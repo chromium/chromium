@@ -6,6 +6,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/test/metrics/user_action_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
@@ -14,37 +15,43 @@
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
+#import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
-#import "ios/chrome/browser/find_in_page/model/java_script_find_tab_helper.h"
-#import "ios/chrome/browser/find_in_page/model/util.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/lens/model/lens_browser_agent.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper_delegate.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/reader_mode/model/features.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/sessions/model/fake_tab_restore_service.h"
+#import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_browser_agent.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/page_side_swipe_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
-#import "ios/chrome/browser/tabs/model/closing_web_state_observer_browser_agent.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/model/web_navigation_util.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_api.h"
 #import "ios/web/common/uikit_ui_util.h"
-#import "ios/web/public/find_in_page/java_script_find_in_page_manager.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
@@ -61,27 +68,38 @@
 class KeyCommandsProviderTest : public PlatformTest {
  protected:
   KeyCommandsProviderTest() {
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(IOSChromeTabRestoreServiceFactory::GetInstance(),
                               FakeTabRestoreService::GetTestingFactory());
     builder.AddTestingFactory(ios::BookmarkModelFactory::GetInstance(),
                               ios::BookmarkModelFactory::GetDefaultFactory());
-    browser_state_ = std::move(builder).Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = std::move(builder).Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     web_state_list_ = browser_->GetWebStateList();
     LensBrowserAgent::CreateForBrowser(browser_.get());
     WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
 
-    bookmark_model_ =
-        ios::BookmarkModelFactory::GetForBrowserState(browser_state_.get());
+    bookmark_model_ = ios::BookmarkModelFactory::GetForProfile(profile_.get());
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
     provider_ = [[KeyCommandsProvider alloc] initWithBrowser:browser_.get()];
+
+    CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+    mock_browser_coordinator_commands_handler_ =
+        OCMStrictProtocolMock(@protocol(BrowserCoordinatorCommands));
+    [dispatcher
+        startDispatchingToTarget:mock_browser_coordinator_commands_handler_
+                     forProtocol:@protocol(BrowserCoordinatorCommands)];
+
+    mock_page_side_swipe_commands_handler_ =
+        OCMStrictProtocolMock(@protocol(PageSideSwipeCommands));
+    [dispatcher startDispatchingToTarget:mock_page_side_swipe_commands_handler_
+                             forProtocol:@protocol(PageSideSwipeCommands)];
   }
   ~KeyCommandsProviderTest() override {}
 
   web::FakeWebState* InsertNewWebState(int index) {
     auto web_state = std::make_unique<web::FakeWebState>();
-    web_state->SetBrowserState(browser_state_.get());
+    web_state->SetBrowserState(profile_.get());
     int insertedIndex = web_state_list_->InsertWebState(
         std::move(web_state),
         WebStateList::InsertionParams::AtIndex(index).Activate());
@@ -90,8 +108,8 @@ class KeyCommandsProviderTest : public PlatformTest {
   }
 
   void CloseWebState(int index) {
-    web_state_list_->CloseWebStateAt(
-        index, WebStateList::ClosingFlags::CLOSE_NO_FLAGS);
+    web_state_list_->CloseWebStateAt(index,
+                                     WebStateList::ClosingReason::kDefault);
   }
 
   // Checks that `view_controller_` can perform the `action` with the given
@@ -120,7 +138,7 @@ class KeyCommandsProviderTest : public PlatformTest {
     navigation_manager->AddItem(url3, ui::PageTransition::PAGE_TRANSITION_LINK);
 
     web_state->SetNavigationManager(std::move(navigation_manager));
-    web_state->SetBrowserState(browser_state_.get());
+    web_state->SetBrowserState(profile_.get());
 
     int insertedIndex = web_state_list_->InsertWebState(
         std::move(web_state),
@@ -139,7 +157,7 @@ class KeyCommandsProviderTest : public PlatformTest {
     navigation_manager->SetLastCommittedItem(
         navigation_manager->GetItemAtIndex(0));
     web_state->SetNavigationManager(std::move(navigation_manager));
-    web_state->SetBrowserState(browser_state_.get());
+    web_state->SetBrowserState(profile_.get());
     web_state->SetNavigationItemCount(1);
     web_state->SetCurrentURL(url);
     return web_state;
@@ -155,12 +173,16 @@ class KeyCommandsProviderTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
-  raw_ptr<WebStateList> web_state_list_;
+  raw_ptr<WebStateList, DanglingUntriaged> web_state_list_;
   base::UserActionTester user_action_tester_;
   raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
   KeyCommandsProvider* provider_;
+  OCMockObject<BrowserCoordinatorCommands>*
+      mock_browser_coordinator_commands_handler_;
+  OCMockObject<PageSideSwipeCommands>* mock_page_side_swipe_commands_handler_;
 };
 
 // Checks that KeyCommandsProvider returns key commands.
@@ -278,35 +300,13 @@ TEST_F(KeyCommandsProviderTest, CanPerform_FindInPageActions) {
 
   // Open a tab.
   web::FakeWebState* web_state = InsertNewWebState(0);
-  if (IsNativeFindInPageAvailable()) {
-    NewTabPageTabHelper::CreateForWebState(web_state);
-    FindTabHelper::CreateForWebState(web_state);
-  } else {
-    web_state->SetWebFramesManager(
-        web::ContentWorld::kIsolatedWorld,
-        std::make_unique<web::FakeWebFramesManager>());
-    web::JavaScriptFindInPageManager::CreateForWebState(web_state);
-    JavaScriptFindTabHelper::CreateForWebState(web_state);
-  }
 
-  if (IsNativeFindInPageAvailable()) {
-    EXPECT_TRUE(CanPerform(@"keyCommand_find"));
-  } else {
-    // If Native Find in Page unavailable, then Find in Page only works if
-    // content is HTML.
-    web_state->SetContentIsHTML(false);
-    EXPECT_FALSE(CanPerform(@"keyCommand_find"));
-
-    // Can Find in Page.
-    web_state->SetContentIsHTML(true);
-    EXPECT_TRUE(CanPerform(@"keyCommand_find"));
-    EXPECT_FALSE(CanPerform(@"keyCommand_findNext"));
-    EXPECT_FALSE(CanPerform(@"keyCommand_findPrevious"));
-  }
+  NewTabPageTabHelper::CreateForWebState(web_state);
+  FindTabHelper::CreateForWebState(web_state);
+  EXPECT_TRUE(CanPerform(@"keyCommand_find"));
 
   // Find UI active.
-  AbstractFindTabHelper* helper =
-      GetConcreteFindTabHelperFromWebState(web_state);
+  FindTabHelper* helper = FindTabHelper::FromWebState(web_state);
   helper->SetFindUIActive(YES);
   EXPECT_TRUE(CanPerform(@"keyCommand_findNext"));
   EXPECT_TRUE(CanPerform(@"keyCommand_findPrevious"));
@@ -398,7 +398,7 @@ TEST_F(KeyCommandsProviderTest, CanPerform_ActionsInHttpPage) {
   GURL url(kChromeUINewTabURL);
   fake_web_state->SetVisibleURL(url);
   fake_web_state->SetNavigationManager(std::move(fake_navigation_manager));
-  fake_web_state->SetBrowserState(browser_state_.get());
+  fake_web_state->SetBrowserState(profile_.get());
 
   id delegate = OCMProtocolMock(@protocol(NewTabPageTabHelperDelegate));
 
@@ -408,7 +408,7 @@ TEST_F(KeyCommandsProviderTest, CanPerform_ActionsInHttpPage) {
   ntp_helper->SetDelegate(delegate);
 
   // Ensure that the actions are not available when the tab is a NTP.
-  ASSERT_TRUE(ntp_helper->IsActive());
+  ASSERT_TRUE(IsVisibleURLNewTabPage(fake_web_state.get()));
   ASSERT_FALSE(url.SchemeIsHTTPOrHTTPS());
   for (NSString* action in actions) {
     EXPECT_FALSE(CanPerform(action));
@@ -457,7 +457,7 @@ TEST_F(KeyCommandsProviderTest, CanPerform_BackForwardWithMultipleEntries) {
 // Checks whether KeyCommandsProvider can perform the actions that are only
 // available when there are at least one closed tab.
 TEST_F(KeyCommandsProviderTest, CanPerform_ReopenLastClosedTab) {
-  ClosingWebStateObserverBrowserAgent::CreateForBrowser(browser_.get());
+  IOSChromeTabRestoreBrowserAgent::CreateForBrowser(browser_.get());
   // No tabs.
   ASSERT_EQ(web_state_list_->count(), 0);
   EXPECT_FALSE(CanPerform(@"keyCommand_reopenLastClosedTab"));
@@ -491,7 +491,7 @@ TEST_F(KeyCommandsProviderTest, CanPerform_ReportAnIssue) {
 TEST_F(KeyCommandsProviderTest,
        CanPerform_OpenNewIncognitoTab_DisabledByPolicy) {
   // Disable regular tabs with policy.
-  browser_state_->GetTestingPrefService()->SetManagedPref(
+  profile_->GetTestingPrefService()->SetManagedPref(
       policy::policy_prefs::kIncognitoModeAvailability,
       std::make_unique<base::Value>(
           static_cast<int>(IncognitoModePrefs::kForced)));
@@ -507,7 +507,7 @@ TEST_F(KeyCommandsProviderTest,
 // disabled by policy.
 TEST_F(KeyCommandsProviderTest, CanPerform_OpenNewRegularTab_DisabledByPolicy) {
   // Disable regular tabs with policy.
-  browser_state_->GetTestingPrefService()->SetManagedPref(
+  profile_->GetTestingPrefService()->SetManagedPref(
       policy::policy_prefs::kIncognitoModeAvailability,
       std::make_unique<base::Value>(
           static_cast<int>(IncognitoModePrefs::kDisabled)));
@@ -519,7 +519,7 @@ TEST_F(KeyCommandsProviderTest, CanPerform_OpenNewRegularTab_DisabledByPolicy) {
   EXPECT_TRUE(CanPerform(@"keyCommand_openNewRegularTab"));
 }
 
-// Checks the showHistory logic based on an regular browser state.
+// Checks the showHistory logic based on an regular profile.
 TEST_F(KeyCommandsProviderTest, ShowHistory_RegularBrowserState) {
   NSString* showHistoryCommand = @"keyCommand_showHistory";
   EXPECT_FALSE(CanPerform(showHistoryCommand));
@@ -531,11 +531,10 @@ TEST_F(KeyCommandsProviderTest, ShowHistory_RegularBrowserState) {
   EXPECT_FALSE(CanPerform(showHistoryCommand));
 }
 
-// Checks the showHistory logic based on an incognito browser state.
+// Checks the showHistory logic based on an incognito profile.
 TEST_F(KeyCommandsProviderTest, ShowHistory_IncognitoBrowserState) {
-  ChromeBrowserState* incognito_browser_state =
-      browser_state_->GetOffTheRecordChromeBrowserState();
-  browser_ = std::make_unique<TestBrowser>(incognito_browser_state);
+  ProfileIOS* incognito_profile = profile_->GetOffTheRecordProfile();
+  browser_ = std::make_unique<TestBrowser>(incognito_profile);
   provider_ = [[KeyCommandsProvider alloc] initWithBrowser:browser_.get()];
   web_state_list_ = browser_->GetWebStateList();
 
@@ -547,16 +546,15 @@ TEST_F(KeyCommandsProviderTest, ShowHistory_IncognitoBrowserState) {
   EXPECT_FALSE(CanPerform(showHistoryCommand));
 }
 
-// Checks the Clear Browsing Data logic based on an regular browser state.
+// Checks the Clear Browsing Data logic based on an regular profile.
 TEST_F(KeyCommandsProviderTest, clearBrowsingData_RegularBrowserState) {
   EXPECT_TRUE(CanPerform(@"keyCommand_clearBrowsingData"));
 }
 
-// Checks the Clear Browsing Data logic based on an incognito browser state.
+// Checks the Clear Browsing Data logic based on an incognito profile.
 TEST_F(KeyCommandsProviderTest, clearBrowsingData_IncognitoBrowserState) {
-  ChromeBrowserState* incognito_browser_state =
-      browser_state_->GetOffTheRecordChromeBrowserState();
-  browser_ = std::make_unique<TestBrowser>(incognito_browser_state);
+  ProfileIOS* incognito_profile = profile_->GetOffTheRecordProfile();
+  browser_ = std::make_unique<TestBrowser>(incognito_profile);
   provider_ = [[KeyCommandsProvider alloc] initWithBrowser:browser_.get()];
   web_state_list_ = browser_->GetWebStateList();
 
@@ -657,7 +655,7 @@ TEST_F(KeyCommandsProviderTest, ImplementsActions) {
   [provider_ keyCommand_clearBrowsingData];
 }
 
-// Checks the openNewTab logic based on a regular browser state.
+// Checks the openNewTab logic based on a regular profile.
 TEST_F(KeyCommandsProviderTest, OpenNewTab_RegularBrowserState) {
   id handler = OCMStrictProtocolMock(@protocol(ApplicationCommands));
   provider_.applicationHandler = handler;
@@ -671,11 +669,10 @@ TEST_F(KeyCommandsProviderTest, OpenNewTab_RegularBrowserState) {
   [handler verify];
 }
 
-// Checks the openNewTab logic based on an incognito browser state.
+// Checks the openNewTab logic based on an incognito profile.
 TEST_F(KeyCommandsProviderTest, OpenNewTab_IncognitoBrowserState) {
-  ChromeBrowserState* incognito_browser_state =
-      browser_state_->GetOffTheRecordChromeBrowserState();
-  browser_ = std::make_unique<TestBrowser>(incognito_browser_state);
+  ProfileIOS* incognito_profile = profile_->GetOffTheRecordProfile();
+  browser_ = std::make_unique<TestBrowser>(incognito_profile);
   provider_ = [[KeyCommandsProvider alloc] initWithBrowser:browser_.get()];
   id handler = OCMStrictProtocolMock(@protocol(ApplicationCommands));
   provider_.applicationHandler = handler;
@@ -689,7 +686,7 @@ TEST_F(KeyCommandsProviderTest, OpenNewTab_IncognitoBrowserState) {
   [handler verify];
 }
 
-// Checks that openNewRegularTab opens a tab in the regular browser state.
+// Checks that openNewRegularTab opens a tab in the regular profile.
 TEST_F(KeyCommandsProviderTest, OpenNewRegularTab) {
   id handler = OCMStrictProtocolMock(@protocol(ApplicationCommands));
   provider_.applicationHandler = handler;
@@ -703,7 +700,7 @@ TEST_F(KeyCommandsProviderTest, OpenNewRegularTab) {
   [handler verify];
 }
 
-// Checks that openNewIncognitoTab opens a tab in the Incognito browser state.
+// Checks that openNewIncognitoTab opens a tab in the Incognito profile.
 TEST_F(KeyCommandsProviderTest, OpenNewIncognitoTab) {
   id handler = OCMStrictProtocolMock(@protocol(ApplicationCommands));
   provider_.applicationHandler = handler;
@@ -776,8 +773,7 @@ TEST_F(KeyCommandsProviderTest, AddToBookmarks_AddURL) {
   id addCommand = [OCMArg checkWithBlock:^BOOL(URLWithTitle* URL) {
     return URL.URL == url;
   }];
-  OCMExpect(
-      [provider_.bookmarksHandler createOrEditBookmarkWithURL:addCommand]);
+  OCMExpect([provider_.bookmarksHandler addOrEditBookmark:addCommand]);
   web::FakeWebState* web_state = InsertNewWebState(0);
   web_state->SetCurrentURL(url);
 
@@ -908,8 +904,20 @@ TEST_F(KeyCommandsProviderTest, BackForward) {
       web_state->GetNavigationManager();
   int initial_index = navigation_manager->GetLastCommittedItemIndex();
 
+  if (IsLensOverlayAvailable(profile_->GetPrefs()) &&
+      IsLensOverlaySameTabNavigationEnabled(profile_->GetPrefs())) {
+    OCMExpect([mock_page_side_swipe_commands_handler_
+        navigateBackWithSideSwipeAnimationIfNeeded]);
+  }
+
   [provider_ keyCommand_back];
   EXPECT_EQ(navigation_manager->GetLastCommittedItemIndex(), initial_index - 1);
+
+  if (IsLensOverlayAvailable(profile_->GetPrefs()) &&
+      IsLensOverlaySameTabNavigationEnabled(profile_->GetPrefs())) {
+    OCMExpect([mock_page_side_swipe_commands_handler_
+        navigateBackWithSideSwipeAnimationIfNeeded]);
+  }
 
   [provider_ keyCommand_back];
   EXPECT_EQ(navigation_manager->GetLastCommittedItemIndex(), initial_index - 2);
@@ -919,6 +927,11 @@ TEST_F(KeyCommandsProviderTest, BackForward) {
 
   [provider_ keyCommand_forward];
   EXPECT_EQ(navigation_manager->GetLastCommittedItemIndex(), initial_index);
+
+  if (IsLensOverlayAvailable(profile_->GetPrefs()) &&
+      IsLensOverlaySameTabNavigationEnabled(profile_->GetPrefs())) {
+    EXPECT_OCMOCK_VERIFY(mock_page_side_swipe_commands_handler_);
+  }
 }
 
 #pragma mark - Validate
@@ -926,35 +939,22 @@ TEST_F(KeyCommandsProviderTest, BackForward) {
 TEST_F(KeyCommandsProviderTest, ValidateCommands) {
   // Open a tab.
   web::FakeWebState* web_state = InsertNewWebState(0);
-  if (IsNativeFindInPageAvailable()) {
-    NewTabPageTabHelper::CreateForWebState(web_state);
-    FindTabHelper::CreateForWebState(web_state);
-  } else {
-    web_state->SetWebFramesManager(
-        web::ContentWorld::kIsolatedWorld,
-        std::make_unique<web::FakeWebFramesManager>());
-    web::JavaScriptFindInPageManager::CreateForWebState(web_state);
-    JavaScriptFindTabHelper::CreateForWebState(web_state);
-  }
+  NewTabPageTabHelper::CreateForWebState(web_state);
+  FindTabHelper::CreateForWebState(web_state);
 
-  if (!IsNativeFindInPageAvailable()) {
-    // JavaScript Find in Page only works if content is HTML.
-    web_state->SetContentIsHTML(true);
-  }
   EXPECT_TRUE(CanPerform(@"keyCommand_find"));
   EXPECT_TRUE(CanPerform(@"keyCommand_select1"));
 
   for (UIKeyCommand* command in provider_.keyCommands) {
     [provider_ validateCommand:command];
     if (command.action == @selector(keyCommand_find)) {
-      EXPECT_TRUE([command.discoverabilityTitle
-          isEqualToString:l10n_util::GetNSStringWithFixup(
-                              IDS_IOS_KEYBOARD_FIND_IN_PAGE)]);
+      EXPECT_NSEQ(
+          command.discoverabilityTitle,
+          l10n_util::GetNSStringWithFixup(IDS_IOS_KEYBOARD_FIND_IN_PAGE));
     }
     if (command.action == @selector(keyCommand_select1)) {
-      EXPECT_TRUE([command.discoverabilityTitle
-          isEqualToString:l10n_util::GetNSStringWithFixup(
-                              IDS_IOS_KEYBOARD_FIRST_TAB)]);
+      EXPECT_NSEQ(command.discoverabilityTitle,
+                  l10n_util::GetNSStringWithFixup(IDS_IOS_KEYBOARD_FIRST_TAB));
     }
   }
 }
@@ -1013,4 +1013,32 @@ TEST_F(KeyCommandsProviderTest, ClearingBrowserDoesntCrash) {
   browser_.reset();
 
   EXPECT_FALSE(CanPerform(@"keyCommand_showNextTab"));
+}
+
+// Checks that some commands are not available in ReadingMode.
+TEST_F(KeyCommandsProviderTest, TestReadingMode) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kEnableReaderMode, kEnableReaderModeInUS}, {});
+  // Open a tab with a URL.
+  GURL url = GURL("https://test/url");
+  auto web_state_unique = CreateFakeWebStateWithURL(url);
+  auto web_state = web_state_unique.get();
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state_unique),
+      WebStateList::InsertionParams::Automatic().Activate());
+  web_state->SetWebFramesManager(web::ContentWorld::kIsolatedWorld,
+                                 std::make_unique<web::FakeWebFramesManager>());
+
+  ReaderModeTabHelper::CreateForWebState(
+      web_state, DistillerServiceFactory::GetForProfile(profile_.get()));
+  SnapshotSourceTabHelper::CreateForWebState(web_state);
+  ReaderModeTabHelper* tab_helper =
+      ReaderModeTabHelper::FromWebState(web_state);
+  EXPECT_TRUE(CanPerform(@"keyCommand_addToReadingList"));
+  EXPECT_TRUE(CanPerform(@"keyCommand_addToBookmarks"));
+
+  tab_helper->ActivateReader(ReaderModeAccessPoint::kAIHub);
+  EXPECT_FALSE(CanPerform(@"keyCommand_addToReadingList"));
+  EXPECT_FALSE(CanPerform(@"keyCommand_addToBookmarks"));
 }

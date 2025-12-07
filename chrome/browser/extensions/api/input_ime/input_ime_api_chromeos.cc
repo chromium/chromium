@@ -12,12 +12,13 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/keyboard/keyboard_config.h"
 #include "base/feature_list.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
 #include "chrome/browser/ash/input_method/input_method_engine.h"
 #include "chrome/browser/ash/input_method/native_input_method_engine.h"
 #include "chrome/browser/ash/input_method/text_field_contextual_info_fetcher.h"
-#include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
@@ -138,7 +139,6 @@ input_ime::AssistiveWindowType ConvertAssistiveWindowType(
     const ash::ime::AssistiveWindowType& type) {
   switch (type) {
     case ash::ime::AssistiveWindowType::kNone:
-    case ash::ime::AssistiveWindowType::kEmojiSuggestion:
     case ash::ime::AssistiveWindowType::kPersonalInfoSuggestion:
     case ash::ime::AssistiveWindowType::kGrammarSuggestion:
     case ash::ime::AssistiveWindowType::kMultiWordSuggestion:
@@ -211,26 +211,6 @@ std::string GetKeyFromEvent(const ui::KeyEvent& event) {
   }
   return base::UTF16ToUTF8(std::u16string(1, ch));
 }
-
-std::string GetKeyFromEventForGoogleBrandedInputMethod(
-    const ui::KeyEvent& event) {
-  switch (event.key_code()) {
-    case ui::VKEY_F1:
-    case ui::VKEY_F2:
-    case ui::VKEY_F3:
-    case ui::VKEY_F4:
-    case ui::VKEY_F5:
-    case ui::VKEY_F6:
-    case ui::VKEY_F7:
-    case ui::VKEY_F8:
-    case ui::VKEY_F9:
-    case ui::VKEY_F10:
-      return ui::KeycodeConverter::DomKeyToKeyString(event.GetDomKey());
-    default:
-      return GetKeyFromEvent(event);
-  }
-}
-
 // TODO(b/247441188): Change the input extension JS API to use
 // PersonalizationMode instead of a bool.
 bool ConvertPersonalizationMode(const TextInputMethod::InputContext& context) {
@@ -389,11 +369,7 @@ class ImeObserverChromeOS
         properties->find(ui::kPropertyFromVK) != properties->end())
       keyboard_event.extension_id = extension_id_;
 
-    keyboard_event.key =
-        (extension_id_ == "jkghodnilhceideoidjikpgommlajknk" &&
-         base::FeatureList::IsEnabled(ash::features::kJapaneseFunctionRow))
-            ? GetKeyFromEventForGoogleBrandedInputMethod(event)
-            : GetKeyFromEvent(event);
+    keyboard_event.key = GetKeyFromEvent(event);
     keyboard_event.code = event.code() == ui::DomCode::NONE
                               ? ash::KeyboardCodeToDomKeycode(event.key_code())
                               : event.GetCodeString();
@@ -990,7 +966,7 @@ ExtensionFunction::ResponseAction InputImeClearCompositionFunction::Run() {
   results.Append(success);
   return RespondNow(success
                         ? ArgumentList(std::move(results))
-                        : ErrorWithArguments(
+                        : ErrorWithArgumentsDoNotUse(
                               std::move(results),
                               InformativeError(error, static_function_name())));
 }
@@ -1081,7 +1057,7 @@ InputImeSetCandidateWindowPropertiesFunction::Run() {
       !engine->SetCandidateWindowVisible(*properties.visible, &error)) {
     base::Value::List results;
     results.Append(false);
-    return RespondNow(ErrorWithArguments(
+    return RespondNow(ErrorWithArgumentsDoNotUse(
         std::move(results), InformativeError(error, static_function_name())));
   }
 
@@ -1174,7 +1150,7 @@ ExtensionFunction::ResponseAction InputImeSetCandidatesFunction::Run() {
   results.Append(success);
   return RespondNow(success
                         ? ArgumentList(std::move(results))
-                        : ErrorWithArguments(
+                        : ErrorWithArgumentsDoNotUse(
                               std::move(results),
                               InformativeError(error, static_function_name())));
 }
@@ -1198,7 +1174,7 @@ ExtensionFunction::ResponseAction InputImeSetCursorPositionFunction::Run() {
   results.Append(success);
   return RespondNow(success
                         ? ArgumentList(std::move(results))
-                        : ErrorWithArguments(
+                        : ErrorWithArgumentsDoNotUse(
                               std::move(results),
                               InformativeError(error, static_function_name())));
 }

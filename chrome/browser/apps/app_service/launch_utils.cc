@@ -19,11 +19,12 @@
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -32,6 +33,8 @@
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/sessions/core/session_id.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/common/constants.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -41,106 +44,9 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chromeos/crosapi/mojom/app_service_types.mojom-shared.h"
-#include "chromeos/crosapi/mojom/app_service_types.mojom.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/public/cpp/new_window_delegate.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/lacros_extensions_util.h"
-#include "chrome/browser/profiles/profile.h"
-#include "extensions/browser/extension_registry.h"
-#include "extensions/common/extension.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_CHROMEOS)
-namespace {
-// Use manual mapping for launch container and window open disposition because
-// we cannot use mojom traits for crosapi::mojom::LaunchParams yet. Move to auto
-// mapping when the AppService Intent struct is converted to use FilePaths.
-crosapi::mojom::LaunchContainer ConvertAppServiceToCrosapiLaunchContainer(
-    apps::LaunchContainer input) {
-  switch (input) {
-    case apps::LaunchContainer::kLaunchContainerWindow:
-      return crosapi::mojom::LaunchContainer::kLaunchContainerWindow;
-    case apps::LaunchContainer::kLaunchContainerTab:
-      return crosapi::mojom::LaunchContainer::kLaunchContainerTab;
-    case apps::LaunchContainer::kLaunchContainerNone:
-      return crosapi::mojom::LaunchContainer::kLaunchContainerNone;
-    case apps::LaunchContainer::kLaunchContainerPanelDeprecated:
-      NOTREACHED_IN_MIGRATION();
-      return crosapi::mojom::LaunchContainer::kLaunchContainerNone;
-  }
-  NOTREACHED_IN_MIGRATION();
-}
-
-apps::LaunchContainer ConvertCrosapiToAppServiceLaunchContainer(
-    crosapi::mojom::LaunchContainer input) {
-  switch (input) {
-    case crosapi::mojom::LaunchContainer::kLaunchContainerWindow:
-      return apps::LaunchContainer::kLaunchContainerWindow;
-    case crosapi::mojom::LaunchContainer::kLaunchContainerTab:
-      return apps::LaunchContainer::kLaunchContainerTab;
-    case crosapi::mojom::LaunchContainer::kLaunchContainerNone:
-      return apps::LaunchContainer::kLaunchContainerNone;
-  }
-  NOTREACHED_IN_MIGRATION();
-}
-
-crosapi::mojom::WindowOpenDisposition ConvertWindowOpenDispositionToCrosapi(
-    WindowOpenDisposition input) {
-  switch (input) {
-    case WindowOpenDisposition::UNKNOWN:
-      return crosapi::mojom::WindowOpenDisposition::kUnknown;
-    case WindowOpenDisposition::CURRENT_TAB:
-      return crosapi::mojom::WindowOpenDisposition::kCurrentTab;
-    case WindowOpenDisposition::NEW_FOREGROUND_TAB:
-      return crosapi::mojom::WindowOpenDisposition::kNewForegroundTab;
-    case WindowOpenDisposition::NEW_BACKGROUND_TAB:
-      return crosapi::mojom::WindowOpenDisposition::kNewBackgroundTab;
-    case WindowOpenDisposition::NEW_WINDOW:
-      return crosapi::mojom::WindowOpenDisposition::kNewWindow;
-    case WindowOpenDisposition::NEW_POPUP:
-      return crosapi::mojom::WindowOpenDisposition::kNewPopup;
-    case WindowOpenDisposition::SINGLETON_TAB:
-    case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
-    case WindowOpenDisposition::SAVE_TO_DISK:
-    case WindowOpenDisposition::OFF_THE_RECORD:
-    case WindowOpenDisposition::IGNORE_ACTION:
-    case WindowOpenDisposition::SWITCH_TO_TAB:
-      NOTREACHED_IN_MIGRATION();
-      return crosapi::mojom::WindowOpenDisposition::kUnknown;
-  }
-
-  NOTREACHED_IN_MIGRATION();
-}
-
-WindowOpenDisposition ConvertWindowOpenDispositionFromCrosapi(
-    crosapi::mojom::WindowOpenDisposition input) {
-  switch (input) {
-    case crosapi::mojom::WindowOpenDisposition::kUnknown:
-      return WindowOpenDisposition::UNKNOWN;
-    case crosapi::mojom::WindowOpenDisposition::kCurrentTab:
-      return WindowOpenDisposition::CURRENT_TAB;
-    case crosapi::mojom::WindowOpenDisposition::kNewForegroundTab:
-      return WindowOpenDisposition::NEW_FOREGROUND_TAB;
-    case crosapi::mojom::WindowOpenDisposition::kNewBackgroundTab:
-      return WindowOpenDisposition::NEW_BACKGROUND_TAB;
-    case crosapi::mojom::WindowOpenDisposition::kNewWindow:
-      return WindowOpenDisposition::NEW_WINDOW;
-    case crosapi::mojom::WindowOpenDisposition::kNewPopup:
-      return WindowOpenDisposition::NEW_POPUP;
-  }
-
-  NOTREACHED_IN_MIGRATION();
-}
-
-}  // namespace
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace apps {
@@ -243,9 +149,7 @@ AppLaunchParams CreateAppLaunchParamsForIntent(
     params.override_url = intent->url.value();
   }
 
-  // On Lacros, the caller of this function attaches the intent files to the
-  // AppLaunchParams.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!intent->files.empty()) {
     std::vector<GURL> file_urls;
     for (const auto& intent_file : intent->files) {
@@ -263,7 +167,7 @@ AppLaunchParams CreateAppLaunchParamsForIntent(
       }
     }
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   params.intent = std::move(intent);
 
@@ -336,6 +240,8 @@ extensions::AppLaunchSource GetAppLaunchSource(LaunchSource launch_source) {
     case LaunchSource::kFromProfileMenu:
     case LaunchSource::kFromSysTrayCalendar:
     case LaunchSource::kFromInstaller:
+    case LaunchSource::kFromNavigationCapturing:
+    case LaunchSource::kFromWebInstallApi:
       return extensions::AppLaunchSource::kSourceNone;
   }
 }
@@ -353,8 +259,7 @@ int GetEventFlags(WindowOpenDisposition disposition, bool prefer_container) {
     case WindowOpenDisposition::NEW_FOREGROUND_TAB:
       return ui::EF_MIDDLE_MOUSE_BUTTON | ui::EF_SHIFT_DOWN;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return ui::EF_NONE;
+      NOTREACHED();
   }
 }
 
@@ -364,15 +269,17 @@ int GetSessionIdForRestoreFromWebContents(
     return SessionID::InvalidValue().id();
   }
 
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  const tabs::TabInterface* tab =
+      tabs::TabInterface::GetFromContents(web_contents);
+  const BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
   if (!browser) {
     return SessionID::InvalidValue().id();
   }
 
-  return browser->session_id().id();
+  return browser->GetSessionID().id();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 arc::mojom::WindowInfoPtr MakeArcWindowInfo(WindowInfoPtr window_info) {
   if (!window_info) {
     return nullptr;
@@ -388,94 +295,17 @@ arc::mojom::WindowInfoPtr MakeArcWindowInfo(WindowInfoPtr window_info) {
   return arc_window_info;
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS)
-crosapi::mojom::LaunchParamsPtr ConvertLaunchParamsToCrosapi(
-    const AppLaunchParams& params,
-    Profile* profile) {
-  auto crosapi_params = crosapi::mojom::LaunchParams::New();
-
-  crosapi_params->app_id = params.app_id;
-  crosapi_params->launch_source = params.launch_source;
-
-  // Both launch_files and override_url will be represent by intent in crosapi
-  // launch params. These info will normally represent in the intent field in
-  // the launch params, if not, then generate the intent from these fields
-  if (params.intent) {
-    crosapi_params->intent =
-        apps_util::ConvertAppServiceToCrosapiIntent(params.intent, profile);
-  } else if (!params.override_url.is_empty()) {
-    crosapi_params->intent = apps_util::ConvertAppServiceToCrosapiIntent(
-        std::make_unique<Intent>(apps_util::kIntentActionView,
-                                 params.override_url),
-        profile);
-  } else if (!params.launch_files.empty()) {
-    std::vector<base::FilePath> files = params.launch_files;
-    crosapi_params->intent =
-        apps_util::CreateCrosapiIntentForViewFiles(std::move(files));
-  }
-  crosapi_params->container =
-      ConvertAppServiceToCrosapiLaunchContainer(params.container);
-  crosapi_params->disposition =
-      ConvertWindowOpenDispositionToCrosapi(params.disposition);
-  crosapi_params->display_id = params.display_id;
-  return crosapi_params;
-}
-
-AppLaunchParams ConvertCrosapiToLaunchParams(
-    const crosapi::mojom::LaunchParamsPtr& crosapi_params,
-    Profile* profile) {
-  AppLaunchParams params(
-      crosapi_params->app_id,
-      ConvertCrosapiToAppServiceLaunchContainer(crosapi_params->container),
-      ConvertWindowOpenDispositionFromCrosapi(crosapi_params->disposition),
-      crosapi_params->launch_source, crosapi_params->display_id);
-  if (!crosapi_params->intent) {
-    return params;
-  }
-
-  if (crosapi_params->intent->url.has_value()) {
-    params.override_url = crosapi_params->intent->url.value();
-  }
-
-  if (crosapi_params->intent->files.has_value()) {
-    for (const auto& file : crosapi_params->intent->files.value()) {
-      params.launch_files.push_back(file->file_path);
-    }
-  }
-
-  params.intent = apps_util::CreateAppServiceIntentFromCrosapi(
-      crosapi_params->intent, profile);
-  return params;
-}
-
-crosapi::mojom::LaunchParamsPtr CreateCrosapiLaunchParamsWithEventFlags(
-    AppServiceProxy* proxy,
-    const std::string& app_id,
-    int event_flags,
-    LaunchSource launch_source,
-    int64_t display_id) {
-  WindowMode window_mode = WindowMode::kUnknown;
-  proxy->AppRegistryCache().ForOneApp(app_id,
-                                      [&window_mode](const AppUpdate& update) {
-                                        window_mode = update.WindowMode();
-                                      });
-  auto launch_params = apps::CreateAppIdLaunchParamsWithEventFlags(
-      app_id, event_flags, launch_source, display_id,
-      /*fallback_container=*/
-      ConvertWindowModeToAppLaunchContainer(window_mode));
-  return apps::ConvertLaunchParamsToCrosapi(launch_params, proxy->profile());
-}
-
 AppIdsToLaunchForUrl::AppIdsToLaunchForUrl() = default;
 AppIdsToLaunchForUrl::AppIdsToLaunchForUrl(AppIdsToLaunchForUrl&&) = default;
 AppIdsToLaunchForUrl::~AppIdsToLaunchForUrl() = default;
 
 AppIdsToLaunchForUrl FindAppIdsToLaunchForUrl(AppServiceProxy* proxy,
                                               const GURL& url) {
+  // Navigation Capturing also enables launching of browser-tab apps.
+  bool exclude_browser_tab_apps = !features::IsNavigationCapturingReimplEnabled();
   AppIdsToLaunchForUrl result;
-  result.candidates = proxy->GetAppIdsForUrl(url, /*exclude_browsers=*/true);
+  result.candidates =
+      proxy->GetAppIdsForUrl(url, /*exclude_browsers=*/true, exclude_browser_tab_apps);
   if (result.candidates.empty()) {
     return result;
   }
@@ -502,21 +332,13 @@ void MaybeLaunchPreferredAppForUrl(Profile* profile,
       return;
     }
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  CHECK(ash::NewWindowDelegate::GetPrimary());
+  CHECK(ash::NewWindowDelegate::GetInstance());
 
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  NavigateParams params(profile, url, ui::PAGE_TRANSITION_LINK);
-  params.window_action = NavigateParams::SHOW_WINDOW;
-  Navigate(&params);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 void LaunchUrlInInstalledAppOrBrowser(Profile* profile,
                                       const GURL& url,
                                       LaunchSource launch_source) {
@@ -534,12 +356,12 @@ void LaunchUrlInInstalledAppOrBrowser(Profile* profile,
     }
   }
 
-  CHECK(ash::NewWindowDelegate::GetPrimary());
+  CHECK(ash::NewWindowDelegate::GetInstance());
 
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace apps

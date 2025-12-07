@@ -15,8 +15,6 @@
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -44,7 +42,7 @@ void SetupDemoModeOnlineEnrollment(MockEnrollmentLauncher* mock,
   EXPECT_CALL(*mock, Setup(ConfigIsAttestation(), _));
 
   EXPECT_CALL(*mock, EnrollUsingAttestation())
-      .WillRepeatedly(testing::Invoke([mock, result]() {
+      .WillRepeatedly([mock, result]() {
         switch (result) {
           case DemoModeSetupResult::SUCCESS:
             mock->status_consumer()->OnDeviceEnrolled();
@@ -61,9 +59,9 @@ void SetupDemoModeOnlineEnrollment(MockEnrollmentLauncher* mock,
                         DM_STATUS_TEMPORARY_UNAVAILABLE));
             break;
           default:
-            NOTREACHED_IN_MIGRATION();
+            NOTREACHED();
         }
-      }));
+      });
 }
 
 bool SetupDummyOfflinePolicyDir(const std::string& account_id,

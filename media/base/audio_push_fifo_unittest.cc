@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <limits>
 #include <memory>
 #include <vector>
@@ -72,8 +67,8 @@ class AudioPushFifoTest : public testing::TestWithParam<int> {
       EXPECT_EQ(GetExpectedOutputChunks(i * input_chunk_size), results_.size());
 
       // Fill audio data with predictable values.
-      for (int j = 0; j < audio_bus->frames(); ++j)
-        audio_bus->channel(0)[j] = static_cast<float>(sample_value++);
+      std::ranges::generate(audio_bus->channel_span(0),
+                            [&sample_value]() { return sample_value++; });
 
       fifo_->Push(*audio_bus);
       // Note: AudioPushFifo has just called ReceiveAndCheckNextChunk() zero or
@@ -133,23 +128,25 @@ class AudioPushFifoTest : public testing::TestWithParam<int> {
   // adds a result to |results_|.
   void ReceiveAndCheckNextChunk(const AudioBus& audio_bus, int frame_delay) {
     OutputChunkResult result;
+    auto channel_data = audio_bus.channel_span(0);
     result.num_frames = audio_bus.frames();
-    result.first_sample_value = audio_bus.channel(0)[0];
-    result.last_sample_value = audio_bus.channel(0)[audio_bus.frames() - 1];
+    result.first_sample_value = channel_data[0];
+    result.last_sample_value = channel_data[audio_bus.frames() - 1];
     result.frame_delay = frame_delay;
 
     // Check that each sample value is the previous sample value plus one.
     for (int i = 1; i < audio_bus.frames(); ++i) {
       const float expected_value = result.first_sample_value + i;
-      const float actual_value = audio_bus.channel(0)[i];
+      const float actual_value = channel_data[i];
       if (actual_value != expected_value) {
         if (actual_value == 0.0f) {
           // This chunk is probably being emitted by a Flush().  If that's true
           // then the frame_delay will be negative and the rest of the
           // |audio_bus| should be all zeroes.
           ASSERT_GT(0, frame_delay);
-          for (int j = i + 1; j < audio_bus.frames(); ++j)
-            ASSERT_EQ(0.0f, audio_bus.channel(0)[j]);
+          ASSERT_TRUE(std::ranges::all_of(
+              channel_data.subspan(static_cast<size_t>(i + 1)),
+              [](float value) { return value == 0.0f; }));
           break;
         } else {
           ASSERT_EQ(expected_value, actual_value) << "Sample at offset " << i
@@ -210,8 +207,9 @@ TEST_P(AudioPushFifoTest, PushArbitraryNumbersOfFramesAtATime) {
     const int input_chunk_size = GetRandomInRange(1, 1920);
     const std::unique_ptr<AudioBus> audio_bus =
         AudioBus::Create(1, input_chunk_size);
-    for (int j = 0; j < audio_bus->frames(); ++j)
-      audio_bus->channel(0)[j] = static_cast<float>(sample_value++);
+
+    std::ranges::generate(audio_bus->channel_span(0),
+                          [&sample_value]() { return sample_value++; });
 
     fifo_->Push(*audio_bus);
     // Note: AudioPushFifo has just called ReceiveAndCheckNextChunk() zero or

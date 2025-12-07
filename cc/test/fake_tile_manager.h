@@ -14,6 +14,8 @@
 
 namespace cc {
 
+class TileManagerClient;
+
 class FakeTileManager : public TileManager {
  public:
   FakeTileManager(TileManagerClient* client,

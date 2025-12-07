@@ -9,7 +9,9 @@ AccessibilityExtensionRectUtilTest = class extends CommonE2ETestBase {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-    await importModule('RectUtil', '/common/rect_util.js');
+
+    const imports = TestImportManager.getImports();
+    globalThis.RectUtil = imports.RectUtil;
   }
 };
 

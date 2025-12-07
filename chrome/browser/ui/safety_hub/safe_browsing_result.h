@@ -7,10 +7,24 @@
 
 #include <memory>
 
-#include "chrome/browser/ui/safety_hub/safety_hub_service.h"
+#include "base/values.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 #include "chrome/browser/ui/webui/settings/safety_hub_handler.h"
 
-class SafetyHubSafeBrowsingResult : public SafetyHubService::Result {
+class PrefService;
+
+// The state of Safe Browsing settings.
+enum class SafeBrowsingState {
+  kEnabledEnhanced = 0,
+  kEnabledStandard = 1,
+  kDisabledByAdmin = 2,
+  kDisabledByExtension = 3,
+  kDisabledByUser = 4,
+  // New enum values must go above here.
+  kMaxValue = kDisabledByUser,
+};
+
+class SafetyHubSafeBrowsingResult : public SafetyHubResult {
  public:
   SafetyHubSafeBrowsingResult() = delete;
 
@@ -21,14 +35,20 @@ class SafetyHubSafeBrowsingResult : public SafetyHubService::Result {
 
   ~SafetyHubSafeBrowsingResult() override;
 
-  static std::optional<std::unique_ptr<SafetyHubService::Result>> GetResult(
+  static std::optional<std::unique_ptr<SafetyHubResult>> GetResult(
       const PrefService* pref_service);
 
   static SafeBrowsingState GetState(const PrefService* pref_service);
 
-  // SafetyHubService::Result implementation
+#if !BUILDFLAG(IS_ANDROID)
+  // Fetches data for the Safe Browsing card to return data to the desktop UI.
+  static base::Value::Dict GetSafeBrowsingCardData(
+      const PrefService* pref_service);
+#endif  // BUILDFLAG(IS_ANDROID)
 
-  std::unique_ptr<SafetyHubService::Result> Clone() const override;
+  // SafetyHubResult implementation
+
+  std::unique_ptr<SafetyHubResult> Clone() const override;
 
   base::Value::Dict ToDictValue() const override;
 

@@ -1,0 +1,48 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "face_pile_consumer.h",
+    "face_pile_providing.h",
+    "face_pile_view.h",
+    "face_pile_view.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/data_sharing/public:features",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/share_kit/model",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups:tab_groups_constant",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+}
+
+source_set("utils") {
+  sources = [
+    "tab_group_utils.h",
+    "tab_group_utils.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/tab_groups",
+    "//ios/chrome/common/ui/colors",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_face_pile_consumer.h",
+    "fake_face_pile_consumer.mm",
+    "fake_face_pile_provider.h",
+    "fake_face_pile_provider.mm",
+  ]
+  deps = [ ":ui" ]
+}

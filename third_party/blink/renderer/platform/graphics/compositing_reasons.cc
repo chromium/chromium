@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/graphics/compositing_reasons.h"
+
+#include <array>
 
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -17,14 +14,15 @@ namespace blink {
 namespace {
 
 #define V(name) #name,
-constexpr const char* kShortNames[] = {FOR_EACH_COMPOSITING_REASON(V)};
+constexpr auto kShortNames =
+    std::to_array<const char* const>({FOR_EACH_COMPOSITING_REASON(V)});
 #undef V
 
 struct ReasonAndDescription {
   CompositingReasons reason;
   const char* description;
 };
-constexpr ReasonAndDescription kReasonDescriptionMap[] = {
+constexpr auto kReasonDescriptionMap = std::to_array<ReasonAndDescription>({
     {CompositingReason::k3DTransform, "Has a 3d transform."},
     {CompositingReason::k3DScale, "Has a 3d scale."},
     {CompositingReason::k3DRotate, "Has a 3d rotate."},
@@ -47,6 +45,8 @@ constexpr ReasonAndDescription kReasonDescriptionMap[] = {
      "Has an active accelerated backdrop filter animation or transition."},
     {CompositingReason::kAffectedByOuterViewportBoundsDelta,
      "Is fixed position affected by outer viewport bounds delta."},
+    {CompositingReason::kAffectedBySafeAreaBottom,
+     "Is fixed position affected by safe area bottom."},
     {CompositingReason::kFixedPosition,
      "Is fixed position in a scrollable view."},
     {CompositingReason::kUndoOverscroll,
@@ -73,6 +73,10 @@ constexpr ReasonAndDescription kReasonDescriptionMap[] = {
      "Has a will-change: filter compositing hint."},
     {CompositingReason::kWillChangeBackdropFilter,
      "Has a will-change: backdrop-filter compositing hint."},
+    {CompositingReason::kWillChangeClipPath,
+     "Has a will-change: clip-path compositing hint."},
+    {CompositingReason::kWillChangeMixBlendMode,
+     "Has a will-change: mix-blend-mode compositing hint."},
     {CompositingReason::kWillChangeOther,
      "Has a will-change compositing hint other than transform, opacity, filter"
      " and backdrop-filter."},
@@ -89,7 +93,7 @@ constexpr ReasonAndDescription kReasonDescriptionMap[] = {
     {CompositingReason::kViewTransitionElement,
      "This element is shared during view transition."},
     {CompositingReason::kViewTransitionPseudoElement,
-     "This element is a part of a pseudo element tree representing the view "
+     "This element is a part of a pseudo-element tree representing the view "
      "transition."},
     {CompositingReason::kViewTransitionElementDescendantWithClipPath,
      "This element's ancestor is shared during view transition and it has a "
@@ -114,7 +118,7 @@ constexpr ReasonAndDescription kReasonDescriptionMap[] = {
     {CompositingReason::kDevToolsOverlay, "Is DevTools overlay."},
     {CompositingReason::kViewTransitionContent,
      "The layer containing the contents of a view transition element."},
-};
+});
 
 }  // anonymous namespace
 
@@ -157,12 +161,8 @@ std::vector<const char*> CompositingReason::Descriptions(
 
 String CompositingReason::ToString(CompositingReasons reasons) {
   StringBuilder builder;
-  for (const char* name : ShortNames(reasons)) {
-    if (builder.length())
-      builder.Append(',');
-    builder.Append(name);
-  }
-  return builder.ToString();
+  builder.AppendRange(ShortNames(reasons), ",");
+  return builder.ReleaseString();
 }
 
 }  // namespace blink

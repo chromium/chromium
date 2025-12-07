@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/filters/ffmpeg_h264_to_annex_b_bitstream_converter.h"
+
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "media/ffmpeg/ffmpeg_common.h"
 #include "media/ffmpeg/scoped_av_packet.h"
-#include "media/filters/ffmpeg_h264_to_annex_b_bitstream_converter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -287,7 +289,6 @@ class FFmpegH264ToAnnexBBitstreamConverterTest : public testing::Test {
     // Set up AVCConfigurationRecord correctly for tests.
     // It's ok to do const cast here as data in kHeaderDataOkWithFieldLen4 is
     // never written to.
-    memset(&test_parameters_, 0, sizeof(AVCodecParameters));
     test_parameters_.extradata =
         const_cast<uint8_t*>(kHeaderDataOkWithFieldLen4);
     test_parameters_.extradata_size = sizeof(kHeaderDataOkWithFieldLen4);
@@ -301,11 +302,11 @@ class FFmpegH264ToAnnexBBitstreamConverterTest : public testing::Test {
   void CreatePacket(AVPacket* packet, const uint8_t* data, uint32_t data_size) {
     // Create new packet sized of |data_size| from |data|.
     EXPECT_EQ(av_new_packet(packet, data_size), 0);
-    memcpy(packet->data, data, data_size);
+    UNSAFE_TODO(memcpy(packet->data, data, data_size));
   }
 
   // Variable to hold valid dummy parameters for testing.
-  AVCodecParameters test_parameters_;
+  AVCodecParameters test_parameters_ = {};
 };
 
 TEST_F(FFmpegH264ToAnnexBBitstreamConverterTest, Conversion_Success) {
@@ -327,9 +328,9 @@ TEST_F(FFmpegH264ToAnnexBBitstreamConverterTest, Conversion_SuccessBigPacket) {
 
   // Create new packet with 1000 excess bytes.
   auto test_packet = ScopedAVPacket::Allocate();
-  static uint8_t excess_data[sizeof(kPacketDataOkWithFieldLen4) + 1000] = {0};
-  memcpy(excess_data, kPacketDataOkWithFieldLen4,
-         sizeof(kPacketDataOkWithFieldLen4));
+  static uint8_t excess_data[sizeof(kPacketDataOkWithFieldLen4) + 1000] = {};
+  UNSAFE_TODO(memcpy(excess_data, kPacketDataOkWithFieldLen4,
+                     sizeof(kPacketDataOkWithFieldLen4)));
   CreatePacket(test_packet.get(), excess_data, sizeof(excess_data));
 
   // Try out the actual conversion (should be successful and allocate new
@@ -339,7 +340,7 @@ TEST_F(FFmpegH264ToAnnexBBitstreamConverterTest, Conversion_SuccessBigPacket) {
   // Converter will be automatically cleaned up.
 }
 
-TEST_F(FFmpegH264ToAnnexBBitstreamConverterTest, Conversion_FailureNullParams) {
+TEST_F(FFmpegH264ToAnnexBBitstreamConverterTest, Conversion_SuccessNullParams) {
   // Set up AVCConfigurationRecord to represent NULL data.
   AVCodecParameters dummy_parameters;
   dummy_parameters.extradata = nullptr;
@@ -355,7 +356,11 @@ TEST_F(FFmpegH264ToAnnexBBitstreamConverterTest, Conversion_FailureNullParams) {
                sizeof(kPacketDataOkWithFieldLen4));
 
   // Try out the actual conversion. This should fail due to missing extradata.
-  EXPECT_FALSE(converter.ConvertPacket(test_packet.get()));
+  auto* packet_data = test_packet->data;
+  EXPECT_TRUE(converter.ConvertPacket(test_packet.get()));
+  EXPECT_EQ(static_cast<size_t>(test_packet->size),
+            sizeof(kPacketDataOkWithFieldLen4));
+  EXPECT_EQ(test_packet->data, packet_data);
 
   // Converter will be automatically cleaned up.
 }

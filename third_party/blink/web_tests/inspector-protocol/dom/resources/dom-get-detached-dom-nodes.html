@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <div id="a">
+      <p id="b">
+        <span id="c">
+            <span id="f"></span>
+        </span>
+        <span id="d"></span>
+        <span id="e"></span>
+      </p>
+    </div>
+
+    <script>
+      var outerDiv = document.getElementById("a");
+      var innerSpan = document.getElementById("c");
+      var innerSpan2 = document.getElementById("d");
+      // Cause <p id="b"> to be removed, but without ever taking a reference to it
+      outerDiv.innerHTML = "";
+    </script>
+  </body>
+</html>

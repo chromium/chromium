@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <cmath>
 #include <cstdint>
 #include <limits>
@@ -11,6 +16,7 @@
 #include "base/check.h"
 #include "chromecast/media/base/slew_volume.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_sample_types.h"
 #include "media/base/vector_math.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -47,7 +53,7 @@ std::vector<float*> GetDataChannels(::media::AudioBus* audio,
   std::vector<float*> data(kNumChannels);
   for (int i = 0; i < kNumChannels; ++i) {
     int source_channel = swapped ? (i + 1) % kNumChannels : i;
-    data[i] = audio->channel(source_channel);
+    data[i] = audio->channel_span(source_channel).data();
   }
   return data;
 }

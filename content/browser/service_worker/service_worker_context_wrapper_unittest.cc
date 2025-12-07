@@ -75,13 +75,13 @@ class ServiceWorkerContextWrapperTest : public testing::Test {
   }
 
   ServiceWorkerContextCore* context() { return wrapper_->context(); }
-  ServiceWorkerRegistry* registry() { return context()->registry(); }
+  ServiceWorkerRegistry& registry() { return context()->registry(); }
 
   blink::ServiceWorkerStatusCode StoreRegistration(
       scoped_refptr<ServiceWorkerRegistration> registration) {
     blink::ServiceWorkerStatusCode result;
     base::RunLoop loop;
-    registry()->StoreRegistration(
+    registry().StoreRegistration(
         registration.get(), registration->waiting_version(),
         base::BindLambdaForTesting([&](blink::ServiceWorkerStatusCode status) {
           result = status;
@@ -95,7 +95,7 @@ class ServiceWorkerContextWrapperTest : public testing::Test {
       scoped_refptr<ServiceWorkerRegistration> registration) {
     blink::ServiceWorkerStatusCode result;
     base::RunLoop loop;
-    registry()->DeleteRegistration(
+    registry().DeleteRegistration(
         registration,
         base::BindLambdaForTesting([&](blink::ServiceWorkerStatusCode status) {
           result = status;
@@ -112,8 +112,8 @@ class ServiceWorkerContextWrapperTest : public testing::Test {
     storage_control_ =
         std::make_unique<storage::ServiceWorkerStorageControlImpl>(
             user_data_directory_.GetPath(),
-            /*database_task_runner=*/
-            base::SingleThreadTaskRunner::GetCurrentDefault(),
+            base::MakeRefCounted<
+                storage::ServiceWorkerStorage::StorageSharedBuffer>(),
             std::move(receiver));
   }
 
@@ -138,7 +138,7 @@ TEST_F(ServiceWorkerContextWrapperTest, HasRegistration) {
 
   // Store it.
   base::RunLoop loop;
-  registry()->StoreRegistration(
+  registry().StoreRegistration(
       registration.get(), registration->waiting_version(),
       base::BindLambdaForTesting(
           [&loop](blink::ServiceWorkerStatusCode status) {
@@ -154,7 +154,7 @@ TEST_F(ServiceWorkerContextWrapperTest, HasRegistration) {
   InitWrapper();
 
   // Now test that registrations are recognized.
-  wrapper_->context()->WaitForRegistrationsInitializedForTest();
+  wrapper_->context()->registry().WaitForRegistrationsInitializedForTest();
   EXPECT_TRUE(wrapper_->MaybeHasRegistrationForStorageKey(key));
   EXPECT_FALSE(wrapper_->MaybeHasRegistrationForStorageKey(
       blink::StorageKey::CreateFromStringForTesting("https://example.org")));
@@ -166,7 +166,7 @@ TEST_F(ServiceWorkerContextWrapperTest, HasRegistration) {
 // key, and should only return FALSE when ALL registrations for that key
 // have been deleted from storage.
 TEST_F(ServiceWorkerContextWrapperTest, DeleteRegistrationsForSameKey) {
-  wrapper_->context()->WaitForRegistrationsInitializedForTest();
+  wrapper_->context()->registry().WaitForRegistrationsInitializedForTest();
 
   // Make two registrations for same origin.
   GURL scope1("https://example1.com/abc/");
@@ -221,7 +221,7 @@ TEST_F(ServiceWorkerContextWrapperTest, DeleteRegistrationsForPartitionedKeys) {
   scope_feature_list_.InitAndEnableFeature(
       net::features::kThirdPartyStoragePartitioning);
 
-  wrapper_->context()->WaitForRegistrationsInitializedForTest();
+  wrapper_->context()->registry().WaitForRegistrationsInitializedForTest();
 
   // Make two registrations for same origin, but different top-level site.
   GURL scope("https://example1.com/abc/");
@@ -279,7 +279,7 @@ TEST_F(ServiceWorkerContextWrapperTest, DeleteRegistrationsForPartitionedKeys) {
 // registrations may exist, MaybeHasRegistrationForStorageKey correctly returns
 // FALSE since the registrations do not exist in storage.
 TEST_F(ServiceWorkerContextWrapperTest, DeleteRegistration) {
-  wrapper_->context()->WaitForRegistrationsInitializedForTest();
+  wrapper_->context()->registry().WaitForRegistrationsInitializedForTest();
 
   // Make registration.
   GURL scope1("https://example2.com/");

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/ash/global_media_controls/media_item_ui_device_selector_delegate_ash.h"
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 
 void MediaItemUIDeviceSelectorDelegateAsh::OnAudioSinkChosen(
     const std::string& id,

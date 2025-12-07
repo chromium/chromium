@@ -1,0 +1,14 @@
+{
+  "name": "Simple web app with for WCO nav capture",
+  "icons": [
+    {
+      "src": "basic-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "index_wco.html",
+  "display": "standalone",
+  "scope": ".",
+  "display_override": [ "window-controls-overlay" ]
+}

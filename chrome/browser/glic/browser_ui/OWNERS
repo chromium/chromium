@@ -1,0 +1,17 @@
+file://chrome/browser/background/glic/OWNERS
+
+# Border view
+per-file *border_view*=baranerf@google.com
+per-file *border_view*=liuwilliam@chromium.org
+per-file *border_view*=vollick@chromium.org
+
+# Tab underline
+per-file *tab_underline*=cuianthony@chromium.org
+per-file *tab_underline*=liuwilliam@chromium.org
+
+# Vector icon manager
+per-file *vector_icon*=vollick@chromium.org
+
+# Tab indicator and IPH
+per-file *tab_indicator*=dfried@chromium.org
+per-file *iph*=dfried@chromium.org

@@ -13,13 +13,13 @@ namespace sync_file_system {
 
 class LocalOriginChangeObserver {
  public:
-  LocalOriginChangeObserver() {}
+  LocalOriginChangeObserver() = default;
 
   LocalOriginChangeObserver(const LocalOriginChangeObserver&) = delete;
   LocalOriginChangeObserver& operator=(const LocalOriginChangeObserver&) =
       delete;
 
-  ~LocalOriginChangeObserver() {}
+  ~LocalOriginChangeObserver() = default;
 
   virtual void OnChangesAvailableInOrigins(const std::set<GURL>& origins) = 0;
 };

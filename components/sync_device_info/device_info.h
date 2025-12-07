@@ -10,12 +10,12 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "components/sync/base/data_type.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace sync_pb {
 enum SharingSpecificFields_EnabledFeatures : int;
@@ -44,8 +44,7 @@ class DeviceInfo {
 
   // A struct that holds information regarding to Sharing features.
   struct SharingInfo {
-    SharingInfo(SharingTargetInfo vapid_target_info,
-                SharingTargetInfo sharing_target_info,
+    SharingInfo(SharingTargetInfo sharing_target_info,
                 std::string chime_representative_target_id,
                 std::set<sync_pb::SharingSpecificFields_EnabledFeatures>
                     enabled_features);
@@ -53,10 +52,6 @@ class DeviceInfo {
     SharingInfo(SharingInfo&& other);
     SharingInfo& operator=(const SharingInfo& other);
     ~SharingInfo();
-
-    // Target info using VAPID key.
-    // TODO(crbug.com/40102247): Deprecate when VAPID migration is over.
-    SharingTargetInfo vapid_target_info;
 
     // Target info using Sharing sender ID.
     SharingTargetInfo sender_id_target_info;
@@ -73,11 +68,11 @@ class DeviceInfo {
   struct PhoneAsASecurityKeyInfo {
     // NotReady indicates that more time is needed to calculate the
     // PhoneAsASecurityKeyInfo.
-    using NotReady = base::StrongAlias<class NotReadyTag, absl::monostate>;
+    using NotReady = base::StrongAlias<class NotReadyTag, std::monostate>;
     // NoSupport indicates that phone-as-a-security-key cannot be supported.
-    using NoSupport = base::StrongAlias<class NoSupportTag, absl::monostate>;
+    using NoSupport = base::StrongAlias<class NoSupportTag, std::monostate>;
     using StatusOrInfo =
-        absl::variant<NotReady, NoSupport, PhoneAsASecurityKeyInfo>;
+        std::variant<NotReady, NoSupport, PhoneAsASecurityKeyInfo>;
 
     PhoneAsASecurityKeyInfo();
     PhoneAsASecurityKeyInfo(const PhoneAsASecurityKeyInfo& other);
@@ -126,7 +121,15 @@ class DeviceInfo {
   // A Java counterpart will be generated for this enum.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.sync_device_info
   //
-  enum class FormFactor { kUnknown = 0, kDesktop = 1, kPhone = 2, kTablet = 3 };
+  enum class FormFactor {
+    kUnknown = 0,
+    kDesktop = 1,
+    kPhone = 2,
+    kTablet = 3,
+    kAutomotive = 4,
+    kWearable = 5,
+    kTv = 6,
+  };
 
   DeviceInfo(
       const std::string& guid,
@@ -148,7 +151,7 @@ class DeviceInfo {
       const std::optional<PhoneAsASecurityKeyInfo>& paask_info,
       const std::string& fcm_registration_token,
       const DataTypeSet& interested_data_types,
-      std::optional<base::Time> floating_workspace_last_signin_timestamp);
+      std::optional<base::Time> auto_sign_out_last_signin_timestamp);
 
   DeviceInfo(const DeviceInfo&) = delete;
   DeviceInfo& operator=(const DeviceInfo&) = delete;
@@ -228,7 +231,7 @@ class DeviceInfo {
   const DataTypeSet& interested_data_types() const;
 
   // Returns the time at which this device was last signed into the device.
-  std::optional<base::Time> floating_workspace_last_signin_timestamp() const;
+  std::optional<base::Time> auto_sign_out_last_signin_timestamp() const;
 
   // Apps can set ids for a device that is meaningful to them but
   // not unique enough so the user can be tracked. Exposing |guid|
@@ -253,8 +256,7 @@ class DeviceInfo {
 
   void set_interested_data_types(const DataTypeSet& data_types);
 
-  void set_floating_workspace_last_signin_timestamp(
-      std::optional<base::Time> time);
+  void set_auto_sign_out_last_signin_timestamp(std::optional<base::Time> time);
 
  private:
   const std::string guid_;
@@ -303,7 +305,7 @@ class DeviceInfo {
   // Data types for which this device receives invalidations.
   DataTypeSet interested_data_types_;
 
-  std::optional<base::Time> floating_workspace_last_signin_timestamp_;
+  std::optional<base::Time> auto_sign_out_last_signin_timestamp_;
 
   // NOTE: when adding a member, don't forget to update
   // |StoredDeviceInfoStillAccurate| in device_info_sync_bridge.cc or else

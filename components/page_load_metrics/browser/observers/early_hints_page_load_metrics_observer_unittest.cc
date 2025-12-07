@@ -55,16 +55,6 @@ class EarlyHintsPageLoadMetricsObserverTest
   }
 };
 
-TEST_F(EarlyHintsPageLoadMetricsObserverTest, PageType) {
-  NavigateAndCommit(GURL(kTestUrl));
-  PopulateTimingForHistograms();
-  tester()->NavigateToUntrackedUrl();
-
-  tester()->histogram_tester().ExpectUniqueSample(
-      page_load_metrics::internal::kPageLoadTrackerPageType,
-      page_load_metrics::internal::PageLoadTrackerPageType::kPrimaryPage, 1);
-}
-
 TEST_F(EarlyHintsPageLoadMetricsObserverTest, WithoutPreload) {
   NavigateAndCommit(GURL(kTestUrl));
   PopulateTimingForHistograms();

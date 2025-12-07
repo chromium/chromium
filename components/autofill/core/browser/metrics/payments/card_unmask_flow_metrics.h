@@ -5,17 +5,19 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_CARD_UNMASK_FLOW_METRICS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_CARD_UNMASK_FLOW_METRICS_H_
 
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include <variant>
+
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
 namespace autofill::autofill_metrics {
 
 // All possible results of the card unmask flow.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class ServerCardUnmaskResult {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-
   // Default value, should never be used in logging.
   kUnknown = 0,
   // Card unmask completed successfully because the data had already been
@@ -53,10 +55,9 @@ enum class CvcFillingFlowType {
   kMaxValue = kMandatoryReauth,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class ServerCardUnmaskFlowType {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-
   // Flow type was unknown at time of logging.
   kUnspecified = 0,
   // Only FIDO auth was offered.
@@ -70,7 +71,9 @@ enum class ServerCardUnmaskFlowType {
   kRiskBased = 4,
   // Device unlock auth was offered.
   kDeviceUnlock = 5,
-  kMaxValue = kDeviceUnlock,
+  // VCN 3DS auth was offered.
+  kThreeDomainSecure = 6,
+  kMaxValue = kThreeDomainSecure,
 };
 
 void LogServerCardUnmaskAttempt(
@@ -79,8 +82,8 @@ void LogCvcFilling(CvcFillingFlowType flow_type,
                    CreditCard::RecordType record_type);
 void LogServerCardUnmaskResult(
     ServerCardUnmaskResult unmask_result,
-    absl::variant<payments::PaymentsAutofillClient::PaymentsRpcCardType,
-                  CreditCard::RecordType>,
+    std::variant<payments::PaymentsAutofillClient::PaymentsRpcCardType,
+                 CreditCard::RecordType>,
     ServerCardUnmaskFlowType flow_type);
 void LogServerCardUnmaskFormSubmission(
     payments::PaymentsAutofillClient::PaymentsRpcCardType card_type);

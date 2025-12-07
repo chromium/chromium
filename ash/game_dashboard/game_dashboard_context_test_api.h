@@ -6,6 +6,7 @@
 #define ASH_GAME_DASHBOARD_GAME_DASHBOARD_CONTEXT_TEST_API_H_
 
 #include <string>
+#include <string_view>
 
 #include "ash/game_dashboard/game_dashboard_context.h"
 #include "base/memory/raw_ptr.h"
@@ -32,13 +33,16 @@ namespace ash {
 
 class AnchoredNudge;
 class FeatureTile;
+class GameDashboardBatteryView;
 class GameDashboardButton;
 class GameDashboardButtonRevealController;
 class GameDashboardMainMenuCursorHandler;
 class GameDashboardMainMenuView;
+class GameDashboardNetworkView;
 class GameDashboardToolbarView;
 class IconButton;
 class PillButton;
+class TimeView;
 class Switch;
 
 // Wrapper for `GameDashboardContext` that exposes its internals to test
@@ -59,6 +63,7 @@ class GameDashboardContextTestApi {
   // Returns the Game Dashboard button widget, button, and title view.
   views::Widget* GetGameDashboardButtonWidget() const;
   GameDashboardButton* GetGameDashboardButton() const;
+  float GetGameDashboardButtonCornerRadius() const;
   views::Label* GetGameDashboardButtonTitle() const;
   GameDashboardButtonRevealController* GetGameDashboardButtonRevealController()
       const;
@@ -71,10 +76,13 @@ class GameDashboardContextTestApi {
   FeatureTile* GetMainMenuToolbarTile();
   FeatureTile* GetMainMenuRecordGameTile();
   FeatureTile* GetMainMenuScreenshotTile();
-  const std::u16string& GetMainMenuScreenSizeSubtitle();
+  std::u16string_view GetMainMenuScreenSizeSubtitle();
   views::Button* GetMainMenuScreenSizeSettingsButton();
   views::Button* GetMainMenuGameControlsDetailsButton();
   PillButton* GetMainMenuGameControlsSetupButton();
+  TimeView* GetMainMenuClockView();
+  GameDashboardBatteryView* GetMainMenuBatteryView();
+  GameDashboardNetworkView* GetMainMenuNetworkView();
   Switch* GetMainMenuGameControlsFeatureSwitch();
   views::LabelButton* GetMainMenuFeedbackButton();
   IconButton* GetMainMenuHelpButton();

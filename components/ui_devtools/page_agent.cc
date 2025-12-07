@@ -8,11 +8,6 @@ namespace ui_devtools {
 
 PageAgent::PageAgent(DOMAgent* dom_agent) : dom_agent_(dom_agent) {}
 
-PageAgent::~PageAgent() {}
-
-protocol::Response PageAgent::reload(protocol::Maybe<bool> bypass_cache) {
-  NOTREACHED_IN_MIGRATION();
-  return protocol::Response::Success();
-}
+PageAgent::~PageAgent() = default;
 
 }  // namespace ui_devtools

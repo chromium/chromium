@@ -5,13 +5,11 @@
 #include "chrome/browser/ui/extensions/extension_settings_overridden_dialog.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/common/extension_builder.h"
@@ -54,10 +52,11 @@ class ExtensionSettingsOverriddenDialogUnitTest
       bool include_extra_perms = true) {
     extensions::ExtensionBuilder builder(name);
     builder.SetLocation(location);
-    if (include_extra_perms)
+    if (include_extra_perms) {
       builder.AddAPIPermission("storage");
+    }
     scoped_refptr<const extensions::Extension> extension = builder.Build();
-    service()->AddExtension(extension.get());
+    registrar()->AddExtension(extension);
     return extension.get();
   }
 
@@ -126,8 +125,9 @@ TEST_F(ExtensionSettingsOverriddenDialogUnitTest,
                                       DialogResult::kChangeSettingsBack, 1);
 
   EXPECT_TRUE(registry()->disabled_extensions().Contains(extension->id()));
-  EXPECT_EQ(extensions::disable_reason::DISABLE_USER_ACTION,
-            GetExtensionPrefs()->GetDisableReasons(extension->id()));
+  EXPECT_THAT(GetExtensionPrefs()->GetDisableReasons(extension->id()),
+              testing::UnorderedElementsAre(
+                  extensions::disable_reason::DISABLE_USER_ACTION));
   EXPECT_FALSE(IsExtensionAcknowledged(extension->id()));
 }
 
@@ -235,37 +235,15 @@ TEST_F(ExtensionSettingsOverriddenDialogUnitTest,
   EXPECT_TRUE(controller.ShouldShow());
   controller.OnDialogShown();
 
-  service()->UninstallExtension(
+  registrar()->UninstallExtension(
       extension->id(), extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
 
   controller.HandleDialogResult(DialogResult::kChangeSettingsBack);
 }
 
-class LightweightExtensionSettingsOverriddenDialogTest
-    : public ExtensionSettingsOverriddenDialogUnitTest,
-      public testing::WithParamInterface<bool> {
- public:
-  LightweightExtensionSettingsOverriddenDialogTest() {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(
-          features::kLightweightExtensionOverrideConfirmations);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          features::kLightweightExtensionOverrideConfirmations);
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         LightweightExtensionSettingsOverriddenDialogTest,
-                         testing::Bool());
-
 // Tests that simple override extensions don't trigger the settings overridden
-// dialog if the lightweight extension overrides experiment is enabled.
-TEST_P(LightweightExtensionSettingsOverriddenDialogTest,
+// dialog.
+TEST_F(ExtensionSettingsOverriddenDialogUnitTest,
        SimpleOverrideExtensionDoesntTriggerDialog) {
   const extensions::Extension* extension =
       AddExtension("alpha", extensions::mojom::ManifestLocation::kInternal,
@@ -273,18 +251,15 @@ TEST_P(LightweightExtensionSettingsOverriddenDialogTest,
 
   ExtensionSettingsOverriddenDialog controller(
       CreateTestDialogParams(extension->id()), profile());
-  // The dialog should *not* want to show if the feature is enabled.
-  bool expect_should_show = !GetParam();
-  EXPECT_EQ(expect_should_show, controller.ShouldShow());
-  // Regardless of features enablement, the the extension should not be
-  // acknowledged. The latter is important to re-assess the extension in case
-  // it updates.
+  EXPECT_FALSE(controller.ShouldShow());
+  // The the extension should not be acknowledged. The latter is important to
+  // re-assess the extension in case it updates.
   EXPECT_FALSE(IsExtensionAcknowledged(extension->id()));
 }
 
 // Tests that simple override extensions don't trigger the settings overridden
-// dialog if the lightweight extension overrides experiment is enabled.
-TEST_P(LightweightExtensionSettingsOverriddenDialogTest,
+// dialog.
+TEST_F(ExtensionSettingsOverriddenDialogUnitTest,
        NonSimpleOverrideExtensionAlwaysTriggersDialog) {
   const extensions::Extension* extension =
       AddExtension("alpha", extensions::mojom::ManifestLocation::kInternal,
@@ -292,6 +267,6 @@ TEST_P(LightweightExtensionSettingsOverriddenDialogTest,
 
   ExtensionSettingsOverriddenDialog controller(
       CreateTestDialogParams(extension->id()), profile());
-  // The dialog should always show, regardless of feature state.
+  // The dialog should always show.
   EXPECT_TRUE(controller.ShouldShow());
 }

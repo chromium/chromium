@@ -6,5 +6,11 @@
     "background": {
       "service_worker": "background.js"
     },
+    "externally_connectable": {
+      "ids": ["*"],
+      "matches": [
+        "<all_urls>"
+      ]
+    },
     "description": "It is used to verify the functionality of the ExtensionExtendedBackgroundLifetimeForPortConnectionsToUrls policy."
   }

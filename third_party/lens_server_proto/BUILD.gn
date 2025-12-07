@@ -5,10 +5,15 @@
 import("//third_party/protobuf/proto_library.gni")
 
 _proto_files = [
+  "aim_communication.proto",
+  "aim_query.proto",
   "lens_overlay_client_context.proto",
   "lens_overlay_client_logs.proto",
   "lens_overlay_client_platform.proto",
   "lens_overlay_cluster_info.proto",
+  "lens_overlay_contextual_inputs.proto",
+  "lens_overlay_deep_gleam_data.proto",
+  "lens_overlay_document.proto",
   "lens_overlay_filters.proto",
   "lens_overlay_geometry.proto",
   "lens_overlay_image_crop.proto",
@@ -16,6 +21,7 @@ _proto_files = [
   "lens_overlay_interaction_request_metadata.proto",
   "lens_overlay_knowledge_intent_query.proto",
   "lens_overlay_knowledge_query.proto",
+  "lens_overlay_math_solver_query.proto",
   "lens_overlay_message_set.proto",
   "lens_overlay_overlay_object.proto",
   "lens_overlay_payload.proto",
@@ -23,6 +29,8 @@ _proto_files = [
   "lens_overlay_platform.proto",
   "lens_overlay_polygon.proto",
   "lens_overlay_request_id.proto",
+  "lens_overlay_request_type.proto",
+  "lens_overlay_routing_info.proto",
   "lens_overlay_selection_type.proto",
   "lens_overlay_server.proto",
   "lens_overlay_service_deps.proto",
@@ -31,6 +39,9 @@ _proto_files = [
   "lens_overlay_text.proto",
   "lens_overlay_text_query.proto",
   "lens_overlay_translate_stickiness_signals.proto",
+  "lens_overlay_video_context_input_params.proto",
+  "lens_overlay_video_params.proto",
+  "lens_overlay_visual_input_type.proto",
   "lens_overlay_visual_search_interaction_data.proto",
   "lens_overlay_visual_search_interaction_log_data.proto",
 ]

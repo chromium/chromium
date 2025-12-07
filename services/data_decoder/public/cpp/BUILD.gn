@@ -23,10 +23,7 @@ component("service_provider") {
 }
 
 source_set("cpp") {
-  public = [
-    "data_decoder.h",
-    "json_sanitizer.h",
-  ]
+  public = [ "data_decoder.h" ]
 
   sources = [ "data_decoder.cc" ]
 
@@ -40,15 +37,6 @@ source_set("cpp") {
     "//services/data_decoder/public/mojom",
   ]
   deps = [ "//build:blink_buildflags" ]
-
-  if (is_android) {
-    sources += [ "json_sanitizer_android.cc" ]
-
-    deps +=
-        [ "//services/data_decoder/public/cpp/android:safe_json_jni_headers" ]
-  } else {
-    sources += [ "json_sanitizer_non_android.cc" ]
-  }
 
   if (!use_blink) {
     # NOTE: We depend on this target here for iOS only, to support in-process
@@ -82,10 +70,10 @@ source_set("safe_xml_parser") {
 source_set("test_support") {
   testonly = true
   sources = [
-    "test_support/in_process_data_decoder.cc",
-    "test_support/in_process_data_decoder.h",
     "test_support/fake_data_decoder_service.cc",
     "test_support/fake_data_decoder_service.h",
+    "test_support/in_process_data_decoder.cc",
+    "test_support/in_process_data_decoder.h",
   ]
 
   public_deps = [
@@ -96,7 +84,5 @@ source_set("test_support") {
     "//services/data_decoder/public/mojom",
   ]
 
-  deps = [
-    "//testing/gtest",
-  ]
+  deps = [ "//testing/gtest" ]
 }

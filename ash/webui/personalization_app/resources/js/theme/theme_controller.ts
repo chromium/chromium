@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
+import type {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
 import {ColorScheme} from '../../color_scheme.mojom-webui.js';
-import {ThemeProviderInterface} from '../../personalization_app.mojom-webui.js';
-import {PersonalizationStore} from '../personalization_store.js';
+import type {ThemeProviderInterface} from '../../personalization_app.mojom-webui.js';
+import type {PersonalizationStore} from '../personalization_store.js';
 
-import {setColorModeAutoScheduleEnabledAction, setColorSchemeAction, setDarkModeEnabledAction, setGeolocationPermissionEnabledAction, setSampleColorSchemesAction, setStaticColorAction} from './theme_actions.js';
+import {setColorModeAutoScheduleEnabledAction, setColorSchemeAction, setDarkModeEnabledAction, setGeolocationIsUserModifiableAction, setGeolocationPermissionEnabledAction, setSampleColorSchemesAction, setStaticColorAction} from './theme_actions.js';
 
 /**
  * @fileoverview contains all of the functions to interact with C++ side through
@@ -23,16 +23,20 @@ export async function initializeData(
     { enabled },
     { darkModeEnabled },
     { geolocationEnabled },
+    { geolocationIsUserModifiable },
   ] = await Promise.all([
     provider.isColorModeAutoScheduleEnabled(),
     provider.isDarkModeEnabled(),
     provider.isGeolocationEnabledForSystemServices(),
+    provider.isGeolocationUserModifiable(),
   ]);
 
   store.beginBatchUpdate();
   store.dispatch(setDarkModeEnabledAction(darkModeEnabled));
   store.dispatch(setColorModeAutoScheduleEnabledAction(enabled));
   store.dispatch(setGeolocationPermissionEnabledAction(geolocationEnabled));
+  store.dispatch(
+      setGeolocationIsUserModifiableAction(geolocationIsUserModifiable));
   store.endBatchUpdate();
 }
 

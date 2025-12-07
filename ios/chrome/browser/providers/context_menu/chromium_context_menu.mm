@@ -11,7 +11,8 @@ ElementsToAddToContextMenu* GetContextMenuElementsToAdd(
     web::ContextMenuParams params,
     UIViewController* presenting_view_controller,
     id<MiniMapCommands> mini_map_handler,
-    id<UnitConversionCommands> unit_conversion_handler) {
+    id<UnitConversionCommands> unit_conversion_handler,
+    id<EnhancedCalendarCommands> enhanced_calendar_handler) {
   return nil;
 }
 
@@ -41,6 +42,14 @@ std::optional<std::vector<web::TextAnnotation>> ExtractTextAnnotationFromText(
     ukm::SourceId source_id,
     const base::FilePath& model_path) {
   return std::nullopt;
+}
+
+NSString* StyledContextMenuStringForString(NSString* string) {
+  return string;
+}
+
+void AttachBlockToContextMenu(NSString* string, ProceduralBlock block) {
+  return;
 }
 
 }  // namespace ios::provider

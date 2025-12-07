@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "base/strings/stringprintf.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/common/sync_token.h"
 
 namespace viz {
 
@@ -29,16 +31,20 @@ std::string BlendBitmap::ToString() const {
                             destination_region_.ToString().c_str());
 }
 
+BlitRequest::BlitRequest() = default;
+
 BlitRequest::BlitRequest(const gfx::Point& destination_region_offset,
                          LetterboxingBehavior letterboxing_behavior,
-                         const gpu::Mailbox& mailbox,
+                         scoped_refptr<gpu::ClientSharedImage> shared_image,
                          const gpu::SyncToken& sync_token,
                          bool populates_gpu_memory_buffer)
     : destination_region_offset_(destination_region_offset),
       letterboxing_behavior_(letterboxing_behavior),
-      mailbox_(mailbox),
+      shared_image_(std::move(shared_image)),
       sync_token_(sync_token),
-      populates_gpu_memory_buffer_(populates_gpu_memory_buffer) {}
+      populates_gpu_memory_buffer_(populates_gpu_memory_buffer) {
+  DCHECK(shared_image_);
+}
 
 BlitRequest::BlitRequest(BlitRequest&& other) = default;
 BlitRequest& BlitRequest::operator=(BlitRequest&& other) = default;

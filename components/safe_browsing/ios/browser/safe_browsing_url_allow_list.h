@@ -94,7 +94,6 @@ class SafeBrowsingUrlAllowList
  private:
   explicit SafeBrowsingUrlAllowList(web::WebState* web_state);
   friend class web::WebStateUserData<SafeBrowsingUrlAllowList>;
-  WEB_STATE_USER_DATA_KEY_DECL();
 
   // Struct storing the threat types that have been allowed and those for
   // which the user has not made a decision yet.

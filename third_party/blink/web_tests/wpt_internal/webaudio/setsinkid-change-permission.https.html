@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+</head>
+<body>
+<script>
+
+promise_test(async _ => {
+    let audioContext = new AudioContext();
+
+    const initial_devices = await navigator.mediaDevices.enumerateDevices();
+    const initial_audioDevices = initial_devices.filter(
+        d => d.kind === 'audiooutput' && d.deviceId !== 'default');
+    for (const initial_audioDevice of initial_audioDevices) {
+        audioContext.setSinkId(initial_audioDevice.deviceId);
+    }
+
+    await test_driver.set_permission(
+      {name: 'microphone'}, 'granted');
+
+    const granted_devices = await navigator.mediaDevices.enumerateDevices();
+    const granted_audioDevices = granted_devices.filter(
+        d => d.kind === 'audiooutput' && d.deviceId !== 'default');
+    for (const granted_audioDevice of granted_audioDevices) {
+        audioContext.setSinkId(granted_audioDevice.deviceId);
+    }
+
+    await test_driver.set_permission(
+      {name: 'microphone'}, 'denied');
+
+    const denied_devices = await navigator.mediaDevices.enumerateDevices();
+    const denied_audioDevices = denied_devices.filter(
+        d => d.kind === 'audiooutput' && d.deviceId !== 'default');
+    for (const denied_audioDevice of denied_audioDevices) {
+        audioContext.setSinkId(denied_audioDevice.deviceId);
+    }
+
+}, 'changing permission affects the devices accepted by setSinkId');
+
+</script>
+</body>
+</html>

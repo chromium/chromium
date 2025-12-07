@@ -18,7 +18,8 @@ group("test") {
 renderer_ipc_fuzzing_enabled =
     fuzzing_engine_supports_custom_main && is_linux && enable_mojom_fuzzer
 
-if (fuzzing_engine_supports_custom_main) {
+# TODO(crbug.com/446587184): Enable in_process_fuzzer_runner on Android.
+if (fuzzing_engine_supports_custom_main && !is_android) {
   source_set("renderer_in_process_fuzzer_runner") {
     testonly = true
     sources = [ "in_process_renderer_fuzzing.h" ]
@@ -27,7 +28,7 @@ if (fuzzing_engine_supports_custom_main) {
       "//chrome/test:test_support",
       "//chrome/test/fuzzing:in_process_fuzzer_runner",
       "//chrome/test/fuzzing:in_process_proto_fuzzer_runner",
-      "//testing/libfuzzer:renderer_fuzzing",
+      "//testing/libfuzzer/renderer_fuzzing",
     ]
   }
 }
@@ -60,6 +61,10 @@ if (renderer_ipc_fuzzing_enabled) {
     foreach(target, browser_exposed_mojom_targets) {
       inputs += [ get_label_info(target, "target_gen_dir") + "/" +
                   get_label_info(target, "name") + ".build_metadata" ]
+      deps += [
+        target + "__build_metadata",
+        target + "__parser_deps",
+      ]
     }
 
     # We cannot use the GN `metadata` mechanism here, because our initial
@@ -72,6 +77,9 @@ if (renderer_ipc_fuzzing_enabled) {
       _metafiles += [ rebase_path(file, root_build_dir) ]
     }
     write_file("$target_gen_dir/metadata", _metafiles)
+
+    inputs +=
+        [ "//chrome/test/fuzzing/renderer_fuzzing/ipc_fuzzing/testcase.h.tmpl" ]
 
     script = "//chrome/test/fuzzing/renderer_fuzzing/ipc_fuzzing/generate_testcase.py"
     args = [
@@ -109,14 +117,11 @@ if (renderer_ipc_fuzzing_enabled) {
       "//chrome/test:test_support",
       "//chrome/test/fuzzing:in_process_proto_fuzzer_runner",
       "//content/test/fuzzer:mojolpm_fuzzer_support",
-      "//testing/libfuzzer:renderer_fuzzing",
       "//testing/libfuzzer/proto:url_proto_converter",
+      "//testing/libfuzzer/renderer_fuzzing",
       "//third_party/blink/public/common:storage_key_proto_converter",
     ]
 
-    deps += _mojolpm_deps
-
-    proto_deps = [ ":renderer_in_process_mojolpm_fuzzer_generator" ]
-    proto_deps += _mojolpm_deps
+    proto_deps = _mojolpm_deps
   }
 }

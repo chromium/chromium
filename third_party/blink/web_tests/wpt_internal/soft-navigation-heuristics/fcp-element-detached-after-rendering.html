@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/soft-navigation-heuristics/resources/soft-navigation-test-helper.js"></script>
+
+<button id="navigateButton">Click Me!</button>
+
+<div id="content"></div>
+
+<script>
+  async function runTest(t, url, htmlContent) {
+    navigateButton.addEventListener("click", () => {
+      history.pushState({}, '', url);
+      content.innerHTML = htmlContent;
+      requestAnimationFrame(async () => {
+        // Remove the element after it has been rendered, but before the
+        // presentation feedback has a chance to run.
+        await scheduler.yield();
+        testElement.remove();
+      });
+    }, {once: true});
+
+    const softNavPromise =
+        SoftNavigationTestHelper.getPerformanceEntries("soft-navigation");
+
+    if (test_driver) {
+      test_driver.click(navigateButton);
+    }
+
+    const helper = new SoftNavigationTestHelper(t);
+    const entries = await helper.withTimeoutMessage(
+        softNavPromise, "Soft navigation entry never arrived.", 3000);
+    assert_equals(entries.length, 1, 'Expected exactly one soft navigation.');
+    assert_true(
+        entries[0].name.endsWith(url),
+        'Unexpected Soft Navigation URL.');
+  }
+
+  promise_test(t => {
+    const url = '/soft-nav-1';
+    // base64 encoded /images/lcp-16x16.png. Use a data URI here because this
+    // image loads synchronously, allowing us to control the relative order of
+    // tasks more easily and in the same way as text.
+    const src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAArElEQVR4AZTQgQaEQBCA4b9pturiHPcu9/4PdMCp2trJybKwbMVi8Jn9TcXHeAdegWFn2HgE+o0+4Ix2O+ba6Na28V53Oi+3NI2XWxo1Lej2+QOiRgw13KKF3UDaHTW1yXmJWNI0i5zrzieNm7WgU8nxjmEWCXKlJOn9+CHqdkUt3x1LkkYnibsvatwkeXdB40bJuwuaatX8gukmucZ9NS8paOpR8pKCRv97DgBllRV8uazI0wAAAABJRU5ErkJggg==';
+    const htmlContent = `<img id="testElement" src="${src}"></img>`;
+    return runTest(t, url, htmlContent);
+  },'Soft Navigation Detection works if the FCP element is removed after being rendered (image)');
+
+  promise_test(t => {
+    const url = '/soft-nav-2';
+    const htmlContent = '<div id="testElement">Text Content</div>';
+    return runTest(t, url, htmlContent);
+  },'Soft Navigation Detection works if the FCP element is removed after being rendered (text)');
+</script>

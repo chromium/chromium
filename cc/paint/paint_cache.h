@@ -15,6 +15,7 @@
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
+#include "third_party/skia/include/effects/SkRuntimeEffect.h"
 
 namespace cc {
 
@@ -38,7 +39,11 @@ namespace cc {
 
 using PaintCacheId = uint32_t;
 using PaintCacheIds = std::vector<PaintCacheId>;
-enum class PaintCacheDataType : uint32_t { kPath, kLast = kPath };
+enum class PaintCacheDataType : uint32_t {
+  kPath,
+  kSkRuntimeEffect,
+  kLast = kSkRuntimeEffect
+};
 enum class PaintCacheEntryState : uint32_t {
   kEmpty,
   kCached,
@@ -107,22 +112,26 @@ class CC_PAINT_EXPORT ServicePaintCache {
   ServicePaintCache();
   ~ServicePaintCache();
 
-  // Stores |path| received from the client in the cache.
+  // Stores an entry received from the client in the cache.
   void PutPath(PaintCacheId, SkPath path);
+  void PutEffect(PaintCacheId id, sk_sp<SkRuntimeEffect> effect);
 
   // Retrieves an entry for |id| stored in the cache. The path data is stored in
   // |path| pointed memory. Returns false, if the entry is not found.
   bool GetPath(PaintCacheId id, SkPath* path) const;
+  bool GetEffect(PaintCacheId id, sk_sp<SkRuntimeEffect>* effect) const;
 
   void Purge(PaintCacheDataType type,
              size_t n,
              const volatile PaintCacheId* ids);
   void PurgeAll();
-  bool empty() const { return cached_paths_.empty(); }
+  bool IsEmpty() const;
 
  private:
   using PathMap = std::map<PaintCacheId, SkPath>;
   PathMap cached_paths_;
+  using EffectMap = std::map<PaintCacheId, sk_sp<SkRuntimeEffect>>;
+  EffectMap cached_effects_;
 };
 
 }  // namespace cc

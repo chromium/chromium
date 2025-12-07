@@ -6,37 +6,32 @@
 // accessible.
 const accessibleStorageAreas = ['sync', 'local'];
 const invalidAccessMessage =
-    'Access to storage is not allowed from this context.';
+    'Error: Access to storage is not allowed from this context.';
+const contextCannotSetAccessLevelMessage =
+    'Error: Context cannot set the storage access level';
 
 async function testAccessibleStorageAreas(func, param) {
   // `sync` and `local` storage areas have untrusted access level by default,
   // thus content scripts can access the storage.
   for (const area of accessibleStorageAreas) {
-    // If the param exists and to avoid mutating it, insert a copy of the param
-    // to each area params.
-    let areaParams = param ? [param] : [];
-    await new Promise((resolve) => {
-      areaParams.push(() => {
-        chrome.test.assertNoLastError();
-        resolve();
-      })
-      chrome.storage[area][func](...areaParams);
-    })
-  };
-};
+    if (param !== undefined) {
+      await chrome.storage[area][func](param);
+    } else {
+      await chrome.storage[area][func]();
+    }
+  }
+}
 
 async function testInaccessibleStorageAreas(func, param) {
   // `session` storage area has only trusted access level by default, thus
   // content scripts cannot access the storage.
   // If the param exists, insert a copy of the param to the area params.
-  let areaParams = param ? [param] : [];
-  await new Promise((resolve) => {
-    areaParams.push(() => {
-      chrome.test.assertLastError(invalidAccessMessage);
-      resolve();
-    })
-    chrome.storage.session[func](...areaParams);
-  })
+  const areaParams = [];
+  if (param !== undefined) {
+    areaParams.push(param);
+  }
+  await chrome.test.assertPromiseRejects(
+      chrome.storage.session[func](...areaParams), invalidAccessMessage);
 };
 
 async function testGetValueSetByBackgroundPage() {
@@ -76,6 +71,12 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
+  async function getKeysFromContentScript() {
+    await testAccessibleStorageAreas('getKeys');
+    await testInaccessibleStorageAreas('getKeys');
+    chrome.test.succeed();
+  },
+
   async function getBytesInUseFromContentScript() {
     await testAccessibleStorageAreas('getBytesInUse', null);
     await testInaccessibleStorageAreas('getBytesInUse', null);
@@ -94,18 +95,28 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
-  function setAccessLevelFromContentScript() {
-    // `setAccessLevel` is not exposed to `sync` or `local`.
-    chrome.test.assertFalse(!!chrome.storage.sync.setAccessLevel);
-    chrome.test.assertFalse(!!chrome.storage.local.setAccessLevel);
-    // TODO(crbug.com/40189208): `setAccessLevel` is exposed to `session` but
-    // cannot be accessed from a content script. This will change once we only
-    // expose `setAccessLevel` in unprivileged contexts.
+  async function setAccessLevelFromContentScript() {
+    // TODO(crbug.com/40189208): `setAccessLevel` is exposed to all valid
+    // storage areas, but cannot be accessed from a content script. This will
+    // change once we only expose `setAccessLevel` in unprivileged contexts.
+    chrome.test.assertTrue(!!chrome.storage.sync.setAccessLevel);
+    chrome.test.assertTrue(!!chrome.storage.local.setAccessLevel);
     chrome.test.assertTrue(!!chrome.storage.session.setAccessLevel);
-    chrome.storage.session.setAccessLevel(
-        {accessLevel: 'TRUSTED_CONTEXTS'}, () => {
-          chrome.test.assertLastError(invalidAccessMessage);
-          chrome.test.succeed();
-        });
+    chrome.test.assertTrue(!!chrome.storage.managed.setAccessLevel);
+    await chrome.test.assertPromiseRejects(
+        chrome.storage.session.setAccessLevel(
+            {accessLevel: 'TRUSTED_CONTEXTS'}),
+        invalidAccessMessage);
+    await chrome.test.assertPromiseRejects(
+        chrome.storage.managed.setAccessLevel(
+            {accessLevel: 'TRUSTED_CONTEXTS'}),
+        contextCannotSetAccessLevelMessage);
+    await chrome.test.assertPromiseRejects(
+        chrome.storage.local.setAccessLevel({accessLevel: 'TRUSTED_CONTEXTS'}),
+        contextCannotSetAccessLevelMessage);
+    await chrome.test.assertPromiseRejects(
+        chrome.storage.sync.setAccessLevel({accessLevel: 'TRUSTED_CONTEXTS'}),
+        contextCannotSetAccessLevelMessage);
+    chrome.test.succeed();
   }
 ]);

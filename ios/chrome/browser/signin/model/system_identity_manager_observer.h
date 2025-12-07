@@ -7,6 +7,9 @@
 
 #import <Foundation/Foundation.h>
 
+#include <set>
+#include <string>
+
 #include "base/observer_list_types.h"
 
 @protocol RefreshAccessTokenError;
@@ -19,21 +22,22 @@ class SystemIdentityManagerObserver : public base::CheckedObserver {
   SystemIdentityManagerObserver() = default;
   ~SystemIdentityManagerObserver() override = default;
 
-  // Called when the list of identity has changed. If `notify_user` is true,
-  // the identity changed due to an external source; this means that a first
-  // party Google application has added or removed identies, or the identity
-  // token is invalid.
-  virtual void OnIdentityListChanged(bool notify_user) {}
+  // Called when the list of identity has changed.
+  virtual void OnIdentityListChanged() {}
 
   // Called when information about `identity` (such as the name or the image)
   // have been updated.
   virtual void OnIdentityUpdated(id<SystemIdentity> identity) {}
 
+  // Called when refresh token for `identity` is updated.
+  virtual void OnIdentityRefreshTokenUpdated(id<SystemIdentity> identity) {}
+
   // Called when refreshing access token for `identity` fails with `error`.
   // The error can be handled by calling `HandleMDMNotification`.
   virtual void OnIdentityAccessTokenRefreshFailed(
       id<SystemIdentity> identity,
-      id<RefreshAccessTokenError> error) {}
+      id<RefreshAccessTokenError> error,
+      const std::set<std::string>& scopes) {}
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_SYSTEM_IDENTITY_MANAGER_OBSERVER_H_

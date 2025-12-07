@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/digital_identity_interstitial_type.h"
+#include "content/public/browser/render_frame_host.h"
 #include "url/origin.h"
 
 namespace content {
@@ -20,11 +21,23 @@ namespace content {
 class WebContents;
 
 // Coordinates between the web and native apps such that the latter can share
-// vcs with the web API caller. The functions are platform agnostic and
-// implementations are expected to be different across platforms like desktop
-// and mobile.
+// vcs with the web API caller, or the website issues vcs to native apps. The
+// functions are platform agnostic and implementations are expected to be
+// different across platforms like desktop and mobile.
 class CONTENT_EXPORT DigitalIdentityProvider {
  public:
+  struct CONTENT_EXPORT DigitalCredential {
+    DigitalCredential(std::optional<std::string> protocol,
+                      std::optional<base::Value> data);
+    DigitalCredential(DigitalCredential&& other);
+    DigitalCredential& operator=(DigitalCredential&& other);
+    DigitalCredential(DigitalCredential& other) = delete;
+    DigitalCredential& operator=(const DigitalCredential&) = delete;
+    ~DigitalCredential();
+
+    std::optional<std::string> protocol;
+    std::optional<base::Value> data;
+  };
   // Do not reorder or change the values because the enum values are being
   // recorded in metrics.
   // A Java counterpart will be generated for this enum.
@@ -36,7 +49,10 @@ class CONTENT_EXPORT DigitalIdentityProvider {
     kErrorNoCredential = 2,
     kErrorUserDeclined = 3,
     kErrorAborted = 4,
-    kMaxValue = kErrorAborted,
+    kErrorNoRequests = 5,
+    kErrorNoTransientUserActivation = 6,
+    kErrorInvalidJson = 7,
+    kMaxValue = kErrorInvalidJson,
   };
 
   virtual ~DigitalIdentityProvider();
@@ -44,10 +60,11 @@ class CONTENT_EXPORT DigitalIdentityProvider {
   DigitalIdentityProvider(const DigitalIdentityProvider&) = delete;
   DigitalIdentityProvider& operator=(const DigitalIdentityProvider&) = delete;
 
-  // Returns whether the origin is a known low risk origin for which the
-  // digital credential interstitial should not be shown regardless of the
-  // credential being requested.
-  virtual bool IsLowRiskOrigin(const url::Origin& to_check) const = 0;
+  // Returns whether the last committed origin of `render_frame_host` is a known
+  // low risk origin for which the digital credential interstitial should not be
+  // shown regardless of the credential being requested.
+  virtual bool IsLastCommittedOriginLowRisk(
+      RenderFrameHost& render_frame_host) const = 0;
 
   // Show interstitial to prompt user whether they want to share their identity
   // with the web page. Runs callback after the user dismisses the interstitial.
@@ -66,11 +83,21 @@ class CONTENT_EXPORT DigitalIdentityProvider {
       DigitalIdentityInterstitialCallback callback) = 0;
 
   using DigitalIdentityCallback = base::OnceCallback<void(
-      const base::expected<std::string, RequestStatusForMetrics>&)>;
-  virtual void Request(WebContents* web_contents,
-                       const url::Origin& origin,
-                       const std::string& request,
-                       DigitalIdentityCallback callback) = 0;
+      base::expected<DigitalCredential, RequestStatusForMetrics>)>;
+
+  // Coordinates the call to present a digital credential between the web and
+  // native apps.
+  virtual void Get(WebContents* web_contents,
+                   const url::Origin& origin,
+                   base::ValueView request,
+                   DigitalIdentityCallback callback) = 0;
+
+  // Coordinates the call to issue a digital credential between the web and
+  // native apps.
+  virtual void Create(WebContents* web_contents,
+                      const url::Origin& origin,
+                      base::ValueView request,
+                      DigitalIdentityCallback callback) = 0;
 
  protected:
   DigitalIdentityProvider();

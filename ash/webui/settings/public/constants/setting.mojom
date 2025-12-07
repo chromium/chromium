@@ -102,6 +102,7 @@ enum Setting {
   kImproveSearchSuggestions = 317,
   kMakeSearchesAndBrowsingBetter = 318,
   kGoogleDriveSearchSuggestions = 319,
+  kGraduation = 320,
 
   // Device section.
   kTouchpadTapToClick = 400,
@@ -122,8 +123,8 @@ enum Setting {
   kNightLight = 415,
   kStylusToolsInShelf = 416,
   kStylusNoteTakingApp = 417,
-  kStylusNoteTakingFromLockScreen = 418,
-  kStylusLatestNoteOnLockScreen = 419,
+  // Note: Value 418 and 419 were for deprecated remoed LockScreen apps - see
+  // https://crbug.com/376354347. Do not reuse.
   kDisplayOrientation = 420,
   kDisplayArrangement = 421,
   kPowerIdleBehaviorWhileCharging = 422,
@@ -151,6 +152,9 @@ enum Setting {
   kChargingSounds = 443,
   kLowBatterySound = 444,
   kBatterySaver = 445,
+  kTouchpadSimulateRightClick = 446,
+  kOptimizedCharging = 447,
+  kChargeLimit = 448,
 
   // Personalization section.
   kOpenWallpaper = 500,
@@ -162,22 +166,25 @@ enum Setting {
   // kDarkModeThemed respectively.
   // Do not reuse.
 
-  // Search and Assistant section.
+  // Search section.
   kPreferredSearchEngine = 600,
-  kAssistantOnOff = 601,
-  kAssistantRelatedInfo = 602,
+  // 601 was used for kAssistantOnOff. Do not reuse.
+  // 602 was used for kAssistantRelatedInfo. Do not reuse.
   // Note: Value 603 was for deprecated kAssistantQuickAnswers.
   // Do not reuse.
-  kAssistantOkGoogle = 604,
-  kAssistantNotifications = 605,
-  kAssistantVoiceInput = 606,
-  kTrainAssistantVoiceModel = 607,
+  // 604 was used for kAssistantOkGoogle. Do not reuse.
+  // 605 was used for kAssistantNotifications. Do not reuse.
+  // 606 was used for kAssistantVoiceInput. Do not reuse.
+  // 607 was used for kTrainAssistantVoiceModel. Do not reuse.
   kQuickAnswersOnOff = 608,
   kQuickAnswersDefinition = 609,
   kQuickAnswersTranslation = 610,
   kQuickAnswersUnitConversion = 611,
   kMahiOnOff = 612,
   kMagicBoostOnOff = 613,
+  kLobsterOnOff = 614,
+  kSunfishOnOff = 615,
+  kScannerOnOff = 616,
 
   // Apps section.
   kManageAndroidPreferences = 700,
@@ -197,12 +204,13 @@ enum Setting {
   kUninstallCrostini = 801,
   kBackupLinuxAppsAndFiles = 802,
   kRestoreLinuxAppsAndFiles = 803,
-  kCrostiniAdbDebugging = 804,
+  // Note: Value 804 was for deprecated kCrostiniAdbDebugging. Do not reuse.
   kCrostiniDiskResize = 805,
   kCrostiniMicAccess = 806,
   kCrostiniContainerUpgrade = 807,
   kBruschettaMicAccess = 808,
   kGuestUsbNotification = 809,
+  kGuestUsbPersistentPassthrough = 810,
 
   // Note: Plugin VM section is omitted (see https://crbug.com/1074101).
 
@@ -242,7 +250,8 @@ enum Setting {
   kShowInputOptionsInShelf = 1201,
   // Note: Value 1202 was deprecated for kShowPersonalInformationSuggestions.
   // Do not reuse.
-  kShowEmojiSuggestions = 1203,
+  // Note: Value 1203 was deprecated for kShowEmojiSuggestions.
+  // Do not reuse.
   kChangeDeviceLanguage = 1204,
   kOfferTranslation = 1205,
   kAddInputMethod = 1206,
@@ -332,6 +341,11 @@ enum Setting {
   kMagnifierFollowsChromeVox = 1549,
   kMainNodeAnnotationsEnabled = 1550,
   kFlashNotifications = 1551,
+  kAlwaysShowScrollbarsEnabled = 1552,
+  kFaceGaze = 1553,
+  kBounceKeys = 1554,
+  kSlowKeys = 1555,
+  kDisableTouchpad = 1556,
 
   // Reset section.
   kPowerwash = 1600,

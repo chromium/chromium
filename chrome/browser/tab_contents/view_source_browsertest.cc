@@ -24,6 +24,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
@@ -270,8 +271,8 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest, CrossSiteSubframe) {
   if (content::AreAllSitesIsolatedForTesting()) {
     EXPECT_NE(original_main_frame->GetSiteInstance(),
               original_child_frame->GetSiteInstance());
-    EXPECT_NE(original_main_frame->GetProcess()->GetID(),
-              original_child_frame->GetProcess()->GetID());
+    EXPECT_NE(original_main_frame->GetProcess()->GetDeprecatedID(),
+              original_child_frame->GetProcess()->GetDeprecatedID());
   }
 
   // Open view-source mode tab for the subframe.  This tries to mimic the
@@ -319,9 +320,9 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest, CrossSiteSubframe) {
   GURL original_url = original_child_frame->GetLastCommittedURL();
   std::string title = base::UTF16ToUTF8(view_source_contents->GetTitle());
   EXPECT_THAT(title, HasSubstr(content::kViewSourceScheme));
-  EXPECT_THAT(title, HasSubstr(original_url.host()));
-  EXPECT_THAT(title, HasSubstr(original_url.port()));
-  EXPECT_THAT(title, HasSubstr(original_url.path()));
+  EXPECT_THAT(title, HasSubstr(original_url.GetHost()));
+  EXPECT_THAT(title, HasSubstr(original_url.GetPort()));
+  EXPECT_THAT(title, HasSubstr(original_url.GetPath()));
 }
 
 // Tests that "View Source" works fine for pages shown via HTTP POST.
@@ -416,9 +417,9 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest, HttpPostInMainframe) {
   EXPECT_THAT(title, Not(HasSubstr("EmbeddedTestServer - EchoAll")));
   GURL original_url = current_main_frame->GetLastCommittedURL();
   EXPECT_THAT(title, HasSubstr(content::kViewSourceScheme));
-  EXPECT_THAT(title, HasSubstr(original_url.host()));
-  EXPECT_THAT(title, HasSubstr(original_url.port()));
-  EXPECT_THAT(title, HasSubstr(original_url.path()));
+  EXPECT_THAT(title, HasSubstr(original_url.GetHost()));
+  EXPECT_THAT(title, HasSubstr(original_url.GetPort()));
+  EXPECT_THAT(title, HasSubstr(original_url.GetPath()));
 }
 
 // Test the case where ViewSource() is called on a top-level RenderFrameHost
@@ -601,9 +602,9 @@ IN_PROC_BROWSER_TEST_P(ViewSourceWithSplitCacheTest, HttpPostInSubframe) {
   GURL original_url = original_child_frame->GetLastCommittedURL();
   std::string title = base::UTF16ToUTF8(view_source_contents->GetTitle());
   EXPECT_THAT(title, HasSubstr(content::kViewSourceScheme));
-  EXPECT_THAT(title, HasSubstr(original_url.host()));
-  EXPECT_THAT(title, HasSubstr(original_url.port()));
-  EXPECT_THAT(title, HasSubstr(original_url.path()));
+  EXPECT_THAT(title, HasSubstr(original_url.GetHost()));
+  EXPECT_THAT(title, HasSubstr(original_url.GetPort()));
+  EXPECT_THAT(title, HasSubstr(original_url.GetPath()));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -649,7 +650,8 @@ IN_PROC_BROWSER_TEST_P(ViewSourceWithSplitCacheEnabledTest,
         subframe_url.c_str());
     content::TestNavigationObserver navigation_observer(original_contents);
     original_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-        base::ASCIIToUTF16(create_frame_script), base::NullCallback());
+        base::ASCIIToUTF16(create_frame_script), base::NullCallback(),
+        content::ISOLATED_WORLD_ID_GLOBAL);
     navigation_observer.Wait();
   }
 
@@ -808,7 +810,8 @@ IN_PROC_BROWSER_TEST_F(ViewSourcePrerenderTest, ViewSourceForPrerender) {
   set_target(content::WebContents::FromRenderFrameHost(referrer_frame));
 
   prerender_test_helper().AddPrerender(prerender_url);
-  int host_id = prerender_test_helper().GetHostForUrl(prerender_url);
+  content::FrameTreeNodeId host_id =
+      prerender_test_helper().GetHostForUrl(prerender_url);
   content::RenderFrameHost* prerender_frame =
       prerender_test_helper().GetPrerenderedMainFrameHost(host_id);
   EXPECT_TRUE(prerender_frame);

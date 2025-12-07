@@ -16,7 +16,6 @@ items:
 - caption: Use essential and non-essential cookies in search.
   value: false
 owners:
-- ayag@chromium.org
 - mohammedabdon@chromium.org
 - dp-chromeos-eng@google.com
 schema:

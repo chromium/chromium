@@ -9,12 +9,14 @@
 #include "ash/shell.h"
 #include "ash/system/mahi/test/mock_mahi_media_app_content_manager.h"
 #include "ash/system/mahi/test/mock_mahi_media_app_events_proxy.h"
-#include "ash/test/ash_test_base.h"
 #include "ash/test/test_window_builder.h"
 #include "ash/webui/media_app_ui/media_app_ui_untrusted.mojom.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/test/base/chrome_ash_test_base.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_content_manager.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_events_proxy.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/test/test_window_delegate.h"
@@ -42,10 +44,11 @@ class MockMahiUntrustedPage
               (override));
 };
 
-class MahiMediaAppClientTest : public AshTestBase {
+class MahiMediaAppClientTest : public ChromeAshTestBase {
  public:
   MahiMediaAppClientTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+      : ChromeAshTestBase(std::make_unique<content::BrowserTaskEnvironment>(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME)) {}
 
   MahiMediaAppClientTest(const MahiMediaAppClientTest&) = delete;
   MahiMediaAppClientTest& operator=(const MahiMediaAppClientTest&) = delete;
@@ -55,7 +58,7 @@ class MahiMediaAppClientTest : public AshTestBase {
   void SetUp() override {
     // On MahiMediaAppClient destruction, it notifies an `OnPdfClosed` event.
     EXPECT_CALL(mock_mahi_media_app_events_proxy_, OnPdfClosed(_)).Times(1);
-    AshTestBase::SetUp();
+    ChromeAshTestBase::SetUp();
   }
 
  protected:
@@ -77,8 +80,8 @@ class MahiMediaAppClientTest : public AshTestBase {
 
 // Tests that requests to media app can be forwarded via mojo::Remote.
 TEST_F(MahiMediaAppClientTest, HideMediaAppContextMenu) {
-  std::unique_ptr<aura::Window> window(
-      aura::test::CreateTestWindowWithId(-1, nullptr));
+  std::unique_ptr<aura::Window> window =
+      aura::test::CreateTestWindow({.bounds = {100, 100}});
 
   auto mahi_media_app_client_ = std::make_unique<MahiMediaAppClient>(
       receiver_.BindNewPipeAndPassRemote(), "test_name", window.get());
@@ -92,8 +95,8 @@ TEST_F(MahiMediaAppClientTest, HideMediaAppContextMenu) {
 // It tries to get text content from PDF file that is no more than 5,000,000
 // bytes, and consider content valid when its word count >= 50.
 TEST_F(MahiMediaAppClientTest, GetPdfContent) {
-  std::unique_ptr<aura::Window> window(
-      aura::test::CreateTestWindowWithId(-1, nullptr));
+  std::unique_ptr<aura::Window> window =
+      aura::test::CreateTestWindow({.bounds = {100, 100}});
 
   auto mahi_media_app_client_ = std::make_unique<MahiMediaAppClient>(
       receiver_.BindNewPipeAndPassRemote(), "test_name", window.get());
@@ -138,8 +141,8 @@ TEST_F(MahiMediaAppClientTest, GetPdfContent) {
 // Tests that MahiMediaAppClient resets its `media_app_window_` when it's
 // destroying.
 TEST_F(MahiMediaAppClientTest, WindowDestroying) {
-  std::unique_ptr<aura::Window> window(
-      aura::test::CreateTestWindowWithId(-1, nullptr));
+  std::unique_ptr<aura::Window> window =
+      aura::test::CreateTestWindow({.bounds = {100, 100}});
 
   auto mahi_media_app_client_ = std::make_unique<MahiMediaAppClient>(
       receiver_.BindNewPipeAndPassRemote(), "test_name", window.get());
@@ -155,12 +158,12 @@ TEST_F(MahiMediaAppClientTest, WindowDestroying) {
 TEST_F(MahiMediaAppClientTest, WindowFocus) {
   aura::test::TestWindowDelegate wd1;
   wd1.set_can_focus(true);
-  std::unique_ptr<aura::Window> window_1(
-      CreateTestWindowInShellWithDelegate(&wd1, -1, gfx::Rect(10, 10, 50, 50)));
+  std::unique_ptr<aura::Window> window_1(CreateTestWindowInShell(
+      {.delegate = &wd1, .bounds = {10, 10, 50, 50}, .window_id = -1}));
   aura::test::TestWindowDelegate wd2;
   wd2.set_can_focus(true);
-  std::unique_ptr<aura::Window> window_2(
-      CreateTestWindowInShellWithDelegate(&wd2, -2, gfx::Rect(70, 70, 50, 50)));
+  std::unique_ptr<aura::Window> window_2(CreateTestWindowInShell(
+      {.delegate = &wd2, .bounds = {70, 70, 50, 50}, .window_id = -2}));
 
   // `window_2` has focus.
   aura::client::FocusClient* focus_client =
@@ -204,8 +207,8 @@ TEST_F(MahiMediaAppClientTest, WindowFocus) {
 TEST_F(MahiMediaAppClientTest, PdfRename) {
   aura::test::TestWindowDelegate wd;
   wd.set_can_focus(true);
-  std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithDelegate(&wd, -1, gfx::Rect(10, 10, 50, 50)));
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.delegate = &wd, .bounds = gfx::Rect(10, 10, 50, 50), .window_id = -1}));
 
   // `window` has focus.
   aura::client::FocusClient* focus_client =
@@ -236,4 +239,20 @@ TEST_F(MahiMediaAppClientTest, PdfRename) {
 
   EXPECT_EQ(mahi_media_app_client_->file_name(), "new_name");
 }
+
+TEST_F(MahiMediaAppClientTest, ShowPdfContextMenuSelectedText) {
+  std::unique_ptr<aura::Window> window =
+      aura::test::CreateTestWindow({.bounds = {100, 100}});
+
+  auto mahi_media_app_client_ = std::make_unique<MahiMediaAppClient>(
+      receiver_.BindNewPipeAndPassRemote(), "test_name", window.get());
+
+  EXPECT_CALL(mock_mahi_media_app_content_manager_,
+              SetSelectedText(testing::Eq("some selected text")))
+      .Times(1);
+
+  const gfx::RectF test_rect;
+  mahi_media_app_client_->OnPdfContextMenuShow(test_rect, "some selected text");
+}
+
 }  // namespace ash

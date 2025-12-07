@@ -5,8 +5,8 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 
 #include <math.h>
+
 #include <queue>
-#include <unordered_map>
 #include <utility>
 
 #include "base/debug/crash_logging.h"
@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -29,13 +30,13 @@
 #include "content/browser/renderer_host/navigator_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
-#include "content/browser/webauth/authenticator_environment.h"
 #include "content/common/navigation_params_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_features.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/common/loader/loader_constants.h"
@@ -48,7 +49,7 @@ namespace {
 
 // This is a global map between frame_tree_node_ids and pointers to
 // FrameTreeNodes.
-typedef std::unordered_map<int, FrameTreeNode*> FrameTreeNodeIdMap;
+using FrameTreeNodeIdMap = absl::flat_hash_map<FrameTreeNodeId, FrameTreeNode*>;
 
 base::LazyInstance<FrameTreeNodeIdMap>::DestructorAtExit
     g_frame_tree_node_id_map = LAZY_INSTANCE_INITIALIZER;
@@ -114,16 +115,12 @@ class FrameTreeNode::OpenerDestroyedObserver : public FrameTreeNode::Observer {
   bool observing_original_opener_;
 };
 
-const int FrameTreeNode::kFrameTreeNodeInvalidId = -1;
-
-static_assert(FrameTreeNode::kFrameTreeNodeInvalidId ==
-                  RenderFrameHost::kNoFrameTreeNodeId,
-              "Have consistent sentinel values for an invalid FTN id.");
-
-int FrameTreeNode::next_frame_tree_node_id_ = 1;
+// static
+FrameTreeNodeId::Generator FrameTreeNode::frame_tree_node_id_generator_;
 
 // static
-FrameTreeNode* FrameTreeNode::GloballyFindByID(int frame_tree_node_id) {
+FrameTreeNode* FrameTreeNode::GloballyFindByID(
+    FrameTreeNodeId frame_tree_node_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   FrameTreeNodeIdMap* nodes = g_frame_tree_node_id_map.Pointer();
   auto it = nodes->find(frame_tree_node_id);
@@ -162,7 +159,7 @@ FrameTreeNode::FrameTreeNode(
     blink::FrameOwnerElementType owner_type,
     const blink::FramePolicy& frame_policy)
     : frame_tree_(frame_tree),
-      frame_tree_node_id_(next_frame_tree_node_id_++),
+      frame_tree_node_id_(frame_tree_node_id_generator_.GenerateNextId()),
       parent_(parent),
       frame_owner_element_type_(owner_type),
       tree_scope_type_(tree_scope_type),
@@ -173,7 +170,7 @@ FrameTreeNode::FrameTreeNode(
       fenced_frame_status_(
           ComputeFencedFrameStatus(frame_tree, parent_, frame_policy)),
       render_manager_(this, frame_tree.manager_delegate()) {
-  TRACE_EVENT_BEGIN("navigation", "FrameTreeNode",
+  TRACE_EVENT_BEGIN("navigation.debug", "FrameTreeNode",
                     perfetto::Track::FromPointer(this),
                     "frame_tree_node_when_created", this);
   std::pair<FrameTreeNodeIdMap::iterator, bool> result =
@@ -183,24 +180,42 @@ FrameTreeNode::FrameTreeNode(
 }
 
 void FrameTreeNode::DestroyInnerFrameTreeIfExists() {
+  if (!current_frame_host() ||
+      !current_frame_host()->inner_tree_main_frame_tree_node_id()) {
+    return;
+  }
+
+  FrameTreeNode* inner_tree_main_frame_tree_node =
+      FrameTreeNode::GloballyFindByID(
+          current_frame_host()->inner_tree_main_frame_tree_node_id());
+  if (!inner_tree_main_frame_tree_node) {
+    return;
+  }
+
   // If `this` is an dummy outer delegate node, then we really are representing
   // an inner FrameTree for one of the following consumers:
   //   - `FencedFrame`
   //   - `GuestView`
-  // If we are representing a `FencedFrame` object, we need to destroy it
-  // alongside ourself. `GuestView` however, *currently* has a more complex
-  // lifetime and is dealt with separately.
-  bool is_outer_dummy_node = false;
-  if (current_frame_host() &&
-      current_frame_host()->inner_tree_main_frame_tree_node_id() !=
-          FrameTreeNode::kFrameTreeNodeInvalidId) {
-    is_outer_dummy_node = true;
-  }
-
-  if (is_outer_dummy_node) {
-    if (FencedFrame* doomed_fenced_frame = FindFencedFrame(this)) {
-      parent()->DestroyFencedFrame(*doomed_fenced_frame);
-    }
+  switch (inner_tree_main_frame_tree_node->GetFrameType()) {
+    case FrameType::kSubframe:
+    case FrameType::kPrerenderMainFrame:
+      NOTREACHED();
+    case FrameType::kPrimaryMainFrame:
+      // This is possible for inner WebContents based GuestViews. The lifetimes
+      // of inner WebContents are dealt with separately.
+      // TODO(crbug.com/40202416): Once inner WebContents are removed, this can
+      // be NOTREACHED.
+      break;
+    case FrameType::kFencedFrameRoot:
+      // If we are representing a `FencedFrame` object, we need to destroy it
+      // alongside ourself.
+      if (FencedFrame* doomed_fenced_frame = FindFencedFrame(this)) {
+        parent()->DestroyFencedFrame(*doomed_fenced_frame);
+      }
+      break;
+    case FrameType::kGuestMainFrame:
+      parent()->DestroyGuestPage(this);
+      break;
   }
 }
 
@@ -226,18 +241,6 @@ FrameTreeNode::~FrameTreeNode() {
     // TODO(crbug.com/40177949): Need to determine how to handle pending
     // deletions, as observers will be notified.
     CHECK(!render_manager()->speculative_frame_host());
-  }
-
-  // If the removed frame was created by a script, then its history entry will
-  // never be reused - we can save some memory by removing the history entry.
-  // See also https://crbug.com/784356.
-  if (is_created_by_script_ && parent_) {
-    NavigationEntryImpl* nav_entry =
-        navigator().controller().GetLastCommittedEntry();
-    if (nav_entry) {
-      nav_entry->RemoveEntryForFrame(this,
-                                     /* only_if_different_position = */ false);
-    }
   }
 
   frame_tree_->FrameRemoved(this);
@@ -305,7 +308,21 @@ FrameTreeNode::~FrameTreeNode() {
   DCHECK(!current_frame_host() || !IsLoading());
 
   // Matches the TRACE_EVENT_BEGIN in the constructor.
-  TRACE_EVENT_END("navigation", perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END("navigation.debug", perfetto::Track::FromPointer(this));
+}
+
+void FrameTreeNode::MaybeRemoveFromLastCommittedEntry() {
+  // If the removed frame was created by a script, then its history entry will
+  // never be reused - we can save some memory by removing the history entry.
+  // See also https://crbug.com/784356.
+  if (is_created_by_script_ && parent_) {
+    NavigationEntryImpl* nav_entry =
+        navigator().controller().GetLastCommittedEntry();
+    if (nav_entry) {
+      nav_entry->RemoveEntryForFrame(this,
+                                     /* only_if_different_position = */ false);
+    }
+  }
 }
 
 void FrameTreeNode::AddObserver(Observer* observer) {
@@ -385,6 +402,8 @@ FrameType FrameTreeNode::GetFrameType() const {
       return FrameType::kPrerenderMainFrame;
     case FrameTree::Type::kFencedFrame:
       return FrameType::kFencedFrameRoot;
+    case FrameTree::Type::kGuest:
+      return FrameType::kGuestMainFrame;
   }
 }
 
@@ -482,6 +501,9 @@ void FrameTreeNode::SetPendingFramePolicy(blink::FramePolicy frame_policy) {
         frame_policy.required_document_policy;
   }
 
+  pending_frame_policy_.deferred_fetch_policy =
+      frame_policy.deferred_fetch_policy;
+
   // Fenced frame roots do not have a parent, so add an extra check here to
   // still allow a fenced frame to properly set its container policy. The
   // required document policy and sandbox flags should stay unmodified.
@@ -577,7 +599,8 @@ void FrameTreeNode::TakeNavigationRequest(
     }
     ResetNavigationRequestButKeepState(
         navigation_request->GetTypeForNavigationDiscardReason());
-  } else if (navigation_request_) {
+  } else if (navigation_request_ &&
+             !navigation_request_->GetNavigationDiscardReason().has_value()) {
     navigation_request_->set_navigation_discard_reason(
         navigation_request->GetTypeForNavigationDiscardReason());
   }
@@ -603,6 +626,12 @@ void FrameTreeNode::TakeNavigationRequest(
     was_discarded_ = false;
   }
   render_manager()->DidCreateNavigationRequest(navigation_request_.get());
+
+  devtools_instrumentation::DidStartNavigating(
+      *this, navigation_request_->common_params().url,
+      navigation_request_->devtools_navigation_token(),
+      navigation_request_->common_params().navigation_type);
+
   DidStartLoading(previous_frame_tree_loading_state);
 }
 
@@ -637,8 +666,9 @@ void FrameTreeNode::ResetNavigationRequestButKeepState(
   // accidentally complete a navigation that should be reset.
   CancelRestartingBackForwardCacheNavigation();
   devtools_instrumentation::OnResetNavigationRequest(navigation_request_.get());
-
-  navigation_request_->set_navigation_discard_reason(reason);
+  if (!navigation_request_->GetNavigationDiscardReason().has_value()) {
+    navigation_request_->set_navigation_discard_reason(reason);
+  }
   navigation_request_.reset();
 }
 
@@ -775,7 +805,7 @@ bool FrameTreeNode::NotifyUserActivation(
   // If we're in a picture-in-picture frame tree, then also activate the opener
   // frame of the picture-in-picture root.
   FrameTree* pip_opener =
-      frame_tree().delegate()->GetPictureInPictureOpenerFrameTree();
+      frame_tree().delegate()->GetDocumentPictureInPictureOpenerFrameTree();
   if (base::FeatureList::IsEnabled(
           blink::features::kDocumentPictureInPictureUserActivation) &&
       pip_opener) {
@@ -791,32 +821,29 @@ bool FrameTreeNode::NotifyUserActivation(
 
   // See the "Same-origin Visibility" section in |UserActivationState| class
   // doc.
-  if (base::FeatureList::IsEnabled(
-          features::kUserActivationSameOriginVisibility)) {
-    const url::Origin& current_origin =
-        this->current_frame_host()->GetLastCommittedOrigin();
-    for (FrameTreeNode* node : frame_tree().Nodes()) {
-      if (node->current_frame_host()->GetLastCommittedOrigin().IsSameOriginWith(
-              current_origin)) {
-        node->current_frame_host()->ActivateUserActivation(notification_type,
-                                                           sticky_only);
-      }
+  const url::Origin& current_origin =
+      this->current_frame_host()->GetLastCommittedOrigin();
+  for (FrameTreeNode* node : frame_tree().Nodes()) {
+    if (node->current_frame_host()->GetLastCommittedOrigin().IsSameOriginWith(
+            current_origin)) {
+      node->current_frame_host()->ActivateUserActivation(notification_type,
+                                                         sticky_only);
     }
+  }
 
-    if (base::FeatureList::IsEnabled(
-            blink::features::kDocumentPictureInPictureUserActivation)) {
-      // If we own a picture-in-picture window, then also activate same-origin
-      // frames within the picture-in-picture window.
-      FrameTree* picture_in_picture_frame_tree =
-          frame_tree().delegate()->GetOwnedPictureInPictureFrameTree();
-      if (picture_in_picture_frame_tree) {
-        for (FrameTreeNode* node : picture_in_picture_frame_tree->Nodes()) {
-          if (node->current_frame_host()
-                  ->GetLastCommittedOrigin()
-                  .IsSameOriginWith(current_origin)) {
-            node->current_frame_host()->ActivateUserActivation(
-                notification_type, sticky_only);
-          }
+  if (base::FeatureList::IsEnabled(
+          blink::features::kDocumentPictureInPictureUserActivation)) {
+    // If we own a picture-in-picture window, then also activate same-origin
+    // frames within the picture-in-picture window.
+    FrameTree* picture_in_picture_frame_tree =
+        frame_tree().delegate()->GetOwnedDocumentPictureInPictureFrameTree();
+    if (picture_in_picture_frame_tree) {
+      for (FrameTreeNode* node : picture_in_picture_frame_tree->Nodes()) {
+        if (node->current_frame_host()
+                ->GetLastCommittedOrigin()
+                .IsSameOriginWith(current_origin)) {
+          node->current_frame_host()->ActivateUserActivation(notification_type,
+                                                             sticky_only);
         }
       }
     }
@@ -825,6 +852,18 @@ bool FrameTreeNode::NotifyUserActivation(
   navigator().controller().NotifyUserActivation();
   current_frame_host()->MaybeIsolateForUserActivation();
 
+  return true;
+}
+
+bool FrameTreeNode::AreAncestorsSecure() {
+  RenderFrameHostImpl* frame = parent();
+  while (frame) {
+    if (!network::IsOriginPotentiallyTrustworthy(
+            frame->GetLastCommittedOrigin())) {
+      return false;
+    }
+    frame = frame->GetParent();
+  }
   return true;
 }
 
@@ -839,7 +878,7 @@ bool FrameTreeNode::ConsumeTransientUserActivation() {
     // If we're consuming user activation in a picture-in-picture window, ensure
     // that its opener's frames also consume activation.
     FrameTree* pip_opener =
-        frame_tree().delegate()->GetPictureInPictureOpenerFrameTree();
+        frame_tree().delegate()->GetDocumentPictureInPictureOpenerFrameTree();
     if (pip_opener) {
       for (FrameTreeNode* node : pip_opener->Nodes()) {
         node->current_frame_host()->ConsumeTransientUserActivation();
@@ -849,7 +888,7 @@ bool FrameTreeNode::ConsumeTransientUserActivation() {
     // If we own a picture-in-picture window, ensure that its frames also
     // consume activation.
     FrameTree* picture_in_picture_frame_tree =
-        frame_tree().delegate()->GetOwnedPictureInPictureFrameTree();
+        frame_tree().delegate()->GetOwnedDocumentPictureInPictureFrameTree();
     if (picture_in_picture_frame_tree) {
       for (FrameTreeNode* node : picture_in_picture_frame_tree->Nodes()) {
         node->current_frame_host()->ConsumeTransientUserActivation();
@@ -873,17 +912,6 @@ bool FrameTreeNode::ClearUserActivation() {
   return true;
 }
 
-bool FrameTreeNode::VerifyUserActivation() {
-  DCHECK(base::FeatureList::IsEnabled(
-             features::kBrowserVerifiedUserActivationMouse) ||
-         base::FeatureList::IsEnabled(
-             features::kBrowserVerifiedUserActivationKeyboard));
-
-  return render_manager_.current_frame_host()
-      ->GetRenderWidgetHost()
-      ->RemovePendingUserActivationIfAvailable();
-}
-
 bool FrameTreeNode::UpdateUserActivationState(
     blink::mojom::UserActivationUpdateType update_type,
     blink::mojom::UserActivationNotificationType notification_type) {
@@ -895,19 +923,6 @@ bool FrameTreeNode::UpdateUserActivationState(
     case blink::mojom::UserActivationUpdateType::kNotifyActivation:
       update_result = NotifyUserActivation(notification_type);
       break;
-    case blink::mojom::UserActivationUpdateType::
-        kNotifyActivationPendingBrowserVerification: {
-      if (VerifyUserActivation()) {
-        update_result = NotifyUserActivation(
-            blink::mojom::UserActivationNotificationType::kInteraction);
-        update_type = blink::mojom::UserActivationUpdateType::kNotifyActivation;
-      } else {
-        // TODO(crbug.com/40091540): We need to decide what to do when
-        // user activation verification failed. NOTREACHED here will make all
-        // unrelated tests that inject event to renderer fail.
-        return false;
-      }
-    } break;
     case blink::mojom::UserActivationUpdateType::kNotifyActivationStickyOnly:
       update_result = NotifyUserActivationStickyOnly();
       break;
@@ -958,7 +973,7 @@ void FrameTreeNode::SetPopupCreatorOrigin(
 
 void FrameTreeNode::WriteIntoTrace(
     perfetto::TracedProto<TraceProto> proto) const {
-  proto->set_frame_tree_node_id(frame_tree_node_id());
+  proto->set_frame_tree_node_id(frame_tree_node_id().value());
   proto->set_is_main_frame(IsMainFrame());
   proto.Set(TraceProto::kCurrentFrameHost, current_frame_host());
   proto.Set(TraceProto::kSpeculativeFrameHost,
@@ -1030,47 +1045,6 @@ std::optional<FencedFrameProperties>& FrameTreeNode::GetFencedFrameProperties(
   FrameTreeNode* node = GetClosestAncestorWithFencedFrameProperties();
 
   return node ? node->fenced_frame_properties_ : fenced_frame_properties_;
-}
-
-void FrameTreeNode::MaybeResetFencedFrameAutomaticBeaconReportEventData(
-    blink::mojom::AutomaticBeaconType event_type) {
-  std::optional<FencedFrameProperties>& properties = GetFencedFrameProperties();
-  // `properties` will exist for both fenced frames as well as iframes loaded
-  // with a urn:uuid.
-  if (!properties) {
-    return;
-  }
-  properties->MaybeResetAutomaticBeaconData(event_type);
-}
-
-void FrameTreeNode::SetFencedFrameAutomaticBeaconReportEventData(
-    blink::mojom::AutomaticBeaconType event_type,
-    const std::string& event_data,
-    const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
-    bool once,
-    bool cross_origin_exposed) {
-  std::optional<FencedFrameProperties>& properties = GetFencedFrameProperties();
-  // `properties` will exist for both fenced frames as well as iframes loaded
-  // with a urn:uuid. This allows URN iframes to call this function without
-  // getting bad-messaged.
-  if (!properties || !properties->fenced_frame_reporter()) {
-    mojo::ReportBadMessage(
-        "Automatic beacon data can only be set in fenced frames or iframes "
-        "loaded from a config with a fenced frame reporter.");
-    return;
-  }
-  // This metadata should only be present in the renderer in frames that are
-  // same-origin to the mapped url.
-  if (!properties->mapped_url().has_value() ||
-      !current_origin().IsSameOriginWith(url::Origin::Create(
-          properties->mapped_url()->GetValueIgnoringVisibility()))) {
-    mojo::ReportBadMessage(
-        "Automatic beacon data can only be set from documents that are same-"
-        "origin to the mapped url from the fenced frame config.");
-    return;
-  }
-  properties->UpdateAutomaticBeaconData(event_type, event_data, destinations,
-                                        once, cross_origin_exposed);
 }
 
 size_t FrameTreeNode::GetFencedFrameDepth(
@@ -1275,13 +1249,16 @@ FrameTreeNode::CreateNavigationRequestForSynchronousRendererCommit(
     const std::vector<GURL>& redirects,
     const GURL& original_url,
     std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter,
-    int http_response_code) {
+    std::unique_ptr<DocumentIsolationPolicyReporter> dip_reporter,
+    int http_response_code,
+    base::TimeTicks actual_navigation_start) {
   return NavigationRequest::CreateForSynchronousRendererCommit(
       this, render_frame_host, is_same_document, url, origin,
       initiator_base_url, isolation_info_for_subresources, std::move(referrer),
       transition, should_replace_current_entry, method,
       has_transient_activation, is_overriding_user_agent, redirects,
-      original_url, std::move(coep_reporter), http_response_code);
+      original_url, std::move(coep_reporter), std::move(dip_reporter),
+      http_response_code, actual_navigation_start);
 }
 
 void FrameTreeNode::CancelNavigation(NavigationDiscardReason reason) {
@@ -1291,21 +1268,23 @@ void FrameTreeNode::CancelNavigation(NavigationDiscardReason reason) {
   ResetNavigationRequest(reason);
 }
 
+void FrameTreeNode::ResetNavigationsForDiscard() {
+  for (FrameTreeNode* frame : frame_tree().SubtreeNodes(this)) {
+    // TODO(crbug.com/365481515): Consider adding a separate discard reason for
+    // frame tree discarding.
+    frame->ResetNavigationRequest(NavigationDiscardReason::kWillRemoveFrame);
+    frame->current_frame_host()->ResetOwnedNavigationRequests(
+        NavigationDiscardReason::kWillRemoveFrame);
+  }
+}
+
 bool FrameTreeNode::Credentialless() const {
   return attributes_->credentialless;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-void FrameTreeNode::GetVirtualAuthenticatorManager(
-    mojo::PendingReceiver<blink::test::mojom::VirtualAuthenticatorManager>
-        receiver) {
-  auto* environment_singleton = AuthenticatorEnvironment::GetInstance();
-  environment_singleton->EnableVirtualAuthenticatorFor(this,
-                                                       /*enable_ui=*/false);
-  environment_singleton->AddVirtualAuthenticatorReceiver(this,
-                                                         std::move(receiver));
+FrameType FrameTreeNode::GetCurrentFrameType() const {
+  return GetFrameType();
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 void FrameTreeNode::RestartBackForwardCachedNavigationAsync(int nav_entry_id) {
   TRACE_EVENT0("navigation",

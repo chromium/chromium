@@ -12,7 +12,10 @@
 #include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/browser/extension_icon_image.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/gfx/image/image_skia.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace content {
 class BrowserContext;
@@ -42,7 +45,7 @@ class ChromeAppIcon : public IconImage::Observer {
     kPaused    // Applied to apps that run out of daily time limit.
   };
 
-  // Applies image processing effects to |image_skia|, such as resizing, adding
+  // Applies image processing effects to `image_skia`, such as resizing, adding
   // badges, converting to gray and rounding corners.
   static void ApplyEffects(int resource_size_in_dip,
                            const ResizeFunction& resize_function,
@@ -51,8 +54,8 @@ class ChromeAppIcon : public IconImage::Observer {
                            Badge badge_type,
                            gfx::ImageSkia* image_skia);
 
-  // |resize_function| overrides icon resizing behavior if non-null. Otherwise
-  // IconLoader with perform the resizing. In both cases |resource_size_in_dip|
+  // `resize_function` overrides icon resizing behavior if non-null. Otherwise
+  // IconLoader with perform the resizing. In both cases `resource_size_in_dip`
   // is used to pick the correct icon representation from resources.
   ChromeAppIcon(ChromeAppIconDelegate* delegate,
                 content::BrowserContext* browser_context,
@@ -74,16 +77,11 @@ class ChromeAppIcon : public IconImage::Observer {
   bool IsValid() const;
 
   // Re-applies app effects over the current extension icon and dispatches the
-  // result via |delegate_|.
+  // result via `delegate_`.
   void UpdateIcon();
 
   const gfx::ImageSkia& image_skia() const { return image_skia_; }
   const std::string& app_id() const { return app_id_; }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Returns whether the icon is badged because it's an extension app that has
-  // its Android analog installed.
-  bool has_chrome_badge() const { return has_chrome_badge_; }
-#endif
 
  private:
   const Extension* GetExtension();
@@ -102,14 +100,8 @@ class ChromeAppIcon : public IconImage::Observer {
   const std::string app_id_;
 
   // Contains current icon image. This is static image with applied effects and
-  // it is updated each time when |icon_| is updated.
+  // it is updated each time when `icon_` is updated.
   gfx::ImageSkia image_skia_;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Whether the icon got badged because it's an extension app that has its
-  // Android analog installed.
-  bool has_chrome_badge_ = false;
-#endif
 
   const int resource_size_in_dip_;
 

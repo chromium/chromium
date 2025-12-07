@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <variant>
+
 #include "ash/style/rounded_rect_cutout_path_builder.h"
 #include "ash/style/style_viewer/system_ui_components_grid_view.h"
 #include "ash/style/style_viewer/system_ui_components_grid_view_factories.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/views/background.h"
 #include "ui/views/view.h"
@@ -34,7 +35,7 @@ struct CutoutSpec {
 struct CutoutEntry {
   std::u16string name;
   SkColor color;
-  absl::variant<std::vector<CutoutSpec>, CutoutsSpec> cutouts;
+  std::variant<std::vector<CutoutSpec>, CutoutsSpec> cutouts;
   std::optional<int> radius;
   std::optional<int> outer_radius;
   std::optional<int> inner_radius;
@@ -58,15 +59,15 @@ class CutoutsGridView : public SystemUIComponentsGridView {
     view->SetPreferredSize(std::make_optional<gfx::Size>(200, 150));
     auto builder =
         RoundedRectCutoutPathBuilder(gfx::SizeF(view->GetPreferredSize()));
-    if (absl::holds_alternative<std::vector<CutoutSpec>>(entry.cutouts)) {
-      const auto& cutouts = absl::get<std::vector<CutoutSpec>>(entry.cutouts);
+    if (std::holds_alternative<std::vector<CutoutSpec>>(entry.cutouts)) {
+      const auto& cutouts = std::get<std::vector<CutoutSpec>>(entry.cutouts);
       if (!cutouts.empty()) {
         for (const auto& spec : cutouts) {
           builder.AddCutout(spec.corner, gfx::SizeF(spec.size));
         }
       }
     } else {
-      const CutoutsSpec& cutouts = absl::get<CutoutsSpec>(entry.cutouts);
+      const CutoutsSpec& cutouts = std::get<CutoutsSpec>(entry.cutouts);
       if (!cutouts.corners.empty()) {
         for (const auto& corner : cutouts.corners) {
           builder.AddCutout(corner, gfx::SizeF(cutouts.cutout_size));

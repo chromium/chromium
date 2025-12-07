@@ -167,7 +167,7 @@ public class LazySubscriptionsManagerTest {
         GCMMessage message = new GCMMessage("MySenderId", extras);
         LazySubscriptionsManager.persistMessage(subscriptionId, message);
 
-        GCMMessage messages[] = LazySubscriptionsManager.readMessages(subscriptionId);
+        GCMMessage[] messages = LazySubscriptionsManager.readMessages(subscriptionId);
         assertEquals(1, messages.length);
         assertEquals(message.getSenderId(), messages[0].getSenderId());
 
@@ -197,7 +197,7 @@ public class LazySubscriptionsManagerTest {
             LazySubscriptionsManager.persistMessage(subscriptionId, message);
         }
         // Check that only the most recent |MESSAGES_QUEUE_SIZE| are persisted.
-        GCMMessage messages[] = LazySubscriptionsManager.readMessages(subscriptionId);
+        GCMMessage[] messages = LazySubscriptionsManager.readMessages(subscriptionId);
         assertEquals(LazySubscriptionsManager.MESSAGES_QUEUE_SIZE, messages.length);
         for (int i = 0; i < LazySubscriptionsManager.MESSAGES_QUEUE_SIZE; i++) {
             assertEquals(
@@ -222,7 +222,7 @@ public class LazySubscriptionsManagerTest {
         GCMMessage message1 = new GCMMessage("MySenderId", extras);
         LazySubscriptionsManager.persistMessage(subscriptionId, message1);
 
-        GCMMessage messages[] = LazySubscriptionsManager.readMessages(subscriptionId);
+        GCMMessage[] messages = LazySubscriptionsManager.readMessages(subscriptionId);
         assertEquals(1, messages.length);
         assertArrayEquals(rawData1, messages[0].getRawData());
 

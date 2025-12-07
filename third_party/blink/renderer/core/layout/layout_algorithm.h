@@ -97,17 +97,35 @@ class CORE_EXPORT LayoutAlgorithm {
     container_builder_.SetIsNewFormattingContext(
         params.space.IsNewFormattingContext());
     container_builder_.SetInitialFragmentGeometry(params.fragment_geometry);
-    if (UNLIKELY(params.space.HasBlockFragmentation() ||
-                 IsBreakInside(params.break_token))) {
+    if (params.space.HasBlockFragmentation() ||
+        IsBreakInside(params.break_token)) [[unlikely]] {
       SetupFragmentBuilderForFragmentation(
           params.space, params.node, params.break_token, &container_builder_);
     }
+  }
+
+  const GapGeometry* GetGapGeometry() const {
+    return container_builder_.GetGapGeometry();
   }
 
  protected:
   // Protected (non-virtual) destructor, to make sure that the destructor is
   // invoked directly on subclasses.
   ~LayoutAlgorithm() = default;
+
+  enum RelayoutType {
+    kNoRelayout = 0,
+    kRelayoutForEarlyBreak = 1,
+    kRelayoutIgnoringLineClamp = 2,
+    kRelayoutClampingByLines = 4,
+    kRelayoutForTextBoxTrim = 8,
+    kRelayoutWithoutFragmentation = 16,
+    kRelayoutIgnoringChildScrollbarChanges = 32,
+    kRelayoutAsLastTableBox = 64,
+    kRelayoutClampingAfterLayoutObject = 128,
+  };
+  // Bitmask of active relayout types (`RelayoutType`).
+  typedef int RelayoutMode;
 
   const ConstraintSpace& GetConstraintSpace() const {
     return container_builder_.GetConstraintSpace();
@@ -128,6 +146,7 @@ class CORE_EXPORT LayoutAlgorithm {
   }
 
   const BoxStrut& Borders() const { return container_builder_.Borders(); }
+  const BoxStrut& Scrollbar() const { return container_builder_.Scrollbar(); }
   const BoxStrut& Padding() const { return container_builder_.Padding(); }
   const BoxStrut& BorderPadding() const {
     return container_builder_.BorderPadding();
@@ -185,6 +204,66 @@ class CORE_EXPORT LayoutAlgorithm {
         FragmentainerCapacityForChildren(), appeal_before, &container_builder_);
   }
 
+  // Carry over any previous relayout data from the previous layout algorithm,
+  // and set up any new relayout data for the additional relayout type.
+  // Subclasses that have data to set up on their own should override this
+  // function and do their stuff in addition to calling this function.
+  void SetupRelayoutData(const LayoutAlgorithm& previous_algorithm,
+                         RelayoutType relayout_type) {
+    if (relayout_mode_ & kRelayoutForEarlyBreak) {
+      // We're not going to run out of space in the next layout pass, since
+      // we're breaking earlier, so no space shortage will be detected. Repeat
+      // what we found in this pass.
+      container_builder_.PropagateSpaceShortage(
+          previous_algorithm.container_builder_.MinimalSpaceShortage());
+    }
+
+    if (relayout_type != kRelayoutForEarlyBreak) {
+      early_break_ = previous_algorithm.early_break_;
+      additional_early_breaks_ = previous_algorithm.additional_early_breaks_;
+    }
+    container_builder_.SetBoxType(
+        previous_algorithm.container_builder_.GetBoxType());
+  }
+
+  // Re-run this layout algorithm for the specified type of relayout.
+  template <typename Algorithm>
+  const LayoutResult* Relayout(RelayoutType relayout_type,
+                               const EarlyBreak* breakpoint = nullptr,
+                               const HeapVector<Member<EarlyBreak>>*
+                                   additional_early_breaks = nullptr) const {
+    // Don't retry with the same type.
+    DCHECK(!(relayout_mode_ & relayout_type));
+
+    // Early-breaks are only expected if we're actually re-laying out for an
+    // early-break.
+    DCHECK(!breakpoint || relayout_type == kRelayoutForEarlyBreak);
+    DCHECK(!additional_early_breaks || relayout_type == kRelayoutForEarlyBreak);
+
+    ConstraintSpace new_space = GetConstraintSpace();
+    RelayoutMode new_relayout_mode = relayout_mode_ | relayout_type;
+    if (new_relayout_mode & kRelayoutWithoutFragmentation) {
+      // We'll relayout with a special cloned constraint space that disables
+      // further fragmentation (but rather lets clipped child content "overflow"
+      // past the fragmentation line). This means that the cached constraint
+      // space will still be set up to do block fragmentation, but that should
+      // be the right thing, since, as far as input is concerned, this node is
+      // meant to perform block fragmentation (and it may already have produced
+      // multiple fragments, but this one will be the last).
+      new_space = new_space.CloneWithoutFragmentation();
+    }
+
+    LayoutAlgorithmParams params(
+        Node(), container_builder_.InitialFragmentGeometry(), new_space,
+        GetBreakToken(), breakpoint, additional_early_breaks);
+
+    Algorithm relayout_algorithm(params);
+    relayout_algorithm.relayout_mode_ = new_relayout_mode;
+    relayout_algorithm.SetupRelayoutData(*static_cast<const Algorithm*>(this),
+                                         relayout_type);
+    return relayout_algorithm.Layout();
+  }
+
   // Lay out again, this time with a predefined good breakpoint that we
   // discovered in the first pass. This happens when we run out of space in a
   // fragmentainer at an less-than-ideal location, due to breaking restrictions,
@@ -197,25 +276,8 @@ class CORE_EXPORT LayoutAlgorithm {
     DCHECK(!early_break_);
     DCHECK(!additional_early_breaks_ || additional_early_breaks_->empty());
 
-    LayoutAlgorithmParams params(Node(),
-                                 container_builder_.InitialFragmentGeometry(),
-                                 GetConstraintSpace(), GetBreakToken(),
-                                 &breakpoint, additional_early_breaks);
-    Algorithm algorithm_with_break(params);
-    return RelayoutAndBreakEarlier(&algorithm_with_break);
-  }
-
-  template <typename Algorithm>
-  const LayoutResult* RelayoutAndBreakEarlier(Algorithm* new_algorithm) {
-    DCHECK(new_algorithm);
-    auto& new_builder = new_algorithm->container_builder_;
-    new_builder.SetBoxType(container_builder_.GetBoxType());
-    // We're not going to run out of space in the next layout pass, since we're
-    // breaking earlier, so no space shortage will be detected. Repeat what we
-    // found in this pass.
-    new_builder.PropagateSpaceShortage(
-        container_builder_.MinimalSpaceShortage());
-    return new_algorithm->Layout();
+    return Relayout<Algorithm>(kRelayoutForEarlyBreak, &breakpoint,
+                               additional_early_breaks);
   }
 
   // Lay out again, this time without block fragmentation. This happens when a
@@ -225,23 +287,7 @@ class CORE_EXPORT LayoutAlgorithm {
   template <typename Algorithm>
   const LayoutResult* RelayoutWithoutFragmentation() {
     DCHECK(GetConstraintSpace().HasBlockFragmentation());
-    // We'll relayout with a special cloned constraint space that disables
-    // further fragmentation (but rather lets clipped child content "overflow"
-    // past the fragmentation line). This means that the cached constraint space
-    // will still be set up to do block fragmentation, but that should be the
-    // right thing, since, as far as input is concerned, this node is meant to
-    // perform block fragmentation (and it may already have produced multiple
-    // fragment, but this one will be the last).
-    ConstraintSpace new_space =
-        GetConstraintSpace().CloneWithoutFragmentation();
-
-    LayoutAlgorithmParams params(Node(),
-                                 container_builder_.InitialFragmentGeometry(),
-                                 new_space, GetBreakToken());
-    Algorithm algorithm_without_fragmentation(params);
-    auto& new_builder = algorithm_without_fragmentation.container_builder_;
-    new_builder.SetBoxType(container_builder_.GetBoxType());
-    return algorithm_without_fragmentation.Layout();
+    return Relayout<Algorithm>(kRelayoutWithoutFragmentation);
   }
 
   InputNodeType node_;
@@ -256,6 +302,10 @@ class CORE_EXPORT LayoutAlgorithm {
   // For example, there may be an early break within multiple flex columns. This
   // can be used to pass additional early breaks to the next layout pass.
   const HeapVector<Member<EarlyBreak>>* additional_early_breaks_ = nullptr;
+
+  // The relayout types that are currently active. Every time Relayout() is
+  // called, another RelayoutType is added to this field.
+  RelayoutMode relayout_mode_ = kNoRelayout;
 };
 
 }  // namespace blink

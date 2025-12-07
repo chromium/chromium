@@ -1,0 +1,29 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/build_webui.gni")
+
+assert(!is_android)
+
+build_webui("build") {
+  grd_prefix = "side_panel_comments"
+
+  static_files = [ "comments.html" ]
+  ts_files = [
+    "app.html.ts",
+    "app.ts",
+    "comments_api_proxy.ts",
+  ]
+
+  ts_deps = [
+    "//third_party/lit/v3_0:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+  webui_context_type = "trusted"
+
+  mojo_files_deps = [
+    "//chrome/browser/ui/webui/side_panel/comments:mojo_bindings_ts__generator",
+  ]
+  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/side_panel/comments/comments.mojom-webui.ts" ]
+}

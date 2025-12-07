@@ -67,12 +67,12 @@ std::string GetKeyName(std::string_view request_origin) {
 // A default implementation of the Delegate interface.
 class DefaultDelegate : public PlatformVerificationFlow::Delegate {
  public:
-  DefaultDelegate() {}
+  DefaultDelegate() = default;
 
   DefaultDelegate(const DefaultDelegate&) = delete;
   DefaultDelegate& operator=(const DefaultDelegate&) = delete;
 
-  ~DefaultDelegate() override {}
+  ~DefaultDelegate() override = default;
 
   bool IsInSupportedMode() override {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -359,7 +359,7 @@ PlatformVerificationFlow::ExpiryStatus PlatformVerificationFlow::CheckExpiry(
       return EXPIRY_STATUS_INVALID_X509;
   }
 
-  NOTREACHED_IN_MIGRATION() << "Unknown certificate status";
+  NOTREACHED() << "Unknown certificate status";
 }
 
 void PlatformVerificationFlow::RenewCertificateCallback(

@@ -2,17 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/shared_image/ahardwarebuffer_image_backing_factory.h"
 
-#include "base/android/android_hardware_buffer_compat.h"
+#include <android/hardware_buffer.h>
+
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
+#include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -28,9 +26,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/gpu/GrBackendSemaphore.h"
-#include "third_party/skia/include/gpu/GrBackendSurface.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -42,6 +40,7 @@
 #include <dawn/native/DawnNative.h>
 #include <dawn/native/OpenGLBackend.h>
 #include <dawn/webgpu_cpp.h>
+#include <dawn/webgpu_cpp_print.h>
 #endif
 
 namespace gpu {
@@ -60,9 +59,6 @@ class AHardwareBufferImageBackingFactoryTest
   void SetUp() override {
     // AHardwareBuffer is only supported on ANDROID O+. Hence these tests
     // should not be run on android versions less that O.
-    if (!base::AndroidHardwareBufferCompat::IsSupportAvailable()) {
-      GTEST_SKIP() << "AHardwareBuffer not supported";
-    }
 
     if (IsGraphiteDawn() && !IsGraphiteDawnSupported()) {
       GTEST_SKIP() << "Graphite/Dawn not supported";
@@ -71,7 +67,8 @@ class AHardwareBufferImageBackingFactoryTest
     ASSERT_NO_FATAL_FAILURE(InitializeContext(GrContextType()));
 
     backing_factory_ = std::make_unique<AHardwareBufferImageBackingFactory>(
-        context_state_->feature_info(), gpu_preferences_);
+        context_state_->feature_info(), gpu_preferences_,
+        context_state_->vk_context_provider());
   }
 };
 
@@ -150,7 +147,7 @@ TEST_P(AHardwareBufferImageBackingFactoryTest, Basic) {
 // Test to check interaction between GL and skia representations.
 // We write to a GL texture using gl representation and then read from skia
 // representation.
-TEST_F(AHardwareBufferImageBackingFactoryTest, GLWriteSkiaRead) {
+TEST_P(AHardwareBufferImageBackingFactoryTest, GLWriteSkiaRead) {
   // Create a backing using mailbox.
   auto mailbox = Mailbox::Generate();
   auto format = viz::SinglePlaneFormat::kRGBA_8888;
@@ -229,7 +226,7 @@ TEST_P(AHardwareBufferImageBackingFactoryTest, ProduceDawnOpenGLES) {
 
   wgpu::RequestAdapterOptions adapter_options;
   adapter_options.backendType = wgpu::BackendType::OpenGLES;
-  adapter_options.compatibilityMode = true;
+  adapter_options.featureLevel = wgpu::FeatureLevel::Compatibility;
 
   dawn::native::opengl::RequestAdapterOptionsGetGLProc
       adapter_options_get_gl_proc = {};
@@ -249,7 +246,26 @@ TEST_P(AHardwareBufferImageBackingFactoryTest, ProduceDawnOpenGLES) {
   }
   wgpu::Adapter adapter = wgpu::Adapter(adapters[0].Get());
 
+  std::array<wgpu::FeatureName, 3> required_features = {
+      // We need to request internal usage to be able to do operations with
+      // internal methods that would need specific usages.
+      wgpu::FeatureName::DawnInternalUsages,
+
+      // AHardwareBuffers are imported directly into Dawn and SyncFDs are used
+      // to synchronize them.
+      wgpu::FeatureName::SharedTextureMemoryAHardwareBuffer,
+      wgpu::FeatureName::SharedFenceSyncFD};
+  for (const wgpu::FeatureName& required_feature : required_features) {
+    if (!adapter.HasFeature(required_feature)) {
+      GTEST_SKIP() << "Required Dawn feature " << required_feature
+                   << " is not available.";
+    }
+  }
+
   wgpu::DeviceDescriptor device_descriptor;
+  device_descriptor.requiredFeatureCount = required_features.size();
+  device_descriptor.requiredFeatures = required_features.data();
+
   wgpu::Device device = adapter.CreateDevice(&device_descriptor);
 
   auto dawn_representation = shared_image_representation_factory_.ProduceDawn(
@@ -300,15 +316,14 @@ TEST_P(AHardwareBufferImageBackingFactoryTest, InitialData) {
   SkAlphaType alpha_type = kPremul_SkAlphaType;
   gpu::SharedImageUsageSet usage = SHARED_IMAGE_USAGE_DISPLAY_READ;
 
-  auto image_info =
-      SkImageInfo::Make(gfx::SizeToSkISize(size),
-                        viz::ToClosestSkColorType(true, format), alpha_type);
+  auto image_info = SkImageInfo::Make(
+      gfx::SizeToSkISize(size), viz::ToClosestSkColorType(format), alpha_type);
   SkBitmap expected_bitmap;
   expected_bitmap.allocPixels(image_info);
 
-  base::span<uint8_t> pixel_span(
+  base::span<uint8_t> UNSAFE_TODO(pixel_span(
       static_cast<uint8_t*>(expected_bitmap.pixmap().writable_addr()),
-      expected_bitmap.computeByteSize());
+      expected_bitmap.computeByteSize()));
   for (size_t i = 0; i < pixel_span.size(); i++) {
     pixel_span[i] = static_cast<uint8_t>(i);
   }
@@ -344,6 +359,38 @@ TEST_P(AHardwareBufferImageBackingFactoryTest, InvalidFormat) {
       mailbox, format, surface_handle, size, color_space, surface_origin,
       alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
   EXPECT_FALSE(backing);
+}
+
+TEST_P(AHardwareBufferImageBackingFactoryTest,
+       CanCreateMultiplanarBackingWhenPassedGMBHandle) {
+  auto mailbox = Mailbox::Generate();
+  auto format = viz::MultiPlaneFormat::kNV12;
+  gfx::Size size(256, 256);
+  auto color_space = gfx::ColorSpace::CreateSRGB();
+  GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
+  SkAlphaType alpha_type = kPremul_SkAlphaType;
+  gpu::SharedImageUsageSet usage =
+      SHARED_IMAGE_USAGE_CPU_READ | SHARED_IMAGE_USAGE_CPU_WRITE_ONLY;
+
+  AHardwareBuffer* buffer = nullptr;
+  AHardwareBuffer_Desc hwb_desc = {};
+  hwb_desc.width = size.width();
+  hwb_desc.height = size.height();
+  hwb_desc.layers = 1;
+  hwb_desc.format = AHARDWAREBUFFER_FORMAT_Y8Cb8Cr8_420;
+  hwb_desc.usage = AHARDWAREBUFFER_USAGE_CPU_READ_OFTEN;
+  AHardwareBuffer_allocate(&hwb_desc, &buffer);
+  ASSERT_NE(buffer, nullptr);
+
+  gfx::GpuMemoryBufferHandle handle;
+  handle.type = gfx::ANDROID_HARDWARE_BUFFER;
+  handle.android_hardware_buffer =
+      base::android::ScopedHardwareBufferHandle::Adopt(buffer);
+
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
+      "TestLabel", /*is_thread_safe=*/false, std::move(handle));
+  EXPECT_TRUE(backing);
 }
 
 // Test to check invalid size support.

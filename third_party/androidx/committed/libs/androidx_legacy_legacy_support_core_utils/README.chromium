@@ -1,0 +1,20 @@
+Name: Android Support Library core utils
+Short Name: legacy-support-core-utils
+URL: https://dl.google.com/dl/android/maven2/androidx/legacy/legacy-support-core-utils/1.0.0/legacy-support-core-utils-1.0.0.aar
+Version: 1.0.0
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+The Support Library is a static library that you can add to your Android application in order to use APIs that are either not available for older platform versions or utility APIs that aren't a part of the framework APIs. Compatible on devices running API 14 or later.
+
+See also: http://developer.android.com/tools/extras/support-library.html
+
+
+Local Modifications:
+No modifications.

@@ -97,15 +97,15 @@ FakeFidoDiscoveryFactory::Create(FidoTransportProtocol transport) {
     case FidoTransportProtocol::kNearFieldCommunication:
       return SingleDiscovery(std::move(next_nfc_discovery_));
     case FidoTransportProtocol::kBluetoothLowEnergy:
-    case FidoTransportProtocol::kAndroidAccessory:
       return {};
     case FidoTransportProtocol::kHybrid:
       return SingleDiscovery(std::move(next_cable_discovery_));
     case FidoTransportProtocol::kInternal:
       return std::move(next_platform_discovery_list_);
+    case FidoTransportProtocol::kDeprecatedAoa:
+      break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return {};
+  NOTREACHED();
 }
 
 #if BUILDFLAG(IS_WIN)

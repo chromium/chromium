@@ -4,9 +4,9 @@
       "win",
       "linux",
       "mac",
-      "chromeos_ash",
-      "chromeos_lacros",
-      "fuchsia"
+      "chromeos",
+      "fuchsia",
+      "android"
     ],
     "simple_policy_pref_mapping_test": {
       "pref_name": "devtools.availability",
@@ -23,8 +23,7 @@
       "win",
       "linux",
       "mac",
-      "chromeos_ash",
-      "chromeos_lacros",
+      "chromeos",
       "fuchsia"
     ],
     "policy_pref_mapping_tests": [

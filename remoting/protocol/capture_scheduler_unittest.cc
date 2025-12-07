@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -20,7 +21,8 @@
 
 namespace remoting::protocol {
 
-static const int kTestInputs[] = {100, 50, 30, 20, 10, 30, 60, 80};
+constexpr auto kTestInputs =
+    std::to_array<int>({100, 50, 30, 20, 10, 30, 60, 80});
 static const int kMinumumFrameIntervalMs = 50;
 
 class CaptureSchedulerTest : public testing::Test {
@@ -84,12 +86,13 @@ class CaptureSchedulerTest : public testing::Test {
 };
 
 TEST_F(CaptureSchedulerTest, SingleSampleSameTimes) {
-  const int kTestResults[][std::size(kTestInputs)] = {
-      {400, 200, 120, 80, 50, 120, 240, 320},  // One core.
-      {200, 100, 60, 50, 50, 60, 120, 160},    // Two cores.
-      {100, 50, 50, 50, 50, 50, 60, 80},       // Four cores.
-      {50, 50, 50, 50, 50, 50, 50, 50}         // Eight cores.
-  };
+  const auto kTestResults =
+      std::to_array<std::array<const int, std::size(kTestInputs)>>({
+          {400, 200, 120, 80, 50, 120, 240, 320},  // One core.
+          {200, 100, 60, 50, 50, 60, 120, 160},    // Two cores.
+          {100, 50, 50, 50, 50, 50, 60, 80},       // Four cores.
+          {50, 50, 50, 50, 50, 50, 50, 50},        // Eight cores.
+      });
 
   for (size_t i = 0; i < std::size(kTestResults); ++i) {
     for (size_t j = 0; j < std::size(kTestInputs); ++j) {
@@ -104,12 +107,13 @@ TEST_F(CaptureSchedulerTest, SingleSampleSameTimes) {
 }
 
 TEST_F(CaptureSchedulerTest, SingleSampleDifferentTimes) {
-  const int kTestResults[][std::size(kTestInputs)] = {
-      {360, 220, 120, 60, 60, 120, 220, 360},  // One core.
-      {180, 110, 60, 50, 50, 60, 110, 180},    // Two cores.
-      {90, 55, 50, 50, 50, 50, 55, 90},        // Four cores.
-      {50, 50, 50, 50, 50, 50, 50, 50}         // Eight cores.
-  };
+  const auto kTestResults =
+      std::to_array<std::array<const int, std::size(kTestInputs)>>({
+          {360, 220, 120, 60, 60, 120, 220, 360},  // One core.
+          {180, 110, 60, 50, 50, 60, 110, 180},    // Two cores.
+          {90, 55, 50, 50, 50, 50, 55, 90},        // Four cores.
+          {50, 50, 50, 50, 50, 50, 50, 50},        // Eight cores.
+      });
 
   for (size_t i = 0; i < std::size(kTestResults); ++i) {
     for (size_t j = 0; j < std::size(kTestInputs); ++j) {
@@ -125,12 +129,13 @@ TEST_F(CaptureSchedulerTest, SingleSampleDifferentTimes) {
 }
 
 TEST_F(CaptureSchedulerTest, RollingAverageDifferentTimes) {
-  const double kTestResults[][std::size(kTestInputs)] = {
-      {360, 290, 233.333, 133.333, 80, 80, 133.333, 233.333},  // One core.
-      {180, 145, 116.666, 66.666, 50, 50, 66.666, 116.666},    // Two cores.
-      {90, 72.5, 58.333, 50, 50, 50, 50, 58.333},              // Four cores.
-      {50, 50, 50, 50, 50, 50, 50, 50}                         // Eight cores.
-  };
+  const auto kTestResults =
+      std::to_array<std::array<const double, std::size(kTestInputs)>>({
+          {360, 290, 233.333, 133.333, 80, 80, 133.333, 233.333},  // One core.
+          {180, 145, 116.666, 66.666, 50, 50, 66.666, 116.666},    // Two cores.
+          {90, 72.5, 58.333, 50, 50, 50, 50, 58.333},  // Four cores.
+          {50, 50, 50, 50, 50, 50, 50, 50},            // Eight cores.
+      });
 
   for (size_t i = 0; i < std::size(kTestResults); ++i) {
     InitScheduler();

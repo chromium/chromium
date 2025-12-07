@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/audio/win/audio_low_latency_output_win.h"
 
 #include <windows.h>
@@ -17,6 +12,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -39,6 +35,8 @@
 #include "media/audio/mock_audio_source_callback.h"
 #include "media/audio/test_audio_thread.h"
 #include "media/audio/win/core_audio_util_win.h"
+#include "media/base/audio_bus.h"
+#include "media/base/audio_sample_types.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/seekable_buffer.h"
 #include "media/base/test_data_util.h"
@@ -96,7 +94,7 @@ class ReadFromFileAudioSource : public AudioOutputStream::AudioSourceCallback {
     // Write the array which contains delta times to a text file.
     size_t elements_written = 0;
     while (elements_written < elements_to_write_) {
-      fprintf(text_file_.get(), "%d\n", delta_times_[elements_written]);
+      fprintf(text_file_.get(), "%d\n", UNSAFE_TODO(delta_times_[elements_written]));
       ++elements_written;
     }
 
@@ -114,11 +112,11 @@ class ReadFromFileAudioSource : public AudioOutputStream::AudioSourceCallback {
     const int diff = (now_time - previous_call_time_).InMilliseconds();
     previous_call_time_ = now_time;
     if (elements_to_write_ < kMaxDeltaSamples) {
-      delta_times_[elements_to_write_] = diff;
+      UNSAFE_TODO(delta_times_[elements_to_write_]) = diff;
       ++elements_to_write_;
     }
 
-    int max_size = dest->frames() * dest->channels() * kBitsPerSample / 8;
+    size_t max_size = dest->frames() * dest->channels() * kBitsPerSample / 8;
 
     // Use samples read from a data file and fill up the audio buffer
     // provided to us in the callback.
@@ -128,7 +126,9 @@ class ReadFromFileAudioSource : public AudioOutputStream::AudioSourceCallback {
     if (max_size) {
       static_assert(kBitsPerSample == 16, "FromInterleaved expects 2 bytes.");
       dest->FromInterleaved<SignedInt16SampleTypeTraits>(
-          reinterpret_cast<const int16_t*>(file_->data() + pos_), frames);
+          reinterpret_cast<const int16_t*>(
+              base::span(*file_).subspan(pos_).data()),
+          frames);
       pos_ += max_size;
     }
     return frames;
@@ -136,12 +136,12 @@ class ReadFromFileAudioSource : public AudioOutputStream::AudioSourceCallback {
 
   void OnError(ErrorType type) override {}
 
-  int file_size() { return base::checked_cast<int>(file_->size()); }
+  size_t file_size() { return base::checked_cast<int>(file_->size()); }
 
  private:
   scoped_refptr<DecoderBuffer> file_;
   std::unique_ptr<int[]> delta_times_;
-  int pos_;
+  size_t pos_;
   base::TimeTicks previous_call_time_;
   raw_ptr<FILE> text_file_;
   size_t elements_to_write_;

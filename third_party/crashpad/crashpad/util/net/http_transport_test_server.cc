@@ -96,7 +96,7 @@ int HttpTransportTestServerMain(int argc, char* argv[]) {
                    std::string boundary;
                    httplib::detail::parse_multipart_boundary(
                        req.get_header_value("Content-Type"), boundary);
-                   for (const auto& part : req.files) {
+                   for (const auto& part : req.form.fields) {
                      to_stdout += "--" + boundary + "\r\n";
                      to_stdout += "Content-Disposition: form-data; name=\"" +
                                   part.first + "\"\r\n\r\n";

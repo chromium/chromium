@@ -16,13 +16,14 @@
 #include "base/values.h"
 #include "components/crash/core/browser/crashes_ui_util.h"
 #include "components/crash/core/common/reporter_running_ios.h"
-#include "components/grit/dev_ui_components_resources.h"
+#include "components/grit/crashes_resources.h"
+#include "components/grit/crashes_resources_map.h"
 #include "components/strings/grit/components_branded_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/version_info/version_info.h"
 #include "ios/chrome/browser/crash_report/model/crash_upload_list.h"
 #include "ios/chrome/browser/metrics/model/ios_chrome_metrics_service_accessor.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #include "ios/chrome/grit/ios_branded_strings.h"
 #include "ios/web/public/webui/web_ui_ios.h"
@@ -35,25 +36,21 @@ web::WebUIIOSDataSource* CreateCrashesUIHTMLSource() {
   web::WebUIIOSDataSource* source =
       web::WebUIIOSDataSource::Create(kChromeUICrashesHost);
 
-  for (size_t i = 0; i < crash_reporter::kCrashesUILocalizedStringsCount; ++i) {
-    source->AddLocalizedString(
-        crash_reporter::kCrashesUILocalizedStrings[i].name,
-        crash_reporter::kCrashesUILocalizedStrings[i].resource_id);
+  for (const auto& [name, resource_id] :
+       crash_reporter::kCrashesUILocalizedStrings) {
+    source->AddLocalizedString(name, resource_id);
   }
 
   source->AddLocalizedString(crash_reporter::kCrashesUIShortProductName,
                              IDS_IOS_SHORT_PRODUCT_NAME);
 
   source->UseStringsJs();
-  source->AddResourcePath(crash_reporter::kCrashesUICrashesJS,
-                          IDR_CRASH_CRASHES_JS);
-  source->AddResourcePath(crash_reporter::kCrashesUICrashesCSS,
-                          IDR_CRASH_CRASHES_CSS);
-  source->AddResourcePath(crash_reporter::kCrashesUISadTabSVG,
-                          IDR_CRASH_SADTAB_SVG);
-  source->SetDefaultResource(IDR_CRASH_CRASHES_HTML);
+  source->AddResourcePaths(kCrashesResources);
+  source->AddResourcePath("", IDR_CRASHES_CRASHES_HTML);
   return source;
 }
+
+}  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -73,7 +70,6 @@ class CrashesDOMHandler : public web::WebUIIOSMessageHandler {
 
   // WebUIMessageHandler implementation.
   void RegisterMessages() override;
-
 
  private:
   // Crash UploadList callback.
@@ -118,8 +114,9 @@ void CrashesDOMHandler::RegisterMessages() {
 void CrashesDOMHandler::HandleRequestCrashes(const base::Value::List& args) {
   if (first_load_) {
     first_load_ = false;
-    if (list_available_)
+    if (list_available_) {
       UpdateUI();
+    }
   } else {
     list_available_ = false;
     upload_list_->Load(base::BindOnce(&CrashesDOMHandler::OnUploadListAvailable,
@@ -134,22 +131,24 @@ void CrashesDOMHandler::HandleRequestSingleCrashUpload(
     return;
   }
 
-  std::string local_id = args[0].GetString();
+  const std::string& local_id = args[0].GetString();
   upload_list_->RequestSingleUploadAsync(local_id);
 }
 
 void CrashesDOMHandler::OnUploadListAvailable() {
   list_available_ = true;
-  if (!first_load_)
+  if (!first_load_) {
     UpdateUI();
+  }
 }
 
 void CrashesDOMHandler::UpdateUI() {
   bool crash_reporting_enabled =
       IOSChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled();
   base::Value::List crash_list;
-  if (crash_reporting_enabled)
+  if (crash_reporting_enabled) {
     crash_reporter::UploadListToValue(upload_list_.get(), &crash_list);
+  }
 
   base::Value::Dict result;
   result.Set("enabled", crash_reporting_enabled);
@@ -166,8 +165,6 @@ void CrashesDOMHandler::UpdateUI() {
   web_ui()->CallJavascriptFunction("cr.webUIListenerCallback", args);
 }
 
-}  // namespace
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 // CrashesUI
@@ -179,6 +176,6 @@ CrashesUI::CrashesUI(web::WebUIIOS* web_ui, const std::string& host)
   web_ui->AddMessageHandler(std::make_unique<CrashesDOMHandler>());
 
   // Set up the chrome://crashes/ source.
-  web::WebUIIOSDataSource::Add(ChromeBrowserState::FromWebUIIOS(web_ui),
+  web::WebUIIOSDataSource::Add(ProfileIOS::FromWebUIIOS(web_ui),
                                CreateCrashesUIHTMLSource());
 }

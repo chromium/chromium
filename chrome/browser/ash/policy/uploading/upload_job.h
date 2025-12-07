@@ -9,8 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "url/gurl.h"
-
 namespace policy {
 
 class DataSegment;
@@ -51,7 +49,7 @@ class UploadJob {
 
   UploadJob& operator=(const UploadJob&) = delete;
 
-  virtual ~UploadJob() {}
+  virtual ~UploadJob() = default;
 
   // Adds one data segment to the UploadJob. A DataSegment corresponds
   // to one "Content-Disposition" in the "multipart" request. As per RFC 2388,

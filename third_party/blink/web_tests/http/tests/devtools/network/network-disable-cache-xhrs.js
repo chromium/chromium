@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
+import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
+
 (async function() {
   TestRunner.addResult(`Tests disabling cache from inspector.\n`);
   await TestRunner.showPanel('network');
@@ -17,7 +19,7 @@ import {NetworkTestRunner} from 'network_test_runner';
   }
 
   function step2() {
-    TestRunner.NetworkAgent.setCacheDisabled(true).then(step3);
+    TestRunner.NetworkAgent.invoke_setCacheDisabled({cacheDisabled: true}).then(step3);
   }
 
   function step3() {
@@ -32,16 +34,16 @@ import {NetworkTestRunner} from 'network_test_runner';
     var request2 = requests[requests.length - 2];
     var request3 = requests[requests.length - 1];
 
-    var request1Content = await request1.requestContent();
-    var request2Content = await request2.requestContent();
-    var request3Content = await request3.requestContent();
+    var request1Content = await request1.requestContentData().then(TextUtils.ContentData.ContentData.asDeferredContent);
+    var request2Content = await request2.requestContentData().then(TextUtils.ContentData.ContentData.asDeferredContent);
+    var request3Content = await request3.requestContentData().then(TextUtils.ContentData.ContentData.asDeferredContent);
 
     TestRunner.addResult(request1.url());
     TestRunner.addResult(request2.url());
     TestRunner.addResult(request3.url());
     TestRunner.assertTrue(request1Content.content === request2Content.content, 'First and second resources are equal');
     TestRunner.assertTrue(request2Content.content !== request3Content.content, 'Second and third resources differ');
-    TestRunner.NetworkAgent.setCacheDisabled(false).then(step5);
+    TestRunner.NetworkAgent.invoke_setCacheDisabled({cacheDisabled: false}).then(step5);
   }
 
   function step5() {

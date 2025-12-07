@@ -24,8 +24,9 @@ class BrowserContextHelperDelegateImpl : public BrowserContextHelper::Delegate {
       const AccountId& account_id) override;
   content::BrowserContext* DeprecatedGetBrowserContext(
       const base::FilePath& path) override;
-  content::BrowserContext* GetOrCreatePrimaryOTRBrowserContext(
-      content::BrowserContext* browser_context) override;
+  content::BrowserContext* GetPrimaryOTRBrowserContext(
+      content::BrowserContext* browser_context,
+      bool create_if_needed) override;
   content::BrowserContext* GetOriginalBrowserContext(
       content::BrowserContext* browser_context) override;
   const base::FilePath* GetUserDataDir() override;

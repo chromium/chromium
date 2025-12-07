@@ -20,5 +20,5 @@ layer at (0,0)
           LayoutText {#text} at (2,2) size 96x16
             text run at (2,2) width 96: "a          b"
 layer at (8,100)
-  LayoutBlockFlow {HR} at (0,92) size 784x2 [border: (1px inset #EEEEEE) (1px inset #EEEEEE) (1px inset #EEEEEE) (1px inset #EEEEEE)]
+  LayoutBlockFlow {HR} at (0,92) size 784x2 [color=#808080] [border: (1px inset #EEEEEE) (1px inset #EEEEEE) (1px inset #EEEEEE) (1px inset #EEEEEE)]
 caret: position 3 of child 0 {#text} of child 1 {PRE} of child 7 {DIV} of body

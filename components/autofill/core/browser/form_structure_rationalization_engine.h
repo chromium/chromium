@@ -10,14 +10,11 @@
 #include <string_view>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/field_types.h"
-
-namespace base {
-struct Feature;
-}
 
 namespace autofill {
 class LogManager;
@@ -79,6 +76,9 @@ enum class FieldLocation {
   // This specifies a field that needs to succeed the trigger field in the
   // form.
   kSuccessor,
+  // This specifies a filed that is present anywhere in the form apart from the
+  // trigger field.
+  kAnywhere,
 };
 
 // Container class for conditions that all need to be true for a field to be
@@ -197,7 +197,7 @@ bool IsFieldConditionFulfilledIgnoringLocation(ParsingContext& context,
 // `condition.location`. Returns std::nullopt if no such field exists.
 std::optional<size_t> FindFieldMeetingCondition(
     ParsingContext& context,
-    const std::vector<std::unique_ptr<AutofillField>>& fields,
+    base::span<const std::unique_ptr<AutofillField>> fields,
     size_t start_index,
     const FieldCondition& condition);
 
@@ -208,7 +208,7 @@ std::optional<size_t> FindFieldMeetingCondition(
 void ApplyRuleIfApplicable(
     ParsingContext& context,
     const RationalizationRule& rule,
-    const std::vector<std::unique_ptr<AutofillField>>& fields,
+    base::span<const std::unique_ptr<AutofillField>> fields,
     LogManager* log_manager = nullptr);
 
 }  // namespace internal
@@ -219,7 +219,7 @@ void ApplyRuleIfApplicable(
 // constness is inherited from the calling sites.
 void ApplyRationalizationEngineRules(
     ParsingContext& context,
-    const std::vector<std::unique_ptr<AutofillField>>& fields,
+    base::span<const std::unique_ptr<AutofillField>> fields,
     LogManager* log_manager = nullptr);
 
 }  // namespace autofill::rationalization

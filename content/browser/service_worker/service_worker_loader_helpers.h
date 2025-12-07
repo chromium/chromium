@@ -6,7 +6,9 @@
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_LOADER_HELPERS_H_
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/common/content_export.h"
@@ -77,7 +79,7 @@ network::ResourceRequest CreateRequestForServiceWorkerScript(
 CONTENT_EXPORT bool IsPathRestrictionSatisfied(
     const GURL& scope,
     const GURL& script_url,
-    const std::string* service_worker_allowed_header_value,
+    const std::optional<std::string_view>& service_worker_allowed_header_value,
     std::string* error_message);
 
 // Same as above IsPathRestrictionSatisfied, but without considering
@@ -90,6 +92,21 @@ CONTENT_EXPORT bool IsPathRestrictionSatisfiedWithoutHeader(
 // Returns the set of hash strings of fetch handlers which can be bypassed.
 const base::flat_set<std::string> FetchHandlerBypassedHashStrings();
 
+// Check if `client_url` is eligible for Synsthtic Response.
+// Exposes one method which accepts `allowed_url` for testing.
+bool IsEligibleForSyntheticResponse(BrowserContext* browser_context,
+                                    const GURL& client_url);
+CONTENT_EXPORT bool IsEligibleForSyntheticResponseForTesting(  // IN-TEST
+    BrowserContext* browser_context,
+    const GURL& client_url,
+    const std::string& allowed_url,
+    const std::string& denied_url_params);
+bool IsEligibleForSyntheticResponseInternal(
+    BrowserContext* browser_context,
+    const GURL& client_url,
+    const std::string& allowed_url,
+    const base::flat_set<std::string>& denied_url_params);
+bool IsSyntheticResponseDryRunModeEnabled();
 }  // namespace service_worker_loader_helpers
 
 }  // namespace content

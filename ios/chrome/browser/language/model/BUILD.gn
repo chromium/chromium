@@ -13,15 +13,16 @@ source_set("model") {
   ]
   deps = [
     "//base",
+    "//components/application_locale_storage",
     "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//components/language/core/browser",
     "//components/language/core/common",
     "//components/language/core/language_model",
     "//components/pref_registry",
     "//components/prefs",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
   ]
 }
 
@@ -37,10 +38,10 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/language/core/browser",
     "//components/language/core/language_model",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/web",
     "//ios/web/public/test",
-    "//testing/gmock:gmock",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }

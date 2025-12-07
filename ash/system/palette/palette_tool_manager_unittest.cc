@@ -33,10 +33,7 @@ class TestTool : public PaletteTool {
 
  private:
   // PaletteTool:
-  views::View* CreateView() override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
+  views::View* CreateView() override { NOTREACHED(); }
   void OnViewDestroyed() override { FAIL(); }
 
   PaletteGroup group_;
@@ -61,13 +58,7 @@ class PaletteToolManagerTest : public ::testing::Test,
   void HidePalette() override {}
   void HidePaletteImmediately() override {}
   void OnActiveToolChanged() override { ++tool_changed_count_; }
-  aura::Window* GetWindow() override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
-  void RecordPaletteOptionsUsage(PaletteTrayOptions option,
-                                 PaletteInvocationMethod method) override {}
-  void RecordPaletteModeCancellation(PaletteModeCancelType type) override {}
+  aura::Window* GetWindow() override { NOTREACHED(); }
 
   // PaletteTool::Delegate:
   void EnableTool(PaletteToolId tool_id) override {}

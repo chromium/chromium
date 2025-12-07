@@ -20,11 +20,15 @@
 
 #if BUILDFLAG(ENABLE_VULKAN)
 #include <vulkan/vulkan_core.h>
-#endif
+#endif  // BUILDFLAG(ENABLE_VULKAN)
+
+#if BUILDFLAG(IS_WIN)
+#include <dxgi.h>
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace skgpu::graphite {
 class TextureInfo;
-struct DawnTextureInfo;
+class DawnTextureInfo;
 }
 
 namespace gpu {
@@ -49,12 +53,10 @@ struct GLFormatDesc {
 // Metal) type/format information for a given SharedImageFormat. These functions
 // should ideally only be called from the GPU service and viz.
 
-// BufferFormat is being transitioned out of SharedImage code (to use
-// SharedImageFormat instead). Refrain from using this function or preferably
-// use with single planar SharedImageFormats. Returns BufferFormat for given
-// `format`.
-GPU_GLES2_EXPORT gfx::BufferFormat ToBufferFormat(
-    viz::SharedImageFormat format);
+// Returns true if the buffer handle `size` is valid for `format`, checking for
+// odd size support.
+GPU_GLES2_EXPORT bool IsSizeForBufferHandleValid(const gfx::Size& size,
+                                                 viz::SharedImageFormat format);
 
 // Returns SkYUVAInfo::PlaneConfig equivalent of
 // SharedImageFormat::PlaneConfig.
@@ -131,6 +133,11 @@ GPU_GLES2_EXPORT VkFormat ToVkFormat(viz::SharedImageFormat format,
                                      int plane_index);
 #endif
 
+#if BUILDFLAG(IS_WIN)
+// Formats supported with no GpuMemoryBufferHandle.
+GPU_GLES2_EXPORT DXGI_FORMAT ToDXGIFormat(viz::SharedImageFormat format);
+#endif  // BUILDFLAG(IS_WIN)
+
 // Following functions return the appropriate Dawn format for a
 // SharedImageFormat. Returns wgpu::TextureFormat format for given `format`.
 // Note that this will return a multi-planar Dawn format for multi-planar
@@ -201,6 +208,11 @@ GPU_GLES2_EXPORT skgpu::graphite::TextureInfo GraphitePromiseTextureInfo(
     std::optional<VulkanYCbCrInfo> ycbcr_info,
     int plane_index = 0,
     bool mipmapped = false);
+
+#if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(SKIA_USE_DAWN)
+GPU_GLES2_EXPORT wgpu::YCbCrVkDescriptor ToDawnYCbCrVkDescriptor(
+    const VulkanYCbCrInfo& ycbcr_info);
+#endif
 
 #if BUILDFLAG(SKIA_USE_DAWN)
 GPU_GLES2_EXPORT skgpu::graphite::DawnTextureInfo DawnBackendTextureInfo(

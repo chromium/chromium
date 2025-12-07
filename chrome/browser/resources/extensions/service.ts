@@ -36,6 +36,10 @@ export interface ServiceInterface extends ActivityLogDelegate,
   getExtensionSize(id: string): Promise<string>;
   dismissSafetyHubExtensionsMenuNotification(): void;
   dismissMv2DeprecationNotice(): void;
+  shouldIgnoreUpdate(
+      extensionId: string,
+      eventType: chrome.developerPrivate.EventType): boolean;
+  showSiteSettings(extensionId: string): void;
 }
 
 export class Service implements ServiceInterface {
@@ -71,7 +75,21 @@ export class Service implements ServiceInterface {
   }
 
   getExtensionSize(id: string) {
-    return chrome.developerPrivate.getExtensionSize(id);
+    return chrome.developerPrivate.getExtensionSize(id).catch(error => {
+      // The extension is no longer in the system so we should no longer
+      // remain on this page. It's safe to catch this error here because
+      // `ExtensionsManagerElement` should navigate back to the LIST page if
+      // an extension for an extension specific page (such as this one) is
+      // uninstalled.
+      // For this API call, check that this should be the only error message
+      // that could be returned.
+      if (error.message !==
+          `No such extension found for call to ` +
+              `'developerPrivate.getExtensionSize'.`) {
+        throw error;
+      }
+      return '';
+    });
   }
 
   addRuntimeHostPermission(id: string, host: string): Promise<void> {
@@ -204,13 +222,26 @@ export class Service implements ServiceInterface {
     chrome.metricsPrivate.recordUserAction(
         isEnabled ? 'Extensions.ExtensionEnabled' :
                     'Extensions.ExtensionDisabled');
-    chrome.management.setEnabled(id, isEnabled);
+    return chrome.management.setEnabled(id, isEnabled)
+        .catch(
+            _ => {
+                // The `setEnabled` call can reasonably fail for a number of
+                // reasons, including that the user chose to deny a re-enable
+                // dialog. Silently ignore these errors.
+            });
   }
 
   setItemAllowedIncognito(id: string, isAllowedIncognito: boolean) {
     chrome.developerPrivate.updateExtensionConfiguration({
       extensionId: id,
       incognitoAccess: isAllowedIncognito,
+    });
+  }
+
+  setItemAllowedUserScripts(id: string, isAllowedUserScripts: boolean) {
+    chrome.developerPrivate.updateExtensionConfiguration({
+      extensionId: id,
+      userScriptsAccess: isAllowedUserScripts,
     });
   }
 
@@ -254,6 +285,27 @@ export class Service implements ServiceInterface {
     });
   }
 
+  openDevToolsForError(error: chrome.developerPrivate.RuntimeError): void {
+    const devToolsProperties: chrome.developerPrivate.OpenDevToolsProperties = {
+      extensionId: error.extensionId,
+      renderProcessId: error.renderProcessId,
+      renderViewId: error.renderViewId,
+      incognito: error.fromIncognito,
+      isServiceWorker: error.isServiceWorker,
+    };
+
+    // Get stack trace information if available to open the correct file and
+    // line.
+    const stackFrame = error.stackTrace && error.stackTrace[0];
+    if (stackFrame) {
+      devToolsProperties.url = stackFrame.url;
+      devToolsProperties.lineNumber = stackFrame.lineNumber;
+      devToolsProperties.columnNumber = stackFrame.columnNumber;
+    }
+
+    chrome.developerPrivate.openDevTools(devToolsProperties);
+  }
+
   openUrl(url: string): void {
     window.open(url);
   }
@@ -269,12 +321,26 @@ export class Service implements ServiceInterface {
   }
 
   repairItem(id: string): void {
-    chrome.developerPrivate.repairExtension(id);
+    chrome.developerPrivate.repairExtension(id).catch(
+        _ => {
+            // This can legitimately fail (e.g. if a reinstall is already
+            // in progress). Ignore the error to avoid crashing the browser,
+            // since WebUI errors are treated as crashes.
+        });
   }
 
   showItemOptionsPage(extension: chrome.developerPrivate.ExtensionInfo): void {
     assert(extension && extension.optionsPage);
-    if (extension.optionsPage!.openInTab) {
+    // We can't handle embedded options on android because guest_view is not
+    // supported.
+    // <if expr="is_android">
+    const openInTab = true;
+    // </if>
+    // <if expr="not is_android">
+    const openInTab = extension.optionsPage.openInTab;
+    // </if>
+
+    if (openInTab) {
       chrome.developerPrivate.showOptions(extension.id);
     } else {
       navigation.navigateTo({
@@ -512,6 +578,14 @@ export class Service implements ServiceInterface {
 
   dismissMv2DeprecationNoticeForExtension(id: string): Promise<void> {
     return chrome.developerPrivate.dismissMv2DeprecationNoticeForExtension(id);
+  }
+
+  uploadItemToAccount(id: string): Promise<boolean> {
+    return chrome.developerPrivate.uploadExtensionToAccount(id);
+  }
+
+  showSiteSettings(extensionId: string) {
+    chrome.developerPrivate.showSiteSettings(extensionId);
   }
 
   static getInstance(): ServiceInterface {

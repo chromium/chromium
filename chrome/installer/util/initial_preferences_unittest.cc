@@ -4,11 +4,6 @@
 //
 // Unit tests for initial preferences related methods.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/installer/util/initial_preferences.h"
 
 #include <stddef.h>
@@ -76,27 +71,25 @@ TEST_F(InitialPreferencesTest, NoFileToParse) {
 }
 
 TEST_F(InitialPreferencesTest, ParseDistroParams) {
-  const char text[] =
-      "{ \n"
-      "  \"distribution\": { \n"
-      "     \"show_welcome_page\": true,\n"
-      "     \"import_bookmarks_from_file\": \"c:\\\\foo\",\n"
-      "     \"do_not_create_any_shortcuts\": true,\n"
-      "     \"do_not_create_desktop_shortcut\": true,\n"
-      "     \"do_not_create_quick_launch_shortcut\": true,\n"
-      "     \"do_not_create_taskbar_shortcut\": true,\n"
-      "     \"do_not_launch_chrome\": true,\n"
-      "     \"make_chrome_default\": true,\n"
-      "     \"make_chrome_default_for_user\": true,\n"
-      "     \"program_files_dir\": \"c:\\\\bar\",\n"
-      "     \"system_level\": true,\n"
-      "     \"verbose_logging\": true,\n"
-      "     \"require_eula\": true\n"
-      "  },\n"
-      "  \"blah\": {\n"
-      "     \"show_welcome_page\": false\n"
-      "  }\n"
-      "} \n";
+  const char text[] = R"({
+    "distribution": {
+      "show_welcome_page": true,
+      "import_bookmarks_from_file": "c:\\foo",
+      "do_not_create_any_shortcuts": true,
+      "do_not_create_desktop_shortcut": true,
+      "do_not_create_quick_launch_shortcut": true,
+      "do_not_create_taskbar_shortcut": true,
+      "do_not_launch_chrome": true,
+      "make_chrome_default_for_user": true,
+      "program_files_dir": "c:\\bar",
+      "system_level": true,
+      "verbose_logging": true,
+      "require_eula": true
+    },
+    "blah": {
+      "show_welcome_page": false
+    }
+  })";
 
   EXPECT_TRUE(base::WriteFile(prefs_file(), text));
   installer::InitialPreferences prefs(prefs_file());
@@ -108,17 +101,16 @@ TEST_F(InitialPreferencesTest, ParseDistroParams) {
       installer::initial_preferences::kDoNotCreateQuickLaunchShortcut,
       installer::initial_preferences::kDoNotCreateTaskbarShortcut,
       installer::initial_preferences::kDoNotLaunchChrome,
-      installer::initial_preferences::kMakeChromeDefault,
       installer::initial_preferences::kMakeChromeDefaultForUser,
       installer::initial_preferences::kSystemLevel,
       installer::initial_preferences::kVerboseLogging,
       installer::initial_preferences::kRequireEula,
   };
 
-  for (size_t i = 0; i < std::size(expected_true); ++i) {
+  for (const char* pref_name : expected_true) {
     bool value = false;
-    EXPECT_TRUE(prefs.GetBool(expected_true[i], &value));
-    EXPECT_TRUE(value) << expected_true[i];
+    EXPECT_TRUE(prefs.GetBool(pref_name, &value));
+    EXPECT_TRUE(value) << pref_name;
   }
 
   std::string str_value;
@@ -134,15 +126,14 @@ TEST_F(InitialPreferencesTest, ParseDistroParams) {
 }
 
 TEST_F(InitialPreferencesTest, ParseMissingDistroParams) {
-  const char text[] =
-      "{ \n"
-      "  \"distribution\": { \n"
-      "     \"import_bookmarks_from_file\": \"\",\n"
-      "     \"do_not_create_desktop_shortcut\": true,\n"
-      "     \"do_not_create_quick_launch_shortcut\": true,\n"
-      "     \"do_not_launch_chrome\": false\n"
-      "  }\n"
-      "} \n";
+  const char text[] = R"({
+    "distribution": {
+      "import_bookmarks_from_file": "",
+      "do_not_create_desktop_shortcut": true,
+      "do_not_create_quick_launch_shortcut": true,
+      "do_not_launch_chrome": false
+    }
+  })";
 
   EXPECT_TRUE(base::WriteFile(prefs_file(), text));
   installer::InitialPreferences prefs(prefs_file());
@@ -155,19 +146,18 @@ TEST_F(InitialPreferencesTest, ParseMissingDistroParams) {
   };
 
   bool value = false;
-  for (size_t i = 0; i < std::size(expected_bool); ++i) {
-    EXPECT_TRUE(prefs.GetBool(expected_bool[i].name, &value));
-    EXPECT_EQ(value, expected_bool[i].expected_value) << expected_bool[i].name;
+  for (const auto& expected : expected_bool) {
+    EXPECT_TRUE(prefs.GetBool(expected.name, &value));
+    EXPECT_EQ(value, expected.expected_value) << expected.name;
   }
 
   const char* const missing_bools[] = {
       installer::initial_preferences::kDoNotRegisterForUpdateLaunch,
-      installer::initial_preferences::kMakeChromeDefault,
       installer::initial_preferences::kMakeChromeDefaultForUser,
   };
 
-  for (size_t i = 0; i < std::size(missing_bools); ++i) {
-    EXPECT_FALSE(prefs.GetBool(missing_bools[i], &value)) << missing_bools[i];
+  for (const char* missing_bool : missing_bools) {
+    EXPECT_FALSE(prefs.GetBool(missing_bool, &value)) << missing_bool;
   }
 
   std::string str_value;
@@ -177,17 +167,16 @@ TEST_F(InitialPreferencesTest, ParseMissingDistroParams) {
 }
 
 TEST_F(InitialPreferencesTest, FirstRunTabs) {
-  const char text[] =
-      "{ \n"
-      "  \"distribution\": { \n"
-      "     \"something here\": true\n"
-      "  },\n"
-      "  \"first_run_tabs\": [\n"
-      "     \"http://google.com/f1\",\n"
-      "     \"https://google.com/f2\",\n"
-      "     \"new_tab_page\"\n"
-      "  ]\n"
-      "} \n";
+  const char text[] = R"({
+    "distribution": {
+      "something here": true
+    },
+    "first_run_tabs": [
+      "http://google.com/f1",
+      "https://google.com/f2",
+      "new_tab_page"
+    ]
+  })";
 
   EXPECT_TRUE(base::WriteFile(prefs_file(), text));
   installer::InitialPreferences prefs(prefs_file());
@@ -199,32 +188,146 @@ TEST_F(InitialPreferencesTest, FirstRunTabs) {
   EXPECT_EQ("new_tab_page", tabs[2]);
 }
 
-// In this test instead of using our synthetic json file, we use an
-// actual test case from the extensions unittest. The hope here is that if
-// they change something in the manifest this test will break, but in
-// general it is expected the extension format to be backwards compatible.
-TEST(MasterPrefsExtension, ValidateExtensionJSON) {
-  base::FilePath prefs_path;
-  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &prefs_path));
-  prefs_path = prefs_path.AppendASCII("extensions")
-                   .AppendASCII("good")
-                   .AppendASCII("Preferences");
+// Test the parsing of the initial_extensions block from initial preferences.
+TEST_F(InitialPreferencesTest, ParseInitialExtensionsWithProviderName) {
+  constexpr char kTestExtensionId1[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+  constexpr char kTestExtensionId2[] = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
+  constexpr char kProvider[] = "GTest";
+  constexpr std::string_view kInitialExtensions = R"({
+    "initial_extensions": {
+      "provider_name": "GTest",
+      "list": [
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      ]
+    }
+  })";
 
-  installer::InitialPreferences prefs(prefs_path);
-  const base::Value::Dict* extensions = nullptr;
-  EXPECT_TRUE(prefs.GetExtensionsBlock(extensions));
-  EXPECT_TRUE(extensions->FindIntByDottedPath(
-      "behllobkkfkfnphdnhnkndlbkcpglgmj.location"));
-  EXPECT_TRUE(extensions->FindIntByDottedPath(
-      "behllobkkfkfnphdnhnkndlbkcpglgmj.state"));
-  EXPECT_TRUE(extensions->FindStringByDottedPath(
-      "behllobkkfkfnphdnhnkndlbkcpglgmj.path"));
-  EXPECT_TRUE(extensions->FindStringByDottedPath(
-      "behllobkkfkfnphdnhnkndlbkcpglgmj.manifest.key"));
-  EXPECT_TRUE(extensions->FindStringByDottedPath(
-      "behllobkkfkfnphdnhnkndlbkcpglgmj.manifest.name"));
-  EXPECT_TRUE(extensions->FindStringByDottedPath(
-      "behllobkkfkfnphdnhnkndlbkcpglgmj.manifest.version"));
+  ASSERT_TRUE(base::WriteFile(prefs_file(), kInitialExtensions));
+  installer::InitialPreferences prefs(prefs_file());
+  ASSERT_TRUE(prefs.read_from_file());
+
+  const base::Value::List* extensions = prefs.GetInitialExtensionsList();
+  ASSERT_NE(extensions, nullptr);
+  ASSERT_EQ(extensions->size(), 2u);
+
+  const std::string* id1 = (*extensions)[0].GetIfString();
+  ASSERT_NE(id1, nullptr);
+  EXPECT_EQ(*id1, kTestExtensionId1);
+
+  const std::string* id2 = (*extensions)[1].GetIfString();
+  ASSERT_NE(id2, nullptr);
+  EXPECT_EQ(*id2, kTestExtensionId2);
+
+  EXPECT_EQ(prefs.GetInitialExtensionsProviderName(), std::string(kProvider));
+}
+
+// Test parsing when initial_extensions.list exists but provider_name is
+// omitted.
+TEST_F(InitialPreferencesTest, ParseInitialExtensionsWithoutProviderName) {
+  constexpr char kTestExtensionId1[] = "cccccccccccccccccccccccccccccccc";
+  constexpr char kTestExtensionId2[] = "dddddddddddddddddddddddddddddddd";
+  constexpr std::string_view kInitialExtensions = R"({
+    "initial_extensions": {
+      "list": [
+        "cccccccccccccccccccccccccccccccc",
+        "dddddddddddddddddddddddddddddddd"
+      ]
+    }
+  })";
+
+  ASSERT_TRUE(base::WriteFile(prefs_file(), kInitialExtensions));
+  installer::InitialPreferences prefs(prefs_file());
+  ASSERT_TRUE(prefs.read_from_file());
+
+  const base::Value::List* extensions = prefs.GetInitialExtensionsList();
+  ASSERT_NE(extensions, nullptr);
+  ASSERT_EQ(extensions->size(), 2u);
+
+  const std::string* id1 = (*extensions)[0].GetIfString();
+  ASSERT_NE(id1, nullptr);
+  EXPECT_EQ(*id1, kTestExtensionId1);
+
+  const std::string* id2 = (*extensions)[1].GetIfString();
+  ASSERT_NE(id2, nullptr);
+  EXPECT_EQ(*id2, kTestExtensionId2);
+
+  // Provider name should be empty when not present.
+  EXPECT_TRUE(prefs.GetInitialExtensionsProviderName().empty());
+}
+
+// Test that GetInitialExtensionsList returns null when the block is absent.
+TEST_F(InitialPreferencesTest, MissingInitialExtensionsBlock) {
+  constexpr std::string_view kDistribution = R"({
+  "distribution": {
+      "verbose_logging": true
+    }
+  })";
+
+  ASSERT_TRUE(base::WriteFile(prefs_file(), kDistribution));
+  installer::InitialPreferences prefs(prefs_file());
+  ASSERT_TRUE(prefs.read_from_file());
+
+  const base::Value::List* extensions = prefs.GetInitialExtensionsList();
+  EXPECT_EQ(extensions, nullptr);
+}
+
+// Test the parsing of bookmarks block from initial preferences.
+TEST_F(InitialPreferencesTest, ValidateBookmarksJSON) {
+  constexpr char bookmarks_json_string[] = R"({
+    "bookmarks": {
+      "first_run_bookmarks": {
+        "children": [
+          {
+            "name": "ABC",
+            "type": "url",
+            "url": "https://google.com"
+          },
+          {
+            "name": "Folder1",
+            "type": "folder",
+            "children": [
+              {
+                "name": "ABC",
+                "type": "url",
+                "url": "https://google.com"
+              },
+              {
+                "name": "XYZ",
+                "type": "url",
+                "url": "https://facebook.com"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  })";
+  ASSERT_TRUE(base::WriteFile(prefs_file(), bookmarks_json_string));
+
+  installer::InitialPreferences prefs(prefs_file());
+
+  const base::Value::Dict* bookmarks = prefs.GetBookmarksBlock();
+  ASSERT_TRUE(bookmarks);
+
+  ASSERT_TRUE(bookmarks->FindDict("first_run_bookmarks"));
+
+  const base::Value::List* children =
+      bookmarks->FindListByDottedPath("first_run_bookmarks.children");
+  ASSERT_TRUE(children);
+  ASSERT_EQ(children->size(), 2u);
+
+  const base::Value::Dict* first_child = (*children)[0].GetIfDict();
+  ASSERT_TRUE(first_child);
+  EXPECT_EQ(*first_child->FindString("name"), "ABC");
+  EXPECT_EQ(*first_child->FindString("type"), "url");
+  EXPECT_EQ(*first_child->FindString("url"), "https://google.com");
+
+  const base::Value::Dict* second_child = (*children)[1].GetIfDict();
+  ASSERT_TRUE(second_child);
+  EXPECT_EQ(*second_child->FindString("name"), "Folder1");
+  EXPECT_EQ(*second_child->FindString("type"), "folder");
+  EXPECT_EQ(second_child->FindList("children")->size(), 2u);
 }
 
 // Test that we are parsing initial preferences correctly.
@@ -232,16 +335,15 @@ TEST_F(InitialPreferencesTest, GetInstallPreferencesTest) {
   // Create a temporary prefs file.
   base::FilePath prefs_file;
   ASSERT_TRUE(base::CreateTemporaryFile(&prefs_file));
-  const char text[] =
-      "{ \n"
-      "  \"distribution\": { \n"
-      "     \"do_not_create_desktop_shortcut\": false,\n"
-      "     \"do_not_create_quick_launch_shortcut\": false,\n"
-      "     \"do_not_launch_chrome\": true,\n"
-      "     \"system_level\": true,\n"
-      "     \"verbose_logging\": false\n"
-      "  }\n"
-      "} \n";
+  const char text[] = R"({
+    "distribution": {
+      "do_not_create_desktop_shortcut": false,
+      "do_not_create_quick_launch_shortcut": false,
+      "do_not_launch_chrome": true,
+      "system_level": true,
+      "verbose_logging": false
+    }
+  })";
   EXPECT_TRUE(base::WriteFile(prefs_file, text));
 
   // Make sure command line values override the values in initial preferences.
@@ -260,9 +362,9 @@ TEST_F(InitialPreferencesTest, GetInstallPreferencesTest) {
 
   // Now check that prefs got merged correctly.
   bool value = false;
-  for (size_t i = 0; i < std::size(expected_bool); ++i) {
-    EXPECT_TRUE(prefs.GetBool(expected_bool[i].name, &value));
-    EXPECT_EQ(value, expected_bool[i].expected_value) << expected_bool[i].name;
+  for (const auto& expected : expected_bool) {
+    EXPECT_TRUE(prefs.GetBool(expected.name, &value));
+    EXPECT_EQ(value, expected.expected_value) << expected.name;
   }
 
   // Delete temporary prefs file.
@@ -277,10 +379,9 @@ TEST_F(InitialPreferencesTest, GetInstallPreferencesTest) {
       {installer::initial_preferences::kDoNotLaunchChrome, true},
   };
 
-  for (size_t i = 0; i < std::size(expected_bool2); ++i) {
-    EXPECT_TRUE(prefs2.GetBool(expected_bool2[i].name, &value));
-    EXPECT_EQ(value, expected_bool2[i].expected_value)
-        << expected_bool2[i].name;
+  for (const auto& expected : expected_bool2) {
+    EXPECT_TRUE(prefs2.GetBool(expected.name, &value));
+    EXPECT_EQ(value, expected.expected_value) << expected.name;
   }
 
   EXPECT_FALSE(
@@ -300,17 +401,16 @@ TEST_F(InitialPreferencesTest, TestDefaultInstallConfig) {
 }
 
 TEST_F(InitialPreferencesTest, EnforceLegacyPreferences) {
-  static const char kLegacyPrefs[] =
-      "{"
-      "  \"distribution\": {"
-      "     \"create_all_shortcuts\": false,\n"
-      "     \"import_bookmarks\": true,\n"
-      "     \"import_history\": true,\n"
-      "     \"import_home_page\": true,\n"
-      "     \"import_search_engine\": true,\n"
-      "     \"ping_delay\": 40\n"
-      "  }"
-      "}";
+  static const char kLegacyPrefs[] = R"({
+    "distribution": {
+      "create_all_shortcuts": false,
+      "import_bookmarks": true,
+      "import_history": true,
+      "import_home_page": true,
+      "import_search_engine": true,
+      "ping_delay": 40
+    }
+  })";
 
   installer::InitialPreferences prefs(kLegacyPrefs);
 
@@ -349,12 +449,11 @@ TEST_F(InitialPreferencesTest, EnforceLegacyPreferences) {
 }
 
 TEST_F(InitialPreferencesTest, DontEnforceLegacyCreateAllShortcutsTrue) {
-  static const char kCreateAllShortcutsFalsePrefs[] =
-      "{"
-      "  \"distribution\": {"
-      "     \"create_all_shortcuts\": true"
-      "  }"
-      "}";
+  static const char kCreateAllShortcutsFalsePrefs[] = R"({
+    "distribution": {
+      "create_all_shortcuts": true
+    }
+  })";
 
   installer::InitialPreferences prefs(kCreateAllShortcutsFalsePrefs);
 
@@ -374,12 +473,11 @@ TEST_F(InitialPreferencesTest, DontEnforceLegacyCreateAllShortcutsTrue) {
 
 TEST_F(InitialPreferencesTest,
        DontEnforceLegacyCreateAllShortcutsNotSpecified) {
-  static const char kCreateAllShortcutsFalsePrefs[] =
-      "{"
-      "  \"distribution\": {"
-      "     \"some_other_pref\": true"
-      "  }"
-      "}";
+  static const char kCreateAllShortcutsFalsePrefs[] = R"({
+    "distribution": {
+      "some_other_pref": true
+    }
+  })";
 
   installer::InitialPreferences prefs(kCreateAllShortcutsFalsePrefs);
 

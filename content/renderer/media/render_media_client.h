@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/sequence_checker.h"
 #include "base/synchronization/waitable_event.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/decoder.h"
@@ -16,10 +17,11 @@
 #include "media/base/supported_video_decoder_config.h"
 #include "media/mojo/mojom/audio_decoder.mojom.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
-#include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
 #include "media/mojo/mojom/video_decoder.mojom.h"
+#include "media/mojo/mojom/video_encode_accelerator.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
+#include "services/viz/public/mojom/gpu.mojom.h"
 
 namespace content {
 
@@ -35,9 +37,11 @@ class RenderMediaClient : public media::MediaClient {
   static void Initialize();
 
   // MediaClient implementation.
-  bool IsSupportedAudioType(const media::AudioType& type) final;
-  bool IsSupportedVideoType(const media::VideoType& type) final;
+  bool IsDecoderSupportedAudioType(const media::AudioType& type) final;
+  bool IsDecoderSupportedVideoType(const media::VideoType& type) final;
+  bool IsEncoderSupportedVideoType(const media::VideoType& type) final;
   bool IsSupportedBitstreamAudioCodec(media::AudioCodec codec) final;
+  bool ShouldSuppressAudioTracks() final;
   std::optional<::media::AudioRendererAlgorithmParameters>
   GetAudioRendererAlgorithmParameters(
       media::AudioParameters audio_parameters) final;
@@ -47,15 +51,21 @@ class RenderMediaClient : public media::MediaClient {
   RenderMediaClient();
   ~RenderMediaClient() override;
 
+  void GetSupportedVideoEncoderConfigs();
+
   void OnInterfaceFactoryDisconnected();
+  void OnGpuDisconnected();
   void OnAudioDecoderDisconnected();
   void OnVideoDecoderDisconnected();
+  void OnVideoEncoderDisconnected();
 
   void OnGetSupportedAudioDecoderConfigs(
       const media::SupportedAudioDecoderConfigs& configs);
   void OnGetSupportedVideoDecoderConfigs(
       const media::SupportedVideoDecoderConfigs& configs,
       media::VideoDecoderType type);
+  void OnGetSupportedVideoEncoderConfigs(
+      const media::VideoEncodeAccelerator::SupportedProfiles& configs);
 
   const scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   SEQUENCE_CHECKER(main_thread_sequence_checker_);
@@ -64,23 +74,35 @@ class RenderMediaClient : public media::MediaClient {
   // retrieved from the |video_decoder_for_supported_profiles_|. May be waited
   // upon by any thread but the RenderThread since it's always signaled from the
   // RenderThread.
-  [[maybe_unused]] base::WaitableEvent did_video_update_;
+  [[maybe_unused]] base::WaitableEvent did_video_decoder_update_;
+
   // Used to indicate if optional audio codec support information has been
   // retrieved from the MojoAudioDecoder. May be waited upon by any thread but
   // the RenderThread since it's always signaled from the RenderThread.
-  [[maybe_unused]] base::WaitableEvent did_audio_update_;
+  [[maybe_unused]] base::WaitableEvent did_audio_decoder_update_;
+
+  // Used to indicate if optional video profile support information has been
+  // retrieved from the |video_encoder_for_supported_profiles_|.
+  [[maybe_unused]] bool did_video_encoder_update_ = false;
 
   [[maybe_unused]] mojo::Remote<media::mojom::InterfaceFactory>
       interface_factory_for_supported_profiles_
           GUARDED_BY_CONTEXT(main_thread_sequence_checker_);
-  [[maybe_unused]] absl::variant<
-      mojo::SharedRemote<media::mojom::VideoDecoder>,
-      mojo::SharedRemote<media::stable::mojom::StableVideoDecoder>>
+
+  [[maybe_unused]] mojo::Remote<viz::mojom::Gpu> gpu_for_supported_profiles_
+      GUARDED_BY_CONTEXT(main_thread_sequence_checker_);
+
+  [[maybe_unused]] mojo::SharedRemote<media::mojom::VideoDecoder>
       video_decoder_for_supported_profiles_
           GUARDED_BY_CONTEXT(main_thread_sequence_checker_);
 
   [[maybe_unused]] mojo::SharedRemote<media::mojom::AudioDecoder>
       audio_decoder_for_supported_configs_
+          GUARDED_BY_CONTEXT(main_thread_sequence_checker_);
+
+  [[maybe_unused]] mojo::SharedRemote<
+      media::mojom::VideoEncodeAcceleratorProvider>
+      video_encoder_for_supported_profiles_
           GUARDED_BY_CONTEXT(main_thread_sequence_checker_);
 };
 

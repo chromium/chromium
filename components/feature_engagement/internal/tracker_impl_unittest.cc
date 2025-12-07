@@ -10,7 +10,6 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -22,16 +21,17 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/feature_engagement/internal/availability_model_impl.h"
 #include "components/feature_engagement/internal/display_lock_controller.h"
 #include "components/feature_engagement/internal/editable_configuration.h"
 #include "components/feature_engagement/internal/event_model_impl.h"
 #include "components/feature_engagement/internal/feature_config_condition_validator.h"
 #include "components/feature_engagement/internal/in_memory_event_store.h"
+#include "components/feature_engagement/internal/multiple_event_model_provider.h"
 #include "components/feature_engagement/internal/never_availability_model.h"
 #include "components/feature_engagement/internal/never_event_storage_validator.h"
 #include "components/feature_engagement/internal/once_condition_validator.h"
+#include "components/feature_engagement/internal/single_event_model_provider.h"
 #include "components/feature_engagement/internal/stats.h"
 #include "components/feature_engagement/internal/test/test_time_provider.h"
 #include "components/feature_engagement/internal/time_provider.h"
@@ -64,6 +64,9 @@ BASE_FEATURE(kTrackerTestFeatureEvent,
 BASE_FEATURE(kTrackerTestFeatureSnooze,
              "test_snooze",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTrackerTestFeatureDeviceStorage,
+             "test_device_storage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kTrackerTestGroupOne,
              "test_group_one",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -73,7 +76,8 @@ void RegisterFeatureConfig(EditableConfiguration* configuration,
                            bool valid,
                            bool tracking_only,
                            bool snooze_params,
-                           const char* additional_event_name = nullptr) {
+                           const char* additional_event_name = nullptr,
+                           StorageType storage_type = StorageType::PROFILE) {
   FeatureConfig config;
   config.valid = valid;
   config.used.name = feature.name + std::string("_used");
@@ -94,6 +98,7 @@ void RegisterFeatureConfig(EditableConfiguration* configuration,
     event_config.storage = 7U;
     config.event_configs.emplace(std::move(event_config));
   }
+  config.storage_type = storage_type;
   configuration->SetConfiguration(&feature, config);
 }
 
@@ -280,7 +285,7 @@ class TestSessionController : public SessionController {
   bool should_reset_for_next_call_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class TestConfigurationProvider : public ConfigurationProvider {
  public:
   TestConfigurationProvider() = default;
@@ -353,6 +358,9 @@ class TrackerImplTest : public ::testing::Test {
         std::move(event_store),
         std::make_unique<StoreEverythingEventStorageValidator>());
 
+    auto event_model_provider =
+        std::make_unique<SingleEventModelProvider>(std::move(event_model));
+
     auto availability_model = std::make_unique<TestTrackerAvailabilityModel>();
     availability_model_ = availability_model.get();
     availability_model_->SetIsReady(ShouldAvailabilityStoreBeReady());
@@ -375,10 +383,11 @@ class TrackerImplTest : public ::testing::Test {
     session_controller_ = session_controller.get();
 
     tracker_ = std::make_unique<TrackerImpl>(
-        std::move(event_model), std::move(availability_model),
+        std::move(event_model_provider), std::move(availability_model),
         std::move(configuration), std::move(display_lock_controller),
         std::move(condition_validator), std::move(time_provider),
-        std::move(event_exporter), std::move(session_controller));
+        std::move(event_exporter), std::move(session_controller),
+        nullptr /* event_storage_migration */, nullptr /* pref_service */);
   }
 
   void VerifyEventTrigger(std::string event_name, uint32_t count) {
@@ -1213,7 +1222,7 @@ TEST_F(TrackerImplTest, TestWouldTriggerInspection) {
                    0);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(TrackerImplTest, TestWouldTriggerWithUpdatedConfig) {
   // Ensure all initialization is finished.
   StoringInitializedCallback callback;
@@ -1498,6 +1507,296 @@ TEST_F(OnceConditionTrackerImplTest, MultipleShownTimeLogged) {
                                            1);
   histogram_tester_.ExpectUniqueTimeSample(histogram_name_bar, base::Seconds(3),
                                            1);
+}
+
+class MultipleEventModelTrackerImplTest : public TrackerImplTest {
+ public:
+  MultipleEventModelTrackerImplTest() = default;
+
+  MultipleEventModelTrackerImplTest(const MultipleEventModelTrackerImplTest&) =
+      delete;
+  MultipleEventModelTrackerImplTest& operator=(
+      const MultipleEventModelTrackerImplTest&) = delete;
+
+  void SetUp() override {
+    std::unique_ptr<EditableConfiguration> configuration =
+        std::make_unique<EditableConfiguration>();
+    configuration_ = configuration.get();
+
+    RegisterFeatureConfig(configuration.get(), kTrackerTestFeatureFoo,
+                          true /* is_valid */, false /* tracking_only */,
+                          false /* snooze_params */);
+    RegisterFeatureConfig(configuration.get(), kTrackerTestFeatureBar,
+                          true /* is_valid */, false /* tracking_only */,
+                          false /* snooze_params */);
+    RegisterFeatureConfig(configuration.get(), kTrackerTestFeatureBaz,
+                          true /* is_valid */, true /* tracking_only */,
+                          false /* snooze_params */);
+    RegisterFeatureConfig(configuration.get(), kTrackerTestFeatureQux,
+                          false /* is_valid */, false /* tracking_only */,
+                          false /* snooze_params */);
+    RegisterFeatureConfig(configuration.get(), kTrackerTestFeatureEvent,
+                          /*valid=*/true, /*tracking_only=*/false,
+                          /*snooze_params=*/false, "test_event_event");
+    RegisterFeatureConfig(configuration.get(), kTrackerTestFeatureSnooze,
+                          true /* is_valid */, false /* tracking_only */,
+                          true /* snooze_params */);
+    RegisterFeatureConfig(configuration.get(), kTrackerTestFeatureDeviceStorage,
+                          true /* is_valid */, false /* tracking_only */,
+                          true /* snooze_params */,
+                          nullptr /* additional_event_name */,
+                          StorageType::DEVICE);
+    RegisterGroupConfig(configuration.get(), kTrackerTestGroupOne,
+                        true /* is_valid */);
+
+    std::unique_ptr<TestTrackerInMemoryEventStore> profile_event_store =
+        CreateEventStore();
+    profile_event_store_ = profile_event_store.get();
+
+    std::unique_ptr<TestTrackerInMemoryEventStore> device_event_store =
+        CreateEventStore();
+    device_event_store_ = device_event_store.get();
+
+    auto profile_event_model = std::make_unique<EventModelImpl>(
+        std::move(profile_event_store),
+        std::make_unique<StoreEverythingEventStorageValidator>());
+    profile_event_model_ = profile_event_model.get();
+
+    auto device_event_model = std::make_unique<EventModelImpl>(
+        std::move(device_event_store),
+        std::make_unique<StoreEverythingEventStorageValidator>());
+    device_event_model_ = device_event_model.get();
+
+    auto multiple_event_model_provider =
+        std::make_unique<MultipleEventModelProvider>(
+            std::move(profile_event_model), std::move(device_event_model));
+
+    auto availability_model = std::make_unique<TestTrackerAvailabilityModel>();
+    availability_model_ = availability_model.get();
+    availability_model_->SetIsReady(ShouldAvailabilityStoreBeReady());
+
+    auto display_lock_controller =
+        std::make_unique<TestTrackerDisplayLockController>();
+    display_lock_controller_ = display_lock_controller.get();
+
+    auto condition_validator = CreateConditionValidator();
+    condition_validator_ = condition_validator.get();
+
+    auto time_provider = std::make_unique<TestTimeProvider>();
+    time_provider_ = time_provider.get();
+    time_provider->SetCurrentDay(1u);
+
+    auto event_exporter = std::make_unique<TestTrackerEventExporter>();
+    event_exporter_ = event_exporter.get();
+
+    auto session_controller = std::make_unique<TestSessionController>();
+    session_controller_ = session_controller.get();
+
+    tracker_ = std::make_unique<TrackerImpl>(
+        std::move(multiple_event_model_provider), std::move(availability_model),
+        std::move(configuration), std::move(display_lock_controller),
+        std::move(condition_validator), std::move(time_provider),
+        std::move(event_exporter), std::move(session_controller),
+        nullptr /* event_storage_migration */, nullptr /* pref_service */);
+  }
+
+ protected:
+  void VerifyEventTriggerForStore(TestTrackerInMemoryEventStore* store,
+                                  const std::string& event_name,
+                                  uint32_t count) {
+    Event trigger_event = store->GetEvent(event_name);
+    if (count == 0) {
+      EXPECT_EQ(0, trigger_event.events_size());
+      return;
+    }
+
+    EXPECT_EQ(1, trigger_event.events_size());
+    EXPECT_EQ(1u, trigger_event.events(0).day());
+    EXPECT_EQ(count, trigger_event.events(0).count());
+  }
+
+  void VerifyEventTrigger(TestTrackerInMemoryEventStore* store,
+                          std::string event_name,
+                          uint32_t count) {
+    VerifyEventTriggerForStore(store, event_name, count);
+  }
+
+  void VerifyEventTriggerEvents(TestTrackerInMemoryEventStore* store,
+                                const base::Feature& feature,
+                                uint32_t count) {
+    VerifyEventTrigger(
+        store, configuration_->GetFeatureConfig(feature).trigger.name, count);
+  }
+
+  void VerifyGroupEventTriggerEvents(TestTrackerInMemoryEventStore* store,
+                                     const base::Feature& group,
+                                     uint32_t count) {
+    VerifyEventTrigger(
+        store, configuration_->GetGroupConfig(group).trigger.name, count);
+  }
+
+  raw_ptr<EventModel> profile_event_model_;
+  raw_ptr<EventModel> device_event_model_;
+  raw_ptr<TestTrackerInMemoryEventStore> device_event_store_;
+  raw_ptr<TestTrackerInMemoryEventStore> profile_event_store_;
+};
+
+TEST_F(MultipleEventModelTrackerImplTest,
+       TestInitializationWithMultipleStorage) {
+  EXPECT_FALSE(tracker_->IsInitialized());
+
+  StoringInitializedCallback callback;
+  tracker_->AddOnInitializedCallback(base::BindOnce(
+      &StoringInitializedCallback::OnInitialized, base::Unretained(&callback)));
+  EXPECT_FALSE(callback.invoked());
+
+  // Ensure all initialization is finished.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(tracker_->IsInitialized());
+  EXPECT_TRUE(callback.invoked());
+  EXPECT_TRUE(callback.success());
+}
+
+TEST_F(MultipleEventModelTrackerImplTest, TestWriteEventToMultipleStores) {
+  // Ensure all initialization is finished.
+  StoringInitializedCallback callback;
+  tracker_->AddOnInitializedCallback(base::BindOnce(
+      &StoringInitializedCallback::OnInitialized, base::Unretained(&callback)));
+  base::RunLoop().RunUntilIdle();
+  base::UserActionTester user_action_tester;
+
+  // The first time a feature triggers it should be shown.
+  EXPECT_TRUE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureFoo));
+  VerifyEventTriggerEvents(profile_event_store_, kTrackerTestFeatureFoo, 1u);
+  VerifyEventTriggerEvents(device_event_store_, kTrackerTestFeatureFoo, 1u);
+  VerifyGroupEventTriggerEvents(profile_event_store_, kTrackerTestGroupOne, 1u);
+  VerifyGroupEventTriggerEvents(device_event_store_, kTrackerTestGroupOne, 1u);
+  EXPECT_FALSE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureFoo));
+  VerifyEventTriggerEvents(profile_event_store_, kTrackerTestFeatureFoo, 1u);
+  VerifyEventTriggerEvents(device_event_store_, kTrackerTestFeatureFoo, 1u);
+  VerifyGroupEventTriggerEvents(profile_event_store_, kTrackerTestGroupOne, 1u);
+  VerifyGroupEventTriggerEvents(device_event_store_, kTrackerTestGroupOne, 1u);
+  EXPECT_FALSE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureQux));
+  VerifyEventTriggerEvents(profile_event_store_, kTrackerTestFeatureQux, 0);
+  VerifyEventTriggerEvents(device_event_store_, kTrackerTestFeatureQux, 0);
+  VerifyGroupEventTriggerEvents(profile_event_store_, kTrackerTestGroupOne, 1u);
+  VerifyGroupEventTriggerEvents(device_event_store_, kTrackerTestGroupOne, 1u);
+  VerifyUserActionsTriggerChecks(user_action_tester, 2, 0, 0, 1);
+  VerifyUserActionsTriggered(user_action_tester, 1, 0, 0, 0);
+  VerifyUserActionsNotTriggered(user_action_tester, 1, 0, 0, 1);
+  VerifyUserActionsWouldHaveTriggered(user_action_tester, 0, 0, 0, 0);
+  VerifyUserActionsDismissed(user_action_tester, 0);
+  VerifyHistograms(true, 1, 1, 0, false, 0, 0, 0, false, 0, 0, 0, true, 0, 1,
+                   0);
+
+  // While in-product help is currently showing, no other features should be
+  // shown.
+  EXPECT_FALSE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureBar));
+  VerifyEventTriggerEvents(profile_event_store_, kTrackerTestFeatureBar, 0);
+  VerifyEventTriggerEvents(device_event_store_, kTrackerTestFeatureBar, 0);
+  VerifyGroupEventTriggerEvents(profile_event_store_, kTrackerTestGroupOne, 1u);
+  VerifyGroupEventTriggerEvents(device_event_store_, kTrackerTestGroupOne, 1u);
+  EXPECT_FALSE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureQux));
+  VerifyEventTriggerEvents(profile_event_store_, kTrackerTestFeatureQux, 0);
+  VerifyEventTriggerEvents(device_event_store_, kTrackerTestFeatureQux, 0);
+  VerifyGroupEventTriggerEvents(profile_event_store_, kTrackerTestGroupOne, 1u);
+  VerifyGroupEventTriggerEvents(device_event_store_, kTrackerTestGroupOne, 1u);
+  VerifyUserActionsTriggerChecks(user_action_tester, 2, 1, 0, 2);
+  VerifyUserActionsTriggered(user_action_tester, 1, 0, 0, 0);
+  VerifyUserActionsNotTriggered(user_action_tester, 1, 1, 0, 2);
+  VerifyUserActionsWouldHaveTriggered(user_action_tester, 0, 0, 0, 0);
+  VerifyUserActionsDismissed(user_action_tester, 0);
+  VerifyHistograms(true, 1, 1, 0, true, 0, 1, 0, false, 0, 0, 0, true, 0, 2, 0);
+
+  // After dismissing the current in-product help, that feature can not be shown
+  // again, but a different feature should.
+  tracker_->Dismissed(kTrackerTestFeatureFoo);
+  EXPECT_FALSE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureFoo));
+  VerifyEventTriggerEvents(profile_event_store_, kTrackerTestFeatureFoo, 1u);
+  VerifyEventTriggerEvents(device_event_store_, kTrackerTestFeatureFoo, 1u);
+  VerifyGroupEventTriggerEvents(profile_event_store_, kTrackerTestGroupOne, 1u);
+  VerifyGroupEventTriggerEvents(device_event_store_, kTrackerTestGroupOne, 1u);
+  EXPECT_TRUE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureBar));
+  VerifyEventTriggerEvents(profile_event_store_, kTrackerTestFeatureBar, 1u);
+  VerifyEventTriggerEvents(device_event_store_, kTrackerTestFeatureBar, 1u);
+  VerifyGroupEventTriggerEvents(profile_event_store_, kTrackerTestGroupOne, 2u);
+  VerifyGroupEventTriggerEvents(device_event_store_, kTrackerTestGroupOne, 2u);
+  EXPECT_FALSE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureQux));
+  VerifyEventTriggerEvents(profile_event_store_, kTrackerTestFeatureQux, 0);
+  VerifyEventTriggerEvents(device_event_store_, kTrackerTestFeatureQux, 0);
+  VerifyGroupEventTriggerEvents(profile_event_store_, kTrackerTestGroupOne, 2u);
+  VerifyGroupEventTriggerEvents(device_event_store_, kTrackerTestGroupOne, 2u);
+  VerifyUserActionsTriggerChecks(user_action_tester, 3, 2, 0, 3);
+  VerifyUserActionsTriggered(user_action_tester, 1, 1, 0, 0);
+  VerifyUserActionsNotTriggered(user_action_tester, 2, 1, 0, 3);
+  VerifyUserActionsWouldHaveTriggered(user_action_tester, 0, 0, 0, 0);
+  VerifyUserActionsDismissed(user_action_tester, 1);
+  VerifyHistograms(true, 1, 2, 0, true, 1, 1, 0, false, 0, 0, 0, true, 0, 3, 0);
+
+  // After dismissing the second registered feature, no more in-product help
+  // should be shown, since kTrackerTestFeatureQux is invalid.
+  tracker_->Dismissed(kTrackerTestFeatureBar);
+  EXPECT_FALSE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureFoo));
+  VerifyEventTriggerEvents(profile_event_store_, kTrackerTestFeatureFoo, 1u);
+  VerifyEventTriggerEvents(device_event_store_, kTrackerTestFeatureFoo, 1u);
+  VerifyGroupEventTriggerEvents(profile_event_store_, kTrackerTestGroupOne, 2u);
+  VerifyGroupEventTriggerEvents(device_event_store_, kTrackerTestGroupOne, 2u);
+  EXPECT_FALSE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureBar));
+  VerifyEventTriggerEvents(profile_event_store_, kTrackerTestFeatureBar, 1u);
+  VerifyEventTriggerEvents(device_event_store_, kTrackerTestFeatureBar, 1u);
+  VerifyGroupEventTriggerEvents(profile_event_store_, kTrackerTestGroupOne, 2u);
+  VerifyGroupEventTriggerEvents(device_event_store_, kTrackerTestGroupOne, 2u);
+  EXPECT_FALSE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureQux));
+  VerifyEventTriggerEvents(profile_event_store_, kTrackerTestFeatureQux, 0);
+  VerifyEventTriggerEvents(device_event_store_, kTrackerTestFeatureQux, 0);
+  VerifyGroupEventTriggerEvents(profile_event_store_, kTrackerTestGroupOne, 2u);
+  VerifyGroupEventTriggerEvents(device_event_store_, kTrackerTestGroupOne, 2u);
+  VerifyUserActionsTriggerChecks(user_action_tester, 4, 3, 0, 4);
+  VerifyUserActionsTriggered(user_action_tester, 1, 1, 0, 0);
+  VerifyUserActionsNotTriggered(user_action_tester, 3, 2, 0, 4);
+  VerifyUserActionsWouldHaveTriggered(user_action_tester, 0, 0, 0, 0);
+  VerifyUserActionsDismissed(user_action_tester, 2);
+  VerifyHistograms(true, 1, 3, 0, true, 1, 2, 0, false, 0, 0, 0, true, 0, 4, 0);
+}
+
+TEST_F(MultipleEventModelTrackerImplTest, TestReadEventFromSingleStorage) {
+  // Ensure all initialization is finished.
+  StoringInitializedCallback callback;
+  tracker_->AddOnInitializedCallback(base::BindOnce(
+      &StoringInitializedCallback::OnInitialized, base::Unretained(&callback)));
+  base::RunLoop().RunUntilIdle();
+  base::UserActionTester user_action_tester;
+
+  // All the features should not be triggered yet.
+  EXPECT_FALSE(
+      tracker_->HasEverTriggered(kTrackerTestFeatureDeviceStorage, false));
+
+  // For triggered features, has ever triggered from storage should returns
+  // true, as the storage is set to 1.
+  EXPECT_TRUE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureDeviceStorage));
+  tracker_->Dismissed(kTrackerTestFeatureDeviceStorage);
+  VerifyEventTriggerEvents(profile_event_store_,
+                           kTrackerTestFeatureDeviceStorage, 1u);
+  VerifyEventTriggerEvents(device_event_store_,
+                           kTrackerTestFeatureDeviceStorage, 1u);
+
+  const std::string& event_trigger_name =
+      kTrackerTestFeatureDeviceStorage.name + std::string("_trigger");
+
+  // Clear the trigger event from the profile model. `HasEverTriggered` should
+  // still return true because the event persists in the device model, which is
+  // the designated storage for this feature.
+  profile_event_model_->ClearEvent(event_trigger_name);
+  EXPECT_TRUE(
+      tracker_->HasEverTriggered(kTrackerTestFeatureDeviceStorage, false));
+
+  // Clear the trigger event from the device model. Now that the event is
+  // cleared from its designated storage, `HasEverTriggered` should return
+  // false.
+  device_event_model_->ClearEvent(event_trigger_name);
+  EXPECT_FALSE(
+      tracker_->HasEverTriggered(kTrackerTestFeatureDeviceStorage, false));
 }
 
 namespace test {

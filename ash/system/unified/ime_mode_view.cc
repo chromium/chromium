@@ -65,15 +65,11 @@ void ImeModeView::HandleLocaleChange() {
 }
 
 void ImeModeView::UpdateLabelOrImageViewColor(bool active) {
-  if (!chromeos::features::IsJellyEnabled()) {
-    label()->SetEnabledColorId(kColorAshIconColorPrimary);
-    return;
-  }
   TrayItemView::UpdateLabelOrImageViewColor(active);
 
-  label()->SetEnabledColorId(active
-                                 ? cros_tokens::kCrosSysSystemOnPrimaryContainer
-                                 : cros_tokens::kCrosSysOnSurface);
+  label()->SetEnabledColor(active
+                               ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                               : cros_tokens::kCrosSysOnSurface);
 }
 
 void ImeModeView::Update() {
@@ -89,7 +85,7 @@ void ImeModeView::Update() {
 
   // Do not show IME mode icon in tablet mode as it's less useful and screen
   // space is limited.
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     SetVisible(false);
     return;
   }
@@ -110,7 +106,7 @@ void ImeModeView::Update() {
   std::u16string description =
       l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_INDICATOR_IME_TOOLTIP,
                                  ime_controller->current_ime().name);
-  label()->SetTooltipText(description);
+  label()->SetCustomTooltipText(description);
   label()->SetCustomAccessibleName(description);
   label()->SetElideBehavior(gfx::NO_ELIDE);
 

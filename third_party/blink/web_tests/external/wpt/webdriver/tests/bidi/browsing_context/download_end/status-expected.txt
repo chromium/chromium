@@ -1,0 +1,7 @@
+This is a wdspec test.
+[FAIL] test_status_complete
+  AssertionError
+[FAIL] test_status_canceled
+  AssertionError
+Harness: the test ran to completion.
+

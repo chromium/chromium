@@ -7,10 +7,14 @@ include_rules = [
   "+printing",
   "+services/network/public/mojom/referrer_policy.mojom-shared.h",
   "+services/screen_ai/buildflags",
+  "+services/screen_ai/public/cpp/utilities.h",
   "+services/screen_ai/public/mojom/screen_ai_service.mojom.h",
   "+services/screen_ai/public/mojom/screen_ai_service.mojom-forward.h",
   "+third_party/blink/public",
+  "+third_party/ink",
   "+third_party/skia/include/core",
+  "+third_party/skia/include/ports",
+  "+ui/accessibility/ax_enums.mojom-data-view.h",
   "+ui/base",
   "+ui/events",
   "+ui/gfx",
@@ -20,6 +24,7 @@ include_rules = [
 specific_include_rules = {
   ".*_unittest.*\.cc": [
     "+cc/test",
+    "+crypto",
     "+ui/latency/latency_info.h",
   ],
 }

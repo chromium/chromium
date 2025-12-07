@@ -64,4 +64,8 @@ message SendTabToSelfPush {
   // Placeholder body. Will be used if payload is not properly assembled on
   // receiving device. Will not get encrypted by Chime.
   optional string placeholder_body = 7;
+
+  // Unique identifier of the associated SendTabToSelfEntry. Will be used to
+  // dismiss the entry upon push notification interaction.
+  optional string entry_unique_guid = 8;
 }

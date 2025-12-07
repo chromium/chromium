@@ -1,0 +1,18 @@
+AXWebArea
+++AXHeading AXTitle='no attributes:' AXValue=3
+++++AXStaticText AXValue='no attributes:'
+++AXPopUpButton AXValue='one'
+++++AXMenuItem AXValue='one'
+++AXHeading AXTitle='multiple:' AXValue=3
+++++AXStaticText AXValue='multiple:'
+++AXList
+++++AXMenuItem AXValue='one not selected'
+++++AXMenuItem AXValue='two not selected'
+++AXHeading AXTitle='size=4:' AXValue=3
+++++AXStaticText AXValue='size=4:'
+++AXList
+++++AXMenuItem AXValue='one'
+++++AXMenuItem AXValue='two'
+++AXHeading AXTitle='multiple size=1:' AXValue=3
+++++AXStaticText AXValue='multiple size=1:'
+++AXPopUpButton AXValue='0 selected'

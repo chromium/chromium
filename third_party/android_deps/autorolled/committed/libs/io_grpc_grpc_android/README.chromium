@@ -1,0 +1,19 @@
+Name: io.grpc:grpc-android
+Short Name: grpc-android
+URL: https://repo.maven.apache.org/maven2/io/grpc/grpc-android/1.77.0/grpc-android-1.77.0.aar
+Version: 1.77.0
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: cpe:/a:grpc:grpc
+Security Critical: no
+Shipped: no
+
+Description:
+gRPC: Android
+
+See also: https://github.com/grpc/grpc-java
+
+
+Local Modifications:
+No modifications.

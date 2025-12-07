@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("a11y") {
   sources = [
@@ -12,6 +10,8 @@ static_library("a11y") {
     "accessibility_handler.h",
     "accessibility_section.cc",
     "accessibility_section.h",
+    "facegaze_settings_handler.cc",
+    "facegaze_settings_handler.h",
     "select_to_speak_handler.cc",
     "select_to_speak_handler.h",
     "settings_with_tts_preview_handler.cc",
@@ -24,6 +24,8 @@ static_library("a11y") {
 
   public_deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/webui/settings",
     "//components/prefs",
     "//components/soda",
     "//content/public/browser",
@@ -39,15 +41,14 @@ static_library("a11y") {
     "//base:i18n",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
-    "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/accessibility:utils",
     "//chrome/browser/ash/accessibility",
-    "//chrome/browser/ash/crosapi:browser_util",
+    "//chrome/browser/ash/browser_delegate",
+    "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/common",
     "//chromeos/components/kiosk",
+    "//chromeos/services/tts/public/mojom",
     "//components/language/core/browser",
     "//components/language/core/common",
     "//components/live_caption:utils",
@@ -64,6 +65,7 @@ static_library("a11y") {
     "//ui/events/ash",
     "//ui/events/devices",
     "//ui/events/ozone/layout",
+    "//ui/webui",
   ]
 }
 

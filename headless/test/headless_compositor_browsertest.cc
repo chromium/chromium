@@ -31,8 +31,8 @@ class HeadlessCompositorBrowserTest : public HeadlessProtocolBrowserTest {
         // Animation-only BeginFrames are only supported when updates from the
         // impl-thread are disabled. See
         // https://goo.gle/chrome-headless-rendering.
-        cc::switches::kDisableThreadedAnimation,
-        cc::switches::kDisableCheckerImaging,
+        switches::kDisableThreadedAnimation,
+        switches::kDisableCheckerImaging,
 
         // Ensure that image animations don't resync their animation timestamps
         // when looping back around.
@@ -51,26 +51,22 @@ class HeadlessCompositorBrowserTest : public HeadlessProtocolBrowserTest {
 // TODO(crbug.com/40656275): Suite is flaky on TSan Linux.
 #if BUILDFLAG(IS_MAC) || ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
                           defined(THREAD_SANITIZER))
-#define HEADLESS_COMPOSITOR_TEST(TEST_NAME, SCRIPT_NAME) \
-  IN_PROC_BROWSER_TEST_F(HeadlessCompositorBrowserTest,  \
-                         DISABLED_##TEST_NAME) {         \
-    test_folder_ = "/protocol/";                         \
-    script_name_ = SCRIPT_NAME;                          \
-    RunTest();                                           \
-  }
+#define HEADLESS_COMPOSITOR_TEST(TEST_NAME, SCRIPT_NAME)  \
+  HEADLESS_PROTOCOL_TEST_F(HeadlessCompositorBrowserTest, \
+                           DISABLED_##TEST_NAME, SCRIPT_NAME)
 #else
 #define HEADLESS_COMPOSITOR_TEST(TEST_NAME, SCRIPT_NAME)             \
-  IN_PROC_BROWSER_TEST_F(HeadlessCompositorBrowserTest, TEST_NAME) { \
-    test_folder_ = "/protocol/";                                     \
-    script_name_ = SCRIPT_NAME;                                      \
-    RunTest();                                                       \
-  }
+  HEADLESS_PROTOCOL_TEST_F(HeadlessCompositorBrowserTest, TEST_NAME, \
+                           SCRIPT_NAME)
 #endif
 
+HEADLESS_COMPOSITOR_TEST(VirtualTimeControllerTest,
+                         "helpers/virtual-time-controller-test.js")
+
 HEADLESS_COMPOSITOR_TEST(CompositorBasicRaf,
-                         "emulation/compositor-basic-raf.js")
+                         "virtual-time/compositor-basic-raf.js")
 HEADLESS_COMPOSITOR_TEST(CompositorImageAnimation,
-                         "emulation/compositor-image-animation-test.js")
+                         "virtual-time/compositor-image-animation-test.js")
 
 // Flaky on all platforms. TODO(crbug.com/41471823): Re-enable.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
@@ -80,83 +76,81 @@ HEADLESS_COMPOSITOR_TEST(CompositorImageAnimation,
 #define MAYBE_CompositorCssAnimation CompositorCssAnimation
 #endif
 HEADLESS_COMPOSITOR_TEST(MAYBE_CompositorCssAnimation,
-                         "emulation/compositor-css-animation-test.js")
+                         "virtual-time/compositor-css-animation-test.js")
 HEADLESS_COMPOSITOR_TEST(VirtualTimeCancelClientRedirect,
-                         "emulation/virtual-time-cancel-client-redirect.js")
-HEADLESS_COMPOSITOR_TEST(DoubleBeginFrame, "emulation/double-begin-frame.js")
-HEADLESS_COMPOSITOR_TEST(VirtualTimeControllerTest,
-                         "helpers/virtual-time-controller-test.js")
-HEADLESS_COMPOSITOR_TEST(RendererHelloWorld, "sanity/renderer-hello-world.js")
+                         "virtual-time/virtual-time-cancel-client-redirect.js")
+HEADLESS_COMPOSITOR_TEST(DoubleBeginFrame, "virtual-time/double-begin-frame.js")
+HEADLESS_COMPOSITOR_TEST(RendererHelloWorld,
+                         "virtual-time/renderer-hello-world.js")
 HEADLESS_COMPOSITOR_TEST(RendererOverrideTitleJsEnabled,
-                         "sanity/renderer-override-title-js-enabled.js")
+                         "virtual-time/renderer-override-title-js-enabled.js")
 HEADLESS_COMPOSITOR_TEST(RendererOverrideTitleJsDisabled,
-                         "sanity/renderer-override-title-js-disabled.js")
+                         "virtual-time/renderer-override-title-js-disabled.js")
 HEADLESS_COMPOSITOR_TEST(RendererJavaScriptConsoleErrors,
-                         "sanity/renderer-javascript-console-errors.js")
+                         "virtual-time/renderer-javascript-console-errors.js")
 HEADLESS_COMPOSITOR_TEST(RendererDelayedCompletion,
-                         "sanity/renderer-delayed-completion.js")
+                         "virtual-time/renderer-delayed-completion.js")
 HEADLESS_COMPOSITOR_TEST(RendererClientRedirectChain,
-                         "sanity/renderer-client-redirect-chain.js")
+                         "virtual-time/renderer-client-redirect-chain.js")
 HEADLESS_COMPOSITOR_TEST(RendererClientRedirectChainNoJs,
-                         "sanity/renderer-client-redirect-chain-no-js.js")
+                         "virtual-time/renderer-client-redirect-chain-no-js.js")
 HEADLESS_COMPOSITOR_TEST(RendererServerRedirectChain,
-                         "sanity/renderer-server-redirect-chain.js")
+                         "virtual-time/renderer-server-redirect-chain.js")
 HEADLESS_COMPOSITOR_TEST(RendererServerRedirectToFailure,
-                         "sanity/renderer-server-redirect-to-failure.js")
-HEADLESS_COMPOSITOR_TEST(RendererServerRedirectRelativeChain,
-                         "sanity/renderer-server-redirect-relative-chain.js")
+                         "virtual-time/renderer-server-redirect-to-failure.js")
+HEADLESS_COMPOSITOR_TEST(
+    RendererServerRedirectRelativeChain,
+    "virtual-time/renderer-server-redirect-relative-chain.js")
 HEADLESS_COMPOSITOR_TEST(RendererMixedRedirectChain,
-                         "sanity/renderer-mixed-redirect-chain.js")
+                         "virtual-time/renderer-mixed-redirect-chain.js")
 HEADLESS_COMPOSITOR_TEST(RendererFramesRedirectChain,
-                         "sanity/renderer-frames-redirect-chain.js")
+                         "virtual-time/renderer-frames-redirect-chain.js")
 HEADLESS_COMPOSITOR_TEST(RendererDoubleRedirect,
-                         "sanity/renderer-double-redirect.js")
+                         "virtual-time/renderer-double-redirect.js")
 HEADLESS_COMPOSITOR_TEST(RendererRedirectAfterCompletion,
-                         "sanity/renderer-redirect-after-completion.js")
+                         "virtual-time/renderer-redirect-after-completion.js")
 HEADLESS_COMPOSITOR_TEST(RendererRedirect307PostMethod,
-                         "sanity/renderer-redirect-307-post-method.js")
+                         "virtual-time/renderer-redirect-307-post-method.js")
 HEADLESS_COMPOSITOR_TEST(RendererRedirectPostChain,
-                         "sanity/renderer-redirect-post-chain.js")
+                         "virtual-time/renderer-redirect-post-chain.js")
 HEADLESS_COMPOSITOR_TEST(RendererRedirect307PutMethod,
-                         "sanity/renderer-redirect-307-put-method.js")
+                         "virtual-time/renderer-redirect-307-put-method.js")
 HEADLESS_COMPOSITOR_TEST(RendererRedirect303PutGet,
-                         "sanity/renderer-redirect-303-put-get.js")
+                         "virtual-time/renderer-redirect-303-put-get.js")
 HEADLESS_COMPOSITOR_TEST(RendererRedirectBaseUrl,
-                         "sanity/renderer-redirect-base-url.js")
+                         "virtual-time/renderer-redirect-base-url.js")
 HEADLESS_COMPOSITOR_TEST(RendererRedirectNonAsciiUrl,
-                         "sanity/renderer-redirect-non-ascii-url.js")
+                         "virtual-time/renderer-redirect-non-ascii-url.js")
 HEADLESS_COMPOSITOR_TEST(RendererRedirectEmptyUrl,
-                         "sanity/renderer-redirect-empty-url.js")
+                         "virtual-time/renderer-redirect-empty-url.js")
 HEADLESS_COMPOSITOR_TEST(RendererRedirectInvalidUrl,
-                         "sanity/renderer-redirect-invalid-url.js")
+                         "virtual-time/renderer-redirect-invalid-url.js")
 HEADLESS_COMPOSITOR_TEST(RendererRedirectKeepsFragment,
-                         "sanity/renderer-redirect-keeps-fragment.js")
+                         "virtual-time/renderer-redirect-keeps-fragment.js")
 HEADLESS_COMPOSITOR_TEST(RendererRedirectReplacesFragment,
-                         "sanity/renderer-redirect-replaces-fragment.js")
+                         "virtual-time/renderer-redirect-replaces-fragment.js")
 HEADLESS_COMPOSITOR_TEST(RendererRedirectNewFragment,
-                         "sanity/renderer-redirect-new-fragment.js")
+                         "virtual-time/renderer-redirect-new-fragment.js")
 HEADLESS_COMPOSITOR_TEST(RendererWindowLocationFragments,
-                         "sanity/renderer-window-location-fragments.js")
+                         "virtual-time/renderer-window-location-fragments.js")
 HEADLESS_COMPOSITOR_TEST(RendererCookieSetFromJs,
-                         "sanity/renderer-cookie-set-from-js.js")
-HEADLESS_COMPOSITOR_TEST(RendererCookieSetFromJsNoCookies,
-                         "sanity/renderer-cookie-set-from-js-no-cookies.js")
+                         "virtual-time/renderer-cookie-set-from-js.js")
+HEADLESS_COMPOSITOR_TEST(
+    RendererCookieSetFromJsNoCookies,
+    "virtual-time/renderer-cookie-set-from-js-no-cookies.js")
 HEADLESS_COMPOSITOR_TEST(RendererCookieUpdatedFromJs,
-                         "sanity/renderer-cookie-updated-from-js.js")
+                         "virtual-time/renderer-cookie-updated-from-js.js")
 HEADLESS_COMPOSITOR_TEST(RendererInCrossOriginObject,
-                         "sanity/renderer-in-cross-origin-object.js")
+                         "virtual-time/renderer-in-cross-origin-object.js")
 
 HEADLESS_COMPOSITOR_TEST(RendererContentSecurityPolicy,
-                         "sanity/renderer-content-security-policy.js")
+                         "virtual-time/renderer-content-security-policy.js")
 
 HEADLESS_COMPOSITOR_TEST(RendererFrameLoadEvents,
-                         "sanity/renderer-frame-load-events.js")
+                         "virtual-time/renderer-frame-load-events.js")
 HEADLESS_COMPOSITOR_TEST(RendererCssUrlFilter,
-                         "sanity/renderer-css-url-filter.js")
-HEADLESS_COMPOSITOR_TEST(RendererCanvas, "sanity/renderer-canvas.js")
-HEADLESS_COMPOSITOR_TEST(ScreenshotWebp, "sanity/screenshot-webp.js")
-HEADLESS_COMPOSITOR_TEST(ScreenshotOptimizeForSpeed,
-                         "sanity/screenshot-optimize-for-speed.js")
+                         "virtual-time/renderer-css-url-filter.js")
+HEADLESS_COMPOSITOR_TEST(RendererCanvas, "virtual-time/renderer-canvas.js")
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 // Flaky on at least Linux and Windows: crbug.com/1294751.
@@ -165,14 +159,20 @@ HEADLESS_COMPOSITOR_TEST(ScreenshotOptimizeForSpeed,
 #define MAYBE_RendererOpacityAnimation RendererOpacityAnimation
 #endif
 HEADLESS_COMPOSITOR_TEST(MAYBE_RendererOpacityAnimation,
-                         "sanity/renderer-opacity-animation.js")
-HEADLESS_COMPOSITOR_TEST(ScreenshotAfterMetricsOverride,
-                         "sanity/screenshot-after-metrics-override.js")
-HEADLESS_COMPOSITOR_TEST(ScreenshotDeviceScaleFactor,
-                         "emulation/screenshot-device-scale-factor.js")
-HEADLESS_COMPOSITOR_TEST(VirtualTimeIntersectionObserverWithViewport,
-                         "emulation/intersection-observer-with-viewport.js")
-HEADLESS_COMPOSITOR_TEST(VeryLargeViewportCrash,
-                         "emulation/very-large-viewport-crash.js")
+                         "virtual-time/renderer-opacity-animation.js")
 
+HEADLESS_COMPOSITOR_TEST(ScreenshotWebp, "virtual-time/screenshot-webp.js")
+HEADLESS_COMPOSITOR_TEST(ScreenshotOptimizeForSpeed,
+                         "virtual-time/screenshot-optimize-for-speed.js")
+HEADLESS_COMPOSITOR_TEST(ScreenshotAfterMetricsOverride,
+                         "virtual-time/screenshot-after-metrics-override.js")
+HEADLESS_COMPOSITOR_TEST(ScreenshotDeviceScaleFactor,
+                         "virtual-time/screenshot-device-scale-factor.js")
+HEADLESS_COMPOSITOR_TEST(VirtualTimeIntersectionObserverWithViewport,
+                         "virtual-time/intersection-observer-with-viewport.js")
+HEADLESS_COMPOSITOR_TEST(VeryLargeViewportCrash,
+                         "virtual-time/very-large-viewport-crash.js")
+
+HEADLESS_COMPOSITOR_TEST(VirtualTimeBlockedWorker,
+                         "virtual-time/blocked-worker.js")
 }  // namespace headless

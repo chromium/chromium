@@ -27,8 +27,8 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef __CELT_MIPSR1_H__
-#define __CELT_MIPSR1_H__
+#ifndef CELT_MIPSR1_H__
+#define CELT_MIPSR1_H__
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -149,4 +149,4 @@ void comb_filter(opus_val32 *y, opus_val32 *x, int T0, int T1, int N,
    }
 }
 
-#endif /* __CELT_MIPSR1_H__ */
+#endif /* CELT_MIPSR1_H__ */

@@ -94,15 +94,12 @@ struct CORE_EXPORT InvalidationSetDeleter {
 //
 // We avoid virtual functions to minimize space consumption.
 class CORE_EXPORT InvalidationSet
-    : public WTF::RefCounted<InvalidationSet, InvalidationSetDeleter> {
-  USING_FAST_MALLOC_WITH_TYPE_NAME(blink::InvalidationSet);
-
+    : public RefCounted<InvalidationSet, InvalidationSetDeleter> {
  public:
   InvalidationSet(const InvalidationSet&) = delete;
   InvalidationSet& operator=(const InvalidationSet&) = delete;
 
   bool operator==(const InvalidationSet&) const;
-  bool operator!=(const InvalidationSet& o) const { return !(*this == o); }
 
   InvalidationType GetType() const {
     return static_cast<InvalidationType>(type_);
@@ -180,15 +177,21 @@ class CORE_EXPORT InvalidationSet
     return invalidation_flags_.InvalidatesParts();
   }
 
+  void SetInvalidatesTreeCounting() {
+    invalidation_flags_.SetInvalidatesTreeCounting(true);
+  }
+  bool InvalidatesTreeCounting() const {
+    return invalidation_flags_.InvalidatesTreeCounting();
+  }
+
   bool IsEmpty() const {
     return HasEmptyBackings() &&
            !invalidation_flags_.InvalidateCustomPseudo() &&
            !invalidation_flags_.InsertionPointCrossing() &&
            !invalidation_flags_.InvalidatesSlotted() &&
-           !invalidation_flags_.InvalidatesParts();
+           !invalidation_flags_.InvalidatesParts() &&
+           !invalidation_flags_.InvalidatesTreeCounting();
   }
-
-  bool IsAlive() const { return is_alive_; }
 
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
@@ -235,6 +238,20 @@ class CORE_EXPORT InvalidationSet
   // Returns a singleton DescendantInvalidationSet which invalidates all
   // shadow-including descendants with part attributes.
   static InvalidationSet* PartInvalidationSet();
+
+  // Returns a singleton NthSiblingInvalidationSet which invalidates all
+  // siblings whose ComputedStyle depends on tree-counting functions such as
+  // sibling-count() and sibling-index(). It does so by setting
+  // invalidates_tree_counting_ along with invalidates_self_, making it
+  // equivalent to an imaginary ':nth-child(n):has-tree-counting-style'
+  // selector, where ':has-tree-counting-style' matches an element with a
+  // ComputedStyle that relies on the evaluation of tree-counting functions.
+  //
+  // This set is scheduled on ContainerNodes marked with
+  // ChildrenAffectedByForwardPositionalRules() or
+  // ChildrenAffectedByBackwardPositionalRules() when child elements are
+  // inserted, removed, or change target slot.
+  static InvalidationSet* TreeCountingInvalidationSet();
 
   enum class BackingType {
     kClasses,
@@ -321,7 +338,6 @@ class CORE_EXPORT InvalidationSet
         }
         return hash_set_iterator_ == other.hash_set_iterator_;
       }
-      bool operator!=(const Iterator& other) const { return !(*this == other); }
       void operator++() {
         if (type_ == Type::kString) {
           string_ = g_null_atom;
@@ -374,8 +390,6 @@ class CORE_EXPORT InvalidationSet
   explicit InvalidationSet(InvalidationType);
 
   ~InvalidationSet() {
-    CHECK(is_alive_);
-    is_alive_ = false;
     ClearAllBackings();
   }
 
@@ -438,9 +452,6 @@ class CORE_EXPORT InvalidationSet
   // (unless we know for sure no child can be affected by a
   // selector of the :nth-child type).
   unsigned invalidates_nth_ : 1;
-
-  // If true, the instance is alive and can be used.
-  unsigned is_alive_ : 1;
 };
 
 class CORE_EXPORT DescendantInvalidationSet final : public InvalidationSet {
@@ -503,9 +514,12 @@ class CORE_EXPORT SiblingInvalidationSet : public InvalidationSet {
 
 // For invalidation of :nth-* selectors on dom mutations we use a sibling
 // invalidation set which is scheduled on the parent node of the DOM mutation
-// affected by the :nth-* selectors.
+// affected by the :nth-* selectors. Similarly, we use another
+// NthSiblingInvalidationSet for invalidating style for elements whose style
+// rely on tree-counting functions such as sibling-index(). See
+// InvalidationSet::TreeCountingInvalidationSet() for further documentation.
 //
-// During invalidation, the set is pushed into the SiblingData used for
+// During invalidation, such sets are pushed into the SiblingData used for
 // invalidating the direct children.
 //
 // Features are collected into this set as if the selectors were preceded by a

@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -38,7 +39,8 @@ class CC_EXPORT ThrottleDecider {
   const base::flat_set<viz::FrameSinkId>& ids() const { return ids_; }
 
  private:
-  base::flat_map<viz::CompositorRenderPassId, const viz::CompositorRenderPass*>
+  base::flat_map<viz::CompositorRenderPassId,
+                 raw_ptr<const viz::CompositorRenderPass, CtnExperimental>>
       id_to_pass_map_;
   // Ids of frame sinks that are qualified for throttling.
   base::flat_set<viz::FrameSinkId> ids_;

@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] [required] gatherElements float32 3D input and int32 negative indices
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gatherElements float32 actual -66.05901336669922 should be close enough to expected 89.0337142944336 by ULP distance: expected a number less than or equal to 0n but got 2234920826n
+[FAIL] [required] gatherElements float32 1D input and int32 out-of-bounds indices
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gatherElements float32 actual -26.158037185668945 should be close enough to expected 51.79948425292969 by ULP distance: expected a number less than or equal to 0n but got 2216719957n
+[FAIL] [required] gatherElements float16 3D input and int32 negative indices
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gatherElements float16 actual -66.0625 should be close enough to expected 89.0625 by ULP distance: expected a number less than or equal to 0 but got 32400
+Harness: the test ran to completion.
+

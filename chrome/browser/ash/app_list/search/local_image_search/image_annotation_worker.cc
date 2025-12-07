@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/app_list/search/local_image_search/image_annotation_worker.h"
 
 #include <algorithm>
@@ -17,16 +12,18 @@
 #include <string>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/image_util.h"
-#include "base/feature_list.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -35,8 +32,12 @@
 #include "chrome/browser/ash/app_list/search/local_image_search/search_utils.h"
 #include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
+#include "chromeos/services/machine_learning/public/mojom/image_content_annotation.mojom.h"
+#include "content/public/browser/browser_thread.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
+#include "ui/gfx/image/image_skia_operations.h"
 
 namespace app_list {
 namespace {
@@ -44,14 +45,22 @@ namespace {
 using TokenizedString = ::ash::string_matching::TokenizedString;
 using Mode = ::ash::string_matching::TokenizedString::Mode;
 
-constexpr int kMaxFileSizeBytes = 2e+7;   // ~ 20MiB
-constexpr int kConfidenceThreshold = 79;  // 30% of 255 (max of ICA)
+constexpr int kMaxFileSizeBytes = 2e+7;  // ~ 20MiB
+constexpr float kConfidenceThreshold = 0.3f;
 constexpr int kOcrMinWordLength = 3;
 constexpr int kRetryDelay = 2;              // For exponential delays.
 constexpr int kMaxNumRetries = 12;          // Over 2 hrs.
-constexpr int kDefaultIndexingLimit = 500;  // 500 images per user session.
+constexpr int kDefaultIndexingLimit = 200;  // 200 images per user session.
 constexpr base::TimeDelta kInitialIndexingDelay = base::Seconds(1);
-constexpr base::TimeDelta kMaxImageProcessingTime = base::Minutes(2);
+constexpr int kMaxOcrImageSize = 1000;  // The max allowed width&height in DIP.
+constexpr int kMaxDisconnection =
+    3;  // The max allowed disconnection for both ICA and OCR.
+constexpr base::TimeDelta kIcaReconnectDelay = base::Seconds(10);
+// LINT.IfChange(MaxBatchCount)
+constexpr int kMaxBatchCount = 10;  // The max batch ocr request we can make
+                                    // before checking the service status.
+// LINT.ThenChange(//chrome/browser/ash/app_list/search/local_image_search/image_annotation_worker_unittest.cc:MaxBatchCount)
+constexpr base::TimeDelta kOcrRestartDelay = base::Seconds(20);
 
 // These values persist to logs. Entries should not be renumbered and numeric
 // values should never be reused.
@@ -60,8 +69,12 @@ enum class Status {
   kFailedToInitializeIca = 1,
   kFailedToInitializeOcr = 2,
   kFailedToDecodeImage = 3,
-  kImageProcessingTimeOut = 4,
-  kMaxValue = kImageProcessingTimeOut,
+  kImageProcessingTimeOut = 4,  // Deprecated
+  kFailedToProcessIca = 5,
+  kFailedToProcessOcr = 6,
+  kIcaDisconnectionLimit = 7,
+  kOcrDisconnectionLimit = 8,
+  kMaxValue = kOcrDisconnectionLimit,
 };
 
 void LogStatusUma(Status status) {
@@ -86,12 +99,6 @@ void LogIndexingUma(IndexingStatus status) {
       status);
 }
 
-int GetConfidenceThreshold() {
-  return base::GetFieldTrialParamByFeatureAsInt(
-      search_features::kLauncherLocalImageSearchConfidence,
-      "confidence_threshold", kConfidenceThreshold);
-}
-
 // Exclude animated WebPs.
 bool IsStaticWebp(const base::FilePath& path) {
   std::ifstream file(path.value(), std::ios::binary);
@@ -107,9 +114,9 @@ bool IsStaticWebp(const base::FilePath& path) {
   // Checking for RIFF header and WebP identifier as in the
   // https://developers.google.com/speed/webp/docs/riff_container
   if (std::string(buffer, 4) == "RIFF" &&
-      std::string(buffer + 8, 4) == "WEBP") {
+      std::string(UNSAFE_TODO(buffer + 8), 4) == "WEBP") {
     // Checking the VP8X chunk for animation
-    if (std::string(buffer + 12, 4) == "VP8X") {
+    if (std::string(UNSAFE_TODO(buffer + 12), 4) == "VP8X") {
       // VP8X header is 8 bytes then the flags byte.
       const char flags = buffer[20];
       // The second bit indicates if it's animated.
@@ -153,7 +160,7 @@ bool IsPng(const base::FilePath& path) {
   const uint8_t pngSignature[8] = {0x89, 0x50, 0x4E, 0x47,
                                    0x0D, 0x0A, 0x1A, 0x0A};
   for (int i = 0; i < 8; ++i) {
-    if (buffer[i] != pngSignature[i]) {
+    if (UNSAFE_TODO(buffer[i]) != UNSAFE_TODO(pngSignature[i])) {
       return false;
     }
   }
@@ -196,6 +203,17 @@ bool IsPathExcluded(const base::FilePath& path,
                      });
 }
 
+// The same as the static function of `ScreenAIServiceRouter` as we are not
+// allowed to include it directly. It's not expected to change this function and
+// to sync it to `ScreenAIServiceRouter`. Instead, we would like this function
+// to sync when there is an update in `ScreenAIServiceRouter` so that we can
+// re-try OCR with the right delay.
+// LINT.IfChange(SuggestedWaitTimeBeforeReAttempt)
+base::TimeDelta SuggestedWaitTimeBeforeReAttempt(uint32_t reattempt_number) {
+  return base::Minutes(reattempt_number * reattempt_number);
+}
+// LINT.ThenChange(//chrome/browser/screen_ai/screen_ai_service_router.cc:SuggestedWaitTimeBeforeReAttempt)
+
 }  // namespace
 
 ImageAnnotationWorker::ImageAnnotationWorker(
@@ -234,16 +252,28 @@ void ImageAnnotationWorker::Initialize(AnnotationStorage* annotation_storage) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(annotation_storage);
   annotation_storage_ = annotation_storage;
+  // This function is called from `AnnotationStorage`. Thus, we will the task
+  // runner `AnnotationStorage` currently runs on.
+  main_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
 
   on_file_change_callback_ = base::BindRepeating(
       &ImageAnnotationWorker::OnFileChange, weak_ptr_factory_.GetWeakPtr());
 
-  if (use_ica_) {
-    DVLOG(1) << "Initializing ICA DLC.";
-    image_content_annotator_.EnsureAnnotatorIsConnected();
+  if (use_ocr_) {
+    optical_character_recognizer_->SetDisconnectedCallback(
+        base::BindRepeating(&ImageAnnotationWorker::OnOcrDisconnected,
+                            ocr_weak_ptr_factory_.GetWeakPtr()));
   }
 
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+  if (use_ica_) {
+    DVLOG(1) << "Initializing ICA DLC.";
+    image_content_annotator_ = std::make_unique<ImageContentAnnotator>(
+        base::BindRepeating(&ImageAnnotationWorker::OnIcaDisconnected,
+                            weak_ptr_factory_.GetWeakPtr()));
+    image_content_annotator_->EnsureAnnotatorIsConnected();
+  }
+
+  main_task_runner_->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ImageAnnotationWorker::OnDlcInstalled,
                      weak_ptr_factory_.GetWeakPtr()),
@@ -251,7 +281,9 @@ void ImageAnnotationWorker::Initialize(AnnotationStorage* annotation_storage) {
 }
 
 void ImageAnnotationWorker::OnDlcInstalled() {
-  bool is_ica_dlc_installed = image_content_annotator_.IsDlcInitialized();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  bool is_ica_dlc_installed =
+      image_content_annotator_ && image_content_annotator_->IsDlcInitialized();
   bool is_ocr_dlc_installed = optical_character_recognizer_ &&
                               optical_character_recognizer_->is_ready();
 
@@ -277,18 +309,20 @@ void ImageAnnotationWorker::OnDlcInstalled() {
     // function `EnsureAnnotatorIsConnected()` is called. Thus, at each retry we
     // should trigger it again so that it attempts to bind the annotator.
     if (use_ica_) {
-      image_content_annotator_.EnsureAnnotatorIsConnected();
+      image_content_annotator_->EnsureAnnotatorIsConnected();
     }
 
     // It is expected to be ready on a first try. Also, it is not a time
     // sensitive task, so we do not need to implement a full-fledged observer.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+    main_task_runner_->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ImageAnnotationWorker::OnDlcInstalled,
                        weak_ptr_factory_.GetWeakPtr()),
         base::Seconds(std::pow(kRetryDelay, num_retries_passed_)));
     num_retries_passed_ += 1;
-    image_content_annotator_.set_num_retries_passed(num_retries_passed_);
+    if (use_ica_) {
+      image_content_annotator_->set_num_retries_passed(num_retries_passed_);
+    }
     return;
   }
 
@@ -303,6 +337,10 @@ void ImageAnnotationWorker::OnDlcInstalled() {
         {.type = base::FilePathWatcher::Type::kRecursive,
          .report_modified_path = true},
         on_file_change_callback_);
+  }
+
+  if (search_features::IsLauncherImageSearchDebugEnabled()) {
+    LOG(ERROR) << "DLC initialization succeed.";
   }
 
   LogStatusUma(Status::kOk);
@@ -321,77 +359,79 @@ void ImageAnnotationWorker::OnFileChange(const base::FilePath& path,
 
   DVLOG(1) << "Adding to a queue";
   files_to_process_.push(std::move(path));
-  if (files_to_process_.size() == 1) {
-    // TODO(b:353385656): Remove this log after the performance analysis.
-    if (base::FeatureList::IsEnabled(ash::features::kLocalImageSearchOnCore)) {
-      LOG(ERROR) << "image indexing starts.";
-    }
+  // To keep the process sequential, `OnFileChange` should only start the
+  // processing if there is no active processing.
+  if (!queue_processing_started_) {
+    // Queue processing started. Sets the flag.
+    queue_processing_started_ = true;
     queue_processing_start_time_ = base::TimeTicks::Now();
-    return ProcessNextItem();
+    ProcessItems();
   }
   return;
 }
 
-void ImageAnnotationWorker::ProcessNextItem() {
+void ImageAnnotationWorker::ProcessItems() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (ocr_batch_count_ >= kMaxBatchCount) {
+    // Resets the batch count, and checks if we need to pause the ocr
+    // processing after `kOcrRestartDelay` of rest. It allows the system to cool
+    // down and helps to reduce the chance of fan spin.
+    ocr_batch_count_ = 0;
+    main_task_runner_->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&ImageAnnotationWorker::CheckIsOCRBusy,
+                       weak_ptr_factory_.GetWeakPtr()),
+        kOcrRestartDelay);
+    return;
+  }
+
   base::UmaHistogramCounts100000(
       "Apps.AppList.AnnotationStorage.ImageAnnotationWorker."
       "QueueNumberOfObjectsToProcess",
       files_to_process_.size());
-  if (files_to_process_.empty()) {
-    DVLOG(1) << "The queue is empty.";
-    base::UmaHistogramLongTimes100(
-        "Apps.AppList.AnnotationStorage.ImageAnnotationWorker."
-        "QueueProcessingTime",
-        base::TimeTicks::Now() - queue_processing_start_time_);
-    // TODO(b:353385656): Remove this log after the performance analysis.
-    if (base::FeatureList::IsEnabled(ash::features::kLocalImageSearchOnCore)) {
-      LOG(ERROR) << "image indexing finishes.";
-    }
-    image_content_annotator_.DisconnectAnnotator();
-    return;
-  }
 
-  const base::FilePath path = files_to_process_.front();
-  DVLOG(1) << "ProcessNextItem " << path;
-  if (base::PathExists(path)) {
-    if (base::DirectoryExists(path)) {  // It's a directory.
-      return ProcessNextDirectory();
-    } else {  // It's a file.
-      if (IsImage(path)) {
-        return ProcessNextImage();
+  while (files_to_process_.size() > 0) {
+    const base::FilePath path = files_to_process_.front();
+    files_to_process_.pop();
+
+    DVLOG(1) << "ProcessNextItem " << path;
+    if (base::PathExists(path)) {
+      if (base::DirectoryExists(path)) {  // It's a directory.
+        ProcessNextDirectory(path);
+      } else if (IsImage(path)) {
+        bool image_is_decoded = ProcessNextImage(path);
+        // If the image is decoded. stop the process as we need to keep the
+        // image processing sequential. The process will be continued by the
+        // callback (either `OnPerformOcr` or `OnPerformIca`).
+        if (image_is_decoded) {
+          return;
+        }
+      }
+      // Don't do anything if it's a non-image file and continue on the next
+      // item.
+    } else {
+      if (path.FinalExtension().empty()) {
+        RemoveOldDirectory(path);
       } else {
-        return MaybeProcessNextItem(path);
+        annotation_storage_->Remove(path);
       }
     }
-  } else {
-    if (path.FinalExtension().empty()) {
-      return RemoveOldDirectory();
-    } else {
-      annotation_storage_->Remove(path);
-      return MaybeProcessNextItem(path);
-    }
   }
+
+  DVLOG(1) << "The queue is empty.";
+  base::UmaHistogramLongTimes100(
+      "Apps.AppList.AnnotationStorage.ImageAnnotationWorker."
+      "QueueProcessingTime",
+      base::TimeTicks::Now() - queue_processing_start_time_);
+  // As the queue processing is finished, disconnects the annotators and
+  // resets the flag.
+  DisconnectAnnotators();
+  queue_processing_started_ = false;
 }
 
-void ImageAnnotationWorker::MaybeProcessNextItem(
-    const base::FilePath& file_path,
-    bool use_timer) {
-  // Early return if queue is empty already, or the processed file is
-  // out-of-date.
-  if (files_to_process_.empty() || files_to_process_.front() != file_path) {
-    return;
-  }
-  if (use_timer) {
-    timeout_timer_.Stop();
-  }
-  files_to_process_.pop();
-  return ProcessNextItem();
-}
-
-void ImageAnnotationWorker::ProcessNextDirectory() {
+void ImageAnnotationWorker::ProcessNextDirectory(
+    const base::FilePath& directory_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::FilePath directory_path = files_to_process_.front();
   DVLOG(1) << "ProcessNextDirectory " << directory_path;
 
   // We need to re-index all the files in the directory.
@@ -405,57 +445,91 @@ void ImageAnnotationWorker::ProcessNextDirectory() {
     DVLOG(1) << "Found file: " << file_path;
     OnFileChange(std::move(file_path), /*error=*/false);
   }
-  return MaybeProcessNextItem(directory_path);
+  return;
 }
 
-void ImageAnnotationWorker::RemoveOldDirectory() {
+void ImageAnnotationWorker::RemoveOldDirectory(
+    const base::FilePath& directory_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::FilePath directory_path = files_to_process_.front();
   DVLOG(1) << "RemoveOldDirectory " << directory_path;
 
   auto files = annotation_storage_->SearchByDirectory(directory_path);
   for (const auto& file : files) {
     OnFileChange(file, /*error=*/false);
   }
-
-  return MaybeProcessNextItem(directory_path);
+  return;
 }
 
-void ImageAnnotationWorker::ProcessNextImage() {
+bool ImageAnnotationWorker::ProcessNextImage(const base::FilePath& image_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::FilePath image_path = files_to_process_.front();
-  DVLOG(1) << "ProcessNextImage " << image_path;
+  if (search_features::IsLauncherImageSearchDebugEnabled()) {
+    LOG(ERROR) << "ProcessNextImage " << image_path;
+  }
 
   auto file_info = std::make_unique<base::File::Info>();
   if (!base::GetFileInfo(image_path, file_info.get()) || file_info->size == 0 ||
       file_info->size > kMaxFileSizeBytes || !IsSupportedImage(image_path)) {
     annotation_storage_->Remove(image_path);
-    return MaybeProcessNextItem(image_path);
+    return false;
   }
   DCHECK(file_info);
 
-  const base::Time last_modified_time =
-      annotation_storage_->GetLastModifiedTime(image_path);
-  // Annotations are updated on a file change and have the file's last
-  // modified time. So skip inserting the image annotations if the file
-  // has not changed since the last update.
-  if (file_info->last_modified == last_modified_time) {
-    return MaybeProcessNextItem(image_path);
+  // If all conditions meet:
+  //  1. The image exists in the database and has not been modified since
+  //  the last indexing.
+  //  2. The ocr is not enabled or the ocr indexing in database is up-to-date.
+  //  3. The ica is not enabled or the ica indexing in database is up-to-date.
+  //  4. It's not in the test environment.
+  // Then an indexing is not expected and skip the process. Otherwise, clear
+  // this image from database and redo the indexing.
+  const ImageStatus image_status =
+      annotation_storage_->GetImageStatus(image_path);
+  bool ocr_up_to_date = !use_ocr_ || image_status.ocr_version == kOcrVersion;
+  bool ica_up_to_date = !use_ica_ || image_status.ica_version == kIcaVersion;
+  if (file_info->last_modified ==
+          image_status.last_modified.value_or(base::Time()) &&
+      ocr_up_to_date && ica_up_to_date &&
+      !image_processing_delay_for_test_.has_value()) {
+    return false;
   }
 
   DVLOG(1) << "Processing new " << image_path << " "
            << file_info->last_modified;
   annotation_storage_->Remove(image_path);
-  ImageInfo image_info({}, image_path, file_info->last_modified,
+  ImageInfo image_info(/*annotations=*/{}, image_path, file_info->last_modified,
                        file_info->size);
 
+  // Early return if:
+  // 1. Reaching the indexing limit.
+  // 2. Reaching the maximum ica disconnection event.
+  // 3. Reaching the maximum ocr disconnection event.
+  // Continue the process as we still need to deal with deleted images.
   if (search_features::IsLauncherImageSearchIndexingLimitEnabled()) {
-    // Early return if reaches the indexing limit. Continue the process as we
-    // still need to deal with deleted files.
     if (num_indexing_images_ >= indexing_limit_) {
-      return MaybeProcessNextItem(image_path);
+      // When reaching indexing limit, no more image processing is expected.
+      // Thus, disconnects annotators.
+      DisconnectAnnotators();
+      return false;
     }
     num_indexing_images_ += 1;
+  }
+  if (num_ica_disconnection_ >= kMaxDisconnection ||
+      num_ocr_disconnection_ >= kMaxDisconnection) {
+    // When reaching disconnection limit, no more image processing is
+    // expected. Thus, disconnects annotators.
+    DisconnectAnnotators();
+    return false;
+  }
+
+  // The fake logic should only work in tests. In tests, always skip the image
+  // decoding step.
+  if (image_processing_delay_for_test_.has_value()) {
+    // Call `OnDecodeImageFile` so that we can test the logic of timer.
+    main_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&ImageAnnotationWorker::OnDecodeImageFile,
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  std::move(image_info), gfx::ImageSkia()));
+    return true;
   }
 
   if (use_ocr_ || use_ica_) {
@@ -464,55 +538,61 @@ void ImageAnnotationWorker::ProcessNextImage() {
         base::BindOnce(&ImageAnnotationWorker::OnDecodeImageFile,
                        weak_ptr_factory_.GetWeakPtr(), image_info),
         image_info.path);
-    return;
+    return true;
   }
-
-  // The fake logic should only work in tests.
-  if (image_processing_delay_for_test_.has_value()) {
-    // Call `OnDecodeImageFile` so that we can test the logic of timer.
-    ImageAnnotationWorker::OnDecodeImageFile(std::move(image_info),
-                                             gfx::ImageSkia());
-    return;
-  }
+  return false;
 }
 
 void ImageAnnotationWorker::OnDecodeImageFile(
     ImageInfo image_info,
     const gfx::ImageSkia& image_skia) {
-  DVLOG(1) << "OnDecodeImageFile.";
+  if (search_features::IsLauncherImageSearchDebugEnabled()) {
+    LOG(ERROR) << "OnDecodeImageFile.";
+  }
   // `image_skia` can be empty in tests.
   if (image_skia.size().IsEmpty() &&
       !image_processing_delay_for_test_.has_value()) {
     LOG(ERROR) << "Failed to decode image.";
     LogStatusUma(Status::kFailedToDecodeImage);
-    return MaybeProcessNextItem(image_info.path);
-  }
-
-  timeout_timer_.Start(
-      FROM_HERE, kMaxImageProcessingTime,
-      base::BindOnce(&ImageAnnotationWorker::OnImageProcessTimeout,
-                     weak_ptr_factory_.GetWeakPtr()));
-
-  if (use_ocr_ && use_ica_) {
-    LogIndexingUma(IndexingStatus::kOcrStart);
-    LogIndexingUma(IndexingStatus::kIcaStart);
-    optical_character_recognizer_->PerformOCR(
-        *image_skia.bitmap(),
-        base::BindOnce(&ImageAnnotationWorker::OnPerformOcr,
-                       weak_ptr_factory_.GetWeakPtr(), image_info)
-            .Then(base::BindOnce(
-                &ImageContentAnnotator::AnnotateEncodedImage,
-                base::Unretained(&image_content_annotator_), image_info.path,
-                base::BindOnce(&ImageAnnotationWorker::OnPerformIca,
-                               weak_ptr_factory_.GetWeakPtr(),
-                               std::move(image_info)))));
+    ProcessItems();
     return;
+  }
+  image_info.width = image_skia.width();
+  image_info.height = image_skia.height();
+
+  if (search_features::IsLauncherImageSearchDebugEnabled()) {
+    LOG(ERROR) << "Image decoding succeed.";
   }
 
   if (use_ocr_) {
     LogIndexingUma(IndexingStatus::kOcrStart);
+    LogIcaUma(IcaStatus::kStartWithOcr);
+    CHECK(!ocr_in_use_);
+
+    // Downsamples Image if it is too big for OCR, and it helps reduce the
+    // memory
+    // usage and ocr processing time. We scale to the smaller ratio to ensure
+    // that the resized width and height won't exceed the max value.
+    gfx::ImageSkia resized_image;
+
+    if (image_skia.height() > kMaxOcrImageSize ||
+        image_skia.width() > kMaxOcrImageSize) {
+      float scale = static_cast<float>(kMaxOcrImageSize) /
+                    std::max(image_skia.width(), image_skia.height());
+      gfx::Size target_size = gfx::ScaleToRoundedSize(image_skia.size(), scale);
+      resized_image = gfx::ImageSkiaOperations::CreateResizedImage(
+          image_skia, skia::ImageOperations::RESIZE_BEST, target_size);
+    }
+
+    ocr_in_use_ = true;
+    // If it's the first ocr request in a batch, set the OCR mode to light
+    // first.
+    if (ocr_batch_count_ == 0) {
+      optical_character_recognizer_->SetOCRLightMode(/*enabled=*/true);
+    }
+    ocr_batch_count_++;
     optical_character_recognizer_->PerformOCR(
-        *image_skia.bitmap(),
+        resized_image.isNull() ? *image_skia.bitmap() : *resized_image.bitmap(),
         base::BindOnce(&ImageAnnotationWorker::OnPerformOcr,
                        weak_ptr_factory_.GetWeakPtr(), std::move(image_info)));
     return;
@@ -520,7 +600,11 @@ void ImageAnnotationWorker::OnDecodeImageFile(
 
   if (use_ica_) {
     LogIndexingUma(IndexingStatus::kIcaStart);
-    image_content_annotator_.AnnotateEncodedImage(
+    LogIcaUma(IcaStatus::kStartWithoutOcr);
+    CHECK(!ica_in_use_);
+
+    ica_in_use_ = true;
+    image_content_annotator_->AnnotateEncodedImage(
         image_info.path,
         base::BindOnce(&ImageAnnotationWorker::OnPerformIca,
                        weak_ptr_factory_.GetWeakPtr(), std::move(image_info)));
@@ -543,7 +627,12 @@ void ImageAnnotationWorker::OnPerformOcr(
     ImageInfo image_info,
     screen_ai::mojom::VisualAnnotationPtr visual_annotation) {
   LogIndexingUma(IndexingStatus::kOcrSucceed);
-  DVLOG(1) << "OnPerformOcr";
+  LogIcaUma(IcaStatus::kOcrSucceed);
+  ocr_in_use_ = false;
+  if (search_features::IsLauncherImageSearchDebugEnabled()) {
+    LOG(ERROR) << "OnPerformOcr with line size: "
+               << visual_annotation->lines.size();
+  }
   for (const auto& text_line : visual_annotation->lines) {
     TokenizedString tokens(base::UTF8ToUTF16(text_line->text_line),
                            Mode::kWords);
@@ -556,13 +645,27 @@ void ImageAnnotationWorker::OnPerformOcr(
     }
   }
   // Always insert the `image_info` because even if there is no annotation for
-  // this image, we need to save the image last modification time so that we
+  // this image, we need to update the image status in the database so that we
   // won't re-process this image in the next user session.
-  annotation_storage_->Insert(std::move(image_info));
+  annotation_storage_->Insert(image_info, IndexingSource::kOcr);
+  LogIcaUma(IcaStatus::kOcrInserted);
 
   // OCR is the first in the pipeline.
-  if (!use_ica_) {
-    MaybeProcessNextItem(image_info.path, /*use_timer=*/true);
+  if (use_ica_) {
+    LogIndexingUma(IndexingStatus::kIcaStart);
+    CHECK(!ica_in_use_);
+
+    // Clear `annotations` as it's for ocr only.
+    image_info.annotations.clear();
+
+    ica_in_use_ = true;
+    image_content_annotator_->AnnotateEncodedImage(
+        image_info.path,
+        base::BindOnce(&ImageAnnotationWorker::OnPerformIca,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(image_info)));
+  } else {
+    LogIcaUma(IcaStatus::kIcaDisabled);
+    ProcessItems();
   }
 }
 
@@ -572,11 +675,15 @@ void ImageAnnotationWorker::OnPerformIca(
   if (ptr->status ==
       chromeos::machine_learning::mojom::ImageAnnotationResult::Status::OK) {
     LogIndexingUma(IndexingStatus::kIcaSucceed);
+    LogIcaUma(IcaStatus::kIcaSucceed);
+  } else {
+    LogIcaUma(IcaStatus::kIcaFailed);
   }
+  ica_in_use_ = false;
   DVLOG(1) << "OnPerformIca. Status: " << ptr->status
            << " Size: " << ptr->annotations.size();
   for (const auto& a : ptr->annotations) {
-    if (a->confidence < GetConfidenceThreshold() || !a->name.has_value() ||
+    if (a->score < kConfidenceThreshold || !a->name.has_value() ||
         a->name->empty()) {
       continue;
     }
@@ -584,21 +691,42 @@ void ImageAnnotationWorker::OnPerformIca(
     TokenizedString tokens(base::UTF8ToUTF16(a->name.value()), Mode::kWords);
     for (const auto& word : tokens.tokens()) {
       DVLOG(1) << "Id: " << a->id << " MId: " << a->mid
-               << " Confidence: " << (int)a->confidence << " Name: " << word;
-      image_info.annotations.insert(base::UTF16ToUTF8(word));
+               << " Confidence score: " << static_cast<float>(a->score)
+               << " Name: " << word;
+      std::string annotation = base::UTF16ToUTF8(word);
+      // If duplication occurs, keep the one with higher confidence score.
+      if (image_info.annotation_map.contains(annotation) &&
+          image_info.annotation_map[annotation].score >= a->score) {
+        continue;
+      }
+
+      AnnotationInfo annotation_info;
+      annotation_info.score = a->score;
+      if (a->bounding_box.has_value() && image_info.width > 0 &&
+          image_info.height > 0) {
+        annotation_info.x =
+            static_cast<float>(a->bounding_box->x()) / image_info.width;
+        annotation_info.y =
+            static_cast<float>(a->bounding_box->y()) / image_info.height;
+        annotation_info.area =
+            static_cast<float>(a->bounding_box->width()) / image_info.width *
+            static_cast<float>(a->bounding_box->height()) / image_info.height;
+      }
+      image_info.annotation_map[annotation] = annotation_info;
     }
   }
   // Always insert the `image_info` because even if there is no annotation for
-  // this image, we need to save the image last modification time so that we
+  // this image, we need to update the image status in the database so that we
   // won't re-process this image in the next user session.
-  annotation_storage_->Insert(image_info);
+  annotation_storage_->Insert(image_info, IndexingSource::kIca);
+  LogIcaUma(IcaStatus::kIcaInserted);
 
   // ICA is the last in the pipeline.
-  MaybeProcessNextItem(image_info.path, /*use_timer=*/true);
+  ProcessItems();
 }
 
 void ImageAnnotationWorker::FindAndRemoveDeletedFiles(
-    const std::vector<base::FilePath> files) {
+    std::vector<base::FilePath> files) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "FindAndRemoveDeletedImages.";
   task_runner_->PostTaskAndReplyWithResult(
@@ -623,10 +751,108 @@ void ImageAnnotationWorker::FindAndRemoveDeletedFiles(
           annotation_storage_));
 }
 
-void ImageAnnotationWorker::OnImageProcessTimeout() {
-  LOG(ERROR) << "Annotators timed out.";
-  LogStatusUma(Status::kImageProcessingTimeOut);
-  MaybeProcessNextItem(base::FilePath());
+void ImageAnnotationWorker::OnIcaDisconnected() {
+  // Ensures this function is executed in the `main_task_runner_` only.
+  if (!main_task_runner_->RunsTasksInCurrentSequence()) {
+    main_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&ImageAnnotationWorker::OnIcaDisconnected,
+                                  weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // If this is fired during ica processing, we have called
+  // `image_content_annotator_->AnnotateEncodedImage()` but have not received
+  // the callback yet. The callback won't be triggered in this case and ica
+  // has disconnected, thus we skip the current image.
+  if (ica_in_use_) {
+    LOG(ERROR) << "ICA disconnected during processing.";
+    LogStatusUma(Status::kFailedToProcessIca);
+
+    // If disconnection reaches the limit, we should no longer make ica
+    // processing request.
+    CHECK(num_ica_disconnection_ < kMaxDisconnection);
+    num_ica_disconnection_++;
+    if (num_ica_disconnection_ == kMaxDisconnection) {
+      LogStatusUma(Status::kIcaDisconnectionLimit);
+    }
+    ica_in_use_ = false;
+    // Restarts the process with a short delay to allow ica to recover.
+    // This queue deals with image changes, both addition and deletion. Even
+    // when reaching the limit and addition is not expected, we still need to
+    // continue the process to remove deleted images from the db.
+    // If `kMaxDisconnection` reached, we don't need to wait before continue
+    // the process.
+    main_task_runner_->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&ImageAnnotationWorker::ProcessItems,
+                       weak_ptr_factory_.GetWeakPtr()),
+        num_ica_disconnection_ == kMaxDisconnection ? base::TimeDelta()
+                                                    : kIcaReconnectDelay);
+  }
+  // If disconnection happens while ica is not processing, no-op.
+}
+
+void ImageAnnotationWorker::OnOcrDisconnected() {
+  // Ensures this function is executed in the `main_task_runner_` only.
+  if (!main_task_runner_->RunsTasksInCurrentSequence()) {
+    main_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&ImageAnnotationWorker::OnOcrDisconnected,
+                                  weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // If this is fired during ocr processing, we have called
+  // `optical_character_recognizer_->PerformOCR()` but have not received the
+  // callback yet. The callback won't be triggered in this case and ocr has
+  // disconnected, thus we skip the current image.
+  if (ocr_in_use_) {
+    LOG(ERROR) << "OCR disconnected during processing. ";
+    LogStatusUma(Status::kFailedToProcessOcr);
+
+    // If disconnection reaches the limit, we should no longer make ocr
+    // processing request.
+    CHECK(num_ocr_disconnection_ < kMaxDisconnection);
+    num_ocr_disconnection_++;
+    if (num_ocr_disconnection_ == kMaxDisconnection) {
+      LogStatusUma(Status::kOcrDisconnectionLimit);
+    }
+    ocr_in_use_ = false;
+    ocr_batch_count_ = 0;
+    // Restarts the process with the suggested delay to allow ocr to recover.
+    // This queue deals with image changes, both addition and deletion. Even
+    // when reaching the limit and addition is not expected, we still need to
+    // continue the process to remove deleted images from the db.
+    // If `kMaxDisconnection` reached, we don't need to wait before continue
+    // the process.
+    main_task_runner_->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&ImageAnnotationWorker::ProcessItems,
+                       weak_ptr_factory_.GetWeakPtr()),
+        num_ocr_disconnection_ == kMaxDisconnection
+            ? base::TimeDelta()
+            : SuggestedWaitTimeBeforeReAttempt(num_ocr_disconnection_));
+    // As the waiting period for OCR is long, shut down ICA to save resources.
+    // The connection will be resumed on the next ICA request through
+    // `EnsureAnnotatorIsConnected()`.
+    if (use_ica_) {
+      image_content_annotator_->DisconnectAnnotator();
+    }
+  }
+  // If disconnection happens while ocr is not processing, no-op. The
+  // `OnOcrDisconnected` event will be triggered again if we attempt to make
+  // request to the screen ai service before it's resumed.
+}
+
+void ImageAnnotationWorker::DisconnectAnnotators() {
+  if (use_ica_) {
+    image_content_annotator_->DisconnectAnnotator();
+  }
+  if (use_ocr_) {
+    optical_character_recognizer_->DisconnectAnnotator();
+    ocr_batch_count_ = 0;
+  }
 }
 
 void ImageAnnotationWorker::RunFakeImageAnnotator(ImageInfo image_info) {
@@ -635,8 +861,38 @@ void ImageAnnotationWorker::RunFakeImageAnnotator(ImageInfo image_info) {
   const std::string annotation =
       image_info.path.BaseName().RemoveFinalExtension().value();
   image_info.annotations.insert(std::move(annotation));
-  annotation_storage_->Insert(std::move(image_info));
-  MaybeProcessNextItem(image_info.path, /*use_timer=*/true);
+  annotation_storage_->Insert(std::move(image_info), source_for_test_);
+  ProcessItems();
+}
+
+void ImageAnnotationWorker::CheckIsOCRBusy() {
+  optical_character_recognizer_->IsOCRBusy(
+      base::BindOnce(&ImageAnnotationWorker::OnIsOCRBusyResponse,
+                     ocr_weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ImageAnnotationWorker::OnIsOCRBusyResponse(bool is_busy) {
+  // Ensures this function is executed in the `main_task_runner_` only.
+  if (!main_task_runner_->RunsTasksInCurrentSequence()) {
+    main_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&ImageAnnotationWorker::OnIsOCRBusyResponse,
+                                  weak_ptr_factory_.GetWeakPtr(), is_busy));
+    return;
+  }
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (is_busy) {
+    // Since this process is not user initiated, if the OCR is busy with other
+    // user initiated tasks, this task will be postponed.
+    main_task_runner_->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&ImageAnnotationWorker::CheckIsOCRBusy,
+                       weak_ptr_factory_.GetWeakPtr()),
+        kOcrRestartDelay);
+  } else {
+    // If ocr service is not busy, just continue the process.
+    ProcessItems();
+  }
 }
 
 void ImageAnnotationWorker::TriggerOnFileChangeForTests(

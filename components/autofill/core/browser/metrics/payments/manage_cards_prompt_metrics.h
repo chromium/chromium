@@ -7,12 +7,12 @@
 
 namespace autofill {
 
-// Metrics to measure user interaction with the Manage Cards view shown when
-// user clicks on the save card icon after accepting to save a card.
+// Metrics to measure user interaction with the Manage Cards view shown when the
+// user clicks on the save card icon after saving a local card.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class ManageCardsPromptMetric {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-
   // The manage cards promo was shown.
   kManageCardsShown = 0,
   // The user clicked on [Done].
@@ -22,8 +22,7 @@ enum class ManageCardsPromptMetric {
   kMaxValue = kManageCardsManageCards
 };
 
-void LogManageCardsPromptMetric(ManageCardsPromptMetric metric,
-                                bool is_upload_save);
+void LogManageCardsPromptMetric(ManageCardsPromptMetric metric);
 
 }  // namespace autofill
 

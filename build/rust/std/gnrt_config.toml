@@ -11,16 +11,18 @@
 # to per-crate options).
 
 [resolve]
-# There is a virtual "sysroot" crate that includes all sysroot libraries as
-# dependencies.
-root = "sysroot"
+# `/build/rust/std/fake_root` is an artificial crate that depends on a
+# `sysroot` crate from `//third_party/rust-src/library/sysroot` while also
+# turning on all the required crate features of `sysroot`.  `sysroot` includes
+# all sysroot libraries as dependencies.
+root = "fake_root"
 
 # Workaround for Cargo issue: hashbrown's Cargo.toml uses an unstable Cargo
 # feature that leads to incorrect `cargo metadata` output.
 #
 # TODO(https://github.com/rust-lang/cargo/issues/10801): remove workaround once
 # issue is fixed.
-remove_crates = ['allocator-api2']
+remove_crates = ['allocator-api2', 'shlex']
 
 [gn]
 build_file_template = "BUILD.gn.hbs"
@@ -40,13 +42,14 @@ build_file_template = "BUILD.gn.hbs"
 extra_kv = { include_coverage = true }
 
 [crate.compiler_builtins]
-# Dependencies of profiler_builtins must have instrumentation disabled
-# The build script conditionally generates a file; it's simplest to just paste
-# raw GN into the output. (crbug.com/1470653)
-extra_kv = { include_coverage = false, raw_gn = 'if (current_cpu == "arm64") { build_script_outputs = ["outlined_atomics.rs"] }' }
-
-# compiler_builtins depends on libm on windows crbug.com/1472681
-extra_src_roots = ['../libm']
+# Dependencies of profiler_builtins must have instrumentation disabled.
+extra_kv = { include_coverage = false }
+extra_build_script_src_roots = [
+  '../configure.rs',
+]
+extra_src_roots = [
+  '../../libm/src',
+]
 
 [crate.core]
 # Dependencies of profiler_builtins must have instrumentation disabled
@@ -105,3 +108,7 @@ exclude_deps_in_gn = ['proc_macro']
 #
 # Suppress link directives since we specify the deps in GN configs.
 extra_kv = { skip_build_rs = true, no_link_directives = true }
+
+[crate.windows-targets]
+# This target is #[no_core] which is incompatible with profiling.
+extra_kv = { include_coverage = false }

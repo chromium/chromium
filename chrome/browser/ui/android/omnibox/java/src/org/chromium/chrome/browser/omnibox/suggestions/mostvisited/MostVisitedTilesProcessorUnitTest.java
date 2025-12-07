@@ -38,14 +38,22 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
+import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionItemViewBuilder;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionViewProperties;
 import org.chromium.chrome.browser.omnibox.test.R;
+import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.widget.tile.TileViewProperties;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
@@ -57,8 +65,8 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /** Tests for {@link MostVisitedTilesProcessor}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -74,13 +82,18 @@ public final class MostVisitedTilesProcessorUnitTest {
     private MostVisitedTilesProcessor mProcessor;
     private List<AutocompleteMatch> mMatches;
 
-    private ArgumentCaptor<Callback<Bitmap>> mFavIconCallbackCaptor =
+    private final ArgumentCaptor<Callback<Bitmap>> mFavIconCallbackCaptor =
             ArgumentCaptor.forClass(Callback.class);
-    private ArgumentCaptor<Callback<Bitmap>> mGenIconCallbackCaptor =
+    private final ArgumentCaptor<Callback<Bitmap>> mGenIconCallbackCaptor =
             ArgumentCaptor.forClass(Callback.class);
     private @Mock Bitmap mFaviconBitmap;
     private @Mock SuggestionHost mSuggestionHost;
     private @Mock OmniboxImageSupplier mImageSupplier;
+    private @Mock AutocompleteInput mInput;
+    private @Mock UrlBarEditingTextStateProvider mTextProvider;
+    private @Mock Supplier<Tab> mTabSupplier;
+    private @Mock Supplier<ShareDelegate> mShareDelegateSupplier;
+    private @Mock BookmarkState mBookmarkState;
 
     static class TileData {
         public final String title;
@@ -109,9 +122,17 @@ public final class MostVisitedTilesProcessorUnitTest {
                 .when(mImageSupplier)
                 .generateFavicon(any(), mGenIconCallbackCaptor.capture());
 
-        mProcessor =
-                new MostVisitedTilesProcessor(
-                        mContext, mSuggestionHost, Optional.of(mImageSupplier));
+        AutocompleteUIContext uiContext =
+                new AutocompleteUIContext(
+                        mContext,
+                        mSuggestionHost,
+                        mTextProvider,
+                        mImageSupplier,
+                        mBookmarkState,
+                        mTabSupplier,
+                        mShareDelegateSupplier,
+                        new ObservableSupplierImpl<>(ControlsPosition.TOP));
+        mProcessor = new MostVisitedTilesProcessor(uiContext);
         OmniboxResourceProvider.disableCachesForTesting();
     }
 
@@ -136,10 +157,10 @@ public final class MostVisitedTilesProcessorUnitTest {
                                             ? OmniboxSuggestionType.TILE_REPEATABLE_QUERY
                                             : OmniboxSuggestionType.TILE_MOST_VISITED_SITE)
                             .setIsSearch(tile.isSearch)
-                            .setDisplayText(tile.title)
+                            .setDescription(tile.title)
                             .setUrl(tile.url)
                             .build();
-            mProcessor.populateModel(match, mPropertyModel, placement);
+            mProcessor.populateModel(mInput, match, mPropertyModel, placement);
             mMatches.add(match);
         }
 
@@ -187,9 +208,17 @@ public final class MostVisitedTilesProcessorUnitTest {
 
     @Test
     public void populateModel_navTileIcon_fallbackIcon() {
-        mProcessor =
-                new MostVisitedTilesProcessor(
-                        mContext, mSuggestionHost, /* imageSupplier= */ Optional.empty());
+        AutocompleteUIContext uiContext =
+                new AutocompleteUIContext(
+                        mContext,
+                        mSuggestionHost,
+                        mTextProvider,
+                        /* imageSupplier= */ null,
+                        mBookmarkState,
+                        mTabSupplier,
+                        mShareDelegateSupplier,
+                        new ObservableSupplierImpl<>(ControlsPosition.TOP));
+        mProcessor = new MostVisitedTilesProcessor(uiContext);
         List<ListItem> tileList =
                 populateMatchesForHorizontalRenderGroup(0, new TileData("title", NAV_URL, false));
 
@@ -406,13 +435,16 @@ public final class MostVisitedTilesProcessorUnitTest {
         // Note that this passes both placement of the carousel in the list as well as particular
         // element that is getting removed.
         tileList.get(1).model.get(TileViewProperties.ON_LONG_CLICK).onLongClick(null);
-        ordered.verify(mSuggestionHost, times(1)).onDeleteMatch(eq(mMatches.get(1)), eq("nav1"));
+        ordered.verify(mSuggestionHost, times(1))
+                .confirmDeleteMatch(eq(mMatches.get(1)), eq("nav1"));
 
         tileList.get(2).model.get(TileViewProperties.ON_LONG_CLICK).onLongClick(null);
-        ordered.verify(mSuggestionHost, times(1)).onDeleteMatch(eq(mMatches.get(2)), eq("nav2"));
+        ordered.verify(mSuggestionHost, times(1))
+                .confirmDeleteMatch(eq(mMatches.get(2)), eq("nav2"));
 
         tileList.get(0).model.get(TileViewProperties.ON_LONG_CLICK).onLongClick(null);
-        ordered.verify(mSuggestionHost, times(1)).onDeleteMatch(eq(mMatches.get(0)), eq("search1"));
+        ordered.verify(mSuggestionHost, times(1))
+                .confirmDeleteMatch(eq(mMatches.get(0)), eq("search1"));
 
         verifyNoMoreInteractions(mSuggestionHost);
         verifyNoMoreInteractions(mImageSupplier);
@@ -433,13 +465,13 @@ public final class MostVisitedTilesProcessorUnitTest {
         // Note that this passes both placement of the carousel in the list as well as particular
         // element that is getting removed.
         tileList.get(1).model.get(TileViewProperties.ON_LONG_CLICK).onLongClick(null);
-        ordered.verify(mSuggestionHost).onDeleteMatch(eq(mMatches.get(1)), eq("nav1"));
+        ordered.verify(mSuggestionHost).confirmDeleteMatch(eq(mMatches.get(1)), eq("nav1"));
 
         tileList.get(2).model.get(TileViewProperties.ON_LONG_CLICK).onLongClick(null);
-        ordered.verify(mSuggestionHost).onDeleteMatch(eq(mMatches.get(2)), eq("nav2"));
+        ordered.verify(mSuggestionHost).confirmDeleteMatch(eq(mMatches.get(2)), eq("nav2"));
 
         tileList.get(0).model.get(TileViewProperties.ON_LONG_CLICK).onLongClick(null);
-        ordered.verify(mSuggestionHost).onDeleteMatch(eq(mMatches.get(0)), eq("search1"));
+        ordered.verify(mSuggestionHost).confirmDeleteMatch(eq(mMatches.get(0)), eq("search1"));
 
         verifyNoMoreInteractions(mSuggestionHost);
         verifyNoMoreInteractions(mImageSupplier);
@@ -545,7 +577,7 @@ public final class MostVisitedTilesProcessorUnitTest {
         populateMatchesForHorizontalRenderGroup(0, new TileData("", SEARCH_URL, true));
 
         assertEquals(
-                mContext.getResources().getString(R.string.accessibility_omnibox_most_visited_list),
+                mContext.getString(R.string.accessibility_omnibox_most_visited_list),
                 mPropertyModel.get(BaseCarouselSuggestionViewProperties.CONTENT_DESCRIPTION));
     }
 }

@@ -10,16 +10,19 @@
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/wallpaper/test_sea_pen_wallpaper_manager_session_delegate.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "base/hash/hash.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "chrome/test/base/chrome_ash_test_base.h"
 #include "components/account_id/account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -30,7 +33,8 @@
 namespace {
 
 constexpr char kUser[] = "user1@test.com";
-const AccountId kAccountId = AccountId::FromUserEmailGaiaId(kUser, kUser);
+const AccountId kAccountId =
+    AccountId::FromUserEmailGaiaId(kUser, GaiaId("1111"));
 
 ash::personalization_app::mojom::SeaPenQueryPtr MakeTemplateQuery() {
   return ash::personalization_app::mojom::SeaPenQuery::NewTemplateQuery(
@@ -43,14 +47,14 @@ ash::personalization_app::mojom::SeaPenQueryPtr MakeTemplateQuery() {
               "test template query", "test template title")));
 }
 
-class WallpaperMetricsProviderTest : public ash::AshTestBase {
+class WallpaperMetricsProviderTest : public ChromeAshTestBase {
  public:
   WallpaperMetricsProvider& wallpaper_metrics_provider() {
     return wallpaper_metrics_provider_;
   }
 
   void SetUp() override {
-    ash::AshTestBase::SetUp();
+    ChromeAshTestBase::SetUp();
     ash::SeaPenWallpaperManager::GetInstance()->SetSessionDelegateForTesting(
         std::make_unique<ash::TestSeaPenWallpaperManagerSessionDelegate>());
   }
@@ -132,8 +136,7 @@ TEST_F(WallpaperMetricsProviderTest, RecordsImageSettledWithEmptyCollectionId) {
   histogram_tester.ExpectTotalCount("Ash.Wallpaper.Collection.Settled", 0);
 }
 
-// TODO(crbug.com/347294904): Re-enable this test
-TEST_F(WallpaperMetricsProviderTest, DISABLED_RecordsSeaPenTemplateSettled) {
+TEST_F(WallpaperMetricsProviderTest, RecordsSeaPenTemplateSettled) {
   SimulateUserLogin(kAccountId);
   AccountId account_id =
       ash::Shell::Get()->session_controller()->GetActiveAccountId();
@@ -160,7 +163,14 @@ TEST_F(WallpaperMetricsProviderTest, DISABLED_RecordsSeaPenTemplateSettled) {
 
   wallpaper_metrics_provider().ProvideCurrentSessionData(nullptr);
 
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  wallpaper_metrics_provider().SetGetTemplateIdCallbackForTesting(
+      base::BindLambdaForTesting([&run_loop](bool success) {
+        EXPECT_TRUE(success);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
   histogram_tester.ExpectUniqueSample(
       "Ash.Wallpaper.SeaPen.Template.Settled",
       static_cast<int>(

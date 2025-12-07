@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/values.h"
+#include "components/enterprise/browser/reporting/report_generation_config.h"
 #include "components/enterprise/browser/reporting/report_type.h"
 #include "components/policy/core/browser/policy_conversions_client.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -31,6 +32,8 @@ class ReportingDelegateFactory;
  */
 class ProfileReportGenerator {
  public:
+  using ExtensionsEnabledCallback = base::RepeatingCallback<bool()>;
+
   class Delegate {
    public:
     Delegate() = default;
@@ -45,11 +48,20 @@ class ProfileReportGenerator {
     // Sets sign-in information in the report, including email and gaia id.
     virtual void GetSigninUserInfo(
         enterprise_management::ChromeUserProfileInfo* report) = 0;
-    // Sets intalled extension information in the report.
+    // Set affiliation information in the report.
+    virtual void GetAffiliationInfo(
+        enterprise_management::ChromeUserProfileInfo* report) = 0;
+    // Sets installed extension information in the report.
     virtual void GetExtensionInfo(
         enterprise_management::ChromeUserProfileInfo* report) = 0;
     // Sets extension requests information in the report.
     virtual void GetExtensionRequest(
+        enterprise_management::ChromeUserProfileInfo* report) = 0;
+    // Sets profile id in the report.
+    virtual void GetProfileId(
+        enterprise_management::ChromeUserProfileInfo* report) = 0;
+    // Sets profile name in the report.
+    virtual void GetProfileName(
         enterprise_management::ChromeUserProfileInfo* report) = 0;
 
     // Returns a new platform-specific policy conversions client.
@@ -69,13 +81,19 @@ class ProfileReportGenerator {
   void set_policies_enabled(bool enabled);
   void set_is_machine_scope(bool is_machine);
 
-  // Generates a report for the profile associated with |path| and |name| if
-  // it's activated, and returns the report. The report is null if it can't be
-  // generated.
-  std::unique_ptr<enterprise_management::ChromeUserProfileInfo> MaybeGenerate(
+  // Pass a callback to enable/disable extension report with dynamic condition.
+  void SetExtensionsEnabledCallback(ExtensionsEnabledCallback callback);
+
+  // Generates a report for the profile associated with `path` if
+  // it's activated, and returns the report by invoking `callback` with its
+  // value. The report is null if it can't be generated.
+  void MaybeGenerate(
       const base::FilePath& path,
-      const std::string& name,
-      ReportType report_type);
+      ReportType report_type,
+      SecuritySignalsMode signals_mode,
+      base::OnceCallback<
+          void(std::unique_ptr<enterprise_management::ChromeUserProfileInfo>)>
+          callback);
 
  protected:
   void GetChromePolicyInfo();
@@ -89,6 +107,8 @@ class ProfileReportGenerator {
   bool extensions_enabled_ = true;
   bool policies_enabled_ = true;
   bool is_machine_scope_ = true;
+
+  base::RepeatingCallback<bool()> extensions_enabled_callback_;
 
   std::unique_ptr<enterprise_management::ChromeUserProfileInfo> report_;
 };

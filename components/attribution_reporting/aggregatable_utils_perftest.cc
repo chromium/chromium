@@ -54,7 +54,7 @@ class AggregatableUtilsPerfTest : public testing::Test,
 };
 
 TEST_P(AggregatableUtilsPerfTest, GetNullAggregatableReports) {
-  const auto& test_case = GetParam();
+  const TestCase& test_case = GetParam();
 
   const base::Time trigger_time = base::Time::Now();
   const std::optional<base::Time> attributed_source_time;
@@ -80,12 +80,15 @@ TEST_P(AggregatableUtilsPerfTest, GetNullAggregatableReports) {
   perf_test::PerfResultReporter reporter(
       "AttributionReporting.GetNullAggregatableReports", test_case.story_name);
   reporter.RegisterImportantMetric(".wall_time", "ms");
-  reporter.AddResult(".wall_time", 1e6 / timer.LapsPerSecond());
+  reporter.AddResult(".wall_time", timer.TimePerLap());
 }
 
 INSTANTIATE_TEST_SUITE_P(,
                          AggregatableUtilsPerfTest,
-                         testing::ValuesIn(kTestCases));
+                         testing::ValuesIn(kTestCases),
+                         [](const testing::TestParamInfo<TestCase>& info) {
+                           return info.param.story_name;
+                         });
 
 }  // namespace
 }  // namespace attribution_reporting

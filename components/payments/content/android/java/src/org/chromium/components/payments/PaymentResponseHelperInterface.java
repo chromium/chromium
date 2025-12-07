@@ -4,12 +4,14 @@
 
 package org.chromium.components.payments;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.payments.mojom.PaymentResponse;
 
 /**
  * The interface of a helper class that generates a {@link PaymentResponse} with the input of
  * payment details.
  */
+@NullMarked
 public interface PaymentResponseHelperInterface {
     /**
      * Generates a {@link PaymentResponse} with the given payment details.
@@ -26,8 +28,9 @@ public interface PaymentResponseHelperInterface {
 
     /** The callback that output the payment response. */
     interface PaymentResponseResultCallback {
-        /*
+        /**
          * Called when the payment response is generated.
+         *
          * @param response The payment response to send to the merchant.
          */
         void onPaymentResponseReady(PaymentResponse response);

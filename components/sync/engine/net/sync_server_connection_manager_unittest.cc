@@ -15,6 +15,7 @@
 #include "components/sync/engine/net/http_post_provider.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_request_headers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {
@@ -26,7 +27,8 @@ class BlockingHttpPost : public HttpPostProvider {
       : wait_for_abort_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                         base::WaitableEvent::InitialState::NOT_SIGNALED) {}
 
-  void SetExtraRequestHeaders(const char* headers) override {}
+  void SetExtraRequestHeaders(const net::HttpRequestHeaders& headers) override {
+  }
   void SetURL(const GURL& url) override {}
   void SetPostPayload(const char* content_type,
                       int content_length,
@@ -118,7 +120,8 @@ class FailingHttpPost : public HttpPostProvider {
   explicit FailingHttpPost(int net_error_code)
       : net_error_code_(net_error_code) {}
 
-  void SetExtraRequestHeaders(const char* headers) override {}
+  void SetExtraRequestHeaders(const net::HttpRequestHeaders& headers) override {
+  }
   void SetURL(const GURL& url) override {}
   void SetPostPayload(const char* content_type,
                       int content_length,

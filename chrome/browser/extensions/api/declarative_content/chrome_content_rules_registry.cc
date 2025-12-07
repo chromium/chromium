@@ -9,8 +9,6 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/web_contents.h"
@@ -18,8 +16,12 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/rules_registry_ids.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/declarative/declarative_constants.h"
 #include "extensions/common/extension_id.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -82,11 +84,11 @@ ChromeContentRulesRegistry::ChromeContentRulesRegistry(
     : ContentRulesRegistry(browser_context,
                            declarative_content_constants::kOnPageChanged,
                            cache_delegate,
-                           RulesRegistryService::kDefaultRulesRegistryID),
+                           rules_registry_ids::kDefaultRulesRegistryID),
       evaluators_(std::move(evaluators_factory).Run(this)),
       evaluation_disposition_(EVALUATE_REQUESTS) {}
 
-void ChromeContentRulesRegistry::RequestEvaluation(
+void ChromeContentRulesRegistry::NotifyPredicateStateUpdated(
     content::WebContents* contents) {
   switch (evaluation_disposition_) {
     case EVALUATE_REQUESTS:
@@ -100,7 +102,7 @@ void ChromeContentRulesRegistry::RequestEvaluation(
   }
 }
 
-bool ChromeContentRulesRegistry::ShouldManageConditionsForBrowserContext(
+bool ChromeContentRulesRegistry::ShouldManagePredicatesForBrowserContext(
     content::BrowserContext* context) {
   return ManagingRulesForBrowserContext(context);
 }
@@ -132,6 +134,7 @@ void ChromeContentRulesRegistry::DidFinishNavigation(
 void ChromeContentRulesRegistry::WebContentsDestroyed(
     content::WebContents* web_contents) {
   active_rules_.erase(web_contents);
+  evaluation_pending_.erase(web_contents);
 }
 
 void ChromeContentRulesRegistry::OnWatchedPageChanged(
@@ -156,7 +159,7 @@ ChromeContentRulesRegistry::ContentRule::ContentRule(
       actions(std::move(actions)),
       priority(priority) {}
 
-ChromeContentRulesRegistry::ContentRule::~ContentRule() {}
+ChromeContentRulesRegistry::ContentRule::~ContentRule() = default;
 
 std::unique_ptr<const ChromeContentRulesRegistry::ContentRule>
 ChromeContentRulesRegistry::CreateRule(
@@ -303,8 +306,9 @@ std::string ChromeContentRulesRegistry::AddRulesImpl(
 
   // Request evaluation for all WebContents, under the assumption that a
   // non-empty condition has been added.
-  for (const auto& web_contents_rules_pair : active_rules_)
-    RequestEvaluation(web_contents_rules_pair.first);
+  for (const auto& web_contents_rules_pair : active_rules_) {
+    NotifyPredicateStateUpdated(web_contents_rules_pair.first);
+  }
 
   return std::string();
 }
@@ -437,7 +441,6 @@ size_t ChromeContentRulesRegistry::GetActiveRulesCountForTesting() {
   return count;
 }
 
-ChromeContentRulesRegistry::~ChromeContentRulesRegistry() {
-}
+ChromeContentRulesRegistry::~ChromeContentRulesRegistry() = default;
 
 }  // namespace extensions

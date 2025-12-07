@@ -31,7 +31,6 @@ namespace {
 
 using CertificateStatus = EnrollmentCertificateUploader::Status;
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::StrictMock;
 using ::testing::WithArgs;
 
@@ -95,11 +94,11 @@ class EnrollmentIdUploadManagerTest : public DeviceSettingsTestBase {
   void ExpectUploadEnrollmentCertificate(CertificateStatus status, int times) {
     EXPECT_CALL(certificate_uploader_, ObtainAndUploadCertificate(_))
         .Times(times)
-        .WillRepeatedly(Invoke(
+        .WillRepeatedly(
             [status](
                 base::OnceCallback<void(CertificateStatus status)> callback) {
               std::move(callback).Run(status);
-            }));
+            });
   }
 
   void ExpectUploadEnrollmentId(int times) {
@@ -109,7 +108,7 @@ class EnrollmentIdUploadManagerTest : public DeviceSettingsTestBase {
     }
     EXPECT_CALL(policy_client_, UploadEnterpriseEnrollmentId(enrollment_id_, _))
         .Times(times)
-        .WillRepeatedly(WithArgs<1>(Invoke(ResultCallbackSuccess)));
+        .WillRepeatedly(WithArgs<1>(ResultCallbackSuccess));
   }
 
   void SetUpDevicePolicy(bool enrollment_id_needed) {

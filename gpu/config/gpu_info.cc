@@ -11,10 +11,9 @@
 #include "build/build_config.h"
 #include "gpu/config/gpu_util.h"
 
-#if BUILDFLAG(IS_MAC)
-#include <GLES2/gl2.h>
-#include <GLES2/gl2extchromium.h>
-#endif  // BUILDFLAG(IS_MAC)
+#if BUILDFLAG(ENABLE_VULKAN)
+#include "gpu/ipc/common/vulkan_info.mojom.h"
+#endif
 
 namespace {
 
@@ -66,53 +65,6 @@ void EnumerateVideoEncodeAcceleratorSupportedProfile(
   enumerator->EndVideoEncodeAcceleratorSupportedProfile();
 }
 
-const char* ImageDecodeAcceleratorTypeToString(
-    gpu::ImageDecodeAcceleratorType type) {
-  switch (type) {
-    case gpu::ImageDecodeAcceleratorType::kJpeg:
-      return "JPEG";
-    case gpu::ImageDecodeAcceleratorType::kWebP:
-      return "WebP";
-    case gpu::ImageDecodeAcceleratorType::kUnknown:
-      return "Unknown";
-  }
-  NOTREACHED_IN_MIGRATION() << "Invalid ImageDecodeAcceleratorType.";
-  return "";
-}
-
-const char* ImageDecodeAcceleratorSubsamplingToString(
-    gpu::ImageDecodeAcceleratorSubsampling subsampling) {
-  switch (subsampling) {
-    case gpu::ImageDecodeAcceleratorSubsampling::k420:
-      return "4:2:0";
-    case gpu::ImageDecodeAcceleratorSubsampling::k422:
-      return "4:2:2";
-    case gpu::ImageDecodeAcceleratorSubsampling::k444:
-      return "4:4:4";
-  }
-}
-
-void EnumerateImageDecodeAcceleratorSupportedProfile(
-    const gpu::ImageDecodeAcceleratorSupportedProfile& profile,
-    gpu::GPUInfo::Enumerator* enumerator) {
-  enumerator->BeginImageDecodeAcceleratorSupportedProfile();
-  enumerator->AddString("imageType",
-                        ImageDecodeAcceleratorTypeToString(profile.image_type));
-  enumerator->AddString("minEncodedDimensions",
-                        profile.min_encoded_dimensions.ToString());
-  enumerator->AddString("maxEncodedDimensions",
-                        profile.max_encoded_dimensions.ToString());
-  std::string subsamplings;
-  for (size_t i = 0; i < profile.subsamplings.size(); i++) {
-    if (i > 0)
-      subsamplings += ", ";
-    subsamplings +=
-        ImageDecodeAcceleratorSubsamplingToString(profile.subsamplings[i]);
-  }
-  enumerator->AddString("subsamplings", subsamplings);
-  enumerator->EndImageDecodeAcceleratorSupportedProfile();
-}
-
 #if BUILDFLAG(IS_WIN)
 void EnumerateOverlayInfo(const gpu::OverlayInfo& info,
                           gpu::GPUInfo::Enumerator* enumerator) {
@@ -152,19 +104,6 @@ const char* OverlaySupportToString(gpu::OverlaySupport support) {
   }
 }
 #endif  // BUILDFLAG(IS_WIN)
-
-#if BUILDFLAG(IS_MAC)
-GPU_EXPORT bool ValidateMacOSSpecificTextureTarget(int target) {
-  switch (target) {
-    case GL_TEXTURE_2D:
-    case GL_TEXTURE_RECTANGLE_ARB:
-      return true;
-
-    default:
-      return false;
-  }
-}
-#endif  // BUILDFLAG(IS_MAC)
 
 VideoDecodeAcceleratorCapabilities::VideoDecodeAcceleratorCapabilities()
     : flags(0) {}
@@ -299,6 +238,12 @@ GPUInfo::GPUDevice* GPUInfo::FindGpuByLuid(DWORD low_part, LONG high_part) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(ENABLE_VULKAN)
+std::vector<uint8_t> GPUInfo::SerializeVulkanInfo() const {
+  return gpu::mojom::VulkanInfo::Serialize(&vulkan_info.value());
+}
+#endif
+
 void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
   struct GPUInfoKnownFields {
     base::TimeDelta initialization_time;
@@ -313,6 +258,7 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
     std::string machine_model_name;
     std::string machine_model_version;
     std::string display_type;
+    SkiaBackendType skia_backend_type;
     std::string gl_version;
     std::string gl_vendor;
     std::string gl_renderer;
@@ -345,13 +291,11 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
         video_encode_accelerator_supported_profiles;
     bool jpeg_decode_accelerator_supported;
 
-    ImageDecodeAcceleratorSupportedProfiles
-        image_decode_accelerator_supported_profiles;
-
     bool subpixel_font_rendering;
     uint32_t visibility_callback_call_count;
 
 #if BUILDFLAG(ENABLE_VULKAN)
+    bool hardware_supports_vulkan;
     std::optional<VulkanInfo> vulkan_info;
 #endif
   };
@@ -380,6 +324,8 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
   enumerator->AddString("vertexShaderVersion", vertex_shader_version);
   enumerator->AddString("maxMsaaSamples", max_msaa_samples);
   enumerator->AddString("displayType", display_type);
+  enumerator->AddString("skiaBackendType",
+                        SkiaBackendTypeToString(skia_backend_type));
   enumerator->AddString("glVersion", gl_version);
   enumerator->AddString("glVendor", gl_vendor);
   enumerator->AddString("glRenderer", gl_renderer);
@@ -421,14 +367,13 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
     EnumerateVideoEncodeAcceleratorSupportedProfile(profile, enumerator);
   enumerator->AddBool("jpegDecodeAcceleratorSupported",
       jpeg_decode_accelerator_supported);
-  for (const auto& profile : image_decode_accelerator_supported_profiles)
-    EnumerateImageDecodeAcceleratorSupportedProfile(profile, enumerator);
   enumerator->AddBool("subpixelFontRendering", subpixel_font_rendering);
   enumerator->AddInt("visibilityCallbackCallCount",
                      visibility_callback_call_count);
 #if BUILDFLAG(ENABLE_VULKAN)
+  enumerator->AddBool("hardwareSupportsVulkan", hardware_supports_vulkan);
   if (vulkan_info) {
-    auto blob = vulkan_info->Serialize();
+    auto blob = SerializeVulkanInfo();
     enumerator->AddBinary("vulkanInfo", base::span<const uint8_t>(blob));
   }
 #endif

@@ -2,29 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/win/src/handle_closer_agent.h"
 
 #include <Windows.h>
-#include <winnls.h>
 
 #include <stddef.h>
+#include <winnls.h>
 
 #include "base/check.h"
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/strings/string_util.h"
 #include "base/win/static_constants.h"
 #include "base/win/win_util.h"
+#include "base/win/windows_handle_util.h"
 #include "sandbox/win/src/heap_helper.h"
 #include "sandbox/win/src/sandbox_nt_util.h"
 #include "sandbox/win/src/win_utils.h"
 
 namespace sandbox {
 namespace {
+// Partial definition only for value not in PROCESSINFOCLASS.
+constexpr uint32_t ProcessHandleTable = 58;
+
 // Handle Types.
 constexpr wchar_t kFile[] = L"File";
 constexpr wchar_t kSection[] = L"Section";
@@ -62,6 +63,7 @@ bool CsrssDisconnectCleanup() {
   ::HeapDestroy(csr_port_heap);
   return true;
 }
+
 }  // namespace
 
 // Memory buffer mapped from the parent, with our configuration.
@@ -166,22 +168,21 @@ bool HandleCloserAgent::CloseHandles() {
 
   // The system call will return only handles up to the buffer size so add a
   // margin of error of an additional 1000 handles.
-  std::vector<char> buffer((handle_count + 1000) * sizeof(uint32_t));
+  auto handles = base::HeapArray<uint32_t>::WithSize(handle_count + 1000);
   DWORD return_length;
   NTSTATUS status = GetNtExports()->QueryInformationProcess(
-      ::GetCurrentProcess(), ProcessHandleTable, buffer.data(),
-      static_cast<ULONG>(buffer.size()), &return_length);
+      ::GetCurrentProcess(), static_cast<PROCESSINFOCLASS>(ProcessHandleTable),
+      handles.data(), static_cast<ULONG>(handles.size() * sizeof(uint32_t)),
+      &return_length);
 
   if (!NT_SUCCESS(status)) {
     ::SetLastError(GetLastErrorFromNtStatus(status));
     return false;
   }
-  DCHECK(buffer.size() >= return_length);
-  DCHECK((buffer.size() % sizeof(uint32_t)) == 0);
 
-  base::span<uint32_t> handle_values(reinterpret_cast<uint32_t*>(buffer.data()),
-                                     return_length / sizeof(uint32_t));
-  for (uint32_t handle_value : handle_values) {
+  CHECK(handles.size() * sizeof(uint32_t) >= return_length);
+  for (const uint32_t handle_value :
+       handles.subspan(0, return_length / sizeof(uint32_t))) {
     HANDLE handle = base::win::Uint32ToHandle(handle_value);
     auto type_name = GetTypeNameFromHandle(handle);
     if (type_name) {

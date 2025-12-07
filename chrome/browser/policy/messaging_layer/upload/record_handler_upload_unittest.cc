@@ -46,7 +46,6 @@ using ::testing::Between;
 using ::testing::Eq;
 using ::testing::Ge;
 using ::testing::Gt;
-using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::Lt;
 using ::testing::Not;
@@ -383,19 +382,19 @@ TEST_F(RecordHandlerUploadTest, SuccessfulInitiation) {
 
   EXPECT_CALL(mock_delegate_,
               DoInitiate(StrEq(kUploadFileName), Not(IsEmpty()), _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [](std::string_view origin_path, std::string_view upload_parameters,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*total*/,
                                     std::string /*session_token*/>>)> cb) {
             std::move(cb).Run(std::make_pair(300L, kSessionToken));
-          }));
+          });
   EXPECT_CALL(mock_delegate_, DoNextStep).Times(0);
   EXPECT_CALL(mock_delegate_, DoFinalize).Times(0);
 
   EXPECT_CALL(*test_storage_, AddRecord(Eq(Priority::SECURITY), _, _))
-      .WillOnce(Invoke([](Priority priority, Record record,
-                          StorageModuleInterface::EnqueueCallback callback) {
+      .WillOnce([](Priority priority, Record record,
+                   StorageModuleInterface::EnqueueCallback callback) {
         EXPECT_TRUE(record.needs_local_unencrypted_copy());
         LogUploadEvent log_upload_event;
         EXPECT_TRUE(log_upload_event.ParseFromArray(record.data().data(),
@@ -405,7 +404,7 @@ TEST_F(RecordHandlerUploadTest, SuccessfulInitiation) {
                           MatchTrackerInProgress(0L, 300L, kSessionToken)));
         EXPECT_FALSE(log_upload_event.upload_tracker().has_status());
         std::move(callback).Run(Status::StatusOK());
-      }));
+      });
 
   handler_->HandleRecords(
       /*need_encryption_key=*/false,
@@ -448,8 +447,8 @@ TEST_F(RecordHandlerUploadTest, SuccessfulNextStep) {
   EXPECT_CALL(mock_delegate_, DoFinalize).Times(0);
 
   EXPECT_CALL(*test_storage_, AddRecord(Eq(Priority::SECURITY), _, _))
-      .WillOnce(Invoke([](Priority priority, Record record,
-                          StorageModuleInterface::EnqueueCallback callback) {
+      .WillOnce([](Priority priority, Record record,
+                   StorageModuleInterface::EnqueueCallback callback) {
         EXPECT_TRUE(record.needs_local_unencrypted_copy());
         LogUploadEvent log_upload_event;
         EXPECT_TRUE(log_upload_event.ParseFromArray(record.data().data(),
@@ -459,7 +458,7 @@ TEST_F(RecordHandlerUploadTest, SuccessfulNextStep) {
                           MatchTrackerInProgress(200L, 300L, kSessionToken)));
         EXPECT_FALSE(log_upload_event.upload_tracker().has_status());
         std::move(callback).Run(Status::StatusOK());
-      }));
+      });
   handler_->HandleRecords(
       /*need_encryption_key=*/false,
       /*config_file_version=*/-1,
@@ -489,17 +488,16 @@ TEST_F(RecordHandlerUploadTest, SuccessfulFinalize) {
   EXPECT_CALL(mock_delegate_, DoInitiate).Times(0);
   EXPECT_CALL(mock_delegate_, DoNextStep).Times(0);
   EXPECT_CALL(mock_delegate_, DoFinalize(StrEq(kSessionToken), _))
-      .WillOnce(
-          Invoke([](std::string_view session_token,
-                    base::OnceCallback<void(
-                        StatusOr<std::string /*access_parameters*/>)> cb) {
-            std::move(cb).Run(kAccessParameters);
-          }));
+      .WillOnce([](std::string_view session_token,
+                   base::OnceCallback<void(
+                       StatusOr<std::string /*access_parameters*/>)> cb) {
+        std::move(cb).Run(kAccessParameters);
+      });
   EXPECT_CALL(mock_delegate_, DoDeleteFile(StrEq(kUploadFileName))).Times(1);
 
   EXPECT_CALL(*test_storage_, AddRecord(Eq(Priority::SECURITY), _, _))
-      .WillOnce(Invoke([](Priority priority, Record record,
-                          StorageModuleInterface::EnqueueCallback callback) {
+      .WillOnce([](Priority priority, Record record,
+                   StorageModuleInterface::EnqueueCallback callback) {
         EXPECT_FALSE(record.needs_local_unencrypted_copy());
         LogUploadEvent log_upload_event;
         EXPECT_TRUE(log_upload_event.ParseFromArray(record.data().data(),
@@ -509,7 +507,7 @@ TEST_F(RecordHandlerUploadTest, SuccessfulFinalize) {
                           MatchTrackerFinished(300L, kAccessParameters)));
         EXPECT_FALSE(log_upload_event.upload_tracker().has_status());
         std::move(callback).Run(Status::StatusOK());
-      }));
+      });
   handler_->HandleRecords(
       /*need_encryption_key=*/false,
       /*config_file_version=*/-1,
@@ -584,8 +582,8 @@ TEST_F(RecordHandlerUploadTest, FailedProcessing) {
   EXPECT_CALL(mock_delegate_, DoDeleteFile(StrEq(kUploadFileName))).Times(1);
 
   EXPECT_CALL(*test_storage_, AddRecord(Eq(Priority::SECURITY), _, _))
-      .WillOnce(Invoke([](Priority priority, Record record,
-                          StorageModuleInterface::EnqueueCallback callback) {
+      .WillOnce([](Priority priority, Record record,
+                   StorageModuleInterface::EnqueueCallback callback) {
         EXPECT_FALSE(record.needs_local_unencrypted_copy());
         LogUploadEvent log_upload_event;
         EXPECT_TRUE(log_upload_event.ParseFromArray(record.data().data(),
@@ -595,7 +593,7 @@ TEST_F(RecordHandlerUploadTest, FailedProcessing) {
             AllOf(MatchSettings(),
                   MatchError(Status(error::CANCELLED, "Failure by test"))));
         std::move(callback).Run(Status::StatusOK());
-      }));
+      });
   handler_->HandleRecords(
       /*need_encryption_key=*/false,
       /*config_file_version=*/-1,
@@ -619,19 +617,19 @@ TEST_F(RecordHandlerUploadTest, RepeatedInitiationAttempts) {
 
   EXPECT_CALL(mock_delegate_,
               DoInitiate(StrEq(kUploadFileName), Not(IsEmpty()), _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [](std::string_view origin_path, std::string_view upload_parameters,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*total*/,
                                     std::string /*session_token*/>>)> cb) {
             std::move(cb).Run(std::make_pair(300L, kSessionToken));
-          }));
+          });
   EXPECT_CALL(mock_delegate_, DoNextStep).Times(0);
   EXPECT_CALL(mock_delegate_, DoFinalize).Times(0);
 
   EXPECT_CALL(*test_storage_, AddRecord(Eq(Priority::SECURITY), _, _))
-      .WillOnce(Invoke([](Priority priority, Record record,
-                          StorageModuleInterface::EnqueueCallback callback) {
+      .WillOnce([](Priority priority, Record record,
+                   StorageModuleInterface::EnqueueCallback callback) {
         EXPECT_TRUE(record.needs_local_unencrypted_copy());
         LogUploadEvent log_upload_event;
         EXPECT_TRUE(log_upload_event.ParseFromArray(record.data().data(),
@@ -641,7 +639,7 @@ TEST_F(RecordHandlerUploadTest, RepeatedInitiationAttempts) {
                           MatchTrackerInProgress(0L, 300L, kSessionToken)));
         EXPECT_FALSE(log_upload_event.upload_tracker().has_status());
         std::move(callback).Run(Status::StatusOK());
-      }));
+      });
 
   for (size_t i = 0; i < kNumTestRecords; ++i) {
     ScopedReservation record_reservation(init_encrypted_record.ByteSizeLong(),
@@ -676,21 +674,21 @@ TEST_F(RecordHandlerUploadTest, InitiationFailureTriggersRetry) {
   // Simulate delegate failure initiating the job.
   EXPECT_CALL(mock_delegate_,
               DoInitiate(StrEq(kUploadFileName), Not(IsEmpty()), _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [](std::string_view origin_path, std::string_view upload_parameters,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*total*/,
                                     std::string /*session_token*/>>)> cb) {
             std::move(cb).Run(
                 base::unexpected(Status(error::CANCELLED, "Failure by test")));
-          }));
+          });
   EXPECT_CALL(mock_delegate_, DoNextStep).Times(0);
   EXPECT_CALL(mock_delegate_, DoFinalize).Times(0);
 
   // Record retry event and then original with status.
   EXPECT_CALL(*test_storage_, AddRecord(Eq(Priority::SECURITY), _, _))
-      .WillOnce(Invoke([](Priority priority, Record record,
-                          StorageModuleInterface::EnqueueCallback callback) {
+      .WillOnce([](Priority priority, Record record,
+                   StorageModuleInterface::EnqueueCallback callback) {
         // Expect retry event (starting a new job) - no tracker.
         EXPECT_TRUE(record.needs_local_unencrypted_copy());
         LogUploadEvent log_upload_event;
@@ -699,9 +697,9 @@ TEST_F(RecordHandlerUploadTest, InitiationFailureTriggersRetry) {
         EXPECT_THAT(log_upload_event, MatchSettings(/*retry_count=*/1));
         EXPECT_FALSE(log_upload_event.upload_tracker().has_status());
         std::move(callback).Run(Status::StatusOK());
-      }))
-      .WillOnce(Invoke([](Priority priority, Record record,
-                          StorageModuleInterface::EnqueueCallback callback) {
+      })
+      .WillOnce([](Priority priority, Record record,
+                   StorageModuleInterface::EnqueueCallback callback) {
         // Expect initiation failed event.
         EXPECT_FALSE(record.needs_local_unencrypted_copy());
         LogUploadEvent log_upload_event;
@@ -712,7 +710,7 @@ TEST_F(RecordHandlerUploadTest, InitiationFailureTriggersRetry) {
             AllOf(MatchSettings(/*retry_count=*/2),
                   MatchError(Status(error::CANCELLED, "Failure by test"))));
         std::move(callback).Run(Status::StatusOK());
-      }));
+      });
 
   // Original file to not be deleted!
   EXPECT_CALL(mock_delegate_, DoDeleteFile).Times(0);
@@ -762,8 +760,8 @@ TEST_F(RecordHandlerUploadTest, RepeatedNextStepAttempts) {
   EXPECT_CALL(mock_delegate_, DoFinalize).Times(0);
 
   EXPECT_CALL(*test_storage_, AddRecord(Eq(Priority::SECURITY), _, _))
-      .WillOnce(Invoke([](Priority priority, Record record,
-                          StorageModuleInterface::EnqueueCallback callback) {
+      .WillOnce([](Priority priority, Record record,
+                   StorageModuleInterface::EnqueueCallback callback) {
         EXPECT_TRUE(record.needs_local_unencrypted_copy());
         LogUploadEvent log_upload_event;
         EXPECT_TRUE(log_upload_event.ParseFromArray(record.data().data(),
@@ -773,7 +771,7 @@ TEST_F(RecordHandlerUploadTest, RepeatedNextStepAttempts) {
                           MatchTrackerInProgress(200L, 300L, kSessionToken)));
         EXPECT_FALSE(log_upload_event.upload_tracker().has_status());
         std::move(callback).Run(Status::StatusOK());
-      }));
+      });
 
   for (size_t i = 0; i < kNumTestRecords; ++i) {
     ScopedReservation record_reservation(
@@ -823,8 +821,8 @@ TEST_F(RecordHandlerUploadTest, NextStepFailureTriggersRetry) {
 
   // Record retry event and then original with status.
   EXPECT_CALL(*test_storage_, AddRecord(Eq(Priority::SECURITY), _, _))
-      .WillOnce(Invoke([](Priority priority, Record record,
-                          StorageModuleInterface::EnqueueCallback callback) {
+      .WillOnce([](Priority priority, Record record,
+                   StorageModuleInterface::EnqueueCallback callback) {
         // Expect retry event (starting a new job) - no tracker.
         EXPECT_TRUE(record.needs_local_unencrypted_copy());
         LogUploadEvent log_upload_event;
@@ -833,9 +831,9 @@ TEST_F(RecordHandlerUploadTest, NextStepFailureTriggersRetry) {
         EXPECT_THAT(log_upload_event, MatchSettings(/*retry_count=*/1));
         EXPECT_FALSE(log_upload_event.upload_tracker().has_status());
         std::move(callback).Run(Status::StatusOK());
-      }))
-      .WillOnce(Invoke([](Priority priority, Record record,
-                          StorageModuleInterface::EnqueueCallback callback) {
+      })
+      .WillOnce([](Priority priority, Record record,
+                   StorageModuleInterface::EnqueueCallback callback) {
         // Expect next step failed event.
         EXPECT_FALSE(record.needs_local_unencrypted_copy());
         LogUploadEvent log_upload_event;
@@ -846,7 +844,7 @@ TEST_F(RecordHandlerUploadTest, NextStepFailureTriggersRetry) {
             AllOf(MatchSettings(/*retry_count=*/2),
                   MatchError(Status(error::CANCELLED, "Failure by test"))));
         std::move(callback).Run(Status::StatusOK());
-      }));
+      });
 
   // Original file to not be deleted!
   EXPECT_CALL(mock_delegate_, DoDeleteFile).Times(0);
@@ -882,17 +880,16 @@ TEST_F(RecordHandlerUploadTest, RepeatedFinalizeAttempts) {
   EXPECT_CALL(mock_delegate_, DoInitiate).Times(0);
   EXPECT_CALL(mock_delegate_, DoNextStep).Times(0);
   EXPECT_CALL(mock_delegate_, DoFinalize(StrEq(kSessionToken), _))
-      .WillOnce(
-          Invoke([](std::string_view session_token,
-                    base::OnceCallback<void(
-                        StatusOr<std::string /*access_parameters*/>)> cb) {
-            std::move(cb).Run(kAccessParameters);
-          }));
+      .WillOnce([](std::string_view session_token,
+                   base::OnceCallback<void(
+                       StatusOr<std::string /*access_parameters*/>)> cb) {
+        std::move(cb).Run(kAccessParameters);
+      });
 
   // Record added only once!
   EXPECT_CALL(*test_storage_, AddRecord(Eq(Priority::SECURITY), _, _))
-      .WillOnce(Invoke([](Priority priority, Record record,
-                          StorageModuleInterface::EnqueueCallback callback) {
+      .WillOnce([](Priority priority, Record record,
+                   StorageModuleInterface::EnqueueCallback callback) {
         EXPECT_FALSE(record.needs_local_unencrypted_copy());
         LogUploadEvent log_upload_event;
         EXPECT_TRUE(log_upload_event.ParseFromArray(record.data().data(),
@@ -902,7 +899,7 @@ TEST_F(RecordHandlerUploadTest, RepeatedFinalizeAttempts) {
                           MatchTrackerFinished(300L, kAccessParameters)));
         EXPECT_FALSE(log_upload_event.upload_tracker().has_status());
         std::move(callback).Run(Status::StatusOK());
-      }));
+      });
 
   // Original file to be deleted only once!
   EXPECT_CALL(mock_delegate_, DoDeleteFile(StrEq(kUploadFileName))).Times(1);
@@ -941,18 +938,17 @@ TEST_F(RecordHandlerUploadTest, FinalizeFailureTriggersRetry) {
   EXPECT_CALL(mock_delegate_, DoNextStep).Times(0);
   // Simulate delegate failure finalizing the job.
   EXPECT_CALL(mock_delegate_, DoFinalize(StrEq(kSessionToken), _))
-      .WillOnce(
-          Invoke([](std::string_view session_token,
-                    base::OnceCallback<void(
-                        StatusOr<std::string /*access_parameters*/>)> cb) {
-            std::move(cb).Run(
-                base::unexpected(Status(error::CANCELLED, "Failure by test")));
-          }));
+      .WillOnce([](std::string_view session_token,
+                   base::OnceCallback<void(
+                       StatusOr<std::string /*access_parameters*/>)> cb) {
+        std::move(cb).Run(
+            base::unexpected(Status(error::CANCELLED, "Failure by test")));
+      });
 
   // Record retry event and then original with status.
   EXPECT_CALL(*test_storage_, AddRecord(Eq(Priority::SECURITY), _, _))
-      .WillOnce(Invoke([](Priority priority, Record record,
-                          StorageModuleInterface::EnqueueCallback callback) {
+      .WillOnce([](Priority priority, Record record,
+                   StorageModuleInterface::EnqueueCallback callback) {
         // Expect retry event (starting a new job) - no tracker.
         EXPECT_TRUE(record.needs_local_unencrypted_copy());
         LogUploadEvent log_upload_event;
@@ -961,9 +957,9 @@ TEST_F(RecordHandlerUploadTest, FinalizeFailureTriggersRetry) {
         EXPECT_THAT(log_upload_event, MatchSettings(/*retry_count=*/1));
         EXPECT_FALSE(log_upload_event.upload_tracker().has_status());
         std::move(callback).Run(Status::StatusOK());
-      }))
-      .WillOnce(Invoke([](Priority priority, Record record,
-                          StorageModuleInterface::EnqueueCallback callback) {
+      })
+      .WillOnce([](Priority priority, Record record,
+                   StorageModuleInterface::EnqueueCallback callback) {
         // Expect finalize failed event.
         EXPECT_FALSE(record.needs_local_unencrypted_copy());
         LogUploadEvent log_upload_event;
@@ -974,7 +970,7 @@ TEST_F(RecordHandlerUploadTest, FinalizeFailureTriggersRetry) {
             AllOf(MatchSettings(/*retry_count=*/2),
                   MatchError(Status(error::CANCELLED, "Failure by test"))));
         std::move(callback).Run(Status::StatusOK());
-      }));
+      });
 
   // Original file to not be deleted!
   EXPECT_CALL(mock_delegate_, DoDeleteFile).Times(0);

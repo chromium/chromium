@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/sensor/ambient_light_sensor.h"
 
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 
 using device::mojom::blink::SensorType;
 
@@ -33,7 +33,7 @@ AmbientLightSensor::AmbientLightSensor(ExecutionContext* execution_context,
              options,
              exception_state,
              SensorType::AMBIENT_LIGHT,
-             {mojom::blink::PermissionsPolicyFeature::kAmbientLightSensor}) {}
+             {network::mojom::PermissionsPolicyFeature::kAmbientLightSensor}) {}
 
 std::optional<double> AmbientLightSensor::illuminance() const {
   if (hasReading())

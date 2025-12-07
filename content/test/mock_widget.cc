@@ -40,7 +40,8 @@ void MockWidget::ClearScreenRects() {
 
 void MockWidget::GetWidgetInputHandler(
     mojo::PendingReceiver<blink::mojom::WidgetInputHandler> request,
-    mojo::PendingRemote<blink::mojom::WidgetInputHandlerHost> host) {
+    mojo::PendingRemote<blink::mojom::WidgetInputHandlerHost> host,
+    bool from_viz) {
   // Some tests try to reinitialize a host against same MockWidget multiple
   // times. We assume this happens against the same host and avoid changing the
   // binding.
@@ -86,10 +87,9 @@ void MockWidget::RequestSuccessfulPresentationTimeForNextFrame(
 
 void MockWidget::CancelSuccessfulPresentationTimeRequest() {}
 
-void MockWidget::SetupRenderInputRouterConnections(
+void MockWidget::SetupBrowserRenderInputRouterConnections(
     mojo::PendingReceiver<blink::mojom::RenderInputRouterClient>
-        browser_request,
-    mojo::PendingReceiver<blink::mojom::RenderInputRouterClient> viz_request) {
+        browser_request) {
   input_receiver_.Bind(std::move(browser_request));
 }
 

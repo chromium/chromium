@@ -10,7 +10,6 @@
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "remoting/host/input_monitor/local_mouse_input_monitor_x11.h"
-#include "remoting/host/linux/wayland_utils.h"
 
 namespace remoting {
 
@@ -20,10 +19,6 @@ std::unique_ptr<LocalPointerInputMonitor> LocalPointerInputMonitor::Create(
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
     LocalInputMonitor::PointerMoveCallback on_mouse_move,
     base::OnceClosure disconnect_callback) {
-  if (IsRunningWayland()) {
-    NOTIMPLEMENTED();
-    return nullptr;
-  }
   return std::make_unique<LocalMouseInputMonitorX11>(
       caller_task_runner, input_task_runner, std::move(on_mouse_move));
 }

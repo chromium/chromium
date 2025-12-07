@@ -11,6 +11,8 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <variant>
+#include <vector>
 
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
@@ -20,7 +22,6 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/browsing_data/content/browsing_data_model.h"
 #include "components/browsing_data/content/cookie_helper.h"
 #include "components/content_settings/common/content_settings_manager.mojom.h"
@@ -33,7 +34,6 @@
 #include "content/public/browser/page_user_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "net/base/schemeful_site.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -169,6 +169,10 @@ class PageSpecificContentSettings
     virtual content::WebContents* MaybeGetSyncedWebContentsForPictureInPicture(
         content::WebContents* web_contents) = 0;
 
+    // Returns `true` if `web_contents` represents a PiP window. Returns `false`
+    // otherwise.
+    virtual bool IsPiPWindow(content::WebContents* web_contents) = 0;
+
     // Notifies the delegate a particular content settings type was allowed for
     // the first time on this page.
     virtual void OnContentAllowed(ContentSettingsType type) = 0;
@@ -248,8 +252,8 @@ class PageSpecificContentSettings
 
   static void StorageAccessed(
       mojom::ContentSettingsManager::StorageType storage_type,
-      absl::variant<content::GlobalRenderFrameHostToken,
-                    content::GlobalRenderFrameHostId> frame_id,
+      std::variant<content::GlobalRenderFrameHostToken,
+                   content::GlobalRenderFrameHostId> frame_id,
       const blink::StorageKey& storage_key,
       bool blocked_by_policy);
 
@@ -438,13 +442,30 @@ class PageSpecificContentSettings
   // This method is called when audio or video capturing is started or finished.
   void OnCapturingStateChanged(ContentSettingsType type, bool is_capturing);
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // This method is called every time when device capabilities (currently, only
+  // Smart Cards) are used to communicate with a device. Because device
+  // connections can be long-lived, this method may be called multiple times
+  // during a connection.
+  void OnDeviceUsed(ContentSettingsType type);
+  // This is called when the last connection from this page to devices of `type`
+  // is closed.
+  void OnLastDeviceConnectionLost(ContentSettingsType type);
+#endif
+
   // Returns true if a page is currently using a feature gated behind `type`
   // permission. Returns false otherwise.
-  bool IsInUse(ContentSettingsType type) { return in_use_.contains(type); }
+  bool IsInUse(ContentSettingsType type) const;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // This is specific to the object based content settings (for now, just smart
+  // cards) - they should show for 15 more seconds after `IsInUse` turns false.
+  bool ShouldShowDeviceInUseIndicator(ContentSettingsType type) const;
+#endif
 
   // Returns a time of last usage of a feature gated behind `type` permission.
   // Returns base::Time() if `type` was not used in the last 24 hours.
-  const base::Time GetLastUsedTime(ContentSettingsType type);
+  const base::Time GetLastUsedTime(ContentSettingsType type) const;
 
   // This method is called when audio or video activity indicator is opened.
   void OnActivityIndicatorBubbleOpened(ContentSettingsType type);
@@ -472,6 +493,10 @@ class PageSpecificContentSettings
   // is true, then it will try to update activity indicators in the location
   // bar.
   void ResetMediaBlockedState(ContentSettingsType type, bool update_indicators);
+
+  // Called to update the location bar when a site first registers for automatic
+  // picture-in-picture.
+  void OnRegisteredForAutoPictureInPictureChanged();
 
   void set_media_stream_access_origin_for_testing(const GURL& url) {
     media_stream_access_origin_ = url;

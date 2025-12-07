@@ -13,8 +13,10 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
+#include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 
 namespace crosier {
@@ -29,7 +31,7 @@ void SendBuffer(const base::ScopedFD& sock, const char* buf, int byte_size) {
     ssize_t bytes_sent = HANDLE_EINTR(send(sock.get(), p, remaining, 0));
     CHECK_GT(bytes_sent, 0);
 
-    p += bytes_sent;
+    UNSAFE_TODO(p += bytes_sent);
     remaining -= bytes_sent;
   }
 }
@@ -46,7 +48,8 @@ base::ScopedFD CreateSocketAndBind(const base::FilePath& path) {
 
   struct sockaddr_un addr;
   addr.sun_family = AF_UNIX;
-  strncpy(addr.sun_path, path.value().c_str(), sizeof(sockaddr_un::sun_path));
+  UNSAFE_TODO(strncpy(addr.sun_path, path.value().c_str(),
+                      sizeof(sockaddr_un::sun_path)));
 
   PCHECK(bind(socket.get(), reinterpret_cast<struct sockaddr*>(&addr),
               sizeof(addr)) == 0);
@@ -68,7 +71,7 @@ std::string ReadString(const base::ScopedFD& sock) {
       break;
     }
 
-    if (buf[bytes_read - 1] == 0) {
+    if (UNSAFE_TODO(buf[bytes_read - 1]) == 0) {
       done = true;
       --bytes_read;  // No need to copy the null terminator.
     }
@@ -86,16 +89,15 @@ void ReadBuffer(const base::ScopedFD& sock, void* buf, int byte_size) {
     CHECK_GE(bytes_read, 0);
     if (bytes_read == 0) {
       // The connection is lost before finishing read. Not supported.
-      CHECK(false) << "Connection lost";
-      break;
+      NOTREACHED() << "Connection lost";
     }
 
-    p += bytes_read;
+    UNSAFE_TODO(p += bytes_read);
     remaining -= bytes_read;
   }
 }
 
-void SendString(const base::ScopedFD& sock, const std::string_view str) {
+void SendString(const base::ScopedFD& sock, std::string_view str) {
   SendBuffer(sock, str.data(), str.size());
 
   char terminator = 0;

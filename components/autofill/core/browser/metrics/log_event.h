@@ -5,20 +5,20 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_LOG_EVENT_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_LOG_EVENT_H_
 
+#include <variant>
+
 #include "base/time/time.h"
 #include "base/types/id_type.h"
-#include "components/autofill/core/browser/autofill_ablation_study.h"
-#include "components/autofill/core/browser/autofill_granular_filling_utils.h"
-#include "components/autofill/core/browser/form_filler.h"
-#include "components/autofill/core/browser/form_parsing/regex_patterns.h"
-#include "components/autofill/core/browser/proto/api_v1.pb.h"
+#include "components/autofill/core/browser/filling/field_filling_skip_reason.h"
+#include "components/autofill/core/browser/heuristic_source.h"
+#include "components/autofill/core/browser/studies/autofill_ablation_study.h"
 #include "components/autofill/core/common/is_required.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace autofill {
 
-using FieldPrediction =
-    AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction;
+enum AutofillQueryResponse_FormSuggestion_FieldSuggestion_FieldPrediction_Source : int;
+using FieldPredictionSource =
+    AutofillQueryResponse_FormSuggestion_FieldSuggestion_FieldPrediction_Source;
 
 // An identifier to connect the various sub-events of filling together.
 using FillEventId = base::IdTypeU32<class FillEventIdClass>;
@@ -34,23 +34,24 @@ OptionalBoolean ToOptionalBoolean(bool value);
 bool OptionalBooleanToBool(OptionalBoolean value);
 
 // Enum for different data types filled during autofill filling events,
-// including those of the SingleFieldFormFiller.
-// Values are recorded as metrics and must not change or be reused.
+// including those of the SingleFieldFiller.
 enum class FillDataType : uint8_t {
   kUndefined = 0,
   kAutofillProfile = 1,
   kCreditCard = 2,
-  kSingleFieldFormFillerAutocomplete = 3,
-  kSingleFieldFormFillerIban = 4,
-  kSingleFieldFormFillerPromoCode = 5,
+  kSingleFieldFillerAutocomplete = 3,
+  kSingleFieldFillerIban = 4,
+  kSingleFieldFillerPromoCode = 5,
+  kAutofillAi = 6,
+  kSingleFieldFillerLoyaltyCard = 7,
+  kOneTimePasswordValue = 8,
 };
 
 // AreCollapsible(..., ...) are a set of functions that checks whether two
 // consecutive events in the event log of a form can be merged into one.
 // This is a best effort mechanism to reduce the memory footprint caused by
 // redundant events.
-bool AreCollapsible(const absl::monostate& event1,
-                    const absl::monostate& event2);
+bool AreCollapsible(const std::monostate& event1, const std::monostate& event2);
 
 // Log the field that shows a dropdown list of suggestions for autofill.
 struct AskForValuesToFillFieldLogEvent {
@@ -92,21 +93,13 @@ struct FillFieldLogEvent {
       internal::IsRequired();
   // Whether the field had a value after this fill operation.
   OptionalBoolean had_value_after_filling = internal::IsRequired();
-  // The `FillingMethod` used to fill the field. This represents the
-  // different popup surfaces a user can use to interact with Autofill, which
-  // may lead to a different set of fields being filled. These sets/groups can
-  // be either the full form, a group of related fields or a single field.
-  FillingMethod filling_method = FillingMethod::kNone;
   // Records whether filling was ever prevented because of the cross c
   // autofill security policy that applies to credit cards.
   OptionalBoolean filling_prevented_by_iframe_security_policy =
       OptionalBoolean::kUndefined;
-  // The hash of the value that would have been filled if the field wasn't
-  // skipped because it was pre-filled on page load. In all other cases this
-  // member is set to `std::nullopt`.
-  std::optional<size_t>
-      value_that_would_have_been_filled_in_a_prefilled_field_hash =
-          std::nullopt;
+  // Indicates whether the filling was triggered due to a change in a dynamic
+  // form. (see FormFiller::TriggerRefill()).
+  OptionalBoolean was_refill = OptionalBoolean::kUndefined;
 };
 
 bool AreCollapsible(const FillFieldLogEvent& event1,
@@ -123,8 +116,8 @@ bool AreCollapsible(const TypingFieldLogEvent& event1,
 // Events recorded after local heuristic prediction happened.
 struct HeuristicPredictionFieldLogEvent {
   FieldType field_type = internal::IsRequired();
-  PatternSource pattern_source = internal::IsRequired();
-  bool is_active_pattern_source = internal::IsRequired();
+  HeuristicSource heuristic_source = internal::IsRequired();
+  bool is_active_heuristic_source = internal::IsRequired();
   size_t rank_in_field_signature_group = internal::IsRequired();
 };
 
@@ -144,11 +137,11 @@ bool AreCollapsible(const AutocompleteAttributeFieldLogEvent& event1,
 // Events recorded after autofill server prediction happened.
 struct ServerPredictionFieldLogEvent {
   std::optional<FieldType> server_type1 =
-      static_cast<FieldType>(internal::IsRequired());
-  FieldPrediction::Source prediction_source1 = internal::IsRequired();
+      static_cast<FieldType>(internal::IsRequired());  // nocheck
+  FieldPredictionSource prediction_source1 = internal::IsRequired();
   std::optional<FieldType> server_type2 =
-      static_cast<FieldType>(internal::IsRequired());
-  FieldPrediction::Source prediction_source2 = internal::IsRequired();
+      static_cast<FieldType>(internal::IsRequired());  // nocheck
+  FieldPredictionSource prediction_source2 = internal::IsRequired();
   bool server_type_prediction_is_override = internal::IsRequired();
   size_t rank_in_field_signature_group = internal::IsRequired();
 };

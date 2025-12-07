@@ -14,14 +14,11 @@
 
 @protocol FormSuggestionViewDelegate <NSObject>
 
-// User accepted a suggestion from FormSuggestionView.
+// User accepted a suggestion from FormSuggestionView. `index` indicates the
+// position of the selected suggestion among the available suggestions.
 - (void)formSuggestionView:(FormSuggestionView*)formSuggestionView
-       didAcceptSuggestion:(FormSuggestion*)suggestion;
-
-// The view received a long pull in the content direction. The delegate should
-// probably unlock the trailing view and reset to a clean state.
-- (void)formSuggestionViewShouldResetFromPull:
-    (FormSuggestionView*)formSuggestionView;
+       didAcceptSuggestion:(FormSuggestion*)suggestion
+                   atIndex:(NSInteger)index;
 
 @end
 
@@ -47,13 +44,13 @@
     accessoryTrailingView:(UIView*)trailingView
                completion:(void (^)(BOOL finished))completion;
 
+// Sets whether the UI is in compact mode, so that the keyboard accessory can
+// adapt to the compact size class if necessary.
+- (void)setIsCompact:(BOOL)isCompact;
+
 // Reset content insets back to zero and sets the delegate to nil. Used to stop
 // hearing for the pull gesture to reset and unlock the trailing view.
 - (void)resetContentInsetAndDelegateAnimated:(BOOL)animated;
-
-// Animates the content insets so the trailing view is showed as the first
-// thing.
-- (void)lockTrailingView;
 
 @end
 

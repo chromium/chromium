@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] logicalNot uint8 1D constant tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported constant type."
-Harness: the test ran to completion.
-

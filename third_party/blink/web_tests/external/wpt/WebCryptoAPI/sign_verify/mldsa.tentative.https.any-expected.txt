@@ -1,0 +1,81 @@
+This is a testharness.js-based test.
+[FAIL] importVectorKeys step: ML-DSA-44 basic test verification
+  assert_unreached: importVectorKeys failed for ML-DSA-44 basic test. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: ML-DSA-65 basic test verification
+  assert_unreached: importVectorKeys failed for ML-DSA-65 basic test. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: ML-DSA-87 basic test verification
+  assert_unreached: importVectorKeys failed for ML-DSA-87 basic test. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: ML-DSA-44 basic test verification with altered signature after call
+  assert_unreached: importVectorKeys failed for ML-DSA-44 basic test. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: ML-DSA-65 basic test verification with altered signature after call
+  assert_unreached: importVectorKeys failed for ML-DSA-65 basic test. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: ML-DSA-87 basic test verification with altered signature after call
+  assert_unreached: importVectorKeys failed for ML-DSA-87 basic test. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: ML-DSA-44 basic test with altered plaintext after call
+  assert_unreached: importVectorKeys failed for ML-DSA-44 basic test. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: ML-DSA-65 basic test with altered plaintext after call
+  assert_unreached: importVectorKeys failed for ML-DSA-65 basic test. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: ML-DSA-87 basic test with altered plaintext after call
+  assert_unreached: importVectorKeys failed for ML-DSA-87 basic test. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: ML-DSA-44 basic test using privateKey to verify
+  assert_unreached: importVectorKeys failed for ML-DSA-44 basic test. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: ML-DSA-65 basic test using privateKey to verify
+  assert_unreached: importVectorKeys failed for ML-DSA-65 basic test. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: ML-DSA-87 basic test using privateKey to verify
+  assert_unreached: importVectorKeys failed for ML-DSA-87 basic test. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: ML-DSA-44 basic test using publicKey to sign
+  assert_unreached: importVectorKeys failed for ML-DSA-44 basic test. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: ML-DSA-65 basic test using publicKey to sign
+  assert_unreached: importVectorKeys failed for ML-DSA-65 basic test. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: ML-DSA-87 basic test using publicKey to sign
+  assert_unreached: importVectorKeys failed for ML-DSA-87 basic test. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: ML-DSA-44 basic test no verify usage
+  assert_unreached: importVectorKeys failed for ML-DSA-44 basic test. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: ML-DSA-65 basic test no verify usage
+  assert_unreached: importVectorKeys failed for ML-DSA-65 basic test. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: ML-DSA-87 basic test no verify usage
+  assert_unreached: importVectorKeys failed for ML-DSA-87 basic test. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: ML-DSA-44 basic test round trip
+  assert_unreached: importVectorKeys failed for ML-DSA-44 basic test. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: ML-DSA-65 basic test round trip
+  assert_unreached: importVectorKeys failed for ML-DSA-65 basic test. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: ML-DSA-87 basic test round trip
+  assert_unreached: importVectorKeys failed for ML-DSA-87 basic test. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: ML-DSA-44 basic test verification failure due to altered signature
+  assert_unreached: importVectorKeys failed for ML-DSA-44 basic test. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: ML-DSA-65 basic test verification failure due to altered signature
+  assert_unreached: importVectorKeys failed for ML-DSA-65 basic test. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: ML-DSA-87 basic test verification failure due to altered signature
+  assert_unreached: importVectorKeys failed for ML-DSA-87 basic test. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: ML-DSA-44 basic test verification failure due to shortened signature
+  assert_unreached: importVectorKeys failed for ML-DSA-44 basic test. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: ML-DSA-65 basic test verification failure due to shortened signature
+  assert_unreached: importVectorKeys failed for ML-DSA-65 basic test. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: ML-DSA-87 basic test verification failure due to shortened signature
+  assert_unreached: importVectorKeys failed for ML-DSA-87 basic test. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: ML-DSA-44 basic test verification failure due to altered plaintext
+  assert_unreached: importVectorKeys failed for ML-DSA-44 basic test. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: ML-DSA-65 basic test verification failure due to altered plaintext
+  assert_unreached: importVectorKeys failed for ML-DSA-65 basic test. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: ML-DSA-87 basic test verification failure due to altered plaintext
+  assert_unreached: importVectorKeys failed for ML-DSA-87 basic test. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: ML-DSA-44 invalid signature verification
+  assert_unreached: importVectorKeys failed for ML-DSA-44 invalid signature. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: ML-DSA-65 invalid signature verification
+  assert_unreached: importVectorKeys failed for ML-DSA-65 invalid signature. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: ML-DSA-87 invalid signature verification
+  assert_unreached: importVectorKeys failed for ML-DSA-87 invalid signature. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: ML-DSA-44 basic test signing with wrong algorithm name
+  assert_unreached: importVectorKeys failed for ML-DSA-44 basic test. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: ML-DSA-65 basic test signing with wrong algorithm name
+  assert_unreached: importVectorKeys failed for ML-DSA-65 basic test. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: ML-DSA-87 basic test signing with wrong algorithm name
+  assert_unreached: importVectorKeys failed for ML-DSA-87 basic test. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: ML-DSA-44 basic test verifying with wrong algorithm name
+  assert_unreached: importVectorKeys failed for ML-DSA-44 basic test. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: ML-DSA-65 basic test verifying with wrong algorithm name
+  assert_unreached: importVectorKeys failed for ML-DSA-65 basic test. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: ML-DSA-87 basic test verifying with wrong algorithm name
+  assert_unreached: importVectorKeys failed for ML-DSA-87 basic test. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+Harness: the test ran to completion.
+

@@ -12,16 +12,16 @@ import org.chromium.chrome.browser.keyboard_accessory.data.CachedProviderAdapter
 import org.chromium.chrome.browser.keyboard_accessory.data.ConditionalProviderAdapter;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
-import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 
 import java.util.ArrayList;
 
 /**
- * This class holds all data that is necessary to restore the state of the Keyboard accessory
- * and its sheet for the {@link WebContents} it is attached to.
+ * This class holds all data that is necessary to restore the state of the Keyboard accessory and
+ * its sheet for the {@link WebContents} it is attached to.
  */
 class ManualFillingState {
     private static final int[] TAB_ORDER = {
@@ -36,21 +36,16 @@ class ManualFillingState {
     private boolean mWebContentsShowing;
 
     private class Observer extends WebContentsObserver {
-        public Observer(WebContents webContents) {
+        Observer(WebContents webContents) {
             super(webContents);
         }
 
         @Override
-        public void wasShown() {
-            super.wasShown();
-            mWebContentsShowing = true;
-            if (mActionsProvider != null) mActionsProvider.notifyAboutCachedItems();
-        }
-
-        @Override
-        public void wasHidden() {
-            super.wasHidden();
-            mWebContentsShowing = false;
+        public void onVisibilityChanged(@Visibility int visibility) {
+            mWebContentsShowing = visibility == Visibility.VISIBLE;
+            if (mWebContentsShowing && mActionsProvider != null) {
+                mActionsProvider.notifyAboutCachedItems();
+            }
         }
     }
 
@@ -69,7 +64,6 @@ class ManualFillingState {
         mWebContents = webContents;
         mWebContentsShowing = true;
         mWebContentsObserver = new Observer(mWebContents);
-        mWebContents.addObserver(mWebContentsObserver);
     }
 
     /**
@@ -102,7 +96,9 @@ class ManualFillingState {
     }
 
     void destroy() {
-        if (mWebContents != null) mWebContents.removeObserver(mWebContentsObserver);
+        if (mWebContentsObserver != null) {
+            mWebContentsObserver.observe(null);
+        }
         mActionsProvider = null;
         mSheetDataProviders.clear();
         mWebContentsShowing = false;
@@ -111,11 +107,11 @@ class ManualFillingState {
     /**
      * Wraps the given ActionProvider in a {@link CachedProviderAdapter} and stores it.
      *
-     * @param provider A {@link PropertyProvider} providing actions.
+     * @param provider A {@link Provider} providing actions.
      * @param defaultActions A default set of actions to prepopulate the adapter's cache.
      */
     void wrapActionsProvider(
-            PropertyProvider<KeyboardAccessoryData.Action[]> provider,
+            Provider<KeyboardAccessoryData.Action[]> provider,
             KeyboardAccessoryData.Action[] defaultActions) {
         mActionsProvider =
                 new CachedProviderAdapter<>(
@@ -124,7 +120,8 @@ class ManualFillingState {
 
     /**
      * Returns the wrapped provider set with {@link #wrapActionsProvider}.
-     * @return A {@link CachedProviderAdapter} wrapping a {@link PropertyProvider}.
+     *
+     * @return A {@link CachedProviderAdapter} wrapping a {@link Provider}.
      */
     Provider<KeyboardAccessoryData.Action[]> getActionsProvider() {
         return mActionsProvider;
@@ -134,10 +131,10 @@ class ManualFillingState {
      * Wraps the given provider for sheet data in a {@link ConditionalProviderAdapter} and stores
      * it.
      *
-     * @param provider A {@link PropertyProvider} providing sheet data.
+     * @param provider A {@link Provider} providing sheet data.
      */
     void wrapSheetDataProvider(
-            @AccessoryTabType int tabType, PropertyProvider<AccessorySheetData> provider) {
+            @AccessoryTabType int tabType, Provider<AccessorySheetData> provider) {
         mSheetDataProviders.put(
                 tabType, new ConditionalProviderAdapter<>(provider, () -> mWebContentsShowing));
     }
@@ -145,7 +142,7 @@ class ManualFillingState {
     /**
      * Returns the wrapped provider set with {@link #wrapSheetDataProvider}.
      *
-     * @return A {@link CachedProviderAdapter} wrapping a {@link PropertyProvider}.
+     * @return A {@link CachedProviderAdapter} wrapping a {@link Provider}.
      */
     @Nullable
     Provider<AccessorySheetData> getSheetDataProvider(@AccessoryTabType int tabType) {

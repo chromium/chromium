@@ -23,32 +23,38 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
 
+#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/case_folding_hash.h"
+#include "third_party/blink/renderer/platform/wtf/text/convert_to_8bit_hash_reader.h"
 
-namespace WTF {
+namespace blink {
 
 namespace {
 
-const char kNullLChars[2] = {0, 0};
-const UChar kNullUChars[2] = {0, 0};
+const char kNullLChars[1] = {0};
+const UChar kNullUChars[1] = {0};
 
-const unsigned kEmptyStringHash = 0x74EBC84B;
-const unsigned kSingleNullCharacterHash = 0x8249B3F8;
+const uint64_t kEmptyStringHash = 0x5A6EF77074EBC84B;
+const uint64_t kSingleNullCharacterHash = 0x48DFCE108249B3F8;
 
-const LChar kTestALChars[6] = {0x41, 0x95, 0xFF, 0x50, 0x01, 0};
-const UChar kTestAUChars[6] = {0x41, 0x95, 0xFF, 0x50, 0x01, 0};
-const UChar kTestBUChars[6] = {0x41, 0x95, 0xFFFF, 0x1080, 0x01, 0};
+const LChar kTestALChars[5] = {0x41, 0x95, 0xFF, 0x50, 0x01};
+const UChar kTestAUChars[5] = {0x41, 0x95, 0xFF, 0x50, 0x01};
+const UChar kTestBUChars[5] = {0x41, 0x95, 0xFFFF, 0x1080, 0x01};
 
-const unsigned kTestAHash = 0xE0A5DDE6;
-const unsigned kTestBHash = 0xEEA75C1E;
+const uint64_t kTestAHash = 0xE9422771E0A5DDE6;
+const uint64_t kTestBHash = 0x4A2DA770EEA75C1E;
+
+bool EqualCaseFoldingHash(StringView a, StringView b) {
+  unsigned hash_a = a.Is8Bit() ? CaseFoldingHash::GetHash(a.Span8())
+                               : CaseFoldingHash::GetHash(a.Span16());
+  unsigned hash_b = b.Is8Bit() ? CaseFoldingHash::GetHash(b.Span8())
+                               : CaseFoldingHash::GetHash(b.Span16());
+  return hash_a == hash_b;
+}
 
 }  // anonymous namespace
 
@@ -83,7 +89,7 @@ TEST(StringHasherTest, StringHasher_ComputeHashAndMaskTop8Bits) {
   const char kStr[] = "A quick browñ föx jumps over thé lazy dog";
   UChar kWideStr[sizeof(kStr)];
   for (unsigned i = 0; i < sizeof(kStr); ++i) {
-    kWideStr[i] = static_cast<uint8_t>(kStr[i]);
+    UNSAFE_TODO(kWideStr[i]) = static_cast<uint8_t>(UNSAFE_TODO(kStr[i]));
   }
   EXPECT_EQ(StringHasher::ComputeHashAndMaskTop8Bits(kStr, strlen(kStr)),
             StringHasher::ComputeHashAndMaskTop8Bits<ConvertTo8BitHashReader>(
@@ -97,28 +103,29 @@ TEST(StringHasherTest, StringHasher_ComputeHashAndMaskTop8Bits) {
 }
 
 TEST(StringHasherTest, StringHasher_HashMemory) {
-  EXPECT_EQ(kEmptyStringHash, StringHasher::HashMemory(nullptr, 0));
-  EXPECT_EQ(kEmptyStringHash, StringHasher::HashMemory(kNullUChars, 0));
-  EXPECT_EQ(kEmptyStringHash, StringHasher::HashMemory<0>(nullptr));
-  EXPECT_EQ(kEmptyStringHash, StringHasher::HashMemory<0>(kNullUChars));
+  EXPECT_EQ(kEmptyStringHash,
+            StringHasher::HashMemory(base::span<const uint8_t>()));
+  EXPECT_EQ(kEmptyStringHash,
+            StringHasher::HashMemory(base::span<const uint8_t, 0>()));
+  EXPECT_EQ(kEmptyStringHash, StringHasher::HashMemory(
+                                  base::as_byte_span(kNullUChars).first(0u)));
 
-  EXPECT_EQ(kSingleNullCharacterHash, StringHasher::HashMemory(kNullLChars, 1));
-  EXPECT_EQ(kSingleNullCharacterHash, StringHasher::HashMemory<1>(kNullUChars));
+  EXPECT_EQ(
+      kSingleNullCharacterHash,
+      StringHasher::HashMemory(base::as_byte_span(kNullUChars).first(1u)));
 
-  EXPECT_EQ(kTestAHash, StringHasher::HashMemory(kTestALChars, 5));
-  EXPECT_EQ(kTestAHash, StringHasher::HashMemory<5>(kTestALChars));
-  EXPECT_EQ(kTestBHash, StringHasher::HashMemory(kTestBUChars, 10));
-  EXPECT_EQ(kTestBHash, StringHasher::HashMemory<10>(kTestBUChars));
+  EXPECT_EQ(kTestAHash, StringHasher::HashMemory(kTestALChars));
+  EXPECT_EQ(kTestBHash,
+            StringHasher::HashMemory(base::as_byte_span(kTestBUChars)));
 }
 
 TEST(StringHasherTest, CaseFoldingHash) {
-  EXPECT_NE(CaseFoldingHash::GetHash("foo"), CaseFoldingHash::GetHash("bar"));
-  EXPECT_EQ(CaseFoldingHash::GetHash("foo"), CaseFoldingHash::GetHash("FOO"));
-  EXPECT_EQ(CaseFoldingHash::GetHash("foo"), CaseFoldingHash::GetHash("Foo"));
-  EXPECT_EQ(CaseFoldingHash::GetHash("Longer string 123"),
-            CaseFoldingHash::GetHash("longEr String 123"));
-  EXPECT_EQ(CaseFoldingHash::GetHash(String::FromUTF8("Ünicode")),
-            CaseFoldingHash::GetHash(String::FromUTF8("ünicode")));
+  EXPECT_FALSE(EqualCaseFoldingHash("foo", "bar"));
+  EXPECT_TRUE(EqualCaseFoldingHash("foo", "FOO"));
+  EXPECT_TRUE(EqualCaseFoldingHash("foo", "Foo"));
+  EXPECT_TRUE(EqualCaseFoldingHash("Longer string 123", "longEr String 123"));
+  EXPECT_TRUE(EqualCaseFoldingHash(String::FromUTF8("Ünicode"),
+                                   String::FromUTF8("ünicode")));
 }
 
 TEST(StringHasherTest, ContractionAndExpansion) {
@@ -133,8 +140,8 @@ TEST(StringHasherTest, ContractionAndExpansion) {
     String s16 = s8;
     s16.Ensure16Bit();
     EXPECT_EQ(CaseFoldingHash::GetHash(s8), CaseFoldingHash::GetHash(s16));
-    EXPECT_EQ(WTF::GetHash(s8), WTF::GetHash(s16));
+    EXPECT_EQ(GetHash(s8), GetHash(s16));
   }
 }
 
-}  // namespace WTF
+}  // namespace blink

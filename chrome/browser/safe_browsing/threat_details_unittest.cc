@@ -12,7 +12,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/pickle.h"
 #include "base/run_loop.h"
-#include "base/test/metrics/histogram_tester.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -24,17 +25,19 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
 #include "components/safe_browsing/content/browser/threat_details_history.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
-#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
 #include "components/safe_browsing/content/browser/web_contents_key.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
+#include "components/security_interstitials/core/unsafe_resource_locator.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -42,6 +45,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
+#include "crypto/obsolete/md5.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_util.h"
@@ -55,6 +59,7 @@
 
 using content::BrowserThread;
 using content::WebContents;
+using security_interstitials::UnsafeResourceLocator;
 using testing::_;
 using testing::DoAll;
 using testing::Eq;
@@ -65,6 +70,11 @@ using testing::UnorderedPointwise;
 namespace safe_browsing {
 
 namespace {
+
+std::string ComputeMd5(std::string_view data) {
+  return base::HexEncodeLower(
+      crypto::obsolete::Md5::HashForTesting(base::as_byte_span(data)));
+}
 
 // Mixture of HTTP and HTTPS.  No special treatment for HTTPS.
 static const char* kOriginalLandingURL =
@@ -145,7 +155,7 @@ class ThreatDetailsWrap : public ThreatDetails {
     SetShouldSendReport(true);
   }
 
-  ~ThreatDetailsWrap() override {}
+  ~ThreatDetailsWrap() override = default;
 
   void ThreatDetailsDone(WebContentsKey web_contents_key) {
     ++done_callback_count_;
@@ -211,7 +221,7 @@ class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
   bool ReportWasSent() { return report_sent_; }
 
  private:
-  ~MockSafeBrowsingUIManager() override {}
+  ~MockSafeBrowsingUIManager() override = default;
 
   std::string serialized_;
   bool report_sent_;
@@ -299,8 +309,9 @@ class ThreatDetailsTest : public ChromeRenderViewHostTestHarness {
     resource->url = url;
     resource->threat_type = threat_type;
     resource->threat_source = threat_source;
-    resource->render_process_id = primary_main_frame_id.child_id;
-    resource->render_frame_token = primary_main_frame->GetFrameToken().value();
+    resource->rfh_locator = UnsafeResourceLocator::CreateForRenderFrameToken(
+        primary_main_frame_id.child_id,
+        primary_main_frame->GetFrameToken().value());
     resource->is_async_check = is_async_check;
   }
 
@@ -428,9 +439,10 @@ class ThreatDetailsTest : public ChromeRenderViewHostTestHarness {
     // The last item of the redirect chain has to be the final url when adding
     // to history backend.
     redirects->push_back(url);
-    history_service()->AddPage(url, base::Time::Now(), 1, 0, GURL(), *redirects,
-                               ui::PAGE_TRANSITION_TYPED,
-                               history::SOURCE_BROWSED, false);
+    history_service()->AddPage(
+        url, base::Time::Now(), 1, 0, GURL(), *redirects,
+        ui::PAGE_TRANSITION_TYPED, history::SOURCE_BROWSED,
+        history::VisitResponseCodeCategory::kNot404, false);
   }
 
   void WriteCacheEntry(const std::string& url,
@@ -528,6 +540,8 @@ TEST_F(ThreatDetailsTest, ThreatResource) {
 
   ClientSafeBrowsingReportRequest expected;
   expected.set_type(ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING);
+  expected.mutable_client_properties()->set_url_api_type(
+      ClientSafeBrowsingReportRequest::CLIENT_SIDE_DETECTION);
   expected.set_url(kThreatURL);
   expected.set_url_request_destination(
       ClientSafeBrowsingReportRequest::DOCUMENT);
@@ -1062,6 +1076,8 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails_AmbiguousDOM) {
 
   ClientSafeBrowsingReportRequest expected;
   expected.set_type(ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING);
+  expected.mutable_client_properties()->set_url_api_type(
+      ClientSafeBrowsingReportRequest::CLIENT_SIDE_DETECTION);
   expected.set_url(kThreatURL);
   expected.set_url_request_destination(
       ClientSafeBrowsingReportRequest::DOCUMENT);
@@ -1082,17 +1098,10 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails_AmbiguousDOM) {
   pb_resource = expected.add_resources();
   pb_resource->set_id(2);
   pb_resource->set_url(kDOMParentURL);
-  pb_resource->add_child_ids(3);
-
-  // TODO(lpz): The data URL is added, despite being unreportable, because it
-  // is a child of the top-level page. Consider if this should happen.
-  pb_resource = expected.add_resources();
-  pb_resource->set_id(3);
-  pb_resource->set_url(kDataURL);
 
   // This child can't be mapped to its containing iframe so its parent is unset.
   pb_resource = expected.add_resources();
-  pb_resource->set_id(4);
+  pb_resource->set_id(3);
   pb_resource->set_url(kDOMChildUrl2);
 
   expected.set_complete(false);  // Since the cache was missing.
@@ -1109,7 +1118,7 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails_AmbiguousDOM) {
   pb_element = expected.add_dom();
   pb_element->set_id(1);
   pb_element->set_tag("SCRIPT");
-  pb_element->set_resource_id(4);
+  pb_element->set_resource_id(3);
   pb_element->add_attribute()->set_name("src");
   pb_element->mutable_attribute(0)->set_value(kDOMChildUrl2);
 
@@ -1121,8 +1130,6 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails_AmbiguousDOM) {
       ui_manager_.get(), web_contents(), resource, nullptr, history_service(),
       referrer_chain_provider_.get());
   report->StartCollection();
-
-  base::HistogramTester histograms;
 
   // Send both sets of nodes from different render frames.
   report->OnReceivedThreatDOMDetails(mojo::Remote<mojom::ThreatReporter>(),
@@ -1493,8 +1500,9 @@ TEST_F(ThreatDetailsTest, ThreatWithRedirectUrl) {
       ->NavigateAndCommit(GURL(kLandingURL));
 
   UnsafeResource resource;
-  InitResource(SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING, ThreatSource::REMOTE,
-               false /* is_async_check */, GURL(kThreatURL), &resource);
+  InitResource(SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING,
+               ThreatSource::CLIENT_SIDE_DETECTION, false /* is_async_check */,
+               GURL(kThreatURL), &resource);
   resource.original_url = GURL(kOriginalLandingURL);
 
   // add some redirect urls
@@ -1515,7 +1523,7 @@ TEST_F(ThreatDetailsTest, ThreatWithRedirectUrl) {
   ClientSafeBrowsingReportRequest expected;
   expected.set_type(ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING);
   expected.mutable_client_properties()->set_url_api_type(
-      ClientSafeBrowsingReportRequest::ANDROID_SAFETYNET);
+      ClientSafeBrowsingReportRequest::CLIENT_SIDE_DETECTION);
   expected.mutable_client_properties()->set_is_async_check(false);
   expected.set_url(kThreatURL);
   expected.set_url_request_destination(
@@ -1711,6 +1719,8 @@ TEST_F(ThreatDetailsTest, ThreatOnFreshTab) {
 
   ClientSafeBrowsingReportRequest expected;
   expected.set_type(ClientSafeBrowsingReportRequest::URL_MALWARE);
+  expected.mutable_client_properties()->set_url_api_type(
+      ClientSafeBrowsingReportRequest::CLIENT_SIDE_DETECTION);
   expected.set_url(kThreatURL);
   expected.set_url_request_destination(
       ClientSafeBrowsingReportRequest::DOCUMENT);
@@ -1759,6 +1769,8 @@ TEST_F(ThreatDetailsTest, HTTPCache) {
 
   ClientSafeBrowsingReportRequest expected;
   expected.set_type(ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING);
+  expected.mutable_client_properties()->set_url_api_type(
+      ClientSafeBrowsingReportRequest::CLIENT_SIDE_DETECTION);
   expected.set_url(kThreatURL);
   expected.set_url_request_destination(
       ClientSafeBrowsingReportRequest::DOCUMENT);
@@ -1783,7 +1795,7 @@ TEST_F(ThreatDetailsTest, HTTPCache) {
   pb_response->set_body(kLandingData);
   std::string landing_data(kLandingData);
   pb_response->set_bodylength(landing_data.size());
-  pb_response->set_bodydigest(base::MD5String(landing_data));
+  pb_response->set_bodydigest(ComputeMd5(landing_data));
   pb_response->set_remote_ip("1.2.3.4:80");
 
   pb_resource = expected.add_resources();
@@ -1800,7 +1812,7 @@ TEST_F(ThreatDetailsTest, HTTPCache) {
   pb_response->set_body(kThreatData);
   std::string threat_data(kThreatData);
   pb_response->set_bodylength(threat_data.size());
-  pb_response->set_bodydigest(base::MD5String(threat_data));
+  pb_response->set_bodydigest(ComputeMd5(threat_data));
   pb_response->set_remote_ip("1.2.3.4:80");
   expected.set_complete(true);
 
@@ -1842,6 +1854,8 @@ TEST_F(ThreatDetailsTest, HttpsResourceSanitization) {
 
   ClientSafeBrowsingReportRequest expected;
   expected.set_type(ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING);
+  expected.mutable_client_properties()->set_url_api_type(
+      ClientSafeBrowsingReportRequest::CLIENT_SIDE_DETECTION);
   expected.set_url(kThreatURLHttps);
   expected.set_url_request_destination(
       ClientSafeBrowsingReportRequest::DOCUMENT);
@@ -1866,7 +1880,7 @@ TEST_F(ThreatDetailsTest, HttpsResourceSanitization) {
   pb_response->set_body(kLandingData);
   std::string landing_data(kLandingData);
   pb_response->set_bodylength(landing_data.size());
-  pb_response->set_bodydigest(base::MD5String(landing_data));
+  pb_response->set_bodydigest(ComputeMd5(landing_data));
   pb_response->set_remote_ip("1.2.3.4:80");
 
   // The threat URL is HTTP so the request and response are cleared (except for
@@ -1881,7 +1895,7 @@ TEST_F(ThreatDetailsTest, HttpsResourceSanitization) {
   pb_header->set_value("image/jpeg");
   std::string threat_data(kThreatData);
   pb_response->set_bodylength(threat_data.size());
-  pb_response->set_bodydigest(base::MD5String(threat_data));
+  pb_response->set_bodydigest(ComputeMd5(threat_data));
   pb_response->set_remote_ip("1.2.3.4:80");
   expected.set_complete(true);
 

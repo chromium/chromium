@@ -31,6 +31,10 @@
 #include "net/socket/connection_attempts.h"
 #include "net/url_request/url_request_job.h"
 
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+#include "net/device_bound_sessions/session_service.h"
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+
 namespace net {
 
 class HttpRequestHeaders;
@@ -40,6 +44,7 @@ class HttpTransaction;
 class HttpUserAgentSettings;
 class SSLPrivateKey;
 struct TransportInfo;
+struct LoadTimingInternalInfo;
 class UploadDataStream;
 
 // A URLRequestJob subclass that is built on top of HttpTransaction. It
@@ -62,6 +67,20 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   void SetIsSharedDictionaryReadAllowedCallback(
       base::RepeatingCallback<bool()> callback) override;
 
+  // An enumeration of the results of a request with respect to IP Protection.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class IpProtectionJobResult {
+    // Request was not IP Protected.
+    kProtectionNotAttempted = 0,
+    // Request was IP Protected and carried via IP Protection proxies or, if
+    // the direct-only parameter is true, made directly.
+    kProtectionSuccess = 1,
+    // Request was IP Protected, but fell back to direct.
+    kDirectFallback = 2,
+    kMaxValue = kDirectFallback,
+  };
+
  protected:
   URLRequestHttpJob(URLRequest* request,
                     const HttpUserAgentSettings* http_user_agent_settings);
@@ -75,7 +94,6 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   ConnectionAttempts GetConnectionAttempts() const override;
   void CloseConnectionOnDestruction() override;
   std::unique_ptr<SourceStream> SetUpSourceStream() override;
-  cookie_util::StorageAccessStatus StorageAccessStatus() const override;
 
   RequestPriority priority() const {
     return priority_;
@@ -148,6 +166,13 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   int NotifyConnectedCallback(const TransportInfo& info,
                               CompletionOnceCallback callback);
 
+  void RestartTransaction();
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  void RestartTransactionForRefresh(
+      const device_bound_sessions::SessionService::DeferralParams&
+          deferral_params,
+      device_bound_sessions::SessionService::RefreshResult result);
+#endif
   void RestartTransactionWithAuth(const AuthCredentials& credentials);
 
   // Overridden from URLRequestJob:
@@ -156,8 +181,12 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   LoadState GetLoadState() const override;
   bool GetMimeType(std::string* mime_type) const override;
   bool GetCharset(std::string* charset) override;
+  void GetClientSideContentDecodingTypes(
+      std::vector<net::SourceStreamType>* types) const override;
   void GetResponseInfo(HttpResponseInfo* info) override;
   void GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const override;
+  void PopulateLoadTimingInternalInfo(
+      LoadTimingInternalInfo* load_timing_internal_info) const override;
   bool GetTransactionRemoteEndpoint(IPEndPoint* endpoint) const override;
   int GetResponseCode() const override;
   void PopulateNetErrorDetails(NetErrorDetails* details) const override;
@@ -238,9 +267,6 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   // in a request.
   bool ShouldRecordPartitionedCookieUsage() const;
 
-  // Applies the relevant Sec-Fetch-Storage-Access header if needed.
-  void MaybeSetSecFetchStorageAccessHeader();
-
   RequestPriority priority_ = DEFAULT_PRIORITY;
 
   HttpRequestInfo request_info_;
@@ -317,12 +343,17 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   // started.
   FirstPartySetMetadata first_party_set_metadata_;
 
-  // The level of storage access available to this request. Note that this
-  // member is not set during construction; it is only set on request legs that
-  // include the Sec-Fetch-Storage-Access request header. (In particular, this
-  // excludes same-site requests and requests that cannot include cookies.)
-  cookie_util::StorageAccessStatus storage_access_status_ =
-      cookie_util::StorageAccessStatus::kNone;
+  // The number of times this request was deferred due to a Device Bound
+  // Session.
+  size_t device_bound_session_deferral_count_ = 0;
+
+  // The time of the first deferral due to Device Bound Sessions. This
+  // is used to measure the total delay of Device Bound Session
+  // Deferral.
+  base::TimeTicks device_bound_session_first_deferral_;
+
+  // The content encoding types that need to be handled in the client side.
+  std::vector<net::SourceStreamType> client_side_content_decoding_types_;
 
   base::WeakPtrFactory<URLRequestHttpJob> weak_factory_{this};
 };

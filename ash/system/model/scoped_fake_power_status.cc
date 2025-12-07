@@ -8,6 +8,7 @@
 
 #include "ash/system/model/fake_power_status.h"
 #include "ash/system/power/power_status.h"
+#include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 
@@ -18,10 +19,7 @@ ScopedFakePowerStatus* ScopedFakePowerStatus::instance_ = nullptr;
 
 ScopedFakePowerStatus::ScopedFakePowerStatus() {
   // Only allow one scoped instance at a time.
-  if (instance_) {
-    NOTREACHED_IN_MIGRATION();
-    return;
-  }
+  CHECK(!instance_);
   instance_ = this;
 
   real_power_status_instance_ = PowerStatus::g_power_status_;
@@ -34,8 +32,7 @@ ScopedFakePowerStatus::ScopedFakePowerStatus() {
 
 ScopedFakePowerStatus::~ScopedFakePowerStatus() {
   if (instance_ != this) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   instance_ = nullptr;

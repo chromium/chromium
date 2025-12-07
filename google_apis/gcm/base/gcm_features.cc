@@ -7,16 +7,10 @@
 namespace gcm {
 namespace features {
 
-BASE_FEATURE(kGCMDeleteIncomingMessagesWithoutTTL,
-             "GCMDeleteIncomingMessagesWithoutTTL",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kGCMAvoidConnectionWhenNetworkUnavailable,
-             "GCMAvoidConnectionWhenNetworkUnavailable",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGCMDoNotIncreaseBackoffDelayOnNetworkChange,
-             "GCMDoNotIncreaseBackoffDelayOnNetworkChange",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features

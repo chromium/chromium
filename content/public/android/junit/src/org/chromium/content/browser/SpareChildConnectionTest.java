@@ -4,6 +4,9 @@
 
 package org.chromium.content.browser;
 
+import static com.google.common.truth.Truth.assertThat;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -26,6 +29,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.ChildBindingState;
 import org.chromium.base.process_launcher.ChildConnectionAllocator;
 import org.chromium.base.process_launcher.ChildProcessConnection;
 import org.chromium.base.process_launcher.TestChildProcessConnection;
@@ -48,7 +52,8 @@ public class SpareChildConnectionTest {
                     /* serviceCount= */ 3,
                     /* bindToCaller= */ false,
                     /* bindAsExternalService= */ false,
-                    /* useStrongBinding= */ false);
+                    /* fallbackToNextSlot= */ false,
+                    /* isSandboxedForHistograms= */ false);
 
     // The allocator used to allocate the actual connection.
     private ChildConnectionAllocator mConnectionAllocator;
@@ -65,9 +70,11 @@ public class SpareChildConnectionTest {
                 boolean bindToCaller,
                 boolean bindAsExternalService,
                 Bundle serviceBundle,
-                String instanceName) {
-            // We expect to create only one connection in these tests.
-            assert mConnection == null;
+                String instanceName,
+                boolean independentFallback,
+                boolean isSandboxedForHistograms) {
+            // We expect to create only one connection after calling reset().
+            assertThat(mConnection).isNull();
             mConnection =
                     new TestChildProcessConnection(
                             serviceName, bindToCaller, bindAsExternalService, serviceBundle);
@@ -84,6 +91,10 @@ public class SpareChildConnectionTest {
 
         public void simulateConnectionDied() {
             mConnection.getServiceCallback().onChildProcessDied(mConnection);
+        }
+
+        public void reset() {
+            mConnection = null;
         }
     }
     ;
@@ -108,7 +119,8 @@ public class SpareChildConnectionTest {
                         /* serviceCount= */ 5,
                         /* bindToCaller= */ false,
                         /* bindAsExternalService= */ false,
-                        /* useStrongBinding= */ false);
+                        /* fallbackToNextSlot= */ false,
+                        /* isSandboxedForHistograms= */ false);
         mConnectionAllocator.setConnectionFactoryForTesting(mTestConnectionFactory);
         mSpareConnection =
                 new SpareChildConnection(
@@ -126,15 +138,20 @@ public class SpareChildConnectionTest {
     public void testCreateAndGet() {
         // Tests retrieving the connection with the wrong allocator.
         ChildProcessConnection connection =
-                mSpareConnection.getConnection(mWrongConnectionAllocator, mServiceCallback);
+                mSpareConnection.getConnection(
+                        mWrongConnectionAllocator, mServiceCallback, ChildBindingState.VISIBLE);
         assertNull(connection);
 
         // And with the right one.
-        connection = mSpareConnection.getConnection(mConnectionAllocator, mServiceCallback);
+        connection =
+                mSpareConnection.getConnection(
+                        mConnectionAllocator, mServiceCallback, ChildBindingState.VISIBLE);
         assertNotNull(connection);
 
         // The connection has been used, subsequent calls should return null.
-        connection = mSpareConnection.getConnection(mConnectionAllocator, mServiceCallback);
+        connection =
+                mSpareConnection.getConnection(
+                        mConnectionAllocator, mServiceCallback, ChildBindingState.VISIBLE);
         assertNull(connection);
     }
 
@@ -145,7 +162,8 @@ public class SpareChildConnectionTest {
 
         // Retrieve the wrong connection, no callback should be fired.
         ChildProcessConnection connection =
-                mSpareConnection.getConnection(mWrongConnectionAllocator, mServiceCallback);
+                mSpareConnection.getConnection(
+                        mWrongConnectionAllocator, mServiceCallback, ChildBindingState.VISIBLE);
         assertNull(connection);
         ShadowLooper.runUiThreadTasks();
         verify(mServiceCallback, times(0)).onChildStarted();
@@ -162,7 +180,8 @@ public class SpareChildConnectionTest {
 
         // Now retrieve the connection, the callback should be invoked.
         ChildProcessConnection connection =
-                mSpareConnection.getConnection(mConnectionAllocator, mServiceCallback);
+                mSpareConnection.getConnection(
+                        mConnectionAllocator, mServiceCallback, ChildBindingState.VISIBLE);
         assertNotNull(connection);
 
         // No more connections are available.
@@ -180,7 +199,8 @@ public class SpareChildConnectionTest {
 
         // Retrieve the connection before it's bound.
         ChildProcessConnection connection =
-                mSpareConnection.getConnection(mConnectionAllocator, mServiceCallback);
+                mSpareConnection.getConnection(
+                        mConnectionAllocator, mServiceCallback, ChildBindingState.VISIBLE);
         assertNotNull(connection);
         ShadowLooper.runUiThreadTasks();
         // No callbacks are called.
@@ -203,7 +223,8 @@ public class SpareChildConnectionTest {
 
         // We should not have a spare connection.
         ChildProcessConnection connection =
-                mSpareConnection.getConnection(mConnectionAllocator, mServiceCallback);
+                mSpareConnection.getConnection(
+                        mConnectionAllocator, mServiceCallback, ChildBindingState.VISIBLE);
         assertNull(connection);
     }
 
@@ -212,7 +233,8 @@ public class SpareChildConnectionTest {
     public void testRetrievedConnectionFailsToBind() {
         // Retrieve the spare connection before it's bound.
         ChildProcessConnection connection =
-                mSpareConnection.getConnection(mConnectionAllocator, mServiceCallback);
+                mSpareConnection.getConnection(
+                        mConnectionAllocator, mServiceCallback, ChildBindingState.VISIBLE);
         assertNotNull(connection);
 
         mTestConnectionFactory.simulateConnectionFailingToBind();
@@ -227,7 +249,8 @@ public class SpareChildConnectionTest {
     public void testRetrievedConnectionStops() {
         // Retrieve the spare connection before it's bound.
         ChildProcessConnection connection =
-                mSpareConnection.getConnection(mConnectionAllocator, mServiceCallback);
+                mSpareConnection.getConnection(
+                        mConnectionAllocator, mServiceCallback, ChildBindingState.VISIBLE);
         assertNotNull(connection);
 
         mTestConnectionFactory.simulateConnectionDied();
@@ -246,7 +269,50 @@ public class SpareChildConnectionTest {
 
         // Connection should be gone.
         ChildProcessConnection connection =
-                mSpareConnection.getConnection(mConnectionAllocator, mServiceCallback);
+                mSpareConnection.getConnection(
+                        mConnectionAllocator, mServiceCallback, ChildBindingState.VISIBLE);
         assertNull(connection);
+    }
+
+    @Test
+    @Feature({"ProcessManagement"})
+    public void testInitialBindingState() {
+        @ChildBindingState
+        int[] testBindingStates = {
+            ChildBindingState.WAIVED,
+            ChildBindingState.NOT_PERCEPTIBLE,
+            ChildBindingState.VISIBLE,
+            ChildBindingState.STRONG,
+        };
+        for (@ChildBindingState int testBindingState : testBindingStates) {
+            // Create a new spare connection for each binding state.
+            mTestConnectionFactory.reset();
+            mSpareConnection =
+                    new SpareChildConnection(
+                            /* context= */ null, mConnectionAllocator, /* serviceBundle= */ null);
+            ChildProcessConnection connection =
+                    mSpareConnection.getConnection(
+                            mConnectionAllocator, mServiceCallback, testBindingState);
+            assertNotNull(connection);
+            mTestConnectionFactory.simulateConnectionBindingSuccessfully();
+            assertEquals(testBindingState, connection.bindingStateCurrent());
+            if (testBindingState == ChildBindingState.WAIVED) {
+                assertEquals(0, connection.getStrongBindingCount());
+                assertEquals(0, connection.getVisibleBindingCount());
+                assertEquals(0, connection.getNotPerceptibleBindingCount());
+            } else if (testBindingState == ChildBindingState.NOT_PERCEPTIBLE) {
+                assertEquals(0, connection.getStrongBindingCount());
+                assertEquals(0, connection.getVisibleBindingCount());
+                assertEquals(1, connection.getNotPerceptibleBindingCount());
+            } else if (testBindingState == ChildBindingState.VISIBLE) {
+                assertEquals(0, connection.getStrongBindingCount());
+                assertEquals(1, connection.getVisibleBindingCount());
+                assertEquals(0, connection.getNotPerceptibleBindingCount());
+            } else if (testBindingState == ChildBindingState.STRONG) {
+                assertEquals(1, connection.getStrongBindingCount());
+                assertEquals(0, connection.getVisibleBindingCount());
+                assertEquals(0, connection.getNotPerceptibleBindingCount());
+            }
+        }
     }
 }

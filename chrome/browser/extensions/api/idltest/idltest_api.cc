@@ -44,6 +44,5 @@ ExtensionFunction::ResponseAction IdltestSendArrayBufferViewFunction::Run() {
 
 ExtensionFunction::ResponseAction IdltestGetArrayBufferFunction::Run() {
   static constexpr std::string_view kHello = "hello world";
-  return RespondNow(
-      WithArguments(base::Value(base::as_bytes(base::make_span(kHello)))));
+  return RespondNow(WithArguments(base::Value(base::as_byte_span(kHello))));
 }

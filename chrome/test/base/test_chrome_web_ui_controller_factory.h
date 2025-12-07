@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -34,7 +35,8 @@ class TestChromeWebUIControllerFactory : public ChromeWebUIControllerFactory {
     virtual ~WebUIProvider();
   };
 
-  using FactoryOverridesMap = std::map<std::string, WebUIProvider*>;
+  using FactoryOverridesMap =
+      std::map<std::string, raw_ptr<WebUIProvider, CtnExperimental>>;
 
   TestChromeWebUIControllerFactory();
   TestChromeWebUIControllerFactory(const TestChromeWebUIControllerFactory&) =

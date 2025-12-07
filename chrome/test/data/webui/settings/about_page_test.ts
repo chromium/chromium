@@ -3,10 +3,9 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import type {SettingsAboutPageElement, SettingsRoutes} from 'chrome://settings/settings.js';
-import {AboutPageBrowserProxyImpl, LifetimeBrowserProxyImpl, Route, Router, resetRouterForTesting} from 'chrome://settings/settings.js';
-import {assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {SettingsAboutPageElement} from 'chrome://settings/settings.js';
+import {AboutPageBrowserProxyImpl, LifetimeBrowserProxyImpl, loadTimeData, Router, routes} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestAboutPageBrowserProxy} from './test_about_page_browser_proxy.js';
 import {TestLifetimeBrowserProxy} from './test_lifetime_browser_proxy.js';
@@ -22,29 +21,15 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {PromoteUpdaterStatus} from 'chrome://settings/settings.js';
 // </if>
 
-// <if expr="not chromeos_ash">
+// <if expr="not is_chromeos">
 import {UpdateStatus} from 'chrome://settings/settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {assertFalse, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertNotEquals} from 'chrome://webui-test/chai_assert.js';
+import {isVisible, eventToPromise} from 'chrome://webui-test/test_util.js';
 // </if>
-
-// <if expr="_google_chrome or not chromeos_ash">
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
-// </if>
-
 // clang-format on
 
-function setupRouter(): SettingsRoutes {
-  const routes = {
-    ABOUT: new Route('/help'),
-    ADVANCED: new Route('/advanced'),
-    BASIC: new Route('/'),
-  } as unknown as SettingsRoutes;
-  resetRouterForTesting(new Router(routes));
-  return routes;
-}
-
-// <if expr="not chromeos_ash">
+// <if expr="not is_chromeos">
 function fireStatusChanged(
     status: UpdateStatus, options: {progress?: number, message?: string} = {}) {
   webUIListenerCallback('update-status-changed', {
@@ -60,15 +45,12 @@ suite('AllBuilds', function() {
   let aboutBrowserProxy: TestAboutPageBrowserProxy;
   let lifetimeBrowserProxy: TestLifetimeBrowserProxy;
 
-  let testRoutes: SettingsRoutes;
-
   setup(function() {
     loadTimeData.overrideValues({
       aboutObsoleteNowOrSoon: false,
       aboutObsoleteEndOfTheLine: false,
     });
 
-    testRoutes = setupRouter();
     lifetimeBrowserProxy = new TestLifetimeBrowserProxy();
     LifetimeBrowserProxyImpl.setInstance(lifetimeBrowserProxy);
 
@@ -86,69 +68,82 @@ suite('AllBuilds', function() {
     lifetimeBrowserProxy.reset();
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-about-page');
-    Router.getInstance().navigateTo(testRoutes.ABOUT);
+    Router.getInstance().navigateTo(routes.ABOUT);
     document.body.appendChild(page);
-    // <if expr="chromeos_ash">
+    // <if expr="is_chromeos">
     return Promise.resolve();
     // </if>
 
-    // <if expr="not chromeos_ash">
+    // <if expr="not is_chromeos">
     return aboutBrowserProxy.whenCalled('refreshUpdateStatus');
     // </if>
   }
 
-  // <if expr="not chromeos_ash">
+  // <if expr="not is_chromeos">
   const SPINNER_ICON: string = 'chrome://resources/images/throbber_small.svg';
+
+  async function assertSpinnerVisible(visible: boolean) {
+    const img = page.shadowRoot!.querySelector<HTMLImageElement>(
+        `img[src='${SPINNER_ICON}']`);
+    assertTrue(!!img);
+    if (img.complete) {
+      assertEquals(visible, isVisible(img));
+      return;
+    }
+
+    await eventToPromise('load', img);
+    assertEquals(visible, isVisible(img));
+  }
 
   /**
    * Test that the status icon and status message update according to
    * incoming 'update-status-changed' events.
    */
-  test('IconAndMessageUpdates', function() {
-    const icon = page.shadowRoot!.querySelector('iron-icon')!;
+  test('IconAndMessageUpdates', async function() {
+    const icon = page.shadowRoot!.querySelector('cr-icon')!;
     assertTrue(!!icon);
     const statusMessageEl =
         page.shadowRoot!.querySelector('#updateStatusMessage div')!;
     let previousMessageText = statusMessageEl.textContent;
 
     fireStatusChanged(UpdateStatus.CHECKING);
-    assertEquals(SPINNER_ICON, icon.src);
-    assertEquals(null, icon.getAttribute('icon'));
+    await assertSpinnerVisible(true);
+    assertEquals('', icon.getAttribute('icon'));
     assertNotEquals(previousMessageText, statusMessageEl.textContent);
     previousMessageText = statusMessageEl.textContent;
 
     fireStatusChanged(UpdateStatus.UPDATING, {progress: 0});
-    assertEquals(SPINNER_ICON, icon.src);
-    assertEquals(null, icon.getAttribute('icon'));
-    assertFalse(statusMessageEl.textContent!.includes('%'));
+    await assertSpinnerVisible(true);
+    assertEquals('', icon.getAttribute('icon'));
+    assertFalse(statusMessageEl.textContent.includes('%'));
     assertNotEquals(previousMessageText, statusMessageEl.textContent);
     previousMessageText = statusMessageEl.textContent;
 
     fireStatusChanged(UpdateStatus.UPDATING, {progress: 1});
     assertNotEquals(previousMessageText, statusMessageEl.textContent);
-    assertTrue(statusMessageEl.textContent!.includes('%'));
+    assertTrue(statusMessageEl.textContent.includes('%'));
     previousMessageText = statusMessageEl.textContent;
 
     fireStatusChanged(UpdateStatus.NEARLY_UPDATED);
-    assertEquals(null, icon.src);
-    assertEquals('settings:check-circle', icon.icon);
+    await assertSpinnerVisible(false);
+    assertEquals('cr:check-circle', icon.icon);
     assertNotEquals(previousMessageText, statusMessageEl.textContent);
     previousMessageText = statusMessageEl.textContent;
 
     fireStatusChanged(UpdateStatus.DISABLED_BY_ADMIN);
-    assertEquals(null, icon.src);
+    await assertSpinnerVisible(false);
     assertEquals('cr20:domain', icon.icon);
-    assertEquals(0, statusMessageEl.textContent!.trim().length);
+    assertEquals(0, statusMessageEl.textContent.trim().length);
 
     fireStatusChanged(UpdateStatus.FAILED);
-    assertEquals(null, icon.src);
+    await assertSpinnerVisible(false);
     assertEquals('cr:error', icon.icon);
-    assertEquals(0, statusMessageEl.textContent!.trim().length);
+    assertEquals(0, statusMessageEl.textContent.trim().length);
 
     fireStatusChanged(UpdateStatus.DISABLED);
-    assertEquals(null, icon.src);
-    assertEquals(null, icon.getAttribute('icon'));
-    assertEquals(0, statusMessageEl.textContent!.trim().length);
+    await assertSpinnerVisible(false);
+    assertEquals('', icon.getAttribute('icon'));
+    assertEquals(0, statusMessageEl.textContent.trim().length);
   });
 
   test('ErrorMessageWithHtml', function() {
@@ -193,27 +188,27 @@ suite('AllBuilds', function() {
     }
 
     await initNewPage();
-    const icon = page.shadowRoot!.querySelector('iron-icon')!;
+    const icon = page.shadowRoot!.querySelector('cr-icon')!;
     assertTrue(!!icon);
     assertTrue(!!queryUpdateStatusMessage());
     assertTrue(!!queryDeprecationWarning());
     assertFalse(queryDeprecationWarning().hidden);
 
     fireStatusChanged(UpdateStatus.CHECKING);
-    assertEquals(SPINNER_ICON, icon.src);
-    assertEquals(null, icon.getAttribute('icon'));
+    await assertSpinnerVisible(true);
+    assertEquals('', icon.getAttribute('icon'));
     assertFalse(queryDeprecationWarning().hidden);
     assertFalse(queryUpdateStatusMessage().hidden);
 
     fireStatusChanged(UpdateStatus.UPDATING);
-    assertEquals(SPINNER_ICON, icon.src);
-    assertEquals(null, icon.getAttribute('icon'));
+    await assertSpinnerVisible(true);
+    assertEquals('', icon.getAttribute('icon'));
     assertFalse(queryDeprecationWarning().hidden);
     assertFalse(queryUpdateStatusMessage().hidden);
 
     fireStatusChanged(UpdateStatus.NEARLY_UPDATED);
-    assertEquals(null, icon.src);
-    assertEquals('settings:check-circle', icon.icon);
+    await assertSpinnerVisible(false);
+    assertEquals('cr:check-circle', icon.icon);
     assertFalse(queryDeprecationWarning().hidden);
     assertFalse(queryUpdateStatusMessage().hidden);
   });
@@ -239,7 +234,7 @@ suite('AllBuilds', function() {
     }
 
     await initNewPage();
-    const icon = page.shadowRoot!.querySelector('iron-icon')!;
+    const icon = page.shadowRoot!.querySelector('cr-icon')!;
     assertTrue(!!icon);
     assertTrue(!!queryDeprecationWarning());
     assertTrue(!!queryUpdateStatusMessage());
@@ -248,19 +243,19 @@ suite('AllBuilds', function() {
     assertTrue(queryUpdateStatusMessage().hidden);
 
     fireStatusChanged(UpdateStatus.CHECKING);
-    assertEquals(null, icon.src);
+    await assertSpinnerVisible(false);
     assertEquals('cr:error', icon.icon);
     assertFalse(queryDeprecationWarning().hidden);
     assertTrue(queryUpdateStatusMessage().hidden);
 
     fireStatusChanged(UpdateStatus.FAILED);
-    assertEquals(null, icon.src);
+    await assertSpinnerVisible(false);
     assertEquals('cr:error', icon.icon);
     assertFalse(queryDeprecationWarning().hidden);
     assertTrue(queryUpdateStatusMessage().hidden);
 
     fireStatusChanged(UpdateStatus.UPDATED);
-    assertEquals(null, icon.src);
+    await assertSpinnerVisible(false);
     assertEquals('cr:error', icon.icon);
     assertFalse(queryDeprecationWarning().hidden);
     assertTrue(queryUpdateStatusMessage().hidden);
@@ -327,6 +322,18 @@ suite('AllBuilds', function() {
     page.shadowRoot!.querySelector<HTMLElement>('#help')!.click();
     return aboutBrowserProxy.whenCalled('openHelpPage');
   });
+
+  test('searchContents', async function() {
+    let result = await page.searchContents('foo');
+    assertFalse(result.canceled);
+    assertEquals(0, result.matchCount);
+    assertFalse(result.wasClearSearch);
+
+    result = await page.searchContents('');
+    assertFalse(result.canceled);
+    assertEquals(0, result.matchCount);
+    assertTrue(result.wasClearSearch);
+  });
 });
 
 // <if expr="_google_chrome">
@@ -334,17 +341,15 @@ suite('OfficialBuild', function() {
   let page: SettingsAboutPageElement;
   let browserProxy: TestAboutPageBrowserProxy;
   let openWindowProxy: TestOpenWindowProxy;
-  let testRoutes: SettingsRoutes;
 
   setup(function() {
-    testRoutes = setupRouter();
     browserProxy = new TestAboutPageBrowserProxy();
     AboutPageBrowserProxyImpl.setInstance(browserProxy);
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-about-page');
-    Router.getInstance().navigateTo(testRoutes.ABOUT);
+    Router.getInstance().navigateTo(routes.ABOUT);
     document.body.appendChild(page);
     return flushTasks();
   });
@@ -427,40 +432,40 @@ suite('OfficialBuild', function() {
 
     item = queryPromoteUpdater();
     assertTrue(!!item);
-    assertFalse(item!.hasAttribute('disabled'));
-    assertTrue(item!.hasAttribute('actionable'));
+    assertFalse(item.hasAttribute('disabled'));
+    assertTrue(item.hasAttribute('actionable'));
 
     arrow = queryArrowIcon();
     assertTrue(!!arrow);
-    assertEquals('CR-ICON-BUTTON', arrow!.parentElement!.tagName);
-    assertFalse(arrow!.parentElement!.hidden);
-    assertFalse(arrow!.hasAttribute('disabled'));
+    assertEquals('CR-ICON-BUTTON', arrow.parentElement!.tagName);
+    assertFalse(arrow.parentElement!.hidden);
+    assertFalse(arrow.hasAttribute('disabled'));
 
     firePromoteUpdaterStatusChanged(PromoStatusScenarios.IN_BETWEEN);
     flush();
     item = queryPromoteUpdater();
     assertTrue(!!item);
-    assertTrue(item!.hasAttribute('disabled'));
-    assertTrue(item!.hasAttribute('actionable'));
+    assertTrue(item.hasAttribute('disabled'));
+    assertTrue(item.hasAttribute('actionable'));
 
     arrow = queryArrowIcon();
     assertTrue(!!arrow);
-    assertEquals('CR-ICON-BUTTON', arrow!.parentElement!.tagName);
-    assertFalse(arrow!.parentElement!.hidden);
-    assertTrue(arrow!.hasAttribute('disabled'));
+    assertEquals('CR-ICON-BUTTON', arrow.parentElement!.tagName);
+    assertFalse(arrow.parentElement!.hidden);
+    assertTrue(arrow.hasAttribute('disabled'));
 
     firePromoteUpdaterStatusChanged(PromoStatusScenarios.PROMOTED);
     flush();
     item = queryPromoteUpdater();
     assertTrue(!!item);
-    assertTrue(item!.hasAttribute('disabled'));
-    assertFalse(item!.hasAttribute('actionable'));
+    assertTrue(item.hasAttribute('disabled'));
+    assertFalse(item.hasAttribute('actionable'));
 
     arrow = queryArrowIcon();
     assertTrue(!!arrow);
-    assertEquals('CR-ICON-BUTTON', arrow!.parentElement!.tagName);
-    assertTrue(arrow!.parentElement!.hidden);
-    assertTrue(arrow!.hasAttribute('disabled'));
+    assertEquals('CR-ICON-BUTTON', arrow.parentElement!.tagName);
+    assertTrue(arrow.parentElement!.hidden);
+    assertTrue(arrow.hasAttribute('disabled'));
   });
 
   test('PromoteUpdaterButtonWorksWhenEnabled', async function() {
@@ -469,7 +474,7 @@ suite('OfficialBuild', function() {
     const item = page.shadowRoot!.querySelector<HTMLElement>('#promoteUpdater');
     assertTrue(!!item);
 
-    item!.click();
+    item.click();
 
     await browserProxy.whenCalled('promoteUpdater');
   });

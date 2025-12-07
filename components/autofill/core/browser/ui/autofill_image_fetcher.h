@@ -5,13 +5,14 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_AUTOFILL_IMAGE_FETCHER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_AUTOFILL_IMAGE_FETCHER_H_
 
+#include <map>
 #include <memory>
 #include <optional>
 
 #include "base/barrier_callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
+#include "components/image_fetcher/core/image_fetcher_types.h"
 
 class GURL;
 
@@ -33,24 +34,33 @@ namespace autofill {
 // image_fetcher::ImageFetcher.
 class AutofillImageFetcher : public AutofillImageFetcherBase {
  public:
-  virtual ~AutofillImageFetcher() = default;
+  ~AutofillImageFetcher() override;
 
   // AutofillImageFetcherBase:
-  void FetchImagesForURLs(
-      base::span<const GURL> card_art_urls,
-      base::OnceCallback<void(
-          const std::vector<std::unique_ptr<CreditCardArtImage>>&)> callback)
+  // The image sizes passed in the arguments are unused as this param is only
+  // used for Android. For Desktop, the implementation of this method has
+  // hardcoded image sizes.
+  void FetchCreditCardArtImagesForURLs(
+      base::span<const GURL> image_urls,
+      base::span<const AutofillImageFetcherBase::ImageSize> image_sizes_unused)
       override;
+  void FetchPixAccountImagesForURLs(base::span<const GURL> image_urls) override;
+  void FetchValuableImagesForURLs(base::span<const GURL> image_urls) override;
+  const gfx::Image* GetCachedImageForUrl(const GURL& image_url,
+                                         ImageType image_type) const override;
 
   // Subclasses may override this to provide custom handling of a given card art
-  // URL.
-  virtual GURL ResolveCardArtURL(const GURL& card_art_url);
+  // URL for `image_type`. Resolved URLs are used as mapping keys for image
+  // caching.
+  virtual GURL ResolveImageURL(const GURL& image_url,
+                               ImageType image_type) const = 0;
 
-  // Subclasses may override this to provide custom handling of a fetched card
-  // art image. The default behavior is a no-op. The passed-in `card_art_url` is
-  // the original URL before resolving via `ResolveCardArtURL`.
-  virtual gfx::Image ResolveCardArtImage(const GURL& card_art_url,
-                                         const gfx::Image& card_art_image);
+  // Applies platform-specific post-processing to the `image` of the given
+  // `image_type`. The passed-in `image_url` is the original URL before
+  // resolving via `ResolveImageURL`.
+  virtual gfx::Image ResolveImage(const GURL& image_url,
+                                  const gfx::Image& image,
+                                  ImageType image_type);
 
   // Subclasses override this to provide the underlying image fetcher instance.
   //
@@ -65,22 +75,31 @@ class AutofillImageFetcher : public AutofillImageFetcherBase {
   virtual base::WeakPtr<AutofillImageFetcher> GetWeakPtr() = 0;
 
  protected:
+  AutofillImageFetcher();
+
   // Called when an image is fetched. If the fetch was unsuccessful,
-  // `card_art_image` will be an empty gfx::Image(). If the original URL was
-  // invalid, `fetch_image_request_timestamp` will also be null.
-  void OnCardArtImageFetched(
-      base::OnceCallback<void(std::unique_ptr<CreditCardArtImage>)>
-          barrier_callback,
-      const GURL& card_art_url,
-      const std::optional<base::TimeTicks>& fetch_image_request_timestamp,
-      const gfx::Image& card_art_image,
-      const image_fetcher::RequestMetadata& metadata);
+  // `image` will be an empty gfx::Image().
+  void OnImageFetched(const GURL& image_url,
+                      ImageType image_type,
+                      const gfx::Image& image,
+                      const image_fetcher::RequestMetadata& metadata);
+
+  // Subclasses may override this to provide custom handling of a fetched card
+  // art image. The passed-in `card_art_url` is the original URL before
+  // resolving via `ResolveImageURL`.
+  virtual gfx::Image ResolveCardArtImage(const GURL& card_art_url,
+                                         const gfx::Image& card_art_image) = 0;
+  // Subclasses may override this to provide custom handling of a fetched
+  // valuable image.
+  virtual gfx::Image ResolveValuableImage(const gfx::Image& valuable_image) = 0;
 
  private:
-  void FetchImageForURL(
-      base::OnceCallback<void(std::unique_ptr<CreditCardArtImage>)>
-          barrier_callback,
-      const GURL& card_art_url);
+  void FetchImageForURL(const GURL& image_url, ImageType image_type);
+
+  // Keeps track of the number of fetch attempts for a given URL.
+  std::map<GURL, int> fetch_attempt_counter_;
+  // An in-memory image cache which stores post-processed images.
+  std::map<GURL, std::unique_ptr<gfx::Image>> cached_images_;
 };
 
 }  // namespace autofill

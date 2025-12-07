@@ -7,24 +7,18 @@
 
 #include "base/feature_list.h"
 
-namespace content_capture {
+namespace content_capture::features {
 
-namespace features {
-
-BASE_DECLARE_FEATURE(kContentCapture);
-
-// ContentCapture is triggered in the unpredictable conditions which might be
-// changed on different aiai release or configuration push, this feature allows
-// us to trigger the ContentCapture independently to get the unbiased result.
-BASE_DECLARE_FEATURE(kContentCaptureTriggeringForExperiment);
+// Enables sending content capture metadata (e.g. sensitivity score, language
+// string, language confidence) to the data share service.
+BASE_DECLARE_FEATURE(kContentCaptureSendMetadataForDataShare);
 
 bool IsContentCaptureEnabled();
-bool ShouldTriggerContentCaptureForExperiment();
+
+bool ShouldSendMetadataForDataShare();
 
 int TaskInitialDelayInMilliseconds();
 
-}  // namespace features
-
-}  // namespace content_capture
+}  // namespace content_capture::features
 
 #endif  // COMPONENTS_CONTENT_CAPTURE_COMMON_CONTENT_CAPTURE_FEATURES_H_

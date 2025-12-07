@@ -68,7 +68,7 @@ bool ParseVDMX(int* y_max,
   auto vdmx =
       // TODO(crbug.com/40284755): ParseVDMX should receive a span, not a
       // pointer and length.
-      UNSAFE_BUFFERS(base::span(vdmx_ptr, vdmx_length));
+      UNSAFE_TODO(base::span(vdmx_ptr, vdmx_length));
 
   // We ignore the version. Future tables should be backwards compatible with
   // this layout.

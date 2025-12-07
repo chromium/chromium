@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
+#include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
@@ -30,11 +32,12 @@
 #include "components/prefs/pref_member.h"
 #include "components/spellcheck/common/spellcheck_features.h"
 #include "components/translate/core/browser/translate_download_manager.h"
+#include "components/translate/core/browser/translate_prefs.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_prefs.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "ui/base/ime/ash/component_extension_ime_manager.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
@@ -55,7 +58,7 @@ class MockLanguageSettingsPrivateDelegate
  public:
   explicit MockLanguageSettingsPrivateDelegate(content::BrowserContext* context)
       : LanguageSettingsPrivateDelegate(context) {}
-  ~MockLanguageSettingsPrivateDelegate() override {}
+  ~MockLanguageSettingsPrivateDelegate() override = default;
 
   // LanguageSettingsPrivateDelegate:
   std::vector<DictionaryStatus> GetHunspellDictionaryStatuses() override;
@@ -113,8 +116,6 @@ class LanguageSettingsPrivateApiTest : public ExtensionServiceTestBase {
  protected:
   void RunGetLanguageListTest();
 
-  virtual void InitFeatures() {}
-
 #if BUILDFLAG(IS_WIN)
   virtual void AddSpellcheckLanguagesForTesting(
       const std::vector<std::string>& spellcheck_languages_for_testing) {
@@ -132,8 +133,6 @@ class LanguageSettingsPrivateApiTest : public ExtensionServiceTestBase {
     ExtensionServiceTestBase::InitializeEmptyExtensionService();
     EventRouterFactory::GetInstance()->SetTestingFactory(
         profile(), base::BindRepeating(&BuildEventRouter));
-
-    InitFeatures();
 
     LanguageSettingsPrivateDelegateFactory::GetInstance()->SetTestingFactory(
         profile(), base::BindRepeating(&BuildLanguageSettingsPrivateDelegate));
@@ -245,7 +244,7 @@ TEST_F(LanguageSettingsPrivateApiTest, SetTranslateTargetLanguageTest) {
   std::vector<std::string> content_languages_before;
   translate_prefs_->GetLanguageList(&content_languages_before);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ASSERT_EQ(std::vector<std::string>({"en-US"}), content_languages_before);
 #else
   ASSERT_EQ(std::vector<std::string>({"en-US", "en"}),
@@ -292,28 +291,6 @@ TEST_F(LanguageSettingsPrivateApiTest, GetNeverTranslateLanguagesListTest) {
   }
 }
 
-class LanguageSettingsPrivateApiGetLanguageListTest
-    : public LanguageSettingsPrivateApiTest {
- public:
-  LanguageSettingsPrivateApiGetLanguageListTest() = default;
-  ~LanguageSettingsPrivateApiGetLanguageListTest() override = default;
-
- protected:
-  void InitFeatures() override {
-#if BUILDFLAG(IS_WIN)
-    // Disable the delayed init feature since that case is tested in
-    // LanguageSettingsPrivateApiTestDelayInit below.
-    feature_list_.InitAndDisableFeature(
-        spellcheck::kWinDelaySpellcheckServiceInit);
-#endif  // BUILDFLAG(IS_WIN)
-  }
-};
-
-TEST_F(LanguageSettingsPrivateApiGetLanguageListTest, GetLanguageList) {
-  translate::TranslateDownloadManager::GetInstance()->ResetForTesting();
-  RunGetLanguageListTest();
-}
-
 void LanguageSettingsPrivateApiTest::RunGetLanguageListTest() {
   struct LanguageToTest {
     std::string accept_language;
@@ -332,7 +309,7 @@ void LanguageSettingsPrivateApiTest::RunGetLanguageListTest() {
       {"de", "de-DE", false, true},
       {"es-MX", "", true, true},
       {"fa", "", false, true},
-      {"gl", "", true, false},
+      {"gl", "", true, true},
       {"zu", "", false, false},
       // Finnish with Filipino language pack (string in string).
       {"fi", "fil", true, false},
@@ -429,7 +406,7 @@ void LanguageSettingsPrivateApiTest::RunGetLanguageListTest() {
   EXPECT_EQ(languages_to_test.size(), languages_to_test_found_count);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace {
 
 namespace input_method = ::ash::input_method;
@@ -714,7 +691,7 @@ TEST_F(LanguageSettingsPrivateApiTest, RemoveInputMethodTest) {
   TestInputMethodManager::Shutdown();
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
 class LanguageSettingsPrivateApiTestDelayInit
@@ -723,13 +700,6 @@ class LanguageSettingsPrivateApiTestDelayInit
   LanguageSettingsPrivateApiTestDelayInit() = default;
 
  protected:
-  void InitFeatures() override {
-    // Force Windows hybrid spellcheck and delayed initialization of the
-    // spellcheck service to be enabled.
-    feature_list_.InitAndEnableFeature(
-        spellcheck::kWinDelaySpellcheckServiceInit);
-  }
-
   void AddSpellcheckLanguagesForTesting(
       const std::vector<std::string>& spellcheck_languages_for_testing)
       override {

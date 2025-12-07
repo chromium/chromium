@@ -5,6 +5,7 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
+#import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
@@ -13,7 +14,6 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/ui_bundled/authentication/authentication_egtest_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
-#import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -28,6 +28,8 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 using base::test::ios::kWaitForDownloadTimeout;
+
+namespace {
 
 // Path to the autofill test pages.
 const char kAutofillTestPagesDirectory[] = "components/test/data/autofill";
@@ -96,10 +98,14 @@ id<GREYMatcher> VirtualCardEnrollmentAcceptButton() {
       IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_ACCEPT_BUTTON_LABEL));
 }
 
-id<GREYMatcher> VirtualCardEnrollmentSkipButton() {
-  return testing::ButtonWithAccessibilityLabel(l10n_util::GetNSString(
-      IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DECLINE_BUTTON_LABEL_SKIP));
+// Matcher for the activity indicator.
+id<GREYMatcher> ActivityIndicatorMatcher() {
+  return grey_allOf(grey_kindOfClassName(@"UIActivityIndicatorView"),
+                    grey_ancestor(chrome_test_util::ButtonStackPrimaryButton()),
+                    nil);
 }
+
+}  // namespace
 
 @interface VirtualCardEnrollmentBottomSheetEgTest : ChromeTestCase
 @end
@@ -109,18 +115,7 @@ id<GREYMatcher> VirtualCardEnrollmentSkipButton() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(
-      autofill::features::kAutofillEnableVirtualCards);
-  if ([self
-          isRunningTest:@selector
-          (testVirtualCardEnrollmentShowsLoadingAndConfirmationAfterAcceptPushed
-              )]) {
-    config.features_enabled.push_back(
-        autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
-  } else if ([self isRunningTest:@selector
-                   (testVirtualCardEnrollmentDismissesAfterAcceptPushed)]) {
-    config.features_disabled.push_back(
-        autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
-  }
+      autofill::features::kAutofillSaveCardBottomSheet);
   return config;
 }
 
@@ -138,14 +133,14 @@ id<GREYMatcher> VirtualCardEnrollmentSkipButton() {
   GREYAssertTrue(self.testServer->Start(), @"Failed to start test server.");
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [AutofillAppInterface clearAllServerDataForTesting];
   [AutofillAppInterface clearVirtualCardEnrollmentStrikes];
   [AutofillAppInterface tearDownFakeCreditCardServer];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
-- (void)showVirtualCardEnrollmentBottomSheet {
+- (void)fillAndSubmitFormWithServerResponse {
   // Load the test page with a credit card form.
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kCreditCardUploadUrl)];
 
@@ -154,6 +149,9 @@ id<GREYMatcher> VirtualCardEnrollmentSkipButton() {
                                  forRequest:kGetSaveCardDetailsUrl
                               withErrorCode:net::HTTP_OK];
 
+  // Wait for the web view to appear.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:chrome_test_util::WebViewMatcher()];
   // Fill the form.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFillFormId)];
@@ -179,22 +177,38 @@ id<GREYMatcher> VirtualCardEnrollmentSkipButton() {
   // Wait for upload and get upload details.
   GREYAssertTrue([AutofillAppInterface waitForEvents],
                  @"Did not call upload save or get upload details response.");
+}
 
-  // Push the save button on the card.
-  id<GREYMatcher> overlaySaveButton =
-      chrome_test_util::ButtonWithAccessibilityLabelId(
-          IDS_IOS_AUTOFILL_SAVE_ELLIPSIS);
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:overlaySaveButton];
-  [[EarlGrey selectElementWithMatcher:overlaySaveButton]
-      performAction:grey_tap()];
+- (void)showVirtualCardEnrollmentBottomSheetAfterSaveCardBottomSheet:
+    (BOOL)afterSaveCardBottomSheet {
+  [self fillAndSubmitFormWithServerResponse];
 
-  // Push the save button on the modal.
-  id<GREYMatcher> modalSaveButton =
-      chrome_test_util::ButtonWithAccessibilityLabelId(
-          IDS_IOS_AUTOFILL_SAVE_CARD);
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:modalSaveButton];
-  [[EarlGrey selectElementWithMatcher:modalSaveButton]
-      performAction:grey_tap()];
+  if (afterSaveCardBottomSheet) {
+    // Push the accept button on the save card bottomsheet.
+    id<GREYMatcher> saveCardBottomSheetAcceptButtonMatcher =
+        chrome_test_util::ButtonWithAccessibilityLabelId(
+            IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT);
+    [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                        saveCardBottomSheetAcceptButtonMatcher];
+    [[EarlGrey selectElementWithMatcher:saveCardBottomSheetAcceptButtonMatcher]
+        performAction:grey_tap()];
+  } else {
+    // Push the save button on the save card infobar banner.
+    id<GREYMatcher> overlaySaveButton =
+        chrome_test_util::ButtonWithAccessibilityLabelId(
+            IDS_IOS_AUTOFILL_SAVE_ELLIPSIS);
+    [ChromeEarlGrey waitForUIElementToAppearWithMatcher:overlaySaveButton];
+    [[EarlGrey selectElementWithMatcher:overlaySaveButton]
+        performAction:grey_tap()];
+
+    // Push the save button on the save card infobar modal.
+    id<GREYMatcher> modalSaveButton =
+        chrome_test_util::ButtonWithAccessibilityLabelId(
+            IDS_IOS_AUTOFILL_SAVE_CARD);
+    [ChromeEarlGrey waitForUIElementToAppearWithMatcher:modalSaveButton];
+    [[EarlGrey selectElementWithMatcher:modalSaveButton]
+        performAction:grey_tap()];
+  }
 
   // Inject risk data required for the card upload request to be initiated.
   [AutofillAppInterface setPaymentsRiskData:@"Fake risk data for tests"];
@@ -205,7 +219,11 @@ id<GREYMatcher> VirtualCardEnrollmentSkipButton() {
 }
 
 - (void)testVirtualCardEnrollmentDismissesAfterSkipPushed {
-  [self showVirtualCardEnrollmentBottomSheet];
+  // TODO(crbug.com/415027494): Test is flaky on iPad device from 18.2.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Disabled on iPad");
+  }
+  [self showVirtualCardEnrollmentBottomSheetAfterSaveCardBottomSheet:YES];
 
   // Assert the header trait is set on the header label.
   [[EarlGrey selectElementWithMatcher:VirtualCardEnrollmentTitle()]
@@ -225,20 +243,53 @@ id<GREYMatcher> VirtualCardEnrollmentSkipButton() {
       waitForUIElementToDisappearWithMatcher:VirtualCardEnrollmentTitle()];
 }
 
-- (void)testVirtualCardEnrollmentDismissesAfterAcceptPushed {
-  [self showVirtualCardEnrollmentBottomSheet];
+// TODO(crbug.com/419219302): Test is flaky.
+- (void)DISABLED_testSaveCardInfobarFollowedByVirtualCardEnrollment {
+  [self fillAndSubmitFormWithServerResponse];
 
-  // Push the accept button on the virtual card enrollment bottom sheet.
-  [[EarlGrey selectElementWithMatcher:VirtualCardEnrollmentAcceptButton()]
+  // Dismiss save card bottomsheet. Dismissing the bottomsheet incurs a strike
+  // on the card. For the second card upload offer, an infobar banner will be
+  // shown. Push the accept button on the save card bottomsheet.
+  id<GREYMatcher> saveCardBottomSheetCancelButtonMatcher =
+      chrome_test_util::ButtonWithAccessibilityLabelId(
+          IDS_AUTOFILL_NO_THANKS_MOBILE_UPLOAD_SAVE);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      saveCardBottomSheetCancelButtonMatcher];
+  [[EarlGrey selectElementWithMatcher:saveCardBottomSheetCancelButtonMatcher]
       performAction:grey_tap()];
 
-  // Assert the virtual card enrollment bottom sheet has been dismissed.
-  [ChromeEarlGrey
-      waitForUIElementToDisappearWithMatcher:VirtualCardEnrollmentTitle()];
+  // Assert save card bottomsheet dimisses.
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      saveCardBottomSheetCancelButtonMatcher];
+  // Submit the credit card form again to be offered card upload in a save card
+  // infobar.
+  [self fillAndSubmitFormWithServerResponse];
+
+  [self showVirtualCardEnrollmentBottomSheetAfterSaveCardBottomSheet:NO];
+
+  // Assert the header trait is set on the header label.
+  [[EarlGrey selectElementWithMatcher:VirtualCardEnrollmentTitle()]
+      assertWithMatcher:grey_allOf(
+                            grey_accessibilityTrait(UIAccessibilityTraitHeader),
+                            grey_sufficientlyVisible(), nil)];
+
+  // Push the skip button on the virtual card enrollment bottom sheet.
+  [[EarlGrey
+      selectElementWithMatcher:
+          testing::ButtonWithAccessibilityLabel(l10n_util::GetNSString(
+              IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DECLINE_BUTTON_LABEL_SKIP))]
+      performAction:grey_tap()];
 }
 
-- (void)testVirtualCardEnrollmentShowsLoadingAndConfirmationAfterAcceptPushed {
-  [self showVirtualCardEnrollmentBottomSheet];
+// TODO(crbug.com/415396933): Re-enable the test.
+- (void)
+    DISABLED_testVirtualCardEnrollmentShowsLoadingAndConfirmationAfterAcceptPushed {
+  // TODO(crbug.com/437268290): Re-enable the test on iOS26.
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+
+  [self showVirtualCardEnrollmentBottomSheetAfterSaveCardBottomSheet:YES];
 
   // Avoid immediately failing due to missing access token.
   [AutofillAppInterface setAccessToken];
@@ -256,18 +307,14 @@ id<GREYMatcher> VirtualCardEnrollmentSkipButton() {
       performAction:grey_tap()];
 
   // Assert an activity indicator view is being shown in the loading state.
-  id<GREYMatcher> activityIndicatorView =
-      grey_kindOfClassName(@"UIActivityIndicatorView");
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:activityIndicatorView];
-  [[[EarlGrey selectElementWithMatcher:activityIndicatorView]
-      inRoot:grey_accessibilityID(
-                 kConfirmationAlertPrimaryActionAccessibilityIdentifier)]
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:ActivityIndicatorMatcher()];
+  [[EarlGrey selectElementWithMatcher:ActivityIndicatorMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Assert the primary action button is disabled.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kConfirmationAlertPrimaryActionAccessibilityIdentifier)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonStackPrimaryButton()]
       assertWithMatcher:
           grey_allOf(
               grey_not(grey_enabled()),
@@ -276,9 +323,8 @@ id<GREYMatcher> VirtualCardEnrollmentSkipButton() {
               nil)];
 
   // Assert the secondary action button is disabled.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kConfirmationAlertSecondaryActionAccessibilityIdentifier)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonStackSecondaryButton()]
       assertWithMatcher:grey_not(grey_enabled())];
 
   // Inject a successful enrollment response from the payments server.
@@ -287,17 +333,14 @@ id<GREYMatcher> VirtualCardEnrollmentSkipButton() {
                               withErrorCode:net::HTTP_OK];
 
   // Assert the primary action button is still disabled.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kConfirmationAlertPrimaryActionAccessibilityIdentifier)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonStackPrimaryButton()]
       assertWithMatcher:grey_not(grey_enabled())];
 
   // Assert the primary action button contains the checkmark symbol.
   [[[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kConfirmationAlertCheckmarkSymbolIdentifier)]
-      inRoot:grey_accessibilityID(
-                 kConfirmationAlertPrimaryActionAccessibilityIdentifier)]
+      selectElementWithMatcher:chrome_test_util::ButtonStackCheckmarkSymbol()]
+      inRoot:chrome_test_util::ButtonStackPrimaryButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

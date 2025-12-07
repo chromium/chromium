@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_set_parameter_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
-#include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_send_stream.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_script_transform.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -42,6 +42,7 @@ class RTCRtpCapabilities;
 class RTCRtpTransceiver;
 class RTCInsertableStreams;
 class RTCStatsReport;
+class RTCRtpScriptTransform;
 
 webrtc::RtpEncodingParameters ToRtpEncodingParameters(
     ExecutionContext* context,
@@ -80,17 +81,23 @@ class RTCRtpSender final : public ScriptWrappable,
   MediaStreamTrack* track();
   RTCDtlsTransport* transport();
   RTCDtlsTransport* rtcpTransport();
-  ScriptPromise<IDLUndefined> replaceTrack(ScriptState*, MediaStreamTrack*);
+  ScriptPromise<IDLUndefined> replaceTrack(ScriptState*,
+                                           MediaStreamTrack*,
+                                           ExceptionState&);
   RTCDTMFSender* dtmf();
   static RTCRtpCapabilities* getCapabilities(ScriptState* state,
                                              const String& kind);
   RTCRtpSendParameters* getParameters();
   ScriptPromise<IDLUndefined> setParameters(ScriptState*,
                                             const RTCRtpSendParameters*,
-                                            const RTCSetParameterOptions*);
+                                            const RTCSetParameterOptions*,
+                                            ExceptionState&);
   ScriptPromise<RTCStatsReport> getStats(ScriptState*);
   void setStreams(HeapVector<Member<MediaStream>> streams, ExceptionState&);
   RTCInsertableStreams* createEncodedStreams(ScriptState*, ExceptionState&);
+
+  RTCRtpScriptTransform* transform() { return transform_; }
+  void setTransform(RTCRtpScriptTransform*, ExceptionState& exception_state);
 
   RTCRtpSenderPlatform* web_sender();
   // Sets the track. This must be called when the |RTCRtpSenderPlatform| has its
@@ -103,11 +110,6 @@ class RTCRtpSender final : public ScriptWrappable,
   void set_transceiver(RTCRtpTransceiver*);
   void set_transport(RTCDtlsTransport*);
 
-  ScriptPromise<HeapVector<Member<RTCRtpSendStream>>> replaceSendStreams() {
-    // TODO(crbug.com/345101934): Implement me.
-    return {};
-  }
-
   // ExecutionContextLifecycleObserver
   void ContextDestroyed() override;
 
@@ -116,27 +118,21 @@ class RTCRtpSender final : public ScriptWrappable,
  private:
   // Insertable Streams audio support methods
   RTCInsertableStreams* CreateEncodedAudioStreams(ScriptState*);
-  void RegisterEncodedAudioStreamCallback();
   void UnregisterEncodedAudioStreamCallback();
   void SetAudioUnderlyingSource(
       RTCEncodedAudioUnderlyingSource* new_underlying_source,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   void SetAudioUnderlyingSink(
       RTCEncodedAudioUnderlyingSink* new_underlying_sink);
-  void OnAudioFrameFromEncoder(
-      std::unique_ptr<webrtc::TransformableAudioFrameInterface> frame);
 
   // Insertable Streams video support methods
   RTCInsertableStreams* CreateEncodedVideoStreams(ScriptState*);
-  void RegisterEncodedVideoStreamCallback();
   void UnregisterEncodedVideoStreamCallback();
   void SetVideoUnderlyingSource(
       RTCEncodedVideoUnderlyingSource* new_underlying_source,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   void SetVideoUnderlyingSink(
       RTCEncodedVideoUnderlyingSink* new_underlying_sink);
-  void OnVideoFrameFromEncoder(
-      std::unique_ptr<webrtc::TransformableVideoFrameInterface> frame);
 
   void LogMessage(const std::string& message);
 
@@ -155,6 +151,7 @@ class RTCRtpSender final : public ScriptWrappable,
   Member<RTCRtpTransceiver> transceiver_;
   bool transform_shortcircuited_ = false;
   Member<RTCInsertableStreams> encoded_streams_;
+  Member<RTCRtpScriptTransform> transform_;
 
   // Insertable Streams audio support
   base::Lock audio_underlying_source_lock_;

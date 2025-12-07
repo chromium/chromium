@@ -9,7 +9,6 @@
 
 #include "ash/public/cpp/shelf_model_observer.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/webui/resources/cr_components/app_management/app_management.mojom.h"
 
 class AppManagementPageHandlerChromeOs;
 class ShelfControllerHelper;

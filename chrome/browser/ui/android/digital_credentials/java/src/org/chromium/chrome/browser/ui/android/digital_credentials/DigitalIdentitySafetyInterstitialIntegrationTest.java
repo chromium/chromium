@@ -5,12 +5,8 @@
 package org.chromium.chrome.browser.ui.android.digital_credentials;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-
-import android.app.Activity;
 
 import androidx.test.filters.LargeTest;
 
@@ -31,16 +27,21 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.digital_credentials.DigitalIdentityInterstitialClosedReason;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.webid.DigitalIdentityProvider;
+import org.chromium.chrome.browser.webid.IdentityCredentialsDelegate;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.test.util.DOMUtils;
-import org.chromium.content_public.browser.test.util.DigitalCredentialProviderUtils.MockIdentityCredentialsDelegate;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -59,13 +60,13 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
      * Observes shown modal dialogs.
      *
      * <p>Presses {@link ButtonType.POSITIVE} for dialog whose {@link
-     * ModalDialogProperties.MESSAGE_PARAGRAPH1} matches the parameter passed to the constructor.
+     * ModalDialogProperties.MESSAGE_PARAGRAPHS} matches the parameter passed to the constructor.
      */
     private static class ModalDialogButtonPresser implements ModalDialogManagerObserver {
-        private String mSearchParagraph1;
+        private final String mSearchParagraph1;
         private boolean mWasDialogShown;
         private boolean mWasAnyDialogShown;
-        private boolean mPressButtonOnShow;
+        private final boolean mPressButtonOnShow;
         private PropertyModel mDialogPropertyModel;
 
         public ModalDialogButtonPresser(String searchParagraph1, boolean pressButtonOnShow) {
@@ -81,15 +82,11 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
             return mWasDialogShown;
         }
 
-        public PropertyModel getDialogPropertyModel() {
-            return mDialogPropertyModel;
-        }
-
         @Override
         public void onDialogAdded(PropertyModel model) {
             mWasAnyDialogShown = true;
 
-            CharSequence paragraph1 = model.get(ModalDialogProperties.MESSAGE_PARAGRAPH_1);
+            CharSequence paragraph1 = model.get(ModalDialogProperties.MESSAGE_PARAGRAPHS).get(0);
             if (paragraph1 != null && mSearchParagraph1.equals(paragraph1.toString())) {
                 mWasDialogShown = true;
                 mDialogPropertyModel = model;
@@ -101,23 +98,26 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
         }
     }
 
-    /** {@link MockIdentityCredentialsDelegate} implementation which returns "token". */
+    /** {@link IdentityCredentialsDelegate} implementation which returns "token". */
     private static class ReturnTokenIdentityCredentialsDelegate
-            extends MockIdentityCredentialsDelegate {
+            extends IdentityCredentialsDelegate {
         @Override
-        public Promise<byte[]> get(Activity activity, String origin, String request) {
-            return Promise.fulfilled("token".getBytes());
+        public Promise<DigitalCredential> get(WindowAndroid window, String origin, String request) {
+            return Promise.fulfilled(
+                    new DigitalCredential("protocol", "{\"token\" : \"test_token\"}".getBytes()));
         }
     }
 
-    private static final String TEST_PAGE = "/chrome/test/data/android/fedcm_mdocs.html";
+    private static final String TEST_PAGE = "/chrome/test/data/android/dc_mdocs.html";
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     private EmbeddedTestServer mTestServer;
+    private WebPageStation mPage;
 
     private ModalDialogButtonPresser mModalDialogObserver;
 
@@ -131,7 +131,9 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
         mTestServer = mActivityTestRule.getTestServer();
         DigitalIdentityProvider.setDelegateForTesting(new ReturnTokenIdentityCredentialsDelegate());
 
-        mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(TEST_PAGE));
+        // startOnTestServerUrl is flaky. Using startOnBlankPage() instead with loadUrl()
+        mActivityTestRule.startOnBlankPage();
+        mActivityTestRule.loadUrl(mActivityTestRule.getTestServer().getURL(TEST_PAGE));
 
         mModalDialogManager = getActivity().getModalDialogManager();
     }
@@ -202,7 +204,7 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
 
         DOMUtils.clickNode(mActivityTestRule.getWebContents(), nodeIdToClick);
 
-        waitTillLogTextAreaHasTextContent("\"token\"");
+        waitTillLogTextAreaHasTextContent("\"test_token\"");
 
         if (expectedInterstitialParagraph1ResourceId >= 0) {
             assertTrue(mModalDialogObserver.wasDialogShown());
@@ -275,8 +277,9 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
     }
 
     /**
-     * Test that the interstitial is updated to indicate that the credential request has been
-     * canceled if the page navigates while the interstitial is showing.
+     * Test that the DigitalIdentityInterstitialClosedReason.PAGE_NAVIGATED is recorded for
+     * Blink.DigitalIdentityInterstitialClosedReason if the page navigates while the interstitial is
+     * showing.
      */
     @Test
     @LargeTest
@@ -284,7 +287,11 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
         "BackForwardCacheMemoryControls",
         "WebIdentityDigitalCredentials:dialog/high_risk"
     })
-    public void testDialogUpdatedIfPageNavigatesWhileDialogIsUp() throws TimeoutException {
+    public void testCloseReasonUmaRecorded_PageNavigates() throws TimeoutException {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Blink.DigitalIdentityRequest.InterstitialClosedReason",
+                        DigitalIdentityInterstitialClosedReason.PAGE_NAVIGATED);
         addModalDialogObserver(
                 R.string.digital_identity_interstitial_high_risk_dialog_text,
                 /* pressButtonOnShow= */ false);
@@ -294,21 +301,38 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
                 () -> {
                     return mModalDialogObserver.wasDialogShown();
                 });
-        assertNull(
-                mModalDialogObserver
-                        .getDialogPropertyModel()
-                        .get(ModalDialogProperties.MESSAGE_PARAGRAPH_2));
 
         // Navigating the page should update the interstitial's UI.
         mActivityTestRule.loadUrl(mTestServer.getURL("/chrome/test/data/android/simple.html"));
-        assertEquals(
-                getActivity()
-                        .getString(
-                                R.string.digital_identity_interstitial_request_aborted_dialog_text,
-                                getPageOriginString()),
-                mModalDialogObserver
-                        .getDialogPropertyModel()
-                        .get(ModalDialogProperties.MESSAGE_PARAGRAPH_2)
-                        .toString());
+
+        histogramWatcher.assertExpected();
+    }
+
+    /**
+     * Test that Blink.DigitalIdentityInterstitialClosedReason UMA is recorded when the interstitial
+     * dialog is closed for a different reason.
+     */
+    @Test
+    @LargeTest
+    @EnableFeatures({
+        "BackForwardCacheMemoryControls",
+        "WebIdentityDigitalCredentials:dialog/high_risk"
+    })
+    public void testCloseReasonUmaRecorded_Other() throws TimeoutException {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Blink.DigitalIdentityRequest.InterstitialClosedReason",
+                        DigitalIdentityInterstitialClosedReason.OK_BUTTON);
+        addModalDialogObserver(
+                R.string.digital_identity_interstitial_high_risk_dialog_text,
+                /* pressButtonOnShow= */ true);
+
+        DOMUtils.clickNode(mActivityTestRule.getWebContents(), "request_age_and_name_button");
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    return mModalDialogObserver.wasDialogShown();
+                });
+
+        histogramWatcher.assertExpected();
     }
 }

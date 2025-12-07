@@ -35,9 +35,7 @@ std::map<std::string, std::string> kTestMap = {
     {"testPackage5", "AVAILABLE"},      {"testPackage6", "REQUIRED"}};
 
 std::string CreatePolicyJson(const base::Value::Dict& arc_policy) {
-  std::string arc_policy_string;
-  base::JSONWriter::Write(arc_policy, &arc_policy_string);
-  return arc_policy_string;
+  return base::WriteJson(arc_policy).value_or("");
 }
 
 std::string CreatePolicyWithAppInstalls(

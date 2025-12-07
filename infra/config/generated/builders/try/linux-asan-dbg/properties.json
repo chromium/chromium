@@ -22,13 +22,13 @@
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
-                  "mb",
-                  "clobber"
+                  "clobber",
+                  "mb"
                 ],
                 "build_config": "Debug",
                 "config": "chromium_asan",
                 "target_bits": 64,
-                "target_platform": "win"
+                "target_platform": "linux"
               },
               "legacy_gclient_config": {
                 "config": "chromium"
@@ -47,18 +47,15 @@
       "targets_spec_directory": "src/infra/config/generated/builders/try/linux-asan-dbg/targets"
     }
   },
-  "$build/reclient": {
-    "instance": "rbe-chromium-untrusted",
-    "metrics_project": "chromium-reclient-metrics",
-    "scandeps_server": true
-  },
   "$build/siso": {
     "configs": [
       "builder"
     ],
+    "enable_cloud_monitoring": true,
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
+    "metrics_project": "chromium-reclient-metrics",
     "project": "rbe-chromium-untrusted",
     "remote_jobs": -1
   },

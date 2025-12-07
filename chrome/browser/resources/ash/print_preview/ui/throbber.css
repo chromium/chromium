@@ -1,0 +1,15 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #import=./print_preview_vars.css.js
+ * #css_wrapper_metadata_end */
+
+.throbber {
+  background: url(chrome://resources/images/throbber_small.svg) no-repeat;
+  display: inline-block;
+  height: var(--throbber-size);
+  width: var(--throbber-size);
+}

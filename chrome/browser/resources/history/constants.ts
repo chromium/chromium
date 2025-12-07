@@ -11,6 +11,22 @@ export const RESULTS_PER_PAGE = 150;
 export const BROWSING_GAP_TIME = 15 * 60 * 1000;
 
 /**
+ * This enum is used to differentiate all the relevant sign-in/history-sync
+ * states.
+ */
+// LINT.IfChange(HistorySignInState)
+export enum HistorySignInState {
+  SIGNED_OUT = 0,
+  WEB_ONLY_SIGNED_IN = 1,
+  SIGNED_IN_NOT_SYNCING_TABS = 2,
+  SIGNED_IN_SYNCING_TABS = 3,
+  SIGN_IN_PENDING_NOT_SYNCING_TABS = 4,
+  SIGN_IN_PENDING_SYNCING_TABS = 5,
+  SYNC_DISABLED = 6,
+}
+// LINT.ThenChange(/chrome/browser/ui/webui/history/history_sign_in_state_watcher.h:HistorySignInState)
+
+/**
  * Histogram buckets for UMA tracking of which view is being shown to the user.
  * Keep this in sync with the HistoryPageView enum in histograms.xml.
  * This enum is append-only.
@@ -49,3 +65,21 @@ export enum SyncedTabsHistogram {
   OPENED_LINK_VIA_CONTEXT_MENU = 11,
   LIMIT = 12  // Should always be the last one.
 }
+
+/**
+ * Contains all context menu interactions for a visit in the history page.
+ *
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ *
+ * Must be kept in sync with the VisitContextMenuAction enum in
+ * histograms/metadata/history/enums.xml
+ */
+// LINT.IfChange(VisitContextMenuAction)
+export enum VisitContextMenuAction {
+  MORE_FROM_THIS_SITE_CLICKED = 0,
+  REMOVE_FROM_HISTORY_CLICKED = 1,
+  REMOVE_BOOKMARK_CLICKED = 2,
+  MAX_VALUE = 3,
+}
+// LINT.ThenChange(/tools/metrics/histograms/metadata/history/enums.xml:VisitContextMenuAction)

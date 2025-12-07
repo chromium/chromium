@@ -17,7 +17,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/AwDarkMode_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace android_webview {
@@ -32,16 +32,16 @@ bool IsForceDarkEnabled(content::WebContents* web_contents) {
 }  // namespace
 
 // static
-jlong JNI_AwDarkMode_Init(JNIEnv* env,
-                          const JavaParamRef<jobject>& caller,
-                          const JavaParamRef<jobject>& java_web_contents) {
+static jlong JNI_AwDarkMode_Init(JNIEnv* env,
+                                 const JavaRef<jobject>& obj,
+                                 const JavaRef<jobject>& java_web_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(java_web_contents);
   DCHECK(web_contents);
-  return reinterpret_cast<intptr_t>(new AwDarkMode(env, caller, web_contents));
+  return reinterpret_cast<intptr_t>(new AwDarkMode(env, obj, web_contents));
 }
 
-void JNI_AwDarkMode_EnableSimplifiedDarkMode(JNIEnv* env) {
+static void JNI_AwDarkMode_EnableSimplifiedDarkMode(JNIEnv* env) {
   sShouldEnableSimplifiedDarkMode = true;
 }
 
@@ -51,7 +51,7 @@ AwDarkMode* AwDarkMode::FromWebContents(content::WebContents* contents) {
 }
 
 AwDarkMode::AwDarkMode(JNIEnv* env,
-                       jobject obj,
+                       const jni_zero::JavaRef<jobject>& obj,
                        content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents), jobj_(env, obj) {
   web_contents->SetUserData(kAwDarkModeUserDataKey, base::WrapUnique(this));
@@ -143,11 +143,6 @@ void AwDarkMode::PopulateWebPreferencesForPreT(
   } else if (prefers_dark_from_theme_) {
     web_prefs->preferred_color_scheme =
         blink::mojom::PreferredColorScheme::kDark;
-    if (base::FeatureList::IsEnabled(
-            android_webview::features::kWebViewForceDarkModeMatchTheme)) {
-      web_prefs->force_dark_mode_enabled = true;
-      is_force_dark_applied_ = true;
-    }
   } else {
     web_prefs->preferred_color_scheme =
         blink::mojom::PreferredColorScheme::kLight;
@@ -163,8 +158,7 @@ bool AwDarkMode::IsAppUsingDarkTheme() {
   return Java_AwDarkMode_isAppUsingDarkTheme(env, scoped_obj);
 }
 
-void AwDarkMode::DetachFromJavaObject(JNIEnv* env,
-                                      const JavaParamRef<jobject>& jcaller) {
+void AwDarkMode::DetachFromJavaObject(JNIEnv* env) {
   jobj_.reset();
 }
 
@@ -186,3 +180,5 @@ void AwDarkMode::InferredColorSchemeUpdated(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwDarkMode)

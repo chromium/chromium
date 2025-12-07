@@ -11,11 +11,12 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/memory/raw_ref.h"
 #include "build/build_config.h"
-#include "ui/gfx/gfx_export.h"
 #include "ui/gfx/text_constants.h"
 
 namespace base {
@@ -25,23 +26,24 @@ class FilePath;
 namespace gfx {
 class FontList;
 
-GFX_EXPORT extern const char kEllipsis[];
-GFX_EXPORT extern const char16_t kEllipsisUTF16[];
-GFX_EXPORT extern const char16_t kForwardSlash;
+// U+2026 in utf8
+inline constexpr char kEllipsis[] = "\xE2\x80\xA6";
+inline constexpr char16_t kEllipsisUTF16[] = {0x2026, 0};
+inline constexpr char16_t kForwardSlash = '/';
 
 // Helper class to split + elide text, while respecting UTF-16 surrogate pairs
 // and combining character sequences.
-class GFX_EXPORT StringSlicer {
+class COMPONENT_EXPORT(GFX) StringSlicer {
  public:
-  // Warning: Retains a reference to |text| and |ellipsis|. They must have a
+  // Warning: Retains `text` and `ellipsis`. The backing string must have a
   // longer lifetime than the StringSlicer.
   //
   // Note: if |elide_whitespace| is std::nullopt, the default whitespace
   // elision strategy for the type of elision being done will be chosen.
   // Defaults are to trim for beginning and end elision; no trimming for middle
   // elision.
-  StringSlicer(const std::u16string& text,
-               const std::u16string& ellipsis,
+  StringSlicer(std::u16string_view text,
+               std::u16string_view ellipsis,
                bool elide_in_middle,
                bool elide_at_beginning,
                std::optional<bool> elide_whitespace = std::nullopt);
@@ -62,10 +64,10 @@ class GFX_EXPORT StringSlicer {
 
  private:
   // The text to be sliced.
-  const raw_ref<const std::u16string, DanglingUntriaged> text_;
+  std::u16string_view text_;
 
   // Ellipsis string to use.
-  const raw_ref<const std::u16string, DanglingUntriaged> ellipsis_;
+  std::u16string_view ellipsis_;
 
   // If true, the middle of the string will be elided.
   const bool elide_in_middle_;
@@ -78,10 +80,11 @@ class GFX_EXPORT StringSlicer {
 };
 
 // Elides |text| to fit the |available_pixel_width| with the specified behavior.
-GFX_EXPORT std::u16string ElideText(const std::u16string& text,
-                                    const gfx::FontList& font_list,
-                                    float available_pixel_width,
-                                    ElideBehavior elide_behavior);
+COMPONENT_EXPORT(GFX)
+std::u16string ElideText(std::u16string_view text,
+                         const gfx::FontList& font_list,
+                         float available_pixel_width,
+                         ElideBehavior elide_behavior);
 
 // Elide a filename to fit a given pixel width, with an emphasis on not hiding
 // the extension unless we have to. If filename contains a path, the path will
@@ -89,9 +92,10 @@ GFX_EXPORT std::u16string ElideText(const std::u16string& text,
 // filename is forced to have LTR directionality, which means that in RTL UI
 // the elided filename is wrapped with LRE (Left-To-Right Embedding) mark and
 // PDF (Pop Directional Formatting) mark.
-GFX_EXPORT std::u16string ElideFilename(const base::FilePath& filename,
-                                        const gfx::FontList& font_list,
-                                        float available_pixel_width);
+COMPONENT_EXPORT(GFX)
+std::u16string ElideFilename(const base::FilePath& filename,
+                             const gfx::FontList& font_list,
+                             float available_pixel_width);
 
 // Functions to elide strings when the font information is unknown. As opposed
 // to the above functions, ElideString() and ElideRectangleString() operate in
@@ -105,9 +109,10 @@ GFX_EXPORT std::u16string ElideFilename(const base::FilePath& filename,
 // puts "Hell...Tom" in str and returns true.
 // TODO(tsepez): Doesn't handle UTF-16 surrogate pairs properly.
 // TODO(tsepez): Doesn't handle bidi properly.
-GFX_EXPORT bool ElideString(const std::u16string& input,
-                            size_t max_len,
-                            std::u16string* output);
+COMPONENT_EXPORT(GFX)
+bool ElideString(std::u16string_view input,
+                 size_t max_len,
+                 std::u16string* output);
 
 // Reformat |input| into |output| so that it fits into a |max_rows| by
 // |max_cols| rectangle of characters.  Input newlines are respected, but
@@ -118,11 +123,12 @@ GFX_EXPORT bool ElideString(const std::u16string& input,
 // intra-word (respecting UTF-16 surrogate pairs) as necessary. Truncation
 // (indicated by an added 3 dots) occurs if the result is still too long.
 //  Returns true if the input had to be truncated (and not just reformatted).
-GFX_EXPORT bool ElideRectangleString(const std::u16string& input,
-                                     size_t max_rows,
-                                     size_t max_cols,
-                                     bool strict,
-                                     std::u16string* output);
+COMPONENT_EXPORT(GFX)
+bool ElideRectangleString(std::u16string_view input,
+                          size_t max_rows,
+                          size_t max_cols,
+                          bool strict,
+                          std::u16string* output);
 
 // Indicates whether the |available_pixel_width| by |available_pixel_height|
 // rectangle passed to |ElideRectangleText()| had insufficient space to
@@ -141,21 +147,23 @@ enum ReformattingResultFlags {
 // param. Returns a combination of |ReformattingResultFlags| that indicate
 // whether the given rectangle had insufficient space to accommodate |text|,
 // leading to elision or truncation (and not just reformatting).
-GFX_EXPORT int ElideRectangleText(const std::u16string& text,
-                                  const gfx::FontList& font_list,
-                                  float available_pixel_width,
-                                  int available_pixel_height,
-                                  WordWrapBehavior wrap_behavior,
-                                  std::vector<std::u16string>* lines);
+COMPONENT_EXPORT(GFX)
+int ElideRectangleText(std::u16string_view text,
+                       const gfx::FontList& font_list,
+                       float available_pixel_width,
+                       int available_pixel_height,
+                       WordWrapBehavior wrap_behavior,
+                       std::vector<std::u16string>* lines);
 
 // Truncates |string| to |length| characters. This breaks the string according
 // to the specified |break_type|, which must be either WORD_BREAK or
 // CHARACTER_BREAK, and adds the horizontal ellipsis character (unicode
 // character 0x2026) to render "...". The supplied string is returned if the
 // string has |length| characters or less.
-GFX_EXPORT std::u16string TruncateString(const std::u16string& string,
-                                         size_t length,
-                                         BreakType break_type);
+COMPONENT_EXPORT(GFX)
+std::u16string TruncateString(std::u16string_view string,
+                              size_t length,
+                              BreakType break_type);
 
 }  // namespace gfx
 

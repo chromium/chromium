@@ -28,22 +28,20 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_CACHED_METADATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_CACHED_METADATA_H_
 
 #include <stdint.h>
 
+#include <variant>
+
 #include "base/check_op.h"
+#include "base/containers/buffer_iterator.h"
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/pass_key.h"
 #include "mojo/public/cpp/base/big_buffer.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/common/loader/code_cache_util.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -61,6 +59,13 @@ struct CachedMetadataHeader {
   uint64_t tag;  // This might be 0 if the caller to CachedMetadata::Create did
                  // not specify a value.
 };
+
+// Ensure that the actual size of the CachedMetadataHeader struct matches
+// the defined constant. This helps catch accidental changes to the struct
+// that would break compatibility with cached data or size calculations and
+// tests.
+static_assert(sizeof(CachedMetadataHeader) ==
+              kCodeCacheCachedMetadataHeaderSize);
 
 // Metadata retrieved from the embedding application's cache.
 //
@@ -82,75 +87,61 @@ class PLATFORM_EXPORT CachedMetadata : public RefCounted<CachedMetadata> {
                                   estimated_body_size);
     uint32_t marker = CachedMetadataHandler::kSingleEntryWithTag;
     CHECK_EQ(vector.size(), offsetof(CachedMetadataHeader, marker));
-    vector.Append(reinterpret_cast<const uint8_t*>(&marker), sizeof(uint32_t));
+    vector.AppendSpan(base::byte_span_from_ref(marker));
     CHECK_EQ(vector.size(), offsetof(CachedMetadataHeader, type));
-    vector.Append(reinterpret_cast<const uint8_t*>(&data_type_id),
-                  sizeof(uint32_t));
+    vector.AppendSpan(base::byte_span_from_ref(data_type_id));
     CHECK_EQ(vector.size(), offsetof(CachedMetadataHeader, tag));
-    vector.Append(reinterpret_cast<const uint8_t*>(&tag), sizeof(uint64_t));
+    vector.AppendSpan(base::byte_span_from_ref(tag));
     CHECK_EQ(vector.size(), sizeof(CachedMetadataHeader));
     return vector;
   }
 
   static scoped_refptr<CachedMetadata> Create(uint32_t data_type_id,
-                                              const uint8_t* data,
-                                              size_t size,
+                                              base::span<const uint8_t> data,
                                               uint64_t tag = 0);
-  static scoped_refptr<CachedMetadata> CreateFromSerializedData(
-      const uint8_t* data,
-      size_t);
   static scoped_refptr<CachedMetadata> CreateFromSerializedData(
       Vector<uint8_t> data);
   static scoped_refptr<CachedMetadata> CreateFromSerializedData(
-      mojo_base::BigBuffer& data);
+      mojo_base::BigBuffer& data,
+      uint32_t offset = 0);
 
   CachedMetadata(Vector<uint8_t> data, base::PassKey<CachedMetadata>);
   CachedMetadata(uint32_t data_type_id,
-                 const uint8_t* data,
-                 wtf_size_t size,
+                 base::span<const uint8_t> data,
                  uint64_t tag,
                  base::PassKey<CachedMetadata>);
-  CachedMetadata(mojo_base::BigBuffer data, base::PassKey<CachedMetadata>);
-  CachedMetadata(const mojo_base::BigBuffer* data,
+  CachedMetadata(mojo_base::BigBuffer data,
+                 uint32_t offset,
                  base::PassKey<CachedMetadata>);
 
-  base::span<const uint8_t> SerializedData() const {
-    return base::make_span(RawData(), RawSize());
+  base::span<const uint8_t> SerializedData() const;
+
+  uint32_t DataTypeID() const { return GetHeader().type; }
+  uint64_t tag() const { return GetHeader().tag; }
+
+  base::span<const uint8_t> Data() const {
+    return SerializedData().subspan<sizeof(CachedMetadataHeader)>();
   }
 
-  uint32_t DataTypeID() const {
-    DCHECK_GE(RawSize(), sizeof(CachedMetadataHeader));
-    return (reinterpret_cast<const CachedMetadataHeader*>(RawData()))->type;
-  }
-
-  const uint8_t* Data() const {
-    DCHECK_GE(RawSize(), sizeof(CachedMetadataHeader));
-    return RawData() + sizeof(CachedMetadataHeader);
-  }
-
-  uint32_t size() const {
-    DCHECK_GE(RawSize(), sizeof(CachedMetadataHeader));
-    return RawSize() - sizeof(CachedMetadataHeader);
-  }
-
-  uint64_t tag() const {
-    CHECK_GE(RawSize(), sizeof(CachedMetadataHeader));
-    return (reinterpret_cast<const CachedMetadataHeader*>(RawData()))->tag;
-  }
-
-  // Drains the serialized data as a Vector<uint8_t> or BigBuffer.
-  absl::variant<Vector<uint8_t>, mojo_base::BigBuffer> DrainSerializedData() &&;
+  // Drains the serialized data as a Vector<uint8_t> or BigBuffer. This includes
+  // any data before the offset specified in CreateFromSerializedData.
+  std::variant<Vector<uint8_t>, mojo_base::BigBuffer> DrainSerializedData() &&;
 
  private:
   friend class RefCounted<CachedMetadata>;
   ~CachedMetadata() = default;
 
-  const uint8_t* RawData() const;
-  uint32_t RawSize() const;
+  const CachedMetadataHeader& GetHeader() const {
+    base::BufferIterator iterator(SerializedData());
+    return *iterator.Object<CachedMetadataHeader>();
+  }
 
   // Since the serialization format supports random access, storing it in
   // serialized form avoids need for a copy during serialization.
-  absl::variant<Vector<uint8_t>, mojo_base::BigBuffer> buffer_;
+  std::variant<Vector<uint8_t>, mojo_base::BigBuffer> buffer_;
+
+  // The offset within the Vector or BigBuffer where the cached metadata starts.
+  uint32_t offset_ = 0;
 };
 
 }  // namespace blink

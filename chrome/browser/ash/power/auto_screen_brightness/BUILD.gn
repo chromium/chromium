@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("auto_screen_brightness") {
   sources = [
@@ -33,8 +33,6 @@ static_library("auto_screen_brightness") {
     "light_provider_mojo.h",
     "light_samples_observer.cc",
     "light_samples_observer.h",
-    "metrics_reporter.cc",
-    "metrics_reporter.h",
     "model_config.cc",
     "model_config.h",
     "model_config_loader.h",
@@ -83,7 +81,6 @@ source_set("unit_tests") {
     "gaussian_trainer_unittest.cc",
     "light_provider_mojo_unittest.cc",
     "light_samples_observer_unittest.cc",
-    "metrics_reporter_unittest.cc",
     "model_config_loader_impl_unittest.cc",
     "modeller_impl_unittest.cc",
     "monotone_cubic_spline_unittest.cc",
@@ -94,6 +91,7 @@ source_set("unit_tests") {
     "//ash/constants",
     "//base/test:test_support",
     "//chrome/browser:browser_process",
+    "//chrome/browser/prefs",
     "//chrome/common",
     "//chrome/test:test_support",
     "//chromeos/components/sensors",

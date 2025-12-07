@@ -4,6 +4,7 @@
 
 #include "base/task/sequence_manager/task_queue.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/task/sequence_manager/sequence_manager.h"
@@ -14,11 +15,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace sequence_manager {
-namespace internal {
 // To avoid symbol collisions in jumbo builds.
-namespace task_queue_unittest {
+namespace base::sequence_manager::internal::task_queue_unittest {
 namespace {
 
 TEST(TaskQueueTest, TaskQueueVoters) {
@@ -117,8 +115,7 @@ TEST(TaskQueueTest, CanceledTaskRemoved) {
   DelayedTaskHandle delayed_task_handle =
       task_runner->PostCancelableDelayedTask(
           subtle::PostDelayedTaskPassKeyForTesting(), FROM_HERE,
-          BindLambdaForTesting([&task_ran]() { task_ran = true; }),
-          Seconds(20));
+          BindLambdaForTesting([&task_ran] { task_ran = true; }), Seconds(20));
   EXPECT_EQ(queue->GetNumberOfPendingTasks(), 1u);
 
   // The task is only removed from the queue if the feature is enabled.
@@ -180,7 +177,4 @@ TEST(TaskQueueTest, ValidCancelableTaskIsNotCanceled) {
 }
 
 }  // namespace
-}  // namespace task_queue_unittest
-}  // namespace internal
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager::internal::task_queue_unittest

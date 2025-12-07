@@ -1,0 +1,35 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+import("//testing/test.gni")
+
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos/ash")
+
+# To add a unit test to this target, make a "unit_test" source_set in your
+# component and add a reference here.
+# Note: For historical reasons, the name "ash_components_unittests" is kept,
+# rather than "chromeos_experiences_unittests".
+test("ash_components_unittests") {
+  use_xvfb = use_xvfb_in_this_config
+
+  sources = [ "test/run_all_unittests.cc" ]
+
+  deps = [
+    "//base/test:test_support",
+    "//chromeos/ash/components:test_support",
+    "//chromeos/ash/components/chaps_util:unit_tests",
+    "//chromeos/ash/experiences/arc:unit_tests",
+    "//chromeos/ash/experiences/arc/mojom:unit_tests",
+    "//mojo/core/embedder",
+
+    # TODO(crbug.com/386148857): Temporarily refer chromeos/ash/experiences
+    # from here for arc directory migration. Fix this later.
+    "//chromeos/ash/experiences/arc/intent_helper:unit_tests",
+    "//chromeos/ash/experiences/arc/keymint:unit_tests",
+    "//chromeos/ash/experiences/arc/message_center:unit_tests",
+    "//chromeos/ash/experiences/arc/process:unit_tests",
+    "//chromeos/ash/experiences/arc/session:unit_tests",
+  ]
+}

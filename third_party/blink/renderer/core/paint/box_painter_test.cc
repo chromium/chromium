@@ -21,7 +21,7 @@ TEST_P(BoxPainterTest, EmptyDecorationBackground) {
     <style>
       body {
         margin: 0;
-        /* to force a subsequene and paint chunk */
+        /* to force a subsequence and paint chunk */
         opacity: 0.5;
         /* to verify child empty backgrounds expand chunk bounds */
         height: 0;
@@ -89,10 +89,10 @@ TEST_P(BoxPainterTest, ScrollHitTestOrderWithScrollBackgroundAttachment) {
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
                           IsSameId(container.Id(), kBackgroundType),
                           IsSameId(child.Id(), kBackgroundType)));
-  HitTestData scroll_hit_test;
-  scroll_hit_test.scroll_translation =
+  auto* scroll_hit_test = MakeGarbageCollected<HitTestData>();
+  scroll_hit_test->scroll_translation =
       container.FirstFragment().PaintProperties()->ScrollTranslation();
-  scroll_hit_test.scroll_hit_test_rect = gfx::Rect(0, 0, 200, 200);
+  scroll_hit_test->scroll_hit_test_rect = gfx::Rect(0, 0, 200, 200);
   EXPECT_THAT(
       ContentPaintChunks(),
       ElementsAre(
@@ -104,7 +104,7 @@ TEST_P(BoxPainterTest, ScrollHitTestOrderWithScrollBackgroundAttachment) {
           IsPaintChunk(
               2, 2, PaintChunk::Id(container.Id(), DisplayItem::kScrollHitTest),
               container.FirstFragment().LocalBorderBoxProperties(),
-              &scroll_hit_test, gfx::Rect(0, 0, 200, 200)),
+              scroll_hit_test, gfx::Rect(0, 0, 200, 200)),
           IsPaintChunk(2, 3)));
 }
 
@@ -144,10 +144,10 @@ TEST_P(BoxPainterTest, ScrollHitTestOrderWithLocalBackgroundAttachment) {
       ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
                   IsSameId(container_scrolling_client->Id(), kBackgroundType),
                   IsSameId(child.Id(), kBackgroundType)));
-  HitTestData scroll_hit_test;
-  scroll_hit_test.scroll_translation =
+  auto* scroll_hit_test = MakeGarbageCollected<HitTestData>();
+  scroll_hit_test->scroll_translation =
       container.FirstFragment().PaintProperties()->ScrollTranslation();
-  scroll_hit_test.scroll_hit_test_rect = gfx::Rect(0, 0, 200, 200);
+  scroll_hit_test->scroll_hit_test_rect = gfx::Rect(0, 0, 200, 200);
   EXPECT_THAT(
       ContentPaintChunks(),
       ElementsAre(
@@ -159,7 +159,7 @@ TEST_P(BoxPainterTest, ScrollHitTestOrderWithLocalBackgroundAttachment) {
           IsPaintChunk(
               1, 1, PaintChunk::Id(container.Id(), DisplayItem::kScrollHitTest),
               container.FirstFragment().LocalBorderBoxProperties(),
-              &scroll_hit_test, gfx::Rect(0, 0, 200, 200)),
+              scroll_hit_test, gfx::Rect(0, 0, 200, 200)),
           IsPaintChunk(
               1, 3,
               PaintChunk::Id(container.Id(), kScrollingBackgroundChunkType),
@@ -197,12 +197,12 @@ TEST_P(BoxPainterTest, ScrollHitTestProperties) {
                           IsSameId(container.Id(), kBackgroundType),
                           IsSameId(child.Id(), kBackgroundType)));
 
-  HitTestData scroll_hit_test_data;
+  auto* scroll_hit_test_data = MakeGarbageCollected<HitTestData>();
   const auto& scrolling_contents_properties =
       container.FirstFragment().ContentsProperties();
-  scroll_hit_test_data.scroll_translation =
+  scroll_hit_test_data->scroll_translation =
       container.FirstFragment().PaintProperties()->ScrollTranslation();
-  scroll_hit_test_data.scroll_hit_test_rect = gfx::Rect(0, 0, 200, 200);
+  scroll_hit_test_data->scroll_hit_test_rect = gfx::Rect(0, 0, 200, 200);
   EXPECT_THAT(
       paint_chunks,
       ElementsAre(
@@ -213,13 +213,10 @@ TEST_P(BoxPainterTest, ScrollHitTestProperties) {
           IsPaintChunk(
               2, 2, PaintChunk::Id(container.Id(), DisplayItem::kScrollHitTest),
               container.FirstFragment().LocalBorderBoxProperties(),
-              &scroll_hit_test_data, gfx::Rect(0, 0, 200, 200)),
+              scroll_hit_test_data, gfx::Rect(0, 0, 200, 200)),
           IsPaintChunk(
               2, 3,
-              PaintChunk::Id(container.Id(),
-                             RuntimeEnabledFeatures::HitTestOpaquenessEnabled()
-                                 ? kScrollingBackgroundChunkType
-                                 : kClippedContentsBackgroundChunkType),
+              PaintChunk::Id(container.Id(), kScrollingBackgroundChunkType),
               scrolling_contents_properties)));
 
   // We always create scroll node for the root layer.

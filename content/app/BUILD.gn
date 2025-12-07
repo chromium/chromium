@@ -2,10 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/apple/mobile_config.gni")
 import("//build/config/chrome_build.gni")
-import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/features.gni")
-import("//ppapi/buildflags/buildflags.gni")
 import("//third_party/tflite/features.gni")
 
 extra_configs = [
@@ -23,7 +21,6 @@ content_app_deps = [
   "//crypto",
   "//mojo/core/embedder",
   "//mojo/public/cpp/platform",
-  "//ppapi/buildflags",
   "//services/tracing/public/cpp",
   "//ui/base",
   "//ui/gfx",
@@ -40,7 +37,6 @@ if (is_win) {
     "//content/public/android:content_app_jni",
     "//device/bluetooth",
     "//device/gamepad",
-    "//gpu",
     "//media",
     "//media/capture",
     "//media/midi",
@@ -53,12 +49,16 @@ if (is_win) {
   ]
 }
 
-if (is_ios) {
+if (is_ios && target_platform == "iphoneos") {
   content_app_deps += [ "//content/app/ios/appex:child_process_bridge" ]
 }
 
-if (enable_ppapi) {
-  content_app_deps += [ "//content/ppapi_plugin:ppapi_plugin_sources" ]
+if (is_android) {
+  config("javaless_renderers_define") {
+    if (enable_javaless_renderers) {
+      defines = [ "JAVALESS_RENDERERS" ]
+    }
+  }
 }
 
 # Compile content_main_runner_impl.[h, cc] in a separate target to exempt from
@@ -90,14 +90,27 @@ source_set("content_main_runner_app") {
            "//third_party/tflite:buildflags",
            "//tools/v8_context_snapshot:buildflags",
          ]
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/startup",
-      "//chromeos/startup:constants",
-    ]
-  }
   if (build_tflite_with_xnnpack) {
     deps += [ "//third_party/cpuinfo" ]
+  }
+}
+
+if (is_android && enable_javaless_renderers) {
+  # Since javaless renderers provide their own entry point into the shared
+  # library, for component builds to work, we require this to fall into the root
+  # component. Thus, you must add this directly to the shared_library target
+  # this should end up in.
+  source_set("javaless_renderer") {
+    configs += [ ":javaless_renderers_define" ]
+    sources = [ "android/javaless_child_process_service.cc" ]
+    deps = [
+      ":app",
+      "//base",
+      "//base:build_info_aidl_native",
+      "//base:process_launcher_aidl_native",
+      "//content/common",
+      "//content/public/app",
+    ]
   }
 }
 
@@ -124,6 +137,7 @@ source_set("app") {
   # internal content ones) should depend on the public one.
   visibility = [
     ":for_content_tests",  # See top of //content/BUILD.gn for why.
+    ":javaless_renderer",
     "//content/public/app:*",
   ]
 

@@ -12,7 +12,7 @@ features:
   dynamic_refresh: true
   per_profile: true
 owners:
-- sandormajor@google.com
+- sandormajor@chromium.org
 - selya@google.com
 schema:
   type: object

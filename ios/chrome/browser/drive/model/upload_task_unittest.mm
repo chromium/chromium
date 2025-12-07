@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/drive/model/upload_task.h"
 
+#import <MacTypes.h>
+
 #import "ios/chrome/browser/drive/model/test_upload_task_observer.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"

@@ -4,9 +4,12 @@
 
 package org.chromium.mojo.bindings;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.nio.ByteBuffer;
 
 /** Header information for a message. */
+@NullMarked
 public class MessageHeader {
 
     private static final int SIMPLE_MESSAGE_SIZE = 24;
@@ -177,8 +180,7 @@ public class MessageHeader {
     @Override
     public boolean equals(Object object) {
         if (object == this) return true;
-        if (object == null) return false;
-        if (getClass() != object.getClass()) return false;
+        if (!(object instanceof MessageHeader)) return false;
 
         MessageHeader other = (MessageHeader) object;
         return (BindingsHelper.equals(mDataHeader, other.mDataHeader)

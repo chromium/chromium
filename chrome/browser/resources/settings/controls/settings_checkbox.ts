@@ -45,10 +45,11 @@ export class SettingsCheckboxElement extends SettingsCheckboxElementBase {
       subLabelHtml: {
         type: String,
         value: '',
-        observer: 'onSubLabelHtmlChanged_',
       },
     };
   }
+
+  declare subLabelHtml: string;
 
   static get observers() {
     return [
@@ -56,18 +57,13 @@ export class SettingsCheckboxElement extends SettingsCheckboxElementBase {
     ];
   }
 
-  private onSubLabelChanged_() {
-    this.$.checkbox.ariaDescription = this.$.subLabel.textContent!;
+  /** Focus on the inner cr-checkbox. */
+  override focus() {
+    this.$.checkbox.focus();
   }
 
-  /**
-   * Don't let clicks on a link inside the secondary label reach the checkbox.
-   */
-  private onSubLabelHtmlChanged_() {
-    const links = this.$.subLabel.querySelectorAll('a');
-    links.forEach((link) => {
-      link.addEventListener('click', this.stopPropagation_.bind(this));
-    });
+  private onSubLabelChanged_() {
+    this.$.checkbox.ariaDescription = this.$.subLabel.textContent!;
   }
 
   private stopPropagation_(event: Event) {
@@ -79,7 +75,25 @@ export class SettingsCheckboxElement extends SettingsCheckboxElementBase {
   }
 
   private sanitizeInnerHtml_(rawString: string): TrustedHTML {
-    return sanitizeInnerHtml(rawString);
+    return sanitizeInnerHtml(rawString, {
+      attrs: [
+        'id',
+        'aria-label',
+      ],
+    });
+  }
+
+  private onSubLabelClick_(e: Event) {
+    const target = e.target as HTMLElement;
+    if (target.tagName === 'A') {
+      this.dispatchEvent(new CustomEvent(
+          'sub-label-link-clicked',
+          {bubbles: true, composed: true, detail: {id: target.id}}));
+      e.preventDefault();
+
+      // Don't let link click events from the sub-label reach the checkbox.
+      e.stopPropagation();
+    }
   }
 }
 

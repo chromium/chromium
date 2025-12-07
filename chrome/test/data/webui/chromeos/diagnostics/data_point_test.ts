@@ -5,7 +5,7 @@
 import 'chrome://diagnostics/data_point.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {DataPointElement} from 'chrome://diagnostics/data_point.js';
+import type {DataPointElement} from 'chrome://diagnostics/data_point.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';

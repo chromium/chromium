@@ -2,20 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/chromeos/gpu_memory_buffer_video_frame_mapper.h"
 
 #include <sys/mman.h>
 
+#include <array>
+
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "media/gpu/chromeos/chromeos_compressed_gpu_memory_buffer_video_frame_utils.h"
 #include "media/gpu/macros.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace media {
 // static
@@ -42,15 +37,9 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFrameMapper::MapFrame(
   }
 
   if (video_frame->storage_type() !=
-      VideoFrame::StorageType::STORAGE_GPU_MEMORY_BUFFER) {
+      VideoFrame::StorageType::STORAGE_MAPPABLE_SHARED_IMAGE) {
     VLOGF(1) << "VideoFrame's storage type is not GPU_MEMORY_BUFFER: "
              << video_frame->storage_type();
-    return nullptr;
-  }
-
-  if (IsIntelMediaCompressedModifier(video_frame->layout().modifier())) {
-    VLOGF(1)
-        << "This mapper doesn't support Intel media compressed VideoFrames";
     return nullptr;
   }
 
@@ -60,31 +49,29 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFrameMapper::MapFrame(
     return nullptr;
   }
 
-  auto scoped_mapping = video_frame->MapGMBOrSharedImage();
+  auto scoped_mapping = video_frame->MapSharedImage();
   if (!scoped_mapping) {
     VLOGF(1) << "Failed to get the mapped memory.";
     return nullptr;
   }
 
   const size_t num_planes = VideoFrame::NumPlanes(format_);
-  uint8_t* plane_addrs[VideoFrame::kMaxPlanes] = {};
-  for (size_t i = 0; i < num_planes; i++)
-    plane_addrs[i] = scoped_mapping->Memory(i);
+  std::array<base::span<uint8_t>, VideoFrame::kMaxPlanes> planes = {};
+
+  for (size_t i = 0; i < num_planes; i++) {
+    planes[i] = scoped_mapping->GetMemoryAsSpan(i);
+  }
 
   scoped_refptr<VideoFrame> mapped_frame;
   if (IsYuvPlanar(format_)) {
     mapped_frame = VideoFrame::WrapExternalYuvDataWithLayout(
         video_frame->layout(), video_frame->visible_rect(),
-        video_frame->natural_size(), plane_addrs[0], plane_addrs[1],
-        plane_addrs[2], video_frame->timestamp());
+        video_frame->natural_size(), planes[0], planes[1], planes[2],
+        video_frame->timestamp());
   } else if (num_planes == 1) {
-    size_t buffer_size = VideoFrame::AllocationSize(
-        format_,
-        gfx::Size(scoped_mapping->Stride(0), scoped_mapping->Size().height()));
     mapped_frame = VideoFrame::WrapExternalDataWithLayout(
         video_frame->layout(), video_frame->visible_rect(),
-        video_frame->natural_size(), plane_addrs[0], buffer_size,
-        video_frame->timestamp());
+        video_frame->natural_size(), planes[0], video_frame->timestamp());
   }
 
   if (!mapped_frame) {

@@ -4,6 +4,8 @@
 
 #include "components/viz/service/display/overlay_candidate_factory.h"
 
+#include <variant>
+
 #include "base/containers/contains.h"
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
@@ -14,13 +16,11 @@
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/common/quads/video_hole_draw_quad.h"
-#include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/viz_utils.h"
 #include "components/viz/service/debugger/viz_debugger.h"
 #include "components/viz/service/display/display_resource_provider.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -174,16 +174,6 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuad(
   candidate.overlay_damage_index =
       sqs->overlay_damage_index.value_or(OverlayCandidate::kInvalidDamageIndex);
 
-  if (sqs->layer_id != 0) {
-    static_assert(
-        std::is_same<decltype(SharedQuadState::layer_id), uint32_t>::value);
-    static_assert(std::is_same<decltype(SharedQuadState::layer_namespace_id),
-                               uint32_t>::value);
-    candidate.aggregated_layer_id =
-        static_cast<uint64_t>(sqs->layer_id) |
-        (static_cast<uint64_t>(sqs->layer_namespace_id) << 32);
-  }
-
   auto status = CandidateStatus::kFailQuadNotSupported;
   switch (quad->material) {
     case DrawQuad::Material::kTextureContent:
@@ -288,14 +278,17 @@ float OverlayCandidateFactory::EstimateVisibleDamage(
       0.f, quad_damage.size().GetArea() - occluded_damage_estimate_total);
 }
 
+// static
 bool OverlayCandidateFactory::IsOccludedByFilteredQuad(
-    const OverlayCandidate& candidate,
+    const DrawQuad& quad,
     QuadList::ConstIterator quad_list_begin,
     QuadList::ConstIterator quad_list_end,
-    const base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>&
-        render_pass_backdrop_filters) const {
-  gfx::RectF target_rect =
-      OverlayCandidate::DisplayRectInTargetSpace(candidate);
+    const base::flat_map<AggregatedRenderPassId,
+                         raw_ptr<cc::FilterOperations, CtnExperimental>>&
+        render_pass_backdrop_filters) {
+  const gfx::RectF target_rect =
+      quad.shared_quad_state->quad_to_target_transform.MapRect(
+          gfx::RectF(quad.visible_rect));
   for (auto overlap_iter = quad_list_begin; overlap_iter != quad_list_end;
        ++overlap_iter) {
     if (auto* render_pass_draw_quad =
@@ -314,14 +307,16 @@ bool OverlayCandidateFactory::IsOccludedByFilteredQuad(
   return false;
 }
 
+// static
 bool OverlayCandidateFactory::IsOccluded(
-    const OverlayCandidate& candidate,
+    const DrawQuad& quad,
     QuadList::ConstIterator quad_list_begin,
-    QuadList::ConstIterator quad_list_end) const {
+    QuadList::ConstIterator quad_list_end) {
   // The rects are rounded as they're snapped by the compositor to pixel unless
   // it is AA'ed, in which case, it won't be overlaid.
-  gfx::Rect target_rect =
-      gfx::ToRoundedRect(OverlayCandidate::DisplayRectInTargetSpace(candidate));
+  const gfx::Rect target_rect = gfx::ToRoundedRect(
+      quad.shared_quad_state->quad_to_target_transform.MapRect(
+          gfx::RectF(quad.visible_rect)));
 
   // Check that no visible quad overlaps the candidate.
   for (auto overlap_iter = quad_list_begin; overlap_iter != quad_list_end;
@@ -357,6 +352,8 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
     candidate.needs_detiling =
         resource_provider_->GetNeedsDetiling(resource_id);
     candidate.hdr_metadata = resource_provider_->GetHDRMetadata(resource_id);
+    candidate.low_latency_rendering =
+        resource_provider_->IsLowLatencyRendering(resource_id);
 
     if (!context_.is_delegated_context &&
         !base::Contains(kOverlayFormats, candidate.format)) {
@@ -417,10 +414,7 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
         primary_rect_.Contains(candidate.display_rect);
     const bool transform_supports_clipping =
         context_.supports_arbitrary_transform ||
-        absl::holds_alternative<gfx::OverlayTransform>(candidate.transform);
-    // Out of window clipping is enabled on Lacros only when it is supported.
-    // TODO(crbug.com/40246811): Remove the condition on `quad_within_window`
-    // when M117 becomes widely supported.
+        std::holds_alternative<gfx::OverlayTransform>(candidate.transform);
     bool can_delegate_clipping =
         context_.supports_clip_rect &&
         (quad_within_window || context_.supports_out_of_window_clip_rect) &&
@@ -442,7 +436,7 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
     } else {
       // Clipping is applied after transforms, so we can't delegate transforms
       // if we can't delegate clipping.
-      if (absl::holds_alternative<gfx::Transform>(candidate.transform)) {
+      if (std::holds_alternative<gfx::Transform>(candidate.transform)) {
         return CandidateStatus::kFailHasTransformButCantClip;
       }
 
@@ -489,7 +483,7 @@ void OverlayCandidateFactory::SetDisplayRect(
       auto filter_it = render_pass_filters_->find(rpdq->render_pass_id);
       if (filter_it != render_pass_filters_->end()) {
         candidate.display_rect = gfx::RectF(
-            filter_it->second->ExpandRectForPixelMovement(quad.visible_rect));
+            GetExpandedRectForPixelMovingFilters(*rpdq, *filter_it->second));
         // uv_rect will be updated in SkiaRenderer because the buffer size will
         // be rounded up some.
       }
@@ -621,12 +615,12 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromTileQuad(
     return CandidateStatus::kFailNearFilter;
 
   candidate.resource_size_in_pixels =
-      resource_provider_->GetResourceBackedSize(quad->resource_id());
+      resource_provider_->GetResourceBackedSize(quad->resource_id);
   candidate.uv_rect = gfx::ScaleRect(
       quad->tex_coord_rect, 1.f / candidate.resource_size_in_pixels.width(),
       1.f / candidate.resource_size_in_pixels.height());
 
-  auto rtn = FromDrawQuadResource(quad, quad->resource_id(), false, candidate);
+  auto rtn = FromDrawQuadResource(quad, quad->resource_id, false, candidate);
   return rtn;
 }
 
@@ -667,20 +661,22 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromTextureQuad(
     return CandidateStatus::kFailBlending;
   }
 
-  candidate.uv_rect = BoundingRect(quad->uv_top_left, quad->uv_bottom_right);
+  if (quad->resource_id != kInvalidResourceId) {
+    auto resource_size_in_pixels =
+        resource_provider_->GetResourceBackedSize(quad->resource_id);
+    candidate.uv_rect = quad->GetNormalizedTexCoords(resource_size_in_pixels);
+  }
 
-  auto rtn = FromDrawQuadResource(quad, quad->resource_id(), quad->y_flipped,
-                                  candidate);
+  const bool y_flipped = resource_provider_->GetOrigin(quad->resource_id) ==
+                         kBottomLeft_GrSurfaceOrigin;
+  auto rtn =
+      FromDrawQuadResource(quad, quad->resource_id, y_flipped, candidate);
   if (rtn == CandidateStatus::kSuccess) {
     // Only handle clip rect for required overlays
     if (!context_.is_delegated_context && candidate.requires_overlay) {
       HandleClipAndSubsampling(candidate);
     }
 
-    // Texture quads for UI elements like scroll bars have empty
-    // |size_in_pixels| as 'set_resource_size_in_pixels' is not called as these
-    // quads are not intended to become overlays.
-    if (!quad->resource_size_in_pixels().IsEmpty()) {
       if (candidate.requires_overlay) {
         candidate.priority_hint = gfx::OverlayPriorityHint::kHardwareProtection;
       } else if (quad->is_video_frame) {
@@ -688,17 +684,12 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromTextureQuad(
       } else {
         candidate.priority_hint = gfx::OverlayPriorityHint::kRegular;
       }
-    }
+
+    candidate.protected_video_type = quad->protected_video_type;
 
 #if BUILDFLAG(IS_ANDROID)
     candidate.is_video_in_surface_view =
-        quad->is_stream_video &&
-        !resource_provider_->IsBackedBySurfaceTexture(quad->resource_id());
-    if (quad->is_stream_video) {
-      // StreamVideoDrawQuad used to set the resource_size_in_pixels directly
-      // from the quad rather than from the resource.
-      candidate.resource_size_in_pixels = quad->resource_size_in_pixels();
-    }
+        resource_provider_->IsBackedBySurfaceView(quad->resource_id);
 #endif
 
     candidate.has_rounded_display_masks =
@@ -732,15 +723,15 @@ void OverlayCandidateFactory::HandleClipAndSubsampling(
   // Baking |clip_rect| into the |uv_rect| and |display_rect| doesn't make sense
   // when there is an arbitrary transform between the two because the transform
   // may not preserve axis alignment.
-  DCHECK(absl::holds_alternative<gfx::OverlayTransform>(candidate.transform));
+  DCHECK(std::holds_alternative<gfx::OverlayTransform>(candidate.transform));
 
   // Candidates that need detiling have a UV rect that indicates the
   // relationship between the visible rect and the backing buffer dimensions
   // (coded size). This rect is calculated assuming no rotation, so we need to
   // rotate it before applying our own clipping.
   if (candidate.needs_detiling &&
-      absl::holds_alternative<gfx::OverlayTransform>(candidate.transform)) {
-    switch (absl::get<gfx::OverlayTransform>(candidate.transform)) {
+      std::holds_alternative<gfx::OverlayTransform>(candidate.transform)) {
+    switch (std::get<gfx::OverlayTransform>(candidate.transform)) {
       case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90:
         candidate.uv_rect =
             gfx::RectF(1.0f - candidate.uv_rect.height(), candidate.uv_rect.x(),

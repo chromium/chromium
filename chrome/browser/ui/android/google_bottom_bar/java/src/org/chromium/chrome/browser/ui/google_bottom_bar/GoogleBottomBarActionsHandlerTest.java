@@ -16,9 +16,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.gsa.GSAState.GOOGLE_APP_CLASS_NAME;
-import static org.chromium.chrome.browser.gsa.GSAState.PACKAGE_NAME;
-import static org.chromium.chrome.browser.gsa.GSAState.VOICE_SEARCH_INTENT_ACTION;
+import static org.chromium.chrome.browser.gsa.GSAUtils.GSA_CLASS_NAME;
+import static org.chromium.chrome.browser.gsa.GSAUtils.GSA_PACKAGE_NAME;
+import static org.chromium.chrome.browser.gsa.GSAUtils.VOICE_SEARCH_INTENT_ACTION;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.PIH_BASIC;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarActionsHandler.EXTRA_IS_LAUNCHED_FROM_CHROME_SEARCH_ENTRYPOINT;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.BUTTON_CLICKED_HISTOGRAM;
@@ -43,16 +43,14 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implements;
-import org.robolectric.annotation.Resetter;
 import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowPackageManager;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.lens.LensController;
@@ -69,37 +67,19 @@ import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /** Unit tests for {@link BottomBarConfig}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,
-        shadows = {ShadowLog.class, GoogleBottomBarActionsHandlerTest.ShadowLensController.class})
+        shadows = {ShadowLog.class})
 public class GoogleBottomBarActionsHandlerTest {
     private static final String TEST_URI = "https://www.test.com/";
 
     private final GURL mGURL = new GURL(TEST_URI);
 
-    @Implements(LensController.class)
-    public static class ShadowLensController {
-        public static boolean sIsAvailable;
-
-        public static LensController sController;
-
-        public static LensController getInstance() {
-            if (sController == null) {
-                sController = mock(LensController.class);
-            }
-            doReturn(sIsAvailable).when(sController).isLensEnabled(any());
-            return sController;
-        }
-
-        @Resetter
-        public static void reset() {
-            sIsAvailable = false;
-            sController = null;
-        }
-    }
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
@@ -108,6 +88,7 @@ public class GoogleBottomBarActionsHandlerTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private Tab mTab;
     @Mock private Supplier<Tab> mTabSupplier;
+    @Mock private LensController mLensController;
 
     @Mock private ShareDelegate mShareDelegate;
     @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
@@ -121,8 +102,8 @@ public class GoogleBottomBarActionsHandlerTest {
 
     @Before
     public void setup() {
+        LensController.setInstanceForTesting(mLensController);
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
-        MockitoAnnotations.initMocks(this);
         mGoogleBottomBarActionsHandler =
                 new GoogleBottomBarActionsHandler(mActivity, mTabSupplier, mShareDelegateSupplier);
 
@@ -138,7 +119,6 @@ public class GoogleBottomBarActionsHandlerTest {
 
     @After
     public void tearDown() {
-        ShadowLensController.reset();
         if (mHistogramWatcher != null) {
             mHistogramWatcher.assertExpected();
             mHistogramWatcher.close();
@@ -255,7 +235,7 @@ public class GoogleBottomBarActionsHandlerTest {
         BottomBarConfig.ButtonConfig buttonConfig =
                 new BottomBarConfig.ButtonConfig(
                         PIH_BASIC,
-                        context.getDrawable(R.drawable.page_insights_icon),
+                        context.getDrawable(R.drawable.bottom_bar_page_insights_icon),
                         context.getString(
                                 R.string.google_bottom_bar_page_insights_button_description),
                         pendingIntent);
@@ -279,7 +259,7 @@ public class GoogleBottomBarActionsHandlerTest {
         BottomBarConfig.ButtonConfig buttonConfig =
                 new BottomBarConfig.ButtonConfig(
                         PIH_BASIC,
-                        context.getDrawable(R.drawable.page_insights_icon),
+                        context.getDrawable(R.drawable.bottom_bar_page_insights_icon),
                         context.getString(
                                 R.string.google_bottom_bar_page_insights_button_description),
                         /* pendingIntent= */ null);
@@ -289,7 +269,7 @@ public class GoogleBottomBarActionsHandlerTest {
         clickListener.onClick(buttonView);
 
         ShadowLog.LogItem logItem = ShadowLog.getLogsForTag("cr_GBBActionHandler").get(0);
-        assertEquals(logItem.msg, "Can't perform action with id: 1 as pending intent is null.");
+        assertEquals("Can't perform action with id: 1 as pending intent is null.", logItem.msg);
     }
 
     @Test
@@ -311,7 +291,7 @@ public class GoogleBottomBarActionsHandlerTest {
         clickListener.onClick(buttonView);
 
         ShadowLog.LogItem logItem = ShadowLog.getLogsForTag("cr_GBBActionHandler").get(0);
-        assertEquals(logItem.msg, "Can't perform action with id: 8 as pending intent is null.");
+        assertEquals("Can't perform action with id: 8 as pending intent is null.", logItem.msg);
     }
 
     @Test
@@ -363,7 +343,7 @@ public class GoogleBottomBarActionsHandlerTest {
 
         assertNull(Shadows.shadowOf(mActivity).getNextStartedActivityForResult());
         ShadowLog.LogItem logItem = ShadowLog.getLogsForTag("cr_GBBActionHandler").get(0);
-        assertEquals(logItem.msg, "Can't resolve activity for action: openGoogleAppSearch");
+        assertEquals("Can't resolve activity for action: openGoogleAppSearch", logItem.msg);
     }
 
     @Test
@@ -382,7 +362,7 @@ public class GoogleBottomBarActionsHandlerTest {
                         /* description= */ "Description",
                         /* pendingIntent= */ null);
         Intent intent = new Intent(SearchManager.INTENT_ACTION_GLOBAL_SEARCH);
-        intent.setPackage(PACKAGE_NAME);
+        intent.setPackage(GSA_PACKAGE_NAME);
         mShadowPackageManager.addResolveInfoForIntent(intent, new ResolveInfo());
 
         View.OnClickListener clickListener =
@@ -391,7 +371,7 @@ public class GoogleBottomBarActionsHandlerTest {
 
         Intent startedIntent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
         assertEquals(SearchManager.INTENT_ACTION_GLOBAL_SEARCH, startedIntent.getAction());
-        assertEquals(PACKAGE_NAME, startedIntent.getPackage());
+        assertEquals(GSA_PACKAGE_NAME, startedIntent.getPackage());
         assertTrue(
                 startedIntent
                         .getExtras()
@@ -446,7 +426,7 @@ public class GoogleBottomBarActionsHandlerTest {
         clickListener.onClick(buttonView);
 
         ShadowLog.LogItem logItem = ShadowLog.getLogsForTag("cr_GBBActionHandler").get(0);
-        assertEquals(logItem.msg, "Can't resolve activity for action: openGoogleAppHome");
+        assertEquals("Can't resolve activity for action: openGoogleAppHome", logItem.msg);
     }
 
     @Test
@@ -466,7 +446,7 @@ public class GoogleBottomBarActionsHandlerTest {
                         /* pendingIntent= */ null);
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_INFO);
-        intent.setClassName(PACKAGE_NAME, GOOGLE_APP_CLASS_NAME);
+        intent.setClassName(GSA_PACKAGE_NAME, GSA_CLASS_NAME);
         mShadowPackageManager.addResolveInfoForIntent(intent, new ResolveInfo());
 
         View.OnClickListener clickListener =
@@ -477,8 +457,8 @@ public class GoogleBottomBarActionsHandlerTest {
         assertEquals(Intent.ACTION_MAIN, startedIntent.getAction());
         assertEquals(1, startedIntent.getCategories().size());
         assertTrue(startedIntent.getCategories().contains(Intent.CATEGORY_INFO));
-        assertEquals(PACKAGE_NAME, startedIntent.getComponent().getPackageName());
-        assertEquals(GOOGLE_APP_CLASS_NAME, startedIntent.getComponent().getShortClassName());
+        assertEquals(GSA_PACKAGE_NAME, startedIntent.getComponent().getPackageName());
+        assertEquals(GSA_CLASS_NAME, startedIntent.getComponent().getShortClassName());
         assertTrue(
                 startedIntent
                         .getExtras()
@@ -518,7 +498,7 @@ public class GoogleBottomBarActionsHandlerTest {
 
         assertNull(Shadows.shadowOf(mActivity).getNextStartedActivityForResult());
         ShadowLog.LogItem logItem = ShadowLog.getLogsForTag("cr_GBBActionHandler").get(0);
-        assertEquals(logItem.msg, "Can't resolve activity for action: openGoogleAppHome");
+        assertEquals("Can't resolve activity for action: openGoogleAppHome", logItem.msg);
     }
 
     @Test
@@ -528,7 +508,7 @@ public class GoogleBottomBarActionsHandlerTest {
                         BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.SEARCHBOX_HOME);
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_INFO);
-        intent.setClassName(PACKAGE_NAME, GOOGLE_APP_CLASS_NAME);
+        intent.setClassName(GSA_PACKAGE_NAME, GSA_CLASS_NAME);
         mShadowPackageManager.addResolveInfoForIntent(intent, new ResolveInfo());
 
         mGoogleBottomBarActionsHandler.onSearchboxHomeTap();
@@ -537,8 +517,8 @@ public class GoogleBottomBarActionsHandlerTest {
         assertEquals(Intent.ACTION_MAIN, startedIntent.getAction());
         assertEquals(1, startedIntent.getCategories().size());
         assertTrue(startedIntent.getCategories().contains(Intent.CATEGORY_INFO));
-        assertEquals(PACKAGE_NAME, startedIntent.getComponent().getPackageName());
-        assertEquals(GOOGLE_APP_CLASS_NAME, startedIntent.getComponent().getShortClassName());
+        assertEquals(GSA_PACKAGE_NAME, startedIntent.getComponent().getPackageName());
+        assertEquals(GSA_CLASS_NAME, startedIntent.getComponent().getShortClassName());
         assertTrue(
                 startedIntent
                         .getExtras()
@@ -551,7 +531,7 @@ public class GoogleBottomBarActionsHandlerTest {
 
         assertNull(Shadows.shadowOf(mActivity).getNextStartedActivityForResult());
         ShadowLog.LogItem logItem = ShadowLog.getLogsForTag("cr_GBBActionHandler").get(0);
-        assertEquals(logItem.msg, "Can't resolve activity for action: openGoogleAppSearch");
+        assertEquals("Can't resolve activity for action: openGoogleAppSearch", logItem.msg);
     }
 
     @Test
@@ -560,14 +540,14 @@ public class GoogleBottomBarActionsHandlerTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.SEARCHBOX_SEARCH);
         Intent intent = new Intent(SearchManager.INTENT_ACTION_GLOBAL_SEARCH);
-        intent.setPackage(PACKAGE_NAME);
+        intent.setPackage(GSA_PACKAGE_NAME);
         mShadowPackageManager.addResolveInfoForIntent(intent, new ResolveInfo());
 
         mGoogleBottomBarActionsHandler.onSearchboxHintTextTap();
 
         Intent startedIntent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
         assertEquals(SearchManager.INTENT_ACTION_GLOBAL_SEARCH, startedIntent.getAction());
-        assertEquals(PACKAGE_NAME, startedIntent.getPackage());
+        assertEquals(GSA_PACKAGE_NAME, startedIntent.getPackage());
         assertTrue(
                 startedIntent
                         .getExtras()
@@ -580,7 +560,7 @@ public class GoogleBottomBarActionsHandlerTest {
 
         assertNull(Shadows.shadowOf(mActivity).getNextStartedActivityForResult());
         ShadowLog.LogItem logItem = ShadowLog.getLogsForTag("cr_GBBActionHandler").get(0);
-        assertEquals(logItem.msg, "Can't resolve activity for action: openGoogleAppVoiceSearch");
+        assertEquals("Can't resolve activity for action: openGoogleAppVoiceSearch", logItem.msg);
     }
 
     @Test
@@ -590,14 +570,14 @@ public class GoogleBottomBarActionsHandlerTest {
                         BUTTON_CLICKED_HISTOGRAM,
                         GoogleBottomBarButtonEvent.SEARCHBOX_VOICE_SEARCH);
         Intent intent = new Intent(VOICE_SEARCH_INTENT_ACTION);
-        intent.setPackage(PACKAGE_NAME);
+        intent.setPackage(GSA_PACKAGE_NAME);
         mShadowPackageManager.addResolveInfoForIntent(intent, new ResolveInfo());
 
         mGoogleBottomBarActionsHandler.onSearchboxMicTap();
 
         Intent startedIntent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
         assertEquals(VOICE_SEARCH_INTENT_ACTION, startedIntent.getAction());
-        assertEquals(PACKAGE_NAME, startedIntent.getPackage());
+        assertEquals(GSA_PACKAGE_NAME, startedIntent.getPackage());
         assertTrue(
                 startedIntent
                         .getExtras()
@@ -609,12 +589,12 @@ public class GoogleBottomBarActionsHandlerTest {
         mHistogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.SEARCHBOX_LENS);
-        ShadowLensController.sIsAvailable = false;
+        doReturn(false).when(mLensController).isLensEnabled(any());
 
         Context context = mActivity;
         mGoogleBottomBarActionsHandler.onSearchboxLensTap(new View(context));
 
-        verify(ShadowLensController.getInstance(), never()).startLens(any(), any());
+        verify(mLensController, never()).startLens(any(), any());
     }
 
     @Test
@@ -622,13 +602,12 @@ public class GoogleBottomBarActionsHandlerTest {
         mHistogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.SEARCHBOX_LENS);
-        ShadowLensController.sIsAvailable = true;
+        doReturn(true).when(mLensController).isLensEnabled(any());
 
         Context context = mActivity;
         mGoogleBottomBarActionsHandler.onSearchboxLensTap(new View(context));
 
-        verify(ShadowLensController.getInstance())
-                .startLens(any(), mLensIntentParamsArgumentCaptor.capture());
+        verify(mLensController).startLens(any(), mLensIntentParamsArgumentCaptor.capture());
         LensIntentParams params = mLensIntentParamsArgumentCaptor.getValue();
         assertEquals(LensEntryPoint.GOOGLE_BOTTOM_BAR, params.getLensEntryPoint());
     }

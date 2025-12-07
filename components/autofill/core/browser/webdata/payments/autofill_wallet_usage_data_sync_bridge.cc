@@ -4,11 +4,11 @@
 
 #include "components/autofill/core/browser/webdata/payments/autofill_wallet_usage_data_sync_bridge.h"
 
+#include <algorithm>
 #include <utility>
 
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
-#include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
+#include "components/autofill/core/browser/data_model/payments/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/metrics/payments/wallet_usage_data_metrics.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
@@ -18,6 +18,7 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
+#include "components/webdata/common/web_database.h"
 
 namespace autofill {
 
@@ -32,7 +33,7 @@ const int kAutofillWalletUsageDataSyncBridgeUserDataKey = 0;
 void AutofillWalletUsageDataSyncBridge::CreateForWebDataServiceAndBackend(
     AutofillWebDataBackend* web_data_backend,
     AutofillWebDataService* web_data_service) {
-  web_data_service->GetDBUserData()->SetUserData(
+  web_data_service->GetDBUserData().SetUserData(
       &kAutofillWalletUsageDataSyncBridgeUserDataKey,
       std::make_unique<AutofillWalletUsageDataSyncBridge>(
           std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
@@ -46,7 +47,7 @@ AutofillWalletUsageDataSyncBridge*
 AutofillWalletUsageDataSyncBridge::FromWebDataService(
     AutofillWebDataService* web_data_service) {
   return static_cast<AutofillWalletUsageDataSyncBridge*>(
-      web_data_service->GetDBUserData()->GetUserData(
+      web_data_service->GetDBUserData().GetUserData(
           &kAutofillWalletUsageDataSyncBridgeUserDataKey));
 }
 
@@ -90,6 +91,8 @@ AutofillWalletUsageDataSyncBridge::ApplyIncrementalSyncChanges(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   PaymentsAutofillTable* table = GetAutofillTable();
 
+  auto transaction = web_data_backend_->GetDatabase()->AcquireTransaction();
+
   // Only Virtual Card Usage Data is currently supported.
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_data) {
     switch (change->type()) {
@@ -98,7 +101,8 @@ AutofillWalletUsageDataSyncBridge::ApplyIncrementalSyncChanges(
             !table->RemoveVirtualCardUsageData(change->storage_key())) {
           return syncer::ModelError(
               FROM_HERE,
-              "Failed to delete virtual card usage data from table.");
+              syncer::ModelError::Type::
+                  kAutofillWalletUsageFailedToDeleteVirtualCardUsageData);
         }
         break;
       case syncer::EntityChange::ACTION_ADD:
@@ -119,7 +123,8 @@ AutofillWalletUsageDataSyncBridge::ApplyIncrementalSyncChanges(
         if (table && !table->AddOrUpdateVirtualCardUsageData(remote)) {
           return syncer::ModelError(
               FROM_HERE,
-              "Failed to add or update virtual card usage data in table.");
+              syncer::ModelError::Type::
+                  kAutofillWalletUsageFailedToAddOrUpdateVirtualCardUsageData);
         }
       }
     }
@@ -127,7 +132,14 @@ AutofillWalletUsageDataSyncBridge::ApplyIncrementalSyncChanges(
 
   // Commit the transaction to make sure the data and the metadata with the
   // new progress marker is written down.
+
+  // Commits changes through CommitChanges(...) or through the scoped
+  // sql::Transaction `transaction` depending on the
+  // 'SqlScopedTransactionWebDatabase' Finch experiment.
   web_data_backend_->CommitChanges();
+  if (transaction) {
+    transaction->Commit();
+  }
 
   // False positives can occur here if an update doesn't change the profile.
   // Since such false positives are fine, and since PaymentsAutofillTable's API
@@ -144,10 +156,10 @@ std::unique_ptr<syncer::DataBatch>
 AutofillWalletUsageDataSyncBridge::GetDataForCommit(
     StorageKeyList storage_keys) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::ranges::sort(storage_keys);
+  std::ranges::sort(storage_keys);
   auto filter_by_keys = base::BindRepeating(
       [](const StorageKeyList& storage_keys, const std::string& usage_data_id) {
-        return base::ranges::binary_search(storage_keys, usage_data_id);
+        return std::ranges::binary_search(storage_keys, usage_data_id);
       },
       storage_keys);
   return GetDataAndFilter(filter_by_keys);
@@ -161,13 +173,13 @@ AutofillWalletUsageDataSyncBridge::GetAllDataForDebugging() {
 }
 
 std::string AutofillWalletUsageDataSyncBridge::GetClientTag(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   DCHECK(entity_data.specifics.has_autofill_wallet_usage());
   return entity_data.specifics.autofill_wallet_usage().guid();
 }
 
 std::string AutofillWalletUsageDataSyncBridge::GetStorageKey(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   DCHECK(entity_data.specifics.has_autofill_wallet_usage());
 
   // Use client tag as the storage key.
@@ -176,12 +188,24 @@ std::string AutofillWalletUsageDataSyncBridge::GetStorageKey(
 
 void AutofillWalletUsageDataSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
+  auto transaction = web_data_backend_->GetDatabase()->AcquireTransaction();
+
   PaymentsAutofillTable* table = GetAutofillTable();
   if (table && !table->RemoveAllVirtualCardUsageData()) {
     change_processor()->ReportError(
-        {FROM_HERE, "Failed to delete usage data from table."});
+        {FROM_HERE,
+         syncer::ModelError::Type::
+             kAutofillWalletUsageFailedToDeleteAllVirtualCardUsageData});
   }
+
+  // Commits changes through CommitChanges(...) or through the scoped
+  // sql::Transaction `transaction` depending on the
+  // 'SqlScopedTransactionWebDatabase' Finch experiment.
   web_data_backend_->CommitChanges();
+  if (transaction) {
+    transaction->Commit();
+  }
+
   web_data_backend_->NotifyOnAutofillChangedBySync(
       syncer::AUTOFILL_WALLET_USAGE);
 }
@@ -208,7 +232,8 @@ void AutofillWalletUsageDataSyncBridge::LoadMetadata() {
   if (!web_data_backend_->GetDatabase() || !GetAutofillTable() ||
       !GetSyncMetadataStore()) {
     change_processor()->ReportError(
-        {FROM_HERE, "Failed to load Autofill table."});
+        {FROM_HERE, syncer::ModelError::Type::
+                        kAutofillWalletUsageFailedToLoadAutofillTable});
     return;
   }
 
@@ -217,7 +242,7 @@ void AutofillWalletUsageDataSyncBridge::LoadMetadata() {
                                                   batch.get())) {
     change_processor()->ReportError(
         {FROM_HERE,
-         "Failed reading Autofill Wallet usage metadata from WebDatabase."});
+         syncer::ModelError::Type::kAutofillWalletUsageFailedToReadMetadata});
     return;
   }
   change_processor()->ModelReadyToSync(std::move(batch));
@@ -226,22 +251,21 @@ void AutofillWalletUsageDataSyncBridge::LoadMetadata() {
 std::unique_ptr<syncer::MutableDataBatch>
 AutofillWalletUsageDataSyncBridge::GetDataAndFilter(
     base::RepeatingCallback<bool(const std::string&)> filter) {
-  std::vector<std::unique_ptr<VirtualCardUsageData>>
-      virtual_card_usage_data_list;
+  std::vector<VirtualCardUsageData> virtual_card_usage_data_list;
   if (!GetAutofillTable()->GetAllVirtualCardUsageData(
-          &virtual_card_usage_data_list)) {
+          virtual_card_usage_data_list)) {
     change_processor()->ReportError(
         {FROM_HERE,
-         "Failed to load Autofill Wallet usage data data from table."});
+         syncer::ModelError::Type::kAutofillWalletUsageFailedToLoadData});
     return nullptr;
   }
 
   auto batch = std::make_unique<syncer::MutableDataBatch>();
-  for (const std::unique_ptr<VirtualCardUsageData>& virtual_card_usage_data :
+  for (const VirtualCardUsageData& virtual_card_usage_data :
        virtual_card_usage_data_list) {
-    if (filter.Run(*virtual_card_usage_data->usage_data_id())) {
+    if (filter.Run(*virtual_card_usage_data.usage_data_id())) {
       AutofillWalletUsageData usage_data =
-          AutofillWalletUsageData::ForVirtualCard(*virtual_card_usage_data);
+          AutofillWalletUsageData::ForVirtualCard(virtual_card_usage_data);
       auto entity_data = std::make_unique<syncer::EntityData>();
       sync_pb::AutofillWalletUsageSpecifics* usage_specifics =
           entity_data->specifics.mutable_autofill_wallet_usage();

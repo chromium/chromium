@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.payments;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.AddressNormalizerFactory;
 import org.chromium.chrome.browser.autofill.AutofillAddress;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
@@ -22,17 +22,18 @@ import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentResponse;
 
 /** The helper class to create and prepare a PaymentResponse. */
+@NullMarked
 public class ChromePaymentResponseHelper
         implements NormalizedAddressRequestDelegate, PaymentResponseHelperInterface {
-    @Nullable private final AutofillContact mSelectedContact;
+    private final @Nullable AutofillContact mSelectedContact;
     private final PaymentApp mSelectedPaymentApp;
     private final PaymentOptions mPaymentOptions;
     private final PaymentResponse mPaymentResponse;
-    private AutofillAddress mSelectedShippingAddress;
-    private PaymentResponseResultCallback mResultCallback;
+    private @Nullable AutofillAddress mSelectedShippingAddress;
+    private @Nullable PaymentResponseResultCallback mResultCallback;
     private boolean mIsWaitingForShippingNormalization;
     private boolean mIsWaitingForPaymentsDetails = true;
-    private PayerData mPayerDataFromPaymentApp;
+    private @Nullable PayerData mPayerDataFromPaymentApp;
 
     /**
      * Builds a helper to construct and fill a PaymentResponse.
@@ -45,8 +46,8 @@ public class ChromePaymentResponseHelper
      * @param personalDataManager The context appropriate PersonalDataManager reference.
      */
     public ChromePaymentResponseHelper(
-            EditableOption selectedShippingAddress,
-            EditableOption selectedShippingOption,
+            @Nullable EditableOption selectedShippingAddress,
+            @Nullable EditableOption selectedShippingOption,
             @Nullable AutofillContact selectedContact,
             PaymentApp selectedPaymentApp,
             PaymentOptions paymentOptions,
@@ -117,6 +118,7 @@ public class ChromePaymentResponseHelper
 
         if (profile != null) {
             // The normalization finished first: use the normalized address.
+            assert mSelectedShippingAddress != null;
             mSelectedShippingAddress.completeAddress(profile);
             mPaymentResponse.shippingAddress = mSelectedShippingAddress.toPaymentAddress();
         }
@@ -133,9 +135,11 @@ public class ChromePaymentResponseHelper
     private void onAllDataReady() {
         assert !mIsWaitingForPaymentsDetails;
         assert !mIsWaitingForShippingNormalization;
+        assert mResultCallback != null;
 
         // Set up the shipping section of the response when it comes from payment app.
         if (mPaymentOptions.requestShipping && mSelectedPaymentApp.handlesShippingAddress()) {
+            assert mPayerDataFromPaymentApp != null;
             mPaymentResponse.shippingAddress =
                     PaymentAddressTypeConverter.convertAddressToMojoPaymentAddress(
                             mPayerDataFromPaymentApp.shippingAddress);
@@ -145,6 +149,7 @@ public class ChromePaymentResponseHelper
         // Set up the contact section of the response.
         if (mPaymentOptions.requestPayerName) {
             if (mSelectedPaymentApp.handlesPayerName()) {
+                assert mPayerDataFromPaymentApp != null;
                 mPaymentResponse.payer.name = mPayerDataFromPaymentApp.payerName;
             } else {
                 assert mSelectedContact != null;
@@ -153,6 +158,7 @@ public class ChromePaymentResponseHelper
         }
         if (mPaymentOptions.requestPayerPhone) {
             if (mSelectedPaymentApp.handlesPayerPhone()) {
+                assert mPayerDataFromPaymentApp != null;
                 mPaymentResponse.payer.phone = mPayerDataFromPaymentApp.payerPhone;
             } else {
                 assert mSelectedContact != null;
@@ -161,6 +167,7 @@ public class ChromePaymentResponseHelper
         }
         if (mPaymentOptions.requestPayerEmail) {
             if (mSelectedPaymentApp.handlesPayerEmail()) {
+                assert mPayerDataFromPaymentApp != null;
                 mPaymentResponse.payer.email = mPayerDataFromPaymentApp.payerEmail;
             } else {
                 assert mSelectedContact != null;

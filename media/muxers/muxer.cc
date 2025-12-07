@@ -5,6 +5,7 @@
 #include "media/muxers/muxer.h"
 
 #include <optional>
+#include <variant>
 
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
@@ -17,17 +18,20 @@ Muxer::VideoParameters::VideoParameters(const VideoFrame& frame)
     : visible_rect_size(frame.visible_rect().size()),
       frame_rate(frame.metadata().frame_rate.value_or(0.0)),
       codec(VideoCodec::kUnknown),
-      color_space(frame.ColorSpace()) {}
+      color_space(frame.ColorSpace()),
+      transformation(frame.metadata().transformation) {}
 
 Muxer::VideoParameters::VideoParameters(
     gfx::Size visible_rect_size,
     double frame_rate,
     VideoCodec codec,
-    std::optional<gfx::ColorSpace> color_space)
+    std::optional<gfx::ColorSpace> color_space,
+    std::optional<VideoTransformation> transformation)
     : visible_rect_size(visible_rect_size),
       frame_rate(frame_rate),
       codec(codec),
-      color_space(color_space) {}
+      color_space(color_space),
+      transformation(transformation) {}
 
 Muxer::VideoParameters::VideoParameters(const VideoParameters&) = default;
 
@@ -43,16 +47,12 @@ std::string Muxer::VideoParameters::AsHumanReadableString() const {
 
 Muxer::EncodedFrame::EncodedFrame() = default;
 Muxer::EncodedFrame::EncodedFrame(
-    absl::variant<AudioParameters, VideoParameters> params,
+    std::variant<AudioParameters, VideoParameters> params,
     std::optional<media::AudioEncoder::CodecDescription> codec_description,
-    std::string data,
-    std::string alpha_data,
-    bool is_keyframe)
+    scoped_refptr<DecoderBuffer> data)
     : params(std::move(params)),
       codec_description(std::move(codec_description)),
-      data(std::move(data)),
-      alpha_data(std::move(alpha_data)),
-      is_keyframe(is_keyframe) {}
+      data(std::move(data)) {}
 Muxer::EncodedFrame::~EncodedFrame() = default;
 Muxer::EncodedFrame::EncodedFrame(EncodedFrame&&) = default;
 

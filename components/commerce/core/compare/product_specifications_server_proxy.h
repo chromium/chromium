@@ -16,12 +16,14 @@
 #include "components/commerce/core/commerce_types.h"
 #include "url/gurl.h"
 
+namespace base {
+class DictValue;
+}  // namespace base
+
+namespace endpoint_fetcher {
 class EndpointFetcher;
 struct EndpointResponse;
-
-namespace base {
-class Value;
-}  // namespace base
+}  // namespace endpoint_fetcher
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -50,15 +52,14 @@ class ProductSpecificationsServerProxy {
   // Gets the specifications data for the provided cluster IDs. The callback
   // will provide both the list of product cluster IDs for the products being
   // compared and the specifications data.
-  void GetProductSpecificationsForClusterIds(
+  virtual void GetProductSpecificationsForClusterIds(
       std::vector<uint64_t> cluster_ids,
       ProductSpecificationsCallback callback);
 
  protected:
-  virtual std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
-      const GURL& url,
-      const std::string& http_method,
-      const std::string& post_data);
+  virtual std::unique_ptr<endpoint_fetcher::EndpointFetcher>
+  CreateEndpointFetcher(const GURL& url,
+                        const std::string& post_data);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ProductSpecificationsServerProxyTest,
@@ -67,14 +68,14 @@ class ProductSpecificationsServerProxy {
   // Returns a ProductSpecifications object for the provided JSON. If the JSON
   // cannot be converted, std::nullopt is returned.
   static std::optional<ProductSpecifications>
-  ProductSpecificationsFromJsonResponse(const base::Value& compareJson);
+  ProductSpecificationsFromJsonResponse(const base::DictValue& compare_json);
 
   void HandleSpecificationsResponse(
       std::vector<uint64_t> cluster_ids,
       base::OnceCallback<void(std::vector<uint64_t>,
                               std::optional<ProductSpecifications>)> callback,
-      std::unique_ptr<EndpointFetcher> endpoint_fetcher,
-      std::unique_ptr<EndpointResponse> responses);
+      std::unique_ptr<endpoint_fetcher::EndpointFetcher> endpoint_fetcher,
+      std::unique_ptr<endpoint_fetcher::EndpointResponse> responses);
 
   raw_ptr<AccountChecker> account_checker_;
   raw_ptr<signin::IdentityManager> identity_manager_;

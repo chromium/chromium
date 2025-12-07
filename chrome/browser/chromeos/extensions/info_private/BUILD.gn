@@ -1,0 +1,48 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions)
+assert(is_chromeos)
+
+static_library("info_private") {
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  sources = [
+    "info_private_api.cc",
+    "info_private_api.h",
+  ]
+
+  public_deps = [ "//extensions/browser" ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//build/config/chromebox_for_meetings:buildflags",
+    "//build/config/cuttlefish:buildflags",
+    "//build/config/squid:buildflags",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/app_mode",
+    "//chrome/browser/ash/arc:arc_util",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/system",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc:arc_base_utils",
+    "//chromeos/constants",
+    "//components/metrics",
+    "//components/prefs",
+    "//components/user_manager",
+    "//extensions/common",
+    "//ui/display",
+  ]
+}

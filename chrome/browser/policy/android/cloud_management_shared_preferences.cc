@@ -32,3 +32,5 @@ std::string ReadDmTokenFromSharedPreferences() {
 
 }  // namespace android
 }  // namespace policy
+
+DEFINE_JNI(CloudManagementSharedPreferences)

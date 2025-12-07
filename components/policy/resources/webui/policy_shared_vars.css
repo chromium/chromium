@@ -38,6 +38,12 @@ html {
   --toast-background: var(--google-grey-900-white-4-percent);
   --toast-border: rgba(80, 80, 80, 0.6);
   --toast-text-color: var(--google-grey-200);
+  --promotion-banner-background: #E8F0FE;
+  --promotion-pill-button-color: #0B57D0;
+  --promotion-pill-button-color-hover: #FDFCFB1A;
+  --promotion-pill-text-color: #FFFFFF;
+  --promotion-banner-title-color: #202124;
+  --promotion-banner-description-color: #202124;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -64,5 +70,11 @@ html {
     --toast-background: var(--google-grey-100);
     --toast-border: rgba(0, 0, 0, .06);
     --toast-text-color: black;
+    --promotion-banner-background: #3C4043;
+    --promotion-pill-button-color: #A8C7FA;
+    --promotion-pill-button-color-hover: #1F1F1F0F;
+    --promotion-pill-text-color: #062E6F;
+    --promotion-banner-title-color: #FFFFFF;
+    --promotion-banner-description-color: #FFFFFF;
   }
 }

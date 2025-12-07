@@ -21,7 +21,7 @@ function get_path() {
 
 ANDROID_JAR=$(get_path ../../android_sdk/public/platforms/*/android.jar)
 DEXDUMP=$(get_path ../../android_sdk/public/build-tools/*/dexdump)
-R8_PATH=$(get_path ../lib/r8.jar)
+R8_PATH=$(get_path ../cipd/lib/r8.jar)
 JAVA_HOME=../../jdk/current
 JAVA_BIN=../../jdk/current/bin
 MIN_API=24

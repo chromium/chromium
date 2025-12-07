@@ -1,0 +1,65 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# See src/build_defs.bzl for the list of XNN_ENABLE flags.
+xnn_defines = [
+  "XNN_ENABLE_AVX=1",
+  "XNN_ENABLE_AVX2=1",
+  "XNN_ENABLE_CPUINFO=1",
+  "XNN_ENABLE_F16C=1",
+  "XNN_ENABLE_FMA3=1",
+  "XNN_ENABLE_MEMOPT=1",
+  "XNN_ENABLE_SPARSE=1",
+  "XNN_ENABLE_SSE=1",
+  "XNN_ENABLE_SSE2=1",
+  "XNN_ENABLE_SSSE3=1",
+  "XNN_ENABLE_SSE41=1",
+  "XNN_ENABLE_ARM_FP16_SCALAR=0",
+  "XNN_ENABLE_ARM_FP16_VECTOR=0",
+  "XNN_ENABLE_ARM_BF16=0",
+]
+
+if (current_cpu == "arm64") {
+  xnn_defines += [
+    "XNN_ENABLE_ARM_DOTPROD=1",
+    "XNN_ENABLE_ARM_I8MM=1",
+    "XNN_ENABLE_ASSEMBLY=1",
+  ]
+} else {
+  xnn_defines += [
+    "XNN_ENABLE_ARM_DOTPROD=0",
+    "XNN_ENABLE_ARM_I8MM=0",
+    "XNN_ENABLE_ASSEMBLY=0",
+  ]
+}
+
+xnn_defines += [
+  "XNN_ENABLE_RISCV_FP16_VECTOR=0",
+  "XNN_ENABLE_AVX512AMX=0",
+  "XNN_ENABLE_AVX512FP16=0",
+  "XNN_ENABLE_AVX512BF16=0",
+]
+
+if (current_cpu == "x86" || current_cpu == "x64") {
+  xnn_defines += [ "XNN_ENABLE_AVXVNNI=1" ]
+} else {
+  xnn_defines += [ "XNN_ENABLE_AVXVNNI=0" ]
+}
+
+xnn_defines += [
+  "XNN_ENABLE_AVXVNNIINT8=0",
+  "XNN_ENABLE_AVX512F=0",
+  "XNN_ENABLE_AVX256SKX=0",
+  "XNN_ENABLE_AVX256VNNI=0",
+  "XNN_ENABLE_AVX256VNNIGFNI=0",
+  "XNN_ENABLE_AVX512SKX=0",
+  "XNN_ENABLE_AVX512VBMI=0",
+  "XNN_ENABLE_AVX512VNNI=0",
+  "XNN_ENABLE_AVX512VNNIGFNI=0",
+  "XNN_ENABLE_HVX=0",
+  "XNN_ENABLE_KLEIDIAI=0",
+  "XNN_ENABLE_ARM_SME=0",
+  "XNN_ENABLE_ARM_SME2=0",
+  "XNN_ENABLE_WASM_REVECTORIZE=0",
+]

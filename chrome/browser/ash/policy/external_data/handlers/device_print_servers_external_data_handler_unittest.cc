@@ -82,7 +82,7 @@ class DevicePrintServersExternalDataHandlerTest : public testing::Test {
   }
 
   void TearDown() override {
-    ash::PrintServersProviderFactory::Get()->Shutdown();
+    ash::PrintServersProviderFactory::Get()->ShutdownForTesting();
     device_print_servers_external_data_handler_->Shutdown();
   }
 

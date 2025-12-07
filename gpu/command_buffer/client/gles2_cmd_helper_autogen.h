@@ -2651,13 +2651,6 @@ void MemoryBarrierByRegion(GLbitfield barriers) {
   }
 }
 
-void SwapBuffers(GLuint64 swap_id, GLbitfield flags) {
-  gles2::cmds::SwapBuffers* c = GetCmdSpace<gles2::cmds::SwapBuffers>();
-  if (c) {
-    c->Init(swap_id, flags);
-  }
-}
-
 void GetMaxValueInBufferCHROMIUM(GLuint buffer_id,
                                  GLsizei count,
                                  GLenum type,
@@ -2708,20 +2701,6 @@ void FlushMappedBufferRange(GLenum target, GLintptr offset, GLsizeiptr size) {
       GetCmdSpace<gles2::cmds::FlushMappedBufferRange>();
   if (c) {
     c->Init(target, offset, size);
-  }
-}
-
-void ResizeCHROMIUM(GLint width,
-                    GLint height,
-                    GLfloat scale_factor,
-                    GLboolean alpha,
-                    GLuint shm_id,
-                    GLuint shm_offset,
-                    GLsizei color_space_size) {
-  gles2::cmds::ResizeCHROMIUM* c = GetCmdSpace<gles2::cmds::ResizeCHROMIUM>();
-  if (c) {
-    c->Init(width, height, scale_factor, alpha, shm_id, shm_offset,
-            color_space_size);
   }
 }
 
@@ -3010,32 +2989,6 @@ void GetFragDataIndexEXT(GLuint program,
   }
 }
 
-void InitializeDiscardableTextureCHROMIUM(GLuint texture_id,
-                                          uint32_t shm_id,
-                                          uint32_t shm_offset) {
-  gles2::cmds::InitializeDiscardableTextureCHROMIUM* c =
-      GetCmdSpace<gles2::cmds::InitializeDiscardableTextureCHROMIUM>();
-  if (c) {
-    c->Init(texture_id, shm_id, shm_offset);
-  }
-}
-
-void UnlockDiscardableTextureCHROMIUM(GLuint texture_id) {
-  gles2::cmds::UnlockDiscardableTextureCHROMIUM* c =
-      GetCmdSpace<gles2::cmds::UnlockDiscardableTextureCHROMIUM>();
-  if (c) {
-    c->Init(texture_id);
-  }
-}
-
-void LockDiscardableTextureCHROMIUM(GLuint texture_id) {
-  gles2::cmds::LockDiscardableTextureCHROMIUM* c =
-      GetCmdSpace<gles2::cmds::LockDiscardableTextureCHROMIUM>();
-  if (c) {
-    c->Init(texture_id);
-  }
-}
-
 void WindowRectanglesEXTImmediate(GLenum mode,
                                   GLsizei count,
                                   const GLint* box) {
@@ -3133,72 +3086,12 @@ void EndSharedImageAccessDirectCHROMIUM(GLuint texture) {
   }
 }
 
-void ConvertRGBAToYUVAMailboxesINTERNALImmediate(GLenum planes_yuv_color_space,
-                                                 GLenum plane_config,
-                                                 GLenum subsampling,
-                                                 const GLbyte* mailboxes) {
-  const uint32_t size =
-      gles2::cmds::ConvertRGBAToYUVAMailboxesINTERNALImmediate::ComputeSize();
-  gles2::cmds::ConvertRGBAToYUVAMailboxesINTERNALImmediate* c =
-      GetImmediateCmdSpaceTotalSize<
-          gles2::cmds::ConvertRGBAToYUVAMailboxesINTERNALImmediate>(size);
-  if (c) {
-    c->Init(planes_yuv_color_space, plane_config, subsampling, mailboxes);
-  }
-}
-
-void ConvertYUVAMailboxesToRGBINTERNALImmediate(GLint src_x,
-                                                GLint src_y,
-                                                GLsizei width,
-                                                GLsizei height,
-                                                GLenum planes_yuv_color_space,
-                                                GLenum plane_config,
-                                                GLenum subsampling,
-                                                const GLbyte* mailboxes) {
-  const uint32_t size =
-      gles2::cmds::ConvertYUVAMailboxesToRGBINTERNALImmediate::ComputeSize();
-  gles2::cmds::ConvertYUVAMailboxesToRGBINTERNALImmediate* c =
-      GetImmediateCmdSpaceTotalSize<
-          gles2::cmds::ConvertYUVAMailboxesToRGBINTERNALImmediate>(size);
-  if (c) {
-    c->Init(src_x, src_y, width, height, planes_yuv_color_space, plane_config,
-            subsampling, mailboxes);
-  }
-}
-
-void ConvertYUVAMailboxesToTextureINTERNALImmediate(
-    GLuint texture,
-    GLenum target,
-    GLuint internal_format,
-    GLenum type,
-    GLint src_x,
-    GLint src_y,
-    GLsizei width,
-    GLsizei height,
-    GLboolean flip_y,
-    GLenum planes_yuv_color_space,
-    GLenum plane_config,
-    GLenum subsampling,
-    const GLbyte* mailboxes) {
-  const uint32_t size = gles2::cmds::
-      ConvertYUVAMailboxesToTextureINTERNALImmediate::ComputeSize();
-  gles2::cmds::ConvertYUVAMailboxesToTextureINTERNALImmediate* c =
-      GetImmediateCmdSpaceTotalSize<
-          gles2::cmds::ConvertYUVAMailboxesToTextureINTERNALImmediate>(size);
-  if (c) {
-    c->Init(texture, target, internal_format, type, src_x, src_y, width, height,
-            flip_y, planes_yuv_color_space, plane_config, subsampling,
-            mailboxes);
-  }
-}
-
 void CopySharedImageINTERNALImmediate(GLint xoffset,
                                       GLint yoffset,
                                       GLint x,
                                       GLint y,
                                       GLsizei width,
                                       GLsizei height,
-                                      GLboolean unpack_flip_y,
                                       const GLbyte* mailboxes) {
   const uint32_t size =
       gles2::cmds::CopySharedImageINTERNALImmediate::ComputeSize();
@@ -3206,7 +3099,7 @@ void CopySharedImageINTERNALImmediate(GLint xoffset,
       GetImmediateCmdSpaceTotalSize<
           gles2::cmds::CopySharedImageINTERNALImmediate>(size);
   if (c) {
-    c->Init(xoffset, yoffset, x, y, width, height, unpack_flip_y, mailboxes);
+    c->Init(xoffset, yoffset, x, y, width, height, mailboxes);
   }
 }
 
@@ -3218,7 +3111,7 @@ void CopySharedImageToTextureINTERNALImmediate(GLuint texture,
                                                GLint src_y,
                                                GLsizei width,
                                                GLsizei height,
-                                               GLboolean flip_y,
+                                               GLboolean is_dst_origin_top_left,
                                                const GLbyte* src_mailbox) {
   const uint32_t size =
       gles2::cmds::CopySharedImageToTextureINTERNALImmediate::ComputeSize();
@@ -3227,7 +3120,7 @@ void CopySharedImageToTextureINTERNALImmediate(GLuint texture,
           gles2::cmds::CopySharedImageToTextureINTERNALImmediate>(size);
   if (c) {
     c->Init(texture, target, internal_format, type, src_x, src_y, width, height,
-            flip_y, src_mailbox);
+            is_dst_origin_top_left, src_mailbox);
   }
 }
 

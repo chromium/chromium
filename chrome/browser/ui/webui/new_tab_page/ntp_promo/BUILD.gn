@@ -1,0 +1,57 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(!is_android)
+
+source_set("ntp_promo") {
+  sources = [
+    "ntp_promo_handler.cc",
+    "ntp_promo_handler.h",
+  ]
+  public_deps = [ ":mojo_bindings" ]
+  deps = [
+    "//base",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/user_education",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chrome/browser/user_education",
+    "//ui/base",
+  ]
+}
+
+mojom("mojo_bindings") {
+  sources = [ "ntp_promo.mojom" ]
+  webui_module_path = "/"
+  public_deps = [ "//mojo/public/mojom/base" ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "ntp_promo.mojom.Promo"
+          cpp = "::user_education::NtpShowablePromo"
+        },
+      ]
+      traits_headers = [
+        "ntp_promo_mojom_traits.h",
+        "//components/user_education/common/ntp_promo/ntp_promo_controller.h",
+      ]
+      traits_sources = [ "ntp_promo_mojom_traits.cc" ]
+      traits_public_deps = [ "//components/user_education/common" ]
+    },
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "ntp_promo_handler_unittest.cc" ]
+  deps = [
+    ":ntp_promo",
+    "//base/test:test_support",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chrome/test:test_support",
+  ]
+}

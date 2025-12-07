@@ -8,9 +8,10 @@ import 'chrome://scanning/source_select.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ColorMode, PageSize, ScanSource, SourceType} from 'chrome://scanning/scanning.mojom-webui.js';
+import type {ScanSource} from 'chrome://scanning/scanning.mojom-webui.js';
+import {ColorMode, PageSize, SourceType} from 'chrome://scanning/scanning.mojom-webui.js';
 import {getSourceTypeString} from 'chrome://scanning/scanning_app_util.js';
-import {SourceSelectElement} from 'chrome://scanning/source_select.js';
+import type {SourceSelectElement} from 'chrome://scanning/source_select.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {assertOrderedAlphabetically, createScannerSource} from './scanning_app_test_utils.js';
@@ -59,10 +60,10 @@ suite('sourceSelectTest', function() {
     assertEquals(2, select.length);
     assertEquals(
         getSourceTypeString(firstSource.type),
-        select.options[0]!.textContent!.trim());
+        select.options[0]!.textContent.trim());
     assertEquals(
         getSourceTypeString(secondSource.type),
-        select.options[1]!.textContent!.trim());
+        select.options[1]!.textContent.trim());
     assertEquals(secondSource.name, select.value);
   });
 

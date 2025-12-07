@@ -15,6 +15,8 @@ MockClusterManager::MockClusterManager(
           product_specifications_service,
           nullptr,
           base::RepeatingCallback<void(const GURL&, ProductInfoCallback)>(),
+          base::RepeatingCallback<void(const std::vector<GURL>& urls,
+                                       ProductInfoBatchCallback)>(),
           base::RepeatingCallback<const std::vector<UrlInfo>()>()) {}
 
 MockClusterManager::~MockClusterManager() = default;

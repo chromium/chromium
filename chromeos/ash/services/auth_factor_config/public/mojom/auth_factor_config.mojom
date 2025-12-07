@@ -21,7 +21,9 @@ module ash.auth.mojom;
 // An enumeration of all authentication factors.
 enum AuthFactor {
   kRecovery,
-  kPin,
+  kPrefBasedPin,
+  kCryptohomePin,
+  kCryptohomePinV2,
   kGaiaPassword,
   kLocalPassword,
   // TODO(crbug.com/1327627): Add support for other authentication factors:
@@ -95,6 +97,18 @@ interface RecoveryFactorEditor {
   Configure(string auth_token, bool enabled) => (ConfigureResult result);
 };
 
+// A value describing the complexity of a pin.
+enum PinComplexity {
+  kOk,
+  kInvalidTokenError,
+  // These values correspond to the values of the `LocalAuthFactorsComplexity`
+  // policy (components/policy/resources/templates/policy_definitions/Signin/LocalAuthFactorsComplexity.yaml).
+  kErrNone,
+  kErrLow,
+  kErrMedium,
+  kErrHigh,
+};
+
 // Interface for methods specific to pin authentication. Served from chrome
 // ash, intended to be consumed by the following webuis:
 // * chrome://os-settings
@@ -102,14 +116,33 @@ interface RecoveryFactorEditor {
 interface PinFactorEditor {
   // Set the user pin to the desired value.
   SetPin(string auth_token, string pin) => (ConfigureResult result);
+
+  // Update an already set user pin to the desired value. This method will
+  // only update a cryptohome pin if already present, for prefs-based pins and
+  // empty pins, it's a no-op.
+  UpdatePin(string auth_token, string pin) => (ConfigureResult result);
+
   // Remove the pin factor for the user.
   RemovePin(string auth_token) => (ConfigureResult result);
+
+  // Returns the type of the pin factor, or nullopt if it has none.
+  GetConfiguredPinFactor(string auth_token) => (AuthFactor? pin_factor);
+
+  // Returns a value describing the complexity of the provided pin value.
+  CheckPinComplexity(string auth_token, string pin) =>
+      (PinComplexity complexity);
 };
 
 // A value describing the complexity of a password.
 enum PasswordComplexity {
   kOk,
   kTooShort,
+  // These values correspond to the values of the LocalAuthFactorsComplexity
+  // policy (components/policy/resources/templates/policy_definitions/Signin/LocalAuthFactorsComplexity.yaml).
+  kErrNone,
+  kErrLow,
+  kErrMedium,
+  kErrHigh,
 };
 
 // Interface for methods specific to password authentication. Served from chrome
@@ -124,17 +157,18 @@ enum PasswordComplexity {
 // adding a non existing auth factor and updating an existing auth factor, we
 // also make this distinction in this interface.
 interface PasswordFactorEditor {
-  // Updates the user's password to the local password with the desired value.
-  // This assumes that the user has a password factor set up (either local or
-  // Gaia). Callers must provide a sufficiently complex password. A password
-  // is considered sufficiently complex if the `CheckLocalPasswordComplexity`
-  // call returns `kOk` for the password.
-  UpdateLocalPassword(string auth_token, string new_password) =>
+  // Updates or sets the user's password to the local password with the
+  // desired value. This checks if the password exists. If it exists, then
+  // updates it and if it does not, then sets it. Callers must provide a
+  // sufficiently complex password. A password is considered sufficiently
+  // complex if the `CheckLocalPasswordComplexity` call returns `kOk` for
+  // the password.
+  UpdateOrSetLocalPassword(string auth_token, string new_password) =>
       (ConfigureResult result);
 
-  // Updates the user's cryptohoome password to match their online password.
-  // This assumes that the user has an online password factor set up.
-  UpdateOnlinePassword(string auth_token, string new_password) =>
+  // Updates or sets the user's cryptohoome password to match their online
+  // password. This assumes that the user has an online password factor set up.
+  UpdateOrSetOnlinePassword(string auth_token, string new_password) =>
       (ConfigureResult result);
 
   // Sets the user's local password to the desired value. This assumes that the
@@ -152,4 +186,9 @@ interface PasswordFactorEditor {
   // Returns a value describing the complexity of the provided password value.
   CheckLocalPasswordComplexity(string password) =>
       (PasswordComplexity complexity);
+
+  // Remove the password factor for the user if the user has modern pin
+  // configured. While it is client's responsibility to not call,
+  // this IPC will also have additional check.
+  RemovePassword(string auth_token) => (ConfigureResult result);
 };

@@ -1,0 +1,18 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Next MinVersion: 1
+
+module ash.cfm.mojom;
+
+// A Utility for providing lower level daemon with Meet Client specific
+// information provided by the browser.
+// Implemented in:
+// chrome/browser/ash/chromebox_for_meetings/meet_browser/meet_browser_service.h
+[Stable, Uuid="94d11de3-90a6-4fdc-b15a-f666a700fc1c"]
+interface MeetBrowser {
+  // Returns the device path, given the WebRTC Device Id from the Meet Client
+  // of a Video Capture device
+  TranslateVideoDeviceId@0(string hashed_device_id) => (string? device_path);
+};

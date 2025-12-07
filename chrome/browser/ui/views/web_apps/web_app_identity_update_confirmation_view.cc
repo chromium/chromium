@@ -23,6 +23,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia.h"
@@ -31,6 +33,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/table_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/typography.h"
 
 namespace {
@@ -68,9 +71,9 @@ WebAppIdentityUpdateConfirmationView::WebAppIdentityUpdateConfirmationView(
       .set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH))
       .SetButtonLabel(
-          ui::DIALOG_BUTTON_CANCEL,
+          ui::mojom::DialogButton::kCancel,
           l10n_util::GetStringUTF16(IDS_WEBAPP_UPDATE_NEGATIVE_BUTTON))
-      .SetModalType(ui::MODAL_TYPE_WINDOW)
+      .SetModalType(ui::mojom::ModalType::kWindow)
       .SetTitle(title_change
                     ? (icon_change
                            ? IDS_WEBAPP_UPDATE_DIALOG_TITLE_NAME_AND_ICON
@@ -84,7 +87,7 @@ WebAppIdentityUpdateConfirmationView::WebAppIdentityUpdateConfirmationView(
       .SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical, gfx::Insets(),
           2 * layout_provider->GetDistanceMetric(
-                  DISTANCE_CONTROL_LIST_VERTICAL)))
+                  views::DISTANCE_CONTROL_LIST_VERTICAL)))
       .AddChildren(
           views::Builder<views::Label>()
               .SetID(VIEW_ID_APP_IDENTITY_UPDATE_HEADER)
@@ -135,7 +138,7 @@ WebAppIdentityUpdateConfirmationView::WebAppIdentityUpdateConfirmationView(
                           IDS_WEBAPP_UPDATE_NEW_ICON)))
               .AddPaddingRow(views::TableLayout::kFixedSize,
                              layout_provider->GetDistanceMetric(
-                                 DISTANCE_CONTROL_LIST_VERTICAL))
+                                 views::DISTANCE_CONTROL_LIST_VERTICAL))
               .AddRows(1, views::TableLayout::kFixedSize, 0)
               .AddChildren(
                   views::Builder<views::Label>()

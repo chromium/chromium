@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webcodecs/audio_data.h"
 
 #include <optional>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -49,7 +46,8 @@ class AudioDataTest : public testing::Test {
  protected:
   void VerifyPlanarData(float* data, float start_value, int count) {
     for (int i = 0; i < count; ++i)
-      ASSERT_NEAR(data[i], start_value + i * kIncrement, kEpsilon) << "i=" << i;
+      UNSAFE_TODO(ASSERT_NEAR(data[i], start_value + i * kIncrement, kEpsilon))
+          << "i=" << i;
   }
 
   AllowSharedBufferSource* CreateDefaultData() {
@@ -60,9 +58,10 @@ class AudioDataTest : public testing::Test {
     auto* buffer = DOMArrayBuffer::Create(channels * frames, sizeof(float));
     for (int ch = 0; ch < channels; ++ch) {
       float* plane_start =
-          reinterpret_cast<float*>(buffer->Data()) + ch * frames;
+          UNSAFE_TODO(reinterpret_cast<float*>(buffer->Data()) + ch * frames);
       for (int i = 0; i < frames; ++i) {
-        plane_start[i] = static_cast<float>((i + ch * frames) * kIncrement);
+        UNSAFE_TODO(plane_start[i]) =
+            static_cast<float>((i + ch * frames) * kIncrement);
       }
     }
     return MakeGarbageCollected<AllowSharedBufferSource>(buffer);
@@ -75,7 +74,7 @@ class AudioDataTest : public testing::Test {
     audio_data_init->setNumberOfChannels(kChannels);
     audio_data_init->setNumberOfFrames(kFrames);
     audio_data_init->setSampleRate(kSampleRate);
-    audio_data_init->setFormat("f32-planar");
+    audio_data_init->setFormat(V8AudioSampleFormat::Enum::kF32Planar);
     return audio_data_init;
   }
 
@@ -140,7 +139,7 @@ TEST_F(AudioDataTest, ConstructFromMediaBuffer) {
 
   auto* frame = MakeGarbageCollected<AudioData>(media_buffer);
 
-  EXPECT_EQ(frame->format(), "s16");
+  EXPECT_EQ(frame->format(), V8AudioSampleFormat::Enum::kS16);
   EXPECT_EQ(frame->sampleRate(), static_cast<uint32_t>(kSampleRate));
   EXPECT_EQ(frame->numberOfFrames(), static_cast<uint32_t>(kFrames));
   EXPECT_EQ(frame->numberOfChannels(), static_cast<uint32_t>(kChannels));
@@ -171,7 +170,7 @@ TEST_F(AudioDataTest, ConstructFromAudioDataInit) {
   auto* frame = MakeGarbageCollected<AudioData>(
       scope.GetScriptState(), audio_data_init, scope.GetExceptionState());
 
-  EXPECT_EQ(frame->format(), "f32-planar");
+  EXPECT_EQ(frame->format(), V8AudioSampleFormat::Enum::kF32Planar);
   EXPECT_EQ(frame->sampleRate(), static_cast<uint32_t>(kSampleRate));
   EXPECT_EQ(frame->numberOfFrames(), static_cast<uint32_t>(kFrames));
   EXPECT_EQ(frame->numberOfChannels(), static_cast<uint32_t>(kChannels));
@@ -190,7 +189,7 @@ TEST_F(AudioDataTest, ConstructFromAudioDataInit_HighChannelCount) {
   auto* frame = MakeGarbageCollected<AudioData>(
       scope.GetScriptState(), audio_data_init, scope.GetExceptionState());
 
-  EXPECT_EQ(frame->format(), "f32-planar");
+  EXPECT_EQ(frame->format(), V8AudioSampleFormat::Enum::kF32Planar);
   EXPECT_EQ(frame->sampleRate(), static_cast<uint32_t>(kSampleRate));
   EXPECT_EQ(frame->numberOfFrames(), static_cast<uint32_t>(kFrames));
   EXPECT_EQ(frame->numberOfChannels(),
@@ -290,7 +289,7 @@ TEST_F(AudioDataTest, CopyTo_PlaneIndex) {
 TEST_F(AudioDataTest, TransferBuffer) {
   V8TestingScope scope;
   std::string data = "audio data";
-  auto* buffer = DOMArrayBuffer::Create(data.data(), data.size());
+  auto* buffer = DOMArrayBuffer::Create(base::as_byte_span(data));
   auto* buffer_source = MakeGarbageCollected<AllowSharedBufferSource>(buffer);
   const void* buffer_data_ptr = buffer->Data();
 
@@ -300,7 +299,7 @@ TEST_F(AudioDataTest, TransferBuffer) {
   audio_data_init->setNumberOfChannels(1);
   audio_data_init->setNumberOfFrames(static_cast<uint32_t>(data.size()));
   audio_data_init->setSampleRate(kSampleRate);
-  audio_data_init->setFormat("u8");
+  audio_data_init->setFormat(V8AudioSampleFormat::Enum::kU8);
   HeapVector<Member<DOMArrayBuffer>> transfer;
   transfer.push_back(Member<DOMArrayBuffer>(buffer));
   audio_data_init->setTransfer(std::move(transfer));
@@ -308,7 +307,7 @@ TEST_F(AudioDataTest, TransferBuffer) {
   auto* audio_data = MakeGarbageCollected<AudioData>(
       scope.GetScriptState(), audio_data_init, scope.GetExceptionState());
 
-  EXPECT_EQ(audio_data->format(), "u8");
+  EXPECT_EQ(audio_data->format(), V8AudioSampleFormat::Enum::kU8);
   EXPECT_EQ(audio_data->numberOfFrames(), data.size());
   EXPECT_EQ(audio_data->numberOfChannels(), 1u);
 
@@ -325,14 +324,11 @@ TEST_F(AudioDataTest, TransferBuffer) {
 TEST_F(AudioDataTest, FailToTransferUnAlignedBuffer) {
   V8TestingScope scope;
   const uint32_t frames = 3;
-  std::vector<float> data{0.0, 1.0, 2.0, 3.0, 4.0};
-  auto* buffer =
-      DOMArrayBuffer::Create(data.data(), data.size() * sizeof(float));
+  std::vector<int32_t> data{0, 1, 2, 3, 4};
+  auto* buffer = DOMArrayBuffer::Create(base::as_byte_span(data));
   auto* view = DOMDataView::Create(
-      buffer, 1 /* offset one byte from the float ptr, that how we are sure that
-                   the view is not aligned to sizeof(float) */
-      ,
-      frames * sizeof(float));
+      buffer, 1 /* offset one byte to ensure misalignment */,
+      frames * sizeof(int32_t));
   auto* buffer_source = MakeGarbageCollected<AllowSharedBufferSource>(
       MaybeShared<DOMArrayBufferView>(view));
 
@@ -345,7 +341,7 @@ TEST_F(AudioDataTest, FailToTransferUnAlignedBuffer) {
   audio_data_init->setNumberOfChannels(1);
   audio_data_init->setNumberOfFrames(frames);
   audio_data_init->setSampleRate(kSampleRate);
-  audio_data_init->setFormat("f32");
+  audio_data_init->setFormat(V8AudioSampleFormat::Enum::kS32);
   HeapVector<Member<DOMArrayBuffer>> transfer;
   transfer.push_back(Member<DOMArrayBuffer>(buffer));
   audio_data_init->setTransfer(std::move(transfer));
@@ -362,7 +358,7 @@ TEST_F(AudioDataTest, FailToTransferUnAlignedBuffer) {
 
   // Even though we copied the data, the buffer still needs to be aligned.
   EXPECT_TRUE(buffer->IsDetached());
-  EXPECT_EQ(allocations_size, frames * sizeof(float));
+  EXPECT_EQ(allocations_size, frames * sizeof(int32_t));
 }
 
 TEST_F(AudioDataTest, CopyTo_Offset) {
@@ -455,20 +451,22 @@ TEST_F(AudioDataTest, Interleaved) {
 
   auto* frame = MakeGarbageCollected<AudioData>(media_buffer);
 
-  EXPECT_EQ("s16", frame->format());
+  EXPECT_EQ(V8AudioSampleFormat::Enum::kS16, frame->format());
+
+  auto* options = CreateCopyToOptions(/*index=*/1, kOffset, kPartialFrameCount);
 
   // Verify that plane indexes > 1 throw, for interleaved formats.
-  auto* options = CreateCopyToOptions(/*index=*/1, kOffset, kPartialFrameCount);
-  int allocations_size =
-      frame->allocationSize(options, scope.GetExceptionState());
-
-  EXPECT_TRUE(scope.GetExceptionState().HadException());
-  scope.GetExceptionState().ClearException();
+  {
+    DummyExceptionStateForTesting exception_state;
+    frame->allocationSize(options, exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+  }
 
   // Verify that copy conversion to a planar format supports indexes > 1,
   // even if the source is interleaved.
   options->setFormat(V8AudioSampleFormat::Enum::kF32Planar);
-  allocations_size = frame->allocationSize(options, scope.GetExceptionState());
+  int allocations_size =
+      frame->allocationSize(options, scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 
   // Verify we get the expected allocation size, for valid formats.
@@ -496,33 +494,43 @@ TEST_F(AudioDataTest, Interleaved) {
     int block_index = i * kInterleavedChannels;
     int16_t base_value = kOffset + i;
 
-    EXPECT_EQ(copy[block_index], base_value);                    // channel 0
-    EXPECT_EQ(copy[block_index + 1], base_value + kFrames);      // channel 1
-    EXPECT_EQ(copy[block_index + 2], base_value + 2 * kFrames);  // channel 2
+    UNSAFE_TODO(EXPECT_EQ(copy[block_index], base_value));  // channel 0
+    UNSAFE_TODO(
+        EXPECT_EQ(copy[block_index + 1], base_value + kFrames));  // channel 1
+    UNSAFE_TODO(EXPECT_EQ(copy[block_index + 2],
+                          base_value + 2 * kFrames));  // channel 2
   }
 }
 
 struct U8Traits {
-  static constexpr std::string Format = "u8";
-  static constexpr std::string PlanarFormat = "u8-planar";
+  static constexpr V8AudioSampleFormat::Enum Format =
+      V8AudioSampleFormat::Enum::kU8;
+  static constexpr V8AudioSampleFormat::Enum PlanarFormat =
+      V8AudioSampleFormat::Enum::kU8Planar;
   using Traits = media::UnsignedInt8SampleTypeTraits;
 };
 
 struct S16Traits {
-  static constexpr std::string Format = "s16";
-  static constexpr std::string PlanarFormat = "s16-planar";
+  static constexpr V8AudioSampleFormat::Enum Format =
+      V8AudioSampleFormat::Enum::kS16;
+  static constexpr V8AudioSampleFormat::Enum PlanarFormat =
+      V8AudioSampleFormat::Enum::kS16Planar;
   using Traits = media::SignedInt16SampleTypeTraits;
 };
 
 struct S32Traits {
-  static constexpr std::string Format = "s32";
-  static constexpr std::string PlanarFormat = "s32-planar";
+  static constexpr V8AudioSampleFormat::Enum Format =
+      V8AudioSampleFormat::Enum::kS32;
+  static constexpr V8AudioSampleFormat::Enum PlanarFormat =
+      V8AudioSampleFormat::Enum::kS32Planar;
   using Traits = media::SignedInt32SampleTypeTraits;
 };
 
 struct F32Traits {
-  static constexpr std::string Format = "f32";
-  static constexpr std::string PlanarFormat = "f32-planar";
+  static constexpr V8AudioSampleFormat::Enum Format =
+      V8AudioSampleFormat::Enum::kF32;
+  static constexpr V8AudioSampleFormat::Enum PlanarFormat =
+      V8AudioSampleFormat::Enum::kF32Planar;
   using Traits = media::Float32SampleTypeTraits;
 };
 
@@ -531,7 +539,8 @@ struct ConversionConfig {
   using From = SourceTraits;
   using To = TargetTraits;
   static std::string config_name() {
-    return From::Format + "_to_" + To::Format;
+    return std::string(V8AudioSampleFormat(From::Format).AsCStr()) + "_to_" +
+           std::string(V8AudioSampleFormat(To::Format).AsCStr());
   }
 };
 
@@ -539,14 +548,14 @@ template <typename TestConfig>
 class AudioDataConversionTest : public testing::Test {
  protected:
   AudioDataInit* CreateAudioDataInit(AllowSharedBufferSource* data,
-                                     std::string format) {
+                                     V8AudioSampleFormat::Enum format) {
     auto* audio_data_init = AudioDataInit::Create();
     audio_data_init->setData(data);
     audio_data_init->setTimestamp(kTimestampInMicroSeconds);
     audio_data_init->setNumberOfChannels(kChannels);
     audio_data_init->setNumberOfFrames(kFrames);
     audio_data_init->setSampleRate(kSampleRate);
-    audio_data_init->setFormat(String(format));
+    audio_data_init->setFormat(format);
     return audio_data_init;
   }
 
@@ -555,7 +564,7 @@ class AudioDataConversionTest : public testing::Test {
   // kZeroPointValue; if `use_frame_count`, the last sample of every channel
   // will be kZeroPointValue. This allows us to verify that we respect bounds
   // when copying.
-  AudioData* CreateAudioData(std::string format,
+  AudioData* CreateAudioData(V8AudioSampleFormat::Enum format,
                              bool planar,
                              bool use_offset,
                              bool use_frame_count,
@@ -571,12 +580,12 @@ class AudioDataConversionTest : public testing::Test {
   // Creates CopyToOptions. If `use_offset` is true, we exclude the first
   // sample. If `use_frame_count`, we exclude the last sample.
   AudioDataCopyToOptions* CreateCopyToOptions(int plane_index,
-                                              std::string format,
+                                              V8AudioSampleFormat::Enum format,
                                               bool use_offset,
                                               bool use_frame_count) {
     auto* copy_to_options = AudioDataCopyToOptions::Create();
     copy_to_options->setPlaneIndex(plane_index);
-    copy_to_options->setFormat(String(format));
+    copy_to_options->setFormat(format);
     int total_frames = kFrames;
 
     if (use_offset) {
@@ -605,27 +614,27 @@ class AudioDataConversionTest : public testing::Test {
 
     ValueType* plane_start = reinterpret_cast<ValueType*>(buffer->Data());
     for (int i = 0; i < kFrames; ++i) {
-      plane_start[i] = SourceTraits::kMinValue;
+      UNSAFE_TODO(plane_start[i]) = SourceTraits::kMinValue;
     }
 
     if (use_offset) {
       plane_start[0] = SourceTraits::kZeroPointValue;
     }
     if (use_frame_count) {
-      plane_start[kFrames - 1] = SourceTraits::kZeroPointValue;
+      UNSAFE_TODO(plane_start[kFrames - 1]) = SourceTraits::kZeroPointValue;
     }
 
-    plane_start += kFrames;
+    UNSAFE_TODO(plane_start += kFrames);
 
     for (int i = 0; i < kFrames; ++i) {
-      plane_start[i] = SourceTraits::kMaxValue;
+      UNSAFE_TODO(plane_start[i]) = SourceTraits::kMaxValue;
     }
 
     if (use_offset) {
       plane_start[0] = SourceTraits::kZeroPointValue;
     }
     if (use_frame_count) {
-      plane_start[kFrames - 1] = SourceTraits::kZeroPointValue;
+      UNSAFE_TODO(plane_start[kFrames - 1]) = SourceTraits::kZeroPointValue;
     }
 
     return MakeGarbageCollected<AllowSharedBufferSource>(buffer);
@@ -646,18 +655,20 @@ class AudioDataConversionTest : public testing::Test {
 
     ValueType* plane_start = reinterpret_cast<ValueType*>(buffer->Data());
     for (int i = 0; i < kTotalSamples; i += 2) {
-      plane_start[i] = SourceTraits::kMinValue;
-      plane_start[i + 1] = SourceTraits::kMaxValue;
+      UNSAFE_TODO(plane_start[i]) = SourceTraits::kMinValue;
+      UNSAFE_TODO(plane_start[i + 1]) = SourceTraits::kMaxValue;
     }
 
     if (use_offset) {
       plane_start[0] = SourceTraits::kZeroPointValue;
-      plane_start[1] = SourceTraits::kZeroPointValue;
+      UNSAFE_TODO(plane_start[1]) = SourceTraits::kZeroPointValue;
     }
 
     if (use_frame_count) {
-      plane_start[kTotalSamples - 2] = SourceTraits::kZeroPointValue;
-      plane_start[kTotalSamples - 1] = SourceTraits::kZeroPointValue;
+      UNSAFE_TODO(plane_start[kTotalSamples - 2]) =
+          SourceTraits::kZeroPointValue;
+      UNSAFE_TODO(plane_start[kTotalSamples - 1]) =
+          SourceTraits::kZeroPointValue;
     }
 
     return MakeGarbageCollected<AllowSharedBufferSource>(buffer);
@@ -681,7 +692,7 @@ class AudioDataConversionTest : public testing::Test {
     using TargetType = Config::To::Traits::ValueType;
     constexpr int kChannelToCopy = 1;
 
-    std::string source_format =
+    V8AudioSampleFormat::Enum source_format =
         source_is_planar ? Config::From::PlanarFormat : Config::From::Format;
 
     // Create original data. The first and last frame will be zero'ed, if
@@ -713,7 +724,7 @@ class AudioDataConversionTest : public testing::Test {
 
     // `kChannelToCopy` should only contain kMaxValue
     for (int i = 0; i < frames_to_copy; ++i) {
-      ASSERT_EQ(copied_data[i], Config::To::Traits::kMaxValue);
+      UNSAFE_TODO(ASSERT_EQ(copied_data[i], Config::To::Traits::kMaxValue));
     }
   }
 
@@ -723,7 +734,7 @@ class AudioDataConversionTest : public testing::Test {
     using Config = TestConfig;
     using TargetType = Config::To::Traits::ValueType;
 
-    std::string source_format =
+    V8AudioSampleFormat::Enum source_format =
         source_is_planar ? Config::From::PlanarFormat : Config::From::Format;
 
     // Create original data. The first and last frame will be zero'ed, if
@@ -757,8 +768,8 @@ class AudioDataConversionTest : public testing::Test {
     // The interleaved data should have kMinValue in
     // channel 0 and kMaxValue in channel 1.
     for (int i = 0; i < total_frames; i += 2) {
-      ASSERT_EQ(copied_data[i], Config::To::Traits::kMinValue);
-      ASSERT_EQ(copied_data[i + 1], Config::To::Traits::kMaxValue);
+      UNSAFE_TODO(ASSERT_EQ(copied_data[i], Config::To::Traits::kMinValue));
+      UNSAFE_TODO(ASSERT_EQ(copied_data[i + 1], Config::To::Traits::kMaxValue));
     }
   }
 

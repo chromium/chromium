@@ -6,13 +6,14 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/check.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/ios_buildflags.h"
 #include "ui/display/display.h"
 #include "ui/display/display_features.h"
 #include "ui/display/screen_base.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/display/util/display_util.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace display {
 namespace {
@@ -24,7 +25,7 @@ class ScreenNotification {
 }  // namespace display
 
 @interface ScreenObserver : NSObject {
-  raw_ptr<display::ScreenNotification> _notifier;
+  raw_ptr<display::ScreenNotification, DanglingUntriaged> _notifier;
 }
 - (void)mainScreenChanged;
 @end
@@ -32,13 +33,15 @@ class ScreenNotification {
 @implementation ScreenObserver
 
 - (instancetype)initWithNotifier:(display::ScreenNotification*)notifier {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _notifier = notifier;
     NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
+#if !BUILDFLAG(IS_IOS_TVOS)
     [defaultCenter addObserver:self
                       selector:@selector(mainScreenChanged)
                           name:UIDeviceOrientationDidChangeNotification
                         object:nil];
+#endif
     [defaultCenter addObserver:self
                       selector:@selector(mainScreenChanged)
                           name:UIWindowDidBecomeKeyNotification
@@ -64,6 +67,24 @@ class ScreenNotification {
 namespace display {
 namespace {
 
+// Return all screens associated with scenes of the application.
+NSArray<UIScreen*>* GetAllActiveScreens() {
+#if BUILDFLAG(IS_IOS_APP_EXTENSION)
+  return [NSArray<UIScreen*> array];
+#else
+  NSMutableSet<UIScreen*>* screens = [NSMutableSet set];
+  for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
+    auto* window_scene = base::apple::ObjCCastStrict<UIWindowScene>(scene);
+    for (UIWindow* window in window_scene.windows) {
+      if (UIScreen* screen = window.screen) {
+        [screens addObject:screen];
+      }
+    }
+  }
+  return [screens allObjects];
+#endif
+}
+
 class ScreenIos : public ScreenBase, public ScreenNotification {
  public:
   ScreenIos() {
@@ -80,13 +101,40 @@ class ScreenIos : public ScreenBase, public ScreenNotification {
       return;
     }
 
-    Display display(0, gfx::Rect(screen.bounds));
+    const int64_t display_id = 0;
+    Display display(display_id, gfx::Rect(screen.bounds));
     CGFloat scale = [screen scale];
 
     if (Display::HasForceDeviceScaleFactor()) {
       scale = Display::GetForcedDeviceScaleFactor();
     }
     display.set_device_scale_factor(scale);
+
+#if !BUILDFLAG(IS_IOS_TVOS)
+    Display::Rotation rotation = Display::ROTATE_0;
+    switch (UIDevice.currentDevice.orientation) {
+      case UIDeviceOrientationPortrait:
+      case UIDeviceOrientationFaceUp:
+      case UIDeviceOrientationFaceDown:
+      case UIDeviceOrientationUnknown:
+        rotation = Display::ROTATE_0;
+        break;
+      case UIDeviceOrientationPortraitUpsideDown:
+        rotation = Display::ROTATE_180;
+        break;
+      case UIDeviceOrientationLandscapeLeft:
+        rotation = Display::ROTATE_90;
+        break;
+      case UIDeviceOrientationLandscapeRight:
+        rotation = Display::ROTATE_270;
+        break;
+    }
+    display.set_rotation(rotation);
+    display.set_touch_support(Display::TouchSupport::AVAILABLE);
+    display.set_accelerometer_support(Display::AccelerometerSupport::AVAILABLE);
+    AddInternalDisplayId(display_id);
+#endif
+
     ProcessDisplayChanged(display, true /* is_primary */);
   }
 
@@ -110,24 +158,6 @@ class ScreenIos : public ScreenBase, public ScreenNotification {
   }
 
  private:
-  // Return all screens associated with scenes of the application.
-  NSArray<UIScreen*>* GetAllActiveScreens() const {
-#if BUILDFLAG(IS_IOS_APP_EXTENSION)
-    return [NSArray<UIScreen*> array];
-#else
-    NSMutableSet<UIScreen*>* screens = [NSMutableSet set];
-    for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
-      UIWindowScene* windowScene =
-          base::apple::ObjCCastStrict<UIWindowScene>(scene);
-      UIScreen* screen = windowScene.keyWindow.screen;
-      if (screen) {
-        [screens addObject:screen];
-      }
-    }
-    return [screens allObjects];
-#endif
-  }
-
   ScreenObserver* __strong observer_;
 };
 
@@ -140,6 +170,15 @@ gfx::NativeWindow Screen::GetWindowForView(gfx::NativeView view) {
 
 Screen* CreateNativeScreen() {
   return new ScreenIos;
+}
+
+float GetInternalDisplayDeviceScaleFactor() {
+#if BUILDFLAG(IS_IOS_APP_EXTENSION)
+  return 1.0f;
+#else
+  UIScreen* screen = GetAllActiveScreens().firstObject;
+  return screen ? screen.scale : 1.0f;
+#endif
 }
 
 }  // namespace display

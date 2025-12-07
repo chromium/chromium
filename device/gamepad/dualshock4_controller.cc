@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/gamepad/dualshock4_controller.h"
 
 #include <algorithm>
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/metrics/crc32.h"
 #include "base/numerics/safe_conversions.h"
@@ -41,7 +37,7 @@ const float kDpadMax = 7.0f;
 constexpr uint16_t kTouchDimensionX = 1920;
 constexpr uint16_t kTouchDimensionY = 942;
 
-struct ControllerData {
+struct PACKED_OBJ ControllerData {
   uint8_t axis_left_x;
   uint8_t axis_left_y;
   uint8_t axis_right_x;
@@ -76,7 +72,7 @@ struct ControllerData {
   uint8_t battery_info : 5;
   uint8_t padding2 : 2;
   bool extension_detection : 1;
-} ABSL_ATTRIBUTE_PACKED;
+};
 
 static_assert(sizeof(ControllerData) == 30,
               "ControllerData has incorrect size");
@@ -91,7 +87,7 @@ static_assert(sizeof(TouchData) == 4, "TouchPadData has incorrect size");
 
 struct TouchPadData {
   uint8_t touch_data_timestamp;
-  TouchData touch[2];
+  std::array<TouchData, 2> touch;
 };
 
 static_assert(sizeof(TouchPadData) == 9, "TouchPadData has incorrect size");
@@ -107,7 +103,7 @@ struct Dualshock4InputReportUsb {
 static_assert(sizeof(Dualshock4InputReportUsb) == 64,
               "Dualshock4InputReportUsb has incorrect size");
 
-struct Dualshock4InputReportBluetooth {
+struct PACKED_OBJ Dualshock4InputReportBluetooth {
   uint8_t padding1[2];
   ControllerData controller_data;
   uint8_t padding2[2];
@@ -115,7 +111,7 @@ struct Dualshock4InputReportBluetooth {
   TouchPadData touches[4];
   uint8_t padding3[2];
   uint32_t crc32;
-} ABSL_ATTRIBUTE_PACKED;
+};
 
 static_assert(sizeof(Dualshock4InputReportBluetooth) == 77,
               "Dualshock4InputReportBluetooth has incorrect size");
@@ -179,7 +175,7 @@ void ProcessTouchData(base::span<const TouchPadData> touchpad_data,
                       std::optional<uint32_t>& initial_touch_id,
                       Gamepad* pad) {
   pad->touch_events_length = 0;
-  GamepadTouch* touches = pad->touch_events;
+  auto& touches = pad->touch_events;
 
   for (const auto& touchpad_data_entry : touchpad_data) {
     auto [touch_id_0, touch_id_1] = id_transform(
@@ -197,7 +193,7 @@ void ProcessTouchData(base::span<const TouchPadData> touchpad_data,
             (j == 0 ? touch_id_0 : touch_id_1) - initial_touch_id.value();
         touch.surface_id = 0;
         // x and y coordinates stored in 3 bytes (12bits each)
-        ReadTouchCoordinates(base::make_span(raw_touch.data, 3u), touch);
+        ReadTouchCoordinates(raw_touch.data, touch);
       }
     }
   }
@@ -216,15 +212,22 @@ void ProcessAxisButtonData(const ControllerData& controller_data,
   pad->axes[4] = NormalizeAxis(controller_data.axis_right_2);
   pad->axes[5] = NormalizeAxis(controller_data.axis_right_y);
   pad->axes[9] = NormalizeDpad(controller_data.axis_dpad);
-  const bool button_values[] = {
-      controller_data.button_square, controller_data.button_cross,
-      controller_data.button_circle, controller_data.button_triangle,
-      controller_data.button_left_1, controller_data.button_right_1,
-      controller_data.button_left_2, controller_data.button_right_2,
-      controller_data.button_share,  controller_data.button_options,
-      controller_data.button_left_3, controller_data.button_right_3,
-      controller_data.button_ps,     controller_data.button_touch,
-  };
+  const auto button_values = std::to_array<bool>({
+      controller_data.button_square,
+      controller_data.button_cross,
+      controller_data.button_circle,
+      controller_data.button_triangle,
+      controller_data.button_left_1,
+      controller_data.button_right_1,
+      controller_data.button_left_2,
+      controller_data.button_right_2,
+      controller_data.button_share,
+      controller_data.button_options,
+      controller_data.button_left_3,
+      controller_data.button_right_3,
+      controller_data.button_ps,
+      controller_data.button_touch,
+  });
   for (size_t i = 0; i < std::size(button_values); ++i) {
     pad->buttons[i].pressed = button_values[i];
     pad->buttons[i].touched = button_values[i];
@@ -295,15 +298,15 @@ bool Dualshock4Controller::ProcessInputReport(uint8_t report_id,
   DCHECK(pad);
 
   const ControllerData* controller_data = nullptr;
-  const TouchPadData* touches = nullptr;
+  base::span<const TouchPadData> touches_span;
   uint8_t touches_count = 0;
 
   auto set_controller_and_touch_data =
-      [&controller_data, &touches, &touches_count,
+      [&controller_data, &touches_span, &touches_count,
        is_multitouch_enabled](const auto& data) {
         controller_data = &data->controller_data;
         if (is_multitouch_enabled) {
-          touches = data->touches;
+          touches_span = base::span(data->touches);
           touches_count = data->touches_count;
         }
       };
@@ -330,8 +333,8 @@ bool Dualshock4Controller::ProcessInputReport(uint8_t report_id,
 
   if (is_multitouch_enabled) {
     pad->supports_touch_events_ = true;
-    ProcessTouchData(base::make_span(touches, touches_count),
-                     transform_touch_id_, initial_touch_id_, pad);
+    ProcessTouchData(touches_span.first(touches_count), transform_touch_id_,
+                     initial_touch_id_, pad);
   }
 
   pad->timestamp = GamepadDataFetcher::CurrentTimeInMicroseconds();

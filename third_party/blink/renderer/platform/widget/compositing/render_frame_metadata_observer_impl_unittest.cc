@@ -48,7 +48,7 @@ class MockRenderFrameMetadataObserverClient
                void(uint32_t frame_token,
                     const cc::RenderFrameMetadata& metadata));
   MOCK_METHOD1(OnFrameSubmissionForTesting, void(uint32_t frame_token));
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   MOCK_METHOD1(OnRootScrollOffsetChanged, void(const gfx::PointF& offset));
 #endif
 
@@ -129,10 +129,11 @@ TEST_F(RenderFrameMetadataObserverImplTest, ShouldSendFrameToken) {
   }
 }
 
-// This test verifies that a frame token is not requested from viz when
-// the root scroll offset changes on Android.
-#if BUILDFLAG(IS_ANDROID)
-TEST_F(RenderFrameMetadataObserverImplTest, ShouldSendFrameTokenOnAndroid) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+// This test verifies that a frame token is not requested from viz when the root
+// scroll offset changes.
+TEST_F(RenderFrameMetadataObserverImplTest,
+       ShouldNotSendFrameTokenOnRootScrollOffsetUpdate) {
   viz::CompositorFrameMetadata compositor_frame_metadata;
   compositor_frame_metadata.send_frame_token_to_embedder = false;
   compositor_frame_metadata.frame_token = 1337;
@@ -160,7 +161,7 @@ TEST_F(RenderFrameMetadataObserverImplTest, ShouldSendFrameTokenOnAndroid) {
   observer_impl().OnRenderFrameSubmission(render_frame_metadata,
                                           &compositor_frame_metadata,
                                           false /* force_send */);
-  // Android does not need a corresponding frame token.
+  // Embedder does not need a corresponding frame token.
   EXPECT_FALSE(compositor_frame_metadata.send_frame_token_to_embedder);
   {
     base::RunLoop run_loop;
@@ -449,7 +450,7 @@ TEST_F(RenderFrameMetadataObserverImplTest,
     run_loop.Run();
   }
 }
-#endif
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 // This test verifies that a request to force send metadata is respected.
 TEST_F(RenderFrameMetadataObserverImplTest, ForceSendMetadata) {

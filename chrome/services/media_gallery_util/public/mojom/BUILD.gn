@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//media/media_options.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
@@ -12,6 +13,12 @@ mojom("mojom") {
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
   ]
+
+  enabled_features = []
+
+  if (is_android && media_use_ffmpeg) {
+    enabled_features += [ "is_android_and_media_use_ffmpeg" ]
+  }
 
   cpp_typemaps = [
     {

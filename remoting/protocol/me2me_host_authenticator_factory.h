@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/host_authentication_config.h"
 
@@ -16,9 +17,11 @@ namespace remoting::protocol {
 
 class Me2MeHostAuthenticatorFactory : public AuthenticatorFactory {
  public:
+  using CheckAccessPermissionCallback =
+      base::RepeatingCallback<bool(std::string_view)>;
+
   Me2MeHostAuthenticatorFactory(
-      const std::string& host_owner,
-      std::vector<std::string> required_client_domain_list,
+      CheckAccessPermissionCallback check_access_permission_callback,
       std::unique_ptr<HostAuthenticationConfig> config);
 
   Me2MeHostAuthenticatorFactory(const Me2MeHostAuthenticatorFactory&) = delete;
@@ -34,8 +37,7 @@ class Me2MeHostAuthenticatorFactory : public AuthenticatorFactory {
 
  private:
   // Used for all host authenticators.
-  std::string canonical_host_owner_email_;
-  std::vector<std::string> required_client_domain_list_;
+  CheckAccessPermissionCallback check_access_permission_callback_;
   std::unique_ptr<HostAuthenticationConfig> config_;
 };
 

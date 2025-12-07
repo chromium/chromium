@@ -151,7 +151,7 @@ class MP4StreamParserTest : public testing::Test {
     CHECK(tracks.get());
     DVLOG(1) << "NewConfigF: got " << tracks->tracks().size() << " tracks";
     for (const auto& track : tracks->tracks()) {
-      const auto& track_id = track->bytestream_track_id();
+      const auto& track_id = track->stream_id();
       if (track->type() == MediaTrack::Type::kAudio) {
         audio_track_id_ = track_id;
         audio_decoder_config_ = tracks->getAudioConfig(track_id);
@@ -280,7 +280,7 @@ class MP4StreamParserTest : public testing::Test {
       // Attempt to incrementally parse each appended chunk to test out the
       // parser's internal management of input queue and pending data bytes.
       EXPECT_TRUE(AppendAllDataThenParseInPieces(
-          buffer->AsSpan().subspan(start, chunk_size),
+          (*buffer).subspan(start, chunk_size),
           (chunk_size > 7) ? (chunk_size - 7) : chunk_size));
       start += chunk_size;
     } while (start < end);
@@ -315,10 +315,9 @@ TEST_F(MP4StreamParserTest, Flush) {
 
   scoped_refptr<DecoderBuffer> buffer =
       ReadTestDataFile("bear-1280x720-av_frag.mp4");
-  EXPECT_TRUE(
-      AppendAllDataThenParseInPieces(buffer->AsSpan().first(65536u), 512));
+  EXPECT_TRUE(AppendAllDataThenParseInPieces((*buffer).first(65536), 512));
   parser_->Flush();
-  EXPECT_TRUE(AppendAllDataThenParseInPieces(buffer->AsSpan(), 512));
+  EXPECT_TRUE(AppendAllDataThenParseInPieces(*buffer, 512));
 }
 
 TEST_F(MP4StreamParserTest, Reinitialization) {
@@ -326,8 +325,8 @@ TEST_F(MP4StreamParserTest, Reinitialization) {
 
   scoped_refptr<DecoderBuffer> buffer =
       ReadTestDataFile("bear-1280x720-av_frag.mp4");
-  EXPECT_TRUE(AppendAllDataThenParseInPieces(buffer->AsSpan(), 512));
-  EXPECT_TRUE(AppendAllDataThenParseInPieces(buffer->AsSpan(), 512));
+  EXPECT_TRUE(AppendAllDataThenParseInPieces(*buffer, 512));
+  EXPECT_TRUE(AppendAllDataThenParseInPieces(*buffer, 512));
 }
 
 TEST_F(MP4StreamParserTest, UnknownDuration_V0_AllBitsSet) {
@@ -446,13 +445,12 @@ TEST_F(MP4StreamParserTest, NoMoovAfterFlush) {
 
   scoped_refptr<DecoderBuffer> buffer =
       ReadTestDataFile("bear-1280x720-av_frag.mp4");
-  EXPECT_TRUE(AppendAllDataThenParseInPieces(buffer->AsSpan(), 512));
+  EXPECT_TRUE(AppendAllDataThenParseInPieces(*buffer, 512));
   parser_->Flush();
 
-  const int kFirstMoofOffset = 1307;
+  static constexpr size_t kFirstMoofOffset = 1307;
   EXPECT_TRUE(AppendAllDataThenParseInPieces(
-      buffer->AsSpan().subspan(kFirstMoofOffset,
-                               buffer->size() - kFirstMoofOffset),
+      (*buffer).subspan(kFirstMoofOffset, buffer->size() - kFirstMoofOffset),
       512));
 }
 
@@ -474,7 +472,7 @@ TEST_F(MP4StreamParserTest, MissingSampleEncryptionInfo) {
   scoped_refptr<DecoderBuffer> buffer =
       ReadTestDataFile("bear-1280x720-a_frag-cenc_missing-saiz-saio.mp4");
   EXPECT_MEDIA_LOG(SampleEncryptionInfoUnavailableLog());
-  EXPECT_FALSE(AppendAllDataThenParseInPieces(buffer->AsSpan(), 512));
+  EXPECT_FALSE(AppendAllDataThenParseInPieces(*buffer, 512));
 }
 
 // Test a file where all video samples start with an Access Unit
@@ -500,8 +498,7 @@ TEST_F(MP4StreamParserTest, HEVC_in_MP4_container) {
   InitializeParserWithInitParametersExpectations(params);
 
   scoped_refptr<DecoderBuffer> buffer = ReadTestDataFile("bear-hevc-frag.mp4");
-  EXPECT_EQ(expect_success,
-            AppendAllDataThenParseInPieces(buffer->AsSpan(), 512));
+  EXPECT_EQ(expect_success, AppendAllDataThenParseInPieces(*buffer, 512));
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
   EXPECT_EQ(VideoCodec::kHEVC, video_decoder_config_.codec());
   EXPECT_EQ(HEVCPROFILE_MAIN, video_decoder_config_.profile());
@@ -580,7 +577,7 @@ TEST_F(MP4StreamParserTest, CencWithEncryptionInfoStoredAsAuxDataInMdat) {
 
   scoped_refptr<DecoderBuffer> buffer =
       ReadTestDataFile("bear-1280x720-v_frag-cenc.mp4");
-  EXPECT_TRUE(AppendAllDataThenParseInPieces(buffer->AsSpan(), 512));
+  EXPECT_TRUE(AppendAllDataThenParseInPieces(*buffer, 512));
 }
 
 TEST_F(MP4StreamParserTest, CencWithSampleEncryptionBox) {
@@ -594,7 +591,7 @@ TEST_F(MP4StreamParserTest, CencWithSampleEncryptionBox) {
 
   scoped_refptr<DecoderBuffer> buffer =
       ReadTestDataFile("bear-640x360-v_frag-cenc-senc.mp4");
-  EXPECT_TRUE(AppendAllDataThenParseInPieces(buffer->AsSpan(), 512));
+  EXPECT_TRUE(AppendAllDataThenParseInPieces(*buffer, 512));
 }
 
 TEST_F(MP4StreamParserTest, NaturalSizeWithoutPASP) {
@@ -607,7 +604,7 @@ TEST_F(MP4StreamParserTest, NaturalSizeWithoutPASP) {
   scoped_refptr<DecoderBuffer> buffer =
       ReadTestDataFile("bear-640x360-non_square_pixel-without_pasp.mp4");
 
-  EXPECT_TRUE(AppendAllDataThenParseInPieces(buffer->AsSpan(), 512));
+  EXPECT_TRUE(AppendAllDataThenParseInPieces(*buffer, 512));
   EXPECT_EQ(gfx::Size(639, 360), video_decoder_config_.natural_size());
 }
 
@@ -621,7 +618,7 @@ TEST_F(MP4StreamParserTest, NaturalSizeWithPASP) {
   scoped_refptr<DecoderBuffer> buffer =
       ReadTestDataFile("bear-640x360-non_square_pixel-with_pasp.mp4");
 
-  EXPECT_TRUE(AppendAllDataThenParseInPieces(buffer->AsSpan(), 512));
+  EXPECT_TRUE(AppendAllDataThenParseInPieces(*buffer, 512));
   EXPECT_EQ(gfx::Size(639, 360), video_decoder_config_.natural_size());
 }
 
@@ -645,8 +642,7 @@ TEST_F(MP4StreamParserTest, DemuxingDVProfile5WithDVMimeTypeSourceBuffer) {
 
   scoped_refptr<DecoderBuffer> buffer =
       ReadTestDataFile("glass-blowing2-dolby-vision-profile-5-frag.mp4");
-  EXPECT_EQ(expect_success,
-            AppendAllDataThenParseInPieces(buffer->AsSpan(), 512));
+  EXPECT_EQ(expect_success, AppendAllDataThenParseInPieces(*buffer, 512));
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
   EXPECT_EQ(VideoCodec::kDolbyVision, video_decoder_config_.codec());
   EXPECT_EQ(DOLBYVISION_PROFILE5, video_decoder_config_.profile());
@@ -673,8 +669,7 @@ TEST_F(MP4StreamParserTest, DemuxingDVProfile5WithHEVCMimeTypeSourceBuffer) {
 
   scoped_refptr<DecoderBuffer> buffer =
       ReadTestDataFile("glass-blowing2-dolby-vision-profile-5-frag.mp4");
-  EXPECT_EQ(expect_success,
-            AppendAllDataThenParseInPieces(buffer->AsSpan(), 512));
+  EXPECT_EQ(expect_success, AppendAllDataThenParseInPieces(*buffer, 512));
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
   EXPECT_EQ(VideoCodec::kDolbyVision, video_decoder_config_.codec());
   EXPECT_EQ(DOLBYVISION_PROFILE5, video_decoder_config_.profile());
@@ -701,8 +696,7 @@ TEST_F(MP4StreamParserTest, DemuxingDVProfile8WithDVMimeTypeSourceBuffer) {
 
   scoped_refptr<DecoderBuffer> buffer =
       ReadTestDataFile("glass-blowing2-dolby-vision-profile-8-1-frag.mp4");
-  EXPECT_EQ(expect_success,
-            AppendAllDataThenParseInPieces(buffer->AsSpan(), 512));
+  EXPECT_EQ(expect_success, AppendAllDataThenParseInPieces(*buffer, 512));
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
   EXPECT_EQ(VideoCodec::kDolbyVision, video_decoder_config_.codec());
   EXPECT_EQ(DOLBYVISION_PROFILE8, video_decoder_config_.profile());
@@ -733,8 +727,7 @@ TEST_F(MP4StreamParserTest, DemuxingDVProfile8WithHEVCMimeTypeSourceBuffer) {
 
   scoped_refptr<DecoderBuffer> buffer =
       ReadTestDataFile("glass-blowing2-dolby-vision-profile-8-1-frag.mp4");
-  EXPECT_EQ(expect_success,
-            AppendAllDataThenParseInPieces(buffer->AsSpan(), 512));
+  EXPECT_EQ(expect_success, AppendAllDataThenParseInPieces(*buffer, 512));
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
   EXPECT_EQ(VideoCodec::kHEVC, video_decoder_config_.codec());
   EXPECT_EQ(HEVCPROFILE_MAIN10, video_decoder_config_.profile());
@@ -762,8 +755,7 @@ TEST_F(MP4StreamParserTest, DemuxingAC3) {
 
   scoped_refptr<DecoderBuffer> buffer =
       ReadTestDataFile("bear-ac3-only-frag.mp4");
-  EXPECT_EQ(expect_success,
-            AppendAllDataThenParseInPieces(buffer->AsSpan(), 512));
+  EXPECT_EQ(expect_success, AppendAllDataThenParseInPieces(*buffer, 512));
 }
 
 TEST_F(MP4StreamParserTest, DemuxingEAC3) {
@@ -787,8 +779,7 @@ TEST_F(MP4StreamParserTest, DemuxingEAC3) {
 
   scoped_refptr<DecoderBuffer> buffer =
       ReadTestDataFile("bear-eac3-only-frag.mp4");
-  EXPECT_EQ(expect_success,
-            AppendAllDataThenParseInPieces(buffer->AsSpan(), 512));
+  EXPECT_EQ(expect_success, AppendAllDataThenParseInPieces(*buffer, 512));
 }
 
 TEST_F(MP4StreamParserTest, DemuxingAc4Ims) {
@@ -812,8 +803,7 @@ TEST_F(MP4StreamParserTest, DemuxingAc4Ims) {
 
   scoped_refptr<DecoderBuffer> buffer =
       ReadTestDataFile("ac4-only-ims-frag.mp4");
-  EXPECT_EQ(kExpectSuccess,
-            AppendAllDataThenParseInPieces(buffer->AsSpan(), 512));
+  EXPECT_EQ(kExpectSuccess, AppendAllDataThenParseInPieces(*buffer, 512));
 }
 
 TEST_F(MP4StreamParserTest, DemuxingAc4AJoc) {
@@ -837,8 +827,7 @@ TEST_F(MP4StreamParserTest, DemuxingAc4AJoc) {
 
   scoped_refptr<DecoderBuffer> buffer =
       ReadTestDataFile("ac4-only-ajoc-frag.mp4");
-  EXPECT_EQ(kExpectSuccess,
-            AppendAllDataThenParseInPieces(buffer->AsSpan(), 512));
+  EXPECT_EQ(kExpectSuccess, AppendAllDataThenParseInPieces(*buffer, 512));
 }
 
 TEST_F(MP4StreamParserTest, DemuxingAc4ChannelBasedCoding) {
@@ -862,8 +851,7 @@ TEST_F(MP4StreamParserTest, DemuxingAc4ChannelBasedCoding) {
 
   scoped_refptr<DecoderBuffer> buffer =
       ReadTestDataFile("ac4-only-channel-based-coding-frag.mp4");
-  EXPECT_EQ(kExpectSuccess,
-            AppendAllDataThenParseInPieces(buffer->AsSpan(), 512));
+  EXPECT_EQ(kExpectSuccess, AppendAllDataThenParseInPieces(*buffer, 512));
 }
 
 TEST_F(MP4StreamParserTest, DemuxingDTS) {
@@ -886,8 +874,7 @@ TEST_F(MP4StreamParserTest, DemuxingDTS) {
   InitializeParserWithInitParametersExpectations(params);
 
   scoped_refptr<DecoderBuffer> buffer = ReadTestDataFile("bear_dtsc.mp4");
-  EXPECT_EQ(expect_success,
-            AppendAllDataThenParseInPieces(buffer->AsSpan(), 512));
+  EXPECT_EQ(expect_success, AppendAllDataThenParseInPieces(*buffer, 512));
 }
 
 TEST_F(MP4StreamParserTest, DemuxingDTSE) {
@@ -910,8 +897,7 @@ TEST_F(MP4StreamParserTest, DemuxingDTSE) {
   InitializeParserWithInitParametersExpectations(params);
 
   scoped_refptr<DecoderBuffer> buffer = ReadTestDataFile("bear_dtse.mp4");
-  EXPECT_EQ(expect_success,
-            AppendAllDataThenParseInPieces(buffer->AsSpan(), 512));
+  EXPECT_EQ(expect_success, AppendAllDataThenParseInPieces(*buffer, 512));
 }
 
 TEST_F(MP4StreamParserTest, DemuxingDTSX) {
@@ -934,8 +920,7 @@ TEST_F(MP4StreamParserTest, DemuxingDTSX) {
   InitializeParserWithInitParametersExpectations(params);
 
   scoped_refptr<DecoderBuffer> buffer = ReadTestDataFile("bear_dtsx.mp4");
-  EXPECT_EQ(expect_success,
-            AppendAllDataThenParseInPieces(buffer->AsSpan(), 512));
+  EXPECT_EQ(expect_success, AppendAllDataThenParseInPieces(*buffer, 512));
 }
 
 TEST_F(MP4StreamParserTest, Flac) {
@@ -947,7 +932,7 @@ TEST_F(MP4StreamParserTest, Flac) {
   InitializeParserWithInitParametersExpectations(params);
 
   scoped_refptr<DecoderBuffer> buffer = ReadTestDataFile("bear-flac_frag.mp4");
-  EXPECT_TRUE(AppendAllDataThenParseInPieces(buffer->AsSpan(), 512));
+  EXPECT_TRUE(AppendAllDataThenParseInPieces(*buffer, 512));
 }
 
 TEST_F(MP4StreamParserTest, Flac192kHz) {
@@ -964,7 +949,7 @@ TEST_F(MP4StreamParserTest, Flac192kHz) {
 
   scoped_refptr<DecoderBuffer> buffer =
       ReadTestDataFile("bear-flac-192kHz_frag.mp4");
-  EXPECT_TRUE(AppendAllDataThenParseInPieces(buffer->AsSpan(), 512));
+  EXPECT_TRUE(AppendAllDataThenParseInPieces(*buffer, 512));
 }
 
 TEST_F(MP4StreamParserTest, VideoColorSpaceInvalidValues) {
@@ -984,7 +969,7 @@ TEST_F(MP4StreamParserTest, Vp9) {
   InitializeParserWithInitParametersExpectations(params);
 
   auto buffer = ReadTestDataFile("vp9-hdr-init-segment.mp4");
-  EXPECT_TRUE(AppendAllDataThenParseInPieces(buffer->AsSpan(), 512));
+  EXPECT_TRUE(AppendAllDataThenParseInPieces(*buffer, 512));
 
   EXPECT_EQ(video_decoder_config_.profile(), VP9PROFILE_PROFILE2);
   EXPECT_EQ(video_decoder_config_.level(), 31u);
@@ -1038,14 +1023,14 @@ TEST_F(MP4StreamParserTest, MediaTrackInfoSourcing) {
   EXPECT_EQ(media_tracks_->tracks().size(), 2u);
   const MediaTrack& video_track = *(media_tracks_->tracks()[0]);
   EXPECT_EQ(video_track.type(), MediaTrack::Type::kVideo);
-  EXPECT_EQ(video_track.bytestream_track_id(), 1);
+  EXPECT_EQ(video_track.stream_id(), 1);
   EXPECT_EQ(video_track.kind().value(), "main");
   EXPECT_EQ(video_track.label().value(), "VideoHandler");
   EXPECT_EQ(video_track.language().value(), "und");
 
   const MediaTrack& audio_track = *(media_tracks_->tracks()[1]);
   EXPECT_EQ(audio_track.type(), MediaTrack::Type::kAudio);
-  EXPECT_EQ(audio_track.bytestream_track_id(), 2);
+  EXPECT_EQ(audio_track.stream_id(), 2);
   EXPECT_EQ(audio_track.kind().value(), "main");
   EXPECT_EQ(audio_track.label().value(), "SoundHandler");
   EXPECT_EQ(audio_track.language().value(), "und");
@@ -1064,28 +1049,28 @@ TEST_F(MP4StreamParserTest, MultiTrackFile) {
 
   const MediaTrack& video_track1 = *(media_tracks_->tracks()[0]);
   EXPECT_EQ(video_track1.type(), MediaTrack::Type::kVideo);
-  EXPECT_EQ(video_track1.bytestream_track_id(), 1);
+  EXPECT_EQ(video_track1.stream_id(), 1);
   EXPECT_EQ(video_track1.kind().value(), "main");
   EXPECT_EQ(video_track1.label().value(), "VideoHandler");
   EXPECT_EQ(video_track1.language().value(), "und");
 
   const MediaTrack& audio_track1 = *(media_tracks_->tracks()[1]);
   EXPECT_EQ(audio_track1.type(), MediaTrack::Type::kAudio);
-  EXPECT_EQ(audio_track1.bytestream_track_id(), 2);
+  EXPECT_EQ(audio_track1.stream_id(), 2);
   EXPECT_EQ(audio_track1.kind().value(), "main");
   EXPECT_EQ(audio_track1.label().value(), "SoundHandler");
   EXPECT_EQ(audio_track1.language().value(), "und");
 
   const MediaTrack& video_track2 = *(media_tracks_->tracks()[2]);
   EXPECT_EQ(video_track2.type(), MediaTrack::Type::kVideo);
-  EXPECT_EQ(video_track2.bytestream_track_id(), 3);
+  EXPECT_EQ(video_track2.stream_id(), 3);
   EXPECT_EQ(video_track2.kind().value(), "");
   EXPECT_EQ(video_track2.label().value(), "VideoHandler");
   EXPECT_EQ(video_track2.language().value(), "und");
 
   const MediaTrack& audio_track2 = *(media_tracks_->tracks()[3]);
   EXPECT_EQ(audio_track2.type(), MediaTrack::Type::kAudio);
-  EXPECT_EQ(audio_track2.bytestream_track_id(), 4);
+  EXPECT_EQ(audio_track2.stream_id(), 4);
   EXPECT_EQ(audio_track2.kind().value(), "");
   EXPECT_EQ(audio_track2.label().value(), "SoundHandler");
   EXPECT_EQ(audio_track2.language().value(), "und");
@@ -1114,10 +1099,11 @@ TEST_P(MP4StreamParserRotationMatrixEvaluatorTest, RotationCalculation) {
   MovieHeader movie_header;
 
   // Identity matrix, with 16.16 and 2.30 fixed points.
-  uint32_t identity_matrix[9] = {1 << 16, 0, 0, 0, 1 << 16, 0, 0, 0, 1 << 30};
+  static constexpr std::array<int32_t, 9u> identity_matrix = {
+      1 << 16, 0, 0, 0, 1 << 16, 0, 0, 0, 1 << 30};
 
-  memcpy(movie_header.display_matrix, identity_matrix, sizeof(identity_matrix));
-  memcpy(track_header.display_matrix, identity_matrix, sizeof(identity_matrix));
+  base::span(movie_header.display_matrix).copy_from(identity_matrix);
+  base::span(track_header.display_matrix).copy_from(identity_matrix);
 
   MatrixRotationTestCaseParam data = GetParam();
 

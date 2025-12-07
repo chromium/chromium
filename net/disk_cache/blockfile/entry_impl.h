@@ -7,9 +7,12 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <string>
 
+#include "base/containers/heap_array.h"
+#include "base/memory/ref_counted.h"
 #include "net/base/net_export.h"
 #include "net/disk_cache/blockfile/disk_format.h"
 #include "net/disk_cache/blockfile/storage_block-inl.h"
@@ -153,7 +156,7 @@ class NET_EXPORT_PRIVATE EntryImpl
 
   // Set the access times for this entry. This method provides support for
   // the upgrade tool.
-  void SetTimes(base::Time last_used, base::Time last_modified);
+  void SetTimes(base::Time last_used);
 
   // Logs a begin event and enables logging for the EntryImpl.  Will also cause
   // an end event to be logged on destruction.  The EntryImpl must have its key
@@ -171,15 +174,14 @@ class NET_EXPORT_PRIVATE EntryImpl
   void Close() override;
   std::string GetKey() const override;
   base::Time GetLastUsed() const override;
-  base::Time GetLastModified() const override;
-  int32_t GetDataSize(int index) const override;
+  int64_t GetDataSize(int index) const override;
   int ReadData(int index,
-               int offset,
+               int64_t offset,
                IOBuffer* buf,
                int buf_len,
                CompletionOnceCallback callback) override;
   int WriteData(int index,
-                int offset,
+                int64_t offset,
                 IOBuffer* buf,
                 int buf_len,
                 CompletionOnceCallback callback,
@@ -288,7 +290,12 @@ class NET_EXPORT_PRIVATE EntryImpl
   // responsible for deleting the block (or file) from the backing store at some
   // point; there is no need to report any storage-size change, only to do the
   // actual cleanup.
-  void GetData(int index, std::unique_ptr<char[]>* buffer, Addr* address);
+  void GetData(int index, base::HeapArray<uint8_t>* buffer, Addr* address);
+
+  // Returns the byte span that can be used to access internal key in
+  // `entry_`. Note that this may be longer than the key and its terminating
+  // nul.
+  base::span<char> InternalKeySpan() const;
 
   // |net_log_| should be early since some field destructors (at least
   // ~SparseControl) can touch it.
@@ -297,12 +304,13 @@ class NET_EXPORT_PRIVATE EntryImpl
   CacheRankingsBlock node_;   // Rankings related information for this entry.
   base::WeakPtr<BackendImpl> backend_;  // Back pointer to the cache.
   base::WeakPtr<InFlightBackendIO> background_queue_;  // In-progress queue.
-  std::unique_ptr<UserBuffer> user_buffers_[kNumStreams];  // Stores user data.
+  std::array<std::unique_ptr<UserBuffer>, kNumStreams>
+      user_buffers_;  // Stores user data.
   // Files to store external user data and key.
-  scoped_refptr<File> files_[kNumStreams + 1];
+  std::array<scoped_refptr<File>, kNumStreams + 1> files_;
   mutable std::string key_;           // Copy of the key.
   // Bytes not reported yet to the backend.
-  int unreported_size_[kNumStreams] = {};
+  std::array<int, kNumStreams> unreported_size_ = {};
   bool doomed_ = false;       // True if this entry was removed from the cache.
   bool read_only_;            // True if not yet writing.
   bool dirty_ = false;        // True if we detected that this is a dirty entry.

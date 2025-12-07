@@ -82,7 +82,7 @@ bool UnifiedMouseWarpController::WarpMouseCursor(ui::MouseEvent* event) {
 
   // TODO(afakhry): Remove implicit grab. crbug.com/773348.
   const display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
+      display::Screen::Get()->GetDisplayNearestWindow(
           const_cast<aura::Window*>(host->window()));
   return WarpMouseCursorInNativeCoords(display.id(), point_in_native,
                                        point_in_unified_host,

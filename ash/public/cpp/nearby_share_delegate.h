@@ -29,11 +29,18 @@ class ASH_PUBLIC_EXPORT NearbyShareDelegate {
   // Used to determine if NearbyShare has been enabled in the settings app.
   virtual bool IsEnabled() = 0;
 
+  // Used to enable/disable Quick Share (formerly Nearby Share) in the settings
+  // app.
+  virtual void SetEnabled(bool enabled) = 0;
+
   // Used by the pod button to determine whether it should be visible.
   virtual bool IsPodButtonVisible() = 0;
 
   // Gets the current high visibility state from the NearbySharingService.
   virtual bool IsHighVisibilityOn() = 0;
+
+  // Gets onboarding state from nearby share settings.
+  virtual bool IsOnboardingComplete() = 0;
 
   // Returns true if EnableHighVisibility() has been called but
   // NearbyShareDelegate has not yet been informed that the request has
@@ -55,6 +62,9 @@ class ASH_PUBLIC_EXPORT NearbyShareDelegate {
   // label under the pod button.
   virtual void ShowNearbyShareSettings() const = 0;
 
+  // Open Nearby Share onboarding page in settings app.
+  virtual void ShowOnboardingPage() const = 0;
+
   // Returns the icon for Nearby Share. Used by the pod button to
   // display the icon, where `on_icon`=false will return the alternative icon
   // for when the feature is off. Caller should check if the icon is_empty
@@ -66,8 +76,11 @@ class ASH_PUBLIC_EXPORT NearbyShareDelegate {
   // feature flag is disabled.
   virtual std::u16string GetPlaceholderFeatureName() const = 0;
 
-  // Return the device's current Visibility.
+  // Returns the device's current Visibility.
   virtual ::nearby_share::mojom::Visibility GetVisibility() const = 0;
+
+  // Sets the device's Visibility.
+  virtual void SetVisibility(::nearby_share::mojom::Visibility visibility) = 0;
 };
 
 }  // namespace ash

@@ -352,7 +352,7 @@ preferable if the entire test is optional.
 ### Consolidating tests from other documents ###
 
 ```eval_rst
-.. js::autofunction fetch_tests_from_window
+.. js:autofunction:: fetch_tests_from_window
 ```
 
 **Note:** By default any markup file referencing `testharness.js` will
@@ -408,7 +408,7 @@ Here's an example that uses `window.open`.
 ### Web Workers ###
 
 ```eval_rst
-.. js:autofunction fetch_tests_from_worker
+.. js:autofunction:: fetch_tests_from_worker
 ```
 
 The `testharness.js` script can be used from within [dedicated workers, shared
@@ -554,8 +554,9 @@ when there's a specific condition that needs to be met for the test to
 proceed. [`Test.step_timeout()`](#Test.step_timeout) is preferred in other cases.
 
 Note that timeouts generally need to be a few seconds long in order to
-produce stable results in all test environments.
+produce stable results in all test environments. However, the use of timeouts should be avoided whenever possible in favor of event-driven approaches. Prefer to wait for an event (e.g., `load`, `DOMContentLoaded`, or custom events) to indicate readiness, or use two `requestAnimationFrame` calls to ensure rendering steps have completed. These alternatives improve reliability and consistency across different environments.
 
+In some cases, such as reftests that compare frames after a specific animation duration (e.g., APNG tests), use of `step_timeout()` may be acceptable. When doing so, consider documenting the reason.
 For [single page tests](#single-page-tests),
 [step_timeout](#step_timeout) is also available as a global function.
 

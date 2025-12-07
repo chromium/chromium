@@ -4,6 +4,8 @@
 
 package org.chromium.ui.events.devices;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.hardware.input.InputManager;
 import android.hardware.input.InputManager.InputDeviceListener;
@@ -17,12 +19,15 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * A singleton that helps detecting changes in input devices through the interface
  * {@link InputDeviceObserver}.
  */
 @JNINamespace("ui")
+@NullMarked
 public class InputDeviceObserver implements InputDeviceListener {
     private static final InputDeviceObserver INSTANCE = new InputDeviceObserver();
     private static final String KEYBOARD_CONNECTION_HISTOGRAM_NAME =
@@ -50,18 +55,18 @@ public class InputDeviceObserver implements InputDeviceListener {
         INSTANCE.detachObserver();
     }
 
-    private InputManager mInputManager;
+    private @Nullable InputManager mInputManager;
     private int mObserversCounter;
 
     // Override InputDeviceListener methods
     @Override
     public void onInputDeviceChanged(int deviceId) {
-        InputDeviceObserverJni.get().inputConfigurationChanged(InputDeviceObserver.this);
+        InputDeviceObserverJni.get().inputConfigurationChanged();
     }
 
     @Override
     public void onInputDeviceRemoved(int deviceId) {
-        InputDeviceObserverJni.get().inputConfigurationChanged(InputDeviceObserver.this);
+        InputDeviceObserverJni.get().inputConfigurationChanged();
         // InputDevice#getDevice() returns null for a removed device, and therefore we will use the
         // |mActiveDeviceMap| to determine the source type of the removed device.
         if (!mActiveDeviceMap.containsKey(deviceId)) return;
@@ -75,7 +80,7 @@ public class InputDeviceObserver implements InputDeviceListener {
 
     @Override
     public void onInputDeviceAdded(int deviceId) {
-        InputDeviceObserverJni.get().inputConfigurationChanged(InputDeviceObserver.this);
+        InputDeviceObserverJni.get().inputConfigurationChanged();
         var device = InputDevice.getDevice(deviceId);
         if (device == null) return;
         if ((device.getSources() & InputDevice.SOURCE_KEYBOARD) == InputDevice.SOURCE_KEYBOARD) {
@@ -99,6 +104,7 @@ public class InputDeviceObserver implements InputDeviceListener {
     private void detachObserver() {
         assert mObserversCounter > 0;
         if (--mObserversCounter == 0) {
+            assumeNonNull(mInputManager);
             mInputManager.unregisterInputDeviceListener(this);
             mInputManager = null;
         }
@@ -106,6 +112,6 @@ public class InputDeviceObserver implements InputDeviceListener {
 
     @NativeMethods
     interface Natives {
-        void inputConfigurationChanged(InputDeviceObserver caller);
+        void inputConfigurationChanged();
     }
 }

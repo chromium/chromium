@@ -17,12 +17,18 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "extensions/buildflags/buildflags.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_IOS)
 #include "components/history_clusters/core/config.h"  // nogncheck
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "extensions/common/extension_features.h"  // nogncheck
 #endif
 
 AutocompleteClassifier::AutocompleteClassifier(
@@ -43,56 +49,80 @@ void AutocompleteClassifier::Shutdown() {
 
 // static
 int AutocompleteClassifier::DefaultOmniboxProviders(bool is_low_memory_device) {
-  int optional_query_tiles =
-      (base::FeatureList::IsEnabled(omnibox::kQueryTilesInZPSOnNTP) &&
-       !is_low_memory_device)
-          ? AutocompleteProvider::TYPE_QUERY_TILE
-          : 0;
-  return optional_query_tiles |
+  return
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-         // Custom search engines cannot be used on mobile.
-         AutocompleteProvider::TYPE_KEYWORD |
-         AutocompleteProvider::TYPE_OPEN_TAB |
-         AutocompleteProvider::TYPE_FEATURED_SEARCH |
+      // Custom search engines cannot be used on mobile.
+      AutocompleteProvider::TYPE_KEYWORD | AutocompleteProvider::TYPE_OPEN_TAB |
+      AutocompleteProvider::TYPE_FEATURED_SEARCH |
+      // Most visited sites for desktop.
+      (omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::Get().enabled
+           ? AutocompleteProvider::TYPE_MOST_VISITED_SITES
+           : 0) |
+      (omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::Get()
+               .show_recently_closed_tabs
+           ? AutocompleteProvider::TYPE_RECENTLY_CLOSED_TABS
+           : 0) |
+      AutocompleteProvider::TYPE_CONTEXTUAL_SEARCH |
 #else
-         AutocompleteProvider::TYPE_CLIPBOARD |
-         AutocompleteProvider::TYPE_MOST_VISITED_SITES |
-         AutocompleteProvider::TYPE_VERBATIM_MATCH |
+      AutocompleteProvider::TYPE_CLIPBOARD |
+      AutocompleteProvider::TYPE_MOST_VISITED_SITES |
+      AutocompleteProvider::TYPE_VERBATIM_MATCH |
 #endif
 #if BUILDFLAG(IS_ANDROID)
-         AutocompleteProvider::TYPE_VOICE_SUGGEST |
+      AutocompleteProvider::TYPE_VOICE_SUGGEST |
+      // Only enabled for hub search.
+      AutocompleteProvider::TYPE_OPEN_TAB |
+      // Only enabled for hub search.
+      (base::FeatureList::IsEnabled(omnibox::kAndroidHubSearchTabGroups)
+           ? AutocompleteProvider::TYPE_TAB_GROUP
+           : 0) |
+      // Keyword search for Android.
+      (base::FeatureList::IsEnabled(omnibox::kOmniboxSiteSearch)
+           ? AutocompleteProvider::TYPE_KEYWORD
+           : 0) |
 #endif
 #if !BUILDFLAG(IS_IOS)
-         (history_clusters::GetConfig().is_journeys_enabled_no_locale_check &&
-                  history_clusters::GetConfig().omnibox_history_cluster_provider
-              ? AutocompleteProvider::TYPE_HISTORY_CLUSTER_PROVIDER
-              : 0) |
+      (history_clusters::GetConfig().is_journeys_enabled_no_locale_check &&
+               history_clusters::GetConfig().omnibox_history_cluster_provider
+           ? AutocompleteProvider::TYPE_HISTORY_CLUSTER_PROVIDER
+           : 0) |
 #endif
-         AutocompleteProvider::TYPE_ZERO_SUGGEST |
-         AutocompleteProvider::TYPE_ZERO_SUGGEST_LOCAL_HISTORY |
-         (base::FeatureList::IsEnabled(omnibox::kDocumentProvider)
-              ? AutocompleteProvider::TYPE_DOCUMENT
-              : 0) |
-         (OmniboxFieldTrial::IsOnDeviceHeadSuggestEnabledForAnyMode()
-              ? AutocompleteProvider::TYPE_ON_DEVICE_HEAD
-              : 0) |
-         AutocompleteProvider::TYPE_BOOKMARK |
-         AutocompleteProvider::TYPE_BUILTIN |
-         AutocompleteProvider::TYPE_HISTORY_QUICK |
-         AutocompleteProvider::TYPE_HISTORY_URL |
-         AutocompleteProvider::TYPE_SEARCH |
-         AutocompleteProvider::TYPE_SHORTCUTS |
-         AutocompleteProvider::TYPE_HISTORY_FUZZY |
-         AutocompleteProvider::TYPE_CALCULATOR |
+      AutocompleteProvider::TYPE_ZERO_SUGGEST |
+      AutocompleteProvider::TYPE_ZERO_SUGGEST_LOCAL_HISTORY |
+      (base::FeatureList::IsEnabled(omnibox::kDocumentProvider)
+           ? AutocompleteProvider::TYPE_DOCUMENT
+           : 0) |
+      (OmniboxFieldTrial::IsOnDeviceHeadSuggestEnabledForAnyMode()
+           ? AutocompleteProvider::TYPE_ON_DEVICE_HEAD
+           : 0) |
+      AutocompleteProvider::TYPE_BOOKMARK | AutocompleteProvider::TYPE_BUILTIN |
+      AutocompleteProvider::TYPE_HISTORY_QUICK |
+      AutocompleteProvider::TYPE_HISTORY_URL |
+      AutocompleteProvider::TYPE_SEARCH | AutocompleteProvider::TYPE_SHORTCUTS |
+      AutocompleteProvider::TYPE_HISTORY_FUZZY |
+      AutocompleteProvider::TYPE_CALCULATOR |
+      AutocompleteProvider::TYPE_ENTERPRISE_SEARCH_AGGREGATOR |
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-         (history_embeddings::kOmniboxScoped.Get() ||
-                  history_embeddings::kOmniboxUnscoped.Get()
-              ? AutocompleteProvider::TYPE_HISTORY_EMBEDDINGS
-              : 0)
-#else
-         0
+      (history_embeddings::GetFeatureParameters().omnibox_scoped ||
+               history_embeddings::GetFeatureParameters().omnibox_unscoped
+           ? AutocompleteProvider::TYPE_HISTORY_EMBEDDINGS
+           : 0) |
 #endif
-      ;
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+      // The `chrome.omnibox` extension API uses `TYPE_KEYWORD`, including on
+      // desktop Android.
+      AutocompleteProvider::TYPE_KEYWORD |
+      // `UnscopedExtensionProvider` should only be included when extensions are
+      // enabled and the `ExperimentalOmniboxLabs` feature is enabled.
+      (base::FeatureList::IsEnabled(
+           extensions_features::kExperimentalOmniboxLabs)
+           ? AutocompleteProvider::TYPE_UNSCOPED_EXTENSION
+           : 0)
+#else
+      0
+#endif
+          ;
 }
 
 void AutocompleteClassifier::Classify(

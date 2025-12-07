@@ -61,7 +61,6 @@ public class ResourceButtonDataUnitTest {
                         R.string.button_new_tab,
                         R.string.button_new_incognito_tab,
                         R.drawable.ic_add);
-        assertEquals(buttonData, buttonData);
         assertEquals(
                 buttonData,
                 new ResourceButtonData(

@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -19,8 +20,8 @@
 #include "base/json/string_escape.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
@@ -39,6 +40,7 @@
 #include "content/shell/browser/shell_browser_main_parts.h"
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "content/shell/browser/shell_devtools_manager_delegate.h"
+#include "ipc/constants.mojom.h"
 #include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -46,7 +48,7 @@
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
 #include "base/command_line.h"
 #include "content/public/browser/devtools_frontend_host.h"
 #include "content/shell/common/shell_switches.h"
@@ -143,9 +145,7 @@ class ShellDevToolsBindings::NetworkResourceLoader
     bindings_->loaders_.erase(bindings_->loaders_.find(this));
   }
 
-  void OnRetry(base::OnceClosure start_retry) override {
-    NOTREACHED_IN_MIGRATION();
-  }
+  void OnRetry(base::OnceClosure start_retry) override { NOTREACHED(); }
 
   const int stream_id_;
   const int request_id_;
@@ -158,7 +158,7 @@ class ShellDevToolsBindings::NetworkResourceLoader
 // the constant
 // kMaxMessageChunkSize in chrome/browser/devtools/devtools_ui_bindings.cc.
 constexpr size_t kShellMaxMessageChunkSize =
-    IPC::Channel::kMaximumMessageSize / 4;
+    IPC::mojom::kChannelMaximumMessageSize / 4;
 
 void ShellDevToolsBindings::InspectElementAt(int x, int y) {
   if (agent_host_) {
@@ -193,7 +193,7 @@ ShellDevToolsBindings::~ShellDevToolsBindings() {
 
 void ShellDevToolsBindings::ReadyToCommitNavigation(
     NavigationHandle* navigation_handle) {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
   content::RenderFrameHost* frame = navigation_handle->GetRenderFrameHost();
   if (navigation_handle->IsInPrimaryMainFrame()) {
     frontend_host_ = DevToolsFrontendHost::Create(
@@ -220,8 +220,7 @@ void ShellDevToolsBindings::AttachInternal() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   const bool create_for_tab = false;
 #else
-  const bool create_for_tab = base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kContentShellDevToolsTabTarget);
+  const bool create_for_tab = true;
 #endif
   agent_host_ = create_for_tab
                     ? DevToolsAgentHost::GetOrCreateForTab(inspected_contents_)
@@ -265,8 +264,8 @@ void ShellDevToolsBindings::HandleMessageFromDevToolsFrontend(
     const std::string* protocol_message = params[0].GetIfString();
     if (!agent_host_ || !protocol_message)
       return;
-    agent_host_->DispatchProtocolMessage(
-        this, base::as_bytes(base::make_span(*protocol_message)));
+    agent_host_->DispatchProtocolMessage(this,
+                                         base::as_byte_span(*protocol_message));
   } else if (*method == "loadCompleted") {
     CallClientFunction("DevToolsAPI", "setUseSoftMenu", base::Value(true));
   } else if (*method == "loadNetworkResource" && params.size() == 3) {

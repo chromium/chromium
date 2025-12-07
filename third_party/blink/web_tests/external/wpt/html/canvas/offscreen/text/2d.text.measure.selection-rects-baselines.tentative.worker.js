@@ -31,7 +31,9 @@ t.step(function() {
     'UNAVAILABLE',
     '🏁🎶🏁',
     '）（あ）（',
-    '-abcd_'
+    '-abcd_',
+    'איפה הספרייה?',
+    'bidiמתמטיקה'
   ]
 
   for (const text of kTexts) {

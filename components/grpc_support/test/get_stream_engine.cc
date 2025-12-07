@@ -75,7 +75,8 @@ class BidirectionalStreamTestURLRequestContextGetter
       UpdateHostResolverRules();
 
       // Need to enable QUIC for the test server.
-      net::AlternativeService alternative_service(net::kProtoQUIC, "", 443);
+      net::AlternativeService alternative_service(net::NextProto::kProtoQUIC,
+                                                  "", 443);
       url::SchemeHostPort quic_hint_server(
           "https", net::QuicSimpleTestServer::GetHost(), 443);
       request_context_->http_server_properties()->SetQuicAlternativeService(
@@ -114,7 +115,7 @@ class BidirectionalStreamTestURLRequestContextGetter
                            "MAP test.example.com 127.0.0.1:%d",
                            test_server_port_));
   }
-  ~BidirectionalStreamTestURLRequestContextGetter() override {}
+  ~BidirectionalStreamTestURLRequestContextGetter() override = default;
 
   int test_server_port_;
   std::unique_ptr<net::URLRequestContext> request_context_;

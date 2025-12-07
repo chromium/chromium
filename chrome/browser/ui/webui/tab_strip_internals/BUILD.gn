@@ -1,0 +1,88 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(enable_session_service)
+
+source_set("tab_strip_internals") {
+  sources = [
+    "tab_strip_internals_handler.h",
+    "tab_strip_internals_observer.h",
+    "tab_strip_internals_ui.h",
+    "tab_strip_internals_util.h",
+  ]
+
+  deps = [
+    ":mojo_bindings",
+    "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui/tabs:tab_strip_model_observer",
+    "//chrome/common",
+    "//components/sessions",
+    "//content/public/browser",
+    "//ui/webui",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "tab_strip_internals_handler.cc",
+    "tab_strip_internals_observer.cc",
+    "tab_strip_internals_ui.cc",
+    "tab_strip_internals_util.cc",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    ":tab_strip_internals",
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/tab_strip_internals:resources",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/tabs/alert:tab_alert",
+    "//components/sessions:session_id",
+    "//components/tabs:public",
+    "//content/public/browser",
+    "//ui/webui",
+  ]
+}
+
+mojom("mojo_bindings") {
+  sources = [ "tab_strip_internals.mojom" ]
+
+  public_deps = [ "//mojo/public/mojom/base" ]
+
+  deps = [
+    "//chrome/browser/ui/webui/tabs:mojo_bindings",
+    "//components/tab_groups/public/mojom:mojo_bindings",
+    "//url/mojom:url_mojom_gurl",
+  ]
+  webui_module_path = "/"
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "tab_strip_internals_observer_browsertest.cc" ]
+
+  deps = [
+    ":tab_strip_internals",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:tab_group",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/test:test_support_ui",
+    "//components/tabs:public",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//url",
+  ]
+}

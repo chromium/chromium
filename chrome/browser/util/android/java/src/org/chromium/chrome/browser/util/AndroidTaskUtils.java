@@ -13,18 +13,23 @@ import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.Pair;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
+import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /** Deals with Document-related API calls. */
+@NullMarked
 public class AndroidTaskUtils {
     public static final String TAG = "DocumentUtilities";
 
@@ -34,14 +39,19 @@ public class AndroidTaskUtils {
     // that won't cause Chrome to blow up in degenerate cases.
     private static final int MAX_NUM_TASKS = 100;
 
+    @Nullable private static AppTask sAppTaskForTesting;
+    @Nullable private static Map<AppTask, RecentTaskInfo> sTaskInfosForTesting;
+
     /**
-     * Finishes tasks other than the one with the given ID that were started with the given data
-     * in the Intent, removing those tasks from Recents and leaving a unique task with the data.
+     * Finishes tasks other than the one with the given ID that were started with the given data in
+     * the Intent, removing those tasks from Recents and leaving a unique task with the data.
+     *
      * @param data Passed in as part of the Intent's data when starting the Activity.
      * @param canonicalTaskId ID of the task will be the only one left with the ID.
      * @return Intent of one of the tasks that were finished.
      */
-    public static Intent finishOtherTasksWithData(Uri data, int canonicalTaskId) {
+    public static @Nullable Intent finishOtherTasksWithData(
+            @Nullable Uri data, int canonicalTaskId) {
         if (data == null) return null;
 
         String dataString = data.toString();
@@ -66,7 +76,8 @@ public class AndroidTaskUtils {
         return finishAndRemoveTasks(tasksToFinish);
     }
 
-    private static Intent finishAndRemoveTasks(List<ActivityManager.AppTask> tasksToFinish) {
+    private static @Nullable Intent finishAndRemoveTasks(
+            List<ActivityManager.AppTask> tasksToFinish) {
         Intent removedIntent = null;
         for (ActivityManager.AppTask task : tasksToFinish) {
             Log.d(TAG, "Removing task with duplicated data: " + task);
@@ -78,10 +89,15 @@ public class AndroidTaskUtils {
 
     /**
      * Returns the RecentTaskInfo for the task, if the ActivityManager succeeds in finding the task.
+     *
      * @param task AppTask containing information about a task.
      * @return The RecentTaskInfo associated with the task, or null if it couldn't be found.
      */
-    public static RecentTaskInfo getTaskInfoFromTask(AppTask task) {
+    public static @Nullable RecentTaskInfo getTaskInfoFromTask(AppTask task) {
+        if (sTaskInfosForTesting != null) {
+            return sTaskInfosForTesting.get(task);
+        }
+
         RecentTaskInfo info = null;
         try {
             info = task.getTaskInfo();
@@ -91,12 +107,18 @@ public class AndroidTaskUtils {
         return info;
     }
 
+    public static void setTaskInfosForTesting(Map<AppTask, RecentTaskInfo> map) {
+        sTaskInfosForTesting = map;
+        ResettersForTesting.register(() -> sTaskInfosForTesting = null);
+    }
+
     /**
      * Returns the baseIntent of the RecentTaskInfo associated with the given task.
+     *
      * @param task Task to get the baseIntent for.
      * @return The baseIntent, or null if it couldn't be retrieved.
      */
-    public static Intent getBaseIntentFromTask(AppTask task) {
+    public static @Nullable Intent getBaseIntentFromTask(AppTask task) {
         RecentTaskInfo info = getTaskInfoFromTask(task);
         return info == null ? null : info.baseIntent;
     }
@@ -107,7 +129,7 @@ public class AndroidTaskUtils {
      * @return Fully qualified component name name or null if we were not able to
      * determine it.
      */
-    public static String getTaskComponentName(AppTask task) {
+    public static @Nullable String getTaskComponentName(AppTask task) {
         RecentTaskInfo info = getTaskInfoFromTask(task);
         if (info == null) return null;
 
@@ -182,5 +204,34 @@ public class AndroidTaskUtils {
             }
         }
         return matchingInfos;
+    }
+
+    /**
+     * Get the {@link AppTask} for a given taskId.
+     *
+     * @param context The activity context.
+     * @param taskId The id of the task whose AppTask will be returned.
+     * @return The {@link AppTask} for a given taskId if found, {@code null} otherwise.
+     */
+    public static @Nullable AppTask getAppTaskFromId(Context context, int taskId) {
+        if (sAppTaskForTesting != null) {
+            return sAppTaskForTesting;
+        }
+
+        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (var appTask : am.getAppTasks()) {
+            var taskInfo = appTask.getTaskInfo();
+            if (taskInfo == null) continue;
+            int taskInfoId = taskInfo.taskId;
+            if (taskInfoId == taskId) {
+                return appTask;
+            }
+        }
+        return null;
+    }
+
+    public static void setAppTaskForTesting(@Nullable AppTask task) {
+        sAppTaskForTesting = task;
+        ResettersForTesting.register(() -> sAppTaskForTesting = null);
     }
 }

@@ -41,7 +41,7 @@ namespace base {
 class SequencedTaskRunner;
 }
 
-namespace WTF {
+namespace blink {
 
 class WTF_EXPORT Partitions {
  public:
@@ -116,6 +116,6 @@ class WTF_EXPORT Partitions {
   static partition_alloc::PartitionRoot* buffer_root_;
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_ALLOCATOR_PARTITIONS_H_

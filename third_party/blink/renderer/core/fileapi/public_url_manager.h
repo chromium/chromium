@@ -27,7 +27,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FILEAPI_PUBLIC_URL_MANAGER_H_
 
 #include "base/types/pass_key.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink.h"
@@ -72,7 +71,9 @@ class CORE_EXPORT PublicURLManager final
   // BlobURLToken. This token can be used by the browser process to securely
   // lookup what blob a URL used to refer to, even after the URL is revoked.
   // If the URL fails to resolve the request will simply be disconnected.
-  void Resolve(const KURL&, mojo::PendingReceiver<mojom::blink::BlobURLToken>);
+  void ResolveAsBlobURLToken(const KURL&,
+                             mojo::PendingReceiver<mojom::blink::BlobURLToken>,
+                             bool is_top_level_navigation);
 
   // ExecutionContextLifecycleObserver interface.
   void ContextDestroyed() override;

@@ -61,11 +61,11 @@ void InterpolableStyleColor::Composite(const BaseInterpolableColor& other,
 }
 
 void InterpolableStyleColor::Scale(double scale) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void InterpolableStyleColor::Add(const InterpolableValue& other) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 Color InterpolableStyleColor::Resolve(

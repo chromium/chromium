@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/table/table_view_observer.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -32,15 +33,13 @@ class ChooserDialogView : public views::DialogDelegateView,
   ~ChooserDialogView() override;
 
   // views::DialogDelegate:
-  bool IsDialogButtonEnabled(ui::DialogButton button) const override;
+  bool IsDialogButtonEnabled(ui::mojom::DialogButton button) const override;
   views::View* GetInitiallyFocusedView() override;
 
   // views::TableViewObserver:
   void OnSelectionChanged() override;
 
-  DeviceChooserContentView* device_chooser_content_view_for_test() const {
-    return device_chooser_content_view_;
-  }
+  DeviceChooserContentView* device_chooser_content_view_for_test() const;
 
  private:
   raw_ptr<DeviceChooserContentView> device_chooser_content_view_;

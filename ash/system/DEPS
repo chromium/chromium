@@ -1,12 +1,16 @@
 include_rules = [
   "+chromeos/ash/components/phonehub",
+  "+chromeos/ash/components/policy",
   "+chromeos/ash/components/settings",
   "+components/account_id",
   "+components/device_event_log/device_event_log.h",
   "+components/global_media_controls",
   "+components/live_caption",
+  "+components/webapps/isolated_web_apps",
   "+components/prefs",
+  "+components/signin/public/identity_manager/identity_manager.h",
   "+grit/ui_chromeos_resources.h",
+  "+google_apis/common",
 ]
 
 specific_include_rules = {

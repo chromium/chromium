@@ -18,8 +18,13 @@
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/engine/sync_engine.h"
+#include "components/sync/protocol/encryption.pb.h"
 #include "components/sync/service/data_type_encryption_handler.h"
 #include "components/trusted_vault/trusted_vault_client.h"
+
+namespace os_crypt_async {
+class Encryptor;
+}  // namespace os_crypt_async
 
 namespace syncer {
 
@@ -43,7 +48,7 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
     virtual std::string GetEncryptionBootstrapToken() const = 0;
   };
 
-  // |delegate| and |trusted_vault_client| must not be null and must outlive
+  // `delegate` and `trusted_vault_client` must not be null and must outlive
   // this object.
   SyncServiceCrypto(Delegate* delegate,
                     trusted_vault::TrustedVaultClient* trusted_vault_client);
@@ -62,9 +67,18 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   bool IsTrustedVaultKeyRequired() const;
   bool IsTrustedVaultRecoverabilityDegraded() const;
   bool IsEncryptEverythingEnabled() const;
+
+  // The following methods may only be called if the sync engine is initialized.
   void SetEncryptionPassphrase(const std::string& passphrase);
   bool SetDecryptionPassphrase(const std::string& passphrase);
+
+  // Asynchronously decrypts pending keys using `nigori`. `nigori` must not be
+  // null. It's safe to call this method with wrong `nigori` and, unlike
+  // SetDecryptionPassphrase(), when passphrase isn't required.
   void SetExplicitPassphraseDecryptionNigoriKey(std::unique_ptr<Nigori> nigori);
+  // Returns stored decryption key, corresponding to the last successfully
+  // decrypted explicit passphrase Nigori. Returns nullptr if there is no such
+  // stored decryption key.
   std::unique_ptr<Nigori> GetExplicitPassphraseDecryptionNigoriKey() const;
 
   // Returns whether it's already possible to determine whether trusted vault
@@ -75,10 +89,14 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   // Returns the actual passphrase type being used for encryption.
   std::optional<PassphraseType> GetPassphraseType() const;
 
-  // Used to provide the engine when it is initialized, |engine| must not be
-  // null and must outlive the |this| or the Reset() call. Should not be called
+  // Used to provide the engine when it is initialized, `engine` must not be
+  // null and must outlive the `this` or the Reset() call. Should not be called
   // second time, unless Reset() is called first.
   void SetSyncEngine(const CoreAccountInfo& account_info, SyncEngine* engine);
+
+  // Must be called once an encryptor is available, before any method that
+  // encrypts/decrypts is called. May be called with nullptr.
+  void SetEncryptor(std::unique_ptr<os_crypt_async::Encryptor> encryptor);
 
   // Creates a proxy observer object that will post calls to this thread.
   std::unique_ptr<SyncEncryptionHandler::Observer> GetEncryptionObserverProxy();
@@ -102,7 +120,9 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   DataTypeSet GetAllEncryptedDataTypes() const override;
 
   // TrustedVaultClient::Observer implementation.
-  void OnTrustedVaultKeysChanged() override;
+  void OnTrustedVaultKeysChanged(
+      std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA> trigger)
+      override;
   void OnTrustedVaultRecoverabilityChanged() override;
 
  private:
@@ -126,21 +146,33 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   };
 
   // Reads trusted vault keys from the client and feeds them to the sync engine.
-  void FetchTrustedVaultKeys(bool is_second_fetch_attempt);
+  void FetchTrustedVaultKeys(
+      bool is_second_fetch_attempt,
+      std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA>
+          trigger);
 
   // Called at various stages of asynchronously fetching and processing trusted
-  // vault encryption keys. |is_second_fetch_attempt| is useful for the case
+  // vault encryption keys. `is_second_fetch_attempt` is useful for the case
   // where multiple passes (up to two) are needed to fetch the keys from the
   // client.
   void TrustedVaultKeysFetchedFromClient(
       bool is_second_fetch_attempt,
+      std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA> trigger,
       const std::vector<std::vector<uint8_t>>& keys);
-  void TrustedVaultKeysAdded(bool is_second_fetch_attempt);
-  void TrustedVaultKeysMarkedAsStale(bool is_second_fetch_attempt, bool result);
-  void FetchTrustedVaultKeysCompletedButInsufficient();
+  void TrustedVaultKeysAdded(
+      bool is_second_fetch_attempt,
+      std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA>
+          trigger);
+  void TrustedVaultKeysMarkedAsStale(
+      bool is_second_fetch_attempt,
+      std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA> trigger,
+      bool result);
+  void FetchTrustedVaultKeysCompletedButInsufficient(
+      std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA>
+          trigger);
 
   // Updates required user action and notifies observers via
-  // |notify_required_user_action_changed_|.
+  // `notify_required_user_action_changed_`.
   void UpdateRequiredUserActionAndNotify(
       RequiredUserAction new_required_user_action);
 
@@ -151,9 +183,9 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   // TrustedVaultClient::GetIsRecoverabilityDegraded().
   void GetIsRecoverabilityDegradedCompleted(bool is_recoverability_degraded);
 
-  // Attempts decryption of |cached_pending_keys| with a |nigori| and, if
+  // Attempts decryption of `cached_pending_keys` with a `nigori` and, if
   // successful, resolves the kPassphraseRequired state and populates the
-  // |nigori| to engine. Should never be called when there is no cached pending
+  // `nigori` to engine. Should never be called when there is no cached pending
   // keys. Returns true if successful. Doesn't update bootstrap token.
   bool SetDecryptionKeyWithoutUpdatingBootstrapToken(
       std::unique_ptr<Nigori> nigori);
@@ -163,10 +195,22 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   // successful attempt.
   void MaybeSetDecryptionKeyFromBootstrapToken();
 
+  // Reads Nigori from bootstrap token. Returns nullptr if bootstrap token empty
+  // or corrupted.
+  std::unique_ptr<Nigori> ReadNigoriFromBootstrapToken(
+      const std::string& bootstrap_token) const;
+
+  // Serializes `nigori` as bootstrap token. Returns empty string in case of
+  // crypto/serialization failures.
+  std::string SerializeNigoriAsBootstrapToken(const Nigori& nigori);
+
   const raw_ptr<Delegate> delegate_;
 
   // Never null and guaranteed to outlive us.
   const raw_ptr<trusted_vault::TrustedVaultClient> trusted_vault_client_;
+
+  // May be null if OSCryptAsync is not used.
+  std::unique_ptr<os_crypt_async::Encryptor> encryptor_;
 
   // All the mutable state is wrapped in a struct so that it can be easily
   // reset to its default values.

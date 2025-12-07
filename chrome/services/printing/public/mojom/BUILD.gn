@@ -58,7 +58,7 @@ mojom("mojom") {
           cpp = "::printing::PdfRenderSettings"
         },
         {
-          mojom = "printing.mojom.PdfRenderSettings::Mode"
+          mojom = "printing.mojom.PdfRenderSettings.Mode"
           cpp = "::printing::PdfRenderSettings::Mode"
         },
       ]
@@ -69,7 +69,7 @@ mojom("mojom") {
     {
       types = [
         {
-          mojom = "printing.mojom.PwgRasterSettings::TransformType"
+          mojom = "printing.mojom.PwgRasterSettings.TransformType"
           cpp = "::printing::PwgRasterTransformType"
         },
         {

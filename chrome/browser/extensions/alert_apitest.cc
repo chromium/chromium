@@ -19,6 +19,7 @@
 #include "components/javascript_dialogs/app_modal_dialog_queue.h"
 #include "components/javascript_dialogs/app_modal_dialog_view.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
@@ -79,11 +80,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, AlertBasic) {
   ASSERT_TRUE(RunExtensionTest("alert")) << message_;
 
   const Extension* extension = GetSingleLoadedExtension();
-  ExtensionHost* host = ProcessManager::Get(browser()->profile())
-                            ->GetBackgroundHostForExtension(extension->id());
+  ExtensionHost* host =
+      ProcessManager::Get(profile())->GetBackgroundHostForExtension(
+          extension->id());
   ASSERT_TRUE(host);
   host->host_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      u"alert('This should not crash.');", base::NullCallback());
+      u"alert('This should not crash.');", base::NullCallback(),
+      content::ISOLATED_WORLD_ID_GLOBAL);
 
   ASSERT_NO_FATAL_FAILURE(CloseDialog());
 }
@@ -92,8 +95,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, AlertQueue) {
   ASSERT_TRUE(RunExtensionTest("alert")) << message_;
 
   const Extension* extension = GetSingleLoadedExtension();
-  ExtensionHost* host = ProcessManager::Get(browser()->profile())
-                            ->GetBackgroundHostForExtension(extension->id());
+  ExtensionHost* host =
+      ProcessManager::Get(profile())->GetBackgroundHostForExtension(
+          extension->id());
   ASSERT_TRUE(host);
 
   // Creates several dialogs at the same time.
@@ -104,7 +108,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, AlertQueue) {
     host->host_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         u"alert('" + base::ASCIIToUTF16(dialog_name) + u"');",
         base::BindOnce(&CheckAlertResult, dialog_name,
-                       base::Unretained(&call_count)));
+                       base::Unretained(&call_count)),
+        content::ISOLATED_WORLD_ID_GLOBAL);
   }
 
   // Closes these dialogs.
@@ -126,8 +131,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ConfirmQueue) {
   ASSERT_TRUE(RunExtensionTest("alert")) << message_;
 
   const Extension* extension = GetSingleLoadedExtension();
-  ExtensionHost* host = ProcessManager::Get(browser()->profile())
-                            ->GetBackgroundHostForExtension(extension->id());
+  ExtensionHost* host =
+      ProcessManager::Get(profile())->GetBackgroundHostForExtension(
+          extension->id());
   ASSERT_TRUE(host);
 
   // Creates several dialogs at the same time.
@@ -140,7 +146,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ConfirmQueue) {
     host->host_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         u"confirm('" + base::ASCIIToUTF16(dialog_name) + u"');",
         base::BindOnce(&CheckConfirmResult, dialog_name, true,
-                       base::Unretained(&call_count)));
+                       base::Unretained(&call_count)),
+        content::ISOLATED_WORLD_ID_GLOBAL);
   }
   for (size_t i = 0; i != num_cancelled_dialogs; ++i) {
     const std::string dialog_name =
@@ -148,7 +155,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ConfirmQueue) {
     host->host_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         u"confirm('" + base::ASCIIToUTF16(dialog_name) + u"');",
         base::BindOnce(&CheckConfirmResult, dialog_name, false,
-                       base::Unretained(&call_count)));
+                       base::Unretained(&call_count)),
+        content::ISOLATED_WORLD_ID_GLOBAL);
   }
 
   // Closes these dialogs.
@@ -176,10 +184,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
   const Extension* extension = LoadExtension(extension_path);
   ASSERT_TRUE(extension);
   const GURL extension_url = extension->GetResourceURL("popup.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_url));
-
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* tab = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(tab, extension_url));
 
   // Verify the title that would be used for a dialog spawned by extension.
   javascript_dialogs::AppModalDialogManager* dialog_manager =

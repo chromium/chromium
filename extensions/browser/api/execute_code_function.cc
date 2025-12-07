@@ -7,15 +7,17 @@
 
 #include "extensions/browser/api/execute_code_function.h"
 
+#include <algorithm>
 #include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
+#include "base/strings/escape.h"
+#include "base/strings/string_util.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/load_and_localize_file.h"
+#include "extensions/browser/safe_browsing_delegate.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_resource.h"
@@ -90,13 +92,13 @@ bool ExecuteCodeFunction::Execute(const std::string& code_string,
       details_->all_frames.value_or(false) ? ScriptExecutor::INCLUDE_SUB_FRAMES
                                            : ScriptExecutor::SPECIFIED_FRAMES;
 
-  root_frame_id_ =
-      details_->frame_id.value_or(ExtensionApiFrameIdMap::kTopFrameId);
+  root_frame_id_ = details_->frame_id.value_or(GetRootFrameId());
 
-  ScriptExecutor::MatchAboutBlank match_about_blank =
+  mojom::MatchOriginAsFallbackBehavior match_about_blank =
       details_->match_about_blank.value_or(false)
-          ? ScriptExecutor::MATCH_ABOUT_BLANK
-          : ScriptExecutor::DONT_MATCH_ABOUT_BLANK;
+          ? mojom::MatchOriginAsFallbackBehavior::
+                kMatchForAboutSchemeAndClimbTree
+          : mojom::MatchOriginAsFallbackBehavior::kNever;
 
   mojom::RunLocation run_at = ConvertRunLocation(details_->run_at);
 
@@ -176,8 +178,10 @@ ExtensionFunction::ResponseAction ExecuteCodeFunction::Run() {
 
   if (details_->code) {
     if (!IsWebView() && extension()) {
-      ExtensionsBrowserClient::Get()->NotifyExtensionApiTabExecuteScript(
-          browser_context(), extension_id(), *details_->code);
+      ExtensionsBrowserClient::Get()
+          ->GetSafeBrowsingDelegate()
+          ->NotifyExtensionApiTabExecuteScript(browser_context(),
+                                               extension_id(), *details_->code);
     }
 
     if (!Execute(*details_->code, &error))
@@ -200,9 +204,20 @@ bool ExecuteCodeFunction::LoadFile(const std::string& file,
     *error = kNoCodeOrFileToExecuteError;
     return false;
   }
-  script_url_ = extension()->GetResourceURL(file);
 
-  bool might_require_localization = ShouldInsertCSS() || ShouldRemoveCSS();
+  bool is_css_injection = ShouldInsertCSS() || ShouldRemoveCSS();
+
+  if (!script_parsing::ValidateMimeTypeFromFileExtension(
+          resource.relative_path(),
+          is_css_injection ? script_parsing::ContentScriptType::kCss
+                           : script_parsing::ContentScriptType::kJs,
+          error)) {
+    return false;
+  }
+
+  script_url_ = extension()->GetResourceURL(base::EscapePath(file));
+
+  bool might_require_localization = is_css_injection;
 
   std::string relative_path = resource.relative_path().AsUTF8Unsafe();
   LoadAndLocalizeResources(
@@ -218,10 +233,10 @@ void ExecuteCodeFunction::OnExecuteCodeFinished(
     std::vector<ScriptExecutor::FrameResult> results) {
   DCHECK(!results.empty());
 
-  auto root_frame_result = base::ranges::find(
+  auto root_frame_result = std::ranges::find(
       results, root_frame_id_, &ScriptExecutor::FrameResult::frame_id);
 
-  CHECK(root_frame_result != results.end(), base::NotFatalUntil::M130);
+  CHECK(root_frame_result != results.end());
 
   // We just error out if we never injected in the root frame.
   // TODO(devlin): That's a bit odd, because other injections may have

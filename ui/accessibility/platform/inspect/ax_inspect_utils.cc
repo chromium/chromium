@@ -33,8 +33,7 @@ std::string AXFormatValue(const base::Value& value) {
     // Special handling for constants which are exposed as is, i.e. with no
     // quotation marks.
     std::string const_prefix = kConstValuePrefix;
-    if (base::StartsWith(value.GetString(), const_prefix,
-                         base::CompareCase::SENSITIVE)) {
+    if (value.GetString().starts_with(const_prefix)) {
       return value.GetString().substr(const_prefix.length());
     }
     // TODO: escape quotation marks if any to make the output unambiguous.
@@ -74,14 +73,12 @@ std::string AXFormatValue(const base::Value& value) {
       if (!output.empty()) {
         output += ", ";
       }
-      if (base::StartsWith(item.first, setkey_prefix,
-                           base::CompareCase::SENSITIVE)) {
+      if (item.first.starts_with(setkey_prefix)) {
         // Some of the dictionary's keys should not be appended to the output,
         // so that the dictionary can also be used as a set. Such keys start
         // with the _setkey_ prefix.
         output += AXFormatValue(item.second);
-      } else if (base::StartsWith(item.first, orderedkey_prefix,
-                                  base::CompareCase::SENSITIVE)) {
+      } else if (item.first.starts_with(orderedkey_prefix)) {
         // Process ordered dictionaries. Remove order number from keys before
         // formatting.
         std::string key = item.first;

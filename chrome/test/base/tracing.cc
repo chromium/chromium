@@ -8,12 +8,12 @@
 #include <utility>
 
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string_util.h"
 #include "base/timer/timer.h"
+#include "base/trace_event/trace_config.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "content/public/browser/browser_thread.h"
@@ -48,7 +48,7 @@ class StringTraceEndpoint
   }
 
  private:
-  ~StringTraceEndpoint() override {}
+  ~StringTraceEndpoint() override = default;
 
   raw_ptr<std::string> result_;
   base::RepeatingClosure completion_callback_;

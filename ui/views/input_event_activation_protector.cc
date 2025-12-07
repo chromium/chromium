@@ -20,8 +20,9 @@ InputEventActivationProtector::~InputEventActivationProtector() {
 }
 
 void InputEventActivationProtector::VisibilityChanged(bool is_visible) {
-  if (is_visible)
+  if (is_visible) {
     view_protected_time_stamp_ = base::TimeTicks::Now();
+  }
 }
 
 void InputEventActivationProtector::MaybeUpdateViewProtectedTimeStamp(
@@ -35,7 +36,8 @@ void InputEventActivationProtector::MaybeUpdateViewProtectedTimeStamp(
 }
 
 bool InputEventActivationProtector::IsPossiblyUnintendedInteraction(
-    const ui::Event& event) {
+    const ui::Event& event,
+    bool allow_key_events) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableInputEventActivationProtectionForTesting))
       [[unlikely]] {
@@ -55,11 +57,12 @@ bool InputEventActivationProtector::IsPossiblyUnintendedInteraction(
 
   if (!event.IsMouseEvent() && !event.IsTouchEvent() &&
       !event.IsGestureEvent()) {
-    return false;
+    if (allow_key_events || !event.IsKeyEvent()) {
+      return false;
+    }
   }
 
-  const base::TimeDelta kShortInterval =
-      base::Milliseconds(GetDoubleClickInterval());
+  const base::TimeDelta kShortInterval = GetDoubleClickInterval();
   const bool short_event_after_last_event =
       event.time_stamp() < last_event_timestamp_ + kShortInterval;
   last_event_timestamp_ = event.time_stamp();

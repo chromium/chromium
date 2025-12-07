@@ -5,15 +5,22 @@
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_chromeos.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/run_until.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile_io_data.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
-#include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
-#include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view_chromeos.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -28,6 +35,7 @@
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_test_api.h"
 #include "components/permissions/request_type.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/test/extension_test_message_listener.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/animation/ink_drop.h"
@@ -73,7 +81,7 @@ class ImmersiveModeControllerChromeosWebAppBrowserTest
       // Wait for the URL to load so that the location bar end-state stabilizes.
       url_observer.Wait();
     }
-    controller_ = browser_view()->immersive_mode_controller();
+    controller_ = ImmersiveModeController::From(browser());
 
     // Disable animations in immersive fullscreen before we show the window,
     // which triggers an animation.
@@ -142,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
   ASSERT_FALSE(controller()->IsEnabled());
 
   // The tabstrip is not visible for web apps.
-  EXPECT_FALSE(tabstrip->GetVisible());
+  EXPECT_FALSE(tabstrip->IsDrawn());
   EXPECT_TRUE(toolbar->GetVisible());
 
   // The window header should be above the web contents.
@@ -156,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
   // Entering immersive fullscreen should make the web contents flush with the
   // top of the widget. The popup browser type doesn't support tabstrip and
   // toolbar feature, thus invisible.
-  EXPECT_FALSE(tabstrip->GetVisible());
+  EXPECT_FALSE(tabstrip->IsDrawn());
   EXPECT_FALSE(toolbar->GetVisible());
   EXPECT_TRUE(top_container->GetVisibleBounds().IsEmpty());
   EXPECT_EQ(0, GetBoundsInWidget(contents_web_view).y());
@@ -166,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
 
   // The tabstrip should still be hidden and the web contents should still be
   // flush with the top of the screen.
-  EXPECT_FALSE(tabstrip->GetVisible());
+  EXPECT_FALSE(tabstrip->IsDrawn());
   EXPECT_TRUE(toolbar->GetVisible());
   EXPECT_EQ(0, GetBoundsInWidget(contents_web_view).y());
 
@@ -182,26 +190,20 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
   ExitImmersiveFullscreenMode(browser());
   EXPECT_FALSE(browser_view()->GetWidget()->IsFullscreen());
   EXPECT_FALSE(controller()->IsEnabled());
-  EXPECT_FALSE(tabstrip->GetVisible());
+  EXPECT_FALSE(tabstrip->IsDrawn());
   EXPECT_TRUE(toolbar->GetVisible());
   EXPECT_EQ(header_height, GetBoundsInWidget(contents_web_view).y());
 }
 
 // Verify the immersive mode status is as expected in tablet mode (titlebars are
 // autohidden in tablet mode).
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(b/40946296): Port and enable when bug is fixed.
-#define MAYBE_ImmersiveModeStatusTabletMode \
-  DISABLED_ImmersiveModeStatusTabletMode
-#else
-#define MAYBE_ImmersiveModeStatusTabletMode ImmersiveModeStatusTabletMode
-#endif
 IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
-                       MAYBE_ImmersiveModeStatusTabletMode) {
+                       ImmersiveModeStatusTabletMode) {
   LaunchAppBrowser();
   ASSERT_FALSE(controller()->IsEnabled());
 
-  aura::Window* aura_window = browser_view()->frame()->GetNativeWindow();
+  aura::Window* aura_window =
+      browser_view()->browser_widget()->GetNativeWindow();
   // Verify that after entering tablet mode, immersive mode is enabled, and the
   // the associated window's top inset is 0 (the top of the window is not
   // visible).
@@ -248,9 +250,8 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
   LaunchAppBrowser();
   ASSERT_FALSE(controller()->IsEnabled());
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  BrowserNonClientFrameViewChromeOS* frame_view =
-      static_cast<BrowserNonClientFrameViewChromeOS*>(
-          browser_view->GetWidget()->non_client_view()->frame_view());
+  BrowserFrameViewChromeOS* frame_view = static_cast<BrowserFrameViewChromeOS*>(
+      browser_view->GetWidget()->non_client_view()->frame_view());
   chromeos::FrameCaptionButtonContainerView* caption_button_container =
       frame_view->caption_button_container();
   chromeos::FrameCaptionButtonContainerView::TestApi frame_test_api(
@@ -312,14 +313,10 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
 // but still drawn. In this case, we should have a null anchor view so that the
 // bubble gets placed in the default top left corner. Regression test for
 // https://crbug.com/1087143.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(crbug.com/329759044): Enable when bug is fixed.
-#define MAYBE_PermissionsBubbleAnchor DISABLED_PermissionsBubbleAnchor
-#else
-#define MAYBE_PermissionsBubbleAnchor PermissionsBubbleAnchor
-#endif
+// TODO(crbug.com/454621319): Debug and figure out why this started failing
+// after the changes in https://crrev.com/c/7064537.
 IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
-                       MAYBE_PermissionsBubbleAnchor) {
+                       DISABLED_PermissionsBubbleAnchor) {
   LaunchAppBrowser();
   auto test_api =
       std::make_unique<test::PermissionRequestManagerTestApi>(browser());
@@ -345,9 +342,8 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
   EXPECT_TRUE(bubble_dialog->GetAnchorView());
 
   // Turn on immersive, but do not reveal.
-  auto* immersive_mode_controller =
-      BrowserView::GetBrowserViewForBrowser(browser())
-          ->immersive_mode_controller();
+  auto* const immersive_mode_controller =
+      ImmersiveModeController::From(browser());
   immersive_mode_controller->SetEnabled(true);
 
   // Since a bubble was visible and anchored to the header, the header should
@@ -401,4 +397,39 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
 
   EXPECT_FALSE(immersive_mode_controller->IsRevealed());
   EXPECT_FALSE(bubble_dialog->GetAnchorView());
+}
+
+// Tests that `chrome.windows.update` enters fullscreen without the immersive
+// UI. See https://crbug.com/419812047
+using UpdateFullscreenTest = extensions::ExtensionApiTest;
+IN_PROC_BROWSER_TEST_F(UpdateFullscreenTest, NoImmersiveUI) {
+  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWontReply);
+  ASSERT_TRUE(
+      LoadExtension(test_data_dir_.AppendASCII("windows/update_fullscreen")));
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+
+  BrowserWindowInterface* found_browser = nullptr;
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    bool exit_run_until = false;
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [&](BrowserWindowInterface* browser) {
+          if (!browser->GetWindow()->IsFullscreen()) {
+            return true;  // continue iterating (inner lambda)
+          }
+
+          if (browser->GetBrowserForMigrationOnly()
+                  ->GetWindowTitleForCurrentTab(
+                      /*include_app_name=*/false) != u"Hello") {
+            return true;  // continue iterating (inner lambda)
+          }
+
+          found_browser = browser;
+          exit_run_until = true;
+          return false;  // stop iterating (inner lambda)
+        });
+    return exit_run_until;
+  }));
+
+  ASSERT_NE(found_browser, nullptr);
+  EXPECT_FALSE(ImmersiveModeController::From(found_browser)->IsEnabled());
 }

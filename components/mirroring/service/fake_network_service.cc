@@ -2,17 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/mirroring/service/fake_network_service.h"
 
+#include <algorithm>
 #include <memory>
 
-#include "base/ranges/algorithm.h"
-// #include "media/cast/test/utility/net_utility.h"
+#include "base/compiler_specific.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
@@ -39,7 +34,7 @@ MockUdpSocket::MockUdpSocket(
     mojo::PendingRemote<network::mojom::UDPSocketListener> listener)
     : receiver_(this, std::move(receiver)), listener_(std::move(listener)) {}
 
-MockUdpSocket::~MockUdpSocket() {}
+MockUdpSocket::~MockUdpSocket() = default;
 
 void MockUdpSocket::Bind(const net::IPEndPoint& local_addr,
                          network::mojom::UDPSocketOptionsPtr options,
@@ -80,23 +75,21 @@ void MockUdpSocket::Send(
 
 void MockUdpSocket::OnReceivedPacket(const media::cast::Packet& packet) {
   if (num_ask_for_receive_) {
-    listener_->OnReceived(
-        net::OK, std::nullopt,
-        base::span<const uint8_t>(
-            reinterpret_cast<const uint8_t*>(packet.data()), packet.size()));
+    listener_->OnReceived(net::OK, std::nullopt,
+                          base::span<const uint8_t>(packet));
     ASSERT_LT(0, num_ask_for_receive_);
     --num_ask_for_receive_;
   }
 }
 
 void MockUdpSocket::VerifySendingPacket(const media::cast::Packet& packet) {
-  EXPECT_TRUE(base::ranges::equal(packet, *sending_packet_));
+  EXPECT_TRUE(std::ranges::equal(packet, *sending_packet_));
 }
 
 MockNetworkContext::MockNetworkContext(
     mojo::PendingReceiver<network::mojom::NetworkContext> receiver)
     : receiver_(this, std::move(receiver)) {}
-MockNetworkContext::~MockNetworkContext() {}
+MockNetworkContext::~MockNetworkContext() = default;
 
 void MockNetworkContext::CreateUDPSocket(
     mojo::PendingReceiver<network::mojom::UDPSocket> receiver,

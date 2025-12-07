@@ -10,11 +10,11 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
-#include "third_party/blink/renderer/core/layout/legacy_layout_tree_walking.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/logical_fragment.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/physical_fragment.h"
+#include "third_party/blink/renderer/core/layout/transform_utils.h"
 #include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 
@@ -279,8 +279,8 @@ PhysicalRect ScrollableOverflowCalculator::ScrollableOverflowForPropagation(
   }
 
   // Apply any transforms to the overflow.
-  if (std::optional<gfx::Transform> transform =
-          node_.GetTransformForChildFragment(child_fragment, size_)) {
+  if (std::optional<gfx::Transform> transform = GetTransformForChildFragment(
+          child_fragment, *node_.GetLayoutBox(), size_)) {
     overflow =
         PhysicalRect::EnclosingRect(transform->MapRect(gfx::RectF(overflow)));
   }

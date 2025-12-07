@@ -5,6 +5,11 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 
 #include <limits.h>
+
+#include <string_view>
+
+#include "base/compiler_specific.h"
+#include "base/strings/string_view_util.h"
 #include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
@@ -118,16 +123,6 @@ CSSValueID CSSParserToken::Id() const {
   return static_cast<CSSValueID>(id_);
 }
 
-CSSValueID CSSParserToken::FunctionId() const {
-  if (type_ != kFunctionToken) {
-    return CSSValueID::kInvalid;
-  }
-  if (id_ < 0) {
-    id_ = static_cast<int>(CssValueKeywordID(Value()));
-  }
-  return static_cast<CSSValueID>(id_);
-}
-
 bool CSSParserToken::HasStringBacking() const {
   CSSParserTokenType token_type = GetType();
   if (value_is_inline_) {
@@ -147,31 +142,19 @@ CSSParserToken CSSParserToken::CopyWithUpdatedString(
 }
 
 bool CSSParserToken::ValueDataCharRawEqual(const CSSParserToken& other) const {
-  if (value_length_ != other.value_length_) {
-    return false;
-  }
-
   if (ValueDataCharRaw() == other.ValueDataCharRaw() &&
       value_is_8bit_ == other.value_is_8bit_) {
-    return true;
+    return value_length_ == other.value_length_;
   }
 
   if (value_is_8bit_) {
-    return other.value_is_8bit_
-               ? Equal(static_cast<const LChar*>(ValueDataCharRaw()),
-                       static_cast<const LChar*>(other.ValueDataCharRaw()),
-                       value_length_)
-               : Equal(static_cast<const LChar*>(ValueDataCharRaw()),
-                       static_cast<const UChar*>(other.ValueDataCharRaw()),
-                       value_length_);
+    const auto span = Span8();
+    return other.value_is_8bit_ ? span == other.Span8()
+                                : span == other.Span16();
   } else {
-    return other.value_is_8bit_
-               ? Equal(static_cast<const UChar*>(ValueDataCharRaw()),
-                       static_cast<const LChar*>(other.ValueDataCharRaw()),
-                       value_length_)
-               : Equal(static_cast<const UChar*>(ValueDataCharRaw()),
-                       static_cast<const UChar*>(other.ValueDataCharRaw()),
-                       value_length_);
+    const auto span = Span16();
+    return other.value_is_8bit_ ? span == other.Span8()
+                                : span == other.Span16();
   }
 }
 
@@ -242,13 +225,15 @@ void CSSParserToken::Serialize(StringBuilder& builder) const {
       if (numeric_value_type_ == kIntegerValueType) {
         return builder.AppendNumber(ClampTo<int64_t>(NumericValue()));
       } else {
-        NumberToStringBuffer buffer;
-        const char* str = NumberToString(NumericValue(), buffer);
+        DoubleToStringConverter converter;
+        base::span<const LChar> str = converter.ToString(NumericValue());
         builder.Append(str);
         // This wasn't parsed as an integer, so when we serialize it back,
         // it cannot be an integer. Otherwise, we would round-trip e.g.
         // “2.0” to “2”, which could make an invalid value suddenly valid.
-        if (strchr(str, '.') == nullptr && strchr(str, 'e') == nullptr) {
+        auto str_view = base::as_string_view(str);
+        if (str_view.find('.') == std::string_view::npos &&
+            str_view.find('e') == std::string_view::npos) {
           builder.Append(".0");
         }
         return;
@@ -258,9 +243,8 @@ void CSSParserToken::Serialize(StringBuilder& builder) const {
       return builder.Append('%');
     case kDimensionToken: {
       // This will incorrectly serialize e.g. 4e3e2 as 4000e2
-      NumberToStringBuffer buffer;
-      const char* str = NumberToString(NumericValue(), buffer);
-      builder.Append(str);
+      DoubleToStringConverter converter;
+      builder.Append(converter.ToString(NumericValue()));
       // NOTE: We don't need the same “.0” treatment as we did for
       // kNumberToken, as there are no situations where e.g. 2deg
       // would be valid but 2.0deg not.
@@ -316,9 +300,53 @@ void CSSParserToken::Serialize(StringBuilder& builder) const {
 
     case kEOFToken:
     case kCommentToken:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
+}
+
+// https://www.w3.org/TR/css-syntax-3/#serialization
+bool NeedsInsertedComment(const CSSParserToken& a, const CSSParserToken& b) {
+  CSSParserTokenType at = a.GetType();
+  CSSParserTokenType bt = b.GetType();
+
+  // Row 1–7 of the table.
+  if (at == kIdentToken || at == kAtKeywordToken || at == kHashToken ||
+      at == kDimensionToken || at == kNumberToken ||
+      (at == kDelimiterToken &&
+       (a.Delimiter() == '#' || a.Delimiter() == '-'))) {
+    if (at == kIdentToken && bt == kLeftParenthesisToken) {
+      return true;
+    }
+    if (at == kNumberToken && bt == kDelimiterToken) {
+      if (b.Delimiter() == '-') {
+        return false;
+      }
+      if (b.Delimiter() == '%') {
+        return true;
+      }
+    }
+    return bt == kIdentToken || bt == kFunctionToken || bt == kUrlToken ||
+           bt == kBadUrlToken || bt == kNumberToken || bt == kPercentageToken ||
+           bt == kDimensionToken || bt == kCDCToken ||
+           (bt == kDelimiterToken && b.Delimiter() == '-');
+  }
+
+  // Row 8.
+  if (at == kDelimiterToken && a.Delimiter() == '@') {
+    return bt == kIdentToken || bt == kFunctionToken || bt == kUrlToken ||
+           bt == kBadUrlToken || bt == kCDCToken ||
+           (bt == kDelimiterToken && b.Delimiter() == '-');
+  }
+
+  // Rows 9 and 10.
+  if (at == kDelimiterToken && (a.Delimiter() == '.' || a.Delimiter() == '+')) {
+    return bt == kNumberToken || bt == kPercentageToken ||
+           bt == kDimensionToken;
+  }
+
+  // Final row (all other cases are false).
+  return at == kDelimiterToken && bt == kDelimiterToken &&
+         a.Delimiter() == '/' && b.Delimiter() == '*';
 }
 
 }  // namespace blink

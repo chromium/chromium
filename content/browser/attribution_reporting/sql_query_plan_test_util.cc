@@ -4,6 +4,7 @@
 
 #include "content/browser/attribution_reporting/sql_query_plan_test_util.h"
 
+#include <algorithm>
 #include <optional>
 #include <ostream>
 #include <string>
@@ -14,12 +15,10 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
@@ -100,7 +99,7 @@ bool SqlIndexMatcher::MatchAndExplain(const SqlQueryPlan& plan,
   std::string_view index_text =
       plan_piece.substr(start_pos, end_pos - start_pos);
 
-  return base::ranges::all_of(columns_, [index_text](const std::string& col) {
+  return std::ranges::all_of(columns_, [index_text](const std::string& col) {
     return base::Contains(index_text, col);
   });
 }

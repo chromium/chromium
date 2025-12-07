@@ -49,8 +49,7 @@ viz::mojom::FilterType CCFilterTypeToMojo(
     case cc::FilterOperation::OFFSET:
       return viz::mojom::FilterType::OFFSET;
   }
-  NOTREACHED_IN_MIGRATION();
-  return viz::mojom::FilterType::FILTER_TYPE_LAST;
+  NOTREACHED();
 }
 
 cc::FilterOperation::FilterType MojoFilterTypeToCC(
@@ -89,8 +88,7 @@ cc::FilterOperation::FilterType MojoFilterTypeToCC(
     case viz::mojom::FilterType::OFFSET:
       return cc::FilterOperation::OFFSET;
   }
-  NOTREACHED_IN_MIGRATION();
-  return cc::FilterOperation::FILTER_TYPE_LAST;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -142,8 +140,7 @@ bool StructTraits<viz::mojom::FilterOperationDataView, cc::FilterOperation>::
       if (!matrix.is_null()) {
         // Guaranteed by prior validation of the FilterOperation struct
         // because this array specifies a fixed size in the mojom.
-        DCHECK_EQ(matrix.size(), 20u);
-        out->set_matrix(base::make_span<20>(matrix));
+        out->set_matrix(*base::span(matrix).to_fixed_extent<20>());
       }
       return true;
     }

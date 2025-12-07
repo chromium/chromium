@@ -300,7 +300,7 @@ std::vector<mojom::HidReportDescriptionPtr> CreateReportDescriptions(
   auto report_items = preparsed_data.GetReportItems(report_type);
 
   // Sort items by |report_id| and |bit_index|.
-  base::ranges::sort(report_items, [](const auto& a, const auto& b) {
+  std::ranges::sort(report_items, [](const auto& a, const auto& b) {
     if (a.report_id < b.report_id)
       return true;
     if (a.report_id == b.report_id)
@@ -453,8 +453,7 @@ uint16_t HidServiceWin::PreparsedData::GetReportByteLength(
       report_length = GetCaps().FeatureReportByteLength;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   // Whether or not the device includes report IDs in its reports the size
   // of the report ID is included in the value provided by Windows. This
@@ -498,7 +497,7 @@ void HidServiceWin::Connect(const std::string& device_guid,
   std::vector<std::unique_ptr<HidConnectionWin::HidDeviceEntry>> file_handles;
   for (const auto& entry : platform_device_id_map) {
     base::win::ScopedHandle file_handle(OpenDevice(entry.platform_device_id));
-    if (!file_handle.IsValid()) {
+    if (!file_handle.is_valid()) {
       HID_PLOG(DEBUG) << "Failed to open device with deviceId='"
                       << entry.platform_device_id << "'";
       continue;
@@ -579,8 +578,9 @@ void HidServiceWin::AddDeviceBlocking(
     const std::string& physical_device_id,
     const std::wstring& interface_id) {
   base::win::ScopedHandle device_handle(OpenDevice(device_path));
-  if (!device_handle.IsValid())
+  if (!device_handle.is_valid()) {
     return;
+  }
 
   auto preparsed_data = HidPreparsedData::Create(device_handle.Get());
   if (!preparsed_data)
@@ -685,7 +685,7 @@ base::win::ScopedHandle HidServiceWin::OpenDevice(
                         FILE_SHARE_READ | FILE_SHARE_WRITE,
                         /*lpSecurityAttributes=*/nullptr, OPEN_EXISTING,
                         FILE_FLAG_OVERLAPPED, /*hTemplateFile=*/nullptr));
-    if (file.IsValid() || GetLastError() != ERROR_ACCESS_DENIED) {
+    if (file.is_valid() || GetLastError() != ERROR_ACCESS_DENIED) {
       break;
     }
   }

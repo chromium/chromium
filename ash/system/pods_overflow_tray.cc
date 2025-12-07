@@ -26,8 +26,10 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace ash {
 
@@ -61,17 +63,15 @@ PodsOverflowTray::PodsOverflowTray(Shelf* shelf)
 
   // TODO(b/337925759): Make visible only when pods overflow on the shelf.
   TrayBackgroundView::SetVisiblePreferred(true);
+
+  // TODO(crbug.com/337963043): Update a11y strings.
+  GetViewAccessibility().SetName(u"Pods overflow tray");
 }
 
 PodsOverflowTray::~PodsOverflowTray() {
   if (bubble_) {
     bubble_->bubble_view()->ResetDelegate();
   }
-}
-
-std::u16string PodsOverflowTray::GetAccessibleNameForTray() {
-  // TODO(b/337963043): Update a11y strings.
-  return u"Pods overflow tray";
 }
 
 void PodsOverflowTray::HandleLocaleChange() {
@@ -92,7 +92,7 @@ void PodsOverflowTray::UpdateTrayItemColor(bool is_active) {
   tray_icon_->SetImage(GetTrayContainerImage(is_active));
 }
 
-void PodsOverflowTray::CloseBubble() {
+void PodsOverflowTray::CloseBubbleInternal() {
   pods_container_ = nullptr;
   bubble_.reset();
   SetIsActive(false);
@@ -117,7 +117,7 @@ void PodsOverflowTray::ShowBubble() {
     pods_container_->AddChildView(
         views::Builder<views::View>()
             .SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize))
-            .SetBackground(views::CreateThemedRoundedRectBackground(
+            .SetBackground(views::CreateRoundedRectBackground(
                 cros_tokens::kCrosSysSystemOnBase, kPodsBubbleCornerRadius))
             .Build());
   }

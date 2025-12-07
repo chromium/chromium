@@ -6,6 +6,7 @@ desc: |-
         Leaving the policy unset puts a default scale factor in use.
 
         Note: The scale factor must be 100% or more.
+default: null
 example_value: 200
 features:
   dynamic_refresh: true

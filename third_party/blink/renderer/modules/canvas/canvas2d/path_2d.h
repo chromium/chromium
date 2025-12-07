@@ -38,10 +38,10 @@
 #include "third_party/blink/renderer/core/geometry/dom_matrix_read_only.h"
 #include "third_party/blink/renderer/core/svg/svg_path_utilities.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_path.h"
-#include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/graphics/path.h"
+#include "third_party/blink/renderer/platform/geometry/path.h"
+#include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"  // IWYU pragma: keep (blink::Visitor)
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -68,8 +68,7 @@ class MODULES_EXPORT Path2D final : public ScriptWrappable, public CanvasPath {
       case V8UnionPath2DOrString::ContentType::kString:
         return MakeGarbageCollected<Path2D>(script_state, path->GetAsString());
     }
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
   static Path2D* Create(ScriptState* script_state) {
     return MakeGarbageCollected<Path2D>(script_state);
@@ -89,10 +88,6 @@ class MODULES_EXPORT Path2D final : public ScriptWrappable, public CanvasPath {
         !std::isfinite(matrix->m42()))
       return;
     GetModifiablePath().AddPath(path->GetPath(), matrix->GetAffineTransform());
-    if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-      identifiability_study_helper_.UpdateBuilder(CanvasOps::kAddPath,
-                                                  path->GetIdentifiableToken());
-    }
   }
 
   void Trace(Visitor*) const override;
@@ -103,20 +98,17 @@ class MODULES_EXPORT Path2D final : public ScriptWrappable, public CanvasPath {
 
   explicit Path2D(ScriptState* script_state)
       : context_(ExecutionContext::From(script_state)) {
-    identifiability_study_helper_.SetExecutionContext(context_.Get());
     GetModifiablePath().SetIsVolatile(false);
   }
   Path2D(ScriptState* script_state, const Path& path)
       : CanvasPath(path), context_(ExecutionContext::From(script_state)) {
-    identifiability_study_helper_.SetExecutionContext(context_.Get());
     GetModifiablePath().SetIsVolatile(false);
   }
   Path2D(ScriptState* script_state, Path2D* path)
       : Path2D(script_state, path->GetPath()) {}
   Path2D(ScriptState* script_state, const String& path_data)
       : context_(ExecutionContext::From(script_state)) {
-    identifiability_study_helper_.SetExecutionContext(context_.Get());
-    BuildPathFromString(path_data, GetModifiablePath());
+    GetModifiablePath() = PathBuilder(BuildPathFromString(path_data));
     GetModifiablePath().SetIsVolatile(false);
   }
 

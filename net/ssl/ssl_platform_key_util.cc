@@ -6,15 +6,15 @@
 
 #include <string_view>
 
-#include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
+#include "crypto/evp.h"
 #include "crypto/openssl_util.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
-#include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/rsa.h"
@@ -44,13 +44,11 @@ class SSLPlatformKeyTaskRunner {
   base::Thread worker_thread_;
 };
 
-base::LazyInstance<SSLPlatformKeyTaskRunner>::Leaky g_platform_key_task_runner =
-    LAZY_INSTANCE_INITIALIZER;
-
 }  // namespace
 
 scoped_refptr<base::SingleThreadTaskRunner> GetSSLPlatformKeyTaskRunner() {
-  return g_platform_key_task_runner.Get().task_runner();
+  static base::NoDestructor<SSLPlatformKeyTaskRunner> instance;
+  return instance->task_runner();
 }
 
 bssl::UniquePtr<EVP_PKEY> GetClientCertPublicKey(
@@ -65,7 +63,7 @@ bssl::UniquePtr<EVP_PKEY> GetClientCertPublicKey(
     return nullptr;
   }
 
-  return ParseSpki(base::as_byte_span(spki));
+  return crypto::evp::PublicKeyFromBytes(base::as_byte_span(spki));
 }
 
 bool GetClientCertInfo(const X509Certificate* certificate,
@@ -81,21 +79,10 @@ bool GetClientCertInfo(const X509Certificate* certificate,
   return true;
 }
 
-bssl::UniquePtr<EVP_PKEY> ParseSpki(base::span<const uint8_t> spki) {
-  CBS cbs;
-  CBS_init(&cbs, spki.data(), spki.size());
-  bssl::UniquePtr<EVP_PKEY> key(EVP_parse_public_key(&cbs));
-  if (!key || CBS_len(&cbs) != 0) {
-    LOG(ERROR) << "Could not parse public key.";
-    return nullptr;
-  }
-  return key;
-}
-
 bool GetPublicKeyInfo(base::span<const uint8_t> spki,
                       int* out_type,
                       size_t* out_max_length) {
-  auto key = ParseSpki(spki);
+  auto key = crypto::evp::PublicKeyFromBytes(spki);
   if (!key) {
     return false;
   }

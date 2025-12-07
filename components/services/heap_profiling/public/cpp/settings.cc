@@ -57,6 +57,9 @@ Mode ConvertStringToMode(const std::string& mode) {
     return Mode::kUtilitySampling;
   if (mode == kMemlogModeUtilityAndBrowser)
     return Mode::kUtilityAndBrowser;
+  if (mode == kMemlogModeAllUtilities) {
+    return Mode::kAllUtilities;
+  }
   DLOG(ERROR) << "Unsupported value: \"" << mode << "\" passed to --"
               << kMemlogMode;
   return Mode::kNone;

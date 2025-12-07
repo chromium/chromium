@@ -2,23 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/metrics/event_metrics.h"
 
 #include <algorithm>
+#include <array>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <utility>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/time/default_tick_clock.h"
 #include "cc/metrics/event_latency_tracing_recorder.h"
+#include "ui/events/types/event_type.h"
 
 namespace cc {
 namespace {
@@ -28,7 +27,7 @@ constexpr base::TimeDelta kScrollHistogramMin = base::Milliseconds(4);
 constexpr base::TimeDelta kScrollHistogramMax = base::Milliseconds(500);
 constexpr size_t kScrollHistogramBucketCount = 50;
 
-constexpr struct {
+struct InterestingEvents {
   EventMetrics::EventType metrics_event_type;
   const char* name;
 
@@ -39,7 +38,8 @@ constexpr struct {
 
   std::optional<EventMetrics::HistogramBucketing> histogram_bucketing =
       std::nullopt;
-} kInterestingEvents[] = {
+};
+constexpr auto kInterestingEvents = std::to_array<InterestingEvents>({
 #define EVENT_TYPE(type_name, ui_type, ...)                      \
   {                                                              \
     .metrics_event_type = EventMetrics::EventType::k##type_name, \
@@ -108,17 +108,21 @@ constexpr struct {
                                         .count = kScrollHistogramBucketCount,
                                         .version_suffix = "2"}}),
     EVENT_TYPE(MouseMoved, ui::EventType::kMouseMoved),
+    EVENT_TYPE(InertialGestureScrollEnd,
+               ui::EventType::kGestureScrollEnd,
+               .scroll_is_inertial = true),
 #undef EVENT_TYPE
-};
+});
 static_assert(std::size(kInterestingEvents) ==
                   static_cast<int>(EventMetrics::EventType::kMaxValue) + 1,
               "EventMetrics::EventType has changed.");
 
-constexpr struct {
+struct ScrollTypes {
   ScrollEventMetrics::ScrollType metrics_scroll_type;
   ui::ScrollInputType ui_input_type;
   const char* name;
-} kScrollTypes[] = {
+};
+constexpr auto kScrollTypes = std::to_array<ScrollTypes>({
 #define SCROLL_TYPE(name)                                                  \
   {                                                                        \
     ScrollEventMetrics::ScrollType::k##name, ui::ScrollInputType::k##name, \
@@ -129,17 +133,18 @@ constexpr struct {
     SCROLL_TYPE(Touchscreen),
     SCROLL_TYPE(Wheel),
 #undef SCROLL_TYPE
-};
+});
 static_assert(std::size(kScrollTypes) ==
                   static_cast<int>(ScrollEventMetrics::ScrollType::kMaxValue) +
                       1,
               "ScrollEventMetrics::ScrollType has changed.");
 
-constexpr struct {
+struct PinchTypes {
   PinchEventMetrics::PinchType metrics_pinch_type;
   ui::ScrollInputType ui_input_type;
   const char* name;
-} kPinchTypes[] = {
+};
+constexpr auto kPinchTypes = std::to_array<PinchTypes>({
 #define PINCH_TYPE(metrics_name, ui_name)              \
   {                                                    \
     PinchEventMetrics::PinchType::k##metrics_name,     \
@@ -148,7 +153,7 @@ constexpr struct {
     PINCH_TYPE(Touchpad, Wheel),
     PINCH_TYPE(Touchscreen, Touchscreen),
 #undef PINCH_TYPE
-};
+});
 static_assert(std::size(kPinchTypes) ==
                   static_cast<int>(PinchEventMetrics::PinchType::kMaxValue) + 1,
               "PinchEventMetrics::PinchType has changed.");
@@ -180,8 +185,7 @@ ScrollEventMetrics::ScrollType ToScrollType(ui::ScrollInputType ui_input_type) {
       return metrics_scroll_type;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return ScrollEventMetrics::ScrollType::kMaxValue;
+  NOTREACHED();
 }
 
 PinchEventMetrics::PinchType ToPinchType(ui::ScrollInputType ui_input_type) {
@@ -192,8 +196,7 @@ PinchEventMetrics::PinchType ToPinchType(ui::ScrollInputType ui_input_type) {
       return metrics_pinch_type;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return PinchEventMetrics::PinchType::kMaxValue;
+  NOTREACHED();
 }
 
 bool IsGestureScroll(ui::EventType type) {
@@ -340,8 +343,12 @@ EventMetrics::EventMetrics(const EventMetrics& other)
 EventMetrics::~EventMetrics() {
   if (should_record_tracing()) {
     EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
-        this, base::TimeTicks::Now(), base::TimeDelta(), nullptr, nullptr);
+        this, base::TimeTicks::Now(), nullptr, nullptr, nullptr, std::nullopt);
   }
+}
+
+void EventMetrics::CoalesceWith(const EventMetrics& newer_event) {
+  caused_frame_update_ |= newer_event.caused_frame_update_;
 }
 
 const char* EventMetrics::GetTypeName() const {
@@ -351,6 +358,27 @@ const char* EventMetrics::GetTypeName() const {
 // static
 const char* EventMetrics::GetTypeName(EventMetrics::EventType type) {
   return kInterestingEvents[static_cast<int>(type)].name;
+}
+
+// static
+bool EventMetrics::ShouldKeepEvenWithoutCausingFrameUpdate(
+    EventMetrics::EventType type) {
+  switch (type) {
+    // `CompositorFrameReporter::ReportScrollJankMetrics()` needs to know about
+    // all gesture scroll updates, so that the scroll jank metric could
+    // correctly evaluate the fast scroll and fling continuity rules.
+    case EventType::kGestureScrollUpdate:
+    case EventType::kInertialGestureScrollUpdate:
+    case EventType::kFirstGestureScrollUpdate:
+    // `CompositorFrameReporter::ReportScrollJankMetrics()` needs to know about
+    // all gesture scroll ends, so that it could correctly report per-scroll
+    // jank metrics at the end of each scroll.
+    case EventType::kGestureScrollEnd:
+    case EventType::kInertialGestureScrollEnd:
+      return true;
+    default:
+      return false;
+  }
 }
 
 const std::optional<EventMetrics::HistogramBucketing>&
@@ -363,29 +391,32 @@ void EventMetrics::SetHighLatencyStage(const std::string& stage) {
 }
 
 void EventMetrics::SetDispatchStageTimestamp(DispatchStage stage) {
-  DCHECK(dispatch_stage_timestamps_[static_cast<size_t>(stage)].is_null());
+  DCHECK(UNSAFE_TODO(dispatch_stage_timestamps_[static_cast<size_t>(stage)])
+             .is_null());
 
-  dispatch_stage_timestamps_[static_cast<size_t>(stage)] =
+  UNSAFE_TODO(dispatch_stage_timestamps_[static_cast<size_t>(stage)]) =
       tick_clock_->NowTicks();
 }
 
 void EventMetrics::SetDispatchStageTimestamp(DispatchStage stage,
                                              base::TimeTicks timestamp) {
-  DCHECK(dispatch_stage_timestamps_[static_cast<size_t>(stage)].is_null());
+  DCHECK(UNSAFE_TODO(dispatch_stage_timestamps_[static_cast<size_t>(stage)])
+             .is_null());
 
-  dispatch_stage_timestamps_[static_cast<size_t>(stage)] = timestamp;
+  UNSAFE_TODO(dispatch_stage_timestamps_[static_cast<size_t>(stage)]) =
+      timestamp;
 }
 
 base::TimeTicks EventMetrics::GetDispatchStageTimestamp(
     DispatchStage stage) const {
-  return dispatch_stage_timestamps_[static_cast<size_t>(stage)];
+  return UNSAFE_TODO(dispatch_stage_timestamps_[static_cast<size_t>(stage)]);
 }
 
 void EventMetrics::ResetToDispatchStage(DispatchStage stage) {
   for (size_t stage_index = static_cast<size_t>(stage) + 1;
        stage_index <= static_cast<size_t>(DispatchStage::kMaxValue);
        stage_index++) {
-    dispatch_stage_timestamps_[stage_index] = base::TimeTicks();
+    UNSAFE_TODO(dispatch_stage_timestamps_[stage_index] = base::TimeTicks());
   }
 }
 
@@ -424,10 +455,10 @@ std::unique_ptr<EventMetrics> EventMetrics::Clone() const {
 void EventMetrics::CopyTimestampsFrom(const EventMetrics& other,
                                       DispatchStage last_dispatch_stage) {
   DCHECK_LE(last_dispatch_stage, DispatchStage::kMaxValue);
-  std::copy(other.dispatch_stage_timestamps_,
-            other.dispatch_stage_timestamps_ +
-                static_cast<size_t>(last_dispatch_stage) + 1,
-            dispatch_stage_timestamps_);
+  UNSAFE_TODO(std::copy(other.dispatch_stage_timestamps_,
+                        other.dispatch_stage_timestamps_ +
+                            static_cast<size_t>(last_dispatch_stage) + 1,
+                        dispatch_stage_timestamps_));
 }
 
 // ScrollEventMetrics
@@ -563,7 +594,7 @@ ScrollEventMetrics::ScrollEventMetrics(const ScrollEventMetrics&) = default;
 ScrollEventMetrics::~ScrollEventMetrics() {
   if (should_record_tracing()) {
     EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
-        this, base::TimeTicks::Now(), base::TimeDelta(), nullptr, nullptr);
+        this, base::TimeTicks::Now(), nullptr, nullptr, nullptr, std::nullopt);
   }
 }
 
@@ -733,16 +764,20 @@ ScrollUpdateEventMetrics::ScrollUpdateEventMetrics(
 ScrollUpdateEventMetrics::~ScrollUpdateEventMetrics() {
   if (should_record_tracing()) {
     EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
-        this, base::TimeTicks::Now(), base::TimeDelta(), nullptr, nullptr);
+        this, base::TimeTicks::Now(), nullptr, nullptr, nullptr, std::nullopt);
   }
 }
 
 void ScrollUpdateEventMetrics::CoalesceWith(
     const ScrollUpdateEventMetrics& newer_scroll_update) {
+  DCHECK(!is_synthetic_);
+  DCHECK(!newer_scroll_update.is_synthetic_);
+  EventMetrics::CoalesceWith(newer_scroll_update);
   last_timestamp_ = newer_scroll_update.last_timestamp_;
   delta_ += newer_scroll_update.delta_;
   predicted_delta_ += newer_scroll_update.predicted_delta_;
   coalesced_event_count_ += newer_scroll_update.coalesced_event_count_;
+  did_scroll_ |= newer_scroll_update.did_scroll_;
 }
 
 ScrollUpdateEventMetrics* ScrollUpdateEventMetrics::AsScrollUpdate() {
@@ -827,7 +862,7 @@ PinchEventMetrics::PinchEventMetrics(const PinchEventMetrics&) = default;
 PinchEventMetrics::~PinchEventMetrics() {
   if (should_record_tracing()) {
     EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
-        this, base::TimeTicks::Now(), base::TimeDelta(), nullptr, nullptr);
+        this, base::TimeTicks::Now(), nullptr, nullptr, nullptr, std::nullopt);
   }
 }
 
@@ -847,9 +882,11 @@ std::unique_ptr<EventMetrics> PinchEventMetrics::Clone() const {
 EventMetricsSet::EventMetricsSet() = default;
 EventMetricsSet::~EventMetricsSet() = default;
 EventMetricsSet::EventMetricsSet(EventMetrics::List main_thread_event_metrics,
-                                 EventMetrics::List impl_thread_event_metrics)
+                                 EventMetrics::List impl_thread_event_metrics,
+                                 EventMetrics::List raster_thread_event_metrics)
     : main_event_metrics(std::move(main_thread_event_metrics)),
-      impl_event_metrics(std::move(impl_thread_event_metrics)) {}
+      impl_event_metrics(std::move(impl_thread_event_metrics)),
+      raster_event_metrics(std::move(raster_thread_event_metrics)) {}
 EventMetricsSet::EventMetricsSet(EventMetricsSet&& other) = default;
 EventMetricsSet& EventMetricsSet::operator=(EventMetricsSet&& other) = default;
 

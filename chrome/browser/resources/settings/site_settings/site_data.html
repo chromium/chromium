@@ -1,34 +1,7 @@
-<style include="settings-shared">
-  .content-settings-header,
-  .radio-group {
-    padding: 0 var(--cr-section-padding);
-  }
-
-  .radio-group-sub-heading {
-    padding-bottom: 10px;
-  }
-
-  settings-collapse-radio-button {
-    --settings-collapse-toggle-min-height: var(--cr-section-min-height);
-  }
-
-  settings-collapse-radio-button.two-line {
-    --settings-collapse-toggle-min-height:
-        var(--cr-section-two-line-min-height);
-  }
-
-  settings-collapse-radio-button:not(:first-of-type) {
-    --settings-collapse-separator-line: var(--cr-separator-line);
-  }
-
-  #exceptionHeader {
-    padding: 0 var(--cr-section-padding);
-  }
-
-  #exceptionHeaderSubLabel {
-    padding-bottom: 10px;
-  }
-</style>
+<style include="settings-shared site-settings-shared"></style>
+<settings-subpage page-title="$i18n{siteDataPageTitle}"
+    search-label="$i18n{siteSettingsAllSitesSearch}"
+    search-term="{{searchTerm}}" route-path$="[[routePath]]">
 <div class="content-settings-header secondary">
   $i18n{siteDataPageDescription}
 </div>
@@ -46,7 +19,7 @@
         pref="[[prefs.generated.cookie_default_content_setting]]"
         label="$i18n{siteDataPageAllowRadioLabel}"
         sub-label="$i18n{siteDataPageAllowRadioSubLabel}"
-        icon="settings:database">
+        icon="privacy:database">
     </settings-collapse-radio-button>
     <settings-collapse-radio-button id="defaultSessionOnly" no-collapse
         class="two-line"
@@ -54,7 +27,7 @@
         pref="[[prefs.generated.cookie_default_content_setting]]"
         label="$i18n{siteDataPageClearOnExitRadioLabel}"
         sub-label="$i18n{siteDataPageClearOnExitRadioSubLabel}"
-        icon="settings:database">
+        icon="privacy:database">
     </settings-collapse-radio-button>
     <settings-collapse-radio-button id="defaultBlock" no-collapse
         class="two-line"
@@ -62,7 +35,7 @@
         pref="[[prefs.generated.cookie_default_content_setting]]"
         label="$i18n{siteDataPageBlockRadioLabel}"
         sub-label="$i18n{siteDataPageBlockRadioSublabel}"
-        icon="settings:database-off">
+        icon="privacy:database-off">
     </settings-collapse-radio-button>
   </settings-radio-group>
 </div>
@@ -113,3 +86,4 @@
     </div>
   </cr-dialog>
 </template>
+</settings-subpage>

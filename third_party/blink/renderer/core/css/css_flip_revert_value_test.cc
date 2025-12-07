@@ -35,8 +35,9 @@ TEST(CSSFlipRevertValueTest, NotEquals) {
                                                 TryTacticTransform()),
       *MakeGarbageCollected<CSSFlipRevertValue>(
           CSSPropertyID::kLeft,
-          TryTacticTransform(TryTacticList{
-              TryTactic::kFlipBlock, TryTactic::kNone, TryTactic::kNone})));
+          TryTacticTransform(TryTacticList{TryTactic::kFlipBlock,
+                                           TryTactic::kNone, TryTactic::kNone},
+                             WritingMode::kHorizontalTb)));
 }
 
 }  // namespace blink

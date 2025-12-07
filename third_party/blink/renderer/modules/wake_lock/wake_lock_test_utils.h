@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WAKE_LOCK_WAKE_LOCK_TEST_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WAKE_LOCK_WAKE_LOCK_TEST_UTILS_H_
 
+#include <array>
 #include <optional>
 
 #include "base/functional/callback.h"
@@ -88,7 +89,7 @@ class MockWakeLockService : public mojom::blink::WakeLockService {
       const String& description,
       mojo::PendingReceiver<device::mojom::blink::WakeLock> receiver) override;
 
-  MockWakeLock mock_wake_lock_[V8WakeLockType::kEnumSize];
+  std::array<MockWakeLock, V8WakeLockType::kEnumSize> mock_wake_lock_;
   mojo::ReceiverSet<mojom::blink::WakeLockService> receivers_;
 };
 
@@ -117,9 +118,11 @@ class MockPermissionService final : public mojom::blink::PermissionService {
                      HasPermissionCallback) override;
   void RegisterPageEmbeddedPermissionControl(
       Vector<mojom::blink::PermissionDescriptorPtr> permissions,
+      mojom::blink::EmbeddedPermissionRequestDescriptorPtr descriptor,
       mojo::PendingRemote<mojom::blink::EmbeddedPermissionControlClient> client)
       override;
   void RequestPageEmbeddedPermission(
+      Vector<mojom::blink::PermissionDescriptorPtr> descriptors,
       mojom::blink::EmbeddedPermissionRequestDescriptorPtr permissions,
       RequestPageEmbeddedPermissionCallback) override;
   void RequestPermission(mojom::blink::PermissionDescriptorPtr permission,
@@ -147,10 +150,12 @@ class MockPermissionService final : public mojom::blink::PermissionService {
 
   mojo::Receiver<mojom::blink::PermissionService> receiver_{this};
 
-  std::optional<mojom::blink::PermissionStatus>
-      permission_responses_[V8WakeLockType::kEnumSize];
+  std::array<std::optional<mojom::blink::PermissionStatus>,
+             V8WakeLockType::kEnumSize>
+      permission_responses_;
 
-  base::OnceClosure request_permission_callbacks_[V8WakeLockType::kEnumSize];
+  std::array<base::OnceClosure, V8WakeLockType::kEnumSize>
+      request_permission_callbacks_;
 };
 
 // Overrides requests for WakeLockService with MockWakeLockService instances.
@@ -177,10 +182,10 @@ class WakeLockTestingContext final {
   MockPermissionService& GetPermissionService();
 
   // Synchronously waits for |promise| to be fulfilled.
-  void WaitForPromiseFulfillment(ScriptPromiseUntyped promise);
+  void WaitForPromiseFulfillment(ScriptPromise<WakeLockSentinel> promise);
 
   // Synchronously waits for |promise| to be rejected.
-  void WaitForPromiseRejection(ScriptPromiseUntyped promise);
+  void WaitForPromiseRejection(ScriptPromise<WakeLockSentinel> promise);
 
  private:
   MockPermissionService permission_service_;

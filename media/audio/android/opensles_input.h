@@ -9,6 +9,7 @@
 #include <SLES/OpenSLES_Android.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 
 #include "base/compiler_specific.h"
@@ -101,7 +102,7 @@ class OpenSLESInputStream : public AudioInputStream {
 
   // Audio buffers that are allocated in the constructor based on
   // info from audio parameters.
-  uint8_t* audio_data_[kMaxNumOfBuffersInQueue];
+  std::array<uint8_t*, kMaxNumOfBuffersInQueue> audio_data_;
 
   int active_buffer_index_;
   int buffer_size_bytes_;

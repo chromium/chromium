@@ -32,6 +32,5 @@ after:
 |     "This<#selection-caret>"
 |   <b>
 |     " is another paragraph."
-|   <br>
 | "
 "

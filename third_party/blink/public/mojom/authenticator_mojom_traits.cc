@@ -22,11 +22,10 @@ EnumTraits<blink::mojom::AuthenticatorTransport,
       return blink::mojom::AuthenticatorTransport::HYBRID;
     case ::device::FidoTransportProtocol::kInternal:
       return blink::mojom::AuthenticatorTransport::INTERNAL;
-    case ::device::FidoTransportProtocol::kAndroidAccessory:
+    case ::device::FidoTransportProtocol::kDeprecatedAoa:
       return blink::mojom::AuthenticatorTransport::HYBRID;
   }
-  NOTREACHED_IN_MIGRATION();
-  return blink::mojom::AuthenticatorTransport::USB;
+  NOTREACHED();
 }
 
 // static
@@ -51,8 +50,7 @@ bool EnumTraits<blink::mojom::AuthenticatorTransport,
       *output = ::device::FidoTransportProtocol::kInternal;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -63,8 +61,7 @@ EnumTraits<blink::mojom::PublicKeyCredentialType,
     case ::device::CredentialType::kPublicKey:
       return blink::mojom::PublicKeyCredentialType::PUBLIC_KEY;
   }
-  NOTREACHED_IN_MIGRATION();
-  return blink::mojom::PublicKeyCredentialType::PUBLIC_KEY;
+  NOTREACHED();
 }
 
 // static
@@ -76,8 +73,7 @@ bool EnumTraits<blink::mojom::PublicKeyCredentialType, device::CredentialType>::
       *output = ::device::CredentialType::kPublicKey;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -123,8 +119,7 @@ blink::mojom::AuthenticatorAttachment EnumTraits<
     case ::device::AuthenticatorAttachment::kCrossPlatform:
       return blink::mojom::AuthenticatorAttachment::CROSS_PLATFORM;
   }
-  NOTREACHED_IN_MIGRATION();
-  return blink::mojom::AuthenticatorAttachment::NO_PREFERENCE;
+  NOTREACHED();
 }
 
 // static
@@ -143,8 +138,7 @@ bool EnumTraits<blink::mojom::AuthenticatorAttachment,
       *output = ::device::AuthenticatorAttachment::kCrossPlatform;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -160,8 +154,7 @@ blink::mojom::ResidentKeyRequirement EnumTraits<
     case ::device::ResidentKeyRequirement::kRequired:
       return blink::mojom::ResidentKeyRequirement::REQUIRED;
   }
-  NOTREACHED_IN_MIGRATION();
-  return blink::mojom::ResidentKeyRequirement::DISCOURAGED;
+  NOTREACHED();
 }
 
 // static
@@ -180,8 +173,7 @@ bool EnumTraits<blink::mojom::ResidentKeyRequirement,
       *output = ::device::ResidentKeyRequirement::kRequired;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -197,8 +189,7 @@ EnumTraits<blink::mojom::UserVerificationRequirement,
     case ::device::UserVerificationRequirement::kDiscouraged:
       return blink::mojom::UserVerificationRequirement::DISCOURAGED;
   }
-  NOTREACHED_IN_MIGRATION();
-  return blink::mojom::UserVerificationRequirement::REQUIRED;
+  NOTREACHED();
 }
 
 // static
@@ -217,8 +208,7 @@ bool EnumTraits<blink::mojom::UserVerificationRequirement,
       *output = ::device::UserVerificationRequirement::kDiscouraged;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -233,8 +223,7 @@ EnumTraits<blink::mojom::LargeBlobSupport, device::LargeBlobSupport>::ToMojom(
     case ::device::LargeBlobSupport::kPreferred:
       return blink::mojom::LargeBlobSupport::PREFERRED;
   }
-  NOTREACHED_IN_MIGRATION();
-  return blink::mojom::LargeBlobSupport::NOT_REQUESTED;
+  NOTREACHED();
 }
 
 // static
@@ -252,8 +241,7 @@ bool EnumTraits<blink::mojom::LargeBlobSupport, device::LargeBlobSupport>::
       *output = ::device::LargeBlobSupport::kPreferred;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -364,8 +352,7 @@ EnumTraits<blink::mojom::AttestationConveyancePreference,
         kEnterpriseApprovedByBrowser:
       return blink::mojom::AttestationConveyancePreference::ENTERPRISE;
   }
-  NOTREACHED_IN_MIGRATION();
-  return blink::mojom::AttestationConveyancePreference::NONE;
+  NOTREACHED();
 }
 
 // static
@@ -388,8 +375,7 @@ bool EnumTraits<blink::mojom::AttestationConveyancePreference,
           kEnterpriseIfRPListedOnAuthenticator;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace mojo

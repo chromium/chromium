@@ -1,0 +1,12 @@
+Tests frameStartedNavigating events with tab targets and user action opening a new page
+frameStartedNavigating{
+    method : Page.frameStartedNavigating
+    params : {
+        frameId : <string 0>
+        loaderId : <string 1>
+        navigationType : differentDocument
+        url : http://127.0.0.1:8000/inspector-protocol/resources/empty.html?link.click
+    }
+    sessionId : <string 2>
+}
+

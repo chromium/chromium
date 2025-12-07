@@ -21,6 +21,7 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwCookieManager;
 import org.chromium.android_webview.AwSettings;
+import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
@@ -30,6 +31,7 @@ import org.chromium.content_public.browser.test.util.HistoryUtils;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.util.TestWebServer;
+import org.chromium.net.test.util.WebServer;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -278,7 +280,7 @@ public class LoadDataWithBaseUrlTest extends AwParameterizedTest {
             final String html = getCrossOriginAccessTestPageHtml(frameUrl);
             final String baseUrl = "http://www.google.com/"; // Treat the iframe as 3P.
             loadDataWithBaseUrlSync(html, "text/html", false, baseUrl, null);
-            TestWebServer.HTTPRequest request =
+            WebServer.HTTPRequest request =
                     webServer.getLastRequest("/" + CommonResources.ABOUT_FILENAME);
             Assert.assertEquals("Should send 3P cookies", cookie, request.headerValue("Cookie"));
         } finally {
@@ -644,7 +646,6 @@ public class LoadDataWithBaseUrlTest extends AwParameterizedTest {
      *
      * @param baseUri Base URI to start from.
      * @param textUri The text URI to fetch the text from.
-     * @throws Throwable
      */
     private boolean verifyXhrForUrls(String baseUri, String textUri) throws Throwable {
         final String successMsg = "SUCCESS";
@@ -680,7 +681,7 @@ public class LoadDataWithBaseUrlTest extends AwParameterizedTest {
                     @Override
                     public WebResourceResponseInfo shouldInterceptRequest(
                             AwWebResourceRequest request) {
-                        String url = request.url;
+                        String url = request.getUrl();
                         if (textUri.equals(url)) {
                             return new WebResourceResponseInfo(
                                     "text/plaintext",

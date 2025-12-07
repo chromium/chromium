@@ -5,14 +5,16 @@
 #ifndef IOS_CHROME_BROWSER_POLICY_MODEL_CLOUD_USER_POLICY_SIGNIN_SERVICE_H_
 #define IOS_CHROME_BROWSER_POLICY_MODEL_CLOUD_USER_POLICY_SIGNIN_SERVICE_H_
 
-#include <memory>
+#import <memory>
 
 #import "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
-#include "components/policy/core/browser/cloud/user_policy_signin_service_base.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
+#import "base/scoped_observation.h"
+#import "components/policy/core/browser/cloud/user_policy_signin_service_base.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 
-class ChromeBrowserState;
+namespace enterprise {
+class ProfileIdService;
+}  // namespace enterprise
 
 namespace policy {
 
@@ -22,10 +24,11 @@ class CloudPolicyClientRegistrationHelper;
 class UserPolicySigninService : public UserPolicySigninServiceBase,
                                 public signin::IdentityManager::Observer {
  public:
-  // Creates a UserPolicySigninService associated with the `browser_state`.
+  // Creates a UserPolicySigninService associated with the profile.
   UserPolicySigninService(
-      PrefService* browser_state_prefs,
+      PrefService* pref_service,
       PrefService* local_state,
+      enterprise::ProfileIdService* profile_id_service,
       DeviceManagementService* device_management_service,
       UserCloudPolicyManager* policy_manager,
       signin::IdentityManager* identity_manager,
@@ -38,6 +41,9 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override;
 
+  // CloudPolicyClient::Observer implementation:
+  void OnPolicyFetched(CloudPolicyClient* client) override;
+
   // KeyedService implementation:
   void Shutdown() override;
 
@@ -47,9 +53,7 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
  private:
   // UserPolicySigninServiceBase implementation:
   base::TimeDelta GetTryRegistrationDelay() override;
-  void ProhibitSignoutIfNeeded() override;
   void UpdateLastPolicyCheckTime() override;
-  signin::ConsentLevel GetConsentLevelForRegistration() override;
   bool CanApplyPolicies(bool check_for_refresh_token) override;
   std::string GetProfileId() override;
 
@@ -60,8 +64,9 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
   // Helper used to register for user policy.
   std::unique_ptr<CloudPolicyClientRegistrationHelper> registration_helper_;
 
-  // The PrefService associated with the BrowserState.
-  raw_ptr<PrefService> browser_state_prefs_;
+  // The PrefService and ProfileIdService associated with the Profile.
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<enterprise::ProfileIdService> profile_id_service_;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>

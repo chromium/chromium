@@ -7,10 +7,10 @@
 
 #include <optional>
 #include <ostream>
+#include <variant>
 
-#include "ash/components/arc/mojom/auth.mojom.h"
-#include "ash/components/arc/session/arc_stop_reason.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "chromeos/ash/experiences/arc/mojom/auth.mojom.h"
+#include "chromeos/ash/experiences/arc/session/arc_stop_reason.h"
 
 enum class ProvisioningStatus;
 
@@ -57,9 +57,9 @@ class ArcProvisioningResult {
   // Returns the result of provisioning from inside ARC.
   const mojom::ArcSignInResult* sign_in_result() const;
 
-  absl::variant<mojom::ArcSignInResultPtr,
-                ArcStopReason,
-                ChromeProvisioningTimeout>
+  std::variant<mojom::ArcSignInResultPtr,
+               ArcStopReason,
+               ChromeProvisioningTimeout>
       result_;
 };
 

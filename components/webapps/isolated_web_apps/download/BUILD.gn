@@ -1,0 +1,37 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("download") {
+  sources = [
+    "bundle_downloader.cc",
+    "bundle_downloader.h",
+  ]
+
+  deps = [
+    "//base",
+    "//net",
+    "//services/network/public/cpp",
+  ]
+
+  public_deps = [
+    "//base",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "bundle_downloader_unittest.cc" ]
+  deps = [
+    ":download",
+    "//base",
+    "//base/test:test_support",
+    "//net",
+    "//net/traffic_annotation:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

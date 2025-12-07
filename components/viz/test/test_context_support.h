@@ -40,15 +40,10 @@ class TestContextSupport : public gpu::ContextSupport {
                    base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)>
                        callback) override;
   void SetAggressivelyFreeResources(bool aggressively_free_resources) override;
-  uint64_t ShareGroupTracingGUID() const override;
+  bool GetAggressivelyFreeResources() const;
   void SetErrorMessageCallback(
       base::RepeatingCallback<void(const char*, int32_t)> callback) override;
-  bool ThreadSafeShallowLockDiscardableTexture(uint32_t texture_id) override;
-  void CompleteLockDiscardableTexureOnContextThread(
-      uint32_t texture_id) override;
-  bool ThreadsafeDiscardableTextureIsDeletedForTracing(
-      uint32_t texture_id) override;
-  void* MapTransferCacheEntry(uint32_t serialized_size) override;
+  base::span<uint8_t> MapTransferCacheEntry(uint32_t serialized_size) override;
   void UnmapAndCreateTransferCacheEntry(uint32_t type, uint32_t id) override;
   bool ThreadsafeLockTransferCacheEntry(uint32_t entry_type,
                                         uint32_t entry_id) override;
@@ -57,14 +52,6 @@ class TestContextSupport : public gpu::ContextSupport {
   void DeleteTransferCacheEntry(uint32_t entry_type,
                                 uint32_t entry_id) override;
   unsigned int GetTransferBufferFreeSize() const override;
-  bool IsJpegDecodeAccelerationSupported() const override;
-  bool IsWebPDecodeAccelerationSupported() const override;
-  bool CanDecodeWithHardwareAcceleration(
-      const cc::ImageHeaderMetadata* image_metadata) const override;
-  bool HasGrContextSupport() const override;
-  void SetGrContext(GrDirectContext* gr) override;
-  void WillCallGLFromSkia() override;
-  void DidCallGLFromSkia() override;
 
   void CallAllSyncPointCallbacks();
 
@@ -77,6 +64,7 @@ class TestContextSupport : public gpu::ContextSupport {
  private:
   std::vector<base::OnceClosure> sync_point_callbacks_;
   bool out_of_order_callbacks_;
+  bool aggressively_free_resources_ = false;
 
   base::WeakPtrFactory<TestContextSupport> weak_ptr_factory_{this};
 };

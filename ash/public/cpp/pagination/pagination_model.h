@@ -6,6 +6,7 @@
 #define ASH_PUBLIC_CPP_PAGINATION_PAGINATION_MODEL_H_
 
 #include <memory>
+#include <sstream>
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/compiler_specific.h"
@@ -136,7 +137,7 @@ class ASH_PUBLIC_EXPORT PaginationModel : public views::AnimationDelegateViews {
   void StartTransitionAnimation(const Transition& transition);
   void ResetTransitionAnimation();
 
-  // gfx::AnimationDelegate overrides:
+  // views::AnimationDelegateViews overrides:
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
 

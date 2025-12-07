@@ -43,7 +43,6 @@ namespace {
 // complete. If the experiment shows a significant input delay improvement,
 // replace with a more refined mitigation for pages that access many fonts.
 BASE_FEATURE(kLimitFontFamilyNamesPerRenderer,
-             "LimitFontFamilyNamesPerRenderer",
              base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr size_t kFamilyNamesLimit = 20;
 

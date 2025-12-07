@@ -9,9 +9,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/commerce/mock_commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/views/commerce/product_specifications_icon_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -21,6 +23,7 @@
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -38,7 +41,7 @@ class ProductSpecificationsIconViewIntegrationTest
     : public TestWithBrowserView {
  public:
   ProductSpecificationsIconViewIntegrationTest() {
-    MockCommerceUiTabHelper::ReplaceFactory();
+    commerce_ui_override_ = MockCommerceUiTabHelper::ReplaceFactory();
   }
 
   ProductSpecificationsIconViewIntegrationTest(
@@ -49,7 +52,8 @@ class ProductSpecificationsIconViewIntegrationTest
   ~ProductSpecificationsIconViewIntegrationTest() override = default;
 
   void SetUp() override {
-    test_features_.InitAndEnableFeature(commerce::kProductSpecifications);
+    test_features_.InitWithFeatures({commerce::kProductSpecifications},
+                                    /*disabled_features*/ {});
     TestWithBrowserView::SetUp();
 
     account_checker_ = std::make_unique<commerce::MockAccountChecker>();
@@ -104,6 +108,7 @@ class ProductSpecificationsIconViewIntegrationTest
   raw_ptr<commerce::MockShoppingService, AcrossTasksDanglingUntriaged>
       shopping_service_;
   std::unique_ptr<commerce::MockAccountChecker> account_checker_;
+  ui::UserDataFactory::ScopedOverride commerce_ui_override_;
 };
 
 TEST_F(ProductSpecificationsIconViewIntegrationTest, IconVisibility) {
@@ -128,8 +133,32 @@ TEST_F(ProductSpecificationsIconViewIntegrationTest, IconExecution) {
   auto* icon_view = GetChip();
   EXPECT_TRUE(icon_view->GetVisible());
 
+  ON_CALL(*GetTabHelper(), GetComparisonSetName)
+      .WillByDefault(testing::Return(u"Set"));
+
+  ToastController* toast_controller =
+      browser()->browser_window_features()->toast_controller();
+  EXPECT_FALSE(toast_controller->IsShowingToast());
+
   EXPECT_CALL(*GetTabHelper(), OnProductSpecificationsIconClicked).Times(1);
   icon_view->ExecuteForTesting();
+
+  // Verify toast is showing.
+  EXPECT_TRUE(toast_controller->IsShowingToast());
+
+  GURL expected_comparison_table_url = GURL("example.com");
+  ON_CALL(*GetTabHelper(), GetComparisonTableURL)
+      .WillByDefault(testing::Return(expected_comparison_table_url));
+
+  // Simulate clicking the "Open" button in the toast.
+  GetTabHelper()->OnOpenComparePageClicked();
+  EXPECT_EQ(browser()
+                ->browser_window_features()
+                ->tab_strip_model()
+                ->GetActiveTab()
+                ->GetContents()
+                ->GetLastCommittedURL(),
+            expected_comparison_table_url);
 }
 
 TEST_F(ProductSpecificationsIconViewIntegrationTest, TestVisualState) {

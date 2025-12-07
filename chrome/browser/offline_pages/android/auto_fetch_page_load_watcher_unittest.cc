@@ -63,7 +63,7 @@ class MockAutoFetchNotifier : public AutoFetchNotifier {
 
 class FakeInternalImplDelegate : public InternalImpl::Delegate {
  public:
-  ~FakeInternalImplDelegate() override {}
+  ~FakeInternalImplDelegate() override = default;
   void SetNotificationStateToShown(int64_t request_id) override {
     set_notification_state_requests.push_back(request_id);
   }
@@ -80,7 +80,7 @@ class FakeInternalImplDelegate : public InternalImpl::Delegate {
 // tab information.
 class StubTabFinder : public AutoFetchPageLoadWatcher::AndroidTabFinder {
  public:
-  ~StubTabFinder() override {}
+  ~StubTabFinder() override = default;
 
   // AutoFetchPageLoadWatcher::AndroidTabFinder.
   std::map<int, TabInfo> FindAndroidTabs(
@@ -337,7 +337,8 @@ TEST_F(AutoFetchInternalImplFencedFrameTest,
       content::NavigationSimulator::CreateRendererInitiated(kFencedFrameUrl,
                                                             fenced_frame_rfh);
   navigation_simulator->Commit();
-  EXPECT_TRUE(fenced_frame_rfh->IsFencedFrameRoot());
+  EXPECT_TRUE(
+      navigation_simulator->GetFinalRenderFrameHost()->IsFencedFrameRoot());
 
   // AutoFetchPageLoadWatcher should not store the URL navigated in the fenced
   // frame.

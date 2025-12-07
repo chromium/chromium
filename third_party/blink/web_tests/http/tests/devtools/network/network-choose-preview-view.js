@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {TestRunner} from 'test_runner';
-import {NetworkTestRunner} from 'network_test_runner';
+import { TestRunner } from 'test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
 import * as Network from 'devtools/panels/network/network.js';
 import * as SourceFrame from 'devtools/ui/legacy/components/source_frame/source_frame.js';
 import * as UIModule from 'devtools/ui/legacy/legacy.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
 
 (async function() {
   'use strict';
@@ -17,10 +17,11 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   await TestRunner.showPanel('network');
 
   function createNetworkRequest(mimeType, content, statusCode, resourceType) {
-    var request = SDK.NetworkRequest.NetworkRequest.create(0, 'http://localhost');
+    const request = SDK.NetworkRequest.NetworkRequest.create(
+      'requestId', 'http://localhost', '', null, null, null);
     request.setResourceType(resourceType);
     request.mimeType = mimeType;
-    request.setContentDataProvider(() => Promise.resolve({error: null, content: content, encoded: false}));
+    request.setContentDataProvider(async () => new TextUtils.ContentData.ContentData(content, false, mimeType));
     if (statusCode !== undefined)
       request.statusCode = statusCode;
     return request;

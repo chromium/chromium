@@ -4,7 +4,8 @@
 
 package org.chromium.chrome.browser.language.settings;
 
-import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.buildMenuListItem;
+import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.components.browser_ui.widget.ListItemBuilder.buildSimpleMenuItem;
 
 import android.app.Activity;
 import android.content.Context;
@@ -22,10 +23,18 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableObservableSupplier;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
@@ -41,7 +50,9 @@ import java.util.Collection;
  * menu and added with the `Add Language` button. Subclasses will override makeFragmentListDelegate
  * to populate the LanguageItem list and provide callbacks for adding and removing items.
  */
-public abstract class LanguageItemListFragment extends Fragment implements ProfileDependentSetting {
+@NullMarked
+public abstract class LanguageItemListFragment extends Fragment
+        implements EmbeddableSettingsPage, ProfileDependentSetting {
     // Request code for returning from Select Language Fragment
     private static final int REQUEST_CODE_SELECT_LANGUAGE = 1;
 
@@ -69,11 +80,11 @@ public abstract class LanguageItemListFragment extends Fragment implements Profi
             final LanguageItem currentLanguageItem = getItemByPosition(position);
 
             ModelList menuItems = new ModelList();
-            menuItems.add(buildMenuListItem(R.string.remove, 0, 0));
+            menuItems.add(buildSimpleMenuItem(R.string.remove));
 
             // ListMenu.Delegate handles return from three dot menu.
             ListMenu.Delegate delegate =
-                    (model) -> {
+                    (model, view) -> {
                         int textId = model.get(ListMenuItemProperties.TITLE_ID);
                         if (textId == R.string.remove) {
                             onLanguageRemoved(currentLanguageItem.getCode());
@@ -93,21 +104,30 @@ public abstract class LanguageItemListFragment extends Fragment implements Profi
         }
     }
 
-    private Profile mProfile;
+    private @MonotonicNonNull Profile mProfile;
     private ListAdapter mAdapter;
     private ListDelegate mListDelegate;
+    private final SettableObservableSupplier<String> mPageTitle =
+            ObservableSuppliers.createMonotonic();
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mListDelegate = makeFragmentListDelegate();
-        getActivity().setTitle(getLanguageListTitle(getContext()));
+        mPageTitle.set(getLanguageListTitle(getContext()));
         recordFragmentImpression();
     }
 
     @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
+    }
+
+    @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         // Inflate the layout for this fragment.
         View inflatedView =
                 inflater.inflate(R.layout.language_list_with_add_button, container, false);
@@ -119,7 +139,7 @@ public abstract class LanguageItemListFragment extends Fragment implements Profi
         mRecyclerView.addItemDecoration(
                 new DividerItemDecoration(activity, layoutManager.getOrientation()));
 
-        mAdapter = new ListAdapter(activity, mProfile);
+        mAdapter = new ListAdapter(activity, assumeNonNull(mProfile));
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.onDataUpdated();
         ScrollView scrollView = inflatedView.findViewById(R.id.scroll_view);
@@ -139,28 +159,59 @@ public abstract class LanguageItemListFragment extends Fragment implements Profi
         addLanguageButton.setOnClickListener(
                 view -> { // Lambda for View.OnClickListener
                     recordAddLanguageImpression();
-                    Intent intent =
-                            SettingsLauncherFactory.createSettingsLauncher()
-                                    .createSettingsActivityIntent(
-                                            getActivity(), SelectLanguageFragment.class);
-                    intent.putExtra(
-                            SelectLanguageFragment.INTENT_POTENTIAL_LANGUAGES,
-                            getPotentialLanguageType());
-                    startActivityForResult(intent, REQUEST_CODE_SELECT_LANGUAGE);
+                    Bundle args = new Bundle();
+                    args.putShort(
+                            SelectLanguageFragment.KEY_POTENTIAL_LANGUAGES,
+                            (short) getPotentialLanguageType());
+                    if (!ChromeFeatureList.sSettingsSingleActivity.isEnabled()) {
+                        // Use an Intent with extra. Return value is received via onActivityResult.
+                        Intent intent =
+                                SettingsNavigationFactory.createSettingsNavigation()
+                                        .createSettingsIntent(
+                                                getActivity(), SelectLanguageFragment.class, args);
+                        startActivityForResult(intent, REQUEST_CODE_SELECT_LANGUAGE);
+                        return;
+                    }
+
+                    // On using fragment, the result is received via this result listener.
+                    var fragmentManager = getFragmentManager();
+                    assumeNonNull(fragmentManager);
+                    fragmentManager.setFragmentResultListener(
+                            SelectLanguageFragment.FRAGMENT_RESULT_TAG,
+                            this,
+                            (String requestKey, Bundle result) -> {
+                                String code =
+                                        result.getString(
+                                                SelectLanguageFragment.KEY_SELECTED_LANGUAGE);
+                                assumeNonNull(code);
+                                onSelectLanguageResult(code);
+                            });
+                    SettingsNavigationFactory.createSettingsNavigation()
+                            .startSettings(
+                                    getActivity(),
+                                    SelectLanguageFragment.class,
+                                    args,
+                                    /* addToBackStack= */ true);
                 });
 
         return inflatedView;
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, requestCode, data);
         if (requestCode == REQUEST_CODE_SELECT_LANGUAGE && resultCode == Activity.RESULT_OK) {
-            String code = data.getStringExtra(SelectLanguageFragment.INTENT_SELECTED_LANGUAGE);
-            onLanguageAdded(code);
-            mAdapter.onDataUpdated();
-            recordAddAction();
+            assumeNonNull(data);
+            String code = data.getStringExtra(SelectLanguageFragment.KEY_SELECTED_LANGUAGE);
+            assumeNonNull(code);
+            onSelectLanguageResult(code);
         }
+    }
+
+    private void onSelectLanguageResult(String code) {
+        onLanguageAdded(code);
+        mAdapter.onDataUpdated();
+        recordAddAction();
     }
 
     @Override
@@ -170,6 +221,7 @@ public abstract class LanguageItemListFragment extends Fragment implements Profi
 
     /** Return the {@link Profile} associated with this language item. */
     public Profile getProfile() {
+        assert mProfile != null : "Attempting to use the profile before initialization.";
         return mProfile;
     }
 
@@ -209,7 +261,7 @@ public abstract class LanguageItemListFragment extends Fragment implements Profi
     protected abstract void recordRemoveAction();
 
     /** Callback for when a language is added to the LanguageItemList. */
-    protected abstract void onLanguageAdded(String code);
+    protected abstract void onLanguageAdded(@Nullable String code);
 
     /** Callback for when a language is removed to the LanguageItemList. */
     protected abstract void onLanguageRemoved(String code);

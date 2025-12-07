@@ -16,6 +16,9 @@ extern NSString* const kFakeAuthAddAccountButtonIdentifier;
 // Accessibility identifier for the cancel button in
 // FakeAuthActivityViewController.
 extern NSString* const kFakeAuthCancelButtonIdentifier;
+// Accessibility identifier for the dismiss button in
+// FakeAuthActivityViewController.
+extern NSString* const kFakeAuthDismissButtonIdentifier;
 
 // Accessibility identifier for FakeAccountDetailsViewController.
 extern NSString* const kFakeAccountDetailsViewIdentifier;

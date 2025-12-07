@@ -4,9 +4,11 @@
 
 #include "content/public/test/resource_load_observer.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
+#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "content/public/browser/render_frame_host.h"
@@ -47,7 +49,7 @@ void ResourceLoadObserver::CheckResourceLoaded(
     const GURL& referrer,
     const std::string& load_method,
     network::mojom::RequestDestination request_destination,
-    const base::FilePath::StringPieceType& served_file_name,
+    const base::FilePath::StringViewType& served_file_name,
     const std::string& mime_type,
     const std::string& ip_address,
     bool was_cached,
@@ -62,13 +64,14 @@ void ResourceLoadObserver::CheckResourceLoaded(
     }
 
     resource_load_info_found = true;
-    int64_t file_size = -1;
+    std::optional<int64_t> file_size;
     if (!served_file_name.empty()) {
       base::ScopedAllowBlockingForTesting allow_blocking;
       base::FilePath test_dir;
       ASSERT_TRUE(base::PathService::Get(content::DIR_TEST_DATA, &test_dir));
       base::FilePath served_file = test_dir.Append(served_file_name);
-      ASSERT_TRUE(GetFileSize(served_file, &file_size));
+      file_size = base::GetFileSize(served_file);
+      ASSERT_TRUE(file_size.has_value());
     }
     EXPECT_EQ(referrer, resource_load_info->referrer);
     EXPECT_EQ(load_method, resource_load_info->method);
@@ -97,9 +100,11 @@ void ResourceLoadObserver::CheckResourceLoaded(
       CheckTime(timing.connect_timing.connect_start);
       CheckTime(timing.connect_timing.connect_end);
     }
-    if (file_size != -1) {
-      EXPECT_EQ(file_size, resource_load_info->raw_body_bytes);
-      EXPECT_LT(file_size, resource_load_info->total_received_bytes);
+    if (file_size.has_value()) {
+      EXPECT_EQ(file_size.value(),
+                resource_load_info->raw_body_bytes.InBytes());
+      EXPECT_LT(file_size.value(),
+                resource_load_info->total_received_bytes.InBytes());
     }
   }
   EXPECT_TRUE(resource_load_info_found);

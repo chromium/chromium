@@ -59,7 +59,7 @@ public class ProxyChangeListenerTest {
             }
         }
 
-        private List<RegisteredReceiver> mReceivers = new ArrayList<>();
+        private final List<RegisteredReceiver> mReceivers = new ArrayList<>();
 
         FakeContext() {
             super(
@@ -125,8 +125,8 @@ public class ProxyChangeListenerTest {
 
         // Create the listener that's going to be used for tests
         mListener = ProxyChangeListener.create();
-        mListener.setDelegateForTesting(
-                mDelegate = Mockito.mock(ProxyChangeListener.Delegate.class));
+        mDelegate = Mockito.mock(ProxyChangeListener.Delegate.class);
+        mListener.setDelegateForTesting(mDelegate);
         mListener.start(0);
 
         // These are looking for a call to register*NonExported*BroadcastReceiver to register a
@@ -141,7 +141,7 @@ public class ProxyChangeListenerTest {
                                                 !filter.matchAction(Proxy.PROXY_CHANGE_ACTION)),
                                 ArgumentMatchers.isNull(),
                                 ArgumentMatchers.isNull(),
-                                ArgumentMatchers.eq(ContextUtils.RECEIVER_NOT_EXPORTED));
+                                ArgumentMatchers.eq(Context.RECEIVER_NOT_EXPORTED));
             } else {
                 Mockito.verify(mAppContext)
                         .registerReceiver(
@@ -181,8 +181,8 @@ public class ProxyChangeListenerTest {
         mListener.stop();
         Assert.assertEquals(
                 "All receivers should have been unregistered",
-                mAppContext.getReceivers().size(),
-                0);
+                0,
+                mAppContext.getReceivers().size());
     }
 
     @Test

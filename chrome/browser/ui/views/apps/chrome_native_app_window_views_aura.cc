@@ -8,47 +8,41 @@
 
 #include "apps/ui/views/app_window_frame_view.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/apps/app_window_easy_resize_window_targeter.h"
 #include "chrome/browser/ui/views/apps/shaped_app_window_targeter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_LINUX)
 #include "chrome/browser/shell_integration_linux.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/lacros_extensions_util.h"
-#include "chrome/browser/profiles/profile.h"
-#endif
-
 using extensions::AppWindow;
 
-ui::WindowShowState
-ChromeNativeAppWindowViewsAura::GetRestorableState(
-    const ui::WindowShowState restore_state) const {
+ui::mojom::WindowShowState ChromeNativeAppWindowViewsAura::GetRestorableState(
+    const ui::mojom::WindowShowState restore_state) const {
   // Allowlist states to return so that invalid and transient states
   // are not saved and used to restore windows when they are recreated.
   switch (restore_state) {
-    case ui::SHOW_STATE_NORMAL:
-    case ui::SHOW_STATE_MAXIMIZED:
-    case ui::SHOW_STATE_FULLSCREEN:
+    case ui::mojom::WindowShowState::kNormal:
+    case ui::mojom::WindowShowState::kMaximized:
+    case ui::mojom::WindowShowState::kFullscreen:
       return restore_state;
 
-    case ui::SHOW_STATE_DEFAULT:
-    case ui::SHOW_STATE_MINIMIZED:
-    case ui::SHOW_STATE_INACTIVE:
-    case ui::SHOW_STATE_END:
-      return ui::SHOW_STATE_NORMAL;
+    case ui::mojom::WindowShowState::kDefault:
+    case ui::mojom::WindowShowState::kMinimized:
+    case ui::mojom::WindowShowState::kInactive:
+    case ui::mojom::WindowShowState::kEnd:
+      return ui::mojom::WindowShowState::kNormal;
   }
 
-  return ui::SHOW_STATE_NORMAL;
+  return ui::mojom::WindowShowState::kNormal;
 }
 
 void ChromeNativeAppWindowViewsAura::OnBeforeWidgetInit(
@@ -67,18 +61,11 @@ void ChromeNativeAppWindowViewsAura::OnBeforeWidgetInit(
   init_params->wm_role_name = std::string(kX11WindowRoleApp);
 #endif  // BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  init_params->restore_session_id = app_window()->session_id().id();
-  if (app_window()->GetExtension()) {
-    init_params->restore_window_id_source = app_window()->GetExtension()->id();
-  }
-#endif
-
   ChromeNativeAppWindowViews::OnBeforeWidgetInit(create_params, init_params,
                                                  widget);
 }
 
-std::unique_ptr<views::NonClientFrameView>
+std::unique_ptr<views::FrameView>
 ChromeNativeAppWindowViewsAura::CreateNonStandardAppFrame() {
   auto frame = std::make_unique<apps::AppWindowFrameView>(
       widget(), this, HasFrameColor(), ActiveFrameColor(),
@@ -97,18 +84,21 @@ ChromeNativeAppWindowViewsAura::CreateNonStandardAppFrame() {
   return frame;
 }
 
-ui::WindowShowState ChromeNativeAppWindowViewsAura::GetRestoredState() const {
+ui::mojom::WindowShowState ChromeNativeAppWindowViewsAura::GetRestoredState()
+    const {
   // First normal states are checked.
-  if (IsMaximized())
-    return ui::SHOW_STATE_MAXIMIZED;
+  if (IsMaximized()) {
+    return ui::mojom::WindowShowState::kMaximized;
+  }
   if (IsFullscreen()) {
-    return ui::SHOW_STATE_FULLSCREEN;
+    return ui::mojom::WindowShowState::kFullscreen;
   }
 
   // Use kRestoreShowStateKey to get the window restore show state in case a
   // window is minimized/hidden.
-  ui::WindowShowState restore_state = widget()->GetNativeWindow()->GetProperty(
-      aura::client::kRestoreShowStateKey);
+  ui::mojom::WindowShowState restore_state =
+      widget()->GetNativeWindow()->GetProperty(
+          aura::client::kRestoreShowStateKey);
   return GetRestorableState(restore_state);
 }
 

@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/current_thread.h"
 #include "base/task/sequenced_task_runner.h"
@@ -27,12 +28,16 @@ class ListenerImpl : public PlatformChannelServer::Listener,
                      public base::win::ObjectWatcher::Delegate {
  public:
   ListenerImpl() {
-    memset(&connect_overlapped_, 0, sizeof(connect_overlapped_));
+    UNSAFE_TODO(memset(&connect_overlapped_, 0, sizeof(connect_overlapped_)));
   }
 
   ~ListenerImpl() override {
     if (server_.is_valid()) {
       ::CancelIo(server_.get());
+      // CancelIo is asynchronous; block the destruction on the kernel writing
+      // status into connect_overlapped_ to avoid a use-after-free.
+      DWORD bytes = 0;
+      ::GetOverlappedResult(server_.get(), &connect_overlapped_, &bytes, TRUE);
     }
   }
 
@@ -90,11 +95,12 @@ class ListenerImpl : public PlatformChannelServer::Listener,
 
   // base::win::ObjectWatcher:
   void OnObjectSignaled(HANDLE object) override {
-    // Event signaled. Check the status of the pipe. The only success case is
-    // when ConnectNamedPipe() returns ERROR_PIPE_CONNECTED here.
+    // Event signaled. Check the status of the pipe.
     CHECK_EQ(object, connect_event_.get());
-    BOOL ok = ::ConnectNamedPipe(server_.get(), &connect_overlapped_);
-    if (ok || ::GetLastError() != ERROR_PIPE_CONNECTED) {
+    DWORD bytes = 0;
+    const BOOL ok = ::GetOverlappedResult(server_.get(), &connect_overlapped_,
+                                          &bytes, FALSE);
+    if (!ok) {
       std::move(callback_).Run({});
       return;
     }

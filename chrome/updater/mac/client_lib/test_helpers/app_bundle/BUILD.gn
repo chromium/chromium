@@ -1,0 +1,29 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/apple/tweak_info_plist.gni")
+import("//build/config/mac/rules.gni")
+import("//chrome/updater/branding.gni")
+
+tweak_info_plist("registration_test_plist") {
+  info_plist = "Info.plist"
+}
+
+bundle_data("updater_zip_resource") {
+  public_deps = [ "//chrome/updater/mac:updater_zip" ]
+  sources = [ "${root_out_dir}/updater.zip" ]
+  outputs = [ "{{bundle_resources_dir}}/updater.zip" ]
+}
+
+mac_app_bundle("registration_test_app_bundle") {
+  testonly = true
+  info_plist_target = ":registration_test_plist"
+  sources = [ "registration_test_app.mm" ]
+  public_deps = [ ":updater_zip_resource" ]
+  deps = [
+    "//base",
+    "//chrome/updater/mac/client_lib:integration_test_sources",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}

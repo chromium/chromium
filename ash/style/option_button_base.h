@@ -56,6 +56,7 @@ class ASH_EXPORT OptionButtonBase : public views::LabelButton {
 
   // Updates the `select_` state.
   void SetSelected(bool selected);
+  virtual void OnSelectedChanged() {}
 
   // Sets a TypographyToken as the style of the label.
   void SetLabelStyle(TypographyToken token);
@@ -67,11 +68,9 @@ class ASH_EXPORT OptionButtonBase : public views::LabelButton {
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize() const override;
-  int GetHeightForWidth(int width) const override;
   void Layout(PassKey) override;
   void OnThemeChanged() override;
   void NotifyClick(const ui::Event& event) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  protected:
   // `icon_state` is a bitmask using the IconState enum.

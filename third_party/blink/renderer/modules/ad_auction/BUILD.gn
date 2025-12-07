@@ -17,7 +17,7 @@ blink_modules_sources("ad_auction") {
     "validate_blink_interest_group.h",
   ]
 
-  deps = [ "//third_party/blink/renderer/modules/geolocation:geolocation" ]
+  deps = [ "//third_party/blink/renderer/core" ]
 }
 
 source_set("unit_tests") {
@@ -34,7 +34,7 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/blink/public:test_headers",
     "//third_party/blink/public/common:headers",
-    "//third_party/blink/renderer/modules:modules",
+    "//third_party/blink/renderer/modules",
     "//third_party/blink/renderer/platform:test_support",
     "//url",
   ]

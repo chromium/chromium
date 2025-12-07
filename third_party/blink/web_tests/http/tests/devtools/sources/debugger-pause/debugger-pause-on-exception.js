@@ -25,8 +25,8 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   SourcesTestRunner.startDebuggerTest(step1);
 
   function step1() {
-    TestRunner.DebuggerAgent.setPauseOnExceptions(
-        SDK.DebuggerModel.PauseOnExceptionsState.PauseOnUncaughtExceptions);
+    TestRunner.DebuggerAgent.invoke_setPauseOnExceptions(
+        {state: SDK.DebuggerModel.PauseOnExceptionsState.PauseOnUncaughtExceptions});
     SourcesTestRunner.showScriptSource('debugger-pause-on-exception.js', step2);
   }
 
@@ -37,8 +37,8 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   }
 
   function step3() {
-    TestRunner.DebuggerAgent.setPauseOnExceptions(
-        SDK.DebuggerModel.PauseOnExceptionsState.DontPauseOnExceptions);
+    TestRunner.DebuggerAgent.invoke_setPauseOnExceptions(
+        {state: SDK.DebuggerModel.PauseOnExceptionsState.DontPauseOnExceptions});
     SourcesTestRunner.completeDebuggerTest();
   }
 })();

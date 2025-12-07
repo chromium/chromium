@@ -25,16 +25,15 @@ if (is_apple) {
   import("//build/config/apple/symbols.gni")
 }
 
-if (is_ios) {
-  import("//build/config/ios/config.gni")
-}
-
 declare_args() {
   # Set to true to use lld, the LLVM linker.
   # In late bring-up on macOS (see docs/mac_lld.md).
   # Tentatively used on iOS.
   # The default linker everywhere else.
   use_lld = is_clang && current_os != "zos"
+
+  # If false, build using C++20; otherwise, build using C++23.
+  use_cxx23 = true
 
   # If true, optimize for size.
   # Default to favoring speed over size for platforms not listed below.
@@ -48,6 +47,15 @@ declare_args() {
   # builds on Linux that could use a different version of the compiler.
   # With GCC, warnings in no-Chromium code are always not treated as errors.
   treat_warnings_as_errors = true
+
+  # Ignore unknown warning flags when using an older Clang version.
+  disable_unknown_warning_option = false
+
+  # How clang should report warnings, either false to report in the usual
+  # manner, or true to add source range information to the diagnostics in
+  # a form suitable for subsequent processing with scripts. With GCC, or
+  # on Windows, the warning format is not affected.
+  diagnostics_print_source_range_info = false
 
   # How many symbols to include in the build. This affects the performance of
   # the build since the symbols are large and dealing with them is slow.
@@ -68,26 +76,19 @@ declare_args() {
   # example, don't omit the frame pointer and leave in symbols.
   enable_profiling = false
 
-  # use_debug_fission: whether to use split DWARF debug info
-  # files. This can reduce link time significantly, but is incompatible
-  # with some utilities such as icecc and ccache. Requires gold and
-  # gcc >= 4.8 or clang.
-  # http://gcc.gnu.org/wiki/DebugFission
-  use_debug_fission = !is_android && !is_fuchsia && !is_apple && !is_win &&
-                      use_lld && cc_wrapper == ""
+  # use_debug_fission: whether to use split DWARF debug info files. This can
+  # reduce link time significantly.
+  use_debug_fission =
+      !is_android && !is_fuchsia && !is_apple && !is_win && use_lld
 
   # Enables support for ThinLTO, which links 3x-10x faster than full LTO. See
   # also http://blog.llvm.org/2016/06/thinlto-scalable-and-incremental-lto.html
   # Use it by default on official-optimized android and Chrome OS builds, but
   # not ARC or linux-chromeos since it's been seen to not play nicely with
   # Chrome's clang. crbug.com/1033839
-  # Disabled in iOS cronet builds since build step cronet_static_complete
-  # wants to build a .a file consumable by external clients, and they won't
-  # have the same LLVM revisions as us, making bitcode useless to them.
   use_thin_lto =
       is_cfi || (is_clang && is_official_build && chrome_pgo_phase != 1 &&
-                 (is_linux || is_win || is_mac ||
-                  (is_ios && use_lld && !is_cronet_build) ||
+                 (is_linux || is_win || is_mac || (is_ios && use_lld) ||
                   (is_android && target_os != "chromeos") ||
                   (is_chromeos && is_chromeos_device)))
 
@@ -117,8 +118,7 @@ declare_args() {
   exclude_unwind_tables = is_official_build && !is_android
 
   # Where to redirect clang crash diagnoses
-  clang_diagnostic_dir =
-      rebase_path("//tools/clang/crashreports", root_build_dir)
+  clang_diagnostic_dir = rebase_path("//out/clang-crashreports", root_build_dir)
 
   # Mark binaries as compatible with Shadow Stack of Control-flow Enforcement
   # Technology (CET). If Windows version and hardware supports the feature and
@@ -128,13 +128,9 @@ declare_args() {
   enable_cet_shadow_stack = target_cpu == "x64"
 
   # Set to true to enable using the ML inliner in LLVM. This currently only
-  # enables the ML inliner when targeting Android for a size-optimized build.
-  # Currently the ML inliner is only supported on linux hosts.
-  use_ml_inliner = host_os == "linux" && is_android && optimize_for_size &&
-                   !llvm_android_mainline  # https://crbug.com/1468680
-
-  # Set to true to use the android unwinder V2 implementation.
-  use_android_unwinder_v2 = true
+  # enables the ML inliner when targeting Android.
+  # Currently the ML inliner is only supported on linux hosts
+  use_ml_inliner = host_os == "linux" && is_android
 
   # Whether we should consider the profile we're using to be accurate. Accurate
   # profiles have the benefit of (potentially substantial) binary size
@@ -147,6 +143,12 @@ declare_args() {
   # flag set to the same value.
   use_relative_vtables_abi = is_android && current_cpu == "arm64" &&
                              use_custom_libcxx && !is_component_build
+
+  # Enable C++14 sized global deallocation functions.
+  # Enable only on ASan or platforms without strict binary size requirements
+  # because of binary size increase.
+  # TODO(crbug.com/345541122): investigate the fuchsia binary size increase.
+  use_sized_deallocation = is_clang && (is_asan || !optimize_for_size)
 }
 
 # To try out this combination, delete this assert.
@@ -159,18 +161,39 @@ assert(!is_cfi || use_thin_lto, "CFI requires ThinLTO")
 assert(!enable_profiling || !is_component_build,
        "Cannot profile component builds (crbug.com/1199271).")
 
+# The Abseil .def lists for Windows component builds are created expecting sized
+# deallocation. Disabling it leads to symbol mismatches and build failures.
+# This assertion is restricted to Clang builds. ANGLE MSVC builds, where
+# is_clang is false, do not use Abseil that requires this assertion.
+assert(!is_clang || !is_win || !is_component_build || use_sized_deallocation,
+       "Sized deallocation must be enabled in component builds on Windows.")
+assert(is_clang || !use_sized_deallocation,
+       "Sized deallocation is supported on clang.")
+
 if (use_thin_lto && is_debug) {
   print("WARNING: ThinLTO (use_thin_lto=true) doesn't work with debug" +
         " (is_debug=true) build.")
 }
 
+compiler_logs = []
+
+if (use_thin_lto) {
+  compiler_logs += [ "use_thin_lto=true" ]
+} else {
+  compiler_logs += [ "use_thin_lto=false" ]
+}
+
 # Determine whether to enable or disable frame pointers, based on the platform
 # and build arguments.
-if (is_chromeos) {
+if (is_chromeos || (enable_cast_receiver && is_linux)) {
   # ChromeOS generally prefers frame pointers, to support CWP.
   # However, Clang does not currently generate usable frame pointers in ARM
   # 32-bit builds (https://bugs.llvm.org/show_bug.cgi?id=18505) so disable them
   # there to avoid the unnecessary overhead.
+  #
+  # Linux cast builds run on embedded devices and are often constrained
+  # by binary size; disabling frame ptrs for ARM32 builds can save
+  # several MB.
   enable_frame_pointers = current_cpu != "arm"
 } else if (is_apple || is_linux) {
   enable_frame_pointers = true
@@ -240,7 +263,7 @@ enable_arm_cfi_table = is_android && !is_component_build && current_cpu == "arm"
 # deterministic builds to reduce compile times, so this is less relevant for
 # official builders.
 strip_absolute_paths_from_debug_symbols_default =
-    is_android || is_fuchsia || is_nacl || (is_win && use_lld) || is_linux ||
+    is_android || is_fuchsia || (is_win && use_lld) || is_linux ||
     is_chromeos || (is_apple && !enable_dsyms)
 
 # If the platform uses stripped absolute paths by default, then we don't expose
@@ -258,9 +281,9 @@ if (strip_absolute_paths_from_debug_symbols_default) {
 clang_need_input_root_absolute_path = !strip_absolute_paths_from_debug_symbols
 
 if (clang_need_input_root_absolute_path) {
-  compiler_logs = [ "clang_need_input_root_absolute_path=true" ]
+  compiler_logs += [ "clang_need_input_root_absolute_path=true" ]
 } else {
-  compiler_logs = [ "clang_need_input_root_absolute_path=false" ]
+  compiler_logs += [ "clang_need_input_root_absolute_path=false" ]
 }
 
 # TODO: https://issues.chromium.org/40120210 - remove this
@@ -277,10 +300,7 @@ compiler_logs += [ "clang_need_input_root_absolute_path_for_objc=$clang_need_inp
 # If it wasn't manually set, set to an appropriate default.
 assert(symbol_level >= -1 && symbol_level <= 2, "Invalid symbol_level")
 if (symbol_level == -1) {
-  if (is_android && !is_component_build && !use_debug_fission) {
-    # Prefer faster & smaller release builds.
-    symbol_level = 1
-  } else if (is_chromeos_device) {
+  if (is_chromeos_device) {
     # Use lower symbol level in Simple Chrome build for faster link time.
     # For Simple Chrome, this should take precedence over is_official_build,
     # turned on by --internal.
@@ -292,17 +312,25 @@ if (symbol_level == -1) {
     } else {
       symbol_level = 1
     }
+  } else if (is_official_build) {
+    # We want the best debug info we can get for in-the-wild crashes.
+    symbol_level = 2
+  } else if (is_android) {
+    # Prefer faster & smaller build times by default. gdb/lldb do not work well
+    # on Android, and many devs touch only Java, so this is a good default.
+    # symbol_level = 0 is even faster, but crashes then have incomplete stacks
+    # (missing frames and source lines).
+    symbol_level = 1
   } else if (using_sanitizer) {
     # Sanitizers need line table info for stack traces. They don't need type
     # info or variable info, so we can leave that out to speed up the build.
     # Sanitizers also require symbols for filename suppressions to work.
     symbol_level = 1
-  } else if ((!is_nacl && !is_linux && !is_chromeos && !is_fuchsia &&
-              current_os != "aix") || is_debug || is_official_build ||
-             is_castos || is_cast_android) {
+  } else if ((!is_linux && !is_chromeos && !is_fuchsia &&
+              current_os != "aix") || is_debug) {
     # Linux builds slower by having symbols as part of the target binary,
     # whereas Mac and Windows have them separate, so in Release Linux, default
-    # them off, but keep them on for Official builds and Chromecast builds.
+    # them off.
     symbol_level = 2
   } else {
     symbol_level = 0
@@ -324,7 +352,7 @@ if (forbid_non_component_debug_builds) {
   assert(
       symbol_level != 2 || current_toolchain != default_toolchain ||
           is_component_build || is_fuchsia || is_apple || use_debug_fission ||
-          is_android || is_chromeos || host_os == "win",
+          is_android || is_chromeos || is_win,
       "Can't do non-component builds at symbol_level=2 without use_debug_fission=true")
 }
 

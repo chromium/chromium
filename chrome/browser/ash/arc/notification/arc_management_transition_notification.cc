@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/arc/notification/arc_management_transition_notification.h"
 
-#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/functional/bind.h"
@@ -12,16 +11,17 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
-#include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "url/gurl.h"
@@ -66,9 +66,8 @@ class NotificationDelegate : public message_center::NotificationDelegate,
 
   // Dismisses currently active notification.
   void Dismiss() {
-    NotificationDisplayService::GetForProfile(profile_)->Close(
-        NotificationHandler::Type::TRANSIENT,
-        kManagementTransitionNotificationId);
+    message_center::MessageCenter::Get()->RemoveNotification(
+        kManagementTransitionNotificationId, /*by_user=*/false);
   }
 
   // Called in case transition state is changed.
@@ -110,18 +109,18 @@ void ShowManagementTransitionNotification(Profile* profile) {
   notifier_id.profile_id =
       multi_user_util::GetAccountIdFromProfile(profile).GetUserEmail();
 
-  message_center::Notification notification = ash::CreateSystemNotification(
+  auto notification = ash::CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE,
       kManagementTransitionNotificationId,
       l10n_util::GetStringUTF16(IDS_ARC_CHILD_TRANSITION_TITLE),
       l10n_util::GetStringUTF16(IDS_ARC_CHILD_TRANSITION_MESSAGE),
       l10n_util::GetStringUTF16(IDS_ARC_NOTIFICATION_DISPLAY_SOURCE), GURL(),
       notifier_id, message_center::RichNotificationData(),
-      new NotificationDelegate(profile), GetNotificationIcon(transition),
+      base::MakeRefCounted<NotificationDelegate>(profile),
+      GetNotificationIcon(transition),
       message_center::SystemNotificationWarningLevel::NORMAL);
-  NotificationDisplayService::GetForProfile(profile)->Display(
-      NotificationHandler::Type::TRANSIENT, notification,
-      /*metadata=*/nullptr);
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification));
 }
 
 }  // namespace arc

@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/new_tab_page/modules/modules_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/search/ntp_features.h"
@@ -23,6 +24,18 @@
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
+
+namespace {
+
+const char kSpreadsheetFileIconUrl[] =
+    "https://drive-thirdparty.googleusercontent.com/32/type/application/"
+    "vnd.google-apps.spreadsheet";
+
+const char kDocFileIconUrl[] =
+    "https://drive-thirdparty.googleusercontent.com/32/type/application/"
+    "vnd.google-apps.document";
+
+}  // namespace
 
 class DriveServiceTest : public testing::Test {
  public:
@@ -37,8 +50,8 @@ class DriveServiceTest : public testing::Test {
             &test_url_loader_factory_),
         identity_test_env.identity_manager(),
         &mock_segmentation_platform_service_, "en-US", &prefs_);
-    identity_test_env.MakePrimaryAccountAvailable("example@google.com",
-                                                  signin::ConsentLevel::kSync);
+    identity_test_env.MakePrimaryAccountAvailable(
+        "example@google.com", signin::ConsentLevel::kSignin);
     service_->RegisterProfilePrefs(prefs_.registry());
   }
 
@@ -66,11 +79,10 @@ TEST_F(DriveServiceTest, PassesDataOnSuccess) {
 
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(
-          testing::Invoke([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
-            actual_documents = std::move(documents);
-            quit_closure.Run();
-          }));
+      .WillOnce([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
+        actual_documents = std::move(documents);
+        quit_closure.Run();
+      });
 
   // Make sure we are not in the dismissed time window.
   prefs_.SetTime(DriveService::kLastDismissedTimePrefName, base::Time::Now());
@@ -87,7 +99,8 @@ TEST_F(DriveServiceTest, PassesDataOnSuccess) {
                                ->at(0)
                                .As<network::DataElementBytes>()
                                .AsStringPiece());
-  auto body_value = base::JSONReader::Read(request_body);
+  auto body_value = base::JSONReader::Read(
+      request_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_EQ("en-US", *body_value->GetDict().FindStringByDottedPath(
                          "client_info.language_code"));
   test_url_loader_factory_.SimulateResponseForPendingRequest(
@@ -145,19 +158,17 @@ TEST_F(DriveServiceTest, PassesDataOnSuccess) {
 
   EXPECT_EQ(2u, actual_documents.size());
   EXPECT_EQ("Foo foo", actual_documents.at(0)->title);
-  EXPECT_EQ("application/vnd.google-apps.spreadsheet",
-            actual_documents.at(0)->mime_type);
+  EXPECT_EQ(kSpreadsheetFileIconUrl, actual_documents.at(0)->icon_url.spec());
   EXPECT_EQ("Foo foo", actual_documents.at(0)->justification_text);
   EXPECT_EQ("https://google.com/foo", actual_documents.at(0)->item_url.spec());
   EXPECT_EQ("Bar", actual_documents.at(1)->title);
   EXPECT_EQ("123", actual_documents.at(1)->id);
-  EXPECT_EQ("application/vnd.google-apps.document",
-            actual_documents.at(1)->mime_type);
+  EXPECT_EQ(kDocFileIconUrl, actual_documents.at(1)->icon_url.spec());
   EXPECT_EQ("Foo bar foo bar", actual_documents.at(1)->justification_text);
   EXPECT_EQ("https://google.com/bar", actual_documents.at(1)->item_url.spec());
-  ASSERT_EQ(1,
-            histogram_tester_.GetBucketCount("NewTabPage.Modules.DataRequest",
-                                             base::PersistentHash("drive")));
+  ASSERT_EQ(1, histogram_tester_.GetBucketCount(
+                   "NewTabPage.Modules.DataRequest",
+                   base::PersistentHash(ntp_modules::kDriveModuleId)));
   // The third item is malformed. So, even though we can display the first two
   // items, we report a content error.
   ASSERT_EQ(1, histogram_tester_.GetBucketCount(
@@ -182,32 +193,28 @@ TEST_F(DriveServiceTest, PassesDataToMultipleRequestsToDriveService) {
   base::MockCallback<DriveService::GetFilesCallback> callback4;
   EXPECT_CALL(callback1, Run(testing::_))
       .Times(1)
-      .WillOnce(
-          testing::Invoke([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
-            response1 = std::move(documents);
-            barrier_closure.Run();
-          }));
+      .WillOnce([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
+        response1 = std::move(documents);
+        barrier_closure.Run();
+      });
   EXPECT_CALL(callback2, Run(testing::_))
       .Times(1)
-      .WillOnce(
-          testing::Invoke([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
-            response2 = std::move(documents);
-            barrier_closure.Run();
-          }));
+      .WillOnce([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
+        response2 = std::move(documents);
+        barrier_closure.Run();
+      });
   EXPECT_CALL(callback3, Run(testing::_))
       .Times(1)
-      .WillOnce(
-          testing::Invoke([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
-            response3 = std::move(documents);
-            barrier_closure.Run();
-          }));
+      .WillOnce([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
+        response3 = std::move(documents);
+        barrier_closure.Run();
+      });
   EXPECT_CALL(callback4, Run(testing::_))
       .Times(1)
-      .WillOnce(
-          testing::Invoke([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
-            response4 = std::move(documents);
-            barrier_closure.Run();
-          }));
+      .WillOnce([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
+        response4 = std::move(documents);
+        barrier_closure.Run();
+      });
   service_->GetDriveFiles(callback1.Get());
   service_->GetDriveFiles(callback2.Get());
   service_->GetDriveFiles(callback3.Get());
@@ -250,28 +257,24 @@ TEST_F(DriveServiceTest, PassesDataToMultipleRequestsToDriveService) {
   EXPECT_EQ(1u, response3.size());
   EXPECT_EQ(1u, response4.size());
   EXPECT_EQ("Foo foo", response1.at(0)->title);
-  EXPECT_EQ("application/vnd.google-apps.spreadsheet",
-            response1.at(0)->mime_type);
+  EXPECT_EQ(kSpreadsheetFileIconUrl, response1.at(0)->icon_url.spec());
   EXPECT_EQ("Foo foo", response1.at(0)->justification_text);
   EXPECT_EQ("234", response1.at(0)->id);
   EXPECT_EQ("Foo foo", response2.at(0)->title);
-  EXPECT_EQ("application/vnd.google-apps.spreadsheet",
-            response2.at(0)->mime_type);
+  EXPECT_EQ(kSpreadsheetFileIconUrl, response2.at(0)->icon_url.spec());
   EXPECT_EQ("Foo foo", response2.at(0)->justification_text);
   EXPECT_EQ("234", response2.at(0)->id);
   EXPECT_EQ("Foo foo", response3.at(0)->title);
-  EXPECT_EQ("application/vnd.google-apps.spreadsheet",
-            response3.at(0)->mime_type);
+  EXPECT_EQ(kSpreadsheetFileIconUrl, response3.at(0)->icon_url.spec());
   EXPECT_EQ("Foo foo", response3.at(0)->justification_text);
   EXPECT_EQ("234", response3.at(0)->id);
   EXPECT_EQ("Foo foo", response4.at(0)->title);
-  EXPECT_EQ("application/vnd.google-apps.spreadsheet",
-            response4.at(0)->mime_type);
+  EXPECT_EQ(kSpreadsheetFileIconUrl, response4.at(0)->icon_url.spec());
   EXPECT_EQ("Foo foo", response4.at(0)->justification_text);
   EXPECT_EQ("234", response4.at(0)->id);
-  ASSERT_EQ(1,
-            histogram_tester_.GetBucketCount("NewTabPage.Modules.DataRequest",
-                                             base::PersistentHash("drive")));
+  ASSERT_EQ(1, histogram_tester_.GetBucketCount(
+                   "NewTabPage.Modules.DataRequest",
+                   base::PersistentHash(ntp_modules::kDriveModuleId)));
   ASSERT_EQ(1, histogram_tester_.GetBucketCount(
                    "NewTabPage.Drive.ItemSuggestRequestResult",
                    ItemSuggestRequestResult::kSuccess));
@@ -309,10 +312,10 @@ TEST_F(DriveServiceTest, PassesCachedDataIfRequested) {
   auto quit_closure = task_environment_.QuitClosure();
   EXPECT_CALL(callback, Run(testing::_))
       .WillRepeatedly(
-          testing::Invoke([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
+          [&](std::vector<file_suggestion::mojom::FilePtr> documents) {
             response = std::move(documents);
             quit_closure.Run();
-          }));
+          });
 
   // Enable caching.
   base::test::ScopedFeatureList features;
@@ -338,9 +341,9 @@ TEST_F(DriveServiceTest, PassesCachedDataIfRequested) {
 
   EXPECT_FALSE(response.empty());
   EXPECT_EQ("234", response[0]->id);
-  EXPECT_EQ(1,
-            histogram_tester_.GetBucketCount("NewTabPage.Modules.DataRequest",
-                                             base::PersistentHash("drive")));
+  EXPECT_EQ(1, histogram_tester_.GetBucketCount(
+                   "NewTabPage.Modules.DataRequest",
+                   base::PersistentHash(ntp_modules::kDriveModuleId)));
 
   // Subsequent fetch should use cache.
   response.clear();
@@ -351,9 +354,9 @@ TEST_F(DriveServiceTest, PassesCachedDataIfRequested) {
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
   EXPECT_FALSE(response.empty());
   EXPECT_EQ("234", response[0]->id);
-  EXPECT_EQ(1,
-            histogram_tester_.GetBucketCount("NewTabPage.Modules.DataRequest",
-                                             base::PersistentHash("drive")));
+  EXPECT_EQ(1, histogram_tester_.GetBucketCount(
+                   "NewTabPage.Modules.DataRequest",
+                   base::PersistentHash(ntp_modules::kDriveModuleId)));
 
   // Should re-request if cache expires.
   quit_closure = task_environment_.QuitClosure();
@@ -371,9 +374,9 @@ TEST_F(DriveServiceTest, PassesCachedDataIfRequested) {
   task_environment_.RunUntilQuit();
 
   EXPECT_EQ("234", response[0]->id);
-  EXPECT_EQ(2,
-            histogram_tester_.GetBucketCount("NewTabPage.Modules.DataRequest",
-                                             base::PersistentHash("drive")));
+  EXPECT_EQ(2, histogram_tester_.GetBucketCount(
+                   "NewTabPage.Modules.DataRequest",
+                   base::PersistentHash(ntp_modules::kDriveModuleId)));
 
   // Should re-request if token changes.
   quit_closure = task_environment_.QuitClosure();
@@ -389,9 +392,9 @@ TEST_F(DriveServiceTest, PassesCachedDataIfRequested) {
       network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
   task_environment_.RunUntilQuit();
   EXPECT_EQ("234", response[0]->id);
-  EXPECT_EQ(3,
-            histogram_tester_.GetBucketCount("NewTabPage.Modules.DataRequest",
-                                             base::PersistentHash("drive")));
+  EXPECT_EQ(3, histogram_tester_.GetBucketCount(
+                   "NewTabPage.Modules.DataRequest",
+                   base::PersistentHash(ntp_modules::kDriveModuleId)));
 }
 
 TEST_F(DriveServiceTest, PassesDataIfSegmentationIsEnabled) {
@@ -412,11 +415,10 @@ TEST_F(DriveServiceTest, PassesDataIfSegmentationIsEnabled) {
 
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(
-          testing::Invoke([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
-            actual_documents = std::move(documents);
-            quit_closure.Run();
-          }));
+      .WillOnce([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
+        actual_documents = std::move(documents);
+        quit_closure.Run();
+      });
 
   // Make sure we are not in the dismissed time window.
   prefs_.SetTime(DriveService::kLastDismissedTimePrefName, base::Time::Now());
@@ -433,7 +435,8 @@ TEST_F(DriveServiceTest, PassesDataIfSegmentationIsEnabled) {
                                ->at(0)
                                .As<network::DataElementBytes>()
                                .AsStringPiece());
-  auto body_value = base::JSONReader::Read(request_body);
+  auto body_value = base::JSONReader::Read(
+      request_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_EQ("en-US", *body_value->GetDict().FindStringByDottedPath(
                          "client_info.language_code"));
   test_url_loader_factory_.SimulateResponseForPendingRequest(
@@ -489,7 +492,8 @@ TEST_F(DriveServiceTest, AddsClientTagIfRequested) {
                                ->at(0)
                                .As<network::DataElementBytes>()
                                .AsStringPiece());
-  auto body_value = base::JSONReader::Read(request_body);
+  auto body_value = base::JSONReader::Read(
+      request_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_EQ("foo", *body_value->GetDict().FindStringByDottedPath(
                        "client_info.client_tags.name"));
 }
@@ -499,10 +503,10 @@ TEST_F(DriveServiceTest, PassesNoDataIfDismissed) {
   base::MockCallback<DriveService::GetFilesCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&passed_no_data](std::vector<file_suggestion::mojom::FilePtr> suggestions) {
-            passed_no_data = suggestions.empty();
-          }));
+      .WillOnce([&passed_no_data](
+                    std::vector<file_suggestion::mojom::FilePtr> suggestions) {
+        passed_no_data = suggestions.empty();
+      });
 
   prefs_.SetTime(DriveService::kLastDismissedTimePrefName, base::Time::Now());
   service_->GetDriveFiles(callback.Get());
@@ -517,10 +521,10 @@ TEST_F(DriveServiceTest, PassesNoDataOnAuthError) {
 
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&token_is_valid](std::vector<file_suggestion::mojom::FilePtr> suggestions) {
-            token_is_valid = !suggestions.empty();
-          }));
+      .WillOnce([&token_is_valid](
+                    std::vector<file_suggestion::mojom::FilePtr> suggestions) {
+        token_is_valid = !suggestions.empty();
+      });
 
   service_->GetDriveFiles(callback.Get());
 
@@ -528,9 +532,9 @@ TEST_F(DriveServiceTest, PassesNoDataOnAuthError) {
       GoogleServiceAuthError(GoogleServiceAuthError::State::CONNECTION_FAILED));
 
   EXPECT_FALSE(token_is_valid);
-  ASSERT_EQ(0,
-            histogram_tester_.GetBucketCount("NewTabPage.Modules.DataRequest",
-                                             base::PersistentHash("drive")));
+  ASSERT_EQ(0, histogram_tester_.GetBucketCount(
+                   "NewTabPage.Modules.DataRequest",
+                   base::PersistentHash(ntp_modules::kDriveModuleId)));
 }
 
 TEST_F(DriveServiceTest, PassesNoDataOnNetError) {
@@ -540,11 +544,10 @@ TEST_F(DriveServiceTest, PassesNoDataOnNetError) {
 
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(
-          testing::Invoke([&](std::vector<file_suggestion::mojom::FilePtr> suggestions) {
-            empty_response = suggestions.empty();
-            quit_closure.Run();
-          }));
+      .WillOnce([&](std::vector<file_suggestion::mojom::FilePtr> suggestions) {
+        empty_response = suggestions.empty();
+        quit_closure.Run();
+      });
 
   service_->GetDriveFiles(callback.Get());
 
@@ -565,9 +568,9 @@ TEST_F(DriveServiceTest, PassesNoDataOnNetError) {
   task_environment_.RunUntilQuit();
 
   EXPECT_TRUE(empty_response);
-  ASSERT_EQ(1,
-            histogram_tester_.GetBucketCount("NewTabPage.Modules.DataRequest",
-                                             base::PersistentHash("drive")));
+  ASSERT_EQ(1, histogram_tester_.GetBucketCount(
+                   "NewTabPage.Modules.DataRequest",
+                   base::PersistentHash(ntp_modules::kDriveModuleId)));
   ASSERT_EQ(1, histogram_tester_.GetBucketCount(
                    "NewTabPage.Drive.ItemSuggestRequestResult",
                    ItemSuggestRequestResult::kNetworkError));
@@ -581,11 +584,10 @@ TEST_F(DriveServiceTest, PassesNoDataOnEmptyResponse) {
 
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(
-          testing::Invoke([&](std::vector<file_suggestion::mojom::FilePtr> suggestions) {
-            empty_response = suggestions.empty();
-            quit_closure.Run();
-          }));
+      .WillOnce([&](std::vector<file_suggestion::mojom::FilePtr> suggestions) {
+        empty_response = suggestions.empty();
+        quit_closure.Run();
+      });
 
   service_->GetDriveFiles(callback.Get());
 
@@ -598,9 +600,9 @@ TEST_F(DriveServiceTest, PassesNoDataOnEmptyResponse) {
   task_environment_.RunUntilQuit();
 
   EXPECT_TRUE(empty_response);
-  ASSERT_EQ(1,
-            histogram_tester_.GetBucketCount("NewTabPage.Modules.DataRequest",
-                                             base::PersistentHash("drive")));
+  ASSERT_EQ(1, histogram_tester_.GetBucketCount(
+                   "NewTabPage.Modules.DataRequest",
+                   base::PersistentHash(ntp_modules::kDriveModuleId)));
   ASSERT_EQ(1, histogram_tester_.GetBucketCount(
                    "NewTabPage.Drive.ItemSuggestRequestResult",
                    ItemSuggestRequestResult::kJsonParseError));
@@ -613,11 +615,10 @@ TEST_F(DriveServiceTest, PassesNoDataOnMissingItemKey) {
 
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(
-          testing::Invoke([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
-            actual_documents = std::move(documents);
-            quit_closure.Run();
-          }));
+      .WillOnce([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
+        actual_documents = std::move(documents);
+        quit_closure.Run();
+      });
 
   service_->GetDriveFiles(callback.Get());
 
@@ -634,9 +635,9 @@ TEST_F(DriveServiceTest, PassesNoDataOnMissingItemKey) {
   task_environment_.RunUntilQuit();
 
   EXPECT_TRUE(actual_documents.empty());
-  ASSERT_EQ(1,
-            histogram_tester_.GetBucketCount("NewTabPage.Modules.DataRequest",
-                                             base::PersistentHash("drive")));
+  ASSERT_EQ(1, histogram_tester_.GetBucketCount(
+                   "NewTabPage.Modules.DataRequest",
+                   base::PersistentHash(ntp_modules::kDriveModuleId)));
   ASSERT_EQ(1, histogram_tester_.GetBucketCount(
                    "NewTabPage.Drive.ItemSuggestRequestResult",
                    ItemSuggestRequestResult::kContentError));
@@ -670,10 +671,9 @@ TEST_F(DriveServiceFakeDataTest, ReturnsFakeData) {
   base::MockCallback<DriveService::GetFilesCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(
-          testing::Invoke([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
-            fake_documents = std::move(documents);
-          }));
+      .WillOnce([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
+        fake_documents = std::move(documents);
+      });
 
   prefs_.SetTime(DriveService::kLastDismissedTimePrefName, base::Time::Now());
   task_environment_.AdvanceClock(DriveService::kDismissDuration);

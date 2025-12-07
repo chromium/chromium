@@ -1,0 +1,10 @@
+{
+  "name": "Tabs smoke test extension",
+  "version": "0.1",
+  "manifest_version": 3,
+  "description": "A simple extension to test the chrome.tabs API.",
+  "permissions": ["tabs"],
+  "background": {
+    "service_worker": "worker.js"
+  }
+}

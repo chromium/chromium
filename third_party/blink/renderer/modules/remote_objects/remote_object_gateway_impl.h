@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
@@ -25,11 +24,9 @@ class RemoteObject;
 
 class MODULES_EXPORT RemoteObjectGatewayImpl
     : public GarbageCollected<RemoteObjectGatewayImpl>,
-      public Supplement<LocalFrame>,
-      public mojom::blink::RemoteObjectGateway {
+      public mojom::blink::RemoteObjectGateway,
+      public GarbageCollectedMixin {
  public:
-  static const char kSupplementName[];
-
   RemoteObjectGatewayImpl(
       base::PassKey<RemoteObjectGatewayImpl>,
       LocalFrame&,
@@ -60,15 +57,20 @@ class MODULES_EXPORT RemoteObjectGatewayImpl
   void ReleaseObject(int32_t object_id, RemoteObject* remote_object);
   RemoteObject* GetRemoteObject(v8::Isolate* isolate, int32_t object_id);
 
+  LocalFrame* GetLocalFrame() const { return local_frame_; }
+
  private:
   // mojom::blink::RemoteObjectGateway
-  void AddNamedObject(const WTF::String& name, int32_t id) override;
-  void RemoveNamedObject(const WTF::String& name) override;
+  void AddNamedObject(const String& name, int32_t id) override;
+  void RemoveNamedObject(const String& name) override;
 
-  void InjectNamed(const WTF::String& object_name, int32_t object_id);
+  void InjectNamed(const String& object_name, int32_t object_id);
 
+  Member<LocalFrame> local_frame_;
   HashMap<String, int32_t> named_objects_;
-  HashMap<int32_t, RemoteObject*, IntWithZeroKeyHashTraits<int32_t>>
+  HeapHashMap<int32_t,
+              WeakMember<RemoteObject>,
+              IntWithZeroKeyHashTraits<int32_t>>
       remote_objects_;
 
   HeapMojoReceiver<mojom::blink::RemoteObjectGateway,
@@ -83,10 +85,8 @@ class MODULES_EXPORT RemoteObjectGatewayImpl
 class RemoteObjectGatewayFactoryImpl
     : public GarbageCollected<RemoteObjectGatewayFactoryImpl>,
       public mojom::blink::RemoteObjectGatewayFactory,
-      public Supplement<LocalFrame> {
+      public GarbageCollectedMixin {
  public:
-  static const char kSupplementName[];
-
   explicit RemoteObjectGatewayFactoryImpl(
       base::PassKey<RemoteObjectGatewayFactoryImpl>,
       LocalFrame& frame,
@@ -115,6 +115,7 @@ class RemoteObjectGatewayFactoryImpl
       mojo::PendingReceiver<mojom::blink::RemoteObjectGateway> receiver)
       override;
 
+  Member<LocalFrame> local_frame_;
   HeapMojoReceiver<mojom::blink::RemoteObjectGatewayFactory,
                    RemoteObjectGatewayFactoryImpl,
                    HeapMojoWrapperMode::kForceWithoutContextObserver>

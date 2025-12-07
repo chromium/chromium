@@ -4,11 +4,14 @@
 
 #include "content/browser/speech/soda_speech_recognition_engine_impl.h"
 
+#include <array>
 #include <memory>
 #include <vector>
 
 #include "base/containers/queue.h"
 #include "base/run_loop.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/test/run_until.h"
 #include "content/browser/speech/fake_speech_recognition_manager_delegate.h"
 #include "content/browser/speech/speech_recognition_engine.h"
 #include "content/browser/speech/speech_recognizer_impl.h"
@@ -148,7 +151,7 @@ SodaSpeechRecognitionEngineImplTest::CreateSpeechRecognition(
 void SodaSpeechRecognitionEngineImplTest::SendDummyAudioChunk() {
   // Enough data so that the encoder will output something, as can't read 0
   // bytes from a Mojo stream.
-  unsigned char dummy_audio_buffer_data[2000 * 2] = {'\0'};
+  std::array<unsigned char, 2000 * 2> dummy_audio_buffer_data = {'\0'};
   scoped_refptr<AudioChunk> dummy_audio_chunk(new AudioChunk(
       &dummy_audio_buffer_data[0], sizeof(dummy_audio_buffer_data),
       2 /* bytes per sample */));
@@ -231,7 +234,8 @@ TEST_F(SodaSpeechRecognitionEngineImplTest, SpeechRecognitionResults) {
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(recognition_ready_);
 
-  EXPECT_CALL(*mock_service_, SendAudioToSpeechRecognitionService(_)).Times(2);
+  EXPECT_CALL(*mock_service_, SendAudioToSpeechRecognitionService(_, _))
+      .Times(2);
 
   client_under_test_->StartRecognition();
   SendDummyAudioChunk();
@@ -248,7 +252,7 @@ TEST_F(SodaSpeechRecognitionEngineImplTest, SpeechRecognitionResults) {
   ExpectResultsReceived(second_results);
 
   SendTranscriptionError();
-  ASSERT_EQ(media::mojom::SpeechRecognitionErrorCode::kNoSpeech, error_);
+  ASSERT_EQ(media::mojom::SpeechRecognitionErrorCode::kAborted, error_);
 }
 
 TEST_F(SodaSpeechRecognitionEngineImplTest, SpeechRecognitionAudioChunksEnded) {
@@ -259,7 +263,8 @@ TEST_F(SodaSpeechRecognitionEngineImplTest, SpeechRecognitionAudioChunksEnded) {
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(recognition_ready_);
 
-  EXPECT_CALL(*mock_service_, SendAudioToSpeechRecognitionService(_)).Times(1);
+  EXPECT_CALL(*mock_service_, SendAudioToSpeechRecognitionService(_, _))
+      .Times(1);
 
   client_under_test_->StartRecognition();
   SendDummyAudioChunk();
@@ -273,7 +278,7 @@ TEST_F(SodaSpeechRecognitionEngineImplTest, SpeechRecognitionAudioChunksEnded) {
   client_under_test_->AudioChunksEnded();
   client_under_test_->EndRecognition();
   loop.RunUntilIdle();
-  ASSERT_EQ(media::mojom::SpeechRecognitionErrorCode::kAborted, error_);
+  ASSERT_EQ(media::mojom::SpeechRecognitionErrorCode::kNone, error_);
 }
 
 TEST_F(SodaSpeechRecognitionEngineImplTest, SpeechRecognitionEndOfUtterance) {
@@ -285,7 +290,8 @@ TEST_F(SodaSpeechRecognitionEngineImplTest, SpeechRecognitionEndOfUtterance) {
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(recognition_ready_);
 
-  EXPECT_CALL(*mock_service_, SendAudioToSpeechRecognitionService(_)).Times(1);
+  EXPECT_CALL(*mock_service_, SendAudioToSpeechRecognitionService(_, _))
+      .Times(1);
 
   client_under_test_->StartRecognition();
   SendDummyAudioChunk();
@@ -312,7 +318,8 @@ TEST_F(SodaSpeechRecognitionEngineImplTest, SpeechRecognitionEnd) {
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(recognition_ready_);
 
-  EXPECT_CALL(*mock_service_, SendAudioToSpeechRecognitionService(_)).Times(1);
+  EXPECT_CALL(*mock_service_, SendAudioToSpeechRecognitionService(_, _))
+      .Times(1);
 
   client_under_test_->StartRecognition();
   SendDummyAudioChunk();
@@ -342,6 +349,20 @@ TEST_F(SodaSpeechRecognitionEngineImplTest, SetOnReadyCallbackAfterBind) {
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(recognition_ready_);
+}
+
+TEST_F(SodaSpeechRecognitionEngineImplTest, UpdateRecognitionContext) {
+  SpeechRecognitionSessionConfig config;
+  client_under_test_ = CreateSpeechRecognition(
+      config, fake_speech_recognition_mgr_delegate_.get(), true);
+  ASSERT_TRUE(client_under_test_->Initialize());
+  ASSERT_TRUE(base::test::RunUntil([&]() { return recognition_ready_; }));
+
+  media::SpeechRecognitionRecognitionContext context;
+  context.phrases.emplace_back("test phrase", 2.0);
+  EXPECT_CALL(*mock_service_, UpdateRecognitionContext(context));
+  client_under_test_->UpdateRecognitionContext(context);
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace content

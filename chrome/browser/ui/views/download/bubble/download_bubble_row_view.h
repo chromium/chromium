@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_DOWNLOAD_BUBBLE_DOWNLOAD_BUBBLE_ROW_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_DOWNLOAD_BUBBLE_DOWNLOAD_BUBBLE_ROW_VIEW_H_
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -16,9 +18,9 @@
 #include "chrome/browser/ui/download/download_item_mode.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_list_view.h"
-#include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
 #include "components/download/public/common/download_item.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
@@ -38,24 +40,22 @@ class FlexLayoutView;
 class InkDropContainerView;
 }  // namespace views
 
-class DownloadShelfContextMenuView;
+class DownloadUiContextMenuView;
 class DownloadBubbleUIController;
 
 class DownloadBubbleRowView : public views::View,
                               public views::ContextMenuController,
                               public views::FocusChangeListener,
-                              public views::ViewTargeterDelegate,
                               public DownloadBubbleRowViewInfoObserver {
   METADATA_HEADER(DownloadBubbleRowView, views::View)
 
  public:
-  explicit DownloadBubbleRowView(
+  DownloadBubbleRowView(
       const DownloadBubbleRowViewInfo& info,
       base::WeakPtr<DownloadBubbleUIController> bubble_controller,
       base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
       base::WeakPtr<Browser> browser,
-      int fixed_width,
-      bool is_in_partial_view = false);
+      int fixed_width);
   DownloadBubbleRowView(const DownloadBubbleRowView&) = delete;
   DownloadBubbleRowView& operator=(const DownloadBubbleRowView&) = delete;
   ~DownloadBubbleRowView() override;
@@ -77,16 +77,16 @@ class DownloadBubbleRowView : public views::View,
 
   // Overrides views::FocusChangeListener
   void OnWillChangeFocus(views::View* before, views::View* now) override;
-  void OnDidChangeFocus(views::View* before, views::View* now) override {}
 
   // Update the row and its elements for hover and focus events.
   void UpdateRowForHover(bool hovered);
   void UpdateRowForFocus(bool visible, bool request_focus_on_last_quick_action);
 
   // Overrides views::ContextMenuController:
-  void ShowContextMenuForViewImpl(View* source,
-                                  const gfx::Point& point,
-                                  ui::MenuSourceType source_type) override;
+  void ShowContextMenuForViewImpl(
+      View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override;
 
   // Overrides ui::AcceleratorTarget
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
@@ -95,7 +95,7 @@ class DownloadBubbleRowView : public views::View,
   // Returns the transparent button that is activated when the row is clicked.
   views::Button* transparent_button() { return transparent_button_; }
 
-  const std::u16string& GetSecondaryLabelTextForTesting();
+  std::u16string_view GetSecondaryLabelTextForTesting();
 
   DownloadUIModel* model() { return info_->model(); }
   const DownloadBubbleRowViewInfo& info() const { return *info_; }
@@ -107,9 +107,6 @@ class DownloadBubbleRowView : public views::View,
   void SetInputProtectorForTesting(
       std::unique_ptr<views::InputEventActivationProtector> input_protector);
 
-  // views::ViewTargeterDelegate
-  View* TargetForRect(View* root, const gfx::Rect& rect) override;
-
  protected:
   // Overrides ui::LayerDelegate:
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
@@ -118,9 +115,7 @@ class DownloadBubbleRowView : public views::View,
  private:
   void AddMainPageButton(DownloadCommands::Command command,
                          const std::u16string& button_string);
-  views::ImageButton* AddQuickAction(DownloadCommands::Command command);
-  views::ImageButton* GetActionButtonForCommand(
-      DownloadCommands::Command command);
+  void AddQuickAction(DownloadCommands::Command command);
   std::u16string GetAccessibleNameForQuickAction(
       DownloadCommands::Command command);
   std::u16string GetAccessibleNameForMainPageButton(
@@ -133,7 +128,6 @@ class DownloadBubbleRowView : public views::View,
   void UpdateButtons();
   void UpdateProgressBar();
   void UpdateLabels();
-  void UpdateDeepScanNotice();
   void RecordMetricsOnUpdate();
   void RecordDownloadDisplayed();
 
@@ -191,11 +185,8 @@ class DownloadBubbleRowView : public views::View,
       main_page_buttons_;
 
   // Quick Actions on the main page.
-  raw_ptr<views::ImageButton> resume_action_ = nullptr;
-  raw_ptr<views::ImageButton> pause_action_ = nullptr;
-  raw_ptr<views::ImageButton> show_in_folder_action_ = nullptr;
-  raw_ptr<views::ImageButton> cancel_action_ = nullptr;
-  raw_ptr<views::ImageButton> open_when_complete_action_ = nullptr;
+  base::flat_map<DownloadCommands::Command, raw_ptr<views::ImageButton>>
+      quick_actions_;
 
   // Holder for the main button.
   raw_ptr<views::FlexLayoutView> main_button_holder_ = nullptr;
@@ -212,8 +203,8 @@ class DownloadBubbleRowView : public views::View,
   // The model controlling this object's state.
   raw_ref<const DownloadBubbleRowViewInfo> info_;
 
-  // Reuse the download shelf context menu in the bubble.
-  std::unique_ptr<DownloadShelfContextMenuView> context_menu_;
+  // Context menu offering additional actions for a particular download.
+  std::unique_ptr<DownloadUiContextMenuView> context_menu_;
 
   // Controller for keeping track of downloads.
   base::WeakPtr<DownloadBubbleUIController> bubble_controller_ = nullptr;
@@ -234,10 +225,6 @@ class DownloadBubbleRowView : public views::View,
 
   raw_ptr<views::InkDropContainerView> inkdrop_container_;
 
-#if !BUILDFLAG(IS_CHROMEOS)
-  raw_ptr<views::View> deep_scan_notice_;
-#endif
-
   // Drag and drop:
   // Whether we are dragging the download bubble row.
   bool dragging_ = false;
@@ -256,11 +243,6 @@ class DownloadBubbleRowView : public views::View,
 
   // Mitigates the risk of clickjacking by enforcing a delay in click input.
   std::unique_ptr<views::InputEventActivationProtector> input_protector_;
-
-  // Used for metrics to study clickjacking potential.
-  const base::Time shown_time_;
-  // False in tests.
-  const bool is_in_partial_view_ = false;
 
   // TODO(crbug.com/40233803): The size constraint is not passed down from the
   // views tree in the first round of layout, so setting a fixed width to bound

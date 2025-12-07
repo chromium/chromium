@@ -17,11 +17,6 @@ typedef void (^ProceduralBlockWithData)(NSData*);
 // These methods must be called from the Chrome app.
 namespace main_app {
 
-// Iterates through the extensions pending logs and deletes them.
-// Calls `callback` on each log before deleting.
-// TODO(crbug.com/40548746): remove function.
-void ProcessPendingLogs(ProceduralBlockWithData callback);
-
 // Enables the metrics collecting in extensions. The extensions will
 // use `clientID` as client ID, and `brandCode` as brand code in the logs.
 // TODO(crbug.com/40548746): remove function.

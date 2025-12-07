@@ -34,9 +34,9 @@ TEST_F(DeleteSelectionCommandTest, deleteListFromTable) {
       "</ol></td></tr></table>"
       "</div>");
 
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
-  Element* table = GetDocument().QuerySelector(AtomicString("table"));
-  Element* br = GetDocument().QuerySelector(AtomicString("br"));
+  Element* div = QuerySelector("div");
+  Element* table = QuerySelector("table");
+  Element* br = QuerySelector("br");
 
   LocalFrame* frame = GetDocument().GetFrame();
   frame->Selection().SetSelection(
@@ -57,7 +57,7 @@ TEST_F(DeleteSelectionCommandTest, deleteListFromTable) {
 
   EXPECT_TRUE(command->Apply()) << "the delete command should have succeeded";
   EXPECT_EQ("<div contenteditable=\"true\"><br></div>",
-            GetDocument().body()->innerHTML());
+            GetDocument().body()->GetInnerHTMLString());
   EXPECT_TRUE(frame->Selection().GetSelectionInDOMTree().IsCaret());
   EXPECT_EQ(Position(div, 0), frame->Selection()
                                   .ComputeVisibleSelectionInDOMTree()
@@ -140,12 +140,13 @@ TEST_F(DeleteSelectionCommandTest, DeleteWithEditabilityChange) {
                              .SetSanitizeMarkup(true)
                              .Build());
   // Should not crash.
-  EXPECT_TRUE(command.Apply());
+  // Editing state is aborted after the body stops being editable.
+  EXPECT_FALSE(command.Apply());
 
   // The command removes the <style>, so the <body> stops being editable,
   // and then "x" is not removed.
   EXPECT_FALSE(IsEditable(*GetDocument().body()));
-  EXPECT_EQ("|x", GetSelectionTextFromBody());
+  EXPECT_EQ("^x|", GetSelectionTextFromBody());
 }
 
 // This is a regression test for https://crbug.com/1307391

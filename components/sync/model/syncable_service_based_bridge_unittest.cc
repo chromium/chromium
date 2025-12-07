@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -35,7 +36,6 @@ namespace {
 using testing::_;
 using testing::ElementsAre;
 using testing::Eq;
-using testing::Invoke;
 using testing::IsEmpty;
 using testing::NotNull;
 using testing::Pair;
@@ -44,6 +44,8 @@ using testing::Return;
 const DataType kDataType = PREFERENCES;
 const std::string_view kSyncableServiceStartTimeHistogramName =
     "Sync.SyncableServiceStartTime.PREFERENCE";
+const std::string_view kMaybeClearDataHistogramName =
+    "Sync.SyncableService.MaybeClearDataIfMetadataEmptyOrInvalid.PREFERENCE";
 
 sync_pb::EntitySpecifics GetTestSpecifics(const std::string& name = "name") {
   sync_pb::EntitySpecifics specifics;
@@ -70,6 +72,7 @@ MATCHER_P(HasName, name, "") {
 class MockSyncableService : public SyncableService {
  public:
   MOCK_METHOD(void, WaitUntilReadyToSync, (base::OnceClosure done), (override));
+  MOCK_METHOD(void, WillStartInitialSync, (), (override));
   MOCK_METHOD(std::optional<syncer::ModelError>,
               MergeDataAndStartSyncing,
               (DataType type,
@@ -77,6 +80,7 @@ class MockSyncableService : public SyncableService {
                std::unique_ptr<SyncChangeProcessor> sync_processor),
               (override));
   MOCK_METHOD(void, StopSyncing, (DataType type), (override));
+  MOCK_METHOD(void, StayStoppedAndMaybeClearData, (DataType type), (override));
   MOCK_METHOD(std::optional<ModelError>,
               ProcessSyncChanges,
               (const base::Location& from_here,
@@ -87,6 +91,11 @@ class MockSyncableService : public SyncableService {
   base::WeakPtr<SyncableService> AsWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
   }
+  MOCK_METHOD(std::string,
+              GetClientTag,
+              (const EntityData& entity_data),
+              (const override));
+  MOCK_METHOD(bool, SupportsGetClientTag, (), (const override));
 
  private:
   base::WeakPtrFactory<MockSyncableService> weak_ptr_factory_{this};
@@ -103,8 +112,7 @@ class SyncableServiceBasedBridgeTest : public ::testing::Test {
   SyncableServiceBasedBridgeTest()
       : store_(DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
     ON_CALL(syncable_service_, WaitUntilReadyToSync)
-        .WillByDefault(
-            Invoke([](base::OnceClosure done) { std::move(done).Run(); }));
+        .WillByDefault([](base::OnceClosure done) { std::move(done).Run(); });
     ON_CALL(syncable_service_, MergeDataAndStartSyncing)
         .WillByDefault(
             [&](DataType type, const SyncDataList& initial_sync_data,
@@ -127,11 +135,11 @@ class SyncableServiceBasedBridgeTest : public ::testing::Test {
   }
 
   void ShutdownBridge() {
-    // |bridge_| must outlive |start_syncing_sync_processor_|, so reset it
+    // `bridge_` must outlive `start_syncing_sync_processor_`, so reset it
     // first.
     start_syncing_sync_processor_.reset();
     bridge_.reset();
-    // The mock is still delegating to |real_processor_|, so we reset it too.
+    // The mock is still delegating to `real_processor_`, so we reset it too.
     ASSERT_TRUE(testing::Mock::VerifyAndClear(&mock_processor_));
     real_processor_.reset();
   }
@@ -140,8 +148,7 @@ class SyncableServiceBasedBridgeTest : public ::testing::Test {
     syncer::DataTypeActivationRequest request;
     request.error_handler = mock_error_handler_.Get();
     request.cache_guid = "TestCacheGuid";
-    request.authenticated_account_id =
-        CoreAccountId::FromGaiaId("SomeAccountId");
+    request.authenticated_gaia_id = GaiaId("SomeGaiaId");
     return request;
   }
 
@@ -224,9 +231,9 @@ TEST_F(SyncableServiceBasedBridgeTest,
 TEST_F(SyncableServiceBasedBridgeTest, ShouldWaitUntilModelReadyToSync) {
   base::OnceClosure syncable_service_ready_cb;
   ON_CALL(syncable_service_, WaitUntilReadyToSync)
-      .WillByDefault(Invoke([&](base::OnceClosure done) {
+      .WillByDefault([&](base::OnceClosure done) {
         syncable_service_ready_cb = std::move(done);
-      }));
+      });
 
   EXPECT_CALL(mock_processor_, ModelReadyToSync).Times(0);
   EXPECT_CALL(syncable_service_, WaitUntilReadyToSync).Times(0);
@@ -283,6 +290,126 @@ TEST_F(SyncableServiceBasedBridgeTest,
   real_processor_->OnSyncStopping(KEEP_METADATA);
 }
 
+// Regression test for crbug.com/401453180.
+TEST_F(SyncableServiceBasedBridgeTest,
+       ShouldMaybeClearDataIfPendingClearMetadataOnStart) {
+  // Simulate prior initial sync done.
+  InitializeBridge();
+  StartSyncing();
+  worker_->UpdateFromServer(kClientTagHash, GetTestSpecifics("name1"));
+  ShutdownBridge();
+
+  EXPECT_CALL(syncable_service_, StopSyncing).Times(0);
+  EXPECT_CALL(syncable_service_, StayStoppedAndMaybeClearData).Times(0);
+  InitializeBridge();
+
+  base::RunLoop loop;
+  ON_CALL(syncable_service_, WaitUntilReadyToSync)
+      .WillByDefault([&](base::OnceClosure done) {
+        // This should mark sync metadata as pending clear on start.
+        real_processor_->ClearMetadataIfStopped();
+        // Metadata has not been cleared yet.
+        ASSERT_THAT(GetAllData(), Not(IsEmpty()));
+        std::move(done).Run();
+        loop.Quit();
+      });
+
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(syncable_service_, StayStoppedAndMaybeClearData(kDataType));
+  // The processor should clear the pre-existing metadata and lead to
+  // StayStoppedAndMaybeClearData() being called.
+  loop.Run();
+  histogram_tester.ExpectUniqueSample(kMaybeClearDataHistogramName,
+                                      /*sample=*/true,
+                                      /*expected_bucket_count=*/1);
+  ASSERT_THAT(GetAllData(), IsEmpty());
+
+  ShutdownBridge();
+}
+
+TEST_F(SyncableServiceBasedBridgeTest, ShouldMaybeClearDataIfMetadataEmpty) {
+  base::RunLoop loop;
+  EXPECT_CALL(syncable_service_, StayStoppedAndMaybeClearData(kDataType))
+      .WillOnce([&]() { loop.Quit(); });
+  base::HistogramTester histogram_tester;
+  // No metadata exists, thus any account data in the syncable service should be
+  // cleared.
+  InitializeBridge();
+  loop.Run();
+  histogram_tester.ExpectUniqueSample(kMaybeClearDataHistogramName,
+                                      /*sample=*/true,
+                                      /*expected_bucket_count=*/1);
+
+  ShutdownBridge();
+}
+
+TEST_F(SyncableServiceBasedBridgeTest,
+       ShouldMaybeClearDataIfMetadataInconsistentOnNextStartup) {
+  // Simulate pre-existing metadata in the store without initial sync done.
+  {
+    std::unique_ptr<DataTypeStore::WriteBatch> batch =
+        store_->CreateWriteBatch();
+    batch->WriteData(kClientTagHash.value(),
+                     GetTestSpecifics().SerializeAsString());
+    base::RunLoop loop;
+    store_->CommitWriteBatch(
+        std::move(batch),
+        base::BindLambdaForTesting(
+            [&](const std::optional<ModelError>& error) { loop.Quit(); }));
+    loop.Run();
+  }
+
+  // Simulate a successful initial sync.
+  InitializeBridge();
+  StartSyncing();
+  ASSERT_THAT(GetAllData(), IsEmpty());
+  ShutdownBridge();
+
+  base::RunLoop loop;
+  // On the next startup, the metadata is currently empty, which should trigger
+  // StayStoppedAndMaybeClearData().
+  EXPECT_CALL(syncable_service_, StayStoppedAndMaybeClearData(kDataType))
+      .WillOnce([&]() { loop.Quit(); });
+  base::HistogramTester histogram_tester;
+  // Metadata exists but initial sync is not done, thus leading to an
+  // inconsistent state, which should trigger StayStoppedAndMaybeClearData().
+  InitializeBridge();
+  loop.Run();
+  histogram_tester.ExpectUniqueSample(kMaybeClearDataHistogramName,
+                                      /*sample=*/true,
+                                      /*expected_bucket_count=*/1);
+
+  ShutdownBridge();
+}
+
+TEST_F(SyncableServiceBasedBridgeTest,
+       ShouldNotMaybeClearDataIfMetadataNotEmpty) {
+  // Simulate prior initial sync done.
+  InitializeBridge();
+  StartSyncing();
+  worker_->UpdateFromServer(kClientTagHash, GetTestSpecifics("name1"));
+  ShutdownBridge();
+
+  base::RunLoop loop;
+  ON_CALL(syncable_service_, WaitUntilReadyToSync)
+      .WillByDefault([&](base::OnceClosure done) {
+        std::move(done).Run();
+        loop.Quit();
+      });
+  EXPECT_CALL(syncable_service_, StayStoppedAndMaybeClearData(kDataType))
+      .Times(0);
+  base::HistogramTester histogram_tester;
+  InitializeBridge();
+  // Metadata exists and initial sync is done, thus leading to no need to clear
+  // data.
+  loop.Run();
+  histogram_tester.ExpectUniqueSample(kMaybeClearDataHistogramName,
+                                      /*sample=*/false,
+                                      /*expected_bucket_count=*/1);
+
+  ShutdownBridge();
+}
+
 TEST_F(SyncableServiceBasedBridgeTest,
        ShouldNotStopSyncableServiceDuringShutdownIfNotPreviouslyStarted) {
   EXPECT_CALL(syncable_service_, StopSyncing).Times(0);
@@ -294,7 +421,8 @@ TEST_F(SyncableServiceBasedBridgeTest,
 TEST_F(SyncableServiceBasedBridgeTest, ShouldPropagateErrorDuringStart) {
   // Instrument MergeDataAndStartSyncing() to return an error.
   ON_CALL(syncable_service_, MergeDataAndStartSyncing)
-      .WillByDefault(Return(ModelError(FROM_HERE, "Test error")));
+      .WillByDefault(Return(
+          ModelError(FROM_HERE, syncer::ModelError::Type::kGenericTestError)));
 
   EXPECT_CALL(mock_error_handler_, Run);
 
@@ -460,7 +588,8 @@ TEST_F(SyncableServiceBasedBridgeTest,
 
   // We fake an error, reported by the bridge.
   EXPECT_CALL(mock_error_handler_, Run);
-  real_processor_->ReportError(ModelError(FROM_HERE, "Fake error"));
+  real_processor_->ReportError(
+      ModelError(FROM_HERE, syncer::ModelError::Type::kGenericTestError));
   ASSERT_TRUE(real_processor_->GetError());
 
   // Further local changes should be ignored.
@@ -659,10 +788,10 @@ TEST_F(SyncableServiceBasedBridgeTest, ShouldMeasureSyncableServiceStartTime) {
 
   base::RunLoop loop;
   ON_CALL(syncable_service_, WaitUntilReadyToSync)
-      .WillByDefault(Invoke([&](base::OnceClosure done) {
+      .WillByDefault([&](base::OnceClosure done) {
         std::move(done).Run();
         loop.Quit();
-      }));
+      });
 
   base::HistogramTester histogram_tester;
   EXPECT_CALL(syncable_service_, MergeDataAndStartSyncing);
@@ -723,11 +852,39 @@ TEST_F(SyncableServiceBasedBridgeTest,
 
   // Instrument MergeDataAndStartSyncing() to return an error.
   EXPECT_CALL(syncable_service_, MergeDataAndStartSyncing)
-      .WillOnce(Return(ModelError(FROM_HERE, "Test error")));
+      .WillOnce(Return(
+          ModelError(FROM_HERE, syncer::ModelError::Type::kGenericTestError)));
   EXPECT_CALL(mock_error_handler_, Run);
 
   worker_->UpdateFromServer(kClientTagHash, GetTestSpecifics("name1"));
   histogram_tester.ExpectTotalCount(kSyncableServiceStartTimeHistogramName, 0);
+}
+
+TEST_F(SyncableServiceBasedBridgeTest, ShouldCallWillStartInitialSync) {
+  ::testing::InSequence in_sequence;
+  EXPECT_CALL(syncable_service_, WillStartInitialSync);
+  EXPECT_CALL(syncable_service_, MergeDataAndStartSyncing);
+
+  InitializeBridge();
+  StartSyncing();
+  worker_->UpdateFromServer(kClientTagHash, GetTestSpecifics("name1"));
+}
+
+TEST_F(SyncableServiceBasedBridgeTest,
+       ShouldNotCallWillStartInitialSyncUponBrowserRestart) {
+  // The following writes data into store for the next run.
+  InitializeBridge();
+  StartSyncing();
+  worker_->UpdateFromServer(kClientTagHash, GetTestSpecifics("name1"));
+
+  // Mimic restart.
+  ShutdownBridge();
+
+  EXPECT_CALL(syncable_service_, MergeDataAndStartSyncing);
+  EXPECT_CALL(syncable_service_, WillStartInitialSync).Times(0);
+  // Initial data is loaded from the store.
+  InitializeBridge();
+  StartSyncing();
 }
 
 }  // namespace

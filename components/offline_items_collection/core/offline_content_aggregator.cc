@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/offline_items_collection/core/offline_content_aggregator.h"
+
+#include <algorithm>
 #include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "components/offline_items_collection/core/offline_content_aggregator.h"
 #include "components/offline_items_collection/core/offline_item.h"
 
 namespace offline_items_collection {
@@ -17,7 +18,8 @@ namespace offline_items_collection {
 namespace {
 
 template <typename T, typename U>
-bool MapContainsValue(const std::map<T, U>& map, U value) {
+bool MapContainsValue(const std::map<T, raw_ptr<U, CtnExperimental>>& map,
+                      U* value) {
   for (const auto& it : map) {
     if (it.second == value)
       return true;
@@ -27,7 +29,7 @@ bool MapContainsValue(const std::map<T, U>& map, U value) {
 
 }  // namespace
 
-OfflineContentAggregator::OfflineContentAggregator() {}
+OfflineContentAggregator::OfflineContentAggregator() = default;
 
 OfflineContentAggregator::~OfflineContentAggregator() = default;
 
@@ -125,6 +127,17 @@ void OfflineContentAggregator::ResumeDownload(const ContentId& id) {
   it->second->ResumeDownload(id);
 }
 
+void OfflineContentAggregator::ValidateDangerousDownload(const ContentId& id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto it = providers_.find(id.name_space);
+
+  if (it == providers_.end()) {
+    return;
+  }
+
+  it->second->ValidateDangerousDownload(id);
+}
+
 void OfflineContentAggregator::GetItemById(const ContentId& id,
                                            SingleItemCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -158,7 +171,7 @@ void OfflineContentAggregator::GetAllItems(MultipleItemCallback callback) {
 
   DCHECK(aggregated_items_.empty());
   for (auto provider_it : providers_) {
-    auto* provider = provider_it.second;
+    auto* provider = provider_it.second.get();
 
     provider->GetAllItems(
         base::BindOnce(&OfflineContentAggregator::OnGetAllItemsDone,
@@ -242,7 +255,7 @@ void OfflineContentAggregator::OnItemRemoved(const ContentId& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!pending_providers_.empty()) {
-    auto item = base::ranges::find(aggregated_items_, id, &OfflineItem::id);
+    auto item = std::ranges::find(aggregated_items_, id, &OfflineItem::id);
     if (item != aggregated_items_.end())
       aggregated_items_.erase(item);
   }

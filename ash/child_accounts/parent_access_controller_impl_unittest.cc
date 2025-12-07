@@ -238,27 +238,17 @@ TEST_F(ParentAccessControllerImplTest, ParentAccessUMARecording) {
 
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOGIN_PRIMARY);
-  StartParentAccess(EmptyAccountId(), SupervisedAction::kReauth);
-  histogram_tester_.ExpectBucketCount(
-      ParentAccessControllerImpl::kUMAParentAccessCodeUsage,
-      ParentAccessControllerImpl::UMAUsage::kReauhLoginScreen, 1);
-  SimulateButtonPress(PinRequestView::TestApi(view_).back_button());
-  ExpectUMAActionReported(
-      ParentAccessControllerImpl::UMAAction::kCanceledByUser, 6, 6);
-
-  GetSessionControllerClient()->SetSessionState(
-      session_manager::SessionState::LOGIN_PRIMARY);
   StartParentAccess(EmptyAccountId(), SupervisedAction::kAddUser);
   histogram_tester_.ExpectBucketCount(
       ParentAccessControllerImpl::kUMAParentAccessCodeUsage,
       ParentAccessControllerImpl::UMAUsage::kAddUserLoginScreen, 1);
   SimulateButtonPress(PinRequestView::TestApi(view_).back_button());
   ExpectUMAActionReported(
-      ParentAccessControllerImpl::UMAAction::kCanceledByUser, 7, 7);
+      ParentAccessControllerImpl::UMAAction::kCanceledByUser, 6, 6);
 
   histogram_tester_.ExpectTotalCount(
-      ParentAccessControllerImpl::kUMAParentAccessCodeUsage, 7);
-  EXPECT_EQ(7, back_action_);
+      ParentAccessControllerImpl::kUMAParentAccessCodeUsage, 6);
+  EXPECT_EQ(6, back_action_);
 }
 
 // Tests successful parent access validation flow.
@@ -321,11 +311,6 @@ TEST_F(ParentAccessControllerImplTest, ParentAccessInternalError) {
 #if DCHECK_IS_ON()
 // Tests that on login screen we check parent access code against all accounts.
 TEST_F(ParentAccessControllerImplTest, EnforceNoAccountSpecifiedOnLogin) {
-  GetSessionControllerClient()->SetSessionState(
-      session_manager::SessionState::LOGIN_PRIMARY);
-  EXPECT_DEATH_IF_SUPPORTED(
-      StartParentAccess(GetChildAccountId(), SupervisedAction::kReauth), "");
-
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOGIN_PRIMARY);
   EXPECT_DEATH_IF_SUPPORTED(

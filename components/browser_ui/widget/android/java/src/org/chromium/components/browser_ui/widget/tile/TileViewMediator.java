@@ -6,9 +6,11 @@ package org.chromium.components.browser_ui.widget.tile;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Mediator for the TileView. */
+@NullMarked
 class TileViewMediator {
     private final PropertyModel mModel;
 
@@ -46,12 +48,12 @@ class TileViewMediator {
     }
 
     /**
-     * Set whether the Icon Badge should be visible.
+     * Set whether the offline badge should be visible.
      *
-     * @param badgeVisible Whether icon badge should be visible.
+     * @param isVisible Whether offline badge should be visible.
      */
-    void setBadgeVisible(boolean badgeVisible) {
-        mModel.set(TileViewProperties.BADGE_VISIBLE, badgeVisible);
+    void setOfflineBadgeVisibility(boolean isVisible) {
+        mModel.set(TileViewProperties.OFFLINE_BADGE_VISIBLE, isVisible);
     }
 
     /**

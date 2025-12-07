@@ -1,21 +1,20 @@
 // Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "chrome/browser/ash/login/screens/family_link_notice_screen.h"
-
 #include "ash/constants/ash_features.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
+#include "chrome/browser/ash/login/screens/family_link_notice_screen.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/login/test/wizard_controller_screen_exit_waiter.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/family_link_notice_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/common/pref_names.h"
@@ -23,6 +22,7 @@
 #include "chromeos/ash/components/login/auth/stub_authenticator_builder.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace ash {
 namespace {
@@ -133,7 +133,8 @@ class FamilyLinkNoticeScreenChildTest : public FamilyLinkNoticeScreenTest {
   EmbeddedPolicyTestServerMixin policy_server_mixin_{&mixin_host_};
   UserPolicyMixin user_policy_mixin_{
       &mixin_host_,
-      AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId),
+      AccountId::FromUserEmailGaiaId(test::kTestEmail,
+                                     GaiaId(test::kTestGaiaId)),
       &policy_server_mixin_};
 };
 
@@ -172,7 +173,7 @@ class FamilyLinkNoticeScreenManagedTest : public FamilyLinkNoticeScreenTest {
 
  private:
   const LoginManagerMixin::TestUserInfo test_user_{
-      AccountId::FromUserEmailGaiaId("user@example.com", "1111")};
+      AccountId::FromUserEmailGaiaId("user@example.com", GaiaId("1111"))};
   UserPolicyMixin user_policy_mixin_{&mixin_host_, test_user_.account_id};
 };
 

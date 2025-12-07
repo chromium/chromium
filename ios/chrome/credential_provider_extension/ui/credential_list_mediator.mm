@@ -65,18 +65,11 @@
   [self.consumer
       setTopPrompt:PromptForServiceIdentifiers(self.serviceIdentifiers)];
 
+  __weak __typeof(self) weakSelf = self;
   dispatch_queue_t priorityQueue =
       dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
   dispatch_async(priorityQueue, ^{
-    self.allCredentials = [self fetchAllCredentials];
-
-    self.suggestedCredentials = [self.UIHandler isRequestingPasskey]
-                                    ? [self filterPasskeyCredentials]
-                                    : [self filterPasswordCredentials];
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [self presentCredentials];
-    });
+    [weakSelf fetchAndPresentRelevantCredentials];
   });
 }
 
@@ -136,71 +129,129 @@
 
 #pragma mark - Private
 
+// Fetches and presents credentials that are relevant to the service the user is
+// trying to log into.
+- (void)fetchAndPresentRelevantCredentials {
+  self.allCredentials = [self fetchAllCredentials];
+  self.suggestedCredentials = [self filterCredentials];
+
+  __weak __typeof(self) weakSelf = self;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [weakSelf presentCredentials];
+  });
+}
+
 // Returns all credentials from the credential store, filtered by request type
 // and sorted by service name.
 - (NSArray<id<Credential>>*)fetchAllCredentials {
-  BOOL isRequestingPasskey = [self.UIHandler isRequestingPasskey];
-  // Only use passwords or passkeys, depending on what's requested.
+  NSString* relyingPartyIdentifier = [self.UIHandler relyingPartyIdentifier];
+
+  // Figure out which type(s) of credentials to keep.
+  BOOL includePasswords = NO;
+  BOOL includePasskeys = NO;
+  if (relyingPartyIdentifier) {
+    // When showing passkeys, only include passwords if there's at least one
+    // that matches the service identifiers.
+    includePasswords = [self hasPasswordThatMatchesServiceIdentifiers];
+    includePasskeys = YES;
+  } else {
+    includePasswords = YES;
+  }
+
   NSArray<id<Credential>>* credentials = [self.credentialStore.credentials
       filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(
                                                    id<Credential> credential,
                                                    NSDictionary* bindings) {
-        return credential.isPasskey == isRequestingPasskey;
+        BOOL isPassword = !credential.isPasskey;
+        BOOL isValidPasskey =
+            credential.isPasskey && !credential.hidden &&
+            [credential.rpId isEqualToString:relyingPartyIdentifier];
+
+        return (includePasswords && isPassword) ||
+               (includePasskeys && isValidPasskey);
       }]];
 
-  credentials = [credentials sortedArrayUsingComparator:^NSComparisonResult(
-                                 id<Credential> obj1, id<Credential> obj2) {
-    return isRequestingPasskey ? [obj1.rpId compare:obj2.rpId]
-                               : [obj1.serviceName compare:obj2.serviceName];
-  }];
+  // Only sort if there's no relying party identifier. Otherwise, it means that
+  // the `credentials` list only contains passkeys, and hence there's no need to
+  // sort as they all have the same `rpId`.
+  if (!relyingPartyIdentifier) {
+    credentials = [credentials sortedArrayUsingComparator:^NSComparisonResult(
+                                   id<Credential> obj1, id<Credential> obj2) {
+      NSString* firstIdentifier = obj1.isPasskey ? obj1.rpId : obj1.serviceName;
+      NSString* secondIdentifier =
+          obj2.isPasskey ? obj2.rpId : obj2.serviceName;
+      return [firstIdentifier compare:secondIdentifier];
+    }];
+  }
+
   return credentials;
 }
 
-// Returns the list of allowed passkey credentials for the relying party.
-- (NSArray<id<Credential>>*)filterPasskeyCredentials {
-  // If the allowedCredentials array is empty, then the relying party accepts
-  // any passkey credential.
-  NSArray<NSData*>* allowedCredentials = [self.UIHandler allowedCredentials];
-  if (allowedCredentials.count == 0) {
-    return self.allCredentials;
-  }
-
+// Returns the list of allowed credentials that are related to the relying
+// party/service identifiers.
+- (NSArray<id<Credential>>*)filterCredentials {
   NSMutableArray* filteredCredentials = [[NSMutableArray alloc] init];
+  NSArray<NSData*>* allowedCredentials = [self.UIHandler allowedCredentials];
+  // If the `allowedCredentials` array is empty, then the relying party accepts
+  // any passkey credential.
+  BOOL isAnyPasskeyAllowed = allowedCredentials.count == 0;
+
   for (id<Credential> credential in self.allCredentials) {
-    if ([allowedCredentials containsObject:credential.credentialId]) {
+    if (credential.isPasskey) {
+      if (isAnyPasskeyAllowed ||
+          [allowedCredentials containsObject:credential.credentialId]) {
+        [filteredCredentials addObject:credential];
+      }
+    } else if (!credential.isPasskey &&
+               [self passwordCredential:credential
+                   matchesServiceIdentifiers:self.serviceIdentifiers]) {
       [filteredCredentials addObject:credential];
     }
   }
+
   return filteredCredentials;
 }
 
-// Returns the list of allowed password credentials for the service identifier.
-- (NSArray<id<Credential>>*)filterPasswordCredentials {
-  NSMutableArray* filteredCredentials = [[NSMutableArray alloc] init];
-  for (id<Credential> credential in self.allCredentials) {
-    for (ASCredentialServiceIdentifier* identifier in self.serviceIdentifiers) {
-      if (credential.serviceName &&
-          [identifier.identifier
-              localizedStandardContainsString:credential.serviceName]) {
-        [filteredCredentials addObject:credential];
-        break;
-      }
-      if (credential.serviceIdentifier &&
-          [identifier.identifier
-              localizedStandardContainsString:credential.serviceIdentifier]) {
-        [filteredCredentials addObject:credential];
-        break;
-      }
+// Returns `YES` if the provided `credential` matches at least one of the
+// `serviceIdentifiers`.
+- (BOOL)passwordCredential:(id<Credential>)credential
+    matchesServiceIdentifiers:
+        (NSArray<ASCredentialServiceIdentifier*>*)serviceIdentifiers {
+  for (ASCredentialServiceIdentifier* identifier in serviceIdentifiers) {
+    BOOL serviceNameMatches =
+        credential.serviceName &&
+        [identifier.identifier
+            localizedStandardContainsString:credential.serviceName];
+    BOOL serviceIdentifierMatches =
+        credential.serviceIdentifier &&
+        [identifier.identifier
+            localizedStandardContainsString:credential.serviceIdentifier];
+    if (serviceNameMatches || serviceIdentifierMatches) {
+      return YES;
     }
   }
-  return filteredCredentials;
+  return NO;
+}
+
+// Returns `YES` if at least one of the saved password credentials matches the
+// `serviceIdentifiers`.
+- (BOOL)hasPasswordThatMatchesServiceIdentifiers {
+  __weak __typeof(self) weakSelf = self;
+  NSUInteger indexOfMatchingPassword = [self.credentialStore.credentials
+      indexOfObjectPassingTest:^BOOL(id<Credential> credential, NSUInteger,
+                                     BOOL*) {
+        return !credential.isPasskey &&
+               [weakSelf passwordCredential:credential
+                   matchesServiceIdentifiers:weakSelf.serviceIdentifiers];
+      }];
+  return indexOfMatchingPassword != NSNotFound;
 }
 
 // Tells the consumer to show the passed in suggested and all credentials.
 - (void)presentCredentials {
   // TODO(crbug.com/40215043): Remove the serviceIdentifier check once the
   // new password screen properly supports user url entry.
-  BOOL canCreatePassword = ![self.UIHandler isRequestingPasskey] &&
+  BOOL canCreatePassword = ![self.UIHandler relyingPartyIdentifier] &&
                            IsPasswordCreationUserEnabled() &&
                            self.serviceIdentifiers.count > 0;
   if (!canCreatePassword && !self.allCredentials.count) {

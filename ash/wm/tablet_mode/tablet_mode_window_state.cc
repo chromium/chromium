@@ -33,6 +33,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/compositor/layer.h"
 #include "ui/wm/core/ime_util_chromeos.h"
 #include "ui/wm/core/window_util.h"
@@ -45,9 +46,10 @@ using ::chromeos::WindowStateType;
 // Sets the restore bounds and show state overrides. These values take
 // precedence over the restore bounds and restore show state (if set).
 // If |bounds_override| is empty the values are cleared.
-void SetWindowRestoreOverrides(aura::Window* window,
-                               const gfx::Rect& bounds_override,
-                               ui::WindowShowState window_state_override) {
+void SetWindowRestoreOverrides(
+    aura::Window* window,
+    const gfx::Rect& bounds_override,
+    ui::mojom::WindowShowState window_state_override) {
   if (bounds_override.IsEmpty()) {
     window->ClearProperty(kRestoreWindowStateTypeOverrideKey);
     window->ClearProperty(kRestoreBoundsOverrideKey);
@@ -68,9 +70,11 @@ gfx::Size GetMaximumSizeOfWindow(WindowState* window_state) {
       screen_util::GetMaximizedWindowBoundsInParent(window_state->window())
           .size();
 
-  gfx::Size size = window_state->window()->delegate()
-                       ? window_state->window()->delegate()->GetMaximumSize()
-                       : gfx::Size();
+  gfx::Size size =
+      window_state->window()->delegate()
+          ? window_state->window()->delegate()->GetMaximumSize().value_or(
+                gfx::Size())
+          : gfx::Size();
   if (size.IsEmpty())
     return workspace_size;
 
@@ -151,12 +155,20 @@ TabletModeWindowState::TabletModeWindowState(
   DCHECK(!snap || SplitViewController::Get(Shell::GetPrimaryRootWindow())
                       ->CanKeepCurrentSnapRatio(window));
 
-  // Snapped and floated windows maintain their state; other windows become
-  // maximized if possible, centered with a backdrop if not possible.
-  state_type_on_attach_ = snap || state->IsFloated()
-                              ? current_state_type_
-                              : state->GetWindowTypeOnMaximizable();
-  // TODO(oshima|sammiequon): consider SplitView scenario.
+  // Snapped and floated windows maintain their state; tabs dragged out of a
+  // snapped window inherit the snapped state at least for the duration of the
+  // drag; other windows become maximized if possible, centered with a backdrop
+  // if not possible.
+  if (snap || state->IsFloated()) {
+    state_type_on_attach_ = current_state_type_;
+  } else if (const WindowState* source_state =
+                 window_util::GetTabDraggingSourceWindowState(window);
+             source_state && source_state->IsSnapped()) {
+    state_type_on_attach_ = source_state->GetStateType();
+  } else {
+    state_type_on_attach_ = state->GetWindowTypeOnMaximizable();
+  }
+
   WindowState::ScopedBoundsChangeAnimation bounds_animation(
       window, entering_tablet_mode && !ShouldAnimateWindowForTransition(window)
                   ? WindowState::BoundsChangeAnimationType::kAnimateZero
@@ -199,8 +211,7 @@ void TabletModeWindowState::UpdateWindowPosition(
                                              /*float_state=*/false);
       break;
     case WindowState::BoundsChangeAnimationType::kAnimateZero:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -301,11 +312,10 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
       // PIP windows are not managed by TabletModeWindowManager even if the
       // window is in tablet mode. PIP window uses DefaultState instead, not
       // TabletModeWindowState.
-      NOTREACHED_IN_MIGRATION();
-      break;
-    case WM_EVENT_TRUSTED_PIN:
+      NOTREACHED();
+    case WM_EVENT_LOCKED_FULLSCREEN:
       if (!Shell::Get()->screen_pinning_controller()->IsPinned()) {
-        UpdateWindow(window_state, WindowStateType::kTrustedPinned,
+        UpdateWindow(window_state, WindowStateType::kLockedFullscreen,
                      /*animate=*/true);
       }
       break;
@@ -380,7 +390,7 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
       } else if (current_state_type_ != WindowStateType::kMinimized &&
                  current_state_type_ != WindowStateType::kFullscreen &&
                  current_state_type_ != WindowStateType::kPinned &&
-                 current_state_type_ != WindowStateType::kTrustedPinned &&
+                 current_state_type_ != WindowStateType::kLockedFullscreen &&
                  current_state_type_ != WindowStateType::kPrimarySnapped &&
                  current_state_type_ != WindowStateType::kSecondarySnapped &&
                  current_state_type_ != WindowStateType::kFloated) {
@@ -403,8 +413,7 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
       // If an already snapped window or floated or pinned window gets added to
       // the workspace, the window should not be forced maximized, rather retain
       // its previous state.
-      UpdateWindow(window_state,
-                   AdjustStateForTabletMode(window_state, current_state_type_),
+      UpdateWindow(window_state, AdjustStateForTabletMode(window_state),
                    /*animate=*/true);
       break;
     case WM_EVENT_DISPLAY_METRICS_CHANGED:
@@ -449,7 +458,7 @@ void TabletModeWindowState::AttachState(WindowState* window_state,
       // It will get updated later in `FloatController::OnTabletModeStarted`.
       current_state_type_ != WindowStateType::kFloated &&
       current_state_type_ != WindowStateType::kPinned &&
-      current_state_type_ != WindowStateType::kTrustedPinned) {
+      current_state_type_ != WindowStateType::kLockedFullscreen) {
     UpdateWindow(window_state, state_type_on_attach_,
                  animate_bounds_on_attach_);
   }
@@ -458,7 +467,7 @@ void TabletModeWindowState::AttachState(WindowState* window_state,
 void TabletModeWindowState::DetachState(WindowState* window_state) {
   // From now on, we can use the default session restore mechanism again.
   SetWindowRestoreOverrides(window_state->window(), gfx::Rect(),
-                            ui::SHOW_STATE_NORMAL);
+                            ui::mojom::WindowShowState::kNormal);
 }
 
 void TabletModeWindowState::UpdateWindow(WindowState* window_state,
@@ -469,7 +478,7 @@ void TabletModeWindowState::UpdateWindow(WindowState* window_state,
   DCHECK(target_state == WindowStateType::kMinimized ||
          target_state == WindowStateType::kMaximized ||
          target_state == WindowStateType::kPinned ||
-         target_state == WindowStateType::kTrustedPinned ||
+         target_state == WindowStateType::kLockedFullscreen ||
          (target_state == WindowStateType::kNormal &&
           (!window_state->CanMaximize() || !!wm::GetTransientParent(window))) ||
          target_state == WindowStateType::kFullscreen ||
@@ -527,12 +536,13 @@ void TabletModeWindowState::UpdateWindow(WindowState* window_state,
 }
 
 WindowStateType TabletModeWindowState::AdjustStateForTabletMode(
-    WindowState* window_state,
-    WindowStateType current_state_type) {
+    WindowState* window_state) {
+  auto current_state_type = window_state->GetStateType();
   if (chromeos::IsSnappedWindowStateType(current_state_type) ||
       chromeos::IsPinnedWindowStateType(current_state_type) ||
-      current_state_type == chromeos::WindowStateType::kFloated) {
-    return window_state->GetStateType();
+      current_state_type == chromeos::WindowStateType::kFloated ||
+      current_state_type == chromeos::WindowStateType::kFullscreen) {
+    return current_state_type;
   }
 
   return window_state->GetWindowTypeOnMaximizable();
@@ -636,7 +646,8 @@ void TabletModeWindowState::DoTabletSnap(
 
   // A snap WMEvent will put the window in tablet split view.
   split_view_controller->OnSnapEvent(window, snap_event_type,
-                                     snap_action_source);
+                                     snap_action_source,
+                                     WindowSnapGrouping::kGrouped);
 
   // Change window state and bounds to the snapped window state and bounds.
   UpdateWindow(window_state, new_state_type, /*animate=*/false);

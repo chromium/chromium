@@ -7,8 +7,10 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_item_warning_data.h"
@@ -26,6 +28,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 
@@ -37,12 +40,11 @@ namespace {
 // Please update the description of TailoredInfo field in csd.proto when
 // changing this value.
 // LINT.IfChange
-constexpr int kTailoredWarningVersion = 3;
-constexpr int kTailoredWarningVersionDownloadReportWithoutUserDecision = 5;
+constexpr int kTailoredWarningVersion = 5;
 // LINT.ThenChange(/components/safe_browsing/core/common/proto/csd.proto)
 
 DownloadRequestMaker::TabUrls TabUrlsFromWebContents(
-    content::WebContents* web_contents) {
+    base::WeakPtr<content::WebContents> web_contents) {
   DownloadRequestMaker::TabUrls result;
   if (web_contents) {
     content::NavigationEntry* entry =
@@ -58,8 +60,8 @@ DownloadRequestMaker::TabUrls TabUrlsFromWebContents(
 void SetDownloadItemWarningData(download::DownloadItem* item,
                                 const std::optional<std::string>& password,
                                 const FileAnalyzer::Results& results) {
-  DownloadItemWarningData::SetIsEncryptedArchive(
-      item, results.encryption_info.is_encrypted);
+  DownloadItemWarningData::SetIsTopLevelEncryptedArchive(
+      item, results.encryption_info.is_top_level_encrypted);
   DownloadItemWarningData::SetIsFullyExtractedArchive(
       item, results.archive_summary.parser_status() ==
                     ClientDownloadRequest::ArchiveSummary::VALID &&
@@ -107,9 +109,13 @@ DownloadRequestMaker::CreateFromDownloadItem(
       binary_feature_extractor,
       content::DownloadItemUtils::GetBrowserContext(item),
       TabUrls{item->GetTabUrl(), item->GetTabReferrerUrl()},
-      item->GetTargetFilePath(), item->GetFullPath(), item->GetURL(),
-      item->GetHash(), item->GetReceivedBytes(), resources,
-      item->HasUserGesture(),
+#if BUILDFLAG(IS_ANDROID)
+      /*target_file_name=*/item->GetFileNameToReportUser(),
+#else
+      /*target_file_name=*/item->GetTargetFilePath(),
+#endif
+      item->GetFullPath(), item->GetURL(), item->GetHash(),
+      item->GetReceivedBytes(), resources, item->HasUserGesture(),
       static_cast<ReferrerChainData*>(
           item->GetUserData(ReferrerChainData::kDownloadReferrerChainDataKey)),
       password, DownloadProtectionService::GetDownloadPingToken(item),
@@ -124,7 +130,6 @@ DownloadRequestMaker::CreateFromDownloadItem(
 std::unique_ptr<DownloadRequestMaker>
 DownloadRequestMaker::CreateFromFileSystemAccess(
     scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor,
-    DownloadProtectionService* service,
     const content::FileSystemAccessWriteItem& item) {
   ClientDownloadRequest::Resource resource;
   resource.set_url(
@@ -152,7 +157,7 @@ DownloadRequestMaker::DownloadRequestMaker(
     scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor,
     content::BrowserContext* browser_context,
     TabUrls tab_urls,
-    base::FilePath target_file_path,
+    base::FilePath target_file_name,
     base::FilePath full_path,
     GURL source_url,
     std::string sha256_hash,
@@ -167,7 +172,7 @@ DownloadRequestMaker::DownloadRequestMaker(
       request_(std::make_unique<ClientDownloadRequest>()),
       binary_feature_extractor_(binary_feature_extractor),
       tab_urls_(tab_urls),
-      target_file_path_(target_file_path),
+      target_file_name_(target_file_name),
       full_path_(full_path),
       password_(password.CopyAsOptional()),
       on_results_callback_(std::move(on_results_callback)) {
@@ -195,6 +200,13 @@ DownloadRequestMaker::DownloadRequestMaker(
 DownloadRequestMaker::~DownloadRequestMaker() = default;
 
 void DownloadRequestMaker::Start(DownloadRequestMaker::Callback callback) {
+  CallbackWithDetails callback_adapter =
+      base::IgnoreArgs<RequestCreationDetails>(std::move(callback));
+  Start(std::move(callback_adapter));
+}
+
+void DownloadRequestMaker::Start(
+    DownloadRequestMaker::CallbackWithDetails callback) {
   callback_ = std::move(callback);
 
   Profile* profile = Profile::FromBrowserContext(browser_context_);
@@ -202,25 +214,27 @@ void DownloadRequestMaker::Start(DownloadRequestMaker::Callback callback) {
       profile && AdvancedProtectionStatusManagerFactory::GetForProfile(profile)
                      ->IsUnderAdvancedProtection();
 
-  *request_->mutable_population() =
-      GetUserPopulationForProfileWithCookieTheftExperiments(profile);
-  if (base::FeatureList::IsEnabled(kNestedArchives)) {
+  *request_->mutable_population() = GetUserPopulationForProfile(profile);
+
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(kMaliciousApkDownloadCheck)) {
+    std::string malicious_apk_check = "MaliciousApkDownloadCheck";
+    if (kMaliciousApkDownloadCheckTelemetryOnly.Get()) {
+      base::StrAppend(&malicious_apk_check, {".TelemetryOnly"});
+    }
     request_->mutable_population()->add_finch_active_groups(
-        "SafeBrowsingArchiveImprovements.Enabled");
+        std::move(malicious_apk_check));
   }
-  if (profile && IsEnhancedProtectionEnabled(*profile->GetPrefs()) &&
-      base::FeatureList::IsEnabled(kDeepScanningCriteria)) {
-    request_->mutable_population()->add_finch_active_groups(
-        "SafeBrowsingDeepScanningCriteria-Enabled");
-  }
+#endif
+
   request_->set_request_ap_verdicts(is_under_advanced_protection);
   request_->set_locale(g_browser_process->GetApplicationLocale());
-  request_->set_file_basename(target_file_path_.BaseName().AsUTF8Unsafe());
+  request_->set_file_basename(target_file_name_.BaseName().AsUTF8Unsafe());
 
   PopulateTailoredInfo();
 
   file_analyzer_->Start(
-      target_file_path_, full_path_, password_,
+      target_file_name_, full_path_, password_,
       base::BindOnce(&DownloadRequestMaker::OnFileFeatureExtractionDone,
                      weakptr_factory_.GetWeakPtr()));
 }
@@ -228,6 +242,8 @@ void DownloadRequestMaker::Start(DownloadRequestMaker::Callback callback) {
 void DownloadRequestMaker::OnFileFeatureExtractionDone(
     FileAnalyzer::Results results) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  details_.inspection_type = results.inspection_performed;
 
   request_->set_download_type(results.type);
   request_->mutable_archived_binary()->CopyFrom(results.archived_binaries);
@@ -301,15 +317,12 @@ void DownloadRequestMaker::OnGotTabRedirects(
     }
   }
 
-  std::move(callback_).Run(std::move(request_));
+  std::move(callback_).Run(details_, std::move(request_));
 }
 
 void DownloadRequestMaker::PopulateTailoredInfo() {
   ClientDownloadRequest::TailoredInfo tailored_info;
-  int version = base::FeatureList::IsEnabled(
-                    safe_browsing::kDownloadReportWithoutUserDecision)
-                    ? kTailoredWarningVersionDownloadReportWithoutUserDecision
-                    : kTailoredWarningVersion;
+  int version = kTailoredWarningVersion;
   tailored_info.set_version(version);
   *request_->mutable_tailored_info() = tailored_info;
 }

@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -238,8 +239,9 @@ class TranslateManagerBrowserTest : public InProcessBrowserTest {
 
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
-    if (request.GetURL().path() != "/mock_translate_script.js")
+    if (request.GetURL().GetPath() != "/mock_translate_script.js") {
       return nullptr;
+    }
 
     std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
         new net::test_server::BasicHttpResponse);
@@ -1041,7 +1043,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
 
   ResetObserver();
 
-  GURL french_url = ui_test_utils::GetTestUrl(
+  GURL french_url = chrome_test_utils::GetTestUrl(
       base::FilePath(), base::FilePath(FILE_PATH_LITERAL("french_page.html")));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), french_url));
 

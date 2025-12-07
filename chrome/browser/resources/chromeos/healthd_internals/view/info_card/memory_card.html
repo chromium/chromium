@@ -1,0 +1,33 @@
+<style include="healthd-internals-shared cr-shared-style md-select">
+  #cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  #headerEndContainer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-inline-end: 16px;
+  }
+
+  #memoryUnitSelector {
+    width: 80px;
+  }
+</style>
+<div id="cardHeader">
+  <h2>Memory</h2>
+  <div id="headerEndContainer">
+    <label>Unit: </label>
+    <select id="memoryUnitSelector" class="md-select"
+        on-change="onMemoryUnitChanged" value="[[memoryUnit]]">
+      <option value="auto">Auto</option>
+      <option value="gibibyte">GB</option>
+      <option value="mebibyte">MB</option>
+      <option value="kibibyte">KB</option>
+    </select>
+  </div>
+</div>
+<healthd-internals-info-card id="infoCard">
+</healthd-internals-info-card>

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.cc.input.OffsetTag;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.DrawingInfo;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -11,9 +12,11 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableLongPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Properties associated with the top toolbar's composited layer. */
+@NullMarked
 public class TopToolbarOverlayProperties {
     /** Whether the URL should be hidden when rendered. */
     public static final WritableBooleanPropertyKey ANONYMIZE = new WritableBooleanPropertyKey();
@@ -44,12 +47,29 @@ public class TopToolbarOverlayProperties {
     /** The current x offset of the top toolbar. */
     public static final WritableFloatPropertyKey X_OFFSET = new WritableFloatPropertyKey();
 
-    /** The current y offset of the top toolbar. */
-    public static final WritableFloatPropertyKey CONTENT_OFFSET = new WritableFloatPropertyKey();
+    /**
+     * The current x offset of the top toolbar. This is used when |LEGACY_CONTENT_OFFSET| is not
+     * set.
+     */
+    public static final WritableFloatPropertyKey Y_OFFSET = new WritableFloatPropertyKey();
+
+    // TODO(https://crbug.com/454338286): Rename / remove in favor of yOffset.
+    /**
+     * The current content offset used to position the top toolbar. This offset effectively
+     * represents the offset between the bottom edge of the toolbar and might not equal to the
+     * content offset from the current browser control, especially when there are other browser
+     * controls shown below the toolbar (e.g. bookmark bar).
+     *
+     * <p>When this attribute is set, the value of {@link #Y_OFFSET} will be ignored.
+     */
+    public static final WritableFloatPropertyKey LEGACY_CONTENT_OFFSET =
+            new WritableFloatPropertyKey();
 
     /** The OffsetTag indicating that this layer should be moved by viz. */
     public static final WritableObjectPropertyKey<OffsetTag> TOOLBAR_OFFSET_TAG =
             new WritableObjectPropertyKey<>();
+
+    public static final WritableLongPropertyKey CAPTURE_RESOURCE_ID = new WritableLongPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
@@ -62,7 +82,9 @@ public class TopToolbarOverlayProperties {
                 URL_BAR_RESOURCE_ID,
                 VISIBLE,
                 X_OFFSET,
-                CONTENT_OFFSET,
-                TOOLBAR_OFFSET_TAG
+                Y_OFFSET,
+                LEGACY_CONTENT_OFFSET,
+                TOOLBAR_OFFSET_TAG,
+                CAPTURE_RESOURCE_ID
             };
 }

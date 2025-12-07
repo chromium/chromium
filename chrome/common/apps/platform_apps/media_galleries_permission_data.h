@@ -32,8 +32,10 @@ class MediaGalleriesPermissionData {
   // Populate |this| from a base::Value.
   bool FromValue(const base::Value* value);
 
-  bool operator<(const MediaGalleriesPermissionData& rhs) const;
-  bool operator==(const MediaGalleriesPermissionData& rhs) const;
+  friend auto operator<=>(const MediaGalleriesPermissionData&,
+                          const MediaGalleriesPermissionData&) = default;
+  friend bool operator==(const MediaGalleriesPermissionData&,
+                         const MediaGalleriesPermissionData&) = default;
 
   std::string permission() const { return permission_; }
 

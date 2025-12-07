@@ -4,6 +4,7 @@
 
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 
+#include <memory>
 #include <optional>
 #include <string>
 
@@ -11,24 +12,32 @@
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/puma_histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/stringprintf.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "base/version_info/version_info.h"
 #include "build/branding_buildflags.h"
 #include "components/country_codes/country_codes.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
-#include "components/search_engines/eea_countries_ids.h"
+#include "components/regional_capabilities/program_settings.h"
+#include "components/regional_capabilities/regional_capabilities_service.h"
+#include "components/search_engines/choice_made_location.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_terms_data.h"
+#include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
@@ -36,67 +45,49 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "components/grit/components_scaled_resources.h"  // nogncheck
-#include "ui/resources/grit/ui_resources.h"               // nogncheck
-#endif
+using ::country_codes::CountryId;
 
 namespace search_engines {
 
 namespace {
-#if !BUILDFLAG(IS_ANDROID)
-// Defines `kSearchEngineResourceIdMap`.
-#include "components/search_engines/generated_search_engine_resource_ids-inc.cc"
-#endif
-
 // Serialization keys for `ChoiceScreenDisplayState`.
 constexpr char kDisplayStateCountryIdKey[] = "country_id";
 constexpr char kDisplayStateSearchEnginesKey[] = "search_engines";
 constexpr char kDisplayStateSelectedEngineIndexKey[] = "selected_engine_index";
 
+// Returns a serialised program from the given `preference`, or `std::nullopt`
+// if the preference is not a valid program.
+std::optional<int> SerializedProgramFromPreference(
+    const PrefService::Preference& preference) {
+  if (preference.IsDefaultValue()) {
+    // If the preference has no set value, we assume the choice was made before
+    // we started persisting the program, and Waffle was the only supported
+    // program at the time.
+    return regional_capabilities::SerializeProgram(
+        regional_capabilities::Program::kWaffle);
+  }
+
+  int serialized_program = preference.GetValue()->GetInt();
+  if (regional_capabilities::IsValidSerializedProgram(serialized_program)) {
+    return serialized_program;
+  }
+
+  return std::nullopt;
+}
+
 }  // namespace
-
-const char kSearchEngineChoiceScreenNavigationConditionsHistogram[] =
-    "Search.ChoiceScreenNavigationConditions";
-
-const char kSearchEngineChoiceScreenProfileInitConditionsHistogram[] =
-    "Search.ChoiceScreenProfileInitConditions";
-
-const char kSearchEngineChoiceScreenEventsHistogram[] =
-    "Search.ChoiceScreenEvents";
-
-const char kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram[] =
-    "Search.ChoiceScreenDefaultSearchEngineType";
-
-const char kSearchEngineChoiceScreenSelectedEngineIndexHistogram[] =
-    "Search.ChoiceScreenSelectedEngineIndex";
-
-const char kSearchEngineChoiceScreenShowedEngineAtHistogramPattern[] =
-    "Search.ChoiceScreenShowedEngineAt.Index%d";
-
-const char kSearchEngineChoiceScreenShowedEngineAtCountryMismatchHistogram[] =
-    "Search.ChoiceScreenShowedEngineAt.CountryMismatch";
-
-const char kSearchEngineChoiceWipeReasonHistogram[] = "Search.ChoiceWipeReason";
-
-const char kSearchEngineChoiceRepromptHistogram[] = "Search.ChoiceReprompt";
-
-const char kSearchEngineChoiceRepromptWildcardHistogram[] =
-    "Search.ChoiceReprompt.Wildcard";
-
-const char kSearchEngineChoiceRepromptSpecificCountryHistogram[] =
-    "Search.ChoiceReprompt.SpecificCountry";
-
-const char kSearchEngineChoiceUnexpectedIdHistogram[] =
-    "Search.ChoiceDebug.UnexpectedSearchEngineId";
 
 ChoiceScreenDisplayState::ChoiceScreenDisplayState(
     std::vector<SearchEngineType> search_engines,
-    int country_id,
+    CountryId country_id,
+    bool is_current_default_search_presented,
+    bool includes_non_regional_set_engine,
     std::optional<int> selected_engine_index)
     : search_engines(std::move(search_engines)),
       selected_engine_index(selected_engine_index),
-      country_id(country_id) {}
+      country_id(country_id),
+      is_current_default_search_presented(is_current_default_search_presented),
+      includes_non_regional_set_engine(includes_non_regional_set_engine) {}
 
 ChoiceScreenDisplayState::ChoiceScreenDisplayState(
     const ChoiceScreenDisplayState& other) = default;
@@ -104,9 +95,13 @@ ChoiceScreenDisplayState::ChoiceScreenDisplayState(
 ChoiceScreenDisplayState::~ChoiceScreenDisplayState() = default;
 
 base::Value::Dict ChoiceScreenDisplayState::ToDict() const {
+  // TODO(crbug.com/454023518): Non-regional set engine support is not currently
+  // expected to result in uploading nor locally caching display metrics.
+  CHECK(!includes_non_regional_set_engine);
+
   auto dict = base::Value::Dict();
 
-  dict.Set(kDisplayStateCountryIdKey, country_id);
+  dict.Set(kDisplayStateCountryIdKey, country_id.Serialize());
 
   base::Value::List* search_engines_array =
       dict.EnsureList(kDisplayStateSearchEnginesKey);
@@ -125,8 +120,12 @@ base::Value::Dict ChoiceScreenDisplayState::ToDict() const {
 // static
 std::optional<ChoiceScreenDisplayState> ChoiceScreenDisplayState::FromDict(
     const base::Value::Dict& dict) {
-  std::optional<int> parsed_country_id =
+  std::optional<int> parsed_country_code =
       dict.FindInt(kDisplayStateCountryIdKey);
+  std::optional<CountryId> parsed_country_id;
+  if (parsed_country_code.has_value()) {
+    parsed_country_id = CountryId::Deserialize(parsed_country_code.value());
+  }
   const base::Value::List* parsed_search_engines =
       dict.FindList(kDisplayStateSearchEnginesKey);
   std::optional<int> parsed_selected_engine_index =
@@ -142,8 +141,13 @@ std::optional<ChoiceScreenDisplayState> ChoiceScreenDisplayState::FromDict(
     return std::nullopt;
   }
 
-  if (!parsed_country_id.has_value() ||
-      !parsed_search_engines) {
+  if (!parsed_country_id.has_value() || !parsed_search_engines) {
+    return std::nullopt;
+  }
+
+  if (!parsed_country_id->IsValid()) {
+    // Should never happen if a choice screen was shown. The triggering logic
+    // ensures this is not possible.
     return std::nullopt;
   }
 
@@ -153,14 +157,16 @@ std::optional<ChoiceScreenDisplayState> ChoiceScreenDisplayState::FromDict(
         static_cast<SearchEngineType>(search_engine_type.GetInt()));
   }
 
-  return ChoiceScreenDisplayState(
-      search_engines, parsed_country_id.value(),
-      parsed_selected_engine_index);
+  return ChoiceScreenDisplayState(search_engines, parsed_country_id.value(),
+                                  /*is_current_default_search_presented=*/false,
+                                  /*includes_non_regional_set_engine=*/false,
+                                  parsed_selected_engine_index);
 }
 
 ChoiceScreenData::ChoiceScreenData(
     TemplateURL::OwnedTemplateURLVector owned_template_urls,
-    int country_id,
+    const TemplateURL* current_default_to_highlight,
+    CountryId country_id,
     const SearchTermsData& search_terms_data)
     : search_engines_(std::move(owned_template_urls)),
       display_state_(ChoiceScreenDisplayState(
@@ -169,58 +175,46 @@ ChoiceScreenData::ChoiceScreenData(
               [&search_terms_data](const std::unique_ptr<TemplateURL>& t_url) {
                 return t_url->GetEngineType(search_terms_data);
               }),
-          country_id)) {}
+          country_id,
+          /*is_current_default_search_presented=*/
+          current_default_to_highlight != nullptr,
+          /*includes_non_regional_set_engine=*/
+          current_default_to_highlight != nullptr &&
+              !base::Contains(search_engines_,
+                              current_default_to_highlight,
+                              &std::unique_ptr<TemplateURL>::get))),
+      current_default_to_highlight_(current_default_to_highlight) {}
 
 ChoiceScreenData::~ChoiceScreenData() = default;
 
-// Returns whether the choice screen flag is generally enabled for the specific
-// user flow.
-bool IsChoiceScreenFlagEnabled(ChoicePromo promo) {
-  return base::FeatureList::IsEnabled(switches::kSearchEngineChoiceTrigger);
-}
-
-bool IsEeaChoiceCountry(int country_id) {
-  // Consider the search engine list command line country override as an EEA
-  // region country to display the search engine choice screen.
-  return HasSearchEngineCountryListOverride()
-             ? true
-             : kEeaChoiceCountriesIds.contains(country_id);
-}
-
-void RecordChoiceScreenProfileInitCondition(
-    SearchEngineChoiceScreenConditions condition) {
-  base::UmaHistogramEnumeration(
-      kSearchEngineChoiceScreenProfileInitConditionsHistogram, condition);
-}
-
-void RecordChoiceScreenNavigationCondition(
-    SearchEngineChoiceScreenConditions condition) {
-  base::UmaHistogramEnumeration(
-      kSearchEngineChoiceScreenNavigationConditionsHistogram, condition);
-}
-
-void RecordChoiceScreenEvent(SearchEngineChoiceScreenEvents event) {
-  base::UmaHistogramEnumeration(kSearchEngineChoiceScreenEventsHistogram,
-                                event);
-
-  if (event == SearchEngineChoiceScreenEvents::kChoiceScreenWasDisplayed ||
-      event == SearchEngineChoiceScreenEvents::kFreChoiceScreenWasDisplayed ||
-      event == SearchEngineChoiceScreenEvents::
-                   kProfileCreationChoiceScreenWasDisplayed) {
-    base::RecordAction(
-        base::UserMetricsAction("SearchEngineChoiceScreenShown"));
-  }
-}
-
-void RecordChoiceScreenDefaultSearchProviderType(SearchEngineType engine_type) {
+void RecordChoiceScreenDefaultSearchProviderType(
+    SearchEngineType engine_type,
+    ChoiceMadeLocation choice_location) {
   base::UmaHistogramEnumeration(
       kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram, engine_type,
       SEARCH_ENGINE_MAX);
+  base::PumaHistogramEnumeration(
+      base::PumaType::kRc,
+      kPumaSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
+      engine_type, SEARCH_ENGINE_MAX);
+  if (choice_location == ChoiceMadeLocation::kChoiceScreen) {
+    base::UmaHistogramEnumeration(
+        kSearchEngineChoiceScreenDefaultSearchEngineType2Histogram, engine_type,
+        SEARCH_ENGINE_MAX);
+    base::PumaHistogramEnumeration(
+        base::PumaType::kRc,
+        kPumaSearchEngineChoiceScreenDefaultSearchEngineType2Histogram,
+        engine_type, SEARCH_ENGINE_MAX);
+  }
 }
 
 void RecordChoiceScreenSelectedIndex(int selected_engine_index) {
   base::UmaHistogramExactLinear(
       kSearchEngineChoiceScreenSelectedEngineIndexHistogram,
+      selected_engine_index,
+      TemplateURLPrepopulateData::kMaxEeaPrepopulatedEngines);
+  base::PumaHistogramExactLinear(
+      base::PumaType::kRc, kPumaSearchChoiceScreenSelectedEngineIndexHistogram,
       selected_engine_index,
       TemplateURLPrepopulateData::kMaxEeaPrepopulatedEngines);
 }
@@ -244,82 +238,132 @@ void RecordChoiceScreenPositions(
   }
 }
 
-void RecordUnexpectedSearchProvider(const TemplateURLData& data) {
-  base::UmaHistogramSparse(kSearchEngineChoiceUnexpectedIdHistogram,
-                           data.prepopulate_id);
-}
-
 void WipeSearchEngineChoicePrefs(PrefService& profile_prefs,
-                                 WipeSearchEngineChoiceReason reason) {
-  if (IsChoiceScreenFlagEnabled(ChoicePromo::kAny)) {
-    base::UmaHistogramEnumeration(kSearchEngineChoiceWipeReasonHistogram,
-                                  reason);
-    profile_prefs.ClearPref(
-        prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp);
-    profile_prefs.ClearPref(
-        prefs::kDefaultSearchProviderChoiceScreenCompletionVersion);
-    profile_prefs.ClearPref(
-        prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState);
+                                 SearchEngineChoiceWipeReason reason) {
+  base::UmaHistogramEnumeration(kSearchEngineChoiceWipeReasonHistogram, reason);
+
+  profile_prefs.ClearPref(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp);
+  profile_prefs.ClearPref(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionVersion);
+  profile_prefs.ClearPref(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionProgram);
+  profile_prefs.ClearPref(
+      prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState);
+  profile_prefs.ClearPref(
+      prefs::kDefaultSearchProviderChoiceInvalidationTimestamp);
 
 #if BUILDFLAG(IS_IOS)
-    profile_prefs.ClearPref(
-        prefs::kDefaultSearchProviderChoiceScreenSkippedCount);
+  profile_prefs.ClearPref(
+      prefs::kDefaultSearchProviderChoiceScreenSkippedCount);
 #endif
-  }
 }
 
-std::optional<SearchEngineCountryOverride> GetSearchEngineCountryOverride() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(switches::kSearchEngineChoiceCountry)) {
-    return std::nullopt;
+base::expected<ChoiceCompletionMetadata, ChoiceCompletionMetadata::ParseError>
+GetChoiceCompletionMetadata(const PrefService& prefs) {
+  if (!prefs.HasPrefPath(
+          prefs::kDefaultSearchProviderChoiceScreenCompletionVersion)) {
+    return base::unexpected(
+        prefs.HasPrefPath(
+            prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp)
+            ? ChoiceCompletionMetadata::ParseError::kMissingVersion
+            : ChoiceCompletionMetadata::ParseError::kAbsent);
   }
 
-  std::string country_id =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kSearchEngineChoiceCountry);
+  base::Version version(prefs.GetString(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionVersion));
+  if (!version.IsValid() ||
+      version.components().size() !=
+          version_info::GetVersion().components().size()) {
+    return base::unexpected(
+        ChoiceCompletionMetadata::ParseError::kInvalidVersion);
+  }
 
-  if (country_id == switches::kDefaultListCountryOverride) {
-    return SearchEngineCountryListOverride::kEeaDefault;
+  if (!prefs.HasPrefPath(
+          prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp)) {
+    return base::unexpected(
+        ChoiceCompletionMetadata::ParseError::kMissingTimestamp);
   }
-  if (country_id == switches::kEeaListCountryOverride) {
-    return SearchEngineCountryListOverride::kEeaAll;
+
+  base::Time timestamp =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(prefs.GetInt64(
+        prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp)));
+
+  if (timestamp.is_null()) {
+    return base::unexpected(
+        ChoiceCompletionMetadata::ParseError::kNullTimestamp);
   }
-  return country_codes::CountryStringToCountryID(country_id);
+
+  std::optional<int> serialized_choice_program =
+      SerializedProgramFromPreference(CHECK_DEREF(prefs.FindPreference(
+          prefs::kDefaultSearchProviderChoiceScreenCompletionProgram)));
+  if (!serialized_choice_program.has_value()) {
+    return base::unexpected(
+        ChoiceCompletionMetadata::ParseError::kInvalidProgram);
+  }
+
+  return ChoiceCompletionMetadata{
+      .timestamp = timestamp,
+      .version = version,
+      .serialized_program = *serialized_choice_program,
+  };
 }
 
-bool HasSearchEngineCountryListOverride() {
-  std::optional<SearchEngineCountryOverride> country_override =
-      GetSearchEngineCountryOverride();
-  if (!country_override.has_value()) {
+void ClearSearchEngineChoiceInvalidation(PrefService& prefs) {
+  prefs.ClearPref(prefs::kDefaultSearchProviderChoiceInvalidationTimestamp);
+}
+
+bool IsSearchEngineChoiceInvalid(const PrefService& prefs) {
+  if (!base::FeatureList::IsEnabled(
+          switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection)) {
+    // Ensure that we never consider a search engine choice invalid when the
+    // feature is disabled. This could happen if a user changes experiment
+    // groups for example.
     return false;
   }
 
-  return absl::holds_alternative<SearchEngineCountryListOverride>(
-      country_override.value());
+  return prefs.GetInt64(
+             prefs::kDefaultSearchProviderChoiceInvalidationTimestamp) > 0;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-std::u16string GetMarketingSnippetString(
-    const TemplateURLData& template_url_data) {
-  int snippet_resource_id =
-      GetMarketingSnippetResourceId(template_url_data.keyword());
-
-  return snippet_resource_id == -1
-             ? l10n_util::GetStringFUTF16(
-                   IDS_SEARCH_ENGINE_FALLBACK_MARKETING_SNIPPET,
-                   template_url_data.short_name())
-             : l10n_util::GetStringUTF16(snippet_resource_id);
+ChoiceCompletionMetadata CreateChoiceCompletionMetadataWithProgram(
+    int serialized_program) {
+  return ChoiceCompletionMetadata{
+      .timestamp = base::Time::Now(),
+      .version = version_info::GetVersion(),
+      .serialized_program = serialized_program,
+  };
 }
 
-int GetIconResourceId(const std::u16string& engine_keyword) {
-  // `kSearchEngineResourceIdMap` is defined in
-  // `components/search_engines/generated_search_engine_resource_ids-inc.cc`
-  const base::fixed_flat_map<std::u16string_view, int,
-                             kSearchEngineResourceIdMap.size()>::const_iterator
-      iterator = kSearchEngineResourceIdMap.find(engine_keyword);
-  return iterator == kSearchEngineResourceIdMap.cend() ? -1 : iterator->second;
+ChoiceCompletionMetadata CreateChoiceCompletionMetadataForCurrentState(
+    regional_capabilities::RegionalCapabilitiesService&
+        regional_capabilities_service) {
+  return CreateChoiceCompletionMetadataWithProgram(
+      regional_capabilities_service.GetSerializedActiveProgram());
 }
 
-#endif
+void SetChoiceCompletionMetadata(PrefService& prefs,
+                                 ChoiceCompletionMetadata metadata) {
+  // Verify that any invalidation has already been cleared. Otherwise the
+  // completion will be ignored.
+  CHECK(!IsSearchEngineChoiceInvalid(prefs), base::NotFatalUntil::M140);
+
+  prefs.SetInt64(prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
+                 metadata.timestamp.ToDeltaSinceWindowsEpoch().InSeconds());
+  prefs.SetString(prefs::kDefaultSearchProviderChoiceScreenCompletionVersion,
+                  metadata.version.GetString());
+  prefs.SetInteger(prefs::kDefaultSearchProviderChoiceScreenCompletionProgram,
+                   metadata.serialized_program);
+}
+
+std::optional<base::Time> GetChoiceScreenCompletionTimestamp(
+    PrefService& prefs) {
+  auto metadata = GetChoiceCompletionMetadata(prefs);
+  if (!metadata.has_value()) {
+    return std::nullopt;
+  }
+
+  return metadata->timestamp;
+}
 
 }  // namespace search_engines

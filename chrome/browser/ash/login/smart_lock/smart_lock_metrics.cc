@@ -15,7 +15,8 @@ void RecordSmartLockDidUserManuallyUnlockPhone(bool did_unlock) {
 }
 
 void RecordSmartLockSigninDuration(const base::TimeDelta& duration) {
-  UMA_HISTOGRAM_MEDIUM_TIMES("EasyUnlock.AuthEvent.SignIn.Duration", duration);
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("EasyUnlock.AuthEvent.SignIn.Duration",
+                                        duration);
 }
 
 void RecordSmartLockSigninEvent(SmartLockAuthEvent event) {
@@ -25,7 +26,8 @@ void RecordSmartLockSigninEvent(SmartLockAuthEvent event) {
 }
 
 void RecordSmartLockScreenUnlockDuration(const base::TimeDelta& duration) {
-  UMA_HISTOGRAM_MEDIUM_TIMES("EasyUnlock.AuthEvent.Unlock.Duration", duration);
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("EasyUnlock.AuthEvent.Unlock.Duration",
+                                        duration);
 }
 
 void RecordSmartLockScreenUnlockEvent(SmartLockAuthEvent event) {

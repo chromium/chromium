@@ -36,7 +36,6 @@
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/mojo_socket_test_util.h"
 #include "services/network/public/mojom/network_service.mojom.h"
-#include "services/network/public/mojom/tcp_socket.mojom-forward.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "services/network/public/mojom/tls_socket.mojom.h"
 #include "services/network/public/mojom/udp_socket.mojom.h"
@@ -945,13 +944,13 @@ TEST_P(TCPSocketWithMockSocketTest, ReadAndWriteMultiple) {
   net::IoMode mode = GetParam();
   for (int j = 0; j < kNumIterations; ++j) {
     for (const char& c : kTestMsg) {
-      reads.emplace_back(mode, &c, 1, sequence_number++);
+      reads.emplace_back(mode, sequence_number++, base::byte_span_from_ref(c));
     }
     if (j == kNumIterations - 1) {
       reads.emplace_back(mode, net::OK, sequence_number++);
     }
     for (const char& c : kTestMsg) {
-      writes.emplace_back(mode, &c, 1, sequence_number++);
+      writes.emplace_back(mode, sequence_number++, base::byte_span_from_ref(c));
     }
   }
   net::StaticSocketDataProvider data_provider(reads, writes);
@@ -996,13 +995,13 @@ TEST_P(TCPSocketWithMockSocketTest, PartialStreamSocketWrite) {
   net::IoMode mode = GetParam();
   for (int j = 0; j < kNumIterations; ++j) {
     for (const char& c : kTestMsg) {
-      reads.emplace_back(mode, &c, 1, sequence_number++);
+      reads.emplace_back(mode, sequence_number++, base::byte_span_from_ref(c));
     }
     if (j == kNumIterations - 1) {
       reads.emplace_back(mode, net::OK, sequence_number++);
     }
     for (const char& c : kTestMsg) {
-      writes.emplace_back(mode, &c, 1, sequence_number++);
+      writes.emplace_back(mode, sequence_number++, base::byte_span_from_ref(c));
     }
   }
   net::StaticSocketDataProvider data_provider(reads, writes);
@@ -1048,8 +1047,7 @@ TEST_P(TCPSocketWithMockSocketTest, ReadError) {
   net::IoMode mode = GetParam();
   net::MockRead reads[] = {net::MockRead(mode, net::ERR_FAILED)};
   constexpr std::string_view kTestMsg = "hello!";
-  net::MockWrite writes[] = {
-      net::MockWrite(mode, kTestMsg.data(), kTestMsg.size(), 0)};
+  net::MockWrite writes[] = {net::MockWrite(mode, 0, kTestMsg)};
   net::IPEndPoint server_addr(net::IPAddress::IPv4Localhost(), 1234);
   net::StaticSocketDataProvider data_provider(reads, writes);
   data_provider.set_connect_data(
@@ -1082,9 +1080,8 @@ TEST_P(TCPSocketWithMockSocketTest, WriteError) {
   constexpr std::string_view kTestMsg = "hello!";
   // The first MockRead needs to complete asynchronously because otherwise it
   // can't be paused to happen after the MockWrite.
-  net::MockRead reads[] = {
-      net::MockRead(net::ASYNC, kTestMsg.data(), kTestMsg.size(), 1),
-      net::MockRead(mode, net::OK, 2)};
+  net::MockRead reads[] = {net::MockRead(net::ASYNC, 1, kTestMsg),
+                           net::MockRead(mode, net::OK, 2)};
   net::MockWrite writes[] = {net::MockWrite(mode, net::ERR_FAILED, 0)};
   net::SequencedSocketData data_provider(reads, writes);
 
@@ -1480,9 +1477,8 @@ TEST_F(TCPSocketWithMockSocketTest, SetNoDelayFails) {
 TEST_F(TCPSocketWithMockSocketTest, SetOptionsAfterTLSUpgrade) {
   // Populate with some mock reads, so UpgradeToTLS() won't error out because of
   // a closed receive pipe.
-  const net::MockRead kReads[] = {
-      net::MockRead(net::ASYNC, "hello", 5 /* length */),
-      net::MockRead(net::ASYNC, net::OK)};
+  const net::MockRead kReads[] = {net::MockRead(net::ASYNC, "hello"),
+                                  net::MockRead(net::ASYNC, net::OK)};
   net::StaticSocketDataProvider data_provider(kReads,
                                               base::span<net::MockWrite>());
   net::SSLSocketDataProvider ssl_socket(net::ASYNC, net::ERR_FAILED);

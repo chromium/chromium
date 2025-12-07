@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ui/views/extensions/extension_keybinding_registry_views.h"
 
-#include "chrome/browser/extensions/api/commands/command_service.h"
+#include "chrome/browser/extensions/commands/command_service.h"
+#include "chrome/browser/extensions/extension_commands_global_registry.h"
 #include "chrome/browser/extensions/extension_keybinding_registry.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/accelerator_priority.h"
 #include "extensions/common/extension.h"
+#include "ui/base/accelerators/command.h"
 #include "ui/views/focus/focus_manager.h"
 
 ExtensionKeybindingRegistryViews::ExtensionKeybindingRegistryViews(
@@ -23,44 +25,39 @@ ExtensionKeybindingRegistryViews::ExtensionKeybindingRegistryViews(
 }
 
 ExtensionKeybindingRegistryViews::~ExtensionKeybindingRegistryViews() {
+  if (extensions::ExtensionCommandsGlobalRegistry* const global_registry =
+          extensions::ExtensionCommandsGlobalRegistry::Get(profile_);
+      global_registry->registry_for_active_window() == this) {
+    global_registry->set_registry_for_active_window(nullptr);
+  }
+
   focus_manager_->UnregisterAccelerators(this);
 }
 
-void ExtensionKeybindingRegistryViews::AddExtensionKeybindings(
+bool ExtensionKeybindingRegistryViews::PopulateCommands(
     const extensions::Extension* extension,
-    const std::string& command_name) {
-  // This object only handles named commands, not browser/page actions.
-  if (ShouldIgnoreCommand(command_name))
-    return;
-
+    ui::CommandMap* commands) {
   extensions::CommandService* command_service =
-      extensions::CommandService::Get(profile_);
-  // Add all the active keybindings (except page actions and browser actions,
-  // which are handled elsewhere).
-  extensions::CommandMap commands;
+      extensions::CommandService::Get(browser_context());
   if (!command_service->GetNamedCommands(
-          extension->id(),
-          extensions::CommandService::ACTIVE,
-          extensions::CommandService::REGULAR,
-          &commands))
-    return;
-  extensions::CommandMap::const_iterator iter = commands.begin();
-  for (; iter != commands.end(); ++iter) {
-    if (!command_name.empty() && (iter->second.command_name() != command_name))
-      continue;
-    const ui::Accelerator &accelerator = iter->second.accelerator();
-    if (!IsAcceleratorRegistered(accelerator)) {
-      focus_manager_->RegisterAccelerator(accelerator,
-                                          kExtensionAcceleratorPriority, this);
-    }
-
-    AddEventTarget(accelerator, extension->id(), iter->second.command_name());
+          extension->id(), extensions::CommandService::ACTIVE,
+          extensions::CommandService::REGULAR, commands)) {
+    return false;
   }
+  return true;
 }
 
-void ExtensionKeybindingRegistryViews::RemoveExtensionKeybindingImpl(
+bool ExtensionKeybindingRegistryViews::RegisterAccelerator(
     const ui::Accelerator& accelerator,
+    const extensions::ExtensionId& extension_id,
     const std::string& command_name) {
+  focus_manager_->RegisterAccelerator(accelerator,
+                                      kExtensionAcceleratorPriority, this);
+  return true;
+}
+
+void ExtensionKeybindingRegistryViews::UnregisterAccelerator(
+    const ui::Accelerator& accelerator) {
   focus_manager_->UnregisterAccelerator(accelerator, this);
 }
 
@@ -76,4 +73,15 @@ bool ExtensionKeybindingRegistryViews::AcceleratorPressed(
 
 bool ExtensionKeybindingRegistryViews::CanHandleAccelerators() const {
   return true;
+}
+
+void ExtensionKeybindingRegistryViews::OnHostActivationChanged(bool active) {
+  if (extensions::ExtensionCommandsGlobalRegistry* const global_registry =
+          extensions::ExtensionCommandsGlobalRegistry::Get(profile_)) {
+    if (active) {
+      global_registry->set_registry_for_active_window(this);
+    } else if (global_registry->registry_for_active_window() == this) {
+      global_registry->set_registry_for_active_window(nullptr);
+    }
+  }
 }

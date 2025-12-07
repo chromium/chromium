@@ -31,9 +31,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_FORM_SUBMISSION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_FORM_SUBMISSION_H_
 
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/frame/policy_container.mojom-blink.h"
-#include "third_party/blink/public/mojom/frame/remote_frame.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/remote_frame.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/triggering_event_info.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
@@ -128,7 +128,7 @@ class FormSubmission final : public GarbageCollected<FormSubmission> {
       LocalDOMWindow* origin_window,
       const LocalFrameToken& initiator_frame_token,
       bool has_rel_opener,
-      std::unique_ptr<SourceLocation> source_location,
+      SourceLocation* source_location,
       mojo::PendingRemote<mojom::blink::NavigationStateKeepAliveHandle>
           initiator_navigation_state_keep_alive_handle);
   // FormSubmission for DialogMethod
@@ -136,6 +136,7 @@ class FormSubmission final : public GarbageCollected<FormSubmission> {
 
   void Trace(Visitor*) const;
 
+  void NotifyInspector();
   void Navigate();
 
   KURL RequestURL() const;
@@ -171,7 +172,7 @@ class FormSubmission final : public GarbageCollected<FormSubmission> {
   // source location when we create the form submission and then pass it over to
   // the `FrameLoadRequest`. Capturing the source location later when creating
   // the `FrameLoadRequest` will not return the correct location.
-  std::unique_ptr<SourceLocation> source_location_;
+  Member<SourceLocation> source_location_;
 
   // Since form submissions are scheduled asynchronously, we need to keep a
   // handle to the initiator NavigationStateKeepAliveHandle. This ensures that

@@ -1,0 +1,4 @@
+per-file BUILD.gn=file:BUILD_OWNERS
+
+erikchen@chromium.org
+rdevlin.cronin@chromium.org

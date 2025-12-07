@@ -6,6 +6,7 @@
 #define UI_AURA_WINDOW_TREE_HOST_OBSERVER_H_
 
 #include "base/containers/flat_set.h"
+#include "base/observer_list_types.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "ui/aura/aura_export.h"
 #include "ui/aura/window.h"
@@ -15,7 +16,7 @@ class SkRegion;
 namespace aura {
 class WindowTreeHost;
 
-class AURA_EXPORT WindowTreeHostObserver {
+class AURA_EXPORT WindowTreeHostObserver : public base::CheckedObserver {
  public:
   // Called when the host's client size has changed.
   virtual void OnHostResized(WindowTreeHost* host) {}
@@ -47,8 +48,16 @@ class AURA_EXPORT WindowTreeHostObserver {
       const aura::WindowTreeHost* host,
       const base::flat_set<viz::FrameSinkId>& ids) {}
 
+  virtual void OnSetPreferredRefreshRate(WindowTreeHost* host,
+                                         float preferred_refresh_rate) {}
+
+  // Called when the local surface id of the frame sink embedded in `host` has
+  // changed.
+  virtual void OnLocalSurfaceIdChanged(WindowTreeHost* host,
+                                       const viz::LocalSurfaceId& id) {}
+
  protected:
-  virtual ~WindowTreeHostObserver() {}
+  ~WindowTreeHostObserver() override {}
 };
 
 }  // namespace aura

@@ -20,9 +20,13 @@ source_set("coordinator") {
     "//ios/chrome/browser/contextual_panel/ui:public",
     "//ios/chrome/browser/contextual_panel/utils",
     "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/infobars/model:badge",
     "//ios/chrome/browser/infobars/model:public",
+    "//ios/chrome/browser/intelligence/bwg/model:tab_helper",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/layout_guide",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
@@ -30,7 +34,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:omnibox_util",
-    "//ios/chrome/browser/ui/fullscreen",
   ]
 }
 

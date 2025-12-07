@@ -2,12 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import os.path
 import web_idl
 
 from . import style_format
 from .codegen_tracing import CodeGenTracing
 from .path_manager import PathManager
-
+from .union_name_mapper import UnionNameMapper
 
 def init(**kwargs):
     """
@@ -97,10 +98,15 @@ class PackageInitializer(object):
         PackageInitializer._the_web_idl_database = (
             web_idl.Database.read_from_file(self._web_idl_database_path))
 
-        PathManager.init(
-            root_src_dir=self._root_src_dir,
-            root_gen_dir=self._root_gen_dir,
-            component_reldirs=self._component_reldirs)
+        union_name_config = os.path.abspath(
+            os.path.join(self._root_src_dir, "third_party", "blink",
+                         "renderer", "bindings", "union_name_map.conf"))
+        union_name_mapper = UnionNameMapper.init(
+            union_name_config, PackageInitializer._the_web_idl_database)
+        PathManager.init(root_src_dir=self._root_src_dir,
+                         root_gen_dir=self._root_gen_dir,
+                         component_reldirs=self._component_reldirs,
+                         union_name_mapper=union_name_mapper)
 
         style_format.init(root_src_dir=self._root_src_dir,
                           enable_style_format=self._enable_style_format)

@@ -11,6 +11,7 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
+#include "media/base/supported_types.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/clients/mojo_video_encoder_metrics_provider.h"
 #include "media/video/gpu_video_accelerator_factories.h"
@@ -25,6 +26,7 @@
 #include "third_party/webrtc/api/video_codecs/video_encoder.h"
 #include "third_party/webrtc/api/video_codecs/vp9_profile.h"
 #include "third_party/webrtc/media/base/codec.h"
+#include "third_party/webrtc/modules/video_coding/svc/scalability_mode_util.h"
 
 #if BUILDFLAG(RTC_USE_H265)
 #include "third_party/webrtc/api/video_codecs/h265_profile_tier_level.h"
@@ -34,22 +36,39 @@ namespace blink {
 
 namespace {
 
-#if BUILDFLAG(IS_WIN)
-// Enables AV1 encode acceleration for Windows.
-BASE_FEATURE(kMediaFoundationAV1Encoding,
-             "MediaFoundationAV1Encoding",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+// Convert media::SVCScalabilityMode to webrtc::ScalabilityMode and fill
+// format.scalability_modes.
+void FillScalabilityModes(
+    webrtc::SdpVideoFormat& format,
+    const media::VideoEncodeAccelerator::SupportedProfile& profile) {
+  bool disable_h265_l1t2 =
+      !base::FeatureList::IsEnabled(::features::kWebRtcH265L1T2);
+  bool disable_h265_l1t3 =
+      disable_h265_l1t2 ||
+      !base::FeatureList::IsEnabled(::features::kWebRtcH265L1T3);
 
-// Enables H.264 CBP encode acceleration for Windows.
-BASE_FEATURE(kMediaFoundationH264CbpEncoding,
-             "MediaFoundationH264CbpEncoding",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+  for (const media::SVCScalabilityMode& mode : profile.scalability_modes) {
+    std::optional<webrtc::ScalabilityMode> scalability_mode =
+        webrtc::ScalabilityModeFromString(media::GetScalabilityModeName(mode));
+    if (!scalability_mode.has_value()) {
+      LOG(WARNING) << "Unrecognized SVC scalability mode: "
+                   << media::GetScalabilityModeName(mode);
+      continue;
+    }
 
-// Enables VP9 encode acceleration for Windows.
-BASE_FEATURE(kMediaFoundationVP9Encoding,
-             "MediaFoundationVP9Encoding",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
+    if (profile.profile >= media::HEVCPROFILE_MIN &&
+        profile.profile <= media::HEVCPROFILE_MAX) {
+      if ((scalability_mode == webrtc::ScalabilityMode::kL1T2 &&
+           disable_h265_l1t2) ||
+          (scalability_mode == webrtc::ScalabilityMode::kL1T3 &&
+           disable_h265_l1t3)) {
+        continue;
+      }
+    }
+
+    format.scalability_modes.push_back(scalability_mode.value());
+  }
+}
 
 // Translate from media::VideoEncodeAccelerator::SupportedProfile to
 // webrtc::SdpVideoFormat, or return nothing if the profile isn't supported.
@@ -62,41 +81,20 @@ std::optional<webrtc::SdpVideoFormat> VEAToWebRTCFormat(
 
   if (profile.profile >= media::VP8PROFILE_MIN &&
       profile.profile <= media::VP8PROFILE_MAX) {
-    return webrtc::SdpVideoFormat("VP8");
+    webrtc::SdpVideoFormat format("VP8");
+    FillScalabilityModes(format, profile);
+    return format;
   }
   if (profile.profile >= media::H264PROFILE_MIN &&
       profile.profile <= media::H264PROFILE_MAX) {
-#if !BUILDFLAG(IS_ANDROID)
-    // Enable H264 HW encode for WebRTC when SW fallback is available, which is
-    // checked by kWebRtcH264WithOpenH264FFmpeg flag. This check should be
-    // removed when SW implementation is fully enabled.
-    bool webrtc_h264_sw_enabled = false;
-// TODO(crbug.com/355256378): OpenH264 for encoding and FFmpeg for H264 decoding
-// should be detangled such that software decoding can be enabled without
-// software encoding.
-#if BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) && \
-    BUILDFLAG(ENABLE_OPENH264)
-    webrtc_h264_sw_enabled = base::FeatureList::IsEnabled(
-        blink::features::kWebRtcH264WithOpenH264FFmpeg);
-#endif  // BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) &&
-        // BUILDFLAG(ENABLE_OPENH264)
-    if (!webrtc_h264_sw_enabled) {
+    if (!UseH264AcceleratedEncoderForWebRTC()) {
       return std::nullopt;
     }
-#endif
 
     webrtc::H264Profile h264_profile;
     switch (profile.profile) {
       case media::H264PROFILE_BASELINE:
-#if BUILDFLAG(IS_ANDROID)
-        // Force HW H264 on Android to be CBP for most compatibility, since:
-        // - Only HW H264 is available on Android at present.
-        // - MediaCodec only advise BP, which works same as CBP in most cases.
-        // - Some peers only expect CBP in negotiation.
-        h264_profile = webrtc::H264Profile::kProfileConstrainedBaseline;
-#else
         h264_profile = webrtc::H264Profile::kProfileBaseline;
-#endif  // BUILDFLAG(IS_ANDROID)
         break;
       case media::H264PROFILE_MAIN:
         h264_profile = webrtc::H264Profile::kProfileMain;
@@ -113,13 +111,19 @@ std::optional<webrtc::SdpVideoFormat> VEAToWebRTCFormat(
         webrtc::H264SupportedLevel(width * height, fps);
     const webrtc::H264ProfileLevelId profile_level_id(
         h264_profile, h264_level.value_or(webrtc::H264Level::kLevel1));
+    const std::optional<std::string> h264_profile_level_string =
+        webrtc::H264ProfileLevelIdToString(profile_level_id);
+    if (!h264_profile_level_string) {
+      // Unsupported combination of profile and level.
+      return std::nullopt;
+    }
 
     webrtc::SdpVideoFormat format("H264");
     format.parameters = {
-        {cricket::kH264FmtpProfileLevelId,
-         *webrtc::H264ProfileLevelIdToString(profile_level_id)},
-        {cricket::kH264FmtpLevelAsymmetryAllowed, "1"},
-        {cricket::kH264FmtpPacketizationMode, "1"}};
+        {webrtc::kH264FmtpProfileLevelId, *h264_profile_level_string},
+        {webrtc::kH264FmtpLevelAsymmetryAllowed, "1"},
+        {webrtc::kH264FmtpPacketizationMode, "1"}};
+    FillScalabilityModes(format, profile);
     return format;
   }
 
@@ -141,12 +145,15 @@ std::optional<webrtc::SdpVideoFormat> VEAToWebRTCFormat(
     format.parameters = {
         {webrtc::kVP9FmtpProfileId,
          webrtc::VP9ProfileToString(vp9_profile)}};
+    FillScalabilityModes(format, profile);
     return format;
   }
 
   if (profile.profile >= media::AV1PROFILE_MIN &&
       profile.profile <= media::AV1PROFILE_MAX) {
-    return webrtc::SdpVideoFormat("AV1");
+    webrtc::SdpVideoFormat format("AV1");
+    FillScalabilityModes(format, profile);
+    return format;
   }
 
   if (profile.profile >= media::HEVCPROFILE_MIN &&
@@ -178,13 +185,14 @@ std::optional<webrtc::SdpVideoFormat> VEAToWebRTCFormat(
         h265_level.value_or(webrtc::H265Level::kLevel1));
     webrtc::SdpVideoFormat format("H265");
     format.parameters = {
-        {cricket::kH265FmtpProfileId,
+        {webrtc::kH265FmtpProfileId,
          webrtc::H265ProfileToString(profile_tier_level.profile)},
-        {cricket::kH265FmtpTierFlag,
+        {webrtc::kH265FmtpTierFlag,
          webrtc::H265TierToString(profile_tier_level.tier)},
-        {cricket::kH265FmtpLevelId,
+        {webrtc::kH265FmtpLevelId,
          webrtc::H265LevelToString(profile_tier_level.level)},
-        {cricket::kH265FmtpTxMode, "SRST"}};
+        {webrtc::kH265FmtpTxMode, "SRST"}};
+    FillScalabilityModes(format, profile);
     return format;
 #else
     return std::nullopt;
@@ -198,11 +206,48 @@ struct SupportedFormats {
   bool unknown = true;
   std::vector<media::VideoCodecProfile> profiles
       ALLOW_DISCOURAGED_TYPE("Matches webrtc API");
-  std::vector<std::vector<media::SVCScalabilityMode>> scalability_modes
-      ALLOW_DISCOURAGED_TYPE("Matches webrtc API");
   std::vector<webrtc::SdpVideoFormat> sdp_formats
       ALLOW_DISCOURAGED_TYPE("Matches webrtc API");
 };
+
+#if BUILDFLAG(RTC_USE_H265)
+// Insert or replace the H.265 format in |supported_formats| with the higher
+// level for the same profile. Assume VEA always reports same scalability modes
+// for the same video profile, the scalability mode of the highest level format
+// will be used, and we don't handle the case that same profile has different
+// scalability modes.
+void InsertOrReplaceWithHigherLevelH265Format(
+    SupportedFormats* supported_formats,
+    const webrtc::SdpVideoFormat& format,
+    media::VideoCodecProfile profile) {
+  std::optional<webrtc::H265ProfileTierLevel> new_profile_tier_level =
+      webrtc::ParseSdpForH265ProfileTierLevel(format.parameters);
+  if (!new_profile_tier_level.has_value()) {
+    return;
+  }
+
+  DCHECK_EQ(supported_formats->profiles.size(),
+            supported_formats->sdp_formats.size());
+
+  std::optional<webrtc::H265ProfileTierLevel> existing_profile_tier_level;
+  auto profile_it = std::find(supported_formats->profiles.begin(),
+                              supported_formats->profiles.end(), profile);
+
+  if (profile_it != supported_formats->profiles.end()) {
+    auto index = std::distance(supported_formats->profiles.begin(), profile_it);
+    existing_profile_tier_level = webrtc::ParseSdpForH265ProfileTierLevel(
+        supported_formats->sdp_formats[index].parameters);
+
+    if (existing_profile_tier_level.has_value() &&
+        new_profile_tier_level->level > existing_profile_tier_level->level) {
+      supported_formats->sdp_formats[index] = format;
+    }
+  } else {
+    supported_formats->sdp_formats.push_back(format);
+    supported_formats->profiles.push_back(profile);
+  }
+}
+#endif
 
 SupportedFormats GetSupportedFormatsInternal(
     media::GpuVideoAcceleratorFactories* gpu_factories,
@@ -218,8 +263,17 @@ SupportedFormats GetSupportedFormatsInternal(
   // querying GPU process.
   supported_formats.unknown = false;
   for (const auto& profile : *profiles) {
-    if (base::Contains(disabled_profiles, profile.profile))
+    // Skip if profile is OS software encoder profile and we don't allow use
+    // OS software encoder.
+    if (profile.is_software_codec &&
+        !media::MayHaveAndAllowSelectOSSoftwareEncoder(
+            media::VideoCodecProfileToVideoCodec(profile.profile))) {
       continue;
+    }
+
+    if (base::Contains(disabled_profiles, profile.profile)) {
+      continue;
+    }
 
     std::optional<webrtc::SdpVideoFormat> format = VEAToWebRTCFormat(profile);
     if (format) {
@@ -228,73 +282,39 @@ SupportedFormats GetSupportedFormatsInternal(
       }
       // Supported H.265 formats must be added to the end of supported codecs.
 #if BUILDFLAG(RTC_USE_H265)
-      if (format->name == cricket::kH265CodecName) {
-        const std::optional<webrtc::H265ProfileTierLevel> profile_tier_level =
-            webrtc::ParseSdpForH265ProfileTierLevel(format->parameters);
-        // https://datatracker.ietf.org/doc/draft-ietf-avtcore-hevc-webrtc/:
-        // according to above spec, level 3.1 is mandatory to support. So
-        // unlike H.264 which has level-asymmetry-allowed parameter in SDP to
-        // signal support for asymmetric levels, we need to add level 3.1
-        // explicitly if GPU factory reports supporting of level higher than
-        // 3.1, to make sure that if remote only supports level 3.1, we still
-        // allow the SDP negotiation to succeed.
-        if (profile_tier_level &&
-            profile_tier_level->level > webrtc::H265Level::kLevel3_1) {
-          webrtc::SdpVideoFormat level_3_1_format(*format);
-          format->parameters[cricket::kH265FmtpLevelId] =
-              webrtc::H265LevelToString(webrtc::H265Level::kLevel3_1);
-          low_priority_formats.profiles.push_back(profile.profile);
-          low_priority_formats.scalability_modes.push_back(
-              profile.scalability_modes);
-          low_priority_formats.sdp_formats.push_back(level_3_1_format);
-        }
-
-        low_priority_formats.profiles.push_back(profile.profile);
-        low_priority_formats.scalability_modes.push_back(
-            profile.scalability_modes);
-        low_priority_formats.sdp_formats.push_back(std::move(*format));
+      if (format->name == webrtc::kH265CodecName) {
+        // Avoid having duplicated formats reported via GetSupportedFormats().
+        // Also ensure only the highest level format is reported for the same
+        // H.265 profile.
+        InsertOrReplaceWithHigherLevelH265Format(
+            &low_priority_formats, format.value(), profile.profile);
         continue;
       }
 #endif  // BUILDFLAG(RTC_USE_H265)
       supported_formats.profiles.push_back(profile.profile);
-      supported_formats.scalability_modes.push_back(profile.scalability_modes);
       supported_formats.sdp_formats.push_back(std::move(*format));
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-#if BUILDFLAG(IS_WIN)
       const bool kShouldAddH264Cbp =
-          base::FeatureList::IsEnabled(kMediaFoundationH264CbpEncoding) &&
+          IsH264ConstrainedBaselineProfileAvailableForAcceleratedEncoder() &&
           profile.profile == media::VideoCodecProfile::H264PROFILE_BASELINE;
-#elif BUILDFLAG(IS_LINUX)
-      const bool kShouldAddH264Cbp =
-          profile.profile == media::VideoCodecProfile::H264PROFILE_BASELINE;
-#endif
+
       if (kShouldAddH264Cbp) {
         supported_formats.profiles.push_back(profile.profile);
-        supported_formats.scalability_modes.push_back(
-            profile.scalability_modes);
-        cricket::AddH264ConstrainedBaselineProfileToSupportedFormats(
+        webrtc::AddH264ConstrainedBaselineProfileToSupportedFormats(
             &supported_formats.sdp_formats);
       }
-#endif
     }
   }
 
   supported_formats.profiles.insert(supported_formats.profiles.end(),
                                     low_priority_formats.profiles.begin(),
                                     low_priority_formats.profiles.end());
-  supported_formats.scalability_modes.insert(
-      supported_formats.scalability_modes.end(),
-      low_priority_formats.scalability_modes.begin(),
-      low_priority_formats.scalability_modes.end());
   supported_formats.sdp_formats.insert(supported_formats.sdp_formats.end(),
                                        low_priority_formats.sdp_formats.begin(),
                                        low_priority_formats.sdp_formats.end());
 
   DCHECK_EQ(supported_formats.profiles.size(),
             supported_formats.sdp_formats.size());
-  DCHECK_EQ(supported_formats.profiles.size(),
-            supported_formats.scalability_modes.size());
 
   return supported_formats;
 }
@@ -302,7 +322,7 @@ SupportedFormats GetSupportedFormatsInternal(
 bool IsConstrainedH264(const webrtc::SdpVideoFormat& format) {
   bool is_constrained_h264 = false;
 
-  if (format.name == cricket::kH264CodecName) {
+  if (format.name == webrtc::kH264CodecName) {
     const std::optional<webrtc::H264ProfileLevelId> profile_level_id =
         webrtc::ParseSdpForH264ProfileLevelId(format.parameters);
     if (profile_level_id &&
@@ -315,19 +335,19 @@ bool IsConstrainedH264(const webrtc::SdpVideoFormat& format) {
   return is_constrained_h264;
 }
 
-bool IsScalabiltiyModeSupported(
-    const std::string& scalability_mode,
-    const std::vector<media::SVCScalabilityMode>& supported_scalability_modes) {
-  for (const auto& supported_scalability_mode : supported_scalability_modes) {
-    if (scalability_mode ==
-        media::GetScalabilityModeName(supported_scalability_mode)) {
-      return true;
-    }
-  }
-  return false;
-}
-
 }  // anonymous namespace
+
+RTCVideoEncoderFactory::RTCVideoEncoderFactory(
+    media::GpuVideoAcceleratorFactories* gpu_factories,
+    scoped_refptr<media::MojoVideoEncoderMetricsProviderFactory>
+        encoder_metrics_provider_factory,
+    bool override_disabled_profiles)
+    : RTCVideoEncoderFactory(gpu_factories,
+                             std::move(encoder_metrics_provider_factory)) {
+  if (override_disabled_profiles) {
+    disabled_profiles_.clear();
+  }
+}
 
 RTCVideoEncoderFactory::RTCVideoEncoderFactory(
     media::GpuVideoAcceleratorFactories* gpu_factories,
@@ -337,19 +357,11 @@ RTCVideoEncoderFactory::RTCVideoEncoderFactory(
       encoder_metrics_provider_factory_(
           std::move(encoder_metrics_provider_factory)),
       gpu_codec_support_waiter_(gpu_factories) {
-#if BUILDFLAG(IS_WIN)
-  if (!base::FeatureList::IsEnabled(kMediaFoundationVP9Encoding)) {
-    disabled_profiles_.emplace_back(media::VP9PROFILE_PROFILE0);
-    disabled_profiles_.emplace_back(media::VP9PROFILE_PROFILE1);
-    disabled_profiles_.emplace_back(media::VP9PROFILE_PROFILE2);
-    disabled_profiles_.emplace_back(media::VP9PROFILE_PROFILE3);
-  }
-  if (!base::FeatureList::IsEnabled(kMediaFoundationAV1Encoding)) {
+  if (!base::FeatureList::IsEnabled(::features::kWebRtcAV1HWEncode)) {
     disabled_profiles_.emplace_back(media::AV1PROFILE_PROFILE_MAIN);
     disabled_profiles_.emplace_back(media::AV1PROFILE_PROFILE_HIGH);
     disabled_profiles_.emplace_back(media::AV1PROFILE_PROFILE_PRO);
   }
-#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(RTC_USE_H265)
   // We may not need to add check for media::kPlatformHEVCEncoderSupport here
@@ -441,9 +453,34 @@ RTCVideoEncoderFactory::QueryCodecSupport(
 
   for (size_t i = 0; i < supported_formats.sdp_formats.size(); ++i) {
     if (format.IsSameCodec(supported_formats.sdp_formats[i])) {
+#if BUILDFLAG(RTC_USE_H265)
+      // For H.265 we further check that the level-id supported is no smaller
+      // than that being queried.
+      if (format.name == webrtc::kH265CodecName) {
+        const std::optional<webrtc::H265ProfileTierLevel> profile_tier_level =
+            webrtc::ParseSdpForH265ProfileTierLevel(format.parameters);
+        if (profile_tier_level) {
+          const std::optional<webrtc::H265ProfileTierLevel> supported_profile =
+              webrtc::ParseSdpForH265ProfileTierLevel(
+                  supported_formats.sdp_formats[i].parameters);
+          if (supported_profile &&
+              profile_tier_level->level > supported_profile->level) {
+            return {/*is_supported=*/false, /*is_power_efficient=*/false};
+          }
+        } else {
+          // If invalid format parameters are passed, we should not support it.
+          break;
+        }
+      }
+#endif  // BUILDFLAG(RTC_USE_H265)
+      std::optional<webrtc::ScalabilityMode> mode =
+          scalability_mode.has_value()
+              ? webrtc::ScalabilityModeFromString(scalability_mode.value())
+              : std::nullopt;
       if (!scalability_mode ||
-          IsScalabiltiyModeSupported(*scalability_mode,
-                                     supported_formats.scalability_modes[i])) {
+          (mode.has_value() &&
+           base::Contains(supported_formats.sdp_formats[i].scalability_modes,
+                          mode.value()))) {
         return {/*is_supported=*/true, /*is_power_efficient=*/true};
       }
       break;

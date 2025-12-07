@@ -68,8 +68,7 @@ SearchResultListView::SearchResultListType CategoryToListType(
     case ash::AppListSearchResultCategory::kGames:
       return SearchResultListView::SearchResultListType::kGames;
     case ash::AppListSearchResultCategory::kUnknown:
-      NOTREACHED_IN_MIGRATION();
-      return SearchResultListView::SearchResultListType::kBestMatch;
+      NOTREACHED();
   }
 }
 
@@ -79,10 +78,10 @@ SearchResultListView::SearchResultListView(
     AppListViewDelegate* view_delegate,
     SearchResultPageDialogController* dialog_controller,
     SearchResultView::SearchResultViewType search_result_view_type,
-    std::optional<size_t> productivity_launcher_index)
+    std::optional<size_t> search_result_category_index)
     : SearchResultContainerView(view_delegate),
       results_container_(new views::View),
-      productivity_launcher_index_(productivity_launcher_index),
+      search_result_category_index_(search_result_category_index),
       search_result_view_type_(search_result_view_type) {
   auto* layout = results_container_->SetLayoutManager(
       std::make_unique<views::FlexLayout>());
@@ -93,7 +92,7 @@ SearchResultListView::SearchResultListView(
   title_label_->SetAutoColorReadabilityEnabled(false);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,
                                         *title_label_);
-  title_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
+  title_label_->SetEnabledColor(cros_tokens::kCrosSysOnSurfaceVariant);
 
   title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_label_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
@@ -103,7 +102,7 @@ SearchResultListView::SearchResultListView(
   title_label_->SetPaintToLayer();
   title_label_->layer()->SetFillsBoundsOpaquely(false);
 
-  results_container_->AddChildView(title_label_.get());
+  results_container_->AddChildViewRaw(title_label_.get());
 
   size_t result_count =
       ash::SharedAppListConfig::instance()
@@ -119,7 +118,7 @@ SearchResultListView::SearchResultListView(
     results_container_->AddChildView(search_result_views_.back());
     AddObservedResultView(search_result_views_.back());
   }
-  AddChildView(results_container_.get());
+  AddChildViewRaw(results_container_.get());
 }
 
 SearchResultListView::~SearchResultListView() = default;
@@ -200,7 +199,7 @@ void SearchResultListView::SetListType(SearchResultListType list_type) {
   GetViewAccessibility().SetName(
       l10n_util::GetStringFUTF16(
           IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_ACCESSIBLE_NAME,
-          title_label_->GetText()),
+          std::u16string(title_label_->GetText())),
       ax::mojom::NameFrom::kAttribute);
 
 #if DCHECK_IS_ON()
@@ -267,13 +266,13 @@ void SearchResultListView::OnSelectedResultChanged() {
 }
 
 int SearchResultListView::DoUpdate() {
-  if (productivity_launcher_index_.has_value()) {
+  if (search_result_category_index_.has_value()) {
     std::vector<ash::AppListSearchResultCategory>* ordered_categories =
         AppListModelProvider::Get()->search_model()->ordered_categories();
-    if (productivity_launcher_index_ < ordered_categories->size()) {
+    if (search_result_category_index_ < ordered_categories->size()) {
       enabled_ = true;
       SetListType(CategoryToListType(
-          (*ordered_categories)[productivity_launcher_index_.value()]));
+          (*ordered_categories)[search_result_category_index_.value()]));
     } else {
       enabled_ = false;
       list_type_.reset();
@@ -286,7 +285,7 @@ int SearchResultListView::DoUpdate() {
   }
 
   std::vector<SearchResult*> displayed_results = UpdateResultViews();
-  NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, false);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kChildrenChanged, false);
 
   auto* notifier = view_delegate()->GetNotifier();
 
@@ -377,8 +376,7 @@ SearchResult::Category SearchResultListView::GetSearchCategory() {
     case SearchResultListType::kAnswerCard:
       // Categories are undefined for |KBestMatch|, and
       // |kAnswerCard| list types.
-      NOTREACHED_IN_MIGRATION();
-      return SearchResult::Category::kUnknown;
+      NOTREACHED();
     case SearchResultListType::kApps:
       return SearchResult::Category::kApps;
     case SearchResultListType::kAppShortcuts:

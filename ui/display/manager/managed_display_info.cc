@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/display/manager/managed_display_info.h"
 
 #include <stdio.h>
@@ -16,13 +11,14 @@
 #include <string_view>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "ui/display/display.h"
 #include "ui/display/display_features.h"
 #include "ui/display/display_switches.h"
@@ -60,10 +56,10 @@ void GetDisplayBounds(const std::string& spec,
   int height = 0;
   int x = 0;
   int y = 0;
-  if (sscanf(spec.c_str(), "%dx%d*%f", &width, &height, device_scale_factor) >=
-          2 ||
-      sscanf(spec.c_str(), "%d+%d-%dx%d*%f", &x, &y, &width, &height,
-             device_scale_factor) >= 4) {
+  if (UNSAFE_TODO(sscanf(spec.c_str(), "%dx%d*%f", &width, &height,
+                         device_scale_factor)) >= 2 ||
+      UNSAFE_TODO(sscanf(spec.c_str(), "%d+%d-%dx%d*%f", &x, &y, &width,
+                         &height, device_scale_factor)) >= 4) {
     bounds->SetRect(x, y, width, height);
 
     auto equals_within_epsilon = [device_scale_factor](float dsf) {
@@ -112,8 +108,7 @@ std::string PanelOrientationToString(PanelOrientation orientation) {
     case kRightUp:
       return "RightUp";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 }  // namespace
@@ -164,11 +159,7 @@ gfx::Size ManagedDisplayMode::GetSizeInDIP() const {
 }
 
 bool ManagedDisplayMode::IsEquivalent(const ManagedDisplayMode& other) const {
-  if (display::features::IsListAllDisplayModesEnabled())
-    return *this == other;
-
-  return size_ == other.size_ &&
-         IsWithinEpsilon(device_scale_factor_, other.device_scale_factor_);
+  return *this == other;
 }
 
 std::string ManagedDisplayMode::ToString() const {
@@ -212,7 +203,7 @@ ManagedDisplayInfo ManagedDisplayInfo::CreateFromSpecWithID(
       std::string_view radius = radii_part[idx];
       bool conversion_success = base::StringToInt(radius, &radius_in_int);
       DCHECK(conversion_success);
-      radii[idx] = static_cast<float>(radius_in_int);
+      UNSAFE_TODO(radii[idx]) = static_cast<float>(radius_in_int);
     }
 
     panel_corners_radii =
@@ -345,7 +336,7 @@ ManagedDisplayInfo ManagedDisplayInfo::CreateFromSpecWithID(
 
   if (has_hdr) {
     gfx::DisplayColorSpaces display_color_spaces{
-        gfx::ColorSpace::CreateHDR10(), gfx::BufferFormat::BGRA_1010102};
+        gfx::ColorSpace::CreateHDR10(), viz::SinglePlaneFormat::kBGRA_1010102};
     display_info.set_display_color_spaces(display_color_spaces);
   }
 
@@ -371,7 +362,7 @@ ManagedDisplayInfo::ManagedDisplayInfo()
       is_aspect_preserving_scaling_(false),
       clear_overscan_insets_(false),
       bits_per_channel_(0),
-      variable_refresh_rate_state_(kVrrNotCapable),
+      variable_refresh_rate_state_(VariableRefreshRateState::kVrrNotCapable),
       vsync_rate_min_(std::nullopt) {}
 
 ManagedDisplayInfo::ManagedDisplayInfo(int64_t id,
@@ -394,8 +385,10 @@ ManagedDisplayInfo::ManagedDisplayInfo(int64_t id,
       is_aspect_preserving_scaling_(false),
       clear_overscan_insets_(false),
       bits_per_channel_(0),
-      variable_refresh_rate_state_(kVrrNotCapable),
-      vsync_rate_min_(std::nullopt) {}
+      variable_refresh_rate_state_(VariableRefreshRateState::kVrrNotCapable),
+      vsync_rate_min_(std::nullopt) {
+  has_overscan_ = true;
+}
 
 ManagedDisplayInfo::ManagedDisplayInfo(const ManagedDisplayInfo& other) =
     default;
@@ -455,10 +448,7 @@ void ManagedDisplayInfo::Copy(const ManagedDisplayInfo& native_info) {
   display_modes_ = native_info.display_modes_;
   maximum_cursor_size_ = native_info.maximum_cursor_size_;
   display_color_spaces_ = native_info.display_color_spaces_;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   snapshot_color_space_ = native_info.snapshot_color_space_;
-#endif
 
   bits_per_channel_ = native_info.bits_per_channel_;
   refresh_rate_ = native_info.refresh_rate_;
@@ -592,7 +582,6 @@ gfx::Insets ManagedDisplayInfo::GetOverscanInsetsInPixel() const {
       overscan_insets_in_dip_, device_scale_factor_));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 void ManagedDisplayInfo::SetSnapshotColorSpace(
     const gfx::ColorSpace& snapshot_color) {
   snapshot_color_space_ = snapshot_color;
@@ -601,7 +590,6 @@ void ManagedDisplayInfo::SetSnapshotColorSpace(
 gfx::ColorSpace ManagedDisplayInfo::GetSnapshotColorSpace() const {
   return snapshot_color_space_;
 }
-#endif
 
 void ManagedDisplayInfo::SetManagedDisplayModes(
     const ManagedDisplayModeList& display_modes) {
@@ -623,7 +611,7 @@ std::string ManagedDisplayInfo::ToString() const {
 
   std::string result = base::StringPrintf(
       "ManagedDisplayInfo[%lld] port_display_id=%lld, edid_display_id=%lld, "
-      "native bounds=%s, size=%s, device-scale=%g, "
+      "native bounds=%s, size=%s, refresh-rate=%f, device-scale=%g, "
       "display-zoom=%g, overscan=%s, rotation=%d, touchscreen=%s, "
       "panel_corners_radii=%s, panel_orientation=%s, detected=%s, "
       "color_space=%s",
@@ -631,7 +619,7 @@ std::string ManagedDisplayInfo::ToString() const {
       static_cast<long long int>(port_display_id_),
       static_cast<long long int>(edid_display_id_),
       bounds_in_native_.ToString().c_str(), size_in_pixel_.ToString().c_str(),
-      device_scale_factor_, zoom_factor_,
+      refresh_rate_, device_scale_factor_, zoom_factor_,
       overscan_insets_in_dip_.ToString().c_str(), rotation_degree,
       touch_support_ == Display::TouchSupport::AVAILABLE     ? "yes"
       : touch_support_ == Display::TouchSupport::UNAVAILABLE ? "no"
@@ -639,7 +627,11 @@ std::string ManagedDisplayInfo::ToString() const {
       panel_corners_radii_.ToString().c_str(),
       PanelOrientationToString(panel_orientation_).c_str(),
       detected_ ? "true" : "false",
-      display_color_spaces_.GetRasterColorSpace().ToString().c_str());
+      display_color_spaces_
+          .GetRasterAndCompositeColorSpace(
+              gfx::ContentColorUsage::kWideColorGamut)
+          .ToString()
+          .c_str());
 
   return result;
 }

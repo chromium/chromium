@@ -1,3 +1,4 @@
+#include "absl/status/status.h"
 #include "mediapipe/framework/formats/tensor.h"
 
 #ifdef MEDIAPIPE_TENSOR_USE_AHWB
@@ -10,13 +11,14 @@
 #include <vector>
 
 #include "absl/base/const_init.h"
+#include "absl/base/log_severity.h"
 #include "absl/functional/any_invocable.h"
 #include "absl/log/absl_check.h"
 #include "absl/log/absl_log.h"
 #include "absl/synchronization/mutex.h"
 #include "mediapipe/framework/deps/no_destructor.h"
+#include "mediapipe/framework/formats/ahwb_gpu_releaser.h"
 #include "mediapipe/framework/formats/hardware_buffer.h"
-#include "mediapipe/framework/formats/tensor_ahwb_usage.h"
 #include "mediapipe/gpu/gl_base.h"
 #endif  // MEDIAPIPE_TENSOR_USE_AHWB
 
@@ -86,119 +88,6 @@ static inline int AlignedToPowerOf2(int value, int alignment) {
   return ((value - 1) | (alignment - 1)) + 1;
 }
 
-// This class keeps tensor's resources while the tensor is in use on GPU or TPU
-// but is already released on CPU. When a regular OpenGL buffer is bound to the
-// GPU queue for execution and released on client side then the buffer is still
-// not released because is being used by GPU. OpenGL driver keeps traking of
-// that. When OpenGL buffer is build on top of AHWB then the traking is done
-// with the DeleyedRelease which, actually, keeps record of all AHWBs allocated
-// and releases each of them if already used. EGL/GL fences are used to check
-// the status of a buffer.
-class DelayedReleaser {
- public:
-  // Non-copyable
-  DelayedReleaser(const DelayedReleaser&) = delete;
-  DelayedReleaser& operator=(const DelayedReleaser&) = delete;
-  // Non-movable
-  DelayedReleaser(DelayedReleaser&&) = delete;
-  DelayedReleaser& operator=(DelayedReleaser&&) = delete;
-
-  static void Add(std::shared_ptr<HardwareBuffer> ahwb, GLuint opengl_buffer,
-                  EGLSyncKHR ssbo_sync, GLsync ssbo_read,
-                  std::list<TensorAhwbUsage>&& ahwb_usages,
-                  std::shared_ptr<mediapipe::GlContext> gl_context) {
-    static absl::Mutex mutex;
-    std::deque<std::unique_ptr<DelayedReleaser>> to_release_local;
-    using std::swap;
-
-    // IsSignaled will grab other mutexes, so we don't want to call it while
-    // holding the deque mutex.
-    {
-      absl::MutexLock lock(&mutex);
-      swap(to_release_local, *to_release_);
-    }
-
-    // Using `new` to access a non-public constructor.
-    to_release_local.emplace_back(absl::WrapUnique(
-        new DelayedReleaser(std::move(ahwb), opengl_buffer, ssbo_sync,
-                            ssbo_read, std::move(ahwb_usages), gl_context)));
-    for (auto it = to_release_local.begin(); it != to_release_local.end();) {
-      if ((*it)->IsSignaled()) {
-        it = to_release_local.erase(it);
-      } else {
-        ++it;
-      }
-    }
-
-    {
-      absl::MutexLock lock(&mutex);
-      to_release_->insert(to_release_->end(),
-                          std::make_move_iterator(to_release_local.begin()),
-                          std::make_move_iterator(to_release_local.end()));
-      to_release_local.clear();
-    }
-  }
-
-  ~DelayedReleaser() { CompleteAndEraseUsages(ahwb_usages_); }
-
-  bool IsSignaled() {
-    bool ready = !HasIncompleteUsages(ahwb_usages_);
-
-    if (ssbo_read_ != 0) {
-      gl_context_->Run([this, &ready]() {
-        GLenum status = glClientWaitSync(ssbo_read_, 0,
-                                         /* timeout ns = */ 0);
-        if (status != GL_CONDITION_SATISFIED && status != GL_ALREADY_SIGNALED) {
-          ready = false;
-          return;
-        }
-        glDeleteSync(ssbo_read_);
-        ssbo_read_ = 0;
-      });
-    }
-
-    if (ready && gl_context_) {
-      gl_context_->Run([this]() {
-        if (fence_sync_ != EGL_NO_SYNC_KHR && IsGlSupported()) {
-          auto egl_display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
-          if (egl_display != EGL_NO_DISPLAY) {
-            eglDestroySyncKHR(egl_display, fence_sync_);
-          }
-          fence_sync_ = EGL_NO_SYNC_KHR;
-        }
-        glDeleteBuffers(1, &opengl_buffer_);
-        opengl_buffer_ = GL_INVALID_INDEX;
-      });
-    }
-
-    return ready;
-  }
-
- protected:
-  std::shared_ptr<HardwareBuffer> ahwb_;
-  GLuint opengl_buffer_;
-  // TODO: use wrapper instead.
-  EGLSyncKHR fence_sync_;
-  // TODO: use wrapper instead.
-  GLsync ssbo_read_;
-  std::list<TensorAhwbUsage> ahwb_usages_;
-  std::shared_ptr<mediapipe::GlContext> gl_context_;
-
-  static inline NoDestructor<std::deque<std::unique_ptr<DelayedReleaser>>>
-      to_release_;
-
-  DelayedReleaser(std::shared_ptr<HardwareBuffer> ahwb, GLuint opengl_buffer,
-                  EGLSyncKHR fence_sync, GLsync ssbo_read,
-                  std::list<TensorAhwbUsage>&& ahwb_usages,
-                  std::shared_ptr<mediapipe::GlContext> gl_context)
-      : ahwb_(std::move(ahwb)),
-        opengl_buffer_(opengl_buffer),
-        fence_sync_(fence_sync),
-        ssbo_read_(ssbo_read),
-        ahwb_usages_(std::move(ahwb_usages)),
-        gl_context_(gl_context) {}
-};
-
 class AhwbUsageTrack {
  public:
   static void Insert(uint64_t id) {
@@ -245,12 +134,9 @@ Tensor::AHardwareBufferView Tensor::GetAHardwareBufferReadView() const {
 
   EraseCompletedUsages(ahwb_usages_);
   ahwb_usages_.push_back(TensorAhwbUsage());
-  auto& ahwb_usage = ahwb_usages_.back();
   return {ahwb_.get(),
-          &write_complete_fence_fd_,   // Returned by GetWriteCompleteFenceFd.
-          &ahwb_usage.is_complete_fn,  // Filled by SetReadingFinishedFunc.
-          &ahwb_usage.release_callbacks,
-          std::move(lock),
+          &write_complete_fence_fd_,  // Returned by GetWriteCompleteFenceFd.
+          &ahwb_usages_.back(), std::move(lock),
           /*is_write_view=*/false};
 }
 
@@ -262,12 +148,12 @@ void Tensor::CreateEglSyncAndFd() const {
         fence_sync_ = eglCreateSyncKHR(egl_display,
                                        EGL_SYNC_NATIVE_FENCE_ANDROID, nullptr);
         if (fence_sync_ != EGL_NO_SYNC_KHR) {
-          if (write_complete_fence_fd_ != -1) {
-            ABSL_LOG(DFATAL) << "write_complete_fence_fd_ is already set.";
-          }
+          // TODO: Ensure we don't leak GL sync objects and fd
+          // fences. This can happen if write_complete_fence_fd_ is already
+          // valid here.
           write_complete_fence_fd_ =
-              eglDupNativeFenceFDANDROID(egl_display, fence_sync_);
-          if (write_complete_fence_fd_ == -1) {
+              UniqueFd(eglDupNativeFenceFDANDROID(egl_display, fence_sync_));
+          if (!write_complete_fence_fd_.IsValid()) {
             eglDestroySyncKHR(egl_display, fence_sync_);
             fence_sync_ = EGL_NO_SYNC_KHR;
           }
@@ -283,6 +169,12 @@ Tensor::AHardwareBufferView Tensor::GetAHardwareBufferWriteView() const {
   auto lock(std::make_unique<absl::MutexLock>(&view_mutex_));
   ABSL_CHECK_OK(AllocateAHardwareBuffer())
       << "AHardwareBuffer is not supported on the target system.";
+  if (valid_ != 0) {
+    ABSL_LOG(ERROR)
+        << "Tensors are designed for single writes. Multiple writes to a "
+           "Tensor instance are not supported and may lead to undefined "
+           "behavior due to lack of synchronization.";
+  }
   valid_ = kValidAHardwareBuffer;
 
   EraseCompletedUsages(ahwb_usages_);
@@ -292,12 +184,9 @@ Tensor::AHardwareBufferView Tensor::GetAHardwareBufferWriteView() const {
         ahwb_usages_.size());
   }
   ahwb_usages_.push_back(TensorAhwbUsage());
-  auto& ahwb_usage = ahwb_usages_.back();
   return {ahwb_.get(),
-          &write_complete_fence_fd_,   // For SetWritingFinishedFD.
-          &ahwb_usage.is_complete_fn,  // Filled by SetWritingFinishedFunc.
-          &ahwb_usage.release_callbacks,
-          std::move(lock),
+          &write_complete_fence_fd_,  // Set by SetWritingFinishedFD.
+          &ahwb_usages_.back(), std::move(lock),
           /*is_write_view=*/true};
 }
 
@@ -383,7 +272,7 @@ void Tensor::MoveCpuOrSsboToAhwb() const {
 // is finished then the GPU reads from the SSBO.
 bool Tensor::InsertAhwbToSsboFence() const {
   if (!ahwb_) return false;
-  if (write_complete_fence_fd_ != -1) {
+  if (write_complete_fence_fd_.IsValid()) {
     // Can't wait for FD to be signaled on GPU.
     // TODO: wait on CPU instead.
     if (!IsGlSupported()) return true;
@@ -394,7 +283,7 @@ bool Tensor::InsertAhwbToSsboFence() const {
 
     // EGL will take ownership of the passed fd if eglCreateSyncKHR is
     // successful.
-    int fd_for_egl = dup(write_complete_fence_fd_);
+    int fd_for_egl = dup(write_complete_fence_fd_.Get());
 
     EGLint sync_attribs[] = {EGL_SYNC_NATIVE_FENCE_FD_ANDROID,
                              (EGLint)fd_for_egl, EGL_NONE};
@@ -415,22 +304,30 @@ void Tensor::MoveAhwbStuff(Tensor* src) {
   ahwb_ = std::exchange(src->ahwb_, nullptr);
   fence_sync_ = std::exchange(src->fence_sync_, EGL_NO_SYNC_KHR);
   ssbo_read_ = std::exchange(src->ssbo_read_, static_cast<GLsync>(0));
-  write_complete_fence_fd_ = std::exchange(src->write_complete_fence_fd_, -1);
+  write_complete_fence_fd_ = std::move(src->write_complete_fence_fd_);
   ahwb_usages_ = std::move(src->ahwb_usages_);
   use_ahwb_ = std::exchange(src->use_ahwb_, false);
 }
 
-void Tensor::ReleaseAhwbStuff() {
-  if (write_complete_fence_fd_ != -1) {
-    close(write_complete_fence_fd_);
-    write_complete_fence_fd_ = -1;
-  }
+absl::Status Tensor::ReleaseAhwbStuff() {
+  write_complete_fence_fd_.Reset();
   if (__builtin_available(android 26, *)) {
     if (ahwb_) {
-      if (ssbo_read_ != 0 || fence_sync_ != EGL_NO_SYNC_KHR ||
-          HasIncompleteUsages(ahwb_usages_)) {
-        DelayedReleaser::Add(std::move(ahwb_), opengl_buffer_, fence_sync_,
-                             ssbo_read_, std::move(ahwb_usages_), gl_context_);
+      const bool gl_operation_maybe_pending =
+          ssbo_read_ != 0 || fence_sync_ != EGL_NO_SYNC_KHR;
+      if (gl_operation_maybe_pending && gl_context_ == nullptr) {
+        ABSL_LOG(DFATAL)
+            << "Pending GL operations without captured GL context.";
+      }
+      if ((gl_operation_maybe_pending || HasIncompleteUsages(ahwb_usages_)) &&
+          gl_context_ != nullptr) {
+        // Delay release until the GPU usage is finished.
+        MP_RETURN_IF_ERROR(gl_context_->Run([this]() -> absl::Status {
+          auto& releaser = gl_context_->GetCachedAttachment(kAhwbGpuReleaser);
+          return releaser.AddAndFreeUnusedResources(ahwb_, opengl_buffer_,
+                                                    fence_sync_, ssbo_read_,
+                                                    std::move(ahwb_usages_));
+        }));
         opengl_buffer_ = GL_INVALID_INDEX;
       } else {
         CompleteAndEraseUsages(ahwb_usages_);
@@ -438,12 +335,14 @@ void Tensor::ReleaseAhwbStuff() {
       }
     }
   }
+  return absl::OkStatus();
 }
 
 void* Tensor::MapAhwbToCpuRead() const {
   if (ahwb_ != nullptr) {
     if (!(valid_ & kValidCpu)) {
-      if ((valid_ & kValidOpenGlBuffer) && write_complete_fence_fd_ == -1) {
+      if ((valid_ & kValidOpenGlBuffer) &&
+          !write_complete_fence_fd_.IsValid()) {
         // EGLSync is failed. Use another synchronization method.
         // TODO: Use tflite::gpu::GlBufferSync and GlActiveSync.
         gl_context_->Run([]() { glFinish(); });
@@ -457,10 +356,8 @@ void* Tensor::MapAhwbToCpuRead() const {
     }
     auto ptr =
         ahwb_->Lock(HardwareBufferSpec::AHARDWAREBUFFER_USAGE_CPU_READ_OFTEN,
-                    write_complete_fence_fd_);
+                    write_complete_fence_fd_.Release());
     ABSL_CHECK_OK(ptr) << "Lock of AHWB failed";
-    close(write_complete_fence_fd_);
-    write_complete_fence_fd_ = -1;
     return *ptr;
   }
   return nullptr;
@@ -497,7 +394,7 @@ void Tensor::TrackAhwbUsage(uint64_t source_location_hash) const {
 bool Tensor::AllocateAhwbMapToSsbo() const { return false; }
 bool Tensor::InsertAhwbToSsboFence() const { return false; }
 void Tensor::MoveAhwbStuff(Tensor* src) {}
-void Tensor::ReleaseAhwbStuff() {}
+absl::Status Tensor::ReleaseAhwbStuff() { return absl::OkStatus(); }
 void* Tensor::MapAhwbToCpuRead() const { return nullptr; }
 void* Tensor::MapAhwbToCpuWrite() const { return nullptr; }
 void Tensor::TrackAhwbUsage(uint64_t key) const {}

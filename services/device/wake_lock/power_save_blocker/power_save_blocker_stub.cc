@@ -10,28 +10,22 @@
 
 namespace device {
 
-class PowerSaveBlocker::Delegate
-    : public base::RefCountedThreadSafe<PowerSaveBlocker::Delegate> {
+class PowerSaveBlocker::Delegate {
  public:
-  Delegate() {}
+  Delegate() = default;
 
   Delegate(const Delegate&) = delete;
   Delegate& operator=(const Delegate&) = delete;
 
- private:
-  friend class base::RefCountedThreadSafe<Delegate>;
-  virtual ~Delegate() {}
+  ~Delegate() = default;
 };
 
 PowerSaveBlocker::PowerSaveBlocker(
     mojom::WakeLockType type,
     mojom::WakeLockReason reason,
     const std::string& description,
-    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> blocking_task_runner)
-    : delegate_(new Delegate()),
-      ui_task_runner_(ui_task_runner),
-      blocking_task_runner_(blocking_task_runner) {}
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
+    : delegate_(ui_task_runner) {}
 
 PowerSaveBlocker::~PowerSaveBlocker() {}
 

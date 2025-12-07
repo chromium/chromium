@@ -29,6 +29,7 @@
 
 #include "third_party/blink/renderer/core/editing/dom_selection.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_get_composed_ranges_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/range.h"
@@ -48,6 +49,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -173,13 +175,6 @@ bool DOMSelection::isCollapsed() const {
   DomWindow()->document()->UpdateStyleAndLayout(
       DocumentUpdateReason::kSelection);
 
-  Node* node =
-      Selection().ComputeVisibleSelectionInDOMTree().Anchor().AnchorNode();
-  if (node && node->IsInShadowTree() &&
-      DomWindow()->document()->AncestorInThisScope(node)) {
-    return true;
-  }
-
   TemporaryRange temp_range(this, PrimaryRangeOrNull());
   if (temp_range.GetRange()) {
     return temp_range.GetRange()->collapsed();
@@ -212,6 +207,10 @@ String DOMSelection::direction() const {
       DocumentUpdateReason::kSelection);
 
   if (!Selection().IsDirectional() ||
+      (RuntimeEnabledFeatures::SelectionCollapsedDirectionNoneEnabled() &&
+       // Use IsCaret() instead of isCollapsed() so that directionality is still
+       // reported for selections that cross shadow boundaries.
+       Selection().GetSelectionInDOMTree().IsCaret()) ||
       Selection().ComputeVisibleSelectionInDOMTree().IsNone()) {
     return "none";
   }
@@ -375,14 +374,31 @@ void DOMSelection::setBaseAndExtent(Node* base_node,
 
   // TODO(editing-dev): Behavior on where base or extent is null is still
   // under discussion: https://github.com/w3c/selection-api/issues/72
-  if (!base_node) {
-    UseCounter::Count(DomWindow(), WebFeature::kSelectionSetBaseAndExtentNull);
-    Selection().Clear();
-    return;
-  }
-  if (!extent_node) {
-    UseCounter::Count(DomWindow(), WebFeature::kSelectionSetBaseAndExtentNull);
-    extent_offset = 0;
+  if (RuntimeEnabledFeatures::SelectionSetBaseAndExtentNonNullNodeEnabled()) {
+    if (!base_node) {
+      UseCounter::Count(DomWindow(),
+                        WebFeature::kSelectionSetBaseAndExtentNull);
+      exception_state.ThrowTypeError("anchorNode is null");
+      return;
+    }
+    if (!extent_node) {
+      UseCounter::Count(DomWindow(),
+                        WebFeature::kSelectionSetBaseAndExtentNull);
+      exception_state.ThrowTypeError("focusNode is null");
+      return;
+    }
+  } else {
+    if (!base_node) {
+      UseCounter::Count(DomWindow(),
+                        WebFeature::kSelectionSetBaseAndExtentNull);
+      Selection().Clear();
+      return;
+    }
+    if (!extent_node) {
+      UseCounter::Count(DomWindow(),
+                        WebFeature::kSelectionSetBaseAndExtentNull);
+      extent_offset = 0;
+    }
   }
 
   // 1. If anchorOffset is longer than anchorNode's length or if focusOffset is
@@ -520,7 +536,13 @@ void DOMSelection::extend(Node* node,
 
   // 3. Let oldAnchor and oldFocus be the context object's anchor and focus, and
   // let newFocus be the boundary point (node, offset).
-  const Position old_anchor(anchorNode(), anchorOffset());
+  Position old_anchor(anchorNode(), anchorOffset());
+  if (RuntimeEnabledFeatures::
+          UseSelectionInDOMTreeAnchorInExtendSelectionEnabled()) {
+    old_anchor =
+        Selection().GetSelectionInDOMTree().Anchor().ToOffsetInAnchor();
+  }
+
   DCHECK(!old_anchor.IsNull());
   const Position new_focus(node, offset);
 
@@ -570,7 +592,7 @@ Range* DOMSelection::getRangeAt(unsigned index,
   if (index >= rangeCount()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        String::Number(index) + " is not a valid index.");
+        StrCat({String::Number(index), " is not a valid index."}));
     return nullptr;
   }
 
@@ -587,30 +609,33 @@ Range* DOMSelection::getRangeAt(unsigned index,
 
 // https://www.w3.org/TR/selection-api/#dom-selection-getcomposedranges
 const StaticRangeVector DOMSelection::getComposedRanges(
-    const HeapVector<Member<ShadowRoot>>& shadowRoots) const {
+    const GetComposedRangesOptions* options) const {
   StaticRangeVector ranges;
   // 1. If this is empty, return an empty array.
   if (!IsAvailable()) {
     return ranges;
   }
   TemporaryRange temp_range(this, PrimaryRangeOrNull());
-  Range* range = temp_range.GetRange();
-  if (!range) {
+  if (!temp_range.GetRange()) {
     return ranges;
   }
+
+  const SelectionInDOMTree& selection = Selection().GetSelectionInDOMTree();
   // 2. Otherwise, let startNode be start node of the range associated with
   // this, and let startOffset be start offset of the range.
-  Node* startNode = range->composedStartContainer();
-  unsigned startOffset = range->composedStartOffset();
+  const Position& start = selection.ComputeStartPosition();
+  Node* startNode = start.ComputeContainerNode();
+  unsigned startOffset = start.ComputeOffsetInContainerNode();
   // 3. Rescope startNode and startOffset with listed shadow roots.
-  Rescope(startNode, startOffset, shadowRoots, /*isEnd=*/false);
+  Rescope(startNode, startOffset, options->shadowRoots(), /*isEnd=*/false);
 
   // 4. Let endNode be end node of the range associated with this, and let
   // endOffset be end offset of the range.
-  Node* endNode = range->composedEndContainer();
-  unsigned endOffset = range->composedEndOffset();
+  const Position& end = selection.ComputeEndPosition();
+  Node* endNode = end.ComputeContainerNode();
+  unsigned endOffset = end.ComputeOffsetInContainerNode();
   // 5. Rescope endNode and endOffset with listed shadow roots.
-  Rescope(endNode, endOffset, shadowRoots, /*isEnd=*/true);
+  Rescope(endNode, endOffset, options->shadowRoots(), /*isEnd=*/true);
 
   // 6. Return an array consisting of new StaticRange whose start node is
   // startNode, start offset is startOffset, end node is endNode, and end
@@ -697,11 +722,18 @@ void DOMSelection::ClearCachedRangeIfSelectionOfDocument() {
     Selection().ClearDocumentCachedRange();
 }
 
-void DOMSelection::removeRange(Range* range) {
+void DOMSelection::removeRange(Range* range, ExceptionState& exception_state) {
   DCHECK(range);
   TemporaryRange temp_range(this, PrimaryRangeOrNull());
   if (IsAvailable() && range == temp_range.GetRange()) {
     Selection().Clear();
+  } else {
+    UseCounter::Count(DomWindow(),
+                      WebFeature::kSelectionRemoveRangeNotFoundWouldThrow);
+    if (RuntimeEnabledFeatures::SelectionRemoveRangeNotFoundErrorEnabled()) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kNotFoundError,
+                                        "Range not found.");
+    }
   }
 }
 
@@ -757,19 +789,14 @@ void DOMSelection::deleteFromDocument() {
   DomWindow()->document()->UpdateStyleAndLayout(
       DocumentUpdateReason::kSelection);
 
-  // The following code is necessary for
-  // editing/selection/deleteFromDocument-crash.html, which assumes
-  // deleteFromDocument() for text selection in a TEXTAREA deletes the TEXTAREA
-  // value.
-
-  if (Selection().ComputeVisibleSelectionInDOMTree().IsNone())
-    return;
-
   Range* selected_range = CreateRange(Selection()
                                           .ComputeVisibleSelectionInDOMTree()
                                           .ToNormalizedEphemeralRange());
   if (!selected_range)
     return;
+  if (selected_range->startContainer()->IsInUserAgentShadowRoot()) {
+    return;
+  }
 
   // |selectedRange| may point nodes in a different root.
   selected_range->deleteContents(ASSERT_NO_EXCEPTION);
@@ -858,9 +885,15 @@ String DOMSelection::toString() {
   const EphemeralRange range = Selection()
                                    .ComputeVisibleSelectionInDOMTree()
                                    .ToNormalizedEphemeralRange();
-  return PlainText(
-      range,
-      TextIteratorBehavior::Builder().SetForSelectionToString(true).Build());
+
+  TextIteratorBehavior::Builder behavior_builder;
+  behavior_builder.SetForSelectionToString(true);
+
+  if (RuntimeEnabledFeatures::SelectionToStringSkipsUserSelectNoneEnabled()) {
+    behavior_builder.SetSkipsUnselectableContent(true);
+  }
+
+  return PlainText(range, behavior_builder.Build());
 }
 
 Node* DOMSelection::ShadowAdjustedNode(const Position& position) const {

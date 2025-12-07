@@ -740,8 +740,7 @@ bool SandboxDirectoryDatabase::Init(RecoveryOption recovery_option) {
       return Init(FAIL_ON_CORRUPTION);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool SandboxDirectoryDatabase::RepairDatabase(const std::string& db_path) {

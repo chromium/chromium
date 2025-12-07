@@ -9,13 +9,22 @@
 #include <string_view>
 
 #include "base/files/file_path.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -25,24 +34,25 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
-#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/navigation_simulator.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkStream.h"
-#include "third_party/skia/include/encode/SkPngEncoder.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "content/public/common/content_features.h"
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 namespace web_app {
 namespace {
@@ -66,16 +76,26 @@ IsolatedWebAppBrowserTestHarness::IsolatedWebAppBrowserTestHarness() {
   // are tests that inherit from this class which depend on being able to start
   // without kControlledFrame in their feature list.
   iwa_scoped_feature_list_.InitWithFeatures(
-      {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode,
-       blink::features::kUnrestrictedUsb},
+      {
+#if !BUILDFLAG(IS_CHROMEOS)
+          features::kIsolatedWebApps,
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+          features::kIsolatedWebAppDevMode},
       {});
 }
 
 IsolatedWebAppBrowserTestHarness::~IsolatedWebAppBrowserTestHarness() = default;
 
+void IsolatedWebAppBrowserTestHarness::PreRunTestOnMainThread() {
+  if (auto* provider = GetRuntimeDataProvider()) {
+    resetter_ = ChromeIwaRuntimeDataProvider::SetInstanceForTesting(provider);
+  }
+  WebAppBrowserTestBase::PreRunTestOnMainThread();
+}
+
 std::unique_ptr<net::EmbeddedTestServer>
 IsolatedWebAppBrowserTestHarness::CreateAndStartServer(
-    const base::FilePath::StringPieceType& chrome_test_data_relative_root) {
+    base::FilePath::StringViewType chrome_test_data_relative_root) {
   return CreateAndStartDevServer(chrome_test_data_relative_root);
 }
 
@@ -93,9 +113,14 @@ Browser* IsolatedWebAppBrowserTestHarness::GetBrowserFromFrame(
   return browser;
 }
 
+ChromeIwaRuntimeDataProvider*
+IsolatedWebAppBrowserTestHarness::GetRuntimeDataProvider() {
+  return nullptr;
+}
+
 content::RenderFrameHost* IsolatedWebAppBrowserTestHarness::OpenApp(
     const webapps::AppId& app_id,
-    std::string_view path) {
+    std::optional<std::string_view> path) {
   return OpenIsolatedWebApp(profile(), app_id, path);
 }
 
@@ -112,8 +137,54 @@ IsolatedWebAppBrowserTestHarness::NavigateToURLInNewTab(
       window, url, disposition, ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 }
 
+UpdateDiscoveryTaskResultWaiter::UpdateDiscoveryTaskResultWaiter(
+    WebAppProvider& provider,
+    const webapps::AppId expected_app_id,
+    TaskResultCallback callback)
+    : expected_app_id_(expected_app_id),
+      callback_(std::move(callback)),
+      provider_(provider) {
+  observation_.Observe(&provider.iwa_update_manager());
+}
+
+UpdateDiscoveryTaskResultWaiter::~UpdateDiscoveryTaskResultWaiter() = default;
+
+// IsolatedWebAppUpdateManager::Observer:
+void UpdateDiscoveryTaskResultWaiter::OnUpdateDiscoveryTaskCompleted(
+    const webapps::AppId& app_id,
+    IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status) {
+  if (app_id != expected_app_id_) {
+    return;
+  }
+  std::move(callback_).Run(status);
+  observation_.Reset();
+}
+
+UpdateApplyTaskResultWaiter::UpdateApplyTaskResultWaiter(
+    WebAppProvider& provider,
+    const webapps::AppId expected_app_id,
+    TaskResultCallback callback)
+    : expected_app_id_(expected_app_id),
+      callback_(std::move(callback)),
+      provider_(provider) {
+  observation_.Observe(&provider.iwa_update_manager());
+}
+
+UpdateApplyTaskResultWaiter::~UpdateApplyTaskResultWaiter() = default;
+
+// IsolatedWebAppUpdateManager::Observer:
+void UpdateApplyTaskResultWaiter::OnUpdateApplyTaskCompleted(
+    const webapps::AppId& app_id,
+    IsolatedWebAppApplyUpdateCommandResult status) {
+  if (app_id != expected_app_id_) {
+    return;
+  }
+  std::move(callback_).Run(status);
+  observation_.Reset();
+}
+
 std::unique_ptr<net::EmbeddedTestServer> CreateAndStartDevServer(
-    const base::FilePath::StringPieceType& chrome_test_data_relative_root) {
+    base::FilePath::StringViewType chrome_test_data_relative_root) {
   base::FilePath server_root =
       base::FilePath(FILE_PATH_LITERAL("chrome/test/data"))
           .Append(chrome_test_data_relative_root);
@@ -144,22 +215,30 @@ IsolatedWebAppUrlInfo InstallDevModeProxyIsolatedWebApp(
   return url_info;
 }
 
-content::RenderFrameHost* OpenIsolatedWebApp(Profile* profile,
-                                             const webapps::AppId& app_id,
-                                             std::string_view path) {
-  WebAppRegistrar& registrar =
-      WebAppProvider::GetForWebApps(profile)->registrar_unsafe();
-  const WebApp* app = registrar.GetAppById(app_id);
-  EXPECT_TRUE(app);
+content::RenderFrameHost* OpenIsolatedWebApp(
+    Profile* profile,
+    const webapps::AppId& app_id,
+    std::optional<std::string_view> path) {
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
+  auto url = [&]() -> std::optional<GURL> {
+    if (!path) {
+      return std::nullopt;
+    }
+    return provider->registrar_unsafe().GetAppStartUrl(app_id).Resolve(*path);
+  }();
 
-  NavigateParams params(profile, app->start_url().Resolve(path),
-                        ui::PAGE_TRANSITION_GENERATED);
-  params.app_id = app->app_id();
-  params.window_action = NavigateParams::SHOW_WINDOW;
-  params.disposition = WindowOpenDisposition::NEW_WINDOW;
-  params.user_gesture = true;
-  ui_test_utils::NavigateToURL(&params);
-  return params.navigated_or_inserted_contents->GetPrimaryMainFrame();
+  base::test::TestFuture<content::WebContents*> future;
+  provider->scheduler().LaunchApp(
+      app_id, url,
+      base::BindOnce([](base::WeakPtr<Browser>,
+                        base::WeakPtr<content::WebContents> web_contents,
+                        apps::LaunchContainer) {
+        return web_contents.get();
+      }).Then(future.GetCallback()));
+
+  auto* web_contents = future.Get();
+  content::WaitForLoadStop(web_contents);
+  return web_contents->GetPrimaryMainFrame();
 }
 
 void CreateIframe(content::RenderFrameHost* parent_frame,
@@ -180,41 +259,6 @@ void CreateIframe(content::RenderFrameHost* parent_frame,
         )",
                                          iframe_id, url, permissions_policy),
                       content::EXECUTE_SCRIPT_NO_USER_GESTURE));
-}
-
-// TODO(crbug.com/40274184): This function should probably be built on top of
-// `test::InstallDummyWebApp`, instead of committing the update and triggering
-// `NotifyWebAppInstalled` manually. However, the `InstallFromInfoCommand` used
-// by that function does not currently allow setting the `WebApp::IsolationData`
-// (which is good for non-test-code, as all real IWA installs must go through
-// the `InstallIsolatedWebAppCommand`).
-webapps::AppId AddDummyIsolatedAppToRegistry(
-    Profile* profile,
-    const GURL& start_url,
-    const std::string& name,
-    const WebApp::IsolationData& isolation_data,
-    webapps::WebappInstallSource install_source) {
-  CHECK(profile);
-  WebAppProvider* provider = WebAppProvider::GetForTest(profile);
-  CHECK(provider);
-
-  std::unique_ptr<WebApp> isolated_web_app = test::CreateWebApp(
-      start_url, ConvertInstallSurfaceToWebAppSource(install_source));
-  const webapps::AppId app_id = isolated_web_app->app_id();
-  isolated_web_app->SetName(name);
-  isolated_web_app->SetScope(isolated_web_app->start_url());
-  isolated_web_app->SetIsolationData(isolation_data);
-  isolated_web_app->SetLatestInstallSource(install_source);
-
-  base::test::TestFuture<bool> future;
-  {
-    ScopedRegistryUpdate update =
-        provider->sync_bridge_unsafe().BeginUpdate(future.GetCallback());
-    update->CreateApp(std::move(isolated_web_app));
-  }
-  EXPECT_TRUE(future.Take());
-  provider->install_manager().NotifyWebAppInstalled(app_id);
-  return app_id;
 }
 
 void SimulateIsolatedWebAppNavigation(content::WebContents* web_contents,

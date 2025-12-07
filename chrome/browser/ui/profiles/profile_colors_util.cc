@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 
 #include "base/containers/contains.h"
@@ -195,25 +190,21 @@ DefaultAvatarColors GetDefaultAvatarColors(
   DefaultAvatarColors result;
 
   if (color_utils::IsDark(profile_highlight_color)) {
-    if (base::FeatureList::IsEnabled(kOutlineSilhouetteIcon)) {
-      result.stroke_color = color_provider.GetColor(kColorAvatarStroke);
-      result.fill_color =
-          color_utils::GetContrastRatio(profile_highlight_color,
-                                        result.stroke_color) >=
-                  color_utils::kMinimumVisibleContrastRatio
-              ? profile_highlight_color
-              : color_provider.GetColor(kColorAvatarFillForContrast);
-      return result;
-    }
-    result.stroke_color = color_provider.GetColor(kColorAvatarStrokeLight);
-  } else {
-    color_utils::HSL color_hsl;
-    color_utils::SkColorToHSL(profile_highlight_color, &color_hsl);
-    color_hsl.l = std::max(0., color_hsl.l - 0.5);
-    result.stroke_color = color_utils::HSLToSkColor(
-        color_hsl, SkColorGetA(profile_highlight_color));
+    result.stroke_color = color_provider.GetColor(kColorAvatarStroke);
+    result.fill_color =
+        color_utils::GetContrastRatio(profile_highlight_color,
+                                      result.stroke_color) >=
+                color_utils::kMinimumVisibleContrastRatio
+            ? profile_highlight_color
+            : color_provider.GetColor(kColorAvatarFillForContrast);
+    return result;
   }
 
+  color_utils::HSL color_hsl;
+  color_utils::SkColorToHSL(profile_highlight_color, &color_hsl);
+  color_hsl.l = std::max(0., color_hsl.l - 0.5);
+  result.stroke_color = color_utils::HSLToSkColor(
+      color_hsl, SkColorGetA(profile_highlight_color));
   result.fill_color = profile_highlight_color;
   return result;
 }

@@ -8,29 +8,43 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_omnibox_client_delegate.h"
-#import "ios/chrome/browser/lens_overlay/ui/lens_omnibox_mutator.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_mediator_delegate.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_overlay_bottom_sheet_presentation_commands.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_result_consumer.h"
-#import "ios/chrome/browser/lens_overlay/ui/lens_overlay_selection_delegate.h"
-#import "ios/chrome/browser/lens_overlay/ui/lens_overlay_snapshot_consumer.h"
-#import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_mutator.h"
+#import "ios/chrome/browser/omnibox/ui/omnibox_focus_delegate.h"
+#import "ios/public/provider/chrome/browser/lens/lens_overlay_api.h"
 
+@protocol ApplicationCommands;
+@protocol ChromeLensOverlay;
+class LensOmniboxClient;
+@protocol LensOverlayCommands;
+@protocol LensOverlayMediatorDelegate;
+@class LensOverlayMetricsRecorder;
 @protocol LensToolbarConsumer;
 @class OmniboxCoordinator;
-namespace web {
-class WebState;
-}  // namespace web
+class PrefService;
+class TemplateURLService;
+class WebStateList;
 
 /// Main mediator for Lens Overlay.
 /// Manages data flow between Selection, Omnibox and Results.
-@interface LensOverlayMediator : NSObject <LensOmniboxMutator,
+@interface LensOverlayMediator : NSObject <ChromeLensOverlayDelegate,
                                            LensOmniboxClientDelegate,
-                                           LensOverlaySelectionDelegate,
+                                           LensResultPageMediatorDelegate,
+                                           LensToolbarMutator,
                                            OmniboxFocusDelegate>
+
+/// Delegate for this class.
+@property(nonatomic, weak) id<LensOverlayMediatorDelegate> delegate;
 
 @property(nonatomic, weak) id<LensOverlayResultConsumer> resultConsumer;
 
-// Consumer for the captured snapshot image.
-@property(nonatomic, weak) id<LensOverlaySnapshotConsumer> snapshotConsumer;
+/// Application commands handler.
+@property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
+
+// Handler for the Lens Overlay commands;
+@property(nonatomic, weak) id<LensOverlayCommands> commandsHandler;
 
 /// Coordinator to interact with the omnibox.
 @property(nonatomic, weak) OmniboxCoordinator* omniboxCoordinator;
@@ -38,14 +52,32 @@ class WebState;
 /// Lens toolbar consumer.
 @property(nonatomic, weak) id<LensToolbarConsumer> toolbarConsumer;
 
-/// Active`webState` observed by this mediator.
-@property(nonatomic, assign) web::WebState* webState;
+/// Lens backend handler.
+@property(nonatomic, weak) id<ChromeLensOverlay> lensHandler;
+
+/// Presentation commands for requesting bottom sheet resizing.
+@property(nonatomic, weak) id<LensOverlayBottomSheetPresentationCommands>
+    bottomSheetCommands;
+
+/// Utility for recoding Lens Overlay metrics.
+@property(nonatomic, weak) LensOverlayMetricsRecorder* metricsRecorder;
+
+/// TemplateURLService to observe default search engine change.
+@property(nonatomic, assign) TemplateURLService* templateURLService;
+
+@property(nonatomic, assign) LensOmniboxClient* omniboxClient;
+
+/// Current lens result. Readonly.
+@property(nonatomic, strong, readonly) id<ChromeLensOverlayResult>
+    currentLensResult;
+
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList
+                        profilePrefs:(const PrefService*)profilePrefs
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
 
 /// Releases managed objects.
 - (void)disconnect;
-
-// Starts the main workflow for a given `snapshot` image.
-- (void)startWithSnapshot:(UIImage*)snapshot;
 
 @end
 

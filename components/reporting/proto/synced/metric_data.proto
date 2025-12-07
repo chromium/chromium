@@ -127,6 +127,15 @@ message NetworkTelemetry {
   optional bool power_management_enabled = 14;
   // Signal strength for wireless networks in dBm.
   optional int32 signal_strength_dbm = 15;
+
+  // IPv6 addresses assigned to this network.
+  repeated string ipv6_address = 16;
+  // The gateway IPv6 for this interface, if any.
+  optional string ipv6_gateway = 17;
+  // Is the network metered or not.
+  optional bool is_metered = 18;
+  // Link reported max download speed.
+  optional int32 link_down_speed_kbps = 19;
 }
 
 // Message describing the NETWORK_CONNECTION_STATE_CHANGE event.
@@ -362,6 +371,10 @@ message DisplayDevice {
   optional int32 model_id = 6;
   // Year of manufacture.
   optional int32 manufacture_year = 7;
+  // 32 bits serial number.
+  optional uint32 serial_number = 8;
+  // EDID version.
+  optional string edid_version = 9;
 }
 
 // Information about keylocker. This is supported on Intel CPUs.
@@ -454,7 +467,8 @@ message UserStatusTelemetry {
 }
 
 // Displays telemetry data
-// Default checking rate: 3 hrs.
+// Default checking rate: 3 hrs. Also collected on external display
+// connected/disconnected events.
 // Policy: ReportDeviceGraphicsStatus
 // Policy default: false
 message DisplaysTelemetry {
@@ -473,6 +487,16 @@ message DisplayStatus {
   optional int64 refresh_rate = 4;
   // Internal or external display.
   optional bool is_internal = 5;
+
+  // These data members are similar to the ones in the DisplayDevice. But are
+  // duplicated here to ensure clients are able to distinguish displays based on
+  // the external display connected/disconnected events as DisplayDevice is
+  // part of InfoData that is gathered only on boot.
+  //
+  // 32 bits serial number.
+  optional uint32 serial_number = 6;
+  // EDID version.
+  optional string edid_version = 7;
 }
 
 // Deliberately left empty as there is no payload for Heartbeat messages.
@@ -604,6 +628,8 @@ enum MetricEventType {
   URL_OPENED = 18;
   URL_CLOSED = 19;
   KIOSK_HEARTBEAT = 20;
+  EXTERNAL_DISPLAY_CONNECTED = 21;
+  EXTERNAL_DISPLAY_DISCONNECTED = 22;
 
   reserved 2, 3, 10, 11, 12;
 }
@@ -843,6 +869,12 @@ message FatalCrashTelemetry {
 
     // When presenting to the admin, the following will be ACTIVE_DIRECTORY
     SESSION_TYPE_ACTIVE_DIRECTORY = 8;
+
+    // When presenting to the admin, the following will be KIOSK
+    SESSION_TYPE_KIOSK_IWA = 9;
+    // TODO(crbug.com/423049262): Update MetricEnumConverter.java to support
+    // SESSION_TYPE_KIOSK_ARCVM_APP
+    SESSION_TYPE_KIOSK_ARCVM_APP = 10;
   }
   // required
   optional CrashType type = 1;

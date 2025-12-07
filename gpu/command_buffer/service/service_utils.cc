@@ -11,18 +11,19 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "skia/buildflags.h"
 #include "ui/gl/gl_bindings.h"
+#include "ui/gl/gl_features.h"
 #include "ui/gl/gl_implementation.h"
+#include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gl_utils.h"
-#include "ui/gl/gl_surface_egl.h"
 
 namespace gpu {
 namespace gles2 {
@@ -129,14 +130,13 @@ WebGPUPowerPreference ParseWebGPUPowerPreference(
 }  // namespace
 
 gl::GLContextAttribs GenerateGLContextAttribsForDecoder(
-    const ContextCreationAttribs& attribs_helper,
+    ContextType context_type,
+    gl::GpuPreference gpu_preference,
     const ContextGroup* context_group) {
   gl::GLContextAttribs attribs;
-  attribs.gpu_preference = attribs_helper.gpu_preference;
+  attribs.gpu_preference = gpu_preference;
   if (context_group->use_passthrough_cmd_decoder()) {
-    attribs.bind_generates_resource = attribs_helper.bind_generates_resource;
-    attribs.webgl_compatibility_context =
-        IsWebGLContextType(attribs_helper.context_type);
+    attribs.webgl_compatibility_context = IsWebGLContextType(context_type);
 
     // Always use the global texture and semaphore share group for the
     // passthrough command decoder
@@ -148,29 +148,16 @@ gl::GLContextAttribs GenerateGLContextAttribsForDecoder(
     attribs.allow_client_arrays = false;
 
     // Request a specific context version instead of always 3.0
-    if (IsWebGL2OrES3ContextType(attribs_helper.context_type)) {
+    if (IsWebGL2OrES3ContextType(context_type)) {
       attribs.client_major_es_version = 3;
       attribs.client_minor_es_version = 0;
     } else {
-      DCHECK(IsWebGL1OrES2ContextType(attribs_helper.context_type));
+      DCHECK(IsWebGL1OrES2ContextType(context_type));
       attribs.client_major_es_version = 2;
       attribs.client_minor_es_version = 0;
     }
   } else {
     attribs.client_major_es_version = 3;
-    attribs.client_minor_es_version = 0;
-  }
-
-  if (gl::GetGlWorkarounds().disable_es3gl_context) {
-    // Forcefully disable ES3 contexts
-    attribs.client_major_es_version = 2;
-    attribs.client_minor_es_version = 0;
-  }
-
-  if (IsES31ForTestingContextType(attribs_helper.context_type)) {
-    // Forcefully disable ES 3.1 contexts. Tests create contexts by initializing
-    // the attributes directly.
-    attribs.client_major_es_version = 2;
     attribs.client_minor_es_version = 0;
   }
 
@@ -181,12 +168,12 @@ gl::GLContextAttribs GenerateGLContextAttribsForCompositor(
     bool use_passthrough_cmd_decoder) {
   gl::GLContextAttribs attribs;
   if (use_passthrough_cmd_decoder) {
-    attribs.bind_generates_resource = false;
-
     // Always use the global texture and semaphore share group for the
     // passthrough command decoder
     attribs.global_texture_share_group = true;
     attribs.global_semaphore_share_group = true;
+
+    attribs.passthrough_shaders = features::IsANGLEPassthroughShadersAllowed();
 
     // Disable resource initialization and buffer bounds checks for trusted
     // contexts.
@@ -195,12 +182,7 @@ gl::GLContextAttribs GenerateGLContextAttribsForCompositor(
     attribs.allow_client_arrays = true;
   }
 
-  bool force_es2_context = gl::GetGlWorkarounds().disable_es3gl_context;
-  if (features::UseGles2ForOopR() && use_passthrough_cmd_decoder) {
-    force_es2_context = true;
-  }
-
-  attribs.client_major_es_version = force_es2_context ? 2 : 3;
+  attribs.client_major_es_version = 3;
   attribs.client_minor_es_version = 0;
 
   return attribs;
@@ -208,10 +190,6 @@ gl::GLContextAttribs GenerateGLContextAttribsForCompositor(
 
 bool UsePassthroughCommandDecoder(const base::CommandLine* command_line) {
   return gl::UsePassthroughCommandDecoder(command_line);
-}
-
-bool PassthroughCommandDecoderSupported() {
-  return gl::PassthroughCommandDecoderSupported();
 }
 
 GpuPreferences ParseGpuPreferences(const base::CommandLine* command_line) {
@@ -233,13 +211,9 @@ GpuPreferences ParseGpuPreferences(const base::CommandLine* command_line) {
   gpu_preferences.enable_gpu_driver_debug_logging =
       command_line->HasSwitch(switches::kEnableGPUDriverDebugLogging);
   gpu_preferences.disable_gpu_program_cache =
-      command_line->HasSwitch(switches::kDisableGpuProgramCache);
+      !features::IsShaderDiskCacheEnabled(command_line);
   gpu_preferences.enforce_gl_minimums =
       command_line->HasSwitch(switches::kEnforceGLMinimums);
-  if (GetUintFromSwitch(command_line, switches::kForceGpuMemAvailableMb,
-                        &gpu_preferences.force_gpu_mem_available_bytes)) {
-    gpu_preferences.force_gpu_mem_available_bytes *= 1024 * 1024;
-  }
   if (GetUintFromSwitch(
           command_line, switches::kForceGpuMemDiscardableLimitMb,
           &gpu_preferences.force_gpu_mem_discardable_limit_bytes)) {
@@ -372,8 +346,41 @@ uint32_t GetTextureTargetForIOSurfaces() {
        gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal)) {
     return GL_TEXTURE_2D;
   }
-  return GL_TEXTURE_RECTANGLE_ARB;
+  return GL_TEXTURE_RECTANGLE_ANGLE;
 }
 #endif  // BUILDFLAG(IS_MAC)
+
+size_t UpdateShaderCacheSizeOnMemoryPressure(
+    size_t max_cache_size,
+    base::MemoryPressureLevel memory_pressure_level) {
+  switch (memory_pressure_level) {
+    case base::MEMORY_PRESSURE_LEVEL_NONE:
+      return max_cache_size;
+    case base::MEMORY_PRESSURE_LEVEL_MODERATE:
+      if (base::FeatureList::IsEnabled(
+              ::features::kAggressiveShaderCacheLimits)) {
+        // Ignore moderate memory pressure.
+      } else {
+        max_cache_size /= 4;
+      }
+      break;
+    case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
+      if (base::FeatureList::IsEnabled(
+              ::features::kAggressiveShaderCacheLimits)) {
+#if BUILDFLAG(IS_ANDROID)
+        // On Android, critical memory pressure notifications are very common,
+        // and not necessarily tied to actual critical memory pressure. Ignore.
+        break;
+#else
+        max_cache_size /= 4;
+#endif
+      } else {
+        max_cache_size = 0;
+      }
+      break;
+  }
+
+  return max_cache_size;
+}
 
 }  // namespace gpu

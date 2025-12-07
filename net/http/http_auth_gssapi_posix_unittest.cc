@@ -5,9 +5,11 @@
 #include "net/http/http_auth_gssapi_posix.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/base_paths.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/native_library.h"
@@ -43,7 +45,7 @@ void SetBuffer(gss_buffer_t dest, const void* src, size_t length) {
   dest->length = length;
   if (length) {
     dest->value = new char[length];
-    memcpy(dest->value, src, length);
+    UNSAFE_TODO(memcpy(dest->value, src, length));
   }
 }
 
@@ -268,9 +270,7 @@ TEST(HttpAuthGSSAPITest, ParseChallenge_FirstRound) {
   // The first round should just consist of an unadorned "Negotiate" header.
   test::MockGSSAPILibrary mock_library;
   HttpAuthGSSAPI auth_gssapi(&mock_library, CHROME_GSS_SPNEGO_MECH_OID_DESC);
-  std::string challenge_text = "Negotiate";
-  HttpAuthChallengeTokenizer challenge(challenge_text.begin(),
-                                       challenge_text.end());
+  HttpAuthChallengeTokenizer challenge("Negotiate");
   EXPECT_EQ(HttpAuth::AUTHORIZATION_RESULT_ACCEPT,
             auth_gssapi.ParseChallenge(&challenge));
 }
@@ -281,9 +281,7 @@ TEST(HttpAuthGSSAPITest, ParseChallenge_TwoRounds) {
   // have a valid base64 token associated with it.
   test::MockGSSAPILibrary mock_library;
   HttpAuthGSSAPI auth_gssapi(&mock_library, CHROME_GSS_SPNEGO_MECH_OID_DESC);
-  std::string first_challenge_text = "Negotiate";
-  HttpAuthChallengeTokenizer first_challenge(first_challenge_text.begin(),
-                                             first_challenge_text.end());
+  HttpAuthChallengeTokenizer first_challenge("Negotiate");
   EXPECT_EQ(HttpAuth::AUTHORIZATION_RESULT_ACCEPT,
             auth_gssapi.ParseChallenge(&first_challenge));
 
@@ -295,9 +293,7 @@ TEST(HttpAuthGSSAPITest, ParseChallenge_TwoRounds) {
                     &auth_token, NetLogWithSource::Make(NetLogSourceType::NONE),
                     base::BindOnce(&UnexpectedCallback)));
 
-  std::string second_challenge_text = "Negotiate Zm9vYmFy";
-  HttpAuthChallengeTokenizer second_challenge(second_challenge_text.begin(),
-                                              second_challenge_text.end());
+  HttpAuthChallengeTokenizer second_challenge("Negotiate Zm9vYmFy");
   EXPECT_EQ(HttpAuth::AUTHORIZATION_RESULT_ACCEPT,
             auth_gssapi.ParseChallenge(&second_challenge));
 
@@ -321,9 +317,7 @@ TEST(HttpAuthGSSAPITest, ParseChallenge_UnexpectedTokenFirstRound) {
   // should be treated as an invalid challenge from the server.
   test::MockGSSAPILibrary mock_library;
   HttpAuthGSSAPI auth_gssapi(&mock_library, CHROME_GSS_SPNEGO_MECH_OID_DESC);
-  std::string challenge_text = "Negotiate Zm9vYmFy";
-  HttpAuthChallengeTokenizer challenge(challenge_text.begin(),
-                                       challenge_text.end());
+  HttpAuthChallengeTokenizer challenge("Negotiate Zm9vYmFy");
   EXPECT_EQ(HttpAuth::AUTHORIZATION_RESULT_INVALID,
             auth_gssapi.ParseChallenge(&challenge));
 }
@@ -333,9 +327,7 @@ TEST(HttpAuthGSSAPITest, ParseChallenge_MissingTokenSecondRound) {
   // an authentication challenge rejection from the server or proxy.
   test::MockGSSAPILibrary mock_library;
   HttpAuthGSSAPI auth_gssapi(&mock_library, CHROME_GSS_SPNEGO_MECH_OID_DESC);
-  std::string first_challenge_text = "Negotiate";
-  HttpAuthChallengeTokenizer first_challenge(first_challenge_text.begin(),
-                                             first_challenge_text.end());
+  HttpAuthChallengeTokenizer first_challenge("Negotiate");
   EXPECT_EQ(HttpAuth::AUTHORIZATION_RESULT_ACCEPT,
             auth_gssapi.ParseChallenge(&first_challenge));
 
@@ -345,9 +337,7 @@ TEST(HttpAuthGSSAPITest, ParseChallenge_MissingTokenSecondRound) {
             auth_gssapi.GenerateAuthToken(
                 nullptr, "HTTP/intranet.google.com", std::string(), &auth_token,
                 NetLogWithSource(), base::BindOnce(&UnexpectedCallback)));
-  std::string second_challenge_text = "Negotiate";
-  HttpAuthChallengeTokenizer second_challenge(second_challenge_text.begin(),
-                                              second_challenge_text.end());
+  HttpAuthChallengeTokenizer second_challenge("Negotiate");
   EXPECT_EQ(HttpAuth::AUTHORIZATION_RESULT_REJECT,
             auth_gssapi.ParseChallenge(&second_challenge));
 }
@@ -357,9 +347,7 @@ TEST(HttpAuthGSSAPITest, ParseChallenge_NonBase64EncodedToken) {
   // be treated as an invalid challenge.
   test::MockGSSAPILibrary mock_library;
   HttpAuthGSSAPI auth_gssapi(&mock_library, CHROME_GSS_SPNEGO_MECH_OID_DESC);
-  std::string first_challenge_text = "Negotiate";
-  HttpAuthChallengeTokenizer first_challenge(first_challenge_text.begin(),
-                                             first_challenge_text.end());
+  HttpAuthChallengeTokenizer first_challenge("Negotiate");
   EXPECT_EQ(HttpAuth::AUTHORIZATION_RESULT_ACCEPT,
             auth_gssapi.ParseChallenge(&first_challenge));
 
@@ -369,16 +357,15 @@ TEST(HttpAuthGSSAPITest, ParseChallenge_NonBase64EncodedToken) {
             auth_gssapi.GenerateAuthToken(
                 nullptr, "HTTP/intranet.google.com", std::string(), &auth_token,
                 NetLogWithSource(), base::BindOnce(&UnexpectedCallback)));
-  std::string second_challenge_text = "Negotiate =happyjoy=";
-  HttpAuthChallengeTokenizer second_challenge(second_challenge_text.begin(),
-                                              second_challenge_text.end());
+  HttpAuthChallengeTokenizer second_challenge("Negotiate =happyjoy=");
   EXPECT_EQ(HttpAuth::AUTHORIZATION_RESULT_INVALID,
             auth_gssapi.ParseChallenge(&second_challenge));
 }
 
 TEST(HttpAuthGSSAPITest, OidToValue_NIL) {
   auto actual = OidToValue(GSS_C_NO_OID);
-  auto expected = base::JSONReader::Read(R"({ "oid": "<Empty OID>" })");
+  auto expected = base::JSONReader::Read(R"({ "oid": "<Empty OID>" })",
+                                         base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(expected.has_value());
   EXPECT_EQ(actual, expected);
 }
@@ -393,7 +380,8 @@ TEST(HttpAuthGSSAPITest, OidToValue_Known) {
         "length": 6,
         "bytes" : "KwYBBQYD"
       }
-  )");
+  )",
+                                         base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(expected.has_value());
   EXPECT_EQ(actual, expected);
 }
@@ -406,7 +394,8 @@ TEST(HttpAuthGSSAPITest, OidToValue_Unknown) {
         "length": 6,
         "bytes" : "KwYBBQYF"
       }
-  )");
+  )",
+                                         base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(expected.has_value());
   EXPECT_EQ(actual, expected);
 }
@@ -423,7 +412,8 @@ TEST(HttpAuthGSSAPITest, GetGssStatusValue_NoLibrary) {
           "status": 1
         }
       }
-  )");
+  )",
+                                         base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(expected.has_value());
   EXPECT_EQ(actual, expected);
 }
@@ -443,7 +433,8 @@ TEST(HttpAuthGSSAPITest, GetGssStatusValue_WithLibrary) {
           "message": [ "Value: 1, Type 2" ]
         }
       }
-  )");
+  )",
+                                         base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(expected.has_value());
   EXPECT_EQ(actual, expected);
 }
@@ -472,7 +463,8 @@ TEST(HttpAuthGSSAPITest, GetGssStatusValue_Multiline) {
           "status": 0
         }
       }
-  )");
+  )",
+                                         base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(expected.has_value());
   EXPECT_EQ(actual, expected);
 }
@@ -504,7 +496,8 @@ TEST(HttpAuthGSSAPITest, GetGssStatusValue_InfiniteLines) {
           "status": 0
         }
       }
-  )");
+  )",
+                                         base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(expected.has_value());
   EXPECT_EQ(actual, expected);
 }
@@ -526,7 +519,8 @@ TEST(HttpAuthGSSAPITest, GetGssStatusValue_Failure) {
           "status": 0
         }
       }
-  )");
+  )",
+                                         base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(expected.has_value());
   EXPECT_EQ(actual, expected);
 }
@@ -548,7 +542,8 @@ TEST(HttpAuthGSSAPITest, GetGssStatusValue_EmptyMessage) {
           "status": 0
         }
       }
-  )");
+  )",
+                                         base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(expected.has_value());
   EXPECT_EQ(actual, expected);
 }
@@ -570,7 +565,8 @@ TEST(HttpAuthGSSAPITest, GetGssStatusValue_Misbehave) {
           "status": 0
         }
       }
-  )");
+  )",
+                                         base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(expected.has_value());
   EXPECT_EQ(actual, expected);
 }
@@ -592,7 +588,8 @@ TEST(HttpAuthGSSAPITest, GetGssStatusValue_NotUtf8) {
           "status": 0
         }
       }
-  )");
+  )",
+                                         base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(expected.has_value());
   EXPECT_EQ(actual, expected);
 }
@@ -633,7 +630,8 @@ TEST(HttpAuthGSSAPITest, GetContextStateAsValue_ValidContext) {
         },
         "open": false
       }
-  )");
+  )",
+                                         base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(expected.has_value());
   EXPECT_EQ(actual, expected);
 }
@@ -653,7 +651,8 @@ TEST(HttpAuthGSSAPITest, GetContextStateAsValue_NoContext) {
             }
          }
       }
-  )");
+  )",
+                                         base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(expected.has_value());
   EXPECT_EQ(actual, expected);
 }

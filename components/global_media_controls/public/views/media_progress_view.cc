@@ -7,16 +7,19 @@
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
 #include "cc/paint/paint_flags.h"
-#include "components/global_media_controls/media_view_utils.h"
+#include "components/global_media_controls/public/format_duration.h"
 #include "components/strings/grit/components_strings.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/base/cursor/cursor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/property_effects.h"
 #include "ui/views/widget/widget.h"
 
 namespace global_media_controls {
@@ -26,19 +29,15 @@ namespace {
 // The height of the whole view based on whether the progress line is squiggly
 // or straight.
 constexpr int kSquigglyProgressViewHeight = 32;
-constexpr int kStraightProgressViewHeight = 24;
+constexpr int kStraightProgressViewHeight = 28;
 
-// The width of stroke to paint the progress foreground and background lines,
-// and also the focus ring.
+// The stroke width to paint the progress foreground and background lines, and
+// also the focus ring.
 constexpr int kStrokeWidth = 2;
 
-// The width of stroke to paint the progress foreground straight line when user
-// is dragging the progress line.
+// The stroke width to paint the straight progress line when user is dragging
+// the progress line.
 constexpr int kLargeStrokeWidth = 4;
-
-// The height of squiggly progress that user can click to seek to a new media
-// position. This is slightly larger than the painted progress height.
-constexpr int kProgressClickHeight = 16;
 
 // Defines the x of where the painting of progress should start since we own the
 // OnPaint() function.
@@ -63,8 +62,22 @@ constexpr int kStraightProgressIndicatorGap = 4;
 // and straight lines will take.
 constexpr base::TimeDelta kSlideAnimationDuration = base::Milliseconds(200);
 
+// Defines how long the animation for transitioning between a thicker and
+// thinner progress line.
+constexpr base::TimeDelta kThicknessAnimationDuration = base::Milliseconds(150);
+
 // Defines how frequently the progress will be updated.
 constexpr base::TimeDelta kProgressUpdateFrequency = base::Milliseconds(100);
+
+// Defines how long the progress colors should delay switching when the media
+// playback rate is changing.
+constexpr base::TimeDelta kSwitchProgressColorsDelayTime =
+    base::Milliseconds(200);
+
+// Defines how long to delay before considering the user is dragging the
+// progress view rather than clicking.
+constexpr base::TimeDelta kProgressDragStartedDelayTime =
+    base::Milliseconds(200);
 
 // Defines the radius of the focus ring around the progress.
 constexpr float kFocusRingRadius = 18.0f;
@@ -97,12 +110,21 @@ MediaProgressView::MediaProgressView(
           std::move(playback_state_change_for_dragging_callback)),
       seek_callback_(std::move(seek_callback)),
       on_update_progress_callback_(std::move(on_update_progress_callback)),
-      slide_animation_(this) {
+      slide_animation_(this),
+      thickness_animation_(this) {
   SetFlipCanvasOnPaintForRTLUI(true);
   SetFocusBehavior(FocusBehavior::ALWAYS);
 
   slide_animation_.SetSlideDuration(kSlideAnimationDuration);
-  foreground_straight_line_width_ = kStrokeWidth;
+  thickness_animation_.SetSlideDuration(kThicknessAnimationDuration);
+  straight_progress_stroke_width_ = kStrokeWidth;
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kSlider);
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+      IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_TIME_SCRUBBER));
+  GetViewAccessibility().SetValue(GetFormattedDuration(current_position_));
+  GetViewAccessibility().AddAction(ax::mojom::Action::kIncrement);
+  GetViewAccessibility().AddAction(ax::mojom::Action::kDecrement);
 }
 
 MediaProgressView::~MediaProgressView() = default;
@@ -111,9 +133,15 @@ MediaProgressView::~MediaProgressView() = default;
 // gfx::AnimationDelegate implementations:
 
 void MediaProgressView::AnimationProgressed(const gfx::Animation* animation) {
-  CHECK(animation == &slide_animation_);
-  progress_amp_fraction_ = animation->GetCurrentValue();
-  OnPropertyChanged(&progress_amp_fraction_, views::kPropertyEffectsPaint);
+  if (animation == &slide_animation_) {
+    progress_amp_fraction_ = animation->GetCurrentValue();
+    OnPropertyChanged(&progress_amp_fraction_, views::PropertyEffects::kPaint);
+  } else if (animation == &thickness_animation_) {
+    straight_progress_stroke_width_ =
+        animation->CurrentValueBetween(kStrokeWidth, kLargeStrokeWidth);
+    OnPropertyChanged(&straight_progress_stroke_width_,
+                      views::PropertyEffects::kPaint);
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -124,16 +152,6 @@ gfx::Size MediaProgressView::CalculatePreferredSize(
   const int height = (use_squiggly_line_ ? kSquigglyProgressViewHeight
                                          : kStraightProgressViewHeight);
   return gfx::Size(GetContentsBounds().size().width(), height);
-}
-
-void MediaProgressView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  View::GetAccessibleNodeData(node_data);
-  node_data->role = ax::mojom::Role::kSlider;
-  node_data->SetNameChecked(l10n_util::GetStringUTF16(
-      IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_TIME_SCRUBBER));
-  node_data->SetValue(GetFormattedDuration(current_position_));
-  node_data->AddAction(ax::mojom::Action::kIncrement);
-  node_data->AddAction(ax::mojom::Action::kDecrement);
 }
 
 bool MediaProgressView::HandleAccessibleAction(
@@ -173,8 +191,9 @@ void MediaProgressView::OnPaint(gfx::Canvas* canvas) {
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setStrokeWidth(kStrokeWidth);
   flags.setAntiAlias(true);
-  flags.setColor(color_provider->GetColor(
-      is_paused_ ? paused_foreground_color_id_ : playing_foreground_color_id_));
+  flags.setColor(color_provider->GetColor(use_paused_colors_
+                                              ? paused_foreground_color_id_
+                                              : playing_foreground_color_id_));
 
   // Translate the canvas to avoid painting anything in the width inset.
   canvas->Save();
@@ -185,7 +204,7 @@ void MediaProgressView::OnPaint(gfx::Canvas* canvas) {
     // Create a foreground squiggly progress path longer than the required
     // length and truncate it later in canvas. If the media is paused, this will
     // become a straight line.
-    SkPath progress_path;
+    SkPathBuilder progress_path;
     int current_x = -phase_offset_ - kProgressWavelength / 2;
     int current_amp =
         static_cast<int>(kProgressAmplitude * progress_amp_fraction_);
@@ -203,45 +222,55 @@ void MediaProgressView::OnPaint(gfx::Canvas* canvas) {
 
     // Paint the foreground squiggly progress in a clipped rect.
     canvas->ClipRect(gfx::Rect(0, 0, progress_width, view_height));
-    canvas->DrawPath(progress_path, flags);
+    canvas->DrawPath(progress_path.detach(), flags);
   } else {
     // Paint the foreground straight progress line with rounded corners.
     flags.setStyle(cc::PaintFlags::kFill_Style);
-    int straight_progress_width = progress_width -
-                                  kStraightProgressIndicatorGap -
-                                  kStraightProgressIndicatorSize.width() / 2;
-    if (straight_progress_width > 0) {
+    const int foreground_progress_width =
+        progress_width - kStraightProgressIndicatorGap -
+        kStraightProgressIndicatorSize.width() / 2;
+    if (foreground_progress_width > 0) {
       canvas->DrawRoundRect(
-          gfx::RectF(0, (view_height - foreground_straight_line_width_) / 2,
-                     straight_progress_width, foreground_straight_line_width_),
-          foreground_straight_line_width_ / 2, flags);
+          gfx::RectF(0, (view_height - straight_progress_stroke_width_) / 2,
+                     foreground_progress_width,
+                     straight_progress_stroke_width_),
+          straight_progress_stroke_width_ / 2, flags);
     }
   }
   canvas->Restore();
 
   // Paint the progress rectangle indicator.
   flags.setStyle(cc::PaintFlags::kFill_Style);
-  const gfx::SizeF indicator_size =
+  gfx::SizeF indicator_size =
       (use_squiggly_line_ ? kSquigglyProgressIndicatorSize
                           : kStraightProgressIndicatorSize);
-  canvas->DrawRoundRect(
-      gfx::RectF(gfx::PointF(progress_width - indicator_size.width() / 2,
-                             (view_height - indicator_size.height()) / 2),
-                 indicator_size),
-      indicator_size.width() / 2, flags);
+  // For live media, we should not draw an indicator.
+  if (is_live_) {
+    indicator_size = gfx::SizeF();
+  } else {
+    canvas->DrawRoundRect(
+        gfx::RectF(gfx::PointF(progress_width - indicator_size.width() / 2,
+                               (view_height - indicator_size.height()) / 2),
+                   indicator_size),
+        indicator_size.width() / 2, flags);
+  }
 
   // Paint the background straight line with rounded corners.
   int background_line_x =
       progress_width + indicator_size.width() / 2 +
       (use_squiggly_line_ ? 0 : kStraightProgressIndicatorGap);
   if (background_line_x < view_width) {
-    flags.setColor(
-        color_provider->GetColor(is_paused_ ? paused_background_color_id_
-                                            : playing_background_color_id_));
+    flags.setColor(color_provider->GetColor(
+        use_paused_colors_ ? paused_background_color_id_
+                           : playing_background_color_id_));
+    const int background_progress_stroke_width =
+        use_squiggly_line_ ? kStrokeWidth : straight_progress_stroke_width_;
     canvas->DrawRoundRect(
-        gfx::RectF(background_line_x, (view_height - kStrokeWidth) / 2,
-                   view_width - background_line_x, kStrokeWidth),
-        kStrokeWidth / 2, flags);
+        gfx::RectF(background_line_x,
+                   (view_height - background_progress_stroke_width) / 2,
+                   view_width - background_line_x,
+                   background_progress_stroke_width),
+        background_progress_stroke_width / 2, flags);
   }
   canvas->Restore();
 
@@ -270,14 +299,27 @@ void MediaProgressView::OnBlur() {
   SchedulePaint();
 }
 
+void MediaProgressView::OnMouseEntered(const ui::MouseEvent& event) {
+  thickness_animation_.Show();
+}
+
+void MediaProgressView::OnMouseExited(const ui::MouseEvent& event) {
+  if (!is_dragging_) {
+    thickness_animation_.Hide();
+  }
+}
+
+ui::Cursor MediaProgressView::GetCursor(const ui::MouseEvent& event) {
+  return ui::mojom::CursorType::kHand;
+}
+
 bool MediaProgressView::OnMousePressed(const ui::MouseEvent& event) {
   if (is_live_ || !event.IsOnlyLeftMouseButton() ||
       !IsValidSeekPosition(event.x(), event.y())) {
     return false;
   }
 
-  OnProgressDragStarted();
-  HandleSeeking(event.x());
+  OnProgressDragStarted(event.x());
   return true;
 }
 
@@ -328,8 +370,9 @@ void MediaProgressView::OnGestureEvent(ui::GestureEvent* event) {
 
   switch (event->type()) {
     case ui::EventType::kGestureTapDown:
-      OnProgressDragStarted();
-      [[fallthrough]];
+      OnProgressDragStarted(event->x());
+      event->SetHandled();
+      break;
     case ui::EventType::kGestureScrollBegin:
     case ui::EventType::kGestureScrollUpdate:
       HandleSeeking(event->x());
@@ -368,6 +411,23 @@ void MediaProgressView::UpdateProgress(
       slide_animation_.Hide();
     }
     is_paused_ = is_paused;
+
+    // Restart the timer to delay updating the colors of the progress view so
+    // that the colors will not change too frequently if the playback rate is
+    // only changed for very short time when the media is loading.
+    if (switch_progress_colors_delay_timer_->IsRunning()) {
+      switch_progress_colors_delay_timer_->Stop();
+    }
+    switch_progress_colors_delay_timer_->Start(
+        FROM_HERE, kSwitchProgressColorsDelayTime,
+        base::BindOnce(&MediaProgressView::UpdateProgressColors,
+                       base::Unretained(this), is_paused_));
+  }
+
+  // If the user is currently dragging the progress bar and the media is no
+  // longer paused, re-pause it for dragging.
+  if (is_dragging_ && !is_paused_) {
+    PauseForDragging();
   }
 
   current_position_ = media_position.GetPosition();
@@ -380,7 +440,7 @@ void MediaProgressView::UpdateProgress(
   if (new_value != current_value_) {
     current_value_ = new_value;
     MaybeNotifyAccessibilityValueChanged();
-    OnPropertyChanged(&current_value_, views::kPropertyEffectsPaint);
+    OnPropertyChanged(&current_value_, views::PropertyEffects::kPaint);
   }
 
   if (!is_paused_) {
@@ -390,7 +450,7 @@ void MediaProgressView::UpdateProgress(
           static_cast<int>(kProgressUpdateFrequency.InMillisecondsF() / 1000 *
                            kProgressPhaseSpeed);
       phase_offset_ %= kProgressWavelength;
-      OnPropertyChanged(&phase_offset_, views::kPropertyEffectsPaint);
+      OnPropertyChanged(&phase_offset_, views::PropertyEffects::kPaint);
     }
 
     update_progress_timer_->Start(
@@ -409,31 +469,70 @@ void MediaProgressView::MaybeNotifyAccessibilityValueChanged() {
   GetViewAccessibility().SetValue(GetFormattedDuration(current_position_));
 }
 
-void MediaProgressView::OnProgressDragStarted() {
+void MediaProgressView::OnProgressDragStarted(double location) {
+  // Set a timer to delay for a while before we consider the user event to be
+  // dragging rather than clicking. If the user only intends to click, we will
+  // not pause the media and only seek to the new position.
+  CHECK(!progress_drag_started_delay_timer_->IsRunning());
+  progress_drag_started_delay_timer_->Start(
+      FROM_HERE, kProgressDragStartedDelayTime,
+      base::BindOnce(&MediaProgressView::DelayedProgressDragStarted,
+                     base::Unretained(this), location));
+}
+
+void MediaProgressView::DelayedProgressDragStarted(double location) {
+  is_dragging_ = true;
+
   // Pause the media only once if it is playing when the user starts dragging
   // the progress line.
   if (!is_paused_ && !paused_for_dragging_) {
-    playback_state_change_for_dragging_callback_.Run(
-        PlaybackStateChangeForDragging::kPauseForDraggingStarted);
-    paused_for_dragging_ = true;
+    PauseForDragging();
   }
-  // Enlarge the foreground straight progress line width when the user starts
+
+  // Enlarge the straight progress line stroke width when the user starts
   // dragging the progress line.
-  foreground_straight_line_width_ = kLargeStrokeWidth;
+  thickness_animation_.Show();
   drag_state_change_callback_.Run(DragState::kDragStarted);
+
+  // Seek to the location for the dragging event so that if the user only
+  // intends to click, we will not do the extra seeking here.
+  HandleSeeking(location);
 }
 
 void MediaProgressView::OnProgressDragEnded() {
-  // Un-pause the media when the user finishes dragging the progress line if the
-  // media was playing before dragging.
-  if (paused_for_dragging_) {
-    playback_state_change_for_dragging_callback_.Run(
-        PlaybackStateChangeForDragging::kResumeForDraggingEnded);
-    paused_for_dragging_ = false;
+  is_dragging_ = false;
+
+  if (progress_drag_started_delay_timer_->IsRunning()) {
+    // If the timer is still running, we consider the user event to be clicking
+    // rather than dragging and do not need to un-pause the media.
+    progress_drag_started_delay_timer_->Stop();
+  } else {
+    // Un-pause the media when the user finishes dragging the progress line if
+    // the media was playing before dragging.
+    if (paused_for_dragging_) {
+      playback_state_change_for_dragging_callback_.Run(
+          PlaybackStateChangeForDragging::kResumeForDraggingEnded);
+      paused_for_dragging_ = false;
+      UpdateProgressColors(paused_for_dragging_);
+    }
+    // Reset the straight progress line stroke width if the mouse is not
+    // hovering over the view.
+    if (!IsMouseHovered()) {
+      thickness_animation_.Hide();
+    }
+    drag_state_change_callback_.Run(DragState::kDragEnded);
   }
-  // Reset the foreground straight progress line width.
-  foreground_straight_line_width_ = kStrokeWidth;
-  drag_state_change_callback_.Run(DragState::kDragEnded);
+}
+
+void MediaProgressView::PauseForDragging() {
+  playback_state_change_for_dragging_callback_.Run(
+      PlaybackStateChangeForDragging::kPauseForDraggingStarted);
+  paused_for_dragging_ = true;
+  UpdateProgressColors(true);
+}
+
+void MediaProgressView::UpdateProgressColors(bool is_paused) {
+  use_paused_colors_ = is_paused;
 }
 
 void MediaProgressView::HandleSeeking(double location) {
@@ -457,10 +556,12 @@ double MediaProgressView::CalculateNewValue(base::TimeDelta new_position) {
 }
 
 bool MediaProgressView::IsValidSeekPosition(int x, int y) {
+  const int height = (use_squiggly_line_ ? kSquigglyProgressViewHeight
+                                         : kStraightProgressViewHeight);
   return (kWidthInset <= x) &&
          (x <= GetContentsBounds().width() - kWidthInset) &&
-         ((GetContentsBounds().height() - kProgressClickHeight) / 2 <= y) &&
-         (y <= (GetContentsBounds().height() + kProgressClickHeight) / 2);
+         ((GetContentsBounds().height() - height) / 2 <= y) &&
+         (y <= (GetContentsBounds().height() + height) / 2);
 }
 
 // Helper functions for testing:
@@ -476,9 +577,23 @@ bool MediaProgressView::is_live_for_testing() const {
   return is_live_;
 }
 
-void MediaProgressView::set_timer_for_testing(
+bool MediaProgressView::use_paused_colors_for_testing() const {
+  return use_paused_colors_;
+}
+
+void MediaProgressView::set_update_progress_timer_for_testing(
     std::unique_ptr<base::OneShotTimer> test_timer) {
   update_progress_timer_ = std::move(test_timer);
+}
+
+void MediaProgressView::set_switch_progress_colors_delay_timer_for_testing(
+    std::unique_ptr<base::OneShotTimer> test_timer) {
+  switch_progress_colors_delay_timer_ = std::move(test_timer);
+}
+
+void MediaProgressView::set_progress_drag_started_delay_timer_for_testing(
+    std::unique_ptr<base::OneShotTimer> test_timer) {
+  progress_drag_started_delay_timer_ = std::move(test_timer);
 }
 
 BEGIN_METADATA(MediaProgressView)

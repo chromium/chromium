@@ -88,6 +88,7 @@
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
@@ -117,11 +118,12 @@ SelectionInDOMTree Editor::SelectionForCommand(Event* event) {
     return selection;
   // If the target is a text control, and the current selection is outside of
   // its shadow tree, then use the saved selection for that text control.
-  if (!IsTextControl(*event->target()->ToNode()))
+  if (!IsTextControl(*event->RawTarget()->ToNode())) {
     return selection;
+  }
   auto* text_control_of_selection_start =
       EnclosingTextControl(selection.Anchor());
-  auto* text_control_of_target = ToTextControl(event->target()->ToNode());
+  auto* text_control_of_target = ToTextControl(event->RawTarget()->ToNode());
   if (!selection.IsNone() &&
       text_control_of_target == text_control_of_selection_start)
     return selection;
@@ -161,7 +163,7 @@ static bool IsCaretAtStartOfWrappedLine(const FrameSelection& selection) {
     return false;
   int prev_offset = prev.ComputeOffsetInContainerNode();
   UChar prev_char = prev_node->data()[prev_offset];
-  return prev_char == kSpaceCharacter;
+  return prev_char == uchar::kSpace;
 }
 
 bool Editor::HandleTextEvent(TextEvent* event) {
@@ -183,7 +185,8 @@ bool Editor::HandleTextEvent(TextEvent* event) {
     if (event->PastingFragment()) {
       ReplaceSelectionWithFragment(
           event->PastingFragment(), false, event->ShouldSmartReplace(),
-          event->ShouldMatchStyle(), InputEvent::InputType::kInsertFromPaste);
+          event->ShouldMatchStyle(), InputEvent::InputType::kInsertFromPaste,
+          event->GetDataTransfer());
     } else {
       ReplaceSelectionWithText(event->data(), false,
                                event->ShouldSmartReplace(),
@@ -205,7 +208,8 @@ bool Editor::HandleTextEvent(TextEvent* event) {
   // TODO(kojii): rich editing has the same issue, but has more options and
   // needs coordination with JS. Enable for plaintext only for now and collect
   // feedback.
-  if (data == " " && !CanEditRichly() &&
+  if (!RuntimeEnabledFeatures::CaretWithTextAffinityUpstreamEnabled() &&
+      data == " " && !CanEditRichly() &&
       IsCaretAtStartOfWrappedLine(GetFrameSelection())) {
     InsertLineBreak();
   }
@@ -295,7 +299,8 @@ void Editor::ReplaceSelectionWithFragment(DocumentFragment* fragment,
                                           bool select_replacement,
                                           bool smart_replace,
                                           bool match_style,
-                                          InputEvent::InputType input_type) {
+                                          InputEvent::InputType input_type,
+                                          DataTransfer* data_transfer) {
   DCHECK(!GetFrame().GetDocument()->NeedsLayoutTreeUpdate());
   const VisibleSelection& selection =
       GetFrameSelection().ComputeVisibleSelectionInDOMTree();
@@ -312,8 +317,8 @@ void Editor::ReplaceSelectionWithFragment(DocumentFragment* fragment,
   if (match_style)
     options |= ReplaceSelectionCommand::kMatchStyle;
   DCHECK(GetFrame().GetDocument());
-  MakeGarbageCollected<ReplaceSelectionCommand>(*GetFrame().GetDocument(),
-                                                fragment, options, input_type)
+  MakeGarbageCollected<ReplaceSelectionCommand>(
+      *GetFrame().GetDocument(), fragment, options, input_type, data_transfer)
       ->Apply();
   RevealSelectionAfterEditingOperation();
 }
@@ -329,7 +334,8 @@ void Editor::ReplaceSelectionWithText(const String& text,
 
 void Editor::ReplaceSelectionAfterDragging(DocumentFragment* fragment,
                                            InsertMode insert_mode,
-                                           DragSourceType drag_source_type) {
+                                           DragSourceType drag_source_type,
+                                           DataTransfer* data_transfer) {
   ReplaceSelectionCommand::CommandOptions options =
       ReplaceSelectionCommand::kSelectReplacement |
       ReplaceSelectionCommand::kPreventNesting;
@@ -340,7 +346,7 @@ void Editor::ReplaceSelectionAfterDragging(DocumentFragment* fragment,
   DCHECK(GetFrame().GetDocument());
   MakeGarbageCollected<ReplaceSelectionCommand>(
       *GetFrame().GetDocument(), fragment, options,
-      InputEvent::InputType::kInsertFromDrop)
+      InputEvent::InputType::kInsertFromDrop, data_transfer)
       ->Apply();
 }
 
@@ -405,9 +411,14 @@ bool Editor::ReplaceSelectionAfterDraggingWithEvents(
   if (frame_->GetInputMethodController().GetActiveEditContext())
     return true;
 
-  if (should_insert && drop_target->isConnected())
-    ReplaceSelectionAfterDragging(fragment, insert_mode, drag_source_type);
-
+  if (should_insert && drop_target->isConnected()) {
+    if (RuntimeEnabledFeatures::InputEventDataTransferForInsertCmdEnabled()) {
+      ReplaceSelectionAfterDragging(fragment, insert_mode, drag_source_type,
+                                    data_transfer);
+    } else {
+      ReplaceSelectionAfterDragging(fragment, insert_mode, drag_source_type);
+    }
+  }
   return true;
 }
 
@@ -479,7 +490,6 @@ Editor::Editor(LocalFrame& frame)
       // matches IE but not FF).
       should_style_with_css_(false),
       kill_ring_(std::make_unique<KillRing>()),
-      are_marked_text_matches_highlighted_(false),
       default_paragraph_separator_(EditorParagraphSeparator::kIsDiv) {}
 
 Editor::~Editor() = default;
@@ -496,11 +506,11 @@ bool Editor::InsertText(const String& text, KeyboardEvent* triggering_event) {
                                                            triggering_event);
 }
 
-bool Editor::InsertTextWithoutSendingTextEvent(
-    const String& text,
-    bool select_inserted_text,
-    TextEvent* triggering_event,
-    InputEvent::InputType input_type) {
+bool Editor::InsertTextWithoutSendingTextEvent(const String& text,
+                                               bool select_inserted_text,
+                                               TextEvent* triggering_event,
+                                               InputEvent::InputType input_type,
+                                               DataTransfer* data_transfer) {
   const VisibleSelection& selection =
       CreateVisibleSelection(SelectionForCommand(triggering_event));
   if (!selection.IsContentEditable())
@@ -515,7 +525,7 @@ bool Editor::InsertTextWithoutSendingTextEvent(
       triggering_event && triggering_event->IsComposition()
           ? TypingCommand::kTextCompositionConfirm
           : TypingCommand::kTextCompositionNone,
-      false, input_type);
+      false, input_type, data_transfer);
   if (editing_state.IsAborted())
     return false;
 
@@ -570,7 +580,7 @@ static void CountEditingEvent(ExecutionContext* execution_context,
                               WebFeature feature_on_text_area,
                               WebFeature feature_on_content_editable,
                               WebFeature feature_on_non_node) {
-  EventTarget* event_target = event.target();
+  EventTarget* event_target = event.RawTarget();
   Node* node = event_target->ToNode();
   if (!node) {
     UseCounter::Count(execution_context, feature_on_non_node);
@@ -815,7 +825,7 @@ bool Editor::FindString(LocalFrame& frame,
   Range* const result_range = FindRangeOfString(
       *frame.GetDocument(), target,
       EphemeralRangeInFlatTree(selection.Start(), selection.End()),
-      static_cast<FindOptions>(options | kFindAPICall));
+      options.SetFindApiCall(true));
 
   if (!result_range)
     return false;
@@ -837,7 +847,7 @@ static Range* FindStringBetweenPositions(
     FindOptions options) {
   EphemeralRangeInFlatTree search_range(reference_range);
 
-  bool forward = !(options & kBackwards);
+  bool forward = !options.IsBackwards();
 
   while (true) {
     EphemeralRangeInFlatTree result_range =
@@ -869,8 +879,7 @@ static Range* FindStringBetweenPositions(
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 Range* Editor::FindRangeOfString(
@@ -889,10 +898,10 @@ Range* Editor::FindRangeOfString(
       EphemeralRangeInFlatTree::RangeOfContents(document);
   EphemeralRangeInFlatTree search_range(document_range);
 
-  const bool forward = !(options & kBackwards);
+  const bool forward = !options.IsBackwards();
   bool start_in_reference_range = false;
   if (reference_range.IsNotNull()) {
-    start_in_reference_range = options & kStartInSelection;
+    start_in_reference_range = options.IsStartingInSelection();
     if (forward && start_in_reference_range) {
       search_range = EphemeralRangeInFlatTree(reference_range.StartPosition(),
                                               document_range.EndPosition());
@@ -929,22 +938,13 @@ Range* Editor::FindRangeOfString(
     result_range = FindStringBetweenPositions(target, search_range, options);
   }
 
-  if (!result_range && options & kWrapAround) {
+  if (!result_range && options.IsWrappingAround()) {
     if (wrapped_around)
       *wrapped_around = true;
     return FindStringBetweenPositions(target, document_range, options);
   }
 
   return result_range;
-}
-
-void Editor::SetMarkedTextMatchesAreHighlighted(bool flag) {
-  if (flag == are_marked_text_matches_highlighted_)
-    return;
-
-  are_marked_text_matches_highlighted_ = flag;
-  GetFrame().GetDocument()->Markers().RepaintMarkers(
-      DocumentMarker::MarkerTypes::TextMatch());
 }
 
 void Editor::RespondToChangedSelection() {
@@ -954,8 +954,19 @@ void Editor::RespondToChangedSelection() {
 }
 
 void Editor::SyncSelection(SyncCondition force_sync) {
-  frame_->Client()->DidChangeSelection(
-      !GetFrameSelection().GetSelectionInDOMTree().IsRange(), force_sync);
+  TRACE_EVENT0("blink", "Editor::SyncSelection");
+
+  // When EditContext is active, it takes care of selection synchronization.
+  if (frame_->GetInputMethodController().GetActiveEditContext()) {
+    return;
+  }
+
+  // Update frame Client() provided the iframe has not been removed already. See
+  // https://crbug.com/459123383 .
+  if (frame_->Client()) {
+    frame_->Client()->DidChangeSelection(
+        !GetFrameSelection().GetSelectionInDOMTree().IsRange(), force_sync);
+  }
 }
 
 SpellChecker& Editor::GetSpellChecker() const {

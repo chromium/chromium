@@ -10,7 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/viz/service/display/overlay_processor_using_strategy.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/ozone/public/hardware_capabilities.h"
 #include "ui/ozone/public/overlay_candidates_ozone.h"
 
@@ -19,10 +19,17 @@ namespace viz {
 class VIZ_SERVICE_EXPORT OverlayProcessorOzone
     : public OverlayProcessorUsingStrategy {
  public:
+  class PixmapProvider {
+   public:
+    virtual scoped_refptr<gfx::NativePixmap> GetNativePixmap(
+        const gpu::Mailbox& mailbox) = 0;
+    virtual ~PixmapProvider();
+  };
+
   OverlayProcessorOzone(
       std::unique_ptr<ui::OverlayCandidatesOzone> overlay_candidates,
       std::vector<OverlayStrategy> available_strategies,
-      gpu::SharedImageInterface* shared_image_interface);
+      std::unique_ptr<PixmapProvider> pixmap_provider);
   ~OverlayProcessorOzone() override;
 
   bool IsOverlaySupported() const override;
@@ -39,7 +46,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorOzone
       const QuadList& quad_list) override;
 
   void CheckOverlaySupportImpl(
-      const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
+      const std::optional<OverlayCandidate>& primary_plane,
       OverlayCandidateList* surfaces) override;
   // If UseMultipleOverlays is enabled, set `ReceiveHardwareCapabilities` as a
   // callback on `overlay_candidates_` to be called with a
@@ -58,6 +65,10 @@ class VIZ_SERVICE_EXPORT OverlayProcessorOzone
   // result accordingly.
   void OnSwapBuffersComplete(gfx::SwapResult swap_result) override;
 
+ protected:
+  void InsertPrimaryPlane(OverlayCandidate primary_plane,
+                          OverlayCandidateList& candidates) override;
+
  private:
   // Populates |native_pixmap| and |native_pixmap_unique_id| in |candidate|
   // based on |mailbox|. |is_primary| should be true if this is the primary
@@ -70,7 +81,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorOzone
   std::unique_ptr<ui::OverlayCandidatesOzone> overlay_candidates_;
   const std::vector<OverlayStrategy> available_strategies_;
   bool has_independent_cursor_plane_ = true;
-  const raw_ptr<gpu::SharedImageInterface> shared_image_interface_;
+  std::unique_ptr<PixmapProvider> pixmap_provider_;
 
   base::WeakPtrFactory<OverlayProcessorOzone> weak_ptr_factory_{this};
 };

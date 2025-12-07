@@ -18,8 +18,8 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/user_education/common/help_bubble_params.h"
-#include "components/user_education/common/tutorial_registry.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
+#include "components/user_education/common/tutorial/tutorial_registry.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -85,7 +85,9 @@ class StartTutorialInPageBrowserTest : public InteractiveBrowserTest {
 
   user_education::TutorialService* GetTutorialService() {
     return static_cast<user_education::FeaturePromoControllerCommon*>(
-               browser()->window()->GetFeaturePromoController())
+               UserEducationServiceFactory::GetForBrowserContext(
+                   browser()->profile())
+                   ->GetFeaturePromoControllerForTesting())
         ->tutorial_service_for_testing();
   }
 
@@ -208,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(StartTutorialInPageBrowserTest,
 
   auto params = GetDefaultParams();
   params.target_url = GURL(kTargetPageURL);
-  params.overwrite_active_tab = true;
+  params.page_open_mode = user_education::PageOpenMode::kOverwriteActiveTab;
   params.callback = tutorial_triggered.Get();
   handle = StartTutorialInPage::Start(browser(), std::move(params));
 

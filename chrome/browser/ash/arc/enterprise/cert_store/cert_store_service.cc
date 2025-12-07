@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service.h"
 
 #include <algorithm>
@@ -16,37 +11,39 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "ash/components/arc/arc_util.h"
+#include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/arc/enterprise/cert_store/arc_cert_installer_utils.h"
-#include "chrome/browser/ash/arc/keymaster/arc_keymaster_bridge.h"
-#include "chrome/browser/ash/arc/keymint/arc_keymint_bridge.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
+#include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service_factory.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service_impl.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
-#include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/common/net/x509_certificate_model_nss.h"
-#include "chrome/services/keymaster/public/mojom/cert_store.mojom.h"
+#include "chromeos/ash/components/platform_keys/platform_keys.h"
+#include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/keymaster/arc_keymaster_bridge.h"
+#include "chromeos/ash/experiences/arc/keymint/arc_keymint_bridge.h"
+#include "chromeos/ash/services/keymaster/public/mojom/cert_store.mojom.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "crypto/rsa_private_key.h"
 #include "net/cert/x509_util_nss.h"
 
 // Enable VLOG level 1.
@@ -56,47 +53,6 @@
 namespace arc {
 
 namespace {
-
-// Singleton factory for CertStoreService.
-class CertStoreServiceFactory : public ProfileKeyedServiceFactory {
- public:
-  static CertStoreService* GetForBrowserContext(
-      content::BrowserContext* context) {
-    return static_cast<CertStoreService*>(
-        GetInstance()->GetServiceForBrowserContext(context, true));
-  }
-
-  static CertStoreServiceFactory* GetInstance() {
-    return base::Singleton<CertStoreServiceFactory>::get();
-  }
-
-  CertStoreServiceFactory(const CertStoreServiceFactory&) = delete;
-  CertStoreServiceFactory& operator=(const CertStoreServiceFactory&) = delete;
-
- private:
-  friend base::DefaultSingletonTraits<CertStoreServiceFactory>;
-  CertStoreServiceFactory()
-      : ProfileKeyedServiceFactory(
-            "CertStoreService",
-            ProfileSelections::Builder()
-                .WithRegular(ProfileSelection::kOwnInstance)
-                // TODO(crbug.com/40257657): Check if this service is needed in
-                // Guest mode.
-                .WithGuest(ProfileSelection::kOwnInstance)
-                // TODO(crbug.com/41488885): Check if this service is needed for
-                // Ash Internals.
-                .WithAshInternals(ProfileSelection::kOwnInstance)
-                .Build()) {
-    DependsOn(NssServiceFactory::GetInstance());
-  }
-
-  bool ServiceIsNULLWhileTesting() const override { return true; }
-
-  KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override {
-    return new CertStoreService(context);
-  }
-};
 
 // The following series of functions related to ListCerts make use of the
 // NSSCertDatabase to fulfill its goal of listing certificates. The cert
@@ -268,7 +224,7 @@ void IsCertificateAllowed(IsCertificateAllowedCallback callback,
   ash::platform_keys::KeyPermissionsServiceFactory::GetForBrowserContext(
       context)
       ->IsCorporateKey(
-          chromeos::platform_keys::GetSubjectPublicKeyInfoBlob(cert),
+          chromeos::platform_keys::GetSubjectPublicKeyInfo(cert),
           base::BindOnce(&CheckCorporateFlag, std::move(callback)));
 }
 
@@ -287,11 +243,11 @@ std::optional<CertDescription> BuildCertDescritionOnWorkerThread(
   if (!nss_cert)
     return std::nullopt;
 
-  // TODO(b/193771095) Use a valid wincx.
-  // Must have a private key in order to access label and ID.
+  // Passing a nullptr for wincx is a hack but not worth fixing now, see
+  // b/193771095 Must have a private key in order to access label and ID.
   SECKEYPrivateKey* private_key =
       PK11_FindKeyByAnyCert(nss_cert.get(), nullptr /* wincx */);
-  // TODO(b/193771180) Investigate race condition with null private keys.
+  // Potential race condition with null private keys (see b/193771180)
   if (!private_key)
     return std::nullopt;
   crypto::ScopedSECKEYPrivateKey priv_key_destroyer(private_key);
@@ -308,14 +264,13 @@ std::optional<CertDescription> BuildCertDescritionOnWorkerThread(
   if (!id_item)
     return std::nullopt;
   crypto::ScopedSECItem sec_item_destroyer(id_item);
-  std::string pkcs11_id(id_item->data, id_item->data + id_item->len);
+  std::string pkcs11_id(id_item->data,
+                        UNSAFE_TODO(id_item->data + id_item->len));
 
-  // TODO(b/193784305) Try to avoid (some) key generation if possible.
   // Generate the placeholder RSA key that will be installed in ARC.
-  auto placeholder_key = crypto::RSAPrivateKey::Create(2048);
-  DCHECK(placeholder_key);
+  auto placeholder_key = crypto::keypair::PrivateKey::GenerateRsa2048();
 
-  return CertDescription(placeholder_key.release(), nss_cert.release(), slot,
+  return CertDescription(placeholder_key, nss_cert.release(), slot,
                          pkcs11_label, pkcs11_id);
 }
 
@@ -351,7 +306,8 @@ std::vector<keymaster::mojom::ChromeOsKeyPtr> PrepareChromeOsKeysForKeymaster(
         keymaster::mojom::ChapsKeyData::New(certificate.label, certificate.id,
                                             certificate.slot);
     keymaster::mojom::ChromeOsKeyPtr key = keymaster::mojom::ChromeOsKey::New(
-        ExportSpki(certificate.placeholder_key.get()),
+        base::Base64Encode(
+            certificate.placeholder_key.ToSubjectPublicKeyInfo()),
         keymaster::mojom::KeyData::NewChapsKeyData(std::move(key_data)));
 
     chrome_os_keys.push_back(std::move(key));
@@ -375,7 +331,8 @@ std::vector<keymint::mojom::ChromeOsKeyPtr> PrepareChromeOsKeysForKeyMint(
         keymint::mojom::ChapsKeyData::New(certificate.label, certificate.id,
                                           certificate.slot);
     keymint::mojom::ChromeOsKeyPtr key = keymint::mojom::ChromeOsKey::New(
-        ExportSpki(certificate.placeholder_key.get()),
+        base::Base64Encode(
+            certificate.placeholder_key.ToSubjectPublicKeyInfo()),
         keymint::mojom::KeyData::NewChapsKeyData(std::move(key_data)));
 
     chrome_os_keys.push_back(std::move(key));
@@ -385,17 +342,6 @@ std::vector<keymint::mojom::ChromeOsKeyPtr> PrepareChromeOsKeysForKeyMint(
 }
 
 }  // namespace
-
-// static
-CertStoreService* CertStoreService::GetForBrowserContext(
-    content::BrowserContext* context) {
-  return CertStoreServiceFactory::GetForBrowserContext(context);
-}
-
-// static
-BrowserContextKeyedServiceFactory* CertStoreService::GetFactory() {
-  return CertStoreServiceFactory::GetInstance();
-}
 
 CertStoreService::CertStoreService(content::BrowserContext* context)
     : CertStoreService(context, std::make_unique<ArcCertInstaller>(context)) {}
@@ -634,11 +580,6 @@ void CertStoreService::OnArcCertsInstalled(bool need_policy_update,
                                      policy::PolicyMap(), policy::PolicyMap());
     }
   }
-}
-
-// static
-void CertStoreService::EnsureFactoryBuilt() {
-  CertStoreServiceFactory::GetInstance();
 }
 
 }  // namespace arc

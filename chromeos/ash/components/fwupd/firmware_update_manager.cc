@@ -14,14 +14,16 @@
 #include "ash/webui/firmware_update_ui/mojom/firmware_update.mojom.h"
 #include "base/base_paths.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_reader.h"
 #include "base/path_service.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
@@ -34,6 +36,7 @@
 #include "chromeos/ash/components/fwupd/histogram_util.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/device_event_log/device_event_log.h"
 #include "crypto/sha2.h"
 #include "dbus/message.h"
@@ -89,7 +92,7 @@ const char kLVFSMirrorBaseURL[] =
 constexpr std::string_view kMirrorJcatFileName = "firmware.xml.xz.jcat";
 constexpr std::string_view kMirrorZipFileName = "firmware.xml.gz";
 const char kLocalFirmwareBasePath[] = "/var/lib/fwupd/metadata/";
-const char kLocalMetadataFileName[] = "metadata.xml.zst";
+const char kLocalMetadataFileName[] = "firmware.xml.zst";
 
 FirmwareUpdateManager* g_instance = nullptr;
 
@@ -158,21 +161,16 @@ base::File VerifyChecksum(base::File file, const std::string& checksum) {
   }
 
   // Safe to truncate down to <int>.
-  int file_length = raw_file_length;
+  const int file_length = raw_file_length;
 
   // Check checksum of the file.
-  std::vector<char> buf(file_length);
-  if (file.Read(0, buf.data(), file_length) != file_length) {
+  std::vector<uint8_t> buf(file_length);
+  if (file.Read(0, buf) != file_length) {
     return base::File();
   }
 
-  const std::string_view contents(buf.data(), file_length);
-
-  const std::string sha_contents = crypto::SHA256HashString(contents);
-
   const std::string encoded_sha =
-      base::ToLowerASCII(base::HexEncode(sha_contents));
-
+      base::HexEncodeLower(crypto::SHA256HashString(base::as_string_view(buf)));
   if (encoded_sha != checksum) {
     FIRMWARE_LOG(ERROR) << "Wrong checksum, expected: " << checksum
                         << ", got: " << encoded_sha;
@@ -193,11 +191,12 @@ bool CreateDirIfNotExists(const base::FilePath& path) {
 
 firmware_update::mojom::FirmwareUpdatePtr CreateUpdate(
     const FwupdUpdate& update_details,
-    const std::string& device_id,
-    const std::string& device_name) {
+    const FwupdDevice& device) {
   auto update = firmware_update::mojom::FirmwareUpdate::New();
-  update->device_id = device_id;
-  update->device_name = base::UTF8ToUTF16(device_name);
+  update->device_id = device.id;
+  update->device_name = base::UTF8ToUTF16(device.device_name);
+  update->needs_reboot =
+      device.needs_reboot && features::IsFlexFirmwareUpdateEnabled();
   update->device_version = update_details.version;
   update->device_description = base::UTF8ToUTF16(update_details.description);
   update->priority =
@@ -295,7 +294,8 @@ firmware_update::mojom::DeviceRequestPtr GetDeviceRequest(
       static_cast<firmware_update::mojom::DeviceRequestKind>(request.kind));
 }
 
-bool GetMetadataFileInfo(base::FilePath filepath, base::File::Info* info) {
+bool GetMetadataFileInfo(const base::FilePath& filepath,
+                         base::File::Info* info) {
   if (!base::PathExists(filepath)) {
     FIRMWARE_LOG(DEBUG) << "Local firmware file not found at: " << filepath;
     return false;
@@ -312,25 +312,26 @@ bool GetMetadataFileInfo(base::FilePath filepath, base::File::Info* info) {
   return true;
 }
 
-std::string GetFirmwareFileNameFromJsonString(std::string json_content) {
+std::string GetFirmwareFileNameFromJsonString(const std::string& json_content) {
   if (json_content == "") {
     FIRMWARE_LOG(ERROR) << "Failed to deserialize json for empty string";
     return "";
   }
 
-  std::string error;
-  JSONStringValueDeserializer messages_deserializer(json_content);
-  std::unique_ptr<base::Value> value =
-      messages_deserializer.Deserialize(/*error_code=*/nullptr, &error);
-  if (error != "") {
+  base::JSONReader::Result value =
+      base::JSONReader::ReadAndReturnValueWithError(
+          json_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  if (!value.has_value()) {
     FIRMWARE_LOG(ERROR) << "Failed to deserialize json string with error: "
-                        << error;
+                        << value.error().ToString();
     return "";
   }
-  DCHECK(value);
-  auto dictionary =
-      std::make_unique<base::Value::Dict>(std::move(*value).TakeDict());
-  base::Value::List* items = dictionary->FindList("Items");
+  base::Value::Dict* dict = value->GetIfDict();
+  if (!dict) {
+    FIRMWARE_LOG(ERROR) << "Parsed JSON is not a dictionary";
+    return "";
+  }
+  base::Value::List* items = dict->FindList("Items");
   if (items == nullptr || items->empty()) {
     FIRMWARE_LOG(ERROR) << "Couldn't find 'Items' key in checksum json file";
     return "";
@@ -340,10 +341,10 @@ std::string GetFirmwareFileNameFromJsonString(std::string json_content) {
     FIRMWARE_LOG(ERROR) << "Couldn't find 'Id' key in checksum json file";
     return "";
   }
-  return *filename;
+  return std::move(*filename);
 }
 
-bool CreateAndClearFile(base::FilePath filepath) {
+bool CreateAndClearFile(const base::FilePath& filepath) {
   // TODO(michaelcheco): Verify that creating the empty file is
   // necessary.
   return base::WriteFile(filepath, /*data=*/"");
@@ -357,9 +358,9 @@ device_event_log::LogLevel LogLevelForFileErrors() {
              : device_event_log::LOG_LEVEL_DEBUG;
 }
 
-void CleanUpTempFiles(base::FilePath checksum_filepath,
+void CleanUpTempFiles(const base::FilePath& checksum_filepath,
                       base::File checksum_file,
-                      base::FilePath firmware_filepath,
+                      const base::FilePath& firmware_filepath,
                       base::File firmware_file) {
   if (!checksum_filepath.empty()) {
     base::DeleteFile(checksum_filepath);
@@ -382,7 +383,7 @@ std::string ReadFileToString(const base::FilePath& filename) {
   return file_contents;
 }
 
-std::string UncompressFileAndGetFilename(std::string file_contents) {
+std::string UncompressFileAndGetFilename(const std::string& file_contents) {
   // Log an EVENT here in case b/339310876 comes up again.
   FIRMWARE_LOG(EVENT) << "GzipUncompress: " << file_contents.size();
   std::string content;
@@ -393,12 +394,14 @@ std::string UncompressFileAndGetFilename(std::string file_contents) {
 
 bool RefreshRemoteAllowed(FirmwareUpdateManager::Source source,
                           bool refresh_remote_for_testing,
+                          bool is_online,
                           bool is_metered) {
   FIRMWARE_LOG(DEBUG) << "RefreshRemoteAllowed()";
-  DCHECK(NetworkHandler::IsInitialized());
   const bool connection_ok =
-      !is_metered || source == FirmwareUpdateManager::Source::kUI;
-  FIRMWARE_LOG(DEBUG) << "Connection metered: " << is_metered
+      is_online &&
+      (!is_metered || source == FirmwareUpdateManager::Source::kUI);
+  FIRMWARE_LOG(DEBUG) << "Connection online: " << is_online
+                      << ", Connection metered: " << is_metered
                       << ", Source: " << static_cast<int>(source)
                       << ", Refresh Remote connection okay: " << connection_ok;
   if (!connection_ok) {
@@ -440,6 +443,12 @@ FirmwareUpdateManager::FirmwareUpdateManager()
     FwupdClient::Get()->AddObserver(this);
   }
 
+  // NetworkHandler may not be initialized in tests.
+  if (NetworkHandler::IsInitialized()) {
+    NetworkHandler::Get()->network_state_handler()->AddObserver(this,
+                                                                FROM_HERE);
+  }
+
   DCHECK_EQ(nullptr, g_instance);
   g_instance = this;
 }
@@ -448,6 +457,12 @@ FirmwareUpdateManager::~FirmwareUpdateManager() {
   DCHECK_EQ(this, g_instance);
   if (FwupdClient::Get()) {
     FwupdClient::Get()->RemoveObserver(this);
+  }
+
+  // NetworkHandler may not be initialized in tests.
+  if (NetworkHandler::IsInitialized()) {
+    NetworkHandler::Get()->network_state_handler()->RemoveObserver(this,
+                                                                   FROM_HERE);
   }
   g_instance = nullptr;
 }
@@ -531,6 +546,15 @@ void FirmwareUpdateManager::ObservePeripheralUpdates(
   }
 }
 
+void FirmwareUpdateManager::DefaultNetworkChanged(const NetworkState* network) {
+  FIRMWARE_LOG(DEBUG) << "DefaultNetworkChanged(): Pending refresh: "
+                      << is_refresh_pending_
+                      << ", Default Network: " << (network != nullptr);
+  if (is_refresh_pending_) {
+    RequestAllUpdates(Source::kNetworkChange);
+  }
+}
+
 // TODO(michaelcheco): Handle the case where the app is closed during an
 // install.
 void FirmwareUpdateManager::ResetInstallState() {
@@ -566,26 +590,32 @@ void FirmwareUpdateManager::RequestAllUpdates(Source source) {
     return;
   }
 
-  if (should_show_notification_for_test_) {
-    // Short circuit to immediately display notification.
-    NotifyCriticalFirmwareUpdateReceived();
-    return;
-  }
-
   if (is_fetching_updates_) {
     FIRMWARE_LOG(DEBUG)
         << "One instance of RequestAllUpdates already is progress; skipped";
     return;
   }
 
+  if (should_show_notification_for_test_) {
+    // Short circuit to immediately display notification.
+    NotifyCriticalFirmwareUpdateReceived();
+    return;
+  }
+
   FIRMWARE_LOG(USER) << "RequestAllUpdates: " << static_cast<int>(source);
+  is_refresh_pending_ = true;
   is_fetching_updates_ = true;
+  const NetworkState* network =
+      NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
+  if (!network) {
+    return MaybeRefreshRemote(false);
+  }
+  bool is_online = network->IsOnline();
+  bool is_metered = network->metered();
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&RefreshRemoteAllowed, source, refresh_remote_for_testing_,
-                     NetworkHandler::Get()
-                         ->network_state_handler()
-                         ->default_network_is_metered()),
+                     is_online, is_metered),
       base::BindOnce(&FirmwareUpdateManager::MaybeRefreshRemote,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -782,6 +812,12 @@ void FirmwareUpdateManager::OnGetFile(const std::string& device_id,
     }
   }
 
+  if (inflight_update_.is_null()) {
+    FIRMWARE_LOG(ERROR) << "Unknown device ID: " << device_id;
+    std::move(callback).Run(MethodResult::kUnknownDeviceId);
+    return;
+  }
+
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&VerifyChecksum, std::move(file),
@@ -848,8 +884,11 @@ void FirmwareUpdateManager::OnUpdateListResponse(const std::string& device_id,
   // If there are updates, then choose the first one.
   if (!updates->empty()) {
     auto device_name = devices_pending_update_[device_id].device_name;
+    auto needs_reboot = devices_pending_update_[device_id].needs_reboot &&
+                        features::IsFlexFirmwareUpdateEnabled();
     // Create a complete FirmwareUpdate and add to updates_.
-    updates_.push_back(CreateUpdate(updates->front(), device_id, device_name));
+    updates_.push_back(CreateUpdate(
+        updates->front(), FwupdDevice(device_id, device_name, needs_reboot)));
   }
 
   // Remove the pending device.
@@ -1142,7 +1181,8 @@ void FirmwareUpdateManager::GetFirmwareFilename(
   FIRMWARE_LOG(DEBUG) << "GetFirmwareFilename: " << checksum_filepath_
                       << ", Uncompressing and parsing checksum file.";
   task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&UncompressFileAndGetFilename, file_contents),
+      FROM_HERE,
+      base::BindOnce(&UncompressFileAndGetFilename, std::move(file_contents)),
       base::BindOnce(&FirmwareUpdateManager::TriggerDownloadOfFirmwareFile,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -1196,6 +1236,9 @@ void FirmwareUpdateManager::RefreshRemoteComplete(MethodResult result) {
     DEVICE_LOG(device_event_log::LOG_TYPE_FIRMWARE, LogLevelForFileErrors())
         << "Refreshing LVFS remote failed: " << static_cast<int>(result);
   } else {
+    // Only set to false when refresh remote successful, otherwise retry when
+    // network changes (infrequent)
+    is_refresh_pending_ = false;
     FIRMWARE_LOG(USER) << "RefreshRemote completed";
   }
   firmware_update::metrics::EmitRefreshRemoteResult(result);
@@ -1222,6 +1265,24 @@ void FirmwareUpdateManager::AddUpdateProgressObserver(
         observer) {
   update_progress_observer_.reset();
   update_progress_observer_.Bind(std::move(observer));
+}
+
+void FirmwareUpdateManager::Restart() {
+  chromeos::PowerManagerClient::Get()->RequestRestart(
+      power_manager::REQUEST_RESTART_FOR_USER,
+      "Restarting after user installed UEFI firmware update.");
+}
+
+void FirmwareUpdateManager::BindInterface(
+    mojo::PendingReceiver<firmware_update::mojom::SystemUtils>
+        pending_receiver) {
+  // Clear any bound receiver, since this service is a singleton and is bound
+  // to the firmware updater UI it's possible that the app can be closed and
+  // reopened multiple times resulting in multiple attempts to bind to this
+  // receiver.
+  system_utils_receiver_.reset();
+
+  system_utils_receiver_.Bind(std::move(pending_receiver));
 }
 
 }  // namespace ash

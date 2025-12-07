@@ -165,7 +165,7 @@ class SandboxFileStreamWriterTest : public FileStreamWriterTest {
         future;
     quota_manager_->GetUsageAndQuota(
         blink::StorageKey::CreateFromStringForTesting(kURLOrigin),
-        blink::mojom::StorageType::kTemporary, future.GetCallback());
+        future.GetCallback());
 
     quota_usage_and_info info;
     info.status = future.Get<0>();
@@ -176,8 +176,7 @@ class SandboxFileStreamWriterTest : public FileStreamWriterTest {
 
   void SetQuota(int64_t quota) {
     quota_manager_->SetQuota(
-        blink::StorageKey::CreateFromStringForTesting(kURLOrigin),
-        blink::mojom::StorageType::kTemporary, quota);
+        blink::StorageKey::CreateFromStringForTesting(kURLOrigin), quota);
   }
 
   int64_t GetFreeQuota() {
@@ -201,7 +200,7 @@ class SandboxFileStreamWriterTest : public FileStreamWriterTest {
         BucketInfo result,
         quota_manager_proxy_sync.GetBucket(
             blink::StorageKey::CreateFromStringForTesting(kURLOrigin),
-            kDefaultBucketName, blink::mojom::StorageType::kTemporary));
+            kDefaultBucketName));
     EXPECT_EQ(result.name, kDefaultBucketName);
     EXPECT_EQ(result.storage_key,
               blink::StorageKey::CreateFromStringForTesting(kURLOrigin));

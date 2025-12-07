@@ -13,41 +13,10 @@
 
 namespace downgrade {
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class SnapshotItemId {
-  kLocalState = 0,
-  kHighResAvatar = 1,
-  kLastBrowser = 2,
-  kPreferences = 3,
-  kSecurePreferences = 4,
-  kHistory = 5,
-  kFavicons = 6,
-  kTopSites = 7,
-  kLocalOrSyncableBookmarks = 8,
-  kLegacyCurrentTabSession = 9,  // TODO(crbug.com/40704630): Remove in M89
-  kLegacyCurrentSession = 10,    // TODO(crbug.com/40704630): Remove in M89
-  kGAIAPicture = 11,
-  kAffiliationDatabase = 12,
-  kLoginDataForProfile = 13,
-  kLoginDataForAccount = 14,
-  kWebData = 15,
-  kStrikeDatabase = 16,
-  kCookie = 17,
-  kProfileIcon = 18,
-  kLastVersion = 19,
-  kSessions = 20,
-  kAccountBookmarks = 21,
-  kMaxValue = kAccountBookmarks
-};
-
 struct SnapshotItemDetails {
   enum class ItemType { kFile, kDirectory };
 
-  SnapshotItemDetails(base::FilePath path,
-                      ItemType type,
-                      uint64_t data_types,
-                      SnapshotItemId id);
+  SnapshotItemDetails(base::FilePath path, ItemType type, uint64_t data_types);
   ~SnapshotItemDetails() = default;
   const base::FilePath path;
   const bool is_directory;
@@ -55,7 +24,6 @@ struct SnapshotItemDetails {
   // Bitfield from ChromeBrowsingDataRemoverDelegate::DataType representing
   // the data types affected by this item.
   const uint64_t data_types;
-  const SnapshotItemId id;
 };
 
 // Returns a list of items to snapshot that should be directly under the user

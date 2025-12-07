@@ -24,9 +24,9 @@
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
+#include "chrome/browser/search/background/ntp_custom_background_service_constants.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_observer.h"
 #include "chrome/browser/search/background/wallpaper_search/wallpaper_search_background_manager.h"
-#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/search/instant_types.h"
 #include "chrome/common/url_constants.h"
@@ -47,17 +47,12 @@
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
-namespace {
+// TODO(crbug.com/456789190): All Android-related components should be discussed
+// later to determine if refactoring is necessary. This includes elements like
+// color extraction, the general policy, and the NotifyAboutBackgrounds logic
+// used in the image upload method.
 
-const char kNtpCustomBackgroundURL[] = "background_url";
-const char kNtpCustomBackgroundAttributionLine1[] = "attribution_line_1";
-const char kNtpCustomBackgroundAttributionLine2[] = "attribution_line_2";
-const char kNtpCustomBackgroundAttributionActionURL[] =
-    "attribution_action_url";
-const char kNtpCustomBackgroundCollectionId[] = "collection_id";
-const char kNtpCustomBackgroundResumeToken[] = "resume_token";
-const char kNtpCustomBackgroundRefreshTimestamp[] = "refresh_timestamp";
-const char kNtpCustomBackgroundMainColor[] = "background_main_color";
+namespace {
 
 constexpr char kSidePanelSnapshotImageOptions[] = "=w320-h180-p-k-no-nd-mv";
 
@@ -68,7 +63,7 @@ base::Value::Dict GetBackgroundInfoAsDict(
     const GURL& action_url,
     const std::optional<std::string>& collection_id,
     const std::optional<std::string>& resume_token,
-    const std::optional<int> refresh_timestamp) {
+    std::optional<int> refresh_timestamp) {
   base::Value::Dict background_info;
   background_info.Set(kNtpCustomBackgroundURL,
                       base::Value(background_url.spec()));
@@ -115,6 +110,7 @@ base::Value::Dict NtpCustomBackgroundDefaults() {
   return defaults;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 void CopyFileToProfilePath(const base::FilePath& from_path,
                            const base::FilePath& profile_path) {
   base::CopyFile(from_path,
@@ -127,8 +123,12 @@ std::string ReadFileToString(const base::FilePath& path) {
   base::ReadFileToString(path, &image_data);
   return image_data;
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void RemoveLocalBackgroundImageCopy(Profile* profile) {
+#if !BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/456789190): Discuss about propagating the deletion request
+  // to Java.
   // Delete wallpaper search image.
   if (base::FeatureList::IsEnabled(
           ntp_features::kCustomizeChromeWallpaperSearch) &&
@@ -142,6 +142,7 @@ void RemoveLocalBackgroundImageCopy(Profile* profile) {
   base::ThreadPool::PostTask(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::GetDeleteFileCallback(path));
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 // |GetBitmapMainColor| just wraps |CalculateKMeanColorOfBitmap|.
@@ -156,13 +157,21 @@ SkColor GetBitmapMainColor(const SkBitmap& bitmap) {
 // static
 void NtpCustomBackgroundService::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
+#if !BUILDFLAG(IS_ANDROID)
   registry->RegisterDictionaryPref(
-      prefs::kNtpCustomBackgroundDict, NtpCustomBackgroundDefaults(),
+      prefs::kDeprecatedNtpCustomBackgroundDictDoNotUse,
+      NtpCustomBackgroundDefaults(),
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+  registry->RegisterDictionaryPref(prefs::kNtpCustomBackgroundDict,
+                                   NtpCustomBackgroundDefaults());
   registry->RegisterBooleanPref(prefs::kNtpCustomBackgroundLocalToDevice,
                                 false);
   registry->RegisterStringPref(prefs::kNtpCustomBackgroundLocalToDeviceId, "");
   registry->RegisterBooleanPref(prefs::kNtpCustomBackgroundInspiration, false);
+
+#if !BUILDFLAG(IS_ANDROID)
   // Register wallpaper search profile prefs.
   if (base::FeatureList::IsEnabled(
           ntp_features::kCustomizeChromeWallpaperSearch) &&
@@ -170,6 +179,7 @@ void NtpCustomBackgroundService::RegisterProfilePrefs(
           optimization_guide::features::kOptimizationGuideModelExecution)) {
     WallpaperSearchBackgroundManager::RegisterProfilePrefs(registry);
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 // static
@@ -201,10 +211,8 @@ NtpCustomBackgroundService::NtpCustomBackgroundService(Profile* profile)
       clock_(base::DefaultClock::GetInstance()),
       background_updated_timestamp_(base::TimeTicks::Now()) {
   background_service_ = NtpBackgroundServiceFactory::GetForProfile(profile_);
-  theme_service_ = ThemeServiceFactory::GetForProfile(profile_);
   if (background_service_)
     background_service_observation_.Observe(background_service_.get());
-  theme_service_observation_.Observe(theme_service_);
 
   // Update theme info when the pref is changed via Sync.
   pref_change_registrar_.Init(pref_service_);
@@ -217,7 +225,11 @@ NtpCustomBackgroundService::NtpCustomBackgroundService(Profile* profile)
       std::make_unique<ImageDecoderImpl>(), profile_->GetURLLoaderFactory());
 }
 
-NtpCustomBackgroundService::~NtpCustomBackgroundService() = default;
+NtpCustomBackgroundService::~NtpCustomBackgroundService() {
+  if (theme_delegate_) {
+    theme_delegate_->OnNtpCustomBackgroundServiceShuttingDown();
+  }
+}
 
 void NtpCustomBackgroundService::OnCollectionInfoAvailable() {}
 
@@ -235,11 +247,8 @@ void NtpCustomBackgroundService::OnNextCollectionImageAvailable() {
   std::string resume_token = background_service_->next_image_resume_token();
   int64_t timestamp = (clock_->Now() + base::Days(1)).ToTimeT();
 
-  if (base::FeatureList::IsEnabled(
-          ntp_features::kCustomizeChromeColorExtraction)) {
-    FetchCustomBackgroundAndExtractBackgroundColor(image.image_url,
-                                                   image.thumbnail_image_url);
-  }
+  FetchCustomBackgroundAndExtractBackgroundColor(image.image_url,
+                                                 image.thumbnail_image_url);
 
   base::Value::Dict background_info = GetBackgroundInfoAsDict(
       image.image_url, attribution1, attribution2, image.attribution_action_url,
@@ -254,12 +263,6 @@ void NtpCustomBackgroundService::OnNtpBackgroundServiceShuttingDown() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   background_service_observation_.Reset();
   background_service_ = nullptr;
-}
-
-void NtpCustomBackgroundService::OnThemeChanged() {}
-
-void NtpCustomBackgroundService::OnCustomNtpBackgroundObsolete() {
-  ResetNtpTheme(profile_);
 }
 
 void NtpCustomBackgroundService::UpdateBackgroundFromSync() {
@@ -286,13 +289,6 @@ void NtpCustomBackgroundService::SetCustomBackgroundInfo(
   if (IsCustomBackgroundDisabledByPolicy()) {
     return;
   }
-  // Store current background info before it is changed so it can be used if
-  // RevertBackgroundChanges is called.
-  if (previous_background_info_ == std::nullopt) {
-    previous_background_info_ = std::make_optional(
-        pref_service_->GetValue(prefs::kNtpCustomBackgroundDict).Clone());
-    previous_local_background_ = false;
-  }
 
   bool is_backdrop_collection =
       background_service_ &&
@@ -315,9 +311,7 @@ void NtpCustomBackgroundService::SetCustomBackgroundInfo(
       is_backdrop_collection) {
     background_service_->FetchNextCollectionImage(collection_id, std::nullopt);
   } else if (background_url.is_valid() && is_backdrop_url) {
-    if (base::FeatureList::IsEnabled(
-            ntp_features::kCustomizeChromeColorExtraction) &&
-        thumbnail_url.is_valid()) {
+    if (thumbnail_url.is_valid()) {
       FetchCustomBackgroundAndExtractBackgroundColor(background_url,
                                                      thumbnail_url);
     }
@@ -343,8 +337,9 @@ void NtpCustomBackgroundService::UpdateLocalCustomBackgroundPrefsWithColor(
   // Make sure that local background is still set.
   if (pref_service_->GetBoolean(prefs::kNtpCustomBackgroundLocalToDevice)) {
     // Set background color.
-    theme_service_->SetUserColorAndBrowserColorVariant(
-        color, ui::mojom::BrowserColorVariant::kTonalSpot);
+    if (theme_delegate_) {
+      theme_delegate_->OnBackgroundColorExtracted(color);
+    }
   }
 }
 
@@ -377,27 +372,33 @@ void NtpCustomBackgroundService::ProcessLocalImageData(std::string image_data) {
 
 void NtpCustomBackgroundService::SelectLocalBackgroundImage(
     const base::FilePath& path) {
+#if BUILDFLAG(IS_ANDROID)
+  SetBackgroundToLocalResource();
+#else
+  // TODO(crbug.com/456789190): Discuss the relevance to Android and the
+  // implementation of the policy check before notifying Java.
   if (IsCustomBackgroundDisabledByPolicy()) {
     return;
   }
-  previous_background_info_.reset();
-  previous_local_background_ = true;
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(&CopyFileToProfilePath, path, profile_->GetPath()),
       base::BindOnce(&NtpCustomBackgroundService::SetBackgroundToLocalResource,
                      weak_ptr_factory_.GetWeakPtr()));
+#endif
 }
 
 void NtpCustomBackgroundService::RefreshBackgroundIfNeeded() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Do not refresh background & color if extension theme is in use.
-  if (theme_service_->UsingExtensionTheme()) {
+  if (theme_delegate_ && theme_delegate_->UsingExtensionTheme()) {
     return;
   }
 
   const base::Value::Dict& background_info =
       pref_service_->GetDict(prefs::kNtpCustomBackgroundDict);
+
+#if !BUILDFLAG(IS_ANDROID)
   int64_t refresh_timestamp = 0;
   const base::Value* timestamp_value =
       background_info.Find(kNtpCustomBackgroundRefreshTimestamp);
@@ -406,30 +407,16 @@ void NtpCustomBackgroundService::RefreshBackgroundIfNeeded() {
   if (refresh_timestamp == 0)
     return;
 
-  if (clock_->Now().ToTimeT() > refresh_timestamp) {
-    std::string collection_id =
-        background_info.Find(kNtpCustomBackgroundCollectionId)->GetString();
-    std::string resume_token =
-        background_info.Find(kNtpCustomBackgroundResumeToken)->GetString();
-    background_service_->FetchNextCollectionImage(collection_id, resume_token);
+  if (clock_->Now().ToTimeT() <= refresh_timestamp) {
+    return;
   }
-}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
-void NtpCustomBackgroundService::RevertBackgroundChanges() {
-  if (previous_background_info_.has_value()) {
-    pref_service_->Set(prefs::kNtpCustomBackgroundDict,
-                       *previous_background_info_);
-  }
-  if (previous_local_background_) {
-    SetBackgroundToLocalResource();
-  }
-  previous_background_info_.reset();
-  previous_local_background_ = false;
-}
-
-void NtpCustomBackgroundService::ConfirmBackgroundChanges() {
-  previous_background_info_.reset();
-  previous_local_background_ = false;
+  std::string collection_id =
+      background_info.Find(kNtpCustomBackgroundCollectionId)->GetString();
+  std::string resume_token =
+      background_info.Find(kNtpCustomBackgroundResumeToken)->GetString();
+  background_service_->FetchNextCollectionImage(collection_id, resume_token);
 }
 
 std::optional<CustomBackground>
@@ -487,10 +474,7 @@ NtpCustomBackgroundService::GetCustomBackground() {
     const base::Value* attribution_action_url =
         background_info.Find(kNtpCustomBackgroundAttributionActionURL);
     const base::Value* color =
-        base::FeatureList::IsEnabled(
-            ntp_features::kCustomizeChromeColorExtraction)
-            ? background_info.Find(kNtpCustomBackgroundMainColor)
-            : nullptr;
+        background_info.Find(kNtpCustomBackgroundMainColor);
     custom_background->custom_background_url = custom_background_url;
     custom_background->is_uploaded_image = false;
     custom_background->collection_id = collection_id;
@@ -546,6 +530,14 @@ void NtpCustomBackgroundService::AddObserver(
 void NtpCustomBackgroundService::RemoveObserver(
     NtpCustomBackgroundServiceObserver* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void NtpCustomBackgroundService::SetThemeDelegate(ThemeDelegate* delegate) {
+  theme_delegate_ = delegate;
+}
+
+void NtpCustomBackgroundService::RemoveThemeDelegate() {
+  theme_delegate_ = nullptr;
 }
 
 bool NtpCustomBackgroundService::IsCustomBackgroundDisabledByPolicy() {
@@ -608,16 +600,22 @@ void NtpCustomBackgroundService::VerifyCustomBackgroundImageURL() {
 
 void NtpCustomBackgroundService::SetBackgroundToLocalResource() {
   background_updated_timestamp_ = base::TimeTicks::Now();
-  // If the current background is a wallpaper search background, delete the
-  // file before setting the new background. This is temporary until multiple
-  // local images is supported.
+#if !BUILDFLAG(IS_ANDROID)
+  // If these conditions are true, a wallpaper search image is set so it must
+  // be removed.
   if (pref_service_->GetBoolean(prefs::kNtpCustomBackgroundLocalToDevice) &&
       !pref_service_->GetString(prefs::kNtpCustomBackgroundLocalToDeviceId)
            .empty()) {
-    RemoveLocalBackgroundImageCopy(profile_);
+    WallpaperSearchBackgroundManager::RemoveWallpaperSearchBackground(profile_);
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   pref_service_->SetBoolean(prefs::kNtpCustomBackgroundLocalToDevice, true);
   pref_service_->ClearPref(prefs::kNtpCustomBackgroundLocalToDeviceId);
+
+#if !BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/456789190): Discuss notifying java through
+  // NtpCustomBackgroundService.
   NotifyAboutBackgrounds();
   if (base::FeatureList::IsEnabled(
           ntp_features::kCustomizeChromeWallpaperSearch) &&
@@ -631,14 +629,13 @@ void NtpCustomBackgroundService::SetBackgroundToLocalResource() {
         base::BindOnce(&NtpCustomBackgroundService::ProcessLocalImageData,
                        weak_ptr_factory_.GetWeakPtr()));
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void NtpCustomBackgroundService::SetBackgroundToLocalResourceWithId(
     const base::Token& id,
     bool is_inspiration_image) {
   background_updated_timestamp_ = base::TimeTicks::Now();
-  // Remove the last local background if it exists. This is
-  // temporary until multiple local images is supported.
   RemoveLocalBackgroundImageCopy(profile_);
   pref_service_->SetBoolean(prefs::kNtpCustomBackgroundLocalToDevice, true);
   pref_service_->SetString(prefs::kNtpCustomBackgroundLocalToDeviceId,
@@ -690,14 +687,17 @@ void NtpCustomBackgroundService::UpdateCustomBackgroundPrefsWithColor(
   if (current_bg_url == image_url) {
     pref_service_->SetDict(prefs::kNtpCustomBackgroundDict,
                            GetBackgroundInfoWithColor(&background_info, color));
-    theme_service_->SetUserColorAndBrowserColorVariant(
-        color, ui::mojom::BrowserColorVariant::kTonalSpot);
+    if (theme_delegate_) {
+      theme_delegate_->OnBackgroundColorExtracted(color);
+    }
   }
 }
 
 void NtpCustomBackgroundService::FetchCustomBackgroundAndExtractBackgroundColor(
     const GURL& image_url,
     const GURL& fetch_url) {
+// TODO(crbug.com/456789190): Discuss about color extraction in Android.
+#if !BUILDFLAG(IS_ANDROID)
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("ntp_custom_background",
                                           R"(
@@ -740,6 +740,7 @@ void NtpCustomBackgroundService::FetchCustomBackgroundAndExtractBackgroundColor(
           &NtpCustomBackgroundService::UpdateCustomBackgroundColorAsync,
           weak_ptr_factory_.GetWeakPtr(), image_url),
       std::move(params));
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void NtpCustomBackgroundService::OnCustomBackgroundURLHeadersReceived(

@@ -9,10 +9,10 @@
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,7 +26,7 @@ void SuccessCallback(bool* did_respond,
                      base::Value::List results,
                      const std::string& error,
                      mojom::ExtraResponseDataPtr) {
-  EXPECT_EQ(ExtensionFunction::ResponseType::SUCCEEDED, type);
+  EXPECT_EQ(ExtensionFunction::ResponseType::kSucceeded, type);
   *did_respond = true;
 }
 
@@ -35,7 +35,7 @@ void FailCallback(bool* did_respond,
                   base::Value::List results,
                   const std::string& error,
                   mojom::ExtraResponseDataPtr) {
-  EXPECT_EQ(ExtensionFunction::ResponseType::FAILED, type);
+  EXPECT_EQ(ExtensionFunction::ResponseType::kFailed, type);
   *did_respond = true;
 }
 
@@ -55,7 +55,7 @@ class ValidationFunction : public ExtensionFunction {
   bool did_respond() { return did_respond_; }
 
  private:
-  ~ValidationFunction() override {}
+  ~ValidationFunction() override = default;
   bool should_succeed_;
   bool did_respond_;
 };
@@ -63,7 +63,7 @@ class ValidationFunction : public ExtensionFunction {
 
 using ChromeExtensionFunctionUnitTest = ExtensionServiceTestBase;
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_SimpleFunctionTest DISABLED_SimpleFunctionTest
 #else
 #define MAYBE_SimpleFunctionTest SimpleFunctionTest
@@ -87,15 +87,15 @@ TEST_F(ChromeExtensionFunctionUnitTest, BrowserShutdownValidationFunctionTest) {
 TEST_F(ChromeExtensionFunctionUnitTest, DestructionWithoutResponseOnUnload) {
   InitializeEmptyExtensionService();
   scoped_refptr<const Extension> extension = ExtensionBuilder("foo").Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension);
   ASSERT_TRUE(registry()->enabled_extensions().Contains(extension->id()));
 
   auto function = base::MakeRefCounted<ValidationFunction>(false);
   function->set_extension(extension);
   function->SetBrowserContextForTesting(browser_context());
 
-  service()->DisableExtension(extension->id(),
-                              disable_reason::DISABLE_USER_ACTION);
+  registrar()->DisableExtension(extension->id(),
+                                {disable_reason::DISABLE_USER_ACTION});
   ASSERT_TRUE(registry()->disabled_extensions().Contains(extension->id()));
 
   // Destroying the extension function without responding if the extension has
@@ -119,7 +119,7 @@ TEST_F(ChromeExtensionFunctionDeathTest, MAYBE_DestructionWithoutResponse) {
         InitializeEmptyExtensionService();
         scoped_refptr<const Extension> extension =
             ExtensionBuilder("foo").Build();
-        service()->AddExtension(extension.get());
+        registrar()->AddExtension(extension);
 
         ASSERT_TRUE(registry()->enabled_extensions().Contains(extension->id()));
 

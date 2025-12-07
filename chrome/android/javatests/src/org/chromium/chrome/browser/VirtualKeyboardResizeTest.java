@@ -9,14 +9,12 @@ import static org.hamcrest.Matchers.lessThanOrEqualTo;
 
 import android.util.JsonReader;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,14 +31,14 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.Coordinates;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
 
 import java.io.IOException;
@@ -56,22 +54,14 @@ import java.util.concurrent.TimeUnit;
 @Batch(Batch.PER_CLASS)
 public class VirtualKeyboardResizeTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private static final String TEXTFIELD_DOM_ID = "inputElement";
     private static final int TEST_TIMEOUT = 10000;
 
-    private EmbeddedTestServer mTestServer;
-
     private static PrefService getPrefService() {
         return UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
-    }
-
-    @Before
-    public void setUp() {
-        mTestServer =
-                EmbeddedTestServer.createAndStartServer(
-                        ApplicationProvider.getApplicationContext());
     }
 
     @After
@@ -84,8 +74,8 @@ public class VirtualKeyboardResizeTest {
     }
 
     private void startMainActivityWithURL(String url) throws Throwable {
-        mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(url));
-        mActivityTestRule.waitForActivityNativeInitializationComplete();
+        mActivityTestRule.startOnTestServerUrl(url);
+        mActivityTestRule.getActivityTestRule().waitForActivityNativeInitializationComplete();
 
         // Ensure a compositor commit has occurred. This ensures that browser
         // controls shown state is synced to Blink before we start querying
@@ -107,11 +97,11 @@ public class VirtualKeyboardResizeTest {
     }
 
     private void navigateToURL(String url) {
-        mActivityTestRule.loadUrl(mTestServer.getURL(url));
+        mActivityTestRule.loadUrl(mActivityTestRule.getTestServer().getURL(url));
     }
 
     private void openInNewTab(String url) {
-        mActivityTestRule.loadUrlInNewTab(mTestServer.getURL(url));
+        mActivityTestRule.loadUrlInNewTab(mActivityTestRule.getTestServer().getURL(url));
     }
 
     private void assertWaitForKeyboardStatus(final boolean show) {
@@ -121,7 +111,6 @@ public class VirtualKeyboardResizeTest {
                             mActivityTestRule
                                     .getKeyboardDelegate()
                                     .isKeyboardShowing(
-                                            mActivityTestRule.getActivity(),
                                             mActivityTestRule.getActivity().getTabsView());
                     Criteria.checkThat(isKeyboardShowing, Matchers.is(show));
                 },
@@ -192,7 +181,7 @@ public class VirtualKeyboardResizeTest {
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(
                         getWebContents(), "window.resizeEventLog");
         JsonReader jsonReader = new JsonReader(new StringReader(jsonText));
-        ArrayList<Integer> pageHeights = new ArrayList<Integer>();
+        ArrayList<Integer> pageHeights = new ArrayList<>();
         try {
             jsonReader.beginArray();
             while (jsonReader.hasNext()) {
@@ -246,6 +235,7 @@ public class VirtualKeyboardResizeTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/419874405")
     public void testVirtualKeyboardDefaultResizeModeWithPref() throws Throwable {
         startMainActivityWithURL("/chrome/test/data/android/about.html");
         ThreadUtils.runOnUiThreadBlocking(
@@ -352,6 +342,7 @@ public class VirtualKeyboardResizeTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/421296274")
     public void testResizesVisualMetaTag() throws Throwable {
         startMainActivityWithURL("/chrome/test/data/android/about.html");
 
@@ -394,6 +385,7 @@ public class VirtualKeyboardResizeTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/383769050")
     public void testResizesLayoutMetaTag() throws Throwable {
         startMainActivityWithURL(
                 "/chrome/test/data/android/page_with_editable.html?resizes-content");
@@ -431,7 +423,7 @@ public class VirtualKeyboardResizeTest {
         startMainActivityWithURL(
                 "/chrome/test/data/android/page_with_editable.html?overlays-content");
 
-        Assert.assertEquals(getNumGeometryChangeEvents(), 0);
+        Assert.assertEquals(0, getNumGeometryChangeEvents());
 
         int initialHeight = getPageInnerHeight();
         double initialVVHeight = getVisualViewportHeight();
@@ -452,49 +444,50 @@ public class VirtualKeyboardResizeTest {
     /** Test that the virtual keyboard mode is correctly set/reset on navigations. */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/421296274")
     public void testModeAfterNavigation() throws Throwable {
         startMainActivityWithURL("/chrome/test/data/android/page_with_editable.html");
 
         Assert.assertEquals(
+                VirtualKeyboardMode.RESIZES_VISUAL,
                 mActivityTestRule
                         .getActivity()
                         .getCompositorViewHolderForTesting()
-                        .getVirtualKeyboardModeForTesting(),
-                VirtualKeyboardMode.RESIZES_VISUAL);
+                        .getVirtualKeyboardModeForTesting());
 
         navigateToURL("/chrome/test/data/android/page_with_editable.html?resizes-content");
         Assert.assertEquals(
+                VirtualKeyboardMode.RESIZES_CONTENT,
                 mActivityTestRule
                         .getActivity()
                         .getCompositorViewHolderForTesting()
-                        .getVirtualKeyboardModeForTesting(),
-                VirtualKeyboardMode.RESIZES_CONTENT);
+                        .getVirtualKeyboardModeForTesting());
 
         navigateToURL("/chrome/test/data/android/page_with_editable.html");
 
         Assert.assertEquals(
+                VirtualKeyboardMode.RESIZES_VISUAL,
                 mActivityTestRule
                         .getActivity()
                         .getCompositorViewHolderForTesting()
-                        .getVirtualKeyboardModeForTesting(),
-                VirtualKeyboardMode.RESIZES_VISUAL);
+                        .getVirtualKeyboardModeForTesting());
 
         navigateToURL("/chrome/test/data/android/page_with_editable.html?overlays-content");
 
         Assert.assertEquals(
+                VirtualKeyboardMode.OVERLAYS_CONTENT,
                 mActivityTestRule
                         .getActivity()
                         .getCompositorViewHolderForTesting()
-                        .getVirtualKeyboardModeForTesting(),
-                VirtualKeyboardMode.OVERLAYS_CONTENT);
+                        .getVirtualKeyboardModeForTesting());
 
         openInNewTab("/chrome/test/data/android/page_with_editable.html?resizes-content");
         Assert.assertEquals(
+                VirtualKeyboardMode.RESIZES_CONTENT,
                 mActivityTestRule
                         .getActivity()
                         .getCompositorViewHolderForTesting()
-                        .getVirtualKeyboardModeForTesting(),
-                VirtualKeyboardMode.RESIZES_CONTENT);
+                        .getVirtualKeyboardModeForTesting());
 
         // Ensure showing the keyboard and going through the resize flow uses the current virtual
         // keyboard mode.
@@ -526,11 +519,11 @@ public class VirtualKeyboardResizeTest {
         startMainActivityWithURL("/chrome/test/data/android/page_with_editable.html");
 
         Assert.assertEquals(
+                VirtualKeyboardMode.RESIZES_VISUAL,
                 mActivityTestRule
                         .getActivity()
                         .getCompositorViewHolderForTesting()
-                        .getVirtualKeyboardModeForTesting(),
-                VirtualKeyboardMode.RESIZES_VISUAL);
+                        .getVirtualKeyboardModeForTesting());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -540,32 +533,33 @@ public class VirtualKeyboardResizeTest {
 
         navigateToURL("/chrome/test/data/android/page_with_editable.html");
         Assert.assertEquals(
+                VirtualKeyboardMode.RESIZES_CONTENT,
                 mActivityTestRule
                         .getActivity()
                         .getCompositorViewHolderForTesting()
-                        .getVirtualKeyboardModeForTesting(),
-                VirtualKeyboardMode.RESIZES_CONTENT);
+                        .getVirtualKeyboardModeForTesting());
 
         navigateToURL("/chrome/test/data/android/page_with_editable.html?overlays-content");
         Assert.assertEquals(
+                VirtualKeyboardMode.OVERLAYS_CONTENT,
                 mActivityTestRule
                         .getActivity()
                         .getCompositorViewHolderForTesting()
-                        .getVirtualKeyboardModeForTesting(),
-                VirtualKeyboardMode.OVERLAYS_CONTENT);
+                        .getVirtualKeyboardModeForTesting());
 
         openInNewTab("/chrome/test/data/android/page_with_editable.html");
         Assert.assertEquals(
+                VirtualKeyboardMode.RESIZES_CONTENT,
                 mActivityTestRule
                         .getActivity()
                         .getCompositorViewHolderForTesting()
-                        .getVirtualKeyboardModeForTesting(),
-                VirtualKeyboardMode.RESIZES_CONTENT);
+                        .getVirtualKeyboardModeForTesting());
     }
 
     /** Test that in overlays-content mode, the keyboard doesn't cause any transient resizes. */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/414804967")
     public void testNoSpuriousResizeEventOverlaysContent() throws Throwable {
         startMainActivityWithURL(
                 "/chrome/test/data/android/page_with_editable.html?overlays-content");
@@ -573,7 +567,7 @@ public class VirtualKeyboardResizeTest {
 
         int initialHeight = getPageInnerHeight();
 
-        Assert.assertEquals(getNumGeometryChangeEvents(), 0);
+        Assert.assertEquals(0, getNumGeometryChangeEvents());
         DOMUtils.clickNode(getWebContents(), TEXTFIELD_DOM_ID);
         assertWaitForNthGeometryChangeEvent(1);
 
@@ -597,6 +591,7 @@ public class VirtualKeyboardResizeTest {
     /** Test that in resizes-visual mode, the keyboard doesn't cause any transient resizes. */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/414804967")
     public void testNoSpuriousResizeEventResizesVisual() throws Throwable {
         startMainActivityWithURL(
                 "/chrome/test/data/android/page_with_editable.html?resizes-visual");

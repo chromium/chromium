@@ -8,6 +8,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "cc/layers/picture_layer_impl.h"
 #include "cc/tiles/raster_tile_priority_queue_all.h"
 #include "cc/tiles/raster_tile_priority_queue_required.h"
 
@@ -36,8 +37,7 @@ std::unique_ptr<RasterTilePriorityQueue> RasterTilePriorityQueue::Create(
       return std::move(queue);
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 }  // namespace cc

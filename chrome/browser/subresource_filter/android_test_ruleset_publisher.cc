@@ -36,20 +36,20 @@ void OnRulesetPublished(
 
 }  // namespace
 
-void JNI_TestRulesetPublisher_CreateAndPublishRulesetDisallowingSuffixForTesting(
+static void
+JNI_TestRulesetPublisher_CreateAndPublishRulesetDisallowingSuffixForTesting(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& publisher_param,
-    const base::android::JavaParamRef<jstring>& suffix) {
+    const base::android::JavaRef<jobject>& publisher_param,
+    std::string& suffix) {
   subresource_filter::testing::TestRulesetPair test_ruleset_pair;
   auto creator =
       std::make_unique<subresource_filter::testing::TestRulesetCreator>();
-  std::string suffix_str = base::android::ConvertJavaStringToUTF8(env, suffix);
-  creator->CreateRulesetToDisallowURLsWithPathSuffix(suffix_str,
+  creator->CreateRulesetToDisallowURLsWithPathSuffix(suffix,
                                                      &test_ruleset_pair);
 
   subresource_filter::UnindexedRulesetInfo unindexed_ruleset_info;
   unindexed_ruleset_info.content_version =
-      base::NumberToString(base::Hash(suffix_str));
+      base::NumberToString(base::Hash(suffix));
   unindexed_ruleset_info.ruleset_path = test_ruleset_pair.unindexed.path;
 
   base::android::ScopedJavaGlobalRef<jobject> publisher;
@@ -66,3 +66,5 @@ void JNI_TestRulesetPublisher_CreateAndPublishRulesetDisallowingSuffixForTesting
   // the ruleset to 2-8 seconds on average.
   AfterStartupTaskUtils::SetBrowserStartupIsCompleteForTesting();
 }
+
+DEFINE_JNI(TestRulesetPublisher)

@@ -8,11 +8,13 @@ import android.content.Context;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * This class is responsible for persisting subscription specific flags to make them available
  * before native has loaded.
  */
+@NullMarked
 public class SubscriptionFlagManager {
     private static final String PREF_PACKAGE =
             "org.chromium.components.gcm_driver.subscription_flags";
@@ -24,8 +26,7 @@ public class SubscriptionFlagManager {
     /**
      * Given an appId and a senderId, this methods builds a unique identifier for a subscription.
      * Currently implementation concatenates both senderId and appId.
-     * @param appId
-     * @param senderId
+     *
      * @return The unique identifier for the subscription.
      */
     public static String buildSubscriptionUniqueId(final String appId, final String senderId) {

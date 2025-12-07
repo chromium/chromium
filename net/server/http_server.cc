@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/server/http_server.h"
 
+#include <array>
 #include <string_view>
 #include <utility>
 
@@ -18,6 +14,7 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/sys_byteorder.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
@@ -26,9 +23,11 @@
 #include "net/server/http_server_request_info.h"
 #include "net/server/http_server_response_info.h"
 #include "net/server/web_socket.h"
+#include "net/server/web_socket_parse_result.h"
 #include "net/socket/server_socket.h"
 #include "net/socket/stream_socket.h"
 #include "net/socket/tcp_server_socket.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace net {
 
@@ -250,29 +249,33 @@ int HttpServer::HandleReadResult(HttpConnection* connection, int rv) {
   read_buf->DidRead(rv);
 
   // Handles http requests or websocket messages.
-  while (read_buf->GetSize() > 0) {
+  while (!read_buf->readable_bytes().empty()) {
     if (connection->web_socket()) {
       std::string message;
-      WebSocket::ParseResult result = connection->web_socket()->Read(&message);
-      if (result == WebSocket::FRAME_INCOMPLETE)
+      WebSocketParseResult result = connection->web_socket()->Read(&message);
+      if (result == WebSocketParseResult::FRAME_INCOMPLETE) {
         break;
+      }
 
-      if (result == WebSocket::FRAME_CLOSE ||
-          result == WebSocket::FRAME_ERROR) {
+      if (result == WebSocketParseResult::FRAME_CLOSE ||
+          result == WebSocketParseResult::FRAME_ERROR) {
         Close(connection->id());
         return ERR_CONNECTION_CLOSED;
       }
-      if (result == WebSocket::FRAME_OK_FINAL)
+      if (result == WebSocketParseResult::FRAME_OK_FINAL) {
         delegate_->OnWebSocketMessage(connection->id(), std::move(message));
+      }
       if (HasClosedConnection(connection))
         return ERR_CONNECTION_CLOSED;
       continue;
     }
 
+    // The headers are reparsed from the beginning every time a packet is
+    // received. This only really matters if something tries to upload a large
+    // request body.
     HttpServerRequestInfo request;
     size_t pos = 0;
-    if (!ParseHeaders(read_buf->StartOfBuffer(), read_buf->GetSize(),
-                      &request, &pos)) {
+    if (!ParseHeaders(read_buf->readable_bytes(), &request, &pos)) {
       // An error has occured. Close the connection.
       Close(connection->id());
       return ERR_CONNECTION_CLOSED;
@@ -311,9 +314,11 @@ int HttpServer::HandleReadResult(HttpConnection* connection, int rv) {
         return ERR_CONNECTION_CLOSED;
       }
 
-      if (read_buf->GetSize() - pos < content_length)
+      if (read_buf->readable_bytes().size() - pos < content_length) {
         break;  // Not enough data was received yet.
-      request.data.assign(read_buf->StartOfBuffer() + pos, content_length);
+      }
+      request.data = base::as_string_view(
+          read_buf->readable_bytes().subspan(pos, content_length));
       pos += content_length;
     }
 
@@ -378,7 +383,7 @@ namespace {
 //     a single space between the method/url and url/protocol.
 
 // Input character types.
-enum header_parse_inputs {
+enum HeaderParseInputs {
   INPUT_LWS,
   INPUT_CR,
   INPUT_LF,
@@ -388,7 +393,7 @@ enum header_parse_inputs {
 };
 
 // Parser states.
-enum header_parse_states {
+enum HeaderParseStates {
   ST_METHOD,     // Receiving the method
   ST_URL,        // Receiving the URL
   ST_PROTO,      // Receiving the protocol
@@ -401,8 +406,16 @@ enum header_parse_states {
   MAX_STATES
 };
 
+// This state machine has a number of bugs, for example it considers
+// "HTTP/1.1 200 OK\r\n"
+// "Foo\r\n"
+// to be a correctly terminated set of request headers. It also accepts "\n"
+// between header lines but requires "\r\n" at the end of the headers.
+// TODO(crbug): Consider using a different request parser. Maybe balsa headers
+// from QUICHE, if it doesn't increase the binary size too much.
+
 // State transition table
-const int parser_state[MAX_STATES][MAX_INPUTS] = {
+constexpr std::array<std::array<int, MAX_INPUTS>, MAX_STATES> kParserState = {{
     /* METHOD    */ {ST_URL, ST_ERR, ST_ERR, ST_ERR, ST_METHOD},
     /* URL       */ {ST_PROTO, ST_ERR, ST_ERR, ST_URL, ST_URL},
     /* PROTOCOL  */ {ST_ERR, ST_HEADER, ST_NAME, ST_ERR, ST_PROTO},
@@ -410,11 +423,12 @@ const int parser_state[MAX_STATES][MAX_INPUTS] = {
     /* NAME      */ {ST_SEPARATOR, ST_DONE, ST_ERR, ST_VALUE, ST_NAME},
     /* SEPARATOR */ {ST_SEPARATOR, ST_ERR, ST_ERR, ST_VALUE, ST_ERR},
     /* VALUE     */ {ST_VALUE, ST_HEADER, ST_NAME, ST_VALUE, ST_VALUE},
-    /* DONE      */ {ST_DONE, ST_DONE, ST_DONE, ST_DONE, ST_DONE},
-    /* ERR       */ {ST_ERR, ST_ERR, ST_ERR, ST_ERR, ST_ERR}};
+    /* DONE      */ {ST_ERR, ST_ERR, ST_DONE, ST_ERR, ST_ERR},
+    /* ERR       */ {ST_ERR, ST_ERR, ST_ERR, ST_ERR, ST_ERR},
+}};
 
 // Convert an input character to the parser's input token.
-int charToInput(char ch) {
+int CharToInputType(char ch) {
   switch (ch) {
     case ' ':
     case '\t':
@@ -431,76 +445,78 @@ int charToInput(char ch) {
 
 }  // namespace
 
-bool HttpServer::ParseHeaders(const char* data,
-                              size_t data_len,
+bool HttpServer::ParseHeaders(base::span<const uint8_t> data,
                               HttpServerRequestInfo* info,
                               size_t* ppos) {
-  size_t& pos = *ppos;
+  // Copy *ppos to avoid the compiler having to think about pointer aliasing.
+  size_t pos = *ppos;
+  // Make sure `pos` is always written back to `ppos` even if an extra return is
+  // added to the function.
+  absl::Cleanup set_ppos = [&pos, ppos]() { *ppos = pos; };
   int state = ST_METHOD;
-  std::string buffer;
+  size_t token_start = pos;
   std::string header_name;
-  std::string header_value;
-  while (pos < data_len) {
-    char ch = data[pos++];
-    int input = charToInput(ch);
-    int next_state = parser_state[state][input];
+  for (; pos < data.size(); ++pos) {
+    const char ch = data[pos];
+    if (ch == '\0') {
+      // Lots of code assumes strings don't contain null characters, so disallow
+      // them to be on the safe side.
+      return false;
+    }
+    const int input = CharToInputType(ch);
+    const int next_state = kParserState[state][input];
+    if (next_state == ST_ERR) {
+      // No point in continuing.
+      return false;
+    }
 
-    bool transition = (next_state != state);
-    HttpServerRequestInfo::HeadersMap::iterator it;
+    const bool transition = (next_state != state);
     if (transition) {
+      const auto token =
+          base::as_string_view(data.subspan(token_start, pos - token_start));
+      token_start = pos + 1;  // Skip the whitespace or separator.
       // Do any actions based on state transitions.
       switch (state) {
         case ST_METHOD:
-          info->method = buffer;
-          buffer.clear();
+          info->method = std::string(token);
           break;
         case ST_URL:
-          info->path = buffer;
-          buffer.clear();
+          info->path = std::string(token);
           break;
         case ST_PROTO:
-          if (buffer != "HTTP/1.1") {
-            LOG(ERROR) << "Cannot handle request with protocol: " << buffer;
-            next_state = ST_ERR;
+          if (token != "HTTP/1.1") {
+            LOG(ERROR) << "Cannot handle request with protocol: " << token;
+            return false;
           }
-          buffer.clear();
           break;
         case ST_NAME:
-          header_name = base::ToLowerASCII(buffer);
-          buffer.clear();
+          header_name = base::ToLowerASCII(token);
           break;
-        case ST_VALUE:
-          base::TrimWhitespaceASCII(buffer, base::TRIM_LEADING, &header_value);
-          it = info->headers.find(header_name);
+        case ST_VALUE: {
+          std::string_view header_value =
+              base::TrimWhitespaceASCII(token, base::TRIM_LEADING);
           // See the second paragraph ("A sender MUST NOT generate multiple
           // header fields...") of tools.ietf.org/html/rfc7230#section-3.2.2.
-          if (it == info->headers.end()) {
-            info->headers[header_name] = header_value;
-          } else {
-            it->second.append(",");
-            it->second.append(header_value);
+          auto [it, inserted] = info->headers.try_emplace(
+              std::move(header_name), std::move(header_value));
+          header_name.clear();  // Avoid use-after-move lint error.
+          if (!inserted) {
+            // Since the insertion did not happen, try_emplace() did not move
+            // the contents of `header_value` and we can still use it.
+            std::string& value = it->second;
+            value.reserve(value.size() + 1 + header_value.size());
+            value.push_back(',');
+            value.append(header_value);
           }
-          buffer.clear();
           break;
-        case ST_SEPARATOR:
-          break;
+        }
       }
       state = next_state;
     } else {
       // Do any actions based on current state
-      switch (state) {
-        case ST_METHOD:
-        case ST_URL:
-        case ST_PROTO:
-        case ST_VALUE:
-        case ST_NAME:
-          buffer.append(&ch, 1);
-          break;
-        case ST_DONE:
-          // We got CR to get this far, also need the LF
-          return (input == INPUT_LF);
-        case ST_ERR:
-          return false;
+      if (state == ST_DONE) {
+        ++pos;  // Point to the first byte of the body.
+        return true;
       }
     }
   }

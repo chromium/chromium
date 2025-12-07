@@ -9,6 +9,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -17,6 +18,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/strings/cstring_view.h"
 #include "base/strings/string_number_conversions.h"
 #include "sandbox/linux/suid/common/sandbox.h"
 
@@ -31,10 +33,11 @@ bool IsFileSystemAccessDenied() {
 }
 
 int GetHelperApi(base::Environment* env) {
-  std::string api_string;
+  std::optional<std::string> api_string =
+      env->GetVar(sandbox::kSandboxEnvironmentApiProvides);
   int api_number = 0;  // Assume API version 0 if no environment was found.
-  if (env->GetVar(sandbox::kSandboxEnvironmentApiProvides, &api_string) &&
-      !base::StringToInt(api_string, &api_number)) {
+  if (api_string.has_value() &&
+      !base::StringToInt(api_string.value(), &api_number)) {
     // It's an error if we could not convert the API number.
     api_number = -1;
   }
@@ -43,11 +46,10 @@ int GetHelperApi(base::Environment* env) {
 
 // Convert |var_name| from the environment |env| to an int.
 // Return -1 if the variable does not exist or the value cannot be converted.
-int EnvToInt(base::Environment* env, const char* var_name) {
-  std::string var_string;
+int EnvToInt(base::Environment* env, base::cstring_view var_name) {
+  std::string var_string = env->GetVar(var_name).value_or(std::string());
   int var_value = -1;
-  if (env->GetVar(var_name, &var_string) &&
-      !base::StringToInt(var_string, &var_value)) {
+  if (!var_string.empty() && !base::StringToInt(var_string, &var_value)) {
     var_value = -1;
   }
   return var_value;

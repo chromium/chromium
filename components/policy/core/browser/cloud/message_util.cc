@@ -68,9 +68,10 @@ int GetIDSForDMStatus(DeviceManagementStatus status) {
       return IDS_POLICY_DM_STATUS_INVALID_PACKAGED_DEVICE_FOR_KIOSK;
     case DM_STATUS_SERVICE_ILLEGAL_ACCOUNT_FOR_PACKAGED_EDU_LICENSE:
       return IDS_POLICY_DM_STATUS_SERVICE_DOMAIN_MISMATCH;
+    case DM_STATUS_SERVICE_ORG_UNIT_ENROLLMENT_LIMIT_EXCEEEDED:
+      return IDS_POLICY_DM_STATUS_ORG_UNIT_ENROLLMENT_LIMIT_EXCEEDED;
   }
-  NOTREACHED_IN_MIGRATION() << "Unhandled DM status " << status;
-  return IDS_POLICY_DM_STATUS_UNKNOWN_ERROR;
+  NOTREACHED() << "Unhandled DM status " << status;
 }
 
 int GetIDSForValidationStatus(CloudPolicyValidatorBase::Status status) {
@@ -106,10 +107,9 @@ int GetIDSForValidationStatus(CloudPolicyValidatorBase::Status status) {
     case CloudPolicyValidatorBase::VALIDATION_VALUE_ERROR:
       return IDS_POLICY_VALIDATION_VALUE_ERROR;
     case CloudPolicyValidatorBase::VALIDATION_STATUS_SIZE:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION() << "Unhandled validation status " << status;
-  return IDS_POLICY_VALIDATION_UNKNOWN_ERROR;
+  NOTREACHED() << "Unhandled validation status " << status;
 }
 
 int GetIDSForStoreStatus(CloudPolicyStore::Status status) {
@@ -130,8 +130,7 @@ int GetIDSForStoreStatus(CloudPolicyStore::Status status) {
     case CloudPolicyStore::STATUS_BAD_STATE:
       return IDS_POLICY_STORE_STATUS_BAD_STATE;
   }
-  NOTREACHED_IN_MIGRATION() << "Unhandled store status " << status;
-  return IDS_POLICY_STORE_STATUS_UNKNOWN_ERROR;
+  NOTREACHED() << "Unhandled store status " << status;
 }
 
 }  // namespace

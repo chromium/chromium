@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <string>
@@ -67,12 +68,6 @@ class NET_EXPORT_PRIVATE MemEntryImpl final
     kChild,
   };
 
-  // Provided to better document calls to |UpdateStateOnUse()|.
-  enum EntryModified {
-    ENTRY_WAS_NOT_MODIFIED,
-    ENTRY_WAS_MODIFIED,
-  };
-
   // Constructor for parent entries.
   MemEntryImpl(base::WeakPtr<MemBackendImpl> backend,
                const std::string& key,
@@ -101,24 +96,22 @@ class NET_EXPORT_PRIVATE MemEntryImpl final
   // The in-memory size of this entry to use for the purposes of eviction.
   int GetStorageSize() const;
 
-  // Update an entry's position in the backend LRU list and set |last_used_|. If
-  // the entry was modified, also update |last_modified_|.
-  void UpdateStateOnUse(EntryModified modified_enum);
+  // Update an entry's position in the backend LRU list and set |last_used_|.
+  void UpdateStateOnUse();
 
   // From disk_cache::Entry:
   void Doom() override;
   void Close() override;
   std::string GetKey() const override;
   base::Time GetLastUsed() const override;
-  base::Time GetLastModified() const override;
-  int32_t GetDataSize(int index) const override;
+  int64_t GetDataSize(int index) const override;
   int ReadData(int index,
-               int offset,
+               int64_t offset,
                IOBuffer* buf,
                int buf_len,
                CompletionOnceCallback callback) override;
   int WriteData(int index,
-                int offset,
+                int64_t offset,
                 IOBuffer* buf,
                 int buf_len,
                 CompletionOnceCallback callback,
@@ -146,7 +139,7 @@ class NET_EXPORT_PRIVATE MemEntryImpl final
                MemEntryImpl* parent,
                net::NetLog* net_log);
 
-  using EntryMap = std::map<int64_t, MemEntryImpl*>;
+  using EntryMap = std::map<int64_t, raw_ptr<MemEntryImpl, CtnExperimental>>;
 
   static const int kNumStreams = 3;
 
@@ -157,9 +150,9 @@ class NET_EXPORT_PRIVATE MemEntryImpl final
   int InternalReadData(int index, int offset, IOBuffer* buf, int buf_len);
   int InternalWriteData(int index, int offset, IOBuffer* buf, int buf_len,
                         bool truncate);
-  int InternalReadSparseData(int64_t offset, IOBuffer* buf, int buf_len);
-  int InternalWriteSparseData(int64_t offset, IOBuffer* buf, int buf_len);
-  RangeResult InternalGetAvailableRange(int64_t offset, int len);
+  int InternalReadSparseData(uint64_t offset, IOBuffer* buf, size_t buf_len);
+  int InternalWriteSparseData(uint64_t offset, IOBuffer* buf, size_t buf_len);
+  RangeResult InternalGetAvailableRange(uint64_t offset, size_t len);
 
   // Initializes the children map and sparse info. This method is only called
   // on a parent entry.
@@ -169,30 +162,29 @@ class NET_EXPORT_PRIVATE MemEntryImpl final
   // child entry or this entry itself if |offset| points to the first range.
   // If such entry does not exist and |create| is true, a new child entry is
   // created.
-  MemEntryImpl* GetChild(int64_t offset, bool create);
+  MemEntryImpl* GetChild(uint64_t offset, bool create);
 
   // Returns an interval describing what's stored in the child entry pointed to
   // by i, in global coordinates.
   // Precondition: i != children_.end();
-  net::Interval<int64_t> ChildInterval(
+  net::Interval<uint64_t> ChildInterval(
       MemEntryImpl::EntryMap::const_iterator i);
 
   // Compact vectors to try to avoid over-allocation due to exponential growth.
   void Compact();
 
   std::string key_;
-  std::vector<char> data_[kNumStreams];  // User data.
+  std::array<std::vector<char>, kNumStreams> data_;  // User data.
   uint32_t ref_count_ = 0;
 
   int64_t child_id_;     // The ID of a child entry.
-  int child_first_pos_ = 0;  // The position of the first byte in a child
-                             // entry. 0 here is beginning of child, not of
-                             // the entire file.
+  uint64_t child_first_pos_ = 0;  // The position of the first byte in a child
+                                  // entry. 0 here is beginning of child, not of
+                                  // the entire file.
   // Pointer to the parent entry, or nullptr if this entry is a parent entry.
   raw_ptr<MemEntryImpl> parent_;
   std::unique_ptr<EntryMap> children_;
 
-  base::Time last_modified_;
   base::Time last_used_;
   base::WeakPtr<MemBackendImpl> backend_;  // Back pointer to the cache.
   bool doomed_ = false;  // True if this entry was removed from the cache.

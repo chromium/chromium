@@ -86,10 +86,10 @@ CurrencyFormatter::CurrencyFormatter(const std::string& currency_code,
   icu_formatter_->setMaximumFractionDigits(kMaximumNumFractionalDigits);
 }
 
-CurrencyFormatter::~CurrencyFormatter() {}
+CurrencyFormatter::~CurrencyFormatter() = default;
 
-void CurrencyFormatter::SetMaxFractionalDigits(const int maxFractionalDigits) {
-  icu_formatter_->setMaximumFractionDigits(maxFractionalDigits);
+void CurrencyFormatter::SetMaxFractionalDigits(int max_fractional_digits) {
+  icu_formatter_->setMaximumFractionDigits(max_fractional_digits);
 }
 
 std::u16string CurrencyFormatter::Format(const std::string& amount) {

@@ -15,8 +15,8 @@
 #include "mojo/public/cpp/bindings/tests/pickled_types_blink.h"
 #include "mojo/public/cpp/bindings/tests/pickled_types_chromium.h"
 #include "mojo/public/cpp/bindings/tests/variant_test_util.h"
-#include "mojo/public/interfaces/bindings/tests/test_native_types.mojom-blink.h"
-#include "mojo/public/interfaces/bindings/tests/test_native_types.mojom.h"
+#include "mojo/public/interfaces/bindings/tests/test_native_types.test-mojom-blink.h"
+#include "mojo/public/interfaces/bindings/tests/test_native_types.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo {
@@ -135,13 +135,13 @@ class BlinkPicklePasserImpl : public blink::PicklePasser {
     std::move(callback).Run(std::move(container));
   }
 
-  void PassPickles(WTF::Vector<PickledStructBlink> pickles,
+  void PassPickles(::blink::Vector<PickledStructBlink> pickles,
                    PassPicklesCallback callback) override {
     std::move(callback).Run(std::move(pickles));
   }
 
   void PassPickleArrays(
-      WTF::Vector<WTF::Vector<PickledStructBlink>> pickle_arrays,
+      ::blink::Vector<::blink::Vector<PickledStructBlink>> pickle_arrays,
       PassPickleArraysCallback callback) override {
     std::move(callback).Run(std::move(pickle_arrays));
   }

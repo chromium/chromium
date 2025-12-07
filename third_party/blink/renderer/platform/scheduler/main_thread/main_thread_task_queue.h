@@ -76,7 +76,8 @@ class PLATFORM_EXPORT MainThreadTaskQueue
     kFramePausable = 14,
     kFrameUnpausable = 15,
     kV8 = 16,
-    kV8LowPriority = 27,
+    kV8UserVisible = 27,
+    kV8BestEffort = 28,
     // 17 : kIPC, obsolete
     kInput = 18,
 
@@ -96,7 +97,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
 
     // Used to group multiple types when calculating Expected Queueing Time.
     kOther = 23,
-    kCount = 28
+    kCount = 29
   };
 
   // The ThrottleHandle controls throttling and unthrottling the queue. When
@@ -135,11 +136,6 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   static base::sequence_manager::QueueName NameForQueueType(
       QueueType queue_type);
 
-  // Returns true if task queues of the given queue type can be created on a
-  // per-frame basis, and false if they are only created on a shared basis for
-  // the entire main thread.
-  static bool IsPerFrameTaskQueue(QueueType);
-
   using QueueTraitsKeyType = int;
 
   // QueueTraits represent the deferrable, throttleable, pausable, and freezable
@@ -159,17 +155,15 @@ class PLATFORM_EXPORT MainThreadTaskQueue
       kLoadingControl = 4,
       kFindInPage = 5,
       kExperimentalDatabase = 6,
-      kJavaScriptTimer = 7,
-      kHighPriorityLocalFrame = 8,
-      kCompositor = 9,  // Main-thread only.
-      kInput = 10,
-      kPostMessageForwarding = 11,
-      kInternalNavigationCancellation = 12,
-      kRenderBlocking = 13,
-      kLow = 14,
-      kAsyncScript = 15,
+      kHighPriorityLocalFrame = 7,
+      kCompositor = 8,  // Main-thread only.
+      kInput = 9,
+      kPostMessageForwarding = 10,
+      kInternalNavigationCancellation = 11,
+      kRenderBlocking = 12,
+      kLow = 13,
 
-      kMaxValue = kAsyncScript
+      kMaxValue = kLow
     };
 
     // Bit width required for the PrioritisationType enumeration
@@ -232,6 +226,11 @@ class PLATFORM_EXPORT MainThreadTaskQueue
       return *this;
     }
 
+    QueueTraits SetCanRunInBFCache(bool value) {
+      can_run_in_bfcache = value;
+      return *this;
+    }
+
     QueueTraits SetPrioritisationType(PrioritisationType type) {
       prioritisation_type = type;
       return *this;
@@ -244,7 +243,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
 
     bool operator==(const QueueTraits& other) const = default;
 
-    // Return a key suitable for WTF::HashMap.
+    // Return a key suitable for HashMap.
     QueueTraitsKeyType Key() const {
       // offset for shifting bits to compute |key|.
       // |key| starts at 1 since 0 and -1 are used for empty/deleted values.
@@ -258,6 +257,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
       key |= can_be_frozen << (offset++);
       key |= can_run_in_background << (offset++);
       key |= can_run_when_virtual_time_paused << (offset++);
+      key |= can_run_in_bfcache << (offset++);
       key |= can_be_paused_for_android_webview << (offset++);
       key |= static_cast<int>(prioritisation_type) << offset;
       offset += kPrioritisationTypeWidthBits;
@@ -274,6 +274,13 @@ class PLATFORM_EXPORT MainThreadTaskQueue
     bool can_be_frozen : 1 = false;
     bool can_run_in_background : 1 = true;
     bool can_run_when_virtual_time_paused : 1 = true;
+    // Normally, a freezable task queue is paused when its page is frozen. A
+    // page can be frozen when it enters the Back-Forward Cache, or when the
+    // browser freezes pages to save resources. This flag marks tasks that
+    // should run only when the page is frozen for BFCache. This is useful for
+    // tasks that need to evict the page from BFCache, e.g., a message from a
+    // SharedWorker.
+    bool can_run_in_bfcache : 1 = false;
     bool can_be_paused_for_android_webview : 1 = false;
     PrioritisationType prioritisation_type = PrioritisationType::kRegular;
   };
@@ -345,6 +352,12 @@ class PLATFORM_EXPORT MainThreadTaskQueue
 
     QueueCreationParams SetCanRunWhenVirtualTimePaused(bool value) {
       queue_traits = queue_traits.SetCanRunWhenVirtualTimePaused(value);
+      ApplyQueueTraitsToSpec();
+      return *this;
+    }
+
+    QueueCreationParams SetCanRunInBFCache(bool value) {
+      queue_traits = queue_traits.SetCanRunInBFCache(value);
       ApplyQueueTraitsToSpec();
       return *this;
     }
@@ -433,6 +446,8 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   bool CanRunWhenVirtualTimePaused() const {
     return queue_traits_.can_run_when_virtual_time_paused;
   }
+
+  bool CanRunInBFCache() const { return queue_traits_.can_run_in_bfcache; }
 
   QueueTraits GetQueueTraits() const { return queue_traits_; }
 

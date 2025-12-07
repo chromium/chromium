@@ -13,14 +13,17 @@
 #include "base/mac/mac_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/run_until.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest_mac.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -29,6 +32,9 @@
 #import "ui/base/cocoa/window_size_constants.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #import "ui/base/test/scoped_fake_full_keyboard_access.h"
 #import "ui/base/test/windowed_nsnotification_observer.h"
 #include "ui/compositor/layer.h"
@@ -36,6 +42,7 @@
 #import "ui/events/test/cocoa_test_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/controls/button/label_button.h"
@@ -47,11 +54,20 @@
 #include "ui/views/widget/native_widget_mac.h"
 #include "ui/views/widget/native_widget_private.h"
 #include "ui/views/widget/widget_interactive_uitest_utils.h"
+#include "ui/views/widget/widget_observer.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace {
 // "{}" in base64encode, to create some dummy restoration data.
 const std::string kDummyWindowRestorationData = "e30=";
+
+class WidgetModalVisibilityObserver : public views::WidgetObserver {
+ public:
+  MOCK_METHOD(void,
+              OnWidgetWindowModalVisibilityChanged,
+              (views::Widget*, bool),
+              (override));
+};
 }  // namespace
 
 // Donates an implementation of -[NSAnimation stopAnimation] which calls the
@@ -68,7 +84,6 @@ const std::string kDummyWindowRestorationData = "e30=";
 @property(readonly, nonatomic) int invalidateShadowCount;
 @property(assign, nonatomic) BOOL fakeOnInactiveSpace;
 @property(assign, nonatomic) bool* deallocFlag;
-+ (void)waitForDealloc;
 @end
 
 // Used to mock BridgedContentView so that calls to drawRect: can be
@@ -95,7 +110,8 @@ namespace views::test {
 class BridgedNativeWidgetTestApi {
  public:
   explicit BridgedNativeWidgetTestApi(NSWindow* window)
-      : bridge_(*NativeWidgetMacNSWindowHost::GetFromNativeWindow(window)
+      : bridge_(*NativeWidgetMacNSWindowHost::GetFromNativeWindow(
+                     gfx::NativeWindow(window))
                      ->GetInProcessNSWindowBridge()) {}
 
   explicit BridgedNativeWidgetTestApi(Widget* widget)
@@ -169,6 +185,15 @@ class NativeWidgetMacTest : public WidgetTest {
   NativeWidgetMacTest(const NativeWidgetMacTest&) = delete;
   NativeWidgetMacTest& operator=(const NativeWidgetMacTest&) = delete;
 
+  // TODO(ellyjones): Once DialogDelegate::CreateDialogWidget can accept a
+  // unique_ptr, return unique_ptr here.
+  static DialogDelegateView* MakeModalDialog(ui::mojom::ModalType modal_type) {
+    auto dialog = std::make_unique<DialogDelegateView>(
+        DialogDelegateView::CreatePassKey());
+    dialog->SetModalType(modal_type);
+    return dialog.release();
+  }
+
   // Make an NSWindow with a close button and a title bar to use as a parent.
   // This NSWindow is backed by a widget that is not exposed to the caller.
   // To destroy the Widget, the native NSWindow must be closed.
@@ -218,8 +243,9 @@ class WidgetChangeObserver : public TestWidgetObserver {
   WidgetChangeObserver& operator=(const WidgetChangeObserver&) = delete;
 
   void WaitForVisibleCounts(int gained, int lost) {
-    if (gained_visible_count_ >= gained && lost_visible_count_ >= lost)
+    if (gained_visible_count_ >= gained && lost_visible_count_ >= lost) {
       return;
+    }
 
     target_gained_visible_count_ = gained;
     target_lost_visible_count_ = lost;
@@ -237,12 +263,12 @@ class WidgetChangeObserver : public TestWidgetObserver {
 
  private:
   // WidgetObserver:
-  void OnWidgetVisibilityChanged(Widget* widget,
-                                 bool visible) override {
+  void OnWidgetVisibilityChanged(Widget* widget, bool visible) override {
     ++(visible ? gained_visible_count_ : lost_visible_count_);
     if (run_loop_ && gained_visible_count_ >= target_gained_visible_count_ &&
-        lost_visible_count_ >= target_lost_visible_count_)
+        lost_visible_count_ >= target_lost_visible_count_) {
       run_loop_->Quit();
+    }
   }
 
   int gained_visible_count_ = 0;
@@ -273,8 +299,8 @@ class CustomTooltipView : public View, public ViewObserver {
   METADATA_HEADER(CustomTooltipView, View)
 
  public:
-  CustomTooltipView(const std::u16string& tooltip, View* tooltip_handler)
-      : tooltip_(tooltip) {
+  CustomTooltipView(const std::u16string& tooltip, View* tooltip_handler) {
+    SetTooltipText(tooltip);
     if (tooltip_handler) {
       tooltip_handler_observation_.Observe(tooltip_handler);
     }
@@ -282,11 +308,6 @@ class CustomTooltipView : public View, public ViewObserver {
 
   CustomTooltipView(const CustomTooltipView&) = delete;
   CustomTooltipView& operator=(const CustomTooltipView&) = delete;
-
-  // View:
-  std::u16string GetTooltipText(const gfx::Point& p) const override {
-    return tooltip_;
-  }
 
   View* GetTooltipHandlerForPoint(const gfx::Point& point) override {
     return tooltip_handler_observation_.IsObserving()
@@ -300,7 +321,6 @@ class CustomTooltipView : public View, public ViewObserver {
   }
 
  private:
-  std::u16string tooltip_;
   base::ScopedObservation<View, ViewObserver> tooltip_handler_observation_{
       this};
 };
@@ -416,12 +436,13 @@ TEST_F(NativeWidgetMacTest, DISABLED_HideAndShowExternally) {
 TEST_F(NativeWidgetMacTest, NotImplemented) {
   NSWindow* native_parent = MakeBorderlessNativeParent();
   NativeWidgetMacNSWindowHost* window_host =
-      NativeWidgetMacNSWindowHost::GetFromNativeWindow(native_parent);
+      NativeWidgetMacNSWindowHost::GetFromNativeWindow(
+          gfx::NativeWindow(native_parent));
 
   EXPECT_FALSE(window_host->native_widget_mac()->WillExecuteCommand(
-                   5001, WindowOpenDisposition::CURRENT_TAB, true));
+      5001, WindowOpenDisposition::CURRENT_TAB, true));
   EXPECT_FALSE(window_host->native_widget_mac()->ExecuteCommand(
-                   5001, WindowOpenDisposition::CURRENT_TAB, true));
+      5001, WindowOpenDisposition::CURRENT_TAB, true));
 
   [native_parent close];
 }
@@ -430,7 +451,8 @@ TEST_F(NativeWidgetMacTest, NotImplemented) {
 TEST_F(NativeWidgetMacTest, WindowFrameTitlebarHeight) {
   NSWindow* native_parent = MakeBorderlessNativeParent();
   NativeWidgetMacNSWindowHost* window_host =
-      NativeWidgetMacNSWindowHost::GetFromNativeWindow(native_parent);
+      NativeWidgetMacNSWindowHost::GetFromNativeWindow(
+          gfx::NativeWindow(native_parent));
 
   bool override_titlebar_height = true;
   float titlebar_height = 100.0;
@@ -457,13 +479,15 @@ class PaintCountView : public View {
   void OnPaint(gfx::Canvas* canvas) override {
     EXPECT_TRUE(GetWidget()->IsVisible());
     ++paint_count_;
-    if (run_loop_ && paint_count_ == target_paint_count_)
+    if (run_loop_ && paint_count_ == target_paint_count_) {
       run_loop_->Quit();
+    }
   }
 
   void WaitForPaintCount(int target) {
-    if (paint_count_ == target)
+    if (paint_count_ == target) {
       return;
+    }
 
     target_paint_count_ = target;
     base::RunLoop run_loop;
@@ -514,7 +538,8 @@ TEST_F(NativeWidgetMacTest, ChildWidgetOnInactiveSpace) {
 // bounds whilst minimized.
 TEST_F(NativeWidgetMacTest, MiniaturizeExternally) {
   WidgetAutoclosePtr widget(new Widget);
-  Widget::InitParams init_params(Widget::InitParams::TYPE_WINDOW);
+  Widget::InitParams init_params(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                                 Widget::InitParams::TYPE_WINDOW);
   widget->Init(std::move(init_params));
 
   auto* view = widget->GetContentsView()->AddChildView(
@@ -552,7 +577,7 @@ TEST_F(NativeWidgetMacTest, MiniaturizeExternally) {
     views::test::PropertyWaiter minimize_waiter(
         base::BindRepeating(&Widget::IsMinimized,
                             base::Unretained(widget.get())),
-        true);
+        true, base::Seconds(5));
     [ns_window performMiniaturize:nil];
     EXPECT_TRUE(minimize_waiter.Wait());
   }
@@ -636,11 +661,12 @@ TEST_F(NativeWidgetMacTest, MiniaturizeExternally) {
   EXPECT_EQ(3, view->paint_count());
 }
 
-// Tests that NativeWidgetMac::Show(ui::SHOW_STATE_MINIMIZED) minimizes the
-// widget (previously it ordered its window out).
+// Tests that NativeWidgetMac::Show(ui::mojom::WindowShowState::kMinimized)
+// minimizes the widget (previously it ordered its window out).
 TEST_F(NativeWidgetMacTest, MinimizeByNativeShow) {
   WidgetAutoclosePtr widget(new Widget);
-  Widget::InitParams init_params(Widget::InitParams::TYPE_WINDOW);
+  Widget::InitParams init_params(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                                 Widget::InitParams::TYPE_WINDOW);
   widget->Init(std::move(init_params));
 
   auto* view = widget->GetContentsView()->AddChildView(
@@ -655,7 +681,7 @@ TEST_F(NativeWidgetMacTest, MinimizeByNativeShow) {
   {
     views::test::PropertyWaiter visibility_waiter(
         base::BindRepeating(&Widget::IsVisible, base::Unretained(widget.get())),
-        true);
+        true, base::Seconds(5));
     widget->Show();
     EXPECT_TRUE(visibility_waiter.Wait());
   }
@@ -672,7 +698,7 @@ TEST_F(NativeWidgetMacTest, MinimizeByNativeShow) {
     NativeWidgetMac* native_widget =
         static_cast<views::NativeWidgetMac*>(widget->native_widget());
     gfx::Rect restore_bounds(100, 100, 300, 300);
-    native_widget->Show(ui::SHOW_STATE_MINIMIZED, restore_bounds);
+    native_widget->Show(ui::mojom::WindowShowState::kMinimized, restore_bounds);
 
     EXPECT_TRUE(minimize_waiter.Wait());
   }
@@ -693,8 +719,13 @@ TEST_F(NativeWidgetMacTest, MiniaturizeFramelessWindow) {
   EXPECT_FALSE(widget->IsMinimized());
 
   // But this should work.
-  widget->Minimize();
-  base::RunLoop().RunUntilIdle();
+  {
+    views::test::PropertyWaiter minimize_waiter(
+        base::BindRepeating(&Widget::IsMinimized, base::Unretained(widget)),
+        true, base::Seconds(5));
+    widget->Minimize();
+    EXPECT_TRUE(minimize_waiter.Wait());
+  }
 
   EXPECT_TRUE(widget->IsMinimized());
 
@@ -760,7 +791,8 @@ TEST_F(NativeWidgetMacTest, SetCursor) {
 
   // Use an event generator to ask views code to set the cursor. However, note
   // that this does not cause Cocoa to generate tracking rectangle updates.
-  ui::test::EventGenerator event_generator(GetContext(), widget_window);
+  ui::test::EventGenerator event_generator(GetContext(),
+                                           gfx::NativeWindow(widget_window));
 
   // Move the mouse over the first view, then simulate a tracking rectangle
   // update. Verify that the cursor changed from arrow to hand type.
@@ -800,7 +832,7 @@ TEST_F(NativeWidgetMacTest, AccessibilityIntegration) {
   const std::u16string test_string = u"Green";
   views::Label* label = new views::Label(test_string);
   label->SetBounds(0, 0, 100, 100);
-  widget->GetContentsView()->AddChildView(label);
+  widget->GetContentsView()->AddChildViewRaw(label);
   widget->Show();
 
   // Accessibility hit tests come in Cocoa screen coordinates.
@@ -829,7 +861,7 @@ Widget* AttachPopupToNativeParent(NSWindow* native_parent) {
   // manager.
   Widget* child = new Widget;
   Widget::InitParams init_params(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
-  init_params.parent = anchor_view;
+  init_params.parent = gfx::NativeView(anchor_view);
   init_params.child = true;
   init_params.type = Widget::InitParams::TYPE_POPUP;
   child->Init(std::move(init_params));
@@ -842,8 +874,8 @@ Widget* AttachPopupToNativeParent(NSWindow* native_parent) {
 TEST_F(NativeWidgetMacTest, NonWidgetParent) {
   NSWindow* native_parent = MakeBorderlessNativeParent();
 
-  Widget::Widgets children;
-  Widget::GetAllChildWidgets([native_parent contentView], &children);
+  Widget::Widgets children =
+      Widget::GetAllChildWidgets(gfx::NativeView(native_parent.contentView));
   EXPECT_EQ(1u, children.size());
 
   Widget* child = AttachPopupToNativeParent(native_parent);
@@ -854,7 +886,7 @@ TEST_F(NativeWidgetMacTest, NonWidgetParent) {
   internal::NativeWidgetPrivate* top_level_widget =
       internal::NativeWidgetPrivate::GetTopLevelNativeWidget(
           child->GetNativeView());
-  EXPECT_EQ(Widget::GetWidgetForNativeWindow(native_parent),
+  EXPECT_EQ(Widget::GetWidgetForNativeWindow(gfx::NativeWindow(native_parent)),
             top_level_widget->GetWidget());
   EXPECT_NE(child, top_level_widget->GetWidget());
 
@@ -864,7 +896,8 @@ TEST_F(NativeWidgetMacTest, NonWidgetParent) {
           child->GetNativeWindow());
   EXPECT_EQ(bridged_native_widget_host->parent()
                 ->native_widget_mac()
-                ->GetNativeWindow(),
+                ->GetNativeWindow()
+                .GetNativeNSWindow(),
             native_parent);
 
   const gfx::Rect child_bounds(50, 50, 200, 100);
@@ -875,11 +908,13 @@ TEST_F(NativeWidgetMacTest, NonWidgetParent) {
   child->Show();
   EXPECT_TRUE(child->IsVisible());
   EXPECT_EQ(1u, [[native_parent childWindows] count]);
-  EXPECT_EQ(child->GetNativeWindow(), [native_parent childWindows][0]);
+  EXPECT_EQ(child->GetNativeWindow().GetNativeNSWindow(),
+            [native_parent childWindows][0]);
   EXPECT_EQ(native_parent,
             [child->GetNativeWindow().GetNativeNSWindow() parentWindow]);
 
-  Widget::GetAllChildWidgets([native_parent contentView], &children);
+  children.merge(
+      Widget::GetAllChildWidgets(gfx::NativeView(native_parent.contentView)));
   ASSERT_EQ(2u, children.size());
   EXPECT_EQ(1u, children.count(child));
 
@@ -894,7 +929,8 @@ TEST_F(NativeWidgetMacTest, NonWidgetParent) {
   [anchor_view removeFromSuperview];
   EXPECT_EQ(bridged_native_widget_host->parent()
                 ->native_widget_mac()
-                ->GetNativeWindow(),
+                ->GetNativeWindow()
+                .GetNativeNSWindow(),
             native_parent);
 
   // Closing the parent should close and destroy the child.
@@ -906,31 +942,36 @@ TEST_F(NativeWidgetMacTest, NonWidgetParent) {
   [native_parent close];
 }
 
-// Tests that CloseAllSecondaryWidgets behaves in various configurations.
-TEST_F(NativeWidgetMacTest, CloseAllSecondaryWidgetsValidState) {
+// Tests that CloseAllWidgets behaves in various configurations.
+TEST_F(NativeWidgetMacTest, CloseAllWidgetsValidState) {
   NativeWidgetMacTestWindow* __weak last_window_weak = nil;
   bool window_deallocated = false;
   @autoreleasepool {
-    // First verify the behavior of CloseAllSecondaryWidgets in the normal case,
-    // and how [NSApp windows] changes in response to Widget closure.
+    // First verify the behavior of CloseAllWidgets in the normal case, and how
+    // [NSApp windows] changes in response to Widget closure.
     Widget* widget = CreateWidgetWithTestWindow(
-        Widget::InitParams(Widget::InitParams::TYPE_WINDOW), &last_window_weak);
+        Widget::InitParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                           Widget::InitParams::TYPE_WINDOW),
+        &last_window_weak);
     last_window_weak.deallocFlag = &window_deallocated;
     TestWidgetObserver observer(widget);
     EXPECT_TRUE([NSApp.windows containsObject:last_window_weak]);
-    Widget::CloseAllSecondaryWidgets();
+    Widget::CloseAllWidgets();
     EXPECT_TRUE(observer.widget_closed());
   }
 
-  EXPECT_TRUE(window_deallocated);
+  // Since macOS 26 Tahoe the NSWindow may not be sychronously destroyed by
+  // -[NSWindow close].
+  EXPECT_TRUE(base::test::RunUntil([&]() { return window_deallocated; }));
   window_deallocated = false;
 
   NativeWidgetMacTestWindow* __strong last_window_strong = nil;
   @autoreleasepool {
     // Repeat, but now retain a reference and close the window before
-    // CloseAllSecondaryWidgets().
+    // CloseAllWidgets().
     Widget* widget = CreateWidgetWithTestWindow(
-        Widget::InitParams(Widget::InitParams::TYPE_WINDOW),
+        Widget::InitParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                           Widget::InitParams::TYPE_WINDOW),
         &last_window_strong);
     last_window_strong.deallocFlag = &window_deallocated;
     TestWidgetObserver observer(widget);
@@ -940,10 +981,11 @@ TEST_F(NativeWidgetMacTest, CloseAllSecondaryWidgetsValidState) {
 
   EXPECT_FALSE(window_deallocated);
   @autoreleasepool {
-    Widget::CloseAllSecondaryWidgets();
+    Widget::CloseAllWidgets();
     last_window_strong = nil;
   }
-  EXPECT_TRUE(window_deallocated);
+
+  EXPECT_TRUE(base::test::RunUntil([&]() { return window_deallocated; }));
 
   // Repeat, with two Widgets. We can't control the order of window closure.
   // If the parent is closed first, it should tear down the child while
@@ -960,7 +1002,7 @@ TEST_F(NativeWidgetMacTest, CloseAllSecondaryWidgetsValidState) {
       containsObject:parent->GetNativeWindow().GetNativeNSWindow()]);
   EXPECT_TRUE([[NSApp windows]
       containsObject:child->GetNativeWindow().GetNativeNSWindow()]);
-  Widget::CloseAllSecondaryWidgets();
+  Widget::CloseAllWidgets();
   EXPECT_TRUE(parent_observer.widget_closed());
   EXPECT_TRUE(child_observer.widget_closed());
 }
@@ -978,7 +1020,7 @@ TEST_F(NativeWidgetMacTest, NonWidgetParentLastReference) {
     NativeWidgetMacTestWindow* window;
     Widget::InitParams init_params =
         CreateParams(Widget::InitParams::TYPE_POPUP);
-    init_params.parent = [native_parent contentView];
+    init_params.parent = gfx::NativeView(native_parent.contentView);
     init_params.bounds = gfx::Rect(0, 0, 100, 200);
     CreateWidgetWithTestWindow(std::move(init_params), &window);
     window.deallocFlag = &child_dealloced;
@@ -998,12 +1040,8 @@ TEST_F(NativeWidgetMacTest, NonWidgetParentLastReference) {
   // As of macOS 13 (Ventura), it seems that exiting the autoreleasepool
   // block does not immediately trigger a release of its contents. Wait
   // here for the deallocations to occur before proceeding.
-  while (!child_dealloced || !native_parent_dealloced) {
-    [NativeWidgetMacTestWindow waitForDealloc];
-  }
-
-  EXPECT_TRUE(child_dealloced);
-  EXPECT_TRUE(native_parent_dealloced);
+  EXPECT_TRUE(base::test::RunUntil([&]() { return child_dealloced; }));
+  EXPECT_TRUE(base::test::RunUntil([&]() { return native_parent_dealloced; }));
 }
 
 // Tests visibility for a child of a native NSWindow, reshowing after a
@@ -1170,7 +1208,8 @@ TEST_F(NativeWidgetMacTest, TwoWidgetTooltips) {
 // Regression test for https://crbug.com/942452.
 TEST_F(NativeWidgetMacTest, CapturedMouseUpClearsDrag) {
   MouseTrackingWidget* widget = new MouseTrackingWidget;
-  Widget::InitParams init_params(Widget::InitParams::TYPE_WINDOW);
+  Widget::InitParams init_params(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                                 Widget::InitParams::TYPE_WINDOW);
   widget->Init(std::move(init_params));
 
   NSWindow* window = widget->GetNativeWindow().GetNativeNSWindow();
@@ -1214,14 +1253,6 @@ TEST_F(NativeWidgetMacTest, CapturedMouseUpClearsDrag) {
 
 namespace {
 
-// TODO(ellyjones): Once DialogDelegate::CreateDialogWidget can accept a
-// unique_ptr, return unique_ptr here.
-DialogDelegateView* MakeModalDialog(ui::ModalType modal_type) {
-  auto dialog = std::make_unique<DialogDelegateView>();
-  dialog->SetModalType(modal_type);
-  return dialog.release();
-}
-
 // While in scope, waits for a call to a swizzled objective C method, then quits
 // a nested run loop.
 class ScopedSwizzleWaiter {
@@ -1244,8 +1275,9 @@ class ScopedSwizzleWaiter {
   }
 
   void WaitForMethod() {
-    if (method_called_)
+    if (method_called_) {
       return;
+    }
 
     base::RunLoop run_loop;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -1261,8 +1293,9 @@ class ScopedSwizzleWaiter {
   void CallMethodInternal(id receiver, SEL selector) {
     DCHECK(!method_called_);
     method_called_ = true;
-    if (run_loop_)
+    if (run_loop_) {
       run_loop_->Quit();
+    }
     swizzler_.InvokeOriginal<void>(receiver, selector);
   }
 
@@ -1280,8 +1313,8 @@ ScopedSwizzleWaiter* ScopedSwizzleWaiter::instance_ = nullptr;
 // animation). However, testing with overlapping swizzlers is tricky.
 Widget* ShowChildModalWidgetAndWait(NSWindow* native_parent) {
   Widget* modal_dialog_widget = views::DialogDelegate::CreateDialogWidget(
-      MakeModalDialog(ui::MODAL_TYPE_CHILD), nullptr,
-      [native_parent contentView]);
+      NativeWidgetMacTest::MakeModalDialog(ui::mojom::ModalType::kChild),
+      gfx::NativeWindow(), gfx::NativeView(native_parent.contentView));
 
   modal_dialog_widget->SetBounds(gfx::Rect(50, 50, 200, 150));
   EXPECT_FALSE(modal_dialog_widget->IsVisible());
@@ -1312,8 +1345,8 @@ Widget* ShowChildModalWidgetAndWait(NSWindow* native_parent) {
 // sheet animation is blocking.
 Widget* ShowWindowModalWidget(NSWindow* native_parent) {
   Widget* sheet_widget = views::DialogDelegate::CreateDialogWidget(
-      MakeModalDialog(ui::MODAL_TYPE_WINDOW), nullptr,
-      [native_parent contentView]);
+      NativeWidgetMacTest::MakeModalDialog(ui::mojom::ModalType::kWindow),
+      gfx::NativeWindow(), gfx::NativeView(native_parent.contentView));
   sheet_widget->Show();
   return sheet_widget;
 }
@@ -1381,7 +1414,7 @@ TEST_F(NativeWidgetMacTest, ConfirmMinimizedWindowRestoration) {
   params.native_widget =
       CreatePlatformNativeWidgetImpl(widget, kStubCapture, nullptr);
   // Start the window off in the dock.
-  params.show_state = ui::SHOW_STATE_MINIMIZED;
+  params.show_state = ui::mojom::WindowShowState::kMinimized;
   params.workspace = kDummyWindowRestorationData;
   widget->Init(std::move(params));
 
@@ -1402,7 +1435,7 @@ TEST_F(NativeWidgetMacTest, ConfirmVisibleWindowRestoration) {
   Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
   params.native_widget =
       CreatePlatformNativeWidgetImpl(widget, kStubCapture, nullptr);
-  params.show_state = ui::SHOW_STATE_NORMAL;
+  params.show_state = ui::mojom::WindowShowState::kNormal;
   params.workspace = kDummyWindowRestorationData;
   widget->Init(std::move(params));
 
@@ -1421,8 +1454,8 @@ TEST_F(NativeWidgetMacTest, ConfirmVisibleWindowRestoration) {
 TEST_F(NativeWidgetMacTest, ShowAnimationControl) {
   NSWindow* native_parent = MakeBorderlessNativeParent();
   Widget* modal_dialog_widget = views::DialogDelegate::CreateDialogWidget(
-      MakeModalDialog(ui::MODAL_TYPE_CHILD), nullptr,
-      [native_parent contentView]);
+      MakeModalDialog(ui::mojom::ModalType::kChild), gfx::NativeWindow(),
+      gfx::NativeView(native_parent.contentView));
 
   modal_dialog_widget->SetBounds(gfx::Rect(50, 50, 200, 150));
   EXPECT_FALSE(modal_dialog_widget->IsVisible());
@@ -1489,8 +1522,8 @@ TEST_F(NativeWidgetMacTest, MAYBE_WindowModalSheet) {
   NSWindow* native_parent = MakeClosableTitledNativeParent();
 
   Widget* sheet_widget = views::DialogDelegate::CreateDialogWidget(
-      MakeModalDialog(ui::MODAL_TYPE_WINDOW), nullptr,
-      [native_parent contentView]);
+      MakeModalDialog(ui::mojom::ModalType::kWindow), gfx::NativeWindow(),
+      gfx::NativeView(native_parent.contentView));
 
   WidgetChangeObserver widget_observer(sheet_widget);
 
@@ -1529,8 +1562,8 @@ TEST_F(NativeWidgetMacTest, MAYBE_WindowModalSheet) {
                 *did_observe_ptr = true;
               }];
 
-  Widget::Widgets children;
-  Widget::GetAllChildWidgets([native_parent contentView], &children);
+  Widget::Widgets children =
+      Widget::GetAllChildWidgets(gfx::NativeView(native_parent.contentView));
   ASSERT_EQ(2u, children.size());
 
   sheet_widget->Show();  // Should run the above block, then animate the sheet.
@@ -1538,7 +1571,8 @@ TEST_F(NativeWidgetMacTest, MAYBE_WindowModalSheet) {
   [[NSNotificationCenter defaultCenter] removeObserver:observer];
 
   // Ensure sheets are included as a child.
-  Widget::GetAllChildWidgets([native_parent contentView], &children);
+  children.merge(
+      Widget::GetAllChildWidgets(gfx::NativeView(native_parent.contentView)));
   ASSERT_EQ(2u, children.size());
   EXPECT_TRUE(children.count(sheet_widget));
 
@@ -1710,15 +1744,23 @@ TEST_F(NativeWidgetMacTest, CloseWindowModalSheetWithoutSheetParent) {
 TEST_F(NativeWidgetMacTest, NoopReparentNativeView) {
   NSWindow* parent = MakeBorderlessNativeParent();
   Widget* dialog = views::DialogDelegate::CreateDialogWidget(
-      new DialogDelegateView, nullptr, [parent contentView]);
+      MakeModalDialog(ui::mojom::ModalType::kNone), gfx::NativeWindow(),
+      gfx::NativeView(parent.contentView));
   NativeWidgetMacNSWindowHost* window_host =
       NativeWidgetMacNSWindowHost::GetFromNativeWindow(
           dialog->GetNativeWindow());
 
-  EXPECT_EQ(window_host->parent()->native_widget_mac()->GetNativeWindow(),
+  EXPECT_EQ(window_host->parent()
+                ->native_widget_mac()
+                ->GetNativeWindow()
+                .GetNativeNSWindow(),
             parent);
-  Widget::ReparentNativeView(dialog->GetNativeView(), [parent contentView]);
-  EXPECT_EQ(window_host->parent()->native_widget_mac()->GetNativeWindow(),
+  Widget::ReparentNativeView(dialog->GetNativeView(),
+                             gfx::NativeView(parent.contentView));
+  EXPECT_EQ(window_host->parent()
+                ->native_widget_mac()
+                ->GetNativeWindow()
+                .GetNativeNSWindow(),
             parent);
 
   [parent close];
@@ -1726,14 +1768,22 @@ TEST_F(NativeWidgetMacTest, NoopReparentNativeView) {
   Widget* parent_widget = CreateTopLevelNativeWidget();
   parent = parent_widget->GetNativeWindow().GetNativeNSWindow();
   dialog = views::DialogDelegate::CreateDialogWidget(
-      new DialogDelegateView, nullptr, [parent contentView]);
+      MakeModalDialog(ui::mojom::ModalType::kNone), gfx::NativeWindow(),
+      gfx::NativeView(parent.contentView));
   window_host = NativeWidgetMacNSWindowHost::GetFromNativeWindow(
       dialog->GetNativeWindow());
 
-  EXPECT_EQ(window_host->parent()->native_widget_mac()->GetNativeWindow(),
+  EXPECT_EQ(window_host->parent()
+                ->native_widget_mac()
+                ->GetNativeWindow()
+                .GetNativeNSWindow(),
             parent);
-  Widget::ReparentNativeView(dialog->GetNativeView(), [parent contentView]);
-  EXPECT_EQ(window_host->parent()->native_widget_mac()->GetNativeWindow(),
+  Widget::ReparentNativeView(dialog->GetNativeView(),
+                             gfx::NativeView(parent.contentView));
+  EXPECT_EQ(window_host->parent()
+                ->native_widget_mac()
+                ->GetNativeWindow()
+                .GetNativeNSWindow(),
             parent);
 
   parent_widget->CloseNow();
@@ -1746,7 +1796,7 @@ class ParentCloseMonitor : public WidgetObserver {
  public:
   explicit ParentCloseMonitor(Widget* parent) {
     child_widget_ = std::make_unique<Widget>();
-    child_widget_->AddObserver(this);
+    widget_observation_.Observe(child_widget_.get());
     Widget::InitParams init_params(Widget::InitParams::CLIENT_OWNS_WIDGET,
                                    Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     init_params.parent = parent->GetNativeView();
@@ -1768,9 +1818,7 @@ class ParentCloseMonitor : public WidgetObserver {
   ParentCloseMonitor(const ParentCloseMonitor&) = delete;
   ParentCloseMonitor& operator=(const ParentCloseMonitor&) = delete;
 
-  ~ParentCloseMonitor() override {
-    EXPECT_TRUE(child_closed_);  // Otherwise the observer wasn't removed.
-  }
+  ~ParentCloseMonitor() override = default;
 
   void OnWidgetDestroying(Widget* child) override {
     // Upon a parent-triggered close, the NSWindow relationship will still exist
@@ -1781,7 +1829,7 @@ class ParentCloseMonitor : public WidgetObserver {
     EXPECT_TRUE([parent_nswindow_ isVisible]);
     EXPECT_FALSE([parent_nswindow_ delegate]);
 
-    EXPECT_FALSE(child_closed_);
+    EXPECT_FALSE(DidChildClose());
   }
 
   void OnWidgetDestroyed(Widget* child) override {
@@ -1789,17 +1837,16 @@ class ParentCloseMonitor : public WidgetObserver {
     EXPECT_TRUE([parent_nswindow_ isVisible]);
     EXPECT_FALSE([parent_nswindow_ delegate]);
 
-    EXPECT_FALSE(child_closed_);
-    child->RemoveObserver(this);
-    child_closed_ = true;
+    EXPECT_FALSE(DidChildClose());
+    widget_observation_.Reset();
   }
 
-  bool child_closed() const { return child_closed_; }
+  bool DidChildClose() const { return !widget_observation_.IsObserving(); }
 
  private:
   NSWindow* __strong parent_nswindow_;
-  bool child_closed_ = false;
   std::unique_ptr<Widget> child_widget_;
+  base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
 };
 
 // Ensures when a parent window is destroyed, and triggers its child windows to
@@ -1813,7 +1860,7 @@ TEST_F(NativeWidgetMacTest, NoParentDelegateDuringTeardown) {
     parent->Show();
     ParentCloseMonitor monitor(parent);
     [parent->GetNativeWindow().GetNativeNSWindow() close];
-    EXPECT_TRUE(monitor.child_closed());
+    EXPECT_TRUE(monitor.DidChildClose());
   }
 
   // Test the Widget::CloseNow() flow.
@@ -1823,7 +1870,7 @@ TEST_F(NativeWidgetMacTest, NoParentDelegateDuringTeardown) {
     parent->Show();
     ParentCloseMonitor monitor(parent);
     parent->CloseNow();
-    EXPECT_TRUE(monitor.child_closed());
+    EXPECT_TRUE(monitor.DidChildClose());
   }
 
   // Test the WIDGET_OWNS_NATIVE_WIDGET flow.
@@ -1838,7 +1885,7 @@ TEST_F(NativeWidgetMacTest, NoParentDelegateDuringTeardown) {
 
     ParentCloseMonitor monitor(parent.get());
     parent.reset();
-    EXPECT_TRUE(monitor.child_closed());
+    EXPECT_TRUE(monitor.DidChildClose());
   }
 
   // Test the CLIENT_OWNS_WIDGET flow.
@@ -1853,7 +1900,7 @@ TEST_F(NativeWidgetMacTest, NoParentDelegateDuringTeardown) {
 
     ParentCloseMonitor monitor(parent.get());
     parent->CloseNow();
-    EXPECT_TRUE(monitor.child_closed());
+    EXPECT_TRUE(monitor.DidChildClose());
   }
 }
 
@@ -1862,38 +1909,38 @@ TEST_F(NativeWidgetMacTest, NativeProperties) {
   // Create a regular widget (TYPE_WINDOW).
   Widget* regular_widget = CreateTopLevelNativeWidget();
   EXPECT_TRUE([regular_widget->GetNativeWindow().GetNativeNSWindow()
-                   canBecomeKeyWindow]);
+      canBecomeKeyWindow]);
   EXPECT_TRUE([regular_widget->GetNativeWindow().GetNativeNSWindow()
-                   canBecomeMainWindow]);
+      canBecomeMainWindow]);
 
   // Disabling activation should prevent key and main status.
   regular_widget->widget_delegate()->SetCanActivate(false);
   EXPECT_FALSE([regular_widget->GetNativeWindow().GetNativeNSWindow()
-                    canBecomeKeyWindow]);
+      canBecomeKeyWindow]);
   EXPECT_FALSE([regular_widget->GetNativeWindow().GetNativeNSWindow()
-                    canBecomeMainWindow]);
+      canBecomeMainWindow]);
 
   // Create a dialog widget (also TYPE_WINDOW), but with a DialogDelegate.
   Widget* dialog_widget = views::DialogDelegate::CreateDialogWidget(
-      MakeModalDialog(ui::MODAL_TYPE_CHILD), nullptr,
+      MakeModalDialog(ui::mojom::ModalType::kChild), gfx::NativeWindow(),
       regular_widget->GetNativeView());
   EXPECT_TRUE([dialog_widget->GetNativeWindow().GetNativeNSWindow()
-                   canBecomeKeyWindow]);
+      canBecomeKeyWindow]);
   // Dialogs shouldn't take main status away from their parent.
   EXPECT_FALSE([dialog_widget->GetNativeWindow().GetNativeNSWindow()
-                    canBecomeMainWindow]);
+      canBecomeMainWindow]);
 
   // Create a bubble widget (with a parent): also shouldn't get main.
   BubbleDialogDelegateView* bubble_view = new SimpleBubbleView();
   bubble_view->set_parent_window(regular_widget->GetNativeView());
   Widget* bubble_widget = BubbleDialogDelegateView::CreateBubble(bubble_view);
   EXPECT_TRUE([bubble_widget->GetNativeWindow().GetNativeNSWindow()
-                   canBecomeKeyWindow]);
+      canBecomeKeyWindow]);
   EXPECT_FALSE([bubble_widget->GetNativeWindow().GetNativeNSWindow()
-                    canBecomeMainWindow]);
+      canBecomeMainWindow]);
   EXPECT_EQ(NSWindowCollectionBehaviorTransient,
             [bubble_widget->GetNativeWindow().GetNativeNSWindow()
-                    collectionBehavior] &
+                collectionBehavior] &
                 NSWindowCollectionBehaviorTransient);
 
   regular_widget->CloseNow();
@@ -2136,7 +2183,8 @@ TEST_F(NativeWidgetMacTest, SetSizeDoesntChangeOrigin) {
   Widget* child_control = new Widget;
   gfx::Rect child_control_rect(50, 70, 300, 100);
   {
-    Widget::InitParams params(Widget::InitParams::TYPE_CONTROL);
+    Widget::InitParams params(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                              Widget::InitParams::TYPE_CONTROL);
     params.parent = parent->GetNativeView();
     params.bounds = child_control_rect;
     child_control->Init(std::move(params));
@@ -2147,7 +2195,8 @@ TEST_F(NativeWidgetMacTest, SetSizeDoesntChangeOrigin) {
   Widget* child_window = new Widget;
   gfx::Rect child_window_rect(110, 90, 200, 50);
   {
-    Widget::InitParams params(Widget::InitParams::TYPE_WINDOW);
+    Widget::InitParams params(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                              Widget::InitParams::TYPE_WINDOW);
     params.parent = parent->GetNativeView();
     params.bounds = child_window_rect;
     child_window->Init(std::move(params));
@@ -2266,7 +2315,7 @@ class NativeWidgetMacViewsOrderTest : public WidgetTest {
         View* parent) {
       std::unique_ptr<NativeHostHolder> holder(new NativeHostHolder(
           parent->AddChildView(std::make_unique<NativeViewHost>())));
-      holder->host()->Attach(holder->view());
+      holder->host()->Attach(gfx::NativeView(holder->view()));
       return holder;
     }
 
@@ -2294,7 +2343,7 @@ class NativeWidgetMacViewsOrderTest : public WidgetTest {
         [widget_->GetNativeView().GetNativeNSView().subviews copy];
 
     native_host_parent_ = new View();
-    widget_->GetContentsView()->AddChildView(native_host_parent_.get());
+    widget_->GetContentsView()->AddChildViewRaw(native_host_parent_.get());
 
     const size_t kNativeViewCount = 3;
     for (size_t i = 0; i < kNativeViewCount; ++i) {
@@ -2337,7 +2386,7 @@ TEST_F(NativeWidgetMacViewsOrderTest, NativeViewAttached) {
                 hosts_[0]->view(), hosts_[2]->view()
               ]]));
 
-  second_host->host()->Attach(second_host->view());
+  second_host->host()->Attach(gfx::NativeView(second_host->view()));
   EXPECT_NSEQ([GetContentNativeView() subviews],
               ([GetStartingSubviews() arrayByAddingObjectsFromArray:@[
                 hosts_[0]->view(), hosts_[1]->view(), hosts_[2]->view()
@@ -2360,9 +2409,9 @@ TEST_F(NativeWidgetMacViewsOrderTest, ReorderViews) {
 
   View* new_parent = new View();
   native_host_parent_->RemoveChildView(hosts_[1]->host());
-  native_host_parent_->AddChildView(new_parent);
-  new_parent->AddChildView(hosts_[1]->host());
-  new_parent->AddChildView(hosts_[2]->host());
+  native_host_parent_->AddChildViewRaw(new_parent);
+  new_parent->AddChildViewRaw(hosts_[1]->host());
+  new_parent->AddChildViewRaw(hosts_[2]->host());
   EXPECT_NSEQ([GetContentNativeView() subviews],
               ([GetStartingSubviews() arrayByAddingObjectsFromArray:@[
                 hosts_[0]->view(), hosts_[1]->view(), hosts_[2]->view()
@@ -2422,11 +2471,12 @@ NSArray* ExtractTouchBarGroupIdentifiers(NSView* view) {
 
 // Test TouchBar integration.
 TEST_F(NativeWidgetMacTest, TouchBar) {
-  DialogDelegate* delegate = MakeModalDialog(ui::MODAL_TYPE_NONE);
-  views::DialogDelegate::CreateDialogWidget(delegate, nullptr, nullptr);
+  DialogDelegate* delegate = MakeModalDialog(ui::mojom::ModalType::kNone);
+  views::DialogDelegate::CreateDialogWidget(delegate, gfx::NativeWindow(),
+                                            gfx::NativeView());
   NSView* content =
       [delegate->GetWidget()->GetNativeWindow().GetNativeNSWindow()
-              contentView];
+          contentView];
 
   // Constants from bridged_content_view_touch_bar.mm.
   NSString* const kTouchBarOKId = @"com.google.chrome-OK";
@@ -2451,7 +2501,7 @@ TEST_F(NativeWidgetMacTest, TouchBar) {
   // Ensure the touchBar is recreated by comparing pointers.
 
   // Remove the cancel button.
-  delegate->SetButtons(ui::DIALOG_BUTTON_OK);
+  delegate->SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
   delegate->DialogModelChanged();
   EXPECT_TRUE(delegate->GetOkButton());
   EXPECT_FALSE(delegate->GetCancelButton());
@@ -2535,6 +2585,97 @@ TEST_F(NativeWidgetMacTest,
   parent->CloseNow();
 }
 
+// Tests behavior of window-modal dialogs, displayed as sheets.
+TEST_F(NativeWidgetMacTest, OnWidgetWindowModalVisibilityChanged) {
+  WidgetAutoclosePtr parent_widget(CreateTopLevelPlatformWidget());
+  parent_widget->Show();
+  NSWindow* parent_nswindow =
+      parent_widget->GetNativeWindow().GetNativeNSWindow();
+
+  testing::NiceMock<WidgetModalVisibilityObserver> observer;
+  base::ScopedObservation<Widget, WidgetObserver> observation(&observer);
+  observation.Observe(parent_widget.get());
+
+  NSRect frame = NSMakeRect(0, 0, 200, 100);
+  NSWindow* sheet_nswindow =
+      [[NSWindow alloc] initWithContentRect:frame
+                                  styleMask:NSWindowStyleMaskTitled
+                                    backing:NSBackingStoreBuffered
+                                      defer:NO];
+
+  EXPECT_CALL(observer,
+              OnWidgetWindowModalVisibilityChanged(parent_widget.get(), true));
+  [parent_nswindow beginSheet:sheet_nswindow completionHandler:nil];
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  EXPECT_CALL(observer,
+              OnWidgetWindowModalVisibilityChanged(parent_widget.get(), false));
+  [parent_nswindow endSheet:sheet_nswindow];
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return parent_nswindow.attachedSheet == nil; }));
+}
+
+// Tests that CenterWindow centers a child window over its parent.
+TEST_F(NativeWidgetMacTest, CenterWindowWithParent) {
+  NativeWidgetMacTestWindow* parent_window;
+  Widget::InitParams parent_params =
+      CreateParams(Widget::InitParams::TYPE_WINDOW);
+  parent_params.bounds = gfx::Rect(100, 100, 400, 300);
+  Widget* parent =
+      CreateWidgetWithTestWindow(std::move(parent_params), &parent_window);
+
+  auto child = std::make_unique<Widget>();
+  Widget::InitParams child_params(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                  Widget::InitParams::TYPE_WINDOW);
+  child_params.parent = parent->GetNativeView();
+  child->Init(std::move(child_params));
+
+  gfx::Size child_size(100, 80);
+  child->CenterWindow(child_size);
+
+  gfx::Rect parent_bounds = parent->GetWindowBoundsInScreen();
+  gfx::Rect child_bounds = child->GetWindowBoundsInScreen();
+  EXPECT_EQ(parent_bounds.CenterPoint(), child_bounds.CenterPoint());
+
+  parent->CloseNow();
+}
+
+// Tests that CenterWindow clamps the child window to the visible screen area
+// when the parent is partially off-screen.
+TEST_F(NativeWidgetMacTest, CenterWindowClampsToScreen) {
+  NSScreen* screen = [NSScreen mainScreen];
+  NSRect visible_frame = [screen visibleFrame];
+  gfx::Rect screen_bounds = gfx::ScreenRectFromNSRect(visible_frame);
+
+  // Position the parent at the bottom-right corner, partially off-screen.
+  gfx::Rect parent_bounds(screen_bounds.right() - 100, screen_bounds.y() - 100,
+                          400, 300);
+
+  NativeWidgetMacTestWindow* parent_window;
+  Widget::InitParams parent_params =
+      CreateParams(Widget::InitParams::TYPE_WINDOW);
+  parent_params.bounds = parent_bounds;
+  Widget* parent =
+      CreateWidgetWithTestWindow(std::move(parent_params), &parent_window);
+
+  auto child = std::make_unique<Widget>();
+  Widget::InitParams child_params(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                  Widget::InitParams::TYPE_WINDOW);
+  child_params.parent = parent->GetNativeView();
+  child->Init(std::move(child_params));
+
+  gfx::Size child_size(200, 150);
+  child->CenterWindow(child_size);
+
+  // The child window should be clamped within the visible screen area.
+  gfx::Rect child_bounds = child->GetWindowBoundsInScreen();
+  EXPECT_TRUE(screen_bounds.Contains(child_bounds))
+      << "Child bounds " << child_bounds.ToString()
+      << " should be within screen bounds " << screen_bounds.ToString();
+
+  parent->CloseNow();
+}
+
 }  // namespace views::test
 
 @implementation TestStopAnimationWaiter
@@ -2549,29 +2690,10 @@ TEST_F(NativeWidgetMacTest,
 @synthesize fakeOnInactiveSpace = _fakeOnInactiveSpace;
 @synthesize deallocFlag = _deallocFlag;
 
-+ (base::RunLoop**)runLoop {
-  static base::RunLoop* runLoop = nullptr;
-  return &runLoop;
-}
-
-// Returns once the NativeWidgetMacTestWindow's -dealloc method has been
-// called.
-+ (void)waitForDealloc {
-  base::RunLoop runLoop;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, runLoop.QuitClosure(), TestTimeouts::action_timeout());
-  (*[NativeWidgetMacTestWindow runLoop]) = &runLoop;
-  runLoop.Run();
-  (*[NativeWidgetMacTestWindow runLoop]) = nullptr;
-}
-
 - (void)dealloc {
   if (_deallocFlag) {
     DCHECK(!*_deallocFlag);
     *_deallocFlag = true;
-    if (*[NativeWidgetMacTestWindow runLoop]) {
-      (*[NativeWidgetMacTestWindow runLoop])->Quit();
-    }
   }
 }
 

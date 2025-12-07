@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/web_app_id_constants.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -10,7 +11,6 @@
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_docs.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_app_definition_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/grit/preinstalled_web_apps_resources.h"
 
@@ -131,7 +131,7 @@ ExternalInstallOptions GetConfigForGoogleCalendar() {
         {IDR_PREINSTALLED_WEB_APPS_GOOGLE_CALENDAR_ICON_192_PNG});
     return info;
   });
-  options.expected_app_id = kGoogleCalendarAppId;
+  options.expected_app_id = ash::kGoogleCalendarAppId;
 
   return options;
 }

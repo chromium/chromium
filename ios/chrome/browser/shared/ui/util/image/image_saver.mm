@@ -15,7 +15,6 @@
 #import "base/task/thread_pool.h"
 #import "base/threading/scoped_blocking_call.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 #import "ios/chrome/browser/web/model/image_fetch/image_fetch_tab_helper.h"
@@ -27,12 +26,13 @@
 @interface ImageSaver ()
 // Base view controller for the alerts.
 @property(nonatomic, weak) UIViewController* baseViewController;
-// Alert coordinator to give feedback to the user.
-@property(nonatomic, strong) AlertCoordinator* alertCoordinator;
 @property(nonatomic, readonly) Browser* browser;
 @end
 
-@implementation ImageSaver
+@implementation ImageSaver {
+  // Alert to give feedback to the user.
+  UIAlertController* _alertController;
+}
 
 - (instancetype)initWithBrowser:(Browser*)browser {
   self = [super init];
@@ -43,8 +43,7 @@
 }
 
 - (void)stop {
-  [self.alertCoordinator stop];
-  self.alertCoordinator = nil;
+  [self dismissAlert];
   self.baseViewController = nil;
   _browser = nullptr;
 }
@@ -63,6 +62,8 @@
     [weakSelf didGetImageData:data];
   });
 }
+
+#pragma mark - Private
 
 // Callback when the image `data` got retrieved from the tab.
 - (void)didGetImageData:(NSData*)data {
@@ -125,35 +126,37 @@
 // Shows a privacy alert allowing the user to go to Chrome's settings. Dismiss
 // previous alert if it has not been dismissed yet.
 - (void)displayImageErrorAlertWithSettings:(NSURL*)settingURL {
-  // Dismiss current alert.
-  [_alertCoordinator stop];
+  [self dismissAlert];
 
   NSString* title =
       l10n_util::GetNSString(IDS_IOS_SAVE_IMAGE_PRIVACY_ALERT_TITLE);
   NSString* message = l10n_util::GetNSString(
       IDS_IOS_SAVE_IMAGE_PRIVACY_ALERT_MESSAGE_GO_TO_SETTINGS);
+  _alertController =
+      [UIAlertController alertControllerWithTitle:title
+                                          message:message
+                                   preferredStyle:UIAlertControllerStyleAlert];
 
-  self.alertCoordinator = [[AlertCoordinator alloc]
-      initWithBaseViewController:self.baseViewController
-                         browser:_browser
-                           title:title
-                         message:message];
+  [_alertController
+      addAction:[UIAlertAction
+                    actionWithTitle:l10n_util::GetNSString(IDS_CANCEL)
+                              style:UIAlertActionStyleCancel
+                            handler:nil]];
 
-  [self.alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
-                                   action:nil
-                                    style:UIAlertActionStyleCancel];
+  UIAlertAction* openSettings = [UIAlertAction
+      actionWithTitle:l10n_util::GetNSString(
+                          IDS_IOS_SAVE_IMAGE_PRIVACY_ALERT_GO_TO_SETTINGS)
+                style:UIAlertActionStyleDefault
+              handler:^(UIAlertAction*) {
+                [[UIApplication sharedApplication] openURL:settingURL
+                                                   options:@{}
+                                         completionHandler:nil];
+              }];
+  [_alertController addAction:openSettings];
 
-  [_alertCoordinator
-      addItemWithTitle:l10n_util::GetNSString(
-                           IDS_IOS_SAVE_IMAGE_PRIVACY_ALERT_GO_TO_SETTINGS)
-                action:^{
-                  [[UIApplication sharedApplication] openURL:settingURL
-                                                     options:@{}
-                                           completionHandler:nil];
-                }
-                 style:UIAlertActionStyleDefault];
-
-  [_alertCoordinator start];
+  [self.baseViewController presentViewController:_alertController
+                                        animated:YES
+                                      completion:nil];
 }
 
 // Called when Chrome has been denied access to the photos or videos and the
@@ -169,20 +172,23 @@
 // Shows a privacy alert on the main queue, with errorContent as the message.
 // Dismisses previous alert if it has not been dismissed yet.
 - (void)asyncDisplayPrivacyErrorAlertOnMainQueue:(NSString*)errorContent {
+  [self dismissAlert];
+
   NSString* title =
       l10n_util::GetNSString(IDS_IOS_SAVE_IMAGE_PRIVACY_ALERT_TITLE);
-  // Dismiss current alert.
-  [self.alertCoordinator stop];
+  _alertController =
+      [UIAlertController alertControllerWithTitle:title
+                                          message:errorContent
+                                   preferredStyle:UIAlertControllerStyleAlert];
 
-  self.alertCoordinator = [[AlertCoordinator alloc]
-      initWithBaseViewController:self.baseViewController
-                         browser:_browser
-                           title:title
-                         message:errorContent];
-  [self.alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_OK)
-                                   action:nil
-                                    style:UIAlertActionStyleDefault];
-  [self.alertCoordinator start];
+  [_alertController
+      addAction:[UIAlertAction actionWithTitle:l10n_util::GetNSString(IDS_OK)
+                                         style:UIAlertActionStyleDefault
+                                       handler:nil]];
+
+  [self.baseViewController presentViewController:_alertController
+                                        animated:YES
+                                      completion:nil];
 }
 
 // Called after the system attempts to write the image to the saved photos
@@ -200,6 +206,13 @@
     // TODO(crbug.com/41362123): Provide a way for the user to easily reach the
     // photos app.
   }
+}
+
+// Dismisses the alert.
+- (void)dismissAlert {
+  [_alertController.presentingViewController dismissViewControllerAnimated:YES
+                                                                completion:nil];
+  _alertController = nil;
 }
 
 @end

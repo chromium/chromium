@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/content_settings/core/common/content_settings_pattern.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <string_view>
@@ -18,6 +14,8 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -37,12 +35,19 @@ size_t g_non_domain_wildcard_non_port_schemes_count = 0;
 // Keep it consistent with enum SchemeType in content_settings_pattern.h.
 // TODO(msramek): Layering violation: assemble this array from hardcoded
 // schemes and those injected via |SetNonWildcardDomainNonPortSchemes()|.
-const char* const kSchemeNames[] = {"wildcard",         "other",
-                                    url::kHttpScheme,   url::kHttpsScheme,
-                                    url::kFileScheme,   "chrome-extension",
-                                    "chrome-search",    "chrome",
-                                    "chrome-untrusted", "devtools",
-                                    "isolated-app"};
+constexpr auto kSchemeNames = std::to_array<const char*>({
+    "wildcard",
+    "other",
+    url::kHttpScheme,
+    url::kHttpsScheme,
+    url::kFileScheme,
+    "chrome-extension",
+    "chrome-search",
+    "chrome",
+    "chrome-untrusted",
+    "devtools",
+    "isolated-app",
+});
 
 static_assert(std::size(kSchemeNames) == ContentSettingsPattern::SCHEME_MAX,
               "kSchemeNames should have SCHEME_MAX elements");
@@ -83,7 +88,7 @@ bool IsSubDomainOrEqual(std::string_view sub_domain, std::string_view domain) {
 //  (2) The right-most domain label, which is defined as the empty string if
 //      |domain| is empty or ends in a dot.
 std::tuple<std::optional<std::string_view>, std::string_view>
-SplitDomainOnLastDot(const std::string_view domain) {
+SplitDomainOnLastDot(std::string_view domain) {
   size_t index_of_last_dot = domain.rfind('.');
   if (index_of_last_dot == std::string_view::npos) {
     return std::make_tuple(std::nullopt, domain);
@@ -257,16 +262,22 @@ bool ContentSettingsPattern::Builder::Canonicalize(PatternParts* parts) {
       GURL url(url_spec);
       if (!url.is_valid())
         return false;
-      if (parts->path == url.path_piece())
+      if (parts->path == url.path()) {
         break;
-      parts->path = url.path();
+      }
+      parts->path = url.GetPath();
     }
   }
 
   // Canonicalize the host part.
   url::CanonHostInfo host_info;
-  std::string canonicalized_host(
-      net::CanonicalizeHost(parts->host, &host_info));
+  std::string canonicalized_host;
+  if (parts->scheme == url::kFileScheme) {
+    canonicalized_host = net::CanonicalizeFileHost(parts->host, &host_info);
+  } else {
+    canonicalized_host = net::CanonicalizeHost(parts->host, &host_info);
+  }
+
   if (host_info.IsIPAddress() && parts->has_domain_wildcard)
     return false;
 
@@ -306,8 +317,7 @@ bool ContentSettingsPattern::Builder::Validate(const PatternParts& parts) {
   if ((parts.is_scheme_wildcard && !parts.scheme.empty()) ||
       (parts.is_port_wildcard && !parts.port.empty()) ||
       (parts.is_path_wildcard && !parts.path.empty())) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   // file:// URL patterns have an empty host and port.
@@ -407,34 +417,36 @@ ContentSettingsPattern ContentSettingsPattern::FromURL(const GURL& url) {
     local_url = url.inner_url();
   }
   if (local_url->SchemeIsFile()) {
-    builder.WithScheme(local_url->scheme())->WithPath(local_url->path());
+    builder.WithScheme(local_url->GetScheme())->WithPath(local_url->GetPath());
   } else {
     // Please keep the order of the ifs below as URLs with an IP as host can
     // also have a "http" scheme.
     const bool is_non_wildcard_portless_scheme =
-        IsNonWildcardDomainNonPortScheme(local_url->scheme());
+        IsNonWildcardDomainNonPortScheme(local_url->GetScheme());
     if (local_url->HostIsIPAddress()) {
-      builder.WithScheme(local_url->scheme())->WithHost(local_url->host());
+      builder.WithScheme(local_url->GetScheme())
+          ->WithHost(local_url->GetHost());
     } else if (local_url->SchemeIs(url::kHttpScheme)) {
       builder.WithSchemeWildcard()->WithDomainWildcard()->WithHost(
-          local_url->host());
+          local_url->GetHost());
     } else if (local_url->SchemeIs(url::kHttpsScheme)) {
-      builder.WithScheme(local_url->scheme())
+      builder.WithScheme(local_url->GetScheme())
           ->WithDomainWildcard()
-          ->WithHost(local_url->host());
+          ->WithHost(local_url->GetHost());
     } else if (is_non_wildcard_portless_scheme) {
-      builder.WithScheme(local_url->scheme())->WithHost(local_url->host());
+      builder.WithScheme(local_url->GetScheme())
+          ->WithHost(local_url->GetHost());
     } else {
       // Unsupported scheme
     }
-    if (local_url->port_piece().empty()) {
+    if (local_url->port().empty()) {
       if (local_url->SchemeIs(url::kHttpsScheme)) {
         builder.WithPort(std::string(GetDefaultPort(url::kHttpsScheme)));
       } else if (!is_non_wildcard_portless_scheme) {
         builder.WithPortWildcard();
       }
     } else {
-      builder.WithPort(local_url->port());
+      builder.WithPort(local_url->GetPort());
     }
   }
   return builder.Build();
@@ -449,13 +461,13 @@ ContentSettingsPattern ContentSettingsPattern::FromURLNoWildcard(
     local_url = url.inner_url();
   }
   if (local_url->SchemeIsFile()) {
-    builder.WithScheme(local_url->scheme())->WithPath(local_url->path());
+    builder.WithScheme(local_url->GetScheme())->WithPath(local_url->GetPath());
   } else {
-    builder.WithScheme(local_url->scheme())->WithHost(local_url->host());
-    if (local_url->port_piece().empty()) {
-      builder.WithPort(std::string(GetDefaultPort(local_url->scheme_piece())));
+    builder.WithScheme(local_url->GetScheme())->WithHost(local_url->GetHost());
+    if (local_url->port().empty()) {
+      builder.WithPort(std::string(GetDefaultPort(local_url->scheme())));
     } else {
-      builder.WithPort(local_url->port());
+      builder.WithPort(local_url->GetPort());
     }
   }
   return builder.Build();
@@ -470,12 +482,12 @@ ContentSettingsPattern ContentSettingsPattern::FromURLToSchemefulSitePattern(
   auto builder = ContentSettingsPattern::CreateBuilder();
 
   if (registrable_domain.empty()) {
-    registrable_domain = url.host();
+    registrable_domain = url.GetHost();
   } else {
     builder->WithDomainWildcard();
   }
 
-  return builder->WithScheme(url.scheme())
+  return builder->WithScheme(url.GetScheme())
       ->WithHost(registrable_domain)
       ->WithPathWildcard()
       ->WithPortWildcard()
@@ -498,7 +510,8 @@ void ContentSettingsPattern::SetNonWildcardDomainNonPortSchemes(
   if (g_non_domain_wildcard_non_port_schemes) {
     DCHECK_EQ(g_non_domain_wildcard_non_port_schemes_count, count);
     for (size_t i = 0; i < count; ++i) {
-      DCHECK_EQ(g_non_domain_wildcard_non_port_schemes[i], schemes[i]);
+      UNSAFE_TODO(
+          DCHECK_EQ(g_non_domain_wildcard_non_port_schemes[i], schemes[i]));
     }
   }
 
@@ -512,7 +525,7 @@ bool ContentSettingsPattern::IsNonWildcardDomainNonPortScheme(
   DCHECK(g_non_domain_wildcard_non_port_schemes ||
          g_non_domain_wildcard_non_port_schemes_count == 0);
   for (size_t i = 0; i < g_non_domain_wildcard_non_port_schemes_count; ++i) {
-    if (g_non_domain_wildcard_non_port_schemes[i] == scheme) {
+    if (UNSAFE_TODO(g_non_domain_wildcard_non_port_schemes[i]) == scheme) {
       return true;
     }
   }
@@ -588,8 +601,7 @@ bool ContentSettingsPattern::Matches(const GURL& url) const {
   }
 
   // Match the scheme part.
-  if (!parts_.is_scheme_wildcard &&
-      parts_.scheme != local_url->scheme_piece()) {
+  if (!parts_.is_scheme_wildcard && parts_.scheme != local_url->scheme()) {
     return false;
   }
 
@@ -599,13 +611,13 @@ bool ContentSettingsPattern::Matches(const GURL& url) const {
   // filesystem:file:///temporary/... are equivalent.
   // TODO(msramek): The file scheme should not behave differently when nested
   // inside the filesystem scheme. Investigate and fix.
-  if (!parts_.is_scheme_wildcard &&
-      local_url->scheme_piece() == url::kFileScheme)
-    return parts_.is_path_wildcard || parts_.path == local_url->path_piece();
+  if (!parts_.is_scheme_wildcard && local_url->scheme() == url::kFileScheme) {
+    return parts_.is_path_wildcard || parts_.path == local_url->path();
+  }
 
   // Match the host part. Code is the same as url::TrimEndingDot but that method
   // unnecessarily creates a new std::string.
-  std::string_view trimmed_host = local_url->host_piece();
+  std::string_view trimmed_host = local_url->host();
   size_t len = trimmed_host.length();
   if (len > 1 && trimmed_host[len - 1] == '.') {
     trimmed_host.remove_suffix(1);
@@ -627,9 +639,9 @@ bool ContentSettingsPattern::Matches(const GURL& url) const {
   // Use the default port if the port string is empty. GURL returns an empty
   // string if no port at all was specified or if the default port was
   // specified.
-  const std::string_view port = local_url->port_piece().empty()
-                                    ? GetDefaultPort(local_url->scheme_piece())
-                                    : local_url->port_piece();
+  const std::string_view port = local_url->port().empty()
+                                    ? GetDefaultPort(local_url->scheme())
+                                    : local_url->port();
   if (!parts_.is_port_wildcard && parts_.port != port) {
     return false;
   }
@@ -666,7 +678,8 @@ GURL ContentSettingsPattern::ToRepresentativeUrl() const {
   return GURL();
 }
 
-ContentSettingsPattern::SchemeType ContentSettingsPattern::GetScheme() const {
+ContentSettingsPattern::SchemeType ContentSettingsPattern::GetSchemeType()
+    const {
   if (parts_.is_scheme_wildcard)
     return SCHEME_WILDCARD;
 
@@ -677,8 +690,55 @@ ContentSettingsPattern::SchemeType ContentSettingsPattern::GetScheme() const {
   return SCHEME_OTHER;
 }
 
+const std::string& ContentSettingsPattern::GetScheme() const {
+  return parts_.scheme;
+}
+
 const std::string& ContentSettingsPattern::GetHost() const {
   return parts_.host;
+}
+
+ContentSettingsPattern::Scope ContentSettingsPattern::GetScope() const {
+  if (parts_.host.empty() && parts_.has_domain_wildcard &&
+      parts_.is_port_wildcard && parts_.is_scheme_wildcard) {
+    return Scope::kFullWildcard;
+  }
+
+  if (parts_.scheme == url::kFileScheme && !parts_.is_path_wildcard) {
+    return Scope::kFilePath;
+  }
+
+  if (parts_.host.empty()) {
+    return Scope::kCustomScope;
+  }
+
+  if (parts_.has_domain_wildcard) {
+    if (parts_.is_port_wildcard && parts_.is_scheme_wildcard) {
+      return Scope::kWithDomainAndSchemeAndPortWildcard;
+    }
+    if (parts_.is_port_wildcard) {
+      return Scope::kWithDomainAndPortWildcard;
+    }
+    if (parts_.is_scheme_wildcard) {
+      return Scope::kWithDomainAndSchemeWildcard;
+    }
+    return Scope::kWithDomainWildcard;
+  }
+
+  // Origin is set and there is no domain wildcard.
+  if (parts_.is_port_wildcard && parts_.is_scheme_wildcard) {
+    return Scope::kWithSchemeAndPortWildcard;
+  }
+  if (parts_.is_port_wildcard) {
+    return Scope::kWithPortWildcard;
+  }
+  if (parts_.is_scheme_wildcard) {
+    return Scope::kWithSchemeWildcard;
+  }
+
+  DCHECK(!parts_.host.empty() && !parts_.has_domain_wildcard &&
+         !parts_.is_port_wildcard && !parts_.is_scheme_wildcard);
+  return Scope::kOriginScoped;
 }
 
 ContentSettingsPattern::Relation ContentSettingsPattern::Compare(
@@ -722,26 +782,6 @@ ContentSettingsPattern::Relation ContentSettingsPattern::Compare(
   if (scheme_relation != IDENTITY)
     return scheme_relation;
   return path_relation;
-}
-
-bool ContentSettingsPattern::operator==(
-    const ContentSettingsPattern& other) const {
-  return Compare(other) == IDENTITY;
-}
-
-bool ContentSettingsPattern::operator!=(
-    const ContentSettingsPattern& other) const {
-  return !(*this == other);
-}
-
-bool ContentSettingsPattern::operator<(
-    const ContentSettingsPattern& other) const {
-  return Compare(other) < 0;
-}
-
-bool ContentSettingsPattern::operator>(
-    const ContentSettingsPattern& other) const {
-  return Compare(other) > 0;
 }
 
 // static
@@ -841,8 +881,7 @@ ContentSettingsPattern::Relation ContentSettingsPattern::CompareHost(
     return ContentSettingsPattern::DISJOINT_ORDER_POST;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return ContentSettingsPattern::IDENTITY;
+  NOTREACHED();
 }
 
 // static

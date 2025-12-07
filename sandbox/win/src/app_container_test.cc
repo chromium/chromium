@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <windows.h>
 
 #include <memory>
@@ -14,6 +9,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
@@ -28,6 +24,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/win/access_token.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
@@ -37,6 +35,7 @@
 #include "build/build_config.h"
 #include "sandbox/features.h"
 #include "sandbox/win/src/app_container_base.h"
+#include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/tests/common/controller.h"
 #include "sandbox/win/tests/common/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -48,25 +47,6 @@ namespace {
 const wchar_t kAppContainerSid[] =
     L"S-1-15-2-3251537155-1984446955-2931258699-841473695-1938553385-"
     L"924012148-2839372144";
-
-constexpr ACProfileRegistration GetProfileRegistration() {
-#if defined(ARCH_CPU_ARM64)
-  return ACProfileRegistration::kNoFirewall;
-#else
-  return ACProfileRegistration::kDefault;
-#endif  // defined(ARCH_CPU_ARM64)
-}
-
-void DeleteProfile(const wchar_t* package_name) {
-  switch (GetProfileRegistration()) {
-    case ACProfileRegistration::kDefault:
-      AppContainerBase::Delete(package_name);
-      break;
-    case ACProfileRegistration::kNoFirewall:
-      AppContainerBase::DeleteNoFirewall(package_name);
-      break;
-  }
-}
 
 std::wstring GenerateRandomPackageName() {
   return base::ASCIIToWide(base::StringPrintf(
@@ -101,11 +81,12 @@ void CheckToken(const std::optional<base::win::AccessToken>& token,
   ASSERT_EQ(capabilities.size(), security_capabilities->CapabilityCount)
       << TokenTypeToName(impersonation);
   for (size_t index = 0; index < capabilities.size(); ++index) {
-    EXPECT_EQ(capabilities[index].GetAttributes(),
-              security_capabilities->Capabilities[index].Attributes)
+    EXPECT_EQ(
+        capabilities[index].GetAttributes(),
+        UNSAFE_TODO(security_capabilities->Capabilities[index]).Attributes)
         << TokenTypeToName(impersonation);
     EXPECT_TRUE(capabilities[index].GetSid().Equal(
-        security_capabilities->Capabilities[index].Sid))
+        UNSAFE_TODO(security_capabilities->Capabilities[index]).Sid))
         << TokenTypeToName(impersonation);
   }
 }
@@ -177,8 +158,8 @@ std::wstring GetAppContainerProfileName() {
 // Adds an app container policy similar to network service.
 ResultCode AddNetworkAppContainerPolicy(TargetPolicy* policy) {
   std::wstring profile_name = GetAppContainerProfileName();
-  ResultCode ret = policy->GetConfig()->AddAppContainerProfile(
-      profile_name.c_str(), GetProfileRegistration());
+  ResultCode ret =
+      policy->GetConfig()->AddAppContainerProfile(profile_name.c_str());
   if (SBOX_ALL_OK != ret)
     return ret;
   ret = policy->GetConfig()->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
@@ -217,9 +198,8 @@ class AppContainerTest : public ::testing::Test {
     policy_ = broker_services_->CreatePolicy();
     ASSERT_EQ(SBOX_ALL_OK, policy_->GetConfig()->SetProcessMitigations(
                                MITIGATION_HEAP_TERMINATE));
-    ASSERT_EQ(SBOX_ALL_OK,
-              policy_->GetConfig()->AddAppContainerProfile(
-                  package_name_.c_str(), GetProfileRegistration()));
+    ASSERT_EQ(SBOX_ALL_OK, policy_->GetConfig()->AddAppContainerProfile(
+                               package_name_.c_str()));
     created_profile_ = true;
   }
 
@@ -228,7 +208,7 @@ class AppContainerTest : public ::testing::Test {
       ::TerminateProcess(scoped_process_info_.process_handle(), 0);
     }
     if (created_profile_) {
-      DeleteProfile(package_name_.c_str());
+      AppContainerBase::Delete(package_name_.c_str());
     }
   }
 
@@ -238,12 +218,16 @@ class AppContainerTest : public ::testing::Test {
     wchar_t prog_name[MAX_PATH] = {};
     ASSERT_NE(DWORD{0}, ::GetModuleFileNameW(nullptr, prog_name, MAX_PATH));
 
-    PROCESS_INFORMATION process_info = {};
     DWORD last_error = 0;
-    ResultCode result = broker_services_->SpawnTarget(
-        prog_name, prog_name, std::move(policy_), &last_error, &process_info);
+    ResultCode result;
+    base::test::TaskEnvironment task_environment;
+    base::test::TestFuture<base::win::ScopedProcessInformation, DWORD,
+                           ResultCode>
+        test_future;
+    broker_services_->SpawnTargetAsync(prog_name, prog_name, std::move(policy_),
+                                       test_future.GetCallback());
+    std::tie(scoped_process_info_, last_error, result) = test_future.Take();
     ASSERT_EQ(SBOX_ALL_OK, result) << "Last Error: " << last_error;
-    scoped_process_info_.Set(process_info);
   }
 
   AppContainerBase* container() {
@@ -479,7 +463,7 @@ TEST(AppContainerLaunchTest, CheckLPACACE) {
 
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"LoadDLL"));
 
-  DeleteProfile(GetAppContainerProfileName().c_str());
+  AppContainerBase::Delete(GetAppContainerProfileName().c_str());
 }
 
 TEST(AppContainerLaunchTest, IsAppContainer) {
@@ -490,26 +474,13 @@ TEST(AppContainerLaunchTest, IsAppContainer) {
 
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"CheckIsAppContainer"));
 
-  DeleteProfile(GetAppContainerProfileName().c_str());
+  AppContainerBase::Delete(GetAppContainerProfileName().c_str());
 }
 
 TEST(AppContainerLaunchTest, IsNotAppContainer) {
   TestRunner runner;
 
   EXPECT_EQ(SBOX_TEST_FAILED, runner.RunTest(L"CheckIsAppContainer"));
-}
-
-TEST(AppContainerLaunchTest, IsAppContainerNoFirewall) {
-  if (!features::IsAppContainerSandboxSupported()) {
-    return;
-  }
-  TestRunner runner;
-  std::wstring package_name = GenerateRandomPackageName();
-  ASSERT_EQ(SBOX_ALL_OK,
-            runner.GetPolicy()->GetConfig()->AddAppContainerProfile(
-                package_name.c_str(), ACProfileRegistration::kNoFirewall));
-  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"CheckIsAppContainer"));
-  EXPECT_TRUE(AppContainerBase::DeleteNoFirewall(package_name.c_str()));
 }
 
 SBOX_TESTS_COMMAND int CreateTempFileInAppContainer(int argc, wchar_t** argv) {
@@ -523,7 +494,7 @@ SBOX_TESTS_COMMAND int CreateTempFileInAppContainer(int argc, wchar_t** argv) {
   return SBOX_TEST_SUCCEEDED;
 }
 
-TEST(AppContainerLaunchTest, CreateTempFileNoFirewall) {
+TEST(AppContainerLaunchTest, CreateTempFile) {
   if (!features::IsAppContainerSandboxSupported()) {
     return;
   }
@@ -531,13 +502,13 @@ TEST(AppContainerLaunchTest, CreateTempFileNoFirewall) {
   std::wstring package_name = GenerateRandomPackageName();
   ASSERT_EQ(SBOX_ALL_OK,
             runner.GetPolicy()->GetConfig()->AddAppContainerProfile(
-                package_name.c_str(), ACProfileRegistration::kNoFirewall));
+                package_name.c_str()));
   EXPECT_EQ(SBOX_ALL_OK, runner.GetPolicy()->GetConfig()->SetTokenLevel(
                              USER_UNPROTECTED, USER_UNPROTECTED));
 
   EXPECT_EQ(SBOX_TEST_SUCCEEDED,
             runner.RunTest(L"CreateTempFileInAppContainer"));
-  EXPECT_TRUE(AppContainerBase::DeleteNoFirewall(package_name.c_str()));
+  EXPECT_TRUE(AppContainerBase::Delete(package_name.c_str()));
 }
 
 TEST(LowBoxTest, ChildProcessMitigationLowBox) {
@@ -546,13 +517,6 @@ TEST(LowBoxTest, ChildProcessMitigationLowBox) {
   }
 
   TestRunner runner(JobLevel::kUnprotected, USER_UNPROTECTED, USER_UNPROTECTED);
-
-#if defined(ARCH_CPU_ARM64)
-  // TODO(crbug.com/41497342) A DPLOG issued when CreateProcess() fails
-  // conflicts with Csrss lockdown on Win11 ARM64 - so allow Csrss to allow the
-  // process to run the right exitcode and not an access violation crash.
-  runner.SetDisableCsrss(false);
-#endif  // defined(ARCH_CPU_ARM64)
 
   EXPECT_EQ(SBOX_ALL_OK,
             runner.GetPolicy()->GetConfig()->SetLowBox(kAppContainerSid));

@@ -4,11 +4,14 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {FingerprintBrowserProxyImpl, FingerprintResultType, FingerprintSetupStep, SettingsFingerprintListSubpageElement, SettingsSetupFingerprintDialogElement} from 'chrome://os-settings/lazy_load.js';
-import {CrDialogElement, Router, routes} from 'chrome://os-settings/os_settings.js';
+import type {SettingsFingerprintListSubpageElement, SettingsSetupFingerprintDialogElement} from 'chrome://os-settings/lazy_load.js';
+import {FingerprintBrowserProxyImpl, FingerprintResultType, FingerprintSetupStep} from 'chrome://os-settings/lazy_load.js';
+import type {CrDialogElement} from 'chrome://os-settings/os_settings.js';
+import {Router, routes} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
-import {DomRepeatEvent, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -255,6 +258,32 @@ suite('<settings-fingerprint-list-subpage>', () => {
         dialog.shadowRoot!.querySelector<HTMLButtonElement>('#closeButton');
     assertTrue(!!closeButton);
     closeButton.click();
+    await browserProxy.whenCalled('cancelCurrentEnroll');
+    assertEquals(0, fingerprintList.get('fingerprints_').length);
+  });
+
+  // This test simulates a page reload (e.g., CTRL+R) to ensure the
+  // `setup_fingerprint_dialog`'s `disconnectedCallback()` handles
+  // DOM removal correctly.
+  test('ReloadFingerprintEnrollDialog', async () => {
+    openDialog();
+    await browserProxy.whenCalled('startEnroll');
+    const dialogButton =
+        dialog.shadowRoot!.querySelector<CrDialogElement>('#dialog');
+    assertTrue(!!dialogButton);
+    assertTrue(dialogButton.open);
+    assertEquals(0, dialog.get('percentComplete_'));
+    assertEquals(FingerprintSetupStep.LOCATE_SCANNER, dialog.get('step_'));
+    // First tap on the sensor to start fingerprint enrollment.
+    browserProxy.scanReceived(
+        FingerprintResultType.SUCCESS, false, 20 /* percent */);
+    assertEquals(FingerprintSetupStep.MOVE_FINGER, dialog.get('step_'));
+
+    browserProxy.scanReceived(
+        FingerprintResultType.SUCCESS, false, 30 /* percent */);
+    assertEquals(30, dialog.get('percentComplete_'));
+    assertEquals(FingerprintSetupStep.MOVE_FINGER, dialog.get('step_'));
+    dialog.parentNode!.removeChild(dialog);
     await browserProxy.whenCalled('cancelCurrentEnroll');
     assertEquals(0, fingerprintList.get('fingerprints_').length);
   });

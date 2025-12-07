@@ -8,10 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
-
-namespace WTF {
-class String;
-}  // namespace WTF
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 namespace cssvalue {
@@ -24,7 +21,7 @@ class CORE_EXPORT CSSViewValue : public CSSValue {
   const CSSValue* Axis() const { return axis_.Get(); }
   const CSSValue* Inset() const { return inset_.Get(); }
 
-  WTF::String CustomCSSText() const;
+  String CustomCSSText() const;
   bool Equals(const CSSViewValue&) const;
   void TraceAfterDispatch(blink::Visitor*) const;
 

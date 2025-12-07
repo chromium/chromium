@@ -157,26 +157,13 @@ const char* TpmChallengeKeyResult::GetErrorMessage() const {
       return kVerifiedAccessFlowUnsupportedErrorMsg;
     case TpmChallengeKeyResultCode::kSuccess:
       // Not an error message.
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION() << static_cast<int>(result_code);
+  NOTREACHED() << static_cast<int>(result_code);
 }
 
 bool TpmChallengeKeyResult::IsSuccess() const {
   return result_code == TpmChallengeKeyResultCode::kSuccess;
-}
-
-bool TpmChallengeKeyResult::operator==(
-    const TpmChallengeKeyResult& other) const {
-  return ((result_code == other.result_code) &&
-          (public_key == other.public_key) &&
-          (challenge_response == other.challenge_response));
-}
-
-bool TpmChallengeKeyResult::operator!=(
-    const TpmChallengeKeyResult& other) const {
-  return !(*this == other);
 }
 
 std::ostream& operator<<(std::ostream& os,

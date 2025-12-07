@@ -66,7 +66,7 @@ struct DowncastTraits<HTMLTableSectionElement> {
   }
   static bool AllowFrom(const Node& node) {
     auto* html_element = DynamicTo<HTMLElement>(node);
-    return html_element ? IsHTMLTableSectionElement(*html_element) : false;
+    return html_element && IsHTMLTableSectionElement(*html_element);
   }
   static bool AllowFrom(const Node* node) {
     return node && IsA<HTMLTableSectionElement>(*node);

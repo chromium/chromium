@@ -1,0 +1,57 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("button_stack") {
+  sources = [
+    "button_stack_action_delegate.h",
+    "button_stack_configuration.h",
+    "button_stack_configuration.mm",
+    "button_stack_consumer.h",
+    "button_stack_view_controller.h",
+    "button_stack_view_controller.mm",
+  ]
+  deps = [
+    ":constants",
+    ":utils",
+    "//base",
+    "//ios/chrome/common/app_group",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("utils") {
+  sources = [
+    "button_stack_utils.h",
+    "button_stack_utils.mm",
+  ]
+  deps = [
+    ":constants",
+    "//ios/chrome/common/ui/util",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("constants") {
+  sources = [
+    "button_stack_constants.h",
+    "button_stack_constants.mm",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "button_stack_view_controller_unittest.mm" ]
+  deps = [
+    ":button_stack",
+    "//base/test:test_support",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

@@ -84,6 +84,7 @@ extern const base::FilePath::CharType kTransportSecurityPersisterFilename[];
 extern const base::FilePath::CharType kTrustTokenFilename[];
 extern const base::FilePath::CharType kVideoTutorialsStorageDirname[];
 extern const base::FilePath::CharType kWebAppDirname[];
+extern const base::FilePath::CharType kDeviceBoundSessionsFilename[];
 
 #if BUILDFLAG(IS_WIN)
 extern const base::FilePath::CharType kJumpListIconDirname[];
@@ -92,6 +93,8 @@ extern const base::FilePath::CharType kJumpListIconDirname[];
 // directory names
 #if BUILDFLAG(IS_WIN)
 extern const wchar_t kUserDataDirname[];
+#elif BUILDFLAG(IS_ANDROID)
+extern const base::FilePath::CharType kOTRTempStateDirname[];
 #endif
 
 // Fraction of the soft process limit that can be consumed by extensions, before

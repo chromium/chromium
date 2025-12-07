@@ -9,15 +9,13 @@
 CloudPolicyCoreStatusProvider::CloudPolicyCoreStatusProvider(
     policy::CloudPolicyCore* core)
     : core_(core) {
-  core_->store()->AddObserver(this);
+  scoped_observation_.Observe(core_->store());
   // TODO(bartfab): Add an observer that watches for client errors. Observing
   // core_->client() directly is not safe as the client may be destroyed and
   // (re-)created anytime if the user signs in or out on desktop platforms.
 }
 
-CloudPolicyCoreStatusProvider::~CloudPolicyCoreStatusProvider() {
-  core_->store()->RemoveObserver(this);
-}
+CloudPolicyCoreStatusProvider::~CloudPolicyCoreStatusProvider() = default;
 
 void CloudPolicyCoreStatusProvider::OnStoreLoaded(
     policy::CloudPolicyStore* store) {
@@ -27,4 +25,9 @@ void CloudPolicyCoreStatusProvider::OnStoreLoaded(
 void CloudPolicyCoreStatusProvider::OnStoreError(
     policy::CloudPolicyStore* store) {
   NotifyStatusChange();
+}
+
+void CloudPolicyCoreStatusProvider::OnStoreDestruction(
+    policy::CloudPolicyStore* store) {
+  scoped_observation_.Reset();
 }

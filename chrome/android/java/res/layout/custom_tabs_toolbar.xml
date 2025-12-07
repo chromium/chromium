@@ -12,27 +12,22 @@ found in the LICENSE file.
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
     android:layout_height="@dimen/custom_tabs_control_container_height">
-    <LinearLayout
-        android:id="@+id/close_minimize_layout"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:layout_marginEnd="42dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-        <ImageButton
-            android:id="@+id/close_button"
-            style="@style/ToolbarButton"
-            android:layout_gravity="start|center_vertical"
-            android:contentDescription="@string/close_tab" />
-        <ViewStub
-            android:id="@+id/minimize_button_stub"
-            style="@style/ToolbarButton"
-            android:inflatedId="@+id/custom_tabs_minimize_button"
-            android:layout="@layout/custom_tabs_minimize_button"
-            android:layout_gravity="start|center_vertical"
-            app:tint="@color/default_icon_color_tint_list" />
-    </LinearLayout>
+    <ImageButton
+        android:id="@+id/close_button"
+        style="@style/ToolbarButton"
+        android:layout_width="@dimen/toolbar_button_width"
+        android:paddingHorizontal="@dimen/custom_tabs_toolbar_button_horizontal_padding"
+        android:layout_gravity="start|center_vertical"
+        android:contentDescription="@string/close_tab" />
+    <ViewStub
+        android:id="@+id/minimize_button_stub"
+        style="@style/ToolbarButton"
+        android:inflatedId="@+id/custom_tabs_minimize_button"
+        android:layout="@layout/custom_tabs_minimize_button"
+        android:layout_gravity="start|center_vertical"
+        app:tint="@color/default_icon_color_tint_list" />
 
+    <!-- LINT.IfChange(IncognitoIcon) -->
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/incognito_cct_logo_image_view"
         style="@style/LocationBarButton"
@@ -43,21 +38,29 @@ found in the LICENSE file.
         app:srcCompat="@drawable/ic_incognito_cct_24dp"
         android:visibility="gone"
         android:contentDescription="@string/accessibility_incognito_badge"/>
+    <!-- LINT.ThenChange(//chrome/android/java/res/layout/custom_tab_incognito_icon.xml) -->
 
     <FrameLayout
         android:id="@+id/location_bar_frame_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical" >
-        <org.chromium.ui.widget.ChromeImageButton
-            android:id="@+id/security_button"
-            style="@style/LocationBarButton"
-            android:layout_width="@dimen/location_bar_lock_icon_width"
-            android:layout_height="@dimen/location_bar_lock_icon_height"
-            android:layout_gravity="center_vertical"
-            android:scaleType="center"
-            android:visibility="gone"
-            app:tint="@color/default_icon_color_tint_list" />
+        <FrameLayout
+          android:id="@+id/security_button_wrapper"
+          android:layout_width="@dimen/location_bar_lock_icon_width"
+          android:layout_height="wrap_content"
+          android:visibility="gone"
+          tools:ignore="UselessParent">
+          <org.chromium.ui.widget.ChromeImageButton
+              android:id="@+id/security_button"
+              style="@style/LocationBarButton"
+              android:layout_width="@dimen/location_bar_lock_icon_width"
+              android:layout_height="@dimen/location_bar_lock_icon_height"
+              android:layout_gravity="center_vertical"
+              android:scaleType="center"
+              android:visibility="gone"
+              app:tint="@color/default_icon_color_tint_list" />
+        </FrameLayout>
         <org.chromium.chrome.browser.customtabs.features.toolbar.TitleAndUrlLayout
             android:id="@+id/title_url_container"
             android:layout_width="match_parent"
@@ -89,13 +92,16 @@ found in the LICENSE file.
                 android:layoutDirection="ltr">
                 <org.chromium.ui.widget.ChromeImageButton
                     android:id="@+id/security_icon"
-                    android:layout_width="@dimen/location_bar_icon_width"
+                    android:layout_width="@dimen/custom_tabs_security_icon_width"
+                    android:paddingLeft="@dimen/custom_tabs_security_icon_padding_left"
+                    android:paddingRight="@dimen/custom_tabs_security_icon_padding_right"
                     android:layout_height="match_parent"
                     android:layout_gravity="center_vertical"
+                    android:foregroundGravity="left|center_vertical"
                     android:scaleType="fitCenter"
                     android:visibility="gone"
                     app:tint="@color/default_icon_color_tint_list"
-                    tools:ignore="ContentDescription"
+                    tools:ignore="ContentDescription,RtlHardcoded"
                     style="@style/LocationBarButton"/>
                 <org.chromium.chrome.browser.omnibox.UrlBarApi26
                     android:id="@+id/url_bar"
@@ -130,18 +136,24 @@ found in the LICENSE file.
     <LinearLayout
         android:id="@+id/action_buttons"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="42dp"
+        android:layout_height="match_parent"
+        android:layout_marginEnd="@dimen/toolbar_button_width"
         android:layout_gravity="center_vertical|end"
         android:gravity="center_vertical"
-        android:orientation="horizontal" />
+        android:orientation="horizontal">
+        <ViewStub
+            android:id="@+id/optional_button_stub"
+            android:inflatedId="@+id/optional_toolbar_button_container"
+            android:layout_gravity="center_vertical"
+            android:visibility="gone"
+            style="@style/ToolbarHoverableButton" />
+    </LinearLayout>
 
-
+    <!-- LINT.IfChange(MenuButton) -->
     <org.chromium.chrome.browser.toolbar.menu_button.MenuButton
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|end"
-        android:layout_width="42dp"
-        android:paddingEnd="4dp"
+        android:layout_width="wrap_content"
         android:id="@+id/menu_button_wrapper">
 
         <org.chromium.ui.widget.ChromeImageButton
@@ -151,9 +163,21 @@ found in the LICENSE file.
             android:layout_gravity="center"
             android:clickable="true"
             android:focusable="true"
+            android:layout_width="@dimen/toolbar_button_width"
+            android:paddingHorizontal="@dimen/custom_tabs_toolbar_button_horizontal_padding"
             android:contentDescription="@string/accessibility_toolbar_btn_menu"
+            android:tooltipText="@string/accessibility_toolbar_btn_menu"
             android:background="@null"
             app:tint="@color/default_icon_color_tint_list" />
-
+       <ImageView
+           android:id="@+id/menu_dot"
+           android:layout_height="8dp"
+           android:layout_width="8dp"
+           android:src="@drawable/menu_dot"
+           android:importantForAccessibility="no"
+           android:layout_gravity="top|end"
+           android:background="@null"
+           android:visibility="gone" />
     </org.chromium.chrome.browser.toolbar.menu_button.MenuButton>
+    <!-- LINT.ThenChange(//chrome/android/java/res/layout/custom_tab_menu_button.xml:MenuButton) -->
 </org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar>

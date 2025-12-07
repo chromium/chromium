@@ -8,14 +8,11 @@
 
 namespace blink {
 
-const char NavigatorPreferences::kSupplementName[] = "NavigatorPreferences";
-
 NavigatorPreferences& NavigatorPreferences::From(Navigator& navigator) {
-  NavigatorPreferences* supplement =
-      Supplement<Navigator>::From<NavigatorPreferences>(navigator);
+  NavigatorPreferences* supplement = navigator.GetNavigatorPreferences();
   if (!supplement) {
     supplement = MakeGarbageCollected<NavigatorPreferences>(navigator);
-    ProvideTo(navigator, supplement);
+    navigator.SetNavigatorPreferences(supplement);
   }
   return *supplement;
 }
@@ -30,11 +27,9 @@ PreferenceManager* NavigatorPreferences::preferences() {
 
 void NavigatorPreferences::Trace(Visitor* visitor) const {
   visitor->Trace(preference_manager_);
-  Supplement<Navigator>::Trace(visitor);
 }
 
-NavigatorPreferences::NavigatorPreferences(Navigator& navigator)
-    : Supplement(navigator) {
+NavigatorPreferences::NavigatorPreferences(Navigator& navigator) {
   preference_manager_ =
       MakeGarbageCollected<PreferenceManager>(navigator.GetExecutionContext());
 }

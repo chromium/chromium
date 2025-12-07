@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
+#include "third_party/blink/renderer/platform/crypto.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -31,12 +32,14 @@ CSPCheckResult CSPDirectiveListAllowFromSource(
     const network::mojom::blink::ContentSecurityPolicy& csp,
     ContentSecurityPolicy* policy,
     CSPDirectiveName type,
+    const KURL& document_url,
     const KURL& url,
     const KURL& url_before_redirects,
     ResourceRequest::RedirectStatus redirect_status,
     ReportingDisposition reporting_disposition,
+    bool csp_extended_script_src_hashes_enabled = false,
     const String& nonce = String(),
-    const IntegrityMetadataSet& hashes = IntegrityMetadataSet(),
+    const IntegrityMetadataSet& integrity_metadata = IntegrityMetadataSet(),
     ParserDisposition parser_disposition = kParserInserted);
 
 CORE_EXPORT
@@ -62,6 +65,10 @@ bool CSPDirectiveListRequiresTrustedTypes(
     const network::mojom::blink::ContentSecurityPolicy& csp);
 
 CORE_EXPORT
+std::optional<HashAlgorithm> CSPDirectiveListHashToReport(
+    const network::mojom::blink::ContentSecurityPolicy& csp);
+
+CORE_EXPORT
 bool CSPDirectiveListAllowInline(
     const network::mojom::blink::ContentSecurityPolicy& csp,
     ContentSecurityPolicy* policy,
@@ -70,7 +77,7 @@ bool CSPDirectiveListAllowInline(
     const String& content,
     const String& nonce,
     const String& context_url,
-    const WTF::OrdinalNumber& context_line,
+    const OrdinalNumber& context_line,
     ReportingDisposition reporting_disposition);
 
 // Returns whether or not the Javascript code generation should call back the
@@ -85,7 +92,9 @@ bool CSPDirectiveListAllowEval(
     ContentSecurityPolicy* policy,
     ReportingDisposition reporting_disposition,
     ContentSecurityPolicy::ExceptionStatus exception_status,
-    const String& content);
+    const String& content,
+    const Vector<network::IntegrityMetadata>& script_hash_values,
+    bool csp_extended_script_src_hashes_enabled);
 
 CORE_EXPORT
 bool CSPDirectiveListAllowWasmCodeGeneration(
@@ -98,7 +107,8 @@ bool CSPDirectiveListAllowWasmCodeGeneration(
 CORE_EXPORT
 bool CSPDirectiveListShouldDisableEval(
     const network::mojom::blink::ContentSecurityPolicy& csp,
-    String& error_message);
+    String& error_message,
+    bool csp_extended_script_src_hashes_enabled);
 
 // We need to pass both `csp` and `policy` in because for now, we need to
 // ensure the policy supports `wasm-unsafe-eval`.
@@ -116,10 +126,20 @@ bool CSPDirectiveListAllowDynamic(
     CSPDirectiveName directive_type);
 
 CORE_EXPORT
+bool CSPDirectiveListAllowDynamicUrl(
+    const network::mojom::blink::ContentSecurityPolicy& csp,
+    CSPDirectiveName directive_type);
+
+CORE_EXPORT
 bool CSPDirectiveListAllowHash(
     const network::mojom::blink::ContentSecurityPolicy& csp,
-    const network::mojom::blink::CSPHashSource& hash_value,
+    const network::IntegrityMetadata& hash_value,
     const ContentSecurityPolicy::InlineType inline_type);
+
+CORE_EXPORT
+bool CSPDirectiveListAllowEvalHash(
+    const Vector<network::IntegrityMetadata>& script_hash_values,
+    CSPOperativeDirective directive);
 
 // We consider `object-src` restrictions to be reasonable iff they're
 // equivalent to `object-src 'none'`.
@@ -156,6 +176,25 @@ CORE_EXPORT
 CSPOperativeDirective CSPDirectiveListOperativeDirective(
     const network::mojom::blink::ContentSecurityPolicy& csp,
     CSPDirectiveName type);
+
+void FillInCSPHashValues(
+    const String& source,
+    const HashSet<IntegrityAlgorithm>& hash_algorithms_used,
+    Vector<network::IntegrityMetadata>& csp_hash_values);
+
+// Given a document URL and a script URL, returns the relative path of the
+// script URL. Document URL is the URL of the document that contains the script.
+// Only computed if document_url and script_url are same origin and Http(s).
+// Returns empty String otherwise. This function implements roughly the opposite
+// of remove_dot_segments algorithm defined in
+// https://datatracker.ietf.org/doc/html/rfc3986#section-5.2.4
+CORE_EXPORT
+String GetRelativeScriptUrl(const KURL& document_url, const KURL& script_url);
+
+// Strips a URL for use in hash calculations by removing username, password
+// and fragment values.
+CORE_EXPORT
+KURL CSPStripURL(const KURL& url);
 
 }  // namespace blink
 

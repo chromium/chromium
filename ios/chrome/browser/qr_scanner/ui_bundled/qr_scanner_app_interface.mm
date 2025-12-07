@@ -11,13 +11,13 @@
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_url_loader.h"
 #import "ios/chrome/browser/qr_scanner/ui_bundled/qr_scanner_camera_controller.h"
 #import "ios/chrome/browser/qr_scanner/ui_bundled/qr_scanner_view_controller.h"
+#import "ios/chrome/browser/scanner/ui_bundled/camera_controller.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
-#import "ios/chrome/browser/shared/ui/symbols/chrome_icon.h"
-#import "ios/chrome/browser/ui/scanner/camera_controller.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -39,7 +39,7 @@ using scanner::CameraState;
 }
 
 + (NSString*)closeIconAccessibilityLabel {
-  return [ChromeIcon closeIcon].accessibilityLabel;
+  return l10n_util::GetNSString(IDS_IOS_ICON_CLOSE);
 }
 
 #pragma mark Swizzling

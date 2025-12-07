@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_PERMISSIONS_PREF_BASED_QUIET_PERMISSION_UI_SELECTOR_H_
 
 #include "base/memory/raw_ptr.h"
-#include "components/permissions/permission_ui_selector.h"
+#include "components/permissions/prediction_service/permission_ui_selector.h"
 
 class Profile;
 
@@ -17,8 +17,7 @@ enum class RequestType;
 
 // Determines if the quiet prompt UI should be used to display a notification
 // permission request on a given site according to user prefs. The quiet UI can
-// be enabled in prefs for all sites, either directly by the user in settings,
-// or by the AdaptiveQuietNotificationPermissionUiEnabler.
+// be enabled in prefs for all sites, either directly by the user in settings.
 //
 // Each instance of this class is long-lived and can support multiple requests.
 class PrefBasedQuietPermissionUiSelector
@@ -35,7 +34,8 @@ class PrefBasedQuietPermissionUiSelector
       const PrefBasedQuietPermissionUiSelector&) = delete;
 
   // NotificationPermissionUiSelector:
-  void SelectUiToUse(permissions::PermissionRequest* request,
+  void SelectUiToUse(content::WebContents* web_contents,
+                     permissions::PermissionRequest* request,
                      DecisionMadeCallback callback) override;
 
   void Cancel() override;

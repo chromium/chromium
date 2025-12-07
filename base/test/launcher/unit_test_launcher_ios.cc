@@ -7,7 +7,6 @@
 #include "base/apple/foundation_util.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/test/allow_check_is_test_for_testing.h"
 #include "base/test/gtest_util.h"

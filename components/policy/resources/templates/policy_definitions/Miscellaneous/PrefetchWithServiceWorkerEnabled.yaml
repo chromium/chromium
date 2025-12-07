@@ -1,0 +1,37 @@
+caption: Allow SpeculationRules prefetch to ServiceWorker-controlled URLs
+desc: |-
+  SpeculationRules prefetch can be issued to URLs that are controlled by
+  ServiceWorker. However, legacy code did not allow it and canceled the prefetch
+  requests. This policy enables to control the behavior.
+
+  Setting this policy to Enabled or not set allows SpeculationRules prefetch to
+  ServiceWorker-controlled URLs (if the PrefetchServiceWorker feature flag is
+  enabled). This is the current default behavior and is aligned with the
+  specifications.
+
+  Setting this policy to Disabled disallows SpeculationRules prefetch to
+  ServiceWorker-controlled URLs. This is the legacy behavior.
+
+  This policy is intended to be temporary and will be removed in the future.
+default: true
+example_value: true
+features:
+  dynamic_refresh: false
+  per_profile: true
+items:
+- caption: SpeculationRules prefetch can be sent to ServiceWorker-controlled URLs.
+  value: true
+- caption: SpeculationRules prefetch cannot be sent to ServiceWorker-controlled URLs (legacy behavior).
+  value: false
+owners:
+- nhiroki@chromium.org
+- file://content/browser/preloading/prefetch/OWNERS
+schema:
+  type: boolean
+supported_on:
+- android:138-
+- chrome.*:138-
+- chrome_os:138-
+- fuchsia:138-
+tags: []
+type: main

@@ -5,14 +5,12 @@
 #ifndef MEDIA_GPU_WINDOWS_D3D12_HELPERS_H_
 #define MEDIA_GPU_WINDOWS_D3D12_HELPERS_H_
 
-#include <wrl.h>
-
 #include <array>
-#include <memory>
 
+#include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 #include "media/base/limits.h"
 #include "media/base/video_codecs.h"
-#include "media/base/video_types.h"
 #include "media/gpu/h264_dpb.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d_com_defs.h"
@@ -23,15 +21,36 @@
 
 namespace media {
 
+struct D3D12HeapProperties {
+  constexpr static D3D12_HEAP_PROPERTIES kDefault{D3D12_HEAP_TYPE_DEFAULT};
+  constexpr static D3D12_HEAP_PROPERTIES kUpload{D3D12_HEAP_TYPE_UPLOAD};
+  constexpr static D3D12_HEAP_PROPERTIES kReadback{D3D12_HEAP_TYPE_READBACK};
+};
+
+class D3D11PictureBuffer;
+
 // Manages reference frame buffers, for reference frame descriptors to index on.
 class MEDIA_GPU_EXPORT D3D12ReferenceFrameList {
  public:
   explicit D3D12ReferenceFrameList(ComD3D12VideoDecoderHeap heap);
   ~D3D12ReferenceFrameList();
 
+  D3D12ReferenceFrameList(const D3D12ReferenceFrameList& other);
+
+  void SetPictureBuffers(
+      base::span<scoped_refptr<D3D11PictureBuffer>> picture_buffers);
+
   void WriteTo(D3D12_VIDEO_DECODE_REFERENCE_FRAMES* dest);
 
   void emplace(size_t index, ID3D12Resource* resource, UINT subresource);
+
+  // Get the D3D12 resource barriers for encoding a frame to the given
+  // |current_output_resource| and |current_output_subresource|, which contains
+  // transitions for the current frame to video decode write state, and for the
+  // reference frames to video decode read state.
+  std::vector<D3D12_RESOURCE_BARRIER> GetTransitionsToDecodeState(
+      ID3D12Resource* current_output_resource,
+      UINT current_output_subresource);
 
  private:
   // Max size of picture_buffers_ that D3D11VideoDecoder may create.
@@ -56,6 +75,44 @@ class MEDIA_GPU_EXPORT D3D12ReferenceFrameList {
   // D3D12_VIDEO_DECODE_REFERENCE_FRAMES also has ID3D12VideoDecoderHeap**
   // ppHeaps. The items in |heaps_| are always |heap_.Get()|.
   std::array<ID3D12VideoDecoderHeap*, kMaxSize> heaps_;
+  // The raw pointer array for converting to
+  // D3D12_VIDEO_DECODE_REFERENCE_FRAMES. We only store the references here. The
+  // lifetime of |D3D11PictureBuffer|'s is managed by the |D3D11VideoDecoder|.
+  std::array<raw_ptr<D3D11PictureBuffer>, kMaxSize> picture_buffers_;
+};
+
+// A scoped class managing the |Map()| and |Unmap()| of a |ID3D12Resource|. The
+// instances of this class are expected to live shortly since it relies on the
+// validity of the underlying |ID3D12Resource|.
+// Note: Since the Map() operation may fail, the |data()| must be checked
+// before use.
+class MEDIA_GPU_EXPORT ScopedD3D12ResourceMap {
+ public:
+  ScopedD3D12ResourceMap();
+  ~ScopedD3D12ResourceMap();
+
+  ScopedD3D12ResourceMap(const ScopedD3D12ResourceMap& other) = delete;
+  ScopedD3D12ResourceMap& operator=(const ScopedD3D12ResourceMap& other) =
+      delete;
+
+  ScopedD3D12ResourceMap(ScopedD3D12ResourceMap&& other) noexcept;
+  ScopedD3D12ResourceMap& operator=(ScopedD3D12ResourceMap&& other) noexcept;
+
+  bool Map(ID3D12Resource* resource,
+           UINT subresource = 0,
+           const D3D12_RANGE* read_range = nullptr);
+
+  // The mapped memory span. It can be empty if there is no successful |Map()|
+  // call.
+  base::span<uint8_t> data() const { return data_; }
+
+  // |Unmap()| the resource with given |written_range|, if it is not committed.
+  void Commit(const D3D12_RANGE* written_range = nullptr);
+
+ private:
+  Microsoft::WRL::ComPtr<ID3D12Resource> resource_ = nullptr;
+  UINT subresource_ = 0;
+  base::raw_span<uint8_t> data_;
 };
 
 MEDIA_GPU_EXPORT ComD3D12Device CreateD3D12Device(IDXGIAdapter* adapter);

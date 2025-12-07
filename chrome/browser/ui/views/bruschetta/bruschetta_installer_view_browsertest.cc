@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_installer.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -79,7 +80,9 @@ class BruschettaInstallerViewBrowserTest : public DialogBrowserTest {
   }
 
   void ShowUi(const std::string& name) override {
-    BruschettaInstallerView::Show(browser()->profile(), GetBruschettaAlphaId());
+    BruschettaInstallerView::Show(browser()->profile(),
+                                  *g_browser_process->local_state(),
+                                  GetBruschettaAlphaId());
     view_ = BruschettaInstallerView::GetActiveViewForTesting();
 
     ASSERT_NE(nullptr, view_);

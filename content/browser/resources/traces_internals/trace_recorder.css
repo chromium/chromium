@@ -1,0 +1,150 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=./config_toggle.css.js
+ * #import=//resources/cr_elements/md_select_lit.css.js
+ * #scheme=relative
+ * #include=cr-shared-style-lit md-select-lit config-toggle
+ * #css_wrapper_metadata_end */
+
+:host {
+  color: var(--cr-primary-text-color);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+  padding: 8px 12px;
+}
+
+#control-container {
+  background-color: var(--cr-card-background-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: -8px;
+}
+
+#status-container {
+  display: flex;
+  align-items: center;
+  margin-left: 12px;
+  font-weight: bold;
+  color: var(--google-grey-700);
+}
+
+#progress-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  margin: 0 18px;
+}
+
+#buffer-progress {
+  width: 100%;
+  height: 22px;
+}
+
+#action-panel {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+}
+
+#config-container {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  min-height: 1.25em;
+}
+
+.buffer-config-container {
+  display: flex;
+  flex-direction: row;
+  margin: 8px 12px;
+}
+
+.buffer-row-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.growing-row {
+  flex-grow: 1;
+}
+
+.status-circle {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.status-idle .status-circle {
+  background-color: var(--google-grey-700);
+}
+
+.status-starting .status-circle {
+  background-color: var(--google-orange-700);
+}
+
+.status-tracing .status-circle {
+  background-color: var(--google-green-700);
+}
+
+.status-stopping .status-circle {
+  background-color: var(--google-orange-700);
+}
+
+.card {
+  background-color: var(--cr-card-background-color);
+  border-radius: var(--cr-card-border-radius);
+  box-shadow: var(--cr-card-shadow);
+  max-width: var(--card-max-width);
+  margin: 8px 0;
+}
+
+.config-grid {
+  display: grid;
+  gap: 2px 16px;
+  align-items: start;
+}
+.category-grid {
+  /* Define column templates.
+     - 80px for the checkbox
+     - 1fr for the name (takes up 1 fraction of the remaining space)
+     - 1fr for the tags
+     - 4fr for the description (takes up 4x the space of name/tags)
+  */
+  grid-template-columns: 40px 1fr 1fr 4fr;
+}
+.tags-grid {
+  grid-template-columns: 40px 40px 1fr;
+}
+.etw-grid {
+  grid-template-columns: 40px 1fr 4fr;
+}
+
+.header-row-group {
+  font-weight: bold;
+  border-bottom: 1px solid var(--cr-separator-color);
+  padding-bottom: 8px;
+}
+
+.header-row-group,
+.row {
+  /*
+    This allows the cells to refer back to the parent .category-grid
+    for their layout instructions.
+  */
+  display: contents;
+}
+
+.expanded-content {
+  padding: 0 12px 8px;
+}

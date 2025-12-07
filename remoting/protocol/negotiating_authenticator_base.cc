@@ -69,6 +69,11 @@ Authenticator::RejectionReason NegotiatingAuthenticatorBase::rejection_reason()
   return rejection_reason_;
 }
 
+Authenticator::RejectionDetails
+NegotiatingAuthenticatorBase::rejection_details() const {
+  return rejection_details_;
+}
+
 void NegotiatingAuthenticatorBase::ProcessMessageInternal(
     const jingle_xmpp::XmlElement* message,
     base::OnceClosure resume_callback) {
@@ -103,6 +108,7 @@ void NegotiatingAuthenticatorBase::UpdateState(
 
   if (state_ == REJECTED) {
     rejection_reason_ = current_authenticator_->rejection_reason();
+    rejection_details_ = current_authenticator_->rejection_details();
   }
 
   std::move(resume_callback).Run();
@@ -111,7 +117,7 @@ void NegotiatingAuthenticatorBase::UpdateState(
 std::unique_ptr<jingle_xmpp::XmlElement>
 NegotiatingAuthenticatorBase::GetNextMessageInternal() {
   DCHECK_EQ(state(), MESSAGE_READY);
-  DCHECK(current_method_ != Method::INVALID);
+  DCHECK(current_method_ != AuthenticationMethod::INVALID);
 
   std::unique_ptr<jingle_xmpp::XmlElement> result;
   if (current_authenticator_->state() == MESSAGE_READY) {
@@ -122,7 +128,7 @@ NegotiatingAuthenticatorBase::GetNextMessageInternal() {
   state_ = current_authenticator_->state();
   DCHECK(state_ == ACCEPTED || state_ == WAITING_MESSAGE);
   result->AddAttr(kMethodAttributeQName,
-                  HostAuthenticationConfig::MethodToString(current_method_));
+                  AuthenticationMethodToString(current_method_));
   return result;
 }
 
@@ -130,18 +136,25 @@ void NegotiatingAuthenticatorBase::NotifyStateChangeAfterAccepted() {
   state_ = current_authenticator_->state();
   if (state_ == REJECTED) {
     rejection_reason_ = current_authenticator_->rejection_reason();
+    rejection_details_ = current_authenticator_->rejection_details();
   }
   Authenticator::NotifyStateChangeAfterAccepted();
 }
 
-void NegotiatingAuthenticatorBase::AddMethod(Method method) {
-  DCHECK(method != Method::INVALID);
+void NegotiatingAuthenticatorBase::AddMethod(AuthenticationMethod method) {
+  DCHECK(method != AuthenticationMethod::INVALID);
   methods_.push_back(method);
 }
 
 const std::string& NegotiatingAuthenticatorBase::GetAuthKey() const {
   DCHECK_EQ(state(), ACCEPTED);
   return current_authenticator_->GetAuthKey();
+}
+
+const SessionPolicies* NegotiatingAuthenticatorBase::GetSessionPolicies()
+    const {
+  DCHECK_EQ(state(), ACCEPTED);
+  return current_authenticator_->GetSessionPolicies();
 }
 
 std::unique_ptr<ChannelAuthenticator>

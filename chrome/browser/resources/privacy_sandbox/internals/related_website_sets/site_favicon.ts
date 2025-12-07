@@ -50,9 +50,9 @@ export class SiteFaviconElement extends CrLitElement {
     };
   }
 
-  domain: string = '';
-  url: string = '';
-  protected showDownloadedIcon_: boolean = false;
+  accessor domain: string = '';
+  accessor url: string = '';
+  protected accessor showDownloadedIcon_: boolean = false;
   private faviconDownloadTimeout_: number|null = null;
 
   override disconnectedCallback() {

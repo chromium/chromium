@@ -21,11 +21,11 @@
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/site_instance.h"
-#include "ppapi/buildflags/buildflags.h"
+#include "content/public/common/buildflags.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/menus/simple_menu_model.h"
 
 namespace content {
 class RenderFrameHost;
@@ -39,7 +39,7 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
   // the embedder.
   class ToolkitDelegate {
    public:
-    virtual ~ToolkitDelegate() {}
+    virtual ~ToolkitDelegate() = default;
     // Initialize the toolkit's menu.
     virtual void Init(ui::SimpleMenuModel* menu_model) = 0;
 
@@ -183,6 +183,9 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
                                        const std::string& extra_headers,
                                        bool started_from_context_menu);
 
+  virtual ui::IsNewFeatureAtValue GetIsNewFeatureAtValue(
+      const std::string& feature_name) const;
+
   // Populates OpenURLParams for opening the specified URL string in a new tab
   // with the extra headers.
   content::OpenURLParams GetOpenURLParamsWithExtraHeaders(
@@ -224,6 +227,14 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
 
  private:
   bool AppendCustomItems();
+
+  void AddCustomItemsToMenu(
+      const std::vector<blink::mojom::CustomContextMenuItemPtr>& items,
+      size_t depth,
+      size_t* total_items,
+      std::vector<std::unique_ptr<ui::SimpleMenuModel>>* submenus,
+      ui::SimpleMenuModel::Delegate* delegate,
+      ui::SimpleMenuModel* menu_model);
 
   std::unique_ptr<ToolkitDelegate> toolkit_delegate_;
 

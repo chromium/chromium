@@ -9,8 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "components/sync/protocol/nigori_specifics.pb.h"
-
 namespace sync_pb {
 class EncryptedData;
 class NigoriKey;

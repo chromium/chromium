@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_observer.h"
@@ -49,8 +48,6 @@ class ASH_EXPORT AshNotificationView
   METADATA_HEADER(AshNotificationView, message_center::NotificationViewBase)
 
  public:
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBubbleIdForTesting);
-
   // TODO(crbug/1241983): Add metadata and builder support to this view.
   explicit AshNotificationView(const message_center::Notification& notification,
                                bool shown_in_popup);
@@ -154,6 +151,8 @@ class ASH_EXPORT AshNotificationView
   GetActionButtonsForTest();
 
   views::Label* GetTitleRowLabelForTest();
+
+  message_center::NotificationInputContainer* GetInlineReplyForTest();
 
   // View containing all grouped notifications, propagates size changes
   // to the parent notification view.
@@ -298,7 +297,7 @@ class ASH_EXPORT AshNotificationView
 
   // Called when the fade out animation for `view` has ended. This function
   // resets the views's opacity to 1.0f and makes it invisible.
-  void OnFadeOutAnimationEnded(views::View* view);
+  void OnFadeOutAnimationEnded(int view_id);
 
   // Called when the grouped animation for this view has ended, or has been
   // aborted.
@@ -312,7 +311,7 @@ class ASH_EXPORT AshNotificationView
                                std::string parent_id);
 
   // A helper wrapping `OnFadeOutAnimationEnded` for `view` as a closure.
-  base::OnceClosure OnFadeOutAnimationEndedClosure(views::View* view);
+  base::OnceClosure OnFadeOutAnimationEndedClosure(int view_id);
 
   // A helper for grouped animations ending/aborting.
   base::OnceClosure OnGroupedAnimationEndedClosure(

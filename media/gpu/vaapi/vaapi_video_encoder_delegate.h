@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "media/base/video_bitrate_allocation.h"
 #include "media/base/video_codecs.h"
+#include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/video/video_encode_accelerator.h"
 #include "media/video/video_encoder_info.h"
 #include "ui/gfx/geometry/size.h"
@@ -24,7 +25,6 @@
 namespace media {
 struct BitstreamBufferMetadata;
 class CodecPicture;
-class ScopedVABuffer;
 class VideoFrame;
 class VaapiWrapper;
 
@@ -212,8 +212,10 @@ class VaapiVideoEncoderDelegate {
   // Notifies the encoded chunk size in bytes with layers info through
   // BitstreamBufferMetadata to update a bitrate controller in
   // VaapiVideoEncoderDelegate. This should be called only if constant
-  // quantization encoding is used, which currently is true for VP8 and VP9.
-  virtual void BitrateControlUpdate(const BitstreamBufferMetadata& metadata);
+  // quantization encoding is used, which currently is true for VP8, VP9, H264
+  // and AV1.
+  virtual void BitrateControlUpdate(
+      const BitstreamBufferMetadata& metadata) = 0;
 };
 }  // namespace media
 

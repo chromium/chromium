@@ -30,8 +30,7 @@ gfx::Size DeskBarView::CalculatePreferredSize(
   // The preferred size should be its scroll view contents' size plus the
   // horizontal padding at both left/right. In addition, it should not exceed
   // the available size.
-  gfx::Size preferred_size =
-      scroll_view_contents_->GetPreferredSize(available_size);
+  gfx::Size preferred_size = contents_view_->GetPreferredSize(available_size);
   preferred_size.Enlarge(
       /*grow_width=*/kDeskBarScrollViewMinimumHorizontalPaddingDeskButton * 2,
       /*grow_height=*/0);

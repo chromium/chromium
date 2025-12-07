@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="th">
+<translation id="1293272072740285747">เก็บกลุ่มนี้ไว้เพื่อเพิ่มแท็บในภายหลัง หรือลบออกหากคุณไม่ต้องการแล้ว
+
+หากลบกลุ่มนี้ ทุกคนจะเสียสิทธิ์เข้าถึงกลุ่มแท็บ "<ph name="TITLE_OF_GROUP" />" ทันที และระบบจะลบกลุ่มนี้ออกจากอุปกรณ์ทุกเครื่อง</translation>
+<translation id="1340839264183302272">ออกจากกลุ่ม</translation>
+<translation id="1419023007528516122">การดำเนินการนี้จะลบกลุ่มออกจากอุปกรณ์ของคุณอย่างถาวร</translation>
+<translation id="1501480321619201731">ลบกลุ่ม</translation>
+<translation id="2677748264148917807">ออก</translation>
+<translation id="3547352561153509682">การดำเนินการนี้จะลบกลุ่มออกจากอุปกรณ์ทั้งหมดที่ลงชื่อเข้าใช้ <ph name="USER_EMAIL" /></translation>
+<translation id="381219490185664296">เลิกจัดกลุ่มแท็บใช่ไหม</translation>
+<translation id="4139634748112164403">แท็บจะยังคงเปิดอยู่ในอุปกรณ์นี้ แต่ระบบจะลบกลุ่มอย่างถาวร</translation>
+<translation id="4431937619879060901">คุณจะเสียสิทธิ์เข้าถึงกลุ่มแท็บ "<ph name="GROUP_NAME" />" ทันที และระบบจะลบกลุ่มออกจากอุปกรณ์ของคุณทุกเครื่อง</translation>
+<translation id="4460014764210899310">เลิกจัดกลุ่ม</translation>
+<translation id="4777866634702576038">ลบกลุ่มแท็บใช่ไหม</translation>
+<translation id="5094423602314093681">นําแท็บออกและลบกลุ่มใช่ไหม</translation>
+<translation id="5647702255748985085">ออกจากกลุ่มใช่ไหม</translation>
+<translation id="742664698522525515">เก็บกลุ่มไว้ไหม</translation>
+<translation id="750886945254958667">เก็บกลุ่มนี้ไว้เพื่อเพิ่มแท็บในภายหลัง หรือออกจากกลุ่มหากคุณไม่ต้องการเข้าถึงกลุ่มแล้ว</translation>
+<translation id="8261506727792406068">ลบ</translation>
+<translation id="870736955561925754">ปิดแท็บและลบกลุ่มใช่ไหม</translation>
+<translation id="8804742093141782941">เก็บกลุ่มไว้</translation>
+<translation id="9169141410816678175">ทุกคนจะเสียสิทธิ์เข้าถึงกลุ่มแท็บ "<ph name="GROUP_NAME" />" ทันที และระบบจะลบกลุ่มนี้ออกจากอุปกรณ์ทุกเครื่อง</translation>
+<translation id="9216898458513705996">แท็บจะยังคงเปิดอยู่ในอุปกรณ์นี้ แต่ระบบจะลบกลุ่มออกจากอุปกรณ์ทั้งหมดที่ลงชื่อเข้าใช้ <ph name="USER_EMAIL" /></translation>
+<translation id="94870150074703282">ลบกลุ่มไหม</translation>
+</translationbundle>

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -39,7 +40,7 @@ constexpr int kAv1MinimumTargetBitrateKbpsPerMegapixel = 2500;
 
 // Use the highest possible encoder speed as it produces frames faster than the
 // lower settings, requires fewer CPU resources, and still has low bitrates.
-constexpr int kAv1DefaultEncoderSpeed = 10;
+constexpr int kAv1DefaultEncoderSpeed = 11;
 
 }  // namespace
 
@@ -269,6 +270,7 @@ void WebrtcVideoEncoderAV1::PrepareImage(
   }
 
   // Convert the updated region to YUV ready for encoding.
+  CHECK_EQ(frame->pixel_format(), webrtc::FOURCC_ARGB);
   const uint8_t* rgb_data = frame->data();
   const int rgb_stride = frame->stride();
   const int y_stride = image_->stride[0];
@@ -287,10 +289,11 @@ void WebrtcVideoEncoderAV1::PrepareImage(
                          rect.left() * webrtc::DesktopFrame::kBytesPerPixel;
         int y_offset = y_stride * rect.top() + rect.left();
         int uv_offset = uv_stride * rect.top() / 2 + rect.left() / 2;
-        libyuv::ARGBToI420(rgb_data + rgb_offset, rgb_stride, y_data + y_offset,
-                           y_stride, u_data + uv_offset, uv_stride,
-                           v_data + uv_offset, uv_stride, rect.width(),
-                           rect.height());
+        libyuv::ARGBToI420(UNSAFE_TODO(rgb_data + rgb_offset), rgb_stride,
+                           UNSAFE_TODO(y_data + y_offset), y_stride,
+                           UNSAFE_TODO(u_data + uv_offset), uv_stride,
+                           UNSAFE_TODO(v_data + uv_offset), uv_stride,
+                           rect.width(), rect.height());
       }
       break;
     case AOM_IMG_FMT_I444:
@@ -300,15 +303,15 @@ void WebrtcVideoEncoderAV1::PrepareImage(
         int rgb_offset = rgb_stride * rect.top() +
                          rect.left() * webrtc::DesktopFrame::kBytesPerPixel;
         int yuv_offset = uv_stride * rect.top() + rect.left();
-        libyuv::ARGBToI444(rgb_data + rgb_offset, rgb_stride,
-                           y_data + yuv_offset, y_stride, u_data + yuv_offset,
-                           uv_stride, v_data + yuv_offset, uv_stride,
+        libyuv::ARGBToI444(UNSAFE_TODO(rgb_data + rgb_offset), rgb_stride,
+                           UNSAFE_TODO(y_data + yuv_offset), y_stride,
+                           UNSAFE_TODO(u_data + yuv_offset), uv_stride,
+                           UNSAFE_TODO(v_data + yuv_offset), uv_stride,
                            rect.width(), rect.height());
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -386,7 +389,7 @@ void WebrtcVideoEncoderAV1::UpdateConfig(const FrameParams& params) {
 
   // Update encoder context.
   if (aom_codec_enc_config_set(codec_.get(), &config_)) {
-    NOTREACHED_IN_MIGRATION() << "Unable to set encoder config";
+    NOTREACHED() << "Unable to set encoder config";
   }
 }
 

@@ -13,13 +13,17 @@
 
 #include "base/auto_reset.h"
 #include "base/check.h"
+#include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
-#include "base/notreached.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "pdf/paint_ready_rect.h"
+#include "pdf/pdf_features.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRect.h"
@@ -96,23 +100,22 @@ void PaintManager::SetTransform(float scale,
                                 const gfx::Point& origin,
                                 const gfx::Vector2d& translate,
                                 bool schedule_flush) {
-  if (!surface_)
+  if (!surface_) {
     return;
-
-  if (scale <= 0.0f) {
-    NOTREACHED_IN_MIGRATION();
-  } else {
-    // translate_with_origin = origin - scale * origin - translate
-    gfx::Vector2dF translate_with_origin = origin.OffsetFromOrigin();
-    translate_with_origin.Scale(1.0f - scale);
-    translate_with_origin.Subtract(translate);
-
-    // TODO(crbug.com/40203030): Should update be deferred until `Flush()`?
-    client_->UpdateLayerTransform(scale, translate_with_origin);
   }
 
-  if (!schedule_flush)
+  CHECK_GT(scale, 0.0f);
+  // translate_with_origin = origin - scale * origin - translate
+  gfx::Vector2dF translate_with_origin = origin.OffsetFromOrigin();
+  translate_with_origin.Scale(1.0f - scale);
+  translate_with_origin.Subtract(translate);
+
+  // TODO(crbug.com/40203030): Should update be deferred until `Flush()`?
+  client_->UpdateLayerTransform(scale, translate_with_origin);
+
+  if (!schedule_flush) {
     return;
+  }
 
   if (flush_pending_) {
     flush_requested_ = true;
@@ -126,8 +129,9 @@ void PaintManager::ClearTransform() {
 }
 
 void PaintManager::Invalidate() {
-  if (!surface_ && !has_pending_resize_)
+  if (!surface_ && !has_pending_resize_) {
     return;
+  }
 
   EnsureCallbackPending();
   aggregator_.InvalidateRect(gfx::Rect(GetEffectiveSize()));
@@ -136,14 +140,16 @@ void PaintManager::Invalidate() {
 void PaintManager::InvalidateRect(const gfx::Rect& rect) {
   DCHECK(!in_paint_);
 
-  if (!surface_ && !has_pending_resize_)
+  if (!surface_ && !has_pending_resize_) {
     return;
+  }
 
   // Clip the rect to the device area.
   gfx::Rect clipped_rect =
       gfx::IntersectRects(rect, gfx::Rect(GetEffectiveSize()));
-  if (clipped_rect.IsEmpty())
+  if (clipped_rect.IsEmpty()) {
     return;  // Nothing to do.
+  }
 
   EnsureCallbackPending();
   aggregator_.InvalidateRect(clipped_rect);
@@ -153,8 +159,9 @@ void PaintManager::ScrollRect(const gfx::Rect& clip_rect,
                               const gfx::Vector2d& amount) {
   DCHECK(!in_paint_);
 
-  if (!surface_ && !has_pending_resize_)
+  if (!surface_ && !has_pending_resize_) {
     return;
+  }
 
   EnsureCallbackPending();
 
@@ -173,13 +180,15 @@ void PaintManager::EnsureCallbackPending() {
   // The best way for us to do the next update is to get a notification that
   // a previous one has completed. So if we're already waiting for one, we
   // don't have to do anything differently now.
-  if (flush_pending_)
+  if (flush_pending_) {
     return;
+  }
 
   // If no flush is pending, we need to do a manual call to get back to the
   // main thread. We may have one already pending, or we may need to schedule.
-  if (manual_callback_pending_)
+  if (manual_callback_pending_) {
     return;
+  }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&PaintManager::OnManualCallbackComplete,
@@ -189,9 +198,6 @@ void PaintManager::EnsureCallbackPending() {
 
 void PaintManager::DoPaint() {
   base::AutoReset<bool> auto_reset_in_paint(&in_paint_, true);
-
-  std::vector<PaintReadyRect> ready_rects;
-  std::vector<gfx::Rect> pending_rects;
 
   DCHECK(aggregator_.HasPendingUpdate());
 
@@ -228,8 +234,9 @@ void PaintManager::DoPaint() {
       weak_factory_.InvalidateWeakPtrs();
     }
 
-    if (pending_device_scale_ != device_scale_)
+    if (pending_device_scale_ != device_scale_) {
       client_->UpdateScale(1.0f / pending_device_scale_);
+    }
     device_scale_ = pending_device_scale_;
 
     // This must be cleared before calling into the plugin since it may do
@@ -239,15 +246,24 @@ void PaintManager::DoPaint() {
   }
 
   PaintAggregator::PaintUpdate update = aggregator_.GetPendingUpdate();
+
+  // Set a timer here to check how long it takes to do all the paint operations
+  // below, except for the flush.
+  const base::TimeTicks begin_time = base::TimeTicks::Now();
+
+  std::vector<PaintReadyRect> ready_rects;
+  std::vector<gfx::Rect> pending_rects;
   client_->OnPaint(update.paint_rects, ready_rects, pending_rects);
 
-  if (ready_rects.empty() && pending_rects.empty())
+  if (ready_rects.empty() && pending_rects.empty()) {
     return;  // Nothing was painted, don't schedule a flush.
+  }
 
   std::vector<PaintReadyRect> ready_now;
   if (pending_rects.empty()) {
-    aggregator_.SetIntermediateResults(ready_rects, pending_rects);
-    ready_now = aggregator_.GetReadyRects();
+    aggregator_.SetIntermediateResults(std::move(ready_rects),
+                                       std::move(pending_rects));
+    ready_now = aggregator_.TakeReadyRects();
     aggregator_.ClearPendingUpdate();
 
     // First, apply any scroll amount less than the surface's size.
@@ -262,7 +278,7 @@ void PaintManager::DoPaint() {
     view_size_changed_waiting_for_paint_ = false;
   } else {
     std::vector<PaintReadyRect> ready_later;
-    for (const auto& ready_rect : ready_rects) {
+    for (auto& ready_rect : ready_rects) {
       // Don't flush any part (i.e. scrollbars) if we're resizing the browser,
       // as that'll lead to flashes.  Until we flush, the browser will use the
       // previous image, but if we flush, it'll revert to using the blank image.
@@ -270,14 +286,15 @@ void PaintManager::DoPaint() {
       // default background color instead of the pepper default of black.
       if (ready_rect.flush_now() &&
           (!view_size_changed_waiting_for_paint_ || first_paint_)) {
-        ready_now.push_back(ready_rect);
+        ready_now.push_back(std::move(ready_rect));
       } else {
-        ready_later.push_back(ready_rect);
+        ready_later.push_back(std::move(ready_rect));
       }
     }
     // Take the rectangles, except the ones that need to be flushed right away,
     // and save them so that everything is flushed at once.
-    aggregator_.SetIntermediateResults(ready_later, pending_rects);
+    aggregator_.SetIntermediateResults(std::move(ready_later),
+                                       std::move(pending_rects));
 
     if (ready_now.empty()) {
       EnsureCallbackPending();
@@ -286,13 +303,27 @@ void PaintManager::DoPaint() {
   }
 
   for (const auto& ready_rect : ready_now) {
-    SkRect skia_rect = gfx::RectToSkRect(ready_rect.rect());
+    const SkRect skia_rect = gfx::RectToSkRect(ready_rect.rect());
+
+    // Paint the page's white background, and then paint the page's contents.
+    // If `ready_rect.image()` has transparencies, this is necessary to paint
+    // over the stale data in `skia_rect` in `surface_`.
+    SkPaint paint;
+    paint.setColor(SK_ColorWHITE);
+    surface_->getCanvas()->drawRect(skia_rect, paint);
+
     surface_->getCanvas()->drawImageRect(
-        &ready_rect.image(), skia_rect, skia_rect, SkSamplingOptions(), nullptr,
+        ready_rect.image(), skia_rect, skia_rect, SkSamplingOptions(), nullptr,
         SkCanvas::kStrict_SrcRectConstraint);
   }
 
+  base::UmaHistogramMediumTimes("PDF.RenderAndPaintTime",
+                                base::TimeTicks::Now() - begin_time);
+
   Flush();
+
+  base::UmaHistogramMediumTimes("PDF.RenderPaintAndFlushTime",
+                                base::TimeTicks::Now() - begin_time);
 
   first_paint_ = false;
 }
@@ -318,8 +349,9 @@ void PaintManager::OnFlushComplete() {
 
   // If more paints were enqueued while we were waiting for the flush to
   // complete, execute them now.
-  if (aggregator_.HasPendingUpdate())
+  if (aggregator_.HasPendingUpdate()) {
     DoPaint();
+  }
 
   // If there was another flush request while flushing we flush again.
   if (flush_requested_) {
@@ -335,8 +367,9 @@ void PaintManager::OnManualCallbackComplete() {
   // invalid regions. Even though we only schedule this callback when something
   // is pending, a Flush callback could have come in before this callback was
   // executed and that could have cleared the queue.
-  if (aggregator_.HasPendingUpdate())
+  if (aggregator_.HasPendingUpdate()) {
     DoPaint();
+  }
 }
 
 }  // namespace chrome_pdf

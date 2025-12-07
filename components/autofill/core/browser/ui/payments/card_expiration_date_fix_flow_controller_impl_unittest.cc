@@ -5,14 +5,15 @@
 #include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_controller_impl.h"
 
 #include <stddef.h>
+
 #include <memory>
 
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_view.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,7 +28,7 @@ class TestCardExpirationDateFixFlowView : public CardExpirationDateFixFlowView {
 
 class CardExpirationDateFixFlowControllerImplGenericTest {
  public:
-  CardExpirationDateFixFlowControllerImplGenericTest() {}
+  CardExpirationDateFixFlowControllerImplGenericTest() = default;
 
   CardExpirationDateFixFlowControllerImplGenericTest(
       const CardExpirationDateFixFlowControllerImplGenericTest&) = delete;
@@ -64,7 +65,7 @@ class CardExpirationDateFixFlowControllerImplTest
     : public CardExpirationDateFixFlowControllerImplGenericTest,
       public testing::Test {
  public:
-  CardExpirationDateFixFlowControllerImplTest() {}
+  CardExpirationDateFixFlowControllerImplTest() = default;
 
   CardExpirationDateFixFlowControllerImplTest(
       const CardExpirationDateFixFlowControllerImplTest&) = delete;

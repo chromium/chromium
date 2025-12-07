@@ -80,7 +80,7 @@ class BleV2Medium : public ::nearby::api::ble_v2::BleMedium,
       api::ble_v2::ServerGattConnectionCallback callback) override;
 
   std::unique_ptr<api::ble_v2::GattClient> ConnectToGattServer(
-      api::ble_v2::BlePeripheral& peripheral,
+      api::ble_v2::BlePeripheral::UniqueId peripheral_id,
       api::ble_v2::TxPowerLevel tx_power_level,
       api::ble_v2::ClientGattConnectionCallback callback) override;
 
@@ -90,15 +90,10 @@ class BleV2Medium : public ::nearby::api::ble_v2::BleMedium,
   std::unique_ptr<api::ble_v2::BleSocket> Connect(
       const std::string& service_id,
       api::ble_v2::TxPowerLevel tx_power_level,
-      api::ble_v2::BlePeripheral& peripheral,
+      api::ble_v2::BlePeripheral::UniqueId peripheral_id,
       CancellationFlag* cancellation_flag) override;
 
   bool IsExtendedAdvertisementsAvailable() override;
-
-  bool GetRemotePeripheral(const std::string& mac_address,
-                           GetRemotePeripheralCallback callback) override;
-  bool GetRemotePeripheral(api::ble_v2::BlePeripheral::UniqueId id,
-                           GetRemotePeripheralCallback callback) override;
 
  private:
   // TODO(b/330759317): Remove FRIEND call once unit tests can rely on

@@ -9,6 +9,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "components/url_deduplication/deduplication_strategy.h"
 #include "components/url_deduplication/url_strip_handler.h"
@@ -26,7 +27,9 @@ URLDeduplicationHelper::URLDeduplicationHelper(DeduplicationStrategy strategy)
 
 URLDeduplicationHelper::~URLDeduplicationHelper() = default;
 
-std::string URLDeduplicationHelper::ComputeURLDeduplicationKey(GURL url) {
+std::string URLDeduplicationHelper::ComputeURLDeduplicationKey(
+    const GURL& url,
+    const std::string& title) {
   GURL stripped_destination_url = url;
   for (auto& handler : strip_handlers_) {
     GURL temp_url = handler->StripExtraParams(url);
@@ -47,7 +50,7 @@ std::string URLDeduplicationHelper::ComputeURLDeduplicationKey(GURL url) {
 
   // Strip various common prefixes in order to group the resulting hostnames
   // together and avoid duplicates.
-  std::string host = stripped_destination_url.host();
+  std::string host = stripped_destination_url.GetHost();
   for (std::string_view prefix : strategy_.excluded_prefixes) {
     if (host.size() > prefix.size() &&
         base::StartsWith(host, prefix, base::CompareCase::INSENSITIVE_ASCII)) {
@@ -67,6 +70,11 @@ std::string URLDeduplicationHelper::ComputeURLDeduplicationKey(GURL url) {
 
   if (strategy_.clear_ref) {
     replacements.ClearRef();
+    needs_replacement = true;
+  }
+
+  if (strategy_.clear_path) {
+    replacements.ClearPath();
     needs_replacement = true;
   }
 
@@ -93,6 +101,10 @@ std::string URLDeduplicationHelper::ComputeURLDeduplicationKey(GURL url) {
   if (needs_replacement) {
     stripped_destination_url =
         stripped_destination_url.ReplaceComponents(replacements);
+  }
+
+  if (strategy_.include_title) {
+    return base::StrCat({stripped_destination_url.spec(), "#", title});
   }
 
   return stripped_destination_url.spec();

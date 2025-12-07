@@ -1,6 +1,6 @@
 arc_support: (Warning! Soon this dependency will be dropped, please start using <ph name="GLS_POLICY_NAME">GoogleLocationServicesEnabled</ph> instead) If this policy is set to <ph name="BLOCK_GEOLOCATION_SETTING">BlockGeolocation</ph>,
-  Android apps cannot access location information. If you set this policy to any other
-  value or leave it unset, the user is asked to consent when an Android app wants
+  <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> system services and Android apps cannot access location information. If you set this policy to any other
+  value or leave it unset, the user is asked to allow when an Android app wants
   to access location information.
 caption: Default geolocation setting
 default: null

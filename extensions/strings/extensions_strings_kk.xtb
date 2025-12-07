@@ -5,7 +5,6 @@
 <translation id="1140871961407805696">Артқы</translation>
 <translation id="1196338895211115272">Жеке кілтті экспорттау сәтсіз аяқталды.</translation>
 <translation id="132960226125594336">Контент скриптіне арналған "<ph name="RELATIVE_PATH" />" файлын жүктеу мүмкін емес, себебі ол максималды скрипт өлшемінен немесе кеңейтімнің максималды жалпы контент скрипті өлшемінен асып түседі.</translation>
-<translation id="1420684932347524586">Кездейсоқ RSA жеке кілтін жасау сәтсіз аяқталды.</translation>
 <translation id="1445572445564823378">Бұл кеңейтім <ph name="PRODUCT_NAME" /> жұмысын баяулатады. <ph name="PRODUCT_NAME" /> жұмысын қалпына келтіру үшін кеңейтімді өшіруіңіз керек.</translation>
 <translation id="1468038450257740950">WebGL қолдау көрсетілмеген.</translation>
 <translation id="1610570795592207282">Скриптіге арналған CSS "<ph name="RELATIVE_PATH" />" жүктелмеді.</translation>
@@ -19,13 +18,11 @@
 <translation id="3115238746683532089">Жеткізуші <ph name="VENDOR_ID" /> ұсынған белгісіз өнім <ph name="PRODUCT_ID" /> (сериялық нөмірі <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">CRX файлын ауыстыру мүмкін болмады. Файл пайдаланылып жатқан болуы мүмкін.</translation>
 <translation id="3163201441334626963">Жеткізуші <ph name="VENDOR_ID" /> ұсынған белгісіз өнім <ph name="PRODUCT_ID" /></translation>
-<translation id="3369521687965833290">Кеңейтімді пакеттен шығару мүмкін емес. Кеңейтімді қауіпсіз түрде пакеттен шығару үшін диск әрібінен басталатын профиль каталогіңіздің жолы болу керек және қосындыны, бекіту нүктесін немесе таңбалық сілтемені қамтымайды. Профиліңіз үшін мұндай жол жоқ.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (сериялық нөмірі <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> ұсынған <ph name="PRODUCT_NAME" /> (сериялық нөмірі <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Жеке кілт үшін енгізілетін мән жарамды жол болуы керек.</translation>
 <translation id="388442998277590542">"<ph name="OPTIONS_PAGE" />" опциялар бетін жүктеу мүмкін емес.</translation>
 <translation id="3984413272403535372">Кеңейтімді белгілеу кезіндегі қате.</translation>
-<translation id="4115165561519362854">Бұл машинаның әкімшісі <ph name="EXTENSION_NAME" /> кеңейтімінде кемінде <ph name="EXTENSION_VERSION" /> нұсқасы болуын қажет етеді. Аталмыш нұсқаға жаңартылмайынша оны қосу мүмкін емес.</translation>
 <translation id="4233778200880751280">"<ph name="ABOUT_PAGE" />" анықтама бетін жүктеу мүмкін емес.</translation>
 <translation id="471800408830181311">Жеке кілтті шығару әрекеті сәтсіз аяқталды.</translation>
 <translation id="4811956658694082538">Пайдалы бағдарлама процесі бұзылғандықтан, пакетті орнату мүмкін емес. Chrome қайта іске қосып және әрекетті қайталап көріңіз.</translation>
@@ -39,7 +36,6 @@
 <translation id="5972529113578162692">Бұл машинаның әкімшісі <ph name="EXTENSION_NAME" /> кеңейтімін орнатуды қажет етеді. Оны жою мүмкін емес.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> ұсынған белгісіз өнім <ph name="PRODUCT_ID" /> (сериялық нөмірі <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="VENDOR_ID" /> ұсынған <ph name="PRODUCT_NAME" /></translation>
-<translation id="6143635259298204954">Кеңейтімді пакеттен шығару мүмкін емес. Кеңейтімді пакеттен қауіпсіз түрде шығару үшін белгі сілтемесін қамтымайтын профиль каталогінің жолы болуы керек. Профиліңіз үшін мұндай жолдар жоқ.</translation>
 <translation id="6322279351188361895">Жеке кілтті оқу әрекеті сәтсіз аяқталды.</translation>
 <translation id="6391538222494443604">Кіріс каталогі бар болуы керек.</translation>
 <translation id="641087317769093025">Кеңейтімді мұрағаттан шығару мүмкін болмады</translation>
@@ -52,12 +48,14 @@
 <translation id="7068383018033524534">Манифест файлы жарамсыз</translation>
 <translation id="7217838517480956708">Бұл машинаның әкімшісі <ph name="EXTENSION_NAME" /> кеңейтімін орнатуды қажет етеді. Оны жою не өзгерту мүмкін емес.</translation>
 <translation id="7612608473764576263">Жеке кілт үшін енгізілетін мән жарамды болуы керек (PKCS#8 форматындағы PEM кодталған RSA кілті).</translation>
+<translation id="7876803335449432072">Контент скрипті үшін "<ph name="RELATIVE_PATH" />" файлын жүктеу мүмкін болмады. Контент скриптінің стильдер кестесін тек қолдау көрсетілетін стильдер кестесі түріндегі файлдардан (мысалы, .css) жүктеуге болады.</translation>
 <translation id="7939686037314084444">Кеңейтім дұрыс жүктелмеді. Ол желі сұрауларын қабылдай алмауы мүмкін.</translation>
 <translation id="7972881773422714442">Опциялар: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Алдыңғы</translation>
 <translation id="8047248493720652249">Бұл кеңейтімнің жүктеу "<ph name="ATTEMPTED_FILENAME" />" файлының атын өзгерту әрекеті сәтсіз аяқталды, себебі басқа кеңейтім (<ph name="EXTENSION_NAME" />) басқа файл атауын "<ph name="ACTUAL_FILENAME" />" анықтады.</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" /> ұсынған <ph name="PRODUCT_NAME" /> өнімі</translation>
 <translation id="8517576857589387417">Манифест файлы жоқ немесе оқылмайды</translation>
+<translation id="8621383749470166852">Контент скрипті үшін "<ph name="RELATIVE_PATH" />" файлын жүктеу мүмкін болмады. Контент скрипттерін тек қолдау көрсетілетін JavaScript файлдарынан (мысалы, .js) жүктеуге болады.</translation>
 <translation id="8636666366616799973">Пакет жарамсыз. Мәліметтер: "<ph name="ERROR_MESSAGE" />".</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" бір құрылғыға кіруге рұқсат сұрауда:</translation>
 <translation id="8885905466771744233">Көрсетілген кеңейтім үшін жеке кілт бұрыннан бар. Айтылған кілтті қайта пайдаланыңыз немесе алдымен оны өшіріңіз.</translation>

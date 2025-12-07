@@ -5,7 +5,6 @@
 /*
 Exported functions:
 assertCSSResponsive
-assertSVGResponsive
 
 Exported objects:
 neutralKeyframe
@@ -28,15 +27,14 @@ Options format: {
 }
 
 Description:
-assertCSSResponsive() and assertSVGResponsive() take a property
-specific interpolation and a list of style configurations with interpolation
-expectations that apply to each configuration.
-It starts the interpolation in every configuration, changes the
+assertCSSResponsive() takes a property specific interpolation and a list of
+style configurations with interpolation expectations that apply to each
+configuration. It starts the interpolation in every configuration, changes the
 state to every other configuration (n * (n - 1) complexity) and asserts that
-each destination configuration's expectations are met.
-Each animation target can be assigned custom styles via the ".target" selector.
-This test is designed to catch stale interpolation caches.
-Set from/to to the exported neutralKeyframe object to use neutral keyframes.
+each destination configuration's expectations are met. Each animation target can
+be assigned custom styles via the ".target" selector. This test is designed to
+catch stale interpolation caches. Set from/to to the exported neutralKeyframe
+object to use neutral keyframes.
 */
 
 (function() {
@@ -77,33 +75,6 @@ function assertCSSResponsive(options) {
       },
       getAnimatedValue(target, property) {
         return getComputedStyle(target)[property];
-      },
-    },
-  });
-}
-
-function assertSVGResponsive(options) {
-  pendingResponsiveTests.push({
-    options,
-    bindings: {
-      prefixProperty(property) {
-        return 'svg-' + property;
-      },
-      createTargetContainer(container) {
-        var svgRoot = createElement('svg', container, 'svg-root', svgNamespace);
-        svgRoot.setAttribute('width', 0);
-        svgRoot.setAttribute('height', 0);
-        return svgRoot;
-      },
-      createTarget(targetContainer) {
-        console.assert(options.targetTag);
-        return createElement(options.targetTag, targetContainer, 'target', svgNamespace);
-      },
-      setValue(target, property, value) {
-        target.setAttribute(property, value);
-      },
-      getAnimatedValue(target, property) {
-        return options.getter ? options.getter(target) : target[property].animVal;
       },
     },
   });
@@ -292,7 +263,6 @@ loadScript('../../../resources/testharness.js').then(() => {
 
 
 window.assertCSSResponsive = assertCSSResponsive;
-window.assertSVGResponsive = assertSVGResponsive;
 window.neutralKeyframe = neutralKeyframe;
 
 })();

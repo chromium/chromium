@@ -1,0 +1,23 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Source:
+// http://google3/google/rpc/stream_body.proto
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package ash.babelorca;
+
+message Status {
+  int32 code = 1;
+  string message = 2;
+}
+
+message StreamBody {
+  repeated bytes messages = 1;
+  Status status = 2;
+  repeated bytes noop = 15;
+}

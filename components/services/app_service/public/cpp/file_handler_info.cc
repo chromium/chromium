@@ -20,6 +20,6 @@ FileHandlerInfo::FileHandlerInfo()
 
 FileHandlerInfo::FileHandlerInfo(const FileHandlerInfo& other) = default;
 
-FileHandlerInfo::~FileHandlerInfo() {}
+FileHandlerInfo::~FileHandlerInfo() = default;
 
 }  // namespace apps

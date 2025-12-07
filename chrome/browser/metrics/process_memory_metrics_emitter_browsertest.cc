@@ -6,9 +6,12 @@
 
 #include <set>
 
+#include "base/barrier_closure.h"
 #include "base/feature_list.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -29,6 +32,7 @@
 #include "content/public/browser/network_service_util.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/dns/mock_host_resolver.h"
@@ -38,6 +42,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/os_metrics.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -46,6 +51,13 @@
 #include "extensions/common/extension.h"
 #include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/test_extension_dir.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include <wrl/client.h>
+
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "third_party/iaccessible2/ia2_api_all.h"
 #endif
 
 namespace {
@@ -81,12 +93,13 @@ int GetNumRenderers(Browser* browser) {
   return static_cast<int>(render_process_hosts.size());
 }
 
-void RequestGlobalDumpCallback(base::OnceClosure quit_closure,
-                               bool success,
-                               uint64_t) {
+void RequestGlobalDumpCallback(
+    base::OnceClosure quit_closure,
+    memory_instrumentation::mojom::RequestOutcome outcome,
+    uint64_t) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, std::move(quit_closure));
-  ASSERT_TRUE(success);
+  ASSERT_EQ(memory_instrumentation::mojom::RequestOutcome::kSuccess, outcome);
 }
 
 void OnStartTracingDoneCallback(
@@ -101,9 +114,9 @@ void OnStartTracingDoneCallback(
 
 class ProcessMemoryMetricsEmitterFake : public ProcessMemoryMetricsEmitter {
  public:
-  explicit ProcessMemoryMetricsEmitterFake(base::RunLoop* run_loop,
+  explicit ProcessMemoryMetricsEmitterFake(base::OnceClosure quit_closure,
                                            ukm::TestUkmRecorder* recorder)
-      : run_loop_(run_loop), recorder_(recorder) {}
+      : quit_closure_(std::move(quit_closure)), recorder_(recorder) {}
 
   ProcessMemoryMetricsEmitterFake(const ProcessMemoryMetricsEmitterFake&) =
       delete;
@@ -111,34 +124,21 @@ class ProcessMemoryMetricsEmitterFake : public ProcessMemoryMetricsEmitter {
       const ProcessMemoryMetricsEmitterFake&) = delete;
 
  private:
-  ~ProcessMemoryMetricsEmitterFake() override {}
+  ~ProcessMemoryMetricsEmitterFake() override = default;
 
-  void ReceivedMemoryDump(bool success,
-                          std::unique_ptr<GlobalMemoryDump> ptr) override {
-    EXPECT_TRUE(success);
-    ProcessMemoryMetricsEmitter::ReceivedMemoryDump(success, std::move(ptr));
-    finished_memory_dump_ = true;
-    QuitIfFinished();
-  }
-
-  void ReceivedProcessInfos(std::vector<ProcessInfo> process_infos) override {
-    ProcessMemoryMetricsEmitter::ReceivedProcessInfos(std::move(process_infos));
-    finished_process_info_ = true;
-    QuitIfFinished();
-  }
-
-  void QuitIfFinished() {
-    if (!finished_memory_dump_ || !finished_process_info_)
-      return;
-    if (run_loop_)
-      run_loop_->Quit();
+  void ReceivedMemoryDump(
+      absl::flat_hash_map<base::ProcessId, ProcessInfo> process_infos,
+      memory_instrumentation::mojom::RequestOutcome outcome,
+      std::unique_ptr<GlobalMemoryDump> ptr) override {
+    EXPECT_EQ(memory_instrumentation::mojom::RequestOutcome::kSuccess, outcome);
+    ProcessMemoryMetricsEmitter::ReceivedMemoryDump(std::move(process_infos),
+                                                    outcome, std::move(ptr));
+    std::move(quit_closure_).Run();
   }
 
   ukm::UkmRecorder* GetUkmRecorder() override { return recorder_; }
 
-  raw_ptr<base::RunLoop> run_loop_;
-  bool finished_memory_dump_ = false;
-  bool finished_process_info_ = false;
+  base::OnceClosure quit_closure_;
   raw_ptr<ukm::TestUkmRecorder> recorder_;
 };
 
@@ -350,7 +350,7 @@ class ProcessMemoryMetricsEmitterTest
   ProcessMemoryMetricsEmitterTest& operator=(
       const ProcessMemoryMetricsEmitterTest&) = delete;
 
-  ~ProcessMemoryMetricsEmitterTest() override {}
+  ~ProcessMemoryMetricsEmitterTest() override = default;
 
   void SetUpOnMainThread() override {
     extensions::ExtensionBrowserTest::SetUpOnMainThread();
@@ -579,9 +579,8 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
   // Intentionally let emitter leave scope to check that it correctly keeps
   // itself alive.
   {
-    scoped_refptr<ProcessMemoryMetricsEmitterFake> emitter(
-        new ProcessMemoryMetricsEmitterFake(&run_loop,
-                                            test_ukm_recorder_.get()));
+    auto emitter = base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(
+        run_loop.QuitClosure(), test_ukm_recorder_.get());
     emitter->FetchAndEmitProcessMemoryMetrics();
   }
 
@@ -633,9 +632,8 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
   // Intentionally let emitter leave scope to check that it correctly keeps
   // itself alive.
   {
-    scoped_refptr<ProcessMemoryMetricsEmitterFake> emitter(
-        new ProcessMemoryMetricsEmitterFake(&run_loop,
-                                            test_ukm_recorder_.get()));
+    auto emitter = base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(
+        run_loop.QuitClosure(), test_ukm_recorder_.get());
     emitter->FetchAndEmitProcessMemoryMetrics();
   }
 
@@ -682,9 +680,8 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
   // Intentionally let emitter leave scope to check that it correctly keeps
   // itself alive.
   {
-    scoped_refptr<ProcessMemoryMetricsEmitterFake> emitter(
-        new ProcessMemoryMetricsEmitterFake(&run_loop,
-                                            test_ukm_recorder_.get()));
+    auto emitter = base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(
+        run_loop.QuitClosure(), test_ukm_recorder_.get());
     emitter->FetchAndEmitProcessMemoryMetrics();
   }
 
@@ -729,9 +726,8 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
 
   {
     base::RunLoop run_loop;
-    scoped_refptr<ProcessMemoryMetricsEmitterFake> emitter(
-        new ProcessMemoryMetricsEmitterFake(&run_loop,
-                                            test_ukm_recorder_.get()));
+    auto emitter = base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(
+        run_loop.QuitClosure(), test_ukm_recorder_.get());
     emitter->FetchAndEmitProcessMemoryMetrics();
 
     run_loop.Run();
@@ -773,10 +769,11 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
   base::RunLoop run_loop;
 
   int count = 3;
+  // Only the last emitter should stop the run loop.
+  auto quit_closure = base::BarrierClosure(count, run_loop.QuitClosure());
   for (int i = 0; i < count; ++i) {
-    // Only the last emitter should stop the run loop.
     auto emitter = base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(
-        (i == count - 1) ? &run_loop : nullptr, test_ukm_recorder_.get());
+        quit_closure, test_ukm_recorder_.get());
     emitter->FetchAndEmitProcessMemoryMetrics();
   }
 
@@ -819,9 +816,8 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
   base::HistogramTester histogram_tester;
   {
     base::RunLoop run_loop;
-    scoped_refptr<ProcessMemoryMetricsEmitterFake> emitter(
-        new ProcessMemoryMetricsEmitterFake(&run_loop,
-                                            test_ukm_recorder_.get()));
+    auto emitter = base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(
+        run_loop.QuitClosure(), test_ukm_recorder_.get());
     emitter->FetchAndEmitProcessMemoryMetrics();
     run_loop.Run();
   }
@@ -838,9 +834,8 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
   tab2->WasShown();
   {
     base::RunLoop run_loop;
-    scoped_refptr<ProcessMemoryMetricsEmitterFake> emitter(
-        new ProcessMemoryMetricsEmitterFake(&run_loop,
-                                            test_ukm_recorder_.get()));
+    auto emitter = base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(
+        run_loop.QuitClosure(), test_ukm_recorder_.get());
     emitter->FetchAndEmitProcessMemoryMetrics();
     run_loop.Run();
   }
@@ -866,8 +861,8 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest, MAYBE_RendererBuildId) {
     // To match with the memory maps, need to convert it to absolute path,
     // which may hit ScopedBlockingCall.
     base::ScopedAllowBlockingForTesting allow_blocking;
-    auto maps =
-        memory_instrumentation::OSMetrics::GetProcessMemoryMaps(process.Pid());
+    auto maps = memory_instrumentation::OSMetrics::GetProcessMemoryMaps(
+        process.Handle());
     bool found = false;
     for (const memory_instrumentation::mojom::VmRegionPtr& region : maps) {
       if (region->module_debugid.empty())
@@ -878,3 +873,48 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest, MAYBE_RendererBuildId) {
     EXPECT_TRUE(found);
   }
 }
+
+#if BUILDFLAG(IS_WIN)
+// Tests the reporting of dormant, ghost, and live node counts.
+// Disabled due to flakes; see https://crbug.com/41324945.
+IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
+                       DISABLED_AXPlatformNodeWinTest) {
+  // A lambda to collect and check a memory metric.
+  auto check_metric = [this](const std::string& metric_name) {
+    base::HistogramTester histogram_tester;
+    base::RunLoop run_loop;
+    {
+      auto emitter = base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(
+          run_loop.QuitClosure(), test_ukm_recorder_.get());
+      emitter->FetchAndEmitProcessMemoryMetrics();
+    }
+
+    run_loop.Run();
+
+    CheckMemoryMetric(metric_name, histogram_tester, 1,
+                      ValueRestriction::ABOVE_ZERO);
+  };
+
+  // Enable basic accessibility to ensure that nodes are created.
+  content::ScopedAccessibilityModeOverride basic_ax(ui::kAXModeBasic);
+
+  // Check that there are a number of dormant nodes for the browser's UX.
+  check_metric(
+      "Memory.Experimental.Browser2.Custom.AXPlatformWinDormantNodeCount");
+
+  // Hold a reference to an accessibility node so that there's one live node.
+  Microsoft::WRL::ComPtr<IAccessible> root(
+      browser()->GetBrowserView().GetNativeViewAccessible());
+  ASSERT_TRUE(root);
+
+  // Check for a live node.
+  check_metric(
+      "Memory.Experimental.Browser2.Custom.AXPlatformWinLiveNodeCount");
+
+  // Close the browser so that the live node becomes a ghost.
+  CloseBrowserSynchronously(browser());
+
+  check_metric(
+      "Memory.Experimental.Browser2.Custom.AXPlatformWinGhostNodeCount");
+}
+#endif  // BUILDFLAG(IS_WIN)

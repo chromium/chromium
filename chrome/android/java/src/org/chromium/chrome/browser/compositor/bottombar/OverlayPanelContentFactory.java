@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.compositor.bottombar;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Interface used to generalize the creation of the OverlayPanelContent. This is so test cases
  * are able to offer a custom version of the OverlayPanelContent to be used in the tests.
  */
+@NullMarked
 public interface OverlayPanelContentFactory {
     /** Create a new OverlayPanelContent object. This can be overridden for tests. */
     OverlayPanelContent createNewOverlayPanelContent();

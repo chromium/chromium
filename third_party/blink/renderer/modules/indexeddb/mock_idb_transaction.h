@@ -35,6 +35,13 @@ class MockIDBTransaction
                Vector<IDBIndexKeys>,
                PutCallback callback),
               (override));
+  MOCK_METHOD(void,
+              SetIndexKeys,
+              (int64_t object_store_id,
+               std::unique_ptr<IDBKey> primary_key,
+               IDBIndexKeys),
+              (override));
+  MOCK_METHOD(void, SetIndexKeysDone, (), (override));
   MOCK_METHOD(void, Commit, (int64_t num_errors_handled), (override));
 
   void Bind(mojo::PendingAssociatedReceiver<mojom::blink::IDBTransaction>);

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
@@ -100,10 +99,9 @@ class TestClusteringBackend : public ClusteringBackend {
         return AnnotatedVisitToClusterVisit(visit);
     }
 
-    NOTREACHED_IN_MIGRATION()
+    NOTREACHED()
         << "TestClusteringBackend::GetVisitById() could not find visit_id: "
         << visit_id;
-    return {};
   }
 
   // Should be invoked before `GetClusters()` is invoked.
@@ -336,7 +334,7 @@ class HistoryClustersServiceTest : public testing::Test {
     // Including synced visits launched in early 2024.
     filter_params.include_synced_visits = true;
     const auto task = history_clusters_service_->QueryClusters(
-        ClusteringRequestSource::kJourneysPage, filter_params,
+        ClusteringRequestSource::kJourneysPage, std::move(filter_params),
         /*begin_time=*/base::Time(), continuation_params, /*recluster=*/false,
         base::BindLambdaForTesting(
             [&](std::vector<history::Cluster> clusters_temp,
@@ -1474,7 +1472,6 @@ class HistoryClustersServiceJourneysDisabledTest
         /*enabled_features=*/{},
         /*disabled_features=*/{
             internal::kJourneys,
-            internal::kPersistContextAnnotationsInHistoryDb,
         });
 
     Config config;

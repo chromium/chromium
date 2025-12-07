@@ -22,9 +22,12 @@ _RLIBS_REGEX = re.compile(r'  rlibs = (.*?)(?:\n|$)')
 
 
 class _SourceMapper:
-  def __init__(self, dep_map, parsed_file_count):
+
+  def __init__(self, dep_map, parsed_file_count, inputs_by_path):
     self._dep_map = dep_map
     self.parsed_file_count = parsed_file_count
+    self._inputs_by_path = inputs_by_path
+    self.inputs_map_count = len(inputs_by_path)
     self._unmatched_paths = set()
 
   def _FindSourceForPathInternal(self, path):
@@ -73,6 +76,9 @@ class _SourceMapper:
   def IterAllPaths(self):
     return self._dep_map.keys()
 
+  def GetInputsForBinary(self, path):
+    return self._inputs_by_path.get(path)
+
 
 def _ParseNinjaPathList(path_list):
   ret = path_list.replace('\\ ', '\b')
@@ -84,9 +90,8 @@ def _OutputsAreObject(outputs):
           or outputs.endswith('.rlib'))
 
 
-def _ParseOneFile(lines, dep_map, elf_path):
+def _ParseOneFile(lines, dep_map, inputs_by_path):
   sub_ninjas = []
-  elf_inputs = None
   last_elf_paths = []
   for line in lines:
     if line.startswith('subninja '):
@@ -103,56 +108,67 @@ def _ParseOneFile(lines, dep_map, elf_path):
         else:
           obj_paths = _ParseNinjaPathList(srcs)
           dep_map[output] = {os.path.basename(p): p for p in obj_paths}
-      elif elf_path:
+      elif inputs_by_path:
         last_elf_paths = [
             os.path.normpath(p) for p in _ParseNinjaPathList(outputs)
         ]
-        if elf_path in last_elf_paths:
-          elf_inputs = _ParseNinjaPathList(srcs)
+        for elf_path in last_elf_paths:
+          results = inputs_by_path.get(elf_path)
+          if results is not None:
+            results.extend(_ParseNinjaPathList(srcs))
     # Rust .rlibs are listed as implicit dependencies of the main
     # target linking rule, then are given as an extra
     #   rlibs =
     # variable on a subsequent line. Watch out for that line.
     m = _RLIBS_REGEX.match(line)
     if m:
-      if elf_path in last_elf_paths:
-        elf_inputs.extend(_ParseNinjaPathList(m.group(1)))
+      for elf_path in last_elf_paths:
+        results = inputs_by_path.get(elf_path)
+        if results is not None:
+          results.extend(_ParseNinjaPathList(m.group(1)))
 
-  return sub_ninjas, elf_inputs
-
-
-def ParseOneFileForTest(lines, dep_map, elf_path):
-  return _ParseOneFile(lines, dep_map, elf_path)
+  return sub_ninjas
 
 
-def Parse(output_directory, elf_path):
+def ParseOneFileForTest(lines, dep_map, inputs_by_path):
+  return _ParseOneFile(lines, dep_map, inputs_by_path)
+
+
+def Parse(output_directory, interesting_elf_paths):
   """Parses build.ninja and subninjas.
 
   Args:
     output_directory: Where to find the root build.ninja.
-    elf_path: Path to elf file to find inputs for.
+    interesting_elf_paths: Paths of link steps to collect inputs for.
 
-  Returns: A tuple of (source_mapper, elf_inputs).
+  Returns: A tuple of (source_mapper, inputs_by_path).
   """
-  if elf_path:
-    elf_path = os.path.relpath(elf_path, output_directory)
+  if interesting_elf_paths:
+    # Change paths to be relative to output directory.
+    inputs_by_path = {
+        os.path.relpath(p, output_directory): []
+        for p in interesting_elf_paths
+    }
+  else:
+    inputs_by_path = {}
   to_parse = ['build.ninja']
   seen_paths = set(to_parse)
   dep_map = {}
-  elf_inputs = None
   while to_parse:
     path = os.path.join(output_directory, to_parse.pop())
     with open(path, encoding='utf-8', errors='ignore') as obj:
-      sub_ninjas, found_elf_inputs = _ParseOneFile(obj, dep_map, elf_path)
-      if found_elf_inputs:
-        assert not elf_inputs, 'Found multiple inputs for elf_path ' + elf_path
-        elf_inputs = found_elf_inputs
+      sub_ninjas = _ParseOneFile(obj, dep_map, inputs_by_path)
     for subpath in sub_ninjas:
       assert subpath not in seen_paths, 'Double include of ' + subpath
       seen_paths.add(subpath)
     to_parse.extend(sub_ninjas)
 
-  return _SourceMapper(dep_map, len(seen_paths)), elf_inputs
+  # Change paths back to their original forms and remove empty entries.
+  ret_inputs_by_path = {}
+  for path in interesting_elf_paths:
+    if inputs := inputs_by_path.get(os.path.relpath(path, output_directory)):
+      ret_inputs_by_path[path] = inputs
+  return _SourceMapper(dep_map, len(seen_paths), ret_inputs_by_path)
 
 
 def main():
@@ -165,9 +181,9 @@ def main():
   logging.basicConfig(level=logging.DEBUG,
                       format='%(levelname).1s %(relativeCreated)6d %(message)s')
 
-  source_mapper, elf_inputs = Parse(args.output_directory, args.elf_path)
-  if not elf_inputs:
-    elf_inputs = []
+  elf_paths = [args.elf_path] if args.elf_path else None
+  source_mapper = Parse(args.output_directory, elf_paths)
+  elf_inputs = source_mapper.GetInputsForBinary(args.elf_path)
 
   print('Found {} elf_inputs, and {} source mappings'.format(
       len(elf_inputs), len(source_mapper._dep_map)))

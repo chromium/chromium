@@ -4,18 +4,42 @@
 
 #include "base/synchronization/lock.h"
 
-#include <stdlib.h>
+#include <stdint.h>
 
+#include <algorithm>
+#include <atomic>
+#include <cmath>
 #include <cstdint>
+#include <memory>
+#include <utility>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
+#include "base/features.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
+#include "base/profiler/thread_delegate.h"
+#include "base/rand_util.h"
+#include "base/synchronization/lock_impl.h"
 #include "base/synchronization/lock_subtle.h"
+#include "base/system/sys_info.h"
+#include "base/test/bind.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/background_thread_pool_field_trial.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 using testing::UnorderedElementsAre;
 using testing::UnorderedElementsAreArray;
@@ -26,7 +50,7 @@ namespace base {
 
 class BasicLockTestThread : public PlatformThread::Delegate {
  public:
-  explicit BasicLockTestThread(Lock* lock) : lock_(lock), acquired_(0) {}
+  explicit BasicLockTestThread(Lock* lock) : lock_(lock) {}
 
   BasicLockTestThread(const BasicLockTestThread&) = delete;
   BasicLockTestThread& operator=(const BasicLockTestThread&) = delete;
@@ -40,13 +64,13 @@ class BasicLockTestThread : public PlatformThread::Delegate {
     for (int i = 0; i < 10; i++) {
       lock_->Acquire();
       acquired_++;
-      PlatformThread::Sleep(Milliseconds(rand() % 20));
+      PlatformThread::Sleep(RandTimeDeltaUpTo(Milliseconds(20)));
       lock_->Release();
     }
     for (int i = 0; i < 10; i++) {
       if (lock_->Try()) {
         acquired_++;
-        PlatformThread::Sleep(Milliseconds(rand() % 20));
+        PlatformThread::Sleep(RandTimeDeltaUpTo(Milliseconds(20)));
         lock_->Release();
       }
     }
@@ -56,7 +80,7 @@ class BasicLockTestThread : public PlatformThread::Delegate {
 
  private:
   raw_ptr<Lock> lock_;
-  int acquired_;
+  int acquired_ = 0;
 };
 
 TEST(LockTest, Basic) {
@@ -75,20 +99,20 @@ TEST(LockTest, Basic) {
   for (int i = 0; i < 10; i++) {
     lock.Acquire();
     acquired++;
-    PlatformThread::Sleep(Milliseconds(rand() % 20));
+    PlatformThread::Sleep(RandTimeDeltaUpTo(Milliseconds(20)));
     lock.Release();
   }
   for (int i = 0; i < 10; i++) {
     if (lock.Try()) {
       acquired++;
-      PlatformThread::Sleep(Milliseconds(rand() % 20));
+      PlatformThread::Sleep(RandTimeDeltaUpTo(Milliseconds(20)));
       lock.Release();
     }
   }
   for (int i = 0; i < 5; i++) {
     lock.Acquire();
     acquired++;
-    PlatformThread::Sleep(Milliseconds(rand() % 20));
+    PlatformThread::Sleep(RandTimeDeltaUpTo(Milliseconds(20)));
     lock.Release();
   }
 
@@ -102,7 +126,7 @@ TEST(LockTest, Basic) {
 
 class TryLockTestThread : public PlatformThread::Delegate {
  public:
-  explicit TryLockTestThread(Lock* lock) : lock_(lock), got_lock_(false) {}
+  explicit TryLockTestThread(Lock* lock) : lock_(lock) {}
 
   TryLockTestThread(const TryLockTestThread&) = delete;
   TryLockTestThread& operator=(const TryLockTestThread&) = delete;
@@ -112,15 +136,16 @@ class TryLockTestThread : public PlatformThread::Delegate {
     // lock is properly released.
     bool got_lock = lock_->Try();
     got_lock_ = got_lock;
-    if (got_lock)
+    if (got_lock) {
       lock_->Release();
+    }
   }
 
   bool got_lock() const { return got_lock_; }
 
  private:
   raw_ptr<Lock> lock_;
-  bool got_lock_;
+  bool got_lock_ = false;
 };
 
 TEST(LockTest, TryLock) {
@@ -175,7 +200,7 @@ class MutexLockTestThread : public PlatformThread::Delegate {
     for (int i = 0; i < 40; i++) {
       lock->Acquire();
       int v = *value;
-      PlatformThread::Sleep(Milliseconds(rand() % 10));
+      PlatformThread::Sleep(RandTimeDeltaUpTo(Milliseconds(10)));
       *value = v + 1;
       lock->Release();
     }
@@ -227,6 +252,8 @@ TEST(LockTest, MutexFourThreads) {
 
   EXPECT_EQ(4 * 40, value);
 }
+
+// AutoLock tests --------------------------------------------------------------
 
 TEST(LockTest, AutoLockMaybe) {
   Lock lock;
@@ -350,7 +377,7 @@ NO_THREAD_SAFETY_ANALYSIS {
     locks[i].Acquire(subtle::LockTracking::kEnabled);
   }
 
-  EXPECT_DCHECK_DEATH({
+  EXPECT_CHECK_DEATH({
     locks[kHeldLocksCapacity].Acquire(subtle::LockTracking::kEnabled);
     locks[kHeldLocksCapacity].Release();
   });
@@ -373,6 +400,193 @@ TEST(LockTest, TrackingDisabled) {
   AutoLock auto_lock(lock, subtle::LockTracking::kDisabled);
   EXPECT_TRUE(subtle::GetTrackedLocksHeldByCurrentThread().empty());
 }
+
+// Priority Inheritance Tests --------------------------------------------------
+
+#if BUILDFLAG(ENABLE_MUTEX_PRIORITY_INHERITANCE)
+namespace {
+class PriorityInheritanceTest {
+ public:
+  // The average value of MeasureRunTime() over |num_samples| iterations.
+  static TimeDelta MeasureAverageRunTime(int num_samples = 10) {
+    TimeDelta total_runtime;
+    for (int i = 0; i < num_samples; i++) {
+      total_runtime += MeasureRunTime();
+    }
+
+    return total_runtime / num_samples;
+  }
+
+  // Measure the time taken for a low-priority thread (kBackground) to perform
+  // CPU bound work when it holds a lock that is awaited by a high-priority
+  // thread (kRealtimeAudio).
+  static TimeDelta MeasureRunTime() {
+    Lock lock;
+    TimeDelta test_run_time;
+    std::atomic<bool> signal_cpu_bound_worker_threads_shutdown{false},
+        signal_thread_a_will_lock{false};
+
+    // Keep all the cores busy with a workload of CPU bound thread to reduce
+    // flakiness in the test by skewing the CPU time between the high-priority
+    // and low-priority measurement threads.
+    std::vector<TestThread> cpu_bound_worker_threads;
+    for (int i = 0; i < 15; i++) {
+      cpu_bound_worker_threads.emplace_back(
+          ThreadType::kDefault, base::BindLambdaForTesting([&]() {
+            while (!signal_cpu_bound_worker_threads_shutdown.load(
+                std::memory_order_relaxed)) {
+              BusyLoop(10);
+            }
+          }));
+    }
+
+    for (auto& worker_thread : cpu_bound_worker_threads) {
+      worker_thread.Create();
+    }
+
+    TestThread thread_a(
+        ThreadType::kRealtimeAudio, base::BindLambdaForTesting([&]() {
+          // Signal to thread B that the current thread will acquire the lock
+          // next, so that it can to start its CPU bound work.
+          signal_thread_a_will_lock.store(true, std::memory_order_relaxed);
+
+          // Wait on the lock to be released once the low-priority thread is
+          // done. In the case when priority inheritance mutexes are enabled,
+          // this should boost the priority of the low-priority thread to the
+          // priority of the highest priority waiter (i.e. the current thread).
+          AutoLock auto_lock(lock);
+          BusyLoop(10);
+        }));
+
+    TestThread thread_b(
+        ThreadType::kBackground, base::BindLambdaForTesting([&]() {
+          // Acquire the lock before creating the high-priority thread, so that
+          // the higher priority thread is blocked on the current thread while
+          // the current thread performs CPU-bound work.
+          AutoLock auto_lock(lock);
+          thread_a.Create();
+
+          // Before performing the CPU bound work, wait for the thread A to
+          // signal that it has started running and will acquire the lock next.
+          // While it is not a perfectly reliable signal (thread A may get
+          // descheduled immediately after signalling), given the relative
+          // priorities of the two threads it is good enough to reduce large
+          // variations due to latencies in thread bring up.
+          while (!signal_thread_a_will_lock.load(std::memory_order_relaxed)) {
+            usleep(10);
+          }
+
+          ElapsedTimer timer;
+          BusyLoop(1000000);
+          test_run_time = timer.Elapsed();
+        }));
+
+    // Create the low-priority thread which is responsible for creating the
+    // high-priority thread. Wait for both threads to finish before recording
+    // the elapsed time.
+    thread_b.Create();
+    thread_b.Join();
+    thread_a.Join();
+
+    signal_cpu_bound_worker_threads_shutdown.store(true,
+                                                   std::memory_order_relaxed);
+    for (auto& worker_thread : cpu_bound_worker_threads) {
+      worker_thread.Join();
+    }
+
+    return test_run_time;
+  }
+
+ private:
+  // CPU bound work for the threads to eat up CPU cycles.
+  static void BusyLoop(size_t n) {
+    __unused int sum = 0;
+    for (int i = 0; i < n; i++) {
+      if (base::ShouldRecordSubsampledMetric(0.5)) {
+        sum += 1;
+      }
+    }
+  }
+
+  class TestThread : public PlatformThread::Delegate {
+   public:
+    explicit TestThread(ThreadType thread_type, base::OnceClosure body)
+        : thread_type_(thread_type), body_(std::move(body)) {}
+
+    void Create() {
+      ASSERT_TRUE(
+          PlatformThread::CreateWithType(0, this, &handle_, thread_type_));
+    }
+
+    void ThreadMain() override { std::move(body_).Run(); }
+
+    void Join() { PlatformThread::Join(handle_); }
+
+   private:
+    ThreadType thread_type_;
+    PlatformThreadHandle handle_;
+    base::OnceClosure body_;
+  };
+};
+
+}  // namespace
+
+// Tests that the time taken by a higher-priority thread to acquire a lock held
+// by a lower-priority thread is indeed reduced by priority inheritance.
+TEST(LockTest, PriorityIsInherited) {
+  TimeDelta avg_test_run_time_with_pi, avg_test_run_time_without_pi;
+
+  // Priority inheritance mutexes are not supported on Android kernels < 6.1
+  if (!base::KernelSupportsPriorityInheritanceFutex()) {
+    GTEST_SKIP() << "base::Lock does not handle multiple thread priorities "
+                 << "(Kernel version: "
+                 << base::SysInfo::KernelVersionNumber::Current() << ")";
+  }
+
+  {
+    base::android::ScopedUsePriorityInheritanceLocksForTesting use_pi_locks;
+    ASSERT_TRUE(base::android::BackgroundThreadPoolFieldTrial::
+               ShouldUsePriorityInheritanceLocks());
+    avg_test_run_time_with_pi =
+        PriorityInheritanceTest::MeasureAverageRunTime();
+  }
+
+  {
+    ASSERT_TRUE(!base::android::BackgroundThreadPoolFieldTrial::
+               ShouldUsePriorityInheritanceLocks());
+    avg_test_run_time_without_pi =
+        PriorityInheritanceTest::MeasureAverageRunTime();
+  }
+
+  // During the time in which the thread A is waiting on the lock to be released
+  // by the thread B, the thread B runs at kBackground priority in the non-PI
+  // case and at kRealtimeAudio priority in the PI case.
+  //
+  // Based on the Linux kernel's allocation of CPU shares documented in
+  // https://elixir.bootlin.com/linux/v6.12.5/source/kernel/sched/core.c#L9998,
+  // a thread running at kRealtimeAudio (nice value = -16) gets 36291 shares
+  // of the CPU, a thread at kDefault (nice value = 0) get 1024 shares and a
+  // thread at kBackground (nice value = 10) gets 110 shares of the CPU.
+  //
+  // Assuming no other threads except the ones created by this test are running,
+  // during the time in which thread A is waiting on the lock to be released by
+  // thread B, thread B gets 110/(15*1024 + 110) ≈ 0.7% of the CPU time in the
+  // non-PI case and 36291/(36291 + 15*1024) ≈ 70% of the CPU time in the PI
+  // case. This is approximately a 100x difference in CPU shares allocated to
+  // the thread B when it is doing CPU-bound work.
+  //
+  // The test is thus designed such that the measured run time is thread B's CPU
+  // bound work. While there are other factors at play that determine the
+  // measured run time such as the frequency at which the CPU is running, we can
+  // expect that there will be at least an order of magnitude of disparity in
+  // the test run times with and without PI.
+  //
+  // In order to reduce test flakiness while still eliminating the possibility
+  // of variance in measurements accounting for the test results, we
+  // conservatively expect a 3x improvement.
+  EXPECT_GT(avg_test_run_time_without_pi, 3 * avg_test_run_time_with_pi);
+}
+#endif  // BUILDFLAG(ENABLE_MUTEX_PRIORITY_INHERITANCE)
 
 #endif  // DCHECK_IS_ON()
 

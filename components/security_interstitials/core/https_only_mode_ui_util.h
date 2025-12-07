@@ -14,14 +14,18 @@ struct HttpInterstitialState;
 }
 
 // Populates |load_time_data| for interstitial HTML.
+//
+// TODO(http://crbug.com/415341199): Remove `august2024_refresh_enabled`
+// parameter once iOS is switched over to the new UI.
 void PopulateHttpsOnlyModeStringsForBlockingPage(
     base::Value::Dict& load_time_data,
     const GURL& url,
     const security_interstitials::https_only_mode::HttpInterstitialState& state,
-    bool balanced_mode);
+    bool august2024_refresh_enabled);
 
 // Values added to get shared interstitial HTML to play nice.
 void PopulateHttpsOnlyModeStringsForSharedHTML(
-    base::Value::Dict& load_time_data);
+    base::Value::Dict& load_time_data,
+    bool august2024_refresh_enabled);
 
 #endif  // COMPONENTS_SECURITY_INTERSTITIALS_CORE_HTTPS_ONLY_MODE_UI_UTIL_H_

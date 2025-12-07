@@ -12,6 +12,7 @@
 
 #include "base/check_op.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/windows_types.h"
@@ -21,7 +22,7 @@
 #include "ui/base/cursor/platform_cursor.h"
 #include "ui/base/resource/resource_bundle_win.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/icon_util.h"
+#include "ui/gfx/win/icon_util.h"
 #include "ui/resources/grit/ui_unscaled_resources.h"
 
 namespace ui {

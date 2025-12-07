@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/feature_observer.h"
 
 #include "content/public/browser/content_browser_client.h"
@@ -27,8 +22,9 @@ FeatureObserver::FeatureObserver(FeatureObserverClient* client,
         [](mojo::ReceiverSet<blink::mojom::ObservedFeature>* set,
            FeatureObserverClient* client, GlobalRenderFrameHostId id,
            blink::mojom::ObservedFeatureType type) {
-          if (!set->empty())
+          if (!set->empty()) {
             return;
+          }
 
           // Notify if this is the last receiver.
           client->OnStopUsing(id, type);

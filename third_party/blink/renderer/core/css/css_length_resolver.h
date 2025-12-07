@@ -13,11 +13,14 @@
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/style/position_area.h"
 #include "third_party/blink/renderer/core/style/scoped_css_name.h"
+#include "third_party/blink/renderer/core/style/style_position_anchor.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
+
+class Element;
 
 class CORE_EXPORT CSSLengthResolver {
  public:
@@ -66,9 +69,13 @@ class CORE_EXPORT CSSLengthResolver {
   // https://drafts.csswg.org/css-anchor-position-1/
   virtual void ReferenceAnchor() const = 0;
 
+  // Called when sibling-index() or sibling-count() functions are evaluated.
+  // Used so that we can mark the resulting style as not cacheable in the MPC.
+  virtual void ReferenceSibling() const = 0;
+
   // The AnchorEvaluator used to evaluate anchor()/anchor-size() queries.
   virtual AnchorEvaluator* GetAnchorEvaluator() const { return nullptr; }
-  virtual const ScopedCSSName* GetPositionAnchor() const { return nullptr; }
+  virtual const StylePositionAnchor& GetPositionAnchor() const;
   virtual std::optional<PositionAreaOffsets> GetPositionAreaOffsets() const {
     return std::nullopt;
   }
@@ -81,6 +88,8 @@ class CORE_EXPORT CSSLengthResolver {
   }
 
   double ZoomedComputedPixels(double value, CSSPrimitiveValue::UnitType) const;
+
+  virtual const Element* GetElement() const = 0;
 
  private:
   bool IsHorizontalWritingMode() const {

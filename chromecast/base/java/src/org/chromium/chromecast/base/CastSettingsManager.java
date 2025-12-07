@@ -15,13 +15,9 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 
-/**
- * Manager for Cast settings.
- */
+/** Manager for Cast settings. */
 public final class CastSettingsManager {
     private static final String TAG = "CastSettingsManager";
-
-    private static final String PREFS_FILE_NAME = "CastSettings";
 
     /** The default device name, which is the model name. */
     private static final String DEFAULT_DEVICE_NAME = Build.MODEL;
@@ -31,21 +27,19 @@ public final class CastSettingsManager {
 
     private final ContentResolver mContentResolver;
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    ContentObserver mDeviceNameObserver;
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    ContentObserver mIsDeviceProvisionedObserver;
+    @VisibleForTesting ContentObserver mDeviceNameObserver;
+    @VisibleForTesting ContentObserver mIsDeviceProvisionedObserver;
 
     /**
-     * Can be implemented to receive notifications from a CastSettingsManager instance when
-     * settings have changed.
+     * Can be implemented to receive notifications from a CastSettingsManager instance when settings
+     * have changed.
      */
     public static class OnSettingChangedListener {
         public void onCastEnabledChanged(boolean enabled) {}
         public void onDeviceNameChanged(String deviceName) {}
     }
 
-    private OnSettingChangedListener mListener;
+    private final OnSettingChangedListener mListener;
 
     /**
      * Creates a fully-featured CastSettingsManager instance. Will fail if called from a

@@ -17,7 +17,7 @@ InitializeStoreTask::InitializeStoreTask(
       reset_attempts_left_(kRestartAttemptsMaximum),
       callback_(std::move(callback)) {}
 
-InitializeStoreTask::~InitializeStoreTask() {}
+InitializeStoreTask::~InitializeStoreTask() = default;
 
 void InitializeStoreTask::Run() {
   InitializeStore();
@@ -51,10 +51,11 @@ void InitializeStoreTask::TryToResetStore() {
 }
 
 void InitializeStoreTask::OnStoreResetDone(bool success) {
-  if (success)
+  if (success) {
     InitializeStore();
-  else
+  } else {
     TryToResetStore();
+  }
 }
 
 }  // namespace offline_pages

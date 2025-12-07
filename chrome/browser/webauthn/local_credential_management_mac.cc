@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/webauthn/local_credential_management_mac.h"
-#include "chrome/browser/webauthn/local_credential_management.h"
 
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/webauthn/chrome_web_authentication_delegate.h"
+#include "chrome/browser/webauthn/local_credential_management.h"
 #include "device/fido/mac/credential_store.h"
 
 LocalCredentialManagementMac::LocalCredentialManagementMac(
@@ -50,7 +51,8 @@ void LocalCredentialManagementMac::Enumerate(
     credential_metadata.emplace_back(
         device::AuthenticatorType::kTouchID, credential.rp_id,
         credential.credential_id,
-        credential.metadata.ToPublicKeyCredentialUserEntity());
+        credential.metadata.ToPublicKeyCredentialUserEntity(),
+        /*provider_name=*/std::nullopt);
   }
   std::sort(credential_metadata.begin(), credential_metadata.end(),
             CredentialComparator());

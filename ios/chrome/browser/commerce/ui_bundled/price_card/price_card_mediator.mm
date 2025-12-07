@@ -5,21 +5,34 @@
 #import "ios/chrome/browser/commerce/ui_bundled/price_card/price_card_mediator.h"
 
 #import "ios/chrome/browser/commerce/ui_bundled/price_card/price_card_item.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
 #import "ios/web/public/web_state.h"
 
-PriceCardItem* CreatePriceCardItem(web::WebState* web_state) {
-  if (!web_state)
-    return nil;
+void CreatePriceCardItem(web::WebState* web_state,
+                         base::OnceCallback<void(PriceCardItem*)> callback) {
+  if (!web_state) {
+    std::move(callback).Run(nil);
+    return;
+  }
   ShoppingPersistedDataTabHelper* shoppingHelper =
       ShoppingPersistedDataTabHelper::FromWebState(web_state);
-  if (!shoppingHelper || !shoppingHelper->GetPriceDrop() ||
-      !shoppingHelper->GetPriceDrop()->current_price ||
-      !shoppingHelper->GetPriceDrop()->previous_price)
-    return nil;
-  return [[PriceCardItem alloc]
-      initWithPrice:shoppingHelper->GetPriceDrop()->current_price
-      previousPrice:shoppingHelper->GetPriceDrop()->previous_price];
+  if (!shoppingHelper) {
+    return;
+  }
+  shoppingHelper->GetPriceDrop(base::BindOnce(
+      [](base::OnceCallback<void(PriceCardItem*)> callback,
+         std::optional<ShoppingPersistedDataTabHelper::PriceDrop> price_drop) {
+        if (!price_drop.has_value() || !price_drop->current_price ||
+            !price_drop->previous_price) {
+          std::move(callback).Run(nil);
+          return;
+        }
+        PriceCardItem* price_card_item =
+            [[PriceCardItem alloc] initWithPrice:price_drop->current_price
+                                   previousPrice:price_drop->previous_price];
+        std::move(callback).Run(price_card_item);
+      },
+      std::move(callback)));
 }
 
 @interface PriceCardMediator ()
@@ -38,8 +51,9 @@ PriceCardItem* CreatePriceCardItem(web::WebState* web_state) {
     web::WebState* webState = self.webStateList->GetWebStateAt(i);
     ShoppingPersistedDataTabHelper* shoppingHelper =
         ShoppingPersistedDataTabHelper::FromWebState(webState);
-    if (!shoppingHelper)
+    if (!shoppingHelper) {
       continue;
+    }
     shoppingHelper->LogMetrics(priceDropLogId);
   }
 }
@@ -50,7 +64,10 @@ PriceCardItem* CreatePriceCardItem(web::WebState* web_state) {
                     completion:(void (^)(PriceCardItem*))completion {
   web::WebState* webState = GetWebState(
       self.webStateList, WebStateSearchCriteria{.identifier = identifier});
-  completion(CreatePriceCardItem(webState));
+  CreatePriceCardItem(webState,
+                      base::BindOnce(^(PriceCardItem* price_card_item) {
+                        completion(price_card_item);
+                      }));
 }
 
 @end

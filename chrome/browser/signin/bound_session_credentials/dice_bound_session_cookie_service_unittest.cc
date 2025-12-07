@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_test_cookie_manager.h"
@@ -17,11 +18,15 @@
 #include "content/public/test/test_storage_partition.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "net/device_bound_sessions/session_key.h"
+#include "services/network/test/mock_device_bound_session_manager.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
+using ::testing::_;
 
 MATCHER_P(DeletionFilterMatchesCookies, url, "") {
   const auto& [filter, cookie_name] = arg;
@@ -33,6 +38,8 @@ class DiceBoundSessionCookieServiceTest : public ::testing::Test {
   DiceBoundSessionCookieServiceTest()
       : identity_test_env_(&url_loader_factory_) {
     storage_partition_.set_cookie_manager_for_browser_process(&cookie_manager_);
+    storage_partition_.set_device_bound_session_manager(
+        &device_bound_session_manager_);
     dice_bound_session_cookie_service_ =
         std::make_unique<DiceBoundSessionCookieService>(
             bound_session_cookie_refresh_service_,
@@ -69,9 +76,18 @@ class DiceBoundSessionCookieServiceTest : public ::testing::Test {
 
   BoundSessionTestCookieManager* cookie_manager() { return &cookie_manager_; }
 
+  network::MockDeviceBoundSessionManager* device_bound_session_manager() {
+    return &device_bound_session_manager_;
+  }
+
+  DiceBoundSessionCookieService* dice_bound_session_cookie_service() {
+    return dice_bound_session_cookie_service_.get();
+  }
+
  private:
   base::test::TaskEnvironment task_environment_;
   BoundSessionTestCookieManager cookie_manager_;
+  network::MockDeviceBoundSessionManager device_bound_session_manager_;
   content::TestStoragePartition storage_partition_;
   network::TestURLLoaderFactory url_loader_factory_;
   signin::IdentityTestEnvironment identity_test_env_;
@@ -116,4 +132,36 @@ TEST_F(DiceBoundSessionCookieServiceTest,
           DeletionFilterMatchesCookies(GaiaUrls::GetInstance()->gaia_url()),
           {"cookie_1", "cookie_2"}));
 }
+
+TEST_F(DiceBoundSessionCookieServiceTest,
+       NetworkSessionTerminatedDeleteBoundCookies) {
+  net::device_bound_sessions::SessionKey session{
+      net::SchemefulSite(GURL("https://google.com/")),
+      net::device_bound_sessions::SessionKey::Id("SessionId")};
+
+  dice_bound_session_cookie_service()->OnDeviceBoundSessionAccessed(
+      net::device_bound_sessions::SessionAccess{
+          net::device_bound_sessions::SessionAccess::AccessType::kTermination,
+          session, std::vector<std::string>{"cookie_1", "cookie_2"}});
+
+  EXPECT_THAT(
+      cookie_manager()->TakeCookieDeletionFilters(),
+      testing::UnorderedPointwise(
+          DeletionFilterMatchesCookies(GaiaUrls::GetInstance()->gaia_url()),
+          {"cookie_1", "cookie_2"}));
+}
+
+TEST_F(DiceBoundSessionCookieServiceTest, NonGaiaNetworkSessionTerminated) {
+  net::device_bound_sessions::SessionKey session{
+      net::SchemefulSite(GURL("https://example.test/")),
+      net::device_bound_sessions::SessionKey::Id("SessionId")};
+
+  dice_bound_session_cookie_service()->OnDeviceBoundSessionAccessed(
+      net::device_bound_sessions::SessionAccess{
+          net::device_bound_sessions::SessionAccess::AccessType::kTermination,
+          session, std::vector<std::string>{"cookie_1", "cookie_2"}});
+
+  EXPECT_FALSE(url_loader_factory().IsPending(list_accounts_url()));
+}
+
 }  // namespace

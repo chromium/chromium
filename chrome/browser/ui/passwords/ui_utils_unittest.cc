@@ -8,6 +8,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ref.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
@@ -28,38 +29,23 @@ namespace {
 class ScopedResourceOverride {
  public:
   ScopedResourceOverride()
-      : had_shared_instance_(ui::ResourceBundle::HasSharedInstance()),
-        bundle_(GetOrCreateSharedInstance()),
+      : bundle_(ui::ResourceBundle::GetSharedInstance()),
         app_locale_(g_browser_process->GetApplicationLocale()) {}
 
   ScopedResourceOverride(const ScopedResourceOverride&) = delete;
   ScopedResourceOverride& operator=(const ScopedResourceOverride&) = delete;
 
   ~ScopedResourceOverride() {
-    if (had_shared_instance_) {
-      // Reloading the resources will discard all overrides.
-      bundle_.ReloadLocaleResources(app_locale_);
-    } else {
-      ui::ResourceBundle::CleanupSharedInstance();
-    }
+    // Reloading the resources will discard all overrides.
+    bundle_->ReloadLocaleResources(app_locale_);
   }
 
   void OverrideLocaleStringResource(int string_id, const std::u16string& str) {
-    bundle_.OverrideLocaleStringResource(string_id, str);
+    bundle_->OverrideLocaleStringResource(string_id, str);
   }
 
  private:
-  // Returns the shared resource bundle. Creates one if there was none.
-  static ui::ResourceBundle& GetOrCreateSharedInstance() {
-    if (!ui::ResourceBundle::HasSharedInstance()) {
-      ui::ResourceBundle::InitSharedInstanceWithLocale(
-          "en", nullptr, ui::ResourceBundle::LOAD_COMMON_RESOURCES);
-    }
-    return ui::ResourceBundle::GetSharedInstance();
-  }
-
-  const bool had_shared_instance_;  // Was there a shared bundle before?
-  ui::ResourceBundle& bundle_;      // The shared bundle.
+  const raw_ref<ui::ResourceBundle> bundle_;  // The shared bundle.
   const std::string app_locale_;
 };
 

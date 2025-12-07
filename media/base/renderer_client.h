@@ -18,8 +18,8 @@
 
 namespace media {
 
-// Interface used by Renderer, AudioRenderer, VideoRenderer and
-// MediaPlayerRenderer implementations to notify their clients.
+// Interface used by Renderer, AudioRenderer and VideoRenderer implementations
+// to notify their clients.
 class MEDIA_EXPORT RendererClient {
  public:
   // Executed if any error was encountered after Renderer initialization.

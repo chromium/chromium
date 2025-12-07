@@ -62,7 +62,7 @@ std::optional<LaunchContext::ProcessState> LaunchContext::LaunchNativeProcess(
     bool native_hosts_executables_launch_directly) {
   base::LaunchOptions options;
 
-  int read_pipe_fds[2] = {0};
+  int read_pipe_fds[2] = {};
   if (HANDLE_EINTR(pipe(read_pipe_fds)) != 0) {
     LOG(ERROR) << "Bad read pipe";
     return std::nullopt;
@@ -72,7 +72,7 @@ std::optional<LaunchContext::ProcessState> LaunchContext::LaunchNativeProcess(
   options.fds_to_remap.push_back(
       std::make_pair(read_pipe_write_fd.get(), STDOUT_FILENO));
 
-  int write_pipe_fds[2] = {0};
+  int write_pipe_fds[2] = {};
   if (HANDLE_EINTR(pipe(write_pipe_fds)) != 0) {
     LOG(ERROR) << "Bad write pipe";
     return std::nullopt;
@@ -84,9 +84,7 @@ std::optional<LaunchContext::ProcessState> LaunchContext::LaunchNativeProcess(
 
   options.current_directory = command_line.GetProgram().DirName();
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   // Don't use no_new_privs mode, e.g. in case the host needs to use sudo.
   options.allow_new_privs = true;
 #endif

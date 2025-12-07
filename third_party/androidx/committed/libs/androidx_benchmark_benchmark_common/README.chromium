@@ -1,0 +1,20 @@
+Name: Benchmark - Common
+Short Name: benchmark-common
+URL: https://androidx.dev/snapshots/builds/14500233/artifacts/repository/androidx/benchmark/benchmark-common/1.5.0-SNAPSHOT/benchmark-common-1.5.0-20251126.133552-1.aar
+Version: 1.5.0-SNAPSHOT
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: no
+Shipped: no
+License Android Compatible: yes
+
+Description:
+Android Benchmark - Common
+
+See also: https://developer.android.com/jetpack/androidx/releases/benchmark#1.5.0-SNAPSHOT
+
+
+Local Modifications:
+No modifications.

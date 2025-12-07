@@ -9,7 +9,7 @@
 
 #include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/threading/thread_checker.h"
 #include "components/media_router/common/providers/cast/channel/cast_channel_enum.h"
@@ -32,12 +32,12 @@ class MessageFramer;
 
 class CastTransport {
  public:
-  virtual ~CastTransport() {}
+  virtual ~CastTransport();
 
   // Object to be informed of incoming messages and read errors.
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate();
 
     // Called once Transport is successfully initialized and started.
     // Owned read delegates are Start()ed automatically.
@@ -78,7 +78,7 @@ class CastTransportImpl : public CastTransport {
   // Interface to read/write data from a socket to ease unit-testing.
   class Channel {
    public:
-    virtual ~Channel() {}
+    virtual ~Channel();
     virtual void Read(net::IOBuffer* buffer,
                       int bytes,
                       net::CompletionOnceCallback callback) = 0;

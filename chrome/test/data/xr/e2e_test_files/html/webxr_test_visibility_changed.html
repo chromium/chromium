@@ -17,6 +17,17 @@ event received.
         return sessionInfos[sessionTypes.IMMERSIVE].currentSession;
       }
 
+      function subscribeToVisibilityChange() {
+        currentImmersiveSession().addEventListener(
+          "visibilitychange", onVisibilityChange, false);
+      }
+
+      let visibility_change_count = 0;
+
+      function onVisibilityChange() {
+        visibility_change_count++;
+      }
+
       function isVisibilityEqualTo(expected) {
         return currentImmersiveSession().visibilityState == expected;
       }

@@ -35,8 +35,7 @@ namespace gfx {
 class ImageSkia;
 }  // namespace gfx
 
-namespace ash {
-namespace app_time {
+namespace ash::app_time {
 
 extern const char kAppsWithTimeLimitMetric[];
 extern const char kBlockedAppsCountMetric[];
@@ -44,6 +43,7 @@ extern const char kPolicyChangeCountMetric[];
 extern const char kEngagementMetric[];
 
 class AppServiceWrapper;
+class WebTimeActivityProvider;
 
 // Coordinates per-app time limit for child user.
 class AppTimeController : public SystemClockClient::Observer,
@@ -62,6 +62,7 @@ class AppTimeController : public SystemClockClient::Observer,
     base::Time GetLastResetTime() const;
 
     AppActivityRegistry* app_registry();
+    WebTimeActivityProvider* web_time_activity_provider();
 
    private:
     const raw_ptr<AppTimeController, DanglingUntriaged> controller_;
@@ -157,6 +158,7 @@ class AppTimeController : public SystemClockClient::Observer,
 
   std::unique_ptr<AppServiceWrapper> app_service_wrapper_;
   std::unique_ptr<AppActivityRegistry> app_registry_;
+  std::unique_ptr<WebTimeActivityProvider> web_time_activity_provider_;
 
   // Used to observe when policy preferences change.
   std::unique_ptr<PrefChangeRegistrar> pref_registrar_;
@@ -170,7 +172,6 @@ class AppTimeController : public SystemClockClient::Observer,
   base::WeakPtrFactory<AppTimeController> weak_ptr_factory_{this};
 };
 
-}  // namespace app_time
-}  // namespace ash
+}  // namespace ash::app_time
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_APP_TIME_CONTROLLER_H_

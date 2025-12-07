@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
+#include "base/memory/ref_counted.h"
 #include "gpu/gpu_gles2_export.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gl/gl_bindings.h"
@@ -17,8 +18,6 @@ class ScopedHardwareBufferFenceSync;
 }  // namespace base::android
 
 namespace gpu {
-class TextureOwner;
-class TextureBase;
 
 // This class lets AndroidVideoImageBacking draw video frames.
 class GPU_GLES2_EXPORT StreamTextureSharedImageInterface
@@ -28,11 +27,7 @@ class GPU_GLES2_EXPORT StreamTextureSharedImageInterface
   // not longer valid or the context is lost.
   virtual void ReleaseResources() = 0;
 
-  // Update texture image to the most recent frame.
-  virtual void UpdateAndBindTexImage() = 0;
-
   virtual bool HasTextureOwner() const = 0;
-  virtual TextureBase* GetTextureBase() const = 0;
 
   // Notify the texture of overlay decision, When overlay promotion is true,
   // this also sets the bounds of where the overlay is.
@@ -41,10 +36,6 @@ class GPU_GLES2_EXPORT StreamTextureSharedImageInterface
   // Render the video frame into an overlay plane. Should only be called after
   // the overlay promotion. Return true if it could render to overlay correctly.
   virtual bool RenderToOverlay() = 0;
-
-  // Whether TextureOwner's implementation binds texture to TextureOwner owned
-  // texture_id during the texture update.
-  virtual bool TextureOwnerBindsTextureOnUpdate() = 0;
 
   // Provides the buffer backing this image, if it is backed by an
   // AHardwareBuffer. The ScopedHardwareBuffer returned may include a fence

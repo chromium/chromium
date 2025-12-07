@@ -22,7 +22,6 @@
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/policy_oauth2_token_fetcher.h"
@@ -32,6 +31,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
@@ -39,6 +39,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -64,7 +65,7 @@ const char kEnrollmentModeUIRecovery[] = "recovery";
 std::string EnrollmentModeToUIMode(policy::EnrollmentConfig::Mode mode) {
   switch (mode) {
     case policy::EnrollmentConfig::MODE_NONE:
-      NOTREACHED_NORETURN() << "Bad enrollment mode " << mode;
+      NOTREACHED() << "Bad enrollment mode " << mode;
     case policy::EnrollmentConfig::MODE_MANUAL:
     case policy::EnrollmentConfig::MODE_MANUAL_REENROLLMENT:
     case policy::EnrollmentConfig::MODE_LOCAL_ADVERTISED:
@@ -84,6 +85,8 @@ std::string EnrollmentModeToUIMode(policy::EnrollmentConfig::Mode mode) {
     case policy::EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED:
     case policy::EnrollmentConfig::
         MODE_ENROLLMENT_TOKEN_INITIAL_MANUAL_FALLBACK:
+    case policy::EnrollmentConfig::MODE_REMOTE_DEPLOYMENT_SERVER_FORCED:
+    case policy::EnrollmentConfig::MODE_REMOTE_DEPLOYMENT_MANUAL_FALLBACK:
       return kEnrollmentModeUIForced;
     case policy::EnrollmentConfig::MODE_RECOVERY:
       return kEnrollmentModeUIRecovery;
@@ -169,10 +172,11 @@ void EnrollmentScreenHandler::SetEnrollmentController(Controller* controller) {
 }
 
 void EnrollmentScreenHandler::Show() {
-  if (!IsJavascriptAllowed())
+  if (!IsJavascriptAllowed()) {
     show_on_init_ = true;
-  else
+  } else {
     DoShow();
+  }
 }
 
 void EnrollmentScreenHandler::Hide() {
@@ -268,7 +272,7 @@ void EnrollmentScreenHandler::ShowAuthError(
     case GoogleServiceAuthError::NUM_STATES:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void EnrollmentScreenHandler::ShowOtherError(
@@ -283,7 +287,7 @@ void EnrollmentScreenHandler::ShowOtherError(
                 /*retry=*/true);
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void EnrollmentScreenHandler::Shutdown() {
@@ -308,7 +312,7 @@ void EnrollmentScreenHandler::ShowEnrollmentStatus(
       // Some special cases for generating a nicer message that's more helpful.
       switch (status.client_status()) {
         case policy::DM_STATUS_SERVICE_MANAGEMENT_NOT_SUPPORTED:
-          if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
+          if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
             ShowError(IDS_ENTERPRISE_ENROLLMENT_ACCOUNT_ERROR_MEETS,
                       /*retry=*/true);
           } else {
@@ -316,7 +320,7 @@ void EnrollmentScreenHandler::ShowEnrollmentStatus(
           }
           break;
         case policy::DM_STATUS_SERVICE_MISSING_LICENSES:
-          if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
+          if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
             ShowError(IDS_ENTERPRISE_ENROLLMENT_MISSING_LICENSES_ERROR_MEETS,
                       /*retry=*/true);
           } else {
@@ -352,7 +356,7 @@ void EnrollmentScreenHandler::ShowEnrollmentStatus(
               /*retry=*/true);
           break;
         case policy::DM_STATUS_SERVICE_ENTERPRISE_TOS_HAS_NOT_BEEN_ACCEPTED:
-          if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
+          if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
             ShowError(
                 IDS_ENTERPRISE_ENROLLMENT_ENTERPRISE_TOS_HAS_NOT_BEEN_ACCEPTED_MEETS,
                 /*retry=*/true);
@@ -369,7 +373,12 @@ void EnrollmentScreenHandler::ShowEnrollmentStatus(
           break;
         case policy::DM_STATUS_SERVICE_INVALID_PACKAGED_DEVICE_FOR_KIOSK:
           ShowError(IDS_ENTERPRISE_ENROLLMENT_INVALID_PACKAGED_DEVICE_FOR_KIOSK,
-                    true);
+                    /*retry=*/true);
+          break;
+        case policy::DM_STATUS_SERVICE_ORG_UNIT_ENROLLMENT_LIMIT_EXCEEEDED:
+          ShowError(
+              IDS_ENTERPRISE_ENROLLMENT_ORG_UNIT_ENROLLMENT_LIMIT_EXCEEDED,
+              /*retry=*/true);
           break;
         default:
           ShowErrorMessage(
@@ -442,8 +451,7 @@ void EnrollmentScreenHandler::ShowEnrollmentStatus(
                     /*retry=*/true);
           return;
       }
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     case policy::EnrollmentStatus::Code::kStoreError:
       ShowErrorMessage(
           l10n_util::GetStringFUTF8(
@@ -469,7 +477,7 @@ void EnrollmentScreenHandler::ShowEnrollmentStatus(
                 /*retry=*/false);
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // EnrollmentScreenHandler BaseScreenHandler implementation -----
@@ -491,7 +499,7 @@ void EnrollmentScreenHandler::DeclareLocalizedValues(
                IDS_EDUCATION_ENROLLMENT_SCREEN_TITLE);
   builder->Add("oauthEnrollNextBtn", IDS_OFFLINE_LOGIN_NEXT_BUTTON_TEXT);
   builder->Add("oauthEnrollSkip", IDS_ENTERPRISE_ENROLLMENT_SKIP);
-  if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
+  if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
     // Use Next text since the setup is not finished.
     builder->Add("oauthEnrollDone", IDS_EULA_NEXT_BUTTON);
   } else {
@@ -624,7 +632,7 @@ void EnrollmentScreenHandler::HandleClose(const std::string& reason) {
   } else if (reason == "done") {
     controller_->OnConfirmationClosed();
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -650,7 +658,7 @@ void EnrollmentScreenHandler::HandleCompleteLogin(const std::string& user,
 
   login::OnlineSigninArtifacts signin_artifacts;
   signin_artifacts.email = user;
-  signin_artifacts.gaia_id = gaia_id;
+  signin_artifacts.gaia_id = GaiaId(gaia_id);
   signin_artifacts.password = password;
   signin_artifacts.using_saml = using_saml;
 
@@ -710,9 +718,10 @@ void EnrollmentScreenHandler::HandleDeviceAttributesProvided(
 }
 
 void EnrollmentScreenHandler::HandleOnLearnMore() {
-  if (!help_app_.get())
+  if (!help_app_.get()) {
     help_app_ = new HelpAppLauncher(
         LoginDisplayHost::default_host()->GetNativeWindow());
+  }
   help_app_->ShowHelpTopic(HelpAppLauncher::HELP_DEVICE_ATTRIBUTES);
 }
 
@@ -781,8 +790,9 @@ void EnrollmentScreenHandler::DoShowWithPartition(
     const std::string& partition_name) {
   // If enrollment ends and the browser is being restarted, the renderers are
   // killed so we can not talk to them anymore.
-  if (shutdown_)
+  if (shutdown_) {
     return;
+  }
 
   signin_partition_name_ = partition_name;
 
@@ -810,15 +820,17 @@ base::Value::Dict EnrollmentScreenHandler::ScreenDataForOAuthEnrollment() {
   screen_data.Set("gaiaUrl", GaiaUrls::GetInstance()->gaia_url().spec());
   screen_data.Set(
       "gaiaPath",
-      GaiaUrls::GetInstance()->embedded_setup_chromeos_url().path().substr(1));
+      GaiaUrls::GetInstance()->embedded_setup_chromeos_url().GetPath().substr(
+          1));
   screen_data.Set("clientId",
                   GaiaUrls::GetInstance()->oauth2_chrome_client_id());
   screen_data.Set("management_domain", config_.management_domain);
   screen_data.Set("gaia_buttons_type",
                   GetGaiaButtonsTypeString(gaia_buttons_type_));
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
-  if (!app_locale.empty())
+  if (!app_locale.empty()) {
     screen_data.Set("hl", app_locale);
+  }
   const std::string& email = config_.enrollment_nudge_email;
   if (!email.empty()) {
     screen_data.Set("email", email);

@@ -44,9 +44,9 @@ void XboxHidController::SetVibration(mojom::GamepadEffectParametersPtr params) {
   control_report[0] = 0x03;  // report ID
   control_report[1] = 0x0f;  // enable rumble motors, enable trigger haptics
   control_report[2] =
-      static_cast<uint8_t>(params->right_trigger * kRumbleMagnitudeMax);
-  control_report[3] =
       static_cast<uint8_t>(params->left_trigger * kRumbleMagnitudeMax);
+  control_report[3] =
+      static_cast<uint8_t>(params->right_trigger * kRumbleMagnitudeMax);
   control_report[4] =
       static_cast<uint8_t>(params->strong_magnitude * kRumbleMagnitudeMax);
   control_report[5] =

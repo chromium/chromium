@@ -11,8 +11,8 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/ash/input_method/assistive_prefs.h"
 #include "chrome/browser/ash/input_method/autocorrect_enums.h"
 #include "chrome/browser/ash/input_method/autocorrect_prefs.h"
@@ -28,6 +28,7 @@ namespace {
 namespace mojom = ::ash::ime::mojom;
 
 constexpr std::string_view kJapaneseEngineId = "nacl_mozc_jp";
+constexpr std::string_view kJapaneseUsEngineId = "nacl_mozc_us";
 
 // The values here should be kept in sync with
 // chrome/browser/resources/ash/settings/os_languages_page/input_method_util.js
@@ -83,6 +84,10 @@ bool IsFstEngine(const std::string& engine_id) {
   return base::StartsWith(engine_id, "xkb:", base::CompareCase::SENSITIVE) ||
          base::StartsWith(engine_id, "experimental_",
                           base::CompareCase::SENSITIVE);
+}
+
+bool IsJapaneseEngine(const std::string& engine_id) {
+  return engine_id == kJapaneseEngineId || engine_id == kJapaneseUsEngineId;
 }
 
 bool IsKoreanEngine(const std::string& engine_id) {
@@ -365,9 +370,22 @@ mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
   // subdictionary structure depends on the type of input method it's for.  The
   // subdictionary may be null if the user hasn't changed any settings for that
   // input method.
+
+  // TODO(crbug.com/203464079): Use distinct CrOS prefs for nacl_mozc_jp
+  // ("Japanese [for JIS keyboard]") and nacl_mozc_us ("Japanese for US
+  // keyboard") input methods. Due to singleton constraints in the legacy
+  // implementation, unlike all other input methods whose settings were distinct
+  // from one another, these two input methods shared the same settings. Upon
+  // migration to CrOS prefs, the unintended sharing was intentionally retained
+  // until the issue is separately addressed outside the scope of the said
+  // migration. Thus a single Japanese prefs entry with key "nacl_mozc_jp" is
+  // currently used for both "nacl_mozc_jp" and "nacl_mozc_us" input methods.
+  std::string_view lookup_engine_id =
+      engine_id == kJapaneseUsEngineId ? kJapaneseEngineId : engine_id;
+
   const base::Value::Dict* ime_prefs_ptr =
       prefs.GetDict(::prefs::kLanguageInputMethodSpecificSettings)
-          .FindDict(engine_id);
+          .FindDict(lookup_engine_id);
 
   base::Value::Dict default_dict;
   const base::Value::Dict& input_method_specific_pref =
@@ -397,14 +415,10 @@ mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
     return mojom::InputMethodSettings::NewVietnameseVniSettings(
         CreateVietnameseVniSettings(input_method_specific_pref));
   }
-  if (engine_id == kJapaneseEngineId) {
+  if (IsJapaneseEngine(engine_id)) {
     return mojom::InputMethodSettings::NewJapaneseSettings(
         ToMojomInputMethodSettings(input_method_specific_pref));
   }
-  // TODO(b/232341104): Add the code to send the Japanese settings to
-  // the engine if the engine_id is nacl_mozc_jp or nacl_mozc_us.
-  // This will do the inverse of ConvertConfigToJapaneseSettings.
-  // This will be something like InputMethodSettings::NewJapaneseSettings(...)
 
   return nullptr;
 }
@@ -437,8 +451,8 @@ void SetLanguageInputMethodSpecificSetting(PrefService& prefs,
 }
 
 bool IsAutocorrectSupported(const std::string& engine_id) {
-  static const base::NoDestructor<base::flat_set<std::string>>
-      enabledInputMethods({
+  static constexpr auto kEnabledInputMethods =
+      base::MakeFixedFlatSet<std::string_view>({
           "xkb:be::fra",        "xkb:be::ger",
           "xkb:be::nld",        "xkb:br::por",
           "xkb:ca::fra",        "xkb:ca:eng:eng",
@@ -461,7 +475,7 @@ bool IsAutocorrectSupported(const std::string& engine_id) {
           "xkb:us:workman:eng",
       });
 
-  return enabledInputMethods->find(engine_id) != enabledInputMethods->end();
+  return kEnabledInputMethods.contains(engine_id);
 }
 
 bool IsPhysicalKeyboardAutocorrectAllowed(const PrefService& prefs) {

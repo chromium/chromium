@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "third_party/cros_system_api/mojo/service_constants.h"

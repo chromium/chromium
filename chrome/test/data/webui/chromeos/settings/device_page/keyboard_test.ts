@@ -4,8 +4,9 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {SettingsKeyboardElement} from 'chrome://os-settings/lazy_load.js';
-import {DevicePageBrowserProxyImpl, Route, Router, routes, settingMojom, SettingsSliderElement} from 'chrome://os-settings/os_settings.js';
+import type {SettingsKeyboardElement} from 'chrome://os-settings/lazy_load.js';
+import type {CrLinkRowElement, Route, SettingsSliderElement} from 'chrome://os-settings/os_settings.js';
+import {DevicePageBrowserProxyImpl, Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
@@ -217,5 +218,12 @@ suite('<settings-keyboard>', () => {
     await checkDeepLink(
         routes.KEYBOARD, settingMojom.Setting.kKeyboardShortcuts.toString(),
         button, 'Keyboard shortcuts button');
+  });
+
+  test('Navigate to a11y keyboard settings subpage', () => {
+    keyboardPage.shadowRoot!
+        .querySelector<CrLinkRowElement>('#a11yKeyboardRow')!.click();
+    assertEquals(
+        routes.A11Y_KEYBOARD_AND_TEXT_INPUT, Router.getInstance().currentRoute);
   });
 });

@@ -19,6 +19,7 @@
 #include "ash/public/cpp/holding_space/holding_space_section.h"
 #include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
@@ -27,7 +28,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
-#include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icon_types.h"
 
 namespace ash {
 namespace {
@@ -41,7 +42,7 @@ using testing::VariantWith;
 HoldingSpaceItem::InProgressCommand CreateInProgressCommand(
     HoldingSpaceCommandId command_id) {
   return HoldingSpaceItem::InProgressCommand(command_id, /*label_id=*/-1,
-                                             &gfx::kNoneIcon,
+                                             &gfx::VectorIcon::EmptyIcon(),
                                              /*handler=*/base::DoNothing());
 }
 

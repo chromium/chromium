@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -13,15 +14,14 @@
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/device_response_converter.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_test_data.h"
-#include "device/fido/fido_transport_protocol.h"
-#include "device/fido/fido_types.h"
 #include "device/fido/opaque_attestation_statement.h"
 #include "device/fido/p256_public_key.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
+#include "device/fido/public/fido_types.h"
 #include "device/fido/public_key.h"
-#include "fido_transport_protocol.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -443,7 +443,7 @@ std::vector<uint8_t> GetTestCredentialRawIdBytes() {
 // assumed to be a CTAP2 status byte.
 std::optional<cbor::Value> DecodeCBOR(base::span<const uint8_t> in) {
   CHECK(!in.empty());
-  return cbor::Reader::Read(in.subspan(1));
+  return cbor::Reader::Read(in.subspan<1>());
 }
 
 }  // namespace
@@ -741,17 +741,18 @@ TEST(CTAPResponseTest, TestReadGetInfoResponse) {
 TEST(CTAPResponseTest, TestReadGetInfoResponseWithDuplicateVersion) {
   uint8_t
       get_info[sizeof(kTestAuthenticatorGetInfoResponseWithDuplicateVersion)];
-  memcpy(get_info, kTestAuthenticatorGetInfoResponseWithDuplicateVersion,
-         sizeof(get_info));
+  UNSAFE_TODO(memcpy(get_info,
+                     kTestAuthenticatorGetInfoResponseWithDuplicateVersion,
+                     sizeof(get_info)));
   // Should fail to parse with duplicate versions.
   EXPECT_FALSE(ReadCTAPGetInfoResponse(get_info));
 
   // Find the first of the duplicate versions and change it to a different
   // value. That should be sufficient to make the data parsable.
   static constexpr std::string_view kU2Fv9 = "U2F_V9";
-  uint8_t* first_version = base::ranges::search(get_info, kU2Fv9);
-  ASSERT_TRUE(first_version);
-  memcpy(first_version, "U2F_V3", 6);
+  auto first_version = std::ranges::search(get_info, kU2Fv9);
+  ASSERT_FALSE(first_version.empty());
+  UNSAFE_TODO(memcpy(first_version.begin(), "U2F_V3", 6));
   std::optional<AuthenticatorGetInfoResponse> response =
       ReadCTAPGetInfoResponse(get_info);
   ASSERT_TRUE(response);
@@ -811,8 +812,8 @@ TEST(CTAPResponseTest, TestSerializeGetInfoResponse) {
 
   EXPECT_THAT(AuthenticatorGetInfoResponse::EncodeToCBOR(response),
               ::testing::ElementsAreArray(
-                  base::make_span(test_data::kTestGetInfoResponsePlatformDevice)
-                      .subspan(1)));
+                  base::span(test_data::kTestGetInfoResponsePlatformDevice)
+                      .subspan<1>()));
 }
 
 TEST(CTAPResponseTest, TestSerializeMakeCredentialResponse) {
@@ -840,7 +841,7 @@ TEST(CTAPResponseTest, TestSerializeMakeCredentialResponse) {
   };
 
   const auto application_parameter =
-      base::make_span(test_data::kApplicationParameter)
+      base::span(test_data::kApplicationParameter)
           .subspan<0, kRpIdHashLength>();
   // Starting signature counter value set by example 4 of the CTAP spec. The
   // signature counter can start at any value but it should never decrease.
@@ -880,7 +881,7 @@ TEST(CTAPResponseTest, TestSerializeMakeCredentialResponse) {
   EXPECT_THAT(
       AsCTAPStyleCBORBytes(response),
       ::testing::ElementsAreArray(
-          base::make_span(test_data::kTestMakeCredentialResponse).subspan(1)));
+          base::span(test_data::kTestMakeCredentialResponse).subspan<1>()));
 }
 
 TEST(CTAPResponseTest, AttestationObjectResponseFields) {

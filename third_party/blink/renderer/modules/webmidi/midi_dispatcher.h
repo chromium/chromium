@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBMIDI_MIDI_DISPATCHER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBMIDI_MIDI_DISPATCHER_H_
 
-#include "base/memory/raw_ptr.h"
+#include "base/containers/span.h"
 #include "media/midi/midi_service.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -36,9 +36,9 @@ class MIDIDispatcher : public GarbageCollected<MIDIDispatcher>,
                                        midi::mojom::PortState) = 0;
 
     virtual void DidStartSession(midi::mojom::Result) = 0;
+    virtual void OnSessionStartFailed() = 0;
     virtual void DidReceiveMIDIData(unsigned port_index,
-                                    const unsigned char* data,
-                                    wtf_size_t length,
+                                    base::span<const uint8_t> data,
                                     base::TimeTicks time_stamp) = 0;
   };
 
@@ -48,8 +48,7 @@ class MIDIDispatcher : public GarbageCollected<MIDIDispatcher>,
   void SetClient(Client* client) { client_ = client; }
 
   void SendMIDIData(uint32_t port,
-                    const uint8_t* data,
-                    wtf_size_t length,
+                    base::span<const uint8_t> data,
                     base::TimeTicks timestamp);
 
   // midi::mojom::blink::MidiSessionClient implementation.
@@ -69,6 +68,8 @@ class MIDIDispatcher : public GarbageCollected<MIDIDispatcher>,
   void Trace(Visitor* visitor) const;
 
  private:
+  void OnConnectionError();
+
   Member<Client> client_;
 
   bool initialized_ = false;

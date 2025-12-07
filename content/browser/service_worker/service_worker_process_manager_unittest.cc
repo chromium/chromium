@@ -143,7 +143,7 @@ TEST_F(ServiceWorkerProcessManagerTest,
 
   // An existing process should be allocated to the worker.
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status);
-  EXPECT_EQ(host->GetID(), process_info.process_id);
+  EXPECT_EQ(host->GetDeprecatedID(), process_info.process_id);
   EXPECT_EQ(ServiceWorkerMetrics::StartSituation::EXISTING_UNREADY_PROCESS,
             process_info.start_situation);
   EXPECT_EQ(1u, host->GetWorkerRefCount());
@@ -188,7 +188,7 @@ TEST_F(ServiceWorkerProcessManagerTest,
 
   // A new process should be allocated to the worker.
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status);
-  EXPECT_NE(host->GetID(), process_info.process_id);
+  EXPECT_NE(host->GetDeprecatedID(), process_info.process_id);
   EXPECT_EQ(ServiceWorkerMetrics::StartSituation::NEW_PROCESS,
             process_info.start_situation);
   EXPECT_EQ(0u, host->GetWorkerRefCount());

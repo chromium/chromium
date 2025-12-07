@@ -25,8 +25,7 @@ class RangeSet {
   RangeSet(RangeSet&& range_set);
   RangeSet& operator=(const RangeSet& other);
 
-  bool operator==(const RangeSet& other) const;
-  bool operator!=(const RangeSet& other) const;
+  friend bool operator==(const RangeSet&, const RangeSet&) = default;
 
   bool Contains(uint32_t point) const;
   bool Contains(const gfx::Range& range) const;

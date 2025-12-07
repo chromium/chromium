@@ -10,11 +10,10 @@
 #include "base/task/thread_pool.h"
 #include "base/version_info/channel.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
@@ -33,19 +32,8 @@
 
 namespace {
 
-// For ChromeOS Lacros, browser updates are done via system services, thus
-// we redirect to the safetyCheck page that interacts with these. On other
-// platforms it may be possible to download an updated browser via a site.
-const char* kUpdateBrowserRedirectUrl =
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // The URL to be used to update Lacros-Chrome when auto-update failed
-    // for too long.
-    chrome::kChromeUIActivateSafetyCheckSettingsURL;
-#else
-    // The URL to be used to re-install Chrome when auto-update failed for
-    // too long.
-    "https://www.google.com/chrome";
-#endif
+// The URL to be used to re-install Chrome when auto-update failed for too long.
+const char* kUpdateBrowserRedirectUrl = "https://www.google.com/chrome";
 
 bool g_upgrade_bubble_is_showing = false;
 
@@ -88,7 +76,6 @@ void OnDialogAccepted(content::PageNavigator* navigator,
   }
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 const char* GetUpdateUrlChannelSuffix(version_info::Channel channel) {
   switch (channel) {
     case version_info::Channel::CANARY:
@@ -102,29 +89,27 @@ const char* GetUpdateUrlChannelSuffix(version_info::Channel channel) {
       return "";
   }
 }
-#endif
 
 }  // namespace
 
-void ShowOutdatedUpgradeBubble(Browser* browser, bool auto_update_enabled) {
-  if (g_upgrade_bubble_is_showing)
+void ShowOutdatedUpgradeBubble(BrowserWindowInterface* browser,
+                               content::PageNavigator* page_navigator,
+                               bool auto_update_enabled) {
+  if (g_upgrade_bubble_is_showing) {
     return;
+  }
 
   g_upgrade_bubble_is_showing = true;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto update_url = std::string(kUpdateBrowserRedirectUrl);
-#else
   auto update_url = std::string(kUpdateBrowserRedirectUrl) +
                     GetUpdateUrlChannelSuffix(chrome::GetChannel());
-#endif
 
   auto dialog_model =
       ui::DialogModel::Builder()
           .SetTitle(l10n_util::GetStringUTF16(IDS_UPGRADE_BUBBLE_TITLE))
           .AddOkButton(
-              base::BindOnce(&OnDialogAccepted, browser, auto_update_enabled,
-                             std::move(update_url)),
+              base::BindOnce(&OnDialogAccepted, page_navigator,
+                             auto_update_enabled, std::move(update_url)),
               ui::DialogModel::Button::Params().SetLabel(
                   l10n_util::GetStringUTF16(auto_update_enabled
                                                 ? IDS_REINSTALL_APP
@@ -137,8 +122,8 @@ void ShowOutdatedUpgradeBubble(Browser* browser, bool auto_update_enabled) {
               base::UserMetricsAction("OutdatedUpgradeBubble.Later")))
           .Build();
 
-  chrome::ShowBubble(browser, kToolbarAppMenuButtonElementId,
-                     std::move(dialog_model));
+  chrome::ShowBubble(BrowserElements::From(browser)->GetContext(),
+                     kToolbarAppMenuButtonElementId, std::move(dialog_model));
 
   base::RecordAction(
       auto_update_enabled

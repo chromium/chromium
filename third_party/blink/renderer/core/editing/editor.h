@@ -43,6 +43,7 @@
 namespace blink {
 
 class CompositeEditCommand;
+class DataTransfer;
 class DragData;
 class EditingBehavior;
 class EditorCommand;
@@ -128,7 +129,8 @@ class CORE_EXPORT Editor final : public GarbageCollected<Editor> {
       const String&,
       bool select_inserted_text,
       TextEvent* triggering_event,
-      InputEvent::InputType = InputEvent::InputType::kInsertText);
+      InputEvent::InputType = InputEvent::InputType::kInsertText,
+      DataTransfer* = nullptr);
   bool InsertLineBreak();
   bool InsertParagraphSeparator();
 
@@ -190,14 +192,12 @@ class CORE_EXPORT Editor final : public GarbageCollected<Editor> {
   void RespondToChangedSelection();
   void SyncSelection(blink::SyncCondition force_sync);
 
-  bool MarkedTextMatchesAreHighlighted() const;
-  void SetMarkedTextMatchesAreHighlighted(bool);
-
   void ReplaceSelectionWithFragment(DocumentFragment*,
                                     bool select_replacement,
                                     bool smart_replace,
                                     bool match_style,
-                                    InputEvent::InputType);
+                                    InputEvent::InputType,
+                                    DataTransfer* = nullptr);
   void ReplaceSelectionWithText(const String&,
                                 bool select_replacement,
                                 bool smart_replace,
@@ -209,7 +209,8 @@ class CORE_EXPORT Editor final : public GarbageCollected<Editor> {
 
   void ReplaceSelectionAfterDragging(DocumentFragment*,
                                      InsertMode,
-                                     DragSourceType);
+                                     DragSourceType,
+                                     DataTransfer* = nullptr);
 
   // Return false if frame was destroyed by event handler, should stop executing
   // remaining actions.
@@ -252,7 +253,6 @@ class CORE_EXPORT Editor final : public GarbageCollected<Editor> {
   bool should_style_with_css_;
   const std::unique_ptr<KillRing> kill_ring_;
   VisibleSelection mark_;
-  bool are_marked_text_matches_highlighted_;
   EditorParagraphSeparator default_paragraph_separator_;
   Member<EditingStyle> typing_style_;
   bool mark_is_directional_ = false;
@@ -279,10 +279,6 @@ inline const VisibleSelection& Editor::Mark() const {
 
 inline bool Editor::MarkIsDirectional() const {
   return mark_is_directional_;
-}
-
-inline bool Editor::MarkedTextMatchesAreHighlighted() const {
-  return are_marked_text_matches_highlighted_;
 }
 
 inline EditingStyle* Editor::TypingStyle() const {

@@ -11,7 +11,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "components/performance_manager/public/features.h"
@@ -65,24 +66,26 @@ base::Value PerformanceHandler::GetCurrentOpenSites() {
   base::Value::List hosts;
   std::set<std::pair<base::TimeTicks, std::string>, std::greater<>>
       last_active_time_host_pairs;
-  const Profile* profile = Profile::FromWebUI(web_ui());
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    // Exclude browsers not signed into the current profile
-    if (browser->profile() != profile) {
-      continue;
-    }
+  const Profile* const profile = Profile::FromWebUI(web_ui());
 
-    TabStripModel* tab_strip_model = browser->tab_strip_model();
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [profile, &last_active_time_host_pairs](BrowserWindowInterface* browser) {
+        if (browser->GetProfile() != profile) {
+          return true;
+        }
 
-    for (int tab_index = 0; tab_index < tab_strip_model->count(); ++tab_index) {
-      WebContents* web_contents = tab_strip_model->GetWebContentsAt(tab_index);
-      const GURL url = web_contents->GetLastCommittedURL();
-      if (url.is_valid() && url.SchemeIsHTTPOrHTTPS()) {
-        last_active_time_host_pairs.insert(
-            std::make_pair(web_contents->GetLastActiveTimeTicks(), url.host()));
-      }
-    }
-  }
+        TabStripModel* const tab_strip_model = browser->GetTabStripModel();
+        for (int i = 0; i < tab_strip_model->count(); ++i) {
+          WebContents* const web_contents =
+              tab_strip_model->GetWebContentsAt(i);
+          const GURL url = web_contents->GetLastCommittedURL();
+          if (url.is_valid() && url.SchemeIsHTTPOrHTTPS()) {
+            last_active_time_host_pairs.insert(std::make_pair(
+                web_contents->GetLastActiveTimeTicks(), url.GetHost()));
+          }
+        }
+        return true;
+      });
 
   std::unordered_set<std::string> added_hosts;
   for (auto& [last_active_time, host] : last_active_time_host_pairs) {

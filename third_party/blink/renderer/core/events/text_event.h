@@ -33,6 +33,7 @@
 
 namespace blink {
 
+class DataTransfer;
 class DocumentFragment;
 
 class TextEvent final : public UIEvent {
@@ -46,10 +47,12 @@ class TextEvent final : public UIEvent {
   static TextEvent* CreateForPlainTextPaste(AbstractView*,
                                             const String& data,
                                             bool should_smart_replace);
-  static TextEvent* CreateForFragmentPaste(AbstractView*,
-                                           DocumentFragment* data,
-                                           bool should_smart_replace,
-                                           bool should_match_style);
+  static TextEvent* CreateForFragmentPaste(
+      AbstractView*,
+      DocumentFragment* data,
+      bool should_smart_replace,
+      bool should_match_style,
+      DataTransfer* data_transfer = nullptr);
   static TextEvent* CreateForDrop(AbstractView*, const String& data);
 
   TextEvent();
@@ -60,7 +63,8 @@ class TextEvent final : public UIEvent {
             const String& data,
             DocumentFragment*,
             bool should_smart_replace,
-            bool should_match_style);
+            bool should_match_style,
+            DataTransfer* data_transfer = nullptr);
   ~TextEvent() override;
 
   void initTextEvent(const AtomicString& type,
@@ -86,7 +90,7 @@ class TextEvent final : public UIEvent {
   bool ShouldSmartReplace() const { return should_smart_replace_; }
   bool ShouldMatchStyle() const { return should_match_style_; }
   DocumentFragment* PastingFragment() const { return pasting_fragment_.Get(); }
-
+  DataTransfer* GetDataTransfer() const { return data_transfer_.Get(); }
   void Trace(Visitor*) const override;
 
  private:
@@ -94,6 +98,7 @@ class TextEvent final : public UIEvent {
   String data_;
 
   Member<DocumentFragment> pasting_fragment_;
+  Member<DataTransfer> data_transfer_;
   bool should_smart_replace_;
   bool should_match_style_;
 };

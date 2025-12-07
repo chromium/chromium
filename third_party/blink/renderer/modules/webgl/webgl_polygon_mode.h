@@ -10,6 +10,8 @@
 
 namespace blink {
 
+class ExecutionContext;
+
 class WebGLPolygonMode final : public WebGLExtension {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -17,7 +19,7 @@ class WebGLPolygonMode final : public WebGLExtension {
   static bool Supported(WebGLRenderingContextBase*);
   static const char* ExtensionName();
 
-  explicit WebGLPolygonMode(WebGLRenderingContextBase*);
+  WebGLPolygonMode(WebGLRenderingContextBase*, ExecutionContext*);
 
   WebGLExtensionName GetName() const override;
 

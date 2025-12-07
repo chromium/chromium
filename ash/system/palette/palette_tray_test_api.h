@@ -43,6 +43,10 @@ class PaletteTrayTestApi {
   // Have the tray act as though it is on a display with a stylus
   void SetDisplayHasStylus() { palette_tray_->SetDisplayHasStylusForTesting(); }
 
+  std::u16string GetAccessibleNameForBubble() {
+    return palette_tray_->GetAccessibleNameForBubble();
+  }
+
  private:
   raw_ptr<PaletteTray, DanglingUntriaged> palette_tray_ = nullptr;
 };

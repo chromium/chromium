@@ -24,12 +24,12 @@
 #include "ash/wm/overview/overview_grid_event_handler.h"
 #include "ash/wm/overview/overview_item_base.h"
 #include "ash/wm/overview/overview_item_view.h"
+#include "ash/wm/overview/overview_item_view_scheduler.h"
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/overview/overview_window_drag_controller.h"
 #include "ash/wm/overview/scoped_overview_animation_settings.h"
 #include "ash/wm/overview/scoped_overview_hide_windows.h"
-#include "ash/wm/raster_scale/raster_scale_controller.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/layout_divider_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
@@ -47,6 +47,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
@@ -137,7 +138,7 @@ void SetWidgetBoundsAndMaybeAnimateTransform(
   gfx::RectF previous_bounds = gfx::RectF(window->GetBoundsInScreen());
   window->SetBoundsInScreen(
       new_bounds_in_screen,
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window));
+      display::Screen::Get()->GetDisplayNearestWindow(window));
   if (animation_type == OVERVIEW_ANIMATION_NONE ||
       animation_type == OVERVIEW_ANIMATION_ENTER_FROM_HOME_LAUNCHER ||
       previous_bounds.IsEmpty()) {
@@ -181,6 +182,7 @@ OverviewItem::OverviewItem(aura::Window* window,
       root_window_(window->GetRootWindow()),
       transform_window_(this, window),
       window_destruction_delegate_(destruction_delegate),
+      event_handler_delegate_(event_handler_delegate),
       eligible_for_shadow_config_(eligible_for_shadow_config),
       animation_disabler_(window) {
   CHECK(window_destruction_delegate_);
@@ -224,23 +226,15 @@ void OverviewItem::OnFocusedViewClosed() {
   overview_session_->OnFocusedItemClosed(this);
 }
 
-void OverviewItem::UpdateItemContentViewForMinimizedWindow() {
-  overview_item_view_->RefreshPreviewView();
-}
-
 void OverviewItem::UpdateRoundedCorners() {
-  // TODO(sammiequon): Clean up this function.
-
-  // Do not show the rounded corners and the shadow if overview is shutting
-  // down or we're currently in entering overview animation. Also don't update
-  // or animate the window's frame header clip under these conditions. If the
-  // feature ContinuousOverviewScrollAnimation is enabled, always show rounded
-  // corners for minimized windows, and show rounded corners for non-minimized
-  // windows after the continuous scroll has ended.
   OverviewController* overview_controller = OverviewController::Get();
+
+  // If the feature ContinuousOverviewScrollAnimation is enabled, always show
+  // rounded corners for minimized windows, and show rounded corners for
+  // non-minimized windows after the continuous scroll has ended.
   bool show_rounded_corners_for_start_animation = false;
   if (features::IsContinuousOverviewScrollAnimationEnabled() &&
-      !display::Screen::GetScreen()->InTabletMode()) {
+      !display::Screen::Get()->InTabletMode()) {
     show_rounded_corners_for_start_animation =
         transform_window_.IsMinimizedOrTucked() ||
         !IsContinuousScrollInProgress();
@@ -249,12 +243,17 @@ void OverviewItem::UpdateRoundedCorners() {
         !overview_controller->IsInStartAnimation();
   }
 
+  // Do not show the rounded corners and the shadow if overview is shutting
+  // down or we're currently in entering overview animation. Also don't update
+  // or animate the window's frame header clip under these conditions.
   const bool is_shutting_down =
       !overview_controller || !overview_controller->InOverviewSession();
   const bool should_show_rounded_corners =
       !is_shutting_down && show_rounded_corners_for_start_animation;
   if (should_show_rounded_corners) {
-    overview_item_view_->RefreshItemVisuals();
+    if (overview_item_view_) {
+      overview_item_view_->RefreshItemVisuals();
+    }
     if (!transform_window_.IsMinimizedOrTucked()) {
       transform_window_.UpdateRoundedCorners(should_show_rounded_corners);
     }
@@ -348,8 +347,8 @@ void OverviewItem::UpdateMirrorsForDragging(bool is_touch_dragging) {
   }
 
   if (!window_mirror_for_dragging_) {
-    window_mirror_for_dragging_ =
-        std::make_unique<DragWindowController>(GetWindow(), is_touch_dragging);
+    window_mirror_for_dragging_ = std::make_unique<DragWindowController>(
+        GetWindow(), is_touch_dragging, /*create_window_shadow=*/false);
   }
   window_mirror_for_dragging_->Update();
 }
@@ -383,12 +382,6 @@ OverviewItem* OverviewItem::GetLeafItemForWindow(aura::Window* window) {
 
 void OverviewItem::SetBounds(const gfx::RectF& target_bounds,
                              OverviewAnimationType animation_type) {
-  // Pause raster scale updates during SetBounds. For example, if we perform an
-  // item spawned animation, we set the initial transform but immediately start
-  // an animation, so we don't want to trigger a raster scale update for the
-  // initial transform.
-  ScopedPauseRasterScaleUpdates scoped_pause;
-
   if (in_bounds_update_ || transform_window_.is_restoring() ||
       !OverviewController::Get()->InOverviewSession()) {
     return;
@@ -467,8 +460,9 @@ void OverviewItem::SetBounds(const gfx::RectF& target_bounds,
   // If the window was minimized while in overview, the preview may not exist.
   // `OverviewItemView::SetShowPreview()` is a no-op if the preview already
   // exists, so it is free to ensure it here.
-  overview_item_view_->SetShowPreview(true);
-  ui::Layer* preview_layer = overview_item_view_->preview_view()->layer();
+  GetOrCreateOverviewItemView().SetShowPreview(true);
+  ui::Layer* preview_layer =
+      GetOrCreateOverviewItemView().preview_view()->layer();
 
   // Minimized windows have a `WindowPreviewView` which mirrors content from the
   // window. `target_bounds` may not have a matching aspect ratio to the
@@ -561,17 +555,16 @@ gfx::Transform OverviewItem::ComputeTargetTransform(
   // container.
   if (transform_window_.fill_mode() == OverviewItemFillMode::kNormal ||
       transform_window_.fill_mode() == OverviewItemFillMode::kPillarBoxed) {
-    if (!overview_item_view_->header_view()->GetBoundsInScreen().IsEmpty()) {
-      // The window top bar's target height with the transform.
-      const float window_top_inset_target_height =
-          target_bounds.height() / screen_rect.height() * top_view_inset;
-      overview_item_bounds.set_y(
-          overview_item_view_->header_view()->GetBoundsInScreen().bottom() -
-          window_top_inset_target_height);
-      overview_item_bounds.set_height(target_bounds.height() -
-                                      kWindowMiniViewHeaderHeight +
-                                      window_top_inset_target_height);
-    }
+    // The window top bar's target height with the transform.
+    const float window_top_inset_target_height =
+        target_bounds.height() / screen_rect.height() * top_view_inset;
+    const int header_view_bottom =
+        base::ClampRound(transformed_bounds.y() + kWindowMiniViewHeaderHeight);
+    overview_item_bounds.set_y(header_view_bottom -
+                               window_top_inset_target_height);
+    overview_item_bounds.set_height(target_bounds.height() -
+                                    kWindowMiniViewHeaderHeight +
+                                    window_top_inset_target_height);
   }
 
   return gfx::TransformBetweenRects(screen_rect, overview_item_bounds);
@@ -583,7 +576,7 @@ void OverviewItem::RestoreWindow(bool reset_transform, bool animate) {
   // TODO(oshima): SplitViewController has its own logic to adjust the
   // target state in `SplitViewController::OnOverviewModeEnding`.
   // Unify the mechanism to control it and remove ifs.
-  if (display::Screen::GetScreen()->InTabletMode() &&
+  if (display::Screen::Get()->InTabletMode() &&
       !SplitViewController::Get(root_window_)->InSplitViewMode() &&
       reset_transform) {
     MaximizeIfSnapped(GetWindow());
@@ -594,7 +587,9 @@ void OverviewItem::RestoreWindow(bool reset_transform, bool animate) {
     transient_child->ClearProperty(kForceVisibleInMiniViewKey);
   }
 
-  overview_item_view_->OnOverviewItemWindowRestoring();
+  if (overview_item_view_) {
+    overview_item_view_->OnOverviewItemWindowRestoring();
+  }
   transform_window_.RestoreWindow(reset_transform, animate);
 
   if (!transform_window_.IsMinimizedOrTucked()) {
@@ -663,7 +658,7 @@ std::vector<views::Widget*> OverviewItem::GetFocusableWidgets() {
 }
 
 views::View* OverviewItem::GetBackDropView() const {
-  return overview_item_view_->backdrop_view();
+  return overview_item_view_ ? overview_item_view_->backdrop_view() : nullptr;
 }
 
 bool OverviewItem::ShouldHaveShadow() const {
@@ -705,10 +700,6 @@ float OverviewItem::GetOpacity() const {
 }
 
 void OverviewItem::PrepareForOverview() {
-  // Forced overview items to be visible if they won't have a snapshot.
-  if (!Shell::Get()->overview_controller()->windows_have_snapshot()) {
-    scoped_force_visible_.emplace(GetWindow());
-  }
   transform_window_.PrepareForOverview();
   prepared_for_overview_ = true;
 }
@@ -733,7 +724,8 @@ void OverviewItem::OnStartingAnimationComplete() {
 
   const bool show_backdrop =
       GetOverviewItemFillMode() != OverviewItemFillMode::kNormal;
-  overview_item_view_->SetBackdropVisibility(show_backdrop);
+  GetOrCreateOverviewItemView().SetBackdropVisibility(show_backdrop);
+
   UpdateCannotSnapWarningVisibility(/*animate=*/true);
 }
 
@@ -758,17 +750,20 @@ void OverviewItem::StartDrag() {
 }
 
 void OverviewItem::OnOverviewItemDragStarted() {
-  overview_item_view_->SetCloseButtonVisible(false);
+  GetOrCreateOverviewItemView().SetCloseButtonVisible(false);
+  transform_window_.OnDragStarted();
 }
 
 void OverviewItem::OnOverviewItemDragEnded(bool snap) {
   if (snap) {
     if (!IsDragItem()) {
-      overview_item_view_->HideCloseInstantlyAndThenShowItSlowly();
+      GetOrCreateOverviewItemView().HideCloseInstantlyAndThenShowItSlowly();
     }
   } else {
-    overview_item_view_->SetCloseButtonVisible(true);
+    GetOrCreateOverviewItemView().SetCloseButtonVisible(true);
   }
+
+  transform_window_.OnDragEnded();
 }
 
 void OverviewItem::OnOverviewItemContinuousScroll(
@@ -776,7 +771,7 @@ void OverviewItem::OnOverviewItemContinuousScroll(
     float scroll_ratio) {
   auto* window = GetWindow();
 
-  // TODO(sammiequon): This should use
+  // TODO: This should use
   // `ScopedOverviewTransformWindow::IsMinimizedOrTucked()` since tucked
   // windows behave like minimized windows in overview, even if continuous
   // scroll and tucked windows will not be supported together.
@@ -877,7 +872,9 @@ void OverviewItem::AnimateAndCloseItem(bool up) {
 
   animating_to_close_ = true;
   overview_session_->PositionWindows(/*animate=*/true);
-  overview_item_view_->OnOverviewItemWindowRestoring();
+  if (overview_item_view_) {
+    overview_item_view_->OnOverviewItemWindowRestoring();
+  }
 
   const int translation_y = kSwipeToCloseCloseTranslationDp * (up ? -1 : 1);
   gfx::Transform transform;
@@ -920,19 +917,23 @@ void OverviewItem::UpdateOverviewItemFillMode() {
   transform_window_.UpdateOverviewItemFillMode();
   const bool show_backdrop =
       GetOverviewItemFillMode() != OverviewItemFillMode::kNormal;
-  overview_item_view_->SetBackdropVisibility(show_backdrop);
+  if (overview_item_view_) {
+    overview_item_view_->SetBackdropVisibility(show_backdrop);
+  }
 }
 
 const gfx::RoundedCornersF OverviewItem::GetRoundedCorners() const {
+  if (!overview_item_view_) {
+    return gfx::RoundedCornersF();
+  }
+
   if (transform_window_.IsMinimizedOrTucked()) {
     return overview_item_view_->GetRoundedCorners();
   }
 
   const aura::Window* window = transform_window_.window();
-  const auto header_rounded_corners = overview_item_view_->header_view()
-                                          ->GetBackground()
-                                          ->GetRoundedCornerRadii()
-                                          .value_or(gfx::RoundedCornersF());
+  const auto header_rounded_corners =
+      overview_item_view_->header_view()->layer()->rounded_corner_radii();
   const auto* layer = window->layer();
   const gfx::RoundedCornersF& transform_window_rounded_corners =
       layer->rounded_corner_radii();
@@ -968,11 +969,18 @@ void OverviewItem::OnWindowParentChanged(aura::Window* window,
   }
 
   if (root_window_ != window->GetRootWindow()) {
+    // Restore Window to reset the transform and the clip before adding new
+    // OverviewItem.
+    RestoreWindow(/*reset_transform=*/true, /*animate=*/false);
     overview_session_->AddItemInMruOrder(
         window, /*reposition=*/false, /*animate=*/true,
         /*restack=*/true, /*use_spawn_animation=*/true);
     window_destruction_delegate_->OnOverviewItemWindowDestroying(
         this, /*reposition=*/true);
+  } else if (parent != item_widget_->GetNativeWindow()->parent()) {
+    // The window may stay on the same root, but changed parent by changing
+    // desks. Move `item_widget_` so it has the same parent as `window`.
+    parent->AddChild(item_widget_->GetNativeWindow());
   }
 }
 
@@ -1008,8 +1016,10 @@ void OverviewItem::OnWindowBoundsChanged(aura::Window* window,
     return;
   }
 
-  if (reason == ui::PropertyChangeReason::NOT_FROM_ANIMATION)
+  if (reason == ui::PropertyChangeReason::NOT_FROM_ANIMATION &&
+      overview_item_view_) {
     overview_item_view_->RefreshPreviewView();
+  }
 
   // Immediately finish any active bounds animation.
   window->layer()->GetAnimator()->StopAnimatingProperty(
@@ -1094,7 +1104,7 @@ void OverviewItem::OnPostWindowStateTypeChange(WindowState* window_state,
   }
 
   const bool minimized_or_tucked = transform_window_.IsMinimizedOrTucked();
-  overview_item_view_->SetShowPreview(minimized_or_tucked);
+  GetOrCreateOverviewItemView().SetShowPreview(minimized_or_tucked);
   if (!minimized_or_tucked) {
     EnsureVisible();
   }
@@ -1115,6 +1125,7 @@ void OverviewItem::CreateItemWidget(
   views::Widget::InitParams params = CreateOverviewItemWidgetParams(
       GetWindow()->parent(), "OverviewItemWidget",
       /*accept_events=*/true);
+
   // The key is not needed for all `OverviewItemBase` objects, such as the drop
   // target.
   params.init_properties_container.SetProperty(kIsOverviewItemKey, true);
@@ -1131,17 +1142,16 @@ void OverviewItem::CreateItemWidget(
     CreateShadow();
   }
 
-  overview_item_view_ =
-      item_widget_->SetContentsView(std::make_unique<OverviewItemView>(
-          this, event_handler_delegate ? event_handler_delegate : this,
-          base::BindRepeating(&OverviewItem::CloseButtonPressed,
-                              base::Unretained(this)),
-          GetWindow(), transform_window_.IsMinimizedOrTucked()));
+  const bool should_enter_without_animations =
+      overview_session_ && overview_session_->ShouldEnterWithoutAnimations();
+  ScheduleOverviewItemViewInitialization(
+      *GetWindow(), *item_widget_, overview_grid_->enter_animation_task_pool(),
+      should_enter_without_animations,
+      base::BindOnce(
+          base::IgnoreResult(&OverviewItem::GetOrCreateOverviewItemView),
+          weak_ptr_factory_.GetWeakPtr()));
   item_widget_->Show();
-  item_widget_->SetOpacity(
-      overview_session_ && overview_session_->ShouldEnterWithoutAnimations()
-          ? 1.f
-          : 0.f);
+  item_widget_->SetOpacity(should_enter_without_animations ? 1.f : 0.f);
   item_widget_->GetLayer()->SetMasksToBounds(/*masks_to_bounds=*/false);
 }
 
@@ -1271,21 +1281,6 @@ void OverviewItem::SetItemBounds(const gfx::RectF& target_bounds,
                                  bool is_first_update) {
   aura::Window* window = GetWindow();
 
-  // TODO(michelefan): Remove the crash keys when http://b/320479135 is fixed.
-  SCOPED_CRASH_KEY_STRING32("b/320479135", "win_title",
-                            base::UTF16ToUTF8(window->GetTitle()));
-
-  SCOPED_CRASH_KEY_NUMBER(
-      "b/320479135", "win_type",
-      static_cast<int>(window->GetProperty(chromeos::kAppTypeKey)));
-
-  SCOPED_CRASH_KEY_STRING32("b/320479135", "rw_bounds",
-                            root_window_->GetBoundsInScreen().ToString());
-
-  SCOPED_CRASH_KEY_STRING32(
-      "b/320479135", "win_get_rw_bounds",
-      window->GetRootWindow()->GetBoundsInScreen().ToString());
-
   CHECK_EQ(root_window_, window->GetRootWindow());
 
   const gfx::Transform transform = ComputeTargetTransform(target_bounds);
@@ -1306,7 +1301,7 @@ void OverviewItem::SetItemBounds(const gfx::RectF& target_bounds,
     clip_rect = gfx::Rect(window->bounds().size());
     // We add 1 to the `top_inset`, because in some cases, the header is not
     // clipped fully due to what seems to be a rounding error.
-    // TODO(afakhry|sammiequon): Investigate a proper fix for this.
+    // TODO: Investigate a proper fix for this.
     const int top_inset = GetTopInset();
     if (top_inset > 0 && !clip_rect.IsEmpty()) {
       clip_rect.Inset(gfx::Insets::TLBR(top_inset + 1, 0, 0, 0));
@@ -1364,6 +1359,9 @@ void OverviewItem::UpdateHeaderLayout(OverviewAnimationType animation_type) {
   }
   widget_window->SetTransform(gfx::Transform());
 
+  if (!overview_item_view_) {
+    return;
+  }
   // The header doesn't need to be painted to a layer unless been dragged.
   WindowMiniViewHeaderView* header_view = overview_item_view_->header_view();
   if (!header_view->layer()) {
@@ -1409,7 +1407,7 @@ OverviewItem::GetExitOverviewAnimationTypeForMinimizedWindow(
   // Fade out the minimized window without animation if switch from tablet mode
   // to clamshell mode.
   if (type == OverviewEnterExitType::kFadeOutExit) {
-    return display::Screen::GetScreen()->InTabletMode()
+    return display::Screen::Get()->InTabletMode()
                ? OVERVIEW_ANIMATION_EXIT_TO_HOME_LAUNCHER
                : OVERVIEW_ANIMATION_NONE;
   }
@@ -1442,12 +1440,25 @@ void OverviewItem::AnimateOpacity(float opacity,
 void OverviewItem::CloseButtonPressed() {
   base::RecordAction(
       base::UserMetricsAction("WindowSelector_OverviewCloseButton"));
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     base::RecordAction(
         base::UserMetricsAction("Tablet_WindowCloseFromOverviewButton"));
   }
 
   CloseWindow();
+}
+
+OverviewItemView& OverviewItem::GetOrCreateOverviewItemView() {
+  if (overview_item_view_) {
+    return *overview_item_view_;
+  }
+  overview_item_view_ =
+      item_widget_->SetContentsView(std::make_unique<OverviewItemView>(
+          this, event_handler_delegate_ ? event_handler_delegate_ : this,
+          base::BindRepeating(&OverviewItem::CloseButtonPressed,
+                              base::Unretained(this)),
+          GetWindow(), transform_window_.IsMinimizedOrTucked()));
+  return *overview_item_view_;
 }
 
 }  // namespace ash

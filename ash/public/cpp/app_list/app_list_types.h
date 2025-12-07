@@ -365,6 +365,7 @@ enum class AppListGridAnimationStatus {
 // This enum is used in a histogram, do not remove/renumber entries. If you're
 // adding to this enum with the intention that it will be logged, update the
 // AppListLaunchedFrom enum listing in tools/metrics/histograms/enums.xml.
+// LINT.IfChange(AppListLaunchedFrom)
 enum class AppListLaunchedFrom {
   kLaunchedFromGrid = 1,
   DEPRECATED_kLaunchedFromSuggestionChip = 2,
@@ -375,8 +376,10 @@ enum class AppListLaunchedFrom {
   kLaunchedFromQuickAppAccess = 7,
   kLaunchedFromAppsCollections = 8,
   kLaunchedFromDiscoveryChip = 9,
-  kMaxValue = kLaunchedFromDiscoveryChip,
+  kLaunchedFromSearchBoxIcon = 10,
+  kMaxValue = kLaunchedFromSearchBoxIcon,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/apps/enums.xml:AppListLaunchedFrom)
 
 // The UI representation of the app that's being launched. Currently all search
 // results that are not apps (OminboxResult, LauncherSearcResult, etc.) are
@@ -394,7 +397,6 @@ enum class AppListSearchResultType {
   kInstalledApp,  // Installed apps.
   kPlayStoreApp,  // Installable apps from PlayStore.
   kInstantApp,    // Instant apps.
-  kInternalApp,   // Chrome OS apps.
   kOmnibox,       // Results from Omnibox.
   kLauncher,      // Results from launcher search (currently only from Files).
   kAnswerCard,    // WebContents based answer card.
@@ -656,6 +658,7 @@ class ASH_PUBLIC_EXPORT SearchResultTextItem {
     kKeyboardShortcutInputModeChange,
     kKeyboardShortcutZoom,
     kKeyboardShortcutMediaLaunchApp1,
+    kKeyboardShortcutMediaLaunchApp1Refresh,
     kKeyboardShortcutMediaFastForward,
     kKeyboardShortcutMediaPause,
     kKeyboardShortcutMediaPlay,
@@ -665,6 +668,7 @@ class ASH_PUBLIC_EXPORT SearchResultTextItem {
     kKeyboardShortcutMicrophone,
     kKeyboardShortcutBrightnessDown,
     kKeyboardShortcutBrightnessUp,
+    kKeyboardShortcutBrightnessUpRefresh,
     kKeyboardShortcutVolumeMute,
     kKeyboardShortcutVolumeDown,
     kKeyboardShortcutVolumeUp,
@@ -676,11 +680,19 @@ class ASH_PUBLIC_EXPORT SearchResultTextItem {
     kKeyboardShortcutSettings,
     kKeyboardShortcutSnapshot,
     kKeyboardShortcutLauncher,
+    kKeyboardShortcutLauncherRefresh,
     kKeyboardShortcutSearch,
     kKeyboardShortcutPower,
     kKeyboardShortcutKeyboardBacklightToggle,
     kKeyboardShortcutKeyboardBrightnessDown,
     kKeyboardShortcutKeyboardBrightnessUp,
+    kKeyboardShortcutKeyboardQuickInsert,
+    kKeyboardShortcutAccessibility,
+    kKeyboardShortcutBrowserHome,
+    kKeyboardShortcutMediaLaunchMail,
+    kKeyboardShortcutContextMenu,
+    kKeyboardShortcutDoNotDisturb,
+    kKeyboardShortcutCameraAccessToggle,
   };
 
   // Only used for SearchResultTextItemType kString

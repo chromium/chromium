@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/android/jni_array.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
@@ -20,10 +21,9 @@
 // The native part of java UmaSessionStats class. This is a singleton.
 class UmaSessionStats {
  public:
-  void UmaResumeSession(JNIEnv* env,
-                        const base::android::JavaParamRef<jobject>& obj);
-  void UmaEndSession(JNIEnv* env,
-                     const base::android::JavaParamRef<jobject>& obj);
+  void UmaResumeSession(JNIEnv* env);
+  void UmaEndSession(JNIEnv* env);
+  void FlushSession(JNIEnv* env);
 
   // Called before an UMA log is completed to record associated metrics.
   void ProvideCurrentSessionData();
@@ -55,6 +55,12 @@ class UmaSessionStats {
   friend class base::NoDestructor<UmaSessionStats>;
   UmaSessionStats() = default;
   ~UmaSessionStats() = default;
+
+  // Registers an external experiment with the synthetic trial registry. Private
+  // as its access control is restricted to the JNI interface.
+  static void RegisterExternalExperiments(
+      const std::vector<int>& experiment_ids,
+      variations::SyntheticTrialAnnotationMode override_mode);
 
   class SessionTimeTracker {
    public:

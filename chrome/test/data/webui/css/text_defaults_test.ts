@@ -20,19 +20,8 @@ function getExpectedFontFamily(expectingSystemFont: boolean): string {
       // <if expr="is_win">
       '"Segoe UI"';
       // </if>
-      // <if expr="chromeos_ash">
+      // <if expr="is_chromeos">
       'Roboto';
-      // </if>
-      // <if expr="chromeos_lacros">
-      // TODO(crbug.com/40261940): Change to 'Roboto' once bug is fixed.
-      'sans';
-      // </if>
-      // <if expr="is_fuchsia">
-      // TODO(dpapad): WebUI tests are compiled on Fuchsia but don't seem to run
-      // on any bot, so the value below does not matter, it just makes the code
-      // syntactically valid. Figure out whether the tests should be run, or
-      // excluded from compilation on Fuchsia.
-      'unknown';
       // </if>
 
   return fontFamily;
@@ -44,8 +33,7 @@ function assertFontFamilyRule(
     link: HTMLLinkElement, expectingSystemFont: boolean) {
   assertTrue(!!link.sheet);
   const styleRules =
-      Array.from(link.sheet.cssRules).filter(r => r instanceof CSSStyleRule) as
-      CSSStyleRule[];
+      Array.from(link.sheet.cssRules).filter(r => r instanceof CSSStyleRule);
   assertTrue(styleRules.length > 0);
 
   const fontFamily = styleRules[0]!.style.getPropertyValue('font-family');

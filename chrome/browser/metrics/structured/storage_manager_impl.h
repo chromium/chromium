@@ -59,6 +59,10 @@ class StorageManagerImpl : public StorageManager {
       const google::protobuf::RepeatedPtrField<StructuredEventProto>& events)
       override;
 
+  // Gets the configuration for the StorageManager using the configuration of
+  // the system.
+  static StorageManagerConfig GetStorageManagerConfig();
+
  private:
   // Flushes |event_buffer_| and then adds |event| to |event_buffer_| after.
   void FlushAndAddEvent(StructuredEventProto&& event);

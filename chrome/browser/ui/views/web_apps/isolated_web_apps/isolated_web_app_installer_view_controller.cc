@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -14,12 +15,14 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/shelf/isolated_web_app_installer_shelf_item_controller.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/callback_delayer.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/pref_observer.h"
-#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
+#include "chrome/browser/web_applications/icons/icon_masker.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -27,44 +30,31 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/public/cpp/shelf_item.h"
+#include "ash/public/cpp/shelf_model.h"
+#include "ash/public/cpp/shelf_types.h"
+#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ui/ash/shelf/isolated_web_app_installer_shelf_item_controller.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "ui/events/event_constants.h"
 #else
 #include "base/command_line.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/public/cpp/shelf_item.h"
-#include "ash/public/cpp/shelf_model.h"
-#include "ash/public/cpp/shelf_types.h"
-#include "ash/webui/settings/public/constants/routes.mojom.h"
-#include "chrome/browser/ui/ash/shelf/isolated_web_app_installer_shelf_item_controller.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "ash/webui/settings/public/constants/routes.mojom.h"
-#include "chrome/browser/ui/lacros/window_utility.h"
-#include "chrome/common/webui_url_constants.h"
-#include "chromeos/crosapi/mojom/lacros_shelf_item_tracker.mojom.h"
-#include "chromeos/crosapi/mojom/url_handler.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#include "url/gurl.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace web_app {
 
@@ -113,14 +103,13 @@ struct IsolatedWebAppInstallerViewController::InstallabilityCheckedVisitor {
   }
 
   void operator()(const InstallabilityChecker::BundleInstallable& installable) {
-    if (!installable.metadata.icons().empty()) {
-      // Get the last icon from |any|, size doesn't matter since Shelf will
-      // rescale the icon anyway.
-      controller_->SetIcon(gfx::ImageSkia::CreateFrom1xBitmap(
-          installable.metadata.icons()
-              .GetBitmapsForPurpose(IconPurpose::ANY)
-              .rbegin()
-              ->second));
+    if (!installable.metadata.image_info().bitmaps.empty()) {
+      // Get the last icon from available trusted icon bitmaps, size doesn't
+      // matter since Shelf will rescale the icon anyway.
+      controller_->SetIcon(
+          gfx::ImageSkia::CreateFrom1xBitmap(
+              installable.metadata.image_info().bitmaps.rbegin()->second),
+          installable.metadata.image_info().is_maskable);
       controller_->AddOrUpdateWindowToShelf();
     }
     model_->SetSignedWebBundleMetadata(installable.metadata);
@@ -130,7 +119,8 @@ struct IsolatedWebAppInstallerViewController::InstallabilityCheckedVisitor {
   void operator()(const InstallabilityChecker::BundleUpdatable& updatable) {
     model_->SetDialog(
         IsolatedWebAppInstallerModel::BundleAlreadyInstalledDialog{
-            updatable.metadata.app_name(), updatable.installed_version});
+            updatable.metadata.app_name(),
+            updatable.installed_version.version()});
   }
 
   void operator()(const InstallabilityChecker::BundleOutdated& outdated) {
@@ -138,7 +128,8 @@ struct IsolatedWebAppInstallerViewController::InstallabilityCheckedVisitor {
     // more specific error messages for newer vs same version already installed.
     model_->SetDialog(
         IsolatedWebAppInstallerModel::BundleAlreadyInstalledDialog{
-            outdated.metadata.app_name(), outdated.installed_version});
+            outdated.metadata.app_name(),
+            outdated.installed_version.version()});
   }
 
   void operator()(const InstallabilityChecker::ProfileShutdown&) {
@@ -198,26 +189,8 @@ void IsolatedWebAppInstallerViewController::AddOrUpdateWindowToShelf() {
   if (!window_) {
     return;
   }
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosService* lacros_service = chromeos::LacrosService::Get();
-  if (lacros_service->IsAvailable<crosapi::mojom::LacrosShelfItemTracker>()) {
-    std::string window_id =
-        lacros_window_utility::GetRootWindowUniqueId(window_);
 
-    crosapi::mojom::WindowDataPtr window_data =
-        crosapi::mojom::WindowData::New();
-    window_data->item_id = instance_id_;
-    window_data->window_id = window_id;
-    window_data->instance_type =
-        crosapi::mojom::InstanceType::kIsolatedWebAppInstaller;
-    window_data->icon = icon_;
-
-    lacros_service->GetRemote<crosapi::mojom::LacrosShelfItemTracker>()
-        ->AddOrUpdateWindow(std::move(window_data));
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::ShelfModel* shelf_model = ash::ShelfModel::Get();
   ash::ShelfID shelf_id = ash::ShelfID(instance_id_);
 
@@ -256,14 +229,22 @@ void IsolatedWebAppInstallerViewController::AddOrUpdateWindowToShelf() {
     ash::ShelfModel::Get()->Set(index, item);
   }
 
-  static_cast<LacrosShelfItemController*>(
+  static_cast<IsolatedWebAppInstallerShelfItemController*>(
       shelf_model->GetShelfItemDelegate(shelf_id))
       ->AddWindow(window_);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-void IsolatedWebAppInstallerViewController::SetIcon(gfx::ImageSkia icon) {
+void IsolatedWebAppInstallerViewController::SetIcon(gfx::ImageSkia icon,
+                                                    bool trigger_masking) {
   icon_ = icon;
+  if (trigger_masking) {
+    web_app::MaskIconOnOs(
+        *icon_.bitmap(),
+        base::BindOnce(
+            &IsolatedWebAppInstallerViewController::OnIconMaskedUpdateShelf,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void IsolatedWebAppInstallerViewController::SetViewForTesting(
@@ -296,8 +277,8 @@ void IsolatedWebAppInstallerViewController::Show() {
 
   widget_ =
       views::DialogDelegate::CreateDialogWidget(std::move(dialog_delegate),
-                                                /*context=*/nullptr,
-                                                /*parent=*/nullptr);
+                                                /*context=*/gfx::NativeWindow(),
+                                                /*parent=*/gfx::NativeView());
 
   CHECK(!window_);
   window_ = widget_->GetNativeWindow();
@@ -345,7 +326,6 @@ bool IsolatedWebAppInstallerViewController::OnAccept() {
       web_app_provider_->scheduler().LaunchApp(
           app_id, *base::CommandLine::ForCurrentProcess(),
           /*current_directory=*/base::FilePath(),
-          /*url_handler_launch_url=*/std::nullopt,
           /*protocol_handler_launch_url=*/std::nullopt,
           /*file_launch_url=*/std::nullopt, /*launch_files=*/{},
           base::DoNothing());
@@ -354,20 +334,19 @@ bool IsolatedWebAppInstallerViewController::OnAccept() {
     }
 
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return true;
 }
 
 void IsolatedWebAppInstallerViewController::OnComplete() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::ShelfModel* shelf_model = ash::ShelfModel::Get();
   ash::ShelfID shelf_id = ash::ShelfID(instance_id_);
   int index = shelf_model->ItemIndexByID(shelf_id);
   if (-1 != index) {
     shelf_model->RemoveItemAt(index);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   view_ = nullptr;
   dialog_delegate_ = nullptr;
@@ -422,7 +401,7 @@ void IsolatedWebAppInstallerViewController::OnGetMetadataProgressUpdated(
 
 void IsolatedWebAppInstallerViewController::OnInstallabilityChecked(
     InstallabilityChecker::Result result) {
-  absl::visit(InstallabilityCheckedVisitor(*model_, *this), result);
+  std::visit(InstallabilityCheckedVisitor(*model_, *this), result);
 }
 
 void IsolatedWebAppInstallerViewController::OnInstallProgressUpdated(
@@ -430,6 +409,12 @@ void IsolatedWebAppInstallerViewController::OnInstallProgressUpdated(
   if (view_) {
     view_->UpdateInstallProgress(progress);
   }
+}
+
+void IsolatedWebAppInstallerViewController::OnIconMaskedUpdateShelf(
+    SkBitmap mask_bitmap) {
+  icon_ = gfx::ImageSkia::CreateFrom1xBitmap(std::move(mask_bitmap));
+  AddOrUpdateWindowToShelf();
 }
 
 void IsolatedWebAppInstallerViewController::OnInstallComplete(
@@ -447,22 +432,10 @@ void IsolatedWebAppInstallerViewController::OnShowMetadataLearnMoreClicked() {
 }
 
 void IsolatedWebAppInstallerViewController::OnSettingsLinkClicked() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
       profile_, chromeos::settings::mojom::kManageIsolatedWebAppsSubpagePath);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosService* service = chromeos::LacrosService::Get();
-  DCHECK(service->IsAvailable<crosapi::mojom::UrlHandler>());
-
-  GURL manage_isolated_web_apps_subpage_url =
-      GURL(chrome::kChromeUIOSSettingsURL)
-          .Resolve(
-              chromeos::settings::mojom::kManageIsolatedWebAppsSubpagePath);
-  service->GetRemote<crosapi::mojom::UrlHandler>()->OpenUrl(
-      manage_isolated_web_apps_subpage_url);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void IsolatedWebAppInstallerViewController::OnChildDialogCanceled() {
@@ -505,7 +478,7 @@ void IsolatedWebAppInstallerViewController::OnChildDialogAccepted() {
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -520,8 +493,7 @@ void IsolatedWebAppInstallerViewController::OnStepChanged() {
 
   switch (model_->step()) {
     case IsolatedWebAppInstallerModel::Step::kNone:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case IsolatedWebAppInstallerModel::Step::kDisabled:
       IsolatedWebAppInstallerView::SetDialogButtons(
           dialog_delegate_, IDS_APP_CLOSE,
@@ -567,17 +539,17 @@ void IsolatedWebAppInstallerViewController::OnChildDialogChanged() {
 std::unique_ptr<views::DialogDelegate>
 IsolatedWebAppInstallerViewController::CreateDialogDelegate(
     std::unique_ptr<views::View> contents_view) {
-  gfx::Size contents_max_size = contents_view->GetMaximumSize();
   auto delegate = std::make_unique<OnCompleteDialogDelegate>();
   delegate->set_internal_name(
       IsolatedWebAppInstallerView::kInstallerWidgetName);
-  delegate->SetOwnedByWidget(true);
+  delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
   delegate->SetContentsView(std::move(contents_view));
-  delegate->SetModalType(ui::MODAL_TYPE_WINDOW);
+  delegate->SetModalType(ui::mojom::ModalType::kWindow);
   delegate->SetShowCloseButton(false);
   delegate->SetHasWindowSizeControls(false);
+  delegate->set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH));
   delegate->SetCanResize(false);
-  delegate->set_fixed_width(contents_max_size.width());
   // TODO(crbug.com/40280769): Set the title of the dialog for Alt+Tab
   delegate->SetShowTitle(false);
 

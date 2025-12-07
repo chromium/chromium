@@ -20,7 +20,9 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace ash {
 
@@ -54,6 +56,8 @@ SwitchAccessBackButtonView::SwitchAccessBackButtonView(bool for_menu) {
                   base::Unretained(this))))
       .SetSize(gfx::Size(side_length, side_length))
       .BuildChildren();
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
 }
 
 int SwitchAccessBackButtonView::GetFocusRingWidthPerSide() {
@@ -76,13 +80,14 @@ void SwitchAccessBackButtonView::SetForMenu(bool for_menu) {
   }
 }
 
-void SwitchAccessBackButtonView::GetAccessibleNodeData(
-    ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kButton;
-}
-
-int SwitchAccessBackButtonView::GetHeightForWidth(int w) const {
-  return w;
+gfx::Size SwitchAccessBackButtonView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  gfx::Size preferred_size =
+      views::BoxLayoutView::CalculatePreferredSize(available_size);
+  if (available_size.width().is_bounded()) {
+    preferred_size.set_height(available_size.width().value());
+  }
+  return preferred_size;
 }
 
 void SwitchAccessBackButtonView::OnPaint(gfx::Canvas* canvas) {
@@ -112,8 +117,8 @@ void SwitchAccessBackButtonView::OnPaint(gfx::Canvas* canvas) {
 }
 
 void SwitchAccessBackButtonView::OnButtonPressed() {
-  NotifyAccessibilityEvent(ax::mojom::Event::kClicked,
-                           /*send_native_event=*/false);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kClicked,
+                                     /*send_native_event=*/false);
 }
 
 BEGIN_METADATA(SwitchAccessBackButtonView)

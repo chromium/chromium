@@ -7,7 +7,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/favicon/large_icon_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "components/autofill/core/browser/payments_suggestion_generator.h"
+#include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/image_fetcher/core/image_fetcher.h"
@@ -96,8 +96,8 @@ void PasswordFaviconLoaderImpl::Load(
       /*min_source_size=*/
       favicon::LargeIconService::StandardIconSize::k16x16,
       /*size_to_resize_to=*/
-      favicon::LargeIconService::StandardIconSize::k16x16,
-      favicon::LargeIconService::NoBigEnoughIconBehavior::kReturnEmpty,
+      favicon::LargeIconService::StandardIconSize::k32x32,
+      favicon::LargeIconService::NoBigEnoughIconBehavior::kReturnBitmap,
       /*should_trim_page_url_path=*/false, kFaviconTrafficAnnotation,
       base::BindOnce(&PasswordFaviconLoaderImpl::OnFaviconResponse,
                      weak_ptr_factory_.GetWeakPtr(), favicon_details.domain_url,

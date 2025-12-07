@@ -13,6 +13,7 @@
 #include "base/callback_list.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
@@ -25,8 +26,6 @@ namespace ash {
 
 class InformedRestoreContextMenuModel;
 
-// TODO(http://b/337339184): Change the layout when the display orientation
-// changes.
 class ASH_EXPORT InformedRestoreContentsView : public views::BoxLayoutView {
   METADATA_HEADER(InformedRestoreContentsView, views::BoxLayoutView)
 
@@ -46,6 +45,12 @@ class ASH_EXPORT InformedRestoreContentsView : public views::BoxLayoutView {
   // Update the contents of list view or the icon row of screenshot preview with
   // the updated contents data.
   void UpdateContents();
+
+  // Update the preferred width for the container which contains the restore,
+  // cancel and settings button. Its preferred width is smaller if the screen
+  // size is too small.
+  void UpdatePrimaryContainerPreferredWidth(aura::Window* root_window,
+                                            std::optional<bool> is_landscape);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(InformedRestoreContextMenuModelTest,
@@ -79,6 +84,11 @@ class ASH_EXPORT InformedRestoreContentsView : public views::BoxLayoutView {
   // The menu runner that is responsible for the context menu.
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
+  // Container for the restore, cancel and settings button.
+  raw_ptr<views::BoxLayoutView> primary_container_view_;
+
+  raw_ptr<views::ImageButton> settings_button_ = nullptr;
+
   // The container of the items list view or screenshot.
   raw_ptr<views::BoxLayoutView> preview_container_view_;
 
@@ -95,8 +105,6 @@ class ASH_EXPORT InformedRestoreContentsView : public views::BoxLayoutView {
 
   bool showing_list_view_ = true;
   bool close_metric_recorded_ = false;
-
-  raw_ptr<views::ImageButton> settings_button_ = nullptr;
 
   base::CallbackListSubscription contents_data_updated_subscription_;
 

@@ -5,7 +5,9 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_STUB_PASSWORD_MANAGER_DRIVER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_STUB_PASSWORD_MANAGER_DRIVER_H_
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 
 namespace password_manager {
@@ -25,17 +27,33 @@ class StubPasswordManagerDriver : public PasswordManagerDriver {
 
   // PasswordManagerDriver:
   int GetId() const override;
-  void SetPasswordFillData(
+  void PropagateFillDataOnParsingCompletion(
       const autofill::PasswordFormFillData& form_data) override;
   void GeneratedPasswordAccepted(const std::u16string& password) override;
+  void GeneratedPasswordRejected() override;
   void FocusNextFieldAfterPasswords() override;
+  void FillField(autofill::FieldRendererId triggering_field_id,
+                 const std::u16string& value,
+                 autofill::FieldPropertiesFlags field_properties,
+                 base::OnceCallback<void(bool)> success_callback) override;
   void FillSuggestion(const std::u16string& username,
-                      const std::u16string& password) override;
+                      const std::u16string& password,
+                      base::OnceCallback<void(bool)> success_callback) override;
+  void FillSuggestionById(
+      autofill::FieldRendererId username_element_id,
+      autofill::FieldRendererId password_element_id,
+      const std::u16string& username,
+      const std::u16string& password,
+      autofill::AutofillSuggestionTriggerSource suggestion_source) override;
 #if BUILDFLAG(IS_ANDROID)
   void TriggerFormSubmission() override;
 #endif
   void PreviewSuggestion(const std::u16string& username,
                          const std::u16string& password) override;
+  void PreviewSuggestionById(autofill::FieldRendererId username_element_id,
+                             autofill::FieldRendererId password_element_id,
+                             const std::u16string& username,
+                             const std::u16string& password) override;
   void PreviewGenerationSuggestion(const std::u16string& password) override;
   void ClearPreviewedForm() override;
   void SetSuggestionAvailability(autofill::FieldRendererId element_id,
@@ -44,13 +62,23 @@ class StubPasswordManagerDriver : public PasswordManagerDriver {
   PasswordGenerationFrameHelper* GetPasswordGenerationHelper() override;
   PasswordManagerInterface* GetPasswordManager() override;
   PasswordAutofillManager* GetPasswordAutofillManager() override;
+  bool IsDirectChildOfPrimaryMainFrame() const override;
   bool IsInPrimaryMainFrame() const override;
+  bool IsNestedWithinFencedFrame() const override;
   bool CanShowAutofillUi() const override;
   int GetFrameId() const override;
   const GURL& GetLastCommittedURL() const override;
+  const url::Origin& GetLastCommittedOrigin() const override;
+
+  gfx::RectF TransformToRootCoordinates(
+      const gfx::RectF& bounds_in_frame_coordinates) override;
+  void CheckViewAreaVisible(autofill::FieldRendererId field_id,
+                            base::OnceCallback<void(bool)>) override;
+  autofill::AutofillDriver* GetAutofillDriver() const override;
   base::WeakPtr<password_manager::PasswordManagerDriver> AsWeakPtr() override;
 
  private:
+  url::Origin opaque_origin_;
   base::WeakPtrFactory<StubPasswordManagerDriver> weak_ptr_factory_{this};
 };
 

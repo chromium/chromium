@@ -4,16 +4,17 @@
 
 #include "third_party/blink/renderer/modules/webgpu/gpu_canvas_context.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_htmlcanvaselement_offscreencanvas.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_tone_mapping.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_tone_mapping_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_canvas_alpha_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_canvas_configuration.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_canvas_tone_mapping.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_canvas_tone_mapping_mode.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_canvasrenderingcontext2d_gpucanvascontext_imagebitmaprenderingcontext_webgl2renderingcontext_webglrenderingcontext.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_gpucanvascontext_imagebitmaprenderingcontext_offscreencanvasrenderingcontext2d_webgl2renderingcontext_webglrenderingcontext.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_offscreen_rendering_context.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_rendering_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/canvas/predefined_color_space.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
@@ -27,20 +28,38 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_texture_alpha_clearer.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkImage.h"
 
 namespace blink {
 
+namespace {
+
+bool IsContextFormatSupported(V8GPUTextureFormat::Enum format) {
+  switch (format) {
+    case V8GPUTextureFormat::Enum::kBgra8Unorm:
+    case V8GPUTextureFormat::Enum::kRgba8Unorm:
+    case V8GPUTextureFormat::Enum::kRgba16Float:
+      return true;
+    default:
+      return false;
+  }
+}
+
+}  // namespace
+
 GPUCanvasContext::Factory::~Factory() = default;
 
 CanvasRenderingContext* GPUCanvasContext::Factory::Create(
+    ExecutionContext*,
     CanvasRenderingContextHost* host,
     const CanvasContextCreationAttributesCore& attrs) {
   CanvasRenderingContext* rendering_context =
@@ -75,6 +94,7 @@ void GPUCanvasContext::Trace(Visitor* visitor) const {
   visitor->Trace(device_);
   visitor->Trace(texture_);
   visitor->Trace(swap_texture_);
+  ScriptWrappable::Trace(visitor);
   CanvasRenderingContext::Trace(visitor);
 }
 
@@ -87,15 +107,28 @@ V8OffscreenRenderingContext* GPUCanvasContext::AsV8OffscreenRenderingContext() {
   return MakeGarbageCollected<V8OffscreenRenderingContext>(this);
 }
 
-SkColorInfo GPUCanvasContext::CanvasRenderingContextSkColorInfo() const {
-  if (!swap_buffers_)
-    return CanvasRenderingContext::CanvasRenderingContextSkColorInfo();
-  return SkColorInfo(viz::ToClosestSkColorType(
-                         /*gpu_compositing=*/true, swap_buffers_->Format()),
-                     alpha_mode_ == V8GPUCanvasAlphaMode::Enum::kOpaque
-                         ? kOpaque_SkAlphaType
-                         : kPremul_SkAlphaType,
-                     PredefinedColorSpaceToSkColorSpace(color_space_));
+SkAlphaType GPUCanvasContext::GetAlphaType() const {
+  if (!swap_buffers_) {
+    return kPremul_SkAlphaType;
+  }
+  return alpha_mode_ == V8GPUCanvasAlphaMode::Enum::kOpaque
+             ? kOpaque_SkAlphaType
+             : kPremul_SkAlphaType;
+}
+
+viz::SharedImageFormat GPUCanvasContext::GetSharedImageFormat() const {
+  if (!swap_buffers_) {
+    return GetN32FormatForCanvas();
+    ;
+  }
+  return swap_buffers_->Format();
+}
+
+gfx::ColorSpace GPUCanvasContext::GetColorSpace() const {
+  if (!swap_buffers_) {
+    return gfx::ColorSpace::CreateSRGB();
+  }
+  return PredefinedColorSpaceToGfxColorSpace(color_space_);
 }
 
 void GPUCanvasContext::Stop() {
@@ -133,67 +166,129 @@ void GPUCanvasContext::Reshape(int width, int height) {
   Host()->SetNeedsCompositingUpdate();
 }
 
-scoped_refptr<StaticBitmapImage> GPUCanvasContext::GetImage(FlushReason) {
-  if (!swap_buffers_)
+void GPUCanvasContext::Dispose() {
+  resource_provider_.reset();
+  CanvasRenderingContext::Dispose();
+}
+
+scoped_refptr<StaticBitmapImage> GPUCanvasContext::GetImage() {
+  if (!swap_buffers_) {
     return nullptr;
+  }
+
+  if (device_->IsDestroyed()) {
+    return MakeFallbackStaticBitmapImage(alpha_mode_);
+  }
 
   // If there is a current texture, create a snapshot from it.
-  if (texture_ && !texture_->Destroyed()) {
-    return SnapshotInternal(texture_->GetHandle(), swap_buffers_->Size());
+  if (texture_ && !texture_->IsDestroyed()) {
+    return SnapshotInternal(texture_->GetHandle());
   } else if (swap_texture_) {
-    return SnapshotInternal(swap_texture_->GetHandle(), swap_buffers_->Size());
+    return SnapshotInternal(swap_texture_->GetHandle());
   }
 
-  // If there is no current texture, we need to get the information of the last
-  // texture reserved, that contains the last mailbox, create a new texture for
-  // it, and use it to create the resource provider.
-  auto mailbox_texture = swap_buffers_->GetLastWebGPUMailboxTexture();
-  if (!mailbox_texture) {
+  // If there is no current texture, return a snapshot of the front buffer if
+  // possible.
+  auto front_buffer_texture = GetFrontBufferMailboxTexture();
+  if (!front_buffer_texture) {
     return nullptr;
   }
 
-  return SnapshotInternal(mailbox_texture->GetTexture(),
-                          gfx::Size(mailbox_texture->GetTexture().GetWidth(),
-                                    mailbox_texture->GetTexture().GetHeight()));
+  return SnapshotInternal(front_buffer_texture->GetTexture());
 }
 
-bool GPUCanvasContext::PaintRenderingResultsToCanvas(
+CanvasResourceProviderSharedImage*
+GPUCanvasContext::GetOrCreateCanvasResourceProvider() {
+  auto* provider = resource_provider_.get();
+  if (!provider && !did_fail_to_create_resource_provider_) {
+    if (Host()->IsValidImageSize()) {
+      if (SharedGpuContext::IsGpuCompositingEnabled()) {
+        // This code path could be used for compositing so add the necessary
+        // shared image usage flags.
+        resource_provider_ = CanvasResourceProvider::CreateWebGPUImageProvider(
+            Host()->Size(), GetSharedImageFormat(), GetAlphaType(),
+            GetColorSpace(), swap_buffers_->GetSharedImageUsagesForDisplay(),
+            Host());
+      }
+      Host()->UpdateMemoryUsage();
+      provider = resource_provider_.get();
+    }
+    if (!provider) {
+      did_fail_to_create_resource_provider_ = true;
+    } else if (provider->IsValid()) {
+      base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
+                                provider->IsAccelerated());
+      base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
+                                    provider->GetType());
+    }
+  }
+  return provider;
+}
+
+CanvasResourceProviderSharedImage*
+GPUCanvasContext::PaintRenderingResultsToCanvas(
     SourceDrawingBuffer source_buffer) {
   if (!swap_buffers_) {
-    return false;
+    return resource_provider_.get();
   }
 
-  if (Host()->ResourceProvider() &&
-      Host()->ResourceProvider()->Size() != swap_buffers_->Size()) {
-    Host()->DiscardResourceProvider();
+  if (resource_provider_.get() &&
+      resource_provider_.get()->Size() != swap_buffers_->Size()) {
+    resource_provider_.reset();
+    Host()->DiscardResources();
   }
 
-  CanvasResourceProvider* resource_provider =
-      Host()->GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  auto* resource_provider = GetOrCreateCanvasResourceProvider();
   if (!resource_provider) {
-    return false;
+    return nullptr;
   }
 
-  return CopyRenderingResultsFromDrawingBuffer(resource_provider,
-                                               source_buffer);
+  if (device_->IsDestroyed()) {
+    SkColor4f color = alpha_mode_ == V8GPUCanvasAlphaMode::Enum::kOpaque
+                          ? SkColors::kBlack
+                          : SkColors::kTransparent;
+    resource_provider->Canvas().clear(color);
+    resource_provider->FlushCanvas(FlushReason::kClear);
+    return resource_provider;
+  }
+
+  wgpu::Texture texture;
+
+  scoped_refptr<WebGPUMailboxTexture> front_buffer_texture;
+  if (source_buffer == kFrontBuffer) {
+#if BUILDFLAG(IS_LINUX)
+    // By returning false here the canvas will show up as black in the scenarios
+    // that copy the front buffer, such as printing.
+    // TODO(crbug.com/40902474): Support concurrent SharedImage reads via Dawn
+    // on Linux backings and enable the below codepath.
+    return nullptr;
+#else
+    // Create a WebGPU texture backed by the front buffer's SharedImage.
+    front_buffer_texture = GetFrontBufferMailboxTexture();
+    if (!front_buffer_texture) {
+      return resource_provider;
+    }
+
+    texture = front_buffer_texture->GetTexture();
+#endif
+  } else {
+    if (!texture_) {
+      return resource_provider;
+    }
+    texture = texture_->GetHandle();
+  }
+
+  CopyTextureToResourceProvider(texture, resource_provider);
+  return resource_provider;
 }
 
-bool GPUCanvasContext::CopyRenderingResultsFromDrawingBuffer(
-    CanvasResourceProvider* resource_provider,
+scoped_refptr<StaticBitmapImage>
+GPUCanvasContext::PaintRenderingResultsToSnapshot(
     SourceDrawingBuffer source_buffer) {
-  // TODO(crbug.com/1367056): Handle source_buffer == kFrontBuffer.
-  // By returning false here the canvas will show up as black in the scenarios
-  // that copy the front buffer, such as printing.
-  if (source_buffer != kBackBuffer) {
-    return false;
-  }
+  CanvasResourceProviderSharedImage* provider =
+      PaintRenderingResultsToCanvas(source_buffer);
 
-  if (!texture_) {
-    return false;
-  }
-
-  return CopyTextureToResourceProvider(
-      texture_->GetHandle(), swap_buffers_->Size(), resource_provider);
+  return provider ? provider->Snapshot() : nullptr;
 }
 
 bool GPUCanvasContext::CopyRenderingResultsToVideoFrame(
@@ -209,45 +304,32 @@ bool GPUCanvasContext::CopyRenderingResultsToVideoFrame(
                                          dst_color_space, std::move(callback));
 }
 
-void GPUCanvasContext::SetFilterQuality(
-    cc::PaintFlags::FilterQuality filter_quality) {
-  if (filter_quality != filter_quality_) {
-    filter_quality_ = filter_quality;
-    if (swap_buffers_) {
-      swap_buffers_->SetFilterQuality(filter_quality);
-    }
-  }
+void GPUCanvasContext::SizeChanged() {
+  did_fail_to_create_resource_provider_ = false;
+  resource_provider_.reset();
 }
 
 bool GPUCanvasContext::PushFrame() {
   DCHECK(Host());
   DCHECK(Host()->IsOffscreenCanvas());
 
-  if (!swap_buffers_)
-    return false;
-
-  // NOTE: It is necessary to call this before calling
-  // PrepareTransferableResource(), as the latter moves the current swapbuffer
-  // into `release_callback`.
-  // TODO(crbug.com/353744937): Eliminate this code needing to prepare the
-  // TransferableResource altogether in favor of it happening further down the
-  // line via the ClientSI.
-  auto client_si = swap_buffers_->GetCurrentSharedImage();
-  viz::TransferableResource transferable_resource;
-  viz::ReleaseCallback release_callback;
-  if (!swap_buffers_->PrepareTransferableResource(
-          nullptr, &transferable_resource, &release_callback)) {
+  if (!swap_buffers_) {
     return false;
   }
 
-  // If it was possible to prepare the transferable resource, the
-  // ClientSharedImage must also be valid.
-  CHECK(client_si);
+  gpu::SyncToken sync_token;
+  viz::ReleaseCallback release_callback;
+  auto client_si =
+      swap_buffers_->ExportCurrentSharedImage(sync_token, &release_callback);
+  if (!client_si) {
+    return false;
+  }
+
   auto canvas_resource = ExternalCanvasResource::Create(
-      std::move(client_si), transferable_resource, std::move(release_callback),
-      GetContextProviderWeakPtr(), /*resource_provider=*/nullptr,
-      filter_quality_,
-      /*is_origin_top_left=*/kBottomLeft_GrSurfaceOrigin);
+      std::move(client_si), sync_token,
+      viz::TransferableResource::ResourceSource::kWebGPUSwapBuffer,
+      swap_buffers_->GetHDRMetadata(), std::move(release_callback),
+      GetContextProviderWeakPtr());
   if (!canvas_resource)
     return false;
 
@@ -260,87 +342,40 @@ bool GPUCanvasContext::PushFrame() {
 ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  auto MakeFallbackImageBitmap =
-      [this](V8GPUCanvasAlphaMode::Enum alpha_mode) -> ImageBitmap* {
-    // It is not possible to create an empty image bitmap, return null in that
-    // case which will fail ImageBitmap creation with an exception instead.
-    gfx::Size size = Host()->Size();
-    if (size.IsEmpty()) {
-      return nullptr;
-    }
-
-    // We intentionally leave the image in legacy color space.
-    SkBitmap black_bitmap;
-    if (!black_bitmap.tryAllocN32Pixels(size.width(), size.height())) {
-      // It is not possible to create such a big image bitmap, return null in
-      // that case which will fail ImageBitmap creation with an exception
-      // instead.
-      return nullptr;
-    }
-
-    if (alpha_mode == V8GPUCanvasAlphaMode::Enum::kOpaque) {
-      black_bitmap.eraseARGB(255, 0, 0, 0);
-    } else {
-      black_bitmap.eraseARGB(0, 0, 0, 0);
-    }
-
-    return MakeGarbageCollected<ImageBitmap>(
-        UnacceleratedStaticBitmapImage::Create(
-            SkImages::RasterFromBitmap(black_bitmap)));
-  };
-
   // If the canvas configuration is invalid, WebGPU requires that we give a
   // fallback black ImageBitmap if possible.
   if (!swap_buffers_) {
-    return MakeFallbackImageBitmap(V8GPUCanvasAlphaMode::Enum::kOpaque);
+    auto staticBitmapImage =
+        MakeFallbackStaticBitmapImage(V8GPUCanvasAlphaMode::Enum::kOpaque);
+    return staticBitmapImage
+               ? MakeGarbageCollected<ImageBitmap>(staticBitmapImage)
+               : nullptr;
   }
 
-  // NOTE: It is necessary to call this before calling
-  // PrepareTransferableResource(), as the latter moves the current swapbuffer
-  // into `release_callback`.
-  // TODO(crbug.com/353744937): Eliminate this code needing to prepare the
-  // TransferableResource altogether in favor of it happening further down the
-  // line via the ClientSI.
-  auto client_si = swap_buffers_->GetCurrentSharedImage();
-  viz::TransferableResource transferable_resource;
+  gpu::SyncToken sk_image_sync_token;
   viz::ReleaseCallback release_callback;
-  if (!swap_buffers_->PrepareTransferableResource(
-          nullptr, &transferable_resource, &release_callback)) {
+  auto client_si = swap_buffers_->ExportCurrentSharedImage(sk_image_sync_token,
+                                                           &release_callback);
+  if (!client_si) {
     // If we can't get a mailbox, return an transparent black ImageBitmap.
     // The only situation in which this could happen is when two or more calls
     // to transferToImageBitmap are made back-to-back, or when the context gets
     // lost.
-    return MakeFallbackImageBitmap(alpha_mode_);
+    auto staticBitmapImage = MakeFallbackStaticBitmapImage(alpha_mode_);
+    return staticBitmapImage
+               ? MakeGarbageCollected<ImageBitmap>(staticBitmapImage)
+               : nullptr;
   }
   DCHECK(release_callback);
-  CHECK(client_si);
-
-  // Use the sync token generated after producing the mailbox. Waiting for this
-  // before trying to use the mailbox with some other context will ensure it is
-  // valid.
-  const auto& sk_image_sync_token = transferable_resource.sync_token();
-
-  auto sk_color_type = viz::ToClosestSkColorType(
-      /*gpu_compositing=*/true, transferable_resource.format);
-
-  const SkImageInfo sk_image_info = SkImageInfo::Make(
-      texture_descriptor_.size.width, texture_descriptor_.size.height,
-      sk_color_type, kPremul_SkAlphaType);
 
   return MakeGarbageCollected<ImageBitmap>(
       AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
-          std::move(client_si), sk_image_sync_token,
-          /* shared_image_texture_id = */ 0, sk_image_info,
-          transferable_resource.texture_target(),
-          /* is_origin_top_left = */ kBottomLeft_GrSurfaceOrigin,
+          std::move(client_si), sk_image_sync_token, kPremul_SkAlphaType,
           GetContextProviderWeakPtr(), base::PlatformThread::CurrentRef(),
           ThreadScheduler::Current()->CleanupTaskRunner(),
-          std::move(release_callback),
-          /*supports_display_compositing=*/true,
-          transferable_resource.is_overlay_candidate));
+          std::move(release_callback)));
 }
 
-// gpu_presentation_context.idl
 V8UnionHTMLCanvasElementOrOffscreenCanvas*
 GPUCanvasContext::getHTMLOrOffscreenCanvas() const {
   if (Host()->IsOffscreenCanvas()) {
@@ -375,6 +410,13 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
     }
   }
 
+  if (!IsContextFormatSupported(descriptor->format().AsEnum())) {
+    exception_state.ThrowTypeError(
+        String::Format("Unsupported canvas context format '%s'.",
+                       V8GPUTextureFormat(descriptor->format()).AsCStr()));
+    return;
+  }
+
   // As soon as the validation for extensions for usage and formats passes, the
   // canvas is "configured" and calls to getNextTexture() will return GPUTexture
   // objects (valid or invalid) and not throw.
@@ -388,6 +430,7 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
   texture_descriptor_ = {
       // Set the values from the configuration descriptor
       .usage = AsDawnFlags<wgpu::TextureUsage>(descriptor->usage()),
+      .dimension = wgpu::TextureDimension::e2D,
       .size = {static_cast<uint32_t>(host_size.width()),
                static_cast<uint32_t>(host_size.height())},
       .format = AsDawnEnum(descriptor->format()),
@@ -413,32 +456,30 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
   device_->GetHandle().ValidateTextureDescriptor(&texture_descriptor_);
 
   copy_to_swap_texture_required_ = false;
-  switch (texture_descriptor_.format) {
-    case wgpu::TextureFormat::BGRA8Unorm:
 #if BUILDFLAG(IS_ANDROID)
-      // BGRA8Unorm is not natively supported by Android's compositor.
-      copy_to_swap_texture_required_ = true;
-#endif
-      break;
-
-    case wgpu::TextureFormat::RGBA8Unorm:
-#if BUILDFLAG(IS_MAC)
-      // RGBA8Unorm is not natively supported by MacOS's compositor.
-      copy_to_swap_texture_required_ = true;
-#endif
-      break;
-
-    case wgpu::TextureFormat::RGBA16Float:
-      break;
-
-    default:
-      device_->InjectError(
-          wgpu::ErrorType::Validation,
-          ("Unsupported canvas context format \"" +
-           std::string(FromDawnEnum(texture_descriptor_.format)) + "\"")
-              .c_str());
-      return;
+  if (texture_descriptor_.format == wgpu::TextureFormat::BGRA8Unorm) {
+    // BGRA8Unorm is not natively supported by Android's compositor.
+    copy_to_swap_texture_required_ = true;
   }
+  if ((texture_descriptor_.usage & wgpu::TextureUsage::StorageBinding) != 0) {
+    // Storage images are not supported on some AHB/gralloc versions.
+    copy_to_swap_texture_required_ = true;
+  }
+#endif
+#if BUILDFLAG(IS_MAC)
+  if (texture_descriptor_.format == wgpu::TextureFormat::RGBA8Unorm) {
+    // RGBA8Unorm is not natively supported by MacOS's compositor.
+    copy_to_swap_texture_required_ = true;
+  }
+#endif
+
+#if BUILDFLAG(IS_LINUX)
+  if (texture_descriptor_.format == wgpu::TextureFormat::BGRA8Unorm) {
+    // WebGPU on vulkan with GL interop cannot support BGRA due to bugs in
+    // mesa. See anglebug.com/40644739
+    copy_to_swap_texture_required_ = true;
+  }
+#endif
 
   // If the context is configured with STORAGE_BINDING texture usage and
   // "bgra8unorm" is the preferred format but the adapter doesn't support the
@@ -448,9 +489,9 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
   // about not using the preferred format.
   suppress_preferred_format_warning_ = false;
   if (copy_to_swap_texture_required_ &&
-      GPU::preferred_canvas_format() == wgpu::TextureFormat::BGRA8Unorm &&
+      GPU::GetPreferredCanvasFormat() == wgpu::TextureFormat::BGRA8Unorm &&
       texture_descriptor_.usage & wgpu::TextureUsage::StorageBinding &&
-      !device_->adapter()->features()->has(
+      !device_->adapter()->features()->Has(
           V8GPUFeatureName::Enum::kBgra8UnormStorage)) {
     suppress_preferred_format_warning_ = true;
   }
@@ -473,15 +514,7 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
   // `swap_texture_descriptor_`: Each can end up being used in operations on the
   // texture depending on whether the operation is on `texture_` or
   // `swap_texture_` (which will of course be the same texture in this case).
-  // NOTE: We gate these additions under the
-  // `kDawnSIRepsUseClientProvidedInternalUsages` feature here just to be safe
-  // while rolling out this feature. In reality, setting internal usages on
-  // `texture_` will be a no-op in this case if the feature is disabled, as the
-  // SI rep backing the texture will use hardcoded internal usages rather than
-  // taking them from the client.
-  if (!copy_to_swap_texture_required_ &&
-      base::FeatureList::IsEnabled(
-          features::kDawnSIRepsUseClientProvidedInternalUsages)) {
+  if (!copy_to_swap_texture_required_) {
     // `texture_` will be used as the source of either CopyTextureForBrowser()
     // or CopyTextureToTexture() operations (the former if the alpha mode is
     // opaque, the latter if it is not). In either case, CopySrc is required.
@@ -522,7 +555,7 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
 
     // In cases where a copy is necessary the swap buffers will always use the
     // preferred canvas format.
-    swap_texture_descriptor_.format = GPU::preferred_canvas_format();
+    swap_texture_descriptor_.format = GPU::GetPreferredCanvasFormat();
 
     // The swap buffer texture doesn't need any view formats.
     swap_texture_descriptor_.viewFormats = nullptr;
@@ -535,24 +568,19 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
   }
 
   gfx::HDRMetadata hdr_metadata;
-  if (descriptor->hasToneMapping()) {
-    if (descriptor->toneMapping()->hasMode()) {
-      switch (descriptor->toneMapping()->mode().AsEnum()) {
-        case V8GPUCanvasToneMappingMode::Enum::kStandard:
-          break;
-        case V8GPUCanvasToneMappingMode::Enum::kExtended:
-          hdr_metadata.extended_range.emplace(
-              /*current_headroom=*/gfx::HdrMetadataExtendedRange::
-                  kDefaultHdrHeadroom,
-              /*desired_headroom=*/gfx::HdrMetadataExtendedRange::
-                  kDefaultHdrHeadroom);
-          break;
-      }
+  if (descriptor->hasToneMapping() && descriptor->toneMapping()->hasMode()) {
+    tone_mapping_mode_ = descriptor->toneMapping()->mode().AsEnum();
+    switch (tone_mapping_mode_) {
+      case V8CanvasToneMappingMode::Enum::kStandard:
+        break;
+      case V8CanvasToneMappingMode::Enum::kExtended:
+        hdr_metadata.extended_range.emplace(
+            /*current_headroom=*/gfx::HdrMetadataExtendedRange::
+                kDefaultHdrHeadroom,
+            /*desired_headroom=*/gfx::HdrMetadataExtendedRange::
+                kDefaultHdrHeadroom);
+        break;
     }
-  } else if (descriptor->hasHdrOptions()) {
-    // TODO(https://crbug.com/333967627): Remove support for this older version
-    // of the API once the new API lands.
-    ParseCanvasHighDynamicRangeOptions(descriptor->hdrOptions(), hdr_metadata);
   }
 
   const wgpu::DawnTextureInternalUsageDescriptor* internal_usage_desc = nullptr;
@@ -570,8 +598,8 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
   swap_buffers_ = base::AdoptRef(new WebGPUSwapBufferProvider(
       this, device_->GetDawnControlClient(), device_->GetHandle(),
       swap_texture_descriptor_.usage, internal_usage,
-      swap_texture_descriptor_.format, color_space_, hdr_metadata));
-  swap_buffers_->SetFilterQuality(filter_quality_);
+      swap_texture_descriptor_.format, color_space_, hdr_metadata,
+      kTopLeft_GrSurfaceOrigin));
 
   // Note: SetContentsOpaque is only an optimization hint. It doesn't
   // actually make the contents opaque.
@@ -612,6 +640,32 @@ void GPUCanvasContext::unconfigure() {
   configured_ = false;
 }
 
+GPUCanvasConfiguration* GPUCanvasContext::getConfiguration() {
+  if (!configured_) {
+    return nullptr;
+  }
+
+  GPUCanvasConfiguration* configuration = GPUCanvasConfiguration::Create();
+  configuration->setDevice(device_);
+  configuration->setFormat(FromDawnEnum(texture_descriptor_.format));
+  configuration->setUsage(static_cast<uint32_t>(texture_descriptor_.usage));
+
+  Vector<V8GPUTextureFormat> view_formats;
+  for (size_t i = 0; i < texture_descriptor_.viewFormatCount; ++i) {
+    view_formats.push_back(FromDawnEnum(view_formats_[i]));
+  }
+  configuration->setViewFormats(view_formats);
+
+  configuration->setColorSpace(PredefinedColorSpaceToV8(color_space_));
+  configuration->setAlphaMode(alpha_mode_);
+
+  CanvasToneMapping* tone_mapping = CanvasToneMapping::Create();
+  tone_mapping->setMode(tone_mapping_mode_);
+  configuration->setToneMapping(tone_mapping);
+
+  return configuration;
+}
+
 GPUTexture* GPUCanvasContext::getCurrentTexture(
     ScriptState* script_state,
     ExceptionState& exception_state) {
@@ -621,6 +675,11 @@ GPUTexture* GPUCanvasContext::getCurrentTexture(
     return nullptr;
   }
   DCHECK(device_);
+
+  // Validate the texture descriptor as required by the spec for
+  // GPUCanvasContext.getCurrentTexture(). This is required on each call,
+  // so it must appear before the cached texture early-out below.
+  device_->GetHandle().ValidateTextureDescriptor(&texture_descriptor_);
 
   // Calling getCurrentTexture returns a texture that is valid until the
   // animation frame it gets presented. If getCurrentTexture is called multiple
@@ -643,9 +702,7 @@ GPUTexture* GPUCanvasContext::getCurrentTexture(
   // "dirty", so always call DidDraw() when a new texture is created.
   DidDraw(CanvasPerformanceMonitor::DrawType::kOther);
 
-  SkAlphaType alpha_type = alpha_mode_ == V8GPUCanvasAlphaMode::Enum::kOpaque
-                               ? kOpaque_SkAlphaType
-                               : kPremul_SkAlphaType;
+  SkAlphaType alpha_type = GetAlphaType();
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
       swap_buffers_->GetNewTexture(swap_texture_descriptor_, alpha_type);
   if (!mailbox_texture) {
@@ -670,15 +727,16 @@ GPUTexture* GPUCanvasContext::getCurrentTexture(
   swap_texture_ = MakeGarbageCollected<GPUTexture>(
       device_, swap_texture_descriptor_.format,
       static_cast<wgpu::TextureUsage>(swap_texture_descriptor_.usage),
-      std::move(mailbox_texture), String(swap_texture_descriptor_.label));
+      std::move(mailbox_texture),
+      String::FromUTF8(swap_texture_descriptor_.label));
 
   if (copy_to_swap_texture_required_) {
     texture_ = MakeGarbageCollected<GPUTexture>(
         device_, device_->GetHandle().CreateTexture(&texture_descriptor_),
-        String(texture_descriptor_.label));
+        String::FromUTF8(texture_descriptor_.label));
     // If the user manually destroys the texture before yielding control back
     // to the browser, do the copy just prior to the texture destruction.
-    texture_->SetBeforeDestroyCallback(WTF::BindOnce(
+    texture_->SetBeforeDestroyCallback(blink::BindOnce(
         [](GPUCanvasContext* context, GPUTexture* texture) {
           context->CopyToSwapTexture();
           texture->ClearBeforeDestroyCallback();
@@ -695,20 +753,44 @@ GPUTexture* GPUCanvasContext::getCurrentTexture(
   return texture_.Get();
 }
 
+scoped_refptr<WebGPUMailboxTexture>
+GPUCanvasContext::GetFrontBufferMailboxTexture() {
+  auto front_buffer_si = swap_buffers_->GetFrontBufferSharedImage();
+  if (!front_buffer_si) {
+    return nullptr;
+  }
+  wgpu::TextureUsage front_buffer_usage =
+      wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::TextureBinding;
+  wgpu::DawnTextureInternalUsageDescriptor front_buffer_usage_desc = {{
+      .internalUsage = front_buffer_usage,
+  }};
+  wgpu::TextureDescriptor desc = {
+      .size = {base::checked_cast<uint32_t>(front_buffer_si->size().width()),
+               base::checked_cast<uint32_t>(front_buffer_si->size().height())},
+      .format = swap_buffers_->TextureFormat(),
+  };
+  desc.nextInChain = &front_buffer_usage_desc;
+
+  return WebGPUMailboxTexture::FromExistingSharedImage(
+      device_->GetDawnControlClient(), device_->GetHandle(), desc,
+      front_buffer_si, swap_buffers_->GetFrontBufferSyncToken());
+}
+
 void GPUCanvasContext::ReplaceDrawingBuffer(bool destroy_swap_buffers) {
-  if (swap_texture_) {
-    DCHECK(swap_buffers_);
-    swap_buffers_->DiscardCurrentSwapBuffer();
-    swap_texture_ = nullptr;
+  if (!swap_buffers_) {
+    return;
   }
 
-  if (copy_to_swap_texture_required_ && texture_) {
-    texture_->ClearBeforeDestroyCallback();
-    texture_->destroy();
-  }
+  swap_buffers_->DiscardCurrentSwapBuffer();
+
+  // DiscardCurrentSwapBuffer() will call OnTextureTransferred() which should
+  // have destroyed the previous textures, except when we failed to create the
+  // swap buffer in the first place in which case `texture_` and `swap_texture_`
+  // are both "error" textures.
   texture_ = nullptr;
+  swap_texture_ = nullptr;
 
-  if (swap_buffers_ && destroy_swap_buffers) {
+  if (destroy_swap_buffers) {
     // Tell any previous swapbuffers that it will no longer be used and can
     // destroy all its resources (and produce errors when used).
     swap_buffers_->Neuter();
@@ -730,7 +812,7 @@ void GPUCanvasContext::OnTextureTransferred() {
   DCHECK(texture_);
   DCHECK(swap_texture_);
 
-  if (copy_to_swap_texture_required_ && texture_ && !texture_->Destroyed()) {
+  if (copy_to_swap_texture_required_ && texture_ && !texture_->IsDestroyed()) {
     CopyToSwapTexture();
     texture_->ClearBeforeDestroyCallback();
     texture_->destroy();
@@ -739,10 +821,20 @@ void GPUCanvasContext::OnTextureTransferred() {
   swap_texture_ = nullptr;
 }
 
+void GPUCanvasContext::InitializeLayer(cc::Layer* layer) {
+  if (Host()) {
+    Host()->InitializeLayerWithCSSProperties(layer);
+  }
+}
+
 void GPUCanvasContext::SetNeedsCompositingUpdate() {
   if (Host()) {
     Host()->SetNeedsCompositingUpdate();
   }
+}
+
+bool GPUCanvasContext::IsGPUDeviceDestroyed() {
+  return device_->IsDestroyed();
 }
 
 void GPUCanvasContext::CopyToSwapTexture() {
@@ -755,11 +847,11 @@ void GPUCanvasContext::CopyToSwapTexture() {
     device_->AddSingletonWarning(GPUSingletonWarning::kNonPreferredFormat);
   }
 
-  wgpu::ImageCopyTexture source = {
+  wgpu::TexelCopyTextureInfo source = {
       .texture = texture_->GetHandle(),
       .aspect = wgpu::TextureAspect::All,
   };
-  wgpu::ImageCopyTexture destination = {
+  wgpu::TexelCopyTextureInfo destination = {
       .texture = swap_texture_->GetHandle(),
       .aspect = wgpu::TextureAspect::All,
   };
@@ -788,58 +880,52 @@ void GPUCanvasContext::CopyToSwapTexture() {
 
 bool GPUCanvasContext::CopyTextureToResourceProvider(
     const wgpu::Texture& texture,
-    const gfx::Size& size,
-    CanvasResourceProvider* resource_provider) const {
+    CanvasResourceProviderSharedImage* resource_provider) const {
+#if BUILDFLAG(USE_DAWN)
   DCHECK(resource_provider);
+
+  gfx::Size size(texture.GetWidth(), texture.GetHeight());
   DCHECK_EQ(resource_provider->Size(), size);
 
   // This method will copy the contents of `texture` to `resource_provider`'s
   // backing SharedImage via the WebGPU interface. Hence, WEBGPU_WRITE usage
   // must be included on that backing SharedImage.
-  DCHECK(resource_provider->GetSharedImageUsageFlags() &
-         gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE);
-  DCHECK(resource_provider->IsOriginTopLeft());
+  DCHECK(resource_provider->GetSharedImageUsageFlags().Has(
+      gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE));
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> shared_context_wrapper =
       SharedGpuContext::ContextProviderWrapper();
-  if (!shared_context_wrapper || !shared_context_wrapper->ContextProvider())
+  if (!shared_context_wrapper) {
     return false;
+  }
 
+  gpu::SyncToken sync_token;
   auto dst_client_si =
-      resource_provider->GetBackingClientSharedImageForOverwrite();
+      resource_provider->GetBackingClientSharedImageForExternalWrite(
+          gpu::SharedImageUsageSet(), sync_token);
   if (!dst_client_si) {
     return false;
   }
 
-  auto* ri = shared_context_wrapper->ContextProvider()->RasterInterface();
-
   if (!GetContextProviderWeakPtr()) {
     return false;
   }
-  // todo(crbug/1267244) Use WebGPUMailboxTexture here instead of doing things
-  // manually.
-  gpu::webgpu::WebGPUInterface* webgpu =
-      GetContextProviderWeakPtr()->ContextProvider()->WebGPUInterface();
-  gpu::webgpu::ReservedTexture reservation =
-      webgpu->ReserveTexture(device_->GetHandle().Get());
-  DCHECK(reservation.texture);
-  wgpu::Texture reserved_texture = wgpu::Texture::Acquire(reservation.texture);
 
-  gpu::SyncToken sync_token;
-  ri->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
-  webgpu->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+  gpu::webgpu::WebGPUInterface* webgpu =
+      GetContextProviderWeakPtr()->ContextProvider().WebGPUInterface();
+
   wgpu::TextureUsage usage =
       wgpu::TextureUsage::CopyDst | wgpu::TextureUsage::RenderAttachment;
-  webgpu->AssociateMailbox(reservation.deviceId, reservation.deviceGeneration,
-                           reservation.id, reservation.generation,
-                           static_cast<uint64_t>(usage),
-                           dst_client_si->mailbox());
-  wgpu::ImageCopyTexture source = {
+  std::unique_ptr<gpu::WebGPUTextureScopedAccess> scoped_access =
+      dst_client_si->BeginWebGPUTextureAccess(
+          webgpu, sync_token, device_->GetHandle(), wgpu::TextureDescriptor(),
+          static_cast<uint64_t>(usage), gpu::webgpu::WEBGPU_MAILBOX_NONE);
+  wgpu::TexelCopyTextureInfo source = {
       .texture = texture,
       .aspect = wgpu::TextureAspect::All,
   };
-  wgpu::ImageCopyTexture destination = {
-      .texture = reserved_texture,
+  wgpu::TexelCopyTextureInfo destination = {
+      .texture = scoped_access->texture(),
       .aspect = wgpu::TextureAspect::All,
   };
   wgpu::Extent3D copy_size = {
@@ -860,9 +946,8 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
     // Issue a copyTextureForBrowser call with internal usage turned on.
     // There is a special step for srcAlphaMode == wgpu::AlphaMode::Opaque that
     // clears alpha channel to one.
-    SkImageInfo sk_dst_image_info = resource_provider->GetSkImageInfo();
     wgpu::AlphaMode dstAlphaMode;
-    switch (sk_dst_image_info.alphaType()) {
+    switch (resource_provider->GetAlphaType()) {
       case SkAlphaType::kPremul_SkAlphaType:
         dstAlphaMode = wgpu::AlphaMode::Premultiplied;
         break;
@@ -878,7 +963,7 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
         break;
     }
     wgpu::CopyTextureForBrowserOptions options = {
-        .flipY = !resource_provider->IsOriginTopLeft(),
+        .flipY = dst_client_si->surface_origin() == kBottomLeft_GrSurfaceOrigin,
         .srcAlphaMode = srcAlphaMode,
         .dstAlphaMode = dstAlphaMode,
         .internalUsage = true,
@@ -907,39 +992,74 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
     device_->queue()->GetHandle().Submit(1u, &command_buffer);
     command_buffer = nullptr;
   }
+  sync_token =
+      gpu::WebGPUTextureScopedAccess::EndAccess(std::move(scoped_access));
 
-  webgpu->DissociateMailbox(reservation.id, reservation.generation);
-  webgpu->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
-  ri->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+  resource_provider->EndExternalWrite(sync_token);
 
   return true;
+#else
+  NOTREACHED();
+#endif
 }
 
 scoped_refptr<StaticBitmapImage> GPUCanvasContext::SnapshotInternal(
-    const wgpu::Texture& texture,
-    const gfx::Size& size) const {
-  const auto canvas_context_color = CanvasRenderingContextSkColorInfo();
-  const auto info =
-      SkImageInfo::Make(gfx::SizeToSkISize(size), canvas_context_color);
+    const wgpu::Texture& texture) const {
+  gfx::Size size(texture.GetWidth(), texture.GetHeight());
+
   // We tag the SharedImage inside the WebGPUImageProvider with display usages
   // since there are uncommon paths which may use this snapshot for compositing.
   // These paths are usually related to either printing or either video and
   // usually related to OffscreenCanvas; in cases where the image created from
   // this Snapshot will be sent eventually to the Display Compositor.
   auto resource_provider = CanvasResourceProvider::CreateWebGPUImageProvider(
-      info, swap_buffers_->GetSharedImageUsagesForDisplay());
+      size, GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
+      swap_buffers_->GetSharedImageUsagesForDisplay());
   if (!resource_provider)
     return nullptr;
 
-  if (!CopyTextureToResourceProvider(texture, size, resource_provider.get()))
+  if (!CopyTextureToResourceProvider(texture, resource_provider.get())) {
     return nullptr;
+  }
 
-  return resource_provider->Snapshot(FlushReason::kNone);
+  return resource_provider->Snapshot();
 }
 
 base::WeakPtr<WebGraphicsContext3DProviderWrapper>
 GPUCanvasContext::GetContextProviderWeakPtr() const {
   return device_->GetDawnControlClient()->GetContextProviderWeakPtr();
+}
+
+scoped_refptr<StaticBitmapImage>
+GPUCanvasContext::MakeFallbackStaticBitmapImage(
+    V8GPUCanvasAlphaMode::Enum alpha_mode) {
+  // It is not possible to create an empty image bitmap, return null in that
+  // case which will fail ImageBitmap creation with an exception instead.
+  gfx::Size size = Host()->Size();
+  if (size.IsEmpty()) {
+    return nullptr;
+  }
+
+  // We intentionally leave the image in legacy color space.
+  SkBitmap black_bitmap;
+  if (!black_bitmap.tryAllocN32Pixels(size.width(), size.height())) {
+    // It is not possible to create such a big image bitmap, return null in
+    // that case which will fail ImageBitmap creation with an exception
+    // instead.
+    return nullptr;
+  }
+
+  if (alpha_mode == V8GPUCanvasAlphaMode::Enum::kOpaque) {
+    black_bitmap.eraseARGB(255, 0, 0, 0);
+  } else {
+    black_bitmap.eraseARGB(0, 0, 0, 0);
+  }
+
+  // Mark the bitmap as immutable to avoid an unnecessary copy in the
+  // following RasterFromBitmap() call.
+  black_bitmap.setImmutable();
+  return UnacceleratedStaticBitmapImage::Create(
+      SkImages::RasterFromBitmap(black_bitmap));
 }
 
 }  // namespace blink

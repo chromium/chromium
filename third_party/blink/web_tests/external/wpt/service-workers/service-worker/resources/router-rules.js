@@ -1,7 +1,7 @@
 const TEST_CACHE_NAME = 'v1';
-// The value is coming from:
-// https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/public/common/service_worker/service_worker_router_rule.h;l=28;drc=6f3f85b321146cfc0f9eb81a74c7c2257821461e
+// https://w3c.github.io/ServiceWorker/#check-router-registration-limit-algorithm
 const CONDITION_MAX_RECURSION_DEPTH = 10;
+const CONDITION_MAX_COUNT = 1024;
 
 const routerRules = {
   'condition-urlpattern-constructed-source-network': [{
@@ -56,13 +56,21 @@ const routerRules = {
   'condition-lack-of-source': [{
     condition: {requestMode: 'no-cors'},
   }],
-  'condition-invalid-request-method': [{
+  'condition-invalid-bytestring-request-method': [{
     condition: {requestMethod: String.fromCodePoint(0x3042)},
+    source: 'network'
+  }],
+  'condition-invalid-http-request-method': [{
+    condition: {requestMethod: '(GET|POST)'},
+    source: 'network'
+  }],
+  'condition-forbidden-request-method': [{
+    condition: {requestMethod: 'connect'},
     source: 'network'
   }],
   'condition-invalid-or-condition-depth': (() => {
     const addOrCondition = (depth) => {
-      if (depth > CONDITION_MAX_RECURSION_DEPTH) {
+      if (depth > CONDITION_MAX_RECURSION_DEPTH + 1) {
         return {urlPattern: '/foo'};
       }
       return {
@@ -73,7 +81,7 @@ const routerRules = {
   })(),
   'condition-invalid-not-condition-depth': (() => {
     const generateNotCondition = (depth) => {
-      if (depth > CONDITION_MAX_RECURSION_DEPTH) {
+      if (depth > CONDITION_MAX_RECURSION_DEPTH + 1) {
         return {
           urlPattern: '/**/example.txt',
         };
@@ -82,7 +90,7 @@ const routerRules = {
     };
     return {condition: generateNotCondition(1), source: 'network'};
   })(),
-  'condition-invalid-router-size': [...Array(512)].map((val, i) => {
+  'condition-invalid-router-size': [...Array(CONDITION_MAX_COUNT + 1)].map((val, i) => {
     return {
       condition: {urlPattern: `/foo-${i}`},
       source: 'network'

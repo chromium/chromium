@@ -12,10 +12,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace component_updater {
+
 using ::testing::_;
 using ::testing::StrictMock;
-
-namespace component_updater {
 
 class MockRealTimeUrlChecksAllowlist
     : public safe_browsing::RealTimeUrlChecksAllowlist {
@@ -28,7 +28,6 @@ class MockRealTimeUrlChecksAllowlist
 
   MOCK_METHOD1(PopulateFromDynamicUpdate, void(const std::string& binary_pb));
 
-  ~MockRealTimeUrlChecksAllowlist() override = default;
 };
 
 class RealTimeUrlChecksAllowlistComponentInstallerTest
@@ -44,7 +43,7 @@ class RealTimeUrlChecksAllowlistComponentInstallerTest
         &mock_realtime_allowlist);
 
     // Calling ComponentReady should trigger PopulateFromDynamicUpdate call
-    EXPECT_CALL(mock_realtime_allowlist, PopulateFromDynamicUpdate(_)).Times(1);
+    EXPECT_CALL(mock_realtime_allowlist, PopulateFromDynamicUpdate(_));
     policy_->ComponentReady(base::Version(), component_install_dir_.GetPath(),
                             base::Value::Dict());
 

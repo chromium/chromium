@@ -1,0 +1,27 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "OnSecurityEventEnterpriseConnector": [
+            {
+              "service_provider": "google"
+            }
+          ]
+        },
+        "prefs": {
+          "enterprise_connectors.on_security_event": {
+            "value": [
+              {
+                "service_provider": "google"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

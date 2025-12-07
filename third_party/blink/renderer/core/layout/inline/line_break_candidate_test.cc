@@ -364,4 +364,38 @@ TEST_F(LineBreakCandidateTest, ForcedBreak) {
   }
 }
 
+TEST_F(LineBreakCandidateTest, OutOfFlowPositioned) {
+  LoadAhem();
+  SetBodyInnerHTML(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    #target {
+      font-family: Ahem;
+      font-size: 10px;
+    }
+    </style>
+    <div id="target">
+      012 456 89
+      012 456 89
+      01
+      <span style="position: absolute"></span>
+    </div>
+  )HTML");
+  const InlineNode target = GetInlineNodeByElementId("target");
+  for (const int width : {800, 40, 10}) {
+    LineBreakCandidates candidates;
+    EXPECT_TRUE(ComputeCandidates(target, LayoutUnit(width), candidates));
+    EXPECT_THAT(candidates, testing::ElementsAre(
+                                LineBreakCandidate({0, 0}, 0),
+                                LineBreakCandidate({0, 4}, {0, 3}, 40, 30),
+                                LineBreakCandidate({0, 8}, {0, 7}, 80, 70),
+                                LineBreakCandidate({0, 11}, {0, 10}, 110, 100),
+                                LineBreakCandidate({0, 15}, {0, 14}, 150, 140),
+                                LineBreakCandidate({0, 19}, {0, 18}, 190, 180),
+                                LineBreakCandidate({0, 22}, {0, 21}, 220, 210),
+                                LineBreakCandidate({0, 24}, {0, 24}, 240, 240)))
+        << String::Format("Width=%d", width);
+  }
+}
+
 }  // namespace blink

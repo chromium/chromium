@@ -23,108 +23,42 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/html/parser/html_entity_search.h"
 
-#include "third_party/blink/renderer/core/html/parser/html_entity_table.h"
+#include <algorithm>
+#include <functional>
 
 namespace blink {
 
-static const HTMLEntityTableEntry* Halfway(const HTMLEntityTableEntry* left,
-                                           const HTMLEntityTableEntry* right) {
-  return &left[(right - left) / 2];
-}
-
-HTMLEntitySearch::HTMLEntitySearch()
-    : current_length_(0),
-      most_recent_match_(nullptr),
-      first_(HTMLEntityTable::FirstEntry()),
-      last_(HTMLEntityTable::LastEntry()) {}
-
-HTMLEntitySearch::CompareResult HTMLEntitySearch::Compare(
-    const HTMLEntityTableEntry* entry,
-    UChar next_character) const {
-  if (entry->length < current_length_ + 1)
-    return kBefore;
-  const LChar* entity_string = HTMLEntityTable::EntityString(*entry);
-  UChar entry_next_character = entity_string[current_length_];
-  if (entry_next_character == next_character)
-    return kPrefix;
-  return entry_next_character < next_character ? kBefore : kAfter;
-}
-
-const HTMLEntityTableEntry* HTMLEntitySearch::FindFirst(
-    UChar next_character) const {
-  const HTMLEntityTableEntry* left = first_;
-  const HTMLEntityTableEntry* right = last_;
-  if (left == right)
-    return left;
-  CompareResult result = Compare(left, next_character);
-  if (result == kPrefix)
-    return left;
-  if (result == kAfter)
-    return right;
-  while (left + 1 < right) {
-    const HTMLEntityTableEntry* probe = Halfway(left, right);
-    result = Compare(probe, next_character);
-    if (result == kBefore)
-      left = probe;
-    else {
-      DCHECK(result == kAfter || result == kPrefix);
-      right = probe;
-    }
-  }
-  DCHECK_EQ(left + 1, right);
-  return right;
-}
-
-const HTMLEntityTableEntry* HTMLEntitySearch::FindLast(
-    UChar next_character) const {
-  const HTMLEntityTableEntry* left = first_;
-  const HTMLEntityTableEntry* right = last_;
-  if (left == right)
-    return right;
-  CompareResult result = Compare(right, next_character);
-  if (result == kPrefix)
-    return right;
-  if (result == kBefore)
-    return left;
-  while (left + 1 < right) {
-    const HTMLEntityTableEntry* probe = Halfway(left, right);
-    result = Compare(probe, next_character);
-    if (result == kAfter)
-      right = probe;
-    else {
-      DCHECK(result == kBefore || result == kPrefix);
-      left = probe;
-    }
-  }
-  DCHECK_EQ(left + 1, right);
-  return left;
-}
+HTMLEntitySearch::HTMLEntitySearch() : range_(HTMLEntityTable::AllEntries()) {}
 
 void HTMLEntitySearch::Advance(UChar next_character) {
   DCHECK(IsEntityPrefix());
   if (!current_length_) {
-    first_ = HTMLEntityTable::FirstEntryStartingWith(next_character);
-    last_ = HTMLEntityTable::LastEntryStartingWith(next_character);
-    if (!first_ || !last_)
-      return Fail();
+    range_ = HTMLEntityTable::EntriesStartingWith(next_character);
   } else {
-    first_ = FindFirst(next_character);
-    last_ = FindLast(next_character);
-    if (first_ == last_ && Compare(first_, next_character) != kPrefix)
-      return Fail();
+    // Get the subrange where `next_character` matches at the end of the
+    // current prefix (index == `current_length_`).
+    auto projector =
+        [this](const HTMLEntityTableEntry& entry) -> std::optional<UChar> {
+      if (entry.length < current_length_ + 1) {
+        return std::nullopt;
+      }
+      base::span<const LChar> entity_string =
+          HTMLEntityTable::EntityString(entry);
+      return entity_string[current_length_];
+    };
+    range_ = std::ranges::equal_range(range_, next_character, std::less{},
+                                      projector);
+  }
+  if (range_.empty()) {
+    return Fail();
   }
   ++current_length_;
-  if (first_->length != current_length_) {
+  if (range_.front().length != current_length_) {
     return;
   }
-  most_recent_match_ = first_;
+  most_recent_match_ = &range_.front();
 }
 
 }  // namespace blink

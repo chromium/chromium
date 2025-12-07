@@ -16,6 +16,7 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.ColorInt;
 import androidx.core.view.ViewCompat;
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -24,7 +25,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
@@ -35,8 +37,8 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.chrome.browser.tab_ui.TabCardThemeUtil;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
-import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
@@ -61,8 +63,10 @@ public class TabThumbnailViewRenderTest {
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_MOBILE_TAB_SWITCHER_GRID)
-                    .setRevision(4)
+                    .setRevision(8)
                     .build();
+
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
@@ -71,7 +75,7 @@ public class TabThumbnailViewRenderTest {
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
 
     private FrameLayout mContentView;
-    private ViewGroup mTabCard;
+    private TabGridView mTabCard;
     private TabThumbnailView mTabThumbnailView;
     private Bitmap mBitmap;
 
@@ -82,7 +86,6 @@ public class TabThumbnailViewRenderTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mActivityTestRule.launchActivity(null);
         mActivityTestRule.getActivity().setTheme(R.style.Theme_BrowserUI_DayNight);
         ThreadUtils.runOnUiThreadBlocking(
@@ -91,7 +94,7 @@ public class TabThumbnailViewRenderTest {
                     mContentView.setBackgroundColor(Color.WHITE);
 
                     mTabCard =
-                            (ViewGroup)
+                            (TabGridView)
                                     mActivityTestRule
                                             .getActivity()
                                             .getLayoutInflater()
@@ -99,7 +102,7 @@ public class TabThumbnailViewRenderTest {
                                                     R.layout.tab_grid_card_item,
                                                     mContentView,
                                                     false);
-                    ((TabGridView) mTabCard).setTabActionState(TabActionState.CLOSABLE);
+                    mTabCard.setTabActionState(TabActionState.CLOSABLE);
                     mTabCard.setVisibility(View.VISIBLE);
                     mContentView.addView(mTabCard);
 
@@ -111,6 +114,7 @@ public class TabThumbnailViewRenderTest {
                                     ViewGroup.LayoutParams.WRAP_CONTENT);
                     mActivityTestRule.getActivity().setContentView(mContentView, params);
                 });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     final int cardWidthPx = mContentView.getMeasuredWidth() / 2;
@@ -125,6 +129,7 @@ public class TabThumbnailViewRenderTest {
                     mTabCard.getLayoutParams().height = cardHeightPx;
                     mTabCard.setLayoutParams(mTabCard.getLayoutParams());
                 });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mBitmap = createBitmapFourColor();
@@ -221,10 +226,14 @@ public class TabThumbnailViewRenderTest {
         View cardView = mTabCard.findViewById(R.id.card_view);
         cardView.getBackground().mutate();
         final @ColorInt int backgroundColor =
-                TabUiThemeUtils.getCardViewBackgroundColor(
-                        cardView.getContext(), isIncognito, isSelected);
+                TabCardThemeUtil.getCardViewBackgroundColor(
+                        cardView.getContext(), isIncognito, isSelected, /* colorId= */ null);
         ViewCompat.setBackgroundTintList(cardView, ColorStateList.valueOf(backgroundColor));
 
-        mTabThumbnailView.updateThumbnailPlaceholder(isIncognito, isSelected);
+        mTabThumbnailView.updateThumbnailPlaceholder(isIncognito, isSelected, /* colorId= */ null);
+
+        mTabCard.setTabActionButtonTint(
+                TabCardThemeUtil.getActionButtonTintList(
+                        mTabCard.getContext(), isIncognito, isSelected, /* colorId= */ null));
     }
 }

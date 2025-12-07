@@ -1,5 +1,5 @@
 // META: title=test WebNN API element-wise sin operation
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -15,7 +15,9 @@
 
 
 const getSinPrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {float32: 1 / 1024, float16: 1 / 512};
+  // Use the float accuracy for WGSL for float16:
+  // https://gpuweb.github.io/gpuweb/wgsl/#concrete-float-accuracy
+  const toleranceValueDict = {float32: 2 ** -10, float16: 2 ** -7};
   const expectedDataType =
       getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
   return {metricType: 'ATOL', value: toleranceValueDict[expectedDataType]};
@@ -28,7 +30,7 @@ const sinTests = [
       'inputs': {
         'sinInput': {
           'data': [79.78058624267578],
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -39,7 +41,7 @@ const sinTests = [
       'expectedOutputs': {
         'sinOutput': {
           'data': [-0.946033775806427],
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       }
     }
@@ -59,7 +61,7 @@ const sinTests = [
             31.016063690185547, -94.88304901123047,  -84.58417510986328,
             44.8487434387207,   -19.000272750854492, -48.03827667236328
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'},
+          'descriptor': {shape: [24], dataType: 'float32'},
           'constant': true
         }
       },
@@ -80,7 +82,7 @@ const sinTests = [
             -0.38929200172424316, -0.59339439868927,    -0.23656263947486877,
             0.7620325684547424,   -0.15014687180519104, 0.7921885848045349
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -100,7 +102,7 @@ const sinTests = [
             31.016063690185547, -94.88304901123047,  -84.58417510986328,
             44.8487434387207,   -19.000272750854492, -48.03827667236328
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -120,7 +122,7 @@ const sinTests = [
             -0.38929200172424316, -0.59339439868927,    -0.23656263947486877,
             0.7620325684547424,   -0.15014687180519104, 0.7921885848045349
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -140,7 +142,7 @@ const sinTests = [
             31.016063690185547, -94.88304901123047,  -84.58417510986328,
             44.8487434387207,   -19.000272750854492, -48.03827667236328
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -160,7 +162,7 @@ const sinTests = [
             -0.38929200172424316, -0.59339439868927,    -0.23656263947486877,
             0.7620325684547424,   -0.15014687180519104, 0.7921885848045349
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       }
     }
@@ -180,7 +182,7 @@ const sinTests = [
             31.016063690185547, -94.88304901123047,  -84.58417510986328,
             44.8487434387207,   -19.000272750854492, -48.03827667236328
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -200,7 +202,7 @@ const sinTests = [
             -0.38929200172424316, -0.59339439868927,    -0.23656263947486877,
             0.7620325684547424,   -0.15014687180519104, 0.7921885848045349
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -220,7 +222,7 @@ const sinTests = [
             31.016063690185547, -94.88304901123047,  -84.58417510986328,
             44.8487434387207,   -19.000272750854492, -48.03827667236328
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -240,7 +242,7 @@ const sinTests = [
             -0.38929200172424316, -0.59339439868927,    -0.23656263947486877,
             0.7620325684547424,   -0.15014687180519104, 0.7921885848045349
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -260,7 +262,7 @@ const sinTests = [
             31.016063690185547, -94.88304901123047,  -84.58417510986328,
             44.8487434387207,   -19.000272750854492, -48.03827667236328
           ],
-          'descriptor': {'dimensions': [2, 1, 4, 1, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 1, 4, 1, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -280,18 +282,257 @@ const sinTests = [
             -0.38929200172424316, -0.59339439868927,    -0.23656263947486877,
             0.7620325684547424,   -0.15014687180519104, 0.7921885848045349
           ],
-          'descriptor': {'dimensions': [2, 1, 4, 1, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 1, 4, 1, 3], dataType: 'float32'}
+        }
+      }
+    }
+  },
+
+  // float16 tests
+  {
+    'name': 'sin float16 0D scalar',
+    'graph': {
+      'inputs': {
+        'sinInput':
+            {'data': [79.75], 'descriptor': {shape: [], dataType: 'float16'}}
+      },
+      'operators': [{
+        'name': 'sin',
+        'arguments': [{'input': 'sinInput'}],
+        'outputs': 'sinOutput'
+      }],
+      'expectedOutputs': {
+        'sinOutput': {
+          'data': [-0.935546875],
+          'descriptor': {shape: [], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'sin float16 1D constant tensor',
+    'graph': {
+      'inputs': {
+        'sinInput': {
+          'data': [
+            79.75,     55,         -28.046875,   -31.640625, 56.28125,
+            -96.1875,  -73,        -3.423828125, 84,         5.03125,
+            -9.515625, 9.5390625,  -25.265625,   -20.828125, -32.03125,
+            -55.6875,  15.9296875, -57.875,      31.015625,  -94.875,
+            -84.5625,  44.84375,   -19,          -48.03125
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'sin',
+        'arguments': [{'input': 'sinInput'}],
+        'outputs': 'sinOutput'
+      }],
+      'expectedOutputs': {
+        'sinOutput': {
+          'data': [
+            -0.935546875,     -0.99951171875,  -0.2254638671875,
+            -0.2227783203125, -0.26416015625,  -0.9326171875,
+            0.6767578125,     0.278564453125,  0.7333984375,
+            -0.94970703125,   0.0906982421875, -0.114013671875,
+            -0.1324462890625, -0.91796875,     -0.5771484375,
+            0.7587890625,     -0.219970703125, -0.97021484375,
+            -0.3896484375,    -0.5869140625,   -0.257568359375,
+            0.7587890625,     -0.14990234375,  0.7880859375
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'sin float16 1D tensor',
+    'graph': {
+      'inputs': {
+        'sinInput': {
+          'data': [
+            79.75,     55,         -28.046875,   -31.640625, 56.28125,
+            -96.1875,  -73,        -3.423828125, 84,         5.03125,
+            -9.515625, 9.5390625,  -25.265625,   -20.828125, -32.03125,
+            -55.6875,  15.9296875, -57.875,      31.015625,  -94.875,
+            -84.5625,  44.84375,   -19,          -48.03125
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'sin',
+        'arguments': [{'input': 'sinInput'}],
+        'outputs': 'sinOutput'
+      }],
+      'expectedOutputs': {
+        'sinOutput': {
+          'data': [
+            -0.935546875,     -0.99951171875,  -0.2254638671875,
+            -0.2227783203125, -0.26416015625,  -0.9326171875,
+            0.6767578125,     0.278564453125,  0.7333984375,
+            -0.94970703125,   0.0906982421875, -0.114013671875,
+            -0.1324462890625, -0.91796875,     -0.5771484375,
+            0.7587890625,     -0.219970703125, -0.97021484375,
+            -0.3896484375,    -0.5869140625,   -0.257568359375,
+            0.7587890625,     -0.14990234375,  0.7880859375
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'sin float16 2D tensor',
+    'graph': {
+      'inputs': {
+        'sinInput': {
+          'data': [
+            79.75,     55,         -28.046875,   -31.640625, 56.28125,
+            -96.1875,  -73,        -3.423828125, 84,         5.03125,
+            -9.515625, 9.5390625,  -25.265625,   -20.828125, -32.03125,
+            -55.6875,  15.9296875, -57.875,      31.015625,  -94.875,
+            -84.5625,  44.84375,   -19,          -48.03125
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'sin',
+        'arguments': [{'input': 'sinInput'}],
+        'outputs': 'sinOutput'
+      }],
+      'expectedOutputs': {
+        'sinOutput': {
+          'data': [
+            -0.935546875,     -0.99951171875,  -0.2254638671875,
+            -0.2227783203125, -0.26416015625,  -0.9326171875,
+            0.6767578125,     0.278564453125,  0.7333984375,
+            -0.94970703125,   0.0906982421875, -0.114013671875,
+            -0.1324462890625, -0.91796875,     -0.5771484375,
+            0.7587890625,     -0.219970703125, -0.97021484375,
+            -0.3896484375,    -0.5869140625,   -0.257568359375,
+            0.7587890625,     -0.14990234375,  0.7880859375
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'sin float16 3D tensor',
+    'graph': {
+      'inputs': {
+        'sinInput': {
+          'data': [
+            79.75,     55,         -28.046875,   -31.640625, 56.28125,
+            -96.1875,  -73,        -3.423828125, 84,         5.03125,
+            -9.515625, 9.5390625,  -25.265625,   -20.828125, -32.03125,
+            -55.6875,  15.9296875, -57.875,      31.015625,  -94.875,
+            -84.5625,  44.84375,   -19,          -48.03125
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'sin',
+        'arguments': [{'input': 'sinInput'}],
+        'outputs': 'sinOutput'
+      }],
+      'expectedOutputs': {
+        'sinOutput': {
+          'data': [
+            -0.935546875,     -0.99951171875,  -0.2254638671875,
+            -0.2227783203125, -0.26416015625,  -0.9326171875,
+            0.6767578125,     0.278564453125,  0.7333984375,
+            -0.94970703125,   0.0906982421875, -0.114013671875,
+            -0.1324462890625, -0.91796875,     -0.5771484375,
+            0.7587890625,     -0.219970703125, -0.97021484375,
+            -0.3896484375,    -0.5869140625,   -0.257568359375,
+            0.7587890625,     -0.14990234375,  0.7880859375
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'sin float16 4D tensor',
+    'graph': {
+      'inputs': {
+        'sinInput': {
+          'data': [
+            79.75,     55,         -28.046875,   -31.640625, 56.28125,
+            -96.1875,  -73,        -3.423828125, 84,         5.03125,
+            -9.515625, 9.5390625,  -25.265625,   -20.828125, -32.03125,
+            -55.6875,  15.9296875, -57.875,      31.015625,  -94.875,
+            -84.5625,  44.84375,   -19,          -48.03125
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'sin',
+        'arguments': [{'input': 'sinInput'}],
+        'outputs': 'sinOutput'
+      }],
+      'expectedOutputs': {
+        'sinOutput': {
+          'data': [
+            -0.935546875,     -0.99951171875,  -0.2254638671875,
+            -0.2227783203125, -0.26416015625,  -0.9326171875,
+            0.6767578125,     0.278564453125,  0.7333984375,
+            -0.94970703125,   0.0906982421875, -0.114013671875,
+            -0.1324462890625, -0.91796875,     -0.5771484375,
+            0.7587890625,     -0.219970703125, -0.97021484375,
+            -0.3896484375,    -0.5869140625,   -0.257568359375,
+            0.7587890625,     -0.14990234375,  0.7880859375
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'sin float16 5D tensor',
+    'graph': {
+      'inputs': {
+        'sinInput': {
+          'data': [
+            79.75,     55,         -28.046875,   -31.640625, 56.28125,
+            -96.1875,  -73,        -3.423828125, 84,         5.03125,
+            -9.515625, 9.5390625,  -25.265625,   -20.828125, -32.03125,
+            -55.6875,  15.9296875, -57.875,      31.015625,  -94.875,
+            -84.5625,  44.84375,   -19,          -48.03125
+          ],
+          'descriptor': {shape: [2, 1, 4, 1, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'sin',
+        'arguments': [{'input': 'sinInput'}],
+        'outputs': 'sinOutput'
+      }],
+      'expectedOutputs': {
+        'sinOutput': {
+          'data': [
+            -0.935546875,     -0.99951171875,  -0.2254638671875,
+            -0.2227783203125, -0.26416015625,  -0.9326171875,
+            0.6767578125,     0.278564453125,  0.7333984375,
+            -0.94970703125,   0.0906982421875, -0.114013671875,
+            -0.1324462890625, -0.91796875,     -0.5771484375,
+            0.7587890625,     -0.219970703125, -0.97021484375,
+            -0.3896484375,    -0.5869140625,   -0.257568359375,
+            0.7587890625,     -0.14990234375,  0.7880859375
+          ],
+          'descriptor': {shape: [2, 1, 4, 1, 3], dataType: 'float16'}
         }
       }
     }
   }
 ];
 
-if (navigator.ml) {
-  sinTests.forEach((test) => {
-    webnn_conformance_test(
-        buildGraphAndCompute, getSinPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(
+    sinTests, buildAndExecuteGraph, getSinPrecisionTolerance);

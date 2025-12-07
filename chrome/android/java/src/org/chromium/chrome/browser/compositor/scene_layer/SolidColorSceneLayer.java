@@ -10,12 +10,14 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 
 /**
  * A solid color scene layer to use as a background for a layout without other composited content.
  */
 @JNINamespace("android")
+@NullMarked
 public class SolidColorSceneLayer extends SceneLayer {
     // NOTE: If you use SceneLayer's native pointer here, the JNI generator will try to
     // downcast using reinterpret_cast<>. We keep a separate pointer to avoid it.
@@ -32,7 +34,7 @@ public class SolidColorSceneLayer extends SceneLayer {
     @Override
     protected void initializeNative() {
         if (mNativePtr == 0) {
-            mNativePtr = SolidColorSceneLayerJni.get().init(SolidColorSceneLayer.this);
+            mNativePtr = SolidColorSceneLayerJni.get().init(this);
         }
         assert mNativePtr != 0;
     }
@@ -46,7 +48,7 @@ public class SolidColorSceneLayer extends SceneLayer {
     @NativeMethods
     @VisibleForTesting
     public interface Natives {
-        long init(SolidColorSceneLayer caller);
+        long init(SolidColorSceneLayer self);
 
         void setBackgroundColor(long nativeSolidColorSceneLayer, int backgroundColor);
     }

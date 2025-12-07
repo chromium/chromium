@@ -50,6 +50,7 @@
 
 #include <string>
 
+#include "base/containers/span.h"
 #include "net/base/net_export.h"
 
 namespace net {
@@ -97,21 +98,22 @@ class NET_EXPORT_PRIVATE HttpChunkedDecoder {
   // markers.  The return value indicates the final size of decoded data stored
   // in |buf|.  Call reached_eof() after this method to check if end-of-file
   // was encountered.
-  int FilterBuf(char* buf, int buf_len);
+  int FilterBuf(base::span<uint8_t> buf);
 
  private:
   // Scans |buf| for the next chunk delimiter.  This method returns the number
   // of bytes consumed from |buf|.  If found, |chunk_remaining_| holds the
   // value for the next chunk size.
-  int ScanForChunkRemaining(const char* buf, int buf_len);
+  int ScanForChunkRemaining(base::span<const uint8_t> buf);
 
-  // Converts string |start| of length |len| to a numeric value.
-  // |start| is a string of type "chunk-size" (hex string).
+  // Converts the buffer |buf| to a numeric value.
+  // |buf| is a buffer containing a "chunk-size" (hex string).
   // If the conversion succeeds, returns true and places the result in |out|.
-  static bool ParseChunkSize(const char* start, int len, int64_t* out);
+  static bool ParseChunkSize(base::span<const uint8_t> buf, uint64_t* out);
 
   // Indicates the number of bytes remaining for the current chunk.
-  int64_t chunk_remaining_ = 0;
+  // Using uint64_t as it can exceed size_t.
+  uint64_t chunk_remaining_ = 0;
 
   // A small buffer used to store a partial chunk marker.
   std::string line_buf_;

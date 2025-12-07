@@ -30,13 +30,13 @@ bool InsertValue(Rules& rules,
                  const ContentSettingsPattern& primary_pattern,
                  const ContentSettingsPattern& secondary_pattern,
                  base::Value value,
-                 const RuleMetaData& metadata) {
+                 RuleMetaData metadata) {
   ValueEntry& entry = rules[{primary_pattern, secondary_pattern}];
   if (entry.value == value && entry.metadata == metadata) {
     return false;
   }
   entry.value = std::move(value);
-  entry.metadata = metadata;
+  entry.metadata = std::move(metadata);
   return true;
 }
 
@@ -64,12 +64,12 @@ bool EraseValue(HostIndexedContentSettings::HostToContentSettings& index,
 const RuleEntry* FindContentSetting(const GURL& primary_url,
                                     const GURL& secondary_url,
                                     const Rules& settings,
-                                    base::Clock* clock) {
-  const auto it = base::ranges::find_if(settings, [&](const auto& entry) {
+                                    const base::Clock* clock,
+                                    bool return_expired_settings_) {
+  const auto it = std::ranges::find_if(settings, [&](const auto& entry) {
     return entry.first.primary_pattern.Matches(primary_url) &&
            entry.first.secondary_pattern.Matches(secondary_url) &&
-           (base::FeatureList::IsEnabled(
-                content_settings::features::kActiveContentSettingExpiry) ||
+           (return_expired_settings_ ||
             !entry.second.metadata.IsExpired(clock));
   });
   return it == settings.end() ? nullptr : &*it;
@@ -81,7 +81,8 @@ const RuleEntry* FindInHostToContentSettings(
     const HostIndexedContentSettings::HostToContentSettings&
         indexed_content_setting,
     std::string_view host,
-    base::Clock* clock) {
+    const base::Clock* clock,
+    bool return_expired_settings) {
   if (host.empty() || indexed_content_setting.empty()) {
     return nullptr;
   }
@@ -93,8 +94,8 @@ const RuleEntry* FindInHostToContentSettings(
   if (primary_url.HostIsIPAddress()) {
     auto it = indexed_content_setting.find(host);
     if (it != indexed_content_setting.end()) {
-      auto* result =
-          FindContentSetting(primary_url, secondary_url, it->second, clock);
+      auto* result = FindContentSetting(primary_url, secondary_url, it->second,
+                                        clock, return_expired_settings);
       if (result) {
         return result;
       }
@@ -105,7 +106,8 @@ const RuleEntry* FindInHostToContentSettings(
       auto it = indexed_content_setting.find(subdomain);
       if (it != indexed_content_setting.end()) {
         auto* result =
-            FindContentSetting(primary_url, secondary_url, it->second, clock);
+            FindContentSetting(primary_url, secondary_url, it->second, clock,
+                               return_expired_settings);
         if (result) {
           return result;
         }
@@ -182,7 +184,7 @@ HostIndexedContentSettings::Iterator::operator++() {
         // We have reached the end.
         break;
       case Stage::kInvalid:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
   return *this;
@@ -212,7 +214,7 @@ void HostIndexedContentSettings::Iterator::SetStage(Stage stage) {
         break;
       }
       // Fall through to the next index structure if the requested one is empty.
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     case Stage::kSecondaryHost:
       if (!index_->secondary_host_indexed_.empty()) {
         stage_ = Stage::kSecondaryHost;
@@ -220,7 +222,7 @@ void HostIndexedContentSettings::Iterator::SetStage(Stage stage) {
         break;
       }
       // Fall through to the next index structure if the requested one is empty.
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     case Stage::kWildcard:
       stage_ = Stage::kWildcard;
       next_map_iterator_ = {};
@@ -229,23 +231,30 @@ void HostIndexedContentSettings::Iterator::SetStage(Stage stage) {
       current_end_ = index_->wildcard_settings_.end();
       break;
     case Stage::kInvalid:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
-HostIndexedContentSettings::HostIndexedContentSettings()
-    : HostIndexedContentSettings(base::DefaultClock::GetInstance()) {}
+HostIndexedContentSettings::HostIndexedContentSettings(
+    bool return_expired_settings)
+    : HostIndexedContentSettings(base::DefaultClock::GetInstance(),
+                                 return_expired_settings) {}
 
-HostIndexedContentSettings::HostIndexedContentSettings(base::Clock* clock)
-    : clock_(clock) {
+HostIndexedContentSettings::HostIndexedContentSettings(
+    const base::Clock* clock,
+    bool return_expired_settings)
+    : clock_(clock), return_expired_settings_(return_expired_settings) {
   DCHECK(clock);
 }
 
-HostIndexedContentSettings::HostIndexedContentSettings(ProviderType source,
-                                                       bool off_the_record)
+HostIndexedContentSettings::HostIndexedContentSettings(
+    ProviderType source,
+    bool off_the_record,
+    bool return_expired_settings)
     : source_(source),
       off_the_record_(off_the_record),
-      clock_(base::DefaultClock::GetInstance()) {}
+      clock_(base::DefaultClock::GetInstance()),
+      return_expired_settings_(return_expired_settings) {}
 
 HostIndexedContentSettings::HostIndexedContentSettings(
     HostIndexedContentSettings&& other) = default;
@@ -254,7 +263,8 @@ HostIndexedContentSettings& HostIndexedContentSettings::operator=(
 
 // static
 std::vector<HostIndexedContentSettings> HostIndexedContentSettings::Create(
-    const ContentSettingsForOneType& settings) {
+    const ContentSettingsForOneType& settings,
+    bool return_expired_settings) {
   std::vector<HostIndexedContentSettings> indices;
   if (settings.empty()) {
     return indices;
@@ -264,10 +274,12 @@ std::vector<HostIndexedContentSettings> HostIndexedContentSettings::Create(
     // accurate precedence of settings.
     if (indices.empty() || entry.source != indices.back().source_ ||
         entry.incognito != indices.back().off_the_record()) {
-      indices.emplace_back(entry.source, entry.incognito);
+      indices.emplace_back(entry.source, entry.incognito,
+                           return_expired_settings);
     }
     indices.back().SetValue(entry.primary_pattern, entry.secondary_pattern,
-                            entry.setting_value.Clone(), entry.metadata);
+                            entry.setting_value.Clone(),
+                            entry.metadata.Clone());
   }
   return indices;
 }
@@ -285,39 +297,41 @@ const RuleEntry* HostIndexedContentSettings::Find(
     const GURL& primary_url,
     const GURL& secondary_url) const {
   const RuleEntry* found = FindInHostToContentSettings(
-      primary_url, secondary_url, primary_host_indexed_,
-      primary_url.host_piece(), clock_);
+      primary_url, secondary_url, primary_host_indexed_, primary_url.host(),
+      clock_, return_expired_settings_);
   if (found) {
     return found;
   }
-  found = FindInHostToContentSettings(primary_url, secondary_url,
-                                      secondary_host_indexed_,
-                                      secondary_url.host_piece(), clock_);
+  found = FindInHostToContentSettings(
+      primary_url, secondary_url, secondary_host_indexed_, secondary_url.host(),
+      clock_, return_expired_settings_);
   if (found) {
     return found;
   }
   return FindContentSetting(primary_url, secondary_url, wildcard_settings_,
-                            clock_);
+                            clock_, return_expired_settings_);
 }
 
 bool HostIndexedContentSettings::SetValue(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     base::Value value,
-    const RuleMetaData& metadata) {
+    RuleMetaData metadata) {
   DCHECK_EQ(iterating_, 0);
   const std::string& primary_host = primary_pattern.GetHost();
   if (!primary_host.empty()) {
     return InsertValue(primary_host_indexed_[primary_host], primary_pattern,
-                       secondary_pattern, std::move(value), metadata);
+                       secondary_pattern, std::move(value),
+                       std::move(metadata));
   }
   const std::string& secondary_host = secondary_pattern.GetHost();
   if (!secondary_host.empty()) {
     return InsertValue(secondary_host_indexed_[secondary_host], primary_pattern,
-                       secondary_pattern, std::move(value), metadata);
+                       secondary_pattern, std::move(value),
+                       std::move(metadata));
   }
   return InsertValue(wildcard_settings_, primary_pattern, secondary_pattern,
-                     std::move(value), metadata);
+                     std::move(value), std::move(metadata));
 }
 
 bool HostIndexedContentSettings::DeleteValue(
@@ -363,7 +377,7 @@ bool HostIndexedContentSettings::empty() const {
          wildcard_settings_.empty();
 }
 
-void HostIndexedContentSettings::SetClockForTesting(base::Clock* clock) {
+void HostIndexedContentSettings::SetClockForTesting(const base::Clock* clock) {
   clock_ = clock;
 }
 

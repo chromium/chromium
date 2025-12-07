@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,6 +40,7 @@ chrome.settingsPrivate.ControlledBy = {
   EXTENSION: 'EXTENSION',
   PARENT: 'PARENT',
   CHILD_RESTRICTION: 'CHILD_RESTRICTION',
+  SAFE_BROWSING_OFF: 'SAFE_BROWSING_OFF',
 };
 
 /**

@@ -80,6 +80,9 @@ class CookieStoreIOS : public net::CookieStore,
       SetCookiesCallback callback,
       std::optional<net::CookieAccessResult> cookie_access_result =
           std::nullopt) override;
+  void SetUnsafeCanonicalCookieForTestAsync(
+      std::unique_ptr<CanonicalCookie> cookie,
+      SetCookiesCallback callback) override;
   void GetCookieListWithOptionsAsync(
       const GURL& url,
       const net::CookieOptions& options,
@@ -98,7 +101,7 @@ class CookieStoreIOS : public net::CookieStore,
                                   DeleteCallback callback) override;
   void FlushStore(base::OnceClosure callback) override;
   CookieChangeDispatcher& GetChangeDispatcher() override;
-  void SetCookieableSchemes(const std::vector<std::string>& schemes,
+  void SetCookieableSchemes(std::vector<std::string> schemes,
                             SetCookieableSchemesCallback callback) override;
 
  protected:

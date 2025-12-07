@@ -22,7 +22,7 @@ std::unique_ptr<SctpTransportProxy> SctpTransportProxy::Create(
     LocalFrame& frame,
     scoped_refptr<base::SingleThreadTaskRunner> proxy_thread,
     scoped_refptr<base::SingleThreadTaskRunner> host_thread,
-    rtc::scoped_refptr<webrtc::SctpTransportInterface> sctp_transport,
+    webrtc::scoped_refptr<webrtc::SctpTransportInterface> sctp_transport,
     Delegate* delegate) {
   DCHECK(proxy_thread->BelongsToCurrentThread());
   std::unique_ptr<SctpTransportProxy> proxy =
@@ -39,7 +39,7 @@ SctpTransportProxy::SctpTransportProxy(
     LocalFrame& frame,
     scoped_refptr<base::SingleThreadTaskRunner> proxy_thread,
     scoped_refptr<base::SingleThreadTaskRunner> host_thread,
-    rtc::scoped_refptr<webrtc::SctpTransportInterface> sctp_transport,
+    webrtc::scoped_refptr<webrtc::SctpTransportInterface> sctp_transport,
     Delegate* delegate)
     : proxy_thread_(std::move(proxy_thread)),
       host_thread_(std::move(host_thread)),

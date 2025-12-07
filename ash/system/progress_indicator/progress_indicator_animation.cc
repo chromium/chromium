@@ -5,8 +5,8 @@
 #include "ash/system/progress_indicator/progress_indicator_animation.h"
 
 #include "base/task/sequenced_task_runner.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/slide_animation.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 namespace ash {
 
@@ -67,7 +67,7 @@ void ProgressIndicatorAnimation::AnimationEnded(
   // happens, we need to post cyclic restarts rather than restarting them
   // immediately. Otherwise the animation will loop endlessly without providing
   // other code an opportunity to run.
-  if (ui::ScopedAnimationDurationScaleMode::duration_multiplier() == 0.f) {
+  if (gfx::ScopedAnimationDurationScaleMode::duration_multiplier() == 0.f) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&ProgressIndicatorAnimation::StartInternal,
@@ -81,7 +81,7 @@ void ProgressIndicatorAnimation::AnimationEnded(
 void ProgressIndicatorAnimation::StartInternal(bool is_cyclic_restart) {
   animator_ = std::make_unique<gfx::SlideAnimation>(this);
   animator_->SetSlideDuration(
-      ui::ScopedAnimationDurationScaleMode::duration_multiplier() * duration_);
+      gfx::ScopedAnimationDurationScaleMode::duration_multiplier() * duration_);
   animator_->SetTweenType(gfx::Tween::Type::LINEAR);
 
   if (!is_cyclic_restart)

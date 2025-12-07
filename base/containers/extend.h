@@ -5,11 +5,11 @@
 #ifndef BASE_CONTAINERS_EXTEND_H_
 #define BASE_CONTAINERS_EXTEND_H_
 
+#include <algorithm>
 #include <iterator>
+#include <ranges>
 #include <type_traits>
 #include <vector>
-
-#include "base/containers/span.h"
 
 namespace base {
 
@@ -22,20 +22,16 @@ void Extend(std::vector<T>& dst, std::vector<T>&& src) {
   src.clear();
 }
 
-// Append to |dst| all elements of |src| by copying them out of |src|. |src| is
-// not changed.
-//
-// # Implementation note on std::type_identity_t:
-// This overload allows implicit conversions to `span<const T>`, by creating a
-// non-deduced context:
-// https://en.cppreference.com/w/cpp/language/template_argument_deduction#Non-deduced_contexts
-//
-// This would not be possible by just receiving `span<const T>` as the templated
-// `T` can not be deduced (even though it is fixed by the deduction from the
-// `vector<T>` parameter).
-template <typename T>
-void Extend(std::vector<T>& dst, std::type_identity_t<span<const T>> src) {
-  dst.insert(dst.end(), src.begin(), src.end());
+// Appends `range` to `dst`, copying them out of `range`.
+template <typename T, typename Range, typename Proj = std::identity>
+  requires std::ranges::range<Range> &&
+           std::indirectly_unary_invocable<Proj, std::ranges::iterator_t<Range>>
+void Extend(std::vector<T>& dst, Range&& range, Proj proj = {}) {
+  if constexpr (std::ranges::sized_range<Range>) {
+    dst.reserve(dst.size() + std::ranges::size(range));
+  }
+  std::ranges::transform(std::forward<Range>(range), std::back_inserter(dst),
+                         std::move(proj));
 }
 
 }  // namespace base

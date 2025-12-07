@@ -5,37 +5,29 @@
 #include "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
 
 #include "base/functional/bind.h"
-#include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/sessions/core/tab_restore_service_impl.h"
 #include "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_client.h"
 #include "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace {
 
-std::unique_ptr<KeyedService> BuildTabRestoreService(
-    web::BrowserState* context) {
-  DCHECK(!context->IsOffTheRecord());
-
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+std::unique_ptr<KeyedService> BuildTabRestoreService(ProfileIOS* profile) {
+  DCHECK(!profile->IsOffTheRecord());
   return std::make_unique<sessions::TabRestoreServiceImpl>(
       std::make_unique<IOSChromeTabRestoreServiceClient>(
-          browser_state->GetStatePath(),
-          BrowserListFactory::GetForBrowserState(browser_state)),
-      browser_state->GetPrefs(), /*time_factory=*/nullptr);
+          profile->GetStatePath(), BrowserListFactory::GetForProfile(profile)),
+      profile->GetPrefs(), /*time_factory=*/nullptr);
 }
 
 }  // namespace
 
 // static
-sessions::TabRestoreService*
-IOSChromeTabRestoreServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
-  return static_cast<sessions::TabRestoreService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+sessions::TabRestoreService* IOSChromeTabRestoreServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
+  return GetInstance()->GetServiceForProfileAs<sessions::TabRestoreService>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -46,26 +38,21 @@ IOSChromeTabRestoreServiceFactory::GetInstance() {
 }
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactory
+IOSChromeTabRestoreServiceFactory::TestingFactory
 IOSChromeTabRestoreServiceFactory::GetDefaultFactory() {
-  return base::BindRepeating(&BuildTabRestoreService);
+  return base::BindOnce(&BuildTabRestoreService);
 }
 
 IOSChromeTabRestoreServiceFactory::IOSChromeTabRestoreServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "TabRestoreService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("TabRestoreService",
+                                    TestingCreation::kNoServiceForTests) {
   DependsOn(BrowserListFactory::GetInstance());
 }
 
 IOSChromeTabRestoreServiceFactory::~IOSChromeTabRestoreServiceFactory() {}
 
-bool IOSChromeTabRestoreServiceFactory::ServiceIsNULLWhileTesting() const {
-  return true;
-}
-
 std::unique_ptr<KeyedService>
 IOSChromeTabRestoreServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  return BuildTabRestoreService(context);
+    ProfileIOS* profile) const {
+  return BuildTabRestoreService(profile);
 }

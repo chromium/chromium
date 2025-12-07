@@ -17,6 +17,7 @@
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/clipboard/url_file_parser.h"
+#include "ui/base/ui_base_features.h"
 #include "url/gurl.h"
 
 @interface URLAndTitle ()
@@ -50,7 +51,7 @@ namespace {
 // and returns the URLs/titles found within.
 NSArray<URLAndTitle*>* ReadWebURLsWithTitlesPboardType(NSPasteboard* pboard) {
   NSArray* bookmark_pairs = base::apple::ObjCCast<NSArray>(
-      [pboard propertyListForType:kUTTypeWebKitWebURLsWithTitles]);
+      [pboard propertyListForType:kUTTypeWebKitWebUrlsWithTitles]);
   if (!bookmark_pairs) {
     return [NSArray array];
   }
@@ -140,7 +141,7 @@ URLAndTitle* ExtractStandardURLAndTitle(NSPasteboardItem* item) {
     return nil;
   }
 
-  NSString* title = [item stringForType:kUTTypeURLName];
+  NSString* title = [item stringForType:kUTTypeUrlName];
 
   if (!title) {
     // If there is no title on the drag, check to see if it's a URL drag
@@ -228,7 +229,8 @@ URLAndTitle* ExtractURLFromURLFile(NSPasteboardItem* item) {
 
 // Returns a URL and title if a string on the pasteboard item is formatted as a
 // URL but doesn't actually have the URL type.
-URLAndTitle* ExtractURLFromStringValue(NSPasteboardItem* item) {
+URLAndTitle* ExtractURLFromStringValue(NSPasteboardItem* item,
+                                       bool is_renderer_tainted) {
   NSString* string = [item stringForType:NSPasteboardTypeString];
   if (!string) {
     return nil;
@@ -250,9 +252,16 @@ URLAndTitle* ExtractURLFromStringValue(NSPasteboardItem* item) {
     return nil;
   }
 
+  if (base::FeatureList::IsEnabled(
+          features::kDragDropOnlySynthesizeHttpOrHttpsUrlsFromText) &&
+      is_renderer_tainted && !url.SchemeIsHTTPOrHTTPS()) {
+    return nil;
+  }
+
   // The hostname is the best that can be done for the title.
-  return [URLAndTitle URLAndTitleWithURL:string
-                                   title:base::SysUTF8ToNSString(url.host())];
+  return
+      [URLAndTitle URLAndTitleWithURL:string
+                                title:base::SysUTF8ToNSString(url.GetHost())];
 }
 
 // If there is a file URL on the pasteboard, returns that file as the URL. For
@@ -275,6 +284,8 @@ NSArray<URLAndTitle*>* ReadURLItemsWithTitles(NSPasteboard* pboard,
                                               bool include_files) {
   NSMutableArray<URLAndTitle*>* result = [NSMutableArray array];
 
+  const bool is_renderer_tainted =
+      [pboard.types containsObject:kUTTypeChromiumRendererInitiatedDrag];
   for (NSPasteboardItem* item in pboard.pasteboardItems) {
     // Try each of several ways of getting URLs from the pasteboard item and
     // stop with the first one that works.
@@ -286,7 +297,7 @@ NSArray<URLAndTitle*>* ReadURLItemsWithTitles(NSPasteboard* pboard,
     }
 
     if (!url_and_title) {
-      url_and_title = ExtractURLFromStringValue(item);
+      url_and_title = ExtractURLFromStringValue(item, is_renderer_tainted);
     }
 
     if (!url_and_title && include_files) {
@@ -333,14 +344,14 @@ NSArray<NSPasteboardItem*>* PasteboardItemsFromUrls(
     [item setString:url_string forType:NSPasteboardTypeString];
     [item setString:url_string forType:NSPasteboardTypeURL];
     if (title.length) {
-      [item setString:title forType:kUTTypeURLName];
+      [item setString:title forType:kUTTypeUrlName];
     }
 
     // Safari puts the "Web URLs and Titles" pasteboard type onto the first
     // pasteboard item.
     if (i == 0) {
       [item setPropertyList:@[ urls, titles ]
-                    forType:kUTTypeWebKitWebURLsWithTitles];
+                    forType:kUTTypeWebKitWebUrlsWithTitles];
     }
 
     [items addObject:item];

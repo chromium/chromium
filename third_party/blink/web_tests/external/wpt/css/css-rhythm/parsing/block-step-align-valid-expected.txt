@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] e.style['block-step-align'] = "auto" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step-align'] = "center" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step-align'] = "start" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step-align'] = "end" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+Harness: the test ran to completion.
+

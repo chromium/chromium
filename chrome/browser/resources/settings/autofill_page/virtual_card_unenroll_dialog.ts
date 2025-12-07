@@ -51,9 +51,7 @@ export class SettingsVirtualCardUnenrollDialogElement extends PolymerElement {
     };
   }
 
-  creditCard: chrome.autofillPrivate.CreditCardEntry;
-  private title_: string;
-  private label_: string;
+  declare creditCard: chrome.autofillPrivate.CreditCardEntry;
 
   close() {
     this.$.dialog.close();

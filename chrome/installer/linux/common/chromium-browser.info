@@ -1,0 +1,42 @@
+# Copyright 2009 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# This file provides common configuration information for building
+# chromium-browser packages for various platforms.
+
+# Base name of the package.
+PACKAGE="chromium-browser"
+
+# Filename of the main executable (for generating launcher scripts, etc.)
+PROGNAME=chrome
+
+# Base directory for package installation.
+INSTALLDIR=/opt/chromium.org/chromium
+
+# Directory for device policy enrollments.
+ENROLLMENTDIR=/etc/chromium/policies/enrollment
+
+# Display string for desktop menu/icon.
+MENUNAME="Chromium Web Browser"
+
+# Brief package description.
+SHORTDESC="The web browser from the Chromium projects"
+
+# Detailed package description.
+FULLDESC="Chromium is a browser that combines a minimal design with sophisticated technology to make the web faster, safer, and easier."
+
+# Package maintainer information.
+MAINTNAME="Chromium Linux Team"
+MAINTMAIL="chromium-packagers@chromium.org"
+PRODUCTURL="https://www.chromium.org/Home"
+
+PROJECT_LICENSE="BSD-3-Clause and LGPL-2.1+ and Apache-2.0 and IJG and MIT and GPL-2.0+ and ISC and OpenSSL and (MPL-1.1 or GPL-2.0 or LGPL-2.0)"
+
+DEVELOPER_NAME="The Chromium Authors"
+
+BUGTRACKERURL="https://www.chromium.org/for-testers/bug-reporting-guidelines"
+
+HELPURL="https://chromium.googlesource.com/chromium/src/+/main/docs/linux/debugging.md"
+
+RDN="org.chromium.Chromium"

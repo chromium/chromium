@@ -41,33 +41,38 @@ public class ContextMenuUtils {
     }
 
     /**
-     * Opens a context menu.
-     * @param tab                   The tab to open a context menu for.
-     * @param openerDOMNodeId       The DOM node to long press to open the context menu for.
-     * @return                      The {@link ContextMenuCoordinator} of the context menu.
-     * @throws TimeoutException
+     * Opens a context menu after scrolling to the given element.
+     *
+     * @param tab The tab to open a context menu for.
+     * @param openerDOMNodeId The DOM node to long press to open the context menu for.
+     * @return The {@link ContextMenuCoordinator} of the context menu.
      */
     public static ContextMenuCoordinator openContextMenu(Tab tab, String openerDOMNodeId)
-            throws TimeoutException {
-        String jsCode = "document.getElementById('" + openerDOMNodeId + "')";
-        return openContextMenuByJs(tab, jsCode);
-    }
-
-    /**
-     * Opens a context menu.
-     * @param tab                   The tab to open a context menu for.
-     * @param jsCode                The javascript to get the DOM node to long press to
-     *                              open the context menu for.
-     * @return                      The {@link ContextMenuCoordinator} of the context menu.
-     * @throws TimeoutException
-     */
-    private static ContextMenuCoordinator openContextMenuByJs(Tab tab, String jsCode)
             throws TimeoutException {
         final OnContextMenuShownHelper helper = new OnContextMenuShownHelper();
         ContextMenuHelper.setMenuShownCallbackForTests(helper::notifyCalled);
 
         int callCount = helper.getCallCount();
-        DOMUtils.longPressNodeByJs(tab.getWebContents(), jsCode);
+        DOMUtils.longPressNode(tab.getWebContents(), openerDOMNodeId);
+
+        helper.waitForCallback(callCount);
+        return helper.getContextMenuCoordinator();
+    }
+
+    /**
+     * Opens a context menu with a right click.
+     *
+     * @param tab The tab to open a context menu for.
+     * @param jsCode The javascript to get the DOM node to right click to open the context menu for.
+     * @return The {@link ContextMenuCoordinator} of the context menu.
+     */
+    private static ContextMenuCoordinator openContextMenuByJsFromRightClick(Tab tab, String jsCode)
+            throws TimeoutException {
+        final OnContextMenuShownHelper helper = new OnContextMenuShownHelper();
+        ContextMenuHelper.setMenuShownCallbackForTests(helper::notifyCalled);
+
+        int callCount = helper.getCallCount();
+        DOMUtils.rightClickNodeByJs(tab.getWebContents(), jsCode);
 
         helper.waitForCallback(callCount);
         return helper.getContextMenuCoordinator();
@@ -75,11 +80,11 @@ public class ContextMenuUtils {
 
     /**
      * Opens and selects an item from a context menu.
-     * @param tab                   The tab to open a context menu for.
-     * @param openerDOMNodeId       The DOM node to long press to open the context menu for.
-     * @param itemId                The context menu item ID to select.
-     * @param activity              The activity to assert for gaining focus after click or null.
-     * @throws TimeoutException
+     *
+     * @param tab The tab to open a context menu for.
+     * @param openerDOMNodeId The DOM node to long press to open the context menu for.
+     * @param itemId The context menu item ID to select.
+     * @param activity The activity to assert for gaining focus after click or null.
      */
     public static void selectContextMenuItem(
             Instrumentation instrumentation,
@@ -88,22 +93,40 @@ public class ContextMenuUtils {
             String openerDOMNodeId,
             final int itemId)
             throws TimeoutException {
+        selectContextMenuItemByJs(instrumentation, activity, tab, openerDOMNodeId, itemId);
+    }
+
+    /**
+     * Opens a context menu with right click and selects an item from it.
+     *
+     * @param tab The tab to open a context menu for.
+     * @param openerDOMNodeId The DOM node to long press to open the context menu for.
+     * @param itemId The context menu item ID to select.
+     * @param activity The activity to assert for gaining focus after click or null.
+     */
+    public static void selectContextMenuItemFromRightClick(
+            Instrumentation instrumentation,
+            Activity activity,
+            Tab tab,
+            String openerDOMNodeId,
+            final int itemId)
+            throws TimeoutException {
         String jsCode = "document.getElementById('" + openerDOMNodeId + "')";
-        selectContextMenuItemByJs(instrumentation, activity, tab, jsCode, itemId);
+        selectContextMenuItemByJsFromRightClick(instrumentation, activity, tab, jsCode, itemId);
     }
 
     /**
      * Opens and selects an item from a context menu asserting that an intent will be sent with a
-     * specific package name.
-     * the app will then send an intent to (which is verified by a downstream assertion).
-     * @param instrumentation       Instrumentation module used for executing test behavior.
-     * @param expectedActivity      The activity to assert for gaining focus after click or null.
-     * @param tab                   The tab to open a context menu for.
-     * @param openerDOMNodeId       The DOM node to long press to open the context menu for.
-     * @param itemId                The context menu item ID to select.
+     * specific package name. the app will then send an intent to (which is verified by a downstream
+     * assertion).
+     *
+     * @param instrumentation Instrumentation module used for executing test behavior.
+     * @param expectedActivity The activity to assert for gaining focus after click or null.
+     * @param tab The tab to open a context menu for.
+     * @param openerDOMNodeId The DOM node to long press to open the context menu for.
+     * @param itemId The context menu item ID to select.
      * @param expectedIntentPackage If firing an external intent the expected package name of the
-     *         target.
-     * @throws TimeoutException
+     *     target.
      */
     public static void selectContextMenuItemWithExpectedIntent(
             Instrumentation instrumentation,
@@ -113,22 +136,26 @@ public class ContextMenuUtils {
             final int itemId,
             String expectedIntentPackage)
             throws TimeoutException {
-        String jsCode = "document.getElementById('" + openerDOMNodeId + "')";
         selectContextMenuItemByJs(
-                instrumentation, expectedActivity, tab, jsCode, itemId, expectedIntentPackage);
+                instrumentation,
+                expectedActivity,
+                tab,
+                openerDOMNodeId,
+                itemId,
+                expectedIntentPackage);
     }
 
     /**
-     * Selects the context menu chip asserting that an intent will be sent with a
-     * specific package name.  Note that this method does not open the context menu.
-     * @param instrumentation       Instrumentation module used for executing test behavior.
-     * @param expectedActivity      The activity to assert for gaining focus after click or null.
-     * @param menuCoordinator       The menu coordinator which manages the context menu.
-     * @param openerDOMNodeId       The DOM node to long press to open the context menu for.
-     * @param itemId                The context menu item ID to select.
+     * Selects the context menu chip asserting that an intent will be sent with a specific package
+     * name. Note that this method does not open the context menu.
+     *
+     * @param instrumentation Instrumentation module used for executing test behavior.
+     * @param expectedActivity The activity to assert for gaining focus after click or null.
+     * @param menuCoordinator The menu coordinator which manages the context menu.
+     * @param openerDOMNodeId The DOM node to long press to open the context menu for.
+     * @param itemId The context menu item ID to select.
      * @param expectedIntentPackage If firing an external intent the expected package name of the
-     *         target.
-     * @throws TimeoutException
+     *     target.
      */
     public static void selectAlreadyOpenedContextMenuChipWithExpectedIntent(
             Instrumentation instrumentation,
@@ -146,24 +173,23 @@ public class ContextMenuUtils {
 
     /**
      * Long presses to open and selects an item from a context menu.
-     * @param instrumentation       Instrumentation module used for executing test behavior.
-     * @param expectedActivity      The activity to assert for gaining focus after click or null.
-     * @param tab                   The tab to open a context menu for.
-     * @param jsCode                The javascript to get the DOM node to long press
-     *                              to open the context menu for.
-     * @param itemId                The context menu item ID to select.
+     *
+     * @param instrumentation Instrumentation module used for executing test behavior.
+     * @param expectedActivity The activity to assert for gaining focus after click or null.
+     * @param tab The tab to open a context menu for.
+     * @param openerDOMNodeId The DOM node to long press to open the context menu for.
+     * @param itemId The context menu item ID to select.
      * @param expectedIntentPackage If expecting an external intent the expected package name.
-     * @throws TimeoutException
      */
     public static void selectContextMenuItemByJs(
             Instrumentation instrumentation,
             Activity expectedActivity,
             Tab tab,
-            String jsCode,
+            String openerDOMNodeId,
             final int itemId,
             String expectedIntentPackage)
             throws TimeoutException {
-        ContextMenuCoordinator menu = openContextMenuByJs(tab, jsCode);
+        ContextMenuCoordinator menu = openContextMenu(tab, openerDOMNodeId);
         Assert.assertNotNull("Failed to open context menu", menu);
 
         selectOpenContextMenuItem(
@@ -172,21 +198,38 @@ public class ContextMenuUtils {
 
     /**
      * Long presses to open and selects an item from a context menu.
-     * @param tab                   The tab to open a context menu for.
-     * @param jsCode                The javascript to get the DOM node to long press
-     *                              to open the context menu for.
-     * @param itemId                The context menu item ID to select.
-     * @param activity              The activity to assert for gaining focus after click or null.
-     * @throws TimeoutException
+     *
+     * @param tab The tab to open a context menu for.
+     * @param openerDOMNodeId The DOM node to long press to open the context menu for.
+     * @param itemId The context menu item ID to select.
+     * @param activity The activity to assert for gaining focus after click or null.
      */
     private static void selectContextMenuItemByJs(
+            Instrumentation instrumentation,
+            Activity activity,
+            Tab tab,
+            String openerDOMNodeId,
+            final int itemId)
+            throws TimeoutException {
+        selectContextMenuItemByJs(instrumentation, activity, tab, openerDOMNodeId, itemId, null);
+    }
+
+    /**
+     * Right click to open and selects an item from a context menu.
+     *
+     * @param tab The tab to open a context menu for.
+     * @param jsCode The javascript to get the DOM node to long press to open the context menu for.
+     * @param itemId The context menu item ID to select.
+     * @param activity The activity to assert for gaining focus after click or null.
+     */
+    private static void selectContextMenuItemByJsFromRightClick(
             Instrumentation instrumentation,
             Activity activity,
             Tab tab,
             String jsCode,
             final int itemId)
             throws TimeoutException {
-        ContextMenuCoordinator menuCoordinator = openContextMenuByJs(tab, jsCode);
+        ContextMenuCoordinator menuCoordinator = openContextMenuByJsFromRightClick(tab, jsCode);
         Assert.assertNotNull("Failed to open context menu", menuCoordinator);
 
         selectOpenContextMenuItem(instrumentation, activity, menuCoordinator, itemId);
@@ -197,11 +240,7 @@ public class ContextMenuUtils {
             final Activity activity,
             final ContextMenuCoordinator menuCoordinator,
             final int itemId) {
-        instrumentation.runOnMainSync(() -> menuCoordinator.clickListItemForTesting(itemId));
-
-        if (activity != null) {
-            CriteriaHelper.pollInstrumentationThread(activity::hasWindowFocus);
-        }
+        selectOpenContextMenuItem(instrumentation, activity, menuCoordinator, itemId, null);
     }
 
     private static void selectOpenContextMenuItem(

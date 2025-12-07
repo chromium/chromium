@@ -7,7 +7,10 @@ package org.chromium.chrome.browser;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
+import android.os.Build.VERSION_CODES;
 import android.text.TextUtils;
+import android.util.Size;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
@@ -25,16 +28,21 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.insets.WindowInsetsUtils;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
 import org.chromium.ui.test.util.RenderTestRule;
 
@@ -53,16 +61,18 @@ import java.util.concurrent.atomic.AtomicReference;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    "enable-features=ViewTransitionOnNavigation",
     // Resampling can make scroll offsets non-deterministic so turn it off to ensure hiding browser
-    // controls works reliably.
-    "disable-features=ResamplingScrollEvents",
+    // controls works reliably;
+    // Disable edge to edge as part of the test is measuring the keyboard's height, which differs
+    // depending on whether Chrome is drawn e2e.
+    "disable-features=ResamplingScrollEvents,DrawCutoutEdgeToEdge,EdgeToEdgeBottomChin",
     "hide-scrollbars"
 })
 @Batch(Batch.PER_CLASS)
 public class ViewTransitionPixelTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
@@ -72,8 +82,6 @@ public class ViewTransitionPixelTest {
 
     private static final String TEXTFIELD_DOM_ID = "inputElement";
     private static final int TEST_TIMEOUT = 10000;
-
-    private EmbeddedTestServer mTestServer;
 
     private ViewportTestUtils mViewportTestUtils;
 
@@ -85,9 +93,6 @@ public class ViewTransitionPixelTest {
 
     @Before
     public void setUp() {
-        mTestServer =
-                EmbeddedTestServer.createAndStartServer(
-                        ApplicationProvider.getApplicationContext());
         mViewportTestUtils = new ViewportTestUtils(mActivityTestRule);
         mViewportTestUtils.setUpForBrowserControls();
     }
@@ -104,8 +109,8 @@ public class ViewTransitionPixelTest {
             Assert.fail("Unexpected virtual keyboard mode");
         }
 
-        mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(url));
-        mActivityTestRule.waitForActivityNativeInitializationComplete();
+        mActivityTestRule.startOnTestServerUrl(url);
+        mActivityTestRule.getActivityTestRule().waitForActivityNativeInitializationComplete();
 
         mInitialPageHeight = mViewportTestUtils.getPageInnerHeightPx();
         mInitialVVHeight = mViewportTestUtils.getVisualViewportHeightPx();
@@ -118,7 +123,6 @@ public class ViewTransitionPixelTest {
                             mActivityTestRule
                                     .getKeyboardDelegate()
                                     .isKeyboardShowing(
-                                            mActivityTestRule.getActivity(),
                                             mActivityTestRule.getActivity().getTabsView());
                     Criteria.checkThat(isKeyboardShowing, Matchers.is(show));
                 },
@@ -127,7 +131,7 @@ public class ViewTransitionPixelTest {
     }
 
     private WebContents getWebContents() {
-        return mActivityTestRule.getActivity().getActivityTab().getWebContents();
+        return mActivityTestRule.getActivityTab().getWebContents();
     }
 
     private void showAndWaitForKeyboard() throws Throwable {
@@ -141,7 +145,7 @@ public class ViewTransitionPixelTest {
 
         assertWaitForKeyboardStatus(true);
 
-        double keyboardHeight = getKeyboardHeightDp();
+        int keyboardHeight = getKeyboardHeightPx();
 
         if (mVirtualKeyboardMode == VirtualKeyboardMode.RESIZES_VISUAL) {
             mViewportTestUtils.waitForExpectedVisualViewportHeight(
@@ -171,22 +175,16 @@ public class ViewTransitionPixelTest {
         }
     }
 
-    private double getKeyboardHeightDp() {
-        double keyboardHeightPx =
-                mActivityTestRule
-                        .getKeyboardDelegate()
-                        .calculateTotalKeyboardHeight(
-                                mActivityTestRule
-                                        .getActivity()
-                                        .getWindow()
-                                        .getDecorView()
-                                        .getRootView());
-        return keyboardHeightPx / mViewportTestUtils.getDeviceScaleFactor();
+    private int getKeyboardHeightPx() {
+        return mActivityTestRule
+                .getKeyboardDelegate()
+                .calculateTotalKeyboardHeight(
+                        mActivityTestRule.getActivity().getWindow().getDecorView().getRootView());
     }
 
     private void setLocationAndWaitForLoad(String url) {
         ChromeTabUtils.waitForTabPageLoaded(
-                mActivityTestRule.getActivity().getActivityTab(),
+                mActivityTestRule.getActivityTab(),
                 url,
                 () -> {
                     try {
@@ -266,8 +264,7 @@ public class ViewTransitionPixelTest {
     }
 
     private String getCurrentUrl() {
-        return ChromeTabUtils.getUrlStringOnUiThread(
-                mActivityTestRule.getActivity().getActivityTab());
+        return ChromeTabUtils.getUrlStringOnUiThread(mActivityTestRule.getActivityTab());
     }
 
     /**
@@ -280,6 +277,7 @@ public class ViewTransitionPixelTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "crbug.com/435692206")
     public void testVirtualKeyboardResizesVisual() throws Throwable {
         startKeyboardTest(VirtualKeyboardMode.RESIZES_VISUAL);
 
@@ -322,7 +320,32 @@ public class ViewTransitionPixelTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "crbug.com/435692206")
     public void testVirtualKeyboardResizesContent() throws Throwable {
+        doTestVirtualKeyboardResizesContent();
+    }
+
+    /**
+     * Same as {@code #testVirtualKeyboardResizesContent()}, but assuming the presence of caption
+     * bar insets to draw custom app headers. This is known to have caused regressions in bottom
+     * Chrome UI placement when OSK is visible.
+     */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @MinAndroidSdkLevel(VERSION_CODES.R)
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @DisabledTest(message = "crbug.com/435692206")
+    public void testVirtualKeyboardResizesContent_ValidCaptionBarFrame() throws Throwable {
+        // Simulate fullscreen window behavior in an environment that supports Android V custom app
+        // header APIs.
+        WindowInsetsUtils.setFrameForTesting(new Size(2560, 1600));
+        WindowInsetsUtils.setWidestUnoccludedRectForTesting(new Rect());
+
+        doTestVirtualKeyboardResizesContent();
+    }
+
+    private void doTestVirtualKeyboardResizesContent() throws Throwable {
         startKeyboardTest(VirtualKeyboardMode.RESIZES_CONTENT);
 
         showAndWaitForKeyboard();
@@ -366,8 +389,8 @@ public class ViewTransitionPixelTest {
     @Feature({"RenderTest"})
     public void testDialog() throws Throwable {
         String url = "/chrome/test/data/android/view_transition_dialog.html";
-        mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(url));
-        mActivityTestRule.waitForActivityNativeInitializationComplete();
+        mActivityTestRule.startOnTestServerUrl(url);
+        mActivityTestRule.getActivityTestRule().waitForActivityNativeInitializationComplete();
 
         createTransitionAndWaitUntilDomUpdateDispatched();
 
@@ -396,8 +419,8 @@ public class ViewTransitionPixelTest {
     @Feature({"RenderTest"})
     public void testPageWiderThanICB() throws Throwable {
         String url = "/chrome/test/data/android/view_transition_wider_than_icb.html";
-        mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(url));
-        mActivityTestRule.waitForActivityNativeInitializationComplete();
+        mActivityTestRule.startOnTestServerUrl(url);
+        mActivityTestRule.getActivityTestRule().waitForActivityNativeInitializationComplete();
 
         createTransitionAndWaitUntilDomUpdateDispatched();
 
@@ -431,8 +454,8 @@ public class ViewTransitionPixelTest {
     @Feature({"RenderTest"})
     public void testBrowserControlsRootSnapshotControlsOverlay() throws Throwable {
         String url = "/chrome/test/data/android/view_transition_browser_controls.html";
-        mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(url));
-        mActivityTestRule.waitForActivityNativeInitializationComplete();
+        mActivityTestRule.startOnTestServerUrl(url);
+        mActivityTestRule.getActivityTestRule().waitForActivityNativeInitializationComplete();
 
         mViewportTestUtils.hideBrowserControls();
 
@@ -476,10 +499,11 @@ public class ViewTransitionPixelTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "crbug.com/387372707")
     public void testBrowserControlsRootSnapshotControlsPush() throws Throwable {
         String url = "/chrome/test/data/android/view_transition_browser_controls.html";
-        mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(url));
-        mActivityTestRule.waitForActivityNativeInitializationComplete();
+        mActivityTestRule.startOnTestServerUrl(url);
+        mActivityTestRule.getActivityTestRule().waitForActivityNativeInitializationComplete();
 
         mViewportTestUtils.hideBrowserControls();
 
@@ -517,8 +541,8 @@ public class ViewTransitionPixelTest {
     @Feature({"RenderTest"})
     public void testBrowserControlsChildSnapshotControlsOverlay() throws Throwable {
         String url = "/chrome/test/data/android/view_transition_browser_controls_child.html";
-        mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(url));
-        mActivityTestRule.waitForActivityNativeInitializationComplete();
+        mActivityTestRule.startOnTestServerUrl(url);
+        mActivityTestRule.getActivityTestRule().waitForActivityNativeInitializationComplete();
 
         mViewportTestUtils.hideBrowserControls();
 
@@ -561,10 +585,11 @@ public class ViewTransitionPixelTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "crbug.com/387365717")
     public void testBrowserControlsChildSnapshotControlsPush() throws Throwable {
         String url = "/chrome/test/data/android/view_transition_browser_controls_child.html";
-        mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(url));
-        mActivityTestRule.waitForActivityNativeInitializationComplete();
+        mActivityTestRule.startOnTestServerUrl(url);
+        mActivityTestRule.getActivityTestRule().waitForActivityNativeInitializationComplete();
 
         mViewportTestUtils.hideBrowserControls();
 

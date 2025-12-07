@@ -1,3 +1,6 @@
+// Keep in sync with:
+// wpt_internal/isolated-permissions-policy/feature-policy-features-listing.js
+
 // * |platformSpecific| determines the platform-filtering of features. Only
 //   platform-specific features will be tested if set to true, and only
 //   all-platform features will be used if set to false.

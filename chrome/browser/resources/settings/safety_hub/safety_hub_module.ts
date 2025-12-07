@@ -8,6 +8,7 @@
  * state of Chrome.
  */
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
@@ -77,14 +78,13 @@ export class SettingsSafetyHubModuleElement extends
       // The string for the subheader label.
       subheader: String,
 
-      // The icon for the module.
+      // The icon for the module. Optional.
       headerIcon: {
         String,
-        value: 'cr:error',
         observer: 'onHeaderIconChanged_',
       },
 
-      // The color of the header-icon.
+      // The color of the header-icon. Optional.
       headerIconColor: String,
 
       // The icon for the button of the list item.
@@ -108,16 +108,17 @@ export class SettingsSafetyHubModuleElement extends
     };
   }
 
-  sites: SiteInfo[];
-  header: string;
-  subheader: string|TrustedHTML;
-  headerIcon: string;
-  headerIconColor: string;
-  buttonIcon: string;
-  buttonAriaLabelId: string;
-  buttonTooltipText: string;
-  moreButtonAriaLabelId: string;
-  moreActionVisible: boolean;
+  declare sites: SiteInfo[];
+  declare animated: boolean;
+  declare header: string;
+  declare subheader: string|TrustedHTML;
+  declare headerIcon: string;
+  declare headerIconColor: string;
+  declare buttonIcon: string;
+  declare buttonAriaLabelId: string;
+  declare buttonTooltipText: string;
+  declare moreButtonAriaLabelId: string;
+  declare moreActionVisible: boolean;
 
   private modelUpdateDelayMsForTesting_: number|null = null;
 
@@ -140,6 +141,10 @@ export class SettingsSafetyHubModuleElement extends
     for (const item of items) {
       const links = item.querySelectorAll('a');
       links.forEach((link) => {
+        if (link.target === '_blank') {
+          link.setAttribute('aria-description', this.i18n('opensInNewTab'));
+        }
+
         link.addEventListener('click', function() {
           this.dispatchEvent(new CustomEvent(
               'sh-module-item-link-click',
@@ -191,13 +196,13 @@ export class SettingsSafetyHubModuleElement extends
     // Remove the item that corresponds to |origin|. If no origin is specified,
     // remove all items.
     let removedAll = (origin === null);
-    for (let i = 0; i < this.sites!.length; ++i) {
-      if (origin === null || origin === this.sites![i]!.origin) {
-        items[i]!.classList.add('hiding');
+    for (let i = 0; i < this.sites.length; ++i) {
+      if (origin === null || origin === this.sites[i].origin) {
+        items[i].classList.add('hiding');
         if (origin) {
           // If this is the last site being removed, the visuals should be
           // the same as if all sites were removed.
-          removedAll ||= (this.sites!.length === 1);
+          removedAll ||= (this.sites.length === 1);
           break;
         }
       }
@@ -234,8 +239,8 @@ export class SettingsSafetyHubModuleElement extends
 
     let wasEmpty = true;
     for (let i = 0; i < items.length; ++i) {
-      if (origins.includes(this.sites![i]!.origin)) {
-        items[i]!.classList.add('showing');
+      if (origins.includes(this.sites[i].origin)) {
+        items[i].classList.add('showing');
       } else {
         // If at least one item doesn't need showing, there was at least
         // one already rendered item.
@@ -257,6 +262,18 @@ export class SettingsSafetyHubModuleElement extends
       setTimeout(callback, delayMs);
     }
     setTimeout(this.finalizeAnimation_.bind(this), delayMs);
+  }
+
+  /** Focus the main button for the given |origin|, if it exists. */
+  focusOriginMainButton(origin: string) {
+    for (const item of this.shadowRoot!.querySelectorAll<HTMLElement>(
+             '#siteList .list-item')) {
+      const siteRepresentation = item.querySelector('.site-representation');
+      if (siteRepresentation && siteRepresentation.innerHTML === origin) {
+        item.querySelector<HTMLElement>('#mainButton')!.focus();
+        return;
+      }
+    }
   }
 
   private finalizeAnimation_() {

@@ -19,6 +19,7 @@
 <translation id="115443833402798225">Hangul ahnmatae</translation>
 <translation id="1155759005174418845">Katalonska</translation>
 <translation id="1168100932582989117">Googleovi serveri naziva</translation>
+<translation id="1170788066030116158">Datum snimanja</translation>
 <translation id="1172970565351728681">Preostalo je oko <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Promijeni naziv</translation>
 <translation id="1173916544412572294">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, baterija telefona <ph name="BATTERY_STATUS" />%, detalji</translation>
@@ -34,6 +35,7 @@
 <translation id="1249250836236328755">Žanr</translation>
 <translation id="1254593899333212300">Direktna internetska veza</translation>
 <translation id="1272293450992660632">Vrijednosti PIN-a se ne podudaraju.</translation>
+<translation id="1279040297980392566">Čekanje završetka skeniranja. Pokušajte ponovo kasnije</translation>
 <translation id="1280820357415527819">Traženje mobilnih mreža</translation>
 <translation id="1293556467332435079">Fajlovi</translation>
 <translation id="1297922636971898492">Google Disk trenutno nije dostupan. Otpremanje će se automatski ponovo pokrenuti čim Google Disk bude opet na raspolaganju.</translation>
@@ -72,6 +74,7 @@
 <translation id="1577977504532381335">Pregledajte pravila administratora</translation>
 <translation id="158849752021629804">Potrebna je matična mreža</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1601786938618212857">ZIP</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="162175252992296058">portugalski s međunarodnom SAD tastaturom</translation>
 <translation id="1629521517399325891">Korisnički certifikat nije dostupan za autentifikaciju mreže.</translation>
@@ -105,6 +108,7 @@
 <translation id="1810764548349082891">Nema dostupnog pregleda</translation>
 <translation id="1812302367230252929">amharski (transliteracija)</translation>
 <translation id="1813278315230285598">Usluge</translation>
+<translation id="181434555916624618">Zasad se ne prikazuju rezultati s osobama. Pokušajte s drugim upitom.</translation>
 <translation id="1829129547161959350">Pingvin</translation>
 <translation id="183183971458492120">Učitavanje informacija…</translation>
 <translation id="1832073788765803750">Uska katakana</translation>
@@ -135,7 +139,6 @@
 <translation id="2084809735218147718">Daje znak "hvala"</translation>
 <translation id="2088690981887365033">VPN mreža</translation>
 <translation id="209653272837065803">Nema dovoljno prostora za pohranu da se fajlovi nastave sinhronizirati</translation>
-<translation id="2111134541987263231">Uključite <ph name="BEGIN_BOLD" />Dozvoli u anonimnom načinu rada<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086">Stavke (njih <ph name="NUMBER_OF_ITEMS" />) će se izbrisati i nećete ih moći vratiti.</translation>
 <translation id="2122305276694332719">Automatskim povezivanjem na skrivenu mrežu će se omogućiti drugima da vide vaš uređaj i neke postavke mreže, a to nije preporučljivo.</translation>
 <translation id="2125607626296734455">kmerski</translation>
@@ -166,7 +169,6 @@
 <translation id="2304820083631266885">Planeta</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> je izbačen.</translation>
 <translation id="2307462900900812319">Konfiguriraj mrežu</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{Nije moguće pronaći ekstenziju s ID-om <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Kontaktirajte administratora.}one{Nije moguće pronaći ekstenzije s ID-om <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Kontaktirajte administratora.}few{Nije moguće pronaći ekstenzije s ID-om <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Kontaktirajte administratora.}other{Nije moguće pronaći ekstenzije s ID-om <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Kontaktirajte administratora.}}</translation>
 <translation id="2325650632570794183">Ova vrsta fajla nije podržana. Posjetite Chrome Web trgovinu da pronađete aplikaciju koja može otvoriti ovu vrstu fajla.</translation>
 <translation id="2326539130272988168">bugarski</translation>
 <translation id="233822363739146957">Nema dovoljno prostora za pohranu da se svi fajlovi sinhroniziraju</translation>
@@ -238,7 +240,6 @@
 <translation id="290843123675549676">marati</translation>
 <translation id="2923240520113693977">Estonska</translation>
 <translation id="2938685643439809023">Mongolska</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{Nije moguće pronaći ekstenziju}one{Nije moguće pronaći ekstenzije}few{Nije moguće pronaći ekstenzije}other{Nije moguće pronaći ekstenzije}}</translation>
 <translation id="2943503720238418293">Koristite kraći naziv</translation>
 <translation id="2949781154072577687">Formatiranje diska <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">Meduza</translation>
@@ -295,7 +296,6 @@
 <translation id="3356580349448036450">Završi</translation>
 <translation id="3358452157379365236">Gitara</translation>
 <translation id="3368922792935385530">Povezano</translation>
-<translation id="3372635229069101468">Kliknite na <ph name="BEGIN_BOLD" />Detalji<ph name="END_BOLD" /></translation>
 <translation id="3382143449143186018">nepalski s tastaturom InScript</translation>
 <translation id="338691029516748599">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, upravlja vaš administrator, poveži</translation>
 <translation id="3408072735282270043">Aktiviranje, <ph name="NETWORK_NAME" /></translation>
@@ -354,7 +354,6 @@
 <translation id="3811494700605067549">Odabran je 1 fajl</translation>
 <translation id="3817579325494460411">Nije navedeno</translation>
 <translation id="3819448694985509187">Pogrešan PIN. Imate još 1 pokušaj.</translation>
-<translation id="3822559385185038546">Ovaj proksi server je nametnuo vaš administrator</translation>
 <translation id="3830674330436234648">Reproduciranje nije dostupno</translation>
 <translation id="383652340667548381">Srpska</translation>
 <translation id="3839045880592694915">Operater ne dozvoljava povezivanje modema. Kontaktirajte operatera za više detalja.</translation>
@@ -380,12 +379,11 @@
 <translation id="4040753847560036377">Pogrešan PUK</translation>
 <translation id="4057991113334098539">Aktiviranje…</translation>
 <translation id="4092890906744441904">irski</translation>
-<translation id="4101601646343868113">Prijavite se na mobilnu mrežu i potvrdite da je paket prijenosa podataka na mobilnoj mreži aktivan</translation>
+<translation id="4101601646343868113">Prijavite se na mobilnu mrežu i potvrdite da je paket prenosa podataka na mobilnoj mreži aktivan</translation>
 <translation id="4124731372776320263">Sinhronizacija 1 fajla s Diska</translation>
 <translation id="4124935795427217608">Jednorog</translation>
 <translation id="4131235941541910880">Premjestite stavke koje su vam nepotrebne u otpad</translation>
 <translation id="4134804435730168042">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktiviranje nakon postavljanja uređaja</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{Uključite sljedeću ekstenziju u anonimnom načinu rada:}one{Uključite sljedeće ekstenzije u anonimnom načinu rada:}few{Uključite sljedeće ekstenzije u anonimnom načinu rada:}other{Uključite sljedeće ekstenzije u anonimnom načinu rada:}}</translation>
 <translation id="4153015322587141338">Desnom tipkom kliknite na fajl i odaberite "<ph name="PIN_COMMAND" />" za brzi pristup fajlovima na polici.</translation>
 <translation id="4157569377477607576">Pravila administratora ne preporučuju:</translation>
 <translation id="4159731583141908892">Fajl <ph name="FILE_NAME" /> je premješten.</translation>
@@ -393,7 +391,6 @@
 <translation id="4179621117429069925">Ova stavka je u otpadu</translation>
 <translation id="4186579485882418952">Omogući offline</translation>
 <translation id="4193154014135846272">Google dokument</translation>
-<translation id="4197674956721858839">Kreiraj zip fajl odabranih stavki</translation>
 <translation id="4202378258276439759">španski (Latinska Amerika)</translation>
 <translation id="4202977638116331303">gruzijski</translation>
 <translation id="421017592316736757">Za pristup ovom fajlu morate biti na mreži</translation>
@@ -421,6 +418,7 @@
 <translation id="4387004326333427325">Potvrda za autentifikaciju je daljinski odbijena</translation>
 <translation id="4394214039309501350">Vanjski link</translation>
 <translation id="4394980935660306080">Ranije ove sedmice</translation>
+<translation id="4397435965699247285">OneDrive nije dostupan offline</translation>
 <translation id="4398096759193130964">Vratite stavke ili ih prevucite u novi folder izvan otpada</translation>
 <translation id="4401287888955153199">Izdvoji sve</translation>
 <translation id="4410695710508688828">Izdvajanje nije uspjelo. <ph name="ERROR_MESSAGE" /></translation>
@@ -483,9 +481,7 @@
 <translation id="4801956050125744859">Zadrži obje</translation>
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4805966553127040832">Vraćanje stavki (ukupno <ph name="COUNT" />)</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{Da koristite anonimni način rada, organizacija zahtijeva ekstenziju}one{Da koristite anonimni način rada, organizacija zahtijeva određene ekstenzije}few{Da koristite anonimni način rada, organizacija zahtijeva određene ekstenzije}other{Da koristite anonimni način rada, organizacija zahtijeva određene ekstenzije}}</translation>
 <translation id="4826849268470072925">tamilski ITRANS</translation>
-<translation id="482932175346970750">Upišite <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> u pregledniku</translation>
 <translation id="4843566743023903107">Uređaji Chromebase</translation>
 <translation id="4850886885716139402">Prikaz</translation>
 <translation id="485316830061041779">Njemačka</translation>
@@ -558,7 +554,6 @@
      i sarađujte na fajlovima s drugima.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Oporavljeni fajlovi iz Google Diska</translation>
 <translation id="5278111733643988471">Da vratite ovu stavku, prevucite je u novi folder izvan otpada. Izvorni folder "<ph name="PARENT_FOLDER_NAME" />" ove stavke je izbrisan.</translation>
-<translation id="5283101102242354279">Uključite ekstenziju u anonimnom načinu rada:</translation>
 <translation id="5288441970121584418">Pljeskavica</translation>
 <translation id="5293615890992542006">Administratorska pravila blokiraju premještanje fajla</translation>
 <translation id="5305688511332277257">Nema instaliranih</translation>
@@ -601,6 +596,7 @@
 <translation id="5596627076506792578">Više opcija</translation>
 <translation id="5602622065581044566">bugarski s fonetskom tastaturom</translation>
 <translation id="5605830556594064952">SAD Dvorak</translation>
+<translation id="560739212255190568">Administrator je postavio pravila o nadjačavanju proksi servera uz primjenu sljedećeg proksi servera</translation>
 <translation id="5618330573454123917">Ovaj fajl je dizajniran za računar koji koristi Macintosh softver. Sadržaj nije kompatibilan s vašim uređajem koji koristi ChromeOS. <ph name="BEGIN_LINK_HELP" />Saznajte više<ph name="END_LINK_HELP" /> o otvaranju fajlova u ChromeOS-u.</translation>
 <translation id="5625294776298156701">tamilski s tastaturom Tamil99</translation>
 <translation id="5633226425545095130">Ako premjestite ovu stavku, dijelit će se sa svakim ko može vidjeti dijeljeni folder "<ph name="DESTINATION_NAME" />".</translation>
@@ -685,11 +681,11 @@
 <translation id="6267547857941397424">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, baterija telefona <ph name="BATTERY_STATUS" />%, poveži</translation>
 <translation id="6269630227984243955">malajski</translation>
 <translation id="6271903698064569429">Nije moguće otpremiti fajlove jer na disku "<ph name="SHARED_DRIVE_NAME" />" nema dovoljno prostora za pohranu.</translation>
-<translation id="6279140785485544797">Vaš paket prijenosa podataka na mobilnoj mreži je možda istekao. Kontaktirajte operatera za podršku.</translation>
+<translation id="6279140785485544797">Vaš paket prenosa podataka na mobilnoj mreži je možda istekao. Kontaktirajte operatera za podršku.</translation>
 <translation id="6287852322318138013">Odaberite aplikaciju da otvorite ovaj fajl</translation>
-<translation id="6295542640242147836">Zaključaj SIM</translation>
+<translation id="6295542640242147836">Zaključavanje SIM-a</translation>
 <translation id="6296410173147755564">Nevažeći PUK</translation>
-<translation id="6308243004861726558">Fajl je povjerljiv i podložan pravilima administratora. Primjenjuju se sljedeće radnje pristupa i prijenosa fajla.</translation>
+<translation id="6308243004861726558">Fajl je povjerljiv i podložan pravilima administratora. Primjenjuju se sljedeće radnje pristupa i prenosa fajla.</translation>
 <translation id="6312403991423642364">Nepoznata greška na mreži</translation>
 <translation id="6317608858038767920">Prilagođeni naziv servera <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> arhiva</translation>
@@ -769,7 +765,7 @@
 <translation id="6949408524333579394">srpski (transliteracija)</translation>
 <translation id="69548399407432279">Prošla godina</translation>
 <translation id="6960565108681981554">Nije aktivirano. Kontaktirajte mobilnog operatera.</translation>
-<translation id="696203921837389374">Omogući sinhronizaciju putem prijenosa podataka na mobilnoj mreži</translation>
+<translation id="696203921837389374">Omogući sinhronizaciju putem prenosa podataka na mobilnoj mreži</translation>
 <translation id="6965382102122355670">Uredu</translation>
 <translation id="6965648386495488594">Priključak</translation>
 <translation id="6970230597523682626">Bugarska</translation>
@@ -812,7 +808,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, detalji</translation>
 <translation id="7246947237293279874">FTP proksi</translation>
 <translation id="7248671827512403053">Prijava</translation>
-<translation id="7252604552361840748">Pronađite ekstenziju iznad</translation>
 <translation id="7256405249507348194">Neprepoznata greška: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Dostupne usluge</translation>
 <translation id="7291818353625820805">Želite tipke za ponavljanje? Isključite znakove naglaska u Postavkama tastature</translation>
@@ -1001,6 +996,7 @@
 <translation id="8540608333167683902">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, detalji</translation>
 <translation id="8545476925160229291">engleski (SAD)</translation>
 <translation id="854655314928502177">URL za automatsko otkrivanje web proksi servera:</translation>
+<translation id="8547747809824590510">Administrator je postavio pravila o nadjačavanju proksi servera</translation>
 <translation id="8549186985808798022">italijanski</translation>
 <translation id="8551494947769799688">Latvijska</translation>
 <translation id="8560515948038859357">kantonski</translation>
@@ -1061,13 +1057,14 @@
 <translation id="9038620279323455325">Fajl s nazivom "<ph name="FILE_NAME" />" već postoji. Odaberite drugi naziv fajla.</translation>
 <translation id="9046895021617826162">Povezivanje nije uspjelo</translation>
 <translation id="9065512565307033593">Ako ne uspijete potvrditi, onemogućit će vam se pristup mreži.</translation>
+<translation id="9079844694307518094">Administrator primjenjuje sljedeći proksi server</translation>
 <translation id="908378762078012445">ruski s fonetskom tastaturom AATSEEL</translation>
 <translation id="9086302186042011942">Sinhroniziranje</translation>
 <translation id="9099674669267916096">Broj stranica</translation>
 <translation id="9100610230175265781">Potreban je pristupni izraz</translation>
 <translation id="9110990317705400362">Stalno tražimo načine da učinimo pregledanje sigurnijim. Prethodno je svaka web lokacija od vas mogla zatražiti da dodate ekstenziju u preglednik. U najnovijoj verziji Google Chromea, izričito morate reći Chromeu da želite instalirati ove ekstenzije tako što ćete ih dodati putem stranice Ekstenzije. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Otključaj</translation>
-<translation id="9116909380156770361">Prijenos fajla na <ph name="RESTRICTED_COMPONENTS" /></translation>
+<translation id="9116909380156770361">Prenos fajla na <ph name="RESTRICTED_COMPONENTS" /></translation>
 <translation id="912419004897138677">Kodek</translation>
 <translation id="9130775360844693113">Članovi tima "<ph name="DESTINATION_NAME" />" dobit će pristup ovim stavkama.</translation>
 <translation id="9131598836763251128">Odaberite jedan ili više fajlova</translation>
@@ -1084,6 +1081,7 @@
 <translation id="9213073329713032541">Instalacija uspješno pokrenuta.</translation>
 <translation id="9219103736887031265">Slike</translation>
 <translation id="9219908252191632183">Lunarno</translation>
+<translation id="931652069802536959">Mreža je blokirana pravilima</translation>
 <translation id="938470336146445890">Instalirajte korisnički certifikat.</translation>
 <translation id="939736085109172342">Novi folder</translation>
 <translation id="943972244133411984">Izmijenio/la</translation>

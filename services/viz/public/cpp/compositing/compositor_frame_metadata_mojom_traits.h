@@ -50,6 +50,11 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
     return metadata.scrollable_viewport_size;
   }
 
+  static gfx::Size visible_viewport_size(
+      const viz::CompositorFrameMetadata& metadata) {
+    return metadata.visible_viewport_size;
+  }
+
   static gfx::ContentColorUsage content_color_usage(
       const viz::CompositorFrameMetadata& metadata) {
     return metadata.content_color_usage;
@@ -72,6 +77,11 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
   static bool is_handling_interaction(
       const viz::CompositorFrameMetadata& metadata) {
     return metadata.is_handling_interaction;
+  }
+
+  static bool is_handling_animation(
+      const viz::CompositorFrameMetadata& metadata) {
+    return metadata.is_handling_animation;
   }
 
   static SkColor4f root_background_color(
@@ -134,6 +144,11 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
     return metadata.display_transform_hint;
   }
 
+  static bool is_mobile_optimized(
+      const viz::CompositorFrameMetadata& metadata) {
+    return metadata.is_mobile_optimized;
+  }
+
   static const std::unique_ptr<gfx::DelegatedInkMetadata>&
   delegated_ink_metadata(const viz::CompositorFrameMetadata& metadata) {
     return metadata.delegated_ink_metadata;
@@ -172,6 +187,11 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
   static const viz::FrameIntervalInputs& frame_interval_inputs(
       const viz::CompositorFrameMetadata& metadata) {
     return metadata.frame_interval_inputs;
+  }
+
+  static const viz::TreesInVizTiming& trees_in_viz_timing(
+      const viz::CompositorFrameMetadata& metadata) {
+    return metadata.trees_in_viz_timing_details;
   }
 
   static bool Read(viz::mojom::CompositorFrameMetadataDataView data,

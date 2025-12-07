@@ -1,0 +1,26 @@
+caption: Enterprise Logo URL for a managed browser
+default: null
+desc: |-
+  A URL to an image that will be used as an enterprise badge for a managed browser. The URL must point to an image.
+
+  It is recommended to use the favicon (example https://www.google.com/favicon.ico) or an icon no smaller than 48 x 48 px.
+
+  Note that this policy is only applied for managed browsers, so it will have no effect for managed users on unmanaged browsers.
+
+  On <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, this policy is only available on instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain, joined to <ph name="MS_AAD_NAME">Microsoft® Azure® Active Directory®</ph> or enrolled in <ph name="CHROME_ENTERPRISE_CORE_NAME">Chrome Enterprise Core</ph>.
+
+  On <ph name="MAC_OS_NAME">macOS</ph>, this policy is only available on instances that are managed via MDM, joined to a domain via MCX or enrolled in <ph name="CHROME_ENTERPRISE_CORE_NAME">Chrome Enterprise Core</ph>.
+example_value: https://example.com/image.png
+features:
+  dynamic_refresh: true
+  per_profile: false
+supported_on:
+- chrome.*:139-
+owners:
+- file://components/policy/OWNERS
+- esalma@google.com
+schema:
+  type: string
+sensitive: true
+tags: []
+type: string

@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
+
+#include <array>
 
 #include "base/lazy_instance.h"
 #include "base/location.h"
@@ -28,6 +25,7 @@
 #include "cc/test/test_layer_tree_host_base.h"
 #include "cc/test/test_task_graph_runner.h"
 #include "cc/test/test_tile_priorities.h"
+#include "cc/tiles/eviction_tile_priority_queue.h"
 #include "cc/tiles/tile.h"
 #include "cc/tiles/tile_priority.h"
 #include "cc/trees/layer_tree_impl.h"
@@ -82,14 +80,16 @@ class TileManagerPerfTest : public TestLayerTreeHostBase {
 
   void RunRasterQueueConstructTest(const std::string& test_name,
                                    int layer_count) {
-    TreePriority priorities[] = {SAME_PRIORITY_FOR_BOTH_TREES,
-                                 SMOOTHNESS_TAKES_PRIORITY,
-                                 NEW_CONTENT_TAKES_PRIORITY};
+    auto priorities = std::to_array<TreePriority>({
+        SAME_PRIORITY_FOR_BOTH_TREES,
+        SMOOTHNESS_TAKES_PRIORITY,
+        NEW_CONTENT_TAKES_PRIORITY,
+    });
     int priority_count = 0;
 
     std::vector<FakePictureLayerImpl*> layers = CreateLayers(layer_count, 10);
     for (auto* layer : layers)
-      layer->UpdateTiles(TileMemoryLimitPolicy::ALLOW_ANYTHING);
+      layer->UpdateTiles();
 
     timer_.Reset();
     do {
@@ -107,13 +107,15 @@ class TileManagerPerfTest : public TestLayerTreeHostBase {
   void RunRasterQueueConstructAndIterateTest(const std::string& test_name,
                                              int layer_count,
                                              int tile_count) {
-    TreePriority priorities[] = {SAME_PRIORITY_FOR_BOTH_TREES,
-                                 SMOOTHNESS_TAKES_PRIORITY,
-                                 NEW_CONTENT_TAKES_PRIORITY};
+    auto priorities = std::to_array<TreePriority>({
+        SAME_PRIORITY_FOR_BOTH_TREES,
+        SMOOTHNESS_TAKES_PRIORITY,
+        NEW_CONTENT_TAKES_PRIORITY,
+    });
 
     std::vector<FakePictureLayerImpl*> layers = CreateLayers(layer_count, 100);
     for (auto* layer : layers)
-      layer->UpdateTiles(TileMemoryLimitPolicy::ALLOW_ANYTHING);
+      layer->UpdateTiles();
 
     int priority_count = 0;
     timer_.Reset();
@@ -138,14 +140,9 @@ class TileManagerPerfTest : public TestLayerTreeHostBase {
 
   void RunEvictionQueueConstructTest(const std::string& test_name,
                                      int layer_count) {
-    TreePriority priorities[] = {SAME_PRIORITY_FOR_BOTH_TREES,
-                                 SMOOTHNESS_TAKES_PRIORITY,
-                                 NEW_CONTENT_TAKES_PRIORITY};
-    int priority_count = 0;
-
     std::vector<FakePictureLayerImpl*> layers = CreateLayers(layer_count, 10);
     for (auto* layer : layers) {
-      layer->UpdateTiles(TileMemoryLimitPolicy::ALLOW_ANYTHING);
+      layer->UpdateTiles();
       for (size_t i = 0; i < layer->num_tilings(); ++i) {
         tile_manager()->InitializeTilesWithResourcesForTesting(
             layer->tilings()->tiling_at(i)->AllTilesForTesting());
@@ -155,8 +152,7 @@ class TileManagerPerfTest : public TestLayerTreeHostBase {
     timer_.Reset();
     do {
       std::unique_ptr<EvictionTilePriorityQueue> queue(
-          host_impl()->BuildEvictionQueue(priorities[priority_count]));
-      priority_count = (priority_count + 1) % std::size(priorities);
+          host_impl()->BuildEvictionQueue());
       timer_.NextLap();
     } while (!timer_.HasTimeLimitExpired());
 
@@ -168,15 +164,10 @@ class TileManagerPerfTest : public TestLayerTreeHostBase {
   void RunEvictionQueueConstructAndIterateTest(const std::string& test_name,
                                                int layer_count,
                                                int tile_count) {
-    TreePriority priorities[] = {SAME_PRIORITY_FOR_BOTH_TREES,
-                                 SMOOTHNESS_TAKES_PRIORITY,
-                                 NEW_CONTENT_TAKES_PRIORITY};
-    int priority_count = 0;
-
     std::vector<FakePictureLayerImpl*> layers =
         CreateLayers(layer_count, tile_count);
     for (auto* layer : layers) {
-      layer->UpdateTiles(TileMemoryLimitPolicy::ALLOW_ANYTHING);
+      layer->UpdateTiles();
       for (size_t i = 0; i < layer->num_tilings(); ++i) {
         tile_manager()->InitializeTilesWithResourcesForTesting(
             layer->tilings()->tiling_at(i)->AllTilesForTesting());
@@ -187,13 +178,12 @@ class TileManagerPerfTest : public TestLayerTreeHostBase {
     do {
       int count = tile_count;
       std::unique_ptr<EvictionTilePriorityQueue> queue(
-          host_impl()->BuildEvictionQueue(priorities[priority_count]));
+          host_impl()->BuildEvictionQueue());
       while (count--) {
         ASSERT_FALSE(queue->IsEmpty());
         ASSERT_TRUE(queue->Top().tile());
         queue->Pop();
       }
-      priority_count = (priority_count + 1) % std::size(priorities);
       timer_.NextLap();
     } while (!timer_.HasTimeLimitExpired());
 
@@ -272,7 +262,7 @@ class TileManagerPerfTest : public TestLayerTreeHostBase {
     do {
       host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
       for (auto* layer : layers)
-        layer->UpdateTiles(TileMemoryLimitPolicy::ALLOW_ANYTHING);
+        layer->UpdateTiles();
 
       GlobalStateThatImpactsTilePriority global_state(GlobalStateForTest());
       tile_manager()->PrepareTiles(global_state);

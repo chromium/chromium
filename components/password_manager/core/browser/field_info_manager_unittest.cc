@@ -7,9 +7,11 @@
 #include <memory>
 
 #include "base/i18n/case_conversion.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "components/password_manager/core/browser/form_parsing/password_field_prediction.h"
+#include "components/password_manager/core/browser/password_manager_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using autofill::FieldRendererId;
@@ -45,7 +47,6 @@ FormPredictions CreateTestPredictions(int driver_id,
   predictions.form_signature = form_signature;
 
   predictions.fields.emplace_back(renderer_id, field_signature, type,
-                                  /*may_use_prefilled_placeholder=*/false,
                                   /*is_override=*/false);
 
   return predictions;
@@ -75,31 +76,25 @@ TEST_F(FieldInfoManagerTest, InfoAddedRetrievedAndExpired) {
   EXPECT_TRUE(manager_->GetFieldInfo(kAnotherDomain).empty());
 
   // Check that the info is still accessible.
-  task_environment_.FastForwardBy(kFieldInfoLifetime / 2);
+  task_environment_.FastForwardBy(kSingleUsernameTimeToLive / 2);
   EXPECT_EQ(manager_->GetFieldInfo(kTestDomain), expected_info);
 
   // The info should not be accessible anymore
-  task_environment_.FastForwardBy(kFieldInfoLifetime / 2);
+  task_environment_.FastForwardBy(kSingleUsernameTimeToLive / 2);
   EXPECT_TRUE(manager_->GetFieldInfo(kTestDomain).empty());
 }
 
 TEST_F(FieldInfoManagerTest, InfoOverwrittenWithNewField) {
-  FieldInfo info1(kTestDriverId, FieldRendererId(1), kTestDomain, u"value1",
-                  /*is_likely_otp=*/false);
-  manager_->AddFieldInfo(info1, /*predictions=*/std::nullopt);
-  FieldInfo info2(kTestDriverId, FieldRendererId(2), kTestDomain, u"value2",
-                  /*is_likely_otp=*/false);
-  manager_->AddFieldInfo(info2, /*predictions=*/std::nullopt);
+  std::vector<FieldInfo> infos;
+  for (int i = 0; i < 11; ++i) {
+    infos.emplace_back(kTestDriverId, FieldRendererId(i), kTestDomain,
+                       u"value" + base::NumberToString16(i),
+                       /*is_likely_otp=*/false);
+    manager_->AddFieldInfo(infos.back(), /*predictions=*/std::nullopt);
+  }
 
-  std::vector<FieldInfo> expected_info = {info1, info2};
-  EXPECT_EQ(manager_->GetFieldInfo(kTestDomain), expected_info);
-
-  // The third info should dismiss the first one.
-  FieldInfo info3(kTestDriverId, FieldRendererId(3), kTestDomain, u"value3",
-                  /*is_likely_otp=*/false);
-  manager_->AddFieldInfo(info3, /*predictions=*/std::nullopt);
-
-  expected_info = {info2, info3};
+  // The cache size is 10, so the first info should be dismissed.
+  std::vector<FieldInfo> expected_info(infos.begin() + 1, infos.end());
   EXPECT_EQ(manager_->GetFieldInfo(kTestDomain), expected_info);
 }
 
@@ -152,9 +147,7 @@ TEST_F(FieldInfoManagerTest, ProcessServerPredictions) {
 
   // Add another field.
   form_prediction.fields.emplace_back(kAnotherFieldId, kAnotherFieldSignature,
-                                      kAnotherFieldType,
-                                      /*may_use_prefilled_placeholder=*/false,
-                                      /*is_override=*/false);
+                                      kAnotherFieldType, /*is_override=*/false);
 
   predictions[kTestFormSignature] = form_prediction;
 
@@ -180,6 +173,30 @@ TEST_F(FieldInfoManagerTest, InfoRetrievedForPSLMatchedDomain) {
   manager_->AddFieldInfo(info, /*predictions=*/std::nullopt);
   std::vector<FieldInfo> expected_info = {info};
   EXPECT_EQ(manager_->GetFieldInfo("https://psl.domain.com"), expected_info);
+}
+
+TEST_F(FieldInfoManagerTest, GetFieldInfo_NumFieldsToConsider) {
+  FieldInfo info1(kTestDriverId, FieldRendererId(1), kTestDomain, u"value1",
+                  /*is_likely_otp=*/false);
+  manager_->AddFieldInfo(info1, /*predictions=*/std::nullopt);
+  FieldInfo info2(kTestDriverId, FieldRendererId(2), kTestDomain, u"value2",
+                  /*is_likely_otp=*/false);
+  manager_->AddFieldInfo(info2, /*predictions=*/std::nullopt);
+
+  // With no limit, both are returned.
+  std::vector<FieldInfo> expected_info = {info1, info2};
+  EXPECT_EQ(manager_->GetFieldInfo(kTestDomain), expected_info);
+
+  // With limit 1, only the last one is returned.
+  expected_info = {info2};
+  EXPECT_EQ(manager_->GetFieldInfo(kTestDomain, 1), expected_info);
+
+  // With limit 2, both are returned.
+  expected_info = {info1, info2};
+  EXPECT_EQ(manager_->GetFieldInfo(kTestDomain, 2), expected_info);
+
+  // With limit 3 (more than available), both are returned.
+  EXPECT_EQ(manager_->GetFieldInfo(kTestDomain, 3), expected_info);
 }
 
 }  // namespace password_manager

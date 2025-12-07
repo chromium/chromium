@@ -4,10 +4,12 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {AppManagementArcDetailViewElement, MediaDevicesProxy} from 'chrome://os-settings/lazy_load.js';
-import {AppManagementReadOnlyPermissionItemElement, AppManagementStore, CrButtonElement, CrToggleElement, GeolocationAccessLevel, LocalizedLinkElement, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
+import type {AppManagementArcDetailViewElement} from 'chrome://os-settings/lazy_load.js';
+import {MediaDevicesProxy} from 'chrome://os-settings/lazy_load.js';
+import type {AppManagementReadOnlyPermissionItemElement, CrButtonElement, LocalizedLinkElement} from 'chrome://os-settings/os_settings.js';
+import {AppManagementStore, GeolocationAccessLevel, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
 import {AppType, PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
+import type {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
 import {createBoolPermission, createTriStatePermission} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {getPermissionValueBool} from 'chrome://resources/cr_components/app_management/util.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
@@ -52,9 +54,7 @@ suite('<app-management-arc-detail-view>', () => {
 
   async function clickPermissionToggle(permissionType: PermissionTypeIndex):
       Promise<void> {
-    (getPermissionCrToggleByType(arcPermissionView, permissionType) as
-     CrToggleElement)
-        .click();
+    getPermissionCrToggleByType(arcPermissionView, permissionType).click();
     await fakeHandler.flushPipesForTesting();
   }
 
@@ -156,23 +156,23 @@ suite('<app-management-arc-detail-view>', () => {
       const checkPermissionToggle =
           async (permissionType: PermissionTypeIndex) => {
         assertTrue(getPermissionBoolByType(permissionType));
-        assertTrue((getPermissionCrToggleByType(
-                        arcPermissionView, permissionType) as CrToggleElement)
-                       .checked);
+        assertTrue(
+            (getPermissionCrToggleByType(arcPermissionView, permissionType))
+                .checked);
 
         // Toggle Off.
         await clickPermissionToggle(permissionType);
         assertFalse(getPermissionBoolByType(permissionType));
-        assertFalse((getPermissionCrToggleByType(
-                         arcPermissionView, permissionType) as CrToggleElement)
-                        .checked);
+        assertFalse(
+            (getPermissionCrToggleByType(arcPermissionView, permissionType))
+                .checked);
 
         // Toggle On.
         await clickPermissionToggle(permissionType);
         assertTrue(getPermissionBoolByType(permissionType));
-        assertTrue((getPermissionCrToggleByType(
-                        arcPermissionView, permissionType) as CrToggleElement)
-                       .checked);
+        assertTrue(
+            (getPermissionCrToggleByType(arcPermissionView, permissionType))
+                .checked);
       };
 
       await checkPermissionToggle('kLocation');
@@ -184,23 +184,23 @@ suite('<app-management-arc-detail-view>', () => {
       const checkPermissionItemOnClick =
           async (permissionType: PermissionTypeIndex) => {
         assertTrue(getPermissionBoolByType(permissionType));
-        assertTrue((getPermissionCrToggleByType(
-                        arcPermissionView, permissionType) as CrToggleElement)
-                       .checked);
+        assertTrue(
+            (getPermissionCrToggleByType(arcPermissionView, permissionType))
+                .checked);
 
         // Toggle Off.
         await clickPermissionItem(permissionType);
         assertFalse(getPermissionBoolByType(permissionType));
-        assertFalse((getPermissionCrToggleByType(
-                         arcPermissionView, permissionType) as CrToggleElement)
-                        .checked);
+        assertFalse(
+            (getPermissionCrToggleByType(arcPermissionView, permissionType))
+                .checked);
 
         // Toggle On.
         await clickPermissionItem(permissionType);
         assertTrue(getPermissionBoolByType(permissionType));
-        assertTrue((getPermissionCrToggleByType(
-                        arcPermissionView, permissionType) as CrToggleElement)
-                       .checked);
+        assertTrue(
+            (getPermissionCrToggleByType(arcPermissionView, permissionType))
+                .checked);
       };
 
       await checkPermissionItemOnClick('kLocation');
@@ -346,7 +346,6 @@ suite('<app-management-arc-detail-view>', () => {
 
           loadTimeData.overrideValues({
             'appManagementArcReadOnlyPermissions': true,
-            'privacyHubAppPermissionsV2Enabled': true,
             'privacyHubLocationAccessControlEnabled': true,
           });
 
@@ -376,7 +375,6 @@ suite('<app-management-arc-detail-view>', () => {
           arcPermissionView.remove();
           loadTimeData.overrideValues({
             'appManagementArcReadOnlyPermissions': false,
-            'privacyHubAppPermissionsV2Enabled': false,
             'privacyHubLocationAccessControlEnabled': false,
           });
         });

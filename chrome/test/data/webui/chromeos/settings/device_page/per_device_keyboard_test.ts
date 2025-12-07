@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://os-settings/os_settings.js';
+import 'chrome://os-settings/lazy_load.js';
 
-import {CrLinkRowElement, DevicePageBrowserProxyImpl, fakeKeyboards, fakeKeyboards2, PerDeviceSubsectionHeaderElement, Router, routes, SettingsPerDeviceKeyboardElement, SettingsSliderElement} from 'chrome://os-settings/os_settings.js';
+import type {SettingsPerDeviceKeyboardElement} from 'chrome://os-settings/lazy_load.js';
+import {PerDeviceSubsectionHeaderElement} from 'chrome://os-settings/lazy_load.js';
+import type {CrLinkRowElement, SettingsSliderElement} from 'chrome://os-settings/os_settings.js';
+import {DevicePageBrowserProxyImpl, fakeKeyboards, fakeKeyboards2, Router, routes} from 'chrome://os-settings/os_settings.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -18,8 +20,6 @@ import {clearBody} from '../utils.js';
 import {TestDevicePageBrowserProxy} from './test_device_page_browser_proxy.js';
 
 suite('<settings-per-device-keyboard>', () => {
-  const isRevampWayfindingEnabled =
-      loadTimeData.getBoolean('isRevampWayfindingEnabled');
   let perDeviceKeyboardPage: SettingsPerDeviceKeyboardElement;
   let devicePageBrowserProxy: TestDevicePageBrowserProxy;
 
@@ -81,7 +81,7 @@ suite('<settings-per-device-keyboard>', () => {
   });
 
   test(
-      'Display correct name used for internal/external keyboards', async () => {
+      'Display correct name used for internal/external keyboards', () => {
         const subsections = perDeviceKeyboardPage.shadowRoot!.querySelectorAll(
             'settings-per-device-keyboard-subsection');
         for (let i = 0; i < subsections.length; i++) {
@@ -91,10 +91,10 @@ suite('<settings-per-device-keyboard>', () => {
           const name =
               subsectionHeader.shadowRoot!.querySelector('h2')!.textContent;
           if (fakeKeyboards[i]!.isExternal) {
-            assertEquals(fakeKeyboards[i]!.name, name!.trim());
+            assertEquals(fakeKeyboards[i]!.name, name.trim());
           } else {
             assertTrue(subsections[i]!.i18nExists('builtInKeyboardName'));
-            assertEquals('Built-in Keyboard', name!.trim());
+            assertEquals('Built-in Keyboard', name.trim());
           }
         }
       });
@@ -108,21 +108,18 @@ suite('<settings-per-device-keyboard>', () => {
     assertEquals(
         500,
         perDeviceKeyboardPage.shadowRoot!
-            .querySelector<SettingsSliderElement>('#delaySlider')!.pref!.value);
+            .querySelector<SettingsSliderElement>('#delaySlider')!.pref.value);
     assertEquals(
         500,
         perDeviceKeyboardPage.shadowRoot!
             .querySelector<SettingsSliderElement>(
-                '#repeatRateSlider')!.pref!.value);
+                '#repeatRateSlider')!.pref.value);
 
     // Test interaction with the settings-slider's underlying cr-slider.
     pressAndReleaseKeyOn(
         perDeviceKeyboardPage.shadowRoot!.querySelector('#delaySlider')!
             .shadowRoot!.querySelector('cr-slider')!,
-        37, [],
-        // In the revamp, slider values and labels are reversed from low to
-        // high.
-        isRevampWayfindingEnabled ? 'ArrowRight' : 'ArrowLeft');
+        37, [], 'ArrowRight');
     pressAndReleaseKeyOn(
         perDeviceKeyboardPage.shadowRoot!.querySelector('#repeatRateSlider')!
             .shadowRoot!.querySelector('cr-slider')!,
@@ -145,7 +142,7 @@ suite('<settings-per-device-keyboard>', () => {
     assertEquals(
         1500,
         perDeviceKeyboardPage.shadowRoot!
-            .querySelector<SettingsSliderElement>('#delaySlider')!.pref!.value);
+            .querySelector<SettingsSliderElement>('#delaySlider')!.pref.value);
     perDeviceKeyboardPage.set(
         'prefs.settings.language.xkb_auto_repeat_interval_r2.value', 2000);
     await flushTasks();
@@ -153,7 +150,7 @@ suite('<settings-per-device-keyboard>', () => {
         2000,
         perDeviceKeyboardPage.shadowRoot!
             .querySelector<SettingsSliderElement>(
-                '#repeatRateSlider')!.pref!.value);
+                '#repeatRateSlider')!.pref.value);
 
     // Test sliders round to nearest value when prefs change.
     perDeviceKeyboardPage.set(
@@ -162,7 +159,7 @@ suite('<settings-per-device-keyboard>', () => {
     assertEquals(
         500,
         perDeviceKeyboardPage.shadowRoot!
-            .querySelector<SettingsSliderElement>('#delaySlider')!.pref!.value);
+            .querySelector<SettingsSliderElement>('#delaySlider')!.pref.value);
     perDeviceKeyboardPage.set(
         'prefs.settings.language.xkb_auto_repeat_interval_r2.value', 45);
     await flushTasks();
@@ -170,21 +167,21 @@ suite('<settings-per-device-keyboard>', () => {
         50,
         perDeviceKeyboardPage.shadowRoot!
             .querySelector<SettingsSliderElement>(
-                '#repeatRateSlider')!.pref!.value);
+                '#repeatRateSlider')!.pref.value);
 
     perDeviceKeyboardPage.set(
         'prefs.settings.language.xkb_auto_repeat_enabled_r2.value', false);
     assertFalse(collapse.opened);
   });
 
-  test('Open keyboard shortcut viewer', async () => {
+  test('Open keyboard shortcut viewer', () => {
     perDeviceKeyboardPage.shadowRoot!
         .querySelector<CrLinkRowElement>('#shortcutCustomizationApp')!.click();
     assertEquals(
         1, devicePageBrowserProxy.getCallCount('showShortcutCustomizationApp'));
   });
 
-  test('Navigate to input tab', async () => {
+  test('Navigate to input tab', () => {
     perDeviceKeyboardPage.shadowRoot!
         .querySelector<CrLinkRowElement>('#inputRow')!.click();
     assertEquals(routes.OS_LANGUAGES_INPUT, Router.getInstance().currentRoute);
@@ -200,5 +197,12 @@ suite('<settings-per-device-keyboard>', () => {
         perDeviceKeyboardPage.shadowRoot!
             .querySelector<HTMLElement>(
                 '#noKeyboardsConnectedMessage')!.innerText.trim());
+  });
+
+  test('Navigate to a11y keyboard settings subpage', () => {
+    perDeviceKeyboardPage.shadowRoot!
+        .querySelector<CrLinkRowElement>('#a11yKeyboardRow')!.click();
+    assertEquals(
+        routes.A11Y_KEYBOARD_AND_TEXT_INPUT, Router.getInstance().currentRoute);
   });
 });

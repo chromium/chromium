@@ -2,20 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/ffmpeg/ffmpeg_common.h"
 
+#include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "media/base/audio_decoder_config.h"
+#include "media/base/audio_timestamp_helper.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/media_util.h"
@@ -23,6 +22,7 @@
 #include "media/base/video_aspect_ratio.h"
 #include "media/base/video_color_space.h"
 #include "media/base/video_decoder_config.h"
+#include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "media/formats/mp4/box_definitions.h"
 #include "media/media_buildflags.h"
@@ -38,6 +38,9 @@ namespace media {
 
 namespace {
 
+// TODO(crbug.com/379418979): Remove after M133 is stable.
+BASE_FEATURE(kStrictFFmpegCodecs, base::FEATURE_ENABLED_BY_DEFAULT);
+
 EncryptionScheme GetEncryptionScheme(const AVStream* stream) {
   AVDictionaryEntry* key =
       av_dict_get(stream->metadata, "enc_key_id", nullptr, 0);
@@ -47,7 +50,7 @@ EncryptionScheme GetEncryptionScheme(const AVStream* stream) {
 VideoDecoderConfig::AlphaMode GetAlphaMode(const AVStream* stream) {
   AVDictionaryEntry* alpha_mode =
       av_dict_get(stream->metadata, "alpha_mode", nullptr, 0);
-  return alpha_mode && !strcmp(alpha_mode->value, "1")
+  return alpha_mode && std::string_view(alpha_mode->value) == "1"
              ? VideoDecoderConfig::AlphaMode::kHasAlpha
              : VideoDecoderConfig::AlphaMode::kIsOpaque;
 }
@@ -56,6 +59,78 @@ VideoColorSpace GetGuessedColorSpace(const VideoColorSpace& color_space) {
   return VideoColorSpace::FromGfxColorSpace(
       // convert to gfx color space and make a guess.
       color_space.GuessGfxColorSpace());
+}
+
+const char* GetAllowedVideoDecoders() {
+  // This should match the configured lists in //third_party/ffmpeg.
+#if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+  return "h264";
+#else
+  return "";
+#endif
+}
+
+void ApplyCodecContextSecuritySettings(AVCodecContext* codec_context) {
+  // Future versions of ffmpeg may copy the allow list from the format
+  // context.
+  if (!codec_context->codec_whitelist) {
+    // Note: FFmpeg will try to free this string, so we must duplicate it.
+    codec_context->codec_whitelist =
+        av_strdup(codec_context->codec_type == AVMEDIA_TYPE_AUDIO
+                      ? GetAllowedAudioDecoders()
+                      : GetAllowedVideoDecoders());
+  }
+
+  // Note: This is security sensitive. FFmpeg may not always continue safely
+  // in the presence of errors. See https://crbug.com/379418979
+  if (base::FeatureList::IsEnabled(kStrictFFmpegCodecs)) {
+    codec_context->err_recognition |= AV_EF_EXPLODE;
+  }
+}
+
+template <typename T>
+void CopyBufferFromConfig(const T& config, AVCodecContext* codec_context) {
+  if (config.extra_data().empty()) {
+    codec_context->extradata = nullptr;
+    codec_context->extradata_size = 0;
+    return;
+  }
+  codec_context->extradata_size = config.extra_data().size();
+  codec_context->extradata = reinterpret_cast<uint8_t*>(
+      av_malloc(config.extra_data().size() + AV_INPUT_BUFFER_PADDING_SIZE));
+  // SAFETY:
+  // https://ffmpeg.org/doxygen/6.0/structAVCodecContext.html#abe964316aaaa61967b012efdcced79c4
+  // ffmpeg documentation: The allocated memory should be
+  // `AV_INPUT_BUFFER_PADDING_SIZE` bytes larger than `extradata_size`. And the
+  // memory must be allocated using `av_malloc`.
+  //
+  // We allocated the appropriate memory according to this rule above and
+  // converted it to `base::span` here. So this is safe.
+  base::span allocated_extradata = UNSAFE_BUFFERS(
+      base::span(codec_context->extradata,
+                 static_cast<size_t>(config.extra_data().size() +
+                                     AV_INPUT_BUFFER_PADDING_SIZE)));
+  auto [extradata, padding] =
+      allocated_extradata.split_at(config.extra_data().size());
+  extradata.copy_from_nonoverlapping(config.extra_data());
+  std::ranges::fill(padding, '\0');
+}
+
+base::span<const uint32_t> GetSkipSamples(const AVPacket* packet) {
+  size_t skip_samples_size = 0;
+  const uint32_t* skip_samples_ptr =
+      reinterpret_cast<const uint32_t*>(av_packet_get_side_data(
+          packet, AV_PKT_DATA_SKIP_SAMPLES, &skip_samples_size));
+  // SAFETY:
+  // https://ffmpeg.org/doxygen/6.0/group__lavc__packet.html#ga68712351b8a025b464e5c854d4a9fe1f
+  // ffmpeg documentation: av_packet_get_side_data() returns a pointer to
+  // already allocated data with a valid size if present and sets `size`
+  // to its length, or nullptr if no data is available and sets `size` to zero.
+  //
+  // Since we are not allocating memory, and it is considered a valid use case
+  // to construct a base::span<> from nullptr with size zero, this is safe.
+  return UNSAFE_BUFFERS(
+      base::span<const uint32_t>(skip_samples_ptr, skip_samples_size));
 }
 
 }  // namespace
@@ -230,22 +305,22 @@ AVCodecID VideoCodecToCodecID(VideoCodec video_codec) {
 static VideoCodecProfile ProfileIDToVideoCodecProfile(int profile) {
   // Clear out the CONSTRAINED & INTRA flags which are strict subsets of the
   // corresponding profiles with which they're used.
-  profile &= ~FF_PROFILE_H264_CONSTRAINED;
-  profile &= ~FF_PROFILE_H264_INTRA;
+  profile &= ~AV_PROFILE_H264_CONSTRAINED;
+  profile &= ~AV_PROFILE_H264_INTRA;
   switch (profile) {
-    case FF_PROFILE_H264_BASELINE:
+    case AV_PROFILE_H264_BASELINE:
       return H264PROFILE_BASELINE;
-    case FF_PROFILE_H264_MAIN:
+    case AV_PROFILE_H264_MAIN:
       return H264PROFILE_MAIN;
-    case FF_PROFILE_H264_EXTENDED:
+    case AV_PROFILE_H264_EXTENDED:
       return H264PROFILE_EXTENDED;
-    case FF_PROFILE_H264_HIGH:
+    case AV_PROFILE_H264_HIGH:
       return H264PROFILE_HIGH;
-    case FF_PROFILE_H264_HIGH_10:
+    case AV_PROFILE_H264_HIGH_10:
       return H264PROFILE_HIGH10PROFILE;
-    case FF_PROFILE_H264_HIGH_422:
+    case AV_PROFILE_H264_HIGH_422:
       return H264PROFILE_HIGH422PROFILE;
-    case FF_PROFILE_H264_HIGH_444_PREDICTIVE:
+    case AV_PROFILE_H264_HIGH_444_PREDICTIVE:
       return H264PROFILE_HIGH444PREDICTIVEPROFILE;
     default:
       DVLOG(1) << "Unknown profile id: " << profile;
@@ -256,23 +331,23 @@ static VideoCodecProfile ProfileIDToVideoCodecProfile(int profile) {
 static int VideoCodecProfileToProfileID(VideoCodecProfile profile) {
   switch (profile) {
     case H264PROFILE_BASELINE:
-      return FF_PROFILE_H264_BASELINE;
+      return AV_PROFILE_H264_BASELINE;
     case H264PROFILE_MAIN:
-      return FF_PROFILE_H264_MAIN;
+      return AV_PROFILE_H264_MAIN;
     case H264PROFILE_EXTENDED:
-      return FF_PROFILE_H264_EXTENDED;
+      return AV_PROFILE_H264_EXTENDED;
     case H264PROFILE_HIGH:
-      return FF_PROFILE_H264_HIGH;
+      return AV_PROFILE_H264_HIGH;
     case H264PROFILE_HIGH10PROFILE:
-      return FF_PROFILE_H264_HIGH_10;
+      return AV_PROFILE_H264_HIGH_10;
     case H264PROFILE_HIGH422PROFILE:
-      return FF_PROFILE_H264_HIGH_422;
+      return AV_PROFILE_H264_HIGH_422;
     case H264PROFILE_HIGH444PREDICTIVEPROFILE:
-      return FF_PROFILE_H264_HIGH_444_PREDICTIVE;
+      return AV_PROFILE_H264_HIGH_444_PREDICTIVE;
     default:
       DVLOG(1) << "Unknown VideoCodecProfile: " << profile;
   }
-  return FF_PROFILE_UNKNOWN;
+  return AV_PROFILE_UNKNOWN;
 }
 
 SampleFormat AVSampleFormatToSampleFormat(AVSampleFormat sample_format,
@@ -349,10 +424,10 @@ bool AVCodecContextToAudioDecoderConfig(const AVCodecContext* codec_context,
       // The spec for AC3/EAC3 audio is ETSI TS 102 366. According to sections
       // F.3.1 and F.5.1 in that spec the sample_format for AC3/EAC3 must be 16.
       sample_format = kSampleFormatS16;
-#else
-      NOTREACHED_IN_MIGRATION();
-#endif
       break;
+#else
+      NOTREACHED();
+#endif
 #if BUILDFLAG(ENABLE_PLATFORM_MPEG_H_AUDIO)
     case AudioCodec::kMpegHAudio:
       channel_layout = CHANNEL_LAYOUT_BITSTREAM;
@@ -373,17 +448,18 @@ bool AVCodecContextToAudioDecoderConfig(const AVCodecContext* codec_context,
   // AVStream occasionally has invalid extra data. See http://crbug.com/517163
   if ((codec_context->extradata_size == 0) !=
       (codec_context->extradata == nullptr)) {
-    LOG(ERROR) << __func__
-               << (codec_context->extradata == nullptr ? " NULL" : " Non-NULL")
-               << " extra data cannot have size of "
-               << codec_context->extradata_size << ".";
+    DLOG(ERROR) << __func__
+                << (codec_context->extradata == nullptr ? " NULL" : " Non-NULL")
+                << " extra data cannot have size of "
+                << codec_context->extradata_size << ".";
     return false;
   }
 
   std::vector<uint8_t> extra_data;
   if (codec_context->extradata_size > 0) {
-    extra_data.assign(codec_context->extradata,
-                      codec_context->extradata + codec_context->extradata_size);
+    extra_data.resize(codec_context->extradata_size);
+    base::span(extra_data)
+        .copy_from_nonoverlapping(AVCodecContextExtraDataToSpan(codec_context));
   }
 
   config->Initialize(codec, sample_format, channel_layout, codec_context->sample_rate,
@@ -405,12 +481,10 @@ bool AVCodecContextToAudioDecoderConfig(const AVCodecContext* codec_context,
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   if (codec == AudioCodec::kAAC) {
-    config->set_aac_extra_data(extra_data);
-
     // TODO(dalecurtis): Just use the profile from the codec context if ffmpeg
     // ever starts supporting xHE-AAC.
     // FFmpeg provides the (defined_profile - 1) for AVCodecContext::profile
-    if (codec_context->profile == FF_PROFILE_UNKNOWN ||
+    if (codec_context->profile == AV_PROFILE_UNKNOWN ||
         codec_context->profile == mp4::AAC::kXHeAAcType - 1) {
       // Errors aren't fatal here, so just drop any MediaLog messages.
       NullMediaLog media_log;
@@ -437,6 +511,7 @@ AVStreamToAVCodecContext(const AVStream* stream) {
     return nullptr;
   }
 
+  ApplyCodecContextSecuritySettings(codec_context.get());
   return codec_context;
 }
 
@@ -464,18 +539,8 @@ void AudioDecoderConfigToAVCodecContext(const AudioDecoderConfig& config,
   codec_context->ch_layout.nb_channels = config.channels();
   codec_context->sample_rate = config.samples_per_second();
 
-  if (config.extra_data().empty()) {
-    codec_context->extradata = nullptr;
-    codec_context->extradata_size = 0;
-  } else {
-    codec_context->extradata_size = config.extra_data().size();
-    codec_context->extradata = reinterpret_cast<uint8_t*>(
-        av_malloc(config.extra_data().size() + AV_INPUT_BUFFER_PADDING_SIZE));
-    memcpy(codec_context->extradata, &config.extra_data()[0],
-           config.extra_data().size());
-    memset(codec_context->extradata + config.extra_data().size(), '\0',
-           AV_INPUT_BUFFER_PADDING_SIZE);
-  }
+  CopyBufferFromConfig(config, codec_context);
+  ApplyCodecContextSecuritySettings(codec_context);
 }
 
 bool AVStreamToVideoDecoderConfig(const AVStream* stream,
@@ -541,8 +606,8 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
       if (profile == VIDEO_CODEC_PROFILE_UNKNOWN && codec_context->extradata &&
           codec_context->extradata_size) {
         mp4::AVCDecoderConfigurationRecord avc_config;
-        if (avc_config.Parse(codec_context->extradata,
-                             codec_context->extradata_size)) {
+        if (avc_config.Parse(
+                AVCodecContextExtraDataToSpan(codec_context.get()))) {
           profile = ProfileIDToVideoCodecProfile(avc_config.profile_indication);
         }
       }
@@ -559,8 +624,8 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
       // should always be FF_PROFILE_UNKNOWN (-99) here
       if (codec_context->extradata && codec_context->extradata_size) {
         mp4::HEVCDecoderConfigurationRecord hevc_config;
-        if (hevc_config.Parse(codec_context->extradata,
-                              codec_context->extradata_size)) {
+        if (hevc_config.Parse(
+                AVCodecContextExtraDataToSpan(codec_context.get()))) {
           hevc_profile = hevc_config.general_profile_idc;
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
           if (!color_space.IsSpecified()) {
@@ -626,16 +691,16 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
       break;
     case VideoCodec::kVP9:
       switch (codec_context->profile) {
-        case FF_PROFILE_VP9_0:
+        case AV_PROFILE_VP9_0:
           profile = VP9PROFILE_PROFILE0;
           break;
-        case FF_PROFILE_VP9_1:
+        case AV_PROFILE_VP9_1:
           profile = VP9PROFILE_PROFILE1;
           break;
-        case FF_PROFILE_VP9_2:
+        case AV_PROFILE_VP9_2:
           profile = VP9PROFILE_PROFILE2;
           break;
-        case FF_PROFILE_VP9_3:
+        case AV_PROFILE_VP9_3:
           profile = VP9PROFILE_PROFILE3;
           break;
         default:
@@ -717,13 +782,15 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
 
   std::vector<uint8_t> extra_data;
   if (codec_context->extradata_size > 0) {
-    extra_data.assign(codec_context->extradata,
-                      codec_context->extradata + codec_context->extradata_size);
+    extra_data.resize(codec_context->extradata_size);
+    base::span(extra_data)
+        .copy_from_nonoverlapping(
+            AVCodecContextExtraDataToSpan(codec_context.get()));
   }
 
   VideoTransformation video_transformation = VideoTransformation();
-  for (int i = 0; i < stream->codecpar->nb_coded_side_data; ++i) {
-    const auto& side_data = stream->codecpar->coded_side_data[i];
+  for (const auto& side_data :
+       AVCodecParametersCodedSideToSpan(stream->codecpar)) {
     switch (side_data.type) {
       case AV_PKT_DATA_DISPLAYMATRIX: {
         CHECK_EQ(side_data.size, sizeof(int32_t) * 3 * 3);
@@ -798,7 +865,7 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
         // Treat dolby vision contents as dolby vision codec only if the
         // device support clear DV decoding, otherwise use the original
         // HEVC or AVC codec and profile.
-        if (media::IsSupportedVideoType(type)) {
+        if (media::IsDecoderSupportedVideoType(type)) {
           codec = type.codec;
           profile = type.profile;
         }
@@ -835,18 +902,8 @@ void VideoDecoderConfigToAVCodecContext(
   if (config.color_space_info().range == gfx::ColorSpace::RangeID::FULL)
     codec_context->color_range = AVCOL_RANGE_JPEG;
 
-  if (config.extra_data().empty()) {
-    codec_context->extradata = nullptr;
-    codec_context->extradata_size = 0;
-  } else {
-    codec_context->extradata_size = config.extra_data().size();
-    codec_context->extradata = reinterpret_cast<uint8_t*>(
-        av_malloc(config.extra_data().size() + AV_INPUT_BUFFER_PADDING_SIZE));
-    memcpy(codec_context->extradata, &config.extra_data()[0],
-           config.extra_data().size());
-    memset(codec_context->extradata + config.extra_data().size(), '\0',
-           AV_INPUT_BUFFER_PADDING_SIZE);
-  }
+  CopyBufferFromConfig(config, codec_context);
+  ApplyCodecContextSecuritySettings(codec_context);
 }
 
 ChannelLayout ChannelLayoutToChromeChannelLayout(int64_t layout, int channels) {
@@ -941,15 +998,15 @@ VideoPixelFormat AVPixelFormatToVideoPixelFormat(AVPixelFormat pixel_format) {
     case AV_PIX_FMT_YUVA420P:
       return PIXEL_FORMAT_I420A;
 
+    // Default to 10-bit pixel formats for 9-bits since they are non-standard
+    // and were never seen in the wild.
     case AV_PIX_FMT_YUV420P9LE:
-      return PIXEL_FORMAT_YUV420P9;
     case AV_PIX_FMT_YUV420P10LE:
       return PIXEL_FORMAT_YUV420P10;
     case AV_PIX_FMT_YUV420P12LE:
       return PIXEL_FORMAT_YUV420P12;
 
     case AV_PIX_FMT_YUV422P9LE:
-      return PIXEL_FORMAT_YUV422P9;
     case AV_PIX_FMT_YUV422P10LE:
       return PIXEL_FORMAT_YUV422P10;
     case AV_PIX_FMT_YUV422P12LE:
@@ -957,7 +1014,6 @@ VideoPixelFormat AVPixelFormatToVideoPixelFormat(AVPixelFormat pixel_format) {
 
     case AV_PIX_FMT_YUV444P9LE:
     case AV_PIX_FMT_GBRP9LE:
-      return PIXEL_FORMAT_YUV444P9;
     case AV_PIX_FMT_YUV444P10LE:
     case AV_PIX_FMT_GBRP10LE:
       return PIXEL_FORMAT_YUV444P10;
@@ -967,13 +1023,13 @@ VideoPixelFormat AVPixelFormatToVideoPixelFormat(AVPixelFormat pixel_format) {
 
     default:
       // FFmpeg knows more pixel formats than Chromium cares about.
-      LOG(ERROR) << "Unsupported pixel format: " << pixel_format;
+      DVLOG(1) << "Unsupported pixel format: " << pixel_format;
       return PIXEL_FORMAT_UNKNOWN;
   }
 }
 
 std::string AVErrorToString(int errnum) {
-  char errbuf[AV_ERROR_MAX_STRING_SIZE] = {0};
+  char errbuf[AV_ERROR_MAX_STRING_SIZE] = {};
   av_strerror(errnum, errbuf, AV_ERROR_MAX_STRING_SIZE);
   return std::string(errbuf);
 }
@@ -981,8 +1037,79 @@ std::string AVErrorToString(int errnum) {
 int32_t HashCodecName(const char* codec_name) {
   // Use the first 32-bits from the SHA1 hash as the identifier.
   int32_t hash;
-  memcpy(&hash, base::SHA1HashString(codec_name).substr(0, 4).c_str(), 4);
+  base::byte_span_from_ref(hash).copy_from_nonoverlapping(
+      base::as_byte_span(base::SHA1HashString(codec_name)).first<4>());
   return hash;
+}
+
+const char* GetAllowedAudioDecoders() {
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+#define EXTRA_CODECS ",aac"
+#else
+#define EXTRA_CODECS
+#endif
+
+  // This should match the configured lists in //third_party/ffmpeg.
+  static constexpr std::string_view kAllowedAudioCodecs =
+      "vorbis,libopus,flac,pcm_u8,pcm_s16le,pcm_s24le,pcm_s32le,pcm_f32le,"
+      "mp3,pcm_s16be,pcm_s24be,pcm_mulaw,pcm_alaw" EXTRA_CODECS;
+#undef EXTRA_CODECS
+
+  return kAllowedAudioCodecs.data();
+}
+
+base::TimeDelta ConvertStreamTimestamp(const AVRational& time_base,
+                                       int64_t timestamp) {
+  if (timestamp == kNoFFmpegTimestamp) {
+    return kNoTimestamp;
+  }
+
+  return ConvertFromTimeBase(time_base, timestamp);
+}
+
+std::optional<DecoderBufferSideData::DiscardPadding>
+GetDiscardPaddingFromAVPacket(const AVPacket* packet, int samples_per_second) {
+  // Skip samples are only valid for audio packets.
+  constexpr int kSkipSamplesValidSize = 10;
+  constexpr int kSkipEndSamplesOffset = 1;
+  base::span<const uint32_t> skip_samples = GetSkipSamples(packet);
+  if (skip_samples.size() >= kSkipSamplesValidSize) {
+    // Because FFmpeg rolls codec delay and skip samples into one we can only
+    // allow front discard padding on the first packet.  Otherwise the discard
+    // helper can't figure out which data to discard.  See AudioDiscardHelper.
+    //
+    // NOTE: Large values may end up as negative here, but negatives are
+    // discarded below.
+    auto discard_front_samples = static_cast<int>(skip_samples[0]);
+    if (discard_front_samples < 0) {
+      // See https://crbug.com/1189939 and https://trac.ffmpeg.org/ticket/9622
+      DLOG(ERROR) << "Negative skip samples are not allowed.";
+      discard_front_samples = 0;
+    }
+
+    // NOTE: Large values may end up as negative here, which could lead to
+    // a negative timestamp. It's not clear if this is intentional.
+    const auto discard_end_samples =
+        static_cast<int>(skip_samples[kSkipEndSamplesOffset]);
+
+    if (discard_front_samples || discard_end_samples) {
+      const auto front_discard = AudioTimestampHelper::FramesToTime(
+          discard_front_samples, samples_per_second);
+      return std::make_pair(front_discard,
+                            AudioTimestampHelper::FramesToTime(
+                                discard_end_samples, samples_per_second));
+    }
+  }
+
+  // If the packet is marked for complete discard and it doesn't already have
+  // any discard padding set, mark the side data for complete discard. We don't
+  // want to overwrite any existing discard padding since the discard padding
+  // may refer to frames beyond this packet.
+  if (packet->flags & AV_PKT_FLAG_DISCARD) {
+    return std::make_pair(kInfiniteDuration, base::TimeDelta());
+  }
+
+  return std::nullopt;
 }
 
 }  // namespace media

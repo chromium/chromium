@@ -5,6 +5,7 @@
 #include "BlinkGCPluginConsumer.h"
 
 #include <algorithm>
+#include <memory>
 #include <set>
 
 #include "BadPatternFinder.h"
@@ -18,6 +19,9 @@
 #include "JsonWriter.h"
 #include "RecordInfo.h"
 #include "clang/AST/RecursiveASTVisitor.h"
+#include "clang/Basic/SourceLocation.h"
+#include "clang/Basic/SourceManager.h"
+#include "clang/Lex/Preprocessor.h"
 #include "clang/Sema/Sema.h"
 #include "llvm/Support/TimeProfiler.h"
 
@@ -89,6 +93,8 @@ BlinkGCPluginConsumer::BlinkGCPluginConsumer(
   // Only check structures in blink, cppgc and pdfium.
   options_.checked_namespaces.insert("blink");
   options_.checked_namespaces.insert("cppgc");
+  options_.checked_namespaces.insert("v8");
+  options_.checked_namespaces.insert("WTF");
 
   // Add Pdfium subfolders containing GCed classes.
   options_.checked_directories.push_back("fpdfsdk/");
@@ -105,6 +111,8 @@ BlinkGCPluginConsumer::BlinkGCPluginConsumer(
 void BlinkGCPluginConsumer::HandleTranslationUnit(ASTContext& context) {
   llvm::TimeTraceScope TimeScope(
       "BlinkGCPluginConsumer::HandleTranslationUnit");
+  ApplyFilter(context);
+
   // Don't run the plugin if the compilation unit is already invalid.
   if (reporter_.hasErrorOccurred())
     return;
@@ -174,8 +182,9 @@ void BlinkGCPluginConsumer::ParseFunctionTemplates(TranslationUnitDecl* decl) {
 }
 
 void BlinkGCPluginConsumer::CheckRecord(RecordInfo* info) {
-  if (IsIgnored(info))
+  if (!info || IsIgnored(info)) {
     return;
+  }
 
   CXXRecordDecl* record = info->record();
 
@@ -220,7 +229,7 @@ void BlinkGCPluginConsumer::CheckClass(RecordInfo* info) {
   }
 
   {
-    CheckFieldsVisitor visitor(options_);
+    CheckFieldsVisitor visitor;
     if (visitor.ContainsInvalidFields(info))
       reporter_.ClassContainsInvalidFields(info, visitor.invalid_fields());
   }
@@ -457,6 +466,14 @@ void BlinkGCPluginConsumer::CheckDispatch(RecordInfo* info) {
     if (!visitor.dispatched_to_receiver())
       reporter_.MissingFinalizeDispatch(defn, info);
   }
+
+  if (info->HasMultipleTraceDispatchMethods()) {
+    reporter_.RedundantTraceDispatchMethod(info, base);
+  }
+
+  if (info->HasMultipleFinalizeDispatchMethods()) {
+    reporter_.RedundantFinalizeDispatchMethod(info, base);
+  }
 }
 
 // TODO: Should we collect destructors similar to trace methods?
@@ -475,8 +492,9 @@ void BlinkGCPluginConsumer::CheckFinalization(RecordInfo* info) {
 
 void BlinkGCPluginConsumer::CheckTracingMethod(CXXMethodDecl* method) {
   RecordInfo* parent = cache_.Lookup(method->getParent());
-  if (IsIgnored(parent))
+  if (!parent || IsIgnored(parent)) {
     return;
+  }
 
   // Check templated tracing methods by checking the template instantiations.
   // Specialized templates are handled as ordinary classes.
@@ -498,6 +516,10 @@ void BlinkGCPluginConsumer::CheckTracingMethod(CXXMethodDecl* method) {
 void BlinkGCPluginConsumer::CheckTraceOrDispatchMethod(
     RecordInfo* parent,
     CXXMethodDecl* method) {
+  if (!parent) {
+    return;
+  }
+
   Config::TraceMethodType trace_type = Config::GetTraceMethodType(method);
   if (trace_type == Config::TRACE_AFTER_DISPATCH_METHOD ||
       !parent->GetTraceDispatchMethod()) {

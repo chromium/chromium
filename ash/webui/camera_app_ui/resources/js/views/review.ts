@@ -14,7 +14,7 @@ import {WaitableEvent} from '../waitable_event.js';
 
 import {View} from './view.js';
 
-interface UIArgs {
+interface UiArgs {
   text?: I18nString;
   label?: I18nString;
   icon?: string;
@@ -41,7 +41,7 @@ export class Option<T> {
    *     selected.
    * @param params.hasPopup Sets aria-haspopup for the option.
    */
-  constructor(readonly uiArgs: UIArgs, {exitValue, callback, hasPopup}: {
+  constructor(readonly uiArgs: UiArgs, {exitValue, callback, hasPopup}: {
     exitValue?: T,
     callback?: (() => void),
     hasPopup?: boolean,

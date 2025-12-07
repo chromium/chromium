@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
@@ -35,15 +36,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
-
-void FakeWebPushSender::SendMessage(const std::string& fcm_token,
-                                    crypto::ECPrivateKey* vapid_key,
-                                    WebPushMessage message,
-                                    WebPushCallback callback) {
-  fcm_token_ = fcm_token;
-  message_ = std::move(message);
-  std::move(callback).Run(SendWebPushMessageResult::kSuccessful, "message_id");
-}
+#include "ui/base/mojom/menu_source_type.mojom.h"
 
 void FakeSharingMessageBridge::SendSharingMessage(
     std::unique_ptr<sync_pb::SharingMessageSpecifics> specifics,
@@ -63,8 +56,7 @@ SharingBrowserTest::SharingBrowserTest()
     : SyncTest(TWO_CLIENT),
       scoped_testing_factory_installer_(
           base::BindRepeating(&gcm::FakeGCMProfileService::Build)),
-      sharing_service_(nullptr),
-      fake_web_push_sender_(nullptr) {}
+      sharing_service_(nullptr) {}
 
 SharingBrowserTest::~SharingBrowserTest() = default;
 
@@ -77,7 +69,7 @@ void SharingBrowserTest::SetUpOnMainThread() {
 void SharingBrowserTest::Init(
     sync_pb::SharingSpecificFields_EnabledFeatures first_device_feature,
     sync_pb::SharingSpecificFields_EnabledFeatures second_device_feature) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL("mock.http", GetTestPageURL());
@@ -90,9 +82,6 @@ void SharingBrowserTest::Init(
 
   SharingFCMSender* sharing_fcm_sender =
       sharing_service_->GetMessageSenderForTesting()->GetFCMSenderForTesting();
-  fake_web_push_sender_ = new FakeWebPushSender();
-  sharing_fcm_sender->SetWebPushSenderForTesting(
-      base::WrapUnique(fake_web_push_sender_.get()));
   sharing_fcm_sender->SetSharingMessageBridgeForTesting(
       &fake_sharing_message_bridge_);
 
@@ -114,13 +103,16 @@ void SharingBrowserTest::SetUpDevices(
       original_device_info_tracker->GetAllDeviceInfo();
   ASSERT_EQ(2u, original_devices.size());
 
-  for (size_t i = 0; i < original_devices.size(); i++)
+  for (size_t i = 0; i < original_devices.size(); i++) {
     AddDeviceInfo(*original_devices[i], i);
-  const std::map<syncer::DeviceInfo::FormFactor, int> device_count_by_type =
-      fake_device_info_tracker_.CountActiveDevicesByType();
+  }
+  const absl::flat_hash_map<syncer::DeviceInfo::FormFactor, int>
+      device_count_by_type =
+          fake_device_info_tracker_.CountActiveDevicesByType();
   int total = 0;
-  for (const auto& type_and_count : device_count_by_type)
+  for (const auto& type_and_count : device_count_by_type) {
     total += type_and_count.second;
+  }
   ASSERT_EQ(2, total);
 }
 
@@ -164,7 +156,7 @@ void SharingBrowserTest::AddDeviceInfo(
           original_device.sharing_info(), original_device.paask_info(),
           original_device.fcm_registration_token(),
           original_device.interested_data_types(),
-          original_device.floating_workspace_last_signin_timestamp());
+          original_device.auto_sign_out_last_signin_timestamp());
   fake_device_info_tracker_.Add(fake_device.get());
   device_infos_.push_back(std::move(fake_device));
 }
@@ -181,7 +173,7 @@ std::unique_ptr<TestRenderViewContextMenu> SharingBrowserTest::InitContextMenu(
   params.src_url = url;
   params.link_text = base::ASCIIToUTF16(link_text);
   params.page_url = web_contents_->GetVisibleURL();
-  params.source_type = ui::MenuSourceType::MENU_SOURCE_MOUSE;
+  params.source_type = ui::mojom::MenuSourceType::kMouse;
 #if BUILDFLAG(IS_MAC)
   params.writing_direction_default = 0;
   params.writing_direction_left_to_right = 0;

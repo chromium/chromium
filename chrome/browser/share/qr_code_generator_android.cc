@@ -18,12 +18,12 @@
 #include "chrome/android/chrome_jni_headers/QRCodeGenerator_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 static ScopedJavaLocalRef<jobject> JNI_QRCodeGenerator_GenerateBitmap(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_data_string) {
+    const JavaRef<jstring>& j_data_string) {
   // TODO(https://crbug.com/325664342): Audit if `QuietZone::kIncluded`
   // can/should be used instead (this may require testing if the different image
   // size works well with surrounding UI elements).  Note that the absence of a
@@ -42,3 +42,5 @@ static ScopedJavaLocalRef<jobject> JNI_QRCodeGenerator_GenerateBitmap(
   }
   return java_bitmap;
 }
+
+DEFINE_JNI(QRCodeGenerator)

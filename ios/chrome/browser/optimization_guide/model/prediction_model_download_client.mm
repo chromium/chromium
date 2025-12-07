@@ -8,8 +8,8 @@
 #import "base/metrics/histogram_macros_local.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/download/public/background_service/download_metadata.h"
-#import "components/optimization_guide/core/prediction_manager.h"
-#import "components/optimization_guide/core/prediction_model_download_manager.h"
+#import "components/optimization_guide/core/delivery/prediction_manager.h"
+#import "components/optimization_guide/core/delivery/prediction_model_download_manager.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "services/network/public/cpp/resource_request_body.h"
@@ -37,21 +37,23 @@ std::optional<proto::OptimizationTarget> ParseOptimizationTarget(
 }  // namespace
 
 PredictionModelDownloadClient::PredictionModelDownloadClient(
-    ChromeBrowserState* browser_state)
-    : browser_state_(browser_state) {}
+    ProfileIOS* profile)
+    : profile_(profile) {}
 
 PredictionModelDownloadClient::~PredictionModelDownloadClient() = default;
 
 PredictionModelDownloadManager*
 PredictionModelDownloadClient::GetPredictionModelDownloadManager() {
   OptimizationGuideService* optimization_guide_service =
-      OptimizationGuideServiceFactory::GetForBrowserState(browser_state_);
-  if (!optimization_guide_service)
+      OptimizationGuideServiceFactory::GetForProfile(profile_);
+  if (!optimization_guide_service) {
     return nullptr;
+  }
   PredictionManager* prediction_manager =
       optimization_guide_service->GetPredictionManager();
-  if (!prediction_manager)
+  if (!prediction_manager) {
     return nullptr;
+  }
   return prediction_manager->prediction_model_download_manager();
 }
 
@@ -60,8 +62,9 @@ void PredictionModelDownloadClient::OnServiceInitialized(
     const std::vector<download::DownloadMetaData>& downloads) {
   PredictionModelDownloadManager* download_manager =
       GetPredictionModelDownloadManager();
-  if (!download_manager)
+  if (!download_manager) {
     return;
+  }
 
   std::set<std::string> outstanding_download_guids;
   std::map<std::string, base::FilePath> successful_downloads;
@@ -81,8 +84,9 @@ void PredictionModelDownloadClient::OnServiceInitialized(
 void PredictionModelDownloadClient::OnServiceUnavailable() {
   PredictionModelDownloadManager* download_manager =
       GetPredictionModelDownloadManager();
-  if (download_manager)
+  if (download_manager) {
     download_manager->OnDownloadServiceUnavailable();
+  }
 }
 
 void PredictionModelDownloadClient::OnDownloadStarted(
@@ -101,9 +105,10 @@ void PredictionModelDownloadClient::OnDownloadFailed(
     download::Client::FailureReason reason) {
   PredictionModelDownloadManager* download_manager =
       GetPredictionModelDownloadManager();
-  if (download_manager)
+  if (download_manager) {
     download_manager->OnDownloadFailed(
         ParseOptimizationTarget(completion_info.custom_data), guid);
+  }
 }
 
 void PredictionModelDownloadClient::OnDownloadSucceeded(
@@ -111,10 +116,11 @@ void PredictionModelDownloadClient::OnDownloadSucceeded(
     const download::CompletionInfo& completion_info) {
   PredictionModelDownloadManager* download_manager =
       GetPredictionModelDownloadManager();
-  if (download_manager)
+  if (download_manager) {
     download_manager->OnDownloadSucceeded(
         ParseOptimizationTarget(completion_info.custom_data), guid,
         completion_info.path);
+  }
 }
 
 bool PredictionModelDownloadClient::CanServiceRemoveDownloadedFile(

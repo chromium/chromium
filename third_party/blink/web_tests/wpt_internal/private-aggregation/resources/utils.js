@@ -1,162 +1,108 @@
-// Payload with contributions [{bucket: 1n, value: 2}], padded to 20
-// contributions (and with default filtering IDs)
-const ONE_CONTRIBUTION_EXAMPLE_PAYLOAD =
-    'omRkYXRhlKNiaWRBAGV2YWx1ZUQAAAACZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAABo2JpZEEAZX' +
-    'ZhbHVlRAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAACjYmlkQQBldmFsdWVEAAAAAGZidWNr' +
-    'ZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRBAGV2YWx1ZUQAAAAAZmJ1Y2tldFAAAAAAAAAAAAAAAA' +
-    'AAAAAAo2JpZEEAZXZhbHVlRAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAACjYmlkQQBldmFs' +
-    'dWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRBAGV2YWx1ZUQAAAAAZmJ1Y2tldF' +
-    'AAAAAAAAAAAAAAAAAAAAAAo2JpZEEAZXZhbHVlRAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAA' +
-    'AACjYmlkQQBldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRBAGV2YWx1ZU' +
-    'QAAAAAZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAAAo2JpZEEAZXZhbHVlRAAAAABmYnVja2V0UAAA' +
-    'AAAAAAAAAAAAAAAAAACjYmlkQQBldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAK' +
-    'NiaWRBAGV2YWx1ZUQAAAAAZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAAAo2JpZEEAZXZhbHVlRAAA' +
-    'AABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAACjYmlkQQBldmFsdWVEAAAAAGZidWNrZXRQAAAAAA' +
-    'AAAAAAAAAAAAAAAKNiaWRBAGV2YWx1ZUQAAAAAZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAAAo2Jp' +
-    'ZEEAZXZhbHVlRAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAACjYmlkQQBldmFsdWVEAAAAAG' +
-    'ZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRBAGV2YWx1ZUQAAAAAZmJ1Y2tldFAAAAAAAAAA' +
-    'AAAAAAAAAAAAo2JpZEEAZXZhbHVlRAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAABpb3Blcm' +
-    'F0aW9uaWhpc3RvZ3JhbQ==';
+// Tests using this script should first import:
+// ../../aggregation-service/support/aggregation-service.js
 
-// Payload with contributions [{bucket: 1n, value: 2}, {bucket: 3n, value: 4}],
-// padded to 20 contributions (and with default filtering IDs)
-const MULTIPLE_CONTRIBUTIONS_EXAMPLE_PAYLOAD =
-    'omRkYXRhlKNiaWRBAGV2YWx1ZUQAAAACZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAABo2JpZEEAZX' +
-    'ZhbHVlRAAAAARmYnVja2V0UAAAAAAAAAAAAAAAAAAAAAOjYmlkQQBldmFsdWVEAAAAAGZidWNr' +
-    'ZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRBAGV2YWx1ZUQAAAAAZmJ1Y2tldFAAAAAAAAAAAAAAAA' +
-    'AAAAAAo2JpZEEAZXZhbHVlRAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAACjYmlkQQBldmFs' +
-    'dWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRBAGV2YWx1ZUQAAAAAZmJ1Y2tldF' +
-    'AAAAAAAAAAAAAAAAAAAAAAo2JpZEEAZXZhbHVlRAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAA' +
-    'AACjYmlkQQBldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRBAGV2YWx1ZU' +
-    'QAAAAAZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAAAo2JpZEEAZXZhbHVlRAAAAABmYnVja2V0UAAA' +
-    'AAAAAAAAAAAAAAAAAACjYmlkQQBldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAK' +
-    'NiaWRBAGV2YWx1ZUQAAAAAZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAAAo2JpZEEAZXZhbHVlRAAA' +
-    'AABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAACjYmlkQQBldmFsdWVEAAAAAGZidWNrZXRQAAAAAA' +
-    'AAAAAAAAAAAAAAAKNiaWRBAGV2YWx1ZUQAAAAAZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAAAo2Jp' +
-    'ZEEAZXZhbHVlRAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAACjYmlkQQBldmFsdWVEAAAAAG' +
-    'ZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRBAGV2YWx1ZUQAAAAAZmJ1Y2tldFAAAAAAAAAA' +
-    'AAAAAAAAAAAAo2JpZEEAZXZhbHVlRAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAABpb3Blcm' +
-    'F0aW9uaWhpc3RvZ3JhbQ==';
+const NUM_CONTRIBUTIONS_SHARED_STORAGE = 20;
+const NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE = 100;
 
-// Payload with contributions [{bucket: 1n, value: 2, filteringId: 3n}], padded
-// to 20 contributions
-const ONE_CONTRIBUTION_WITH_FILTERING_ID_EXAMPLE_PAYLOAD =
-    'omRkYXRhlKNiaWRBA2V2YWx1ZUQAAAACZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAABo2JpZEEAZX' +
-    'ZhbHVlRAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAACjYmlkQQBldmFsdWVEAAAAAGZidWNr' +
-    'ZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRBAGV2YWx1ZUQAAAAAZmJ1Y2tldFAAAAAAAAAAAAAAAA' +
-    'AAAAAAo2JpZEEAZXZhbHVlRAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAACjYmlkQQBldmFs' +
-    'dWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRBAGV2YWx1ZUQAAAAAZmJ1Y2tldF' +
-    'AAAAAAAAAAAAAAAAAAAAAAo2JpZEEAZXZhbHVlRAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAA' +
-    'AACjYmlkQQBldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRBAGV2YWx1ZU' +
-    'QAAAAAZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAAAo2JpZEEAZXZhbHVlRAAAAABmYnVja2V0UAAA' +
-    'AAAAAAAAAAAAAAAAAACjYmlkQQBldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAK' +
-    'NiaWRBAGV2YWx1ZUQAAAAAZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAAAo2JpZEEAZXZhbHVlRAAA' +
-    'AABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAACjYmlkQQBldmFsdWVEAAAAAGZidWNrZXRQAAAAAA' +
-    'AAAAAAAAAAAAAAAKNiaWRBAGV2YWx1ZUQAAAAAZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAAAo2Jp' +
-    'ZEEAZXZhbHVlRAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAACjYmlkQQBldmFsdWVEAAAAAG' +
-    'ZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRBAGV2YWx1ZUQAAAAAZmJ1Y2tldFAAAAAAAAAA' +
-    'AAAAAAAAAAAAo2JpZEEAZXZhbHVlRAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAABpb3Blcm' +
-    'F0aW9uaWhpc3RvZ3JhbQ==';
+const NULL_CONTRIBUTION_WITH_CUSTOM_FILTERING_ID_MAX_BYTES = Object.freeze({
+  bucket: encodeBigInt(0n, 16),
+  value: encodeBigInt(0n, 4),
+  id: encodeBigInt(0n, 3),
+});
 
-// Payload with contributions [{bucket: 1n, value: 2}], padded to 20
-// contributions and using a filteringIdMaxBytes of 3.
-const ONE_CONTRIBUTION_WITH_CUSTOM_FILTERING_ID_MAX_BYTES_EXAMPLE_PAYLOAD =
-    'omRkYXRhlKNiaWRDAAAAZXZhbHVlRAAAAAJmYnVja2V0UAAAAAAAAAAAAAAAAAAAAAGjYmlkQw' +
-    'AAAGV2YWx1ZUQAAAAAZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAAAo2JpZEMAAABldmFsdWVEAAAA' +
-    'AGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRDAAAAZXZhbHVlRAAAAABmYnVja2V0UAAAAA' +
-    'AAAAAAAAAAAAAAAACjYmlkQwAAAGV2YWx1ZUQAAAAAZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAAA' +
-    'o2JpZEMAAABldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRDAAAAZXZhbH' +
-    'VlRAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAACjYmlkQwAAAGV2YWx1ZUQAAAAAZmJ1Y2tl' +
-    'dFAAAAAAAAAAAAAAAAAAAAAAo2JpZEMAAABldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAA' +
-    'AAAAAAAKNiaWRDAAAAZXZhbHVlRAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAACjYmlkQwAA' +
-    'AGV2YWx1ZUQAAAAAZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAAAo2JpZEMAAABldmFsdWVEAAAAAG' +
-    'ZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRDAAAAZXZhbHVlRAAAAABmYnVja2V0UAAAAAAA' +
-    'AAAAAAAAAAAAAACjYmlkQwAAAGV2YWx1ZUQAAAAAZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAAAo2' +
-    'JpZEMAAABldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRDAAAAZXZhbHVl' +
-    'RAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAACjYmlkQwAAAGV2YWx1ZUQAAAAAZmJ1Y2tldF' +
-    'AAAAAAAAAAAAAAAAAAAAAAo2JpZEMAAABldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAA' +
-    'AAAAAKNiaWRDAAAAZXZhbHVlRAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAACjYmlkQwAAAG' +
-    'V2YWx1ZUQAAAAAZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAAAaW9wZXJhdGlvbmloaXN0b2dyYW0=';
+const ONE_CONTRIBUTION_EXAMPLE = Object.freeze([{
+  bucket: encodeBigInt(1n, 16),
+  value: encodeBigInt(2n, 4),
+  id: encodeBigInt(0n, 1),
+}]);
 
-// Payload with contributions [{bucket: 1n, value: 2, filteringId: 259n}],
-// padded to 20 contributions and using a filteringIdMaxBytes of 3.
-const ONE_CONTRIBUTION_WITH_FILTERING_ID_AND_CUSTOM_MAX_BYTES_EXAMPLE_PAYLOAD =
-    'omRkYXRhlKNiaWRDAAEDZXZhbHVlRAAAAAJmYnVja2V0UAAAAAAAAAAAAAAAAAAAAAGjYmlkQw' +
-    'AAAGV2YWx1ZUQAAAAAZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAAAo2JpZEMAAABldmFsdWVEAAAA' +
-    'AGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRDAAAAZXZhbHVlRAAAAABmYnVja2V0UAAAAA' +
-    'AAAAAAAAAAAAAAAACjYmlkQwAAAGV2YWx1ZUQAAAAAZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAAA' +
-    'o2JpZEMAAABldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRDAAAAZXZhbH' +
-    'VlRAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAACjYmlkQwAAAGV2YWx1ZUQAAAAAZmJ1Y2tl' +
-    'dFAAAAAAAAAAAAAAAAAAAAAAo2JpZEMAAABldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAA' +
-    'AAAAAAAKNiaWRDAAAAZXZhbHVlRAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAACjYmlkQwAA' +
-    'AGV2YWx1ZUQAAAAAZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAAAo2JpZEMAAABldmFsdWVEAAAAAG' +
-    'ZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRDAAAAZXZhbHVlRAAAAABmYnVja2V0UAAAAAAA' +
-    'AAAAAAAAAAAAAACjYmlkQwAAAGV2YWx1ZUQAAAAAZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAAAo2' +
-    'JpZEMAAABldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRDAAAAZXZhbHVl' +
-    'RAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAACjYmlkQwAAAGV2YWx1ZUQAAAAAZmJ1Y2tldF' +
-    'AAAAAAAAAAAAAAAAAAAAAAo2JpZEMAAABldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAA' +
-    'AAAAAKNiaWRDAAAAZXZhbHVlRAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAACjYmlkQwAAAG' +
-    'V2YWx1ZUQAAAAAZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAAAaW9wZXJhdGlvbmloaXN0b2dyYW0=';
+const MULTIPLE_CONTRIBUTIONS_EXAMPLE = Object.freeze([
+  {
+    bucket: encodeBigInt(1n, 16),
+    value: encodeBigInt(2n, 4),
+    id: encodeBigInt(0n, 1),
+  },
+  {
+    bucket: encodeBigInt(3n, 16),
+    value: encodeBigInt(4n, 4),
+    id: encodeBigInt(0n, 1),
+  },
+]);
 
-// Payload with contributions [{bucket: 1n, value: 2, filteringId: 1n},
-// {bucket: 1n, value: 2, filteringId: 2n}], padded to 20 contributions.
-const MULTIPLE_CONTRIBUTIONS_DIFFERING_IN_FILTERING_ID_EXAMPLE_PAYLOAD =
-    'omRkYXRhlKNiaWRBAWV2YWx1ZUQAAAACZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAABo2JpZEECZX' +
-    'ZhbHVlRAAAAAJmYnVja2V0UAAAAAAAAAAAAAAAAAAAAAGjYmlkQQBldmFsdWVEAAAAAGZidWNr' +
-    'ZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRBAGV2YWx1ZUQAAAAAZmJ1Y2tldFAAAAAAAAAAAAAAAA' +
-    'AAAAAAo2JpZEEAZXZhbHVlRAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAACjYmlkQQBldmFs' +
-    'dWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRBAGV2YWx1ZUQAAAAAZmJ1Y2tldF' +
-    'AAAAAAAAAAAAAAAAAAAAAAo2JpZEEAZXZhbHVlRAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAA' +
-    'AACjYmlkQQBldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRBAGV2YWx1ZU' +
-    'QAAAAAZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAAAo2JpZEEAZXZhbHVlRAAAAABmYnVja2V0UAAA' +
-    'AAAAAAAAAAAAAAAAAACjYmlkQQBldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAK' +
-    'NiaWRBAGV2YWx1ZUQAAAAAZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAAAo2JpZEEAZXZhbHVlRAAA' +
-    'AABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAACjYmlkQQBldmFsdWVEAAAAAGZidWNrZXRQAAAAAA' +
-    'AAAAAAAAAAAAAAAKNiaWRBAGV2YWx1ZUQAAAAAZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAAAo2Jp' +
-    'ZEEAZXZhbHVlRAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAACjYmlkQQBldmFsdWVEAAAAAG' +
-    'ZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRBAGV2YWx1ZUQAAAAAZmJ1Y2tldFAAAAAAAAAA' +
-    'AAAAAAAAAAAAo2JpZEEAZXZhbHVlRAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAABpb3Blcm' +
-    'F0aW9uaWhpc3RvZ3JhbQ==';
+const ONE_CONTRIBUTION_WITH_FILTERING_ID_EXAMPLE = Object.freeze([
+  {
+    bucket: encodeBigInt(1n, 16),
+    value: encodeBigInt(2n, 4),
+    id: encodeBigInt(3n, 1),
+  },
+]);
 
-// Payload with contributions [{bucket: i, value: 1} for i from 1 to 20,
-// inclusive].
-const CONTRIBUTIONS_UP_TO_LIMIT_EXAMPLE_PAYLOAD =
-    'omRkYXRhlKNiaWRBAGV2YWx1ZUQAAAABZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAABo2JpZEEAZX' +
-    'ZhbHVlRAAAAAFmYnVja2V0UAAAAAAAAAAAAAAAAAAAAAKjYmlkQQBldmFsdWVEAAAAAWZidWNr' +
-    'ZXRQAAAAAAAAAAAAAAAAAAAAA6NiaWRBAGV2YWx1ZUQAAAABZmJ1Y2tldFAAAAAAAAAAAAAAAA' +
-    'AAAAAEo2JpZEEAZXZhbHVlRAAAAAFmYnVja2V0UAAAAAAAAAAAAAAAAAAAAAWjYmlkQQBldmFs' +
-    'dWVEAAAAAWZidWNrZXRQAAAAAAAAAAAAAAAAAAAABqNiaWRBAGV2YWx1ZUQAAAABZmJ1Y2tldF' +
-    'AAAAAAAAAAAAAAAAAAAAAHo2JpZEEAZXZhbHVlRAAAAAFmYnVja2V0UAAAAAAAAAAAAAAAAAAA' +
-    'AAijYmlkQQBldmFsdWVEAAAAAWZidWNrZXRQAAAAAAAAAAAAAAAAAAAACaNiaWRBAGV2YWx1ZU' +
-    'QAAAABZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAAKo2JpZEEAZXZhbHVlRAAAAAFmYnVja2V0UAAA' +
-    'AAAAAAAAAAAAAAAAAAujYmlkQQBldmFsdWVEAAAAAWZidWNrZXRQAAAAAAAAAAAAAAAAAAAADK' +
-    'NiaWRBAGV2YWx1ZUQAAAABZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAANo2JpZEEAZXZhbHVlRAAA' +
-    'AAFmYnVja2V0UAAAAAAAAAAAAAAAAAAAAA6jYmlkQQBldmFsdWVEAAAAAWZidWNrZXRQAAAAAA' +
-    'AAAAAAAAAAAAAAD6NiaWRBAGV2YWx1ZUQAAAABZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAAQo2Jp' +
-    'ZEEAZXZhbHVlRAAAAAFmYnVja2V0UAAAAAAAAAAAAAAAAAAAABGjYmlkQQBldmFsdWVEAAAAAW' +
-    'ZidWNrZXRQAAAAAAAAAAAAAAAAAAAAEqNiaWRBAGV2YWx1ZUQAAAABZmJ1Y2tldFAAAAAAAAAA' +
-    'AAAAAAAAAAATo2JpZEEAZXZhbHVlRAAAAAFmYnVja2V0UAAAAAAAAAAAAAAAAAAAABRpb3Blcm' +
-    'F0aW9uaWhpc3RvZ3JhbQ==';
+const ONE_CONTRIBUTION_WITH_CUSTOM_FILTERING_ID_MAX_BYTES_EXAMPLE =
+    Object.freeze([
+      {
+        bucket: encodeBigInt(1n, 16),
+        value: encodeBigInt(2n, 4),
+        id: encodeBigInt(0n, 3),
+      },
+    ]);
 
-// Payload with contributions [{bucket: 1n, value: 21}], padded to 20
-// contributions
-const ONE_CONTRIBUTION_HIGHER_VALUE_EXAMPLE_PAYLOAD =
-    'omRkYXRhlKNiaWRBAGV2YWx1ZUQAAAAVZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAABo2JpZEEAZX' +
-    'ZhbHVlRAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAACjYmlkQQBldmFsdWVEAAAAAGZidWNr' +
-    'ZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRBAGV2YWx1ZUQAAAAAZmJ1Y2tldFAAAAAAAAAAAAAAAA' +
-    'AAAAAAo2JpZEEAZXZhbHVlRAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAACjYmlkQQBldmFs' +
-    'dWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRBAGV2YWx1ZUQAAAAAZmJ1Y2tldF' +
-    'AAAAAAAAAAAAAAAAAAAAAAo2JpZEEAZXZhbHVlRAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAA' +
-    'AACjYmlkQQBldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRBAGV2YWx1ZU' +
-    'QAAAAAZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAAAo2JpZEEAZXZhbHVlRAAAAABmYnVja2V0UAAA' +
-    'AAAAAAAAAAAAAAAAAACjYmlkQQBldmFsdWVEAAAAAGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAK' +
-    'NiaWRBAGV2YWx1ZUQAAAAAZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAAAo2JpZEEAZXZhbHVlRAAA' +
-    'AABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAACjYmlkQQBldmFsdWVEAAAAAGZidWNrZXRQAAAAAA' +
-    'AAAAAAAAAAAAAAAKNiaWRBAGV2YWx1ZUQAAAAAZmJ1Y2tldFAAAAAAAAAAAAAAAAAAAAAAo2Jp' +
-    'ZEEAZXZhbHVlRAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAACjYmlkQQBldmFsdWVEAAAAAG' +
-    'ZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAKNiaWRBAGV2YWx1ZUQAAAAAZmJ1Y2tldFAAAAAAAAAA' +
-    'AAAAAAAAAAAAo2JpZEEAZXZhbHVlRAAAAABmYnVja2V0UAAAAAAAAAAAAAAAAAAAAABpb3Blcm' +
-    'F0aW9uaWhpc3RvZ3JhbQ==';
+const ONE_CONTRIBUTION_WITH_FILTERING_ID_AND_CUSTOM_MAX_BYTES_EXAMPLE =
+    Object.freeze([
+      {
+        bucket: encodeBigInt(1n, 16),
+        value: encodeBigInt(2n, 4),
+        id: encodeBigInt(259n, 3),
+      },
+    ]);
+
+const MULTIPLE_CONTRIBUTIONS_DIFFERING_IN_FILTERING_ID_EXAMPLE = Object.freeze([
+  {
+    bucket: encodeBigInt(1n, 16),
+    value: encodeBigInt(2n, 4),
+    id: encodeBigInt(1n, 1),
+  },
+  {
+    bucket: encodeBigInt(1n, 16),
+    value: encodeBigInt(2n, 4),
+    id: encodeBigInt(2n, 1),
+  },
+]);
+
+const ONE_CONTRIBUTION_HIGHER_VALUE_EXAMPLE = Object.freeze([
+  {
+    bucket: encodeBigInt(1n, 16),
+    value: encodeBigInt(21n, 4),
+    id: encodeBigInt(0n, 1),
+  },
+]);
+
+/**
+ * Returns an array of contributions, each of which could be passed into
+ * `privateAggregation.contributeToHistogram()`. This function constructs
+ * inputs; for the expected output payload, pass the same value of
+ * `numContributions` to `buildPayloadWithSequentialContributions()`.
+ */
+function buildArrayOfSequentialContributions(numContributions) {
+  return Array(numContributions)
+      .fill()
+      .map((_, i) => ({bucket: BigInt(i) + 1n, value: 1}));
+}
+
+/**
+ * Returns a frozen payload object with contributions of the form `{bucket: i,
+ * value: 1}` for i from 1 to `numContributions`, inclusive.
+ */
+function buildPayloadWithSequentialContributions(numContributions) {
+  return Object.freeze({
+    operation: 'histogram',
+    data: Array(numContributions).fill().map((_, i) => ({
+                                               bucket: encodeBigInt(
+                                                   BigInt(i) + 1n, 16),
+                                               value: encodeBigInt(1n, 4),
+                                               id: encodeBigInt(0n, 1),
+                                             })),
+  });
+}
 
 const private_aggregation_promise_test = (f, name) => promise_test(async t => {
   await resetWptServer();
@@ -190,30 +136,79 @@ const resetReports = url => {
  */
 const delay = ms => new Promise(resolve => step_timeout(resolve, ms));
 
-/**
- * Polls the given `url` to retrieve reports sent there. Once the reports are
- * received, returns the list of reports. Returns null if the timeout is reached
- * before a report is available.
- */
-const pollReports = async (url, wait_for = 1, timeout = 5000 /*ms*/) => {
-  let startTime = performance.now();
-  let payloads = [];
-  while (performance.now() - startTime < timeout) {
-    const resp = await fetch(new URL(url, location.origin));
-    const payload = await resp.json();
-    if (payload.length > 0) {
-      payloads = payloads.concat(payload);
-    }
-    if (payloads.length >= wait_for) {
-      return payloads;
-    }
-    await delay(/*ms=*/ 100);
+class ReportPoller {
+  #reportPath
+  #debugReportPath
+  #fullTimeoutMs
+
+  /**
+   * @param{string} reportPath The reporting endpoint.
+   * @param{string} debugReportPath The reporting endpoint for debug reports.
+   * @param{number} fullTimeoutMs Maximum duration that `pollReportsAndAssert()`
+   *    may wait for reports to become available.
+   */
+  constructor(reportPath, debugReportPath, fullTimeoutMs) {
+    this.#reportPath = reportPath;
+    this.#debugReportPath = debugReportPath;
+    this.#fullTimeoutMs = fullTimeoutMs
   }
-  if (payloads.length > 0) {
-    return payloads;
+
+  /**
+   * Polls for regular reports and debug reports. Asserts that the numbers of
+   * reports and debug reports received match `expectedNumReports` and
+   * `expectedNumDebugReports`, respectively. In the worst case, this function
+   * takes approximately `fullTimeoutMs` rather than up to `2 * fullTimeoutMs`.
+   *
+   * @param {number} expectedNumReports A non-negative integer.
+   * @param {number} expectedNumDebugReports A non-negative integer.
+   * @returns {Object} The `reports` and `debug_reports` fields contain arrays
+   *    of reports, already parsed as JSON.
+   */
+  async pollReportsAndAssert(expectedNumReports, expectedNumDebugReports) {
+    const [reports, debugReports] = await Promise.all([
+      this.#poll(this.#reportPath, expectedNumReports || 1),
+      this.#poll(this.#debugReportPath, expectedNumDebugReports || 1),
+    ]);
+
+    assert_equals(
+        reports.length, expectedNumReports, 'Unexpected number of reports.');
+    assert_equals(
+        debugReports.length, expectedNumDebugReports,
+        'Unexpected number of debug reports.');
+
+    return {
+      reports: reports.map(JSON.parse),
+      debug_reports: debugReports.map(JSON.parse)
+    };
   }
-  return null;
-};
+
+  /**
+   * Polls `path` until `targetNumReports` responses have been retrieved or
+   * runtime exceeds `this.#fullTimeoutMs`. Guaranteed to poll at least once.
+   * Returns an array of reports parsed from JSON responses.
+   */
+  async #poll(path, targetNumReports) {
+    assert_greater_than(
+        targetNumReports, 0,
+        '#pollReports(): targetNumReports cannot be negative.');
+
+    const timeoutTime = performance.now() + this.#fullTimeoutMs;
+    const outReports = [];
+
+    do {
+      const response = await fetch(path);
+      assert_true(response.ok, '#pollReports(): fetch response should be OK.');
+      const reports = await response.json();
+      outReports.push(...reports);
+      if (outReports.length >= targetNumReports) {
+        break;
+      }
+      await delay(/*ms=*/ 100);
+    } while (performance.now() < timeoutTime);
+
+    return outReports;
+  }
+}
 
 /**
  * Verifies that a report's shared_info string is serialized JSON with the
@@ -221,7 +216,7 @@ const pollReports = async (url, wait_for = 1, timeout = 5000 /*ms*/) => {
  * whether debug mode is expected to be enabled for this report.
  */
 const verifySharedInfo = (shared_info_str, api, is_debug_enabled) => {
-  shared_info = JSON.parse(shared_info_str);
+  const shared_info = JSON.parse(shared_info_str);
   assert_equals(shared_info.api, api);
   if (is_debug_enabled) {
     assert_equals(shared_info.debug_mode, 'enabled');
@@ -248,12 +243,14 @@ const verifySharedInfo = (shared_info_str, api, is_debug_enabled) => {
 };
 
 /**
- * Verifies that an report's aggregation_service_payloads has the expected
- * fields. The `expected_cleartext_payload` should be the expected value of
- * debug_cleartext_payload or undefined if debug mode is disabled.
+ * Verifies that a report's aggregation_service_payloads has the expected
+ * fields. The `expected_payload` should be undefined if debug mode is disabled.
+ * Otherwise, it should be the expected list of CBOR-encoded contributions in
+ * the debug_cleartext_payload. `pad_with_contribution` is the contribution to
+ * pad the payload with; if undefined is used, default padding will be used.
  */
 const verifyAggregationServicePayloads =
-    (aggregation_service_payloads, expected_cleartext_payload) => {
+    (aggregation_service_payloads, expected_payload) => {
       assert_equals(aggregation_service_payloads.length, 1);
       const payload_obj = aggregation_service_payloads[0];
 
@@ -266,33 +263,36 @@ const verifyAggregationServicePayloads =
       // test its contents.
       atob(payload_obj.payload);
 
-      if (expected_cleartext_payload) {
+      if (expected_payload) {
         assert_own_property(payload_obj, 'debug_cleartext_payload');
-        assert_equals(
-            payload_obj.debug_cleartext_payload, expected_cleartext_payload);
+
+        const payload = CborParser.parse(payload_obj.debug_cleartext_payload);
+
+        // TODO(alexmt): Consider sorting both payloads in order to ignore
+        // ordering.
+        assert_payload_equals(payload, expected_payload);
       }
 
       // Check there are no extra keys
-      assert_equals(
-          Object.keys(payload_obj).length, expected_cleartext_payload ? 3 : 2);
+      assert_equals(Object.keys(payload_obj).length, expected_payload ? 3 : 2);
     };
 
 /**
- * Verifies that an report has the expected fields. `is_debug_enabled` should be
+ * Verifies that a report has the expected fields. `is_debug_enabled` should be
  * a boolean corresponding to whether debug mode is expected to be enabled for
  * this report. `debug_key` should be the debug key if set; otherwise,
- * undefined. The `expected_cleartext_payload` should be the expected value of
+ * undefined. The `expected_payload` should be the expected value of
  * debug_cleartext_payload if debug mode is enabled; otherwise, undefined.
  */
 const verifyReport =
-    (report, api, is_debug_enabled, debug_key, expected_cleartext_payload,
+    (report, api, is_debug_enabled, debug_key, expected_payload = undefined,
      context_id = undefined,
      aggregation_coordinator_origin = get_host_info().HTTPS_ORIGIN) => {
-      if (debug_key || expected_cleartext_payload) {
+      if (debug_key || expected_payload) {
         // A debug key cannot be set without debug mode being enabled and the
-        // `expected_cleartext_payload` should be undefined if debug mode is not
-        // enabled.
-        assert_true(is_debug_enabled);
+        // `expected_payload` should be undefined if debug mode is not enabled.
+        assert_true(
+            is_debug_enabled, 'verifyReport(): Debug mode should be enabled.');
       }
 
       assert_own_property(report, 'shared_info');
@@ -307,7 +307,7 @@ const verifyReport =
 
       assert_own_property(report, 'aggregation_service_payloads');
       verifyAggregationServicePayloads(
-          report.aggregation_service_payloads, expected_cleartext_payload);
+          report.aggregation_service_payloads, expected_payload);
 
       assert_own_property(report, 'aggregation_coordinator_origin');
       assert_equals(

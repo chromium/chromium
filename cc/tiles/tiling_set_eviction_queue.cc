@@ -44,25 +44,10 @@ void TilingSetEvictionQueue::GenerateTilingOrder(
       tilings_.push_back(tiling);
   }
 
-  range = tiling_set->GetTilingRange(PictureLayerTilingSet::LOWER_THAN_LOW_RES);
+  range =
+      tiling_set->GetTilingRange(PictureLayerTilingSet::LOWER_THAN_HIGH_RES);
   for (size_t i = range.start; i < range.end; ++i) {
     size_t index = range.start + (range.end - 1 - i);
-    PictureLayerTiling* tiling = tiling_set->tiling_at(index);
-    if (tiling->has_tiles())
-      tilings_.push_back(tiling);
-  }
-
-  range = tiling_set->GetTilingRange(
-      PictureLayerTilingSet::BETWEEN_HIGH_AND_LOW_RES);
-  for (size_t i = range.start; i < range.end; ++i) {
-    size_t index = range.start + (range.end - 1 - i);
-    PictureLayerTiling* tiling = tiling_set->tiling_at(index);
-    if (tiling->has_tiles())
-      tilings_.push_back(tiling);
-  }
-
-  range = tiling_set->GetTilingRange(PictureLayerTilingSet::LOW_RES);
-  for (size_t index = range.start; index < range.end; ++index) {
     PictureLayerTiling* tiling = tiling_set->tiling_at(index);
     if (tiling->has_tiles())
       tilings_.push_back(tiling);
@@ -84,8 +69,7 @@ void TilingSetEvictionQueue::AdvancePhase() {
     phase_ = static_cast<Phase>(phase_ + 1);
     switch (phase_) {
       case EVENTUALLY_RECT:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       case SOON_BORDER_RECT:
         soon_iterator_ = SoonBorderTilingIterator(&tilings_, tree_);
         if (!soon_iterator_.done())

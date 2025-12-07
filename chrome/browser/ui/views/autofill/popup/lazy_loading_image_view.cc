@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace autofill {
 LazyLoadingImageView::LazyLoadingImageView(gfx::Size size,
@@ -25,7 +26,7 @@ LazyLoadingImageView::LazyLoadingImageView(gfx::Size size,
 LazyLoadingImageView::~LazyLoadingImageView() = default;
 
 void LazyLoadingImageView::OnLoadSuccess(const gfx::Image& image) {
-  image_->SetImage(image.AsImageSkia());
+  image_->SetImage(ui::ImageModel::FromImage(image));
 }
 
 void LazyLoadingImageView::OnPaint(gfx::Canvas* canvas) {

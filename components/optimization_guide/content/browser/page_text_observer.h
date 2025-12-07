@@ -6,7 +6,9 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_TEXT_OBSERVER_H_
 
 #include <stdint.h>
+
 #include <set>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -36,12 +38,6 @@ class PageTextObserver : public content::WebContentsObserver,
                          public content::WebContentsUserData<PageTextObserver> {
  public:
   ~PageTextObserver() override;
-
-  // Retrieves the instance of PageTextObserver that was attached
-  // to the specified WebContents. If no instance was attached, creates one,
-  // and attaches it to the specified WebContents.
-  static PageTextObserver* GetOrCreateForWebContents(
-      content::WebContents* web_contents);
 
   // Contains all the information that is needed to request a text dump by a
   // consumer.

@@ -11,7 +11,6 @@
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
-#include "partition_alloc/partition_alloc_base/cxx20_is_constant_evaluated.h"
 #include "partition_alloc/partition_alloc_forward.h"
 
 #if !PA_BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL)
@@ -56,7 +55,7 @@ struct RawPtrHookableImpl {
   // Wraps a pointer.
   template <typename T>
   PA_ALWAYS_INLINE static constexpr T* WrapRawPtr(T* ptr) {
-    if (!partition_alloc::internal::base::is_constant_evaluated()) {
+    if (!std::is_constant_evaluated()) {
       if (EnableHooks) {
         GetRawPtrHooks()->wrap_ptr(reinterpret_cast<uintptr_t>(ptr));
       }
@@ -67,7 +66,7 @@ struct RawPtrHookableImpl {
   // Notifies the allocator when a wrapped pointer is being removed or replaced.
   template <typename T>
   PA_ALWAYS_INLINE static constexpr void ReleaseWrappedPtr(T* ptr) {
-    if (!partition_alloc::internal::base::is_constant_evaluated()) {
+    if (!std::is_constant_evaluated()) {
       if (EnableHooks) {
         GetRawPtrHooks()->release_wrapped_ptr(reinterpret_cast<uintptr_t>(ptr));
       }
@@ -79,7 +78,7 @@ struct RawPtrHookableImpl {
   template <typename T>
   PA_ALWAYS_INLINE static constexpr T* SafelyUnwrapPtrForDereference(
       T* wrapped_ptr) {
-    if (!partition_alloc::internal::base::is_constant_evaluated()) {
+    if (!std::is_constant_evaluated()) {
       if (EnableHooks) {
         GetRawPtrHooks()->safely_unwrap_for_dereference(
             reinterpret_cast<uintptr_t>(wrapped_ptr));
@@ -93,7 +92,7 @@ struct RawPtrHookableImpl {
   template <typename T>
   PA_ALWAYS_INLINE static constexpr T* SafelyUnwrapPtrForExtraction(
       T* wrapped_ptr) {
-    if (!partition_alloc::internal::base::is_constant_evaluated()) {
+    if (!std::is_constant_evaluated()) {
       if (EnableHooks) {
         GetRawPtrHooks()->safely_unwrap_for_extraction(
             reinterpret_cast<uintptr_t>(wrapped_ptr));
@@ -107,7 +106,7 @@ struct RawPtrHookableImpl {
   template <typename T>
   PA_ALWAYS_INLINE static constexpr T* UnsafelyUnwrapPtrForComparison(
       T* wrapped_ptr) {
-    if (!partition_alloc::internal::base::is_constant_evaluated()) {
+    if (!std::is_constant_evaluated()) {
       if (EnableHooks) {
         GetRawPtrHooks()->unsafely_unwrap_for_comparison(
             reinterpret_cast<uintptr_t>(wrapped_ptr));
@@ -127,39 +126,45 @@ struct RawPtrHookableImpl {
   }
 
   // Advance the wrapped pointer by `delta_elems`.
+  // PRECONDITIONS: `wrapped_ptr` must be at least `delta_elems` before the
+  // end of the range.
   template <
       typename T,
       typename Z,
       typename =
           std::enable_if_t<partition_alloc::internal::is_offset_type<Z>, void>>
-  PA_ALWAYS_INLINE static constexpr T*
+  PA_UNSAFE_BUFFER_USAGE PA_ALWAYS_INLINE static constexpr T*
   Advance(T* wrapped_ptr, Z delta_elems, bool /*is_in_pointer_modification*/) {
-    if (!partition_alloc::internal::base::is_constant_evaluated()) {
+    // SAFETY: required from caller, enforced by PA_UNSAFE_BUFFER_USAGE.
+    if (!std::is_constant_evaluated()) {
       if (EnableHooks) {
-        GetRawPtrHooks()->advance(
-            reinterpret_cast<uintptr_t>(wrapped_ptr),
-            reinterpret_cast<uintptr_t>(wrapped_ptr + delta_elems));
+        GetRawPtrHooks()->advance(reinterpret_cast<uintptr_t>(wrapped_ptr),
+                                  reinterpret_cast<uintptr_t>(PA_UNSAFE_BUFFERS(
+                                      wrapped_ptr + delta_elems)));
       }
     }
-    return wrapped_ptr + delta_elems;
+    return PA_UNSAFE_BUFFERS(wrapped_ptr + delta_elems);
   }
 
   // Retreat the wrapped pointer by `delta_elems`.
+  // PRECONDITIONS: `wrapped_ptr` must be at least `delta_elems` after
+  // the start of the range.
   template <
       typename T,
       typename Z,
       typename =
           std::enable_if_t<partition_alloc::internal::is_offset_type<Z>, void>>
-  PA_ALWAYS_INLINE static constexpr T*
+  PA_UNSAFE_BUFFER_USAGE PA_ALWAYS_INLINE static constexpr T*
   Retreat(T* wrapped_ptr, Z delta_elems, bool /*is_in_pointer_modification*/) {
-    if (!partition_alloc::internal::base::is_constant_evaluated()) {
+    // SAFETY: required from caller, enforced by PA_UNSAFE_BUFFER_USAGE.
+    if (!std::is_constant_evaluated()) {
       if (EnableHooks) {
-        GetRawPtrHooks()->advance(
-            reinterpret_cast<uintptr_t>(wrapped_ptr),
-            reinterpret_cast<uintptr_t>(wrapped_ptr - delta_elems));
+        GetRawPtrHooks()->advance(reinterpret_cast<uintptr_t>(wrapped_ptr),
+                                  reinterpret_cast<uintptr_t>(PA_UNSAFE_BUFFERS(
+                                      wrapped_ptr - delta_elems)));
       }
     }
-    return wrapped_ptr - delta_elems;
+    return PA_UNSAFE_BUFFERS(wrapped_ptr - delta_elems);
   }
 
   template <typename T>
@@ -172,7 +177,7 @@ struct RawPtrHookableImpl {
   // memory was freed or not.
   template <typename T>
   PA_ALWAYS_INLINE static constexpr T* Duplicate(T* wrapped_ptr) {
-    if (!partition_alloc::internal::base::is_constant_evaluated()) {
+    if (!std::is_constant_evaluated()) {
       if (EnableHooks) {
         GetRawPtrHooks()->duplicate(reinterpret_cast<uintptr_t>(wrapped_ptr));
       }
@@ -184,7 +189,7 @@ struct RawPtrHookableImpl {
   // to create a new raw_ptr<T> from another raw_ptr<T> of a different flavor.
   template <typename T>
   PA_ALWAYS_INLINE static constexpr T* WrapRawPtrForDuplication(T* ptr) {
-    if (!partition_alloc::internal::base::is_constant_evaluated()) {
+    if (!std::is_constant_evaluated()) {
       if (EnableHooks) {
         GetRawPtrHooks()->wrap_ptr_for_duplication(
             reinterpret_cast<uintptr_t>(ptr));
@@ -196,7 +201,7 @@ struct RawPtrHookableImpl {
   template <typename T>
   PA_ALWAYS_INLINE static constexpr T* UnsafelyUnwrapPtrForDuplication(
       T* wrapped_ptr) {
-    if (!partition_alloc::internal::base::is_constant_evaluated()) {
+    if (!std::is_constant_evaluated()) {
       if (EnableHooks) {
         GetRawPtrHooks()->unsafely_unwrap_for_duplication(
             reinterpret_cast<uintptr_t>(wrapped_ptr));

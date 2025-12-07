@@ -10,11 +10,14 @@ import android.os.PowerManager;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
-import org.chromium.chrome.browser.AppHooks;
+import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.UUID;
 
 /** Delegates calls out from the OmahaClient. */
+@NullMarked
 public abstract class OmahaDelegateBase extends OmahaDelegate {
     private final ExponentialBackoffScheduler mScheduler;
 
@@ -55,7 +58,7 @@ public abstract class OmahaDelegateBase extends OmahaDelegate {
     }
 
     @Override
-    protected RequestGenerator createRequestGenerator() {
-        return AppHooks.get().createOmahaRequestGenerator();
+    protected @Nullable RequestGenerator createRequestGenerator() {
+        return ServiceLoaderUtil.maybeCreate(RequestGenerator.class);
     }
 }

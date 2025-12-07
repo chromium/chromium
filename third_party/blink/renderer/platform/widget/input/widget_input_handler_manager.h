@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/widget/input/input_handler_proxy.h"
 #include "third_party/blink/renderer/platform/widget/input/input_handler_proxy_client.h"
 #include "third_party/blink/renderer/platform/widget/input/main_thread_event_queue.h"
+#include "third_party/blink/renderer/platform/widget/input/widget_input_handler_impl.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
 namespace cc {
@@ -65,6 +66,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
     kMaxValue = kAfterFirstPaint
   };
 
+ public:
   // For use in bitfields to keep track of why we should keep suppressing input
   // events. Maybe the rendering pipeline is currently deferring something, or
   // we are still waiting for the user to see some non empty paint. And we use
@@ -77,9 +79,10 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
     kDeferCommits = 1 << 1,
     // if set, we have not painted a main frame from the current navigation yet
     kHasNotPainted = 1 << 2,
+    // if set, we are not visible, and should not accept any input
+    kHidden = 1 << 3,
   };
 
- public:
   // The `widget` and `frame_widget_input_handler` should be invalidated
   // at the same time.
   static scoped_refptr<WidgetInputHandlerManager> Create(
@@ -109,19 +112,24 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   WidgetInputHandlerManager& operator=(const WidgetInputHandlerManager&) =
       delete;
 
+  void SetHost(mojo::PendingRemote<mojom::blink::WidgetInputHandlerHost> host);
+  void SetVizHost(
+      mojo::PendingRemote<mojom::blink::WidgetInputHandlerHost> viz_host);
+
   void AddInterface(
-      mojo::PendingReceiver<mojom::blink::WidgetInputHandler> receiver,
-      mojo::PendingRemote<mojom::blink::WidgetInputHandlerHost> host);
+      mojo::PendingReceiver<mojom::blink::WidgetInputHandler> receiver);
 
   // MainThreadEventQueueClient overrides.
   bool HandleInputEvent(const WebCoalescedInputEvent& event,
                         std::unique_ptr<cc::EventMetrics> metrics,
                         HandledEventCallback handled_callback) override;
   void InputEventsDispatched(bool raf_aligned) override;
-  void SetNeedsMainFrame() override;
+  void SetNeedsMainFrame(bool urgent) override;
   bool RequestedMainFramePending() override;
 
-  void DidFirstVisuallyNonEmptyPaint(const base::TimeTicks& first_paint_time);
+  void OnFirstContentfulPaint(const base::TimeTicks& first_paint_time);
+  void SetHidden(bool hidden);
+  void OnDevToolsSessionConnectionChanged(bool attached);
 
   // InputHandlerProxyClient overrides.
   void WillShutdown() override;
@@ -142,6 +150,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   void ProcessTouchAction(cc::TouchAction touch_action);
 
   mojom::blink::WidgetInputHandlerHost* GetWidgetInputHandlerHost();
+  mojom::blink::WidgetInputHandlerHost* GetVizWidgetInputHandlerHost();
 
 #if BUILDFLAG(IS_ANDROID)
   void AttachSynchronousCompositor(
@@ -191,8 +200,8 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
       cc::BrowserControlsState constraints,
       cc::BrowserControlsState current,
       bool animate,
-      base::optional_ref<const cc::BrowserControlsOffsetTagsInfo>
-          offset_tags_info);
+      base::optional_ref<const cc::BrowserControlsOffsetTagModifications>
+          offset_tag_modifications);
 
   MainThreadEventQueue* input_event_queue() { return input_event_queue_.get(); }
 
@@ -205,8 +214,19 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   // both main and compositor thread queues have been processed.
   void FlushEventQueuesForTesting(base::OnceClosure done_callback);
 
+  void DispatchEventOnInputThreadForTesting(
+      std::unique_ptr<blink::WebCoalescedInputEvent> event,
+      mojom::blink::WidgetInputHandler::DispatchEventCallback callback);
+
+  void SetInputHandlerProxyForTesting(
+      std::unique_ptr<InputHandlerProxy> input_handler_proxy);
+
   base::WeakPtr<WidgetInputHandlerManager> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  uint16_t suppressing_input_events_state() const {
+    return suppressing_input_events_state_;
   }
 
  private:
@@ -313,6 +333,8 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   void FlushCompositorQueueForTesting();
   void FlushMainThreadQueueForTesting(base::OnceClosure done);
 
+  void OnVizHostDisconnected() { viz_host_.reset(); }
+
   // Only valid to be called on the main thread.
   base::WeakPtr<WidgetBase> widget_;
   base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
@@ -330,6 +352,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   // The WidgetInputHandlerHost is bound on the compositor task runner
   // but class can be called on the compositor and main thread.
   mojo::SharedRemote<mojom::blink::WidgetInputHandlerHost> host_;
+  mojo::SharedRemote<mojom::blink::WidgetInputHandlerHost> viz_host_;
 
   // Any thread can access these variables.
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
@@ -431,6 +454,12 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   // Whether to use ScrollPredictor to resample scroll events. This is false for
   // web_tests to ensure that scroll deltas are not timing-dependent.
   const bool allow_scroll_resampling_ = true;
+
+  std::atomic<bool> dev_tools_session_attached_ = false;
+  const bool ignore_hidden_input_;
+  // The timestamp when the widget was hidden. Used to track the duration of
+  // hidden state.
+  base::TimeTicks hidden_received_;
 
   base::WeakPtrFactory<WidgetInputHandlerManager> weak_ptr_factory_{this};
 };

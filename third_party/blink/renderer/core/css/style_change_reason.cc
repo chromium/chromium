@@ -24,6 +24,7 @@ const char kDesignMode[] = "DesignMode";
 const char kDialog[] = "Dialog";
 const char kDisplayLock[] = "DisplayLock";
 const char kEditContext[] = "EditContext";
+const char kEnvironmentVariableChanged[] = "EnvironmentVariableChanged";
 const char kViewTransition[] = "ViewTransition";
 const char kFlatTreeChange[] = "FlatTreeChange";
 const char kFonts[] = "Fonts";
@@ -38,6 +39,8 @@ const char kInspector[] = "Inspector";
 const char kKeyframesRuleChange[] = "@keyframes rule change";
 const char kLanguage[] = "Language";
 const char kLinkColorChange[] = "LinkColorChange";
+const char kMediaQuery[] = "Media Query changed";
+const char kNodeInserted[] = "Node was inserted into tree";
 const char kPictureSourceChanged[] = "PictureSourceChange";
 const char kPlatformColorChange[] = "PlatformColorChange";
 const char kPluginChanged[] = "Plugin Changed";
@@ -63,36 +66,41 @@ const char kZoom[] = "Zoom";
 }  // namespace style_change_reason
 
 namespace style_change_extra_data {
-DEFINE_GLOBAL(AtomicString, g_active);
-DEFINE_GLOBAL(AtomicString, g_active_view_transition);
-DEFINE_GLOBAL(AtomicString, g_active_view_transition_type);
-DEFINE_GLOBAL(AtomicString, g_disabled);
-DEFINE_GLOBAL(AtomicString, g_drag);
-DEFINE_GLOBAL(AtomicString, g_focus);
-DEFINE_GLOBAL(AtomicString, g_focus_visible);
-DEFINE_GLOBAL(AtomicString, g_focus_within);
-DEFINE_GLOBAL(AtomicString, g_hover);
-DEFINE_GLOBAL(AtomicString, g_past);
-DEFINE_GLOBAL(AtomicString, g_unresolved);
+DEFINE_GLOBAL(, AtomicString, g_active);
+DEFINE_GLOBAL(, AtomicString, g_active_view_transition);
+DEFINE_GLOBAL(, AtomicString, g_active_view_transition_type);
+DEFINE_GLOBAL(, AtomicString, g_disabled);
+DEFINE_GLOBAL(, AtomicString, g_drag);
+DEFINE_GLOBAL(, AtomicString, g_focus);
+DEFINE_GLOBAL(, AtomicString, g_focus_visible);
+DEFINE_GLOBAL(, AtomicString, g_focus_within);
+DEFINE_GLOBAL(, AtomicString, g_hover);
+DEFINE_GLOBAL(, AtomicString, g_past);
+DEFINE_GLOBAL(, AtomicString, g_patching);
+DEFINE_GLOBAL(, AtomicString, g_unresolved);
 
 void Init() {
   DCHECK(IsMainThread());
 
-  new (WTF::NotNullTag::kNotNull, (void*)&g_active) AtomicString(":active");
-  new (WTF::NotNullTag::kNotNull, (void*)&g_active_view_transition)
+  new (base::NotNullTag::kNotNull, (void*)&g_active) AtomicString(":active");
+  new (base::NotNullTag::kNotNull, (void*)&g_active_view_transition)
       AtomicString(":active_view_transition");
-  new (WTF::NotNullTag::kNotNull, (void*)&g_active_view_transition_type)
+  new (base::NotNullTag::kNotNull, (void*)&g_active_view_transition_type)
       AtomicString(":active_view_transition_type");
-  new (WTF::NotNullTag::kNotNull, (void*)&g_disabled) AtomicString(":disabled");
-  new (WTF::NotNullTag::kNotNull, (void*)&g_drag) AtomicString(":-webkit-drag");
-  new (WTF::NotNullTag::kNotNull, (void*)&g_focus) AtomicString(":focus");
-  new (WTF::NotNullTag::kNotNull, (void*)&g_focus_visible)
+  new (base::NotNullTag::kNotNull, (void*)&g_disabled)
+      AtomicString(":disabled");
+  new (base::NotNullTag::kNotNull, (void*)&g_drag)
+      AtomicString(":-webkit-drag");
+  new (base::NotNullTag::kNotNull, (void*)&g_focus) AtomicString(":focus");
+  new (base::NotNullTag::kNotNull, (void*)&g_focus_visible)
       AtomicString(":focus-visible");
-  new (WTF::NotNullTag::kNotNull, (void*)&g_focus_within)
+  new (base::NotNullTag::kNotNull, (void*)&g_focus_within)
       AtomicString(":focus-within");
-  new (WTF::NotNullTag::kNotNull, (void*)&g_hover) AtomicString(":hover");
-  new (WTF::NotNullTag::kNotNull, (void*)&g_past) AtomicString(":past");
-  new (WTF::NotNullTag::kNotNull, (void*)&g_unresolved)
+  new (base::NotNullTag::kNotNull, (void*)&g_hover) AtomicString(":hover");
+  new (base::NotNullTag::kNotNull, (void*)&g_past) AtomicString(":past");
+  new (base::NotNullTag::kNotNull, (void*)&g_patching)
+      AtomicString(":patching");
+  new (base::NotNullTag::kNotNull, (void*)&g_unresolved)
       AtomicString(":unresolved");
 }
 

@@ -10,8 +10,10 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "google_apis/gaia/gaia_id.h"
 
 enum AuthenticationErrorCategory {
   // Unknown errors.
@@ -34,16 +36,49 @@ enum AuthenticationErrorCategory {
 class DeviceAccountsProvider {
  public:
   // Account information.
-  struct AccountInfo {
-    std::string gaia;
-    std::string email;
-    std::string hosted_domain;
+  class AccountInfo {
+   public:
+    // `gaia` and `email` can't be empty.
+    AccountInfo(GaiaId gaia,
+                std::string email,
+                std::string hosted_domain,
+                bool has_persistent_auth_error = false);
+    AccountInfo(const AccountInfo& other);
+    AccountInfo& operator=(const AccountInfo& other);
+    AccountInfo(AccountInfo&& other);
+    AccountInfo& operator=(AccountInfo&& other);
+    ~AccountInfo();
+
+    // Account's Gaia id. Guaranteed to be non-empty.
+    const GaiaId& GetGaiaId() const;
+
+    // Account's email. Guaranteed to be non-empty.
+    const std::string& GetEmail() const;
+
+    const std::string& GetHostedDomain() const;
+    bool HasPersistentAuthError() const;
+
+   private:
+    GaiaId gaia_;
+    std::string email_;
+    std::string hosted_domain_;
+    bool has_persistent_auth_error_;
   };
 
   // Access token info.
   struct AccessTokenInfo {
     std::string token;
     base::Time expiration_time;
+  };
+
+  class Observer : public base::CheckedObserver {
+   public:
+    Observer() = default;
+    ~Observer() override = default;
+
+    virtual void OnAccountsOnDeviceChanged() {}
+    virtual void OnAccountOnDeviceUpdated(
+        const DeviceAccountsProvider::AccountInfo& device_account) {}
   };
 
   // Result of GetAccessToken() passed to the callback. Contains either
@@ -55,15 +90,23 @@ class DeviceAccountsProvider {
   using AccessTokenCallback =
       base::OnceCallback<void(AccessTokenResult result)>;
 
-  DeviceAccountsProvider() {}
-  virtual ~DeviceAccountsProvider() {}
+  DeviceAccountsProvider() = default;
+  virtual ~DeviceAccountsProvider() = default;
 
-  // Returns the ids of all accounts.
-  virtual std::vector<AccountInfo> GetAllAccounts() const;
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
+
+  // Returns the IDs of all accounts that are assigned to the current profile.
+  virtual std::vector<AccountInfo> GetAccountsForProfile() const;
+
+  // Returns the IDs of all accounts that exist on the device, including the
+  // ones that are assigned to different profiles, in the order in which they're
+  // provided by the SystemIdentityManager.
+  virtual std::vector<AccountInfo> GetAccountsOnDevice() const;
 
   // Starts fetching an access token for the account with id |gaia_id| with
   // the given |scopes|. Once the token is obtained, |callback| is called.
-  virtual void GetAccessToken(const std::string& gaia_id,
+  virtual void GetAccessToken(const GaiaId& gaia_id,
                               const std::string& client_id,
                               const std::set<std::string>& scopes,
                               AccessTokenCallback callback);

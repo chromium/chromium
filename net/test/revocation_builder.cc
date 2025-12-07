@@ -46,7 +46,7 @@ bool CBBAddBytes(CBB* cbb, base::span<const uint8_t> data) {
 
 // Adds a GeneralizedTime value to the given CBB.
 // The argument ordering follows the boringssl CBB_* api style.
-bool CBBAddGeneralizedTime(CBB* cbb, const base::Time& time) {
+bool CBBAddGeneralizedTime(CBB* cbb, base::Time time) {
   bssl::der::GeneralizedTime generalized_time;
   if (!EncodeTimeAsGeneralizedTime(time, &generalized_time)) {
     return false;

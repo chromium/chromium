@@ -52,7 +52,6 @@ struct UrlRule {
   UrlRule& operator=(const UrlRule&);
 
   bool operator==(const UrlRule& other) const;
-  bool operator!=(const UrlRule& other) const { return !operator==(other); }
 
   // Returns a protobuf representation of the rule.
   url_pattern_index::proto::UrlRule ToProtobuf() const;
@@ -102,8 +101,7 @@ struct CssRule {
   ~CssRule();
   CssRule& operator=(const CssRule&);
 
-  bool operator==(const CssRule& other) const;
-  bool operator!=(const CssRule& other) const { return !operator==(other); }
+  friend bool operator==(const CssRule&, const CssRule&) = default;
 
   // Returns a protobuf representation of the rule.
   url_pattern_index::proto::CssRule ToProtobuf() const;

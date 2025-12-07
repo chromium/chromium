@@ -145,6 +145,10 @@ static void GL_BINDING_CALL Mock_glBlitFramebufferNV(GLint srcX0,
                                                      GLint dstY1,
                                                      GLbitfield mask,
                                                      GLenum filter);
+static void GL_BINDING_CALL
+Mock_glBlobCacheCallbacksANGLE(GLSETBLOBPROCANGLE set,
+                               GLGETBLOBPROCANGLE get,
+                               const void* userData);
 static void GL_BINDING_CALL Mock_glBufferData(GLenum target,
                                               GLsizeiptr size,
                                               const void* data,

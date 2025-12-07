@@ -12,8 +12,6 @@
 #include "content/browser/broadcast_channel/broadcast_channel_service.h"
 #include "content/browser/buckets/bucket_manager.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
-#include "content/browser/devtools/service_worker_devtools_agent_host.h"
-#include "content/browser/devtools/service_worker_devtools_manager.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
@@ -21,11 +19,13 @@
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_version.h"
+#include "content/browser/websockets/websocket_connector_impl.h"
 #include "content/browser/webtransport/web_transport_connector_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
@@ -90,7 +90,21 @@ void ServiceWorkerHost::CreateWebTransportConnector(
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<WebTransportConnectorImpl>(
           worker_process_id_, /*frame=*/nullptr, version_->key().origin(),
-          GetNetworkAnonymizationKey()),
+          GetNetworkAnonymizationKey(),
+          version_->BuildClientSecurityState()->Clone()),
+      std::move(receiver));
+}
+
+void ServiceWorkerHost::CreateWebSocketConnector(
+    mojo::PendingReceiver<blink::mojom::WebSocketConnector> receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  const blink::StorageKey& storage_key = version_->key();
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<WebSocketConnectorImpl>(
+          worker_process_id_, IPC::mojom::kRoutingIdNone, storage_key.origin(),
+          storage_key.ToPartialNetIsolationInfo(),
+          version_->BuildClientSecurityState()->Clone()),
       std::move(receiver));
 }
 
@@ -230,7 +244,21 @@ void ServiceWorkerHost::CreateBlobUrlStoreProvider(
   }
 
   storage_partition_impl->GetBlobUrlRegistry()->AddReceiver(
-      version()->key(), std::move(receiver));
+      version()->key(), version()->key().origin(),
+      GetProcessHost()->GetDeprecatedID(), std::move(receiver),
+      /*context_type_for_debugging=*/"Service Worker",
+      base::BindRepeating(
+          [](base::WeakPtr<ServiceWorkerHost> host) -> std::string {
+            if (!host) {
+              return "destroyed ServiceWorkerHost";
+            }
+            return host->version()->key().GetDebugString();
+          },
+          weak_factory_.GetWeakPtr()),
+      // Storage access can only be granted to dedicated workers.
+      base::BindRepeating([]() -> bool { return false; }),
+      !(GetContentClient()->browser()->IsBlobUrlPartitioningEnabled(
+          GetProcessHost()->GetBrowserContext())));
 }
 
 void ServiceWorkerHost::CreateBucketManagerHost(
@@ -264,8 +292,10 @@ blink::mojom::PermissionStatus ServiceWorkerHost::GetPermissionStatus(
 
   return process->GetBrowserContext()
       ->GetPermissionController()
-      ->GetPermissionStatusForWorker(permission_type, process,
-                                     GetBucketStorageKey().origin());
+      ->GetPermissionStatusForWorker(
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(permission_type),
+          process, GetBucketStorageKey().origin());
 }
 
 void ServiceWorkerHost::BindCacheStorageForBucket(
@@ -275,18 +305,8 @@ void ServiceWorkerHost::BindCacheStorageForBucket(
                                                 bucket.ToBucketLocator());
 }
 
-GlobalRenderFrameHostId ServiceWorkerHost::GetAssociatedRenderFrameHostId()
-    const {
-  // For `ServiceWorkerHost` there is no associated `RenderFrameHost`.
-  return GlobalRenderFrameHostId();
-}
-
-base::UnguessableToken ServiceWorkerHost::GetDevToolsToken() const {
-  return ServiceWorkerDevToolsManager::GetInstance()
-      ->GetDevToolsAgentHostForWorker(
-          version_->GetInfo().process_id,
-          version_->GetInfo().devtools_agent_route_id)
-      ->devtools_worker_token();
+storage::BucketClientInfo ServiceWorkerHost::GetBucketClientInfo() const {
+  return storage::BucketClientInfo{worker_process_id(), token()};
 }
 
 RenderProcessHost* ServiceWorkerHost::GetProcessHost() const {
@@ -298,6 +318,7 @@ void ServiceWorkerHost::BindAIManager(
   auto* process = GetProcessHost();
   if (process) {
     GetContentClient()->browser()->BindAIManager(process->GetBrowserContext(),
+                                                 this, /*rfh=*/nullptr,
                                                  std::move(receiver));
   }
 }

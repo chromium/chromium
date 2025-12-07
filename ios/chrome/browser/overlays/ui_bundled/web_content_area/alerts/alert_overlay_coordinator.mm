@@ -10,8 +10,8 @@
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_coordinator+subclassing.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_coordinator_delegate.h"
 #import "ios/chrome/browser/overlays/ui_bundled/web_content_area/alerts/alert_overlay_mediator.h"
-#import "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"
-#import "ios/chrome/browser/ui/presenters/non_modal_view_controller_presenter.h"
+#import "ios/chrome/browser/presenters/ui_bundled/contained_presenter_delegate.h"
+#import "ios/chrome/browser/presenters/ui_bundled/non_modal_view_controller_presenter.h"
 
 using alert_overlays::AlertRequest;
 
@@ -27,8 +27,9 @@ using alert_overlays::AlertRequest;
 #pragma mark - Accessors
 
 - (void)setAlertMediator:(AlertOverlayMediator*)alertMediator {
-  if ([self.alertMediator isEqual:alertMediator])
+  if ([self.alertMediator isEqual:alertMediator]) {
     return;
+  }
   self.alertMediator.dataSource = nil;
   self.mediator = alertMediator;
   self.alertMediator.dataSource = self;
@@ -74,8 +75,9 @@ using alert_overlays::AlertRequest;
 }
 
 - (void)startAnimated:(BOOL)animated {
-  if (self.started)
+  if (self.started) {
     return;
+  }
   self.alertViewController = [[AlertViewController alloc] init];
   self.alertViewController.modalPresentationStyle =
       UIModalPresentationOverCurrentContext;
@@ -95,8 +97,9 @@ using alert_overlays::AlertRequest;
 }
 
 - (void)stopAnimated:(BOOL)animated {
-  if (!self.started)
+  if (!self.started) {
     return;
+  }
 
   self.started = NO;
   [self.presenter dismissAnimated:animated];

@@ -5,6 +5,69 @@
 #ifndef CHROME_BROWSER_WEBAUTHN_WEBAUTHN_METRICS_UTIL_H_
 #define CHROME_BROWSER_WEBAUTHN_WEBAUTHN_METRICS_UTIL_H_
 
+namespace webauthn::metrics {
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class GPMMakeCredentialEvents {
+  // LINT.IfChange
+  kStarted = 0,
+  kSuccess = 1,
+  kFailure = 2,
+  kMaxValue = kFailure,
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml)
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class GPMGetAssertionEvents {
+  // LINT.IfChange
+  kStarted = 0,
+  kSuccess = 1,
+  kFailure = 2,
+  kMaxValue = kFailure,
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml)
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class OnboardingEvents {
+  // LINT.IfChange
+  kStarted = 0,
+  kSucceeded = 1,
+  kCreateGpmPasskeySheetCancelled = 2,
+  kCreateGpmPasskeySheetSaveAnotherWaySelected = 3,
+  kAuthenticatorGpmPinSheetCancelled = 4,
+  kFailure = 5,
+  kMaxValue = kFailure,
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml)
+};
+
+// Enum for the WebAuthentication.StoreKeysFlowType histogram.
+enum class WebAuthenticationGPMRecoveryEvent {
+  // LINT.IfChange(WebAuthenticationGPMRecoveryEvent)
+  kStoreKeysFromExplicitFlowStarted = 0,
+  kStoreKeysFromExplicitFlowSucceeded = 1,
+  kStoreKeysFromOpportunisticFlowStarted = 2,
+  kStoreKeysFromOpportunisticFlowSucceeded = 3,
+  kStoreKeysFromOpportunisticFlowIgnoredRedundant = 4,
+  kStoreKeysFromOpportunisticFlowIgnoredNoUV = 5,
+  kStoreKeysFromOpportunisticFlowFailed = 6,
+  kMaxValue = kStoreKeysFromOpportunisticFlowFailed,
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:WebAuthenticationGPMRecoveryEvent)
+};
+
+void RecordGPMRecoveryEvent(WebAuthenticationGPMRecoveryEvent event);
+
+void RecordCombinedSelectorShown(int credential_count);
+void RecordCombinedSelectorAccept(int credential_count, bool default_selected);
+void RecordCombinedSelectorCancelButtonClicked();
+
+}  // namespace webauthn::metrics
+
 void ReportConditionalUiPasskeyCount(int passkey_count);
+void RecordGPMMakeCredentialEvent(
+    webauthn::metrics::GPMMakeCredentialEvents event);
+void RecordGPMGetAssertionEvent(webauthn::metrics::GPMGetAssertionEvents event);
+void RecordOnboardingEvent(webauthn::metrics::OnboardingEvents event);
 
 #endif  // CHROME_BROWSER_WEBAUTHN_WEBAUTHN_METRICS_UTIL_H_

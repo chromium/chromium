@@ -51,7 +51,9 @@ enum class DomCode : uint32_t;
 // ancestors have provided an implementation.
 class EVENTS_EXPORT Event {
  public:
-  using Properties = base::flat_map<std::string, std::vector<uint8_t>>;
+  using PropertyKey = std::string;
+  using PropertyValue = std::vector<uint8_t>;
+  using Properties = base::flat_map<PropertyKey, PropertyValue>;
 
   virtual ~Event();
 
@@ -101,8 +103,13 @@ class EVENTS_EXPORT Event {
   int source_device_id() const { return source_device_id_; }
   void set_source_device_id(int id) { source_device_id_ = id; }
 
-  // Sets the properties associated with this Event.
+  // Sets and rewrites the properties associated with this Event. Please use
+  // SetProperty() if you only intend to modify an existing event.
+  // TODO(crbug.com/374334456): Switch to using SetProperty() where appropriate.
   void SetProperties(const Properties& properties);
+
+  // Sets the property value for the given key associated with this Event.
+  void SetProperty(const PropertyKey& key, const PropertyValue& value);
 
   // Returns the properties associated with this event, which may be null.
   // The properties are meant to provide a way to associate arbitrary key/value
@@ -166,6 +173,7 @@ class EVENTS_EXPORT Event {
       case EventType::kGesturePinchBegin:
       case EventType::kGesturePinchEnd:
       case EventType::kGesturePinchUpdate:
+      case EventType::kGestureShortPress:
       case EventType::kGestureLongPress:
       case EventType::kGestureLongTap:
       case EventType::kGestureSwipe:
@@ -297,10 +305,7 @@ class EVENTS_EXPORT Event {
   // Marks the event as skipped. This immediately stops the propagation of the
   // event like `StopPropagation()` but sets an extra bit so that the dispatcher
   // of the event can use this extra information to decide to handle the event
-  // themselves. For example in the case of ash-chrome - lacros-chrome
-  // interaction in ChromeOS, lacros-chrome can mark the event as 'skipped' to
-  // stop the propagation, but also notifies ash-chroem that the event was not
-  // handled in lacros. Note that `handled()` will still return true to stop the
+  // themselves. Note that `handled()` will still return true to stop the
   // event from being passed to the next phase. Note that SetSkipped() can be
   // called only for cancelable events.
   void SetSkipped();
@@ -604,10 +609,7 @@ class EVENTS_EXPORT MouseEvent : public LocatedEvent {
   // Raw mouse movement value reported from mouse hardware. The value of this is
   // platform dependent and may change depending upon the hardware connected to
   // the device. This field is only set if the flag EF_UNADJUSTED_MOUSE is
-  // present (which is the case on windows platforms, and CrOS if the
-  // kEnableOrdinalMotion flag is set).
-  //
-  // TODO(b/171249701): always enable on CrOS.
+  // present (which is the case on windows platforms).
   gfx::Vector2dF movement_;
 
   // The most recent user-generated MouseEvent, used to detect double clicks.

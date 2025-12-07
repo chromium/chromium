@@ -21,7 +21,7 @@ import action_helpers  # build_utils adds //build to sys.path.
 import zip_helpers
 
 
-_DEX_XMX = '2G'  # Increase this when __final_dex OOMs.
+_DEX_XMX = '3G'  # Increase this when __final_dex OOMs.
 
 DEFAULT_IGNORE_WARNINGS = (
     # Warning: Running R8 version main (build engineering), which cannot be
@@ -29,7 +29,26 @@ DEFAULT_IGNORE_WARNINGS = (
     # any known version for selecting Proguard configurations embedded under
     # META-INF/. This means that all rules with a '-upto-' qualifier will be
     # excluded and all rules with a -from- qualifier will be included.
-    r'Running R8 version main', )
+    r'Running R8 version main',
+    # https://issuetracker.google.com/327611582
+    r'The companion object Companion could not be found',
+    # https://crbug.com/408280256
+    r'MethodHandle.invoke',
+)
+
+_MERGE_SERVICE_ENTRIES = (
+    # Uses ServiceLoader to find all implementing classes, so multiple are
+    # expected.
+    'META-INF/services/androidx.appsearch.app.AppSearchDocumentClassMap',
+    'META-INF/services/kotlinx.coroutines.CoroutineExceptionHandler',
+    'META-INF/services/kotlinx.coroutines.internal.MainDispatcherFactory',
+)
+
+_IGNORE_SERVICE_ENTRIES = (
+    # ServiceLoader call is used only for ProtoBuf full (non-lite).
+    # BaseGeneratedExtensionRegistryLite$Loader conflicts with
+    # ChromeGeneratedExtensionRegistryLite$Loader.
+    'META-INF/services/com.google.protobuf.GeneratedExtensionRegistryLoader', )
 
 INTERFACE_DESUGARING_WARNINGS = (r'default or static interface methods', )
 
@@ -185,7 +204,7 @@ def _RunD8(dex_cmd, input_paths, output_path, warnings_as_errors,
                               fail_on_output=warnings_as_errors)
     except Exception as e:
       if isinstance(e, build_utils.CalledProcessError):
-        output = e.output  # pylint: disable=no-member
+        output = e.output
         if "global synthetic for 'Record desugaring'" in output:
           sys.stderr.write('Java records are not supported.\n')
           sys.stderr.write(
@@ -197,23 +216,67 @@ def _RunD8(dex_cmd, input_paths, output_path, warnings_as_errors,
       raise
 
 
-def _ZipAligned(dex_files, output_path):
+def _ZipAligned(dex_files, output_path, services_map):
   """Creates a .dex.jar with 4-byte aligned files.
 
   Args:
     dex_files: List of dex files.
     output_path: The output file in which to write the zip.
+    services_map: map of path->data for META-INF/services
   """
   with zipfile.ZipFile(output_path, 'w') as z:
     for i, dex_file in enumerate(dex_files):
       name = 'classes{}.dex'.format(i + 1 if i > 0 else '')
       zip_helpers.add_to_zip_hermetic(z, name, src_path=dex_file, alignment=4)
+    for path, data in sorted(services_map.items()):
+      zip_helpers.add_to_zip_hermetic(z, path, data=data, alignment=4)
 
 
-def _CreateFinalDex(d8_inputs, output, tmp_dir, dex_cmd, options=None):
+def _CreateServicesMap(service_jars):
+  ret = {}
+  origins = {}
+  for jar_path in service_jars:
+    with zipfile.ZipFile(jar_path, 'r') as z:
+      for n in z.namelist():
+        if n.startswith('META-INF/services/') and not n.endswith('/'):
+          if n in _IGNORE_SERVICE_ENTRIES:
+            continue
+          old_lines = ret.get(n, '').splitlines()
+          new_lines = z.read(n).decode('utf8').splitlines()
+          old_lines.extend(l for l in new_lines if l not in old_lines)
+          data = '\n'.join(old_lines) + '\n'
+          if _MERGE_SERVICE_ENTRIES or ret.get(n, data) == data:
+            ret[n] = data
+            origins[n] = jar_path
+          else:
+            # We should arguably just concat the files here, but Chrome's own
+            # uses (via ServiceLoaderUtil) all assume only one entry.
+            raise Exception(f"""\
+Conflicting contents for: {n}
+{origins[n]}:
+{ret[n]}
+{jar_path}:
+{data}
+
+If this entry can be safely ignored (because the ServiceLoader.load() call is \
+never hit), update _IGNORE_SERVICE_ENTRIES in dex.py.
+
+If this service is meant to allow multiple implementations, update \
+_MERGE_SERVICE_ENTRIES in dex.py.
+""")
+  return ret
+
+
+def _CreateFinalDex(d8_inputs,
+                    output,
+                    tmp_dir,
+                    dex_cmd,
+                    options=None,
+                    service_jars=None):
   tmp_dex_output = os.path.join(tmp_dir, 'tmp_dex_output.zip')
   needs_dexing = not all(f.endswith('.dex') for f in d8_inputs)
   needs_dexmerge = output.endswith('.dex') or not (options and options.library)
+  services_map = _CreateServicesMap(service_jars or [])
   if needs_dexing or needs_dexmerge:
     tmp_dex_dir = os.path.join(tmp_dir, 'tmp_dex_dir')
     os.mkdir(tmp_dex_dir)
@@ -230,10 +293,10 @@ def _CreateFinalDex(d8_inputs, output, tmp_dir, dex_cmd, options=None):
         raise Exception('%d files created, expected 1' % len(dex_files))
       tmp_dex_output = dex_files[0]
     else:
-      _ZipAligned(sorted(dex_files), tmp_dex_output)
+      _ZipAligned(sorted(dex_files), tmp_dex_output, services_map)
   else:
     # Skip dexmerger. Just put all incrementals into the .jar individually.
-    _ZipAligned(sorted(d8_inputs), tmp_dex_output)
+    _ZipAligned(sorted(d8_inputs), tmp_dex_output, services_map)
     logging.debug('Quick-zipped %d files', len(d8_inputs))
 
   # The dex file is complete and can be moved out of tmp_dir.
@@ -241,15 +304,18 @@ def _CreateFinalDex(d8_inputs, output, tmp_dir, dex_cmd, options=None):
 
 
 def _IntermediateDexFilePathsFromInputJars(class_inputs, incremental_dir):
-  """Returns a list of all intermediate dex file paths."""
+  """Returns list of intermediate dex file paths, .jar files with services."""
   dex_files = []
+  service_jars = set()
   for jar in class_inputs:
     with zipfile.ZipFile(jar, 'r') as z:
       for subpath in z.namelist():
         if _IsClassFile(subpath):
           subpath = subpath[:-5] + 'dex'
           dex_files.append(os.path.join(incremental_dir, subpath))
-  return dex_files
+        elif subpath.startswith('META-INF/services/'):
+          service_jars.add(jar)
+  return dex_files, sorted(service_jars)
 
 
 def _DeleteStaleIncrementalDexFiles(dex_dir, dex_files):
@@ -262,7 +328,6 @@ def _DeleteStaleIncrementalDexFiles(dex_dir, dex_files):
 
 
 def _ParseDesugarDeps(desugar_dependencies_file):
-  # pylint: disable=line-too-long
   """Returns a dict of dependent/dependency mapping parsed from the file.
 
   Example file format:
@@ -277,10 +342,9 @@ def _ParseDesugarDeps(desugar_dependencies_file):
   org/chromium/base/task/TaskRunnerImplJni.class
     <-  org/chromium/base/task/TaskRunnerImpl$Natives.class
   """
-  # pylint: enable=line-too-long
   dependents_from_dependency = collections.defaultdict(set)
   if desugar_dependencies_file and os.path.exists(desugar_dependencies_file):
-    with open(desugar_dependencies_file, 'r') as f:
+    with open(desugar_dependencies_file, 'r', encoding='utf-8') as f:
       dependent = None
       for line in f:
         line = line.rstrip()
@@ -322,7 +386,7 @@ def _ExtractClassFiles(changes, tmp_dir, class_inputs, required_classes_set):
     if changes:
       changed_class_list = (set(changes.IterChangedSubpaths(jar))
                             | required_classes_set)
-      predicate = lambda x: x in changed_class_list and _IsClassFile(x)
+      predicate = lambda x: x in changed_class_list and _IsClassFile(x)  # pylint: disable=cell-var-from-loop
     else:
       predicate = _IsClassFile
 
@@ -380,7 +444,7 @@ def _CreateIntermediateDexFiles(changes, options, tmp_dir, dex_cmd):
     logging.debug('Dexed class files.')
 
 
-def _OnStaleMd5(changes, options, final_dex_inputs, dex_cmd):
+def _OnStaleMd5(changes, options, final_dex_inputs, service_jars, dex_cmd):
   logging.debug('_OnStaleMd5')
   with build_utils.TempDir() as tmp_dir:
     if options.incremental_dir:
@@ -392,8 +456,12 @@ def _OnStaleMd5(changes, options, final_dex_inputs, dex_cmd):
       logging.debug('Stale files deleted')
       _CreateIntermediateDexFiles(changes, options, tmp_dir, dex_cmd)
 
-    _CreateFinalDex(
-        final_dex_inputs, options.output, tmp_dir, dex_cmd, options=options)
+    _CreateFinalDex(final_dex_inputs,
+                    options.output,
+                    tmp_dir,
+                    dex_cmd,
+                    options=options,
+                    service_jars=service_jars)
 
 
 def MergeDexForIncrementalInstall(r8_jar_path, src_paths, dest_dex_jar,
@@ -406,7 +474,11 @@ def MergeDexForIncrementalInstall(r8_jar_path, src_paths, dest_dex_jar,
       min_api,
   ]
   with build_utils.TempDir() as tmp_dir:
-    _CreateFinalDex(src_paths, dest_dex_jar, tmp_dir, dex_cmd)
+    _CreateFinalDex(src_paths,
+                    dest_dex_jar,
+                    tmp_dir,
+                    dex_cmd,
+                    service_jars=src_paths)
 
 
 def main(args):
@@ -427,12 +499,14 @@ def main(args):
 
   track_subpaths_allowlist = []
   if options.incremental_dir:
-    final_dex_inputs = _IntermediateDexFilePathsFromInputJars(
+    final_dex_inputs, service_jars = _IntermediateDexFilePathsFromInputJars(
         options.class_inputs, options.incremental_dir)
     output_paths += final_dex_inputs
     track_subpaths_allowlist += options.class_inputs
   else:
     final_dex_inputs = list(options.class_inputs)
+    service_jars = final_dex_inputs
+  service_jars += options.dex_inputs
   final_dex_inputs += options.dex_inputs
 
   dex_cmd = build_utils.JavaCmd(xmx=_DEX_XMX)
@@ -489,7 +563,8 @@ def main(args):
   # The changes feature from md5_check allows us to only re-dex the class files
   # that have changed and the class files that need to be re-desugared by D8.
   md5_check.CallAndWriteDepfileIfStale(
-      lambda changes: _OnStaleMd5(changes, options, final_dex_inputs, dex_cmd),
+      lambda changes: _OnStaleMd5(changes, options, final_dex_inputs,
+                                  service_jars, dex_cmd),
       options,
       input_paths=input_paths,
       input_strings=dex_cmd + [str(bool(options.incremental_dir))],

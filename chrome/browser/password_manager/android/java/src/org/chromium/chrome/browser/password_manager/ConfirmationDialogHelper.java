@@ -4,9 +4,14 @@
 
 package org.chromium.chrome.browser.password_manager;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Resources;
 
+import org.chromium.base.CallbackUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -15,13 +20,17 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.SimpleModalDialogController;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /** Helps to show a confirmation. */
+@NullMarked
 public class ConfirmationDialogHelper {
     private final Context mContext;
     private ModalDialogManager mModalDialogManager;
-    private PropertyModel mDialogModel;
-    private Runnable mConfirmedCallback;
-    private Runnable mDeclinedCallback;
+    private @Nullable PropertyModel mDialogModel;
+    private @Nullable Runnable mConfirmedCallback;
+    private @Nullable Runnable mDeclinedCallback;
 
     public ConfirmationDialogHelper(Context context) {
         mContext = context;
@@ -46,29 +55,37 @@ public class ConfirmationDialogHelper {
      * Shows an dialog to confirm the deletion.
      *
      * @param title A {@link String} used as title.
-     * @param message A {@link String} used message body.
-     * @param confirmButtonTextId A string ID for positive button label.
+     * @param message A {@link CharSequence} used message body.
+     * @param confirmButtonText A {@link String} for confirmation button label.
      * @param confirmedCallback A callback to run when the dialog is accepted.
      * @param declinedCallback A callback to run when the dialog is declined.
      */
     public void showConfirmation(
-            String title, String message, int confirmButtonTextId, Runnable confirmedCallback) {
-        showConfirmation(title, message, confirmButtonTextId, confirmedCallback, () -> {});
+            String title,
+            CharSequence message,
+            String confirmButtonText,
+            Runnable confirmedCallback) {
+        showConfirmation(
+                title,
+                message,
+                confirmButtonText,
+                confirmedCallback,
+                CallbackUtils.emptyRunnable());
     }
 
     /**
      * Shows an dialog to confirm the deletion.
      *
      * @param title A {@link String} used as title.
-     * @param message A {@link String} used message body.
-     * @param confirmButtonTextId A string ID for positive button label.
+     * @param message A {@link CharSequence} used message body.
+     * @param confirmButtonText A {@link String} for confirmation button label.
      * @param confirmedCallback A callback to run when the dialog is accepted.
      * @param declinedCallback A callback to run when the dialog is declined.
      */
     public void showConfirmation(
             String title,
-            String message,
-            int confirmButtonTextId,
+            CharSequence message,
+            String confirmButtonText,
             Runnable confirmedCallback,
             Runnable declinedCallback) {
         assert title != null;
@@ -88,10 +105,10 @@ public class ConfirmationDialogHelper {
                                 ModalDialogProperties.BUTTON_STYLES,
                                 ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
                         .with(ModalDialogProperties.TITLE, title)
-                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1, message)
                         .with(
-                                ModalDialogProperties.POSITIVE_BUTTON_TEXT,
-                                mContext.getString(confirmButtonTextId))
+                                ModalDialogProperties.MESSAGE_PARAGRAPHS,
+                                new ArrayList<>(List.of(message)))
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, confirmButtonText)
                         .with(
                                 ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
                                 mContext.getString(R.string.cancel))
@@ -103,9 +120,11 @@ public class ConfirmationDialogHelper {
     private void onDismiss(@DialogDismissalCause int dismissalCause) {
         switch (dismissalCause) {
             case DialogDismissalCause.POSITIVE_BUTTON_CLICKED:
+                assumeNonNull(mConfirmedCallback);
                 mConfirmedCallback.run();
                 break;
             case DialogDismissalCause.NEGATIVE_BUTTON_CLICKED:
+                assumeNonNull(mDeclinedCallback);
                 mDeclinedCallback.run();
                 break;
             default:

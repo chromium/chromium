@@ -108,8 +108,11 @@ class CORE_EXPORT MouseEvent : public UIEventWithKeyState {
   // WinIE uses 1,4,2 for left/middle/right but not for click (just for
   // mousedown/up, maybe others), but we will match the standard DOM.
   virtual int16_t button() const;
-  // Returns true if |button()| is WebPointerProperties::Button::kLeft.
+  // Returns true if `button()` is `WebPointerProperties::Button::kLeft`.
   bool IsLeftButton() const;
+  // Returns true if `button()` can be used to trigger a link click.
+  bool IsLinkClickButton() const;
+
   uint16_t buttons() const { return buttons_; }
   bool ButtonDown() const { return button_ != -1; }
   EventTarget* relatedTarget() const { return related_target_.Get(); }
@@ -121,6 +124,8 @@ class CORE_EXPORT MouseEvent : public UIEventWithKeyState {
   }
   virtual Node* toElement() const;
   virtual Node* fromElement() const;
+
+  CSSPseudoElement* pseudoTarget() const { return Event::pseudoTarget(); }
 
   virtual DataTransfer* getDataTransfer() const { return nullptr; }
 

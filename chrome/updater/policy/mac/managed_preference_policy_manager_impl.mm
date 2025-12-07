@@ -13,15 +13,18 @@
 
 namespace {
 // Constants for managed preference policy keys.
-NSString* kGlobalPolicyKey = @"global";
-NSString* kUpdateDefaultKey = @"UpdateDefault";
-NSString* kDownloadPreferenceKey = @"DownloadPreference";
-NSString* kUpdatesSuppressedStartHourKey = @"UpdatesSuppressedStartHour";
-NSString* kUpdatesSuppressedStartMinuteKey = @"UpdatesSuppressedStartMin";
-NSString* kUpdatesSuppressedDurationMinuteKey = @"UpdatesSuppressedDurationMin";
-NSString* kTargetChannelKey = @"TargetChannel";
-NSString* kTargetVersionPrefixKey = @"TargetVersionPrefix";
-NSString* kRollbackToTargetVersionKey = @"RollbackToTargetVersion";
+NSString* const kGlobalPolicyKey = @"global";
+NSString* const kUpdateDefaultKey = @"UpdateDefault";
+NSString* const kDownloadPreferenceKey = @"DownloadPreference";
+NSString* const kUpdatesSuppressedStartHourKey = @"UpdatesSuppressedStartHour";
+NSString* const kUpdatesSuppressedStartMinuteKey = @"UpdatesSuppressedStartMin";
+NSString* const kUpdatesSuppressedDurationMinuteKey =
+    @"UpdatesSuppressedDurationMin";
+NSString* const kTargetChannelKey = @"TargetChannel";
+NSString* const kTargetVersionPrefixKey = @"TargetVersionPrefix";
+NSString* const kRollbackToTargetVersionKey = @"RollbackToTargetVersion";
+NSString* const kMajorVersionRolloutKey = @"MajorVersionRolloutPolicy";
+NSString* const kMinorVersionRolloutKey = @"MinorVersionRolloutPolicy";
 }  // namespace
 
 namespace updater {
@@ -155,6 +158,8 @@ int TranslateUpdatePolicyValue(int update_policy_from_managed_preferences) {
 @property(nonatomic, readonly) int rollbackToTargetVersion;
 @property(nonatomic, readonly, nullable) NSString* targetChannel;
 @property(nonatomic, readonly, nullable) NSString* targetVersionPrefix;
+@property(nonatomic, readonly) int majorVersionRolloutPolicy;
+@property(nonatomic, readonly) int minorVersionRolloutPolicy;
 
 @end
 
@@ -162,6 +167,8 @@ int TranslateUpdatePolicyValue(int update_policy_from_managed_preferences) {
 
 @synthesize updatePolicy = _updatePolicy;
 @synthesize rollbackToTargetVersion = _rollbackToTargetVersion;
+@synthesize majorVersionRolloutPolicy = _majorVersionRolloutPolicy;
+@synthesize minorVersionRolloutPolicy = _minorVersionRolloutPolicy;
 
 - (instancetype)initWithDictionary:(CRUAppPolicyDictionary*)policyDict {
   if (([super init])) {
@@ -173,6 +180,10 @@ int TranslateUpdatePolicyValue(int update_policy_from_managed_preferences) {
         base::apple::ObjCCast<NSString>(policyDict[kTargetVersionPrefixKey]);
     _rollbackToTargetVersion =
         updater::ReadPolicyInteger(policyDict[kRollbackToTargetVersionKey]);
+    _majorVersionRolloutPolicy =
+        updater::ReadPolicyInteger(policyDict[kMajorVersionRolloutKey]);
+    _minorVersionRolloutPolicy =
+        updater::ReadPolicyInteger(policyDict[kMinorVersionRolloutKey]);
   }
 
   return self;
@@ -235,8 +246,7 @@ int TranslateUpdatePolicyValue(int update_policy_from_managed_preferences) {
 }
 
 - (NSString*)source {
-  return [NSString
-      stringWithUTF8String:updater::kSourceManagedPreferencePolicyManager];
+  return [NSString stringWithUTF8String:updater::kSourcePlatformPolicyManager];
 }
 
 - (NSString*)downloadPreference {
@@ -291,6 +301,22 @@ int TranslateUpdatePolicyValue(int update_policy_from_managed_preferences) {
     return updater::kPolicyNotSet;
   }
   return [_appPolicies objectForKey:appid].rollbackToTargetVersion;
+}
+
+- (int)majorVersionRolloutPolicy:(NSString*)appid {
+  appid = appid.lowercaseString;
+  if (![_appPolicies objectForKey:appid]) {
+    return updater::kPolicyNotSet;
+  }
+  return [_appPolicies objectForKey:appid].majorVersionRolloutPolicy;
+}
+
+- (int)minorVersionRolloutPolicy:(NSString*)appid {
+  appid = appid.lowercaseString;
+  if (![_appPolicies objectForKey:appid]) {
+    return updater::kPolicyNotSet;
+  }
+  return [_appPolicies objectForKey:appid].minorVersionRolloutPolicy;
 }
 
 - (NSArray<NSString*>*)appsWithPolicy {

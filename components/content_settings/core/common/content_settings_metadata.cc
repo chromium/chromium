@@ -15,11 +15,33 @@
 namespace content_settings {
 
 RuleMetaData::RuleMetaData() = default;
+RuleMetaData::RuleMetaData(RuleMetaData&& other) = default;
+
+RuleMetaData RuleMetaData::Clone() const {
+  RuleMetaData clone;
+  clone.last_modified_ = last_modified_;
+  clone.last_used_ = last_used_;
+  clone.last_visited_ = last_visited_;
+  clone.expiration_ = expiration_;
+  clone.session_model_ = session_model_;
+  clone.lifetime_ = lifetime_;
+  clone.tpcd_metadata_rule_source_ = tpcd_metadata_rule_source_;
+  clone.tpcd_metadata_cohort_ = tpcd_metadata_cohort_;
+  clone.tpcd_metadata_elected_dtrp_ = tpcd_metadata_elected_dtrp_;
+  clone.decided_by_related_website_sets_ = decided_by_related_website_sets_;
+  clone.rule_options_ = rule_options_.Clone();
+  return clone;
+}
+
+RuleMetaData& RuleMetaData::operator=(RuleMetaData&& other) = default;
 
 void RuleMetaData::SetFromConstraints(
     const ContentSettingConstraints& constraints) {
   session_model_ = constraints.session_model();
+  decided_by_related_website_sets_ =
+      constraints.decided_by_related_website_sets();
   SetExpirationAndLifetime(constraints.expiration(), constraints.lifetime());
+  rule_options_ = constraints.options().Clone();
 }
 
 void RuleMetaData::SetExpirationAndLifetime(base::Time expiration,
@@ -30,7 +52,7 @@ void RuleMetaData::SetExpirationAndLifetime(base::Time expiration,
   lifetime_ = lifetime;
 }
 
-bool RuleMetaData::IsExpired(base::Clock* clock) const {
+bool RuleMetaData::IsExpired(const base::Clock* clock) const {
   return !expiration().is_null() && expiration() <= clock->Now();
 }
 

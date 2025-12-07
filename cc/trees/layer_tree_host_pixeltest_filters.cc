@@ -114,8 +114,8 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurRect) {
   FilterOperations filters;
   filters.Append(FilterOperation::CreateBlurFilter(2.f, SkTileMode::kClamp));
   blur->SetBackdropFilters(filters);
-  gfx::RRectF backdrop_filter_bounds(gfx::RectF(gfx::SizeF(blur->bounds())), 0);
-  blur->SetBackdropFilterBounds(backdrop_filter_bounds);
+  blur->SetBackdropFilterBounds(SkPath::Rect(
+      SkRect::MakeWH(blur->bounds().width(), blur->bounds().height())));
 
 #if BUILDFLAG(IS_WIN) || defined(ARCH_CPU_ARM64)
   // Windows and ARM64 have 436 pixels off by 1: crbug.com/259915
@@ -302,6 +302,78 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurOutsets) {
   RunPixelTest(
       background,
       base::FilePath(FILE_PATH_LITERAL("backdrop_filter_blur_outsets.png")));
+}
+
+TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterQuality_0_33) {
+#if defined(MEMORY_SANITIZER)
+  if (renderer_type() == viz::RendererType::kSkiaVk) {
+    GTEST_SKIP() << "TODO(crbug.com/40839215): Uninitialized data error";
+  }
+#endif
+  scoped_refptr<SolidColorLayer> background =
+      CreateSolidColorLayer(gfx::Rect(200, 200), SK_ColorWHITE);
+
+  scoped_refptr<SolidColorLayer> green =
+      CreateSolidColorLayer(gfx::Rect(50, 50, 100, 100), kCSSGreen);
+  scoped_refptr<SolidColorLayer> blur =
+      CreateSolidColorLayer(gfx::Rect(200, 200), SK_ColorTRANSPARENT);
+  background->AddChild(green);
+  background->AddChild(blur);
+
+  FilterOperations filters;
+  filters.Append(FilterOperation::CreateBlurFilter(30.0f, SkTileMode::kClamp));
+  blur->SetBackdropFilters(filters);
+  blur->SetBackdropFilterQuality(0.33);
+
+#if BUILDFLAG(IS_WIN) || defined(ARCH_CPU_ARM64)
+  // Windows and ARM64 have 436 pixels off by 1: crbug.com/259915
+  pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
+      FuzzyPixelComparator()
+          .DiscardAlpha()
+          .SetErrorPixelsPercentageLimit(1.09f)  // 436px / (200*200)
+          .SetAbsErrorLimit(1));
+#endif
+
+  RunPixelTest(
+      background,
+      base::FilePath(FILE_PATH_LITERAL("backdrop_filter_quality_0_33.png"))
+          .InsertBeforeExtensionASCII(GetRendererSuffix()));
+}
+
+TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterQuality_1_0) {
+#if defined(MEMORY_SANITIZER)
+  if (renderer_type() == viz::RendererType::kSkiaVk) {
+    GTEST_SKIP() << "TODO(crbug.com/40839215): Uninitialized data error";
+  }
+#endif
+  scoped_refptr<SolidColorLayer> background =
+      CreateSolidColorLayer(gfx::Rect(200, 200), SK_ColorWHITE);
+
+  scoped_refptr<SolidColorLayer> green =
+      CreateSolidColorLayer(gfx::Rect(50, 50, 100, 100), kCSSGreen);
+  scoped_refptr<SolidColorLayer> blur =
+      CreateSolidColorLayer(gfx::Rect(200, 200), SK_ColorTRANSPARENT);
+  background->AddChild(green);
+  background->AddChild(blur);
+
+  FilterOperations filters;
+  filters.Append(FilterOperation::CreateBlurFilter(30.0f, SkTileMode::kClamp));
+  blur->SetBackdropFilters(filters);
+  blur->SetBackdropFilterQuality(1.0);
+
+#if BUILDFLAG(IS_WIN) || defined(ARCH_CPU_ARM64)
+  // Windows and ARM64 have 436 pixels off by 1: crbug.com/259915
+  pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
+      FuzzyPixelComparator()
+          .DiscardAlpha()
+          .SetErrorPixelsPercentageLimit(1.09f)  // 436px / (200*200)
+          .SetAbsErrorLimit(1));
+#endif
+
+  RunPixelTest(
+      background,
+      base::FilePath(FILE_PATH_LITERAL("backdrop_filter_quality_1_0.png"))
+          .InsertBeforeExtensionASCII(GetRendererSuffix()));
 }
 
 class LayerTreeHostBlurFiltersPixelTestGPULayerList
@@ -530,7 +602,7 @@ TEST_P(LayerTreeHostFiltersPixelTest, ImageFilterClipped) {
       CreateSolidColorLayer(gfx::Rect(200, 200), SK_ColorRED);
   background->AddChild(foreground);
 
-  float matrix[20] = {0};
+  float matrix[20] = {};
   // This filter does a red-blue swap, so the foreground becomes blue.
   matrix[2] = matrix[6] = matrix[10] = matrix[18] = 1.0f;
   // We filter only the bottom 200x100 pixels of the foreground.
@@ -639,7 +711,11 @@ TEST_P(LayerTreeHostFiltersPixelTest, MAYBE_ImageFilterScaled) {
 }
 
 // TODO(crbug.com/40256786): currently do not pass on iOS.
-#if BUILDFLAG(IS_IOS)
+// TODO(crbug.com/401029604): Times out in arm64 windows and linux TSAN.
+#if BUILDFLAG(IS_IOS) ||                                        \
+    (defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_ARM64) && \
+     BUILDFLAG(IS_WIN)) ||                                      \
+    (defined(THREAD_SANITIZER) && BUILDFLAG(IS_LINUX))
 #define MAYBE_BackdropFilterRotated DISABLED_BackdropFilterRotated
 #else
 #define MAYBE_BackdropFilterRotated BackdropFilterRotated
@@ -1208,18 +1284,6 @@ class BackdropFilterOffsetTest : public LayerTreeHostFiltersPixelTest {
     scoped_refptr<SolidColorLayer> filtered = CreateSolidColorLayer(
         gfx::Rect(0, 100, 200, 100), SkColorSetA(SK_ColorGREEN, 127));
     FilterOperations filters;
-    // TODO(crbug.com/41473761): This test actually also tests how the
-    // OffsetPaintFilter handles the edge condition. Because the
-    // OffsetPaintFilter is pulling content from outside the filter region (just
-    // the bottom 200x100 square), it must create content for all but the bottom
-    // 25px of the filter rect. After [1], backdrop filters [2] apply the
-    // reflect/mirror edge mode to sample pixels outside of their bounds. This
-    // is supported in SkiaRenderer but not the software compositor. The
-    // expected behavior with reflection is that the 25px dark green (from the
-    // overlap with the black background) is mirrored to a 50px square and then
-    // translated 75px down to the bottom. [1]
-    // https://github.com/w3c/fxtf-drafts/issues/374 [2]
-    // https://drafts.fxtf.org/filter-effects-2/#backdrop-filter-operation
     filters.Append(FilterOperation::CreateReferenceFilter(
         sk_make_sp<OffsetPaintFilter>(0, 75, nullptr)));
     filtered->SetBackdropFilters(filters);
@@ -1229,17 +1293,13 @@ class BackdropFilterOffsetTest : public LayerTreeHostFiltersPixelTest {
     // BLACK    WHITE
     //   **     LIGHT GREEN
     //
-    // ** = Top half light green and bottom half dark green for GPU rendering,
-    // but incorrectly is a dark-light-dark horizontal sandwich for software.
+    // ** = Top half light green and bottom half dark green.
     device_scale_factor_ = device_scale_factor;
 
     base::FilePath expected_result =
         base::FilePath(FILE_PATH_LITERAL("offset_backdrop_filter_.png"));
     expected_result = expected_result.InsertBeforeExtensionASCII(
         base::NumberToString(device_scale_factor) + "x");
-    if (use_software_renderer()) {
-      expected_result = expected_result.InsertBeforeExtensionASCII("_sw");
-    }
     RunPixelTest(std::move(root), expected_result);
   }
 

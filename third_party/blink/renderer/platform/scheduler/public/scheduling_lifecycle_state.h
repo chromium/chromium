@@ -22,6 +22,7 @@ enum class SchedulingLifecycleState {
   kThrottled,
   // Frame is stopped, no tasks associated with it can run.
   kStopped,
+  kMaxValue = kStopped,
 };
 
 const char* SchedulingLifecycleStateToString(SchedulingLifecycleState state);

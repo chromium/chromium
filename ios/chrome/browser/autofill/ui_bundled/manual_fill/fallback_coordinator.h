@@ -13,7 +13,7 @@
 @class ManualFillInjectionHandler;
 
 // Delegate for the coordinator actions.
-@protocol FallbackCoordinatorDelegate<NSObject>
+@protocol FallbackCoordinatorDelegate <NSObject>
 
 // Called when the user has taken action to dismiss a popover.
 - (void)fallbackCoordinatorDidDismissPopover:

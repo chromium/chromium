@@ -15,9 +15,8 @@ namespace media {
 constexpr base::TimeDelta MinimumDelayAfterFailedOverlay = base::Seconds(5);
 
 AndroidVideoSurfaceChooserImpl::AndroidVideoSurfaceChooserImpl(
-    bool allow_dynamic,
     const base::TickClock* tick_clock)
-    : allow_dynamic_(allow_dynamic), tick_clock_(tick_clock) {
+    : tick_clock_(tick_clock) {
   // Use a DefaultTickClock if one wasn't provided.
   if (!tick_clock_)
     tick_clock_ = base::DefaultTickClock::GetInstance();
@@ -45,25 +44,6 @@ void AndroidVideoSurfaceChooserImpl::UpdateState(
   if (factory_changed)
     overlay_factory_ = std::move(*new_factory);
 
-  if (!allow_dynamic_) {
-    if (!initial_state_received_) {
-      initial_state_received_ = true;
-      // Choose here so that Choose() doesn't have to handle non-dynamic.
-      // Note that we ignore |is_expecting_relayout| here, since it's transient.
-      // We don't want to pick TextureOwner permanently for that.
-      if (overlay_factory_ &&
-          ((current_state_.is_fullscreen &&
-            !current_state_.promote_secure_only) ||
-           current_state_.is_secure || current_state_.is_required) &&
-          current_state_.video_rotation == VIDEO_ROTATION_0) {
-        SwitchToOverlay(false);
-      } else {
-        SwitchToTextureOwner();
-      }
-    }
-    return;
-  }
-
   // If we're entering fullscreen, clear any previous failure attempt.  It's
   // likely that any previous failure was due to a lack of power efficiency,
   // but entering fs likely changes that anyway.
@@ -82,9 +62,6 @@ void AndroidVideoSurfaceChooserImpl::UpdateState(
 }
 
 void AndroidVideoSurfaceChooserImpl::Choose() {
-  // Pre-M we shouldn't be called.
-  DCHECK(allow_dynamic_);
-
   // TODO(liberato): should this depend on resolution?
   OverlayState new_overlay_state =
       current_state_.promote_secure_only ? kUsingTextureOwner : kUsingOverlay;
@@ -282,10 +259,6 @@ void AndroidVideoSurfaceChooserImpl::OnPowerEfficientState(
   // If the overlay is now required, then keep it.  It might have become
   // required since we requested it.
   if (current_state_.is_required)
-    return;
-
-  // If we're not able to switch dynamically, then keep the overlay.
-  if (!allow_dynamic_)
     return;
 
   // We could set the failure timer here, but we don't mostly for fullscreen.

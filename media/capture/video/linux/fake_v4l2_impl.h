@@ -49,10 +49,9 @@ class CAPTURE_EXPORT FakeV4L2Impl : public V4L2CaptureDevice {
   int munmap(void* start, size_t length) override;
   int poll(struct pollfd* ufds, unsigned int nfds, int timeout) override;
 
- protected:
+ private:
   ~FakeV4L2Impl() override;
 
- private:
   class OpenedDevice;
 
   base::Lock lock_;

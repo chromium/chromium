@@ -2,20 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/data_decoder/image_decoder_impl.h"
 
+#include <array>
 #include <memory>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
-#include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -49,20 +46,21 @@ constexpr gin::V8SnapshotFileType kSnapshotType =
 #endif
 #endif
 
-bool CreateJPEGImage(int width,
-                     int height,
-                     SkColor color,
-                     std::vector<unsigned char>* output) {
+std::optional<std::vector<uint8_t>> CreateJPEGImage(int width,
+                                                    int height,
+                                                    SkColor color) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(width, height);
   bitmap.eraseColor(color);
 
   constexpr int kQuality = 50;
-  if (!gfx::JPEGCodec::Encode(bitmap, kQuality, output)) {
+  std::optional<std::vector<uint8_t>> result =
+      gfx::JPEGCodec::Encode(bitmap, kQuality);
+
+  if (!result) {
     LOG(ERROR) << "Unable to encode " << width << "x" << height << " bitmap";
-    return false;
   }
-  return true;
+  return result;
 }
 
 class Request {
@@ -71,7 +69,7 @@ class Request {
 
   void DecodeImage(const std::vector<unsigned char>& image, bool shrink) {
     decoder_->DecodeImage(
-        image, mojom::ImageCodec::kDefault, shrink, kTestMaxImageSize,
+        {image}, mojom::ImageCodec::kDefault, shrink, kTestMaxImageSize,
         gfx::Size(),  // Take the smallest frame (there's only one frame).
         base::BindOnce(&Request::OnRequestDone, base::Unretained(this)));
   }
@@ -108,15 +106,14 @@ class BlinkInitializer : public blink::Platform {
   ~BlinkInitializer() override = default;
 };
 
-base::LazyInstance<BlinkInitializer>::Leaky g_blink_initializer =
-    LAZY_INSTANCE_INITIALIZER;
-
 class ImageDecoderImplTest : public testing::Test {
  public:
   ImageDecoderImplTest() = default;
   ~ImageDecoderImplTest() override = default;
 
-  void SetUp() override { g_blink_initializer.Get(); }
+  void SetUp() override {
+    static base::NoDestructor<BlinkInitializer> instance;
+  }
 
  protected:
   ImageDecoderImpl* decoder() { return &decoder_; }
@@ -138,15 +135,23 @@ TEST_F(ImageDecoderImplTest, DecodeImageSizeLimit) {
   int base_msg_size = sizeof(skia::mojom::BitmapN32::Data_);
 
   // Sizes which should trigger dimension-halving 0, 1 and 2 times
-  int heights[] = {max_height_for_msg - 10, max_height_for_msg + 10,
-                   2 * max_height_for_msg + 10};
-  int widths[] = {heights[0] * 3 / 2, heights[1] * 3 / 2, heights[2] * 3 / 2};
+  auto heights = std::to_array<int>({
+      max_height_for_msg - 10,
+      max_height_for_msg + 10,
+      2 * max_height_for_msg + 10,
+  });
+  auto widths = std::to_array<int>({
+      heights[0] * 3 / 2,
+      heights[1] * 3 / 2,
+      heights[2] * 3 / 2,
+  });
   for (size_t i = 0; i < std::size(heights); i++) {
-    std::vector<unsigned char> jpg;
-    ASSERT_TRUE(CreateJPEGImage(widths[i], heights[i], SK_ColorRED, &jpg));
+    std::optional<std::vector<uint8_t>> jpg =
+        CreateJPEGImage(widths[i], heights[i], SK_ColorRED);
+    ASSERT_TRUE(jpg);
 
     Request request(decoder());
-    request.DecodeImage(jpg, true);
+    request.DecodeImage(jpg.value(), true);
     ASSERT_FALSE(request.bitmap().isNull());
 
     // Check that image has been shrunk appropriately
@@ -162,7 +167,7 @@ TEST_F(ImageDecoderImplTest, DecodeImageSizeLimit) {
     // an empty image is returned
     if (heights[i] > max_height_for_msg) {
       Request request2(decoder());
-      request2.DecodeImage(jpg, false);
+      request2.DecodeImage(jpg.value(), /*shrink=*/false);
       EXPECT_TRUE(request2.bitmap().isNull());
     }
 #endif
@@ -172,8 +177,8 @@ TEST_F(ImageDecoderImplTest, DecodeImageSizeLimit) {
 TEST_F(ImageDecoderImplTest, DecodeImageFailed) {
   // The "jpeg" is just some "random" data;
   const char kRandomData[] = "u gycfy7xdjkhfgui bdui ";
-  std::vector<unsigned char> jpg(kRandomData,
-                                 kRandomData + sizeof(kRandomData));
+  std::vector<unsigned char> jpg(
+      kRandomData, UNSAFE_TODO(kRandomData + sizeof(kRandomData)));
 
   Request request(decoder());
   request.DecodeImage(jpg, false);
@@ -181,12 +186,11 @@ TEST_F(ImageDecoderImplTest, DecodeImageFailed) {
 }
 
 TEST_F(ImageDecoderImplTest, DecodeAnimationFailed) {
-  base::span<const uint8_t> data = base::as_bytes(
-      base::make_span("this ASCII text is *defintely* an animation"));
+  auto data = base::as_byte_span("this ASCII text is *defintely* an animation");
 
   std::vector<mojom::AnimationFramePtr> frames;
   decoder()->DecodeAnimation(
-      data, false, kTestMaxImageSize,
+      {data}, false, kTestMaxImageSize,
       base::BindLambdaForTesting(
           [&frames](std::vector<mojom::AnimationFramePtr> result) {
             frames = std::move(result);

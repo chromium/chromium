@@ -33,23 +33,22 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_dompointinit_unrestricteddouble.h"
-#include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/graphics/path.h"
+#include "third_party/blink/renderer/platform/geometry/path.h"
+#include "third_party/blink/renderer/platform/geometry/path_builder.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_high_entropy_op_type.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"  // IWYU pragma: keep (blink::Visitor)
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 // https://github.com/include-what-you-use/include-what-you-use/issues/1546
-// IWYU pragma: no_forward_declare WTF::internal::__thisIsHereToForceASemicolonAfterThisMacro
+// IWYU pragma: no_forward_declare internal::__thisIsHereToForceASemicolonAfterThisMacro
 
 // IWYU pragma: no_include "third_party/blink/renderer/platform/heap/visitor.h"
 
@@ -137,15 +136,19 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin {
     return AffineTransform();
   }
 
-  IdentifiableToken GetIdentifiableToken() const {
-    return identifiability_study_helper_.GetToken();
+  // Returns the path types that would result in a high entropy canvas operation
+  // when these are drawn on the canvas. Because of the high entropy associated
+  // with the operation, this reveals information about the user's device and
+  // thus could be used for fingerprinting.
+  HighEntropyCanvasOpType HighEntropyPathOpTypes() const {
+    return high_entropy_path_op_types_;
   }
 
   virtual ExecutionContext* GetTopExecutionContext() const = 0;
 
   const Path& GetPath() const {
     UpdatePathFromLineOrArcIfNecessary();
-    return path_;
+    return path_builder_.CurrentPath();
   }
 
   // Returns true if the CanvasPath represents a line. In some cases (such as
@@ -171,7 +174,8 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin {
   }
 
   bool IsEmpty() const {
-    return line_builder_.IsEmpty() && arc_builder_.IsEmpty() && path_.IsEmpty();
+    return line_builder_.IsEmpty() && arc_builder_.IsEmpty() &&
+           path_builder_.IsEmpty();
   }
 
   // The returned rectangle is not necessarily exact, and may contain much more
@@ -180,12 +184,10 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin {
   // than necessary.
   gfx::RectF BoundingRect() const;
 
-  void Trace(Visitor*) const override;
-
  protected:
-  CanvasPath() { path_.SetIsVolatile(true); }
-  explicit CanvasPath(const Path& path) : path_(path) {
-    path_.SetIsVolatile(true);
+  CanvasPath() { path_builder_.SetIsVolatile(true); }
+  explicit CanvasPath(const Path& path) : path_builder_(path) {
+    path_builder_.SetIsVolatile(true);
   }
   ALWAYS_INLINE void SetIsTransformInvertible(bool val) {
     is_transform_invertible_ = val;
@@ -194,12 +196,12 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin {
   void Clear() {
     line_builder_.Clear();
     arc_builder_.Clear();
-    path_.Clear();
+    path_builder_.Reset();
   }
 
-  Path& GetModifiablePath() {
+  PathBuilder& GetModifiablePath() {
     UpdatePathFromLineOrArcIfNecessaryForMutation();
-    return path_;
+    return path_builder_;
   }
 
   // This mirrors state that is stored in CanvasRenderingContext2DState.  We
@@ -209,7 +211,10 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin {
   // code paths that handle non-invertible transforms.
   bool is_transform_invertible_ = true;
 
-  IdentifiabilityStudyHelper identifiability_study_helper_;
+  // The path types that would result in a high entropy canvas operation when
+  // these are drawn on the canvas. These could be used for fingerprinting.
+  HighEntropyCanvasOpType high_entropy_path_op_types_ =
+      HighEntropyCanvasOpType::kNone;
 
  private:
   // Used to build up a line.
@@ -309,7 +314,7 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin {
       return arc_;
     }
 
-    void UpdatePath(Path& path) const;
+    void UpdatePath(PathBuilder& path) const;
 
    private:
     enum class State {
@@ -324,10 +329,10 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin {
 
   bool DoesPathNeedUpdatingFromLineOrArc() const {
     return (!line_builder_.IsEmpty() || !arc_builder_.IsEmpty()) &&
-           path_.IsEmpty();
+           path_builder_.IsEmpty();
   }
 
-  // Updates `path_` from one of the builders if necessary.
+  // Updates `path_builder_` from one of the builders if necessary.
   void UpdatePathFromLineOrArcIfNecessary() const;
 
   // Same as UpdatePathFromLineOrArcIfNecessary(), but also clears the builders.
@@ -337,9 +342,9 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin {
 
   ArcBuilder arc_builder_;
 
-  // `path_` may be lazily updated from one of the builders. As such, it needs
-  // to be mutable.
-  mutable Path path_;
+  // `path_builder_` may be lazily updated from one of the builders. As such, it
+  // needs to be mutable.
+  mutable PathBuilder path_builder_;
 };
 
 ALWAYS_INLINE bool CanvasPath::IsTransformInvertible() const {

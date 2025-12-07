@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/update_client/update_checker.h"
 
 #include <initializer_list>
@@ -20,7 +15,7 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
-#include "base/files/file_util.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
@@ -65,11 +60,14 @@ class UpdateCheckerTest : public testing::TestWithParam<bool> {
   void SetUp() override;
   void TearDown() override;
 
-  void UpdateCheckComplete(
-      const std::optional<ProtocolParser::Results>& results,
-      ErrorCategory error_category,
-      int error,
-      int retry_after_sec);
+  void UpdateCheckComplete(std::optional<ProtocolParser::Results> results,
+                           ErrorCategory error_category,
+                           int error,
+                           int retry_after_sec);
+
+ private:
+  // `task_environment_` must outlive `update_context_`.
+  base::test::TaskEnvironment task_environment_;
 
  protected:
   void Quit();
@@ -79,6 +77,7 @@ class UpdateCheckerTest : public testing::TestWithParam<bool> {
   std::unique_ptr<Component> MakeComponent(const std::string& brand) const;
   std::unique_ptr<Component> MakeComponent(
       const std::string& brand,
+      const std::string& lang,
       const std::string& install_data_index,
       bool allow_updates_on_metered_connection) const;
   std::optional<base::Value::Dict> ParseRequest(int request_number);
@@ -86,9 +85,7 @@ class UpdateCheckerTest : public testing::TestWithParam<bool> {
   base::Value::Dict GetFirstAppAsDict(const base::Value::Dict& request);
 
   std::unique_ptr<TestingPrefServiceSimple> pref_;
-  std::unique_ptr<PersistedData> metadata_;
   scoped_refptr<TestConfigurator> config_;
-  raw_ptr<TestActivityDataService> activity_data_service_;
 
   std::unique_ptr<UpdateChecker> update_checker_;
 
@@ -106,9 +103,7 @@ class UpdateCheckerTest : public testing::TestWithParam<bool> {
  private:
   scoped_refptr<UpdateContext> MakeMockUpdateContext() const;
 
-  base::test::TaskEnvironment task_environment_;
   base::OnceClosure quit_closure_;
-  base::ScopedTempDir temp_dir_;
 };
 
 // This test is parameterized for |is_foreground|.
@@ -126,11 +121,6 @@ void UpdateCheckerTest::SetUp() {
   RegisterPersistedDataPrefs(pref_->registry());
   config_ = base::MakeRefCounted<TestConfigurator>(pref_.get());
 
-  auto activity_data_service = std::make_unique<TestActivityDataService>();
-  activity_data_service_ = activity_data_service.get();
-  metadata_ =
-      CreatePersistedData(pref_.get(), std::move(activity_data_service));
-
   post_interceptor_ = std::make_unique<URLLoaderPostInterceptor>(
       config_->test_url_loader_factory());
   EXPECT_TRUE(post_interceptor_);
@@ -139,7 +129,6 @@ void UpdateCheckerTest::SetUp() {
 
   error_ = 0;
   retry_after_sec_ = 0;
-  EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
   update_context_ = MakeMockUpdateContext();
   update_context_->is_foreground = is_foreground_;
   update_context_->components_to_check_for_updates = {kUpdateItemId};
@@ -169,7 +158,7 @@ void UpdateCheckerTest::Quit() {
 }
 
 void UpdateCheckerTest::UpdateCheckComplete(
-    const std::optional<ProtocolParser::Results>& results,
+    std::optional<ProtocolParser::Results> results,
     ErrorCategory error_category,
     int error,
     int retry_after_sec) {
@@ -181,12 +170,9 @@ void UpdateCheckerTest::UpdateCheckComplete(
 }
 
 scoped_refptr<UpdateContext> UpdateCheckerTest::MakeMockUpdateContext() const {
-  CrxCache::Options options(temp_dir_.GetPath());
   return base::MakeRefCounted<UpdateContext>(
-      config_, base::MakeRefCounted<CrxCache>(options), false, false,
-      std::vector<std::string>(), UpdateClient::CrxStateChangeCallback(),
-      UpdateEngine::NotifyObserversCallback(), UpdateEngine::Callback(),
-      nullptr,
+      config_, false, false, std::vector<std::string>(),
+      UpdateClient::CrxStateChangeCallback(), UpdateEngine::Callback(), nullptr,
       /*is_update_check_only=*/false);
 }
 
@@ -196,22 +182,23 @@ std::unique_ptr<Component> UpdateCheckerTest::MakeComponent() const {
 
 std::unique_ptr<Component> UpdateCheckerTest::MakeComponent(
     const std::string& brand) const {
-  return MakeComponent(brand, {}, true);
+  return MakeComponent(brand, {}, {}, true);
 }
 
 std::unique_ptr<Component> UpdateCheckerTest::MakeComponent(
     const std::string& brand,
+    const std::string& lang,
     const std::string& install_data_index,
     bool allow_updates_on_metered_connection) const {
   CrxComponent crx_component;
   crx_component.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
   crx_component.brand = brand;
+  crx_component.lang = lang;
   crx_component.install_data_index = install_data_index;
   crx_component.name = "test_jebg";
-  crx_component.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
+  crx_component.pk_hash = base::ToVector(jebg_hash);
   crx_component.installer = nullptr;
   crx_component.version = base::Version("0.9");
-  crx_component.fingerprint = "fp1";
   crx_component.allow_updates_on_metered_connection =
       allow_updates_on_metered_connection;
 
@@ -226,7 +213,8 @@ std::optional<base::Value::Dict> UpdateCheckerTest::ParseRequest(
     int request_number) {
   const std::string& request =
       post_interceptor_->GetRequestBody(request_number);
-  std::optional<base::Value> request_val = base::JSONReader::Read(request);
+  std::optional<base::Value> request_val =
+      base::JSONReader::Read(request, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   if (!request_val || !request_val->is_dict()) {
     return std::nullopt;
@@ -238,7 +226,7 @@ std::optional<base::Value::Dict> UpdateCheckerTest::ParseRequest(
 base::Value UpdateCheckerTest::GetFirstAppAsValue(
     const base::Value::Dict& request) {
   const base::Value::List* app_list =
-      request.FindDict("request")->FindList("app");
+      request.FindDict("request")->FindList("apps");
   return CHECK_DEREF(app_list)[0].Clone();
 }
 
@@ -261,14 +249,14 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
                                   {"updatepolicy", "1"}};
   }));
 
-  metadata_->SetCohort(kUpdateItemId, "id3");
-  metadata_->SetCohortHint(kUpdateItemId, "hint2");
-  metadata_->SetCohortName(kUpdateItemId, "name1");
+  config_->GetPersistedData()->SetCohort(kUpdateItemId, "id3");
+  config_->GetPersistedData()->SetCohortHint(kUpdateItemId, "hint2");
+  config_->GetPersistedData()->SetCohortName(kUpdateItemId, "name1");
 
-  update_checker_ = UpdateChecker::Create(config_, metadata_.get());
+  update_checker_ = UpdateChecker::Create(config_);
 
   update_context_->components[kUpdateItemId] =
-      MakeComponent("TEST", "foobar_install_data_index", true);
+      MakeComponent("TEST", "foolang", "foobar_install_data_index", true);
 
   auto& component = update_context_->components[kUpdateItemId];
   component->crx_component_->installer_attributes["ap"] = "some_ap";
@@ -294,7 +282,8 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
   ASSERT_TRUE(request->FindString("@updater"));
   EXPECT_EQ("fake_prodid", *request->FindString("@updater"));
   ASSERT_TRUE(request->FindString("acceptformat"));
-  EXPECT_EQ("crx3,puff", *request->FindString("acceptformat"));
+  EXPECT_EQ("crx3,download,puff,run,xz,zucc",
+            *request->FindString("acceptformat"));
   EXPECT_TRUE(request->contains("arch"));
   ASSERT_TRUE(request->FindString("dedup"));
   EXPECT_EQ("cr", *request->FindString("dedup"));
@@ -302,13 +291,13 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
   EXPECT_EQ("params", *request->FindString("extra"));
   ASSERT_TRUE(request->FindIntByDottedPath("hw.physmemory").has_value());
   EXPECT_LT(0, *request->FindIntByDottedPath("hw.physmemory"));
-  EXPECT_TRUE(request->contains("nacl_arch"));
+  EXPECT_FALSE(request->contains("nacl_arch"));
   ASSERT_TRUE(request->FindString("prodchannel"));
   EXPECT_EQ("fake_channel_string", *request->FindString("prodchannel"));
   ASSERT_TRUE(request->FindString("prodversion"));
   EXPECT_EQ("30.0", *request->FindString("prodversion"));
   ASSERT_TRUE(request->FindString("protocol"));
-  EXPECT_EQ("3.1", *request->FindString("protocol"));
+  EXPECT_EQ("4.0", *request->FindString("protocol"));
   EXPECT_TRUE(request->contains("requestid"));
   EXPECT_TRUE(request->contains("sessionid"));
   ASSERT_TRUE(request->FindString("testrequest"));
@@ -329,9 +318,9 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
             *request->FindStringByDottedPath("os.platform"));
   ASSERT_TRUE(request->FindStringByDottedPath("os.version"));
 
-  ASSERT_TRUE(request->FindList("app"));
-  ASSERT_FALSE(request->FindList("app")->empty());
-  const auto* app = request->FindList("app")->front().GetIfDict();
+  ASSERT_TRUE(request->FindList("apps"));
+  ASSERT_FALSE(request->FindList("apps")->empty());
+  const auto* app = request->FindList("apps")->front().GetIfDict();
   ASSERT_TRUE(app);
   ASSERT_TRUE(app->FindString("appid"));
   EXPECT_EQ(kUpdateItemId, *app->FindString("appid"));
@@ -340,7 +329,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
   ASSERT_TRUE(app->FindString("brand"));
   EXPECT_EQ("TEST", *app->FindString("brand"));
   ASSERT_TRUE(app->FindString("lang"));
-  EXPECT_EQ("fake_lang", *app->FindString("lang"));
+  EXPECT_EQ("foolang", *app->FindString("lang"));
   EXPECT_EQ("name1", *app->FindString("cohortname"));
   EXPECT_EQ("hint2", *app->FindString("cohorthint"));
   EXPECT_EQ("id3", *app->FindString("cohort"));
@@ -368,19 +357,6 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
   ASSERT_TRUE(app->FindIntByDottedPath("ping.r").has_value());
   EXPECT_EQ(-2, app->FindIntByDottedPath("ping.r").value());
 
-  ASSERT_TRUE(app->FindListByDottedPath("packages.package"));
-  ASSERT_FALSE(app->FindListByDottedPath("packages.package")->empty());
-  ASSERT_TRUE(
-      app->FindListByDottedPath("packages.package")->front().GetIfDict());
-  ASSERT_TRUE(app->FindListByDottedPath("packages.package")
-                  ->front()
-                  .GetIfDict()
-                  ->FindString("fp"));
-  EXPECT_EQ("fp1", *app->FindListByDottedPath("packages.package")
-                        ->front()
-                        .GetIfDict()
-                        ->FindString("fp"));
-
 #if BUILDFLAG(IS_WIN)
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   const auto* updater = request->FindDict("updater");
@@ -397,17 +373,15 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
   EXPECT_EQ(ErrorCategory::kNone, error_category_);
   EXPECT_EQ(0, error_);
   EXPECT_TRUE(results_);
-  EXPECT_EQ(1u, results_->list.size());
-  const auto& result = results_->list.front();
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", result.extension_id.c_str());
-  EXPECT_EQ("1.0", result.manifest.version);
-  EXPECT_EQ("11.0.1.0", result.manifest.browser_min_version);
-  EXPECT_EQ(1u, result.manifest.packages.size());
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf.crx",
-               result.manifest.packages.front().name.c_str());
-  EXPECT_EQ(1u, result.crx_urls.size());
-  EXPECT_EQ(GURL("http://localhost/download/"), result.crx_urls.front());
-  EXPECT_STREQ("this", result.action_run.c_str());
+  EXPECT_EQ(1u, results_->apps.size());
+  const auto& result = results_->apps.front();
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", result.app_id);
+  EXPECT_EQ(base::Version("1.0"), result.nextversion);
+  EXPECT_EQ(1u, result.pipelines.size());
+  EXPECT_EQ(
+      GURL("http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx3"),
+      result.pipelines[0].operations[0].urls[0]);
+  EXPECT_EQ(result.pipelines[0].operations[2].path, "this");
 
   // Check the DDOS protection header values.
   const auto extra_request_headers =
@@ -427,7 +401,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckInvalidAp) {
       std::make_unique<PartialMatch>("updatecheck"),
       GetTestFilePath("updatecheck_reply_1.json")));
 
-  update_checker_ = UpdateChecker::Create(config_, metadata_.get());
+  update_checker_ = UpdateChecker::Create(config_);
 
   update_context_->components[kUpdateItemId] = MakeComponent("TEST");
 
@@ -451,6 +425,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckInvalidAp) {
   EXPECT_EQ(kUpdateItemId, CHECK_DEREF(app.FindString("appid")));
   EXPECT_EQ("0.9", CHECK_DEREF(app.FindString("version")));
   EXPECT_EQ("TEST", CHECK_DEREF(app.FindString("brand")));
+  EXPECT_EQ("fake_lang", CHECK_DEREF(app.FindString("lang")));
   EXPECT_FALSE(app.contains("data"));
   if (is_foreground_) {
     EXPECT_EQ("ondemand", CHECK_DEREF(app.FindString("installsource")));
@@ -460,11 +435,6 @@ TEST_P(UpdateCheckerTest, UpdateCheckInvalidAp) {
   EXPECT_TRUE(app.contains("updatecheck"));
   EXPECT_TRUE(app.contains("ping"));
   EXPECT_EQ(-2, app_as_val.GetDict().FindByDottedPath("ping.r")->GetInt());
-  EXPECT_EQ("fp1", CHECK_DEREF(app_as_val.GetDict()
-                                   .FindByDottedPath("packages.package")
-                                   ->GetList()[0]
-                                   .GetDict()
-                                   .FindString("fp")));
 }
 
 TEST_P(UpdateCheckerTest, UpdateCheckSuccessNoBrand) {
@@ -472,7 +442,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccessNoBrand) {
       std::make_unique<PartialMatch>("updatecheck"),
       GetTestFilePath("updatecheck_reply_1.json")));
 
-  update_checker_ = UpdateChecker::Create(config_, metadata_.get());
+  update_checker_ = UpdateChecker::Create(config_);
 
   update_context_->components[kUpdateItemId] = MakeComponent("TOOLONG");
 
@@ -498,11 +468,6 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccessNoBrand) {
   EXPECT_TRUE(app.contains("updatecheck"));
   EXPECT_TRUE(app.contains("ping"));
   EXPECT_EQ(-2, app_as_val.GetDict().FindByDottedPath("ping.r")->GetInt());
-  EXPECT_EQ("fp1", CHECK_DEREF(app_as_val.GetDict()
-                                   .FindByDottedPath("packages.package")
-                                   ->GetList()[0]
-                                   .GetDict()
-                                   .FindString("fp")));
 }
 
 TEST_P(UpdateCheckerTest, UpdateCheckFallback) {
@@ -517,7 +482,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckFallback) {
       std::make_unique<PartialMatch>("updatecheck"),
       GetTestFilePath("updatecheck_reply_1.json")));
 
-  update_checker_ = UpdateChecker::Create(config_, metadata_.get());
+  update_checker_ = UpdateChecker::Create(config_);
 
   update_context_->components[kUpdateItemId] = MakeComponent("TOOLONG");
 
@@ -538,7 +503,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckError) {
   EXPECT_TRUE(post_interceptor_->ExpectRequest(
       std::make_unique<PartialMatch>("updatecheck"), net::HTTP_FORBIDDEN));
 
-  update_checker_ = UpdateChecker::Create(config_, metadata_.get());
+  update_checker_ = UpdateChecker::Create(config_);
 
   update_context_->components[kUpdateItemId] = MakeComponent();
 
@@ -565,7 +530,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckDownloadPreference) {
 
   config_->SetDownloadPreference(std::string("cacheable"));
 
-  update_checker_ = UpdateChecker::Create(config_, metadata_.get());
+  update_checker_ = UpdateChecker::Create(config_);
 
   update_context_->components[kUpdateItemId] = MakeComponent();
 
@@ -591,7 +556,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckCupError) {
       GetTestFilePath("updatecheck_reply_1.json")));
 
   config_->SetEnabledCupSigning(true);
-  update_checker_ = UpdateChecker::Create(config_, metadata_.get());
+  update_checker_ = UpdateChecker::Create(config_);
 
   update_context_->components[kUpdateItemId] = MakeComponent("TEST");
 
@@ -622,11 +587,6 @@ TEST_P(UpdateCheckerTest, UpdateCheckCupError) {
   EXPECT_TRUE(app.contains("updatecheck"));
   EXPECT_TRUE(app.contains("ping"));
   EXPECT_EQ(-2, app_as_val.GetDict().FindByDottedPath("ping.r")->GetInt());
-  EXPECT_EQ("fp1", CHECK_DEREF(app_as_val.GetDict()
-                                   .FindByDottedPath("packages.package")
-                                   ->GetList()[0]
-                                   .GetDict()
-                                   .FindString("fp")));
 
   // Expect an error since the response is not trusted.
   EXPECT_EQ(ErrorCategory::kUpdateCheck, error_category_);
@@ -639,7 +599,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckCupError) {
 TEST_P(UpdateCheckerTest, UpdateCheckRequiresEncryptionError) {
   config_->SetUpdateCheckUrl(GURL("http:\\foo\bar"));
 
-  update_checker_ = UpdateChecker::Create(config_, metadata_.get());
+  update_checker_ = UpdateChecker::Create(config_);
 
   update_context_->components[kUpdateItemId] = MakeComponent();
 
@@ -668,19 +628,19 @@ TEST_P(UpdateCheckerTest, UpdateCheckLastRollCall) {
       std::make_unique<PartialMatch>("updatecheck"),
       GetTestFilePath(filename)));
 
-  update_checker_ = UpdateChecker::Create(config_, metadata_.get());
+  update_checker_ = UpdateChecker::Create(config_);
 
   update_context_->components[kUpdateItemId] = MakeComponent();
 
   // Do two update-checks.
-  activity_data_service_->SetDaysSinceLastRollCall(kUpdateItemId, 5);
+  config_->GetActivityDataService()->SetDaysSinceLastRollCall(kUpdateItemId, 5);
   update_checker_->CheckForUpdates(
       update_context_, {{"extra", "params"}},
       base::BindOnce(&UpdateCheckerTest::UpdateCheckComplete,
                      base::Unretained(this)));
   RunThreads();
 
-  update_checker_ = UpdateChecker::Create(config_, metadata_.get());
+  update_checker_ = UpdateChecker::Create(config_);
   update_checker_->CheckForUpdates(
       update_context_, {{"extra", "params"}},
       base::BindOnce(&UpdateCheckerTest::UpdateCheckComplete,
@@ -716,12 +676,12 @@ TEST_P(UpdateCheckerTest, UpdateCheckLastActive) {
       std::make_unique<PartialMatch>("updatecheck"),
       GetTestFilePath(filename)));
 
-  update_checker_ = UpdateChecker::Create(config_, metadata_.get());
+  update_checker_ = UpdateChecker::Create(config_);
 
   update_context_->components[kUpdateItemId] = MakeComponent();
 
-  activity_data_service_->SetActiveBit(kUpdateItemId, true);
-  activity_data_service_->SetDaysSinceLastActive(kUpdateItemId, 10);
+  config_->GetActivityDataService()->SetActiveBit(kUpdateItemId, true);
+  config_->GetActivityDataService()->SetDaysSinceLastActive(kUpdateItemId, 10);
   update_checker_->CheckForUpdates(
       update_context_, {{"extra", "params"}},
       base::BindOnce(&UpdateCheckerTest::UpdateCheckComplete,
@@ -729,10 +689,10 @@ TEST_P(UpdateCheckerTest, UpdateCheckLastActive) {
   RunThreads();
 
   // The active bit should be reset.
-  EXPECT_FALSE(activity_data_service_->GetActiveBit(kUpdateItemId));
+  EXPECT_FALSE(config_->GetActivityDataService()->GetActiveBit(kUpdateItemId));
 
-  activity_data_service_->SetActiveBit(kUpdateItemId, true);
-  update_checker_ = UpdateChecker::Create(config_, metadata_.get());
+  config_->GetActivityDataService()->SetActiveBit(kUpdateItemId, true);
+  update_checker_ = UpdateChecker::Create(config_);
   update_checker_->CheckForUpdates(
       update_context_, {{"extra", "params"}},
       base::BindOnce(&UpdateCheckerTest::UpdateCheckComplete,
@@ -740,16 +700,16 @@ TEST_P(UpdateCheckerTest, UpdateCheckLastActive) {
   RunThreads();
 
   // The active bit should be reset.
-  EXPECT_FALSE(activity_data_service_->GetActiveBit(kUpdateItemId));
+  EXPECT_FALSE(config_->GetActivityDataService()->GetActiveBit(kUpdateItemId));
 
-  update_checker_ = UpdateChecker::Create(config_, metadata_.get());
+  update_checker_ = UpdateChecker::Create(config_);
   update_checker_->CheckForUpdates(
       update_context_, {{"extra", "params"}},
       base::BindOnce(&UpdateCheckerTest::UpdateCheckComplete,
                      base::Unretained(this)));
   RunThreads();
 
-  EXPECT_FALSE(activity_data_service_->GetActiveBit(kUpdateItemId));
+  EXPECT_FALSE(config_->GetActivityDataService()->GetActiveBit(kUpdateItemId));
 
   EXPECT_EQ(3, post_interceptor_->GetHitCount())
       << post_interceptor_->GetRequestsAsString();
@@ -783,7 +743,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckLastActive) {
 }
 
 TEST_P(UpdateCheckerTest, UpdateCheckInstallSource) {
-  update_checker_ = UpdateChecker::Create(config_, metadata_.get());
+  update_checker_ = UpdateChecker::Create(config_);
 
   update_context_->components[kUpdateItemId] = MakeComponent();
 
@@ -803,7 +763,8 @@ TEST_P(UpdateCheckerTest, UpdateCheckInstallSource) {
                          base::Unretained(this)));
       RunThreads();
       const auto& request = post_interceptor->GetRequestBody(0);
-      const auto root = base::JSONReader::Read(request);
+      const auto root =
+          base::JSONReader::Read(request, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       ASSERT_TRUE(root);
       const base::Value::Dict app = GetFirstAppAsDict(root->GetDict());
       EXPECT_EQ("ondemand", CHECK_DEREF(app.FindString("installsource")));
@@ -824,7 +785,8 @@ TEST_P(UpdateCheckerTest, UpdateCheckInstallSource) {
                          base::Unretained(this)));
       RunThreads();
       const auto& request = post_interceptor->GetRequestBody(0);
-      const auto root = base::JSONReader::Read(request);
+      const auto root =
+          base::JSONReader::Read(request, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       ASSERT_TRUE(root);
       const base::Value::Dict app = GetFirstAppAsDict(root->GetDict());
       EXPECT_EQ("sideload", CHECK_DEREF(app.FindString("installsource")));
@@ -846,7 +808,8 @@ TEST_P(UpdateCheckerTest, UpdateCheckInstallSource) {
                        base::Unretained(this)));
     RunThreads();
     const auto& request = post_interceptor->GetRequestBody(0);
-    const auto root = base::JSONReader::Read(request);
+    const auto root =
+        base::JSONReader::Read(request, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(root);
     const base::Value::Dict app = GetFirstAppAsDict(root->GetDict());
     EXPECT_FALSE(app.contains("installsource"));
@@ -866,7 +829,8 @@ TEST_P(UpdateCheckerTest, UpdateCheckInstallSource) {
                        base::Unretained(this)));
     RunThreads();
     const auto& request = post_interceptor->GetRequestBody(0);
-    const auto root = base::JSONReader::Read(request);
+    const auto root =
+        base::JSONReader::Read(request, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(root);
     const base::Value::Dict app = GetFirstAppAsDict(root->GetDict());
     EXPECT_EQ("webstore", CHECK_DEREF(app.FindString("installsource")));
@@ -875,7 +839,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckInstallSource) {
 }
 
 TEST_P(UpdateCheckerTest, ComponentDisabled) {
-  update_checker_ = UpdateChecker::Create(config_, metadata_.get());
+  update_checker_ = UpdateChecker::Create(config_);
 
   update_context_->components[kUpdateItemId] = MakeComponent();
 
@@ -894,7 +858,8 @@ TEST_P(UpdateCheckerTest, ComponentDisabled) {
                        base::Unretained(this)));
     RunThreads();
     const auto& request = post_interceptor->GetRequestBody(0);
-    const auto root = base::JSONReader::Read(request);
+    const auto root =
+        base::JSONReader::Read(request, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(root);
     const base::Value::Dict app = GetFirstAppAsDict(root->GetDict());
     EXPECT_EQ(true, app.FindBool("enabled"));
@@ -915,7 +880,8 @@ TEST_P(UpdateCheckerTest, ComponentDisabled) {
                        base::Unretained(this)));
     RunThreads();
     const auto& request = post_interceptor->GetRequestBody(0);
-    const auto root = base::JSONReader::Read(request);
+    const auto root =
+        base::JSONReader::Read(request, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(root);
     const base::Value::Dict app = GetFirstAppAsDict(root->GetDict());
     EXPECT_EQ(true, app.FindBool("enabled"));
@@ -936,7 +902,8 @@ TEST_P(UpdateCheckerTest, ComponentDisabled) {
                        base::Unretained(this)));
     RunThreads();
     const auto& request = post_interceptor->GetRequestBody(0);
-    const auto root = base::JSONReader::Read(request);
+    const auto root =
+        base::JSONReader::Read(request, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(root);
     const base::Value::Dict app = GetFirstAppAsDict(root->GetDict());
     EXPECT_EQ(false, app.FindBool("enabled"));
@@ -958,7 +925,8 @@ TEST_P(UpdateCheckerTest, ComponentDisabled) {
                        base::Unretained(this)));
     RunThreads();
     const auto& request = post_interceptor->GetRequestBody(0);
-    const auto root = base::JSONReader::Read(request);
+    const auto root =
+        base::JSONReader::Read(request, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(root);
     const base::Value::Dict app = GetFirstAppAsDict(root->GetDict());
     EXPECT_EQ(false, app.FindBool("enabled"));
@@ -981,7 +949,8 @@ TEST_P(UpdateCheckerTest, ComponentDisabled) {
                        base::Unretained(this)));
     RunThreads();
     const auto& request = post_interceptor->GetRequestBody(0);
-    const auto root = base::JSONReader::Read(request);
+    const auto root =
+        base::JSONReader::Read(request, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(root);
     const base::Value::Dict app = GetFirstAppAsDict(root->GetDict());
     EXPECT_EQ(false, app.FindBool("enabled"));
@@ -1006,7 +975,8 @@ TEST_P(UpdateCheckerTest, ComponentDisabled) {
                        base::Unretained(this)));
     RunThreads();
     const auto& request = post_interceptor->GetRequestBody(0);
-    const auto root = base::JSONReader::Read(request);
+    const auto root =
+        base::JSONReader::Read(request, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(root);
     const base::Value::Dict app = GetFirstAppAsDict(root->GetDict());
     EXPECT_EQ(false, app.FindBool("enabled"));
@@ -1020,7 +990,7 @@ TEST_P(UpdateCheckerTest, ComponentDisabled) {
 }
 
 TEST_P(UpdateCheckerTest, UpdateCheckUpdateDisabled) {
-  update_checker_ = UpdateChecker::Create(config_, metadata_.get());
+  update_checker_ = UpdateChecker::Create(config_);
 
   update_context_->components[kUpdateItemId] = MakeComponent();
 
@@ -1045,7 +1015,8 @@ TEST_P(UpdateCheckerTest, UpdateCheckUpdateDisabled) {
                        base::Unretained(this)));
     RunThreads();
     const auto& request = post_interceptor->GetRequestBody(0);
-    const auto root = base::JSONReader::Read(request);
+    const auto root =
+        base::JSONReader::Read(request, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(root);
     const base::Value::Dict app = GetFirstAppAsDict(root->GetDict());
     EXPECT_EQ(kUpdateItemId, CHECK_DEREF(app.FindString("appid")));
@@ -1070,7 +1041,8 @@ TEST_P(UpdateCheckerTest, UpdateCheckUpdateDisabled) {
                        base::Unretained(this)));
     RunThreads();
     const auto& request = post_interceptor->GetRequestBody(0);
-    const auto root = base::JSONReader::Read(request);
+    const auto root =
+        base::JSONReader::Read(request, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(root);
     const base::Value app_as_val = GetFirstAppAsValue(root->GetDict());
     const base::Value::Dict app = GetFirstAppAsDict(root->GetDict());
@@ -1084,10 +1056,10 @@ TEST_P(UpdateCheckerTest, UpdateCheckUpdateDisabled) {
 }
 
 TEST_P(UpdateCheckerTest, UpdateDisabledByMeteredConnection) {
-  update_checker_ = UpdateChecker::Create(config_, metadata_.get());
+  update_checker_ = UpdateChecker::Create(config_);
 
   update_context_->components[kUpdateItemId] =
-      MakeComponent("TEST", "foobar_install_data_index", false);
+      MakeComponent("TEST", {}, "foobar_install_data_index", false);
 
   auto& component = update_context_->components[kUpdateItemId];
   auto crx_component = component->crx_component();
@@ -1111,7 +1083,8 @@ TEST_P(UpdateCheckerTest, UpdateDisabledByMeteredConnection) {
                        base::Unretained(this)));
     RunThreads();
     const auto& request = post_interceptor->GetRequestBody(0);
-    const auto root = base::JSONReader::Read(request);
+    const auto root =
+        base::JSONReader::Read(request, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(root);
     const base::Value::Dict app = GetFirstAppAsDict(root->GetDict());
     EXPECT_EQ(kUpdateItemId, CHECK_DEREF(app.FindString("appid")));
@@ -1136,7 +1109,8 @@ TEST_P(UpdateCheckerTest, UpdateDisabledByMeteredConnection) {
                        base::Unretained(this)));
     RunThreads();
     const auto& request = post_interceptor->GetRequestBody(0);
-    const auto root = base::JSONReader::Read(request);
+    const auto root =
+        base::JSONReader::Read(request, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(root);
     const base::Value app_as_val = GetFirstAppAsValue(root->GetDict());
     const base::Value::Dict app = GetFirstAppAsDict(root->GetDict());
@@ -1150,7 +1124,7 @@ TEST_P(UpdateCheckerTest, UpdateDisabledByMeteredConnection) {
 }
 
 TEST_P(UpdateCheckerTest, SameVersionUpdateAllowed) {
-  update_checker_ = UpdateChecker::Create(config_, metadata_.get());
+  update_checker_ = UpdateChecker::Create(config_);
 
   update_context_->components[kUpdateItemId] = MakeComponent();
 
@@ -1171,11 +1145,12 @@ TEST_P(UpdateCheckerTest, SameVersionUpdateAllowed) {
                        base::Unretained(this)));
     RunThreads();
     const auto& request = post_interceptor->GetRequestBody(0);
-    const auto root = base::JSONReader::Read(request);
+    const auto root =
+        base::JSONReader::Read(request, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(root);
     const auto& app =
-        (*root->GetDict().FindListByDottedPath("request.app"))[0].GetDict();
-    EXPECT_STREQ(kUpdateItemId, app.FindString("appid")->c_str());
+        (*root->GetDict().FindListByDottedPath("request.apps"))[0].GetDict();
+    EXPECT_EQ(kUpdateItemId, CHECK_DEREF(app.FindString("appid")));
     EXPECT_TRUE(app.FindDict("updatecheck"));
     EXPECT_FALSE(app.FindByDottedPath("updatecheck.sameversionupdate"));
   }
@@ -1195,43 +1170,14 @@ TEST_P(UpdateCheckerTest, SameVersionUpdateAllowed) {
                        base::Unretained(this)));
     RunThreads();
     const auto& request = post_interceptor->GetRequestBody(0);
-    const auto root = base::JSONReader::Read(request);
+    const auto root =
+        base::JSONReader::Read(request, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(root);
     const auto& app =
-        (*root->GetDict().FindListByDottedPath("request.app"))[0].GetDict();
-    EXPECT_STREQ(kUpdateItemId, app.FindString("appid")->c_str());
+        (*root->GetDict().FindListByDottedPath("request.apps"))[0].GetDict();
+    EXPECT_EQ(kUpdateItemId, CHECK_DEREF(app.FindString("appid")));
     EXPECT_EQ(app.FindBoolByDottedPath("updatecheck.sameversionupdate"), true);
   }
-}
-
-TEST_P(UpdateCheckerTest, NoUpdateActionRun) {
-  EXPECT_TRUE(post_interceptor_->ExpectRequest(
-      std::make_unique<PartialMatch>("updatecheck"),
-      GetTestFilePath("updatecheck_reply_noupdate.json")));
-  update_checker_ = UpdateChecker::Create(config_, metadata_.get());
-
-  update_context_->components[kUpdateItemId] = MakeComponent();
-
-  update_checker_->CheckForUpdates(
-      update_context_, {},
-      base::BindOnce(&UpdateCheckerTest::UpdateCheckComplete,
-                     base::Unretained(this)));
-  RunThreads();
-
-  EXPECT_EQ(1, post_interceptor_->GetHitCount())
-      << post_interceptor_->GetRequestsAsString();
-  ASSERT_EQ(1, post_interceptor_->GetCount())
-      << post_interceptor_->GetRequestsAsString();
-
-  // Check the arguments of the callback after parsing.
-  EXPECT_EQ(ErrorCategory::kNone, error_category_);
-  EXPECT_EQ(0, error_);
-  EXPECT_TRUE(results_);
-  EXPECT_EQ(1u, results_->list.size());
-  const auto& result = results_->list.front();
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", result.extension_id.c_str());
-  EXPECT_STREQ("noupdate", result.status.c_str());
-  EXPECT_STREQ("this", result.action_run.c_str());
 }
 
 TEST_P(UpdateCheckerTest, UpdatePauseResume) {
@@ -1245,7 +1191,7 @@ TEST_P(UpdateCheckerTest, UpdatePauseResume) {
       post_interceptor_.get()));
   post_interceptor_->Pause();
 
-  update_checker_ = UpdateChecker::Create(config_, metadata_.get());
+  update_checker_ = UpdateChecker::Create(config_);
 
   update_context_->components[kUpdateItemId] = MakeComponent("TEST");
 
@@ -1268,10 +1214,6 @@ TEST_P(UpdateCheckerTest, UpdatePauseResume) {
   EXPECT_EQ(true, app.FindBool("enabled"));
   EXPECT_TRUE(app.FindDict("updatecheck")->empty());
   EXPECT_EQ(-2, app_as_val.GetDict().FindIntByDottedPath("ping.r").value());
-
-  const base::Value::List& packages =
-      CHECK_DEREF(app.FindDict("packages")->FindList("package"));
-  EXPECT_EQ("fp1", CHECK_DEREF(packages[0].GetDict().FindString("fp")));
 }
 
 // Tests that an update checker object and its underlying SimpleURLLoader can
@@ -1290,7 +1232,7 @@ TEST_P(UpdateCheckerTest, UpdateResetUpdateChecker) {
 
   update_context_->components[kUpdateItemId] = MakeComponent();
 
-  update_checker_ = UpdateChecker::Create(config_, metadata_.get());
+  update_checker_ = UpdateChecker::Create(config_);
   update_checker_->CheckForUpdates(
       update_context_, {},
       base::BindOnce(&UpdateCheckerTest::UpdateCheckComplete,
@@ -1305,7 +1247,7 @@ TEST_P(UpdateCheckerTest, ParseErrorProtocolVersionMismatch) {
       std::make_unique<PartialMatch>("updatecheck"),
       GetTestFilePath("updatecheck_reply_parse_error.json")));
 
-  update_checker_ = UpdateChecker::Create(config_, metadata_.get());
+  update_checker_ = UpdateChecker::Create(config_);
 
   update_context_->components[kUpdateItemId] = MakeComponent();
 
@@ -1333,7 +1275,7 @@ TEST_P(UpdateCheckerTest, ParseErrorAppStatusErrorUnknownApplication) {
       std::make_unique<PartialMatch>("updatecheck"),
       GetTestFilePath("updatecheck_reply_unknownapp.json")));
 
-  update_checker_ = UpdateChecker::Create(config_, metadata_.get());
+  update_checker_ = UpdateChecker::Create(config_);
 
   update_context_->components[kUpdateItemId] = MakeComponent();
 
@@ -1351,18 +1293,18 @@ TEST_P(UpdateCheckerTest, ParseErrorAppStatusErrorUnknownApplication) {
   EXPECT_EQ(ErrorCategory::kNone, error_category_);
   EXPECT_EQ(0, error_);
   EXPECT_TRUE(results_);
-  EXPECT_EQ(1u, results_->list.size());
-  const auto& result = results_->list.front();
-  EXPECT_STREQ("error-unknownApplication", result.status.c_str());
+  EXPECT_EQ(1u, results_->apps.size());
+  const auto& result = results_->apps.front();
+  EXPECT_EQ("error-unknownApplication", result.status);
 }
 
 TEST_P(UpdateCheckerTest, DomainJoined) {
-  for (const auto is_managed :
+  for (const auto& is_managed :
        std::initializer_list<std::optional<bool>>{std::nullopt, false, true}) {
     EXPECT_TRUE(post_interceptor_->ExpectRequest(
         std::make_unique<PartialMatch>("updatecheck"),
         GetTestFilePath("updatecheck_reply_noupdate.json")));
-    update_checker_ = UpdateChecker::Create(config_, metadata_.get());
+    update_checker_ = UpdateChecker::Create(config_);
 
     update_context_->components[kUpdateItemId] = MakeComponent();
 

@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_POLICY_CORE_COMMON_FAKE_ASYNC_POLICY_LOADER_H_
 #define COMPONENTS_POLICY_CORE_COMMON_FAKE_ASYNC_POLICY_LOADER_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/policy/core/common/async_policy_loader.h"
 #include "components/policy/core/common/policy_bundle.h"
 

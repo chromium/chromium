@@ -10,7 +10,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
@@ -68,10 +70,11 @@ LabelButton* WidgetExample::BuildButton(View* container,
 }
 
 void WidgetExample::CreateDialogWidget(View* sender, bool modal) {
-  auto dialog = std::make_unique<DialogDelegateView>();
+  auto dialog =
+      std::make_unique<DialogDelegateView>(DialogDelegateView::CreatePassKey());
   dialog->SetTitle(IDS_WIDGET_WINDOW_TITLE);
-  dialog->SetBackground(CreateThemedSolidBackground(
-      ExamplesColorIds::kColorWidgetExampleDialogBorder));
+  dialog->SetBackground(
+      CreateSolidBackground(ExamplesColorIds::kColorWidgetExampleDialogBorder));
   dialog->SetLayoutManager(std::make_unique<BoxLayout>(
       BoxLayout::Orientation::kVertical, gfx::Insets(10), 10));
   dialog->SetExtraView(std::make_unique<MdTextButton>(
@@ -80,9 +83,10 @@ void WidgetExample::CreateDialogWidget(View* sender, bool modal) {
       std::make_unique<Label>(GetStringUTF16(IDS_WIDGET_FOOTNOTE_LABEL)));
   dialog->AddChildView(std::make_unique<Label>(
       GetStringUTF16(IDS_WIDGET_DIALOG_CONTENTS_LABEL)));
-  if (modal)
-    dialog->SetModalType(ui::MODAL_TYPE_WINDOW);
-  DialogDelegate::CreateDialogWidget(dialog.release(), nullptr,
+  if (modal) {
+    dialog->SetModalType(ui::mojom::ModalType::kWindow);
+  }
+  DialogDelegate::CreateDialogWidget(dialog.release(), gfx::NativeWindow(),
                                      sender->GetWidget()->GetNativeView())
       ->Show();
 }
@@ -104,7 +108,7 @@ void WidgetExample::ShowWidget(View* sender, Widget::InitParams::Type type) {
     View* contents = widget->SetContentsView(std::make_unique<View>());
     contents->SetLayoutManager(
         std::make_unique<BoxLayout>(BoxLayout::Orientation::kHorizontal));
-    contents->SetBackground(CreateThemedSolidBackground(
+    contents->SetBackground(CreateSolidBackground(
         ExamplesColorIds::kColorWidgetExampleContentBorder));
     BuildButton(contents, GetStringUTF16(IDS_WIDGET_CLOSE_BUTTON_LABEL))
         ->SetCallback(

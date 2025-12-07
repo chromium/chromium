@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-
 #import "chrome/browser/ui/cocoa/fullscreen/fullscreen_toolbar_controller.h"
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #import "chrome/browser/ui/cocoa/fullscreen/fullscreen_menubar_tracker.h"
 #import "chrome/browser/ui/cocoa/fullscreen/fullscreen_toolbar_animation_controller.h"
@@ -16,6 +15,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 
 @implementation FullscreenToolbarController {
@@ -54,8 +54,9 @@
 }
 
 - (void)enterFullscreenMode {
-  if (_inFullscreenMode)
+  if (_inFullscreenMode) {
     return;
+  }
   _inFullscreenMode = YES;
 
   _menubarTracker = [[FullscreenMenubarTracker alloc]
@@ -65,8 +66,9 @@
 }
 
 - (void)exitFullscreenMode {
-  if (!_inFullscreenMode)
+  if (!_inFullscreenMode) {
     return;
+  }
   _inFullscreenMode = NO;
 
   _animationController->StopAnimationAndTimer();
@@ -87,8 +89,9 @@
   constexpr CGFloat kHideFraction = 0.0;
   constexpr CGFloat kShowFraction = 1.0;
 
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kKioskMode))
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kKioskMode)) {
     return kHideFraction;
+  }
 
   switch (_toolbarStyle) {
     case FullscreenToolbarStyle::TOOLBAR_PRESENT:
@@ -96,11 +99,13 @@
     case FullscreenToolbarStyle::TOOLBAR_NONE:
       return kHideFraction;
     case FullscreenToolbarStyle::TOOLBAR_HIDDEN:
-      if (_animationController->IsAnimationRunning())
+      if (_animationController->IsAnimationRunning()) {
         return _animationController->GetToolbarFractionFromProgress();
+      }
 
-      if ([self mustShowFullscreenToolbar])
+      if ([self mustShowFullscreenToolbar]) {
         return kShowFraction;
+      }
 
       return [_menubarTracker menubarFraction];
   }
@@ -111,14 +116,17 @@
 }
 
 - (BOOL)mustShowFullscreenToolbar {
-  if (!_inFullscreenMode)
+  if (!_inFullscreenMode) {
     return NO;
+  }
 
-  if (_toolbarStyle == FullscreenToolbarStyle::TOOLBAR_PRESENT)
+  if (_toolbarStyle == FullscreenToolbarStyle::TOOLBAR_PRESENT) {
     return YES;
+  }
 
-  if (_toolbarStyle == FullscreenToolbarStyle::TOOLBAR_NONE)
+  if (_toolbarStyle == FullscreenToolbarStyle::TOOLBAR_NONE) {
     return NO;
+  }
 
   return [_menubarTracker state] == FullscreenMenubarState::SHOWN;
 }
@@ -152,10 +160,11 @@
 }
 
 - (BOOL)isFullscreenTransitionInProgress {
-  auto* host =
-      views::NativeWidgetMacNSWindowHost::GetFromNativeWindow([self window]);
-  if (auto* bridge = host->GetInProcessNSWindowBridge())
+  auto* host = views::NativeWidgetMacNSWindowHost::GetFromNativeWindow(
+      gfx::NativeWindow([self window]));
+  if (auto* bridge = host->GetInProcessNSWindowBridge()) {
     return bridge->in_fullscreen_transition();
+  }
   DLOG(ERROR) << "TODO(crbug.com/41431787): Support fullscreen "
                  "transitions for RemoteMacViews PWA windows.";
   return false;

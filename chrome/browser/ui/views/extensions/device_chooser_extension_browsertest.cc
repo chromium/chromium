@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <string>
 
 #include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_future.h"
 #include "build/buildflag.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/chooser_bubble_testapi.h"
-#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view.h"
@@ -77,9 +77,7 @@ class DeviceChooserExtensionBrowserTest
   }
 
   ExtensionsToolbarContainer* extensions_container() {
-    return BrowserView::GetBrowserViewForBrowser(browser())
-        ->toolbar()
-        ->extensions_container();
+    return browser()->GetBrowserView().toolbar()->extensions_container();
   }
 
   bool ShowChooser() {
@@ -102,7 +100,7 @@ class DeviceChooserExtensionBrowserTest
       // queries the underlying model and not GetVisible(), as that relies on an
       // animation running, which is not reliable in unit tests on Mac.
       return extensions_container()->IsActionVisibleOnToolbar(
-          action->view_controller()->GetId());
+          action->view_model()->GetId());
 #else
       return action->GetVisible();
 #endif
@@ -123,7 +121,7 @@ class DeviceChooserExtensionBrowserTest
 
   std::vector<std::string> GetPinnedExtensionNames() {
     return base::ToVector(GetPinnedExtensionViews(), [](auto* view) {
-      return base::UTF16ToUTF8(view->view_controller()->GetActionName());
+      return base::UTF16ToUTF8(view->view_model()->GetActionName());
     });
   }
 

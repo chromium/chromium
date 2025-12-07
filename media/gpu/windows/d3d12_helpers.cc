@@ -7,6 +7,7 @@
 #include "base/check_is_test.h"
 #include "base/logging.h"
 #include "media/base/video_codecs.h"
+#include "media/gpu/windows/d3d11_picture_buffer.h"
 #include "media/gpu/windows/format_utils.h"
 #include "media/gpu/windows/supported_profile_helpers.h"
 #include "third_party/microsoft_dxheaders/src/include/directx/d3dx12_core.h"
@@ -19,6 +20,16 @@ D3D12ReferenceFrameList::D3D12ReferenceFrameList(ComD3D12VideoDecoderHeap heap)
 }
 
 D3D12ReferenceFrameList::~D3D12ReferenceFrameList() = default;
+
+D3D12ReferenceFrameList::D3D12ReferenceFrameList(
+    const D3D12ReferenceFrameList& other) = default;
+
+void D3D12ReferenceFrameList::SetPictureBuffers(
+    base::span<scoped_refptr<D3D11PictureBuffer>> picture_buffers) {
+  for (size_t i = 0; i < picture_buffers.size(); i++) {
+    picture_buffers_[i] = picture_buffers[i].get();
+  }
+}
 
 void D3D12ReferenceFrameList::WriteTo(
     D3D12_VIDEO_DECODE_REFERENCE_FRAMES* dest) {
@@ -37,6 +48,72 @@ void D3D12ReferenceFrameList::emplace(size_t index,
   }
   resources_[index] = resource;
   subresources_[index] = subresource;
+}
+
+std::vector<D3D12_RESOURCE_BARRIER>
+D3D12ReferenceFrameList::GetTransitionsToDecodeState(
+    ID3D12Resource* current_output_resource,
+    UINT current_output_subresource) {
+  std::vector<D3D12_RESOURCE_BARRIER> barriers;
+  for (size_t i = 0; i < size_; i++) {
+    if (resources_[i] == current_output_resource &&
+        subresources_[i] == current_output_subresource) {
+      auto transitions = CreateD3D12TransitionBarriersForAllPlanes(
+          resources_[i], subresources_[i], D3D12_RESOURCE_STATE_COMMON,
+          D3D12_RESOURCE_STATE_VIDEO_DECODE_WRITE);
+      barriers.insert(barriers.end(), transitions.begin(), transitions.end());
+    } else if (picture_buffers_[i]->in_picture_use()) {
+      auto transitions = CreateD3D12TransitionBarriersForAllPlanes(
+          resources_[i], subresources_[i], D3D12_RESOURCE_STATE_COMMON,
+          D3D12_RESOURCE_STATE_VIDEO_DECODE_READ);
+      barriers.insert(barriers.end(), transitions.begin(), transitions.end());
+    }
+  }
+  return barriers;
+}
+
+ScopedD3D12ResourceMap::ScopedD3D12ResourceMap() = default;
+
+ScopedD3D12ResourceMap::~ScopedD3D12ResourceMap() {
+  Commit();
+}
+
+ScopedD3D12ResourceMap::ScopedD3D12ResourceMap(
+    ScopedD3D12ResourceMap&& other) noexcept = default;
+
+ScopedD3D12ResourceMap& ScopedD3D12ResourceMap::operator=(
+    ScopedD3D12ResourceMap&& other) noexcept = default;
+
+bool ScopedD3D12ResourceMap::Map(ID3D12Resource* resource,
+                                 UINT subresource,
+                                 const D3D12_RANGE* read_range) {
+  CHECK(data_.empty());
+  CHECK(resource);
+  CHECK_EQ(resource->GetDesc().Dimension, D3D12_RESOURCE_DIMENSION_BUFFER);
+  void* data;
+  HRESULT hr = resource->Map(subresource, read_range, &data);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed to Map D3D12Resource: "
+               << logging::SystemErrorCodeToString(hr);
+    return false;
+  }
+  resource_ = resource;
+  subresource_ = subresource;
+  // SAFETY: A successful |ID3D12Resource::Map()| sets |data| with valid
+  // address, and for D3D12_RESOURCE_DIMENSION_BUFFER resource, the length is
+  // its |Width|. We will also reset the |data_| before we |Unmap()|.
+  data_ = UNSAFE_BUFFERS(
+      base::span(static_cast<uint8_t*>(data),
+                 static_cast<size_t>(resource_->GetDesc().Width)));
+  return true;
+}
+
+void ScopedD3D12ResourceMap::Commit(const D3D12_RANGE* written_range) {
+  if (resource_) {
+    data_ = {};
+    resource_->Unmap(subresource_, written_range);
+    resource_ = nullptr;
+  }
 }
 
 ComD3D12Device CreateD3D12Device(IDXGIAdapter* adapter) {
@@ -109,7 +186,8 @@ GUID GetD3D12VideoDecodeGUID(VideoCodecProfile profile,
     case HEVCPROFILE_MAIN10:
       return D3D12_VIDEO_DECODE_PROFILE_HEVC_MAIN10;
     case HEVCPROFILE_REXT:
-      return GetHEVCRangeExtensionPrivateGUID(bitdepth, chroma_sampling);
+      return GetHEVCRangeExtensionGUID(bitdepth, chroma_sampling,
+                                       /*use_dxva_device_for_hevc_rext=*/true);
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
     case AV1PROFILE_PROFILE_MAIN:
       return D3D12_VIDEO_DECODE_PROFILE_AV1_PROFILE0;

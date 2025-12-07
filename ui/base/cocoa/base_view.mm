@@ -189,13 +189,13 @@ NSString* kSelectionDirection = @"Chromium.kSelectionDirection";
 }
 
 - (gfx::Rect)flipNSRectToRect:(NSRect)rect {
-  gfx::Rect new_rect(NSRectToCGRect(rect));
+  gfx::Rect new_rect(rect);
   new_rect.set_y(NSHeight(self.bounds) - new_rect.bottom());
   return new_rect;
 }
 
 - (NSRect)flipRectToNSRect:(gfx::Rect)rect {
-  NSRect new_rect(NSRectFromCGRect(rect.ToCGRect()));
+  NSRect new_rect = rect.ToCGRect();
   new_rect.origin.y = NSHeight(self.bounds) - NSMaxY(new_rect);
   return new_rect;
 }

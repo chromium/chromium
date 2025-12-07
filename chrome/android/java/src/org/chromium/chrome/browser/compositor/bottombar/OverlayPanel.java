@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.compositor.bottombar;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.RectF;
@@ -13,15 +15,17 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager.PanelPriority;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
@@ -31,12 +35,12 @@ import org.chromium.chrome.browser.compositor.layouts.eventfilter.MotionEventHan
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.OverlayPanelEventFilter;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.SceneOverlay;
-import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.content_public.browser.SelectionPopupController;
@@ -47,9 +51,10 @@ import org.chromium.ui.resources.ResourceManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.List;
+import java.util.function.Supplier;
 
 /** Controls the Overlay Panel. */
+@NullMarked
 public class OverlayPanel extends OverlayPanelAnimation
         implements ActivityStateListener,
                 SwipeHandler,
@@ -154,7 +159,7 @@ public class OverlayPanel extends OverlayPanelAnimation
     private final ViewGroup mCompositorViewHolder;
 
     /** Supplies the current activity {@link Tab}. */
-    private final Supplier<Tab> mCurrentTabSupplier;
+    private final Supplier<@Nullable Tab> mCurrentTabSupplier;
 
     /** OverlayPanel manager handle for notifications of opening and closing. */
     protected final OverlayPanelManager mPanelManager;
@@ -178,7 +183,7 @@ public class OverlayPanel extends OverlayPanelAnimation
     private OverlayPanelContentFactory mContentFactory;
 
     /** Container for content the panel will show. */
-    private OverlayPanelContent mContent;
+    private @Nullable OverlayPanelContent mContent;
 
     /** If the base page text controls have been cleared. */
     private boolean mDidClearTextControls;
@@ -215,18 +220,29 @@ public class OverlayPanel extends OverlayPanelAnimation
      * @param compositorViewHolder The {@link CompositorViewHolder}
      * @param toolbarHeightDp The height of the toolbar in dp.
      * @param currentTabSupplier Supplies the current {@link Tab}.
+     * @param desktopWindowStateManager Manager to get desktop window and app header state.
+     * @param bottomControlsStacker The {@link BottomControlsStacker} for observing and changing
+     *     browser controls heights.
      */
     public OverlayPanel(
-            @NonNull Context context,
-            @NonNull LayoutManagerImpl layoutManager,
-            @NonNull OverlayPanelManager panelManager,
-            @NonNull BrowserControlsStateProvider browserControlsStateProvider,
-            @NonNull WindowAndroid windowAndroid,
-            @NonNull Profile profile,
-            @NonNull ViewGroup compositorViewHolder,
+            Context context,
+            LayoutManagerImpl layoutManager,
+            OverlayPanelManager panelManager,
+            BrowserControlsStateProvider browserControlsStateProvider,
+            WindowAndroid windowAndroid,
+            Profile profile,
+            ViewGroup compositorViewHolder,
             float toolbarHeightDp,
-            @NonNull Supplier<Tab> currentTabSupplier) {
-        super(context, layoutManager, toolbarHeightDp);
+            Supplier<@Nullable Tab> currentTabSupplier,
+            @Nullable DesktopWindowStateManager desktopWindowStateManager,
+            BottomControlsStacker bottomControlsStacker) {
+        super(
+                context,
+                layoutManager,
+                toolbarHeightDp,
+                desktopWindowStateManager,
+                browserControlsStateProvider,
+                bottomControlsStacker);
         mLayoutManager = layoutManager;
         mContentFactory = this;
         mBrowserControlsStateProvider = browserControlsStateProvider;
@@ -269,15 +285,17 @@ public class OverlayPanel extends OverlayPanelAnimation
     }
 
     /** Return the {@link Tab} supplier for the Activity containing this OverlayPanel. */
-    protected Supplier<Tab> getCurrentTabSupplier() {
+    protected Supplier<@Nullable Tab> getCurrentTabSupplier() {
         return mCurrentTabSupplier;
     }
 
     /** Destroy the native components associated with this panel's content. */
+    @Override
     public void destroy() {
         closePanel(StateChangeReason.UNKNOWN, false);
         mLayoutManager.removeSceneChangeObserver(mSceneChangeObserver);
         ApplicationStatus.unregisterActivityStateListener(this);
+        super.destroy();
     }
 
     /**
@@ -376,6 +394,7 @@ public class OverlayPanel extends OverlayPanelAnimation
     /**
      * @param activity The {@link Activity} associated with the panel.
      */
+    @Initializer
     public void setActivity(Activity activity) {
         mActivity = activity;
         if (mActivity != null) {
@@ -427,15 +446,17 @@ public class OverlayPanel extends OverlayPanelAnimation
     }
 
     /**
-     * Set the visibility of the base page text selection controls. This will also attempt to
-     * remove focus from the base page to clear any open controls.
+     * Set the visibility of the base page text selection controls. This will also attempt to remove
+     * focus from the base page to clear any open controls.
+     *
      * @param visible If the text controls are visible.
      */
     protected void setBasePageTextControlsVisibility(boolean visible) {
         if (mActivity == null) return;
-        if (!mCurrentTabSupplier.hasValue()) return;
+        var currentTab = mCurrentTabSupplier.get();
+        if (currentTab == null) return;
 
-        WebContents baseWebContents = mCurrentTabSupplier.get().getWebContents();
+        WebContents baseWebContents = assumeNonNull(mCurrentTabSupplier.get()).getWebContents();
         if (baseWebContents == null) return;
 
         // If the panel does not have focus or isn't open, return.
@@ -514,14 +535,14 @@ public class OverlayPanel extends OverlayPanelAnimation
     /**
      * @return The WebContents that this panel currently holds.
      */
-    public WebContents getWebContents() {
+    public @Nullable WebContents getWebContents() {
         return mContent != null ? mContent.getWebContents() : null;
     }
 
     /**
      * @return The container view that this panel currently holds.
      */
-    public ViewGroup getContainerView() {
+    public @Nullable ViewGroup getContainerView() {
         return mContent != null ? mContent.getContainerView() : null;
     }
 
@@ -636,17 +657,6 @@ public class OverlayPanel extends OverlayPanelAnimation
         //
         // This is necessary to fix the bugs: crbug.com/510205 and crbug.com/510206
         mContent.updateBrowserControlsState(isFullWidthSizePanel());
-    }
-
-    /**
-     * Remove the last entry from history provided it is in a given time frame.
-     * @param historyUrl The URL to remove.
-     * @param urlTimeMs The time that the URL was visited.
-     */
-    public void removeLastHistoryEntry(String historyUrl, long urlTimeMs) {
-        if (mContent == null) return;
-        // Expose OverlayPanelContent method.
-        mContent.removeLastHistoryEntry(historyUrl, urlTimeMs);
     }
 
     /**
@@ -870,7 +880,7 @@ public class OverlayPanel extends OverlayPanelAnimation
     // ============================================================================================
 
     @Override
-    public void onDown(float x, float y, boolean fromMouse, int buttons) {
+    public void onDown(float x, float y, int buttons) {
         mInitialPanelTouchY = y;
         handleSwipeStart();
     }
@@ -891,7 +901,7 @@ public class OverlayPanel extends OverlayPanelAnimation
     }
 
     @Override
-    public void click(float x, float y, boolean fromMouse, int buttons) {
+    public void click(float x, float y, int buttons, int modifiers) {
         handleClick(x, y);
     }
 
@@ -909,6 +919,9 @@ public class OverlayPanel extends OverlayPanelAnimation
 
     @Override
     public void onHoverExit() {}
+
+    @Override
+    public void onScroll(float horizontalAxisScroll, float verticalAxisScroll) {}
 
     // SwipeHandler implementation.
 
@@ -970,10 +983,13 @@ public class OverlayPanel extends OverlayPanelAnimation
     // ============================================================================================
 
     @Override
-    public SceneOverlayLayer getUpdatedSceneOverlayTree(
-            RectF viewport, RectF visibleViewport, ResourceManager resourceManager, float yOffset) {
+    public @Nullable SceneOverlayLayer getUpdatedSceneOverlayTree(
+            RectF viewport, RectF visibleViewport, ResourceManager resourceManager) {
         return null;
     }
+
+    @Override
+    public void removeFromParent() {}
 
     @Override
     public boolean isSceneOverlayTreeShowing() {
@@ -1013,11 +1029,6 @@ public class OverlayPanel extends OverlayPanelAnimation
     }
 
     @Override
-    public void getVirtualViews(List<VirtualView> views) {
-        // TODO(mdjones): Add views for accessibility.
-    }
-
-    @Override
     public boolean handlesTabCreating() {
         // If the panel is not opened, do not handle tab creating.
         if (!isPanelOpened()) return false;
@@ -1032,7 +1043,7 @@ public class OverlayPanel extends OverlayPanelAnimation
 
     @Override
     public boolean shouldHideAndroidBrowserControls() {
-        return isPanelOpened() && mCanHideAndroidBrowserControls;
+        return isPanelOpened() && getCanHideAndroidBrowserControls();
     }
 
     @Override
@@ -1049,7 +1060,7 @@ public class OverlayPanel extends OverlayPanelAnimation
     }
 
     @Override
-    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return isShowingSupplier();
     }
 

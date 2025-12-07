@@ -28,6 +28,7 @@
 #include "media/mojo/mojom/media_player.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -96,6 +97,9 @@ class CONTENT_EXPORT MediaWebContentsObserver
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
   void MediaPictureInPictureChanged(bool is_picture_in_picture) override;
   void DidUpdateAudioMutingState(bool muted) override;
+  void DidStartNavigation(NavigationHandle* navigation_handle) override;
+  void RenderFrameHostChanged(RenderFrameHost* old_host,
+                              RenderFrameHost* new_host) override;
 
   // MediaPlayerObserverClient implementation.
   void GetHasPlayedBefore(GetHasPlayedBeforeCallback callback) override;
@@ -109,6 +113,9 @@ class CONTENT_EXPORT MediaWebContentsObserver
   // merging the logic of effectively fullscreen, hiding media controls and
   // fullscreening video element to the same place.
   void RequestPersistentVideo(bool value);
+
+  // Returns the number of active players with video content.
+  int GetCurrentlyPlayingVideoCount() const;
 
   // Returns whether or not the given player id is active.
   bool IsPlayerActive(const MediaPlayerId& player_id) const;

@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_RULE_KEYFRAME_H_
 
 #include <memory>
-#include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/timeline_offset.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -26,8 +25,6 @@ struct KeyframeOffset {
   bool operator==(const KeyframeOffset& b) const {
     return percent == b.percent && name == b.name;
   }
-
-  bool operator!=(const KeyframeOffset& b) const { return !(*this == b); }
 
   TimelineOffset::NamedRange name;
   double percent;

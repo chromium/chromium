@@ -74,6 +74,21 @@ network_mojom::NetworkFilterPtr GetConfiguredWiFiFilter() {
       network_mojom::kNoLimit);
 }
 
+mojom::HardwareVerificationResultPtr ConvertHardwareVerificationResult(
+    const rmad::HardwareVerificationResult& result) {
+  if (result.is_skipped()) {
+    return mojom::HardwareVerificationResult::NewSkipResult(
+        mojom::SkipHardwareVerificationResult::New());
+  }
+  if (result.is_compliant()) {
+    return mojom::HardwareVerificationResult::NewPassResult(
+        mojom::PassHardwareVerificationResult::New());
+  }
+
+  return mojom::HardwareVerificationResult::NewFailResult(
+      mojom::FailHardwareVerificationResult::New(result.error_str()));
+}
+
 }  // namespace
 
 ShimlessRmaService::ShimlessRmaService(
@@ -108,6 +123,44 @@ void ShimlessRmaService::GetCurrentState(GetCurrentStateCallback callback) {
   RmadClient::Get()->GetCurrentState(base::BindOnce(
       &ShimlessRmaService::OnGetStateResponse<GetCurrentStateCallback>,
       weak_ptr_factory_.GetWeakPtr(), std::move(callback), kGetCurrentState));
+}
+
+void ShimlessRmaService::GetStateProperties(
+    GetStatePropertiesCallback callback) {
+  switch (state_proto_.state_case()) {
+    case rmad::RmadState::kUpdateDeviceInfo:
+      std::move(callback).Run(CreateUpdateDeviceInfoStateProperty());
+      return;
+    default:
+      std::move(callback).Run(mojom::StatePropertyResult::NewError(
+          mojom::StatePropertyError::kUnsupported));
+      return;
+  }
+  NOTREACHED();
+}
+
+mojom::StatePropertyResultPtr
+ShimlessRmaService::CreateUpdateDeviceInfoStateProperty() {
+  return mojom::StatePropertyResult::NewProperty(
+      mojom::StateProperty::NewUpdateDeviceInfoStateProperty(
+          mojom::UpdateDeviceInfoStateProperty::New(
+              /*serial_number_modifiable=*/state_proto_.update_device_info()
+                  .serial_number_modifiable(),
+              /*region_modifiable=*/
+              state_proto_.update_device_info().region_modifiable(),
+              /*sku_modifiable=*/
+              state_proto_.update_device_info().sku_modifiable(),
+              /*custom_label_modifiable=*/
+              state_proto_.update_device_info().custom_label_modifiable(),
+              /*dram_part_number_modifiable=*/
+              state_proto_.update_device_info().dram_part_number_modifiable(),
+              /*feature_level_modifiable=*/
+              state_proto_.update_device_info().feature_level_modifiable(),
+              /*customized_serial_number_naming=*/
+              state_proto_.update_device_info()
+                  .customized_serial_number_naming(),
+              /*hide_google_sku=*/
+              state_proto_.update_device_info().hide_google_sku())));
 }
 
 mojom::StateResultPtr ShimlessRmaService::CreateStateResult(
@@ -447,12 +500,11 @@ void ShimlessRmaService::SetWipeDevice(bool should_wipe_device,
   TransitionNextStateGeneric(std::move(callback));
 }
 
-void ShimlessRmaService::ChooseManuallyDisableWriteProtect(
-    ChooseManuallyDisableWriteProtectCallback callback) {
+void ShimlessRmaService::SetManuallyDisableWriteProtect(
+    SetManuallyDisableWriteProtectCallback callback) {
   if (state_proto_.state_case() != rmad::RmadState::kWpDisableMethod) {
-    LOG(ERROR)
-        << "ChooseManuallyDisableWriteProtect called from incorrect state "
-        << state_proto_.state_case();
+    LOG(ERROR) << "SetManuallyDisableWriteProtect called from incorrect state "
+               << state_proto_.state_case();
     std::move(callback).Run(CreateStateResultForInvalidRequest());
     return;
   }
@@ -461,10 +513,10 @@ void ShimlessRmaService::ChooseManuallyDisableWriteProtect(
   TransitionNextStateGeneric(std::move(callback));
 }
 
-void ShimlessRmaService::ChooseRsuDisableWriteProtect(
-    ChooseRsuDisableWriteProtectCallback callback) {
+void ShimlessRmaService::SetRsuDisableWriteProtect(
+    SetRsuDisableWriteProtectCallback callback) {
   if (state_proto_.state_case() != rmad::RmadState::kWpDisableMethod) {
-    LOG(ERROR) << "ChooseRsuDisableWriteProtect called from incorrect state "
+    LOG(ERROR) << "SetRsuDisableWriteProtect called from incorrect state "
                << state_proto_.state_case();
     std::move(callback).Run(CreateStateResultForInvalidRequest());
     return;
@@ -1182,9 +1234,10 @@ void ShimlessRmaService::ExternalDiskState(bool detected) {
 void ShimlessRmaService::HardwareVerificationResult(
     const rmad::HardwareVerificationResult& result) {
   last_hardware_verification_result_ = result;
+  auto hardware_verification_result = ConvertHardwareVerificationResult(result);
   for (auto& observer : hardware_verification_observers_) {
-    observer->OnHardwareVerificationResult(result.is_compliant(),
-                                           result.error_str());
+    observer->OnHardwareVerificationResult(
+        std::move(hardware_verification_result));
   }
 }
 
@@ -1283,11 +1336,12 @@ void ShimlessRmaService::ObserveHardwareVerificationStatus(
     ::mojo::PendingRemote<mojom::HardwareVerificationStatusObserver> observer) {
   hardware_verification_observers_.Add(std::move(observer));
   if (last_hardware_verification_result_) {
+    auto hardware_verification_result = ConvertHardwareVerificationResult(
+        last_hardware_verification_result_.value());
     for (auto& hardware_verification_observer :
          hardware_verification_observers_) {
       hardware_verification_observer->OnHardwareVerificationResult(
-          last_hardware_verification_result_->is_compliant(),
-          last_hardware_verification_result_->error_str());
+          std::move(hardware_verification_result));
     }
   }
 }
@@ -1466,8 +1520,7 @@ void ShimlessRmaService::OnOsUpdateStatusCallback(
       // Added to avoid lint error
       case update_engine::Operation::Operation_INT_MIN_SENTINEL_DO_NOT_USE_:
       case update_engine::Operation::Operation_INT_MAX_SENTINEL_DO_NOT_USE_:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
   OsUpdateProgress(operation, progress, error_code);
@@ -1561,7 +1614,7 @@ void ShimlessRmaService::OnExtractExternalDiagnosticsApp(
 void ShimlessRmaService::InstallLastFound3pDiagnosticsApp(
     InstallLastFound3pDiagnosticsAppCallback callback) {
   if (extracted_3p_diag_swbn_path_.empty() ||
-      extracted_3p_diag_swbn_path_.empty()) {
+      extracted_3p_diag_crx_path_.empty()) {
     LOG(ERROR) << "Should call GetInstallable3pDiagnosticsAppPath first";
     std::move(callback).Run(nullptr);
     return;

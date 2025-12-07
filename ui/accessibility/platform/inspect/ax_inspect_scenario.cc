@@ -4,6 +4,9 @@
 
 #include "ui/accessibility/platform/inspect/ax_inspect_scenario.h"
 
+#include <string_view>
+
+#include "base/containers/fixed_flat_map.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -16,7 +19,7 @@
 namespace ui {
 
 AXInspectScenario::AXInspectScenario(
-    const std::vector<ui::AXPropertyFilter>& default_filters)
+    const std::vector<AXPropertyFilter>& default_filters)
     : property_filters(default_filters) {}
 AXInspectScenario::AXInspectScenario(AXInspectScenario&&) = default;
 AXInspectScenario::~AXInspectScenario() = default;
@@ -26,7 +29,7 @@ AXInspectScenario& AXInspectScenario::operator=(AXInspectScenario&&) = default;
 std::optional<AXInspectScenario> AXInspectScenario::From(
     const std::string& directive_prefix,
     const base::FilePath& scenario_path,
-    const std::vector<ui::AXPropertyFilter>& default_filters) {
+    const std::vector<AXPropertyFilter>& default_filters) {
   std::vector<std::string> lines;
   std::string file_contents;
   {
@@ -46,10 +49,11 @@ std::optional<AXInspectScenario> AXInspectScenario::From(
     size_t scenario_end = file_contents.find("-->", scenario_start);
     if (scenario_start != std::string::npos &&
         scenario_end != std::string::npos) {
-      auto start = file_contents.begin() + scenario_start;
-      auto end = start + (scenario_end - scenario_start);
-      lines = base::SplitString(base::MakeStringPiece(start, end), "\n",
-                                base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+      std::string_view scenario =
+          std::string_view(file_contents)
+              .substr(scenario_start, scenario_end - scenario_start);
+      lines = base::SplitString(scenario, "\n", base::TRIM_WHITESPACE,
+                                base::SPLIT_WANT_ALL);
     }
   } else {
     // Otherwise, assume the whole file contains only directives
@@ -63,7 +67,7 @@ std::optional<AXInspectScenario> AXInspectScenario::From(
 AXInspectScenario AXInspectScenario::From(
     const std::string& directive_prefix,
     const std::vector<std::string>& lines,
-    const std::vector<ui::AXPropertyFilter>& default_filters) {
+    const std::vector<AXPropertyFilter>& default_filters) {
   AXInspectScenario scenario(default_filters);
   Directive directive = kNone;
   // Directives have format of @directive:value[..value], value per line.
@@ -75,28 +79,39 @@ AXInspectScenario AXInspectScenario::From(
     }
 
     // Implicit directive case: use the most recent directive.
-    if (!base::StartsWith(line, "@")) {
+    if (!line.starts_with("@")) {
       if (directive != kNone) {
-        std::string value(base::TrimWhitespaceASCII(line, base::TRIM_ALL));
-        if (!value.empty())
-          scenario.ProcessDirective(directive, value);
+        std::string_view trimmed_value =
+            base::TrimWhitespaceASCII(line, base::TRIM_ALL);
+        if (!trimmed_value.empty()) {
+          scenario.ProcessDirective(directive, trimmed_value);
+        }
       }
       continue;
     }
 
     // Parse directive.
-    auto directive_end_pos = line.find_first_of(':');
-    if (directive_end_pos == std::string::npos)
-      continue;
+    auto parts = base::SplitStringOnce(line, ':');
+    std::string name;
+    std::string value;
 
-    directive =
-        ParseDirective(directive_prefix, line.substr(0, directive_end_pos));
+    if (parts) {
+      auto [directive_name, directive_value] = *parts;
+      name = directive_name;
+      value = directive_value;
+    } else {
+      // Handle directives without colon/value (like @EVENTS-TREE-DUMP)
+      name = line;
+      value = "";
+    }
+
+    directive = ParseDirective(directive_prefix, name);
     if (directive == kNone)
       continue;
 
-    std::string value = line.substr(directive_end_pos + 1);
-    if (!value.empty())
+    if (!value.empty() || directive == kEventsTreeDump) {
       scenario.ProcessDirective(directive, value);
+    }
   }
   return scenario;
 }
@@ -104,70 +119,79 @@ AXInspectScenario AXInspectScenario::From(
 // static
 AXInspectScenario::Directive AXInspectScenario::ParseDirective(
     const std::string& directive_prefix,
-    const std::string& directive) {
-  if (directive == "@NO-LOAD-EXPECTED")
-    return kNoLoadExpected;
-  if (directive == "@WAIT-FOR" || directive == directive_prefix + "WAIT-FOR")
-    return kWaitFor;
-  if (directive == "@EXECUTE-AND-WAIT-FOR")
-    return kExecuteAndWaitFor;
-  if (directive == "@DEFAULT-ACTION-ON")
-    return kDefaultActionOn;
-  if (directive == directive_prefix + "ALLOW" || directive == "@ALLOW")
-    return kPropertyFilterAllow;
-  if (directive == directive_prefix + "ALLOW-EMPTY" ||
-      directive == "@ALLOW-EMPTY") {
-    return kPropertyFilterAllowEmpty;
-  }
-  if (directive == directive_prefix + "DENY" || directive == "@DENY")
-    return kPropertyFilterDeny;
-  if (directive == directive_prefix + "SCRIPT" || directive == "@SCRIPT")
-    return kScript;
-  if (directive == directive_prefix + "DENY-NODE" || directive == "@DENY-NODE")
-    return kNodeFilter;
+    std::string_view directive) {
+  static constexpr auto kMapping =
+      base::MakeFixedFlatMap<std::string_view, Directive>(
+          {{"NO-LOAD-EXPECTED", kNoLoadExpected},
+           {"WAIT-FOR", kWaitFor},
+           {"EXECUTE-AND-WAIT-FOR", kExecuteAndWaitFor},
+           {"DEFAULT-ACTION-ON", kDefaultActionOn},
+           {"ALLOW", kPropertyFilterAllow},
+           {"ALLOW-EMPTY", kPropertyFilterAllowEmpty},
+           {"DENY", kPropertyFilterDeny},
+           {"SCRIPT", kScript},
+           {"DENY-NODE", kNodeFilter},
+           {"EVENTS-TREE-DUMP", kEventsTreeDump}});
 
-  return kNone;
+  if (!directive.starts_with('@')) {
+    return kNone;
+  }
+
+  auto trimmed_directive = directive.starts_with(directive_prefix)
+                               ? directive.substr(directive_prefix.size())
+                               : directive.substr(1);
+
+  auto it = kMapping.find(trimmed_directive);
+
+  return it != kMapping.end() ? it->second : kNone;
 }
 
 void AXInspectScenario::ProcessDirective(Directive directive,
-                                         const std::string& value) {
+                                         std::string_view value) {
   switch (directive) {
     case kNoLoadExpected:
-      no_load_expected.push_back(value);
+      no_load_expected.push_back(std::string(value));
       break;
     case kWaitFor:
-      wait_for.push_back(value);
+      wait_for.push_back(std::string(value));
       break;
     case kExecuteAndWaitFor:
-      execute.push_back(value);
+      execute.push_back(std::string(value));
       break;
     case kDefaultActionOn:
-      default_action_on.push_back(value);
+      default_action_on.push_back(std::string(value));
       break;
     case kPropertyFilterAllow:
-      property_filters.emplace_back(value, AXPropertyFilter::ALLOW);
+      property_filters.emplace_back(std::string(value),
+                                    AXPropertyFilter::ALLOW);
       break;
     case kPropertyFilterAllowEmpty:
-      property_filters.emplace_back(value, AXPropertyFilter::ALLOW_EMPTY);
+      property_filters.emplace_back(std::string(value),
+                                    AXPropertyFilter::ALLOW_EMPTY);
       break;
     case kPropertyFilterDeny:
-      property_filters.emplace_back(value, AXPropertyFilter::DENY);
+      property_filters.emplace_back(std::string(value), AXPropertyFilter::DENY);
       break;
     case kScript:
-      script_instructions.emplace_back(value);
+      script_instructions.emplace_back(std::string(value));
       break;
     case kNodeFilter: {
-      const auto& parts = base::SplitString(value, "=", base::TRIM_WHITESPACE,
-                                            base::SPLIT_WANT_NONEMPTY);
-      if (parts.size() == 2)
-        node_filters.emplace_back(parts[0], parts[1]);
-      else
+      auto parts = base::SplitStringOnce(value, '=');
+      if (parts) {
+        node_filters.emplace_back(std::string(base::TrimWhitespaceASCII(
+                                      parts->first, base::TRIM_ALL)),
+                                  std::string(base::TrimWhitespaceASCII(
+                                      parts->second, base::TRIM_ALL)));
+      } else {
         LOG(WARNING) << "Failed to parse node filter " << value;
+      }
       break;
     }
-    default:
-      NOTREACHED_IN_MIGRATION() << "Unrecognized " << directive << " directive";
+    case kEventsTreeDump:
+      events_tree_dump_enabled = true;
       break;
+    default:
+      NOTREACHED() << "Unrecognized " << directive << " directive";
   }
 }
 

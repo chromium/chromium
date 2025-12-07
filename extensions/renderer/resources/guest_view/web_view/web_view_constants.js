@@ -19,21 +19,21 @@ var WebViewConstants = {
   ATTRIBUTE_SRC: 'src',
 
   // Error/warning messages.
-  ERROR_MSG_ALREADY_NAVIGATED: '<webview>: ' +
+  ERROR_MSG_ALREADY_NAVIGATED:
       'The object has already navigated, so its partition cannot be changed.',
-  ERROR_MSG_CANNOT_INJECT_SCRIPT: '<webview>: ' +
+  ERROR_MSG_CANNOT_INJECT_SCRIPT:
       'Script cannot be injected into content until the page has loaded.',
-  ERROR_MSG_DIALOG_ACTION_ALREADY_TAKEN: '<webview>: ' +
+  ERROR_MSG_DIALOG_ACTION_ALREADY_TAKEN:
       'An action has already been taken for this "dialog" event.',
-  ERROR_MSG_NEWWINDOW_ACTION_ALREADY_TAKEN: '<webview>: ' +
+  ERROR_MSG_INVALID_PARTITION_ATTRIBUTE: 'Invalid partition attribute.',
+  ERROR_MSG_NEWWINDOW_ACTION_ALREADY_TAKEN:
       'An action has already been taken for this "newwindow" event.',
-  ERROR_MSG_PERMISSION_ACTION_ALREADY_TAKEN: '<webview>: ' +
+  ERROR_MSG_PERMISSION_ACTION_ALREADY_TAKEN:
       'Permission has already been decided for this "permissionrequest" event.',
-  ERROR_MSG_INVALID_PARTITION_ATTRIBUTE: '<webview>: ' +
-      'Invalid partition attribute.',
-  WARNING_MSG_DIALOG_REQUEST_BLOCKED: '<webview>: %1 %2 dialog was blocked.',
-  WARNING_MSG_NEWWINDOW_REQUEST_BLOCKED: '<webview>: A new window was blocked.',
-  WARNING_MSG_PERMISSION_REQUEST_BLOCKED: '<webview>: ' +
+  WARNING_MSG_DIALOG_REQUEST_BLOCKED: '%1 %2 dialog was blocked.',
+  WARNING_MSG_LOAD_ABORTED: 'The load has aborted with error %1: %2. url: %3',
+  WARNING_MSG_NEWWINDOW_REQUEST_BLOCKED: 'A new window was blocked.',
+  WARNING_MSG_PERMISSION_REQUEST_BLOCKED:
       'The permission request for "%1" has been denied.'
 };
 

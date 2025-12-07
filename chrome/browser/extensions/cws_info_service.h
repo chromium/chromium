@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_CWS_INFO_SERVICE_H_
 
 #include <optional>
+#include <string>
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
@@ -13,7 +14,10 @@
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class PrefService;
 class Profile;
@@ -30,7 +34,6 @@ class ExtensionPrefs;
 class ExtensionRegistry;
 class BatchGetStoreMetadatasResponse;
 
-BASE_DECLARE_FEATURE(kCWSInfoService);
 BASE_DECLARE_FEATURE(kCWSInfoFastCheck);
 
 // This is an interface class to allow for easy mocking.
@@ -56,10 +59,10 @@ class CWSInfoServiceInterface {
     bool is_present = false;
     // This extension is currently published and downloadable from CWS.
     bool is_live = false;
-    // The last time the extension was updated in CWS. Only valid if |is_live|
+    // The last time the extension was updated in CWS. Only valid if `is_live`
     // is true.
     base::Time last_update_time;
-    // The following fields are only valid if |is_present| is true.
+    // The following fields are only valid if `is_present` is true.
     // If the extension has been taken down, i.e., no longer live, this
     // represents the violation type that caused the take-down.
     CWSViolationType violation_type = CWSViolationType::kNone;
@@ -135,15 +138,15 @@ class CWSInfoService : public CWSInfoServiceInterface, public KeyedService {
   // Only used for testing to create a fake derived class.
   CWSInfoService();
 
-  // This method schedules an info check after specified |seconds|.
+  // This method schedules an info check after specified `seconds`.
   void ScheduleCheck(int seconds);
 
   // This method prepares request protos to fetch CWS metadata. A CWS fetch
   // operation can consist of multiple request protos when the number of
   // installed extensions exceeds the max ids supported per request (100). The
   // request protos, extension ids and other data associated with the fetch are
-  // returned in a |FetchContext|. The method also outputs a
-  // |new_info_requested| that indicates if at least one of the installed
+  // returned in a `FetchContext`. The method also outputs a
+  // `new_info_requested` that indicates if at least one of the installed
   // extensions is missing CWS metadata information.
   struct FetchContext;
   std::unique_ptr<FetchContext> CreateRequests(
@@ -153,7 +156,7 @@ class CWSInfoService : public CWSInfoServiceInterface, public KeyedService {
   void SendRequest();
 
   // Handles the server response associated with a single network request.
-  void OnResponseReceived(std::unique_ptr<std::string> response);
+  void OnResponseReceived(std::optional<std::string> response);
 
   // Saves data to prefs if the response data is different from the saved data.
   // Returns true if the response data is saved, false otherwise.

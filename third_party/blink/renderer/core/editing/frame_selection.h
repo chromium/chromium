@@ -32,17 +32,20 @@
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/dom/synchronous_mutation_observer.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/editing/set_selection_options.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
+#include "third_party/blink/renderer/core/layout/inline/caret_rect.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
+#include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
+class CharacterData;
+class Document;
 class EffectPaintPropertyNode;
 class Element;
 class FrameCaret;
@@ -54,15 +57,16 @@ class LayoutBlock;
 class LayoutSelection;
 class LayoutText;
 class LocalFrame;
+class NodeWithIndex;
 class PhysicalBoxFragment;
 class Range;
 class SelectionEditor;
+class Text;
 class TextIteratorBehavior;
 enum class SelectionModifyAlteration;
 enum class SelectionModifyDirection;
 enum class SelectionState;
 struct PaintInvalidatorContext;
-struct PhysicalOffset;
 struct PhysicalRect;
 
 enum RevealExtentOption { kRevealExtent, kDoNotRevealExtent };
@@ -128,8 +132,7 @@ struct LayoutTextSelectionStatus {
 };
 
 class CORE_EXPORT FrameSelection final
-    : public GarbageCollected<FrameSelection>,
-      public SynchronousMutationObserver {
+    : public GarbageCollected<FrameSelection> {
  public:
   explicit FrameSelection(LocalFrame&);
   FrameSelection(const FrameSelection&) = delete;
@@ -206,6 +209,9 @@ class CORE_EXPORT FrameSelection final
 
   // Bounds of (possibly transformed) caret in absolute coords
   gfx::Rect AbsoluteCaretBounds() const;
+
+  // Returns the type of caret shape.
+  CaretShape GetCaretShape() const;
 
   // Returns anchor and focus bounds in absolute coords.
   // If the selection range is empty, returns the caret bounds.
@@ -285,6 +291,9 @@ class CORE_EXPORT FrameSelection final
   String SelectedText(const TextIteratorBehavior&) const;
   String SelectedText() const;
   String SelectedTextForClipboard() const;
+  // Returns true if the current selection corresponds to a non-empty visible
+  // text range within this frame.
+  bool HasVisibleText() const;
 
   // This returns last layouted selection bounds of LayoutSelection rather than
   // SelectionEditor keeps.
@@ -318,7 +327,21 @@ class CORE_EXPORT FrameSelection final
   SelectionState ComputePaintingSelectionStateForCursor(
       const InlineCursorPosition& position) const;
 
-  void Trace(Visitor*) const override;
+  // Notifications from the Document.
+  void ContextDestroyed();
+  void DidChangeChildren(const ContainerNode::ChildrenChange& change);
+  void DidMergeTextNodes(const Text& merged_node,
+                         const NodeWithIndex& node_to_be_removed_with_index,
+                         unsigned old_length);
+  void DidSplitTextNode(const Text&);
+  void DidUpdateCharacterData(CharacterData*,
+                              unsigned offset,
+                              unsigned old_length,
+                              unsigned new_length);
+  void NodeChildrenWillBeRemoved(ContainerNode&);
+  void NodeWillBeRemoved(Node&);
+
+  void Trace(Visitor*) const;
 
  private:
   friend class CaretDisplayItemClientTest;
@@ -340,11 +363,6 @@ class CORE_EXPORT FrameSelection final
 
   void MoveRangeSelectionInternal(const SelectionInDOMTree&, TextGranularity);
 
-  // Implementation of |SynchronousMutationObserver| member functions.
-  void ContextDestroyed() final;
-  void NodeChildrenWillBeRemoved(ContainerNode&) final;
-  void NodeWillBeRemoved(Node&) final;
-
   // Returns the range corresponding to a |text_granularity| selection around
   // the caret. Returns a null range if the selection failed, either because
   // the current selection was not a caret or if a |text_granularity| selection
@@ -357,6 +375,7 @@ class CORE_EXPORT FrameSelection final
       WordSide word_side) const;
 
   Member<LocalFrame> frame_;
+  WeakMember<Document> document_;
   const Member<LayoutSelection> layout_selection_;
   const Member<SelectionEditor> selection_editor_;
 

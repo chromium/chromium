@@ -10,6 +10,7 @@
 
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -165,7 +166,7 @@ class UserDataDowngradeBrowserCopyAndCleanTest
               mock_relaunch_callback_->Get());
 
       // Expect that browser startup short-circuits into a relaunch.
-      set_expected_exit_code(chrome::RESULT_CODE_DOWNGRADE_AND_RELAUNCH);
+      set_expected_exit_code(CHROME_RESULT_CODE_DOWNGRADE_AND_RELAUNCH);
 
       // Prepare to check histograms during the restart.
       histogram_tester_ = std::make_unique<base::HistogramTester>();

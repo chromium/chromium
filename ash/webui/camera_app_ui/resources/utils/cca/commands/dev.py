@@ -43,6 +43,7 @@ class _Route(NamedTuple):
 
 
 class RequestHandler:
+
     def __init__(
         self,
         cca_root: str,
@@ -57,6 +58,7 @@ class RequestHandler:
         self.routes = self._build_routes()
 
     def _load_grd_strings(self) -> Dict[str, str]:
+
         def get_message_text_content(message: minidom.Element) -> str:
             pieces = []
             for child in message.childNodes:
@@ -88,11 +90,7 @@ class RequestHandler:
             "is_test_image": True,
             "os_version": "local-dev",
             "textdirection": "ltr",
-            "video_capture_disallowed": False,
-            "timeLapse": True,
-            "auto_qr": True,
-            "digital_zoom": True,
-            "preview_ocr": True,
+            "cca_disallowed": False,
             "super_res": True,
         }
         load_time_data.update(self._load_grd_strings())
@@ -197,6 +195,12 @@ class RequestHandler:
                        for import_name, export_name in exports)
         return js
 
+    def _transform_js_models_load_time_data_js(self, request_path: str,
+                                               js: str) -> str:
+        return _stub_chrome_url(request_path,
+                                js).replace('/strings.m.js',
+                                            '../../strings.m.js')
+
     def _handle_color_css_updater_js(self, request_path: str) -> bytes:
         del request_path  # Unused.
         return (b"export const ColorChangeUpdater = "
@@ -210,6 +214,7 @@ class RequestHandler:
         path: Optional[Union[str, Callable[[str], str]]] = None,
         transform: Optional[Callable[[str, str], str]] = None,
     ) -> bytes:
+
         def calculate_path():
             if callable(path):
                 return path(request_path)
@@ -286,6 +291,15 @@ class RequestHandler:
             ),
             # strings are generated dynamically from grd file.
             _Route("/strings.m.js", self._handle_strings_m_js),
+            # The file includes the only absolute import.
+            _Route(
+                "/js/models/load_time_data.js",
+                functools.partial(
+                    self._handle_static_file,
+                    root=self._tsc_root,
+                    transform=self._transform_js_models_load_time_data_js,
+                ),
+            ),
             # All mojo imports are stubbed.
             _Route(
                 "/js/mojo/type.js",
@@ -308,7 +322,6 @@ class RequestHandler:
             ),
             # These two files are not compiled and need to be served from
             # self.cca_root.
-            _Route("/js/lib/analytics.js", self._handle_static_file),
             _Route("/js/lib/ffmpeg.js", self._handle_static_file),
             # All other .js files.
             _Route(
@@ -339,6 +352,7 @@ class RequestHandler:
 
 
 class DevServerHandler(http.server.SimpleHTTPRequestHandler):
+
     def __init__(
         self,
         handler: RequestHandler,

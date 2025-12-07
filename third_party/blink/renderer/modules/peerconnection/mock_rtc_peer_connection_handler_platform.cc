@@ -38,7 +38,7 @@ webrtc::PeerConnectionInterface::RTCConfiguration DefaultConfiguration() {
 // Having a refcounted helper class allows multiple DummyRTCRtpSenderPlatform to
 // share the same internal states.
 class DummyRtpSenderInternal
-    : public WTF::ThreadSafeRefCounted<DummyRtpSenderInternal> {
+    : public ThreadSafeRefCounted<DummyRtpSenderInternal> {
  private:
   static uintptr_t last_id_;
 
@@ -81,7 +81,8 @@ class DummyRTCRtpSenderPlatform : public RTCRtpSenderPlatform {
     return nullptr;
   }
   uintptr_t Id() const override { return internal_->id(); }
-  rtc::scoped_refptr<webrtc::DtlsTransportInterface> DtlsTransport() override {
+  webrtc::scoped_refptr<webrtc::DtlsTransportInterface> DtlsTransport()
+      override {
     return nullptr;
   }
   webrtc::DtlsTransportInformation DtlsTransportInformation() override {
@@ -174,7 +175,8 @@ class DummyRTCRtpReceiverPlatform : public RTCRtpReceiverPlatform {
     return nullptr;
   }
   uintptr_t Id() const override { return id_; }
-  rtc::scoped_refptr<webrtc::DtlsTransportInterface> DtlsTransport() override {
+  webrtc::scoped_refptr<webrtc::DtlsTransportInterface> DtlsTransport()
+      override {
     return nullptr;
   }
   webrtc::DtlsTransportInformation DtlsTransportInformation() override {
@@ -217,7 +219,7 @@ uintptr_t DummyRTCRtpReceiverPlatform::last_id_ = 0;
 // Having a refcounted helper class allows multiple
 // DummyRTCRtpTransceiverPlatforms to share the same internal states.
 class DummyTransceiverInternal
-    : public WTF::ThreadSafeRefCounted<DummyTransceiverInternal> {
+    : public ThreadSafeRefCounted<DummyTransceiverInternal> {
  private:
   static uintptr_t last_id_;
 
@@ -329,8 +331,7 @@ bool MockRTCPeerConnectionHandlerPlatform::Initialize(
     ExecutionContext*,
     const webrtc::PeerConnectionInterface::RTCConfiguration&,
     WebLocalFrame*,
-    ExceptionState&,
-    RTCRtpTransport*) {
+    ExceptionState&) {
   return true;
 }
 
@@ -426,7 +427,7 @@ MockRTCPeerConnectionHandlerPlatform::RemoveTrack(
   return std::unique_ptr<RTCRtpTransceiverPlatform>(std::move(copy));
 }
 
-rtc::scoped_refptr<webrtc::DataChannelInterface>
+webrtc::scoped_refptr<webrtc::DataChannelInterface>
 MockRTCPeerConnectionHandlerPlatform::CreateDataChannel(
     const String& label,
     const webrtc::DataChannelInit&) {

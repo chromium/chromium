@@ -35,11 +35,11 @@ package google.protobuf;
 import "google/protobuf/source_context.proto";
 import "google/protobuf/type.proto";
 
-option csharp_namespace = "Google.Protobuf.WellKnownTypes";
 option java_package = "com.google.protobuf";
 option java_outer_classname = "ApiProto";
 option java_multiple_files = true;
 option objc_class_prefix = "GPB";
+option csharp_namespace = "Google.Protobuf.WellKnownTypes";
 option go_package = "google.golang.org/protobuf/types/known/apipb";
 
 // Api is a light-weight descriptor for an API Interface.
@@ -51,6 +51,11 @@ option go_package = "google.golang.org/protobuf/types/known/apipb";
 // sometimes simply referred to as "APIs" in other contexts, such as the name of
 // this message itself. See https://cloud.google.com/apis/design/glossary for
 // detailed terminology.
+//
+// New usages of this message as an alternative to ServiceDescriptorProto are
+// strongly discouraged. This message does not reliability preserve all
+// information necessary to model the schema and preserve semantics. Instead
+// make use of FileDescriptorSet which preserves the necessary information.
 message Api {
   // The fully qualified name of this interface, including package name
   // followed by the interface's simple name.
@@ -82,7 +87,6 @@ message Api {
   // be omitted. Zero major versions must only be used for
   // experimental, non-GA interfaces.
   //
-  //
   string version = 4;
 
   // Source context for the protocol buffer service represented by this
@@ -94,9 +98,17 @@ message Api {
 
   // The source syntax of the service.
   Syntax syntax = 7;
+
+  // The source edition string, only valid when syntax is SYNTAX_EDITIONS.
+  string edition = 8;
 }
 
 // Method represents a method of an API interface.
+//
+// New usages of this message as an alternative to MethodDescriptorProto are
+// strongly discouraged. This message does not reliability preserve all
+// information necessary to model the schema and preserve semantics. Instead
+// make use of FileDescriptorSet which preserves the necessary information.
 message Method {
   // The simple name of this method.
   string name = 1;
@@ -117,7 +129,16 @@ message Method {
   repeated Option options = 6;
 
   // The source syntax of this method.
-  Syntax syntax = 7;
+  //
+  // This field should be ignored, instead the syntax should be inherited from
+  // Api. This is similar to Field and EnumValue.
+  Syntax syntax = 7 [deprecated = true];
+
+  // The source edition string, only valid when syntax is SYNTAX_EDITIONS.
+  //
+  // This field should be ignored, instead the edition should be inherited from
+  // Api. This is similar to Field and EnumValue.
+  string edition = 8 [deprecated = true];
 }
 
 // Declares an API Interface to be included in this interface. The including

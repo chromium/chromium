@@ -1,88 +1,86 @@
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
-  const {page, session, dp} = await testRunner.startBlank(
-      `Verifies that navigating from a OOPIF to in-process iframe sets the right sessionId.\n`);
-
-  async function enableNetwork(network) {
-    await network.clearBrowserCache();
-    await network.setCacheDisabled({cacheDisabled: true});
-    await network.enable();
-  }
-
-  const NETWORK_REQUEST_EVENTS = [
-    'Network.requestWillBeSent',
-    'Network.requestWillBeSentExtraInfo',
-    'Network.responseReceived',
-    'Network.responseReceivedExtraInfo',
-  ];
-
-  const originalDispatch = DevToolsAPI.dispatchMessage;
-  const networkListeners = new Set();
-  const eventsByRequestId = {};
-  DevToolsAPI.dispatchMessage = function(message) {
-    const obj = JSON.parse(message);
-    if (!NETWORK_REQUEST_EVENTS.includes(obj.method)) {
-      originalDispatch(message);
-      return;
-    }
-    const requestId = obj.params.requestId;
-    eventsByRequestId[requestId] = eventsByRequestId[requestId] || [];
-    for (const existingEvent of eventsByRequestId[requestId]) {
-      if (existingEvent.sessionId !== obj.sessionId) {
-        testRunner.log(`Session ID mismatch between ${
-            JSON.stringify(existingEvent)} and ${message}`);
-      }
-    }
-    eventsByRequestId[requestId].push(obj);
-    for (const listener of networkListeners) listener(obj);
-  };
-
-  function networkRequestEvents(numRequests) {
-    let numPendingRequests = numRequests;
-    return new Promise((resolve) => {
-      const listener = (event) => {
-        if (eventsByRequestId[event.params.requestId].length ==
-            NETWORK_REQUEST_EVENTS.length) {
-          delete eventsByRequestId[event.params.requestId];
-          --numPendingRequests;
-          if (numPendingRequests == 0) {
-            networkListeners.delete(listener);
-            resolve();
-          }
-        }
-      };
-      networkListeners.add(listener);
-    });
-  }
+  const {session, dp} = await testRunner.startBlank(
+      `Verifies that ExtraInfo CDP events are generated when navigating from a OOPIF to in-process iframe.\n`);
 
   await dp.Page.enable();
-  await enableNetwork(dp.Network);
+  await dp.Page.setLifecycleEventsEnabled({ enabled: true });
+  let numberOfLoads = 0;
+  dp.Page.onLifecycleEvent(onLifecycleEvent);
+  await dp.Network.clearBrowserCache();
+  await dp.Network.setCacheDisabled({cacheDisabled: true});
+  await dp.Network.enable();
   await dp.Target.setAutoAttach({autoAttach: true, waitForDebuggerOnStart: true, flatten: true});
 
+  const iFrameEvents = new Map();
+  const mainEvents = new Map();
+  for (eventName of ['onRequestWillBeSent', 'onRequestWillBeSentExtraInfo', 'onResponseReceived', 'onResponseReceivedExtraInfo']) {
+    mainEvents.set(eventName, 0);
+    iFrameEvents.set(eventName, 0);
+  }
 
-  session.navigate('resources/page-out.html');
-  await Promise.all([
-    dp.Target.onceAttachedToTarget().then(async (event) => {
-      const dp2 = session.createChild(event.params.sessionId).protocol;
-      await dp2.Page.enable();
-      await enableNetwork(dp2.Network);
-      await dp2.Runtime.runIfWaitingForDebugger();
-    }),
-    networkRequestEvents(2),  // One request for the main frame and one for the iframe
-  ]);
-
-  testRunner.log(
-      'Loaded page-out with OOPIF, setting iframe src to in-process URL.');
-
-  session.evaluate(`document.getElementById('page-iframe').src =
-      'http://127.0.0.1:8000/inspector-protocol/network/resources/inner-iframe.html'`);
-  await networkRequestEvents(1);
-  testRunner.log('Got expected iframe events');
-
-  for (const events in Object.values(eventsByRequestId)) {
-    for (const event of events) {
-      testRunner.log(event, 'Unexpected event');
+  function verifyEventCount(eventName, totalCount, mainCount) {
+    if (totalCount !== mainEvents.get(eventName) + iFrameEvents.get(eventName)) {
+      testRunner.log(`Unexpected number of '${eventName}' events received:`);
+      testRunner.log(`Actual: ${mainEvents.get(eventName) + iFrameEvents.get(eventName)}, Expected: ${totalCount}`);
+    }
+    if (mainCount !== undefined) {
+      if (mainCount !== mainEvents.get(eventName)) {
+        testRunner.log(`Unexpected number of '${eventName}' events received on main frame:`);
+        testRunner.log(`Actual: ${mainEvents.get(eventName)}, Expected: ${mainCount}`);
+      }
+      if (totalCount - mainCount !== iFrameEvents.get(eventName)) {
+        testRunner.log(`Unexpected number of '${eventName}' events received on iframe:`);
+        testRunner.log(`Actual: ${iFrameEvents.get(eventName)}, Expected: ${totalCount - mainCount}`);
+      }
     }
   }
 
-  testRunner.completeTest();
+  function hook(network, events) {
+    network.onRequestWillBeSent(() => events.set('onRequestWillBeSent', events.get('onRequestWillBeSent') + 1));
+    network.onResponseReceived(() => events.set('onResponseReceived', events.get('onResponseReceived') + 1));
+    network.onRequestWillBeSentExtraInfo(() => events.set('onRequestWillBeSentExtraInfo', events.get('onRequestWillBeSentExtraInfo') + 1));
+    network.onResponseReceivedExtraInfo(() => events.set('onResponseReceivedExtraInfo', events.get('onResponseReceivedExtraInfo') + 1));
+  }
+
+  dp.Target.onAttachedToTarget(async event => {
+   const dp2 = session.createChild(event.params.sessionId).protocol;
+   await dp2.Page.enable();
+   await dp2.Page.setLifecycleEventsEnabled({ enabled: true });
+   dp2.Page.onLifecycleEvent(onLifecycleEvent);
+   await dp2.Network.clearBrowserCache();
+   await dp2.Network.setCacheDisabled({cacheDisabled: true});
+   await dp2.Network.enable();
+   hook(dp2.Network, iFrameEvents);
+   await dp2.Runtime.runIfWaitingForDebugger();
+  });
+
+  hook(dp.Network, mainEvents);
+  await session.navigate('resources/page-out.html');
+
+  async function onLifecycleEvent(event) {
+    if (event.params.name !== 'load') return;
+    numberOfLoads++;
+    if (numberOfLoads === 4) {
+      verifyEventCount('onRequestWillBeSent', 3, 2);
+      verifyEventCount('onResponseReceived', 3, 2);
+      // `ExtraInfo`-events are usually generated before the navigation is committed, and the `ExtraInfo`-events are sent for the OOPIF-target.
+      // But there is no guarantee for this ordering, and sometimes the navigation is committed first, which causes the destruction of the
+      // OOPIF's `DevToolsRenderAgentHost`. In this case, the `ExtraInfo`-events are sent via the main frame's `DevToolsAgentHost` instead.
+      verifyEventCount('onRequestWillBeSentExtraInfo', 3);
+      verifyEventCount('onResponseReceivedExtraInfo', 3);
+
+      testRunner.log('In-process iframe loading complete.');
+      testRunner.completeTest();
+    }
+    if (numberOfLoads === 2) {
+      verifyEventCount('onRequestWillBeSent', 2, 2);
+      verifyEventCount('onResponseReceived', 2, 2);
+      verifyEventCount('onRequestWillBeSentExtraInfo', 2, 2);
+      verifyEventCount('onResponseReceivedExtraInfo', 2, 2);
+
+      testRunner.log('Loaded page-out with OOPIF, setting iframe src to in-process URL.');
+      await session.evaluate(`document.getElementById('page-iframe').src =
+        'http://127.0.0.1:8000/inspector-protocol/network/resources/inner-iframe.html'`);
+    }
+  }
 })

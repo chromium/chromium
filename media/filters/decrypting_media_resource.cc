@@ -30,7 +30,6 @@ DecryptingMediaResource::DecryptingMediaResource(
       media_log_(media_log),
       task_runner_(task_runner) {
   DCHECK(media_resource);
-  DCHECK_EQ(MediaResource::Type::kStream, media_resource->GetType());
   DCHECK(cdm_context_);
   DCHECK(cdm_context_->GetDecryptor());
   DCHECK(cdm_context_->GetDecryptor()->CanAlwaysDecrypt());
@@ -39,11 +38,6 @@ DecryptingMediaResource::DecryptingMediaResource(
 }
 
 DecryptingMediaResource::~DecryptingMediaResource() = default;
-
-MediaResource::Type DecryptingMediaResource::GetType() const {
-  DCHECK_EQ(MediaResource::Type::kStream, media_resource_->GetType());
-  return MediaResource::Type::kStream;
-}
 
 std::vector<DemuxerStream*> DecryptingMediaResource::GetAllStreams() {
   if (streams_.size()) {

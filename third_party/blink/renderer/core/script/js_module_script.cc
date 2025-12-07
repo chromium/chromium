@@ -24,11 +24,23 @@ JSModuleScript* JSModuleScript::Create(
     Modulator* modulator,
     const ScriptFetchOptions& options,
     const TextPosition& start_position) {
+  // Note: this needs to be set here so modulator->IsScriptingDisabled() below
+  //       has access to the correct context information.
+  // TODO(crbug.com/371004128): this seems wrong; `IsScriptingDisabled()` should
+  //       be modified so that it uses the correct ScriptState internally.
+  ScriptState* script_state = modulator->GetScriptState();
+  ScriptState::Scope scope(script_state);
+
   // <spec step="1">If scripting is disabled for settings's responsible browsing
   // context, then set source to the empty string.</spec>
+  //
+  // The `static_cast` is added to avoid copy construction. Without
+  // `static_cast`, we'd create an temporary object either
+  // `CopyWithClearedSourceText()` or a copy of `original_params`.
   const ModuleScriptCreationParams& params =
       modulator->IsScriptingDisabled()
-          ? original_params.CopyWithClearedSourceText()
+          ? static_cast<const ModuleScriptCreationParams&>(
+                original_params.CopyWithClearedSourceText())
           : original_params;
 
   // <spec step="2">Let script be a new module script that this algorithm will
@@ -40,16 +52,13 @@ JSModuleScript* JSModuleScript::Create(
 
   // <spec step="7">Let result be ParseModule(source, settings's Realm,
   // script).</spec>
-  ScriptState* script_state = modulator->GetScriptState();
-  ScriptState::Scope scope(script_state);
   v8::Isolate* isolate = script_state->GetIsolate();
-  ExceptionState exception_state(isolate, v8::ExceptionContext::kOperation,
-                                 "JSModuleScript", "Create");
+  v8::TryCatch try_catch(isolate);
 
   ModuleRecordProduceCacheData* produce_cache_data = nullptr;
 
   v8::Local<v8::Module> result = ModuleRecord::Compile(
-      script_state, params, options, start_position, exception_state,
+      script_state, params, options, start_position,
       modulator->GetV8CacheOptions(), &produce_cache_data);
 
   // CreateInternal processes Steps 4 and 8-10.
@@ -63,12 +72,11 @@ JSModuleScript* JSModuleScript::Create(
       params.BaseURL(), options, start_position, produce_cache_data);
 
   // <spec step="8">If result is a list of errors, then:</spec>
-  if (exception_state.HadException()) {
+  if (try_catch.HasCaught()) {
     DCHECK(result.IsEmpty());
 
     // <spec step="8.1">Set script's parse error to result[0].</spec>
-    v8::Local<v8::Value> error = exception_state.GetException();
-    exception_state.ClearException();
+    v8::Local<v8::Value> error = try_catch.Exception();
     script->SetParseErrorAndClearRecord(ScriptValue(isolate, error));
 
     // <spec step="8.2">Return script.</spec>
@@ -87,7 +95,7 @@ JSModuleScript* JSModuleScript::Create(
     if (requested.HasInvalidImportAttributeKey(&failure_reason)) {
       // <spec step="9.1.1">Let error be a new SyntaxError exception.</spec>
       error = V8ThrowException::CreateSyntaxError(
-          isolate, "Invalid attribute key \"" + failure_reason + "\".");
+          isolate, StrCat({"Invalid attribute key \"", failure_reason, "\"."}));
 
       // <spec step="9.2">Resolve a module specifier given script and
       // requested.[[Specifier]], catching any exceptions.</spec>
@@ -96,8 +104,8 @@ JSModuleScript* JSModuleScript::Create(
                                              &failure_reason)
                     .IsValid()) {
       error = V8ThrowException::CreateTypeError(
-          isolate, "Failed to resolve module specifier \"" +
-                       requested.specifier + "\". " + failure_reason);
+          isolate, StrCat({"Failed to resolve module specifier \"",
+                           requested.specifier, "\". ", failure_reason}));
       // <spec step="9.4">Let moduleType be the result of running the module
       // type from module request steps given requested.</spec>
       //
@@ -107,8 +115,8 @@ JSModuleScript* JSModuleScript::Create(
                ModuleType::kInvalid) {
       // <spec step="9.5.1">Let error be a new TypeError exception.</spec>
       error = V8ThrowException::CreateTypeError(
-          isolate, "\"" + requested.GetModuleTypeString() +
-                       "\" is not a valid module type.");
+          isolate, StrCat({"\"", requested.GetModuleTypeString(),
+                           "\" is not a valid module type."}));
     }
 
     if (!error.IsEmpty()) {

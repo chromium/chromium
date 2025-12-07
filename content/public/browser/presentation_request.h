@@ -28,10 +28,8 @@ struct CONTENT_EXPORT PresentationRequest {
   PresentationRequest(const PresentationRequest& other);
   PresentationRequest& operator=(const PresentationRequest& other);
 
-  bool operator==(const PresentationRequest& other) const;
-  bool operator!=(const PresentationRequest& other) const {
-    return !(*this == other);
-  }
+  friend bool operator==(const PresentationRequest&,
+                         const PresentationRequest&) = default;
 
   // ID of RenderFrameHost that initiated the request.
   GlobalRenderFrameHostId render_frame_host_id;

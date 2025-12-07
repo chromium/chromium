@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/service/transform_feedback_manager.h"
 
+#include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "gpu/command_buffer/service/buffer_manager.h"
 #include "ui/gl/gl_version_info.h"
@@ -122,8 +123,7 @@ bool TransformFeedback::GetVerticesNeededForDraw(GLenum mode,
           checked_primcount * (checked_count - checked_count % 2);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
     case GL_POINTS:
       checked_vertices += checked_primcount * checked_count;
   }

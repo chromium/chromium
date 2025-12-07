@@ -49,6 +49,7 @@ dictionary MediaTrackSupportedConstraints {
 
     // W3C Media Capture Extensions
     [RuntimeEnabled=MediaCaptureBackgroundBlur] boolean backgroundBlur = true;
+    [RuntimeEnabled=MediaCaptureCameraControls] boolean backgroundSegmentationMask = true;
     [RuntimeEnabled=MediaCaptureCameraControls] boolean eyeGazeCorrection = true;
     [RuntimeEnabled=MediaCaptureCameraControls] boolean faceFraming = true;
 
@@ -56,4 +57,5 @@ dictionary MediaTrackSupportedConstraints {
     // https://w3c.github.io/mediacapture-screen-share/#extensions-to-mediatracksupportedconstraints
     boolean displaySurface = true;
     boolean suppressLocalAudioPlayback = true;
+    [RuntimeEnabled=RestrictOwnAudio] boolean restrictOwnAudio = true;
 };

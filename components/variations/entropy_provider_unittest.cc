@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "components/variations/entropy_provider.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <cmath>
 #include <limits>
 #include <memory>
@@ -73,7 +70,7 @@ double GenerateNormalizedMurmurHashEntropy(ValueInRange entropy_source,
 // entropy source values internally to produce each output entropy value.
 class TrialEntropyGenerator {
  public:
-  virtual ~TrialEntropyGenerator() {}
+  virtual ~TrialEntropyGenerator() = default;
   virtual double GenerateEntropyValue() const = 0;
 };
 
@@ -89,7 +86,7 @@ class SHA1EntropyGenerator : public TrialEntropyGenerator {
   SHA1EntropyGenerator(const SHA1EntropyGenerator&) = delete;
   SHA1EntropyGenerator& operator=(const SHA1EntropyGenerator&) = delete;
 
-  ~SHA1EntropyGenerator() override {}
+  ~SHA1EntropyGenerator() override = default;
 
   double GenerateEntropyValue() const override {
     // Use a random UUID + 13 additional bits of entropy to match how the
@@ -118,7 +115,7 @@ class NormalizedMurmurHashEntropyGenerator : public TrialEntropyGenerator {
   NormalizedMurmurHashEntropyGenerator& operator=(
       const NormalizedMurmurHashEntropyGenerator&) = delete;
 
-  ~NormalizedMurmurHashEntropyGenerator() override {}
+  ~NormalizedMurmurHashEntropyGenerator() override = default;
 
   double GenerateEntropyValue() const override {
     return GenerateNormalizedMurmurHashEntropy(
@@ -173,8 +170,9 @@ void PerformEntropyUniformityTest(
           static_cast<double>(i) / kBucketCount;
       const double chi_square =
           ComputeChiSquare(distribution, expected_value_per_bucket);
-      if (chi_square < kChiSquareThreshold)
+      if (chi_square < kChiSquareThreshold) {
         break;
+      }
 
       // If |i == kMaxIterationCount|, the Chi-Square statistic did not
       // converge after |kMaxIterationCount|.
@@ -195,12 +193,12 @@ TEST(EntropyProviderTest, UseOneTimeRandomizationSHA1) {
   // _might_ actually give the same result, but we know that given the
   // particular client_id we use for unit tests they won't.
   SHA1EntropyProvider entropy_provider("client_id");
-  scoped_refptr<base::FieldTrial> trials[] = {
+  auto trials = std::to_array<scoped_refptr<base::FieldTrial>>({
       base::FieldTrialList::FactoryGetFieldTrial("one", 100, "default",
                                                  entropy_provider),
       base::FieldTrialList::FactoryGetFieldTrial("two", 100, "default",
                                                  entropy_provider),
-  };
+  });
 
   for (const scoped_refptr<base::FieldTrial>& trial : trials) {
     for (int j = 0; j < 100; ++j)
@@ -221,12 +219,12 @@ TEST(EntropyProviderTest, UseOneTimeRandomizationNormalizedMurmurHash) {
   // the particular low_entropy_source we use for unit tests they won't.
   NormalizedMurmurHashEntropyProvider entropy_provider(
       {1234, kMaxLowEntropySize});
-  scoped_refptr<base::FieldTrial> trials[] = {
+  auto trials = std::to_array<scoped_refptr<base::FieldTrial>>({
       base::FieldTrialList::FactoryGetFieldTrial("one", 100, "default",
                                                  entropy_provider),
       base::FieldTrialList::FactoryGetFieldTrial("two", 100, "default",
                                                  entropy_provider),
-  };
+  });
 
   for (const scoped_refptr<base::FieldTrial>& trial : trials) {
     for (int j = 0; j < 100; ++j)
@@ -243,12 +241,12 @@ TEST(EntropyProviderTest, UseOneTimeRandomizationWithCustomSeedSHA1) {
   // for one time randomization produce the same group assignments.
   SHA1EntropyProvider entropy_provider("client_id");
   const uint32_t kCustomSeed = 9001;
-  scoped_refptr<base::FieldTrial> trials[] = {
+  auto trials = std::to_array<scoped_refptr<base::FieldTrial>>({
       base::FieldTrialList::FactoryGetFieldTrial("one", 100, "default",
                                                  entropy_provider, kCustomSeed),
       base::FieldTrialList::FactoryGetFieldTrial("two", 100, "default",
                                                  entropy_provider, kCustomSeed),
-  };
+  });
 
   for (const scoped_refptr<base::FieldTrial>& trial : trials) {
     for (int j = 0; j < 100; ++j)
@@ -267,12 +265,12 @@ TEST(EntropyProviderTest,
   NormalizedMurmurHashEntropyProvider entropy_provider(
       {1234, kMaxLowEntropySize});
   const uint32_t kCustomSeed = 9001;
-  scoped_refptr<base::FieldTrial> trials[] = {
+  auto trials = std::to_array<scoped_refptr<base::FieldTrial>>({
       base::FieldTrialList::FactoryGetFieldTrial("one", 100, "default",
                                                  entropy_provider, kCustomSeed),
       base::FieldTrialList::FactoryGetFieldTrial("two", 100, "default",
                                                  entropy_provider, kCustomSeed),
-  };
+  });
 
   for (const scoped_refptr<base::FieldTrial>& trial : trials) {
     for (int j = 0; j < 100; ++j)
@@ -285,8 +283,8 @@ TEST(EntropyProviderTest,
 }
 
 TEST(EntropyProviderTest, SHA1Entropy) {
-  const double results[] = { GenerateSHA1Entropy("hi", "1"),
-                             GenerateSHA1Entropy("there", "1") };
+  const auto results = std::to_array<double>(
+      {GenerateSHA1Entropy("hi", "1"), GenerateSHA1Entropy("there", "1")});
 
   EXPECT_NE(results[0], results[1]);
   for (double result : results) {
@@ -301,9 +299,9 @@ TEST(EntropyProviderTest, SHA1Entropy) {
 }
 
 TEST(EntropyProviderTest, NormalizedMurmurHashEntropy) {
-  const double results[] = {
-      GenerateNormalizedMurmurHashEntropy({1234, kMaxLowEntropySize}, "1"),
-      GenerateNormalizedMurmurHashEntropy({4321, kMaxLowEntropySize}, "1")};
+  const auto results = std::to_array<double>(
+      {GenerateNormalizedMurmurHashEntropy({1234, kMaxLowEntropySize}, "1"),
+       GenerateNormalizedMurmurHashEntropy({4321, kMaxLowEntropySize}, "1")});
 
   EXPECT_NE(results[0], results[1]);
   for (double result : results) {

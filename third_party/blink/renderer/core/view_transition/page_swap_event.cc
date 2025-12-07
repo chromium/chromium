@@ -15,26 +15,24 @@
 #include "third_party/blink/renderer/core/navigation_api/navigation_api.h"
 #include "third_party/blink/renderer/core/view_transition/dom_view_transition.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/uuid.h"
 
 namespace blink {
 namespace {
 
-String TypeToString(mojom::blink::NavigationTypeForNavigationApi type) {
-  static_assert(static_cast<int>(
-                    mojom::blink::NavigationTypeForNavigationApi::kPush) == 0);
-  static_assert(static_cast<int>(
-                    mojom::blink::NavigationTypeForNavigationApi::kTraverse) ==
-                1);
-  static_assert(static_cast<int>(
-                    mojom::blink::NavigationTypeForNavigationApi::kReplace) ==
-                2);
-  static_assert(
-      static_cast<int>(mojom::blink::NavigationTypeForNavigationApi::kReload) ==
-      3);
-
-  DEFINE_STATIC_LOCAL(Vector<String>, names,
-                      ({"push", "traverse", "replace", "reload"}));
-  return names[static_cast<int>(type)];
+V8NavigationType::Enum TypeToEnum(
+    mojom::blink::NavigationTypeForNavigationApi type) {
+  switch (type) {
+    case mojom::blink::NavigationTypeForNavigationApi::kPush:
+      return V8NavigationType::Enum::kPush;
+    case mojom::blink::NavigationTypeForNavigationApi::kTraverse:
+      return V8NavigationType::Enum::kTraverse;
+    case mojom::blink::NavigationTypeForNavigationApi::kReplace:
+      return V8NavigationType::Enum::kReplace;
+    case mojom::blink::NavigationTypeForNavigationApi::kReload:
+      return V8NavigationType::Enum::kReload;
+  }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -46,8 +44,6 @@ PageSwapEvent::PageSwapEvent(
     : Event(event_type_names::kPageswap, Bubbles::kNo, Cancelable::kNo),
       dom_view_transition_(view_transition) {
   CHECK(RuntimeEnabledFeatures::PageSwapEventEnabled());
-  CHECK(!view_transition ||
-        RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled());
   CHECK(!view_transition || page_swap_event_params);
 
   if (page_swap_event_params) {
@@ -77,16 +73,16 @@ PageSwapEvent::PageSwapEvent(
       case mojom::blink::NavigationTypeForNavigationApi::kReplace:
         entry = MakeGarbageCollected<NavigationHistoryEntry>(
             document.domWindow(),
-            /*key=*/WTF::CreateCanonicalUUIDString(),
-            /*id=*/WTF::CreateCanonicalUUIDString(),
+            /*key=*/CreateCanonicalUUIDString(),
+            /*id=*/CreateCanonicalUUIDString(),
             /*url=*/page_swap_event_params->url,
             /*document_sequence_number=*/0,
             /*state=*/nullptr);
     }
 
     activation_ = MakeGarbageCollected<NavigationActivation>();
-    activation_->Update(
-        entry, from, TypeToString(page_swap_event_params->navigation_type));
+    activation_->Update(entry, from,
+                        TypeToEnum(page_swap_event_params->navigation_type));
   }
 }
 

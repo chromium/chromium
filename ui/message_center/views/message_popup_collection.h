@@ -204,6 +204,9 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   virtual void RestartPopupTimers();
   virtual void PausePopupTimers();
 
+  // Whether transform can be used for animation instead of bounds change.
+  virtual bool CanUseTransformForBoundsAnimation() const = 0;
+
   // Stops all the animation and closes all the popups immediately.
   void CloseAllPopupsNow();
 
@@ -291,10 +294,6 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
 
   // Returns the popup which is visually |index_from_top|-th from the top.
   PopupItem* GetPopupItem(size_t index_from_top);
-
-  // Reset |recently_closed_by_user_| to false. Used by
-  // |recently_closed_by_user_timer_|
-  void ResetRecentlyClosedByUser();
 
   // Animation state. See the comment of State.
   State state_ = State::kIdle;

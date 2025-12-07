@@ -7,19 +7,20 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "build/build_config.h"
+#include "chrome/browser/printing/print_preview_test.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/auto_reset.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/values.h"
@@ -49,7 +50,7 @@
 
 namespace printing {
 
-using PrintViewManagerTest = BrowserWithTestWindowTest;
+using PrintViewManagerTest = PrintPreviewTest;
 
 namespace {
 
@@ -329,7 +330,7 @@ class TestPrintViewManagerWin : public PrintViewManagerBase {
   // printing is complete.
   void WaitForCallback() {
     base::RunLoop run_loop;
-    base::AutoReset<base::RunLoop*> auto_reset(&run_loop_, &run_loop);
+    base::AutoReset<raw_ptr<base::RunLoop>> auto_reset(&run_loop_, &run_loop);
     run_loop.Run();
   }
 
@@ -343,19 +344,17 @@ class TestPrintViewManagerWin : public PrintViewManagerBase {
   }
   void SetupScriptedPrintPreview(
       SetupScriptedPrintPreviewCallback callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
-  void ShowScriptedPrintPreview(bool is_modifiable) override {
-    NOTREACHED_IN_MIGRATION();
-  }
+  void ShowScriptedPrintPreview(bool is_modifiable) override { NOTREACHED(); }
   void RequestPrintPreview(
       mojom::RequestPrintPreviewParamsPtr params) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void CheckForCancel(int32_t preview_ui_id,
                       int32_t request_id,
                       CheckForCancelCallback callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
  private:
@@ -363,9 +362,7 @@ class TestPrintViewManagerWin : public PrintViewManagerBase {
     return static_cast<TestPrintJobWin*>(print_job_.get());
   }
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION base::RunLoop* run_loop_ = nullptr;
+  raw_ptr<base::RunLoop> run_loop_ = nullptr;
 };
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -446,7 +443,7 @@ TEST_F(PrintViewManagerTest, PostScriptHasCorrectOffsets) {
       test::GetPrintTicket(mojom::PrinterType::kLocal);
   const char kTestData[] = "abc";
   auto print_data = base::MakeRefCounted<base::RefCountedStaticMemory>(
-      kTestData, sizeof(kTestData));
+      base::as_byte_span(kTestData));
   PrinterHandler::PrintCallback callback =
       base::BindOnce(&TestPrintViewManagerWin::FakePrintCallback,
                      base::Unretained(print_view_manager.get()));

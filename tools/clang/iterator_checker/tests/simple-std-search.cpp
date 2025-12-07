@@ -6,8 +6,6 @@
 
 void StdSearchValidIterator(const std::vector<int>& v, std::vector<int>& p) {
   auto it = std::search(std::begin(v), std::end(v), std::begin(p), std::end(p));
-  // TODO: The error `Potentially invalid iterator comparison` shouldn't be
-  // emitted here.
   if (it != std::end(v)) {
     *it;  // Valid.
   }
@@ -16,4 +14,9 @@ void StdSearchValidIterator(const std::vector<int>& v, std::vector<int>& p) {
 void StdSearchInvalidIterator(const std::vector<int>& v, std::vector<int>& p) {
   auto it = std::search(std::begin(v), std::end(v), std::begin(p), std::end(p));
   *it;  // Invalid access.
+}
+
+void StdSearchMismatchedIterators(std::vector<int>& v1, std::vector<int>& v2) {
+  // This is not fine because using mismatched iterators.
+  std::search(std::begin(v1), std::end(v2), std::begin(v2), std::end(v1));
 }

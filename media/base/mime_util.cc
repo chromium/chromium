@@ -46,12 +46,11 @@ std::optional<VideoType> ParseVideoCodecString(std::string_view mime_type,
                                               allow_ambiguous_matches);
 }
 
-bool ParseAudioCodecString(std::string_view mime_type,
-                           std::string_view codec_id,
-                           bool* ambiguous_codec_string,
-                           AudioCodec* out_codec) {
-  return GetMimeUtil()->ParseAudioCodecString(
-      mime_type, codec_id, ambiguous_codec_string, out_codec);
+std::optional<AudioType> ParseAudioCodecString(std::string_view mime_type,
+                                               std::string_view codec_id,
+                                               bool allow_ambiguous_matches) {
+  return GetMimeUtil()->ParseAudioCodecString(mime_type, codec_id,
+                                              allow_ambiguous_matches);
 }
 
 }  // namespace media

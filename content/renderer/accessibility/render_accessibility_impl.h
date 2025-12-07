@@ -5,7 +5,6 @@
 #ifndef CONTENT_RENDERER_ACCESSIBILITY_RENDER_ACCESSIBILITY_IMPL_H_
 #define CONTENT_RENDERER_ACCESSIBILITY_RENDER_ACCESSIBILITY_IMPL_H_
 
-#include <list>
 #include <memory>
 #include <vector>
 
@@ -13,7 +12,6 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
 #include "content/public/renderer/render_accessibility.h"
 #include "content/public/renderer/render_frame.h"
@@ -22,13 +20,7 @@
 #include "third_party/blink/public/web/web_ax_context.h"
 #include "third_party/blink/public/web/web_ax_object.h"
 #include "ui/accessibility/ax_event.h"
-#include "ui/accessibility/ax_node_data.h"
-#include "ui/accessibility/ax_relative_bounds.h"
-#include "ui/accessibility/ax_tree.h"
-#include "ui/accessibility/ax_tree_data.h"
-#include "ui/accessibility/ax_tree_serializer.h"
 #include "ui/accessibility/ax_tree_update.h"
-#include "ui/gfx/geometry/rect_f.h"
 
 namespace base {
 class ElapsedTimer;
@@ -42,8 +34,6 @@ namespace ui {
 
 struct AXActionData;
 class AXActionTarget;
-struct AXEvent;
-class AXTreeID;
 
 }  // namespace ui
 
@@ -99,7 +89,6 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // RenderAccessibility implementation.
   bool HasActiveDocument() const override;
   ui::AXMode GetAXMode() const override;
-  void RecordInaccessiblePdfUkm() override;
   void SetPluginAXTreeActionTargetAdapter(
       PluginAXTreeActionTargetAdapter* adapter) override;
 #if BUILDFLAG(IS_CHROMEOS)
@@ -135,9 +124,11 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
     ax::mojom::Event event_type = ax::mojom::Event::kNone);
   // Called when it is safe to begin a serialization.
   // Returns true if a serialization occurs.
-  bool SendAccessibilitySerialization(std::vector<ui::AXTreeUpdate> updates,
-                                      std::vector<ui::AXEvent> events,
-                                      bool had_load_complete_messages);
+  bool SendAccessibilitySerialization(
+      std::vector<ui::AXTreeUpdate> updates,
+      std::vector<ui::AXEvent> events,
+      ui::AXLocationAndScrollUpdates location_and_scroll_updates,
+      bool had_load_complete_messages);
 
   // Returns the main top-level document for this page, or NULL if there's
   // no view or frame.
@@ -269,9 +260,6 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // The actual accessibility mode on a Document is the combination of this
   // mode and any other active AXContext objects' accessibility modes.
   ui::AXMode accessibility_mode_;
-
-  // A set of IDs for which we should always load inline text boxes.
-  std::set<int32_t> load_inline_text_boxes_ids_;
 
   // So we can queue up tasks to be executed later.
   base::WeakPtrFactory<RenderAccessibilityImpl>

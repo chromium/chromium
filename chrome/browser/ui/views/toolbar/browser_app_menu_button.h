@@ -11,8 +11,8 @@
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
-#include "components/user_education/common/feature_promo_controller.h"
-#include "components/user_education/common/feature_promo_handle.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo/feature_promo_handle.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -54,6 +54,9 @@ class BrowserAppMenuButton : public AppMenuButton {
   // Updates the presentation according to |severity_| and the theme provider.
   void UpdateIcon() override;
 
+  // Need to override to implement the Expand and Collapse actions.
+  bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
+
  private:
   void OnTouchUiChanged();
 
@@ -77,8 +80,8 @@ class BrowserAppMenuButton : public AppMenuButton {
   AlertMenuItem GetAlertItemForRunningTutorial();
 
   AppMenuIconController::TypeAndSeverity type_and_severity_{
-      AppMenuIconController::IconType::NONE,
-      AppMenuIconController::Severity::NONE};
+      AppMenuIconController::IconType::kNone,
+      AppMenuIconController::Severity::kNone};
 
   // Our owning toolbar view.
   const raw_ptr<ToolbarView> toolbar_view_;

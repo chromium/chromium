@@ -4,44 +4,56 @@
 
 #include "chrome/browser/web_applications/web_app_utils.h"
 
+#include <algorithm>
+#include <functional>
 #include <iterator>
 #include <map>
 #include <optional>
 #include <set>
 #include <utility>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/enum_set.h"
-#include "base/containers/flat_set.h"
+#include "base/containers/extend.h"
+#include "base/containers/map_util.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
+#include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/content_settings/core/browser/content_settings_info.h"
+#include "components/content_settings/core/browser/content_settings_registry.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/crx_file/id_util.h"
 #include "components/grit/components_resources.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/run_on_os_login_types.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "components/webapps/browser/web_app_error_page_constants.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -58,35 +70,23 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#include "base/feature_list.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "chromeos/ash/components/file_manager/app_id.h"
 #include "components/user_manager/user_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/app_service.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#include "chromeos/startup/browser_params_proxy.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace web_app {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// Denotes whether user web apps may be installed on profiles other than the
-// main profile. This may be modified by SetSkipMainProfileCheckForTesting().
-bool g_skip_main_profile_check_for_testing = false;
-#endif
-
 GURL EncodeIconAsUrl(const SkBitmap& bitmap) {
-  std::vector<unsigned char> output;
-  gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &output);
-  std::string encoded = base::Base64Encode(output);
+  std::optional<std::vector<uint8_t>> output =
+      gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false);
+  std::string encoded =
+      base::Base64Encode(output.value_or(std::vector<uint8_t>()));
   return GURL("data:image/png;base64," + encoded);
 }
 
@@ -196,87 +196,6 @@ class AppIconFetcherTask : public content::WebContentsObserver {
   base::WeakPtrFactory<AppIconFetcherTask> weak_factory_{this};
 };
 
-// Note: This can never return kBrowser. This is because the user has
-// specified that the web app should be displayed in a window, and thus
-// the lowest fallback that we can go to is kMinimalUi.
-DisplayMode ResolveAppDisplayModeForStandaloneLaunchContainer(
-    DisplayMode app_display_mode) {
-  switch (app_display_mode) {
-    case DisplayMode::kBrowser:
-    case DisplayMode::kMinimalUi:
-      return DisplayMode::kMinimalUi;
-    case DisplayMode::kUndefined:
-    case DisplayMode::kPictureInPicture:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
-    case DisplayMode::kStandalone:
-    case DisplayMode::kFullscreen:
-      return DisplayMode::kStandalone;
-    case DisplayMode::kWindowControlsOverlay:
-      return DisplayMode::kWindowControlsOverlay;
-    case DisplayMode::kTabbed:
-      if (base::FeatureList::IsEnabled(blink::features::kDesktopPWAsTabStrip)) {
-        return DisplayMode::kTabbed;
-      } else {
-        return DisplayMode::kStandalone;
-      }
-    case DisplayMode::kBorderless:
-      return DisplayMode::kBorderless;
-  }
-}
-
-std::optional<DisplayMode> TryResolveUserDisplayMode(
-    mojom::UserDisplayMode user_display_mode) {
-  switch (user_display_mode) {
-    case mojom::UserDisplayMode::kBrowser:
-      return DisplayMode::kBrowser;
-    case mojom::UserDisplayMode::kTabbed:
-      if (base::FeatureList::IsEnabled(
-              features::kDesktopPWAsTabStripSettings)) {
-        return DisplayMode::kTabbed;
-      }
-      // Treat as standalone.
-      [[fallthrough]];
-    case mojom::UserDisplayMode::kStandalone:
-      break;
-  }
-
-  return std::nullopt;
-}
-
-std::optional<DisplayMode> TryResolveOverridesDisplayMode(
-    const std::vector<DisplayMode>& display_mode_overrides) {
-  for (DisplayMode override_display_mode : display_mode_overrides) {
-    DisplayMode resolved_display_mode =
-        ResolveAppDisplayModeForStandaloneLaunchContainer(
-            override_display_mode);
-    if (override_display_mode == resolved_display_mode) {
-      return resolved_display_mode;
-    }
-  }
-
-  return std::nullopt;
-}
-
-DisplayMode ResolveNonIsolatedEffectiveDisplayMode(
-    DisplayMode app_display_mode,
-    const std::vector<DisplayMode>& display_mode_overrides,
-    mojom::UserDisplayMode user_display_mode) {
-  const std::optional<DisplayMode> resolved_display_mode =
-      TryResolveUserDisplayMode(user_display_mode);
-
-  if (resolved_display_mode.has_value()) {
-    return *resolved_display_mode;
-  }
-
-  const std::optional<DisplayMode> resolved_override_display_mode =
-      TryResolveOverridesDisplayMode(display_mode_overrides);
-  if (resolved_override_display_mode.has_value()) {
-    return *resolved_override_display_mode;
-  }
-  return ResolveAppDisplayModeForStandaloneLaunchContainer(app_display_mode);
-}
-
 }  // namespace
 
 constexpr base::FilePath::CharType kManifestResourcesDirectoryName[] =
@@ -290,48 +209,31 @@ bool AreWebAppsEnabled(Profile* profile) {
     return false;
   }
 
-  const Profile* original_profile = profile->GetOriginalProfile();
-  DCHECK(!original_profile->IsOffTheRecord());
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Web Apps should not be installed to the ChromeOS system profiles except the
   // lock screen app profile.
-  if (!ash::ProfileHelper::IsUserProfile(original_profile) &&
-      !ash::ProfileHelper::IsLockScreenAppProfile(profile) &&
+  if (!ash::ProfileHelper::IsUserProfile(profile) &&
       !ash::IsShimlessRmaAppBrowserContext(profile)) {
     return false;
   }
   auto* user_manager = user_manager::UserManager::Get();
-  // Don't enable if SWAs in Kiosk session are disabled for the next session
-  // types.
-  if (!base::FeatureList::IsEnabled(ash::features::kKioskEnableSystemWebApps)) {
-    // Don't enable for Chrome App Kiosk sessions.
-    if (user_manager && user_manager->IsLoggedInAsKioskApp()) {
-      return false;
-    }
-  }
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Disable web apps in the profile unless one of the following is true:
-  // * the profile is the main one
-  // * the testing condition is set
-  if (!(profile->IsMainProfile() || g_skip_main_profile_check_for_testing)) {
+
+  // Don't enable for Chrome App or ARC Kiosk sessions.
+  if (user_manager && (user_manager->IsLoggedInAsKioskChromeApp() ||
+                       user_manager->IsLoggedInAsKioskArcvmApp())) {
     return false;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  return true;
+  // Guest session forces OTR to be turned on.
+  if (profile->IsGuestSession()) {
+    return profile->IsOffTheRecord();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  return !profile->IsOffTheRecord();
 }
 
 bool AreWebAppsUserInstallable(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // With Lacros, web apps are not installed using the Ash browser.
-  if (IsWebAppsCrosapiEnabled()) {
-    return false;
-  }
-  if (ash::ProfileHelper::IsLockScreenAppProfile(profile)) {
-    return false;
-  }
-#endif
   return AreWebAppsEnabled(profile) && !profile->IsGuestSession() &&
          !profile->IsOffTheRecord();
 }
@@ -343,19 +245,25 @@ content::BrowserContext* GetBrowserContextForWebApps(
   if (!profile) {
     return nullptr;
   }
+
+  if (AreWebAppsEnabled(profile)) {
+    return profile;
+  }
+
+  // On ChromeOS, the system web app implementation requires that incognito
+  // profiles can be used to look up the WebAppProvider of their original
+  // profile.
+  // TODO(https://crbug.com/384063076): Stop returning for profiles on ChromeOS
+  // where `AreWebAppsEnabled` returns `false`.
+#if BUILDFLAG(IS_CHROMEOS)
   Profile* original_profile = profile->GetOriginalProfile();
-  if (!AreWebAppsEnabled(original_profile)) {
-    return nullptr;
+  CHECK(original_profile);
+  if (AreWebAppsEnabled(original_profile)) {
+    return original_profile;
   }
+#endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Use OTR profile for Guest Session.
-  if (profile->IsGuestSession()) {
-    return profile->IsOffTheRecord() ? profile : nullptr;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  return original_profile;
+  return nullptr;
 }
 
 content::BrowserContext* GetBrowserContextForWebAppMetrics(
@@ -399,7 +307,7 @@ base::FilePath GetWebAppsTempDirectory(
 }
 
 std::string GetProfileCategoryForLogging(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!ash::ProfileHelper::IsUserProfile(profile)) {
     return "SigninOrLockScreen";
   } else if (user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp()) {
@@ -427,13 +335,9 @@ bool IsChromeOsDataMandatory() {
 }
 
 bool AreAppsLocallyInstalledBySync() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   // On Chrome OS, sync always locally installs an app.
   return true;
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-  // With Crosapi, Ash no longer participates in sync.
-  // On Chrome OS before Crosapi, sync always locally installs an app.
-  return !IsWebAppsCrosapiEnabled();
 #else
   return false;
 #endif
@@ -492,7 +396,7 @@ std::vector<std::u16string> TransformFileExtensionsForDisplay(
     const std::set<std::string>& extensions) {
   std::vector<std::u16string> extensions_for_display;
   extensions_for_display.reserve(extensions.size());
-  base::ranges::transform(
+  std::ranges::transform(
       extensions, std::back_inserter(extensions_for_display),
       [](const std::string& extension) {
         return base::UTF8ToUTF16(base::ToUpperASCII(extension.substr(1)));
@@ -510,29 +414,6 @@ bool IsRunOnOsLoginModeEnabledForAutostart(RunOnOsLoginMode login_mode) {
       return false;
   }
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-bool IsWebAppsCrosapiEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return crosapi::browser_util::IsLacrosEnabled();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* lacros_service = chromeos::LacrosService::Get();
-  return lacros_service &&
-         lacros_service->IsAvailable<crosapi::mojom::AppPublisher>();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-}
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void SetSkipMainProfileCheckForTesting(bool skip_check) {
-  g_skip_main_profile_check_for_testing = skip_check;
-}
-
-bool IsMainProfileCheckSkippedForTesting() {
-  return g_skip_main_profile_check_for_testing;
-}
-#endif
 
 bool HasAnySpecifiedSourcesAndNoOtherSources(
     WebAppManagementTypes sources,
@@ -553,7 +434,7 @@ bool CanUserUninstallWebApp(const webapps::AppId& app_id,
 webapps::AppId GetAppIdFromAppSettingsUrl(const GURL& url) {
   // App Settings page is served under chrome://app-settings/<app-id>.
   // url.path() returns "/<app-id>" with a leading slash.
-  std::string path = url.path();
+  std::string path = url.GetPath();
   if (path.size() <= 1) {
     return webapps::AppId();
   }
@@ -567,21 +448,6 @@ bool IsInScope(const GURL& url, const GURL& scope) {
 
   return base::StartsWith(url.spec(), scope.spec(),
                           base::CompareCase::SENSITIVE);
-}
-
-DisplayMode ResolveEffectiveDisplayMode(
-    DisplayMode app_display_mode,
-    const std::vector<DisplayMode>& app_display_mode_overrides,
-    mojom::UserDisplayMode user_display_mode,
-    bool is_isolated) {
-  const DisplayMode resolved_display_mode =
-      ResolveNonIsolatedEffectiveDisplayMode(
-          app_display_mode, app_display_mode_overrides, user_display_mode);
-  if (is_isolated && resolved_display_mode == DisplayMode::kBrowser) {
-    return DisplayMode::kStandalone;
-  }
-
-  return resolved_display_mode;
 }
 
 apps::LaunchContainer ConvertDisplayModeToAppLaunchContainer(
@@ -638,7 +504,8 @@ content::mojom::AlternativeErrorPageOverrideInfoPtr ConstructWebAppErrorPage(
 
   WebAppRegistrar& web_app_registrar = web_app_provider->registrar_unsafe();
   const std::optional<webapps::AppId> app_id =
-      web_app_registrar.FindAppWithUrlInScope(url);
+      web_app_registrar.FindBestAppWithUrlInScope(
+          url, WebAppFilter::InstalledInChrome());
   if (!app_id.has_value()) {
     return nullptr;
   }
@@ -676,12 +543,41 @@ bool IsValidScopeForLinkCapturing(const GURL& scope) {
   return scope.is_valid() && scope.has_scheme() && scope.SchemeIsHTTPOrHTTPS();
 }
 
-// TODO(http://b/331208955): Remove after migration.
+void ResetAllContentSettingsForWebApp(Profile* profile, const GURL& app_scope) {
+  HostContentSettingsMap* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile);
+  for (int i = static_cast<int>(ContentSettingsType::kMinValue);
+       i <= static_cast<int>(ContentSettingsType::kMaxValue); ++i) {
+    ContentSettingsType content_type = static_cast<ContentSettingsType>(i);
+
+    if (content_type == ContentSettingsType::MIXEDSCRIPT ||
+        content_type == ContentSettingsType::PROTOCOL_HANDLERS) {
+      // These types are excluded because one can't call
+      // GetDefaultContentSetting() for them.
+      continue;
+    }
+
+    // ContentSettingsType enum values may include deprecated types or other
+    // that are not registered in the ContentSettingsRegistry.
+    // `Get()` returns nullptr for unregistered types. Skip these, as they
+    // cannot be managed or reset via HostContentSettingsMap.
+    if (!content_settings::ContentSettingsRegistry::GetInstance()->Get(
+            content_type)) {
+      continue;
+    }
+
+    host_content_settings_map->SetContentSettingDefaultScope(
+        app_scope, app_scope, content_type, CONTENT_SETTING_DEFAULT);
+  }
+}
+
+// TODO(crbug.com/331208955): Remove after migration.
 bool WillBeSystemWebApp(const webapps::AppId& app_id,
                         WebAppManagementTypes sources) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
-  return app_id == kContainerAppId && sources.Has(WebAppManagement::kDefault);
-#else  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
+  return app_id == ash::kGeminiAppId && sources.Has(WebAppManagement::kDefault);
+#else  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+       // && BUILDFLAG(IS_CHROMEOS)
   return false;
 #endif
 }

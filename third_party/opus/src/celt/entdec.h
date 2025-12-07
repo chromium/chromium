@@ -81,6 +81,16 @@ int ec_dec_bit_logp(ec_dec *_this,unsigned _logp);
   Return: The decoded symbol s.*/
 int ec_dec_icdf(ec_dec *_this,const unsigned char *_icdf,unsigned _ftb);
 
+/*Decodes a symbol given an "inverse" CDF table.
+  No call to ec_dec_update() is necessary after this call.
+  _icdf: The "inverse" CDF, such that symbol s falls in the range
+          [s>0?ft-_icdf[s-1]:0,ft-_icdf[s]), where ft=1<<_ftb.
+         The values must be monotonically non-increasing, and the last value
+          must be 0.
+  _ftb: The number of bits of precision in the cumulative distribution.
+  Return: The decoded symbol s.*/
+int ec_dec_icdf16(ec_dec *_this,const opus_uint16 *_icdf,unsigned _ftb);
+
 /*Extracts a raw unsigned integer with a non-power-of-2 range from the stream.
   The bits must have been encoded with ec_enc_uint().
   No call to ec_dec_update() is necessary after this call.

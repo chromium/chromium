@@ -14,13 +14,14 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/link_capturing/apps_intent_picker_delegate.h"
 #include "chrome/browser/apps/link_capturing/intent_picker_info.h"
-#include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/apps/link_capturing/metrics/intent_handling_metrics.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/display/types/display_constants.h"
 #include "url/gurl.h"
@@ -33,17 +34,13 @@ PickerEntryType GetPickerEntryType(AppType app_type) {
   PickerEntryType picker_entry_type = PickerEntryType::kUnknown;
   switch (app_type) {
     case AppType::kUnknown:
-    case AppType::kBuiltIn:
     case AppType::kCrostini:
     case AppType::kPluginVm:
     case AppType::kChromeApp:
     case AppType::kExtension:
-    case AppType::kStandaloneBrowser:
-    case AppType::kStandaloneBrowserChromeApp:
     case AppType::kRemote:
     case AppType::kBorealis:
     case AppType::kBruschetta:
-    case AppType::kStandaloneBrowserExtension:
       break;
     case AppType::kArc:
       picker_entry_type = PickerEntryType::kArc;
@@ -106,7 +103,7 @@ void ChromeOsAppsIntentPickerDelegate::FindAllAppsForUrl(
   }
   // Reverse to keep old behavior of ordering (even though it was arbitrary, it
   // was at least deterministic).
-  std::reverse(apps.begin(), apps.end());
+  std::ranges::reverse(apps);
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(apps_callback), std::move(apps)));
@@ -192,13 +189,15 @@ void ChromeOsAppsIntentPickerDelegate::LaunchApp(
     content::WebContents* web_contents,
     const GURL& url,
     const std::string& launch_name,
-    PickerEntryType entry_type) {
+    PickerEntryType entry_type,
+    base::OnceClosure callback) {
   CHECK(!launch_name.empty());
   if (entry_type == PickerEntryType::kWeb) {
     web_app::WebAppProvider* provider =
         web_app::WebAppProvider::GetForWebApps(&profile_.get());
-    provider->ui_manager().ReparentAppTabToWindow(web_contents, launch_name,
-                                                  /*shortcut_created=*/true);
+    provider->ui_manager().ReparentAppTabToWindow(
+        web_contents, launch_name,
+        base::IgnoreArgs<content::WebContents*>(std::move(callback)));
   } else {
     CHECK(proxy_);
     proxy_->LaunchAppWithUrl(
@@ -206,7 +205,8 @@ void ChromeOsAppsIntentPickerDelegate::LaunchApp(
         GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
                       /*prefer_container=*/true),
         url, LaunchSource::kFromLink,
-        std::make_unique<WindowInfo>(display::kDefaultDisplayId));
+        std::make_unique<WindowInfo>(display::kDefaultDisplayId),
+        base::IgnoreArgs<LaunchResult&&>(std::move(callback)));
     CloseOrGoBack(web_contents);
   }
 }

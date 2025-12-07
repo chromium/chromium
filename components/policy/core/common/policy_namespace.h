@@ -30,6 +30,10 @@ enum PolicyDomain {
   // ID.
   POLICY_DOMAIN_SIGNIN_EXTENSIONS,
 
+  // The component ID for the extension install policies is equal to the
+  // extension ID.
+  POLICY_DOMAIN_EXTENSION_INSTALL,
+
   // Must be the last entry.
   POLICY_DOMAIN_SIZE,
 };
@@ -40,12 +44,13 @@ struct POLICY_EXPORT PolicyNamespace {
   PolicyNamespace();
   PolicyNamespace(PolicyDomain domain, const std::string& component_id);
   PolicyNamespace(const PolicyNamespace& other);
+  PolicyNamespace& operator=(const PolicyNamespace& other);
   ~PolicyNamespace();
 
-  PolicyNamespace& operator=(const PolicyNamespace& other);
-  bool operator<(const PolicyNamespace& other) const;
-  bool operator==(const PolicyNamespace& other) const;
-  bool operator!=(const PolicyNamespace& other) const;
+  friend bool operator==(const PolicyNamespace&,
+                         const PolicyNamespace&) = default;
+  friend auto operator<=>(const PolicyNamespace&,
+                          const PolicyNamespace&) = default;
 
   PolicyDomain domain;
   std::string component_id;

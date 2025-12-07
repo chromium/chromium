@@ -5,6 +5,7 @@
 #include "remoting/host/win/event_trace_data.h"
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/logging_win.h"
@@ -20,13 +21,11 @@ constexpr char kWarningSeverity[] = "WARNING";
 constexpr char kErrorSeverity[] = "ERROR";
 constexpr char kFatalSeverity[] = "FATAL";
 constexpr char kVerboseSeverity[] = "VERBOSE";
-constexpr char kUnknownSeverity[] = "UNKNOWN";
 
 logging::LogSeverity EventTraceLevelToSeverity(uint8_t level) {
   switch (level) {
     case TRACE_LEVEL_NONE:
-      NOTREACHED_IN_MIGRATION();
-      return logging::LOGGING_ERROR;
+      NOTREACHED();
     case TRACE_LEVEL_FATAL:
       return logging::LOGGING_FATAL;
     case TRACE_LEVEL_ERROR:
@@ -83,25 +82,28 @@ EventTraceData EventTraceData::Create(EVENT_TRACE* event) {
     offset += bytes_to_skip;
 
     // Read the line info and move the cursor.
-    data.line = *reinterpret_cast<const int32_t*>(mof_data + offset);
+    data.line =
+        *reinterpret_cast<const int32_t*>(UNSAFE_TODO(mof_data + offset));
     offset += sizeof(int32_t);
 
     // Read the file info and move the cursor.
-    const char* file_info = reinterpret_cast<const char*>(mof_data + offset);
+    const char* file_info =
+        reinterpret_cast<const char*>(UNSAFE_TODO(mof_data + offset));
     size_t str_len = strnlen_s(file_info, event->MofLength - offset);
     base::FilePath file_path(base::UTF8ToWide(file_info));
     data.file_name = base::WideToUTF8(file_path.BaseName().value());
     offset += (str_len + 1);
 
     // Read the message and move the cursor.
-    const char* message = reinterpret_cast<const char*>(mof_data + offset);
+    const char* message =
+        reinterpret_cast<const char*>(UNSAFE_TODO(mof_data + offset));
     str_len = strnlen_s(message, event->MofLength - offset);
     data.message.assign(message);
     offset += (str_len + 1);
 
     DCHECK_EQ(event->MofLength, offset);
   } else {
-    NOTREACHED_IN_MIGRATION() << "Unknown event type: " << data.event_type;
+    NOTREACHED() << "Unknown event type: " << data.event_type;
   }
 
   return data;
@@ -122,8 +124,7 @@ std::string EventTraceData::SeverityToString(logging::LogSeverity severity) {
       if (severity < 0) {
         return kVerboseSeverity;
       }
-      NOTREACHED_IN_MIGRATION();
-      return kUnknownSeverity;
+      NOTREACHED();
   }
 }
 

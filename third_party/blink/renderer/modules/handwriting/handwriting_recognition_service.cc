@@ -50,8 +50,7 @@ void OnCreateHandwritingRecognizer(
     }
   }
 
-  NOTREACHED_IN_MIGRATION()
-      << "CreateHandwritingRecognizer returns an invalid result.";
+  NOTREACHED() << "CreateHandwritingRecognizer returns an invalid result.";
 }
 
 void OnQueryHandwritingRecognizer(
@@ -67,22 +66,18 @@ void OnQueryHandwritingRecognizer(
 
 }  // namespace
 
-const char HandwritingRecognitionService::kSupplementName[] =
-    "NavigatorHandwritingRecognitionService";
-
 HandwritingRecognitionService::HandwritingRecognitionService(
     Navigator& navigator)
-    : Supplement<Navigator>(navigator),
-      remote_service_(navigator.GetExecutionContext()) {}
+    : navigator_(navigator), remote_service_(navigator.GetExecutionContext()) {}
 
 // static
 HandwritingRecognitionService& HandwritingRecognitionService::From(
     Navigator& navigator) {
   HandwritingRecognitionService* supplement =
-      Supplement<Navigator>::From<HandwritingRecognitionService>(navigator);
+      navigator.GetHandwritingRecognitionService();
   if (!supplement) {
     supplement = MakeGarbageCollected<HandwritingRecognitionService>(navigator);
-    ProvideTo(navigator, supplement);
+    navigator.SetHandwritingRecognitionService(supplement);
   }
   return *supplement;
 }
@@ -112,7 +107,7 @@ bool HandwritingRecognitionService::BootstrapMojoConnectionIfNeeded(
   // the ScriptState passed in may not be guaranteed to match the execution
   // context associated with this navigator, especially with
   // cross-browsing-context calls.
-  auto* execution_context = GetSupplementable()->GetExecutionContext();
+  auto* execution_context = navigator_->GetExecutionContext();
   if (!remote_service_.is_bound()) {
     execution_context->GetBrowserInterfaceBroker().GetInterface(
         remote_service_.BindNewPipeAndPassReceiver(
@@ -144,8 +139,8 @@ HandwritingRecognitionService::CreateHandwritingRecognizer(
 
   remote_service_->CreateHandwritingRecognizer(
       std::move(mojo_model_constraint),
-      WTF::BindOnce(OnCreateHandwritingRecognizer, WrapPersistent(script_state),
-                    WrapPersistent(resolver)));
+      BindOnce(OnCreateHandwritingRecognizer, WrapPersistent(script_state),
+               WrapPersistent(resolver)));
 
   return promise;
 }
@@ -178,15 +173,15 @@ HandwritingRecognitionService::QueryHandwritingRecognizer(
   remote_service_->QueryHandwritingRecognizer(
       mojo::ConvertTo<handwriting::mojom::blink::HandwritingModelConstraintPtr>(
           constraint),
-      WTF::BindOnce(&OnQueryHandwritingRecognizer, WrapPersistent(script_state),
-                    WrapPersistent(resolver)));
+      BindOnce(&OnQueryHandwritingRecognizer, WrapPersistent(script_state),
+               WrapPersistent(resolver)));
 
   return promise;
 }
 
 void HandwritingRecognitionService::Trace(Visitor* visitor) const {
   visitor->Trace(remote_service_);
-  Supplement<Navigator>::Trace(visitor);
+  visitor->Trace(navigator_);
 }
 
 }  // namespace blink

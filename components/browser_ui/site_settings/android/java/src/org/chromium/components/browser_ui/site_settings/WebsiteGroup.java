@@ -4,6 +4,9 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
+import org.chromium.build.annotations.EnsuresNonNullIf;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.url.GURL;
@@ -16,6 +19,7 @@ import java.util.Map;
 import java.util.Set;
 
 /** Represents a group of Websites that either share the same eTLD+1 or are embedded on it. */
+@NullMarked
 public class WebsiteGroup implements WebsiteEntry {
     // The common eTLD+1.
     private final String mDomainAndRegistry;
@@ -25,8 +29,8 @@ public class WebsiteGroup implements WebsiteEntry {
     private final long mTotalUsage;
     // Total number of cookies associated with the websites.
     private final int mCookiesCount;
-    // Related Web Sets info relative to the eTLD+1.
-    private RWSCookieInfo mRWSInfo;
+    // Related Website Sets info relative to the eTLD+1.
+    private @Nullable RwsCookieInfo mRwsInfo;
 
     /**
      * Groups the websites by eTLD+1.
@@ -39,7 +43,9 @@ public class WebsiteGroup implements WebsiteEntry {
         Map<String, List<Website>> etldMap = new HashMap<>();
         for (Website website : websites) {
             // TODO(crbug.com/40231223): Handle partitioned storage.
-            String etld = website.getAddress().getDomainAndRegistry();
+            // Use the main address to handle cases where Origin is a wildcard and the Embedder is
+            // the actual address.
+            String etld = website.getMainAddress().getDomainAndRegistry();
             List<Website> etldSites = etldMap.get(etld);
             if (etldSites == null) {
                 etldSites = new ArrayList<>();
@@ -67,8 +73,8 @@ public class WebsiteGroup implements WebsiteEntry {
             totalUsage += website.getTotalUsage();
             // If there's more than 1 website with RWS info in the group it's fine to override it
             // since websites are grouped by eTLD+1, and RWS info are at eTLD+1 level as well.
-            if (website.getRWSCookieInfo() != null) {
-                mRWSInfo = website.getRWSCookieInfo();
+            if (website.getRwsCookieInfo() != null) {
+                mRwsInfo = website.getRwsCookieInfo();
             }
         }
         mTotalUsage = totalUsage;
@@ -118,20 +124,21 @@ public class WebsiteGroup implements WebsiteEntry {
 
     /** {@inheritDoc} */
     @Override
+    @EnsuresNonNullIf({"mRwsInfo"})
     public boolean isPartOfRws() {
-        return getRWSInfo() != null;
+        return mRwsInfo != null;
     }
 
     /** {@inheritDoc} */
     @Override
-    public String getRwsOwner() {
-        return isPartOfRws() ? getRWSInfo().getOwner() : null;
+    public @Nullable String getRwsOwner() {
+        return isPartOfRws() ? mRwsInfo.getOwner() : null;
     }
 
     /** {@inheritDoc} */
     @Override
     public int getRwsSize() {
-        return isPartOfRws() ? getRWSInfo().getMembersCount() : 0;
+        return isPartOfRws() ? mRwsInfo.getMembersCount() : 0;
     }
 
     /**
@@ -151,10 +158,11 @@ public class WebsiteGroup implements WebsiteEntry {
         return true;
     }
 
-    public RWSCookieInfo getRWSInfo() {
-        return mRWSInfo;
+    public @Nullable RwsCookieInfo getRwsInfo() {
+        return mRwsInfo;
     }
 
+    @Override
     public String getDomainAndRegistry() {
         return mDomainAndRegistry;
     }

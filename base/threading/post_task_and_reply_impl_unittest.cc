@@ -60,7 +60,7 @@ class MockObject {
 
 class MockRunsTasksInCurrentSequenceTaskRunner : public TestMockTimeTaskRunner {
  public:
-  MockRunsTasksInCurrentSequenceTaskRunner(
+  explicit MockRunsTasksInCurrentSequenceTaskRunner(
       TestMockTimeTaskRunner::Type type =
           TestMockTimeTaskRunner::Type::kStandalone)
       : TestMockTimeTaskRunner(type) {}
@@ -90,8 +90,9 @@ class MockRunsTasksInCurrentSequenceTaskRunner : public TestMockTimeTaskRunner {
   bool PostDelayedTask(const Location& from_here,
                        OnceClosure task,
                        TimeDelta delay) override {
-    if (!accepts_tasks_)
+    if (!accepts_tasks_) {
       return false;
+    }
 
     return TestMockTimeTaskRunner::PostDelayedTask(from_here, std::move(task),
                                                    delay);

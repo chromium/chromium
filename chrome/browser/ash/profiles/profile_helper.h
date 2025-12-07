@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_PROFILES_PROFILE_HELPER_H_
 #define CHROME_BROWSER_ASH_PROFILES_PROFILE_HELPER_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -74,19 +73,6 @@ class ProfileHelper {
   // construction of the signin Profile to determine if that Profile is the
   // signin Profile.
   static bool IsSigninProfile(const Profile* profile);
-
-  // DEPRECATED. Please use
-  // ash::BrowserContextHelper::GetLockScreenAppBrowserContextPath() instead.
-  // Returns the path used for the lock screen apps profile - profile used
-  // for launching platform apps that can display windows on top of the lock
-  // screen.
-  static base::FilePath GetLockScreenAppProfilePath();
-
-  // DEPRECATED. Please use ash::IsLockScreenAppBrowserContext() instead.
-  // Returns whether |profile| is the lock screen app profile - the profile used
-  // for launching platform apps that can display a window on top of the lock
-  // screen.
-  static bool IsLockScreenAppProfile(const Profile* profile);
 
   // DEPRECATED. Please use
   // ash::BrowserContextHelper::GetLockScreenBrowserContextPath() instead.

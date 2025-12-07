@@ -20,9 +20,9 @@
 #include "chrome/browser/ash/login/test/oobe_window_visibility_waiter.h"
 #include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/ash/login/test/wizard_controller_screen_exit_waiter.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/cryptohome_recovery_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/enter_old_password_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
@@ -34,6 +34,7 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -210,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, SuccessfulRecovery) {
   EXPECT_TRUE(IsMounted());
 }
 
-// Verifies that recovery is skipped and GaiaPasswordChangedScreen is shown when
+// Verifies that recovery is skipped and EnterOldPasswordScreen is shown when
 // recovery factor is not configured.
 IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenNoRecoveryTest,
                        NoRecoveryFactor) {

@@ -7,50 +7,38 @@
 #include <optional>
 
 #include "base/strings/string_number_conversions.h"
+#include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/webid/federated_auth_request_impl.h"
-#include "content/browser/webid/federated_auth_request_page_data.h"
-#include "content/public/browser/federated_identity_api_permission_context_delegate.h"
-#include "content/public/browser/identity_request_dialog_controller.h"
+#include "content/browser/webid/request_page_data.h"
+#include "content/browser/webid/request_service.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/webid/federated_identity_api_permission_context_delegate.h"
+#include "content/public/browser/webid/identity_request_dialog_controller.h"
 
 namespace content {
 namespace {
-namespace FedCm = content::protocol::FedCm;
+namespace FedCm = protocol::FedCm;
 
-FedCm::DialogType ConvertDialogType(
-    content::FederatedAuthRequestImpl::DialogType type) {
+using DialogType = webid::RequestService::DialogType;
+
+FedCm::DialogType ConvertDialogType(DialogType type) {
   switch (type) {
-    case content::FederatedAuthRequestImpl::kNone:
-      NOTREACHED_NORETURN()
-          << "This should only be called if there is a dialog";
-    case content::FederatedAuthRequestImpl::kLoginToIdpPopup:
-    case content::FederatedAuthRequestImpl::kContinueOnPopup:
-    case content::FederatedAuthRequestImpl::kErrorUrlPopup:
-      NOTREACHED_NORETURN()
+    case DialogType::kNone:
+      NOTREACHED() << "This should only be called if there is a dialog";
+    case DialogType::kLoginToIdpPopup:
+    case DialogType::kContinueOnPopup:
+    case DialogType::kErrorUrlPopup:
+      NOTREACHED()
           << "These dialog types are not currently exposed to automation";
-    case content::FederatedAuthRequestImpl::kSelectAccount:
+    case DialogType::kSelectAccount:
       return FedCm::DialogTypeEnum::AccountChooser;
-    case content::FederatedAuthRequestImpl::kAutoReauth:
+    case DialogType::kAutoReauth:
       return FedCm::DialogTypeEnum::AutoReauthn;
-    case content::FederatedAuthRequestImpl::kConfirmIdpLogin:
+    case DialogType::kConfirmIdpLogin:
       return FedCm::DialogTypeEnum::ConfirmIdpLogin;
-    case content::FederatedAuthRequestImpl::kError:
+    case DialogType::kError:
       return FedCm::DialogTypeEnum::Error;
   }
-}
-
-std::optional<std::pair<IdentityProviderData, IdentityRequestAccount>>
-GetAccountAt(const std::vector<IdentityProviderData>& idp_data, int index) {
-  int current = 0;
-  for (const auto& data : idp_data) {
-    for (const IdentityRequestAccount& account : data.accounts) {
-      if (current == index) {
-        return std::make_pair(data, account);
-      }
-      ++current;
-    }
-  }
-  return std::nullopt;
 }
 
 }  // namespace
@@ -78,7 +66,8 @@ void FedCmHandler::Wire(UberDispatcher* dispatcher) {
   FedCm::Dispatcher::wire(dispatcher, this);
 }
 
-DispatchResponse FedCmHandler::Enable(Maybe<bool> in_disableRejectionDelay) {
+DispatchResponse FedCmHandler::Enable(
+    std::optional<bool> in_disableRejectionDelay) {
   auto* auth_request = GetFederatedAuthRequest();
   bool was_enabled = enabled_;
   enabled_ = true;
@@ -88,7 +77,7 @@ DispatchResponse FedCmHandler::Enable(Maybe<bool> in_disableRejectionDelay) {
   // This could happen if FedCmHandler::Enable was called to enable/disable the
   // rejection delay.
   if (!was_enabled && auth_request &&
-      auth_request->GetDialogType() != FederatedAuthRequestImpl::kNone) {
+      auth_request->GetDialogType() != DialogType::kNone) {
     DidShowDialog();
   }
 
@@ -110,59 +99,49 @@ void FedCmHandler::DidShowDialog() {
   dialog_id_ = base::NumberToString(next_dialog_id_++);
 
   auto* auth_request = GetFederatedAuthRequest();
-  const auto* idp_data = GetIdentityProviderData(auth_request);
-  // idp_data can be empty if this is an IDP Signin Confirmation dialog.
-
-  // We flatten the two-level IDP->account list into a single
-  // list of accounts because:
-  // - It's easier to work with for callers
-  // - When used for automated testing by IDPs, I expect most of their
-  //   tests to involve just one IDP (themselves), and the single level
-  //   list is easier to use in that case
-  // - If we decide to show, for example, returning accounts across IDPs
-  //   at the top and remaining accounts below that, the two-level list
-  //   requires the same IDP to be present more than once; a single-level
-  //   list is less confusing.
-  // The idpConfigUrl field allows callers to identify which IDP an account
-  // belongs to.
-  auto accounts = std::make_unique<Array<FedCm::Account>>();
-  if (idp_data) {
-    for (const auto& data : *idp_data) {
-      for (const IdentityRequestAccount& account : data.accounts) {
-        FedCm::LoginState login_state;
-        std::optional<std::string> tos_url;
-        std::optional<std::string> pp_url;
-        switch (*account.login_state) {
-          case IdentityRequestAccount::LoginState::kSignUp:
-            login_state = FedCm::LoginStateEnum::SignUp;
-            // Because TOS and PP URLs are only used when the login state is
-            // sign up, we only populate them in that case.
-            pp_url = data.client_metadata.privacy_policy_url.spec();
-            tos_url = data.client_metadata.terms_of_service_url.spec();
-            break;
-          case IdentityRequestAccount::LoginState::kSignIn:
-            login_state = FedCm::LoginStateEnum::SignIn;
-            break;
-        }
-        std::unique_ptr<FedCm::Account> entry =
-            FedCm::Account::Create()
-                .SetAccountId(account.id)
-                .SetEmail(account.email)
-                .SetName(account.name)
-                .SetGivenName(account.given_name)
-                .SetPictureUrl(account.picture.spec())
-                .SetIdpConfigUrl(data.idp_metadata.config_url.spec())
-                .SetIdpLoginUrl(data.idp_metadata.idp_login_url.spec())
-                .SetLoginState(login_state)
-                .Build();
-        if (pp_url) {
-          entry->SetPrivacyPolicyUrl(*pp_url);
-        }
-        if (tos_url) {
-          entry->SetTermsOfServiceUrl(*tos_url);
-        }
-        accounts->push_back(std::move(entry));
+  const auto* accounts = GetAccounts(auth_request);
+  // `accounts` can be empty if this is an IDP Signin Confirmation dialog.
+  auto accounts_array = std::make_unique<Array<FedCm::Account>>();
+  if (accounts) {
+    for (const auto& account : *accounts) {
+      FedCm::LoginState login_state;
+      std::optional<std::string> tos_url;
+      std::optional<std::string> pp_url;
+      switch (account->idp_claimed_login_state.value_or(
+          account->browser_trusted_login_state)) {
+        case IdentityRequestAccount::LoginState::kSignUp:
+          login_state = FedCm::LoginStateEnum::SignUp;
+          // Because TOS and PP URLs are only used when the login state is
+          // sign up, we only populate them in that case.
+          pp_url = account->identity_provider->client_metadata
+                       .privacy_policy_url.spec();
+          tos_url = account->identity_provider->client_metadata
+                        .terms_of_service_url.spec();
+          break;
+        case IdentityRequestAccount::LoginState::kSignIn:
+          login_state = FedCm::LoginStateEnum::SignIn;
+          break;
       }
+      std::unique_ptr<FedCm::Account> entry =
+          FedCm::Account::Create()
+              .SetAccountId(account->id)
+              .SetEmail(account->display_identifier)
+              .SetName(account->display_name)
+              .SetGivenName(account->given_name)
+              .SetPictureUrl(account->picture.spec())
+              .SetIdpConfigUrl(
+                  account->identity_provider->idp_metadata.config_url.spec())
+              .SetIdpLoginUrl(
+                  account->identity_provider->idp_metadata.idp_login_url.spec())
+              .SetLoginState(login_state)
+              .Build();
+      if (pp_url) {
+        entry->SetPrivacyPolicyUrl(*pp_url);
+      }
+      if (tos_url) {
+        entry->SetTermsOfServiceUrl(*tos_url);
+      }
+      accounts_array->push_back(std::move(entry));
     }
   }
   IdentityRequestDialogController* dialog = auth_request->GetDialogController();
@@ -170,12 +149,12 @@ void FedCmHandler::DidShowDialog() {
 
   FedCm::DialogType dialog_type =
       ConvertDialogType(auth_request->GetDialogType());
-  Maybe<String> maybe_subtitle;
+  std::optional<String> maybe_subtitle;
   std::optional<std::string> subtitle = dialog->GetSubtitle();
   if (subtitle) {
     maybe_subtitle = *subtitle;
   }
-  frontend_->DialogShown(dialog_id_, dialog_type, std::move(accounts),
+  frontend_->DialogShown(dialog_id_, dialog_type, std::move(accounts_array),
                          dialog->GetTitle(), std::move(maybe_subtitle));
 }
 
@@ -195,18 +174,19 @@ DispatchResponse FedCmHandler::SelectAccount(const String& in_dialogId,
   }
 
   auto* auth_request = GetFederatedAuthRequest();
-  const auto* idp_data = GetIdentityProviderData(auth_request);
-  if (!idp_data) {
+  if (!GetIdentityProviderData(auth_request)) {
     return DispatchResponse::ServerError(
         "selectAccount called while no FedCm dialog is shown");
   }
-  auto account = GetAccountAt(*idp_data, in_accountIndex);
-  if (!account) {
+  const auto* accounts = GetAccounts(auth_request);
+  if (!accounts || in_accountIndex < 0 ||
+      static_cast<size_t>(in_accountIndex) >= accounts->size()) {
     return DispatchResponse::InvalidParams("Invalid account index");
   }
 
+  const auto& account = accounts->at(in_accountIndex);
   auth_request->AcceptAccountsDialogForDevtools(
-      account->first.idp_metadata.config_url, account->second);
+      account->identity_provider->idp_metadata.config_url, *account);
   return DispatchResponse::Success();
 }
 
@@ -220,30 +200,30 @@ DispatchResponse FedCmHandler::OpenUrl(
   }
 
   auto* auth_request = GetFederatedAuthRequest();
-  const auto* idp_data = GetIdentityProviderData(auth_request);
-  if (!idp_data) {
+  if (!GetIdentityProviderData(auth_request)) {
     return DispatchResponse::ServerError(
         "openUrl called while no FedCm dialog is shown");
   }
 
-  auto account = GetAccountAt(*idp_data, in_accountIndex);
-  if (!account) {
+  const auto* accounts = GetAccounts(auth_request);
+  if (!accounts || in_accountIndex < 0 ||
+      static_cast<size_t>(in_accountIndex) >= accounts->size()) {
     return DispatchResponse::InvalidParams("Invalid account index");
   }
 
+  const auto& account = accounts->at(in_accountIndex);
   IdentityRequestDialogController::LinkType type;
   GURL url;
   if (in_accountUrlType == FedCm::AccountUrlTypeEnum::TermsOfService) {
     type = IdentityRequestDialogController::LinkType::TERMS_OF_SERVICE;
-    url = account->first.client_metadata.terms_of_service_url;
+    url = account->identity_provider->client_metadata.terms_of_service_url;
   } else if (in_accountUrlType == FedCm::AccountUrlTypeEnum::PrivacyPolicy) {
     type = IdentityRequestDialogController::LinkType::PRIVACY_POLICY;
-    url = account->first.client_metadata.privacy_policy_url;
+    url = account->identity_provider->client_metadata.privacy_policy_url;
   } else {
     return DispatchResponse::InvalidParams("Invalid account URL type");
   }
-  if (!url.is_valid() || account->second.login_state !=
-                             IdentityRequestAccount::LoginState::kSignUp) {
+  if (!url.is_valid() || account->fields.empty()) {
     return DispatchResponse::InvalidParams(
         "Account does not have requested URL");
   }
@@ -265,13 +245,13 @@ DispatchResponse FedCmHandler::ClickDialogButton(
         "clickDialogButton called while no FedCm dialog is shown");
   }
 
-  FederatedAuthRequestImpl::DialogType type = auth_request->GetDialogType();
+  DialogType type = auth_request->GetDialogType();
   if (in_dialogButton == FedCm::DialogButtonEnum::ConfirmIdpLoginContinue) {
     switch (type) {
-      case FederatedAuthRequestImpl::kConfirmIdpLogin:
+      case DialogType::kConfirmIdpLogin:
         auth_request->AcceptConfirmIdpLoginDialogForDevtools();
         return DispatchResponse::Success();
-      case FederatedAuthRequestImpl::kSelectAccount: {
+      case DialogType::kSelectAccount: {
         const auto* idp_data = GetIdentityProviderData(auth_request);
         CHECK(idp_data) << "kSelectAccount should always have IDP data";
         CHECK(!idp_data->empty());
@@ -280,7 +260,7 @@ DispatchResponse FedCmHandler::ClickDialogButton(
               "Multi-IDP not supported for ConfirmIdpLogin yet "
               "(crbug.com/328115461)");
         }
-        if (!auth_request->UseAnotherAccountForDevtools(idp_data->at(0))) {
+        if (!auth_request->UseAnotherAccountForDevtools(*idp_data->at(0))) {
           return DispatchResponse::ServerError(
               "'Use another account' not supported for this IDP");
         }
@@ -292,7 +272,7 @@ DispatchResponse FedCmHandler::ClickDialogButton(
             "confirm IDP login dialog is shown");
     }
   } else if (in_dialogButton == FedCm::DialogButtonEnum::ErrorGotIt) {
-    if (type != FederatedAuthRequestImpl::kError) {
+    if (type != DialogType::kError) {
       return DispatchResponse::ServerError(
           "clickDialogButton called with ErrorGotIt while no error dialog is "
           "shown");
@@ -300,7 +280,7 @@ DispatchResponse FedCmHandler::ClickDialogButton(
     auth_request->ClickErrorDialogGotItForDevtools();
     return DispatchResponse::Success();
   } else if (in_dialogButton == FedCm::DialogButtonEnum::ErrorMoreDetails) {
-    if (type != FederatedAuthRequestImpl::kError) {
+    if (type != DialogType::kError) {
       return DispatchResponse::ServerError(
           "clickDialogButton called with ErrorMoreDetails while no error "
           "dialog is shown");
@@ -315,8 +295,9 @@ DispatchResponse FedCmHandler::ClickDialogButton(
   return DispatchResponse::InvalidParams("Invalid dialog button");
 }
 
-DispatchResponse FedCmHandler::DismissDialog(const String& in_dialogId,
-                                             Maybe<bool> in_triggerCooldown) {
+DispatchResponse FedCmHandler::DismissDialog(
+    const String& in_dialogId,
+    std::optional<bool> in_triggerCooldown) {
   if (in_dialogId != dialog_id_) {
     return DispatchResponse::InvalidParams(
         "Dialog ID does not match current dialog");
@@ -328,12 +309,12 @@ DispatchResponse FedCmHandler::DismissDialog(const String& in_dialogId,
         "dismissDialog called while no FedCm dialog is shown");
   }
 
-  FederatedAuthRequestImpl::DialogType type = auth_request->GetDialogType();
-  if (type == FederatedAuthRequestImpl::kConfirmIdpLogin) {
+  DialogType type = auth_request->GetDialogType();
+  if (type == DialogType::kConfirmIdpLogin) {
     auth_request->DismissConfirmIdpLoginDialogForDevtools();
     return DispatchResponse::Success();
   }
-  if (type == FederatedAuthRequestImpl::kError) {
+  if (type == DialogType::kError) {
     auth_request->DismissErrorDialogForDevtools();
     return DispatchResponse::Success();
   }
@@ -363,24 +344,24 @@ url::Origin FedCmHandler::GetEmbeddingOrigin() {
   return frame_host_->GetMainFrame()->GetLastCommittedOrigin();
 }
 
-FederatedAuthRequestPageData* FedCmHandler::GetPageData() {
+webid::RequestPageData* FedCmHandler::GetPageData() {
   if (!frame_host_) {
     return nullptr;
   }
   Page& page = frame_host_->GetPage();
-  return PageUserData<FederatedAuthRequestPageData>::GetOrCreateForPage(page);
+  return PageUserData<webid::RequestPageData>::GetOrCreateForPage(page);
 }
 
-FederatedAuthRequestImpl* FedCmHandler::GetFederatedAuthRequest() {
-  FederatedAuthRequestPageData* page_data = GetPageData();
+webid::RequestService* FedCmHandler::GetFederatedAuthRequest() {
+  webid::RequestPageData* page_data = GetPageData();
   if (!page_data) {
     return nullptr;
   }
   return page_data->PendingWebIdentityRequest();
 }
 
-const std::vector<IdentityProviderData>* FedCmHandler::GetIdentityProviderData(
-    FederatedAuthRequestImpl* auth_request) {
+const std::vector<IdentityProviderDataPtr>*
+FedCmHandler::GetIdentityProviderData(webid::RequestService* auth_request) {
   if (!auth_request) {
     return nullptr;
   }
@@ -390,6 +371,18 @@ const std::vector<IdentityProviderData>* FedCmHandler::GetIdentityProviderData(
     return nullptr;
   }
   return &idp_data;
+}
+
+const std::vector<IdentityRequestAccountPtr>* FedCmHandler::GetAccounts(
+    webid::RequestService* auth_request) {
+  if (!auth_request) {
+    return nullptr;
+  }
+  const auto& accounts = auth_request->GetAccounts();
+  if (accounts.empty()) {
+    return nullptr;
+  }
+  return &accounts;
 }
 
 FederatedIdentityApiPermissionContextDelegate*

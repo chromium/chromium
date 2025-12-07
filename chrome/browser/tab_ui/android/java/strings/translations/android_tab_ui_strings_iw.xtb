@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="iw">
+<translation id="1293272072740285747">אפשר לשמור את הקבוצה הזו כדי להוסיף כרטיסיות מאוחר יותר, או למחוק אותה אם אין לך יותר צורך בה.
+
+אם הקבוצה תימחק, כולם יאבדו באופן מיידי את הגישה לקבוצת הכרטיסיות "<ph name="TITLE_OF_GROUP" />", והיא תימחק מכל המכשירים.</translation>
+<translation id="1340839264183302272">יציאה מהקבוצה</translation>
+<translation id="1419023007528516122">הקבוצה תימחק לתמיד מהמכשיר שלך</translation>
+<translation id="1501480321619201731">מחיקת קבוצה</translation>
+<translation id="2677748264148917807">יציאה</translation>
+<translation id="3547352561153509682">הפעולה הזו תמחק את הקבוצה מכל המכשירים שמחוברים לחשבון <ph name="USER_EMAIL" /></translation>
+<translation id="381219490185664296">לבטל את קבוצת הכרטיסיות?</translation>
+<translation id="4139634748112164403">הכרטיסיות יישארו פתוחות במכשיר הזה, אבל הקבוצה תימחק לתמיד</translation>
+<translation id="4431937619879060901">הגישה שלך לקבוצת הכרטיסיות "<ph name="GROUP_NAME" />" תאבד באופן מיידי ותימחק מכל המכשירים שלך</translation>
+<translation id="4460014764210899310">פיזור הקבוצה</translation>
+<translation id="4777866634702576038">למחוק את קבוצת הכרטיסיות?</translation>
+<translation id="5094423602314093681">להסיר את הכרטיסיות ולמחוק את הקבוצה?</translation>
+<translation id="5647702255748985085">רוצה לצאת מהקבוצה?</translation>
+<translation id="742664698522525515">לשמור את הקבוצה?</translation>
+<translation id="750886945254958667">אפשר לשמור את הקבוצה הזו כדי להוסיף כרטיסיות מאוחר יותר, או לעזוב אותה אם אין לך יותר צורך בה</translation>
+<translation id="8261506727792406068">מחיקה</translation>
+<translation id="870736955561925754">לסגור את הכרטיסייה ולמחוק את הקבוצה?</translation>
+<translation id="8804742093141782941">שמירת הקבוצה</translation>
+<translation id="9169141410816678175">כולם יאבדו באופן מיידי את הגישה לקבוצת הכרטיסיות "<ph name="GROUP_NAME" />", והיא תימחק מכל המכשירים</translation>
+<translation id="9216898458513705996">הכרטיסיות יישארו פתוחות במכשיר הזה, אבל הקבוצה תימחק מכל המכשירים שמחוברים לחשבון <ph name="USER_EMAIL" /></translation>
+<translation id="94870150074703282">למחוק את הקבוצה?</translation>
+</translationbundle>

@@ -24,8 +24,8 @@ void CallRunExclusive(const base::WeakPtr<ExclusiveTask>& task,
 
 }  // namespace
 
-ExclusiveTask::ExclusiveTask() {}
-ExclusiveTask::~ExclusiveTask() {}
+ExclusiveTask::ExclusiveTask() = default;
+ExclusiveTask::~ExclusiveTask() = default;
 
 void ExclusiveTask::RunPreflight(std::unique_ptr<SyncTaskToken> token) {
   std::unique_ptr<TaskBlocker> task_blocker(new TaskBlocker);

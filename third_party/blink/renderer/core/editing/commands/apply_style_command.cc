@@ -61,6 +61,7 @@
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -287,8 +288,10 @@ void ApplyStyleCommand::ApplyBlockStyle(EditingStyle* style,
       visible_end.DeepEquivalent().ParentAnchoredEquivalent());
 
   const TextIteratorBehavior behavior =
-      TextIteratorBehavior::AllVisiblePositionsRangeLengthBehavior();
-
+      RuntimeEnabledFeatures::EnterInOpenShadowRootsEnabled()
+          ? TextIteratorBehavior::
+                AllVisiblePositionsIncludingShadowRootRangeLengthBehavior()
+          : TextIteratorBehavior::AllVisiblePositionsRangeLengthBehavior();
   const int start_index = TextIterator::RangeLength(start_range, behavior);
   const int end_index = TextIterator::RangeLength(end_range, behavior);
 
@@ -707,30 +710,42 @@ void ApplyStyleCommand::ApplyInlineStyle(EditingStyle* style,
   // of it
   bool split_start = IsValidCaretPositionInTextNode(start);
   if (split_start) {
-    if (ShouldSplitTextElement(start.AnchorNode()->parentElement(), style))
+    bool should_split_text_element =
+        ShouldSplitTextElement(start.AnchorNode()->parentElement(), style);
+    if (should_split_text_element) {
       SplitTextElementAtStart(start, end);
-    else
+    } else {
       SplitTextAtStart(start, end);
+    }
     start = StartPosition();
     end = EndPosition();
     if (start.IsNull() || end.IsNull())
       return;
-    start_dummy_span_ancestor = DummySpanAncestorForNode(start.AnchorNode());
+    if (!RuntimeEnabledFeatures::SplitTextNotCleanupDummySpansEnabled() ||
+        should_split_text_element) {
+      start_dummy_span_ancestor = DummySpanAncestorForNode(start.AnchorNode());
+    }
   }
 
   // split the end node and containing element if the selection ends inside of
   // it
   bool split_end = IsValidCaretPositionInTextNode(end);
   if (split_end) {
-    if (ShouldSplitTextElement(end.AnchorNode()->parentElement(), style))
+    bool should_split_text_element =
+        ShouldSplitTextElement(end.AnchorNode()->parentElement(), style);
+    if (should_split_text_element) {
       SplitTextElementAtEnd(start, end);
-    else
+    } else {
       SplitTextAtEnd(start, end);
+    }
     start = StartPosition();
     end = EndPosition();
     if (start.IsNull() || end.IsNull())
       return;
-    end_dummy_span_ancestor = DummySpanAncestorForNode(end.AnchorNode());
+    if (!RuntimeEnabledFeatures::SplitTextNotCleanupDummySpansEnabled() ||
+        should_split_text_element) {
+      end_dummy_span_ancestor = DummySpanAncestorForNode(end.AnchorNode());
+    }
   }
 
   // Remove style from the selection.
@@ -1544,11 +1559,30 @@ void ApplyStyleCommand::RemoveInlineStyle(EditingStyle* style,
       }
 
       if (style_to_push_down) {
+        EditingStyle* filtered_style_to_push_down = style_to_push_down;
+
+        if (RuntimeEnabledFeatures::
+                RemoveFormatFilterBackgroundColorEnabled()) {
+          // Filter out styles that should be removed - don't push down styles
+          // that conflict with the styles we're trying to remove
+          filtered_style_to_push_down = style_to_push_down->Copy();
+          if (style && style->Style() && filtered_style_to_push_down->Style()) {
+            // Remove any properties from style_to_push_down that are present in
+            // the style being removed
+            for (const CSSPropertyValue& property :
+                 style->Style()->Properties()) {
+              filtered_style_to_push_down->Style()->RemoveProperty(
+                  property.PropertyID());
+            }
+          }
+        }
+
         for (; child_node; child_node = child_node->nextSibling()) {
-          ApplyInlineStyleToPushDown(child_node, style_to_push_down,
+          ApplyInlineStyleToPushDown(child_node, filtered_style_to_push_down,
                                      editing_state);
-          if (editing_state->IsAborted())
+          if (editing_state->IsAborted()) {
             return;
+          }
         }
       }
     }
@@ -2050,17 +2084,20 @@ float ApplyStyleCommand::ComputedFontSize(Node* node) {
   }
 
   auto* style = MakeGarbageCollected<CSSComputedStyleDeclaration>(element);
-  if (!style)
+  if (!style) {
     return 0;
+  }
 
-  const auto* value = To<CSSPrimitiveValue>(
+  const auto* value = DynamicTo<CSSPrimitiveValue>(
       style->GetPropertyCSSValue(CSSPropertyID::kFontSize));
-  if (!value)
+  if (!value) {
     return 0;
+  }
 
   // TODO(yosin): We should have printer for |CSSPrimitiveValue::UnitType|.
   DCHECK(value->IsPx());
-  return value->GetFloatValue();
+  std::optional<double> font_size = value->GetValueIfKnown();
+  return font_size.value_or(0);
 }
 
 void ApplyStyleCommand::JoinChildTextNodes(ContainerNode* node,

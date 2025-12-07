@@ -4,10 +4,9 @@ Name,Size
 .data.rel.ro,1065224
 .data.rel.ro.local,790024
 .other,90351129
+.part.end,16
 .rel.dyn,2655384
 .rodata,5927652
-.strtab,34841854
-.symtab,17166112
 .text,35982248
 
 GroupCount,Address,SizeWithoutPadding,Padding,NumAliases,PSS,Section,Name
@@ -60,12 +59,13 @@ GroupCount,Address,SizeWithoutPadding,Padding,NumAliases,PSS,Section,Name
 ,0x2de70a0,4,0,1,4.0,d,base::android::g_renderer_histogram_code
 ,0x2de70a4,4,0,1,4.0,d,base::android::g_library_version_number
 ,0x2de70a8,101600,0,1,101600.0,d,** .data (unattributed)
-,0x0,262144,0,1,262144.0,b,ff_cos_131072
-,0x0,131072,0,1,131072.0,b,ff_cos_131072_fixed
-,0x0,131072,0,1,131072.0,b,ff_cos_65536
+,0x0,16,0,1,16.0,b,** ELF Section: .part.end
 ,0x2dffda0,28,0,1,28.0,b,g_chrome_content_browser_client
 ,0x2dffe80,4,196,1,200.0,b,SaveHistogram::atomic_histogram_pointer
 ,0x2dffe84,4,0,1,4.0,b,g_AnimationFrameTimeHistogram_clazz
+,0x2dffe88,4,0,1,4.0,b,ff_cos_131072
+,0x2dffe8c,4,0,1,4.0,b,ff_cos_131072_fixed
+,0x2dffe9b,4,11,1,15.0,b,ff_cos_65536
 ,0x0,60,0,1,60.0,o,** ELF Section: .ARM.attributes
 ,0x0,1536456,0,1,1536456.0,o,** ELF Section: .ARM.exidx
 ,0x0,183632,0,1,183632.0,o,** ELF Section: .ARM.extab
@@ -81,11 +81,8 @@ GroupCount,Address,SizeWithoutPadding,Padding,NumAliases,PSS,Section,Name
 ,0x0,8,0,1,8.0,o,** ELF Section: .init_array
 ,0x0,19,0,1,19.0,o,** ELF Section: .interp
 ,0x0,36,0,1,36.0,o,** ELF Section: .note.gnu.build-id
-,0x0,28,0,1,28.0,o,** ELF Section: .note.gnu.gold-version
 ,0x0,4244,0,1,4244.0,o,** ELF Section: .plt
 ,0x0,2655384,0,1,2655384.0,o,** ELF Section: .rel.dyn
 ,0x0,2816,0,1,2816.0,o,** ELF Section: .rel.plt
 ,0x0,436,0,1,436.0,o,** ELF Section: .shstrtab
-,0x0,34841854,0,1,34841854.0,o,** ELF Section: .strtab
-,0x0,17166112,0,1,17166112.0,o,** ELF Section: .symtab
-,0x0,0,33902635,1,33902635.0,o,Overhead: ELF file
+,0x0,0,85910629,1,85910629.0,o,Overhead: ELF file

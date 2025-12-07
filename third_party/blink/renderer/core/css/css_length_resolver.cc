@@ -142,6 +142,14 @@ double CSSLengthResolver::ContainerMaxPercent() const {
   return std::max(ContainerWidthPercent(), ContainerHeightPercent());
 }
 
+const StylePositionAnchor& CSSLengthResolver::GetPositionAnchor() const {
+  using Holder = DisallowNewWrapper<StylePositionAnchor>;
+  DEFINE_STATIC_LOCAL(Persistent<Holder>, empty,
+                      (MakeGarbageCollected<Holder>(StylePositionAnchor(
+                          StylePositionAnchor::Initial()))));
+  return empty->Value();
+}
+
 double CSSLengthResolver::ZoomedComputedPixels(
     double value,
     CSSPrimitiveValue::UnitType type) const {
@@ -298,8 +306,7 @@ double CSSLengthResolver::ZoomedComputedPixels(
       return value * RcapFontSize(Zoom());
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 

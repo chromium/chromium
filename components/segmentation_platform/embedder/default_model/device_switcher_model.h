@@ -27,6 +27,32 @@ class DeviceSwitcherModel : public DefaultModelProvider {
   static constexpr char kSyncedAndFirstDeviceLabel[] = "SyncedAndFirstDevice";
   static constexpr char kNotSyncedLabel[] = "NotSynced";
 
+  enum Label {
+    kLabelAndroidPhone,
+    kLabelIosPhoneChrome,
+    kLabelAndroidTablet,
+    kLabelIosTablet,
+    kLabelDesktop,
+    kLabelOther,
+    kLabelSyncedAndFirstDevice,
+    kLabelNotSynced,
+    kLabelCount,
+  };
+
+  enum Feature {
+    kFeatureSyncSuccess,
+    kFeatureAndroidPhoneCount,
+    kFeatureAndroidTabletCount,
+    kFeatureIosPhoneCount,
+    kFeatureIosTabletCount,
+    kFeatureLinuxCount,
+    kFeatureMacCount,
+    kFeatureWindowsCount,
+    kFeatureChromeOsCount,
+    kFeatureOtherCount,
+    kFeatureCount,
+  };
+
   DeviceSwitcherModel();
   ~DeviceSwitcherModel() override = default;
 

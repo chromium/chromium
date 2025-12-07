@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_VR_VR_TAB_HELPER_H_
 #define CHROME_BROWSER_VR_VR_TAB_HELPER_H_
 
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace vr {
@@ -15,6 +17,11 @@ class VrTabHelper : public content::WebContentsUserData<VrTabHelper> {
   VrTabHelper& operator=(const VrTabHelper&) = delete;
 
   ~VrTabHelper() override;
+
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnIsContentDisplayedInHeadsetChanged(bool state) = 0;
+  };
 
   bool is_in_vr() const { return is_in_vr_; }
 
@@ -28,8 +35,10 @@ class VrTabHelper : public content::WebContentsUserData<VrTabHelper> {
 
   void SetIsContentDisplayedInHeadset(bool state);
 
-  static bool IsInVr(content::WebContents* contents);
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
+  static bool IsInVr(content::WebContents* contents);
   static bool IsContentDisplayedInHeadset(content::WebContents* contents);
   static void SetIsContentDisplayedInHeadset(content::WebContents* contents,
                                              bool state);
@@ -55,6 +64,8 @@ class VrTabHelper : public content::WebContentsUserData<VrTabHelper> {
   // TODO(cassew): Rename below vars to more intuitive names.
   bool is_in_vr_ = false;
   bool is_content_displayed_in_headset_ = false;
+
+  base::ObserverList<Observer> observers_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

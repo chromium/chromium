@@ -29,6 +29,8 @@ import java.util.concurrent.Executor;
  */
 @Deprecated
 public abstract class ExperimentalCronetEngine extends CronetEngine {
+    private static final String SHOULD_OVERRIDE_WITH_HTTPENGINE = "Cronet_OverrideWithHttpEngine";
+
     /** The value of a connection metric is unknown. */
     public static final int CONNECTION_METRIC_UNKNOWN = CronetEngine.CONNECTION_METRIC_UNKNOWN;
 
@@ -261,5 +263,13 @@ public abstract class ExperimentalCronetEngine extends CronetEngine {
     // TODO(pauljensen): Expose once implemented, http://crbug.com/418111
     public URLConnection openConnection(URL url, Proxy proxy) throws IOException {
         return url.openConnection(proxy);
+    }
+
+    /** Determines whether HttpEngine should be used or not. */
+    public static boolean shouldOverrideWithHttpEngine(Context context) {
+        var shouldOverrideWithHttpEngineFlagValue =
+                HttpFlagsForApi.getHttpFlags(context).flags().get(SHOULD_OVERRIDE_WITH_HTTPENGINE);
+        return shouldOverrideWithHttpEngineFlagValue != null
+                && shouldOverrideWithHttpEngineFlagValue.getBoolValue();
     }
 }

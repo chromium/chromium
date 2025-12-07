@@ -1,0 +1,11 @@
+<!doctype html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<script>
+test(() => assert_selection(
+  '<div contenteditable><ul><li>foo</li><li>ba|r baz</li></ul></div>',
+  'InsertOrderedList',
+  '<div contenteditable><ul><li>foo</li></ul><ol><li>ba|r baz</li></ol></div>'),
+  'InsertOrderedList should not change initial selection');
+</script>

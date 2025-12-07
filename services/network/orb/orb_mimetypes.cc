@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <set>
 #include <string>
 #include <unordered_set>
@@ -19,7 +20,6 @@
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "net/base/mime_sniffer.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -47,20 +47,20 @@ const char kTextPlain[] = "text/plain";
 
 // Javascript MIME type suffixes for use in CORB protection logging. See also
 // https://mimesniff.spec.whatwg.org/#javascript-mime-type.
-const char* kJavaScriptSuffixes[] = {"ecmascript",
-                                     "javascript",
-                                     "x-ecmascript",
-                                     "x-javascript",
-                                     "javascript1.0",
-                                     "javascript1.1",
-                                     "javascript1.2",
-                                     "javascript1.3",
-                                     "javascript1.4",
-                                     "javascript1.5",
-                                     "jscript",
-                                     "livescript",
-                                     "js",
-                                     "x-js"};
+constexpr const char* kJavaScriptSuffixes[] = {"ecmascript",
+                                               "javascript",
+                                               "x-ecmascript",
+                                               "x-javascript",
+                                               "javascript1.0",
+                                               "javascript1.1",
+                                               "javascript1.2",
+                                               "javascript1.3",
+                                               "javascript1.4",
+                                               "javascript1.5",
+                                               "jscript",
+                                               "livescript",
+                                               "js",
+                                               "x-js"};
 
 // TODO(lukasza): Remove kJsonProtobuf once this MIME type is not used in
 // practice.  See also https://crbug.com/826756#c3
@@ -164,7 +164,7 @@ const auto& GetNeverSniffedMimeTypes() {
 
   // All items need to be lower-case, to support case-insensitive comparisons
   // later.
-  DCHECK(base::ranges::all_of(kNeverSniffedMimeTypes, [](const auto& s) {
+  DCHECK(std::ranges::all_of(kNeverSniffedMimeTypes, [](const auto& s) {
     return s == base::ToLowerASCII(s);
   }));
 

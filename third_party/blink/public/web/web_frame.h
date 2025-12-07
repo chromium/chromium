@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_FRAME_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_FRAME_H_
 
+#include "base/unguessable_token.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-forward.h"
@@ -43,6 +44,8 @@
 #include "v8/include/v8-forward.h"
 
 namespace blink {
+
+enum class DetachReason;
 
 #if INSIDE_BLINK
 class Frame;
@@ -92,12 +95,13 @@ class BLINK_EXPORT WebFrame {
           remote_frame_host,
       CrossVariantMojoAssociatedReceiver<mojom::RemoteFrameInterfaceBase>
           receiver,
-      mojom::FrameReplicationStatePtr replicated_state);
+      mojom::FrameReplicationStatePtr replicated_state,
+      const std::optional<base::UnguessableToken>& devtools_frame_token);
 
   // This method closes and deletes the WebFrame. This is typically called by
   // the embedder in response to a frame detached callback to the WebFrame
   // client.
-  virtual void Close();
+  virtual void Close(DetachReason detach_reason);
 
   // Called by the embedder when it needs to detach the subtree rooted at this
   // frame.
@@ -112,7 +116,7 @@ class BLINK_EXPORT WebFrame {
   mojom::InsecureRequestPolicy GetInsecureRequestPolicy() const;
 
   // The frame's upgrade insecure navigations set.
-  WebVector<unsigned> GetInsecureRequestToUpgrade() const;
+  std::vector<unsigned> GetInsecureRequestToUpgrade() const;
 
   // Hierarchy ----------------------------------------------------------
 

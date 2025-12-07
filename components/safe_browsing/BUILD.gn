@@ -22,20 +22,25 @@ buildflag_header("buildflags") {
   # SAFE_BROWSING_DB_REMOTE means "are SB databases available via GMS Core?"
   # This is true only for Android.
   #
+  # SAFE_BROWSING_DOWNLOAD_PROTECTION means "are SB download protection features
+  # available?" This is true for desktop OSes and Android.
   if (safe_browsing_mode == 0) {
-    flags += [ "FULL_SAFE_BROWSING=0" ]
-    flags += [ "SAFE_BROWSING_AVAILABLE=0" ]
-    flags += [ "SAFE_BROWSING_DB_LOCAL=0" ]
-    flags += [ "SAFE_BROWSING_DB_REMOTE=0" ]
+    flags += [ "FULL_SAFE_BROWSING=false" ]
+    flags += [ "SAFE_BROWSING_AVAILABLE=false" ]
+    flags += [ "SAFE_BROWSING_DB_LOCAL=false" ]
+    flags += [ "SAFE_BROWSING_DB_REMOTE=false" ]
+    flags += [ "SAFE_BROWSING_DOWNLOAD_PROTECTION=false" ]
   } else if (safe_browsing_mode == 1) {
-    flags += [ "FULL_SAFE_BROWSING=1" ]
-    flags += [ "SAFE_BROWSING_AVAILABLE=1" ]
-    flags += [ "SAFE_BROWSING_DB_LOCAL=1" ]
-    flags += [ "SAFE_BROWSING_DB_REMOTE=0" ]
+    flags += [ "FULL_SAFE_BROWSING=true" ]
+    flags += [ "SAFE_BROWSING_AVAILABLE=true" ]
+    flags += [ "SAFE_BROWSING_DB_LOCAL=true" ]
+    flags += [ "SAFE_BROWSING_DB_REMOTE=false" ]
+    flags += [ "SAFE_BROWSING_DOWNLOAD_PROTECTION=true" ]
   } else if (safe_browsing_mode == 2) {
-    flags += [ "FULL_SAFE_BROWSING=0" ]
-    flags += [ "SAFE_BROWSING_AVAILABLE=1" ]
-    flags += [ "SAFE_BROWSING_DB_LOCAL=0" ]
-    flags += [ "SAFE_BROWSING_DB_REMOTE=1" ]
+    flags += [ "FULL_SAFE_BROWSING=false" ]
+    flags += [ "SAFE_BROWSING_AVAILABLE=true" ]
+    flags += [ "SAFE_BROWSING_DB_LOCAL=false" ]
+    flags += [ "SAFE_BROWSING_DB_REMOTE=true" ]
+    flags += [ "SAFE_BROWSING_DOWNLOAD_PROTECTION=true" ]
   }
 }

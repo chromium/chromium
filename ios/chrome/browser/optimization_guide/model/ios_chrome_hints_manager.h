@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_IOS_CHROME_HINTS_MANAGER_H_
 #define IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_IOS_CHROME_HINTS_MANAGER_H_
 
-#include "components/optimization_guide/core/hints_manager.h"
+#include "components/optimization_guide/core/hints/hints_manager.h"
 
 namespace signin {
 class IdentityManager;

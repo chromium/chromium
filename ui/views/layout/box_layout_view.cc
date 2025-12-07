@@ -9,6 +9,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/layout/layout_manager.h"
+#include "ui/views/property_effects.h"
 
 namespace views {
 
@@ -24,11 +25,12 @@ BoxLayoutView::BoxLayoutView()
       default_flex_(layout_->GetDefaultFlex()) {}
 
 void BoxLayoutView::SetOrientation(BoxLayout::Orientation orientation) {
-  if (orientation_ == orientation)
+  if (orientation_ == orientation) {
     return;
+  }
   layout_->SetOrientation(orientation);
   orientation_ = orientation;
-  OnPropertyChanged(&orientation_, kPropertyEffectsLayout);
+  OnPropertyChanged(&orientation_, PropertyEffects::kLayout);
 }
 
 BoxLayout::Orientation BoxLayoutView::GetOrientation() const {
@@ -37,11 +39,12 @@ BoxLayout::Orientation BoxLayoutView::GetOrientation() const {
 
 void BoxLayoutView::SetMainAxisAlignment(
     BoxLayout::MainAxisAlignment main_axis_alignment) {
-  if (main_axis_alignment_ == main_axis_alignment)
+  if (main_axis_alignment_ == main_axis_alignment) {
     return;
+  }
   layout_->set_main_axis_alignment(main_axis_alignment);
   main_axis_alignment_ = main_axis_alignment;
-  OnPropertyChanged(&main_axis_alignment_, kPropertyEffectsLayout);
+  OnPropertyChanged(&main_axis_alignment_, PropertyEffects::kLayout);
 }
 
 BoxLayout::MainAxisAlignment BoxLayoutView::GetMainAxisAlignment() const {
@@ -50,11 +53,12 @@ BoxLayout::MainAxisAlignment BoxLayoutView::GetMainAxisAlignment() const {
 
 void BoxLayoutView::SetCrossAxisAlignment(
     BoxLayout::CrossAxisAlignment cross_axis_alignment) {
-  if (cross_axis_alignment_ == cross_axis_alignment)
+  if (cross_axis_alignment_ == cross_axis_alignment) {
     return;
+  }
   layout_->set_cross_axis_alignment(cross_axis_alignment);
   cross_axis_alignment_ = cross_axis_alignment;
-  OnPropertyChanged(&cross_axis_alignment_, kPropertyEffectsLayout);
+  OnPropertyChanged(&cross_axis_alignment_, PropertyEffects::kLayout);
 }
 
 BoxLayout::CrossAxisAlignment BoxLayoutView::GetCrossAxisAlignment() const {
@@ -62,11 +66,12 @@ BoxLayout::CrossAxisAlignment BoxLayoutView::GetCrossAxisAlignment() const {
 }
 
 void BoxLayoutView::SetInsideBorderInsets(const gfx::Insets& insets) {
-  if (inside_border_insets_ == insets)
+  if (inside_border_insets_ == insets) {
     return;
+  }
   layout_->set_inside_border_insets(insets);
   inside_border_insets_ = insets;
-  OnPropertyChanged(&inside_border_insets_, kPropertyEffectsLayout);
+  OnPropertyChanged(&inside_border_insets_, PropertyEffects::kLayout);
 }
 
 const gfx::Insets& BoxLayoutView::GetInsideBorderInsets() const {
@@ -74,11 +79,12 @@ const gfx::Insets& BoxLayoutView::GetInsideBorderInsets() const {
 }
 
 void BoxLayoutView::SetMinimumCrossAxisSize(int size) {
-  if (minimum_cross_axis_size_ == size)
+  if (minimum_cross_axis_size_ == size) {
     return;
+  }
   layout_->set_minimum_cross_axis_size(size);
   minimum_cross_axis_size_ = size;
-  OnPropertyChanged(&minimum_cross_axis_size_, kPropertyEffectsLayout);
+  OnPropertyChanged(&minimum_cross_axis_size_, PropertyEffects::kLayout);
 }
 
 int BoxLayoutView::GetMinimumCrossAxisSize() const {
@@ -86,11 +92,12 @@ int BoxLayoutView::GetMinimumCrossAxisSize() const {
 }
 
 void BoxLayoutView::SetBetweenChildSpacing(int spacing) {
-  if (between_child_spacing_ == spacing)
+  if (between_child_spacing_ == spacing) {
     return;
+  }
   layout_->set_between_child_spacing(spacing);
   between_child_spacing_ = spacing;
-  OnPropertyChanged(&between_child_spacing_, kPropertyEffectsLayout);
+  OnPropertyChanged(&between_child_spacing_, PropertyEffects::kLayout);
 }
 
 int BoxLayoutView::GetBetweenChildSpacing() const {
@@ -98,11 +105,12 @@ int BoxLayoutView::GetBetweenChildSpacing() const {
 }
 
 void BoxLayoutView::SetCollapseMarginsSpacing(bool collapse_margins_spacing) {
-  if (collapse_margins_spacing_ == collapse_margins_spacing)
+  if (collapse_margins_spacing_ == collapse_margins_spacing) {
     return;
+  }
   layout_->SetCollapseMarginsSpacing(collapse_margins_spacing);
   collapse_margins_spacing_ = collapse_margins_spacing;
-  OnPropertyChanged(&collapse_margins_spacing_, kPropertyEffectsLayout);
+  OnPropertyChanged(&collapse_margins_spacing_, PropertyEffects::kLayout);
 }
 
 bool BoxLayoutView::GetCollapseMarginsSpacing() const {
@@ -110,11 +118,12 @@ bool BoxLayoutView::GetCollapseMarginsSpacing() const {
 }
 
 void BoxLayoutView::SetDefaultFlex(int default_flex) {
-  if (default_flex_ == default_flex)
+  if (default_flex_ == default_flex) {
     return;
+  }
   layout_->SetDefaultFlex(default_flex);
   default_flex_ = default_flex;
-  OnPropertyChanged(&default_flex_, kPropertyEffectsLayout);
+  OnPropertyChanged(&default_flex_, PropertyEffects::kLayout);
 }
 
 int BoxLayoutView::GetDefaultFlex() const {

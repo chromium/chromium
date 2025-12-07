@@ -40,7 +40,6 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/frame_serializer.h"
-#include "third_party/blink/renderer/core/frame/frame_serializer_delegate_impl.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_frame_serializer_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
@@ -49,10 +48,54 @@
 #include "third_party/blink/renderer/platform/mhtml/serialized_resource.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_concatenate.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
+
+namespace {
+
+void ContinueGenerateMHTMLParts(
+    const WebString& boundary,
+    const blink::LocalFrameToken& frame_token,
+    MHTMLArchive::EncodingPolicy encoding_policy,
+    base::OnceCallback<void(WebThreadSafeData)> callback,
+    Deque<SerializedResource> resources) {
+  WebFrame* web_frame = WebLocalFrame::FromFrameToken(frame_token);
+  LocalFrame* frame =
+      web_frame ? To<WebLocalFrameImpl>(web_frame)->GetFrame() : nullptr;
+
+  TRACE_EVENT_END1("page-serialization",
+                   "WebFrameSerializer::generateMHTMLParts serializing",
+                   "resource count", static_cast<uint64_t>(resources.size()));
+
+  // There was an error serializing the frame (e.g. of an image resource).
+  if (resources.empty() || !frame) {
+    std::move(callback).Run(WebThreadSafeData());
+    return;
+  }
+
+  // Encode serialized resources as MHTML.
+  scoped_refptr<RawData> output = RawData::Create();
+  {
+    // Frame is the 1st resource (see FrameSerializer::serializeFrame doc
+    // comment). Frames get a Content-ID header.
+    MHTMLArchive::GenerateMHTMLPart(
+        boundary, FrameSerializer::GetContentID(frame), encoding_policy,
+        resources.TakeFirst(), *output->MutableData());
+    while (!resources.empty()) {
+      TRACE_EVENT0("page-serialization",
+                   "WebFrameSerializer::generateMHTMLParts encoding");
+      MHTMLArchive::GenerateMHTMLPart(boundary, String(), encoding_policy,
+                                      resources.TakeFirst(),
+                                      *output->MutableData());
+    }
+  }
+  std::move(callback).Run(WebThreadSafeData(output));
+}
+
+}  // namespace
 
 WebThreadSafeData WebFrameSerializer::GenerateMHTMLHeader(
     const WebString& boundary,
@@ -73,10 +116,11 @@ WebThreadSafeData WebFrameSerializer::GenerateMHTMLHeader(
   return WebThreadSafeData(buffer);
 }
 
-WebThreadSafeData WebFrameSerializer::GenerateMHTMLParts(
+void WebFrameSerializer::GenerateMHTMLParts(
     const WebString& boundary,
     WebLocalFrame* web_frame,
-    MHTMLPartsGenerationDelegate* web_delegate) {
+    MHTMLPartsGenerationDelegate* web_delegate,
+    base::OnceCallback<void(WebThreadSafeData)> callback) {
   TRACE_EVENT0("page-serialization", "WebFrameSerializer::generateMHTMLParts");
   DCHECK(web_frame);
   DCHECK(web_delegate);
@@ -92,39 +136,11 @@ WebThreadSafeData WebFrameSerializer::GenerateMHTMLParts(
   TRACE_EVENT_BEGIN0("page-serialization",
                      "WebFrameSerializer::generateMHTMLParts serializing");
   Deque<SerializedResource> resources;
-  {
-    HeapHashSet<WeakMember<const Element>> shadow_template_elements;
-    FrameSerializerDelegateImpl core_delegate(*web_delegate,
-                                              shadow_template_elements);
-    FrameSerializer serializer(resources, core_delegate);
-    serializer.SerializeFrame(*frame);
-  }
-
-  TRACE_EVENT_END1("page-serialization",
-                   "WebFrameSerializer::generateMHTMLParts serializing",
-                   "resource count", static_cast<uint64_t>(resources.size()));
-
-  // There was an error serializing the frame (e.g. of an image resource).
-  if (resources.empty())
-    return WebThreadSafeData();
-
-  // Encode serialized resources as MHTML.
-  scoped_refptr<RawData> output = RawData::Create();
-  {
-    // Frame is the 1st resource (see FrameSerializer::serializeFrame doc
-    // comment). Frames get a Content-ID header.
-    MHTMLArchive::GenerateMHTMLPart(
-        boundary, FrameSerializerDelegateImpl::GetContentID(frame),
-        encoding_policy, resources.TakeFirst(), *output->MutableData());
-    while (!resources.empty()) {
-      TRACE_EVENT0("page-serialization",
-                   "WebFrameSerializer::generateMHTMLParts encoding");
-      MHTMLArchive::GenerateMHTMLPart(boundary, String(), encoding_policy,
-                                      resources.TakeFirst(),
-                                      *output->MutableData());
-    }
-  }
-  return WebThreadSafeData(output);
+  FrameSerializer::SerializeFrame(
+      *web_delegate, *frame,
+      blink::BindOnce(&ContinueGenerateMHTMLParts, boundary,
+                      web_frame->GetLocalFrameToken(), encoding_policy,
+                      std::move(callback)));
 }
 
 bool WebFrameSerializer::Serialize(
@@ -139,20 +155,15 @@ bool WebFrameSerializer::Serialize(
 
 WebString WebFrameSerializer::GenerateMetaCharsetDeclaration(
     const WebString& charset) {
-  // TODO(yosin) We should call |FrameSerializer::metaCharsetDeclarationOf()|.
-  String charset_string =
-      "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=" +
-      static_cast<const String&>(charset) + "\">";
-  return charset_string;
+  return StrCat(
+      {"<meta http-equiv=\"Content-Type\" content=\"text/html; charset=",
+       static_cast<const String&>(charset), "\">"});
 }
 
 WebString WebFrameSerializer::GenerateMarkOfTheWebDeclaration(
     const WebURL& url) {
-  StringBuilder builder;
-  builder.Append("\n<!-- ");
-  builder.Append(FrameSerializer::MarkOfTheWebDeclaration(url));
-  builder.Append(" -->\n");
-  return builder.ToString();
+  return StrCat(
+      {"\n<!-- ", FrameSerializer::MarkOfTheWebDeclaration(url), " -->\n"});
 }
 
 }  // namespace blink

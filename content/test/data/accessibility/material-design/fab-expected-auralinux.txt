@@ -1,0 +1,75 @@
+[document web] name='Material Web FAB'
+++[section] name='Ready'
+++++[push button]
+++++++[section]
+++++[push button]
+++++++[section]
+++++[push button]
+++++++[section]
+++++[push button] name='Extended FAB'
+++++++[section]
+++++++[static] name='Extended FAB'
+++++[push button]
+++++++[section]
+++++[push button]
+++++++[section]
+=== Start Continuation ===
+[document web] name='Material Web FAB'
+++[section] name='Ready'
+++++[push button]
+++++++[section]
+++++[push button]
+++++++[section]
+++++[push button]
+++++++[section]
+++++[push button] name='Extended FAB'
+++++++[section]
+++++++[static] name='Extended FAB'
+++++[push button]
+++++++[section]
+++++[push button]
+++++++[section]
+++++[section]
+++++++[static] name='FAB Lowered'
+=== Start Continuation ===
+[document web] name='Material Web FAB'
+++[section] name='Ready'
+++++[push button]
+++++++[section]
+++++[push button]
+++++++[section]
+++++[push button]
+++++++[section]
+++++[push button] name='Extended FAB'
+++++++[section]
+++++++[static] name='Extended FAB'
+++++[push button]
+++++++[section]
+++++[push button]
+++++++[section]
+++++[section]
+++++++[static] name='FAB Lowered'
+++++[section]
+++++++[static] name='FAB Unlowered'
+=== Start Continuation ===
+[document web] name='Material Web FAB'
+++[section] name='Ready'
+++++[push button]
+++++++[section]
+++++[push button]
+++++++[section]
+++++[push button]
+++++++[section]
+++++[push button] name='Extended FAB'
+++++++[section]
+++++++[static] name='Extended FAB'
+++++[push button]
+++++++[section]
+++++[push button]
+++++++[section]
+++++[section]
+++++++[static] name='FAB Lowered'
+++++[section]
+++++++[static] name='FAB Unlowered'
+++++[section]
+++++++[static] name='FAB Clicked'

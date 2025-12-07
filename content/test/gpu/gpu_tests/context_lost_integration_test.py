@@ -7,18 +7,17 @@ import logging
 import os
 import sys
 import time
-from typing import Any, List, Optional, Set, Tuple
+from typing import Any
 import unittest
 
+from telemetry.core import exceptions
+
+import gpu_path_util
 from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
 from gpu_tests import gpu_helper
 from gpu_tests.util import host_information
-
-import gpu_path_util
-
-from telemetry.core import exceptions
 
 harness_script = r"""
   var domAutomationController = {};
@@ -80,7 +79,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def _SuiteSupportsParallelTests(cls) -> bool:
     return True
 
-  def _GetSerialTests(self) -> Set[str]:
+  def _GetSerialTests(self) -> set[str]:
     serial_tests = {
         # High/low power tests don't work properly with multiple browsers
         # active.
@@ -89,11 +88,6 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         'ContextLost_MacWebGLCopyTexSubImage2DHighPowerSwitchDoesNotCrash',
         'ContextLost_MacWebGLPreserveDBHighPowerSwitchLosesContext',
     }
-    if host_information.IsMac():
-      serial_tests |= {
-          # crbug.com/338574390, flaky on Mac/ASan.
-          'ContextLost_WebGLContextRestoredInHiddenTab',
-      }
     if host_information.IsMac() or host_information.IsWindows():
       serial_tests |= {
           # Flaky timeout http://crbug.com/352077583
@@ -102,7 +96,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     return serial_tests
 
   @classmethod
-  def GenerateBrowserArgs(cls, additional_args: List[str]) -> List[str]:
+  def GenerateBrowserArgs(cls, additional_args: list[str]) -> list[str]:
     """Adds default arguments to |additional_args|.
 
     See the parent class' method documentation for additional information.
@@ -126,7 +120,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # Could not figure out how to prevent yapf from breaking the formatting
     # below.
     # yapf: disable
-    tests: Tuple[Tuple[str, str], ...] = (
+    tests: tuple[tuple[str, str], ...] = (
              ('GpuCrash_GPUProcessCrashesExactlyOncePerVisitToAboutGpuCrash',
               'gpu_process_crash.html'),
              ('GpuCrash_GPUProcessCrashesExactlyOnce_SurfaceControlDisabled',
@@ -162,7 +156,6 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
               'worker-webgl-raf-after-gpu-crash.html'),
              ('ContextLost_OffscreenCanvasRecoveryAfterGPUCrash',
               'offscreencanvas_recovery_after_gpu_crash.html'),
-             ('ContextLost_WebGL2Blocked', 'webgl2-context-blocked.html'),
              ('ContextLost_WebGL2UnpackImageHeight',
               'webgl2-unpack-image-height.html'),
              ('ContextLost_MacWebGLMultisamplingHighPowerSwitchLosesContext',
@@ -174,6 +167,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
              ('ContextLost_MacWebGLPreserveDBHighPowerSwitchLosesContext',
               'webgl2-preserve-db-high-power-switch-loses-context.html'),
              ('GpuCrash_InfoForHardwareGpu', 'simple.html'),
+             ('GpuCrash_SoftwareFallbackDisabled', 'simple.html'),
              ('GpuCrash_InfoForDualHardwareGpus', 'webgl-high-perf.html'),
              ('ContextLost_WebGPUBlockedAfterJSNavigation',
               'webgpu-domain-blocking-page1.html'),
@@ -206,14 +200,16 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     cls.SetStaticServerDirs([gpu_path_util.GPU_DATA_DIR])
 
   # Can be changed to functools.cache on Python 3.9+.
+  @classmethod
   @functools.lru_cache(maxsize=None)
-  def _GetWaitTimeout(self):
+  def _GetWaitTimeout(cls):
     timeout = 60
-    if self._is_asan:
+    if cls._is_asan or cls.browser.browser_type in ('debug', 'web-engine-shell',
+                                                    'cast-streaming-shell'):
       timeout *= 2
     return timeout
 
-  def _WaitForPageToFinish(self, tab, timeout: Optional[int] = None) -> bool:
+  def _WaitForPageToFinish(self, tab, timeout: int | None = None) -> bool:
     timeout = timeout or self._GetWaitTimeout()
     try:
       tab.WaitForJavaScriptCondition('window.domAutomationController._finished',
@@ -225,7 +221,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def _KillGPUProcess(self,
                       number_of_gpu_process_kills: int,
                       check_crash_count: bool,
-                      timeout: Optional[int] = None) -> None:
+                      timeout: int | None = None) -> None:
     timeout = timeout or self._GetWaitTimeout()
     tab = self.tab
     # Doing the GPU process kill operation cooperatively -- in the
@@ -281,7 +277,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       while current_time - start_time < 20:
         system_info = tab.browser.GetSystemInfo()
         number_of_crashes = \
-            system_info.gpu.aux_attributes[u'process_crash_count']
+            system_info.gpu.aux_attributes['process_crash_count']
         if number_of_crashes >= expected_kills:
           break
         time.sleep(1)
@@ -292,13 +288,13 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     time.sleep(5)
     system_info = tab.browser.GetSystemInfo()
     number_of_crashes = \
-        system_info.gpu.aux_attributes[u'process_crash_count']
+        system_info.gpu.aux_attributes['process_crash_count']
 
     if number_of_crashes < expected_kills:
       self.fail('Timed out waiting for a gpu process crash')
     elif number_of_crashes != expected_kills:
-      self.fail('Expected %d gpu process crashes; got: %d' %
-                (expected_kills, number_of_crashes))
+      self.fail(f'Expected {expected_kills} gpu process crashes; got: '
+                f'{number_of_crashes}')
 
   def _NavigateAndWaitForLoad(self, test_path: str) -> None:
     url = self.UrlOfStaticFilePath(test_path)
@@ -312,8 +308,8 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     tab.Navigate('chrome:gpu',
                  script_to_evaluate_on_commit=feature_query_script)
     tab.WaitForJavaScriptCondition('window.gpuPagePopulated', timeout=10)
-    status = (tab.EvaluateJavaScript('GetFeatureStatus("webgl", %s)' %
-                                     ('true' if for_hardware_gpu else 'false')))
+    status = tab.EvaluateJavaScript(
+        f'GetFeatureStatus("webgl", {ToJsBoolString(for_hardware_gpu)})')
     tab.Close()
     return status
 
@@ -322,13 +318,12 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     tab.Navigate('chrome:gpu',
                  script_to_evaluate_on_commit=vendor_id_query_script)
     tab.WaitForJavaScriptCondition('window.gpuPagePopulated', timeout=10)
-    vid = (tab.EvaluateJavaScript('GetActiveVendorId(%s)' %
-                                  ('true' if for_hardware_gpu else 'false')))
+    vid = tab.EvaluateJavaScript(
+        f'GetActiveVendorId({ToJsBoolString(for_hardware_gpu)})')
     tab.Close()
     return vid
 
-  def _WaitForTabAndCheckCompletion(self,
-                                    timeout: Optional[int] = None) -> None:
+  def _WaitForTabAndCheckCompletion(self, timeout: int | None = None) -> None:
     tab = self.tab
     completed = self._WaitForPageToFinish(tab, timeout=timeout)
     if not completed:
@@ -373,7 +368,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   def _ContextLost_WebGPUContextLostFromGPUProcessExit(self,
                                                        test_path: str) -> None:
-    self.RestartBrowserIfNecessaryWithArgs(cba.ENABLE_WEBGPU_FOR_TESTING)
+    self.RestartBrowserIfNecessaryWithArgs([])
     self._NavigateAndWaitForLoad(test_path)
     self.tab.EvaluateJavaScript(
         'chrome.gpuBenchmarking.terminateGpuProcessNormally()')
@@ -384,9 +379,9 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
     self._RestartBrowser('must restart after tests that kill the GPU process')
 
-  def _ContextLost_WebGPUStressRequestDeviceAndRemoveLoop(self, test_path: str
-                                                          ) -> None:
-    self.RestartBrowserIfNecessaryWithArgs(cba.ENABLE_WEBGPU_FOR_TESTING)
+  def _ContextLost_WebGPUStressRequestDeviceAndRemoveLoop(
+      self, test_path: str) -> None:
+    self.RestartBrowserIfNecessaryWithArgs([])
     self._NavigateAndWaitForLoad(test_path)
 
     # Test runs for 90 seconds; wait for 120 seconds.
@@ -441,8 +436,8 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # No reason to wait more than 10 seconds for this test to complete.
     self._WaitForTabAndCheckCompletion(timeout=10)
 
-  def _ContextLost_WebGLContextRestoredInHiddenTab(self, test_path: str
-                                                   ) -> None:
+  def _ContextLost_WebGLContextRestoredInHiddenTab(self,
+                                                   test_path: str) -> None:
     self.RestartBrowserIfNecessaryWithArgs([])
     self._NavigateAndWaitForLoad(test_path)
     tab = self.tab
@@ -498,8 +493,8 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
           'Page should have been blocked from getting a new WebGL context')
     self._RestartBrowser('must restart after tests that kill the GPU process')
 
-  def _ContextLost_WebGLUnblockedAfterUserInitiatedReload(self, test_path: str
-                                                          ) -> None:
+  def _ContextLost_WebGLUnblockedAfterUserInitiatedReload(
+      self, test_path: str) -> None:
     self.RestartBrowserIfNecessaryWithArgs([])
     self._NavigateAndWaitForLoad(test_path)
     tab = self.tab
@@ -576,16 +571,6 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     self._KillGPUProcess(1, False)
     self._WaitForTabAndCheckCompletion()
     self._RestartBrowser('must restart after tests that kill the GPU process')
-
-  def _ContextLost_WebGL2Blocked(self, test_path: str) -> None:
-    self.RestartBrowserIfNecessaryWithArgs(['--disable_es3_gl_context=1'])
-    self._NavigateAndWaitForLoad(test_path)
-    tab = self.tab
-    tab.EvaluateJavaScript('runTest()')
-    self._WaitForTabAndCheckCompletion()
-    # Attempting to create a WebGL 2.0 context when ES 3.0 is
-    # blocklisted should not cause the GPU process to crash.
-    self._CheckCrashCount(tab, 0)
 
   def _ContextLost_WebGL2UnpackImageHeight(self, test_path: str) -> None:
     self.RestartBrowserIfNecessaryWithArgs([
@@ -689,14 +674,17 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def _GpuCrash_InfoForHardwareGpu(self, test_path: str) -> None:
     # Ensure that info displayed in chrome:gpu for hardware gpu is correct,
     # after gpu process crashes three times and falls back to SwiftShader.
-    self.RestartBrowserIfNecessaryWithArgs(
-        [cba.DISABLE_DOMAIN_BLOCKING_FOR_3D_APIS])
+    self.RestartBrowserIfNecessaryWithArgs([
+        cba.DISABLE_DOMAIN_BLOCKING_FOR_3D_APIS,
+        '--enable-features=AllowSoftwareGLFallbackDueToCrashes,'
+        'AllowSwiftShaderFallback'
+    ])
     self._NavigateAndWaitForLoad(test_path)
     # Check WebGL status at browser startup.
     webgl_status = self._GetWebGLFeatureStatus(False)
     if webgl_status != 'enabled':
-      self.fail('WebGL should be hardware accelerated initially, but got %s' %
-                webgl_status)
+      self.fail(f'WebGL should be hardware accelerated initially, but got '
+                f'{webgl_status}')
     webgl_status_for_hardware_gpu = self._GetWebGLFeatureStatus(True)
     if webgl_status_for_hardware_gpu != '':
       self.fail('Feature status for hardware gpu should not be displayed '
@@ -705,12 +693,34 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     self._KillGPUProcess(3, True)
     webgl_status = self._GetWebGLFeatureStatus(False)
     if webgl_status != 'unavailable_software':
-      self.fail('WebGL should be software only with SwiftShader, but got %s' %
-                webgl_status)
+      self.fail(f'WebGL should be software only with SwiftShader, but got '
+                f'{webgl_status}')
     webgl_status_for_hardware_gpu = self._GetWebGLFeatureStatus(True)
     if webgl_status_for_hardware_gpu != 'enabled':
-      self.fail('WebGL status for hardware gpu should be "enabled", '
-                'but got %s' % webgl_status_for_hardware_gpu)
+      self.fail(f'WebGL status for hardware gpu should be "enabled", '
+                f'but got {webgl_status_for_hardware_gpu}')
+    self._RestartBrowser('must restart after tests that kill the GPU process')
+
+  def _GpuCrash_SoftwareFallbackDisabled(self, test_path: str) -> None:
+    # Ensure that WebGL is using hardware acceleration by default. If the
+    # AllowSoftwareGLFallbackDueToCrashes is disabled and the GPU process
+    # crashes three times then WebGL should be fully disabled.
+    self.RestartBrowserIfNecessaryWithArgs([
+        cba.DISABLE_DOMAIN_BLOCKING_FOR_3D_APIS,
+        '--disable-features=AllowSoftwareGLFallbackDueToCrashes'
+    ])
+    self._NavigateAndWaitForLoad(test_path)
+    # Check WebGL status at browser startup.
+    webgl_status = self._GetWebGLFeatureStatus(False)
+    if webgl_status != 'enabled':
+      self.fail(f'WebGL should be hardware accelerated initially, but got '
+                f'{webgl_status}')
+    # Check WebGL status after three GPU crashes - No software fallback due to
+    # AllowSoftwareGLFallbackDueToCrashes being disabled.
+    self._KillGPUProcess(3, True)
+    webgl_status = self._GetWebGLFeatureStatus(False)
+    if webgl_status != 'disabled_off':
+      self.fail(f'WebGL should be disabled_off, but got {webgl_status}')
     self._RestartBrowser('must restart after tests that kill the GPU process')
 
   def _GpuCrash_InfoForDualHardwareGpus(self, test_path: str) -> None:
@@ -721,8 +731,9 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     if not self.IsDualGPUMacLaptop():
       logging.info('Skipping test because not running on dual-GPU Mac laptop')
       self.skipTest('Not running on dual-GPU Mac laptop')
-    self.RestartBrowserIfNecessaryWithArgs(
-        [cba.DISABLE_DOMAIN_BLOCKING_FOR_3D_APIS])
+    self.RestartBrowserIfNecessaryWithArgs([
+        cba.DISABLE_DOMAIN_BLOCKING_FOR_3D_APIS, '--enable-unsafe-swiftshader'
+    ])
     active_vendor_id = self._GetActiveVendorId(False)
     # Load WebGL content and switch to discrete GPU.
     self._NavigateAndWaitForLoad(test_path)
@@ -736,12 +747,12 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     if not active_vendor_id_for_hardware_gpu:
       self.fail('Fail to query the active GPU vendor id for hardware GPU')
     if active_vendor_id_for_hardware_gpu != new_active_vendor_id:
-      self.fail('vendor id for hw GPU should be 0x%04x, got 0x%04x' %
-                (new_active_vendor_id, active_vendor_id_for_hardware_gpu))
+      self.fail(f'vendor id for hw GPU should be 0x{new_active_vendor_id:04x}, '
+                f'got 0x{active_vendor_id_for_hardware_gpu:04x}')
     self._RestartBrowser('must restart after tests that kill the GPU process')
 
   def _ContextLost_WebGPUBlockedAfterJSNavigation(self, test_path: str) -> None:
-    self.RestartBrowserIfNecessaryWithArgs(cba.ENABLE_WEBGPU_FOR_TESTING)
+    self.RestartBrowserIfNecessaryWithArgs([])
     self._NavigateAndWaitForLoad(test_path)
 
     tab = self.tab
@@ -791,7 +802,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     'Success' state while the second run only needs to reach 'Loaded' state to
     verify that a WebGPU has been unblocked.
     """
-    self.RestartBrowserIfNecessaryWithArgs(cba.ENABLE_WEBGPU_FOR_TESTING)
+    self.RestartBrowserIfNecessaryWithArgs([])
     # Make sure the tab loaded and initially got a WebGPU device.
     self._NavigateAndWaitForLoad(test_path)
     tab = self.tab
@@ -824,7 +835,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def _GpuNormalTermination_WebGPUNotBlocked(self, test_path: str) -> None:
     """Tests that normal GPU process termination does not block WebGPU.
     """
-    self.RestartBrowserIfNecessaryWithArgs(cba.ENABLE_WEBGPU_FOR_TESTING)
+    self.RestartBrowserIfNecessaryWithArgs([])
     self._NavigateAndWaitForLoad(test_path)
     tab = self.tab
 
@@ -837,12 +848,15 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     self._RestartBrowser('must restart after tests that kill the GPU process')
 
   @classmethod
-  def ExpectationsFiles(cls) -> List[str]:
+  def ExpectationsFiles(cls) -> list[str]:
     return [
-        os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), 'test_expectations',
-            'context_lost_expectations.txt')
+        os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                     'test_expectations', 'context_lost_expectations.txt')
     ]
+
+
+def ToJsBoolString(value: bool) -> str:
+  return 'true' if value else 'false'
 
 
 def load_tests(loader: unittest.TestLoader, tests: Any,

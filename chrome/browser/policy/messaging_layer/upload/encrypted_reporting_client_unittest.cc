@@ -21,6 +21,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/device_management_service_configuration.h"
 #include "chrome/browser/policy/messaging_layer/upload/encrypted_reporting_client.h"
@@ -45,7 +46,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #endif
@@ -104,7 +105,7 @@ class FakeDelegate : public EncryptedReportingClient::Delegate {
 class EncryptedReportingClientTest : public ::testing::Test {
  protected:
   void SetUp() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
                                                   "fake-serial-number");
 #endif
@@ -115,7 +116,8 @@ class EncryptedReportingClientTest : public ::testing::Test {
     device_management_service_ =
         std::make_unique<policy::DeviceManagementService>(
             std::make_unique<policy::DeviceManagementServiceConfiguration>(
-                "", "", kServerUrl));
+                /*dm_server_url=*/"", /*realtime_reporting_server_url=*/"",
+                /*encrypted_reporting_server_url=*/kServerUrl));
     device_management_service_->ScheduleInitialization(0);
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
         url_loader_factory_.GetSafeWeakWrapper());
@@ -160,7 +162,8 @@ class EncryptedReportingClientTest : public ::testing::Test {
         base::JSONReader::Read(request.request_body->elements()
                                    ->at(0)
                                    .As<network::DataElementBytes>()
-                                   .AsStringPiece());
+                                   .AsStringPiece(),
+                               base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     CHECK(body);
     CHECK(body->is_dict());
     return body->GetDict().Clone();
@@ -173,9 +176,9 @@ class EncryptedReportingClientTest : public ::testing::Test {
         (*url_loader_factory_.pending_requests())[index].request.url.spec();
     EXPECT_THAT(pending_request_url, StartsWith(kServerUrl));
 
-    std::string response_string = "";
+    std::string response_string;
     if (response.has_value()) {
-      base::JSONWriter::Write(response.value(), &response_string);
+      response_string = base::WriteJson(response.value()).value_or("");
     }
     url_loader_factory_.SimulateResponseForPendingRequest(pending_request_url,
                                                           response_string);
@@ -223,7 +226,7 @@ class EncryptedReportingClientTest : public ::testing::Test {
   std::unique_ptr<policy::DeviceManagementService> device_management_service_;
   network::TestURLLoaderFactory url_loader_factory_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 #endif
 };

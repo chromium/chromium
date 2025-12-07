@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // This file tests the chrome.alarms extension API.
 
 #include "extensions/browser/api/alarms/alarms_api.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <string>
@@ -80,9 +76,6 @@ class ExtensionAlarmsTest : public ApiUnitTest {
     alarm_delegate_ = delegate.get();
     alarm_manager_->set_delegate(std::move(delegate));
 
-    // Make sure there's a RenderViewHost for alarms to warn into.
-    CreateBackgroundPage();
-
     test_clock_.SetNow(base::Time::FromSecondsSinceUnixEpoch(10));
   }
 
@@ -101,8 +94,9 @@ class ExtensionAlarmsTest : public ApiUnitTest {
   // JsAlarms.
   std::vector<JsAlarm> ToAlarmList(const std::optional<base::Value>& value) {
     std::vector<JsAlarm> list;
-    if (!value)
+    if (!value) {
       return list;
+    }
     for (const auto& item : value->GetList()) {
       auto alarm = JsAlarm::FromValue(item);
       if (!alarm) {
@@ -118,7 +112,7 @@ class ExtensionAlarmsTest : public ApiUnitTest {
   void CreateAlarms(size_t num_alarms) {
     CHECK_LE(num_alarms, 3U);
 
-    const char* const kCreateArgs[] = {
+    static constexpr std::array kCreateArgs = {
         "[null, {\"periodInMinutes\": 0.001}]",
         "[\"7\", {\"periodInMinutes\": 7}]",
         "[\"0\", {\"delayInMinutes\": 0}]",
@@ -335,7 +329,16 @@ class ConsoleLogMessageLocalFrame : public content::FakeLocalFrame {
   std::string last_message_;
 };
 
-TEST_F(ExtensionAlarmsTest, CreateDelayBelowMinimum) {
+class ExtensionAlarmsLogTest : public ExtensionAlarmsTest {
+  void SetUp() override {
+    ExtensionAlarmsTest::SetUp();
+
+    // Make sure there's a RenderViewHost for alarms to warn into.
+    CreateExtensionPage();
+  }
+};
+
+TEST_F(ExtensionAlarmsLogTest, CreateDelayBelowMinimum) {
   // Create an alarm with delay below the minimum accepted value.
   ConsoleLogMessageLocalFrame local_frame;
   local_frame.Init(
@@ -413,8 +416,9 @@ TEST_F(ExtensionAlarmsTest, GetAll) {
 
     // Test the "7" alarm.
     JsAlarm* alarm = &alarms[0];
-    if (alarm->name != "7")
+    if (alarm->name != "7") {
       alarm = &alarms[1];
+    }
     EXPECT_EQ("7", alarm->name);
     EXPECT_THAT(alarm->period_in_minutes, testing::Eq(7));
   }
@@ -525,7 +529,7 @@ class ExtensionAlarmsSchedulingTest : public ExtensionAlarmsTest {
     EXPECT_EQ(scheduled_time, alarm_manager_->next_poll_time_);
   }
 
-  static void RemoveAlarmCallback(bool success) { EXPECT_TRUE(success); }
+  static void RemoveAlarmCallback(bool found) { EXPECT_TRUE(found); }
   static void RemoveAllAlarmsCallback() {}
 
  public:
@@ -611,10 +615,7 @@ TEST_F(ExtensionAlarmsSchedulingTest, PollScheduling) {
 }
 
 TEST_F(ExtensionAlarmsSchedulingTest, ReleasedExtensionPollsInfrequently) {
-  // TODO(https://crbug.com/40804030): Update this to use MV3. MV3 has different
-  // min granularities for alarms.
   set_extension(ExtensionBuilder("Test")
-                    .SetManifestVersion(2)
                     .SetLocation(mojom::ManifestLocation::kInternal)
                     .Build());
   test_clock_.SetNow(base::Time::FromSecondsSinceUnixEpoch(300));
@@ -627,12 +628,12 @@ TEST_F(ExtensionAlarmsSchedulingTest, ReleasedExtensionPollsInfrequently) {
       300010, alarm_manager_->next_poll_time_.InMillisecondsFSinceUnixEpoch());
 
   alarm_manager_->last_poll_time_ = base::Time::FromSecondsSinceUnixEpoch(290);
-  // In released extensions, we set the granularity to at least 1
-  // minute, which makes AddAlarm schedule the next poll after the
+  // In released extensions, we set the granularity to at least 30
+  // seconds, which makes AddAlarm schedule the next poll after the
   // extension requested.
   alarm_manager_->ScheduleNextPoll();
   EXPECT_DOUBLE_EQ(
-      (alarm_manager_->last_poll_time_ + base::Minutes(1))
+      (alarm_manager_->last_poll_time_ + base::Seconds(30))
           .InMillisecondsFSinceUnixEpoch(),
       alarm_manager_->next_poll_time_.InMillisecondsFSinceUnixEpoch());
 }
@@ -651,11 +652,8 @@ TEST_F(ExtensionAlarmsSchedulingTest, TimerRunning) {
 }
 
 TEST_F(ExtensionAlarmsSchedulingTest, MinimumGranularity) {
-  // TODO(https://crbug.com/40804030): Update this to use MV3. MV3 has different
-  // min granularities for alarms.
   set_extension(ExtensionBuilder("Test")
                     .SetLocation(mojom::ManifestLocation::kInternal)
-                    .SetManifestVersion(2)
                     .Build());
   test_clock_.SetNow(base::Time::UnixEpoch());
   CreateAlarm("[\"a\", {\"periodInMinutes\": 2}]");
@@ -665,12 +663,12 @@ TEST_F(ExtensionAlarmsSchedulingTest, MinimumGranularity) {
 
   alarm_manager_->last_poll_time_ =
       base::Time::FromSecondsSinceUnixEpoch(2 * 60);
-  // In released extensions, we set the granularity to at least 1
-  // minute, which makes scheduler set it to 1 minute, rather than
+  // In released extensions, we set the granularity to at least 30
+  // seconds, which makes scheduler set it to 30 seconds, rather than
   // 1 second later (when b is supposed to go off).
   alarm_manager_->ScheduleNextPoll();
   EXPECT_DOUBLE_EQ(
-      (alarm_manager_->last_poll_time_ + base::Minutes(1))
+      (alarm_manager_->last_poll_time_ + base::Seconds(30))
           .InMillisecondsFSinceUnixEpoch(),
       alarm_manager_->next_poll_time_.InMillisecondsFSinceUnixEpoch());
 }
@@ -681,9 +679,9 @@ TEST_F(ExtensionAlarmsSchedulingTest, DifferentMinimumGranularities) {
   // extension - so there is no minimum granularity.
   CreateAlarm("[\"a\", {\"periodInMinutes\": 0.2}]");  // 12 seconds.
 
-  // Create a new extension, which is packed, and has a granularity of 1 minute.
-  // CreateAlarm() uses extension_, so keep a ref of the old one around, and
-  // repopulate extension_.
+  // Create a new extension, which is packed, and has a granularity of 30
+  // seconds. CreateAlarm() uses extension_, so keep a ref of the old one
+  // around, and repopulate extension_.
   scoped_refptr<const Extension> extension2(extension_ref());
   set_extension(ExtensionBuilder("Test")
                     .SetLocation(mojom::ManifestLocation::kInternal)
@@ -718,7 +716,7 @@ void FrequencyTestGetAlarmsCallback(ExtensionAlarmsTest* test, Alarm* alarm) {
 // subjected to minimum polling interval.
 // Regression test for https://crbug.com/618540.
 TEST_F(ExtensionAlarmsSchedulingTest, PollFrequencyFromStoredAlarm) {
-  struct {
+  static constexpr struct {
     bool is_unpacked;
     int manifest_version;
     base::TimeDelta delay_minimum;
@@ -731,7 +729,7 @@ TEST_F(ExtensionAlarmsSchedulingTest, PollFrequencyFromStoredAlarm) {
   };
 
   // Test once for unpacked and once for crx extension.
-  for (size_t i = 0; i < std::size(test_data); ++i) {
+  for (const auto& entry : test_data) {
     test_clock_.SetNow(base::Time::FromSecondsSinceUnixEpoch(10));
 
     // Mimic retrieving an alarm from StateStore.
@@ -739,7 +737,7 @@ TEST_F(ExtensionAlarmsSchedulingTest, PollFrequencyFromStoredAlarm) {
         "[{\"name\": \"hello\", \"scheduledTime\": 10000, "
         "\"periodInMinutes\": 0.0001}]";
     base::TimeDelta min_delay = alarms_api_constants::GetMinimumDelay(
-        test_data[i].is_unpacked, test_data[i].manifest_version);
+        entry.is_unpacked, entry.manifest_version);
 
     alarm_manager_->ReadFromStorage(extension()->id(), min_delay,
                                     base::test::ParseJson(alarm_args));
@@ -758,7 +756,7 @@ TEST_F(ExtensionAlarmsSchedulingTest, PollFrequencyFromStoredAlarm) {
         // 10s initial clock.
         base::Time::FromSecondsSinceUnixEpoch(10) +
         // 10ms in FrequencyTestGetAlarmsCallback.
-        base::Milliseconds(10) + test_data[i].delay_minimum;
+        base::Milliseconds(10) + entry.delay_minimum;
     // The alarm should not trigger before our expected poll time...
     EXPECT_GE(alarm_manager_->next_poll_time_, expected_poll_time);
     // And should trigger within a few seconds of it (to account for test

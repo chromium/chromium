@@ -26,8 +26,7 @@ class SequencedTaskRunner;
 class WaitableEvent;
 }  // namespace base
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 // An implementation of Nearby Connections's abstract class
 // api::WifiLanServerSocket. This implementation wraps a TCPServerSocket and
@@ -117,7 +116,6 @@ class WifiLanServerSocket : public api::WifiLanServerSocket {
       pending_accept_waitable_events_;
 };
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome
 
 #endif  // CHROME_SERVICES_SHARING_NEARBY_PLATFORM_WIFI_LAN_SERVER_SOCKET_H_

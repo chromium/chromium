@@ -10,7 +10,6 @@
 #include "base/test/mock_callback.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/android/window_android.h"
 
 namespace {
 
@@ -24,7 +23,7 @@ class MockJniDelegate : public JniDelegate {
   MockJniDelegate() = default;
   ~MockJniDelegate() override = default;
 
-  MOCK_METHOD((void), Create, (ui::WindowAndroid*), (override));
+  MOCK_METHOD((void), Create, (ui::WindowAndroid&), (override));
   MOCK_METHOD((void), Show, (const std::string&), (override));
   MOCK_METHOD((void), Dismiss, (), (override));
 };
@@ -46,6 +45,8 @@ class NoPasskeysBottomSheetBridgeTest : public testing::Test {
   NoPasskeysBottomSheetBridge& no_passkeys_bridge() {
     return *no_passkeys_bridge_;
   }
+
+  void destroyNoPasskeysBridge() { no_passkeys_bridge_.reset(); }
 
  private:
   raw_ptr<MockJniDelegate> mock_jni_delegate_;
@@ -78,14 +79,17 @@ TEST_F(NoPasskeysBottomSheetBridgeTest, IgnoreRedundantDismissCalls) {
     EXPECT_CALL(mock_jni_delegate(), Create);
     EXPECT_CALL(mock_jni_delegate(), Show(kTestOrigin));
   }
-  no_passkeys_bridge().Show(scoped_window->get(), kTestOrigin,
-                            base::DoNothing(), base::DoNothing());
+  no_passkeys_bridge().Show(
+      scoped_window->get(), kTestOrigin,
+      /*on_dismissed_callback=*/base::DoNothing(),
+      /*on_click_use_another_device_callback=*/base::DoNothing());
 
   EXPECT_CALL(mock_jni_delegate(), Dismiss)
       .WillOnce(InvokeWithoutArgs(
           [this]() { no_passkeys_bridge().OnDismissed(/*env=*/nullptr); }));
   no_passkeys_bridge().Dismiss();
   no_passkeys_bridge().Dismiss();  // This should not trigger a second call!
+  destroyNoPasskeysBridge();  // This also should not trigger a second call!
 }
 
 TEST_F(NoPasskeysBottomSheetBridgeTest, RunCallbackForOnClickUseAnotherDevice) {
@@ -94,9 +98,22 @@ TEST_F(NoPasskeysBottomSheetBridgeTest, RunCallbackForOnClickUseAnotherDevice) {
   const std::string kTestOrigin("origin.com");
 
   no_passkeys_bridge().Show(scoped_window->get(), kTestOrigin,
-                            base::DoNothing(),
+                            /*on_dismissed_callback=*/base::DoNothing(),
                             on_click_use_another_device_callback.Get());
 
   EXPECT_CALL(on_click_use_another_device_callback, Run);
   no_passkeys_bridge().OnClickUseAnotherDevice(/*env=*/nullptr);
+}
+
+TEST_F(NoPasskeysBottomSheetBridgeTest, DismissesOnDestruction) {
+  auto scoped_window = ui::WindowAndroid::CreateForTesting();
+  const std::string kTestOrigin("origin.com");
+
+  no_passkeys_bridge().Show(
+      scoped_window->get(), kTestOrigin,
+      /*on_dismissed_callback=*/base::DoNothing(),
+      /*on_click_use_another_device_callback=*/base::DoNothing());
+
+  EXPECT_CALL(mock_jni_delegate(), Dismiss);
+  destroyNoPasskeysBridge();
 }

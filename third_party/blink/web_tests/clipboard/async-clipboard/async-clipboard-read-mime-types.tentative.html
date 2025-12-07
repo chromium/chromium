@@ -1,0 +1,55 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Async clipboard read MIME types</title>
+<link rel="help" href="https://w3c.github.io/clipboard-apis/#async-clipboard-api">
+<body>Body needed for test_driver.click()</body>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/testdriver.js"></script>
+<script src="../../resources/testdriver-vendor.js"></script>
+<script src="resources/clipboard-write.js"></script>
+<script src="resources/user-activation.js"></script>
+<script>
+//  Tests clipboard.read() MIME type filtering and ClipboardItem.types property.
+//  Validates selective reading of standard formats (text/plain, text/html) and
+//  custom web formats. Ensures proper type discovery in selective reading approach.
+
+promise_test(async t => {
+  await WritePlainTextAndHTMLToClipboard();
+  const items = await navigator.clipboard.read({types: ['text/plain']});
+  assert_equals(items.length, 1);
+  const item = items[0];
+  const clipboard_mime_types = item.types;
+  assert_array_equals(clipboard_mime_types, ['text/plain']);
+}, 'Reading only plain text');
+
+promise_test(async t => {
+  await WritePlainTextAndHTMLToClipboard();
+  const items = await navigator.clipboard.read({
+    types: ['text/html'],
+    unsanitized: ['text/html']
+  });
+  assert_equals(items.length, 1);
+  const item = items[0];
+  const clipboard_mime_types = item.types;
+  assert_array_equals(clipboard_mime_types, ['text/html']);
+}, 'Reading unsanitized html');
+
+promise_test(async t => {
+  await WritePlainTextAndHTMLToClipboard();
+  const items = await navigator.clipboard.read();
+  assert_equals(items.length, 1);
+  const item = items[0];
+  const clipboard_mime_types = item.types;
+  assert_array_equals(clipboard_mime_types, ['text/plain', 'text/html']);
+}, 'Reading all types');
+
+promise_test(async t => {
+  await WriteCustomFormatToClipboard();
+  const items = await navigator.clipboard.read({types: ['web application/x-custom']});
+  assert_equals(items.length, 1);
+  const item = items[0];
+  const clipboard_mime_types = item.types;
+  assert_array_equals(clipboard_mime_types, ['web application/x-custom']);
+}, 'Reading only custom format');
+</script>

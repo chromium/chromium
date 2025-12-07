@@ -9,7 +9,7 @@ int const kNumberOfSections = 2;
 int const kMonthSection = 0;
 int const kYearSection = 1;
 int const kNumberOfYearsToShow = 20;
-}
+}  // namespace
 
 @interface ExpirationDatePicker () <UIPickerViewDelegate,
                                     UIPickerViewDataSource>
@@ -23,7 +23,7 @@ int const kNumberOfYearsToShow = 20;
 @synthesize onDateSelected = _onDateSelected;
 
 - (instancetype)initWithFrame:(CGRect)frame {
-  if (self = [super initWithFrame:frame]) {
+  if ((self = [super initWithFrame:frame])) {
     NSCalendar* calendar = NSCalendar.currentCalendar;
     NSDateComponents* calendarComponents =
         [calendar components:NSCalendarUnitMonth | NSCalendarUnitYear

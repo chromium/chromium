@@ -4,15 +4,19 @@
 
 #include "autocomplete_match_classification.h"
 
+#include <string>
+#include <string_view>
+
 #include "base/i18n/case_conversion.h"
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
+#include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "components/omnibox/browser/scored_history_match.h"
 #include "in_memory_url_index_types.h"
 
 namespace {
 
-std::u16string clean(std::u16string text) {
+std::u16string clean(std::u16string_view text) {
   const size_t kMaxTextLength = 2000;
   return base::i18n::ToLower(text.substr(0, kMaxTextLength));
 }
@@ -47,28 +51,46 @@ ACMatchClassifications ClassifyAllMatchesInString(
                                                  classifications);
 }
 
-TermMatches FindTermMatches(std::u16string find_text,
-                            std::u16string text,
+TermMatches FindTermMatches(std::u16string_view find_text,
+                            std::u16string_view text,
                             bool allow_prefix_matching,
                             bool allow_mid_word_matching) {
-  find_text = clean(find_text);
-  text = clean(text);
+  std::u16string find_text_str = clean(find_text);
+  std::u16string text_str = clean(text);
 
-  if (find_text.empty())
+  // Some international characters become multiple characters when converting
+  // case. E.g. Armenian և is 1 character lowercase, but 2 characters Եվ
+  // uppercased. Turkish has examples of the opposite, where the lowercasing can
+  // increase length. If the string length changes when lowercased, term match
+  // indexes will be off when being used to style the original-cased `text`.
+  // This will cause either `DCHECK` crashes if the incorrect index is out of
+  // bounds; or incorrect styling if the incorrect index remains in bounds or
+  // `DCHECK`s are disabled. E.g. input 'ou' would bold 'Yo[uT]ube' if lower
+  // case 'Y' is 2 characters.
+  if (find_text_str.size() != find_text.size() ||
+      text_str.size() != text.size()) {
     return {};
+  }
+
+  if (find_text_str.empty()) {
+    return {};
+  }
 
   if (allow_prefix_matching &&
-      base::StartsWith(text, find_text, base::CompareCase::SENSITIVE))
-    return {{0, 0, find_text.length()}};
+      base::StartsWith(text_str, find_text_str, base::CompareCase::SENSITIVE)) {
+    return {{0, 0, find_text_str.length()}};
+  }
 
-  String16Vector find_terms = String16VectorFromString16(find_text, nullptr);
+  String16Vector find_terms =
+      String16VectorFromString16(find_text_str, nullptr);
   WordStarts word_starts;
   // `word_starts` is unused if `allow_mid_word_matching` is true.
   if (!allow_mid_word_matching) {
-    String16VectorFromString16(text, &word_starts);
+    String16VectorFromString16(text_str, &word_starts);
   }
   return FindTermMatchesForTerms(find_terms, WordStarts(find_terms.size(), 0),
-                                 text, word_starts, allow_mid_word_matching);
+                                 text_str, word_starts,
+                                 allow_mid_word_matching);
 }
 
 TermMatches FindTermMatchesForTerms(const String16Vector& find_terms,
@@ -87,7 +109,7 @@ TermMatches FindTermMatchesForTerms(const String16Vector& find_terms,
       matches, find_terms_word_starts, text_word_starts, 0, std::string::npos);
 }
 
-ACMatchClassifications ClassifyTermMatches(TermMatches matches,
+ACMatchClassifications ClassifyTermMatches(const TermMatches& matches,
                                            size_t text_length,
                                            int match_style,
                                            int non_match_style) {

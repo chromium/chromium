@@ -64,7 +64,7 @@ NSError* ErrorForOutcome(app_group::OpenExtensionOutcome outcome_type) {
       error_code = NSURLErrorUnsupportedURL;
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   return [NSError errorWithDomain:NSURLErrorDomain
                              code:error_code

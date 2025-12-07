@@ -6,18 +6,18 @@
 
 #include <memory>
 
-#include "ash/system/notification_center/views/ash_notification_view.h"
 #include "ash/system/notification_center/notification_center_test_api.h"
+#include "ash/system/notification_center/views/ash_notification_view.h"
 #include "ash/system/notification_center/views/notification_center_view.h"
 #include "ash/system/notification_center/views/notification_list_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
@@ -468,7 +468,7 @@ TEST_F(MessageCenterMetricsUtilsTest, RecordSystemNotificationAdded) {
   // Create system notifications with a valid catalog name, one for a non-pinned
   // notification and one for a pinned one (e.g. Full Restore and Caps Lock).
   const NotificationCatalogName catalog_name =
-      NotificationCatalogName::kFullRestore;
+      NotificationCatalogName::kNightLight;
   const NotificationCatalogName pinned_catalog_name =
       NotificationCatalogName::kCapsLock;
   auto notification = CreateNotificationWithCatalogName(catalog_name);
@@ -495,7 +495,7 @@ TEST_F(MessageCenterMetricsUtilsTest,
 
   // Create a system notification with a valid catalog name (e.g. Full Restore).
   const NotificationCatalogName catalog_name =
-      NotificationCatalogName::kFullRestore;
+      NotificationCatalogName::kNightLight;
   auto notification = CreateNotificationWithCatalogName(catalog_name);
 
   // Add notification to message center.
@@ -541,14 +541,14 @@ TEST_F(MessageCenterMetricsUtilsTest, RecordPopupUserJourneyTime) {
 
   // Create a non-pinned system notification with a valid catalog name.
   const NotificationCatalogName catalog_name =
-      NotificationCatalogName::kFullRestore;
+      NotificationCatalogName::kNightLight;
   auto notification = CreateNotificationWithCatalogName(catalog_name);
 
   // Add notification to message center. Use the normal duration for adding the
   // notification so that the recorded popup duration is expected.
   auto* message_center = message_center::MessageCenter::Get();
-  std::optional<ui::ScopedAnimationDurationScaleMode> mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  std::optional<gfx::ScopedAnimationDurationScaleMode> mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   message_center->AddNotification(
       std::make_unique<message_center::Notification>(*notification));
 

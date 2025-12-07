@@ -8,11 +8,11 @@
 #include <utility>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/paint/paint_flags.h"
 #include "chrome/grit/theme_resources.h"
 #include "extensions/browser/app_window/native_app_window.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -135,7 +135,7 @@ void AppWindowFrameView::SetFrameCornerRadius(int radius) {
   SchedulePaint();
 }
 
-// views::NonClientFrameView implementation.
+// views::FrameView implementation.
 
 gfx::Rect AppWindowFrameView::GetBoundsForClientView() const {
   if (!draw_frame_ || widget_->IsFullscreen())
@@ -147,9 +147,7 @@ gfx::Rect AppWindowFrameView::GetBoundsForClientView() const {
 gfx::Rect AppWindowFrameView::GetWindowBoundsForClientBounds(
     const gfx::Rect& client_bounds) const {
   gfx::Rect window_bounds = client_bounds;
-// TODO(crbug.com/40118868): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   // Get the difference between the widget's client area bounds and window
   // bounds, and grow |window_bounds| by that amount.
   gfx::Insets native_frame_insets =
@@ -250,7 +248,7 @@ gfx::Size AppWindowFrameView::CalculatePreferredSize(
 }
 
 void AppWindowFrameView::Layout(PassKey) {
-  LayoutSuperclass<NonClientFrameView>(this);
+  LayoutSuperclass<FrameView>(this);
 
   if (!draw_frame_)
     return;
@@ -325,22 +323,16 @@ void AppWindowFrameView::OnPaint(gfx::Canvas* canvas) {
   flags.setStyle(cc::PaintFlags::kFill_Style);
   flags.setColor(CurrentFrameColor());
 
-  SkPath path;
-
   const SkScalar sk_corner_radius = SkIntToScalar(frame_corner_radius_);
-  const SkScalar radii[8] = {sk_corner_radius,
-                             sk_corner_radius,  // top-left
-                             sk_corner_radius,
-                             sk_corner_radius,  // top-right
-                             0,
-                             0,  // bottom-right
-                             0,
-                             0};  // bottom-left
+  const SkVector radii[4] = {{sk_corner_radius, sk_corner_radius},  // top-left
+                             {sk_corner_radius, sk_corner_radius},  // top-right
+                             {0, 0},   // bottom-right
+                             {0, 0}};  // bottom-left
 
   gfx::Rect frame_bounds(0, 0, width(), kCaptionHeight);
-  path.addRoundRect(gfx::RectToSkRect(frame_bounds), radii,
-                    SkPathDirection::kCW);
-  path.close();
+  const SkPath path = SkPath::RRect(
+      SkRRect::MakeRectRadii(gfx::RectToSkRect(frame_bounds), radii));
+
   canvas->DrawPath(path, flags);
 }
 

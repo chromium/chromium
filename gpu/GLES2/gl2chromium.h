@@ -9,8 +9,6 @@
 
 #include <GLES2/gl2platform.h>
 
-#define GL_CONTEXT_LOST 0x300E
-
 #if defined(GLES2_USE_MOJO)
 #define GLES2_GET_FUN(name) MojoGLES2gl ## name
 #else

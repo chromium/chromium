@@ -49,24 +49,6 @@ uint8_t AuthenticatorDataFlags(bool user_present,
               : 0);
 }
 
-uint8_t CombineAuthenticatorDataFlags(
-    base::span<const AuthenticatorData::Flag> flags) {
-  uint8_t val = 0u;
-  for (auto flag : flags) {
-    val |= base::strict_cast<uint8_t>(flag);
-  }
-  return val;
-}
-
-inline std::array<uint8_t, kSignCounterLength> MarshalSignCounter(
-    uint32_t sign_counter) {
-  return std::array<uint8_t, kSignCounterLength>{
-      static_cast<uint8_t>(sign_counter >> 24),
-      static_cast<uint8_t>(sign_counter >> 16),
-      static_cast<uint8_t>(sign_counter >> 8),
-      static_cast<uint8_t>(sign_counter)};
-}
-
 }  // namespace
 
 // static
@@ -130,18 +112,6 @@ AuthenticatorData::AuthenticatorData(
       extensions_(std::move(extensions)) {
   ValidateAuthenticatorDataStateOrCrash();
 }
-
-AuthenticatorData::AuthenticatorData(
-    base::span<const uint8_t, kRpIdHashLength> rp_id_hash,
-    std::initializer_list<Flag> flags,
-    uint32_t sign_counter,
-    std::optional<AttestedCredentialData> data,
-    std::optional<cbor::Value> extensions)
-    : AuthenticatorData(rp_id_hash,
-                        CombineAuthenticatorDataFlags(flags),
-                        MarshalSignCounter(sign_counter),
-                        std::move(data),
-                        std::move(extensions)) {}
 
 AuthenticatorData::AuthenticatorData(
     base::span<const uint8_t, kRpIdHashLength> rp_id_hash,

@@ -44,6 +44,7 @@ source_set("tests") {
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//testing/gtest",
+    "//third_party/fuzztest",
     "//url",
   ]
 }

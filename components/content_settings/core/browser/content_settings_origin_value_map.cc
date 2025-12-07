@@ -45,10 +45,11 @@ class RuleIteratorImpl : public RuleIterator {
 
   std::unique_ptr<Rule> Next() override {
     DCHECK(HasNext());
-    auto to_return = std::make_unique<Rule>(
-        current_rule_->first.primary_pattern,
-        current_rule_->first.secondary_pattern,
-        current_rule_->second.value.Clone(), current_rule_->second.metadata);
+    auto to_return =
+        std::make_unique<Rule>(current_rule_->first.primary_pattern,
+                               current_rule_->first.secondary_pattern,
+                               current_rule_->second.value.Clone(),
+                               current_rule_->second.metadata.Clone());
     ++current_rule_;
     return to_return;
   }
@@ -94,7 +95,7 @@ std::unique_ptr<Rule> OriginValueMap::GetRule(
   if (result) {
     return std::make_unique<Rule>(
         result->first.primary_pattern, result->first.secondary_pattern,
-        result->second.value.Clone(), result->second.metadata);
+        result->second.value.Clone(), result->second.metadata.Clone());
   }
 
   return nullptr;
@@ -116,7 +117,7 @@ std::vector<ContentSettingsType> OriginValueMap::types() const {
   return result;
 }
 
-OriginValueMap::OriginValueMap(base::Clock* clock) : clock_(clock) {
+OriginValueMap::OriginValueMap(const base::Clock* clock) : clock_(clock) {
   DCHECK(clock);
 }
 
@@ -140,12 +141,11 @@ const base::Value* OriginValueMap::GetValue(
   return nullptr;
 }
 
-bool OriginValueMap::SetValue(
-    const ContentSettingsPattern& primary_pattern,
-    const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type,
-    base::Value value,
-    const RuleMetaData& metadata) {
+bool OriginValueMap::SetValue(const ContentSettingsPattern& primary_pattern,
+                              const ContentSettingsPattern& secondary_pattern,
+                              ContentSettingsType content_type,
+                              base::Value value,
+                              RuleMetaData metadata) {
   CHECK(!iterating_);
   DCHECK(primary_pattern.IsValid());
   DCHECK(secondary_pattern.IsValid());
@@ -154,7 +154,8 @@ bool OriginValueMap::SetValue(
   CHECK_NE(ContentSettingsType::DEFAULT, content_type);
 
   return get_index(content_type)
-      .SetValue(primary_pattern, secondary_pattern, std::move(value), metadata);
+      .SetValue(primary_pattern, secondary_pattern, std::move(value),
+                std::move(metadata));
 }
 
 bool OriginValueMap::DeleteValue(
@@ -184,7 +185,7 @@ void OriginValueMap::clear() {
   return entry_index().clear();
 }
 
-void OriginValueMap::SetClockForTesting(base::Clock* clock) {
+void OriginValueMap::SetClockForTesting(const base::Clock* clock) {
   clock_ = clock;
   base::AutoLock lock(lock_);
   for (auto& index : entry_index()) {

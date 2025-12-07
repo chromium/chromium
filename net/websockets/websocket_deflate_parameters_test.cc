@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "net/websockets/websocket_deflate_parameters.h"
 
+#include <array>
 #include <iterator>
 #include <ostream>
 #include <string>
@@ -116,10 +113,10 @@ TEST_P(WebSocketDeflateParametersInitializeTest, Initialize) {
   const std::string expected_failure_message =
       GetParam().expected.failure_message;
 
-  WebSocketExtensionParser parser;
-  ASSERT_TRUE(parser.Parse("permessage-deflate" + query));
-  ASSERT_EQ(1u, parser.extensions().size());
-  WebSocketExtension extension = parser.extensions()[0];
+  const std::vector<WebSocketExtension> extensions =
+      ParseWebSocketExtensions("permessage-deflate" + query);
+  ASSERT_EQ(1u, extensions.size());
+  WebSocketExtension extension = extensions[0];
 
   WebSocketDeflateParameters parameters;
   std::string failure_message;
@@ -156,16 +153,16 @@ TEST_P(WebSocketDeflateParametersCompatibilityTest, CheckCompatiblity) {
   std::string message;
   WebSocketDeflateParameters request, response;
 
-  WebSocketExtensionParser request_parser;
-  ASSERT_TRUE(request_parser.Parse("permessage-deflate" + request_query));
-  ASSERT_EQ(1u, request_parser.extensions().size());
-  ASSERT_TRUE(request.Initialize(request_parser.extensions()[0], &message));
+  const std::vector<WebSocketExtension> request_extensions =
+      ParseWebSocketExtensions("permessage-deflate" + request_query);
+  ASSERT_EQ(1u, request_extensions.size());
+  ASSERT_TRUE(request.Initialize(request_extensions[0], &message));
   ASSERT_TRUE(request.IsValidAsRequest(&message));
 
-  WebSocketExtensionParser response_parser;
-  ASSERT_TRUE(response_parser.Parse("permessage-deflate" + response_query));
-  ASSERT_EQ(1u, response_parser.extensions().size());
-  ASSERT_TRUE(response.Initialize(response_parser.extensions()[0], &message));
+  const std::vector<WebSocketExtension> response_extensions =
+      ParseWebSocketExtensions("permessage-deflate" + response_query);
+  ASSERT_EQ(1u, response_extensions.size());
+  ASSERT_TRUE(response.Initialize(response_extensions[0], &message));
   ASSERT_TRUE(response.IsValidAsResponse(&message));
 
   EXPECT_EQ(expected, request.IsCompatibleWith(response));
@@ -186,7 +183,7 @@ std::vector<InitializeTestParameter> InitializeTestParameters() {
   const InitializeTestParameter::Expectation kUnknownParameter = {
       false, "Received an unexpected permessage-deflate extension parameter"};
 
-  const InitializeTestParameter parameters[] = {
+  const auto parameters = std::to_array<InitializeTestParameter>({
       {"", kInitialized},
       {"; server_no_context_takeover", kInitialized},
       {"; server_no_context_takeover=0", Invalid("server_no_context_takeover")},
@@ -222,9 +219,11 @@ std::vector<InitializeTestParameter> InitializeTestParameters() {
        "; server_max_window_bits=12; client_max_window_bits=13",
        kInitialized},
       {"; hogefuga", kUnknownParameter},
-  };
+  });
   return std::vector<InitializeTestParameter>(
-      parameters, parameters + std::size(parameters));
+      parameters.data(), base::span<const InitializeTestParameter>(parameters)
+                             .subspan(std::size(parameters))
+                             .data());
 }
 
 constexpr CompatibilityTestParameter kCompatibilityTestParameters[] = {

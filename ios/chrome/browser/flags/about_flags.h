@@ -9,11 +9,12 @@
 #define IOS_CHROME_BROWSER_FLAGS_ABOUT_FLAGS_H_
 
 #include <stddef.h>
+
 #include <string>
 #include <vector>
 
 #include "base/values.h"
-#include "components/flags_ui/flags_state.h"
+#include "components/webui/flags/flags_state.h"
 
 namespace base {
 class CommandLine;

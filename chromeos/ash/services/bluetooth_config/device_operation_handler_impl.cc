@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/services/bluetooth_config/device_operation_handler_impl.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/bluetooth_common.h"

@@ -32,8 +32,6 @@ source_set("model") {
     "//components/favicon/core",
     "//components/favicon_base",
     "//components/history/core/browser",
-    "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//components/power_bookmarks/core",
     "//components/prefs",
     "//components/sync_bookmarks",
@@ -41,11 +39,12 @@ source_set("model") {
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/signin/model:system_identity_manager",
-    "//ios/web",
+    "//ios/chrome/browser/signin/model:system_identity_util",
   ]
   public_deps = [ ":model_utils" ]
   allow_circular_includes_from = [
@@ -65,8 +64,8 @@ source_set("model_utils") {
     "//base",
     "//components/bookmarks/browser",
     "//components/prefs",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
   ]
   public_deps = [ ":bookmark_storage_type" ]
 }
@@ -84,8 +83,8 @@ source_set("test_support") {
     "//components/bookmarks/test",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
-    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
@@ -109,8 +108,8 @@ source_set("unit_tests") {
     "//components/bookmarks/browser",
     "//components/bookmarks/browser:unit_tests_bundle_data",
     "//components/bookmarks/test",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gtest",

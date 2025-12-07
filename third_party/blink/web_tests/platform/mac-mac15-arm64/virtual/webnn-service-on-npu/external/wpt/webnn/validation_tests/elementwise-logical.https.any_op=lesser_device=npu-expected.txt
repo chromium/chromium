@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] [lesser] TypeError is expected if two inputs aren't broadcastable
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported rank 6 for input operand named 'inputB187', must be in range [0, 5]."
+Harness: the test ran to completion.
+

@@ -9,7 +9,7 @@
 #include "base/logging.h"
 #include "media/base/decoder_buffer.h"
 #include "media/cast/openscreen/remoting_proto_utils.h"
-#include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
+#include "third_party/openscreen/src/cast/streaming/public/encoded_frame.h"
 
 namespace cast_streaming {
 

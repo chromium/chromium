@@ -1,0 +1,10 @@
+specific_include_rules = {
+  "nonclosable_app_ui_utils\.cc": [
+    "+ui/base",
+
+    # TODO(crbug.com/402346171): Components should not have dependencies to
+    # //ash. Resolve it.
+    "+ash/public/cpp/system/toast_data.h",
+    "+ash/public/cpp/system/toast_manager.h",
+  ]
+}

@@ -15,7 +15,7 @@
 #include "build/build_config.h"
 #include "components/headless/policy/headless_mode_policy_handler.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"  // nogncheck http://crbug.com/1227148
-#include "components/policy/core/browser/url_blocklist_policy_handler.h"  // nogncheck http://crbug.com/1227148
+#include "components/policy/core/browser/url_list/url_blocklist_policy_handler.h"  // nogncheck http://crbug.com/1227148
 #include "components/policy/core/common/async_policy_provider.h"  // nogncheck http://crbug.com/1227148
 #include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_paths.h"
@@ -150,7 +150,7 @@ HeadlessBrowserPolicyConnector::CreatePlatformProvider() {
       std::make_unique<MacPreferences>(), bundle_id);
   return std::make_unique<AsyncPolicyProvider>(GetSchemaRegistry(),
                                                std::move(loader));
-#elif BUILDFLAG(IS_POSIX)
+#elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<AsyncPolicyLoader> loader(new ConfigDirPolicyLoader(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),

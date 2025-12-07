@@ -1,0 +1,261 @@
+rootWebArea htmlTag='#document' name='Material Web FAB'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++button className='fab   ' htmlTag='button'
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer className='touch-target' htmlTag='div'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++none ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+++++++++button className='fab  small ' htmlTag='button'
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer className='touch-target' htmlTag='div'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++none ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+++++++++button className='fab  large ' htmlTag='button'
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer className='touch-target' htmlTag='div'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++none ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+++++++++button className='fab  extended ' htmlTag='button' name='Extended FAB'
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer className='touch-target' htmlTag='div'
+++++++++++genericContainer ignored
+++++++++++++none ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++staticText ignored invisible
+++++++++++genericContainer ignored
+++++++++++++staticText name='Extended FAB'
+++++++++++++++inlineTextBox name='Extended FAB'
+++++++++button className='fab  lowered ' htmlTag='button'
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer className='touch-target' htmlTag='div'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++none ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+++++++++button className='fab   ' htmlTag='button'
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer className='touch-target' htmlTag='div'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++none ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+=== Start Continuation ===
+rootWebArea htmlTag='#document' name='Material Web FAB'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++button className='fab lowered' htmlTag='button'
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer className='touch-target' htmlTag='div'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++none ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+++++++++button className='fab  small ' htmlTag='button'
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer className='touch-target' htmlTag='div'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++none ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+++++++++button className='fab  large ' htmlTag='button'
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer className='touch-target' htmlTag='div'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++none ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+++++++++button className='fab  extended ' htmlTag='button' name='Extended FAB'
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer className='touch-target' htmlTag='div'
+++++++++++genericContainer ignored
+++++++++++++none ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++staticText ignored invisible
+++++++++++genericContainer ignored
+++++++++++++staticText name='Extended FAB'
+++++++++++++++inlineTextBox name='Extended FAB'
+++++++++button className='fab  lowered ' htmlTag='button'
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer className='touch-target' htmlTag='div'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++none ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+++++++++button className='fab   ' htmlTag='button'
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer className='touch-target' htmlTag='div'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++none ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+++++++++genericContainer htmlTag='div'
+++++++++++staticText name='FAB Lowered'
+++++++++++++inlineTextBox name='FAB Lowered'
+=== Start Continuation ===
+rootWebArea htmlTag='#document' name='Material Web FAB'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++button className='fab' htmlTag='button'
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer className='touch-target' htmlTag='div'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++none ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+++++++++button className='fab  small ' htmlTag='button'
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer className='touch-target' htmlTag='div'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++none ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+++++++++button className='fab  large ' htmlTag='button'
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer className='touch-target' htmlTag='div'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++none ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+++++++++button className='fab  extended ' htmlTag='button' name='Extended FAB'
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer className='touch-target' htmlTag='div'
+++++++++++genericContainer ignored
+++++++++++++none ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++staticText ignored invisible
+++++++++++genericContainer ignored
+++++++++++++staticText name='Extended FAB'
+++++++++++++++inlineTextBox name='Extended FAB'
+++++++++button className='fab  lowered ' htmlTag='button'
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer className='touch-target' htmlTag='div'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++none ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+++++++++button className='fab   ' htmlTag='button'
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer className='touch-target' htmlTag='div'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++none ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+++++++++genericContainer htmlTag='div'
+++++++++++staticText name='FAB Lowered'
+++++++++++++inlineTextBox name='FAB Lowered'
+++++++++genericContainer htmlTag='div'
+++++++++++staticText name='FAB Unlowered'
+++++++++++++inlineTextBox name='FAB Unlowered'
+=== Start Continuation ===
+rootWebArea htmlTag='#document' name='Material Web FAB'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++button className='fab' htmlTag='button'
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer className='touch-target' htmlTag='div'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++none ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+++++++++button className='fab  small ' htmlTag='button'
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer className='touch-target' htmlTag='div'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++none ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+++++++++button className='fab  large ' htmlTag='button'
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer className='touch-target' htmlTag='div'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++none ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+++++++++button className='fab  extended ' htmlTag='button' name='Extended FAB'
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer className='touch-target' htmlTag='div'
+++++++++++genericContainer ignored
+++++++++++++none ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++staticText ignored invisible
+++++++++++genericContainer ignored
+++++++++++++staticText name='Extended FAB'
+++++++++++++++inlineTextBox name='Extended FAB'
+++++++++button className='fab  lowered ' htmlTag='button'
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer className='touch-target' htmlTag='div'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++none ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+++++++++button className='fab   ' htmlTag='button'
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer className='touch-target' htmlTag='div'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++none ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+++++++++genericContainer htmlTag='div'
+++++++++++staticText name='FAB Lowered'
+++++++++++++inlineTextBox name='FAB Lowered'
+++++++++genericContainer htmlTag='div'
+++++++++++staticText name='FAB Unlowered'
+++++++++++++inlineTextBox name='FAB Unlowered'
+++++++++genericContainer htmlTag='div'
+++++++++++staticText name='FAB Clicked'
+++++++++++++inlineTextBox name='FAB Clicked'

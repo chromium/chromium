@@ -9,6 +9,8 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "chrome/browser/safe_browsing/tailored_security/message_retry_handler.h"
+#include "chrome/browser/user_education/user_education_service.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service_observer.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -23,6 +25,11 @@
 
 class Browser;
 class Profile;
+
+#if !BUILDFLAG(IS_ANDROID)
+DECLARE_REQUIRED_NOTICE_IDENTIFIER(kEnabledEnhancedBrowsingNotice);
+DECLARE_REQUIRED_NOTICE_IDENTIFIER(kDisabledEnhancedBrowsingNotice);
+#endif
 
 namespace safe_browsing {
 
@@ -57,8 +64,17 @@ class ChromeTailoredSecurityService : public TailoredSecurityService,
   // TabModelObserver::
   void DidAddTab(TabAndroid* tab, TabModel::TabLaunchType type) override;
   // TabModelListObserver::
-  void OnTabModelAdded() override;
-  void OnTabModelRemoved() override;
+  void OnTabModelAdded(TabModel* tab_model) override;
+  void OnTabModelRemoved(TabModel* tab_model) override;
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+  void TriggerDialogDisplay(
+      bool is_enabled,
+      user_education::RequiredNoticePriorityHandle messaging_priority_handle);
+  void ReleaseEnabledQueueHandle();
+  void ReleaseDisabledQueueHandle();
+  void QueueNotice(bool is_enabled);
 #endif
 
  protected:
@@ -126,11 +142,19 @@ class ChromeTailoredSecurityService : public TailoredSecurityService,
 #endif
 
   void MaybeRetryForSyncUsers();
-  void SaveRetryState(TailoredSecurityRetryState result);
   bool ShouldRetryForSyncUsers();
 
   raw_ptr<Profile> profile_;
+
   base::OneShotTimer retry_timer_;
+  // The retry handler used to manage retry logic.
+  std::unique_ptr<MessageRetryHandler> retry_handler_;
+
+#if !BUILDFLAG(IS_ANDROID)
+  user_education::RequiredNoticePriorityHandle enabled_notice_handle_;
+  user_education::RequiredNoticePriorityHandle disabled_notice_handle_;
+  base::WeakPtrFactory<ChromeTailoredSecurityService> weak_factory_{this};
+#endif
 };
 
 }  // namespace safe_browsing

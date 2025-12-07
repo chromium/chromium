@@ -10,8 +10,7 @@
 
 class Profile;
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 class PhoneHubManager;
 
@@ -42,7 +41,6 @@ class PhoneHubManagerFactory : public ProfileKeyedServiceFactory {
       user_prefs::PrefRegistrySyncable* registry) override;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROME_BROWSER_ASH_PHONEHUB_PHONE_HUB_MANAGER_FACTORY_H_

@@ -50,7 +50,7 @@ NetworkListNetworkHeaderView::NetworkListNetworkHeaderView(
   // The tooltip provides a better accessibility label than the default
   // provided by AddViewAndLabel() above.
   entry_row()->GetViewAccessibility().SetName(u"");
-  entry_row()->text_label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  entry_row()->text_label()->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
   ash::TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton1,
                                              *entry_row()->text_label());
   entry_row()->SetExpandable(true);

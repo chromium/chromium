@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
@@ -26,11 +27,11 @@
 #include "chromecast/public/volume_control.h"
 #include "media/audio/mock_audio_source_callback.h"
 #include "media/audio/test_audio_thread.h"
+#include "media/base/audio_bus.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::NiceMock;
 using testing::Return;
 
@@ -111,8 +112,7 @@ class FakeAudioDecoder : public CmaBackend::AudioDecoder {
         delegate_->OnDecoderError();
         return CmaBackend::BufferStatus::kBufferSuccess;
       default:
-        NOTREACHED_IN_MIGRATION();
-        return CmaBackend::BufferStatus::kBufferFailed;
+        NOTREACHED();
     }
   }
   void GetStatistics(Statistics* statistics) override {}
@@ -176,10 +176,7 @@ class FakeCmaBackend : public CmaBackend {
     audio_decoder_ = std::make_unique<FakeAudioDecoder>(params_);
     return audio_decoder_.get();
   }
-  VideoDecoder* CreateVideoDecoder() override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
+  VideoDecoder* CreateVideoDecoder() override { NOTREACHED(); }
 
   bool Initialize() override { return true; }
   bool Start(int64_t start_pts) override {
@@ -272,11 +269,11 @@ class CastAudioOutputStreamTest : public ::testing::Test {
 
   void SetUpCmaBackendFactory() {
     EXPECT_CALL(*mock_backend_factory_, CreateBackend(_))
-        .WillRepeatedly(Invoke([this](const MediaPipelineDeviceParams& params) {
+        .WillRepeatedly([this](const MediaPipelineDeviceParams& params) {
           auto fake_cma_backend = std::make_unique<FakeCmaBackend>(params);
           cma_backend_ = fake_cma_backend.get();
           return fake_cma_backend;
-        }));
+        });
     EXPECT_EQ(mock_backend_factory_.get(),
               audio_manager_->helper_.GetCmaBackendFactory());
   }
@@ -363,7 +360,7 @@ TEST_F(CastAudioOutputStreamTest, CloseWithoutStop) {
 
   ::media::MockAudioSourceCallback source_callback;
   EXPECT_CALL(source_callback, OnMoreData(_, _, _, _))
-      .WillRepeatedly(Invoke(OnMoreData));
+      .WillRepeatedly(OnMoreData);
   stream->Start(&source_callback);
   RunThreadsUntilIdle();
 
@@ -378,7 +375,7 @@ TEST_F(CastAudioOutputStreamTest, StartImmediatelyAfterOpen) {
 
   ::media::MockAudioSourceCallback source_callback;
   EXPECT_CALL(source_callback, OnMoreData(_, _, _, _))
-      .WillRepeatedly(Invoke(OnMoreData));
+      .WillRepeatedly(OnMoreData);
   stream->Start(&source_callback);
   RunThreadsUntilIdle();
   EXPECT_EQ(FakeCmaBackend::kStateRunning, cma_backend_->state());
@@ -418,7 +415,7 @@ TEST_F(CastAudioOutputStreamTest, StartStopStart) {
 
   ::media::MockAudioSourceCallback source_callback;
   EXPECT_CALL(source_callback, OnMoreData(_, _, _, _))
-      .WillRepeatedly(Invoke(OnMoreData));
+      .WillRepeatedly(OnMoreData);
   stream->Start(&source_callback);
   RunThreadsUntilIdle();
   stream->Stop();
@@ -428,7 +425,7 @@ TEST_F(CastAudioOutputStreamTest, StartStopStart) {
 
   // Ensure we fetch new data when restarting.
   EXPECT_CALL(source_callback, OnMoreData(_, _, _, _))
-      .WillRepeatedly(Invoke(OnMoreData));
+      .WillRepeatedly(OnMoreData);
   int last_on_more_data_call_count = on_more_data_call_count_;
   stream->Start(&source_callback);
   RunThreadsUntilIdle();
@@ -452,7 +449,7 @@ TEST_F(CastAudioOutputStreamTest, StopPreventsCallbacks) {
 
   ::media::MockAudioSourceCallback source_callback;
   EXPECT_CALL(source_callback, OnMoreData(_, _, _, _))
-      .WillRepeatedly(Invoke(OnMoreData));
+      .WillRepeatedly(OnMoreData);
   stream->Start(&source_callback);
   RunThreadsUntilIdle();
   stream->SetVolume(0.5);
@@ -474,7 +471,7 @@ TEST_F(CastAudioOutputStreamTest, ClosePreventsCallbacks) {
 
   ::media::MockAudioSourceCallback source_callback;
   EXPECT_CALL(source_callback, OnMoreData(_, _, _, _))
-      .WillRepeatedly(Invoke(OnMoreData));
+      .WillRepeatedly(OnMoreData);
   stream->Start(&source_callback);
   RunThreadsUntilIdle();
 
@@ -495,7 +492,7 @@ TEST_F(CastAudioOutputStreamTest, Format) {
       ::media::AudioParameters::AUDIO_PCM_LINEAR,
       ::media::AudioParameters::AUDIO_PCM_LOW_LATENCY};
   for (size_t i = 0; i < std::size(format); ++i) {
-    format_ = format[i];
+    format_ = UNSAFE_TODO(format[i]);
     ::media::AudioOutputStream* stream = CreateStream();
     ASSERT_TRUE(stream);
     EXPECT_TRUE(stream->Open());
@@ -517,7 +514,7 @@ TEST_F(CastAudioOutputStreamTest, ChannelLayout) {
       ::media::ChannelLayoutConfig::Mono(),
       ::media::ChannelLayoutConfig::Stereo()};
   for (size_t i = 0; i < std::size(layout); ++i) {
-    channel_layout_config_ = layout[i];
+    channel_layout_config_ = UNSAFE_TODO(layout[i]);
     ::media::AudioOutputStream* stream = CreateStream();
     ASSERT_TRUE(stream);
     EXPECT_TRUE(stream->Open());
@@ -562,7 +559,7 @@ TEST_F(CastAudioOutputStreamTest, DeviceState) {
 
   ::media::MockAudioSourceCallback source_callback;
   EXPECT_CALL(source_callback, OnMoreData(_, _, _, _))
-      .WillRepeatedly(Invoke(OnMoreData));
+      .WillRepeatedly(OnMoreData);
   stream->Start(&source_callback);
   RunThreadsUntilIdle();
   EXPECT_EQ(FakeCmaBackend::kStateRunning, cma_backend_->state());
@@ -592,7 +589,7 @@ TEST_F(CastAudioOutputStreamTest, PushFrame) {
 
   ::media::MockAudioSourceCallback source_callback;
   EXPECT_CALL(source_callback, OnMoreData(_, _, _, _))
-      .WillRepeatedly(Invoke(OnMoreData));
+      .WillRepeatedly(OnMoreData);
   // No error must be reported to source callback.
   EXPECT_CALL(source_callback, OnError(_)).Times(0);
   stream->Start(&source_callback);
@@ -627,7 +624,7 @@ TEST_F(CastAudioOutputStreamTest, PushFrameAfterStop) {
 
   ::media::MockAudioSourceCallback source_callback;
   EXPECT_CALL(source_callback, OnMoreData(_, _, _, _))
-      .WillRepeatedly(Invoke(OnMoreData));
+      .WillRepeatedly(OnMoreData);
   // No error must be reported to source callback.
   EXPECT_CALL(source_callback, OnError(_)).Times(0);
   stream->Start(&source_callback);
@@ -658,7 +655,7 @@ TEST_F(CastAudioOutputStreamTest, PushFrameAfterClose) {
 
   ::media::MockAudioSourceCallback source_callback;
   EXPECT_CALL(source_callback, OnMoreData(_, _, _, _))
-      .WillRepeatedly(Invoke(OnMoreData));
+      .WillRepeatedly(OnMoreData);
   // No error must be reported to source callback.
   EXPECT_CALL(source_callback, OnError(_)).Times(0);
   stream->Start(&source_callback);
@@ -689,7 +686,7 @@ TEST_F(CastAudioOutputStreamTest, DISABLED_DeviceBusy) {
 
   ::media::MockAudioSourceCallback source_callback;
   EXPECT_CALL(source_callback, OnMoreData(_, _, _, _))
-      .WillRepeatedly(Invoke(OnMoreData));
+      .WillRepeatedly(OnMoreData);
   // No error must be reported to source callback.
   EXPECT_CALL(source_callback, OnError(_)).Times(0);
   stream->Start(&source_callback);
@@ -724,7 +721,7 @@ TEST_F(CastAudioOutputStreamTest, DeviceError) {
 
   ::media::MockAudioSourceCallback source_callback;
   EXPECT_CALL(source_callback, OnMoreData(_, _, _, _))
-      .WillRepeatedly(Invoke(OnMoreData));
+      .WillRepeatedly(OnMoreData);
   // AudioOutputStream must report error to source callback.
   EXPECT_CALL(source_callback, OnError(_));
   stream->Start(&source_callback);
@@ -749,7 +746,7 @@ TEST_F(CastAudioOutputStreamTest, DeviceAsyncError) {
 
   ::media::MockAudioSourceCallback source_callback;
   EXPECT_CALL(source_callback, OnMoreData(_, _, _, _))
-      .WillRepeatedly(Invoke(OnMoreData));
+      .WillRepeatedly(OnMoreData);
   // AudioOutputStream must report error to source callback.
   EXPECT_CALL(source_callback, OnError(_)).Times(testing::AtLeast(1));
   stream->Start(&source_callback);
@@ -797,7 +794,7 @@ TEST_F(CastAudioOutputStreamTest, InvalidAudioDelay) {
   ::media::MockAudioSourceCallback source_callback;
   const base::TimeDelta delay = base::TimeDelta();
   EXPECT_CALL(source_callback, OnMoreData(delay, _, _, _))
-      .WillRepeatedly(Invoke(OnMoreData));
+      .WillRepeatedly(OnMoreData);
 
   stream->Start(&source_callback);
   RunThreadsUntilIdle();
@@ -821,7 +818,7 @@ TEST_F(CastAudioOutputStreamTest, AudioDelay) {
   // OnMoreData can be called with a shorter delay than the rendering delay in
   // order to prefetch audio data faster.
   EXPECT_CALL(source_callback, OnMoreData(testing::Le(delay), _, _, _))
-      .WillRepeatedly(Invoke(OnMoreData));
+      .WillRepeatedly(OnMoreData);
 
   stream->Start(&source_callback);
   RunThreadsUntilIdle();
@@ -844,7 +841,7 @@ TEST_F(CastAudioOutputStreamTest, SessionId) {
   // both.
   ::media::MockAudioSourceCallback source_callback;
   EXPECT_CALL(source_callback, OnMoreData(_, _, _, _))
-      .WillRepeatedly(Invoke(OnMoreData));
+      .WillRepeatedly(OnMoreData);
   stream->Start(&source_callback);
   RunThreadsUntilIdle();
 

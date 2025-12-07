@@ -44,8 +44,9 @@ enum class WindowType {
 
 // Focuses the window client associated with |service_worker_client|. |callback|
 // is called with the client information on completion.
-void FocusWindowClient(ServiceWorkerClient* service_worker_client,
-                       ClientCallback callback);
+void FocusWindowClient(
+    ServiceWorkerClient* service_worker_client,
+    blink::mojom::ServiceWorkerHost::FocusClientCallback callback);
 
 // Opens a new window and navigates it to `url`. `callback` is called with the
 // window's client information on completion. If `type` is NEW_TAB_WINDOW, we

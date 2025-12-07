@@ -26,23 +26,29 @@
 namespace blink {
 
 class HTMLDetailsElement;
+class SummaryDescendantsObserver;
 
 class HTMLSummaryElement final : public HTMLElement {
  public:
   explicit HTMLSummaryElement(Document&);
 
+  void Trace(Visitor*) const override;
+
   bool IsMainSummary() const;
   bool WillRespondToMouseClickEvents() override;
 
+  InsertionNotificationRequest InsertedInto(ContainerNode&) final;
+  void RemovedFrom(ContainerNode&) final;
+
  private:
-  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
   void DefaultEventHandler(Event&) override;
   bool HasActivationBehavior() const override;
   HTMLDetailsElement* DetailsElement() const;
 
-  bool SupportsFocus(UpdateBehavior update_behavior =
-                         UpdateBehavior::kStyleAndLayout) const override;
+  FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
   int DefaultTabIndex() const override;
+
+  Member<SummaryDescendantsObserver> descendants_observer_;
 };
 
 }  // namespace blink

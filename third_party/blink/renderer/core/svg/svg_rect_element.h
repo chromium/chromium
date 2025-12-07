@@ -35,6 +35,7 @@ class SVGRectElement final : public SVGGeometryElement {
   explicit SVGRectElement(Document&);
 
   Path AsPath() const override;
+  PathBuilder AsMutablePath() const override;
 
   SVGAnimatedLength* x() const { return x_.Get(); }
   SVGAnimatedLength* y() const { return y_.Get(); }
@@ -46,13 +47,7 @@ class SVGRectElement final : public SVGGeometryElement {
   void Trace(Visitor*) const override;
 
  private:
-  void CollectStyleForPresentationAttribute(
-      const QualifiedName&,
-      const AtomicString&,
-      MutableCSSPropertyValueSet*) override;
   void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
-
-  bool SelfHasRelativeLengths() const override;
 
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
 
@@ -60,7 +55,7 @@ class SVGRectElement final : public SVGGeometryElement {
       const QualifiedName& attribute_name) const override;
   void SynchronizeAllSVGAttributes() const override;
   void CollectExtraStyleForPresentationAttribute(
-      MutableCSSPropertyValueSet* style) override;
+      HeapVector<CSSPropertyValue, 8>& style) override;
 
   Member<SVGAnimatedLength> x_;
   Member<SVGAnimatedLength> y_;

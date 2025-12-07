@@ -10,8 +10,8 @@ using DecidePolicyForDownloadHandler = void (^)(NewDownloadPolicy);
 
 @implementation FakeDownloadManagerTabHelperDelegate {
   std::unique_ptr<web::DownloadTask::State> _state;
-  raw_ptr<web::DownloadTask> _decidingPolicyForDownload;
-  raw_ptr<web::DownloadTask> _currentDownloadTask;
+  raw_ptr<web::DownloadTask, DanglingUntriaged> _decidingPolicyForDownload;
+  raw_ptr<web::DownloadTask, DanglingUntriaged> _currentDownloadTask;
   DecidePolicyForDownloadHandler _decidePolicyForDownloadHandler;
   BOOL _shouldObserveFullscreen;
 }
@@ -29,8 +29,9 @@ using DecidePolicyForDownloadHandler = void (^)(NewDownloadPolicy);
 }
 
 - (BOOL)decidePolicy:(NewDownloadPolicy)policy {
-  if (!_decidePolicyForDownloadHandler)
+  if (!_decidePolicyForDownloadHandler) {
     return NO;
+  }
 
   _decidePolicyForDownloadHandler(policy);
   _decidingPolicyForDownload = nil;
@@ -67,7 +68,7 @@ using DecidePolicyForDownloadHandler = void (^)(NewDownloadPolicy);
 }
 
 - (void)downloadManagerTabHelper:(DownloadManagerTabHelper*)tabHelper
-               didCancelDownload:(web::DownloadTask*)download {
+              didCleanupDownload:(web::DownloadTask*)download {
   _state = std::make_unique<web::DownloadTask::State>(download->GetState());
 }
 

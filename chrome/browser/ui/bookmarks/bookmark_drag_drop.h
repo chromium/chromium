@@ -13,13 +13,12 @@
 #include "build/build_config.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 class Profile;
 
 namespace bookmarks {
 class BookmarkNode;
-struct BookmarkNodeData;
 }
 
 namespace content {
@@ -67,23 +66,22 @@ struct BookmarkDragParams {
   gfx::Point start_point;
 };
 
+// LINT.IfChange(BookmarkReorderDropTarget)
+enum class BookmarkReorderDropTarget {
+  kBookmarkBarView = 0,
+  kBookmarkManagerAPI = 1,
+  kBookmarkMenu = 2,
+  kBookmarkSidePanel = 3,
+  kMaxValue = kBookmarkSidePanel,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/bookmarks/enums.xml:BookmarkReorderDropTarget)
+
 // Starts the process of dragging a folder of bookmarks.
 void DragBookmarks(Profile* profile, const BookmarkDragParams& params);
 
 void DragBookmarksForTest(Profile* profile,
                           const BookmarkDragParams& params,
                           DoBookmarkDragCallback do_drag_callback);
-
-// Drops the bookmark nodes that are in |data| onto |parent_node| at |index|.
-// |copy| indicates the source operation: if true then the bookmarks in |data|
-// are copied, otherwise they are moved if they belong to the same |profile|.
-// Returns the drop type used.
-ui::mojom::DragOperation DropBookmarks(
-    Profile* profile,
-    const bookmarks::BookmarkNodeData& data,
-    const bookmarks::BookmarkNode* parent_node,
-    size_t index,
-    bool copy);
 
 }  // namespace chrome
 

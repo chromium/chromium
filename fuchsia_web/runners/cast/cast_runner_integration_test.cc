@@ -19,12 +19,12 @@
 
 #include "base/auto_reset.h"
 #include "base/base_paths.h"
-#include "base/files/file_util.h"
 #include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/mem_buffer_util.h"
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ref.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -224,11 +224,10 @@ class TestCastComponent {
       } else {
         // Create a `fuchsia.io.Directory` connected to the directory of fake
         // services.
-        zx_status_t status = services_->services.Serve(
-            fuchsia::io::OpenFlags::RIGHT_READABLE |
-                fuchsia::io::OpenFlags::RIGHT_WRITABLE |
-                fuchsia::io::OpenFlags::DIRECTORY,
-            services.NewRequest().TakeChannel());
+        zx_status_t status =
+            services_->services.Serve(fuchsia_io::wire::kPermReadable,
+                                      fidl::ServerEnd<fuchsia_io::Directory>(
+                                          services.NewRequest().TakeChannel()));
         ZX_CHECK(status == ZX_OK, status) << "Serve()";
       }
     }
@@ -238,7 +237,7 @@ class TestCastComponent {
     // at random to uniquely identify it, and supplied with `services` as
     // configured above.
     component_.emplace(
-        test_realm_services_.Connect<fuchsia::component::Realm>(),
+        test_realm_services_->Connect<fuchsia::component::Realm>(),
         test::CastRunnerLauncher::kTestCollectionName,
         base::Uuid::GenerateRandomV4().AsLowercaseString(), component_url,
         base::BindOnce(&TestCastComponent::OnComponentTeardown,
@@ -389,7 +388,7 @@ class TestCastComponent {
     }
   }
 
-  const sys::ServiceDirectory& test_realm_services_;
+  const raw_ref<const sys::ServiceDirectory> test_realm_services_;
 
   // True if the Cast component should be offered a service directory channel
   // that has already been closed, to simulate the providing agent having
@@ -924,7 +923,7 @@ TEST_F(CastRunnerIntegrationTest, InitialMinConsoleLogSeverity_DEBUG) {
       FakeApplicationConfigManager::CreateConfig(kTestAppId, app_url);
 
   *app_config.mutable_initial_min_console_log_severity() =
-      fuchsia::diagnostics::Severity::DEBUG;
+      fuchsia::diagnostics::types::Severity::DEBUG;
   app_config_manager().AddAppConfig(std::move(app_config));
 
   component.StartCastComponentWithQueryApi();

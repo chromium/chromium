@@ -1,9 +1,15 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Below we use `"__comment__": "Foo."` instead of `// Foo.` to preserve the
+// comments during sorting.
 {
   "__comment__": [
-    "This file is identified by PatternSource::kLegacy in the code.",
+    "This file is identified by PatternFile::kLegacy in the code.",
     "See go/autofill-internal-parsing-patterns for instructions on how to update patterns."
   ],
-  "PATTERN_SOURCE_DUMMY": {
+  "PATTERN_FILE_DUMMY": {
     "en": [
       {
         "positive_pattern": "legacy",
@@ -148,7 +154,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH",
           "TEXT_AREA"
         ]
@@ -166,7 +171,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH",
           "TEXT_AREA"
         ]
@@ -184,7 +188,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH",
           "TEXT_AREA"
         ]
@@ -202,7 +205,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH",
           "TEXT_AREA"
         ]
@@ -220,7 +222,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH",
           "TEXT_AREA"
         ]
@@ -1027,7 +1028,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -1044,7 +1044,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -1061,7 +1060,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -1078,7 +1076,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -1095,7 +1092,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -1115,8 +1111,7 @@
           "INPUT_TEXT",
           "TEXT_AREA",
           "INPUT_SEARCH",
-          "SELECT_ONE",
-          "SELECT_LIST"
+          "SELECT_ONE"
         ]
       }
     ],
@@ -1133,8 +1128,55 @@
           "INPUT_TEXT",
           "TEXT_AREA",
           "INPUT_SEARCH",
-          "SELECT_ONE",
-          "SELECT_LIST"
+          "SELECT_ONE"
+        ]
+      }
+    ]
+  },
+  "ALTERNATIVE_FAMILY_NAME": {
+    "en": [
+      {
+        "__comment__": "TODO(crbug.com/359768803): It's just a placeholder to prevent tests from crashing.",
+        "positive_pattern": "family-phonetic-name",
+        "positive_score": 0.1,
+        "negative_pattern": null,
+        "match_field_attributes": [
+          "LABEL"
+        ],
+        "form_control_types": [
+          "INPUT_TEXT"
+        ]
+      }
+    ]
+  },
+  "ALTERNATIVE_FULL_NAME": {
+    "en": [
+      {
+        "__comment__": "TODO(crbug.com/359768803): It's just a placeholder to prevent tests from crashing.",
+        "positive_pattern": "full-phonetic-name",
+        "positive_score": 0.1,
+        "negative_pattern": null,
+        "match_field_attributes": [
+          "LABEL"
+        ],
+        "form_control_types": [
+          "INPUT_TEXT"
+        ]
+      }
+    ]
+  },
+  "ALTERNATIVE_GIVEN_NAME": {
+    "en": [
+      {
+        "__comment__": "TODO(crbug.com/359768803): It's just a placeholder to prevent tests from crashing.",
+        "positive_pattern": "given-phonetic-name",
+        "positive_score": 0.1,
+        "negative_pattern": null,
+        "match_field_attributes": [
+          "LABEL"
+        ],
+        "form_control_types": [
+          "INPUT_TEXT"
         ]
       }
     ]
@@ -1290,14 +1332,13 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
     ],
     "en": [
       {
-        "positive_pattern": "city|town|suburb",
+        "positive_pattern": "(?<!(?:pa|ri|li|di|ni|lo))city|town|suburb",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": [
@@ -1307,7 +1348,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -1324,7 +1364,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -1341,7 +1380,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -1358,7 +1396,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -1375,7 +1412,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -1392,7 +1428,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -1409,7 +1444,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -1426,7 +1460,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -1443,7 +1476,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -1460,7 +1492,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -1477,7 +1508,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -1494,7 +1524,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -1511,7 +1540,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -1528,7 +1556,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -1545,7 +1572,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -1720,7 +1746,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -1737,7 +1762,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -1754,7 +1778,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -1771,7 +1794,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -1788,7 +1810,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -1805,7 +1826,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -1822,7 +1842,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -1839,7 +1858,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -1856,7 +1874,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -1874,7 +1891,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -1891,7 +1907,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -1908,7 +1923,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -1926,7 +1940,6 @@
         ],
         "form_control_types": [
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -1946,7 +1959,6 @@
           "INPUT_TEXT",
           "INPUT_TELEPHONE",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_NUMBER",
           "INPUT_SEARCH"
         ]
@@ -1965,7 +1977,6 @@
           "INPUT_TEXT",
           "INPUT_TELEPHONE",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_NUMBER",
           "INPUT_SEARCH"
         ]
@@ -1984,7 +1995,6 @@
           "INPUT_TEXT",
           "INPUT_TELEPHONE",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_NUMBER",
           "INPUT_SEARCH"
         ]
@@ -2003,7 +2013,6 @@
           "INPUT_TEXT",
           "INPUT_TELEPHONE",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_NUMBER",
           "INPUT_SEARCH"
         ]
@@ -2022,7 +2031,6 @@
           "INPUT_TEXT",
           "INPUT_TELEPHONE",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_NUMBER",
           "INPUT_SEARCH"
         ]
@@ -2041,7 +2049,6 @@
           "INPUT_TEXT",
           "INPUT_TELEPHONE",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_NUMBER",
           "INPUT_SEARCH"
         ]
@@ -2060,7 +2067,6 @@
           "INPUT_TEXT",
           "INPUT_TELEPHONE",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_NUMBER",
           "INPUT_SEARCH"
         ]
@@ -2079,7 +2085,6 @@
           "INPUT_TEXT",
           "INPUT_TELEPHONE",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_NUMBER",
           "INPUT_SEARCH"
         ]
@@ -2100,7 +2105,6 @@
           "INPUT_TEXT",
           "INPUT_TELEPHONE",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_NUMBER",
           "INPUT_SEARCH"
         ]
@@ -2121,7 +2125,6 @@
           "INPUT_TEXT",
           "INPUT_TELEPHONE",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_NUMBER",
           "INPUT_SEARCH"
         ]
@@ -2142,7 +2145,6 @@
           "INPUT_TEXT",
           "INPUT_TELEPHONE",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_NUMBER",
           "INPUT_SEARCH"
         ]
@@ -2161,7 +2163,6 @@
           "INPUT_TEXT",
           "INPUT_TELEPHONE",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_NUMBER",
           "INPUT_SEARCH"
         ]
@@ -2180,7 +2181,6 @@
           "INPUT_TEXT",
           "INPUT_TELEPHONE",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_NUMBER",
           "INPUT_SEARCH"
         ]
@@ -2199,7 +2199,6 @@
           "INPUT_TEXT",
           "INPUT_TELEPHONE",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_NUMBER",
           "INPUT_SEARCH"
         ]
@@ -2218,7 +2217,6 @@
           "INPUT_TEXT",
           "INPUT_TELEPHONE",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_NUMBER",
           "INPUT_SEARCH"
         ]
@@ -2237,7 +2235,6 @@
           "INPUT_TEXT",
           "INPUT_TELEPHONE",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_NUMBER",
           "INPUT_SEARCH"
         ]
@@ -2256,7 +2253,6 @@
           "INPUT_TEXT",
           "INPUT_TELEPHONE",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_NUMBER",
           "INPUT_SEARCH"
         ]
@@ -2275,7 +2271,6 @@
           "INPUT_TEXT",
           "INPUT_TELEPHONE",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_NUMBER",
           "INPUT_SEARCH"
         ]
@@ -2294,7 +2289,6 @@
           "INPUT_TEXT",
           "INPUT_TELEPHONE",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_NUMBER",
           "INPUT_SEARCH"
         ]
@@ -2313,7 +2307,6 @@
           "INPUT_TEXT",
           "INPUT_TELEPHONE",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_NUMBER",
           "INPUT_SEARCH"
         ]
@@ -2334,7 +2327,6 @@
           "INPUT_TEXT",
           "INPUT_TELEPHONE",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_NUMBER",
           "INPUT_SEARCH"
         ]
@@ -2355,7 +2347,6 @@
           "INPUT_TEXT",
           "INPUT_TELEPHONE",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_NUMBER",
           "INPUT_SEARCH"
         ]
@@ -2374,7 +2365,6 @@
           "INPUT_TEXT",
           "INPUT_TELEPHONE",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_NUMBER",
           "INPUT_SEARCH"
         ]
@@ -2393,7 +2383,6 @@
           "INPUT_TEXT",
           "INPUT_TELEPHONE",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_NUMBER",
           "INPUT_SEARCH"
         ]
@@ -2412,7 +2401,6 @@
           "INPUT_TEXT",
           "INPUT_TELEPHONE",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_NUMBER",
           "INPUT_SEARCH"
         ]
@@ -2431,7 +2419,6 @@
           "INPUT_TEXT",
           "INPUT_TELEPHONE",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_NUMBER",
           "INPUT_SEARCH"
         ]
@@ -2450,7 +2437,6 @@
           "INPUT_TEXT",
           "INPUT_TELEPHONE",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_NUMBER",
           "INPUT_SEARCH"
         ]
@@ -2469,7 +2455,6 @@
           "INPUT_TEXT",
           "INPUT_TELEPHONE",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_NUMBER",
           "INPUT_SEARCH"
         ]
@@ -2488,7 +2473,6 @@
           "INPUT_TEXT",
           "INPUT_TELEPHONE",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_NUMBER",
           "INPUT_SEARCH"
         ]
@@ -2507,7 +2491,6 @@
           "INPUT_TEXT",
           "INPUT_TELEPHONE",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_NUMBER",
           "INPUT_SEARCH"
         ]
@@ -2528,7 +2511,6 @@
           "INPUT_TEXT",
           "INPUT_TELEPHONE",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_NUMBER",
           "INPUT_SEARCH"
         ]
@@ -2549,7 +2531,6 @@
           "INPUT_TEXT",
           "INPUT_TELEPHONE",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_NUMBER",
           "INPUT_SEARCH"
         ]
@@ -2844,8 +2825,7 @@
         ],
         "form_control_types": [
           "INPUT_TEXT",
-          "SELECT_ONE",
-          "SELECT_LIST"
+          "SELECT_ONE"
         ]
       }
     ]
@@ -3920,6 +3900,22 @@
       }
     ]
   },
+  "LAST_NAME_PREFIX": {
+    "nl": [
+      {
+        "positive_pattern": "tussenv",
+        "positive_score": 0.9,
+        "negative_pattern": null,
+        "match_field_attributes": [
+          "LABEL",
+          "NAME"
+        ],
+        "form_control_types": [
+          "INPUT_TEXT"
+        ]
+      }
+    ]
+  },
   "LAST_NAME_SECOND": {
     "es": [
       {
@@ -3935,6 +3931,26 @@
         ]
       }
     ]
+  },
+  "LOYALTY_MEMBERSHIP_ID": {
+    "en": {
+      "AutofillEnableLoyaltyCardsFilling": [
+        {
+          "positive_pattern": "loyalty.*(?:num|card)|frequent[\\s-]*flyer|(?:member|membership|traveler|flyer).*(?:number|no)",
+          "positive_score": 1.1,
+          "negative_pattern": null,
+          "match_field_attributes": [
+            "LABEL",
+            "NAME"
+          ],
+          "form_control_types": [
+            "INPUT_TEXT",
+            "INPUT_SEARCH",
+            "INPUT_NUMBER"
+          ]
+        }
+      ]
+    }
   },
   "MERCHANT_PROMO_CODE": {
     "en": [
@@ -4041,7 +4057,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -4058,7 +4073,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -4075,7 +4089,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -4253,7 +4266,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "TEXT_AREA",
           "INPUT_NUMBER",
           "INPUT_SEARCH"
@@ -4696,7 +4708,6 @@
           "INPUT_TEXT",
           "INPUT_TELEPHONE",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_NUMBER"
         ]
       }
@@ -4853,7 +4864,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "TEXT_AREA",
           "INPUT_NUMBER",
           "INPUT_SEARCH"
@@ -4872,7 +4882,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "TEXT_AREA",
           "INPUT_NUMBER",
           "INPUT_SEARCH"
@@ -4891,7 +4900,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "TEXT_AREA",
           "INPUT_NUMBER",
           "INPUT_SEARCH"
@@ -4910,7 +4918,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "TEXT_AREA",
           "INPUT_NUMBER",
           "INPUT_SEARCH"
@@ -5105,7 +5112,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -5122,7 +5128,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -5139,7 +5144,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -5156,7 +5160,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -5173,7 +5176,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -5190,7 +5192,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -5207,7 +5208,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -5224,7 +5224,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -5241,7 +5240,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -5258,7 +5256,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -5275,7 +5272,6 @@
         "form_control_types": [
           "INPUT_TEXT",
           "SELECT_ONE",
-          "SELECT_LIST",
           "INPUT_SEARCH"
         ]
       }
@@ -5370,39 +5366,75 @@
     ]
   },
   "ZIP_4": {
-    "en": [
-      {
-        "positive_pattern": "zip|^-$|post2",
-        "positive_score": 1.1,
-        "negative_pattern": "\\.zip",
-        "negative_patterns_explainer": ".zip refers to a file extension",
-        "match_field_attributes": [
-          "LABEL",
-          "NAME"
-        ],
-        "form_control_types": [
-          "INPUT_TEXT",
-          "INPUT_TELEPHONE",
-          "INPUT_NUMBER"
-        ]
-      }
-    ],
-    "pt": [
-      {
-        "positive_pattern": "codpos2",
-        "positive_score": 1.1,
-        "negative_pattern": null,
-        "match_field_attributes": [
-          "LABEL",
-          "NAME"
-        ],
-        "form_control_types": [
-          "INPUT_TEXT",
-          "INPUT_TELEPHONE",
-          "INPUT_NUMBER"
-        ]
-      }
-    ]
+    "en": {
+      "": [
+        {
+          "positive_pattern": "zip|^-$|post2",
+          "positive_score": 1.1,
+          "negative_pattern": "\\.zip",
+          "negative_patterns_explainer": ".zip refers to a file extension",
+          "match_field_attributes": [
+            "LABEL",
+            "NAME"
+          ],
+          "form_control_types": [
+            "INPUT_TEXT",
+            "INPUT_TELEPHONE",
+            "INPUT_NUMBER"
+          ]
+        }
+      ],
+      "AutofillSupportSplitZipCode": [
+        {
+          "positive_pattern": "(?:(?:zip|post(?:al)?)[\\W_]*code|zip)[\\W_]*(?:0?2|ext|plus|complement|suffix|second)",
+          "positive_score": 1.1,
+          "negative_pattern": null,
+          "match_field_attributes": [
+            "LABEL",
+            "NAME"
+          ],
+          "form_control_types": [
+            "INPUT_TEXT",
+            "INPUT_TELEPHONE",
+            "INPUT_NUMBER"
+          ]
+        }
+      ]
+    },
+    "pt": {
+      "": [
+        {
+          "positive_pattern": "codpos2",
+          "positive_score": 1.1,
+          "negative_pattern": null,
+          "match_field_attributes": [
+            "LABEL",
+            "NAME"
+          ],
+          "form_control_types": [
+            "INPUT_TEXT",
+            "INPUT_TELEPHONE",
+            "INPUT_NUMBER"
+          ]
+        }
+      ],
+      "AutofillSupportSplitZipCode": [
+        {
+          "positive_pattern": "(?:codigo[\\W_]?postal|cep)[\\W_]?2",
+          "positive_score": 1.1,
+          "negative_pattern": null,
+          "match_field_attributes": [
+            "LABEL",
+            "NAME"
+          ],
+          "form_control_types": [
+            "INPUT_TEXT",
+            "INPUT_TELEPHONE",
+            "INPUT_NUMBER"
+          ]
+        }
+      ]
+    }
   },
   "ZIP_CODE": {
     "de": [

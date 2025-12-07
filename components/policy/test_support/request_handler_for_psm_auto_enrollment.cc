@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/threading/thread_restrictions.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/policy/test_support/test_server_helpers.h"
@@ -134,8 +135,7 @@ std::unique_ptr<HttpResponse> RequestHandlerForPsmAutoEnrollment::HandleRequest(
         "PSM RLWE oprf_request, or query_request fields must be filled");
   }
 
-  return CreateHttpResponse(net::HTTP_OK,
-                            device_management_response.SerializeAsString());
+  return CreateHttpResponse(net::HTTP_OK, device_management_response);
 }
 
 }  // namespace policy

@@ -4,10 +4,11 @@
 
 package org.chromium.chrome.browser.download.home.list;
 
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.BatchingListUpdateCallback;
 import androidx.recyclerview.widget.ListUpdateCallback;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.ListModel;
 
 /**
@@ -15,6 +16,7 @@ import org.chromium.ui.modelutil.ListModel;
  * @see BatchingListUpdateCallback
  * @param <T> The object type that this class manages in a list.
  */
+@NullMarked
 public abstract class BatchListModel<T> extends ListModel<T> {
     final BatchingListUpdateCallback mBatchingCallback;
 

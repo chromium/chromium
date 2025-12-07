@@ -7,7 +7,6 @@
 goog.module('goog.dom.TagIteratorTest');
 goog.setTestOnly();
 
-const StopIteration = goog.require('goog.iter.StopIteration');
 const TagIterator = goog.require('goog.dom.TagIterator');
 const TagName = goog.require('goog.dom.TagName');
 const TagWalkType = goog.require('goog.dom.TagWalkType');
@@ -53,8 +52,7 @@ testSuite({
   testBasicHTML() {
     it = new TagIterator(dom.getElement('test'));
     pos = 0;
-
-    iter.forEach(it, () => {
+    function doCheck() {
       pos++;
       switch (pos) {
         case 1:
@@ -102,9 +100,22 @@ testSuite({
           assertEquals('Depth at end should be 0', 0, it.depth);
           break;
         default:
-          throw StopIteration;
+          throw new Error('Unknown position.');
       }
+    }
+    iter.forEach(it, () => {
+      doCheck();
     });
+
+    // Reset, and do the same thing using ES6 Iteration
+    it = new TagIterator(dom.getElement('test'));
+    pos = 0;
+    const iterable = /** @type {!Iterable<?>} */ ({
+      [Symbol.iterator]: () => it,
+    });
+    for (const unused of iterable) {
+      doCheck();
+    }
   },
 
   testSkipTag() {
@@ -141,7 +152,7 @@ testSuite({
           assertEquals('Depth at end should be 0', 0, it.depth);
           break;
         default:
-          throw StopIteration;
+          throw new Error('Unknown position.');
       }
     });
   },
@@ -188,7 +199,7 @@ testSuite({
           }
           break;
         default:
-          throw StopIteration;
+          throw new Error('Unknown position.');
       }
     });
   },
@@ -227,7 +238,7 @@ testSuite({
           assertEndTag(TagName.DIV);
           break;
         default:
-          throw StopIteration;
+          throw new Error('Unknown position.');
       }
     });
   },
@@ -267,7 +278,7 @@ testSuite({
           assertEquals('Depth at end should be 0', 0, it.depth);
           break;
         default:
-          throw StopIteration;
+          throw new Error('Unknown position.');
       }
     });
   },
@@ -307,7 +318,7 @@ testSuite({
           assertEndTag(TagName.UL);
           break;
         default:
-          throw StopIteration;
+          throw new Error('Unknown position.');
       }
     });
   },

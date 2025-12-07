@@ -1,0 +1,150 @@
+This is a testharness.js-based test.
+Found 73 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] HTMLElement interface: attribute autocorrect
+  assert_true: The prototype object must have a property "autocorrect" expected true got false
+[FAIL] HTMLElement interface: attribute headingOffset
+  assert_own_property: expected property "headingOffset" missing
+[FAIL] HTMLElement interface: attribute headingReset
+  assert_own_property: expected property "headingReset" missing
+[FAIL] HTMLElement interface: document.createElement("noscript") must inherit property "autocorrect" with the proper type
+  assert_inherits: property "autocorrect" not found in prototype chain
+[FAIL] HTMLBodyElement interface: attribute onpagereveal
+  assert_true: The prototype object must have a property "onpagereveal" expected true got false
+[FAIL] HTMLBodyElement interface: attribute onpageswap
+  assert_true: The prototype object must have a property "onpageswap" expected true got false
+[FAIL] HTMLBodyElement interface: document.createElement("body") must inherit property "onpagereveal" with the proper type
+  assert_inherits: property "onpagereveal" not found in prototype chain
+[FAIL] HTMLBodyElement interface: document.createElement("body") must inherit property "onpageswap" with the proper type
+  assert_inherits: property "onpageswap" not found in prototype chain
+[FAIL] HTMLMediaElement interface: document.createElement("video") must inherit property "fastSeek(double)" with the proper type
+  assert_inherits: property "fastSeek" not found in prototype chain
+[FAIL] HTMLMediaElement interface: calling fastSeek(double) on document.createElement("video") with too few arguments must throw TypeError
+  assert_inherits: property "fastSeek" not found in prototype chain
+[FAIL] HTMLMediaElement interface: document.createElement("video") must inherit property "getStartDate()" with the proper type
+  assert_inherits: property "getStartDate" not found in prototype chain
+[FAIL] HTMLMediaElement interface: document.createElement("audio") must inherit property "fastSeek(double)" with the proper type
+  assert_inherits: property "fastSeek" not found in prototype chain
+[FAIL] HTMLMediaElement interface: calling fastSeek(double) on document.createElement("audio") with too few arguments must throw TypeError
+  assert_inherits: property "fastSeek" not found in prototype chain
+[FAIL] HTMLMediaElement interface: document.createElement("audio") must inherit property "getStartDate()" with the proper type
+  assert_inherits: property "getStartDate" not found in prototype chain
+[FAIL] HTMLMediaElement interface: new Audio() must inherit property "fastSeek(double)" with the proper type
+  assert_inherits: property "fastSeek" not found in prototype chain
+[FAIL] HTMLMediaElement interface: calling fastSeek(double) on new Audio() with too few arguments must throw TypeError
+  assert_inherits: property "fastSeek" not found in prototype chain
+[FAIL] HTMLMediaElement interface: new Audio() must inherit property "getStartDate()" with the proper type
+  assert_inherits: property "getStartDate" not found in prototype chain
+[FAIL] HTMLMediaElement interface: operation fastSeek(double)
+  assert_own_property: interface prototype object missing non-static operation expected property "fastSeek" missing
+[FAIL] HTMLMediaElement interface: operation getStartDate()
+  assert_own_property: interface prototype object missing non-static operation expected property "getStartDate" missing
+[FAIL] HTMLInputElement interface: attribute alpha
+  assert_true: The prototype object must have a property "alpha" expected true got false
+[FAIL] HTMLInputElement interface: attribute colorSpace
+  assert_true: The prototype object must have a property "colorSpace" expected true got false
+[FAIL] HTMLInputElement interface: document.createElement("input") must inherit property "alpha" with the proper type
+  assert_inherits: property "alpha" not found in prototype chain
+[FAIL] HTMLInputElement interface: document.createElement("input") must inherit property "colorSpace" with the proper type
+  assert_inherits: property "colorSpace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("text") must inherit property "alpha" with the proper type
+  assert_inherits: property "alpha" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("text") must inherit property "colorSpace" with the proper type
+  assert_inherits: property "colorSpace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("hidden") must inherit property "alpha" with the proper type
+  assert_inherits: property "alpha" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("hidden") must inherit property "colorSpace" with the proper type
+  assert_inherits: property "colorSpace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("search") must inherit property "alpha" with the proper type
+  assert_inherits: property "alpha" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("search") must inherit property "colorSpace" with the proper type
+  assert_inherits: property "colorSpace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("tel") must inherit property "alpha" with the proper type
+  assert_inherits: property "alpha" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("tel") must inherit property "colorSpace" with the proper type
+  assert_inherits: property "colorSpace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("url") must inherit property "alpha" with the proper type
+  assert_inherits: property "alpha" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("url") must inherit property "colorSpace" with the proper type
+  assert_inherits: property "colorSpace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("email") must inherit property "alpha" with the proper type
+  assert_inherits: property "alpha" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("email") must inherit property "colorSpace" with the proper type
+  assert_inherits: property "colorSpace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("password") must inherit property "alpha" with the proper type
+  assert_inherits: property "alpha" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("password") must inherit property "colorSpace" with the proper type
+  assert_inherits: property "colorSpace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("date") must inherit property "alpha" with the proper type
+  assert_inherits: property "alpha" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("date") must inherit property "colorSpace" with the proper type
+  assert_inherits: property "colorSpace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("month") must inherit property "alpha" with the proper type
+  assert_inherits: property "alpha" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("month") must inherit property "colorSpace" with the proper type
+  assert_inherits: property "colorSpace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("week") must inherit property "alpha" with the proper type
+  assert_inherits: property "alpha" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("week") must inherit property "colorSpace" with the proper type
+  assert_inherits: property "colorSpace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("time") must inherit property "alpha" with the proper type
+  assert_inherits: property "alpha" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("time") must inherit property "colorSpace" with the proper type
+  assert_inherits: property "colorSpace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("datetime-local") must inherit property "alpha" with the proper type
+  assert_inherits: property "alpha" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("datetime-local") must inherit property "colorSpace" with the proper type
+  assert_inherits: property "colorSpace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("number") must inherit property "alpha" with the proper type
+  assert_inherits: property "alpha" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("number") must inherit property "colorSpace" with the proper type
+  assert_inherits: property "colorSpace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("range") must inherit property "alpha" with the proper type
+  assert_inherits: property "alpha" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("range") must inherit property "colorSpace" with the proper type
+  assert_inherits: property "colorSpace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("color") must inherit property "alpha" with the proper type
+  assert_inherits: property "alpha" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("color") must inherit property "colorSpace" with the proper type
+  assert_inherits: property "colorSpace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("checkbox") must inherit property "alpha" with the proper type
+  assert_inherits: property "alpha" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("checkbox") must inherit property "colorSpace" with the proper type
+  assert_inherits: property "colorSpace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("radio") must inherit property "alpha" with the proper type
+  assert_inherits: property "alpha" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("radio") must inherit property "colorSpace" with the proper type
+  assert_inherits: property "colorSpace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("file") must inherit property "alpha" with the proper type
+  assert_inherits: property "alpha" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("file") must inherit property "colorSpace" with the proper type
+  assert_inherits: property "colorSpace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("submit") must inherit property "alpha" with the proper type
+  assert_inherits: property "alpha" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("submit") must inherit property "colorSpace" with the proper type
+  assert_inherits: property "colorSpace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("image") must inherit property "alpha" with the proper type
+  assert_inherits: property "alpha" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("image") must inherit property "colorSpace" with the proper type
+  assert_inherits: property "colorSpace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("reset") must inherit property "alpha" with the proper type
+  assert_inherits: property "alpha" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("reset") must inherit property "colorSpace" with the proper type
+  assert_inherits: property "colorSpace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("button") must inherit property "alpha" with the proper type
+  assert_inherits: property "alpha" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("button") must inherit property "colorSpace" with the proper type
+  assert_inherits: property "colorSpace" not found in prototype chain
+[FAIL] HTMLTemplateElement interface: attribute shadowRootCustomElementRegistry
+  assert_true: The prototype object must have a property "shadowRootCustomElementRegistry" expected true got false
+[FAIL] HTMLTemplateElement interface: document.createElement("template") must inherit property "shadowRootCustomElementRegistry" with the proper type
+  assert_inherits: property "shadowRootCustomElementRegistry" not found in prototype chain
+[FAIL] HTMLFrameSetElement interface: attribute onpagereveal
+  assert_true: The prototype object must have a property "onpagereveal" expected true got false
+[FAIL] HTMLFrameSetElement interface: attribute onpageswap
+  assert_true: The prototype object must have a property "onpageswap" expected true got false
+[FAIL] HTMLFrameSetElement interface: document.createElement("frameset") must inherit property "onpagereveal" with the proper type
+  assert_inherits: property "onpagereveal" not found in prototype chain
+[FAIL] HTMLFrameSetElement interface: document.createElement("frameset") must inherit property "onpageswap" with the proper type
+  assert_inherits: property "onpageswap" not found in prototype chain
+Harness: the test ran to completion.
+

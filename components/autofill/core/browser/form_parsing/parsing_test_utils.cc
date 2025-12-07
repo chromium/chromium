@@ -3,83 +3,54 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/form_parsing/parsing_test_utils.h"
-#include "components/autofill/core/browser/form_parsing/buildflags.h"
-#include "components/autofill/core/common/autofill_features.h"
+
+#include "base/containers/to_vector.h"
+#include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/form_parsing/form_field_parser_test_api.h"
 
 namespace autofill {
 
-namespace {
-void UpdateRanks(std::vector<std::unique_ptr<AutofillField>>& fields) {
-  for (size_t i = 0; i < fields.size(); ++i) {
-    fields[i]->set_rank(i);
-  }
-}
-}  // namespace
-
-std::vector<PatternProviderFeatureState> PatternProviderFeatureState::All() {
-  return {
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-      {.active_source = "default"},
-      {.active_source = "experimental"},
-#else
-      // Builds without Autofill internal patterns default to the legacy
-      // patterns. The `active_source` feature parameter is in fact not read
-      // in this case.
-      {.active_source = "legacy"},
-#endif
-  };
-}
-
-FormFieldParserTestBase::FormFieldParserTestBase(
-    PatternProviderFeatureState pattern_provider_feature_state) {
-  CHECK_NE(pattern_provider_feature_state.active_source, nullptr);
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      features::kAutofillParsingPatternProvider,
-      base::FieldTrialParams{
-          {features::kAutofillParsingPatternActiveSource.name,
-           pattern_provider_feature_state.active_source}});
-}
-
+FormFieldParserTestBase::FormFieldParserTestBase() = default;
 FormFieldParserTestBase::~FormFieldParserTestBase() = default;
 
 void FormFieldParserTestBase::AddFormFieldData(FormControlType control_type,
-                                               std::string name,
-                                               std::string label,
+                                               std::string_view name,
+                                               std::string_view label,
+                                               std::string_view placeholder,
+                                               int max_length,
                                                FieldType expected_type) {
-  AddFormFieldDataWithLength(control_type, name, label, /*max_length=*/0,
-                             expected_type);
-}
-
-void FormFieldParserTestBase::AddFormFieldDataWithLength(
-    FormControlType control_type,
-    std::string name,
-    std::string label,
-    int max_length,
-    FieldType expected_type) {
   FormFieldData field_data;
   field_data.set_form_control_type(control_type);
   field_data.set_name(base::UTF8ToUTF16(name));
   field_data.set_label(base::UTF8ToUTF16(label));
+  field_data.set_placeholder(base::UTF8ToUTF16(placeholder));
   field_data.set_max_length(max_length);
   field_data.set_renderer_id(MakeFieldRendererId());
-  fields_.push_back(std::make_unique<AutofillField>(field_data));
+  fields_.push_back(field_data);
   expected_classifications_.insert(
       std::make_pair(field_data.global_id(), expected_type));
 }
 
+void FormFieldParserTestBase::AddFormFieldData(FormControlType control_type,
+                                               std::string_view name,
+                                               std::string_view label,
+                                               FieldType expected_type) {
+  AddFormFieldData(control_type, name, label, /*placeholder=*/"",
+                   /*max_length=*/0, expected_type);
+}
+
 void FormFieldParserTestBase::AddSelectOneFormFieldData(
-    std::string name,
-    std::string label,
+    std::string_view name,
+    std::string_view label,
     const std::vector<SelectOption>& options,
     FieldType expected_type) {
   AddFormFieldData(FormControlType::kSelectOne, name, label, expected_type);
-  FormFieldData* field_data = fields_.back().get();
-  field_data->set_options(options);
+  FormFieldData& field_data = fields_.back();
+  field_data.set_options(options);
 }
 
-// Convenience wrapper for text control elements.
-void FormFieldParserTestBase::AddTextFormFieldData(std::string name,
-                                                   std::string label,
+void FormFieldParserTestBase::AddTextFormFieldData(std::string_view name,
+                                                   std::string_view label,
                                                    FieldType expected_type) {
   AddFormFieldData(FormControlType::kInputText, name, label, expected_type);
 }
@@ -91,19 +62,21 @@ void FormFieldParserTestBase::AddTextFormFieldData(std::string name,
 void FormFieldParserTestBase::ClassifyAndVerify(
     ParseResult parse_result,
     const GeoIpCountryCode& client_country,
-    const LanguageCode& page_language) {
-  UpdateRanks(fields_);
-  AutofillScanner scanner(fields_);
-  ParsingContext context(client_country, page_language,
-                         *GetActivePatternSource());
-  std::unique_ptr<FormFieldParser> field = Parse(context, &scanner);
+    const LanguageCode& page_language,
+    PatternFile pattern_file) {
+  AutofillScanner scanner(fields_,
+                          [](const FormFieldData& field) { return true; });
+  ParsingContext context(fields_, client_country, page_language, pattern_file,
+                         GetActiveRegexFeatures(), /*log_manager=*/nullptr);
+  std::unique_ptr<FormFieldParser> field = Parse(context, scanner);
 
   if (parse_result == ParseResult::kNotParsed) {
-    ASSERT_EQ(nullptr, field.get());
+    ASSERT_EQ(nullptr, field.get())
+        << "Expected field not to be parsed, but it was.";
     return;
   }
   ASSERT_NE(nullptr, field.get());
-  field->AddClassificationsForTesting(field_candidates_map_);
+  test_api(*field).AddClassifications(field_candidates_map_);
 
   TestClassificationExpectations();
 }
@@ -112,18 +85,19 @@ void FormFieldParserTestBase::ClassifyAndVerify(
 void FormFieldParserTestBase::ClassifyAndVerifyWithMultipleParses(
     const GeoIpCountryCode& client_country,
     const LanguageCode& page_language) {
-  UpdateRanks(fields_);
-  ParsingContext context(client_country, page_language,
-                         *GetActivePatternSource());
-  AutofillScanner scanner(fields_);
+  ParsingContext context(fields_, client_country, page_language,
+                         *GetActivePatternFile(), /*active_features=*/{},
+                         /*log_manager=*/{});
+  AutofillScanner scanner(fields_,
+                          [](const FormFieldData& field) { return true; });
   while (!scanner.IsEnd()) {
     // An empty page_language means the language is unknown and patterns of
     // all languages are used.
-    std::unique_ptr<FormFieldParser> field = Parse(context, &scanner);
+    std::unique_ptr<FormFieldParser> field = Parse(context, scanner);
     if (field == nullptr) {
       scanner.Advance();
     } else {
-      field->AddClassificationsForTesting(field_candidates_map_);
+      test_api(*field).AddClassifications(field_candidates_map_);
     }
   }
   TestClassificationExpectations();

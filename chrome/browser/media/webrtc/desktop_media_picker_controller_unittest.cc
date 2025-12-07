@@ -58,6 +58,7 @@ class MockDesktopMediaList : public DesktopMediaList {
   MOCK_METHOD(void, ClearDelegatedSourceListSelection, ());
   MOCK_METHOD(void, FocusList, ());
   MOCK_METHOD(void, HideList, ());
+  MOCK_METHOD(void, ShowDelegatedList, ());
 };
 
 class MockDesktopMediaPickerFactory : public DesktopMediaPickerFactory {

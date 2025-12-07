@@ -7,7 +7,10 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
-#include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
+#include "third_party/blink/renderer/core/animation/length_units_checker.h"
+#include "third_party/blink/renderer/core/animation/tree_counting_checker.h"
+#include "third_party/blink/renderer/core/css/css_font_style_range_value.h"
+#include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -59,15 +62,32 @@ InterpolationValue CSSFontStyleInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSFontStyleInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState* state,
+    const StyleResolverState& state,
     ConversionCheckers& conversion_checkers) const {
-  auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+  const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (identifier_value &&
       identifier_value->GetValueID() == CSSValueID::kItalic) {
     return nullptr;
   }
-  return CreateFontStyleValue(
-      StyleBuilderConverterBase::ConvertFontStyle(value));
+  if (const auto* style_range_value =
+          DynamicTo<cssvalue::CSSFontStyleRangeValue>(value)) {
+    const CSSValueList* values = style_range_value->GetObliqueValues();
+    if (values->length()) {
+      const auto& primitive_value = To<CSSPrimitiveValue>(values->Item(0));
+      if (primitive_value.IsElementDependent()) {
+        conversion_checkers.push_back(
+            TreeCountingChecker::Create(state.CssToLengthConversionData()));
+      }
+      CSSPrimitiveValue::LengthTypeFlags types;
+      primitive_value.AccumulateLengthUnitTypes(types);
+      if (CSSInterpolationType::ConversionChecker* length_units_checker =
+              LengthUnitsChecker::MaybeCreate(types, state)) {
+        conversion_checkers.push_back(length_units_checker);
+      }
+    }
+  }
+  return CreateFontStyleValue(StyleBuilderConverterBase::ConvertFontStyle(
+      state.CssToLengthConversionData(), value));
 }
 
 InterpolationValue
@@ -80,9 +100,10 @@ void CSSFontStyleInterpolationType::ApplyStandardPropertyValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue*,
     StyleResolverState& state) const {
-  state.GetFontBuilder().SetStyle(FontSelectionValue(
-      ClampTo(To<InterpolableNumber>(interpolable_value).Value(),
-              kMinObliqueValue, kMaxObliqueValue)));
+  state.GetFontBuilder().SetStyle(
+      FontSelectionValue(ClampTo(To<InterpolableNumber>(interpolable_value)
+                                     .Value(state.CssToLengthConversionData()),
+                                 kMinObliqueValue, kMaxObliqueValue)));
 }
 
 }  // namespace blink

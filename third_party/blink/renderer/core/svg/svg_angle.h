@@ -22,7 +22,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_ANGLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_ANGLE_H_
 
-#include "third_party/blink/renderer/core/svg/properties/svg_property_helper.h"
+#include "third_party/blink/renderer/core/svg/properties/svg_property.h"
 #include "third_party/blink/renderer/core/svg/svg_enumeration.h"
 #include "third_party/blink/renderer/core/svg/svg_parsing_error.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"
@@ -42,7 +42,7 @@ enum SVGMarkerOrientType {
 };
 DECLARE_SVG_ENUM_MAP(SVGMarkerOrientType);
 
-class SVGAngle final : public SVGPropertyHelper<SVGAngle> {
+class SVGAngle final : public SVGPropertyBase {
  public:
   typedef SVGAngleTearOff TearOffType;
 
@@ -72,7 +72,7 @@ class SVGAngle final : public SVGPropertyHelper<SVGAngle> {
   }
 
   void SetValueInSpecifiedUnits(float value_in_specified_units) {
-    value_in_specified_units_ = value_in_specified_units;
+    NewValueSpecifiedUnits(unit_type_, value_in_specified_units);
   }
   float ValueInSpecifiedUnits() const { return value_in_specified_units_; }
 
@@ -105,6 +105,7 @@ class SVGAngle final : public SVGPropertyHelper<SVGAngle> {
                           const SVGElement* context_element) const override;
 
   static AnimatedPropertyType ClassType() { return kAnimatedAngle; }
+  AnimatedPropertyType GetType() const override { return ClassType(); }
 
   void Trace(Visitor*) const override;
 

@@ -1,0 +1,32 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/util/generate_wrapper.gni")
+
+# Defines a generated_wrapper script test under bin/ in the build dir that is
+# itself wrapped by the logdog_wrapper.py tool, which will automatically stream
+# the device's logcats to logdog.
+template("logdog_wrapper_script_test") {
+  generate_wrapper(target_name) {
+    forward_variables_from(invoker,
+                           "*",
+                           [
+                             "args",
+                             "data_deps",
+                           ])
+    executable = "../../build/android/test_wrapper/logdog_wrapper.py"
+    wrapper_script = "$root_out_dir/bin/run_${target_name}"
+    testonly = true
+
+    executable_args = []
+    if (defined(invoker.args)) {
+      executable_args += invoker.args
+    }
+
+    data_deps = [ "//build/android:logdog_wrapper_py" ]
+    if (defined(invoker.data_deps)) {
+      data_deps += invoker.data_deps
+    }
+  }
+}

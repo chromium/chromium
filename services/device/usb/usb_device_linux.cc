@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -74,9 +75,9 @@ void UsbDeviceLinux::Open(OpenCallback callback) {
     auto* memory_pressure_monitor = base::MemoryPressureMonitor::Get();
     if (memory_pressure_monitor) {
       memory_pressure_critical.Set(
-          (memory_pressure_monitor->GetCurrentPressureLevel() ==
-           base::MemoryPressureMonitor::MemoryPressureLevel::
-               MEMORY_PRESSURE_LEVEL_CRITICAL)
+          (memory_pressure_monitor->GetCurrentPressureLevel(
+               base::MemoryPressureMonitorTag::kUsbDeviceLinux) ==
+           base::MEMORY_PRESSURE_LEVEL_CRITICAL)
               ? "true"
               : "false");
     }

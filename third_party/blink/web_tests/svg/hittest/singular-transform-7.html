@@ -1,28 +1,41 @@
 <!DOCTYPE html>
-<script src="../../resources/js-test.js"></script>
-<style>
-body { margin: 0; }
-.p .a {
-  transform: scaleX(0);
-}
-.p:hover .a {
-  transform: scaleX(1);
-  fill: red;
-}
-</style>
-<svg width="400" height="100">
-  <g class="p">
-    <foreignObject transform="scale(0)" width="200" height="100">
-      <svg>
-        <rect class="a" width="200" height="100"/>
-      </svg>
-    </foreignObject>
-    <rect class="b" width="100" height="100" fill="green"/>
-  </g>
-</svg>
-<script>
-if (window.testRunner)
-  eventSender.mouseMoveTo(150, 50);
+    <title>SVG hover transform foreignObject test</title>
+    <script src="../../resources/testharness.js"></script>
+    <script src="../../resources/testharnessreport.js"></script>
+    <style>
+    body { margin: 0; }
+    .p .a {
+      transform: scaleX(0);
+    }
+    .p:hover .a {
+      transform: scaleX(1);
+      fill: red;
+    }
+    </style>
+    <svg width="400" height="100">
+      <g class="p">
+        <foreignObject transform="scale(0)" width="200" height="100">
+          <svg>
+            <rect class="a" width="200" height="100"/>
+          </svg>
+        </foreignObject>
+        <rect class="b" width="100" height="100" fill="green"/>
+      </g>
+    </svg>
+    <script>
+    test(() => {
+      // eventSender must be available to simulate hover.
+      assert_true(
+        'eventSender' in window,
+        'eventSender should exist for hover simulation'
+      );
+      eventSender.mouseMoveTo(150, 50);
 
-shouldBeNull("document.querySelector('.p:hover .a')");
-</script>
+      // Verify that .p:hover .a is not selectable inside a scaled foreignObject.
+      assert_equals(
+        document.querySelector('.p:hover .a'),
+        null,
+        "document.querySelector('.p:hover .a') should be null"
+      );
+    }, "SVG hover transform foreignObject test: nested <rect> inside <foreignObject> remains non-selectable under .p:hover");
+    </script>

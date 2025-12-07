@@ -20,7 +20,7 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.components.browser_ui.test.BrowserUiDummyFragmentActivity;
+import org.chromium.components.browser_ui.test.BrowserUiTestFragmentActivity;
 import org.chromium.components.browser_ui.widget.promo.PromoCardCoordinator.LayoutStyle;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -34,7 +34,7 @@ public class PromoCardCoordinatorUnitTest {
 
     @Before
     public void setUp() {
-        mActivity = Robolectric.buildActivity(BrowserUiDummyFragmentActivity.class).setup().get();
+        mActivity = Robolectric.buildActivity(BrowserUiTestFragmentActivity.class).setup().get();
         mModel = new PropertyModel.Builder(PromoCardProperties.ALL_KEYS).build();
     }
 
@@ -45,7 +45,7 @@ public class PromoCardCoordinatorUnitTest {
 
     private void setupCoordinator(@LayoutStyle int layoutStyle) {
         mPromoCardCoordinator =
-                new PromoCardCoordinator(mActivity, mModel, "test-feature", layoutStyle);
+                PromoCardCoordinator.create(mActivity, mModel, "test-feature", layoutStyle);
         mView = (PromoCardView) mPromoCardCoordinator.getView();
         Assert.assertNotNull("PromoCardView is null", mView);
     }
@@ -130,7 +130,7 @@ public class PromoCardCoordinatorUnitTest {
     @SmallTest
     public void testChangeVisibility() {
         setupCoordinator(LayoutStyle.LARGE);
-        Assert.assertEquals(mView.mSecondaryButton.getVisibility(), View.VISIBLE);
+        Assert.assertEquals(View.VISIBLE, mView.mSecondaryButton.getVisibility());
 
         // Hide the secondary button
         mModel.set(PromoCardProperties.HAS_SECONDARY_BUTTON, false);
@@ -146,6 +146,7 @@ public class PromoCardCoordinatorUnitTest {
         setupCoordinator(LayoutStyle.LARGE);
         final CallbackHelper primaryClickCallback = new CallbackHelper();
         final CallbackHelper secondaryClickCallback = new CallbackHelper();
+        final CallbackHelper closeClickCallback = new CallbackHelper();
 
         mModel.set(
                 PromoCardProperties.PRIMARY_BUTTON_CALLBACK,
@@ -153,6 +154,9 @@ public class PromoCardCoordinatorUnitTest {
         mModel.set(
                 PromoCardProperties.SECONDARY_BUTTON_CALLBACK,
                 (v) -> secondaryClickCallback.notifyCalled());
+        mModel.set(
+                PromoCardProperties.CLOSE_BUTTON_CALLBACK,
+                (v) -> closeClickCallback.notifyCalled());
 
         mView.mPrimaryButton.performClick();
         primaryClickCallback.waitForCallback("Primary button callback is never called.", 0);
@@ -165,5 +169,10 @@ public class PromoCardCoordinatorUnitTest {
                 "Secondary button should be clicked once.",
                 1,
                 secondaryClickCallback.getCallCount());
+
+        mView.mCloseButton.performClick();
+        closeClickCallback.waitForCallback("Secondary button callback is never called.", 0);
+        Assert.assertEquals(
+                "Close button should be clicked once.", 1, closeClickCallback.getCallCount());
     }
 }

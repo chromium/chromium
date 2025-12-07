@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
@@ -103,7 +104,7 @@ int GetManifestVersion(const base::Value::Dict& manifest_value,
   // Platform apps were launched after manifest version 2 was the preferred
   // version, so they default to that.
   return manifest_value.FindInt(keys::kManifestVersion)
-      .value_or(type == Manifest::TYPE_PLATFORM_APP ? 2 : 1);
+      .value_or(type == Manifest::Type::kPlatformApp ? 2 : 1);
 }
 
 // Helper class to filter available values from a manifest.
@@ -208,28 +209,28 @@ ManifestLocation Manifest::GetHigherPriorityLocation(ManifestLocation loc1,
 Manifest::Type Manifest::GetTypeFromManifestValue(
     const base::Value::Dict& value,
     bool for_login_screen) {
-  Type type = TYPE_UNKNOWN;
+  Type type = Type::kUnknown;
   if (value.Find(keys::kTheme)) {
-    type = TYPE_THEME;
+    type = Type::kTheme;
   } else if (value.Find(api::shared_module::ManifestKeys::kExport)) {
-    type = TYPE_SHARED_MODULE;
+    type = Type::kSharedModule;
   } else if (value.Find(keys::kApp)) {
     if (value.FindByDottedPath(keys::kWebURLs) ||
         value.FindByDottedPath(keys::kLaunchWebURL)) {
-      type = TYPE_HOSTED_APP;
+      type = Type::kHostedApp;
     } else if (value.FindByDottedPath(keys::kPlatformAppBackground)) {
-      type = TYPE_PLATFORM_APP;
+      type = Type::kPlatformApp;
     } else {
-      type = TYPE_LEGACY_PACKAGED_APP;
+      type = Type::kLegacyPackagedApp;
     }
   } else if (value.Find(keys::kChromeOSSystemExtension)) {
-    type = TYPE_CHROMEOS_SYSTEM_EXTENSION;
+    type = Type::kChromeOSSystemExtension;
   } else if (for_login_screen) {
-    type = TYPE_LOGIN_SCREEN_EXTENSION;
+    type = Type::kLoginScreenExtension;
   } else {
-    type = TYPE_EXTENSION;
+    type = Type::kExtension;
   }
-  DCHECK_NE(type, TYPE_UNKNOWN);
+  DCHECK_NE(type, Type::kUnknown);
 
   return type;
 }
@@ -308,6 +309,12 @@ void Manifest::ValidateManifest(std::vector<InstallWarning>* warnings) const {
   // Also generate warnings for keys that are not features.
   for (const auto item : value_) {
     if (!manifest_feature_provider->GetFeature(item.first)) {
+      // There are a set of keys that are not handled by Chrome, but that we
+      // explicitly allow. Don't add a warning for those keys.
+      if (base::Contains(keys::kIgnoredUnrecognizedKeys, item.first)) {
+        continue;
+      }
+
       warnings->emplace_back(
           ErrorUtils::FormatErrorMessage(
               manifest_errors::kUnrecognizedManifestKey, item.first),

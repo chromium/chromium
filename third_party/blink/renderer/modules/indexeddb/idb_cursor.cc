@@ -59,7 +59,7 @@ namespace blink {
 
 namespace {
 
-using CursorSet = HeapHashSet<WeakMember<IDBCursor>>;
+using CursorSet = GCedHeapHashSet<WeakMember<IDBCursor>>;
 
 CursorSet& GetGlobalCursorSet() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<Persistent<CursorSet>>,
@@ -111,22 +111,6 @@ void IDBCursor::Trace(Visitor* visitor) const {
 
 void IDBCursor::ContextWillBeDestroyed() {
   ResetPrefetchCache();
-}
-
-// Keep the request's wrapper alive as long as the cursor's wrapper is alive,
-// so that the same script object is seen each time the cursor is used.
-v8::Local<v8::Object> IDBCursor::AssociateWithWrapper(
-    v8::Isolate* isolate,
-    const WrapperTypeInfo* wrapper_type,
-    v8::Local<v8::Object> wrapper) {
-  wrapper =
-      ScriptWrappable::AssociateWithWrapper(isolate, wrapper_type, wrapper);
-  if (!wrapper.IsEmpty()) {
-    static const V8PrivateProperty::SymbolKey kPrivatePropertyRequest;
-    V8PrivateProperty::GetSymbol(isolate, kPrivatePropertyRequest)
-        .Set(wrapper, request_->ToV8(isolate, wrapper));
-  }
-  return wrapper;
 }
 
 IDBRequest* IDBCursor::update(ScriptState* script_state,
@@ -329,7 +313,7 @@ IDBRequest* IDBCursor::Delete(ScriptState* script_state,
       script_state, this, transaction_.Get(), std::move(metrics));
   transaction_->db().Delete(
       transaction_->Id(), EffectiveObjectStore()->Id(), IdbPrimaryKey(),
-      WTF::BindOnce(&IDBRequest::OnDelete, WrapPersistent(request)));
+      BindOnce(&IDBRequest::OnDelete, WrapPersistent(request)));
   return request;
 }
 
@@ -444,8 +428,7 @@ IDBObjectStore* IDBCursor::EffectiveObjectStore() const {
     case Source::ContentType::kIDBObjectStore:
       return source_->GetAsIDBObjectStore();
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 bool IDBCursor::IsDeleted() const {
@@ -455,24 +438,22 @@ bool IDBCursor::IsDeleted() const {
     case Source::ContentType::kIDBObjectStore:
       return source_->GetAsIDBObjectStore()->IsDeleted();
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static
-mojom::IDBCursorDirection IDBCursor::StringToDirection(
-    const String& direction_string) {
-  if (direction_string == indexed_db_names::kNext)
-    return mojom::IDBCursorDirection::Next;
-  if (direction_string == indexed_db_names::kNextunique)
-    return mojom::IDBCursorDirection::NextNoDuplicate;
-  if (direction_string == indexed_db_names::kPrev)
-    return mojom::IDBCursorDirection::Prev;
-  if (direction_string == indexed_db_names::kPrevunique)
-    return mojom::IDBCursorDirection::PrevNoDuplicate;
-
-  NOTREACHED_IN_MIGRATION();
-  return mojom::IDBCursorDirection::Next;
+mojom::blink::IDBCursorDirection IDBCursor::V8EnumToDirection(
+    V8IDBCursorDirection::Enum mode) {
+  switch (mode) {
+    case V8IDBCursorDirection::Enum::kNext:
+      return mojom::blink::IDBCursorDirection::Next;
+    case V8IDBCursorDirection::Enum::kNextunique:
+      return mojom::blink::IDBCursorDirection::NextNoDuplicate;
+    case V8IDBCursorDirection::Enum::kPrev:
+      return mojom::blink::IDBCursorDirection::Prev;
+    case V8IDBCursorDirection::Enum::kPrevunique:
+      return mojom::blink::IDBCursorDirection::PrevNoDuplicate;
+  }
 }
 
 // static
@@ -488,24 +469,21 @@ void IDBCursor::ResetCursorPrefetchCaches(int64_t transaction_id,
   }
 }
 
-const String& IDBCursor::direction() const {
+V8IDBCursorDirection IDBCursor::direction() const {
   switch (direction_) {
     case mojom::IDBCursorDirection::Next:
-      return indexed_db_names::kNext;
+      return V8IDBCursorDirection(V8IDBCursorDirection::Enum::kNext);
 
     case mojom::IDBCursorDirection::NextNoDuplicate:
-      return indexed_db_names::kNextunique;
+      return V8IDBCursorDirection(V8IDBCursorDirection::Enum::kNextunique);
 
     case mojom::IDBCursorDirection::Prev:
-      return indexed_db_names::kPrev;
+      return V8IDBCursorDirection(V8IDBCursorDirection::Enum::kPrev);
 
     case mojom::IDBCursorDirection::PrevNoDuplicate:
-      return indexed_db_names::kPrevunique;
-
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return indexed_db_names::kNext;
+      return V8IDBCursorDirection(V8IDBCursorDirection::Enum::kPrevunique);
   }
+  NOTREACHED();
 }
 
 void IDBCursor::AdvanceImpl(uint32_t count, IDBRequest* request) {
@@ -518,9 +496,9 @@ void IDBCursor::AdvanceImpl(uint32_t count, IDBRequest* request) {
   // Reset all cursor prefetch caches except for this cursor.
   ResetCursorPrefetchCaches(transaction_->Id(), this);
 
-  remote_->Advance(
-      count, WTF::BindOnce(&IDBCursor::AdvanceCallback, WrapPersistent(this),
-                           WrapWeakPersistent(request)));
+  remote_->Advance(count,
+                   BindOnce(&IDBCursor::AdvanceCallback, WrapPersistent(this),
+                            WrapWeakPersistent(request)));
 }
 
 void IDBCursor::AdvanceCallback(IDBRequest* request,
@@ -553,8 +531,8 @@ void IDBCursor::CursorContinue(const IDBKey* key,
 
       remote_->Prefetch(
           prefetch_amount_,
-          WTF::BindOnce(&IDBCursor::PrefetchCallback, WrapPersistent(this),
-                        WrapWeakPersistent(request)));
+          BindOnce(&IDBCursor::PrefetchCallback, WrapPersistent(this),
+                   WrapWeakPersistent(request)));
 
       // Increase prefetch_amount_ exponentially.
       prefetch_amount_ *= 2;
@@ -571,10 +549,9 @@ void IDBCursor::CursorContinue(const IDBKey* key,
 
   // Reset all cursor prefetch caches except for this cursor.
   ResetCursorPrefetchCaches(transaction_->Id(), this);
-  remote_->Continue(
-      IDBKey::Clone(key), IDBKey::Clone(primary_key),
-      WTF::BindOnce(&IDBCursor::AdvanceCallback, WrapPersistent(this),
-                    WrapWeakPersistent(request)));
+  remote_->Continue(IDBKey::Clone(key), IDBKey::Clone(primary_key),
+                    BindOnce(&IDBCursor::AdvanceCallback, WrapPersistent(this),
+                             WrapWeakPersistent(request)));
 }
 
 void IDBCursor::PrefetchCallback(IDBRequest* request,
@@ -681,9 +658,9 @@ void IDBCursor::CachedContinue(IDBRequest* request) {
     request->GetExecutionContext()
         ->GetTaskRunner(TaskType::kDatabaseAccess)
         ->PostTask(FROM_HERE,
-                   WTF::BindOnce(&IDBRequest::HandleResponseAdvanceCursor,
-                                 WrapWeakPersistent(request), std::move(key),
-                                 std::move(primary_key), std::move(value)));
+                   BindOnce(&IDBRequest::HandleResponseAdvanceCursor,
+                            WrapWeakPersistent(request), std::move(key),
+                            std::move(primary_key), std::move(value)));
   }
 }
 

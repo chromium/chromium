@@ -14,10 +14,10 @@
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/entity_change.h"
-#include "components/sync/protocol/unique_position.pb.h"
 
 namespace sync_pb {
 class EntitySpecifics;
+class UniquePosition;
 }  // namespace sync_pb
 
 namespace syncer {
@@ -131,7 +131,7 @@ class DataTypeSyncBridge {
   // different from GetStorageKey(). Only the hash of this value is kept.
   //
   // IsEntityDataValid() is guaranteed to hold for the `entity_data`.
-  virtual std::string GetClientTag(const EntityData& entity_data) = 0;
+  virtual std::string GetClientTag(const EntityData& entity_data) const = 0;
 
   // Must not be called unless SupportsGetStorageKey() returns true.
   //
@@ -146,7 +146,7 @@ class DataTypeSyncBridge {
   // it contains invalid data).
   //
   // IsEntityDataValid() is guaranteed to hold for the `entity_data`.
-  virtual std::string GetStorageKey(const EntityData& entity_data) = 0;
+  virtual std::string GetStorageKey(const EntityData& entity_data) const = 0;
 
   // Whether or not the bridge is capable of producing a client tag from
   // `EntityData` (usually remote changes), via GetClientTag(). Most bridges do,
@@ -241,15 +241,15 @@ class DataTypeSyncBridge {
   // TODO(crbug.com/40253395): Consider changing the default to preserve unknown
   // fields at least.
   // By default, empty EntitySpecifics is returned.
+  // Refer to the following documentation before implementing this method:
+  // https://www.chromium.org/developers/design-documents/sync/old-sync-clients-data-override-protection/
   virtual sync_pb::EntitySpecifics TrimAllSupportedFieldsFromRemoteSpecifics(
       const sync_pb::EntitySpecifics& entity_specifics) const;
 
   // Returns true if the provided `entity_data` is valid. This method should be
   // implemented by the bridges and can be used to validate the incoming remote
   // updates.
-  // TODO(crbug.com/40677711): Mark this method as pure virtual to force all the
-  // bridges to implement this.
-  virtual bool IsEntityDataValid(const EntityData& entity_data) const;
+  virtual bool IsEntityDataValid(const EntityData& entity_data) const = 0;
 
   // Needs to be informed about any model change occurring via Delete() and
   // Put(). The changing metadata should be stored to persistent storage

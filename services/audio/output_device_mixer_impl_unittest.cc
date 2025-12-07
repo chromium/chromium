@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
+#include "media/base/audio_bus.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -36,6 +37,7 @@ class MockListener : public ReferenceOutput::Listener {
                void(const media::AudioBus& audio_bus,
                     int sample_rate,
                     base::TimeDelta delay));
+  MOCK_METHOD(void, OnReferenceStreamError, (), (override));
 };
 
 // Mock of a physical output stream_under_test.

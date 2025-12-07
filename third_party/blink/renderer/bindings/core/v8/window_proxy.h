@@ -32,7 +32,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_WINDOW_PROXY_H_
 
 #include "base/dcheck_is_on.h"
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
@@ -154,7 +153,7 @@ class CORE_EXPORT WindowProxy : public GarbageCollected<WindowProxy> {
   void ClearForSwap();
   void ClearForV8MemoryPurge();
 
-  v8::MaybeLocal<v8::Object> GlobalProxyIfNotDetached();
+  v8::Local<v8::Object> GetGlobalProxy();
   v8::Local<v8::Object> ReleaseGlobalProxy();
   // This does not initialize the window proxy, either Initialize or
   // InitializeIfNeeded needs to be called after this method.

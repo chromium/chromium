@@ -11,9 +11,6 @@
 namespace storage::features {
 
 COMPONENT_EXPORT(STORAGE_BROWSER)
-BASE_DECLARE_FEATURE(kEnablePersistentFilesystemInIncognito);
-
-COMPONENT_EXPORT(STORAGE_BROWSER)
 BASE_DECLARE_FEATURE(kIncognitoFileSystemContextForTesting);
 
 }  // namespace storage::features

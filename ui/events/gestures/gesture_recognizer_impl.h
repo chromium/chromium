@@ -40,7 +40,8 @@ class TouchEvent;
 class EVENTS_EXPORT GestureRecognizerImpl : public GestureRecognizer,
                                             public GestureProviderAuraClient {
  public:
-  typedef std::map<int, GestureConsumer*> TouchIdToConsumerMap;
+  typedef std::map<int, raw_ptr<GestureConsumer, CtnExperimental>>
+      TouchIdToConsumerMap;
 
   GestureRecognizerImpl();
 
@@ -53,11 +54,10 @@ class EVENTS_EXPORT GestureRecognizerImpl : public GestureRecognizer,
     return helpers_;
   }
 
-  // Returns a list of events of type |type|, one for each pointer down on
-  // |consumer|. Event locations are pulled from the active pointers.
-  std::vector<std::unique_ptr<TouchEvent>> GetEventPerPointForConsumer(
-      GestureConsumer* consumer,
-      EventType type);
+  // Returns a list of events of type `kTouchCancelled`, one for each pointer
+  // down on |consumer|. Event locations are pulled from the active pointers.
+  std::vector<std::unique_ptr<TouchEvent>> GetCancelledEventPerPointForConsumer(
+      GestureConsumer* consumer);
 
   // Overridden from GestureRecognizer
   GestureConsumer* GetTouchLockedTarget(const TouchEvent& event) override;
@@ -123,7 +123,8 @@ class EVENTS_EXPORT GestureRecognizerImpl : public GestureRecognizer,
   // provider. This avoids any invalid reference while routing ACKs for events
   // that may arise post |TransferEventsTo()| function call.
   // See http://crbug.com/698843 for more info.
-  std::map<uint32_t, GestureProviderAura*> event_to_gesture_provider_;
+  std::map<uint32_t, raw_ptr<GestureProviderAura, CtnExperimental>>
+      event_to_gesture_provider_;
 
   // |touch_id_target_| maps a touch-id to its target window.
   // touch-ids are removed from |touch_id_target_| on

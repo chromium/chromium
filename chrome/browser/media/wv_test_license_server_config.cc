@@ -62,11 +62,9 @@ bool GetPyProtoPath(base::FilePath* dir) {
 
 }  // namespace
 
-WVTestLicenseServerConfig::WVTestLicenseServerConfig() {
-}
+WVTestLicenseServerConfig::WVTestLicenseServerConfig() = default;
 
-WVTestLicenseServerConfig::~WVTestLicenseServerConfig() {
-}
+WVTestLicenseServerConfig::~WVTestLicenseServerConfig() = default;
 
 bool WVTestLicenseServerConfig::GetServerCommandLine(
     base::CommandLine* command_line) {
@@ -104,9 +102,10 @@ bool WVTestLicenseServerConfig::GetServerCommandLine(
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   const char kLibraryPathEnvVarName[] = "LD_LIBRARY_PATH";
   std::string library_paths(license_server_path.DirName().value());
-  std::string old_path;
-  if (env->GetVar(kLibraryPathEnvVarName, &old_path))
-    library_paths.append(":").append(old_path);
+  std::optional<std::string> old_path = env->GetVar(kLibraryPathEnvVarName);
+  if (old_path.has_value()) {
+    library_paths.append(":").append(*old_path);
+  }
   env->SetVar(kLibraryPathEnvVarName, library_paths);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 

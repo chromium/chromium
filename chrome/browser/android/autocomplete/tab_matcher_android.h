@@ -11,6 +11,7 @@
 #include "components/search_engines/template_url_service.h"
 
 class AutocompleteInput;
+class TabAndroid;
 class TemplateURLService;
 
 // Implementation of TabMatcher targeting Android platform.
@@ -20,16 +21,20 @@ class TabMatcherAndroid : public TabMatcher {
                     Profile* profile)
       : template_url_service_{template_url_service}, profile_{profile} {}
 
+  // TabMatcher implementation.
   bool IsTabOpenWithURL(const GURL& gurl,
                         const AutocompleteInput* input) const override;
-
   void FindMatchingTabs(GURLToTabInfoMap* map,
                         const AutocompleteInput* input) const override;
+  std::vector<TabMatcher::TabWrapper> GetOpenTabs(
+      const AutocompleteInput* input,
+      bool unused_exclude_active_tab = true) const override;
 
  private:
+  std::vector<raw_ptr<TabAndroid, VectorExperimental>> GetOpenAndroidTabs(
+      const AutocompleteInput* input) const;
   GURLToTabInfoMap GetAllHiddenAndNonCCTTabInfos(
-      const bool keep_search_intent_params,
-      const bool normalize_search_terms) const;
+      const AutocompleteInput* input) const;
 
   raw_ptr<const TemplateURLService> template_url_service_;
   raw_ptr<Profile> profile_;

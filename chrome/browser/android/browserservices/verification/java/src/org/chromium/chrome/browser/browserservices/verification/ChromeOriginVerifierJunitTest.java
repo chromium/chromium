@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.browserservices.verification;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.robolectric.Shadows.shadowOf;
 
 import android.os.Process;
@@ -26,7 +28,6 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.content_relationship_verification.OriginVerifier;
@@ -45,8 +46,8 @@ public class ChromeOriginVerifierJunitTest {
     public static final String TEST_BATCH_NAME = "chrome_origin_verifier";
 
     private static final String PACKAGE_NAME = "org.chromium.com";
-    private int mUid = Process.myUid();
-    private Origin mHttpsOrigin = Origin.create("https://www.example.com");
+    private final int mUid = Process.myUid();
+    private final Origin mHttpsOrigin = Origin.create("https://www.example.com");
 
     private ChromeOriginVerifier mChromeVerifier;
 
@@ -54,16 +55,14 @@ public class ChromeOriginVerifierJunitTest {
 
     @Mock private Profile mProfile;
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
     @Mock private OriginVerifier.Natives mMockOriginVerifierJni;
 
     @Mock private ChromeOriginVerifier.Natives mMockChromeOriginVerifierJni;
 
-    private CountDownLatch mVerificationResultLatch = new CountDownLatch(1);
+    private final CountDownLatch mVerificationResultLatch = new CountDownLatch(1);
 
     private static class TestOriginVerificationListener implements OriginVerificationListener {
-        private CountDownLatch mLatch;
+        private final CountDownLatch mLatch;
         private boolean mVerified;
 
         TestOriginVerificationListener(CountDownLatch latch) {
@@ -90,7 +89,7 @@ public class ChromeOriginVerifierJunitTest {
                 PACKAGE_NAME,
                 mUid);
 
-        mJniMocker.mock(ChromeOriginVerifierJni.TEST_HOOKS, mMockChromeOriginVerifierJni);
+        ChromeOriginVerifierJni.setInstanceForTesting(mMockChromeOriginVerifierJni);
         Mockito.doAnswer(
                         args -> {
                             return 100L;
@@ -98,7 +97,7 @@ public class ChromeOriginVerifierJunitTest {
                 .when(mMockChromeOriginVerifierJni)
                 .init(Mockito.any(), Mockito.any());
 
-        mJniMocker.mock(OriginVerifierJni.TEST_HOOKS, mMockOriginVerifierJni);
+        OriginVerifierJni.setInstanceForTesting(mMockOriginVerifierJni);
         Mockito.doAnswer(
                         args -> {
                             String[] fingerprints = args.getArgument(3);
@@ -108,8 +107,8 @@ public class ChromeOriginVerifierJunitTest {
                                 return false;
                             }
                             // Ensure parsing of signature works.
-                            assert fingerprints.length == 1;
-                            assert fingerprints[0] != null;
+                            assertThat(fingerprints.length).isEqualTo(1);
+                            assertThat(fingerprints[0]).isNotNull();
                             mChromeVerifier.onOriginVerificationResult(
                                     args.getArgument(4), RelationshipCheckResult.SUCCESS);
                             return true;
@@ -117,12 +116,11 @@ public class ChromeOriginVerifierJunitTest {
                 .when(mMockOriginVerifierJni)
                 .verifyOrigin(
                         ArgumentMatchers.anyLong(),
-                        Mockito.any(),
                         ArgumentMatchers.anyString(),
-                        Mockito.any(),
+                        ArgumentMatchers.any(),
                         ArgumentMatchers.anyString(),
                         ArgumentMatchers.anyString(),
-                        Mockito.any());
+                        ArgumentMatchers.any());
     }
 
     @Test
@@ -131,7 +129,6 @@ public class ChromeOriginVerifierJunitTest {
                 new ChromeOriginVerifier(
                         PACKAGE_NAME,
                         CustomTabsService.RELATION_HANDLE_ALL_URLS,
-                        null,
                         null,
                         ChromeVerificationResultStore.getInstance());
         TestOriginVerificationListener resultListener =
@@ -152,7 +149,6 @@ public class ChromeOriginVerifierJunitTest {
                 new ChromeOriginVerifier(
                         PACKAGE_NAME,
                         CustomTabsService.RELATION_HANDLE_ALL_URLS,
-                        null,
                         null,
                         ChromeVerificationResultStore.getInstance());
         TestOriginVerificationListener resultListener =

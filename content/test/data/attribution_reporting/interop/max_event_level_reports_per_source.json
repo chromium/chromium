@@ -60,7 +60,8 @@
             "response": {
               "Attribution-Reporting-Register-Source": {
                 "destination": "https://destination2.test",
-                "max_event_level_reports": 1,
+                // ensure validity of trailing zero
+                "max_event_level_reports": 1.0,
                 "source_event_id": "456"
               }
             }

@@ -6,41 +6,47 @@ package org.chromium.chrome.browser.firstrun;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+// LINT.IfChange(MobileFreProgress)
 /**
- * This is used for histograms to track the FRE progress.
- * It should therefore be treated as append-only.
- * See {@code MobileFreProgress} in tools/metrics/histograms/enums.xml.
+ * This is used for histograms to track the FRE progress. It should therefore be treated as
+ * append-only. See {@code MobileFreProgress} in tools/metrics/histograms/metadata/mobile/enums.xml.
  */
 @IntDef({
     MobileFreProgress.STARTED,
     MobileFreProgress.WELCOME_SHOWN,
     MobileFreProgress.DEPRECATED_DATA_SAVER_SHOWN,
-    MobileFreProgress.SYNC_CONSENT_SHOWN,
-    MobileFreProgress.SYNC_CONSENT_ACCEPTED,
-    MobileFreProgress.SYNC_CONSENT_DISMISSED,
+    MobileFreProgress.DEPRECATED_SYNC_CONSENT_SHOWN,
+    MobileFreProgress.DEPRECATED_SYNC_CONSENT_ACCEPTED,
+    MobileFreProgress.DEPRECATED_SYNC_CONSENT_DISMISSED,
     MobileFreProgress.DEFAULT_SEARCH_ENGINE_SHOWN,
     MobileFreProgress.WELCOME_ADD_ACCOUNT,
     MobileFreProgress.WELCOME_SIGNIN_WITH_DEFAULT_ACCOUNT,
     MobileFreProgress.WELCOME_SIGNIN_WITH_NON_DEFAULT_ACCOUNT,
     MobileFreProgress.WELCOME_DISMISS,
     MobileFreProgress.SYNC_CONSENT_SETTINGS_LINK_CLICK,
+    MobileFreProgress.HISTORY_SYNC_OPT_IN_SHOWN,
+    MobileFreProgress.HISTORY_SYNC_ACCEPTED,
+    MobileFreProgress.HISTORY_SYNC_DISMISSED,
     MobileFreProgress.MAX,
 })
 @Retention(RetentionPolicy.SOURCE)
+@NullMarked
 public @interface MobileFreProgress {
     int STARTED = 0;
     int WELCOME_SHOWN = 1;
     int DEPRECATED_DATA_SAVER_SHOWN = 2;
-    int SYNC_CONSENT_SHOWN = 3;
+    int DEPRECATED_SYNC_CONSENT_SHOWN = 3;
 
     /** The user clicked on the continue button to continue with sync consent. */
-    int SYNC_CONSENT_ACCEPTED = 4;
+    int DEPRECATED_SYNC_CONSENT_ACCEPTED = 4;
 
     /** The user clicked on the |No thanks| button to continue without sync consent. */
-    int SYNC_CONSENT_DISMISSED = 5;
+    int DEPRECATED_SYNC_CONSENT_DISMISSED = 5;
 
     int DEFAULT_SEARCH_ENGINE_SHOWN = 6;
 
@@ -59,5 +65,14 @@ public @interface MobileFreProgress {
     /** The user clicked on the |settings| link on sync consent screen. */
     int SYNC_CONSENT_SETTINGS_LINK_CLICK = 11;
 
-    int MAX = 12;
+    int HISTORY_SYNC_OPT_IN_SHOWN = 12;
+
+    /** The user clicked on the |Yes, I'm in| button to accept history sync. */
+    int HISTORY_SYNC_ACCEPTED = 13;
+
+    /** The user clicked on the |No thanks| button to decline history sync. */
+    int HISTORY_SYNC_DISMISSED = 14;
+
+    int MAX = 15;
 }
+// LINT.ThenChange(//tools/metrics/histograms/metadata/mobile/enums.xml:MobileFreProgress)

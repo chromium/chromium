@@ -1,0 +1,23 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("testing") {
+  testonly = true
+
+  sources = [
+    "toy_tab_strip.cc",
+    "toy_tab_strip.h",
+    "toy_tab_strip_browser_adapter.cc",
+    "toy_tab_strip_browser_adapter.h",
+    "toy_tab_strip_model_adapter.cc",
+    "toy_tab_strip_model_adapter.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/ui/tabs/tab_strip_api/adapters",
+    "//chrome/browser/ui/tabs/tab_strip_api/converters",
+    "//url",
+  ]
+}

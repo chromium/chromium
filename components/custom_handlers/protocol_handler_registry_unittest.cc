@@ -31,7 +31,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
-#include "url/url_features.h"
 
 using content::BrowserThread;
 
@@ -144,6 +143,14 @@ class ProtocolHandlerRegistryTest : public testing::Test {
                                               const GURL& url,
                                               const std::string& app_id) {
     return ProtocolHandler::CreateWebAppProtocolHandler(protocol, url, app_id);
+  }
+
+  ProtocolHandler CreateExtensionProtocolHandler(
+      const std::string& protocol,
+      const GURL& url,
+      const std::string& extension_id) {
+    return ProtocolHandler::CreateExtensionProtocolHandler(protocol, url,
+                                                           extension_id);
   }
 
   bool ProtocolHandlerCanRegisterProtocol(
@@ -297,7 +304,8 @@ TEST_F(ProtocolHandlerRegistryTest, SaveAndLoad) {
 
 TEST_F(ProtocolHandlerRegistryTest, Encode) {
   base::Time now = base::Time::Now();
-  ProtocolHandler handler("news", GURL("https://example.com"), "app_id", now,
+  ProtocolHandler handler("news", GURL("https://example.com"), "app_id",
+                          std::nullopt, now,
                           blink::ProtocolHandlerSecurityLevel::kStrict);
   auto value = handler.Encode();
   ProtocolHandler recreated = ProtocolHandler::CreateProtocolHandler(value);
@@ -379,6 +387,34 @@ TEST_F(ProtocolHandlerRegistryTest, ClearHandlersBetween) {
   EXPECT_FALSE(registry()->IsIgnored(ignored1));
   EXPECT_FALSE(registry()->IsIgnored(ignored2));
   EXPECT_FALSE(registry()->IsIgnored(ignored3));
+}
+
+TEST_F(ProtocolHandlerRegistryTest, TestExtensionProtocolHandlers) {
+  const std::string kIdFoo("fooabbbbccccddddeeeeffffgggghhhh");
+  ProtocolHandler ph1 =
+      CreateExtensionProtocolHandler("news", GURL("https://test/%s"), kIdFoo);
+  registry()->OnAcceptRegisterProtocolHandler(ph1);
+  ASSERT_TRUE(registry()->IsHandledProtocol("news"));
+  ASSERT_TRUE(registry()->IsDefault(ph1));
+
+  const std::string kIdBar("barabbbbccccddddeeeeffffgggghhhh");
+  ProtocolHandler ph2 =
+      CreateExtensionProtocolHandler("mailto", GURL("https://test/%s"), kIdBar);
+  registry()->OnAcceptRegisterProtocolHandler(ph2);
+  ASSERT_TRUE(registry()->IsHandledProtocol("mailto"));
+  ASSERT_TRUE(registry()->IsDefault(ph2));
+
+  {
+    ProtocolHandlerRegistry::ProtocolHandlerList handlers =
+        registry()->GetExtensionProtocolHandlers();
+    ASSERT_EQ(static_cast<size_t>(2), handlers.size());
+  }
+
+  {
+    ProtocolHandlerRegistry::ProtocolHandlerList handlers =
+        registry()->GetExtensionProtocolHandlers(kIdBar);
+    ASSERT_EQ(static_cast<size_t>(1), handlers.size());
+  }
 }
 
 TEST_F(ProtocolHandlerRegistryTest, TestEnabledDisabled) {
@@ -801,31 +837,6 @@ TEST_F(ProtocolHandlerRegistryTest, TestInstallDefaultHandler) {
   EXPECT_TRUE(registry()->IsHandledProtocol("news"));
 }
 
-// Non-special URLs behavior is affected by the
-// StandardCompliantNonSpecialSchemeURLParsing feature.
-// See https://crbug.com/40063064 for details.
-class ProtocolHandlerRegistryParamTest
-    : public ProtocolHandlerRegistryTest,
-      public ::testing::WithParamInterface<bool> {
- public:
-  ProtocolHandlerRegistryParamTest()
-      : use_standard_compliant_non_special_scheme_url_parsing_(GetParam()) {
-    if (use_standard_compliant_non_special_scheme_url_parsing_) {
-      scoped_feature_list_.InitAndEnableFeature(
-          url::kStandardCompliantNonSpecialSchemeURLParsing);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          url::kStandardCompliantNonSpecialSchemeURLParsing);
-    }
-  }
-
- protected:
-  bool use_standard_compliant_non_special_scheme_url_parsing_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 #define URL_p1u1 "https://p1u1.com/%s"
 #define URL_p1u2 "https://p1u2.com/%s"
 #define URL_p1u3 "https://p1u3.com/%s"
@@ -985,7 +996,7 @@ TEST_F(ProtocolHandlerRegistryTest, TestPrefPolicyOverlapIgnore) {
   ASSERT_EQ(InMemoryIgnoredHandlerCount(), 4);
 }
 
-TEST_P(ProtocolHandlerRegistryParamTest, TestURIPercentEncoding) {
+TEST_F(ProtocolHandlerRegistryTest, TestURIPercentEncoding) {
   ProtocolHandler ph =
       CreateProtocolHandler("web+custom", GURL("https://test.com/url=%s"));
   registry()->OnAcceptRegisterProtocolHandler(ph);
@@ -1007,16 +1018,6 @@ TEST_P(ProtocolHandlerRegistryParamTest, TestURIPercentEncoding) {
       translated_url,
       GURL("https://test.com/url=web%2Bcustom%3A%2F%2Fcustom%2520handler"));
 
-  if (!use_standard_compliant_non_special_scheme_url_parsing_) {
-    // We can't test a non-special URL which includes a space in the host part,
-    // as such URLs become invalid when the feature is enabled.
-    // TODO(crbug.com/40063064) Remove this test when the feature is shipped.
-    translated_url = ph.TranslateUrl(GURL("web+custom://custom handler"));
-    ASSERT_EQ(
-        translated_url,
-        GURL("https://test.com/url=web%2Bcustom%3A%2F%2Fcustom%20handler"));
-  }
-
   // Query parameters.
   translated_url = ph.TranslateUrl(GURL("web+custom://custom?foo=bar&bar=baz"));
   ASSERT_EQ(translated_url,
@@ -1025,30 +1026,10 @@ TEST_P(ProtocolHandlerRegistryParamTest, TestURIPercentEncoding) {
 
   // Non-ASCII characters.
   translated_url = ph.TranslateUrl(GURL("web+custom://custom/<>`{}#?\"'😂"));
-
-  // When StandardCompliantNonSpecialSchemeURLParsing feature is enabled, some
-  // punctuation characters in the path part of a non-special URLs are correctly
-  // percent-encoded. Thus, we need to test both cases.
-  if (use_standard_compliant_non_special_scheme_url_parsing_) {
-    // When the feature is enabled, a URL like
-    // "web+custom://custom/<>`{}#?\"'😂" is correctly percent-encoded. This
-    // results in the serialized URL:
-    // "web+custom://custom/%3C%3E%60%7B%7D#?%22'%F0%9F%98%82"
-    ASSERT_EQ(
-        translated_url,
-        GURL("https://test.com/"
-             "url=web%2Bcustom%3A%2F%2Fcustom%2F%253C%253E%2560%257B%257D%"
-             "23%3F%2522'%25F0%259F%2598%2582"));
-  } else {
-    // When the feature is disabled, a URL like
-    // "web+custom://custom/<>`{}#?\"'😂", is not correctly percent-encoded.
-    // This results in the serialized URL:
-    // web+custom://custom/<>`{}#?%22'%F0%9F%98%82".
-    ASSERT_EQ(translated_url,
-              GURL("https://test.com/"
-                   "url=web%2Bcustom%3A%2F%2Fcustom%2F%3C%3E%60%"
-                   "7B%7D%23%3F%2522'%25F0%259F%2598%2582"));
-  }
+  ASSERT_EQ(translated_url,
+            GURL("https://test.com/"
+                 "url=web%2Bcustom%3A%2F%2Fcustom%2F%253C%253E%2560%257B%257D%"
+                 "23%3F%2522'%25F0%259F%2598%2582"));
 
   // ASCII characters from the C0 controls percent-encode set.
   // GURL constructor encodes U+001F and U+007F as "%1F" and "%7F" first,
@@ -1228,10 +1209,8 @@ TEST_F(ProtocolHandlerRegistryTest, ProtocolHandlerSecurityLevels) {
 namespace {
 
 enum class ProtocolTestMode {
-  kFtpOffPaytoOn,
-  kFtpOnPaytoOff,
-  kFtpOnPaytoOn,
-  kFtpOffPaytoOff,
+  kPaytoOff,
+  kPaytoOn,
 };
 
 }  // namespace
@@ -1246,27 +1225,14 @@ class ProtocolHandlerRegistrySchemeTest
   void SetUp() override {
     ProtocolHandlerRegistryTest::SetUp();
     switch (GetParam()) {
-    case ProtocolTestMode::kFtpOffPaytoOn:
-      scoped_feature_list_.InitWithFeatures(
-          {blink::features::kSafelistPaytoToRegisterProtocolHandler},
-          {blink::features::kSafelistFTPToRegisterProtocolHandler});
-      break;
-    case ProtocolTestMode::kFtpOnPaytoOff:
-      scoped_feature_list_.InitWithFeatures(
-          {blink::features::kSafelistFTPToRegisterProtocolHandler},
-          {blink::features::kSafelistPaytoToRegisterProtocolHandler});
-      break;
-    case ProtocolTestMode::kFtpOnPaytoOn:
-      scoped_feature_list_.InitWithFeatures(
-          {blink::features::kSafelistFTPToRegisterProtocolHandler,
-          blink::features::kSafelistPaytoToRegisterProtocolHandler}, {});
-      break;
-    case ProtocolTestMode::kFtpOffPaytoOff:
-    default:
-      scoped_feature_list_.InitWithFeatures({},
-          {blink::features::kSafelistFTPToRegisterProtocolHandler,
-          blink::features::kSafelistPaytoToRegisterProtocolHandler});
-      break;
+      case ProtocolTestMode::kPaytoOff:
+        scoped_feature_list_.InitWithFeatures(
+            {}, {blink::features::kSafelistPaytoToRegisterProtocolHandler});
+        break;
+      case ProtocolTestMode::kPaytoOn:
+        scoped_feature_list_.InitWithFeatures(
+            {blink::features::kSafelistPaytoToRegisterProtocolHandler}, {});
+        break;
     }
   }
 
@@ -1274,10 +1240,8 @@ class ProtocolHandlerRegistrySchemeTest
 };
 INSTANTIATE_TEST_SUITE_P(All,
                          ProtocolHandlerRegistrySchemeTest,
-                         testing::Values(ProtocolTestMode::kFtpOffPaytoOn,
-                                         ProtocolTestMode::kFtpOnPaytoOff,
-                                         ProtocolTestMode::kFtpOnPaytoOn,
-                                         ProtocolTestMode::kFtpOffPaytoOff));
+                         testing::Values(ProtocolTestMode::kPaytoOff,
+                                         ProtocolTestMode::kPaytoOn));
 // See
 // https://html.spec.whatwg.org/multipage/system-state.html#safelisted-scheme
 TEST_P(ProtocolHandlerRegistrySchemeTest, SafelistedSchemes) {
@@ -1297,20 +1261,14 @@ TEST_P(ProtocolHandlerRegistrySchemeTest, SafelistedSchemes) {
   for (auto& scheme : kFtpSchemes) {
     registry()->OnAcceptRegisterProtocolHandler(
         CreateProtocolHandler(scheme, GURL("https://example.com/url=%s")));
-    if (GetParam() == ProtocolTestMode::kFtpOnPaytoOff ||
-        GetParam() == ProtocolTestMode::kFtpOnPaytoOn) {
-      ASSERT_TRUE(registry()->IsHandledProtocol(scheme));
-    } else {
-      ASSERT_FALSE(registry()->IsHandledProtocol(scheme));
-    }
+    ASSERT_TRUE(registry()->IsHandledProtocol(scheme));
   }
   registry()->OnAcceptRegisterProtocolHandler(
     CreateProtocolHandler(kPaytoScheme, GURL("https://example.com/url=%s")));
-  if (GetParam() == ProtocolTestMode::kFtpOffPaytoOn ||
-      GetParam() == ProtocolTestMode::kFtpOnPaytoOn) {
-     ASSERT_TRUE(registry()->IsHandledProtocol(kPaytoScheme));
+  if (GetParam() == ProtocolTestMode::kPaytoOn) {
+    ASSERT_TRUE(registry()->IsHandledProtocol(kPaytoScheme));
   } else {
-     ASSERT_FALSE(registry()->IsHandledProtocol(kPaytoScheme));
+    ASSERT_FALSE(registry()->IsHandledProtocol(kPaytoScheme));
   }
 }
 
@@ -1383,26 +1341,13 @@ TEST_P(ProtocolHandlerRegistryCredentialsTest,
   }
 }
 
-TEST_P(ProtocolHandlerRegistryParamTest, CredentialsForNonStandardSchemes) {
+TEST_F(ProtocolHandlerRegistryTest, CredentialsForNonStandardSchemes) {
   ProtocolHandler ph =
       CreateProtocolHandler("web+bool", GURL("https://example.com/url=%s"));
   registry()->OnAcceptRegisterProtocolHandler(ph);
-
-  if (use_standard_compliant_non_special_scheme_url_parsing_) {
-    // If the feature is enabled, the credentials part, "user:password", in
-    // non-special URLs is correctly parsed and removed.
-    EXPECT_EQ(ph.TranslateUrl(GURL("web+bool://user:password@example/y")),
-              GURL("https://example.com/"
-                   "url=web%2Bbool%3A%2F%2Fexample%2Fy"));
-  } else {
-    EXPECT_EQ(ph.TranslateUrl(GURL("web+bool://user:password@example/y")),
-              GURL("https://example.com/"
-                   "url=web%2Bbool%3A%2F%2Fuser%3Apassword%40example%2Fy"));
-  }
+  EXPECT_EQ(ph.TranslateUrl(GURL("web+bool://user:password@example/y")),
+            GURL("https://example.com/"
+                 "url=web%2Bbool%3A%2F%2Fexample%2Fy"));
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ProtocolHandlerRegistryParamTest,
-                         ::testing::Bool());
 
 }  // namespace custom_handlers

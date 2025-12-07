@@ -16,6 +16,7 @@ namespace ui {
 class WaylandConnection;
 class WaylandKeyboard;
 class WaylandPointer;
+class WaylandTabletSeat;
 class WaylandTouch;
 
 // Wraps the Wayland seat abstraction.
@@ -67,6 +68,7 @@ class WaylandSeat : public wl::GlobalObjectRegistrar<WaylandSeat> {
   std::unique_ptr<WaylandKeyboard> keyboard_;
   std::unique_ptr<WaylandPointer> pointer_;
   std::unique_ptr<WaylandTouch> touch_;
+  std::unique_ptr<WaylandTabletSeat> tablet_;
 };
 
 }  // namespace ui

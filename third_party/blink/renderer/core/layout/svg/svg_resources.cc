@@ -19,7 +19,8 @@
 
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_filter.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_paint_server.h"
@@ -80,7 +81,7 @@ gfx::RectF SVGResources::ReferenceBoxForEffects(
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   if (foreign_object_quirk == ForeignObjectQuirk::kEnabled &&
@@ -115,12 +116,7 @@ void SVGResources::UpdateEffects(LayoutObject& object,
       (style.HasFilter() || (old_style && old_style->HasFilter()))) {
     // We either created one above, or had one already.
     DCHECK(GetClient(object));
-    if (RuntimeEnabledFeatures::SvgTransformOptimizationEnabled()) {
-      GetClient(object)->InvalidateFilterData();
-    } else {
-      object.SetNeedsPaintPropertyUpdate();
-      GetClient(object)->MarkFilterDataDirty();
-    }
+    GetClient(object)->InvalidateFilterData();
   }
   if (!old_style || !had_client)
     return;
@@ -214,6 +210,9 @@ class SVGElementResourceClient::FilterData final
       : last_effect_(last_effect), node_map_(node_map) {}
 
   bool HasEffects() const { return last_effect_ != nullptr; }
+  bool OriginTainted() const {
+    return last_effect_ ? last_effect_->OriginTainted() : false;
+  }
   sk_sp<PaintFilter> BuildPaintFilter() {
     return paint_filter_builder::Build(last_effect_.Get(),
                                        kInterpolationSpaceSRGB);
@@ -261,7 +260,7 @@ bool ContainsResource(const ContainerType* container, SVGResource* resource) {
 
 bool ContainsResource(const FilterOperations& operations,
                       SVGResource* resource) {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       operations.Operations(), [resource](const FilterOperation* operation) {
         return ContainsResource(DynamicTo<ReferenceFilterOperation>(operation),
                                 resource);
@@ -301,7 +300,13 @@ void SVGElementResourceClient::ResourceContentChanged(SVGResource* resource) {
   if (ContainsResource(style.MarkerStartResource(), resource) ||
       ContainsResource(style.MarkerMidResource(), resource) ||
       ContainsResource(style.MarkerEndResource(), resource)) {
-    needs_layout = true;
+    // Within layout a <marker> with a percentage length can invalidate its
+    // clients if the viewport has changed. Skip layout invalidation.
+    if (layout_object->GetFrameView()->IsInPerformLayout()) {
+      layout_object->SetShouldDoFullPaintInvalidation();
+    } else {
+      needs_layout = true;
+    }
     layout_object->SetNeedsBoundariesUpdate();
   }
 
@@ -380,6 +385,9 @@ void SVGElementResourceClient::UpdateFilterData(
       if (filter_data_->HasEffects()) {
         // BuildPaintFilter() can return null which means pass-through.
         operations.AppendReferenceFilter(filter_data_->BuildPaintFilter());
+        if (filter_data_->OriginTainted()) {
+          operations.SetOriginTainted();
+        }
       } else {
         // Create a filter chain that yields transparent black.
         operations.AppendOpacityFilter(0);

@@ -11,7 +11,7 @@
 #import "ios/chrome/app/spotlight/reading_list_spotlight_manager.h"
 #import "ios/chrome/app/spotlight/topsites_spotlight_manager.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -33,19 +33,19 @@
 - (void)start {
   [super start];
 
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.profile;
   self.viewController = [[SpotlightDebuggerViewController alloc]
-      initWithPrefService:browserState->GetPrefs()];
+      initWithPrefService:profile->GetPrefs()];
   self.viewController.delegate = self;
-  self.viewController.bookmarksManager = [BookmarksSpotlightManager
-      bookmarksSpotlightManagerWithBrowserState:browserState];
+  self.viewController.bookmarksManager =
+      [BookmarksSpotlightManager bookmarksSpotlightManagerWithProfile:profile];
 
   self.viewController.readingListSpotlightManager = [ReadingListSpotlightManager
-      readingListSpotlightManagerWithBrowserState:browserState];
-  self.viewController.openTabsSpotlightManager = [OpenTabsSpotlightManager
-      openTabsSpotlightManagerWithBrowserState:browserState];
-  self.viewController.topSitesSpotlightManager = [TopSitesSpotlightManager
-      topSitesSpotlightManagerWithBrowserState:browserState];
+      readingListSpotlightManagerWithProfile:profile];
+  self.viewController.openTabsSpotlightManager =
+      [OpenTabsSpotlightManager openTabsSpotlightManagerWithProfile:profile];
+  self.viewController.topSitesSpotlightManager =
+      [TopSitesSpotlightManager topSitesSpotlightManagerWithProfile:profile];
 
   UINavigationController* navController = [[UINavigationController alloc]
       initWithRootViewController:self.viewController];

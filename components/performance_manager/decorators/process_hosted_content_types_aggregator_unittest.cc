@@ -148,8 +148,9 @@ TEST_F(ProcessHostedContentTypesAggregatorTest, AdFrame) {
   auto ad_frame_node = CreateFrameNodeAutoId(
       process_node.get(), page_node.get(), main_frame_node.get());
   const GURL kUrl("https://example.com");
-  ad_frame_node->OnNavigationCommitted(kUrl, url::Origin::Create(kUrl),
-                                       /* same_document=*/false);
+  ad_frame_node->OnNavigationCommitted(
+      kUrl, url::Origin::Create(kUrl),
+      /*same_document=*/false, /*is_served_from_back_forward_cache=*/false);
   ad_frame_node->SetIsAdFrame(true);
 
   EXPECT_FALSE(IsHosting(process_node, ContentType::kExtension));

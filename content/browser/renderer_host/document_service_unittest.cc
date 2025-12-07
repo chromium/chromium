@@ -13,6 +13,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/public/test/test_utils.h"
 #include "content/test/echo.test-mojom.h"
 #include "content/test/test_render_frame_host.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -99,8 +100,10 @@ TEST_F(DocumentServiceTest, RenderFrameDeleted) {
   // Needs to create a child frame so we can delete it using DetachFrame()
   // because it is not allowed to detach the main frame.
   RenderFrameHost* child_rfh = AddChildFrame(main_rfh(), GURL(kBarOrigin));
+  content::RenderFrameDeletedObserver delete_observer(child_rfh);
   CreateEchoImpl(*child_rfh);
   DetachFrame(child_rfh);
+  delete_observer.WaitUntilDeleted();
   EXPECT_FALSE(is_echo_impl_alive_);
 }
 

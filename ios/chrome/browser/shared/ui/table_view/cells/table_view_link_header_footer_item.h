@@ -57,11 +57,16 @@
 // Sets the `text` displayed by this cell. If the `text` contains a link, the
 // link is appropriately colored. The text is coolored with `color`. If specific
 // `textAlignment` is provided, apply that as well, otherwise it is
-// NSTextAlignmentNatural.
+// NSTextAlignmentNatural. The default font is the preferred font for
+// UIFontTextStyleFootnote.
 - (void)setText:(NSString*)text withColor:(UIColor*)color;
 - (void)setText:(NSString*)text
         withColor:(UIColor*)color
     textAlignment:(NSTextAlignment)textAlignment;
+- (void)setText:(NSString*)text
+        withColor:(UIColor*)color
+    textAlignment:(NSTextAlignment)textAlignment
+             font:(UIFont*)font;
 
 // If forceIndents is YES, activates the constraint to align the header/footer
 // with section items.

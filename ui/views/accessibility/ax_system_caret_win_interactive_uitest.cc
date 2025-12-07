@@ -17,7 +17,7 @@
 #include "ui/base/ime/text_edit_commands.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
@@ -46,7 +46,7 @@ class AXSystemCaretWinTest : public test::DesktopWidgetTest {
     textfield_ = new Textfield();
     textfield_->SetBounds(0, 0, 200, 20);
     textfield_->SetText(u"Some text.");
-    widget_->GetRootView()->AddChildView(textfield_.get());
+    widget_->GetRootView()->AddChildViewRaw(textfield_.get());
     widget_->Show();
     test::WaitForWidgetActive(widget_, true);
     textfield_->RequestFocus();
@@ -142,8 +142,9 @@ WinAccessibilityCaretEventMonitor::~WinAccessibilityCaretEventMonitor() {
 void WinAccessibilityCaretEventMonitor::WaitForNextEvent(DWORD* out_event,
                                                          UINT* out_role,
                                                          UINT* out_state) {
-  if (event_queue_.empty())
+  if (event_queue_.empty()) {
     loop_runner_.Run();
+  }
 
   EventInfo event_info = event_queue_.front();
   event_queue_.pop_front();
@@ -157,16 +158,18 @@ void WinAccessibilityCaretEventMonitor::WaitForNextEvent(DWORD* out_event,
                                           child_variant.Receive()));
 
   base::win::ScopedVariant role_variant;
-  if (S_OK == acc_obj->get_accRole(child_variant, role_variant.Receive()))
+  if (S_OK == acc_obj->get_accRole(child_variant, role_variant.Receive())) {
     *out_role = V_I4(role_variant.ptr());
-  else
+  } else {
     *out_role = 0;
+  }
 
   base::win::ScopedVariant state_variant;
-  if (S_OK == acc_obj->get_accState(child_variant, state_variant.Receive()))
+  if (S_OK == acc_obj->get_accState(child_variant, state_variant.Receive())) {
     *out_state = V_I4(state_variant.ptr());
-  else
+  } else {
     *out_state = 0;
+  }
 }
 
 void WinAccessibilityCaretEventMonitor::OnWinEventHook(HWINEVENTHOOK handle,
@@ -304,8 +307,7 @@ TEST_F(AXSystemCaretWinTest, TestMovingWindow) {
   EXPECT_EQ(height, height3);
 }
 
-// TODO(crbug.com/40820766): This test is flaky.
-TEST_F(AXSystemCaretWinTest, DISABLED_TestCaretMSAAEvents) {
+TEST_F(AXSystemCaretWinTest, TestCaretMSAAEvents) {
   TextfieldTestApi textfield_test_api(textfield_);
   Microsoft::WRL::ComPtr<IAccessible> caret_accessible;
   gfx::NativeWindow native_window = widget_->GetNativeWindow();
@@ -350,7 +352,7 @@ TEST_F(AXSystemCaretWinTest, DISABLED_TestCaretMSAAEvents) {
     // Move focus to a button.
     LabelButton button{Button::PressedCallback(), std::u16string()};
     button.SetBounds(500, 0, 200, 20);
-    widget_->GetRootView()->AddChildView(&button);
+    widget_->GetRootView()->AddChildViewRaw(&button);
     WinAccessibilityCaretEventMonitor monitor(EVENT_OBJECT_SHOW,
                                               EVENT_OBJECT_LOCATIONCHANGE);
     widget_->Show();
@@ -377,6 +379,53 @@ TEST_F(AXSystemCaretWinTest, DISABLED_TestCaretMSAAEvents) {
     ASSERT_EQ(role, static_cast<UINT>(ROLE_SYSTEM_CARET))
         << "Role should be ROLE_SYSTEM_CARET";
     ASSERT_EQ(state, static_cast<UINT>(0)) << "State should be 0";
+  }
+}
+
+TEST_F(AXSystemCaretWinTest, TestCaretEventsWithHiddenInput) {
+  // Set up the text field and input element.
+  TextfieldTestApi textfield_test_api(textfield_);
+  Microsoft::WRL::ComPtr<IAccessible> input_accessible;
+  gfx::NativeWindow native_window = widget_->GetNativeWindow();
+  ASSERT_NE(nullptr, native_window);
+  HWND hwnd = native_window->GetHost()->GetAcceleratedWidget();
+  EXPECT_HRESULT_SUCCEEDED(AccessibleObjectFromWindow(
+      hwnd, static_cast<DWORD>(OBJID_CLIENT), IID_PPV_ARGS(&input_accessible)));
+
+  DWORD event;
+  UINT role;
+  UINT state;
+
+  {
+    // Focus the input element.
+    WinAccessibilityCaretEventMonitor monitor(EVENT_OBJECT_FOCUS,
+                                              EVENT_OBJECT_LOCATIONCHANGE);
+    textfield_test_api.ExecuteTextEditCommand(
+        ui::TextEditCommand::MOVE_TO_BEGINNING_OF_DOCUMENT);
+    monitor.WaitForNextEvent(&event, &role, &state);
+    ASSERT_EQ(event, static_cast<DWORD>(EVENT_OBJECT_LOCATIONCHANGE))
+        << "Event should be EVENT_OBJECT_FOCUS";
+    ASSERT_EQ(role, static_cast<UINT>(ROLE_SYSTEM_CARET))
+        << "Role should be ROLE_SYSTEM_TEXT";
+    ASSERT_EQ(state, static_cast<UINT>(0)) << "State should be 0";
+  }
+
+  {
+    // Hide the input element by setting aria-hidden="true".
+    WinAccessibilityCaretEventMonitor monitor(EVENT_OBJECT_HIDE,
+                                              EVENT_OBJECT_LOCATIONCHANGE);
+    textfield_test_api.ExecuteTextEditCommand(
+        ui::TextEditCommand::MOVE_TO_BEGINNING_OF_DOCUMENT);
+    // Simulate setting aria-hidden="true" by changing the visibility.
+    textfield_->SetVisible(false);
+
+    monitor.WaitForNextEvent(&event, &role, &state);
+    ASSERT_EQ(event, static_cast<DWORD>(EVENT_OBJECT_HIDE))
+        << "Event should be EVENT_OBJECT_HIDE";
+    ASSERT_EQ(role, static_cast<UINT>(ROLE_SYSTEM_CARET))
+        << "Role should be ROLE_SYSTEM_CARET";
+    ASSERT_EQ(state, static_cast<UINT>(STATE_SYSTEM_INVISIBLE))
+        << "State should be STATE_SYSTEM_INVISIBLE";
   }
 }
 

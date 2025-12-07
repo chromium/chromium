@@ -21,7 +21,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/arc_key_permissions_manager_delegate.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
+#include "chromeos/ash/components/platform_keys/platform_keys.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -62,9 +62,11 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager,
 
     // If the update operation has been done successfully, a success
     // |update_status| will be returned. An error |update_status| will be
-    // returned otherwise.
+    // returned otherwise. In both cases |keys_updated| will contain how many
+    // keys were successfully updated.
     using UpdateCallback =
-        base::OnceCallback<void(chromeos::platform_keys::Status update_status)>;
+        base::OnceCallback<void(size_t keys_updated,
+                                chromeos::platform_keys::Status update_status)>;
     // Updates the key permissions in chaps according to |mode_|.
     void Update(UpdateCallback callback);
 
@@ -85,6 +87,7 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager,
     const raw_ptr<KeyPermissionsManagerImpl> key_permissions_manager_;
     base::queue<std::vector<uint8_t>> public_key_spki_der_queue_;
     bool update_started_ = false;
+    size_t keys_updated_ = 0;
     UpdateCallback callback_;
 
     base::WeakPtrFactory<KeyPermissionsInChapsUpdater> weak_ptr_factory_{this};
@@ -110,8 +113,10 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager,
 
   // Used by `ChromeBrowserMainPartsAsh` to create a system-wide key
   // permissions manager instance.
+  // `local_state` must be non-null, and must be valid until
+  // `KeyPermissionsManager::Shutdown` is called.
   static std::unique_ptr<KeyPermissionsManager>
-  CreateSystemTokenKeyPermissionsManager();
+  CreateSystemTokenKeyPermissionsManager(PrefService* local_state);
 
   // Registers system-wide prefs.
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
@@ -157,10 +162,11 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager,
   // Updates the permissions of the keys residing on |token_id| in chaps. If
   // this method is called while an update is already running, it will cancel
   // the running update and start a new one.
-  void UpdateKeyPermissionsInChaps();
+  void UpdateArcKeyPermissionsInChaps();
 
   void StartOneTimeMigration();
-  void OnOneTimeMigrationDone(chromeos::platform_keys::Status migration_status);
+  void OnOneTimeMigrationDone(size_t keys_updated,
+                              chromeos::platform_keys::Status migration_status);
   bool IsOneTimeMigrationDone() const;
 
   void AllowKeyForCorporateUsage(AllowKeyForUsageCallback callback,

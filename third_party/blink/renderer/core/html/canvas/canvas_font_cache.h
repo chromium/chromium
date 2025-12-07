@@ -37,15 +37,14 @@ class CORE_EXPORT CanvasFontCache final
   void PruneAll();
   unsigned size();
 
-  virtual void Trace(Visitor*) const;
+  void Trace(Visitor*) const;
 
   static unsigned MaxFonts();
   unsigned HardMaxFonts();
 
   void WillUseCurrentFont() { SchedulePruningIfNeeded(); }
-  bool GetFontUsingDefaultStyle(HTMLCanvasElement& canvas,
-                                const String&,
-                                Font&);
+  const Font* GetFontUsingDefaultStyle(HTMLCanvasElement& canvas,
+                                       const String&);
 
   // TaskObserver implementation
   void DidProcessTask(const base::PendingTask&) override;
@@ -63,14 +62,7 @@ class CORE_EXPORT CanvasFontCache final
   typedef HeapHashMap<String, Member<MutableCSSPropertyValueSet>>
       MutableStylePropertyMap;
 
-  struct FontWrapper : public GarbageCollected<FontWrapper> {
-    explicit FontWrapper(Font&& font) : font(font) {}
-
-    void Trace(Visitor* visitor) const { visitor->Trace(font); }
-    Font font;
-  };
-
-  HeapHashMap<String, Member<FontWrapper>> fonts_resolved_using_default_style_;
+  HeapHashMap<String, Member<const Font>> fonts_resolved_using_default_style_;
   MutableStylePropertyMap fetched_fonts_;
   LinkedHashSet<String> font_lru_list_;
   std::unique_ptr<FontCachePurgePreventer> main_cache_purge_preventer_;

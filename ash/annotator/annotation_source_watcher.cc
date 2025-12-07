@@ -5,10 +5,8 @@
 #include "ash/annotator/annotation_source_watcher.h"
 
 #include "ash/annotator/annotator_controller.h"
-#include "ash/constants/ash_features.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/shell.h"
-#include "base/feature_list.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -19,14 +17,10 @@ AnnotationSourceWatcher::AnnotationSourceWatcher(
     : annotator_controller_(annotator_controller) {
   capture_mode_controller_ = CaptureModeController::Get();
   capture_mode_observation_.Observe(capture_mode_controller_);
-  // There is no need to observe projector session if the annotator feature is
-  // always enabled in capture mode. Only observe when the feature is disabled.
-  if (!base::FeatureList::IsEnabled(ash::features::kAnnotatorMode)) {
-    ProjectorControllerImpl* projector_controller =
-        Shell::Get()->projector_controller();
-    projector_session_observation_.Observe(
-        projector_controller->projector_session());
-  }
+  ProjectorControllerImpl* projector_controller =
+      Shell::Get()->projector_controller();
+  projector_session_observation_.Observe(
+      projector_controller->projector_session());
 }
 
 AnnotationSourceWatcher::~AnnotationSourceWatcher() {
@@ -36,14 +30,12 @@ AnnotationSourceWatcher::~AnnotationSourceWatcher() {
   capture_mode_controller_ = nullptr;
 }
 
-void AnnotationSourceWatcher::NotifyMarkerClicked(aura::Window* current_root) {
-  // TODO(b/342104047): implement functionality
-}
 void AnnotationSourceWatcher::NotifyMarkerEnabled(aura::Window* current_root) {
-  // TODO(b/342104047): implement functionality
+  annotator_controller_->RegisterView(current_root);
+  annotator_controller_->CreateAnnotationOverlayForMarkerMode(current_root);
 }
 void AnnotationSourceWatcher::NotifyMarkerDisabled() {
-  // TODO(b/342104047): implement functionality
+  annotator_controller_->DisableAnnotator();
 }
 
 void AnnotationSourceWatcher::OnRecordingStarted(aura::Window* current_root) {
@@ -53,8 +45,7 @@ void AnnotationSourceWatcher::OnRecordingStarted(aura::Window* current_root) {
 
   // TODO(b/342104047): Remove this check once the annotator is always enabled
   // in capture mode.
-  if (!base::FeatureList::IsEnabled(ash::features::kAnnotatorMode) &&
-      !is_projector_session_active_) {
+  if (!is_projector_session_active_) {
     return;
   }
 
@@ -68,8 +59,7 @@ void AnnotationSourceWatcher::OnRecordingEnded() {
 
   // TODO(b/342104047): Remove this check once the annotator is always enabled
   // in capture mode.
-  if (!base::FeatureList::IsEnabled(ash::features::kAnnotatorMode) &&
-      !is_projector_session_active_) {
+  if (!is_projector_session_active_) {
     return;
   }
 
@@ -88,8 +78,7 @@ void AnnotationSourceWatcher::OnRecordedWindowChangingRoot(
 
   // TODO(b/342104047): Remove this check once the annotator is always enabled
   // in capture mode.
-  if (!base::FeatureList::IsEnabled(ash::features::kAnnotatorMode) &&
-      !is_projector_session_active_) {
+  if (!is_projector_session_active_) {
     return;
   }
 
@@ -103,8 +92,7 @@ void AnnotationSourceWatcher::OnRecordingStartAborted() {
 
   // TODO(b/342104047): Remove this check once the annotator is always enabled
   // in capture mode.
-  if (!base::FeatureList::IsEnabled(ash::features::kAnnotatorMode) &&
-      !is_projector_session_active_) {
+  if (!is_projector_session_active_) {
     return;
   }
 

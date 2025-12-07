@@ -29,6 +29,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "media/base/audio_bus.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_wiring.h"
 
@@ -38,8 +39,7 @@ AudioNodeInput::AudioNodeInput(AudioHandler& handler)
     : AudioSummingJunction(handler.Context()->GetDeferredTaskHandler()),
       handler_(handler) {
   // Set to mono by default.
-  internal_summing_bus_ =
-      AudioBus::Create(1, GetDeferredTaskHandler().RenderQuantumFrames());
+  internal_summing_bus_ = AudioBus::Create(1, RenderQuantumFrames());
 }
 
 AudioNodeInput::~AudioNodeInput() {
@@ -51,8 +51,8 @@ void AudioNodeInput::DidUpdate() {
 }
 
 void AudioNodeInput::UpdateInternalBus() {
-  DCHECK(GetDeferredTaskHandler().IsAudioThread());
-  GetDeferredTaskHandler().AssertGraphOwner();
+  DCHECK(IsAudioThread());
+  AssertGraphOwner();
 
   unsigned number_of_input_channels = NumberOfChannels();
 
@@ -60,13 +60,13 @@ void AudioNodeInput::UpdateInternalBus() {
     return;
   }
 
-  internal_summing_bus_ = AudioBus::Create(
-      number_of_input_channels, GetDeferredTaskHandler().RenderQuantumFrames());
+  internal_summing_bus_ =
+      AudioBus::Create(number_of_input_channels, RenderQuantumFrames());
 }
 
 unsigned AudioNodeInput::NumberOfChannels() const {
-  AudioHandler::ChannelCountMode mode = Handler().InternalChannelCountMode();
-  if (mode == AudioHandler::kExplicit) {
+  auto mode = Handler().InternalChannelCountMode();
+  if (mode == V8ChannelCountMode::Enum::kExplicit) {
     return Handler().ChannelCount();
   }
 
@@ -81,7 +81,7 @@ unsigned AudioNodeInput::NumberOfChannels() const {
     max_channels = std::max(max_channels, output->NumberOfChannels());
   }
 
-  if (mode == AudioHandler::kClampedMax) {
+  if (mode == V8ChannelCountMode::Enum::kClampedMax) {
     max_channels =
         std::min(max_channels, static_cast<unsigned>(Handler().ChannelCount()));
   }
@@ -90,11 +90,11 @@ unsigned AudioNodeInput::NumberOfChannels() const {
 }
 
 scoped_refptr<AudioBus> AudioNodeInput::Bus() {
-  DCHECK(GetDeferredTaskHandler().IsAudioThread());
+  DCHECK(IsAudioThread());
 
   // Handle single connection specially to allow for in-place processing.
   if (NumberOfRenderingConnections() == 1 &&
-      Handler().InternalChannelCountMode() == AudioHandler::kMax) {
+      Handler().InternalChannelCountMode() == V8ChannelCountMode::Enum::kMax) {
     return RenderingOutput(0)->Bus();
   }
 
@@ -103,14 +103,14 @@ scoped_refptr<AudioBus> AudioNodeInput::Bus() {
 }
 
 scoped_refptr<AudioBus> AudioNodeInput::InternalSummingBus() {
-  DCHECK(GetDeferredTaskHandler().IsAudioThread());
+  DCHECK(IsAudioThread());
 
   return internal_summing_bus_;
 }
 
 void AudioNodeInput::SumAllConnections(scoped_refptr<AudioBus> summing_bus,
                                        uint32_t frames_to_process) {
-  DCHECK(GetDeferredTaskHandler().IsAudioThread());
+  DCHECK(IsAudioThread());
 
   // We shouldn't be calling this method if there's only one connection, since
   // it's less efficient.
@@ -138,11 +138,11 @@ void AudioNodeInput::SumAllConnections(scoped_refptr<AudioBus> summing_bus,
 
 scoped_refptr<AudioBus> AudioNodeInput::Pull(AudioBus* in_place_bus,
                                              uint32_t frames_to_process) {
-  DCHECK(GetDeferredTaskHandler().IsAudioThread());
+  DCHECK(IsAudioThread());
 
   // Handle single connection case.
   if (NumberOfRenderingConnections() == 1 &&
-      Handler().InternalChannelCountMode() == AudioHandler::kMax) {
+      Handler().InternalChannelCountMode() == V8ChannelCountMode::Enum::kMax) {
     // The output will optimize processing using inPlaceBus if it's able.
     AudioNodeOutput* output = RenderingOutput(0);
     return output->Pull(in_place_bus, frames_to_process);

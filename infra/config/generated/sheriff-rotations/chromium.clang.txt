@@ -7,7 +7,6 @@ ci/ToTAndroid (dbg)
 ci/ToTAndroid x64
 ci/ToTAndroid x86
 ci/ToTAndroid64
-ci/ToTAndroidASan
 ci/ToTAndroidCoverage x86
 ci/ToTAndroidOfficial
 ci/ToTChromeOS
@@ -30,6 +29,9 @@ ci/ToTMacArm64
 ci/ToTMacArm64PGO
 ci/ToTMacCoverage
 ci/ToTMacPGO
+ci/ToTRustLinux(dbg)
+ci/ToTRustMac(dbg)
+ci/ToTRustWin(dbg)
 ci/ToTWin
 ci/ToTWin(dbg)
 ci/ToTWin(dll)

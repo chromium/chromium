@@ -15,9 +15,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/crx_file/id_util.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
@@ -35,19 +33,18 @@ using extensions::Extension;
 
 class ExtensionInstallUIBrowserTest : public extensions::ExtensionBrowserTest {
  public:
-  ExtensionInstallUIBrowserTest() {}
+  ExtensionInstallUIBrowserTest() = default;
 
   ExtensionInstallUIBrowserTest(const ExtensionInstallUIBrowserTest&) = delete;
   ExtensionInstallUIBrowserTest& operator=(
       const ExtensionInstallUIBrowserTest&) = delete;
 
-  ~ExtensionInstallUIBrowserTest() override {}
+  ~ExtensionInstallUIBrowserTest() override = default;
 
   // Checks that a theme info bar is currently visible and issues an undo to
   // revert to the previous theme.
   void VerifyThemeInfoBarAndUndoInstall() {
-    WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+    WebContents* web_contents = GetActiveWebContents();
     ASSERT_TRUE(web_contents);
     infobars::ContentInfoBarManager* infobar_manager =
         infobars::ContentInfoBarManager::FromWebContents(web_contents);
@@ -70,7 +67,7 @@ class ExtensionInstallUIBrowserTest : public extensions::ExtensionBrowserTest {
     size_t num_before = extensions::ExtensionRegistry::Get(profile())
                             ->enabled_extensions()
                             .size();
-    ASSERT_TRUE(InstallExtensionWithUIAutoConfirm(theme_path, 1, browser()));
+    ASSERT_TRUE(InstallExtensionWithUIAutoConfirm(theme_path, 1));
     WaitForThemeChange();
     size_t num_after = extensions::ExtensionRegistry::Get(profile())
                            ->enabled_extensions()
@@ -84,13 +81,13 @@ class ExtensionInstallUIBrowserTest : public extensions::ExtensionBrowserTest {
     ASSERT_EQ(theme->name(), expected_name);
   }
 
-  const Extension* GetTheme() const {
-    return ThemeServiceFactory::GetThemeForProfile(browser()->profile());
+  const Extension* GetTheme() {
+    return ThemeServiceFactory::GetThemeForProfile(profile());
   }
 
   void WaitForThemeChange() {
     test::ThemeServiceChangedWaiter waiter(
-        ThemeServiceFactory::GetForProfile(browser()->profile()));
+        ThemeServiceFactory::GetForProfile(profile()));
     waiter.WaitForThemeChanged();
   }
 };
@@ -100,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallUIBrowserTest,
                        DISABLED_TestThemeInstallUndoResetsToDefault) {
   // Install theme once and undo to verify we go back to default theme.
   base::FilePath theme_crx = PackExtension(test_data_dir_.AppendASCII("theme"));
-  ASSERT_TRUE(InstallExtensionWithUIAutoConfirm(theme_crx, 1, browser()));
+  ASSERT_TRUE(InstallExtensionWithUIAutoConfirm(theme_crx, 1));
   WaitForThemeChange();
   const Extension* theme = GetTheme();
   ASSERT_TRUE(theme);
@@ -109,12 +106,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallUIBrowserTest,
   ASSERT_EQ(nullptr, GetTheme());
 
   // Set the same theme twice and undo to verify we go back to default theme.
-  ASSERT_TRUE(InstallExtensionWithUIAutoConfirm(theme_crx, 0, browser()));
+  ASSERT_TRUE(InstallExtensionWithUIAutoConfirm(theme_crx, 0));
   WaitForThemeChange();
   theme = GetTheme();
   ASSERT_TRUE(theme);
   ASSERT_EQ(theme_id, theme->id());
-  ASSERT_TRUE(InstallExtensionWithUIAutoConfirm(theme_crx, 0, browser()));
+  ASSERT_TRUE(InstallExtensionWithUIAutoConfirm(theme_crx, 0));
   WaitForThemeChange();
   theme = GetTheme();
   ASSERT_TRUE(theme);
@@ -145,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallUIBrowserTest,
   InstallThemeAndVerify("theme", "camo theme");
 
   // Reset to default theme.
-  ThemeServiceFactory::GetForProfile(browser()->profile())->UseDefaultTheme();
+  ThemeServiceFactory::GetForProfile(profile())->UseDefaultTheme();
   ASSERT_FALSE(GetTheme());
 }
 

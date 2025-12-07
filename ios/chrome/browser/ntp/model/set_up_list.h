@@ -7,14 +7,13 @@
 
 #import <Foundation/Foundation.h>
 
-class AuthenticationService;
+namespace signin {
+class IdentityManager;
+}
+
 class PrefService;
 @class SetUpListItem;
 @protocol SetUpListDelegate;
-
-namespace syncer {
-class SyncService;
-}  // namespace syncer
 
 // Contains a list of items to display in the Set Up List UI on the NTP / Home.
 @interface SetUpList : NSObject
@@ -28,17 +27,13 @@ class SyncService;
 // `contentNotificationEnabled` is `YES` if the user is enabled to content
 // notifications.
 + (instancetype)buildFromPrefs:(PrefService*)prefs
-                    localState:(PrefService*)localState
-                   syncService:(syncer::SyncService*)syncService
-         authenticationService:(AuthenticationService*)authService
-    contentNotificationEnabled:(BOOL)isContentNotificationEnabled;
+               identityManager:(signin::IdentityManager*)identityManager
+                    localState:(PrefService*)localState;
 
 // Initializes a SetUpList with the given `items`. `localState` is used to
 // store the state of each item and to observe changes to that state.
 - (instancetype)initWithItems:(NSArray<SetUpListItem*>*)items
                     localState:(PrefService*)localState
-         authenticationService:(AuthenticationService*)authService
-    contentNotificationEnabled:(BOOL)isContentNotificationEnabled
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

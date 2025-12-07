@@ -22,6 +22,11 @@ export enum Message {
   MAYBE_SHOW_RELEASE_NOTES_NOTIFICATION =
       'maybe-show-release-notes-notification',
   GET_DEVICE_INFO = 'get-device-info',
+  OPEN_SETTINGS = 'open-settings',
   OPEN_URL_IN_BROWSER_AND_TRIGGER_INSTALL_DIALOG =
       'open-url-in-browser-and-trigger-install-dialog',
+  SET_HAS_COMPLETED_NEW_DEVICE_CHECKLIST =
+      'set-has-completed-new-device-checklist',
+  SET_HAS_VISITED_HOW_TO_PAGE = 'set-has-visited-how-to-page',
+  OPEN_APP_MALL_PATH = 'open-app-mall-path',
 }

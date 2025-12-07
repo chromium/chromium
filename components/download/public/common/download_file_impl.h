@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_FILE_IMPL_H_
 #define COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_FILE_IMPL_H_
 
-#include "components/download/public/common/download_file.h"
-
 #include <stddef.h>
 #include <stdint.h>
 
@@ -17,7 +15,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/files/file.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -27,11 +25,17 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "components/download/public/common/base_file.h"
+#include "components/download/public/common/download_file.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_save_info.h"
 #include "components/download/public/common/rate_estimator.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/services/quarantine/public/mojom/quarantine.mojom.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
+
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+#include "components/enterprise/obfuscation/core/download_obfuscator.h"  // nogncheck
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 namespace download {
 
@@ -71,6 +75,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFileImpl : public DownloadFile {
       const std::string& client_guid,
       const GURL& source_url,
       const GURL& referrer_url,
+      const std::optional<url::Origin>& request_initiator,
       mojo::PendingRemote<quarantine::mojom::Quarantine> remote_quarantine,
       RenameCompletionCallback callback) override;
   void Detach() override;
@@ -132,9 +137,10 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFileImpl : public DownloadFile {
     // DownloadItem/DownloadFile somewhere.
     DownloadInterruptReason GetCompletionStatus() const;
 
-    using CompletionCallback = base::OnceCallback<void(SourceStream*)>;
-    // Register an callback to be called when download completes.
-    void RegisterCompletionCallback(CompletionCallback callback);
+    // Requests that on completion, `StreamSource` invokes
+    // `DownloadFileImpl::OnStreamCompleted` with `this`.
+    void RequestCompletionNotification(
+        base::WeakPtr<DownloadFileImpl> download_file);
 
     InputStream::StreamState Read(scoped_refptr<net::IOBuffer>* data,
                                   size_t* length);
@@ -200,13 +206,12 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFileImpl : public DownloadFile {
 
  protected:
   // For test class overrides.
-  // Validate the first |bytes_to_validate| bytes and write the next
-  // |bytes_to_write| bytes of data from the offset to the file.
+  // Validate that |to_validate| exists at |offset| in the file, then write
+  // |to_write| after it.
   virtual DownloadInterruptReason ValidateAndWriteDataToFile(
       int64_t offset,
-      const char* data,
-      size_t bytes_to_validate,
-      size_t bytes_to_write);
+      base::span<const uint8_t> to_validate,
+      base::span<const uint8_t> to_write);
 
   virtual base::TimeDelta GetRetryDelayForFailedRename(int attempt_number);
 
@@ -237,6 +242,8 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFileImpl : public DownloadFile {
     std::string client_guid;  // See BaseFile::AnnotateWithSourceInformation()
     GURL source_url;          // See BaseFile::AnnotateWithSourceInformation()
     GURL referrer_url;        // See BaseFile::AnnotateWithSourceInformation()
+    std::optional<url::Origin>
+        request_initiator;  // See BaseFile::AnnotateWithSourceInformation()
     mojo::PendingRemote<quarantine::mojom::Quarantine> remote_quarantine;
     int retries_left;         // RenameWithRetryInternal() will
                               // automatically retry until this
@@ -383,6 +390,10 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFileImpl : public DownloadFile {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+  std::unique_ptr<enterprise_obfuscation::DownloadObfuscator> obfuscator_;
+#endif
 
   base::WeakPtr<DownloadDestinationObserver> observer_;
   base::WeakPtrFactory<DownloadFileImpl> weak_factory_{this};

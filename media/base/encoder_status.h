@@ -56,13 +56,19 @@ struct EncoderStatusTraits {
     kOutOfMemoryError = 19,
     // No hardware encoder is available.
     kEncoderAccelerationSupportMissing = 20,
-    kMaxValue = kEncoderAccelerationSupportMissing,
+    // The system ran out of platform encoders.
+    kOutOfPlatformEncoders = 21,
+    // The client provided a non-existing reference buffer.
+    kBadReferenceBuffer = 22,
+    kMaxValue = kBadReferenceBuffer,
   };
   static constexpr StatusGroupType Group() { return "EncoderStatus"; }
 };
 
 using EncoderStatus = TypedStatus<EncoderStatusTraits>;
 
+MEDIA_EXPORT const char* EncoderStatusCodeToString(
+    const EncoderStatus& error_status);
 }  // namespace media
 
 #endif  // MEDIA_BASE_ENCODER_STATUS_H_

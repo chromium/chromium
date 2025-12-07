@@ -11,12 +11,10 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/bad_message.h"
 #include "chrome/browser/printing/print_preview_dialog_controller.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
@@ -150,13 +148,13 @@ bool PrintViewManager::BasicPrint(content::RenderFrameHost* rfh) {
 bool PrintViewManager::PrintPreviewNow(content::RenderFrameHost* rfh,
                                        bool has_selection) {
   return PrintPreview(rfh,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
                       mojo::NullAssociatedRemote(),
 #endif
                       has_selection);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool PrintViewManager::PrintPreviewWithPrintRenderer(
     content::RenderFrameHost* rfh,
     mojo::PendingAssociatedRemote<mojom::PrintRenderer> print_renderer) {
@@ -282,7 +280,7 @@ void PrintViewManager::SetReceiverImplForTesting(PrintManager* impl) {
 
 bool PrintViewManager::PrintPreview(
     content::RenderFrameHost* rfh,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     mojo::PendingAssociatedRemote<mojom::PrintRenderer> print_renderer,
 #endif
     bool has_selection) {
@@ -297,7 +295,7 @@ bool PrintViewManager::PrintPreview(
     return false;
 
   GetPrintRenderFrame(rfh)->InitiatePrintPreview(
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       std::move(print_renderer),
 #endif
       has_selection);
@@ -334,8 +332,7 @@ void PrintViewManager::SetupScriptedPrintPreview(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(kCheckPrintRfhIsActive) &&
-      !rfh->IsActive()) {
+  if (!rfh->IsActive()) {
     // Only active RFHs should show UI elements.
     std::move(callback).Run();
     return;

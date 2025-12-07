@@ -39,10 +39,10 @@ const char kSuccessfulOperationPrefix[] = "ok - ";
 
 namespace content {
 
+class EvalJsResult;
 class Shell;
 class StoragePartitionImpl;
 class WebContents;
-struct EvalJsResult;
 
 class BackgroundSyncBaseBrowserTest : public ContentBrowserTest {
  public:

@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/permissions/notifications_engagement_service_factory.h"
+#include <array>
 
+#include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/permissions/notifications_engagement_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -13,6 +17,7 @@
 namespace permissions {
 constexpr char kEngagementKey[] = "click_count";
 constexpr char kDisplayedKey[] = "display_count";
+constexpr char kSuspiciousKey[] = "suspicious_count";
 
 class NotificationsEngagementServiceTest : public testing::Test {
  public:
@@ -46,8 +51,8 @@ void NotificationsEngagementServiceTest::SetUp() {
 
 TEST_F(NotificationsEngagementServiceTest,
        NotificationsEngagementContentSetting) {
-  GURL hosts[] = {GURL("https://google.com/"),
-                  GURL("https://www.youtube.com/")};
+  auto hosts = std::to_array<GURL>(
+      {GURL("https://google.com/"), GURL("https://www.youtube.com/")});
 
   // Otherwise the test time and the service time will be out of sync and cause
   // the tests to fail.
@@ -191,6 +196,147 @@ TEST_F(NotificationsEngagementServiceTest,
   ASSERT_EQ(3, entryForDate->GetDict().FindInt(kEngagementKey).value());
 }
 
+TEST_F(NotificationsEngagementServiceTest, RecordNotificationSuspicious) {
+  GURL url1("https://www.suspicious1.site.com/");
+  GURL url2("https://www.suspicious2.site.com/");
+
+  HostContentSettingsMap* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+
+  // Notification interaction with display only.
+  task_environment_.FastForwardBy(base::Days(2));
+  service()->RecordNotificationDisplayed(url1);
+  std::string date0 = service()->GetBucketLabel(base::Time::Now());
+
+  // Simulate initial notification interaction with suspicious warning.
+  task_environment_.FastForwardBy(base::Days(2));
+  service()->RecordNotificationSuspicious(url1);
+  service()->RecordNotificationSuspicious(url1);
+  std::string date1 = service()->GetBucketLabel(base::Time::Now());
+
+  // Simulate later notification interaction.
+  task_environment_.FastForwardBy(base::Days(5));
+  service()->RecordNotificationSuspicious(url1);
+  // Add to content setting for different url.
+  service()->RecordNotificationSuspicious(url2);
+  service()->RecordNotificationSuspicious(url2);
+  service()->RecordNotificationSuspicious(url2);
+  std::string date2 = service()->GetBucketLabel(base::Time::Now());
+
+  // Verify notification interaction content setting for url 1.
+  base::Value url1_notification_interaction =
+      host_content_settings_map->GetWebsiteSetting(
+          url1, GURL(), ContentSettingsType::NOTIFICATION_INTERACTIONS);
+  ASSERT_TRUE(url1_notification_interaction.is_dict());
+  base::Value::Dict& url1_notification_interaction_dict =
+      url1_notification_interaction.GetDict();
+  ASSERT_EQ(3U, url1_notification_interaction_dict.size());
+  base::Value* url1_date0_entry =
+      url1_notification_interaction_dict.Find(date0);
+  ASSERT_EQ(0, url1_date0_entry->GetDict().FindInt(kSuspiciousKey).value_or(0));
+  base::Value* url1_date1_entry =
+      url1_notification_interaction_dict.Find(date1);
+  ASSERT_EQ(2, url1_date1_entry->GetDict().FindInt(kSuspiciousKey).value());
+  base::Value* url1_date2_entry =
+      url1_notification_interaction_dict.Find(date2);
+  ASSERT_EQ(1, url1_date2_entry->GetDict().FindInt(kSuspiciousKey).value_or(0));
+
+  // Verify notification interaction content setting for url 2.
+  base::Value url2_notification_interaction =
+      host_content_settings_map->GetWebsiteSetting(
+          url2, GURL(), ContentSettingsType::NOTIFICATION_INTERACTIONS);
+  ASSERT_TRUE(url2_notification_interaction.is_dict());
+  base::Value::Dict& url2_notification_interaction_dict =
+      url2_notification_interaction.GetDict();
+  ASSERT_EQ(1U, url2_notification_interaction_dict.size());
+  base::Value* url2_date2_entry =
+      url2_notification_interaction_dict.Find(date2);
+  ASSERT_EQ(3, url2_date2_entry->GetDict().FindInt(kSuspiciousKey).value());
+}
+
+TEST_F(NotificationsEngagementServiceTest,
+       RecordNotificationDisplayedAndInteractionReportsUMA) {
+  GURL url1("https://url1.test/");
+  GURL url2("https://url2.test/");
+  GURL url3("https://url3.test/");
+  GURL url4("https://url4.test/");
+  GURL url5("https://url5.test/");
+  GURL url6("https://url6.test/");
+  GURL url7("https://url7.test/");
+  GURL url8("https://url8.test/");
+
+  {
+    base::HistogramTester histogram_tester;
+    service()->RecordNotificationDisplayed(url1);
+    histogram_tester.ExpectUniqueSample(
+        "Notifications.Engagement.Displayed.Volume0", 0, 1);
+  }
+
+  {
+    site_engagement::SiteEngagementService* site_engagement_service =
+        site_engagement::SiteEngagementService::Get(profile());
+    site_engagement_service->AddPointsForTesting(url2, 4);
+
+    base::HistogramTester histogram_tester;
+    service()->RecordNotificationDisplayed(url2);
+    histogram_tester.ExpectUniqueSample(
+        "Notifications.Engagement.Displayed.Volume0",
+        site_engagement_service->GetScore(url2) * 2, 1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    service()->RecordNotificationDisplayed(url3, 7);
+    histogram_tester.ExpectUniqueSample(
+        "Notifications.Engagement.Displayed.Volume1", 0, 7);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    service()->RecordNotificationDisplayed(url4, 5 * 7);
+    histogram_tester.ExpectUniqueSample(
+        "Notifications.Engagement.Displayed.Volume5", 0, 5 * 7);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    service()->RecordNotificationDisplayed(url5, 10 * 7);
+    histogram_tester.ExpectUniqueSample(
+        "Notifications.Engagement.Displayed.Volume10", 0, 10 * 7);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    service()->RecordNotificationDisplayed(url6, 20 * 7);
+    histogram_tester.ExpectUniqueSample(
+        "Notifications.Engagement.Displayed.Volume20", 0, 20 * 7);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    service()->RecordNotificationDisplayed(url7, 30 * 7);
+    histogram_tester.ExpectUniqueSample(
+        "Notifications.Engagement.Displayed.VolumeAbove20", 0, 30 * 7);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    service()->RecordNotificationInteraction(url8);
+    histogram_tester.ExpectUniqueSample(
+        "Notifications.Engagement.Clicked.Volume0", 0, 1);
+  }
+}
+
+TEST_F(NotificationsEngagementServiceTest,
+       RecordNotificationSuspiciousReportsUMA) {
+  GURL url("https://url.test/");
+
+  base::HistogramTester histogram_tester;
+  service()->RecordNotificationSuspicious(url);
+  histogram_tester.ExpectUniqueSample(
+      "Notifications.Engagement.Suspicious.Volume0", 0, 1);
+}
+
 TEST_F(NotificationsEngagementServiceTest, EraseStaleEntries) {
   GURL url("https://www.google.com/");
 
@@ -216,6 +362,66 @@ TEST_F(NotificationsEngagementServiceTest, EraseStaleEntries) {
   // Stale entries should be erased, when a new display/interaction is
   // recorded.
   ASSERT_EQ(2u, website_engagement.size());
+}
+
+TEST_F(NotificationsEngagementServiceTest,
+       GetSuspiciousNotificationCountForPeriod) {
+  GURL url("https://www.suspicious.site.com/");
+  HostContentSettingsMap* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+
+  // Record suspicious notifications over several days.
+  task_environment_.FastForwardBy(base::Days(2));
+  service()->RecordNotificationSuspicious(url);
+  service()->RecordNotificationSuspicious(url);
+
+  task_environment_.FastForwardBy(base::Days(5));
+  service()->RecordNotificationSuspicious(url);
+
+  task_environment_.FastForwardBy(base::Days(10));
+  service()->RecordNotificationSuspicious(url);
+  service()->RecordNotificationSuspicious(url);
+  service()->RecordNotificationSuspicious(url);
+
+  task_environment_.FastForwardBy(base::Days(1));
+  service()->RecordNotificationSuspicious(url);
+  service()->RecordNotificationSuspicious(url);
+
+  base::Value website_engagement_value =
+      host_content_settings_map->GetWebsiteSetting(
+          url, GURL(), ContentSettingsType::NOTIFICATION_INTERACTIONS);
+  ASSERT_TRUE(website_engagement_value.is_dict());
+  base::Value::Dict& website_engagement_dict =
+      website_engagement_value.GetDict();
+
+  // No lookback period.
+  EXPECT_EQ(
+      NotificationsEngagementService::GetSuspiciousNotificationCountForPeriod(
+          website_engagement_dict, 0),
+      0);
+  // Lookback period of 1 day.
+  EXPECT_EQ(
+      NotificationsEngagementService::GetSuspiciousNotificationCountForPeriod(
+          website_engagement_dict, 1),
+      2);
+
+  // Lookback period of 7 days.
+  EXPECT_EQ(
+      NotificationsEngagementService::GetSuspiciousNotificationCountForPeriod(
+          website_engagement_dict, 7),
+      5);
+
+  // Long lookback period.
+  EXPECT_EQ(
+      NotificationsEngagementService::GetSuspiciousNotificationCountForPeriod(
+          website_engagement_dict, 12),
+      6);
+  // Lookback period that includes all recorded suspicious
+  // notifications.
+  EXPECT_EQ(
+      NotificationsEngagementService::GetSuspiciousNotificationCountForPeriod(
+          website_engagement_dict, 30),
+      8);
 }
 
 // Disabled, due to http://go/crb/1407635.

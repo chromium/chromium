@@ -37,7 +37,7 @@ class TranslateInfoBarDelegate;
 // TranslateManager is used (e.g. a single tab).
 class TranslateClient {
  public:
-  virtual ~TranslateClient() {}
+  virtual ~TranslateClient() = default;
 
   // Gets the TranslateDriver associated with the client.
   virtual TranslateDriver* GetTranslateDriver() = 0;
@@ -51,13 +51,10 @@ class TranslateClient {
   // Returns the associated AcceptLanguagesService.
   virtual language::AcceptLanguagesService* GetAcceptLanguagesService() = 0;
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Returns a translate infobar that owns |delegate|.
   virtual std::unique_ptr<infobars::InfoBar> CreateInfoBar(
       std::unique_ptr<TranslateInfoBarDelegate> delegate) const = 0;
-
-  // Returns the resource ID of the icon to be shown for the Translate infobars.
-  virtual int GetInfobarIconID() const = 0;
 #endif
 
   // Called when the embedder should present UI to the user corresponding to the

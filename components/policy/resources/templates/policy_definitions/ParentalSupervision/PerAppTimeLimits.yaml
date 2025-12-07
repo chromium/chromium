@@ -39,7 +39,8 @@ features:
   dynamic_refresh: true
   per_profile: false
 owners:
-- agawronska@chromium.org
+- zhangwenyu@googe.com
+- longbowei@google.com
 - cros-families-eng@google.com
 schema:
   properties:

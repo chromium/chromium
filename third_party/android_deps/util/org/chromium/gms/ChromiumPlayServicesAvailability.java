@@ -8,7 +8,12 @@ import android.content.Context;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.base.ResettersForTesting;
+
 // Refer to go/doubledown-play-services#new-apis for more detail.
+@NullMarked
 public final class ChromiumPlayServicesAvailability {
     /**
      * The minimum GMS version we're requesting. isGooglePlayServicesAvailable will fail if the
@@ -20,6 +25,13 @@ public final class ChromiumPlayServicesAvailability {
      */
     public static final int GMS_VERSION_NUMBER = 20415000;
 
+    private static @Nullable Boolean sIsAvailableForTesting;
+
+    public static void setIsAvailableForTesting(boolean value) {
+        sIsAvailableForTesting = value;
+        ResettersForTesting.register(() -> sIsAvailableForTesting = null);
+    }
+
     /**
      * Checks if Play Services is available in this context.
      *
@@ -30,6 +42,9 @@ public final class ChromiumPlayServicesAvailability {
      * PM/UX.
      */
     public static boolean isGooglePlayServicesAvailable(final Context context) {
+        if (sIsAvailableForTesting != null) {
+            return sIsAvailableForTesting;
+        }
         return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(
                        context, GMS_VERSION_NUMBER)
                 == ConnectionResult.SUCCESS;
@@ -50,6 +65,9 @@ public final class ChromiumPlayServicesAvailability {
      * PM/UX.
      */
     public static int getGooglePlayServicesConnectionResult(final Context context) {
+        if (sIsAvailableForTesting != null) {
+            return sIsAvailableForTesting ? ConnectionResult.SUCCESS : ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED;
+        }
         return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(
                 context, GMS_VERSION_NUMBER);
     }

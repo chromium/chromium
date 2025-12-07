@@ -65,8 +65,8 @@ scoped_refptr<chromeos::PpdProvider> CreatePpdProvider(Profile* profile) {
       base::DefaultClock::GetInstance(),
       base::BindRepeating(&GetURLLoaderFactory), use_localhost_as_root);
   auto metadata_manager = chromeos::PpdMetadataManager::Create(
-      g_browser_process->GetApplicationLocale(), channel,
-      base::DefaultClock::GetInstance(), std::move(manager_config_cache));
+      channel, base::DefaultClock::GetInstance(),
+      std::move(manager_config_cache));
 
   auto remote_ppd_fetcher = chromeos::RemotePpdFetcher::Create(
       base::BindRepeating(&GetURLLoaderFactory));

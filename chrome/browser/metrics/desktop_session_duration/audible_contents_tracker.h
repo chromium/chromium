@@ -7,7 +7,6 @@
 
 #include <set>
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -26,12 +25,12 @@ class AudibleContentsTracker : public BrowserListObserver,
   // interface has been created for ease of testing.
   class Observer {
    public:
-    Observer() {}
+    Observer() = default;
 
     Observer(const Observer&) = delete;
     Observer& operator=(const Observer&) = delete;
 
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
 
     // Invoked when a first audio source starts playing after a period of no
     // audio sources.

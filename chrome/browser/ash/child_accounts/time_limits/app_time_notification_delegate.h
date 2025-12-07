@@ -11,8 +11,7 @@ namespace base {
 class TimeDelta;
 }  // namespace base
 
-namespace ash {
-namespace app_time {
+namespace ash::app_time {
 
 class AppId;
 enum class AppNotification;
@@ -33,7 +32,6 @@ class AppTimeNotificationDelegate {
       AppNotification notification) = 0;
 };
 
-}  // namespace app_time
-}  // namespace ash
+}  // namespace ash::app_time
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_APP_TIME_NOTIFICATION_DELEGATE_H_

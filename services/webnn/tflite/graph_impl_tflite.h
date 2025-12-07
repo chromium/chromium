@@ -7,17 +7,23 @@
 
 #include <memory>
 #include <string>
-#include <utility>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "services/webnn/public/cpp/webnn_types.h"
+#include "services/webnn/public/mojom/webnn_error.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-forward.h"
+#include "services/webnn/queueable_resource_state.h"
 #include "services/webnn/webnn_graph_impl.h"
 
-namespace webnn::tflite {
+namespace webnn {
+
+class WebNNConstantOperand;
+
+namespace tflite {
 
 class ContextImplTflite;
 
@@ -27,48 +33,48 @@ class ContextImplTflite;
 // and executing the graph.
 class GraphImplTflite final : public WebNNGraphImpl {
  public:
-  static base::expected<std::unique_ptr<GraphImplTflite>, mojom::ErrorPtr>
-  CreateAndBuild(mojom::GraphInfoPtr graph_info,
-                 ComputeResourceInfo compute_resource_info,
-                 ContextImplTflite* context);
+  static base::expected<scoped_refptr<GraphImplTflite>, mojom::ErrorPtr>
+  CreateAndBuild(
+      mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+      mojom::GraphInfoPtr graph_info,
+      ComputeResourceInfo compute_resource_info,
+      base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
+          constant_operands,
+      base::flat_map<OperandId, WebNNTensorImpl*> constant_tensor_operands,
+      ContextImplTflite* context);
+
+  class ComputeResources;
+  GraphImplTflite(mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+                  ComputeResourceInfo compute_resource_info,
+                  base::flat_map<std::string, int> input_name_to_index,
+                  base::flat_map<std::string, int> output_name_to_index,
+                  scoped_refptr<QueueableResourceState<ComputeResources>>
+                      compute_resources_state,
+                  base::WeakPtr<WebNNContextImpl> context,
+                  std::vector<mojom::Device> devices);
 
   GraphImplTflite(const GraphImplTflite&) = delete;
   GraphImplTflite& operator=(const GraphImplTflite&) = delete;
-  ~GraphImplTflite() override;
 
  private:
-  class GraphResources;
-  class ComputeResources;
+  ~GraphImplTflite() override;
 
-  using NamedBuffers = base::flat_map<std::string, mojo_base::BigBuffer>;
-  using AsyncComputeResult =
-      std::pair<mojom::ComputeResultPtr, std::unique_ptr<ComputeResources>>;
-
-  GraphImplTflite(ComputeResourceInfo compute_resource_info,
-                  scoped_refptr<GraphResources> graph_resources,
-                  std::unique_ptr<ComputeResources> compute_resources,
-                  ContextImplTflite* context);
-
-  // Execute the compiled platform graph asynchronously. The `named_inputs` were
-  // validated in base class so we can use them to compute directly, the result
-  // of execution will be returned to renderer process with the `callback`.
-  void ComputeImpl(NamedBuffers named_inputs,
-                   mojom::WebNNGraph::ComputeCallback callback) override;
-
-  void OnComputeComplete(ComputeCallback callback, AsyncComputeResult result);
-
+  // Execute the compiled platform graph asynchronously. The inputs were
+  // validated in base class so we can use them to compute directly.
   void DispatchImpl(
-      const base::flat_map<std::string_view, WebNNBufferImpl*>& named_inputs,
-      const base::flat_map<std::string_view, WebNNBufferImpl*>& named_outputs)
+      base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>> named_inputs,
+      base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>> named_outputs)
       override;
 
-  void OnDispatchComplete(std::unique_ptr<ComputeResources> compute_resources);
+  scoped_refptr<QueueableResourceState<ComputeResources>>
+      compute_resources_state_;
+  base::flat_map<std::string, int> input_name_to_index_;
+  base::flat_map<std::string, int> output_name_to_index_;
 
-  scoped_refptr<GraphResources> graph_resources_;
-  std::unique_ptr<ComputeResources> compute_resources_;
   base::WeakPtrFactory<GraphImplTflite> weak_factory_{this};
 };
 
-}  // namespace webnn::tflite
+}  // namespace tflite
+}  // namespace webnn
 
 #endif  // SERVICES_WEBNN_TFLITE_GRAPH_IMPL_TFLITE_H_

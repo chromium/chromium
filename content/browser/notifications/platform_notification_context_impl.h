@@ -16,7 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "content/browser/notifications/notification_database.h"
 #include "content/browser/notifications/notification_id_generator.h"
@@ -135,6 +135,12 @@ class CONTENT_EXPORT PlatformNotificationContextImpl
   void ReDisplayNotifications(
       std::vector<GURL> origins,
       ReDisplayNotificationsResultCallback callback) override;
+  void WriteNotificationMetadata(
+      const std::string& notification_id,
+      const GURL& origin,
+      const std::string& metadata_key,
+      const std::string& metadata_value,
+      WriteResourcesResultCallback callback) override;
 
   // ServiceWorkerContextCoreObserver implementation.
   void OnRegistrationDeleted(int64_t registration_id,
@@ -315,6 +321,13 @@ class CONTENT_EXPORT PlatformNotificationContextImpl
                                 ReDisplayNotificationsResultCallback callback,
                                 bool initialized);
 
+  void DoWriteNotificationMetadata(const std::string& notification_id,
+                                   const GURL& origin,
+                                   const std::string& metadata_key,
+                                   const std::string& metadata_value,
+                                   WriteResourcesResultCallback callback,
+                                   bool initialized);
+
   void OnStorageWipedInitialized(bool initialized);
 
   // Deletes all notifications associated with |service_worker_registration_id|
@@ -345,7 +358,7 @@ class CONTENT_EXPORT PlatformNotificationContextImpl
   void LogClose(const NotificationDatabaseData& data);
 
   base::FilePath path_;
-  raw_ptr<BrowserContext, AcrossTasksDanglingUntriaged> browser_context_;
+  raw_ptr<BrowserContext> browser_context_;
 
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
 

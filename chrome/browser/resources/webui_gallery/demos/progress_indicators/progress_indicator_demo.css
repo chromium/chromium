@@ -6,29 +6,10 @@
  * #type=style-lit
  * #import=../demo.css.js
  * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #import=//resources/cr_elements/cr_spinner_style_lit.css.js
  * #scheme=relative
- * #include=demo
+ * #include=demo cr-spinner-style-lit
  * #css_wrapper_metadata_end */
-
-:host {
-  --spinner-size: 28px;
-}
-
-.spinner {
-  mask-image: url(//resources/images/throbber_small.svg);
-  mask-position: center;
-  mask-repeat: no-repeat;
-  mask-size: var(--spinner-size) var(--spinner-size);
-  background-color: var(--google-blue-500);
-  height: var(--spinner-size);
-  width: var(--spinner-size);
-}
-
-@media (prefers-color-scheme: dark) {
-  .spinner {
-    background-color: var(--google-blue-300);
-  }
-}
 
 cr-progress {
   --cr-progress-active-color: var(--google-blue-500);

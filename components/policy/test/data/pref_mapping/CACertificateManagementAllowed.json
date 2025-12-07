@@ -1,7 +1,10 @@
 [
   {
     "os": [
-      "chromeos_ash"
+      "win",
+      "mac",
+      "linux",
+      "chromeos"
     ],
     "simple_policy_pref_mapping_test": {
       "pref_name": "ca_certificate_management_allowed",

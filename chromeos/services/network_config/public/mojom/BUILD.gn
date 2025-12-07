@@ -12,15 +12,11 @@ mojom("mojom") {
     "cros_network_config.mojom",
   ]
 
-  # WebUI bindings are only needed on ChromeOS Ash.
-  if (is_chromeos_ash) {
-    webui_module_path =
-        "chrome://resources/mojo/chromeos/services/network_config/public/mojom"
+  webui_module_path =
+      "chrome://resources/mojo/chromeos/services/network_config/public/mojom"
 
-    # Used by ash/webui/common/resources/network_health, which is still using
-    # JS + Closure.
-    generate_webui_js_bindings = true
-  }
+  # Used by external clients, see chromeos/resources/BUILD.gn.
+  generate_legacy_js_bindings = true
 
   public_deps = [
     ":network_types",
@@ -28,32 +24,14 @@ mojom("mojom") {
     "//services/network/public/mojom:mojom_ip_address",
     "//url/mojom:url_mojom_gurl",
   ]
-
-  cpp_typemaps = [
-    {
-      types = [
-        {
-          mojom = "chromeos.cros_network_config.mojom.ProxyMode"
-          cpp = "::ProxyPrefs::ProxyMode"
-        },
-      ]
-      traits_headers = [ "cros_network_config_mojom_traits.h" ]
-      traits_sources = [ "cros_network_config_mojom_traits.cc" ]
-      traits_public_deps = [ "//components/proxy_config" ]
-    },
-  ]
 }
 
 mojom("network_types") {
   sources = [ "network_types.mojom" ]
 
-  # WebUI bindings are only needed on Ash.
-  if (is_chromeos_ash) {
-    webui_module_path =
-        "chrome://resources/mojo/chromeos/services/network_config/public/mojom"
+  webui_module_path =
+      "chrome://resources/mojo/chromeos/services/network_config/public/mojom"
 
-    # Used by ash/webui/common/resources/network_health, which is still using
-    # JS + Closure.
-    generate_webui_js_bindings = true
-  }
+  # Used by external clients, see chromeos/resources/BUILD.gn.
+  generate_legacy_js_bindings = true
 }

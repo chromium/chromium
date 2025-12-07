@@ -7,9 +7,12 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "net/base/features.h"
 #include "storage/browser/blob/blob_url_store_impl.h"
 #include "storage/browser/blob/blob_url_utils.h"
+#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "url/gurl.h"
 
 namespace storage {
@@ -20,6 +23,12 @@ BlobUrlRegistry::URLStoreCreationHook* g_url_store_creation_hook = nullptr;
 
 }
 
+BlobUrlRegistry::BlobUrlData::BlobUrlData() = default;
+BlobUrlRegistry::BlobUrlData::~BlobUrlData() = default;
+BlobUrlRegistry::BlobUrlData::BlobUrlData(BlobUrlData&&) = default;
+BlobUrlRegistry::BlobUrlData& BlobUrlRegistry::BlobUrlData::operator=(
+    BlobUrlData&&) = default;
+
 BlobUrlRegistry::BlobUrlRegistry(base::WeakPtr<BlobUrlRegistry> fallback)
     : fallback_(std::move(fallback)) {}
 
@@ -29,9 +38,26 @@ BlobUrlRegistry::~BlobUrlRegistry() {
 
 void BlobUrlRegistry::AddReceiver(
     const blink::StorageKey& storage_key,
-    mojo::PendingAssociatedReceiver<blink::mojom::BlobURLStore> receiver) {
+    const url::Origin& renderer_origin,
+    int render_process_host_id,
+    mojo::PendingAssociatedReceiver<blink::mojom::BlobURLStore> receiver,
+    base::RepeatingCallback<
+        void(const GURL&, std::optional<blink::mojom::PartitioningBlobURLInfo>)>
+        partitioning_blob_url_closure,
+    base::RepeatingCallback<bool()> storage_access_check_callback,
+    std::optional<GURL> top_level_blob_navigation_document_url,
+    const char* context_type_for_debugging,
+    base::RepeatingCallback<std::string()> storage_key_debug_string_callback,
+    bool partitioning_disabled_by_policy) {
   mojo::ReceiverId receiver_id = frame_receivers_.Add(
-      std::make_unique<storage::BlobURLStoreImpl>(storage_key, AsWeakPtr()),
+      std::make_unique<storage::BlobURLStoreImpl>(
+          storage_key, renderer_origin, render_process_host_id, AsWeakPtr(),
+          storage::BlobURLValidityCheckBehavior::DEFAULT,
+          std::move(partitioning_blob_url_closure),
+          std::move(storage_access_check_callback),
+          std::move(top_level_blob_navigation_document_url),
+          partitioning_disabled_by_policy, context_type_for_debugging,
+          std::move(storage_key_debug_string_callback)),
       std::move(receiver));
 
   if (g_url_store_creation_hook) {
@@ -41,30 +67,46 @@ void BlobUrlRegistry::AddReceiver(
 
 void BlobUrlRegistry::AddReceiver(
     const blink::StorageKey& storage_key,
+    const url::Origin& renderer_origin,
+    int render_process_host_id,
     mojo::PendingReceiver<blink::mojom::BlobURLStore> receiver,
+    const char* context_type_for_debugging,
+    base::RepeatingCallback<std::string()> storage_key_debug_string_callback,
+    base::RepeatingCallback<bool()> storage_access_check_callback,
+    bool partitioning_disabled_by_policy,
     BlobURLValidityCheckBehavior validity_check_behavior) {
-  worker_receivers_.Add(std::make_unique<storage::BlobURLStoreImpl>(
-                            storage_key, AsWeakPtr(), validity_check_behavior),
-                        std::move(receiver));
+  worker_receivers_.Add(
+      std::make_unique<storage::BlobURLStoreImpl>(
+          storage_key, renderer_origin, render_process_host_id, AsWeakPtr(),
+          validity_check_behavior, base::DoNothing(),
+          std::move(storage_access_check_callback),
+          // We shouldn't pass a value here because this method is not used for
+          // top-level document contexts (only for workers and threaded
+          // worklets).
+          /*top_level_blob_navigation_document_url=*/std::nullopt,
+          partitioning_disabled_by_policy, context_type_for_debugging,
+          std::move(storage_key_debug_string_callback)),
+      std::move(receiver));
 }
 
 bool BlobUrlRegistry::AddUrlMapping(
     const GURL& blob_url,
     mojo::PendingRemote<blink::mojom::Blob> blob,
     const blink::StorageKey& storage_key,
-    // TODO(crbug.com/40775506): Remove these once experiment is over.
-    const base::UnguessableToken& unsafe_agent_cluster_id,
-    const std::optional<net::SchemefulSite>& unsafe_top_level_site) {
+    const url::Origin& renderer_origin,
+    int render_process_host_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!BlobUrlUtils::UrlHasFragment(blob_url));
-  if (IsUrlMapped(blob_url, storage_key)) {
+  if (IsUrlMapped(blob_url, storage_key) ==
+      BlobUrlRegistry::MappingStatus::kIsMapped) {
     return false;
   }
-  url_to_unsafe_agent_cluster_id_[blob_url] = unsafe_agent_cluster_id;
-  if (unsafe_top_level_site)
-    url_to_unsafe_top_level_site_[blob_url] = *unsafe_top_level_site;
-  url_to_blob_[blob_url] = std::move(blob);
-  url_to_storage_key_[blob_url] = storage_key;
+  BlobUrlData data;
+  data.blob = std::move(blob);
+  data.storage_key = storage_key;
+  data.origin = renderer_origin;
+  data.render_process_host_id = render_process_host_id;
+  url_to_data_[blob_url] = std::move(data);
   return true;
 }
 
@@ -72,67 +114,88 @@ bool BlobUrlRegistry::RemoveUrlMapping(const GURL& blob_url,
                                        const blink::StorageKey& storage_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!BlobUrlUtils::UrlHasFragment(blob_url));
-  auto blob_it = url_to_blob_.find(blob_url);
-  if (blob_it == url_to_blob_.end()) {
+  auto data_it = url_to_data_.find(blob_url);
+  if (data_it == url_to_data_.end()) {
     return false;
   }
-  if (url_to_storage_key_.at(blob_url) != storage_key) {
+  if (data_it->second.storage_key != storage_key) {
     return false;
   }
-  url_to_blob_.erase(blob_it);
-  url_to_unsafe_agent_cluster_id_.erase(blob_url);
-  url_to_unsafe_top_level_site_.erase(blob_url);
-  url_to_storage_key_.erase(blob_url);
+  url_to_data_.erase(data_it);
   return true;
 }
 
-bool BlobUrlRegistry::IsUrlMapped(const GURL& blob_url,
-                                  const blink::StorageKey& storage_key) const {
+url::Origin BlobUrlRegistry::GetOriginForNavigation(
+    const GURL& url,
+    const url::Origin& precursor_origin,
+    std::optional<int> target_render_process_host_id) {
+  // Some Blob URLs have the origin embedded directly within the URL, which we
+  // can get from calling url::Origin::Create() (which will extract the embedded
+  // origin if it exists). Cases whether the origin is not embedded within the
+  // URL (when the content part is "null") would result in an opaque origin.
+  url::Origin url_origin = url::Origin::Create(url);
+  if (!url_origin.opaque()) {
+    return url_origin;
+  }
+
+  // The origin is not embedded within the Blob URL. Strip out the ref from the
+  // URL (if it exists), and get the origin from our mapping. If
+  // `target_render_process_host_id` is set, only return the origin if it was
+  // registered by a process with the same ID. This keeps the legacy behavior
+  // where the blob URL's origin mapping lives on the renderer process, so only
+  // the renderer where the blob URL is created knows its origin, so navigations
+  // to other processes can't use the mapped origin.
+  GURL url_without_ref = url.GetWithoutRef();
+  auto it = url_to_data_.find(url_without_ref);
+  if (it != url_to_data_.end() && (!target_render_process_host_id.has_value() ||
+                                   it->second.render_process_host_id ==
+                                       target_render_process_host_id.value())) {
+    return it->second.origin;
+  }
+
+  return url::Origin::Resolve(url, precursor_origin);
+}
+
+BlobUrlRegistry::MappingStatus BlobUrlRegistry::IsUrlMapped(
+    const GURL& blob_url,
+    const blink::StorageKey& storage_key) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (base::Contains(url_to_blob_, blob_url) &&
-      base::Contains(url_to_storage_key_, blob_url) &&
-      url_to_storage_key_.at(blob_url) == storage_key) {
-    return true;
+  auto it = url_to_data_.find(blob_url);
+  if (it != url_to_data_.end()) {
+    const blink::StorageKey& blob_url_key = it->second.storage_key;
+    if (blob_url_key == storage_key) {
+      return BlobUrlRegistry::MappingStatus::kIsMapped;
+    }
+    if (blob_url_key.origin() == storage_key.origin()) {
+      if (blob_url_key.IsFirstPartyContext()) {
+        return BlobUrlRegistry::MappingStatus::
+            kNotMappedCrossPartitionSameOriginAccessFirstPartyBlobURL;
+      }
+      return BlobUrlRegistry::MappingStatus::
+          kNotMappedCrossPartitionSameOriginAccessThirdPartyBlobURL;
+    }
+    // A fallback_ check isn't needed because a given Blob URL will either be
+    // registered in this BlobUrlRegistry or registered in the fallback
+    // BlobUrlRegistry but not both.
+    return BlobUrlRegistry::MappingStatus::kNotMappedOther;
   }
   if (fallback_) {
     return fallback_->IsUrlMapped(blob_url, storage_key);
   }
-  return false;
-}
-
-// TODO(crbug.com/40775506): Remove this once experiment is over.
-std::optional<base::UnguessableToken> BlobUrlRegistry::GetUnsafeAgentClusterID(
-    const GURL& blob_url) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = url_to_unsafe_agent_cluster_id_.find(blob_url);
-  if (it != url_to_unsafe_agent_cluster_id_.end())
-    return it->second;
-  if (fallback_)
-    return fallback_->GetUnsafeAgentClusterID(blob_url);
-  return std::nullopt;
-}
-
-std::optional<net::SchemefulSite> BlobUrlRegistry::GetUnsafeTopLevelSite(
-    const GURL& blob_url) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = url_to_unsafe_top_level_site_.find(blob_url);
-  if (it != url_to_unsafe_top_level_site_.end())
-    return it->second;
-  if (fallback_)
-    return fallback_->GetUnsafeTopLevelSite(blob_url);
-  return std::nullopt;
+  return BlobUrlRegistry::MappingStatus::kNotMappedOther;
 }
 
 mojo::PendingRemote<blink::mojom::Blob> BlobUrlRegistry::GetBlobFromUrl(
     const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = url_to_blob_.find(BlobUrlUtils::ClearUrlFragment(url));
-  if (it == url_to_blob_.end())
+  auto it = url_to_data_.find(BlobUrlUtils::ClearUrlFragment(url));
+  if (it == url_to_data_.end()) {
     return fallback_ ? fallback_->GetBlobFromUrl(url) : mojo::NullRemote();
-  mojo::Remote<blink::mojom::Blob> blob(std::move(it->second));
+  }
+  mojo::Remote<blink::mojom::Blob> blob(std::move(it->second.blob));
   mojo::PendingRemote<blink::mojom::Blob> result;
   blob->Clone(result.InitWithNewPipeAndPassReceiver());
-  it->second = blob.Unbind();
+  it->second.blob = blob.Unbind();
   return result;
 }
 

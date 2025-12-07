@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stdint.h>
 
 #include <string>
@@ -18,6 +13,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
@@ -49,12 +45,10 @@ namespace network {
 namespace {
 
 // Message sent over the tcp connection.
-const char kMsg[] = "please start tls!";
-const size_t kMsgSize = strlen(kMsg);
+constexpr std::string_view kMsg = "please start tls!";
 
 // Message sent over the tls connection.
-const char kSecretMsg[] = "here is secret.";
-const size_t kSecretMsgSize = strlen(kSecretMsg);
+constexpr std::string_view kSecretMsg = "here is secret.";
 
 class TLSClientSocketTestBase {
  public:
@@ -339,10 +333,9 @@ class TLSClientSocketTest
 // Basic test to call UpgradeToTLS, and then read/write after UpgradeToTLS is
 // successful.
 TEST_P(TLSClientSocketTest, UpgradeToTLS) {
-  const net::MockRead kReads[] = {net::MockRead(net::ASYNC, kMsg, kMsgSize, 1),
+  const net::MockRead kReads[] = {net::MockRead(net::ASYNC, 1, kMsg),
                                   net::MockRead(net::SYNCHRONOUS, net::OK, 2)};
-  const net::MockWrite kWrites[] = {
-      net::MockWrite(net::SYNCHRONOUS, kMsg, kMsgSize, 0)};
+  const net::MockWrite kWrites[] = {net::MockWrite(net::SYNCHRONOUS, 0, kMsg)};
   net::SequencedSocketData data_provider(kReads, kWrites);
   data_provider.set_connect_data(net::MockConnect(net::SYNCHRONOUS, net::OK));
   mock_client_socket_factory()->AddSocketDataProvider(&data_provider);
@@ -366,10 +359,10 @@ TEST_P(TLSClientSocketTest, UpgradeToTLS) {
 
   size_t actually_written_bytes = 0;
   EXPECT_EQ(MOJO_RESULT_OK,
-            post_tls_send_handle()->get().WriteData(
-                base::byte_span_from_cstring(kMsg), MOJO_WRITE_DATA_FLAG_NONE,
-                actually_written_bytes));
-  EXPECT_EQ(kMsg, Read(post_tls_recv_handle(), kMsgSize));
+            post_tls_send_handle()->get().WriteData(base::as_byte_span(kMsg),
+                                                    MOJO_WRITE_DATA_FLAG_NONE,
+                                                    actually_written_bytes));
+  EXPECT_EQ(kMsg, Read(post_tls_recv_handle(), kMsg.size()));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(ssl_socket.ConnectDataConsumed());
   EXPECT_TRUE(data_provider.AllReadDataConsumed());
@@ -379,10 +372,9 @@ TEST_P(TLSClientSocketTest, UpgradeToTLS) {
 // Same as the UpgradeToTLS test above, except this test calls
 // base::RunLoop().RunUntilIdle() after destroying the pre-tls data pipes.
 TEST_P(TLSClientSocketTest, ClosePipesRunUntilIdleAndUpgradeToTLS) {
-  const net::MockRead kReads[] = {net::MockRead(net::ASYNC, kMsg, kMsgSize, 1),
+  const net::MockRead kReads[] = {net::MockRead(net::ASYNC, 1, kMsg),
                                   net::MockRead(net::SYNCHRONOUS, net::OK, 2)};
-  const net::MockWrite kWrites[] = {
-      net::MockWrite(net::SYNCHRONOUS, kMsg, kMsgSize, 0)};
+  const net::MockWrite kWrites[] = {net::MockWrite(net::SYNCHRONOUS, 0, kMsg)};
   net::SequencedSocketData data_provider(kReads, kWrites);
   data_provider.set_connect_data(net::MockConnect(net::SYNCHRONOUS, net::OK));
   mock_client_socket_factory()->AddSocketDataProvider(&data_provider);
@@ -411,10 +403,10 @@ TEST_P(TLSClientSocketTest, ClosePipesRunUntilIdleAndUpgradeToTLS) {
 
   size_t actually_written_bytes = 0;
   EXPECT_EQ(MOJO_RESULT_OK,
-            post_tls_send_handle()->get().WriteData(
-                base::byte_span_from_cstring(kMsg), MOJO_WRITE_DATA_FLAG_NONE,
-                actually_written_bytes));
-  EXPECT_EQ(kMsg, Read(post_tls_recv_handle(), kMsgSize));
+            post_tls_send_handle()->get().WriteData(base::as_byte_span(kMsg),
+                                                    MOJO_WRITE_DATA_FLAG_NONE,
+                                                    actually_written_bytes));
+  EXPECT_EQ(kMsg, Read(post_tls_recv_handle(), kMsg.size()));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(ssl_socket.ConnectDataConsumed());
   EXPECT_TRUE(data_provider.AllReadDataConsumed());
@@ -539,13 +531,12 @@ TEST_P(TLSClientSocketTest, UpgradeToTLSWithCustomSSLConfig) {
 // Same as the UpgradeToTLS test, except this also reads and writes to the tcp
 // connection before UpgradeToTLS is called.
 TEST_P(TLSClientSocketTest, ReadWriteBeforeUpgradeToTLS) {
-  const net::MockRead kReads[] = {
-      net::MockRead(net::SYNCHRONOUS, kMsg, kMsgSize, 0),
-      net::MockRead(net::ASYNC, kSecretMsg, kSecretMsgSize, 3),
-      net::MockRead(net::SYNCHRONOUS, net::OK, 4)};
+  const net::MockRead kReads[] = {net::MockRead(net::SYNCHRONOUS, 0, kMsg),
+                                  net::MockRead(net::ASYNC, 3, kSecretMsg),
+                                  net::MockRead(net::SYNCHRONOUS, net::OK, 4)};
   const net::MockWrite kWrites[] = {
-      net::MockWrite(net::SYNCHRONOUS, kMsg, kMsgSize, 1),
-      net::MockWrite(net::SYNCHRONOUS, kSecretMsg, kSecretMsgSize, 2),
+      net::MockWrite(net::SYNCHRONOUS, 1, kMsg),
+      net::MockWrite(net::SYNCHRONOUS, 2, kSecretMsg),
   };
   net::SequencedSocketData data_provider(kReads, kWrites);
   data_provider.set_connect_data(net::MockConnect(net::SYNCHRONOUS, net::OK));
@@ -558,13 +549,13 @@ TEST_P(TLSClientSocketTest, ReadWriteBeforeUpgradeToTLS) {
   EXPECT_EQ(net::OK,
             CreateSocketSync(MakeRequest(&client_socket), server_addr));
 
-  EXPECT_EQ(kMsg, Read(pre_tls_recv_handle(), kMsgSize));
+  EXPECT_EQ(kMsg, Read(pre_tls_recv_handle(), kMsg.size()));
 
   size_t actually_written_bytes = 0;
   EXPECT_EQ(MOJO_RESULT_OK,
-            pre_tls_send_handle()->get().WriteData(
-                base::byte_span_from_cstring(kMsg), MOJO_WRITE_DATA_FLAG_NONE,
-                actually_written_bytes));
+            pre_tls_send_handle()->get().WriteData(base::as_byte_span(kMsg),
+                                                   MOJO_WRITE_DATA_FLAG_NONE,
+                                                   actually_written_bytes));
 
   net::HostPortPair host_port_pair("example.org", 443);
   pre_tls_recv_handle()->reset();
@@ -578,9 +569,9 @@ TEST_P(TLSClientSocketTest, ReadWriteBeforeUpgradeToTLS) {
 
   EXPECT_EQ(MOJO_RESULT_OK,
             post_tls_send_handle()->get().WriteData(
-                base::byte_span_from_cstring(kSecretMsg),
-                MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes));
-  EXPECT_EQ(kSecretMsg, Read(post_tls_recv_handle(), kSecretMsgSize));
+                base::as_byte_span(kSecretMsg), MOJO_WRITE_DATA_FLAG_NONE,
+                actually_written_bytes));
+  EXPECT_EQ(kSecretMsg, Read(post_tls_recv_handle(), kSecretMsg.size()));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(ssl_socket.ConnectDataConsumed());
   EXPECT_TRUE(data_provider.AllReadDataConsumed());
@@ -591,10 +582,10 @@ TEST_P(TLSClientSocketTest, ReadWriteBeforeUpgradeToTLS) {
 // successfully.
 TEST_P(TLSClientSocketTest, ReadErrorAfterUpgradeToTLS) {
   const net::MockRead kReads[] = {
-      net::MockRead(net::ASYNC, kSecretMsg, kSecretMsgSize, 1),
+      net::MockRead(net::ASYNC, 1, kSecretMsg),
       net::MockRead(net::SYNCHRONOUS, net::ERR_CONNECTION_CLOSED, 2)};
   const net::MockWrite kWrites[] = {
-      net::MockWrite(net::SYNCHRONOUS, kSecretMsg, kSecretMsgSize, 0)};
+      net::MockWrite(net::SYNCHRONOUS, 0, kSecretMsg)};
   net::SequencedSocketData data_provider(kReads, kWrites);
   data_provider.set_connect_data(net::MockConnect(net::SYNCHRONOUS, net::OK));
   mock_client_socket_factory()->AddSocketDataProvider(&data_provider);
@@ -619,9 +610,9 @@ TEST_P(TLSClientSocketTest, ReadErrorAfterUpgradeToTLS) {
   size_t actually_written_bytes = 0;
   EXPECT_EQ(MOJO_RESULT_OK,
             post_tls_send_handle()->get().WriteData(
-                base::byte_span_from_cstring(kSecretMsg),
-                MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes));
-  EXPECT_EQ(kSecretMsg, Read(post_tls_recv_handle(), kSecretMsgSize));
+                base::as_byte_span(kSecretMsg), MOJO_WRITE_DATA_FLAG_NONE,
+                actually_written_bytes));
+  EXPECT_EQ(kSecretMsg, Read(post_tls_recv_handle(), kSecretMsg.size()));
   EXPECT_EQ(net::ERR_CONNECTION_CLOSED,
             post_tls_observer()->WaitForReadError());
 
@@ -661,8 +652,8 @@ TEST_P(TLSClientSocketTest, WriteErrorAfterUpgradeToTLS) {
   size_t actually_written_bytes = 0;
   EXPECT_EQ(MOJO_RESULT_OK,
             post_tls_send_handle()->get().WriteData(
-                base::byte_span_from_cstring(kSecretMsg),
-                MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes));
+                base::as_byte_span(kSecretMsg), MOJO_WRITE_DATA_FLAG_NONE,
+                actually_written_bytes));
   EXPECT_EQ(net::ERR_CONNECTION_CLOSED,
             post_tls_observer()->WaitForWriteError());
 
@@ -675,12 +666,11 @@ TEST_P(TLSClientSocketTest, WriteErrorAfterUpgradeToTLS) {
 // Tests that reading from the pre-tls data pipe is okay even after UpgradeToTLS
 // is called.
 TEST_P(TLSClientSocketTest, ReadFromPreTlsDataPipeAfterUpgradeToTLS) {
-  const net::MockRead kReads[] = {
-      net::MockRead(net::ASYNC, kMsg, kMsgSize, 0),
-      net::MockRead(net::ASYNC, kSecretMsg, kSecretMsgSize, 2),
-      net::MockRead(net::SYNCHRONOUS, net::OK, 3)};
+  const net::MockRead kReads[] = {net::MockRead(net::ASYNC, 0, kMsg),
+                                  net::MockRead(net::ASYNC, 2, kSecretMsg),
+                                  net::MockRead(net::SYNCHRONOUS, net::OK, 3)};
   const net::MockWrite kWrites[] = {
-      net::MockWrite(net::SYNCHRONOUS, kSecretMsg, kSecretMsgSize, 1)};
+      net::MockWrite(net::SYNCHRONOUS, 1, kSecretMsg)};
   net::SequencedSocketData data_provider(kReads, kWrites);
   data_provider.set_connect_data(net::MockConnect(net::SYNCHRONOUS, net::OK));
   mock_client_socket_factory()->AddSocketDataProvider(&data_provider);
@@ -700,7 +690,7 @@ TEST_P(TLSClientSocketTest, ReadFromPreTlsDataPipeAfterUpgradeToTLS) {
                tls_socket.BindNewPipeAndPassReceiver(), callback.callback());
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(kMsg, Read(pre_tls_recv_handle(), kMsgSize));
+  EXPECT_EQ(kMsg, Read(pre_tls_recv_handle(), kMsg.size()));
 
   // Reset pre-tls receive pipe now and UpgradeToTLS should complete.
   pre_tls_recv_handle()->reset();
@@ -710,9 +700,9 @@ TEST_P(TLSClientSocketTest, ReadFromPreTlsDataPipeAfterUpgradeToTLS) {
   size_t actually_written_bytes = 0;
   EXPECT_EQ(MOJO_RESULT_OK,
             post_tls_send_handle()->get().WriteData(
-                base::byte_span_from_cstring(kSecretMsg),
-                MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes));
-  EXPECT_EQ(kSecretMsg, Read(post_tls_recv_handle(), kSecretMsgSize));
+                base::as_byte_span(kSecretMsg), MOJO_WRITE_DATA_FLAG_NONE,
+                actually_written_bytes));
+  EXPECT_EQ(kSecretMsg, Read(post_tls_recv_handle(), kSecretMsg.size()));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(ssl_socket.ConnectDataConsumed());
   EXPECT_TRUE(data_provider.AllReadDataConsumed());
@@ -722,12 +712,11 @@ TEST_P(TLSClientSocketTest, ReadFromPreTlsDataPipeAfterUpgradeToTLS) {
 // Tests that writing to the pre-tls data pipe is okay even after UpgradeToTLS
 // is called.
 TEST_P(TLSClientSocketTest, WriteToPreTlsDataPipeAfterUpgradeToTLS) {
-  const net::MockRead kReads[] = {
-      net::MockRead(net::ASYNC, kSecretMsg, kSecretMsgSize, 2),
-      net::MockRead(net::SYNCHRONOUS, net::OK, 3)};
+  const net::MockRead kReads[] = {net::MockRead(net::ASYNC, 2, kSecretMsg),
+                                  net::MockRead(net::SYNCHRONOUS, net::OK, 3)};
   const net::MockWrite kWrites[] = {
-      net::MockWrite(net::SYNCHRONOUS, kMsg, kMsgSize, 0),
-      net::MockWrite(net::SYNCHRONOUS, kSecretMsg, kSecretMsgSize, 1)};
+      net::MockWrite(net::SYNCHRONOUS, 0, kMsg),
+      net::MockWrite(net::SYNCHRONOUS, 1, kSecretMsg)};
   net::SequencedSocketData data_provider(kReads, kWrites);
   data_provider.set_connect_data(net::MockConnect(net::SYNCHRONOUS, net::OK));
   mock_client_socket_factory()->AddSocketDataProvider(&data_provider);
@@ -749,9 +738,9 @@ TEST_P(TLSClientSocketTest, WriteToPreTlsDataPipeAfterUpgradeToTLS) {
 
   size_t actually_written_bytes = 0;
   EXPECT_EQ(MOJO_RESULT_OK,
-            pre_tls_send_handle()->get().WriteData(
-                base::byte_span_from_cstring(kMsg), MOJO_WRITE_DATA_FLAG_NONE,
-                actually_written_bytes));
+            pre_tls_send_handle()->get().WriteData(base::as_byte_span(kMsg),
+                                                   MOJO_WRITE_DATA_FLAG_NONE,
+                                                   actually_written_bytes));
 
   // Reset pre-tls send pipe now and UpgradeToTLS should complete.
   pre_tls_send_handle()->reset();
@@ -760,9 +749,9 @@ TEST_P(TLSClientSocketTest, WriteToPreTlsDataPipeAfterUpgradeToTLS) {
 
   EXPECT_EQ(MOJO_RESULT_OK,
             post_tls_send_handle()->get().WriteData(
-                base::byte_span_from_cstring(kSecretMsg),
-                MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes));
-  EXPECT_EQ(kSecretMsg, Read(post_tls_recv_handle(), kSecretMsgSize));
+                base::as_byte_span(kSecretMsg), MOJO_WRITE_DATA_FLAG_NONE,
+                actually_written_bytes));
+  EXPECT_EQ(kSecretMsg, Read(post_tls_recv_handle(), kSecretMsg.size()));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(ssl_socket.ConnectDataConsumed());
   EXPECT_TRUE(data_provider.AllReadDataConsumed());
@@ -772,13 +761,12 @@ TEST_P(TLSClientSocketTest, WriteToPreTlsDataPipeAfterUpgradeToTLS) {
 // Tests that reading from and writing to pre-tls data pipe is okay even after
 // UpgradeToTLS is called.
 TEST_P(TLSClientSocketTest, ReadAndWritePreTlsDataPipeAfterUpgradeToTLS) {
-  const net::MockRead kReads[] = {
-      net::MockRead(net::ASYNC, kMsg, kMsgSize, 0),
-      net::MockRead(net::ASYNC, kSecretMsg, kSecretMsgSize, 3),
-      net::MockRead(net::SYNCHRONOUS, net::OK, 4)};
+  const net::MockRead kReads[] = {net::MockRead(net::ASYNC, 0, kMsg),
+                                  net::MockRead(net::ASYNC, 3, kSecretMsg),
+                                  net::MockRead(net::SYNCHRONOUS, net::OK, 4)};
   const net::MockWrite kWrites[] = {
-      net::MockWrite(net::SYNCHRONOUS, kMsg, kMsgSize, 1),
-      net::MockWrite(net::SYNCHRONOUS, kSecretMsg, kSecretMsgSize, 2)};
+      net::MockWrite(net::SYNCHRONOUS, 1, kMsg),
+      net::MockWrite(net::SYNCHRONOUS, 2, kSecretMsg)};
   net::SequencedSocketData data_provider(kReads, kWrites);
   data_provider.set_connect_data(net::MockConnect(net::SYNCHRONOUS, net::OK));
   mock_client_socket_factory()->AddSocketDataProvider(&data_provider);
@@ -796,12 +784,12 @@ TEST_P(TLSClientSocketTest, ReadAndWritePreTlsDataPipeAfterUpgradeToTLS) {
   mojo::Remote<mojom::TLSClientSocket> tls_socket;
   UpgradeToTLS(&client_socket, host_port_pair,
                tls_socket.BindNewPipeAndPassReceiver(), callback.callback());
-  EXPECT_EQ(kMsg, Read(pre_tls_recv_handle(), kMsgSize));
+  EXPECT_EQ(kMsg, Read(pre_tls_recv_handle(), kMsg.size()));
   size_t actually_written_bytes = 0;
   EXPECT_EQ(MOJO_RESULT_OK,
-            pre_tls_send_handle()->get().WriteData(
-                base::byte_span_from_cstring(kMsg), MOJO_WRITE_DATA_FLAG_NONE,
-                actually_written_bytes));
+            pre_tls_send_handle()->get().WriteData(base::as_byte_span(kMsg),
+                                                   MOJO_WRITE_DATA_FLAG_NONE,
+                                                   actually_written_bytes));
 
   // Reset pre-tls pipes now and UpgradeToTLS should complete.
   pre_tls_recv_handle()->reset();
@@ -811,9 +799,9 @@ TEST_P(TLSClientSocketTest, ReadAndWritePreTlsDataPipeAfterUpgradeToTLS) {
 
   EXPECT_EQ(MOJO_RESULT_OK,
             post_tls_send_handle()->get().WriteData(
-                base::byte_span_from_cstring(kSecretMsg),
-                MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes));
-  EXPECT_EQ(kSecretMsg, Read(post_tls_recv_handle(), kSecretMsgSize));
+                base::as_byte_span(kSecretMsg), MOJO_WRITE_DATA_FLAG_NONE,
+                actually_written_bytes));
+  EXPECT_EQ(kSecretMsg, Read(post_tls_recv_handle(), kSecretMsg.size()));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(ssl_socket.ConnectDataConsumed());
   EXPECT_TRUE(data_provider.AllReadDataConsumed());
@@ -827,7 +815,7 @@ TEST_P(TLSClientSocketTest, ReadErrorBeforeUpgradeToTLS) {
   if (mode() != kDirect)
     return;
   const net::MockRead kReads[] = {
-      net::MockRead(net::ASYNC, kMsg, kMsgSize, 0),
+      net::MockRead(net::ASYNC, 0, kMsg),
       net::MockRead(net::SYNCHRONOUS, net::ERR_CONNECTION_CLOSED, 1)};
   net::SequencedSocketData data_provider(kReads, base::span<net::MockWrite>());
   data_provider.set_connect_data(net::MockConnect(net::SYNCHRONOUS, net::OK));
@@ -845,7 +833,7 @@ TEST_P(TLSClientSocketTest, ReadErrorBeforeUpgradeToTLS) {
   UpgradeToTLS(&client_socket, host_port_pair,
                tls_socket.BindNewPipeAndPassReceiver(), callback.callback());
 
-  EXPECT_EQ(kMsg, Read(pre_tls_recv_handle(), kMsgSize));
+  EXPECT_EQ(kMsg, Read(pre_tls_recv_handle(), kMsg.size()));
   EXPECT_EQ(net::ERR_CONNECTION_CLOSED, pre_tls_observer()->WaitForReadError());
 
   // Reset pre-tls receive pipe now and UpgradeToTLS should complete.
@@ -885,9 +873,9 @@ TEST_P(TLSClientSocketTest, WriteErrorBeforeUpgradeToTLS) {
                tls_socket.BindNewPipeAndPassReceiver(), callback.callback());
   size_t actually_written_bytes = 0;
   EXPECT_EQ(MOJO_RESULT_OK,
-            pre_tls_send_handle()->get().WriteData(
-                base::byte_span_from_cstring(kMsg), MOJO_WRITE_DATA_FLAG_NONE,
-                actually_written_bytes));
+            pre_tls_send_handle()->get().WriteData(base::as_byte_span(kMsg),
+                                                   MOJO_WRITE_DATA_FLAG_NONE,
+                                                   actually_written_bytes));
 
   EXPECT_EQ(net::ERR_CONNECTION_CLOSED,
             pre_tls_observer()->WaitForWriteError());
@@ -924,19 +912,20 @@ class TLSCLientSocketProxyTest : public ::testing::Test,
 };
 
 TEST_F(TLSCLientSocketProxyTest, UpgradeToTLS) {
-  const char kConnectRequest[] =
+  static constexpr std::string_view kConnectRequest =
       "CONNECT 192.168.1.1:1234 HTTP/1.1\r\n"
       "Host: 192.168.1.1:1234\r\n"
       "Proxy-Connection: keep-alive\r\n\r\n";
-  const char kConnectResponse[] = "HTTP/1.1 200 OK\r\n\r\n";
+  static constexpr std::string_view kConnectResponse =
+      "HTTP/1.1 200 OK\r\n\r\n";
 
   const net::MockRead kReads[] = {
-      net::MockRead(net::ASYNC, kConnectResponse, strlen(kConnectResponse), 1),
-      net::MockRead(net::ASYNC, kMsg, kMsgSize, 3),
+      net::MockRead(net::ASYNC, 1, kConnectResponse),
+      net::MockRead(net::ASYNC, 3, kMsg),
       net::MockRead(net::SYNCHRONOUS, net::OK, 4)};
   const net::MockWrite kWrites[] = {
-      net::MockWrite(net::ASYNC, kConnectRequest, strlen(kConnectRequest), 0),
-      net::MockWrite(net::SYNCHRONOUS, kMsg, kMsgSize, 2)};
+      net::MockWrite(net::ASYNC, 0, kConnectRequest),
+      net::MockWrite(net::SYNCHRONOUS, 2, kMsg)};
   net::SequencedSocketData data_provider(kReads, kWrites);
   data_provider.set_connect_data(net::MockConnect(net::SYNCHRONOUS, net::OK));
   mock_client_socket_factory()->AddSocketDataProvider(&data_provider);
@@ -960,10 +949,10 @@ TEST_F(TLSCLientSocketProxyTest, UpgradeToTLS) {
 
   size_t actually_written_bytes = 0;
   EXPECT_EQ(MOJO_RESULT_OK,
-            post_tls_send_handle()->get().WriteData(
-                base::byte_span_from_cstring(kMsg), MOJO_WRITE_DATA_FLAG_NONE,
-                actually_written_bytes));
-  EXPECT_EQ(kMsg, Read(post_tls_recv_handle(), kMsgSize));
+            post_tls_send_handle()->get().WriteData(base::as_byte_span(kMsg),
+                                                    MOJO_WRITE_DATA_FLAG_NONE,
+                                                    actually_written_bytes));
+  EXPECT_EQ(kMsg, Read(post_tls_recv_handle(), kMsg.size()));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(ssl_socket.ConnectDataConsumed());
   EXPECT_TRUE(data_provider.AllReadDataConsumed());
@@ -996,11 +985,13 @@ TEST_P(TLSClientSocketIoModeTest, MultipleWriteToTLSSocket) {
   int sequence_number = 0;
   net::IoMode mode = GetParam();
   for (int j = 0; j < kNumIterations; ++j) {
-    for (size_t i = 0; i < kSecretMsgSize; ++i) {
-      writes.emplace_back(mode, &kSecretMsg[i], 1, sequence_number++);
+    for (size_t i = 0; i < kSecretMsg.size(); ++i) {
+      writes.emplace_back(mode, sequence_number++,
+                          base::byte_span_from_ref(kSecretMsg[i]));
     }
-    for (size_t i = 0; i < kSecretMsgSize; ++i) {
-      reads.emplace_back(net::ASYNC, &kSecretMsg[i], 1, sequence_number++);
+    for (size_t i = 0; i < kSecretMsg.size(); ++i) {
+      reads.emplace_back(net::ASYNC, sequence_number++,
+                         base::byte_span_from_ref(kSecretMsg[i]));
     }
     if (j == kNumIterations - 1) {
       reads.emplace_back(mode, net::OK, sequence_number++);
@@ -1034,17 +1025,17 @@ TEST_P(TLSClientSocketIoModeTest, MultipleWriteToTLSSocket) {
   // can follow writes.
   for (int j = 0; j < kNumIterations; ++j) {
     // Write multiple times.
-    for (size_t i = 0; i < kSecretMsgSize; ++i) {
+    for (size_t i = 0; i < kSecretMsg.size(); ++i) {
       size_t actually_written_bytes = 0;
       EXPECT_EQ(MOJO_RESULT_OK,
                 post_tls_send_handle()->get().WriteData(
-                    base::byte_span_from_cstring(kSecretMsg).subspan(i, 1u),
+                    base::as_byte_span(kSecretMsg).subspan(i, 1u),
                     MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes));
       // Flush the 1 byte write.
       base::RunLoop().RunUntilIdle();
     }
     // Reading kSecretMsgSize should coalesce the 1-byte mock reads.
-    EXPECT_EQ(kSecretMsg, Read(post_tls_recv_handle(), kSecretMsgSize));
+    EXPECT_EQ(kSecretMsg, Read(post_tls_recv_handle(), kSecretMsg.size()));
   }
   EXPECT_TRUE(ssl_socket.ConnectDataConsumed());
   EXPECT_TRUE(data_provider.AllReadDataConsumed());

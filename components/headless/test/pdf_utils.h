@@ -13,6 +13,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace headless {
 
@@ -38,8 +39,10 @@ class PDFPageBitmap {
   int width() const { return bitmap_size_.width(); }
   int height() const { return bitmap_size_.height(); }
   gfx::Size size() const { return bitmap_size_; }
+  gfx::SizeF page_size_in_points() const { return page_size_in_points_; }
 
  private:
+  gfx::SizeF page_size_in_points_;
   std::vector<uint8_t> bitmap_data_;
   gfx::Size bitmap_size_;
 };

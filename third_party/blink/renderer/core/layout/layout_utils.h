@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "third_party/blink/renderer/core/layout/block_node.h"
+#include "third_party/blink/renderer/core/layout/grid/grid_item.h"
 
 namespace blink {
 
@@ -60,6 +61,15 @@ bool MaySkipLayoutWithinBlockFormattingContext(
     std::optional<LayoutUnit>* bfc_block_offset,
     LayoutUnit* block_offset_delta,
     MarginStrut* end_margin_strut);
+
+// Returns the alignment offset for either the inline or block direction.
+LayoutUnit AlignmentOffset(LayoutUnit container_size,
+                           LayoutUnit size,
+                           LayoutUnit margin_start,
+                           LayoutUnit margin_end,
+                           LayoutUnit baseline_offset,
+                           AxisEdge axis_edge,
+                           bool is_overflow_safe);
 
 }  // namespace blink
 

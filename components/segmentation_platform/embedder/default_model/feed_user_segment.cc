@@ -37,35 +37,36 @@ constexpr std::array<int32_t, 1> kFeedEngagementSimple{1};
 constexpr std::array<int32_t, 1> kFeedEngagementInteracted{2};
 constexpr std::array<int32_t, 1> kFeedEngagementScrolled{4};
 
-constexpr std::array<MetadataWriter::UMAFeature, 11> kFeedUserUMAFeatures = {
-    MetadataWriter::UMAFeature::FromUserAction("MobileNTPMostVisited", 14),
-    MetadataWriter::UMAFeature::FromUserAction("MobileNewTabOpened", 14),
-    MetadataWriter::UMAFeature::FromUserAction("MobileNewTabShown", 14),
-    MetadataWriter::UMAFeature::FromUserAction("Home", 14),
-    MetadataWriter::UMAFeature::FromUserAction("MobileMenuRecentTabs", 14),
-    MetadataWriter::UMAFeature::FromUserAction("MobileMenuHistory", 14),
-    MetadataWriter::UMAFeature::FromUserAction("MobileTabReturnedToCurrentTab",
-                                               14),
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "ContentSuggestions.Feed.EngagementType",
-        28,
-        kFeedEngagementEngaged.data(),
-        kFeedEngagementEngaged.size()),
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "ContentSuggestions.Feed.EngagementType",
-        28,
-        kFeedEngagementSimple.data(),
-        kFeedEngagementSimple.size()),
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "ContentSuggestions.Feed.EngagementType",
-        28,
-        kFeedEngagementInteracted.data(),
-        kFeedEngagementInteracted.size()),
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "ContentSuggestions.Feed.EngagementType",
-        28,
-        kFeedEngagementScrolled.data(),
-        kFeedEngagementScrolled.size()),
+constexpr FeaturePair<FeedUserSegment::Feature> kFeedUserFeatures[] = {
+    {FeedUserSegment::kFeatureMobileNTPMostVisited,
+     features::UserAction("MobileNTPMostVisited", 14)},
+    {FeedUserSegment::kFeatureMobileNewTabOpened,
+     features::UserAction("MobileNewTabOpened", 14)},
+    {FeedUserSegment::kFeatureMobileNewTabShown,
+     features::UserAction("MobileNewTabShown", 14)},
+    {FeedUserSegment::kFeatureHome, features::UserAction("Home", 14)},
+    {FeedUserSegment::kFeatureMobileMenuRecentTabs,
+     features::UserAction("MobileMenuRecentTabs", 14)},
+    {FeedUserSegment::kFeatureMobileMenuHistory,
+     features::UserAction("MobileMenuHistory", 14)},
+    {FeedUserSegment::kFeatureMobileTabReturnedToCurrentTab,
+     features::UserAction("MobileTabReturnedToCurrentTab", 14)},
+    {FeedUserSegment::kFeatureFeedEngagementEngaged,
+     features::UMAEnum("ContentSuggestions.Feed.EngagementType",
+                       28,
+                       kFeedEngagementEngaged)},
+    {FeedUserSegment::kFeatureFeedEngagementSimple,
+     features::UMAEnum("ContentSuggestions.Feed.EngagementType",
+                       28,
+                       kFeedEngagementSimple)},
+    {FeedUserSegment::kFeatureFeedEngagementInteracted,
+     features::UMAEnum("ContentSuggestions.Feed.EngagementType",
+                       28,
+                       kFeedEngagementInteracted)},
+    {FeedUserSegment::kFeatureFeedEngagementScrolled,
+     features::UMAEnum("ContentSuggestions.Feed.EngagementType",
+                       28,
+                       kFeedEngagementScrolled)},
 };
 
 std::unique_ptr<DefaultModelProvider> GetFeedUserSegmentDefautlModel() {
@@ -105,8 +106,7 @@ FeedUserSegment::GetModelConfig() {
       kFeedUserMinSignalCollectionLength, kFeedUserSignalStorageLength);
 
   // Set features.
-  writer.AddUmaFeatures(kFeedUserUMAFeatures.data(),
-                        kFeedUserUMAFeatures.size());
+  writer.AddFeatures<Feature>(kFeedUserFeatures);
 
   //  Set OutputConfig.
   writer.AddOutputConfigForBinaryClassifier(
@@ -125,16 +125,16 @@ void FeedUserSegment::ExecuteModelWithInput(
     const ModelProvider::Request& inputs,
     ExecutionCallback callback) {
   // Invalid inputs.
-  if (inputs.size() != kFeedUserUMAFeatures.size()) {
+  if (inputs.size() != kFeatureCount) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
 
-  const bool feed_engaged = inputs[7] >= 2;
-  const bool feed_engaged_simple = inputs[8] >= 2;
-  const bool feed_interacted = inputs[9] >= 2;
-  const bool feed_scrolled = inputs[10] >= 2;
+  const bool feed_engaged = inputs[kFeatureFeedEngagementEngaged] >= 2;
+  const bool feed_engaged_simple = inputs[kFeatureFeedEngagementSimple] >= 2;
+  const bool feed_interacted = inputs[kFeatureFeedEngagementInteracted] >= 2;
+  const bool feed_scrolled = inputs[kFeatureFeedEngagementScrolled] >= 2;
   float result = 0;
 
   if (feed_engaged || feed_engaged_simple || feed_interacted || feed_scrolled) {

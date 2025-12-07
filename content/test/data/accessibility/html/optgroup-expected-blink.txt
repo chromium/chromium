@@ -16,7 +16,7 @@ rootWebArea
 ++++++++++++++listBoxOption name='Three' restriction=disabled setSize=8 posInSet=7
 ++++++++++++++listBoxOption name='Four' restriction=disabled setSize=8 posInSet=8
 ++++++comboBoxSelect collapsed value='Random Transformer' setSize=7 posInSet=1
-++++++++menuListPopup invisible setSize=7
+++++++++menuListPopup invisible setSize=7 ispopup=auto
 ++++++++++menuListOption name='Random Transformer' setSize=7 posInSet=1 selected=true
 ++++++++++group invisible name='group 1'
 ++++++++++++genericContainer ignored invisible

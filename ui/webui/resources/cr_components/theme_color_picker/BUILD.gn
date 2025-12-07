@@ -4,6 +4,7 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
+import("//ui/webui/webui_features.gni")
 
 assert(!is_android && !is_ios)
 
@@ -29,15 +30,15 @@ build_webui("build") {
     "theme_hue_slider_dialog.css",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "browser_proxy.ts",
     "check_mark_wrapper.html.ts",
     "check_mark_wrapper.ts",
     "color_utils.ts",
     "theme_color.html.ts",
+    "theme_color.ts",
     "theme_color_picker.html.ts",
     "theme_color_picker.ts",
-    "theme_color.ts",
     "theme_hue_slider_dialog.html.ts",
     "theme_hue_slider_dialog.ts",
   ]
@@ -50,6 +51,7 @@ build_webui("build") {
   ts_composite = true
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
+    "//ui/webui/resources/cr_components/managed_dialog:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
@@ -57,4 +59,5 @@ build_webui("build") {
   webui_context_type = "relative"
   generate_grdp = true
   grd_resource_path_prefix = rebase_path(".", "//ui/webui/resources")
+  generate_code_cache = enable_webui_generate_code_cache
 }

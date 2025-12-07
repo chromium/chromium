@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_VIZ_SERVICE_FRAME_SINKS_FRAME_SINK_OBSERVER_H_
 #define COMPONENTS_VIZ_SERVICE_FRAME_SINKS_FRAME_SINK_OBSERVER_H_
 
+#include "components/viz/common/quads/compositor_frame_metadata.h"
+
 namespace viz {
 
 class FrameSinkId;
@@ -12,42 +14,51 @@ struct BeginFrameArgs;
 
 class FrameSinkObserver {
  public:
-  // Called when FrameSinkId is registered
-  virtual void OnRegisteredFrameSinkId(const FrameSinkId& frame_sink_id) = 0;
-
-  // Called when FrameSinkId is being invalidated
-  virtual void OnInvalidatedFrameSinkId(const FrameSinkId& frame_sink_id) = 0;
-
-  // Called when CompositorFrameSink is created
-  virtual void OnCreatedCompositorFrameSink(const FrameSinkId& frame_sink_id,
-                                            bool is_root) = 0;
+  virtual ~FrameSinkObserver() = default;
 
   // Called when CompositorFrameSink is about to be destroyed
   virtual void OnDestroyedCompositorFrameSink(
-      const FrameSinkId& frame_sink_id) = 0;
+      const FrameSinkId& frame_sink_id) {}
 
   // Called when |parent_frame_sink_id| becomes a parent of
   // |child_frame_sink_id|
   virtual void OnRegisteredFrameSinkHierarchy(
       const FrameSinkId& parent_frame_sink_id,
-      const FrameSinkId& child_frame_sink_id) = 0;
+      const FrameSinkId& child_frame_sink_id) {}
 
   // Called when |parent_frame_sink_id| stops being a parent of
   // |child_frame_sink_id|
   virtual void OnUnregisteredFrameSinkHierarchy(
       const FrameSinkId& parent_frame_sink_id,
-      const FrameSinkId& child_frame_sink_id) = 0;
+      const FrameSinkId& child_frame_sink_id) {}
 
   // Called when a sink has started a frame.
   virtual void OnFrameSinkDidBeginFrame(const FrameSinkId& frame_sink_id,
-                                        const BeginFrameArgs& args) = 0;
+                                        const BeginFrameArgs& args) {}
 
   // Called when a sink has finished processing a frame.
   virtual void OnFrameSinkDidFinishFrame(const FrameSinkId& frame_sink_id,
-                                         const BeginFrameArgs& args) = 0;
+                                         const BeginFrameArgs& args) {}
+
+  // Called when the |device_scale_factor| related to |frame_sink_id| changes
+  // with latest activated frame.
+  virtual void OnFrameSinkDeviceScaleFactorChanged(
+      const FrameSinkId& frame_sink_id,
+      float device_scale_factor) {}
+
+  // Called when the |is_mobile_optimized| related to |frame_sink_id| changes
+  // with latest activated frame.
+  virtual void OnFrameSinkMobileOptimizedChanged(
+      const FrameSinkId& frame_sink_id,
+      bool is_mobile_optimized) {}
 
   // Called when capturing is started for `frame_sink_id`.
-  virtual void OnCaptureStarted(const FrameSinkId& frame_sink_id) = 0;
+  virtual void OnCaptureStarted(const FrameSinkId& frame_sink_id) {}
+
+  // Called when ViewTransition identified by `transition_token` has had its
+  // Save directive fulfilled.
+  virtual void OnViewTransitionSaved(
+      const blink::ViewTransitionToken& transition_token) {}
 };
 
 }  // namespace viz

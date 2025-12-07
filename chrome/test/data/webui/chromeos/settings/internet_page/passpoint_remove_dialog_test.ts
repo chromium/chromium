@@ -4,8 +4,8 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {PasspointRemoveDialogElement} from 'chrome://os-settings/lazy_load.js';
-import {CrButtonElement, CrDialogElement} from 'chrome://os-settings/os_settings.js';
+import type {PasspointRemoveDialogElement} from 'chrome://os-settings/lazy_load.js';
+import type {CrButtonElement, CrDialogElement} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -14,10 +14,7 @@ import {eventToPromise} from 'chrome://webui-test/test_util.js';
 suite('<passpoint-remove-dialog>', () => {
   let removeDialog: PasspointRemoveDialogElement;
 
-  async function init(isPasspointSettingsEnabled: boolean) {
-    loadTimeData.overrideValues({
-      isPasspointSettingsEnabled,
-    });
+  async function init() {
     removeDialog = document.createElement('passpoint-remove-dialog');
     assertTrue(!!removeDialog);
     document.body.appendChild(removeDialog);
@@ -31,34 +28,10 @@ suite('<passpoint-remove-dialog>', () => {
     return button;
   }
 
-  test('Network and subscription removal', async () => {
-    // When "Passpoint settings flag" is disabled the dialog has to show two
-    // messages.
-    await init(false);
-
-    const desc =
-        removeDialog.shadowRoot!.querySelector<HTMLDivElement>('#description');
-    assertTrue(!!desc);
-    assertFalse(desc.hidden);
-
-    const info =
-        removeDialog.shadowRoot!.querySelector<HTMLSpanElement>('#information');
-    assertTrue(!!info);
-
-    // Confirm button shows "Confirm".
-    const button = getButton('confirmButton');
-    assertEquals(loadTimeData.getString('confirm'), button.textContent!.trim());
-  });
-
   test('Go to subscription page', async () => {
     // When "Passpoint settings flag" is enabled the dialog has to show only the
     // description message.
-    await init(true);
-
-    const desc =
-        removeDialog.shadowRoot!.querySelector<HTMLDivElement>('#description');
-    assertTrue(!!desc);
-    assertTrue(desc.hidden);
+    await init();
 
     const info =
         removeDialog.shadowRoot!.querySelector<HTMLSpanElement>('#information');
@@ -69,11 +42,11 @@ suite('<passpoint-remove-dialog>', () => {
     assertEquals(
         loadTimeData.getString(
             'networkSectionPasspointGoToSubscriptionButtonLabel'),
-        button.textContent!.trim());
+        button.textContent.trim());
   });
 
   test('Cancel the dialog', async () => {
-    await init(false);
+    await init();
 
     const button = getButton('cancelButton');
     button.click();
@@ -86,7 +59,7 @@ suite('<passpoint-remove-dialog>', () => {
   });
 
   test('Confirm the dialog and get the event', async () => {
-    await init(false);
+    await init();
 
     const button = getButton('confirmButton');
     const confirmPromise = eventToPromise('confirm', window);

@@ -1,0 +1,20 @@
+Name: readability
+Short Name (OPTIONAL): readability
+URL: https://github.com/mozilla/readability
+Version: 0.6.0
+Revision: d7949dc47dd9ed9ee1d3b34ffdcf3bce28cde435
+Update Mechanism: Manual (https://crbug.com/422813143)
+License: Apache-2.0
+License File: LICENSE
+Shipped: yes
+Security Critical: no
+Description: A javascript library to distill the dom.
+Local Modifications:
+
+Readability.js and Readability-readerable.js are cloned into the
+modded_src/ directory to enable rapid develop cycle. Effort should be
+made to upstream changes to Readability. When rolling Readability, also
+update the modded_src/version and update the list of changes below.
+
+- Preserve <img> in <figure> during distillation (crbug.com/457771156).
+  - Does not affect tests.

@@ -29,7 +29,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
+#include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -48,6 +48,9 @@ enum AutoscrollType {
   kAutoscrollForDragAndDrop,
   kAutoscrollForSelection,
   kAutoscrollForMiddleClick,
+#if BUILDFLAG(IS_IOS)
+  kAutoscrollForSelectionToPoint,
+#endif  // BUILDFLAG(IS_IOS)
 };
 
 enum MiddleClickMode {
@@ -83,6 +86,11 @@ class CORE_EXPORT AutoscrollController final
                          const gfx::PointF& event_position,
                          base::TimeTicks event_time);
 
+#if BUILDFLAG(IS_IOS)
+  void StartAutoscrollForSelectionToPoint(LayoutObject* layout_object,
+                                          const gfx::PointF& point_in_viewport);
+#endif  // BUILDFLAG(IS_IOS)
+
   // Middle-click autoscroll.
   void StartMiddleClickAutoscroll(LocalFrame*,
                                   LayoutBox* scrollable,
@@ -103,6 +111,7 @@ class CORE_EXPORT AutoscrollController final
 
   Member<Page> page_;
   AutoscrollType autoscroll_type_ = kNoAutoscroll;
+  bool scroll_result_ = true;
 
   // Selection and drag-and-drop autoscroll.
   void ScheduleMainThreadAnimation();
@@ -116,6 +125,10 @@ class CORE_EXPORT AutoscrollController final
 
   PhysicalOffset drag_and_drop_autoscroll_reference_position_;
   base::TimeTicks drag_and_drop_autoscroll_start_time_;
+
+#if BUILDFLAG(IS_IOS)
+  PhysicalOffset autoscroll_to_point_reference_position_;
+#endif  // BUILDFLAG(IS_IOS)
 
   // Middle-click autoscroll.
   Member<LayoutBox> horizontal_autoscroll_layout_box_ = nullptr;
@@ -132,6 +145,10 @@ class CORE_EXPORT AutoscrollController final
   FRIEND_TEST_ALL_PREFIXES(AutoscrollControllerTest, AutoscrollIsNotPropagated);
   FRIEND_TEST_ALL_PREFIXES(AutoscrollControllerTest,
                            AutoscrollIsPropagatedInYDirection);
+  FRIEND_TEST_ALL_PREFIXES(AutoscrollControllerTest, TextSelectionAutoScroll);
+  FRIEND_TEST_ALL_PREFIXES(AutoscrollControllerTest,
+                           PageVisibilityChangeCancelsAutoscroll);
+  FRIEND_TEST_ALL_PREFIXES(AutoscrollControllerTest, PageLoadCancelsAutoscroll);
 };
 
 }  // namespace blink

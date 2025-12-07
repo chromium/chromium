@@ -17,7 +17,6 @@
 #include "components/viz/service/display/frame_interval_matchers.h"
 #include "components/viz/service/surfaces/surface_observer.h"
 #include "components/viz/service/viz_service_export.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace viz {
 class SurfaceManager;
@@ -29,17 +28,12 @@ class SurfaceManager;
 class VIZ_SERVICE_EXPORT FrameIntervalDecider {
  public:
   using FrameIntervalClass = FrameIntervalMatcher::FrameIntervalClass;
+  using ResultInterval = FrameIntervalMatcher::ResultInterval;
   using Result = FrameIntervalMatcher::Result;
+  using ResultCallback = FrameIntervalMatcher::ResultCallback;
   using FixedIntervalSettings = FrameIntervalMatcher::FixedIntervalSettings;
+  using ContinuousRangeSettings = FrameIntervalMatcher::ContinuousRangeSettings;
   using Settings = FrameIntervalMatcher::Settings;
-
-  class VIZ_SERVICE_EXPORT Client {
-   public:
-    virtual ~Client() = default;
-
-    virtual void SetFrameInterval(Result result,
-                                  FrameIntervalMatcherType matcher_type) = 0;
-  };
 
   // This object should be created and held for the duration when surface
   // aggregation for a frame to be presented by the display is in progress. It
@@ -69,15 +63,16 @@ class VIZ_SERVICE_EXPORT FrameIntervalDecider {
     base::flat_map<FrameSinkId, FrameIntervalInputs> drawn_frame_sinks_;
   };
 
-  explicit FrameIntervalDecider(Client& client);
+  FrameIntervalDecider();
   ~FrameIntervalDecider();
+
+  const Settings& settings() const { return settings_; }
 
   void UpdateSettings(
       Settings settings,
       std::vector<std::unique_ptr<FrameIntervalMatcher>> matchers);
-  std::unique_ptr<ScopedAggregate> WrapAggregate(
-      SurfaceManager& surface_manager,
-      base::TimeTicks frame_time);
+  ScopedAggregate WrapAggregate(SurfaceManager& surface_manager,
+                                base::TimeTicks frame_time);
 
  private:
   void Decide(base::TimeTicks frame_time,
@@ -88,12 +83,12 @@ class VIZ_SERVICE_EXPORT FrameIntervalDecider {
   static bool MayDecreaseFrameInterval(const std::optional<Result>& from,
                                        const std::optional<Result>& to);
 
-  const raw_ref<Client> client_;
   Settings settings_;
   std::vector<std::unique_ptr<FrameIntervalMatcher>> matchers_;
 
   base::TimeTicks current_result_frame_time_;
   std::optional<Result> current_result_;
+  uint64_t frame_id_ = 0u;
 };
 
 }  // namespace viz

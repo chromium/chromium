@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/byte_count.h"
 #include "base/time/time.h"
 
 namespace memory_pressure {
@@ -15,14 +16,20 @@ namespace memory_pressure {
 struct ReclaimTarget {
   ReclaimTarget() = default;
   ~ReclaimTarget() = default;
-  explicit ReclaimTarget(uint64_t target_kb) : target_kb(target_kb) {}
-  ReclaimTarget(uint64_t target_kb, std::optional<base::TimeTicks> origin_time)
-      : target_kb(target_kb), origin_time(origin_time) {}
+  explicit ReclaimTarget(base::ByteCount target) : target(target) {}
+  ReclaimTarget(base::ByteCount target,
+                std::optional<base::TimeTicks> origin_time,
+                bool discard_protected = true)
+      : target(target),
+        origin_time(origin_time),
+        discard_protected(discard_protected) {}
 
-  // The number of KiB that should be reclaimed.
-  uint64_t target_kb = 0;
+  // The amount that should be reclaimed.
+  base::ByteCount target;
   // The time at which this reclaim target was calculated.
   std::optional<base::TimeTicks> origin_time;
+  // Whether protected pages can be discarded.
+  bool discard_protected = true;
 };
 
 }  // namespace memory_pressure

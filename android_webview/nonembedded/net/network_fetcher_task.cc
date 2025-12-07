@@ -51,8 +51,7 @@ void InvokePostRequest(
       env, reinterpret_cast<intptr_t>(&weak_ptr),
       reinterpret_cast<intptr_t>(task_runner.get()),
       url::GURLAndroid::FromNativeGURL(env, url),
-      base::android::ToJavaByteArray(env, post_data),
-      base::android::ConvertUTF8ToJavaString(env, content_type),
+      base::android::ToJavaByteArray(env, post_data), content_type,
       base::android::ToJavaArrayOfStrings(env, keys),
       base::android::ToJavaArrayOfStrings(env, values));
 }
@@ -65,17 +64,16 @@ void InvokeDownload(TaskWeakPtr weak_ptr,
   Java_NetworkFetcherTask_download(
       env, reinterpret_cast<intptr_t>(&weak_ptr),
       reinterpret_cast<intptr_t>(task_runner.get()),
-      url::GURLAndroid::FromNativeGURL(env, url),
-      base::android::ConvertUTF8ToJavaString(env, file_path.value()));
+      url::GURLAndroid::FromNativeGURL(env, url), file_path.value());
 }
 
 }  // namespace
 
 // static
-void JNI_NetworkFetcherTask_CallProgressCallback(JNIEnv* env,
-                                                 jlong weak_ptr,
-                                                 jlong task_runner,
-                                                 jlong current) {
+static void JNI_NetworkFetcherTask_CallProgressCallback(JNIEnv* env,
+                                                        jlong weak_ptr,
+                                                        jlong task_runner,
+                                                        jlong current) {
   auto* native_task_runner =
       reinterpret_cast<base::SequencedTaskRunner*>(task_runner);
   DCHECK(native_task_runner);
@@ -87,11 +85,12 @@ void JNI_NetworkFetcherTask_CallProgressCallback(JNIEnv* env,
 }
 
 // static
-void JNI_NetworkFetcherTask_CallResponseStartedCallback(JNIEnv* env,
-                                                        jlong weak_ptr,
-                                                        jlong task_runner,
-                                                        jint response_code,
-                                                        jlong content_length) {
+static void JNI_NetworkFetcherTask_CallResponseStartedCallback(
+    JNIEnv* env,
+    jlong weak_ptr,
+    jlong task_runner,
+    jint response_code,
+    jlong content_length) {
   auto* native_task_runner =
       reinterpret_cast<base::SequencedTaskRunner*>(task_runner);
   DCHECK(native_task_runner);
@@ -104,7 +103,7 @@ void JNI_NetworkFetcherTask_CallResponseStartedCallback(JNIEnv* env,
 }
 
 // static
-void JNI_NetworkFetcherTask_CallDownloadToFileCompleteCallback(
+static void JNI_NetworkFetcherTask_CallDownloadToFileCompleteCallback(
     JNIEnv* env,
     jlong weak_ptr,
     jlong task_runner,
@@ -122,14 +121,14 @@ void JNI_NetworkFetcherTask_CallDownloadToFileCompleteCallback(
 }
 
 // static
-void JNI_NetworkFetcherTask_CallPostRequestCompleteCallback(
+static void JNI_NetworkFetcherTask_CallPostRequestCompleteCallback(
     JNIEnv* env,
     jlong weak_ptr,
     jlong task_runner,
-    const base::android::JavaParamRef<jbyteArray>& response_body,
+    const base::android::JavaRef<jbyteArray>& response_body,
     jint network_error,
-    const base::android::JavaParamRef<jstring>& header_e_tag,
-    const base::android::JavaParamRef<jstring>& header_x_cup_server_proof,
+    std::string& header_e_tag,
+    std::string& header_x_cup_server_proof,
     jlong x_header_retry_after_sec) {
   auto* native_task_runner =
       reinterpret_cast<base::SequencedTaskRunner*>(task_runner);
@@ -141,11 +140,8 @@ void JNI_NetworkFetcherTask_CallPostRequestCompleteCallback(
   native_task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&NetworkFetcherTask::InvokePostRequestCompleteCallback,
-                     *task, std::make_unique<std::string>(response_body_str),
-                     network_error,
-                     base::android::ConvertJavaStringToUTF8(env, header_e_tag),
-                     base::android::ConvertJavaStringToUTF8(
-                         env, header_x_cup_server_proof),
+                     *task, std::move(response_body_str), network_error,
+                     header_e_tag, header_x_cup_server_proof,
                      x_header_retry_after_sec));
 }
 
@@ -242,7 +238,7 @@ void NetworkFetcherTask::InvokeDownloadToFileCompleteCallback(
 }
 
 void NetworkFetcherTask::InvokePostRequestCompleteCallback(
-    std::unique_ptr<std::string> response_body,
+    std::optional<std::string> response_body,
     int network_error,
     const std::string& header_etag,
     const std::string& header_x_cup_server_proof,
@@ -250,7 +246,10 @@ void NetworkFetcherTask::InvokePostRequestCompleteCallback(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::move(post_request_complete_callback_)
       .Run(std::move(response_body), network_error, header_etag,
-           header_x_cup_server_proof, x_header_retry_after_sec);
+           header_x_cup_server_proof, /*header_set_cookie=*/"",
+           x_header_retry_after_sec);
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(NetworkFetcherTask)

@@ -29,7 +29,7 @@ TEST(BarrierCallbackTest, ErrorToCallCallbackWithZeroCallbacks) {
       base::BarrierCallback<int>(0, base::BindOnce([](std::vector<int>) {}));
   EXPECT_FALSE(barrier_callback.is_null());
 
-  EXPECT_CHECK_DEATH(barrier_callback.Run(3));
+  EXPECT_NOTREACHED_DEATH(barrier_callback.Run(3));
 }
 
 TEST(BarrierCallbackTest, RunAfterNumCallbacks) {

@@ -75,8 +75,6 @@ public class ContextualSearchRelatedSearchesTest extends ContextualSearchInstrum
     /**
      * Tests that the offset of the SERP is unaffected by whether we are showing Related Searches in
      * the Bar or not. See https://crbug.com/1250546.
-     *
-     * @throws Exception
      */
     @Test
     @SmallTest
@@ -204,7 +202,7 @@ public class ContextualSearchRelatedSearchesTest extends ContextualSearchInstrum
         float normalHeight = mPanel.getHeight();
 
         // Simulate a response that includes both a definition and Related Searches
-        List<String> inBarSuggestions = new ArrayList<String>();
+        List<String> inBarSuggestions = new ArrayList<>();
         inBarSuggestions.add("Related Suggestion 1");
         inBarSuggestions.add("Related Suggestion 2");
         ThreadUtils.runOnUiThreadBlocking(

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/settings/timezone_settings.h"
 
 #include <stddef.h>
@@ -14,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -229,15 +225,15 @@ std::string GetTimezoneIDAsString() {
     return std::string();
   }
 
-  std::string timezone(buf, len);
+  std::string_view timezone(buf, len);
   // Remove kTimezoneFilesDir from the beginning.
-  if (!base::StartsWith(timezone, kTimezoneFilesDir,
-                        base::CompareCase::SENSITIVE)) {
+  auto remainder = base::RemovePrefix(timezone, kTimezoneFilesDir);
+  if (!remainder) {
     LOG(ERROR) << "GetTimezoneID: Timezone symlink is wrong " << timezone;
     return std::string();
   }
 
-  return timezone.substr(strlen(kTimezoneFilesDir));
+  return std::string(*remainder);
 }
 
 void SetTimezoneIDFromString(const std::string& id) {
@@ -375,9 +371,9 @@ TimezoneSettingsBaseImpl::GetTimezoneList() const {
 }
 
 TimezoneSettingsBaseImpl::TimezoneSettingsBaseImpl() {
-  for (size_t i = 0; i < std::size(kTimeZones); ++i) {
+  for (const char* timezone : kTimeZones) {
     timezones_.push_back(base::WrapUnique(icu::TimeZone::createTimeZone(
-        icu::UnicodeString(kTimeZones[i], -1, US_INV))));
+        icu::UnicodeString(timezone, -1, US_INV))));
   }
 }
 

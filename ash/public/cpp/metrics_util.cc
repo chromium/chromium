@@ -9,7 +9,7 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 #undef ENABLED_VLOG_LEVEL
 #define ENABLED_VLOG_LEVEL 1
@@ -47,8 +47,8 @@ void ForwardSmoothness(base::TimeTicks start_tick,
                        SmoothnessCallback callback,
                        const cc::FrameSequenceMetrics::CustomReportData& data) {
   bool animation_in_test =
-      ui::ScopedAnimationDurationScaleMode::duration_multiplier() !=
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION;
+      gfx::ScopedAnimationDurationScaleMode::duration_multiplier() !=
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION;
 
   // Always report smoothness data for test. If tests care whether frames
   // are presented, they should check whether the reported smoothness.

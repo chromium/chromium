@@ -15,7 +15,10 @@ class BackendMock : public Backend {
   explicit BackendMock(net::CacheType cache_type);
   ~BackendMock() override;
 
-  MOCK_METHOD(int32_t, GetEntryCount, (), (const, override));
+  MOCK_METHOD(int32_t,
+              GetEntryCount,
+              (net::Int32CompletionOnceCallback callback),
+              (const, override));
   MOCK_METHOD(EntryResult,
               OpenOrCreateEntry,
               (const std::string& key,
@@ -70,10 +73,6 @@ class BackendMock : public Backend {
   MOCK_METHOD(uint8_t,
               GetEntryInMemoryData,
               (const std::string& key),
-              (override));
-  MOCK_METHOD(void,
-              SetEntryInMemoryData,
-              (const std::string& key, uint8_t data),
               (override));
   MOCK_METHOD(int64_t, MaxFileSize, (), (const, override));
 };

@@ -9,7 +9,6 @@
 #include "ash/system/media/media_tray.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tri_view.h"
-#include "media/base/media_switches.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/border.h"
 
@@ -21,15 +20,8 @@ UnifiedMediaControlsDetailedView::UnifiedMediaControlsDetailedView(
     : TrayDetailedView(delegate) {
   CreateTitleRow(IDS_ASH_GLOBAL_MEDIA_CONTROLS_TITLE);
 
-  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI)) {
-    notification_list_view->SetBorder(views::CreateEmptyBorder(
-        gfx::Insets::TLBR(0, 0, kMediaNotificationListViewBottomPadding, 0)));
-  } else {
-    notification_list_view->SetBorder(views::CreateSolidSidedBorder(
-        gfx::Insets::TLBR(0, 0, kMenuSeparatorWidth, 0),
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kSeparatorColor)));
-  }
+  notification_list_view->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(0, 0, kMediaNotificationListViewBottomPadding, 0)));
 
   AddChildView(std::move(notification_list_view));
 }

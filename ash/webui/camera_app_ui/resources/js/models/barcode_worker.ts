@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import * as Comlink from '../lib/comlink.js';
+import * as comlink from '../lib/comlink.js';
 
 /**
  * A barcode worker to detect barcode from images.
@@ -34,4 +34,4 @@ class BarcodeWorkerImpl {
 // runtime.
 export type BarcodeWorker = BarcodeWorkerImpl;
 
-Comlink.expose(new BarcodeWorkerImpl());
+comlink.expose(new BarcodeWorkerImpl());

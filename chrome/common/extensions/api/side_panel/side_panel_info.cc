@@ -4,8 +4,10 @@
 
 #include "chrome/common/extensions/api/side_panel/side_panel_info.h"
 
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "chrome/common/extensions/api/side_panel.h"
+#include "extensions/common/file_util.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 
@@ -30,15 +32,16 @@ std::unique_ptr<SidePanelInfo> ParseFromDictionary(const Extension& extension,
           extension.manifest()->available_values(), manifest_keys, *error)) {
     return nullptr;
   }
+
+  if (!extension.GetResourceURL(manifest_keys.side_panel.default_path)
+           .is_valid()) {
+    *error = errors::kSidePanelManifestDefaultPathInvalid;
+    return nullptr;
+  }
+
   auto info = std::make_unique<SidePanelInfo>();
   info->default_path = std::move(manifest_keys.side_panel.default_path);
   return info;
-}
-
-bool ExtensionResourceExists(const Extension* extension,
-                             const std::string& path) {
-  auto resource_path = extension->GetResource(path).GetFilePath();
-  return !resource_path.empty() && base::PathExists(resource_path);
 }
 
 }  // namespace
@@ -80,15 +83,16 @@ base::span<const char* const> SidePanelManifestHandler::Keys() const {
 }
 
 bool SidePanelManifestHandler::Validate(
-    const Extension* extension,
+    const Extension& extension,
     std::string* error,
     std::vector<InstallWarning>* warnings) const {
-  std::string path = SidePanelInfo::GetDefaultPath(extension);
-  GURL side_panel_url = extension->GetResourceURL(path);
-
-  if (!side_panel_url.is_valid() ||
-      !ExtensionResourceExists(extension, side_panel_url.path())) {
-    *error = errors::kSidePanelManifestDefaultPathError;
+  std::string path = SidePanelInfo::GetDefaultPath(&extension);
+  GURL side_panel_url = extension.GetResourceURL(path);
+  CHECK(side_panel_url.is_valid());  // Validated in ParseFromDictionary.
+  base::FilePath path_file =
+      file_util::ExtensionURLToAbsoluteFilePath(extension, side_panel_url);
+  if (path_file.empty() || !base::PathExists(path_file)) {
+    *error = errors::kSidePanelManifestDefaultPathDoesNotExist;
     return false;
   }
 

@@ -47,6 +47,18 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
 [FAIL] sec-fetch-user rel=stylesheet - Not sent to non-trustworthy cross-site destination
   promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-storage-access rel=icon - Not sent to non-trustworthy same-origin destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-storage-access rel=stylesheet - Not sent to non-trustworthy same-origin destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-storage-access rel=icon - Not sent to non-trustworthy same-site destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-storage-access rel=stylesheet - Not sent to non-trustworthy same-site destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-storage-access rel=icon - Not sent to non-trustworthy cross-site destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-storage-access rel=stylesheet - Not sent to non-trustworthy cross-site destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
 [FAIL] sec-fetch-site rel=icon - HTTPS downgrade (header not sent)
   promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
 [FAIL] sec-fetch-site rel=stylesheet - HTTPS downgrade (header not sent)

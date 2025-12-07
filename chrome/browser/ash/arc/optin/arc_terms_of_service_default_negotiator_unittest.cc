@@ -8,20 +8,19 @@
 #include <ostream>
 #include <vector>
 
-#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "base/functional/bind.h"
-#include "base/hash/sha1.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/arc_support_host.h"
 #include "chrome/browser/ash/arc/extensions/fake_arc_support.h"
 #include "chrome/browser/ash/arc/optin/arc_optin_preference_handler.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
-#include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
@@ -32,6 +31,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/policy/device_policy/device_policy_builder.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "components/consent_auditor/fake_consent_auditor.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_state_manager.h"
@@ -45,6 +46,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
+#include "crypto/obsolete/sha1.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -105,10 +107,18 @@ class MockErrorDelegate : public ArcSupportHost::ErrorDelegate {
 namespace arc {
 
 class ArcTermsOfServiceDefaultNegotiatorTest
-    : public BrowserWithTestWindowTest {
+    : public BrowserWithTestWindowTest,
+      public testing::WithParamInterface<bool> {
  public:
   ArcTermsOfServiceDefaultNegotiatorTest()
       : owner_key_util_(new ownership::MockOwnerKeyUtil()) {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(ash::features::kCrosPrivacyHub);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          ash::features::kCrosPrivacyHub);
+    }
+
     ::ash::OwnerSettingsServiceAshFactory::GetInstance()
         ->SetOwnerKeyUtilForTesting(owner_key_util_);
   }
@@ -123,7 +133,8 @@ class ArcTermsOfServiceDefaultNegotiatorTest
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
 
-    ::ash::DeviceSettingsService::Get()->SetSessionManager(
+    ::ash::DeviceSettingsService::Get()->StartProcessing(
+        TestingBrowserProcess::GetGlobal()->local_state(),
         &session_manager_client_, owner_key_util_);
 
     // MetricsService.
@@ -169,7 +180,7 @@ class ArcTermsOfServiceDefaultNegotiatorTest
     test_metrics_state_manager_.reset();
     test_enabled_state_provider_.reset();
 
-    ::ash::DeviceSettingsService::Get()->UnsetSessionManager();
+    ::ash::DeviceSettingsService::Get()->StopProcessing();
     ash::StatsReportingController::Shutdown();
     BrowserWithTestWindowTest::TearDown();
   }
@@ -193,10 +204,10 @@ class ArcTermsOfServiceDefaultNegotiatorTest
         ConsentAuditorFactory::GetForProfile(profile()));
   }
 
-  CoreAccountId GetAuthenticatedAccountId() {
+  GaiaId GetAuthenticatedGaiaId() {
     return IdentityManagerFactory::GetForProfile(profile())
         ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-        .account_id;
+        .gaia;
   }
 
   bool GetUserMetricsState() {
@@ -211,6 +222,7 @@ class ArcTermsOfServiceDefaultNegotiatorTest
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   policy::DevicePolicyBuilder device_policy_;
   scoped_refptr<ownership::MockOwnerKeyUtil> owner_key_util_;
   ::ash::FakeSessionManagerClient session_manager_client_;
@@ -230,6 +242,10 @@ class ArcTermsOfServiceDefaultNegotiatorTest
   std::unique_ptr<MockErrorDelegate> error_delegate_;
 };
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         ArcTermsOfServiceDefaultNegotiatorTest,
+                         testing::Bool());
+
 class ArcTermsOfServiceDefaultNegotiatorForNonOwnerTest
     : public ArcTermsOfServiceDefaultNegotiatorTest {
  protected:
@@ -246,6 +262,10 @@ class ArcTermsOfServiceDefaultNegotiatorForNonOwnerTest
     ArcTermsOfServiceDefaultNegotiatorTest::SetUp();
   }
 };
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ArcTermsOfServiceDefaultNegotiatorForNonOwnerTest,
+                         testing::Bool());
 
 namespace {
 
@@ -265,14 +285,17 @@ ArcGoogleLocationServiceConsent CreateBaseGoogleLocationServiceConsent() {
   google_location_service_consent.set_confirmation_grd_id(
       IDS_ARC_OPT_IN_DIALOG_BUTTON_AGREE);
   google_location_service_consent.add_description_grd_ids(
-      IDS_ARC_OPT_IN_LOCATION_SETTING);
+      ash::features::IsCrosPrivacyHubLocationEnabled()
+          ? IDS_CROS_OPT_IN_LOCATION_SETTING
+          : IDS_ARC_OPT_IN_LOCATION_SETTING);
   return google_location_service_consent;
 }
 
 ArcPlayTermsOfServiceConsent CreateBasePlayConsent() {
   ArcPlayTermsOfServiceConsent play_consent;
   play_consent.set_play_terms_of_service_hash(
-      base::SHA1HashString(std::string(kFakeToSContent)));
+      base::as_string_view(crypto::obsolete::Sha1::HashForTesting(
+          base::as_byte_span(std::string(kFakeToSContent)))));
   play_consent.set_play_terms_of_service_text_length(
       (std::string(kFakeToSContent).length()));
   play_consent.set_consent_flow(ArcPlayTermsOfServiceConsent::SETUP);
@@ -297,8 +320,7 @@ std::ostream& operator<<(std::ostream& os, Status status) {
       return os << "CANCELLED";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return os;
+  NOTREACHED();
 }
 
 ArcTermsOfServiceNegotiator::NegotiationCallback UpdateStatusCallback(
@@ -310,14 +332,14 @@ ArcTermsOfServiceNegotiator::NegotiationCallback UpdateStatusCallback(
       status);
 }
 
-TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, Accept) {
-  // Configure mock expections for proper consent recording.
+TEST_P(ArcTermsOfServiceDefaultNegotiatorTest, Accept) {
+  // Configure mock expectations for proper consent recording.
   consent_auditor::FakeConsentAuditor* auditor = consent_auditor();
   Mock::VerifyAndClearExpectations(auditor);
 
   ArcPlayTermsOfServiceConsent play_consent = CreateBasePlayConsent();
   play_consent.set_status(UserConsentTypes::GIVEN);
-  EXPECT_CALL(*auditor, RecordArcPlayConsent(GetAuthenticatedAccountId(),
+  EXPECT_CALL(*auditor, RecordArcPlayConsent(GetAuthenticatedGaiaId(),
                                              ArcPlayConsentEq(play_consent)));
 
   ArcBackupAndRestoreConsent backup_and_restore_consent =
@@ -325,7 +347,7 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, Accept) {
   backup_and_restore_consent.set_status(UserConsentTypes::GIVEN);
   EXPECT_CALL(*auditor,
               RecordArcBackupAndRestoreConsent(
-                  GetAuthenticatedAccountId(),
+                  GetAuthenticatedGaiaId(),
                   ArcBackupAndRestoreConsentEq(backup_and_restore_consent)));
   ArcGoogleLocationServiceConsent google_location_service_consent =
       CreateBaseGoogleLocationServiceConsent();
@@ -333,7 +355,7 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, Accept) {
   EXPECT_CALL(
       *auditor,
       RecordArcGoogleLocationServiceConsent(
-          GetAuthenticatedAccountId(),
+          GetAuthenticatedGaiaId(),
           ArcGoogleLocationServiceConsentEq(google_location_service_consent)));
 
   // Show Terms of service page.
@@ -362,7 +384,7 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, Accept) {
   profile()->GetTestingPrefService()->SetManagedPref(
       prefs::kArcBackupRestoreEnabled, std::make_unique<base::Value>(false));
   EXPECT_FALSE(fake_arc_support()->backup_and_restore_mode());
-  if (base::FeatureList::IsEnabled(ash::features::kCrosPrivacyHub)) {
+  if (ash::features::IsCrosPrivacyHubLocationEnabled()) {
     profile()->GetTestingPrefService()->SetInteger(
         ash::prefs::kUserGeolocationAccessLevel,
         static_cast<int>(ash::GeolocationAccessLevel::kDisallowed));
@@ -371,7 +393,7 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, Accept) {
       prefs::kArcLocationServiceEnabled, std::make_unique<base::Value>(false));
   EXPECT_FALSE(fake_arc_support()->location_service_mode());
 
-  if (base::FeatureList::IsEnabled(ash::features::kCrosPrivacyHub)) {
+  if (ash::features::IsCrosPrivacyHubLocationEnabled()) {
     // Toggle kArcLocationServiceEnabled to trigger the computation again as we
     // are listening on it. Now even with kArcLocationServiceEnabled false, we
     // should still get true as we will now honor kUserGeolocationAccessLevel.
@@ -419,8 +441,8 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, Accept) {
       profile()->GetPrefs()->GetBoolean(prefs::kArcLocationServiceEnabled));
 }
 
-TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, AcceptWithLocationDisabled) {
-  if (base::FeatureList::IsEnabled(ash::features::kCrosPrivacyHub)) {
+TEST_P(ArcTermsOfServiceDefaultNegotiatorTest, AcceptWithLocationDisabled) {
+  if (ash::features::IsCrosPrivacyHubLocationEnabled()) {
     profile()->GetTestingPrefService()->SetBoolean(
         prefs::kArcInitialLocationSettingSyncRequired, true);
     profile()->GetTestingPrefService()->SetBoolean(
@@ -456,7 +478,7 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, AcceptWithLocationDisabled) {
   // Make sure preference values are now updated.
   EXPECT_FALSE(
       profile()->GetPrefs()->GetBoolean(prefs::kArcLocationServiceEnabled));
-  if (base::FeatureList::IsEnabled(ash::features::kCrosPrivacyHub)) {
+  if (ash::features::IsCrosPrivacyHubLocationEnabled()) {
     EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(
         prefs::kArcInitialLocationSettingSyncRequired));
     EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(
@@ -468,7 +490,7 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, AcceptWithLocationDisabled) {
   }
 }
 
-TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, AcceptWithUnchecked) {
+TEST_P(ArcTermsOfServiceDefaultNegotiatorTest, AcceptWithUnchecked) {
   // Configure the mock consent auditor to make sure consent auditing records
   // the ToS accept as GIVEN, but the other consents as NOT_GIVEN.
   consent_auditor::FakeConsentAuditor* ca = consent_auditor();
@@ -476,7 +498,7 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, AcceptWithUnchecked) {
 
   ArcPlayTermsOfServiceConsent play_consent = CreateBasePlayConsent();
   play_consent.set_status(UserConsentTypes::GIVEN);
-  EXPECT_CALL(*ca, RecordArcPlayConsent(GetAuthenticatedAccountId(),
+  EXPECT_CALL(*ca, RecordArcPlayConsent(GetAuthenticatedGaiaId(),
                                         ArcPlayConsentEq(play_consent)));
 
   ArcBackupAndRestoreConsent backup_and_restore_consent =
@@ -485,7 +507,7 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, AcceptWithUnchecked) {
   backup_and_restore_consent.set_status(UserConsentTypes::NOT_GIVEN);
   EXPECT_CALL(*ca,
               RecordArcBackupAndRestoreConsent(
-                  GetAuthenticatedAccountId(),
+                  GetAuthenticatedGaiaId(),
                   ArcBackupAndRestoreConsentEq(backup_and_restore_consent)));
 
   ArcGoogleLocationServiceConsent google_location_service_consent =
@@ -493,10 +515,9 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, AcceptWithUnchecked) {
   google_location_service_consent.clear_status();
   google_location_service_consent.set_status(UserConsentTypes::NOT_GIVEN);
   EXPECT_CALL(
-      *ca,
-      RecordArcGoogleLocationServiceConsent(
-          GetAuthenticatedAccountId(),
-          ArcGoogleLocationServiceConsentEq(google_location_service_consent)));
+      *ca, RecordArcGoogleLocationServiceConsent(
+               GetAuthenticatedGaiaId(), ArcGoogleLocationServiceConsentEq(
+                                             google_location_service_consent)));
 
   // Show Terms of service page.
   Status status = Status::PENDING;
@@ -538,9 +559,16 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, AcceptWithUnchecked) {
       profile()->GetPrefs()->GetBoolean(prefs::kArcBackupRestoreEnabled));
   EXPECT_FALSE(
       profile()->GetPrefs()->GetBoolean(prefs::kArcLocationServiceEnabled));
+  if (ash::features::IsCrosPrivacyHubLocationEnabled()) {
+    EXPECT_EQ(ash::GeolocationAccessLevel::kDisallowed,
+              static_cast<ash::GeolocationAccessLevel>(
+                  profile()->GetPrefs()->GetInteger(
+                      ash::prefs::kUserGeolocationAccessLevel)));
+  }
 }
 
-TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, AcceptMetricsNoOwner) {
+// TODO(crbug.com/383267605): Fix flakiness and re-enable.
+TEST_P(ArcTermsOfServiceDefaultNegotiatorTest, DISABLED_AcceptMetricsNoOwner) {
   // Show Terms of service page.
   Status status = Status::PENDING;
   negotiator()->StartNegotiation(UpdateStatusCallback(&status));
@@ -574,8 +602,9 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, AcceptMetricsNoOwner) {
             ash::StatsReportingController::Get()->IsEnabled());
 }
 
-TEST_F(ArcTermsOfServiceDefaultNegotiatorForNonOwnerTest,
-       AcceptMetricsUserOptIn) {
+// TODO(crbug.com/383267605): Fix flakiness and re-enable.
+TEST_P(ArcTermsOfServiceDefaultNegotiatorForNonOwnerTest,
+       DISABLED_AcceptMetricsUserOptIn) {
   // Show Terms of service page.
   Status status = Status::PENDING;
   negotiator()->StartNegotiation(UpdateStatusCallback(&status));
@@ -615,7 +644,7 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorForNonOwnerTest,
   EXPECT_EQ(expected_metrics_state, GetUserMetricsState());
 }
 
-TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, AcceptWithManagedToS) {
+TEST_P(ArcTermsOfServiceDefaultNegotiatorTest, AcceptWithManagedToS) {
   consent_auditor::FakeConsentAuditor* auditor = consent_auditor();
   Mock::VerifyAndClearExpectations(auditor);
 
@@ -623,7 +652,7 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, AcceptWithManagedToS) {
   play_consent.clear_play_terms_of_service_text_length();
   play_consent.clear_play_terms_of_service_hash();
   play_consent.set_status(UserConsentTypes::GIVEN);
-  EXPECT_CALL(*auditor, RecordArcPlayConsent(GetAuthenticatedAccountId(),
+  EXPECT_CALL(*auditor, RecordArcPlayConsent(GetAuthenticatedGaiaId(),
                                              ArcPlayConsentEq(play_consent)));
 
   ArcGoogleLocationServiceConsent google_location_service_consent =
@@ -632,7 +661,7 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, AcceptWithManagedToS) {
   EXPECT_CALL(
       *auditor,
       RecordArcGoogleLocationServiceConsent(
-          GetAuthenticatedAccountId(),
+          GetAuthenticatedGaiaId(),
           ArcGoogleLocationServiceConsentEq(google_location_service_consent)));
 
   // Verifies that we record an empty ToS consent if the ToS is not shown due to
@@ -672,13 +701,13 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, AcceptWithManagedToS) {
       profile()->GetPrefs()->GetBoolean(prefs::kArcLocationServiceEnabled));
 }
 
-TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, Cancel) {
+TEST_P(ArcTermsOfServiceDefaultNegotiatorTest, Cancel) {
   consent_auditor::FakeConsentAuditor* auditor = consent_auditor();
   Mock::VerifyAndClearExpectations(auditor);
 
   ArcPlayTermsOfServiceConsent play_consent = CreateBasePlayConsent();
   play_consent.set_status(UserConsentTypes::NOT_GIVEN);
-  EXPECT_CALL(*auditor, RecordArcPlayConsent(GetAuthenticatedAccountId(),
+  EXPECT_CALL(*auditor, RecordArcPlayConsent(GetAuthenticatedGaiaId(),
                                              ArcPlayConsentEq(play_consent)));
 
   ArcBackupAndRestoreConsent backup_and_restore_consent =
@@ -686,7 +715,7 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, Cancel) {
   backup_and_restore_consent.set_status(UserConsentTypes::NOT_GIVEN);
   EXPECT_CALL(*auditor,
               RecordArcBackupAndRestoreConsent(
-                  GetAuthenticatedAccountId(),
+                  GetAuthenticatedGaiaId(),
                   ArcBackupAndRestoreConsentEq(backup_and_restore_consent)));
 
   ArcGoogleLocationServiceConsent google_location_service_consent =
@@ -695,7 +724,7 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, Cancel) {
   EXPECT_CALL(
       *auditor,
       RecordArcGoogleLocationServiceConsent(
-          GetAuthenticatedAccountId(),
+          GetAuthenticatedGaiaId(),
           ArcGoogleLocationServiceConsentEq(google_location_service_consent)));
 
   // Show Terms of service page.
@@ -732,7 +761,7 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, Cancel) {
       profile()->GetPrefs()->GetBoolean(prefs::kArcLocationServiceEnabled));
 }
 
-TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, Retry) {
+TEST_P(ArcTermsOfServiceDefaultNegotiatorTest, Retry) {
   error_delegate_ = std::make_unique<MockErrorDelegate>();
   support_host()->SetErrorDelegate(error_delegate_.get());
 

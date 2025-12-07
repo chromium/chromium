@@ -80,6 +80,13 @@ crosapi::mojom::WebAppInstallResultCode EnumTraits<
           kCancelledDueToMainFrameNavigation;
     case webapps::InstallResultCode::kNoValidIconsInManifest:
       return crosapi::mojom::WebAppInstallResultCode::kNoValidIconsInManifest;
+    case webapps::InstallResultCode::kNoCustomManifestId:
+      return crosapi::mojom::WebAppInstallResultCode::kNoCustomManifestId;
+    case webapps::InstallResultCode::kManifestIdMismatch:
+      return crosapi::mojom::WebAppInstallResultCode::kManifestIdMismatch;
+    case webapps::InstallResultCode::kFallbackInstallUsingTrustedIcons:
+      return crosapi::mojom::WebAppInstallResultCode::
+          kFallbackInstallUsingTrustedIcons;
   };
 }
 
@@ -179,10 +186,19 @@ bool EnumTraits<crosapi::mojom::WebAppInstallResultCode,
     case crosapi::mojom::WebAppInstallResultCode::kNoValidIconsInManifest:
       *output = webapps::InstallResultCode::kNoValidIconsInManifest;
       return true;
+    case crosapi::mojom::WebAppInstallResultCode::kNoCustomManifestId:
+      *output = webapps::InstallResultCode::kNoCustomManifestId;
+      return true;
+    case crosapi::mojom::WebAppInstallResultCode::kManifestIdMismatch:
+      *output = webapps::InstallResultCode::kManifestIdMismatch;
+      return true;
+    case crosapi::mojom::WebAppInstallResultCode::
+        kFallbackInstallUsingTrustedIcons:
+      *output = webapps::InstallResultCode::kFallbackInstallUsingTrustedIcons;
+      return true;
   };
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 crosapi::mojom::WebAppUninstallResultCode EnumTraits<
@@ -234,8 +250,7 @@ bool EnumTraits<crosapi::mojom::WebAppUninstallResultCode,
       return true;
   };
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace mojo

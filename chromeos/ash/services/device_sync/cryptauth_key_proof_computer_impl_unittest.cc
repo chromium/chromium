@@ -12,8 +12,6 @@
 #include "chromeos/ash/services/device_sync/cryptauth_key.h"
 #include "chromeos/ash/services/device_sync/cryptauth_key_proof_computer.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_common.pb.h"
-#include "crypto/ec_private_key.h"
-#include "crypto/ec_signature_creator.h"
 #include "crypto/hmac.h"
 #include "crypto/signature_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -133,13 +131,14 @@ TEST(DeviceSyncCryptAuthKeyProofComputerImplTest,
           ByteVectorToString(kSymmetricTestInfoBytes));
 
   EXPECT_TRUE(key_proof);
+  auto hmac = base::as_byte_span(*key_proof)
+                  .to_fixed_extent<crypto::hash::kSha256Size>();
 
   // Verify the key proof which should be of the form:
   //     HMAC(HKDF(|key|, |salt|, |info|), |payload|)
-  crypto::HMAC hmac(crypto::HMAC::HashAlgorithm::SHA256);
-  EXPECT_TRUE(
-      hmac.Init(ByteVectorToString(kExpectedDerivedSymmetricKey32Bytes)));
-  EXPECT_TRUE(hmac.Verify(kTestPayload, *key_proof));
+  EXPECT_TRUE(crypto::hmac::VerifySha256(kExpectedDerivedSymmetricKey32Bytes,
+                                         base::as_byte_span(kTestPayload),
+                                         *hmac));
 }
 
 TEST(DeviceSyncCryptAuthKeyProofComputerImplTest,
@@ -152,11 +151,12 @@ TEST(DeviceSyncCryptAuthKeyProofComputerImplTest,
           key, kTestPayload, ByteVectorToString(kSymmetricTestSaltBytes),
           ByteVectorToString(kSymmetricTestInfoBytes));
   EXPECT_TRUE(key_proof);
+  auto hmac = base::as_byte_span(*key_proof)
+                  .to_fixed_extent<crypto::hash::kSha256Size>();
 
-  crypto::HMAC hmac(crypto::HMAC::HashAlgorithm::SHA256);
-  EXPECT_TRUE(
-      hmac.Init(ByteVectorToString(kExpectedDerivedSymmetricKey16Bytes)));
-  EXPECT_TRUE(hmac.Verify(kTestPayload, *key_proof));
+  EXPECT_TRUE(crypto::hmac::VerifySha256(kExpectedDerivedSymmetricKey16Bytes,
+                                         base::as_byte_span(kTestPayload),
+                                         *hmac));
 }
 
 TEST(DeviceSyncCryptAuthKeyProofComputerImplTest,

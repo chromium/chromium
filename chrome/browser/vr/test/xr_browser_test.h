@@ -15,18 +15,13 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/vr/test/conditional_skipping.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "device/vr/public/cpp/features.h"
-#include "device/vr/test/test_hook.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
-#endif
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/test/base/android/android_browser_test.h"
-#else  // !IS_ANDROID
-#include "chrome/test/base/in_process_browser_test.h"
 #endif
 
 namespace content {
@@ -204,13 +199,15 @@ class XrBrowserTestBase : public PlatformBrowserTest {
   }
 
  protected:
+  // Called at the start of |LoadFileAndAwaitInitialization| to allow base
+  // classes to manage any logic that they may want to manage.
+  virtual void OnBeforeLoadFile() {}
   std::unique_ptr<base::Environment> env_;
   std::vector<base::test::FeatureRef> enable_features_;
   std::vector<base::test::FeatureRef> disable_features_;
-  std::vector<std::string> append_switches_;
-  std::vector<std::string> enable_blink_features_;
   std::vector<XrTestRequirement> runtime_requirements_;
   std::unordered_set<std::string> ignored_requirements_;
+  std::optional<std::string> forced_runtime_;
 
 #if BUILDFLAG(IS_WIN)
   HWND hwnd_;

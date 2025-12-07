@@ -22,12 +22,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.CommonTypesProto.RequestContext;
 import org.chromium.components.optimization_guide.proto.HintsProto.OptimizationType;
@@ -44,8 +44,7 @@ public class OptimizationGuideBridgeUnitTest {
     private static final String TEST_URL = "https://testurl.com/";
     private static final String TEST_URL2 = "https://testurl2.com/";
 
-    @Rule public JniMocker mocker = new JniMocker();
-
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock OptimizationGuideBridge.Natives mOptimizationGuideBridgeJniMock;
 
     @Mock OptimizationGuideBridge.OptimizationGuideCallback mCallbackMock;
@@ -54,8 +53,7 @@ public class OptimizationGuideBridgeUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        mocker.mock(OptimizationGuideBridgeJni.TEST_HOOKS, mOptimizationGuideBridgeJniMock);
+        OptimizationGuideBridgeJni.setInstanceForTesting(mOptimizationGuideBridgeJniMock);
     }
 
     @Test

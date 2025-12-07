@@ -18,6 +18,7 @@ import org.robolectric.ParameterizedRobolectricTestRunner;
 
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.chrome.R;
+import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.page_info.PageInfoPermissionsController;
 import org.chromium.components.page_info.PageInfoPermissionsController.PermissionObject;
 
@@ -30,12 +31,13 @@ import java.util.List;
 public class PageInfoPermissionsControllerUnitTest {
     private static PermissionObject createPermission(
             String name, String nameMidSentence, boolean allowed, int warningResId) {
-        PermissionObject permission = new PermissionObject();
-        permission.name = name;
-        permission.nameMidSentence = nameMidSentence;
-        permission.allowed = allowed;
-        permission.warningTextResource = warningResId;
-        return permission;
+        return new PermissionObject(
+                ContentSettingsType.COOKIES,
+                name,
+                nameMidSentence,
+                allowed,
+                warningResId,
+                /* requested= */ false);
     }
 
     private static final PermissionObject LOCATION_OS_WARNING =
@@ -61,10 +63,10 @@ public class PageInfoPermissionsControllerUnitTest {
     @Rule(order = -2)
     public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
 
-    private Context mContext;
-    private String mTestName;
-    private List<PermissionObject> mPermissions;
-    private String mExpectedString;
+    private final Context mContext;
+    private final String mTestName;
+    private final List<PermissionObject> mPermissions;
+    private final String mExpectedString;
 
     public PageInfoPermissionsControllerUnitTest(
             String testName, List<PermissionObject> permissions, String expectedString) {

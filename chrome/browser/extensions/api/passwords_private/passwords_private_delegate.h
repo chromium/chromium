@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_PASSWORDS_PRIVATE_PASSWORDS_PRIVATE_DELEGATE_H_
 #define CHROME_BROWSER_EXTENSIONS_API_PASSWORDS_PRIVATE_PASSWORDS_PRIVATE_DELEGATE_H_
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/extensions/api/passwords_private.h"
@@ -19,10 +19,15 @@
 #include "components/password_manager/core/browser/import/import_results.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check_service.h"
 #include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
+#include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "extensions/browser/extension_function.h"
 
 namespace content {
 class WebContents;
+}
+
+namespace password_manager {
+class PasswordsProvider;
 }
 
 namespace extensions {
@@ -49,6 +54,9 @@ class PasswordsPrivateDelegate
 
   using AuthenticationCallback = base::OnceCallback<void(bool)>;
 
+  virtual password_manager::SavedPasswordsPresenter*
+  GetSavedPasswordsPresenter() = 0;
+
   // Gets the saved passwords list.
   using UiEntries = std::vector<api::passwords_private::PasswordUiEntry>;
   using UiEntriesCallback = base::OnceCallback<void(const UiEntries&)>;
@@ -70,16 +78,11 @@ class PasswordsPrivateDelegate
   virtual std::optional<api::passwords_private::UrlCollection> GetUrlCollection(
       const std::string& url) = 0;
 
-  // Returns whether the account store is a default location for saving
-  // passwords. False means the device store is a default one. Must be called
-  // when the current user has already opted-in for account storage.
-  virtual bool IsAccountStoreDefault(content::WebContents* web_contents) = 0;
-
   // Adds the |username| and |password| corresponding to the |url| to the
   // specified store and returns true if the operation succeeded. Fails and
   // returns false if the data is invalid or an entry with such origin and
   // username already exists. Updates the default store to the used one on
-  // success if the user has opted-in for account storage.
+  // success if account storage is enabled.
   // |url|: The url of the password entry, must be a valid http(s) ip/web
   //        address as is or after adding http(s) scheme.
   // |username|: The username to save, can be empty.
@@ -107,6 +110,10 @@ class PasswordsPrivateDelegate
       int id,
       api::passwords_private::PasswordStoreSet from_stores) = 0;
 
+  // Removes the credential entry corresponding to the |id|. Any invalid id will
+  // be ignored.
+  virtual void RemoveBackupPassword(int id) = 0;
+
   // Removes the password exception entry corresponding to |id|. Any invalid id
   // will be ignored.
   virtual void RemovePasswordException(int id) = 0;
@@ -127,6 +134,18 @@ class PasswordsPrivateDelegate
       api::passwords_private::PlaintextReason reason,
       PlaintextPasswordCallback callback,
       content::WebContents* web_contents) = 0;
+
+  // Copies the plain text backup password for entry corresponding to the |id|
+  // generated for each entry of the password list.
+  // |id| the id created when going over the list of saved passwords.
+  // |callback| The callback that gets invoked with true if the copy was
+  // successful, or false otherwise.
+  // |web_contents| The web content object used as the UI; will be used to show
+  //     an OS-level authentication dialog if necessary.
+  virtual void CopyPlaintextBackupPassword(
+      int id,
+      content::WebContents* web_contents,
+      base::OnceCallback<void(bool)> callback) = 0;
 
   // Requests the full PasswordUiEntry (with filled password) with the given id.
   // Returns the full PasswordUiEntry with |callback|. Returns |std::nullopt|
@@ -196,15 +215,16 @@ class PasswordsPrivateDelegate
   GetExportProgressStatus() = 0;
 
   // Whether the current signed-in user (aka unconsented primary account) has
-  // opted in to use the Google account storage for passwords (as opposed to
+  // the Google account storage for passwords is enabled (as opposed to
   // local/profile storage).
-  virtual bool IsOptedInForAccountStorage() = 0;
+  virtual bool IsAccountStorageEnabled() = 0;
 
-  // Sets whether the user is opted in to use the Google account storage for
-  // passwords. If |opt_in| is true and the user is not currently opted in,
-  // will trigger a reauth flow.
-  virtual void SetAccountStorageOptIn(bool opt_in,
-                                      content::WebContents* web_contents) = 0;
+  // Enables/disables use of the Google account storage for passwords
+  virtual void SetAccountStorageEnabled(bool enabled,
+                                        content::WebContents* web_contents) = 0;
+
+  // Whether the account-storage in settings should be shown.
+  virtual bool ShouldShowAccountStorageSettingToggle() = 0;
 
   // Obtains information about insecure credentials. This includes the last
   // time a check was run, as well as all insecure credentials that are present

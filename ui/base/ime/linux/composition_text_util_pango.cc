@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/base/ime/linux/composition_text_util_pango.h"
 
 #include <pango/pango-attributes.h>
@@ -15,6 +10,7 @@
 #include <algorithm>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/i18n/char_iterator.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/ime/composition_text.h"
@@ -66,8 +62,9 @@ void ExtractCompositionTextFromGtkPreedit(const char* utf8_text,
       if (start >= end)
         continue;
 
-      start = g_utf8_pointer_to_offset(utf8_text, utf8_text + start);
-      end = g_utf8_pointer_to_offset(utf8_text, utf8_text + end);
+      start =
+          g_utf8_pointer_to_offset(utf8_text, UNSAFE_TODO(utf8_text + start));
+      end = g_utf8_pointer_to_offset(utf8_text, UNSAFE_TODO(utf8_text + end));
 
       // Double check, in case |utf8_text| is not a valid utf-8 string.
       start = std::min(start, char_length);

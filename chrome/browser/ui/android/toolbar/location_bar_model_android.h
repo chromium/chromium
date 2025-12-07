@@ -29,20 +29,12 @@ class LocationBarModelAndroid : public ChromeLocationBarModelDelegate {
 
   ~LocationBarModelAndroid() override;
 
-  void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
-  base::android::ScopedJavaLocalRef<jstring> GetFormattedFullURL(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
-  base::android::ScopedJavaLocalRef<jstring> GetURLForDisplay(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  void Destroy(JNIEnv* env);
+  base::android::ScopedJavaLocalRef<jstring> GetFormattedFullURL(JNIEnv* env);
+  base::android::ScopedJavaLocalRef<jstring> GetURLForDisplay(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetUrlOfVisibleNavigationEntry(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
-  jint GetPageClassification(JNIEnv* env,
-                             const base::android::JavaParamRef<jobject>& obj,
-                             bool is_focused_from_fakebox,
-                             bool is_prefetch);
+      JNIEnv* env);
+  jint GetPageClassification(JNIEnv* env, bool is_prefetch) const;
 
   // ChromeLocationBarModelDelegate:
   content::WebContents* GetActiveWebContents() const override;

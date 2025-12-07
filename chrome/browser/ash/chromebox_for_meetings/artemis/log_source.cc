@@ -13,49 +13,75 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/chromebox_for_meetings/artemis/specialized_log_sources.h"
 
+// Some files won't appear until after Chrome starts up. We'll try to open
+// the file at every `Fetch()` request up to `kMaxFileOpenAttempts` times.
+inline constexpr int kMaxFileOpenAttempts = 3;
+
 namespace ash::cfm {
 
 LogSource::LogSource(const std::string& filepath,
+                     size_t data_buffer_size_limit,
                      base::TimeDelta poll_rate,
-                     size_t batch_size)
-    : LocalDataSource(poll_rate,
-                      /*data_needs_redacting=*/true,
+                     size_t num_lines_per_batch)
+    : LocalDataSource(data_buffer_size_limit,
+                      poll_rate,
+                      /*data_needs_redacting=*/false,
                       /*is_incremental=*/true),
       log_file_(filepath),
-      batch_size_(batch_size) {
+      num_lines_per_batch_(num_lines_per_batch) {
   recovery_offset_ = GetLastKnownOffsetFromStorage();
-
-  // No point in proceeding here if the file can't be opened
-  if (!log_file_.OpenAtOffset(recovery_offset_)) {
-    file_is_accessible_ = false;
-    return;
-  }
-
-  // Store this now so we can detect rotations later.
-  last_known_inode_ = GetCurrentFileInode();
+  InitializeFile();
 }
 
 LogSource::~LogSource() = default;
 
-std::unique_ptr<LogSource> LogSource::Create(const std::string& filename,
-                                             base::TimeDelta poll_rate,
-                                             size_t batch_size) {
-  if (filename == kCfmAuditLogFile) {
-    return std::make_unique<AuditLogSource>(poll_rate, batch_size);
-  } else if (filename == kCfmBiosInfoLogFile) {
-    return std::make_unique<BiosInfoLogSource>(poll_rate, batch_size);
-  } else if (filename == kCfmEventlogLogFile) {
-    return std::make_unique<EventlogLogSource>(poll_rate, batch_size);
-  } else if (filename == kCfmLacrosLogFile) {
-    return std::make_unique<LacrosLogSource>(poll_rate, batch_size);
-  } else if (filename == kCfmVariationsListLogFile) {
-    return std::make_unique<VariationsListLogSource>(poll_rate, batch_size);
+bool LogSource::InitializeFile() {
+  if (!log_file_.OpenAtOffset(recovery_offset_)) {
+    num_failed_open_attempts_ += 1;
+    LOG(ERROR) << "Unable to open file " << GetDisplayName() << ". Trying "
+               << kMaxFileOpenAttempts - num_failed_open_attempts_
+               << " more times.";
+    return false;
   }
 
-  return std::make_unique<LogSource>(filename, poll_rate, batch_size);
+  // Store this now so we can detect rotations later.
+  last_known_inode_ = GetCurrentFileInode();
+  return true;
+}
+
+std::unique_ptr<LogSource> LogSource::Create(const std::string& filename,
+                                             size_t data_buffer_size_limit,
+                                             base::TimeDelta poll_rate,
+                                             size_t num_lines_per_batch) {
+  if (filename == kCfmAuditLogFile) {
+    return std::make_unique<AuditLogSource>(data_buffer_size_limit, poll_rate,
+                                            num_lines_per_batch);
+  } else if (filename == kCfmBiosInfoLogFile) {
+    return std::make_unique<BiosInfoLogSource>(data_buffer_size_limit,
+                                               poll_rate, num_lines_per_batch);
+  } else if (filename == kCfmEventlogLogFile) {
+    return std::make_unique<EventlogLogSource>(data_buffer_size_limit,
+                                               poll_rate, num_lines_per_batch);
+  } else if (filename == kCfmVariationsListLogFile) {
+    return std::make_unique<VariationsListLogSource>(
+        data_buffer_size_limit, poll_rate, num_lines_per_batch);
+  }
+
+  return std::make_unique<LogSource>(filename, data_buffer_size_limit,
+                                     poll_rate, num_lines_per_batch);
 }
 
 void LogSource::Fetch(FetchCallback callback) {
+  // If the log file is not open by this point, and we're under our
+  // max retry attempts, try to open it again.
+  if (!log_file_.IsOpen()) {
+    if (num_failed_open_attempts_ >= kMaxFileOpenAttempts ||
+        !InitializeFile()) {
+      std::move(callback).Run({});
+      return;
+    }
+  }
+
   // Cache the current offset to use as a recovery offset in the
   // event of a crash. Note that this will NOT be flushed to disk
   // until we get a call to Flush(), so if we crash before then,
@@ -69,7 +95,7 @@ void LogSource::Fetch(FetchCallback callback) {
 }
 
 void LogSource::Flush() {
-  if (!file_is_accessible_) {
+  if (!log_file_.IsOpen()) {
     return;
   }
   // The upload succeeded, so update our recovery offset.
@@ -82,7 +108,7 @@ const std::string& LogSource::GetDisplayName() {
 }
 
 std::vector<std::string> LogSource::GetNextData() {
-  if (!file_is_accessible_) {
+  if (!log_file_.IsOpen()) {
     return {};
   }
 
@@ -96,7 +122,7 @@ std::vector<std::string> LogSource::GetNextData() {
   // new file. TODO(b/320996557): this might drop newest logs from old
   // rotated file.
   if (DidFileRotate()) {
-    VLOG(4) << "Detected rotation in file '" << log_file_.GetFilePath() << "'";
+    VLOG(1) << "Detected rotation in file '" << log_file_.GetFilePath() << "'";
     log_file_.CloseStream();
     log_file_.OpenAtOffset(0);
   }
@@ -108,11 +134,12 @@ std::vector<std::string> LogSource::GetNextData() {
   // NB: if the last read didn't cause an EOF, new lines will be
   // available immediately without the need to Refresh() first.
   if (log_file_.IsAtEOF()) {
-    VLOG(4) << "Refreshing log file '" << log_file_.GetFilePath() << "'";
+    VLOG(3) << "Refreshing log file '" << log_file_.GetFilePath() << "'";
     log_file_.Refresh();
   }
 
-  return log_file_.RetrieveNextLogs(batch_size_);
+  return log_file_.RetrieveNextLogs(num_lines_per_batch_,
+                                    data_buffer_size_limit_);
 }
 
 int LogSource::GetCurrentFileInode() {

@@ -8,13 +8,12 @@
 #include <memory>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_browser_field_trials.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#include "chrome/installer/util/initial_preferences.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/prefs/pref_service.h"
 
@@ -22,13 +21,21 @@ namespace ash {
 class ChromeBrowserMainPartsAsh;
 }  // namespace ash
 
+namespace installer {
+class InitialPreferences;
+}  // namespace installer
+
+namespace network_time {
+class NetworkTimeTracker;
+}  // namespace network_time
+
 class ChromeMetricsServicesManagerClient;
 
 // The ChromeFeatureListCreator creates the FeatureList and classes required for
 // setting up field trials, e.g. VariationsService, MetricsServicesManager etc.
 // before the full browser loop starts. The |local_state| is instantiated, and
 // its ownership will be taken by BrowserProcessImpl when the full browser
-// starts. Note: On Chrome OS, this class depends on BrowserPolicyConnectorAsh
+// starts. Note: On ChromeOS, this class depends on BrowserPolicyConnectorAsh
 // whose behavior depends on DBusThreadManager being initialized.
 class ChromeFeatureListCreator {
  public:
@@ -65,7 +72,10 @@ class ChromeFeatureListCreator {
   std::unique_ptr<policy::ChromeBrowserPolicyConnector>
   TakeChromeBrowserPolicyConnector();
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+  // Passes ownership of the |network_time_tracker_| to the caller.
+  std::unique_ptr<network_time::NetworkTimeTracker> TakeNetworkTimeTracker();
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<installer::InitialPreferences> TakeInitialPrefs();
 #endif
 
@@ -73,24 +83,29 @@ class ChromeFeatureListCreator {
   policy::ChromeBrowserPolicyConnector* browser_policy_connector() {
     return browser_policy_connector_.get();
   }
+  network_time::NetworkTimeTracker* network_time_tracker() {
+    CHECK(network_time_tracker_);
+    return network_time_tracker_.get();
+  }
   const std::string& actual_locale() { return actual_locale_; }
 
   ChromeBrowserFieldTrials* browser_field_trials() {
     return browser_field_trials_.get();
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Get the FeatureList::Accessor, clearing immediately -- this must only be
   // used by ChromeBrowserMainPartsAsh.
   std::unique_ptr<base::FeatureList::Accessor> GetAndClearFeatureListAccessor(
       base::PassKey<ash::ChromeBrowserMainPartsAsh> key) {
     return std::move(cros_feature_list_accessor_);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
   void CreatePrefService();
   void ConvertFlagsToSwitches();
+  void CreateNetworkTimeTracker();
 
   // Sets up the field trials and related initialization. Call only after
   // about:flags have been converted to switches. However,
@@ -123,20 +138,22 @@ class ChromeFeatureListCreator {
   raw_ptr<ChromeMetricsServicesManagerClient, AcrossTasksDanglingUntriaged>
       metrics_services_manager_client_;
 
+  std::unique_ptr<network_time::NetworkTimeTracker> network_time_tracker_;
+
   std::unique_ptr<metrics_services_manager::MetricsServicesManager>
       metrics_services_manager_;
 
   std::unique_ptr<ChromeBrowserFieldTrials> browser_field_trials_;
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<installer::InitialPreferences> installer_initial_prefs_;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On Chrome OS, the platform needs to be able to access the
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, the platform needs to be able to access the
   // FeatureList::Accessor. On other platforms, this API should not be used.
   std::unique_ptr<base::FeatureList::Accessor> cros_feature_list_accessor_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 #endif  // CHROME_BROWSER_METRICS_CHROME_FEATURE_LIST_CREATOR_H_

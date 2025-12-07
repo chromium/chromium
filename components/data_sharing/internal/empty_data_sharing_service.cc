@@ -5,6 +5,8 @@
 #include "components/data_sharing/internal/empty_data_sharing_service.h"
 
 #include "base/functional/callback.h"
+#include "components/data_sharing/internal/preview_server_proxy.h"
+#include "components/data_sharing/public/data_sharing_sdk_delegate.h"
 
 namespace data_sharing {
 
@@ -30,11 +32,37 @@ void EmptyDataSharingService::AddObserver(Observer* observer) {}
 
 void EmptyDataSharingService::RemoveObserver(Observer* observer) {}
 
-void EmptyDataSharingService::ReadAllGroups(
-    base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)> callback) {}
+bool EmptyDataSharingService::IsGroupDataModelLoaded() {
+  return false;
+}
 
-void EmptyDataSharingService::ReadGroup(
+std::optional<GroupData> EmptyDataSharingService::ReadGroup(
+    const GroupId& group_id) {
+  return std::nullopt;
+}
+
+std::set<GroupData> EmptyDataSharingService::ReadAllGroups() {
+  return std::set<GroupData>();
+}
+
+std::optional<GroupMemberPartialData>
+EmptyDataSharingService::GetPossiblyRemovedGroupMember(
     const GroupId& group_id,
+    const GaiaId& member_gaia_id) {
+  return std::nullopt;
+}
+
+std::optional<GroupData> EmptyDataSharingService::GetPossiblyRemovedGroup(
+    const GroupId& group_id) {
+  return std::nullopt;
+}
+
+void EmptyDataSharingService::ReadGroupDeprecated(
+    const GroupId& group_id,
+    base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback) {}
+
+void EmptyDataSharingService::ReadNewGroup(
+    const GroupToken& token,
     base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback) {}
 
 void EmptyDataSharingService::CreateGroup(
@@ -60,26 +88,73 @@ void EmptyDataSharingService::RemoveMember(
     const std::string& member_email,
     base::OnceCallback<void(PeopleGroupActionOutcome)> callback) {}
 
-bool EmptyDataSharingService::ShouldInterceptNavigationForShareURL(
-    const GURL& url) {
+void EmptyDataSharingService::LeaveGroup(
+    const GroupId& group_id,
+    base::OnceCallback<void(PeopleGroupActionOutcome)> callback) {}
+
+bool EmptyDataSharingService::IsLeavingOrDeletingGroup(
+    const GroupId& group_id) {
   return false;
 }
 
-void EmptyDataSharingService::HandleShareURLNavigationIntercepted(
-    const GURL& url) {}
-
-std::unique_ptr<GURL> EmptyDataSharingService::GetDataSharingURL(
-    const GroupData& group_data) {
-  return nullptr;
+std::vector<GroupEvent> EmptyDataSharingService::GetGroupEventsSinceStartup() {
+  return {};
 }
 
-DataSharingService::ParseURLResult EmptyDataSharingService::ParseDataSharingURL(
-    const GURL& url) {
-  return GroupToken();
+void EmptyDataSharingService::HandleShareURLNavigationIntercepted(
+    const GURL& url,
+    std::unique_ptr<ShareURLInterceptionContext> context) {}
+
+std::unique_ptr<GURL> EmptyDataSharingService::GetDataSharingUrl(
+    const GroupData& group_data) {
+  return nullptr;
 }
 
 void EmptyDataSharingService::EnsureGroupVisibility(
     const GroupId& group_id,
     base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback) {}
+
+void EmptyDataSharingService::GetSharedEntitiesPreview(
+    const GroupToken& group_token,
+    base::OnceCallback<void(const SharedDataPreviewOrFailureOutcome&)>
+        callback) {}
+
+void EmptyDataSharingService::GetAvatarImageForURL(
+    const GURL& avatar_url,
+    int size,
+    base::OnceCallback<void(const gfx::Image&)> callback,
+    image_fetcher::ImageFetcher* image_fetcher) {}
+
+void EmptyDataSharingService::SetSDKDelegate(
+    std::unique_ptr<DataSharingSDKDelegate> sdk_delegate) {}
+
+DataSharingSDKDelegate* EmptyDataSharingService::GetSDKDelegate() {
+  return nullptr;
+}
+
+void EmptyDataSharingService::SetUIDelegate(
+    std::unique_ptr<DataSharingUIDelegate> ui_delegate) {}
+
+DataSharingUIDelegate* EmptyDataSharingService::GetUiDelegate() {
+  return nullptr;
+}
+
+Logger* EmptyDataSharingService::GetLogger() {
+  return nullptr;
+}
+
+void EmptyDataSharingService::AddGroupDataForTesting(GroupData group_data) {}
+void EmptyDataSharingService::SetPreviewServerProxyForTesting(
+    std::unique_ptr<PreviewServerProxy> preview_server_proxy) {}
+PreviewServerProxy* EmptyDataSharingService::GetPreviewServerProxyForTesting() {
+  return nullptr;
+}
+
+void EmptyDataSharingService::OnCollaborationGroupRemoved(
+    const GroupId& group_id) {}
+
+bool EmptyDataSharingService::IsContextIdShared(const ContextId& context_id) {
+  return false;
+}
 
 }  // namespace data_sharing

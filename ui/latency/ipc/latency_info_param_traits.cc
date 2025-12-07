@@ -19,13 +19,6 @@ namespace IPC {
 #include "ui/latency/ipc/latency_info_param_traits_macros.h"
 }  // namespace IPC
 
-// Generate param traits log methods.
-#include "ipc/param_traits_log_macros.h"
-namespace IPC {
-#undef UI_LATENCY_IPC_LATENCY_INFO_PARAM_TRAITS_MACROS_H_
-#include "ui/latency/ipc/latency_info_param_traits_macros.h"
-}  // namespace IPC
-
 // Implemetation for ParamTraits<ui::LatencyInfo>.
 #include "ui/latency/ipc/latency_info_param_traits.h"
 
@@ -55,18 +48,6 @@ bool ParamTraits<ui::LatencyInfo>::Read(const base::Pickle* m,
     return false;
 
   return true;
-}
-
-void ParamTraits<ui::LatencyInfo>::Log(const param_type& p, std::string* l) {
-  LogParam(p.latency_components_, l);
-  l->append(" ");
-  LogParam(p.trace_id_, l);
-  l->append(" ");
-  LogParam(p.coalesced_, l);
-  l->append(" ");
-  LogParam(p.began_, l);
-  l->append(" ");
-  LogParam(p.terminated_, l);
 }
 
 }  // namespace IPC

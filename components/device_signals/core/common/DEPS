@@ -1,0 +1,9 @@
+include_rules = [
+  "+components/policy/core/common",
+]
+
+specific_include_rules = {
+  "platform_utils_linux.cc": [
+    "+ui/base/glib",
+  ],
+}

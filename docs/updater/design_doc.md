@@ -35,6 +35,12 @@ communicating the state of installed applications, and receiving update
 instructions. It applies updates the server instructs it to, and then reports
 the results of the operation back to Omaha servers.
 
+There is an [unofficial tutorial](https://omaha-consulting.com/chromium-updater-omaha-4-tutorial)
+that gives a quick working overview of the updater. (Please note that it was
+written by a third party, so its availability, accuracy and safety cannot be
+guaranteed.)
+
+
 ## Updater Design
 Once installed, the updater operates as a collection of processes that are
 launched on-demand and orchestrate their operations over IPC. The *server
@@ -354,31 +360,10 @@ installer is run at high integrity with UAC on. For example, if a per-user
 Chrome installer is run by right-clicking it in Windows explorer and choosing to
 `Run as administrator`.
 
-De-elevation uses Windows explorer to run the child process at Medium integrity.
-Explorer does not provide a way to get the child process pid or handle. To allow
-waiting for the child process, the updater metainstaller uses an IPC mechanism
-via the command line and registry.
-
-The parent process takes the following steps:
-* Creates a unique guid, and sends it to the child process via command line
-parameter `--de-elevation-id={guid}`, to allow for identifying the child process
-`pid` and waiting for it.
-* Waits for the child process to write a default REG_DWORD value under
-`HKEY_CURRENT_USER\Software\Google\Update{guid}` that contains the child process
-pid.
-* Gets a handle to the child process via the pid.
-* Cleans up the `HKEY_CURRENT_USER\Software\Google\Update{guid}` key, which also
-signals to the child process to proceed with installing at Medium integrity.
-* waits for the child process to complete, and returns the exit code from the
-child process.
-
-The de-elevated metainstaller takes the following steps:
-* Reads the guid from the command line parameter `--de-elevation-id={guid}`.
-* Writes the pid for the current process under
-`HKEY_CURRENT_USER\Software\Google\Update{guid}`.
-* Waits for the parent process to clean up the
-`HKEY_CURRENT_USER\Software\Google\Update{guid}` key.
-* Finally, proceeds with installing at Medium integrity.
+De-elevation uses the Windows explorer token to run the child process using
+`::CreateProcessWithTokenW`. The approach is adapted from the
+[following article](https://learn.microsoft.com/en-us/archive/blogs/aaron_margosis/faq-how-do-i-start-a-program-as-the-desktop-user-from-an-elevated-app)
+.
 
 ##### Offline Installers
 Offline install performs the installation with no update check or file download
@@ -389,9 +374,9 @@ An example offline install command line on Windows platform:
 
 ```
 updater.exe /handoff "&appguid={8A69D345-D564-463C-AFF1-A69D9E530F96}&appname=MyApp&needsadmin=True&installdataindex =verboselog"
-            /installsource offline
-            /sessionid "{E85204C6-6F2F-40BF-9E6C-4952208BB977}"
-            /offlinedir "C:\Users\chrome-bot\AppData\Local\ForgedPath"]
+            /installsource offline
+            /sessionid "{E85204C6-6F2F-40BF-9E6C-4952208BB977}"
+            /offlinedir "C:\Users\chrome-bot\AppData\Local\ForgedPath"]
 ```
 DOS style command line switches are also supported for backward compatibility.
 
@@ -1067,7 +1052,7 @@ system per updater branding and is around 40 bytes.
 The updater is installed to subdirectories of `/opt/` for system-scope
 installations and `~/.local` for user-scope. Subdirectory naming is determined
 by updater branding. E.g. an unbranded user-scope updater will be installed to
-`~/.local/Chromium/ChromiumUpdater.` The installation directory will contain
+`~/.local/chromium/chromium-updater.` The installation directory will contain
 subdirectories for each installed updater version and data files.
 
 

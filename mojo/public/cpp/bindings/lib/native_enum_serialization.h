@@ -11,8 +11,9 @@
 #include <type_traits>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/pickle.h"
-#include "ipc/ipc_param_traits.h"
+#include "ipc/param_traits.h"
 #include "mojo/public/cpp/bindings/lib/serialization_forward.h"
 #include "mojo/public/cpp/bindings/native_enum.h"
 
@@ -35,8 +36,9 @@ struct NativeEnumSerializerImpl {
 
     CHECK_GE(sizeof(int32_t), pickle.payload_size());
     *output = 0;
-    memcpy(reinterpret_cast<char*>(output), pickle.payload_bytes().data(),
-           pickle.payload_bytes().size());
+    UNSAFE_TODO(memcpy(reinterpret_cast<char*>(output),
+                       pickle.payload_bytes().data(),
+                       pickle.payload_bytes().size()));
   }
 
   struct PickleData {

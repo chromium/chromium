@@ -4,13 +4,13 @@
 
 package org.chromium.content.browser;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.MediaSession;
 import org.chromium.content_public.browser.MediaSessionObserver;
 import org.chromium.content_public.browser.WebContents;
@@ -28,18 +28,19 @@ import java.util.List;
  * collection root.
  */
 @JNINamespace("content")
+@NullMarked
 public class MediaSessionImpl extends MediaSession {
     private long mNativeMediaSessionAndroid;
 
-    private ObserverList<MediaSessionObserver> mObservers;
-    private ObserverList.RewindableIterator<MediaSessionObserver> mObserversIterator;
+    private final ObserverList<MediaSessionObserver> mObservers;
+    private final ObserverList.RewindableIterator<MediaSessionObserver> mObserversIterator;
 
     private boolean mIsControllable;
-    private Boolean mIsSuspended;
-    private MediaMetadata mMetadata;
-    private List<MediaImage> mImagesList;
-    private HashSet<Integer> mActionSet;
-    private MediaPosition mPosition;
+    private @Nullable Boolean mIsSuspended;
+    private @Nullable MediaMetadata mMetadata;
+    private @Nullable List<MediaImage> mImagesList;
+    private @Nullable HashSet<Integer> mActionSet;
+    private @Nullable MediaPosition mPosition;
 
     public static MediaSessionImpl fromWebContents(WebContents webContents) {
         return MediaSessionImplJni.get().getMediaSessionFromWebContents(webContents);
@@ -75,41 +76,39 @@ public class MediaSessionImpl extends MediaSession {
 
     @Override
     public void resume() {
-        MediaSessionImplJni.get().resume(mNativeMediaSessionAndroid, MediaSessionImpl.this);
+        MediaSessionImplJni.get().resume(mNativeMediaSessionAndroid);
     }
 
     @Override
     public void suspend() {
-        MediaSessionImplJni.get().suspend(mNativeMediaSessionAndroid, MediaSessionImpl.this);
+        MediaSessionImplJni.get().suspend(mNativeMediaSessionAndroid);
     }
 
     @Override
     public void stop() {
-        MediaSessionImplJni.get().stop(mNativeMediaSessionAndroid, MediaSessionImpl.this);
+        MediaSessionImplJni.get().stop(mNativeMediaSessionAndroid);
     }
 
     @Override
     public void seek(long millis) {
         assert millis != 0 : "Attempted to seek by an unspecified number of milliseconds";
-        MediaSessionImplJni.get().seek(mNativeMediaSessionAndroid, MediaSessionImpl.this, millis);
+        MediaSessionImplJni.get().seek(mNativeMediaSessionAndroid, millis);
     }
 
     @Override
     public void seekTo(long millis) {
         assert millis >= 0 : "Attempted to seek to a negative posision";
-        MediaSessionImplJni.get().seekTo(mNativeMediaSessionAndroid, MediaSessionImpl.this, millis);
+        MediaSessionImplJni.get().seekTo(mNativeMediaSessionAndroid, millis);
     }
 
     @Override
     public void didReceiveAction(int action) {
-        MediaSessionImplJni.get()
-                .didReceiveAction(mNativeMediaSessionAndroid, MediaSessionImpl.this, action);
+        MediaSessionImplJni.get().didReceiveAction(mNativeMediaSessionAndroid, action);
     }
 
     @Override
     public void requestSystemAudioFocus() {
-        MediaSessionImplJni.get()
-                .requestSystemAudioFocus(mNativeMediaSessionAndroid, MediaSessionImpl.this);
+        MediaSessionImplJni.get().requestSystemAudioFocus(mNativeMediaSessionAndroid);
     }
 
     @Override
@@ -193,19 +192,19 @@ public class MediaSessionImpl extends MediaSession {
 
     @NativeMethods
     interface Natives {
-        void resume(long nativeMediaSessionAndroid, MediaSessionImpl caller);
+        void resume(long nativeMediaSessionAndroid);
 
-        void suspend(long nativeMediaSessionAndroid, MediaSessionImpl caller);
+        void suspend(long nativeMediaSessionAndroid);
 
-        void stop(long nativeMediaSessionAndroid, MediaSessionImpl caller);
+        void stop(long nativeMediaSessionAndroid);
 
-        void seek(long nativeMediaSessionAndroid, MediaSessionImpl caller, long millis);
+        void seek(long nativeMediaSessionAndroid, long millis);
 
-        void seekTo(long nativeMediaSessionAndroid, MediaSessionImpl caller, long millis);
+        void seekTo(long nativeMediaSessionAndroid, long millis);
 
-        void didReceiveAction(long nativeMediaSessionAndroid, MediaSessionImpl caller, int action);
+        void didReceiveAction(long nativeMediaSessionAndroid, int action);
 
-        void requestSystemAudioFocus(long nativeMediaSessionAndroid, MediaSessionImpl caller);
+        void requestSystemAudioFocus(long nativeMediaSessionAndroid);
 
         MediaSessionImpl getMediaSessionFromWebContents(WebContents contents);
     }

@@ -97,10 +97,17 @@ HashRealTimeSelection DetermineHashRealTimeSelection(
     bool is_off_the_record,
     PrefService* prefs,
     std::optional<std::string> latest_country,
-    bool log_usage_histograms) {
+    bool log_usage_histograms,
+    bool are_background_lookups_allowed) {
   // All prefs used in this method must match the ones returned by
   // |GetHashRealTimeSelectionConfiguringPrefs| so that consumers listening for
   // changes can receive them correctly.
+  bool only_background_lookup_eligible =
+      base::FeatureList::IsEnabled(kHashPrefixRealTimeLookupsSamplePing) &&
+      safe_browsing::GetSafeBrowsingState(*prefs) ==
+          SafeBrowsingState::ENHANCED_PROTECTION &&
+      are_background_lookups_allowed;
+
   struct Requirement {
     std::string failed_requirement_histogram_suffix;
     bool passes_requirement;
@@ -109,8 +116,10 @@ HashRealTimeSelection DetermineHashRealTimeSelection(
        hash_realtime_utils::IsHashRealTimeLookupEligibleInSessionAndLocation(
            latest_country)},
       {"OffTheRecord", !is_off_the_record},
-      {"NotStandardProtection", safe_browsing::GetSafeBrowsingState(*prefs) ==
-                                    SafeBrowsingState::STANDARD_PROTECTION},
+      {"IneligibleForSafeBrowsingState",
+       safe_browsing::GetSafeBrowsingState(*prefs) ==
+               SafeBrowsingState::STANDARD_PROTECTION ||
+           only_background_lookup_eligible},
       {"NotAllowedByPolicy",
        safe_browsing::AreHashPrefixRealTimeLookupsAllowedByPolicy(*prefs)}};
   bool can_do_lookup = true;
@@ -136,13 +145,18 @@ HashRealTimeSelection DetermineHashRealTimeSelection(
         "SafeBrowsing.HPRT.Ineligible.IneligibleForLocation",
         !IsHashRealTimeLookupEligibleInLocation(latest_country));
   }
-  return can_do_lookup ?
+  return can_do_lookup
+             ?
 #if BUILDFLAG(IS_ANDROID)
-                       HashRealTimeSelection::kDatabaseManager
+             (only_background_lookup_eligible
+                  ? HashRealTimeSelection::kDatabaseManagerBackgroundOnly
+                  : HashRealTimeSelection::kDatabaseManager)
 #else
-                       HashRealTimeSelection::kHashRealTimeService
+             (only_background_lookup_eligible
+                  ? HashRealTimeSelection::kHashRealTimeServiceBackgroundOnly
+                  : HashRealTimeSelection::kHashRealTimeService)
 #endif
-                       : HashRealTimeSelection::kNone;
+             : HashRealTimeSelection::kNone;
 }
 
 HashRealTimeSelectionConfiguringPrefs

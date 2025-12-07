@@ -12,14 +12,14 @@ import './bluetooth_base_page.js';
 import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
 import '//resources/ash/common/cr_elements/cr_input/cr_input.js';
 
-import {CrInputElement} from '//resources/ash/common/cr_elements/cr_input/cr_input.js';
+import type {CrInputElement} from '//resources/ash/common/cr_elements/cr_input/cr_input.js';
 import {I18nMixin} from '//resources/ash/common/cr_elements/i18n_mixin.js';
-import {mojoString16ToString} from '//resources/js/mojo_type_util.js';
-import {BluetoothDeviceProperties} from '//resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
+import type {BluetoothDeviceProperties} from '//resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {afterNextRender, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './bluetooth_pairing_request_code_page.html.js';
-import {ButtonBarState, ButtonState, PairingAuthType} from './bluetooth_types.js';
+import type {ButtonBarState} from './bluetooth_types.js';
+import {ButtonState, PairingAuthType} from './bluetooth_types.js';
 
 /**
  * Maximum length of a PIN code, it can range from 1 to 6 digits.
@@ -94,7 +94,7 @@ export class SettingsBluetoothRequestCodePageElement extends
       return '';
     }
 
-    return mojoString16ToString(this.device.publicName);
+    return this.device.publicName;
   }
 
   private computeButtonBarState_(): ButtonBarState {
@@ -110,7 +110,6 @@ export class SettingsBluetoothRequestCodePageElement extends
   private onPairClicked_(event: Event): void {
     event.stopPropagation();
 
-    // TODO(crbug.com/1010321): Show spinner while pairing.
     if (!this.pinCode_) {
       return;
     }

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/price_history_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:clipToPadding="false"
+    android:padding="@dimen/content_item_container_padding"
+    android:layout_marginTop="@dimen/price_insights_content_top_margin">
+    <!-- Price history title and description -->
+    <!-- TODO(362361187): Refactor price history title into commerce component title. -->
+    <TextView
+        android:id="@+id/price_history_title"
+        android:focusable="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:accessibilityHeading="true"
+        android:textAppearance="@style/TextAppearance.TextMediumThick"
+        android:textAlignment="viewStart"
+        android:maxLines="1"
+        android:ellipsize="end"/>
+    <TextView
+        android:id="@+id/price_history_description"
+        android:focusable="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+        android:textAlignment="viewStart"
+        android:maxLines="1"
+        android:ellipsize="end"/>
+
+    <!-- Divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_marginTop="16dp"
+        android:layout_height="@dimen/price_insights_divider_height"
+        android:background="@macro/default_bg_color"
+        android:layout_marginStart="@dimen/content_item_container_padding_offset"
+        android:layout_marginEnd="@dimen/content_item_container_padding_offset"/>
+
+    <!-- Jackpot url section -->
+    <TextView
+        android:id="@+id/open_jackpot_url_button"
+        android:contentDescription="@string/price_insights_open_url_button_content_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/price_insights_open_url_title"
+        app:drawableEndCompat="@drawable/ic_open_in_new_20dp"
+        android:paddingStart="@dimen/open_jackpot_url_button_text_horizontal_padding"
+        android:paddingEnd="@dimen/price_insights_general_padding"
+        android:paddingVertical="@dimen/open_jackpot_url_button_text_vertical_padding"
+        android:clickable="true"
+        android:focusable="true"
+        android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+        android:background="@drawable/price_insights_sheet_bottom_corner_background"
+        android:foreground="?attr/selectableItemBackground"
+        android:layout_marginStart="@dimen/content_item_container_padding_offset"
+        android:layout_marginEnd="@dimen/content_item_container_padding_offset"
+        android:layout_marginBottom="@dimen/content_item_container_padding_offset"
+        android:visibility="gone"/>
+</LinearLayout>

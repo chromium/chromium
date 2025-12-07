@@ -11,7 +11,7 @@ TestingSearchTermsData::TestingSearchTermsData(
     : google_base_url_(google_base_url) {
 }
 
-TestingSearchTermsData::~TestingSearchTermsData() {}
+TestingSearchTermsData::~TestingSearchTermsData() = default;
 
 std::string TestingSearchTermsData::GoogleBaseURLValue() const {
   return google_base_url_;

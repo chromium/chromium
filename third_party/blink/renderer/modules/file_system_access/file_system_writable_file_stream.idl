@@ -13,7 +13,7 @@
     [
         CallWith=ScriptState,
         RaisesException
-    ] Promise<undefined> write((BufferSource or Blob or USVString or WriteParams) data);
+    ] Promise<undefined> write([ConvertibleToObject] (BufferSource or Blob or USVString or WriteParams) data);
 
     [
         CallWith=ScriptState,

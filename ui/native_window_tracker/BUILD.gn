@@ -1,0 +1,42 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+# Assert that one of the implementation would be used.
+assert(use_aura || is_mac || is_android)
+
+component("native_window_tracker") {
+  sources = [ "native_window_tracker.h" ]
+  deps = [
+    "//base",
+    "//ui/gfx",
+  ]
+
+  defines = [ "IS_UI_NATIVE_WINDOW_TRACKER_IMPL" ]
+
+  if (use_aura) {
+    sources += [
+      "native_window_tracker_aura.cc",
+      "native_window_tracker_aura.h",
+    ]
+    deps += [ "//ui/aura" ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "native_window_tracker_cocoa.h",
+      "native_window_tracker_cocoa.mm",
+    ]
+    frameworks = [ "AppKit.framework" ]
+  }
+
+  if (is_android) {
+    sources += [
+      "native_window_tracker_android.cc",
+      "native_window_tracker_android.h",
+    ]
+    deps += [ "//ui/android" ]
+  }
+}

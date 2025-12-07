@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web_view/internal/signin/web_view_device_accounts_provider_impl.h"
+#import "ios/web_view/internal/signin/web_view_device_accounts_provider_impl.h"
 
-#include "base/check.h"
-#include "base/notreached.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/check.h"
+#import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/web_view/internal/sync/cwv_sync_controller_internal.h"
 #import "ios/web_view/public/cwv_identity.h"
 #import "ios/web_view/public/cwv_sync_controller_data_source.h"
@@ -68,8 +68,16 @@ WebViewDeviceAccountsProviderImpl::WebViewDeviceAccountsProviderImpl() {}
 WebViewDeviceAccountsProviderImpl::~WebViewDeviceAccountsProviderImpl() =
     default;
 
+void WebViewDeviceAccountsProviderImpl::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void WebViewDeviceAccountsProviderImpl::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
 void WebViewDeviceAccountsProviderImpl::GetAccessToken(
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::string& client_id,
     const std::set<std::string>& scopes,
     AccessTokenCallback callback) {
@@ -88,7 +96,7 @@ void WebViewDeviceAccountsProviderImpl::GetAccessToken(
   CWVIdentity* identity =
       [[CWVIdentity alloc] initWithEmail:nil
                                 fullName:nil
-                                  gaiaID:base::SysUTF8ToNSString(gaia_id)];
+                                  gaiaID:gaia_id.ToNSString()];
   [CWVSyncController.dataSource
       fetchAccessTokenForIdentity:identity
                            scopes:scopes_array
@@ -101,17 +109,23 @@ void WebViewDeviceAccountsProviderImpl::GetAccessToken(
 }
 
 std::vector<DeviceAccountsProvider::AccountInfo>
-WebViewDeviceAccountsProviderImpl::GetAllAccounts() const {
+WebViewDeviceAccountsProviderImpl::GetAccountsForProfile() const {
+  // WebView doesn't have profiles, so the accounts for this profile are the
+  // same as the accounts on the device.
+  return GetAccountsOnDevice();
+}
+
+std::vector<DeviceAccountsProvider::AccountInfo>
+WebViewDeviceAccountsProviderImpl::GetAccountsOnDevice() const {
   DCHECK(CWVSyncController.dataSource);
 
   NSArray<CWVIdentity*>* identities =
       [CWVSyncController.dataSource allKnownIdentities];
   std::vector<AccountInfo> account_infos;
   for (CWVIdentity* identity in identities) {
-    AccountInfo account_info;
-    account_info.email = base::SysNSStringToUTF8(identity.email);
-    account_info.gaia = base::SysNSStringToUTF8(identity.gaiaID);
-    account_infos.push_back(account_info);
+    account_infos.emplace_back(GaiaId(identity.gaiaID),
+                               base::SysNSStringToUTF8(identity.email),
+                               /*hosted_domain=*/"");
   }
   return account_infos;
 }

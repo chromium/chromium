@@ -9,21 +9,26 @@
 #include <map>
 #include <memory>
 #include <string_view>
+#include <utility>
 
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "printing/backend/cups_ipp_constants.h"
 #include "printing/backend/mock_cups_printer.h"
 #include "printing/backend/print_backend_utils.h"
 #include "printing/mojom/print.mojom.h"
+#include "printing/printing_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace printing {
 
 using ::testing::Pointwise;
+using ::testing::UnorderedElementsAre;
+using ::testing::UnorderedElementsAreArray;
 using ::testing::UnorderedPointwise;
 
 // Matches the name field to a string.
@@ -90,8 +95,7 @@ class MockCupsPrinterWithMarginsAndAttributes : public MockCupsPrinter {
   // CupsOptionProvider:
   bool CheckOptionSupported(const char* name,
                             const char* value) const override {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   const char* GetLocalizedOptionValueName(const char* option_name,
@@ -122,8 +126,10 @@ class MockCupsPrinterWithMarginsAndAttributes : public MockCupsPrinter {
   }
 
  private:
-  std::map<std::string_view, ipp_attribute_t*> supported_attributes_;
-  std::map<std::string_view, ipp_attribute_t*> default_attributes_;
+  std::map<std::string_view, raw_ptr<ipp_attribute_t, CtnExperimental>>
+      supported_attributes_;
+  std::map<std::string_view, raw_ptr<ipp_attribute_t, CtnExperimental>>
+      default_attributes_;
   std::map<LocalizationKey, std::string> localized_strings_;
   raw_ptr<ipp_attribute_t, DanglingUntriaged> media_col_database_;
 };
@@ -356,6 +362,41 @@ TEST_F(PrintBackendCupsIppHelperTest, CopiesCapable) {
   EXPECT_EQ(2, caps.copies_max);
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(PrintBackendCupsIppHelperTest, PaperMargins) {
+  // There is one borderless variant of the paper. Thus, the total margins
+  // stored will be papers.size() - 1 as borderless margins are not stored
+  // as a separate entry.
+  base::test::ScopedFeatureList scoped_enable;
+  scoped_enable.InitAndEnableFeature(features::kApiPrintingMarginsAndScale);
+  static const std::array<PaperMargins, 3> kExpectedMarginsUm = {
+      PaperMargins{2960, 3150, 2960, 3150},
+      PaperMargins{3900, 100, 6350, 200},
+      PaperMargins{1000, 1000, 1000, 1000},
+  };
+
+  printer_->SetMediaColDatabase(
+      MakeMediaColDatabase(ipp_, {
+                                     {21000, 29700, 0, 0, 0, 0, {}},
+                                     {21000, 29700, 296, 315, 315, 296, {}},
+                                     {21590, 35560, 635, 20, 10, 390, {}},
+                                     {18200, 25700, 100, 100, 100, 100, {}},
+                                 }));
+
+  PrinterSemanticCapsAndDefaults caps;
+  CapsAndDefaultsFromPrinter(*printer_, &caps);
+  EXPECT_EQ(kExpectedMarginsUm.size(), caps.papers.size());
+
+  std::vector<PaperMargins> supported_margins_um;
+  for (const auto& paper : caps.papers) {
+    ASSERT_TRUE(paper.supported_margins_um().has_value());
+    supported_margins_um.emplace_back(paper.supported_margins_um().value());
+  }
+  EXPECT_THAT(supported_margins_um,
+              UnorderedElementsAreArray(kExpectedMarginsUm));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 TEST_F(PrintBackendCupsIppHelperTest, CopiesNotCapable) {
   // copies missing, no setup
   PrinterSemanticCapsAndDefaults caps;
@@ -399,8 +440,8 @@ TEST_F(PrintBackendCupsIppHelperTest, DuplexSupported) {
   CapsAndDefaultsFromPrinter(*printer_, &caps);
 
   EXPECT_THAT(caps.duplex_modes,
-              testing::UnorderedElementsAre(mojom::DuplexMode::kSimplex,
-                                            mojom::DuplexMode::kLongEdge));
+              UnorderedElementsAre(mojom::DuplexMode::kSimplex,
+                                   mojom::DuplexMode::kLongEdge));
   EXPECT_EQ(mojom::DuplexMode::kSimplex, caps.duplex_default);
 }
 
@@ -413,7 +454,7 @@ TEST_F(PrintBackendCupsIppHelperTest, DuplexNotSupported) {
   CapsAndDefaultsFromPrinter(*printer_, &caps);
 
   EXPECT_THAT(caps.duplex_modes,
-              testing::UnorderedElementsAre(mojom::DuplexMode::kSimplex));
+              UnorderedElementsAre(mojom::DuplexMode::kSimplex));
   EXPECT_EQ(mojom::DuplexMode::kSimplex, caps.duplex_default);
 }
 
@@ -1169,6 +1210,153 @@ TEST_F(PrintBackendCupsIppHelperTest, MediaSource) {
               Pointwise(AdvancedCapabilityName(),
                         {"top", "main", "auto", "tray-3", "tray-4"}));
 }
+
+// Test print-scaling values are correctly stored.
+TEST_F(PrintBackendCupsIppHelperTest, PrintScalingTypes) {
+  base::test::ScopedFeatureList scoped_enable;
+  scoped_enable.InitAndEnableFeature(features::kApiPrintingMarginsAndScale);
+  printer_->SetSupportedOptions(
+      "print-scaling",
+      MakeStringCollection(ipp_, {"auto", "auto-fit", "fill", "fit", "none"}));
+  printer_->SetOptionDefault("print-scaling", MakeString(ipp_, "fit"));
+
+  PrinterSemanticCapsAndDefaults caps;
+  CapsAndDefaultsFromPrinter(*printer_, &caps);
+
+  EXPECT_EQ(caps.print_scaling_type_default, mojom::PrintScalingType::kFit);
+  EXPECT_THAT(
+      caps.print_scaling_types,
+      UnorderedElementsAreArray(
+          {mojom::PrintScalingType::kAuto, mojom::PrintScalingType::kAutoFit,
+           mojom::PrintScalingType::kFill, mojom::PrintScalingType::kFit,
+           mojom::PrintScalingType::kNone}));
+}
+
+TEST_F(PrintBackendCupsIppHelperTest, PrintScalingTypes_CorrectMapping) {
+  base::test::ScopedFeatureList scoped_enable;
+  scoped_enable.InitAndEnableFeature(features::kApiPrintingMarginsAndScale);
+  struct ScalingTypeToString {
+    std::string str;
+    mojom::PrintScalingType type;
+  };
+  constexpr std::array<ScalingTypeToString, 5> kScalingTypes{
+      ScalingTypeToString{"auto", mojom::PrintScalingType::kAuto},
+      ScalingTypeToString{"auto-fit", mojom::PrintScalingType::kAutoFit},
+      ScalingTypeToString{"fill", mojom::PrintScalingType::kFill},
+      ScalingTypeToString{"fit", mojom::PrintScalingType::kFit},
+      ScalingTypeToString{"none", mojom::PrintScalingType::kNone}};
+
+  for (const auto& value : kScalingTypes) {
+    printer_->SetSupportedOptions(
+        "print-scaling", MakeStringCollection(ipp_, {value.str.c_str()}));
+    PrinterSemanticCapsAndDefaults caps;
+    CapsAndDefaultsFromPrinter(*printer_, &caps);
+
+    EXPECT_EQ(caps.print_scaling_type_default, value.type);
+    EXPECT_THAT(caps.print_scaling_types,
+                UnorderedElementsAreArray({value.type}));
+  }
+}
+
+// Test first value from supported values is used as default if default is
+// missing.
+TEST_F(PrintBackendCupsIppHelperTest, PrintScalingTypes_NoDefault) {
+  base::test::ScopedFeatureList scoped_enable;
+  scoped_enable.InitAndEnableFeature(features::kApiPrintingMarginsAndScale);
+  printer_->SetSupportedOptions(
+      "print-scaling",
+      MakeStringCollection(ipp_, {"auto-fit", "fill", "none"}));
+
+  PrinterSemanticCapsAndDefaults caps;
+  CapsAndDefaultsFromPrinter(*printer_, &caps);
+
+  EXPECT_EQ(caps.print_scaling_type_default, mojom::PrintScalingType::kAutoFit);
+  EXPECT_THAT(caps.print_scaling_types,
+              UnorderedElementsAreArray({mojom::PrintScalingType::kAutoFit,
+                                         mojom::PrintScalingType::kFill,
+                                         mojom::PrintScalingType::kNone}));
+}
+
+// Test first value from supported values is used as default if default is
+// unknown.
+TEST_F(PrintBackendCupsIppHelperTest, PrintScalingTypes_DefaultUnknown) {
+  base::test::ScopedFeatureList scoped_enable;
+  scoped_enable.InitAndEnableFeature(features::kApiPrintingMarginsAndScale);
+  printer_->SetSupportedOptions(
+      "print-scaling", MakeStringCollection(ipp_, {"fit", "fill", "none"}));
+  printer_->SetOptionDefault("print-scaling", MakeString(ipp_, "value-1"));
+
+  PrinterSemanticCapsAndDefaults caps;
+  CapsAndDefaultsFromPrinter(*printer_, &caps);
+
+  EXPECT_EQ(caps.print_scaling_type_default, mojom::PrintScalingType::kFit);
+  EXPECT_THAT(caps.print_scaling_types,
+              UnorderedElementsAreArray({mojom::PrintScalingType::kFit,
+                                         mojom::PrintScalingType::kFill,
+                                         mojom::PrintScalingType::kNone}));
+}
+
+// Test no values are stored when there are no supported values.
+TEST_F(PrintBackendCupsIppHelperTest, PrintScalingTypes_NoValues) {
+  base::test::ScopedFeatureList scoped_enable;
+  scoped_enable.InitAndEnableFeature(features::kApiPrintingMarginsAndScale);
+  PrinterSemanticCapsAndDefaults caps;
+  CapsAndDefaultsFromPrinter(*printer_, &caps);
+
+  EXPECT_EQ(caps.print_scaling_type_default,
+            mojom::PrintScalingType::kUnknownPrintScalingType);
+  EXPECT_TRUE(caps.print_scaling_types.empty());
+}
+
+// Test no values are stored despite printer saying it has one default value
+// while supported values are empty.
+TEST_F(PrintBackendCupsIppHelperTest, PrintScalingTypes_NoValues2) {
+  base::test::ScopedFeatureList scoped_enable;
+  scoped_enable.InitAndEnableFeature(features::kApiPrintingMarginsAndScale);
+  printer_->SetOptionDefault("print-scaling", MakeString(ipp_, "auto"));
+
+  PrinterSemanticCapsAndDefaults caps;
+  CapsAndDefaultsFromPrinter(*printer_, &caps);
+
+  EXPECT_EQ(caps.print_scaling_type_default,
+            mojom::PrintScalingType::kUnknownPrintScalingType);
+  EXPECT_TRUE(caps.print_scaling_types.empty());
+}
+
+// Test unknown values are not stored and default is correctly set as first
+// value of known print-scaling types.
+TEST_F(PrintBackendCupsIppHelperTest, PrintScalingTypes_UnknownValues) {
+  base::test::ScopedFeatureList scoped_enable;
+  scoped_enable.InitAndEnableFeature(features::kApiPrintingMarginsAndScale);
+  printer_->SetSupportedOptions(
+      "print-scaling",
+      MakeStringCollection(ipp_, {"value-1", "value-2", "auto", "none"}));
+
+  PrinterSemanticCapsAndDefaults caps;
+  CapsAndDefaultsFromPrinter(*printer_, &caps);
+
+  EXPECT_EQ(caps.print_scaling_type_default, mojom::PrintScalingType::kAuto);
+  EXPECT_THAT(caps.print_scaling_types,
+              UnorderedElementsAreArray({mojom::PrintScalingType::kAuto,
+                                         mojom::PrintScalingType::kNone}));
+}
+
+// Test default is not set if only unknown values are supported.
+TEST_F(PrintBackendCupsIppHelperTest, PrintScalingTypes_UnknownValues2) {
+  base::test::ScopedFeatureList scoped_enable;
+  scoped_enable.InitAndEnableFeature(features::kApiPrintingMarginsAndScale);
+  printer_->SetSupportedOptions(
+      "print-scaling",
+      MakeStringCollection(ipp_, {"value-1", "value-2", "value-3", "value-4"}));
+
+  PrinterSemanticCapsAndDefaults caps;
+  CapsAndDefaultsFromPrinter(*printer_, &caps);
+
+  EXPECT_EQ(caps.print_scaling_type_default,
+            mojom::PrintScalingType::kUnknownPrintScalingType);
+  EXPECT_TRUE(caps.print_scaling_types.empty());
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace printing

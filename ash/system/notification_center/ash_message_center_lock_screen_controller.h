@@ -43,6 +43,7 @@ class AshMessageCenterLockScreenController
                                     base::OnceClosure cancel_callback,
                                     int message_id) override;
   bool IsScreenLocked() const override;
+  bool IsNotificationAllowedOnLockScreen(const std::string& id) const override;
 
  private:
   // Modes of the lock screen notification.

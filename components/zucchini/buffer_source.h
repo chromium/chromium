@@ -13,6 +13,7 @@
 #include <type_traits>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "components/zucchini/buffer_view.h"
 
 namespace zucchini {
@@ -57,7 +58,7 @@ class BufferSource : public ConstBufferView {
       return false;
     }
     T next_value = {};
-    ::memcpy(&next_value, begin(), sizeof(T));
+    UNSAFE_TODO(::memcpy(&next_value, begin(), sizeof(T)));
     return value == next_value;
   }
 
@@ -81,7 +82,7 @@ class BufferSource : public ConstBufferView {
     if (Remaining() < sizeof(T)) {
       return false;
     }
-    ::memcpy(value, begin(), sizeof(T));
+    UNSAFE_TODO(::memcpy(value, begin(), sizeof(T)));
     remove_prefix(sizeof(T));
     return true;
   }

@@ -49,15 +49,15 @@ class SyncWorkerInterface {
                                     const std::string& description) = 0;
 
    protected:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
   };
 
-  SyncWorkerInterface() {}
+  SyncWorkerInterface() = default;
 
   SyncWorkerInterface(const SyncWorkerInterface&) = delete;
   SyncWorkerInterface& operator=(const SyncWorkerInterface&) = delete;
 
-  virtual ~SyncWorkerInterface() {}
+  virtual ~SyncWorkerInterface() = default;
 
   // Initializes SyncWorkerInterface after constructions of some member classes.
   virtual void Initialize(
@@ -77,10 +77,6 @@ class SyncWorkerInterface {
   virtual void SetRemoteChangeProcessor(
       RemoteChangeProcessorOnWorker* remote_change_processor_on_worker) = 0;
   virtual RemoteServiceState GetCurrentState() const = 0;
-  virtual void GetOriginStatusMap(
-      RemoteFileSyncService::StatusMapCallback callback) = 0;
-  virtual base::Value::List DumpFiles(const GURL& origin) = 0;
-  virtual base::Value::List DumpDatabase() = 0;
   virtual void SetSyncEnabled(bool enabled) = 0;
   virtual void PromoteDemotedChanges(base::OnceClosure callback) = 0;
 

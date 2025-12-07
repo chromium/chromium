@@ -6,6 +6,11 @@
 #include <optional>
 #include <string>
 
+#include "ash/constants/web_app_id_constants.h"
+#include "ash/public/cpp/app_menu_constants.h"
+#include "ash/public/cpp/shelf_item_delegate.h"
+#include "ash/public/cpp/shelf_model.h"
+#include "ash/public/cpp/system/toast_manager.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
@@ -21,50 +26,38 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_server_mixin.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
+#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/fake_chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/webapps/common/web_app_id.h"
+#include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/image/image.h"
+#include "ui/menus/simple_menu_model.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/public/cpp/app_menu_constants.h"
-#include "ash/public/cpp/shelf_item_delegate.h"
-#include "ash/public/cpp/shelf_model.h"
-#include "ash/public/cpp/system/toast_manager.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/test_controller.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace {
 
 void CheckShortcut(const ui::SimpleMenuModel& model,
@@ -161,8 +154,6 @@ bool HasMenuModelCommandId(ui::MenuModel* model, ash::CommandId command_id) {
 
 }  // namespace
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 namespace {
 constexpr char kCalculatorAppUrl[] = "https://calculator.apps.chrome/";
 
@@ -185,6 +176,10 @@ class WebAppsPreventCloseChromeOsBrowserTest
   WebAppsPreventCloseChromeOsBrowserTest& operator=(
       const WebAppsPreventCloseChromeOsBrowserTest&) = delete;
   ~WebAppsPreventCloseChromeOsBrowserTest() override = default;
+
+  web_app::ChromeIwaRuntimeDataProvider* GetRuntimeDataProvider() override {
+    return &data_provider_;
+  }
 
   void TearDownOnMainThread() override {
     // Clear policy values, otherwise we won't be able to gracefully close stop
@@ -217,8 +212,9 @@ class WebAppsPreventCloseChromeOsBrowserTest
 
       case AppType::kIsolatedWebApp:
         auto web_bundle_id = web_app::test::GetDefaultEd25519WebBundleId();
+        data_provider_.SetManagedAllowlist({web_bundle_id});
 
-        isolated_web_app_update_server_mixin_.AddBundle(
+        iwa_test_update_server_.AddBundle(
             web_app::IsolatedWebAppBuilder(
                 web_app::ManifestBuilder().SetVersion("1.0.0"))
                 .BuildBundle(web_bundle_id,
@@ -230,15 +226,11 @@ class WebAppsPreventCloseChromeOsBrowserTest
                 .origin()
                 .GetURL()
                 .spec();
-        profile()->GetPrefs()->SetList(
-            prefs::kIsolatedWebAppInstallForceList,
-            base::Value::List().Append(
-                base::Value::Dict()
-                    .Set(web_app::kPolicyWebBundleIdKey, web_bundle_id.id())
-                    .Set(web_app::kPolicyUpdateManifestUrlKey,
-                         isolated_web_app_update_server_mixin_
-                             .GetUpdateManifestUrl(web_bundle_id)
-                             .spec())));
+
+        web_app::test::AddForceInstalledIwaToPolicy(
+            profile()->GetPrefs(),
+            iwa_test_update_server_.CreateForceInstallPolicyEntry(
+                web_bundle_id));
         break;
     }
     ASSERT_EQ(installed_app_id, observer.Wait());
@@ -249,7 +241,7 @@ class WebAppsPreventCloseChromeOsBrowserTest
                ? web_app::IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
                      web_app::test::GetDefaultEd25519WebBundleId())
                      .app_id()
-               : web_app::kCalculatorAppId;
+               : ash::kCalculatorAppId;
   }
 
   void ResetPolicies() {
@@ -262,25 +254,15 @@ class WebAppsPreventCloseChromeOsBrowserTest
   }
 
   bool IsToastShown(const std::string& toast_id) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     return ash::ToastManager::Get()->IsToastShown(toast_id);
-#else
-    base::test::TestFuture<bool> future;
-    chromeos::LacrosService::Get()
-        ->GetRemote<crosapi::mojom::TestController>()
-        ->IsToastShown(toast_id, future.GetCallback());
-    EXPECT_TRUE(future.Wait());
-    return future.Get<bool>();
-#endif
   }
 
  protected:
   std::optional<std::string> installed_app_url_;
-  web_app::IsolatedWebAppUpdateServerMixin
-      isolated_web_app_update_server_mixin_{&mixin_host_};
-};
+  web_app::IsolatedWebAppTestUpdateServer iwa_test_update_server_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+  web_app::FakeIwaRuntimeDataProvider data_provider_;
+};
 
 IN_PROC_BROWSER_TEST_P(WebAppsPreventCloseChromeOsBrowserTest, CheckMenuModel) {
   // Set up policy values.
@@ -345,21 +327,8 @@ IN_PROC_BROWSER_TEST_P(WebAppsPreventCloseChromeOsBrowserTest, CheckMenuModel) {
   }
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 IN_PROC_BROWSER_TEST_P(WebAppsPreventCloseChromeOsBrowserTest,
                        CloseTabAttemptShowsToast) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // If ash does not contain the relevant test controller functionality,
-  // then there's nothing to do for this test.
-  auto* lacros_service = chromeos::LacrosService::Get();
-  if (lacros_service->GetInterfaceVersion<crosapi::mojom::TestController>() <
-      static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
-                           kIsToastShownMinVersion)) {
-    GTEST_SKIP() << "Unsupported ash version for IsToastShown";
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   const webapps::AppId installed_app_id = GetInstalledAppId();
   InstallApp();
 
@@ -389,17 +358,6 @@ IN_PROC_BROWSER_TEST_P(WebAppsPreventCloseChromeOsBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(WebAppsPreventCloseChromeOsBrowserTest,
                        CloseWindowAttemptShowsToast) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // If ash does not contain the relevant test controller functionality,
-  // then there's nothing to do for this test.
-  auto* lacros_service = chromeos::LacrosService::Get();
-  if (lacros_service->GetInterfaceVersion<crosapi::mojom::TestController>() <
-      static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
-                           kIsToastShownMinVersion)) {
-    GTEST_SKIP() << "Unsupported ash version for IsToastShown";
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   const webapps::AppId installed_app_id = GetInstalledAppId();
   InstallApp();
 
@@ -440,7 +398,6 @@ INSTANTIATE_TEST_SUITE_P(
         PreventCloseTestParams{.is_prevent_close_enabled = false,
                                .app_type = AppType::kIsolatedWebApp}));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 class IsolatedWebAppChromeOsBrowserTest
     : public web_app::IsolatedWebAppBrowserTestHarness {
  public:
@@ -483,4 +440,3 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppChromeOsBrowserTest,
   EXPECT_EQ(menu_model->GetTypeAt(0), ui::MenuModel::ItemType::TYPE_COMMAND);
   EXPECT_EQ(menu_model->GetCommandIdAt(0), ash::LAUNCH_NEW);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)

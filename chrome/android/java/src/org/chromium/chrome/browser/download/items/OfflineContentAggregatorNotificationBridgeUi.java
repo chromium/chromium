@@ -4,11 +4,17 @@
 
 package org.chromium.chrome.browser.download.items;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.DownloadInfo;
 import org.chromium.chrome.browser.download.DownloadItem;
 import org.chromium.chrome.browser.download.DownloadNotifier;
 import org.chromium.chrome.browser.download.DownloadServiceDelegate;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
+import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
@@ -27,6 +33,7 @@ import java.util.List;
  * A glue class that bridges the Profile-attached OfflineContentProvider with the
  * download notification code (SystemDownloadNotifier and DownloadServiceDelegate).
  */
+@NullMarked
 public class OfflineContentAggregatorNotificationBridgeUi
         implements DownloadServiceDelegate, OfflineContentProvider.Observer, VisualsCallback {
     // TODO(dtrainor): Should this just be part of the OfflineContentProvider callback guarantee?
@@ -89,7 +96,7 @@ public class OfflineContentAggregatorNotificationBridgeUi
 
     // OfflineContentProvider.VisualsCallback implementation.
     @Override
-    public void onVisualsAvailable(ContentId id, OfflineItemVisuals visuals) {
+    public void onVisualsAvailable(@Nullable ContentId id, @Nullable OfflineItemVisuals visuals) {
         OfflineItem item = mOutstandingRequests.remove(id);
         if (item == null) return;
 
@@ -103,12 +110,12 @@ public class OfflineContentAggregatorNotificationBridgeUi
 
     // DownloadServiceDelegate implementation.
     @Override
-    public void cancelDownload(ContentId id, OTRProfileID otrProfileID) {
+    public void cancelDownload(ContentId id, @Nullable OtrProfileId otrProfileId) {
         mProvider.cancelDownload(id);
     }
 
     @Override
-    public void pauseDownload(ContentId id, OTRProfileID otrProfileID) {
+    public void pauseDownload(ContentId id, @Nullable OtrProfileId otrProfileId) {
         mProvider.pauseDownload(id);
     }
 
@@ -120,7 +127,7 @@ public class OfflineContentAggregatorNotificationBridgeUi
     @Override
     public void destroyServiceDelegate() {}
 
-    private void getVisualsAndUpdateItem(OfflineItem item, UpdateDelta updateDelta) {
+    private void getVisualsAndUpdateItem(OfflineItem item, @Nullable UpdateDelta updateDelta) {
         if (shouldIgnoreUpdate(item, updateDelta)) return;
         if (updateDelta != null && updateDelta.visualsChanged) mVisualsCache.remove(item.id);
         if (needsVisualsForUi(item)) {
@@ -131,7 +138,7 @@ public class OfflineContentAggregatorNotificationBridgeUi
                 // through and we can push a new notification when the visuals arrive.
                 boolean requestVisuals = !mOutstandingRequests.containsKey(item.id);
                 mOutstandingRequests.put(item.id, item);
-                if (requestVisuals) mProvider.getVisualsForItem(item.id, this);
+                if (requestVisuals) mProvider.getVisualsForItem(assertNonNull(item.id), this);
                 return;
             }
         } else {
@@ -145,7 +152,7 @@ public class OfflineContentAggregatorNotificationBridgeUi
         if (!shouldCacheVisuals(item)) mVisualsCache.remove(item.id);
     }
 
-    private void pushItemToUi(OfflineItem item, OfflineItemVisuals visuals) {
+    private void pushItemToUi(OfflineItem item, @Nullable OfflineItemVisuals visuals) {
         // TODO(http://crbug.com/855141): Find a cleaner way to hide unimportant UI updates.
         // If it's a suggested page, or the user choose to download later. Do not add it to the
         // notification UI.
@@ -154,41 +161,51 @@ public class OfflineContentAggregatorNotificationBridgeUi
         // If the download is cancelled, no need to DownloadInfo object and it is enough to notify
         // that the download is canceled.
         if (item.state == OfflineItemState.CANCELLED) {
-            mUi.notifyDownloadCanceled(item.id);
+            mUi.notifyDownloadCanceled(assertNonNull(item.id));
             return;
         }
 
         // Request notification permission if needed.
-        ContextualNotificationPermissionRequester.getInstance().requestPermissionIfNeeded();
+        assumeNonNull(ContextualNotificationPermissionRequester.getInstance())
+                .requestPermissionIfNeeded();
 
-        DownloadInfo info = DownloadInfo.fromOfflineItem(item, visuals);
-        switch (item.state) {
-            case OfflineItemState.IN_PROGRESS:
-                mUi.notifyDownloadProgress(info, item.creationTimeMs, item.allowMetered);
-                break;
-            case OfflineItemState.COMPLETE:
-                mUi.notifyDownloadSuccessful(info, -1L, false, item.isOpenable);
-                break;
-            case OfflineItemState.INTERRUPTED:
-                mUi.notifyDownloadInterrupted(
-                        info, !LegacyHelpers.isLegacyDownload(item.id), item.pendingState);
-                break;
-            case OfflineItemState.PAUSED:
-                mUi.notifyDownloadPaused(info);
-                break;
-            case OfflineItemState.FAILED:
-                mUi.notifyDownloadFailed(info);
-                break;
-            case OfflineItemState.PENDING:
-                mUi.notifyDownloadPaused(info);
-                break;
-            default:
-                assert false : "Unexpected OfflineItem state.";
+        try {
+            DownloadInfo info = DownloadInfo.fromOfflineItem(item, visuals);
+            switch (item.state) {
+                case OfflineItemState.IN_PROGRESS:
+                    mUi.notifyDownloadProgress(info, item.creationTimeMs, item.allowMetered);
+                    break;
+                case OfflineItemState.COMPLETE:
+                    mUi.notifyDownloadSuccessful(info, -1L, false, item.isOpenable);
+                    break;
+                case OfflineItemState.INTERRUPTED:
+                    mUi.notifyDownloadInterrupted(
+                            info, !LegacyHelpers.isLegacyDownload(item.id), item.pendingState);
+                    break;
+                case OfflineItemState.PAUSED:
+                    mUi.notifyDownloadPaused(info);
+                    break;
+                case OfflineItemState.FAILED:
+                    mUi.notifyDownloadFailed(info);
+                    break;
+                case OfflineItemState.PENDING:
+                    mUi.notifyDownloadPaused(info);
+                    break;
+                default:
+                    assert false : "Unexpected OfflineItem state.";
+            }
+        } catch (IllegalStateException e) {
+            mUi.notifyDownloadCanceled(assertNonNull(item.id));
         }
     }
 
     private boolean needsVisualsForUi(OfflineItem item) {
         if (item.ignoreVisuals) return false;
+        // A dangerous download doesn't need special visuals. They will always show the same
+        // "dangerous" iconography.
+        if (DownloadUtils.shouldDisplayDownloadAsDangerous(item.dangerType, item.state)) {
+            return false;
+        }
         switch (item.state) {
             case OfflineItemState.IN_PROGRESS:
             case OfflineItemState.PENDING:
@@ -205,6 +222,9 @@ public class OfflineContentAggregatorNotificationBridgeUi
 
     private boolean shouldCacheVisuals(OfflineItem item) {
         if (item.ignoreVisuals) return false;
+        if (DownloadUtils.shouldDisplayDownloadAsDangerous(item.dangerType, item.state)) {
+            return false;
+        }
         switch (item.state) {
             case OfflineItemState.IN_PROGRESS:
             case OfflineItemState.PENDING:
@@ -219,7 +239,7 @@ public class OfflineContentAggregatorNotificationBridgeUi
         }
     }
 
-    private boolean shouldIgnoreUpdate(OfflineItem item, UpdateDelta updateDelta) {
+    private boolean shouldIgnoreUpdate(OfflineItem item, @Nullable UpdateDelta updateDelta) {
         // We only ignore updates for completed items, if there is no significant state change
         // update.
         if (item.state != OfflineItemState.COMPLETE) return false;

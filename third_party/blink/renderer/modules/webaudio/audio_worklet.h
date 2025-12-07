@@ -44,7 +44,7 @@ class MODULES_EXPORT AudioWorklet final : public Worklet {
   // Returns `nullptr` if there is no active `WorkletGlobalScope()`.
   AudioWorkletMessagingProxy* GetMessagingProxy();
 
-  const Vector<CrossThreadAudioParamInfo> GetParamInfoListForProcessor(
+  Vector<CrossThreadAudioParamInfo> GetParamInfoListForProcessor(
       const String& name);
 
   bool IsProcessorRegistered(const String& name);

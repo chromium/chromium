@@ -284,10 +284,10 @@ IPCZ_MSG_BEGIN(AcceptIntroduction, IPCZ_MSG_ID(11))
 
     // Indicates which nominal side of the link (A or B) the recipient must
     // assume for the NodeLink it will establish over `transport`.
-    IPCZ_MSG_PARAM(LinkSide, link_side)
+    IPCZ_MSG_PARAM_ENUM(LinkSide, link_side)
 
     // Indicates the type of the remote node being introduced.
-    IPCZ_MSG_PARAM(NodeType, remote_node_type)
+    IPCZ_MSG_PARAM_ENUM(NodeType, remote_node_type)
 
     // Explicit padding to preserve 4-byte alignment of the following field.
     IPCZ_MSG_PARAM(uint16_t, padding)

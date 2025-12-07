@@ -37,6 +37,10 @@ void LogRouter::LogToTerminal() {
   }
 }
 
+bool LogRouter::HasReceivers() const {
+  return !receivers_.empty();
+}
+
 void LogRouter::ProcessLog(const std::string& text) {
   ProcessLog(CreateEntryForText(text));
 }
@@ -44,7 +48,7 @@ void LogRouter::ProcessLog(const std::string& text) {
 void LogRouter::ProcessLog(const base::Value::Dict& node) {
   // This may not be called when there are no receivers (i.e., the router is
   // inactive), because in that case the logs cannot be displayed.
-  DCHECK(!receivers_.empty());
+  DCHECK(HasReceivers());
   for (LogReceiver& receiver : receivers_)
     receiver.LogEntry(node);
 }
@@ -52,7 +56,7 @@ void LogRouter::ProcessLog(const base::Value::Dict& node) {
 bool LogRouter::RegisterManager(RoutingLogManager* manager) {
   DCHECK(manager);
   managers_.AddObserver(manager);
-  return !receivers_.empty();
+  return HasReceivers();
 }
 
 void LogRouter::UnregisterManager(RoutingLogManager* manager) {
@@ -62,7 +66,7 @@ void LogRouter::UnregisterManager(RoutingLogManager* manager) {
 
 void LogRouter::RegisterReceiver(LogReceiver* receiver) {
   DCHECK(receiver);
-  if (receivers_.empty()) {
+  if (!HasReceivers()) {
     for (RoutingLogManager& manager : managers_)
       manager.OnLogRouterAvailabilityChanged(true);
   }
@@ -72,7 +76,7 @@ void LogRouter::RegisterReceiver(LogReceiver* receiver) {
 void LogRouter::UnregisterReceiver(LogReceiver* receiver) {
   DCHECK(receivers_.HasObserver(receiver));
   receivers_.RemoveObserver(receiver);
-  if (receivers_.empty()) {
+  if (!HasReceivers()) {
     for (RoutingLogManager& manager : managers_)
       manager.OnLogRouterAvailabilityChanged(false);
   }

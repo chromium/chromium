@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/debug/alias.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "components/sync/engine/commit_contribution.h"
@@ -79,8 +80,7 @@ CommitProcessor::GatheringPhase CommitProcessor::IncrementGatheringPhase(
     case GatheringPhase::kLowPriority:
       return GatheringPhase::kDone;
     case GatheringPhase::kDone:
-      NOTREACHED_IN_MIGRATION();
-      return GatheringPhase::kDone;
+      NOTREACHED();
   }
 }
 
@@ -95,8 +95,7 @@ DataTypeSet CommitProcessor::GetUserTypesForCurrentCommitPhase() const {
     case GatheringPhase::kLowPriority:
       return Intersection(commit_types_, LowPriorityUserTypes());
     case GatheringPhase::kDone:
-      NOTREACHED_IN_MIGRATION();
-      return DataTypeSet();
+      NOTREACHED();
   }
 }
 
@@ -104,6 +103,10 @@ size_t CommitProcessor::GatherCommitContributionsForType(
     DataType type,
     size_t max_entries,
     Commit::ContributionMap* contributions) {
+  // Use base::debug::Alias() to ensure that crash dumps in reports include
+  // DataType.
+  base::debug::Alias(&type);
+
   if (max_entries == 0) {
     return 0;
   }

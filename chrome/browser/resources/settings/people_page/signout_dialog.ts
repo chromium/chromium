@@ -13,7 +13,6 @@ import '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
-import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../settings_shared.css.js';
 
 import type {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
@@ -76,17 +75,17 @@ export class SettingsSignoutDialogElement extends
     };
   }
 
-  syncStatus: SyncStatus|null;
-  private deleteProfile_: boolean;
-  private deleteProfileWarningVisible_: boolean;
-  private deleteProfileWarning_: string;
+  declare syncStatus: SyncStatus|null;
+  declare private deleteProfile_: boolean;
+  declare private deleteProfileWarningVisible_: boolean;
+  declare private deleteProfileWarning_: string;
 
   override connectedCallback() {
     super.connectedCallback();
 
     this.addWebUiListener(
         'profile-stats-count-ready', this.handleProfileStatsCount_.bind(this));
-    // <if expr="not chromeos_ash">
+    // <if expr="not is_chromeos">
     ProfileInfoBrowserProxyImpl.getInstance().getProfileStatsCount();
     // </if>
     microTask.run(() => {
@@ -129,7 +128,7 @@ export class SettingsSignoutDialogElement extends
     }
   }
 
-  // <if expr="not chromeos_ash">
+  // <if expr="not is_chromeos">
   private getDisconnectExplanationHtml_(domain: string): TrustedHTML {
     if (domain) {
       return sanitizeInnerHtml(loadTimeData.getStringF(
@@ -140,7 +139,7 @@ export class SettingsSignoutDialogElement extends
   }
   // </if>
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   private getDisconnectExplanationHtml_(_domain: string): TrustedHTML {
     return sanitizeInnerHtml(
         loadTimeData.getString('syncDisconnectExplanation'));
@@ -153,42 +152,13 @@ export class SettingsSignoutDialogElement extends
 
   private onDisconnectConfirm_() {
     this.$.dialog.close();
-    // <if expr="not chromeos_ash">
-    const deleteProfile =
-        this.isClearProfileConfirmButtonVisible_() || this.deleteProfile_;
-    SyncBrowserProxyImpl.getInstance().signOut(deleteProfile);
+    // <if expr="not is_chromeos">
+    SyncBrowserProxyImpl.getInstance().signOut(this.deleteProfile_);
     // </if>
-    // <if expr="chromeos_ash">
+    // <if expr="is_chromeos">
     // Chrome OS users are always signed-in, so just turn off sync.
     SyncBrowserProxyImpl.getInstance().turnOffSync();
     // </if>
-  }
-
-  /**
-   * @return true if the profile is a secondary profile on LaCros, has the
-   *     option to turn off sync without deleting the profile.
-   */
-  private isDeleteProfileFooterVisible_(): boolean {
-    // <if expr="chromeos_lacros">
-    if (!loadTimeData.getBoolean('isSecondaryUser')) {
-      // Profile deletion is not allowed for the main profile.
-      return false;
-    }
-    // </if>
-
-    // If the "Clear and Continue" button is not shown, show the footer that
-    // allows the user to delete the profile.
-    return !this.isClearProfileConfirmButtonVisible_();
-  }
-
-  /**
-   * @return true if the profile is managed and the feature to turn Sync off for
-   *     managed profiles is not enabled. In that case the profile has to be
-   *     cleared, otherwise the user may turn off sync.
-   */
-  private isClearProfileConfirmButtonVisible_(): boolean {
-    return !!this.syncStatus!.domain &&
-        !loadTimeData.getBoolean('turnOffSyncAllowedForManagedProfiles');
   }
 }
 

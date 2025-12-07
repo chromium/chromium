@@ -27,7 +27,7 @@ std::unique_ptr<BookmarkModelView> CreateWrappedView(
       return std::make_unique<BookmarkModelViewUsingAccountNodes>(model);
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -76,6 +76,9 @@ void TestBookmarkModelView::EnsurePermanentNodesExist() {
 void TestBookmarkModelView::RemoveAllSyncableNodes() {
   wrapped_view_->RemoveAllSyncableNodes();
 }
+
+void TestBookmarkModelView::
+    MaybeRemoveUnderlyingModelDuplicatesUponInitialSync() {}
 
 const bookmarks::BookmarkNode* TestBookmarkModelView::GetNodeByUuid(
     const base::Uuid& uuid) const {

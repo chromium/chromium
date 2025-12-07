@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 payments_java_resources = [
+  "//components/payments/content/android/java/res/drawable-night/secure_payment_confirmation_header_illustration.xml",
+  "//components/payments/content/android/java/res/drawable/secure_payment_confirmation_header_illustration.xml",
   "//components/payments/content/android/java/res/layout/payment_handler_content.xml",
   "//components/payments/content/android/java/res/layout/payment_option_edit_icon.xml",
   "//components/payments/content/android/java/res/layout/payment_request.xml",
@@ -10,6 +12,7 @@ payments_java_resources = [
   "//components/payments/content/android/java/res/layout/payment_request_dropdown_item.xml",
   "//components/payments/content/android/java/res/layout/payment_request_header.xml",
   "//components/payments/content/android/java/res/layout/payment_request_spinny.xml",
+  "//components/payments/content/android/java/res/layout/secure_payment_confirmation.xml",
   "//components/payments/content/android/java/res/layout/secure_payment_confirmation_authn_ui.xml",
   "//components/payments/content/android/java/res/layout/secure_payment_confirmation_no_credential_match_ui.xml",
   "//components/payments/content/android/java/res/values-sw600dp/dimens.xml",

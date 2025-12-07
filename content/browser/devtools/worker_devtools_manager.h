@@ -12,7 +12,6 @@
 #include "content/browser/devtools/devtools_throttle_handle.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/global_routing_id.h"
-#include "third_party/blink/public/mojom/devtools/devtools_agent.mojom.h"
 
 namespace content {
 
@@ -20,7 +19,7 @@ class DedicatedWorkerDevToolsAgentHost;
 class DedicatedWorkerHost;
 
 // Manages WorkerDevToolsAgentHost's for Dedicated Workers. This class lives on
-// UI thread. This is only used for PlzDedicatedWorker.
+// UI thread.
 class WorkerDevToolsManager {
  public:
   // Returns the WorkerDevToolsManager singleton.
@@ -36,6 +35,7 @@ class WorkerDevToolsManager {
       const GlobalRenderFrameHostId& ancestor_render_frame_host_id,
       scoped_refptr<DevToolsThrottleHandle> throttle_handle);
   void WorkerDestroyed(const DedicatedWorkerHost* host);
+  void AddAllAgentHosts(DevToolsAgentHost::List* result);
 
  private:
   friend struct base::DefaultSingletonTraits<WorkerDevToolsManager>;

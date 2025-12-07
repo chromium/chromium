@@ -4,23 +4,17 @@
 
 #import <string_view>
 
-#import "base/strings/escape.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/strings/utf_string_conversions.h"
-#import "components/autofill/core/browser/autofill_test_utils.h"
+#import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/password_manager/core/common/password_manager_features.h"
-#import "components/plus_addresses/features.h"
-#import "components/plus_addresses/plus_address_test_utils.h"
+#import "components/plus_addresses/core/common/features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
-#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_app_interface.h"
-#import "ios/chrome/browser/plus_addresses/ui/plus_address_app_interface.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
-#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
-#import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_matchers.h"
+#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/credential_suggestion_bottom_sheet_app_interface.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_settings_app_interface.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -31,18 +25,21 @@
 #import "net/test/embedded_test_server/default_handlers.h"
 #import "ui/base/l10n/l10n_util.h"
 
+using chrome_test_util::ActionSheetItemWithAccessibilityLabelId;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
-using chrome_test_util::ManualFallbackCreditCardTableViewMatcher;
-using chrome_test_util::ManualFallbackOtherPasswordsDismissMatcher;
-using chrome_test_util::ManualFallbackOtherPasswordsMatcher;
-using chrome_test_util::ManualFallbackPasswordTableViewMatcher;
-using chrome_test_util::ManualFallbackProfilesTableViewMatcher;
+using manual_fill::ChipButton;
+using manual_fill::ExpandedManualFillHeaderView;
+using manual_fill::ExpandedManualFillView;
+using manual_fill::KeyboardAccessoryManualFillButton;
 using manual_fill::ManualFillDataType;
+using manual_fill::SegmentedControlAddressTab;
+using manual_fill::SegmentedControlPasswordTab;
 using net::test_server::EmbeddedTestServer;
 
 namespace {
 constexpr char kAddressFormURL[] = "/profile_form.html";
 constexpr char kMultiFieldFormURL[] = "/multi_field_form.html";
+constexpr char kMultiFormPageURL[] = "/multi_form_page.html";
 constexpr char kPaymentMethodFormURL[] = "/credit_card.html";
 constexpr char kPasswordFormURL[] = "/simple_login_form.html";
 
@@ -51,27 +48,21 @@ const char kNameFieldID[] = "name";
 const char kOtherStuffFieldID[] = "otherstuff";
 const char kPasswordFieldID[] = "pw";
 
+// Matcher for the "Autofill Form" button shown in the cells.
+id<GREYMatcher> AutofillFormButton() {
+  return grey_allOf(grey_accessibilityID(
+                        manual_fill::kExpandedManualFillAutofillFormButtonID),
+                    grey_interactable(), nullptr);
+}
+
 // Matcher for the close button.
 id<GREYMatcher> CloseButton() {
   return grey_accessibilityLabel(l10n_util::GetNSString(
       IDS_IOS_EXPANDED_MANUAL_FILL_CLOSE_BUTTON_ACCESSIBILITY_LABEL));
 }
 
-// Matcher for the expanded manual fill view.
-id<GREYMatcher> ExpandedManualFillView() {
-  return grey_accessibilityID(manual_fill::kExpandedManualFillViewID);
-}
-
 id<GREYMatcher> ExpandedManualFillHeaderView() {
   return grey_accessibilityID(manual_fill::kExpandedManualFillHeaderViewID);
-}
-
-// Matcher for the segmented control's password tab.
-id<GREYMatcher> SegmentedControlPasswordTab() {
-  return grey_allOf(
-      grey_accessibilityLabel(l10n_util::GetNSString(
-          IDS_IOS_EXPANDED_MANUAL_FILL_PASSWORD_TAB_ACCESSIBILITY_LABEL)),
-      grey_ancestor(ExpandedManualFillHeaderView()), nil);
 }
 
 // Matcher for the segmented control's payment method tab.
@@ -80,20 +71,6 @@ id<GREYMatcher> SegmentedControlPaymentMethodTab() {
       grey_accessibilityLabel(l10n_util::GetNSString(
           IDS_IOS_EXPANDED_MANUAL_FILL_PAYMENT_TAB_ACCESSIBILITY_LABEL)),
       grey_ancestor(ExpandedManualFillHeaderView()), nil);
-}
-
-// Matcher for the segmented control's address tab.
-id<GREYMatcher> SegmentedControlAddressTab() {
-  return grey_allOf(
-      grey_accessibilityLabel(l10n_util::GetNSString(
-          IDS_IOS_EXPANDED_MANUAL_FILL_ADDRESS_TAB_ACCESSIBILITY_LABEL)),
-      grey_ancestor(ExpandedManualFillHeaderView()), nil);
-}
-
-// Matcher for the keyboard accessory's manual fill button.
-id<GREYMatcher> KeyboardAccessoryManualFillButton() {
-  return grey_accessibilityLabel(
-      l10n_util::GetNSString(IDS_IOS_AUTOFILL_ACCNAME_AUTOFILL_DATA));
 }
 
 // Matcher for the keyboard accessory's password icon.
@@ -106,16 +83,18 @@ id<GREYMatcher> KeyboardAccessoryPasswordManualFillButton() {
 }
 
 // Matcher for the password suggestion chip.
-id<GREYMatcher> KeyboardAccessoryPasswordSuggestionChip() {
-  return grey_text(@"concrete username");
-}
-
-// Matcher for the chip button with the given `title`.
-id<GREYMatcher> ChipButton(std::u16string title) {
-  return grey_allOf(
-      chrome_test_util::ButtonWithAccessibilityLabel(l10n_util::GetNSStringF(
-          IDS_IOS_MANUAL_FALLBACK_CHIP_ACCESSIBILITY_LABEL, title)),
-      grey_interactable(), nullptr);
+id<GREYMatcher> KeyboardAccessoryPasswordSuggestionChip(
+    EmbeddedTestServer* test_server) {
+  NSString* username = @"concrete username";
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    // On iPad, the suggestion text is an attributed string containing the
+    // signon realm on the 2nd line.
+    NSString* realm = base::SysUTF8ToNSString(password_manager::GetShownOrigin(
+        url::Origin::Create(test_server->base_url())));
+    return grey_text([NSString stringWithFormat:@"%@\n%@", username, realm]);
+  } else {
+    return grey_text(username);
+  }
 }
 
 // Checks that the chip button with `title` is sufficiently visible.
@@ -133,9 +112,11 @@ void CheckHeader(bool is_landscape) {
   // The header's top view should only be part of the UI when in portrait mode.
   id<GREYMatcher> header_top_view =
       grey_accessibilityID(manual_fill::kExpandedManualFillHeaderTopViewID);
+  // On iPad, the top view is always visible.
+  bool is_top_view_visible = [ChromeEarlGrey isIPadIdiom] || !is_landscape;
   [[EarlGrey selectElementWithMatcher:header_top_view]
-      assertWithMatcher:is_landscape ? grey_notVisible()
-                                     : grey_sufficientlyVisible()];
+      assertWithMatcher:is_top_view_visible ? grey_sufficientlyVisible()
+                                            : grey_notVisible()];
 
   // Check Chrome logo and close button.
   id<GREYMatcher> chrome_logo;
@@ -199,6 +180,12 @@ void LoadForm(EmbeddedTestServer* test_server, ManualFillDataType data_type) {
   [ChromeEarlGrey waitForWebStateContainingText:form_text];
 }
 
+// Loads a page with forms for different data types.
+void LoadMultiFormPage(EmbeddedTestServer* test_server) {
+  [ChromeEarlGrey loadURL:test_server->GetURL(kMultiFormPageURL)];
+  [ChromeEarlGrey waitForWebStateContainingText:"hello!"];
+}
+
 // Saves a password for the login form.
 void SavePasswordForLoginForm(EmbeddedTestServer* test_server) {
   [AutofillAppInterface
@@ -218,7 +205,7 @@ void DismissPaymentBottomSheet() {
 
 // Makes sure that the payment suggestions are appearing in the keyboard
 // accessory.
-void MakeSurePaymentMethodSuggestionsAreVisisble() {
+void MakeSurePaymentMethodSuggestionsAreVisible() {
   // Needed in order to see the payment method suggestions.
   [AutofillAppInterface considerCreditCardFormSecureForTesting];
 
@@ -227,16 +214,26 @@ void MakeSurePaymentMethodSuggestionsAreVisisble() {
   // Wait for the payment suggestions to appear after dismissing the payment
   // bottom sheet.
   autofill::CreditCard card = autofill::test::GetCreditCard();
-  id<GREYMatcher> cc_chip = grey_text(base::SysUTF16ToNSString(card.GetInfo(
-      autofill::CREDIT_CARD_NAME_FULL, l10n_util::GetLocaleOverride())));
+  NSString* cc_text = base::SysUTF16ToNSString(card.GetInfo(
+      autofill::CREDIT_CARD_NAME_FULL, l10n_util::GetLocaleOverride()));
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    // On iPad, the suggestion text is an attributed string containing the
+    // obfuscated credit card on the 2nd line.
+    NSString* cc_network = base::SysUTF16ToNSString(
+        card.NetworkAndLastFourDigits(/*obfuscation_length=*/2));
+    cc_text = [NSString stringWithFormat:@"%@\n%@", cc_text, cc_network];
+  }
+  id<GREYMatcher> cc_chip = grey_text(cc_text);
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:cc_chip];
 }
 
-// Matcher for the "Autofill Form" button shown in the cells.
-id<GREYMatcher> AutofillFormButton() {
-  return grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
-                        IDS_IOS_MANUAL_FALLBACK_AUTOFILL_FORM_BUTTON_TITLE),
-                    grey_interactable(), nullptr);
+// Looks for the "Autofill form" button in the provided `scroll_view`.
+GREYElementInteraction* SearchAutofillFormButton(id<GREYMatcher> scroll_view) {
+  return [[EarlGrey
+      selectElementWithMatcher:grey_allOf(AutofillFormButton(),
+                                          grey_sufficientlyVisible(), nullptr)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 150)
+      onElementWithMatcher:scroll_view];
 }
 
 }  // namespace
@@ -250,26 +247,8 @@ id<GREYMatcher> AutofillFormButton() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-
-  if ([self isRunningTest:@selector(testPlusAddressFallback)]) {
-    std::string fakeLocalUrl =
-        base::EscapeQueryParamValue("chrome://version", /*use_plus=*/false);
-    config.features_enabled_and_params.push_back(
-        {plus_addresses::features::kPlusAddressesEnabled,
-         {{
-             {"server-url", {fakeLocalUrl}},
-             {"manage-url", {fakeLocalUrl}},
-         }}});
-
-    // Enable the Keyboard Accessory Upgrade feature.
-    config.features_enabled_and_params.push_back(
-        {kIOSKeyboardAccessoryUpgrade, {}});
-    config.features_enabled_and_params.push_back(
-        {plus_addresses::features::kPlusAddressIOSManualFallbackEnabled, {}});
-  } else {
-    // Enable the Keyboard Accessory Upgrade feature.
-    config.features_enabled.push_back(kIOSKeyboardAccessoryUpgrade);
-  }
+  config.features_disabled.push_back(
+      plus_addresses::features::kPlusAddressesEnabled);
 
   return config;
 }
@@ -277,22 +256,19 @@ id<GREYMatcher> AutofillFormButton() {
 - (void)setUp {
   [super setUp];
 
-  // The tested UI is not availble on iPad, so there's no need for any setup.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    return;
-  }
-
   // Set up server.
   net::test_server::RegisterDefaultHandlers(self.testServer);
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+
+  [AutofillAppInterface clearCreditCardStore];
 
   // Save a password, credit card and address.
   SavePasswordForLoginForm(self.testServer);
   [AutofillAppInterface saveLocalCreditCard];
   [AutofillAppInterface saveExampleAccountProfile];
 
-  // Disable the password bottom sheet.
-  [PasswordSuggestionBottomSheetAppInterface disableBottomSheet];
+  // Disable the credential bottom sheet.
+  [CredentialSuggestionBottomSheetAppInterface disableBottomSheet];
 
   // Mock successful reauth for opening the Password Manager.
   [PasswordSettingsAppInterface setUpMockReauthenticationModule];
@@ -300,8 +276,8 @@ id<GREYMatcher> AutofillFormButton() {
                                     ReauthenticationResult::kSuccess];
 }
 
-- (void)tearDown {
-  [super tearDown];
+- (void)tearDownHelper {
+  [super tearDownHelper];
 
   // Clear the stores.
   [AutofillAppInterface clearProfilePasswordStore];
@@ -311,20 +287,28 @@ id<GREYMatcher> AutofillFormButton() {
   [PasswordSettingsAppInterface removeMockReauthenticationModule];
 }
 
+// Loads the appropriate form for the passed `dataType` and opens the expanded
+// manual fill view from there.
+- (void)loadFormAndOpenExpandedManualFillViewForDataType:
+            (ManualFillDataType)dataType
+                                             fieldToFill:
+                                                 (std::string)fieldToFill {
+  LoadForm(self.testServer, dataType);
+  [AutofillAppInterface considerCreditCardFormSecureForTesting];
+  [self openExpandedManualFillViewForDataType:dataType fieldToFill:fieldToFill];
+}
+
 // Opens the expanded manual fill view for a given `dataType`. `fieldToFill` is
 // the ID of the form field that should be focused prior to opening the expanded
 // manual fill view.
 - (void)openExpandedManualFillViewForDataType:(ManualFillDataType)dataType
                                   fieldToFill:(std::string)fieldToFill {
-  // Load form.
-  LoadForm(self.testServer, dataType);
-
   // Tap on the provided field.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(fieldToFill)];
 
   if (dataType == ManualFillDataType::kPaymentMethod) {
-    MakeSurePaymentMethodSuggestionsAreVisisble();
+    MakeSurePaymentMethodSuggestionsAreVisible();
   }
 
   // Open the expanded manual fill view.
@@ -340,12 +324,12 @@ id<GREYMatcher> AutofillFormButton() {
 
 - (void)openAllPasswordListFromPasswordTab {
   // Tap the "Select Password..." action.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackOtherPasswordsMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::OtherPasswordsMatcher()]
       performAction:grey_tap()];
 
   // Acknowledge concerns using other passwords on a website.
   id<GREYMatcher> confirmDialogButton =
-      grey_allOf(ButtonWithAccessibilityLabelId(
+      grey_allOf(ActionSheetItemWithAccessibilityLabelId(
                      IDS_IOS_CONFIRM_USING_OTHER_PASSWORD_CONTINUE),
                  grey_interactable(), nullptr);
   [[EarlGrey selectElementWithMatcher:confirmDialogButton]
@@ -353,7 +337,7 @@ id<GREYMatcher> AutofillFormButton() {
 
   // Verify that the all password list is visible.
   [[EarlGrey
-      selectElementWithMatcher:ManualFallbackOtherPasswordsDismissMatcher()]
+      selectElementWithMatcher:manual_fill::OtherPasswordsDismissMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -362,23 +346,20 @@ id<GREYMatcher> AutofillFormButton() {
 // Tests that the expanded manual fill view header is correctly laid out
 // according to the device's orientation.
 - (void)testExpandedManualFillViewDeviceOrientation {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Expanded manual fill view is only available on iPhone.");
-  }
+  [self loadFormAndOpenExpandedManualFillViewForDataType:ManualFillDataType::
+                                                             kPassword
+                                             fieldToFill:kPasswordFieldID];
 
-  [self openExpandedManualFillViewForDataType:ManualFillDataType::kPassword
-                                  fieldToFill:kPasswordFieldID];
-
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeRight
-                                error:nil];
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationLandscapeRight
+                                   error:nil];
   CheckHeader(/*is_landscape=*/true);
 
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
-                                error:nil];
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationLandscapeLeft
+                                   error:nil];
   CheckHeader(/*is_landscape=*/true);
 
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
+                                   error:nil];
   CheckHeader(/*is_landscape=*/false);
 }
 
@@ -386,17 +367,13 @@ id<GREYMatcher> AutofillFormButton() {
 // manual fill view is opened from a field for which there are password
 // suggestions.
 - (void)testOpeningExpandedManualFillViewForPassword {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Expanded manual fill view is only available on iPhone.");
-  }
-
   // Open the expanded manual fill view for a password field.
-  [self openExpandedManualFillViewForDataType:ManualFillDataType::kPassword
-                                  fieldToFill:kPasswordFieldID];
+  [self loadFormAndOpenExpandedManualFillViewForDataType:ManualFillDataType::
+                                                             kPassword
+                                             fieldToFill:kPasswordFieldID];
 
   // The password view controller should be visible.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::PasswordTableViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -404,18 +381,13 @@ id<GREYMatcher> AutofillFormButton() {
 // expanded manual fill view is opened from a field for which there are payment
 // method suggestions.
 - (void)testOpeningExpandedManualFillViewForPaymentMethod {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Expanded manual fill view is only available on iPhone.");
-  }
-
   // Open the expanded manual fill view for a payment method field.
-  [self openExpandedManualFillViewForDataType:ManualFillDataType::kPaymentMethod
-                                  fieldToFill:kCardNameFieldID];
+  [self loadFormAndOpenExpandedManualFillViewForDataType:ManualFillDataType::
+                                                             kPaymentMethod
+                                             fieldToFill:kCardNameFieldID];
 
   // The payment method view controller should be visible.
-  [[EarlGrey
-      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::CreditCardTableViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -423,64 +395,51 @@ id<GREYMatcher> AutofillFormButton() {
 // manual fill view is opened from a field for which there are address
 // suggestions.
 - (void)testOpeningExpandedManualFillViewForAddress {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Expanded manual fill view is only available on iPhone.");
-  }
-
   // Open the expanded manual fill view for an address field.
-  [self openExpandedManualFillViewForDataType:ManualFillDataType::kAddress
-                                  fieldToFill:kNameFieldID];
+  [self loadFormAndOpenExpandedManualFillViewForDataType:ManualFillDataType::
+                                                             kAddress
+                                             fieldToFill:kNameFieldID];
 
   // The address view controller should be visible.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesTableViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::ProfilesTableViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests that the right manual filling options are visible when switching from
 // one data type to the other.
 - (void)testSwitchingDataTypes {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Expanded manual fill view is only available on iPhone.");
-  }
-
-  [self openExpandedManualFillViewForDataType:ManualFillDataType::kPassword
-                                  fieldToFill:kPasswordFieldID];
+  [self loadFormAndOpenExpandedManualFillViewForDataType:ManualFillDataType::
+                                                             kPassword
+                                             fieldToFill:kPasswordFieldID];
 
   // Select the address tab and confirm that the address view controller is
   // visible.
   [[EarlGrey selectElementWithMatcher:SegmentedControlAddressTab()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesTableViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::ProfilesTableViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Select the payment method tab and confirm that the payment method view
   // controller is visible.
   [[EarlGrey selectElementWithMatcher:SegmentedControlPaymentMethodTab()]
       performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::CreditCardTableViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Select the password tab and confirm that the password view controller is
   // visible.
   [[EarlGrey selectElementWithMatcher:SegmentedControlPasswordTab()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::PasswordTableViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests that tapping the close button hides the expanded manual fill view to
 // show the keyboard and keyboard accessory bar.
 - (void)testClosingExpandedManualFillView {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Expanded manual fill view is only available on iPhone.");
-  }
-
-  [self openExpandedManualFillViewForDataType:ManualFillDataType::kPassword
-                                  fieldToFill:kPasswordFieldID];
+  [self loadFormAndOpenExpandedManualFillViewForDataType:ManualFillDataType::
+                                                             kPassword
+                                             fieldToFill:kPasswordFieldID];
 
   // Tap the close button.
   [[EarlGrey selectElementWithMatcher:CloseButton()] performAction:grey_tap()];
@@ -491,7 +450,7 @@ id<GREYMatcher> AutofillFormButton() {
 
   // The keyboard accessory and keyboard should be visible.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
-                      KeyboardAccessoryPasswordSuggestionChip()];
+                      KeyboardAccessoryPasswordSuggestionChip(self.testServer)];
   [[EarlGrey selectElementWithMatcher:KeyboardAccessoryManualFillButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
   [ChromeEarlGrey waitForKeyboardToAppear];
@@ -500,20 +459,16 @@ id<GREYMatcher> AutofillFormButton() {
 // Tests that saved passwords for the current site are visible even when the
 // expanded manual fill view was not initially opened from a password form.
 - (void)testPasswordsVisibleWhenOpenedFromDifferentDataType {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Expanded manual fill view is only available on iPhone.");
-  }
-
   // Open the expanded manual fill view for an address field.
-  [self openExpandedManualFillViewForDataType:ManualFillDataType::kAddress
-                                  fieldToFill:kNameFieldID];
+  [self loadFormAndOpenExpandedManualFillViewForDataType:ManualFillDataType::
+                                                             kAddress
+                                             fieldToFill:kNameFieldID];
 
   // Select the password tab and confirm that the password view controller is
   // visible.
   [[EarlGrey selectElementWithMatcher:SegmentedControlPasswordTab()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::PasswordTableViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Confirm that the password option is visible.
@@ -523,16 +478,13 @@ id<GREYMatcher> AutofillFormButton() {
 // Tests that the "Autofill Form" button does not exist for the other data types
 // than payments if a payments field is in focus.
 - (void)testNoAutofillFormButtonForNonPaymentTypes {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Expanded manual fill view is only available on iPhone.");
-  }
-
   // Open the expanded manual fill view for a payment field.
-  [self openExpandedManualFillViewForDataType:ManualFillDataType::kPaymentMethod
-                                  fieldToFill:kCardNameFieldID];
+  [self loadFormAndOpenExpandedManualFillViewForDataType:ManualFillDataType::
+                                                             kPaymentMethod
+                                             fieldToFill:kCardNameFieldID];
 
-  [[EarlGrey selectElementWithMatcher:AutofillFormButton()]
+  // Check that the "Autofill Form" button exists.
+  [SearchAutofillFormButton(manual_fill::CreditCardTableViewMatcher())
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Navigate to the address tab and check that the "Autofill Form" button does
@@ -559,19 +511,13 @@ id<GREYMatcher> AutofillFormButton() {
 // Tests that the "Autofill Form" button does not exist for the other data types
 // than addresses if an address field is in focus.
 - (void)testNoAutofillFormButtonForNonAddressTypes {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Expanded manual fill view is only available on iPhone.");
-  }
-
   // Open the expanded manual fill view for an address field.
-  [self openExpandedManualFillViewForDataType:ManualFillDataType::kAddress
-                                  fieldToFill:kNameFieldID];
+  [self loadFormAndOpenExpandedManualFillViewForDataType:ManualFillDataType::
+                                                             kAddress
+                                             fieldToFill:kNameFieldID];
 
-  // Scroll down and check that the "Autofill Form" button exists.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesTableViewMatcher()]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
-  [[EarlGrey selectElementWithMatcher:AutofillFormButton()]
+  // Check that the "Autofill Form" button exists.
+  [SearchAutofillFormButton(manual_fill::ProfilesTableViewMatcher())
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Navigate to the payment tab and check that the "Autofill Form" button does
@@ -598,14 +544,10 @@ id<GREYMatcher> AutofillFormButton() {
 // Tests that the "Autofill Form" button does not exist for the other data types
 // than passwords if a password field is in focus.
 - (void)testNoAutofillFormButtonForNonPasswordTypes {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Expanded manual fill view is only available on iPhone.");
-  }
-
   // Open the expanded manual fill view for a password field.
-  [self openExpandedManualFillViewForDataType:ManualFillDataType::kPassword
-                                  fieldToFill:kPasswordFieldID];
+  [self loadFormAndOpenExpandedManualFillViewForDataType:ManualFillDataType::
+                                                             kPassword
+                                             fieldToFill:kPasswordFieldID];
 
   [[EarlGrey selectElementWithMatcher:AutofillFormButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -636,11 +578,6 @@ id<GREYMatcher> AutofillFormButton() {
 // Tests that the "Autofill Form" button does not exist for all of the data
 // types if the type of the focused field can't be associated with any of them.
 - (void)testNoAutofillFormButtonForRandomType {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Expanded manual fill view is only available on iPhone.");
-  }
-
   // Load form.
   LoadForm(self.testServer, ManualFillDataType::kOther);
 
@@ -672,30 +609,43 @@ id<GREYMatcher> AutofillFormButton() {
       assertWithMatcher:grey_notVisible()];
 }
 
-// Tests that the plus address fallback is shown in the address and the
-// password segment.
-- (void)testPlusAddressFallback {
+// Tests that the "Autofill Form" button's visibility correctly updates as
+// the focused field on the webpage changes. The button should only be
+// visible in the expanded manual fill view when the selected data type tab
+// matches the focused field's type.
+- (void)testAutofillFormButtonVisibilityChangesWithFocusedField {
+  // Not applicable for iPad as interacting with anything outside of the
+  // expanded manual fill view makes the view disappear.
   if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Expanded manual fill view is only available on iPhone.");
+    EARL_GREY_TEST_SKIPPED(@"Test not applicable for iPad.");
   }
 
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-
-  [PlusAddressAppInterface
-      saveExamplePlusProfile:base::SysUTF8ToNSString(
-                                 self.testServer->base_url().spec())];
-
-  // Open the expanded manual fill view for an address field.
+  // Load the multi form page and open the expanded manual fill view for an
+  // address field.
+  LoadMultiFormPage(self.testServer);
   [self openExpandedManualFillViewForDataType:ManualFillDataType::kAddress
                                   fieldToFill:kNameFieldID];
 
-  CheckChipButtonVisibility(plus_addresses::test::kFakePlusAddressU16);
+  // Check that the "Autofill Form" button exists.
+  [SearchAutofillFormButton(manual_fill::ProfilesTableViewMatcher())
+      assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Switch over to passwords.
+  // Now focus a password-related field.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeTop)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kPasswordFieldID)];
+
+  // The "Autofill form" button should have disappeared.
+  [[EarlGrey selectElementWithMatcher:AutofillFormButton()]
+      assertWithMatcher:grey_nil()];
+
+  // Navigate to the password tab and check that the "Autofill Form" button does
+  // exist as the focused field is password-related.
   [[EarlGrey selectElementWithMatcher:SegmentedControlPasswordTab()]
       performAction:grey_tap()];
-  CheckChipButtonVisibility(plus_addresses::test::kFakePlusAddressU16);
+  [[EarlGrey selectElementWithMatcher:AutofillFormButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end

@@ -19,6 +19,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace base {
 class RefCountedMemory;
@@ -40,6 +41,16 @@ class WebUIDataSource {
 
   // Creates a WebUIDataSource and adds it to the BrowserContext, which owns it.
   // Callers just get a raw pointer, which they don't own.
+  // `source_name` is the key for URL lookups, allowing the source to serve
+  // content for URLs that match the patterns:
+  //  - chrome://source_name/*
+  //  - chrome-untrusted://<host>/*
+  //    (source_name is of the form "chrome-untrusted://<host>")
+  //
+  // Though the parent class URLDataSource supports source names like
+  // "your-scheme://" which would serve URLs of the form
+  // "your-scheme://anything", this is explicitly disallowed for
+  // WebUIDataSource for simplicity.
   CONTENT_EXPORT static WebUIDataSource* CreateAndAdd(
       BrowserContext* browser_context,
       const std::string& source_name);
@@ -145,6 +156,14 @@ class WebUIDataSource {
 
   // The |source_name| this WebUIDataSource was created with.
   virtual std::string GetSource() = 0;
+
+  // The origin of URLs served by this data source.
+  //
+  // | source_name_                  | origin                       |
+  // | ----------------------------- | ---------------------------- |
+  // | some-host                     | chrome://some-host           |
+  // | chrome-untrusted://some-host/ | chrome-untrusted://some-host |
+  virtual url::Origin GetOrigin() = 0;
 
   // Set supported scheme if not one of the default supported schemes.
   virtual void SetSupportedScheme(std::string_view scheme) = 0;

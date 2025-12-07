@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -50,7 +51,7 @@ void SpeechGrammarList::addFromUri(ScriptState* script_state,
 
 void SpeechGrammarList::addFromString(const String& string, double weight) {
   String url_string =
-      String("data:application/xml,") + EncodeWithURLEscapeSequences(string);
+      StrCat({"data:application/xml,", EncodeWithURLEscapeSequences(string)});
   grammars_.push_back(
       SpeechGrammar::Create(KURL(NullURL(), url_string), weight));
 }

@@ -24,6 +24,10 @@ enum class CredentialsType {
   // a shared secret for key exchange.
   THIRD_PARTY,
 
+  // Authentication using the Cloud SessionAuthz service, which generates a
+  // shared secret for key exchange.
+  CLOUD_SESSION_AUTHZ,
+
   // Authentication using the corp-internal SessionAuthz service, which
   // generates a shared secret for key exchange.
   CORP_SESSION_AUTHZ,

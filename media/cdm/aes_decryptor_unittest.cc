@@ -2,25 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
 #endif
 
-#include "media/cdm/aes_decryptor.h"
-
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <set>
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/debug/leak_annotations.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -33,6 +36,7 @@
 #include "media/base/decryptor.h"
 #include "media/base/media_switches.h"
 #include "media/base/mock_filters.h"
+#include "media/cdm/aes_decryptor.h"
 #include "media/media_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
@@ -67,7 +71,8 @@ MATCHER(NotEmpty, "") {
 }
 MATCHER(IsJSONDictionary, "") {
   std::string result(arg.begin(), arg.end());
-  std::optional<base::Value> root = base::JSONReader::Read(result);
+  std::optional<base::Value> root =
+      base::JSONReader::Read(result, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   return (root && root->type() == base::Value::Type::DICT);
 }
 MATCHER(IsNullTime, "") {
@@ -85,9 +90,13 @@ const int kOriginalDataSize = 24;
 // 2 bytes of padding. 'kid'(keyid) is variable length, and may require 0, 1,
 // or 2 bytes of padding.
 
-const uint8_t kKeyId[] = {
+const auto kKeyId = std::to_array<uint8_t>({
     // base64 equivalent is AAECAw
-    0x00, 0x01, 0x02, 0x03};
+    0x00,
+    0x01,
+    0x02,
+    0x03,
+});
 
 // Key is 0x0405060708090a0b0c0d0e0f10111213,
 // base64 equivalent is BAUGBwgJCgsMDQ4PEBESEw.
@@ -102,6 +111,27 @@ const char kKeyAsJWK[] =
     "    }"
     "  ],"
     "  \"type\": \"temporary\""
+    "}";
+
+const char kWrongTypeKeyAsJWK[] =
+    "{"
+    "  \"keys\": ["
+    "    {"
+    "      \"kty\": \"oct\","
+    "      \"kid\": \"II\","
+    "      \"k\": \":5\""
+    "    }"
+    "  ],"
+    "}";
+
+const char kKeyIdWithoutKeyAsJWK[] =
+    "{"
+    "  \"keys\": ["
+    "    {"
+    "      \"kty\": \"oct\","
+    "      \"kid\": \"\""
+    "    }"
+    "  ]"
     "}";
 
 // Same kid as kKeyAsJWK, key to decrypt kEncryptedData2
@@ -141,30 +171,65 @@ const char kWrongSizedKeyAsJWK[] =
     "  ]"
     "}";
 
-const uint8_t kIv[] = {0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27,
-                       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+const auto kIv = std::to_array<uint8_t>({
+    0x20,
+    0x21,
+    0x22,
+    0x23,
+    0x24,
+    0x25,
+    0x26,
+    0x27,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+});
 
 // kOriginalData encrypted with kKey and kIv but without any subsamples (or
 // equivalently using kSubsampleEntriesCypherOnly).
-const uint8_t kEncryptedData[] = {
+const auto kEncryptedData = std::to_array<uint8_t>({
     0x2f, 0x03, 0x09, 0xef, 0x71, 0xaf, 0x31, 0x16, 0xfa, 0x9d, 0x18, 0x43,
-    0x1e, 0x96, 0x71, 0xb5, 0xbf, 0xf5, 0x30, 0x53, 0x9a, 0x20, 0xdf, 0x95};
+    0x1e, 0x96, 0x71, 0xb5, 0xbf, 0xf5, 0x30, 0x53, 0x9a, 0x20, 0xdf, 0x95,
+});
 
 // kOriginalData encrypted with kSubsampleKey and kSubsampleIv using
 // kSubsampleEntriesNormal.
-const uint8_t kSubsampleEncryptedData[] = {
+const auto kSubsampleEncryptedData = std::to_array<uint8_t>({
     0x4f, 0x72, 0x09, 0x16, 0x09, 0xe6, 0x79, 0xad, 0x70, 0x73, 0x75, 0x62,
-    0x09, 0xbb, 0x83, 0x1d, 0x4d, 0x08, 0xd7, 0x78, 0xa4, 0xa7, 0xf1, 0x2e};
+    0x09, 0xbb, 0x83, 0x1d, 0x4d, 0x08, 0xd7, 0x78, 0xa4, 0xa7, 0xf1, 0x2e,
+});
 
-const uint8_t kOriginalData2[] = "Changed Original data.";
+const std::string_view kOriginalData2 = "Changed Original data.";
 
-const uint8_t kIv2[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+const auto kIv2 = std::to_array<uint8_t>({
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+});
 
-const uint8_t kKeyId2[] = {
+const auto kKeyId2 = std::to_array<uint8_t>({
     // base64 equivalent is AAECAwQFBgcICQoLDA0ODxAREhM=
     0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
-    0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13};
+    0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13,
+});
 
 const char kKey2AsJWK[] =
     "{"
@@ -180,29 +245,35 @@ const char kKey2AsJWK[] =
 
 // 'k' in bytes is x14x15x16x17x18x19x1ax1bx1cx1dx1ex1fx20x21x22x23
 
-const uint8_t kEncryptedData2[] = {
+const auto kEncryptedData2 = std::to_array<uint8_t>({
     0x57, 0x66, 0xf4, 0x12, 0x1a, 0xed, 0xb5, 0x79, 0x1c, 0x8e, 0x25,
-    0xd7, 0x17, 0xe7, 0x5e, 0x16, 0xe3, 0x40, 0x08, 0x27, 0x11, 0xe9};
+    0xd7, 0x17, 0xe7, 0x5e, 0x16, 0xe3, 0x40, 0x08, 0x27, 0x11, 0xe9,
+});
 
 // Subsample entries for testing. The sum of |cypher_bytes| and |clear_bytes| of
 // all entries must be equal to kOriginalDataSize to make the subsample entries
 // valid.
 
-const SubsampleEntry kSubsampleEntriesNormal[] = {{2, 7}, {3, 11}, {1, 0}};
+const auto kSubsampleEntriesNormal =
+    std::to_array<SubsampleEntry>({{2, 7}, {3, 11}, {1, 0}});
 
-const SubsampleEntry kSubsampleEntriesWrongSize[] = {
+const auto kSubsampleEntriesWrongSize = std::to_array<SubsampleEntry>({
     {3, 6},  // This entry doesn't match the correct entry.
     {3, 11},
-    {1, 0}};
+    {1, 0},
+});
 
-const SubsampleEntry kSubsampleEntriesInvalidTotalSize[] = {
+const auto kSubsampleEntriesInvalidTotalSize = std::to_array<SubsampleEntry>({
     {1, 1000},  // This entry is too large.
     {3, 11},
-    {1, 0}};
+    {1, 0},
+});
 
-const SubsampleEntry kSubsampleEntriesClearOnly[] = {{7, 0}, {8, 0}, {9, 0}};
+const auto kSubsampleEntriesClearOnly =
+    std::to_array<SubsampleEntry>({{7, 0}, {8, 0}, {9, 0}});
 
-const SubsampleEntry kSubsampleEntriesCypherOnly[] = {{0, 6}, {0, 8}, {0, 10}};
+const auto kSubsampleEntriesCypherOnly =
+    std::to_array<SubsampleEntry>({{0, 6}, {0, 8}, {0, 10}});
 
 scoped_refptr<DecoderBuffer> CreateEncryptedBuffer(
     const std::vector<uint8_t>& data,
@@ -242,16 +313,26 @@ class AesDecryptorTest : public testing::TestWithParam<TestType> {
  public:
   AesDecryptorTest()
       : original_data_(kOriginalData, kOriginalData + kOriginalDataSize),
-        encrypted_data_(kEncryptedData,
-                        kEncryptedData + std::size(kEncryptedData)),
+        encrypted_data_(kEncryptedData.data(),
+                        base::span<const uint8_t>(kEncryptedData)
+                            .subspan(std::size(kEncryptedData))
+                            .data()),
         subsample_encrypted_data_(
-            kSubsampleEncryptedData,
-            kSubsampleEncryptedData + std::size(kSubsampleEncryptedData)),
-        key_id_(kKeyId, kKeyId + std::size(kKeyId)),
-        iv_(kIv, kIv + std::size(kIv)),
+            kSubsampleEncryptedData.data(),
+            base::span<const uint8_t>(kSubsampleEncryptedData)
+                .subspan(std::size(kSubsampleEncryptedData))
+                .data()),
+        key_id_(kKeyId.data(),
+                base::span<const uint8_t>(kKeyId)
+                    .subspan(std::size(kKeyId))
+                    .data()),
+        iv_(kIv.data(),
+            base::span<const uint8_t>(kIv).subspan(std::size(kIv)).data()),
         normal_subsample_entries_(
-            kSubsampleEntriesNormal,
-            kSubsampleEntriesNormal + std::size(kSubsampleEntriesNormal)) {}
+            kSubsampleEntriesNormal.data(),
+            base::span<const SubsampleEntry>(kSubsampleEntriesNormal)
+                .subspan(std::size(kSubsampleEntriesNormal))
+                .data()) {}
 
   MOCK_METHOD2(BufferDecrypted,
                void(Decryptor::Status, scoped_refptr<DecoderBuffer>));
@@ -260,7 +341,7 @@ class AesDecryptorTest : public testing::TestWithParam<TestType> {
   void SetUp() override {
     if (GetParam() == TestType::kAesDecryptor) {
       OnCdmCreated(
-          new AesDecryptor(
+          base::MakeRefCounted<AesDecryptor>(
               base::BindRepeating(&MockCdmClient::OnSessionMessage,
                                   base::Unretained(&cdm_client_)),
               base::BindRepeating(&MockCdmClient::OnSessionClosed,
@@ -301,15 +382,16 @@ class AesDecryptorTest : public testing::TestWithParam<TestType> {
           base::BindRepeating(&MockCdmClient::OnSessionExpirationUpdate,
                               base::Unretained(&cdm_client_)),
           base::BindOnce(&AesDecryptorTest::OnCdmCreated,
-                         base::Unretained(this)));
+                         base::Unretained(this)),
+          /*is_debugger_attached=*/false);
 
       base::RunLoop().RunUntilIdle();
 #else
-      NOTREACHED_IN_MIGRATION()
+      NOTREACHED()
           << "CdmAdapter tests only supported when library CDMs are supported.";
 #endif
     } else {
-      NOTREACHED_IN_MIGRATION() << "Unsupported test parameter.";
+      NOTREACHED() << "Unsupported test parameter.";
     }
   }
 
@@ -578,7 +660,8 @@ TEST_P(AesDecryptorTest, MultipleCreateSession) {
 }
 
 TEST_P(AesDecryptorTest, CreateSessionWithCencInitData) {
-  const uint8_t init_data[] = {
+  const auto init_data = std::to_array<uint8_t>({
+      // clang-format off
       0x00, 0x00, 0x00, 0x44,                          // size = 68
       0x70, 0x73, 0x73, 0x68,                          // 'pssh'
       0x01,                                            // version
@@ -591,23 +674,27 @@ TEST_P(AesDecryptorTest, CreateSessionWithCencInitData) {
       0x7E, 0x57, 0x1D, 0x04, 0x7E, 0x57, 0x1D, 0x04,  // key2
       0x7E, 0x57, 0x1D, 0x04, 0x7E, 0x57, 0x1D, 0x04,
       0x00, 0x00, 0x00, 0x00  // datasize
-  };
+      // clang-format on
+  });
 
   EXPECT_CALL(cdm_client_, OnSessionMessage(NotEmpty(), _, IsJSONDictionary()));
   cdm_->CreateSessionAndGenerateRequest(
       CdmSessionType::kTemporary, EmeInitDataType::CENC,
-      std::vector<uint8_t>(init_data, init_data + std::size(init_data)),
+      std::vector<uint8_t>(init_data.data(),
+                           base::span<const uint8_t>(init_data)
+                               .subspan(std::size(init_data))
+                               .data()),
       CreateSessionPromise(RESOLVED));
 }
 
 TEST_P(AesDecryptorTest, CreateSessionWithKeyIdsInitData) {
-  const char init_data[] =
+  const std::string_view init_data =
       "{\"kids\":[\"AQI\",\"AQIDBA\",\"AQIDBAUGBwgJCgsMDQ4PEA\"]}";
 
   EXPECT_CALL(cdm_client_, OnSessionMessage(NotEmpty(), _, IsJSONDictionary()));
   cdm_->CreateSessionAndGenerateRequest(
       CdmSessionType::kTemporary, EmeInitDataType::KEYIDS,
-      std::vector<uint8_t>(init_data, init_data + std::size(init_data) - 1),
+      std::vector<uint8_t>(init_data.begin(), init_data.end()),
       CreateSessionPromise(RESOLVED));
 }
 
@@ -632,6 +719,16 @@ TEST_P(AesDecryptorTest, WrongKey) {
   scoped_refptr<DecoderBuffer> encrypted_buffer = CreateEncryptedBuffer(
       encrypted_data_, key_id_, iv_, no_subsample_entries_);
   DecryptAndExpect(encrypted_buffer, original_data_, DATA_MISMATCH);
+}
+
+TEST_P(AesDecryptorTest, WrongJwtType) {
+  std::string session_id = CreateSession(key_id_);
+  UpdateSessionAndExpect(session_id, kWrongTypeKeyAsJWK, REJECTED, true);
+}
+
+TEST_P(AesDecryptorTest, KeyIdWithoutKey) {
+  std::string session_id = CreateSession(key_id_);
+  UpdateSessionAndExpect(session_id, kKeyIdWithoutKeyAsJWK, REJECTED, true);
 }
 
 TEST_P(AesDecryptorTest, NoKey) {
@@ -678,16 +775,21 @@ TEST_P(AesDecryptorTest, MultipleKeysAndFrames) {
 
   // The second key is also available.
   encrypted_buffer = CreateEncryptedBuffer(
-      std::vector<uint8_t>(kEncryptedData2,
-                           kEncryptedData2 + std::size(kEncryptedData2)),
-      std::vector<uint8_t>(kKeyId2, kKeyId2 + std::size(kKeyId2)),
-      std::vector<uint8_t>(kIv2, kIv2 + std::size(kIv2)),
+      std::vector<uint8_t>(kEncryptedData2.data(),
+                           base::span<const uint8_t>(kEncryptedData2)
+                               .subspan(std::size(kEncryptedData2))
+                               .data()),
+      std::vector<uint8_t>(kKeyId2.data(), base::span<const uint8_t>(kKeyId2)
+                                               .subspan(std::size(kKeyId2))
+                                               .data()),
+      std::vector<uint8_t>(
+          kIv2.data(),
+          base::span<const uint8_t>(kIv2).subspan(std::size(kIv2)).data()),
       no_subsample_entries_);
-  ASSERT_NO_FATAL_FAILURE(DecryptAndExpect(
+  UNSAFE_TODO(ASSERT_NO_FATAL_FAILURE(DecryptAndExpect(
       encrypted_buffer,
-      std::vector<uint8_t>(kOriginalData2,
-                           kOriginalData2 + std::size(kOriginalData2) - 1),
-      SUCCESS));
+      std::vector<uint8_t>(kOriginalData2.begin(), kOriginalData2.end()),
+      SUCCESS)));
 }
 
 TEST_P(AesDecryptorTest, CorruptedIv) {
@@ -747,8 +849,10 @@ TEST_P(AesDecryptorTest, SubsampleWrongSize) {
   UpdateSessionAndExpect(session_id, kKeyAsJWK, RESOLVED, true);
 
   std::vector<SubsampleEntry> subsample_entries_wrong_size(
-      kSubsampleEntriesWrongSize,
-      kSubsampleEntriesWrongSize + std::size(kSubsampleEntriesWrongSize));
+      kSubsampleEntriesWrongSize.data(),
+      base::span<const SubsampleEntry>(kSubsampleEntriesWrongSize)
+          .subspan(std::size(kSubsampleEntriesWrongSize))
+          .data());
 
   scoped_refptr<DecoderBuffer> encrypted_buffer = CreateEncryptedBuffer(
       subsample_encrypted_data_, key_id_, iv_, subsample_entries_wrong_size);
@@ -760,9 +864,10 @@ TEST_P(AesDecryptorTest, SubsampleInvalidTotalSize) {
   UpdateSessionAndExpect(session_id, kKeyAsJWK, RESOLVED, true);
 
   std::vector<SubsampleEntry> subsample_entries_invalid_total_size(
-      kSubsampleEntriesInvalidTotalSize,
-      kSubsampleEntriesInvalidTotalSize +
-          std::size(kSubsampleEntriesInvalidTotalSize));
+      kSubsampleEntriesInvalidTotalSize.data(),
+      base::span<const SubsampleEntry>(kSubsampleEntriesInvalidTotalSize)
+          .subspan(std::size(kSubsampleEntriesInvalidTotalSize))
+          .data());
 
   scoped_refptr<DecoderBuffer> encrypted_buffer =
       CreateEncryptedBuffer(subsample_encrypted_data_, key_id_, iv_,
@@ -776,8 +881,10 @@ TEST_P(AesDecryptorTest, SubsampleClearBytesOnly) {
   UpdateSessionAndExpect(session_id, kKeyAsJWK, RESOLVED, true);
 
   std::vector<SubsampleEntry> clear_only_subsample_entries(
-      kSubsampleEntriesClearOnly,
-      kSubsampleEntriesClearOnly + std::size(kSubsampleEntriesClearOnly));
+      kSubsampleEntriesClearOnly.data(),
+      base::span<const SubsampleEntry>(kSubsampleEntriesClearOnly)
+          .subspan(std::size(kSubsampleEntriesClearOnly))
+          .data());
 
   scoped_refptr<DecoderBuffer> encrypted_buffer = CreateEncryptedBuffer(
       original_data_, key_id_, iv_, clear_only_subsample_entries);
@@ -790,8 +897,10 @@ TEST_P(AesDecryptorTest, SubsampleCypherBytesOnly) {
   UpdateSessionAndExpect(session_id, kKeyAsJWK, RESOLVED, true);
 
   std::vector<SubsampleEntry> cypher_only_subsample_entries(
-      kSubsampleEntriesCypherOnly,
-      kSubsampleEntriesCypherOnly + std::size(kSubsampleEntriesCypherOnly));
+      kSubsampleEntriesCypherOnly.data(),
+      base::span<const SubsampleEntry>(kSubsampleEntriesCypherOnly)
+          .subspan(std::size(kSubsampleEntriesCypherOnly))
+          .data());
 
   scoped_refptr<DecoderBuffer> encrypted_buffer = CreateEncryptedBuffer(
       encrypted_data_, key_id_, iv_, cypher_only_subsample_entries);
@@ -1038,8 +1147,12 @@ TEST_P(AesDecryptorTest, JWKKey) {
 }
 
 TEST_P(AesDecryptorTest, GetKeyIds) {
-  std::vector<uint8_t> key_id1(kKeyId, kKeyId + std::size(kKeyId));
-  std::vector<uint8_t> key_id2(kKeyId2, kKeyId2 + std::size(kKeyId2));
+  std::vector<uint8_t> key_id1(
+      kKeyId.data(),
+      base::span<const uint8_t>(kKeyId).subspan(std::size(kKeyId)).data());
+  std::vector<uint8_t> key_id2(
+      kKeyId2.data(),
+      base::span<const uint8_t>(kKeyId2).subspan(std::size(kKeyId2)).data());
 
   std::string session_id = CreateSession(key_id_);
   EXPECT_FALSE(KeysInfoContains(key_id1));
@@ -1057,7 +1170,9 @@ TEST_P(AesDecryptorTest, GetKeyIds) {
 }
 
 TEST_P(AesDecryptorTest, NoKeysChangeForSameKey) {
-  std::vector<uint8_t> key_id(kKeyId, kKeyId + std::size(kKeyId));
+  std::vector<uint8_t> key_id(
+      kKeyId.data(),
+      base::span<const uint8_t>(kKeyId).subspan(std::size(kKeyId)).data());
 
   std::string session_id = CreateSession(key_id_);
   EXPECT_FALSE(KeysInfoContains(key_id));
@@ -1076,7 +1191,9 @@ TEST_P(AesDecryptorTest, NoKeysChangeForSameKey) {
 }
 
 TEST_P(AesDecryptorTest, RandomSessionIDs) {
-  std::vector<uint8_t> key_id(kKeyId, kKeyId + std::size(kKeyId));
+  std::vector<uint8_t> key_id(
+      kKeyId.data(),
+      base::span<const uint8_t>(kKeyId).subspan(std::size(kKeyId)).data());
   const size_t kNumIterations = 25;
   std::set<std::string> seen_sessions;
 

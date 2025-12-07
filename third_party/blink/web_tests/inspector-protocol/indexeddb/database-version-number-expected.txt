@@ -1,8 +1,4 @@
 Tests that IndexedDB database version is reported correctly
-{
-    name : testDatabase1
-    objectStores : [
-    ]
-    version : 2147483649
-}
+- name : testDatabase1
+- version : 2147483649
 

@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/public/cpp/bindings/connector.h"
 
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include <array>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -109,7 +106,8 @@ class ConnectorTest : public testing::Test {
       std::vector<ScopedHandle> handles = std::vector<ScopedHandle>()) {
     const size_t size = strlen(text) + 1;  // Plus null terminator.
     Message message(1, 0, size, 0, &handles);
-    memcpy(message.payload_buffer()->AllocateAndGet(size), text, size);
+    UNSAFE_TODO(
+        memcpy(message.payload_buffer()->AllocateAndGet(size), text, size));
     return message;
   }
 
@@ -204,7 +202,7 @@ TEST_F(ConnectorTest, Basic_TwoMessages) {
   Connector connector1(std::move(handle1_), Connector::SINGLE_THREADED_SEND,
                        base::SingleThreadTaskRunner::GetCurrentDefault());
 
-  const char* kText[] = {"hello", "world"};
+  auto kText = std::to_array<const char*>({"hello", "world"});
   for (size_t i = 0; i < std::size(kText); ++i) {
     Message message = CreateMessage(kText[i]);
     connector0.Accept(&message);
@@ -236,7 +234,7 @@ TEST_F(ConnectorTest, Basic_TwoMessages_Synchronous) {
   Connector connector1(std::move(handle1_), Connector::SINGLE_THREADED_SEND,
                        base::SingleThreadTaskRunner::GetCurrentDefault());
 
-  const char* kText[] = {"hello", "world"};
+  auto kText = std::to_array<const char*>({"hello", "world"});
   for (size_t i = 0; i < std::size(kText); ++i) {
     Message message = CreateMessage(kText[i]);
     connector0.Accept(&message);
@@ -386,7 +384,7 @@ TEST_F(ConnectorTest, WaitForIncomingMessageWithReentrancy) {
   Connector connector1(std::move(handle1_), Connector::SINGLE_THREADED_SEND,
                        base::SingleThreadTaskRunner::GetCurrentDefault());
 
-  const char* kText[] = {"hello", "world"};
+  auto kText = std::to_array<const char*>({"hello", "world"});
   for (size_t i = 0; i < std::size(kText); ++i) {
     Message message = CreateMessage(kText[i]);
     connector0.Accept(&message);

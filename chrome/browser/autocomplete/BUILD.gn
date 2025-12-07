@@ -1,0 +1,312 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/optimization_guide/features.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+source_set("autocomplete") {
+  sources = [
+    "autocomplete_classifier_factory.h",
+    "chrome_autocomplete_provider_client.h",
+    "chrome_autocomplete_scheme_classifier.h",
+    "document_suggestions_service_factory.h",
+    "enterprise_search_aggregator_suggestions_service_factory.h",
+    "in_memory_url_index_factory.h",
+    "provider_state_service_factory.h",
+    "remote_suggestions_service_factory.h",
+    "shortcuts_backend_factory.h",
+    "zero_suggest_cache_service_factory.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/omnibox/browser",
+    "//components/omnibox/browser:location_bar",
+    "//components/saved_tab_groups/public",
+  ]
+
+  if (is_android) {
+    sources += [ "../android/autocomplete/tab_matcher_android.h" ]
+    public_deps += [ "//components/search_engines" ]
+  } else {
+    sources += [ "tab_matcher_desktop.h" ]
+    public_deps += [
+      "//components/search_engines",
+      "//content/public/browser",
+    ]
+  }
+
+  if (enable_extensions_core) {
+    sources += [
+      "keyword_extensions_delegate_impl.h",
+      "unscoped_extension_provider_delegate_impl.h",
+    ]
+    public_deps += [
+      "//extensions/buildflags",
+      "//extensions/common",
+    ]
+  }
+
+  if (enable_extensions) {
+    sources += [ "shortcuts_extensions_manager.h" ]
+    public_deps += [ "//extensions/browser" ]
+  }
+
+  if (build_with_tflite_lib) {
+    sources += [
+      "autocomplete_scoring_model_service_factory.h",
+      "on_device_tail_model_service_factory.h",
+    ]
+  }
+}
+
+source_set("impl") {
+  sources = [
+    "autocomplete_classifier_factory.cc",
+    "chrome_autocomplete_provider_client.cc",
+    "chrome_autocomplete_scheme_classifier.cc",
+    "document_suggestions_service_factory.cc",
+    "enterprise_search_aggregator_suggestions_service_factory.cc",
+    "in_memory_url_index_factory.cc",
+    "provider_state_service_factory.cc",
+    "remote_suggestions_service_factory.cc",
+    "shortcuts_backend_factory.cc",
+    "zero_suggest_cache_service_factory.cc",
+  ]
+  deps = [
+    ":aim_eligibility_service",
+    ":autocomplete",
+    "//chrome/app:command_ids",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
+    "//chrome/browser/bitmap_fetcher",
+    "//chrome/browser/custom_handlers",
+    "//chrome/browser/history",
+    "//chrome/browser/prefs",
+    "//chrome/browser/profiles",
+    "//chrome/browser/profiles:profile_io_data",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/signin",
+    "//chrome/browser/sync",
+    "//chrome/browser/sync:factories",
+    "//chrome/browser/tab_group_sync:factories",
+    "//chrome/browser/translate",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/omnibox",
+    "//chrome/browser/ui/tabs:tabs_public",
+    "//chrome/browser/upgrade_detector",
+    "//chrome/common",
+    "//chrome/common:chrome_features",
+    "//chrome/common:constants",
+    "//components/application_locale_storage",
+    "//components/bookmarks/browser",
+    "//components/custom_handlers",
+    "//components/history/core/common",
+    "//components/history_clusters/core",
+    "//components/language/core/browser",
+    "//components/lens",
+    "//components/optimization_guide:machine_learning_tflite_buildflags",
+    "//components/translate/core/browser",
+    "//components/unified_consent",
+    "//components/variations/service",
+    "//content/public/browser",
+  ]
+
+  if (is_android) {
+    sources += [ "../android/autocomplete/tab_matcher_android.cc" ]
+    deps += [
+      "//chrome/browser/flags:flags_android",
+      "//chrome/browser/ui/android/omnibox:jni_headers",
+      "//chrome/browser/ui/android/tab_model",
+    ]
+  } else {
+    sources += [ "tab_matcher_desktop.cc" ]
+    deps += [
+      "//chrome/browser/sharing_hub",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/lens",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/views/side_panel",
+      "//chrome/browser/web_applications/app_service",
+    ]
+  }
+
+  if (is_chromeos) {
+    deps += [ "//chrome/browser/ash/app_list/search/essential_search" ]
+  }
+
+  if (enable_extensions_core) {
+    sources += [
+      "keyword_extensions_delegate_impl.cc",
+      "unscoped_extension_provider_delegate_impl.cc",
+    ]
+    deps += [
+      "//chrome/browser/extensions",
+      "//chrome/browser/extensions/api/omnibox",
+      "//chrome/browser/omnibox",
+      "//extensions/browser",
+    ]
+  }
+
+  if (enable_extensions) {
+    sources += [ "shortcuts_extensions_manager.cc" ]
+  }
+
+  if (build_with_tflite_lib) {
+    sources += [
+      "autocomplete_scoring_model_service_factory.cc",
+      "on_device_tail_model_service_factory.cc",
+    ]
+    deps += [ "//chrome/browser/optimization_guide" ]
+  }
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("aim_eligibility_service") {
+  sources = [
+    "aim_eligibility_service_factory.cc",
+    "aim_eligibility_service_factory.h",
+    "chrome_aim_eligibility_service.cc",
+    "chrome_aim_eligibility_service.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/signin",
+    "//components/application_locale_storage",
+    "//components/keyed_service/core",
+    "//components/omnibox/browser",
+    "//components/prefs",
+    "//components/search_engines",
+    "//components/variations/service",
+    "//content/public/browser",
+    "//services/network/public/cpp",
+  ]
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "autocomplete_browsertest.cc",
+      "chrome_aim_eligibility_service_browsertest.cc",
+      "chrome_autocomplete_provider_client_browsertest.cc",
+      "tab_matcher_desktop_browsertest.cc",
+    ]
+    deps = [
+      ":aim_eligibility_service",
+      ":autocomplete",
+      "//base",
+      "//base/test:test_support",
+      "//build:buildflag_header_h",
+      "//chrome/browser",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/extensions",
+      "//chrome/browser/history",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/search_engines",
+      "//chrome/browser/signin",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/lens:test_support",
+      "//chrome/browser/ui/location_bar",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/tabs:tabs_public",
+      "//chrome/browser/ui/views/toolbar",
+      "//chrome/common",
+      "//chrome/common:constants",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/history/core/browser",
+      "//components/lens",
+      "//components/omnibox/browser",
+      "//components/omnibox/browser:location_bar",
+      "//components/prefs",
+      "//components/search",
+      "//components/search_engines",
+      "//components/signin/public/identity_manager:test_support",
+      "//components/variations/service",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//third_party/metrics_proto",
+      "//third_party/omnibox_proto",
+      "//ui/base:types",
+      "//ui/base/unowned_user_data",
+      "//url",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "chrome_autocomplete_scheme_classifier_unittest.cc",
+    "provider_state_service_factory_unittest.cc",
+    "remote_suggestions_service_factory_unittest.cc",
+    "search_provider_unittest.cc",
+    "shortcuts_provider_extension_unittest.cc",
+  ]
+  deps = [
+    ":autocomplete",
+    "//base",
+    "//chrome/browser",
+    "//chrome/browser/history",
+    "//chrome/browser/profiles:test_support",
+    "//chrome/browser/search_engines",
+    "//chrome/common:constants",
+    "//chrome/common:non_code_constants",
+    "//chrome/test:test_support",
+    "//components/google/core/common",
+    "//components/history/core/browser",
+    "//components/lens:features",
+    "//components/lens/proto/server:proto",
+    "//components/omnibox/browser",
+    "//components/omnibox/browser:location_bar",
+    "//components/omnibox/browser:test_support",
+    "//components/omnibox/common",
+    "//components/prefs",
+    "//components/search_engines",
+    "//components/search_engines:search_engine_type",
+    "//components/search_engines:search_engines_switches",
+    "//components/variations",
+    "//components/variations:test_support",
+    "//content/test:test_support",
+    "//extensions/buildflags",
+    "//net",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom:url_loader_base",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/metrics_proto",
+    "//third_party/omnibox_proto",
+    "//ui/base",
+    "//url",
+  ]
+
+  if (enable_extensions) {
+    sources += [ "keyword_extensions_delegate_impl_unittest.cc" ]
+  }
+
+  if (enable_extensions_core) {
+    deps += [
+      "//extensions:test_support",
+      "//extensions/browser",
+      "//extensions/common",
+    ]
+  }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}

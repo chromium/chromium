@@ -1,0 +1,49 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_ios)
+
+import("//ios/web/public/js_messaging/optimize_ts.gni")
+
+source_set("ios") {
+  sources = [
+    "ios_bookmark_parser.h",
+    "ios_bookmark_parser.mm",
+  ]
+  public_deps = [ ":bookmark_parser" ]
+  deps = [
+    "//base",
+    "//components/user_data_importer/utility:bookmarks",
+    "//ios/web/public/js_messaging:web_view_js_utils",
+    "//url",
+  ]
+}
+
+compile_ts("compile_bookmark_parser") {
+  sources = [ "resources/bookmark_parser.ts" ]
+}
+
+action("strip_comments") {
+  script = "//components/user_data_importer/ios/strip_js_comments.py"
+  sources = filter_include(get_target_outputs(":compile_bookmark_parser"),
+                           [ "*/bookmark_parser.js" ])
+  outputs = [ "$target_gen_dir/bookmark_parser.js" ]
+  args = [
+    "--output",
+    rebase_path(outputs[0], root_build_dir),
+    "--input",
+    rebase_path(sources[0], root_build_dir),
+  ]
+  deps = [ ":compile_bookmark_parser" ]
+}
+
+# Intentionally bundle unoptimized, un-minified output of the TS transpiler.
+# This avoids renaming or removing 'unused' symbols that will be referenced
+# when the script is formatted for injection.
+bundle_data("bookmark_parser") {
+  sources = filter_include(get_target_outputs(":strip_comments"),
+                           [ "*/bookmark_parser.js" ])
+  public_deps = [ ":strip_comments" ]
+  outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+}

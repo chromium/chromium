@@ -7,8 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/shared/coordinator/scene/scene_activation_level.h"
+
+@class ProfileState;
 @class SceneState;
-enum SceneActivationLevel : NSUInteger;
 
 // Observer for a SceneState.
 @protocol SceneStateObserver <NSObject>
@@ -19,6 +21,14 @@ enum SceneActivationLevel : NSUInteger;
 // states.
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level;
+
+// Called when the `profileState` is set on the SceneState. This can be useful
+// for AppStateObserver that also want to check if a SceneState's ProfileState
+// initialisation has progressed enough. This allow to avoid a race-condition
+// if the SceneState reaches SceneActivationLevelForegroundActive before the
+// `profileState` is set.
+- (void)sceneState:(SceneState*)sceneState
+    profileStateConnected:(ProfileState*)profileState;
 
 // Notifies when presentingModalOverlay is being set to true.
 - (void)sceneStateWillShowModalOverlay:(SceneState*)sceneState;

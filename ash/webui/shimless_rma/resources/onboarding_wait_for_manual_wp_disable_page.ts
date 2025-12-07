@@ -5,12 +5,13 @@
 import './shimless_rma_shared.css.js';
 import './base_page.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {getTemplate} from './onboarding_wait_for_manual_wp_disable_page.html.js';
-import {HardwareWriteProtectionStateObserverReceiver, ShimlessRmaServiceInterface} from './shimless_rma.mojom-webui.js';
+import type {ShimlessRmaServiceInterface} from './shimless_rma.mojom-webui.js';
+import {HardwareWriteProtectionStateObserverReceiver} from './shimless_rma.mojom-webui.js';
 import {disableAllButtons, focusPageTitle} from './shimless_rma_util.js';
 
 /**

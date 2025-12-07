@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AFFILIATIONS_CORE_BROWSER_MOCK_AFFILIATION_FETCHER_H_
 #define COMPONENTS_AFFILIATIONS_CORE_BROWSER_MOCK_AFFILIATION_FETCHER_H_
 
+#include "base/functional/callback.h"
 #include "components/affiliations/core/browser/affiliation_fetcher_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -17,7 +18,9 @@ class MockAffiliationFetcher : public AffiliationFetcherInterface {
 
   MOCK_METHOD(void,
               StartRequest,
-              (const std::vector<FacetURI>&, RequestInfo),
+              (const std::vector<FacetURI>&,
+               RequestInfo,
+               base::OnceCallback<void(FetchResult)>),
               (override));
   MOCK_METHOD(std::vector<FacetURI>&,
               GetRequestedFacetURIs,

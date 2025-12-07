@@ -2,52 +2,45 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/management/management_ui.h"
 
 #include <memory>
 
 #include "base/strings/utf_string_conversions.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/management/management_ui_constants.h"
 #include "chrome/browser/ui/webui/management/management_ui_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/management_resources.h"
 #include "chrome/grit/management_resources_map.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/policy/core/common/policy_pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/strings/grit/components_strings.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/webui/webui_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/grit/branded_strings.h"
-#include "ui/chromeos/devicetype_utils.h"
-#else  // BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/grit/branded_strings.h"
+#include "ui/chromeos/devicetype_utils.h"
+#else  // BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -58,6 +51,85 @@ content::WebUIDataSource* CreateAndAddManagementUIHtmlSource(Profile* profile) {
   source->AddString("pageSubtitle",
                     ManagementUI::GetManagementPageSubtitle(profile));
 
+  std::vector<webui::LocalizedString> localized_strings;
+  ManagementUI::GetLocalizedStrings(localized_strings, /*remove_links=*/false);
+  source->AddLocalizedStrings(localized_strings);
+
+  source->SetDefaultResource(IDR_MANAGEMENT_MANAGEMENT_HTML);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  source->AddString("managementDeviceLearnMoreUrl",
+                    chrome::kLearnMoreEnterpriseURL);
+  source->AddString("managementAccountLearnMoreUrl",
+                    chrome::kManagedUiLearnMoreUrl);
+
+  const size_t dlp_events_count =
+      policy::DlpRulesManagerFactory::GetForPrimaryProfile() &&
+              policy::DlpRulesManagerFactory::GetForPrimaryProfile()
+                  ->GetReportingManager()
+          ? policy::DlpRulesManagerFactory::GetForPrimaryProfile()
+                ->GetReportingManager()
+                ->events_reported()
+          : 0;
+  source->AddString(kManagementReportDlpEvents,
+                    l10n_util::GetPluralStringFUTF16(
+                        IDS_MANAGEMENT_REPORT_DLP_EVENTS, dlp_events_count));
+  source->AddString("pluginVmDataCollection",
+                    l10n_util::GetStringFUTF16(
+                        IDS_MANAGEMENT_REPORT_PLUGIN_VM,
+                        l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME)));
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  webui::SetupWebUIDataSource(source, kManagementResources,
+                              IDR_MANAGEMENT_MANAGEMENT_HTML);
+  return source;
+}
+
+}  // namespace
+
+// static
+base::RefCountedMemory* ManagementUI::GetFaviconResourceBytes(
+    ui::ResourceScaleFactor scale_factor) {
+  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
+      IDR_MANAGEMENT_FAVICON, scale_factor);
+}
+
+// static
+std::u16string ManagementUI::GetManagementPageSubtitle(Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS)
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
+  const auto device_type = ui::GetChromeOSDeviceTypeResourceId();
+  if (!connector->IsDeviceEnterpriseManaged() &&
+      !profile->GetProfilePolicyConnector()->IsManaged()) {
+    return l10n_util::GetStringFUTF16(IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE,
+                                      l10n_util::GetStringUTF16(device_type));
+  }
+
+  std::string account_manager = connector->GetEnterpriseDomainManager();
+
+  if (account_manager.empty()) {
+    account_manager =
+        GetAccountManagerIdentity(profile).value_or(std::string());
+  }
+  if (account_manager.empty()) {
+    return l10n_util::GetStringFUTF16(IDS_MANAGEMENT_SUBTITLE_MANAGED,
+                                      l10n_util::GetStringUTF16(device_type));
+  }
+  return l10n_util::GetStringFUTF16(IDS_MANAGEMENT_SUBTITLE_MANAGED_BY,
+                                    l10n_util::GetStringUTF16(device_type),
+                                    base::UTF8ToUTF16(account_manager));
+#else   // BUILDFLAG(IS_CHROMEOS)
+  // Call the global function explicitly to avoid a conflict with
+  // the static method ManagementUI::GetManagementPageSubtitle().
+  return ::GetManagementPageSubtitle(profile);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+}
+
+// static
+void ManagementUI::GetLocalizedStrings(
+    std::vector<webui::LocalizedString>& strings,
+    bool remove_links) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
 #if BUILDFLAG(IS_CHROMEOS)
       {"learnMore", IDS_LEARN_MORE},
@@ -68,7 +140,6 @@ content::WebUIDataSource* CreateAndAddManagementUIHtmlSource(Profile* profile) {
       {"deviceReporting", IDS_MANAGEMENT_DEVICE_REPORTING},
       {"updateRequiredEolAdminMessageTitle",
        IDS_MANAGEMENT_UPDATE_REQUIRED_EOL_ADMIN_MESSAGE_TITLE},
-      {kManagementLogUploadEnabled, IDS_MANAGEMENT_LOG_UPLOAD_ENABLED},
       {kManagementReportActivityTimes,
        IDS_MANAGEMENT_REPORT_DEVICE_ACTIVITY_TIMES},
       {kManagementReportNetworkData, IDS_MANAGEMENT_REPORT_DEVICE_NETWORK_DATA},
@@ -101,9 +172,16 @@ content::WebUIDataSource* CreateAndAddManagementUIHtmlSource(Profile* profile) {
        IDS_MANAGEMENT_REPORT_ANDROID_APPLICATIONS},
       {"proxyServerPrivacyDisclosure",
        IDS_MANAGEMENT_PROXY_SERVER_PRIVACY_DISCLOSURE},
+      {"deskSync", IDS_MANAGEMENT_DESK_SYNC_TITLE},
+      {"deskSyncDescription", IDS_MANAGEMENT_DESK_SYNC_DESCRIPTION},
+      {"windowSync", IDS_MANAGEMENT_DESK_SYNC_WINDOWS_NOTICE},
+      {"cookieSync", IDS_MANAGEMENT_DESK_SYNC_COOKIES_NOTICE},
+      {"deskSyncOptOut", IDS_MANAGEMENT_DESK_SYNC_OPT_OUT},
+      {"deskSyncLearnMore", IDS_MANAGEMENT_DESK_SYNC_LEARN_MORE},
       {kManagementOnFileTransferEvent, IDS_MANAGEMENT_FILE_TRANSFER_EVENT},
       {kManagementOnFileTransferVisibleData,
        IDS_MANAGEMENT_FILE_TRANSFER_VISIBLE_DATA},
+      {kManagementReportFileEvents, IDS_MANAGEMENT_REPORT_FILE_EVENTS},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
       {kManagementScreenCaptureEvent, IDS_MANAGEMENT_SCREEN_CAPTURE_EVENT},
@@ -168,7 +246,10 @@ content::WebUIDataSource* CreateAndAddManagementUIHtmlSource(Profile* profile) {
       {kManagementOnPageVisitedEvent, IDS_MANAGEMENT_PAGE_VISITED_EVENT},
       {kManagementOnPageVisitedVisibleData,
        IDS_MANAGEMENT_PAGE_VISITED_VISIBLE_DATA},
-      {kManagementLegacyTechReport, IDS_MANAGEMENT_LEGACY_TECH_REPORT},
+      {kManagementOnExtensionTelemetryEvent,
+       IDS_MANAGEMENT_EXTENSION_TELEMETRY_EVENT},
+      {kManagementOnExtensionTelemetryVisibleData,
+       IDS_MANAGEMENT_EXTENSION_TELEMETRY_VISIBLE_DATA},
       // Profile reporting messages
       {kProfileReportingExplanation,
        IDS_MANAGEMENT_PROFILE_REPORTING_EXPLANATION},
@@ -177,77 +258,43 @@ content::WebUIDataSource* CreateAndAddManagementUIHtmlSource(Profile* profile) {
       {kProfileReportingBrowser, IDS_MANAGEMENT_PROFILE_REPORTING_BROWSER},
       {kProfileReportingExtension, IDS_MANAGEMENT_PROFILE_REPORTING_EXTENSION},
       {kProfileReportingPolicy, IDS_MANAGEMENT_PROFILE_REPORTING_POLICY},
+      {kProfileReportingLearnMore, IDS_MANAGEMENT_PROFILE_REPORTING_LEARN_MORE},
+      {"promotionBannerTitle", IDS_MANAGEMENT_BANNER_PROMOTION_TITLE},
+      {"promotionBannerDesc", IDS_MANAGEMENT_BANNER_PROMOTION_DESC},
+      {"promotionBannerBtn", IDS_MANAGEMENT_BANNER_PROMOTION_BTN},
+      {"promotionBannerAriaLabel", IDS_MANAGEMENT_BANNER_ARIA_LABEL},
+      {"promotionBannerNewTabAriaDescription",
+       IDS_MANAGEMENT_BANNER_NEW_TAB_ARIA_DESCRIPTION},
+      {"promotionBannerDismissAriaLabel",
+       IDS_MANAGEMENT_BANNER_DISMISS_ARIA_LABEL},
   };
-
-  source->AddLocalizedStrings(kLocalizedStrings);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  source->AddString("managementDeviceLearnMoreUrl",
-                    chrome::kLearnMoreEnterpriseURL);
-  source->AddString("managementAccountLearnMoreUrl",
-                    chrome::kManagedUiLearnMoreUrl);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  const size_t dlp_events_count =
-      policy::DlpRulesManagerFactory::GetForPrimaryProfile() &&
-              policy::DlpRulesManagerFactory::GetForPrimaryProfile()
-                  ->GetReportingManager()
-          ? policy::DlpRulesManagerFactory::GetForPrimaryProfile()
-                ->GetReportingManager()
-                ->events_reported()
-          : 0;
-  source->AddString(kManagementReportDlpEvents,
-                    l10n_util::GetPluralStringFUTF16(
-                        IDS_MANAGEMENT_REPORT_DLP_EVENTS, dlp_events_count));
-  source->AddString("pluginVmDataCollection",
-                    l10n_util::GetStringFUTF16(
-                        IDS_MANAGEMENT_REPORT_PLUGIN_VM,
-                        l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME)));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kManagementResources, kManagementResourcesSize),
-      IDR_MANAGEMENT_MANAGEMENT_HTML);
-  return source;
-}
-
-}  // namespace
-
-// static
-base::RefCountedMemory* ManagementUI::GetFaviconResourceBytes(
-    ui::ResourceScaleFactor scale_factor) {
-  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
-      IDR_MANAGEMENT_FAVICON, scale_factor);
-}
-
-// static
-std::u16string ManagementUI::GetManagementPageSubtitle(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  const auto device_type = ui::GetChromeOSDeviceTypeResourceId();
-  if (!connector->IsDeviceEnterpriseManaged() &&
-      !profile->GetProfilePolicyConnector()->IsManaged()) {
-    return l10n_util::GetStringFUTF16(IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE,
-                                      l10n_util::GetStringUTF16(device_type));
+  for (auto i : kLocalizedStrings) {
+    strings.push_back(i);
   }
 
-  std::string account_manager = connector->GetEnterpriseDomainManager();
+  static constexpr webui::LocalizedString kDeviceDisclosuresLinks[] = {
+#if BUILDFLAG(IS_CHROMEOS)
+      {kManagementLogUploadEnabled, IDS_MANAGEMENT_LOG_UPLOAD_ENABLED},
+#endif  // BUILDFLAG(IS_CHROMEOS)
+      {kManagementLegacyTechReport, IDS_MANAGEMENT_LEGACY_TECH_REPORT}};
 
-  if (account_manager.empty())
-    account_manager =
-        chrome::GetAccountManagerIdentity(profile).value_or(std::string());
-  if (account_manager.empty()) {
-    return l10n_util::GetStringFUTF16(IDS_MANAGEMENT_SUBTITLE_MANAGED,
-                                      l10n_util::GetStringUTF16(device_type));
+  // Disclosures that are device-wide (not profile dependent) with links
+  // removed.
+  static constexpr webui::LocalizedString kDeviceDisclosuresLinksRemoved[] = {
+#if BUILDFLAG(IS_CHROMEOS)
+      {kManagementLogUploadEnabled, IDS_MANAGEMENT_LOG_UPLOAD_ENABLED_NO_LINK},
+#endif  // BUILDFLAG(IS_CHROMEOS)
+      {kManagementLegacyTechReport, IDS_MANAGEMENT_LEGACY_TECH_REPORT_NO_LINK}};
+
+  if (remove_links) {
+    for (auto i : kDeviceDisclosuresLinksRemoved) {
+      strings.push_back(i);
+    }
+  } else {
+    for (auto i : kDeviceDisclosuresLinks) {
+      strings.push_back(i);
+    }
   }
-  return l10n_util::GetStringFUTF16(IDS_MANAGEMENT_SUBTITLE_MANAGED_BY,
-                                    l10n_util::GetStringUTF16(device_type),
-                                    base::UTF8ToUTF16(account_manager));
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
-  return chrome::GetManagementPageSubtitle(profile);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 ManagementUI::ManagementUI(content::WebUI* web_ui) : WebUIController(web_ui) {
@@ -257,4 +304,10 @@ ManagementUI::ManagementUI(content::WebUI* web_ui) : WebUIController(web_ui) {
   web_ui->AddMessageHandler(ManagementUIHandler::Create(profile));
 }
 
-ManagementUI::~ManagementUI() {}
+ManagementUI::~ManagementUI() = default;
+
+// static
+void ManagementUI::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(
+      policy::policy_prefs::kHasDismissedManagementPagePromotionBanner, false);
+}

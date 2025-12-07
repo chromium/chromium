@@ -7,12 +7,12 @@
 
 #include <stdint.h>
 
-#include <queue>
+#include <vector>
 
 #include "base/cancelable_callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -30,7 +30,6 @@
 #include "net/base/ip_endpoint.h"
 #include "net/log/net_log_source.h"
 #include "services/network/public/cpp/network_context_getter.h"
-#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "services/network/public/mojom/tls_socket.mojom.h"
 #include "third_party/openscreen/src/cast/common/channel/proto/cast_channel.pb.h"
@@ -70,7 +69,7 @@ class CastSocket {
     virtual void OnReadyStateChanged(const CastSocket& socket) = 0;
   };
 
-  virtual ~CastSocket() {}
+  virtual ~CastSocket();
 
   // Used by BrowserContextKeyedAPIFactory.
   static const char* service_name() { return "CastSocketImplManager"; }
@@ -423,9 +422,7 @@ class CastSocketImpl : public CastSocket {
 
   // Raw pointer to the auth handshake delegate. Used to get detailed error
   // information.
-  // This pointer might dangle when running the following test:
-  // PageSpecificSiteDataDialogPrivacySandboxInteractiveUiTest.FirstPartyAllowed
-  raw_ptr<AuthTransportDelegate, AcrossTasksDanglingUntriaged> auth_delegate_;
+  raw_ptr<AuthTransportDelegate> auth_delegate_;
 
   // List of socket observers.
   base::ObserverList<Observer> observers_;

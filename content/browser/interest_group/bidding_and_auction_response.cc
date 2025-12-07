@@ -6,16 +6,22 @@
 
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/containers/adapters.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/uuid.h"
 #include "base/values.h"
+#include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_pa_report_util.h"
 #include "content/services/auction_worklet/public/cpp/private_aggregation_reporting.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
+#include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
+#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 #include "url/origin.h"
 
 namespace content {
@@ -49,13 +55,40 @@ ExtractCompressedBiddingAndAuctionResponse(
   }
   size_t response_length = (decrypted_data[1] << 24) |
                            (decrypted_data[2] << 16) |
-                           (decrypted_data[3] << 8) | (decrypted_data[4] << 0);
-  if (decrypted_data.size() < kFramingHeaderSize + response_length) {
+                           (decrypted_data[3] << 8) | decrypted_data[4];
+  decrypted_data = decrypted_data.subspan<kFramingHeaderSize>();
+  if (decrypted_data.size() < response_length) {
     // Incomplete Data.
     return std::nullopt;
   }
-  return decrypted_data.subspan(kFramingHeaderSize, response_length);
+  return decrypted_data.first(response_length);
 }
+
+BiddingAndAuctionResponse::KAnonJoinCandidate::KAnonJoinCandidate() = default;
+BiddingAndAuctionResponse::KAnonJoinCandidate::~KAnonJoinCandidate() = default;
+BiddingAndAuctionResponse::KAnonJoinCandidate::KAnonJoinCandidate(
+    KAnonJoinCandidate&&) = default;
+BiddingAndAuctionResponse::KAnonJoinCandidate&
+BiddingAndAuctionResponse::KAnonJoinCandidate::operator=(KAnonJoinCandidate&&) =
+    default;
+
+BiddingAndAuctionResponse::GhostWinnerForTopLevelAuction::
+    GhostWinnerForTopLevelAuction() = default;
+BiddingAndAuctionResponse::GhostWinnerForTopLevelAuction::
+    ~GhostWinnerForTopLevelAuction() = default;
+BiddingAndAuctionResponse::GhostWinnerForTopLevelAuction::
+    GhostWinnerForTopLevelAuction(GhostWinnerForTopLevelAuction&&) = default;
+BiddingAndAuctionResponse::GhostWinnerForTopLevelAuction&
+BiddingAndAuctionResponse::GhostWinnerForTopLevelAuction::operator=(
+    GhostWinnerForTopLevelAuction&&) = default;
+
+BiddingAndAuctionResponse::KAnonGhostWinner::KAnonGhostWinner() = default;
+BiddingAndAuctionResponse::KAnonGhostWinner::~KAnonGhostWinner() = default;
+BiddingAndAuctionResponse::KAnonGhostWinner::KAnonGhostWinner(
+    KAnonGhostWinner&&) = default;
+BiddingAndAuctionResponse::KAnonGhostWinner&
+BiddingAndAuctionResponse::KAnonGhostWinner::operator=(KAnonGhostWinner&&) =
+    default;
 
 BiddingAndAuctionResponse::BiddingAndAuctionResponse(
     BiddingAndAuctionResponse&&) = default;
@@ -77,6 +110,17 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
     return std::nullopt;
   }
 
+  if (base::FeatureList::IsEnabled(
+          features::kFledgeBiddingAndAuctionNonceSupport)) {
+    const std::string* nonce = input_dict->FindString("nonce");
+    if (nonce) {
+      base::Uuid nonce_uuid = base::Uuid::ParseCaseInsensitive(*nonce);
+      if (nonce_uuid.is_valid()) {
+        output.nonce = nonce_uuid.AsLowercaseString();
+      }
+    }
+  }
+
   base::Value::Dict* error_struct = input_dict->FindDict("error");
   if (error_struct) {
     std::string* message = error_struct->FindString("message");
@@ -89,21 +133,31 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
     return std::move(output);
   }
 
-  std::optional<bool> maybe_is_chaff = input_dict->FindBool("isChaff");
-  if (maybe_is_chaff && maybe_is_chaff.value()) {
-    output.is_chaff = true;
-    return std::move(output);
+  base::Value* is_chaff_value = input_dict->Find("isChaff");
+  if (is_chaff_value) {
+    if (!is_chaff_value->is_bool()) {
+      return std::nullopt;
+    }
+    bool is_chaff = is_chaff_value->GetBool();
+    if (is_chaff) {
+      output.is_chaff = true;
+      return std::move(output);
+    }
   }
   output.is_chaff = false;
 
-  std::string* maybe_render_url = input_dict->FindString("adRenderURL");
-  if (!maybe_render_url) {
-    return std::nullopt;
-  }
-  output.ad_render_url = GURL(*maybe_render_url);
-  if (!output.ad_render_url.is_valid() ||
-      !network::IsUrlPotentiallyTrustworthy(output.ad_render_url)) {
-    return std::nullopt;
+  // By design, missing "adRenderURL" field means there is no winner.
+  base::Value* maybe_render_url_value = input_dict->Find("adRenderURL");
+  if (maybe_render_url_value) {
+    std::string* maybe_render_url = maybe_render_url_value->GetIfString();
+    if (!maybe_render_url) {
+      return std::nullopt;
+    }
+    output.ad_render_url = GURL(*maybe_render_url);
+    if (!output.ad_render_url.is_valid() ||
+        !network::IsUrlPotentiallyTrustworthy(output.ad_render_url)) {
+      return std::nullopt;
+    }
   }
   base::Value* components_value = input_dict->Find("components");
   if (components_value) {
@@ -124,57 +178,71 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
       output.ad_components.emplace_back(std::move(component));
     }
   }
-  std::string* maybe_name = input_dict->FindString("interestGroupName");
-  if (!maybe_name) {
-    return std::nullopt;
-  }
-  output.interest_group_name = *maybe_name;
-
-  std::string* maybe_owner = input_dict->FindString("interestGroupOwner");
-  if (!maybe_owner) {
-    return std::nullopt;
-  }
-  output.interest_group_owner = url::Origin::Create(GURL(*maybe_owner));
-  if (!network::IsOriginPotentiallyTrustworthy(output.interest_group_owner)) {
-    return std::nullopt;
-  }
-
-  base::Value::Dict* bidding_groups = input_dict->FindDict("biddingGroups");
-  if (!bidding_groups) {
-    return std::nullopt;
-  }
-  for (const auto owner_groups : *bidding_groups) {
-    url::Origin owner = url::Origin::Create(GURL(owner_groups.first));
-    if (!network::IsOriginPotentiallyTrustworthy(owner)) {
+  base::Value* maybe_name_value = input_dict->Find("interestGroupName");
+  if (maybe_name_value) {
+    std::string* maybe_name = maybe_name_value->GetIfString();
+    if (!maybe_name) {
       return std::nullopt;
     }
+    output.interest_group_name = *maybe_name;
+  }
 
-    auto it = group_names.find(owner);
-    if (it == group_names.end()) {
+  base::Value* maybe_owner_value = input_dict->Find("interestGroupOwner");
+  if (maybe_owner_value) {
+    std::string* maybe_owner = maybe_owner_value->GetIfString();
+    if (!maybe_owner) {
       return std::nullopt;
     }
-    const std::vector<std::string>& names = it->second;
-
-    const base::Value::List* groups = owner_groups.second.GetIfList();
-    if (!groups) {
+    output.interest_group_owner = url::Origin::Create(GURL(*maybe_owner));
+    if (!network::IsOriginPotentiallyTrustworthy(output.interest_group_owner)) {
       return std::nullopt;
     }
-
-    for (const auto& group : *groups) {
-      std::optional<int> maybe_group_idx = group.GetIfInt();
-      if (!maybe_group_idx) {
+  }
+  base::Value* bidding_groups_value = input_dict->Find("biddingGroups");
+  if (bidding_groups_value) {
+    if (!bidding_groups_value->is_dict()) {
+      return std::nullopt;
+    }
+    base::Value::Dict& bidding_groups = bidding_groups_value->GetDict();
+    for (const auto owner_groups : bidding_groups) {
+      url::Origin owner = url::Origin::Create(GURL(owner_groups.first));
+      if (!network::IsOriginPotentiallyTrustworthy(owner)) {
         return std::nullopt;
       }
-      if (*maybe_group_idx < 0 ||
-          static_cast<size_t>(*maybe_group_idx) >= names.size()) {
+
+      auto it = group_names.find(owner);
+      if (it == group_names.end()) {
         return std::nullopt;
       }
-      output.bidding_groups.emplace_back(owner, names[*maybe_group_idx]);
+      const std::vector<std::string>& names = it->second;
+
+      const base::Value::List* groups = owner_groups.second.GetIfList();
+      if (!groups) {
+        return std::nullopt;
+      }
+
+      for (const auto& group : *groups) {
+        std::optional<int> maybe_group_idx = group.GetIfInt();
+        if (!maybe_group_idx) {
+          return std::nullopt;
+        }
+        if (*maybe_group_idx < 0 ||
+            static_cast<size_t>(*maybe_group_idx) >= names.size()) {
+          return std::nullopt;
+        }
+        output.bidding_groups.emplace_back(owner, names[*maybe_group_idx]);
+      }
     }
   }
 
   output.score = input_dict->FindDouble("score");
-  output.bid = input_dict->FindDouble("bid");
+  base::Value* bid_value = input_dict->Find("bid");
+  if (bid_value) {
+    if (!bid_value->is_double() && !bid_value->is_int()) {
+      return std::nullopt;
+    }
+    output.bid = bid_value->GetDouble();
+  }
 
   std::string* maybe_currency = input_dict->FindString("bidCurrency");
   if (maybe_currency) {
@@ -205,11 +273,14 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
           ReportingURLs::TryParse(component_seller_reporting);
     }
   }
-  std::string* maybe_top_level_seller =
-      input_dict->FindString("topLevelSeller");
-  if (maybe_top_level_seller) {
+  base::Value* maybe_top_level_seller_value =
+      input_dict->Find("topLevelSeller");
+  if (maybe_top_level_seller_value) {
+    if (!maybe_top_level_seller_value->is_string()) {
+      return std::nullopt;
+    }
     url::Origin top_level_seller =
-        url::Origin::Create(GURL(*maybe_top_level_seller));
+        url::Origin::Create(GURL(maybe_top_level_seller_value->GetString()));
     if (!network::IsOriginPotentiallyTrustworthy(top_level_seller)) {
       return std::nullopt;
     }
@@ -230,8 +301,35 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
     output.buyer_and_seller_reporting_id = *maybe_buyer_and_seller_reporting_id;
   }
 
+  if (base::FeatureList::IsEnabled(
+          blink::features::kFledgeAuctionDealSupport)) {
+    std::string* maybe_selected_buyer_and_seller_reporting_id =
+        input_dict->FindString("selectedBuyerAndSellerReportingId");
+    if (maybe_selected_buyer_and_seller_reporting_id) {
+      output.selected_buyer_and_seller_reporting_id =
+          *maybe_selected_buyer_and_seller_reporting_id;
+    }
+  }
+
+  if (base::FeatureList::IsEnabled(features::kEnableBandAKAnonEnforcement)) {
+    base::Value::Dict* k_anon_winner_join_candidate =
+        input_dict->FindDict("kAnonWinnerJoinCandidates");
+    if (k_anon_winner_join_candidate) {
+      output.k_anon_join_candidate =
+          TryParseKAnonWinnerJoinCandidate(*k_anon_winner_join_candidate);
+    }
+
+    base::Value::List* k_anon_ghost_winners =
+        input_dict->FindList("kAnonGhostWinners");
+    if (k_anon_ghost_winners) {
+      output.k_anon_ghost_winner =
+          TryParseKAnonGhostWinner(*k_anon_ghost_winners, group_names);
+    }
+  }
+
   if (base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi) &&
-      blink::features::kPrivateAggregationApiEnabledInProtectedAudience.Get()) {
+      blink::features::kPrivateAggregationApiEnabledInProtectedAudience.Get() &&
+      base::FeatureList::IsEnabled(features::kEnableBandAPrivateAggregation)) {
     const base::Value::List* pagg_response =
         input_dict->FindList("paggResponse");
     if (pagg_response) {
@@ -239,14 +337,307 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
                            output);
     }
   }
-  base::Value::List* for_debugging_only_reports =
-      input_dict->FindList("debugReports");
-  if (for_debugging_only_reports) {
-    TryParseForDebuggingOnlyReports(*for_debugging_only_reports, output);
+
+  if (base::FeatureList::IsEnabled(features::kEnableBandASampleDebugReports)) {
+    base::Value::List* for_debugging_only_reports =
+        input_dict->FindList("debugReports");
+    if (for_debugging_only_reports) {
+      TryParseForDebuggingOnlyReports(*for_debugging_only_reports, output);
+    }
+  }
+
+  base::Value::Dict* triggered_updates = input_dict->FindDict("updateGroups");
+  if (base::FeatureList::IsEnabled(features::kEnableBandATriggeredUpdates) &&
+      triggered_updates) {
+    for (const auto owner_groups : *triggered_updates) {
+      url::Origin owner = url::Origin::Create(GURL(owner_groups.first));
+      auto it = group_names.find(owner);
+      if (it == group_names.end()) {
+        continue;
+      }
+      const std::vector<std::string>& names = it->second;
+
+      const base::Value::List* groups = owner_groups.second.GetIfList();
+      if (!groups) {
+        continue;
+      }
+      for (const auto& group : *groups) {
+        const base::Value::Dict* group_dict = group.GetIfDict();
+        if (!group_dict) {
+          continue;
+        }
+        std::optional<int> maybe_group_idx = group_dict->FindInt("index");
+        if (!maybe_group_idx) {
+          continue;
+        }
+        if (*maybe_group_idx < 0 ||
+            static_cast<size_t>(*maybe_group_idx) >= names.size()) {
+          continue;
+        }
+
+        std::optional<int> maybe_update_if_older_than =
+            group_dict->FindInt("updateIfOlderThanMs");
+        if (!maybe_update_if_older_than) {
+          continue;
+        }
+        output.triggered_updates[blink::InterestGroupKey(
+            owner, names[*maybe_group_idx])] =
+            base::Milliseconds(*maybe_update_if_older_than);
+      }
+    }
   }
 
   output.result = AuctionResult::kSuccess;
   return std::move(output);
+}
+
+std::optional<BiddingAndAuctionResponse::KAnonJoinCandidate>
+BiddingAndAuctionResponse::TryParseKAnonWinnerJoinCandidate(
+    base::Value::Dict& k_anon_join_candidate) {
+  KAnonJoinCandidate candidate;
+  std::vector<uint8_t>* ad_render_url_hash =
+      k_anon_join_candidate.FindBlob("adRenderURLHash");
+  if (!ad_render_url_hash) {
+    return std::nullopt;
+  }
+  candidate.ad_render_url_hash = std::move(*ad_render_url_hash);
+
+  base::Value* ad_component_render_urls_hash_value =
+      k_anon_join_candidate.Find("adComponentRenderURLsHash");
+  if (ad_component_render_urls_hash_value) {
+    base::Value::List* ad_component_render_urls_hash =
+        ad_component_render_urls_hash_value->GetIfList();
+    if (!ad_component_render_urls_hash) {
+      return std::nullopt;
+    }
+    for (auto& ad_component_hash_value : *ad_component_render_urls_hash) {
+      if (!ad_component_hash_value.is_blob()) {
+        return std::nullopt;
+      }
+      candidate.ad_component_render_urls_hash.emplace_back(
+          std::move(ad_component_hash_value).TakeBlob());
+    }
+  }
+
+  const std::vector<uint8_t>* reporting_id_hash =
+      k_anon_join_candidate.FindBlob("reportingIdHash");
+  if (!reporting_id_hash) {
+    return std::nullopt;
+  }
+  candidate.reporting_id_hash = std::move(*reporting_id_hash);
+
+  return candidate;
+}
+
+std::optional<BiddingAndAuctionResponse::KAnonGhostWinner>
+BiddingAndAuctionResponse::TryParseKAnonGhostWinner(
+    base::Value::List& k_anon_ghost_winners,
+    const base::flat_map<url::Origin, std::vector<std::string>>& group_names) {
+  KAnonGhostWinner result;
+  if (k_anon_ghost_winners.empty()) {
+    return std::nullopt;
+  }
+  base::Value::Dict* k_anon_ghost_winner =
+      k_anon_ghost_winners.front().GetIfDict();
+  if (!k_anon_ghost_winner) {
+    return std::nullopt;
+  }
+
+  base::Value::Dict* k_anon_join_candidate =
+      k_anon_ghost_winner->FindDict("kAnonJoinCandidates");
+  if (!k_anon_join_candidate) {
+    return std::nullopt;
+  }
+  std::optional<KAnonJoinCandidate> candidate =
+      TryParseKAnonWinnerJoinCandidate(*k_anon_join_candidate);
+  if (!candidate) {
+    return std::nullopt;
+  }
+  result.candidate = std::move(candidate).value();
+
+  std::string* maybe_owner = k_anon_ghost_winner->FindString("owner");
+  if (!maybe_owner) {
+    return std::nullopt;
+  }
+  url::Origin owner = url::Origin::Create(GURL(*maybe_owner));
+  if (!network::IsOriginPotentiallyTrustworthy(owner)) {
+    return std::nullopt;
+  }
+  auto it = group_names.find(owner);
+  if (it == group_names.end()) {
+    return std::nullopt;
+  }
+  const std::vector<std::string>& names = it->second;
+  std::optional<int> maybe_group_idx =
+      k_anon_ghost_winner->FindInt("interestGroupIndex");
+  if (!maybe_group_idx) {
+    return std::nullopt;
+  }
+  if (maybe_group_idx.value() < 0 ||
+      static_cast<size_t>(*maybe_group_idx) >= names.size()) {
+    return std::nullopt;
+  }
+  result.interest_group =
+      blink::InterestGroupKey(owner, names[*maybe_group_idx]);
+
+  base::Value* ghost_winner_private_aggregation_signals_value =
+      k_anon_ghost_winner->Find("ghostWinnerPrivateAggregationSignals");
+  if (ghost_winner_private_aggregation_signals_value) {
+    base::Value::List* ghost_winner_private_aggregation_signals_list =
+        ghost_winner_private_aggregation_signals_value->GetIfList();
+    if (!ghost_winner_private_aggregation_signals_list) {
+      return std::nullopt;
+    }
+    for (const auto& ghost_winner_private_aggregation_signals :
+         *ghost_winner_private_aggregation_signals_list) {
+      const base::Value::Dict* ghost_winner_private_aggregation_signals_dict =
+          ghost_winner_private_aggregation_signals.GetIfDict();
+      if (!ghost_winner_private_aggregation_signals_dict) {
+        return std::nullopt;
+      }
+      // `ghostWinnerPrivateAggregationSignals` will only have reject reason
+      // contributions, which the server will guarantee.
+      const std::vector<uint8_t>* bucket =
+          ghost_winner_private_aggregation_signals_dict->FindBlob("bucket");
+      std::optional<int> value =
+          ghost_winner_private_aggregation_signals_dict->FindInt("value");
+      if (!bucket || bucket->size() > 16 || !value.has_value()) {
+        return std::nullopt;
+      }
+      // Server already filtered out not needed contributions based on final
+      // auction result.
+      result.non_kanon_private_aggregation_requests.emplace_back(
+          auction_worklet::mojom::PrivateAggregationRequest::New(
+              auction_worklet::mojom::AggregatableReportContribution::
+                  NewHistogramContribution(
+                      blink::mojom::AggregatableReportHistogramContribution::
+                          New(
+                              /*bucket=*/U128FromBigEndian(*bucket),
+                              /*value=*/*value,
+                              /*filtering_id=*/std::nullopt)),
+              blink::mojom::DebugModeDetails::New()));
+    }
+  }
+
+  base::Value* ghost_winner_for_top_level_auction_value =
+      k_anon_ghost_winner->Find("ghostWinnerForTopLevelAuction");
+  if (ghost_winner_for_top_level_auction_value) {
+    base::Value::Dict* ghost_winner_for_top_level_auction =
+        ghost_winner_for_top_level_auction_value->GetIfDict();
+    if (!ghost_winner_for_top_level_auction) {
+      return std::nullopt;
+    }
+    std::optional<GhostWinnerForTopLevelAuction> ghost_winner =
+        TryParseGhostWinnerForTopLevelAuction(
+            *ghost_winner_for_top_level_auction);
+    if (!ghost_winner) {
+      return std::nullopt;
+    }
+    result.ghost_winner = std::move(ghost_winner);
+  }
+
+  return result;
+}
+
+std::optional<BiddingAndAuctionResponse::GhostWinnerForTopLevelAuction>
+BiddingAndAuctionResponse::TryParseGhostWinnerForTopLevelAuction(
+    base::Value::Dict& ghost_winner_for_top_level_auction) {
+  GhostWinnerForTopLevelAuction result;
+
+  std::string* maybe_ad_render_url =
+      ghost_winner_for_top_level_auction.FindString("adRenderURL");
+  if (!maybe_ad_render_url) {
+    return std::nullopt;
+  }
+  result.ad_render_url = GURL(*maybe_ad_render_url);
+  if (!result.ad_render_url.is_valid() ||
+      !network::IsUrlPotentiallyTrustworthy(result.ad_render_url)) {
+    return std::nullopt;
+  }
+
+  base::Value* ad_components_value =
+      ghost_winner_for_top_level_auction.Find("adComponentRenderURLs");
+  if (ad_components_value) {
+    base::Value::List* ad_components = ad_components_value->GetIfList();
+    if (!ad_components) {
+      return std::nullopt;
+    }
+    for (const auto& component_val : *ad_components) {
+      const std::string* component_str = component_val.GetIfString();
+      if (!component_str) {
+        return std::nullopt;
+      }
+      GURL component(*component_str);
+      if (!component.is_valid() ||
+          !network::IsUrlPotentiallyTrustworthy(component)) {
+        return std::nullopt;
+      }
+      result.ad_components.emplace_back(std::move(component));
+    }
+  }
+
+  std::optional<double> modified_bid =
+      ghost_winner_for_top_level_auction.FindDouble("modifiedBid");
+  if (!modified_bid) {
+    return std::nullopt;
+  }
+  result.modified_bid = *modified_bid;
+
+  base::Value* bid_currency_value =
+      ghost_winner_for_top_level_auction.Find("bidCurrency");
+  if (bid_currency_value) {
+    std::string* bid_currency = bid_currency_value->GetIfString();
+    if (!bid_currency || !blink::IsValidAdCurrencyCode(*bid_currency)) {
+      return std::nullopt;
+    }
+    result.bid_currency = blink::AdCurrency::From(*bid_currency);
+  }
+
+  base::Value* ad_metadata_value =
+      ghost_winner_for_top_level_auction.Find("adMetadata");
+  if (ad_metadata_value) {
+    std::string* ad_metadata = ad_metadata_value->GetIfString();
+    if (!ad_metadata) {
+      return std::nullopt;
+    }
+    result.ad_metadata = *ad_metadata;
+  }
+
+  base::Value* buyer_reporting_id_value =
+      ghost_winner_for_top_level_auction.Find("buyerReportingId");
+  if (buyer_reporting_id_value) {
+    std::string* buyer_reporting_id = buyer_reporting_id_value->GetIfString();
+    if (!buyer_reporting_id) {
+      return std::nullopt;
+    }
+    result.buyer_reporting_id = std::move(*buyer_reporting_id);
+  }
+
+  base::Value* buyer_and_seller_reporting_id_value =
+      ghost_winner_for_top_level_auction.Find("buyerAndSellerReportingId");
+  if (buyer_and_seller_reporting_id_value) {
+    std::string* buyer_and_seller_reporting_id =
+        buyer_and_seller_reporting_id_value->GetIfString();
+    if (!buyer_and_seller_reporting_id) {
+      return std::nullopt;
+    }
+    result.buyer_and_seller_reporting_id =
+        std::move(*buyer_and_seller_reporting_id);
+  }
+
+  base::Value* selected_buyer_and_seller_reporting_id_value =
+      ghost_winner_for_top_level_auction.Find(
+          "selectedBuyerAndSellerReportingId");
+  if (selected_buyer_and_seller_reporting_id_value) {
+    std::string* selected_buyer_and_seller_reporting_id =
+        selected_buyer_and_seller_reporting_id_value->GetIfString();
+    if (!selected_buyer_and_seller_reporting_id) {
+      return std::nullopt;
+    }
+    result.selected_buyer_and_seller_reporting_id =
+        std::move(*selected_buyer_and_seller_reporting_id);
+  }
+  return result;
 }
 
 // static
@@ -381,9 +772,15 @@ void BiddingAndAuctionResponse::TryParsePAggContributions(
     const PrivateAggregationPhaseKey& agg_phase_key,
     const PrivateAggregationKey& agg_key,
     BiddingAndAuctionResponse& output) {
-  std::optional<auction_worklet::mojom::EventTypePtr> event_type =
-      auction_worklet::ParsePrivateAggregationEventType(event_type_str);
-  if (!event_type.has_value()) {
+  auction_worklet::mojom::EventTypePtr event_type =
+      auction_worklet::ParsePrivateAggregationEventType(
+          event_type_str,
+          base::FeatureList::IsEnabled(
+              blink::features::
+                  kPrivateAggregationApiProtectedAudienceAdditionalExtensions),
+          base::FeatureList::IsEnabled(
+              blink::features::kPrivateAggregationApiErrorReporting));
+  if (!event_type) {
     // Don't throw an error if an invalid reserved event type is provided, to
     // provide forward compatibility with new reserved event types added
     // later.
@@ -396,20 +793,17 @@ void BiddingAndAuctionResponse::TryParsePAggContributions(
     }
     const std::vector<uint8_t>* bucket = contribution_dict->FindBlob("bucket");
     std::optional<int> value = contribution_dict->FindInt("value");
-    std::optional<uint64_t> filtering_id;
-    if (base::FeatureList::IsEnabled(
-            blink::features::kPrivateAggregationApiFilteringIds)) {
-      filtering_id = contribution_dict->FindInt("filteringId");
-    }
+    std::optional<uint64_t> filtering_id =
+        contribution_dict->FindInt("filteringId");
     if (!bucket || bucket->size() > 16 || !value.has_value() ||
         (filtering_id.has_value() && !IsValidFilteringId(filtering_id))) {
       continue;
     }
     if (component_win) {
       // Response contains all event types for a component winner, since it may
-      // win or lose the top level auction. `request` needs to contain event
-      // type because it's needed to decide whether it needs to be filtered out
-      // based on the top level auction result.
+      // win or lose the top-level auction. `request` needs to contain any
+      // non-error event type because it's needed to decide whether it needs to
+      // be filtered out based on the top-level auction result.
       auction_worklet::mojom::PrivateAggregationRequestPtr request =
           auction_worklet::mojom::PrivateAggregationRequest::New(
               auction_worklet::mojom::AggregatableReportContribution::
@@ -421,32 +815,32 @@ void BiddingAndAuctionResponse::TryParsePAggContributions(
                               auction_worklet::mojom::ForEventSignalValue::
                                   NewIntValue(*value),
                               filtering_id, event_type->Clone())),
-              // TODO(qingxinwu): consider allowing this to be set
-              blink::mojom::AggregationServiceMode::kDefault,
               blink::mojom::DebugModeDetails::New());
       output.component_win_pagg_requests[agg_phase_key].emplace_back(
           std::move(request));
     } else {
+      std::optional<blink::mojom::PrivateAggregationErrorEvent> error_event;
+      if (event_type->is_reserved_error()) {
+        error_event =
+            ConvertErrorEventToPAggType(event_type->get_reserved_error());
+      }
+
       // Server already filtered out not needed contributions based on final
       // auction result.
-      auction_worklet::mojom::PrivateAggregationRequestPtr request =
-          auction_worklet::mojom::PrivateAggregationRequest::New(
-              auction_worklet::mojom::AggregatableReportContribution::
-                  NewHistogramContribution(
-                      blink::mojom::AggregatableReportHistogramContribution::
-                          New(
-                              /*bucket=*/U128FromBigEndian(*bucket),
-                              /*value=*/*value,
-                              /*filtering_id=*/filtering_id)),
-              // TODO(qingxinwu): consider allowing this to be set
-              blink::mojom::AggregationServiceMode::kDefault,
-              blink::mojom::DebugModeDetails::New());
-      if ((*event_type)->is_reserved()) {
-        output.server_filtered_pagg_requests_reserved[agg_key].emplace_back(
-            std::move(request));
-      } else {
+      auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr request =
+          auction_worklet::mojom::FinalizedPrivateAggregationRequest::New(
+              blink::mojom::AggregatableReportHistogramContribution::New(
+                  /*bucket=*/U128FromBigEndian(*bucket),
+                  /*value=*/*value,
+                  /*filtering_id=*/filtering_id),
+              blink::mojom::DebugModeDetails::New(), error_event);
+
+      if (event_type->is_non_reserved()) {
         output.server_filtered_pagg_requests_non_reserved[event_type_str]
             .emplace_back(std::move(request));
+      } else {
+        output.server_filtered_pagg_requests_reserved[agg_key].emplace_back(
+            std::move(request));
       }
     }
   }
@@ -480,6 +874,7 @@ void BiddingAndAuctionResponse::TryParseForDebuggingOnlyReports(
         if (!report_dict) {
           continue;
         }
+        output.debugging_only_report_origins.emplace(ad_tech_origin);
         TryParseSingleDebugReport(ad_tech_origin, *report_dict, output);
       }
     }
@@ -491,11 +886,8 @@ void BiddingAndAuctionResponse::TryParseSingleDebugReport(
     const url::Origin& ad_tech_origin,
     const base::Value::Dict& report_dict,
     BiddingAndAuctionResponse& output) {
-  std::optional<bool> maybe_is_win_report = report_dict.FindBool("isWinReport");
-  bool is_win_report = maybe_is_win_report.has_value() && *maybe_is_win_report;
   std::optional<bool> maybe_component_win =
       report_dict.FindBool("componentWin");
-
   const std::string* maybe_url_str = report_dict.FindString("url");
   if (maybe_url_str) {
     GURL reporting_url(*maybe_url_str);
@@ -507,22 +899,30 @@ void BiddingAndAuctionResponse::TryParseSingleDebugReport(
       output.server_filtered_debugging_only_reports[ad_tech_origin]
           .emplace_back(reporting_url);
     } else {
-      output
-          .component_winner_debugging_only_reports[std::make_pair(
-              ad_tech_origin, is_win_report)]
-          .emplace_back(reporting_url);
+      std::optional<bool> maybe_is_win_report =
+          report_dict.FindBool("isWinReport");
+      bool is_win_report =
+          maybe_is_win_report.has_value() && *maybe_is_win_report;
+      std::optional<bool> maybe_seller_report =
+          report_dict.FindBool("isSellerReport");
+      bool is_seller_report =
+          maybe_seller_report.has_value() && *maybe_seller_report;
+      output.component_win_debugging_only_reports[DebugReportKey(
+          is_seller_report, is_win_report)] = reporting_url;
     }
   } else {
     // "url" field is allowed to be not set in debugReports, for cases like
     // forDebuggingOnly APIs were called but server side sampling filtered them
     // out. There's still an entry for this in debugReports to tell Chrome to
     // set cooldown for the ad tech origin.
-    // Insert an entry to corresponding maps for `ad_tech_origin`.
+    // Component auction winner's reports need to be filtered on client side, so
+    // their urls will always be set if corresponding forDebuggingOnly API is
+    // called. Insert an entry to corresponding maps for `ad_tech_origin`.
     if (!maybe_component_win.has_value() || !*maybe_component_win) {
-      output.server_filtered_debugging_only_reports[ad_tech_origin];
-    } else {
-      output.component_winner_debugging_only_reports[std::make_pair(
-          ad_tech_origin, is_win_report)];
+      if (!output.server_filtered_debugging_only_reports.contains(
+              ad_tech_origin)) {
+        output.server_filtered_debugging_only_reports[ad_tech_origin] = {};
+      }
     }
   }
 }

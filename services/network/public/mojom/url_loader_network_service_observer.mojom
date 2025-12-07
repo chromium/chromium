@@ -7,11 +7,12 @@ module network.mojom;
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "services/network/public/mojom/ad_auction.mojom";
 import "services/network/public/mojom/cookie_partition_key.mojom";
 import "services/network/public/mojom/ip_address.mojom";
 import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/network_param.mojom";
-import "services/network/public/mojom/optional_bool.mojom";
+import "services/network/public/mojom/shared_storage.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
@@ -81,30 +82,6 @@ interface AuthChallengeResponder {
    OnAuthCredentials(AuthCredentials? credentials);
 };
 
-// Shared Storage is an origin-keyed storage mechanism where the output is
-// carefully guarded to mitigate the risk of cross-site correlation.
-// See https://github.com/WICG/shared-storage/blob/main/README.md.
-//
-// Each type corresponds to one of the Shared Storage setter or deleter
-// operations that can be triggered by response headers.
-enum SharedStorageOperationType {
-  kSet = 0,
-  kAppend = 1,
-  kDelete = 2,
-  kClear = 3,
-};
-
-// Bundles an operation type with any needed parameters for Shared Storage
-// setter/deleter operations that can be triggered by response headers. The
-// raw structured headers are parsed into an array of this struct, then sent to
-// the browser process.
-struct SharedStorageOperation {
-  SharedStorageOperationType type;
-  string? key;
-  string? value;
-  OptionalBool ignore_if_present = kUnset;
-};
-
 // This interface is used by an URLLoaderFactory to provide notification
 // of authentication and certificate events. This is typically implemented
 // by a trusted process such as the browser process.
@@ -154,22 +131,18 @@ interface URLLoaderNetworkServiceObserver {
       HttpResponseHeaders? head_headers,
       pending_remote<AuthChallengeResponder> auth_challenge_responder);
 
-  // Asks the URL loader observer if the caller has permission to access a
-  // device on the private network.
+  // Asks the URL loader observer if the caller has permission to connect to
+  // devices on the local network.
   //
-  // `url` is the request's URL.
-  // `ip_address` is the remote IP address from which headers were fetched.
-  // `private_network_device_id` and `private_network_device_name` are the
-  // values of the `Private-Network-Access-ID` and `Private-Network-Access-Name`
-  // headers.
+  // `permission_granted` is a bool specifying whether the user granted the
+  // local network access permission.
   //
-  // `permission_granted` is a bool specifying whether the user granted private
-  // network access permission.
-  OnPrivateNetworkAccessPermissionRequired(
-      url.mojom.Url url,
-      network.mojom.IPAddress ip_address,
-      string? private_network_device_id,
-      string? private_network_device_name) => (bool permission_granted);
+  // Calling this function may result in a permission prompt being shown. It is
+  // okay to call this multiple times, the permissions infrastructure will
+  // ensure that multiple permission prompts are not shown at the same time, and
+  // that there aren't any race conditions to worry about with respect to the
+  // permission value.
+  OnLocalNetworkAccessPermissionRequired() => (bool permission_granted);
 
   // Called when the Clear-Site-Data header has been received. The callback
   // should be run after the data is deleted.
@@ -198,30 +171,40 @@ interface URLLoaderNetworkServiceObserver {
   // The syntactic parsing of "Shared-Storage-Write" response headers occurs in
   // the network service for security and privacy; this method then notifies
   // the browser process or other observer implementers that the raw headers
-  // have been parsed into an array of `SharedStorageOperation` structs.
+  // have been parsed into an array of
+  // `SharedStorageModifierMethodWithOptions`s and an optional `with_lock`
+  // option. `with_lock` shouldn't start with '-'.
+  // https://github.com/WICG/shared-storage#from-response-headers
   //
-  // The order of the operations as listed in the header(s) is preserved, so
-  // that the browser process (the main implementer of this API) can guarantee
-  // that it will invoke the corresponding operations in their originally
-  // specified order.
+  // The order of the methods as listed in the header(s) is preserved, so that
+  // the browser process (the main implementer of this API) can guarantee that
+  // it will invoke the corresponding methods in their originally specified
+  // order.
   //
   // Note that any structured header list items that are not parsed as valid
-  // `SharedStorageOperation`s will simply be omitted. Moreover, if the header
-  // does not parse as a valid structured header list, or if the parsed list is
-  // empty, then this method will not be invoked.
-  //
-  // Unlike with calls to Shared Storage from the renderer, we don't check the
-  // the length requirements for keys and values using mojom traits, in order
-  // to avoid a dependency on blink. Instead, we must check these lengths in
-  // the implementation (e.g. in the browser process) before invoking the
-  // actual Shared Storage operations.
+  // `SharedStorageModifierMethodWithOptions`s will simply be omitted. Moreover,
+  // if the header does not parse as a valid structured header list, or if the
+  // parsed list is empty, then this method will not be invoked.
   //
   // TODO(crbug.com/40064101): Make the `OnSharedStorageHeaderReceived()` call
   // synchronous so that we can guarantee that order is preserved between calls
   // triggered by response headers and Shared Storage calls from the same
   // renderer process where this request originated.
   OnSharedStorageHeaderReceived(url.mojom.Origin request_origin,
-                 array<SharedStorageOperation> operations) => ();
+      network.mojom.SharedStorageBatchUpdateMethodsArgument methods_with_options,
+      network.mojom.LockName? with_lock) => ();
+
+  // Notifies the browser of the results of successful parsing of
+  // a Ad-Auction-Record-Event header. The browser stores information from
+  // `ad_auction_event_record` in the interest group database, for use in
+  // generateBid() browser signals during interest group auctions, providing
+  // bidders view and click signals.
+  //
+  // `top_frame_origin` is the top-frame origin associated with the request this
+  // header is in response to, if any.
+  OnAdAuctionEventRecordHeaderReceived(
+      AdAuctionEventRecord ad_auction_event_record,
+      url.mojom.Origin? top_frame_origin);
 
   // Used by the NetworkService to create a copy of this observer.
   // (e.g. when creating an observer for URLLoader from URLLoaderFactory's
@@ -230,5 +213,14 @@ interface URLLoaderNetworkServiceObserver {
 
   // Called when a WebSocket is connected to a private or local IP address
   // space.
-  OnWebSocketConnectedToPrivateNetwork(IPAddressSpace ip_address_space);
+  OnWebSocketConnectedToPrivateNetwork(
+      url.mojom.Url request_url, IPAddressSpace ip_address_space);
+
+  // Called when a URLLoader is connected to a private or local IP address
+  // space.
+  OnUrlLoaderConnectedToPrivateNetwork(
+      url.mojom.Url request_url,
+      IPAddressSpace response_address_space,
+      IPAddressSpace client_address_space,
+      IPAddressSpace target_address_space);
 };

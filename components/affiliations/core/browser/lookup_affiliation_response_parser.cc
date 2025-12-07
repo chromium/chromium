@@ -56,10 +56,12 @@ GroupedFacets ParseEqClass(const affiliation_pb::FacetGroup& grouping) {
 }
 
 void AddSingleFacet(std::vector<AffiliatedFacets>& affiliations, Facet facet) {
+  facet.is_facet_synthesized = true;
   affiliations.push_back({facet});
 }
 
 void AddSingleFacet(std::vector<GroupedFacets>& groups, Facet facet) {
+  facet.is_facet_synthesized = true;
   GroupedFacets group;
   group.facets = {facet};
   groups.push_back(std::move(group));
@@ -123,7 +125,7 @@ bool ParseResponse(const std::vector<FacetURI>& requested_facet_uris,
 bool ParseLookupAffiliationResponse(
     const std::vector<FacetURI>& requested_facet_uris,
     const affiliation_pb::LookupAffiliationByHashPrefixResponse& response,
-    AffiliationFetcherDelegate::Result* result) {
+    AffiliationFetcherInterface::ParsedFetchResponse* result) {
   for (const auto& domain : response.psl_extensions()) {
     result->psl_extensions.push_back(domain);
   }

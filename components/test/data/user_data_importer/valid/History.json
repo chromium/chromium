@@ -1,0 +1,77 @@
+{
+  "metadata" : {
+    "browser_name" : "Safari",
+    "browser_version" : "18.4",
+    "data_type" : "history",
+    "export_time_usec" : 1747418368726439,
+    "schema_version" : 1
+  },
+  "history" : [
+    {
+      "url" : "http://sebsg.github.io/",
+      "time_usec" : 1746019846688645,
+      "visit_count" : 1,
+      "destination_url" : "https://sebsg.github.io/",
+      "destination_time_usec" : 1746019846689580
+    },
+    {
+      "url" : "https://sebsg.github.io/",
+      "time_usec" : 1746019846689580,
+      "visit_count" : 1,
+      "title" : "sebsg.github.io",
+      "source_url" : "http://sebsg.github.io/",
+      "source_time_usec" : 1746019846688645
+    },
+    {
+      "url" : "https://sebsg.github.io/autofill_index.html",
+      "time_usec" : 1746019848174790,
+      "visit_count" : 1,
+      "title" : "sebsg.github.io"
+    },
+    {
+      "url" : "https://sebsg.github.io/autofill/autofill-smoke.html",
+      "time_usec" : 1747418301164362,
+      "visit_count" : 2,
+      "title" : "Autofill Smoke Test"
+    },
+    {
+      "url" : "https://example.com/",
+      "time_usec" : 1747418330169153,
+      "visit_count" : 6,
+      "title" : "Access Denied",
+      "latest_visit_was_load_failure" : true
+    },
+    {
+      "url" : "https://www.example.com/",
+      "time_usec" : 1746019846689580,
+      "visit_count" : 1,
+      "title" : "Explicit redirect from scheme",
+      "source_url" : "http://www.example.com/",
+      "destination_url" : "https://www.example.com/"
+    },
+    {
+      "url" : "https://www.example.com/",
+      "time_usec" : 1746019846689580,
+      "visit_count" : 1,
+      "title" : "Explicit redirect from host",
+      "source_url" : "https://www.example.com/",
+      "destination_url" : "https://www.example2.com/"
+    },
+    {
+      "url" : "https://www.example.com/",
+      "time_usec" : 1746019846689580,
+      "visit_count" : 1,
+      "title" : "Explicit redirect from path",
+      "source_url" : "https://www.example.com/",
+      "destination_url" : "https://www.example.com/more_path/"
+    },
+    {
+      "url" : "https://www.example.com/",
+      "time_usec" : 1746019846689580,
+      "visit_count" : 1,
+      "title" : "Explicit redirect from query",
+      "source_url" : "https://www.example.com/test",
+      "destination_url" : "https://www.example.com/test?q=query"
+    }
+  ]
+}

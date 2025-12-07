@@ -4,6 +4,7 @@
 
 #include "base/strings/cstring_view.h"
 
+#include <algorithm>
 #include <concepts>
 #include <limits>
 #include <sstream>
@@ -11,7 +12,6 @@
 
 #include "base/containers/span.h"
 #include "base/debug/alias.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -69,18 +69,25 @@ TEST(CStringViewTest, LiteralConstructed) {
   }
 }
 
-TEST(CStringViewTest, PointerSizeConstructed) {
+TEST(CStringViewTest, PointerConstructed) {
   constexpr const char* c_empty = "";
-  constexpr auto empty = UNSAFE_BUFFERS(cstring_view(c_empty, 0u));
+  constexpr auto empty = UNSAFE_BUFFERS(cstring_view(c_empty));
   static_assert(std::same_as<const cstring_view, decltype(empty)>);
   EXPECT_EQ(empty.data(), c_empty);
   EXPECT_EQ(empty.size(), 0u);
 
   constexpr const char* c_stuff = "stuff";
-  constexpr auto stuff = UNSAFE_BUFFERS(cstring_view(c_stuff, 5u));
+  constexpr auto stuff = UNSAFE_BUFFERS(cstring_view(c_stuff));
   static_assert(std::same_as<const cstring_view, decltype(stuff)>);
   EXPECT_EQ(stuff.data(), c_stuff);
   EXPECT_EQ(stuff.size(), 5u);
+
+  char c_things_buf[] = {'t', 'h', 'i', 'n', 'g', 's', '\0'};
+  char* c_things = c_things_buf;
+  auto things = UNSAFE_BUFFERS(cstring_view(c_things));
+  static_assert(std::same_as<cstring_view, decltype(things)>);
+  EXPECT_EQ(things.data(), c_things);
+  EXPECT_EQ(things.size(), 6u);
 }
 
 TEST(CStringViewTest, StringConstructed) {
@@ -1057,7 +1064,7 @@ TEST(CStringViewTest, Example_CtorLiteral) {
 }
 
 TEST(CStringViewTest, CompatibleWithRanges) {
-  EXPECT_EQ(2, ranges::count(cstring_view("hello"), 'l'));
+  EXPECT_EQ(2, std::ranges::count(cstring_view("hello"), 'l'));
 }
 
 TEST(CStringViewTest, ConstructFromStringLiteralWithEmbeddedNul) {

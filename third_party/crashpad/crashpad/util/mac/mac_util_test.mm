@@ -40,8 +40,7 @@ void SwVers(NSString* argument, std::string* output) {
 
     @try {
       [task launch];
-    }
-    @catch (NSException* exception) {
+    } @catch (NSException* exception) {
       FAIL() << [[exception name] UTF8String] << ": "
              << [[exception reason] UTF8String];
     }
@@ -54,8 +53,11 @@ void SwVers(NSString* argument, std::string* output) {
 
     output->assign(reinterpret_cast<const char*>([data bytes]), [data length]);
 
-    EXPECT_EQ(output->at(output->size() - 1), '\n');
-    output->resize(output->size() - 1);
+    EXPECT_FALSE(output->empty());
+    if (!output->empty()) {
+      EXPECT_EQ(output->back(), '\n');
+      output->pop_back();
+    }
   }
 }
 
@@ -75,11 +77,17 @@ TEST(MacUtil, MacOSVersionComponents) {
   EXPECT_GE(bugfix, 0);
   EXPECT_LE(bugfix, 99);
 
+  if (major == 10) {
+    EXPECT_LE(minor, 15);
+  } else {
+    EXPECT_TRUE(major <= 15 || major >= 26);
+  }
+
   std::string version;
   if (bugfix) {
     version = base::StringPrintf("%d.%d.%d", major, minor, bugfix);
   } else {
-    // 10.x.0 releases report their version string as simply 10.x.
+    // x.y.0 releases report their version string as simply x.y.
     version = base::StringPrintf("%d.%d", major, minor);
   }
 
@@ -97,9 +105,12 @@ TEST(MacUtil, MacOSVersionComponents) {
   std::string expected_product_name;
   ASSERT_NO_FATAL_FAILURE(SwVers(@"-productName", &expected_product_name));
 
-  // Look for a space after the product name in the complete version string.
-  expected_product_name += ' ';
-  EXPECT_EQ(version_string.find(expected_product_name), 0u);
+  std::string expected_version_string_start =
+      expected_product_name + ' ' + expected_product_version + ' ';
+  std::string expected_version_string_end = " (" + expected_build_version + ')';
+
+  EXPECT_TRUE(version_string.starts_with(expected_version_string_start));
+  EXPECT_TRUE(version_string.ends_with(expected_version_string_end));
 }
 
 TEST(MacUtil, MacOSVersionNumber) {
@@ -118,9 +129,7 @@ TEST(MacUtil, MacOSVersionNumber) {
   ASSERT_TRUE(
       MacOSVersionComponents(&major, &minor, &bugfix, &build, &version_string));
 
-  EXPECT_EQ(macos_version_number,
-            major * 1'00'00 + minor * 1'00 +
-                (macos_version_number >= 10'13'04 ? bugfix : 0));
+  EXPECT_EQ(macos_version_number, major * 1'00'00 + minor * 1'00 + bugfix);
 }
 
 TEST(MacUtil, MacModelAndBoard) {

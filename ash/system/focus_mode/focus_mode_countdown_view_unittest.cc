@@ -14,7 +14,6 @@
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/account_id/account_id.h"
 
@@ -22,7 +21,7 @@ namespace ash {
 
 class FocusModeCountdownViewTest : public AshTestBase {
  public:
-  FocusModeCountdownViewTest() : scoped_feature_(features::kFocusMode) {}
+  FocusModeCountdownViewTest() = default;
   ~FocusModeCountdownViewTest() override = default;
 
   // AshTestBase:
@@ -58,7 +57,6 @@ class FocusModeCountdownViewTest : public AshTestBase {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_;
   raw_ptr<FocusModeTray> focus_mode_tray_ = nullptr;
 };
 

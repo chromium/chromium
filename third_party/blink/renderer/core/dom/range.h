@@ -77,22 +77,6 @@ class CORE_EXPORT Range final : public AbstractRange {
   unsigned startOffset() const override { return start_.Offset(); }
   Node* endContainer() const override { return &end_.Container(); }
   unsigned endOffset() const override { return end_.Offset(); }
-  // The following  should only be used by DOMSelection::getComposedRanges().
-  // It exposes range endpoints that can be in different tree scopes.
-  Node* composedStartContainer() const {
-    return composed_range_ ? &composed_range_->start.Container()
-                           : &start_.Container();
-  }
-  unsigned composedStartOffset() const {
-    return composed_range_ ? composed_range_->start.Offset() : start_.Offset();
-  }
-  Node* composedEndContainer() const {
-    return composed_range_ ? &composed_range_->end.Container()
-                           : &end_.Container();
-  }
-  unsigned composedEndOffset() const {
-    return composed_range_ ? composed_range_->end.Offset() : end_.Offset();
-  }
 
   bool collapsed() const override { return start_ == end_; }
   bool IsConnected() const;
@@ -131,8 +115,9 @@ class CORE_EXPORT Range final : public AbstractRange {
 
   String GetText() const;
 
-  DocumentFragment* createContextualFragment(const String& html,
-                                             ExceptionState&);
+  DocumentFragment* createContextualFragment(
+      const V8UnionStringOrTrustedHTML* html,
+      ExceptionState&);
 
   void detach();
   Range* cloneRange() const;
@@ -228,23 +213,18 @@ class CORE_EXPORT Range final : public AbstractRange {
   RangeBoundaryPoint start_;
   RangeBoundaryPoint end_;
 
-  struct RangeBoundaryPoints : GarbageCollected<RangeBoundaryPoints> {
-    RangeBoundaryPoints(RangeBoundaryPoint start, RangeBoundaryPoint end)
-        : start(start), end(end) {}
-    RangeBoundaryPoint start;
-    RangeBoundaryPoint end;
-
-    void Trace(Visitor* visitor) const {
-      visitor->Trace(start);
-      visitor->Trace(end);
-    }
+  // This tracks how the range updates the selection:
+  // If kAll, set selection to have the same start and end as range.
+  // If kStartOnly, set selection to have the same start as range.
+  // If kEndOnly, set selection to have the same end as range.
+  enum class UpdateSelectionBehavior {
+    kAll,
+    kStartOnly,
+    kEndOnly,
   };
-  // composed range is a pointer that is initially null. It is set when the
-  // Range's start and end endpoints changed to be in different tree scopes,
-  // but are still in the same document.
-  // TODO(https://github.com/whatwg/dom/issues/725#issuecomment-2264117903)
-  // Note a composed tree is getting defined.
-  Member<RangeBoundaryPoints> composed_range_;
+  UpdateSelectionBehavior update_selection_behavior_ =
+      UpdateSelectionBehavior::kAll;
+  void ResetUpdateSelectionBehavior();
 
   friend class RangeUpdateScope;
 };

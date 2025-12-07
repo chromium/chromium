@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_script_url.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
+#include "third_party/blink/renderer/core/xlink_names.h"
 
 namespace blink {
 
@@ -20,14 +21,31 @@ void SVGAnimatedString::setBaseVal(const V8UnionStringOrTrustedScriptURL* value,
                                    ExceptionState& exception_state) {
   DCHECK(value);
 
+  // https://github.com/w3c/svgwg/pull/934, and formerly
   // https://w3c.github.io/trusted-types/dist/spec/#integration-with-svg
   String string;
   switch (value->GetContentType()) {
     case V8UnionStringOrTrustedScriptURL::ContentType::kString:
       string = value->GetAsString();
       if (ContextElement()->IsScriptElement()) {
-        string = TrustedTypesCheckForScriptURL(
-            string, ContextElement()->GetExecutionContext(), exception_state);
+        // Newer updates to Trusted Types are more specific on which values to
+        // check and how to name them. Until the TrustedTypesHTML flag can be
+        // removed, we need to support both ways:
+        if (RuntimeEnabledFeatures::TrustedTypesHTMLEnabled()) {
+          // https://github.com/w3c/svgwg/pull/934
+          if (AttributeName() == svg_names::kHrefAttr ||
+              AttributeName() == xlink_names::kHrefAttr) {
+            string = TrustedTypesCheckForScriptURL(
+                string, ContextElement()->GetExecutionContext(),
+                "SVGScriptElement", "href", exception_state);
+          }
+        } else {
+          // https://w3c.github.io/trusted-types/dist/spec/#integration-with-svg
+          // (Spec is no longer current.)
+          string = TrustedTypesCheckForScriptURL(
+              string, ContextElement()->GetExecutionContext(),
+              "SVGAnimatedString", "baseVal", exception_state);
+        }
         if (exception_state.HadException())
           return;
       }

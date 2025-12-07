@@ -76,9 +76,8 @@ void InlineStylePropertyMap::RemoveAllProperties() {
 void InlineStylePropertyMap::ForEachProperty(IterationFunction visitor) {
   CSSPropertyValueSet& inline_style_set =
       owner_element_->EnsureMutableInlineStyle();
-  for (unsigned i = 0; i < inline_style_set.PropertyCount(); i++) {
-    const auto& property_reference = inline_style_set.PropertyAt(i);
-    visitor(property_reference.Name(), property_reference.Value());
+  for (const CSSPropertyValue& property : inline_style_set.Properties()) {
+    visitor(property.Name(), property.Value());
   }
 }
 

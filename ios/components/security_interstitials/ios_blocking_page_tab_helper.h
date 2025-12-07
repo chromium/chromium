@@ -47,8 +47,11 @@ class IOSBlockingPageTabHelper
   //  void OnBlockingPageMessageReceived(const base::Value& message);
   void OnBlockingPageCommandReceived(SecurityInterstitialCommand command);
 
+  // Sends updates to `blocking_page_for_currently_committed_navigation_` when
+  // dismissed.
+  void UpdateForBlockingPageDismissed();
+
  private:
-  WEB_STATE_USER_DATA_KEY_DECL();
   explicit IOSBlockingPageTabHelper(web::WebState* web_state);
   friend class web::WebStateUserData<IOSBlockingPageTabHelper>;
 
@@ -69,6 +72,9 @@ class IOSBlockingPageTabHelper
 
    private:
     // web::WebStateObserver:
+    void DidStartNavigation(
+        web::WebState* web_state,
+        web::NavigationContext* navigation_context) override;
     void DidFinishNavigation(
         web::WebState* web_state,
         web::NavigationContext* navigation_context) override;

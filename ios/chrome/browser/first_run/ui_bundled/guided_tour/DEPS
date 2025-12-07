@@ -1,0 +1,4 @@
+include_rules = [
+  "+ios/chrome/browser/bubble/ui_bundled/guided_tour/guided_tour_bubble_view_controller_presenter.h",
+  "+ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_button.h",
+]

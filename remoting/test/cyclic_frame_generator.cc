@@ -58,7 +58,8 @@ std::unique_ptr<webrtc::DesktopFrame> CyclicFrameGenerator::GenerateFrame(
       reference_frames_.size();
   bool cursor_state = frame_id % 2;
 
-  auto frame = std::make_unique<webrtc::BasicDesktopFrame>(screen_size_);
+  auto frame = std::make_unique<webrtc::BasicDesktopFrame>(screen_size_,
+                                                           webrtc::FOURCC_ARGB);
   frame->CopyPixelsFrom(*reference_frames_[reference_frame],
                         webrtc::DesktopVector(),
                         webrtc::DesktopRect::MakeSize(screen_size_));

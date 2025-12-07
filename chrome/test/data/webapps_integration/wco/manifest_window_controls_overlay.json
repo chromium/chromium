@@ -12,7 +12,8 @@
       "type": "image/png"
     }
   ],
-  "start_url": "/webapps_integration/wco/basic.html",
+  "id": "/webapps_integration/wco/basic.html",
+  "start_url": "/webapps_integration/wco/basic.html?manifest=manifest_window_controls_overlay.json",
   "scope": "/webapps_integration/wco/",
   "display": "standalone",
   "display_override": [

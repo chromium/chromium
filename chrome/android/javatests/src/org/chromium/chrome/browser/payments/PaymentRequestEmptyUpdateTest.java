@@ -56,7 +56,6 @@ public class PaymentRequestEmptyUpdateTest {
                         "",
                         "https://example.test",
                         true,
-                        true,
                         "Jon Doe",
                         "4111111111111111",
                         "1111",
@@ -74,7 +73,7 @@ public class PaymentRequestEmptyUpdateTest {
     @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testSelectValidAddress() throws Throwable {
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.triggerUiAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(

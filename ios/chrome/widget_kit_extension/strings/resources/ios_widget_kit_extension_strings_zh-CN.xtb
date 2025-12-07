@@ -1,7 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
+<translation id="1149198577555059081">搜索或输入网址</translation>
 <translation id="1324575488877808473">打开 Chrome 即可在此处查看您最常访问的网站。</translation>
+<translation id="1861587787412926934">默认</translation>
+<translation id="2378341468609349249">搜索密码</translation>
 <translation id="2513892053093488070">语音搜索</translation>
 <translation id="2535710892645968259">从锁定的屏幕直接进入 Chrome 恐龙游戏。</translation>
 <translation id="2542770169955243077">Chrome 恐龙游戏</translation>
@@ -11,15 +14,16 @@
 <translation id="3464120926993669599">无痕搜索</translation>
 <translation id="3501428580460217920">在 Chrome 中打开新的无痕式标签页进行搜索或导航。</translation>
 <translation id="3528874492835415837">搜索或输入网址</translation>
+<translation id="3606473512813866845">Google 账号</translation>
 <translation id="3798529146539130967">在 Chrome 中使用语音进行搜索。</translation>
-<translation id="405442954313519726">在新的常规标签页或无痕式标签页中搜索或访问网站，还支持语音输入和二维码扫描。</translation>
+<translation id="405442954313519726">支持通过新标签页、无痕模式、语音或二维码进行搜索或浏览。</translation>
 <translation id="4557098988773644458">直接进入 Chrome 恐龙游戏</translation>
 <translation id="4678859075583681103">发起一项新搜索，或从 iPhone 主屏幕中打开您最常访问的网站。</translation>
-<translation id="4954445889641385956">搜索或输入网址</translation>
 <translation id="4962772945748414465">打开“WEBSITE_PLACEHOLDER”</translation>
 <translation id="5234725349196694896">在 Chrome 中使用您喜爱的搜索引擎进行搜索。</translation>
 <translation id="5277852985315196237">搜索或输入网址</translation>
 <translation id="529497070985873480">Chrome 恐龙</translation>
+<translation id="5325847452011598583">没有账号</translation>
 <translation id="5683557219437283801">语音搜索</translation>
 <translation id="6179961764474023795">快速操作</translation>
 <translation id="6330929932864892436">搜索或输入网址</translation>
@@ -28,6 +32,7 @@
 <translation id="6663288906398689853">搜索</translation>
 <translation id="6691821786147477657">发起一项新搜索，或从 iPad 主屏幕中打开您最常访问的网站。</translation>
 <translation id="6721566127904256183">您最常访问的网站会显示在此处。</translation>
+<translation id="6804899947889706382">搜索或输入网址</translation>
 <translation id="6855322554930231468">搜索</translation>
 <translation id="6973491011026415905">在 Google 密码管理工具中搜索密码</translation>
 <translation id="7010831364920321713">无痕搜索</translation>
@@ -38,7 +43,9 @@
 <translation id="8104498668011127805">直接进入 Chrome 恐龙游戏</translation>
 <translation id="8150601371542319992">智能镜头</translation>
 <translation id="8171952085734471362">无痕搜索</translation>
+<translation id="8310150944719146950">账号</translation>
 <translation id="8564942608461410346">使用您喜爱的搜索引擎在 Chrome 中搜索。</translation>
+<translation id="8858765528951093286">与小组件搭配使用的账号已移除。如需选择其他账号，请点按“编辑小组件”。</translation>
 <translation id="9175676375569833962">搜索
 密码</translation>
 </translationbundle>

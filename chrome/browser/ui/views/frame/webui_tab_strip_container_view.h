@@ -136,7 +136,8 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
   SkColor GetColorProviderColor(ui::ColorId id) const override;
 
   // views::View:
-  int GetHeightForWidth(int w) const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   gfx::Size FlexRule(const views::View* view,
                      const views::SizeBounds& bounds) const;

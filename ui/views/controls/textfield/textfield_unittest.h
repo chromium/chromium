@@ -5,8 +5,6 @@
 #ifndef UI_VIEWS_CONTROLS_TEXTFIELD_TEXTFIELD_UNITTEST_H_
 #define UI_VIEWS_CONTROLS_TEXTFIELD_TEXTFIELD_UNITTEST_H_
 
-#include "ui/views/controls/textfield/textfield.h"
-
 #include <memory>
 #include <string>
 #include <utility>
@@ -14,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/events/event_constants.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/test/views_test_base.h"
 
@@ -49,9 +48,14 @@ class TextfieldTest : public ViewsTestBase, public TextfieldController {
   void OnBeforeUserAction(Textfield* sender) override;
   void OnAfterUserAction(Textfield* sender) override;
   void OnAfterCutOrCopy(ui::ClipboardBuffer clipboard_type) override;
+  bool HandleWriteTextToClipboard(ui::ClipboardBuffer clipboard_buffer,
+                                  const std::u16string_view& text) override;
+  bool AllowStartDragEvent(const std::u16string_view& selected_text) override;
 
   void InitTextfield(int count = 1);
   ui::MenuModel* GetContextMenuModel();
+
+  void MockAXModeAdded();
 
   bool TestingNativeMac() const;
   bool TestingNativeCrOs() const;
@@ -60,7 +64,7 @@ class TextfieldTest : public ViewsTestBase, public TextfieldController {
   T* PrepareTextfields(int count,
                        std::unique_ptr<T> textfield_owned,
                        gfx::Rect bounds) {
-    widget_ = CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+    widget_ = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
     widget_->SetBounds(bounds);
 
     View* container = widget_->SetContentsView(std::make_unique<View>());
@@ -177,6 +181,8 @@ class TextfieldTest : public ViewsTestBase, public TextfieldController {
   ui::ClipboardBuffer copied_to_clipboard_ = ui::ClipboardBuffer::kMaxValue;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
   raw_ptr<View> event_target_ = nullptr;
+  bool handle_write_to_clipboard_ = false;
+  bool allow_drag_event_ = true;
 };
 
 }  // namespace test

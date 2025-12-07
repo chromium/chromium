@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
+#include "services/webnn/public/cpp/supported_tensors.h"
 
 namespace webnn {
 
@@ -19,9 +20,13 @@ inline constexpr char kArgMin[] = "argMin";
 inline constexpr char kBatchNormalization[] = "batchNormalization";
 inline constexpr char kClamp[] = "clamp";
 inline constexpr char kConcat[] = "concat";
+inline constexpr char kCumulativeSum[] = "cumulativeSum";
+inline constexpr char kDequantizeLinear[] = "dequantizeLinear";
 inline constexpr char kElu[] = "elu";
 inline constexpr char kExpand[] = "expand";
 inline constexpr char kGather[] = "gather";
+inline constexpr char kGatherElements[] = "gatherElements";
+inline constexpr char kGatherNd[] = "gatherND";
 inline constexpr char kGelu[] = "gelu";
 inline constexpr char kGemm[] = "gemm";
 inline constexpr char kGru[] = "gru";
@@ -37,9 +42,13 @@ inline constexpr char kLstmCell[] = "lstmCell";
 inline constexpr char kMatmul[] = "matmul";
 inline constexpr char kPad[] = "pad";
 inline constexpr char kPrelu[] = "prelu";
+inline constexpr char kQuantizeLinear[] = "quantizeLinear";
 inline constexpr char kRelu[] = "relu";
 inline constexpr char kResample2d[] = "resample2d";
 inline constexpr char kReshape[] = "reshape";
+inline constexpr char kReverse[] = "reverse";
+inline constexpr char kScatterElements[] = "scatterElements";
+inline constexpr char kScatterND[] = "scatterND";
 inline constexpr char kSigmoid[] = "sigmoid";
 inline constexpr char kSlice[] = "slice";
 inline constexpr char kSoftmax[] = "softmax";
@@ -47,6 +56,7 @@ inline constexpr char kSoftplus[] = "softplus";
 inline constexpr char kSoftsign[] = "softsign";
 inline constexpr char kSplit[] = "split";
 inline constexpr char kTanh[] = "tanh";
+inline constexpr char kTile[] = "tile";
 inline constexpr char kTranspose[] = "transpose";
 inline constexpr char kTriangular[] = "triangular";
 inline constexpr char kWhere[] = "where";
@@ -68,6 +78,10 @@ inline constexpr char kGreater[] = "greater";
 inline constexpr char kGreaterOrEqual[] = "greaterOrEqual";
 inline constexpr char kLesser[] = "lesser";
 inline constexpr char kLesserOrEqual[] = "lesserOrEqual";
+inline constexpr char kNotEqual[] = "notEqual";
+inline constexpr char kLogicalAnd[] = "logicalAnd";
+inline constexpr char kLogicalOr[] = "logicalOr";
+inline constexpr char kLogicalXor[] = "logicalXor";
 
 // elementwise unary ops.
 inline constexpr char kAbs[] = "abs";
@@ -77,8 +91,12 @@ inline constexpr char kExp[] = "exp";
 inline constexpr char kFloor[] = "floor";
 inline constexpr char kLog[] = "log";
 inline constexpr char kNeg[] = "neg";
+inline constexpr char kRoundEven[] = "roundEven";
+inline constexpr char kSign[] = "sign";
 inline constexpr char kSin[] = "sin";
 inline constexpr char kTan[] = "tan";
+inline constexpr char kIsNaN[] = "isNaN";
+inline constexpr char kIsInfinite[] = "isInfinite";
 inline constexpr char kLogicalNot[] = "logicalNot";
 inline constexpr char kIdentity[] = "identity";
 inline constexpr char kSqrt[] = "sqrt";
@@ -112,29 +130,43 @@ std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
                                   OperandDataType type,
                                   SupportedDataTypes supported_types);
 std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
-    NotSupportedConstantTypeError(OperandDataType type,
-                                  SupportedDataTypes supported_types);
+    NotSupportedArgumentError(std::string_view argument_name,
+                              const OperandDescriptor& descriptor,
+                              SupportedTensors supported_tensors);
+std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
+    NotSupportedConstantError(const OperandDescriptor& descriptor,
+                              SupportedTensors supported_tensors);
 std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
     NotSupportedInputArgumentTypeError(OperandDataType type,
                                        SupportedDataTypes supported_types);
 std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
-    NotSupportedInputTypeError(std::string_view input_name,
-                               OperandDataType type,
-                               SupportedDataTypes supported_types);
+    NotSupportedInputArgumentError(const OperandDescriptor& descriptor,
+                                   SupportedTensors supported_tensors);
+std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
+    NotSupportedInputError(std::string_view input_name,
+                           const OperandDescriptor& descriptor,
+                           SupportedTensors supported_tensors);
+std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
+    NotSupportedOpOutputRankError(uint32_t rank,
+                                  SupportedRanks supported_ranks);
 std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
     NotSupportedOpOutputTypeError(OperandDataType type,
                                   SupportedDataTypes supported_types);
 std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
-    NotSupportedOutputTypeError(std::string_view output_name,
-                                OperandDataType type,
-                                SupportedDataTypes supported_types);
+    NotSupportedOutputError(std::string_view output_name,
+                            const OperandDescriptor& descriptor,
+                            SupportedTensors supported_tensors);
 std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
-    NotSupportedMLBufferTypeError(OperandDataType type,
+    NotSupportedMLTensorTypeError(OperandDataType type,
                                   SupportedDataTypes supported_types);
+std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
+    NotSupportedTensorSizeError(uint64_t byte_length, uint64_t size_limit);
 
 std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
     GetErrorLabelPrefix(std::string_view label);
 
+std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
+    ErrorWithLabel(std::string_view label, std::string_view error_message);
 }  // namespace webnn
 
 #endif  // SERVICES_WEBNN_PUBLIC_CPP_WEBNN_ERRORS_H_

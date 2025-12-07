@@ -41,6 +41,10 @@ bool IsPingPong(const CastMessage& message) {
 
 }  // namespace
 
+CastTransport::~CastTransport() = default;
+CastTransport::Delegate::~Delegate() = default;
+CastTransportImpl::Channel::~Channel() = default;
+
 CastTransportImpl::CastTransportImpl(Channel* channel,
                                      int channel_id,
                                      const net::IPEndPoint& ip_endpoint,
@@ -123,16 +127,18 @@ CastTransportImpl::WriteRequest::WriteRequest(
 
 CastTransportImpl::WriteRequest::WriteRequest(WriteRequest&& other) = default;
 
-CastTransportImpl::WriteRequest::~WriteRequest() {}
+CastTransportImpl::WriteRequest::~WriteRequest() = default;
 
 void CastTransportImpl::SetReadState(ReadState read_state) {
-  if (read_state_ != read_state)
+  if (read_state_ != read_state) {
     read_state_ = read_state;
+  }
 }
 
 void CastTransportImpl::SetWriteState(WriteState write_state) {
-  if (write_state_ != write_state)
+  if (write_state_ != write_state) {
     write_state_ = write_state;
+  }
 }
 
 void CastTransportImpl::SetErrorState(ChannelError error_state) {
@@ -157,8 +163,8 @@ void CastTransportImpl::OnWriteResult(int result) {
   do {
     VLOG_WITH_CONNECTION(2)
         << "OnWriteResult (state=" << AsInteger(write_state_) << ", "
-        << "result=" << rv << ", "
-        << "queue size=" << write_queue_.size() << ")";
+        << "result=" << rv << ", " << "queue size=" << write_queue_.size()
+        << ")";
 
     WriteState state = write_state_;
     write_state_ = WriteState::UNKNOWN;
@@ -177,12 +183,8 @@ void CastTransportImpl::OnWriteResult(int result) {
         DCHECK_EQ(WriteState::WRITE_ERROR, write_state_);
         break;
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Unknown state in write state machine: " << AsInteger(state);
-        SetWriteState(WriteState::WRITE_ERROR);
-        SetErrorState(ChannelError::UNKNOWN);
-        rv = net::ERR_FAILED;
-        break;
+        NOTREACHED() << "Unknown state in write state machine: "
+                     << AsInteger(state);
     }
   } while (rv != net::ERR_IO_PENDING && !IsTerminalWriteState(write_state_));
 
@@ -198,7 +200,8 @@ int CastTransportImpl::DoWrite() {
   DCHECK(!write_queue_.empty());
   net::DrainableIOBuffer* io_buffer = write_queue_.front().io_buffer.get();
 
-  VLOG_WITH_CONNECTION(2) << "WriteData byte_count = " << io_buffer->size()
+  VLOG_WITH_CONNECTION(2) << "WriteData byte_count = "
+                          << (io_buffer->BytesConsumed() + io_buffer->size())
                           << " bytes_written " << io_buffer->BytesConsumed();
 
   SetWriteState(WriteState::WRITE_COMPLETE);
@@ -301,12 +304,8 @@ void CastTransportImpl::OnReadResult(int result) {
         DCHECK_EQ(read_state_, ReadState::READ_ERROR);
         break;
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Unknown state in read state machine: " << AsInteger(state);
-        SetReadState(ReadState::READ_ERROR);
-        SetErrorState(ChannelError::UNKNOWN);
-        rv = net::ERR_FAILED;
-        break;
+        NOTREACHED() << "Unknown state in read state machine: "
+                     << AsInteger(state);
     }
   } while (rv != net::ERR_IO_PENDING && !IsTerminalReadState(read_state_));
 

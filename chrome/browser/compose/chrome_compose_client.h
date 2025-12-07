@@ -11,20 +11,19 @@
 
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/token.h"
 #include "chrome/browser/compose/compose_session.h"
 #include "chrome/browser/compose/proactive_nudge_tracker.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/common/compose/compose.mojom.h"
-#include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
-#include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
+#include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/core/browser/compose_client.h"
 #include "components/compose/core/browser/compose_dialog_controller.h"
 #include "components/compose/core/browser/compose_manager.h"
 #include "components/compose/core/browser/compose_manager_impl.h"
-#include "components/optimization_guide/core/optimization_guide_decision.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/prefs/pref_member.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
@@ -33,12 +32,17 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 class Page;
 class WebContents;
 }  // namespace content
+
+namespace optimization_guide {
+class ModelQualityLogsUploaderService;
+class OptimizationGuideDecider;
+class RemoteModelExecutor;
+}  // namespace optimization_guide
 
 class ComposeEnabling;
 
@@ -65,13 +69,16 @@ class ChromeComposeClient
     // TODO(b/40286232): Throttling of this event may be added in the future, in
     // which case this implementation would no longer adhere to a strict event
     // count.
-    void OnAfterTextFieldDidChange(autofill::AutofillManager& manager,
-                                   autofill::FormGlobalId form,
-                                   autofill::FieldGlobalId field,
-                                   const std::u16string& text_value) override;
+    void OnAfterTextFieldValueChanged(
+        autofill::AutofillManager& manager,
+        autofill::FormGlobalId form,
+        autofill::FieldGlobalId field,
+        const std::u16string& text_value) override;
     // Used to reset the field content changes count when a new suggestions UI
     // is shown.
-    void OnSuggestionsShown(autofill::AutofillManager& manager) override;
+    void OnSuggestionsShown(
+        autofill::AutofillManager& manager,
+        base::span<const autofill::Suggestion> suggestions) override;
 
     // Asks Autofill to hide any open compose-related popups.
     void HideComposeNudges();
@@ -85,8 +92,8 @@ class ChromeComposeClient
 
     raw_ptr<content::WebContents> web_contents_;
     // Current count of change events fired on the current focused text field,
-    // as recorded by `OnAfterTextFieldDidChange`.
-    unsigned int text_field_change_event_count_ = 0;
+    // as recorded by `OnAfterTextFieldValueChanged`.
+    unsigned int text_field_value_change_event_count_ = 0;
 
     autofill::ScopedAutofillManagersObservation autofill_managers_observation_{
         this};
@@ -177,11 +184,17 @@ class ChromeComposeClient
   // Called when the focused element changes. This is only used to inform
   // the proactive nudge tracker that focus has changed until the
   // AutofillManager::Observer APIs for focus tracking are fixed.
-  void OnFocusChangedInPage(content::FocusedNodeDetails* details) override;
+  void OnFocusChangedInPage(
+      const content::FocusedNodeDetails& details) override;
 
-  // compose::ProactiveNudgeTracker implementation.
+  // compose::ProactiveNudgeTracker::Delegate implementation.
   void ShowProactiveNudge(autofill::FormGlobalId form,
-                          autofill::FieldGlobalId field) override;
+                          autofill::FieldGlobalId field,
+                          compose::ComposeEntryPoint entry_point) override;
+
+  // Returns the Compose optimization guide hints for the current URL.
+  // compose::ProactiveNudgeTracker::Delegate implementation.
+  compose::ComposeHintMetadata GetComposeHintMetadata() override;
 
   ComposeEnabling& GetComposeEnabling();
 
@@ -196,7 +209,10 @@ class ChromeComposeClient
   void SetOptimizationGuideForTest(
       optimization_guide::OptimizationGuideDecider* opt_guide);
   void SetModelExecutorForTest(
-      optimization_guide::OptimizationGuideModelExecutor* model_executor);
+      optimization_guide::RemoteModelExecutor* model_executor);
+  void SetModelQualityLogsUploaderServiceForTest(
+      optimization_guide::ModelQualityLogsUploaderService*
+          model_quality_logs_uploader_service);
   void SetSkipShowDialogForTest(bool should_skip);
   void SetSessionIdForTest(base::Token session_id);
   void SetInnerTextProviderForTest(InnerTextProvider* inner_text);
@@ -207,7 +223,9 @@ class ChromeComposeClient
 
  protected:
   explicit ChromeComposeClient(content::WebContents* web_contents);
-  optimization_guide::OptimizationGuideModelExecutor* GetModelExecutor();
+  optimization_guide::RemoteModelExecutor* GetModelExecutor();
+  optimization_guide::ModelQualityLogsUploaderService*
+  GetModelQualityLogsUploaderService();
   optimization_guide::OptimizationGuideDecider* GetOptimizationGuide();
   base::Token GetSessionId();
   InnerTextProvider* GetInnerTextProvider();
@@ -252,6 +270,10 @@ class ChromeComposeClient
   // Set the exit reason for a session.
   void SetSessionCloseReason(compose::ComposeSessionCloseReason close_reason);
 
+  // Launch Hats with the active session
+  void LaunchHatsSurveyForActiveSession(
+      compose::ComposeSessionCloseReason close_reason);
+
   // Removes `active_compose_field_id_` from `sessions_` and resets
   // `active_compose_field_id_` and `active_compose_form_id_`
   void RemoveActiveSession();
@@ -267,6 +289,10 @@ class ChromeComposeClient
   // Returns nullptr if no such session exists.
   ComposeSession* GetSessionForActiveComposeField();
 
+  // Returns true if the active field has an existing session that is not
+  // expired.
+  bool ActiveFieldHasUnexpiredSession();
+
   // Checks if the page assessed language is supported by Compose.
   bool IsPageLanguageSupported();
 
@@ -277,8 +303,11 @@ class ChromeComposeClient
   // recently been navigated to.
   raw_ptr<optimization_guide::OptimizationGuideDecider> opt_guide_;
 
-  std::optional<optimization_guide::OptimizationGuideModelExecutor*>
+  std::optional<optimization_guide::RemoteModelExecutor*>
       model_executor_for_test_;
+
+  std::optional<optimization_guide::ModelQualityLogsUploaderService*>
+      logs_uploader_service_for_test_;
 
   std::optional<base::Token> session_id_for_test_;
 
@@ -339,6 +368,9 @@ class ChromeComposeClient
   // Time since page load, or time since page has changed if it's not loaded
   // yet.
   base::TimeTicks page_change_time_;
+
+  compose::ComposeEntryPoint most_recent_nudge_entry_point_ =
+      compose::ComposeEntryPoint::kProactiveNudge;
 
   base::WeakPtrFactory<ChromeComposeClient> weak_ptr_factory_{this};
 

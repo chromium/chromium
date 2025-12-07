@@ -6,6 +6,9 @@
 
 #include "chrome/browser/battery/battery_saver.h"
 #include "chrome/browser/data_saver/data_saver.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/preloading/prefetch/prefetch_service/prefetch_origin_decider.h"
 #include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
@@ -17,12 +20,12 @@
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
-#include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "google_apis/google_api_keys.h"
 #include "net/http/http_util.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 ChromePrefetchServiceDelegate::ChromePrefetchServiceDelegate(
     content::BrowserContext* browser_context)
@@ -31,10 +34,6 @@ ChromePrefetchServiceDelegate::ChromePrefetchServiceDelegate(
           std::make_unique<PrefetchOriginDecider>(profile_->GetPrefs())) {}
 
 ChromePrefetchServiceDelegate::~ChromePrefetchServiceDelegate() = default;
-
-std::string ChromePrefetchServiceDelegate::GetMajorVersionNumber() {
-  return version_info::GetMajorVersionNumber();
-}
 
 std::string ChromePrefetchServiceDelegate::GetAcceptLanguageHeader() {
   return net::HttpUtil::GenerateAcceptLanguageHeader(
@@ -113,14 +112,14 @@ bool ChromePrefetchServiceDelegate::IsDomainInPrefetchAllowList(
 }
 
 bool ChromePrefetchServiceDelegate::IsContaminationExempt(
-    const GURL& referring_url) {
+    const url::Origin& referring_origin) {
   // The default search engine has been chosen by the user and its cross-site
   // navigations have a significant performance impact.
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile_);
   return template_url_service &&
-         template_url_service->IsSearchResultsPageFromDefaultSearchProvider(
-             referring_url);
+         template_url_service->GetDefaultSearchProviderOrigin() ==
+             referring_origin;
 }
 
 void ChromePrefetchServiceDelegate::OnPrefetchLikely(
@@ -133,4 +132,9 @@ void ChromePrefetchServiceDelegate::OnPrefetchLikely(
   }
 
   metrics_web_contents_observer->OnPrefetchLikely();
+}
+
+void ChromePrefetchServiceDelegate::SetAcceptLanguageHeader(
+    std::string accept_language_header) {
+  // no-op.
 }

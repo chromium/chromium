@@ -32,10 +32,11 @@ enum UnPackStatus {
   UNPACK_STATUS_COUNT,
 };
 
-// Unpacks the contents of |archive| into |output_dir|. |output_file|, if not
+// Unpacks the contents of `archive` into `output_dir`. `output_file`, if not
 // null, is populated with the name of the last (or only) member extracted from
 // the archive. Returns UNPACK_NO_ERROR on success. Otherwise, returns a status
-// value indicating the operation that failed.
+// value indicating the operation that failed. Existing files in `output_dir`
+// are not overwritten.
 UnPackStatus UnPackArchive(const base::FilePath& archive,
                            const base::FilePath& output_dir,
                            base::FilePath* output_file);

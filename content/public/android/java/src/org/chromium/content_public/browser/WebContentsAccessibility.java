@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewStructure;
 import android.view.accessibility.AccessibilityNodeProvider;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl;
 
 /**
@@ -15,13 +17,14 @@ import org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl;
  * accessibility part is lazily created upon the first request from Android framework on
  *{@link AccessibilityNodeProvider}, and shares the lifetime with {@link WebContents}.
  */
+@NullMarked
 public interface WebContentsAccessibility {
     /**
      * @param webContents {@link WebContents} object.
      * @return {@link WebContentsAccessibility} object used for the give WebContents.
      *         {@code null} if not available.
      */
-    static WebContentsAccessibility fromWebContents(WebContents webContents) {
+    static @Nullable WebContentsAccessibility fromWebContents(WebContents webContents) {
         return WebContentsAccessibilityImpl.fromWebContents(webContents);
     }
 
@@ -38,6 +41,7 @@ public interface WebContentsAccessibility {
      * Lazily initializes native accessibility here if it's allowed.
      * @return The AccessibilityNodeProvider, if available, or null otherwise.
      */
+    @Nullable
     AccessibilityNodeProvider getAccessibilityNodeProvider();
 
     /**

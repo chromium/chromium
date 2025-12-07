@@ -10,6 +10,7 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
@@ -25,11 +26,13 @@
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
+#include "media/gpu/chromeos/frame_registry.h"
 #include "media/gpu/chromeos/image_processor.h"
 #include "media/gpu/chromeos/image_processor_factory.h"
 #include "media/gpu/chromeos/native_pixmap_frame_resource.h"
 #include "media/gpu/chromeos/oop_video_decoder.h"
 #include "media/gpu/chromeos/platform_video_frame_pool.h"
+#include "media/gpu/chromeos/registered_frame_converter.h"
 #include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/macros.h"
 #include "media/media_buildflags.h"
@@ -122,45 +125,15 @@ scoped_refptr<base::SequencedTaskRunner> GetDecoderTaskRunner(
       base::SingleThreadTaskRunnerThreadMode::DEDICATED);
 }
 
-// DefaultFrameConverter uses the FrameResource built-in converters to handle
-// conversion to VideoFrame objects. It is used by VideoDecoderPipeline when a
-// client doesn't specify a FrameConverter.
-class DefaultFrameConverter : public FrameResourceConverter {
- public:
-  static std::unique_ptr<FrameResourceConverter> Create() {
-    return base::WrapUnique<FrameResourceConverter>(
-        new DefaultFrameConverter());
+int GetMaxNumDecoderInstances(const gpu::GpuDriverBugWorkarounds& workarounds) {
+  constexpr int kDefaultMaxNumDecoderInstances =
+      std::numeric_limits<int>::max();
+  if (workarounds.max_num_hw_video_decoders_10) {
+    return 10;
   }
+  return kDefaultMaxNumDecoderInstances;
+}
 
-  DefaultFrameConverter(const DefaultFrameConverter&) = delete;
-  DefaultFrameConverter& operator=(const DefaultFrameConverter&) = delete;
-
- private:
-  DefaultFrameConverter() = default;
-  ~DefaultFrameConverter() override = default;
-
-  // FrameConverter overrides.
-  void ConvertFrameImpl(scoped_refptr<FrameResource> frame) override {
-    DVLOGF(4);
-
-    if (!frame) {
-      return OnError(FROM_HERE, "Invalid frame.");
-    }
-    LOG_ASSERT(frame->AsVideoFrameResource() ||
-               frame->AsNativePixmapFrameResource())
-        << "|frame| is expected to be a VideoFrameResource or "
-           "NativePixmapFrameResource";
-    scoped_refptr<VideoFrame> video_frame =
-        frame->AsVideoFrameResource()
-            ? frame->AsVideoFrameResource()->GetMutableVideoFrame()
-            : frame->AsNativePixmapFrameResource()->CreateVideoFrame();
-    if (!video_frame) {
-      return OnError(FROM_HERE,
-                     "Failed to convert FrameResource to VideoFrame.");
-    }
-    Output(std::move(video_frame));
-  }
-};
 }  //  namespace
 
 VideoDecoderMixin::VideoDecoderMixin(
@@ -188,8 +161,7 @@ void VideoDecoderMixin::Initialize(const VideoDecoderConfig& config,
                                    InitCB init_cb,
                                    const OutputCB& output_cb,
                                    const WaitingCB& waiting_cb) {
-  NOTREACHED_IN_MIGRATION()
-      << "FrameResource version of Initialize is used instead";
+  NOTREACHED() << "FrameResource version of Initialize is used instead";
 }
 
 void VideoDecoderMixin::ReleaseSecureBuffer(uint64_t secure_handle) {}
@@ -207,6 +179,37 @@ VideoDecoderPipeline::ClientFlushCBState::ClientFlushCBState(
 VideoDecoderPipeline::ClientFlushCBState::~ClientFlushCBState() = default;
 
 // static
+base::AtomicRefCount
+    VideoDecoderPipeline::DecoderReservation::num_decoder_instances_(0);
+
+std::unique_ptr<VideoDecoderPipeline::DecoderReservation>
+VideoDecoderPipeline::DecoderReservation::Take(int max_decoders) {
+  if (max_decoders == std::numeric_limits<int>::max()) {
+    return base::WrapUnique(new VideoDecoderPipeline::DecoderReservation(
+        /*reservation_taken=*/false));
+  }
+  // If Increment() pushes |num_decoder_instances_| beyond |max_decoders| return
+  // nullptr and undo the Increment(). Note: Increment() returns the previous
+  // number of instances.
+  if (num_decoder_instances_.Increment() >= max_decoders) {
+    num_decoder_instances_.Decrement();
+    return nullptr;
+  }
+  return base::WrapUnique(
+      new VideoDecoderPipeline::DecoderReservation(/*reservation_taken=*/true));
+}
+
+VideoDecoderPipeline::DecoderReservation::DecoderReservation(
+    bool reservation_taken)
+    : reservation_taken_(reservation_taken) {}
+
+VideoDecoderPipeline::DecoderReservation::~DecoderReservation() {
+  if (reservation_taken_) {
+    num_decoder_instances_.Decrement();
+  }
+}
+
+// static
 std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
     const gpu::GpuDriverBugWorkarounds& workarounds,
     scoped_refptr<base::SequencedTaskRunner> client_task_runner,
@@ -214,24 +217,24 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
     std::unique_ptr<FrameResourceConverter> frame_converter,
     std::vector<Fourcc> renderable_fourccs,
     std::unique_ptr<MediaLog> media_log,
-    mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder,
+    mojo::PendingRemote<mojom::VideoDecoder> oop_video_decoder,
     bool in_video_decoder_process) {
   DCHECK(client_task_runner);
-  DCHECK(frame_pool);
   DCHECK(!renderable_fourccs.empty());
 
   CreateDecoderFunctionCB create_decoder_function_cb;
   bool uses_oop_video_decoder = false;
   if (oop_video_decoder) {
+    DCHECK(!frame_pool);
     create_decoder_function_cb =
         base::BindOnce(&OOPVideoDecoder::Create, std::move(oop_video_decoder));
     uses_oop_video_decoder = true;
   } else {
+    DCHECK(frame_pool);
 #if BUILDFLAG(USE_VAAPI)
     create_decoder_function_cb = base::BindOnce(&VaapiVideoDecoder::Create);
 #elif BUILDFLAG(USE_V4L2_CODEC)
-    if (base::FeatureList::IsEnabled(kV4L2FlatStatefulVideoDecoder) &&
-        IsV4L2DecoderStateful()) {
+    if (IsV4L2DecoderStateful()) {
       create_decoder_function_cb =
           base::BindOnce(&V4L2StatefulVideoDecoder::Create);
     } else {
@@ -242,8 +245,15 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
 #endif
   }
 
+  std::unique_ptr<DecoderReservation> decoder_reservation =
+      DecoderReservation::Take(GetMaxNumDecoderInstances(workarounds));
+  if (!decoder_reservation) {
+    return nullptr;
+  }
+
   auto* pipeline = new VideoDecoderPipeline(
-      workarounds, std::move(client_task_runner), std::move(frame_pool),
+      std::move(decoder_reservation), workarounds,
+      std::move(client_task_runner), std::move(frame_pool),
       std::move(frame_converter), std::move(renderable_fourccs),
       std::move(media_log), std::move(create_decoder_function_cb),
       uses_oop_video_decoder, in_video_decoder_process);
@@ -252,11 +262,12 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
 }
 
 // static
-std::unique_ptr<VideoDecoder> VideoDecoderPipeline::CreateForVDAAdapterForARC(
+std::unique_ptr<VideoDecoder> VideoDecoderPipeline::CreateForARC(
     const gpu::GpuDriverBugWorkarounds& workarounds,
     scoped_refptr<base::SequencedTaskRunner> client_task_runner,
     std::unique_ptr<DmabufVideoFramePool> frame_pool,
-    std::vector<Fourcc> renderable_fourccs) {
+    std::vector<Fourcc> renderable_fourccs,
+    std::unique_ptr<MediaLog> media_log) {
   DCHECK(client_task_runner);
   DCHECK(frame_pool);
   DCHECK(!renderable_fourccs.empty());
@@ -270,10 +281,18 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::CreateForVDAAdapterForARC(
   return nullptr;
 #endif
 
+  std::unique_ptr<DecoderReservation> decoder_reservation =
+      DecoderReservation::Take(GetMaxNumDecoderInstances(workarounds));
+  if (!decoder_reservation) {
+    return nullptr;
+  }
+
   auto* pipeline = new VideoDecoderPipeline(
-      workarounds, std::move(client_task_runner), std::move(frame_pool),
-      /*frame_converter=*/nullptr, std::move(renderable_fourccs),
-      std::make_unique<NullMediaLog>(), std::move(create_decoder_function_cb),
+      std::move(decoder_reservation), workarounds,
+      std::move(client_task_runner), std::move(frame_pool),
+      RegisteredFrameConverter::Create(base::MakeRefCounted<FrameRegistry>()),
+      std::move(renderable_fourccs), std::move(media_log),
+      std::move(create_decoder_function_cb),
       /*uses_oop_video_decoder=*/false,
       // TODO(b/195769334): Set this properly once OOP-VD is enabled for ARC.
       /*in_video_decoder_process=*/false);
@@ -284,14 +303,14 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::CreateForVDAAdapterForARC(
 // static
 std::unique_ptr<VideoDecoder> VideoDecoderPipeline::CreateForTesting(
     scoped_refptr<base::SequencedTaskRunner> client_task_runner,
+    std::unique_ptr<FrameResourceConverter> frame_converter,
     std::unique_ptr<MediaLog> media_log,
     bool ignore_resolution_changes_to_smaller_for_testing) {
   CreateDecoderFunctionCB create_decoder_function_cb;
 #if BUILDFLAG(USE_VAAPI)
   create_decoder_function_cb = base::BindOnce(&VaapiVideoDecoder::Create);
 #elif BUILDFLAG(USE_V4L2_CODEC)
-  if (base::FeatureList::IsEnabled(kV4L2FlatStatefulVideoDecoder) &&
-      IsV4L2DecoderStateful()) {
+  if (IsV4L2DecoderStateful()) {
     create_decoder_function_cb =
         base::BindOnce(&V4L2StatefulVideoDecoder::Create);
   } else {
@@ -299,14 +318,18 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::CreateForTesting(
   }
 #endif
 
+  std::unique_ptr<DecoderReservation> decoder_reservation =
+      DecoderReservation::Take(std::numeric_limits<int>::max());
+  CHECK(decoder_reservation);  // Take(std::numeric_limits<int>::max()) is
+                               // guaranteed to return a valid reservation.
+
   auto* pipeline = new VideoDecoderPipeline(
-      gpu::GpuDriverBugWorkarounds(), std::move(client_task_runner),
-      std::make_unique<PlatformVideoFramePool>(),
-      /*frame_converter=*/nullptr,
+      std::move(decoder_reservation), gpu::GpuDriverBugWorkarounds(),
+      std::move(client_task_runner), std::make_unique<PlatformVideoFramePool>(),
+      std::move(frame_converter),
       VideoDecoderPipeline::DefaultPreferredRenderableFourccs(),
       std::move(media_log), std::move(create_decoder_function_cb),
-      /*uses_oop_video_decoder=*/false,
-      /*in_video_decoder_process=*/true);
+      /*uses_oop_video_decoder=*/false, /*in_video_decoder_process=*/true);
 
   if (ignore_resolution_changes_to_smaller_for_testing)
     pipeline->ignore_resolution_changes_to_smaller_for_testing_ = true;
@@ -329,9 +352,8 @@ std::vector<Fourcc> VideoDecoderPipeline::DefaultPreferredRenderableFourccs() {
 
 // static
 void VideoDecoderPipeline::NotifySupportKnown(
-    mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder,
-    base::OnceCallback<
-        void(mojo::PendingRemote<stable::mojom::StableVideoDecoder>)> cb) {
+    mojo::PendingRemote<mojom::VideoDecoder> oop_video_decoder,
+    base::OnceCallback<void(mojo::PendingRemote<mojom::VideoDecoder>)> cb) {
   if (oop_video_decoder) {
     OOPVideoDecoder::NotifySupportKnown(std::move(oop_video_decoder),
                                         std::move(cb));
@@ -401,10 +423,18 @@ VideoDecoderPipeline::GetSupportedConfigs(
     });
   }
 
+  if (workarounds.disable_accelerated_av1_decode) {
+    std::erase_if(configs.value(), [](const auto& config) {
+      return config.profile_min >= AV1PROFILE_MIN &&
+             config.profile_max <= AV1PROFILE_MAX;
+    });
+  }
+
   return configs;
 }
 
 VideoDecoderPipeline::VideoDecoderPipeline(
+    std::unique_ptr<DecoderReservation> decoder_reservation,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     scoped_refptr<base::SequencedTaskRunner> client_task_runner,
     std::unique_ptr<DmabufVideoFramePool> frame_pool,
@@ -414,29 +444,33 @@ VideoDecoderPipeline::VideoDecoderPipeline(
     CreateDecoderFunctionCB create_decoder_function_cb,
     bool uses_oop_video_decoder,
     bool in_video_decoder_process)
-    : gpu_workarounds_(gpu_workarounds),
+    : decoder_reservation_(std::move(decoder_reservation)),
+      gpu_workarounds_(gpu_workarounds),
       client_task_runner_(std::move(client_task_runner)),
       decoder_task_runner_(
           uses_oop_video_decoder
               ? client_task_runner_
               : GetDecoderTaskRunner(in_video_decoder_process)),
       main_frame_pool_(std::move(frame_pool)),
-      frame_converter_(frame_converter ? std::move(frame_converter)
-                                       : DefaultFrameConverter::Create()),
+      frame_converter_(std::move(frame_converter)),
       renderable_fourccs_(std::move(renderable_fourccs)),
       media_log_(std::move(media_log)),
       create_decoder_function_cb_(std::move(create_decoder_function_cb)),
       oop_decoder_can_read_without_stalling_(false),
       uses_oop_video_decoder_(uses_oop_video_decoder) {
+  CHECK(decoder_reservation_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
   DETACH_FROM_SEQUENCE(decoder_sequence_checker_);
-  DCHECK(main_frame_pool_);
+  DCHECK_EQ(!main_frame_pool_, uses_oop_video_decoder_);
   DCHECK(client_task_runner_);
+  CHECK(frame_converter_);
   DVLOGF(2);
 
   decoder_weak_this_ = decoder_weak_this_factory_.GetWeakPtr();
 
-  main_frame_pool_->set_parent_task_runner(decoder_task_runner_);
+  if (main_frame_pool_) {
+    main_frame_pool_->set_parent_task_runner(decoder_task_runner_);
+  }
   frame_converter_->Initialize(
       decoder_task_runner_,
       base::BindRepeating(&VideoDecoderPipeline::OnFrameConverted,
@@ -919,6 +953,8 @@ void VideoDecoderPipeline::OnFrameConverted(
   // Flag that the video frame was decoded in a power efficient way.
   video_frame->metadata().power_efficient = true;
 
+  video_frame->metadata().read_lock_fences_enabled = true;
+
   // MojoVideoDecoderService expects the |output_cb_| to be called on the client
   // task runner, even though media::VideoDecoder states frames should be output
   // without any thread jumping.
@@ -1056,6 +1092,7 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
   // is the largest amount of reference frames seen, on an ITU-T H.264 test
   // vector (CAPCM*1_Sand_E.h264).
   CHECK_LE(num_codec_reference_frames, 32u);
+  CHECK(!uses_oop_video_decoder_);
 
   if (candidates.empty())
     return CroStatus::Codes::kNoDecoderOutputFormatCandidates;
@@ -1119,14 +1156,7 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
     main_frame_pool_.reset();
     return *viable_candidate;
   }
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Lacros should always use a PlatformVideoFramePool outside of tests (because
-  // it doesn't need to handle ARC++/ARCVM requests) with no custom allocator
-  // (because buffers are allocated with minigbm).
-  CHECK(!allocator.has_value());
-  CHECK(main_frame_pool_->AsPlatformVideoFramePool() ||
-        main_frame_pool_->IsFakeVideoFramePool());
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
   // Ash Chrome can use any type of frame pool (because it may get requests from
   // ARC++/ARCVM) but never a custom allocator.
   CHECK(!allocator.has_value());
@@ -1193,9 +1223,8 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
     // that callers of this method don't need to inspect GetGpuBufferLayout()
     // of this class' GetVideoFramePool().
 
-#if BUILDFLAG(USE_VAAPI) && BUILDFLAG(IS_CHROMEOS_ASH)
-    // Linux and Lacros do not check the modifiers,
-    // since they do not set any.
+#if BUILDFLAG(USE_VAAPI) && BUILDFLAG(IS_CHROMEOS)
+    // Linux does not check the modifiers since it does not set any.
     const GpuBufferLayout layout(std::move(status_or_layout).value());
     if (layout.modifier() == viable_candidate->modifier) {
       return *viable_candidate;
@@ -1212,7 +1241,7 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
     }
 #else
     return *viable_candidate;
-#endif  // BUILDFLAG(USE_VAAPI) && BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(USE_VAAPI) && BUILDFLAG(IS_CHROMEOS)
   }
 
   // We haven't found a |viable_candidate|, and need to instantiate an

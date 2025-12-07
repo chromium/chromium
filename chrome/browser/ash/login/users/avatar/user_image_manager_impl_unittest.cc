@@ -15,15 +15,15 @@
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_test_util.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
-#include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "components/user_manager/user.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -31,7 +31,7 @@
 namespace ash {
 namespace {
 
-constexpr std::string_view kFakeRegularUserEmail = "test@example.com";
+constexpr char kFakeRegularUserEmail[] = "test@example.com";
 
 }  // namespace
 
@@ -99,58 +99,14 @@ class UserImageManagerImplTest : public testing::Test {
   }
 
  private:
-  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal(),
-                                         &local_state_};
+  TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
   user_manager::TypedScopedUserManager<FakeChromeUserManager>
       fake_chrome_user_manager_{std::make_unique<FakeChromeUserManager>()};
   raw_ptr<testing::StrictMock<test::MockUserImageLoaderDelegate>>
       mock_user_image_loader_delegate_;
   std::unique_ptr<UserImageManagerRegistry> user_image_manager_registry_;
 };
-
-// TODO(b/339503132) should set to google profile image.
-TEST_F(UserImageManagerImplTest, SetsRandomDefaultInitialImageForNewUsers) {
-  const AccountId account_id = AccountId::FromUserEmailGaiaId(
-      std::string(kFakeRegularUserEmail), std::string(kFakeRegularUserEmail));
-  user_manager::User* user = AddUser(account_id);
-
-  GURL requested_url;
-
-  EXPECT_CALL(*mock_user_image_loader_delegate(), FromGURLAnimated)
-      .WillOnce(testing::DoAll(
-          testing::SaveArg<0>(&requested_url),
-          testing::Invoke([](const GURL& default_image_url,
-                             user_image_loader::LoadedCallback loaded_cb) {
-            base::SequencedTaskRunner::GetCurrentDefault()
-                ->PostTaskAndReplyWithResult(
-                    FROM_HERE, base::BindLambdaForTesting([]() {
-                      return std::make_unique<user_manager::UserImage>();
-                    }),
-                    std::move(loaded_cb));
-          })));
-
-  fake_chrome_user_manager()->SetIsCurrentUserNew(true);
-  fake_chrome_user_manager()->UserLoggedIn(
-      account_id, /*user_id_hash=*/
-      user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
-      /*browser_restart=*/false,
-      /*is_child=*/false);
-
-  test::UserImageChangeWaiter user_image_change_waiter;
-  user_image_change_waiter.Wait();
-
-  EXPECT_TRUE(default_user_image::IsInCurrentImageSet(user->image_index()));
-  EXPECT_EQ(requested_url,
-            default_user_image::GetDefaultImageUrl(user->image_index()));
-
-  EXPECT_FALSE(is_downloading_profile_image(account_id));
-  EXPECT_FALSE(NeedProfileImage(account_id));
-  EXPECT_TRUE(
-      user_image_manager_impl(account_id)->DownloadedProfileImage().isNull());
-  EXPECT_TRUE(is_random_image_set(account_id));
-}
 
 TEST_F(UserImageManagerImplTest, RecordsUserImageLoggedInHistogram) {
   constexpr int kDefaultImageIndex = 85;
@@ -159,7 +115,7 @@ TEST_F(UserImageManagerImplTest, RecordsUserImageLoggedInHistogram) {
   base::HistogramTester histogram_tester;
 
   const AccountId account_id = AccountId::FromUserEmailGaiaId(
-      std::string(kFakeRegularUserEmail), std::string(kFakeRegularUserEmail));
+      std::string(kFakeRegularUserEmail), GaiaId("1111"));
   AddUser(account_id);
 
   EXPECT_CALL(*mock_user_image_loader_delegate(), FromGURLAnimated);
@@ -170,9 +126,7 @@ TEST_F(UserImageManagerImplTest, RecordsUserImageLoggedInHistogram) {
   fake_chrome_user_manager()->SetIsCurrentUserNew(false);
   fake_chrome_user_manager()->UserLoggedIn(
       account_id, /*user_id_hash=*/
-      user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
-      /*browser_restart=*/false,
-      /*is_child=*/false);
+      user_manager::TestHelper::GetFakeUsernameHash(account_id));
 
   histogram_tester.ExpectUniqueSample(
       UserImageManagerImpl::kUserImageLoggedInHistogramName,

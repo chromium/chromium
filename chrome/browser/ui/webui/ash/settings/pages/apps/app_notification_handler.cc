@@ -109,7 +109,7 @@ void AppNotificationHandler::SetNotificationPermission(
 }
 
 void AppNotificationHandler::OpenBrowserNotificationSettings() {
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(chrome::kAppNotificationsBrowserSettingsURL),
       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kSwitchToTab);

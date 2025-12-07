@@ -6,14 +6,12 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/files/file.h"
-#include "base/files/file_path.h"
 #include "base/strings/string_util.h"
-#include "chrome/browser/ash/crosapi/crosapi_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
-#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -22,10 +20,11 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/drivefs/drivefs_util.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
-#include "chromeos/crosapi/mojom/file_system_access_cloud_identifier.mojom.h"
 #include "components/drive/file_errors.h"
 #include "content/public/browser/browser_thread.h"
-#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_url.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_cloud_identifier.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
 
 namespace {
 constexpr char kDriveFsProviderName[] = "drive.google.com";
@@ -35,55 +34,63 @@ constexpr char kDriveFsProviderName[] = "drive.google.com";
 // http://google3/apps/drive/cello/common/item_util.h
 constexpr char kDriveFsLocalPrefix[] = "local-";
 
-bool MatchesExpectedDriveFsType(crosapi::mojom::HandleType expected_handle_type,
-                                drivefs::mojom::FileMetadata::Type type) {
+blink::mojom::FileSystemAccessErrorPtr FileSystemAccessErrorOk() {
+  return blink::mojom::FileSystemAccessError::New(
+      blink::mojom::FileSystemAccessStatus::kOk, base::File::FILE_OK,
+      std::string());
+}
+
+blink::mojom::FileSystemAccessErrorPtr FileSystemAccessErrorFailed() {
+  return blink::mojom::FileSystemAccessError::New(
+      blink::mojom::FileSystemAccessStatus::kOperationFailed,
+      base::File::Error::FILE_ERROR_FAILED, "Unable to retrieve identifier");
+}
+
+bool MatchesExpectedDriveFsType(
+    content::FileSystemAccessPermissionContext::HandleType expected_handle_type,
+    drivefs::mojom::FileMetadata::Type type) {
   switch (expected_handle_type) {
-    case crosapi::mojom::HandleType::kUnknown:
-      return false;
-    case crosapi::mojom::HandleType::kFile:
+    case content::FileSystemAccessPermissionContext::HandleType::kFile:
       return drivefs::IsAFile(type);
-    case crosapi::mojom::HandleType::kDirectory:
+    case content::FileSystemAccessPermissionContext::HandleType::kDirectory:
       return drivefs::IsADirectory(type);
   }
 }
 
 bool MatchesExpectedProvidedFsType(
-    crosapi::mojom::HandleType expected_handle_type,
+    content::FileSystemAccessPermissionContext::HandleType expected_handle_type,
     bool is_directory) {
   switch (expected_handle_type) {
-    case crosapi::mojom::HandleType::kUnknown:
-      return false;
-    case crosapi::mojom::HandleType::kFile:
+    case content::FileSystemAccessPermissionContext::HandleType::kFile:
       return !is_directory;
-    case crosapi::mojom::HandleType::kDirectory:
+    case content::FileSystemAccessPermissionContext::HandleType::kDirectory:
       return is_directory;
   }
 }
 
-void DidGetDriveFSMetadata(crosapi::mojom::HandleType expected_handle_type,
-                           crosapi::FileSystemAccessCloudIdentifierProviderAsh::
-                               GetCloudIdentifierCallback callback,
-                           drive::FileError error,
-                           drivefs::mojom::FileMetadataPtr metadata) {
+void DidGetDriveFSMetadata(
+    content::FileSystemAccessPermissionContext::HandleType expected_handle_type,
+    content::ContentBrowserClient::GetCloudIdentifiersCallback callback,
+    drive::FileError error,
+    drivefs::mojom::FileMetadataPtr metadata) {
   if (error != drive::FILE_ERROR_OK || metadata.is_null() ||
       !metadata->item_id.has_value() ||
       base::StartsWith(metadata->item_id.value(), kDriveFsLocalPrefix) ||
       !MatchesExpectedDriveFsType(expected_handle_type, metadata->type)) {
-    std::move(callback).Run(nullptr);
+    // TODO(crbug.com/434161032): Forward `error`.
+    std::move(callback).Run(FileSystemAccessErrorFailed(), {});
     return;
   }
 
-  const std::string& item_id = metadata->item_id.value();
-  crosapi::mojom::FileSystemAccessCloudIdentifierPtr cloud_identifier =
-      crosapi::mojom::FileSystemAccessCloudIdentifier::New(kDriveFsProviderName,
-                                                           item_id);
-  std::move(callback).Run(std::move(cloud_identifier));
+  std::vector<blink::mojom::FileSystemAccessCloudIdentifierPtr> handles;
+  handles.push_back(blink::mojom::FileSystemAccessCloudIdentifier::New(
+      kDriveFsProviderName, metadata->item_id.value()));
+  std::move(callback).Run(FileSystemAccessErrorOk(), std::move(handles));
 }
 
 void DidGetProvidedFilesystemMetada(
-    crosapi::mojom::HandleType expected_handle_type,
-    crosapi::FileSystemAccessCloudIdentifierProviderAsh::
-        GetCloudIdentifierCallback callback,
+    content::FileSystemAccessPermissionContext::HandleType expected_handle_type,
+    content::ContentBrowserClient::GetCloudIdentifiersCallback callback,
     std::unique_ptr<ash::file_system_provider::EntryMetadata> metadata,
     base::File::Error result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -92,38 +99,32 @@ void DidGetProvidedFilesystemMetada(
       !metadata->cloud_identifier || !metadata->is_directory.get() ||
       !MatchesExpectedProvidedFsType(expected_handle_type,
                                      *metadata->is_directory)) {
-    std::move(callback).Run(nullptr);
+    // TODO(crbug.com/434161032): Forward `result`.
+    std::move(callback).Run(FileSystemAccessErrorFailed(), {});
     return;
   }
 
-  crosapi::mojom::FileSystemAccessCloudIdentifierPtr cloud_identifier =
-      crosapi::mojom::FileSystemAccessCloudIdentifier::New(
-          metadata->cloud_identifier->provider_name,
-          metadata->cloud_identifier->id);
-  std::move(callback).Run(std::move(cloud_identifier));
+  std::vector<blink::mojom::FileSystemAccessCloudIdentifierPtr> handles;
+  handles.push_back(blink::mojom::FileSystemAccessCloudIdentifier::New(
+      metadata->cloud_identifier->provider_name,
+      metadata->cloud_identifier->id));
+  std::move(callback).Run(FileSystemAccessErrorOk(), std::move(handles));
 }
 
 }  // namespace
 
 namespace cloud_identifier {
 
-void GetCloudIdentifier(const base::FilePath& virtual_path,
-                        crosapi::mojom::HandleType handle_type,
-                        crosapi::FileSystemAccessCloudIdentifierProviderAsh::
-                            GetCloudIdentifierCallback callback) {
-  Profile* profile =
-      g_browser_process->profile_manager()->GetActiveUserProfile();
-  CHECK(profile);
-  storage::FileSystemContext* file_system_context =
-      file_manager::util::GetFileManagerFileSystemContext(profile);
-  CHECK(file_system_context);
-
-  const storage::FileSystemURL url =
-      file_system_context->CreateCrackedFileSystemURL(
-          blink::StorageKey(), storage::kFileSystemTypeExternal, virtual_path);
-  CHECK(url.is_valid());
-
+void GetCloudIdentifier(
+    const storage::FileSystemURL& url,
+    content::FileSystemAccessPermissionContext::HandleType handle_type,
+    content::ContentBrowserClient::GetCloudIdentifiersCallback callback) {
   if (url.type() == storage::kFileSystemTypeDriveFs) {
+    // TODO(crbug.com/434161032): Pass correct Profile via a param.
+    Profile* profile =
+        g_browser_process->profile_manager()->GetActiveUserProfile();
+    CHECK(profile);
+
     auto* drive_integration_service =
         drive::util::GetIntegrationServiceByProfile(profile);
     drive_integration_service->GetMetadata(
@@ -135,7 +136,7 @@ void GetCloudIdentifier(const base::FilePath& virtual_path,
   if (url.type() == storage::FileSystemType::kFileSystemTypeProvided) {
     ash::file_system_provider::util::FileSystemURLParser parser(url);
     if (!parser.Parse()) {
-      std::move(callback).Run(nullptr);
+      std::move(callback).Run(FileSystemAccessErrorFailed(), {});
       return;
     }
 
@@ -152,8 +153,9 @@ void GetCloudIdentifier(const base::FilePath& virtual_path,
     return;
   }
 
-  // Unsupported file system type.
-  std::move(callback).Run(nullptr);
+  // Only `kFileSystemTypeDriveFs` and `kFileSystemTypeProvided` can be cloud
+  // handled on ChromeOS.
+  std::move(callback).Run(FileSystemAccessErrorOk(), {});
 }
 
 }  // namespace cloud_identifier

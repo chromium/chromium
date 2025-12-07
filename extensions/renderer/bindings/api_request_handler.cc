@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/values.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/renderer/bindings/api_binding_util.h"
@@ -64,7 +65,7 @@ APIRequestHandler::ArgumentAdapter::~ArgumentAdapter() = default;
 const v8::LocalVector<v8::Value>&
 APIRequestHandler::ArgumentAdapter::GetArguments(
     v8::Local<v8::Context> context) const {
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   DCHECK(isolate->GetCurrentContext() == context);
 
   if (base_arguments_) {
@@ -211,7 +212,7 @@ void APIRequestHandler::AsyncResultHandler::ResolveRequest(
     const v8::LocalVector<v8::Value>& response_args,
     const std::string& error,
     mojom::ExtraResponseDataPtr extra_data) {
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
 
   // Set runtime.lastError if there is an error and this isn't a promise-based
   // request (promise-based requests instead reject to indicate failure).
@@ -240,10 +241,9 @@ void APIRequestHandler::AsyncResultHandler::ResolveRequest(
       for (auto& blob : extra_data->blobs) {
         auto web_blob =
             blink::WebBlob::CreateFromSerializedBlob(std::move(blob));
-        v8_blobs.push_back(web_blob.ToV8Value(context->GetIsolate()));
+        v8_blobs.push_back(web_blob.ToV8Value(isolate));
       }
-      auto blobs = v8::Array::New(context->GetIsolate(), v8_blobs.data(),
-                                  v8_blobs.size());
+      auto blobs = v8::Array::New(isolate, v8_blobs.data(), v8_blobs.size());
       args.push_back(std::move(blobs));
     }
 
@@ -276,7 +276,7 @@ void APIRequestHandler::AsyncResultHandler::ResolvePromise(
     v8::Local<v8::Promise::Resolver> resolver) {
   DCHECK_LE(response_args.size(), 1u);
 
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   v8::MicrotasksScope microtasks_scope(
       isolate, context->GetMicrotaskQueue(),
       v8::MicrotasksScope::kDoNotRunMicrotasks);
@@ -363,7 +363,7 @@ void APIRequestHandler::AsyncResultHandler::CallCustomCallback(
     v8::Local<v8::Context> context,
     const v8::LocalVector<v8::Value>& response_args,
     const std::string& error) {
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
 
   v8::Local<v8::Value> callback_to_pass = v8::Undefined(isolate);
   if (!extension_callback_.IsEmpty() || !promise_resolver_.IsEmpty()) {
@@ -397,8 +397,7 @@ void APIRequestHandler::AsyncResultHandler::CallCustomCallback(
                               response_args.end());
 
   JSRunner::Get(context)->RunJSFunction(custom_callback_.Get(isolate), context,
-                                        custom_callback_args.size(),
-                                        custom_callback_args.data());
+                                        custom_callback_args);
 }
 
 APIRequestHandler::Request::Request() = default;
@@ -454,7 +453,7 @@ v8::Local<v8::Promise> APIRequestHandler::StartRequest(
     v8::Local<v8::Function> callback,
     v8::Local<v8::Function> custom_callback,
     binding::ResultModifierFunction result_modifier) {
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
 
   v8::Local<v8::Promise> promise;
   std::unique_ptr<AsyncResultHandler> async_handler =
@@ -511,7 +510,7 @@ APIRequestHandler::RequestDetails APIRequestHandler::AddPendingRequest(
     binding::AsyncResponseType async_type,
     v8::Local<v8::Function> callback,
     binding::ResultModifierFunction result_modifier) {
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   v8::Local<v8::Promise> promise;
   std::unique_ptr<AsyncResultHandler> async_handler = GetAsyncResultHandler(
       context, async_type, callback, v8::Local<v8::Function>(),
@@ -583,7 +582,7 @@ APIRequestHandler::GetAsyncResultHandler(
     v8::Local<v8::Function> custom_callback,
     binding::ResultModifierFunction result_modifier,
     v8::Local<v8::Promise>* promise_out) {
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
 
   std::unique_ptr<AsyncResultHandler> async_handler;
   if (async_type == binding::AsyncResponseType::kPromise) {
@@ -662,11 +661,6 @@ void APIRequestHandler::CompleteRequestImpl(int request_id,
   }
 
   if (try_catch.HasCaught()) {
-    v8::Local<v8::Message> v8_message = try_catch.Message();
-    std::optional<std::string> message;
-    if (!v8_message.IsEmpty()) {
-      message = gin::V8ToString(isolate, v8_message->Get());
-    }
     exception_handler_->HandleException(context, "Error handling response",
                                         &try_catch);
   }

@@ -11,6 +11,7 @@
 
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -184,21 +185,17 @@ TEST_F(CloudApProviderWinTest, ParseCookieInfo) {
 
   // The names and data of all cookies whose names don't begin with 'x-ms'
   // should appear in the cookie header.
-  std::string cookie_value;
-  ASSERT_TRUE(
-      auth_headers.GetHeader(net::HttpRequestHeaders::kCookie, &cookie_value));
-  EXPECT_EQ(cookie_value, base::JoinString({base::WideToASCII(cookie_name_1),
-                                            base::WideToASCII(cookie_data)},
-                                           "="));
+  EXPECT_EQ(auth_headers.GetHeader(net::HttpRequestHeaders::kCookie),
+            base::JoinString({base::WideToASCII(cookie_name_1),
+                              base::WideToASCII(cookie_data)},
+                             "="));
 
   // Only cookies whose name begins with 'x-ms' should be set as individual
   // headers.
-  EXPECT_FALSE(
-      auth_headers.GetHeader(base::WideToASCII(cookie_name_1), &cookie_value));
-  EXPECT_TRUE(
-      auth_headers.GetHeader(base::WideToASCII(cookie_name_2), &cookie_value));
+  EXPECT_FALSE(auth_headers.GetHeader(base::WideToASCII(cookie_name_1)));
   // Cookie attributes are removed from the header value.
-  EXPECT_EQ(cookie_value, base::WideToASCII(L"data"));
+  EXPECT_EQ(auth_headers.GetHeader(base::WideToASCII(cookie_name_2)),
+            base::WideToASCII(L"data"));
 }
 
 }  // namespace enterprise_auth

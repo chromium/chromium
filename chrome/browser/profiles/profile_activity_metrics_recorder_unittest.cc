@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/profiles/profile_activity_metrics_recorder.h"
+
 #include <string>
 #include <vector>
 
@@ -11,11 +13,9 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
-#include "chrome/browser/profiles/profile_activity_metrics_recorder.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -60,6 +60,7 @@ class ProfileActivityMetricsRecorderTest : public testing::Test {
     // next test case.
     ProfileActivityMetricsRecorder::CleanupForTesting();
     metrics::DesktopSessionDurationTracker::CleanupForTesting();
+
   }
 
   void ActivateBrowser(Profile* profile) {
@@ -67,7 +68,7 @@ class ProfileActivityMetricsRecorderTest : public testing::Test {
     browsers_.push_back(CreateBrowserWithTestWindowForParams(browser_params));
 
     // This triggers the recorder to post a task, wait until that's done.
-    BrowserList::SetLastActive(browsers_.back().get());
+    browsers_.back().get()->DidBecomeActive();
     task_environment_.RunUntilIdle();
   }
 

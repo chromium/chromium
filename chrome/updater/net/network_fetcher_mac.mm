@@ -30,15 +30,19 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/event_logger.h"
 #include "chrome/updater/net/fallback_net_fetcher.h"
 #include "chrome/updater/net/fetcher_callback_adapter.h"
 #include "chrome/updater/net/mac/mojom/updater_fetcher.mojom.h"
 #include "chrome/updater/net/network.h"
 #include "chrome/updater/net/network_file_fetcher.h"
 #include "chrome/updater/policy/service.h"
+#include "chrome/updater/protos/omaha_usage_stats_event.pb.h"
 #include "chrome/updater/util/util.h"
 #include "components/update_client/network.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -49,21 +53,12 @@
 #include "url/gurl.h"
 
 using ResponseStartedCallback =
-    update_client::NetworkFetcher::ResponseStartedCallback;
-using ProgressCallback = update_client::NetworkFetcher::ProgressCallback;
+    ::update_client::NetworkFetcher::ResponseStartedCallback;
+using ProgressCallback = ::update_client::NetworkFetcher::ProgressCallback;
 using PostRequestCompleteCallback =
-    update_client::NetworkFetcher::PostRequestCompleteCallback;
+    ::update_client::NetworkFetcher::PostRequestCompleteCallback;
 using DownloadToFileCompleteCallback =
-    update_client::NetworkFetcher::DownloadToFileCompleteCallback;
-
-namespace {
-
-base::span<const uint8_t> AsByteSpan(NSData* data) {
-  return base::span<const uint8_t>(static_cast<const uint8_t*>(data.bytes),
-                                   data.length);
-}
-
-}  // namespace
+    ::update_client::NetworkFetcher::DownloadToFileCompleteCallback;
 
 @interface CRUUpdaterNetworkController : NSObject <NSURLSessionDelegate>
 - (instancetype)initWithResponseStartedCallback:
@@ -185,6 +180,13 @@ base::span<const uint8_t> AsByteSpan(NSData* data) {
   if ([headers objectForKey:headerXCupServerProof]) {
     cupServerProof = [headers objectForKey:headerXCupServerProof];
   }
+  NSString* headerSetCookie =
+      base::SysUTF8ToNSString(update_client::NetworkFetcher::kHeaderSetCookie);
+  NSString* setCookie = @"";
+  if ([headers objectForKey:headerSetCookie]) {
+    setCookie = [headers objectForKey:headerSetCookie];
+  }
+
   int64_t retryAfterResult = -1;
   NSString* xRetryAfter = [headers
       objectForKey:base::SysUTF8ToNSString(
@@ -195,13 +197,13 @@ base::span<const uint8_t> AsByteSpan(NSData* data) {
 
   _callbackRunner->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(_postRequestCompleteCallback),
-                     std::make_unique<std::string>(
-                         reinterpret_cast<const char*>([_downloadedData bytes]),
-                         [_downloadedData length]),
-                     error.code, base::SysNSStringToUTF8(etag),
-                     base::SysNSStringToUTF8(cupServerProof),
-                     retryAfterResult));
+      base::BindOnce(
+          std::move(_postRequestCompleteCallback),
+          std::string(reinterpret_cast<const char*>([_downloadedData bytes]),
+                      [_downloadedData length]),
+          error.code, base::SysNSStringToUTF8(etag),
+          base::SysNSStringToUTF8(cupServerProof),
+          base::SysNSStringToUTF8(setCookie), retryAfterResult));
 }
 
 @end
@@ -338,15 +340,17 @@ base::span<const uint8_t> AsByteSpan(NSData* data) {
 - (void)URLSession:(NSURLSession*)session
           dataTask:(NSURLSessionDataTask*)dataTask
     didReceiveData:(NSData*)data {
-  if (_output.WriteAtCurrentPosAndCheck(AsByteSpan(data))) {
+  if (_output.WriteAtCurrentPosAndCheck(base::apple::NSDataToSpan(data))) {
     _callbackRunner->PostTask(
         FROM_HERE, base::BindOnce(_progressCallback, _output.GetLength()));
     [dataTask resume];
   } else {
     VLOG(1) << __func__ << ": File write error, download job cancelled.";
-    _callbackRunner->PostTask(
-        FROM_HERE, base::BindOnce(std::move(_downloadToFileCompleteCallback),
-                                  updater::kErrorFailedToWriteFile, -1));
+    if (_downloadToFileCompleteCallback) {
+      _callbackRunner->PostTask(
+          FROM_HERE, base::BindOnce(std::move(_downloadToFileCompleteCallback),
+                                    updater::kErrorFailedToWriteFile, -1));
+    }
     [dataTask cancel];
   }
 }
@@ -386,9 +390,11 @@ base::span<const uint8_t> AsByteSpan(NSData* data) {
     NSHTTPURLResponse* response = (NSHTTPURLResponse*)task.response;
     result = response.statusCode == 200 ? 0 : response.statusCode;
   }
-  _callbackRunner->PostTask(
-      FROM_HERE, base::BindOnce(std::move(_downloadToFileCompleteCallback),
-                                result, [task countOfBytesReceived]));
+  if (_downloadToFileCompleteCallback) {
+    _callbackRunner->PostTask(
+        FROM_HERE, base::BindOnce(std::move(_downloadToFileCompleteCallback),
+                                  result, [task countOfBytesReceived]));
+  }
 }
 
 @end
@@ -396,9 +402,106 @@ base::span<const uint8_t> AsByteSpan(NSData* data) {
 namespace updater {
 namespace {
 
+// Wraps a callback pair for PostRequest to log a network event.
+std::pair<ResponseStartedCallback, PostRequestCompleteCallback>
+WrapPostRequestCallbacksWithEventLogging(
+    ResponseStartedCallback response_started_callback,
+    PostRequestCompleteCallback post_request_complete_callback,
+    const GURL& url,
+    scoped_refptr<UpdaterEventLogger> event_logger) {
+  if (!event_logger) {
+    return std::make_pair(response_started_callback,
+                          std::move(post_request_complete_callback));
+  }
+
+  std::unique_ptr<int> response_code = std::make_unique<int>(0);
+  return std::make_pair(
+      base::BindRepeating(
+          [](int* out_response_code, ResponseStartedCallback callback,
+             int response_code, int64_t content_length) {
+            *out_response_code = response_code;
+            callback.Run(response_code, content_length);
+          },
+          response_code.get(), response_started_callback),
+      base::BindOnce(
+          [](scoped_refptr<UpdaterEventLogger> event_logger,
+             base::Time request_start_time, std::unique_ptr<int> response_code,
+             const GURL& url, PostRequestCompleteCallback callback,
+             std::optional<std::string> response_body, int net_error,
+             const std::string& header_etag,
+             const std::string& header_x_cup_server_proof,
+             const std::string& header_set_cookie,
+             int64_t xheader_retry_after_sec) {
+            proto::NetworkEvent event;
+            event.set_stack(proto::NetworkEvent::DIRECT);
+            event.set_url(url.spec());
+            event.set_bytes_received(response_body ? response_body->size() : 0);
+            event.set_elapsed_time_ms(
+                (base::Time::Now() - request_start_time).InMilliseconds());
+            if (net_error > 0) {
+              event.set_error_code(net_error);
+            } else if (*response_code < 200 && *response_code > 299) {
+              event.set_error_code(*response_code);
+            }
+            proto::Omaha4Metric metric;
+            *metric.mutable_network_event() = std::move(event);
+            event_logger->Log(std::move(metric));
+            std::move(callback).Run(response_body, net_error, header_etag,
+                                    header_x_cup_server_proof,
+                                    header_set_cookie, xheader_retry_after_sec);
+          },
+          event_logger, base::Time::Now(), std::move(response_code), url,
+          std::move(post_request_complete_callback)));
+}
+
+std::pair<ResponseStartedCallback, DownloadToFileCompleteCallback>
+WrapDownloadToFileCallbacksWithEventLogging(
+    ResponseStartedCallback response_started_callback,
+    DownloadToFileCompleteCallback download_to_file_complete_callback,
+    const GURL& url,
+    scoped_refptr<UpdaterEventLogger> event_logger) {
+  if (!event_logger) {
+    return std::make_pair(response_started_callback,
+                          std::move(download_to_file_complete_callback));
+  }
+
+  std::unique_ptr<int> response_code = std::make_unique<int>(0);
+  return std::make_pair(
+      base::BindRepeating(
+          [](int* out_response_code, ResponseStartedCallback callback,
+             int response_code, int64_t content_length) {
+            *out_response_code = response_code;
+            callback.Run(response_code, content_length);
+          },
+          response_code.get(), response_started_callback),
+      base::BindOnce(
+          [](scoped_refptr<UpdaterEventLogger> event_logger,
+             base::Time request_start_time, std::unique_ptr<int> response_code,
+             const GURL& url, DownloadToFileCompleteCallback callback,
+             int net_error, int64_t content_size) {
+            proto::NetworkEvent event;
+            event.set_stack(proto::NetworkEvent::DIRECT);
+            event.set_url(url.spec());
+            event.set_bytes_received(content_size);
+            event.set_elapsed_time_ms(
+                (base::Time::Now() - request_start_time).InMilliseconds());
+            if (net_error > 0) {
+              event.set_error_code(net_error);
+            } else if (*response_code < 200 && *response_code > 299) {
+              event.set_error_code(*response_code);
+            }
+            proto::Omaha4Metric metric;
+            *metric.mutable_network_event() = std::move(event);
+            event_logger->Log(std::move(metric));
+            std::move(callback).Run(net_error, content_size);
+          },
+          event_logger, base::Time::Now(), std::move(response_code), url,
+          std::move(download_to_file_complete_callback)));
+}
+
 class NetworkFetcher : public update_client::NetworkFetcher {
  public:
-  NetworkFetcher();
+  explicit NetworkFetcher(scoped_refptr<UpdaterEventLogger> event_logger);
   NetworkFetcher& operator=(const NetworkFetcher&) = delete;
   NetworkFetcher(const NetworkFetcher&) = delete;
   ~NetworkFetcher() override;
@@ -426,9 +529,11 @@ class NetworkFetcher : public update_client::NetworkFetcher {
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
+  scoped_refptr<UpdaterEventLogger> event_logger_;
 };
 
-NetworkFetcher::NetworkFetcher() = default;
+NetworkFetcher::NetworkFetcher(scoped_refptr<UpdaterEventLogger> event_logger)
+    : event_logger_(event_logger) {}
 
 NetworkFetcher::~NetworkFetcher() = default;
 
@@ -442,12 +547,18 @@ void NetworkFetcher::PostRequest(
     PostRequestCompleteCallback post_request_complete_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  auto [wrapped_response_started_callback,
+        wrapped_post_request_complete_callback] =
+      WrapPostRequestCallbacksWithEventLogging(
+          response_started_callback, std::move(post_request_complete_callback),
+          url, event_logger_);
+
   CRUUpdaterNetworkDataDelegate* delegate =
       [[CRUUpdaterNetworkDataDelegate alloc]
-          initWithResponseStartedCallback:std::move(response_started_callback)
+          initWithResponseStartedCallback:wrapped_response_started_callback
                          progressCallback:progress_callback
-              postRequestCompleteCallback:std::move(
-                                              post_request_complete_callback)];
+              postRequestCompleteCallback:
+                  std::move(wrapped_post_request_complete_callback)];
 
   NSURLSession* session =
       [NSURLSession sessionWithConfiguration:NSURLSessionConfiguration
@@ -467,9 +578,9 @@ void NetworkFetcher::PostRequest(
 
   // Post additional headers could overwrite existing headers with the same key,
   // such as "Content-Type" above.
-  for (const auto& header : post_additional_headers) {
-    [urlRequest setValue:base::SysUTF8ToNSString(header.second)
-        forHTTPHeaderField:base::SysUTF8ToNSString(header.first)];
+  for (const auto& [name, value] : post_additional_headers) {
+    [urlRequest setValue:base::SysUTF8ToNSString(value)
+        forHTTPHeaderField:base::SysUTF8ToNSString(name)];
   }
   VLOG(1) << "Posting data: " << post_data.c_str();
 
@@ -485,13 +596,19 @@ base::OnceClosure NetworkFetcher::DownloadToFile(
     DownloadToFileCompleteCallback download_to_file_complete_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  auto [wrapped_response_started_callback,
+        wrapped_download_to_file_complete_callback] =
+      WrapDownloadToFileCallbacksWithEventLogging(
+          response_started_callback,
+          std::move(download_to_file_complete_callback), url, event_logger_);
+
   CRUUpdaterNetworkDownloadDelegate* delegate =
       [[CRUUpdaterNetworkDownloadDelegate alloc]
-          initWithResponseStartedCallback:std::move(response_started_callback)
+          initWithResponseStartedCallback:wrapped_response_started_callback
                          progressCallback:progress_callback
                                  filePath:file_path
            downloadToFileCompleteCallback:
-               std::move(download_to_file_complete_callback)];
+               std::move(wrapped_download_to_file_complete_callback)];
 
   NSURLSession* session =
       [NSURLSession sessionWithConfiguration:NSURLSessionConfiguration
@@ -517,11 +634,11 @@ base::OnceClosure NetworkFetcher::DownloadToFile(
 // after network failure in the startup context.
 class OutOfProcessNetworkFetcher : public update_client::NetworkFetcher {
  public:
-  OutOfProcessNetworkFetcher() = default;
+  explicit OutOfProcessNetworkFetcher(
+      scoped_refptr<UpdaterEventLogger> event_logger);
   OutOfProcessNetworkFetcher& operator=(const OutOfProcessNetworkFetcher&) =
       delete;
   OutOfProcessNetworkFetcher(const NetworkFetcher&) = delete;
-  ~OutOfProcessNetworkFetcher() override = default;
 
   // NetworkFetcher overrides.
   void PostRequest(
@@ -559,8 +676,13 @@ class OutOfProcessNetworkFetcher : public update_client::NetworkFetcher {
       base::File output);
 
   SEQUENCE_CHECKER(sequence_checker_);
+  scoped_refptr<UpdaterEventLogger> event_logger_;
   mojo::Remote<mojom::FetchService> remote_;
 };
+
+OutOfProcessNetworkFetcher::OutOfProcessNetworkFetcher(
+    scoped_refptr<UpdaterEventLogger> event_logger)
+    : event_logger_(event_logger) {}
 
 int OutOfProcessNetworkFetcher::DialFetchService() {
   VLOG(2) << __func__;
@@ -641,11 +763,17 @@ void OutOfProcessNetworkFetcher::PostRequest(
     ProgressCallback progress_callback,
     PostRequestCompleteCallback post_request_complete_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto [wrapped_response_started_callback,
+        wrapped_post_request_complete_callback] =
+      WrapPostRequestCallbacksWithEventLogging(
+          response_started_callback, std::move(post_request_complete_callback),
+          url, event_logger_);
+
   VLOG(1) << __func__;
   if (const int dial_result = DialFetchService(); dial_result != kErrorOk) {
     LOG(ERROR) << "Failed to dial the fetch service: " << dial_result;
     std::move(post_request_complete_callback)
-        .Run(nullptr, dial_result, {}, {}, -1);
+        .Run(std::nullopt, dial_result, {}, {}, {}, -1);
     return;
   }
 
@@ -654,10 +782,14 @@ void OutOfProcessNetworkFetcher::PostRequest(
   for (const auto& [name, value] : post_additional_headers) {
     headers.push_back(mojom::HttpHeader::New(name, value));
   }
+
   remote_->PostRequest(
       url, post_data, content_type, std::move(headers),
-      MakePostRequestObserver(response_started_callback, progress_callback,
-                              std::move(post_request_complete_callback)));
+      MakePostRequestObserver(
+          response_started_callback, progress_callback,
+          mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+              std::move(wrapped_post_request_complete_callback), std::nullopt,
+              kErrorIpcDisconnect, "", "", "", -1)));
 }
 
 base::OnceClosure OutOfProcessNetworkFetcher::DownloadToFile(
@@ -667,9 +799,14 @@ base::OnceClosure OutOfProcessNetworkFetcher::DownloadToFile(
         response_started_callback,
     update_client::NetworkFetcher::ProgressCallback progress_callback,
     update_client::NetworkFetcher::DownloadToFileCompleteCallback
-        download_complete_callback) {
+        download_to_file_complete_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
+  auto [wrapped_response_started_callback,
+        wrapped_download_to_file_complete_callback] =
+      WrapDownloadToFileCallbacksWithEventLogging(
+          response_started_callback,
+          std::move(download_to_file_complete_callback), url, event_logger_);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
@@ -680,8 +817,9 @@ base::OnceClosure OutOfProcessNetworkFetcher::DownloadToFile(
           },
           file_path),
       base::BindOnce(&OutOfProcessNetworkFetcher::DoDownloadFile,
-                     base::Unretained(this), url, response_started_callback,
-                     progress_callback, std::move(download_complete_callback)));
+                     base::Unretained(this), url,
+                     wrapped_response_started_callback, progress_callback,
+                     std::move(wrapped_download_to_file_complete_callback)));
   return base::DoNothing();
 }
 
@@ -706,11 +844,14 @@ void OutOfProcessNetworkFetcher::DoDownloadFile(
     std::move(download_complete_callback).Run(dial_result, -1);
     return;
   }
+
   VLOG(2) << "OutOfProcessNetworkFetcher invoking DownloadToFile() on remote.";
   remote_->DownloadToFile(
       url, std::move(output),
-      MakeFileDownloadObserver(response_started_callback, progress_callback,
-                               std::move(download_complete_callback)));
+      MakeFileDownloadObserver(
+          response_started_callback, progress_callback,
+          mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+              std::move(download_complete_callback), kErrorIpcDisconnect, -1)));
 }
 
 }  // namespace
@@ -749,20 +890,33 @@ base::OnceClosure NetworkFileFetcher::Download(
   return base::DoNothing();
 }
 
-class NetworkFetcherFactory::Impl {};
+class NetworkFetcherFactory::Impl {
+ public:
+  explicit Impl(scoped_refptr<UpdaterEventLogger> event_logger)
+      : event_logger_(event_logger) {}
+
+  scoped_refptr<UpdaterEventLogger> event_logger() { return event_logger_; }
+
+ private:
+  scoped_refptr<UpdaterEventLogger> event_logger_;
+};
 
 NetworkFetcherFactory::NetworkFetcherFactory(
-    std::optional<PolicyServiceProxyConfiguration>) {}
+    std::optional<PolicyServiceProxyConfiguration>,
+    scoped_refptr<UpdaterEventLogger> event_logger)
+    : impl_(std::make_unique<Impl>(event_logger)) {}
 NetworkFetcherFactory::~NetworkFetcherFactory() = default;
 
 std::unique_ptr<update_client::NetworkFetcher> NetworkFetcherFactory::Create()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return std::make_unique<FallbackNetFetcher>(
-      std::make_unique<NetworkFetcher>(),
-      base::CommandLine::ForCurrentProcess()->HasSwitch(kNetWorkerSwitch)
-          ? nullptr  // Already a networker, should not fallback further.
-          : std::make_unique<OutOfProcessNetworkFetcher>());
+  return std::make_unique<LoggingNetworkFetcher>(
+      std::make_unique<FallbackNetFetcher>(
+          std::make_unique<NetworkFetcher>(impl_->event_logger()),
+          base::CommandLine::ForCurrentProcess()->HasSwitch(kNetWorkerSwitch)
+              ? nullptr  // Already a networker, should not fallback further.
+              : std::make_unique<OutOfProcessNetworkFetcher>(
+                    impl_->event_logger())));
 }
 
 }  // namespace updater

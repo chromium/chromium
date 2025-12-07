@@ -6,7 +6,6 @@
 #define ASH_WM_PIP_PIP_POSITIONER_H_
 
 #include "ash/ash_export.h"
-#include "base/memory/weak_ptr.h"
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/rect.h"

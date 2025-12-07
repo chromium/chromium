@@ -138,6 +138,26 @@ class FakeAnnotator : public image_annotation::mojom::Annotator {
       return;
     }
 
+    processors_.emplace_back(std::move(image_processor));
+    processors_.back()->GetJpgImageData(base::BindOnce(
+        &FakeAnnotator::OnJpgImageDataReceived, base::Unretained(this),
+        std::move(image_id), std::move(description_language_tag),
+        std::move(callback)));
+  }
+
+  void OnJpgImageDataReceived(const std::string& image_id,
+                              const std::string& description_language_tag,
+                              AnnotateImageCallback callback,
+                              const std::vector<uint8_t>& image_bytes,
+                              const int32_t width,
+                              const int32_t height) {
+    if (image_bytes.empty()) {
+      std::move(callback).Run(
+          image_annotation::mojom::AnnotateImageResult::NewErrorCode(
+              image_annotation::mojom::AnnotateImageError::kFailure));
+      return;
+    }
+
     // Use the filename to create annotation strings. Check a map from filename
     // to desired label, otherwise just construct a string based on the
     // filename. Adds some trailing whitespace and punctuation to check that
@@ -173,6 +193,8 @@ class FakeAnnotator : public image_annotation::mojom::Annotator {
 
  private:
   mojo::ReceiverSet<image_annotation::mojom::Annotator> receivers_;
+  std::vector<mojo::Remote<image_annotation::mojom::ImageProcessor>>
+      processors_;
   static bool return_ocr_results_;
   static bool return_label_results_;
   static std::map<std::string, std::string> custom_label_result_mapping_;
@@ -648,4 +670,35 @@ IN_PROC_BROWSER_TEST_F(ImageAnnotationBrowserTest,
     content::WaitForAccessibilityTreeToChange(web_contents);
     snapshot = content::GetAccessibilityTreeSnapshot(web_contents);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(ImageAnnotationBrowserTest, LazyLoadingImages) {
+  FakeAnnotator::SetReturnOcrResults(true);
+  FakeAnnotator::SetReturnLabelResults(true);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      https_server_.GetURL("/accessibility/page_with_lazy_image.html")));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  content::WaitForAccessibilityTreeToContainNodeWithName(
+      web_contents,
+      "Appears to say: green.png Annotation. Appears to be: green.png 'en' "
+      "Label");
+  EXPECT_EQ(1u, DescribeNodesWithAnnotations(
+                    content::GetAccessibilityTreeSnapshot(web_contents))
+                    .size());
+
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitWhenIdleClosure(), base::Milliseconds(500));
+  run_loop.Run();
+  web_contents->ScrollToBottomOfDocument();
+
+  content::WaitForAccessibilityTreeToContainNodeWithName(
+      web_contents,
+      "Appears to say: red.png Annotation. Appears to be: red.png 'en' Label");
+  EXPECT_EQ(2u, DescribeNodesWithAnnotations(
+                    content::GetAccessibilityTreeSnapshot(web_contents))
+                    .size());
 }

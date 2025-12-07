@@ -3,14 +3,18 @@
 // found in the LICENSE file.
 
 use crate::paths::ChromiumPaths;
-use handlebars::handlebars_helper;
-use std::collections::HashMap;
-use std::fs;
-use std::path::Path;
-use std::process;
-use std::{fmt::Write, path::PathBuf};
 
-use anyhow::{format_err, Context, Result};
+use anyhow::{ensure, format_err, Context, Result};
+use handlebars::{handlebars_helper, Renderable};
+use serde::Serialize;
+use std::{
+    borrow::Cow,
+    collections::HashMap,
+    fmt::Write,
+    fs,
+    path::{Path, PathBuf},
+    process,
+};
 
 pub fn check_spawn(cmd: &mut process::Command, cmd_msg: &str) -> Result<process::Child> {
     cmd.spawn().with_context(|| format!("failed to start {cmd_msg}"))
@@ -46,6 +50,7 @@ pub fn check_exit_ok(output: &process::Output, cmd_msg: &str) -> Result<()> {
             Some(code) => write!(msg, "{code}.").unwrap(),
             None => write!(msg, "no code.").unwrap(),
         };
+        write!(msg, " stdout:\n\n{}", String::from_utf8_lossy(&output.stdout)).unwrap();
         write!(msg, " stderr:\n\n{}", String::from_utf8_lossy(&output.stderr)).unwrap();
 
         Err(format_err!(msg))
@@ -88,24 +93,26 @@ pub fn without_cargo_config_toml<T>(
     r
 }
 
-/// Run cargo metadata command, optionally with extra flags and environment.
-pub fn run_cargo_metadata(
+/// Same as `run_cargo_metadata` but built on top of `guppy`.
+pub fn get_guppy_package_graph(
     workspace_path: PathBuf,
     mut extra_options: Vec<String>,
     extra_env: HashMap<std::ffi::OsString, std::ffi::OsString>,
-) -> Result<cargo_metadata::Metadata> {
-    let mut command = cargo_metadata::MetadataCommand::new();
-    command.current_dir(workspace_path);
-
-    // Allow the binary dependency on cxxbridge-cmd.
+) -> Result<guppy::graph::PackageGraph> {
+    // See the `[dependencies.cxxbridge-cmd]` section in
+    // `third_party/rust/chromium_crates_io/Cargo.toml` for explanation why
+    // `-Zbindeps` flag is needed.
     extra_options.push("-Zbindeps".to_string());
+
+    let mut command = guppy::MetadataCommand::new();
+    command.current_dir(workspace_path);
     command.other_options(extra_options);
     for (k, v) in extra_env.into_iter() {
         command.env(k, v);
     }
 
     log::debug!("invoking cargo with:\n`{:?}`", command.cargo_command());
-    command.exec().context("running cargo metadata")
+    command.build_graph().context("running cargo metadata")
 }
 
 /// Run a cargo command, other than metadata which should use
@@ -130,8 +137,8 @@ pub fn run_cargo_command(
         command.env(k, v);
     }
 
-    log::debug!("invoking cargo {}", subcommand);
-    let mut handle = command.spawn().with_context(|| format!("running cargo {}", subcommand))?;
+    log::debug!("invoking cargo {subcommand}");
+    let mut handle = command.spawn().with_context(|| format!("running cargo {subcommand}"))?;
     let code = handle.wait().context("waiting for cargo process")?;
     if !code.success() {
         Err(format_err!("cargo {} exited with status {}", subcommand, code))
@@ -153,18 +160,109 @@ pub fn remove_checksums_from_lock(cargo_root: &Path) -> Result<()> {
     Ok(())
 }
 
-pub fn init_handlebars(template_path: &Path) -> Result<handlebars::Handlebars> {
+struct IfKeyPresentHelper();
+
+impl handlebars::HelperDef for IfKeyPresentHelper {
+    fn call<'reg: 'rc, 'rc>(
+        &self,
+        h: &handlebars::Helper<'rc>,
+        r: &'reg handlebars::Handlebars<'reg>,
+        ctx: &'rc handlebars::Context,
+        rc: &mut handlebars::RenderContext<'reg, 'rc>,
+        out: &mut dyn handlebars::Output,
+    ) -> handlebars::HelperResult {
+        let param_not_found =
+            |idx| handlebars::RenderErrorReason::ParamNotFoundForIndex("is_key_present", idx);
+        let key = h.param(0).and_then(|v| v.value().as_str()).ok_or(param_not_found(0))?;
+        let dict = h.param(1).and_then(|v| v.value().as_object()).ok_or(param_not_found(1))?;
+        let template = if dict.contains_key(key) { h.template() } else { h.inverse() };
+        match template {
+            None => Ok(()),
+            Some(t) => t.render(r, ctx, rc, out),
+        }
+    }
+}
+
+pub fn init_handlebars<'reg>() -> handlebars::Handlebars<'reg> {
     let mut handlebars = handlebars::Handlebars::new();
+    handlebars.set_strict_mode(true);
 
     // Don't escape output strings; the default is to escape for HTML output. Do
     // not auto-escape for GN either, so that non-string GN may also be passed.
     handlebars.register_escape_fn(handlebars::no_escape);
-    handlebars.register_template_file("template", template_path).context("loading gn template")?;
 
     // Install helper to escape inputs pasted in GN `".."` strings.
     handlebars_helper!(gn_escape: |x: String| escape_for_handlebars(&x));
     handlebars.register_helper("gn_escape", Box::new(gn_escape));
+
+    // Install helper to detect presence of dictionary keys (which works even if
+    // the corresponding value is "false-y / non-truth-y" - i.e. the helper
+    // distinguishes "missing" / "none" VS `false` / `0` / empty-string, etc.).
+    handlebars.register_helper("if_key_present", Box::new(IfKeyPresentHelper()));
+
+    handlebars
+}
+
+fn template_path_to_registration_name(template_path: &Path) -> String {
+    let filename = template_path
+        .file_name()
+        .map(|filename| filename.to_string_lossy())
+        .unwrap_or(Cow::Borrowed("???no-filename???"));
+    let hash = {
+        use std::hash::{Hash, Hasher};
+        let mut h = std::hash::DefaultHasher::new();
+        template_path.hash(&mut h);
+        h.finish()
+    };
+    format!("{filename}#{hash:#x}")
+}
+
+pub fn init_handlebars_with_template_paths<'a>(
+    template_paths: &[&'a Path],
+) -> Result<handlebars::Handlebars<'a>> {
+    let mut handlebars = init_handlebars();
+    for path in template_paths.iter() {
+        // Explicitly check `path.exists()` to get a better error message, even though
+        // TOCTOU means that we may still get an error below.
+        ensure!(path.exists(), "File doesn't exist: {}", path.display());
+
+        let template_name = template_path_to_registration_name(path);
+        handlebars
+            .register_template_file(&template_name, path)
+            .with_context(|| format!("Loading handlebars template: {}", path.display()))?;
+    }
     Ok(handlebars)
+}
+
+pub fn render_handlebars(
+    handlebars: &handlebars::Handlebars,
+    template_path: &Path,
+    data: &impl Serialize,
+    output_path: &Path,
+) -> Result<()> {
+    render_handlebars_named_template(
+        handlebars,
+        &template_path_to_registration_name(template_path),
+        data,
+        output_path,
+    )
+    .with_context(|| format!("Expanding handlebars template `{}`", template_path.display(),))
+}
+
+pub fn render_handlebars_named_template(
+    handlebars: &handlebars::Handlebars,
+    template_name: &str,
+    data: &impl Serialize,
+    output_path: &Path,
+) -> Result<()> {
+    std::fs::File::create(output_path)
+        .map_err(anyhow::Error::new)
+        .and_then(|output_file| {
+            let buffered_output_file = std::io::BufWriter::new(output_file);
+            handlebars.render_to_write(template_name, data, buffered_output_file)?;
+            Ok(())
+        })
+        .with_context(|| format!("Expanding handlebars template into `{}`", output_path.display(),))
 }
 
 fn escape_for_handlebars(x: &str) -> String {
@@ -190,10 +288,32 @@ mod tests {
     use super::*;
 
     #[test]
-    fn string_excaping() {
+    fn test_string_excaping() {
         assert_eq!("foo bar", format!("{}", escape_for_handlebars("foo bar")));
         assert_eq!("foo bar ", format!("{}", escape_for_handlebars("foo\nbar\n")));
         assert_eq!(r#"foo \"bar\""#, format!("{}", escape_for_handlebars(r#"foo "bar""#)));
         assert_eq!("foo 'bar'", format!("{}", escape_for_handlebars("foo 'bar'")));
+    }
+
+    #[test]
+    fn test_handlebars_helper_is_key_present() {
+        fn render(data: serde_json::Value) -> String {
+            let mut h = init_handlebars();
+            h.register_template_string(
+                "template",
+                r#"
+                    {{#if_key_present "foo" dict}}
+                        true
+                    {{else}}
+                        false
+                    {{/if_key_present}}
+                "#,
+            )
+            .unwrap();
+            h.render("template", &data).unwrap().trim().to_string()
+        }
+
+        assert_eq!("true", render(serde_json::json!({ "dict": { "foo": 456 }})));
+        assert_eq!("false", render(serde_json::json!({ "dict": { "bar": 456 }})));
     }
 }

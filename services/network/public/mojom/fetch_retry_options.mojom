@@ -1,0 +1,19 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+
+// See third_party/blink/renderer/core/fetch/retry_options.idl for details of
+// each member.
+struct FetchRetryOptions {
+  uint32 max_attempts;
+  mojo_base.mojom.TimeDelta? initial_delay;
+  double? backoff_factor;
+  mojo_base.mojom.TimeDelta? max_age;
+  bool retry_after_unload = false;
+  bool retry_non_idempotent = false;
+  bool retry_only_if_server_unreached = false;
+};

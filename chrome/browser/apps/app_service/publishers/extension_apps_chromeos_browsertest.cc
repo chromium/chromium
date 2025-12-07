@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <memory>
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -48,8 +44,8 @@ namespace {
 
 // Write file to disk.
 base::FilePath WriteFile(const base::FilePath& directory,
-                         const std::string_view name,
-                         const std::string_view content) {
+                         std::string_view name,
+                         std::string_view content) {
   const base::FilePath path = directory.Append(std::string_view(name));
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::WriteFile(path, content);
@@ -60,12 +56,6 @@ base::FilePath WriteFile(const base::FilePath& directory,
 
 class ExtensionAppsChromeOsBrowserTest
     : public extensions::ExtensionBrowserTest {
- public:
-  ExtensionAppsChromeOsBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kExtensionWebFileHandlers);
-  }
-
  protected:
   // Launch the extension from an intent and wait for a result from chrome.test.
   void LaunchExtensionAndCatchResult(const extensions::Extension& extension) {
@@ -117,8 +107,7 @@ class ExtensionAppsChromeOsBrowserTest
         WriteFile(scoped_temp_dir.GetPath(), "a.csv", "1,2,3");
 
     // Add file(s) to intent.
-    int64_t file_size = 0;
-    base::GetFileSize(file_path, &file_size);
+    int64_t file_size = base::GetFileSize(file_path).value_or(0);
 
     // Create a virtual file in the file system, as required for AppService.
     scoped_refptr<storage::FileSystemContext> file_system_context =
@@ -136,8 +125,6 @@ class ExtensionAppsChromeOsBrowserTest
     intent->files.push_back(std::move(file));
     return intent;
   }
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Open the extension action url when opening a matching file type.
@@ -264,7 +251,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionAppsChromeOsBrowserTest, NavigateExisting) {
   content::WebContents* web_contents[2];
   for (unsigned short i = 0; i < 2; i++) {
     LaunchExtensionAndCatchResult(*extension);
-    web_contents[i] = browser()->tab_strip_model()->GetActiveWebContents();
+    UNSAFE_TODO(web_contents[i]) =
+        browser()->tab_strip_model()->GetActiveWebContents();
   }
 
   // GetWindowIdOfTab() returns -1 for SessionID::InvalidValue().

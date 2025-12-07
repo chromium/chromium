@@ -13,10 +13,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/site_isolation/site_details.h"
-#include "components/nacl/common/nacl_process_type.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -24,7 +23,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/process_type.h"
-#include "ppapi/buildflags/buildflags.h"
 
 namespace {
 
@@ -46,8 +44,7 @@ void CountRenderProcessHosts(size_t* initialized_and_not_dead, size_t* all) {
 MetricsMemoryDetails::MetricsMemoryDetails(base::OnceClosure callback)
     : callback_(std::move(callback)) {}
 
-MetricsMemoryDetails::~MetricsMemoryDetails() {
-}
+MetricsMemoryDetails::~MetricsMemoryDetails() = default;
 
 void MetricsMemoryDetails::OnDetailsAvailable() {
   UpdateHistograms();
@@ -69,8 +66,7 @@ void MetricsMemoryDetails::UpdateHistograms() {
         case ProcessMemoryInformation::RENDERER_CHROME:
           continue;
         case ProcessMemoryInformation::RENDERER_UNKNOWN:
-          NOTREACHED_IN_MIGRATION() << "Unknown renderer process type.";
-          continue;
+          NOTREACHED() << "Unknown renderer process type.";
         case ProcessMemoryInformation::RENDERER_NORMAL:
         default:
           renderer_count++;
@@ -78,7 +74,7 @@ void MetricsMemoryDetails::UpdateHistograms() {
       }
     }
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Chrome OS exposes system-wide graphics driver memory which has historically
   // been a source of leak/bloat.
   base::GraphicsMemoryInfoKB meminfo;
@@ -93,13 +89,13 @@ void MetricsMemoryDetails::UpdateHistograms() {
   CountRenderProcessHosts(&initialized_and_not_dead_rphs, &all_rphs);
   UpdateSiteIsolationMetrics(initialized_and_not_dead_rphs);
 
-  UMA_HISTOGRAM_COUNTS_100("Memory.ProcessCount",
-                           static_cast<int>(browser.processes.size()));
-  UMA_HISTOGRAM_COUNTS_100("Memory.RendererProcessCount", renderer_count);
+  UMA_HISTOGRAM_COUNTS_1000("Memory.ProcessCount2",
+                            static_cast<int>(browser.processes.size()));
+  UMA_HISTOGRAM_COUNTS_1000("Memory.RendererProcessCount2", renderer_count);
 
-  UMA_HISTOGRAM_COUNTS_100("Memory.RenderProcessHost.Count.All", all_rphs);
-  UMA_HISTOGRAM_COUNTS_100(
-      "Memory.RenderProcessHost.Count.InitializedAndNotDead",
+  UMA_HISTOGRAM_COUNTS_1000("Memory.RenderProcessHost.Count2.All", all_rphs);
+  UMA_HISTOGRAM_COUNTS_1000(
+      "Memory.RenderProcessHost.Count2.InitializedAndNotDead",
       initialized_and_not_dead_rphs);
 }
 

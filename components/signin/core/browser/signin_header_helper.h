@@ -16,6 +16,7 @@
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "url/gurl.h"
 
 namespace content_settings {
@@ -102,14 +103,14 @@ struct ManageAccountsParams {
 struct DiceResponseParams {
   struct AccountInfo {
     AccountInfo();
-    AccountInfo(const std::string& gaia_id,
+    AccountInfo(const GaiaId& gaia_id,
                 const std::string& email,
                 int session_index);
     ~AccountInfo();
     AccountInfo(const AccountInfo&);
 
     // Gaia ID of the account.
-    std::string gaia_id;
+    GaiaId gaia_id;
     // Email of the account.
     std::string email;
     // Session index for the account.
@@ -129,6 +130,9 @@ struct DiceResponseParams {
     // Whether Dice response contains the 'no_authorization_code' header value.
     // If true then LSO was unavailable for provision of auth code.
     bool no_authorization_code = false;
+    // If the account is eligible for token binding, this string is non-empty
+    // and contains a list of supported binding algorithms separated by space.
+    std::string supported_algorithms_for_token_binding;
   };
 
   // Parameters for the SIGNOUT action.
@@ -239,9 +243,10 @@ bool IsUrlEligibleForMirrorCookie(const GURL& url);
 
 // Returns the CHROME_CONNECTED cookie, or an empty string if it should not be
 // added to the request to |url|.
+// Supports nullptr as a value for `cookie_settings` if unavailable.
 std::string BuildMirrorRequestCookieIfPossible(
     const GURL& url,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     AccountConsistencyMethod account_consistency,
     const content_settings::CookieSettings* cookie_settings,
     int profile_mode_mask);
@@ -254,7 +259,7 @@ std::string BuildMirrorRequestCookieIfPossible(
 void AppendOrRemoveMirrorRequestHeader(
     RequestAdapter* request,
     const GURL& redirect_url,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     Tribool is_child_account,
     AccountConsistencyMethod account_consistency,
     const content_settings::CookieSettings* cookie_settings,
@@ -269,7 +274,7 @@ void AppendOrRemoveMirrorRequestHeader(
 bool AppendOrRemoveDiceRequestHeader(
     RequestAdapter* request,
     const GURL& redirect_url,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     bool sync_enabled,
     AccountConsistencyMethod account_consistency,
     const content_settings::CookieSettings* cookie_settings,

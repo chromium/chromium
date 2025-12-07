@@ -6,7 +6,6 @@ import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {getFocusedTreeItem} from '../../common/js/dom_utils.js';
 import {getTreeItemEntry} from '../../common/js/entry_utils.js';
 import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
-import {isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
 import {XfTree} from '../../widgets/xf_tree.js';
 
 import type {Action} from './actions_model.js';
@@ -17,7 +16,6 @@ import type {FolderShortcutsDataModel} from './folder_shortcuts_data_model.js';
 import type {MetadataSetEvent} from './metadata/metadata_cache_set.js';
 import type {MetadataModel} from './metadata/metadata_model.js';
 import {contextMenuHandler, type ShowEvent} from './ui/context_menu_handler.js';
-import type {DirectoryTree} from './ui/directory_tree.js';
 import type {FileManagerUI} from './ui/file_manager_ui.js';
 
 /**
@@ -40,14 +38,9 @@ export class ActionsController {
       private readonly ui_: FileManagerUI) {
     // Attach listeners to non-user events which will only update the in-memory
     // ActionsModel.
-    if (isNewDirectoryTreeEnabled()) {
-      this.ui_.directoryTree!.addEventListener(
-          XfTree.events.TREE_SELECTION_CHANGED,
-          this.onNavigationListSelectionChanged_.bind(this), true);
-    } else {
-      this.ui_.directoryTree!.addEventListener(
-          'change', this.onNavigationListSelectionChanged_.bind(this), true);
-    }
+    this.ui_.directoryTree!.addEventListener(
+        XfTree.events.TREE_SELECTION_CHANGED,
+        this.onNavigationListSelectionChanged_.bind(this), true);
     this.selectionHandler_.addEventListener(
         EventType.CHANGE_THROTTLED, this.onSelectionChanged_.bind(this));
 
@@ -77,12 +70,10 @@ export class ActionsController {
       return this.selectionHandler_.selection.entries;
     }
 
-    const contextMenuForRootItems = isNewDirectoryTreeEnabled() ?
-        this.ui_.directoryTreeContainer!.contextMenuForRootItems :
-        (this.ui_.directoryTree as DirectoryTree).contextMenuForRootItems;
-    const contextMenuForSubitems = isNewDirectoryTreeEnabled() ?
-        this.ui_.directoryTreeContainer!.contextMenuForSubitems :
-        (this.ui_.directoryTree as DirectoryTree).contextMenuForSubitems;
+    const contextMenuForRootItems =
+        this.ui_.directoryTreeContainer!.contextMenuForRootItems;
+    const contextMenuForSubitems =
+        this.ui_.directoryTreeContainer!.contextMenuForSubitems;
     if (this.ui_.directoryTree!.contains(element) ||
         contextMenuForRootItems!.contains(element) ||
         contextMenuForSubitems!.contains(element)) {

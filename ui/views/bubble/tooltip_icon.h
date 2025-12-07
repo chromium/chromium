@@ -14,6 +14,7 @@
 #include "base/timer/timer.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/mouse_watcher.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/widget.h"

@@ -8,7 +8,7 @@
 #include "base/logging.h"
 #include "base/win/shlwapi.h"
 
-CopyTreeWorkItem::~CopyTreeWorkItem() {}
+CopyTreeWorkItem::~CopyTreeWorkItem() = default;
 
 CopyTreeWorkItem::CopyTreeWorkItem(const base::FilePath& source_path,
                                    const base::FilePath& dest_path,

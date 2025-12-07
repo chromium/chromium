@@ -153,7 +153,7 @@ gfx::ColorSpace WebRtcToGfxColorSpace(const webrtc::ColorSpace& color_space) {
       primaries = gfx::ColorSpace::PrimaryID::P3;
       break;
     case webrtc::ColorSpace::PrimaryID::kJEDECP22:
-      primaries = gfx::ColorSpace::PrimaryID::INVALID;
+      primaries = gfx::ColorSpace::PrimaryID::EBU_3213_E;
       break;
     default:
       break;
@@ -217,7 +217,9 @@ gfx::ColorSpace WebRtcToGfxColorSpace(const webrtc::ColorSpace& color_space) {
   gfx::ColorSpace::MatrixID matrix = gfx::ColorSpace::MatrixID::INVALID;
   switch (color_space.matrix()) {
     case webrtc::ColorSpace::MatrixID::kRGB:
-      matrix = gfx::ColorSpace::MatrixID::RGB;
+      // RGB-encoded video actually puts the green in the Y channel,
+      // the blue in the Cb (U) channel and the red in the Cr (V) channel.
+      matrix = gfx::ColorSpace::MatrixID::GBR;
       break;
     case webrtc::ColorSpace::MatrixID::kBT709:
     case webrtc::ColorSpace::MatrixID::kUnspecified:
@@ -297,6 +299,9 @@ webrtc::ColorSpace GfxToWebRtcColorSpace(const gfx::ColorSpace& color_space) {
     case gfx::ColorSpace::PrimaryID::P3:
       primaries = webrtc::ColorSpace::PrimaryID::kSMPTEST432;
       break;
+    case gfx::ColorSpace::PrimaryID::EBU_3213_E:
+      primaries = webrtc::ColorSpace::PrimaryID::kJEDECP22;
+      break;
     default:
       DVLOG(1) << "Unsupported color primaries.";
       break;
@@ -362,6 +367,11 @@ webrtc::ColorSpace GfxToWebRtcColorSpace(const gfx::ColorSpace& color_space) {
       webrtc::ColorSpace::MatrixID::kUnspecified;
   switch (color_space.GetMatrixID()) {
     case gfx::ColorSpace::MatrixID::RGB:
+      matrix = webrtc::ColorSpace::MatrixID::kRGB;
+      break;
+    case gfx::ColorSpace::MatrixID::GBR:
+      // This is used only for RGB YUV images in chrome,
+      // But webrtc always converts to YUV anyway.
       matrix = webrtc::ColorSpace::MatrixID::kRGB;
       break;
     case gfx::ColorSpace::MatrixID::BT709:

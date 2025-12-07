@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #include "base/functional/bind.h"
+#include "base/notimplemented.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -110,7 +111,7 @@ void BluetoothRemoteGattDescriptorMac::ReadRemoteDescriptor(
 }
 
 void BluetoothRemoteGattDescriptorMac::WriteRemoteDescriptor(
-    const std::vector<uint8_t>& value,
+    base::span<const uint8_t> value,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
   if (destructor_called_ || HasPendingRead() || HasPendingWrite()) {

@@ -15,13 +15,13 @@ export type MenuObject = ElementObject&{
  * that if step() is defined at the time of this call, invoke it to start the
  * test auto-stepping ball rolling.
  */
-window.autoStep = () => {
-  window.autostep = window.autostep || false;
-  if (!window.autostep) {
-    window.autostep = true;
+globalThis.autoStep = () => {
+  globalThis.autostep = globalThis.autostep || false;
+  if (!globalThis.autostep) {
+    globalThis.autostep = true;
   }
-  if (window.autostep && typeof window.step === 'function') {
-    window.step();
+  if (globalThis.autostep && typeof globalThis.step === 'function') {
+    globalThis.step();
   }
 };
 
@@ -94,11 +94,13 @@ export class RemoteCall {
       }
       window.currentStep = new Promise(resolve => {
         finishCurrentStep = () => {
+          // eslint-disable-next-line no-console
           console.groupEnd();
           window.currentStep = null;
           resolve();
         };
       });
+      // eslint-disable-next-line no-console
       console.group('Executing: ' + func + ' on ' + appId + ' with args: ');
       console.info(args);
       if (window.autostep !== true) {
@@ -1017,7 +1019,7 @@ export class RemoteCallFilesApp extends RemoteCall {
 
       const actualText =
           await this.waitForElement(appId, ['xf-nudge', '#text']);
-      console.log(actualText);
+      console.info(actualText);
       chrome.test.assertEq(actualText.text, expectedText);
 
       return true;
@@ -1152,7 +1154,7 @@ export class RemoteCallFilesApp extends RemoteCall {
 
   /** Fakes the response from spaced when it retrieves the free space. */
   async setSpacedFreeSpace(freeSpace: bigint) {
-    console.log(freeSpace);
+    console.info(freeSpace);
     await sendTestMessage(
         {name: 'setSpacedFreeSpace', freeSpace: String(freeSpace)});
   }
@@ -1250,18 +1252,18 @@ export class RemoteCallFilesApp extends RemoteCall {
       dialogParams: chrome.fileSystem.ChooseEntryOptions, volumeType: string,
       expectedSet: TestEntryInfo[], closeDialog: (a: string) => Promise<void>,
       useBrowserOpen: boolean = false,
-      debug: boolean = false): Promise<unknown> {
+      debug: boolean = false): Promise<string> {
     const caller = getCaller();
-    let resultPromise;
+    let resultPromise: () => Promise<string>;
     if (useBrowserOpen) {
       await sendTestMessage({name: 'runSelectFileDialog'});
-      resultPromise = async () => {
+      resultPromise = async(): Promise<string> => {
         return await sendTestMessage(
             {name: 'waitForSelectFileDialogNavigation'});
       };
     } else {
       await openEntryChoosingWindow(dialogParams);
-      resultPromise = () => {
+      resultPromise = (): Promise<string> => {
         return pollForChosenEntry(caller);
       };
     }
@@ -1426,5 +1428,22 @@ export class RemoteCallFilesApp extends RemoteCall {
     // Click the menu item.
     await this.callRemoteTestUtil(
         'fakeMouseClick', appId, ['#gear-menu-toggle-hidden-files']);
+  }
+
+  /**
+   * Sets the local user files policies to enable migration to `provider`.
+   * @param provider Where local files should be moved. One of
+   *     microsoft_onedrive, google_drive.
+   */
+  async setLocalFilesMigrationDestination(provider: string) {
+    // Set the destination first, otherwise migration can be complete
+    // immediately, if MyFiles are empty.
+    await sendTestMessage({
+      name: 'skyvault:setMigrationDestination',
+      provider: provider,
+    });
+    // Disable local storage - migration destination is ignored otherwise.
+    await sendTestMessage(
+        {name: 'skyvault:setLocalFilesEnabled', enabled: false});
   }
 }

@@ -27,7 +27,7 @@ using web::test::ExecuteJavaScript;
 namespace {
 
 // Long press duration to trigger context menu.
-constexpr base::TimeDelta kContextMenuLongPressDuration = base::Seconds(1);
+constexpr base::TimeDelta kContextMenuLongPressDuration = base::Seconds(2);
 
 // Duration to wait for verification of JavaScript action.
 // TODO(crbug.com/41289402): Reduce duration if the time required for
@@ -59,8 +59,8 @@ bool IsRectVisibleInView(CGRect rect, UIView* view) {
   CGPoint point_in_view = CGPointMake(CGRectGetMidX(rect), CGRectGetMidY(rect));
 
   // Converts its coordinates to window coordinates.
-  CGPoint point_in_window =
-      [view convertPoint:point_in_view toView:view.window];
+  CGPoint point_in_window = [view convertPoint:point_in_view
+                                        toView:view.window];
 
   // Check if this point is actually on screen.
   if (!CGRectContainsPoint(view.window.frame, point_in_window)) {
@@ -119,21 +119,20 @@ id<GREYAction> WebViewVerifiedActionOnElement(WebState* state,
       WKWebView* web_view =
           [web::test::GetWebController(state) ensureWebViewCreated];
 
-      [web_view
-          callAsyncJavaScript:verifier_script
-                    arguments:nil
-                      inFrame:nil
-               inContentWorld:[WKContentWorld pageWorld]
-            completionHandler:^(id result, NSError* async_error) {
-              if (!async_error) {
-                if ([result isKindOfClass:[NSString class]]) {
-                  DLOG(ERROR) << base::SysNSStringToUTF8(result);
-                } else if ([result isKindOfClass:[NSNumber class]]) {
-                  verified = [result boolValue];
-                }
-              }
-              async_call_complete = true;
-            }];
+      [web_view callAsyncJavaScript:verifier_script
+                          arguments:nil
+                            inFrame:nil
+                     inContentWorld:[WKContentWorld pageWorld]
+                  completionHandler:^(id result, NSError* async_error) {
+                    if (!async_error) {
+                      if ([result isKindOfClass:[NSString class]]) {
+                        DLOG(ERROR) << base::SysNSStringToUTF8(result);
+                      } else if ([result isKindOfClass:[NSNumber class]]) {
+                        verified = [result boolValue];
+                      }
+                    }
+                    async_call_complete = true;
+                  }];
     });
 
     // Run the action and wait for the UI to settle.

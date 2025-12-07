@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Actions} from '../personalization_actions.js';
-import {ReducerFunction} from '../personalization_reducers.js';
-import {PersonalizationState} from '../personalization_state.js';
+import type {Actions} from '../personalization_actions.js';
+import type {ReducerFunction} from '../personalization_reducers.js';
+import type {PersonalizationState} from '../personalization_state.js';
 
 import {AmbientActionName} from './ambient_actions.js';
-import {AmbientState} from './ambient_state.js';
+import type {AmbientState} from './ambient_state.js';
 
 export function albumsReducer(
     state: AmbientState['albums'], action: Actions,
@@ -49,6 +49,18 @@ export function ambientThemeReducer(
       return state;
   }
 }
+
+export function ambientThemePreviewsReducer(
+    state: AmbientState['ambientThemePreviews'], action: Actions,
+    _: PersonalizationState): AmbientState['ambientThemePreviews'] {
+  switch (action.name) {
+    case AmbientActionName.SET_AMBIENT_THEME_PREVIEWS:
+      return action.previews;
+    default:
+      return state;
+  }
+}
+
 
 export function previewsReducer(
     state: AmbientState['previews'], action: Actions,
@@ -125,12 +137,24 @@ export function geolocationPermissionEnabledReducer(
   }
 }
 
+export function geolocationIsUserModifiableReducer(
+    state: AmbientState['geolocationIsUserModifiable'], action: Actions,
+    _: PersonalizationState): AmbientState['geolocationIsUserModifiable'] {
+  switch (action.name) {
+    case AmbientActionName.SET_GEOLOCATION_IS_USER_MODIFIABLE:
+      return action.isUserModifiable;
+    default:
+      return state;
+  }
+}
+
 
 export const ambientReducers:
     {[K in keyof AmbientState]: ReducerFunction<AmbientState[K]>} = {
       albums: albumsReducer,
       ambientModeEnabled: ambientModeEnabledReducer,
       ambientTheme: ambientThemeReducer,
+      ambientThemePreviews: ambientThemePreviewsReducer,
       duration: screenSaverDurationReducer,
       previews: previewsReducer,
       temperatureUnit: temperatureUnitReducer,
@@ -138,4 +162,5 @@ export const ambientReducers:
       ambientUiVisibility: ambientUiVisibilityReducer,
       shouldShowTimeOfDayBanner: shouldShowTimeOfDayBannerReducer,
       geolocationPermissionEnabled: geolocationPermissionEnabledReducer,
+      geolocationIsUserModifiable: geolocationIsUserModifiableReducer,
     };

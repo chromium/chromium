@@ -7,19 +7,20 @@
 #include "base/feature_list.h"
 #include "base/hash/hash.h"
 #include "base/strings/to_string.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/country_type.h"
-#include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
+#include "components/autofill/core/browser/data_quality/addresses/profile_token_quality_test_api.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/profile_token_quality_test_api.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
-
 namespace {
 
+using base::test::EqualsProto;
 using sync_pb::ContactInfoSpecifics;
 
 constexpr char kGuid[] = "00000000-0000-0000-0000-000000000001";
@@ -32,12 +33,12 @@ const auto kModificationDate = base::Time::FromSecondsSinceUnixEpoch(456);
 // returned from `ConstructBaseSpecifics()`.
 AutofillProfile ConstructBaseProfile(
     AddressCountryCode country_code = AddressCountryCode("ES")) {
-  AutofillProfile profile(kGuid, AutofillProfile::Source::kAccount,
+  AutofillProfile profile(kGuid, AutofillProfile::RecordType::kAccount,
                           country_code);
 
-  profile.set_use_count(123);
-  profile.set_use_date(kUseDate);
-  profile.set_modification_date(kModificationDate);
+  profile.usage_history().set_use_count(123);
+  profile.usage_history().set_use_date(kUseDate);
+  profile.usage_history().set_modification_date(kModificationDate);
   profile.set_language_code("en");
   profile.set_profile_label("profile_label");
   profile.set_initial_creator_id(
@@ -49,7 +50,7 @@ AutofillProfile ConstructBaseProfile(
                                            VerificationStatus::kObserved);
   profile.SetRawInfoWithVerificationStatus(NAME_MIDDLE, u"K.",
                                            VerificationStatus::kObserved);
-  profile.SetRawInfoWithVerificationStatus(NAME_LAST, u"Doe",
+  profile.SetRawInfoWithVerificationStatus(NAME_LAST, u"von Doe",
                                            VerificationStatus::kFormatted);
   profile.SetRawInfoWithVerificationStatus(NAME_LAST_FIRST, u"D",
                                            VerificationStatus::kParsed);
@@ -57,7 +58,17 @@ AutofillProfile ConstructBaseProfile(
                                            VerificationStatus::kParsed);
   profile.SetRawInfoWithVerificationStatus(NAME_LAST_SECOND, u"e",
                                            VerificationStatus::kParsed);
-  profile.SetRawInfoWithVerificationStatus(NAME_FULL, u"John K. Doe",
+  profile.SetRawInfoWithVerificationStatus(NAME_LAST_PREFIX, u"von",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(NAME_LAST_CORE, u"Doe",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(NAME_FULL, u"John K. von Doe",
+                                           VerificationStatus::kUserVerified);
+  profile.SetRawInfoWithVerificationStatus(ALTERNATIVE_FAMILY_NAME, u"Doe",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(ALTERNATIVE_GIVEN_NAME, u"John",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(ALTERNATIVE_FULL_NAME, u"John Doe",
                                            VerificationStatus::kUserVerified);
 
   // Set address-related values and statuses.
@@ -65,8 +76,12 @@ AutofillProfile ConstructBaseProfile(
                                            VerificationStatus::kObserved);
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STATE, u"California",
                                            VerificationStatus::kObserved);
-  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ZIP, u"94043",
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ZIP, u"94043-4567",
                                            VerificationStatus::kObserved);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ZIP_PREFIX, u"94043",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ZIP_SUFFIX, u"4567",
+                                           VerificationStatus::kParsed);
   profile.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_STREET_ADDRESS,
       u"123 Fake St. Premise Marcos y Oliva\n"
@@ -307,6 +322,18 @@ AutofillProfile ConstructCompleteProfileIN() {
   return profile;
 }
 
+AutofillProfile ConstructCompleteProfileJP() {
+  AutofillProfile profile = ConstructBaseProfile(AddressCountryCode("JP"));
+  profile.SetRawInfoWithVerificationStatus(ALTERNATIVE_FULL_NAME,
+                                           u"やまもと あおい",
+                                           VerificationStatus::kUserVerified);
+  profile.SetRawInfoWithVerificationStatus(ALTERNATIVE_GIVEN_NAME, u"あおい",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(ALTERNATIVE_FAMILY_NAME, u"やまもと",
+                                           VerificationStatus::kParsed);
+  return profile;
+}
+
 // Helper function to set ContactInfoSpecifics::String- and IntegerToken
 // together with their verification status and value_hash.
 template <typename TokenType, typename Value>
@@ -325,6 +352,7 @@ ContactInfoSpecifics ConstructBaseSpecifics() {
   ContactInfoSpecifics specifics;
 
   specifics.set_guid(kGuid);
+  specifics.set_address_type(ContactInfoSpecifics::REGULAR);
   specifics.set_use_count(123);
   specifics.set_use_date_unix_epoch_seconds(kUseDate.ToTimeT());
   specifics.set_date_modified_unix_epoch_seconds(kModificationDate.ToTimeT());
@@ -339,29 +367,45 @@ ContactInfoSpecifics ConstructBaseSpecifics() {
            ContactInfoSpecifics::OBSERVED);
   SetToken(specifics.mutable_name_middle(), "K.",
            ContactInfoSpecifics::OBSERVED);
-  SetToken(specifics.mutable_name_last(), "Doe",
+  SetToken(specifics.mutable_name_last(), "von Doe",
            ContactInfoSpecifics::FORMATTED);
+  SetToken(specifics.mutable_name_last_prefix(), "von",
+           ContactInfoSpecifics::PARSED);
+  SetToken(specifics.mutable_name_last_core(), "Doe",
+           ContactInfoSpecifics::PARSED);
   SetToken(specifics.mutable_name_last_first(), "D",
            ContactInfoSpecifics::PARSED);
   SetToken(specifics.mutable_name_last_conjunction(), "o",
            ContactInfoSpecifics::PARSED);
   SetToken(specifics.mutable_name_last_second(), "e",
            ContactInfoSpecifics::PARSED);
-  SetToken(specifics.mutable_name_full(), "John K. Doe",
+  SetToken(specifics.mutable_name_full(), "John K. von Doe",
            ContactInfoSpecifics::USER_VERIFIED);
+  SetToken(specifics.mutable_alternative_family_name(), "",
+           ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
+  SetToken(specifics.mutable_alternative_given_name(), "",
+           ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
+  SetToken(specifics.mutable_alternative_full_name(), "",
+           ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
 
   // Set address-related values and statuses.
   SetToken(specifics.mutable_address_city(), "Mountain View",
            ContactInfoSpecifics::OBSERVED);
   SetToken(specifics.mutable_address_state(), "California",
            ContactInfoSpecifics::OBSERVED);
-  SetToken(specifics.mutable_address_zip(), "94043",
+  SetToken(specifics.mutable_address_zip(), "94043-4567",
            ContactInfoSpecifics::OBSERVED);
+  SetToken(specifics.mutable_address_zip_prefix(), "94043",
+           ContactInfoSpecifics::PARSED);
+  SetToken(specifics.mutable_address_zip_suffix(), "4567",
+           ContactInfoSpecifics::PARSED);
   SetToken(specifics.mutable_address_country(), "ES",
            ContactInfoSpecifics::OBSERVED);
   SetToken(specifics.mutable_address_street_address(),
            "123 Fake St. Premise Marcos y Oliva\n"
            "Apt. 10 Floor 2 Red tree",
+           ContactInfoSpecifics::OBSERVED);
+  SetToken(specifics.mutable_address_sorting_code(), "CEDEX",
            ContactInfoSpecifics::OBSERVED);
   SetToken(specifics.mutable_address_dependent_locality(), "Santa Clara",
            ContactInfoSpecifics::OBSERVED);
@@ -462,6 +506,8 @@ ContactInfoSpecifics ConstructCompleteSpecificsAU() {
            ContactInfoSpecifics::PARSED);
 
   // Reset unused tokens from the default info.
+  SetToken(specifics.mutable_address_sorting_code(), "",
+           ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
   SetToken(specifics.mutable_address_admin_level_2(), "",
            ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
   SetToken(specifics.mutable_address_dependent_locality(), "",
@@ -491,6 +537,8 @@ ContactInfoSpecifics ConstructCompleteSpecificsDE() {
            ContactInfoSpecifics::PARSED);
 
   // Reset unused tokens from the default info.
+  SetToken(specifics.mutable_address_sorting_code(), "",
+           ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
   SetToken(specifics.mutable_address_admin_level_2(), "",
            ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
   SetToken(specifics.mutable_address_dependent_locality(), "",
@@ -544,6 +592,8 @@ ContactInfoSpecifics ConstructCompleteSpecificsBR() {
 
   // Reset unused tokens from the default info.
   SetToken(specifics.mutable_address_floor(), "",
+           ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
+  SetToken(specifics.mutable_address_sorting_code(), "",
            ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
   SetToken(specifics.mutable_address_admin_level_2(), "",
            ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
@@ -599,6 +649,11 @@ ContactInfoSpecifics ConstructCompleteSpecificsMX() {
            ContactInfoSpecifics::PARSED);
   SetToken(specifics.mutable_address_floor(), "4",
            ContactInfoSpecifics::PARSED);
+
+  // Reset unused tokens from the default info.
+  SetToken(specifics.mutable_address_sorting_code(), "",
+           ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
+
   return specifics;
 }
 
@@ -639,10 +694,25 @@ ContactInfoSpecifics ConstructCompleteSpecificsIN() {
            ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
   SetToken(specifics.mutable_address_floor(), "",
            ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
+  SetToken(specifics.mutable_address_sorting_code(), "",
+           ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
   return specifics;
 }
 
-}  // namespace
+ContactInfoSpecifics ConstructCompleteSpecificsJP() {
+  ContactInfoSpecifics specifics = ConstructBaseSpecifics();
+
+  SetToken(specifics.mutable_address_country(), "JP",
+           ContactInfoSpecifics::OBSERVED);
+  SetToken(specifics.mutable_alternative_family_name(), "やまもと",
+           ContactInfoSpecifics::PARSED);
+  SetToken(specifics.mutable_alternative_given_name(), "あおい",
+           ContactInfoSpecifics::PARSED);
+  SetToken(specifics.mutable_alternative_full_name(), "やまもと あおい",
+           ContactInfoSpecifics::USER_VERIFIED);
+
+  return specifics;
+}
 
 enum class I18nCountryModel {
   kLegacy = 0,
@@ -650,35 +720,22 @@ enum class I18nCountryModel {
   kBR = 2,
   kDE = 3,
   kIN = 4,
-  kMX = 5
+  kMX = 5,
+  kJP = 6
 };
 
-// The tests are parametrized with a country to assert that all custom address
+// The tests are parameterized with a country to assert that all custom address
 // models are supported.
 class ContactInfoSyncUtilTest
     : public testing::Test,
       public testing::WithParamInterface<I18nCountryModel> {
  public:
   ContactInfoSyncUtilTest() {
-    features_.InitWithFeatures(
-        {features::kAutofillUseI18nAddressModel,
-         features::kAutofillUseAUAddressModel,
-         features::kAutofillUseBRAddressModel,
-         features::kAutofillUseCAAddressModel,
-         features::kAutofillUseDEAddressModel,
-         features::kAutofillUseFRAddressModel,
-         features::kAutofillUseINAddressModel,
-         features::kAutofillUseITAddressModel,
-         features::kAutofillUseMXAddressModel,
-         features::kAutofillEnableSupportForLandmark,
-         features::kAutofillEnableSupportForBetweenStreets,
-         features::kAutofillEnableSupportForAddressOverflow,
-         features::kAutofillEnableSupportForBetweenStreetsOrLandmark,
-         features::kAutofillEnableSupportForAddressOverflowAndLandmark,
-         features::kAutofillEnableSupportForAdminLevel2,
-         features::kAutofillEnableSupportForApartmentNumbers,
-         features::kAutofillEnableDependentLocalityParsing},
-        {});
+    features_.InitWithFeatures({features::kAutofillUseINAddressModel,
+                                features::kAutofillSupportPhoneticNameForJP,
+                                features::kAutofillSupportLastNamePrefix,
+                                features::kAutofillSupportSplitZipCode},
+                               {});
   }
 
   AutofillProfile GetAutofillProfileForCountry(I18nCountryModel country_model) {
@@ -695,6 +752,8 @@ class ContactInfoSyncUtilTest
         return ConstructCompleteProfileMX();
       case I18nCountryModel::kIN:
         return ConstructCompleteProfileIN();
+      case I18nCountryModel::kJP:
+        return ConstructCompleteProfileJP();
     }
   }
 
@@ -713,6 +772,8 @@ class ContactInfoSyncUtilTest
         return ConstructCompleteSpecificsMX();
       case I18nCountryModel::kIN:
         return ConstructCompleteSpecificsIN();
+      case I18nCountryModel::kJP:
+        return ConstructCompleteSpecificsJP();
     }
   }
 
@@ -733,28 +794,50 @@ TEST_P(ContactInfoSyncUtilTest,
 
   ASSERT_TRUE(entity_data != nullptr);
   EXPECT_EQ(entity_data->name, profile.guid());
-  EXPECT_EQ(specifics.SerializeAsString(),
-            entity_data->specifics.contact_info().SerializeAsString());
+  EXPECT_THAT(specifics, EqualsProto(entity_data->specifics.contact_info()));
 }
 
 // Test that only profiles with valid GUID are converted.
 TEST_F(ContactInfoSyncUtilTest,
        CreateContactInfoEntityDataFromAutofillProfile_InvalidGUID) {
-  AutofillProfile profile(kInvalidGuid, AutofillProfile::Source::kAccount,
+  AutofillProfile profile(kInvalidGuid, AutofillProfile::RecordType::kAccount,
                           i18n_model_definition::kLegacyHierarchyCountryCode);
   EXPECT_EQ(CreateContactInfoEntityDataFromAutofillProfile(
                 profile, /*base_contact_info_specifics=*/{}),
             nullptr);
 }
 
-// Test that AutofillProfiles with invalid source are not converted.
+// Test that AutofillProfiles with invalid record type are not converted.
 TEST_F(ContactInfoSyncUtilTest,
-       CreateContactInfoEntityDataFromAutofillProfile_InvalidSource) {
-  AutofillProfile profile(kGuid, AutofillProfile::Source::kLocalOrSyncable,
+       CreateContactInfoEntityDataFromAutofillProfile_InvalidRecordType) {
+  AutofillProfile profile(kGuid, AutofillProfile::RecordType::kLocalOrSyncable,
                           i18n_model_definition::kLegacyHierarchyCountryCode);
   EXPECT_EQ(CreateContactInfoEntityDataFromAutofillProfile(
                 profile, /*base_contact_info_specifics=*/{}),
             nullptr);
+}
+
+// Tests that H/W record types are converted to
+// ContactInfoSpecifics::address_type correctly.
+TEST_F(ContactInfoSyncUtilTest,
+       CreateContactInfoEntityDataFromAutofillProfile_HWRecordTypes) {
+  base::test::ScopedFeatureList feature(
+      features::kAutofillEnableSupportForHomeAndWork);
+  AutofillProfile profile = ConstructBaseProfile();
+
+  test_api(profile).set_record_type(AutofillProfile::RecordType::kAccountHome);
+  EXPECT_EQ(CreateContactInfoEntityDataFromAutofillProfile(
+                profile, /*base_contact_info_specifics=*/{})
+                ->specifics.contact_info()
+                .address_type(),
+            ContactInfoSpecifics::HOME);
+
+  test_api(profile).set_record_type(AutofillProfile::RecordType::kAccountWork);
+  EXPECT_EQ(CreateContactInfoEntityDataFromAutofillProfile(
+                profile, /*base_contact_info_specifics=*/{})
+                ->specifics.contact_info()
+                .address_type(),
+            ContactInfoSpecifics::WORK);
 }
 
 // Test that supported fields and nested messages are successfully trimmed.
@@ -766,9 +849,8 @@ TEST_F(ContactInfoSyncUtilTest, TrimAllSupportedFieldsFromRemoteSpecifics) {
           ContactInfoSpecifics_VerificationStatus_OBSERVED);
 
   sync_pb::ContactInfoSpecifics empty_contact_info_specifics;
-  EXPECT_EQ(TrimContactInfoSpecificsDataForCaching(contact_info_specifics)
-                .SerializeAsString(),
-            empty_contact_info_specifics.SerializeAsString());
+  EXPECT_THAT(TrimContactInfoSpecificsDataForCaching(contact_info_specifics),
+              EqualsProto(empty_contact_info_specifics));
 }
 
 // Test that supported fields and nested messages are successfully trimmed but
@@ -792,11 +874,9 @@ TEST_F(ContactInfoSyncUtilTest,
   contact_info_specifics_with_known_and_unknown_fields.mutable_address_city()
       ->set_value("City");
 
-  EXPECT_EQ(TrimContactInfoSpecificsDataForCaching(
-                contact_info_specifics_with_known_and_unknown_fields)
-                .SerializeAsString(),
-            contact_info_specifics_with_only_unknown_fields
-                .SerializePartialAsString());
+  EXPECT_THAT(TrimContactInfoSpecificsDataForCaching(
+                  contact_info_specifics_with_known_and_unknown_fields),
+              EqualsProto(contact_info_specifics_with_only_unknown_fields));
 }
 
 // Test that the conversion of a profile to specifics preserve the unsupported
@@ -822,8 +902,8 @@ TEST_P(ContactInfoSyncUtilTest, ContactInfoSpecificsFromAutofillProfile) {
   *expected_contact_info.mutable_address_city()->mutable_unknown_fields() =
       "unsupported_field_in_nested_message";
 
-  EXPECT_EQ(contact_info_specifics_from_profile.SerializeAsString(),
-            expected_contact_info.SerializeAsString());
+  EXPECT_THAT(contact_info_specifics_from_profile,
+              EqualsProto(expected_contact_info));
 }
 
 // Test that converting ContactInfoSpecifics -> AutofillProfile works.
@@ -832,18 +912,35 @@ TEST_P(ContactInfoSyncUtilTest, CreateAutofillProfileFromContactInfoSpecifics) {
       GetContactInfoSpecificsForCountry(GetParam());
   AutofillProfile profile = GetAutofillProfileForCountry(GetParam());
 
-  std::unique_ptr<AutofillProfile> converted_profile =
+  AutofillProfile converted_profile =
       CreateAutofillProfileFromContactInfoSpecifics(specifics);
-  ASSERT_TRUE(converted_profile != nullptr);
-  EXPECT_TRUE(test_api(profile).EqualsIncludingUsageStats(*converted_profile));
+  EXPECT_TRUE(test_api(profile).EqualsIncludingUsageStats(converted_profile));
 }
 
-// Test that only specifics with valid GUID are converted.
+// Tests that H/W address types are converted to
+// AutofillProfile::RecordType correctly.
 TEST_F(ContactInfoSyncUtilTest,
-       CreateAutofillProfileFromContactInfoSpecifics_InvalidGUID) {
+       CreateAutofillProfileFromContactInfoSpecifics_AddressTypes) {
+  ContactInfoSpecifics specifics = ConstructBaseSpecifics();
+
+  specifics.set_address_type(ContactInfoSpecifics::HOME);
+  EXPECT_EQ(
+      CreateAutofillProfileFromContactInfoSpecifics(specifics).record_type(),
+      AutofillProfile::RecordType::kAccountHome);
+
+  specifics.set_address_type(ContactInfoSpecifics::WORK);
+  EXPECT_EQ(
+      CreateAutofillProfileFromContactInfoSpecifics(specifics).record_type(),
+      AutofillProfile::RecordType::kAccountWork);
+}
+
+// Tests that specifics without valid GUIDs are rejected.
+TEST_F(ContactInfoSyncUtilTest, AreContactInfoSpecificsValid) {
   ContactInfoSpecifics specifics;
   specifics.set_guid(kInvalidGuid);
-  EXPECT_EQ(CreateAutofillProfileFromContactInfoSpecifics(specifics), nullptr);
+  EXPECT_FALSE(AreContactInfoSpecificsValid(specifics));
+  specifics.set_guid(kGuid);
+  EXPECT_TRUE(AreContactInfoSpecificsValid(specifics));
 }
 
 // Tests that if a token's `value` changes by external means, its observations
@@ -851,7 +948,7 @@ TEST_F(ContactInfoSyncUtilTest,
 TEST_F(ContactInfoSyncUtilTest, ObservationResetting) {
   // Create a profile and collect an observation for NAME_FIRST.
   AutofillProfile profile = test::GetFullProfile();
-  test_api(profile).set_source(AutofillProfile::Source::kAccount);
+  test_api(profile).set_record_type(AutofillProfile::RecordType::kAccount);
   test_api(profile.token_quality())
       .AddObservation(NAME_FIRST,
                       ProfileTokenQuality::ObservationType::kAccepted);
@@ -870,10 +967,9 @@ TEST_F(ContactInfoSyncUtilTest, ObservationResetting) {
 
   // Simulate syncing the `specifics` back to Autofill. Expect that the
   // NAME_FIRST observations are cleared.
-  std::unique_ptr<AutofillProfile> updated_profile =
+  AutofillProfile updated_profile =
       CreateAutofillProfileFromContactInfoSpecifics(*specifics);
-  ASSERT_NE(updated_profile, nullptr);
-  EXPECT_TRUE(updated_profile->token_quality()
+  EXPECT_TRUE(updated_profile.token_quality()
                   .GetObservationTypesForFieldType(NAME_FIRST)
                   .empty());
 }
@@ -883,6 +979,8 @@ INSTANTIATE_TEST_SUITE_P(AutofillI18nModels,
                          testing::Values(I18nCountryModel::kLegacy,
                                          I18nCountryModel::kBR,
                                          I18nCountryModel::kMX,
-                                         I18nCountryModel::kIN));
+                                         I18nCountryModel::kIN,
+                                         I18nCountryModel::kJP));
 
+}  // namespace
 }  // namespace autofill

@@ -7,6 +7,8 @@
 
 #include <cstdint>
 
+#include "ios/web/public/web_state_id.h"
+
 // Wraps a int32 that is used to uniquely identify a snapshot. This is a
 // distinct type to allow the compiler to detect incorrect usage of the
 // API.
@@ -18,6 +20,8 @@ class SnapshotID {
   // Constructors.
   constexpr SnapshotID() : identifier_(0) {}
   constexpr explicit SnapshotID(int32_t identifier) : identifier_(identifier) {}
+  constexpr explicit SnapshotID(web::WebStateID identifier)
+      : identifier_(identifier.identifier()) {}
 
   // Returns whether the identifier is valid.
   constexpr bool valid() const { return identifier_ != 0; }

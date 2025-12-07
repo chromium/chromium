@@ -9,6 +9,20 @@
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
+// The tests in this file should roughly correspond to the tests in
+// chrome/browser/metrics/variations/variations_safe_mode_browsertest.cc when
+// not being in the treatment group of the Seed File experiment. "Roughly"
+// because there is a significant difference between the tests.
+//
+// The browser tests use a HistogramTester to check if Chrome is running in safe
+// mode while the EG tests use the existence of a field trial associated with
+// the test safe seed's sole study. HistogramTesters are not an option in EG
+// tests because ensureAppLaunchedWithConfiguration() both shuts down and
+// relaunches Chrome. It is not possible to initialize a HistogramTester until
+// after the startup code under test has executed. Initializing a
+// HistogramTester before shutting down Chrome isn't helpful because the
+// tester is not persisted across sessions.
+
 @interface VariationsSafeModeTestCase : ChromeTestCase
 @end
 
@@ -23,7 +37,9 @@
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.additional_args = {"--disable-field-trial-config"};
+  config.additional_args = {"--disable-field-trial-config",
+                            "--disable-variations-seed-fetch",
+                            "--force-fieldtrials=SeedFileTrial/Control_V7"};
   return config;
 }
 
@@ -35,7 +51,9 @@
 - (AppLaunchConfiguration)appConfigurationForCrashing {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByKilling;
-  config.additional_args = {"--disable-field-trial-config"};
+  config.additional_args = {"--disable-field-trial-config",
+                            "--disable-variations-seed-fetch",
+                            "--force-fieldtrials=SeedFileTrial/Control_V7"};
   return config;
 }
 
@@ -63,6 +81,21 @@
                   actualStreak);
 }
 
+// Helper method to synchronously wait for the async hasSafeSeed check
+- (BOOL)hasSafeSeed {
+  XCTestExpectation* expectation =
+      [self expectationWithDescription:@"Wait for hasSafeSeed check"];
+  __block BOOL safeSeedPresent = NO;
+  [VariationsAppInterface hasSafeSeed:^(BOOL hasSeed) {
+    safeSeedPresent = hasSeed;
+    [expectation fulfill];
+  }];
+  NSTimeInterval timeout = 5.0;
+  [self waitForExpectationsWithTimeout:timeout handler:nil];
+
+  return safeSeedPresent;
+}
+
 // Restarts the app and ensures there's no variations/crash state active.
 - (void)resetAppState:(AppLaunchConfiguration)config {
   // Clear local state variations prefs since local state is persisted between
@@ -81,7 +114,7 @@
   //   * No active crash streak
   XCTAssertTrue([[AppLaunchManager sharedManager] appIsLaunched],
                 @"App should be launched.");
-  GREYAssertFalse([VariationsAppInterface hasSafeSeed], @"No safe seed.");
+  GREYAssertFalse([self hasSafeSeed], @"No safe seed.");
   GREYAssertFalse([VariationsAppInterface fieldTrialExistsForTestSeed],
                   @"No field trial from test seed.");
   [self checkCrashStreakValue:0];
@@ -94,38 +127,18 @@
   [self resetAppState:[self appConfigurationForTestCase]];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [self resetAppState:[self appConfigurationForCleanRestart]];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - Tests
-
-// The tests in this file should roughly correspond to the tests in
-// chrome/browser/metrics/variations/variations_safe_mode_browsertest.cc.
-// "Roughly" because there is a significant difference between the tests.
-//
-// The browser tests use a HistogramTester to check if Chrome is running in safe
-// mode while the EG tests use the existence of a field trial associated with
-// the test safe seed's sole study. HistogramTesters are not an option in EG
-// tests because ensureAppLaunchedWithConfiguration() both shuts down and
-// relaunches Chrome. It is not possible to initialize a HistogramTester until
-// after the startup code under test has executed. Initializing a
-// HistogramTester before shutting down Chrome isn't helpful because the
-// tester is not persisted across sessions.
 
 // Tests that three crashes trigger variations safe mode.
 //
 // Corresponds to VariationsSafeModeBrowserTest.ThreeCrashesTriggerSafeMode in
 // variations_safe_mode_browsertest.cc.
-// TODO(crbug.com/40073772): Test fails on official builds.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#define MAYBE_testThreeCrashesTriggerSafeMode \
-  DISABLED_testThreeCrashesTriggerSafeMode
-#else
-#define MAYBE_testThreeCrashesTriggerSafeMode testThreeCrashesTriggerSafeMode
-#endif
-- (void)MAYBE_testThreeCrashesTriggerSafeMode {
+- (void)testThreeCrashesTriggerSafeMode {
   [VariationsAppInterface setTestSafeSeedAndSignature];
 
   // Persist the local state pref changes made above and in setUp().
@@ -138,8 +151,7 @@
   // with the study only after variations safe mode is triggered.
   [self checkCrashStreakValue:0];
   [self checkFailedFetchStreakValue:0];
-  GREYAssertTrue([VariationsAppInterface hasSafeSeed],
-                 @"The variations safe seed pref should be set.");
+  GREYAssertTrue([self hasSafeSeed], @"The variations safe seed should exist.");
   GREYAssertFalse([VariationsAppInterface fieldTrialExistsForTestSeed],
                   @"There should be no field trials from kTestSeedData.");
 
@@ -160,8 +172,7 @@
   // Third crash.
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
   [self checkCrashStreakValue:3];
-  GREYAssertTrue([VariationsAppInterface hasSafeSeed],
-                 @"The variations safe seed pref should be set.");
+  GREYAssertTrue([self hasSafeSeed], @"The variations safe seed should exist.");
   // Verify that Chrome fell back to variations safe mode by checking that there
   // is a field trial for the test safe seed's study.
   GREYAssertTrue([VariationsAppInterface fieldTrialExistsForTestSeed],
@@ -190,8 +201,7 @@
   // and the safe seed were persisted, and (iii) safe mode was triggered.
   [self checkCrashStreakValue:0];
   [self checkFailedFetchStreakValue:25];
-  GREYAssertTrue([VariationsAppInterface hasSafeSeed],
-                 @"The variations safe seed pref should be set.");
+  GREYAssertTrue([self hasSafeSeed], @"The variations safe seed should exist.");
   // Verify that Chrome fell back to variations safe mode by checking that there
   // is a field trial for the test safe seed's study.
   GREYAssertTrue([VariationsAppInterface fieldTrialExistsForTestSeed],
@@ -202,13 +212,7 @@
 //
 // Corresponds to VariationsSafeModeBrowserTest.DoNotTriggerSafeMode in
 // variations_safe_mode_browsertest.cc.
-// TODO(crbug.com/40073772): Test fails on official builds.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#define MAYBE_testDoNotTriggerSafeMode DISABLED_testDoNotTriggerSafeMode
-#else
-#define MAYBE_testDoNotTriggerSafeMode testDoNotTriggerSafeMode
-#endif
-- (void)MAYBE_testDoNotTriggerSafeMode {
+- (void)testDoNotTriggerSafeMode {
   [VariationsAppInterface setTestSafeSeedAndSignature];
   // Neither a crash streak of 2 nor a fetch failure streak of 24 will trigger
   // variations safe mode in the next session.
@@ -230,8 +234,7 @@
   // the safe seed was stored, and (iii) safe mode was not triggered.
   [self checkCrashStreakValue:2];
   [self checkFailedFetchStreakValue:24];
-  GREYAssertTrue([VariationsAppInterface hasSafeSeed],
-                 @"The variations safe seed pref should be set.");
+  GREYAssertTrue([self hasSafeSeed], @"The variations safe seed should exist.");
   // Verify that Chrome did not fall back to variations safe mode by checking
   // that there isn't a field trial for the test safe seed's study.
   GREYAssertFalse([VariationsAppInterface fieldTrialExistsForTestSeed],

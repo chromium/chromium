@@ -75,4 +75,3 @@ declare namespace chrome {
 
   }
 }
-

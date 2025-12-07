@@ -89,6 +89,8 @@ class CORE_EXPORT SpaceSplitString {
  private:
   class CORE_EXPORT Data : public GarbageCollected<Data> {
    public:
+    using value_type = AtomicString;
+
     static Data* Create(const AtomicString&);
     static Data* CreateUnique(const Data&);
 
@@ -130,8 +132,7 @@ class CORE_EXPORT SpaceSplitString {
     void CreateVector(const AtomicString&);
     template <typename CharacterType>
     inline void CreateVector(const AtomicString&,
-                             const CharacterType*,
-                             unsigned);
+                             base::span<const CharacterType>);
 
     bool might_be_shared_;
     Vector<AtomicString, 4> vector_;

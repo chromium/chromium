@@ -10,13 +10,11 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
 #include "gpu/gpu_gles2_export.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 
 namespace gpu {
 
@@ -87,7 +85,7 @@ class GPU_GLES2_EXPORT SharedMemoryImageBacking : public SharedImageBacking {
   gfx::GpuMemoryBufferHandle handle_;
 
   // SkPixmap(s) for accessing memory.
-  std::vector<SkPixmap> pixmaps_;
+  const std::vector<SkPixmap> pixmaps_;
 };
 
 }  // namespace gpu

@@ -25,7 +25,7 @@ TEST_F(TooltipIconTest, AccessibleRoleAndName) {
 
   ui::AXNodeData data;
   tooltip->GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(data.role, ax::mojom::Role::kStaticText);
+  EXPECT_EQ(data.role, ax::mojom::Role::kTooltip);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             tooltip_text);
   EXPECT_EQ(tooltip->GetViewAccessibility().GetCachedName(), tooltip_text);

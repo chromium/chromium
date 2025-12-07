@@ -29,7 +29,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_EVENTS_EVENT_DISPATCHER_H_
 
 #include "base/dcheck_is_on.h"
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_result.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -69,7 +68,14 @@ class EventDispatcher {
  private:
   EventDispatcher(Node&, Event&);
 
-  EventDispatchContinuation DispatchEventPreProcess(
+  // This is the Blink equivalent to the DOM Standard's
+  // legacy-pre-activation behavior [1]. It is mostly the same, except it is
+  // called under a broader set of conditions. See the documentation above
+  // `Node::LegacyPreActivationBehavior()`.
+  //
+  // [1]:
+  // https://dom.spec.whatwg.org/#eventtarget-legacy-pre-activation-behavior.
+  EventDispatchContinuation DispatchEventLegacyPreActivationBehavior(
       Node* activation_target,
       EventDispatchHandlingState*&);
   EventDispatchContinuation DispatchEventAtCapturing();

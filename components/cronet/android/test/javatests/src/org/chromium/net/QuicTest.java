@@ -5,9 +5,9 @@
 package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
-import static com.google.common.truth.Truth.assertWithMessage;
 
 import static org.chromium.net.CronetTestRule.getTestStorage;
+import static org.chromium.net.CronetTestUtil.assertIsQuic;
 import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
 
 import android.os.Build;
@@ -25,8 +25,9 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
+import org.chromium.net.impl.CronetLibraryLoader;
 import org.chromium.net.impl.CronetLogger.CronetTrafficInfo;
 import org.chromium.net.impl.CronetUrlRequestContext;
 import org.chromium.net.impl.TestLogger;
@@ -57,7 +58,8 @@ public class QuicTest {
     @Before
     public void setUp() throws Exception {
         // Load library first, since we need the Quic test server's URL.
-        System.loadLibrary("cronet_tests");
+        CronetLibraryLoader.switchToTestLibrary();
+        CronetLibraryLoader.loadLibrary();
         QuicTestServer.startQuicTestServer(mTestRule.getTestFramework().getContext());
         mTestLogger = mLoggerTestRule.mTestLogger;
         mTestRule
@@ -345,13 +347,5 @@ public class QuicTest {
             assertThat(trafficInfo.getFailureReason())
                     .isEqualTo(CronetTrafficInfo.RequestFailureReason.NETWORK);
         }
-    }
-
-    // Helper method to assert that the request is negotiated over QUIC.
-    private void assertIsQuic(UrlResponseInfo responseInfo) {
-        String protocol = responseInfo.getNegotiatedProtocol();
-        assertWithMessage("Expected the negotiatedProtocol to be QUIC but was " + protocol)
-                .that(protocol.startsWith("http/2+quic") || protocol.startsWith("h3"))
-                .isTrue();
     }
 }

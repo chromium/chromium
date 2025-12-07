@@ -2,8 +2,8 @@
 // META: title=IndexedDB: keys and values
 // META: script=resources/support.js
 // @author Odin Hørthe Omdal <mailto:odinho@opera.com>
+'use strict';
 
-'use_strict';
 
 function setOnUpgradeNeeded(t, predicate, _instanceof, value) {
   createdb(t).onupgradeneeded = t.step_func(e => {
@@ -12,7 +12,7 @@ function setOnUpgradeNeeded(t, predicate, _instanceof, value) {
     store.add(value, 1);
 
     e.target.onsuccess = t.step_func(e => {
-      const transaction = db.transaction("store", "readonly", { durability: "relaxed" });
+      const transaction = db.transaction("store", "readonly");
       const objectStore = transaction.objectStore("store");
       objectStore.get(1).onsuccess = t.step_func(e => {
         if (predicate) {

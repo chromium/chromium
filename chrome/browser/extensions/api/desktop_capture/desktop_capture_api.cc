@@ -11,8 +11,11 @@
 #include "chrome/common/chrome_switches.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/buildflags/buildflags.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -32,12 +35,10 @@ const char kTargetTabRequiredFromServiceWorker[] =
 }  // namespace
 
 DesktopCaptureChooseDesktopMediaFunction::
-    DesktopCaptureChooseDesktopMediaFunction() {
-}
+    DesktopCaptureChooseDesktopMediaFunction() = default;
 
 DesktopCaptureChooseDesktopMediaFunction::
-    ~DesktopCaptureChooseDesktopMediaFunction() {
-}
+    ~DesktopCaptureChooseDesktopMediaFunction() = default;
 
 ExtensionFunction::ResponseAction
 DesktopCaptureChooseDesktopMediaFunction::Run() {
@@ -48,7 +49,7 @@ DesktopCaptureChooseDesktopMediaFunction::Run() {
   DesktopCaptureRequestsRegistry::GetInstance()->AddRequest(source_process_id(),
                                                             request_id_, this);
 
-  mutable_args().erase(args().begin());
+  GetMutableArgs().erase(args().begin());
 
   std::optional<api::desktop_capture::ChooseDesktopMedia::Params> params =
       api::desktop_capture::ChooseDesktopMedia::Params::Create(args());
@@ -137,9 +138,9 @@ std::string DesktopCaptureChooseDesktopMediaFunction::GetExtensionTargetName()
 }
 
 DesktopCaptureCancelChooseDesktopMediaFunction::
-    DesktopCaptureCancelChooseDesktopMediaFunction() {}
+    DesktopCaptureCancelChooseDesktopMediaFunction() = default;
 
 DesktopCaptureCancelChooseDesktopMediaFunction::
-    ~DesktopCaptureCancelChooseDesktopMediaFunction() {}
+    ~DesktopCaptureCancelChooseDesktopMediaFunction() = default;
 
 }  // namespace extensions

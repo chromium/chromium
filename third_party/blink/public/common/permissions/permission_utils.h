@@ -8,10 +8,10 @@
 #include <optional>
 #include <string>
 
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-forward.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 
 namespace blink {
 
@@ -34,7 +34,7 @@ enum class PermissionType {
   BACKGROUND_SYNC = 10,
   // FLASH = 11,
   SENSORS = 12,
-  ACCESSIBILITY_EVENTS = 13,
+  // ACCESSIBILITY_EVENTS = 13,  // Deprecated.
   // CLIPBOARD_READ = 14, // Replaced by CLIPBOARD_READ_WRITE in M81.
   // CLIPBOARD_WRITE = 15, // Replaced by CLIPBOARD_SANITIZED_WRITE in M81.
   PAYMENT_HANDLER = 16,
@@ -62,9 +62,13 @@ enum class PermissionType {
   KEYBOARD_LOCK = 38,
   POINTER_LOCK = 39,
   AUTOMATIC_FULLSCREEN = 40,
+  HAND_TRACKING = 41,
+  WEB_APP_INSTALLATION = 42,
+  LOCAL_NETWORK_ACCESS = 43,
 
   // Always keep this at the end.
   NUM,
+  MIN_VALUE = MIDI_SYSEX,
 };
 
 // Converts a permission string ("granted", "denied", "prompt") into a
@@ -78,10 +82,23 @@ BLINK_COMMON_EXPORT std::string GetPermissionString(PermissionType permission);
 // Get a list of all permission types.
 BLINK_COMMON_EXPORT const std::vector<PermissionType>& GetAllPermissionTypes();
 
-// Given |descriptor|, set |permission_type| to a corresponding PermissionType.
+// Given `PermissionDescriptorPtr`, return the corresponding `PermissionType` if
+// it exists.
 BLINK_COMMON_EXPORT std::optional<PermissionType>
-PermissionDescriptorToPermissionType(
+MaybePermissionDescriptorToPermissionType(
     const mojom::PermissionDescriptorPtr& descriptor);
+
+// Given `PermissionDescriptorPtr`, either return the corresponding
+// `PermissionType` or trigger a CHECK() failure.
+BLINK_COMMON_EXPORT PermissionType PermissionDescriptorToPermissionType(
+    const mojom::PermissionDescriptorPtr& descriptor);
+
+// Given a vector of `PermissionDescriptorPtr`s, return a vector of the
+// corresponding `PermissionType`s. Triggers a CHECK() failure if any
+// `PermissionDescriptorPtr` can't be mapped.
+BLINK_COMMON_EXPORT std::vector<PermissionType>
+PermissionDescriptorToPermissionTypes(
+    const std::vector<mojom::PermissionDescriptorPtr>& descriptors);
 
 // Ideally this would be an equivalent function to
 // |PermissionDescriptorToPermissionType| but for a
@@ -101,7 +118,7 @@ PermissionDescriptorInfoToPermissionType(
 
 // Converts `permission` type into the corresponding permission policy feature.
 // If there is no, returns nullopt.
-BLINK_COMMON_EXPORT std::optional<mojom::PermissionsPolicyFeature>
+BLINK_COMMON_EXPORT std::optional<network::mojom::PermissionsPolicyFeature>
 PermissionTypeToPermissionsPolicyFeature(PermissionType permission);
 
 }  // namespace blink

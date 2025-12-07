@@ -8,18 +8,17 @@ embedder.guestURL = '';
 
 var LOG = function(msg) { window.console.log(msg); };
 
-embedder.setUp = function(config) {
+embedder.setUpBaseGuestURL = function(config) {
   embedder.baseGuestURL = 'http://localhost:' + config.testServer.port;
-  embedder.guestURL = embedder.baseGuestURL +
-      '/extensions/platform_apps/web_view/text_selection' +
-      '/guest.html';
-  LOG('Guest url is: ' + embedder.guestURL);
 };
 
 /** @private */
-embedder.setUpGuest_ = function() {
+embedder.setUpGuest_ = function(guestURL) {
+  embedder.guestURL = embedder.baseGuestURL + guestURL;
+  LOG('Guest url is: ' + embedder.guestURL);
+
   document.querySelector('#webview-tag-container').innerHTML =
-      '<webview style="width: 100px; height: 100px;"></webview>';
+      '<webview style="width: 200px; height: 200px;"></webview>';
   var webview = document.querySelector('webview');
   if (!webview) {
     chrome.test.fail('No <webview> element created');
@@ -42,14 +41,18 @@ function testSelection(webview) {
   webview.src = embedder.guestURL;
 }
 
-embedder.startTests = function startTests() {
-   var webview = embedder.setUpGuest_();
+embedder.startTests = function startTests(guestURL) {
+   var webview = embedder.setUpGuest_(guestURL);
    testSelection(webview);
 };
 
 onload = function() {
   chrome.test.getConfig(function(config) {
-    embedder.setUp(config);
-    embedder.startTests();
+    embedder.setUpBaseGuestURL(config);
+    chrome.test.sendMessage('launched');
   });
 };
+
+window.onAppMessage = function(guestURL) {
+  embedder.startTests(guestURL);
+}

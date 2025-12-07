@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <optional>
@@ -18,6 +19,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
 #include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -51,6 +53,29 @@ class GLES2CmdHelper;
 class VertexArrayObjectManager;
 class ReadbackBufferShadowTracker;
 
+namespace internal {
+
+struct TextureUnit {
+  TextureUnit() = default;
+
+  // texture currently bound to this unit's GL_TEXTURE_2D with glBindTexture
+  GLuint bound_texture_2d = 0;
+
+  // texture currently bound to this unit's GL_TEXTURE_CUBE_MAP with
+  // glBindTexture
+  GLuint bound_texture_cube_map = 0;
+
+  // texture currently bound to this unit's GL_TEXTURE_EXTERNAL_OES with
+  // glBindTexture
+  GLuint bound_texture_external_oes = 0;
+
+  // texture currently bound to this unit's GL_TEXTURE_RECTANGLE_ARB with
+  // glBindTexture
+  GLuint bound_texture_rectangle_arb = 0;
+};
+
+}  // namespace internal
+
 // This class emulates GLES2 over command buffers. It can be used by a client
 // program so that the program does not need deal with shared memory and command
 // buffer management. See gl2_lib.h.  Note that there is a performance gain to
@@ -77,15 +102,10 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
   static const GLuint kClientSideArrayId = 0xFEDCBA98u;
   static const GLuint kClientSideElementArrayId = 0xFEDCBA99u;
 
-  // Number of swap buffers allowed before waiting.
-  static const size_t kMaxSwapBuffers = 2;
-
   GLES2Implementation(GLES2CmdHelper* helper,
                       scoped_refptr<ShareGroup> share_group,
                       TransferBufferInterface* transfer_buffer,
-                      bool bind_generates_resource,
                       bool lose_context_when_out_of_memory,
-                      bool support_client_side_arrays,
                       GpuControl* gpu_control);
 
   GLES2Implementation(const GLES2Implementation&) = delete;
@@ -110,25 +130,15 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
 
   // ContextSupport implementation.
   void SetAggressivelyFreeResources(bool aggressively_free_resources) override;
-  uint64_t ShareGroupTracingGUID() const override;
   void SetErrorMessageCallback(
       base::RepeatingCallback<void(const char*, int32_t)> callback) override;
-  bool ThreadSafeShallowLockDiscardableTexture(uint32_t texture_id) override;
-  void CompleteLockDiscardableTexureOnContextThread(
-      uint32_t texture_id) override;
-  bool ThreadsafeDiscardableTextureIsDeletedForTracing(
-      uint32_t texture_id) override;
-  void* MapTransferCacheEntry(uint32_t serialized_size) override;
+  base::span<uint8_t> MapTransferCacheEntry(uint32_t serialized_size) override;
   void UnmapAndCreateTransferCacheEntry(uint32_t type, uint32_t id) override;
   bool ThreadsafeLockTransferCacheEntry(uint32_t type, uint32_t id) override;
   void UnlockTransferCacheEntries(
       const std::vector<std::pair<uint32_t, uint32_t>>& entries) override;
   void DeleteTransferCacheEntry(uint32_t type, uint32_t id) override;
   unsigned int GetTransferBufferFreeSize() const override;
-  bool IsJpegDecodeAccelerationSupported() const override;
-  bool IsWebPDecodeAccelerationSupported() const override;
-  bool CanDecodeWithHardwareAcceleration(
-      const cc::ImageHeaderMetadata* image_metadata) const override;
 
   // InterfaceBase implementation.
   void GenSyncTokenCHROMIUM(GLbyte* sync_token) override;
@@ -326,33 +336,18 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
     GLsizeiptr size;
   };
 
-  struct TextureUnit {
-    TextureUnit() {}
-
-    // texture currently bound to this unit's GL_TEXTURE_2D with glBindTexture
-    GLuint bound_texture_2d = 0;
-
-    // texture currently bound to this unit's GL_TEXTURE_CUBE_MAP with
-    // glBindTexture
-    GLuint bound_texture_cube_map = 0;
-
-    // texture currently bound to this unit's GL_TEXTURE_EXTERNAL_OES with
-    // glBindTexture
-    GLuint bound_texture_external_oes = 0;
-
-    // texture currently bound to this unit's GL_TEXTURE_RECTANGLE_ARB with
-    // glBindTexture
-    GLuint bound_texture_rectangle_arb = 0;
-  };
-
   // Prevents problematic reentrancy during error callbacks.
   class DeferErrorCallbacks {
+    STACK_ALLOCATED();
+
    public:
     explicit DeferErrorCallbacks(GLES2Implementation* gles2_implementation);
     ~DeferErrorCallbacks();
 
    private:
-    raw_ptr<GLES2Implementation> gles2_implementation_;
+    // not using raw_ptr<> here for performance reasons. A CHECK() in
+    // ~GLES2Implementation() assures lifetime invariants instead.
+    GLES2Implementation& gles2_implementation_;
   };
 
   struct DeferredErrorCallback {
@@ -382,7 +377,7 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
   void OnGpuControlLostContext() final;
   void OnGpuControlLostContextMaybeReentrant() final;
   void OnGpuControlErrorMessage(const char* message, int32_t id) final;
-  void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) final;
+  void OnGpuSwitched() final;
   void OnGpuControlReturnData(base::span<const uint8_t> data) final;
 
   void SendErrorMessage(std::string message, int32_t id);
@@ -532,9 +527,6 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
       GLuint buffer_id, GLsizei count, GLenum type, GLuint offset);
 
   void WaitAllAsyncTexImage2DCHROMIUMHelper();
-
-  void RestoreElementAndArrayBuffers(bool restore);
-  void RestoreArrayBuffer(bool restrore);
 
   // The pixels pointer should already account for unpack skip
   // images/rows/pixels.
@@ -686,8 +678,6 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
   DebugMarkerManager debug_marker_manager_;
   std::string this_in_hex_;
 
-  base::queue<int32_t> swap_buffers_tokens_;
-
   ExtensionStatus chromium_framebuffer_multisample_;
 
   GLStaticState static_state_;
@@ -726,7 +716,7 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
   // unpack skip images as last set by glPixelStorei
   GLint unpack_skip_images_;
 
-  std::unique_ptr<TextureUnit[]> texture_units_;
+  base::HeapArray<internal::TextureUnit> texture_units_;
 
   // 0 to gl_state_.max_combined_texture_image_units.
   GLuint active_texture_unit_;
@@ -764,8 +754,6 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
   // track client side arrays.
   std::unique_ptr<VertexArrayObjectManager> vertex_array_object_manager_;
 
-  GLuint reserved_ids_[2];
-
   // Current GL error bits.
   uint32_t error_bits_;
 
@@ -773,9 +761,6 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
 
   // When true, the context is lost when a GL_OUT_OF_MEMORY error occurs.
   const bool lose_context_when_out_of_memory_;
-
-  // Whether or not to support client side arrays.
-  const bool support_client_side_arrays_;
 
   // Used to check for single threaded access.
   int use_count_;
@@ -810,8 +795,9 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
   scoped_refptr<ShareGroup> share_group_;
   ShareGroupContextData share_group_context_data_;
 
-  std::unique_ptr<IdAllocator>
-      id_allocators_[static_cast<int>(IdNamespaces::kNumIdNamespaces)];
+  std::array<std::unique_ptr<IdAllocator>,
+             static_cast<int>(IdNamespaces::kNumIdNamespaces)>
+      id_allocators_;
 
   std::unique_ptr<BufferTracker> buffer_tracker_;
   std::unique_ptr<ReadbackBufferShadowTracker> readback_buffer_shadow_tracker_;
@@ -842,7 +828,6 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
   std::string last_active_url_;
 
   bool gpu_switched_ = false;
-  gl::GpuPreference active_gpu_heuristic_ = gl::GpuPreference::kDefault;
 
   base::WeakPtrFactory<GLES2Implementation> weak_ptr_factory_{this};
 };

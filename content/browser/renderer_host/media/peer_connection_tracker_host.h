@@ -59,12 +59,14 @@ class PeerConnectionTrackerHost
   // base::PowerThermalObserver override.
   void OnThermalStateChange(
       base::PowerThermalObserver::DeviceThermalState new_state) override;
-  void OnSpeedLimitChange(int) override;
+  void OnSpeedLimitChange(int) override {}  // This signal is not forwarded.
 
   // These methods call out to blink::mojom::PeerConnectionManager on renderer
   // side.
   void StartEventLog(int peer_connection_local_id, int output_period_ms);
   void StopEventLog(int lid);
+  void StartDataChannelLog(int peer_connection_local_id);
+  void StopDataChannelLog(int lid);
   void GetStandardStats();
   void GetCurrentState();
 
@@ -111,8 +113,9 @@ class PeerConnectionTrackerHost
                               const std::string& error_message) override;
   void WebRtcEventLogWrite(int lid,
                            const std::vector<uint8_t>& output) override;
+  void WebRtcDataChannelLogWrite(int lid,
+                                 const std::vector<uint8_t>& output) override;
   void AddStandardStats(int lid, base::Value::List value) override;
-  void AddLegacyStats(int lid, base::Value::List value) override;
 
   GlobalRenderFrameHostId frame_id_;
   base::ProcessId peer_pid_;

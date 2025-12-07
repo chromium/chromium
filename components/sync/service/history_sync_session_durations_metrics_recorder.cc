@@ -42,13 +42,13 @@ void LogDuration(std::string_view histogram_suffix,
 HistorySyncSessionDurationsMetricsRecorder::
     HistorySyncSessionDurationsMetricsRecorder(SyncService* sync_service)
     : sync_service_(sync_service) {
-  // |sync_service| can be null if sync is disabled by a command line flag.
+  // `sync_service` can be null if sync is disabled by a command line flag.
   if (sync_service_) {
     sync_observation_.Observe(sync_service_.get());
   }
 
   // Get the initial state.
-  history_sync_enabled_ = IsHistorySyncEnabled();
+  history_sync_status_ = DetermineHistorySyncStatus();
 }
 
 HistorySyncSessionDurationsMetricsRecorder::
@@ -57,21 +57,9 @@ HistorySyncSessionDurationsMetricsRecorder::
   sync_observation_.Reset();
 }
 
-bool HistorySyncSessionDurationsMetricsRecorder::IsHistorySyncEnabled() const {
-  if (!sync_service_) {
-    return false;
-  }
-  if (!sync_service_->GetUserSettings()->GetSelectedTypes().Has(
-          UserSelectableType::kHistory)) {
-    return false;
-  }
-  return true;
-}
-
-void HistorySyncSessionDurationsMetricsRecorder::OnSessionStarted(
-    base::TimeTicks session_start) {
-  total_session_timer_ = std::make_unique<base::ElapsedTimer>();
-  history_sync_state_timer_ = std::make_unique<base::ElapsedTimer>();
+void HistorySyncSessionDurationsMetricsRecorder::OnSessionStarted() {
+  total_session_timer_.emplace();
+  history_sync_state_timer_.emplace();
 }
 
 void HistorySyncSessionDurationsMetricsRecorder::OnSessionEnded(
@@ -83,7 +71,7 @@ void HistorySyncSessionDurationsMetricsRecorder::OnSessionEnded(
   CHECK(history_sync_state_timer_);
 
   if (session_length.is_zero()) {
-    // During Profile teardown, this method is called with a |session_length|
+    // During Profile teardown, this method is called with a `session_length`
     // of zero.
     session_length = total_session_timer_->Elapsed();
   }
@@ -96,34 +84,71 @@ void HistorySyncSessionDurationsMetricsRecorder::OnSessionEnded(
 
   base::TimeDelta total_inactivity_time = total_session_time - session_length;
 
-  LogHistorySyncDuration(history_sync_enabled_,
+  LogHistorySyncDuration(history_sync_status_,
                          SubtractInactiveTime(history_sync_state_session_time,
                                               total_inactivity_time));
 }
 
 void HistorySyncSessionDurationsMetricsRecorder::OnStateChanged(
     SyncService* sync) {
-  bool new_history_sync_state = IsHistorySyncEnabled();
-  if (history_sync_enabled_ == new_history_sync_state) {
+  HistorySyncStatus new_history_sync_status = DetermineHistorySyncStatus();
+  if (history_sync_status_ == new_history_sync_status) {
     return;
   }
 
   // If there's an ongoing session, record it and start a new one.
   if (history_sync_state_timer_) {
-    LogHistorySyncDuration(history_sync_enabled_,
+    LogHistorySyncDuration(history_sync_status_,
                            history_sync_state_timer_->Elapsed());
-    history_sync_state_timer_ = std::make_unique<base::ElapsedTimer>();
+    history_sync_state_timer_.emplace();
   }
 
-  history_sync_enabled_ = new_history_sync_state;
+  history_sync_status_ = new_history_sync_status;
+}
+
+void HistorySyncSessionDurationsMetricsRecorder::OnSyncShutdown(
+    SyncService* sync) {
+  // Unreachable, since the service owning this instance is Shutdown() before
+  // the SyncService.
+  NOTREACHED();
+}
+
+HistorySyncSessionDurationsMetricsRecorder::HistorySyncStatus
+HistorySyncSessionDurationsMetricsRecorder::DetermineHistorySyncStatus() const {
+  if (!sync_service_ ||
+      !sync_service_->GetUserSettings()->GetSelectedTypes().Has(
+          UserSelectableType::kHistory)) {
+    return HistorySyncStatus::kDisabled;
+  }
+  if (sync_service_->GetTransportState() ==
+          SyncService::TransportState::PAUSED ||
+      sync_service_->HasCachedPersistentAuthErrorForMetrics()) {
+    return HistorySyncStatus::kEnabledWithError;
+  }
+  return HistorySyncStatus::kEnabledWithoutError;
 }
 
 // static
 void HistorySyncSessionDurationsMetricsRecorder::LogHistorySyncDuration(
-    bool history_sync_enabled,
+    HistorySyncStatus history_sync_status,
     base::TimeDelta session_length) {
-  LogDuration(history_sync_enabled ? "WithHistorySync" : "WithoutHistorySync",
-              session_length);
+  switch (history_sync_status) {
+    case HistorySyncStatus::kDisabled:
+      LogDuration("WithoutHistorySync", session_length);
+      break;
+    case HistorySyncStatus::kEnabledWithoutError:
+      LogDuration("WithHistorySyncWithoutAuthError", session_length);
+      // "WithHistorySync" gets logged regardless of whether there is an auth
+      // error or not.
+      LogDuration("WithHistorySync", session_length);
+      break;
+    case HistorySyncStatus::kEnabledWithError:
+      LogDuration("WithHistorySyncAndAuthError", session_length);
+      // "WithHistorySync" gets logged regardless of whether there is an auth
+      // error or not.
+      LogDuration("WithHistorySync", session_length);
+      break;
+  }
 }
 
 }  // namespace syncer

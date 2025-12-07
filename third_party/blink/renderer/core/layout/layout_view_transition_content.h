@@ -23,8 +23,10 @@ class CORE_EXPORT LayoutViewTransitionContent : public LayoutReplaced {
     NOT_DESTROYED();
     return "LayoutViewTransitionContent";
   }
-  void OnIntrinsicSizeUpdated(const gfx::RectF& captured_rect,
-                              const gfx::RectF& border_box_rect);
+  void OnIntrinsicSizeUpdated(
+      const gfx::RectF& captured_rect,
+      const gfx::RectF& reference_rect_in_enclosing_layer_space,
+      bool propagate_max_extent_rect);
 
   bool IsViewTransitionContent() const override {
     NOT_DESTROYED();
@@ -33,16 +35,18 @@ class CORE_EXPORT LayoutViewTransitionContent : public LayoutReplaced {
 
  protected:
   PaintLayerType LayerTypeRequired() const override;
-  void IntrinsicSizeChanged() override { NOT_DESTROYED(); }
+  void NaturalSizeChanged() override { NOT_DESTROYED(); }
   void PaintReplaced(const PaintInfo&,
                      const PhysicalOffset& paint_offset) const override;
 
  private:
   PhysicalRect ReplacedContentRectForCapturedContent() const;
+  PhysicalNaturalSizingInfo GetNaturalDimensions() const override;
 
   scoped_refptr<cc::ViewTransitionContentLayer> layer_;
   gfx::RectF captured_rect_;
-  gfx::RectF border_box_rect_;
+  gfx::RectF reference_rect_in_enclosing_layer_space_;
+  bool propagate_max_extent_rect_;
 };
 
 template <>

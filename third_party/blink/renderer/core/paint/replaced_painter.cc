@@ -15,21 +15,23 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/mobile_metrics/mobile_friendliness_checker.h"
+#include "third_party/blink/renderer/core/paint/border_shape_utils.h"
 #include "third_party/blink/renderer/core/paint/box_background_paint_context.h"
 #include "third_party/blink/renderer/core/paint/box_decoration_data.h"
 #include "third_party/blink/renderer/core/paint/box_model_object_painter.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
 #include "third_party/blink/renderer/core/paint/box_painter_base.h"
+#include "third_party/blink/renderer/core/paint/contoured_border_geometry.h"
 #include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
-#include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
 #include "third_party/blink/renderer/core/paint/scoped_paint_state.h"
 #include "third_party/blink/renderer/core/paint/scrollable_area_painter.h"
 #include "third_party/blink/renderer/core/paint/selection_bounds_recorder.h"
 #include "third_party/blink/renderer/core/paint/theme_painter.h"
+#include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_cache_skipper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
@@ -121,14 +123,13 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
 
   const auto& local_paint_info = paint_state.GetPaintInfo();
   auto paint_offset = paint_state.PaintOffset();
-  PhysicalRect border_rect(paint_offset, layout_replaced_.Size());
+  PhysicalRect border_rect(paint_offset, layout_replaced_.StitchedSize());
 
   if (ShouldPaintBoxDecorationBackground(local_paint_info)) {
     bool should_paint_background = false;
-    if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled() &&
-        // TODO(crbug.com/1477914): Without this condition, scaled canvas
-        // would become pixelated on Linux.
-        !layout_replaced_.IsCanvas()) {
+    // TODO(crbug.com/40280438): Without this condition, scaled canvas would
+    // become pixelated on Linux.
+    if (!layout_replaced_.IsCanvas()) {
       should_paint_background = true;
     } else if (layout_replaced_.HasBoxDecorationBackground()) {
       should_paint_background = true;
@@ -165,8 +166,9 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
 
   if (local_paint_info.phase != PaintPhase::kForeground &&
       local_paint_info.phase != PaintPhase::kSelectionDragImage &&
-      !layout_replaced_.CanHaveChildren())
+      (!layout_replaced_.CanHaveChildren() || layout_replaced_.IsCanvas())) {
     return;
+  }
 
   if (local_paint_info.phase == PaintPhase::kSelectionDragImage &&
       !layout_replaced_.IsSelected())
@@ -215,8 +217,7 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
     const ComputedStyle& style = layout_replaced_.StyleRef();
     selection_recorder.emplace(selection_state, selection_rect,
                                local_paint_info.context.GetPaintController(),
-                               style.Direction(), style.GetWritingMode(),
-                               layout_replaced_);
+                               style.Direction(), style.GetWritingMode());
   }
 
   if (!DrawingRecorder::UseCachedDrawingIfPossible(
@@ -233,7 +234,8 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
                              selection_painting_int_rect);
     Color selection_bg = HighlightStyleUtils::HighlightBackgroundColor(
         layout_replaced_.GetDocument(), layout_replaced_.StyleRef(),
-        layout_replaced_.GetNode(), std::nullopt, kPseudoIdSelection);
+        layout_replaced_.GetNode(), std::nullopt, kPseudoIdSelection,
+        SearchTextIsActiveMatch::kNo);
     local_paint_info.context.FillRect(
         selection_painting_int_rect, selection_bg,
         PaintAutoDarkMode(layout_replaced_.StyleRef(),
@@ -258,8 +260,9 @@ bool ReplacedPainter::ShouldPaint(const ScopedPaintState& paint_state) const {
   // But if it's an SVG root, there can be children, so we'll check visibility
   // later.
   if (!layout_replaced_.IsSVGRoot() &&
-      layout_replaced_.StyleRef().Visibility() != EVisibility::kVisible)
+      layout_replaced_.StyleRef().Visibility() != EVisibility::kVisible) {
     return false;
+  }
 
   PhysicalRect local_rect = layout_replaced_.VisualOverflowRect();
   local_rect.Unite(layout_replaced_.LocalSelectionVisualRect());
@@ -279,7 +282,7 @@ void ReplacedPainter::MeasureOverflowMetrics() const {
   auto overflow_size = layout_replaced_.VisualOverflowRect().size;
   auto overflow_area = overflow_size.width * overflow_size.height;
 
-  auto content_size = layout_replaced_.Size();
+  auto content_size = layout_replaced_.StitchedSize();
   auto content_area = content_size.width * content_size.height;
 
   DCHECK_GE(overflow_area, content_area);
@@ -400,17 +403,20 @@ void ReplacedPainter::PaintBoxDecorationBackgroundWithRect(
   // shadow should paint, since controls could have custom shadows of their
   // own.
   if (box_decoration_data.ShouldPaintShadow()) {
+    std::optional<BorderShapeReferenceRects> border_shape_rects =
+        ComputeBorderShapeReferenceRects(paint_rect, style, layout_replaced_);
     BoxPainterBase::PaintNormalBoxShadow(
-        paint_info, paint_rect, style, PhysicalBoxSides(),
+        paint_info, paint_rect, style, border_shape_rects, PhysicalBoxSides(),
         !box_decoration_data.ShouldPaintBackground());
   }
 
   if (BleedAvoidanceIsClipping(
           box_decoration_data.GetBackgroundBleedAvoidance())) {
     state_saver.Save();
-    FloatRoundedRect border =
-        RoundedBorderGeometry::PixelSnappedRoundedBorder(style, paint_rect);
-    paint_info.context.ClipRoundedRect(border);
+
+    ContouredRect border =
+        ContouredBorderGeometry::PixelSnappedContouredBorder(style, paint_rect);
+    paint_info.context.ClipContouredRect(border);
 
     if (box_decoration_data.GetBackgroundBleedAvoidance() ==
         kBackgroundBleedClipLayer) {
@@ -455,10 +461,13 @@ void ReplacedPainter::PaintBoxDecorationBackgroundWithRect(
                                          paint_info, snapped_paint_rect);
     }
     if (!theme_painted) {
+      std::optional<BorderShapeReferenceRects> border_shape_rects =
+          ComputeBorderShapeReferenceRects(paint_rect, style, layout_replaced_);
       BoxPainterBase::PaintBorder(
           layout_replaced_, layout_replaced_.GetDocument(),
           layout_replaced_.GeneratingNode(), paint_info, paint_rect, style,
-          box_decoration_data.GetBackgroundBleedAvoidance());
+          box_decoration_data.GetBackgroundBleedAvoidance(), PhysicalBoxSides(),
+          border_shape_rects ? &*border_shape_rects : nullptr);
     }
   }
 
@@ -500,7 +509,7 @@ void ReplacedPainter::PaintMask(const PaintInfo& paint_info,
     return;
   }
 
-  PhysicalRect paint_rect(paint_offset, layout_replaced_.Size());
+  PhysicalRect paint_rect(paint_offset, layout_replaced_.StitchedSize());
   BoxDrawingRecorder recorder(paint_info.context, layout_replaced_,
                               paint_info.phase, paint_offset);
   PaintMaskImages(paint_info, paint_rect);

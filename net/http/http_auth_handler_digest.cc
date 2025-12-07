@@ -2,17 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/http/http_auth_handler_digest.h"
 
+#include <array>
 #include <string>
 #include <string_view>
 
-#include "base/hash/md5.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
@@ -20,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "crypto/random.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_string_util.h"
@@ -69,12 +65,18 @@ HttpAuthHandlerDigest::DynamicNonceGenerator::DynamicNonceGenerator() = default;
 std::string HttpAuthHandlerDigest::DynamicNonceGenerator::GenerateNonce()
     const {
   // This is how mozilla generates their cnonce -- a 16 digit hex string.
-  static const char domain[] = "0123456789abcdef";
+
+  std::array<uint8_t, 8> rand_bytes;
+  crypto::RandBytes(rand_bytes);
+
   std::string cnonce;
   cnonce.reserve(16);
-  for (int i = 0; i < 16; ++i) {
-    cnonce.push_back(domain[base::RandInt(0, 15)]);
+  for (const uint8_t byte : rand_bytes) {
+    // It shouldn't matter whether this is capitalized or not, but safest to
+    // preserve behavior of using lowercase hex strings.
+    base::AppendHexEncodedByte(byte, cnonce, /*uppercase=*/false);
   }
+  DCHECK_EQ(cnonce.size(), 16u);
   return cnonce;
 }
 
@@ -162,12 +164,13 @@ HttpAuth::AuthorizationResult HttpAuthHandlerDigest::HandleAnotherChallengeImpl(
   // for the new challenge.
   std::string original_realm;
   while (parameters.GetNext()) {
-    if (base::EqualsCaseInsensitiveASCII(parameters.name_piece(), "stale")) {
-      if (base::EqualsCaseInsensitiveASCII(parameters.value_piece(), "true")) {
+    if (base::EqualsCaseInsensitiveASCII(parameters.name(), "stale")) {
+      if (base::EqualsCaseInsensitiveASCII(parameters.value(), "true")) {
         return HttpAuth::AUTHORIZATION_RESULT_STALE;
       }
-    } else if (base::EqualsCaseInsensitiveASCII(parameters.name_piece(),
-                                                "realm")) {
+    } else if (base::EqualsCaseInsensitiveASCII(parameters.name(), "realm")) {
+      // This has to be a copy, since value_piece() may point to an internal
+      // buffer of `parameters`.
       original_realm = parameters.value();
     }
   }
@@ -225,8 +228,7 @@ bool HttpAuthHandlerDigest::ParseChallenge(
   // Loop through all the properties.
   while (parameters.GetNext()) {
     // FAIL -- couldn't parse a property.
-    if (!ParseChallengeProperty(parameters.name_piece(),
-                                parameters.value_piece())) {
+    if (!ParseChallengeProperty(parameters.name(), parameters.value())) {
       return false;
     }
   }
@@ -281,15 +283,10 @@ bool HttpAuthHandlerDigest::ParseChallengeProperty(std::string_view name,
   } else if (base::EqualsCaseInsensitiveASCII(name, "qop")) {
     // Parse the comma separated list of qops.
     // auth is the only supported qop, and all other values are ignored.
-    //
-    // TODO(crbug.com/41375521): Remove this copy when
-    // HttpUtil::ValuesIterator can take a std::string_view.
-    std::string value_str(value);
-    HttpUtil::ValuesIterator qop_values(value_str.begin(), value_str.end(),
-                                        ',');
+    HttpUtil::ValuesIterator qop_values(value, /*delimiter=*/',');
     qop_ = QOP_UNSPECIFIED;
     while (qop_values.GetNext()) {
-      if (base::EqualsCaseInsensitiveASCII(qop_values.value_piece(), "auth")) {
+      if (base::EqualsCaseInsensitiveASCII(qop_values.value(), "auth")) {
         qop_ = QOP_AUTH;
         break;
       }
@@ -310,8 +307,7 @@ std::string HttpAuthHandlerDigest::QopToString(QualityOfProtection qop) {
     case QOP_AUTH:
       return "auth";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
   }
 }
 
@@ -329,8 +325,7 @@ std::string HttpAuthHandlerDigest::AlgorithmToString(Algorithm algorithm) {
     case Algorithm::SHA256_SESS:
       return "SHA-256-sess";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
   }
 }
 
@@ -381,8 +376,7 @@ class HttpAuthHandlerDigest::DigestContext {
     uint8_t md_value[EVP_MAX_MD_SIZE] = {};
     unsigned int md_len = sizeof(md_value);
     CHECK(EVP_DigestFinal_ex(md_ctx_.get(), md_value, &md_len));
-    return base::ToLowerASCII(
-        base::HexEncode(base::span(md_value).first(out_len_)));
+    return base::HexEncodeLower(base::span(md_value).first(out_len_));
   }
 
  private:

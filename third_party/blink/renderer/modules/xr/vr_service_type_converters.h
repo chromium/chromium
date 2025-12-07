@@ -10,7 +10,6 @@
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "third_party/blink/renderer/core/geometry/dom_point_read_only.h"
 #include "third_party/blink/renderer/modules/xr/xr_plane.h"
-#include "ui/gfx/geometry/transform.h"
 
 namespace mojo {
 
@@ -23,9 +22,9 @@ struct TypeConverter<std::optional<blink::XRPlane::Orientation>,
 
 template <>
 struct TypeConverter<blink::HeapVector<blink::Member<blink::DOMPointReadOnly>>,
-                     Vector<device::mojom::blink::XRPlanePointDataPtr>> {
+                     blink::Vector<device::mojom::blink::XRPlanePointDataPtr>> {
   static blink::HeapVector<blink::Member<blink::DOMPointReadOnly>> Convert(
-      const Vector<device::mojom::blink::XRPlanePointDataPtr>& vertices);
+      const blink::Vector<device::mojom::blink::XRPlanePointDataPtr>& vertices);
 };
 
 }  // namespace mojo

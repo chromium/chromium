@@ -134,11 +134,14 @@ bool PlatformCrashpadInitialization(
     const std::string& user_data_dir,
     const base::FilePath& exe_path,
     const std::vector<std::string>& initial_arguments,
+    const std::vector<base::FilePath>& attachments,
     base::FilePath* database_path) {
   base::FilePath metrics_path;  // Only valid in the browser process.
-  DCHECK(!embedded_handler);  // This is not used on Mac.
-  DCHECK(exe_path.empty());   // This is not used on Mac.
+  // These are not used on Mac.
+  DCHECK(!embedded_handler);
+  DCHECK(exe_path.empty());
   DCHECK(initial_arguments.empty());
+  DCHECK(attachments.empty());
 
   if (initial_client) {
     @autoreleasepool {

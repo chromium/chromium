@@ -6,11 +6,13 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <queue>
 #include <set>
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -18,10 +20,10 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
-#include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/trace_event/optional_trace_event.h"
 #include "base/trace_event/typed_macros.h"
+#include "base/types/cxx23_from_range.h"
 #include "base/unguessable_token.h"
 #include "content/browser/renderer_host/batched_proxy_ipc_sender.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
@@ -40,6 +42,7 @@
 #include "content/common/content_navigation_policy.h"
 #include "content/common/content_switches_internal.h"
 #include "content/common/features.h"
+#include "ipc/constants.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
@@ -148,7 +151,7 @@ FrameTree::NodeIterator::NodeIterator(
       should_descend_into_inner_trees_(should_descend_into_inner_trees),
       include_delegate_nodes_for_inner_frame_trees_(
           include_delegate_nodes_for_inner_frame_trees),
-      queue_(starting_nodes.begin(), starting_nodes.end()) {
+      queue_(base::from_range, starting_nodes) {
   // If `include_delegate_nodes_for_inner_frame_trees_` is true then
   // `should_descend_into_inner_trees_` must be true.
   DCHECK(!include_delegate_nodes_for_inner_frame_trees_ ||
@@ -159,7 +162,7 @@ FrameTree::NodeIterator::NodeIterator(
 FrameTree::NodeIterator FrameTree::NodeRange::begin() {
   // We shouldn't be attempting a frame tree traversal while the tree is
   // being constructed or destructed.
-  DCHECK(base::ranges::all_of(starting_nodes_, [](FrameTreeNode* ftn) {
+  DCHECK(std::ranges::all_of(starting_nodes_, [](FrameTreeNode* ftn) {
     return ftn->current_frame_host();
   }));
 
@@ -210,8 +213,6 @@ FrameTree::FrameTree(
                  navigator_delegate,
                  navigation_controller_delegate),
       type_(type),
-      focused_frame_tree_node_id_(FrameTreeNode::kFrameTreeNodeInvalidId),
-      load_progress_(0.0),
       root_(*this,
             nullptr,
             // The top-level frame must always be in a
@@ -258,7 +259,7 @@ void FrameTree::MakeSpeculativeRVHCurrent() {
   speculative_render_view_host_.reset();
 }
 
-FrameTreeNode* FrameTree::FindByID(int frame_tree_node_id) {
+FrameTreeNode* FrameTree::FindByID(FrameTreeNodeId frame_tree_node_id) {
   for (FrameTreeNode* node : Nodes()) {
     if (node->frame_tree_node_id() == frame_tree_node_id)
       return node;
@@ -319,7 +320,7 @@ std::vector<FrameTreeNode*> FrameTree::CollectNodesForIsLoading() {
   FrameTree::NodeIterator node_iter = node_range.begin();
   std::vector<FrameTreeNode*> nodes;
 
-  CHECK(node_iter != node_range.end(), base::NotFatalUntil::M130);
+  CHECK(node_iter != node_range.end());
   FrameTree* root_loading_tree = root_.frame_tree().LoadingTree();
   while (node_iter != node_range.end()) {
     // Skip over frame trees and children which belong to inner web contents
@@ -392,7 +393,7 @@ FrameTreeNode* FrameTree::AddFrame(
     bool was_discarded,
     blink::FrameOwnerElementType owner_type,
     bool is_dummy_frame_for_inner_tree) {
-  CHECK_NE(new_routing_id, MSG_ROUTING_NONE);
+  CHECK_NE(new_routing_id, IPC::mojom::kRoutingIdNone);
   // Normally this path is for blink adding a child local frame. But fenced
   // frames add a dummy child frame that never gets a corresponding
   // RenderFrameImpl in any renderer process, and therefore its `frame_remote`
@@ -409,7 +410,7 @@ FrameTreeNode* FrameTree::AddFrame(
   // it is in the same SiteInstance as the parent frame. Ensure that the process
   // which requested a child frame to be added is the same as the process of the
   // parent node.
-  CHECK_EQ(parent->GetProcess()->GetID(), process_id);
+  CHECK_EQ(parent->GetProcess()->GetDeprecatedID(), process_id);
 
   std::unique_ptr<FrameTreeNode> new_node = base::WrapUnique(
       new FrameTreeNode(*this, parent, scope, is_created_by_script,
@@ -484,8 +485,7 @@ FrameTreeNode* FrameTree::AddFrame(
 void FrameTree::RemoveFrame(FrameTreeNode* child) {
   RenderFrameHostImpl* parent = child->parent();
   if (!parent) {
-    NOTREACHED_IN_MIGRATION() << "Unexpected RemoveFrame call for main frame.";
-    return;
+    NOTREACHED() << "Unexpected RemoveFrame call for main frame.";
   }
 
   parent->RemoveChild(child);
@@ -495,7 +495,8 @@ void FrameTree::CreateProxiesForSiteInstanceGroup(
     FrameTreeNode* source,
     SiteInstanceGroup* site_instance_group,
     const scoped_refptr<BrowsingContextState>&
-        source_new_browsing_context_state) {
+        source_new_browsing_context_state,
+    const std::optional<base::UnguessableToken>& navigation_metrics_token) {
   // Will be instantiated with the root proxy later and passed to
   // `CreateRenderFrameProxy()` to batch create proxies for child frames.
   std::unique_ptr<BatchedProxyIPCSender> batched_proxy_ipc_sender;
@@ -505,7 +506,7 @@ void FrameTree::CreateProxiesForSiteInstanceGroup(
         GetRenderViewHost(site_instance_group).get();
     if (render_view_host) {
       root()->render_manager()->EnsureRenderViewInitialized(
-          render_view_host, site_instance_group);
+          render_view_host, site_instance_group, navigation_metrics_token);
     } else {
       // Due to the check above, we are creating either an opener proxy (when
       // source is null) or a main frame proxy due to a subframe navigation
@@ -524,6 +525,7 @@ void FrameTree::CreateProxiesForSiteInstanceGroup(
       // pass an instance of `BatchedProxyIPCSender` here instead of nullptr.
       root()->render_manager()->CreateRenderFrameProxy(
           site_instance_group, root_browsing_context_state,
+          navigation_metrics_token,
           /*batched_proxy_ipc_sender=*/nullptr);
 
       // We only need to use `BatchedProxyIPCSender` when navigating to a new
@@ -538,8 +540,8 @@ void FrameTree::CreateProxiesForSiteInstanceGroup(
           root_browsing_context_state
               ->GetRenderFrameProxyHost(site_instance_group)
               ->GetSafeRef();
-      batched_proxy_ipc_sender =
-          std::make_unique<BatchedProxyIPCSender>(std::move(root_proxy));
+      batched_proxy_ipc_sender = std::make_unique<BatchedProxyIPCSender>(
+          std::move(root_proxy), navigation_metrics_token);
     }
   }
 
@@ -609,7 +611,7 @@ void FrameTree::CreateProxiesForSiteInstanceGroup(
           site_instance_group,
           node == source ? source_new_browsing_context_state
                          : node->current_frame_host()->browsing_context_state(),
-          batched_proxy_ipc_sender.get());
+          navigation_metrics_token, batched_proxy_ipc_sender.get());
     }
   }
 
@@ -734,7 +736,73 @@ void FrameTree::RegisterRenderViewHost(RenderViewHostMapId id,
   TRACE_EVENT_INSTANT("navigation", "FrameTree::RegisterRenderViewHost",
                       ChromeTrackEvent::kRenderViewHost, *rvh);
   CHECK(!rvh->is_speculative());
-  CHECK(!base::Contains(render_view_host_map_, id));
+  bool rvh_id_already_in_map = base::Contains(render_view_host_map_, id);
+  bool rfh_in_bfcache =
+      controller()
+          .GetBackForwardCache()
+          .IsRenderFrameHostWithSIGInBackForwardCacheForDebugging(
+              rvh->site_instance_group()->GetId());
+  bool rfph_in_bfcache =
+      controller()
+          .GetBackForwardCache()
+          .IsRenderFrameProxyHostWithSIGInBackForwardCacheForDebugging(
+              rvh->site_instance_group()->GetId());
+  bool rvh_in_bfcache =
+      controller()
+          .GetBackForwardCache()
+          .IsRenderViewHostWithMapIdInBackForwardCacheForDebugging(*rvh);
+  // We're seeing cases where an RVH being restored from BFCache has the same
+  // ID as an RVH already in the map, where the 2 RVHs are different but one
+  // was in BFCache and one isn't.
+  // To investigate, detect if any of these cases happen:
+  // 1) A RenderViewHost with the same ID as `rvh` is already in the map
+  // 2) A RenderFrameHost with the same SIG ID as `rvh` is in BFCache
+  // 3) A RenderFrameProxyHost with the same SIG ID as `rvh` is in BFCache
+  // 4) A RenderViewHost with the same ID as `rvh` is in BFCache
+  // These cases shouldn't be possible. Note that when checking #2-#4 for
+  // a RenderViewHost that is getting out of BFCache, we are guaranteed to not
+  // accidentally match to the RVH/RFPH/RFH of the page being restored,
+  // because we can only get here after the StoredPage is taken out of the
+  // BFCache and thus won't be iterated over in the functions above.
+  // See the linked bug below for more details.
+  if (rvh_id_already_in_map || rfh_in_bfcache || rfph_in_bfcache ||
+      rvh_in_bfcache) {
+    // TODO(https://crbug.com/354382462): Remove crash keys once investigation
+    // is done.
+    SCOPED_CRASH_KEY_BOOL("rvh-double", "in_map", rvh_id_already_in_map);
+    SCOPED_CRASH_KEY_BOOL("rvh-double", "rfh_in_bfcache", rfh_in_bfcache);
+    SCOPED_CRASH_KEY_BOOL("rvh-double", "rfph_in_bfcache", rfph_in_bfcache);
+    SCOPED_CRASH_KEY_BOOL("rvh-double", "rvh_in_bfcache", rvh_in_bfcache);
+    SCOPED_CRASH_KEY_BOOL("rvh-double", "passed_renderer_created",
+                          rvh->renderer_view_created());
+    SCOPED_CRASH_KEY_NUMBER("rvh-double", "passed_rvh_main_id",
+                            rvh->main_frame_routing_id());
+    SCOPED_CRASH_KEY_NUMBER("rvh-double", "root_routing_id",
+                            root()->current_frame_host()->GetRoutingID());
+    SCOPED_CRASH_KEY_NUMBER("rvh-double", "passed_rvh_ptr",
+                            reinterpret_cast<size_t>(rvh));
+    SCOPED_CRASH_KEY_BOOL("rvh-double", "passed_rvh_bfcache",
+                          rvh->is_in_back_forward_cache());
+    SCOPED_CRASH_KEY_BOOL("rvh-double", "frame_tree_primary", is_primary());
+
+    if (rvh_id_already_in_map) {
+      SCOPED_CRASH_KEY_BOOL(
+          "rvh-double", "mapped_rvh_registered",
+          render_view_host_map_[id]->is_registered_with_frame_tree());
+      SCOPED_CRASH_KEY_NUMBER(
+          "rvh-double", "mapped_rvh_main_id",
+          render_view_host_map_[id]->main_frame_routing_id());
+      SCOPED_CRASH_KEY_NUMBER(
+          "rvh-double", "map_rvh_ptr",
+          reinterpret_cast<size_t>(render_view_host_map_[id]));
+      SCOPED_CRASH_KEY_BOOL(
+          "rvh-double", "map_rvh_bfcache",
+          render_view_host_map_[id]->is_in_back_forward_cache());
+      SCOPED_CRASH_KEY_BOOL("rvh-double", "mapped_renderer_created",
+                            render_view_host_map_[id]->renderer_view_created());
+      CHECK_EQ(rvh, render_view_host_map_[id]);
+    }
+  }
   render_view_host_map_[id] = rvh;
   rvh->set_is_registered_with_frame_tree(true);
 }
@@ -753,7 +821,7 @@ void FrameTree::UnregisterRenderViewHost(RenderViewHostMapId id,
 
 void FrameTree::FrameUnloading(FrameTreeNode* frame) {
   if (frame->frame_tree_node_id() == focused_frame_tree_node_id_)
-    focused_frame_tree_node_id_ = FrameTreeNode::kFrameTreeNodeInvalidId;
+    focused_frame_tree_node_id_ = FrameTreeNodeId();
 
   // Ensure frames that are about to be deleted aren't visible from the other
   // processes anymore.
@@ -762,7 +830,7 @@ void FrameTree::FrameUnloading(FrameTreeNode* frame) {
 
 void FrameTree::FrameRemoved(FrameTreeNode* frame) {
   if (frame->frame_tree_node_id() == focused_frame_tree_node_id_)
-    focused_frame_tree_node_id_ = FrameTreeNode::kFrameTreeNodeInvalidId;
+    focused_frame_tree_node_id_ = FrameTreeNodeId();
 }
 
 double FrameTree::GetLoadProgress() {
@@ -772,11 +840,12 @@ double FrameTree::GetLoadProgress() {
   return root_.current_frame_host()->GetPage().load_progress();
 }
 
-bool FrameTree::IsLoadingIncludingInnerFrameTrees() const {
-  return GetLoadingState() != LoadingState::NONE;
+bool FrameTree::IsLoadingIncludingInnerFrameTrees(
+    bool exclude_ad_subframes) const {
+  return GetLoadingState(exclude_ad_subframes) != LoadingState::NONE;
 }
 
-LoadingState FrameTree::GetLoadingState() const {
+LoadingState FrameTree::GetLoadingState(bool exclude_ad_subframes) const {
   // The overall loading state for the FrameTree matches the root node's loading
   // state if the root is loading.
   if (root_.GetLoadingState() != LoadingState::NONE) {
@@ -789,6 +858,11 @@ LoadingState FrameTree::GetLoadingState() const {
   for (const FrameTreeNode* node_to_check :
        const_cast<FrameTree*>(this)->CollectNodesForIsLoading()) {
     if (node_to_check->IsLoading()) {
+      if (exclude_ad_subframes &&
+          node_to_check->current_frame_host()->IsAdFrame()) {
+        continue;
+      }
+
       return LoadingState::LOADING_WITHOUT_UI;
     }
   }
@@ -841,8 +915,15 @@ void FrameTree::RegisterExistingOriginAsHavingDefaultIsolation(
   // BrowsingInstance of a bfcache RFH while it's in the cache.
   for (auto* frame_tree_node : SubtreeNodes(root())) {
     auto* frame_host = frame_tree_node->current_frame_host();
-    if (previously_visited_origin == frame_host->GetLastCommittedOrigin())
+    // Sandboxed frame origins are treated as equivalent to their non-sandboxed
+    // precursors in the per-BrowsingInstance Origin-Agent-Cluster state, so it
+    // is important to compare and register precursors as well. See
+    // https://crbug.com/446157743.
+    if (previously_visited_origin.GetTupleOrPrecursorTupleIfOpaque() ==
+        frame_host->GetLastCommittedOrigin()
+            .GetTupleOrPrecursorTupleIfOpaque()) {
       matching_site_instances.insert(frame_host->GetSiteInstance());
+    }
 
     if (frame_host->HasCommittingNavigationRequestForOrigin(
             previously_visited_origin, navigation_request_to_exclude)) {
@@ -1030,6 +1111,28 @@ void FrameTree::FocusOuterFrameTrees() {
     }
     frame_tree_to_focus = &outer_node->frame_tree();
   }
+}
+
+void FrameTree::Discard(base::OnceClosure on_discarded_cb) {
+  const auto attempt_discard = [this](base::OnceClosure on_discarded_cb) {
+    // A speculative pending-commit rfh should not be cancelled or deleted. In
+    // this case ignore the discard request and allow the navigation to complete
+    // as normal.
+    if (const auto* speculative_rfh =
+            root()->render_manager()->speculative_frame_host();
+        speculative_rfh && speculative_rfh->HasPendingCommitNavigation()) {
+      return false;
+    }
+
+    root()->set_was_discarded();
+    root()->current_frame_host()->DiscardFrame(std::move(on_discarded_cb));
+    NavigationControllerImpl& navigation_controller = controller();
+    navigation_controller.SetNeedsReload();
+    navigation_controller.GetBackForwardCache().Flush();
+    return true;
+  };
+  base::UmaHistogramBoolean("Discarding.DiscardFrameTree",
+                            attempt_discard(std::move(on_discarded_cb)));
 }
 
 }  // namespace content

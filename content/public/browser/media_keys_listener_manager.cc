@@ -5,9 +5,8 @@
 #include "content/public/browser/media_keys_listener_manager.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "base/feature_list.h"
 #include "media/base/media_switches.h"
 #endif

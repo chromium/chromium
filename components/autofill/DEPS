@@ -14,7 +14,4 @@ include_rules = [
   # the ability to use the content layer as appropriate.
   "-components/autofill/content",
   "-components/android_autofill",
-
-  # This directory contains build flags and does not pull all of PPAPI in.
-  "+ppapi/buildflags",
 ]

@@ -19,8 +19,8 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.net.CronetEngine;
+import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule;
-import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.NativeTestServer;
 import org.chromium.net.NetworkException;
@@ -42,8 +42,8 @@ public class CronetFixedModeOutputStreamTest {
     @Rule public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 
     private HttpURLConnection mConnection;
-
     private CronetEngine mCronetEngine;
+    private NativeTestServer mNativeTestServer;
 
     @Before
     public void setUp() throws Exception {
@@ -52,10 +52,9 @@ public class CronetFixedModeOutputStreamTest {
                 .applyEngineBuilderPatch(
                         (builder) -> mTestRule.getTestFramework().enableDiskCache(builder));
         mCronetEngine = mTestRule.getTestFramework().startEngine();
-        assertThat(
-                        NativeTestServer.startNativeTestServer(
-                                mTestRule.getTestFramework().getContext()))
-                .isTrue();
+        mNativeTestServer =
+                NativeTestServer.createNativeTestServer(mTestRule.getTestFramework().getContext());
+        mNativeTestServer.start();
     }
 
     @After
@@ -63,13 +62,13 @@ public class CronetFixedModeOutputStreamTest {
         if (mConnection != null) {
             mConnection.disconnect();
         }
-        NativeTestServer.shutdownNativeTestServer();
+        mNativeTestServer.close();
     }
 
     @Test
     @SmallTest
     public void testConnectBeforeWrite() throws Exception {
-        URL url = new URL(NativeTestServer.getEchoBodyURL());
+        URL url = new URL(mNativeTestServer.getEchoBodyURL());
         mConnection = (HttpURLConnection) mCronetEngine.openConnection(url);
         mConnection.setDoOutput(true);
         mConnection.setRequestMethod("POST");
@@ -87,7 +86,7 @@ public class CronetFixedModeOutputStreamTest {
     @SmallTest
     // Regression test for crbug.com/687600.
     public void testZeroLengthWriteWithNoResponseBody() throws Exception {
-        URL url = new URL(NativeTestServer.getEchoBodyURL());
+        URL url = new URL(mNativeTestServer.getEchoBodyURL());
         mConnection = (HttpURLConnection) mCronetEngine.openConnection(url);
         mConnection.setDoOutput(true);
         mConnection.setRequestMethod("POST");
@@ -101,7 +100,7 @@ public class CronetFixedModeOutputStreamTest {
     @Test
     @SmallTest
     public void testWriteAfterRequestFailed() throws Exception {
-        URL url = new URL(NativeTestServer.getEchoBodyURL());
+        URL url = new URL(mNativeTestServer.getEchoBodyURL());
         mConnection = (HttpURLConnection) mCronetEngine.openConnection(url);
         mConnection.setDoOutput(true);
         mConnection.setRequestMethod("POST");
@@ -109,7 +108,7 @@ public class CronetFixedModeOutputStreamTest {
         mConnection.setFixedLengthStreamingMode(largeData.length);
         OutputStream out = mConnection.getOutputStream();
         out.write(largeData, 0, 10);
-        NativeTestServer.shutdownNativeTestServer();
+        mNativeTestServer.close();
         IOException e =
                 assertThrows(
                         IOException.class, () -> out.write(largeData, 10, largeData.length - 10));
@@ -125,8 +124,8 @@ public class CronetFixedModeOutputStreamTest {
     @Test
     @SmallTest
     public void testGetResponseAfterWriteFailed() throws Exception {
-        URL url = new URL(NativeTestServer.getEchoBodyURL());
-        NativeTestServer.shutdownNativeTestServer();
+        URL url = new URL(mNativeTestServer.getEchoBodyURL());
+        mNativeTestServer.close();
         mConnection = (HttpURLConnection) mCronetEngine.openConnection(url);
         mConnection.setDoOutput(true);
         mConnection.setRequestMethod("POST");
@@ -153,18 +152,13 @@ public class CronetFixedModeOutputStreamTest {
             assertThat(networkException.getErrorCode())
                     .isEqualTo(NetworkException.ERROR_CONNECTION_REFUSED);
         }
-        // Restarting server to run the test for a second time.
-        assertThat(
-                        NativeTestServer.startNativeTestServer(
-                                mTestRule.getTestFramework().getContext()))
-                .isTrue();
     }
 
     @Test
     @SmallTest
     public void testFixedLengthStreamingModeZeroContentLength() throws Exception {
         // Check content length is set.
-        URL echoLength = new URL(NativeTestServer.getEchoHeaderURL("Content-Length"));
+        URL echoLength = new URL(mNativeTestServer.getEchoHeaderURL("Content-Length"));
         mConnection = (HttpURLConnection) echoLength.openConnection();
         mConnection.setDoOutput(true);
         mConnection.setRequestMethod("POST");
@@ -175,7 +169,7 @@ public class CronetFixedModeOutputStreamTest {
         mConnection.disconnect();
 
         // Check body is empty.
-        URL echoBody = new URL(NativeTestServer.getEchoBodyURL());
+        URL echoBody = new URL(mNativeTestServer.getEchoBodyURL());
         mConnection = (HttpURLConnection) echoBody.openConnection();
         mConnection.setDoOutput(true);
         mConnection.setRequestMethod("POST");
@@ -188,7 +182,7 @@ public class CronetFixedModeOutputStreamTest {
     @Test
     @SmallTest
     public void testWriteLessThanContentLength() throws Exception {
-        URL url = new URL(NativeTestServer.getEchoBodyURL());
+        URL url = new URL(mNativeTestServer.getEchoBodyURL());
         mConnection = (HttpURLConnection) mCronetEngine.openConnection(url);
         mConnection.setDoOutput(true);
         mConnection.setRequestMethod("POST");
@@ -202,7 +196,7 @@ public class CronetFixedModeOutputStreamTest {
     @Test
     @SmallTest
     public void testWriteMoreThanContentLength() throws Exception {
-        URL url = new URL(NativeTestServer.getEchoBodyURL());
+        URL url = new URL(mNativeTestServer.getEchoBodyURL());
         mConnection = (HttpURLConnection) mCronetEngine.openConnection(url);
         mConnection.setDoOutput(true);
         mConnection.setRequestMethod("POST");
@@ -222,7 +216,7 @@ public class CronetFixedModeOutputStreamTest {
     @Test
     @SmallTest
     public void testWriteMoreThanContentLengthWriteOneByte() throws Exception {
-        URL url = new URL(NativeTestServer.getEchoBodyURL());
+        URL url = new URL(mNativeTestServer.getEchoBodyURL());
         mConnection = (HttpURLConnection) mCronetEngine.openConnection(url);
         mConnection.setDoOutput(true);
         mConnection.setRequestMethod("POST");
@@ -237,19 +231,13 @@ public class CronetFixedModeOutputStreamTest {
                 assertThrows(
                         IOException.class,
                         () -> out.write(TestUtil.UPLOAD_DATA[TestUtil.UPLOAD_DATA.length - 1]));
-        String expectedVariant = "expected 0 bytes but received 1";
-        String expectedVariantOnLollipop =
-                "expected "
-                        + (TestUtil.UPLOAD_DATA.length - 1)
-                        + " bytes but received "
-                        + TestUtil.UPLOAD_DATA.length;
-        assertThat(e).hasMessageThat().isAnyOf(expectedVariant, expectedVariantOnLollipop);
+        assertThat(e).hasMessageThat().isEqualTo("expected 0 bytes but received 1");
     }
 
     @Test
     @SmallTest
     public void testFixedLengthStreamingMode() throws Exception {
-        URL url = new URL(NativeTestServer.getEchoBodyURL());
+        URL url = new URL(mNativeTestServer.getEchoBodyURL());
         mConnection = (HttpURLConnection) mCronetEngine.openConnection(url);
         mConnection.setDoOutput(true);
         mConnection.setRequestMethod("POST");
@@ -265,7 +253,7 @@ public class CronetFixedModeOutputStreamTest {
     @Test
     @SmallTest
     public void testFixedLengthStreamingModeWriteOneByte() throws Exception {
-        URL url = new URL(NativeTestServer.getEchoBodyURL());
+        URL url = new URL(mNativeTestServer.getEchoBodyURL());
         mConnection = (HttpURLConnection) mCronetEngine.openConnection(url);
         mConnection.setDoOutput(true);
         mConnection.setRequestMethod("POST");
@@ -284,7 +272,7 @@ public class CronetFixedModeOutputStreamTest {
     @Test
     @SmallTest
     public void testFixedLengthStreamingModeLargeData() throws Exception {
-        URL url = new URL(NativeTestServer.getEchoBodyURL());
+        URL url = new URL(mNativeTestServer.getEchoBodyURL());
         mConnection = (HttpURLConnection) mCronetEngine.openConnection(url);
         mConnection.setDoOutput(true);
         mConnection.setRequestMethod("POST");
@@ -314,7 +302,7 @@ public class CronetFixedModeOutputStreamTest {
     @Test
     @SmallTest
     public void testFixedLengthStreamingModeLargeDataWriteOneByte() throws Exception {
-        URL url = new URL(NativeTestServer.getEchoBodyURL());
+        URL url = new URL(mNativeTestServer.getEchoBodyURL());
         mConnection = (HttpURLConnection) mCronetEngine.openConnection(url);
         mConnection.setDoOutput(true);
         mConnection.setRequestMethod("POST");
@@ -353,7 +341,7 @@ public class CronetFixedModeOutputStreamTest {
     @Test
     @SmallTest
     public void testOneMassiveWrite() throws Exception {
-        URL url = new URL(NativeTestServer.getEchoBodyURL());
+        URL url = new URL(mNativeTestServer.getEchoBodyURL());
         mConnection = (HttpURLConnection) mCronetEngine.openConnection(url);
         mConnection.setDoOutput(true);
         mConnection.setRequestMethod("POST");
@@ -372,7 +360,7 @@ public class CronetFixedModeOutputStreamTest {
     @SmallTest
     public void testRewindWithCronet() throws Exception {
         // Post preserving redirect should fail.
-        URL url = new URL(NativeTestServer.getRedirectToEchoBody());
+        URL url = new URL(mNativeTestServer.getRedirectToEchoBody());
         mConnection = (HttpURLConnection) mCronetEngine.openConnection(url);
         mConnection.setDoOutput(true);
         mConnection.setRequestMethod("POST");

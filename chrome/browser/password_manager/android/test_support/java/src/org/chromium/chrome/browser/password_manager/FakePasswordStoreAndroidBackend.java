@@ -24,7 +24,6 @@ import org.chromium.components.sync.protocol.PasswordSpecificsData;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -33,17 +32,17 @@ import java.util.function.Predicate;
 /** Fake {@link PasswordStoreAndroidBackend} to be used in integration tests. */
 public class FakePasswordStoreAndroidBackend implements PasswordStoreAndroidBackend {
     private final Map<Account, List<PasswordWithLocalData>> mSavedPasswords = new HashMap<>();
-    private SequencedTaskRunner mTaskRunner =
+    private final SequencedTaskRunner mTaskRunner =
             PostTask.createSequencedTaskRunner(TaskTraits.UI_USER_BLOCKING);
 
     public static final Account sLocalDefaultAccount = new Account("Test user", "Local");
 
     public FakePasswordStoreAndroidBackend() {
-        mSavedPasswords.put(sLocalDefaultAccount, new LinkedList<>());
+        mSavedPasswords.put(sLocalDefaultAccount, new ArrayList<>());
     }
 
     public void setSyncingAccount(Account syncingAccount) {
-        mSavedPasswords.put(syncingAccount, new LinkedList<>());
+        mSavedPasswords.put(syncingAccount, new ArrayList<>());
     }
 
     @Override
@@ -51,7 +50,7 @@ public class FakePasswordStoreAndroidBackend implements PasswordStoreAndroidBack
             Optional<Account> syncingAccount,
             Callback<byte[]> loginsReply,
             Callback<Exception> failureCallback) {
-        mTaskRunner.postTask(
+        mTaskRunner.execute(
                 () -> {
                     Account account = getAccountOrFail(syncingAccount, failureCallback);
                     if (account == null) return;
@@ -70,7 +69,7 @@ public class FakePasswordStoreAndroidBackend implements PasswordStoreAndroidBack
             Optional<Account> syncingAccount,
             Callback<byte[]> loginsReply,
             Callback<Exception> failureCallback) {
-        mTaskRunner.postTask(
+        mTaskRunner.execute(
                 () -> {
                     Account account = getAccountOrFail(syncingAccount, failureCallback);
                     if (account == null) return;
@@ -94,7 +93,7 @@ public class FakePasswordStoreAndroidBackend implements PasswordStoreAndroidBack
             Optional<Account> syncingAccount,
             Callback<byte[]> loginsReply,
             Callback<Exception> failureCallback) {
-        mTaskRunner.postTask(
+        mTaskRunner.execute(
                 () -> {
                     Account account = getAccountOrFail(syncingAccount, failureCallback);
                     if (account == null) return;
@@ -117,7 +116,7 @@ public class FakePasswordStoreAndroidBackend implements PasswordStoreAndroidBack
             Optional<Account> syncingAccount,
             Callback<byte[]> loginsReply,
             Callback<Exception> failureCallback) {
-        mTaskRunner.postTask(
+        mTaskRunner.execute(
                 () -> {
                     Account account = getAccountOrFail(syncingAccount, failureCallback);
                     if (account == null) return;
@@ -138,7 +137,7 @@ public class FakePasswordStoreAndroidBackend implements PasswordStoreAndroidBack
             Optional<Account> syncingAccount,
             Callback<byte[]> loginsReply,
             Callback<Exception> failureCallback) {
-        mTaskRunner.postTask(
+        mTaskRunner.execute(
                 () -> {
                     Account account = getAccountOrFail(syncingAccount, failureCallback);
                     if (account == null) return;
@@ -177,7 +176,7 @@ public class FakePasswordStoreAndroidBackend implements PasswordStoreAndroidBack
             Optional<Account> syncingAccount,
             Runnable successCallback,
             Callback<Exception> failureCallback) {
-        mTaskRunner.postTask(
+        mTaskRunner.execute(
                 () -> {
                     PasswordWithLocalData parsedPassword =
                             parsePwdWithLocalDataOrFail(pwdWithLocalData, failureCallback);
@@ -203,7 +202,7 @@ public class FakePasswordStoreAndroidBackend implements PasswordStoreAndroidBack
             Optional<Account> syncingAccount,
             Runnable successCallback,
             Callback<Exception> failureCallback) {
-        mTaskRunner.postTask(
+        mTaskRunner.execute(
                 () -> {
                     PasswordSpecificsData parsedPassword =
                             parsePwdSpecificDataOrFail(pwdSpecificsData, failureCallback);
@@ -226,7 +225,7 @@ public class FakePasswordStoreAndroidBackend implements PasswordStoreAndroidBack
             Optional<Account> syncingAccount,
             Callback<byte[]> loginsReply,
             Callback<Exception> failureCallback) {
-        mTaskRunner.postTask(
+        mTaskRunner.execute(
                 () -> {
                     Account account = getAccountOrFail(syncingAccount, failureCallback);
                     if (account == null) return;

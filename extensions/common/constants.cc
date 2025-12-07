@@ -12,9 +12,9 @@
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
 
-namespace extensions {
+namespace {
 
-const uint8_t kWebstoreSignaturesPublicKey[] = {
+constexpr uint8_t kWebstoreSignaturesPublicKeyData[] = {
     0x30, 0x82, 0x01, 0x22, 0x30, 0x0d, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86,
     0xf7, 0x0d, 0x01, 0x01, 0x01, 0x05, 0x00, 0x03, 0x82, 0x01, 0x0f, 0x00,
     0x30, 0x82, 0x01, 0x0a, 0x02, 0x82, 0x01, 0x01, 0x00, 0x8f, 0xfb, 0xbf,
@@ -41,8 +41,13 @@ const uint8_t kWebstoreSignaturesPublicKey[] = {
     0x58, 0x34, 0xc8, 0x22, 0x2d, 0x2a, 0x65, 0x75, 0xa7, 0xd9, 0x08, 0x62,
     0xcd, 0x02, 0x03, 0x01, 0x00, 0x01};
 
-const size_t kWebstoreSignaturesPublicKeySize =
-    std::size(kWebstoreSignaturesPublicKey);
+}
+
+namespace extensions {
+
+const base::span<const uint8_t> kWebstoreSignaturesPublicKey(
+    kWebstoreSignaturesPublicKeyData,
+    std::size(kWebstoreSignaturesPublicKeyData));
 
 }  // namespace extensions
 
@@ -72,9 +77,6 @@ bool IsDemoModeChromeApp(std::string_view extension_id) {
   });
   return base::Contains(kDemoModeApps, extension_id);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 bool IsSystemUIApp(std::string_view extension_id) {
   constexpr auto kApps = base::MakeFixedFlatSet<std::string_view>({
@@ -88,15 +90,15 @@ bool IsSystemUIApp(std::string_view extension_id) {
   return base::Contains(kApps, extension_id);
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool IsQuickOfficeExtension(std::string_view extension_id) {
   constexpr auto kQuickOfficeIds = base::MakeFixedFlatSet<std::string_view>({
-      // clang-format off
+#if BUILDFLAG(IS_CHROMEOS)
       kQuickOfficeComponentExtensionId,
+#endif
       kQuickOfficeInternalExtensionId,
       kQuickOfficeExtensionId,
-      // clang-format on
   });
   return base::Contains(kQuickOfficeIds, extension_id);
 }

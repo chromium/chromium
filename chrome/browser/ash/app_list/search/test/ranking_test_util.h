@@ -26,7 +26,7 @@ class RankerTestBase : public testing::Test {
   // A helper function for creating results. For convenience, the provided
   // scores are set as both the display score and normalized relevance.
   Results MakeScoredResults(const std::vector<std::string>& ids,
-                            const std::vector<double> scores,
+                            const std::vector<double>& scores,
                             ResultType result_type = ResultType::kUnknown,
                             Category category = Category::kUnknown);
 
@@ -51,7 +51,7 @@ class RankerTestBase : public testing::Test {
   // provider.
   void SetFtrlScore(const ResultsMap& results,
                     ProviderType provider,
-                    const std::vector<double> ftrl_scores);
+                    const std::vector<double>& ftrl_scores);
   void Wait();
 
  protected:

@@ -5,14 +5,12 @@
 #ifndef CHROME_UPDATER_IPC_UPDATE_SERVICE_DIALER_H_
 #define CHROME_UPDATER_IPC_UPDATE_SERVICE_DIALER_H_
 
-#include "chrome/updater/updater_scope.h"
+#include "build/build_config.h"
 
-namespace updater {
-// Start the update service. Returns false if the service can't be reached.
-[[nodiscard]] bool DialUpdateService(UpdaterScope scope);
+#if BUILDFLAG(IS_WIN)
+#include "chrome/updater/ipc/update_service_dialer_win.h"
+#else  // BUILDFLAG(IS_WIN)
+#include "chrome/updater/ipc/update_service_dialer_posix.h"
+#endif  // BUILDFLAG(IS_WIN)
 
-// Start the update internal service. Returns false if the service can't be
-// reached.
-[[nodiscard]] bool DialUpdateInternalService(UpdaterScope scope);
-}  // namespace updater
 #endif  // CHROME_UPDATER_IPC_UPDATE_SERVICE_DIALER_H_

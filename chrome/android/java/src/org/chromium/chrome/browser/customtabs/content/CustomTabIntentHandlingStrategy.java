@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.customtabs.content;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 
 /** Strategy of handling incoming intents. */
+@NullMarked
 public interface CustomTabIntentHandlingStrategy {
 
     /**

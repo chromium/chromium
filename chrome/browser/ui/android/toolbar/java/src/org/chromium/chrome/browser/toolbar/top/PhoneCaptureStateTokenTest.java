@@ -19,9 +19,10 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.toolbar.ButtonData;
-import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone.VisualState;
 
 /** Unit tests for {@link PhoneCaptureStateToken}. */
@@ -47,7 +48,16 @@ public class PhoneCaptureStateTokenTest {
 
     private static ButtonData makeButtonDate() {
         // Uses default equals impl, reference quality, to compare. Values do not matter.
-        return new ButtonDataImpl(false, null, null, "", false, null, false, 0, 0, false);
+        return new ButtonDataImpl(
+                /* canShow= */ false,
+                /* drawable= */ null,
+                /* onClickListener= */ null,
+                /* contentDescription= */ "",
+                /* supportsTinting= */ false,
+                /* iphCommandBuilder= */ null,
+                /* isEnabled= */ false,
+                /* buttonVariant= */ 0,
+                /* tooltipTextResId= */ 0);
     }
 
     @Before
@@ -336,6 +346,18 @@ public class PhoneCaptureStateTokenTest {
                         mDefaultPhoneCaptureStateToken, otherPhoneCaptureStateToken));
     }
 
+    @Test
+    public void testDifferentControlsPosition() {
+        PhoneCaptureStateToken otherPhoneCaptureStateToken =
+                new PhoneCustomTabCaptureStateTokenBuilder()
+                        .setControlsPosition(ControlsPosition.BOTTOM)
+                        .build();
+        Assert.assertEquals(
+                ToolbarSnapshotDifference.CONTROLS_POSITION,
+                PhoneCaptureStateToken.getAnyDifference(
+                        mDefaultPhoneCaptureStateToken, otherPhoneCaptureStateToken));
+    }
+
     private class PhoneCustomTabCaptureStateTokenBuilder {
         private @ColorInt int mTint = DEFAULT_TINT;
         private int mTabCount = DEFAULT_TAB_COUNT;
@@ -351,6 +373,7 @@ public class PhoneCaptureStateTokenTest {
         private boolean mIsPaintPreview = DEFAULT_IS_PAINT_PREVIEW;
         private float mProgress = DEFAULT_PROGRESS;
         private int mUnfocusedLocationBarLayoutWidth = DEFAULT_UNFOCUSED_LOCATION_BAR_LAYOUT_WIDTH;
+        private int mControlsPosition = ControlsPosition.TOP;
 
         public PhoneCustomTabCaptureStateTokenBuilder setTint(@ColorInt int tint) {
             mTint = tint;
@@ -424,6 +447,12 @@ public class PhoneCaptureStateTokenTest {
             return this;
         }
 
+        public PhoneCustomTabCaptureStateTokenBuilder setControlsPosition(
+                @ControlsPosition int controlsPosition) {
+            mControlsPosition = controlsPosition;
+            return this;
+        }
+
         public PhoneCaptureStateToken build() {
             VisibleUrlText visibleUrlText = new VisibleUrlText(mUrlText, mVisibleTextPrefixHint);
             return new PhoneCaptureStateToken(
@@ -438,7 +467,8 @@ public class PhoneCaptureStateTokenTest {
                     mIsShowingUpdateBadgeDuringLastCapture,
                     mIsPaintPreview,
                     mProgress,
-                    mUnfocusedLocationBarLayoutWidth);
+                    mUnfocusedLocationBarLayoutWidth,
+                    mControlsPosition);
         }
     }
 }

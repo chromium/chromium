@@ -53,9 +53,10 @@ bool IsPageInTabGroup(content::WebContents* contents) {
   return false;
 #else   // BUILDFLAG(IS_ANDROID)
   TabAndroid* const tab = TabAndroid::FromWebContents(contents);
-  if (!tab)
+  if (!tab) {
     return false;
-  return TabModelJniBridge::IsTabInTabGroup(tab);
+  }
+  return tab->GetGroup().has_value();
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
@@ -146,7 +147,7 @@ void HistoryClustersTabHelper::OnUpdatedHistoryForNavigation(
     // `OnUpdatedHistoryForNavigation()`, will have posted a task to add the
     // visit associated to `incomplete_visit_context_annotations`.
     history_service->GetMostRecentVisitsForGurl(
-        url, 2,
+        url, 2, history::VisitQuery404sPolicy::kExclude404s,
         base::BindOnce(
             [](HistoryClustersTabHelper* history_clusters_tab_helper,
                history_clusters::HistoryClustersService*
@@ -154,7 +155,7 @@ void HistoryClustersTabHelper::OnUpdatedHistoryForNavigation(
                int64_t navigation_id, base::Time timestamp,
                history_clusters::IncompleteVisitContextAnnotations&
                    incomplete_visit_context_annotations,
-               history::QueryURLResult result) {
+               history::QueryURLAndVisitsResult result) {
               DCHECK(history_clusters_tab_helper);
               DCHECK(history_clusters_service);
               // visit being added to the DB, e.g. navigations to
@@ -312,6 +313,12 @@ void HistoryClustersTabHelper::DidFinishNavigation(
   if (logger->initial_state()) {
     return;
   }
+  // The WebContentsObserver::OnVisibilityChanged() doesn't fire on navigation,
+  // so we need to manually notify the logger about the visibility state when
+  // navigating to the history clusters page from another visible page.
+  if (web_contents()->GetVisibility() == content::Visibility::VISIBLE) {
+    logger->WasShown();
+  }
 
   logger->set_navigation_id(navigation_handle->GetNavigationId());
 
@@ -343,6 +350,16 @@ void HistoryClustersTabHelper::WebContentsDestroyed() {
   // tab.
   for (auto navigation_id : navigation_ids_)
     RecordPageEndMetricsIfNeeded(navigation_id);
+}
+
+void HistoryClustersTabHelper::OnVisibilityChanged(
+    content::Visibility visibility) {
+  if (visibility != content::Visibility::VISIBLE) {
+    return;
+  }
+  history_clusters::HistoryClustersMetricsLogger::GetOrCreateForPage(
+      web_contents()->GetPrimaryPage())
+      ->WasShown();
 }
 
 void HistoryClustersTabHelper::StartNewNavigationIfNeeded(
@@ -415,8 +432,7 @@ void HistoryClustersTabHelper::RecordPageEndMetricsIfNeeded(
 history_clusters::HistoryClustersService*
 HistoryClustersTabHelper::GetHistoryClustersService() {
   if (!web_contents()) {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
   return HistoryClustersServiceFactory::GetForBrowserContext(
       web_contents()->GetBrowserContext());
@@ -424,8 +440,7 @@ HistoryClustersTabHelper::GetHistoryClustersService() {
 
 history::HistoryService* HistoryClustersTabHelper::GetHistoryService() {
   if (!web_contents()) {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());

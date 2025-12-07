@@ -9,11 +9,13 @@
 
 #include <memory>
 #include <optional>
+#include <unordered_map>
 #include <vector>
 
 #include "cc/paint/filter_operations.h"
 #include "components/viz/common/quads/quad_list.h"
 #include "components/viz/common/viz_common_export.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rrect_f.h"
@@ -39,6 +41,16 @@ class VIZ_COMMON_EXPORT RenderPassInternal {
                                          SkColor4f color,
                                          SkBlendMode blend_mode);
 
+  // Replaces a quad in `quad_list` with a SolidColorDrawQuad with a transparent
+  // hole. This will either be:
+  // * If `quad` requires blending and uses SkBlendMode::kSrcOver then
+  //   use SkColors::kBlack with SkBlendMode::kDstOut and set
+  //   `*quad_was_opaque` to false.
+  // * SkColors::kTransparent with SkBlendMode::kSrcOver blend and set
+  //   `*quad_was_opaque` to true;
+  void ReplaceExistingQuadWithHolePunch(QuadList::Iterator quad,
+                                        bool* quad_was_opaque = nullptr);
+
   // These are in the space of the render pass' physical pixels.
   gfx::Rect output_rect;
   gfx::Rect damage_rect;
@@ -46,18 +58,6 @@ class VIZ_COMMON_EXPORT RenderPassInternal {
   // Transforms from the origin of the |output_rect| to the origin of the root
   // render pass' |output_rect|.
   gfx::Transform transform_to_root_target;
-
-  // Post-processing filters, applied to the pixels in the render pass' texture.
-  cc::FilterOperations filters;
-
-  // Post-processing filters, applied to the pixels showing through the
-  // backdrop of the render pass, from behind it.
-  cc::FilterOperations backdrop_filters;
-
-  // Clipping bounds for backdrop filter. If defined, is in a coordinate space
-  // equivalent to render pass physical pixels after applying
-  // `RenderPassDrawQuad::filter_scale`.
-  std::optional<gfx::RRectF> backdrop_filter_bounds;
 
   // If false, the pixels in the render pass' texture are all opaque.
   bool has_transparent_background = true;
@@ -100,7 +100,9 @@ class VIZ_COMMON_EXPORT RenderPassInternal {
       out->push_back(source->DeepCopy());
   }
 
-  void AsValueInto(base::trace_event::TracedValue* value) const;
+  void AsValueInto(base::trace_event::TracedValue* value,
+                   const std::unordered_map<ResourceId, size_t>&
+                       resource_id_to_index_map) const;
 
  protected:
   RenderPassInternal();

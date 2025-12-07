@@ -5,13 +5,15 @@
 #ifndef COMPONENTS_AUTOFILL_CONTENT_BROWSER_TEST_AUTOFILL_MANAGER_INJECTOR_H_
 #define COMPONENTS_AUTOFILL_CONTENT_BROWSER_TEST_AUTOFILL_MANAGER_INJECTOR_H_
 
+#include <vector>
+
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory_test_api.h"
 #include "components/autofill/content/browser/content_autofill_driver_test_api.h"
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
-#include "components/autofill/core/browser/autofill_manager_test_api.h"
+#include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test_utils.h"
@@ -58,7 +60,7 @@ class TestAutofillManagerInjectorBase {
 //     class MockAutofillManager : BrowserAutofillManager {
 //      public:
 //       explicit MockAutofillManager(ContentAutofillDriver* driver)
-//           : BrowserAutofillManager(driver, "en-US") {}
+//           : BrowserAutofillManager(driver) {}
 //       MOCK_METHOD(...);
 //       ...
 //     };
@@ -72,10 +74,9 @@ class TestAutofillManagerInjectorBase {
 //         autofill_manager_injector_;
 //   };
 template <typename T>
+  requires(std::derived_from<T, AutofillManager>)
 class TestAutofillManagerInjector : public TestAutofillManagerInjectorBase {
  public:
-  static_assert(std::is_base_of_v<AutofillManager, T>);
-
   TestAutofillManagerInjector() = default;
   TestAutofillManagerInjector(const TestAutofillManagerInjector&) = delete;
   TestAutofillManagerInjector& operator=(const TestAutofillManagerInjector&) =

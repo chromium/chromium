@@ -9,29 +9,32 @@
 #define CHROME_COMMON_IMPORTER_PROFILE_IMPORT_PROCESS_PARAM_TRAITS_MACROS_H_
 
 #include "build/build_config.h"
-#include "chrome/common/importer/imported_bookmark_entry.h"
 #include "chrome/common/importer/importer_autofill_form_data_entry.h"
-#include "chrome/common/importer/importer_data_types.h"
-#include "chrome/common/importer/importer_url_row.h"
 #include "components/favicon_base/favicon_usage_data.h"
+#include "components/user_data_importer/common/imported_bookmark_entry.h"
+#include "components/user_data_importer/common/importer_data_types.h"
+#include "components/user_data_importer/common/importer_url_row.h"
 #include "content/public/common/common_param_traits.h"
-#include "ipc/ipc_message_macros.h"
+#include "ipc/param_traits_macros.h"
+
+#undef IPC_MESSAGE_EXPORT
+#define IPC_MESSAGE_EXPORT
 
 #if BUILDFLAG(IS_WIN)
-IPC_ENUM_TRAITS_MIN_MAX_VALUE(importer::ImporterType,
-                              importer::TYPE_UNKNOWN,
-                              importer::TYPE_EDGE)
+IPC_ENUM_TRAITS_MIN_MAX_VALUE(user_data_importer::ImporterType,
+                              user_data_importer::TYPE_UNKNOWN,
+                              user_data_importer::TYPE_EDGE)
 #else
-IPC_ENUM_TRAITS_MIN_MAX_VALUE(importer::ImporterType,
-                              importer::TYPE_UNKNOWN,
-                              importer::TYPE_BOOKMARKS_FILE)
+IPC_ENUM_TRAITS_MIN_MAX_VALUE(user_data_importer::ImporterType,
+                              user_data_importer::TYPE_UNKNOWN,
+                              user_data_importer::TYPE_BOOKMARKS_FILE)
 #endif
 
-IPC_ENUM_TRAITS_MIN_MAX_VALUE(importer::ImportItem,
-                              importer::NONE,
-                              importer::ALL)
+IPC_ENUM_TRAITS_MIN_MAX_VALUE(user_data_importer::ImportItem,
+                              user_data_importer::NONE,
+                              user_data_importer::ALL)
 
-IPC_STRUCT_TRAITS_BEGIN(importer::SourceProfile)
+IPC_STRUCT_TRAITS_BEGIN(user_data_importer::SourceProfile)
   IPC_STRUCT_TRAITS_MEMBER(importer_name)
   IPC_STRUCT_TRAITS_MEMBER(importer_type)
   IPC_STRUCT_TRAITS_MEMBER(source_path)
@@ -40,7 +43,7 @@ IPC_STRUCT_TRAITS_BEGIN(importer::SourceProfile)
   IPC_STRUCT_TRAITS_MEMBER(locale)
 IPC_STRUCT_TRAITS_END()
 
-IPC_STRUCT_TRAITS_BEGIN(ImporterURLRow)
+IPC_STRUCT_TRAITS_BEGIN(user_data_importer::ImporterURLRow)
   IPC_STRUCT_TRAITS_MEMBER(url)
   IPC_STRUCT_TRAITS_MEMBER(title)
   IPC_STRUCT_TRAITS_MEMBER(visit_count)
@@ -49,7 +52,7 @@ IPC_STRUCT_TRAITS_BEGIN(ImporterURLRow)
   IPC_STRUCT_TRAITS_MEMBER(hidden)
 IPC_STRUCT_TRAITS_END()
 
-IPC_STRUCT_TRAITS_BEGIN(ImportedBookmarkEntry)
+IPC_STRUCT_TRAITS_BEGIN(user_data_importer::ImportedBookmarkEntry)
   IPC_STRUCT_TRAITS_MEMBER(in_toolbar)
   IPC_STRUCT_TRAITS_MEMBER(is_folder)
   IPC_STRUCT_TRAITS_MEMBER(url)
@@ -64,7 +67,7 @@ IPC_STRUCT_TRAITS_BEGIN(favicon_base::FaviconUsageData)
   IPC_STRUCT_TRAITS_MEMBER(urls)
 IPC_STRUCT_TRAITS_END()
 
-IPC_STRUCT_TRAITS_BEGIN(importer::SearchEngineInfo)
+IPC_STRUCT_TRAITS_BEGIN(user_data_importer::SearchEngineInfo)
   IPC_STRUCT_TRAITS_MEMBER(url)
   IPC_STRUCT_TRAITS_MEMBER(keyword)
   IPC_STRUCT_TRAITS_MEMBER(display_name)
@@ -78,7 +81,7 @@ IPC_STRUCT_TRAITS_BEGIN(ImporterAutofillFormDataEntry)
   IPC_STRUCT_TRAITS_MEMBER(last_used)
 IPC_STRUCT_TRAITS_END()
 
-IPC_STRUCT_TRAITS_BEGIN(importer::ImporterIE7PasswordInfo)
+IPC_STRUCT_TRAITS_BEGIN(user_data_importer::ImporterIE7PasswordInfo)
   IPC_STRUCT_TRAITS_MEMBER(url_hash)
   IPC_STRUCT_TRAITS_MEMBER(encrypted_data)
   IPC_STRUCT_TRAITS_MEMBER(date_created)

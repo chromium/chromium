@@ -6,6 +6,7 @@
 
 #include "ash/display/refresh_rate_controller.h"
 #include "ash/shell.h"
+#include "ash/system/power/battery_saver_controller.h"
 #include "ash/system/power/power_status.h"
 #include "ash/test/ash_test_base.h"
 
@@ -23,6 +24,10 @@ class PowerConnectedProviderTest : public AshTestBase {
     // pointer.
     ash::Shell::Get()
         ->refresh_rate_controller()
+        ->StopObservingPowerStatusForTest();
+    // And BatterySaverController.
+    ash::Shell::Get()
+        ->battery_saver_controller()
         ->StopObservingPowerStatusForTest();
   }
 
@@ -74,8 +79,7 @@ class PowerConnectedProviderTest : public AshTestBase {
   power_manager::PowerSupplyProperties properties_;
 };
 
-// TODO(b/355485660): This test is failing on chromeos builders.
-TEST_F(PowerConnectedProviderTest, DISABLED_DisabledIfPowerStatusNotInitialized) {
+TEST_F(PowerConnectedProviderTest, DisabledIfPowerStatusNotInitialized) {
   InitializePowerStatus(/*should_initialize=*/false);
   InitializeProvider();
   EXPECT_FALSE(IsPowerConnected());

@@ -51,12 +51,14 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_mojo.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
@@ -64,25 +66,7 @@
 #endif  // IS_WIN
 
 using ResultOrError =
-    base::expected<blink::FontResource::DecodedResult, String>;
-
-namespace WTF {
-
-template <>
-struct CrossThreadCopier<ResultOrError> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = ResultOrError;
-  static Type Copy(Type&& value) { return std::move(value); }
-};
-
-template <>
-struct CrossThreadCopier<SegmentedBuffer> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = SegmentedBuffer;
-  static Type Copy(Type&& value) { return std::move(value); }
-};
-
-}  // namespace WTF
+    base::expected<blink::FontResource::DecodedResult, blink::String>;
 
 namespace blink {
 
@@ -314,13 +298,13 @@ void FontResource::StartLoadLimitTimersIfNecessary(
 
   font_load_short_limit_ = PostDelayedCancellableTask(
       *task_runner, FROM_HERE,
-      WTF::BindOnce(&FontResource::FontLoadShortLimitCallback,
-                    WrapWeakPersistent(this)),
+      blink::BindOnce(&FontResource::FontLoadShortLimitCallback,
+                      WrapWeakPersistent(this)),
       kFontLoadWaitShort);
   font_load_long_limit_ = PostDelayedCancellableTask(
       *task_runner, FROM_HERE,
-      WTF::BindOnce(&FontResource::FontLoadLongLimitCallback,
-                    WrapWeakPersistent(this)),
+      blink::BindOnce(&FontResource::FontLoadLongLimitCallback,
+                      WrapWeakPersistent(this)),
       kFontLoadWaitLong);
 }
 
@@ -431,7 +415,7 @@ void FontResource::OnMemoryDump(WebMemoryDumpLevelOfDetail level,
   Resource::OnMemoryDump(level, memory_dump);
   if (!font_data_)
     return;
-  const String name = GetMemoryDumpName() + "/decoded_webfont";
+  const String name = StrCat({GetMemoryDumpName(), "/decoded_webfont"});
   WebMemoryAllocatorDump* dump = memory_dump->CreateMemoryAllocatorDump(name);
   dump->AddScalar("size", "bytes", font_data_->DataSize());
 

@@ -10,11 +10,11 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "build/build_config.h"
+#include "chrome/updater/configurator.h"
 #include "chrome/updater/updater_scope.h"
 
 namespace updater {
-
-class Configurator;
 
 // The Cleanup houses both periodic and one-time cleanup work items. For
 // example, it is used to clean up obsolete files that were in-use at the time

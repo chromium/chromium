@@ -61,8 +61,8 @@ class ChromePaymentRequestDelegate : public ContentPaymentRequestDelegate {
   content::RenderFrameHost* GetRenderFrameHost() const override;
   std::unique_ptr<webauthn::InternalAuthenticator> CreateInternalAuthenticator()
       const override;
-  scoped_refptr<PaymentManifestWebDataService>
-  GetPaymentManifestWebDataService() const override;
+  scoped_refptr<WebPaymentsWebDataService> GetWebPaymentsWebDataService()
+      const override;
   PaymentRequestDisplayManager* GetDisplayManager() override;
   void EmbedPaymentHandlerWindow(
       const GURL& url,
@@ -76,6 +76,7 @@ class ChromePaymentRequestDelegate : public ContentPaymentRequestDelegate {
   const base::WeakPtr<PaymentUIObserver> GetPaymentUIObserver() const override;
   std::optional<base::UnguessableToken> GetChromeOSTWAInstanceId()
       const override;
+  std::string GetSecurePaymentConfirmationKeychainAccessGroup() const override;
 
  protected:
   // Reference to the dialog so that we can satisfy calls to CloseDialog(). This

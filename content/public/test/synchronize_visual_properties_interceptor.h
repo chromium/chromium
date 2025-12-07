@@ -11,7 +11,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
-#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "third_party/blink/public/mojom/frame/remote_frame.mojom-test-utils.h"
 #include "ui/gfx/geometry/rect.h"

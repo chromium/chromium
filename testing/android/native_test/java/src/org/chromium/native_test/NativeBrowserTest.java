@@ -4,6 +4,7 @@
 
 package org.chromium.native_test;
 
+import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
@@ -16,6 +17,8 @@ import java.io.File;
 @JNINamespace("testing::android")
 public class NativeBrowserTest {
     private static final String TAG = "NativeBrowserTest";
+
+    private static Runnable sActivityTeardownCallback;
 
     // Set the command line flags to be passed to the C++ main() method. Each
     // browser tests Activity should ensure these are included.
@@ -67,8 +70,32 @@ public class NativeBrowserTest {
         NativeBrowserTestJni.get().javaStartupTasksCompleteForBrowserTests();
     }
 
+    /**
+     * Sets the callback to tear down the Activity when the test finishes running. This is optional
+     * if tests do not want/need to tear down the Activity (eg. content shell tests).
+     */
+    public static void setActivityTeardownCallback(Runnable callback) {
+        sActivityTeardownCallback = callback;
+    }
+
+    @CalledByNative
+    private static void runActivityTeardownCallback() {
+        if (sActivityTeardownCallback != null) {
+            sActivityTeardownCallback.run();
+        } else {
+            activityTeardownComplete();
+        }
+        sActivityTeardownCallback = null;
+    }
+
+    public static void activityTeardownComplete() {
+        NativeBrowserTestJni.get().activityTeardownCompleteForBrowserTests();
+    }
+
     @NativeMethods
     interface Natives {
         void javaStartupTasksCompleteForBrowserTests();
+
+        void activityTeardownCompleteForBrowserTests();
     }
 }

@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/fetch/body_stream_buffer.h"
 
 #include <memory>
 
 #include "base/auto_reset.h"
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -31,7 +27,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -94,7 +90,7 @@ class BodyStreamBuffer::LoaderClient final
     client_->DidFetchDataLoadFailed();
   }
 
-  void Abort() override { NOTREACHED_IN_MIGRATION(); }
+  void Abort() override { NOTREACHED(); }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(buffer_);
@@ -119,7 +115,7 @@ BodyStreamBuffer* BodyStreamBuffer::Create(
     ScriptState* script_state,
     BytesConsumer* consumer,
     AbortSignal* signal,
-    ScriptCachedMetadataHandler* cached_metadata_handler,
+    CachedMetadataHandler* cached_metadata_handler,
     scoped_refptr<BlobDataHandle> side_data_blob) {
   auto* buffer = MakeGarbageCollected<BodyStreamBuffer>(
       PassKey(), script_state, consumer, signal, cached_metadata_handler,
@@ -133,7 +129,7 @@ BodyStreamBuffer::BodyStreamBuffer(
     ScriptState* script_state,
     BytesConsumer* consumer,
     AbortSignal* signal,
-    ScriptCachedMetadataHandler* cached_metadata_handler,
+    CachedMetadataHandler* cached_metadata_handler,
     scoped_refptr<BlobDataHandle> side_data_blob)
     : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
       script_state_(script_state),
@@ -163,7 +159,7 @@ void BodyStreamBuffer::Init() {
       Abort();
     } else {
       stream_buffer_abort_handle_ = signal_->AddAlgorithm(
-          WTF::BindOnce(&BodyStreamBuffer::Abort, WrapWeakPersistent(this)));
+          BindOnce(&BodyStreamBuffer::Abort, WrapWeakPersistent(this)));
     }
   }
   OnStateChange();
@@ -172,7 +168,7 @@ void BodyStreamBuffer::Init() {
 BodyStreamBuffer::BodyStreamBuffer(
     ScriptState* script_state,
     ReadableStream* stream,
-    ScriptCachedMetadataHandler* cached_metadata_handler,
+    CachedMetadataHandler* cached_metadata_handler,
     scoped_refptr<BlobDataHandle> side_data_blob)
     : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
       script_state_(script_state),
@@ -195,6 +191,12 @@ scoped_refptr<BlobDataHandle> BodyStreamBuffer::DrainAsBlobDataHandle(
   if (made_from_readable_stream_)
     return nullptr;
 
+  // TODO(crbug.com/423955471): Find out why `consumer_` can be null here and
+  // stop it from happening.
+  if (!consumer_) {
+    return nullptr;
+  }
+
   scoped_refptr<BlobDataHandle> blob_data_handle =
       consumer_->DrainAsBlobDataHandle(policy);
   if (blob_data_handle) {
@@ -213,6 +215,12 @@ scoped_refptr<EncodedFormData> BodyStreamBuffer::DrainAsFormData(
 
   if (made_from_readable_stream_)
     return nullptr;
+
+  // TODO(crbug.com/423955471): Find out why `consumer_` can be null here and
+  // stop it from happening.
+  if (!consumer_) {
+    return nullptr;
+  }
 
   scoped_refptr<EncodedFormData> form_data = consumer_->DrainAsFormData();
   if (form_data) {
@@ -254,8 +262,8 @@ void BodyStreamBuffer::StartLoading(FetchDataLoader* loader,
       client->Abort();
       return;
     }
-    loader_client_abort_handle_ = signal_->AddAlgorithm(WTF::BindOnce(
-        &FetchDataLoader::Client::Abort, WrapWeakPersistent(client)));
+    loader_client_abort_handle_ = signal_->AddAlgorithm(
+        BindOnce(&FetchDataLoader::Client::Abort, WrapWeakPersistent(client)));
   }
   loader_ = loader;
   auto* handle = ReleaseHandle(exception_state);
@@ -352,20 +360,17 @@ ScriptPromise<IDLUndefined> BodyStreamBuffer::Pull(
   return ToResolvedUndefinedPromise(GetScriptState());
 }
 
-ScriptPromise<IDLUndefined> BodyStreamBuffer::Cancel(
-    ExceptionState& exception_state) {
-  return Cancel(v8::Undefined(GetScriptState()->GetIsolate()), exception_state);
+ScriptPromise<IDLUndefined> BodyStreamBuffer::Cancel() {
+  return Cancel(v8::Undefined(GetScriptState()->GetIsolate()));
 }
 
 ScriptPromise<IDLUndefined> BodyStreamBuffer::Cancel(
-    v8::Local<v8::Value> reason,
-    ExceptionState& exception_state) {
+    v8::Local<v8::Value> reason) {
   ReadableStreamController* controller = Stream()->GetController();
   DCHECK(controller->IsByteStreamController());
   ReadableByteStreamController* byte_controller =
       To<ReadableByteStreamController>(controller);
-  byte_controller->Close(GetScriptState(), byte_controller, exception_state);
-  DCHECK(!exception_state.HadException());
+  byte_controller->Close(GetScriptState(), byte_controller);
   CancelConsumer();
   return ToResolvedUndefinedPromise(GetScriptState());
 }
@@ -379,20 +384,18 @@ void BodyStreamBuffer::OnStateChange() {
       GetExecutionContext()->IsContextDestroyed()) {
     return;
   }
-  ExceptionState exception_state(script_state_->GetIsolate(),
-                                 v8::ExceptionContext::kUnknown, "", "");
 
   switch (consumer_->GetPublicState()) {
     case BytesConsumer::PublicState::kReadableOrWaiting:
       break;
     case BytesConsumer::PublicState::kClosed:
-      Close(exception_state);
+      Close(PassThroughException(script_state_->GetIsolate()));
       return;
     case BytesConsumer::PublicState::kErrored:
       GetError();
       return;
   }
-  ProcessData(exception_state);
+  ProcessData(PassThroughException(script_state_->GetIsolate()));
 }
 
 void BodyStreamBuffer::ContextDestroyed() {
@@ -478,19 +481,17 @@ void BodyStreamBuffer::Close(ExceptionState& exception_state) {
   // Close() can be called during construction, in which case `stream_`
   // will not be set yet.
   if (stream_) {
+    v8::Isolate* isolate = script_state_->GetIsolate();
+    v8::TryCatch try_catch(isolate);
     if (script_state_->ContextIsValid()) {
       ScriptState::Scope scope(script_state_);
-      stream_->CloseStream(script_state_, exception_state);
+      stream_->CloseStream(script_state_, PassThroughException(isolate));
     } else {
       // If the context is not valid then Close() will not try to resolve the
       // promises, and that is not a problem.
-      stream_->CloseStream(script_state_, exception_state);
+      stream_->CloseStream(script_state_, PassThroughException(isolate));
     }
-    if (exception_state.HadException()) {
-      DLOG(WARNING) << "Controller::close throws exception "
-                    << exception_state.Code() << ", "
-                    << exception_state.Message();
-      exception_state.ClearException();
+    if (try_catch.HasCaught()) {
       return;
     }
   }
@@ -538,9 +539,8 @@ void BodyStreamBuffer::ProcessData(ExceptionState& exception_state) {
 
   base::AutoReset<bool> auto_reset(&in_process_data_, true);
   while (stream_needs_more_) {
-    const char* buffer = nullptr;
-    size_t available = 0;
-    auto result = consumer_->BeginRead(&buffer, &available);
+    base::span<const char> buffer;
+    auto result = consumer_->BeginRead(buffer);
     if (result == BytesConsumer::Result::kShouldWait)
       return;
     DOMUint8Array* array = nullptr;
@@ -552,20 +552,17 @@ void BodyStreamBuffer::ProcessData(ExceptionState& exception_state) {
         if (ReadableStreamBYOBRequest* request =
                 byte_controller->byobRequest()) {
           DOMArrayBufferView* view = request->view().Get();
-          available = std::min(view->byteLength(), available);
-          memcpy(
-              static_cast<char*>(view->buffer()->Data()) + view->byteOffset(),
-              buffer, available);
+          auto view_span = view->ByteSpan();
+          buffer = buffer.first(std::min(view_span.size(), buffer.size()));
+          view_span.copy_prefix_from(base::as_bytes(buffer));
           byob_view = view;
         }
       }
       if (!byob_view) {
         CHECK(!array);
-        array = DOMUint8Array::CreateOrNull(
-            reinterpret_cast<const unsigned char*>(buffer),
-            base::checked_cast<uint32_t>(available));
+        array = DOMUint8Array::CreateOrNull(base::as_bytes(buffer));
       }
-      result = consumer_->EndRead(available);
+      result = consumer_->EndRead(buffer.size());
       if (!array && !byob_view) {
         RaiseOOMError();
         return;
@@ -578,19 +575,20 @@ void BodyStreamBuffer::ProcessData(ExceptionState& exception_state) {
           // Clear |stream_needs_more_| in order to detect a pull call.
           stream_needs_more_ = false;
           ScriptState::Scope scope(script_state_);
+          v8::TryCatch try_catch(script_state_->GetIsolate());
           auto* byte_controller =
               To<ReadableByteStreamController>(stream_->GetController());
           if (byob_view) {
             ReadableByteStreamController::Respond(
-                script_state_, byte_controller, available, exception_state);
+                script_state_, byte_controller, buffer.size(),
+                PassThroughException(script_state_->GetIsolate()));
           } else {
             CHECK(array);
             ReadableByteStreamController::Enqueue(
                 script_state_, byte_controller, NotShared(array),
-                exception_state);
+                PassThroughException(script_state_->GetIsolate()));
           }
-          if (exception_state.HadException()) {
-            exception_state.ClearException();
+          if (try_catch.HasCaught()) {
             return;
           }
         }
@@ -611,8 +609,7 @@ void BodyStreamBuffer::ProcessData(ExceptionState& exception_state) {
         }
         break;
       case BytesConsumer::Result::kShouldWait:
-        NOTREACHED_IN_MIGRATION();
-        return;
+        NOTREACHED();
       case BytesConsumer::Result::kError:
         GetError();
         return;

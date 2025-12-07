@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/performance_manager/public/graph/page_node.h"
+
 #include "base/test/bind.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/performance_manager/graph/page_node_impl.h"
-#include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/extension_host.h"
 #include "extensions/browser/process_manager.h"
 
 namespace performance_manager {
@@ -18,16 +20,6 @@ namespace performance_manager {
 namespace {
 
 using PageNodeBrowserTest = extensions::ExtensionBrowserTest;
-
-void ExpectPageType(base::WeakPtr<PageNode> page_node, PageType expected_type) {
-  base::RunLoop run_loop;
-  PerformanceManager::CallOnGraph(FROM_HERE, base::BindLambdaForTesting([&]() {
-                                    EXPECT_EQ(page_node->GetType(),
-                                              expected_type);
-                                    run_loop.Quit();
-                                  }));
-  run_loop.Run();
-}
 
 }  // namespace
 
@@ -40,7 +32,7 @@ IN_PROC_BROWSER_TEST_F(PageNodeBrowserTest, TypeTab) {
       PerformanceManager::GetPrimaryPageNodeForWebContents(
           browser()->tab_strip_model()->GetActiveWebContents());
 
-  ExpectPageType(page_node, PageType::kTab);
+  EXPECT_EQ(page_node->GetType(), PageType::kTab);
 }
 
 // Integration test verifying that the correct type is set for a PageNode
@@ -60,7 +52,7 @@ IN_PROC_BROWSER_TEST_F(PageNodeBrowserTest, TypeExtension) {
   base::WeakPtr<PageNode> page_node =
       PerformanceManager::GetPrimaryPageNodeForWebContents(
           host->host_contents());
-  ExpectPageType(page_node, PageType::kExtension);
+  EXPECT_EQ(page_node->GetType(), PageType::kExtension);
 }
 
 }  // namespace performance_manager

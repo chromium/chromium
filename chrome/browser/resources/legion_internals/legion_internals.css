@@ -1,0 +1,53 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+body {
+  font-family: sans-serif;
+  margin: 20px;
+}
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+input[type="text"] {
+  width: 600px;
+  padding: 8px;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+  display: block;
+}
+#console-container {
+  width: 600px;
+  height: 400px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  overflow-y: scroll;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+}
+#input-container {
+  width: 600px;
+  display: flex;
+  flex-direction: column;
+}
+#request-input {
+  width: 100%;
+  height: 100px;
+  padding: 8px;
+  box-sizing: border-box;
+  resize: vertical;
+  flex-grow: 1;
+  margin-bottom: 10px; /* Add some space between textarea and button */
+}
+#send-button {
+  padding: 8px 12px;
+  height: 34px;
+  align-self: flex-end;
+}
+.console-header {
+  margin-bottom: 10px;
+}
+.hidden {
+  display: none;
+}

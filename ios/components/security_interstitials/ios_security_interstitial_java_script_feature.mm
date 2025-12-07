@@ -4,6 +4,7 @@
 
 #import "ios/components/security_interstitials/ios_security_interstitial_java_script_feature.h"
 
+#import "base/strings/string_number_conversions.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
 #import "ios/web/public/js_messaging/script_message.h"
 

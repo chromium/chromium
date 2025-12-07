@@ -1,64 +1,49 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html>
-<head>
-<meta charset="utf-8">
-<title>Soft navigation with multiple popstate calls.</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="/resources/testdriver.js"></script>
-<script src="/resources/testdriver-vendor.js"></script>
-<script src="resources/soft-navigation-helper.js"></script>
-</head>
-<body>
-  <main id=main>
-    <div>
-      <a id=link>Click me!</a>
-    </div>
-  </main>
-  <script>
-    // Push state 4 times, as history.back() calls will trigger popstate
-   //  events.
-    history.pushState({}, "", "foobar.html");
-    history.pushState({}, "", "another_one.html");
-    history.pushState({}, "", "and_another.html");
-    history.pushState({}, "", "and_yet_another.html");
+  <head>
+    <meta charset="utf-8" />
+    <title>Soft navigation with multiple popstate calls.</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/resources/testdriver.js"></script>
+    <script src="/resources/testdriver-vendor.js"></script>
+    <script src="resources/soft-navigation-helper.js"></script>
+  </head>
+  <body>
+    <a id="link">Click me!</a>
+    <main id="main">
+    </main>
+    <script>
+      // Push state 4 times, as history.back() calls will trigger popstate
+      // events.
+      history.pushState({}, "", "three.html");
+      history.pushState({}, "", "two.html");
+      history.pushState({}, "", "one.html");
+      history.pushState({}, "", "zero.html");
 
-    // This function runs at the start of the popstate event.
-    const eventPrepWork = t => {
-      // If this is an event due to the first click, go back() twice more.
-      if (!t.popped) {
-        step_timeout(()=>history.back(), 0);
-        step_timeout(()=>history.back(), 0);
-        t.popped = 0;
-      }
-      ++t.popped;
-      // return true for the second time the event fires, which is the first
-      // back() triggered by the popstate event. The means that the first one
-      // of those back() navigations would trigger a soft navigation, but not
-      // the last one.
-      return t.popped == 2;
-    }
-    const link = document.getElementById("link");
-    link.addEventListener("click", () => {
-      history.back();
-      timestamps[counter]["eventEnd"] = performance.now();
-    });
-    testSoftNavigation({
-      addContent: () => {
-        // Add the content to the main element
-        const main = document.getElementById("main");
-        main.removeChild(document.getElementsByTagName("div")[0]);
-        const div = document.createElement("div");
-        const text = document.createTextNode("Lorem ipsum");
-        div.appendChild(text);
-        div.style="font-size: 3em";
-        main.appendChild(div);
-      },
-      link: link,
-      eventPrepWork: eventPrepWork,
-      testName: "A soft navigation that started from a back() call inside a "
-        + "popstate event is recognized by SoftNavigationHeuristics",
-      eventType: "popstate"});
-  </script>
-</body>
+      testSoftNavigation({
+        testName:
+          "A soft navigation that started from a back() call inside a " +
+          "popstate event is recognized by SoftNavigationHeuristics",
+        eventListenerCb: async () => {
+          history.back();
+          await waitForUrlToEndWith("one.html");
+          history.back();
+          await waitForUrlToEndWith("two.html");
+          history.back();
+          await waitForUrlToEndWith("three.html");
+        },
+        registerRouteChange: (cb) => addEventListener('popstate', (event) => {
+            // Wait for the final back() nav.
+            if (!location.href.endsWith("three.html")) {
+              return;
+            }
+            cb(event);
+          }),
+        pushState: () => { },
+        // Although we will own the pushState, we need to set the expected URL
+        pushUrl: "one.html",
+      });
+    </script>
+  </body>
 </html>

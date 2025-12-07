@@ -2,10 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
 if (is_android) {
   import("//build/config/android/rules.gni")
+}
+
+if (!is_fuchsia) {
+  import("//pdf/features.gni")
 }
 
 source_set("identity_manager") {
@@ -21,6 +23,10 @@ source_set("identity_manager") {
     "account_info.h",
     "account_managed_status_finder.cc",
     "account_managed_status_finder.h",
+    "account_managed_status_finder_outcome.h",
+    "account_state_fetcher.cc",
+    "account_state_fetcher.h",
+    "accounts_cookie_mutator.cc",
     "accounts_cookie_mutator.h",
     "accounts_in_cookie_jar_info.cc",
     "accounts_in_cookie_jar_info.h",
@@ -43,6 +49,7 @@ source_set("identity_manager") {
     "primary_account_mutator.h",
     "scope_set.h",
     "set_accounts_in_cookie_result.h",
+    "signin_constants.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
@@ -58,16 +65,19 @@ source_set("identity_manager") {
   ]
 
   deps = [
-    "//build:chromeos_buildflags",
     "//components/image_fetcher/core",
-    "//components/plus_addresses:features",
+    "//components/plus_addresses/core/common:features",
     "//components/prefs",
     "//components/signin/internal/identity_manager",
     "//components/signin/public/webdata",
     "//services/network/public/cpp",
   ]
 
-  if (is_chromeos_ash) {
+  if (!is_fuchsia) {
+    deps += [ "//pdf:buildflags" ]
+  }
+
+  if (is_chromeos) {
     deps += [ "//components/user_manager" ]
   }
 
@@ -76,7 +86,10 @@ source_set("identity_manager") {
   }
 
   if (is_android) {
-    deps += [ "//components/signin/public/android:jni_headers" ]
+    deps += [
+      "//components/signin/public/android:jni_headers",
+      "//google_apis/gaia/android:jni_headers",
+    ]
   }
 
   allow_circular_includes_from = [
@@ -110,7 +123,9 @@ source_set("unit_tests") {
     "account_capabilities_unittest.cc",
     "account_info_unittest.cc",
     "account_managed_status_finder_unittest.cc",
+    "account_state_fetcher_unittest.cc",
     "accounts_cookie_mutator_unittest.cc",
+    "accounts_in_cookie_jar_info_unittest.cc",
     "accounts_mutator_unittest.cc",
     "diagnostics_provider_unittest.cc",
     "identity_manager_builder_unittest.cc",
@@ -120,6 +135,7 @@ source_set("unit_tests") {
     "primary_account_access_token_fetcher_unittest.cc",
     "primary_account_change_event_unittest.cc",
     "primary_account_mutator_unittest.cc",
+    "test_accounts_unittest.cc",
   ]
 
   deps = [
@@ -127,7 +143,6 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//components/image_fetcher/core:test_support",
     "//components/prefs",
     "//components/prefs:test_support",
@@ -149,14 +164,19 @@ source_set("unit_tests") {
 
   if (is_chromeos) {
     deps += [
+      "//chromeos/ash/components/account_manager",
       "//components/account_manager_core",
       "//components/account_manager_core:test_support",
     ]
   }
 
-  if (is_chromeos_ash) {
-    deps += [ "//chromeos/ash/components/account_manager" ]
+  if (!is_fuchsia) {
+    deps += [ "//pdf:buildflags" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("test_support") {
@@ -169,6 +189,8 @@ source_set("test_support") {
     "identity_test_environment.h",
     "identity_test_utils.cc",
     "identity_test_utils.h",
+    "test_accounts.cc",
+    "test_accounts.h",
     "test_identity_manager_observer.cc",
     "test_identity_manager_observer.h",
   ]
@@ -181,7 +203,6 @@ source_set("test_support") {
   ]
 
   deps = [
-    "//build:chromeos_buildflags",
     "//components/image_fetcher/core:test_support",
     "//components/signin/internal/identity_manager",
     "//components/signin/internal/identity_manager:test_support",
@@ -190,12 +211,8 @@ source_set("test_support") {
     "//testing/gtest",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//chromeos/ash/components/account_manager" ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [ "//components/account_manager_core" ]
   }
 
   if (is_android) {

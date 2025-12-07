@@ -6,8 +6,7 @@
 
 namespace notifications {
 
-ImpressionDetail::ImpressionDetail()
-    : current_max_daily_show(0), num_shown_today(0), num_negative_events(0) {}
+ImpressionDetail::ImpressionDetail() = default;
 
 ImpressionDetail::ImpressionDetail(
     size_t current_max_daily_show,
@@ -20,10 +19,6 @@ ImpressionDetail::ImpressionDetail(
       num_negative_events(num_negative_events),
       last_negative_event_ts(last_negative_event_ts),
       last_shown_ts(last_shown_ts) {}
-
-ImpressionDetail::ImpressionDetail(const ImpressionDetail& other) = default;
-
-ImpressionDetail::~ImpressionDetail() = default;
 
 bool ImpressionDetail::operator==(const ImpressionDetail& other) const {
   return current_max_daily_show == other.current_max_daily_show &&

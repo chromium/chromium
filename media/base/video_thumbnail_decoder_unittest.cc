@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/base/video_thumbnail_decoder.h"
+
 #include <memory>
 #include <vector>
 
@@ -9,13 +11,13 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "media/base/media_util.h"
 #include "media/base/mock_filters.h"
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_frame.h"
-#include "media/base/video_thumbnail_decoder.h"
 #include "media/base/video_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -69,7 +71,6 @@ class VideoThumbnailDecoderTest : public testing::Test {
   MockVideoDecoder* mock_video_decoder() { return mock_video_decoder_; }
   scoped_refptr<VideoFrame> frame() { return frame_; }
 
- private:
   void OnFrameDecoded(scoped_refptr<VideoFrame> frame) {
     frame_ = std::move(frame);
   }
@@ -95,6 +96,41 @@ TEST_F(VideoThumbnailDecoderTest, Success) {
       .Times(2)
       .WillRepeatedly(
           base::test::RunOnceCallbackRepeatedly<1>(DecoderStatus::Codes::kOk));
+
+  Start();
+  EXPECT_TRUE(frame());
+}
+
+TEST_F(VideoThumbnailDecoderTest, SuccessMultipleOutputs) {
+  auto expected_frame = CreateFrame();
+
+  VideoDecoder::OutputCB output_cb;
+  EXPECT_CALL(*mock_video_decoder(), Initialize_(_, _, _, _, _, _))
+      .WillOnce(DoAll(testing::SaveArg<4>(&output_cb),
+                      RunOnceCallback<3>(DecoderStatus::Codes::kOk)));
+  EXPECT_CALL(*mock_video_decoder(), Decode_(_, _))
+      .Times(2)
+      .WillOnce(DoAll(RunOnceCallback<1>(DecoderStatus::Codes::kOk),
+                      [&]() {
+                        output_cb.Run(expected_frame);
+                        output_cb.Run(expected_frame);
+                      }))
+      .WillOnce(RunOnceCallback<1>(DecoderStatus::Codes::kOk));
+
+  Start();
+  EXPECT_TRUE(frame());
+}
+
+TEST_F(VideoThumbnailDecoderTest, SuccessOutputBeforeDecodeCBCompletes) {
+  auto expected_frame = CreateFrame();
+
+  VideoDecoder::OutputCB output_cb;
+  EXPECT_CALL(*mock_video_decoder(), Initialize_(_, _, _, _, _, _))
+      .WillOnce(DoAll(testing::SaveArg<4>(&output_cb),
+                      RunOnceCallback<3>(DecoderStatus::Codes::kOk)));
+  EXPECT_CALL(*mock_video_decoder(), Decode_(_, _))
+      .WillOnce(DoAll([&]() { output_cb.Run(expected_frame); },
+                      RunOnceCallback<1>(DecoderStatus::Codes::kOk)));
 
   Start();
   EXPECT_TRUE(frame());

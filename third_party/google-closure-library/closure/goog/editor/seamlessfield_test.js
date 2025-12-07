@@ -422,7 +422,7 @@ testSuite({
     });
 
     assertFalse(editableField.isLoaded());
-    editableField.manipulateDom(goog.nullFunction);
+    editableField.manipulateDom(() => {});
     clock.tick(1000);
     assertEquals(
         'Must not fire delayed change events if field is not loaded.', 0,
@@ -432,13 +432,13 @@ testSuite({
     const usesIframe = editableField.usesIframe();
 
     try {
-      editableField.manipulateDom(goog.nullFunction);
+      editableField.manipulateDom(() => {});
       clock.tick(1000);  // Wait for delayed change to fire.
       assertEquals(
           'By default must fire a single delayed change event.', 1,
           delayedChangeCalled);
 
-      editableField.manipulateDom(goog.nullFunction, true);
+      editableField.manipulateDom(() => {}, true);
       clock.tick(1000);  // Wait for delayed change to fire.
       assertEquals(
           'Must prevent all delayed change events.', 1, delayedChangeCalled);

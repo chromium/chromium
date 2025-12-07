@@ -7,6 +7,7 @@
   <video id="video" controls loop>
     <source src="../bigbuck.webm">
   </video>
+  <button id="pip" onclick="openPip()">Enter Picture-in-Picture</button>
 </body>
 <script>
 const video = document.getElementById('video');
@@ -19,6 +20,10 @@ function playVideo() {
 function pauseVideo() {
   video.pause();
   navigator.mediaSession.playbackState = "paused";
+}
+
+function muteVideo() {
+  video.muted = true;
 }
 
 function openPip(details) {

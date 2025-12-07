@@ -5,7 +5,6 @@
 #ifndef CHROME_SERVICES_SHARING_SHARING_IMPL_H_
 #define CHROME_SERVICES_SHARING_SHARING_IMPL_H_
 
-#include <map>
 #include <memory>
 #include <vector>
 
@@ -19,7 +18,6 @@
 #include "chromeos/ash/services/nearby/public/mojom/sharing.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/webrtc.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/mojom/mdns_responder.mojom-forward.h"
 #include "services/network/public/mojom/p2p.mojom-forward.h"
@@ -66,7 +64,11 @@ class SharingImpl : public mojom::Sharing {
 
   // These values are used for metrics. Entries should not be renumbered and
   // numeric values should never be reused. If entries are added, kMaxValue
-  // should be updated.
+  // should be updated. Keep in sync with the
+  // NearbyConnectionsUtilityProcessMojoDependencyName UMA enum defined in
+  // //tools/metrics/histograms/metadata/nearby/enums.xml.
+  //
+  // LINT.IfChange(NearbyConnectionsUtilityProcessMojoDependencyName)
   enum class MojoDependencyName {
     kNearbyConnections = 0,
     kBluetoothAdapter = 1,
@@ -85,6 +87,7 @@ class SharingImpl : public mojom::Sharing {
     kMdnsManager = 14,
     kMaxValue = kMdnsManager
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/nearby/enums.xml:NearbyConnectionsUtilityProcessMojoDependencyName)
 
   void DoShutDown(bool is_expected);
   void OnDisconnect(MojoDependencyName mojo_dependency_name);

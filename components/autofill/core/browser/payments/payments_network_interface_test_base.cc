@@ -1,6 +1,7 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #include "components/autofill/core/browser/payments/payments_network_interface_test_base.h"
 
 #include <string>
@@ -52,7 +53,7 @@ void PaymentsNetworkInterfaceTestBase::CreateFieldTrialWithId(
     const std::string& trial_name,
     const std::string& group_name,
     int variation_id) {
-  variations::AssociateGoogleVariationID(
+  variations::AssociateGoogleVariationIDForTesting(
       variations::GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, trial_name, group_name,
       static_cast<variations::VariationID>(variation_id));
   base::FieldTrialList::CreateFieldTrial(trial_name, group_name)->Activate();

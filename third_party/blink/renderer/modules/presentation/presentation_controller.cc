@@ -9,7 +9,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/modules/presentation/presentation_availability_callbacks.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_availability_observer.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_availability_state.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_connection.h"
@@ -18,22 +17,18 @@
 namespace blink {
 
 PresentationController::PresentationController(LocalDOMWindow& window)
-    : Supplement<LocalDOMWindow>(window),
+    : local_dom_window_(window),
       presentation_service_remote_(&window),
       presentation_controller_receiver_(this, &window) {}
 
 PresentationController::~PresentationController() = default;
 
 // static
-const char PresentationController::kSupplementName[] = "PresentationController";
-
-// static
 PresentationController* PresentationController::From(LocalDOMWindow& window) {
-  PresentationController* controller =
-      Supplement<LocalDOMWindow>::From<PresentationController>(window);
+  PresentationController* controller = window.GetPresentationController();
   if (!controller) {
     controller = MakeGarbageCollected<PresentationController>(window);
-    Supplement<LocalDOMWindow>::ProvideTo(window, controller);
+    window.SetPresentationController(controller);
   }
   return controller;
 }
@@ -41,8 +36,9 @@ PresentationController* PresentationController::From(LocalDOMWindow& window) {
 // static
 PresentationController* PresentationController::FromContext(
     ExecutionContext* execution_context) {
-  if (!execution_context || execution_context->IsContextDestroyed())
+  if (!execution_context || execution_context->IsContextDestroyed()) {
     return nullptr;
+  }
   return From(*To<LocalDOMWindow>(execution_context));
 }
 
@@ -52,7 +48,7 @@ void PresentationController::Trace(Visitor* visitor) const {
   visitor->Trace(connections_);
   visitor->Trace(availability_state_);
   visitor->Trace(presentation_service_remote_);
-  Supplement<LocalDOMWindow>::Trace(visitor);
+  visitor->Trace(local_dom_window_);
 }
 
 void PresentationController::SetPresentation(Presentation* presentation) {
@@ -93,8 +89,9 @@ void PresentationController::OnConnectionStateChanged(
     mojom::blink::PresentationInfoPtr presentation_info,
     mojom::blink::PresentationConnectionState state) {
   PresentationConnection* connection = FindConnection(*presentation_info);
-  if (!connection)
+  if (!connection) {
     return;
+  }
 
   connection->DidChangeState(state);
 }
@@ -104,8 +101,9 @@ void PresentationController::OnConnectionClosed(
     mojom::blink::PresentationConnectionCloseReason reason,
     const String& message) {
   PresentationConnection* connection = FindConnection(*presentation_info);
-  if (!connection)
+  if (!connection) {
     return;
+  }
 
   connection->DidClose(reason, message);
 }
@@ -115,10 +113,11 @@ void PresentationController::OnDefaultPresentationStarted(
   DCHECK(result);
   DCHECK(result->presentation_info);
   DCHECK(result->connection_remote && result->connection_receiver);
-  if (!presentation_ || !presentation_->defaultRequest())
+  if (!presentation_ || !presentation_->defaultRequest()) {
     return;
+  }
 
-  auto* connection = ControllerPresentationConnection::Take(
+  auto* connection = ControllerPresentationConnection::Create(
       this, *result->presentation_info, presentation_->defaultRequest());
   // TODO(btolsch): Convert this and similar calls to just use InterfacePtrInfo
   // instead of constructing an InterfacePtr every time we have
@@ -129,8 +128,8 @@ void PresentationController::OnDefaultPresentationStarted(
 
 ControllerPresentationConnection*
 PresentationController::FindExistingConnection(
-    const blink::WebVector<blink::WebURL>& presentation_urls,
-    const blink::WebString& presentation_id) {
+    const std::vector<blink::WebURL>& presentation_urls,
+    const WebString& presentation_id) {
   for (const auto& connection : connections_) {
     for (const auto& presentation_url : presentation_urls) {
       if (connection->GetState() !=
@@ -145,10 +144,10 @@ PresentationController::FindExistingConnection(
 
 HeapMojoRemote<mojom::blink::PresentationService>&
 PresentationController::GetPresentationService() {
-  if (!presentation_service_remote_ && GetSupplementable()) {
+  if (!presentation_service_remote_ && local_dom_window_) {
     scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-        GetSupplementable()->GetTaskRunner(TaskType::kPresentation);
-    GetSupplementable()->GetBrowserInterfaceBroker().GetInterface(
+        local_dom_window_->GetTaskRunner(TaskType::kPresentation);
+    local_dom_window_->GetBrowserInterfaceBroker().GetInterface(
         presentation_service_remote_.BindNewPipeAndPassReceiver(task_runner));
 
     // Note: `presentation_controller_receiver_` should always be unbound in
@@ -167,8 +166,9 @@ PresentationController::GetPresentationService() {
 ControllerPresentationConnection* PresentationController::FindConnection(
     const mojom::blink::PresentationInfo& presentation_info) const {
   for (const auto& connection : connections_) {
-    if (connection->Matches(presentation_info.id, presentation_info.url))
+    if (connection->Matches(presentation_info.id, presentation_info.url)) {
       return connection.Get();
+    }
   }
 
   return nullptr;

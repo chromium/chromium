@@ -15,6 +15,18 @@
 
 namespace blink {
 
+struct SynchronousCompositorProxy::SharedMemoryWithSize {
+  base::WritableSharedMemoryMapping shared_memory;
+  const size_t buffer_size;
+  bool zeroed;
+
+  SharedMemoryWithSize(base::WritableSharedMemoryMapping shm_mapping,
+                       size_t buffer_size)
+      : shared_memory(std::move(shm_mapping)),
+        buffer_size(buffer_size),
+        zeroed(true) {}
+};
+
 SynchronousCompositorProxy::SynchronousCompositorProxy(
     InputHandlerProxy* input_handler_proxy)
     : input_handler_proxy_(input_handler_proxy),
@@ -144,18 +156,6 @@ void SynchronousCompositorProxy::WillSkipDraw() {
   }
 }
 
-struct SynchronousCompositorProxy::SharedMemoryWithSize {
-  base::WritableSharedMemoryMapping shared_memory;
-  const size_t buffer_size;
-  bool zeroed;
-
-  SharedMemoryWithSize(base::WritableSharedMemoryMapping shm_mapping,
-                       size_t buffer_size)
-      : shared_memory(std::move(shm_mapping)),
-        buffer_size(buffer_size),
-        zeroed(true) {}
-};
-
 void SynchronousCompositorProxy::ZeroSharedMemory() {
   // It is possible for this to get called twice, eg. if draw is called before
   // the LayerTreeFrameSink is ready. Just ignore duplicated calls rather than
@@ -240,7 +240,7 @@ void SynchronousCompositorProxy::SubmitCompositorFrame(
         .Run(std::move(common_renderer_params), NextMetadataVersion(),
              std::move(frame->metadata));
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -256,14 +256,14 @@ void SynchronousCompositorProxy::SinkDestroyed() {
   layer_tree_frame_sink_ = nullptr;
 }
 
-void SynchronousCompositorProxy::SetThreadIds(
-    const Vector<base::PlatformThreadId>& thread_ids) {
-  if (thread_ids_ == thread_ids) {
+void SynchronousCompositorProxy::SetThreads(
+    const Vector<viz::Thread>& threads) {
+  if (threads_ == threads) {
     return;
   }
-  thread_ids_ = thread_ids;
+  threads_ = threads;
   if (host_) {
-    host_->SetThreadIds(thread_ids_);
+    host_->SetThreads(threads_);
   }
 }
 
@@ -406,8 +406,8 @@ void SynchronousCompositorProxy::BindChannel(
 
   if (needs_begin_frames_)
     host_->SetNeedsBeginFrames(true);
-  if (!thread_ids_.empty()) {
-    host_->SetThreadIds(thread_ids_);
+  if (!threads_.empty()) {
+    host_->SetThreads(threads_);
   }
 }
 

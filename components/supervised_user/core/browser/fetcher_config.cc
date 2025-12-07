@@ -4,8 +4,10 @@
 
 #include "components/supervised_user/core/browser/fetcher_config.h"
 
+#include <memory>
 #include <string>
 #include <string_view>
+#include <variant>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -19,7 +21,6 @@
 namespace supervised_user {
 
 BASE_FEATURE(kSupervisedUserProtoFetcherConfig,
-             "SupervisedUserProtoFetcherConfig",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace annotations {
@@ -150,24 +151,25 @@ std::string FetcherConfig::GetHttpMethod() const {
     case Method::kPost:
       return net::HttpRequestHeaders::kPostMethod;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
 std::string_view FetcherConfig::StaticServicePath() const {
-  return absl::get<std::string_view>(service_path);
+  return std::get<std::string_view>(service_path);
 }
 
 std::string FetcherConfig::ServicePath(const PathArgs& args) const {
   const std::string_view* static_path =
-      absl::get_if<std::string_view>(&service_path);
+      std::get_if<std::string_view>(&service_path);
   if (static_path != nullptr) {
     CHECK(args.empty()) << "Args are not empty but service_path type variant "
                            "is not FetcherConfig::PathTemplate.";
     return std::string(*static_path);
   }
 
-  const PathTemplate path_template = absl::get<PathTemplate>(service_path);
+  const PathTemplate path_template = std::get<PathTemplate>(service_path);
+  CHECK(!path_template.value().empty()) << "Service path is required";
 
   // Implementation detail: Placeholders are not substituted, but used to split
   // template and put in between as many args as possible. Outstanding args are
@@ -191,4 +193,10 @@ std::string FetcherConfig::ServicePath(const PathArgs& args) const {
   return base::StrCat(target);
 }
 
+std::unique_ptr<net::BackoffEntry> FetcherConfig::BackoffEntry() const {
+  if (!backoff_policy.has_value()) {
+    return nullptr;
+  }
+  return std::make_unique<net::BackoffEntry>(&backoff_policy.value());
+}
 }  // namespace supervised_user

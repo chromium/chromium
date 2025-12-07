@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {NetworkStateProperties as Network} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {NetworkStateProperties as Network} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
-import {CalibrationComponentStatus, CalibrationStatus, Component, ComponentRepairStatus, ComponentType, RmadErrorCode, State, StateResult} from './shimless_rma.mojom-webui.js';
+import type {CalibrationComponentStatus, Component, StateResult} from './shimless_rma.mojom-webui.js';
+import {CalibrationStatus, ComponentRepairStatus, ComponentType, RmadErrorCode, State} from './shimless_rma.mojom-webui.js';
 
 
 export const fakeStates: StateResult[] = [

@@ -6,8 +6,10 @@
 
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
-#include "base/functional/bind_internal.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -52,14 +54,13 @@ std::optional<int> BorealisSurveyHandler::GetGameId(const std::string& app_id) {
 
 base::flat_map<std::string, std::string> BorealisSurveyHandler::GetSurveyData(
     std::string owner_id,
-    const std::string app_id,
+    std::string app_id,
     std::string window_title,
     std::optional<int> game_id) {
   // Number of monitors
   int internal_displays = 0;
   int external_displays = 0;
-  for (const display::Display& d :
-       display::Screen::GetScreen()->GetAllDisplays()) {
+  for (const display::Display& d : display::Screen::Get()->GetAllDisplays()) {
     if (d.IsInternal()) {
       internal_displays++;
     } else {
@@ -90,10 +91,11 @@ base::flat_map<std::string, std::string> BorealisSurveyHandler::GetSurveyData(
       {"appName", window_title},
       {"board", base::SysInfo::HardwareModelName()},
       {"specs",
-       base::StringPrintf("%ldGB; %s",
-                          (long)(base::SysInfo::AmountOfPhysicalMemory() /
-                                 (1000 * 1000 * 1000)),
-                          base::SysInfo::CPUModelName().c_str())},
+       base::StringPrintf(
+           "%ldGB; %s",
+           (long)(base::SysInfo::AmountOfPhysicalMemory().InBytesUnsigned() /
+                  (1000 * 1000 * 1000)),
+           base::SysInfo::CPUModelName().c_str())},
       {"monitorsInternal", base::NumberToString(internal_displays)},
       {"monitorsExternal", base::NumberToString(external_displays)},
       {"proton", compat_tool_info.proton},

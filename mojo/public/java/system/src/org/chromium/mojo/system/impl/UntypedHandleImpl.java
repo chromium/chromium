@@ -4,6 +4,7 @@
 
 package org.chromium.mojo.system.impl;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.mojo.system.DataPipe.ConsumerHandle;
 import org.chromium.mojo.system.DataPipe.ProducerHandle;
 import org.chromium.mojo.system.MessagePipeHandle;
@@ -11,6 +12,7 @@ import org.chromium.mojo.system.SharedBufferHandle;
 import org.chromium.mojo.system.UntypedHandle;
 
 /** Implementation of {@link UntypedHandle}. */
+@NullMarked
 class UntypedHandleImpl extends HandleBase implements UntypedHandle {
     /**
      * @see HandleBase#HandleBase(CoreImpl, long)

@@ -5,3 +5,9 @@ include_rules = [
     "+services/network/public/cpp/is_potentially_trustworthy.h",
     "+services/network/public/cpp/network_switches.h",
 ]
+
+specific_include_rules = {
+    "payments_validators.cc": [
+        "+url/gurl.h"
+    ],
+}

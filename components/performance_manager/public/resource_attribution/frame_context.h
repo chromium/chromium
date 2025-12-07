@@ -8,6 +8,7 @@
 #include <compare>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/global_routing_id.h"
@@ -81,6 +82,12 @@ class FrameContext {
   constexpr friend bool operator==(const FrameContext& a,
                                    const FrameContext& b) {
     return a.id_ == b.id_;
+  }
+
+  // Add FrameContexts to absl hashes.
+  template <typename H>
+  friend H AbslHashValue(H h, const FrameContext& c) {
+    return H::combine(std::move(h), c.id_);
   }
 
  private:

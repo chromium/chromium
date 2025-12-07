@@ -42,10 +42,15 @@
 #include "components/exo/test/test_data_source_delegate.h"
 #include "components/exo/wm_helper.h"
 #include "components/viz/common/quads/compositor_frame.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
+#include "components/viz/test/test_context_provider.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/client/drag_drop_client.h"
@@ -56,7 +61,6 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/draw_waiter_for_test.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
@@ -64,6 +68,7 @@
 #include "ui/events/test/events_test_utils.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/vector2d_f.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/gl/test/gl_test_support.h"
 #include "ui/views/widget/widget.h"
 
@@ -109,7 +114,7 @@ void DispatchGesture(ui::EventType gesture_type, gfx::Point location) {
 
 class MockPointerDelegate : public PointerDelegate {
  public:
-  MockPointerDelegate() {}
+  MockPointerDelegate() = default;
 
   // Overridden from PointerDelegate:
   MOCK_METHOD1(OnPointerDestroying, void(Pointer*));
@@ -163,7 +168,7 @@ class MockPointerConstraintDelegate : public PointerConstraintDelegate {
 
 class MockPointerStylusDelegate : public PointerStylusDelegate {
  public:
-  MockPointerStylusDelegate() {}
+  MockPointerStylusDelegate() = default;
 
   // Overridden from PointerStylusDelegate:
   MOCK_METHOD(void, OnPointerDestroying, (Pointer*));
@@ -172,13 +177,9 @@ class MockPointerStylusDelegate : public PointerStylusDelegate {
   MOCK_METHOD(void, OnPointerTilt, (base::TimeTicks, const gfx::Vector2dF&));
 };
 
-class PointerTest
-    : public test::ExoTestBase,
-      public testing::WithParamInterface<test::FrameSubmissionType> {
+class PointerTest : public test::ExoTestBase {
  public:
-  PointerTest() {
-    test::SetFrameSubmissionFeatureFlags(&feature_list_, GetParam());
-  }
+  PointerTest() = default;
 
   PointerTest(const PointerTest&) = delete;
   PointerTest& operator=(const PointerTest&) = delete;
@@ -268,17 +269,7 @@ class PointerConstraintTest : public PointerTest {
   raw_ptr<aura::client::FocusClient, DanglingUntriaged> focus_client_;
 };
 
-// Instantiate the values of frame submission types in the parameterized tests.
-INSTANTIATE_TEST_SUITE_P(All,
-                         PointerTest,
-                         testing::Values(test::FrameSubmissionType::kNoReactive,
-                                         test::FrameSubmissionType::kReactive));
-INSTANTIATE_TEST_SUITE_P(All,
-                         PointerConstraintTest,
-                         testing::Values(test::FrameSubmissionType::kNoReactive,
-                                         test::FrameSubmissionType::kReactive));
-
-TEST_P(PointerTest, SetCursor) {
+TEST_F(PointerTest, SetCursor) {
   auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
   auto* surface = shell_surface->surface_for_testing();
 
@@ -339,7 +330,7 @@ TEST_P(PointerTest, SetCursor) {
   pointer.reset();
 }
 
-TEST_P(PointerTest, SetCursorNull) {
+TEST_F(PointerTest, SetCursorNull) {
   auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
   auto* surface = shell_surface->surface_for_testing();
 
@@ -364,7 +355,7 @@ TEST_P(PointerTest, SetCursorNull) {
   pointer.reset();
 }
 
-TEST_P(PointerTest, SetCursorType) {
+TEST_F(PointerTest, SetCursorType) {
   auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
   auto* surface = shell_surface->surface_for_testing();
 
@@ -417,7 +408,7 @@ TEST_P(PointerTest, SetCursorType) {
   pointer.reset();
 }
 
-TEST_P(PointerTest, SetCursorTypeOutsideOfSurface) {
+TEST_F(PointerTest, SetCursorTypeOutsideOfSurface) {
   auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
   auto* surface = shell_surface->surface_for_testing();
 
@@ -443,7 +434,7 @@ TEST_P(PointerTest, SetCursorTypeOutsideOfSurface) {
   pointer.reset();
 }
 
-TEST_P(PointerTest, SetCursorAndSetCursorType) {
+TEST_F(PointerTest, SetCursorAndSetCursorType) {
   auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
   auto* surface = shell_surface->surface_for_testing();
 
@@ -505,7 +496,7 @@ TEST_P(PointerTest, SetCursorAndSetCursorType) {
   pointer.reset();
 }
 
-TEST_P(PointerTest, SetCursorNullAndSetCursorType) {
+TEST_F(PointerTest, SetCursorNullAndSetCursorType) {
   auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
   auto* surface = shell_surface->surface_for_testing();
 
@@ -541,7 +532,7 @@ TEST_P(PointerTest, SetCursorNullAndSetCursorType) {
   pointer.reset();
 }
 
-TEST_P(PointerTest, OnPointerEnter) {
+TEST_F(PointerTest, OnPointerEnter) {
   auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
   auto* surface = shell_surface->surface_for_testing();
 
@@ -559,7 +550,7 @@ TEST_P(PointerTest, OnPointerEnter) {
   pointer.reset();
 }
 
-TEST_P(PointerTest, OnPointerLeave) {
+TEST_F(PointerTest, OnPointerLeave) {
   auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
   auto* surface = shell_surface->surface_for_testing();
 
@@ -586,7 +577,7 @@ TEST_P(PointerTest, OnPointerLeave) {
   pointer.reset();
 }
 
-TEST_P(PointerTest, OnPointerMotion) {
+TEST_F(PointerTest, OnPointerMotion) {
   auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
   auto* surface = shell_surface->surface_for_testing();
 
@@ -651,7 +642,7 @@ TEST_P(PointerTest, OnPointerMotion) {
   pointer.reset();
 }
 
-TEST_P(PointerTest, OnPointerButton) {
+TEST_F(PointerTest, OnPointerButton) {
   auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
   auto* surface = shell_surface->surface_for_testing();
 
@@ -676,7 +667,7 @@ TEST_P(PointerTest, OnPointerButton) {
   pointer.reset();
 }
 
-TEST_P(PointerTest, OnPointerButtonWithAttemptToStartDrag) {
+TEST_F(PointerTest, OnPointerButtonWithAttemptToStartDrag) {
   auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
   auto* surface = shell_surface->surface_for_testing();
 
@@ -704,7 +695,7 @@ TEST_P(PointerTest, OnPointerButtonWithAttemptToStartDrag) {
   pointer.reset();
 }
 
-TEST_P(PointerTest, OnPointerScroll) {
+TEST_F(PointerTest, OnPointerScroll) {
   auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
   auto* surface = shell_surface->surface_for_testing();
 
@@ -734,7 +725,7 @@ TEST_P(PointerTest, OnPointerScroll) {
   pointer.reset();
 }
 
-TEST_P(PointerTest, OnPointerScrollWithThreeFinger) {
+TEST_F(PointerTest, OnPointerScrollWithThreeFinger) {
   auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
   auto* surface = shell_surface->surface_for_testing();
 
@@ -764,7 +755,7 @@ TEST_P(PointerTest, OnPointerScrollWithThreeFinger) {
   pointer.reset();
 }
 
-TEST_P(PointerTest, OnPointerScrollDiscrete) {
+TEST_F(PointerTest, OnPointerScrollDiscrete) {
   auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
   auto* surface = shell_surface->surface_for_testing();
 
@@ -787,7 +778,7 @@ TEST_P(PointerTest, OnPointerScrollDiscrete) {
   pointer.reset();
 }
 
-TEST_P(PointerTest, RegisterPointerEventsOnModal) {
+TEST_F(PointerTest, RegisterPointerEventsOnModal) {
   // Create modal surface.
   auto shell_surface = test::ShellSurfaceBuilder({5, 5})
                            .SetCentered()
@@ -835,7 +826,7 @@ TEST_P(PointerTest, RegisterPointerEventsOnModal) {
   pointer.reset();
 }
 
-TEST_P(PointerTest, IgnorePointerEventsOnNonModalWhenModalIsOpen) {
+TEST_F(PointerTest, IgnorePointerEventsOnNonModalWhenModalIsOpen) {
   // Create surface for non-modal window.
   auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
   auto* surface = shell_surface->surface_for_testing();
@@ -897,7 +888,7 @@ TEST_P(PointerTest, IgnorePointerEventsOnNonModalWhenModalIsOpen) {
   pointer.reset();
 }
 
-TEST_P(PointerTest, IgnorePointerLeaveOnModal) {
+TEST_F(PointerTest, IgnorePointerLeaveOnModal) {
   // Create modal surface.
   auto shell_surface = test::ShellSurfaceBuilder({5, 5})
                            .SetCentered()
@@ -937,7 +928,7 @@ TEST_P(PointerTest, IgnorePointerLeaveOnModal) {
   pointer.reset();
 }
 
-TEST_P(PointerTest, RegisterPointerEventsOnNonModal) {
+TEST_F(PointerTest, RegisterPointerEventsOnNonModal) {
   // Create surface for non-modal window.
   auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
   auto* surface = shell_surface->surface_for_testing();
@@ -996,7 +987,7 @@ TEST_P(PointerTest, RegisterPointerEventsOnNonModal) {
   pointer.reset();
 }
 
-TEST_P(PointerTest, DragDropAbortBeforeStart) {
+TEST_F(PointerTest, DragDropAbortBeforeStart) {
   MockPointerDelegate delegate;
   auto pointer = std::make_unique<Pointer>(&delegate, seat_.get());
   TestDataSourceDelegate data_source_delegate;
@@ -1028,7 +1019,7 @@ TEST_P(PointerTest, DragDropAbortBeforeStart) {
   pointer.reset();
 }
 
-TEST_P(PointerTest, DragDropAndPointerEnterLeaveEvents) {
+TEST_F(PointerTest, DragDropAndPointerEnterLeaveEvents) {
   MockPointerDelegate delegate;
   std::unique_ptr<Pointer> pointer(new Pointer(&delegate, seat_.get()));
   TestDataSourceDelegate data_source_delegate;
@@ -1103,7 +1094,7 @@ TEST_P(PointerTest, DragDropAndPointerEnterLeaveEvents) {
   pointer.reset();
 }
 
-TEST_P(PointerTest, DragDropAndPointerEnterLeaveEvents_NoOpOnTouchDrag) {
+TEST_F(PointerTest, DragDropAndPointerEnterLeaveEvents_NoOpOnTouchDrag) {
   MockPointerDelegate delegate;
   std::unique_ptr<Pointer> pointer(new Pointer(&delegate, seat_.get()));
   TestDataSourceDelegate data_source_delegate;
@@ -1148,7 +1139,7 @@ TEST_P(PointerTest, DragDropAndPointerEnterLeaveEvents_NoOpOnTouchDrag) {
   pointer.reset();
 }
 
-TEST_P(PointerTest, IgnoresHandledEvents) {
+TEST_F(PointerTest, IgnoresHandledEvents) {
   // A very dumb handler that simply marks all events as handled. This is needed
   // allows us to mark a mouse event as handled as it gets processed by the
   // event processor.
@@ -1185,7 +1176,7 @@ TEST_P(PointerTest, IgnoresHandledEvents) {
   ash::Shell::Get()->RemovePreTargetHandler(&handler);
 }
 
-TEST_P(PointerTest, IgnoresCursorHideEvents) {
+TEST_F(PointerTest, IgnoresCursorHideEvents) {
   testing::NiceMock<MockPointerDelegate> delegate;
   auto pointer = std::make_unique<Pointer>(&delegate, seat_.get());
 
@@ -1278,7 +1269,7 @@ class TestDataDevice : public DataDevice {
 
 // Test for crbug.com/1307143: It ensures no "pointer enter" event is
 // processed in case the target surface is destroyed during the drop action.
-TEST_P(PointerTest,
+TEST_F(PointerTest,
        DragDropAndPointerEnterLeaveEvents_NoEnterOnSurfaceDestroy) {
   MockPointerDelegate delegate;
   std::unique_ptr<Pointer> pointer(new Pointer(&delegate, seat_.get()));
@@ -1340,7 +1331,7 @@ TEST_P(PointerTest,
 // Test for crbug.com/1307143: It ensures no "pointer enter" event is
 // processed in case the target surface parent is destroyed during the drop
 // action.
-TEST_P(PointerTest,
+TEST_F(PointerTest,
        DragDropAndPointerEnterLeaveEvents_NoEnterOnParentSurfaceDestroy) {
   MockPointerDelegate delegate;
   std::unique_ptr<Pointer> pointer(new Pointer(&delegate, seat_.get()));
@@ -1396,7 +1387,7 @@ TEST_P(PointerTest,
   pointer.reset();
 }
 
-TEST_P(PointerTest, OnPointerRelativeMotion) {
+TEST_F(PointerTest, OnPointerRelativeMotion) {
   auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
   auto* surface = shell_surface->surface_for_testing();
 
@@ -1505,11 +1496,7 @@ class PointerOrdinalMotionTest : public PointerTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         PointerOrdinalMotionTest,
-                         testing::Values(false, true));
-
-TEST_P(PointerOrdinalMotionTest, OrdinalMotionOverridesRelativeMotion) {
+TEST_F(PointerOrdinalMotionTest, OrdinalMotionOverridesRelativeMotion) {
   auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
   auto* surface = shell_surface->surface_for_testing();
 
@@ -1548,7 +1535,7 @@ TEST_P(PointerOrdinalMotionTest, OrdinalMotionOverridesRelativeMotion) {
   pointer->UnregisterRelativePointerDelegate(&relative_delegate);
 }
 
-TEST_P(PointerConstraintTest, ConstrainPointer) {
+TEST_F(PointerConstraintTest, ConstrainPointer) {
   EXPECT_TRUE(pointer_->ConstrainPointer(&constraint_delegate_));
 
   EXPECT_CALL(delegate_, OnPointerEnter(surface_.get(), gfx::PointF(), 0));
@@ -1585,7 +1572,7 @@ TEST_P(PointerConstraintTest, ConstrainPointer) {
   pointer_.reset();
 }
 
-TEST_P(PointerConstraintTest, CanOnlyConstrainPermittedWindows) {
+TEST_F(PointerConstraintTest, CanOnlyConstrainPermittedWindows) {
   std::unique_ptr<ShellSurface> shell_surface =
       test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
   EXPECT_CALL(constraint_delegate_, GetConstrainedSurface())
@@ -1601,7 +1588,7 @@ TEST_P(PointerConstraintTest, CanOnlyConstrainPermittedWindows) {
   pointer_.reset();
 }
 
-TEST_P(PointerConstraintTest, OneConstraintPerSurface) {
+TEST_F(PointerConstraintTest, OneConstraintPerSurface) {
   ON_CALL(constraint_delegate_, IsPersistent())
       .WillByDefault(testing::Return(false));
   EXPECT_TRUE(pointer_->ConstrainPointer(&constraint_delegate_));
@@ -1625,7 +1612,7 @@ TEST_P(PointerConstraintTest, OneConstraintPerSurface) {
   pointer_.reset();
 }
 
-TEST_P(PointerConstraintTest, OneShotConstraintActivatedOnFirstFocus) {
+TEST_F(PointerConstraintTest, OneShotConstraintActivatedOnFirstFocus) {
   auto second_shell_surface = BuildShellSurfaceWhichPermitsPointerLock();
   Surface* second_surface = second_shell_surface->surface_for_testing();
 
@@ -1652,7 +1639,7 @@ TEST_P(PointerConstraintTest, OneShotConstraintActivatedOnFirstFocus) {
   pointer_.reset();
 }
 
-TEST_P(PointerConstraintTest, UnconstrainPointerWhenSurfaceIsDestroyed) {
+TEST_F(PointerConstraintTest, UnconstrainPointerWhenSurfaceIsDestroyed) {
   EXPECT_TRUE(pointer_->ConstrainPointer(&constraint_delegate_));
 
   EXPECT_CALL(delegate_, OnPointerEnter(surface_.get(), gfx::PointF(), 0));
@@ -1669,7 +1656,7 @@ TEST_P(PointerConstraintTest, UnconstrainPointerWhenSurfaceIsDestroyed) {
   pointer_.reset();
 }
 
-TEST_P(PointerConstraintTest, UnconstrainPointerWhenWindowLosesFocus) {
+TEST_F(PointerConstraintTest, UnconstrainPointerWhenWindowLosesFocus) {
   ON_CALL(constraint_delegate_, IsPersistent())
       .WillByDefault(testing::Return(false));
   EXPECT_TRUE(pointer_->ConstrainPointer(&constraint_delegate_));
@@ -1688,7 +1675,7 @@ TEST_P(PointerConstraintTest, UnconstrainPointerWhenWindowLosesFocus) {
   pointer_.reset();
 }
 
-TEST_P(PointerConstraintTest, PersistentConstraintActivatedOnRefocus) {
+TEST_F(PointerConstraintTest, PersistentConstraintActivatedOnRefocus) {
   ON_CALL(constraint_delegate_, IsPersistent())
       .WillByDefault(testing::Return(true));
   EXPECT_TRUE(pointer_->ConstrainPointer(&constraint_delegate_));
@@ -1707,7 +1694,7 @@ TEST_P(PointerConstraintTest, PersistentConstraintActivatedOnRefocus) {
   pointer_.reset();
 }
 
-TEST_P(PointerConstraintTest, MultipleSurfacesCanBeConstrained) {
+TEST_F(PointerConstraintTest, MultipleSurfacesCanBeConstrained) {
   // Arrange: First surface + persistent constraint
   ON_CALL(constraint_delegate_, IsPersistent())
       .WillByDefault(testing::Return(true));
@@ -1753,7 +1740,7 @@ TEST_P(PointerConstraintTest, MultipleSurfacesCanBeConstrained) {
   pointer_.reset();
 }
 
-TEST_P(PointerConstraintTest, UserActionPreventsConstraint) {
+TEST_F(PointerConstraintTest, UserActionPreventsConstraint) {
   ON_CALL(constraint_delegate_, IsPersistent())
       .WillByDefault(testing::Return(false));
   EXPECT_TRUE(pointer_->ConstrainPointer(&constraint_delegate_));
@@ -1794,7 +1781,7 @@ TEST_P(PointerConstraintTest, UserActionPreventsConstraint) {
   pointer_.reset();
 }
 
-TEST_P(PointerConstraintTest, UserCanBreakAndActivatePersistentConstraint) {
+TEST_F(PointerConstraintTest, UserCanBreakAndActivatePersistentConstraint) {
   ON_CALL(constraint_delegate_, IsPersistent())
       .WillByDefault(testing::Return(true));
   EXPECT_TRUE(pointer_->ConstrainPointer(&constraint_delegate_));
@@ -1819,7 +1806,7 @@ TEST_P(PointerConstraintTest, UserCanBreakAndActivatePersistentConstraint) {
   pointer_.reset();
 }
 
-TEST_P(PointerConstraintTest, NoPointerMotionEventWhenUnconstrainingPointer) {
+TEST_F(PointerConstraintTest, NoPointerMotionEventWhenUnconstrainingPointer) {
   testing::MockFunction<void(std::string check_point_name)> check;
   {
     testing::InSequence s;
@@ -1848,7 +1835,7 @@ TEST_P(PointerConstraintTest, NoPointerMotionEventWhenUnconstrainingPointer) {
   pointer_.reset();
 }
 
-TEST_P(PointerConstraintTest, ConstrainPointerWithUncommittedShellSurface) {
+TEST_F(PointerConstraintTest, ConstrainPointerWithUncommittedShellSurface) {
   std::unique_ptr<ShellSurface> uncommitted_shell_surface =
       test::ShellSurfaceBuilder({10, 10}).SetNoCommit().BuildShellSurface();
 
@@ -1877,9 +1864,9 @@ TEST_P(PointerConstraintTest, ConstrainPointerWithUncommittedShellSurface) {
 // This test verifies that if pointer lock is activated during a desk switch
 // swipe animation, that the animation is able to complete and pointer lock is
 // correctly set. Regression test for b/324146178.
-TEST_P(PointerConstraintTest, DeskSwitchSwipeGesture) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+TEST_F(PointerConstraintTest, DeskSwitchSwipeGesture) {
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Start with a surface that has a constrained pointer.
   EXPECT_TRUE(pointer_->ConstrainPointer(&constraint_delegate_));
@@ -1986,7 +1973,7 @@ TEST_P(PointerConstraintTest, DeskSwitchSwipeGesture) {
   pointer_.reset();
 }
 
-TEST_P(PointerTest, PointerStylus) {
+TEST_F(PointerTest, PointerStylus) {
   auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
   auto* surface = shell_surface->surface_for_testing();
 
@@ -2016,7 +2003,7 @@ TEST_P(PointerTest, PointerStylus) {
   pointer.reset();
 }
 
-TEST_P(PointerTest, PointerStylus2) {
+TEST_F(PointerTest, PointerStylus2) {
   auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
   auto* surface = shell_surface->surface_for_testing();
 
@@ -2053,7 +2040,7 @@ TEST_P(PointerTest, PointerStylus2) {
   pointer.reset();
 }
 
-TEST_P(PointerTest, DontSendMouseEventDuringMove) {
+TEST_F(PointerTest, DontSendMouseEventDuringMove) {
   testing::NiceMock<MockPointerDelegate> delegate;
   auto pointer = std::make_unique<Pointer>(&delegate, seat_.get());
 
@@ -2087,7 +2074,7 @@ TEST_P(PointerTest, DontSendMouseEventDuringMove) {
   ::testing::Mock::VerifyAndClearExpectations(&delegate);
 }
 
-TEST_P(PointerTest, SetCursorWithSurfaceChange) {
+TEST_F(PointerTest, SetCursorWithSurfaceChange) {
   auto shell_surface = test::ShellSurfaceBuilder({20, 20}).BuildShellSurface();
   auto* surface = shell_surface->surface_for_testing();
 
@@ -2151,7 +2138,7 @@ TEST_P(PointerTest, SetCursorWithSurfaceChange) {
   pointer.reset();
 }
 
-TEST_P(PointerTest, SetCursorBitmapFromBuffer) {
+TEST_F(PointerTest, SetCursorBitmapFromBuffer) {
   auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
   auto* surface = shell_surface->surface_for_testing();
 
@@ -2167,25 +2154,39 @@ TEST_P(PointerTest, SetCursorBitmapFromBuffer) {
   EXPECT_CALL(delegate, OnPointerEnter(surface, gfx::PointF(), 0));
   generator.MoveMouseTo(surface->window()->GetBoundsInScreen().origin());
 
+  // Create a TestSharedImageInterface to create a mappable shared image.
+  auto test_sii = base::MakeRefCounted<gpu::TestSharedImageInterface>();
   constexpr gfx::Size buffer_size(10, 10);
-  const gfx::BufferFormat buffer_format = gfx::BufferFormat::RGBA_8888;
-  std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
-      test::ExoTestHelper::CreateGpuMemoryBuffer(buffer_size, buffer_format);
-  ASSERT_TRUE(gpu_memory_buffer->Map());
-  ASSERT_NE(nullptr, gpu_memory_buffer->memory(0));
-  ASSERT_NE(0, gpu_memory_buffer->stride(0));
-  // Set the gpu memory buffer to yellow.
-  constexpr uint8_t yellow_rgba[] = {255u, 255u, 0u, 255u};
-  gl::GLTestSupport::SetBufferDataToColor(
-      buffer_size.width(), buffer_size.height(), gpu_memory_buffer->stride(0),
-      0, gfx::BufferFormat::RGBA_8888, yellow_rgba,
-      static_cast<uint8_t*>(gpu_memory_buffer->memory(0)));
-  gpu_memory_buffer->Unmap();
+  const auto format = viz::SinglePlaneFormat::kRGBA_8888;
+  // Setting some default usage in order to get a mappable shared image.
+  const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
+                        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+
+  // Create a mappable shared image.
+  auto shared_image = test_sii->CreateSharedImage(
+      {format, buffer_size, gfx::ColorSpace(),
+       gpu::SharedImageUsageSet(si_usage), "PointerTest"},
+      gpu::kNullSurfaceHandle, gfx::BufferUsage::GPU_READ);
+  ASSERT_TRUE(shared_image);
+
+  auto scoped_mapping = shared_image->Map();
+  ASSERT_TRUE(scoped_mapping);
+
+  // Set the shared image to yellow.
+  SkImageInfo image_info =
+      SkImageInfo::Make(buffer_size.width(), buffer_size.height(),
+                        kRGBA_8888_SkColorType, kPremul_SkAlphaType);
+  sk_sp<SkSurface> sk_surface = SkSurfaces::WrapPixels(
+      image_info, scoped_mapping->GetMemoryForPlane(0).data(),
+      image_info.minRowBytes());
+  sk_surface->getCanvas()->clear(SK_ColorYELLOW);
+
+  scoped_mapping.reset();
 
   std::unique_ptr<Surface> pointer_surface(new Surface);
   std::unique_ptr<Buffer> pointer_buffer =
       test::ExoTestHelper::CreateBufferFromGMBHandle(
-          gpu_memory_buffer->CloneHandle(), buffer_size, buffer_format);
+          shared_image->CloneGpuMemoryBufferHandle(), buffer_size, format);
   pointer_surface->Attach(pointer_buffer.get());
   pointer_surface->Commit();
 
@@ -2199,6 +2200,35 @@ TEST_P(PointerTest, SetCursorBitmapFromBuffer) {
 
   EXPECT_CALL(delegate, OnPointerDestroying(pointer.get()));
   pointer.reset();
+}
+
+TEST_F(PointerConstraintTest, ConstraintPointerLockPointer) {
+  auto* cursor_client = WMHelper::GetInstance()->GetCursorClient();
+  auto original_cursor = cursor_client->GetCursor();
+  EXPECT_TRUE(pointer_->ConstrainPointer(&constraint_delegate_));
+
+  EXPECT_TRUE(cursor_client->IsCursorLocked());
+  EXPECT_TRUE(cursor_client->IsCursorVisible());
+  EXPECT_EQ(original_cursor.type(), cursor_client->GetCursor().type());
+
+  EXPECT_CALL(delegate_, OnPointerEnter(surface_.get(), gfx::PointF(), 0));
+  EXPECT_CALL(delegate_, OnPointerFrame()).Times(testing::AtLeast(1));
+  generator_->MoveMouseTo(surface_->window()->GetBoundsInScreen().origin());
+
+  pointer_->SetCursorType(ui::mojom::CursorType::kNull);
+
+  EXPECT_EQ(ui::mojom::CursorType::kNull, cursor_client->GetCursor().type());
+
+  GetEventGenerator()->PressKey(ui::VKEY_A, 0, 0);
+  EXPECT_TRUE(cursor_client->IsCursorLocked());
+  EXPECT_TRUE(cursor_client->IsCursorVisible());
+
+  pointer_->OnPointerConstraintDelegateDestroying(&constraint_delegate_);
+  EXPECT_CALL(delegate_, OnPointerDestroying(pointer_.get()));
+
+  EXPECT_FALSE(cursor_client->IsCursorLocked());
+
+  pointer_.reset();
 }
 
 }  // namespace

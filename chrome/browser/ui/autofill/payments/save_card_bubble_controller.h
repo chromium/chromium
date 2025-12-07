@@ -9,9 +9,9 @@
 #include <string>
 #include <vector>
 
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
-#include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
 #include "components/autofill/core/browser/ui/payments/save_payment_method_and_virtual_card_enroll_confirmation_ui_params.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/web_contents.h"
@@ -23,7 +23,7 @@ class Profile;
 namespace autofill {
 
 class CreditCard;
-enum class BubbleType;
+enum class PaymentsBubbleType;
 
 // Interface that exposes controller functionality to save card bubbles.
 class SaveCardBubbleController {
@@ -38,11 +38,6 @@ class SaveCardBubbleController {
   // controller from the |web_contents| then return the reference.
   static SaveCardBubbleController* GetOrCreate(
       content::WebContents* web_contents);
-
-  // Returns a reference to the SaveCardBubbleController associated with the
-  // given |web_contents|. If controller does not exist, this will return
-  // nullptr.
-  static SaveCardBubbleController* Get(content::WebContents* web_contents);
 
   // Returns the title that should be displayed in the bubble.
   virtual std::u16string GetWindowTitle() const = 0;
@@ -66,7 +61,7 @@ class SaveCardBubbleController {
 
   // Returns a once callback for the save card bubble controller's
   // OnBubbleClosed() method.
-  virtual base::OnceCallback<void(PaymentsBubbleClosedReason)>
+  virtual base::OnceCallback<void(PaymentsUiClosedReason)>
   GetOnBubbleClosedCallback() = 0;
 
   // Returns the UI parameters needed to display the save card confirmation
@@ -92,11 +87,12 @@ class SaveCardBubbleController {
   // OnSaveButton takes in a struct representing the cardholder name,
   // expiration date month and expiration date year confirmed/entered by the
   // user if they were requested, or struct with empty strings otherwise.
-  virtual void OnSaveButton(const AutofillClient::UserProvidedCardDetails&
-                                user_provided_card_details) = 0;
+  virtual void OnSaveButton(
+      const payments::PaymentsAutofillClient::UserProvidedCardDetails&
+          user_provided_card_details) = 0;
   virtual void OnLegalMessageLinkClicked(const GURL& url) = 0;
   virtual void OnManageCardsClicked() = 0;
-  virtual void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) = 0;
+  virtual void OnBubbleClosed(PaymentsUiClosedReason closed_reason) = 0;
 
   // State.
 
@@ -105,7 +101,7 @@ class SaveCardBubbleController {
   // Returns true iff is showing or has showed bubble for upload save.
   virtual bool IsUploadSave() const = 0;
   // Returns the current state of the bubble.
-  virtual BubbleType GetBubbleType() const = 0;
+  virtual PaymentsBubbleType GetPaymentsBubbleType() const = 0;
   // Returns true if the user is signed in and sync transport is active for
   // Wallet data, without having turned on sync-the-feature.
   virtual bool IsPaymentsSyncTransportEnabledWithoutSyncFeature() const = 0;

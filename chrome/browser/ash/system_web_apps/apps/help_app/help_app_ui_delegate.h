@@ -15,10 +15,6 @@ namespace content {
 class WebUI;
 }  // namespace content
 
-namespace apps {
-class DeviceInfoManager;
-}  // namespace apps
-
 namespace ash {
 
 /**
@@ -46,10 +42,10 @@ class ChromeHelpAppUIDelegate : public HelpAppUIDelegate {
                          callback) override;
   std::optional<std::string> OpenUrlInBrowserAndTriggerInstallDialog(
       const GURL& url) override;
+  void OpenSettings(help_app::mojom::SettingsComponent component) override;
 
  private:
   raw_ptr<content::WebUI> web_ui_;  // Owns |this|.
-  std::unique_ptr<apps::DeviceInfoManager> device_info_manager_;
 };
 
 }  // namespace ash

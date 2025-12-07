@@ -679,7 +679,6 @@ GLint GetProgramResourceLocation(GLuint program,
                                  const char* name) override;
 void MemoryBarrierEXT(GLbitfield barriers) override;
 void MemoryBarrierByRegion(GLbitfield barriers) override;
-void SwapBuffers(GLuint64 swap_id, GLbitfield flags) override;
 GLuint GetMaxValueInBufferCHROMIUM(GLuint buffer_id,
                                    GLsizei count,
                                    GLenum type,
@@ -710,11 +709,6 @@ void* MapTexSubImage2DCHROMIUM(GLenum target,
                                GLenum type,
                                GLenum access) override;
 void UnmapTexSubImage2DCHROMIUM(const void* mem) override;
-void ResizeCHROMIUM(GLuint width,
-                    GLuint height,
-                    GLfloat scale_factor,
-                    GLcolorSpace color_space,
-                    GLboolean alpha) override;
 const GLchar* GetRequestableExtensionsCHROMIUM() override;
 void RequestExtensionCHROMIUM(const char* extension) override;
 void GetProgramInfoCHROMIUM(GLuint program,
@@ -810,9 +804,6 @@ void BindFragDataLocationEXT(GLuint program,
                              GLuint colorNumber,
                              const char* name) override;
 GLint GetFragDataIndexEXT(GLuint program, const char* name) override;
-void InitializeDiscardableTextureCHROMIUM(GLuint texture_id) override;
-void UnlockDiscardableTextureCHROMIUM(GLuint texture_id) override;
-bool LockDiscardableTextureCHROMIUM(GLuint texture_id) override;
 void WindowRectanglesEXT(GLenum mode, GLsizei count, const GLint* box) override;
 GLuint CreateGpuFenceCHROMIUM() override;
 GLuint CreateClientGpuFenceCHROMIUM(ClientGpuFence source) override;
@@ -829,38 +820,12 @@ void MaxShaderCompilerThreadsKHR(GLuint count) override;
 GLuint CreateAndTexStorage2DSharedImageCHROMIUM(const GLbyte* mailbox) override;
 void BeginSharedImageAccessDirectCHROMIUM(GLuint texture, GLenum mode) override;
 void EndSharedImageAccessDirectCHROMIUM(GLuint texture) override;
-void ConvertRGBAToYUVAMailboxesINTERNAL(GLenum planes_yuv_color_space,
-                                        GLenum plane_config,
-                                        GLenum subsampling,
-                                        const GLbyte* mailboxes) override;
-void ConvertYUVAMailboxesToRGBINTERNAL(GLint src_x,
-                                       GLint src_y,
-                                       GLsizei width,
-                                       GLsizei height,
-                                       GLenum planes_yuv_color_space,
-                                       GLenum plane_config,
-                                       GLenum subsampling,
-                                       const GLbyte* mailboxes) override;
-void ConvertYUVAMailboxesToTextureINTERNAL(GLuint texture,
-                                           GLenum target,
-                                           GLuint internal_format,
-                                           GLenum type,
-                                           GLint src_x,
-                                           GLint src_y,
-                                           GLsizei width,
-                                           GLsizei height,
-                                           GLboolean flip_y,
-                                           GLenum planes_yuv_color_space,
-                                           GLenum plane_config,
-                                           GLenum subsampling,
-                                           const GLbyte* mailboxes) override;
 void CopySharedImageINTERNAL(GLint xoffset,
                              GLint yoffset,
                              GLint x,
                              GLint y,
                              GLsizei width,
                              GLsizei height,
-                             GLboolean unpack_flip_y,
                              const GLbyte* mailboxes) override;
 void CopySharedImageToTextureINTERNAL(GLuint texture,
                                       GLenum target,
@@ -870,7 +835,7 @@ void CopySharedImageToTextureINTERNAL(GLuint texture,
                                       GLint src_y,
                                       GLsizei width,
                                       GLsizei height,
-                                      GLboolean flip_y,
+                                      GLboolean is_dst_origin_top_left,
                                       const GLbyte* src_mailbox) override;
 GLboolean ReadbackARGBImagePixelsINTERNAL(const GLbyte* mailbox,
                                           const void* dst_color_space,

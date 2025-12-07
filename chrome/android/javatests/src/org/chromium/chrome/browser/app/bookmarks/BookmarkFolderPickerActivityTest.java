@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.app.bookmarks;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
-import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -16,14 +15,12 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-import android.content.Intent;
-
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.MediumTest;
+import androidx.test.runner.lifecycle.Stage;
 
 import org.junit.After;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,23 +30,23 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.ActivityState;
-import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
+import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
-import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.ReusedCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
@@ -63,50 +60,53 @@ import java.util.concurrent.TimeoutException;
 @RunWith(BaseJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
-@EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
 public class BookmarkFolderPickerActivityTest {
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    @Rule
+    public ReusedCtaTransitTestRule<WebPageStation> mActivityTestRule =
+            ChromeTransitTestRules.blankPageStartReusedActivityRule();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Captor ArgumentCaptor<BookmarkItem> mBookmarkItemCaptor;
     @Mock BookmarkModelObserver mBookmarkModelObserver;
 
-    private static BookmarkModel sBookmarkModel;
-    private static BookmarkId sMobileFolderId;
-    private static BookmarkId sOtherFolderId;
-    private static BookmarkId sLocalOrSyncableReadingListFolder;
+    private BookmarkModel mBookmarkModel;
+    private BookmarkId mMobileFolderId;
+    private BookmarkId mLocalOrSyncableReadingListFolder;
 
+    private final BookmarkManagerOpener mBookmarkManagerOpener = new BookmarkManagerOpenerImpl();
+    private WebPageStation mBlankPage;
     private BookmarkFolderPickerActivity mActivity;
 
-    @BeforeClass
-    public static void setUpBeforeClass() throws TimeoutException {
-        sActivityTestRule.startMainActivityOnBlankPage();
+    @Before
+    public void setUp() {
+        boolean shouldInitialize = mActivityTestRule.getActivity() == null;
+        mBlankPage = mActivityTestRule.start();
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    sBookmarkModel =
-                            BookmarkModel.getForProfile(ProfileManager.getLastUsedRegularProfile());
-                    sBookmarkModel.loadEmptyPartnerBookmarkShimForTesting();
-                });
+        if (shouldInitialize) {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        mBookmarkModel =
+                                BookmarkModel.getForProfile(
+                                        ProfileManager.getLastUsedRegularProfile());
+                        mBookmarkModel.loadEmptyPartnerBookmarkShimForTesting();
+                    });
 
-        BookmarkTestUtil.waitForBookmarkModelLoaded();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    sMobileFolderId = sBookmarkModel.getMobileFolderId();
-                    sOtherFolderId = sBookmarkModel.getOtherFolderId();
-                    sLocalOrSyncableReadingListFolder =
-                            sBookmarkModel.getLocalOrSyncableReadingListFolder();
-                });
+            BookmarkTestUtil.waitForBookmarkModelLoaded();
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        mMobileFolderId = mBookmarkModel.getMobileFolderId();
+                        mLocalOrSyncableReadingListFolder =
+                                mBookmarkModel.getLocalOrSyncableReadingListFolder();
+                    });
+        }
     }
 
     @After
     public void tearDown() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    sBookmarkModel.removeAllUserBookmarks();
+                    mBookmarkModel.removeAllUserBookmarks();
                 });
     }
 
@@ -115,17 +115,18 @@ public class BookmarkFolderPickerActivityTest {
     @Feature({"Bookmark"})
     public void testMoveBookmark() throws ExecutionException, TimeoutException, Exception {
         BookmarkId bookmark =
-                addBookmark(sMobileFolderId, 0, "bookmark", new GURL("https://google.com"));
-        BookmarkId folder = addFolder(sMobileFolderId, 1, "folder");
+                addBookmark(mMobileFolderId, 0, "bookmark", new GURL("https://google.com"));
+        BookmarkId folder = addFolder(mMobileFolderId, 1, "folder");
+
         startFolderPickerActivity(bookmark);
 
-        ThreadUtils.runOnUiThreadBlocking(() -> sBookmarkModel.addObserver(mBookmarkModelObserver));
+        ThreadUtils.runOnUiThreadBlocking(() -> mBookmarkModel.addObserver(mBookmarkModelObserver));
 
         onView(withText("Mobile bookmarks")).perform(click());
         onView(withText("folder")).perform(click());
         onView(withText("Move here")).perform(click());
 
-        BookmarkItem oldParent = getBookmarkItem(sMobileFolderId);
+        BookmarkItem oldParent = getBookmarkItem(mMobileFolderId);
         BookmarkItem newParent = getBookmarkItem(folder);
         verifyBookmarkMoved(oldParent, 0, newParent, 0);
         verifyNoMoreInteractions(mBookmarkModelObserver);
@@ -141,18 +142,18 @@ public class BookmarkFolderPickerActivityTest {
         String title = "bookmark";
         GURL url = new GURL("https://google.com");
 
-        BookmarkId bookmark = addBookmark(sMobileFolderId, 0, title, url);
+        BookmarkId bookmark = addBookmark(mMobileFolderId, 0, title, url);
         startFolderPickerActivity(bookmark);
 
-        ThreadUtils.runOnUiThreadBlocking(() -> sBookmarkModel.addObserver(mBookmarkModelObserver));
+        ThreadUtils.runOnUiThreadBlocking(() -> mBookmarkModel.addObserver(mBookmarkModelObserver));
 
         onView(withId(R.id.folder_recycler_view))
                 .perform(RecyclerViewActions.scrollTo(hasDescendant(withText("Reading list"))));
         onView(withText("Reading list")).perform(click());
         onView(withText("Move here")).perform(click());
 
-        BookmarkItem oldParent = getBookmarkItem(sMobileFolderId);
-        BookmarkItem newParent = getBookmarkItem(sLocalOrSyncableReadingListFolder);
+        BookmarkItem oldParent = getBookmarkItem(mMobileFolderId);
+        BookmarkItem newParent = getBookmarkItem(mLocalOrSyncableReadingListFolder);
         verifyBookmarkMoved(oldParent, 0, newParent, 0);
         verifyNoMoreInteractions(mBookmarkModelObserver);
 
@@ -165,7 +166,7 @@ public class BookmarkFolderPickerActivityTest {
     public void testCancelButton()
             throws ExecutionException, TimeoutException, InterruptedException {
         BookmarkId bookmark =
-                addBookmark(sMobileFolderId, 0, "bookmark", new GURL("https://google.com"));
+                addBookmark(mMobileFolderId, 0, "bookmark", new GURL("https://google.com"));
         startFolderPickerActivity(bookmark);
 
         onView(withText("Cancel")).perform(click());
@@ -174,44 +175,32 @@ public class BookmarkFolderPickerActivityTest {
     }
 
     private BookmarkItem getBookmarkItem(BookmarkId bookmarkId) throws ExecutionException {
-        return ThreadUtils.runOnUiThreadBlocking(() -> sBookmarkModel.getBookmarkById(bookmarkId));
+        return ThreadUtils.runOnUiThreadBlocking(() -> mBookmarkModel.getBookmarkById(bookmarkId));
     }
 
     private BookmarkId addFolder(BookmarkId parent, int index, String title)
             throws ExecutionException {
         return ThreadUtils.runOnUiThreadBlocking(
-                () -> sBookmarkModel.addFolder(parent, index, title));
+                () -> mBookmarkModel.addFolder(parent, index, title));
     }
 
     private BookmarkId addBookmark(BookmarkId parent, int index, String title, GURL url)
             throws ExecutionException {
         return ThreadUtils.runOnUiThreadBlocking(
-                () -> sBookmarkModel.addBookmark(parent, index, title, url));
+                () -> mBookmarkModel.addBookmark(parent, index, title, url));
     }
 
     private void startFolderPickerActivity(BookmarkId... ids) {
-        Intent intent =
-                new Intent(sActivityTestRule.getActivity(), BookmarkFolderPickerActivity.class);
-        intent.putStringArrayListExtra(
-                BookmarkFolderPickerActivity.INTENT_BOOKMARK_IDS,
-                BookmarkUtils.bookmarkIdsToStringList(ids));
-        sActivityTestRule.getActivity().startActivity(intent);
-
-        CriteriaHelper.pollUiThread(
-                () ->
-                        ApplicationStatus.getLastTrackedFocusedActivity()
-                                instanceof BookmarkFolderPickerActivity,
-                "Timed out waiting for BookmarkFolderPickerActivity");
         mActivity =
-                (BookmarkFolderPickerActivity) ApplicationStatus.getLastTrackedFocusedActivity();
-        CriteriaHelper.pollUiThread(
-                () -> ApplicationStatus.getStateForActivity(mActivity) == ActivityState.RESUMED,
-                "Timed out waiting for activity to enter the RESUMED state.");
-    }
-
-    // Clicks the "Go back" button in the selectable list layout.
-    private void clickToolbarBackButton() {
-        onView(withContentDescription("Navigate up")).perform(click());
+                ApplicationTestUtils.waitForActivityWithClass(
+                        BookmarkFolderPickerActivity.class,
+                        Stage.RESUMED,
+                        () -> {
+                            mBookmarkManagerOpener.startFolderPickerActivity(
+                                    mActivityTestRule.getActivity(),
+                                    mActivityTestRule.getProfile(false),
+                                    ids);
+                        });
     }
 
     private void verifyBookmarkMoved(

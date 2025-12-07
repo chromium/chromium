@@ -1,0 +1,16 @@
+Name: firebase-measurement-connector
+Short Name: firebase-measurement-connector
+URL: https://dl.google.com/dl/android/maven2/com/google/firebase/firebase-measurement-connector/19.0.0/firebase-measurement-connector-19.0.0.aar
+Version: 19.0.0
+Update Mechanism: Autoroll
+License: Android Software Development Kit License
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+Bridge interfaces for Firebase analytics into gmscore.
+
+Local Modifications:
+No modifications.

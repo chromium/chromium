@@ -4,9 +4,11 @@
 
 #import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_tab_helper.h"
 
-#import "components/policy/core/browser/url_blocklist_manager.h"
-#import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_service.h"
+#import "components/policy/core/browser/url_list/policy_blocklist_service.h"
+#import "components/policy/core/browser/url_list/url_blocklist_manager.h"
+#import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_service_factory.h"
 #import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_util.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "net/base/apple/url_conversions.h"
 
 PolicyUrlBlockingTabHelper::~PolicyUrlBlockingTabHelper() = default;
@@ -19,10 +21,11 @@ void PolicyUrlBlockingTabHelper::ShouldAllowRequest(
     web::WebStatePolicyDecider::RequestInfo request_info,
     web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
   GURL gurl = net::GURLWithNSURL(request.URL);
-  PolicyBlocklistService* blocklistService =
-      PolicyBlocklistServiceFactory::GetForBrowserState(
-          web_state()->GetBrowserState());
-  if (blocklistService->GetURLBlocklistState(gurl) ==
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state()->GetBrowserState());
+  PolicyBlocklistService* service =
+      PolicyBlocklistServiceFactory::GetForProfile(profile);
+  if (service->GetURLBlocklistState(gurl) ==
       policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST) {
     return std::move(callback).Run(
         web::WebStatePolicyDecider::PolicyDecision::CancelAndDisplayError(
@@ -31,5 +34,3 @@ void PolicyUrlBlockingTabHelper::ShouldAllowRequest(
 
   std::move(callback).Run(web::WebStatePolicyDecider::PolicyDecision::Allow());
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(PolicyUrlBlockingTabHelper)

@@ -10,84 +10,49 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
-#include "components/invalidation/impl/fake_invalidation_service.h"
-#include "components/invalidation/public/invalidation.h"
-#include "components/invalidation/public/invalidation_util.h"
+#include "components/invalidation/invalidation_listener.h"
+#include "components/invalidation/test_support/fake_invalidation_listener.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace cert_provisioning {
-namespace internal {
+namespace ash::cert_provisioning::internal {
 
-class CertProvisioningInvalidationHandlerTest
-    : public testing::TestWithParam<CertScope> {
+namespace {
+
+constexpr char kListenerType[] = "ABC123";
+constexpr char kSomeOtherType[] = "321CBA";
+
+}  // namespace
+
+class CertProvisioningInvalidationHandlerTest : public testing::Test {
  protected:
   CertProvisioningInvalidationHandlerTest()
-      : kInvalidatorTopic("abcdef"),
-        kSomeOtherTopic("fedcba"),
-        kListenerType("ABC123"),
-        kSomeOtherType("321CBA"),
-        invalidation_handler_(
-            CertProvisioningInvalidationHandler::BuildAndRegister(
-                GetScope(),
-                &invalidation_service_,
-                kInvalidatorTopic,
+      : invalidation_handler_(
+            std::make_unique<CertProvisioningInvalidationHandler>(
+                &invalidation_listener_,
                 kListenerType,
                 invalidation_events_.GetRepeatingCallback())) {
     EXPECT_NE(nullptr, invalidation_handler_);
 
-    EnableInvalidationService();
+    invalidation_listener_.Start();
   }
 
-  CertProvisioningInvalidationHandlerTest(
-      const CertProvisioningInvalidationHandlerTest&) = delete;
-  CertProvisioningInvalidationHandlerTest& operator=(
-      const CertProvisioningInvalidationHandlerTest&) = delete;
-
-  CertScope GetScope() const { return GetParam(); }
-
-  const char* GetExpectedOwnerName() const {
-    switch (GetScope()) {
-      case CertScope::kUser:
-        return "cert.user.abcdef";
-      case CertScope::kDevice:
-        return "cert.device.abcdef";
-    }
+  invalidation::DirectInvalidation CreateInvalidation(std::string type) {
+    return invalidation::DirectInvalidation(std::move(type), /*version=*/42,
+                                            /*payload=*/"foo");
   }
 
-  void EnableInvalidationService() {
-    invalidation_service_.SetInvalidatorState(
-        invalidation::InvalidatorState::kEnabled);
-  }
-
-  void DisableInvalidationService() {
-    invalidation_service_.SetInvalidatorState(
-        invalidation::InvalidatorState::kDisabled);
-  }
-
-  invalidation::Invalidation CreateInvalidation(
-      const invalidation::Topic& topic) {
-    return invalidation::Invalidation(topic, 42, "foo");
-  }
-
-  // Will send invalidation to handler if `IsInvalidatorRegistered(topic) ==
-  // true`.
-  invalidation::Invalidation FireInvalidation(
-      const invalidation::Topic& topic) {
-    const invalidation::Invalidation invalidation = CreateInvalidation(topic);
-    invalidation_service_.EmitInvalidationForTest(invalidation);
+  // Will send invalidation to handler if `invalidator_` is registered and
+  // `invalidation_listener_` started.
+  invalidation::DirectInvalidation FireInvalidation(std::string type) {
+    const invalidation::DirectInvalidation invalidation =
+        CreateInvalidation(std::move(type));
+    invalidation_listener_.FireInvalidation(invalidation);
     return invalidation;
   }
 
   bool IsInvalidatorRegistered(
       CertProvisioningInvalidationHandler* invalidator) const {
-    return invalidation_service_.HasObserver(invalidator);
-  }
-
-  bool IsInvalidatorRegistered(const invalidation::Topic& topic) {
-    return invalidation_service_.invalidator_registrar()
-        .GetRegisteredTopics(invalidation_handler_.get())
-        .contains(topic);
+    return invalidation_listener_.HasObserver(invalidator);
   }
 
   bool IsInvalidatorRegistered() const {
@@ -96,84 +61,48 @@ class CertProvisioningInvalidationHandlerTest
 
   base::test::SingleThreadTaskEnvironment task_environment_;
 
-  const invalidation::Topic kInvalidatorTopic;
-  const invalidation::Topic kSomeOtherTopic;
-  const std::string kListenerType;
-  const std::string kSomeOtherType;
-
-  invalidation::FakeInvalidationService invalidation_service_;
+  invalidation::FakeInvalidationListener invalidation_listener_;
 
   base::test::TestFuture<InvalidationEvent> invalidation_events_;
 
   std::unique_ptr<CertProvisioningInvalidationHandler> invalidation_handler_;
 };
 
-TEST_P(CertProvisioningInvalidationHandlerTest,
-       SecondInvalidatorForSameTopicCannotBeBuilt) {
-  EXPECT_NE(nullptr, invalidation_handler_);
-
-  std::unique_ptr<CertProvisioningInvalidationHandler> second_invalidator =
-      CertProvisioningInvalidationHandler::BuildAndRegister(
-          GetScope(), &invalidation_service_, kInvalidatorTopic, kListenerType,
-          base::DoNothing());
-
-  EXPECT_EQ(nullptr, second_invalidator);
-}
-
-TEST_P(CertProvisioningInvalidationHandlerTest,
-       ConstructorShouldNotRegisterInvalidator) {
+TEST_F(CertProvisioningInvalidationHandlerTest,
+       ConstructorRegistersInvalidator) {
   EXPECT_NE(nullptr, invalidation_handler_);
 
   CertProvisioningInvalidationHandler second_invalidator(
-      GetScope(), &invalidation_service_, kSomeOtherTopic, kSomeOtherType,
-      base::DoNothing());
+      &invalidation_listener_, kSomeOtherType, base::DoNothing());
 
-  EXPECT_FALSE(IsInvalidatorRegistered(&second_invalidator));
+  EXPECT_TRUE(IsInvalidatorRegistered(&second_invalidator));
 }
 
-TEST_P(CertProvisioningInvalidationHandlerTest,
-       ShouldReceiveInvalidationForRegisteredTopic) {
-  EXPECT_TRUE(IsInvalidatorRegistered(kInvalidatorTopic));
+TEST_F(CertProvisioningInvalidationHandlerTest,
+       ShouldReportSubscriptionWhenInvalidationListenerRestarts) {
+  EXPECT_TRUE(IsInvalidatorRegistered());
+  EXPECT_EQ(invalidation_events_.Take(),
+            InvalidationEvent::kSuccessfullySubscribed);
 
-  FireInvalidation(kInvalidatorTopic);
+  invalidation_listener_.Shutdown();
+  invalidation_listener_.Start();
+  EXPECT_EQ(invalidation_events_.Take(),
+            InvalidationEvent::kSuccessfullySubscribed);
+}
 
+TEST_F(CertProvisioningInvalidationHandlerTest,
+       ShouldReceiveInvalidationForType) {
+  EXPECT_TRUE(IsInvalidatorRegistered());
+  EXPECT_EQ(invalidation_events_.Take(),
+            InvalidationEvent::kSuccessfullySubscribed);
+
+  FireInvalidation(kListenerType);
   EXPECT_EQ(invalidation_events_.Take(),
             InvalidationEvent::kInvalidationReceived);
 }
 
-TEST_P(CertProvisioningInvalidationHandlerTest, ShouldUnregister) {
-  EXPECT_TRUE(IsInvalidatorRegistered(kInvalidatorTopic));
-
-  invalidation_handler_->Unregister();
-
-  EXPECT_FALSE(IsInvalidatorRegistered());
+TEST_F(CertProvisioningInvalidationHandlerTest, ShouldHaveCorrectTypeName) {
+  EXPECT_EQ(kListenerType, invalidation_handler_->GetType());
 }
 
-TEST_P(CertProvisioningInvalidationHandlerTest,
-       ShouldUnregisterButKeepTopicSubscribedWhenDestroyed) {
-  EXPECT_TRUE(IsInvalidatorRegistered());
-
-  invalidation_handler_.reset();
-
-  // Ensure that invalidator is unregistered.
-  EXPECT_FALSE(IsInvalidatorRegistered());
-  EXPECT_FALSE(invalidation_events_.IsReady());
-
-  // Ensure that topic is still subscribed.
-  const invalidation::TopicMap topics =
-      invalidation_service_.invalidator_registrar().GetAllSubscribedTopics();
-  EXPECT_NE(topics.end(), topics.find(kInvalidatorTopic));
-}
-
-TEST_P(CertProvisioningInvalidationHandlerTest,
-       ShouldHaveUniqueOwnerNameContainingScopeAndTopic) {
-  EXPECT_EQ(GetExpectedOwnerName(), invalidation_handler_->GetOwnerName());
-}
-
-INSTANTIATE_TEST_SUITE_P(CertProvisioningInvalidationHandlerTestInstance,
-                         CertProvisioningInvalidationHandlerTest,
-                         testing::Values(CertScope::kUser, CertScope::kDevice));
-
-}  // namespace internal
-}  // namespace cert_provisioning
-}  // namespace ash
+}  // namespace ash::cert_provisioning::internal

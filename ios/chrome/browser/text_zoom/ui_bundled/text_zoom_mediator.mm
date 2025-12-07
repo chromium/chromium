@@ -6,6 +6,9 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
+#import "components/dom_distiller/core/distilled_page_prefs.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_font_size_utils.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
@@ -16,7 +19,6 @@
 #import "ios/web/public/web_state_observer_bridge.h"
 
 @interface TextZoomMediator () <WebStateListObserving, CRWWebStateObserver>
-
 @end
 
 @implementation TextZoomMediator {
@@ -31,16 +33,22 @@
 
   // The handler for any TextZoom commands.
   id<TextZoomCommands> _commandHandler;
+
+  // Distilled page prefs for reader mode.
+  raw_ptr<dom_distiller::DistilledPagePrefs> _distilledPagePrefs;
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
-                      commandHandler:(id<TextZoomCommands>)commandHandler {
+                      commandHandler:(id<TextZoomCommands>)commandHandler
+                  distilledPagePrefs:
+                      (dom_distiller::DistilledPagePrefs*)distilledPagePrefs {
   DCHECK(webStateList);
   DCHECK(commandHandler);
   if (([super init])) {
     _webStateList = webStateList;
     _commandHandler = commandHandler;
     _activeWebState = _webStateList->GetActiveWebState();
+    _distilledPagePrefs = distilledPagePrefs;
 
     // Create and register the observers.
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
@@ -72,6 +80,7 @@
     _webStateListObserver = nullptr;
     _webStateList = nullptr;
   }
+  _distilledPagePrefs = nullptr;
 }
 
 #pragma mark - Accessors
@@ -96,43 +105,73 @@
 #pragma mark - TextZoomHandler
 
 - (void)zoomIn {
-  if (_activeWebState) {
-    FontSizeTabHelper* FontSizeTabHelper =
+  if (!_activeWebState) {
+    return;
+  }
+  ReaderModeTabHelper* readerModeTabHelper =
+      ReaderModeTabHelper::FromWebState(_activeWebState);
+  if (readerModeTabHelper && readerModeTabHelper->IsActive()) {
+    IncreaseReaderModeFontSize(_distilledPagePrefs);
+  } else {
+    FontSizeTabHelper* fontSizeTabHelper =
         FontSizeTabHelper::FromWebState(_activeWebState);
-    if (FontSizeTabHelper) {
-      FontSizeTabHelper->UserZoom(ZOOM_IN);
+    if (fontSizeTabHelper) {
+      fontSizeTabHelper->UserZoom(ZOOM_IN);
     }
   }
-
   [self updateConsumerState];
 }
 
 - (void)zoomOut {
-  if (_activeWebState) {
+  if (!_activeWebState) {
+    return;
+  }
+  ReaderModeTabHelper* readerModeTabHelper =
+      ReaderModeTabHelper::FromWebState(_activeWebState);
+  if (readerModeTabHelper && readerModeTabHelper->IsActive()) {
+    DecreaseReaderModeFontSize(_distilledPagePrefs);
+  } else {
     FontSizeTabHelper* fontSizeTabHelper =
         FontSizeTabHelper::FromWebState(_activeWebState);
     if (fontSizeTabHelper) {
       fontSizeTabHelper->UserZoom(ZOOM_OUT);
     }
   }
-
   [self updateConsumerState];
 }
 
 - (void)resetZoom {
-  if (_activeWebState) {
+  if (!_activeWebState) {
+    return;
+  }
+  ReaderModeTabHelper* readerModeTabHelper =
+      ReaderModeTabHelper::FromWebState(_activeWebState);
+  if (readerModeTabHelper && readerModeTabHelper->IsActive()) {
+    ResetReaderModeFontSize(_distilledPagePrefs);
+  } else {
     FontSizeTabHelper* fontSizeTabHelper =
         FontSizeTabHelper::FromWebState(_activeWebState);
     if (fontSizeTabHelper) {
       fontSizeTabHelper->UserZoom(ZOOM_RESET);
     }
   }
-
   [self updateConsumerState];
 }
 
 - (void)updateConsumerState {
-  if (_activeWebState) {
+  if (!_activeWebState) {
+    return;
+  }
+  ReaderModeTabHelper* readerModeTabHelper =
+      ReaderModeTabHelper::FromWebState(_activeWebState);
+  if (readerModeTabHelper && readerModeTabHelper->IsActive()) {
+    [_consumer
+        setZoomInEnabled:CanIncreaseReaderModeFontSize(_distilledPagePrefs)];
+    [_consumer
+        setZoomOutEnabled:CanDecreaseReaderModeFontSize(_distilledPagePrefs)];
+    [_consumer
+        setResetZoomEnabled:CanResetReaderModeFontSize(_distilledPagePrefs)];
+  } else {
     FontSizeTabHelper* fontSizeTabHelper =
         FontSizeTabHelper::FromWebState(_activeWebState);
     if (fontSizeTabHelper) {
@@ -168,5 +207,4 @@
     _activeWebState->AddObserver(_activeWebStateObserver.get());
   }
 }
-
 @end

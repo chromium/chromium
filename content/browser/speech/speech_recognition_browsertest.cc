@@ -18,6 +18,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
@@ -36,8 +37,10 @@
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "media/audio/audio_system.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_capturer_source.h"
 #include "media/base/audio_glitch_info.h"
+#include "media/base/audio_sample_types.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -45,17 +48,19 @@
 
 #if !BUILDFLAG(IS_FUCHSIA)
 #include "base/test/scoped_feature_list.h"
+#include "components/soda/mock_soda_installer.h"  // nogncheck
 #include "components/soda/soda_util.h"
+#include "content/browser/site_instance_impl.h"
 #include "content/browser/speech/fake_speech_recognition_manager_delegate.h"
 #include "content/browser/speech/soda_speech_recognition_engine_impl.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "media/base/media_switches.h"
 #include "media/mojo/mojom/audio_data.mojom.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #endif  // !BUILDFLAG(IS_FUCHSIA)
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using base::RunLoop;
 using CaptureCallback = media::AudioCapturerSource::CaptureCallback;
@@ -143,10 +148,9 @@ class MockCapturerSource : public media::AudioCapturerSource {
   MOCK_METHOD1(SetOutputDeviceForAec,
                void(const std::string& output_device_id));
 
- protected:
+ private:
   ~MockCapturerSource() override = default;
 
- private:
   StartCallback start_callback_;
   StopCallback stop_callback_;
   raw_ptr<CaptureCallback, AcrossTasksDanglingUntriaged> capture_callback_;
@@ -198,9 +202,9 @@ class SpeechRecognitionBrowserTest : public ContentBrowserTest {
         /*enabled_features=*/
         {
             media::kOnDeviceWebSpeech,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
             ash::features::kOnDeviceSpeechRecognition,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
         },
         /*disabled_features=*/{});
   }
@@ -213,7 +217,7 @@ class SpeechRecognitionBrowserTest : public ContentBrowserTest {
   }
 
   std::string GetPageFragment() {
-    return shell()->web_contents()->GetLastCommittedURL().ref();
+    return shell()->web_contents()->GetLastCommittedURL().GetRef();
   }
 
   const StreamingServerState &streaming_server_state() {
@@ -245,7 +249,7 @@ class SpeechRecognitionBrowserTest : public ContentBrowserTest {
   // Set SODA On-Device speech recognition features flags.
   base::test::ScopedFeatureList scoped_feature_list_;
   // Setup mock SODA installer
-  MockSodaInstaller mock_soda_installer_;
+  speech::MockSodaInstaller mock_soda_installer_;
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
  private:
@@ -296,7 +300,7 @@ class SpeechRecognitionBrowserTest : public ContentBrowserTest {
         audio_buffer[i] =
             static_cast<uint8_t>(127 * sin(i * 3.14F / (16 * buffer_size)));
     } else {
-      base::ranges::fill(audio_buffer, 0);
+      std::ranges::fill(audio_buffer, 0);
     }
 
     std::unique_ptr<media::AudioBus> audio_bus =
@@ -304,8 +308,7 @@ class SpeechRecognitionBrowserTest : public ContentBrowserTest {
     audio_bus->FromInterleaved<media::SignedInt16SampleTypeTraits>(
         reinterpret_cast<int16_t*>(&audio_buffer.data()[0]),
         audio_bus->frames());
-    capture_callback->Capture(audio_bus.get(), base::TimeTicks::Now(), {}, 0.0,
-                              false);
+    capture_callback->Capture(audio_bus.get(), base::TimeTicks::Now(), {}, 0.0);
   }
 
   void FeedAudioCapturerSource(const media::AudioParameters& audio_params,
@@ -433,8 +436,9 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionBrowserTest,
       }));
 
   bool has_reponsed = false;
-  EXPECT_CALL(*mock_speech_service, SendAudioToSpeechRecognitionService(_))
-      .WillRepeatedly(testing::Invoke([&](media::mojom::AudioDataS16Ptr data) {
+  EXPECT_CALL(*mock_speech_service, SendAudioToSpeechRecognitionService(_, _))
+      .WillRepeatedly([&](media::mojom::AudioDataS16Ptr data,
+                          std::optional<base::TimeDelta> media_start_pts) {
         if (!has_reponsed) {
           has_reponsed = true;
           media::SpeechRecognitionResult result =
@@ -446,7 +450,7 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionBrowserTest,
                              mock_speech_service->GetWeakPtr(),
                              std::move(result)));
         }
-      }));
+      });
 
   TestNavigationObserver navigation_observer(shell()->web_contents(), 2);
   shell()->LoadURL(GetTestUrlFromFragment("oneshot"));
@@ -469,6 +473,108 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionBrowserTest,
                             mock_service) { mock_service.reset(); },
                      std::move(mock_speech_service)));
   base::RunLoop().RunUntilIdle();
+}
+
+IN_PROC_BROWSER_TEST_F(SpeechRecognitionBrowserTest,
+                       NonDefaultPartitionThrowsError) {
+  if (!speech::IsOnDeviceSpeechRecognitionSupported()) {
+    return;
+  }
+  mock_soda_installer_.NotifySodaInstalledForTesting();
+  mock_soda_installer_.NotifySodaInstalledForTesting(
+      speech::LanguageCode::kEnUs);
+  EXPECT_CALL(mock_soda_installer_, GetAvailableLanguages())
+      .WillRepeatedly(InvokeWithoutArgs([]() {
+        std::vector<std::string> langs;
+        langs.push_back("en-US");
+        return langs;
+      }));
+
+  auto* browser_context = shell()->web_contents()->GetBrowserContext();
+  auto storage_partition_config = StoragePartitionConfig::Create(
+      browser_context, "SpeechRecognitionBrowserTest", "FixedStoragePartition",
+      true);
+  ASSERT_TRUE(embedded_test_server()->Start());
+  auto url = embedded_test_server()->GetURL("/");
+  auto* shell = Shell::CreateNewWindow(
+      browser_context, url,
+      SiteInstanceImpl::CreateForFixedStoragePartition(
+          browser_context, url, storage_partition_config),
+      gfx::Size());
+
+  auto GetSiteInstance = [](Shell* shell) {
+    return static_cast<SiteInstanceImpl*>(
+        shell->web_contents()->GetSiteInstance());
+  };
+
+  EXPECT_EQ(GetSiteInstance(shell)->GetStoragePartitionConfig(),
+            storage_partition_config);
+  EXPECT_TRUE(GetSiteInstance(shell)->IsFixedStoragePartition());
+
+  ASSERT_TRUE(
+      NavigateToURL(shell, embedded_test_server()->GetURL("/title1.html")));
+  EXPECT_EQ(GetSiteInstance(shell)->GetStoragePartitionConfig(),
+            storage_partition_config);
+  EXPECT_TRUE(GetSiteInstance(shell)->IsFixedStoragePartition());
+
+  std::string js_to_execute = R"(
+    new Promise((resolve, reject) => {
+      try {
+        var recognition = new webkitSpeechRecognition();
+        var error_received = false;
+
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.mode = 'ondevice-only';
+
+        recognition.onstart = function(event) {
+          console.log('onstart');
+        };
+        recognition.onaudiostart = function(event) {
+          console.log('onaudiostart');
+        };
+        recognition.onsoundstart = function(event) {
+          console.log('onsoundstart');
+        };
+        recognition.onspeechstart = function(event) {
+          console.log('onspeechstart');
+        };
+        recognition.onspeechend = function(event) {
+          console.log('onspeechend');
+        };
+        recognition.onsoundend = function(event) {
+          console.log('onsoundend');
+        };
+        recognition.onaudioend = function(event) {
+          console.log('onaudioend');
+        };
+        recognition.onresult = function(event) {
+          console.log('onresult');
+          resolve();
+        };
+        recognition.onnomatch = function(event) {
+          console.log('onnomatch');
+          resolve();
+        };
+        recognition.onerror = function(event) {
+          console.log('onerror from ExecJs: ' + event.error);
+          if (error_received) { resolve(); return; }
+          error_received = true;
+          window.location.hash = 'error_' + event.error;
+          resolve();
+        };
+        recognition.start();
+      } catch (e) {
+        window.location.hash = 'error_js_exception_in_execjs_' + e.name;
+        resolve();
+      }
+    });
+  )";
+
+  ASSERT_TRUE(
+      ExecJs(shell->web_contents()->GetPrimaryMainFrame(), js_to_execute));
+  EXPECT_THAT(shell->web_contents()->GetLastCommittedURL().GetRef(),
+              testing::HasSubstr("error_service-not-allowed"));
 }
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 

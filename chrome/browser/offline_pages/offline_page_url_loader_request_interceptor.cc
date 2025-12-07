@@ -12,12 +12,12 @@ namespace offline_pages {
 
 OfflinePageURLLoaderRequestInterceptor::OfflinePageURLLoaderRequestInterceptor(
     content::NavigationUIData* navigation_ui_data,
-    int frame_tree_node_id)
+    content::FrameTreeNodeId frame_tree_node_id)
     : navigation_ui_data_(navigation_ui_data),
       frame_tree_node_id_(frame_tree_node_id) {}
 
 OfflinePageURLLoaderRequestInterceptor::
-    ~OfflinePageURLLoaderRequestInterceptor() {}
+    ~OfflinePageURLLoaderRequestInterceptor() = default;
 
 void OfflinePageURLLoaderRequestInterceptor::MaybeCreateLoader(
     const network::ResourceRequest& tentative_resource_request,

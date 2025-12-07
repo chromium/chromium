@@ -1,2 +1,4 @@
 dtrainor@chromium.org
 mdjones@chromium.org
+
+per-file LayerTitleCache.java=file://chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/OWNERS

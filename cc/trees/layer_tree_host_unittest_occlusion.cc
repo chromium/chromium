@@ -120,8 +120,11 @@ class LayerTreeHostOcclusionTestDrawPropertiesOnSurface
     EXPECT_TRUE(GetRenderSurface(child));
     EXPECT_EQ(GetRenderSurface(child), child->render_target());
 
+    // Use the original draw transform before pixel alignment.
+    gfx::Transform transform = surface->draw_transform();
+    transform.Translate(surface->pixel_alignment_offset());
     EXPECT_OCCLUSION_EQ(
-        Occlusion(surface->draw_transform(), SimpleEnclosedRegion(),
+        Occlusion(transform, SimpleEnclosedRegion(),
                   SimpleEnclosedRegion(gfx::Rect(13, 9, 10, 11))),
         surface->occlusion_in_content_space());
     EndTest();
@@ -202,7 +205,7 @@ class LayerTreeHostOcclusionTestDrawPropertiesOnMask
                   SimpleEnclosedRegion(gfx::Rect(13, 9, 10, 11))),
         mask_surface->occlusion_in_content_space());
 
-    EXPECT_OCCLUSION_EQ(Occlusion(gfx::Transform(),
+    EXPECT_OCCLUSION_EQ(Occlusion(mask->DrawTransform(),
                                   SimpleEnclosedRegion(gfx::Rect(3, 4, 10, 10)),
                                   SimpleEnclosedRegion()),
                         mask->draw_properties().occlusion_in_content_space);

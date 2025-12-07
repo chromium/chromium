@@ -21,7 +21,7 @@ class LoadErrorWaiter : public extensions::LoadErrorReporter::Observer {
   // LoadErrorReporter::Observer:
   void OnLoadFailure(content::BrowserContext* browser_context,
                      const base::FilePath& file_path,
-                     const std::string& error) override;
+                     const std::u16string& error) override;
 
   // Waits until the observed LoadErrorReporter report a load error via the
   // OnLoadFailure event.

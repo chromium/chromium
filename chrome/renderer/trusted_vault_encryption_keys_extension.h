@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/trusted_vault_encryption_keys_extension.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-persistent-handle.h"
@@ -45,6 +46,14 @@ class TrustedVaultEncryptionKeysExtension
 #if !BUILDFLAG(IS_ANDROID)
   void SetSyncEncryptionKeys(gin::Arguments* args);
   void SetClientEncryptionKeys(gin::Arguments* args);
+  void SetClientEncryptionKeysContinue(
+      gin::Arguments* args,
+      v8::Local<v8::Function> callback,
+      GaiaId gaia_id,
+      std::optional<
+          base::flat_map<std::string,
+                         std::vector<chrome::mojom::TrustedVaultKeyPtr>>>
+          trusted_vault_keys);
 #endif
   void AddTrustedSyncEncryptionRecoveryMethod(gin::Arguments* args);
   void RunCompletionCallback(

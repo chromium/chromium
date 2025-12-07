@@ -45,41 +45,25 @@ class AuthFactorsLabel : public views::Label {
   METADATA_HEADER(AuthFactorsLabel, views::Label)
 
  public:
-  AuthFactorsLabel(bool visible_to_screen_reader)
-      : visible_to_screen_reader_(visible_to_screen_reader) {
+  AuthFactorsLabel(bool visible_to_screen_reader) {
     SetSubpixelRenderingEnabled(false);
     SetAutoColorReadabilityEnabled(false);
-    SetEnabledColorId(kColorAshTextColorSecondary);
+    SetEnabledColor(kColorAshTextColorSecondary);
     SetMultiLine(true);
     SetMaxLines(kLabelMaxLines);
     SetLineHeight(kLabelLineHeightDp);
     SizeToFit(kAuthFactorsViewWidthDp);
     SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_TOP);
+    GetViewAccessibility().SetIsIgnored(!visible_to_screen_reader);
   }
 
   AuthFactorsLabel(const AuthFactorsLabel&) = delete;
   AuthFactorsLabel& operator=(const AuthFactorsLabel&) = delete;
 
-  // views::Label:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    if (!visible_to_screen_reader_) {
-      node_data->AddState(ax::mojom::State::kInvisible);
-      return;
-    }
-
-    views::Label::GetAccessibleNodeData(node_data);
-  }
-
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override {
     return gfx::Size(kAuthFactorsViewWidthDp, kLabelWrapperHeightDp);
   }
-
- private:
-  // If false, then this label should be excluded from the accessibility tree.
-  // Used when the label is meant purely for animation purposes and does not
-  // represent content that should be made accessible.
-  bool visible_to_screen_reader_ = true;
 };
 
 BEGIN_METADATA(AuthFactorsLabel)
@@ -123,7 +107,7 @@ void AnimatedAuthFactorsLabelWrapper::SetLabelTextAndAccessibleName(
 
   previous_label_id_ = label_id;
   previous_accessible_name_id_ = accessible_name_id;
-  std::u16string previous_text = current_label_->GetText();
+  std::u16string previous_text(current_label_->GetText());
 
   current_label_->SetText(l10n_util::GetStringUTF16(label_id));
   current_label_->GetViewAccessibility().SetName(

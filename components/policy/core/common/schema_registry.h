@@ -5,11 +5,12 @@
 #ifndef COMPONENTS_POLICY_CORE_COMMON_SCHEMA_REGISTRY_H_
 #define COMPONENTS_POLICY_CORE_COMMON_SCHEMA_REGISTRY_H_
 
+#include <array>
 #include <set>
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "components/policy/core/common/policy_namespace.h"
@@ -100,7 +101,7 @@ class POLICY_EXPORT SchemaRegistry {
  private:
   base::ObserverList<Observer, true>::Unchecked observers_;
   base::ObserverList<InternalObserver, true>::Unchecked internal_observers_;
-  bool domains_ready_[POLICY_DOMAIN_SIZE];
+  std::array<bool, POLICY_DOMAIN_SIZE> domains_ready_;
 };
 
 // A registry that combines the maps of other registries.

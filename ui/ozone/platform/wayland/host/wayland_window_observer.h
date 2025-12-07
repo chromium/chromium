@@ -35,10 +35,9 @@ class WaylandWindowObserver : public base::CheckedObserver {
   virtual void OnSubsurfaceRemoved(WaylandWindow* window,
                                    WaylandSubsurface* subsurface);
 
-  // Called when the keyboard focused window is changed.
-  // The latest keyboard focused window can be obtain via
-  // WaylandWindowManager::GetCurrentKeyboardFocusedWindow().
-  virtual void OnKeyboardFocusedWindowChanged();
+  // Called when a window is being permanently removed from the
+  // session it did belong to.
+  virtual void OnWindowRemovedFromSession(WaylandWindow* window);
 
  protected:
   ~WaylandWindowObserver() override;

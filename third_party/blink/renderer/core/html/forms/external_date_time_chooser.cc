@@ -86,8 +86,8 @@ void ExternalDateTimeChooser::OpenDateTimeChooser(
     date_time_dialog_value->suggestions.push_back(suggestion->Clone());
   }
 
-  auto response_callback = WTF::BindOnce(
-      &ExternalDateTimeChooser::ResponseHandler, WrapPersistent(this));
+  auto response_callback =
+      BindOnce(&ExternalDateTimeChooser::ResponseHandler, WrapPersistent(this));
   GetDateTimeChooser(frame).OpenDateTimeDialog(
       std::move(date_time_dialog_value), std::move(response_callback));
 }
@@ -158,6 +158,10 @@ void ExternalDateTimeChooser::EndChooser() {
 
 AXObject* ExternalDateTimeChooser::RootAXObject(Element* popup_owner) {
   return nullptr;
+}
+
+bool ExternalDateTimeChooser::IsPickerVisible() const {
+  return date_time_chooser_.is_bound() && date_time_chooser_.is_connected();
 }
 
 }  // namespace blink

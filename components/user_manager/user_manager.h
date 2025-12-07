@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/scoped_observation_traits.h"
 #include "components/user_manager/include_exclude_account_id_filter.h"
@@ -15,11 +16,10 @@
 #include "components/user_manager/user_type.h"
 
 class AccountId;
+class PrefRegistrySimple;
 class PrefService;
 
 namespace user_manager {
-
-class MultiUserSignInPolicyController;
 
 namespace internal {
 class ScopedUserManagerImpl;
@@ -33,9 +33,11 @@ enum class UserRemovalReason : int32_t {
   DEVICE_EPHEMERAL_USERS_ENABLED = 4,
   GAIA_REMOVED = 5,
   MISCONFIGURED_USER = 6,
+  DEVICE_LOCAL_ACCOUNT_UPDATED = 7,
+  DEMO_ACCOUNT_CLEAN_UP = 8,
 };
 
-// Interface for UserManagerBase - that provides base implementation for
+// Interface for UserManagerImpl - that provides base implementation for
 // Chrome OS user management. Typical features:
 // * Get list of all know users (who have logged into this Chrome OS device)
 // * Keep track for logged in/LRU users, active user in multi-user session.
@@ -70,6 +72,9 @@ class USER_MANAGER_EXPORT UserManager {
 
     // Called when the Profile instance for the user is created.
     virtual void OnUserProfileCreated(const User& user);
+
+    // Called when the Profile instance for the user will be destroyed soon.
+    virtual void OnUserProfileWillBeDestroyed(const User& user);
 
     // Called when the profile image download for the given user fails or
     // user has the default profile image or no porfile image at all.
@@ -113,8 +118,7 @@ class USER_MANAGER_EXPORT UserManager {
     // Called when login state is updated.
     // This looks very similar to ActiveUserChanged, so consider to merge
     // in the future.
-    virtual void OnLoginStateUpdated(const User* active_user,
-                                     bool is_current_user_owner);
+    virtual void OnLoginStateUpdated(const User* active_user);
 
     // Called when another user got added to the existing session.
     virtual void UserAddedToSession(const User* added_user);
@@ -144,6 +148,27 @@ class USER_MANAGER_EXPORT UserManager {
     const std::string locale_;
   };
 
+  // Info to build a device local account.
+  struct DeviceLocalAccountInfo {
+    DeviceLocalAccountInfo(std::string user_id, UserType type);
+    DeviceLocalAccountInfo(const DeviceLocalAccountInfo&);
+    DeviceLocalAccountInfo& operator=(const DeviceLocalAccountInfo&);
+    ~DeviceLocalAccountInfo();
+
+    // Corresponding to AccountId's user email.
+    std::string user_id;
+
+    // Type of the device local account.
+    UserType type;
+
+    // Display name. Can be set only if the type is kPublicAccount.
+    std::optional<std::u16string> display_name;
+  };
+
+  // Registers UserManager preferences.
+  static void RegisterPrefs(PrefRegistrySimple* registry);
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
   // Initializes UserManager instance to this. Normally should be called right
   // after creation so that user_manager::UserManager::Get() doesn't fail.
   // Tests could call this method if they are replacing existing UserManager
@@ -171,9 +196,15 @@ class USER_MANAGER_EXPORT UserManager {
 
   virtual ~UserManager();
 
-  // Returns a list of users who have logged into this device previously. This
-  // is sorted by last login date with the most recent user at the beginning.
-  virtual const UserList& GetUsers() const = 0;
+  // Returns a list of users who have logged into this device previously or
+  // device local users.
+  // Importantly, this does not include followings: Ephemeral users, guest
+  // user, public-account user being removed, even if while logged-in.
+  // They can be found by FindUser() but not included in the result of this
+  // method.
+  // For regular users, this is sorted by last login date with the most
+  // recent user at the beginning.
+  virtual const UserList& GetPersistedUsers() const = 0;
 
   // Returns list of users allowed for logging in into multi-profile session.
   // Users that have a policy that prevents them from being added to the
@@ -181,7 +212,7 @@ class USER_MANAGER_EXPORT UserManager {
   // are regular users (i.e. not a public session/supervised etc.).
   // Returns an empty list in case when primary user is not a regular one or
   // has a policy that prohibits it to be part of multi-profile session.
-  virtual UserList GetUsersAllowedForMultiProfile() const = 0;
+  virtual UserList GetUsersAllowedForMultiUserSignIn() const = 0;
 
   // Returns users allowed on login screen in the given `users` list.
   virtual UserList FindLoginAllowedUsersFrom(const UserList& users) const = 0;
@@ -206,6 +237,9 @@ class USER_MANAGER_EXPORT UserManager {
   // no owner for the device.
   virtual const AccountId& GetOwnerAccountId() const = 0;
 
+  // Sets the account Id as an owner.
+  virtual void SetOwnerId(const AccountId& owner_account_id) = 0;
+
   // Provides the caller with account Id of the Owner user once it is loaded.
   // Would provide empty account id if there is no owner on the device (e.g.
   // if device is enterprise-owned).
@@ -215,15 +249,21 @@ class USER_MANAGER_EXPORT UserManager {
   // Returns account Id of the user that was active in the previous session.
   virtual const AccountId& GetLastSessionActiveAccountId() const = 0;
 
-  // Indicates that a user with the given |account_id| has just logged in. The
-  // persistent list is updated accordingly if the user is not ephemeral.
-  // |browser_restart| is true when reloading Chrome after crash to distinguish
-  // from normal sign in flow.
-  // |username_hash| is used to identify homedir mount point.
+  // Indicates that a user with the given `account_id` has just logged in.
+  // `username_hash` is used to identify homedir mount point.
   virtual void UserLoggedIn(const AccountId& account_id,
-                            const std::string& username_hash,
-                            bool browser_restart,
-                            bool is_child) = 0;
+                            const std::string& username_hash) = 0;
+
+  // If there's no user for the given `account_id`, a new is created with
+  // the given `user_type`. `is_ephemeral` is respected only if the `user_type`
+  // is either kRegular or kChild.
+  // If there's the user of `account_id` already (i.e. persisted),
+  // the user is kRegular or kChild, and the given `user_type` is either one,
+  // the type will be updated properly.
+  // Returns whether the new user is created.
+  virtual bool EnsureUser(const AccountId& account_id,
+                          UserType user_type,
+                          bool is_ephemeral) = 0;
 
   // Called when the Profile instance for a user identified by `account_id`
   // is created. `prefs` should be the one that is owned by Profile.
@@ -239,6 +279,8 @@ class USER_MANAGER_EXPORT UserManager {
 
   // Switches to active user identified by |account_id|. User has to be logged
   // in.
+  // NOTE: Please do not call this method directly. Instead, please use
+  // SessionManager::SwitchActiveSession().
   virtual void SwitchActiveUser(const AccountId& account_id) = 0;
 
   // Switches to the last active user (called after crash happens and session
@@ -247,6 +289,14 @@ class USER_MANAGER_EXPORT UserManager {
 
   // Invoked by session manager to inform session start.
   virtual void OnSessionStarted() = 0;
+
+  // Replaces the list of device local accounts with those found in
+  // `device_local_accounts`. Ensures that data belonging to accounts no longer
+  // on the list is removed. Returns `true` if the list has changed.
+  // Device local accounts are defined by policy. This method is called whenever
+  // an updated list of device local accounts is received from policy.
+  virtual bool UpdateDeviceLocalAccountUser(
+      const base::span<DeviceLocalAccountInfo>& device_local_accounts) = 0;
 
   // Removes the user from the device while providing a reason for enterprise
   // reporting. Note, it will verify that the given user isn't the owner, so
@@ -272,6 +322,11 @@ class USER_MANAGER_EXPORT UserManager {
   // better solution.
   virtual void RemoveUserFromListForRecreation(const AccountId& account_id) = 0;
 
+  // Removes stale ephemeral users from the list, except owner one if there is.
+  // Returns true if any user is removed.
+  // This can be called only when no user is logged in.
+  virtual bool RemoveStaleEphemeralUsers() = 0;
+
   // Removes the user from the device in case when user's cryptohome is lost
   // for some reason to ensure that user is correctly re-created.
   // Does not trigger user removal notification.
@@ -295,12 +350,14 @@ class USER_MANAGER_EXPORT UserManager {
   // Same as FindUser but returns non-const pointer to User object.
   virtual User* FindUserAndModify(const AccountId& account_id) = 0;
 
+  // DEPRECATED. Please use SessionManager::GetActiveSession() instead.
   // Returns the logged-in user that is currently active within this session.
   // There could be multiple users logged in at the the same but for now
   // we support only one of them being active.
   virtual const User* GetActiveUser() const = 0;
   virtual User* GetActiveUser() = 0;
 
+  // DEPRECATED. Please use SessionManager::GetPrimarySession() instead.
   // Returns the primary user of the current session. It is recorded for the
   // first signed-in user and does not change thereafter.
   virtual const User* GetPrimaryUser() const = 0;
@@ -323,6 +380,10 @@ class USER_MANAGER_EXPORT UserManager {
   // Updates data upon User Account download.
   virtual void UpdateUserAccountData(const AccountId& account_id,
                                      const UserAccountData& account_data) = 0;
+
+  // Sets account locale for user with id |account_id|.
+  virtual void UpdateUserAccountLocale(const AccountId& account_id,
+                                       const std::string& locale) = 0;
 
   // Saves user's displayed (non-canonical) email in local state preferences.
   // Ignored If there is no such user.
@@ -394,13 +455,19 @@ class USER_MANAGER_EXPORT UserManager {
   // Returns true if we're logged in as a Guest.
   virtual bool IsLoggedInAsGuest() const = 0;
 
-  // Returns true if we're logged in as a kiosk app.
-  virtual bool IsLoggedInAsKioskApp() const = 0;
+  // Returns true if we're logged in as a kiosk Chrome app.
+  virtual bool IsLoggedInAsKioskChromeApp() const = 0;
 
-  // Returns true if we're logged in as a Web kiosk app.
-  virtual bool IsLoggedInAsWebKioskApp() const = 0;
+  // Returns true if we're logged in as a kiosk Web app.
+  virtual bool IsLoggedInAsKioskWebApp() const = 0;
 
-  // Returns true if we're logged in as chrome, or Web kiosk app.
+  // Returns true if we're logged in as a kiosk Isolated web app (IWA).
+  virtual bool IsLoggedInAsKioskIWA() const = 0;
+
+  // Returns true if we're logged in as an ARCVM kiosk app.
+  virtual bool IsLoggedInAsKioskArcvmApp() const = 0;
+
+  // Returns true if we're logged in as any kiosk app: chrome, web or IWA.
   virtual bool IsLoggedInAsAnyKioskApp() const = 0;
 
   // Returns true if we're logged in as the stub user used for testing on Linux.
@@ -441,6 +508,10 @@ class USER_MANAGER_EXPORT UserManager {
   // Returns true if guest user is allowed.
   virtual bool IsGuestSessionAllowed() const = 0;
 
+  // Sets whether guest session is allowed. This is expected to be called
+  // on device policy update.
+  virtual void SetGuestSessionAllowed(bool value) = 0;
+
   // Returns true if the |user|, which has a GAIA account is allowed according
   // to device settings and policies.
   // Accept only users who has gaia account.
@@ -460,6 +531,12 @@ class USER_MANAGER_EXPORT UserManager {
   // policies.
   virtual bool IsEphemeralAccountId(const AccountId& account_id) const = 0;
 
+  virtual void SetEphemeralModeConfig(
+      EphemeralModeConfig ephemeral_mode_config) = 0;
+
+  // Notifies this UserManager whether or not to show users on sign-in.
+  virtual void SetShowUsersOnSignIn(bool value) = 0;
+
   // Returns "Local State" PrefService instance.
   virtual PrefService* GetLocalState() const = 0;
 
@@ -474,18 +551,14 @@ class USER_MANAGER_EXPORT UserManager {
   virtual bool IsDeviceLocalAccountMarkedForRemoval(
       const AccountId& account_id) const = 0;
 
-  // Sets affiliation status for the user identified with `account_id`
-  // to `is_affiliated`.
-  virtual void SetUserAffiliated(const AccountId& account_id,
-                                 bool is_affiliated) = 0;
+  // Sets policy status for the user identified with `account_id`.
+  virtual void SetUserPolicyStatus(const AccountId& account_id,
+                                   bool is_managed,
+                                   bool is_affiliated) = 0;
 
   // Returns true when the browser has crashed and restarted during the current
   // user's session.
   virtual bool HasBrowserRestarted() const = 0;
-
-  // Returns the instance of multi user sign-in policy controller.
-  virtual MultiUserSignInPolicyController*
-  GetMultiUserSignInPolicyController() = 0;
 
   UserType CalculateUserType(const AccountId& account_id,
                              const User* user,

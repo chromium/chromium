@@ -1,0 +1,16 @@
+include_rules = [
+  "+ios/chrome/browser/account_picker/ui_bundled",
+  "+ios/chrome/browser/drive/model/manage_storage_url_util.h",
+  "+ios/chrome/browser/google_one/shared/google_one_entry_point.h",
+  "+ios/chrome/browser/photos/model",
+  "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/store_kit/model",
+  "+ios/chrome/browser/web/model/image_fetch/image_fetch_tab_helper.h",
+]
+
+specific_include_rules = {
+ "^save_to_photos_coordinator.mm": [
+   "+ios/chrome/browser/authentication/ui_bundled/continuation.h",
+   "+ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h",
+ ],
+}

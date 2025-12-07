@@ -1,6 +1,7 @@
 #data
 <!DOCTYPE html><body><foo>A
 #errors
+(1,27): expected-closing-tag-but-got-eof
 #document
 | <!DOCTYPE html>
 | <html>
@@ -67,7 +68,7 @@
 #data
 <!DOCTYPE html><body><col>A
 #errors
-26: Stray start tag “col”.
+(1,26): unexpected-start-tag-ignored
 #document
 | <!DOCTYPE html>
 | <html>
@@ -78,13 +79,14 @@
 #data
 <!DOCTYPE html><body><command>A
 #errors
+eof
 #document
 | <!DOCTYPE html>
 | <html>
 |   <head>
 |   <body>
 |     <command>
-|     "A"
+|       "A"
 
 #data
 <!DOCTYPE html><body><embed>A
@@ -100,7 +102,7 @@
 #data
 <!DOCTYPE html><body><frame>A
 #errors
-26: Stray start tag “frame”.
+(1,28): unexpected-start-tag-ignored
 #document
 | <!DOCTYPE html>
 | <html>
@@ -150,6 +152,73 @@
 |   <head>
 |   <body>
 |     <keygen>
+|     "A"
+
+#data
+<!DOCTYPE html><keygen>A</keygen>B
+#errors
+33: Stray end tag “keygen”.
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <keygen>
+|     "AB"
+
+#data
+</keygen>A
+#errors
+9: End tag seen without seeing a doctype first. Expected “<!DOCTYPE html>”.
+9: Stray end tag “keygen”.
+#document
+| <html>
+|   <head>
+|   <body>
+|     "A"
+
+#data
+<!DOCTYPE html></keygen>A
+#errors
+24: Stray end tag “keygen”.
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     "A"
+
+#data
+<!DOCTYPE html><head></keygen>A
+#errors
+30: Stray end tag “keygen”.
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     "A"
+
+#data
+<!DOCTYPE html><head></head></keygen>A
+#errors
+30: Stray end tag “keygen”.
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     "A"
+
+#data
+<!DOCTYPE html><body></keygen>A
+#errors
+30: Stray end tag “keygen”.
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
 |     "A"
 
 #data

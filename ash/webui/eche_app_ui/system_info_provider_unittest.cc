@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
@@ -27,7 +28,7 @@ const bool kFakeTabletMode = true;
 const ConnectionStateType kFakeWifiConnectionState =
     ConnectionStateType::kConnected;
 const bool kFakeDebugMode = false;
-const char kFakeGaiaId[] = "123";
+const GaiaId::Literal kFakeGaiaId("123");
 const char kFakeDeviceType[] = "Chromebook";
 const char kFakeOsVersion[] = "1.2.3.4";
 const char kFakeChannel[] = "Dev";
@@ -52,7 +53,8 @@ void ParseJson(const std::string& json,
                bool& disable_stun_server,
                bool& check_android_network_info,
                bool& process_android_accessibility_tree) {
-  std::optional<base::Value> message_value = base::JSONReader::Read(json);
+  std::optional<base::Value> message_value =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   base::Value::Dict* message_dictionary = message_value->GetIfDict();
   const std::string* device_name_ptr =
       message_dictionary->FindString(kJsonDeviceNameKey);
@@ -205,7 +207,7 @@ class SystemInfoProviderTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    display::Screen::GetScreen()->OverrideTabletStateForTesting(
+    test_screen_.OverrideTabletStateForTesting(
         display::TabletState::kInTabletMode);
 
     system_info_provider_ =
@@ -337,7 +339,7 @@ TEST_F(SystemInfoProviderTest, GetSystemInfoHasCorrectJson) {
   bool tablet_mode = false;
   std::string wifi_connection_state = "";
   bool debug_mode = true;
-  std::string gaia_id = "";
+  std::string gaia_id;
   std::string device_type = "";
   std::string os_version = "";
   std::string channel = "";
@@ -359,7 +361,7 @@ TEST_F(SystemInfoProviderTest, GetSystemInfoHasCorrectJson) {
   EXPECT_EQ(tablet_mode, kFakeTabletMode);
   EXPECT_EQ(wifi_connection_state, "connected");
   EXPECT_EQ(debug_mode, kFakeDebugMode);
-  EXPECT_EQ(gaia_id, kFakeGaiaId);
+  EXPECT_EQ(gaia_id, kFakeGaiaId.ToString());
   EXPECT_EQ(device_type, kFakeDeviceType);
   EXPECT_EQ(os_version, kFakeOsVersion);
   EXPECT_EQ(channel, kFakeChannel);

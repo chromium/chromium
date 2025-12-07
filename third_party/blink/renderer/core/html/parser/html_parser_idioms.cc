@@ -22,11 +22,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 
 #include "third_party/blink/renderer/core/html_names.h"
@@ -48,7 +43,7 @@ String StripLeadingAndTrailingHTMLSpaces(const String& string) {
   if (!length)
     return string.IsNull() ? string : g_empty_atom.GetString();
 
-  return WTF::VisitCharacters(string, [&](const auto* chars, unsigned length) {
+  return VisitCharacters(string, [&](auto chars) {
     unsigned num_leading_spaces = 0;
     unsigned num_trailing_spaces = 0;
 
@@ -83,17 +78,16 @@ Vector<String> SplitOnASCIIWhitespace(const String& input) {
   if (!length) {
     return output;
   }
-  WTF::VisitCharacters(input, [&](const auto* cursor, unsigned length) {
-    using CharacterType = std::decay_t<decltype(*cursor)>;
-    const CharacterType* string_start = cursor;
-    const CharacterType* string_end = cursor + length;
-    SkipWhile<CharacterType, IsHTMLSpace>(cursor, string_end);
-    while (cursor < string_end) {
-      const CharacterType* token_start = cursor;
-      SkipUntil<CharacterType, IsHTMLSpace>(cursor, string_end);
-      output.push_back(input.Substring((unsigned)(token_start - string_start),
-                                       (unsigned)(cursor - token_start)));
-      SkipWhile<CharacterType, IsHTMLSpace>(cursor, string_end);
+  VisitCharacters(input, [&](auto chars) {
+    size_t cursor = 0;
+    using CharacterType = std::decay_t<decltype(*chars.data())>;
+    cursor = SkipWhile<CharacterType, IsHTMLSpace>(chars, cursor);
+    while (cursor < chars.size()) {
+      const wtf_size_t token_start = static_cast<wtf_size_t>(cursor);
+      cursor = SkipUntil<CharacterType, IsHTMLSpace>(chars, cursor);
+      output.push_back(input.Substring(
+          token_start, static_cast<wtf_size_t>(cursor - token_start)));
+      cursor = SkipWhile<CharacterType, IsHTMLSpace>(chars, cursor);
     }
   });
   return output;
@@ -188,25 +182,24 @@ bool ParseHTMLInteger(const String& input, int& value) {
   if (length == 0)
     return false;
 
-  return WTF::VisitCharacters(input, [&](const auto* position,
-                                         unsigned length) {
-    using CharacterType = std::decay_t<decltype(*position)>;
-    const auto* end = position + length;
+  return VisitCharacters(input, [&](auto chars) {
+    using CharacterType = std::decay_t<decltype(chars[0])>;
 
     // Step 4
-    SkipWhile<CharacterType, IsHTMLSpace<CharacterType>>(position, end);
+    size_t position =
+        SkipWhile<CharacterType, IsHTMLSpace<CharacterType>>(chars, 0);
 
     // Step 5
-    if (position == end) {
+    if (position == chars.size()) {
       return false;
     }
-    DCHECK_LT(position, end);
+    DCHECK_LT(position, chars.size());
 
     bool ok;
-    constexpr auto kOptions = WTF::NumberParsingOptions()
+    constexpr auto kOptions = NumberParsingOptions()
                                   .SetAcceptTrailingGarbage()
                                   .SetAcceptLeadingPlus();
-    int wtf_value = CharactersToInt(position, end - position, kOptions, &ok);
+    int wtf_value = CharactersToInt(chars.subspan(position), kOptions, &ok);
     if (ok) {
       value = wtf_value;
     }
@@ -214,17 +207,16 @@ bool ParseHTMLInteger(const String& input, int& value) {
   });
 }
 
-static WTF::NumberParsingResult ParseHTMLNonNegativeIntegerInternal(
+static NumberParsingResult ParseHTMLNonNegativeIntegerInternal(
     const String& input,
     unsigned& value) {
   unsigned length = input.length();
   if (length == 0)
-    return WTF::NumberParsingResult::kError;
+    return NumberParsingResult::kError;
 
-  return WTF::VisitCharacters(
-      input, [&](const auto* position, unsigned length) {
-        using CharacterType = std::decay_t<decltype(*position)>;
-        const auto* end = position + length;
+  return VisitCharacters(
+      input, [&](auto chars) {
+        using CharacterType = std::decay_t<decltype(chars[0])>;
 
         // This function is an implementation of the following algorithm:
         // https://html.spec.whatwg.org/C/#rules-for-parsing-non-negative-integers
@@ -235,22 +227,25 @@ static WTF::NumberParsingResult ParseHTMLNonNegativeIntegerInternal(
         // https://html.spec.whatwg.org/C/#rules-for-parsing-integers
 
         // Step 4: Skip whitespace.
-        SkipWhile<CharacterType, IsHTMLSpace<CharacterType>>(position, end);
+        size_t position =
+            SkipWhile<CharacterType, IsHTMLSpace<CharacterType>>(chars, 0);
 
         // Step 5: If position is past the end of input, return an error.
-        if (position == end)
-          return WTF::NumberParsingResult::kError;
-        DCHECK_LT(position, end);
+        if (position == chars.size()) {
+          return NumberParsingResult::kError;
+        }
+        DCHECK_LT(position, chars.size());
 
-        WTF::NumberParsingResult result;
-        constexpr auto kOptions = WTF::NumberParsingOptions()
+        NumberParsingResult result;
+        constexpr auto kOptions = NumberParsingOptions()
                                       .SetAcceptTrailingGarbage()
                                       .SetAcceptLeadingPlus()
                                       .SetAcceptMinusZeroForUnsigned();
         unsigned wtf_value =
-            CharactersToUInt(position, end - position, kOptions, &result);
-        if (result == WTF::NumberParsingResult::kSuccess)
+            CharactersToUInt(chars.subspan(position), kOptions, &result);
+        if (result == NumberParsingResult::kSuccess) {
           value = wtf_value;
+        }
         return result;
       });
 }
@@ -258,7 +253,7 @@ static WTF::NumberParsingResult ParseHTMLNonNegativeIntegerInternal(
 // https://html.spec.whatwg.org/C/#rules-for-parsing-non-negative-integers
 bool ParseHTMLNonNegativeInteger(const String& input, unsigned& value) {
   return ParseHTMLNonNegativeIntegerInternal(input, value) ==
-         WTF::NumberParsingResult::kSuccess;
+         NumberParsingResult::kSuccess;
 }
 
 bool ParseHTMLClampedNonNegativeInteger(const String& input,
@@ -267,15 +262,14 @@ bool ParseHTMLClampedNonNegativeInteger(const String& input,
                                         unsigned& value) {
   unsigned parsed_value;
   switch (ParseHTMLNonNegativeIntegerInternal(input, parsed_value)) {
-    case WTF::NumberParsingResult::kError:
+    case NumberParsingResult::kError:
       return false;
-    case WTF::NumberParsingResult::kOverflowMin:
-      NOTREACHED_IN_MIGRATION() << input;
-      return false;
-    case WTF::NumberParsingResult::kOverflowMax:
+    case NumberParsingResult::kOverflowMin:
+      NOTREACHED() << input;
+    case NumberParsingResult::kOverflowMax:
       value = max;
       return true;
-    case WTF::NumberParsingResult::kSuccess:
+    case NumberParsingResult::kSuccess:
       value = std::max(min, std::min(parsed_value, max));
       return true;
   }
@@ -307,25 +301,26 @@ Vector<double> ParseHTMLListOfFloatingPointNumbers(const String& input) {
   if (!length)
     return numbers;
 
-  WTF::VisitCharacters(input, [&](const auto* position, unsigned length) {
-    using CharacterType = std::decay_t<decltype(*position)>;
-    const auto* end = position + length;
+  VisitCharacters(input, [&](auto chars) {
+    using CharacterType = std::decay_t<decltype(*chars.data())>;
 
-    SkipWhile<CharacterType, IsSpaceOrDelimiter>(position, end);
+    size_t position = SkipWhile<CharacterType, IsSpaceOrDelimiter>(chars, 0);
 
-    while (position < end) {
-      SkipWhile<CharacterType, IsNotSpaceDelimiterOrNumberStart>(position, end);
+    while (position < chars.size()) {
+      position = SkipWhile<CharacterType, IsNotSpaceDelimiterOrNumberStart>(
+          chars, position);
 
-      const CharacterType* unparsed_number_start = position;
-      SkipUntil<CharacterType, IsSpaceOrDelimiter>(position, end);
+      const size_t unparsed_number_start = position;
+      position = SkipUntil<CharacterType, IsSpaceOrDelimiter>(chars, position);
 
       size_t parsed_length = 0;
-      double number =
-          CharactersToDouble(unparsed_number_start,
-                             position - unparsed_number_start, parsed_length);
+      double number = CharactersToDouble(
+          chars.subspan(unparsed_number_start,
+                        static_cast<size_t>(position - unparsed_number_start)),
+          parsed_length);
       numbers.push_back(CheckDoubleValue(number, parsed_length != 0, 0));
 
-      SkipWhile<CharacterType, IsSpaceOrDelimiter>(position, end);
+      position = SkipWhile<CharacterType, IsSpaceOrDelimiter>(chars, position);
     }
   });
   return numbers;
@@ -389,8 +384,7 @@ enum class MetaAttribute {
   kPragma,
 };
 
-WTF::TextEncoding EncodingFromMetaAttributes(
-    const HTMLAttributeList& attributes) {
+TextEncoding EncodingFromMetaAttributes(const HTMLAttributeList& attributes) {
   bool got_pragma = false;
   bool has_charset = false;
   MetaAttribute mode = MetaAttribute::kNone;
@@ -417,9 +411,9 @@ WTF::TextEncoding EncodingFromMetaAttributes(
 
   if (mode == MetaAttribute::kCharset ||
       (mode == MetaAttribute::kPragma && got_pragma))
-    return WTF::TextEncoding(StripLeadingAndTrailingHTMLSpaces(charset));
+    return TextEncoding(StripLeadingAndTrailingHTMLSpaces(charset));
 
-  return WTF::TextEncoding();
+  return TextEncoding();
 }
 
 static bool ThreadSafeEqual(const StringImpl* a, const StringImpl* b) {
@@ -439,48 +433,48 @@ bool ThreadSafeMatch(const String& local_name, const QualifiedName& q_name) {
 }
 
 template <typename CharType>
-inline StringImpl* FindStringIfStatic(const CharType* characters,
-                                      unsigned length) {
+inline StringImpl* FindStringIfStatic(base::span<const CharType> characters) {
   // We don't need to try hashing if we know the string is too long.
-  if (length > StringImpl::HighestStaticStringLength())
+  if (characters.size() > StringImpl::HighestStaticStringLength()) {
     return nullptr;
+  }
   // ComputeHashAndMaskTop8Bits is the function StringImpl::Hash() uses.
-  unsigned hash =
-      StringHasher::ComputeHashAndMaskTop8Bits((const char*)characters, length);
-  const WTF::StaticStringsTable& table = StringImpl::AllStaticStrings();
+  unsigned hash = StringHasher::ComputeHashAndMaskTop8Bits(
+      reinterpret_cast<const char*>(characters.data()), characters.size());
+  const StaticStringsTable& table = StringImpl::AllStaticStrings();
   DCHECK(!table.empty());
 
-  WTF::StaticStringsTable::const_iterator it = table.find(hash);
+  StaticStringsTable::const_iterator it = table.find(hash);
   if (it == table.end())
     return nullptr;
   // It's possible to have hash collisions between arbitrary strings and known
   // identifiers (e.g. "bvvfg" collides with "script"). However ASSERTs in
   // StringImpl::createStatic guard against there ever being collisions between
   // static strings.
-  if (!Equal(it->value, characters, length))
+  if (!Equal(it->value, characters)) {
     return nullptr;
+  }
   return it->value;
 }
 
-String AttemptStaticStringCreation(const LChar* characters, wtf_size_t size) {
-  String string(FindStringIfStatic(characters, size));
+String AttemptStaticStringCreation(base::span<const LChar> characters) {
+  String string(FindStringIfStatic(characters));
   if (string.Impl())
     return string;
-  return String(characters, size);
+  return String(characters);
 }
 
-String AttemptStaticStringCreation(const UChar* characters,
-                                   wtf_size_t size,
+String AttemptStaticStringCreation(base::span<const UChar> characters,
                                    CharacterWidth width) {
-  String string(FindStringIfStatic(characters, size));
+  String string(FindStringIfStatic(characters));
   if (string.Impl())
     return string;
   if (width == kLikely8Bit)
-    string = StringImpl::Create8BitIfPossible(characters, size);
+    string = StringImpl::Create8BitIfPossible(characters);
   else if (width == kForce8Bit)
-    string = String::Make8BitFrom16BitSource(characters, size);
+    string = String::Make8BitFrom16BitSource(characters);
   else
-    string = String(characters, size);
+    string = String(characters);
 
   return string;
 }

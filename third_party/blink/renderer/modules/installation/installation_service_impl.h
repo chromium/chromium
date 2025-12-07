@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
@@ -22,9 +21,9 @@ class LocalFrame;
 class MODULES_EXPORT InstallationServiceImpl final
     : public GarbageCollected<InstallationServiceImpl>,
       public mojom::blink::InstallationService,
-      public Supplement<LocalDOMWindow> {
+      public GarbageCollectedMixin {
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
   static InstallationServiceImpl* From(LocalDOMWindow&);
   static void BindReceiver(
       LocalFrame*,
@@ -44,6 +43,7 @@ class MODULES_EXPORT InstallationServiceImpl final
   void OnInstall() override;
 
  private:
+  Member<LocalDOMWindow> local_dom_window_;
   HeapMojoReceiverSet<mojom::blink::InstallationService,
                       InstallationServiceImpl>
       receivers_;

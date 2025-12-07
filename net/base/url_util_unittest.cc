@@ -9,11 +9,9 @@
 
 #include "base/format_macros.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
-#include "url/url_features.h"
 #include "url/url_util.h"
 
 using base::ASCIIToUTF16;
@@ -224,6 +222,20 @@ TEST(UrlUtilTest, GetValueForKeyInQueryInvalidURL) {
 
   // Always false when parsing an invalid URL.
   EXPECT_FALSE(GetValueForKeyInQuery(url, "test", &value));
+}
+
+TEST(UrlUtilTest, GetValueForKeyInQueryNoOutputValue) {
+  GURL url(
+      "http://example.com/path?name=value&boolParam&"
+      "url=http://test.com/q?n1%3Dv1%26n2");
+
+  // False when getting a non-existent query param.
+  EXPECT_FALSE(GetValueForKeyInQuery(url, "non-exist", nullptr));
+
+  // True when query param exists.
+  EXPECT_TRUE(GetValueForKeyInQuery(url, "name", nullptr));
+  EXPECT_TRUE(GetValueForKeyInQuery(url, "boolParam", nullptr));
+  EXPECT_TRUE(GetValueForKeyInQuery(url, "url", nullptr));
 }
 
 TEST(UrlUtilTest, ParseQuery) {
@@ -672,59 +684,48 @@ TEST(UrlUtilTest, IsLocalhost) {
   EXPECT_TRUE(IsLocalhost(localhost6));
 }
 
-class UrlUtilTypedTest : public ::testing::TestWithParam<bool> {
- public:
-  UrlUtilTypedTest()
-      : use_standard_compliant_non_special_scheme_url_parsing_(GetParam()) {
-    if (use_standard_compliant_non_special_scheme_url_parsing_) {
-      scoped_feature_list_.InitAndEnableFeature(
-          url::kStandardCompliantNonSpecialSchemeURLParsing);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          url::kStandardCompliantNonSpecialSchemeURLParsing);
-    }
-  }
-
- protected:
-  bool use_standard_compliant_non_special_scheme_url_parsing_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All, UrlUtilTypedTest, ::testing::Bool());
-
 TEST(UrlUtilTest, SimplifyUrlForRequest) {
   struct {
     const char* const input_url;
     const char* const expected_simplified_url;
   } tests[] = {
-    {
-      // Reference section should be stripped.
-      "http://www.google.com:78/foobar?query=1#hash",
-      "http://www.google.com:78/foobar?query=1",
-    },
-    {
-      // Reference section can itself contain #.
-      "http://192.168.0.1?query=1#hash#10#11#13#14",
-      "http://192.168.0.1?query=1",
-    },
-    { // Strip username/password.
-      "http://user:pass@google.com",
-      "http://google.com/",
-    },
-    { // Strip both the reference and the username/password.
-      "http://user:pass@google.com:80/sup?yo#X#X",
-      "http://google.com/sup?yo",
-    },
-    { // Try an HTTPS URL -- strip both the reference and the username/password.
-      "https://user:pass@google.com:80/sup?yo#X#X",
-      "https://google.com:80/sup?yo",
-    },
-    { // Try an FTP URL -- strip both the reference and the username/password.
-      "ftp://user:pass@google.com:80/sup?yo#X#X",
-      "ftp://google.com:80/sup?yo",
-    },
+      {
+          // Reference section should be stripped.
+          "http://www.google.com:78/foobar?query=1#hash",
+          "http://www.google.com:78/foobar?query=1",
+      },
+      {
+          // Reference section can itself contain #.
+          "http://192.168.0.1?query=1#hash#10#11#13#14",
+          "http://192.168.0.1?query=1",
+      },
+      {
+          // Strip username/password.
+          "http://user:pass@google.com",
+          "http://google.com/",
+      },
+      {
+          // Strip both the reference and the username/password.
+          "http://user:pass@google.com:80/sup?yo#X#X",
+          "http://google.com/sup?yo",
+      },
+      {
+          // Try an HTTPS URL -- strip both the reference and the
+          // username/password.
+          "https://user:pass@google.com:80/sup?yo#X#X",
+          "https://google.com:80/sup?yo",
+      },
+      {
+          // Try an FTP URL -- strip both the reference and the
+          // username/password.
+          "ftp://user:pass@google.com:80/sup?yo#X#X",
+          "ftp://google.com:80/sup?yo",
+      },
+      {
+          // Try a non-special URL.
+          "foobar://user:pass@google.com:80/sup?yo#X#X",
+          "foobar://google.com:80/sup?yo",
+      },
   };
   for (const auto& test : tests) {
     SCOPED_TRACE(test.input_url);
@@ -734,28 +735,42 @@ TEST(UrlUtilTest, SimplifyUrlForRequest) {
   }
 }
 
-TEST_P(UrlUtilTypedTest, SimplifyUrlForRequest) {
-  static constexpr struct {
-    const char* const input_url;
-    const char* const expected_when_compliant;
-    const char* const expected_when_non_compliant;
-  } tests[] = {
+TEST(UrlUtilTest, RemoveCredentialsFromUrl) {
+  const struct {
+    GURL input_url;
+    GURL output_url;
+  } kTests[] = {
       {
-          // Try a non-special URL
-          "foobar://user:pass@google.com:80/sup?yo#X#X",
-          "foobar://google.com:80/sup?yo",
-          "foobar://user:pass@google.com:80/sup?yo",
+          // Everything other than the username/password should be left alone.
+          GURL("http://a.test:78/foobar?query=1#hash"),
+          GURL("http://a.test:78/foobar?query=1#hash"),
+      },
+      {
+          // Strip username/password.
+          GURL("http://user:pass@a.test"),
+          GURL("http://a.test/"),
+      },
+      {
+          // Try an HTTPS URL.
+          GURL("https://user:pass@a.test:80/sup?yo#hash"),
+          GURL("https://a.test:80/sup?yo#hash"),
+      },
+      {
+          // Try an FTP URL. GURL removes references from these, so don't
+          // include one.
+          GURL("ftp://user:pass@a.test:80/sup?yo"),
+          GURL("ftp://a.test:80/sup?yo"),
+      },
+      {
+          // Try a non-special URL. GURL removes references from these, so don't
+          // include one.
+          GURL("foobar://user:pass@a.test:80/sup?yo"),
+          GURL("foobar://a.test:80/sup?yo"),
       },
   };
-
-  for (const auto& test : tests) {
-    SCOPED_TRACE(test.input_url);
-    GURL simplified = SimplifyUrlForRequest(GURL(test.input_url));
-    if (use_standard_compliant_non_special_scheme_url_parsing_) {
-      EXPECT_EQ(simplified, GURL(test.expected_when_compliant));
-    } else {
-      EXPECT_EQ(simplified, GURL(test.expected_when_non_compliant));
-    }
+  for (const auto& test : kTests) {
+    SCOPED_TRACE(test.input_url.spec());
+    EXPECT_EQ(test.output_url, RemoveCredentialsFromUrl(test.input_url));
   }
 }
 
@@ -804,6 +819,42 @@ TEST(UrlUtilTest, SchemeHasNetworkHost) {
   EXPECT_FALSE(IsStandardSchemeWithNetworkHost(kCustomSchemeWithHost));
   EXPECT_FALSE(IsStandardSchemeWithNetworkHost(kCustomSchemeWithoutAuthority));
   EXPECT_FALSE(IsStandardSchemeWithNetworkHost(kNonStandardScheme));
+}
+
+TEST(UrlUtilTest, GetOriginRelation) {
+  using enum OriginRelation;
+
+  const url::Origin kExampleOrigin =
+      url::Origin::Create(GURL("https://example.test"));
+  EXPECT_EQ(GetOriginRelation(kExampleOrigin, kExampleOrigin), kSameOrigin);
+
+  EXPECT_EQ(GetOriginRelation(
+                kExampleOrigin,
+                url::Origin::Create(GURL("https://other.example.test"))),
+            kSameSite);
+
+  EXPECT_EQ(
+      GetOriginRelation(kExampleOrigin,
+                        url::Origin::Create(GURL("https://cross-site.test"))),
+      kCrossSite);
+
+  // Same-site rules about schemes are followed.
+  const url::Origin cross_scheme_origin =
+      url::Origin::Create(GURL("http://example.test"));
+  EXPECT_EQ(GetOriginRelation(kExampleOrigin, cross_scheme_origin), kCrossSite);
+
+  // Same-site rules about opaque origins are followed.
+  EXPECT_EQ(
+      GetOriginRelation(kExampleOrigin, kExampleOrigin.DeriveNewOpaqueOrigin()),
+      kCrossSite);
+
+  // Cross-port origins are same-site.
+  EXPECT_EQ(
+      GetOriginRelation(kExampleOrigin,
+                        url::Origin::CreateFromNormalizedTuple(
+                            kExampleOrigin.scheme(), kExampleOrigin.host(),
+                            kExampleOrigin.port() + 1)),
+      kSameSite);
 }
 
 TEST(UrlUtilTest, GetIdentityFromURL) {
@@ -899,8 +950,8 @@ TEST(UrlUtilTest, GetIdentityFromURL) {
 TEST(UrlUtilTest, GetIdentityFromURL_UTF8) {
   GURL url(u"http://foo:\x4f60\x597d@blah.com");
 
-  EXPECT_EQ("foo", url.username());
-  EXPECT_EQ("%E4%BD%A0%E5%A5%BD", url.password());
+  EXPECT_EQ("foo", url.GetUsername());
+  EXPECT_EQ("%E4%BD%A0%E5%A5%BD", url.GetPassword());
 
   // Extract the unescaped identity.
   std::u16string username, password;

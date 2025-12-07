@@ -21,7 +21,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/testing/mock_function_scope.h"
 #include "third_party/blink/renderer/core/timing/layout_shift.h"
 #include "third_party/blink/renderer/core/view_transition/dom_view_transition.h"
+#include "third_party/blink/renderer/core/view_transition/scoped_view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -48,6 +49,7 @@
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "v8/include/v8-external.h"
 #include "v8/include/v8-function-callback.h"
@@ -57,11 +59,8 @@
 namespace blink {
 
 class ViewTransitionTest : public testing::Test,
-                           public PaintTestConfigurations,
-                           private ScopedViewTransitionOnNavigationForTest {
+                           public PaintTestConfigurations {
  public:
-  ViewTransitionTest() : ScopedViewTransitionOnNavigationForTest(true) {}
-
   void SetUp() override {
     web_view_helper_ = std::make_unique<frame_test_helpers::WebViewHelper>();
     web_view_helper_->Initialize();
@@ -94,7 +93,7 @@ class ViewTransitionTest : public testing::Test,
     UpdateAllLifecyclePhasesForTest();
     for (auto& callback :
          LayerTreeHost()->TakeViewTransitionCallbacksForTesting()) {
-      std::move(callback).Run();
+      std::move(callback).Run({});
     }
   }
 
@@ -121,7 +120,7 @@ class ViewTransitionTest : public testing::Test,
   }
 
   void SetHtmlInnerHTML(const String& content) {
-    GetDocument().body()->setInnerHTML(content);
+    GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(content);
     UpdateAllLifecyclePhasesForTest();
   }
 
@@ -150,10 +149,10 @@ class ViewTransitionTest : public testing::Test,
   }
 
   void ValidatePseudoElementTree(
-      const Vector<WTF::AtomicString>& view_transition_names,
+      Element* scope,
+      const Vector<AtomicString>& view_transition_names,
       bool has_incoming_image) {
-    auto* transition_pseudo = GetDocument().documentElement()->GetPseudoElement(
-        kPseudoIdViewTransition);
+    auto* transition_pseudo = scope->GetPseudoElement(kPseudoIdViewTransition);
     ASSERT_TRUE(transition_pseudo);
     EXPECT_TRUE(transition_pseudo->GetComputedStyle());
     EXPECT_TRUE(transition_pseudo->GetLayoutObject());
@@ -222,8 +221,8 @@ TEST_P(ViewTransitionTest, LayoutShift) {
   ScriptState::Scope scope(script_state);
 
   MockFunctionScope funcs(script_state);
-  auto* view_transition_callback =
-      V8ViewTransitionCallback::Create(funcs.ExpectCall()->V8Function());
+  auto* view_transition_callback = V8ViewTransitionCallback::Create(
+      funcs.ExpectCall()->ToV8Function(script_state));
 
   auto* transition = ViewTransitionSupplement::startViewTransition(
       script_state, GetDocument(), view_transition_callback,
@@ -240,7 +239,7 @@ TEST_P(ViewTransitionTest, LayoutShift) {
   // resolving.
   test::RunPendingTasks();
   auto start_requests =
-      ViewTransitionSupplement::From(GetDocument())->TakePendingRequests();
+      GetDocument().GetViewTransitions().TakePendingRequests();
   EXPECT_FALSE(start_requests.empty());
   EXPECT_EQ(GetState(transition), State::kAnimating);
 
@@ -252,13 +251,13 @@ TEST_P(ViewTransitionTest, LayoutShift) {
       kPseudoIdViewTransitionGroup, AtomicString("shared"));
   ASSERT_TRUE(container_pseudo);
   auto* container_box = To<LayoutBox>(container_pseudo->GetLayoutObject());
-  EXPECT_EQ(PhysicalSize(100, 100), container_box->Size());
+  EXPECT_EQ(PhysicalSize(100, 100), container_box->StitchedSize());
 
   // View transition elements should not cause a layout shift.
   auto* target = To<LayoutBox>(
       GetDocument().getElementById(AtomicString("target"))->GetLayoutObject());
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
-  EXPECT_EQ(PhysicalSize(100, 100), target->Size());
+  EXPECT_EQ(PhysicalSize(100, 100), target->StitchedSize());
 
   FinishTransition();
   finished_tester.WaitUntilSettled();
@@ -269,10 +268,10 @@ TEST_P(ViewTransitionTest, TransitionCreatesNewObject) {
   ScriptState::Scope scope(script_state);
 
   MockFunctionScope funcs(script_state);
-  auto* first_callback =
-      V8ViewTransitionCallback::Create(funcs.ExpectCall()->V8Function());
-  auto* second_callback =
-      V8ViewTransitionCallback::Create(funcs.ExpectCall()->V8Function());
+  auto* first_callback = V8ViewTransitionCallback::Create(
+      funcs.ExpectCall()->ToV8Function(script_state));
+  auto* second_callback = V8ViewTransitionCallback::Create(
+      funcs.ExpectCall()->ToV8Function(script_state));
 
   auto* first_transition = ViewTransitionSupplement::startViewTransition(
       script_state, GetDocument(), first_callback,
@@ -295,8 +294,8 @@ TEST_P(ViewTransitionTest, TransitionReadyPromiseResolves) {
   ScriptState::Scope scope(script_state);
 
   MockFunctionScope funcs(script_state);
-  auto* view_transition_callback =
-      V8ViewTransitionCallback::Create(funcs.ExpectCall()->V8Function());
+  auto* view_transition_callback = V8ViewTransitionCallback::Create(
+      funcs.ExpectCall()->ToV8Function(script_state));
 
   auto* transition = ViewTransitionSupplement::startViewTransition(
       script_state, GetDocument(), view_transition_callback,
@@ -342,8 +341,8 @@ TEST_P(ViewTransitionTest, PrepareTransitionElementsWantToBeComposited) {
   ScriptState::Scope scope(script_state);
 
   MockFunctionScope funcs(script_state);
-  auto* view_transition_callback =
-      V8ViewTransitionCallback::Create(funcs.ExpectCall()->V8Function());
+  auto* view_transition_callback = V8ViewTransitionCallback::Create(
+      funcs.ExpectCall()->ToV8Function(script_state));
 
   auto* transition = ViewTransitionSupplement::startViewTransition(
       script_state, GetDocument(), view_transition_callback,
@@ -436,8 +435,8 @@ TEST_P(ViewTransitionTest, StartTransitionElementsWantToBeComposited) {
   // This callback sets the elements for the start phase of the transition.
   auto start_setup_lambda =
       [](const v8::FunctionCallbackInfo<v8::Value>& info) {
-        auto* data =
-            static_cast<Data*>(info.Data().As<v8::External>()->Value());
+        auto* data = static_cast<Data*>(info.Data().As<v8::External>()->Value(
+            gin::kViewTransitionTestDataTag));
         data->document.getElementById(AtomicString("e1"))
             ->setAttribute(html_names::kStyleAttr, g_empty_atom);
         data->document.getElementById(AtomicString("e3"))
@@ -449,7 +448,8 @@ TEST_P(ViewTransitionTest, StartTransitionElementsWantToBeComposited) {
       };
   auto start_setup_callback =
       v8::Function::New(script_state->GetContext(), start_setup_lambda,
-                        v8::External::New(script_state->GetIsolate(), &data))
+                        v8::External::New(script_state->GetIsolate(), &data,
+                                          gin::kViewTransitionTestDataTag))
           .ToLocalChecked();
 
   ViewTransitionSupplement::startViewTransition(
@@ -477,8 +477,8 @@ TEST_P(ViewTransitionTest, TransitionCleanedUpBeforePromiseResolution) {
   ScriptState::Scope scope(script_state);
 
   MockFunctionScope funcs(script_state);
-  auto* view_transition_callback =
-      V8ViewTransitionCallback::Create(funcs.ExpectCall()->V8Function());
+  auto* view_transition_callback = V8ViewTransitionCallback::Create(
+      funcs.ExpectCall()->ToV8Function(script_state));
 
   auto* transition = ViewTransitionSupplement::startViewTransition(
       script_state, GetDocument(), view_transition_callback,
@@ -508,8 +508,8 @@ TEST_P(ViewTransitionTest, RenderingPausedTest) {
   ScriptState::Scope scope(script_state);
 
   MockFunctionScope funcs(script_state);
-  auto* view_transition_callback =
-      V8ViewTransitionCallback::Create(funcs.ExpectCall()->V8Function());
+  auto* view_transition_callback = V8ViewTransitionCallback::Create(
+      funcs.ExpectCall()->ToV8Function(script_state));
 
   auto* transition = ViewTransitionSupplement::startViewTransition(
       script_state, GetDocument(), view_transition_callback,
@@ -548,8 +548,8 @@ TEST_P(ViewTransitionTest, Abandon) {
   ScriptState::Scope scope(script_state);
 
   MockFunctionScope funcs(script_state);
-  auto* view_transition_callback =
-      V8ViewTransitionCallback::Create(funcs.ExpectCall()->V8Function());
+  auto* view_transition_callback = V8ViewTransitionCallback::Create(
+      funcs.ExpectCall()->ToV8Function(script_state));
 
   auto* transition = ViewTransitionSupplement::startViewTransition(
       script_state, GetDocument(), view_transition_callback,
@@ -565,8 +565,55 @@ TEST_P(ViewTransitionTest, Abandon) {
   EXPECT_TRUE(finished_tester.IsFulfilled());
 }
 
-// Checks that the pseudo element tree is correctly build for ::transition*
-// pseudo elements.
+TEST_P(ViewTransitionTest, ScopedElementRemoved) {
+  // TODO: Implement me.
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      ::view-transition-group(*) { animation-duration: 100s; }
+      #scope { width: 200px; height: 300px; contain: strict;
+        position: relative; z-index: 0; background: white; }
+    </style>
+    <div id=scope>
+    </div>
+  )HTML");
+
+  auto* document = &GetDocument();
+  Element* scope_element = document->getElementById(AtomicString("scope"));
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
+
+  auto lambda = [](const v8::FunctionCallbackInfo<v8::Value>& info) {};
+  auto* callback = V8ViewTransitionCallback::Create(
+      v8::Function::New(script_state->GetContext(), lambda,
+                        v8::External::New(script_state->GetIsolate(), document,
+                                          gin::kViewTransitionTestDocumentTag))
+          .ToLocalChecked());
+
+  auto* transition = ScopedViewTransition::startViewTransition(
+      script_state, *scope_element, callback, IGNORE_EXCEPTION_FOR_TESTING);
+
+  UpdateAllLifecyclePhasesForTest();
+
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+  test::RunPendingTasks();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(GetState(transition), State::kAnimating);
+  // Removal of the element forcefully halts the view transition, as the
+  // pseudo-elements are removed and the view transition was only being kept
+  // alive by a weak reference to the associated element.
+  scope_element->remove();
+  // Forcing garbage collection, triggers a call to ~ViewTransitionStyleTracker
+  // while the state is not idle or finished. This chain of events triggered
+  // a CHECK failure (see: crbug.com/415376109). The check is no longer
+  // relevant since the style engine no longer keeps a persistent list of
+  // active view transition names. These names are now stored directly in
+  // ViewTransitionStyleTracker. This test ensures that we don't regress this
+  // edge case by reintroducing an assumption about the style tracker's state.
+  ThreadState::Current()->CollectAllGarbageForTesting();
+}
+
+// Checks that the pseudo-element tree is correctly build for ::transition*
+// pseudo-elements.
 TEST_P(ViewTransitionTest, ViewTransitionPseudoTree) {
   SetHtmlInnerHTML(R"HTML(
     <style>
@@ -583,6 +630,7 @@ TEST_P(ViewTransitionTest, ViewTransitionPseudoTree) {
   ScriptState* script_state = GetScriptState();
   ScriptState::Scope scope(script_state);
   DummyExceptionStateForTesting exception_state;
+  Element* root_element = GetDocument().documentElement();
 
   struct Data {
     STACK_ALLOCATED();
@@ -620,7 +668,7 @@ TEST_P(ViewTransitionTest, ViewTransitionPseudoTree) {
   const Vector<AtomicString> view_transition_names = {
       AtomicString("root"), AtomicString("e1"), AtomicString("e2"),
       AtomicString("e3")};
-  ValidatePseudoElementTree(view_transition_names, false);
+  ValidatePseudoElementTree(root_element, view_transition_names, false);
 
   // Finish the prepare phase, mutate the DOM and start the animation.
   UpdateAllLifecyclePhasesAndFinishDirectives();
@@ -638,16 +686,71 @@ TEST_P(ViewTransitionTest, ViewTransitionPseudoTree) {
   test::RunPendingTasks();
   EXPECT_EQ(GetState(transition), State::kAnimating);
 
-  // The start phase should generate pseudo elements for rendering new live
+  // The start phase should generate pseudo-elements for rendering new live
   // content.
   UpdateAllLifecyclePhasesAndFinishDirectives();
-  ValidatePseudoElementTree(view_transition_names, true);
+  ValidatePseudoElementTree(root_element, view_transition_names, true);
 
-  // Finish the animations which should remove the pseudo element tree.
+  // Finish the animations which should remove the pseudo-element tree.
   FinishTransition();
   UpdateAllLifecyclePhasesAndFinishDirectives();
   EXPECT_FALSE(GetDocument().documentElement()->GetPseudoElement(
       kPseudoIdViewTransition));
+}
+
+TEST_P(ViewTransitionTest, ScopedPseudoTree) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      ::view-transition-group(*) { animation-duration: 0s; }
+      #scope { width: 200px; height: 300px; contain: strict;
+        position: relative; z-index: 0; background: white; }
+      #scope div { width: 100px; height: 100px; contain: paint; background: blue }
+    </style>
+    <div id=scope>
+      <div id=e1 style="view-transition-name: e1"></div>
+      <div id=e2 style="view-transition-name: e2"></div>
+      <div id=e3 style="view-transition-name: e3"></div>
+    </div>
+  )HTML");
+
+  auto* document = &GetDocument();
+  Element* scope_element = document->getElementById(AtomicString("scope"));
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
+
+  auto lambda = [](const v8::FunctionCallbackInfo<v8::Value>& info) {};
+  auto* callback = V8ViewTransitionCallback::Create(
+      v8::Function::New(script_state->GetContext(), lambda,
+                        v8::External::New(script_state->GetIsolate(), document))
+          .ToLocalChecked());
+
+  auto* transition = ScopedViewTransition::startViewTransition(
+      script_state, *scope_element, callback, IGNORE_EXCEPTION_FOR_TESTING);
+
+  UpdateAllLifecyclePhasesForTest();
+
+  const Vector<AtomicString> view_transition_names = {
+      AtomicString("e1"), AtomicString("e2"), AtomicString("e3")};
+  ValidatePseudoElementTree(scope_element, view_transition_names, false);
+
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+  test::RunPendingTasks();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(GetState(transition), State::kAnimating);
+
+  ValidatePseudoElementTree(scope_element, view_transition_names, true);
+
+  // Only the scope element should have view transition pseudos.
+  EXPECT_FALSE(GetDocument().documentElement()->GetPseudoElement(
+      kPseudoIdViewTransition));
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(GetState(transition), State::kPendingDone);
+  test::RunPendingTasks();
+  EXPECT_EQ(GetState(transition), State::kFinished);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FALSE(scope_element->GetPseudoElement(kPseudoIdViewTransition));
 }
 
 TEST_P(ViewTransitionTest, ViewTransitionElementInvalidation) {
@@ -691,13 +794,13 @@ TEST_P(ViewTransitionTest, ViewTransitionElementInvalidation) {
   test::RunPendingTasks();
   EXPECT_EQ(GetState(transition), State::kAnimating);
 
-  // The start phase should generate pseudo elements for rendering new live
+  // The start phase should generate pseudo-elements for rendering new live
   // content.
   UpdateAllLifecyclePhasesAndFinishDirectives();
 
   EXPECT_FALSE(element->GetLayoutObject()->NeedsPaintPropertyUpdate());
 
-  // Finish the animations which should remove the pseudo element tree.
+  // Finish the animations which should remove the pseudo-element tree.
   FinishTransition();
 
   EXPECT_TRUE(element->GetLayoutObject()->NeedsPaintPropertyUpdate());
@@ -783,7 +886,7 @@ TEST_P(ViewTransitionTest, InspectorStyleResolver) {
 
     // The resolver collects developer and UA rules.
     EXPECT_GT(pseudo_element_rules->size(), 1u);
-    EXPECT_EQ(pseudo_element_rules->back().first->cssText(),
+    EXPECT_EQ(pseudo_element_rules->back().rule->cssText(),
               test_case.user_rule);
   }
 
@@ -797,7 +900,7 @@ TEST_P(ViewTransitionTest, InspectorStyleResolver) {
     for (const auto& matched_rules : parent_resolver.PseudoElementRules()) {
       if (matched_rules->pseudo_id != test_case.pseudo_id)
         continue;
-      if (matched_rules->view_transition_name == "root") {
+      if (matched_rules->pseudo_argument == "root") {
         EXPECT_FALSE(found_rule_for_root);
         found_rule_for_root = true;
         continue;
@@ -808,16 +911,16 @@ TEST_P(ViewTransitionTest, InspectorStyleResolver) {
     }
 
     ASSERT_TRUE(matched_rules_for_pseudo);
-    // Pseudo elements which are generated for each tag should include the root
+    // Pseudo-elements which are generated for each tag should include the root
     // by default.
     EXPECT_EQ(found_rule_for_root, test_case.uses_tags);
-    EXPECT_EQ(matched_rules_for_pseudo->view_transition_name,
+    EXPECT_EQ(matched_rules_for_pseudo->pseudo_argument,
               test_case.uses_tags ? AtomicString("foo") : g_null_atom);
 
     auto pseudo_element_rules = matched_rules_for_pseudo->matched_rules;
     // The resolver collects developer and UA rules.
     EXPECT_GT(pseudo_element_rules->size(), 1u);
-    EXPECT_EQ(pseudo_element_rules->back().first->cssText(),
+    EXPECT_EQ(pseudo_element_rules->back().rule->cssText(),
               test_case.user_rule);
   }
 
@@ -904,11 +1007,11 @@ TEST_P(ViewTransitionTest, VirtualKeyboardDoesntAffectSnapshotSize) {
   EXPECT_EQ(transition->GetViewTransitionForTest()->GetSnapshotRootSize(),
             original_size);
 
-  // The start phase should generate pseudo elements for rendering new live
+  // The start phase should generate pseudo-elements for rendering new live
   // content.
   UpdateAllLifecyclePhasesAndFinishDirectives();
 
-  // Finish the animations which should remove the pseudo element tree.
+  // Finish the animations which should remove the pseudo-element tree.
   FinishTransition();
 
   UpdateAllLifecyclePhasesAndFinishDirectives();
@@ -1000,7 +1103,8 @@ TEST_P(ViewTransitionTest, PseudoAwareChildTraversal) {
   auto start_setup_lambda =
       [](const v8::FunctionCallbackInfo<v8::Value>& info) {
         auto* document =
-            static_cast<Document*>(info.Data().As<v8::External>()->Value());
+            static_cast<Document*>(info.Data().As<v8::External>()->Value(
+                gin::kViewTransitionTestDocumentTag));
         document->documentElement()->classList().Add(
             AtomicString("transitioned"));
       };
@@ -1009,7 +1113,8 @@ TEST_P(ViewTransitionTest, PseudoAwareChildTraversal) {
   auto start_setup_callback =
       v8::Function::New(
           script_state->GetContext(), start_setup_lambda,
-          v8::External::New(script_state->GetIsolate(), &GetDocument()))
+          v8::External::New(script_state->GetIsolate(), &GetDocument(),
+                            gin::kViewTransitionTestDocumentTag))
           .ToLocalChecked();
 
   ViewTransitionSupplement::startViewTransition(
@@ -1236,7 +1341,7 @@ TEST_P(ViewTransitionTest, IncludingPseudoTraversal) {
 // This test was added because of a crash in getAnimations. The crash would
 // occur because getAnimations attempts to sort the animations into compositing
 // order. The comparator used uses tree order in some situations which requires
-// pseudo elements to implement tree traversal methods. The crash occurred only
+// pseudo-elements to implement tree traversal methods. The crash occurred only
 // on Android, probably due to differences in the std::sort implementation.
 TEST_P(ViewTransitionTest, GetAnimationsCrashTest) {
   SetHtmlInnerHTML(R"HTML(
@@ -1318,9 +1423,9 @@ TEST_P(ViewTransitionTest, ScriptCallAfterNavigationTransition) {
       mojom::blink::NavigationTypeForNavigationApi::kPush;
   ViewTransitionSupplement::SnapshotDocumentForNavigation(
       GetDocument(), blink::ViewTransitionToken(), std::move(page_swap_params),
-      base::BindOnce([](const ViewTransitionState&) {}));
+      BindOnce([](const ViewTransitionState&) {}));
 
-  ASSERT_TRUE(ViewTransitionSupplement::From(GetDocument())->GetTransition());
+  ASSERT_TRUE(GetDocument().GetViewTransitions().GetTransition());
 
   bool callback_issued = false;
 
@@ -1328,13 +1433,15 @@ TEST_P(ViewTransitionTest, ScriptCallAfterNavigationTransition) {
   auto start_setup_lambda =
       [](const v8::FunctionCallbackInfo<v8::Value>& info) {
         auto* callback_issued =
-            static_cast<bool*>(info.Data().As<v8::External>()->Value());
+            static_cast<bool*>(info.Data().As<v8::External>()->Value(
+                gin::kViewTransitionTestBoolTag));
         *callback_issued = true;
       };
   auto start_setup_callback =
       v8::Function::New(
           script_state->GetContext(), start_setup_lambda,
-          v8::External::New(script_state->GetIsolate(), &callback_issued))
+          v8::External::New(script_state->GetIsolate(), &callback_issued,
+                            gin::kViewTransitionTestBoolTag))
           .ToLocalChecked();
   DOMViewTransition* script_transition =
       ViewTransitionSupplement::startViewTransition(
@@ -1412,15 +1519,105 @@ TEST_P(ViewTransitionTest, SubframeSnapshotLayer) {
   ASSERT_TRUE(transition);
 
   UpdateAllLifecyclePhasesForTest();
-  auto layer = transition->GetSubframeSnapshotLayer();
+  auto layer = transition->GetScopeSnapshotLayer();
   ASSERT_TRUE(layer);
   EXPECT_TRUE(layer->is_live_content_layer_for_testing());
 
   child_document.GetPage()->GetChromeClient().WillCommitCompositorFrame();
-  auto new_layer = transition->GetSubframeSnapshotLayer();
+  auto new_layer = transition->GetScopeSnapshotLayer();
   ASSERT_TRUE(new_layer);
   EXPECT_NE(layer, new_layer);
   EXPECT_FALSE(new_layer->is_live_content_layer_for_testing());
+}
+
+TEST_P(ViewTransitionTest, ReplaceDocumentElement) {
+  auto* document = &GetDocument();
+  document->documentElement()->SetInnerHTMLWithoutTrustedTypes(
+      "<body>initial</body>");
+  UpdateAllLifecyclePhasesForTest();
+
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
+
+  auto lambda = [](const v8::FunctionCallbackInfo<v8::Value>& info) {
+    auto* doc = static_cast<Document*>(info.Data().As<v8::External>()->Value(
+        gin::kViewTransitionTestDocumentTag));
+    auto* new_root = doc->CreateElementForBinding(AtomicString("html"));
+    new_root->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+      <body>
+        <style>
+          ::view-transition-group(*) { animation-duration: 0s; }
+        </style>
+        transitioned
+      </body>
+    )HTML");
+    doc->replaceChild(new_root, doc->documentElement());
+  };
+  auto* callback = V8ViewTransitionCallback::Create(
+      v8::Function::New(script_state->GetContext(), lambda,
+                        v8::External::New(script_state->GetIsolate(), document,
+                                          gin::kViewTransitionTestDocumentTag))
+          .ToLocalChecked());
+
+  auto* transition = ViewTransitionSupplement::startViewTransition(
+      script_state, *document, callback, IGNORE_EXCEPTION_FOR_TESTING);
+
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+  test::RunPendingTasks();
+  EXPECT_EQ(GetState(transition), State::kAnimating);
+
+  UpdateAllLifecyclePhasesForTest();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(GetState(transition), State::kPendingDone);
+  test::RunPendingTasks();
+  EXPECT_EQ(GetState(transition), State::kFinished);
+
+  EXPECT_TRUE(
+      document->IsUseCounted(WebFeature::kViewTransitionChangeRootElement));
+}
+
+TEST_P(ViewTransitionTest, ReplaceBody) {
+  auto* document = &GetDocument();
+  document->documentElement()->SetInnerHTMLWithoutTrustedTypes(
+      "<body>initial</body>");
+  UpdateAllLifecyclePhasesForTest();
+
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
+
+  auto lambda = [](const v8::FunctionCallbackInfo<v8::Value>& info) {
+    auto* doc = static_cast<Document*>(info.Data().As<v8::External>()->Value(
+        gin::kViewTransitionTestDocumentTag));
+    doc->documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+      <body>
+        <style>
+          ::view-transition-group(*) { animation-duration: 0s; }
+        </style>
+        transitioned
+      </body>
+    )HTML");
+  };
+  auto* callback = V8ViewTransitionCallback::Create(
+      v8::Function::New(script_state->GetContext(), lambda,
+                        v8::External::New(script_state->GetIsolate(), document,
+                                          gin::kViewTransitionTestDocumentTag))
+          .ToLocalChecked());
+
+  auto* transition = ViewTransitionSupplement::startViewTransition(
+      script_state, *document, callback, IGNORE_EXCEPTION_FOR_TESTING);
+
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+  test::RunPendingTasks();
+  EXPECT_EQ(GetState(transition), State::kAnimating);
+
+  UpdateAllLifecyclePhasesForTest();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(GetState(transition), State::kPendingDone);
+  test::RunPendingTasks();
+  EXPECT_EQ(GetState(transition), State::kFinished);
+
+  EXPECT_FALSE(
+      document->IsUseCounted(WebFeature::kViewTransitionChangeRootElement));
 }
 
 }  // namespace blink

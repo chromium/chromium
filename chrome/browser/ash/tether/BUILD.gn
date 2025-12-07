@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("tether") {
   sources = [
@@ -15,6 +15,8 @@ static_library("tether") {
     "tether_service_factory.cc",
     "tether_service_factory.h",
   ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
     "//base",
@@ -44,6 +46,7 @@ static_library("tether") {
     "//chrome/browser/ui/webui/ash/settings/pages/internet",
   ]
 }
+
 source_set("unit_tests") {
   testonly = true
 
@@ -53,15 +56,29 @@ source_set("unit_tests") {
     ":tether",
     "//ash",
     "//base/test:test_support",
-    "//chrome/browser/ash:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/prefs",
     "//chrome/browser/ui/ash/network",
+    "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/multidevice:test_support",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/network:test_support",
     "//chromeos/ash/components/tether:test_support",
     "//chromeos/ash/services/device_sync",
     "//chromeos/ash/services/device_sync:test_support",
     "//chromeos/ash/services/device_sync/public/cpp:test_support",
+    "//chromeos/ash/services/multidevice_setup/public/cpp",
     "//chromeos/ash/services/multidevice_setup/public/cpp:prefs",
+    "//chromeos/ash/services/multidevice_setup/public/cpp:test_support",
+    "//chromeos/ash/services/secure_channel/public/cpp/client",
     "//chromeos/ash/services/secure_channel/public/cpp/client:test_support",
+    "//chromeos/dbus/power",
+    "//chromeos/dbus/power:power_manager_proto",
+    "//components/prefs:test_support",
+    "//components/sync_preferences:test_support",
+    "//content/test:test_support",
     "//device/bluetooth:mocks",
   ]
 }

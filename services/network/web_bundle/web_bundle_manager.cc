@@ -4,15 +4,16 @@
 
 #include "services/network/web_bundle/web_bundle_manager.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "components/web_package/web_bundle_utils.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/network_context.h"
-#include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/web_bundle_handle.mojom.h"
 #include "services/network/web_bundle/web_bundle_memory_quota_consumer.h"
 #include "services/network/web_bundle/web_bundle_url_loader_factory.h"
@@ -59,8 +60,6 @@ WebBundleManager::CreateWebBundleURLLoaderFactory(
     const GURL& bundle_url,
     const ResourceRequest::WebBundleTokenParams& web_bundle_token_params,
     int32_t process_id,
-    mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
-    std::optional<std::string> devtools_request_id,
     const CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
     mojom::CrossOriginEmbedderPolicyReporter* coep_reporter) {
   Key key = GetKey(web_bundle_token_params, process_id);
@@ -83,7 +82,6 @@ WebBundleManager::CreateWebBundleURLLoaderFactory(
       bundle_url, web_bundle_token_params, std::move(remote),
       std::make_unique<MemoryQuotaConsumer>(weak_ptr_factory_.GetWeakPtr(),
                                             process_id),
-      std::move(devtools_observer), std::move(devtools_request_id),
       cross_origin_embedder_policy, coep_reporter);
 
   // Process pending subresource loaders if there are.
@@ -166,14 +164,12 @@ void WebBundleManager::CleanUpWillBeDeletedURLLoader(
   // issue. As of now, this happens only in non-regular cases; the bundle is
   // blocked by, for example, Chrome Extensions APIs.
 
-  it->second.erase(base::ranges::remove_if(
-                       it->second,
-                       [will_be_deleted_url_loader](auto pending_loader) {
-                         return !pending_loader ||
-                                pending_loader.get() ==
-                                    will_be_deleted_url_loader;
-                       }),
-                   it->second.end());
+  auto to_remove = std::ranges::remove_if(
+      it->second, [will_be_deleted_url_loader](auto pending_loader) {
+        return !pending_loader ||
+               pending_loader.get() == will_be_deleted_url_loader;
+      });
+  it->second.erase(to_remove.begin(), to_remove.end());
 
   if (it->second.empty()) {
     pending_loaders_.erase(key);

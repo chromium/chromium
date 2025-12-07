@@ -16,7 +16,7 @@ class FakeBringAndroidTabsToIOSService : public BringAndroidTabsToIOSService {
       segmentation_platform::DeviceSwitcherResultDispatcher* dispatcher,
       syncer::SyncService* sync_service,
       sync_sessions::SessionSyncService* session_sync_service,
-      PrefService* browser_state_prefs);
+      PrefService* profile_prefs);
 
   ~FakeBringAndroidTabsToIOSService() override;
 

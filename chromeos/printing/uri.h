@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -265,7 +266,7 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) Uri {
 
   // Constructor, it tries to parse |uri|.
   // Leading and trailing whitespaces (space, \t, \n, \r, \f, \v) are ignored.
-  explicit Uri(const std::string& uri);
+  explicit Uri(std::string_view uri);
 
   Uri(const Uri&);
   Uri(Uri&&);

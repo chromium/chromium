@@ -74,5 +74,54 @@ TEST(BucketRangesTest, Checksum) {
   EXPECT_TRUE(ranges.HasValidChecksum());
 }
 
+TEST(BucketRangesTest, FromData) {
+  // Known good value #1
+  {
+    BucketRanges ranges({0, 1, 2});
+    EXPECT_EQ(ranges.size(), 3);
+    EXPECT_EQ(ranges.range(0), 0);
+    EXPECT_EQ(ranges.range(1), 1);
+    EXPECT_EQ(ranges.range(2), 2);
+    EXPECT_EQ(ranges.checksum(), 289217253u);
+  }
+  // Known good value #2
+  {
+    BucketRanges ranges({0, 1, 3});
+    EXPECT_EQ(ranges.size(), 3);
+    EXPECT_EQ(ranges.range(0), 0);
+    EXPECT_EQ(ranges.range(1), 1);
+    EXPECT_EQ(ranges.range(2), 3);
+    EXPECT_EQ(ranges.checksum(), 2843835776u);
+  }
+
+  // Must be non-empty.
+  {
+    BucketRanges ranges({});
+    EXPECT_EQ(ranges.size(), 0);
+    EXPECT_EQ(ranges.checksum(), 0);
+  }
+
+  // Must be non-negative.
+  {
+    BucketRanges ranges({-1, 1, 2});
+    EXPECT_EQ(ranges.size(), 0);
+    EXPECT_EQ(ranges.checksum(), 0);
+  }
+
+  // Must be in sorted order.
+  {
+    BucketRanges ranges({0, 2, 1});
+    EXPECT_EQ(ranges.size(), 0);
+    EXPECT_EQ(ranges.checksum(), 0);
+  }
+
+  // Must not contain duplicate values
+  {
+    BucketRanges ranges({0, 0, 1});
+    EXPECT_EQ(ranges.size(), 0);
+    EXPECT_EQ(ranges.checksum(), 0);
+  }
+}
+
 }  // namespace
 }  // namespace base

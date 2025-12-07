@@ -94,9 +94,9 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Notifications.Actions" enum="NotificationActionType"
-    expires_after="2025-01-05">
+    expires_after="2026-05-10">
   <owner>dewittj@chromium.org</owner>
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     The actions taken on notifications, recorded every time they happen. This
@@ -128,8 +128,60 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Notifications.Android.ImageMemorySizeInKB" units="KB"
+    expires_after="2026-05-31">
+  <owner>peilinwang@google.com</owner>
+  <owner>clank-performance-team@google.com</owner>
+  <summary>
+    Record the memory size in KB of notification images. Recorded whenever we
+    try to display a notification with an image on Android with API level
+    greater than or equal to 19.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Android.IntentProcessedInParallel"
+    units="intents" expires_after="2025-04-13">
+  <owner>peter@chromium.org</owner>
+  <owner>qinmin@chromium.org</owner>
+  <summary>
+    Records the number of notification that are processed in parallel. A sample
+    is recorded when a new intent is received by TrampolineActivity and
+    forwarded to Chrome. Measured on Android.
+  </summary>
+</histogram>
+
+<histogram
+    name="Notifications.Android.IntentStartToFinishDuration.{NativeInitialized}"
+    units="ms" expires_after="2025-04-13">
+  <owner>peter@chromium.org</owner>
+  <owner>qinmin@chromium.org</owner>
+  <summary>
+    Records how long it takes from receiving a notification in the
+    TrampolineActivity to finish processing the notification. A sample is
+    recorded when a qualified notification is processed. Measured on Android.
+  </summary>
+  <token key="NativeInitialized">
+    <variant name="NativeInitialized"
+        summary="Native was initialized when receiving the intent."/>
+    <variant name="NativeUninitialized"
+        summary="Native was not initialized when receiving the intent."/>
+  </token>
+</histogram>
+
+<histogram name="Notifications.Android.IntentStartToNativeInitializedDuration"
+    units="ms" expires_after="2025-04-13">
+  <owner>peter@chromium.org</owner>
+  <owner>qinmin@chromium.org</owner>
+  <summary>
+    Records how long it takes from receiving a notification in the
+    TrampolineActivity to finish initializing the native library. A sample is
+    recorded the first time native library is initialized upon receiving a
+    notification intent. Measured on Android.
+  </summary>
+</histogram>
+
 <histogram name="Notifications.Android.JobIsAlreadyPending{IntentAction}"
-    enum="Boolean" expires_after="2024-12-08">
+    enum="Boolean" expires_after="2025-06-22">
   <owner>peter@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <summary>
@@ -145,7 +197,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Android.JobNativeStartupDuration{IntentAction}"
-    units="ms" expires_after="2024-12-08">
+    units="ms" expires_after="2026-05-03">
   <owner>peter@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <summary>
@@ -163,7 +215,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Android.JobPendingReason{IntentAction}"
-    enum="NotificationPendingJobReason" expires_after="2024-12-08">
+    enum="NotificationPendingJobReason" expires_after="2025-04-13">
   <owner>peter@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <summary>
@@ -179,7 +231,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Android.JobScheduleResult{IntentAction}"
-    enum="BooleanSuccess" expires_after="2024-12-08">
+    enum="BooleanSuccess" expires_after="2025-04-13">
   <owner>peter@chromium.org</owner>
   <owner>engey@chromium.org</owner>
   <summary>
@@ -194,7 +246,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Android.JobStage{IntentAction}"
-    enum="NotificationJobStage" expires_after="2024-12-08">
+    enum="NotificationJobStage" expires_after="2026-05-10">
   <owner>peter@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <summary>
@@ -210,7 +262,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Android.JobStartDelay{IntentAction}" units="ms"
-    expires_after="2024-12-08">
+    expires_after="2025-06-22">
   <owner>peter@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <summary>
@@ -223,6 +275,17 @@ chromium-metrics-reviews@google.com.
     <variant name=".PreUnsubscribe"
         summary="Counts only intents with action PRE_UNSUBSCRIBE."/>
   </token>
+</histogram>
+
+<histogram name="Notifications.Android.NotificationEvent"
+    enum="NotificationEvent" expires_after="2025-10-31">
+  <owner>qinmin@chromium.org</owner>
+  <summary>
+    Records various events on calling Android NotificationManager. One record is
+    emitted both before and after the call. This metric captures whether a call
+    is made, and whether it successfully returns the desired result. Only
+    measured on Android.
+  </summary>
 </histogram>
 
 <histogram name="Notifications.Android.SitesChannel" enum="BooleanUsage"
@@ -386,8 +449,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Cros.Actions.{NotificationAction}"
-    enum="NotificationTypeDetailed" expires_after="2024-12-08">
-  <owner>leandre@chromium.org</owner>
+    enum="NotificationTypeDetailed" expires_after="2026-05-10">
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Records the notification type when a notification interaction occurs:
@@ -398,12 +461,13 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Notifications.Cros.Actions.{NotificationAction}.GroupedByCatalog"
-    enum="NotificationCatalogName" expires_after="2025-03-10">
-  <owner>leandre@chromium.org</owner>
+    enum="NotificationCatalogName" expires_after="2026-07-14">
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Records the notification catalog name when a notification interaction
-    occurs: {NotificationAction}. ChromeOS only.
+    occurs: {NotificationAction}. ChromeOS only. Note that this histogram is
+    expired from March 10 to mid-July 2025.
   </summary>
   <token key="NotificationAction" variants="NotificationAction"/>
 </histogram>
@@ -531,6 +595,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Notifications.Database.WriteNotificationMetadataReadResult"
+    enum="NotificationDatabaseStatus" expires_after="2026-04-22">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records the response status after trying to find the existing
+    NotificationDatabase entry that corresponds to the one we should update with
+    notification content detection metadata. Logged each time a notification is
+    shown, when we request to persist the metadata.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Database.WriteNotificationMetadataUpdateResult"
+    enum="NotificationDatabaseStatus" expires_after="2026-04-22">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records the response status after trying to update an existing
+    NotificationDatabase entry with notification content detection metadata.
+    Logged each time a notification is shown and the database entry is
+    successfully found.
+  </summary>
+</histogram>
+
 <histogram name="Notifications.Database.WriteResult"
     enum="NotificationDatabaseStatus" expires_after="2023-04-16">
   <owner>knollr@chromium.org</owner>
@@ -539,6 +627,35 @@ chromium-metrics-reviews@google.com.
     Records the result status codes of writing data for a notification to the
     Web Notification database.
   </summary>
+</histogram>
+
+<histogram name="Notifications.Engagement.{Type}.Volume{Volume}"
+    units="site-engagement-score*2" expires_after="2026-04-05">
+  <owner>antoniosartori@chromium.org</owner>
+  <owner>feuunk@chromium.org</owner>
+  <summary>
+    Records site engagement of sites when notifications are shown or clicked. A
+    metric is recorded for every displayed notification, clicked notification,
+    and suspicious warning shown reporting the site engagement of the
+    corresponding site multiplied by 2 (we multiply by 2 in order to distinguish
+    engagement values &gt;=0.5 from 0 - note that the smallest possible nonnull
+    engagement value is 0.5). The average daily volume of displayed
+    notifications for that particular site over the past week is encoded in the
+    histogram name.
+  </summary>
+  <token key="Type">
+    <variant name="Clicked"/>
+    <variant name="Displayed"/>
+    <variant name="Suspicious"/>
+  </token>
+  <token key="Volume">
+    <variant name="0"/>
+    <variant name="1"/>
+    <variant name="5"/>
+    <variant name="10"/>
+    <variant name="20"/>
+    <variant name="Above20"/>
+  </token>
 </histogram>
 
 <histogram name="Notifications.LoadProfileResult" enum="BooleanSuccess"
@@ -554,7 +671,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.macOS.AppShimProcess.UptimeOnDisconnect"
-    units="ms" expires_after="2025-03-01">
+    units="ms" expires_after="2026-03-01">
   <owner>mek@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -566,7 +683,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Notifications.macOS.AppShimProcess.UptimeOnUnexpectedDisconnect"
-    units="ms" expires_after="2025-03-01">
+    units="ms" expires_after="2026-03-01">
   <owner>mek@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -605,7 +722,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.NonPersistentNotificationThirdPartyCount"
-    enum="Boolean" expires_after="2025-02-08">
+    enum="Boolean" expires_after="2026-05-03">
   <owner>awillia@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -630,7 +747,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Notifications.NotificationHelper.NotificationActivatorPrimaryStatus"
     enum="NotificationHelperNotificationActivatorPrimaryStatus"
-    expires_after="2025-01-05">
+    expires_after="2026-05-24">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -693,7 +810,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Notifications.Permissions.UNNotification.{Style}.PermissionRequest"
-    enum="UNNotificationPermissionRequestResult" expires_after="M134">
+    enum="UNNotificationPermissionRequestResult" expires_after="2026-03-01">
   <owner>mek@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -707,7 +824,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Notifications.Permissions.UNNotification.{Style}.PermissionStatus"
-    enum="UNNotificationPermissionStatus" expires_after="M134">
+    enum="UNNotificationPermissionStatus" expires_after="2026-03-01">
   <owner>mek@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -720,7 +837,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Permissions.UNNotification.{Style}.Style"
-    enum="UNNotificationStyle" expires_after="M134">
+    enum="UNNotificationStyle" expires_after="2026-03-01">
   <owner>mek@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -734,9 +851,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.PerNotificationActions"
-    enum="NotificationActionType" expires_after="2024-12-24">
+    enum="NotificationActionType" expires_after="2026-03-15">
   <owner>dewittj@chromium.org</owner>
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     The actions taken on notifications, recorded once per notification, when it
@@ -746,85 +863,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Notifications.Persistent.Actions.Action.SizeInBytes"
-    units="bytes" expires_after="2023-10-08">
-  <owner>nwokedi@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>The action label size of one of the notification's actions.</summary>
-</histogram>
-
-<histogram name="Notifications.Persistent.Actions.Icon.SizeInBytes"
-    units="bytes" expires_after="2023-10-08">
-  <owner>nwokedi@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>The icon (URL) size of one of the notification's actions.</summary>
-</histogram>
-
-<histogram name="Notifications.Persistent.Actions.Placeholder.SizeInBytes"
-    units="bytes" expires_after="2023-10-08">
-  <owner>nwokedi@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>The placeholder size of one of the notification's actions.</summary>
-</histogram>
-
-<histogram name="Notifications.Persistent.Actions.Title.SizeInBytes"
-    units="bytes" expires_after="2023-10-08">
-  <owner>nwokedi@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>The title size of one of the notification's actions.</summary>
-</histogram>
-
-<histogram name="Notifications.Persistent.Badge.SizeInBytes" units="bytes"
-    expires_after="2023-10-08">
-  <owner>nwokedi@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>The size of the notification's badge (URL).</summary>
-</histogram>
-
-<histogram name="Notifications.Persistent.Body.SizeInBytes" units="bytes"
-    expires_after="2023-10-08">
-  <owner>nwokedi@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>The size of the notification's body.</summary>
-</histogram>
-
-<histogram name="Notifications.Persistent.Data.SizeInBytes" units="bytes"
-    expires_after="2023-10-08">
-  <owner>nwokedi@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>The size of the notification's data field.</summary>
-</histogram>
-
-<histogram name="Notifications.Persistent.Icon.SizeInBytes" units="bytes"
-    expires_after="2023-10-08">
-  <owner>nwokedi@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>The size of the notification's icon (URL).</summary>
-</histogram>
-
-<histogram name="Notifications.Persistent.Image.SizeInBytes" units="bytes"
-    expires_after="2023-10-08">
-  <owner>nwokedi@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>The size of the notification's image (URL).</summary>
-</histogram>
-
-<histogram name="Notifications.Persistent.Origin.SizeInBytes" units="bytes"
-    expires_after="2023-10-08">
-  <owner>nwokedi@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>The size of the notification's origin.</summary>
-</histogram>
-
-<histogram name="Notifications.Persistent.Title.SizeInBytes" units="bytes"
-    expires_after="2023-10-08">
-  <owner>nwokedi@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>The size of the notification's title.</summary>
-</histogram>
-
 <histogram name="Notifications.PersistentNotificationActionCount"
-    units="buttons" expires_after="2025-01-05">
+    units="buttons" expires_after="2026-03-22">
   <owner>peter@chromium.org</owner>
   <summary>
     The number of action buttons the developer provided for a persistent Web
@@ -833,17 +873,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.PersistentNotificationDisplayResult"
-    enum="PersistentNotificationDisplayResult" expires_after="2023-04-16">
+    enum="PersistentNotificationDisplayResult" expires_after="2026-04-26">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
-    The result of the promise returned by showNotification. Logged whenever
+    The result of the promise returned by showNotification, indicating whether
+    the notification could be shown successfully. Logged whenever
     showNotification is called.
+
+    This metric was expired between April 2023 and December 2024, so data in
+    this period will be missing.
   </summary>
 </histogram>
 
 <histogram name="Notifications.PersistentNotificationThirdPartyCount"
-    enum="Boolean" expires_after="2025-02-08">
+    enum="Boolean" expires_after="2026-05-03">
   <owner>awillia@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -883,16 +927,92 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Notifications.Scheduler.NotificationLifeCycleEvent"
+<histogram
+    name="Notifications.Scheduler.NotificationLifeCycleEvent{NotificationSchedulerClientType}"
     enum="NotificationSchedulerNotificationLifeCycleEvent"
-    expires_after="2023-03-05">
-<!-- Name completed by histogram_suffixes name="NotificationSchedulerClientType" -->
-
+    expires_after="2026-03-05">
   <owner>shaktisahu@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
   <summary>
     Records life cycle events for a scheduled notification, when notification is
     scheduled, shown or encountering any error.
+    {NotificationSchedulerClientType}
+
+    This metric was expired between March 2023 and November 2025, so data may be
+    missing.
+  </summary>
+  <token key="NotificationSchedulerClientType">
+    <variant name=""/>
+    <variant name=".__Test__" summary=""/>
+    <variant name=".ChromeUpdate" summary=""/>
+    <variant name=".FeatureGuide" summary="Deprecated"/>
+    <variant name=".Prefetch" summary=""/>
+    <variant name=".ReadingList" summary=""/>
+    <variant name=".Tips" summary=""/>
+    <variant name=".Unknown" summary=""/>
+    <variant name=".WebUI" summary=""/>
+  </token>
+</histogram>
+
+<histogram
+    name="Notifications.Scheduler.Tips.FeatureTypeAction{NotificationTipsFeatureType}"
+    enum="NotificationSchedulerUserActionType" expires_after="2026-03-05">
+  <owner>wylieb@google.com</owner>
+  <owner>bjfong@google.com</owner>
+  <summary>
+    Records user actions for a shown tips notification, when the notification is
+    clicked through the body or button, or dismissed. This is for Android only.
+    {NotificationTipsFeatureType}
+  </summary>
+  <token key="NotificationTipsFeatureType">
+    <variant name=""/>
+    <variant name=".BottomOmnibox"/>
+    <variant name=".EnhancedBrowsing"/>
+    <variant name=".GoogleLens"/>
+    <variant name=".QuickDelete"/>
+  </token>
+</histogram>
+
+<histogram name="Notifications.Scheduler.Tips.FeatureTypeShown"
+    enum="TipsNotificationsFeatureType" expires_after="2026-03-05">
+  <owner>wylieb@google.com</owner>
+  <owner>bjfong@google.com</owner>
+  <summary>
+    Records the number of shown tips notifications broken down by feature type,
+    recorded just before the notification is expected to be shown. This is for
+    Android only.
+  </summary>
+</histogram>
+
+<histogram
+    name="Notifications.Tips.FeatureTipPromo.EventType{NotificationTipsFeatureType}"
+    enum="NotificationSchedulerUserActionType" expires_after="2026-03-05">
+  <owner>wylieb@google.com</owner>
+  <owner>bjfong@google.com</owner>
+  <summary>
+    Records user actions for a shown feature tip promo, when the promo is shown,
+    interacted with through dismissal, accepted on both the main and detail
+    pages, and backpressed on the detail page. This is for Android only.
+    {NotificationTipsFeatureType}
+  </summary>
+  <token key="NotificationTipsFeatureType">
+    <variant name=""/>
+    <variant name=".BottomOmnibox"/>
+    <variant name=".EnhancedBrowsing"/>
+    <variant name=".GoogleLens"/>
+    <variant name=".QuickDelete"/>
+  </token>
+</histogram>
+
+<histogram name="Notifications.Tips.OptInPromo.EventType"
+    enum="TipsNotificationsOptInPromoEventType" expires_after="2026-03-05">
+  <owner>wylieb@google.com</owner>
+  <owner>bjfong@google.com</owner>
+  <summary>
+    Records the event type for user actions on the Tips Opt In Promo. This is
+    recorded on show, on promo acceptance, and on promo ignore. Ignoring the
+    promo includes dismissal by scrim touch, backpress and swipe away and
+    includes the close button on the promo. This is for Android only.
   </summary>
 </histogram>
 
@@ -940,7 +1060,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Windows.ActivationStatus"
-    enum="WindowsNotificationActivationStatus" expires_after="2025-01-05">
+    enum="WindowsNotificationActivationStatus" expires_after="2026-04-05">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -951,18 +1071,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Windows.CloseStatus"
-    enum="WindowsNotificationCloseStatus" expires_after="2024-09-01">
+    enum="WindowsNotificationCloseStatus" expires_after="2025-03-09">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     The status of Close requests in NotificationPlatformBridgeWin (Windows
     only). Logged whenever a notification is closed. Note: Not logged after M98
-    until end of August 2022, and also not at the beginning of Sept 2023.
+    until end of August 2022, and also not at the beginning of Sept 2023 and
+    Sept 2024.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Windows.CreateToastManagerErrorCode"
-    enum="Hresult" expires_after="2024-09-01">
+    enum="Hresult" expires_after="2025-03-09">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -970,12 +1091,12 @@ chromium-metrics-reviews@google.com.
     toast manager fails. This provides a more detailed error in the cases the
     histogram Notifications.Windows.DisplayStatus reported
     CREATE_TOAST_NOTIFIER_WITH_ID_FAILED. Note: Not logged after M89 until end
-    of August 2022, and also not at the beginning of Sept 2023.
+    of August 2022, and also not at the beginning of Sept 2023 and Sept 2024.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Windows.DisplayFailure" enum="Hresult"
-    expires_after="2025-01-05">
+    expires_after="2025-05-11">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -985,7 +1106,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Windows.DisplayStatus"
-    enum="WindowsNotificationDisplayStatus" expires_after="2025-01-05">
+    enum="WindowsNotificationDisplayStatus" expires_after="2025-03-09">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -1000,7 +1121,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Notifications.Windows.GetDisplayedLaunchIdStatus"
     enum="WindowsNotificationGetDisplayedLaunchIdStatus"
-    expires_after="2025-01-05">
+    expires_after="2025-05-11">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>

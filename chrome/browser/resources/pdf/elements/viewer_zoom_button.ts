@@ -2,40 +2,39 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './viewer_zoom_button.html.js';
+import {getCss} from './viewer_zoom_button.css.js';
+import {getHtml} from './viewer_zoom_button.html.js';
 
-export class ViewerZoomButtonElement extends PolymerElement {
+export class ViewerZoomButtonElement extends CrLitElement {
   static get is() {
     return 'viewer-zoom-button';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /** Index of the icon currently being displayed. */
-      activeIndex: {
-        type: Number,
-        value: 0,
-      },
+      activeIndex: {type: Number},
 
-      disabled: {
-        type: Boolean,
-        value: false,
-      },
+      disabled: {type: Boolean},
 
       /**
        * Icons to be displayed on the FAB. Multiple icons should be separated
        * with spaces, and will be cycled through every time the FAB is clicked.
        */
-      icons: String,
+      icons: {type: String},
 
       /**
        * Used to show the appropriate drop shadow when buttons are focused with
@@ -43,81 +42,61 @@ export class ViewerZoomButtonElement extends PolymerElement {
        */
       keyboardNavigationActive: {
         type: Boolean,
-        reflectToAttribute: true,
+        reflect: true,
       },
 
-      tooltips: String,
-
-      /**
-       * Array version of the list of icons. Polymer does not allow array
-       * properties to be set from HTML, so we must use a string property and
-       * perform the conversion manually.
-       */
-      icons_: {
-        type: Array,
-        value: [''],
-        computed: 'computeIconsArray_(icons)',
-      },
-
-      tooltips_: {
-        type: Array,
-        computed: 'computeTooltipsArray_(tooltips)',
-      },
+      tooltips: {type: String},
 
       /**
-       * Icon currently being displayed on the FAB.
+       * Array version of the list of icons. The public property is a string for
+       * convenience so that either a single icon or multiple icons can be
+       * easily specified without a data binding in the parent's HTML template.
        */
-      visibleIcon_: {
-        type: String,
-        computed: 'computeVisibleIcon_(icons_, activeIndex)',
-      },
+      icons_: {type: Array},
 
-      visibleTooltip_: {
-        type: String,
-        computed: 'computeVisibleTooltip_(tooltips_, activeIndex)',
-      },
+      tooltips_: {type: Array},
     };
   }
 
-  activeIndex: number;
-  disabled: boolean;
-  icons: string;
-  keyboardNavigationActive: boolean;
-  tooltips: string;
-  private icons_: string[];
-  private tooltips_: string[];
-  private visibleIcon_: string;
-  private visibleTooltip_: string;
+  accessor activeIndex: number = 0;
+  accessor disabled: boolean = false;
+  accessor icons: string = '';
+  accessor keyboardNavigationActive: boolean = false;
+  accessor tooltips: string = '';
+  private accessor icons_: string[] = [''];
+  private accessor tooltips_: string[] = [];
 
-  private computeIconsArray_(): string[] {
-    return this.icons.split(' ');
-  }
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
 
-  private computeTooltipsArray_(): string[] {
-    return this.tooltips.split(',');
+    if (changedProperties.has('icons')) {
+      this.icons_ = this.icons.split(' ');
+    }
+    if (changedProperties.has('tooltips')) {
+      this.tooltips_ = this.tooltips.split(',');
+    }
   }
 
   /**
    * @return Icon name for the currently visible icon.
    */
-  private computeVisibleIcon_(): string {
-    return this.icons_[this.activeIndex];
+  protected computeVisibleIcon_(): string {
+    return this.icons_[this.activeIndex]!;
   }
 
   /**
    * @return Tooltip for the currently visible icon.
    */
-  private computeVisibleTooltip_(): string {
-    return this.tooltips_ === undefined ? '' : this.tooltips_[this.activeIndex];
+  protected computeVisibleTooltip_(): string {
+    return this.tooltips_ === undefined ? '' : this.tooltips_[this.activeIndex]!
+        ;
   }
 
-  private fireClick_() {
+  protected fireClick_() {
     // We cannot attach an on-click to the entire viewer-zoom-button, as this
     // will include clicks on the margins. Instead, proxy clicks on the FAB
     // through.
-    this.dispatchEvent(
-        new CustomEvent('fabclick', {bubbles: true, composed: true}));
-
+    this.fire('fabclick');
     this.activeIndex = (this.activeIndex + 1) % this.icons_.length;
   }
 }

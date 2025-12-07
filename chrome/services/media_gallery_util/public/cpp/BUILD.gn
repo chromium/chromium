@@ -39,20 +39,26 @@ source_set("cpp") {
   }
 }
 
-if (!is_android) {
-  source_set("browser_tests") {
-    testonly = true
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-    sources = [ "media_gallery_util_browsertest.cc" ]
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "safe_audio_video_checker_browsertest.cc" ]
 
-    deps = [
-      ":cpp",
-      "//base",
+  deps = [
+    ":cpp",
+    "//base",
+    "//chrome/test:test_support",
+    "//content/public/browser",
+    "//testing/gtest",
+  ]
+
+  if (!is_android) {
+    sources += [ "media_gallery_util_browsertest.cc" ]
+
+    deps += [
       "//chrome/services/media_gallery_util/public/mojom",
-      "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
-      "//testing/gtest",
       "//third_party/libyuv",
     ]
 

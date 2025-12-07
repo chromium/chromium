@@ -4,17 +4,20 @@
 
 #include "device/fido/cable/fido_cable_discovery.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/barrier_closure.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
+#include "base/notimplemented.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -30,8 +33,8 @@
 #include "device/fido/cable/fido_cable_device.h"
 #include "device/fido/cable/fido_cable_handshake_handler.h"
 #include "device/fido/cable/fido_tunnel_device.h"
-#include "device/fido/features.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "device/fido/public/features.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "device/fido/mac/util.h"
@@ -105,7 +108,7 @@ std::unique_ptr<BluetoothAdvertisement::Data> ConstructAdvertisementData(
   // bit of the flag byte.
   service_data_value[0] = kCableFlags;
   service_data_value[1] = 1 /* version */;
-  base::ranges::copy(client_eid, service_data_value.begin() + 2);
+  std::ranges::copy(client_eid, service_data_value.begin() + 2);
   service_data.emplace(kGoogleCableUUID128, std::move(service_data_value));
   advertisement_data->set_service_data(std::move(service_data));
 #endif
@@ -185,8 +188,7 @@ FidoCableDiscovery::CreateV1HandshakeHandler(
 
     case CableDiscoveryData::Version::V2:
     case CableDiscoveryData::Version::INVALID:
-      CHECK(false);
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -639,7 +641,8 @@ FidoCableDiscovery::GetCableDiscoveryData(const BluetoothDevice* device) {
   std::array<uint8_t, 16 + 4> v2_advert;
   if (advert_callback_ && service_data &&
       service_data->size() == v2_advert.size()) {
-    memcpy(v2_advert.data(), service_data->data(), v2_advert.size());
+    UNSAFE_TODO(
+        memcpy(v2_advert.data(), service_data->data(), v2_advert.size()));
     advert_callback_.Run(v2_advert);
   }
 
@@ -683,8 +686,8 @@ std::vector<CableEidArray> FidoCableDiscovery::GetUUIDs(
     std::vector<uint8_t> uuid_binary = uuid.GetBytes();
     CableEidArray authenticator_eid;
     DCHECK_EQ(authenticator_eid.size(), uuid_binary.size());
-    memcpy(authenticator_eid.data(), uuid_binary.data(),
-           std::min(uuid_binary.size(), authenticator_eid.size()));
+    UNSAFE_TODO(memcpy(authenticator_eid.data(), uuid_binary.data(),
+                       std::min(uuid_binary.size(), authenticator_eid.size())));
 
     ret.emplace_back(std::move(authenticator_eid));
   }
@@ -740,15 +743,17 @@ std::string FidoCableDiscovery::ResultDebugString(
   if (!result) {
     // Try to identify some common UUIDs that are random and thus otherwise look
     // like potential EIDs.
-    if (memcmp(eid.data(), kAppleContinuity, eid.size()) == 0) {
+    if (UNSAFE_TODO(memcmp(eid.data(), kAppleContinuity, eid.size())) == 0) {
       ret += " (Apple Continuity service)";
-    } else if (memcmp(eid.data(), kAppleUnknown, eid.size()) == 0) {
+    } else if (UNSAFE_TODO(memcmp(eid.data(), kAppleUnknown, eid.size())) ==
+               0) {
       ret += " (Apple service)";
-    } else if (memcmp(eid.data(), kAppleMedia, eid.size()) == 0) {
+    } else if (UNSAFE_TODO(memcmp(eid.data(), kAppleMedia, eid.size())) == 0) {
       ret += " (Apple Media service)";
-    } else if (memcmp(eid.data(), kAppleNotificationCenter, eid.size()) == 0) {
+    } else if (UNSAFE_TODO(memcmp(eid.data(), kAppleNotificationCenter,
+                                  eid.size())) == 0) {
       ret += " (Apple Notification service)";
-    } else if (memcmp(eid.data(), kCable, eid.size()) == 0) {
+    } else if (UNSAFE_TODO(memcmp(eid.data(), kCable, eid.size())) == 0) {
       ret += " (caBLE indicator)";
     }
     return ret;

@@ -22,8 +22,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ash/input_method/ui/input_method_menu_item.h"
-#include "chrome/browser/ash/input_method/ui/input_method_menu_manager.h"
+#include "chrome/browser/ui/ash/input_method/input_method_menu_item.h"
+#include "chrome/browser/ui/ash/input_method/input_method_menu_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -713,7 +713,6 @@ bool InputMethodEngine::AcceptSuggestionCandidate(
     int context_id,
     const std::u16string& suggestion,
     size_t delete_previous_utf16_len,
-    bool use_replace_surrounding_text,
     std::string* error) {
   if (!IsActive()) {
     *error = kErrorNotActive;
@@ -724,34 +723,13 @@ bool InputMethodEngine::AcceptSuggestionCandidate(
     return false;
   }
 
-  if (use_replace_surrounding_text) {
-    if (delete_previous_utf16_len) {
-      if (base::expected<void, Error> result = ReplaceSurroundingText(
-              context_id_, delete_previous_utf16_len, 0, suggestion);
-          !result.has_value()) {
-        switch (result.error()) {
-          case Error::kInputMethodNotActive:
-            *error = kErrorNotActive;
-            return false;
-          case Error::kIncorrectContextId:
-            *error = base::StringPrintf(
-                "%s request context id = %d, current context id = %d",
-                kErrorWrongContext, context_id, context_id_);
-            return false;
-        }
-      }
-    } else {
-      CommitText(context_id, suggestion, error);
-    }
-  } else {
-    if (delete_previous_utf16_len) {
-      DeleteSurroundingText(context_id_,
-                            -static_cast<int>(delete_previous_utf16_len),
-                            delete_previous_utf16_len, error);
-    }
-
-    CommitText(context_id, suggestion, error);
+  if (delete_previous_utf16_len) {
+    DeleteSurroundingText(context_id_,
+                          -static_cast<int>(delete_previous_utf16_len),
+                          delete_previous_utf16_len, error);
   }
+
+  CommitText(context_id, suggestion, error);
 
   IMEAssistiveWindowHandlerInterface* aw_handler =
       IMEBridge::Get()->GetAssistiveWindowHandler();
@@ -1123,7 +1101,7 @@ bool InputMethodEngine::InferIsUserSelecting(
     return true;
   }
 
-  const bool any_non_empty_label = base::ranges::any_of(
+  const bool any_non_empty_label = std::ranges::any_of(
       candidates,
       [](const Candidate& candidate) { return !candidate.label.empty(); });
   return any_non_empty_label;

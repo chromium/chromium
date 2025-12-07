@@ -2,6 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
 import("//device/vr/buildflags/buildflags.gni")
 
 declare_args() {
@@ -25,6 +29,7 @@ if (enable_openxr) {
     # DEPS rules for it as are present in the below locations.
     visibility = [
       "//chrome/browser/vr/*",
+      "//chrome/test/*",
       "//components/webxr/*",
       "//device/vr/*",
     ]
@@ -35,7 +40,6 @@ if (enable_openxr) {
       "src/include/openxr/openxr_platform.h",
       "src/include/openxr/openxr_platform_defines.h",
       "src/src/common/hex_and_handles.h",
-      "src/src/common/loader_interfaces.h",
     ]
 
     public_configs = [ ":config" ]
@@ -43,7 +47,6 @@ if (enable_openxr) {
 
   if (is_android) {
     # On Android, the loader comes with a couple more external dependencies.
-
     source_set("jnipp") {
       sources = [
         "src/src/external/jnipp/jnipp.cpp",
@@ -52,8 +55,10 @@ if (enable_openxr) {
 
       cflags_cc = [ "-Wno-shadow" ]
 
-      # JNIPP uses exceptions to communicate failures:
-      configs += [ "//build/config/compiler:exceptions" ]
+      configs += [
+        # JNIPP uses exceptions to communicate failures:
+        "//build/config/compiler:exceptions",
+      ]
     }
 
     config("android-jni-wrappers-config") {
@@ -84,13 +89,14 @@ if (enable_openxr) {
     }
   }
 
-  source_set("openxr") {
+  component("openxr") {
     # This visibility is done to help enforce the dependency that
     # openxr_platform.h requires platform headers to be included before it.
     # If you'd like to expand this visibility, you will need to make similar
     # DEPS rules for it as are present in the below locations.
     visibility = [
       "//chrome/browser/vr/*",
+      "//chrome/test/*",
       "//components/webxr/*",
       "//device/vr/*",
     ]
@@ -103,7 +109,6 @@ if (enable_openxr) {
       "src/src/common/filesystem_utils.cpp",
       "src/src/common/filesystem_utils.hpp",
       "src/src/common/hex_and_handles.h",
-      "src/src/common/loader_interfaces.h",
       "src/src/common/object_info.cpp",
       "src/src/common/object_info.h",
       "src/src/common/platform_utils.hpp",
@@ -113,6 +118,8 @@ if (enable_openxr) {
       "src/src/loader/api_layer_interface.hpp",
       "src/src/loader/exception_handling.hpp",
       "src/src/loader/loader_core.cpp",
+      "src/src/loader/loader_init_data.cpp",
+      "src/src/loader/loader_init_data.hpp",
       "src/src/loader/loader_instance.cpp",
       "src/src/loader/loader_instance.hpp",
       "src/src/loader/loader_logger.cpp",
@@ -120,6 +127,8 @@ if (enable_openxr) {
       "src/src/loader/loader_logger_recorders.cpp",
       "src/src/loader/loader_logger_recorders.hpp",
       "src/src/loader/loader_platform.hpp",
+      "src/src/loader/loader_properties.cpp",
+      "src/src/loader/loader_properties.hpp",
       "src/src/loader/manifest_file.hpp",
       "src/src/loader/runtime_interface.cpp",
       "src/src/loader/runtime_interface.hpp",
@@ -129,6 +138,10 @@ if (enable_openxr) {
       "src/src/xr_generated_dispatch_table_core.h",
       "src_overrides/src/loader/manifest_file.cpp",
     ]
+
+    if (is_component_build && is_win) {
+      sources += [ "openxr.def" ]
+    }
 
     include_dirs = [
       "src/include",
@@ -171,9 +184,23 @@ if (enable_openxr) {
       # include path:
       include_dirs += [ "src/src/external/android-jni-wrappers" ]
 
-      # OpenXR loader on Android has a bug where there is unconditional try-catch block
-      # (in android_utilities.cpp) even when built without exceptions support.
-      configs += [ "//build/config/compiler:exceptions" ]
+      libs = [
+        "android",
+        "log",
+      ]
+    }
+
+    # Missing includes are fixed upstream
+    # TODO(crbug.com/440183782): Remove this once a release contains the fix
+    use_libcxx_modules = false
+  }
+
+  if (is_android) {
+    java_group("openxr_manifest_java") {
+      if (allow_openxr_content_providers) {
+        mergeable_android_manifests =
+            [ "src_overrides/src/loader/AndroidManifest.xml.in" ]
+      }
     }
   }
 
@@ -190,6 +217,7 @@ if (enable_openxr) {
     } else {
       defines = [
         "XRLOADER_DISABLE_EXCEPTION_HANDLING",
+        "XR_KHR_LOADER_INIT_SUPPORT",
         "XR_OS_ANDROID",
         "XR_USE_PLATFORM_ANDROID",
         "XR_USE_GRAPHICS_API_OPENGL_ES",

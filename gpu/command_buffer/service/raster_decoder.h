@@ -35,13 +35,13 @@ namespace raster {
 class GPU_GLES2_EXPORT RasterDecoder : public DecoderContext,
                                        public CommonDecoder {
  public:
-  static RasterDecoder* Create(
+  static std::unique_ptr<RasterDecoder> Create(
       DecoderClient* client,
       CommandBufferServiceBase* command_buffer_service,
       gles2::Outputter* outputter,
       const GpuFeatureInfo& gpu_feature_info,
       const GpuPreferences& gpu_preferences,
-      MemoryTracker* memory_tracker,
+      scoped_refptr<MemoryTracker> memory_tracker,
       SharedImageManager* shared_image_manager,
       scoped_refptr<SharedContextState> shared_context_state,
       bool is_priviliged);
@@ -81,6 +81,9 @@ class GPU_GLES2_EXPORT RasterDecoder : public DecoderContext,
   void SetLogCommands(bool log_commands) override;
   gles2::Outputter* outputter() const override;
   bool log_commands() const { return log_commands_; }
+
+  virtual gpu::ContextResult Initialize(
+      bool lose_context_when_out_of_memory) = 0;
 
   virtual int DecoderIdForTest() = 0;
   virtual ServiceTransferCache* GetTransferCacheForTest() = 0;

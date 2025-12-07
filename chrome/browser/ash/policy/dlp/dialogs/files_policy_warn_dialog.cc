@@ -7,13 +7,14 @@
 #include <optional>
 #include <string>
 
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/typography.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog_utils.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_string_util.h"
@@ -28,6 +29,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -50,7 +52,7 @@ std::u16string GetDestinationURL(DlpFileDestination destination) {
   DCHECK(destination.url()->is_valid());
   GURL gurl = *destination.url();
   if (gurl.has_host()) {
-    return base::UTF8ToUTF16(gurl.host());
+    return base::UTF8ToUTF16(gurl.GetHost());
   }
   return base::UTF8ToUTF16(gurl.spec());
 }
@@ -77,8 +79,7 @@ const std::u16string GetDestinationComponent(DlpFileDestination destination) {
       return l10n_util::GetStringUTF16(
           IDS_FILE_BROWSER_DLP_COMPONENT_MICROSOFT_ONEDRIVE);
     case data_controls::Component::kUnknownComponent:
-      NOTREACHED_IN_MIGRATION();
-      return u"";
+      NOTREACHED();
   }
 }
 
@@ -134,8 +135,8 @@ FilesPolicyWarnDialog::FilesPolicyWarnDialog(
   SetCancelCallback(base::BindOnce(&FilesPolicyWarnDialog::CancelWarning,
                                    weak_ptr_factory_.GetWeakPtr(),
                                    std::move(split.second)));
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, GetOkButton());
-  SetButtonLabel(ui::DialogButton::DIALOG_BUTTON_CANCEL, GetCancelButton());
+  SetButtonLabel(ui::mojom::DialogButton::kOk, GetOkButton());
+  SetButtonLabel(ui::mojom::DialogButton::kCancel, GetCancelButton());
 
   AddGeneralInformation();
   if (dialog_info_.GetLearnMoreURL().has_value()) {
@@ -301,7 +302,7 @@ void FilesPolicyWarnDialog::MaybeAddJustificationPanel() {
   }
 
   // Disable the proceed button until some text is entered.
-  DialogDelegate::SetButtonEnabled(ui::DIALOG_BUTTON_OK, false);
+  DialogDelegate::SetButtonEnabled(ui::mojom::DialogButton::kOk, false);
 
   views::View* justification_panel =
       AddChildView(std::make_unique<views::View>());
@@ -319,9 +320,7 @@ void FilesPolicyWarnDialog::MaybeAddJustificationPanel() {
   justification_field_label->SetFontList(
       ash::TypographyProvider::Get()->ResolveTypographyToken(
           ash::TypographyToken::kCrosLabel1));
-  justification_field_label->SetEnabledColor(
-      ash::ColorProvider::Get()->GetContentLayerColor(
-          ash::ColorProvider::ContentLayerType::kTextColorPrimary));
+  justification_field_label->SetEnabledColor(cros_tokens::kTextColorPrimary);
 
   // Setting a themed rounded background does not work for text areas. As a
   // workaround we set it for an external container and set the text area
@@ -331,7 +330,7 @@ void FilesPolicyWarnDialog::MaybeAddJustificationPanel() {
   justification_field_container->SetLayoutManager(
       std::make_unique<views::FillLayout>());
   justification_field_container->SetBackground(
-      views::CreateThemedRoundedRectBackground(
+      views::CreateRoundedRectBackground(
           ash::kColorAshControlBackgroundColorInactive, 8, 0));
 
   justification_field_ = justification_field_container->AddChildView(
@@ -384,9 +383,9 @@ void FilesPolicyWarnDialog::ContentsChanged(
 
   if (new_contents.size() == 0 ||
       new_contents.size() > kMaxBypassJustificationLength) {
-    DialogDelegate::SetButtonEnabled(ui::DIALOG_BUTTON_OK, false);
+    DialogDelegate::SetButtonEnabled(ui::mojom::DialogButton::kOk, false);
   } else {
-    DialogDelegate::SetButtonEnabled(ui::DIALOG_BUTTON_OK, true);
+    DialogDelegate::SetButtonEnabled(ui::mojom::DialogButton::kOk, true);
   }
 }
 

@@ -89,7 +89,7 @@ void SigninPartitionManager::StartSigninSession(
   // The storage partition domain identifies the site embedding the webview. It
   // won't change when the webview navigates.
   storage_partition_domain_ =
-      embedder_web_contents->GetLastCommittedURL().host();
+      embedder_web_contents->GetLastCommittedURL().GetHost();
   current_storage_partition_name_ = GeneratePartitionName();
 
   auto storage_partition_config = content::StoragePartitionConfig::Create(

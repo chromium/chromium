@@ -12,8 +12,7 @@ namespace ui {
 SelectFileDialog* CreateSelectFileDialog(
     SelectFileDialog::Listener* listener,
     std::unique_ptr<SelectFilePolicy> policy) {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 }  // namespace ui

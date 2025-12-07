@@ -72,6 +72,9 @@ class GpuDataManager {
   // Whether a GPU is in use (as opposed to a software renderer).
   virtual bool HardwareAccelerationEnabled() = 0;
 
+  // Whether a GPU is being used for UI rasterization.
+  virtual bool IsGpuRasterizationForUIEnabled() = 0;
+
   // Insert switches into gpu process command line: kUseGL, etc.
   virtual void AppendGpuCommandLine(base::CommandLine* command_line,
                                     GpuProcessKind kind) = 0;

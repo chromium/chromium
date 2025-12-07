@@ -39,8 +39,6 @@
 #include "third_party/cros_system_api/dbus/missive/dbus-constants.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-using std::literals::string_view_literals::operator""sv;
-
 using ::reporting::Priority;
 using ::reporting::Record;
 using ::reporting::SequenceInformation;
@@ -54,9 +52,7 @@ namespace chromeos {
 // default because this is a bug fix. Only putting it behind a feature flag for
 // kill switch in case of emergency.
 // TODO(b/339059662): remove feature flag once retries are in stable channel.
-BASE_FEATURE(kEnableRetryEnqueueRecord,
-             "EnableRetryEnqueueRecord",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableRetryEnqueueRecord, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Number of seconds we'll retry to enqueue a record if Missive is unavailable.
 // If `kEnableRetryEnqueueRecord` is not enabled, the parameter is not set, or
@@ -66,6 +62,7 @@ BASE_FEATURE(kEnableRetryEnqueueRecord,
 const base::FeatureParam<int> kNumSecondsToRetry{
     &kEnableRetryEnqueueRecord, "num_seconds_to_retry",
     /*default seconds to retry=*/2};
+
 namespace {
 
 constexpr char kUmaMissiveClientDbusError[] =
@@ -85,7 +82,7 @@ MissiveClient* g_instance = nullptr;
 // purposes, or by devices that are running unofficial builds.
 bool IsApiKeyAccepted(std::string_view api_key) {
   static constexpr std::string_view kBlockListedKeys[] = {
-      "dummykey"sv, "dummytoken"sv,
+      "dummykey", "dummytoken",
       // More keys or key fragments can be added.
   };
   if (api_key.empty()) {
@@ -408,11 +405,9 @@ class MissiveClientImpl : public MissiveClient {
       *request_.mutable_record() = std::move(record);
       request_.set_priority(priority);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      // Turn on/off the debug state flag (for Ash only).
+      // Turn on/off the debug state flag.
       request_.set_health_data_logging_enabled(
           ::reporting::HistoryTracker::Get()->debug_state());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     }
 
     bool WriteRequest(dbus::MessageWriter* writer) override {
@@ -426,13 +421,11 @@ class MissiveClientImpl : public MissiveClient {
                                  "Response was not parsable.");
       }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      // Accept health data if present (ChromeOS only)
+      // Accept health data if present.
       if (response_body.has_health_data()) {
         ::reporting::HistoryTracker::Get()->set_data(
             std::move(response_body.health_data()), base::DoNothing());
       }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
       reporting::Status status;
       status.RestoreFrom(response_body.status());
@@ -454,11 +447,9 @@ class MissiveClientImpl : public MissiveClient {
                        std::move(completion_callback)) {
       request_.set_priority(priority);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      // Turn on/off the debug state flag (for Ash only).
+      // Turn on/off the debug state flag.
       request_.set_health_data_logging_enabled(
           ::reporting::HistoryTracker::Get()->debug_state());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     }
 
     bool WriteRequest(dbus::MessageWriter* writer) override {
@@ -472,13 +463,11 @@ class MissiveClientImpl : public MissiveClient {
                                  "Response was not parsable.");
       }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      // Accept health data if present (ChromeOS only)
+      // Accept health data if present.
       if (response_body.has_health_data()) {
         ::reporting::HistoryTracker::Get()->set_data(
             std::move(response_body.health_data()), base::DoNothing());
       }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
       reporting::Status status;
       status.RestoreFrom(response_body.status());
@@ -539,11 +528,9 @@ class MissiveClientImpl : public MissiveClient {
       *request_.mutable_sequence_information() = sequence_information;
       request_.set_force_confirm(force_confirm);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      // Turn on/off the debug state flag (for Ash only).
+      // Turn on/off the debug state flag.
       request_.set_health_data_logging_enabled(
           ::reporting::HistoryTracker::Get()->debug_state());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     }
 
     bool WriteRequest(dbus::MessageWriter* writer) override {
@@ -557,13 +544,11 @@ class MissiveClientImpl : public MissiveClient {
                                  "Response was not parsable.");
       }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      // Accept health data if present (ChromeOS only)
+      // Accept health data if present.
       if (response_body.has_health_data()) {
         ::reporting::HistoryTracker::Get()->set_data(
             std::move(response_body.health_data()), base::DoNothing());
       }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
       reporting::Status status;
       status.RestoreFrom(response_body.status());

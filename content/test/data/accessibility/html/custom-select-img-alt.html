@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<style>
+select, ::picker(select) {
+  appearance: base-select;
+}
+</style>
+
+<select>
+  <button>
+    <selectedcontent></selectedcontent>
+  </button>
+  <option>
+    option without img
+  </option>
+  <option>
+    option with img with alt
+    <img alt="img alt text">
+  </option>
+  <option>
+    option with img without alt
+    <img>
+  </option>
+</select>

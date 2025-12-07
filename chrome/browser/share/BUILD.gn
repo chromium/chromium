@@ -17,6 +17,8 @@ source_set("share") {
     "share_attempt.h",
     "share_history.cc",
     "share_history.h",
+    "share_metrics.cc",
+    "share_metrics.h",
     "share_ranking.cc",
     "share_ranking.h",
   ]
@@ -29,8 +31,8 @@ source_set("share") {
     "//base",
     "//chrome/browser/favicon",
     "//chrome/browser/profiles",
-    "//chrome/browser/share/proto:proto",
-    "//components/leveldb_proto:leveldb_proto",
+    "//chrome/browser/share/proto",
+    "//components/leveldb_proto",
     "//components/qr_code_generator:bitmap_generator",
     "//components/shared_highlighting/core/common",
     "//content/public/browser",
@@ -45,16 +47,14 @@ source_set("share") {
       "default_ranking_android.cc",
       "editor_screenshot_task.cc",
       "link_to_text_bridge.cc",
-      "page_info_sharing_bridge.cc",
-      "page_info_sharing_bridge.h",
       "qr_code_generator_android.cc",
     ]
     deps += [
       ":jni_headers",
       "//chrome/android:chrome_jni_headers",
-      "//components/history/core/browser:browser",
+      "//components/history/core/browser",
       "//components/translate/content/browser",
-      "//components/ukm/content:content",
+      "//components/ukm/content",
       "//ui/android",
       "//url",
     ]
@@ -67,9 +67,9 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/chrome/browser/share/ChromeShareExtras.java",
       "android/java/src/org/chromium/chrome/browser/share/ShareDelegate.java",
+      "android/java/src/org/chromium/chrome/browser/share/ShareDelegateSupplier.java",
       "android/java/src/org/chromium/chrome/browser/share/ShareHistoryBridge.java",
       "android/java/src/org/chromium/chrome/browser/share/ShareRankingBridge.java",
-      "android/java/src/org/chromium/chrome/browser/share/page_info_sheet/PageInfoSharingBridge.java",
       "android/java/src/org/chromium/chrome/browser/share/share_sheet/ChromeOptionShareCallback.java",
     ]
 
@@ -84,6 +84,7 @@ if (is_android) {
       "//content/public/android:content_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
+      "//ui/android:ui_java",
       "//url:gurl_java",
     ]
   }
@@ -92,7 +93,6 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/chrome/browser/share/ShareHistoryBridge.java",
       "android/java/src/org/chromium/chrome/browser/share/ShareRankingBridge.java",
-      "android/java/src/org/chromium/chrome/browser/share/page_info_sheet/PageInfoSharingBridge.java",
     ]
   }
 }

@@ -1,7 +1,12 @@
 set noparent
+andyphan@chromium.org
+thestig@chromium.org
+
+per-file ..._ink_*=file://pdf/INK_OWNERS
+
+# Secondary
 dhoss@chromium.org
 kmoon@chromium.org
-thestig@chromium.org
 
 # Security/XFA-related questions/reviews only.
 tsepez@chromium.org

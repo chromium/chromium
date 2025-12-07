@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.firstrun;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,24 +17,32 @@ import android.widget.FrameLayout;
 import androidx.fragment.app.Fragment;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncView;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
+@NullMarked
 public class HistorySyncFirstRunFragment extends Fragment
         implements FirstRunFragment, HistorySyncCoordinator.HistorySyncDelegate {
     private static final String TAG = "HistorySyncFREFrag";
 
-    private HistorySyncCoordinator mHistorySyncCoordinator;
+    private @Nullable HistorySyncCoordinator mHistorySyncCoordinator;
     private FrameLayout mFragmentView;
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         mFragmentView = new FrameLayout(getActivity());
 
         return mFragmentView;
@@ -52,6 +62,8 @@ public class HistorySyncFirstRunFragment extends Fragment
 
     private void createViewAndAttachToFragment() {
         maybeCreateCoordinator();
+        if (mHistorySyncCoordinator == null) return;
+
         HistorySyncView view = mHistorySyncCoordinator.maybeRecreateView();
         if (view != null) {
             // View is non-null when HistorySyncView has created a new view. This new view will
@@ -64,22 +76,24 @@ public class HistorySyncFirstRunFragment extends Fragment
     private void maybeCreateCoordinator() {
         if (mHistorySyncCoordinator != null) return;
 
-        assert getPageDelegate().getProfileProviderSupplier().get() != null;
-        Profile profile = getPageDelegate().getProfileProviderSupplier().get().getOriginalProfile();
-        if (IdentityServicesProvider.get()
-                        .getSigninManager(profile)
-                        .getIdentityManager()
-                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN)
-                == null) {
+        FirstRunPageDelegate delegate = assumeNonNull(getPageDelegate());
+        Profile profile =
+                assumeNonNull(delegate.getProfileProviderSupplier().get()).getOriginalProfile();
+        SigninManager signinManager =
+                assumeNonNull(IdentityServicesProvider.get().getSigninManager(profile));
+        if (signinManager.getIdentityManager().getPrimaryAccountInfo(ConsentLevel.SIGNIN) == null) {
             Log.w(TAG, "No primary account set, dismissing the history sync screen.");
             getPageDelegate().advanceToNextPage();
             return;
         }
         mHistorySyncCoordinator =
                 new HistorySyncCoordinator(
-                        getContext(),
+                        getActivity(),
                         this,
                         profile,
+                        new HistorySyncConfig(
+                                getActivity().getString(R.string.history_sync_title),
+                                getActivity().getString(R.string.history_sync_subtitle)),
                         SigninAccessPoint.START_PAGE,
                         false,
                         false,
@@ -98,11 +112,22 @@ public class HistorySyncFirstRunFragment extends Fragment
 
     /** Implements {@link HistorySyncDelegate} */
     @Override
-    public void dismissHistorySync() {
-        getPageDelegate().advanceToNextPage();
+    public void dismissHistorySync(boolean didSignOut, boolean isHistorySyncAccepted) {
+        assumeNonNull(getPageDelegate()).advanceToNextPage();
         if (mHistorySyncCoordinator != null) {
             mHistorySyncCoordinator.destroy();
             mHistorySyncCoordinator = null;
+        }
+    }
+
+    /** Implements {@link HistorySyncDelegate} */
+    @Override
+    public void recordHistorySyncOptIn(
+            @SigninAccessPoint int accessPoint, boolean isHistorySyncAccepted) {
+        if (isHistorySyncAccepted) {
+            SigninMetricsUtils.logHistorySyncAcceptButtonClicked(accessPoint);
+        } else {
+            SigninMetricsUtils.logHistorySyncDeclineButtonClicked(accessPoint);
         }
     }
 
@@ -111,11 +136,7 @@ public class HistorySyncFirstRunFragment extends Fragment
         super.onDetach();
         if (mHistorySyncCoordinator != null) {
             mHistorySyncCoordinator.destroy();
+            mHistorySyncCoordinator = null;
         }
-    }
-
-    @Override
-    public boolean isLargeScreen() {
-        return !getPageDelegate().canUseLandscapeLayout();
     }
 }

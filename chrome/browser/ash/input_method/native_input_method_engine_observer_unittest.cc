@@ -18,6 +18,7 @@ class NativeInputMethodEngineObserverTest : public ::testing::Test {
   NativeInputMethodEngineObserverTest()
       : observer_(/*prefs=*/profile_.GetPrefs(),
                   /*editor_event_sink=*/nullptr,
+                  /*lobster_event_sink=*/nullptr,
                   /*ime_base_observer=*/nullptr,
                   /*assistive_suggester=*/nullptr,
                   /*autocorrect_manager=*/nullptr,
@@ -63,31 +64,6 @@ TEST_F(NativeInputMethodEngineObserverTest,
       "InputMethod.Assistive.MultiWord.SuggestionOpportunity",
       /*sample=*/MultiWordSuggestionType::kPrediction,
       /*expected_bucket_count=*/1);
-}
-
-TEST_F(NativeInputMethodEngineObserverTest,
-       ReportHistogramSampleReportValidSamples) {
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectTotalCount("Exponential", 0);
-  histogram_tester.ExpectTotalCount("Linear", 0);
-
-  observer_.ReportHistogramSample(
-      static_cast<base::Histogram*>(base::Histogram::FactoryGet(
-          "Exponential", /*minimum=*/1, /*maximum=*/10,
-          /*bucket_count=*/3, base::HistogramBase::kUmaTargetedHistogramFlag)),
-      /*sample=*/5);
-  observer_.ReportHistogramSample(
-      static_cast<base::Histogram*>(base::LinearHistogram::FactoryGet(
-          "Linear", /*minimum=*/1, /*maximum=*/10, /*bucket_count=*/3,
-          base::HistogramBase::kUmaTargetedHistogramFlag)),
-      /*sample=*/6);
-
-  histogram_tester.ExpectTotalCount("Exponential", 1);
-  histogram_tester.ExpectUniqueSample("Exponential", /*sample=*/5,
-                                      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectTotalCount("Linear", 1);
-  histogram_tester.ExpectUniqueSample("Linear", /*sample=*/6,
-                                      /*expected_bucket_count=*/1);
 }
 
 }  // namespace

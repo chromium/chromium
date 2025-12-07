@@ -9,6 +9,7 @@
 #include "components/viz/common/quads/draw_quad.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/overlay_layer_id.h"
 
 // This file contains gmock matchers for verifying DrawQuads are of the expected
 // type with expected attributes. This can be used to verify that a
@@ -57,6 +58,10 @@ testing::Matcher<const DrawQuad*> HasRect(const gfx::Rect& rect);
 // Matches a DrawQuad with expected DrawQuad::visible_rect.
 testing::Matcher<const DrawQuad*> HasVisibleRect(const gfx::Rect& visible_rect);
 
+// Matches a SharedQuadState on a DrawQuad.
+testing::Matcher<const DrawQuad*> HasSharedQuadState(
+    testing::Matcher<const SharedQuadState*> matcher);
+
 // Matches a DrawQuad with expected SharedQuadState::quad_to_target_transform.
 testing::Matcher<const DrawQuad*> HasTransform(const gfx::Transform& transform);
 
@@ -78,7 +83,7 @@ testing::Matcher<const DrawQuad*> HasLayerId(uint32_t layer_id);
 
 // Matches a DrawQuad with expected SharedQuadState::layer_namespace_id.
 testing::Matcher<const DrawQuad*> HasLayerNamespaceId(
-    uint32_t layer_namespace_id);
+    const gfx::OverlayLayerId::NamespaceId& layer_namespace_id);
 
 // Matches a DrawQuad with expected SharedQuadState::mask_filter_info.
 testing::Matcher<const DrawQuad*> HasMaskFilterInfo(

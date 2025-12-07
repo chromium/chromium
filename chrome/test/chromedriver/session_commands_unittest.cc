@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/test/values_test_util.h"
 #include "base/threading/thread.h"
@@ -25,6 +26,8 @@
 #include "chrome/test/chromedriver/logging.h"
 #include "chrome/test/chromedriver/session.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using testing::ContainsRegex;
 
 TEST(SessionCommandsTest, ExecuteGetTimeouts) {
   Session session("id");
@@ -701,11 +704,43 @@ TEST(SessionCommandsTest, ConfigureSession_unhandledPromptBehaviorDict) {
   ASSERT_NE(desired_caps_out, nullptr);
   // Testing specific values could be fragile, but want to verify they are set
 
-  std::string json;
-  base::JSONWriter::Write(session.unhandled_prompt_behavior.CapabilityView(),
-                          &json);
+  std::string json =
+      base::WriteJson(session.unhandled_prompt_behavior.CapabilityView())
+          .value_or("");
   ASSERT_EQ(
       "{\"alert\":\"accept\",\"beforeUnload\":\"accept\",\"confirm\":"
       "\"dismiss\",\"prompt\":\"ignore\"}",
       json);
+}
+
+TEST(SessionCommandsTest, ForwardBidiCommand_noBidiCommand) {
+  BrowserInfo binfo;
+  MockChrome* chrome = new MockChrome(binfo);
+  Session session("id", std::unique_ptr<Chrome>(chrome));
+
+  base::Value::Dict command = base::test::ParseJsonDict(
+      R"({
+        "connectionId": 1,
+      })");
+
+  Status status = ForwardBidiCommand(&session, command, nullptr);
+  ASSERT_EQ(kUnknownError, status.code()) << status.message();
+  EXPECT_THAT(status.message(),
+              ContainsRegex("bidiCommand is missing in params"));
+}
+
+TEST(SessionCommandsTest, ForwardBidiCommand_noConnectionId) {
+  BrowserInfo binfo;
+  MockChrome* chrome = new MockChrome(binfo);
+  Session session("id", std::unique_ptr<Chrome>(chrome));
+
+  base::Value::Dict command = base::test::ParseJsonDict(
+      R"({
+        "bidiCommand": {}
+      })");
+
+  Status status = ForwardBidiCommand(&session, command, nullptr);
+  ASSERT_EQ(kUnknownCommand, status.code()) << status.message();
+  EXPECT_THAT(status.message(),
+              ContainsRegex("connectionId is missing in params"));
 }

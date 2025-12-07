@@ -27,27 +27,55 @@
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy_features.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/policy_value.mojom-blink.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/ad_tracker.h"
+#include "third_party/blink/renderer/core/frame/intervention.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/permissions_policy/policy_helper.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
+namespace {
+
+String SelectivePermissionInterventionMessage(
+    network::mojom::PermissionsPolicyFeature feature) {
+  // Get the feature's name.
+  String feature_name;
+  for (const auto& entry :
+       GetDefaultFeatureNameMap(/*is_isolated_context=*/false)) {
+    if (entry.value == feature) {
+      feature_name = entry.key;
+      break;
+    }
+  }
+  DCHECK(!feature_name.empty());
+
+  return StrCat({"Blocked call to ", feature_name,
+                 " because ad-script was in the JavaScript stack at the time "
+                 "of the call. See http://crbug.com/435223477 for more "
+                 "information about this intervention."});
+}
+
+}  // namespace
+
 // static
-WTF::Vector<unsigned> SecurityContext::SerializeInsecureNavigationSet(
+Vector<unsigned> SecurityContext::SerializeInsecureNavigationSet(
     const InsecureNavigationsSet& set) {
   // The set is serialized as a sorted array. Sorting it makes it easy to know
   // if two serialized sets are equal.
-  WTF::Vector<unsigned> serialized;
+  Vector<unsigned> serialized;
   serialized.reserve(set.size());
   for (unsigned host : set)
     serialized.emplace_back(host);
@@ -147,12 +175,12 @@ void SecurityContext::SetSandboxFlags(
 }
 
 void SecurityContext::SetPermissionsPolicy(
-    std::unique_ptr<PermissionsPolicy> permissions_policy) {
+    std::unique_ptr<network::PermissionsPolicy> permissions_policy) {
   permissions_policy_ = std::move(permissions_policy);
 }
 
 void SecurityContext::SetReportOnlyPermissionsPolicy(
-    std::unique_ptr<PermissionsPolicy> permissions_policy) {
+    std::unique_ptr<network::PermissionsPolicy> permissions_policy) {
   report_only_permissions_policy_ = std::move(permissions_policy);
 }
 
@@ -167,7 +195,7 @@ void SecurityContext::SetReportOnlyDocumentPolicy(
 }
 
 SecurityContext::FeatureStatus SecurityContext::IsFeatureEnabled(
-    mojom::blink::PermissionsPolicyFeature feature) const {
+    network::mojom::PermissionsPolicyFeature feature) const {
   DCHECK(permissions_policy_);
   bool permissions_policy_result =
       permissions_policy_->IsFeatureEnabled(feature);
@@ -175,18 +203,52 @@ SecurityContext::FeatureStatus SecurityContext::IsFeatureEnabled(
       !report_only_permissions_policy_ ||
       report_only_permissions_policy_->IsFeatureEnabled(feature);
 
+  // Selective Permissions Intervention.
+  // https://chromestatus.com/feature/4811835974615040
+  if (permissions_policy_result && IsPrivacySensitiveFeature(feature)) {
+    if (LocalDOMWindow* window =
+            DynamicTo<LocalDOMWindow>(execution_context_.Get())) {
+      if (LocalFrame* frame = window->GetFrame()) {
+        AdTracker::AdScriptAncestry ad_ancestry;
+        AdTracker* ad_tracker = frame->GetAdTracker();
+
+        if (ad_tracker &&
+            ad_tracker->IsAdScriptInStack(
+                AdTracker::StackType::kBottomAndTop,
+                /*ignore_monkey_patch=*/AdTracker::MonkeyPatchableApi::kNone,
+                &ad_ancestry)) {
+          window->CountPermissionsPolicyUsage(
+              feature, UseCounterImpl::PermissionsPolicyUsageType::
+                           kEnabledPrivacySensitive);
+          if (RuntimeEnabledFeatures::
+                  SelectivePermissionsInterventionEnabled()) {
+            permissions_policy_result = false;
+
+            String intervention_message =
+                SelectivePermissionInterventionMessage(feature);
+
+            // Add debugging cross-site data to the devtools console that
+            // shouldn't be in the intervention report.
+            String console_message =
+                StrCat({intervention_message, " ", ad_ancestry.ToString()});
+            Intervention::GenerateReport(frame, "SelectivePermissions",
+                                         intervention_message, console_message);
+          }
+        }
+      }
+    }
+  }
+
   bool should_report =
       !permissions_policy_result || !report_only_permissions_policy_result;
 
-  std::optional<String> reporting_endpoint;
+  String reporting_endpoint;
   if (!permissions_policy_result) {
-    reporting_endpoint = std::optional<String>(
-        permissions_policy_->GetEndpointForFeature(feature));
+    reporting_endpoint =
+        String::FromUTF8(permissions_policy_->GetEndpointForFeature(feature));
   } else if (!report_only_permissions_policy_result) {
-    reporting_endpoint = std::optional<String>(
+    reporting_endpoint = String::FromUTF8(
         report_only_permissions_policy_->GetEndpointForFeature(feature));
-  } else {
-    reporting_endpoint = std::nullopt;
   }
 
   return {permissions_policy_result, should_report, reporting_endpoint};
@@ -209,7 +271,7 @@ SecurityContext::FeatureStatus SecurityContext::IsFeatureEnabled(
       !report_only_document_policy_ ||
       report_only_document_policy_->IsFeatureEnabled(feature, threshold_value);
   return {policy_result, !policy_result || !report_only_policy_result,
-          std::nullopt};
+          String()};
 }
 
 }  // namespace blink

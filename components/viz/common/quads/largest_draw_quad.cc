@@ -16,7 +16,6 @@
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
-#include "components/viz/common/quads/yuv_video_draw_quad.h"
 
 namespace {
 
@@ -41,8 +40,7 @@ constexpr size_t kLargestDrawQuadSize =
             viz::SolidColorDrawQuad,
             viz::SurfaceDrawQuad,
             viz::TextureDrawQuad,
-            viz::TileDrawQuad,
-            viz::YUVVideoDrawQuad>::value;
+            viz::TileDrawQuad>::value;
 
 template <typename...>
 struct MaxAlign {};
@@ -65,8 +63,7 @@ constexpr size_t kLargestDrawQuadAlignment =
              viz::SolidColorDrawQuad,
              viz::SurfaceDrawQuad,
              viz::TextureDrawQuad,
-             viz::TileDrawQuad,
-             viz::YUVVideoDrawQuad>::value;
+             viz::TileDrawQuad>::value;
 
 }  // namespace
 

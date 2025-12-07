@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
+#include "services/network/network_service.h"
+
+#include <array>
+#include <optional>
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
@@ -23,6 +23,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -31,7 +32,6 @@
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/os_crypt/async/common/encryptor.h"
-#include "components/os_crypt/async/common/encryptor_features.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -58,8 +58,10 @@
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "net/base/features.h"
 #include "net/cookies/cookie_util.h"
+#include "net/disk_cache/backend_experiment.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_cache.h"
 #include "net/http/http_response_headers.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -76,9 +78,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
-#include "services/network/test/udp_socket_test_util.h"
 #include "sql/database.h"
-#include "sql/sql_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -97,6 +97,7 @@
 #include "base/files/scoped_temp_file.h"
 #include "base/rand_util.h"
 #include "content/browser/network/network_service_process_tracker_win.h"
+#include "content/common/features.h"
 #include "sandbox/policy/features.h"
 #endif
 
@@ -109,9 +110,10 @@ class WebUITestWebUIControllerFactory : public WebUIControllerFactory {
   std::unique_ptr<WebUIController> CreateWebUIControllerForURL(
       WebUI* web_ui,
       const GURL& url) override {
-    std::string foo(url.path());
-    if (url.path() == "/nobinding/")
-      web_ui->SetBindings(BINDINGS_POLICY_NONE);
+    std::string foo(url.GetPath());
+    if (url.GetPath() == "/nobinding/") {
+      web_ui->SetBindings(BindingsPolicySet());
+    }
     return HasWebUIScheme(url) ? std::make_unique<WebUIController>(web_ui)
                                : nullptr;
   }
@@ -183,7 +185,7 @@ class NetworkServiceBrowserTest : public ContentBrowserTest {
         url, !synchronous);
 
     EvalJsResult result = EvalJs(shell(), script);
-    if (!result.error.empty()) {
+    if (!result.is_ok()) {
       return false;
     }
     return result.ExtractBool();
@@ -232,7 +234,7 @@ class NetworkServiceBrowserTest : public ContentBrowserTest {
                                          TRAFFIC_ANNOTATION_FOR_TESTS);
 
     simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-        loader_factory, simple_loader_helper.GetCallbackDeprecated());
+        loader_factory, simple_loader_helper.GetCallback());
     simple_loader_helper.WaitForCallback();
     ASSERT_TRUE(simple_loader_helper.response_body());
   }
@@ -308,8 +310,23 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest,
 }
 
 #if BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest,
+class NetworkServiceBrowserSimpleCacheTest : public NetworkServiceBrowserTest {
+ public:
+  NetworkServiceBrowserSimpleCacheTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        net::features::kDiskCacheBackendExperiment, {{"backend", "simple"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// `HttpCacheWrittenToDiskOnApplicationStateChange` test tests the behavior
+// specific to SimpleCache, so it is extracted to a dedicated test class that
+// enables DiskCacheBackendExperiment with simple backend.
+IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserSimpleCacheTest,
                        HttpCacheWrittenToDiskOnApplicationStateChange) {
+  ASSERT_TRUE(disk_cache::InSimpleBackendExperimentGroup());
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   // Create network context with cache pointing to the temp cache dir.
@@ -440,8 +457,9 @@ class NetworkServiceOutOfProcessBrowserTest : public NetworkServiceBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(https://crbug.com/442538651): Fix flaky test.
 IN_PROC_BROWSER_TEST_F(NetworkServiceOutOfProcessBrowserTest,
-                       MemoryPressureSentToNetworkProcess) {
+                       DISABLED_MemoryPressureSentToNetworkProcess) {
   mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
   GetNetworkService()->BindTestInterfaceForTesting(
       network_service_test.BindNewPipeAndPassReceiver());
@@ -450,20 +468,18 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceOutOfProcessBrowserTest,
   network_service_test.FlushForTesting();
 
   mojo::ScopedAllowSyncCallForTesting allow_sync_call;
-  base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level =
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+  base::MemoryPressureLevel memory_pressure_level =
+      base::MEMORY_PRESSURE_LEVEL_NONE;
   network_service_test->GetLatestMemoryPressureLevel(&memory_pressure_level);
-  EXPECT_EQ(memory_pressure_level,
-            base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE);
+  EXPECT_EQ(memory_pressure_level, base::MEMORY_PRESSURE_LEVEL_NONE);
 
   base::MemoryPressureListener::NotifyMemoryPressure(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   base::RunLoop().RunUntilIdle();
   FlushNetworkServiceInstanceForTesting();
 
   network_service_test->GetLatestMemoryPressureLevel(&memory_pressure_level);
-  EXPECT_EQ(memory_pressure_level,
-            base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  EXPECT_EQ(memory_pressure_level, base::MEMORY_PRESSURE_LEVEL_CRITICAL);
 }
 
 // Verifies that sync XHRs don't hang if the network service crashes.
@@ -548,7 +564,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, FactoryOverride) {
     }
     void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
         override {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
 
     bool has_received_preflight() const { return has_received_preflight_; }
@@ -606,12 +622,18 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, FactoryOverride) {
   EXPECT_TRUE(test_loader_factory->has_received_request());
 }
 
-// Android doesn't support PRE_ tests.
-// TODO(wfh): Enable this test when https://crbug.com/1257820 is fixed.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+// Cache data migration is not used for Fuchsia.
+#if !BUILDFLAG(IS_FUCHSIA)
 class NetworkServiceBrowserCacheResetTest : public NetworkServiceBrowserTest {
  public:
-  NetworkServiceBrowserCacheResetTest() = default;
+  NetworkServiceBrowserCacheResetTest() {
+    // TODO(crbug.com/456764271): Disabling NetworkServicePerPriorityTaskQueues
+    // feature as it made the test flaky. This feature changes the task
+    // execution order, potentially causing disk_cache::Backend to be destructed
+    // before disk_cache::Entry. See the crbug for more details.
+    scoped_feature_list_.InitAndDisableFeature(
+        network::features::kNetworkServicePerPriorityTaskQueues);
+  }
 
  protected:
   void StoreUrl(const GURL& url) {
@@ -620,8 +642,7 @@ class NetworkServiceBrowserCacheResetTest : public NetworkServiceBrowserTest {
     base::FilePath data_file =
         shell()->web_contents()->GetBrowserContext()->GetPath().Append(
             FILE_PATH_LITERAL("TestData"));
-    std::string data;
-    base::JSONWriter::Write(base::Value(url.spec()), &data);
+    std::string data = base::WriteJson(base::Value(url.spec())).value_or("");
     EXPECT_TRUE(base::WriteFile(data_file, data));
   }
 
@@ -633,7 +654,8 @@ class NetworkServiceBrowserCacheResetTest : public NetworkServiceBrowserTest {
             FILE_PATH_LITERAL("TestData"));
     std::string data;
     EXPECT_TRUE(base::ReadFileToString(data_file, &data));
-    auto json_data = base::JSONReader::Read(data);
+    auto json_data =
+        base::JSONReader::Read(data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(json_data.has_value());
     url = GURL(json_data->GetString());
     EXPECT_TRUE(url.is_valid());
@@ -656,7 +678,8 @@ class NetworkServiceBrowserCacheResetTest : public NetworkServiceBrowserTest {
   // listening on it if `load_only_from_cache` is true.
   int MakeNetworkContentAndLoadUrl(bool reset_cache,
                                    bool load_only_from_cache,
-                                   const GURL& url) {
+                                   const GURL& url,
+                                   bool expect_cache_reset_failure) {
     auto file_paths = network::mojom::NetworkContextFilePaths::New();
     base::FilePath context_path = GetNetworkContextPath();
     file_paths->data_directory = context_path.Append(FILE_PATH_LITERAL("Data"));
@@ -712,18 +735,23 @@ class NetworkServiceBrowserCacheResetTest : public NetworkServiceBrowserTest {
               loop.Quit();
             }));
     loop.Run();
+
+    base::test::TestFuture<bool, int64_t> future;
+    network_context->ComputeHttpCacheSize(base::Time(), base::Time::Max(),
+                                          future.GetCallback());
+    const auto [_, size_or_error] = future.Take();
+
+    if (reset_cache) {
+      EXPECT_EQ(size_or_error,
+                expect_cache_reset_failure ? net::ERR_FAILED : 0);
+    } else {
+      EXPECT_GT(size_or_error, 0);
+    }
     return loader->NetError();
   }
 
-  void GetCacheFileInfo(base::File::Info& info) {
-    base::FilePath ceontxt_path = GetNetworkContextPath();
-    base::FileEnumerator cache_files(GetNetworkContextCachePath(), true,
-                                     base::FileEnumerator::FILES);
-    // Cache entries created.
-    auto file_path = cache_files.Next();
-    ASSERT_FALSE(file_path.empty());
-    ASSERT_TRUE(base::GetFileInfo(file_path, &info));
-  }
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Create a network context and make an HTTP request which causes cache entry to
@@ -737,7 +765,8 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserCacheResetTest,
   ASSERT_NO_FATAL_FAILURE(StoreUrl(url));
 
   EXPECT_THAT(MakeNetworkContentAndLoadUrl(
-                  /*reset_cache=*/false, /*load_only_from_cache=*/false, url),
+                  /*reset_cache=*/false, /*load_only_from_cache=*/false, url,
+                  /*expect_cache_reset_failure=*/false),
               net::test::IsOk());
 }
 
@@ -748,9 +777,11 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserCacheResetTest,
   GURL url;
   ASSERT_NO_FATAL_FAILURE(RetrieveUrl(url));
 
-  EXPECT_THAT(MakeNetworkContentAndLoadUrl(/*reset_cache=*/false,
-                                           /*load_only_from_cache=*/true, url),
-              net::test::IsOk());
+  EXPECT_THAT(
+      MakeNetworkContentAndLoadUrl(/*reset_cache=*/false,
+                                   /*load_only_from_cache=*/true, url,
+                                   /*expect_cache_reset_failure=*/false),
+      net::test::IsOk());
 }
 
 // Using the same network context, reset the cache backend and verify that cache
@@ -759,9 +790,11 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserCacheResetTest, CacheResetTest) {
   GURL url;
   ASSERT_NO_FATAL_FAILURE(RetrieveUrl(url));
 
-  EXPECT_THAT(MakeNetworkContentAndLoadUrl(/*reset_cache=*/true,
-                                           /*load_only_from_cache=*/true, url),
-              net::test::IsError(net::ERR_CACHE_MISS));
+  EXPECT_THAT(
+      MakeNetworkContentAndLoadUrl(/*reset_cache=*/true,
+                                   /*load_only_from_cache=*/true, url,
+                                   /*expect_cache_reset_failure=*/false),
+      net::test::IsError(net::ERR_CACHE_MISS));
 }
 
 #if BUILDFLAG(IS_POSIX)
@@ -777,14 +810,11 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserCacheResetTest, CacheResetFailure) {
   ASSERT_TRUE(base::SetPosixFilePermissions(path, /*mode=*/0));
 
   EXPECT_THAT(MakeNetworkContentAndLoadUrl(/*reset_cache=*/true,
-                                           /*load_only_from_cache=*/true, url),
+                                           /*load_only_from_cache=*/true, url,
+                                           /*expect_cache_reset_failure=*/true),
               net::test::IsError(net::ERR_CACHE_MISS));
 }
 #endif  // BUILDFLAG(IS_POSIX)
-#endif  // BUILDFLAG(IS_ANDROID)
-
-// Cache data migration is not used for Fuchsia.
-#if !BUILDFLAG(IS_FUCHSIA)
 
 const base::FilePath::CharType kCheckpointFileName[] =
     FILE_PATH_LITERAL("NetworkDataMigrated");
@@ -840,6 +870,35 @@ CreateNetworkContextForPaths(network::mojom::NetworkContextFilePathsPtr paths,
   context_params->enable_encrypted_cookies = false;
   context_params->http_cache_enabled = true;
   context_params->file_paths->http_cache_directory = cache_path;
+
+#if BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/377940976): Remove this once the background sequence runner
+  // can be fully drained of tasks during network context shutdown.
+  {
+    base::RunLoop run_loop;
+    // The remote for the test network service needs to stay alive until the
+    // RunLoop has finished.
+    std::optional<mojo::Remote<network::mojom::NetworkServiceTest>>
+        maybe_network_service_test;
+    if (content::IsOutOfProcessNetworkService()) {
+      maybe_network_service_test.emplace();
+      GetNetworkService()->BindTestInterfaceForTesting(
+          maybe_network_service_test->BindNewPipeAndPassReceiver());
+      (*maybe_network_service_test)
+          ->DisableExclusiveCookieDatabaseLockingForTesting(
+              run_loop.QuitClosure());
+    } else {
+      content::GetNetworkTaskRunner()->PostTaskAndReply(
+          FROM_HERE, base::BindOnce([]() {
+            network::NetworkService::GetNetworkServiceForTesting()
+                ->disable_exclusive_cookie_database_locking_for_testing();
+          }),
+          run_loop.QuitClosure());
+    }
+    run_loop.Run();
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
   mojo::PendingRemote<network::mojom::NetworkContext> network_context;
   content::CreateNetworkContextInNetworkService(
       network_context.InitWithNewPipeAndPassReceiver(),
@@ -907,11 +966,6 @@ static const base::FilePath::CharType kNetworkSubpath[] =
 class MAYBE_NetworkServiceDataMigrationBrowserTest : public ContentBrowserTest {
  public:
   MAYBE_NetworkServiceDataMigrationBrowserTest() {
-    // Migration only supports non-WAL sqlite databases. If this feature is
-    // switched on by default before migration has been completed then the code
-    // in MaybeGrantSandboxAccessToNetworkContextData will need to be updated.
-    EXPECT_FALSE(
-        base::FeatureList::IsEnabled(sql::features::kEnableWALModeByDefault));
 #if BUILDFLAG(IS_WIN)
     // On Windows, the network sandbox needs to be disabled. This is because the
     // code that performs the migration on Windows DCHECKs if network sandbox is
@@ -920,12 +974,18 @@ class MAYBE_NetworkServiceDataMigrationBrowserTest : public ContentBrowserTest {
     win_network_sandbox_feature_.InitAndDisableFeature(
         sandbox::policy::features::kNetworkServiceSandbox);
 #endif
+    // In this experiment, we created a DB file
+    // user_data/xxx/yyyy/Cache/Cache_Data/sqldb1-wal, which we can not copy.
+    // TODO(crbug.com/460304696): Fix this. Might be by shutting down sql?
+    scoped_feature_list_.InitAndDisableFeature(
+        net::kHttpCacheInitializeDiskCacheBackendEarly);
   }
 
 #if BUILDFLAG(IS_WIN)
  private:
   base::test::ScopedFeatureList win_network_sandbox_feature_;
 #endif
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // A parameterized test fixture that can simulate various failures in the
@@ -1602,93 +1662,6 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceInvalidLogBrowserTest, Basic) {
             LoadBasicRequest(partition->GetNetworkContext(), test_url));
 }
 
-// Test fixture for using a NetworkService that has a non-default limit on the
-// number of allowed open UDP sockets.
-class NetworkServiceWithUDPSocketLimit : public NetworkServiceBrowserTest {
- public:
-  NetworkServiceWithUDPSocketLimit() {
-    base::FieldTrialParams params;
-    params[net::features::kLimitOpenUDPSocketsMax.name] =
-        base::NumberToString(kMaxUDPSockets);
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        net::features::kLimitOpenUDPSockets, params);
-  }
-
- protected:
-  static constexpr int kMaxUDPSockets = 4;
-
-  // Creates and synchronously connects a UDPSocket using |network_context|.
-  // Returns the network error for Connect().
-  int ConnectUDPSocketSync(
-      mojo::Remote<network::mojom::NetworkContext>* network_context,
-      mojo::Remote<network::mojom::UDPSocket>* socket) {
-    network_context->get()->CreateUDPSocket(
-        socket->BindNewPipeAndPassReceiver(), mojo::NullRemote());
-
-    // The address of this endpoint doesn't matter, since Connect() will not
-    // actually send any datagrams, and is only being called to verify the
-    // socket limit enforcement.
-    net::IPEndPoint remote_addr(net::IPAddress(127, 0, 0, 1), 8080);
-
-    network::mojom::UDPSocketOptionsPtr options =
-        network::mojom::UDPSocketOptions::New();
-
-    net::IPEndPoint local_addr;
-    network::test::UDPSocketTestHelper helper(socket);
-    return helper.ConnectSync(remote_addr, std::move(options), &local_addr);
-  }
-
-  // Creates a NetworkContext using default parameters.
-  mojo::Remote<network::mojom::NetworkContext> CreateNetworkContext() {
-    mojo::Remote<network::mojom::NetworkContext> network_context;
-    network::mojom::NetworkContextParamsPtr context_params =
-        network::mojom::NetworkContextParams::New();
-    context_params->cert_verifier_params = GetCertVerifierParams(
-        cert_verifier::mojom::CertVerifierCreationParams::New());
-    CreateNetworkContextInNetworkService(
-        network_context.BindNewPipeAndPassReceiver(),
-        std::move(context_params));
-    return network_context;
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Tests calling Connect() on |kMaxUDPSockets + 4| sockets. The first
-// kMaxUDPSockets should succeed, whereas the last 4 should fail with
-// ERR_INSUFFICIENT_RESOURCES due to having exceeding the global bound.
-IN_PROC_BROWSER_TEST_F(NetworkServiceWithUDPSocketLimit,
-                       UDPSocketBoundEnforced) {
-  constexpr size_t kNumContexts = 2;
-
-  mojo::Remote<network::mojom::NetworkContext> network_contexts[kNumContexts] =
-      {CreateNetworkContext(), CreateNetworkContext()};
-
-  mojo::Remote<network::mojom::UDPSocket> sockets[kMaxUDPSockets];
-
-  // Try to connect the maximum number of UDP sockets (|kMaxUDPSockets|),
-  // spread evenly between 2 NetworkContexts. These should succeed as the
-  // global limit has not been reached yet. This assumes there are no
-  // other consumers of UDP sockets in the browser yet.
-  for (size_t i = 0; i < kMaxUDPSockets; ++i) {
-    auto* network_context = &network_contexts[i % kNumContexts];
-    EXPECT_EQ(net::OK, ConnectUDPSocketSync(network_context, &sockets[i]));
-  }
-
-  // Try to connect an additional 4 sockets, alternating between each of the
-  // NetworkContexts. These should all fail with ERR_INSUFFICIENT_RESOURCES as
-  // the limit has already been reached. Spreading across NetworkContext
-  // is done to ensure the socket limit is global and not per
-  // NetworkContext.
-  for (size_t i = 0; i < 4; ++i) {
-    auto* network_context = &network_contexts[i % kNumContexts];
-    mojo::Remote<network::mojom::UDPSocket> socket;
-    EXPECT_EQ(net::ERR_INSUFFICIENT_RESOURCES,
-              ConnectUDPSocketSync(network_context, &socket));
-  }
-}
-
 class NetworkServiceNetLogBrowserTest : public ContentBrowserTest {
  public:
   NetworkServiceNetLogBrowserTest() {
@@ -1760,9 +1733,9 @@ class NetworkServiceBoundedNetLogBrowserTest
     log_file_read.GetInfo(&file_info);
 
     // The max size is only a rough bound, so let's make sure the final file is
-    // within a reasonable range from our max. Let's say 10%.
-    const int64_t kMaxSizeUpper = kMaxSizeBytes * 1.1;
-    const int64_t kMaxSizeLower = kMaxSizeBytes * 0.9;
+    // within a reasonable range from our max. Let's say 15%.
+    const int64_t kMaxSizeUpper = kMaxSizeBytes * 1.15;
+    const int64_t kMaxSizeLower = kMaxSizeBytes * 0.85;
 
     // Some devices don't always finish flushing the file to disk before
     // control is returned to the test, meaning that if we were to immediately
@@ -1839,17 +1812,7 @@ class TestCookieEncryptionProvider
   mojo::Receiver<network::mojom::CookieEncryptionProvider> receiver_{this};
 };
 
-class NetworkServiceCookieEncryptionBrowserTest
-    : public ContentBrowserTest,
-      public testing::WithParamInterface</*kProtectEncryptionKey*/ bool> {
- public:
-#if BUILDFLAG(IS_WIN)
-  NetworkServiceCookieEncryptionBrowserTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        os_crypt_async::features::kProtectEncryptionKey, GetParam());
-  }
-#endif  // BUILDFLAG(IS_WIN)
-
+class NetworkServiceCookieEncryptionBrowserTest : public ContentBrowserTest {
  protected:
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -1874,17 +1837,12 @@ class NetworkServiceCookieEncryptionBrowserTest
 
     const std::vector<uint8_t> key_;
   };
-
-#if BUILDFLAG(IS_WIN)
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-#endif  // BUILDFLAG(IS_WIN)
 };
 
 // This test verifies that when a cookie encryption provider is set when
 // creating a network context, then it results in a call to the GetEncryptor
 // method on the CookieEncryptionProvider.
-IN_PROC_BROWSER_TEST_P(NetworkServiceCookieEncryptionBrowserTest,
+IN_PROC_BROWSER_TEST_F(NetworkServiceCookieEncryptionBrowserTest,
                        CookieEncryptionProvider) {
   const auto data_path =
       shell()->web_contents()->GetBrowserContext()->GetPath();
@@ -1919,11 +1877,12 @@ IN_PROC_BROWSER_TEST_P(NetworkServiceCookieEncryptionBrowserTest,
   EXPECT_CALL(provider, GetEncryptor)
       .WillOnce([&os_crypt_async](network::mojom::CookieEncryptionProvider::
                                       GetEncryptorCallback callback) {
-        std::ignore = os_crypt_async.GetInstance(base::BindOnce(
+        os_crypt_async.GetInstance(base::BindOnce(
             [](network::mojom::CookieEncryptionProvider::GetEncryptorCallback
                    callback,
-               os_crypt_async::Encryptor encryptor,
-               bool result) { std::move(callback).Run(std::move(encryptor)); },
+               os_crypt_async::Encryptor encryptor) {
+              std::move(callback).Run(std::move(encryptor));
+            },
             std::move(callback)));
       });
 
@@ -1974,24 +1933,12 @@ IN_PROC_BROWSER_TEST_P(NetworkServiceCookieEncryptionBrowserTest,
       it += key_data.size();
     }
 
-    // If kProtectEncryptionKey is enabled, no instances of the key should be
-    // present in the full memory dump of the network service process.
-    EXPECT_EQ(GetParam() ? 0u : 1u, occurrences);
+    // No instances of the key should be present in the full memory dump of the
+    // network service process as it's encrypted.
+    EXPECT_EQ(0u, occurrences);
   }
 #endif  // BUILDFLAG(IS_WIN) && !defined(ADDRESS_SANITIZER) && defined(NDEBUG)
 }
-
-INSTANTIATE_TEST_SUITE_P(,
-                         NetworkServiceCookieEncryptionBrowserTest,
-                         ::testing::Values(false
-#if BUILDFLAG(IS_WIN)
-                                           ,
-                                           true
-#endif
-                                           ),
-                         [](const auto& info) {
-                           return info.param ? "ProtectOn" : "ProtectOff";
-                         });
 
 #if BUILDFLAG(IS_WIN)
 class NetworkServiceCodeIntegrityTest : public NetworkServiceBrowserTest {

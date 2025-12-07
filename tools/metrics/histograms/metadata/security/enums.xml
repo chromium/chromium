@@ -101,6 +101,23 @@ chromium-metrics-reviews@google.com.
   <int value="17" label="Found conflicting lightweight metadata IDs"/>
 </enum>
 
+<enum name="HttpsFirstModeBlockingResult">
+  <int value="0" label="Unknown value"/>
+  <int value="1" label="An insecure HTTP request was intercepted."/>
+  <int value="2"
+      label="An insecure HTTP request was permitted because a user had
+             previously proceeded through a warning on this origin."/>
+  <int value="3"
+      label="An insecure HTTP request caused a warning to show, and the user
+             proceeded through the warning."/>
+  <int value="4"
+      label="An insecure HTTP request caused a warning to show, and the user
+             cancelled the navigation."/>
+  <int value="5"
+      label="An insecure HTTP request was permitted because no variant of
+             Ask-Before-HTTP prevented the navigation."/>
+</enum>
+
 <enum name="HttpsFirstModeInterstitialReason">
   <int value="0" label="kUnknown">Unknown reason</int>
   <int value="1" label="kPref">
@@ -156,21 +173,80 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/chrome/browser/ssl/https_first_mode_settings_tracker.h) -->
 
-<enum name="JsonParserExtension">
-  <int value="0" label="C style comment (/**/)"/>
-  <int value="1" label="C++ style comment (//)"/>
-  <int value="2" label="UTF-8 \xNN string escape"/>
-  <int value="3" label="Vertical tab string escape (\\v)"/>
-  <int value="4" label="Unescaped ASCII control character [0x00,0x1F]"/>
-  <int value="5" label="Unescaped newline in string (\\r or \\n)"/>
-</enum>
-
 <enum name="LandlockState">
   <int value="0" label="Enabled"/>
   <int value="1" label="Disabled"/>
   <int value="2" label="Not Supported"/>
   <int value="3" label="Unknown"/>
 </enum>
+
+<!-- LINT.IfChange(MainFrameProcessReuseBlockReason) -->
+
+<enum name="MainFrameProcessReuseBlockReason">
+  <int value="0" label="Not blocked"/>
+  <int value="1" label="Process reuse is disabled"/>
+  <int value="2" label="DevTools was ever attached"/>
+  <int value="3" label="Does not require dedicated process"/>
+  <int value="4" label="Localhost or IP address based host"/>
+  <int value="5" label="Scheme is not http(s)"/>
+  <int value="6" label="Embedder disallowed reuse for URL"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/renderer_host/render_frame_host_manager.cc:MainFrameProcessReuseBlockReason) -->
+
+<!-- LINT.IfChange -->
+
+<enum name="MerchantTrustInteraction">
+  <int value="0" label="kPageInfoRowShown">
+    Page info with merchant trust row was shown.
+  </int>
+  <int value="1" label="kBubbleOpenedFromPageInfo">
+    The merchant trust bubble was opened from the page info row.
+  </int>
+  <int value="2" label="kSidePanelOpened">
+    The merchant trust side panel was opened.
+  </int>
+  <int value="3" label="kBubbleClosed">
+    The merchant trust bubble was closed.
+  </int>
+  <int value="4" label="kSidePanelClosed">
+    The merchant trust side panel was closed.
+  </int>
+  <int value="5" label="kBubbleOpenedFromLocationBarChip">
+    The merchant trust bubble was opened from the location bar chip.
+  </int>
+  <int value="6" label="kSidePanelOpenedOnSameTabNavigation">
+    The merchant trust side panel remained open from a same tab navigation.
+  </int>
+  <int value="7" label="kSidePanelClosedOnSameTabNavigation">
+    The merchant trust bubble was closed on a same tab navigation.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//components/page_info/core/merchant_trust_service.h:MerchantTrustInteraction) -->
+
+<!-- LINT.IfChange(MerchantTrustStatus) -->
+
+<enum name="MerchantTrustStatus">
+  <int value="0" label="kValid">A valid response.</int>
+  <int value="1" label="kNoResult">No result received.</int>
+  <int value="2" label="kMissingRatingCount">Rating count is missing.</int>
+  <int value="3" label="kMissingRatingValue">Rating value is missing.</int>
+  <int value="4" label="DEPRECATED kMissingReviewsSummary">
+    Reviews summary is missing.
+  </int>
+  <int value="5" label="kMissingReviewsPageUrl">
+    Reviews page URL is missing.
+  </int>
+  <int value="6" label="kInvalidReviewsPageUrl">
+    Reviews page URL is invalid.
+  </int>
+  <int value="7" label="kValidWithMissingReviewsSummary">
+    A valid response with missing reviews summary.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//components/page_info/core/merchant_trust_validation.h:MerchantTrustStatus) -->
 
 <enum name="NavigationRequestSecurityLevel">
   <int value="0" label="Unknown; request was ignored"/>
@@ -188,6 +264,13 @@ chromium-metrics-reviews@google.com.
   <int value="9"
       label="HTTP request to a fully typed URL with explicit HTTP scheme."/>
   <int value="10" label="HTTP request to a captive portal login page"/>
+  <int value="11" label="Request was for a single-label hostname"/>
+  <int value="12" label="Request was for a URL with non-default ports"/>
+  <int value="13"
+      label="The hostname was in the HTTPS-enforcement list because of the
+             HFM+SE heuristic. Recorded regardless of whether there was a
+             fallback navigation or an interstitial. Not recorded if the
+             hostname is allowlisted."/>
 </enum>
 
 <enum name="NewAcceptedDeviceType">
@@ -230,6 +313,8 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(PrivateNetworkAccessCheckResult) -->
+
 <enum name="PrivateNetworkAccessCheckResult">
   <int value="0" label="AllowedMissingClientSecurityState"/>
   <int value="1" label="AllowedNoLessPublic"/>
@@ -237,14 +322,19 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="AllowedByPolicyWarn"/>
   <int value="4" label="BlockedByLoadOption"/>
   <int value="5" label="BlockedByPolicyBlock"/>
-  <int value="6" label="AllowedByTargetIpAddressSpace"/>
-  <int value="7" label="BlockedByTargetIpAddressSpace"/>
-  <int value="8" label="BlockedByPolicyPreflightWarn"/>
-  <int value="9" label="BlockedByPolicyPreflightBlock"/>
-  <int value="10" label="AllowedByPolicyPreflightWarn"/>
+  <int value="6" label="(Deprecated) AllowedByTargetIpAddressSpace"/>
+  <int value="7" label="(Deprecated) BlockedByTargetIpAddressSpace"/>
+  <int value="8" label="(Deprecated) BlockedByPolicyPreflightWarn"/>
+  <int value="9" label="(Deprecated) BlockedByPolicyPreflightBlock"/>
+  <int value="10" label="(Deprecated) AllowedByPolicyPreflightWarn"/>
   <int value="11" label="BlockedByInconsistentIpAddressSpace"/>
   <int value="12" label="AllowedPotentiallyTrustworthySameOrigin"/>
+  <int value="13" label="LNAPermissionRequired"/>
+  <int value="14" label="LNAAllowedByPolicyWarn"/>
+  <int value="15" label="BlockedByRequiredIpAddressSpaceMismatch"/>
 </enum>
+
+<!-- LINT.ThenChange(/services/network/public/cpp/private_network_access_check_result.h:PrivateNetworkAccessCheckResult) -->
 
 <enum name="PrivateNetworkDeviceValidity">
   <int value="0" label="Device exists"/>
@@ -253,15 +343,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="[Deprecated] Device ID invalid"/>
   <int value="4" label="Device name missing"/>
   <int value="5" label="Device name invalid"/>
-</enum>
-
-<enum name="ProcessPerSiteWithMainFrameThresholdBlockReason">
-  <int value="0" label="Not blocked"/>
-  <int value="1" label="Process reuse is disabled"/>
-  <int value="2" label="DevTools was ever attached"/>
-  <int value="3" label="Does not require dedicated process"/>
-  <int value="4" label="Localhost or IP address based host"/>
-  <int value="5" label="Scheme is not http(s)"/>
 </enum>
 
 <enum name="ReusePendingOrCommittedSiteEnum">
@@ -323,7 +404,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="HTTP with warning (deprecated)"/>
   <int value="2" label="Secure with EV certificate (deprecated)"/>
   <int value="3" label="Secure"/>
-  <int value="4" label="Secure with policy-installed certificate"/>
+  <int value="4" label="Secure with policy-installed certificate (deprecated)"/>
   <int value="5" label="Dangerous"/>
   <int value="6" label="Warning"/>
 </enum>

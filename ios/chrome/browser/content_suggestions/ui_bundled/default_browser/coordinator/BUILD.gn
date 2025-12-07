@@ -1,0 +1,20 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "default_browser_mediator.h",
+    "default_browser_mediator.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/ntp_tiles:pref_names",
+    "//components/prefs/ios",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:public",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/default_browser/public:features",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/default_browser/ui",
+    "//ios/chrome/browser/shared/public/commands",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

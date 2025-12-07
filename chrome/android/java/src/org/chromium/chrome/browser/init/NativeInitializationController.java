@@ -10,6 +10,8 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 
@@ -18,10 +20,14 @@ import java.util.List;
 
 /**
  * This class controls the different asynchronous states during our initialization:
- * 1. During startBackgroundTasks(), we'll kick off loading the library and yield the call stack.
- * 2. We may receive a onStart() / onStop() call any point after that, whether or not
- *    the library has been loaded.
+ *
+ * <ol>
+ *   <li>During startBackgroundTasks(), we'll kick off loading the library and yield the call stack.
+ *   <li>We may receive a onStart() / onStop() call any point after that, whether or not the library
+ *       has been loaded.
+ * </ol>
  */
+@NullMarked
 class NativeInitializationController {
     private static final String TAG = "NIController";
 
@@ -29,10 +35,10 @@ class NativeInitializationController {
 
     private boolean mOnStartPending;
     private boolean mOnResumePending;
-    private List<Intent> mPendingNewIntents;
-    private List<ActivityResult> mPendingActivityResults;
+    private @Nullable List<Intent> mPendingNewIntents;
+    private @Nullable List<ActivityResult> mPendingActivityResults;
 
-    private Boolean mBackgroundTasksComplete;
+    private @Nullable Boolean mBackgroundTasksComplete;
     private boolean mHasDoneFirstDraw;
     private boolean mHasSignaledLibraryLoaded;
     private boolean mInitializationComplete;
@@ -45,9 +51,9 @@ class NativeInitializationController {
     static class ActivityResult {
         public final int requestCode;
         public final int resultCode;
-        public final Intent data;
+        public final @Nullable Intent data;
 
-        public ActivityResult(int requestCode, int resultCode, Intent data) {
+        public ActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
             this.requestCode = requestCode;
             this.resultCode = resultCode;
             this.data = data;
@@ -209,13 +215,14 @@ class NativeInitializationController {
     }
 
     /**
-     * This is the Android onActivityResult callback deferred, if necessary,
-     * to when the native library has loaded.
+     * This is the Android onActivityResult callback deferred, if necessary, to when the native
+     * library has loaded.
+     *
      * @param requestCode The request code for the ActivityResult.
      * @param resultCode The result code for the ActivityResult.
      * @param data The intent that has been sent with the ActivityResult.
      */
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (mInitializationComplete) {
             mActivityDelegate.onActivityResultWithNative(requestCode, resultCode, data);
         } else {

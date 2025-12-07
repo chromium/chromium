@@ -8,18 +8,14 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/mojo_service_events_observer_base.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 
 namespace reporting {
-
-BASE_DECLARE_FEATURE(kEnableWifiSignalEventsReporting);
-BASE_DECLARE_FEATURE(kEnableNetworkConnectionStateEventsReporting);
-BASE_DECLARE_FEATURE(kEnableVpnConnectionStateEventsReporting);
 
 class NetworkEventsObserver
     : public ::chromeos::network_health::mojom::NetworkEventsObserver,

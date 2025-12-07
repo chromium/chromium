@@ -33,7 +33,8 @@ However, the official Chrome build is
 [codesigned](../../chrome/installer/mac/signing/README.md) with the `restrict`
 and `runtime` options, which generally prohibit debuggers from attaching.
 
-In order to debug production/released Chrome, you need to do one of two things:
+In order to debug production/released Chrome, you need to do one of two things
+while Chrome is not running:
 
 1. Disable [System Integrity
 Protection](https://developer.apple.com/documentation/security/disabling_and_enabling_system_integrity_protection),
@@ -43,7 +44,7 @@ by:
     3. Running `csrutil enable --without debug`
     4. Rebooting
 2. Stripping or force-re-codesigning the binary to not use those options:
-   `codesign --force --sign - path/to/Google\ Chrome.app`
+   `codesign --sign=- --deep --force  path/to/Google\ Chrome.app`
 
 If you will frequently debug official builds, (1) is recommended. Note that
 disabling SIP reduces the overall security of the system, so your system
@@ -220,11 +221,11 @@ This approach creates an empty Xcode project that only provides a GUI debugger:
 ### (2) Use *gn*
 
 1. Tell `gn` to generate an Xcode project for your out directory:
-   `gn gen --ide=xcode out/debug`
+   `gn gen --ide=xcode out/debug --ninja-executable=autoninja`
 2. Open *out/debug/all.xcodeproj*
 3. Have it automatically generate schemes for you
 4. You can now build targets from within Xcode, which will simply call out to
-   `ninja` via an Xcode script. But the resulting binaries are available as
+   `autoninja` via an Xcode script. But the resulting binaries are available as
    debuggable targets in Xcode.
 
 Note that any changes to the .xcodeproj will be overwritten; all changes to the
@@ -376,7 +377,7 @@ shows a number of useful things:
 
 It identifies C++ objects by their vtables, so it can't identify vtable-less
 classes, including a lot of the lower-level WebCore ones like StringImpl. To
-work around, temporarily added the `virtual` keyword to `WTF::RefCounted`'s
+work around, temporarily added the `virtual` keyword to `blink::RefCounted`'s
 destructor method, which forces every ref-counted object to include a vtable
 pointer identifying its class.
 

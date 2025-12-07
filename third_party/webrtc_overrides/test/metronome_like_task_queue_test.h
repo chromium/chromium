@@ -11,7 +11,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/webrtc/api/task_queue/task_queue_factory.h"
+#include "third_party/webrtc/api/task_queue/task_queue_base.h"
 #include "third_party/webrtc/rtc_base/system/rtc_export.h"
 
 namespace blink {

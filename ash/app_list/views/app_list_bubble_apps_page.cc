@@ -37,6 +37,7 @@
 #include "ash/style/typography.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -49,9 +50,9 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_type.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/border.h"
@@ -154,7 +155,6 @@ END_METADATA
 
 AppListBubbleAppsPage::AppListBubbleAppsPage(
     AppListViewDelegate* view_delegate,
-    ApplicationDragAndDropHost* drag_and_drop_host,
     AppListConfig* app_list_config,
     AppListA11yAnnouncer* a11y_announcer,
     AppListFolderController* folder_controller,
@@ -165,7 +165,6 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
           std::make_unique<AppListKeyboardController>(this)),
       app_list_nudge_controller_(std::make_unique<AppListNudgeController>()) {
   DCHECK(view_delegate);
-  DCHECK(drag_and_drop_host);
   DCHECK(a11y_announcer);
   DCHECK(folder_controller);
 
@@ -255,8 +254,6 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
           a11y_announcer, view_delegate,
           /*folder_delegate=*/nullptr, scroll_view_, folder_controller,
           app_list_keyboard_controller_.get()));
-  scrollable_apps_grid_view_->SetDragAndDropHostOfCurrentAppList(
-      drag_and_drop_host);
   scrollable_apps_grid_view_->UpdateAppListConfig(app_list_config);
   scrollable_apps_grid_view_->SetMaxColumns(5);
   AppListModel* const model = AppListModelProvider::Get()->model();
@@ -382,7 +379,7 @@ void AppListBubbleAppsPage::PrepareForHideLauncher() {
 
 void AppListBubbleAppsPage::AnimateShowPage() {
   // If skipping animations, just update visibility.
-  if (ui::ScopedAnimationDurationScaleMode::is_zero()) {
+  if (gfx::ScopedAnimationDurationScaleMode::is_zero()) {
     SetVisible(true);
     return;
   }
@@ -441,7 +438,7 @@ void AppListBubbleAppsPage::AnimateShowPage() {
 
 void AppListBubbleAppsPage::AnimateHidePage() {
   // If skipping animations, just update visibility.
-  if (ui::ScopedAnimationDurationScaleMode::is_zero()) {
+  if (gfx::ScopedAnimationDurationScaleMode::is_zero()) {
     SetVisible(false);
     return;
   }
@@ -645,11 +642,12 @@ void AppListBubbleAppsPage::OnActiveAppListModelsChanged(
   recent_apps_->SetModels(search_model, model);
 }
 
-void AppListBubbleAppsPage::OnViewVisibilityChanged(
-    views::View* observed_view,
-    views::View* starting_view) {
-  if (starting_view == continue_section_ || starting_view == recent_apps_)
+void AppListBubbleAppsPage::OnViewVisibilityChanged(views::View* observed_view,
+                                                    views::View* starting_view,
+                                                    bool visible) {
+  if (starting_view == continue_section_ || starting_view == recent_apps_) {
     UpdateSeparatorVisibility();
+  }
 }
 
 void AppListBubbleAppsPage::OnNudgeRemoved() {
@@ -729,7 +727,7 @@ void AppListBubbleAppsPage::InitContinueLabelContainer(
           IconButton::Type::kSmallFloating, &kChevronUpIcon,
           /*is_togglable=*/false,
           /*has_border=*/false));
-  // See ButtonFocusSkipper in app_list_bubble_view.cc for focus handling.
+  // See ButtonFocusSkipper in button_focus_skipper.cc for focus handling.
 }
 
 void AppListBubbleAppsPage::UpdateContinueSectionVisibility() {

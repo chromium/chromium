@@ -15,6 +15,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -33,19 +34,28 @@
 
 namespace {
 
-// A navigation throttle that calls a closure when a navigation to a specified
-// scheme is seen.
+// A navigation throttle that calls a closure when a navigation to a matching
+// URL is seen.
 class AuthNavigationThrottle : public content::NavigationThrottle {
  public:
-  using SchemeURLFoundCallback = base::OnceCallback<void(const GURL&)>;
+  using MatchingURLFoundCallback = base::OnceCallback<void(const GURL&)>;
 
-  AuthNavigationThrottle(content::NavigationHandle* handle,
-                         const std::string& scheme,
-                         SchemeURLFoundCallback scheme_found)
-      : content::NavigationThrottle(handle),
-        scheme_(scheme),
-        scheme_found_(std::move(scheme_found)) {
-    DCHECK(!scheme_found_.is_null());
+  AuthNavigationThrottle(content::NavigationThrottleRegistry& registry,
+                         const std::string& matching_scheme,
+                         MatchingURLFoundCallback matching_url_found)
+      : content::NavigationThrottle(registry),
+        matching_scheme_(matching_scheme),
+        matching_url_found_(std::move(matching_url_found)) {
+    DCHECK(!matching_url_found_.is_null());
+  }
+  AuthNavigationThrottle(content::NavigationThrottleRegistry& registry,
+                         ASWebAuthenticationSessionCallback* matcher_callback,
+                         MatchingURLFoundCallback matching_url_found)
+      API_AVAILABLE(macos(14.4))
+      : content::NavigationThrottle(registry),
+        matcher_callback_(matcher_callback),
+        matching_url_found_(std::move(matching_url_found)) {
+    DCHECK(!matching_url_found_.is_null());
   }
   ~AuthNavigationThrottle() override = default;
 
@@ -63,30 +73,44 @@ class AuthNavigationThrottle : public content::NavigationThrottle {
       return CANCEL_AND_IGNORE;
     }
 
-    GURL url = navigation_handle()->GetURL();
-    if (!url.SchemeIs(scheme_))
-      return PROCEED;
+    const GURL& url = navigation_handle()->GetURL();
+    if (@available(macOS 14.4, *)) {
+      NSURL* ns_url = net::NSURLWithGURL(url);
+      if (!ns_url || ![matcher_callback_ matchesURL:ns_url]) {
+        return PROCEED;
+      }
+    } else {
+      if (!url.SchemeIs(matching_scheme_)) {
+        return PROCEED;
+      }
+    }
 
     // Paranoia; if the callback was already fired, ignore all further
     // navigations that somehow get through before the WebContents deletion
     // happens.
-    if (scheme_found_.is_null())
+    if (matching_url_found_.is_null()) {
       return CANCEL_AND_IGNORE;
+    }
 
     // Post the callback; triggering the deletion of the WebContents that owns
     // the navigation that is in the middle of being throttled would likely not
     // be the best of ideas.
     content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(std::move(scheme_found_), url));
+        FROM_HERE, base::BindOnce(std::move(matching_url_found_), url));
 
     return CANCEL_AND_IGNORE;
   }
 
-  // The scheme to watch for.
-  std::string scheme_;
+  // The scheme being watched for. Used only on macOS 14.3 and earlier.
+  std::string matching_scheme_;
 
-  // The closure to call once the scheme has been seen.
-  SchemeURLFoundCallback scheme_found_;
+  // The matcher to use to check to see if the URL matches. Used only on macOS
+  // 14.4 and later.
+  ASWebAuthenticationSessionCallback* __strong matcher_callback_
+      API_AVAILABLE(macos(14.4));
+
+  // The closure to call once the URL has matched.
+  MatchingURLFoundCallback matching_url_found_;
 };
 
 }  // namespace
@@ -95,8 +119,9 @@ AuthSessionRequest::~AuthSessionRequest() {
   std::string uuid = base::SysNSStringToUTF8(request_.UUID.UUIDString);
 
   auto iter = GetMap().find(uuid);
-  if (iter == GetMap().end())
+  if (iter == GetMap().end()) {
     return;
+  }
 
   GetMap().erase(iter);
 }
@@ -107,15 +132,20 @@ void AuthSessionRequest::StartNewAuthSession(
     Profile* profile) {
   NSString* error_string = nil;
 
-  // Canonicalize the scheme so that it will compare correctly to the GURLs that
-  // are visited later. Bail if it is invalid.
-  NSString* raw_scheme = request.callbackURLScheme;
-  std::optional<std::string> canonical_scheme =
-      CanonicalizeScheme(base::SysNSStringToUTF8(raw_scheme));
-  if (!canonical_scheme) {
-    error_string =
-        [NSString stringWithFormat:@"Scheme '%@' is not valid as per RFC 3986.",
-                                   raw_scheme];
+  std::string matching_scheme;  // macOS 14.3 and earlier.
+  if (@available(macOS 14.4, *)) {
+  } else {
+    // Canonicalize the scheme so that it will compare correctly to the GURLs
+    // that are visited later. Bail if it is invalid.
+    NSString* raw_scheme = request.callbackURLScheme;
+    std::optional<std::string> canonical_scheme =
+        CanonicalizeScheme(base::SysNSStringToUTF8(raw_scheme));
+    if (!canonical_scheme) {
+      error_string = [NSString
+          stringWithFormat:@"Scheme '%@' is not valid as per RFC 3986.",
+                           raw_scheme];
+    }
+    matching_scheme = canonical_scheme.value();
   }
 
   // Create a Browser with an empty tab.
@@ -149,11 +179,11 @@ void AuthSessionRequest::StartNewAuthSession(
   content::WebContents* contents =
       browser->tab_strip_model()->GetActiveWebContents();
   AuthSessionRequest::CreateForWebContents(contents, browser, request,
-                                           canonical_scheme.value());
+                                           matching_scheme);
 
   // Only then actually load the requested page, to make sure that if the very
   // first navigation is the one that authorizes the login, it's caught.
-  // https://crbug.com/1195202
+  // https://crbug.com/40175943
   contents->GetController().LoadURL(net::GURLWithNSURL(request.URL),
                                     content::Referrer(),
                                     ui::PAGE_TRANSITION_LINK, std::string());
@@ -165,8 +195,9 @@ void AuthSessionRequest::CancelAuthSession(
   std::string uuid = base::SysNSStringToUTF8(request.UUID.UUIDString);
 
   auto iter = GetMap().find(uuid);
-  if (iter == GetMap().end())
+  if (iter == GetMap().end()) {
     return;
+  }
 
   iter->second->CancelAuthSession();
 }
@@ -176,48 +207,50 @@ std::optional<std::string> AuthSessionRequest::CanonicalizeScheme(
     std::string scheme) {
   url::RawCanonOutputT<char> canon_output;
   url::Component component;
-  bool result = url::CanonicalizeScheme(
-      scheme.data(), url::Component(0, static_cast<int>(scheme.size())),
-      &canon_output, &component);
-  if (!result)
+  bool result = url::CanonicalizeScheme(scheme, &canon_output, &component);
+  if (!result) {
     return std::nullopt;
+  }
 
   return std::string(canon_output.data() + component.begin, component.len);
 }
 
-std::unique_ptr<content::NavigationThrottle> AuthSessionRequest::CreateThrottle(
-    content::NavigationHandle* handle) {
+void AuthSessionRequest::CreateAndAddNavigationThrottle(
+    content::NavigationThrottleRegistry& registry) {
   // Only attach a throttle to outermost main frames. Note non-primary main
   // frames will cancel the navigation in the throttle.
-  switch (handle->GetNavigatingFrameType()) {
+  switch (registry.GetNavigationHandle().GetNavigatingFrameType()) {
     case content::FrameType::kSubframe:
     case content::FrameType::kFencedFrameRoot:
-      return nil;
+    case content::FrameType::kGuestMainFrame:
+      return;
     case content::FrameType::kPrimaryMainFrame:
     case content::FrameType::kPrerenderMainFrame:
       break;
   }
 
-  // base::Unretained is safe because throttles are owned by the
-  // NavigationRequest, which won't outlive the WebContents, whose lifetime this
-  // is tied to.
   auto scheme_found = base::BindOnce(&AuthSessionRequest::SchemeWasNavigatedTo,
-                                     base::Unretained(this));
+                                     weak_factory_.GetWeakPtr());
 
-  return std::make_unique<AuthNavigationThrottle>(handle, scheme_,
-                                                  std::move(scheme_found));
+  if (@available(macOS 14.4, *)) {
+    registry.AddThrottle(std::make_unique<AuthNavigationThrottle>(
+        registry, request_.callback, std::move(scheme_found)));
+  } else {
+    registry.AddThrottle(std::make_unique<AuthNavigationThrottle>(
+        registry, matching_scheme_, std::move(scheme_found)));
+  }
 }
 
 AuthSessionRequest::AuthSessionRequest(
     content::WebContents* web_contents,
     Browser* browser,
     ASWebAuthenticationSessionRequest* request,
-    std::string scheme)
+    const std::string& matching_scheme)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<AuthSessionRequest>(*web_contents),
       browser_(browser),
       request_(request),
-      scheme_(scheme) {
+      matching_scheme_(matching_scheme) {
   std::string uuid = base::SysNSStringToUTF8(request.UUID.UUIDString);
   GetMap()[uuid] = this;
 }
@@ -226,8 +259,9 @@ AuthSessionRequest::AuthSessionRequest(
 Browser* AuthSessionRequest::CreateBrowser(
     ASWebAuthenticationSessionRequest* request,
     Profile* profile) {
-  if (!profile)
+  if (!profile) {
     return nullptr;
+  }
 
   bool ephemeral_sessions_allowed_by_policy =
       IncognitoModePrefs::GetAvailability(profile->GetPrefs()) !=
@@ -245,8 +279,16 @@ Browser* AuthSessionRequest::CreateBrowser(
       ephemeral_sessions_allowed_by_policy) {
     profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   }
-  if (!profile)
+  if (!profile) {
     return nullptr;
+  }
+
+  // Check if browser creation is possible before attempting to create it.
+  // This prevents crashes when the profile is in an unsuitable state.
+  if (Browser::GetCreationStatusForProfile(profile) !=
+      Browser::CreationStatus::kOk) {
+    return nullptr;
+  }
 
   // Note that this creates a popup-style window to do the signin. This is a
   // specific choice motivated by security concerns, and must *not* be changed
@@ -337,7 +379,7 @@ void AuthSessionRequest::WebContentsDestroyed() {
   //
   // In both cancellation cases, the OS must receive a cancellation callback.
   // (This is an undocumented requirement in the case that the OS asked for the
-  // cancellation; see https://crbug.com/1400714.)
+  // cancellation; see https://crbug.com/40250389.)
 
   if (perform_cancellation_callback_) {
     NSError* error = [NSError
@@ -350,12 +392,13 @@ void AuthSessionRequest::WebContentsDestroyed() {
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AuthSessionRequest);
 
-std::unique_ptr<content::NavigationThrottle> MaybeCreateAuthSessionThrottleFor(
-    content::NavigationHandle* handle) {
-  AuthSessionRequest* request =
-      AuthSessionRequest::FromWebContents(handle->GetWebContents());
-  if (!request)
-    return nullptr;
+void MaybeCreateAndAddAuthSessionNavigationThrottle(
+    content::NavigationThrottleRegistry& registry) {
+  AuthSessionRequest* request = AuthSessionRequest::FromWebContents(
+      registry.GetNavigationHandle().GetWebContents());
+  if (!request) {
+    return;
+  }
 
-  return request->CreateThrottle(handle);
+  return request->CreateAndAddNavigationThrottle(registry);
 }

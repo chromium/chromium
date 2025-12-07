@@ -1,7 +1,6 @@
 {
   "description": "Order of various source destination limits",
   "api_config": {
-    "needs_source_destination_limit": true,
     "max_destinations_per_source_site_reporting_site": "3",
     "max_destinations_per_rate_limit_window_reporting_site": "2",
     "max_destinations_per_rate_limit_window": "3",

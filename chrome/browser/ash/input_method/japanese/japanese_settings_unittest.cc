@@ -16,7 +16,6 @@ using ::ash::ime::mojom::JapaneseSettings;
 
 TEST(JapaneseSettingsTest, OnSetPrefsSetsSettingsFromPrefs) {
   base::Value::Dict prefs;
-  prefs.Set("AutomaticallySendStatisticsToGoogle", false);
   prefs.Set("AutomaticallySwitchToHalfwidth", false);
   prefs.Set("JapaneseDisableSuggestions", true);
   prefs.Set("JapaneseInputMode", "Kana");
@@ -34,8 +33,8 @@ TEST(JapaneseSettingsTest, OnSetPrefsSetsSettingsFromPrefs) {
       ToMojomInputMethodSettings(prefs);
   ash::ime::mojom::JapaneseSettingsPtr expected =
       ash::ime::mojom::JapaneseSettings::New();
-  expected->automatically_send_statistics_to_google = false;
-  expected->automatically_switch_to_halfwidth = true;
+  expected->unused2 = false;
+  expected->automatically_switch_to_halfwidth = false;
   expected->disable_personalized_suggestions = true;
   expected->input_mode = JapaneseSettings::InputMode::kKana;
   expected->keymap_style = JapaneseSettings::KeymapStyle::kChromeos;
@@ -77,8 +76,8 @@ TEST(JapaneseSettingsTest, OnUnsetPrefsSetsDefault) {
   expected->selection_shortcut =
       JapaneseSettings::SelectionShortcut::kDigits123456789;
   expected->keymap_style = JapaneseSettings::KeymapStyle::kCustom;
-  expected->disable_personalized_suggestions = true;
-  expected->automatically_send_statistics_to_google = true;
+  expected->disable_personalized_suggestions = false;
+  expected->unused2 = false;
   EXPECT_EQ(response, expected);
 }
 

@@ -1,0 +1,18 @@
+Name: impress
+Short Name: impress
+URL: https://dl.google.com/dl/android/maven2/com/google/ar/impress/0.0.8/impress-0.0.8.aar
+Version: 0.0.8
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+Impress shows GLTF models on XR devices, and provides advanced materials and rendering.
+A dependency of https://developer.android.com/jetpack/androidx/releases/xr-scenecore.
+
+
+Local Modifications:
+No modifications.

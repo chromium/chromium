@@ -5,15 +5,12 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_SHARED_WEB_CONTENTS_LOCK_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_SHARED_WEB_CONTENTS_LOCK_H_
 
-#include <memory>
-
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/locks/lock.h"
 #include "chrome/browser/web_applications/locks/with_shared_web_contents_resources.h"
 
 namespace content {
 class WebContents;
-struct PartitionedLockHolder;
 }  // namespace content
 
 namespace web_app {
@@ -47,7 +44,8 @@ class SharedWebContentsLock : public Lock,
  public:
   using LockDescription = SharedWebContentsLockDescription;
 
-  ~SharedWebContentsLock();
+  SharedWebContentsLock();
+  ~SharedWebContentsLock() override;
 
   base::WeakPtr<SharedWebContentsLock> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();
@@ -55,9 +53,8 @@ class SharedWebContentsLock : public Lock,
 
  private:
   friend class WebAppLockManager;
-  SharedWebContentsLock(base::WeakPtr<WebAppLockManager> lock_manager,
-                        std::unique_ptr<content::PartitionedLockHolder> holder,
-                        content::WebContents& shared_web_contents);
+  void GrantLock(WebAppLockManager& lock_manager,
+                 content::WebContents& shared_web_contents);
 
   base::WeakPtrFactory<SharedWebContentsLock> weak_factory_{this};
 };

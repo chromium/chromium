@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/AppMenuItem"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:descendantFocusability="afterDescendants">
+
+    <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
+        android:id="@+id/title"
+        style="@style/AppMenuItemTextViewWithCompoundDrawables"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:minHeight="?attr/listItemHeight" />
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/zoom_out_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/zoom_menu_item_divider_margin"
+        android:background="@drawable/menu_button_background"
+        android:contentDescription="@string/page_zoom_decrease_zoom_button_text"
+        android:src="@drawable/ic_remove"
+        app:tint="@color/default_icon_color_tint_list" />
+
+    <TextView
+        android:id="@+id/zoom_percentage"
+        android:accessibilityLiveRegion="polite"
+        android:layout_width="@dimen/zoom_percentage_menu_item_width"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/zoom_percentage_menu_item_margin"
+        android:layout_marginEnd="@dimen/zoom_percentage_menu_item_margin"
+        android:gravity="center"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/zoom_in_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/menu_button_background"
+        android:contentDescription="@string/page_zoom_increase_zoom_button_text"
+        android:src="@drawable/ic_add"
+        app:tint="@color/default_icon_color_tint_list" />
+
+    <View
+        android:layout_width="@dimen/zoom_menu_item_divider_width"
+        android:layout_height="match_parent"
+        android:layout_marginStart="@dimen/zoom_menu_item_divider_margin"
+        android:layout_marginEnd="@dimen/zoom_menu_item_divider_margin"
+        android:background="@drawable/divider_line_bg" />
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/fullscreen_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/menu_button_background"
+        android:contentDescription="@string/page_zoom_fullscreen_button_content_description"
+        android:src="@drawable/ic_fullscreen_enter"
+        app:tint="@color/default_icon_color_tint_list" />
+</LinearLayout>

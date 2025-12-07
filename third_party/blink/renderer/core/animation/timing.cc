@@ -20,49 +20,49 @@ Timing::V8Delay* Timing::Delay::ToV8Delay() const {
   return MakeGarbageCollected<V8Delay>(AsTimeValue().InMillisecondsF());
 }
 
-String Timing::FillModeString(FillMode fill_mode) {
+V8FillMode::Enum Timing::FillModeEnum(FillMode fill_mode) {
   switch (fill_mode) {
     case FillMode::NONE:
-      return "none";
+      return V8FillMode::Enum::kNone;
     case FillMode::FORWARDS:
-      return "forwards";
+      return V8FillMode::Enum::kForwards;
     case FillMode::BACKWARDS:
-      return "backwards";
+      return V8FillMode::Enum::kBackwards;
     case FillMode::BOTH:
-      return "both";
+      return V8FillMode::Enum::kBoth;
     case FillMode::AUTO:
-      return "auto";
+      return V8FillMode::Enum::kAuto;
   }
-  NOTREACHED_IN_MIGRATION();
-  return "none";
 }
 
-Timing::FillMode Timing::StringToFillMode(const String& fill_mode) {
-  if (fill_mode == "none")
-    return Timing::FillMode::NONE;
-  if (fill_mode == "backwards")
-    return Timing::FillMode::BACKWARDS;
-  if (fill_mode == "both")
-    return Timing::FillMode::BOTH;
-  if (fill_mode == "forwards")
-    return Timing::FillMode::FORWARDS;
-  DCHECK_EQ(fill_mode, "auto");
-  return Timing::FillMode::AUTO;
+Timing::FillMode Timing::EnumToFillMode(V8FillMode::Enum fill_mode) {
+  switch (fill_mode) {
+    case V8FillMode::Enum::kNone:
+      return Timing::FillMode::NONE;
+    case V8FillMode::Enum::kBackwards:
+      return Timing::FillMode::BACKWARDS;
+    case V8FillMode::Enum::kBoth:
+      return Timing::FillMode::BOTH;
+    case V8FillMode::Enum::kForwards:
+      return Timing::FillMode::FORWARDS;
+    case V8FillMode::Enum::kAuto:
+      return Timing::FillMode::AUTO;
+  }
 }
 
-String Timing::PlaybackDirectionString(PlaybackDirection playback_direction) {
+V8PlaybackDirection::Enum Timing::PlaybackDirectionEnum(
+    PlaybackDirection playback_direction) {
   switch (playback_direction) {
     case PlaybackDirection::NORMAL:
-      return "normal";
+      return V8PlaybackDirection::Enum::kNormal;
     case PlaybackDirection::REVERSE:
-      return "reverse";
+      return V8PlaybackDirection::Enum::kReverse;
     case PlaybackDirection::ALTERNATE_NORMAL:
-      return "alternate";
+      return V8PlaybackDirection::Enum::kAlternate;
     case PlaybackDirection::ALTERNATE_REVERSE:
-      return "alternate-reverse";
+      return V8PlaybackDirection::Enum::kAlternateReverse;
   }
-  NOTREACHED_IN_MIGRATION();
-  return "normal";
+  NOTREACHED();
 }
 
 Timing::FillMode Timing::ResolvedFillMode(bool is_keyframe_effect) const {
@@ -81,7 +81,7 @@ EffectTiming* Timing::ConvertToEffectTiming() const {
   // Specified values used here so that inputs match outputs for JS API calls
   effect_timing->setDelay(start_delay.ToV8Delay());
   effect_timing->setEndDelay(end_delay.ToV8Delay());
-  effect_timing->setFill(FillModeString(fill_mode));
+  effect_timing->setFill(FillModeEnum(fill_mode));
   effect_timing->setIterationStart(iteration_start);
   effect_timing->setIterations(iteration_count);
   V8UnionCSSNumericValueOrStringOrUnrestrictedDouble* duration;
@@ -94,7 +94,7 @@ EffectTiming* Timing::ConvertToEffectTiming() const {
         V8UnionCSSNumericValueOrStringOrUnrestrictedDouble>("auto");
   }
   effect_timing->setDuration(duration);
-  effect_timing->setDirection(PlaybackDirectionString(direction));
+  effect_timing->setDirection(PlaybackDirectionEnum(direction));
   effect_timing->setEasing(timing_function->ToString());
 
   return effect_timing;
@@ -154,7 +154,7 @@ ComputedEffectTiming* Timing::getComputedTiming(
   computed_timing->setDelay(start_delay.ToV8Delay());
   computed_timing->setEndDelay(end_delay.ToV8Delay());
   computed_timing->setFill(
-      Timing::FillModeString(ResolvedFillMode(is_keyframe_effect)));
+      Timing::FillModeEnum(ResolvedFillMode(is_keyframe_effect)));
   computed_timing->setIterationStart(iteration_start);
   computed_timing->setIterations(iteration_count);
 
@@ -175,7 +175,7 @@ ComputedEffectTiming* Timing::getComputedTiming(
             computed_duration->GetAsDouble()));
   }
 
-  computed_timing->setDirection(Timing::PlaybackDirectionString(direction));
+  computed_timing->setDirection(PlaybackDirectionEnum(direction));
   computed_timing->setEasing(timing_function->ToString());
 
   return computed_timing;
@@ -187,12 +187,15 @@ Timing::CalculatedTiming Timing::CalculateTimings(
     const NormalizedTiming& normalized_timing,
     AnimationDirection animation_direction,
     bool is_keyframe_effect,
-    std::optional<double> playback_rate) const {
+    std::optional<double> playback_rate,
+    bool paused_for_trigger,
+    bool is_endpoint_inclusive) const {
   const AnimationTimeDelta active_duration = normalized_timing.active_duration;
   const AnimationTimeDelta duration = normalized_timing.iteration_duration;
 
   Timing::Phase current_phase = TimingCalculations::CalculatePhase(
-      normalized_timing, local_time, animation_direction);
+      normalized_timing, local_time, animation_direction, paused_for_trigger,
+      is_endpoint_inclusive);
 
   const std::optional<AnimationTimeDelta> active_time =
       TimingCalculations::CalculateActiveTime(

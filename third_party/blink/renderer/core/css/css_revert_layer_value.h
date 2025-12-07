@@ -5,15 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_REVERT_LAYER_VALUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_REVERT_LAYER_VALUE_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
-
-namespace WTF {
-class String;
-}  // namespace WTF
 
 namespace blink {
 
@@ -28,7 +23,7 @@ class CORE_EXPORT CSSRevertLayerValue : public CSSValue {
   explicit CSSRevertLayerValue(base::PassKey<CSSValuePool>)
       : CSSValue(kRevertLayerClass) {}
 
-  WTF::String CustomCSSText() const;
+  String CustomCSSText() const;
 
   bool Equals(const CSSRevertLayerValue&) const { return true; }
 

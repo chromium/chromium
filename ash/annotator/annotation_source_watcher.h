@@ -35,7 +35,6 @@ class ASH_EXPORT AnnotationSourceWatcher : public CaptureModeObserver,
   AnnotationSourceWatcher& operator=(const AnnotationSourceWatcher&) = delete;
   ~AnnotationSourceWatcher() override;
 
-  void NotifyMarkerClicked(aura::Window* current_root);
   void NotifyMarkerEnabled(aura::Window* current_root);
   void NotifyMarkerDisabled();
 

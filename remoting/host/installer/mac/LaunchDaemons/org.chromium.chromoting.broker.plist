@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Disabled</key>
+  <false/>
+  <key>Label</key>
+  <string>org.chromium.chromoting.broker</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Library/PrivilegedHelperTools/@@HOST_BUNDLE_NAME@@/Contents/MacOS/remoting_agent_process_broker</string>
+  </array>
+	<key>MachServices</key>
+  <dict>
+    <key>chromoting.agent_process_broker_mojo_ipc</key>
+    <true/>
+  </dict>
+</dict>
+</plist>

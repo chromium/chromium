@@ -2,22 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/services/secure_channel/ble_weave_packet_receiver.h"
 
-#include "build/build_config.h"
-
-#if BUILDFLAG(IS_WIN)
-#include <winsock2.h>
-#else
 #include <netinet/in.h>
-#endif
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
@@ -107,7 +97,7 @@ BluetoothLowEnergyWeavePacketReceiver::ReceivePacket(const Packet& packet) {
         // Counter not verified.
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
   return state_;
@@ -209,7 +199,7 @@ void BluetoothLowEnergyWeavePacketReceiver::ReceiveNonFirstPacket(
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -352,7 +342,7 @@ uint16_t BluetoothLowEnergyWeavePacketReceiver::GetShortField(
   uint16_t received;
   uint8_t* received_ptr = reinterpret_cast<uint8_t*>(&received);
   received_ptr[0] = packet[byte_offset];
-  received_ptr[1] = packet[byte_offset + 1];
+  UNSAFE_TODO(received_ptr[1]) = packet[byte_offset + 1];
 
   return ntohs(received);
 }

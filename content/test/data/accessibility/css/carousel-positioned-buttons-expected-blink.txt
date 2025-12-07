@@ -1,0 +1,19 @@
+rootWebArea focusable
+++genericContainer ignored
+++++genericContainer ignored
+++++++button name='Scroll left' restriction=disabled controlsIds=genericContainer
+++++++button focusable name='Scroll right' controlsIds=genericContainer
+++++++genericContainer focusable
+++++++++genericContainer
+++++++++++staticText name='Item'
+++++++++++++inlineTextBox name='Item'
+++++++++genericContainer
+++++++++++staticText name='Item'
+++++++++++++inlineTextBox name='Item'
+++++++++genericContainer
+++++++++++staticText name='Item'
+++++++++++++inlineTextBox name='Item'
+++++++navigation controlsIds=genericContainer
+++++++++link focusable detailsIds=genericContainer
+++++++++link focusable detailsIds=genericContainer
+++++++++link focusable detailsIds=genericContainer

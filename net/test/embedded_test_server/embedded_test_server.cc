@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
 #include <stdint.h>
@@ -15,10 +10,12 @@
 #include <optional>
 #include <string_view>
 #include <utility>
+#include <vector>
 
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -34,7 +31,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
-#include "crypto/rsa_private_key.h"
 #include "net/base/hex_utils.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
@@ -52,13 +48,14 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
+#include "net/test/embedded_test_server/http_connect_proxy_handler.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "net/test/key_util.h"
 #include "net/test/revocation_builder.h"
 #include "net/test/test_data_directory.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/spdy_frame_builder.h"
+#include "net/third_party/quiche/src/quiche/http2/core/spdy_frame_builder.h"
 #include "third_party/boringssl/src/pki/extended_key_usage.h"
 #include "url/origin.h"
 
@@ -72,8 +69,9 @@ std::unique_ptr<HttpResponse> ServeResponseForPath(
     const std::string& content_type,
     const std::string& content,
     const HttpRequest& request) {
-  if (request.GetURL().path() != expected_path)
+  if (request.GetURL().GetPath() != expected_path) {
     return nullptr;
+  }
 
   auto http_response = std::make_unique<BasicHttpResponse>();
   http_response->set_code(status_code);
@@ -90,8 +88,8 @@ std::unique_ptr<HttpResponse> ServeResponseForSubPaths(
     const std::string& content_type,
     const std::string& content,
     const HttpRequest& request) {
-  if (request.GetURL().path() != expected_path &&
-      !request.GetURL().path().starts_with(expected_path + "/")) {
+  if (request.GetURL().GetPath() != expected_path &&
+      !request.GetURL().GetPath().starts_with(expected_path + "/")) {
     return nullptr;
   }
 
@@ -221,6 +219,13 @@ bool MaybeCreateOCSPResponse(CertBuilder* target,
   return true;
 }
 
+void DispatchResponseToDelegate(std::unique_ptr<HttpResponse> response,
+                                base::WeakPtr<HttpResponseDelegate> delegate) {
+  HttpResponse* const response_ptr = response.get();
+  delegate->AddResponse(std::move(response));
+  response_ptr->SendResponse(delegate);
+}
+
 }  // namespace
 
 EmbeddedTestServerHandle::EmbeddedTestServerHandle(
@@ -276,6 +281,12 @@ EmbeddedTestServer::ServerCertificateConfig::operator=(
 EmbeddedTestServer::ServerCertificateConfig&
 EmbeddedTestServer::ServerCertificateConfig::operator=(
     ServerCertificateConfig&&) = default;
+
+EmbeddedTestServer::Credential::Credential() = default;
+EmbeddedTestServer::Credential::Credential(Credential&& other) = default;
+EmbeddedTestServer::Credential::~Credential() = default;
+EmbeddedTestServer::Credential& EmbeddedTestServer::Credential::operator=(
+    Credential&& other) = default;
 
 EmbeddedTestServer::EmbeddedTestServer() : EmbeddedTestServer(TYPE_HTTP) {}
 
@@ -380,8 +391,10 @@ bool EmbeddedTestServer::InitializeAndListen(int port,
 
   listen_socket_->DetachFromThread();
 
-  if (is_using_ssl_ && !InitializeSSLServerContext())
+  if (is_using_ssl_ && !InitializeSSLServerContext()) {
+    LOG(ERROR) << "Unable to initialize SSL";
     return false;
+  }
 
   return true;
 }
@@ -390,36 +403,82 @@ bool EmbeddedTestServer::UsingStaticCert() const {
   return !GetCertificateName().empty();
 }
 
-bool EmbeddedTestServer::InitializeCertAndKeyFromFile() {
+std::vector<SSLServerCredential>
+EmbeddedTestServer::InitializeCertAndKeyFromFile() {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath certs_dir(GetTestCertsDirectory());
   std::string cert_name = GetCertificateName();
-  if (cert_name.empty())
-    return false;
+  if (cert_name.empty()) {
+    return {};
+  }
 
-  x509_cert_ = CreateCertificateChainFromFile(certs_dir, cert_name,
-                                              X509Certificate::FORMAT_AUTO);
-  if (!x509_cert_)
-    return false;
+  Credential credential;
+  SSLServerCredential ssl_server_credential;
 
-  private_key_ =
+  credential.x509_cert = CreateCertificateChainFromFile(
+      certs_dir, cert_name, X509Certificate::FORMAT_AUTO);
+  if (!credential.x509_cert) {
+    return {};
+  }
+
+  ssl_server_credential.cert_chain = credential.x509_cert->CopyCertBuffers();
+
+  ssl_server_credential.pkey =
       key_util::LoadEVP_PKEYFromPEM(certs_dir.AppendASCII(cert_name));
-  return !!private_key_;
+
+  if (!ssl_server_credential.pkey) {
+    return {};
+  }
+
+  credentials_.clear();
+  credentials_.push_back(std::move(credential));
+
+  std::vector<SSLServerCredential> ssl_server_credentials;
+  ssl_server_credentials.push_back(std::move(ssl_server_credential));
+  return ssl_server_credentials;
 }
 
-bool EmbeddedTestServer::GenerateCertAndKey() {
+std::vector<SSLServerCredential> EmbeddedTestServer::GenerateCertAndKeys() {
+  std::vector<SSLServerCredential> ssl_server_credentials;
+
   // Create AIA server and start listening. Need to have the socket initialized
   // so the URL can be put in the AIA records of the generated certs.
   aia_http_server_ = std::make_unique<EmbeddedTestServer>(TYPE_HTTP);
-  if (!aia_http_server_->InitializeAndListen())
-    return false;
+  if (!aia_http_server_->InitializeAndListen()) {
+    return {};
+  }
 
+  credentials_.clear();
+  for (const auto& config : cert_configs_) {
+    std::optional<CredentialPair> credential = GenerateCertAndKey(config);
+    if (!credential.has_value()) {
+      return {};
+    }
+    credentials_.push_back(std::move(credential->credential));
+    ssl_server_credentials.push_back(std::move(credential->ssl_credential));
+  }
+
+  // If this server is already accepting connections but is being reconfigured,
+  // start the new AIA server now. Otherwise, wait until
+  // `StartAcceptingConnections` so that this server and the AIA server start
+  // at the same time. (If the test only called InitializeAndListen they expect
+  // no threads to be created yet.)
+  if (io_thread_) {
+    aia_http_server_->StartAcceptingConnections();
+  }
+
+  return ssl_server_credentials;
+}
+
+std::optional<EmbeddedTestServer::CredentialPair>
+EmbeddedTestServer::GenerateCertAndKey(
+    const ServerCertificateConfig& cert_config) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath certs_dir(GetTestCertsDirectory());
   auto now = base::Time::Now();
 
   std::unique_ptr<CertBuilder> root;
-  switch (cert_config_.root) {
+  switch (cert_config.root) {
     case RootType::kTestRootCa:
       root = CertBuilder::FromStaticCertFile(
           certs_dir.AppendASCII("root_ca_cert.pem"));
@@ -430,14 +489,17 @@ bool EmbeddedTestServer::GenerateCertAndKey() {
       root->SetBasicConstraints(/*is_ca=*/true, /*path_len=*/-1);
       root->SetKeyUsages(
           {bssl::KEY_USAGE_BIT_KEY_CERT_SIGN, bssl::KEY_USAGE_BIT_CRL_SIGN});
+      if (!cert_config.root_dns_names.empty()) {
+        root->SetSubjectAltNames(cert_config.root_dns_names, {});
+      }
       break;
   }
 
-  // Will be nullptr if cert_config_.intermediate == kNone.
+  // Will be nullptr if cert_config.intermediate == kNone.
   std::unique_ptr<CertBuilder> intermediate;
   std::unique_ptr<CertBuilder> leaf;
 
-  if (cert_config_.intermediate != IntermediateType::kNone) {
+  if (cert_config.intermediate != IntermediateType::kNone) {
     intermediate = std::make_unique<CertBuilder>(nullptr, root.get());
     intermediate->SetValidity(now - base::Days(100), now + base::Days(1000));
     intermediate->SetBasicConstraints(/*is_ca=*/true, /*path_len=*/-1);
@@ -452,29 +514,37 @@ bool EmbeddedTestServer::GenerateCertAndKey() {
   std::vector<GURL> leaf_ocsp_urls;
 
   leaf->SetValidity(now - base::Days(1), now + base::Days(20));
-  leaf->SetBasicConstraints(/*is_ca=*/false, /*path_len=*/-1);
+  leaf->SetBasicConstraints(/*is_ca=*/cert_config.leaf_is_ca, /*path_len=*/-1);
   leaf->SetExtendedKeyUsages({bssl::der::Input(bssl::kServerAuth)});
 
-  if (!cert_config_.policy_oids.empty()) {
-    leaf->SetCertificatePolicies(cert_config_.policy_oids);
-    if (intermediate)
-      intermediate->SetCertificatePolicies(cert_config_.policy_oids);
+  if (!cert_config.subject_tlv.empty()) {
+    leaf->SetSubjectTLV(cert_config.subject_tlv);
   }
 
-  if (!cert_config_.dns_names.empty() || !cert_config_.ip_addresses.empty()) {
-    leaf->SetSubjectAltNames(cert_config_.dns_names, cert_config_.ip_addresses);
+  if (!cert_config.policy_oids.empty()) {
+    leaf->SetCertificatePolicies(cert_config.policy_oids);
+    if (intermediate)
+      intermediate->SetCertificatePolicies(cert_config.policy_oids);
+  }
+
+  if (!cert_config.qwac_qc_types.empty()) {
+    leaf->SetQwacQcStatements(cert_config.qwac_qc_types);
+  }
+
+  if (!cert_config.dns_names.empty() || !cert_config.ip_addresses.empty()) {
+    leaf->SetSubjectAltNames(cert_config.dns_names, cert_config.ip_addresses);
   } else {
     leaf->SetSubjectAltNames({}, {net::IPAddress::IPv4Localhost()});
   }
 
-  if (!cert_config_.key_usages.empty()) {
-    leaf->SetKeyUsages(cert_config_.key_usages);
+  if (!cert_config.key_usages.empty()) {
+    leaf->SetKeyUsages(cert_config.key_usages);
   } else {
     leaf->SetKeyUsages({bssl::KEY_USAGE_BIT_DIGITAL_SIGNATURE});
   }
 
-  if (!cert_config_.embedded_scts.empty()) {
-    leaf->SetSctConfig(cert_config_.embedded_scts);
+  if (!cert_config.embedded_scts.empty()) {
+    leaf->SetSctConfig(cert_config.embedded_scts);
   }
 
   const std::string leaf_serial_text =
@@ -483,9 +553,9 @@ bool EmbeddedTestServer::GenerateCertAndKey() {
       intermediate ? base::NumberToString(intermediate->GetSerialNumber()) : "";
 
   std::string ocsp_response;
-  if (!MaybeCreateOCSPResponse(leaf.get(), cert_config_.ocsp_config,
+  if (!MaybeCreateOCSPResponse(leaf.get(), cert_config.ocsp_config,
                                &ocsp_response)) {
-    return false;
+    return std::nullopt;
   }
   if (!ocsp_response.empty()) {
     std::string ocsp_path = "/ocsp/" + leaf_serial_text;
@@ -496,20 +566,16 @@ bool EmbeddedTestServer::GenerateCertAndKey() {
   }
 
   std::string stapled_ocsp_response;
-  if (!MaybeCreateOCSPResponse(leaf.get(), cert_config_.stapled_ocsp_config,
+  if (!MaybeCreateOCSPResponse(leaf.get(), cert_config.stapled_ocsp_config,
                                &stapled_ocsp_response)) {
-    return false;
-  }
-  if (!stapled_ocsp_response.empty()) {
-    ssl_config_.ocsp_response = std::vector<uint8_t>(
-        stapled_ocsp_response.begin(), stapled_ocsp_response.end());
+    return std::nullopt;
   }
 
   std::string intermediate_ocsp_response;
   if (!MaybeCreateOCSPResponse(intermediate.get(),
-                               cert_config_.intermediate_ocsp_config,
+                               cert_config.intermediate_ocsp_config,
                                &intermediate_ocsp_response)) {
-    return false;
+    return std::nullopt;
   }
   if (!intermediate_ocsp_response.empty()) {
     std::string intermediate_ocsp_path = "/ocsp/" + intermediate_serial_text;
@@ -520,7 +586,7 @@ bool EmbeddedTestServer::GenerateCertAndKey() {
         "application/ocsp-response", intermediate_ocsp_response));
   }
 
-  if (cert_config_.intermediate == IntermediateType::kByAIA) {
+  if (cert_config.intermediate == IntermediateType::kByAIA) {
     std::string ca_issuers_path = "/ca_issuers/" + intermediate_serial_text;
     leaf_ca_issuers_urls.push_back(aia_http_server_->GetURL(ca_issuers_path));
 
@@ -534,41 +600,56 @@ bool EmbeddedTestServer::GenerateCertAndKey() {
     leaf->SetCaIssuersAndOCSPUrls(leaf_ca_issuers_urls, leaf_ocsp_urls);
   }
 
-  if (cert_config_.intermediate == IntermediateType::kByAIA ||
-      cert_config_.intermediate == IntermediateType::kMissing) {
-    // Server certificate chain does not include the intermediate.
-    x509_cert_ = leaf->GetX509Certificate();
+  Credential credential;
+  SSLServerCredential ssl_server_credential;
+
+  if (!stapled_ocsp_response.empty()) {
+    ssl_server_credential.ocsp_response =
+        base::ToVector(base::as_byte_span(stapled_ocsp_response));
+  }
+
+  ssl_server_credential.trust_anchor_id = cert_config.trust_anchor_id;
+  ssl_server_credential.signed_cert_timestamp_list =
+      cert_config.tls_signed_cert_timestamp_list;
+  ssl_server_credential.signature_algorithm_for_testing =
+      cert_config.signature_algorithm_for_testing;
+
+  ssl_server_credential.cert_chain.push_back(leaf->DupCertBuffer());
+  if (cert_config.intermediate == IntermediateType::kInHandshake) {
+    // Server certificate chain will include the intermediate.
+    credential.x509_cert = leaf->GetX509CertificateChain();
+    ssl_server_credential.cert_chain.push_back(intermediate->DupCertBuffer());
   } else {
-    // Server certificate chain will include the intermediate, if there is one.
-    x509_cert_ = leaf->GetX509CertificateChain();
+    // Server certificate chain does not include the intermediate (if any).
+    credential.x509_cert = leaf->GetX509Certificate();
   }
 
   if (intermediate) {
-    intermediate_ = intermediate->GetX509Certificate();
+    credential.intermediate = intermediate->GetX509Certificate();
   }
 
-  root_ = root->GetX509Certificate();
+  credential.root = root->GetX509Certificate();
 
-  private_key_ = bssl::UpRef(leaf->GetKey());
+  ssl_server_credential.pkey = bssl::UpRef(leaf->GetKey());
 
-  // If this server is already accepting connections but is being reconfigured,
-  // start the new AIA server now. Otherwise, wait until
-  // StartAcceptingConnections so that this server and the AIA server start at
-  // the same time. (If the test only called InitializeAndListen they expect no
-  // threads to be created yet.)
-  if (io_thread_)
-    aia_http_server_->StartAcceptingConnections();
-
-  return true;
+  return CredentialPair{.credential = std::move(credential),
+                        .ssl_credential = std::move(ssl_server_credential)};
 }
 
 bool EmbeddedTestServer::InitializeSSLServerContext() {
+  std::vector<SSLServerCredential> ssl_server_credentials;
   if (UsingStaticCert()) {
-    if (!InitializeCertAndKeyFromFile())
+    ssl_server_credentials = InitializeCertAndKeyFromFile();
+    if (ssl_server_credentials.empty()) {
+      LOG(ERROR) << "Unable to initialize cert and key from file";
       return false;
+    }
   } else {
-    if (!GenerateCertAndKey())
+    ssl_server_credentials = GenerateCertAndKeys();
+    if (ssl_server_credentials.empty()) {
+      LOG(ERROR) << "Unable to generate cert and key";
       return false;
+    }
   }
 
   if (protocol_ == HttpConnection::Protocol::kHttp2) {
@@ -606,10 +687,10 @@ bool EmbeddedTestServer::InitializeSSLServerContext() {
       spdy::SpdySerializedFrame serialized_frame = builder.take();
       DCHECK_EQ(frame_size, serialized_frame.size());
 
+      std::string_view serialized_frame_view(serialized_frame);
       ssl_config_.application_settings[NextProto::kProtoHTTP2] =
-          std::vector<uint8_t>(
-              serialized_frame.data(),
-              serialized_frame.data() + serialized_frame.size());
+          std::vector<uint8_t>(serialized_frame_view.begin(),
+                               serialized_frame_view.end());
 
       ssl_config_.client_hello_callback_for_testing =
           base::BindRepeating([](const SSL_CLIENT_HELLO* client_hello) {
@@ -629,7 +710,7 @@ bool EmbeddedTestServer::InitializeSSLServerContext() {
   }
 
   context_ =
-      CreateSSLServerContext(x509_cert_.get(), private_key_.get(), ssl_config_);
+      CreateSSLServerContext(std::move(ssl_server_credentials), ssl_config_);
   return true;
 }
 
@@ -687,18 +768,72 @@ base::FilePath EmbeddedTestServer::GetRootCertPemPath() {
 void EmbeddedTestServer::ShutdownOnIOThread() {
   DCHECK(io_thread_->task_runner()->BelongsToCurrentThread());
   weak_factory_.InvalidateWeakPtrs();
+  shutdown_closures_.Notify();
   listen_socket_.reset();
   connections_.clear();
+  http_connect_proxy_handler_.reset();
+}
+
+HttpConnection* EmbeddedTestServer::GetConnectionForSocket(
+    const StreamSocket* socket) {
+  auto it = connections_.find(socket);
+  if (it != connections_.end()) {
+    return it->second.get();
+  }
+  return nullptr;
 }
 
 void EmbeddedTestServer::HandleRequest(
     base::WeakPtr<HttpResponseDelegate> delegate,
-    std::unique_ptr<HttpRequest> request) {
+    std::unique_ptr<HttpRequest> request,
+    const StreamSocket* socket) {
   DCHECK(io_thread_->task_runner()->BelongsToCurrentThread());
   request->base_url = base_url_;
 
   for (const auto& monitor : request_monitors_)
     monitor.Run(*request);
+
+  HttpConnection* connection = GetConnectionForSocket(socket);
+  CHECK(connection);
+
+  if (auth_handler_) {
+    auto auth_result = auth_handler_.Run(*request);
+    if (auth_result) {
+      DispatchResponseToDelegate(std::move(auth_result), delegate);
+      return;
+    }
+  }
+
+  if (http_connect_proxy_handler_ && request->method == METHOD_CONNECT) {
+    bool request_handled =
+        http_connect_proxy_handler_->HandleProxyRequest(*connection, *request);
+    // If the proxy handler took over the request, it took ownership of the
+    // underlying socket, so only need to delete the socket.
+    if (request_handled) {
+      connections_.erase(socket);
+      return;
+    }
+
+    auto response = std::make_unique<BasicHttpResponse>();
+    response->set_code(HttpStatusCode::HTTP_BAD_GATEWAY);
+    response->set_reason("Invalid destination");
+    DispatchResponseToDelegate(std::move(response), delegate);
+    return;
+  }
+
+  for (const auto& upgrade_request_handler : upgrade_request_handlers_) {
+    auto upgrade_response = upgrade_request_handler.Run(*request, connection);
+    if (upgrade_response.has_value()) {
+      if (upgrade_response.value() == UpgradeResult::kUpgraded) {
+        connections_.erase(socket);
+        return;
+      }
+    } else {
+      CHECK(upgrade_response.error());
+      DispatchResponseToDelegate(std::move(upgrade_response.error()), delegate);
+      return;
+    }
+  }
 
   std::unique_ptr<HttpResponse> response;
 
@@ -717,16 +852,13 @@ void EmbeddedTestServer::HandleRequest(
   }
 
   if (!response) {
-    LOG(WARNING) << "Request not handled. Returning 404: "
-                 << request->relative_url;
+    VLOG(2) << "Request not handled. Returning 404: " << request->relative_url;
     auto not_found_response = std::make_unique<BasicHttpResponse>();
     not_found_response->set_code(HTTP_NOT_FOUND);
     response = std::move(not_found_response);
   }
 
-  HttpResponse* const response_ptr = response.get();
-  delegate->AddResponse(std::move(response));
-  response_ptr->SendResponse(delegate);
+  DispatchResponseToDelegate(std::move(response), delegate);
 }
 
 GURL EmbeddedTestServer::GetURL(std::string_view relative_url) const {
@@ -761,35 +893,45 @@ std::string EmbeddedTestServer::GetIPLiteralString() const {
 
 void EmbeddedTestServer::SetSSLConfigInternal(
     ServerCertificate cert,
-    const ServerCertificateConfig* cert_config,
+    base::span<const ServerCertificateConfig> cert_configs,
     const SSLServerConfig& ssl_config) {
   DCHECK(!Started());
   cert_ = cert;
-  DCHECK(!cert_config || cert == CERT_AUTO);
-  cert_config_ = cert_config ? *cert_config : ServerCertificateConfig();
-  x509_cert_ = nullptr;
-  private_key_ = nullptr;
+  DCHECK(cert_configs.empty() || cert == CERT_AUTO);
+  if (!cert_configs.empty()) {
+    cert_configs_ = base::ToVector(cert_configs);
+  } else {
+    cert_configs_ = {ServerCertificateConfig()};
+  }
+  credentials_.clear();
   ssl_config_ = ssl_config;
 }
 
 void EmbeddedTestServer::SetSSLConfig(ServerCertificate cert,
                                       const SSLServerConfig& ssl_config) {
-  SetSSLConfigInternal(cert, /*cert_config=*/nullptr, ssl_config);
+  SetSSLConfigInternal(cert, /*cert_configs=*/{}, ssl_config);
 }
 
 void EmbeddedTestServer::SetSSLConfig(ServerCertificate cert) {
-  SetSSLConfigInternal(cert, /*cert_config=*/nullptr, SSLServerConfig());
+  SetSSLConfigInternal(cert, /*cert_configs=*/{}, SSLServerConfig());
 }
 
 void EmbeddedTestServer::SetSSLConfig(
     const ServerCertificateConfig& cert_config,
     const SSLServerConfig& ssl_config) {
-  SetSSLConfigInternal(CERT_AUTO, &cert_config, ssl_config);
+  SetSSLConfigInternal(CERT_AUTO, base::span_from_ref(cert_config), ssl_config);
 }
 
 void EmbeddedTestServer::SetSSLConfig(
     const ServerCertificateConfig& cert_config) {
-  SetSSLConfigInternal(CERT_AUTO, &cert_config, SSLServerConfig());
+  SetSSLConfigInternal(CERT_AUTO, base::span_from_ref(cert_config),
+                       SSLServerConfig());
+}
+
+void EmbeddedTestServer::SetSSLConfig(
+    base::span<const ServerCertificateConfig> cert_configs,
+    const SSLServerConfig& ssl_config) {
+  SetSSLConfigInternal(CERT_AUTO, cert_configs, ssl_config);
 }
 
 void EmbeddedTestServer::SetCertHostnames(std::vector<std::string> hostnames) {
@@ -803,7 +945,7 @@ bool EmbeddedTestServer::ResetSSLConfigOnIOThread(
     ServerCertificate cert,
     const SSLServerConfig& ssl_config) {
   cert_ = cert;
-  cert_config_ = ServerCertificateConfig();
+  cert_configs_ = {ServerCertificateConfig()};
   ssl_config_ = ssl_config;
   connections_.clear();
   return InitializeSSLServerContext();
@@ -836,8 +978,6 @@ std::string EmbeddedTestServer::GetCertificateName() const {
       return "sha1_leaf.pem";
     case CERT_OK_BY_INTERMEDIATE:
       return "ok_cert_by_intermediate.pem";
-    case CERT_BAD_VALIDITY:
-      return "bad_validity.pem";
     case CERT_TEST_NAMES:
       return "test_names.pem";
     case CERT_KEY_USAGE_RSA_ENCIPHERMENT:
@@ -851,9 +991,10 @@ std::string EmbeddedTestServer::GetCertificateName() const {
   return "ok_cert.pem";
 }
 
-scoped_refptr<X509Certificate> EmbeddedTestServer::GetCertificate() {
+scoped_refptr<X509Certificate> EmbeddedTestServer::GetCertificate(
+    size_t credential_num) {
   DCHECK(is_using_ssl_);
-  if (!x509_cert_) {
+  if (credentials_.empty()) {
     // Some tests want to get the certificate before the server has been
     // initialized, so load it now if necessary. This is only possible if using
     // a static certificate.
@@ -862,20 +1003,31 @@ scoped_refptr<X509Certificate> EmbeddedTestServer::GetCertificate() {
     CHECK(UsingStaticCert());
     // TODO(mattm): change contract to return nullptr on error instead of
     // CHECKing, update callers.
-    CHECK(InitializeCertAndKeyFromFile());
+    CHECK(!InitializeCertAndKeyFromFile().empty());
   }
-  return x509_cert_;
+  if (credential_num >= credentials_.size()) {
+    return nullptr;
+  }
+  return credentials_[credential_num].x509_cert;
 }
 
-scoped_refptr<X509Certificate> EmbeddedTestServer::GetGeneratedIntermediate() {
+scoped_refptr<X509Certificate> EmbeddedTestServer::GetGeneratedIntermediate(
+    size_t credential_num) {
   DCHECK(is_using_ssl_);
   DCHECK(!UsingStaticCert());
-  return intermediate_;
+  if (credential_num >= credentials_.size()) {
+    return nullptr;
+  }
+  return credentials_[credential_num].intermediate;
 }
 
-scoped_refptr<X509Certificate> EmbeddedTestServer::GetRoot() {
+scoped_refptr<X509Certificate> EmbeddedTestServer::GetRoot(
+    size_t credential_num) {
   DCHECK(is_using_ssl_);
-  return root_;
+  if (credential_num >= credentials_.size()) {
+    return nullptr;
+  }
+  return credentials_[credential_num].root;
 }
 
 void EmbeddedTestServer::ServeFilesFromDirectory(
@@ -909,6 +1061,35 @@ base::FilePath EmbeddedTestServer::GetFullPathFromSourceDirectory(
   base::FilePath test_data_dir;
   CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir));
   return test_data_dir.Append(relative);
+}
+
+void EmbeddedTestServer::RegisterAuthHandler(
+    const HandleRequestCallback& callback) {
+  CHECK(!io_thread_)
+      << "Handlers must be registered before starting the server.";
+  if (auth_handler_) {
+    VLOG(2) << "Overwriting existing Auth handler.";
+  }
+  auth_handler_ = callback;
+}
+
+void EmbeddedTestServer::EnableConnectProxy(
+    base::span<const HostPortPair> proxied_destinations) {
+  CHECK(!StartedAcceptingConnection());
+  CHECK(!http_connect_proxy_handler_);
+
+  http_connect_proxy_handler_ =
+      std::make_unique<HttpConnectProxyHandler>(proxied_destinations);
+}
+
+void EmbeddedTestServer::RegisterUpgradeRequestHandler(
+    const HandleUpgradeRequestCallback& callback) {
+  CHECK_NE(protocol_, HttpConnection::Protocol::kHttp2)
+      << "RegisterUpgradeRequestHandler() is not supported for HTTP/2 "
+         "connections";
+  CHECK(!io_thread_)
+      << "Handlers must be registered before starting the server.";
+  upgrade_request_handlers_.push_back(callback);
 }
 
 void EmbeddedTestServer::RegisterRequestHandler(
@@ -967,6 +1148,11 @@ void EmbeddedTestServer::SetAlpsAcceptCH(std::string hostname,
   alps_accept_ch_.insert_or_assign(std::move(hostname), std::move(accept_ch));
 }
 
+base::CallbackListSubscription EmbeddedTestServer::RegisterShutdownClosure(
+    base::OnceClosure closure) {
+  return shutdown_closures_.Add(std::move(closure));
+}
+
 void EmbeddedTestServer::OnAcceptCompleted(int rv) {
   DCHECK_NE(ERR_IO_PENDING, rv);
   HandleAcceptResult(std::move(accepted_socket_));
@@ -1018,16 +1204,9 @@ HttpConnection* EmbeddedTestServer::AddConnection(
 void EmbeddedTestServer::RemoveConnection(
     HttpConnection* connection,
     EmbeddedTestServerConnectionListener* listener) {
-  DCHECK(io_thread_->task_runner()->BelongsToCurrentThread());
-  DCHECK(connection);
-  DCHECK_EQ(1u, connections_.count(connection->Socket()));
-
-  StreamSocket* raw_socket = connection->Socket();
-  std::unique_ptr<StreamSocket> socket = connection->TakeSocket();
-  connections_.erase(raw_socket);
-
-  if (listener && socket && socket->IsConnected())
-    listener->OnResponseCompletedSuccessfully(std::move(socket));
+  CHECK(io_thread_->task_runner()->BelongsToCurrentThread());
+  CHECK(connection);
+  CHECK_EQ(1u, connections_.erase(connection->Socket()));
 }
 
 bool EmbeddedTestServer::PostTaskToIOThreadAndWait(base::OnceClosure closure) {

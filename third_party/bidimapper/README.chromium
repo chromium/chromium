@@ -1,15 +1,17 @@
 Name: Implementation of WebDriver BiDi standard
 Short Name: chromium-bidi
-URL: https://registry.npmjs.org/chromium-bidi/-/chromium-bidi-0.6.4.tgz
-Version: 0.6.4
-Date: 2024-08-05
-Revision: 54dab6c913ef15cd1a12594e97d716ca3f7ca9e6
-SHA-512: a0bece1b2306539dbdcc03dc5ae7131461499cfb68191c8d0556fb18ae388843c336b1ab094b4b0af8dc7625152a6de777ce59b1d96e93e1c958cd957c1ba904
-License: Apache 2.0
+URL: https://registry.npmjs.org/chromium-bidi/-/chromium-bidi-11.0.1.tgz
+Version: 11.0.1
+Date: 2025-11-14
+Revision: b421d27106b1c42fcf6f910c0e7c68e7f47edf22
+SHA-512: 54f9f771b3fc32439bec24a5f35100081f9e6c81932f763b45c2d0a18d4a612c2fde12169436b1f07e37739791413a80268788a0bd39dee11057a4d3179eef79
+Update Mechanism: Manual
+License: Apache-2.0
 License File: LICENSE
 Shipped: yes
 Security Critical: no
 CPEPrefix: unknown
+License Android Compatible: yes
 
 Description:
 WebDriver BiDi implementation for ChromeDriver.
@@ -32,7 +34,7 @@ Local modifications are not allowed.
 The upstream is maintained by the Chromium developers.
 All the changes must be done there.
 
-The source code of the current revision can be found at the following url: https://github.com/GoogleChromeLabs/chromium-bidi/archive/54dab6c913ef15cd1a12594e97d716ca3f7ca9e6.zip
+The source code of the current revision can be found at the following url: https://github.com/GoogleChromeLabs/chromium-bidi/archive/b421d27106b1c42fcf6f910c0e7c68e7f47edf22.zip
 
 -------------------- DEPENDENCY DIVIDER --------------------
 
@@ -41,28 +43,19 @@ URL: https://github.com/developit/mitt
 Version: 3.0.1
 License: MIT
 Revision: b240473b5707857ba2c6a8e6d707c28d1e39da49
+Update Mechanism: Manual
 Security Critical: no
 Shipped: yes
 License File: licenses/LICENSE.mitt
 
 -------------------- DEPENDENCY DIVIDER --------------------
 
-Name: urlpattern-polyfill
-URL: https://github.com/kenchris/urlpattern-polyfill
-Version: 10.0.0
-License: MIT
-Revision: 039357b28b68e3d68f59d7c6af0138cd25a91914
-Security Critical: no
-Shipped: yes
-License File: licenses/LICENSE.urlpattern_polyfill
-
--------------------- DEPENDENCY DIVIDER --------------------
-
 Name: zod
 URL: https://zod.dev
-Version: 3.23.8
+Version: 3.25.76
 License: MIT
-Revision: ca42965df46b2f7e2747db29c40a26bcb32a51d5
+Revision: 50606616c0d291caf3210a7521da51271b918333
+Update Mechanism: Manual
 Security Critical: no
 Shipped: yes
 License File: licenses/LICENSE.zod

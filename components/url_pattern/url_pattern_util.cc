@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/url_pattern/url_pattern_util.h"
 
+#include <ranges>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/ranges.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "url/url_util.h"
@@ -22,25 +18,35 @@ namespace {
 
 std::string StdStringFromCanonOutput(const url::CanonOutput& output,
                                      const url::Component& component) {
-  return std::string(output.data() + component.begin, component.len);
+  return std::string(UNSAFE_TODO(output.data() + component.begin),
+                     component.len);
 }
 
-bool ContainsForbiddenHostnameCodePoint(std::string_view input) {
+}  // namespace
+
+bool ContainsForbiddenHostnameCodePoint(std::string_view input,
+                                        const bool allow_ipv6_delimiters) {
   // The full list of forbidden code points is defined at:
   //
   //  https://url.spec.whatwg.org/#forbidden-host-code-point
   //
   // We only check the code points the chromium URL parser incorrectly permits.
   // See: crbug.com/1065667#c18
-  return base::ranges::any_of(input, [](char c) {
-    return c == ' ' || c == '#' || c == ':' || c == '<' || c == '>' ||
-           c == '@' || c == '[' || c == ']' || c == '|';
-  });
+  if (!allow_ipv6_delimiters) {
+    return std::ranges::any_of(input, [](char c) {
+      return c == ' ' || c == '#' || c == ':' || c == '<' || c == '>' ||
+             c == '@' || c == '[' || c == ']' || c == '|';
+    });
+  } else {
+    return std::ranges::any_of(input, [](char c) {
+      return c == ' ' || c == '#' || c == '<' || c == '>' || c == '@' ||
+             c == '|';
+    });
+  }
 }
 
-}  // namespace
-
-absl::StatusOr<std::string> ProtocolEncodeCallback(std::string_view input) {
+base::expected<std::string, absl::Status> ProtocolEncodeCallback(
+    std::string_view input) {
   if (input.empty()) {
     return std::string();
   }
@@ -48,19 +54,18 @@ absl::StatusOr<std::string> ProtocolEncodeCallback(std::string_view input) {
   url::RawCanonOutputT<char> canon_output;
   url::Component component;
 
-  bool result = url::CanonicalizeScheme(
-      input.data(), url::Component(0, base::checked_cast<int>(input.size())),
-      &canon_output, &component);
+  bool result = url::CanonicalizeScheme(input, &canon_output, &component);
 
   if (!result) {
-    return absl::InvalidArgumentError(
-        base::StrCat({"Invalid protocol '", input, "'."}));
+    return base::unexpected(absl::InvalidArgumentError(
+        base::StrCat({"Invalid protocol '", input, "'."})));
   }
 
   return StdStringFromCanonOutput(canon_output, component);
 }
 
-absl::StatusOr<std::string> UsernameEncodeCallback(std::string_view input) {
+base::expected<std::string, absl::Status> UsernameEncodeCallback(
+    std::string_view input) {
   if (input.empty()) {
     return std::string();
   }
@@ -69,20 +74,20 @@ absl::StatusOr<std::string> UsernameEncodeCallback(std::string_view input) {
   url::Component username_component;
   url::Component password_component;
 
-  bool result = url::CanonicalizeUserInfo(
-      input.data(), url::Component(0, base::checked_cast<int>(input.size())),
-      "", url::Component(0, 0), &canon_output, &username_component,
-      &password_component);
+  bool result =
+      url::CanonicalizeUserInfo(input, std::string_view(), &canon_output,
+                                &username_component, &password_component);
 
   if (!result) {
-    return absl::InvalidArgumentError(
-        base::StrCat({"Invalid username pattern '", input, "'."}));
+    return base::unexpected(absl::InvalidArgumentError(
+        base::StrCat({"Invalid username pattern '", input, "'."})));
   }
 
   return StdStringFromCanonOutput(canon_output, username_component);
 }
 
-absl::StatusOr<std::string> PasswordEncodeCallback(std::string_view input) {
+base::expected<std::string, absl::Status> PasswordEncodeCallback(
+    std::string_view input) {
   if (input.empty()) {
     return std::string();
   }
@@ -91,20 +96,20 @@ absl::StatusOr<std::string> PasswordEncodeCallback(std::string_view input) {
   url::Component username_component;
   url::Component password_component;
 
-  bool result = url::CanonicalizeUserInfo(
-      "", url::Component(0, 0), input.data(),
-      url::Component(0, base::checked_cast<int>(input.size())), &canon_output,
-      &username_component, &password_component);
+  bool result =
+      url::CanonicalizeUserInfo(std::string_view(), input, &canon_output,
+                                &username_component, &password_component);
 
   if (!result) {
-    return absl::InvalidArgumentError(
-        base::StrCat({"Invalid password pattern '", input, "'."}));
+    return base::unexpected(absl::InvalidArgumentError(
+        base::StrCat({"Invalid password pattern '", input, "'."})));
   }
 
   return StdStringFromCanonOutput(canon_output, password_component);
 }
 
-absl::StatusOr<std::string> IPv6HostnameEncodeCallback(std::string_view input) {
+base::expected<std::string, absl::Status> IPv6HostnameEncodeCallback(
+    std::string_view input) {
   std::string result;
   result.reserve(input.size());
   // This implements a light validation and canonicalization of IPv6 hostname
@@ -118,16 +123,17 @@ absl::StatusOr<std::string> IPv6HostnameEncodeCallback(std::string_view input) {
   for (size_t i = 0; i < input.size(); ++i) {
     char c = input[i];
     if (!base::IsHexDigit(c) && c != '[' && c != ']' && c != ':') {
-      return absl::InvalidArgumentError(
+      return base::unexpected(absl::InvalidArgumentError(
           base::StrCat({"Invalid IPv6 hostname character '",
-                        std::string_view(&c, 1), "' in '", input, "'."}));
+                        std::string_view(&c, 1), "' in '", input, "'."})));
     }
     result += base::ToLowerASCII(c);
   }
   return result;
 }
 
-absl::StatusOr<std::string> HostnameEncodeCallback(std::string_view input) {
+base::expected<std::string, absl::Status> HostnameEncodeCallback(
+    std::string_view input) {
   if (input.empty()) {
     return std::string();
   }
@@ -140,46 +146,26 @@ absl::StatusOr<std::string> HostnameEncodeCallback(std::string_view input) {
   //
   // TODO(crbug.com/40124263): Remove this check after the URL parser is fixed.
   if (ContainsForbiddenHostnameCodePoint(input)) {
-    return absl::InvalidArgumentError(
-        base::StrCat({"Invalid hostname pattern '", input, "'."}));
+    return base::unexpected(absl::InvalidArgumentError(
+        base::StrCat({"Invalid hostname pattern '", input, "'."})));
   }
 
   url::RawCanonOutputT<char> canon_output;
   url::Component component;
 
   bool result = url::CanonicalizeHost(
-      input.data(), url::Component(0, base::checked_cast<int>(input.size())),
+      input, url::Component(0, base::checked_cast<int>(input.size())),
       &canon_output, &component);
 
   if (!result) {
-    return absl::InvalidArgumentError(
-        base::StrCat({"Invalid hostname pattern '", input, "'."}));
+    return base::unexpected(absl::InvalidArgumentError(
+        base::StrCat({"Invalid hostname pattern '", input, "'."})));
   }
 
   return StdStringFromCanonOutput(canon_output, component);
 }
 
-absl::StatusOr<std::string> PortEncodeCallback(std::string_view input) {
-  if (input.empty()) {
-    return std::string();
-  }
-
-  url::RawCanonOutputT<char> canon_output;
-  url::Component component;
-
-  bool result = url::CanonicalizePort(
-      input.data(), url::Component(0, base::checked_cast<int>(input.size())),
-      url::PORT_UNSPECIFIED, &canon_output, &component);
-
-  if (!result) {
-    return absl::InvalidArgumentError(
-        base::StrCat({"Invalid port pattern '", input, "'."}));
-  }
-
-  return StdStringFromCanonOutput(canon_output, component);
-}
-
-absl::StatusOr<std::string> StandardURLPathnameEncodeCallback(
+base::expected<std::string, absl::Status> PortEncodeCallback(
     std::string_view input) {
   if (input.empty()) {
     return std::string();
@@ -188,19 +174,18 @@ absl::StatusOr<std::string> StandardURLPathnameEncodeCallback(
   url::RawCanonOutputT<char> canon_output;
   url::Component component;
 
-  bool result = url::CanonicalizePartialPath(
-      input.data(), url::Component(0, base::checked_cast<int>(input.size())),
-      &canon_output, &component);
+  bool result = url::CanonicalizePort(input, url::PORT_UNSPECIFIED,
+                                      &canon_output, &component);
 
   if (!result) {
-    return absl::InvalidArgumentError(
-        base::StrCat({"Invalid pathname pattern '", input, "'."}));
+    return base::unexpected(absl::InvalidArgumentError(
+        base::StrCat({"Invalid port pattern '", input, "'."})));
   }
 
   return StdStringFromCanonOutput(canon_output, component);
 }
 
-absl::StatusOr<std::string> PathURLPathnameEncodeCallback(
+base::expected<std::string, absl::Status> StandardURLPathnameEncodeCallback(
     std::string_view input) {
   if (input.empty()) {
     return std::string();
@@ -209,14 +194,31 @@ absl::StatusOr<std::string> PathURLPathnameEncodeCallback(
   url::RawCanonOutputT<char> canon_output;
   url::Component component;
 
-  url::CanonicalizePathURLPath(
-      input.data(), url::Component(0, base::checked_cast<int>(input.size())),
-      &canon_output, &component);
+  bool result = url::CanonicalizePartialPath(input, &canon_output, &component);
+
+  if (!result) {
+    return base::unexpected(absl::InvalidArgumentError(
+        base::StrCat({"Invalid pathname pattern '", input, "'."})));
+  }
 
   return StdStringFromCanonOutput(canon_output, component);
 }
 
-absl::StatusOr<std::string> SearchEncodeCallback(std::string_view input) {
+base::expected<std::string, absl::Status> PathURLPathnameEncodeCallback(
+    std::string_view input) {
+  if (input.empty()) {
+    return std::string();
+  }
+
+  url::RawCanonOutputT<char> canon_output;
+  url::Component component;
+  url::CanonicalizePathUrlPath(input, &canon_output, &component);
+
+  return StdStringFromCanonOutput(canon_output, component);
+}
+
+base::expected<std::string, absl::Status> SearchEncodeCallback(
+    std::string_view input) {
   if (input.empty()) {
     return std::string();
   }
@@ -224,14 +226,14 @@ absl::StatusOr<std::string> SearchEncodeCallback(std::string_view input) {
   url::RawCanonOutputT<char> canon_output;
   url::Component component;
 
-  url::CanonicalizeQuery(
-      input.data(), url::Component(0, base::checked_cast<int>(input.size())),
-      /*converter=*/nullptr, &canon_output, &component);
+  url::CanonicalizeQuery(input, /*converter=*/nullptr, &canon_output,
+                         &component);
 
   return StdStringFromCanonOutput(canon_output, component);
 }
 
-absl::StatusOr<std::string> HashEncodeCallback(std::string_view input) {
+base::expected<std::string, absl::Status> HashEncodeCallback(
+    std::string_view input) {
   if (input.empty()) {
     return std::string();
   }
@@ -239,9 +241,7 @@ absl::StatusOr<std::string> HashEncodeCallback(std::string_view input) {
   url::RawCanonOutputT<char> canon_output;
   url::Component component;
 
-  url::CanonicalizeRef(input.data(),
-                       url::Component(0, base::checked_cast<int>(input.size())),
-                       &canon_output, &component);
+  url::CanonicalizeRef(input, &canon_output, &component);
 
   return StdStringFromCanonOutput(canon_output, component);
 }

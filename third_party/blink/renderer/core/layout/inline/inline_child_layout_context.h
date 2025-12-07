@@ -8,14 +8,13 @@
 #include <optional>
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/inline/fit_text_utils.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_items_builder.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_box_state.h"
 #include "third_party/blink/renderer/core/layout/inline/logical_line_item.h"
 #include "third_party/blink/renderer/core/layout/inline/score_line_break_context.h"
 
 namespace blink {
-
-class InlineItem;
 
 // A context object given to layout. The same instance should be given to
 // children of a parent node, but layout algorithm should be prepared to be
@@ -55,10 +54,9 @@ class CORE_EXPORT InlineChildLayoutContext {
   //
   // To determine this, callers must call |SetItemIndex| to set the end of the
   // current line.
-  InlineLayoutStateStack* BoxStatesIfValidForItemIndex(
-      const HeapVector<InlineItem>& items,
-      unsigned item_index);
-  void SetItemIndex(const HeapVector<InlineItem>& items, unsigned item_index) {
+  InlineLayoutStateStack* BoxStatesIfValidForItemIndex(const InlineItems& items,
+                                                       unsigned item_index);
+  void SetItemIndex(const InlineItems& items, unsigned item_index) {
     items_ = &items;
     item_index_ = item_index;
   }
@@ -75,6 +73,12 @@ class CORE_EXPORT InlineChildLayoutContext {
   void SetBalancedAvailableWidth(std::optional<LayoutUnit> value) {
     balanced_available_width_ = value;
   }
+
+  // FitText: Enable the measuring mode if `paragraph_scale` is nullptr.
+  void EnableMeasuringModeIfNecessary(const ParagraphScale* paragraph_scale);
+  bool IsMeasuringScale() const { return is_measuring_scale_; }
+  // FitText: Returns the minimum scale handled in the measuring mode.
+  ParagraphScale MeasuredScale() const;
 
  protected:
   InlineChildLayoutContext(const InlineNode& node,
@@ -96,13 +100,19 @@ class CORE_EXPORT InlineChildLayoutContext {
   std::optional<InlineLayoutStateStack> box_states_;
 
   // The items and its index this context is set up for.
-  const HeapVector<InlineItem>* items_ = nullptr;
+  const InlineItems* items_ = nullptr;
   unsigned item_index_ = 0;
 
   HeapVector<Member<const BreakToken>> parallel_flow_break_tokens_;
 
   // Used by `ParagraphLineBreaker`.
   std::optional<LayoutUnit> balanced_available_width_;
+
+  // FitText: In the measuring mode, this field is updated for every line.
+  // Otherwise, this holds the paragraph scale which is applied to every line.
+  ParagraphScale minimum_scale_;
+  // FitText: True if in the measuring mode.
+  bool is_measuring_scale_ = false;
 };
 
 // A subclass of `InlineChildLayoutContext` for when the algorithm requires

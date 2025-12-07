@@ -11,8 +11,12 @@
 
 #include "base/functional/callback_forward.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
-#include "components/sync/protocol/data_type_progress_marker.pb.h"
-#include "components/sync/protocol/data_type_state.pb.h"
+
+namespace sync_pb {
+class DataTypeState;
+class DataTypeState_Invalidation;
+class GarbageCollectionDirective;
+}  // namespace sync_pb
 
 namespace syncer {
 class CommitQueue;
@@ -25,7 +29,7 @@ class DataTypeProcessor {
   DataTypeProcessor() = default;
   virtual ~DataTypeProcessor() = default;
 
-  // Connect this processor to the sync engine via |commit_queue|. Once called,
+  // Connect this processor to the sync engine via `commit_queue`. Once called,
   // the processor will send any pending and future commits via this channel.
   // This can only be called multiple times if the processor is disconnected
   // (via the DataTypeController) in between.
@@ -37,8 +41,8 @@ class DataTypeProcessor {
   virtual void DisconnectSync() = 0;
 
   // Sync engine calls GetLocalChanges to request local entities to be committed
-  // to server. Processor should call callback passing local entites when they
-  // are ready. Processor should not pass more than |max_entities|.
+  // to server. Processor should call callback passing local entities when they
+  // are ready. Processor should not pass more than `max_entities`.
   using GetLocalChangesCallback =
       base::OnceCallback<void(CommitRequestDataList&&)>;
   virtual void GetLocalChanges(size_t max_entries,
@@ -64,7 +68,7 @@ class DataTypeProcessor {
   // Informs this object that it should handle new invalidations to store,
   // replacing any previously-stored invalidations.
   virtual void StorePendingInvalidations(
-      std::vector<sync_pb::DataTypeState::Invalidation>
+      std::vector<sync_pb::DataTypeState_Invalidation>
           invalidations_to_store) = 0;
 };
 

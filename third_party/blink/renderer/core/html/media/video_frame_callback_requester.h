@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
@@ -16,19 +16,14 @@ class HTMLVideoElement;
 // Interface defining what the HTMLVideoElement should be aware
 // of in order to support the <video>.requestVideoFrameCallback() API.
 class CORE_EXPORT VideoFrameCallbackRequester
-    : public GarbageCollected<VideoFrameCallbackRequester>,
-      public Supplement<HTMLVideoElement> {
+    : public GarbageCollected<VideoFrameCallbackRequester> {
  public:
-  static const char kSupplementName[];
-
-  static VideoFrameCallbackRequester* From(HTMLVideoElement&);
-
   VideoFrameCallbackRequester(const VideoFrameCallbackRequester&) = delete;
   VideoFrameCallbackRequester& operator=(const VideoFrameCallbackRequester&) =
       delete;
   virtual ~VideoFrameCallbackRequester() = default;
 
-  void Trace(Visitor*) const override;
+  virtual void Trace(Visitor*) const;
 
   virtual void OnWebMediaPlayerCreated() = 0;
   virtual void OnWebMediaPlayerCleared() = 0;
@@ -36,6 +31,8 @@ class CORE_EXPORT VideoFrameCallbackRequester
 
  protected:
   explicit VideoFrameCallbackRequester(HTMLVideoElement&);
+
+  Member<HTMLVideoElement> element_;
 };
 
 }  // namespace blink

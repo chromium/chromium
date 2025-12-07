@@ -4,6 +4,8 @@
 
 package org.chromium.components.minidump_uploader;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.minidump_uploader.util.HttpURLConnectionFactory;
 import org.chromium.components.minidump_uploader.util.HttpURLConnectionFactoryImpl;
 
@@ -21,9 +23,10 @@ import java.util.zip.GZIPOutputStream;
 /**
  * This class tries to upload a minidump to the crash server.
  *
- * Minidumps are stored in multipart MIME format ready to form the body of a POST request. The MIME
- * boundary forms the first line of the file.
+ * Minidumps are stored in multipart MIME format ready to form the body of a POST request. The
+ * MIME boundary forms the first line of the file.
  */
+@NullMarked
 public class MinidumpUploader {
     /* package */
     static final String CRASH_URL_STRING = "https://clients2.google.com/cr/report";
@@ -210,9 +213,9 @@ public class MinidumpUploader {
      *
      * @param connection the connection to read the response from.
      * @return the content of the response.
-     * @throws IOException
      */
-    private String getResponseContentAsString(HttpURLConnection connection) throws IOException {
+    private @Nullable String getResponseContentAsString(HttpURLConnection connection)
+            throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         streamCopy(connection.getInputStream(), baos);
         if (baos.size() == 0) {
@@ -222,12 +225,10 @@ public class MinidumpUploader {
     }
 
     /**
-     * Copies all available data from |inStream| to |outStream|. Closes both
-     * streams when done.
+     * Copies all available data from |inStream| to |outStream|. Closes both streams when done.
      *
      * @param inStream the stream to read
      * @param outStream the stream to write to
-     * @throws IOException
      */
     private void streamCopy(InputStream inStream, OutputStream outStream) throws IOException {
         byte[] temp = new byte[4096];

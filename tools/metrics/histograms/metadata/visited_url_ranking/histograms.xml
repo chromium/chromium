@@ -23,8 +23,234 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="GroupCreationSource">
+  <variant name="CPA"
+      summary="Tab groups created from contextual page action suggestions."/>
+  <variant name="GTS"
+      summary="Tab groups created from Grid Tab Switcher suggestions."/>
+  <variant name="Unknown" summary="Tab groups created from an unknown source."/>
+</variants>
+
+<histogram name="GroupSuggestionsService.OpenedTabCount.Last10Mins"
+    units="counts" expires_after="2026-03-15">
+  <owner>ssid@chromium.org</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    Records the number of opened tabs in last 10 minutes, that are being
+    considered as part of the group suggestion. Logged every time the group
+    suggestion computation is run.
+  </summary>
+</histogram>
+
+<histogram name="GroupSuggestionsService.SuggestionsCount" units="counts"
+    expires_after="2026-05-17">
+  <owner>ssid@chromium.org</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    Records the number of group suggestions that are available to show. Logged
+    every time the group suggestion computation is run.
+  </summary>
+</histogram>
+
+<histogram name="GroupSuggestionsService.SuggestionsCountAfterThrottling"
+    units="counts" expires_after="2026-05-17">
+  <owner>ssid@chromium.org</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    Records the number of group suggestions that are available to show after
+    throttling. Logged every time the group suggestion is available to show.
+  </summary>
+</histogram>
+
+<histogram name="GroupSuggestionsService.SuggestionThrottledReason"
+    enum="TabGroupSuggestionThrottleReason" expires_after="2026-03-15">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    Records the reason why the group suggestion is throttled. Logged every time
+    the group suggestion was computed and then throttled.
+  </summary>
+</histogram>
+
+<histogram name="GroupSuggestionsService.SuggestionUiEvent"
+    enum="SuggestionUiEvent" expires_after="2026-05-17">
+  <owner>mfiaz@google.com</owner>
+  <owner>ssid@chromium.org</owner>
+  <owner>salg@google.com</owner>
+  <summary>
+    Records events related to the group suggestion service UI. Logged each time
+    the respective event occurs.
+  </summary>
+</histogram>
+
+<histogram
+    name="GroupSuggestionsService.TabSwitches.PerGroup.{GroupCreationSource}"
+    units="count" expires_after="2026-05-17">
+  <owner>mfiaz@google.com</owner>
+  <owner>ssid@chromium.org</owner>
+  <owner>salg@google.com</owner>
+  <summary>
+    Records the average number of times per group a tab from a tab group was
+    switched to the foreground. This is recorded when the application is
+    stopped. The count is reset when the application is stopped. The source of
+    the suggestion is {GroupCreationSource}.
+  </summary>
+  <token key="GroupCreationSource" variants="GroupCreationSource"/>
+</histogram>
+
+<histogram
+    name="GroupSuggestionsService.TabSwitches.Total.{GroupCreationSource}"
+    units="count" expires_after="2026-05-17">
+  <owner>mfiaz@google.com</owner>
+  <owner>ssid@chromium.org</owner>
+  <owner>salg@google.com</owner>
+  <summary>
+    Records the number of times a tab from a tab group was switched to the
+    foreground. This is recorded when the application is stopped. The count is
+    reset when the application is stopped. The source of the suggestion is
+    {GroupCreationSource}.
+  </summary>
+  <token key="GroupCreationSource" variants="GroupCreationSource"/>
+</histogram>
+
+<histogram
+    name="GroupSuggestionsService.TimeSpent.PerGroup.{GroupCreationSource}"
+    units="ms" expires_after="2026-05-17">
+  <owner>mfiaz@google.com</owner>
+  <owner>ssid@chromium.org</owner>
+  <owner>salg@google.com</owner>
+  <summary>
+    Records the average time spent per group on a tab from a tab group per
+    session. This is recorded when the application is stopped. The count is
+    reset when the application is stopped. The source of the suggestion is
+    {GroupCreationSource}.
+  </summary>
+  <token key="GroupCreationSource" variants="GroupCreationSource"/>
+</histogram>
+
+<histogram name="GroupSuggestionsService.TimeSpent.Total.{GroupCreationSource}"
+    units="ms" expires_after="2026-05-17">
+  <owner>mfiaz@google.com</owner>
+  <owner>ssid@chromium.org</owner>
+  <owner>salg@google.com</owner>
+  <summary>
+    Records the total time spent on a tab from a tab group per session. This is
+    recorded when the application is stopped. The count is reset when the
+    application is stopped. The source of the suggestion is
+    {GroupCreationSource}.
+  </summary>
+  <token key="GroupCreationSource" variants="GroupCreationSource"/>
+</histogram>
+
+<histogram
+    name="GroupSuggestionsService.TopSuggestionContainsLastTab.{ReasonVariant}"
+    enum="Boolean" expires_after="2026-05-17">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    Records whether the top suggestion contains the tab that is in the last
+    position in the tab model. Logged every time the group suggestion is
+    available to show.
+  </summary>
+  <token key="ReasonVariant">
+    <variant name="RecentlyOpened" summary="Recently opened"/>
+    <variant name="SameOrigin" summary="Same origin"/>
+    <variant name="SimilarSource" summary="Similar source"/>
+    <variant name="SwitchedBetween" summary="Switched between"/>
+  </token>
+</histogram>
+
+<histogram name="GroupSuggestionsService.TopSuggestionReason"
+    enum="GroupSuggestionReason" expires_after="2026-05-17">
+  <owner>ssid@chromium.org</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    Records the reason for the top group suggestion. Logged every time the group
+    suggestion is available to show.
+  </summary>
+</histogram>
+
+<histogram name="GroupSuggestionsService.TopSuggestionTabCount" units="counts"
+    expires_after="2026-05-17">
+  <owner>ssid@chromium.org</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    Records the number of tabs in the top group suggestion. Logged every time
+    the group suggestion is available to show.
+  </summary>
+</histogram>
+
+<histogram name="GroupSuggestionsService.TopSuggestionTabCount.{ReasonVariant}"
+    units="counts" expires_after="2026-05-17">
+  <owner>ssid@chromium.org</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    Records the number of tabs in the top group suggestion. Logged every time
+    the group suggestion is available to show.
+  </summary>
+  <token key="ReasonVariant">
+    <variant name="RecentlyOpened" summary="Recently opened"/>
+    <variant name="SameOrigin" summary="Same origin"/>
+    <variant name="SimilarSource" summary="Similar source"/>
+    <variant name="SwitchedBetween" summary="Switched between"/>
+  </token>
+</histogram>
+
+<histogram
+    name="GroupSuggestionsService.TopSuggestionTabIndexAverageGap.{ReasonVariant}"
+    units="counts" expires_after="2026-05-17">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    Records the average index difference between any tab with its adjacent tabs
+    in the top suggestion. This is recorded once per top suggestion, and
+    recorded every time when suggestion is available to show after throttling.
+  </summary>
+  <token key="ReasonVariant">
+    <variant name="RecentlyOpened" summary="Recently opened"/>
+    <variant name="SameOrigin" summary="Same origin"/>
+    <variant name="SimilarSource" summary="Similar source"/>
+    <variant name="SwitchedBetween" summary="Switched between"/>
+  </token>
+</histogram>
+
+<histogram
+    name="GroupSuggestionsService.TopSuggestionTabIndexMaxGap.{ReasonVariant}"
+    units="counts" expires_after="2026-05-17">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    Records the max index difference between any tab with its adjacent tabs in
+    the top suggestion. This is recorded once per top suggestion, and recorded
+    every time when suggestion is available to show after throttling.
+  </summary>
+  <token key="ReasonVariant">
+    <variant name="RecentlyOpened" summary="Recently opened"/>
+    <variant name="SameOrigin" summary="Same origin"/>
+    <variant name="SimilarSource" summary="Similar source"/>
+    <variant name="SwitchedBetween" summary="Switched between"/>
+  </token>
+</histogram>
+
+<histogram
+    name="VisitedURLRanking.Fetch.History.Filter.ZeroDurationVisits.InOutPercentage"
+    units="%" expires_after="2025-08-22">
+  <owner>romanarora@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Records the percentage of history annotated visits that have a visit
+    duration greater than zero milliseconds and that will be leveratged to
+    produce history aggregate data. Logged every time the History URL visit data
+    fetcher executes and the associated features and params are enabled.
+  </summary>
+</histogram>
+
 <histogram name="VisitedURLRanking.Fetch.{Fetcher}.Success"
-    enum="BooleanSuccess" expires_after="2025-03-22">
+    enum="BooleanSuccess" expires_after="2025-08-22">
   <owner>romanarora@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -40,7 +266,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="VisitedURLRanking.Rank.NumVisits" units="counts"
-    expires_after="2025-03-22">
+    expires_after="2025-08-22">
   <owner>romanarora@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -52,7 +278,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="VisitedURLRanking.Request.Step.{Step}.Status"
-    enum="VisitedURLRankingRequestStepStatus" expires_after="2025-03-22">
+    enum="VisitedURLRankingRequestStepStatus" expires_after="2025-08-22">
   <owner>romanarora@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -72,7 +298,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="VisitedURLRanking.ScoredURLAction" enum="ScoredURLUserAction"
-    expires_after="2025-03-22">
+    expires_after="2025-05-25">
   <owner>romanarora@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -87,7 +313,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="VisitedURLRanking.TransformType.{URLVisitAggregatesTransformType}.InOutPercentage"
-    units="%" expires_after="2025-03-22">
+    units="%" expires_after="2025-08-10">
   <owner>romanarora@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -110,12 +336,13 @@ chromium-metrics-reviews@google.com.
     <variant name="SegmentationMetricsData"
         summary="Segmentation metrics data"/>
     <variant name="ShoppingData" summary="Shopping data"/>
+    <variant name="TabEventsData" summary="Tab events data"/>
   </token>
 </histogram>
 
 <histogram
     name="VisitedURLRanking.TransformType.{URLVisitAggregatesTransformType}.Latency"
-    units="ms" expires_after="2025-03-22">
+    units="ms" expires_after="2025-08-22">
   <owner>romanarora@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -125,11 +352,24 @@ chromium-metrics-reviews@google.com.
     the visited url ranking service feature is enabled. Only logged when the
     tranform had data to process and when the transform was successful.
   </summary>
+  <token key="URLVisitAggregatesTransformType">
+    <variant name="BookmarkData" summary="Bookmark data"/>
+    <variant name="DefaultAppUrlFilter" summary="Default app URL filter"/>
+    <variant name="HistoryCategoriesFilter"
+        summary="History caetgories filter"/>
+    <variant name="HistoryVisibilityScoreFilter"
+        summary="History visibility score filter"/>
+    <variant name="None" summary="None"/>
+    <variant name="RecencyFilter" summary="Recency filter"/>
+    <variant name="SegmentationMetricsData"
+        summary="Segmentation metrics data"/>
+    <variant name="ShoppingData" summary="Shopping data"/>
+  </token>
 </histogram>
 
 <histogram
     name="VisitedURLRanking.TransformType.{URLVisitAggregatesTransformType}.Success"
-    enum="BooleanSuccess" expires_after="2025-03-22">
+    enum="BooleanSuccess" expires_after="2025-08-10">
   <owner>romanarora@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>

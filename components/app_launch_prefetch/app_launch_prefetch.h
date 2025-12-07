@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_APP_LAUNCH_PREFETCH_APP_LAUNCH_PREFETCH_H_
 #define COMPONENTS_APP_LAUNCH_PREFETCH_APP_LAUNCH_PREFETCH_H_
 
+#include <stdint.h>
+
 #include "base/command_line.h"
 #include "base/component_export.h"
 
@@ -36,6 +38,12 @@ enum class SubprocessType {
 // `prefetch_type`.
 COMPONENT_EXPORT(APP_LAUNCH_PREFETCH)
 base::CommandLine::StringViewType GetPrefetchSwitch(SubprocessType type);
+
+// Returns the bucket number in the switch which would be added to a command
+// line when launching a process to direct the Windows prefetcher to use the
+// profile indicated by `prefetch_type`.
+COMPONENT_EXPORT(APP_LAUNCH_PREFETCH)
+uint32_t GetPrefetchBucket(SubprocessType type);
 
 }  // namespace app_launch_prefetch
 

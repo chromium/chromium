@@ -28,7 +28,8 @@
             <span id="dragText">$i18n{lensSearchUploadDialogDragTitle}</span>
             <span tabindex="0" role="button" id="uploadText"
                 @click="${this.onUploadFileClick_}"
-                @keydown="${this.onUploadFileKeyDown_}">
+                @keydown="${this.onUploadFileKeyDown_}"
+                @touchend="${this.onUploadFileTouchEnd_}">
               $i18n{lensSearchUploadDialogUploadFileTitle}
             </span>
           </div>
@@ -64,7 +65,7 @@
       <!-- Loading state -->
       ${this.isLoading_ ? html`
         <div id="loadingContainer">
-          <paper-spinner-lite id="loadingSpinner" active></paper-spinner-lite>
+          <div class="spinner"></div>
           <div class="drag-drop-title">
             $i18n{lensSearchUploadDialogLoadingText}
           </div>

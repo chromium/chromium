@@ -1,0 +1,54 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+component("media_app") {
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_MANTIS_MEDIA_APP_IMPL" ]
+  sources = [
+    "mantis_untrusted_service.cc",
+    "mantis_untrusted_service.h",
+    "mantis_untrusted_service_manager.cc",
+    "mantis_untrusted_service_manager.h",
+  ]
+  deps = [
+    "//ash/constants",
+    "//ash/webui/media_app_ui:mojo_bindings_untrusted",
+    "//base",
+    "//chromeos/ash/components/mantis/mojom",
+    "//chromeos/ash/components/mojo_service_manager",
+    "//chromeos/ash/components/specialized_features",
+    "//chromeos/services/machine_learning/public/cpp",
+    "//chromeos/services/machine_learning/public/mojom",
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "mantis_untrusted_service_manager_unittest.cc",
+    "mantis_untrusted_service_unittest.cc",
+  ]
+  deps = [
+    ":media_app",
+    "//ash/constants",
+    "//ash/webui/media_app_ui:mojo_bindings_untrusted",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/mantis/mojom",
+    "//chromeos/ash/components/mojo_service_manager",
+    "//chromeos/ash/components/mojo_service_manager:test_support",
+    "//chromeos/ash/components/specialized_features",
+    "//chromeos/services/machine_learning/public/cpp:stub",
+    "//chromeos/services/machine_learning/public/mojom",
+    "//components/prefs:test_support",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/system",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

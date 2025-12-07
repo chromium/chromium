@@ -10,15 +10,16 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/dom_distiller/content/browser/distiller_javascript_utils.h"
 #include "components/dom_distiller/content/browser/test/test_util.h"
 #include "components/dom_distiller/core/distiller_page.h"
+#include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/proto/distilled_article.pb.h"
 #include "components/dom_distiller/core/proto/distilled_page.pb.h"
 #include "components/dom_distiller/core/viewer.h"
@@ -31,13 +32,14 @@
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
+#include "content/shell/browser/shell_content_browser_client.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/dom_distiller_js/dom_distiller.pb.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/resource/resource_bundle.h"
 
 using content::ContentBrowserTest;
 using testing::ContainsRegex;
@@ -88,11 +90,20 @@ const char* kVideoArticlePath = "/video_article.html";
 
 class DistillerPageWebContentsTest : public ContentBrowserTest {
  public:
+  DistillerPageWebContentsTest() {
+    // TODO(crbug.com/427898374): Add integration tests for readability.
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{}, {kReaderModeUseReadability});
+  }
+
   // ContentBrowserTest:
   void SetUpOnMainThread() override {
     if (!DistillerJavaScriptWorldIdIsSet()) {
       SetDistillerJavaScriptWorldId(content::ISOLATED_WORLD_ID_CONTENT_END);
     }
+    content::ShellContentBrowserClient::Get()
+        ->set_create_throttles_for_navigation_callback(base::BindRepeating(
+            &dom_distiller::DistillerPageWebContents::MaybeCreateAndAddNavigationThrottle));
     AddComponentsResources();
     SetUpTestServer(embedded_test_server());
     ContentBrowserTest::SetUpOnMainThread();
@@ -119,6 +130,7 @@ class DistillerPageWebContentsTest : public ContentBrowserTest {
   void RunUseCurrentWebContentsTest(const std::string& url,
                                     bool expect_new_web_contents,
                                     bool wait_for_document_loaded);
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   raw_ptr<DistillerPageWebContents, DanglingUntriaged> distiller_page_;
   std::unique_ptr<proto::DomDistillerResult> distiller_result_;
@@ -143,6 +155,7 @@ class TestDistillerPageWebContents : public DistillerPageWebContents {
     ASSERT_EQ(true, expect_new_web_contents_);
     new_web_contents_created_ = true;
     DistillerPageWebContents::CreateNewWebContents(url);
+    EXPECT_TRUE(GetUserDataForTesting());
   }
 
   bool new_web_contents_created() { return new_web_contents_created_; }
@@ -286,6 +299,33 @@ IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
     EXPECT_THAT(distiller_result_->distilled_content().html(),
                 Not(HasSubstr("Lorem ipsum")));
   }
+}
+
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DistillerContentsIgnoreRedirects \
+  DISABLED_DistillerContentsIgnoreRedirects
+#else
+#define MAYBE_DistillerContentsIgnoreRedirects DistillerContentsIgnoreRedirects
+#endif
+IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
+                       MAYBE_DistillerContentsIgnoreRedirects) {
+  GURL article_url(embedded_test_server()->GetURL(kSimpleArticlePath));
+  std::string redirect_path = "/server-redirect?" + article_url.spec();
+
+  DistillerPageWebContents distiller_page(
+      shell()->web_contents()->GetBrowserContext(),
+      shell()->web_contents()->GetContainerBounds().size(),
+      std::unique_ptr<SourcePageHandleWebContents>());
+  distiller_page_ = &distiller_page;
+
+  base::RunLoop run_loop;
+  DistillPage(run_loop.QuitClosure(), redirect_path);
+  run_loop.Run();
+
+  // If redirects were allowed, simple_article would be distilled and we would
+  // have a title. Since redirects are blocked by the throttle, distillation
+  // fails and the title is empty.
+  EXPECT_EQ("", distiller_result_->title());
 }
 
 #if BUILDFLAG(IS_WIN)

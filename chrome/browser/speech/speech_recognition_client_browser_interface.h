@@ -12,14 +12,9 @@
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 
 class PrefChangeRegistrar;
 class PrefService;
-
-namespace captions {
-class LiveCaptionController;
-}  // namespace captions
 
 namespace content {
 class BrowserContext;
@@ -48,13 +43,12 @@ class SpeechRecognitionClientBrowserInterface
   void BindSpeechRecognitionBrowserObserver(
       mojo::PendingRemote<media::mojom::SpeechRecognitionBrowserObserver>
           pending_remote) override;
-  void BindRecognizerToRemoteClient(
-      mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizerClient>
-          client_receiver,
-      mojo::PendingReceiver<media::mojom::SpeechRecognitionSurfaceClient>
-          host_receiver,
-      mojo::PendingRemote<media::mojom::SpeechRecognitionSurface> origin_remote,
-      media::mojom::SpeechRecognitionSurfaceMetadataPtr metadata) override;
+  void REMOVED_1() override;
+#if BUILDFLAG(IS_CHROMEOS)
+  void REMOVED_2(
+      mojo::PendingRemote<media::mojom::SpeechRecognitionBrowserObserver>
+          pending_remote) override;
+#endif
 
   // SodaInstaller::Observer:
   void OnSodaInstalled(speech::LanguageCode language_code) override;
@@ -65,23 +59,27 @@ class SpeechRecognitionClientBrowserInterface
       speech::SodaInstaller::ErrorCode error_code) override {}
 
  private:
-  void OnSpeechRecognitionAvailabilityChanged();
-  void OnSpeechRecognitionLanguageChanged();
   void OnSpeechRecognitionMaskOffensiveWordsChanged();
-  void NotifyObservers(bool enabled);
+
+  // Live Caption Event handling
+  void OnLiveCaptionAvailabilityChanged();
+  void OnLiveCaptionLanguageChanged();
+
+  // Notify our observers whether recognition is enabled or not, if the correct
+  // language pack is installed.  If not, then defer until it is.
+  void NotifyLiveCaptionObserversIfNeeded();
 
   mojo::RemoteSet<media::mojom::SpeechRecognitionBrowserObserver>
-      speech_recognition_availibility_observers_;
+      live_caption_availibility_observers_;
+
+  mojo::RemoteSet<media::mojom::SpeechRecognitionBrowserObserver>
+      babel_orca_availability_observers_;
 
   mojo::ReceiverSet<media::mojom::SpeechRecognitionClientBrowserInterface>
       speech_recognition_client_browser_interface_;
 
-  mojo::UniqueReceiverSet<media::mojom::SpeechRecognitionRecognizerClient>
-      ui_drivers_;
-
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   raw_ptr<PrefService> profile_prefs_;
-  raw_ptr<captions::LiveCaptionController> controller_;
 };
 
 }  // namespace speech

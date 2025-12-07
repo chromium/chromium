@@ -11,35 +11,47 @@
 
 #include "base/memory/weak_ptr.h"
 #include "remoting/protocol/ice_config.h"
+#include "remoting/protocol/network_settings.h"
 #include "remoting/protocol/transport_context.h"
+#include "third_party/webrtc/api/environment/environment.h"
 #include "third_party/webrtc/p2p/client/basic_port_allocator.h"
 
 namespace remoting::protocol {
 
-class PortAllocator : public cricket::BasicPortAllocator {
+class PortAllocator : public webrtc::BasicPortAllocator {
  public:
-  PortAllocator(std::unique_ptr<rtc::NetworkManager> network_manager,
-                std::unique_ptr<rtc::PacketSocketFactory> socket_factory,
+  PortAllocator(const webrtc::Environment& webrtc_env,
+                std::unique_ptr<webrtc::NetworkManager> network_manager,
+                std::unique_ptr<webrtc::PacketSocketFactory> socket_factory,
                 scoped_refptr<TransportContext> transport_context);
   ~PortAllocator() override;
+
+  void ApplyNetworkSettings(const NetworkSettings& network_settings);
 
   scoped_refptr<TransportContext> transport_context() {
     return transport_context_;
   }
 
-  cricket::PortAllocatorSession* CreateSessionInternal(
+  webrtc::PortAllocatorSession* CreateSessionInternal(
       std::string_view content_name,
       int component,
       std::string_view ice_ufrag,
       std::string_view ice_pwd) override;
 
+  base::WeakPtr<PortAllocator> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
-  std::unique_ptr<rtc::NetworkManager> network_manager_;
-  std::unique_ptr<rtc::PacketSocketFactory> socket_factory_;
+  std::unique_ptr<webrtc::NetworkManager> network_manager_;
+  std::unique_ptr<webrtc::PacketSocketFactory> socket_factory_;
   scoped_refptr<TransportContext> transport_context_;
+  bool network_settings_applied_ = false;
+
+  base::WeakPtrFactory<PortAllocator> weak_factory_{this};
 };
 
-class PortAllocatorSession : public cricket::BasicPortAllocatorSession {
+class PortAllocatorSession : public webrtc::BasicPortAllocatorSession {
  public:
   PortAllocatorSession(PortAllocator* allocator,
                        const std::string& content_name,
@@ -50,7 +62,7 @@ class PortAllocatorSession : public cricket::BasicPortAllocatorSession {
 
  private:
   bool relay_enabled() {
-    return !(flags() & cricket::PORTALLOCATOR_DISABLE_RELAY);
+    return !(flags() & webrtc::PORTALLOCATOR_DISABLE_RELAY);
   }
 
   // BasicPortAllocatorSession overrides.
@@ -61,7 +73,7 @@ class PortAllocatorSession : public cricket::BasicPortAllocatorSession {
 
   // Creates PortConfiguration that includes STUN and TURN servers from
   // |ice_config_|.
-  std::unique_ptr<cricket::PortConfiguration> GetPortConfiguration();
+  std::unique_ptr<webrtc::PortConfiguration> GetPortConfiguration();
 
   scoped_refptr<TransportContext> transport_context_;
 

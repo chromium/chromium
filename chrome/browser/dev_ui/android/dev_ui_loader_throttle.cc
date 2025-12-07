@@ -17,6 +17,7 @@
 #include "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/common/buildflags.h"
 #include "content/public/common/url_constants.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "net/base/net_errors.h"
@@ -95,32 +96,39 @@ namespace dev_ui {
 
 // static
 bool DevUiLoaderThrottle::ShouldInstallDevUiDfm(const GURL& url) {
+#if BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND)
+  if (url.SchemeIs(content::kChromeDevToolsScheme)) {
+    return true;
+  }
+#endif
   return url.SchemeIs(content::kChromeUIScheme) &&
-         IsWebUiHostInDevUiDfm(url.host());
+         IsWebUiHostInDevUiDfm(url.GetHost());
 }
 
 // static
-std::unique_ptr<content::NavigationThrottle>
-DevUiLoaderThrottle::MaybeCreateThrottleFor(content::NavigationHandle* handle) {
+void DevUiLoaderThrottle::MaybeCreateAndAdd(
+    content::NavigationThrottleRegistry& registry) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(handle);
-  if (!handle->IsInPrimaryMainFrame())
-    return nullptr;
+  auto& handle = registry.GetNavigationHandle();
+  if (!handle.IsInPrimaryMainFrame()) {
+    return;
+  }
 
-  if (!ShouldInstallDevUiDfm(handle->GetURL()))
-    return nullptr;
+  if (!ShouldInstallDevUiDfm(handle.GetURL())) {
+    return;
+  }
 
   if (dev_ui::DevUiModuleProvider::GetInstance()->ModuleInstalled()) {
     dev_ui::DevUiModuleProvider::GetInstance()->EnsureLoaded();
-    return nullptr;
+    return;
   }
 
-  return std::make_unique<DevUiLoaderThrottle>(handle);
+  registry.AddThrottle(std::make_unique<DevUiLoaderThrottle>(registry));
 }
 
 DevUiLoaderThrottle::DevUiLoaderThrottle(
-    content::NavigationHandle* navigation_handle)
-    : content::NavigationThrottle(navigation_handle) {}
+    content::NavigationThrottleRegistry& registry)
+    : content::NavigationThrottle(registry) {}
 
 DevUiLoaderThrottle::~DevUiLoaderThrottle() = default;
 

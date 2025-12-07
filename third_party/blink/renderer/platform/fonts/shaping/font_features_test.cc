@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/fonts/shaping/font_features.h"
 
+#include <hb.h>
+
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
@@ -12,7 +14,21 @@ namespace blink {
 
 namespace {
 
+//
+// Tests that need `RenderingTest` such as `IsInitial()` are in
+// `InlineNodeTest.FontFeature*'.
+//
 class FontFeaturesTest : public testing::Test {};
+
+std::optional<uint32_t> FindValue(uint32_t tag,
+                                  const FontFeatureRanges& features) {
+  for (const FontFeatureRange& feature : features) {
+    if (feature.tag == tag) {
+      return feature.value;
+    }
+  }
+  return std::nullopt;
+}
 
 static const FontOrientation orientations[] = {
     FontOrientation::kHorizontal,
@@ -39,14 +55,14 @@ TEST_P(FontFeaturesByOrientationTest, EastAsianContextualSpacingOnByDefault) {
   constexpr hb_tag_t vchw = HB_TAG('v', 'c', 'h', 'w');
   FontDescription font_description;
   font_description.SetOrientation(GetOrientation());
-  FontFeatures features;
-  features.Initialize(font_description);
+  FontFeatureRanges features;
+  FontFeatureRange::FromFontDescription(font_description, features);
   if (IsHorizontal()) {
-    EXPECT_EQ(features.FindValueForTesting(chws), 1u);
-    EXPECT_EQ(features.FindValueForTesting(vchw), std::nullopt);
+    EXPECT_EQ(FindValue(chws, features), 1u);
+    EXPECT_EQ(FindValue(vchw, features), std::nullopt);
   } else {
-    EXPECT_EQ(features.FindValueForTesting(chws), std::nullopt);
-    EXPECT_EQ(features.FindValueForTesting(vchw), 1u);
+    EXPECT_EQ(FindValue(chws, features), std::nullopt);
+    EXPECT_EQ(FindValue(vchw, features), 1u);
   }
 }
 
@@ -61,14 +77,14 @@ TEST_P(FontFeaturesByOrientationTest,
     FontDescription font_description;
     font_description.SetOrientation(GetOrientation());
     font_description.SetFeatureSettings(settings);
-    FontFeatures features;
-    features.Initialize(font_description);
+    FontFeatureRanges features;
+    FontFeatureRange::FromFontDescription(font_description, features);
     if (IsHorizontal()) {
-      EXPECT_EQ(features.FindValueForTesting(chws), value);
-      EXPECT_EQ(features.FindValueForTesting(vchw), std::nullopt);
+      EXPECT_EQ(FindValue(chws, features), value);
+      EXPECT_EQ(FindValue(vchw, features), std::nullopt);
     } else {
-      EXPECT_EQ(features.FindValueForTesting(chws), std::nullopt);
-      EXPECT_EQ(features.FindValueForTesting(vchw), value);
+      EXPECT_EQ(FindValue(chws, features), std::nullopt);
+      EXPECT_EQ(FindValue(vchw, features), value);
     }
   }
 }
@@ -88,16 +104,16 @@ TEST_P(FontFeaturesByOrientationTest,
     FontDescription font_description;
     font_description.SetOrientation(GetOrientation());
     font_description.SetFeatureSettings(settings);
-    FontFeatures features;
-    features.Initialize(font_description);
-    EXPECT_EQ(features.FindValueForTesting(chws), std::nullopt);
-    EXPECT_EQ(features.FindValueForTesting(vchw), std::nullopt);
+    FontFeatureRanges features;
+    FontFeatureRange::FromFontDescription(font_description, features);
+    EXPECT_EQ(FindValue(chws, features), std::nullopt);
+    EXPECT_EQ(FindValue(vchw, features), std::nullopt);
   }
 }
 
 // Test the current behavior when multiple glyph-width GPOS features are set via
-// `FontFeatureSettings`. Current |FontFeatures| does not resolve conflicts,
-// just pass them all as specified to HarfBuzz.
+// `FontFeatureSettings`. Current |FontFeatureRanges| does not resolve
+// conflicts, just pass them all as specified to HarfBuzz.
 TEST_P(FontFeaturesByOrientationTest, MultipleGlyphWidthGPOS) {
   const hb_tag_t tags[] = {
       HB_TAG('c', 'h', 'w', 's'), HB_TAG('v', 'c', 'h', 'w'),
@@ -110,11 +126,11 @@ TEST_P(FontFeaturesByOrientationTest, MultipleGlyphWidthGPOS) {
   FontDescription font_description;
   font_description.SetOrientation(GetOrientation());
   font_description.SetFeatureSettings(settings);
-  FontFeatures features;
-  features.Initialize(font_description);
+  FontFeatureRanges features;
+  FontFeatureRange::FromFontDescription(font_description, features);
   // Check all features are enabled.
   for (const hb_tag_t tag : tags)
-    EXPECT_EQ(features.FindValueForTesting(tag), 1u);
+    EXPECT_EQ(FindValue(tag, features), 1u);
 }
 
 }  // namespace

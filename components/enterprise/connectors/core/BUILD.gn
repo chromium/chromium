@@ -4,36 +4,79 @@
 
 import("//build/config/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+}
 
 source_set("core") {
   sources = [
+    "analysis_service_settings_base.cc",
+    "analysis_service_settings_base.h",
     "analysis_settings.cc",
     "analysis_settings.h",
     "common.cc",
     "common.h",
+    "connectors_manager_base.cc",
+    "connectors_manager_base.h",
     "connectors_prefs.cc",
     "connectors_prefs.h",
     "connectors_service_base.cc",
     "connectors_service_base.h",
+    "content_analysis_delegate_base.h",
+    "content_analysis_info_base.h",
+    "content_area_user_provider.cc",
+    "content_area_user_provider.h",
     "enterprise_connectors_policy_handler.cc",
     "enterprise_connectors_policy_handler.h",
-    "reporting_constants.h",
+    "enterprise_interstitial_base.cc",
+    "enterprise_interstitial_base.h",
+    "enterprise_interstitial_util.cc",
+    "enterprise_interstitial_util.h",
+    "features.cc",
+    "features.h",
+    "realtime_reporting_client_base.cc",
+    "realtime_reporting_client_base.h",
+    "reporting_event_router.cc",
+    "reporting_event_router.h",
     "reporting_service_settings.cc",
     "reporting_service_settings.h",
+    "reporting_utils.cc",
+    "reporting_utils.h",
+    "service_provider_config.cc",
+    "service_provider_config.h",
   ]
 
-  public_deps = [ "//components/enterprise/common/proto:connectors_proto" ]
+  public_deps = [
+    ":constants",
+    "//components/download/public/common:public",
+    "//components/enterprise/common/proto:connectors_proto",
+  ]
 
   deps = [
     "//base",
     "//build:blink_buildflags",
+    "//components/enterprise",
     "//components/enterprise/buildflags",
-    "//components/enterprise/connectors",
+    "//components/enterprise/common/proto:browser_events_proto",
+    "//components/enterprise/common/proto:chrome_reporting_entity",
+    "//components/enterprise/common/proto:upload_request_response",
+    "//components/enterprise/device_trust",
+    "//components/enterprise/obfuscation/core:enterprise_obfuscation",
+    "//components/keyed_service/core",
     "//components/policy/core/browser",
     "//components/policy/core/common",
     "//components/prefs",
+    "//components/safe_browsing/core/common:features",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/safe_browsing/core/common/proto:realtimeapi_proto",
+    "//components/security_interstitials/core",
+    "//components/security_interstitials/core:unsafe_resource",
+    "//components/signin/public/identity_manager",
     "//components/strings:components_strings_grit",
+    "//components/url_matcher",
+    "//ui/base",
+    "//ui/base/clipboard:clipboard_types",
     "//ui/gfx/range",
   ]
 
@@ -44,28 +87,165 @@ source_set("core") {
   if (enterprise_client_certificates) {
     deps += [ "//components/enterprise/client_certificates/core" ]
   }
+
+  if (enterprise_data_controls) {
+    deps += [ "//components/enterprise/data_controls/core/browser" ]
+  }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
+
+source_set("cloud_content_scanning") {
+  sources = [
+    "cloud_content_scanning/common.cc",
+    "cloud_content_scanning/common.h",
+    "cloud_content_scanning/connector_data_pipe_getter.cc",
+    "cloud_content_scanning/connector_data_pipe_getter.h",
+    "cloud_content_scanning/connector_upload_request.cc",
+    "cloud_content_scanning/connector_upload_request.h",
+    "cloud_content_scanning/multipart_uploader_base.cc",
+    "cloud_content_scanning/multipart_uploader_base.h",
+    "cloud_content_scanning/resumable_uploader_base.cc",
+    "cloud_content_scanning/resumable_uploader_base.h",
+  ]
+  deps = [
+    "//base",
+    "//components/enterprise/connectors/core",
+    "//components/enterprise/obfuscation/core:enterprise_obfuscation",
+    "//components/file_access",
+    "//components/safe_browsing/core/common",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+  ]
+}
+
+source_set("constants") {
+  sources = [
+    "reporting_constants.cc",
+    "reporting_constants.h",
+  ]
+  deps = [
+    "//base",
+    "//components/enterprise/common/proto:chrome_reporting_entity",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "analysis_test_utils.cc",
+    "analysis_test_utils.h",
+    "realtime_reporting_test_environment.cc",
+    "realtime_reporting_test_environment.h",
+    "realtime_reporting_test_server.cc",
+    "realtime_reporting_test_server.h",
+    "reporting_test_utils.cc",
+    "reporting_test_utils.h",
+    "uploader_test_utils.cc",
+    "uploader_test_utils.h",
+  ]
+
+  deps = [
+    ":cloud_content_scanning",
+    ":core",
+    "//base/test:test_support",
+    "//components/enterprise",
+    "//components/enterprise/buildflags",
+    "//components/enterprise/common/proto:browser_events_proto",
+    "//components/enterprise/common/proto:chrome_reporting_entity",
+    "//components/enterprise/common/proto:upload_request_response",
+    "//components/policy/core/common:common_constants",
+    "//components/policy/core/common:test_support",
+    "//components/policy/proto",
+    "//components/policy/test_support",
+    "//components/prefs",
+    "//net",
+    "//net:test_support",
+    "//testing/gmock",
+    "//url",
+  ]
+
+  if (enterprise_data_controls) {
+    deps += [ "//components/enterprise/data_controls/core/browser" ]
+  }
 }
 
 source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "analysis_service_settings_base_unittest.cc",
+    "connectors_manager_base_unittest.cc",
     "connectors_service_base_unittest.cc",
     "enterprise_connectors_policy_handler_unittest.cc",
     "reporting_service_settings_unittest.cc",
+    "reporting_utils_unittest.cc",
+    "service_provider_config_unittest.cc",
   ]
 
   public_deps = [ ":core" ]
 
   deps = [
     "//base",
-    "//components/enterprise/connectors",
+    "//base/test:test_support",
+    "//components/enterprise/common/proto:browser_events_proto",
+    "//components/enterprise/connectors/core:test_support",
+    "//components/enterprise/obfuscation/core:enterprise_obfuscation",
     "//components/policy/core/browser",
     "//components/policy/core/common",
     "//components/prefs",
     "//components/prefs:test_support",
+    "//components/safe_browsing/core/common:features",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//net",
     "//testing/gtest",
     "//url",
   ]
+}
+
+source_set("cloud_content_scanning_unittests") {
+  testonly = true
+
+  sources = [
+    "cloud_content_scanning/connector_data_pipe_getter_unittest.cc",
+    "cloud_content_scanning/multipart_uploader_base_unittest.cc",
+    "cloud_content_scanning/resumable_uploader_base_unittest.cc",
+  ]
+
+  public_deps = [ ":cloud_content_scanning" ]
+
+  deps = [
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/enterprise/common/proto:connectors_proto",
+    "//components/enterprise/connectors/core",
+    "//components/enterprise/connectors/core:test_support",
+    "//components/enterprise/obfuscation/core:enterprise_obfuscation",
+    "//components/file_access:test_support",
+    "//components/prefs",
+    "//net",
+    "//net/traffic_annotation:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+if (is_android) {
+  android_library("connectors_java_enums") {
+    srcjar_deps = [ ":connectors_java_enums_srcjar" ]
+
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+  }
+
+  java_cpp_enum("connectors_java_enums_srcjar") {
+    sources = [ "common.h" ]
+  }
 }

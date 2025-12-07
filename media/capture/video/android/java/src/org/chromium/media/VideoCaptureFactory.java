@@ -7,6 +7,9 @@ package org.chromium.media;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * This class implements a factory of Android Video Capture objects for Chrome. Cameras are
  * identified by |id|. Video Capture objects allocated via createVideoCapture() are explicitly owned
@@ -14,18 +17,11 @@ import org.jni_zero.JNINamespace;
  */
 @JNINamespace("media")
 @SuppressWarnings("deprecation")
+@NullMarked
 class VideoCaptureFactory {
-    @CalledByNative
-    static boolean isLegacyOrDeprecatedDevice(int id) {
-        return VideoCaptureCamera2.isLegacyDevice(id);
-    }
-
     // Factory methods.
     @CalledByNative
     static VideoCapture createVideoCapture(int id, long nativeVideoCaptureDeviceAndroid) {
-        if (isLegacyOrDeprecatedDevice(id)) {
-            return new VideoCaptureCamera(id, nativeVideoCaptureDeviceAndroid);
-        }
         return new VideoCaptureCamera2(id, nativeVideoCaptureDeviceAndroid);
     }
 
@@ -36,49 +32,31 @@ class VideoCaptureFactory {
 
     @CalledByNative
     static int getCaptureApiType(int index) {
-        if (isLegacyOrDeprecatedDevice(index)) {
-            return VideoCaptureCamera.getCaptureApiType(index);
-        }
         return VideoCaptureCamera2.getCaptureApiType(index);
     }
 
     @CalledByNative
     static boolean isZoomSupported(int index) {
-        if (isLegacyOrDeprecatedDevice(index)) {
-            return VideoCaptureCamera.isZoomSupported(index);
-        }
         return VideoCaptureCamera2.isZoomSupported(index);
     }
 
     @CalledByNative
     static int getFacingMode(int index) {
-        if (isLegacyOrDeprecatedDevice(index)) {
-            return VideoCaptureCamera.getFacingMode(index);
-        }
         return VideoCaptureCamera2.getFacingMode(index);
     }
 
     @CalledByNative
-    static String getDeviceId(int index) {
-        if (isLegacyOrDeprecatedDevice(index)) {
-            return VideoCaptureCamera.getDeviceId(index);
-        }
+    static @Nullable String getDeviceId(int index) {
         return VideoCaptureCamera2.getDeviceId(index);
     }
 
     @CalledByNative
-    static String getDeviceName(int index) {
-        if (isLegacyOrDeprecatedDevice(index)) {
-            return VideoCaptureCamera.getName(index);
-        }
+    static @Nullable String getDeviceName(int index) {
         return VideoCaptureCamera2.getName(index);
     }
 
     @CalledByNative
-    static VideoCaptureFormat[] getDeviceSupportedFormats(int index) {
-        if (isLegacyOrDeprecatedDevice(index)) {
-            return VideoCaptureCamera.getDeviceSupportedFormats(index);
-        }
+    static VideoCaptureFormat @Nullable [] getDeviceSupportedFormats(int index) {
         return VideoCaptureCamera2.getDeviceSupportedFormats(index);
     }
 

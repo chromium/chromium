@@ -37,6 +37,13 @@ struct atomic<shared_ptr<T> > {
   atomic& operator=(atomic&&) = delete;
 };
 
+// Fake unique_ptr for unsafe buffers tests.
+template <typename T>
+class unique_ptr {
+ public:
+  int& operator[](unsigned index);
+};
+
 }  // namespace std
 
 #endif  // TOOLS_CLANG_PLUGINS_TESTS_SYSTEM_MEMORY_

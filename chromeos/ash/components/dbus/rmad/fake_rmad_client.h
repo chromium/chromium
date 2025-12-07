@@ -90,7 +90,8 @@ class COMPONENT_EXPORT(RMAD) FakeRmadClient : public RmadClient {
   void TriggerExternalDiskStateObservation(bool detected_);
   void TriggerHardwareVerificationResultObservation(
       bool is_compliant,
-      const std::string& error_str);
+      const std::string& error_str,
+      bool is_skipped);
   void TriggerFinalizationProgressObservation(
       rmad::FinalizeStatus::Status status,
       double progress,

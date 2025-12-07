@@ -4,17 +4,17 @@
 
 /**
  * @fileoverview Test access into the Child Frame Registration lib.
+ * Requires functions in child_frame_registration_lib.ts.
  */
 
 import {processChildFrameMessage, registerChildFrame} from '//components/autofill/ios/form_util/resources/child_frame_registration_lib.js';
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 /**
  * Calls registerChildFrame on each frame in the document. This is a convenience
  * method for testing from the C++ layer.
  * @return {string[]} The list of remote IDs sent to the child frames.
  */
-function registerAllChildFrames(): string[] {
+export function registerAllChildFrames(): string[] {
   const ids: string[] = [];
   for (const frame of document.getElementsByTagName('iframe')) {
     ids.push(registerChildFrame((frame as HTMLIFrameElement)));
@@ -23,8 +23,3 @@ function registerAllChildFrames(): string[] {
 }
 
 window.addEventListener('message', processChildFrameMessage);
-
-gCrWeb.childFrameRegistrationTesting = {
-  registerChildFrame,
-  registerAllChildFrames,
-};

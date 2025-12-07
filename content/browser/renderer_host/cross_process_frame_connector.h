@@ -10,10 +10,12 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "cc/input/touch_action.h"
+#include "components/input/child_frame_input_helper.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/visibility.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
@@ -25,7 +27,6 @@
 
 namespace blink {
 struct FrameVisualProperties;
-class WebGestureEvent;
 }  // namespace blink
 
 namespace cc {
@@ -41,7 +42,6 @@ class Cursor;
 }
 
 namespace viz {
-class SurfaceId;
 class SurfaceInfo;
 }  // namespace viz
 
@@ -87,7 +87,8 @@ class RenderWidgetHostViewChildFrame;
 // SiteInstance, A2 in the picture above. When a child frame navigates in a new
 // process, SetView() is called to update to the new view.
 //
-class CONTENT_EXPORT CrossProcessFrameConnector {
+class CONTENT_EXPORT CrossProcessFrameConnector
+    : public input::ChildFrameInputHelper::Delegate {
  public:
   // |frame_proxy_in_parent_renderer| corresponds to A2 in the example above.
   explicit CrossProcessFrameConnector(
@@ -97,7 +98,7 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   CrossProcessFrameConnector& operator=(const CrossProcessFrameConnector&) =
       delete;
 
-  virtual ~CrossProcessFrameConnector();
+  ~CrossProcessFrameConnector() override;
 
   // |view| corresponds to B2's RenderWidgetHostViewChildFrame in the example
   // above.
@@ -129,7 +130,11 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
       const blink::FrameVisualProperties& visual_properties,
       bool propagate = true);
 
-  double zoom_level() const { return last_received_zoom_level_; }
+  // ChildFrameInputHelper::Delegate implementation.
+  input::RenderWidgetHostViewInput* GetParentViewInput() override;
+  input::RenderWidgetHostViewInput* GetRootViewInput() override;
+
+  double css_zoom_factor() const { return last_received_css_zoom_factor_; }
 
   // Return the size of the CompositorFrame to use in the child renderer.
   const gfx::Size& local_frame_size_in_pixels() const {
@@ -154,40 +159,6 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   // Request that the platform change the mouse cursor when the mouse is
   // positioned over this view's content.
   void UpdateCursor(const ui::Cursor& cursor);
-
-  // Given a point in the current view's coordinate space, return the same
-  // point transformed into the coordinate space of the top-level view's
-  // coordinate space.
-  gfx::PointF TransformPointToRootCoordSpace(const gfx::PointF& point,
-                                             const viz::SurfaceId& surface_id);
-
-  // Transform a point into the coordinate space of the root
-  // RenderWidgetHostView, for the current view's coordinate space.
-  // Returns false if |target_view| and |view_| do not have the same root
-  // RenderWidgetHostView. RenderWidgetHostViewInput is the abstract class that
-  // defines the interface for handling user input and is one to one with
-  // RenderWidgetHostViewBase in the browser.
-  bool TransformPointToCoordSpaceForView(
-      const gfx::PointF& point,
-      input::RenderWidgetHostViewInput* target_view,
-      const viz::SurfaceId& local_surface_id,
-      gfx::PointF* transformed_point);
-
-  // Pass acked touchpad pinch or double tap gesture events to the root view
-  // for processing.
-  void ForwardAckedTouchpadZoomEvent(
-      const blink::WebGestureEvent& event,
-      blink::mojom::InputEventResultSource ack_source,
-      blink::mojom::InputEventResultState ack_result);
-
-  // A gesture scroll sequence that is not consumed by a child must be bubbled
-  // to ancestors who may consume it.
-  // Returns false if the scroll event could not be bubbled. The caller must
-  // not attempt to bubble the rest of the scroll sequence in this case.
-  // Otherwise, returns true.
-  // Made virtual for test override.
-  [[nodiscard]] virtual bool BubbleScrollEvent(
-      const blink::WebGestureEvent& event);
 
   // These values are written to logs. Do not renumber or delete existing items;
   // add new entries to the end of the list.
@@ -279,9 +250,6 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
 
   bool has_size() const { return has_size_; }
 
-  void DidAckGestureEvent(const blink::WebGestureEvent& event,
-                          blink::mojom::InputEventResultState ack_result);
-
   // Called by RenderWidgetHostViewChildFrame to update the visibility of any
   // nested child RWHVCFs inside it.
   void SetVisibilityForChildViews(bool visible) const;
@@ -341,7 +309,8 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   bool IsVisible();
 
   // This function is called by the RenderFrameHostDelegate to signal that it
-  // became visible.
+  // became visible. This is called after any navigations resulting from
+  // visibility changes have been queued (e.g. if needs-reload was set).
   void DelegateWasShown();
 
   // Handlers for messages received from the parent frame.
@@ -354,6 +323,9 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
       base::OnceClosure closure) {
     child_frame_crash_shown_closure_for_testing_ = std::move(closure);
   }
+
+  // Returns the embedder's visibility.
+  Visibility EmbedderVisibility();
 
  protected:
   friend class MockCrossProcessFrameConnector;
@@ -440,6 +412,9 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   // The last zoom level received from parent renderer, which is used to check
   // if a new surface is created in case of zoom level change.
   double last_received_zoom_level_ = 0.0;
+
+  // Represents CSS zoom applied to the embedding element in the parent.
+  double last_received_css_zoom_factor_ = 1.0;
 
   // Closure that will be run whenever a sad frame is shown and its visibility
   // metrics have been logged. Used for testing only.

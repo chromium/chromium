@@ -159,8 +159,7 @@ std::unique_ptr<StylusWritingGesture> CreateGesture(
           text_alternative, gesture_data->granularity);
     }
     default: {
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
     }
   }
 }
@@ -414,9 +413,7 @@ bool StylusWritingGestureRemoveSpaces::MaybeApplyGesture(LocalFrame* frame) {
 
   InputMethodController& input_method_controller =
       frame->GetInputMethodController();
-  input_method_controller.ReplaceTextAndMoveCaret(
-      "", space_range.value(),
-      InputMethodController::MoveCaretBehavior::kDoNotMove);
+  input_method_controller.ReplaceTextAndKeepSelection("", space_range.value());
   input_method_controller.SetEditableSelectionOffsets(
       PlainTextRange(space_range->Start(), space_range->Start()));
   return true;
@@ -441,7 +438,8 @@ bool StylusWritingGestureSelect::MaybeApplyGesture(LocalFrame* frame) {
   // Select the text between offsets.
   InputMethodController& input_method_controller =
       frame->GetInputMethodController();
-  input_method_controller.SetEditableSelectionOffsets(gesture_range.value());
+  input_method_controller.SetEditableSelectionOffsets(
+      gesture_range.value(), /*show_handle=*/true, /*show_context_menu=*/true);
   return true;
 }
 
@@ -535,9 +533,8 @@ bool StylusWritingGestureSplitOrMerge::MaybeApplyGesture(LocalFrame* frame) {
   }
 
   // Remove spaces found.
-  input_method_controller.ReplaceTextAndMoveCaret(
-      "", PlainTextRange(space_start, space_end),
-      InputMethodController::MoveCaretBehavior::kDoNotMove);
+  input_method_controller.ReplaceTextAndKeepSelection(
+      "", PlainTextRange(space_start, space_end));
   input_method_controller.SetEditableSelectionOffsets(
       PlainTextRange(space_start, space_start));
   return true;

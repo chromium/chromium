@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_image_resource_style_image.h"
+#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/list/layout_inline_list_item.h"
@@ -93,8 +94,7 @@ int ListMarker::ListItemValue(const LayoutObject& list_item) const {
   if (auto* inline_list_item = DynamicTo<LayoutInlineListItem>(list_item)) {
     return inline_list_item->Value();
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 // If the value of ListStyleType changed, we need to update the marker text.
@@ -211,8 +211,7 @@ ListMarker::MarkerTextType ListMarker::MarkerText(
       return kOrdinalValue;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return kStatic;
+  NOTREACHED();
 }
 
 String ListMarker::MarkerTextWithSuffix(const LayoutObject& marker) const {
@@ -234,8 +233,23 @@ String ListMarker::TextAlternative(const LayoutObject& marker) const {
   DCHECK_NE(marker_text_type_, kUnresolved);
   // For accessibility, return the marker string in the logical order even in
   // RTL, reflecting speech order.
-  if (marker_text_type_ == kNotText)
-    return MarkerTextWithSuffix(marker);
+  if (marker_text_type_ == kNotText) {
+    String text = MarkerTextWithSuffix(marker);
+    if (!text.empty()) {
+      return text;
+    }
+
+    // Pseudo-element list markers may return empty text as their text
+    // alternative, so obtain the text from its child as a fallback mechanism.
+    auto* text_child = GetContentChild(marker);
+    if (text_child && !text_child->NextSibling() &&
+        IsA<LayoutTextFragment>(text_child)) {
+      return GetTextChild(marker).PlainText();
+    }
+
+    // The fallback is not present, so return the original empty text.
+    return text;
+  }
 
   if (RuntimeEnabledFeatures::CSSAtRuleCounterStyleSpeakAsDescriptorEnabled()) {
     StringBuilder text;
@@ -243,8 +257,10 @@ String ListMarker::TextAlternative(const LayoutObject& marker) const {
     return text.ToString();
   }
 
-  if (marker_text_type_ == kUnresolved)
+  if (marker_text_type_ == kUnresolved) {
     return MarkerTextWithSuffix(marker);
+  }
+
   return GetTextChild(marker).PlainText();
 }
 
@@ -334,8 +350,8 @@ bool ListMarker::IsMarkerImage(const LayoutObject& marker) const {
 
 LayoutUnit ListMarker::WidthOfSymbol(const ComputedStyle& style,
                                      const AtomicString& list_style) {
-  const Font& font = style.GetFont();
-  const SimpleFontData* font_data = font.PrimaryFont();
+  const Font* font = style.GetFont();
+  const SimpleFontData* font_data = font->PrimaryFont();
   DCHECK(font_data);
   if (!font_data)
     return LayoutUnit();
@@ -398,7 +414,7 @@ std::pair<LayoutUnit, LayoutUnit> ListMarker::InlineMarginsForOutside(
       case ListStyleCategory::kNone:
         break;
       case ListStyleCategory::kSymbol: {
-        const SimpleFontData* font_data = marker_style.GetFont().PrimaryFont();
+        const SimpleFontData* font_data = marker_style.GetFont()->PrimaryFont();
         DCHECK(font_data);
         if (!font_data)
           return {};
@@ -425,7 +441,7 @@ PhysicalRect ListMarker::RelativeSymbolMarkerRect(
     const ComputedStyle& style,
     const AtomicString& list_style,
     LayoutUnit width) {
-  const SimpleFontData* font_data = style.GetFont().PrimaryFont();
+  const SimpleFontData* font_data = style.GetFont()->PrimaryFont();
   DCHECK(font_data);
   if (!font_data)
     return PhysicalRect();

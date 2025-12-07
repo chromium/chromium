@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ash/arc/vmm/arc_system_state_observation.h"
 
-#include "ash/components/arc/session/arc_service_manager.h"
-#include "ash/components/arc/test/fake_arc_session.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
@@ -16,6 +14,9 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
+#include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -42,9 +43,11 @@ ArcAppListPrefs::AppInfo MakePlayStoreInfo(bool ready) {
 class ArcSystemStateObservationTest : public testing::Test {
  public:
   ArcSystemStateObservationTest() {
-    arc_test().SetUp(&profile_);
+    arc_app_test().PreProfileSetUp();
+    profile_ = std::make_unique<TestingProfile>();
+    arc_app_test().PostProfileSetUp(profile_.get());
 
-    observation_ = std::make_unique<ArcSystemStateObservation>(&profile_);
+    observation_ = std::make_unique<ArcSystemStateObservation>(profile_.get());
 
     active_window_observer_ =
         observation_->GetObserverByName(kArcActiveWindowThrottleObserverName);
@@ -59,18 +62,20 @@ class ArcSystemStateObservationTest : public testing::Test {
 
   ~ArcSystemStateObservationTest() override {
     observation_.reset();
-    arc_test().TearDown();
+    arc_app_test().PreProfileTearDown();
+    profile_.reset();
+    arc_app_test().PostProfileTearDown();
   }
 
   ArcSystemStateObservation* observation() { return observation_.get(); }
-  ArcAppTest& arc_test() { return arc_test_; }
+  ArcAppTest& arc_app_test() { return arc_app_test_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  TestingProfile profile_;
-  ArcAppTest arc_test_;
+  std::unique_ptr<TestingProfile> profile_;
+  ArcAppTest arc_app_test_;
 
   std::unique_ptr<ArcSystemStateObservation> observation_;
 

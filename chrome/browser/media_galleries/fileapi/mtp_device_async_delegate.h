@@ -9,7 +9,7 @@
 
 #include "base/files/file.h"
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "storage/browser/file_system/async_file_util.h"
 #include "storage/browser/file_system/watcher_manager.h"
 #include "url/gurl.h"
@@ -206,7 +206,7 @@ class MTPDeviceAsyncDelegate {
 
  protected:
   // Always destruct this object via CancelPendingTasksAndDeleteDelegate().
-  virtual ~MTPDeviceAsyncDelegate() {}
+  virtual ~MTPDeviceAsyncDelegate() = default;
 };
 
 typedef base::OnceCallback<void(MTPDeviceAsyncDelegate*)>

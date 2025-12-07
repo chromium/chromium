@@ -151,6 +151,12 @@ class BookmarkModelMerger {
   void MergeSubtree(const bookmarks::BookmarkNode* local_node,
                     const RemoteTreeNode& remote_node);
 
+  // Makes a second pass on previously-merged subtree to detect if any of the
+  // remote updates are lacking a client tag hash. If so, it migrates the entity
+  // by issuing a deletion and a creation, using a new random GUID.
+  void MigrateBookmarksInSubtreeWithoutClientTagHash(
+      const RemoteTreeNode& remote_node);
+
   // Updates |local_node| to hold same UUID and semantics as its |remote_node|
   // match. The input nodes are two equivalent local and remote bookmarks that
   // are about to be merged. The output node is the potentially replaced
@@ -210,7 +216,7 @@ class BookmarkModelMerger {
   syncer::UniquePosition GenerateUniquePositionForLocalCreation(
       const bookmarks::BookmarkNode* parent,
       size_t index,
-      const std::string& suffix) const;
+      const syncer::UniquePosition::Suffix& suffix) const;
 
   void ReportTimeMetrics();
 

@@ -4,21 +4,30 @@
 
 #include "components/commerce/core/compare/cluster_server_proxy.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/values.h"
+#include "components/commerce/core/account_checker.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/compare/compare_utils.h"
+#include "components/commerce/core/feature_utils.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+
+using endpoint_fetcher::EndpointFetcher;
+using endpoint_fetcher::EndpointResponse;
 
 namespace commerce {
 namespace {
@@ -49,9 +58,9 @@ constexpr net::NetworkTrafficAnnotationTag
               "Ask server for comparable products from a list of product Ids."
             trigger:
               "A Chrome-initiated request that requires user enabling the "
-              "product specification feature. The request is sent after Chrome "
-              "detects several open tabs has similar products, before showing "
-              "the user a button to allow them to compare some of the products."
+              "Tab Compare feature. The request is sent after Chrome detects "
+              "several open tabs has similar products, before showing the user"
+              "a button to allow them to compare some of the products."
             user_data {
               type: OTHER
               type: ACCESS_TOKEN
@@ -70,9 +79,13 @@ constexpr net::NetworkTrafficAnnotationTag
             setting:
               "This fetch is enabled for any user that is eligible to use this "
               "feature based on things like country, locale, and whether the "
-              "user is signed in. The request is enabled with the product "
-              "specification feature."
+              "user is signed in. The request is enabled with the Tab Compare "
+              "feature."
             chrome_policy {
+              TabCompareSettings {
+                policy_options {mode: MANDATORY}
+                TabCompareSettings: 2
+              }
             }
           }
         )");
@@ -102,15 +115,21 @@ std::optional<uint64_t> Deserialize(const base::Value& value) {
 
 ClusterServerProxy::ClusterServerProxy(
     signin::IdentityManager* identity_manager,
-    const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory)
+    const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
+    AccountChecker* account_checker)
     : identity_manager_(identity_manager),
-      url_loader_factory_(url_loader_factory) {}
+      url_loader_factory_(url_loader_factory),
+      account_checker_(account_checker) {}
 
 ClusterServerProxy::~ClusterServerProxy() = default;
 
 void ClusterServerProxy::GetComparableProducts(
     const std::vector<uint64_t>& product_cluster_ids,
     GetComparableProductsCallback callback) {
+  if (!commerce::CanFetchProductSpecificationsData(account_checker_)) {
+    std::move(callback).Run(std::vector<uint64_t>());
+    return;
+  }
   auto fetcher = CreateEndpointFetcher(
       GURL(kServiceBaseUrl.Get()),
       GetJsonStringForProductClusterIds(product_cluster_ids));
@@ -124,11 +143,20 @@ void ClusterServerProxy::GetComparableProducts(
 std::unique_ptr<EndpointFetcher> ClusterServerProxy::CreateEndpointFetcher(
     const GURL& url,
     const std::string& post_data) {
+  EndpointFetcher::RequestParams::Builder request_params =
+      EndpointFetcher::RequestParams::Builder(
+          endpoint_fetcher::HttpMethod::kPost,
+          kGetComparableProductsTrafficAnnotation);
+  request_params.SetUrl(url)
+      .SetContentType(kContentType)
+      .SetAuthType(endpoint_fetcher::OAUTH)
+      .SetOAuthConsumerId(signin::OAuthConsumerId::kChromeMemex)
+      .SetConsentLevel(signin::ConsentLevel::kSignin)
+      .SetTimeout(base::Milliseconds(kTimeoutMs))
+      .SetPostData(post_data);
+  commerce::MaybeUseAlternateShoppingServer(request_params);
   return std::make_unique<EndpointFetcher>(
-      url_loader_factory_, kOAuthName, url, kPostHttpMethod, kContentType,
-      std::vector<std::string>{kOAuthScope}, base::Milliseconds(kTimeoutMs),
-      post_data, kGetComparableProductsTrafficAnnotation, identity_manager_,
-      signin::ConsentLevel::kSignin);
+      url_loader_factory_, identity_manager_, request_params.Build());
 }
 
 void ClusterServerProxy::HandleCompareResponse(
@@ -142,18 +170,12 @@ void ClusterServerProxy::HandleCompareResponse(
     return;
   }
 
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      response->response,
-      base::BindOnce(&ClusterServerProxy::OnResponseJsonParsed,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
+  std::optional<base::Value::Dict> result =
+      base::JSONReader::ReadDict(response->response, base::JSON_PARSE_RFC);
 
-void ClusterServerProxy::OnResponseJsonParsed(
-    GetComparableProductsCallback callback,
-    data_decoder::DataDecoder::ValueOrError result) {
   std::vector<uint64_t> product_cluster_ids;
-  if (result.has_value() && result->is_dict()) {
-    if (auto* response_json = result->GetDict().FindList(kProductIdsKey)) {
+  if (result.has_value()) {
+    if (auto* response_json = result->FindList(kProductIdsKey)) {
       for (const auto& product_id_json : *response_json) {
         if (auto product_id = Deserialize(product_id_json)) {
           product_cluster_ids.push_back(*product_id);

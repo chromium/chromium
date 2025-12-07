@@ -14,55 +14,30 @@
 
 namespace blink {
 
-v8::Local<v8::Module> ModuleTestBase::CompileModule(
-    ScriptState* script_state,
-    const char* source,
-    const KURL& url,
-    ExceptionState& exception_state) {
-  return CompileModule(script_state, String(source), url, exception_state);
+v8::Local<v8::Module> ModuleTestBase::CompileModule(ScriptState* script_state,
+                                                    const char* source,
+                                                    const KURL& url) {
+  return CompileModule(script_state, String(source), url);
 }
 
-v8::Local<v8::Module> ModuleTestBase::CompileModule(
-    ScriptState* script_state,
-    String source,
-    const KURL& url,
-    ExceptionState& exception_state) {
+v8::Local<v8::Module> ModuleTestBase::CompileModule(ScriptState* script_state,
+                                                    String source,
+                                                    const KURL& url) {
   ModuleScriptCreationParams params(
       /*source_url=*/url, /*base_url=*/url,
-      ScriptSourceLocationType::kExternalFile, ModuleType::kJavaScript,
+      ScriptSourceLocationType::kExternalFile, ResolvedModuleType::kJavaScript,
       ParkableString(source.Impl()), nullptr,
-      network::mojom::ReferrerPolicy::kDefault);
+      network::mojom::ReferrerPolicy::kDefault, /*source_map_url=*/String());
   return ModuleRecord::Compile(script_state, params, ScriptFetchOptions(),
-                               TextPosition::MinimumPosition(),
-                               exception_state);
+                               TextPosition::MinimumPosition());
 }
 
-class SaveResultFunction final : public ScriptFunction::Callable {
- public:
-  SaveResultFunction() = default;
-
-  v8::Local<v8::Value> GetResult() {
-    EXPECT_TRUE(result_);
-    EXPECT_FALSE(result_->IsEmpty());
-    return result_->V8Value();
-  }
-
-  ScriptValue Call(ScriptState*, ScriptValue value) override {
-    *result_ = value;
-    return value;
-  }
-
- private:
-  ScriptValue* result_ = nullptr;
-};
-
-class ExpectNotReached final : public ScriptFunction::Callable {
+class ExpectNotReached final : public ThenCallable<IDLAny, ExpectNotReached> {
  public:
   ExpectNotReached() = default;
 
-  ScriptValue Call(ScriptState*, ScriptValue value) override {
+  void React(ScriptState*, ScriptValue value) {
     ADD_FAILURE() << "ExpectNotReached was reached";
-    return value;
   }
 };
 
@@ -73,21 +48,8 @@ v8::Local<v8::Value> ModuleTestBase::GetResult(ScriptState* script_state,
 
   ScriptPromise<IDLAny> script_promise = result.GetPromise(script_state);
   v8::Local<v8::Promise> promise = script_promise.V8Promise();
-  if (promise->State() == v8::Promise::kFulfilled) {
-    return promise->Result();
-  }
-
-  auto* resolve_function = MakeGarbageCollected<SaveResultFunction>();
-  result.GetPromise(script_state)
-      .Then(
-          MakeGarbageCollected<ScriptFunction>(script_state, resolve_function),
-          MakeGarbageCollected<ScriptFunction>(
-              script_state, MakeGarbageCollected<ExpectNotReached>()));
-
-  script_state->GetContext()->GetMicrotaskQueue()->PerformCheckpoint(
-      script_state->GetIsolate());
-
-  return resolve_function->GetResult();
+  CHECK_EQ(promise->State(), v8::Promise::kFulfilled);
+  return promise->Result();
 }
 
 v8::Local<v8::Value> ModuleTestBase::GetException(
@@ -98,20 +60,8 @@ v8::Local<v8::Value> ModuleTestBase::GetException(
 
   ScriptPromise<IDLAny> script_promise = result.GetPromise(script_state);
   v8::Local<v8::Promise> promise = script_promise.V8Promise();
-  if (promise->State() == v8::Promise::kRejected) {
-    return promise->Result();
-  }
-
-  auto* reject_function = MakeGarbageCollected<SaveResultFunction>();
-  script_promise.Then(
-      MakeGarbageCollected<ScriptFunction>(
-          script_state, MakeGarbageCollected<ExpectNotReached>()),
-      MakeGarbageCollected<ScriptFunction>(script_state, reject_function));
-
-  script_state->GetContext()->GetMicrotaskQueue()->PerformCheckpoint(
-      script_state->GetIsolate());
-
-  return reject_function->GetResult();
+  CHECK_EQ(promise->State(), v8::Promise::kRejected);
+  return promise->Result();
 }
 
 }  // namespace blink

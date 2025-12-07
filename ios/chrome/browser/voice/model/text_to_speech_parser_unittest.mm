@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/browser/voice/model/text_to_speech_parser.h"
+
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/voice/model/text_to_speech_parser.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"

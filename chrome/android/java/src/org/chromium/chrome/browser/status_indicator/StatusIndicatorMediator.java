@@ -13,10 +13,11 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
@@ -24,7 +25,9 @@ import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.HashSet;
+import java.util.function.Supplier;
 
+@NullMarked
 class StatusIndicatorMediator
         implements BrowserControlsStateProvider.Observer,
                 View.OnLayoutChangeListener,
@@ -34,22 +37,22 @@ class StatusIndicatorMediator
     private static final int UPDATE_COLOR_TRANSITION_DURATION_MS = 400;
 
     private PropertyModel mModel;
-    private BrowserControlsStateProvider mBrowserControlsStateProvider;
-    private HashSet<StatusIndicatorCoordinator.StatusIndicatorObserver> mObservers =
+    private final BrowserControlsStateProvider mBrowserControlsStateProvider;
+    private final HashSet<StatusIndicatorCoordinator.StatusIndicatorObserver> mObservers =
             new HashSet<>();
     private final TabObscuringHandler mTabObscuringHandler;
-    private Supplier<Integer> mStatusBarWithoutIndicatorColorSupplier;
-    private Runnable mOnShowAnimationEnd;
+    private final Supplier<Integer> mStatusBarWithoutIndicatorColorSupplier;
+    private @Nullable Runnable mOnShowAnimationEnd;
     private Runnable mRegisterResource;
     private Runnable mUnregisterResource;
-    private Supplier<Boolean> mCanAnimateNativeBrowserControls;
-    private Callback<Runnable> mInvalidateCompositorView;
+    private final Supplier<Boolean> mCanAnimateNativeBrowserControls;
+    private Callback<@Nullable Runnable> mInvalidateCompositorView;
     private Runnable mRequestLayout;
 
-    private ValueAnimator mStatusBarAnimation;
-    private ValueAnimator mTextFadeInAnimation;
-    private AnimatorSet mUpdateAnimatorSet;
-    private AnimatorSet mHideAnimatorSet;
+    private @Nullable ValueAnimator mStatusBarAnimation;
+    private @Nullable ValueAnimator mTextFadeInAnimation;
+    private @Nullable AnimatorSet mUpdateAnimatorSet;
+    private @Nullable AnimatorSet mHideAnimatorSet;
 
     private int mIndicatorHeight;
     private int mJavaLayoutHeight;
@@ -57,16 +60,15 @@ class StatusIndicatorMediator
 
     /**
      * Constructs the status indicator mediator.
-     * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} to listen to
-     *                                     for the changes in controls offsets.
+     *
+     * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} to listen to for
+     *     the changes in controls offsets.
      * @param tabObscuringHandler Delegate object handling obscuring views.
      * @param statusBarWithoutIndicatorColorSupplier A supplier that will get the status bar color
-     *                                               without taking the status indicator into
-     *                                               account.
+     *     without taking the status indicator into account.
      * @param canAnimateNativeBrowserControls Will supply a boolean denoting whether the native
-     *                                        browser controls can be animated. This will be false
-     *                                        where we can't have a reliable cc::BCOM instance, e.g.
-     *                                        tab switcher.
+     *     browser controls can be animated. This will be false where we can't have a reliable
+     *     cc::BCOM instance, e.g. tab switcher.
      */
     StatusIndicatorMediator(
             BrowserControlsStateProvider browserControlsStateProvider,
@@ -89,11 +91,12 @@ class StatusIndicatorMediator
      * @param invalidateCompositorView Callback to invalidate the compositor texture.
      * @param requestLayout Runnable to request layout for the view.
      */
+    @Initializer
     void initialize(
             PropertyModel model,
             Runnable registerResource,
             Runnable unregisterResource,
-            Callback<Runnable> invalidateCompositorView,
+            Callback<@Nullable Runnable> invalidateCompositorView,
             Runnable requestLayout) {
         mModel = model;
         mRegisterResource = registerResource;
@@ -107,9 +110,11 @@ class StatusIndicatorMediator
     public void onControlsOffsetChanged(
             int topOffset,
             int topControlsMinHeightOffset,
+            boolean topControlsMinHeightChanged,
             int bottomOffset,
             int bottomControlsMinHeightOffset,
-            boolean needsAnimate,
+            boolean bottomControlsMinHeightChanged,
+            boolean requestNewFrame,
             boolean isVisibilityForced) {
         onOffsetChanged(topControlsMinHeightOffset);
     }
@@ -176,8 +181,8 @@ class StatusIndicatorMediator
      * @param iconTint Compound drawable tint.
      */
     void animateShow(
-            @NonNull String statusText,
-            Drawable statusIcon,
+            String statusText,
+            @Nullable Drawable statusIcon,
             @ColorInt int backgroundColor,
             @ColorInt int textColor,
             @ColorInt int iconTint) {
@@ -237,10 +242,10 @@ class StatusIndicatorMediator
         mTextFadeInAnimation.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
         mTextFadeInAnimation.setDuration(FADE_TEXT_DURATION_MS);
         mTextFadeInAnimation.addUpdateListener(
-                (anim -> {
+                anim -> {
                     final float currentAlpha = (float) anim.getAnimatedValue();
                     mModel.set(StatusIndicatorProperties.TEXT_ALPHA, currentAlpha);
-                }));
+                });
         mTextFadeInAnimation.addListener(
                 new CancelAwareAnimatorListener() {
                     @Override
@@ -281,8 +286,8 @@ class StatusIndicatorMediator
      * @param animationCompleteCallback Callback to run after the animation is done.
      */
     void animateUpdate(
-            @NonNull String statusText,
-            Drawable statusIcon,
+            String statusText,
+            @Nullable Drawable statusIcon,
             @ColorInt int backgroundColor,
             @ColorInt int textColor,
             @ColorInt int iconTint,
@@ -516,5 +521,19 @@ class StatusIndicatorMediator
     @Override
     public void updateObscured(boolean obscureTabContent, boolean obscureToolbar) {
         mModel.set(StatusIndicatorProperties.IS_OBSCURED, obscureToolbar);
+    }
+
+    /**
+     * Returns the "effective height" of the status indicator, which is the height that appears
+     * visually to the user. This is the height that is relevant for determining the y-offsets of
+     * TopControls below the status indicator.
+     *
+     * @return The height of the status indicator as it appears visually to users.
+     */
+    int getEffectiveHeight() {
+        // TODO(crbug.com/417238089): Stacker needs to know this value is changing with animations.
+        return mIsHiding
+                ? mModel.get(StatusIndicatorProperties.CURRENT_VISIBLE_HEIGHT)
+                : mJavaLayoutHeight;
     }
 }

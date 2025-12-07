@@ -1,0 +1,7 @@
+android.webkit.WebView focusable focused
+++android.view.View
+++++android.view.View role_description='menu pop up button' clickable collapsed focusable interesting name='1' expanded_state=1
+++android.widget.Image
+++++android.widget.TextView name='<newline>  '
+++++android.view.View role_description='menu pop up button' clickable collapsed focusable interesting name='1' expanded_state=1
+++++android.widget.TextView name='<newline>'

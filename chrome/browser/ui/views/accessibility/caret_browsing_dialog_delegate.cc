@@ -15,6 +15,8 @@
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/text_constants.h"
@@ -23,10 +25,10 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "ui/events/ash/keyboard_capability.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // static
 void CaretBrowsingDialogDelegate::Show(gfx::NativeWindow parent_window,
@@ -50,7 +52,7 @@ CaretBrowsingDialogDelegate::CaretBrowsingDialogDelegate(
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kText, views::DialogContentType::kControl));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::optional<ui::KeyboardCode> key =
       ash::AccessibilityManager::Get()->GetCaretBrowsingActionKey();
   std::u16string key_string;
@@ -95,7 +97,7 @@ CaretBrowsingDialogDelegate::CaretBrowsingDialogDelegate(
 #else
   std::u16string message_text =
       l10n_util::GetStringUTF16(IDS_ENABLE_CARET_BROWSING_INFO);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   auto* message_label = AddChildView(std::make_unique<views::Label>(
       message_text, views::style::CONTEXT_DIALOG_BODY_TEXT));
@@ -108,7 +110,7 @@ CaretBrowsingDialogDelegate::CaretBrowsingDialogDelegate(
   SetTitle(l10n_util::GetStringUTF16(IDS_ENABLE_CARET_BROWSING_TITLE));
 
   DialogDelegate::SetButtonLabel(
-      ui::DIALOG_BUTTON_OK,
+      ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(IDS_ENABLE_CARET_BROWSING_TURN_ON));
 
   SetShowCloseButton(false);
@@ -133,7 +135,7 @@ CaretBrowsingDialogDelegate::CaretBrowsingDialogDelegate(
   };
   SetCancelCallback(base::BindOnce(on_cancel));
 
-  SetModalType(ui::MODAL_TYPE_WINDOW);
+  SetModalType(ui::mojom::ModalType::kWindow);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 }

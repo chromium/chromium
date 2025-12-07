@@ -81,3 +81,7 @@ bool IsDataSaverEnabled() {
 }
 
 }  // namespace data_saver
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(DataSaverOSSetting)
+#endif

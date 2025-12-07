@@ -4,11 +4,15 @@
 
 #include "chrome/browser/ash/login/quick_unlock/pin_storage_cryptohome.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_salt_storage.h"
@@ -34,12 +38,13 @@ namespace {
 
 using ::cryptohome::KeyLabel;
 
-void CheckCryptohomePinFactor(PinStorageCryptohome::BoolCallback callback,
-                              bool require_unlocked,
-                              std::unique_ptr<UserContext> user_context,
-                              std::optional<AuthenticationError> error) {
+void CheckCryptohomePinFactor(
+    PinStorageCryptohome::AvailabilityCallback callback,
+    bool require_unlocked,
+    std::unique_ptr<UserContext> user_context,
+    std::optional<AuthenticationError> error) {
   if (error.has_value()) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(false, std::nullopt);
     return;
   }
 
@@ -47,16 +52,16 @@ void CheckCryptohomePinFactor(PinStorageCryptohome::BoolCallback callback,
   const cryptohome::AuthFactor* pin_factor =
       config.FindFactorByType(cryptohome::AuthFactorType::kPin);
   if (!pin_factor) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(false, std::nullopt);
     return;
   }
 
   if (require_unlocked && pin_factor->GetPinStatus().IsLockedFactor()) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(false, pin_factor->GetPinStatus().AvailableAt());
     return;
   }
 
-  std::move(callback).Run(true);
+  std::move(callback).Run(true, pin_factor->GetPinStatus().AvailableAt());
 }
 
 // Called after cryptohomed backend is available; used to check if the
@@ -164,9 +169,16 @@ PinStorageCryptohome::~PinStorageCryptohome() = default;
 void PinStorageCryptohome::IsPinSetInCryptohome(
     std::unique_ptr<UserContext> user_context,
     BoolCallback result) {
+  // Pass the enabled boolean result, ignore the availability timestamp.
+  auto availability_callback =
+      [](BoolCallback callback, bool enabled,
+         cryptohome::PinLockAvailability available_at) {
+        std::move(callback).Run(enabled);
+      };
   auth_factor_editor_.GetAuthFactorsConfiguration(
       std::move(user_context),
-      base::BindOnce(&CheckCryptohomePinFactor, std::move(result),
+      base::BindOnce(&CheckCryptohomePinFactor,
+                     base::BindOnce(availability_callback, std::move(result)),
                      false /*require_unlocked*/));
 }
 
@@ -243,15 +255,15 @@ void PinStorageCryptohome::OnSystemSaltObtained(
 void PinStorageCryptohome::CanAuthenticate(
     std::unique_ptr<UserContext> user_context,
     Purpose purpose,
-    BoolCallback result) {
+    AvailabilityCallback result_callback) {
   if (IsCryptohomePinDisabledByPolicy(user_context->GetAccountId(), purpose)) {
-    std::move(result).Run(false);
+    std::move(result_callback).Run(false, std::nullopt);
     return;
   }
 
   auth_factor_editor_.GetAuthFactorsConfiguration(
       std::move(user_context),
-      base::BindOnce(&CheckCryptohomePinFactor, std::move(result),
+      base::BindOnce(&CheckCryptohomePinFactor, std::move(result_callback),
                      true /*require_unlocked*/));
 }
 
@@ -269,9 +281,7 @@ void PinStorageCryptohome::TryAuthenticate(
       << "Webauth dialog uses direct interaction with cryptohome";
 
   if (!user_context->GetAuthSessionId().empty()) {
-    NOTREACHED_IN_MIGRATION()
-        << "TryAuthenticate called with existing auth session";
-    user_context->ResetAuthSessionIds();
+    NOTREACHED() << "TryAuthenticate called with existing auth session";
   }
 
   // We need to start an auth session, which requires us to specify whether
@@ -303,6 +313,8 @@ void PinStorageCryptohome::OnAuthFactorsEdit(
     std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     LOG(ERROR) << "Failed to edit pin, code " << error->get_cryptohome_error();
+    // TODO(b:374099765): Remove this once the bug is fixed.
+    base::debug::DumpWithoutCrashing();
     std::move(callback).Run(std::move(user_context), std::move(error));
     return;
   }

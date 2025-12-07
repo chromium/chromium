@@ -18,8 +18,10 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
 #include "services/webnn/coreml/graph_builder_coreml.h"
+#include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
+#include "services/webnn/queueable_resource_state.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
 
@@ -34,23 +36,35 @@ class ContextImplCoreml;
 // https://developer.apple.com/documentation/coreml/mlmodel/3931182-compilemodel
 // Mac OS 14.0+ is required to support WebNN logical binary operators because
 // the cast operator does not support casting to uint8 prior to Mac OS 14.0.
+// Mac OS 14.4 is required to use MLComputePlan.
+// https://developer.apple.com/documentation/coreml/mlcomputeplan-1w21n
 // CoreML returns bool tensors for logical operators which need to be cast to
 // uint8 tensors to match WebNN expectations.
-class API_AVAILABLE(macos(14.0)) GraphImplCoreml final : public WebNNGraphImpl {
+class API_AVAILABLE(macos(14.4)) GraphImplCoreml final : public WebNNGraphImpl {
  public:
   static void CreateAndBuild(
+      mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
       ContextImplCoreml* context,
       mojom::GraphInfoPtr graph_info,
       ComputeResourceInfo compute_resource_info,
+      base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
+          constant_operands,
+      base::flat_map<OperandId, WebNNTensorImpl*> constant_tensor_operands,
       mojom::CreateContextOptionsPtr context_options,
       ContextProperties context_properties,
       WebNNContextImpl::CreateGraphImplCallback callback);
 
+  struct Params;
+  GraphImplCoreml(mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+                  base::WeakPtr<WebNNContextImpl> context,
+                  std::unique_ptr<Params> params);
+
   GraphImplCoreml(const GraphImplCoreml&) = delete;
   GraphImplCoreml& operator=(const GraphImplCoreml&) = delete;
-  ~GraphImplCoreml() override;
 
  private:
+  ~GraphImplCoreml() override;
+
   // Additional information about the model input that is required
   // for the CoreML backend.
   struct CoreMLFeatureInfo {
@@ -69,33 +83,24 @@ class API_AVAILABLE(macos(14.0)) GraphImplCoreml final : public WebNNGraphImpl {
     std::string coreml_name;
   };
 
-  // Parameters needed to construct a `GraphImplCoreml`. Used for shuttling
-  // these objects between the background thread where the model is compiled and
-  // the originating thread.
-  struct Params {
-    Params(
-        ComputeResourceInfo compute_resource_info,
-        base::flat_map<std::string, std::string> coreml_name_to_operand_name);
-    ~Params();
+  // Responsible for cleaning up disk artifacts created by the CoreML model
+  // compilation process.
+  // This also dumps model files to to `switches::kWebNNCoreMlDumpModel` if
+  // provided.
+  struct ScopedModelPath {
+    explicit ScopedModelPath(base::ScopedTempDir file_dir);
+    ~ScopedModelPath();
+    ScopedModelPath(ScopedModelPath&& other) = default;
 
-    ComputeResourceInfo compute_resource_info;
-    base::flat_map<std::string, std::string> coreml_name_to_operand_name;
-
-    // Represents the compiled and configured Core ML model. This member must be
-    // set before these params are used to construct a new `GraphImplCoreml`.
-    MLModel* __strong ml_model;
+    base::ScopedTempDir file_dir;
   };
-
-  GraphImplCoreml(ContextImplCoreml* context, std::unique_ptr<Params> params);
-
-  static MLFeatureValue* CreateMultiArrayFeatureValueFromBytes(
-      MLMultiArrayConstraint* multi_array_constraint,
-      mojo_base::BigBuffer data);
 
   // Compile the CoreML model to a temporary .modelc file.
   static void CreateAndBuildOnBackgroundThread(
       mojom::GraphInfoPtr graph_info,
       ComputeResourceInfo compute_resource_info,
+      base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
+          constant_operands,
       mojom::CreateContextOptionsPtr context_options,
       ContextProperties context_properties,
       base::OnceCallback<void(
@@ -111,33 +116,33 @@ class API_AVAILABLE(macos(14.0)) GraphImplCoreml final : public WebNNGraphImpl {
       NSURL* compiled_model_url,
       NSError* error);
 
+  static void ReadComputePlan(
+      std::unique_ptr<Params> params,
+      base::OnceCallback<void(
+          base::expected<std::unique_ptr<Params>, mojom::ErrorPtr>)> callback,
+      ScopedModelPath temp_dir,
+      MLComputePlan* compute_plan,
+      NSError* compute_plan_error);
+
   static void DidCreateAndBuild(
+      mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
       base::WeakPtr<WebNNContextImpl> context,
       WebNNContextImpl::CreateGraphImplCallback callback,
       base::expected<std::unique_ptr<Params>, mojom::ErrorPtr> result);
 
-  // Execute the compiled platform graph asynchronously. The `named_inputs` were
-  // validated in base class so we can use them to compute directly, the result
-  // of execution will be returned to renderer process with the `callback`.
-  void ComputeImpl(
-      base::flat_map<std::string, mojo_base::BigBuffer> named_inputs,
-      mojom::WebNNGraph::ComputeCallback callback) override;
-
+  // Execute the compiled platform graph asynchronously. The inputs were
+  // validated in base class so we can use them to compute directly.
   void DispatchImpl(
-      const base::flat_map<std::string_view, WebNNBufferImpl*>& named_inputs,
-      const base::flat_map<std::string_view, WebNNBufferImpl*>& named_outputs)
+      base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>> named_inputs,
+      base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>> named_outputs)
       override;
 
  private:
-  void DidPredictFromCompute(base::ElapsedTimer model_predict_timer,
-                             mojom::WebNNGraph::ComputeCallback callback,
-                             id<MLFeatureProvider> output_features,
-                             NSError* error);
+  class ComputeResources;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::flat_map<std::string, std::string> coreml_name_to_operand_name_;
-  MLModel* __strong ml_model_;
+  scoped_refptr<ComputeResources> compute_resources_;
 
   base::WeakPtrFactory<GraphImplCoreml> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};

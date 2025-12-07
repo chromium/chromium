@@ -57,35 +57,46 @@ const std::string CaptionBubbleContextViews::GetSessionId() const {
 }
 
 void CaptionBubbleContextViews::Activate() {
-  if (!web_contents_)
+  if (!web_contents_) {
     return;
+  }
   // Activate the web contents and the browser window that the web contents is
   // in. Order matters: web contents needs to be active in order for the widget
   // getter to work.
   Browser* browser = chrome::FindBrowserWithTab(web_contents_);
-  if (!browser)
+  if (!browser) {
     return;
+  }
   TabStripModel* tab_strip_model = browser->tab_strip_model();
-  if (!tab_strip_model)
+  if (!tab_strip_model) {
     return;
+  }
   int index = tab_strip_model->GetIndexOfWebContents(web_contents_);
-  if (index == TabStripModel::kNoTab)
+  if (index == TabStripModel::kNoTab) {
     return;
+  }
   tab_strip_model->ActivateTabAt(index);
   views::Widget* context_widget = views::Widget::GetTopLevelWidgetForNativeView(
       web_contents_->GetNativeView());
-  if (context_widget)
+  if (context_widget) {
     context_widget->Activate();
+  }
 }
 
 bool CaptionBubbleContextViews::IsActivatable() const {
   return true;
 }
 
+bool CaptionBubbleContextViews::ShouldAvoidOverlap() const {
+  // Avoid overlap if web_contents_ doesn't belong to a tab.
+  return !chrome::FindBrowserWithTab(web_contents_);
+}
+
 std::unique_ptr<CaptionBubbleSessionObserver>
 CaptionBubbleContextViews::GetCaptionBubbleSessionObserver() {
-  if (web_contents_observer_)
+  if (web_contents_observer_) {
     return std::move(web_contents_observer_);
+  }
 
   return nullptr;
 }

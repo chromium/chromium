@@ -1,0 +1,33 @@
+<!--
+@BLINK-ALLOW:name*
+@BLINK-ALLOW:role*
+-->
+<!DOCTYPE html>
+<html>
+
+<head>
+  <style>
+    .screen-reader-only {
+      position: absolute;
+      left: -9999px;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Main Content</h1>
+  <p>This is the main content of the page.</p>
+
+  <p class="screen-reader-only">
+    This text is is positioned far to the left. However, it will still be included in the final tree when the
+    AXModeOnScreen is on because we only care about vertical scrolling.
+  </p>
+
+  <p>More content here.</p>
+
+</body>
+
+</html>

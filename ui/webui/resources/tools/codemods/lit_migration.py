@@ -44,7 +44,11 @@ def main(argv):
   out = node.RunNode([
       os.path.join(_HERE_PATH, 'node_modules/jscodeshift/bin/jscodeshift.js'),
       '--transform=' + os.path.join(_HERE_PATH, 'lit_migration.js'),
-      '--extensions=ts', '--parser=ts', args.file
+      '--extensions=ts',
+      '--parser=ts',
+      '--no-babel',
+      '--fail-on-error',
+      args.file,
   ])
 
   # Update HTML/CSS file.

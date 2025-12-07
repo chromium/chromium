@@ -15,9 +15,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "media/base/audio_parameters.h"
-#include "services/audio/device_output_listener.h"
 #include "services/audio/output_device_mixer.h"
 #include "services/audio/reference_output.h"
+#include "services/audio/reference_signal_provider.h"
 
 namespace media {
 class AudioManager;
@@ -26,12 +26,14 @@ class AudioOutputStream;
 
 namespace audio {
 
+class OutputDeviceMixerReferenceProvider;
+
 // Creates OutputDeviceMixers as needed, when playback is requested through
 // MakeOutputStream(). OutputDeviceMixers are destroyed on device change, or
 // when the Audio service shuts down, but are not cleaned up otherwise.
 // Listening to a device has no effect, until that device's OutputDeviceMixer is
 // created and playback has started.
-class OutputDeviceMixerManager : public DeviceOutputListener {
+class OutputDeviceMixerManager : public ReferenceSignalProviderFactory {
  public:
   OutputDeviceMixerManager(
       media::AudioManager* audio_manager,
@@ -48,13 +50,18 @@ class OutputDeviceMixerManager : public DeviceOutputListener {
       const media::AudioParameters& params,
       base::OnceClosure close_stream_on_device_change);
 
-  // DeviceOutputListener implementation
-  void StartListening(ReferenceOutput::Listener* listener,
-                      const std::string& device_id) final;
-  void StopListening(ReferenceOutput::Listener* listener) final;
+  // ReferenceSignalProviderFactory implementation. Needs to be called on the
+  // same sequence that OutputDeviceMixerManager was created on.
+  std::unique_ptr<ReferenceSignalProvider> GetReferenceSignalProvider() final;
 
  private:
   friend class OutputDeviceMixerManagerTest;
+  friend class OutputDeviceMixerReferenceProvider;
+
+  // Corresponds to the ReferenceSignalProvider interface
+  void StartListening(ReferenceOutput::Listener* listener,
+                      const std::string& device_id);
+  void StopListening(ReferenceOutput::Listener* listener);
 
   using OutputDeviceMixers = std::vector<std::unique_ptr<OutputDeviceMixer>>;
   using ListenerToDeviceMap =
@@ -113,7 +120,6 @@ class OutputDeviceMixerManager : public DeviceOutputListener {
   base::WeakPtrFactory<OutputDeviceMixerManager> device_change_weak_ptr_factory_
       GUARDED_BY_CONTEXT(owning_sequence_);
 };
-
 }  // namespace audio
 
 #endif  // SERVICES_AUDIO_OUTPUT_DEVICE_MIXER_MANAGER_H_

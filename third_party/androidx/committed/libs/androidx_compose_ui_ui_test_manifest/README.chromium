@@ -1,0 +1,20 @@
+Name: Compose Testing manifest dependency
+Short Name: ui-test-manifest
+URL: https://androidx.dev/snapshots/builds/14500233/artifacts/repository/androidx/compose/ui/ui-test-manifest/1.11.0-SNAPSHOT/ui-test-manifest-1.11.0-20251126.133552-1.aar
+Version: 1.11.0-SNAPSHOT
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: no
+Shipped: no
+License Android Compatible: yes
+
+Description:
+Compose testing library that should be added as a debugImplementation dependency to add properties to the debug manifest necessary for testing an application
+
+See also: https://developer.android.com/jetpack/androidx/releases/compose-ui#1.11.0-SNAPSHOT
+
+
+Local Modifications:
+No modifications.

@@ -12,6 +12,10 @@
 // Specialization of a voting system used to get votes related to the
 // TaskPriority of ExecutionContexts.
 
+namespace content {
+class WebContents;
+}
+
 namespace performance_manager {
 
 namespace execution_context {
@@ -38,16 +42,15 @@ class PriorityAndReason {
   base::TaskPriority priority() const { return priority_; }
   const char* reason() const { return reason_; }
 
-  // Returns -1, 0 or 1 indicating the outcome of a comparison of this value
-  // and |other|.
-  int Compare(const PriorityAndReason& other) const;
-
-  bool operator==(const PriorityAndReason& other) const;
-  bool operator!=(const PriorityAndReason& other) const;
-  bool operator<=(const PriorityAndReason& other) const;
-  bool operator>=(const PriorityAndReason& other) const;
-  bool operator<(const PriorityAndReason& other) const;
-  bool operator>(const PriorityAndReason& other) const;
+  friend bool operator==(const PriorityAndReason& lhs,
+                         const PriorityAndReason& rhs);
+  friend auto operator<=>(const PriorityAndReason& lhs,
+                          const PriorityAndReason& rhs) {
+    if (lhs.priority_ != rhs.priority_) {
+      return lhs.priority_ <=> rhs.priority_;
+    }
+    return ReasonCompare(lhs.reason_, rhs.reason_) <=> 0;
+  }
 
  private:
   base::TaskPriority priority_ = base::TaskPriority::LOWEST;
@@ -61,6 +64,10 @@ using VoteObserver = voting::VoteObserver<Vote>;
 using VotingChannel = voting::VotingChannel<Vote>;
 using VotingChannelFactory = voting::VotingChannelFactory<Vote>;
 using OptionalVotingChannel = voting::OptionalVotingChannel<Vote>;
+
+// Sets whether the given `contents` is closing.
+// Must be called from the PM sequence.
+void SetPageIsClosing(content::WebContents* contents, bool is_closing);
 
 }  // namespace execution_context_priority
 }  // namespace performance_manager

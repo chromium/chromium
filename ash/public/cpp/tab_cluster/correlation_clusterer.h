@@ -5,6 +5,8 @@
 #ifndef ASH_PUBLIC_CPP_TAB_CLUSTER_CORRELATION_CLUSTERER_H_
 #define ASH_PUBLIC_CPP_TAB_CLUSTER_CORRELATION_CLUSTERER_H_
 
+#include <stdint.h>
+
 #include <map>
 #include <optional>
 #include <set>

@@ -23,10 +23,10 @@
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/accessibility/public/mojom/automation.mojom.h"
+#include "ui/accessibility/ax_action_handler_registry.h"
+#include "ui/accessibility/ax_location_and_scroll_updates.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_updates_and_events.h"
 
@@ -100,7 +100,11 @@ class AutomationEventRouter
       const gfx::Point& mouse_location,
       const std::vector<ui::AXEvent>& events) override;
   void DispatchAccessibilityLocationChange(
-      const ui::AXLocationChanges& details) override;
+      const ui::AXTreeID& tree_id,
+      const ui::AXLocationChange& details) override;
+  void DispatchAccessibilityScrollChange(
+      const ui::AXTreeID& tree_id,
+      const ui::AXScrollChange& details) override;
   void DispatchTreeDestroyedEvent(ui::AXTreeID tree_id) override;
   void DispatchActionResult(
       const ui::AXActionData& data,

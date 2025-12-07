@@ -9,17 +9,17 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/containers/flat_map.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/canvas.h"
@@ -42,14 +42,15 @@ ScrollBar::Orientation ScrollBar::GetOrientation() const {
 void ScrollBar::SetThumb(BaseScrollBarThumb* thumb) {
   DCHECK(!thumb_);
   thumb_ = thumb;
-  AddChildView(thumb);
+  AddChildViewRaw(thumb);
   thumb->set_context_menu_controller(this);
 }
 
 bool ScrollBar::ScrollByAmount(ScrollAmount amount) {
   auto desired_offset = GetDesiredScrollOffset(amount);
-  if (!desired_offset)
+  if (!desired_offset) {
     return false;
+  }
 
   SetContentsScrollOffset(desired_offset.value());
   ScrollContentsToOffset();
@@ -67,8 +68,9 @@ void ScrollBar::ScrollToThumbPosition(int thumb_position,
 bool ScrollBar::ScrollByContentsOffset(int contents_offset) {
   int old_offset = contents_scroll_offset_;
   SetContentsScrollOffset(contents_scroll_offset_ - contents_offset);
-  if (old_offset == contents_scroll_offset_)
+  if (old_offset == contents_scroll_offset_) {
     return false;
+  }
 
   ScrollContentsToOffset();
   return true;
@@ -90,8 +92,9 @@ int ScrollBar::GetPosition() const {
 // ScrollBar, View implementation:
 
 bool ScrollBar::OnMousePressed(const ui::MouseEvent& event) {
-  if (event.IsOnlyLeftMouseButton())
+  if (event.IsOnlyLeftMouseButton()) {
     ProcessPressEvent(event);
+  }
   return true;
 }
 
@@ -166,8 +169,9 @@ void ScrollBar::OnGestureEvent(ui::GestureEvent* event) {
   }
 
   if (event->type() == ui::EventType::kGestureScrollUpdate) {
-    if (scroll_status_ == ScrollStatus::kScrollStarted)
+    if (scroll_status_ == ScrollStatus::kScrollStarted) {
       scroll_status_ = ScrollStatus::kScrollInProgress;
+    }
 
     float scroll_amount_f;
     int scroll_amount;
@@ -180,8 +184,9 @@ void ScrollBar::OnGestureEvent(ui::GestureEvent* event) {
       scroll_amount = base::ClampRound(scroll_amount_f);
       roundoff_error_.set_y(scroll_amount - scroll_amount_f);
     }
-    if (ScrollByContentsOffset(scroll_amount))
+    if (ScrollByContentsOffset(scroll_amount)) {
       event->SetHandled();
+    }
     return;
   }
 
@@ -196,6 +201,11 @@ void ScrollBar::OnGestureEvent(ui::GestureEvent* event) {
             : event->details().velocity_y());
     event->SetHandled();
   }
+}
+
+void ScrollBar::OnThemeChanged() {
+  View::OnThemeChanged();
+  SchedulePaint();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -224,9 +234,10 @@ enum ScrollBarContextMenuCommands {
   ScrollBarContextMenuCommand_ScrollNext
 };
 
-void ScrollBar::ShowContextMenuForViewImpl(View* source,
-                                           const gfx::Point& p,
-                                           ui::MenuSourceType source_type) {
+void ScrollBar::ShowContextMenuForViewImpl(
+    View* source,
+    const gfx::Point& p,
+    ui::mojom::MenuSourceType source_type) {
   Widget* widget = GetWidget();
   gfx::Rect widget_bounds = widget->GetWindowBoundsInScreen();
   gfx::Point temp_pt(p.x() - widget_bounds.x(), p.y() - widget_bounds.y());
@@ -351,6 +362,15 @@ BaseScrollBarThumb* ScrollBar::GetThumb() const {
   return thumb_;
 }
 
+ui::NativeTheme::PreferredColorScheme ScrollBar::GetColorScheme() const {
+  const ui::ColorProviderKey::ColorMode color_mode =
+      GetWidget() ? GetWidget()->GetColorMode()
+                  : ui::ColorProviderKey::ColorMode::kLight;
+  return color_mode == ui::ColorProviderKey::ColorMode::kDark
+             ? ui::NativeTheme::PreferredColorScheme::kDark
+             : ui::NativeTheme::PreferredColorScheme::kLight;
+}
+
 void ScrollBar::ScrollToPosition(int position) {
   controller()->ScrollToPosition(this, position);
 }
@@ -365,8 +385,9 @@ void ScrollBar::ObserveScrollEvent(const ui::ScrollEvent& event) {
       scroll_status_ = ScrollStatus::kScrollStarted;
       break;
     case ui::EventType::kScroll:
-      if (scroll_status_ == ScrollStatus::kScrollStarted)
+      if (scroll_status_ == ScrollStatus::kScrollStarted) {
         scroll_status_ = ScrollStatus::kScrollInProgress;
+      }
       break;
     case ui::EventType::kScrollFlingStart:
       scroll_status_ = ScrollStatus::kScrollEnded;
@@ -394,8 +415,9 @@ ScrollAnimator* ScrollBar::GetOrCreateScrollAnimator() {
 void ScrollBar::SetFlingMultiplier(float fling_multiplier) {
   fling_multiplier_ = fling_multiplier;
   // `scroll_animator_` is lazily created when needed.
-  if (!scroll_animator_)
+  if (!scroll_animator_) {
     return;
+  }
 
   GetOrCreateScrollAnimator()->set_velocity_multiplier(fling_multiplier_);
 }
@@ -405,7 +427,7 @@ ScrollBar::ScrollBar(Orientation orientation)
       repeater_(base::BindRepeating(&ScrollBar::TrackClicked,
                                     base::Unretained(this))) {
   set_context_menu_controller(this);
-  GetViewAccessibility().SetProperties(ax::mojom::Role::kScrollBar);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kScrollBar);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -478,10 +500,12 @@ int ScrollBar::CalculateContentsOffset(float thumb_position,
                                        bool scroll_to_middle) const {
   float thumb_size = static_cast<float>(thumb_->GetLength());
   int track_size = GetTrackSize();
-  if (track_size == thumb_size)
+  if (track_size == thumb_size) {
     return 0;
-  if (scroll_to_middle)
+  }
+  if (scroll_to_middle) {
     thumb_position = thumb_position - (thumb_size / 2);
+  }
   float result = (thumb_position * (contents_size_ - viewport_size_)) /
                  (track_size - thumb_size);
   return base::ClampRound(result);
@@ -501,9 +525,8 @@ ScrollBar::ScrollAmount ScrollBar::DetermineScrollAmountByKeyCode(
     return ScrollAmount::kNone;
   }
 
-  static const base::NoDestructor<
-      base::flat_map<ui::KeyboardCode, ScrollAmount>>
-      kMap({
+  static constexpr auto kMap =
+      base::MakeFixedFlatMap<ui::KeyboardCode, ScrollAmount>({
           {ui::VKEY_LEFT, ScrollAmount::kPrevLine},
           {ui::VKEY_RIGHT, ScrollAmount::kNextLine},
           {ui::VKEY_UP, ScrollAmount::kPrevLine},
@@ -514,8 +537,8 @@ ScrollBar::ScrollAmount ScrollBar::DetermineScrollAmountByKeyCode(
           {ui::VKEY_END, ScrollAmount::kEnd},
       });
 
-  const auto i = kMap->find(keycode);
-  return (i == kMap->end()) ? ScrollAmount::kNone : i->second;
+  const auto i = kMap.find(keycode);
+  return (i == kMap.end()) ? ScrollAmount::kNone : i->second;
 }
 
 std::optional<int> ScrollBar::GetDesiredScrollOffset(ScrollAmount amount) {

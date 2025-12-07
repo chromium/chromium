@@ -13,6 +13,19 @@ export const peerConnectionDataStore = {};
 window.userMediaRequests = userMediaRequests;
 window.peerConnectionDataStore = peerConnectionDataStore;
 
+// RTCStats events. Used to create a dump in the file format
+// specified at
+// https://github.com/rtcstats/rtcstats/tree/main/packages/rtcstats-server#rtcstats-dump-file-format
+const rtcStatsEvents = [];
+let lastRtcStatsTimestamp = 0;
+export function addRtcStatsEvent(event_name, connection_id,
+                                 value, ...extra) {
+  const timestamp = extra.pop();
+  const delta = timestamp - lastRtcStatsTimestamp;
+  lastRtcStatsTimestamp = timestamp;
+  rtcStatsEvents.push([event_name, connection_id, value, ...extra, delta]);
+}
+
 /**
  * Provides the UI for dump creation.
  */
@@ -21,92 +34,62 @@ export class DumpCreator {
    * @param {Element} containerElement The parent element of the dump creation
    *     UI.
    */
-  constructor(containerElement) {
+  constructor(ignoredContainerElement) {
     /**
      * The root element of the dump creation UI.
      * @type {Element}
      * @private
      */
-    this.createDumpRoot(containerElement);
-    this.createAudioRecordingRoot(containerElement);
-    this.createPacketRecordingRoot(containerElement);
-  }
-
-  createDumpRoot(containerElement) {
-    this.dumpRoot_ = document.createElement('details');
-
-    this.dumpRoot_.className = 'peer-connection-dump-root';
-    containerElement.appendChild(this.dumpRoot_);
-    const summary = document.createElement('summary');
-    this.dumpRoot_.appendChild(summary);
-    summary.textContent = 'Create a WebRTC-Internals dump';
-    const content = document.createElement('div');
-    this.dumpRoot_.appendChild(content);
-    content.appendChild($('dump-template').content.cloneNode(true));
-    content.getElementsByTagName('a')[0].addEventListener(
-      'click', this.onDownloadData_.bind(this));
-  }
-
-  createAudioRecordingRoot(containerElement) {
-    this.audioRoot_ = document.createElement('details');
-
-    this.audioRoot_.className = 'peer-connection-dump-root';
-    containerElement.appendChild(this.audioRoot_);
-    const summary = document.createElement('summary');
-    this.audioRoot_.appendChild(summary);
-    summary.textContent = 'Create diagnostic audio recordings';
-    const content = document.createElement('div');
-    this.audioRoot_.appendChild(content);
-    content.appendChild($('audio-recording-template').content.cloneNode(true));
-    content.getElementsByTagName('input')[0].addEventListener(
-      'click', this.onAudioDebugRecordingsChanged_.bind(this));
-
-  }
-
-  createPacketRecordingRoot(containerElement) {
-    this.packetRoot_ = document.createElement('details');
-
-    this.packetRoot_.className = 'peer-connection-dump-root';
-    containerElement.appendChild(this.packetRoot_);
-    const summary = document.createElement('summary');
-    this.packetRoot_.appendChild(summary);
-    summary.textContent = 'Create diagnostic packet recordings';
-    const content = document.createElement('div');
-    this.packetRoot_.appendChild(content);
-    content.appendChild($('packet-recording-template').content.cloneNode(true));
-    content.getElementsByTagName('input')[0].addEventListener(
+    document.getElementById('dump-click-target').addEventListener(
+        'click', this.onDownloadInternals_.bind(this));
+    document.getElementById('dump-click-target-rtcstats').addEventListener(
+        'click', this.onDownloadRtcStats_.bind(this));
+    document.getElementById('audio-recording-click-target').addEventListener(
+        'click', this.onAudioDebugRecordingsChanged_.bind(this));
+    document.getElementById('packet-recording-click-target').addEventListener(
         'click', this.onEventLogRecordingsChanged_.bind(this));
+    document.getElementById('datachannel-recording-click-target')
+        .addEventListener(
+            'click', this.onDataChannelRecordingsChanged_.bind(this));
   }
 
   // Mark the diagnostic audio recording checkbox checked.
   setAudioDebugRecordingsCheckbox() {
-    this.audioRoot_.getElementsByTagName('input')[0].checked = true;
+    document.getElementById('audio-recording-checkbox').checked = true;
   }
 
   // Mark the diagnostic audio recording checkbox unchecked.
   clearAudioDebugRecordingsCheckbox() {
-    this.audioRoot_.getElementsByTagName('input')[0].checked = false;
+    document.getElementById('audio-recording-checkbox').checked = false;
   }
 
   // Mark the event log recording checkbox checked.
   setEventLogRecordingsCheckbox() {
-    this.packetRoot_.getElementsByTagName('input')[0].checked = true;
+    document.getElementById('packet-recording-checkbox').checked = true;
   }
 
   // Mark the event log recording checkbox unchecked.
   clearEventLogRecordingsCheckbox() {
-    this.packetRoot_.getElementsByTagName('input')[0].checked = false;
+    document.getElementById('packet-recording-checkbox').checked = false;
   }
 
   // Mark the event log recording checkbox as mutable/immutable.
   setEventLogRecordingsCheckboxMutability(mutable) {
-    this.packetRoot_.getElementsByTagName('input')[0].disabled = !mutable;
+    document.getElementById('packet-recording-checkbox').disabled = !mutable;
     if (!mutable) {
-      const label = this.packetRoot_.getElementsByTagName('label')[0];
+      const label = document.getElementById('packet-recording-label');
       label.style = 'color:red;';
       label.textContent =
           ' WebRTC event logging\'s state was set by a command line flag.';
     }
+  }
+
+  setDataChannelRecordingsCheckbox() {
+    document.getElementById('datachannel-recording-checkbox').checked = true;
+  }
+
+  clearDataChannelRecordingsCheckbox() {
+    document.getElementById('datachannel-recording-checkbox').checked = false;
   }
 
   /**
@@ -114,34 +97,53 @@ export class DumpCreator {
    *
    * @private
    */
-  async onDownloadData_(event) {
-    const useCompression = this.dumpRoot_.getElementsByTagName('input')[0].checked;
+  async download(name, blob, useCompression) {
+    if (useCompression) {
+      const compressionStream = new CompressionStream('gzip');
+      const binaryStream = blob.stream().pipeThrough(compressionStream);
+      const binaryBlob = await new Response(binaryStream).blob();
+      // Since this is async we can't use the default event and need to click
+      // again (while avoiding an infinite loop).
+      const anchor = document.createElement('a');
+      anchor.download = name + '.gz';
+      anchor.href = URL.createObjectURL(binaryBlob);
+      anchor.click();
+      return;
+    }
+    const anchor = document.createElement('a');
+    anchor.download = name + '.txt';
+    anchor.href = URL.createObjectURL(blob);
+    anchor.click();
+  }
+  async onDownloadInternals_() {
+    const useCompression =
+        document.getElementById('dump-checkbox').checked;
+    // Preferably we get the full version information.
+    const uaData = await navigator.userAgentData
+        .getHighEntropyValues(['fullVersionList']);
     const dumpObject = {
       'getUserMedia': userMediaRequests,
       'PeerConnections': peerConnectionDataStore,
       'UserAgent': navigator.userAgent,
+      'UserAgentData': uaData,
     };
     const textBlob =
-      new Blob([JSON.stringify(dumpObject, null, 1)], {type: 'octet/stream'});
-    let url;
-    if (useCompression) {
-      const compressionStream = new CompressionStream('gzip');
-      const binaryStream = textBlob.stream().pipeThrough(compressionStream);
-      const binaryBlob = await new Response(binaryStream).blob();
-      url = URL.createObjectURL(binaryBlob);
-      // Since this is async we can't use the default event and need to click
-      // again (while avoiding an infinite loop).
-      const anchor = document.createElement('a');
-      anchor.download = 'webrtc_internals_dump.gz'
-      anchor.href = url;
-      anchor.click();
-      return;
+        new Blob([JSON.stringify(dumpObject, null, 1)],
+                 {type: 'octet/stream'});
+    await this.download('webrtc_internals_dump',
+                        textBlob, useCompression);
+  }
+  async onDownloadRtcStats_() {
+    const serializedRtcStats = [
+      'RTCStatsDump',
+      JSON.stringify({fileFormat: 3}),
+    ];
+    for (const ev of rtcStatsEvents) {
+      serializedRtcStats.push(JSON.stringify(ev));
     }
-    url = URL.createObjectURL(textBlob);
-    const anchor = this.dumpRoot_.getElementsByTagName('a')[0];
-    anchor.download = 'webrtc_internals_dump.txt'
-    anchor.href = url;
-    // The default action of the anchor will download the url.
+    const rtcStatsBlob = new Blob([serializedRtcStats.join('\n')],
+        {type: 'octet/stream'});
+    await this.download('rtcstats_dump', rtcStatsBlob, true);
   }
 
   /**
@@ -150,12 +152,8 @@ export class DumpCreator {
    * @private
    */
   onAudioDebugRecordingsChanged_() {
-    const enabled = this.audioRoot_.getElementsByTagName('input')[0].checked;
-    if (enabled) {
-      chrome.send('enableAudioDebugRecordings');
-    } else {
-      chrome.send('disableAudioDebugRecordings');
-    }
+    const checkbox = document.getElementById('audio-recording-checkbox');
+    chrome.send((checkbox.checked ? 'en' : 'dis') + 'ableAudioDebugRecordings');
   }
 
   /**
@@ -164,11 +162,18 @@ export class DumpCreator {
    * @private
    */
   onEventLogRecordingsChanged_() {
-    const enabled = this.packetRoot_.getElementsByTagName('input')[0].checked;
-    if (enabled) {
-      chrome.send('enableEventLogRecordings');
-    } else {
-      chrome.send('disableEventLogRecordings');
-    }
+    const checkbox = document.getElementById('packet-recording-checkbox');
+    chrome.send((checkbox.checked ? "en" : "dis") + 'ableEventLogRecordings');
+  }
+
+  /**
+   * Handles the event of toggling the event log recordings state.
+   *
+   * @private
+   */
+  onDataChannelRecordingsChanged_() {
+    const checkbox = document.getElementById('datachannel-recording-checkbox');
+    chrome.send(
+        (checkbox.checked ? 'en' : 'dis') + 'ableDataChannelRecordings');
   }
 }

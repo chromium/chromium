@@ -13,8 +13,7 @@ void SearchScoringSignalsAnnotator::AnnotateResult(
     AutocompleteResult* result) {
   for (auto& match : *result) {
     // Skip ineligible matches
-    if (!IsEligibleMatch(match) &&
-        !AutocompleteMatch::IsSearchType(match.type)) {
+    if (!match.IsMlSignalLoggingEligible()) {
       continue;
     }
 

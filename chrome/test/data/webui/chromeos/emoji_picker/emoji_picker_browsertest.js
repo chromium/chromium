@@ -19,11 +19,6 @@ class EmojiPickerBrowserTest extends PolymerTest {
   get browsePreload() {
     return 'chrome://emoji-picker';
   }
-
-  /** @override */
-  get featureList() {
-    return {enabled: ['ash::features::kImeSystemEmojiPickerClipboard']};
-  }
 }
 
 // Tests behaviour of <emoji-picker> component.
@@ -117,12 +112,6 @@ TEST_F('EmojiPickerExtensionSearchTest', 'All', function() {
 });
 
 var EmojiPickerTrieTest = class extends PolymerTest {
-  /** @override */
-  get featureList() {
-    return {
-      enabled: ['ash::features::kImeSystemEmojiPickerSearchExtension'],
-    };
-  }
   /** @override */
   get browsePreload() {
     return 'chrome://emoji-picker/test_loader.html?module=' +

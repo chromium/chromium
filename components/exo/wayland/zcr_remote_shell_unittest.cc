@@ -18,7 +18,7 @@ using ZcrRemoteShellTest = test::ExoTestBase;
 TEST_F(ZcrRemoteShellTest, GetWorkAreaInsetsInPixel) {
   UpdateDisplay("3000x2000*2.25,1920x1080");
 
-  auto display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  auto display = display::Screen::Get()->GetPrimaryDisplay();
   const float device_scale_factor = display.device_scale_factor();
   EXPECT_EQ(display::kDsf_2_252, device_scale_factor);
   gfx::Insets insets = wayland::GetWorkAreaInsetsInPixel(
@@ -40,7 +40,7 @@ TEST_F(ZcrRemoteShellTest, GetWorkAreaInsetsInPixel) {
   auto widget =
       CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   widget->SetFullscreen(true);
-  display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  display = display::Screen::Get()->GetPrimaryDisplay();
   ASSERT_EQ(display.bounds(), display.work_area());
   gfx::Insets stable_insets = wayland::GetWorkAreaInsetsInPixel(
       display, device_scale_factor, display.GetSizeInPixel(),

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/update_client/background_downloader_win.h"
 
 #include <windows.h>
@@ -21,25 +16,22 @@
 namespace update_client {
 namespace {
 constexpr base::FilePath::CharType kTestDirPrefix[] =
-    FILE_PATH_LITERAL("chrome_BITS_(test)_");
+    FILE_PATH_LITERAL("BackgroundDownloaderWinTest_chrome_BITS_(test)_");
 constexpr base::FilePath::CharType kTestDirMatcher[] =
-    FILE_PATH_LITERAL("chrome_BITS_(test)_*");
-constexpr char kTestDownloadFilename[] = "test_file.txt";
+    FILE_PATH_LITERAL("BackgroundDownloaderWinTest_chrome_BITS_(test)_*");
+constexpr wchar_t kTestDownloadFilename[] = L"test_file.txt";
 constexpr char kTestDownloadContent[] = "Hello, World!";
 }  // namespace
 
 class BackgroundDownloaderWinTest : public testing::Test {
- public:
-  BackgroundDownloaderWinTest() = default;
-  ~BackgroundDownloaderWinTest() override = default;
-
+ protected:
   // Overrides from testing::Test
   void TearDown() override;
 
- protected:
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<BackgroundDownloader> downloader_ =
-      base::MakeRefCounted<BackgroundDownloader>(nullptr);
+      base::MakeRefCounted<BackgroundDownloader>(nullptr,
+                                                 "BackgroundDownloaderWinTest");
 };
 
 void BackgroundDownloaderWinTest::TearDown() {
@@ -51,10 +43,8 @@ void BackgroundDownloaderWinTest::TearDown() {
 TEST_F(BackgroundDownloaderWinTest, CleansStaleDownloads) {
   base::FilePath download_dir_path;
   ASSERT_TRUE(base::CreateNewTempDirectory(kTestDirPrefix, &download_dir_path));
-  ASSERT_EQ(
-      base::WriteFile(download_dir_path.AppendASCII(kTestDownloadFilename),
-                      kTestDownloadContent, sizeof(kTestDownloadContent)),
-      static_cast<int>(sizeof(kTestDownloadContent)));
+  ASSERT_TRUE(base::WriteFile(download_dir_path.Append(kTestDownloadFilename),
+                              kTestDownloadContent));
 
   // Manipulate the creation time of the directory.
   FILETIME creation_filetime =
@@ -74,10 +64,8 @@ TEST_F(BackgroundDownloaderWinTest, CleansStaleDownloads) {
 TEST_F(BackgroundDownloaderWinTest, RetainsRecentDownloads) {
   base::FilePath download_dir_path;
   ASSERT_TRUE(base::CreateNewTempDirectory(kTestDirPrefix, &download_dir_path));
-  ASSERT_EQ(
-      base::WriteFile(download_dir_path.AppendASCII(kTestDownloadFilename),
-                      kTestDownloadContent, sizeof(kTestDownloadContent)),
-      static_cast<int>(sizeof(kTestDownloadContent)));
+  ASSERT_TRUE(base::WriteFile(download_dir_path.Append(kTestDownloadFilename),
+                              kTestDownloadContent));
   downloader_->CleanupStaleDownloads();
   EXPECT_TRUE(base::DirectoryExists(download_dir_path));
 }

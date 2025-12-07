@@ -20,9 +20,10 @@ BoxReflection BoxReflectionForPaintLayer(const PaintLayer& layer,
 
   const LayoutBox* layout_box = layer.GetLayoutBox();
   // TODO(crbug.com/962299): Only correct if the paint offset is correct.
-  gfx::Size frame_size = PhysicalRect(layout_box->FirstFragment().PaintOffset(),
-                                      layout_box->Size())
-                             .PixelSnappedSize();
+  PhysicalSize stitched_size = layout_box->StitchedSize();
+  gfx::Size frame_size =
+      PhysicalRect(layout_box->FirstFragment().PaintOffset(), stitched_size)
+          .PixelSnappedSize();
   BoxReflection::ReflectionDirection direction =
       BoxReflection::kVerticalReflection;
   float offset = 0;
@@ -54,7 +55,7 @@ BoxReflection BoxReflectionForPaintLayer(const PaintLayer& layer,
   if (!mask_nine_piece.HasImage())
     return BoxReflection(direction, offset, PaintRecord(), gfx::RectF());
 
-  PhysicalRect mask_rect(PhysicalOffset(), layer.GetLayoutBox()->Size());
+  PhysicalRect mask_rect(PhysicalOffset(), stitched_size);
   PhysicalRect mask_bounding_rect(mask_rect);
   mask_bounding_rect.Expand(style.ImageOutsets(mask_nine_piece));
 

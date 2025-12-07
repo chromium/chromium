@@ -9,15 +9,20 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/history_clusters_util.h"
-#include "components/optimization_guide/core/optimization_guide_decider.h"
+#include "components/optimization_guide/core/hints/optimization_guide_decider.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/site_engagement/core/site_engagement_score_provider.h"
 
 namespace history_clusters {
 
 namespace {
+
+constexpr int kEngagementScoreCacheSize = 100;
+constexpr base::TimeDelta kEngagementScoreCacheRefreshDuration =
+    base::Minutes(120);
 
 // Returns whether `visit` should be added to `cluster`.
 bool ShouldAddVisitToCluster(const history::VisitRow& new_visit,
@@ -129,7 +134,7 @@ ContextClustererHistoryServiceObserver::ContextClustererHistoryServiceObserver(
     : history_service_(history_service),
       template_url_service_(template_url_service),
       optimization_guide_decider_(optimization_guide_decider),
-      engagement_score_cache_(GetConfig().engagement_score_cache_size),
+      engagement_score_cache_(kEngagementScoreCacheSize),
       engagement_score_provider_(engagement_score_provider),
       clock_(base::DefaultClock::GetInstance()) {
   if (history_service_) {
@@ -149,15 +154,19 @@ ContextClustererHistoryServiceObserver::
 
 void ContextClustererHistoryServiceObserver::OnURLVisited(
     history::HistoryService* history_service,
-    const history::URLRow& url_row,
-    const history::VisitRow& new_visit) {
+    const history::VisitedURLInfo& visited_url_info) {
   TRACE_EVENT0("browser",
                "ContextClusteringHistoryServiceObserver::OnURLVisited");
+  if (visited_url_info.response_code_category ==
+      history::VisitResponseCodeCategory::k404) {
+    return;
+  }
 
   ScopedVisitProcessingTimer url_visited_processing_timer(
       VisitProcessingStage::kUrlVisited);
 
   // Update the normalized URL if it's a search URL.
+  const history::URLRow& url_row = visited_url_info.url_row;
   std::string normalized_url = url_row.url().possibly_invalid_spec();
   std::u16string search_terms;
   bool is_search_normalized_url = false;
@@ -171,6 +180,7 @@ void ContextClustererHistoryServiceObserver::OnURLVisited(
     }
   }
 
+  const history::VisitRow& new_visit = visited_url_info.visit_row;
   history::ClusterVisit cluster_visit =
       CreateClusterVisit(normalized_url, is_search_normalized_url, new_visit);
 
@@ -360,10 +370,6 @@ void ContextClustererHistoryServiceObserver::CleanUpClusters() {
     return;
   }
 
-  base::UmaHistogramCounts1000(
-      "History.Clusters.ContextClusterer.NumClusters.AtCleanUp",
-      in_progress_clusters_.size());
-
   // See which clusters we need to clean up.
   base::flat_set<int64_t> clusters_to_finalize;
   for (const auto& cluster_id_and_cluster : in_progress_clusters_) {
@@ -378,13 +384,6 @@ void ContextClustererHistoryServiceObserver::CleanUpClusters() {
     FinalizeCluster(cluster_id);
   }
 
-  base::UmaHistogramCounts1000(
-      "History.Clusters.ContextClusterer.NumClusters.CleanedUp",
-      clusters_to_finalize.size());
-
-  base::UmaHistogramCounts1000(
-      "History.Clusters.ContextClusterer.NumClusters.PostCleanUp",
-      in_progress_clusters_.size());
 }
 
 void ContextClustererHistoryServiceObserver::FinalizeCluster(
@@ -484,11 +483,7 @@ ContextClustererHistoryServiceObserver::CreateClusterVisit(
 
 float ContextClustererHistoryServiceObserver::GetEngagementScore(
     const GURL& normalized_url) {
-  if (!GetConfig().use_engagement_score_cache) {
-    return engagement_score_provider_->GetScore(normalized_url);
-  }
-
-  std::string visit_host = normalized_url.host();
+  std::string visit_host = normalized_url.GetHost();
   auto it = engagement_score_cache_.Peek(visit_host);
   if (it != engagement_score_cache_.end() &&
       it->second.expiry_time > clock_->Now()) {
@@ -499,8 +494,7 @@ float ContextClustererHistoryServiceObserver::GetEngagementScore(
   engagement_score_cache_.Put(
       visit_host,
       CachedEngagementScore(
-          score,
-          clock_->Now() + GetConfig().engagement_score_cache_refresh_duration));
+          score, clock_->Now() + kEngagementScoreCacheRefreshDuration));
   return score;
 }
 

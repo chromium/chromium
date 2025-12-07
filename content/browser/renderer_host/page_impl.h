@@ -16,6 +16,7 @@
 #include "cc/input/browser_controls_state.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/renderer_host/stored_page.h"
+#include "content/browser/shared_storage/shared_storage_saved_query_data.h"
 #include "content/common/content_export.h"
 #include "content/common/navigation_client.mojom.h"
 #include "content/public/browser/page.h"
@@ -23,6 +24,7 @@
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/fingerprinting_protection/noise_token.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
@@ -31,13 +33,17 @@
 #include "ui/base/ime/mojom/virtual_keyboard_types.mojom.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "content/browser/android/page_proxy.h"
+#endif
+
 namespace cc {
-struct BrowserControlsOffsetTagsInfo;
+struct BrowserControlsOffsetTagModifications;
 }  // namespace cc
 
-namespace input {
+namespace viz {
 class PeakGpuMemoryTracker;
-}  // namespace input
+}  // namespace viz
 
 namespace content {
 
@@ -71,11 +77,13 @@ class CONTENT_EXPORT PageImpl : public Page {
   const std::string& GetContentsMimeType() const override;
   void SetResizableForTesting(std::optional<bool> resizable) override;
   std::optional<bool> GetResizable() override;
+#if BUILDFLAG(IS_ANDROID)
+  const base::android::JavaRef<jobject>& GetJavaPage() override;
+#endif
 
   // Setter for the `window.setResizable(bool)` API's value defining whether the
   // window can be resized or not. `std::nullopt` means the value is not set.
   void SetResizable(std::optional<bool> resizable);
-
   base::WeakPtr<PageImpl> GetWeakPtrImpl();
 
   virtual void UpdateManifestUrl(const GURL& manifest_url);
@@ -87,6 +95,15 @@ class CONTENT_EXPORT PageImpl : public Page {
   }
   void set_is_on_load_completed_in_main_document(bool completed) {
     is_on_load_completed_in_main_document_ = completed;
+  }
+
+  std::optional<base::TimeDelta> GetFirstContentfulPaintInMainDocumentDuration()
+      const {
+    return first_contentful_paint_in_main_document_duration_;
+  }
+
+  void SetFirstContentfulPaintInMainDocumentDuration(base::TimeDelta duration) {
+    first_contentful_paint_in_main_document_duration_ = duration;
   }
 
   bool is_main_document_element_available() const {
@@ -160,6 +177,8 @@ class CONTENT_EXPORT PageImpl : public Page {
   // RenderFrameHostManager::CommitPending and remove this.
   void SetActivationStartTime(base::TimeTicks activation_start);
 
+  void NotifyCrossOriginSubframePrerenderIsAllowed();
+
   // Called during the activation navigation. Sends an IPC to the RenderViews in
   // the renderers, instructing them to transition their documents from
   // prerendered to activated. Tells the corresponding RenderFrameHostImpls that
@@ -183,7 +202,8 @@ class CONTENT_EXPORT PageImpl : public Page {
       cc::BrowserControlsState constraints,
       cc::BrowserControlsState current,
       bool animate,
-      const std::optional<cc::BrowserControlsOffsetTagsInfo>& offset_tags_info);
+      const std::optional<cc::BrowserControlsOffsetTagModifications>&
+          offset_tag_modifications);
 
   float GetPageScaleFactor() const;
 
@@ -192,7 +212,16 @@ class CONTENT_EXPORT PageImpl : public Page {
   }
   double load_progress() const { return load_progress_; }
 
+  // The env() variables for virtual keyboard overlay and context menu insets
+  // are page-level, and don't get propagated into iframes, because a) that
+  // would be a cross-site info leak, and b) it's hard to know exactly how they
+  // would be used in that context.
+  // See https://github.com/w3c/csswg-drafts/issues/4670.
   void NotifyVirtualKeyboardOverlayRect(const gfx::Rect& keyboard_rect);
+
+  // This call will "show interest" in the Element with the provided DOMNodeID,
+  // which is presumed to have an `interestfor` attribute.
+  void ShowInterestInElement(int);
 
   void SetVirtualKeyboardMode(ui::mojom::VirtualKeyboardMode mode);
   ui::mojom::VirtualKeyboardMode virtual_keyboard_mode() const {
@@ -204,6 +233,37 @@ class CONTENT_EXPORT PageImpl : public Page {
 
   // Returns the keyboard layout mapping.
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap();
+
+  // Retrieves the index from `select_url_saved_query_index_results_` for the
+  // given key, or a special value indicating the status of the query. The key
+  // is a tuple of (`origin`, `script_url`, `operation_name`, `query_name`).
+  //
+  // - New Query: If no entry exists for the key, initializes a new entry with
+  //   an index of -1 (indicating pending) and returns -2.
+  // - Pending Query: If an entry exists but the index is -1, adds the provided
+  //   `callback` to the list of callbacks for this query and returns -1.
+  // - Completed Query: If an entry exists and the index is nonnegative, returns
+  //   the index.
+  int32_t GetSavedQueryResultIndexOrStoreCallback(
+      const url::Origin& origin,
+      const GURL& script_url,
+      const std::string& operation_name,
+      const std::u16string& query_name,
+      base::OnceCallback<void(uint32_t)> callback);
+
+  // Updates `select_url_saved_query_index_results_` for the given key as
+  // follows. The key is a tuple of (`origin`, `script_url`, `operation_name`,
+  // `query_name`).
+  //  - The index is of the entry is set to `index`.
+  //  - If the entry has any callbacks, runs them in order.
+  //
+  // Precondition: The entry exists and its index has value -1.
+  void SetSavedQueryResultIndexAndRunCallbacks(
+      const url::Origin& origin,
+      const GURL& script_url,
+      const std::string& operation_name,
+      const std::u16string& query_name,
+      uint32_t index);
 
   // Returns whether a pending call to `sharedStorage.selectURL()` has
   // sufficient budget for `site`, debiting `select_url_overall_budget_` and
@@ -257,6 +317,10 @@ class CONTENT_EXPORT PageImpl : public Page {
   // run for the main document.
   bool is_on_load_completed_in_main_document_ = false;
 
+  // Time taken for first contentful paint to occur.
+  std::optional<base::TimeDelta>
+      first_contentful_paint_in_main_document_duration_;
+
   // True if we've received a notification that the window.document element
   // became available for the main document.
   bool is_main_document_element_available_ = false;
@@ -292,6 +356,16 @@ class CONTENT_EXPORT PageImpl : public Page {
   // Stores the value set by `window.setResizable(bool)` API for whether the
   // window can be resized or not. `std::nullopt` means the value is not set.
   std::optional<bool> resizable_ = std::nullopt;
+
+  // A 64 bit token used as the initial hash value for canvas noising per page,
+  // where nullopt indicates canvas noising should not be enabled for the page.
+  // The initial hash value will be a combination of the main frame's origin and
+  // the browser context (see
+  // content/browser/fingerprinting_protection/canvas_noise_token_data.h for
+  // more details). Modifying the token value must happen prior to the commit of
+  // the page's main frame navigation and will be communicated to the renderer
+  // process during commit via CommitNavigationParams.
+  std::optional<blink::NoiseToken> canvas_noise_token_ = std::nullopt;
 
   // The theme color for the underlying document as specified
   // by theme-color meta tag.
@@ -332,6 +406,12 @@ class CONTENT_EXPORT PageImpl : public Page {
   // `blink::features::kSharedStorageSelectURLLimit` is enabled.
   base::flat_map<net::SchemefulSite, double> select_url_per_site_budget_;
 
+  // A map of tuples (origin, worklet script URL, operation name, query name) to
+  // the index returned for the corresponding `sharedStorage.selectURL()` query.
+  base::flat_map<std::tuple<url::Origin, GURL, std::string, std::u16string>,
+                 SharedStorageSavedQueryData>
+      select_url_saved_query_index_results_;
+
   // This class is owned by the main RenderFrameHostImpl and it's safe to keep a
   // reference to it.
   const raw_ref<RenderFrameHostImpl> main_document_;
@@ -357,6 +437,9 @@ class CONTENT_EXPORT PageImpl : public Page {
   // RenderFrameHostManager::CommitPending and remove this.
   std::optional<base::TimeTicks> activation_start_time_;
 
+  // True if cross origin iframe prerender is allowed.
+  bool is_cross_origin_subframe_prerender_allowed_ = false;
+
   // The resizing mode requested by Blink for the virtual keyboard.
   ui::mojom::VirtualKeyboardMode virtual_keyboard_mode_ =
       ui::mojom::VirtualKeyboardMode::kUnset;
@@ -376,7 +459,7 @@ class CONTENT_EXPORT PageImpl : public Page {
   // Created by NavigationRequest; ownership is maintained until the frame has
   // stopped loading, or we navigate away from the page before it finishes
   // loading.
-  std::unique_ptr<input::PeakGpuMemoryTracker> loading_memory_tracker_;
+  std::unique_ptr<viz::PeakGpuMemoryTracker> loading_memory_tracker_;
 
   // Whether the page is overriding the user agent or not.
   bool is_overriding_user_agent_ = false;
@@ -385,6 +468,12 @@ class CONTENT_EXPORT PageImpl : public Page {
   // or when activating a prerendered page, with the same params as the original
   // navigation.
   mojom::DidCommitProvisionalLoadParamsPtr last_commit_params_;
+
+#if BUILDFLAG(IS_ANDROID)
+  // For each C++ Page, there is a Java counterpart. It is the JNI bridge in
+  // between the two.
+  std::unique_ptr<PageProxy> page_proxy_;
+#endif
 
   base::WeakPtrFactory<PageImpl> weak_factory_{this};
 };

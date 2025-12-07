@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_MANAGEMENT_FLOW_CONTROLLER_IMPL_H_
 
 #include <memory>
+
 #include "base/containers/queue.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
@@ -15,7 +16,8 @@ struct CoreAccountInfo;
 class Profile;
 class ProfilePickerWebContentsHost;
 class ProfileManagementStepController;
-class ProfilePickerSignedInFlowController;
+class ProfilePickerPostSignInAdapter;
+class SigninUIError;
 
 namespace content {
 class WebContents;
@@ -27,21 +29,15 @@ class ProfileManagementFlowControllerImpl
     : public ProfileManagementFlowController {
  public:
   ProfileManagementFlowControllerImpl(ProfilePickerWebContentsHost* host,
-                                      ClearHostClosure clear_host_callback);
+                                      ClearHostClosure clear_host_callback,
+                                      std::string_view flow_type_string);
   ~ProfileManagementFlowControllerImpl() override;
 
  protected:
-  void SwitchToIdentityStepsFromPostSignIn(
-      Profile* signed_in_profile,
-      const CoreAccountInfo& account_info,
-      std::unique_ptr<content::WebContents> contents,
-      StepSwitchFinishedCallback step_switch_finished_callback);
-
-  virtual std::unique_ptr<ProfilePickerSignedInFlowController>
-  CreateSignedInFlowController(
-      Profile* signed_in_profile,
-      const CoreAccountInfo& account_info,
-      std::unique_ptr<content::WebContents> contents) = 0;
+  virtual std::unique_ptr<ProfilePickerPostSignInAdapter>
+  CreatePostSignInAdapter(Profile* signed_in_profile,
+                          const CoreAccountInfo& account_info,
+                          std::unique_ptr<content::WebContents> contents) = 0;
 
   // To be called when the sign-in and/or sync steps of the flow are completed
   // (or skipped), to proceed with additional steps or finish the flow.
@@ -49,14 +45,13 @@ class ProfileManagementFlowControllerImpl
   // When `is_continue_callback` is true, the flow should finishing up
   // immediately so that `post_host_cleared_callback` can be executed, without
   // showing other steps.
-  // Otherwise, the flow can display post-identity steps, passing both
-  // `post_host_cleared_callback` and `step_switch_finished_callback` along so
-  // they can be executed at the right time.
+  // Otherwise, the flow can display post-identity steps, passing
+  // `post_host_cleared_callback` along so they can be executed at the right
+  // time.
   void HandleIdentityStepsCompleted(
       Profile* profile,
       PostHostClearedCallback post_host_cleared_callback,
-      bool is_continue_callback,
-      StepSwitchFinishedCallback step_switch_finished_callback);
+      bool is_continue_callback);
 
   // Register the steps that will be shown after the identity step. The steps
   // should be registered and pushed to the queue in the order in which they
@@ -67,32 +62,29 @@ class ProfileManagementFlowControllerImpl
 
   // Switches to the step at the front of the `post_identity_steps_` queue if it
   // is not empty.
-  // `step_switch_finished_callback` will be forwarded to `SwitchToStep()`.
-  void AdvanceToNextPostIdentityStep(
-      StepSwitchFinishedCallback step_switch_finished_callback);
+  void AdvanceToNextPostIdentityStep();
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Creates, registers and switches to steps to implement the identity flow
   // (signing in then doing the post sign in, which are driven by `Delegate`).
   // Uses an existing profile if the `profile_path` is not empty.
+  // If `initial_email` is not empty, it will be used to pre-fill the email
+  // field in the sign-in screen.
   void SwitchToIdentityStepsFromAccountSelection(
       StepSwitchFinishedCallback step_switch_finished_callback,
       signin_metrics::AccessPoint access_point,
-      base::FilePath profile_path);
-#endif
+      base::FilePath profile_path,
+      const std::string& initial_email = std::string());
 
  private:
   // Move to the steps that come after the identity step.
   void SwitchToPostIdentitySteps(
-      PostHostClearedCallback post_host_cleared_callback,
-      StepSwitchFinishedCallback step_switch_finished_callback);
+      PostHostClearedCallback post_host_cleared_callback);
 
   std::unique_ptr<ProfileManagementStepController> CreatePostSignInStep(
       Profile* signed_in_profile,
       const CoreAccountInfo& account_info,
       std::unique_ptr<content::WebContents> contents);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   std::unique_ptr<ProfileManagementStepController> CreateSamlStep(
       Profile* signed_in_profile,
       std::unique_ptr<content::WebContents> contents);
@@ -104,7 +96,10 @@ class ProfileManagementFlowControllerImpl
       const CoreAccountInfo& account_info,
       std::unique_ptr<content::WebContents> contents,
       StepSwitchFinishedCallback step_switch_finished_callback);
-#endif
+
+  void HandleSigninError(Profile* profile,
+                         content::WebContents* contents,
+                         const SigninUIError& error);
 
   // The list of steps that are added to the flow.
   // It is populated by the return value of `RegisterPostIdentitySteps` that

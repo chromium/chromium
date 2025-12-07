@@ -9,8 +9,7 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
@@ -21,14 +20,21 @@
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/system/invitation.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/base/auto_thread.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/base/switches.h"
 #include "remoting/host/desktop_process.h"
-#include "remoting/host/host_main.h"
 #include "remoting/host/me2me_desktop_environment.h"
-#include "remoting/host/win/session_desktop_environment.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/functional/bind.h"
+#include "remoting/host/win/session_interaction_strategy.h"
+#else
+#include "remoting/host/create_desktop_interaction_strategy_factory.h"
+#include "remoting/host/host_main.h"
+#endif
 
 namespace remoting {
 
@@ -77,23 +83,26 @@ int DesktopProcessMain() {
                                  io_task_runner, std::move(message_pipe));
 
   // Create a platform-dependent environment factory.
-  std::unique_ptr<DesktopEnvironmentFactory> desktop_environment_factory;
 #if BUILDFLAG(IS_WIN)
   // base::Unretained() is safe here: |desktop_process| outlives run_loop.Run().
   auto inject_sas_closure = base::BindRepeating(
       &DesktopProcess::InjectSas, base::Unretained(&desktop_process));
   auto lock_workstation_closure = base::BindRepeating(
       &DesktopProcess::LockWorkstation, base::Unretained(&desktop_process));
-
-  desktop_environment_factory =
-      std::make_unique<SessionDesktopEnvironmentFactory>(
-          ui_task_runner, video_capture_task_runner, input_task_runner,
-          ui_task_runner, inject_sas_closure, lock_workstation_closure);
+  auto interaction_strategy_factory =
+      std::make_unique<SessionInteractionStrategyFactory>(
+          ui_task_runner, ui_task_runner, video_capture_task_runner,
+          input_task_runner, std::move(inject_sas_closure),
+          std::move(lock_workstation_closure));
 #else   // !BUILDFLAG(IS_WIN)
-  desktop_environment_factory.reset(new Me2MeDesktopEnvironmentFactory(
-      ui_task_runner, video_capture_task_runner, input_task_runner,
-      ui_task_runner));
+  auto interaction_strategy_factory = CreateDesktopInteractionStrategyFactory(
+      ui_task_runner, ui_task_runner, video_capture_task_runner,
+      input_task_runner);
 #endif  // !BUILDFLAG(IS_WIN)
+  auto desktop_environment_factory =
+      std::make_unique<Me2MeDesktopEnvironmentFactory>(
+          ui_task_runner, ui_task_runner,
+          std::move(interaction_strategy_factory));
 
   if (!desktop_process.Start(std::move(desktop_environment_factory))) {
     return kInitializationFailed;

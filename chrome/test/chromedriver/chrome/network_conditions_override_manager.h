@@ -42,7 +42,7 @@ class NetworkConditionsOverrideManager : public DevToolsEventListener {
   Status ApplyOverride(const NetworkConditions* network_conditions);
 
   raw_ptr<DevToolsClient> client_;
-  raw_ptr<const NetworkConditions> overridden_network_conditions_;
+  std::unique_ptr<NetworkConditions> overridden_network_conditions_;
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_NETWORK_CONDITIONS_OVERRIDE_MANAGER_H_

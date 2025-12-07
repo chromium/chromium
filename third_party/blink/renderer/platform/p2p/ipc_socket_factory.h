@@ -7,28 +7,31 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/unguessable_token.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/webrtc/api/environment/environment.h"
 #include "third_party/webrtc/api/packet_socket_factory.h"
 
 namespace blink {
 
 class P2PSocketDispatcher;
 
-// IpcPacketSocketFactory implements rtc::PacketSocketFactory
+// IpcPacketSocketFactory implements webrtc::PacketSocketFactory
 // interface for libjingle using IPC-based P2P sockets. The class must
 // be created and used on a thread that is a libjingle thread (implements
-// rtc::Thread) and also has associated base::MessageLoop. Each
+// webrtc::Thread) and also has associated base::MessageLoop. Each
 // socket created by the factory must be used on the thread it was
 // created on.
 // The class needs to be destroyed on the libjingle network thread.
-class IpcPacketSocketFactory : public rtc::PacketSocketFactory {
+class IpcPacketSocketFactory : public webrtc::PacketSocketFactory {
  public:
   PLATFORM_EXPORT explicit IpcPacketSocketFactory(
-      WTF::CrossThreadFunction<
+      CrossThreadFunction<
           void(base::OnceCallback<void(std::optional<base::UnguessableToken>)>)>
           devtools_token_getter,
       P2PSocketDispatcher* socket_dispatcher,
@@ -38,24 +41,27 @@ class IpcPacketSocketFactory : public rtc::PacketSocketFactory {
   IpcPacketSocketFactory& operator=(const IpcPacketSocketFactory&) = delete;
   ~IpcPacketSocketFactory() override;
 
-  rtc::AsyncPacketSocket* CreateUdpSocket(
-      const rtc::SocketAddress& local_address,
+  std::unique_ptr<webrtc::AsyncPacketSocket> CreateUdpSocket(
+      const webrtc::Environment&,
+      const webrtc::SocketAddress& local_address,
       uint16_t min_port,
       uint16_t max_port) override;
-  rtc::AsyncListenSocket* CreateServerTcpSocket(
-      const rtc::SocketAddress& local_address,
+  std::unique_ptr<webrtc::AsyncListenSocket> CreateServerTcpSocket(
+      const webrtc::Environment&,
+      const webrtc::SocketAddress& local_address,
       uint16_t min_port,
       uint16_t max_port,
       int opts) override;
-  rtc::AsyncPacketSocket* CreateClientTcpSocket(
-      const rtc::SocketAddress& local_address,
-      const rtc::SocketAddress& remote_address,
-      const rtc::PacketSocketTcpOptions& opts) override;
+  std::unique_ptr<webrtc::AsyncPacketSocket> CreateClientTcpSocket(
+      const webrtc::Environment&,
+      const webrtc::SocketAddress& local_address,
+      const webrtc::SocketAddress& remote_address,
+      const webrtc::PacketSocketTcpOptions& opts) override;
   std::unique_ptr<webrtc::AsyncDnsResolverInterface> CreateAsyncDnsResolver()
       override;
 
  private:
-  WTF::CrossThreadFunction<void(
+  CrossThreadFunction<void(
       base::OnceCallback<void(std::optional<base::UnguessableToken>)>)>
       devtools_token_getter_;
   const bool batch_udp_packets_;

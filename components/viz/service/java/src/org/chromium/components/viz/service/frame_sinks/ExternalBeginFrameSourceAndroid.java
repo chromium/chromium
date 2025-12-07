@@ -11,9 +11,11 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
 
 /** Provides a VSyncMonitor backed BeginFrameSource. */
 @JNINamespace("viz")
+@NullMarked
 public class ExternalBeginFrameSourceAndroid implements Choreographer.FrameCallback {
     private static final long NANOSECONDS_PER_SECOND = 1000000000;
     private static final long NANOSECONDS_PER_MICROSECOND = 1000;
@@ -98,7 +100,6 @@ public class ExternalBeginFrameSourceAndroid implements Choreographer.FrameCallb
             ExternalBeginFrameSourceAndroidJni.get()
                     .onVSync(
                             mNativeExternalBeginFrameSourceAndroid,
-                            ExternalBeginFrameSourceAndroid.this,
                             frameTimeNanos / NANOSECONDS_PER_MICROSECOND,
                             mRefreshPeriodNano / NANOSECONDS_PER_MICROSECOND);
             postCallback();
@@ -116,7 +117,6 @@ public class ExternalBeginFrameSourceAndroid implements Choreographer.FrameCallb
     interface Natives {
         void onVSync(
                 long nativeExternalBeginFrameSourceAndroid,
-                ExternalBeginFrameSourceAndroid caller,
                 long vsyncTimeMicros,
                 long vsyncPeriodMicros);
     }

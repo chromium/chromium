@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox.styles;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -34,7 +36,6 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
@@ -53,9 +54,8 @@ public final class OmniboxImageSupplierUnitTest {
     private static final int FALLBACK_COLOR = 0xACE0BA5E;
 
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
-    public @Rule JniMocker mJniMocker = new JniMocker();
 
-    private ArgumentCaptor<LargeIconCallback> mIconCallbackCaptor =
+    private final ArgumentCaptor<LargeIconCallback> mIconCallbackCaptor =
             ArgumentCaptor.forClass(LargeIconCallback.class);
 
     private OmniboxImageSupplier mSupplier;
@@ -72,13 +72,13 @@ public final class OmniboxImageSupplierUnitTest {
 
     @Before
     public void setUp() {
-        mJniMocker.mock(LargeIconBridgeJni.TEST_HOOKS, mLargeIconBridgeJni);
+        LargeIconBridgeJni.setInstanceForTesting(mLargeIconBridgeJni);
 
         var context = ContextUtils.getApplicationContext();
         mFaviconSize =
                 context.getResources()
                         .getDimensionPixelSize(R.dimen.omnibox_suggestion_favicon_size);
-        assert mFaviconSize != 0;
+        assertThat(mFaviconSize).isNotEqualTo(0);
         mSupplier = new OmniboxImageSupplier(context);
         mSupplier.setRoundedIconGeneratorForTesting(mIconGenerator);
 
@@ -112,7 +112,6 @@ public final class OmniboxImageSupplierUnitTest {
      * Confirm the type of icon reported to the caller.
      *
      * @param bitmap The expected bitmap.
-     * @param type The expected favicon type.
      */
     private void verifyReturnedIcon(@Nullable Bitmap bitmap) {
         verify(mCallback1, times(1)).onResult(eq(bitmap));

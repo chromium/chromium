@@ -7,7 +7,6 @@
 #include <string_view>
 
 #include "base/barrier_closure.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"

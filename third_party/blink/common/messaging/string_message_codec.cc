@@ -2,25 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
 
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/containers/buffer_iterator.h"
 #include "base/containers/span.h"
-#include "base/functional/overloaded.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/mojom/array_buffer/array_buffer_contents.mojom.h"
 
 namespace blink {
@@ -48,15 +44,18 @@ class VectorArrayBuffer : public WebMessageArrayBufferPayload {
 
   std::optional<base::span<const uint8_t>> GetAsSpanIfPossible()
       const override {
-    return base::make_span(data_).subspan(position_, length_);
+    return AsSpan();
   }
 
   void CopyInto(base::span<uint8_t> dest) const override {
-    CHECK_GE(dest.size(), length_);
-    memcpy(dest.data(), data_.data() + position_, length_);
+    dest.copy_from(AsSpan());
   }
 
  private:
+  base::span<const uint8_t> AsSpan() const {
+    return base::span(data_).subspan(position_, length_);
+  }
+
   std::vector<uint8_t> data_;
   size_t position_;
   size_t length_;
@@ -83,12 +82,11 @@ class BigBufferArrayBuffer : public WebMessageArrayBufferPayload {
 
   std::optional<base::span<const uint8_t>> GetAsSpanIfPossible()
       const override {
-    return base::make_span(data_);
+    return base::span(data_);
   }
 
   void CopyInto(base::span<uint8_t> dest) const override {
-    CHECK(dest.size() >= data_.size());
-    memcpy(dest.data(), data_.data(), data_.size());
+    dest.copy_from(base::span(data_));
   }
 
  private:
@@ -134,10 +132,8 @@ void WriteUint32(uint32_t value, std::vector<uint8_t>* buffer) {
   }
 }
 
-void WriteBytes(const char* bytes,
-                size_t num_bytes,
-                std::vector<uint8_t>* buffer) {
-  buffer->insert(buffer->end(), bytes, bytes + num_bytes);
+void WriteBytes(base::span<const uint8_t> bytes, std::vector<uint8_t>* buffer) {
+  buffer->insert(buffer->end(), bytes.begin(), bytes.end());
 }
 
 bool ReadUint8(base::BufferIterator<const uint8_t>& iter, uint8_t* value) {
@@ -192,22 +188,24 @@ TransferableMessage EncodeWebMessagePayload(const WebMessagePayload& payload) {
   std::vector<uint8_t> buffer;
   WriteUint8(kVersionTag, &buffer);
   WriteUint32(kVersion, &buffer);
-  absl::visit(
-      base::Overloaded{
+  std::visit(
+      absl::Overload{
           [&](const std::u16string& str) {
             if (ContainsOnlyLatin1(str)) {
               std::string data_latin1(str.cbegin(), str.cend());
               WriteUint8(kOneByteStringTag, &buffer);
               WriteUint32(data_latin1.size(), &buffer);
-              WriteBytes(data_latin1.c_str(), data_latin1.size(), &buffer);
+              WriteBytes(base::as_byte_span(data_latin1), &buffer);
             } else {
-              size_t num_bytes = str.size() * sizeof(char16_t);
-              if ((buffer.size() + 1 + BytesNeededForUint32(num_bytes)) & 1)
+              auto str_as_bytes = base::as_byte_span(str);
+              if ((buffer.size() + 1 +
+                   BytesNeededForUint32(str_as_bytes.size())) &
+                  1) {
                 WriteUint8(kPaddingTag, &buffer);
+              }
               WriteUint8(kTwoByteStringTag, &buffer);
-              WriteUint32(num_bytes, &buffer);
-              WriteBytes(reinterpret_cast<const char*>(str.data()), num_bytes,
-                         &buffer);
+              WriteUint32(str_as_bytes.size(), &buffer);
+              WriteBytes(str_as_bytes, &buffer);
             }
           },
           [&](const std::unique_ptr<WebMessageArrayBufferPayload>&
@@ -217,7 +215,7 @@ TransferableMessage EncodeWebMessagePayload(const WebMessagePayload& payload) {
             WriteUint32(0, &buffer);
 
             mojo_base::BigBuffer big_buffer(array_buffer->GetLength());
-            array_buffer->CopyInto(base::make_span(big_buffer));
+            array_buffer->CopyInto(base::span(big_buffer));
             message.array_buffer_contents_array.push_back(
                 mojom::SerializedArrayBufferContents::New(
                     std::move(big_buffer),

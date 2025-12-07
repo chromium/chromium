@@ -20,7 +20,6 @@ class LookalikeUrlTabHelper
  private:
   explicit LookalikeUrlTabHelper(web::WebState* web_state);
   friend class web::WebStateUserData<LookalikeUrlTabHelper>;
-  WEB_STATE_USER_DATA_KEY_DECL();
 
   // web::WebStatePolicyDecider implementation
   void ShouldAllowResponse(

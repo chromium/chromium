@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/common/credential_provider/archivable_credential+passkey.h"
-
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#import "ios/chrome/common/credential_provider/archivable_credential+passkey.h"
 
 using base::HexEncode;
 using base::SysNSStringToUTF8;
@@ -29,8 +28,7 @@ NSString* RecordIdentifierForPasskey(
   // These are the UNIQUE keys in the login database.
   return [NSString
       stringWithFormat:@"%@|%@", SysUTF8ToNSString(passkey.rp_id()),
-                       SysUTF8ToNSString(
-                           HexEncode(passkey.credential_id()))];
+                       SysUTF8ToNSString(HexEncode(passkey.credential_id()))];
 }
 
 sync_pb::WebauthnCredentialSpecifics PasskeyFromCredential(
@@ -47,6 +45,11 @@ sync_pb::WebauthnCredentialSpecifics PasskeyFromCredential(
   credential_specifics.set_creation_time(credential.creationTime);
   credential_specifics.set_last_used_time_windows_epoch_micros(
       credential.lastUsedTime);
+  credential_specifics.set_hidden(credential.hidden);
+  if (credential.hidden) {
+    credential_specifics.set_hidden_time(credential.hiddenTime);
+  }
+  credential_specifics.set_edited_by_user(credential.editedByUser);
 
   if ([credential.privateKey length] > 0) {
     credential_specifics.set_private_key(DataToString(credential.privateKey));
@@ -79,7 +82,10 @@ sync_pb::WebauthnCredentialSpecifics PasskeyFromCredential(
                     privateKey:StringToData(passkey.private_key())
                      encrypted:StringToData(passkey.encrypted())
                   creationTime:passkey.creation_time()
-                  lastUsedTime:passkey.last_used_time_windows_epoch_micros()];
+                  lastUsedTime:passkey.last_used_time_windows_epoch_micros()
+                        hidden:passkey.hidden()
+                    hiddenTime:passkey.hidden_time()
+                  editedByUser:passkey.edited_by_user()];
 }
 
 @end

@@ -36,6 +36,7 @@
 namespace blink {
 
 class WebGLRenderingContextBase;
+class ExecutionContext;
 
 class ANGLEInstancedArrays final : public WebGLExtension {
   DEFINE_WRAPPERTYPEINFO();
@@ -44,7 +45,7 @@ class ANGLEInstancedArrays final : public WebGLExtension {
   static bool Supported(WebGLRenderingContextBase*);
   static const char* ExtensionName();
 
-  explicit ANGLEInstancedArrays(WebGLRenderingContextBase*);
+  ANGLEInstancedArrays(WebGLRenderingContextBase*, ExecutionContext*);
 
   WebGLExtensionName GetName() const override;
 

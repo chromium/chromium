@@ -111,6 +111,45 @@ chrome.test.getConfig(config => chrome.test.runTests([
     });
   },
 
+  async function closeTarget() {
+    const tab = await openTab(chrome.runtime.getURL('inspected.html'));
+
+    let onDetachReceived = false;
+    let tabRemovedReceived = false;
+
+    function checkFinish() {
+      if (onDetachReceived && tabRemovedReceived)
+        chrome.test.succeed();
+    }
+
+    function onDetach(debuggee, reason) {
+      chrome.test.assertEq(tab.id, debuggee.tabId);
+      chrome.test.assertEq("target_closed", reason);
+      chrome.debugger.onDetach.removeListener(onDetach);
+      onDetachReceived = true;
+      checkFinish();
+    }
+
+    function onTabRemoved(closedTabId) {
+      chrome.test.assertEq(tab.id, closedTabId);
+      chrome.tabs.onRemoved.removeListener(onTabRemoved);
+      tabRemovedReceived = true;
+      checkFinish();
+    }
+
+    const debuggee = {tabId: tab.id};
+    chrome.debugger.attach(debuggee, protocolVersion, function() {
+      chrome.debugger.getTargets(function(targets) {
+        const target = targets.find(t => t.tabId === tab.id);
+        chrome.test.assertTrue(!!target);
+        chrome.debugger.onDetach.addListener(onDetach);
+        chrome.tabs.onRemoved.addListener(onTabRemoved);
+        chrome.debugger.sendCommand(debuggee, "Target.closeTarget",
+            { targetId: target.id }, () => chrome.test.assertNoLastError());
+      });
+    });
+  },
+
   async function attachToWebUI() {
     const tab = await openTab('chrome://version');
     const debuggee = {tabId: tab.id};
@@ -447,5 +486,53 @@ chrome.test.getConfig(config => chrome.test.runTests([
             {autoAttach: true, waitForDebuggerOnStart: false}, finish);
       });
     });
+  },
+
+  async function detachFromOOPIFAllowed() {
+    if (!config.customArg) {
+      chrome.test.succeed();
+      return;
+    }
+
+    const urls = config.customArg.split(";");
+    const mainFrameUrl = urls[0];
+    const oopFrameUrl = urls[1];
+
+    chrome.tabs.query({url: "http://*/*" + mainFrameUrl}, function(tabs) {
+      chrome.test.assertNoLastError();
+      const debuggee = {tabId: tabs[0].id};
+
+      function onEvent(_, method, params) {
+        if (method === "Target.attachedToTarget") {
+          chrome.test.assertTrue(
+              params.targetInfo.url.indexOf(oopFrameUrl) !== -1);
+
+          chrome.debugger.sendCommand(
+              debuggee,
+              "Target.detachFromTarget", { sessionId: params.sessionId},
+              function(response) {
+                // Extension should be allowed to detach from
+                // auto-attached targets.
+                chrome.test.assertNoLastError();
+                chrome.test.assertEq({}, response);
+                finish();
+              });
+        }
+      }
+
+      function finish() {
+        chrome.test.assertNoLastError();
+        chrome.debugger.onEvent.removeListener(onEvent);
+        chrome.debugger.detach(debuggee, pass());
+      }
+
+      chrome.debugger.attach(debuggee, protocolVersion, () => {
+        chrome.test.assertNoLastError();
+        chrome.debugger.onEvent.addListener(onEvent);
+        chrome.debugger.sendCommand(debuggee, "Target.setAutoAttach",
+            {autoAttach: true, waitForDebuggerOnStart: false});
+      });
+    });
   }
+
 ]));

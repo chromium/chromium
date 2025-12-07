@@ -256,7 +256,7 @@ class LocalPresentationManager : public KeyedService {
  private:
   friend class LocalPresentationManagerTest;
   friend class MockLocalPresentationManager;
-  FRIEND_TEST_ALL_PREFIXES(PresentationServiceDelegateImplTest,
+  FRIEND_TEST_ALL_PREFIXES(ControllerPresentationServiceDelegateImplTest,
                            ConnectToLocalPresentation);
 
   using LocalPresentationMap =

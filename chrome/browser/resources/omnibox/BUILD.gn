@@ -7,17 +7,12 @@ import("//ui/webui/resources/tools/build_webui.gni")
 build_webui("build") {
   grd_prefix = "omnibox"
 
-  # TODO(crbug.com/339686362): Remove this once `terser` (JS minifier) has been
-  # updated to support the new `with` syntax.
-  optimize = false
-
   web_component_files = [
     "ml/ml_calculator.ts",
     "ml/ml_chart.ts",
     "ml/ml_table.ts",
     "ml/ml_ui.ts",
   ]
-  html_to_wrapper_template = "native"
 
   static_files = [
     "icon_tabs.svg",
@@ -36,8 +31,8 @@ build_webui("build") {
 
   # Some of the files below even though they hold web component definitions,
   # they don't use dedicated HTML files for each web component and therefore for
-  # the purposes of build_webui() are passed as non_web_component_files.
-  non_web_component_files = [
+  # the purposes of build_webui() are passed as ts_files.
+  ts_files = [
     "ml/ml_browser_proxy.ts",
     "omnibox.ts",
     "omnibox_element.ts",
@@ -46,12 +41,18 @@ build_webui("build") {
     "omnibox_util.ts",
   ]
 
-  mojo_files_deps =
-      [ "//chrome/browser/ui/webui/omnibox:mojo_bindings_ts__generator" ]
-  mojo_files =
-      [ "$root_gen_dir/chrome/browser/ui/webui/omnibox/omnibox.mojom-webui.ts" ]
+  mojo_files_deps = [
+    "//chrome/browser/ui/webui/omnibox:mojo_bindings_ts__generator",
+    "//components/omnibox/browser:mojo_bindings_ts__generator",
+  ]
+
+  mojo_files = [
+    "$root_gen_dir/chrome/browser/ui/webui/omnibox/omnibox_internals.mojom-webui.ts",
+    "$root_gen_dir/components/omnibox/browser/omnibox.mojom-webui.ts",
+  ]
 
   ts_tsconfig_base = "tsconfig_base.json"
+  ts_definitions = [ "css.d.ts" ]
   ts_deps = [
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",

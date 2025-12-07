@@ -74,7 +74,7 @@ class CORE_EXPORT BackgroundHTMLScanner {
 
   // Creates a sequence bound BackgroundHTMLScanner which will live on a
   // background thread. Methods can be called using SequenceBound::AsyncCall().
-  static WTF::SequenceBound<BackgroundHTMLScanner> Create(
+  static SequenceBound<BackgroundHTMLScanner> Create(
       const HTMLParserOptions& options,
       ScriptableDocumentParser* parser);
   BackgroundHTMLScanner(std::unique_ptr<HTMLTokenizer> tokenizer,

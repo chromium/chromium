@@ -4,7 +4,13 @@
 
 source_set("discover_feed") {
   testonly = true
-  sources = [ "test_discover_feed.mm" ]
-  deps =
-      [ "//ios/public/provider/chrome/browser/discover_feed:discover_feed_api" ]
+  sources = [
+    "test_discover_feed.mm",
+    "test_discover_feed_service.h",
+    "test_discover_feed_service.mm",
+  ]
+  deps = [
+    "//ios/chrome/test/fakes",
+    "//ios/public/provider/chrome/browser/discover_feed:discover_feed_api",
+  ]
 }

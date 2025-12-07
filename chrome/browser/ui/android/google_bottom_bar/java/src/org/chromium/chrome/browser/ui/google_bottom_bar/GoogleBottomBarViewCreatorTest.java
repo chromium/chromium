@@ -38,10 +38,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -61,6 +61,7 @@ import org.chromium.ui.base.ViewUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /** Unit tests for {@link GoogleBottomBarViewCreator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -68,6 +69,8 @@ import java.util.Map;
 public class GoogleBottomBarViewCreatorTest {
     private static final Map<Integer, Integer> BUTTON_ID_TO_CUSTOM_BUTTON_ID_MAP =
             Map.of(SAVE, 100, SHARE, 101, PIH_BASIC, 103, CUSTOM, 105, SEARCH, 106, HOME, 107);
+
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
@@ -89,8 +92,6 @@ public class GoogleBottomBarViewCreatorTest {
     @Before
     public void setup() {
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
-        MockitoAnnotations.initMocks(this);
-
         mConfigCreator = new BottomBarConfigCreator(mActivity);
 
         when(mTabSupplier.get()).thenReturn(mTab);
@@ -620,7 +621,7 @@ public class GoogleBottomBarViewCreatorTest {
         mGoogleBottomBarViewCreator = getGoogleBottomBarViewCreator(bottomBarConfig);
 
         assertEquals(
-                ViewUtils.dpToPx(mActivity, (float) 123),
+                ViewUtils.dpToPx(mActivity, 123.0f),
                 mGoogleBottomBarViewCreator.getBottomBarHeightInPx());
     }
 
@@ -691,7 +692,7 @@ public class GoogleBottomBarViewCreatorTest {
     private void assertButtonCreated(
             ImageButton button, BottomBarConfig.ButtonConfig buttonConfig) {
         assertEquals(button.getId(), buttonConfig.getId());
-        assertEquals(button.getVisibility(), View.VISIBLE);
+        assertEquals(View.VISIBLE, button.getVisibility());
         assertEquals(button.getContentDescription(), buttonConfig.getDescription());
         assertEquals(button.getDrawable(), buttonConfig.getIcon());
         assertTrue(button.hasOnClickListeners());

@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 
 if (is_android) {
@@ -52,6 +51,13 @@ component("gamepad") {
     "hid_haptic_gamepad.cc",
     "hid_haptic_gamepad.h",
     "hid_writer.h",
+    "normalization.h",
+    "simulated_gamepad_data_fetcher.cc",
+    "simulated_gamepad_data_fetcher.h",
+    "simulated_gamepad_inputs.cc",
+    "simulated_gamepad_inputs.h",
+    "simulated_gamepad_params.cc",
+    "simulated_gamepad_params.h",
     "xbox_hid_controller.cc",
     "xbox_hid_controller.h",
   ]
@@ -108,10 +114,7 @@ component("gamepad") {
         "udev_gamepad_linux.cc",
         "udev_gamepad_linux.h",
       ]
-      deps += [
-        "//build:chromeos_buildflags",
-        "//device/udev_linux",
-      ]
+      deps += [ "//device/udev_linux" ]
     }
   }
 
@@ -144,7 +147,6 @@ component("gamepad") {
       "CoreFoundation.framework",
       "Foundation.framework",
       "GameController.framework",
-      "IOKit.framework",
     ]
 
     if (is_mac) {
@@ -160,13 +162,20 @@ component("gamepad") {
         "xbox_data_fetcher_mac.cc",
         "xbox_data_fetcher_mac.h",
       ]
-      frameworks += [ "ForceFeedback.framework" ]
+      frameworks += [
+        "ForceFeedback.framework",
+        "IOKit.framework",
+      ]
     }
   }
 
   if (is_chromeos) {
     deps += [ "//chromeos/dbus/permission_broker" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 static_library("test_helpers") {
@@ -197,6 +206,10 @@ static_library("test_helpers") {
       "test_support/fake_winrt_wgi_environment.h",
       "test_support/wgi_test_error_code.h",
     ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 }
 

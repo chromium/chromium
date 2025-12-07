@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "chrome/test/chromedriver/chrome/client_hints.h"
 #include "chrome/test/chromedriver/chrome/device_metrics.h"
@@ -17,8 +18,11 @@ class Status;
 struct MobileDevice {
   MobileDevice();
   MobileDevice(const MobileDevice&);
-  ~MobileDevice();
+  MobileDevice(MobileDevice&&);
   MobileDevice& operator=(const MobileDevice&);
+  MobileDevice& operator=(MobileDevice&&);
+  ~MobileDevice();
+
   // Returns the reduced User-agent string for
   // https://github.com/WICG/ua-client-hints.
   Status GetReducedUserAgent(std::string major_version,

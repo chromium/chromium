@@ -9,9 +9,9 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/numerics/safe_conversions.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -34,15 +34,10 @@ const char kFeaturePolicyBlocked[] =
     "Access to the feature \"local-fonts\" is disallowed by Permissions Policy";
 }
 
-// static
-const char FontAccess::kSupplementName[] = "FontAccess";
-
-FontAccess::FontAccess(LocalDOMWindow* window)
-    : Supplement<LocalDOMWindow>(*window), remote_(window) {}
+FontAccess::FontAccess(LocalDOMWindow* window) : remote_(window) {}
 
 void FontAccess::Trace(blink::Visitor* visitor) const {
   visitor->Trace(remote_);
-  Supplement<LocalDOMWindow>::Trace(visitor);
 }
 
 // static
@@ -58,10 +53,10 @@ ScriptPromise<IDLSequence<FontMetadata>> FontAccess::queryLocalFonts(
 
 // static
 FontAccess* FontAccess::From(LocalDOMWindow* window) {
-  auto* supplement = Supplement<LocalDOMWindow>::From<FontAccess>(window);
+  FontAccess* supplement = window->GetFontAccess();
   if (!supplement) {
     supplement = MakeGarbageCollected<FontAccess>(window);
-    Supplement<LocalDOMWindow>::ProvideTo(*window, supplement);
+    window->SetFontAccess(supplement);
   }
   return supplement;
 }
@@ -82,7 +77,7 @@ ScriptPromise<IDLSequence<FontMetadata>> FontAccess::QueryLocalFontsImpl(
   }
   ExecutionContext* context = ExecutionContext::From(script_state);
   if (!context->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kLocalFonts,
+          network::mojom::PermissionsPolicyFeature::kLocalFonts,
           ReportOptions::kReportOnFailure)) {
     exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
     return ScriptPromise<IDLSequence<FontMetadata>>();
@@ -94,7 +89,7 @@ ScriptPromise<IDLSequence<FontMetadata>> FontAccess::QueryLocalFontsImpl(
         remote_.BindNewPipeAndPassReceiver(
             context->GetTaskRunner(TaskType::kFontLoading)));
     remote_.set_disconnect_handler(
-        WTF::BindOnce(&FontAccess::OnDisconnect, WrapWeakPersistent(this)));
+        BindOnce(&FontAccess::OnDisconnect, WrapWeakPersistent(this)));
   }
   DCHECK(remote_.is_bound());
 
@@ -103,8 +98,8 @@ ScriptPromise<IDLSequence<FontMetadata>> FontAccess::QueryLocalFontsImpl(
           script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   remote_->EnumerateLocalFonts(resolver->WrapCallbackInScriptScope(
-      WTF::BindOnce(&FontAccess::DidGetEnumerationResponse,
-                    WrapWeakPersistent(this), WrapPersistent(options))));
+      blink::BindOnce(&FontAccess::DidGetEnumerationResponse,
+                      WrapWeakPersistent(this), WrapPersistent(options))));
 
   return promise;
 }
@@ -163,10 +158,10 @@ void FontAccess::DidGetEnumerationResponse(
     }
 
     auto entry = FontEnumerationEntry{
-        .postscript_name = String::FromUTF8(element.postscript_name().c_str()),
-        .full_name = String::FromUTF8(element.full_name().c_str()),
-        .family = String::FromUTF8(element.family().c_str()),
-        .style = String::FromUTF8(element.style().c_str()),
+        .postscript_name = String::FromUTF8(element.postscript_name()),
+        .full_name = String::FromUTF8(element.full_name()),
+        .family = String::FromUTF8(element.family()),
+        .style = String::FromUTF8(element.style()),
     };
     entries.push_back(FontMetadata::Create(std::move(entry)));
   }

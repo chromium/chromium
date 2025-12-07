@@ -4,8 +4,9 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {SettingsMultideviceSmartlockItemElement} from 'chrome://os-settings/lazy_load.js';
-import {MultiDeviceBrowserProxyImpl, MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData, MultiDeviceSettingsMode, Router} from 'chrome://os-settings/os_settings.js';
+import type {SettingsMultideviceSmartlockItemElement} from 'chrome://os-settings/lazy_load.js';
+import type {MultiDevicePageContentData} from 'chrome://os-settings/os_settings.js';
+import {MultiDeviceBrowserProxyImpl, MultiDeviceFeature, MultiDeviceFeatureState, MultiDeviceSettingsMode, Router} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -56,10 +57,7 @@ suite('<settings-multidevice-smartlock-item>', () => {
    */
   async function simulateFeatureStateChangeRequest(enabled: boolean) {
     const token = 'token1';
-    smartLockItem.authToken = {
-      lifetimeSeconds: 300,
-      token: token,
-    };
+    smartLockItem.authToken = token;
 
     // When the user requets a feature state change, an event with the relevant
     // details is handled.

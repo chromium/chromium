@@ -7,23 +7,26 @@
  * 'site-details' show the details (permissions and usage) for a given origin
  * under Site Settings.
  */
-import 'chrome://resources/js/action_link.js';
 import 'chrome://resources/cr_elements/action_link.css.js';
+import 'chrome://resources/js/action_link.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import '/shared/settings/controls/cr_policy_pref_indicator.js';
 import '../icons.html.js';
 import '../privacy_icons.html.js';
+import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 import './all_sites_icons.html.js';
 import './clear_storage_dialog_shared.css.js';
 import './site_details_permission.js';
 
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
@@ -36,27 +39,34 @@ import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_br
 import {routes} from '../route.js';
 import type {Route} from '../router.js';
 import {RouteObserverMixin, Router} from '../router.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
-import {ChooserType, ContentSetting, ContentSettingsTypes} from './constants.js';
+import {ChooserType, ContentSetting, ContentSettingsTypes, JavascriptOptimizerSetting} from './constants.js';
 import {getTemplate} from './site_details.html.js';
 import type {SiteDetailsPermissionElement} from './site_details_permission.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
 import type {WebsiteUsageBrowserProxy} from './website_usage_browser_proxy.js';
 import {WebsiteUsageBrowserProxyImpl} from './website_usage_browser_proxy.js';
 
+interface BlockAutoplayStatus {
+  enabled: boolean;
+  pref: chrome.settingsPrivate.PrefObject<boolean>;
+}
+
 export interface SiteDetailsElement {
   $: {
     confirmClearStorage: CrDialogElement,
     confirmResetSettings: CrDialogElement,
-    fpsMembership: HTMLElement,
+    rwsMembership: HTMLElement,
     noStorage: HTMLElement,
     storage: HTMLElement,
     usage: HTMLElement,
   };
 }
 
-const SiteDetailsElementBase = RouteObserverMixin(
-    SiteSettingsMixin(WebUiListenerMixin(I18nMixin(PolymerElement))));
+const SiteDetailsElementBase =
+    RouteObserverMixin(SiteSettingsMixin(SettingsViewMixin(
+        WebUiListenerMixin(PrefsMixin(I18nMixin(PolymerElement))))));
 
 export class SiteDetailsElement extends SiteDetailsElementBase {
   static get is() {
@@ -72,13 +82,13 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
       /**
        * Whether unified autoplay blocking is enabled.
        */
-      blockAutoplayEnabled: Boolean,
+      blockAutoplayEnabled_: Boolean,
 
       /**
        * Use the string representing the origin or extension name as the page
        * title of the settings-subpage parent.
        */
-      pageTitle: {
+      pageTitle_: {
         type: String,
         notify: true,
       },
@@ -105,17 +115,19 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
       },
 
       /**
-       * The first party set info for a site including owner and members count.
+       * The related website set info for a site including owner and members
+       * count.
        */
-      fpsMembership_: {
+      rwsMembership_: {
         type: String,
         value: '',
       },
 
       /**
-       * Mock preference used to power managed policy icon for first party sets.
+       * Mock preference used to power managed policy icon for related website
+       * sets.
        */
-      fpsEnterprisePref_: Object,
+      rwsEnterprisePref_: Object,
 
       enableExperimentalWebPlatformFeatures_: {
         type: Boolean,
@@ -131,20 +143,31 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
             loadTimeData.getBoolean('enableWebBluetoothNewPermissionsBackend'),
       },
 
-      autoPictureInPictureEnabled_: {
+      // <if expr="is_chromeos">
+      enableSmartCardReadersContentSetting_: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('autoPictureInPictureEnabled'),
+        value() {
+          return loadTimeData.getBoolean(
+              'enableSmartCardReadersContentSetting');
+        },
       },
+      // </if>
 
-      enableAutomaticFullscreenContentSetting_: {
+      enableHandTrackingContentSetting_: {
         type: Boolean,
         value: () =>
-            loadTimeData.getBoolean('enableAutomaticFullscreenContentSetting'),
+            loadTimeData.getBoolean('enableHandTrackingContentSetting'),
       },
 
-      capturedSurfaceControlEnabled_: {
+      enableCapturedSurfaceControl_: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('capturedSurfaceControlEnabled'),
+        value: () => loadTimeData.getBoolean('enableCapturedSurfaceControl'),
+      },
+
+      enablePermissionSiteSettingsRadioButton_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('enablePermissionSiteSettingsRadioButton'),
       },
 
       contentSettingsTypesEnum_: {
@@ -157,44 +180,75 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
         value: ChooserType,
       },
 
-      enableKeyboardAndPointerLockPrompt_: {
+      enableKeyboardLockPrompt_: {
         type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('enableKeyboardAndPointerLockPrompt'),
+        value: () => loadTimeData.getBoolean('enableKeyboardLockPrompt'),
+      },
+
+      enableWebAppInstallation_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableWebAppInstallation'),
+      },
+
+      enableLocalNetworkAccessSetting_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableLocalNetworkAccessSetting'),
+      },
+
+      /**
+       * Whether the "Block if site is unfamiliar" label should be used for the
+       * default javascript-optimizer content setting.
+       */
+      useBlockIfUnfamiliarLabelForV8OptimizerDefault_: {
+        type: Boolean,
+        computed:
+            'computeShouldUseBlockIfUnfamiliarLabelForV8OptimizerDefault_(' +
+            'prefs.generated.javascript_optimizer.value)',
       },
     };
   }
 
-  blockAutoplayEnabled: boolean;
-  pageTitle: string;
-  private origin_: string;
-  private storedData_: string;
-  private numCookies_: string;
-  private fpsMembership_: string;
-  private fpsEnterprisePref_: chrome.settingsPrivate.PrefObject;
-  private enableExperimentalWebPlatformFeatures_: boolean;
-  private enableWebBluetoothNewPermissionsBackend_: boolean;
-  private autoPictureInPictureEnabled_: boolean;
-  private enableAutomaticFullscreenContentSetting_: boolean;
-  private capturedSurfaceControlEnabled_: boolean;
+  private declare blockAutoplayEnabled_: boolean;
+  private declare pageTitle_: string;
+  declare private origin_: string;
+  declare private storedData_: string;
+  declare private numCookies_: string;
+  declare private rwsMembership_: string;
+  declare private rwsEnterprisePref_: chrome.settingsPrivate.PrefObject;
+  declare private enableExperimentalWebPlatformFeatures_: boolean;
+  declare private enableWebBluetoothNewPermissionsBackend_: boolean;
+  // <if expr="is_chromeos">
+  declare private enableSmartCardReadersContentSetting_: boolean;
+  // </if>
+  declare private enableCapturedSurfaceControl_: boolean;
+  declare private enableHandTrackingContentSetting_: boolean;
+  declare private enablePermissionSiteSettingsRadioButton_: boolean;
+  declare private enableWebAppInstallation_: boolean;
   private websiteUsageProxy_: WebsiteUsageBrowserProxy =
       WebsiteUsageBrowserProxyImpl.getInstance();
-  private enableKeyboardAndPointerLockPrompt_: boolean;
+  declare private enableKeyboardLockPrompt_: boolean;
+  declare private enableLocalNetworkAccessSetting_: boolean;
+  declare private useBlockIfUnfamiliarLabelForV8OptimizerDefault_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
 
     this.addWebUiListener(
         'usage-total-changed',
-        (host: string, data: string, cookies: string, fps: string,
-         fpsPolicy: boolean) => {
-          this.onUsageTotalChanged_(host, data, cookies, fps, fpsPolicy);
+        (host: string, data: string, cookies: string, rws: string,
+         rwsPolicy: boolean) => {
+          this.onUsageTotalChanged_(host, data, cookies, rws, rwsPolicy);
         });
 
     this.addWebUiListener(
         'contentSettingSitePermissionChanged',
         (category: ContentSettingsTypes, origin: string) =>
             this.onPermissionChanged_(category, origin));
+
+    this.addWebUiListener(
+        'onBlockAutoplayStatusChanged',
+        (status: BlockAutoplayStatus) =>
+            this.onBlockAutoplayStatusChanged_(status));
 
     // Refresh block autoplay status from the backend.
     this.browserProxy.fetchBlockAutoplayStatus();
@@ -203,7 +257,9 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
   /**
    * RouteObserverMixin
    */
-  override currentRouteChanged(route: Route) {
+  override currentRouteChanged(route: Route, oldRoute?: Route) {
+    super.currentRouteChanged(route, oldRoute);
+
     if (route !== routes.SITE_SETTINGS_SITE_DETAILS) {
       return;
     }
@@ -246,17 +302,18 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
    * @param origin The origin that the usage was fetched for.
    * @param usage The string showing how much data the given host is using.
    * @param cookies The string showing how many cookies the given host is using.
-   * @param fpsMembership The string showing first party set membership details.
-   * @param fpsPolicy Whether a policy is applied to this FPS member.
+   * @param rwsMembership The string showing related website set membership
+   *     details.
+   * @param rwsPolicy Whether a policy is applied to this RWS member.
    */
   private onUsageTotalChanged_(
-      origin: string, usage: string, cookies: string, fpsMembership: string,
-      fpsPolicy: boolean) {
+      origin: string, usage: string, cookies: string, rwsMembership: string,
+      rwsPolicy: boolean) {
     if (this.origin_ === origin) {
       this.storedData_ = usage;
       this.numCookies_ = cookies;
-      this.fpsMembership_ = fpsMembership;
-      this.fpsEnterprisePref_ = fpsPolicy ? Object.assign({
+      this.rwsMembership_ = rwsMembership;
+      this.rwsEnterprisePref_ = rwsPolicy ? Object.assign({
         enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
         controlledBy: chrome.settingsPrivate.ControlledBy.DEVICE_POLICY,
       }) :
@@ -302,7 +359,7 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
           // The displayName won't change, so just use the first
           // exception.
           assert(exceptionList.length > 0);
-          this.pageTitle = exceptionList[0].displayName;
+          this.pageTitle_ = exceptionList[0].displayName;
         });
   }
 
@@ -372,6 +429,16 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
     return storage !== '' && cookies !== '';
   }
 
+  /**
+   * Returns whether the "Block if site is unfamiliar" label should be used for
+   * the default javascript-optimizer content setting.
+   */
+  private computeShouldUseBlockIfUnfamiliarLabelForV8OptimizerDefault_():
+      boolean {
+    const pref = this.getPref('generated.javascript_optimizer').value;
+    return pref === JavascriptOptimizerSetting.BLOCKED_FOR_UNFAMILIAR_SITES;
+  }
+
   private onResetSettingsDialogClosed_() {
     const toFocus =
         this.shadowRoot!.querySelector<HTMLElement>('#resetSettingsButton');
@@ -384,6 +451,16 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
         this.shadowRoot!.querySelector<HTMLElement>('#clearStorage');
     assert(toFocus);
     focusWithoutInk(toFocus);
+  }
+
+  // Called when the block autoplay status changes.
+  private onBlockAutoplayStatusChanged_(autoplayStatus: BlockAutoplayStatus) {
+    this.blockAutoplayEnabled_ = autoplayStatus.pref.value;
+  }
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

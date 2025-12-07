@@ -25,8 +25,6 @@ var PermissionsHelper = (function() {
         return {name: "geolocation"};
       case "background-sync":
         return {name: "background-sync"};
-      case "accessibility-events":
-        return {name: "accessibility-events"};
       case "clipboard-read-write":
         return {name: "clipboard-write", allowWithoutSanitization: true};
       case "clipboard-sanitized-write":
@@ -45,6 +43,8 @@ var PermissionsHelper = (function() {
           return {name: "captured-surface-control"};
       case "speaker-selection":
         return {name: "speaker-selection"};
+      case "web-app-installation":
+        return {name: "web-app-installation"};
       default:
         throw "Invalid permission name provided";
     }

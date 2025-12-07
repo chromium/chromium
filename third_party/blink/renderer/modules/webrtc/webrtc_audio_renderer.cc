@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_renderer.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -11,7 +12,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
@@ -29,6 +29,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_audio_renderer.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -38,17 +39,6 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/webrtc/api/media_stream_interface.h"
-
-namespace WTF {
-
-template <typename T>
-struct CrossThreadCopier<rtc::scoped_refptr<T>> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = rtc::scoped_refptr<T>;
-  static Type Copy(Type pointer) { return pointer; }
-};
-
-}  // namespace WTF
 
 namespace blink {
 
@@ -101,7 +91,7 @@ const char* StateToString(WebRtcAudioRenderer::State state) {
 // and 'started' states to avoid problems related to incorrect usage which
 // might violate the implementation assumptions inside WebRtcAudioRenderer
 // (see the play reference count).
-class SharedAudioRenderer : public WebMediaStreamAudioRenderer {
+class SharedAudioRenderer : public MediaStreamAudioRenderer {
  public:
   // Callback definition for a callback that is called when when Play(), Pause()
   // or SetVolume are called (whenever the internal |playing_state_| changes).
@@ -114,11 +104,10 @@ class SharedAudioRenderer : public WebMediaStreamAudioRenderer {
   using OnPlayStateRemoved =
       base::OnceCallback<void(WebRtcAudioRenderer::PlayingState*)>;
 
-  SharedAudioRenderer(
-      const scoped_refptr<WebMediaStreamAudioRenderer>& delegate,
-      MediaStreamDescriptor* media_stream_descriptor,
-      const OnPlayStateChanged& on_play_state_changed,
-      OnPlayStateRemoved on_play_state_removed)
+  SharedAudioRenderer(const scoped_refptr<MediaStreamAudioRenderer>& delegate,
+                      MediaStreamDescriptor* media_stream_descriptor,
+                      const OnPlayStateChanged& on_play_state_changed,
+                      OnPlayStateRemoved on_play_state_removed)
       : delegate_(delegate),
         media_stream_descriptor_(media_stream_descriptor),
         started_(false),
@@ -189,7 +178,7 @@ class SharedAudioRenderer : public WebMediaStreamAudioRenderer {
 
  private:
   THREAD_CHECKER(thread_checker_);
-  const scoped_refptr<WebMediaStreamAudioRenderer> delegate_;
+  const scoped_refptr<MediaStreamAudioRenderer> delegate_;
   Persistent<MediaStreamDescriptor> media_stream_descriptor_;
   bool started_;
   WebRtcAudioRenderer::PlayingState playing_state_;
@@ -364,18 +353,19 @@ bool WebRtcAudioRenderer::Initialize(WebRtcAudioRendererSource* source) {
   return true;
 }
 
-scoped_refptr<WebMediaStreamAudioRenderer>
+scoped_refptr<MediaStreamAudioRenderer>
 WebRtcAudioRenderer::CreateSharedAudioRendererProxy(
     MediaStreamDescriptor* media_stream_descriptor) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   SharedAudioRenderer::OnPlayStateChanged on_play_state_changed =
-      WTF::BindRepeating(&WebRtcAudioRenderer::OnPlayStateChanged,
-                         WrapRefCounted(this));
-  SharedAudioRenderer::OnPlayStateRemoved on_play_state_removed = WTF::BindOnce(
-      &WebRtcAudioRenderer::OnPlayStateRemoved, WrapRefCounted(this));
-  return new SharedAudioRenderer(this, media_stream_descriptor,
-                                 std::move(on_play_state_changed),
-                                 std::move(on_play_state_removed));
+      blink::BindRepeating(&WebRtcAudioRenderer::OnPlayStateChanged,
+                           WrapRefCounted(this));
+  SharedAudioRenderer::OnPlayStateRemoved on_play_state_removed =
+      blink::BindOnce(&WebRtcAudioRenderer::OnPlayStateRemoved,
+                      WrapRefCounted(this));
+  return base::MakeRefCounted<SharedAudioRenderer>(
+      this, media_stream_descriptor, std::move(on_play_state_changed),
+      std::move(on_play_state_removed));
 }
 
 bool WebRtcAudioRenderer::IsStarted() const {
@@ -708,7 +698,8 @@ void WebRtcAudioRenderer::UpdateSourceVolume(
         *signaling_thread_, FROM_HERE,
         CrossThreadBindOnce(
             &webrtc::AudioSourceInterface::SetVolume,
-            rtc::scoped_refptr<webrtc::AudioSourceInterface>(source), volume));
+            webrtc::scoped_refptr<webrtc::AudioSourceInterface>(source),
+            volume));
   } else {
     source->SetVolume(volume);
   }
@@ -740,7 +731,7 @@ bool WebRtcAudioRenderer::RemovePlayingState(
     return false;
 
   PlayingStates& array = found->second;
-  auto state_it = base::ranges::find(array, state);
+  auto state_it = std::ranges::find(array, state);
   if (state_it == array.end())
     return false;
 
@@ -913,7 +904,7 @@ void WebRtcAudioRenderer::PrepareSink() {
   sink_->Initialize(new_sink_params, this);
 }
 
-void WebRtcAudioRenderer::SendLogMessage(const WTF::String& message) {
+void WebRtcAudioRenderer::SendLogMessage(const String& message) {
   WebRtcLogMessage(String::Format("WRAR::%s [label=%s]", message.Utf8().c_str(),
                                   media_stream_descriptor_id_.Utf8().c_str())
                        .Utf8());

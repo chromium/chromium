@@ -11,7 +11,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
-#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -68,8 +67,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDoNotTrackTest, FetchFromWorker) {
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      embedded_test_server()->GetURL(
-          "/workers/fetch_from_worker.html?script=fetch_from_worker.js")));
+      embedded_test_server()->GetURL("/workers/fetch_from_worker.html")));
   EXPECT_EQ("1",
             EvalJs(GetWebContents(), "fetch_from_worker('/echoheader?DNT');"));
 

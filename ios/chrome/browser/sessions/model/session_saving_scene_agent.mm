@@ -4,19 +4,15 @@
 
 #import "ios/chrome/browser/sessions/model/session_saving_scene_agent.h"
 
+#import "ios/chrome/app/profile/profile_init_stage.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 @implementation SessionSavingSceneAgent {
-  // YES when sessions need saving -- specifically after the scene has
-  // foregrounded. Initially NO, so session saving isn't triggered as the
-  // scene initially launches.
-  BOOL _sessionsNeedSaving;
+  // YES when the scene reached SceneActivationLevelForegroundActive.
+  BOOL _sceneWasActivated;
 }
 
 #pragma mark - SceneStateObserver
@@ -25,49 +21,55 @@
     transitionedToActivationLevel:(SceneActivationLevel)level {
   switch (level) {
     case SceneActivationLevelUnattached:
-    case SceneActivationLevelDisconnected:
     case SceneActivationLevelForegroundInactive:
       // no-op.
       break;
     case SceneActivationLevelBackground:
+    case SceneActivationLevelDisconnected:
       [self saveSessionsIfNeeded];
       break;
     case SceneActivationLevelForegroundActive:
-      _sessionsNeedSaving = YES;
+      _sceneWasActivated = YES;
       break;
   }
 }
 
-#pragma mark - Public
+#pragma mark - Private
 
+// Saves the scene's sessions if they haven't been saved since the last time
+// the scene was foregrounded.
 - (void)saveSessionsIfNeeded {
-  // No need to do this if the session is already saved.
-  if (!_sessionsNeedSaving)
+  // No need to save the session if the scene didn't reach the
+  // SceneActivationLevelForegroundActive stage.
+  if (!_sceneWasActivated) {
     return;
+  }
 
-  id<BrowserProviderInterface> browserProviderInterface =
-      self.sceneState.browserProviderInterface;
-  if (!browserProviderInterface) {
+  // Forget the scene was activated. Even if the session is not saved, this
+  // is okay because we do not really care about change that could happen
+  // while the scene is backgrounded. If/when it becomes active again, the
+  // flag will be set to YES and on the next background the session will be
+  // saved (assuming that by this point the profile initialization is over).
+  _sceneWasActivated = NO;
+
+  // If the ProfileState is not ProfileInitStage::kFinal, then do not try
+  // to save the session as the profile may not be ready yet.
+  ProfileState* profileState = self.sceneState.profileState;
+  if (profileState.initStage < ProfileInitStage::kFinal) {
     return;
   }
 
   // Since the app is about to be backgrounded or terminated, save the sessions
-  // immediately for the main BrowserState and, if it exists, the incognito
-  // BrowserState.
-  ChromeBrowserState* mainBrowserState =
-      browserProviderInterface.mainBrowserProvider.browser->GetBrowserState();
-  SessionRestorationServiceFactory::GetForBrowserState(mainBrowserState)
-      ->SaveSessions();
+  // immediately for the regular and incognito Profiles (if it exists).
+  DCHECK(profileState.profile);
+  ProfileIOS* profile = profileState.profile;
+  SessionRestorationServiceFactory::GetForProfile(profile)->SaveSessions();
 
-  if (browserProviderInterface.hasIncognitoBrowserProvider) {
-    ChromeBrowserState* incognitoBrowserstate =
-        browserProviderInterface.incognitoBrowserProvider.browser
-            ->GetBrowserState();
-    SessionRestorationServiceFactory::GetForBrowserState(incognitoBrowserstate)
+  if (profile->HasOffTheRecordProfile()) {
+    SessionRestorationServiceFactory::GetForProfile(
+        profile->GetOffTheRecordProfile())
         ->SaveSessions();
   }
-
-  _sessionsNeedSaving = NO;
 }
 
 @end

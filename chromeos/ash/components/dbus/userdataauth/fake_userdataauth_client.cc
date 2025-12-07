@@ -4,12 +4,14 @@
 
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <limits>
 #include <memory>
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -23,7 +25,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -36,7 +38,6 @@
 #include "chromeos/ash/components/dbus/cryptohome/auth_factor.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/recoverable_key_store.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace ash {
 
@@ -48,7 +49,7 @@ namespace {
 // Secrets are stored the same way they are sent to cryptohome (i.e. salted and
 // hashed), but only if secret checking has been enabled via
 // `TestApi::set_enabled_auth_check`.
-// `FakeAuthFactor` is the union/absl::variant of the factor-specific auth
+// `FakeAuthFactor` is the union/std::variant of the factor-specific auth
 // factor structs.
 
 struct PasswordFactor {
@@ -60,6 +61,7 @@ struct PinFactor {
   // This will be `std::nullopt` if auth checking hasn't been activated.
   std::optional<std::string> pin = std::nullopt;
   bool locked = false;
+  bool legacy = false;
 };
 
 struct RecoveryFactor {};
@@ -69,30 +71,29 @@ struct SmartCardFactor {
 
 struct KioskFactor {};
 
-using FakeAuthFactor = absl::variant<PasswordFactor,
-                                     PinFactor,
-                                     RecoveryFactor,
-                                     KioskFactor,
-                                     SmartCardFactor>;
+using FakeAuthFactor = std::variant<PasswordFactor,
+                                    PinFactor,
+                                    RecoveryFactor,
+                                    KioskFactor,
+                                    SmartCardFactor>;
 
 // Strings concatenated with the account id to obtain a user's profile
 // directory name. The prefix "u-" below corresponds to
 // `chrome::kProfileDirPrefix` (which can not be easily included here) and
 // "-hash" is as in `GetStubSanitizedUsername`.
-const std::string kUserDataDirNamePrefix = "u-";
-const std::string kUserDataDirNameSuffix = "-hash";
+constexpr char kUserDataDirNamePrefix[] = "u-";
+constexpr char kUserDataDirNameSuffix[] = "-hash";
 
 // Label of the recovery auth factor.
 // Label of the kiosk auth factor.
-const std::string kCryptohomePublicMountLabel = "publicmount";
+constexpr char kCryptohomePublicMountLabel[] = "publicmount";
 
 // Labels used of of various types of auth factors used by chrome. These must
 // be kept in sync with the labels in cryptohome_key_constants.{cc,h}, which
 // cannot be included into this file because that would result in circular
 // dependencies.
-const std::string kCryptohomeGaiaKeyLabel = "gaia";
-const std::string kCryptohomeRecoveryKeyLabel = "recovery";
-const std::string kCryptohomeLocalPasswordKeyLabel = "local-password";
+constexpr char kCryptohomeRecoveryKeyLabel[] = "recovery";
+constexpr char kCryptohomeGaiaKeyLabel[] = "gaia";
 
 template <typename ReplyType>
 void SetErrorWrapperToReply(ReplyType& reply, cryptohome::ErrorWrapper error) {
@@ -149,7 +150,7 @@ FakeUserDataAuthClient* g_instance = nullptr;
 
 // `OverloadedFunctor` and `FunctorWithReturnType` are used to implement
 // `Overload`, which constructs a visitor appropriate for use with
-// `absl::visit` from lambdas for each case.
+// `std::visit` from lambdas for each case.
 
 // A functor combining the `operator()` definitions of a list of functors into
 // a single functor with overloaded `operator()`.
@@ -172,7 +173,7 @@ struct FunctorWithReturnType {
   Functor functor;
 };
 
-// `Overload` constructs a visitor appropriate for use with `absl::visit` from
+// `Overload` constructs a visitor appropriate for use with `std::visit` from
 // a number of lambdas for each case. The return type of each provided lambda
 // must be convertible to `ReturnType`, and the `operator()` of the combined
 // visitor will always return `ReturnType`.
@@ -182,45 +183,78 @@ FunctorWithReturnType<ReturnType, OverloadedFunctor<Functors...>> Overload(
   return {{std::move(functors)...}};
 }
 
-std::optional<user_data_auth::AuthFactor> FakeAuthFactorToAuthFactor(
-    std::string label,
-    const FakeAuthFactor& factor) {
-  return absl::visit(
-      Overload<std::optional<user_data_auth::AuthFactor>>(
+// Helper that returns a AuthFactorWithStatus with default field values.
+user_data_auth::AuthFactorWithStatus BuildDefaultAuthFactorWithStatus() {
+  user_data_auth::AuthFactorWithStatus factor_with_status;
+  // Add all possible intents for conveniences.
+  factor_with_status.add_available_for_intents(
+      user_data_auth::AUTH_INTENT_DECRYPT);
+  factor_with_status.add_available_for_intents(
+      user_data_auth::AUTH_INTENT_VERIFY_ONLY);
+  factor_with_status.add_available_for_intents(
+      user_data_auth::AUTH_INTENT_WEBAUTHN);
+  factor_with_status.mutable_status_info()->set_time_available_in(0);
+  factor_with_status.mutable_status_info()->set_time_expiring_in(
+      std::numeric_limits<uint64_t>::max());
+  return factor_with_status;
+}
+
+std::optional<user_data_auth::AuthFactorWithStatus>
+FakeAuthFactorToAuthFactorWithStatus(std::string label,
+                                     const FakeAuthFactor& factor) {
+  return std::visit(
+      Overload<std::optional<user_data_auth::AuthFactorWithStatus>>(
           [&](const PasswordFactor& password) {
-            user_data_auth::AuthFactor result;
-            result.set_label(std::move(label));
-            result.set_type(user_data_auth::AUTH_FACTOR_TYPE_PASSWORD);
-            result.mutable_password_metadata();
+            user_data_auth::AuthFactorWithStatus result =
+                BuildDefaultAuthFactorWithStatus();
+            user_data_auth::AuthFactor* factor = result.mutable_auth_factor();
+            factor->set_label(std::move(label));
+            factor->set_type(user_data_auth::AUTH_FACTOR_TYPE_PASSWORD);
+            factor->mutable_password_metadata();
             return result;
           },
           [&](const PinFactor& pin) {
-            user_data_auth::AuthFactor result;
-            result.set_label(std::move(label));
-            result.set_type(user_data_auth::AUTH_FACTOR_TYPE_PIN);
-            result.mutable_pin_metadata()->set_auth_locked(pin.locked);
+            user_data_auth::AuthFactorWithStatus result =
+                BuildDefaultAuthFactorWithStatus();
+            if (pin.locked) {
+              result.mutable_status_info()->set_time_available_in(
+                  std::numeric_limits<uint64_t>::max());
+            }
+            user_data_auth::AuthFactor* factor = result.mutable_auth_factor();
+            factor->set_label(std::move(label));
+            factor->set_type(user_data_auth::AUTH_FACTOR_TYPE_PIN);
+            factor->mutable_pin_metadata();
+            factor->mutable_common_metadata()->set_lockout_policy(
+                pin.legacy ? user_data_auth::LOCKOUT_POLICY_ATTEMPT_LIMITED
+                           : user_data_auth::LOCKOUT_POLICY_TIME_LIMITED);
             return result;
           },
           [&](const RecoveryFactor&) {
-            user_data_auth::AuthFactor result;
-            result.set_label(std::move(label));
-            result.set_type(
+            user_data_auth::AuthFactorWithStatus result =
+                BuildDefaultAuthFactorWithStatus();
+            user_data_auth::AuthFactor* factor = result.mutable_auth_factor();
+            factor->set_label(std::move(label));
+            factor->set_type(
                 user_data_auth::AUTH_FACTOR_TYPE_CRYPTOHOME_RECOVERY);
-            result.mutable_cryptohome_recovery_metadata();
+            factor->mutable_cryptohome_recovery_metadata();
             return result;
           },
           [&](const KioskFactor& kiosk) {
-            user_data_auth::AuthFactor result;
-            result.set_label(std::move(label));
-            result.set_type(user_data_auth::AUTH_FACTOR_TYPE_KIOSK);
-            result.mutable_kiosk_metadata();
+            user_data_auth::AuthFactorWithStatus result =
+                BuildDefaultAuthFactorWithStatus();
+            user_data_auth::AuthFactor* factor = result.mutable_auth_factor();
+            factor->set_label(std::move(label));
+            factor->set_type(user_data_auth::AUTH_FACTOR_TYPE_KIOSK);
+            factor->mutable_kiosk_metadata();
             return result;
           },
           [&](const SmartCardFactor& smart_card) {
-            user_data_auth::AuthFactor result;
-            result.set_label(std::move(label));
-            result.set_type(user_data_auth::AUTH_FACTOR_TYPE_SMART_CARD);
-            result.mutable_smart_card_metadata()->set_public_key_spki_der(
+            user_data_auth::AuthFactorWithStatus result =
+                BuildDefaultAuthFactorWithStatus();
+            user_data_auth::AuthFactor* factor = result.mutable_auth_factor();
+            factor->set_label(std::move(label));
+            factor->set_type(user_data_auth::AUTH_FACTOR_TYPE_SMART_CARD);
+            factor->mutable_smart_card_metadata()->set_public_key_spki_der(
                 smart_card.public_key_spki_der);
             return result;
           }),
@@ -229,7 +263,7 @@ std::optional<user_data_auth::AuthFactor> FakeAuthFactorToAuthFactor(
 
 std::optional<cryptohome::RecoverableKeyStore>
 FakeAuthFactorToRecoverableKeyStore(const FakeAuthFactor& factor) {
-  return absl::visit(
+  return std::visit(
       Overload<std::optional<cryptohome::RecoverableKeyStore>>(
           [&](const PasswordFactor& password) {
             cryptohome::RecoverableKeyStore store;
@@ -285,14 +319,13 @@ std::pair<std::string, FakeAuthFactor> AuthFactorWithInputToFakeAuthFactor(
       return {label, SmartCardFactor{.public_key_spki_der = key}};
     }
     default:
-      NOTREACHED_IN_MIGRATION();
-      __builtin_unreachable();
+      NOTREACHED();
   }
 }
 
 bool CheckCredentialsViaAuthFactor(const FakeAuthFactor& factor,
                                    const std::string& secret) {
-  return absl::visit(
+  return std::visit(
       Overload<bool>(
           [&](const PasswordFactor& password) {
             return password.password == secret;
@@ -316,9 +349,9 @@ template <class FakeFactorType>
 bool ContainsFakeFactor(
     const base::flat_map<std::string, FakeAuthFactor>& factors) {
   const auto it =
-      base::ranges::find_if(factors, [](const auto label_factor_pair) {
+      std::ranges::find_if(factors, [](const auto label_factor_pair) {
         const FakeAuthFactor& fake_factor = label_factor_pair.second;
-        return absl::get_if<FakeFactorType>(&fake_factor) != nullptr;
+        return std::get_if<FakeFactorType>(&fake_factor) != nullptr;
       });
   return it != std::end(factors);
 }
@@ -326,7 +359,7 @@ bool ContainsFakeFactor(
 bool AuthInputMatchesFakeFactorType(
     const ::user_data_auth::AuthInput& auth_input,
     const FakeAuthFactor& fake_factor) {
-  return absl::visit(
+  return std::visit(
       Overload<bool>(
           [&](const PasswordFactor& password) {
             return auth_input.has_password_input();
@@ -342,29 +375,6 @@ bool AuthInputMatchesFakeFactorType(
             return auth_input.has_smart_card_input();
           }),
       fake_factor);
-}
-
-// Helper that fills AuthFactorWithStatus' field with an auth factor.
-void BuildAuthFactorWithStatus(
-    const std::optional<user_data_auth::AuthFactor>& auth_factor,
-    user_data_auth::AuthFactorWithStatus* factor_with_status) {
-  *factor_with_status->mutable_auth_factor() = *auth_factor;
-  // Add all possible intents for conveniences.
-  factor_with_status->add_available_for_intents(
-      user_data_auth::AUTH_INTENT_DECRYPT);
-  factor_with_status->add_available_for_intents(
-      user_data_auth::AUTH_INTENT_VERIFY_ONLY);
-  factor_with_status->add_available_for_intents(
-      user_data_auth::AUTH_INTENT_WEBAUTHN);
-  factor_with_status->mutable_status_info()->set_time_available_in(0);
-  if (auth_factor->type() == user_data_auth::AUTH_FACTOR_TYPE_PIN) {
-    if (auth_factor->pin_metadata().auth_locked()) {
-      factor_with_status->mutable_status_info()->set_time_available_in(
-          std::numeric_limits<uint64_t>::max());
-      factor_with_status->mutable_status_info()->set_time_expiring_in(
-          std::numeric_limits<uint64_t>::max());
-    }
-  }
 }
 
 // Helper that automatically sends a reply struct to a supplied callback when
@@ -489,10 +499,30 @@ void FakeUserDataAuthClient::TestApi::SetPinLocked(
       << "Factor does not exist: " << label;
   FakeAuthFactor& factor = factor_it->second;
 
-  PinFactor* pin_factor = absl::get_if<PinFactor>(&factor);
+  PinFactor* pin_factor = std::get_if<PinFactor>(&factor);
   CHECK(pin_factor) << "Factor is not PIN: " << label;
 
   pin_factor->locked = locked;
+}
+
+void FakeUserDataAuthClient::TestApi::SetPinType(
+    const cryptohome::AccountIdentifier& account_id,
+    const std::string& label,
+    bool legacy_pin) {
+  auto user_it = FakeUserDataAuthClient::Get()->users_.find(account_id);
+  CHECK(user_it != FakeUserDataAuthClient::Get()->users_.end())
+      << "User does not exist: " << account_id.account_id();
+  UserCryptohomeState& user_state = user_it->second;
+
+  auto factor_it = user_state.auth_factors.find(label);
+  CHECK(factor_it != user_state.auth_factors.end())
+      << "Factor does not exist: " << label;
+  FakeAuthFactor& factor = factor_it->second;
+
+  PinFactor* pin_factor = std::get_if<PinFactor>(&factor);
+  CHECK(pin_factor) << "Factor is not PIN: " << label;
+
+  pin_factor->legacy = legacy_pin;
 }
 
 void FakeUserDataAuthClient::TestApi::AddExistingUser(
@@ -683,6 +713,16 @@ void FakeUserDataAuthClient::AddPrepareAuthFactorProgressObserver(
 void FakeUserDataAuthClient::RemovePrepareAuthFactorProgressObserver(
     PrepareAuthFactorProgressObserver* observer) {
   progress_observers_.RemoveObserver(observer);
+}
+
+void FakeUserDataAuthClient::AddAuthFactorStatusUpdateObserver(
+    AuthFactorStatusUpdateObserver* observer) {
+  auth_factor_status_observer_list_.AddObserver(observer);
+}
+
+void FakeUserDataAuthClient::RemoveAuthFactorStatusUpdateObserver(
+    AuthFactorStatusUpdateObserver* observer) {
+  auth_factor_status_observer_list_.RemoveObserver(observer);
 }
 
 void FakeUserDataAuthClient::IsMounted(
@@ -890,7 +930,7 @@ void FakeUserDataAuthClient::StartAuthSession(
   if (user_exists) {
     UserCryptohomeState& user_state = user_it->second;
 
-    // TODO(b/239422391): Some tests expect that kiosk or gaia keys exist
+    // TODO(b/239422391): Some tests expect that kiosk keys or gaia keys exist
     // for existing users, but don't set those keys up. Until those tests are
     // fixed, we explicitly add keys here.
     if (is_kiosk) {
@@ -902,8 +942,7 @@ void FakeUserDataAuthClient::StartAuthSession(
             {kCryptohomeRecoveryKeyLabel, std::move(factor)});
       };
     } else {
-      if (!user_state.auth_factors.contains(kCryptohomeGaiaKeyLabel) &&
-          !user_state.auth_factors.contains(kCryptohomeLocalPasswordKeyLabel)) {
+      if (add_default_password_factor_ && user_state.auth_factors.empty()) {
         LOG(ERROR) << "Listing GAIA password key even though it was not set up";
         FakeAuthFactor factor{PasswordFactor()};
         user_state.auth_factors.insert(
@@ -912,13 +951,13 @@ void FakeUserDataAuthClient::StartAuthSession(
     }
 
     for (const auto& [label, factor] : user_state.auth_factors) {
-      std::optional<user_data_auth::AuthFactor> auth_factor =
-          FakeAuthFactorToAuthFactor(label, factor);
-      DCHECK(auth_factor);
-      *reply.add_auth_factors() = *auth_factor;
-      auto* factor_with_status =
-          reply.add_configured_auth_factors_with_status();
-      BuildAuthFactorWithStatus(auth_factor, factor_with_status);
+      std::optional<user_data_auth::AuthFactorWithStatus>
+          auth_factor_with_status =
+              FakeAuthFactorToAuthFactorWithStatus(label, factor);
+      DCHECK(auth_factor_with_status);
+      *reply.add_auth_factors() = auth_factor_with_status->auth_factor();
+      *reply.add_configured_auth_factors_with_status() =
+          *auth_factor_with_status;
     }
   }
 }
@@ -947,13 +986,14 @@ void FakeUserDataAuthClient::ListAuthFactors(
 
   const UserCryptohomeState& user_state = user_it->second;
   for (const auto& [label, factor] : user_state.auth_factors) {
-    std::optional<user_data_auth::AuthFactor> auth_factor =
-        FakeAuthFactorToAuthFactor(label, factor);
-    if (auth_factor) {
-      *reply.add_configured_auth_factors() = *auth_factor;
-      auto* factor_with_status =
-          reply.add_configured_auth_factors_with_status();
-      BuildAuthFactorWithStatus(auth_factor, factor_with_status);
+    std::optional<user_data_auth::AuthFactorWithStatus>
+        auth_factor_with_status =
+            FakeAuthFactorToAuthFactorWithStatus(label, factor);
+    if (auth_factor_with_status) {
+      *reply.add_configured_auth_factors() =
+          auth_factor_with_status->auth_factor();
+      *reply.add_configured_auth_factors_with_status() =
+          *auth_factor_with_status;
     } else {
       LOG(WARNING) << "Ignoring auth factor incompatible with AuthFactor API: "
                    << label;
@@ -1300,12 +1340,9 @@ void FakeUserDataAuthClient::AuthenticateAuthFactor(
   const UserCryptohomeState& user_state = user_it->second;
 
   std::vector<std::string> auth_factor_labels;
-  if (!request.auth_factor_label().empty()) {
-    auth_factor_labels.push_back(request.auth_factor_label());
-  } else {
-    for (auto label : request.auth_factor_labels()) {
-      auth_factor_labels.push_back(label);
-    }
+  auth_factor_labels.reserve(request.auth_factor_labels_size());
+  for (auto label : request.auth_factor_labels()) {
+    auth_factor_labels.push_back(label);
   }
 
   const ::user_data_auth::AuthInput& auth_input = request.auth_input();
@@ -1351,7 +1388,7 @@ void FakeUserDataAuthClient::AuthenticateAuthFactor(
     // Factor-specific verification logic. Will set the result_error variable
     // variable if a check didn't pass.
     cryptohome::ErrorWrapper result_error = cryptohome::ErrorWrapper::success();
-    absl::visit(
+    std::visit(
         Overload<void>(
             [&](const PasswordFactor& password_factor) {
               const auto& password_input = auth_input.password_input();
@@ -1571,6 +1608,14 @@ void FakeUserDataAuthClient::GetAuthFactorExtendedInfo(
     const ::user_data_auth::GetAuthFactorExtendedInfoRequest& request,
     GetAuthFactorExtendedInfoCallback callback) {
   ::user_data_auth::GetAuthFactorExtendedInfoReply reply;
+  ReplyOnReturn auto_reply(&reply, std::move(callback));
+}
+
+void FakeUserDataAuthClient::GenerateFreshRecoveryId(
+    const ::user_data_auth::GenerateFreshRecoveryIdRequest& request,
+    GenerateFreshRecoveryIdCallback callback) {
+  RememberRequest<Operation::kGenerateFreshRecoveryId>(request);
+  ::user_data_auth::GenerateFreshRecoveryIdReply reply;
   ReplyOnReturn auto_reply(&reply, std::move(callback));
 }
 
@@ -1840,7 +1885,8 @@ void FakeUserDataAuthClient::SetUserDataDir(base::FilePath path) {
   CHECK(!user_data_dir_.has_value());
   user_data_dir_ = std::move(path);
 
-  std::string pattern = kUserDataDirNamePrefix + "*" + kUserDataDirNameSuffix;
+  std::string pattern =
+      base::StrCat({kUserDataDirNamePrefix, "*", kUserDataDirNameSuffix});
   base::FileEnumerator e(*user_data_dir_, /*recursive=*/false,
                          base::FileEnumerator::DIRECTORIES, std::move(pattern));
   for (base::FilePath name = e.Next(); !name.empty(); name = e.Next()) {
@@ -1851,8 +1897,8 @@ void FakeUserDataAuthClient::SetUserDataDir(base::FilePath path) {
     // Remove kUserDataDirNamePrefix from front and kUserDataDirNameSuffix from
     // end to obtain account id.
     std::string account_id_str(
-        base_name.value().begin() + kUserDataDirNamePrefix.size(),
-        base_name.value().end() - kUserDataDirNameSuffix.size());
+        base_name.value().begin() + std::strlen(kUserDataDirNamePrefix),
+        base_name.value().end() - std::strlen(kUserDataDirNameSuffix));
 
     cryptohome::AccountIdentifier account_id;
     account_id.set_account_id(std::move(account_id_str));
@@ -1898,6 +1944,22 @@ void FakeUserDataAuthClient::SetUserDataStorageWriteEnabled(
     const ::user_data_auth::SetUserDataStorageWriteEnabledRequest& request,
     SetUserDataStorageWriteEnabledCallback callback) {
   ::user_data_auth::SetUserDataStorageWriteEnabledReply reply;
+  std::move(callback).Run(std::move(reply));
+}
+
+void FakeUserDataAuthClient::LockFactorUntilReboot(
+    const ::user_data_auth::LockFactorUntilRebootRequest& request,
+    LockFactorUntilRebootCallback callback) {
+  RememberRequest<Operation::kLockFactorUntilReboot>(request);
+  ::user_data_auth::LockFactorUntilRebootReply reply;
+
+  if (auto error = TakeOperationError(Operation::kLockFactorUntilReboot);
+      cryptohome::HasError(error)) {
+    SetErrorWrapperToReply(reply, error);
+    std::move(callback).Run(reply);
+    return;
+  }
+
   std::move(callback).Run(std::move(reply));
 }
 

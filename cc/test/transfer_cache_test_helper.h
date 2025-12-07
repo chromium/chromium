@@ -15,7 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "cc/paint/transfer_cache_deserialize_helper.h"
 #include "cc/paint/transfer_cache_serialize_helper.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 
 namespace cc {
 
@@ -58,13 +58,18 @@ class TransferCacheTestHelper : public TransferCacheDeserializeHelper,
   // Helper functions.
   void EnforceLimits();
 
+  // owned_context_ must be declared before context_ because when no context is
+  // provided, context_ points to owned_context_.get().
+  sk_sp<GrDirectContext> owned_context_;
+  raw_ptr<GrDirectContext> context_ = nullptr;
+
+  // entries_ may reference owned_context_ so must be destroyed before the
+  // context to avoid dangling ptrs.
   std::map<EntryKey, std::unique_ptr<ServiceTransferCacheEntry>> entries_;
   std::set<EntryKey> local_entries_;
   std::set<EntryKey> locked_entries_;
   EntryKey last_added_entry_ = {TransferCacheEntryType::kRawMemory, ~0};
 
-  raw_ptr<GrDirectContext, DanglingUntriaged> context_ = nullptr;
-  sk_sp<GrDirectContext> owned_context_;
   size_t cached_items_limit_ = std::numeric_limits<size_t>::max();
 };
 

@@ -15,7 +15,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/saved_tab_groups/features.h"
+#include "components/saved_tab_groups/public/features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -29,7 +29,6 @@
 #include "ui/views/view_class_properties.h"
 
 namespace {
-static constexpr int kDefaultIconSize = 16;
 static constexpr int kUIUpdateIconSize = 20;
 }  // namespace
 
@@ -38,15 +37,11 @@ namespace tab_groups {
 SavedTabGroupOverflowButton::SavedTabGroupOverflowButton(
     PressedCallback callback)
     : views::MenuButton(std::move(callback)) {
-  GetViewAccessibility().SetProperties(
-      ax::mojom::Role::kButton,
-      l10n_util::GetStringUTF16(IsTabGroupsSaveUIUpdateEnabled()
-                                    ? IDS_ACCNAME_TAB_GROUPS_EVERYTHING
-                                    : IDS_ACCNAME_SAVED_TAB_GROUPS_CHEVRON));
-  SetTooltipText(l10n_util::GetStringUTF16(
-      IsTabGroupsSaveUIUpdateEnabled()
-          ? IDS_TAB_GROUPS_EVERYTHING_BUTTON_TOOLTIP
-          : IDS_SAVED_TAB_GROUPS_OVERFLOW_BUTTON_TOOLTIP));
+  GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_GROUPS_EVERYTHING));
+  SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_TAB_GROUPS_EVERYTHING_BUTTON_TOOLTIP));
   SetFlipCanvasOnPaintForRTLUI(true);
   ConfigureInkDropForToolbar(this);
   SetImageLabelSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -69,10 +64,8 @@ void SavedTabGroupOverflowButton::OnThemeChanged() {
   views::MenuButton::OnThemeChanged();
 
   ui::ColorProvider* color_provider = GetColorProvider();
-  bool is_ui_update = IsTabGroupsSaveUIUpdateEnabled();
-  const gfx::VectorIcon& icon = is_ui_update ? kSavedTabGroupBarEverythingIcon
-                                             : kBookmarkbarOverflowRefreshIcon;
-  const int icon_size = is_ui_update ? kUIUpdateIconSize : kDefaultIconSize;
+  const gfx::VectorIcon& icon = kSavedTabGroupBarEverythingIcon;
+  const int icon_size = kUIUpdateIconSize;
   SetImageModel(
       views::Button::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(

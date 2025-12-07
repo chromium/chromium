@@ -22,25 +22,30 @@ import 'chrome://resources/ash/common/cr_elements/cros_color_overrides.css.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import 'chrome://resources/ash/common/network/apn_list.js';
 import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_indicator_mixin.js';
-import './strings.m.js';
+import '/strings.m.js';
 
+import type {CrToastElement} from 'chrome://resources/ash/common/cr_elements/cr_toast/cr_toast.js';
+import type {I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {ApnList} from 'chrome://resources/ash/common/network/apn_list.js';
+import type {ApnListElement} from 'chrome://resources/ash/common/network/apn_list.js';
 import {getApnDisplayName, isActiveSim} from 'chrome://resources/ash/common/network/cellular_utils.js';
-import {CrPolicyNetworkBehaviorMojo, CrPolicyNetworkBehaviorMojoInterface} from 'chrome://resources/ash/common/network/cr_policy_network_behavior_mojo.js';
+import type {CrPolicyNetworkBehaviorMojoInterface} from 'chrome://resources/ash/common/network/cr_policy_network_behavior_mojo.js';
+import {CrPolicyNetworkBehaviorMojo} from 'chrome://resources/ash/common/network/cr_policy_network_behavior_mojo.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
-import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
+import type {NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
+import {NetworkListenerBehavior} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import {CrToastElement} from 'chrome://resources/ash/common/cr_elements/cr_toast/cr_toast.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {ApnProperties, ConfigProperties, CrosNetworkConfigInterface, GlobalPolicy, IPConfigProperties, ManagedProperties, MAX_NUM_CUSTOM_APNS, ProxySettings, StartConnectResult} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {ApnProperties, ConfigProperties, CrosNetworkConfigInterface, GlobalPolicy, IPConfigProperties, ManagedProperties, ProxySettings} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {MAX_NUM_CUSTOM_APNS, StartConnectResult} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType, OncSource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './internet_detail_dialog.html.js';
-import {InternetDetailDialogBrowserProxy, InternetDetailDialogBrowserProxyImpl} from './internet_detail_dialog_browser_proxy.js';
+import type {InternetDetailDialogBrowserProxy} from './internet_detail_dialog_browser_proxy.js';
+import {InternetDetailDialogBrowserProxyImpl} from './internet_detail_dialog_browser_proxy.js';
 
 /**
  * @fileoverview
@@ -338,7 +343,7 @@ export class InternetDetailDialogElement extends
   }
 
   private getDefaultConfigProperties_(): ConfigProperties {
-    return OncMojo.getDefaultConfigProperties(this.managedProperties_.type);
+    return OncMojo.getBaselineConfigProperties(this.managedProperties_);
   }
 
   private setMojoNetworkProperties_(config: ConfigProperties) {
@@ -625,8 +630,8 @@ export class InternetDetailDialogElement extends
     const apn = event.detail;
     config.typeConfig.cellular = {
       apn: apn,
-      roaming: undefined,
-      textMessageAllowState: undefined,
+      roaming: null,
+      textMessageAllowState: null,
     };
     this.setMojoNetworkProperties_(config);
   }
@@ -738,7 +743,7 @@ export class InternetDetailDialogElement extends
     }
 
     assert(!!this.guid);
-    const apnList = this.shadowRoot!.querySelector<ApnList>('#apnList');
+    const apnList = this.shadowRoot!.querySelector<ApnListElement>('#apnList');
     assert(apnList);
     apnList.openApnDetailDialogInCreateMode();
   }
@@ -752,7 +757,7 @@ export class InternetDetailDialogElement extends
     }
 
     assert(!!this.guid);
-    const apnList = this.shadowRoot!.querySelector<ApnList>('#apnList');
+    const apnList = this.shadowRoot!.querySelector<ApnListElement>('#apnList');
     assert(apnList);
     apnList.openApnSelectionDialog();
   }

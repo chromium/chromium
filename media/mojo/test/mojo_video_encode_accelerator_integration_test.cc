@@ -39,21 +39,29 @@ MATCHER_P(ExpectEncoderStatusCode, expected_code, "encoder status code") {
   return arg.code() == expected_code;
 }
 
-extern std::unique_ptr<VideoEncodeAccelerator> CreateAndInitializeFakeVEA(
+extern EncoderStatus::Or<std::unique_ptr<VideoEncodeAccelerator>>
+CreateAndInitializeFakeVEA(
     const VideoEncodeAccelerator::Config& config,
     VideoEncodeAccelerator::Client* client,
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     const gpu::GPUInfo::GPUDevice& gpu_device,
-    std::unique_ptr<MediaLog> media_log) {
+    std::unique_ptr<MediaLog> media_log,
+    MojoVideoEncodeAcceleratorService::GetCommandBufferHelperCB
+        get_command_buffer_helper_cb,
+    scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner) {
   // Use FakeVEA as scoped_ptr to guarantee proper destruction via Destroy().
   auto vea = std::make_unique<FakeVideoEncodeAccelerator>(
       base::SingleThreadTaskRunner::GetCurrentDefault());
-  const bool result = vea->Initialize(config, client, media_log->Clone());
+  const EncoderStatus result =
+      vea->Initialize(config, client, media_log->Clone());
 
   // Mimic the behaviour of GpuVideoEncodeAcceleratorFactory::CreateVEA().
-  return result ? base::WrapUnique<VideoEncodeAccelerator>(vea.release())
-                : nullptr;
+  if (result.is_ok()) {
+    return base::WrapUnique<VideoEncodeAccelerator>(vea.release());
+  } else {
+    return std::move(result);
+  }
 }
 
 // Mock implementation of the client of MojoVideoEncodeAccelerator.
@@ -90,7 +98,9 @@ class MojoVideoEncodeAcceleratorIntegrationTest : public ::testing::Test {
         std::make_unique<MojoVideoEncodeAcceleratorService>(
             base::BindRepeating(&CreateAndInitializeFakeVEA),
             gpu::GpuPreferences(), gpu::GpuDriverBugWorkarounds(),
-            gpu::GPUInfo::GPUDevice()),
+            gpu::GPUInfo::GPUDevice(),
+            MojoVideoEncodeAcceleratorService::GetCommandBufferHelperCB(),
+            base::SingleThreadTaskRunner::GetCurrentDefault()),
         mojo_vea.InitWithNewPipeAndPassReceiver());
 
     mojo_vea_.reset(new MojoVideoEncodeAccelerator(std::move(mojo_vea)));
@@ -127,8 +137,10 @@ class MojoVideoEncodeAcceleratorIntegrationTest : public ::testing::Test {
         kInitialBitrate, VideoEncodeAccelerator::kDefaultFramerate,
         VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer,
         VideoEncodeAccelerator::Config::ContentType::kCamera);
-    EXPECT_TRUE(mojo_vea()->Initialize(
-        config, mock_vea_client, std::make_unique<media::NullMediaLog>()));
+    EXPECT_TRUE(mojo_vea()
+                    ->Initialize(config, mock_vea_client,
+                                 std::make_unique<media::NullMediaLog>())
+                    .is_ok());
     base::RunLoop().RunUntilIdle();
   }
 
@@ -163,8 +175,10 @@ TEST_F(MojoVideoEncodeAcceleratorIntegrationTest,
       kInitialBitrate, VideoEncodeAccelerator::kDefaultFramerate,
       VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer,
       VideoEncodeAccelerator::Config::ContentType::kCamera);
-  EXPECT_FALSE(mojo_vea()->Initialize(config, invalid_client,
-                                      std::make_unique<media::NullMediaLog>()));
+  EXPECT_FALSE(mojo_vea()
+                   ->Initialize(config, invalid_client,
+                                std::make_unique<media::NullMediaLog>())
+                   .is_ok());
   base::RunLoop().RunUntilIdle();
 }
 
@@ -181,8 +195,10 @@ TEST_F(MojoVideoEncodeAcceleratorIntegrationTest,
       kInitialBitrate, VideoEncodeAccelerator::kDefaultFramerate,
       VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer,
       VideoEncodeAccelerator::Config::ContentType::kCamera);
-  EXPECT_FALSE(mojo_vea()->Initialize(config, mock_vea_client.get(),
-                                      std::make_unique<media::NullMediaLog>()));
+  EXPECT_FALSE(mojo_vea()
+                   ->Initialize(config, mock_vea_client.get(),
+                                std::make_unique<media::NullMediaLog>())
+                   .is_ok());
   base::RunLoop().RunUntilIdle();
 }
 // This test verifies that Initialize() fails when called with an invalid codec
@@ -199,8 +215,10 @@ TEST_F(MojoVideoEncodeAcceleratorIntegrationTest,
       kInitialBitrate, VideoEncodeAccelerator::kDefaultFramerate,
       VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer,
       VideoEncodeAccelerator::Config::ContentType::kCamera);
-  EXPECT_FALSE(mojo_vea()->Initialize(config, mock_vea_client.get(),
-                                      std::make_unique<media::NullMediaLog>()));
+  EXPECT_FALSE(mojo_vea()
+                   ->Initialize(config, mock_vea_client.get(),
+                                std::make_unique<media::NullMediaLog>())
+                   .is_ok());
   base::RunLoop().RunUntilIdle();
 }
 
@@ -272,16 +290,16 @@ TEST_F(MojoVideoEncodeAcceleratorIntegrationTest, EncodeOneFrame) {
     ASSERT_TRUE(shmem.IsValid());
     const scoped_refptr<VideoFrame> video_frame = VideoFrame::WrapExternalData(
         PIXEL_FORMAT_I420, kInputVisibleSize, gfx::Rect(kInputVisibleSize),
-        kInputVisibleSize, static_cast<uint8_t*>(shmem.mapping.memory()),
-        shmem.mapping.size(), base::TimeDelta());
+        kInputVisibleSize, shmem.mapping.GetMemoryAsSpan<uint8_t>(),
+        base::TimeDelta());
     video_frame->BackWithSharedMemory(&shmem.region);
     const bool is_keyframe = true;
 
     EXPECT_CALL(*mock_vea_client, BitstreamBufferReady(kBistreamBufferId, _))
-        .WillOnce(testing::Invoke(
+        .WillOnce(
             [is_keyframe](int32_t, const BitstreamBufferMetadata& metadata) {
               EXPECT_EQ(is_keyframe, metadata.key_frame);
-            }));
+            });
 
     mojo_vea()->Encode(video_frame, is_keyframe);
     base::RunLoop().RunUntilIdle();
@@ -317,8 +335,7 @@ TEST_F(MojoVideoEncodeAcceleratorIntegrationTest,
     const scoped_refptr<VideoFrame> video_frame = VideoFrame::WrapExternalData(
         PIXEL_FORMAT_I420, kInvalidInputVisibleSize,
         gfx::Rect(kInvalidInputVisibleSize), kInvalidInputVisibleSize,
-        static_cast<uint8_t*>(shmem.mapping.memory()), shmem.mapping.size(),
-        base::TimeDelta());
+        shmem.mapping.GetMemoryAsSpan<uint8_t>(), base::TimeDelta());
     video_frame->BackWithSharedMemory(&shmem.region);
     const bool is_keyframe = true;
 

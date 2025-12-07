@@ -64,7 +64,6 @@ class CORE_EXPORT ReadableStreamGenericReader : public ScriptWrappable {
   friend class PipeToEngine;
   friend class ReadableStreamDefaultController;
 
-  ScriptPromise<IDLUndefined> closed_promise_;
   Member<ScriptPromiseResolver<IDLUndefined>> closed_resolver_;
 
  protected:

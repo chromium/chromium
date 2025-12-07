@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_SHARE_AUDIO_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_SHARE_AUDIO_VIEW_H_
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/toggle_button.h"
@@ -14,7 +16,9 @@ class ShareAudioView : public views::View {
   METADATA_HEADER(ShareAudioView, views::View)
 
  public:
-  ShareAudioView(const std::u16string& label_text, bool audio_offered);
+  ShareAudioView(const std::u16string& label_text,
+                 bool audio_offered,
+                 base::RepeatingCallback<void(void)> audio_check_callback);
   ShareAudioView(const ShareAudioView&) = delete;
   ShareAudioView& operator=(const ShareAudioView&) = delete;
   ~ShareAudioView() override;
@@ -27,9 +31,11 @@ class ShareAudioView : public views::View {
 
   // Returns the text in the audio label if an audio label exists;
   // returns the empty string otherwise.
-  std::u16string GetAudioLabelText() const;
+  std::u16string_view GetAudioLabelText() const;
 
  private:
+  void OnAudioToggleButtonPressed();
+  base::RepeatingCallback<void(void)> audio_check_callback_;
   raw_ptr<views::Label> audio_toggle_label_ = nullptr;
   raw_ptr<views::ToggleButton> audio_toggle_button_ = nullptr;
 };

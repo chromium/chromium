@@ -41,7 +41,7 @@ enum FILE_MODE_FLAGS {
   FMF_STANDARDNAMES=32,
 
   // Mode flags are not defined yet.
-  FMF_UNDEFINED=256
+  // FMF_UNDEFINED=256
 };
 
 enum FILE_READ_ERROR_MODE {
@@ -73,8 +73,7 @@ class File
     bool AllowDelete;
     bool AllowExceptions;
 #ifdef _WIN_ALL
-    bool NoSequentialRead;
-    uint CreateMode;
+    // uint CreateMode;
 #endif
     bool PreserveAtime;
     bool TruncatedAfterReadError;

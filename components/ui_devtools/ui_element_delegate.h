@@ -11,12 +11,12 @@ class UIElement;
 
 class UIElementDelegate {
  public:
-  UIElementDelegate() {}
+  UIElementDelegate() = default;
 
   UIElementDelegate(const UIElementDelegate&) = delete;
   UIElementDelegate& operator=(const UIElementDelegate&) = delete;
 
-  virtual ~UIElementDelegate() {}
+  virtual ~UIElementDelegate() = default;
 
   virtual void OnUIElementAdded(UIElement* parent, UIElement* child) = 0;
 

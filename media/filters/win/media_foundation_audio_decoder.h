@@ -15,13 +15,13 @@
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/audio_decoder_config.h"
+#include "media/base/audio_discard_helper.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_export.h"
 #include "media/base/media_log.h"
 
 namespace media {
 class AudioBufferMemoryPool;
-class AudioDiscardHelper;
 
 // MFAudioDecoder is based on Window's MediaFoundation API. The MediaFoundation
 // API is required to decode codecs that aren't supported by Chromium.
@@ -72,8 +72,8 @@ class MEDIA_EXPORT MediaFoundationAudioDecoder : public AudioDecoder {
   //     Any time Reset() is called.
   enum class DecoderState { kUninitialized, kNormal, kDecodeFinished, kError };
 
-  bool CreateDecoder();
-  bool ConfigureOutput();
+  HRESULT CreateDecoder();
+  HRESULT ConfigureOutput();
 
   enum class OutputStatus { kSuccess, kNeedMoreInput, kStreamChange, kFailed };
   enum class PumpState { kNormal, kStreamChange };
@@ -99,7 +99,7 @@ class MEDIA_EXPORT MediaFoundationAudioDecoder : public AudioDecoder {
   // Callback that delivers output frames.
   OutputCB output_cb_;
 
-  DecoderBuffer::TimeInfo current_buffer_time_info_;
+  AudioDiscardHelper::TimeInfo current_buffer_time_info_;
   std::unique_ptr<AudioDiscardHelper> discard_helper_;
 
   // Pool which helps avoid thrashing memory when returning audio buffers.

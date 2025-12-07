@@ -5,13 +5,13 @@
 #include "chrome/browser/ui/autofill/autofill_field_promo_controller_impl.h"
 
 #include "base/functional/bind.h"
-#include "base/functional/overloaded.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_field_promo_view.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
-#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -35,6 +35,12 @@ void AutofillFieldPromoControllerImpl::Show(const gfx::RectF& bounds) {
 
   content::RenderFrameHost* rfh = web_contents_->GetFocusedFrame();
   if (!rfh) {
+    return;
+  }
+
+  auto* const interface =
+      BrowserUserEducationInterface::MaybeGetForWebContentsInTab(web_contents_);
+  if (!interface) {
     return;
   }
 
@@ -63,20 +69,54 @@ void AutofillFieldPromoControllerImpl::Show(const gfx::RectF& bounds) {
   promo_view_ = AutofillFieldPromoView::CreateAndShow(
       web_contents_, bounds, promo_element_identifier_);
 
-  if (!chrome::FindBrowserWithTab(web_contents_)
-           ->window()
-           ->MaybeShowFeaturePromo(feature_promo_.get())) {
-    // Destroy the invisible view if the promo was not shown.
-    Hide();
+  user_education::FeaturePromoParams params(feature_promo_.get());
+  params.show_promo_result_callback =
+      base::BindOnce(&AutofillFieldPromoControllerImpl::OnShowPromoResult,
+                     weak_ptr_factory_.GetWeakPtr());
+  if (interface->CanShowFeaturePromo(feature_promo_.get())) {
+    is_maybe_showing_ = true;
+    interface->MaybeShowFeaturePromo(std::move(params));
   }
 }
 
 void AutofillFieldPromoControllerImpl::Hide() {
+  is_maybe_showing_ = false;
   promo_hide_helper_.reset();
   if (promo_view_) {
-    promo_view_->Close();
-    promo_view_ = nullptr;
+    // First, make the promo view invisible. Then, post a task to close it
+    // (which effectively destroys it). This ensures that parent bounds are
+    // recalculated before the view is destroyed, preventing a nullptr
+    // dereference.
+    promo_view_->MakeInvisible();
+    base::WeakPtr<AutofillFieldPromoView> view_to_close =
+        std::exchange(promo_view_, nullptr);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](base::WeakPtr<AutofillFieldPromoView> promo_view) {
+                         if (promo_view) {
+                           promo_view->Close();
+                         }
+                       },
+                       view_to_close->GetWeakPtr()));
   }
+}
+
+void AutofillFieldPromoControllerImpl::OnShowPromoResult(
+    user_education::FeaturePromoResult result) {
+  // On failure to show, hide the invisible view.
+  if (!result) {
+    Hide();
+  } else if (feature_promo_ == feature_engagement::kIPHAutofillAiOptInFeature) {
+    LogOptInFunnelEvent(AutofillAiOptInFunnelEvents::kIphShown);
+  }
+}
+
+const base::Feature& AutofillFieldPromoControllerImpl::GetFeaturePromo() const {
+  return feature_promo_.get();
+}
+
+bool AutofillFieldPromoControllerImpl::IsMaybeShowing() const {
+  return is_maybe_showing_;
 }
 
 }  // namespace autofill

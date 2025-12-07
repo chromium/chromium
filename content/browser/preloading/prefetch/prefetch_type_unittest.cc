@@ -5,31 +5,23 @@
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/common/content_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-shared.h"
 
 namespace content {
 namespace {
 
-class PrefetchTypeTest : public ::testing::Test {
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kPrefetchBrowserInitiatedTriggers},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+class PrefetchTypeTest : public ::testing::Test {};
 
 TEST_F(PrefetchTypeTest, GetPrefetchTypeParams) {
   PrefetchType prefetch_type1(PreloadingTriggerType::kSpeculationRule,
                               /*use_prefetch_proxy=*/true,
-                              blink::mojom::SpeculationEagerness::kEager);
+                              blink::mojom::SpeculationEagerness::kImmediate);
   PrefetchType prefetch_type2(PreloadingTriggerType::kSpeculationRule,
                               /*use_prefetch_proxy=*/false,
-                              blink::mojom::SpeculationEagerness::kEager);
+                              blink::mojom::SpeculationEagerness::kImmediate);
   PrefetchType prefetch_type3(
       PreloadingTriggerType::kSpeculationRule,
       /*use_prefetch_proxy=*/false,
@@ -43,11 +35,11 @@ TEST_F(PrefetchTypeTest, GetPrefetchTypeParams) {
 
   EXPECT_TRUE(prefetch_type1.IsProxyRequiredWhenCrossOrigin());
   EXPECT_EQ(prefetch_type1.GetEagerness(),
-            blink::mojom::SpeculationEagerness::kEager);
+            blink::mojom::SpeculationEagerness::kImmediate);
 
   EXPECT_FALSE(prefetch_type2.IsProxyRequiredWhenCrossOrigin());
   EXPECT_EQ(prefetch_type2.GetEagerness(),
-            blink::mojom::SpeculationEagerness::kEager);
+            blink::mojom::SpeculationEagerness::kImmediate);
 
   EXPECT_FALSE(prefetch_type3.IsProxyRequiredWhenCrossOrigin());
   EXPECT_EQ(prefetch_type3.GetEagerness(),
@@ -61,13 +53,13 @@ TEST_F(PrefetchTypeTest, GetPrefetchTypeParams) {
 TEST_F(PrefetchTypeTest, ComparePrefetchTypes) {
   PrefetchType prefetch_type1(PreloadingTriggerType::kSpeculationRule,
                               /*use_prefetch_proxy=*/true,
-                              blink::mojom::SpeculationEagerness::kEager);
+                              blink::mojom::SpeculationEagerness::kImmediate);
   PrefetchType prefetch_type2(PreloadingTriggerType::kSpeculationRule,
                               /*use_prefetch_proxy=*/true,
-                              blink::mojom::SpeculationEagerness::kEager);
+                              blink::mojom::SpeculationEagerness::kImmediate);
   PrefetchType prefetch_type3(PreloadingTriggerType::kSpeculationRule,
                               /*use_prefetch_proxy=*/false,
-                              blink::mojom::SpeculationEagerness::kEager);
+                              blink::mojom::SpeculationEagerness::kImmediate);
   PrefetchType prefetch_type4(
       PreloadingTriggerType::kSpeculationRule,
       /*use_prefetch_proxy=*/true,
@@ -86,13 +78,15 @@ TEST_F(PrefetchTypeTest, ComparePrefetchTypes) {
 TEST_F(PrefetchTypeTest, PrefetchInitiator) {
   PrefetchType prefetch_type1(PreloadingTriggerType::kSpeculationRule,
                               /*use_prefetch_proxy=*/true,
-                              blink::mojom::SpeculationEagerness::kEager);
+                              blink::mojom::SpeculationEagerness::kImmediate);
   PrefetchType prefetch_type2(
       PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld,
-      /*use_prefetch_proxy=*/true, blink::mojom::SpeculationEagerness::kEager);
+      /*use_prefetch_proxy=*/true,
+      blink::mojom::SpeculationEagerness::kImmediate);
   PrefetchType prefetch_type3(
       PreloadingTriggerType::kSpeculationRuleFromAutoSpeculationRules,
-      /*use_prefetch_proxy=*/true, blink::mojom::SpeculationEagerness::kEager);
+      /*use_prefetch_proxy=*/true,
+      blink::mojom::SpeculationEagerness::kImmediate);
   PrefetchType prefetch_type4(PreloadingTriggerType::kEmbedder,
                               /*use_prefetch_proxy=*/true);
 
@@ -105,9 +99,9 @@ TEST_F(PrefetchTypeTest, PrefetchInitiator) {
 TEST_F(PrefetchTypeTest, WptProxyTest) {
   PrefetchType prefetch_types[] = {
       {PreloadingTriggerType::kSpeculationRule, /*use_prefetch_proxy=*/true,
-       blink::mojom::SpeculationEagerness::kEager},
+       blink::mojom::SpeculationEagerness::kImmediate},
       {PreloadingTriggerType::kSpeculationRule, /*use_prefetch_proxy=*/false,
-       blink::mojom::SpeculationEagerness::kEager},
+       blink::mojom::SpeculationEagerness::kImmediate},
       {PreloadingTriggerType::kEmbedder, /*use_prefetch_proxy=*/true},
       {PreloadingTriggerType::kEmbedder, /*use_prefetch_proxy=*/false},
   };

@@ -6,6 +6,8 @@ package org.chromium.components.autofill;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -16,6 +18,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -35,26 +38,32 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.ImmutableWeakReference;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 
+import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.Collections;
 
 /** The unit tests for AutofillProvider. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Features.EnableFeatures({AndroidAutofillFeatures.ANDROID_AUTOFILL_BOTTOM_SHEET_WORKAROUND_NAME})
+@Features.EnableFeatures({
+    AndroidAutofillFeatures.ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_PASSKEY_LONG_PRESS_NAME,
+    AndroidAutofillFeatures.ANDROID_AUTOFILL_FORWARD_IFRAME_ORIGIN_NAME,
+    AndroidAutofillFeatures.ANDROID_AUTOFILL_IMPROVED_VISIBILITY_DETECTION_NAME
+})
 public class AutofillProviderTest {
     private static final float EXPECTED_DIP_SCALE = 2;
     private static final int SCROLL_X = 15;
@@ -68,7 +77,7 @@ public class AutofillProviderTest {
     private ViewGroup mContainerView;
     private AutofillProvider mAutofillProvider;
     private DisplayAndroid mDisplayAndroid;
-    private long mMockedNativeAndroidAutofillProvider = 1;
+    private final long mMockedNativeAndroidAutofillProvider = 1;
 
     // Virtual Id of the field with focus.
     private int mFocusVirtualId;
@@ -77,16 +86,23 @@ public class AutofillProviderTest {
     private int mDialogVirtualId;
     private SparseArray<VirtualViewFillInfo> mPrefillRequestInfos;
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private AutofillProvider.Natives mNativeMock;
     @Mock private RenderCoordinatesImpl mRenderCoordinates;
     @Mock private AutofillManager mAutofillManager;
 
     /** AutofillManagerWrapper which keeps track of the virtual id of the field with focus. */
     private class TestAutofillManagerWrapper extends AutofillManagerWrapper {
+        private boolean mDestroyed;
 
         public TestAutofillManagerWrapper(Context context) {
             super(context);
+        }
+
+        @Override
+        public void destroy() {
+            super.destroy();
+            mDestroyed = true;
         }
 
         @Override
@@ -111,7 +127,6 @@ public class AutofillProviderTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
         mContext = Mockito.mock(Context.class);
         when(mContext.getSystemService(AutofillManager.class)).thenReturn(mAutofillManager);
         when(mAutofillManager.isEnabled()).thenReturn(true);
@@ -121,13 +136,14 @@ public class AutofillProviderTest {
         mContainerView = Mockito.mock(ViewGroup.class);
 
         AutofillProvider.setAutofillManagerWrapperFactoryForTesting(
-                (context) -> {
-                    return new TestAutofillManagerWrapper(context);
-                });
+                (context) -> new TestAutofillManagerWrapper(context));
 
         mAutofillProvider =
                 new AutofillProvider(
-                        mContext, mContainerView, mWebContents, "AutofillProviderTest") {
+                        new WeakReference(mContext),
+                        mContainerView,
+                        mWebContents,
+                        "AutofillProviderTest") {
                     @Override
                     protected void initializeNativeAutofillProvider(WebContents webContents) {
                         setNativeAutofillProvider(mMockedNativeAndroidAutofillProvider);
@@ -140,7 +156,7 @@ public class AutofillProviderTest {
         when(mContainerView.getScrollX()).thenReturn(SCROLL_X);
         when(mContainerView.getScrollY()).thenReturn(SCROLL_Y);
         doAnswer(
-                        new Answer<Void>() {
+                        new Answer<>() {
                             @Override
                             public Void answer(InvocationOnMock invocation) {
                                 Object[] args = invocation.getArguments();
@@ -156,7 +172,30 @@ public class AutofillProviderTest {
         RenderCoordinatesImpl.setInstanceForTesting(mRenderCoordinates);
         when(mRenderCoordinates.getContentOffsetYPixInt()).thenReturn(0);
 
-        mJniMocker.mock(AutofillProviderJni.TEST_HOOKS, mNativeMock);
+        AutofillProviderJni.setInstanceForTesting(mNativeMock);
+    }
+
+    @Test
+    public void testContextChangeReinitializesAutofillManager() {
+        TestAutofillManagerWrapper oldManager =
+                (TestAutofillManagerWrapper) mAutofillProvider.getAutofillManagerWrapper();
+        assertFalse(oldManager.mDestroyed);
+
+        // Change context
+        Context newContext = Mockito.mock(Activity.class);
+        when(newContext.getSystemService(AutofillManager.class)).thenReturn(mAutofillManager);
+        mAutofillProvider.switchToContext(new WeakReference<>(newContext));
+
+        // The old manager is destroyed and replaced with a new one.
+        assertTrue(oldManager.mDestroyed);
+        assertNotSame(oldManager, mAutofillProvider.getAutofillManagerWrapper());
+    }
+
+    @Test
+    public void testHandlesNullContextGracefully() {
+        mAutofillProvider.switchToContext(new ImmutableWeakReference(null));
+
+        assertNotNull(mAutofillProvider.getAutofillManagerWrapper());
     }
 
     @Test
@@ -246,11 +285,8 @@ public class AutofillProviderTest {
     }
 
     @Test
-    @Config(minSdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    @Features.EnableFeatures({
-        AndroidAutofillFeatures.ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS_NAME
-    })
     public void testSendingPrefillRequestUsesCorrectHints() {
         FormFieldDataBuilder field1Builder = new FormFieldDataBuilder();
         field1Builder.mServerPredictions = new String[] {"NAME_FIRST", "NAME_LAST"};
@@ -269,11 +305,8 @@ public class AutofillProviderTest {
     }
 
     @Test
-    @Config(minSdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    @Features.EnableFeatures({
-        AndroidAutofillFeatures.ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS_NAME
-    })
     public void testStartSessionWithPrefillRequestWithShowingBottomSheet() {
         int focus = 1;
         int sessionId = 123;
@@ -293,21 +326,18 @@ public class AutofillProviderTest {
         // showAutofillDialog should be called so it has to hold the correct virtualId.
         assertEquals(mDialogVirtualId, virtualId);
         // notifyVirtualViewEntered shouldn't be called so this has to be unset.
-        assertEquals(mFocusVirtualId, 0);
+        assertEquals(0, mFocusVirtualId);
 
         verify(mNativeMock)
                 .onShowBottomSheetResult(
                         mMockedNativeAndroidAutofillProvider,
                         /* isShown= */ true,
-                        /* provided_structure= */ true);
+                        /* providedAutofillStructure= */ true);
     }
 
     @Test
-    @Config(minSdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    @Features.EnableFeatures({
-        AndroidAutofillFeatures.ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS_NAME
-    })
     public void testStartSessionWithPrefillRequestWithoutShowingBottomSheet() {
         int focus = 1;
         int sessionId = 123;
@@ -338,11 +368,8 @@ public class AutofillProviderTest {
     }
 
     @Test
-    @Config(minSdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    @Features.EnableFeatures({
-        AndroidAutofillFeatures.ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS_NAME
-    })
     public void
             testStartSessionWithPrefillRequestWithoutShowingBottomSheetAndNoAutofillStructure() {
         int focus = 1;
@@ -373,11 +400,8 @@ public class AutofillProviderTest {
     }
 
     @Test
-    @Config(minSdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    @Features.EnableFeatures({
-        AndroidAutofillFeatures.ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS_NAME
-    })
     public void testStartSessionWithDifferentSessionIdThanPrefillRequest() {
         int focus = 1;
         int prefillSessionId = 123;
@@ -398,26 +422,41 @@ public class AutofillProviderTest {
                 /* hasServerPrediction= */ false);
 
         // showAutofillDialog shouldn't be called so this has to be 0.
-        assertEquals(mDialogVirtualId, 0);
+        assertEquals(0, mDialogVirtualId);
         // notifyVirtualViewEntered should be called so this has to hold the correct virtualId.
         assertEquals(mFocusVirtualId, FormData.toFieldVirtualId(newSessionId, (short) focus));
 
         verify(mNativeMock, never()).onShowBottomSheetResult(anyLong(), anyBoolean(), anyBoolean());
     }
 
+    @Test
+    public void testCallsNativeToTriggerPasskeys() {
+        mAutofillProvider.triggerPasskeyRequest();
+        verify(mNativeMock).onTriggerPasskeyRequest(eq(mMockedNativeAndroidAutofillProvider));
+    }
+
+    @Test
+    public void testCallsNativeToProvidePasskeyAvailability() {
+        mAutofillProvider.shouldOfferPasskeyEntry();
+        verify(mNativeMock).hasPasskeyRequest(eq(mMockedNativeAndroidAutofillProvider));
+    }
+
     FormData setupPrefillRequest(int sessionId) {
         FormFieldDataBuilder field1Builder = new FormFieldDataBuilder();
         field1Builder.mBounds =
                 new RectF(/* left= */ 10, /* top= */ 20, /* right= */ 300, /* bottom= */ 60);
+        field1Builder.mOrigin = "https://field.host.com/";
+
         FormFieldDataBuilder field2Builder = new FormFieldDataBuilder();
         field2Builder.mBounds =
                 new RectF(/* left= */ 20, /* top= */ 100, /* right= */ 400, /* bottom= */ 200);
+        field2Builder.mOrigin = "https://field2.host.com/";
 
         FormData formData =
                 new FormData(
                         sessionId,
                         /* name= */ null,
-                        /* host= */ null,
+                        /* host= */ "https://host.com/",
                         Arrays.asList(field1Builder.build(), field2Builder.build()));
         mAutofillProvider.sendPrefillRequest(formData);
 

@@ -10,10 +10,9 @@
 #if BUILDFLAG(IS_WIN)
 #include <basetsd.h>  // Included before jpeglib.h because of INT32 clash
 #endif
-#include <stdio.h>    // Needed by jpeglib.h
+#include <stdio.h>  // Needed by jpeglib.h
 
 #include "jpeglib.h"  // for JPEG_MAX_DIMENSION
-
 #include "third_party/libwebp/src/src/webp/encode.h"  // for WEBP_MAX_DIMENSION
 
 namespace blink {
@@ -25,11 +24,13 @@ bool ImageEncoder::Encode(Vector<unsigned char>* dst,
   return SkJpegEncoder::Encode(&dst_stream, src, options);
 }
 
-bool ImageEncoder::Encode(Vector<unsigned char>* dst,
-                          const SkPixmap& src,
-                          const SkPngEncoder::Options& options) {
+bool ImageEncoder::Encode(
+    Vector<unsigned char>* dst,
+    const SkPixmap& src,
+    SkPngRustEncoder::CompressionLevel compression_level) {
   VectorWStream dst_stream(dst);
-  return SkPngEncoder::Encode(&dst_stream, src, options);
+  SkPngRustEncoder::Options options = {.fCompressionLevel = compression_level};
+  return SkPngRustEncoder::Encode(&dst_stream, src, options);
 }
 
 bool ImageEncoder::Encode(Vector<unsigned char>* dst,
@@ -37,6 +38,30 @@ bool ImageEncoder::Encode(Vector<unsigned char>* dst,
                           const SkWebpEncoder::Options& options) {
   VectorWStream dst_stream(dst);
   return SkWebpEncoder::Encode(&dst_stream, src, options);
+}
+
+bool ImageEncoder::Encode(Vector<unsigned char>* dst,
+                          const SkPixmap& src,
+                          ImageEncodingMimeType mime_type,
+                          double quality) {
+  switch (mime_type) {
+    case kMimeTypeJpeg: {
+      SkJpegEncoder::Options options;
+      options.fQuality = ComputeJpegQuality(quality);
+      options.fAlphaOption = SkJpegEncoder::AlphaOption::kBlendOnBlack;
+      if (options.fQuality == 100) {
+        options.fDownsample = SkJpegEncoder::Downsample::k444;
+      }
+      return Encode(dst, src, options);
+    }
+    case kMimeTypeWebp: {
+      SkWebpEncoder::Options options = ComputeWebpOptions(quality);
+      return Encode(dst, src, options);
+    }
+    case kMimeTypePng: {
+      return Encode(dst, src, SkPngRustEncoder::CompressionLevel::kLow);
+    }
+  }
 }
 
 std::unique_ptr<ImageEncoder> ImageEncoder::Create(
@@ -56,10 +81,11 @@ std::unique_ptr<ImageEncoder> ImageEncoder::Create(
 std::unique_ptr<ImageEncoder> ImageEncoder::Create(
     Vector<unsigned char>* dst,
     const SkPixmap& src,
-    const SkPngEncoder::Options& options) {
+    SkPngRustEncoder::CompressionLevel compression_level) {
   std::unique_ptr<ImageEncoder> image_encoder(new ImageEncoder(dst));
+  SkPngRustEncoder::Options options = {.fCompressionLevel = compression_level};
   image_encoder->encoder_ =
-      SkPngEncoder::Make(&image_encoder->dst_, src, options);
+      SkPngRustEncoder::Make(&image_encoder->dst_, src, options);
   if (!image_encoder->encoder_) {
     return nullptr;
   }
@@ -76,9 +102,8 @@ int ImageEncoder::MaxDimension(ImageEncodingMimeType mime_type) {
     case kMimeTypeWebp:
       return WEBP_MAX_DIMENSION;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return -1;
 }
 
 int ImageEncoder::ComputeJpegQuality(double quality) {

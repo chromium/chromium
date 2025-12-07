@@ -14,6 +14,7 @@
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapping.h"
 
@@ -80,10 +81,6 @@ class BASE_EXPORT RefCountedStaticMemory : public RefCountedMemory {
   RefCountedStaticMemory();
   explicit RefCountedStaticMemory(base::span<const uint8_t> bytes);
 
-  // TODO(crbug.com/40284755): Remove this overload, use the span ctor instead.
-  RefCountedStaticMemory(const void* data, size_t length)
-      : UNSAFE_BUFFERS(bytes_(static_cast<const uint8_t*>(data), length)) {}
-
   RefCountedStaticMemory(const RefCountedStaticMemory&) = delete;
   RefCountedStaticMemory& operator=(const RefCountedStaticMemory&) = delete;
 
@@ -93,7 +90,7 @@ class BASE_EXPORT RefCountedStaticMemory : public RefCountedMemory {
   // RefCountedMemory:
   base::span<const uint8_t> AsSpan() const LIFETIME_BOUND override;
 
-  base::span<const uint8_t> bytes_;
+  base::raw_span<const uint8_t> bytes_;
 };
 
 // An implementation of RefCountedMemory, where the data is stored in a STL
@@ -102,30 +99,18 @@ class BASE_EXPORT RefCountedBytes : public RefCountedMemory {
  public:
   RefCountedBytes();
 
-  // Constructs a RefCountedBytes object by copying from |initializer|.
+  // Constructs a RefCountedBytes object by taking `initializer`.
   explicit RefCountedBytes(std::vector<uint8_t> initializer);
+
+  // Constructs a RefCountedBytes object by copying from `initializer`.
   explicit RefCountedBytes(base::span<const uint8_t> initializer);
 
-  // Constructs a RefCountedBytes object by copying |size| bytes from |p|.
-  //
-  // TODO(crbug.com/40284755): Remove this overload, use the span ctor instead.
-  RefCountedBytes(const uint8_t* p, size_t size);
-
   // Constructs a RefCountedBytes object by zero-initializing a new vector of
-  // |size| bytes.
+  // `size` bytes.
   explicit RefCountedBytes(size_t size);
 
   RefCountedBytes(const RefCountedBytes&) = delete;
   RefCountedBytes& operator=(const RefCountedBytes&) = delete;
-
-  // Constructs a RefCountedBytes object by performing a swap. (To non
-  // destructively build a RefCountedBytes, use the constructor that takes a
-  // vector.)
-  //
-  // TODO(danakj): This can be removed, as callers can now move() the vector to
-  // the ctor instead.
-  static scoped_refptr<RefCountedBytes> TakeVector(
-      std::vector<uint8_t>* to_destroy);
 
   const std::vector<uint8_t>& as_vector() const { return bytes_; }
   std::vector<uint8_t>& as_vector() { return bytes_; }
@@ -149,8 +134,8 @@ class BASE_EXPORT RefCountedString : public RefCountedMemory {
   RefCountedString(const RefCountedString&) = delete;
   RefCountedString& operator=(const RefCountedString&) = delete;
 
-  const std::string& as_string() const { return string_; }
-  std::string& as_string() { return string_; }
+  const std::string& as_string() const LIFETIME_BOUND { return string_; }
+  std::string& as_string() LIFETIME_BOUND { return string_; }
 
  private:
   ~RefCountedString() override;
@@ -171,8 +156,8 @@ class BASE_EXPORT RefCountedString16 : public base::RefCountedMemory {
   RefCountedString16(const RefCountedString16&) = delete;
   RefCountedString16& operator=(const RefCountedString16&) = delete;
 
-  const std::u16string& as_string() const { return string_; }
-  std::u16string& as_string() { return string_; }
+  const std::u16string& as_string() const LIFETIME_BOUND { return string_; }
+  std::u16string& as_string() LIFETIME_BOUND { return string_; }
 
  private:
   ~RefCountedString16() override;

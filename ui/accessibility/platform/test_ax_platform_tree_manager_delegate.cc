@@ -4,13 +4,15 @@
 
 #include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
 
+#include "base/functional/callback.h"
+
 namespace ui {
 
 TestAXPlatformTreeManagerDelegate::TestAXPlatformTreeManagerDelegate()
     : is_root_frame_(true), accelerated_widget_(gfx::kNullAcceleratedWidget) {}
 
 void TestAXPlatformTreeManagerDelegate::AccessibilityPerformAction(
-    const ui::AXActionData& data) {}
+    const AXActionData& data) {}
 
 bool TestAXPlatformTreeManagerDelegate::AccessibilityViewHasFocus() {
   return false;
@@ -35,20 +37,20 @@ TestAXPlatformTreeManagerDelegate::AccessibilityGetAcceleratedWidget() {
 
 gfx::NativeViewAccessible
 TestAXPlatformTreeManagerDelegate::AccessibilityGetNativeViewAccessible() {
-  return nullptr;
+  return gfx::NativeViewAccessible();
 }
 
 gfx::NativeViewAccessible TestAXPlatformTreeManagerDelegate::
     AccessibilityGetNativeViewAccessibleForWindow() {
-  return nullptr;
+  return gfx::NativeViewAccessible();
 }
 
 void TestAXPlatformTreeManagerDelegate::AccessibilityHitTest(
     const gfx::Point& point_in_frame_pixels,
     const ax::mojom::Event& opt_event_to_fire,
     int opt_request_id,
-    base::OnceCallback<void(ui::AXPlatformTreeManager* hit_manager,
-                            ui::AXNodeID hit_node_id)> opt_callback) {}
+    base::OnceCallback<void(AXPlatformTreeManager* hit_manager,
+                            AXNodeID hit_node_id)> opt_callback) {}
 
 gfx::NativeWindow TestAXPlatformTreeManagerDelegate::GetTopLevelNativeWindow() {
   return gfx::NativeWindow();
@@ -68,7 +70,12 @@ bool TestAXPlatformTreeManagerDelegate::ShouldSuppressAXLoadComplete() {
 
 content::WebContentsAccessibility*
 TestAXPlatformTreeManagerDelegate::AccessibilityGetWebContentsAccessibility() {
-  return nullptr;
+  return web_contents_accessibility_;
+}
+
+bool TestAXPlatformTreeManagerDelegate::AccessibilityIsWebContentSource() {
+  // Currently only used in web content tests.
+  return true;
 }
 
 }  // namespace ui

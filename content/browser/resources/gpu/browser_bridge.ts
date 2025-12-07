@@ -47,7 +47,6 @@ interface GpuInfo {
   displayInfo: any[];
   featureStatus: FeatureStatus;
   featureStatusForHardwareGpu: FeatureStatus;
-  gpuMemoryBufferInfo: any[];
   videoAcceleratorsInfo: any[];
   vulkanInfo: string;
 }

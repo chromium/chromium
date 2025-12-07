@@ -8,8 +8,7 @@
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "ui/gfx/image/image.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 // Data related to a photo or video taken on an Android device, including
 // metadata and thumbnail.
@@ -35,7 +34,6 @@ class CameraRollItem {
   gfx::Image thumbnail_;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_CAMERA_ROLL_ITEM_H_

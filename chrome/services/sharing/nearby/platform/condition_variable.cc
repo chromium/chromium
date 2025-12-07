@@ -7,8 +7,7 @@
 #include "base/time/time.h"
 #include "chrome/services/sharing/nearby/platform/mutex.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 ConditionVariable::ConditionVariable(Mutex* mutex)
     : mutex_(mutex), condition_variable_(&mutex_->lock_) {}
@@ -30,5 +29,4 @@ void ConditionVariable::Notify() {
   condition_variable_.Broadcast();
 }
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome

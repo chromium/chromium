@@ -137,6 +137,20 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Client Cert"/>
 </enum>
 
+<!-- LINT.IfChange(CertManagerPageEnum) -->
+
+<enum name="CertificateManagerPage">
+  <int value="0" label="Local Certs"/>
+  <int value="1" label="Client Certs"/>
+  <int value="2" label="Chrome Root Store Certs"/>
+  <int value="3" label="Admin Certs subpage"/>
+  <int value="4" label="Platform Client Certs subpage"/>
+  <int value="5" label="Platform Certs subpage"/>
+  <int value="6" label="User Certs subpage"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/resources/certificate_manager/navigation_v2.ts:PageHistogramEnum) -->
+
 <enum name="ConnectionInfo">
   <summary>
     Application protocol used for HTTP response as defined in
@@ -195,43 +209,163 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Zstd"/>
 </enum>
 
-<enum name="CorsAccessCheckError">
-  <summary>
-    The detailed error type for CORS check failures. See
-    services/network/public/mojom/cors.mojom for detailed information.
-  </summary>
-  <int value="0" label="kDisallowedByMode"/>
-  <int value="1" label="kInvalidResponse"/>
-  <int value="2" label="kWildcardOriginNotAllowed"/>
-  <int value="3" label="kMissingAllowOriginHeader"/>
-  <int value="4" label="kMultipleAllowOriginValues"/>
-  <int value="5" label="kInvalidAllowOriginValue"/>
-  <int value="6" label="kAllowOriginMismatch"/>
-  <int value="7" label="kInvalidAllowCredentials"/>
-  <int value="8" label="kCorsDisabledScheme"/>
-  <int value="9" label="kPreflightInvalidStatus"/>
-  <int value="10" label="kPreflightDisallowedRedirect"/>
-  <int value="11" label="kPreflightWildcardOriginNotAllowed"/>
-  <int value="12" label="kPreflightMissingAllowOriginHeader"/>
-  <int value="13" label="kPreflightMultipleAllowOriginValues"/>
-  <int value="14" label="kPreflightInvalidAllowOriginValue"/>
-  <int value="15" label="kPreflightAllowOriginMismatch"/>
-  <int value="16" label="kPreflightInvalidAllowCredentials"/>
-  <int value="17" label="kPreflightMissingAllowPrivateNetwork"/>
-  <int value="18" label="kPreflightInvalidAllowPrivateNetwork"/>
-  <int value="19" label="kInvalidAllowMethodsPreflightResponse"/>
-  <int value="20" label="kInvalidAllowHeadersPreflightResponse"/>
-  <int value="21" label="kMethodDisallowedByPreflightResponse"/>
-  <int value="22" label="kHeaderDisallowedByPreflightResponse"/>
-  <int value="23" label="kRedirectContainsCredentials"/>
-  <int value="24" label="kInsecurePrivateNetwork"/>
-  <int value="25" label="kInvalidPrivateNetworkAccess"/>
-  <int value="26" label="kUnexpectedPrivateNetworkAccess"/>
-  <int value="27" label="kPreflightMissingPrivateNetworkAccessId"/>
-  <int value="28" label="kPreflightMissingPrivateNetworkAccessName"/>
-  <int value="29" label="kPrivateNetworkAccessPermissionUnavailable"/>
-  <int value="30" label="kPrivateNetworkAccessPermissionDenied"/>
+<!-- LINT.IfChange(DeviceBoundSessionDeletionReason) -->
+
+<enum name="DeviceBoundSessionDeletionReason">
+  <int value="0" label="Expired"/>
+  <int value="1" label="Failed to restore key from disk"/>
+  <int value="2" label="Failed to unwrap key"/>
+  <int value="3" label="Removed from storage partition"/>
+  <int value="4" label="User-initiated browser data removal"/>
+  <int value="5" label="Server requested termination"/>
+  <int value="6" label="Invalid session params"/>
+  <int value="7" label="Fatal error during refresh"/>
 </enum>
+
+<!-- LINT.ThenChange(//services/network/public/mojom/device_bound_sessions.mojom:DeviceBoundSessionDeletionReason) -->
+
+<!-- LINT.IfChange(DeviceBoundSessionError) -->
+
+<enum name="DeviceBoundSessionError">
+  <int value="0" label="Success"/>
+  <int value="1" label="Key error"/>
+  <int value="2" label="Signing error"/>
+  <int value="3" label="Network error (DEPRECATED)"/>
+  <int value="4" label="HTTP error"/>
+  <int value="5" label="Server requested termination"/>
+  <int value="6" label="Invalid configuration JSON (DEPRECATED)"/>
+  <int value="7" label="Invalid session ID"/>
+  <int value="8" label="Invalid credentials (DEPRECATED)"/>
+  <int value="9" label="Invalid challenge"/>
+  <int value="10" label="Too many challenges"/>
+  <int value="11" label="Invalid fetcher URL"/>
+  <int value="12" label="Invalid refresh URL"/>
+  <int value="13" label="Transient HTTP error"/>
+  <int value="14" label="Persistent HTTP error (DEPRECATED)"/>
+  <int value="15" label="Same-site mismatch scope origin"/>
+  <int value="16" label="Same-site mismatch refresh URL"/>
+  <int value="17" label="Invalid scope origin (DEPRECATED)"/>
+  <int value="18" label="Mismatched session id"/>
+  <int value="19" label="Invalid refresh initiators (DEPRECATED)"/>
+  <int value="20" label="Invalid scope rule (DEPRECATED)"/>
+  <int value="21" label="Missing scope"/>
+  <int value="22" label="No credentials"/>
+  <int value="23" label="Invalid include_site in scope (DEPRECATED)"/>
+  <int value="24" label="Subdomain registration .well-known unavailable"/>
+  <int value="25"
+      label=".well-known did not authorize registration by subdomain"/>
+  <int value="26" label="Subdomain registration .well-known content malformed"/>
+  <int value="27"
+      label="Federated session not authorized by .well-known (DEPRECATED)"/>
+  <int value="28" label="Session provider .well-known unavailable"/>
+  <int value="29"
+      label="Session provider .well-known content malformed (DEPRECATED)"/>
+  <int value="30" label="Relying party .well-known unavailable"/>
+  <int value="31"
+      label="Relying party .well-known content malformed (DEPRECATED)"/>
+  <int value="32" label="Federated key had incorrect thumbprint"/>
+  <int value="33" label="Federated provider URL not valid"/>
+  <int value="34" label="Federated session invalid (DEPRECATED)"/>
+  <int value="35" label="Federated key invalid"/>
+  <int value="36" label="Too many relying origin labels in .well-known"/>
+  <int value="37"
+      label="Registration in a context that cannot set bound cookies"/>
+  <int value="38" label="Network error"/>
+  <int value="39" label="Proxy error"/>
+  <int value="40" label="Invalid configuration JSON (DEPRECATED 2)"/>
+  <int value="41" label="Empty session config for registration"/>
+  <int value="42" label="Invalid credentials configuration"/>
+  <int value="43" label="Invalid credentials - empty or non-cookie type"/>
+  <int value="44" label="Invalid credentials - empty name"/>
+  <int value="45" label="Invalid credentials - cookie invalid"/>
+  <int value="46" label="Persistent HTTP error"/>
+  <int value="47" label="Registration returned challenge error response code"/>
+  <int value="48" label="Invalid scope origin"/>
+  <int value="49" label="Scope origin contains a path"/>
+  <int value="50" label="Allowed refresh initiator is not a string"/>
+  <int value="51" label="Allowed refresh initiator has invalid host pattern"/>
+  <int value="52" label="Invalid scope specification"/>
+  <int value="53" label="Missing scope specification type"/>
+  <int value="54" label="Empty scope specification domain"/>
+  <int value="55" label="Empty scope specification path"/>
+  <int value="56" label="Scope specification type not include or exclude"/>
+  <int value="57" label="Invalid include_site in scope"/>
+  <int value="58" label="Missing include_site in scope"/>
+  <int value="59"
+      label="Federated session not authorized by provider .well-known"/>
+  <int value="60"
+      label="Federated session not authorized by relying party .well-known"/>
+  <int value="61" label="Session provider .well-known content malformed"/>
+  <int value="62"
+      label="Session provider .well-known content has provider_origin"/>
+  <int value="63" label="Relying party .well-known content malformed"/>
+  <int value="64"
+      label="Relying party .well-known content has relying_origins"/>
+  <int value="65"
+      label="Federated session invalid due to provider session not found"/>
+  <int value="66"
+      label="Federated session invalid due to provider origin mismatch"/>
+  <int value="67" label="Invalid credentials - cookie creation time invalid"/>
+  <int value="68" label="Invalid credentials - cookie name invalid"/>
+  <int value="69" label="Invalid credentials - cookie parsing failed"/>
+  <int value="70" label="Invalid credentials - cookie attribute not permitted"/>
+  <int value="71" label="Invalid credentials - cookie invalid domain"/>
+  <int value="72" label="Invalid credentials - cookie invalid prefix"/>
+  <int value="73" label="Invalid scope rule path"/>
+  <int value="74" label="Invalid scope rule host pattern"/>
+  <int value="75"
+      label="Origin-scoped session has mismatch between host pattern and
+             origin"/>
+  <int value="76"
+      label="Site-scoped session has mismatch between host pattern and site"/>
+  <int value="77" label="Signing quota exceeded"/>
+  <int value="78" label="Invalid configuration JSON"/>
+  <int value="79"
+      label="Federated session invalid due to failure to restore session
+             provider key"/>
+  <int value="80" label="Failed to unwrap key"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/device_bound_sessions/session_error.h:DeviceBoundSessionError) -->
+
+<!-- LINT.IfChange(DeviceBoundSessionProactiveRefreshAttempt) -->
+
+<enum name="DeviceBoundSessionProactiveRefreshAttempt">
+  <int value="0" label="Existing deferring refresh"/>
+  <int value="1" label="Existing proactive refresh"/>
+  <int value="2" label="Session key not restored"/>
+  <int value="3" label="Attempted"/>
+  <int value="4" label="Previous failed proactive refresh"/>
+  <int value="5" label="Signing quota exceeded"/>
+  <int value="6" label="Session in backoff"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/device_bound_sessions/session_service_impl.h:ProactiveRefreshAttempt) -->
+
+<!-- LINT.IfChange(DeviceBoundSessionRefreshResult) -->
+
+<enum name="DeviceBoundSessionRefreshResult">
+  <int value="0" label="Refreshed"/>
+  <int value="1" label="Service initialized"/>
+  <int value="2" label="Endpoint unreachable"/>
+  <int value="3" label="Endpoint transient error"/>
+  <int value="4" label="Refresh quota exceeded"/>
+  <int value="5" label="Fatal error"/>
+  <int value="6" label="Signing exceeded"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/device_bound_sessions/session_service.h:DeviceBoundSessionRefreshResult) -->
+
+<!-- LINT.IfChange(DeviceBoundSessionUsage) -->
+
+<enum name="DeviceBoundSessionUsage">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Not in scope of any session"/>
+  <int value="2" label="In scope but not deferred"/>
+  <int value="3" label="In scope and deferred"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/device_bound_sessions/session_usage.h:DeviceBoundSessionUsage) -->
 
 <enum name="DNS.AttemptType">
   <int value="0" label="DnsUDPAttempt"/>
@@ -258,29 +392,6 @@ chromium-metrics-reviews@google.com.
   <int value="3"
       label="Would be task-fatal transaction error but finch param disabled"/>
   <int value="4" label="Task-fatal transaction error"/>
-</enum>
-
-<enum name="DNS.TaskTypeMetadataAvailability">
-  <int value="0" label="SYSTEM, no metadata"/>
-  <int value="1" label="SYSTEM, with metadata"/>
-  <int value="2" label="DNS, no metadata"/>
-  <int value="3" label="DNS, with metadata"/>
-  <int value="4" label="SECURE_DNS, no metadata"/>
-  <int value="5" label="SECURE_DNS, with metadata"/>
-  <int value="6" label="MDNS, no metadata"/>
-  <int value="7" label="MDNS, with metadata"/>
-  <int value="8" label="CACHE_LOOKUP, no metadata"/>
-  <int value="9" label="CACHE_LOOKUP, with metadata"/>
-  <int value="10" label="INSECURE_CACHE_LOOKUP, no metadata"/>
-  <int value="11" label="INSECURE_CACHE_LOOKUP, with metadata"/>
-  <int value="12" label="SECURE_CACHE_LOOKUP, no metadata"/>
-  <int value="13" label="SECURE_CACHE_LOOKUP, with metadata"/>
-  <int value="14" label="CONFIG_PRESET, no metadata"/>
-  <int value="15" label="CONFIG_PRESET, with metadata"/>
-  <int value="16" label="NAT64, no metadata"/>
-  <int value="17" label="NAT64, with metadata"/>
-  <int value="18" label="HOSTS, no metadata"/>
-  <int value="19" label="HOSTS, with metadata"/>
 </enum>
 
 <enum name="DNS.UdpLowEntropyReason">
@@ -336,6 +447,14 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="NoNameServerFound"/>
 </enum>
 
+<enum name="DnsConfigLocalNameserverState">
+  <int value="0" label="DNS Config without local nameservers"/>
+  <int value="1" label="DNS Config with loopback local nameservers"/>
+  <int value="2" label="DNS Config with non-loopback local nameservers"/>
+  <int value="3"
+      label="DNS Config with local nameservers (including loopback)"/>
+</enum>
+
 <enum name="DohServerAutoupgradeStatus">
   <int value="0" label="SuccessWithNoPriorFailures"/>
   <int value="1" label="SuccessWithSomePriorFailures"/>
@@ -358,6 +477,7 @@ chromium-metrics-reviews@google.com.
   <int value="24" label="P-384"/>
   <int value="25" label="P-521"/>
   <int value="29" label="X25519"/>
+  <int value="4588" label="ML-KEM-768+X25519"/>
   <int value="16696" label="CECPQ2"/>
   <int value="25497" label="Kyber+X25519"/>
 </enum>
@@ -379,6 +499,23 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Not-ECT, ECT(0), CE"/>
   <int value="14" label="ECT(1), ECT(0), CE"/>
   <int value="15" label="Not-ECT, ECT(1), ECT(0), CE"/>
+</enum>
+
+<!-- LINT.IfChange(EraseReason) -->
+
+<enum name="EraseReason">
+  <int value="0" label="kEraseEvict"/>
+  <int value="1" label="kEraseClear"/>
+  <int value="2" label="kEraseDestruct"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/dns/host_cache.h:EraseReason) -->
+
+<enum name="HSTSRedirectUpgradeReason">
+  <int value="0" label="URL not HTTP"/>
+  <int value="1" label="HSTS unavailable"/>
+  <int value="2" label="No HSTS pin"/>
+  <int value="3" label="URL upgraded by HSTS"/>
 </enum>
 
 <enum name="Http2WireErrorCodes">
@@ -415,13 +552,6 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="SpdyProxy Reject (Deprecated)"/>
 </enum>
 
-<enum name="HttpAuthNtlmV2Usage">
-  <int value="0" label="Disabled over unsecured connection"/>
-  <int value="1" label="Disabled over secure connection"/>
-  <int value="2" label="Enabled over unsecured connection"/>
-  <int value="3" label="Enabled over secure connection"/>
-</enum>
-
 <enum name="HttpAuthTarget">
   <int value="0" label="Basic Proxy"/>
   <int value="1" label="Basic Secure Proxy"/>
@@ -444,6 +574,62 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="SpdyProxy Server (Invalid)"/>
   <int value="19" label="SpdyProxy Secure Server (Invalid)"/>
 </enum>
+
+<!-- LINT.IfChange(HttpCacheEntryRejectionStatus) -->
+
+<enum name="HttpCacheEntryRejectionStatus">
+  <int value="0" label="Rejection"/>
+  <int value="1" label="No Rejection Usable"/>
+  <int value="2" label="No Rejection Partial"/>
+  <int value="3" label="No Rejection Non-Read-Write-Mode"/>
+  <int value="4" label="No Rejection Skip Cache Validation"/>
+  <int value="5" label="No Rejection Load Only From Cache"/>
+  <int value="6" label="No Rejection Hint disabled"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/http/http_cache_transaction.h:HttpCacheEntryRejectionStatus) -->
+
+<!-- LINT.IfChange(HttpCacheNotCoveredReason) -->
+
+<enum name="HttpCacheNotCoveredReason">
+  <int value="0" label="No Reason">Should not happen.</int>
+  <int value="1" label="Reading Auth Response">
+    Stopped caching to read the response body of an auth response.
+  </int>
+  <int value="2" label="Network Error">
+    A network error happened in the headers phase.
+  </int>
+  <int value="3" label="Partial Response Validation">
+    A partial response could not be validated, and it was not due to auth.
+  </int>
+  <int value="4" label="Delete Full Entry">
+    We have a full entry, but the server sent a range response that should
+    replace it.
+  </int>
+  <int value="5" label="Partial Request">Partial requests are hard to log.</int>
+  <int value="6" label="Range Header Found">
+    Original request had a Range header.
+  </int>
+  <int value="7" label="Truncated Entry">The cache entry was truncated.</int>
+  <int value="8" label="Partial Validation">
+    Validating a partial entry, and they are hard to log.
+  </int>
+  <int value="9" label="Pre Conditionalized">
+    The request was externally conditionalized and didn't match our existing
+    cache entry.
+  </int>
+  <int value="10" label="Validate Partial">
+    Attempt to validate a partial response failed.
+  </int>
+  <int value="11" label="Ignore Range Request">
+    Range-related failure led to calling IgnoreRangeRequest().
+  </int>
+  <int value="12" label="Blocked By Ip Space">
+    Cached IP address space blocked by Private Network Access policy.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//net/http/http_cache_transaction.h:OtherStatusReason) -->
 
 <enum name="HttpCachePattern">
   <int value="0" label="Undefined"/>
@@ -497,6 +683,28 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(HttpsNotAttemptedReason) -->
+
+<enum name="HttpsNotAttemptedReason">
+  <int value="0" label="Unknown">The reason is unknown.</int>
+  <int value="1" label="QueryingHttpsDisabled">Querying HTTPS is disabled.</int>
+  <int value="2" label="BuiltInResolverDisabled">
+    Built-in DNS resolver is disabled.
+  </int>
+  <int value="3" label="NoDnsClient">No DnsClient.</int>
+  <int value="4" label="FallbackFromInsecureTransactionPreferred">
+    DnsTask wasn't scheduled because it hadn't been working for a while.
+  </int>
+  <int value="5" label="InsecureDnsTaskDisabled">
+    Insecure DnsTask was not allowed to query HTTPS.
+  </int>
+  <int value="6" label="FallbackToSystemTaskAfterDnsTask">
+    DnsTask was executed but fell back to the system task.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//net/dns/host_resolver_manager_job.h:HttpsNotAttemptedReason) -->
+
 <enum name="HttpssvcDnsRcode">
   <summary>
     Tracks the result of querying for an INTEGRITY or HTTPSSVC record. This enum
@@ -518,6 +726,22 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="REFUSED"/>
 </enum>
 
+<!-- LINT.IfChange(HttpStreamPoolInitialAttemptState) -->
+
+<enum name="HttpStreamPoolInitialAttemptState">
+  <int value="0" label="Other"/>
+  <int value="1" label="CanUseQuicWithKnownVersion"/>
+  <int value="2" label="CanUseQuicWithKnownVersionAndSupportsSpdy"/>
+  <int value="3" label="CanUseQuicWithUnknownVersion"/>
+  <int value="4" label="CanUseQuicWithUnknownVersionAndSupportsSpdy"/>
+  <int value="5" label="CannotUseQuicWithKnownVersion"/>
+  <int value="6" label="CannotUseQuicWithKnownVersionAndSupportsSpdy"/>
+  <int value="7" label="CannotUseQuicWithUnknownVersion"/>
+  <int value="8" label="CannotUseQuicWithUnknownVersionAndSupportsSpdy"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/http/http_stream_pool_attempt_manager.h:InitialAttemptState) -->
+
 <enum name="InitialRttEstimateSource">
   <int value="0" label="Default"/>
   <int value="1" label="Cached"/>
@@ -534,11 +758,51 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="CryptoConnectFailedAsync"/>
 </enum>
 
+<!-- LINT.IfChange(LookupOutcome) -->
+
+<enum name="LookupOutcome">
+  <int value="0" label="kLookupMissAbsent"/>
+  <int value="1" label="kLookupMissStale"/>
+  <int value="2" label="kLookupHitValid"/>
+  <int value="3" label="kLookupHitStale"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/dns/host_cache.h:LookupOutcome) -->
+
+<!-- LINT.IfChange(MultiplexedSessionCreationInitiator) -->
+
+<enum name="MultiplexedSessionCreationInitiator">
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kPreconnect"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/spdy/multiplexed_session_creation_initiator.h:MultiplexedSessionCreationInitiator) -->
+
 <enum name="MultiPortStatusOnMigration">
   <int value="0" label="Not validated"/>
   <int value="1" label="Pending refresh validation"/>
   <int value="2" label="Waiting for refresh validation"/>
 </enum>
+
+<!-- LINT.IfChange(NeedsObserverCheckReason) -->
+
+<enum name="NeedsObserverCheckReason">
+  <int value="0" label="NotNeeded">The case where it returns false.</int>
+  <int value="1" label="NoEnabledClientHints">
+    No enabled client hints were provided.
+  </int>
+  <int value="2" label="MainFrameOriginMismatch">
+    The origin of the request does not match the main frame origin.
+  </int>
+  <int value="3" label="SubframeFeatureDisabled">
+    The optimization for subframes is disabled.
+  </int>
+  <int value="4" label="HintNotEnabled">
+    One or more hints in the Accept-CH frame are not in the enabled hints list.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//services/network/accept_ch_frame_interceptor.h:NeedsObserverCheckReason) -->
 
 <enum name="NegotiatedHttpDatagramVersion">
   <int value="0" label="Not supported"/>
@@ -557,6 +821,59 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Normalized Names"/>
   <int value="3" label="Chain contained only one certificate"/>
 </enum>
+
+<!-- LINT.IfChange(NetCertVerifier1QwacResult) -->
+
+<enum name="NetCertVerifier1QwacResult">
+  <int value="0" label="Not a 1-QWAC"/>
+  <int value="1"
+      label="Has some QWAC-like indicators, but they are inconsistent or
+             incomplete"/>
+  <int value="2" label="1-QWAC verification failed"/>
+  <int value="3" label="1-QWAC verification succeeded"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/cert/cert_verify_proc_builtin.h:NetCertVerifier1QwacResult) -->
+
+<!-- LINT.IfChange(NetCertVerifier2QwacBindingResult) -->
+
+<enum name="NetCertVerifier2QwacBindingResult">
+  <int value="0" label="other error"/>
+  <int value="1" label="binding verification succeeded"/>
+  <int value="2" label="binding parsing error"/>
+  <int value="3" label="binding signature invalid"/>
+  <int value="4" label="TLS certificate not bound"/>
+  <int value="5" label="error parsing 2-QWAC leaf certificate"/>
+  <int value="6" label="2-QWAC certificate does not have 2-QWAC indicators"/>
+  <int value="7"
+      label="2-QWAC certificate has some QWAC-like indicators, but they are
+             inconsistent or incomplete"/>
+  <int value="8" label="2-QWAC certificate name invalid"/>
+  <int value="9" label="2-QWAC certificate date invalid"/>
+  <int value="10" label="2-QWAC certificate authority invalid"/>
+  <int value="11" label="2-QWAC certificate invalid"/>
+  <int value="12" label="2-QWAC certificate weak key"/>
+  <int value="13" label="2-QWAC certificate name constraint violation"/>
+  <int value="14" label="other 2-QWAC certificate error"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/cert/cert_verify_proc_builtin.h:NetCertVerifier2QwacBindingResult) -->
+
+<!-- LINT.IfChange(NetCertVerifier2QwacLinkProcessingResult) -->
+
+<enum name="NetCertVerifier2QwacLinkProcessingResult">
+  <int value="0" label="QwacStatus already present"/>
+  <int value="1" label="unacceptable SSLInfo"/>
+  <int value="2" label="no 2-QWAC Link header"/>
+  <int value="3" label="invalid 2-QWAC Link header"/>
+  <int value="4" label="non-relative 2-QWAC Link URL"/>
+  <int value="5" label="download failed or disallowed"/>
+  <int value="6" label="verification failed"/>
+  <int value="7" label="valid 2-QWAC"/>
+  <int value="8" label="QwacStatus destroyed before processing finished"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/net/qwac_web_contents_observer.h:NetCertVerifier2QwacLinkProcessingResult) -->
 
 <enum name="NetErrorPageEvents">
   <int value="0" label="Error Page Shown">
@@ -669,32 +986,6 @@ chromium-metrics-reviews@google.com.
   <int value="30" label="Sign in to network button clicked">
     An error page was shown with at least a &quot;Sign in to network&quot;
     button on it and the user pressed that button.
-  </int>
-</enum>
-
-<enum name="NetFilterType2">
-  <summary>
-    Specific content decoding filter. See net::SourceStream::SourceType for more
-    details
-  </summary>
-  <int value="0" label="Brotli"/>
-  <int value="1" label="Deflate"/>
-  <int value="2" label="GZIP"/>
-  <int value="3" label="GZIPFallback"/>
-  <int value="4" label="SDCH"/>
-  <int value="5" label="SDCHPossible"/>
-  <int value="6" label="Invalid"/>
-  <int value="7" label="None"/>
-  <int value="8" label="Rejected">
-    Unlike other values, this one is reported from HttpNetworkTransaction in a
-    case when an unadvertised, but known encoding appears in a
-    &quot;Content-Encoding&quot; header, and is thus not comparable with the
-    other values, which are potentially returned from cached entries.
-  </int>
-  <int value="9" label="Unknown">
-    Reported from URLRequestHttpJob::SetUpSourceStream when an unknown encoding
-    appears in a &quot;Content-Encoding&quot; header. Despite being reported in
-    this histogram, this does not cause a CONTENT_DECODING_FAILED error.
   </int>
 </enum>
 
@@ -1821,6 +2112,181 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Metered"/>
 </enum>
 
+<!-- LINT.IfChange(NoVarySearchCacheStorageLoadResult) -->
+
+<enum name="NoVarySearchCacheStorageLoadResult">
+  <int value="0" label="Success">Persisted cache was successfully loaded.</int>
+  <int value="1" label="Snapshot file too small">
+    snapshot.baf file was not large enough to contain a magic number. No data
+    restored.
+  </int>
+  <int value="2" label="Snapshot load failed">
+    snapshot.baf file couldn't be loaded into memory. No data restored.
+  </int>
+  <int value="3" label="Bad snapshot magic number">
+    snapshot.baf had an incorrect or old magic number. No data restored.
+  </int>
+  <int value="4" label="Invalid snapshot pickle">
+    Deserialization of snapshot.baf contents failed. No data restored.
+  </int>
+  <int value="5" label="Journal load failed">
+    journal.baj file couldn't be loaded into memory. Journal not restored.
+  </int>
+  <int value="6" label="Journal too old">
+    journal.baj file was older than snapshot.baf. Journal not restored.
+  </int>
+  <int value="7" label="Journal too small">
+    journal.baj file was not large enough to contain a magic number. Journal not
+    restored.
+  </int>
+  <int value="8" label="Bad journal magic number">
+    journal.baj file had an incorrect or old magic number. Journal not restored.
+  </int>
+  <int value="9" label="Corrupt journal">
+    Deserialization of journal.baj contents failed. Journal not restored.
+  </int>
+  <int value="10" label="Corrupt journal entry">
+    Deserialization of a journal entry failed. Journal loading incomplete.
+  </int>
+  <int value="11" label="Couldn't create cache file">
+    Couldn't write a new snapshot.baf file. Persistence abandoned.
+  </int>
+  <int value="12" label="Couldn't create journal">
+    Couldn't create a new journal.baj file. Persistence abandoned.
+  </int>
+  <int value="13" label="Couldn't start journal">
+    Couldn't write to journal.baj file. Persistence abandoned.
+  </int>
+  <int value="14" label="Operations init failed">
+    Target directory doesn't exist, and can't create it. Persistence abandoned.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//net/http/no_vary_search_cache_storage.cc:Result) -->
+
+<!-- LINT.IfChange(NoVarySearchDirectoryCreateResult) -->
+
+<enum name="NoVarySearchDirectoryCreateResult">
+  <int value="0" label="Already existed">Directory already existed.</int>
+  <int value="1" label="Created">Directory successfully created.</int>
+  <int value="2" label="Create failed">
+    Directory didn't exist and couldn't be created.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//net/http/no_vary_search_cache_storage_file_operations.cc:CreateDirectoryResult) -->
+
+<!-- LINT.IfChange(NoVarySearchHeaderParseResult) -->
+
+<enum name="NoVarySearchHeaderParseResult">
+  <int value="0" label="Success">
+    The No-Vary-Search header was successfully parsed.
+  </int>
+  <int value="1" label="No header">
+    The No-Vary-Search header was not present in the response headers.
+  </int>
+  <int value="2" label="Default value">
+    The No-Vary-Search header value was equivalent to the default (vary on all
+    query parameters), and so was ignored.
+  </int>
+  <int value="3" label="Not dictionary">
+    The value of the No-Vary-Search header could not be parsed as a structured
+    headers dictionary.
+  </int>
+  <int value="4" label="Non-boolean key-order">
+    The &quot;key-order&quot; parameter does not have a boolean value.
+  </int>
+  <int value="5" label="Params not string list">
+    The &quot;params&quot; parameter is not an inner list, or contains a
+    non-string value.
+  </int>
+  <int value="6" label="Except not string list">
+    The &quot;except&quot; parameter is not an inner list, or contains a
+    non-string value.
+  </int>
+  <int value="7" label="Except without true params">
+    The &quot;except&quot; parameter was supplied, but the &quot;params&quot;
+    parameter did not have a boolean true value.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//net/http/http_no_vary_search_data.h:NoVarySearchHeaderParseResult) -->
+
+<!-- LINT.IfChange(NoVarySearchRenameOrDeleteResult) -->
+
+<enum name="NoVarySearchRenameOrDeleteResult">
+  <int value="0" label="Source did not exist">
+    The file was not present in the old location.
+  </int>
+  <int value="1" label="Source deleted">
+    The file was present in both the old and the new locations. The file in the
+    old location was deleted.
+  </int>
+  <int value="2" label="Deletion failed">
+    The file was present in both the old and the new locations. An attempt to
+    delete the file in the old location failed.
+  </int>
+  <int value="3" label="Renamed">
+    The file was moved from the old location to the new location.
+  </int>
+  <int value="4" label="Rename failed">
+    An attempt to move the file from the old location to the new location
+    failed.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//net/http/no_vary_search_cache_storage_file_operations.cc:RenameResult) -->
+
+<!-- LINT.IfChange(NoVarySearchUseResult) -->
+
+<enum name="NoVarySearchUseResult">
+  <int value="0" label="Not applied">
+    The request was not suitable, or the feature was disabled.
+  </int>
+  <int value="1" label="No match">
+    There was no match in the No-Vary-Search cache.
+  </int>
+  <int value="2" label="URL Unchanged">
+    There was a match, but the URL was identical so it has no effect.
+  </int>
+  <int value="3" label="Used">
+    There was a match, and the original cache entry was used.
+  </int>
+  <int value="4" label="Not suitable">
+    There was a match, but it was unusable due to in-memory hints, so the match
+    was not used.
+  </int>
+  <int value="5" label="Not openable">
+    There was a match, but the corresponding disk cache entry was missing or
+    could not be loaded, so the match was not used.
+  </int>
+  <int value="6" label="Read-only entry needs validation">
+    There was a match, but the disk cache entry needed revalidation in read-only
+    mode, so the match was not used.
+  </int>
+  <int value="7" label="Incomplete body">
+    There was a match, but the disk cache entry has an incomplete body. Partial
+    responses are not supported for No-Vary-Search, so the match was not used.
+  </int>
+  <int value="8" label="Couldn't conditionalize">
+    There was a match, but revalidation was required and the request could not
+    be conditionalized, so the match was not used.
+  </int>
+  <int value="9" label="Validated">
+    There was a match, and the original cache entry was successfully
+    revalidated.
+  </int>
+  <int value="10" label="Updated">
+    There was a match, and the original cache entry was updated.
+  </int>
+  <int value="11" label="Cache lock timeout">
+    There was a match, but the cache lock timed out. The request then bypassed
+    the cache, so the match was not used.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//net/http/http_cache_transaction.h:NoVarySearchUseResult) -->
+
 <enum name="NsswitchService">
   <int value="0" label="Unknown"/>
   <int value="1" label="&quot;files&quot;"/>
@@ -2191,12 +2657,27 @@ Called by update_net_trust_anchors.py.-->
   <int value="204" label="QUIC_TOO_MANY_CONNECTION_ID_WAITING_TO_RETIRE"/>
   <int value="205" label="QUIC_HTTP_RECEIVE_SERVER_PUSH"/>
   <int value="206" label="QUIC_INVALID_CHARACTER_IN_FIELD_VALUE"/>
+  <int value="207" label="QUIC_HTTP_INVALID_SETTING_VALUE"/>
+  <int value="208" label="QUIC_TLS_UNEXPECTED_KEYING_MATERIAL_EXPORT_LABEL"/>
+  <int value="209" label="QUIC_TLS_KEYING_MATERIAL_EXPORTS_MISMATCH"/>
+  <int value="210" label="QUIC_TLS_KEYING_MATERIAL_EXPORT_NOT_AVAILABLE"/>
+  <int value="211" label="QUIC_UNEXPECTED_DATA_BEFORE_ENCRYPTION_ESTABLISHED"/>
+  <int value="212" label="QUIC_PACKET_WRONG_VERSION"/>
+  <int value="213" label="QUIC_SERVER_UNHEALTHY"/>
+  <int value="214" label="QUIC_HANDSHAKE_FAILED_PACKETS_BUFFERED_TOO_LONG"/>
+  <int value="215" label="QUIC_CLIENT_LOST_NETWORK_ACCESS"/>
+  <int value="216" label="QUIC_HANDSHAKE_FAILED_INVALID_HOSTNAME"/>
+  <int value="217" label="QUIC_HANDSHAKE_FAILED_REJECTING_ALL_CONNECTIONS"/>
+  <int value="218" label="QUIC_HANDSHAKE_FAILED_INVALID_CONNECTION"/>
+  <int value="219" label="QUIC_HANDSHAKE_FAILED_SYNTHETIC_CONNECTION_CLOSE"/>
+  <int value="220" label="QUIC_HANDSHAKE_FAILED_CID_COLLISION"/>
 </enum>
 
 <enum name="QuicFindMatchingIpSessionResult">
   <int value="0" label="MATCHING_IP_SESSION_FOUND"/>
   <int value="1" label="CAN_POOL_BUT_DIFFERENT_IP"/>
   <int value="2" label="CANNOT_POOL_WITH_EXISTING_SESSIONS"/>
+  <int value="3" label="POOLED_WITH_DIFFERENT_IP_SESSION"/>
 </enum>
 
 <enum name="QuicHandshakeFailureReason">
@@ -2319,6 +2800,46 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="SETTING_DO_NOT_FRAGMENT"/>
 </enum>
 
+<!-- LINT.IfChange(QuicSessionKeyMismatchedField) -->
+
+<enum name="QuicSessionKeyMismatchedField">
+  <int value="0" label="kPrivacyMode"/>
+  <int value="1" label="kSocketTag"/>
+  <int value="2" label="kProxyChain"/>
+  <int value="3" label="kSessionUsage"/>
+  <int value="4" label="kNetworkAnonymizationKey"/>
+  <int value="5" label="kSecureDnsPolicy"/>
+  <int value="6" label="kRequireDNSHttpsAlpn"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/quic/quic_session_pool.cc:QuicSessionKeyMismatchedField) -->
+
+<!-- LINT.IfChange(QuicSessionKeyMismatchedFieldCombination) -->
+
+<enum name="QuicSessionKeyMismatchedFieldCombination">
+  <int value="0" label="kUnknownCombination"/>
+  <int value="1" label="kPrivacyMode"/>
+  <int value="2" label="kNetworkAnonymizationKey"/>
+  <int value="3" label="kPrivacyModeNetworkAnonymizationKey"/>
+  <int value="4" label="kRequireDNSHttpsAlpn"/>
+  <int value="5" label="kRequireDNSHttpsAlpnPrivacyMode"/>
+  <int value="6" label="kRequireDNSHttpsNetworkAnonymizationKey"/>
+  <int value="7"
+      label="kPrivacyModeAndNetworkAnonymizationKeyRequireDNSHttpsAlpn"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/quic/quic_session_pool.cc:QuicSessionKeyMismatchedFieldCombination) -->
+
+<!-- LINT.IfChange(QuicSessionKeyPartialMatchResult) -->
+
+<enum name="QuicSessionKeyPartialMatchResult">
+  <int value="0" label="kNoMatch"/>
+  <int value="1" label="kMatchedToActiveSession"/>
+  <int value="2" label="kMatchedToActiveJob"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/quic/quic_session_pool.cc:QuicSessionKeyPartialMatchResult) -->
+
 <enum name="QuicTransportErrorCodes">
   <int value="0" label="NO_ERROR"/>
   <int value="1" label="INTERNAL_ERROR"/>
@@ -2373,6 +2894,19 @@ Called by update_net_trust_anchors.py.-->
   <int value="6" label="WRITE_STATUS_FAILED_TO_COALESCE_PACKET"/>
 </enum>
 
+<!-- LINT.IfChange(RequestPriority) -->
+
+<enum name="RequestPriority">
+  <int value="0" label="THROTTLED"/>
+  <int value="1" label="IDLE"/>
+  <int value="2" label="LOWEST"/>
+  <int value="3" label="LOW"/>
+  <int value="4" label="MEDIUM"/>
+  <int value="5" label="HIGHEST"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/base/request_priority.h:RequestPriority) -->
+
 <enum name="ResolutionCategory">
   <int value="0" label="RESOLVE_SUCCESS"/>
   <int value="1" label="RESOLVE_FAIL"/>
@@ -2406,7 +2940,34 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="Automatic, by enterprise policy"/>
   <int value="6" label="Secure, by user choice"/>
   <int value="7" label="Secure, by enterprise policy"/>
+  <int value="8" label="Automatic with DoH fallback, by user choice"/>
+  <int value="9" label="Automatic with DoH fallback, by enterprise policy"/>
 </enum>
+
+<!-- LINT.IfChange(SharedDictionaryStorageEvictionReason) -->
+
+<enum name="SharedDictionaryStorageEvictionReason">
+  <int value="0" label="Not Evicted"/>
+  <int value="1" label="Memory Pressure Moderate"/>
+  <int value="2" label="Memory Pressure Critical"/>
+  <int value="3" label="Cache Full"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/network/shared_dictionary/shared_dictionary_manager.h:SharedDictionaryStorageEvictionReason) -->
+
+<!-- LINT.IfChange(SharedDictionaryStorageResult) -->
+
+<enum name="SharedDictionaryStorageResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Create Entry Failed"/>
+  <int value="2" label="Write Data Failed"/>
+  <int value="3" label="Size Exceeds Limit"/>
+  <int value="4" label="Size Zero"/>
+  <int value="5" label="Aborted"/>
+  <int value="6" label="Database Write Failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/network/shared_dictionary/shared_dictionary_storage_result.h:SharedDictionaryStorageResult) -->
 
 <enum name="SharedDictionaryStoreError">
   <int value="0" label="Ok"/>
@@ -2420,6 +2981,38 @@ Called by update_net_trust_anchors.py.-->
   <int value="8" label="FailedToSetTotalDictSize"/>
   <int value="9" label="TooBigDictionary"/>
 </enum>
+
+<!-- LINT.IfChange(SharedDictionaryTransactionOutcome) -->
+
+<enum name="SharedDictionaryTransactionOutcome">
+  <int value="0" label="Dictionary Used (Brotli)"/>
+  <int value="1" label="Dictionary Used (Zstandard)"/>
+  <int value="2" label="Dictionary Not Used"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/shared_dictionary/shared_dictionary_transaction_outcome.h:SharedDictionaryTransactionOutcome) -->
+
+<enum name="SkipCompletionPortOnSuccessOutcome">
+  <int value="0"
+      label="Not all available transport protocols return Installable File
+             System (IFS) handles"/>
+  <int value="1" label="SetFileCompletionNotificationModes failed"/>
+  <int value="2" label="Succeeded"/>
+</enum>
+
+<!-- LINT.IfChange(SocketPoolAdditionalCapacityError) -->
+
+<enum name="SocketPoolAdditionalCapacityError">
+  <int value="0" label="InvalidBase"/>
+  <int value="1" label="InvalidCapacity"/>
+  <int value="2" label="InvalidMinimum"/>
+  <int value="3" label="InvalidNoise"/>
+  <int value="4" label="InvalidSocketSoftCap"/>
+  <int value="5" label="InvalidSocketInUse"/>
+  <int value="6" label="InvalidSocketAllocation"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/socket/socket_pool_additional_capacity.cc:SocketPoolAdditionalCapacityError) -->
 
 <enum name="SpdyFrameFlowControlState">
   <int value="0" label="Send not stalled"/>
@@ -2526,6 +3119,64 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="imported from socket"/>
 </enum>
 
+<!-- LINT.IfChange(SqlDiskCacheFakeIndexFileError) -->
+
+<enum name="SqlDiskCacheFakeIndexFileError">
+  <int value="0" label="OkNew"/>
+  <int value="1" label="OkExisting"/>
+  <int value="2" label="CreateFileFailed"/>
+  <int value="3" label="WriteFileFailed"/>
+  <int value="4" label="WrongFileSize"/>
+  <int value="5" label="OpenFileFailed"/>
+  <int value="6" label="ReadFileFailed"/>
+  <int value="7" label="WrongMagicNumber"/>
+  <int value="8" label="FailedToCreateDirectory"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/disk_cache/sql/sql_backend_impl.h:FakeIndexFileError) -->
+
+<!-- LINT.IfChange(SqlDiskCacheIndexMismatchLocation) -->
+
+<enum name="SqlDiskCacheIndexMismatchLocation">
+  <int value="0" label="OpenOrCreateEntry"/>
+  <int value="1" label="CreateEntry"/>
+  <int value="2" label="DoomEntry"/>
+  <int value="3" label="StartEviction"/>
+  <int value="4" label="DeleteLiveEntry"/>
+  <int value="5" label="DeleteLiveEntriesBetween"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/disk_cache/sql/sql_persistent_store_backend_shard.cc:IndexMismatchLocation) -->
+
+<!-- LINT.IfChange(SqlDiskCacheStoreError) -->
+
+<enum name="SqlDiskCacheStoreError">
+  <int value="0" label="Ok"/>
+  <int value="1" label="FailedToCreateDirectory"/>
+  <int value="2" label="FailedToOpenDatabase"/>
+  <int value="3" label="FailedToRazeIncompatibleDatabase"/>
+  <int value="4" label="FailedToStartTransaction"/>
+  <int value="5" label="FailedToCommitTransaction"/>
+  <int value="6" label="FailedToInitializeMetaTable"/>
+  <int value="7" label="FailedToInitializeSchema"/>
+  <int value="8" label="FailedToSetEntryCountMetadata"/>
+  <int value="9" label="FailedToSetTotalSizeMetadata"/>
+  <int value="10" label="FailedToExecute"/>
+  <int value="11" label="InvalidData"/>
+  <int value="12" label="AlreadyExists"/>
+  <int value="13" label="NotFound"/>
+  <int value="14" label="InvalidArgument"/>
+  <int value="15" label="BodyEndMismatch"/>
+  <int value="16" label="FailedForTesting"/>
+  <int value="17" label="Aborted"/>
+  <int value="18" label="NotInitialized"/>
+  <int value="19" label="CheckSumError"/>
+  <int value="20" label="DatabaseClosed"/>
+  <int value="21" label="AbortedDueToBrowserActivity"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/disk_cache/sql/sql_persistent_store.h:SqlDiskCacheStoreError) -->
+
 <enum name="SSLECHResult">
   <summary>The result of a TLS connection that offered ECH</summary>
   <int value="0" label="The connection succeeded on the initial connection"/>
@@ -2597,6 +3248,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="0" label="ALPN not used"/>
   <int value="1" label="HTTP/1.1 negotiated via ALPN"/>
   <int value="2" label="HTTP/2 negotiated via ALPN"/>
+  <int value="3" label="HTTP/3 (QUIC) negotiated via ALPN"/>
 </enum>
 
 <enum name="SSLOrQUICVersion">
@@ -2610,6 +3262,54 @@ Called by update_net_trust_anchors.py.-->
   <int value="7" label="QUIC"/>
 </enum>
 
+<enum name="SSLTrustAnchorIDsResult">
+  <summary>
+    Whether a TLS connection relied on the trust anchor ID retry.
+  </summary>
+  <int value="0"
+      label="There was a DNS hint, and the connection succeeded on the
+             initial connection"/>
+  <int value="1"
+      label="There was a DNS hint, and the connection failed on the initial
+             connection, without retrying"/>
+  <int value="2"
+      label="There was a DNS hint, and the connection succeeded after
+             retrying with fresh Trust Anchor IDs"/>
+  <int value="3"
+      label="There was a DNS hint, and the connection failed after retrying
+             with fresh Trust Anchor IDs"/>
+  <int value="4"
+      label="There was no DNS hint, and the connection succeeded on the
+             initial connection"/>
+  <int value="5"
+      label="There was no DNS hint, and the connection failed on the initial
+             connection, without retrying"/>
+  <int value="6"
+      label="There was no DNS hint, and the connection succeeded after
+             retrying with fresh Trust Anchor IDs"/>
+  <int value="7"
+      label="There was no DNS hint, and the connection failed after retrying
+             with fresh Trust Anchor IDs"/>
+</enum>
+
+<!-- LINT.IfChange(StreamSocketCloseReason) -->
+
+<enum name="StreamSocketCloseReason">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="Close all connections"/>
+  <int value="2" label="IP address changed"/>
+  <int value="3" label="SSL config changed"/>
+  <int value="4" label="Cannot use TCP-based protocols"/>
+  <int value="5" label="SPDY session created"/>
+  <int value="6" label="QUIC session created"/>
+  <int value="7" label="Using existing SPDY session"/>
+  <int value="8" label="Using existing QUIC session"/>
+  <int value="9" label="Abort"/>
+  <int value="10" label="AttemptManagerDraining"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/socket/stream_socket_close_reason.h:StreamSocketCloseReason) -->
+
 <enum name="TPMSupport">
   <int value="0" label="None"/>
   <int value="1" label="RSA"/>
@@ -2621,6 +3321,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="HW"/>
   <int value="2" label="Virtual"/>
   <int value="3" label="Both"/>
+</enum>
+
+<enum name="TrafficAnnotationUniqueIdHash">
+  <int value="29693511" label="loading_predictor_preconnect"/>
+  <int value="81815349" label="search_engine_preconnect"/>
+  <int value="131223974" label="network_hints_preconnect"/>
 </enum>
 
 <!-- LINT.IfChange(TrustTokenOperationStatus) -->
@@ -2638,9 +3344,21 @@ Called by update_net_trust_anchors.py.-->
   <int value="9" label="Internal error"/>
   <int value="10" label="Unknown error"/>
   <int value="11" label="Operation fulfilled locally"/>
+  <int value="12" label="Per-site issuer limit reached"/>
 </enum>
 
 <!-- LINT.ThenChange(//services/network/public/mojom/trust_tokens.mojom:TrustTokenOperationStatus) -->
+
+<!-- LINT.IfChange(TrustTokenProtocolVersion) -->
+
+<enum name="TrustTokenProtocolVersion">
+  <int value="0" label="TrustTokenV3Pmb"/>
+  <int value="1" label="TrustTokenV3Voprf"/>
+  <int value="2" label="PrivateStateTokenV1Pmb"/>
+  <int value="3" label="PrivateStateTokenV1Voprf"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/network/public/mojom/trust_tokens.mojom:TrustTokenProtocolVersion) -->
 
 <enum name="TrustTokenRequestHelperFactoryOutcome">
   <int value="0" label="Successfully created an issuance helper"/>
@@ -2654,6 +3372,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="7" label="Rejected by authorizer (check cookie settings?)"/>
 </enum>
 
+<!-- LINT.IfChange(UnexportableKeyServiceResult) -->
+
 <enum name="UnexportableKeyServiceResult">
   <int value="0" label="Success"/>
   <int value="1" label="Crypto API failed"/>
@@ -2662,7 +3382,14 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="No key provider"/>
   <int value="5" label="Algorithm not supported"/>
   <int value="6" label="Key not ready"/>
+  <int value="7" label="Verify signature failed"/>
+  <int value="8" label="Operation not supported"/>
 </enum>
+
+<!-- LINT.ThenChange(
+    /components/unexportable_keys/mojom/unexportable_key_service.mojom:ServiceError,
+    /components/unexportable_keys/service_error.h:ServiceError
+) -->
 
 <enum name="UnsolicitedHttpsRecordStatus">
   <int value="0" label="Malformed"/>
@@ -2771,6 +3498,643 @@ Called by update_net_trust_anchors.py.-->
     Connected over an HTTP/3 connection.
   </int>
 </enum>
+
+<enum name="Win32TpmErrorCodes">
+<!-- Source:
+     https://learn.microsoft.com/en-us/windows/win32/com/com-error-codes-6
+     with some amendments-->
+
+  <int value="-2146893808" label="NTE_PERM">Access denied.</int>
+  <int value="-2146893785" label="NTE_INVALID_PARAMETER">
+    The parameter is incorrect.
+  </int>
+  <int value="-2144862208" label="TPM_E_ERROR_MASK">
+    This is an error mask to convert TPM hardware errors to win errors.
+  </int>
+  <int value="-2144862207" label="TPM_E_AUTHFAIL">Authentication failed.</int>
+  <int value="-2144862206" label="TPM_E_BADINDEX">
+    The index to a PCR, DIR or other register is incorrect.
+  </int>
+  <int value="-2144862205" label="TPM_E_BAD_PARAMETER">
+    One or more parameter is bad.
+  </int>
+  <int value="-2144862204" label="TPM_E_AUDITFAILURE">
+    An operation completed successfully but the auditing of that operation
+    failed.
+  </int>
+  <int value="-2144862203" label="TPM_E_CLEAR_DISABLED">
+    The clear disable flag is set and all clear operations now require physical
+    access.
+  </int>
+  <int value="-2144862202" label="TPM_E_DEACTIVATED">
+    Activate the Trusted Platform Module (TPM).
+  </int>
+  <int value="-2144862201" label="TPM_E_DISABLED">
+    Enable the Trusted Platform Module (TPM).
+  </int>
+  <int value="-2144862200" label="TPM_E_DISABLED_CMD">
+    The target command has been disabled.
+  </int>
+  <int value="-2144862199" label="TPM_E_FAIL">The operation failed.</int>
+  <int value="-2144862198" label="TPM_E_BAD_ORDINAL">
+    The ordinal was unknown or inconsistent.
+  </int>
+  <int value="-2144862197" label="TPM_E_INSTALL_DISABLED">
+    The ability to install an owner is disabled.
+  </int>
+  <int value="-2144862196" label="TPM_E_INVALID_KEYHANDLE">
+    The key handle cannot be interpreted.
+  </int>
+  <int value="-2144862195" label="TPM_E_KEYNOTFOUND">
+    The key handle points to an invalid key.
+  </int>
+  <int value="-2144862194" label="TPM_E_INAPPROPRIATE_ENC">
+    Unacceptable encryption scheme.
+  </int>
+  <int value="-2144862193" label="TPM_E_MIGRATEFAIL">
+    Migration authorization failed.
+  </int>
+  <int value="-2144862192" label="TPM_E_INVALID_PCR_INFO">
+    PCR information could not be interpreted.
+  </int>
+  <int value="-2144862191" label="TPM_E_NOSPACE">No room to load key.</int>
+  <int value="-2144862190" label="TPM_E_NOSRK">
+    There is no Storage Root Key (SRK) set.
+  </int>
+  <int value="-2144862189" label="TPM_E_NOTSEALED_BLOB">
+    An encrypted blob is invalid or was not created by this TPM.
+  </int>
+  <int value="-2144862188" label="TPM_E_OWNER_SET">
+    The Trusted Platform Module (TPM) already has an owner.
+  </int>
+  <int value="-2144862187" label="TPM_E_RESOURCES">
+    The TPM has insufficient internal resources to perform the requested action.
+  </int>
+  <int value="-2144862186" label="TPM_E_SHORTRANDOM">
+    A random string was too short.
+  </int>
+  <int value="-2144862185" label="TPM_E_SIZE">
+    The TPM does not have the space to perform the operation.
+  </int>
+  <int value="-2144862184" label="TPM_E_WRONGPCRVAL">
+    The named PCR value does not match the current PCR value.
+  </int>
+  <int value="-2144862183" label="TPM_E_BAD_PARAM_SIZE">
+    The paramSize argument to the command has the incorrect value .
+  </int>
+  <int value="-2144862182" label="TPM_E_SHA_THREAD">
+    There is no existing SHA-1 thread.
+  </int>
+  <int value="-2144862181" label="TPM_E_SHA_ERROR">
+    The calculation is unable to proceed because the existing SHA-1 thread has
+    already encountered an error.
+  </int>
+  <int value="-2144862180" label="TPM_E_FAILEDSELFTEST">
+    The TPM hardware device reported a failure during its internal self test.
+    Try restarting the computer to resolve the problem. If the problem
+    continues, you might need to replace your TPM hardware or motherboard.
+  </int>
+  <int value="-2144862179" label="TPM_E_AUTH2FAIL">
+    The authorization for the second key in a 2 key function failed
+    authorization.
+  </int>
+  <int value="-2144862178" label="TPM_E_BADTAG">
+    The tag value sent to for a command is invalid.
+  </int>
+  <int value="-2144862177" label="TPM_E_IOERROR">
+    An IO error occurred transmitting information to the TPM.
+  </int>
+  <int value="-2144862176" label="TPM_E_ENCRYPT_ERROR">
+    The encryption process had a problem.
+  </int>
+  <int value="-2144862175" label="TPM_E_DECRYPT_ERROR">
+    The decryption process did not complete.
+  </int>
+  <int value="-2144862174" label="TPM_E_INVALID_AUTHHANDLE">
+    An invalid handle was used.
+  </int>
+  <int value="-2144862173" label="TPM_E_NO_ENDORSEMENT">
+    The TPM does not have an Endorsement Key (EK) installed.
+  </int>
+  <int value="-2144862172" label="TPM_E_INVALID_KEYUSAGE">
+    The usage of a key is not allowed.
+  </int>
+  <int value="-2144862171" label="TPM_E_WRONG_ENTITYTYPE">
+    The submitted entity type is not allowed.
+  </int>
+  <int value="-2144862170" label="TPM_E_INVALID_POSTINIT">
+    The command was received in the wrong sequence relative to TPM_Init and a
+    subsequent TPM_Startup.
+  </int>
+  <int value="-2144862169" label="TPM_E_INAPPROPRIATE_SIG">
+    Signed data cannot include additional DER information.
+  </int>
+  <int value="-2144862168" label="TPM_E_BAD_KEY_PROPERTY">
+    The key properties in TPM_KEY_PARMs are not supported by this TPM.
+  </int>
+  <int value="-2144862167" label="TPM_E_BAD_MIGRATION">
+    The migration properties of this key are incorrect.
+  </int>
+  <int value="-2144862166" label="TPM_E_BAD_SCHEME">
+    The signature or encryption scheme for this key is incorrect or not
+    permitted in this situation.
+  </int>
+  <int value="-2144862165" label="TPM_E_BAD_DATASIZE">
+    The size of the data (or blob) parameter is bad or inconsistent with the
+    referenced key.
+  </int>
+  <int value="-2144862164" label="TPM_E_BAD_MODE">
+    A mode parameter is bad, such as capArea or subCapArea for
+    TPM_GetCapability, phsicalPresence parameter for TPM_PhysicalPresence, or
+    migrationType for TPM_CreateMigrationBlob.
+  </int>
+  <int value="-2144862163" label="TPM_E_BAD_PRESENCE">
+    Either the physicalPresence or physicalPresenceLock bits have the wrong
+    value.
+  </int>
+  <int value="-2144862162" label="TPM_E_BAD_VERSION">
+    The TPM cannot perform this version of the capability.
+  </int>
+  <int value="-2144862161" label="TPM_E_NO_WRAP_TRANSPORT">
+    The TPM does not allow for wrapped transport sessions.
+  </int>
+  <int value="-2144862160" label="TPM_E_AUDITFAIL_UNSUCCESSFUL">
+    TPM audit construction failed and the underlying command was returning a
+    failure code also.
+  </int>
+  <int value="-2144862159" label="TPM_E_AUDITFAIL_SUCCESSFUL">
+    TPM audit construction failed and the underlying command was returning
+    success.
+  </int>
+  <int value="-2144862158" label="TPM_E_NOTRESETABLE">
+    Attempt to reset a PCR register that does not have the resettable attribute.
+  </int>
+  <int value="-2144862157" label="TPM_E_NOTLOCAL">
+    Attempt to reset a PCR register that requires locality and locality modifier
+    not part of command transport.
+  </int>
+  <int value="-2144862156" label="TPM_E_BAD_TYPE">
+    Make identity blob not properly typed.
+  </int>
+  <int value="-2144862155" label="TPM_E_INVALID_RESOURCE">
+    When saving context identified resource type does not match actual resource.
+  </int>
+  <int value="-2144862154" label="TPM_E_NOTFIPS">
+    The TPM is attempting to execute a command only available when in FIPS mode.
+  </int>
+  <int value="-2144862153" label="TPM_E_INVALID_FAMILY">
+    The command is attempting to use an invalid family ID.
+  </int>
+  <int value="-2144862152" label="TPM_E_NO_NV_PERMISSION">
+    The permission to manipulate the NV storage is not available.
+  </int>
+  <int value="-2144862151" label="TPM_E_REQUIRES_SIGN">
+    The operation requires a signed command.
+  </int>
+  <int value="-2144862150" label="TPM_E_KEY_NOTSUPPORTED">
+    Wrong operation to load an NV key.
+  </int>
+  <int value="-2144862149" label="TPM_E_AUTH_CONFLICT">
+    NV_LoadKey blob requires both owner and blob authorization.
+  </int>
+  <int value="-2144862148" label="TPM_E_AREA_LOCKED">
+    The NV area is locked and not writtable.
+  </int>
+  <int value="-2144862147" label="TPM_E_BAD_LOCALITY">
+    The locality is incorrect for the attempted operation.
+  </int>
+  <int value="-2144862146" label="TPM_E_READ_ONLY">
+    The NV area is read only and can't be written to.
+  </int>
+  <int value="-2144862145" label="TPM_E_PER_NOWRITE">
+    There is no protection on the write to the NV area.
+  </int>
+  <int value="-2144862144" label="TPM_E_FAMILYCOUNT">
+    The family count value does not match.
+  </int>
+  <int value="-2144862143" label="TPM_E_WRITE_LOCKED">
+    The NV area has already been written to.
+  </int>
+  <int value="-2144862142" label="TPM_E_BAD_ATTRIBUTES">
+    The NV area attributes conflict.
+  </int>
+  <int value="-2144862141" label="TPM_E_INVALID_STRUCTURE">
+    The structure tag and version are invalid or inconsistent.
+  </int>
+  <int value="-2144862140" label="TPM_E_KEY_OWNER_CONTROL">
+    The key is under control of the TPM Owner and can only be evicted by the TPM
+    Owner.
+  </int>
+  <int value="-2144862139" label="TPM_E_BAD_COUNTER">
+    The counter handle is incorrect.
+  </int>
+  <int value="-2144862138" label="TPM_E_NOT_FULLWRITE">
+    The write is not a complete write of the area.
+  </int>
+  <int value="-2144862137" label="TPM_E_CONTEXT_GAP">
+    The gap between saved context counts is too large.
+  </int>
+  <int value="-2144862136" label="TPM_E_MAXNVWRITES">
+    The maximum number of NV writes without an owner has been exceeded.
+  </int>
+  <int value="-2144862135" label="TPM_E_NOOPERATOR">
+    No operator AuthData value is set.
+  </int>
+  <int value="-2144862134" label="TPM_E_RESOURCEMISSING">
+    The resource pointed to by context is not loaded.
+  </int>
+  <int value="-2144862133" label="TPM_E_DELEGATE_LOCK">
+    The delegate administration is locked.
+  </int>
+  <int value="-2144862132" label="TPM_E_DELEGATE_FAMILY">
+    Attempt to manage a family other than the delegated family.
+  </int>
+  <int value="-2144862131" label="TPM_E_DELEGATE_ADMIN">
+    Delegation table management not enabled.
+  </int>
+  <int value="-2144862130" label="TPM_E_TRANSPORT_NOTEXCLUSIVE">
+    There was a command executed outside of an exclusive transport session.
+  </int>
+  <int value="-2144862129" label="TPM_E_OWNER_CONTROL">
+    Attempt to context save a owner evict controlled key.
+  </int>
+  <int value="-2144862128" label="TPM_E_DAA_RESOURCES">
+    The DAA command has no resources availble to execute the command.
+  </int>
+  <int value="-2144862127" label="TPM_E_DAA_INPUT_DATA0">
+    The consistency check on DAA parameter inputData0 has failed.
+  </int>
+  <int value="-2144862126" label="TPM_E_DAA_INPUT_DATA1">
+    The consistency check on DAA parameter inputData1 has failed.
+  </int>
+  <int value="-2144862125" label="TPM_E_DAA_ISSUER_SETTINGS">
+    The consistency check on DAA_issuerSettings has failed.
+  </int>
+  <int value="-2144862124" label="TPM_E_DAA_TPM_SETTINGS">
+    The consistency check on DAA_tpmSpecific has failed.
+  </int>
+  <int value="-2144862123" label="TPM_E_DAA_STAGE">
+    The atomic process indicated by the submitted DAA command is not the
+    expected process.
+  </int>
+  <int value="-2144862122" label="TPM_E_DAA_ISSUER_VALIDITY">
+    The issuer's validity check has detected an inconsistency.
+  </int>
+  <int value="-2144862121" label="TPM_E_DAA_WRONG_W">
+    The consistency check on w has failed.
+  </int>
+  <int value="-2144862120" label="TPM_E_BAD_HANDLE">
+    The handle is incorrect.
+  </int>
+  <int value="-2144862119" label="TPM_E_BAD_DELEGATE">
+    Delegation is not correct.
+  </int>
+  <int value="-2144862118" label="TPM_E_BADCONTEXT">
+    The context blob is invalid.
+  </int>
+  <int value="-2144862117" label="TPM_E_TOOMANYCONTEXTS">
+    Too many contexts held by the TPM.
+  </int>
+  <int value="-2144862116" label="TPM_E_MA_TICKET_SIGNATURE">
+    Migration authority signature validation failure.
+  </int>
+  <int value="-2144862115" label="TPM_E_MA_DESTINATION">
+    Migration destination not authenticated.
+  </int>
+  <int value="-2144862114" label="TPM_E_MA_SOURCE">
+    Migration source incorrect.
+  </int>
+  <int value="-2144862113" label="TPM_E_MA_AUTHORITY">
+    Incorrect migration authority.
+  </int>
+  <int value="-2144862111" label="TPM_E_PERMANENTEK">
+    Attempt to revoke the EK and the EK is not revocable.
+  </int>
+  <int value="-2144862110" label="TPM_E_BAD_SIGNATURE">
+    Bad signature of CMK ticket.
+  </int>
+  <int value="-2144862109" label="TPM_E_NOCONTEXTSPACE">
+    There is no room in the context list for additional contexts.
+  </int>
+  <int value="-2144862078" label="TPM_20_E_ATTRIBUTES">
+    TPM 2.0: Inconsistent attributes.
+  </int>
+  <int value="-2144862077" label="TPM_20_E_HASH">
+    TPM 2.0: Hash algorithm not supported or not appropriate.
+  </int>
+  <int value="-2144862076" label="TPM_20_E_VALUE">
+    TPM 2.0: Value is out of range or is not correct for the context.
+  </int>
+  <int value="-2144862075" label="TPM_20_E_HIERARCHY">
+    TPM 2.0: Hierarchy is not enabled or is not correct for the use.
+  </int>
+  <int value="-2144862073" label="TPM_20_E_KEY_SIZE">
+    TPM 2.0: Key size is not supported.
+  </int>
+  <int value="-2144862072" label="TPM_20_E_MGF">
+    TPM 2.0: Mask generation function not supported.
+  </int>
+  <int value="-2144862071" label="TPM_20_E_MODE">
+    TPM 2.0: Mode of operation not supported.
+  </int>
+  <int value="-2144862070" label="TPM_20_E_TYPE">
+    TPM 2.0: The type of the value is not appropriate for the use.
+  </int>
+  <int value="-2144862069" label="TPM_20_E_HANDLE">
+    TPM 2.0: The Handle is not correct for the use.
+  </int>
+  <int value="-2144862068" label="TPM_20_E_KDF">
+    TPM 2.0: Unsupported key derivation function or function not appropriate for
+    use.
+  </int>
+  <int value="-2144862067" label="TPM_20_E_RANGE">
+    TPM 2.0: Value was out of allowed range.
+  </int>
+  <int value="-2144862066" label="TPM_20_E_AUTH_FAIL">
+    TPM 2.0: The authorization HMAC check failed and DA counter incremented.
+  </int>
+  <int value="-2144862065" label="TPM_20_E_NONCE">
+    TPM 2.0: Invalid nonce size.
+  </int>
+  <int value="-2144862062" label="TPM_20_E_SCHEME">
+    TPM 2.0: Unsupported or incompatible scheme.
+  </int>
+  <int value="-2144862059" label="TPM_20_E_SIZE">
+    TPM 2.0: Structure is wrong size..
+  </int>
+  <int value="-2144862058" label="TPM_20_E_SYMMETRIC">
+    TPM 2.0: Unsupported symmetric algorithm or key size, or not appropriate for
+    instance.
+  </int>
+  <int value="-2144862057" label="TPM_20_E_TAG">
+    TPM 2.0: Incorrect structure tag.
+  </int>
+  <int value="-2144862056" label="TPM_20_E_SELECTOR">
+    TPM 2.0: Union selector is incorrect.
+  </int>
+  <int value="-2144862054" label="&gt;TPM_20_E_INSUFFICIENT">
+    TPM 2.0: The TPM was unable to unmarshal a value because there were not
+    enough octets in the input buffer.
+  </int>
+  <int value="-2144862053" label="TPM_20_E_SIGNATURE">
+    TPM 2.0: The signature is not valid.
+  </int>
+  <int value="-2144862052" label="TPM_20_E_KEY">
+    TPM 2.0: Key fields are not compatible with the selected use.
+  </int>
+  <int value="-2144862051" label="TPM_20_E_POLICY_FAIL">
+    TPM 2.0: A policy check failed.
+  </int>
+  <int value="-2144862049" label="TPM_20_E_INTEGRITY">
+    TPM 2.0: Integrity check failed.
+  </int>
+  <int value="-2144862048" label="TPM_20_E_TICKET">
+    TPM 2.0: Invalid ticket.
+  </int>
+  <int value="-2144862047" label="TPM_20_E_RESERVED_BITS">
+    TPM 2.0: Reserved bits not set to zero as required.
+  </int>
+  <int value="-2144862046" label="TPM_20_E_BAD_AUTH">
+    TPM 2.0: Authorization failure without DA implications.
+  </int>
+  <int value="-2144862045" label="TPM_20_E_EXPIRED">
+    TPM 2.0: The policy has expired.
+  </int>
+  <int value="-2144862044" label="TPM_20_E_POLICY_CC">
+    TPM 2.0: The command code in the policy is not the command code of the
+    command or the command code in a policy command references a command that is
+    not implemented.
+  </int>
+  <int value="-2144862043" label="TPM_20_E_BINDING">
+    TPM 2.0: Public and sensitive portions of an object are not
+    cryptographically bound.
+  </int>
+  <int value="-2144862042" label="TPM_20_E_CURVE">
+    TPM 2.0: Curve not supported.
+  </int>
+  <int value="-2144862041" label="TPM_20_E_ECC_POINT">
+    TPM 2.0: Point is not on the required curve.
+  </int>
+  <int value="-2144861952" label="TPM_20_E_INITIALIZE">
+    TPM 2.0: TPM not initialized.
+  </int>
+  <int value="-2144861951" label="TPM_20_E_FAILURE">
+    TPM 2.0: Commands not being accepted because of a TPM failure.
+  </int>
+  <int value="-2144861949" label="TPM_20_E_SEQUENCE">
+    TPM 2.0: Improper use of a sequence handle.
+  </int>
+  <int value="-2144861941" label="TPM_20_E_PRIVATE">
+    TPM 2.0: TPM_RC_PRIVATE error.
+  </int>
+  <int value="-2144861927" label="TPM_20_E_HMAC">TPM 2.0: TPM_RC_HMAC.</int>
+  <int value="-2144861920" label="TPM_20_E_DISABLED">
+    TPM 2.0: TPM_RC_DISABLED.
+  </int>
+  <int value="-2144861919" label="TPM_20_E_EXCLUSIVE">
+    TPM 2.0: Command failed because audit sequence required exclusivity.
+  </int>
+  <int value="-2144861917" label="TPM_20_E_ECC_CURVE">
+    TPM 2.0: Unsupported ECC curve.
+  </int>
+  <int value="-2144861916" label="TPM_20_E_AUTH_TYPE">
+    TPM 2.0: Authorization handle is not correct for command.
+  </int>
+  <int value="-2144861915" label="TPM_20_E_AUTH_MISSING">
+    TPM 2.0: Command requires an authorization session for handle and is not
+    present.
+  </int>
+  <int value="-2144861914" label="TPM_20_E_POLICY">
+    TPM 2.0: Policy failure in Math Operation or an invalid authPolicy value.
+  </int>
+  <int value="-2144861913" label="TPM_20_E_PCR">TPM 2.0: PCR check fail.</int>
+  <int value="-2144861912" label="TPM_20_E_PCR_CHANGED">
+    TPM 2.0: PCR have changed since checked.
+  </int>
+  <int value="-2144861907" label="TPM_20_E_UPGRADE">
+    TPM 2.0: The TPM is not in the right mode for upgrade.
+  </int>
+  <int value="-2144861906" label="TPM_20_E_TOO_MANY_CONTEXTS">
+    TPM 2.0: Context ID counter is at maximum.
+  </int>
+  <int value="-2144861905" label="TPM_20_E_AUTH_UNAVAILABLE">
+    TPM 2.0: authValue or authPolicy is not available for selected entity.
+  </int>
+  <int value="-2144861904" label="TPM_20_E_REBOOT">
+    TPM 2.0: A _TPM_Init and Startup(CLEAR) is required before the TPM can
+    resume operation.
+  </int>
+  <int value="-2144861903" label="TPM_20_E_UNBALANCED">
+    TPM 2.0: The protection algorithms (hash and symmetric) are not reasonably
+    balanced. The digest size of the hash must be larger than the key size of
+    the symmetric algorithm.
+  </int>
+  <int value="-2144861886" label="TPM_20_E_COMMAND_SIZE">
+    TPM 2.0: The TPM command's commandSize value is inconsistent with contents
+    of the command buffer; either the size is not the same as the bytes loaded
+    by the hardware interface layer or the value is not large enough to hold a
+    command header.
+  </int>
+  <int value="-2144861885" label="TPM_20_E_COMMAND_CODE">
+    TPM 2.0: Command code not supported.
+  </int>
+  <int value="-2144861884" label="TPM_20_E_AUTHSIZE">
+    TPM 2.0: The value of authorizationSize is out of range or the number of
+    octets in the authorization Area is greater than required.
+  </int>
+  <int value="-2144861883" label="TPM_20_E_AUTH_CONTEXT">
+    TPM 2.0: Use of an authorization session with a context command or another
+    command that cannot have an authorization session.
+  </int>
+  <int value="-2144861882" label="TPM_20_E_NV_RANGE">
+    TPM 2.0: NV offset+size is out of range.
+  </int>
+  <int value="-2144861881" label="TPM_20_E_NV_SIZE">
+    TPM 2.0: Requested allocation size is larger than allowed.
+  </int>
+  <int value="-2144861880" label="TPM_20_E_NV_LOCKED">
+    TPM 2.0: NV access locked.
+  </int>
+  <int value="-2144861879" label="TPM_20_E_NV_AUTHORIZATION">
+    TPM 2.0: NV access authorization fails in command actions
+  </int>
+  <int value="-2144861878" label="TPM_20_E_NV_UNINITIALIZED">
+    TPM 2.0: An NV index is used before being initialized or the state saved by
+    TPM2_Shutdown(STATE) could not be restored.
+  </int>
+  <int value="-2144861877" label="TPM_20_E_NV_SPACE">
+    TPM 2.0: Insufficient space for NV allocation.
+  </int>
+  <int value="-2144861876" label="TPM_20_E_NV_DEFINED">
+    TPM 2.0: NV index or persistent object already defined.
+  </int>
+  <int value="-2144861872" label="TPM_20_E_BAD_CONTEXT">
+    TPM 2.0: Context in TPM2_ContextLoad() is not valid.
+  </int>
+  <int value="-2144861871" label="TPM_20_E_CPHASH">
+    TPM 2.0: chHash value already set or not correct for use.
+  </int>
+  <int value="-2144861870" label="TPM_20_E_PARENT">
+    TPM 2.0: Handle for parent is not a valid parent.
+  </int>
+  <int value="-2144861869" label="TPM_20_E_NEEDS_TEST">
+    TPM 2.0: Some function needs testing.
+  </int>
+  <int value="-2144861868" label="TPM_20_E_NO_RESULT">
+    TPM 2.0: returned when an internal function cannot process a request due to
+    an unspecified problem. This code is usually related to invalid parameters
+    that are not properly filtered by the input unmarshaling code.
+  </int>
+  <int value="-2144861867" label="TPM_20_E_SENSITIVE">
+    TPM 2.0: The sensitive area did not unmarshal correctly after decryption -
+    this code is used in lieu of the other unmarshaling errors so that an
+    attacker cannot determine where the unmarshaling error occurred.
+  </int>
+  <int value="-2144861184" label="TPM_E_COMMAND_BLOCKED">
+    The command was blocked.
+  </int>
+  <int value="-2144861183" label="TPM_E_INVALID_HANDLE">
+    The specified handle was not found.
+  </int>
+  <int value="-2144861182" label="TPM_E_DUPLICATE_VHANDLE">
+    The TPM returned a duplicate handle and the command needs to be resubmitted.
+  </int>
+  <int value="-2144861181" label="TPM_E_EMBEDDED_COMMAND_BLOCKED">
+    The command within the transport was blocked.
+  </int>
+  <int value="-2144861180" label="TPM_E_EMBEDDED_COMMAND_UNSUPPORTED">
+    The command within the transport is not supported.
+  </int>
+  <int value="-2144860160" label="TPM_E_RETRY">
+    The TPM is too busy to respond to the command immediately, but the command
+    could be resubmitted at a later time.
+  </int>
+  <int value="-2144860159" label="TPM_E_NEEDS_SELFTEST">
+    SelfTestFull has not been run.
+  </int>
+  <int value="-2144860158" label="TPM_E_DOING_SELFTEST">
+    The TPM is currently executing a full selftest.
+  </int>
+  <int value="-2144860157" label="TPM_E_DEFEND_LOCK_RUNNING">
+    The TPM is defending against dictionary attacks and is in a time-out period.
+  </int>
+  <int value="-2144859903" label="TPM_20_E_CONTEXT_GAP">
+    TPM 2.0: Gap for context ID is too large.
+  </int>
+  <int value="-2144859902" label="TPM_20_E_OBJECT_MEMORY">
+    TPM 2.0: Out of memory for object contexts.
+  </int>
+  <int value="-2144859901" label="TPM_20_E_SESSION_MEMORY">
+    TPM 2.0: Out of memory for session contexts.
+  </int>
+  <int value="-2144859900" label="TPM_20_E_MEMORY">
+    TPM 2.0: Out of shared object/session memory or need space for internal
+    operations.
+  </int>
+  <int value="-2144859899" label="TPM_20_E_SESSION_HANDLES">
+    TPM 2.0: Out of session handles - a session must be flushed before a new
+    session may be created.
+  </int>
+  <int value="-2144859898" label="TPM_20_E_OBJECT_HANDLES">
+    TPM 2.0: Out of object handles - the handle space for objects is depleted
+    and a reboot is required.
+  </int>
+  <int value="-2144859897" label="TPM_20_E_LOCALITY">
+    TPM 2.0: Bad locality.
+  </int>
+  <int value="-2144859896" label="TPM_20_E_YIELDED">
+    TPM 2.0: The TPM has suspended operation on the command; forward progress
+    was made and the command may be retried.
+  </int>
+  <int value="-2144859895" label="TPM_20_E_CANCELED">
+    TPM 2.0: The command was canceled.
+  </int>
+  <int value="-2144859894" label="TPM_20_E_TESTING">
+    TPM 2.0: TPM is performing self-tests.
+  </int>
+  <int value="-2144859872" label="TPM_20_E_NV_RATE">
+    TPM 2.0: The TPM is rate-limiting accesses to prevent wearout of NV.
+  </int>
+  <int value="-2144859871" label="TPM_20_E_LOCKOUT">
+    TPM 2.0: Authorization for objects subject to DA protection are not allowed
+    at this time because the TPM is in DA lockout mode.
+  </int>
+  <int value="-2144859870" label="TPM_20_E_RETRY">
+    TPM 2.0: The TPM was not able to start the command.
+  </int>
+  <int value="-2144859869" label="TPM_20_E_NV_UNAVAILABLE">
+    TPM 2.0: the command may require writing of NV and NV is not current
+    accessible..
+  </int>
+  <int value="-2144845823" label="TBS_E_INTERNAL_ERROR">
+    An internal error has occurred within the Trusted Platform Module support
+    program.
+  </int>
+  <int value="-2144845822" label="TBS_E_BAD_PARAMETER">
+    One or more input parameters is bad.
+  </int>
+  <int value="-2144795641" label="TPM_E_PCP_INTERNAL_ERROR">
+    An unexpected internal error has occurred in the Platform Crypto Provider.
+  </int>
+</enum>
+
+<!-- LINT.IfChange(WinHttpStatus) -->
+
+<enum name="WinHttpStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Aborted"/>
+  <int value="2" label="WinHttpOpenFailed"/>
+  <int value="3" label="WinHttpSetTimeoutsFailed"/>
+  <int value="4" label="WinHttpSetStatusCallbackFailed"/>
+  <int value="5" label="WinHttpGetIEProxyConfigForCurrentUserFailed"/>
+  <int value="6" label="WinHttpCreateProxyResolverFailed"/>
+  <int value="7" label="WinHttpGetProxyForURLExFailed"/>
+  <int value="8" label="StatusCallbackFailed"/>
+  <int value="9" label="WinHttpGetProxyResultFailed"/>
+  <int value="10" label="EmptyProxyList"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/proxy_resolver/public/mojom/proxy_resolver.mojom:WinHttpStatus) -->
 
 <enum name="ZeroRttState">
   <int value="0" label="Attempted and succeeded"/>

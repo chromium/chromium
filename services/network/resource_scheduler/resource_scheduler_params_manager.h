@@ -11,7 +11,6 @@
 #include <map>
 #include <optional>
 #include <set>
-#include <unordered_set>
 
 #include "base/component_export.h"
 #include "base/sequence_checker.h"

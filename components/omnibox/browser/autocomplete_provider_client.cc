@@ -4,6 +4,8 @@
 
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 
+#include "base/notreached.h"
+
 history_clusters::HistoryClustersService*
 AutocompleteProviderClient::GetHistoryClustersService() {
   return nullptr;
@@ -11,6 +13,11 @@ AutocompleteProviderClient::GetHistoryClustersService() {
 
 history_embeddings::HistoryEmbeddingsService*
 AutocompleteProviderClient::GetHistoryEmbeddingsService() {
+  return nullptr;
+}
+
+DocumentSuggestionsService*
+AutocompleteProviderClient::GetDocumentSuggestionsService() const {
   return nullptr;
 }
 
@@ -38,9 +45,30 @@ bool AutocompleteProviderClient::IsHistoryEmbeddingsSettingVisible() const {
   return false;
 }
 
+bool AutocompleteProviderClient::IsLensEnabled() const {
+  return false;
+}
+
+bool AutocompleteProviderClient::AreLensEntrypointsVisible() const {
+  return false;
+}
+
+std::optional<bool> AutocompleteProviderClient::IsPagePaywalled() const {
+  return std::nullopt;
+}
+
+bool AutocompleteProviderClient::ShouldSendContextualUrlSuggestParam() const {
+  return false;
+}
+
+bool AutocompleteProviderClient::ShouldSendPageTitleSuggestParam() const {
+  return false;
+}
+
 bool AutocompleteProviderClient::in_background_state() const {
   return false;
 }
+
 
 base::WeakPtr<AutocompleteProviderClient>
 AutocompleteProviderClient::GetWeakPtr() {

@@ -1,0 +1,5 @@
+This is a wdspec test.
+[FAIL] test_contexts_are_isolated
+  webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+Harness: the test ran to completion.
+

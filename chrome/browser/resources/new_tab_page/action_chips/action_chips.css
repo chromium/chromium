@@ -1,0 +1,251 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
+ * #scheme=relative
+ * #include=cr-shared-style-lit cr-icons-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --chip-background-color: var(--color-new-tab-page-action-chip-background);
+  --ntp-chips-container-width: 449px;
+  --chip-slide-duration: 1000ms;
+  --chip-fade-duration: 850ms;
+  --chip-animation-curve: cubic-bezier(0.38, 0.72, 0.00, 1.00);
+}
+
+@keyframes chips-slide {
+  to {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes chips-fade-in {
+  to {
+    opacity: 1;
+  }
+}
+
+.action-chips-wrapper {
+  margin-bottom: 62px;
+  margin-top: 8px;
+  max-width: calc(var(--ntp-chips-container-width) + 2px);
+}
+
+:host([show-simplified-ui_]) .action-chips-wrapper {
+  width: calc(var(--ntp-chips-container-width) + 2px);
+}
+
+.action-chips-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  justify-content: center;
+  width: 100%;
+}
+
+:host([show-simplified-ui_]) .action-chips-container {
+  flex-direction: column;
+  gap: 4px;
+}
+
+.banana {
+  background-image: url(chrome://new-tab-page/icons/banana.svg);
+  background-size: 24px;
+}
+
+:host([show-simplified-ui_]) .banana {
+  background-size: 20px;
+  mask-size: 20px;
+}
+
+.deep-dive {
+  background-color: var(--color-sys-on-surface-subtle);
+  background-size: 24px;
+  -webkit-mask-image: url(chrome://new-tab-page/icons/suggestion.svg);
+}
+
+.deep-search {
+  background-color: var(--color-sys-on-surface-subtle);
+  background-size: 24px;
+  -webkit-mask-image: url(chrome://new-tab-page/icons/deep_search.svg);
+}
+
+:host([show-simplified-ui_]) .deep-search {
+  background-size: 20px;
+  mask-size: 20px;
+}
+
+.action-chip {
+  align-items: center;
+  background-color: var(--chip-background-color);
+  border-radius: 16px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  font-family: inherit;
+  gap: 12px;
+  height: 56px;
+  isolation: isolate;
+  opacity: 0;
+  overflow: hidden;
+  padding: 8px 14px;
+  position: relative;
+  transform: translateY(-56px);
+  width: 240px;
+}
+
+:host([show-simplified-ui_]) .action-chip {
+  background-color: transparent;
+  height: 32px;
+  padding: 0px 20px;
+  width: 100%;
+}
+
+.action-chip:focus-visible {
+  box-shadow: none;
+  outline: 2px solid var(--color-new-tab-page-focus-ring);
+  outline-offset: 2px;
+}
+
+.action-chips-container .action-chip:nth-child(1) {
+  animation:
+    chips-slide var(--chip-slide-duration) 250ms
+      var(--chip-animation-curve) forwards,
+    chips-fade-in var(--chip-fade-duration) 400ms
+      var(--chip-animation-curve) forwards;
+}
+
+.action-chips-container .action-chip:nth-child(2) {
+  animation:
+    chips-slide var(--chip-slide-duration) 280ms
+      var(--chip-animation-curve) forwards,
+    chips-fade-in var(--chip-fade-duration) 430ms
+      var(--chip-animation-curve) forwards;
+}
+
+.action-chips-container .action-chip:nth-child(3) {
+  animation:
+    chips-slide var(--chip-slide-duration) 310ms
+      var(--chip-animation-curve) forwards,
+    chips-fade-in var(--chip-fade-duration) 460ms
+      var(--chip-animation-curve) forwards;
+}
+
+.action-chip::before {
+  background-color: transparent;
+  content: '';
+  inset: 0;
+  position: absolute;
+  z-index: -1;
+}
+
+.action-chip:hover::before {
+  background-color: var(--color-new-tab-page-action-chip-background-hover);
+}
+
+.action-chip-icon-container {
+  border-radius: 100%;
+  height: 24px;
+  width: 24px;
+}
+
+:host([show-simplified-ui_]) .action-chip-icon-container {
+  height: 20px;
+  width: 20px;
+}
+
+.action-chip-recent-tab-favicon {
+  border-radius: 2px;
+  height: 24px;
+  width: 24px;
+}
+
+:host([show-simplified-ui_]) .action-chip-recent-tab-favicon {
+  height: 20px;
+  width: 20px;
+}
+
+.action-chip-text-container {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  width: 100%;
+}
+
+:host([show-simplified-ui_]) .action-chip-text-container {
+  flex-direction: row;
+  gap: 4px;
+}
+
+:host([show-simplified-ui_]) .action-chip-text-container {
+  flex-direction: row;
+  gap: 4px;
+}
+
+.chip-title {
+  color: var(--color-sys-on-surface);
+  font-size: 13px;
+  font-weight: 500;
+  overflow: hidden;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
+:host([show-simplified-ui_]) .chip-title {
+  line-height: 18px;
+  overflow: visible;
+  width: fit-content;
+}
+
+.chip-body {
+  color: var(--color-sys-on-surface-subtle);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
+  text-align: start;
+  width: 100%;
+}
+
+:host([show-simplified-ui_]) .chip-body {
+  font-size: 13px;
+  text-align: start;
+}
+
+.deep-dive-chip .chip-body {
+  display: -webkit-box;
+  overflow: hidden;
+  word-break: break-word;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+@media (min-width: 560px) {
+  :host {
+    --ntp-chips-container-width: 449px;
+  }
+}
+
+@media (min-width: 672px) {
+  :host {
+    --ntp-chips-container-width: 561px;
+  }
+}
+
+@media (min-width: 900px) {
+  :host {
+    --ntp-chips-container-width: 746px;
+  }
+}
+
+cr-button>span {
+  display: block;
+}

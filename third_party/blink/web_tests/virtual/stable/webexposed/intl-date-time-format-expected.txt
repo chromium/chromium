@@ -1,0 +1,368 @@
+This test dumps the output of Intl.DateTimeFormat.prototype.format() for
+some common locales.
+
+[am] Amharic
+  [default] 14/6/2023
+  [short] 14/06/2023 4:50 ከሰዓት
+  [medium] 14 ጁን 2023 4:50:00 ከሰዓት
+  [long] 14 ጁን 2023 4:50:00 ከሰዓት ጂ ኤም ቲ+3
+  [full] ረቡዕ 14 ጁን 2023 4:50:00 ከሰዓት የምስራቅ አፍሪካ ሰዓት
+
+[ar] Arabic
+  [default] 14‏/6‏/2023
+  [short] 14‏/6‏/2023 1:50 م
+  [medium] 14‏/06‏/2023، 1:50:00 م
+  [long] 14 يونيو 2023 في 1:50:00 م UTC
+  [full] الأربعاء، 14 يونيو 2023 في 1:50:00 م التوقيت العالمي المنسق
+
+[ar-EG] Arabic (Egypt)
+  [default] ١٤‏/٦‏/٢٠٢٣
+  [short] ١٤‏/٦‏/٢٠٢٣ ٤:٥٠ م
+  [medium] ١٤‏/٠٦‏/٢٠٢٣، ٤:٥٠:٠٠ م
+  [long] ١٤ يونيو ٢٠٢٣ في ٤:٥٠:٠٠ م غرينتش+٣
+  [full] الأربعاء، ١٤ يونيو ٢٠٢٣ في ٤:٥٠:٠٠ م توقيت شرق أوروبا الصيفي
+
+[ar-SD] Arabic (Sudan)
+  [default] ١٤‏/٦‏/٢٠٢٣
+  [short] ١٤‏/٦‏/٢٠٢٣ ٣:٥٠ م
+  [medium] ١٤‏/٠٦‏/٢٠٢٣، ٣:٥٠:٠٠ م
+  [long] ١٤ يونيو ٢٠٢٣ في ٣:٥٠:٠٠ م غرينتش+٢
+  [full] الأربعاء، ١٤ يونيو ٢٠٢٣ في ٣:٥٠:٠٠ م توقيت وسط أفريقيا
+
+[ar-SY] Arabic (Syria)
+  [default] ١٤‏/٦‏/٢٠٢٣
+  [short] ١٤‏/٦‏/٢٠٢٣ ٤:٥٠ م
+  [medium] ١٤‏/٠٦‏/٢٠٢٣، ٤:٥٠:٠٠ م
+  [long] ١٤ حزيران ٢٠٢٣ في ٤:٥٠:٠٠ م غرينتش+٣
+  [full] الأربعاء، ١٤ حزيران ٢٠٢٣ في ٤:٥٠:٠٠ م غرينتش+٠٣:٠٠
+
+[bn] Bangla
+  [default] ১৪/৬/২০২৩
+  [short] ১৪/৬/২৩, ৭:৫০ PM
+  [medium] ১৪ জুন, ২০২৩, ৭:৫০:০০ PM
+  [long] ১৪ জুন, ২০২৩ এ ৭:৫০:০০ PM GMT +৬
+  [full] বুধবার, ১৪ জুন, ২০২৩ এ ৭:৫০:০০ PM বাংলাদেশ মানক সময়
+
+[de] German
+  [default] 14.6.2023
+  [short] 14.06.23, 15:50
+  [medium] 14.06.2023, 15:50:00
+  [long] 14. Juni 2023 um 15:50:00 MESZ
+  [full] Mittwoch, 14. Juni 2023 um 15:50:00 Mitteleuropäische Sommerzeit
+
+[en] English
+  [default] 6/14/2023
+  [short] 6/14/23, 1:50 PM
+  [medium] Jun 14, 2023, 1:50:00 PM
+  [long] June 14, 2023 at 1:50:00 PM UTC
+  [full] Wednesday, June 14, 2023 at 1:50:00 PM Coordinated Universal Time
+
+[en-AU] Australian English
+  [default] 14/06/2023
+  [short] 14/6/23, 11:50 pm
+  [medium] 14 June 2023, 11:50:00 pm
+  [long] 14 June 2023 at 11:50:00 pm AEST
+  [full] Wednesday, 14 June 2023 at 11:50:00 pm Australian Eastern Standard Time
+
+[en-CA] Canadian English
+  [default] 2023-06-14
+  [short] 2023-06-14, 6:50 a.m.
+  [medium] Jun 14, 2023, 6:50:00 a.m.
+  [long] June 14, 2023 at 6:50:00 a.m. PDT
+  [full] Wednesday, June 14, 2023 at 6:50:00 a.m. Pacific Daylight Time
+
+[en-GB] British English
+  [default] 14/06/2023
+  [short] 14/06/2023, 14:50
+  [medium] 14 Jun 2023, 14:50:00
+  [long] 14 June 2023 at 14:50:00 BST
+  [full] Wednesday, 14 June 2023 at 14:50:00 British Summer Time
+
+[en-IE] English (Ireland)
+  [default] 14/6/2023
+  [short] 14/06/2023, 14:50
+  [medium] 14 Jun 2023, 14:50:00
+  [long] 14 June 2023 at 14:50:00 IST
+  [full] Wednesday 14 June 2023 at 14:50:00 Irish Standard Time
+
+[en-IN] English (India)
+  [default] 14/6/2023
+  [short] 14/06/23, 7:20 pm
+  [medium] 14 Jun 2023, 7:20:00 pm
+  [long] 14 June 2023 at 7:20:00 pm IST
+  [full] Wednesday, 14 June 2023 at 7:20:00 pm India Standard Time
+
+[en-NG] English (Nigeria)
+  [default] 14/06/2023
+  [short] 14/06/2023, 14:50
+  [medium] 14 Jun 2023, 14:50:00
+  [long] 14 June 2023 at 14:50:00 WAT
+  [full] Wednesday, 14 June 2023 at 14:50:00 West Africa Standard Time
+
+[en-NZ] English (New Zealand)
+  [default] 15/06/2023
+  [short] 15/06/2023, 1:50 am
+  [medium] 15 Jun 2023, 1:50:00 am
+  [long] 15 June 2023 at 1:50:00 am NZST
+  [full] Thursday, 15 June 2023 at 1:50:00 am New Zealand Standard Time
+
+[en-PH] English (Philippines)
+  [default] 6/14/2023
+  [short] 6/14/23, 9:50 PM
+  [medium] Jun 14, 2023, 9:50:00 PM
+  [long] June 14, 2023 at 9:50:00 PM GMT+8
+  [full] Wednesday, June 14, 2023 at 9:50:00 PM Philippine Standard Time
+
+[en-PK] English (Pakistan)
+  [default] 14/06/2023
+  [short] 14/06/2023, 6:50 pm
+  [medium] 14-Jun-2023, 6:50:00 pm
+  [long] 14 June 2023 at 6:50:00 pm GMT+5
+  [full] Wednesday, 14 June 2023 at 6:50:00 pm Pakistan Standard Time
+
+[en-TZ] English (Tanzania)
+  [default] 14/06/2023
+  [short] 14/06/2023, 16:50
+  [medium] 14 Jun 2023, 16:50:00
+  [long] 14 June 2023 at 16:50:00 EAT
+  [full] Wednesday, 14 June 2023 at 16:50:00 East Africa Time
+
+[en-US] American English
+  [default] 6/14/2023
+  [short] 6/14/23, 9:50 AM
+  [medium] Jun 14, 2023, 9:50:00 AM
+  [long] June 14, 2023 at 9:50:00 AM EDT
+  [full] Wednesday, June 14, 2023 at 9:50:00 AM Eastern Daylight Time
+
+[en-ZA] English (South Africa)
+  [default] 2023/06/14
+  [short] 2023/06/14, 15:50
+  [medium] 14 Jun 2023, 15:50:00
+  [long] 14 June 2023 at 15:50:00 SAST
+  [full] Wednesday, 14 June 2023 at 15:50:00 South Africa Standard Time
+
+[es] Spanish
+  [default] 14/6/2023
+  [short] 14/6/23, 13:50
+  [medium] 14 jun 2023, 13:50:00
+  [long] 14 de junio de 2023, 13:50:00 UTC
+  [full] miércoles, 14 de junio de 2023, 13:50:00 (tiempo universal coordinado)
+
+[es-419] Latin American Spanish
+  [default] 14/6/2023
+  [short] 14/6/23, 7:50 a.m.
+  [medium] 14 jun 2023, 7:50:00 a.m.
+  [long] 14 de junio de 2023, 7:50:00 a.m. GMT-6
+  [full] miércoles, 14 de junio de 2023, 7:50:00 a.m. hora estándar central
+
+[es-ES] European Spanish
+  [default] 14/6/2023
+  [short] 14/6/23, 15:50
+  [medium] 14 jun 2023, 15:50:00
+  [long] 14 de junio de 2023, 15:50:00 CEST
+  [full] miércoles, 14 de junio de 2023, 15:50:00 (hora de verano de Europa central)
+
+[es-MX] Mexican Spanish
+  [default] 14/6/2023
+  [short] 14/06/23, 7:50 a.m.
+  [medium] 14 jun 2023, 7:50:00 a.m.
+  [long] 14 de junio de 2023, 7:50:00 a.m. GMT-6
+  [full] miércoles, 14 de junio de 2023, 7:50:00 a.m. hora estándar central
+
+[fa] Persian
+  [default] ۱۴۰۲/۳/۲۴
+  [short] ۱۴۰۲/۳/۲۴, ۱۷:۲۰
+  [medium] ۲۴ خرداد ۱۴۰۲، ۱۷:۲۰:۰۰
+  [long] ۲۴ خرداد ۱۴۰۲ ساعت ۱۷:۲۰:۰۰ (‎+۳:۳۰ گرینویچ)
+  [full] ۱۴۰۲ خرداد ۲۴, چهارشنبه ساعت ۱۷:۲۰:۰۰ (وقت عادی ایران)
+
+[fil] Filipino
+  [default] 6/14/2023
+  [short] 6/14/23, 9:50 PM
+  [medium] Hun 14, 2023, 9:50:00 PM
+  [long] Hunyo 14, 2023 nang 9:50:00 PM GMT+8
+  [full] Miyerkules, Hunyo 14, 2023 nang 9:50:00 PM Standard na Oras sa Pilipinas
+
+[fr] French
+  [default] 14/06/2023
+  [short] 14/06/2023 15:50
+  [medium] 14 juin 2023, 15:50:00
+  [long] 14 juin 2023 à 15:50:00 UTC+2
+  [full] mercredi 14 juin 2023 à 15:50:00 heure d’été d’Europe centrale
+
+[gu] Gujarati
+  [default] 14/6/2023
+  [short] 14/6/23 07:20 PM
+  [medium] 14 જૂન, 2023 07:20:00 PM
+  [long] 14 જૂન, 2023 એ 07:20:00 PM IST વાગ્યે
+  [full] બુધવાર, 14 જૂન, 2023 એ 07:20:00 PM ભારતીય માનક સમય વાગ્યે
+
+[hi] Hindi
+  [default] 14/6/2023
+  [short] 14/6/23, 7:20 pm
+  [medium] 14 जून 2023, 7:20:00 pm
+  [long] 14 जून 2023 को 7:20:00 pm IST बजे
+  [full] बुधवार, 14 जून 2023 को 7:20:00 pm भारतीय मानक समय बजे
+
+[id] Indonesian
+  [default] 14/6/2023
+  [short] 14/06/23, 20.50
+  [medium] 14 Jun 2023, 20.50.00
+  [long] 14 Juni 2023 pukul 20.50.00 WIB
+  [full] Rabu, 14 Juni 2023 pukul 20.50.00 Waktu Indonesia Barat
+
+[it] Italian
+  [default] 14/06/2023
+  [short] 14/06/23, 15:50
+  [medium] 14 giu 2023, 15:50:00
+  [long] 14 giugno 2023 alle ore 15:50:00 CEST
+  [full] mercoledì 14 giugno 2023 alle ore 15:50:00 Ora legale dell’Europa centrale
+
+[ja] Japanese
+  [default] 2023/6/14
+  [short] 2023/06/14 22:50
+  [medium] 2023/06/14 22:50:00
+  [long] 2023年6月14日 22:50:00 JST
+  [full] 2023年6月14日水曜日 22時50分00秒 日本標準時
+
+[kn] Kannada
+  [default] 14/6/2023
+  [short] 14/6/23, 07:20 PM
+  [medium] ಜೂನ್ 14, 2023, 07:20:00 PM
+  [long] ಜೂನ್ 14, 2023 ರಂದು 07:20:00 PM IST ಸಮಯಕ್ಕೆ
+  [full] ಬುಧವಾರ, ಜೂನ್ 14, 2023 ರಂದು 07:20:00 PM ಭಾರತೀಯ ಪ್ರಮಾಣಿತ ಸಮಯ ಸಮಯಕ್ಕೆ
+
+[ko] Korean
+  [default] 2023. 6. 14.
+  [short] 23. 6. 14. 오후 10:50
+  [medium] 2023. 6. 14. 오후 10:50:00
+  [long] 2023년 6월 14일 오후 10시 50분 0초 GMT+9
+  [full] 2023년 6월 14일 수요일 오후 10시 50분 0초 한국 표준시
+
+[mr] Marathi
+  [default] १४/६/२०२३
+  [short] १४/६/२३, ७:२० PM
+  [medium] १४ जून, २०२३, ७:२०:०० PM
+  [long] १४ जून, २०२३ रोजी ७:२०:०० PM IST
+  [full] बुधवार, १४ जून, २०२३ रोजी ७:२०:०० PM भारतीय प्रमाण वेळ
+
+[nl] Dutch
+  [default] 14-6-2023
+  [short] 14-06-2023, 15:50
+  [medium] 14 jun 2023, 15:50:00
+  [long] 14 juni 2023 om 15:50:00 CEST
+  [full] woensdag 14 juni 2023 om 15:50:00 Midden-Europese zomertijd
+
+[pl] Polish
+  [default] 14.06.2023
+  [short] 14.06.2023, 15:50
+  [medium] 14 cze 2023, 15:50:00
+  [long] 14 czerwca 2023 15:50:00 CEST
+  [full] środa, 14 czerwca 2023 15:50:00 czas środkowoeuropejski letni
+
+[pt-BR] Brazilian Portuguese
+  [default] 14/06/2023
+  [short] 14/06/2023, 10:50
+  [medium] 14 de jun. de 2023, 10:50:00
+  [long] 14 de junho de 2023 às 10:50:00 BRT
+  [full] quarta-feira, 14 de junho de 2023 às 10:50:00 Horário Padrão de Brasília
+
+[pt-PT] European Portuguese
+  [default] 14/06/2023
+  [short] 14/06/23, 14:50
+  [medium] 14/06/2023, 14:50:00
+  [long] 14 de junho de 2023 às 14:50:00 WEST
+  [full] quarta-feira, 14 de junho de 2023 às 14:50:00 Hora de verão da Europa Ocidental
+
+[ru] Russian
+  [default] 14.06.2023
+  [short] 14.06.2023, 16:50
+  [medium] 14 июн. 2023 г., 16:50:00
+  [long] 14 июня 2023 г. в 16:50:00 GMT+3
+  [full] среда, 14 июня 2023 г. в 16:50:00 Москва, стандартное время
+
+[sv-SE] Swedish (Sweden)
+  [default] 2023-06-14
+  [short] 2023-06-14 15:50
+  [medium] 14 juni 2023 15:50:00
+  [long] 14 juni 2023 kl. 15:50:00 CEST
+  [full] onsdag 14 juni 2023 kl. 15:50:00 centraleuropeisk sommartid
+
+[sw] Swahili
+  [default] 14/6/2023
+  [short] 14/06/2023, 16:50
+  [medium] 14 Jun 2023, 16:50:00
+  [long] 14 Juni 2023, 16:50:00 GMT +3
+  [full] Jumatano, 14 Juni 2023, 16:50:00 Saa za Afrika Mashariki
+
+[ta] Tamil
+  [default] 14/6/2023
+  [short] 14/6/23, 7:20 PM
+  [medium] 14 ஜூன், 2023, 7:20:00 PM
+  [long] 14 ஜூன், 2023 அன்று 7:20:00 PM IST
+  [full] புதன், 14 ஜூன், 2023 அன்று 7:20:00 PM இந்திய நிலையான நேரம்
+
+[te] Telugu
+  [default] 14/6/2023
+  [short] 14-06-23 7:20 PM
+  [medium] 14 జూన్, 2023 7:20:00 PM
+  [long] 14 జూన్, 2023 7:20:00 PM ISTకి
+  [full] 14, జూన్ 2023, బుధవారం 7:20:00 PM భారతదేశ ప్రామాణిక సమయంకి
+
+[th] Thai
+  [default] 14/6/2566
+  [short] 14/6/66 20:50
+  [medium] 14 มิ.ย. 2566 20:50:00
+  [long] 14 มิถุนายน 2566 เวลา 20 นาฬิกา 50 นาที 00 วินาที GMT+7
+  [full] วันพุธที่ 14 มิถุนายน พ.ศ. 2566 เวลา 20 นาฬิกา 50 นาที 00 วินาที เวลาอินโดจีน
+
+[tl] Filipino
+  [default] 6/14/2023
+  [short] 6/14/23, 9:50 PM
+  [medium] Hun 14, 2023, 9:50:00 PM
+  [long] Hunyo 14, 2023 nang 9:50:00 PM GMT+8
+  [full] Miyerkules, Hunyo 14, 2023 nang 9:50:00 PM Standard na Oras sa Pilipinas
+
+[tr] Turkish
+  [default] 14.06.2023
+  [short] 14.06.2023 16:50
+  [medium] 14 Haz 2023 16:50:00
+  [long] 14 Haziran 2023 16:50:00 GMT+3
+  [full] 14 Haziran 2023 Çarşamba 16:50:00 GMT+03:00
+
+[ur] Urdu
+  [default] 14/6/2023
+  [short] 14/6/23، 6:50 PM
+  [medium] 14 جون، 2023، 6:50:00 PM
+  [long] 14 جون، 2023 کو 6:50:00 PM GMT +5
+  [full] بدھ، 14 جون، 2023 کو 6:50:00 PM پاکستان کا معیاری وقت
+
+[vi] Vietnamese
+  [default] 14/6/2023
+  [short] 20:50 14/6/23
+  [medium] 20:50:00 14 thg 6, 2023
+  [long] lúc 20:50:00 GMT+7 14 tháng 6, 2023
+  [full] lúc 20:50:00 Giờ Đông Dương Thứ Tư, 14 tháng 6, 2023
+
+[zh-CN] Chinese (China)
+  [default] 2023/6/14
+  [short] 2023/6/14 21:50
+  [medium] 2023年6月14日 21:50:00
+  [long] 2023年6月14日 GMT+8 21:50:00
+  [full] 2023年6月14日星期三 中国标准时间 21:50:00
+
+[zh-HK] Chinese (Hong Kong)
+  [default] 14/6/2023
+  [short] 14/6/2023 下午9:50
+  [medium] 2023年6月14日 下午9:50:00
+  [long] 2023年6月14日 下午9:50:00 [GMT+8]
+  [full] 2023年6月14日星期三 下午9:50:00 [香港標準時間]
+
+[zh-TW] Chinese (Taiwan)
+  [default] 2023/6/14
+  [short] 2023/6/14 晚上9:50
+  [medium] 2023年6月14日 晚上9:50:00
+  [long] 2023年6月14日 晚上9:50:00 [GMT+8]
+  [full] 2023年6月14日 星期三 晚上9:50:00 [台北標準時間]
+
+

@@ -13,9 +13,9 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace cc {
 namespace {
@@ -64,8 +64,7 @@ CheckerImagingDecision GetAnimationDecision(const PaintImage& image) {
       return CheckerImagingDecision::kCanChecker;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return CheckerImagingDecision::kCanChecker;
+  NOTREACHED();
 }
 
 CheckerImagingDecision GetLoadDecision(const PaintImage& image) {
@@ -76,8 +75,7 @@ CheckerImagingDecision GetLoadDecision(const PaintImage& image) {
       return CheckerImagingDecision::kVetoedPartiallyLoadedImage;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return CheckerImagingDecision::kCanChecker;
+  NOTREACHED();
 }
 
 CheckerImagingDecision GetSizeDecision(const SkIRect& src_rect,
@@ -211,12 +209,13 @@ void CheckerImageTracker::ClearTracker(bool can_clear_decode_policy_tracking) {
   if (can_clear_decode_policy_tracking) {
     decoding_mode_map_.clear();
     image_async_decode_state_.clear();
+    image_decode_queue_.clear();
   } else {
     // If we can't clear the decode policy, we need to make sure we still
     // re-decode and checker images that were pending invalidation.
     for (auto image_id : images_pending_invalidation_) {
       auto it = image_async_decode_state_.find(image_id);
-      CHECK(it != image_async_decode_state_.end(), base::NotFatalUntil::M130);
+      CHECK(it != image_async_decode_state_.end());
       DCHECK_EQ(it->second.policy, DecodePolicy::SYNC);
       it->second.policy = DecodePolicy::ASYNC;
     }
@@ -235,8 +234,9 @@ void CheckerImageTracker::DidFinishImageDecode(
     ImageController::ImageDecodeResult result) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "CheckerImageTracker::DidFinishImageDecode");
-  TRACE_EVENT_NESTABLE_ASYNC_END0("cc", "CheckerImageTracker::DeferImageDecode",
-                                  TRACE_ID_LOCAL(image_id));
+  TRACE_EVENT_END(
+      "cc",
+      /*"CheckerImageTracker::DeferImageDecode"*/ perfetto::Track(image_id));
 
   DCHECK_NE(ImageController::ImageDecodeResult::DECODE_NOT_REQUIRED, result);
   DCHECK_EQ(outstanding_image_decode_.value().stable_id(), image_id);
@@ -409,7 +409,7 @@ void CheckerImageTracker::ScheduleNextImageDecode() {
     // needed.
     PaintImage::Id image_id = candidate.stable_id();
     auto it = image_async_decode_state_.find(image_id);
-    CHECK(it != image_async_decode_state_.end(), base::NotFatalUntil::M130);
+    CHECK(it != image_async_decode_state_.end());
     if (it->second.policy != DecodePolicy::ASYNC)
       continue;
 
@@ -432,12 +432,14 @@ void CheckerImageTracker::ScheduleNextImageDecode() {
 
   PaintImage::Id image_id = outstanding_image_decode_.value().stable_id();
   DCHECK_EQ(image_id_to_decode_.count(image_id), 0u);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-      "cc", "CheckerImageTracker::DeferImageDecode", TRACE_ID_LOCAL(image_id));
+  TRACE_EVENT_BEGIN("cc", "CheckerImageTracker::DeferImageDecode",
+                    perfetto::Track(image_id));
   ImageController::ImageDecodeRequestId request_id =
       image_controller_->QueueImageDecode(
-          draw_image, base::BindOnce(&CheckerImageTracker::DidFinishImageDecode,
-                                     weak_factory_.GetWeakPtr(), image_id));
+          draw_image,
+          base::BindOnce(&CheckerImageTracker::DidFinishImageDecode,
+                         weak_factory_.GetWeakPtr(), image_id),
+          /*speculative*/ false);
 
   image_id_to_decode_.emplace(image_id, std::make_unique<ScopedDecodeHolder>(
                                             image_controller_, request_id));

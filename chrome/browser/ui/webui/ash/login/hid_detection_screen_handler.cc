@@ -83,22 +83,22 @@ void HIDDetectionScreenHandler::DeclareLocalizedValues(
   builder->Add("hidDetectionContinue", IDS_HID_DETECTION_CONTINUE_BUTTON);
   builder->Add("hidDetectionInvitation", IDS_HID_DETECTION_INVITATION_TEXT);
   builder->Add("hidDetectionPrerequisites",
-      IDS_HID_DETECTION_PRECONDITION_TEXT);
+               IDS_HID_DETECTION_PRECONDITION_TEXT);
   builder->Add("hidDetectionPrerequisitesTouchscreen",
                IDS_HID_DETECTION_PRECONDITION_TOUCHSCREEN_TEXT);
   builder->Add("hidDetectionMouseSearching", IDS_HID_DETECTION_SEARCHING_MOUSE);
   builder->Add("hidDetectionKeyboardSearching",
-      IDS_HID_DETECTION_SEARCHING_KEYBOARD);
+               IDS_HID_DETECTION_SEARCHING_KEYBOARD);
   builder->Add("hidDetectionUSBMouseConnected",
-      IDS_HID_DETECTION_CONNECTED_USB_MOUSE);
+               IDS_HID_DETECTION_CONNECTED_USB_MOUSE);
   builder->Add("hidDetectionPointingDeviceConnected",
-      IDS_HID_DETECTION_CONNECTED_POINTING_DEVICE);
+               IDS_HID_DETECTION_CONNECTED_POINTING_DEVICE);
   builder->Add("hidDetectionKeyboardPairing",
                IDS_HID_DETECTION_PAIRING_BLUETOOTH_KEYBOARD);
   builder->Add("hidDetectionUSBKeyboardConnected",
-      IDS_HID_DETECTION_CONNECTED_USB_KEYBOARD);
+               IDS_HID_DETECTION_CONNECTED_USB_KEYBOARD);
   builder->Add("hidDetectionBTMousePaired",
-      IDS_HID_DETECTION_PAIRED_BLUETOOTH_MOUSE);
+               IDS_HID_DETECTION_PAIRED_BLUETOOTH_MOUSE);
   builder->Add("hidDetectionBTEnterKey", IDS_HID_DETECTION_BLUETOOTH_ENTER_KEY);
   builder->Add("hidDetectionPinDialogTitle",
                IDS_HID_DETECTION_PAIRING_BLUETOOTH_KEYBOARD_PIN_DIALOG_TITLE);

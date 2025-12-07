@@ -7,15 +7,14 @@ import {isChromeOS} from 'chrome://resources/js/platform.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SiteDetailsElement, WebsiteUsageBrowserProxy} from 'chrome://settings/lazy_load.js';
-import {ChooserType, ContentSetting, ContentSettingsTypes, SiteSettingSource, SiteSettingsPrefsBrowserProxyImpl, WebsiteUsageBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {MetricsBrowserProxyImpl, PrivacyElementInteractions, Router, routes} from 'chrome://settings/settings.js';
+import {ChooserType, ContentSetting, ContentSettingsTypes, JavascriptOptimizerSetting, SiteSettingSource, SiteSettingsBrowserProxyImpl, WebsiteUsageBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {loadTimeData, MetricsBrowserProxyImpl, PrivacyElementInteractions, Router, routes} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
-import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
+import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
 import type {SiteSettingsPref} from './test_util.js';
 import {createContentSettingTypeToValuePair, createRawChooserException, createRawSiteException, createSiteSettingsPrefs} from './test_util.js';
 
@@ -45,7 +44,7 @@ suite('SiteDetails', function() {
   let prefs: SiteSettingsPref;
 
   /** The mock site settings prefs proxy object to use during test. */
-  let browserProxy: TestSiteSettingsPrefsBrowserProxy;
+  let browserProxy: TestSiteSettingsBrowserProxy;
 
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
 
@@ -53,9 +52,15 @@ suite('SiteDetails', function() {
   let websiteUsageProxy: TestWebsiteUsageBrowserProxy;
 
   // Initialize a site-details before each test.
+  //
+  // It may also be required to add the ContentSettingsType in the constructor
+  // in test_site_settings_prefs_browser_proxy.ts.
   setup(function() {
     loadTimeData.overrideValues({
       enableWebPrintingContentSetting: true,
+      // <if expr="is_chromeos">
+      enableSmartCardReadersContentSetting: true,
+      // </if>
     });
     prefs = createSiteSettingsPrefs(
         [],
@@ -72,7 +77,7 @@ suite('SiteDetails', function() {
               ContentSettingsTypes.JAVASCRIPT,
               [createRawSiteException('https://foo.com:443')]),
           createContentSettingTypeToValuePair(
-              ContentSettingsTypes.JAVASCRIPT_JIT,
+              ContentSettingsTypes.JAVASCRIPT_OPTIMIZER,
               [createRawSiteException('https://foo.com:443')]),
           createContentSettingTypeToValuePair(
               ContentSettingsTypes.SOUND,
@@ -125,6 +130,13 @@ suite('SiteDetails', function() {
           createContentSettingTypeToValuePair(
               ContentSettingsTypes.PAYMENT_HANDLER,
               [createRawSiteException('https://foo.com:443')]),
+          // <if expr="is_chromeos">
+          createContentSettingTypeToValuePair(
+              ContentSettingsTypes.SMART_CARD_READERS,
+              [createRawSiteException('https://foo.com:443', {
+                setting: ContentSetting.BLOCK,
+              })]),
+          // </if>
           createContentSettingTypeToValuePair(
               ContentSettingsTypes.SERIAL_PORTS,
               [createRawSiteException('https://foo.com:443')]),
@@ -155,6 +167,9 @@ suite('SiteDetails', function() {
               ContentSettingsTypes.VR,
               [createRawSiteException('https://foo.com:443')]),
           createContentSettingTypeToValuePair(
+              ContentSettingsTypes.WEB_APP_INSTALLATION,
+              [createRawSiteException('https://foo.com:443')]),
+          createContentSettingTypeToValuePair(
               ContentSettingsTypes.WEB_PRINTING,
               [createRawSiteException('https://foo.com:443')]),
           createContentSettingTypeToValuePair(
@@ -172,6 +187,18 @@ suite('SiteDetails', function() {
           createContentSettingTypeToValuePair(
               ContentSettingsTypes.CAPTURED_SURFACE_CONTROL,
               [createRawSiteException('https://foo.com:443')]),
+          createContentSettingTypeToValuePair(
+              ContentSettingsTypes.HAND_TRACKING,
+              [createRawSiteException('https://foo.com:443')]),
+          createContentSettingTypeToValuePair(
+              ContentSettingsTypes.KEYBOARD_LOCK,
+              [createRawSiteException('https://foo.com:443')]),
+          createContentSettingTypeToValuePair(
+              ContentSettingsTypes.POINTER_LOCK,
+              [createRawSiteException('https://foo.com:443')]),
+          createContentSettingTypeToValuePair(
+              ContentSettingsTypes.LOCAL_NETWORK_ACCESS,
+              [createRawSiteException('https://foo.com:443')]),
         ],
         [
           createContentSettingTypeToValuePair(
@@ -186,8 +213,8 @@ suite('SiteDetails', function() {
                   [createRawSiteException('https://foo.com:443')])]),
         ]);
 
-    browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
+    browserProxy = new TestSiteSettingsBrowserProxy();
+    SiteSettingsBrowserProxyImpl.setInstance(browserProxy);
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
     websiteUsageProxy = new TestWebsiteUsageBrowserProxy();
@@ -196,8 +223,9 @@ suite('SiteDetails', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
-  function createSiteDetails(origin: string) {
+  function createSiteDetails(origin: string, prefs?: {[key: string]: any}) {
     const siteDetailsElement = document.createElement('site-details');
+    siteDetailsElement.prefs = prefs;
     document.body.appendChild(siteDetailsElement);
     Router.getInstance().navigateTo(
         routes.SITE_SETTINGS_SITE_DETAILS,
@@ -214,10 +242,10 @@ suite('SiteDetails', function() {
     assertEquals(
         '',
         testElement.shadowRoot!.querySelector(
-                                   '#storedData')!.textContent!.trim());
+                                   '#storedData')!.textContent.trim());
     assertFalse(testElement.$.noStorage.hidden);
     assertTrue(testElement.$.storage.hidden);
-    assertTrue(testElement.$.usage.textContent!.includes('No usage data'));
+    assertTrue(testElement.$.usage.textContent.includes('No usage data'));
 
     // If there is, check the correct amount of usage is specified.
     const usage = '1 KB';
@@ -225,7 +253,7 @@ suite('SiteDetails', function() {
         'usage-total-changed', 'https://foo.com:443', usage, '10 cookies');
     assertTrue(testElement.$.noStorage.hidden);
     assertFalse(testElement.$.storage.hidden);
-    assertTrue(testElement.$.usage.textContent!.includes(usage));
+    assertTrue(testElement.$.usage.textContent.includes(usage));
   });
 
   test('storage gets trashed properly', async function() {
@@ -247,7 +275,7 @@ suite('SiteDetails', function() {
     assertEquals(
         '1 KB',
         testElement.shadowRoot!.querySelector(
-                                   '#storedData')!.textContent!.trim());
+                                   '#storedData')!.textContent.trim());
     assertTrue(testElement.$.noStorage.hidden);
     assertFalse(testElement.$.storage.hidden);
 
@@ -277,7 +305,7 @@ suite('SiteDetails', function() {
     assertEquals(
         '10 cookies',
         testElement.shadowRoot!.querySelector(
-                                   '#numCookies')!.textContent!.trim());
+                                   '#numCookies')!.textContent.trim());
     assertTrue(testElement.$.noStorage.hidden);
     assertFalse(testElement.$.storage.hidden);
 
@@ -317,13 +345,17 @@ suite('SiteDetails', function() {
 
       // For all the categories with non-user-set 'Allow' preferences,
       // update expected values.
-      if (siteDetailsPermission.category ===
-              ContentSettingsTypes.NOTIFICATIONS ||
-          siteDetailsPermission.category === ContentSettingsTypes.JAVASCRIPT ||
-          siteDetailsPermission.category === ContentSettingsTypes.IMAGES ||
-          siteDetailsPermission.category === ContentSettingsTypes.POPUPS ||
-          siteDetailsPermission.category ===
-              ContentSettingsTypes.FILE_SYSTEM_WRITE) {
+      const categoriesWithNonUserSetAllow = [
+        ContentSettingsTypes.NOTIFICATIONS, ContentSettingsTypes.JAVASCRIPT,
+        ContentSettingsTypes.IMAGES, ContentSettingsTypes.POPUPS,
+        ContentSettingsTypes.FILE_SYSTEM_WRITE,
+        // <if expr="is_chromeos">
+        ContentSettingsTypes.SMART_CARD_READERS,
+        // </if>
+      ];
+
+      if (categoriesWithNonUserSetAllow.includes(
+              siteDetailsPermission.category)) {
         expectedSetting =
             prefs.exceptions[siteDetailsPermission.category][0]!.setting;
         expectedSource =
@@ -337,6 +369,40 @@ suite('SiteDetails', function() {
       assertEquals(expectedMenuValue, siteDetailsPermission.$.permission.value);
     });
   });
+
+  test(
+      'javascript optimizer pref sets use-block-if-unfamiliar-label-for-default property',
+      async function() {
+        const testCases = [
+          JavascriptOptimizerSetting.BLOCKED_FOR_UNFAMILIAR_SITES,
+          JavascriptOptimizerSetting.BLOCKED,
+        ];
+
+        for (const testCase of testCases) {
+          const prefs = {
+            generated: {javascript_optimizer: {value: testCase}},
+          };
+          testElement = createSiteDetails('https://foo.com:443', prefs);
+
+          await browserProxy.whenCalled('isOriginValid');
+          await browserProxy.whenCalled('getOriginPermissions');
+
+          const siteDetailsPermissions =
+              testElement.shadowRoot!.querySelectorAll(
+                  'site-details-permission');
+          const javascriptOptimizerPermission =
+              siteDetailsPermissions.values().find(siteDetailsPermission => {
+                return siteDetailsPermission.category ===
+                    ContentSettingsTypes.JAVASCRIPT_OPTIMIZER;
+              });
+
+          assertEquals(
+              (testCase ===
+               JavascriptOptimizerSetting.BLOCKED_FOR_UNFAMILIAR_SITES),
+              javascriptOptimizerPermission!
+                  .useBlockIfUnfamiliarLabelForDefault);
+        }
+      });
 
   test('categories can be hidden', async function() {
     browserProxy.setPrefs(prefs);
@@ -480,25 +546,27 @@ suite('SiteDetails', function() {
     await browserProxy.whenCalled('fetchBlockAutoplayStatus');
   });
 
-  test('check first party set membership label empty string', async function() {
-    const origin = 'https://foo.com:443';
-    browserProxy.setPrefs(prefs);
-    testElement = createSiteDetails(origin);
+  test(
+      'check related website set membership label empty string',
+      async function() {
+        const origin = 'https://foo.com:443';
+        browserProxy.setPrefs(prefs);
+        testElement = createSiteDetails(origin);
 
-    const results = await Promise.all([
-      websiteUsageProxy.whenCalled('fetchUsageTotal'),
-    ]);
+        const results = await Promise.all([
+          websiteUsageProxy.whenCalled('fetchUsageTotal'),
+        ]);
 
-    const hostRequested = results[0];
-    assertEquals('https://foo.com:443', hostRequested);
-    webUIListenerCallback(
-        'usage-total-changed', hostRequested, '1 KB', '10 cookies', '');
-    assertTrue(testElement.$.fpsMembership.hidden);
-    assertEquals('', testElement.$.fpsMembership.textContent!.trim());
-  });
+        const hostRequested = results[0];
+        assertEquals('https://foo.com:443', hostRequested);
+        webUIListenerCallback(
+            'usage-total-changed', hostRequested, '1 KB', '10 cookies', '');
+        assertTrue(testElement.$.rwsMembership.hidden);
+        assertEquals('', testElement.$.rwsMembership.textContent.trim());
+      });
 
   test(
-      'check first party set membership label populated string',
+      'check related website set membership label populated string',
       async function() {
         const origin = 'https://foo.com:443';
         browserProxy.setPrefs(prefs);
@@ -513,19 +581,19 @@ suite('SiteDetails', function() {
         webUIListenerCallback(
             'usage-total-changed', hostRequested, '1 KB', '10 cookies',
             'Allowed for 1 foo.com site', false);
-        assertFalse(testElement.$.fpsMembership.hidden);
+        assertFalse(testElement.$.rwsMembership.hidden);
         assertEquals(
             'Allowed for 1 foo.com site',
-            testElement.$.fpsMembership.textContent!.trim());
+            testElement.$.rwsMembership.textContent.trim());
         flush();
-        // Assert first party set policy is null.
-        const fpsPolicy =
-            testElement.shadowRoot!.querySelector<HTMLElement>('#fpsPolicy');
-        assertEquals(null, fpsPolicy);
+        // Assert related website set policy is null.
+        const rwsPolicy =
+            testElement.shadowRoot!.querySelector<HTMLElement>('#rwsPolicy');
+        assertEquals(null, rwsPolicy);
       });
 
   test(
-      'first party set policy shown when managed key is set to true',
+      'related website set policy shown when managed key is set to true',
       async function() {
         const origin = 'https://foo.com:443';
         browserProxy.setPrefs(prefs);
@@ -540,15 +608,15 @@ suite('SiteDetails', function() {
         webUIListenerCallback(
             'usage-total-changed', hostRequested, '1 KB', '10 cookies',
             'Allowed for 1 foo.com site', true);
-        assertFalse(testElement.$.fpsMembership.hidden);
+        assertFalse(testElement.$.rwsMembership.hidden);
         assertEquals(
             'Allowed for 1 foo.com site',
-            testElement.$.fpsMembership.textContent!.trim());
+            testElement.$.rwsMembership.textContent.trim());
         flush();
-        // Assert first party set policy is shown.
-        const fpsPolicy =
-            testElement.shadowRoot!.querySelector<HTMLElement>('#fpsPolicy');
-        assertFalse(fpsPolicy!.hidden);
+        // Assert related website set policy is shown.
+        const rwsPolicy =
+            testElement.shadowRoot!.querySelector<HTMLElement>('#rwsPolicy');
+        assertFalse(rwsPolicy!.hidden);
       });
 
   test(

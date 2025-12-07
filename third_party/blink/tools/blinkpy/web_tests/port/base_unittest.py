@@ -67,13 +67,14 @@ class PortTest(LoggingTestCase):
         return port
 
     def test_validate_wpt_dirs(self):
+        port = self.make_port()
         # Keys should not have trailing slashes.
-        for wpt_path in Port.WPT_DIRS.keys():
+        for wpt_path in port.wpt_dirs().keys():
             self.assertFalse(wpt_path.endswith('/'))
         # Values should not be empty (except the last one).
-        for url_prefix in list(Port.WPT_DIRS.values())[:-1]:
+        for url_prefix in list(port.wpt_dirs().values())[:-1]:
             self.assertNotEqual(url_prefix, '/')
-        self.assertEqual(list(Port.WPT_DIRS.values())[-1], '/')
+        self.assertEqual(list(port.wpt_dirs().values())[-1], '/')
 
     def test_validate_wpt_regex(self):
         self.assertEquals(
@@ -112,6 +113,36 @@ class PortTest(LoggingTestCase):
     def test_get_option__default(self):
         port = self.make_port()
         self.assertEqual(port.get_option('foo', 'bar'), 'bar')
+
+    def test_allowed_suffixes_legacy(self):
+        port = self.make_port(with_tests=True)
+        # Depending on the `testRunner` call, any kind can be dumped.
+        self.assertEqual(port.allowed_suffixes('failures/expected/text.html'),
+                         {'txt', 'png', 'wav'})
+
+    def test_allowed_suffixes_legacy_reftest(self):
+        port = self.make_port(with_tests=True)
+        self.assertEqual(
+            port.allowed_suffixes('failures/expected/reftest.html'),
+            {'txt', 'wav'})
+
+    def test_allowed_suffixes_wpt_testharness(self):
+        port = self.make_port(with_tests=True)
+        add_manifest_to_mock_filesystem(port)
+        self.assertEqual(
+            port.allowed_suffixes(
+                'external/wpt/dom/ranges/Range-attributes.html'), {'txt'})
+
+    def test_allowed_suffixes_wpt_reftest(self):
+        port = self.make_port(with_tests=True)
+        add_manifest_to_mock_filesystem(port)
+        self.assertEqual(
+            port.allowed_suffixes('external/wpt/html/dom/elements/'
+                                  'global-attributes/dir_auto-EN-L.html'),
+            set())
+        self.assertEqual(
+            port.allowed_suffixes('external/wpt/foo/bar/test-print.html'),
+            set())
 
     def test_output_filename(self):
         port = self.make_port()
@@ -1534,8 +1565,6 @@ class PortTest(LoggingTestCase):
     def test_http_server_supports_ipv6(self):
         port = self.make_port()
         self.assertTrue(port.http_server_supports_ipv6())
-        port.host.platform.os_name = 'win'
-        self.assertFalse(port.http_server_supports_ipv6())
 
     def test_http_server_requires_http_protocol_options_unsafe(self):
         port = self.make_port(
@@ -1709,10 +1738,10 @@ class PortTest(LoggingTestCase):
         self.assertEquals(
             ['virtual/virtual_passes/passes/test-virtual-passes.html'], tests)
 
-        tests = port.tests(['virtual/virtual_empty_bases'])
+        tests = sorted(port.tests(['virtual/virtual_empty_bases']))
         self.assertEquals([
+            'virtual/virtual_empty_bases/dir/physical2.html',
             'virtual/virtual_empty_bases/physical1.html',
-            'virtual/virtual_empty_bases/dir/physical2.html'
         ], tests)
 
         tests = port.tests(['virtual/virtual_empty_bases/dir'])
@@ -1727,8 +1756,10 @@ class PortTest(LoggingTestCase):
         # Test for a protected method - pylint: disable=protected-access
         # Test that optional paths are used regardless of whether they exist.
         options = optparse.Values({
-            'configuration': 'Release',
-            'build_directory': 'xcodebuild'
+            'configuration':
+            'Release',
+            'build_directory':
+            '/mock-checkout/xcodebuild/Release'
         })
         self.assertEqual(
             self.make_port(options=options).build_path(),
@@ -1854,39 +1885,42 @@ class PortTest(LoggingTestCase):
 
     def test_args_for_test(self):
         port = self.make_port(with_tests=True)
-        self.assertEqual(
-            ['--disable-threaded-compositing', '--disable-threaded-animation'],
-            port.args_for_test('non/virtual'))
-        self.assertEqual(
-            ['--disable-threaded-compositing', '--disable-threaded-animation'],
-            port.args_for_test('passes/text.html'))
-        self.assertEqual(
-            ['--disable-threaded-compositing', '--disable-threaded-animation'],
-            port.args_for_test('virtual/non-existing/test.html'))
+        self.assertEqual([
+            '--disable-threaded-compositing', '--disable-threaded-animation',
+            '--enable-unsafe-swiftshader'
+        ], port.args_for_test('non/virtual'))
+        self.assertEqual([
+            '--disable-threaded-compositing', '--disable-threaded-animation',
+            '--enable-unsafe-swiftshader'
+        ], port.args_for_test('passes/text.html'))
+        self.assertEqual([
+            '--disable-threaded-compositing', '--disable-threaded-animation',
+            '--enable-unsafe-swiftshader'
+        ], port.args_for_test('virtual/non-existing/test.html'))
 
         self.assertEqual([
             '--virtual-arg', '--disable-threaded-compositing',
-            '--disable-threaded-animation'
+            '--disable-threaded-animation', '--enable-unsafe-swiftshader'
         ], port.args_for_test('virtual/virtual_passes/passes/text.html'))
         self.assertEqual([
             '--virtual-arg', '--disable-threaded-compositing',
-            '--disable-threaded-animation'
+            '--disable-threaded-animation', '--enable-unsafe-swiftshader'
         ], port.args_for_test('virtual/virtual_passes/passes/any.html'))
         self.assertEqual([
             '--virtual-arg', '--disable-threaded-compositing',
-            '--disable-threaded-animation'
+            '--disable-threaded-animation', '--enable-unsafe-swiftshader'
         ], port.args_for_test('virtual/virtual_passes/passes/'))
         self.assertEqual([
             '--virtual-arg', '--disable-threaded-compositing',
-            '--disable-threaded-animation'
+            '--disable-threaded-animation', '--enable-unsafe-swiftshader'
         ], port.args_for_test('virtual/virtual_passes/passes'))
         self.assertEqual([
             '--virtual-arg', '--disable-threaded-compositing',
-            '--disable-threaded-animation'
+            '--disable-threaded-animation', '--enable-unsafe-swiftshader'
         ], port.args_for_test('virtual/virtual_passes/'))
         self.assertEqual([
             '--virtual-arg', '--disable-threaded-compositing',
-            '--disable-threaded-animation'
+            '--disable-threaded-animation', '--enable-unsafe-swiftshader'
         ], port.args_for_test('virtual/virtual_passes'))
 
     def test_missing_virtual_test_suite_file(self):
@@ -1911,6 +1945,31 @@ class PortTest(LoggingTestCase):
         self.assertTrue("virtual/v1/test/test.html" in port.tests())
         self.assertTrue("virtual/v2/test/test.html" in port.tests())
         self.assertTrue("virtual/v3/test/test.html" in port.tests())
+
+    def test_virtual_test_disabled(self):
+        port = self.make_port()
+        fs = port.host.filesystem
+        web_tests_dir = port.web_tests_dir()
+        fs.write_text_file(
+            fs.join(web_tests_dir, 'VirtualTestSuites'), '['
+            '{"prefix": "v1", "platforms": ["Linux"], "bases": ["test"],'
+            ' "args": ["-a"], "disabled": false},'
+            '{"prefix": "v2", "platforms": ["Linux"], "bases": ["test"],'
+            ' "args": ["-b"], "disabled": true},'
+            '{"prefix": "v3", "platforms": ["Linux"], "bases": ["test"],'
+            ' "args": ["-c"]}'
+            ']')
+        fs.write_text_file(fs.join(web_tests_dir, 'test', 'test.html'), '')
+
+        self.assertFalse(
+            port.virtual_test_skipped_due_to_disabled(
+                "virtual/v1/test/test.html"))
+        self.assertTrue(
+            port.virtual_test_skipped_due_to_disabled(
+                "virtual/v2/test/test.html"))
+        self.assertFalse(
+            port.virtual_test_skipped_due_to_disabled(
+                "virtual/v3/test/test.html"))
 
     def test_virtual_exclusive_tests(self):
         port = self.make_port()
@@ -1966,20 +2025,126 @@ class PortTest(LoggingTestCase):
             port.skipped_due_to_exclusive_virtual_tests(
                 'virtual/v2/b2/test2.html'))
 
+    def test_virtual_exclusive_tests_with_real_virtual_files(self):
+        port = self.make_port()
+        fs = port.host.filesystem
+        fs.write_text_file(
+            fs.join(port.web_tests_dir(), 'VirtualTestSuites'),
+            json.dumps([{
+                'prefix': 'v0',
+                'platforms': ['Linux'],
+                'bases': [],
+                'exclusive_tests': [],
+                'args': ['-a'],
+                'expires': 'never',
+            }, {
+                'prefix': 'v1',
+                'platforms': ['Linux'],
+                'bases': ['virtual/v0'],
+                'exclusive_tests': 'ALL',
+                'args': ['-a'],
+                'expires': 'never',
+            }, {
+                'prefix': 'v2',
+                'platforms': ['Linux'],
+                'bases': ['virtual/v0/a'],
+                'exclusive_tests': ['virtual/v0/a/c.html'],
+                'args': ['-a'],
+                'expires': 'never',
+            }]))
+        fs.write_text_file(
+            fs.join(port.web_tests_dir(), 'virtual', 'v0', 'a', 'b.html'), '')
+        fs.write_text_file(
+            fs.join(port.web_tests_dir(), 'virtual', 'v0', 'a', 'c.html'), '')
+
+        self.assertTrue(
+            port.skipped_due_to_exclusive_virtual_tests('virtual/v0'))
+        self.assertTrue(
+            port.skipped_due_to_exclusive_virtual_tests('virtual/v0/a/b.html'))
+        self.assertTrue(
+            port.skipped_due_to_exclusive_virtual_tests('virtual/v0/a/c.html'))
+
+        self.assertFalse(
+            port.skipped_due_to_exclusive_virtual_tests(
+                'virtual/v1/virtual/v0'))
+        self.assertFalse(
+            port.skipped_due_to_exclusive_virtual_tests(
+                'virtual/v1/virtual/v0/a/b.html'))
+        self.assertFalse(
+            port.skipped_due_to_exclusive_virtual_tests(
+                'virtual/v1/virtual/v0/a/c.html'))
+
+        self.assertFalse(
+            port.skipped_due_to_exclusive_virtual_tests(
+                'virtual/v2/virtual/v0'))
+        self.assertTrue(
+            port.skipped_due_to_exclusive_virtual_tests(
+                'virtual/v2/virtual/v0/a/b.html'))
+        self.assertFalse(
+            port.skipped_due_to_exclusive_virtual_tests(
+                'virtual/v2/virtual/v0/a/c.html'))
+
     def test_virtual_exclusive_tests_with_generated_tests(self):
         port = self.make_port()
+        port.set_option_default('manifest_update', False)
         fs = port.host.filesystem
         web_tests_dir = port.web_tests_dir()
         fs.write_text_file(
-            fs.join(web_tests_dir, 'VirtualTestSuites'), '['
-            '{"prefix": "v1", "platforms": ["Linux"], "bases": ["external/wpt/console/b1.any.js"],'
-            ' "exclusive_tests": "ALL", '
-            '"args": ["-a"], "expires": "never"},'
-            '{"prefix": "v2", "platforms": ["Linux"], "bases": ["external/wpt/console/b1.any.js",'
-            '                                                   "external/wpt/console/b2.any.js"],'
-            ' "exclusive_tests": ["external/wpt/console/b2.any.js"], '
-            '"args": ["-b"], "expires": "never"}'
-            ']')
+            fs.join(web_tests_dir, 'external', 'wpt', 'MANIFEST.json'),
+            json.dumps({
+                'items': {
+                    'testharness': {
+                        'console': {
+                            'b1.any.js': [
+                                'abcdef0',
+                                ['console/b1.any.html', {}],
+                                ['console/b1.any.worker.html', {}],
+                                ['console/b1.any.sharedworker.html', {}],
+                                [
+                                    'console/b1.https.any.shadowrealm-in-serviceworker.html',
+                                    {}
+                                ],
+                            ],
+                            'b2.any.js': [
+                                '0123457',
+                                ['console/b2.any.html', {}],
+                                ['console/b2.any.worker.html', {}],
+                                ['console/b2.any.sharedworker.html', {}],
+                            ],
+                        },
+                    },
+                },
+            }))
+        virtual_suites = [
+            {
+                'prefix': 'v1',
+                'platforms': ['Linux'],
+                'bases': ['external/wpt/console/b1.any.js'],
+                'exclusive_tests': 'ALL',
+                'args': ['-a'],
+                'expires': 'never',
+            },
+            {
+                'prefix':
+                'v2',
+                'platforms': ['Linux'],
+                'bases': [
+                    'external/wpt/console/b1.any.js',
+                    'external/wpt/console/b2.any.js',
+                ],
+                'exclusive_tests': [
+                    # Ensure `exclusive_tests` work with the generated URLs
+                    # themselves too.
+                    'external/wpt/console/b1.any.html',
+                    'external/wpt/console/b2.any.js',
+                ],
+                'args': ['-b'],
+                'expires':
+                'never',
+            },
+        ]
+        fs.write_text_file(fs.join(web_tests_dir, 'VirtualTestSuites'),
+                           json.dumps(virtual_suites))
         fs.write_text_file(
             fs.join(web_tests_dir, 'external/wpt/console', 'b1.any.js'), '')
         fs.write_text_file(
@@ -1994,6 +2159,10 @@ class PortTest(LoggingTestCase):
         self.assertTrue(
             port.skipped_due_to_exclusive_virtual_tests(
                 'external/wpt/console/b1.any.worker.html'))
+        self.assertTrue(
+            port.skipped_due_to_exclusive_virtual_tests(
+                'external/wpt/console/'
+                'b1.https.any.shadowrealm-in-serviceworker.html'))
         self.assertFalse(
             port.skipped_due_to_exclusive_virtual_tests(
                 'virtual/v1/external/wpt/console/b1.any.html'))
@@ -2003,6 +2172,10 @@ class PortTest(LoggingTestCase):
         self.assertFalse(
             port.skipped_due_to_exclusive_virtual_tests(
                 'virtual/v1/external/wpt/console/b1.any.worker.html'))
+        self.assertFalse(
+            port.skipped_due_to_exclusive_virtual_tests(
+                'virtual/v1/external/wpt/console/'
+                'b1.https.any.shadowrealm-in-serviceworker.html'))
 
         self.assertTrue(
             port.skipped_due_to_exclusive_virtual_tests(
@@ -2013,7 +2186,7 @@ class PortTest(LoggingTestCase):
         self.assertTrue(
             port.skipped_due_to_exclusive_virtual_tests(
                 'external/wpt/console/b2.any.worker.html'))
-        self.assertTrue(
+        self.assertFalse(
             port.skipped_due_to_exclusive_virtual_tests(
                 'virtual/v2/external/wpt/console/b1.any.html'))
         self.assertTrue(
@@ -2022,6 +2195,10 @@ class PortTest(LoggingTestCase):
         self.assertTrue(
             port.skipped_due_to_exclusive_virtual_tests(
                 'virtual/v2/external/wpt/console/b1.any.worker.html'))
+        self.assertTrue(
+            port.skipped_due_to_exclusive_virtual_tests(
+                'virtual/v2/external/wpt/console/'
+                'b1.https.any.shadowrealm-in-serviceworker.html'))
         self.assertFalse(
             port.skipped_due_to_exclusive_virtual_tests(
                 'virtual/v2/external/wpt/console/b2.any.html'))
@@ -2188,6 +2365,25 @@ class PortTest(LoggingTestCase):
                                              'passes/text.html\n')
         self.assertTrue(port.skips_test('failures/expected/image.html'))
 
+    def test_skips_test_expands_smoke_tests_file(self):
+        port = self.make_port(with_tests=True)
+        add_manifest_to_mock_filesystem(port)
+        port.default_smoke_test_only = lambda: True
+        port.host.filesystem.write_text_file(
+            port.path_to_smoke_tests_file(),
+            'virtual/virtual_failures/failures/expected/\n'
+            'external/wpt/console/console-is-a-namespace.any.js\n')
+        self.assertTrue(port.skips_test('failures/expected/image.html'))
+        self.assertFalse(
+            port.skips_test(
+                'virtual/virtual_failures/failures/expected/image.html'))
+        self.assertFalse(
+            port.skips_test(
+                'external/wpt/console/console-is-a-namespace.any.html'))
+        self.assertFalse(
+            port.skips_test(
+                'external/wpt/console/console-is-a-namespace.any.worker.html'))
+
     def test_skips_test_no_skip_smoke_tests_file(self):
         port = self.make_port(with_tests=True)
         port.default_smoke_test_only = lambda: True
@@ -2222,6 +2418,7 @@ class PortTest(LoggingTestCase):
             self.assertEqual([
                 '--disable-threaded-compositing',
                 '--disable-threaded-animation',
+                '--enable-unsafe-swiftshader',
                 '--trace-startup=*,-blink',
                 '--trace-startup-duration=0',
                 '--trace-startup-file=trace_layout_test_non_virtual_TIME.pftrace',

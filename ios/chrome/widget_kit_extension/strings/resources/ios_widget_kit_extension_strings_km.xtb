@@ -1,7 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="km">
+<translation id="1149198577555059081">ស្វែងរក ឬវាយបញ្ចូល URL</translation>
 <translation id="1324575488877808473">បើក Chrome ដើម្បីមើលគេហទំព័រដែលអ្នកបានចូលមើលញឹកញាប់បំផុតនៅទីនេះ។</translation>
+<translation id="1861587787412926934">លំនាំដើម</translation>
+<translation id="2378341468609349249">ស្វែងរកពាក្យសម្ងាត់</translation>
 <translation id="2513892053093488070">ស្វែងរក​​តាម​​សំឡេង</translation>
 <translation id="2535710892645968259">ចូលក្នុងហ្គេមដាយណូស័រ Chrome ពីអេក្រង់ចាក់សោរបស់អ្នក។</translation>
 <translation id="2542770169955243077">ហ្គេម Chrome ដាយណូស័រ</translation>
@@ -11,15 +14,16 @@
 <translation id="3464120926993669599">ការស្វែងរក​លក្ខណៈឯកជន</translation>
 <translation id="3501428580460217920">ស្វែងរក ឬរុករកនៅក្នុងផ្ទាំងឯកជនថ្មីក្នុង Chrome។</translation>
 <translation id="3528874492835415837">ស្វែងរក ឬវាយបញ្ចូល URL</translation>
+<translation id="3606473512813866845">គណនី Gooogle</translation>
 <translation id="3798529146539130967">ស្វែងរកនៅក្នុង Chrome ដោយប្រើសំឡេងរបស់អ្នក។</translation>
 <translation id="405442954313519726">ស្វែងរក ឬរុករកនៅក្នុងផ្ទាំងថ្មី​ នៅក្នុងមុខងារ​ឯកជន ដោយប្រើសំឡេងរបស់អ្នក ឬដោយប្រើកូដ QR។</translation>
 <translation id="4557098988773644458">ចូលក្នុងហ្គេមដាយណូស័រ Chrome</translation>
 <translation id="4678859075583681103">ចាប់ផ្ដើម​ការស្វែងរកថ្មី ឬបើក​គេហទំព័រ​ដែលអ្នកបានចូលមើល​ច្រើនបំផុត​ពីទំព័រដើម iPhone របស់អ្នក។</translation>
-<translation id="4954445889641385956">ស្វែងរក ឬវាយបញ្ចូល URL</translation>
 <translation id="4962772945748414465">បើក WEBSITE_PLACEHOLDER</translation>
 <translation id="5234725349196694896">ស្វែងរកនៅក្នុង Chrome ដោយប្រើម៉ាស៊ីន​ស្វែងរកដែលអ្នកពេញចិត្ត។</translation>
 <translation id="5277852985315196237">ស្វែងរក ឬវាយបញ្ចូល URL</translation>
 <translation id="529497070985873480">Chrome ដាយណូស័រ</translation>
+<translation id="5325847452011598583">គ្មានគណនីទេ</translation>
 <translation id="5683557219437283801">ស្វែងរក​តាមសំឡេង</translation>
 <translation id="6179961764474023795">សកម្មភាពរហ័ស</translation>
 <translation id="6330929932864892436">ស្វែងរក ឬវាយបញ្ចូល URL</translation>
@@ -28,6 +32,7 @@
 <translation id="6663288906398689853">ស្វែងរក</translation>
 <translation id="6691821786147477657">ចាប់ផ្ដើម​ការស្វែងរកថ្មី ឬបើក​គេហទំព័រ​ដែលអ្នកបានចូលមើល​ច្រើនបំផុត​ពីទំព័រដើម iPad របស់អ្នក។</translation>
 <translation id="6721566127904256183">គេហទំព័រ​ដែលអ្នក​ចូលមើល​ញឹកញាប់បំផុត​នឹង​បង្ហាញនៅទីនេះ។</translation>
+<translation id="6804899947889706382">ស្វែងរក ឬវាយបញ្ចូល URL</translation>
 <translation id="6855322554930231468">ស្វែងរក</translation>
 <translation id="6973491011026415905">ស្វែងរកពាក្យសម្ងាត់លើកម្មវិធីគ្រប់គ្រងពាក្យសម្ងាត់</translation>
 <translation id="7010831364920321713">ការស្វែងរក​លក្ខណៈឯកជន</translation>
@@ -39,7 +44,9 @@
 <translation id="8104498668011127805">ចូលក្នុងហ្គេម Chrome ដាយណូស័រ</translation>
 <translation id="8150601371542319992">Lens</translation>
 <translation id="8171952085734471362">ការស្វែងរក​លក្ខណៈឯកជន</translation>
+<translation id="8310150944719146950">គណនី</translation>
 <translation id="8564942608461410346">ស្វែងរកនៅក្នុង Chrome ដោយប្រើម៉ាស៊ីន​ស្វែងរកដែលអ្នកចូលចិត្ត។</translation>
+<translation id="8858765528951093286">គណនី​ដែលបានប្រើ​ជាមួយ​ធាតុ​ក្រាហ្វិក​ត្រូវបាន​ដកចេញ។ ដើម្បី​ជ្រើសរើស​គណនី​ផ្សេងទៀត សូមចុច "កែ​ធាតុ​ក្រាហ្វិក"។</translation>
 <translation id="9175676375569833962">ស្វែងរក
 ពាក្យសម្ងាត់</translation>
 </translationbundle>

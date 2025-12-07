@@ -8,10 +8,12 @@ source_set("ui") {
     "consent_coordinator.mm",
     "consent_view_controller.h",
     "consent_view_controller.mm",
+    "create_navigation_item_title_view.h",
+    "create_navigation_item_title_view.mm",
     "credential_details_consumer.h",
+    "credential_details_view_controller+Testing.h",
     "credential_details_view_controller.h",
     "credential_details_view_controller.mm",
-    "credential_list_consumer.h",
     "credential_list_coordinator.h",
     "credential_list_coordinator.mm",
     "credential_list_global_header_view.h",
@@ -20,12 +22,14 @@ source_set("ui") {
     "credential_list_header_view.mm",
     "credential_list_mediator.h",
     "credential_list_mediator.mm",
-    "credential_list_ui_handler.h",
     "credential_list_view_controller.h",
     "credential_list_view_controller.mm",
-    "credential_response_handler.h",
     "empty_credentials_view_controller.h",
     "empty_credentials_view_controller.mm",
+    "generic_error_view_controller.h",
+    "generic_error_view_controller.mm",
+    "multi_profile_passkey_creation_view_controller.h",
+    "multi_profile_passkey_creation_view_controller.mm",
     "new_password_coordinator+Testing.h",
     "new_password_coordinator.h",
     "new_password_coordinator.mm",
@@ -38,6 +42,8 @@ source_set("ui") {
     "new_password_ui_handler.h",
     "new_password_view_controller.h",
     "new_password_view_controller.mm",
+    "passkey_error_alert_view_controller.h",
+    "passkey_error_alert_view_controller.mm",
     "password_note_cell.h",
     "password_note_cell.mm",
     "password_note_footer_view.h",
@@ -48,6 +54,9 @@ source_set("ui") {
     "ui_util.mm",
   ]
   deps = [
+    ":credential_list_consumer",
+    ":credential_list_ui_handler",
+    ":credential_response_handler",
     ":feature_flags",
     ":utils",
     "//base",
@@ -55,12 +64,14 @@ source_set("ui") {
     "//components/password_manager/core/common:constants",
     "//ios/chrome/common:constants",
     "//ios/chrome/common/app_group",
-    "//ios/chrome/common/app_group:client",
     "//ios/chrome/common/credential_provider",
     "//ios/chrome/common/credential_provider:ui",
+    "//ios/chrome/common/credential_provider/ui/resources",
+    "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/elements",
+    "//ios/chrome/common/ui/elements:branded_navigation_item_title_view",
     "//ios/chrome/common/ui/elements:form_input_accessory",
     "//ios/chrome/common/ui/elements:popover_label_view_controller",
     "//ios/chrome/common/ui/favicon",
@@ -69,7 +80,9 @@ source_set("ui") {
     "//ios/chrome/common/ui/table_view",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util",
+    "//ios/chrome/credential_provider_extension:favicon_util",
     "//ios/chrome/credential_provider_extension:metrics_util",
+    "//ios/chrome/credential_provider_extension:passkey_request_details",
     "//ios/chrome/credential_provider_extension:passkey_util",
     "//ios/chrome/credential_provider_extension:password_spec_fetcher_buildflags",
     "//ios/chrome/credential_provider_extension:password_util",
@@ -85,13 +98,27 @@ source_set("ui") {
   ]
 }
 
+source_set("credential_list_consumer") {
+  sources = [ "credential_list_consumer.h" ]
+  deps = [ "//ios/chrome/common/credential_provider:ui" ]
+}
+
+source_set("credential_list_ui_handler") {
+  sources = [ "credential_list_ui_handler.h" ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("credential_response_handler") {
+  sources = [ "credential_response_handler.h" ]
+}
+
 source_set("feature_flags") {
   sources = [
     "feature_flags.h",
     "feature_flags.mm",
   ]
   deps = [
-    "//ios/chrome/common/app_group:app_group",
+    "//ios/chrome/common/app_group",
     "//ios/chrome/common/credential_provider",
   ]
   frameworks = [ "Foundation.framework" ]
@@ -118,7 +145,7 @@ source_set("mock_credential_list_consumer") {
     "mock_credential_list_consumer.h",
     "mock_credential_list_consumer.mm",
   ]
-  deps = [ ":ui" ]
+  deps = [ ":credential_list_consumer" ]
 }
 
 source_set("mock_credential_list_ui_handler") {
@@ -127,7 +154,7 @@ source_set("mock_credential_list_ui_handler") {
     "mock_credential_list_ui_handler.h",
     "mock_credential_list_ui_handler.mm",
   ]
-  deps = [ ":ui" ]
+  deps = [ ":credential_list_ui_handler" ]
 }
 
 source_set("mock_credential_response_handler") {
@@ -136,19 +163,28 @@ source_set("mock_credential_response_handler") {
     "mock_credential_response_handler.h",
     "mock_credential_response_handler.mm",
   ]
-  deps = [ ":ui" ]
+  deps = [
+    ":credential_response_handler",
+    "//base",
+    "//ios/chrome/credential_provider_extension:passkey_request_details",
+  ]
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "create_navigation_item_title_view_unittest.mm",
+    "credential_details_view_controller_unittest.mm",
     "credential_list_coordinator_unittest.mm",
     "credential_list_mediator+Testing.h",
     "credential_list_mediator_unittest.mm",
+    "multi_profile_passkey_creation_view_controller_unittest.mm",
     "new_password_coordinator_unittest.mm",
     "new_password_mediator_unittest.mm",
+    "passkey_error_alert_view_controller_unittest.mm",
   ]
   deps = [
+    ":credential_list_ui_handler",
     ":feature_flags",
     ":mock_credential_list_consumer",
     ":mock_credential_list_ui_handler",
@@ -159,10 +195,15 @@ source_set("unit_tests") {
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/credential_provider",
     "//ios/chrome/common/credential_provider:mock_credential_store",
-    "//ios/chrome/common/credential_provider:ui",
+    "//ios/chrome/common/ui/button_stack",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/reauthentication:mock_reauthentication_module",
+    "//ios/chrome/credential_provider_extension:font_provider_header",
+    "//ios/chrome/credential_provider_extension:passkey_request_details",
+    "//ios/chrome/credential_provider_extension:passkey_request_details_testing",
     "//ios/chrome/credential_provider_extension:password_util",
     "//ios/chrome/credential_provider_extension:reauthentication_handler",
-    "//ios/chrome/test/app:test_support",
+    "//ios/chrome/credential_provider_extension:system_strings",
     "//testing/gtest",
   ]
 }

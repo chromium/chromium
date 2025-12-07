@@ -1,0 +1,86 @@
+{
+  "linux-wayland-mutter-rel-tests": {
+    "gtest_tests": [
+      {
+        "args": [
+          "--no-xvfb",
+          "--use-mutter",
+          "--ozone-platform=wayland",
+          "--mutter-display=1280x800",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.browser_tests_mutter.filter"
+        ],
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//chrome/test:browser_tests",
+        "module_scheme": "gtest",
+        "name": "browser_tests",
+        "retry_only_failed_tests": true,
+        "swarming": {
+          "dimensions": {
+            "os": "Ubuntu-24.04"
+          },
+          "expiration": 18000,
+          "hard_timeout": 14400,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 46
+        },
+        "test": "browser_tests",
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
+      },
+      {
+        "args": [
+          "--no-xvfb",
+          "--use-mutter",
+          "--ozone-platform=wayland"
+        ],
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//content/test:content_browsertests",
+        "module_scheme": "gtest",
+        "name": "content_browsertests",
+        "retry_only_failed_tests": true,
+        "swarming": {
+          "dimensions": {
+            "os": "Ubuntu-24.04"
+          },
+          "expiration": 18000,
+          "hard_timeout": 14400,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 8
+        },
+        "test": "content_browsertests",
+        "test_id_prefix": "ninja://content/test:content_browsertests/"
+      },
+      {
+        "args": [
+          "--no-xvfb",
+          "--use-mutter",
+          "--ozone-platform=wayland",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.interactive_ui_tests_mutter.filter"
+        ],
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//chrome/test:interactive_ui_tests",
+        "module_scheme": "gtest",
+        "name": "interactive_ui_tests",
+        "swarming": {
+          "dimensions": {
+            "os": "Ubuntu-24.04"
+          },
+          "expiration": 18000,
+          "hard_timeout": 14400,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 12
+        },
+        "test": "interactive_ui_tests",
+        "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
+      }
+    ]
+  }
+}

@@ -1,8 +1,0 @@
-{
-  "icon_url": "webstore_inline_install/extension/icon.png",
-  "users": "371,674",
-  "average_rating": 4.36,
-  "rating_count": 788,
-  "verified_site": "app.com",
-  "manifest": "{\"name\":\"Inline Install Test Extension\",\"version\":\"0.1\",\"manifest_version\":2,\"icons\":{\"128\":\"icon.png\"},\"permissions\":[\"tabs\"]}"
-}

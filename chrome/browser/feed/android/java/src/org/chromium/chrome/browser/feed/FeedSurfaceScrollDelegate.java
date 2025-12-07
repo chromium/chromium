@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.feed;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * A delegate used to obtain information about scroll state and perform various scroll
  * functions.
  */
+@NullMarked
 public interface FeedSurfaceScrollDelegate {
     /**
      * @return Whether the scroll view is initialized. If false, the other delegate methods

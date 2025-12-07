@@ -18,7 +18,7 @@ python_library("test_utils") {
 
   data = [ "//chrome/test/variations/test_utils/" ]
 
-  data_deps = [ "//third_party/catapult/third_party/gsutil:gsutil" ]
+  data_deps = [ "//third_party/catapult/third_party/gsutil" ]
 }
 
 python_library("fixtures") {
@@ -43,7 +43,7 @@ python_library("fixtures") {
       "//build/android:devil_chromium_py",
       "//build/android:test_runner_py",
       "//clank/bin:installer_scripts",
-      "//third_party/catapult/devil:devil",
+      "//third_party/catapult/devil",
     ]
   }
 
@@ -62,8 +62,8 @@ python_library("fixtures") {
     ]
 
     data_deps += [
-      "//third_party/catapult/devil:devil",
-      "//third_party/catapult/telemetry:telemetry",
+      "//third_party/catapult/devil",
+      "//third_party/catapult/telemetry",
     ]
   }
 

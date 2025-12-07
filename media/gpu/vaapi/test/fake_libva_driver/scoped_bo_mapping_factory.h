@@ -5,13 +5,13 @@
 #ifndef MEDIA_GPU_VAAPI_TEST_FAKE_LIBVA_DRIVER_SCOPED_BO_MAPPING_FACTORY_H_
 #define MEDIA_GPU_VAAPI_TEST_FAKE_LIBVA_DRIVER_SCOPED_BO_MAPPING_FACTORY_H_
 
-#include <gbm.h>
-
 #include <memory>
+#include <vector>
 
 #include "base/files/scoped_file.h"
 #include "base/memory/raw_ref.h"
 #include "base/synchronization/lock.h"
+#include "third_party/minigbm/src/gbm.h"
 #include "ui/gfx/linux/scoped_gbm_device.h"
 
 namespace media::internal {

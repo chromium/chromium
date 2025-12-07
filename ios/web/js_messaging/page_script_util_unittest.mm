@@ -11,6 +11,7 @@
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/web_test.h"
 #import "ios/web/test/js_test_util_internal.h"
+#import "ios/web/web_state/crw_web_view.h"
 #import "testing/gtest_mac.h"
 
 namespace web {
@@ -32,12 +33,12 @@ TEST_F(PageScriptUtilTest, MakeScriptInjectableOnce) {
   WKWebView* web_view = BuildWKWebView(CGRectZero, GetBrowserState());
   NSString* identifier = @"script_id";
 
-  test::ExecuteJavaScript(
+  test::ExecuteJavaScriptInWebView(
       web_view, MakeScriptInjectableOnce(identifier, @"var value = 1;"));
   EXPECT_NSEQ(@(1), test::ExecuteJavaScript(web_view, @"value"));
 
-  test::ExecuteJavaScript(web_view,
-                          MakeScriptInjectableOnce(identifier, @"value = 2;"));
+  test::ExecuteJavaScriptInWebView(
+      web_view, MakeScriptInjectableOnce(identifier, @"value = 2;"));
   EXPECT_NSEQ(@(1), test::ExecuteJavaScript(web_view, @"value"));
 }
 

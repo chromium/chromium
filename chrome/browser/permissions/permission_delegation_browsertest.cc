@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
@@ -39,24 +38,15 @@ class PermissionDelegationBrowserTest : public InProcessBrowserTest {
     mock_permission_prompt_factory_ =
         std::make_unique<permissions::MockPermissionPromptFactory>(manager);
 
-    https_embedded_test_server_ = std::make_unique<net::EmbeddedTestServer>(
-        net::EmbeddedTestServer::TYPE_HTTPS);
-    https_embedded_test_server_->ServeFilesFromSourceDirectory(
+    embedded_https_test_server().ServeFilesFromSourceDirectory(
         GetChromeTestDataDir());
     host_resolver()->AddRule("*", "127.0.0.1");
-    content::SetupCrossSiteRedirector(https_embedded_test_server_.get());
-    ASSERT_TRUE(https_embedded_test_server_->Start());
+    content::SetupCrossSiteRedirector(&embedded_https_test_server());
+    ASSERT_TRUE(embedded_https_test_server().Start());
   }
 
   void TearDownOnMainThread() override {
     mock_permission_prompt_factory_.reset();
-    https_embedded_test_server_.reset();
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // HTTPS server only serves a valid cert for localhost, so this is needed
-    // to load pages from other hosts without an error.
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
   permissions::MockPermissionPromptFactory* prompt_factory() {
@@ -67,14 +57,9 @@ class PermissionDelegationBrowserTest : public InProcessBrowserTest {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  net::EmbeddedTestServer* https_embedded_test_server() {
-    return https_embedded_test_server_.get();
-  }
-
  private:
   std::unique_ptr<permissions::MockPermissionPromptFactory>
       mock_permission_prompt_factory_;
-  std::unique_ptr<net::EmbeddedTestServer> https_embedded_test_server_;
   std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_overrider_;
 };
 
@@ -84,11 +69,11 @@ IN_PROC_BROWSER_TEST_F(PermissionDelegationBrowserTest, DelegatedToTwoFrames) {
 
   // Main frame is on a.com, iframe 1 is on b.com and iframe 2 is on c.com.
   GURL main_frame_url =
-      https_embedded_test_server()->GetURL("a.com", "/two_iframes_blank.html");
+      embedded_https_test_server().GetURL("a.com", "/two_iframes_blank.html");
   GURL iframe_url_1 =
-      https_embedded_test_server()->GetURL("b.com", "/simple.html");
+      embedded_https_test_server().GetURL("b.com", "/simple.html");
   GURL iframe_url_2 =
-      https_embedded_test_server()->GetURL("c.com", "/simple.html");
+      embedded_https_test_server().GetURL("c.com", "/simple.html");
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
   content::RenderFrameHost* main_frame =

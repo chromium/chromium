@@ -16,10 +16,10 @@
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/fido_request_handler_base.h"
-#include "device/fido/fido_transport_protocol.h"
-#include "device/fido/fido_types.h"
-#include "device/fido/public_key_credential_rp_entity.h"
-#include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/public/fido_transport_protocol.h"
+#include "device/fido/public/fido_types.h"
+#include "device/fido/public/public_key_credential_rp_entity.h"
+#include "device/fido/public/public_key_credential_user_entity.h"
 #include "device/fido/virtual_ctap2_device.h"
 #include "device/fido/virtual_fido_device.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -125,7 +125,7 @@ TEST_F(VirtualFidoDeviceAuthenticatorTest,
     EXPECT_TRUE(future.Wait());
     DiscoverableCredentialMetadata expected = DiscoverableCredentialMetadata(
         AuthenticatorType::kOther, kRpId, credential_id,
-        PublicKeyCredentialUserEntity());
+        PublicKeyCredentialUserEntity(), /*provider_name=*/std::nullopt);
     EXPECT_THAT(std::get<0>(future.Get()),
                 testing::UnorderedElementsAre(expected));
     EXPECT_EQ(
@@ -147,10 +147,12 @@ TEST_F(VirtualFidoDeviceAuthenticatorTest,
     authenticator_->GetPlatformCredentialInfoForRequest(
         request, CtapGetAssertionOptions(), future.GetCallback());
     EXPECT_TRUE(future.Wait());
-    DiscoverableCredentialMetadata expected1 = DiscoverableCredentialMetadata(
-        AuthenticatorType::kOther, kRpId, id1, user1);
-    DiscoverableCredentialMetadata expected2 = DiscoverableCredentialMetadata(
-        AuthenticatorType::kOther, kRpId, id2, user2);
+    DiscoverableCredentialMetadata expected1 =
+        DiscoverableCredentialMetadata(AuthenticatorType::kOther, kRpId, id1,
+                                       user1, /*provider_name=*/std::nullopt);
+    DiscoverableCredentialMetadata expected2 =
+        DiscoverableCredentialMetadata(AuthenticatorType::kOther, kRpId, id2,
+                                       user2, /*provider_name=*/std::nullopt);
     EXPECT_THAT(std::get<0>(future.Get()),
                 testing::UnorderedElementsAre(expected1, expected2));
     EXPECT_EQ(

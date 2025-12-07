@@ -2,29 +2,27 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-component("properties") {
+source_set("properties") {
+  visibility = [ "//components/dbus/*" ]
   sources = [
     "dbus_properties.cc",
     "dbus_properties.h",
     "success_barrier_callback.cc",
     "success_barrier_callback.h",
-    "types.cc",
-    "types.h",
   ]
-  defines = [ "IS_DBUS_IMPL" ]
+  defines = [ "IS_COMPONENTS_DBUS_IMPL" ]
   deps = [
     "//base",
     "//base:i18n",
+    "//components/dbus/utils",
   ]
   public_deps = [ "//dbus" ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "success_barrier_callback_unittest.cc",
-    "types_unittest.cc",
-  ]
+  visibility = [ "//components/dbus:unit_tests" ]
+  sources = [ "success_barrier_callback_unittest.cc" ]
   deps = [
     ":properties",
     "//base",

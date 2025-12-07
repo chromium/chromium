@@ -13,77 +13,110 @@ cargo_crate("lib") {
   epoch = "0.11"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/adaptors/coalesce.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/adaptors/map.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/adaptors/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/adaptors/multi_product.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/combinations.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/combinations_with_replacement.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/concat_impl.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/cons_tuples_impl.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/diff.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/duplicates_impl.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/either_or_both.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/exactly_one_err.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/extrema_set.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/flatten_ok.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/format.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/free.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/group_map.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/groupbylazy.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/grouping_map.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/impl_macros.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/intersperse.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/k_smallest.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/kmerge_impl.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/lazy_buffer.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/merge_join.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/minmax.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/multipeek_impl.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/pad_tail.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/peek_nth.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/peeking_take_while.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/permutations.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/powerset.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/process_results_impl.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/put_back_n_impl.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/rciter_impl.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/repeatn.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/size_hint.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/sources.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/take_while_inclusive.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/tee.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/tuple_impl.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/unique_impl.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/unziptuple.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/with_position.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/zip_eq_impl.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/zip_longest.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/src/ziptuple.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/adaptors/coalesce.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/adaptors/map.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/adaptors/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/adaptors/multi_product.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/combinations.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/combinations_with_replacement.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/concat_impl.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/cons_tuples_impl.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/diff.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/duplicates_impl.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/either_or_both.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/exactly_one_err.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/extrema_set.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/flatten_ok.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/format.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/free.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/group_map.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/groupbylazy.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/grouping_map.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/impl_macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/intersperse.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/k_smallest.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/kmerge_impl.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/lazy_buffer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/merge_join.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/minmax.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/multipeek_impl.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/pad_tail.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/peek_nth.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/peeking_take_while.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/permutations.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/powerset.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/process_results_impl.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/put_back_n_impl.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/rciter_impl.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/repeatn.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/size_hint.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/sources.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/take_while_inclusive.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/tee.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/tuple_impl.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/unique_impl.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/unziptuple.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/with_position.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/zip_eq_impl.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/zip_longest.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itertools-v0_11/src/ziptuple.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "0.11.0"
   cargo_pkg_authors = "bluss"
   cargo_pkg_name = "itertools"
   cargo_pkg_description =
       "Extra iterator adaptors, iterator methods, free functions, and macros."
-  library_configs -= [ "//build/config/compiler:chromium_code" ]
-  library_configs += [ "//build/config/compiler:no_chromium_code" ]
-  executable_configs -= [ "//build/config/compiler:chromium_code" ]
-  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
-  proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
-  proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
+  cargo_pkg_repository = "https://github.com/rust-itertools/itertools"
+  cargo_pkg_version = "0.11.0"
+
+  allow_unsafe = true
+
   deps = [ "//third_party/rust/either/v1:lib" ]
   features = [
+    "default",
     "use_alloc",
     "use_std",
   ]
 
+  # Only for usage from third-party crates. Add the crate to
+  # //third_party/rust/chromium_crates_io/Cargo.toml to use
+  # it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
   testonly = true
+
+  #####################################################################
+  # Tweaking which GN `config`s apply to this target.
+
+  # Config changes that apply to all `//third_party/rust` crates.
+  _configs_to_remove = [
+    # We don't need code coverage data for any `chromium_crates_io` crates.
+    "//build/config/coverage:default_coverage",
+
+    # This is third-party code, so remove `chromium_code` config.  We are not
+    # at the same time adding `//build/config/compiler:no_chromium_code`,
+    # because 1) we don't want to pull how warnings are handled by that config
+    # and 2) that config doesn't have any non-warnings-related stuff.
+    "//build/config/compiler:chromium_code",
+  ]
+  _configs_to_add = []
+
+  # Changing (if needed) which configs apply to this specific crate (based on
+  # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from
+  # `gnrt_config.toml`).
+  _configs_to_remove += []
+  _configs_to_add += []
+
+  # Applying config changes.
+  library_configs -= _configs_to_remove
+  library_configs += _configs_to_add
+  executable_configs -= _configs_to_remove
+  executable_configs += _configs_to_add
+  proc_macro_configs -= _configs_to_remove
+  proc_macro_configs += _configs_to_add
 }

@@ -38,7 +38,7 @@ class WaitForHistoryTask : public history::HistoryDBTask {
 
  private:
   base::OnceClosure quit_closure_;
-  ~WaitForHistoryTask() override {}
+  ~WaitForHistoryTask() override = default;
 };
 
 }  // namespace

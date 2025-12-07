@@ -6,8 +6,7 @@
 
 namespace media {
 
-VideoCaptureGpuChannelHost::VideoCaptureGpuChannelHost()
-    : gpu_buffer_manager_(nullptr) {}
+VideoCaptureGpuChannelHost::VideoCaptureGpuChannelHost() = default;
 
 VideoCaptureGpuChannelHost::~VideoCaptureGpuChannelHost() = default;
 
@@ -17,27 +16,16 @@ VideoCaptureGpuChannelHost& VideoCaptureGpuChannelHost::GetInstance() {
   return *instance;
 }
 
-void VideoCaptureGpuChannelHost::SetGpuMemoryBufferManager(
-    gpu::GpuMemoryBufferManager* gbm) {
-  base::AutoLock lock(lock_);
-  gpu_buffer_manager_ = gbm;
-}
-
-gpu::GpuMemoryBufferManager*
-VideoCaptureGpuChannelHost::GetGpuMemoryBufferManager() {
-  base::AutoLock lock(lock_);
-  return gpu_buffer_manager_;
-}
-
 void VideoCaptureGpuChannelHost::SetSharedImageInterface(
     scoped_refptr<gpu::SharedImageInterface> shared_image_interface) {
   base::AutoLock lock(lock_);
   shared_image_interface_ = std::move(shared_image_interface);
 }
 
-gpu::SharedImageInterface* VideoCaptureGpuChannelHost::SharedImageInterface() {
+scoped_refptr<gpu::SharedImageInterface>
+VideoCaptureGpuChannelHost::GetSharedImageInterface() {
   base::AutoLock lock(lock_);
-  return shared_image_interface_.get();
+  return shared_image_interface_;
 }
 
 void VideoCaptureGpuChannelHost::OnContextLost() {

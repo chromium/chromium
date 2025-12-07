@@ -62,7 +62,7 @@ bool SVGStaticStringList::IsAnimating() const {
 }
 
 void SVGStaticStringList::SetAnimatedValue(SVGPropertyBase*) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 SVGStringListTearOff* SVGStaticStringList::TearOff() {
@@ -72,8 +72,9 @@ SVGStringListTearOff* SVGStaticStringList::TearOff() {
 }
 
 SVGParsingError SVGStaticStringList::AttributeChanged(const String& value) {
-  ClearBaseValueNeedsSynchronization();
-  return value_->SetValueAsString(value);
+  return UpdateBaseValueFromAttribute(
+      *value_, value,
+      [](const SVGStringListBase&) { return SVGParseStatus::kNoError; });
 }
 
 }  // namespace blink

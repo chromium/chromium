@@ -18,7 +18,7 @@ namespace {
 
 // Returns true if navigation URL host is google.com or www.google.com.
 bool IsGoogleUrl(const GURL& url) {
-  return url.host() == "google.com" || url.host() == "www.google.com";
+  return url.GetHost() == "google.com" || url.GetHost() == "www.google.com";
 }
 
 }  // namespace
@@ -46,11 +46,16 @@ const char kBreadcrumbPageLoadFailure[] = "#failure";
 const char kBreadcrumbRendererInitiatedByUser[] = "#renderer-user";
 const char kBreadcrumbRendererInitiatedByScript[] = "#renderer-script";
 
-BreadcrumbManagerTabHelper::BreadcrumbManagerTabHelper(
-    infobars::InfoBarManager* infobar_manager) {
+// static
+int BreadcrumbManagerTabHelper::ReserveUniqueId() {
   static int next_unique_id = 1;
-  unique_id_ = next_unique_id++;
+  return next_unique_id++;
+}
 
+BreadcrumbManagerTabHelper::BreadcrumbManagerTabHelper(
+    infobars::InfoBarManager* infobar_manager,
+    int unique_id)
+    : unique_id_(unique_id) {
   infobar_manager_ = infobar_manager;
   infobar_observation_.Observe(infobar_manager_.get());
 }
@@ -191,7 +196,7 @@ void BreadcrumbManagerTabHelper::OnInfoBarReplaced(
   }
 }
 
-void BreadcrumbManagerTabHelper::OnManagerShuttingDown(
+void BreadcrumbManagerTabHelper::OnManagerWillBeDestroyed(
     infobars::InfoBarManager* manager) {
   DCHECK_EQ(infobar_manager_, manager);
   DCHECK(infobar_observation_.IsObservingSource(manager));

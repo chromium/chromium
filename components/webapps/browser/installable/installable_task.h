@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_WEBAPPS_BROWSER_INSTALLABLE_INSTALLABLE_TASK_H_
 #define COMPONENTS_WEBAPPS_BROWSER_INSTALLABLE_INSTALLABLE_TASK_H_
 
+#include <vector>
+
 #include "base/memory/weak_ptr.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_data_fetcher.h"
@@ -15,7 +17,6 @@
 
 namespace content {
 class WebContents;
-class ServiceWorkerContext;
 }  // namespace content
 
 namespace webapps {
@@ -28,7 +29,6 @@ class InstallableManager;
 class InstallableTask {
  public:
   InstallableTask(content::WebContents* web_contents,
-                  content::ServiceWorkerContext* service_worker_context,
                   base::WeakPtr<InstallableManager> installable_manager,
                   const InstallableParams& params,
                   InstallableCallback callback,
@@ -50,8 +50,6 @@ class InstallableTask {
  private:
   void IncrementStateAndWorkOnNextTask();
   void OnFetchedData(InstallableStatusCode code);
-
-  void OnWaitingForServiceWorker();
 
   // Evaluater.
   void CheckEligibility();
@@ -75,8 +73,7 @@ class InstallableTask {
     kCheckInstallability = 4,
     kFetchPrimaryIcon = 5,
     kFetchScreenshots = 6,
-    kCheckServiceWorker = 7,
-    kComplete = 8,
+    kComplete = 7,
     kMaxState
   };
   // The current running evaluation state. The order of the |State| enum above

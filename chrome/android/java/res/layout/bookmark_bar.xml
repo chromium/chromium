@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<org.chromium.chrome.browser.bookmarks.bar.BookmarkBar
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/bookmark_bar_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical|end"
+    android:orientation="vertical">
+
+  <FrameLayout
+      android:id="@+id/bookmark_bar_content_container"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:minHeight="@dimen/bookmark_bar_min_height"
+      android:paddingStart="@dimen/bookmark_bar_padding"
+      android:paddingEnd="@dimen/bookmark_bar_padding"
+      android:paddingBottom="@dimen/bookmark_bar_padding">
+
+    <!-- Note: This view should never have padding or margins to minimize snapshot memory cost. -->
+    <org.chromium.components.browser_ui.widget.ViewResourceFrameLayout
+        android:id="@+id/bookmark_bar_view_resource_frame_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:orientation="horizontal"
+          android:gravity="center_vertical">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/bookmark_bar_items_container"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <include
+            android:id="@+id/bookmark_bar_overflow_button"
+            layout="@layout/bookmark_bar_overflow_button_wrapper"
+            android:layout_width="@dimen/bookmark_bar_overflow_button_height_total"
+            android:layout_height="@dimen/bookmark_bar_overflow_button_height_total"
+            android:layout_marginStart="@dimen/bookmark_bar_overflow_button_margin_start" />
+
+        <View
+            android:id="@+id/bookmark_bar_divider"
+            android:layout_width="@dimen/bookmark_bar_divider_width"
+            android:layout_height="@dimen/bookmark_bar_divider_height"
+            android:layout_marginHorizontal="@dimen/bookmark_bar_overflow_button_margin_start"
+            android:background="@drawable/divider_line_bg" />
+
+        <include
+            android:id="@+id/bookmark_bar_all_bookmarks_button"
+            layout="@layout/bookmark_bar_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+      </LinearLayout>
+
+    </org.chromium.components.browser_ui.widget.ViewResourceFrameLayout>
+
+  </FrameLayout>
+
+  <ImageView
+      android:id="@+id/bookmark_bar_hairline"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:importantForAccessibility="no"
+      android:scaleType="fitXY"
+      android:src="@drawable/toolbar_hairline" />
+
+</org.chromium.chrome.browser.bookmarks.bar.BookmarkBar>

@@ -15,7 +15,6 @@
 #include "chrome/browser/enterprise/remote_commands/user_remote_commands_service.h"
 #include "chrome/browser/enterprise/remote_commands/user_remote_commands_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
-#include "chrome/browser/policy/cloud/user_policy_signin_service_internal.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -40,9 +39,6 @@
 #include "user_policy_signin_service.h"
 
 namespace policy {
-namespace internal {
-bool g_force_prohibit_signout_for_tests = false;
-}
 
 ProfileManagerObserverBridge::ProfileManagerObserverBridge(
     UserPolicySigninService* user_policy_signin_service)
@@ -87,19 +83,19 @@ UserPolicySigninService::UserPolicySigninService(
   }
 }
 
-UserPolicySigninService::~UserPolicySigninService() {
-}
+UserPolicySigninService::~UserPolicySigninService() = default;
 
 void UserPolicySigninService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  if (profile_manager && IsSignoutEvent(event)) {
-    UpdateProfileAttributesWhenSignout(profile_, profile_manager);
-    ShutdownCloudPolicyManager();
-  } else if (IsTurnOffSyncEvent(event) &&
-             !CanApplyPolicies(/*check_for_refresh_token=*/true)) {
+  if (IsSignoutEvent(event)) {
+    if (ProfileManager* profile_manager =
+            g_browser_process->profile_manager()) {
+      // `ProfileManager` may be null in tests.
+      UpdateProfileAttributesWhenSignout(profile_, profile_manager);
+    }
     ShutdownCloudPolicyManager();
   }
+
   if (!IsAnySigninEvent(event))
     return;
 
@@ -160,7 +156,6 @@ void UserPolicySigninService::InitializeCloudPolicyManager(
   if (remote_command_service) {
     remote_command_service->Init();
   }
-  ProhibitSignoutIfNeeded();
 }
 
 void UserPolicySigninService::Shutdown() {
@@ -184,45 +179,6 @@ void UserPolicySigninService::OnProfileUserManagementAcceptanceChanged(
     const base::FilePath& profile_path) {
   if (CanApplyPolicies(/*check_for_refresh_token=*/true))
     TryInitializeForSignedInUser();
-}
-
-void UserPolicySigninService::ProhibitSignoutIfNeeded() {
-  if ((!policy_manager() || !policy_manager()->IsClientRegistered()) &&
-      !internal::g_force_prohibit_signout_for_tests) {
-    return;
-  }
-
-  DVLOG(1) << "User is registered for policy - prohibiting signout";
-  bool has_sync_account =
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync);
-
-  if (!chrome::enterprise_util::UserAcceptedAccountManagement(profile_) &&
-      has_sync_account) {
-    // Ensure user accepted management bit is set.
-    chrome::enterprise_util::SetUserAcceptedAccountManagement(profile_, true);
-  }
-
-#if DCHECK_IS_ON()
-  // Setting the user accepted management bit should be enough to prohibit
-  // signout.
-  // The user accepted management bit is set in the profile storage. If there
-  // is no profile storage, the bit will not be set.
-  if (!base::FeatureList::IsEnabled(kDisallowManagedProfileSignout) &&
-      has_sync_account &&
-      chrome::enterprise_util::UserAcceptedAccountManagement(profile_)) {
-    auto* signin_client = ChromeSigninClientFactory::GetForProfile(profile_);
-    DCHECK(!signin_client->IsRevokeSyncConsentAllowed());
-    DCHECK(!signin_client->IsClearPrimaryAccountAllowed(
-        /*has_sync_account=*/true));
-  }
-
-  if (base::FeatureList::IsEnabled(kDisallowManagedProfileSignout) &&
-      chrome::enterprise_util::UserAcceptedAccountManagement(profile_)) {
-    auto* sigin_client = ChromeSigninClientFactory::GetForProfile(profile_);
-    DCHECK(sigin_client->IsRevokeSyncConsentAllowed());
-    DCHECK(!sigin_client->IsClearPrimaryAccountAllowed(has_sync_account));
-  }
-#endif
 }
 
 void UserPolicySigninService::OnProfileReady(Profile* profile) {
@@ -268,7 +224,7 @@ bool UserPolicySigninService::CanApplyPolicies(bool check_for_refresh_token) {
   }
 
   return (profile_can_be_managed_for_testing_ ||
-          chrome::enterprise_util::ProfileCanBeManaged(profile_));
+          enterprise_util::ProfileCanBeManaged(profile_));
 }
 
 CloudPolicyClient::DeviceDMTokenCallback

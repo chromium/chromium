@@ -1,0 +1,92 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
+
+assert(!is_android && !is_ios)
+
+mojom("mojo_bindings") {
+  sources = [ "composebox.mojom" ]
+  webui_module_path = "/"
+
+  public_deps = [
+    "//components/omnibox/browser:mojo_bindings",
+    "//components/omnibox/composebox:mojo_bindings",
+    "//mojo/public//mojom/base",
+  ]
+}
+
+build_webui("build") {
+  grd_prefix = "cr_components_composebox"
+  ts_files = [
+    "common.ts",
+    "composebox.html.ts",
+    "composebox.ts",
+    "composebox_voice_search.ts",
+    "composebox_voice_search.html.ts",
+    "composebox_tool_chip.html.ts",
+    "composebox_tool_chip.ts",
+    "composebox_dropdown.html.ts",
+    "composebox_dropdown.ts",
+    "composebox_match.ts",
+    "composebox_match.html.ts",
+    "composebox_proxy.ts",
+    "composebox_tab_favicon.ts",
+    "context_menu_entrypoint.html.ts",
+    "context_menu_entrypoint.ts",
+    "contextual_entrypoint_and_carousel.html.ts",
+    "contextual_entrypoint_and_carousel.ts",
+    "error_scrim.html.ts",
+    "error_scrim.ts",
+    "recent_tab_chip.ts",
+    "recent_tab_chip.html.ts",
+    "file_carousel.html.ts",
+    "file_carousel.ts",
+    "file_thumbnail.ts",
+    "file_thumbnail.html.ts",
+    "icons.html.ts",
+    "window_proxy.ts",
+  ]
+  css_files = [
+    "composebox.css",
+    "composebox_voice_search.css",
+    "composebox_tool_chip.css",
+    "composebox_dropdown.css",
+    "composebox_match.css",
+    "composebox_tab_favicon.css",
+    "context_menu_entrypoint.css",
+    "contextual_entrypoint_and_carousel.css",
+    "error_scrim.css",
+    "recent_tab_chip.css",
+    "file_carousel.css",
+    "file_thumbnail.css",
+  ]
+
+  mojo_files_deps = [
+    ":mojo_bindings_ts__generator",
+    "//components/omnibox/browser:mojo_bindings_ts__generator",
+    "//components/omnibox/composebox:mojo_bindings_ts__generator",
+  ]
+  mojo_files = [
+    "$root_gen_dir/components/omnibox/composebox/composebox_query.mojom-webui.ts",
+    "$root_gen_dir/ui/webui/resources/cr_components/composebox/composebox.mojom-webui.ts",
+  ]
+
+  ts_out_dir = "$root_gen_dir/ui/webui/resources/tsc/cr_components/composebox"
+  ts_tsconfig_base = "tsconfig_base.json"
+  ts_composite = true
+  ts_definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
+  ts_deps = [
+    "//third_party/lit/v3_0:build_ts",
+    "//ui/webui/resources/cr_components/localized_link:build_ts",
+    "//ui/webui/resources/cr_components/search:build_ts",
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+  webui_context_type = "relative"
+  generate_grdp = true
+  grd_resource_path_prefix = rebase_path(".", "//ui/webui/resources")
+}

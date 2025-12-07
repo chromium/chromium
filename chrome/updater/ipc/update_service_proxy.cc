@@ -19,6 +19,7 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/update_service.h"
+#include "components/policy/core/common/policy_types.h"
 
 namespace updater {
 namespace {
@@ -74,10 +75,11 @@ void UpdateServiceProxy::GetVersion(
       base::Version(), 1));
 }
 
-void UpdateServiceProxy::FetchPolicies(base::OnceCallback<void(int)> callback) {
+void UpdateServiceProxy::FetchPolicies(policy::PolicyFetchReason reason,
+                                       base::OnceCallback<void(int)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto call =
-      base::BindRepeating(&UpdateServiceProxyImpl::FetchPolicies, proxy_);
+  auto call = base::BindRepeating(&UpdateServiceProxyImpl::FetchPolicies,
+                                  proxy_, reason);
   call.Run(base::BindOnce(static_cast<DoneFunc<int>>(&CallDone),
                           base::WrapRefCounted(this), call, std::move(callback),
                           kErrorIpcDisconnect, 1));
@@ -124,12 +126,13 @@ void UpdateServiceProxy::CheckForUpdate(
     const std::string& app_id,
     UpdateService::Priority priority,
     PolicySameVersionUpdate policy_same_version_update,
-    StateChangeCallback state_update,
-    Callback callback) {
+    const std::string& language,
+    base::RepeatingCallback<void(const UpdateState&)> state_update,
+    base::OnceCallback<void(Result)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto call = base::BindRepeating(&UpdateServiceProxyImpl::CheckForUpdate,
-                                  proxy_, app_id, priority,
-                                  policy_same_version_update, state_update);
+  auto call = base::BindRepeating(
+      &UpdateServiceProxyImpl::CheckForUpdate, proxy_, app_id, priority,
+      policy_same_version_update, language, state_update);
   call.Run(
       base::BindOnce(static_cast<DoneFunc<UpdateService::Result>>(&CallDone),
                      base::WrapRefCounted(this), call, std::move(callback),
@@ -141,20 +144,22 @@ void UpdateServiceProxy::Update(
     const std::string& install_data_index,
     Priority priority,
     PolicySameVersionUpdate policy_same_version_update,
-    StateChangeCallback state_update,
-    Callback callback) {
+    const std::string& language,
+    base::RepeatingCallback<void(const UpdateState&)> state_update,
+    base::OnceCallback<void(Result)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto call = base::BindRepeating(&UpdateServiceProxyImpl::Update, proxy_,
-                                  app_id, install_data_index, priority,
-                                  policy_same_version_update, state_update);
+  auto call = base::BindRepeating(
+      &UpdateServiceProxyImpl::Update, proxy_, app_id, install_data_index,
+      priority, policy_same_version_update, language, state_update);
   call.Run(
       base::BindOnce(static_cast<DoneFunc<UpdateService::Result>>(&CallDone),
                      base::WrapRefCounted(this), call, std::move(callback),
                      UpdateService::Result::kIPCConnectionFailed, 1));
 }
 
-void UpdateServiceProxy::UpdateAll(StateChangeCallback state_update,
-                                   Callback callback) {
+void UpdateServiceProxy::UpdateAll(
+    base::RepeatingCallback<void(const UpdateState&)> state_update,
+    base::OnceCallback<void(Result)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto call = base::BindRepeating(&UpdateServiceProxyImpl::UpdateAll, proxy_,
                                   state_update);
@@ -164,16 +169,19 @@ void UpdateServiceProxy::UpdateAll(StateChangeCallback state_update,
                      UpdateService::Result::kIPCConnectionFailed, 1));
 }
 
-void UpdateServiceProxy::Install(const RegistrationRequest& registration,
-                                 const std::string& client_install_data,
-                                 const std::string& install_data_index,
-                                 Priority priority,
-                                 StateChangeCallback state_update,
-                                 Callback callback) {
+void UpdateServiceProxy::Install(
+    const RegistrationRequest& registration,
+    const std::string& client_install_data,
+    const std::string& install_data_index,
+    Priority priority,
+    const std::string& language,
+    base::RepeatingCallback<void(const UpdateState&)> state_update,
+    base::OnceCallback<void(Result)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto call = base::BindRepeating(&UpdateServiceProxyImpl::Install, proxy_,
-                                  registration, client_install_data,
-                                  install_data_index, priority, state_update);
+  auto call =
+      base::BindRepeating(&UpdateServiceProxyImpl::Install, proxy_,
+                          registration, client_install_data, install_data_index,
+                          priority, language, state_update);
   call.Run(
       base::BindOnce(static_cast<DoneFunc<UpdateService::Result>>(&CallDone),
                      base::WrapRefCounted(this), call, std::move(callback),
@@ -185,17 +193,19 @@ void UpdateServiceProxy::CancelInstalls(const std::string& app_id) {
   proxy_->CancelInstalls(app_id);
 }
 
-void UpdateServiceProxy::RunInstaller(const std::string& app_id,
-                                      const base::FilePath& installer_path,
-                                      const std::string& install_args,
-                                      const std::string& install_data,
-                                      const std::string& install_settings,
-                                      StateChangeCallback state_update,
-                                      Callback callback) {
+void UpdateServiceProxy::RunInstaller(
+    const std::string& app_id,
+    const base::FilePath& installer_path,
+    const std::string& install_args,
+    const std::string& install_data,
+    const std::string& install_settings,
+    const std::string& language,
+    base::RepeatingCallback<void(const UpdateState&)> state_update,
+    base::OnceCallback<void(Result)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto call = base::BindRepeating(&UpdateServiceProxyImpl::RunInstaller, proxy_,
-                                  app_id, installer_path, install_args,
-                                  install_data, install_settings, state_update);
+  auto call = base::BindRepeating(
+      &UpdateServiceProxyImpl::RunInstaller, proxy_, app_id, installer_path,
+      install_args, install_data, install_settings, language, state_update);
   call.Run(
       base::BindOnce(static_cast<DoneFunc<UpdateService::Result>>(&CallDone),
                      base::WrapRefCounted(this), call, std::move(callback),

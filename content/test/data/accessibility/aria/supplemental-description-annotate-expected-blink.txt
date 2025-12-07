@@ -1,0 +1,11 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++heading name='Phone Number: Required question'
+++++++++staticText name='Phone Number:'
+++++++++++inlineTextBox name='Phone Number:'
+++++++++staticText name=' '
+++++++++++inlineTextBox name=' '
+++++++++genericContainer name='Required question'
+++++++++++staticText name='*'
+++++++++++++inlineTextBox name='*'

@@ -23,6 +23,7 @@ GamepadMonitor::~GamepadMonitor() {
 
 // static
 void GamepadMonitor::Create(
+    content::RenderFrameHost*,  // Part of the BinderMapForContext interface.
     mojo::PendingReceiver<mojom::GamepadMonitor> receiver) {
   mojo::MakeSelfOwnedReceiver(std::make_unique<GamepadMonitor>(),
                               std::move(receiver));
@@ -40,9 +41,11 @@ void GamepadMonitor::OnGamepadDisconnected(uint32_t index,
     gamepad_observer_remote_->GamepadDisconnected(index, gamepad);
 }
 
-void GamepadMonitor::OnGamepadChanged(const mojom::GamepadChanges& changes) {
-  if (gamepad_observer_remote_)
-    gamepad_observer_remote_->GamepadChanged(changes.Clone());
+void GamepadMonitor::OnGamepadRawInputChanged(uint32_t index,
+                                              const Gamepad& gamepad) {
+  if (gamepad_observer_remote_) {
+    gamepad_observer_remote_->GamepadRawInputChanged(index, gamepad);
+  }
 }
 
 void GamepadMonitor::GamepadStartPolling(GamepadStartPollingCallback callback) {

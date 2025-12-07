@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/completion_repeating_callback.h"
+#include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/dns/public/host_resolver_results.h"
@@ -129,6 +130,8 @@ class NET_EXPORT_PRIVATE SSLConnectJob : public ConnectJob,
                         HttpAuthController* auth_controller,
                         base::OnceClosure restart_with_auth_callback,
                         ConnectJob* job) override;
+  Error OnDestinationDnsAliasesResolved(const std::set<std::string>& aliases,
+                                        ConnectJob* job) override;
   ConnectionAttempts GetConnectionAttempts() const override;
   ResolveErrorInfo GetResolveErrorInfo() const override;
   bool IsSSLError() const override;
@@ -206,7 +209,7 @@ class NET_EXPORT_PRIVATE SSLConnectJob : public ConnectJob,
   // Any DNS aliases for the remote endpoint. Includes all known aliases, e.g.
   // from A, AAAA, or HTTPS, not just from the address used for the connection,
   // in no particular order. Stored because `nested_connect_job_` has a limited
-  // lifetime and the aliases can no longer be retrieved from there by by the
+  // lifetime and the aliases can no longer be retrieved from there by the
   // time that the aliases are needed to be passed in SetSocket.
   std::set<std::string> dns_aliases_;
 
@@ -217,6 +220,13 @@ class NET_EXPORT_PRIVATE SSLConnectJob : public ConnectJob,
   // If not `std::nullopt`, the ECH retry configs to use in the ECH recovery
   // flow. `endpoint_result_` will then contain the endpoint to reconnect to.
   std::optional<std::vector<uint8_t>> ech_retry_configs_;
+
+  // If not empty, the intersection of the client's trusted TLS Trust Anchor IDs
+  // with those advertised by the server during the handshake, in wire format.
+  // This is the set of Trust Anchor IDs to advertise in the ClientHello when
+  // retrying the connection after receiving an error. When this is non-empty,
+  // `endpoint_result_` will contain the endpoint to reconnect to.
+  std::vector<uint8_t> trust_anchor_ids_for_retry_;
 };
 
 }  // namespace net

@@ -1,0 +1,37 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "enhanced_calendar_service_impl.h",
+    "enhanced_calendar_service_impl.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//components/application_locale_storage",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/signin/public/identity_manager",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/intelligence/enhanced_calendar/constants",
+    "//ios/chrome/browser/intelligence/enhanced_calendar/metrics",
+    "//ios/chrome/browser/intelligence/proto_wrappers",
+    "//ios/chrome/browser/optimization_guide/model",
+    "//ios/chrome/browser/optimization_guide/mojom",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/signin/model",
+    "//ios/web/public",
+  ]
+}
+
+source_set("config") {
+  sources = [
+    "enhanced_calendar_configuration.h",
+    "enhanced_calendar_configuration.mm",
+  ]
+
+  deps = [ "//components/optimization_guide/proto:optimization_guide_proto" ]
+}

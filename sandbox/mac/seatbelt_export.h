@@ -7,11 +7,7 @@
 
 #if defined(COMPONENT_BUILD)
 
-#if defined(SEATBELT_IMPLEMENTATION)
 #define SEATBELT_EXPORT __attribute__((visibility("default")))
-#else
-#define SEATBELT_EXPORT
-#endif  // defined(SEATBELT_IMPLEMENTATION)
 
 #else  // defined(COMPONENT_BUILD)
 

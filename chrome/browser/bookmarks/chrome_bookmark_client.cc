@@ -28,6 +28,7 @@
 #include "components/history/core/browser/url_database.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/power_bookmarks/core/suggested_save_location_provider.h"
+#include "components/signin/public/base/persistent_repeating_timer.h"
 #include "components/sync/base/features.h"
 #include "components/sync_bookmarks/bookmark_model_view.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
@@ -36,6 +37,11 @@
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
 #include "chrome/browser/offline_pages/offline_page_bookmark_observer.h"
 #endif
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace {
 
@@ -123,6 +129,23 @@ void ChromeBookmarkClient::Init(bookmarks::BookmarkModel* model) {
       offline_page_observer_.get());
   model_observation_->Observe(model);
 #endif
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Ensure `BookmarkMergedSurfaceService` is created all the time when
+  // `BookmarkModel` is created and before the `BookmarkModel` completes loading
+  // to catch if `ids_reassigned`. Posting a task is required as
+  // `BookmarkMergedSurfaceServiceFactory` will invoke the factory for the
+  // `BookmarkModel`.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::WeakPtr<Profile> profile) {
+            if (profile) {
+              BookmarkMergedSurfaceServiceFactory::GetForProfile(profile.get());
+            }
+          },
+          profile_->GetWeakPtr()));
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 base::CancelableTaskTracker::TaskId
@@ -205,15 +228,23 @@ void ChromeBookmarkClient::DecodeLocalOrSyncableBookmarkSyncMetadata(
           sync_bookmarks::BookmarkModelViewUsingLocalOrSyncableNodes>(model_));
 }
 
-void ChromeBookmarkClient::DecodeAccountBookmarkSyncMetadata(
+ChromeBookmarkClient::DecodeAccountBookmarkSyncMetadataResult
+ChromeBookmarkClient::DecodeAccountBookmarkSyncMetadata(
     const std::string& metadata_str,
     const base::RepeatingClosure& schedule_save_closure) {
-  if (account_bookmark_sync_service_) {
-    account_bookmark_sync_service_->DecodeBookmarkSyncMetadata(
-        metadata_str, schedule_save_closure,
-        std::make_unique<sync_bookmarks::BookmarkModelViewUsingAccountNodes>(
-            model_));
+  if (!account_bookmark_sync_service_) {
+    return DecodeAccountBookmarkSyncMetadataResult::
+        kMustRemoveAccountPermanentFolders;
   }
+
+  account_bookmark_sync_service_->DecodeBookmarkSyncMetadata(
+      metadata_str, schedule_save_closure,
+      std::make_unique<sync_bookmarks::BookmarkModelViewUsingAccountNodes>(
+          model_));
+  return account_bookmark_sync_service_->IsTrackingMetadata()
+             ? DecodeAccountBookmarkSyncMetadataResult::kSuccess
+             : DecodeAccountBookmarkSyncMetadataResult::
+                   kMustRemoveAccountPermanentFolders;
 }
 
 void ChromeBookmarkClient::OnBookmarkNodeRemovedUndoable(
@@ -222,4 +253,16 @@ void ChromeBookmarkClient::OnBookmarkNodeRemovedUndoable(
     std::unique_ptr<bookmarks::BookmarkNode> node) {
   bookmark_undo_service_->AddUndoEntryForRemovedNode(parent, index,
                                                      std::move(node));
+}
+
+void ChromeBookmarkClient::SchedulePersistentTimerForDailyMetrics(
+    base::RepeatingClosure metrics_callback) {
+  if (PrefService* prefs = profile_->GetPrefs()) {
+    // Periodically records the metrics for local and/or account bookmarks
+    // availability in permanent nodes.
+    repeating_timer_ = std::make_unique<signin::PersistentRepeatingTimer>(
+        prefs, bookmarks::prefs::kBookmarkStorageComputationLastUpdatePref,
+        base::Hours(24), metrics_callback);
+    repeating_timer_->Start();
+  }
 }

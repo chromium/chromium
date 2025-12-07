@@ -6,6 +6,9 @@
 
 #include <windows.h>
 
+#include <algorithm>
+#include <iterator>
+
 #include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/updater/app/app_install_progress.h"
@@ -36,17 +39,20 @@ HRESULT LaunchCmdLine(const AppCompletionInfo& app_info) {
 
 }  // namespace
 
+int GetPriority(CompletionCodes code) {
+  auto it = std::ranges::find(kCompletionCodesActionPriority, code);
+  CHECK_NE(it, std::end(kCompletionCodesActionPriority));
+  return std::distance(std::begin(kCompletionCodesActionPriority), it);
+}
+
 bool LaunchCmdLines(const ObserverCompletionInfo& info) {
   bool result = true;
-
-  for (size_t i = 0; i < info.apps_info.size(); ++i) {
-    const AppCompletionInfo& app_info = info.apps_info[i];
+  for (const AppCompletionInfo& app_info : info.apps_info) {
     if (FAILED(app_info.error_code)) {
       continue;
     }
     result &= SUCCEEDED(LaunchCmdLine(app_info));
   }
-
   return result;
 }
 

@@ -1,6 +1,4 @@
 // Copyright 2017 The Chromium Authors
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/accessibility/ax_enums.h"
 
@@ -37,4 +35,54 @@ STATIC_ASSERT_ENUM(WebAXObjectVectorAttribute::kAriaDetails,
                    AXObjectVectorAttribute::kAriaDetails);
 STATIC_ASSERT_ENUM(WebAXObjectVectorAttribute::kAriaFlowTo,
                    AXObjectVectorAttribute::kAriaFlowTo);
+
+String IgnoredReasonName(AXIgnoredReason reason) {
+  // LINT.IfChange(AXIgnoredReason)
+  // This must be kept in sync with the `AXPropertyName` definition in the
+  // Chrome DevTools protocol.
+  switch (reason) {
+    case kAXActiveFullscreenElement:
+      return "activeFullscreenElement";
+    case kAXActiveModalDialog:
+      return "activeModalDialog";
+    case kAXAriaModalDialog:
+      return "activeAriaModalDialog";
+    case kAXAriaHiddenElement:
+      return "ariaHiddenElement";
+    case kAXAriaHiddenSubtree:
+      return "ariaHiddenSubtree";
+    case kAXEmptyAlt:
+      return "emptyAlt";
+    case kAXEmptyText:
+      return "emptyText";
+    case kAXInertElement:
+      return "inertElement";
+    case kAXInertSubtree:
+      return "inertSubtree";
+    case kAXInertStyle:
+      // TODO(crbug.com/370065759): Should either use "inertStyle" when devtools
+      // can handle that, or just drop kAXInertStyle and use kAXInertElement to
+      // indicate that the computed value of interactivity is 'inert'.
+      return "inertElement";
+    case kAXLabelContainer:
+      return "labelContainer";
+    case kAXLabelFor:
+      return "labelFor";
+    case kAXNotRendered:
+      return "notRendered";
+    case kAXNotVisible:
+      return "notVisible";
+    case kAXPresentational:
+      return "presentationalRole";
+    case kAXProbablyPresentational:
+      return "probablyPresentational";
+    case kAXInactiveCarouselTabContent:
+      return "inactiveCarouselTabContent";
+    case kAXUninteresting:
+      return "uninteresting";
+  }
+  // LINT.ThenChange(//third_party/blink/public/devtools_protocol/domains/Accessibility.pdl:AXIgnoredReason)
+  NOTREACHED();
+}
+
 }  // namespace blink

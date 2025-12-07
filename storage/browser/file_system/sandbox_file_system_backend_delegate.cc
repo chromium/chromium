@@ -25,7 +25,6 @@
 #include "storage/browser/file_system/file_system_operation_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/file_system_usage_cache.h"
-#include "storage/browser/file_system/file_system_util.h"
 #include "storage/browser/file_system/obfuscated_file_util.h"
 #include "storage/browser/file_system/obfuscated_file_util_memory_delegate.h"
 #include "storage/browser/file_system/quota/quota_backend_impl.h"
@@ -44,7 +43,7 @@ namespace storage {
 
 namespace {
 
-int64_t kMinimumStatsCollectionIntervalHours = 1;
+constexpr int64_t kMinimumStatsCollectionIntervalHours = 1;
 
 // For type directory names in ObfuscatedFileUtil.
 // TODO(kinuko,nhiroki): Each type string registration should be done
@@ -140,8 +139,7 @@ std::string SandboxFileSystemBackendDelegate::GetTypeString(
       return kSyncableDirectoryName;
     case kFileSystemTypeUnknown:
     default:
-      NOTREACHED_IN_MIGRATION() << "Unknown filesystem type requested:" << type;
-      return std::string();
+      NOTREACHED() << "Unknown filesystem type requested:" << type;
   }
 }
 
@@ -349,7 +347,7 @@ void SandboxFileSystemBackendDelegate::PerformStorageCleanupOnFileTaskRunner(
 }
 
 std::vector<blink::StorageKey>
-SandboxFileSystemBackendDelegate::GetStorageKeysForTypeOnFileTaskRunner(
+SandboxFileSystemBackendDelegate::GetDefaultStorageKeysOnFileTaskRunner(
     FileSystemType type) {
   DCHECK(file_task_runner_->RunsTasksInCurrentSequence());
   std::unique_ptr<StorageKeyEnumerator> enumerator(

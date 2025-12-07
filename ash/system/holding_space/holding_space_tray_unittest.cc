@@ -8,7 +8,6 @@
 #include <deque>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
@@ -27,6 +26,7 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
+#include "ash/session/test_pref_service_provider.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
@@ -52,6 +52,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
@@ -64,13 +65,15 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/canvas_painter.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/skia_util.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
@@ -103,7 +106,7 @@ HoldingSpaceItem::InProgressCommand CreateInProgressCommand(
     int label_id,
     HoldingSpaceItem::InProgressCommand::Handler handler = base::DoNothing()) {
   return HoldingSpaceItem::InProgressCommand(
-      command_id, label_id, &gfx::kNoneIcon, std::move(handler));
+      command_id, label_id, &gfx::VectorIcon::EmptyIcon(), std::move(handler));
 }
 
 // A wrapper around `views::View::GetVisible()` with a null check for `view`.
@@ -244,7 +247,8 @@ class ViewVisibilityChangedWaiter : public views::ViewObserver {
  private:
   // views::ViewObserver:
   void OnViewVisibilityChanged(views::View* view,
-                               views::View* starting_view) override {
+                               views::View* starting_view,
+                               bool visible) override {
     wait_loop_->Quit();
   }
 
@@ -353,24 +357,26 @@ class ScopedTransformRecordingLayerDelegate : public ui::LayerDelegate {
 
 // HoldingSpaceTrayTestBase ----------------------------------------------------
 
-class HoldingSpaceTrayTestBase : public AshTestBase {
+class HoldingSpaceTrayTestBase : public NoSessionAshTestBase {
  public:
   // AshTestBase:
   void SetUp() override {
-    AshTestBase::SetUp();
-
+    NoSessionAshTestBase::SetUp();
     test_api_ = std::make_unique<HoldingSpaceTestApi>();
+
+    auto pref_service = TestPrefServiceProvider::CreateUserPrefServiceSimple();
+    holding_space_prefs::MarkTimeOfFirstAvailability(pref_service.get());
+
     AccountId user_account = AccountId::FromUserEmail(kTestUser);
     HoldingSpaceController::Get()->RegisterClientAndModelForUser(
         user_account, client(), model());
-    GetSessionControllerClient()->AddUserSession(kTestUser);
-    holding_space_prefs::MarkTimeOfFirstAvailability(
-        GetSessionControllerClient()->GetUserPrefService(user_account));
+
+    SimulateUserLogin({}, user_account, std::move(pref_service));
   }
 
   void TearDown() override {
     test_api_.reset();
-    AshTestBase::TearDown();
+    NoSessionAshTestBase::TearDown();
   }
 
   HoldingSpaceItem* AddItem(
@@ -451,19 +457,15 @@ class HoldingSpaceTrayTestBase : public AshTestBase {
   void SwitchToSecondaryUser(const std::string& user_id,
                              HoldingSpaceClient* client,
                              HoldingSpaceModel* model) {
+    auto pref_service = TestPrefServiceProvider::CreateUserPrefServiceSimple();
+    holding_space_prefs::MarkTimeOfFirstAvailability(pref_service.get());
+    holding_space_prefs::MarkTimeOfFirstAdd(pref_service.get());
+    holding_space_prefs::MarkTimeOfFirstPin(pref_service.get());
+
     AccountId user_account = AccountId::FromUserEmail(user_id);
     HoldingSpaceController::Get()->RegisterClientAndModelForUser(user_account,
                                                                  client, model);
-    GetSessionControllerClient()->AddUserSession(user_id);
-
-    holding_space_prefs::MarkTimeOfFirstAvailability(
-        GetSessionControllerClient()->GetUserPrefService(user_account));
-    holding_space_prefs::MarkTimeOfFirstAdd(
-        GetSessionControllerClient()->GetUserPrefService(user_account));
-    holding_space_prefs::MarkTimeOfFirstPin(
-        GetSessionControllerClient()->GetUserPrefService(user_account));
-
-    GetSessionControllerClient()->SwitchActiveUser(user_account);
+    SimulateUserLogin({user_id}, std::nullopt, std::move(pref_service));
   }
 
   void UnregisterModelForUser(const std::string& user_id) {
@@ -513,11 +515,6 @@ class HoldingSpaceTrayTestBase : public AshTestBase {
 // that inherits from `HoldingSpaceAshTestBase`.
 class HoldingSpaceTrayTest : public HoldingSpaceTrayTestBase {
  public:
-  HoldingSpaceTrayTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kHoldingSpaceSuggestions);
-  }
-
   // Verifies that the user's preferences and the suggestion section's visual
   // appearance match a test's current scenario.
   void VerifySuggestionsSectionState(bool expanded, bool item_present) {
@@ -564,9 +561,6 @@ class HoldingSpaceTrayTest : public HoldingSpaceTrayTestBase {
     EXPECT_EQ(test_api()->GetSuggestionsSectionContainer()->GetVisible(),
               expanded && item_present);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests -----------------------------------------------------------------------
@@ -1005,106 +999,6 @@ TEST_F(HoldingSpaceTrayTest,
   test_api()->Close();
 }
 
-// Until the user has pinned an item, a placeholder should exist in the pinned
-// files bubble which contains a chip to open the Files app.
-TEST_F(HoldingSpaceTrayTest, PlaceholderContainsFilesAppChip) {
-  StartSession(/*pre_mark_time_of_first_add=*/false);
-
-  // The tray button should *not* be shown for users that have never added
-  // anything to the holding space.
-  EXPECT_FALSE(test_api()->IsShowingInShelf());
-
-  // Add a download item. This should cause the tray button to show.
-  AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake"));
-  MarkTimeOfFirstAdd();
-  EXPECT_TRUE(test_api()->IsShowingInShelf());
-
-  // Show the bubble. Both the pinned files and recent files child bubbles
-  // should be shown.
-  test_api()->Show();
-  EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
-  EXPECT_TRUE(test_api()->RecentFilesBubbleShown());
-
-  // A chip to open the Files app should exist in the pinned files bubble.
-  views::View* pinned_files_bubble = test_api()->GetPinnedFilesBubble();
-  ASSERT_TRUE(pinned_files_bubble);
-  views::View* files_app_chip =
-      pinned_files_bubble->GetViewByID(kHoldingSpaceFilesAppChipId);
-  ASSERT_TRUE(files_app_chip);
-
-  // Prior to being acted upon by the user, there should be no events logged to
-  // the Files app chip histogram.
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectBucketCount(
-      "HoldingSpace.FilesAppChip.Action.All",
-      holding_space_metrics::FilesAppChipAction::kClick, 0);
-
-  // Click the chip and expect a call to open the Files app.
-  EXPECT_CALL(*client(), OpenMyFiles);
-  Click(files_app_chip);
-
-  // After having been acted upon by the user, there should be a single click
-  // event logged to the Files app chip histogram.
-  histogram_tester.ExpectBucketCount(
-      "HoldingSpace.FilesAppChip.Action.All",
-      holding_space_metrics::FilesAppChipAction::kClick, 1);
-
-  // Because the holding space model contains a download item, the holding space
-  // tray should still be shown. The recent files bubble should be shown but
-  // pinned files child bubble should have been hidden due to destruction of the
-  // pinned files section placeholder which is no longer relevant.
-  EXPECT_TRUE(test_api()->IsShowingInShelf());
-  EXPECT_FALSE(test_api()->PinnedFilesBubbleShown());
-  EXPECT_TRUE(test_api()->RecentFilesBubbleShown());
-}
-
-// The pinned files section of holding space UI contains a placeholder if the
-// user has never pinned a file. The placeholder contains a Files app chip to
-// take the user to the Files app to pin their first file. Once the user has
-// pressed the Files app chip, the pinned files section placeholder should be
-// permanently hidden.
-TEST_F(HoldingSpaceTrayTest, PlaceholderHiddenAfterFilesAppChipPressed) {
-  StartSession(/*pre_mark_time_of_first_add=*/true);
-
-  // The tray button should be shown because the user has previously added an
-  // item to their holding space.
-  EXPECT_TRUE(test_api()->IsShowingInShelf());
-
-  // Show the bubble. Only the pinned files child bubble should be shown.
-  test_api()->Show();
-  EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
-  EXPECT_FALSE(test_api()->RecentFilesBubbleShown());
-
-  // A chip to open the Files app should exist in the pinned files bubble.
-  views::View* pinned_files_bubble = test_api()->GetPinnedFilesBubble();
-  ASSERT_TRUE(pinned_files_bubble);
-  views::View* files_app_chip =
-      pinned_files_bubble->GetViewByID(kHoldingSpaceFilesAppChipId);
-  ASSERT_TRUE(files_app_chip);
-
-  // Click the chip and expect a call to open the Files app.
-  EXPECT_CALL(*client(), OpenMyFiles);
-  Click(files_app_chip);
-
-  // Because the holding space is completely empty, clicking the Files app chip
-  // should cause the holding space tray and all associated bubbles to hide.
-  EXPECT_FALSE(test_api()->IsShowingInShelf());
-  EXPECT_FALSE(test_api()->PinnedFilesBubbleShown());
-  EXPECT_FALSE(test_api()->RecentFilesBubbleShown());
-
-  // Add a download item. This should cause the tray button to show.
-  AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake"));
-  MarkTimeOfFirstAdd();
-  EXPECT_TRUE(test_api()->IsShowingInShelf());
-
-  // Show holding space UI. Because the Files app chip was previously pressed,
-  // the recent files bubble should be shown but the pinned files bubble should
-  // not.
-  test_api()->Show();
-  EXPECT_FALSE(test_api()->PinnedFilesBubbleShown());
-  EXPECT_TRUE(test_api()->RecentFilesBubbleShown());
-}
-
 // User should be able to expand and collapse the suggestions section by
 // pressing the enter key on the suggestions section header.
 TEST_F(HoldingSpaceTrayTest, EnterKeyTogglesSuggestionsExpanded) {
@@ -1267,11 +1161,8 @@ TEST_F(HoldingSpaceTrayTest, EnterKeyOpensSelectedFiles) {
   EXPECT_FALSE(item_views[2]->selected());
 
   // Press the enter key. We expect the client to open the selected item.
-  EXPECT_CALL(
-      *client(),
-      OpenItems(ElementsAre(item_views[0]->item()),
-                Eq(holding_space_metrics::EventSource::kHoldingSpaceBubble),
-                /*callback=*/_));
+  EXPECT_CALL(*client(),
+              OpenItems(ElementsAre(item_views[0]->item()), /*callback=*/_));
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   testing::Mock::VerifyAndClearExpectations(client());
 
@@ -1281,11 +1172,9 @@ TEST_F(HoldingSpaceTrayTest, EnterKeyOpensSelectedFiles) {
   EXPECT_TRUE(item_views[1]->selected());
 
   // Press the enter key. We expect the client to open the selected items.
-  EXPECT_CALL(
-      *client(),
-      OpenItems(ElementsAre(item_views[0]->item(), item_views[1]->item()),
-                Eq(holding_space_metrics::EventSource::kHoldingSpaceBubble),
-                /*callback=*/_));
+  EXPECT_CALL(*client(), OpenItems(ElementsAre(item_views[0]->item(),
+                                               item_views[1]->item()),
+                                   /*callback=*/_));
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   testing::Mock::VerifyAndClearExpectations(client());
 
@@ -1294,11 +1183,8 @@ TEST_F(HoldingSpaceTrayTest, EnterKeyOpensSelectedFiles) {
 
   // Press the enter key. The client should open only the focused item since
   // it was *not* selected prior to pressing the enter key.
-  EXPECT_CALL(
-      *client(),
-      OpenItems(ElementsAre(item_views[2]->item()),
-                Eq(holding_space_metrics::EventSource::kHoldingSpaceItem),
-                /*callback=*/_));
+  EXPECT_CALL(*client(),
+              OpenItems(ElementsAre(item_views[2]->item()), /*callback=*/_));
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   EXPECT_FALSE(item_views[0]->selected());
   EXPECT_FALSE(item_views[1]->selected());
@@ -1560,15 +1446,11 @@ TEST_F(HoldingSpaceTrayTest, MultiselectInTouchMode) {
   // Tap an unselected view. This is the only way to open an item via touch.
   // There must be *no* views currently selected when tapping a view.
   EXPECT_CALL(*client(), OpenItems)
-      .WillOnce(
-          testing::Invoke([&](const std::vector<const HoldingSpaceItem*>& items,
-                              holding_space_metrics::EventSource event_source,
-                              HoldingSpaceClient::SuccessCallback callback) {
-            ASSERT_EQ(items.size(), 1u);
-            EXPECT_EQ(items[0], item_views[2]->item());
-            EXPECT_EQ(event_source,
-                      holding_space_metrics::EventSource::kHoldingSpaceItem);
-          }));
+      .WillOnce([&](const std::vector<const HoldingSpaceItem*>& items,
+                    HoldingSpaceClient::SuccessCallback callback) {
+        ASSERT_EQ(items.size(), 1u);
+        EXPECT_EQ(items[0], item_views[2]->item());
+      });
   GestureTap(item_views[2]);
   testing::Mock::VerifyAndClearExpectations(client());
 }
@@ -1725,29 +1607,19 @@ TEST_F(HoldingSpaceTrayTest, SelectionWithPrimaryAndSecondaryActions) {
         {CreateInProgressCommand(
              HoldingSpaceCommandId::kCancelItem,
              IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_CANCEL,
-             base::BindLambdaForTesting(
-                 [&](const HoldingSpaceItem* item,
-                     HoldingSpaceCommandId command_id,
-                     holding_space_metrics::EventSource event_source) {
-                   EXPECT_EQ(command_id, HoldingSpaceCommandId::kCancelItem);
-                   EXPECT_EQ(
-                       event_source,
-                       holding_space_metrics::EventSource::kHoldingSpaceItem);
-                   cancelled_items.push_back(item);
-                 })),
+             base::BindLambdaForTesting([&](const HoldingSpaceItem* item,
+                                            HoldingSpaceCommandId command_id) {
+               EXPECT_EQ(command_id, HoldingSpaceCommandId::kCancelItem);
+               cancelled_items.push_back(item);
+             })),
          CreateInProgressCommand(
              HoldingSpaceCommandId::kPauseItem,
              IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_PAUSE,
-             base::BindLambdaForTesting(
-                 [&](const HoldingSpaceItem* item,
-                     HoldingSpaceCommandId command_id,
-                     holding_space_metrics::EventSource event_source) {
-                   EXPECT_EQ(command_id, HoldingSpaceCommandId::kPauseItem);
-                   EXPECT_EQ(
-                       event_source,
-                       holding_space_metrics::EventSource::kHoldingSpaceItem);
-                   paused_items.push_back(item);
-                 }))}));
+             base::BindLambdaForTesting([&](const HoldingSpaceItem* item,
+                                            HoldingSpaceCommandId command_id) {
+               EXPECT_EQ(command_id, HoldingSpaceCommandId::kPauseItem);
+               paused_items.push_back(item);
+             }))}));
   }
 
   // Show UI.
@@ -1877,11 +1749,8 @@ TEST_F(HoldingSpaceTrayTest, OpenItemsViaDoubleClickWithEventModifiers) {
 
   // Double click an item with the control key down. Expect the clicked holding
   // space item to be opened.
-  EXPECT_CALL(
-      *client(),
-      OpenItems(ElementsAre(item_views[0]->item()),
-                Eq(holding_space_metrics::EventSource::kHoldingSpaceItem),
-                /*callback=*/_));
+  EXPECT_CALL(*client(),
+              OpenItems(ElementsAre(item_views[0]->item()), /*callback=*/_));
   DoubleClick(item_views[0], ui::EF_CONTROL_DOWN);
   testing::Mock::VerifyAndClearExpectations(client());
 
@@ -1891,11 +1760,8 @@ TEST_F(HoldingSpaceTrayTest, OpenItemsViaDoubleClickWithEventModifiers) {
 
   // Double click an item with the shift key down. Expect the clicked holding
   // space item to be opened.
-  EXPECT_CALL(
-      *client(),
-      OpenItems(ElementsAre(item_views[0]->item()),
-                Eq(holding_space_metrics::EventSource::kHoldingSpaceItem),
-                /*callback=*/_));
+  EXPECT_CALL(*client(),
+              OpenItems(ElementsAre(item_views[0]->item()), /*callback=*/_));
   DoubleClick(item_views[0], ui::EF_SHIFT_DOWN);
   testing::Mock::VerifyAndClearExpectations(client());
 
@@ -1905,11 +1771,8 @@ TEST_F(HoldingSpaceTrayTest, OpenItemsViaDoubleClickWithEventModifiers) {
 
   // Click a holding space item. Then double click the same item with the
   // control key down. Expect the clicked holding space item to be opened.
-  EXPECT_CALL(
-      *client(),
-      OpenItems(ElementsAre(item_views[0]->item()),
-                Eq(holding_space_metrics::EventSource::kHoldingSpaceItem),
-                /*callback=*/_));
+  EXPECT_CALL(*client(),
+              OpenItems(ElementsAre(item_views[0]->item()), /*callback=*/_));
   Click(item_views[0]);
   DoubleClick(item_views[0], ui::EF_CONTROL_DOWN);
   testing::Mock::VerifyAndClearExpectations(client());
@@ -1920,11 +1783,8 @@ TEST_F(HoldingSpaceTrayTest, OpenItemsViaDoubleClickWithEventModifiers) {
 
   // Click a holding space item. Then double click the same item with the
   // shift key down. Expect the clicked holding space item to be opened.
-  EXPECT_CALL(
-      *client(),
-      OpenItems(ElementsAre(item_views[0]->item()),
-                Eq(holding_space_metrics::EventSource::kHoldingSpaceItem),
-                /*callback=*/_));
+  EXPECT_CALL(*client(),
+              OpenItems(ElementsAre(item_views[0]->item()), /*callback=*/_));
   Click(item_views[0]);
   DoubleClick(item_views[0], ui::EF_SHIFT_DOWN);
   testing::Mock::VerifyAndClearExpectations(client());
@@ -1935,11 +1795,9 @@ TEST_F(HoldingSpaceTrayTest, OpenItemsViaDoubleClickWithEventModifiers) {
 
   // Click a holding space item. Then double click a different item with the
   // control key down. Expect both holding space items to be opened.
-  EXPECT_CALL(
-      *client(),
-      OpenItems(ElementsAre(item_views[0]->item(), item_views[1]->item()),
-                Eq(holding_space_metrics::EventSource::kHoldingSpaceItem),
-                /*callback=*/_));
+  EXPECT_CALL(*client(), OpenItems(ElementsAre(item_views[0]->item(),
+                                               item_views[1]->item()),
+                                   /*callback=*/_));
   Click(item_views[0]);
   DoubleClick(item_views[1], ui::EF_CONTROL_DOWN);
   testing::Mock::VerifyAndClearExpectations(client());
@@ -1950,11 +1808,9 @@ TEST_F(HoldingSpaceTrayTest, OpenItemsViaDoubleClickWithEventModifiers) {
 
   // Click a holding space item. Then double click a different item with the
   // shift key down. Expect both holding space items to be opened.
-  EXPECT_CALL(
-      *client(),
-      OpenItems(ElementsAre(item_views[0]->item(), item_views[1]->item()),
-                Eq(holding_space_metrics::EventSource::kHoldingSpaceItem),
-                /*callback=*/_));
+  EXPECT_CALL(*client(), OpenItems(ElementsAre(item_views[0]->item(),
+                                               item_views[1]->item()),
+                                   /*callback=*/_));
   Click(item_views[0]);
   DoubleClick(item_views[1], ui::EF_SHIFT_DOWN);
   testing::Mock::VerifyAndClearExpectations(client());
@@ -1985,8 +1841,8 @@ TEST_F(HoldingSpaceTrayTest, CloseTrayBubbleAfterDoubleClick) {
 // Verifies that the holding space tray animates in and out as expected.
 TEST_F(HoldingSpaceTrayTest, EnterAndExitAnimations) {
   // Ensure animations are run.
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::FAST_DURATION);
 
   // Prior to session start, the tray should not be showing.
   EXPECT_FALSE(test_api()->IsShowingInShelf());
@@ -2051,8 +1907,7 @@ TEST_F(HoldingSpaceTrayTest, EnterAndExitAnimations) {
   transform_recorder.Reset();
 
   // Lock the screen. The tray should animate out.
-  auto* session_controller =
-      ash_test_helper()->test_session_controller_client();
+  auto* session_controller = GetSessionControllerClient();
   session_controller->SetSessionState(session_manager::SessionState::LOCKED);
   ViewVisibilityChangedWaiter().Wait(tray);
   EXPECT_FALSE(test_api()->IsShowingInShelf());
@@ -2176,8 +2031,8 @@ TEST_F(HoldingSpaceTrayTest, HasExpectedBubbleTreatment) {
 
   // Background.
   auto* background = bubble->GetBackground();
-  ASSERT_TRUE(background);
-  EXPECT_EQ(background->get_color(), SK_ColorTRANSPARENT);
+  ASSERT_FALSE(background);
+  EXPECT_EQ(bubble->layer()->type(), ui::LAYER_NOT_DRAWN);
   EXPECT_EQ(bubble->layer()->background_blur(), 0.f);
 
   // Border.
@@ -2186,13 +2041,6 @@ TEST_F(HoldingSpaceTrayTest, HasExpectedBubbleTreatment) {
   // Corner radius.
   EXPECT_FALSE(bubble->layer()->is_fast_rounded_corner());
   EXPECT_EQ(bubble->layer()->rounded_corner_radii(), gfx::RoundedCornersF(0.f));
-}
-
-TEST_F(HoldingSpaceTrayTest, CheckTrayAccessibilityText) {
-  StartSession(/*pre_mark_time_of_first_add=*/true);
-  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
-  EXPECT_EQ(GetTray()->GetAccessibleNameForTray(),
-            u"Tote: recent screen captures, downloads, and pinned files");
 }
 
 TEST_F(HoldingSpaceTrayTest, TrayButtonWithRefreshIcon) {
@@ -2210,7 +2058,33 @@ TEST_F(HoldingSpaceTrayTest, TrayButtonWithRefreshIcon) {
 TEST_F(HoldingSpaceTrayTest, CheckTrayTooltipText) {
   StartSession(/*pre_mark_time_of_first_add=*/true);
   GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
-  EXPECT_EQ(GetTray()->GetTooltipText(gfx::Point()), u"Tote");
+  EXPECT_EQ(GetTray()->GetRenderedTooltipText(gfx::Point()), u"Tote");
+}
+
+TEST_F(HoldingSpaceTrayTest, AccessibleNames) {
+  StartSession();
+
+  const std::u16string expected_accessible_name = l10n_util::GetStringFUTF16(
+      IDS_ASH_HOLDING_SPACE_A11Y_NAME,
+      l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE));
+
+  {
+    ui::AXNodeData node_data;
+    GetTray()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+              expected_accessible_name);
+  }
+
+  test_api()->Show();
+  views::View* bubble = test_api()->GetBubble();
+  ASSERT_TRUE(bubble);
+
+  {
+    ui::AXNodeData node_data;
+    bubble->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+              expected_accessible_name);
+  }
 }
 
 using HoldingSpacePreviewsTrayTest = HoldingSpaceTrayTestBase;
@@ -3026,7 +2900,6 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(HoldingSpaceItem::Type::kArcDownload,
                       HoldingSpaceItem::Type::kDiagnosticsLog,
                       HoldingSpaceItem::Type::kDownload,
-                      HoldingSpaceItem::Type::kLacrosDownload,
                       HoldingSpaceItem::Type::kNearbyShare,
                       HoldingSpaceItem::Type::kPhoneHubCameraRoll,
                       HoldingSpaceItem::Type::kPrintedPdf,
@@ -3462,20 +3335,11 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest, HasAnimatedProgressIndicators) {
   }
 }
 
-class HoldingSpaceTraySuggestionsFeatureTest
-    : public HoldingSpaceTrayTestBase,
-      public ::testing::WithParamInterface</*suggestions_enabled=*/bool> {
+class HoldingSpaceTraySuggestionsFeatureTest : public HoldingSpaceTrayTestBase {
  public:
-  HoldingSpaceTraySuggestionsFeatureTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kHoldingSpaceSuggestions, IsHoldingSpaceSuggestionsEnabled());
-  }
-
   void SetDisableDrive(bool disable) {
     ON_CALL(*client(), IsDriveDisabled).WillByDefault(testing::Return(disable));
   }
-
-  bool IsHoldingSpaceSuggestionsEnabled() const { return GetParam(); }
 
   bool IsGoogleChromeBranded() const {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -3485,24 +3349,13 @@ class HoldingSpaceTraySuggestionsFeatureTest
 #endif
   }
 
-  bool GSuiteIconsAreVisibleWhenSuggestionsFeatureIsEnabled(
-      const views::View* pinned_files_bubble) const {
-    bool has_icons = pinned_files_bubble->GetViewByID(
+  bool GSuiteIconsAreVisible(const views::View* pinned_files_bubble) const {
+    return pinned_files_bubble->GetViewByID(
         kHoldingSpacePinnedFilesSectionPlaceholderGSuiteIconsId);
-    bool should_have_icons =
-        IsHoldingSpaceSuggestionsEnabled() && IsGoogleChromeBranded();
-    return has_icons == should_have_icons;
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         HoldingSpaceTraySuggestionsFeatureTest,
-                         /*suggestions_enabled=*/testing::Bool());
-
-TEST_P(HoldingSpaceTraySuggestionsFeatureTest,
+TEST_F(HoldingSpaceTraySuggestionsFeatureTest,
        PinnedFilesPlaceholderShowsAfterPinUnpin) {
   StartSession(/*pre_mark_time_of_first_add=*/true);
 
@@ -3523,44 +3376,34 @@ TEST_P(HoldingSpaceTraySuggestionsFeatureTest,
   EXPECT_FALSE(test_api()->PinnedFilesBubbleShown());
   EXPECT_FALSE(test_api()->IsShowingInShelf());
 
-  // Add a downloaded file. Now the pinned placeholder should show if the
-  // suggestions flag is enabled.
+  // Add a downloaded file. Now the pinned placeholder should show.
   AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake2"));
   EXPECT_TRUE(test_api()->IsShowingInShelf());
   test_api()->Show();
   EXPECT_TRUE(test_api()->RecentFilesBubbleShown());
-  EXPECT_EQ(test_api()->PinnedFilesBubbleShown(),
-            IsHoldingSpaceSuggestionsEnabled());
+  EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
 
-  if (test_api()->PinnedFilesBubbleShown()) {
-    views::View* pinned_files_bubble = test_api()->GetPinnedFilesBubble();
-    ASSERT_TRUE(pinned_files_bubble);
-
-    // If the suggestions feature is enabled, then the placeholder with the G
-    // Suite icons should be showing without the Files app chip. Otherwise, the
-    // placeholder shouldn't be showing at all.
-    EXPECT_FALSE(pinned_files_bubble->GetViewByID(kHoldingSpaceFilesAppChipId));
-    EXPECT_TRUE(GSuiteIconsAreVisibleWhenSuggestionsFeatureIsEnabled(
-        pinned_files_bubble));
-  }
+  // The placeholder with the G Suite icons should be showing in branded builds.
+  views::View* pinned_files_bubble = test_api()->GetPinnedFilesBubble();
+  ASSERT_TRUE(pinned_files_bubble);
+  EXPECT_EQ(GSuiteIconsAreVisible(pinned_files_bubble),
+            IsGoogleChromeBranded());
 }
 
-TEST_P(HoldingSpaceTraySuggestionsFeatureTest, TrayDoesNotShowUntilFirstAdd) {
+TEST_F(HoldingSpaceTraySuggestionsFeatureTest, TrayDoesNotShowUntilFirstAdd) {
   StartSession(/*pre_mark_time_of_first_add=*/false);
 
-  // For the suggestions feature, the tray should still not show by default
-  // in the shelf.
+  // The tray should still not show by default in the shelf.
   EXPECT_FALSE(test_api()->IsShowingInShelf());
 
   MarkTimeOfFirstAdd();
-
   EXPECT_TRUE(test_api()->IsShowingInShelf());
 }
 
 // Until the user has pinned an item, a placeholder should exist in the pinned
 // files bubble which contains a prompt to pin files and, in chrome branded
 // builds, G Suite icons.
-TEST_P(HoldingSpaceTraySuggestionsFeatureTest,
+TEST_F(HoldingSpaceTraySuggestionsFeatureTest,
        PlaceholderContainsGSuitePrompt) {
   StartSession(/*pre_mark_time_of_first_add=*/true);
 
@@ -3569,7 +3412,7 @@ TEST_P(HoldingSpaceTraySuggestionsFeatureTest,
   EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
   EXPECT_FALSE(test_api()->RecentFilesBubbleShown());
 
-  // The new suggestions placeholder text and icons should exist in the pinned
+  // The suggestions placeholder text and icons should exist in the pinned
   // files bubble.
   views::View* pinned_files_bubble = test_api()->GetPinnedFilesBubble();
   ASSERT_TRUE(pinned_files_bubble);
@@ -3580,14 +3423,13 @@ TEST_P(HoldingSpaceTraySuggestionsFeatureTest,
   ASSERT_TRUE(suggestions_placeholder_label);
 
   std::u16string expected_text =
-      IsHoldingSpaceSuggestionsEnabled()
-          ? l10n_util::GetStringUTF16(
-                IDS_ASH_HOLDING_SPACE_PINNED_EMPTY_PROMPT_SUGGESTIONS)
-          : l10n_util::GetStringUTF16(
-                IDS_ASH_HOLDING_SPACE_PINNED_EMPTY_PROMPT);
+      l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_PINNED_EMPTY_PROMPT);
   EXPECT_EQ(suggestions_placeholder_label->GetText(), expected_text);
 
-  // Also check to make sure that the label is adjusted when drive is disabled.
+  EXPECT_EQ(GSuiteIconsAreVisible(pinned_files_bubble),
+            IsGoogleChromeBranded());
+
+  // Check to make sure that the placeholder is adjusted when drive is disabled.
   test_api()->Close();
   SetDisableDrive(true);
   test_api()->Show();
@@ -3599,19 +3441,12 @@ TEST_P(HoldingSpaceTraySuggestionsFeatureTest,
       static_cast<views::Label*>(pinned_files_bubble->GetViewByID(
           kHoldingSpacePinnedFilesSectionPlaceholderLabelId));
   ASSERT_TRUE(suggestions_placeholder_label);
-  expected_text =
-      IsHoldingSpaceSuggestionsEnabled()
-          ? l10n_util::GetStringUTF16(
-                IDS_ASH_HOLDING_SPACE_PINNED_EMPTY_PROMPT_SUGGESTIONS_DRIVE_DISABLED)
-          : l10n_util::GetStringUTF16(
-                IDS_ASH_HOLDING_SPACE_PINNED_EMPTY_PROMPT);
+  expected_text = l10n_util::GetStringUTF16(
+      IDS_ASH_HOLDING_SPACE_PINNED_EMPTY_PROMPT_DRIVE_DISABLED);
   EXPECT_EQ(suggestions_placeholder_label->GetText(), expected_text);
 
-  bool has_files_app_chip =
-      pinned_files_bubble->GetViewByID(kHoldingSpaceFilesAppChipId);
-  EXPECT_NE(has_files_app_chip, IsHoldingSpaceSuggestionsEnabled());
-  EXPECT_TRUE(GSuiteIconsAreVisibleWhenSuggestionsFeatureIsEnabled(
-      pinned_files_bubble));
+  EXPECT_EQ(GSuiteIconsAreVisible(pinned_files_bubble),
+            IsGoogleChromeBranded());
 }
 
 // Base class for holding space tray tests which make assertions about primary
@@ -3820,15 +3655,8 @@ TEST_P(HoldingSpaceTrayPrimaryAndSecondaryActionsTest, HasExpectedActions) {
 // appropriate.
 class HoldingSpaceTrayVisibilityTest
     : public HoldingSpaceAshTestBase,
-      public testing::WithParamInterface<
-          std::tuple<HoldingSpaceItem::Type,
-                     /*suggestions_enabled=*/bool>> {
+      public testing::WithParamInterface<std::tuple<HoldingSpaceItem::Type>> {
  public:
-  HoldingSpaceTrayVisibilityTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kHoldingSpaceSuggestions, IsHoldingSpaceSuggestionsEnabled());
-  }
-
   void SetUp() override {
     HoldingSpaceAshTestBase::SetUp();
     test_api_ = std::make_unique<HoldingSpaceTestApi>();
@@ -3842,22 +3670,16 @@ class HoldingSpaceTrayVisibilityTest
   // Returns the parameterized holding space item type.
   HoldingSpaceItem::Type GetType() const { return std::get<0>(GetParam()); }
 
-  bool IsHoldingSpaceSuggestionsEnabled() const {
-    return std::get<1>(GetParam());
-  }
-
   HoldingSpaceTestApi* test_api() { return test_api_.get(); }
 
  private:
   std::unique_ptr<HoldingSpaceTestApi> test_api_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     HoldingSpaceTrayVisibilityTest,
-    testing::Combine(testing::ValuesIn(holding_space_util::GetAllItemTypes()),
-                     /*suggestions_enabled=*/testing::Bool()));
+    testing::Combine(testing::ValuesIn(holding_space_util::GetAllItemTypes())));
 
 TEST_P(HoldingSpaceTrayVisibilityTest, TrayShowsForCorrectItemTypes) {
   // Partially initialized items should not cause the tray to show.

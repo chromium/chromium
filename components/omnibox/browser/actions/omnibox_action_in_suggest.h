@@ -7,16 +7,17 @@
 
 #include <optional>
 
+#include "base/gtest_prod_util.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/search_engines/template_url.h"
 #include "components/strings/grit/components_strings.h"
-#include "third_party/omnibox_proto/entity_info.pb.h"
+#include "third_party/omnibox_proto/suggest_template_info.pb.h"
 
 class OmniboxActionInSuggest : public OmniboxAction {
  public:
   OmniboxActionInSuggest(
-      omnibox::ActionInfo action_info,
+      omnibox::SuggestTemplateInfo::TemplateAction template_action,
       std::optional<TemplateURLRef::SearchTermsArgs> search_terms_args);
 
 #if BUILDFLAG(IS_ANDROID)
@@ -28,7 +29,7 @@ class OmniboxActionInSuggest : public OmniboxAction {
   void Execute(ExecutionContext& context) const override;
   OmniboxActionId ActionId() const override;
 
-  omnibox::ActionInfo::ActionType Type() const;
+  omnibox::SuggestTemplateInfo_TemplateAction_ActionType Type() const;
 
   // Downcasts the given OmniboxAction to an OmniboxActionInSuggest if the
   // supplied instance represents one, otherwise returns nullptr.
@@ -37,11 +38,18 @@ class OmniboxActionInSuggest : public OmniboxAction {
   // Static function that registers that an action with a specified type was
   // shown or used. This function can be employed when avoiding the use of the
   // action cpp pointer.
-  static void RecordShownAndUsedMetrics(omnibox::ActionInfo::ActionType type,
-                                        bool used);
+  static void RecordShownAndUsedMetrics(
+      omnibox::SuggestTemplateInfo_TemplateAction_ActionType type,
+      bool used);
 
-  omnibox::ActionInfo action_info{};
-  std::optional<TemplateURLRef::SearchTermsArgs> search_terms_args{};
+  omnibox::SuggestTemplateInfo::TemplateAction template_action;
+  std::optional<TemplateURLRef::SearchTermsArgs> search_terms_args;
+  int tab_id = 0;
+
+ protected:
+  FRIEND_TEST_ALL_PREFIXES(OmniboxActionInSuggestTest, ShowAsActionButton);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxActionInSuggestTest,
+                           ShowAsActionButtonForTabSwitch);
 
  private:
   ~OmniboxActionInSuggest() override;

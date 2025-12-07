@@ -2,11 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//testing/test.gni")
 
-assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //ash")
 
 # To add a unit test to this target, make a "unit_test" source_set in your
 # component and add a reference here.
@@ -20,6 +19,8 @@ test("ash_webui_unittests") {
   ]
 
   deps = [
+    "//ash/constants",
+    "//ash/webui/boca_receiver_app_ui:unit_tests",
     "//ash/webui/boca_ui:unit_tests",
     "//ash/webui/camera_app_ui:unit_tests",
     "//ash/webui/common/backend:unit_tests",
@@ -30,6 +31,7 @@ test("ash_webui_unittests") {
     "//ash/webui/eche_app_ui:unit_tests",
     "//ash/webui/eche_app_ui/mojom:unit_tests",
     "//ash/webui/file_manager:unit_tests",
+    "//ash/webui/graduation:unit_tests",
     "//ash/webui/help_app_ui:unit_tests",
     "//ash/webui/metrics:unit_tests",
     "//ash/webui/os_feedback_ui/backend:unit_tests",
@@ -48,9 +50,11 @@ test("ash_webui_unittests") {
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
+    "//content/test:test_support",
     "//mojo/core/embedder",
-    "//ui/base:base",
-    "//ui/color:color",
+    "//ui/accessibility:test_support",
+    "//ui/base",
+    "//ui/color",
     "//ui/gl",
     "//ui/gl:test_support",
   ]
@@ -67,10 +71,8 @@ group("closure_compile") {
   testonly = true
   deps = [
     "//ash/webui/common:closure_compile",
-    "//ash/webui/demo_mode_app_ui:closure_compile",
     "//ash/webui/eche_app_ui:closure_compile",
     "//ash/webui/file_manager/untrusted_resources:closure_compile",
-    "//ash/webui/files_internals:closure_compile",
     "//ash/webui/media_app_ui:closure_compile",
     "//ash/webui/multidevice_debug/resources:closure_compile",
     "//ash/webui/projector_app/resources:closure_compile",

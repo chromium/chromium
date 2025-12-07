@@ -5,17 +5,16 @@
 #ifndef COMPONENTS_ASSIST_RANKER_RANKER_MODEL_LOADER_IMPL_H_
 #define COMPONENTS_ASSIST_RANKER_RANKER_MODEL_LOADER_IMPL_H_
 
-#include "components/assist_ranker/ranker_model_loader.h"
-
 #include <memory>
 #include <string>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "components/assist_ranker/ranker_model_loader.h"
 #include "url/gurl.h"
 
 namespace base {

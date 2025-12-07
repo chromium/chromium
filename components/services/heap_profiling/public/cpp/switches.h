@@ -17,6 +17,7 @@ extern const char kMemlogModeMinimal[];
 extern const char kMemlogModeRendererSampling[];
 extern const char kMemlogModeUtilityAndBrowser[];
 extern const char kMemlogModeUtilitySampling[];
+extern const char kMemlogModeAllUtilities[];
 
 extern const char kMemlogSamplingRate[];
 extern const char kMemlogSamplingRate10KB[];

@@ -1,0 +1,31 @@
+{
+  parameters: {
+    status: {
+      valid_values: ["stable", "experimental", "test"],
+      valid_keys: ["Android", "Win", "ChromeOS", "Mac", "Linux", "iOS"]
+    },
+    origin_trial_feature_name: {
+    },
+    browser_process_read_write_access: {
+      default: false,
+      value_type: "bool",
+    },
+  },
+
+  data: [
+    {
+      name: "Feature1",
+      browser_process_read_write_access: true,
+      status: "stable",
+    },
+    {
+      name: "Feature2",
+      origin_trial_feature_name: "Feature2OT",
+      status: "experimental",
+    },
+    {
+      name: "Feature3",
+      status: "experimental",
+    },
+  ],
+}

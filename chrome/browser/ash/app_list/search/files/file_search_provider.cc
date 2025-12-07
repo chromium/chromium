@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_list/search/files/file_search_provider.h"
 
+#include <algorithm>
 #include <cmath>
 #include <utility>
 
@@ -12,8 +13,8 @@
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -35,7 +36,6 @@ using ::ash::string_matching::TokenizedString;
 constexpr char kFileSearchSchema[] = "file_search://";
 constexpr int kMaxResults = 25;
 constexpr int kSearchTimeoutMs = 100;
-constexpr double kRelevanceThreshold = 0.79;
 
 // Construct a case-insensitive and accent-insensitive fnmatch query from
 // |query|. E.g. for abc123, the result would be *[aAáàâäāåÁÀÂÄĀÅ][bB][cC]123*.
@@ -95,8 +95,9 @@ std::vector<FileSearchProvider::FileInfo> SearchFilesByPattern(
     const base::FilePath& root_path,
     const std::u16string& query,
     const base::TimeTicks& query_start_time,
-    const std::vector<base::FilePath> trash_paths,
-    const int file_type) {
+    std::vector<base::FilePath> trash_paths,
+    int file_type,
+    base::span<const std::string> allowed_extensions) {
   base::FileEnumerator enumerator(
       root_path,
       /*recursive=*/true, file_type, CreateFnmatchQuery(query),
@@ -108,9 +109,17 @@ std::vector<FileSearchProvider::FileInfo> SearchFilesByPattern(
   for (base::FilePath path = enumerator.Next(); !path.empty();
        path = enumerator.Next()) {
     // Exclude any paths that are parented at an enabled trash location.
-    if (base::ranges::any_of(trash_paths,
-                             [&path](const base::FilePath& trash_path) {
-                               return trash_path.IsParent(path);
+    if (std::ranges::any_of(trash_paths,
+                            [&path](const base::FilePath& trash_path) {
+                              return trash_path.IsParent(path);
+                            })) {
+      continue;
+    }
+    // Exclude any results that are not in the allowed extensions.
+    if (!allowed_extensions.empty() &&
+        !std::ranges::any_of(allowed_extensions,
+                             [&path](const std::string& extension) {
+                               return path.MatchesFinalExtension(extension);
                              })) {
       continue;
     }
@@ -132,12 +141,16 @@ std::vector<FileSearchProvider::FileInfo> SearchFilesByPattern(
 
 }  // namespace
 
-FileSearchProvider::FileSearchProvider(Profile* profile, int file_type)
+FileSearchProvider::FileSearchProvider(
+    Profile* profile,
+    int file_type,
+    std::vector<std::string> allowed_extensions)
     : SearchProvider(SearchCategory::kFiles),
       profile_(profile),
       thumbnail_loader_(profile),
       root_path_(file_manager::util::GetMyFilesFolderForProfile(profile)),
-      file_type_(file_type) {
+      file_type_(file_type),
+      allowed_extensions_(std::move(allowed_extensions)) {
   DCHECK(profile_);
   DCHECK(!root_path_.empty());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -164,8 +177,7 @@ void FileSearchProvider::Start(const std::u16string& query) {
   // precomputed.
   if (trash_paths_.empty()) {
     auto enabled_trash_locations =
-        file_manager::trash::GenerateEnabledTrashLocationsForProfile(
-            profile_, /*base_path=*/base::FilePath());
+        file_manager::trash::GenerateEnabledTrashLocationsForProfile(profile_);
     for (const auto& it : enabled_trash_locations) {
       trash_paths_.emplace_back(
           it.first.Append(it.second.relative_folder_path));
@@ -177,7 +189,7 @@ void FileSearchProvider::Start(const std::u16string& query) {
                      (file_manager::trash::IsTrashEnabledForProfile(profile_)
                           ? trash_paths_
                           : std::vector<base::FilePath>()),
-                     file_type_),
+                     file_type_, allowed_extensions_),
       base::BindOnce(&FileSearchProvider::OnSearchComplete,
                      weak_factory_.GetWeakPtr()));
 }
@@ -198,10 +210,6 @@ void FileSearchProvider::OnSearchComplete(
     double relevance = FileResult::CalculateRelevance(
         last_tokenized_query_, path.path, path.last_accessed);
     DCHECK((relevance >= 0.0) && (relevance <= 1.0));
-    if (search_features::IsLauncherFuzzyMatchAcrossProvidersEnabled() &&
-        relevance < kRelevanceThreshold) {
-      continue;
-    }
     results.push_back(MakeResult(path, relevance));
   }
 

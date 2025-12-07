@@ -5,9 +5,11 @@
 #include "components/cast_streaming/renderer/control/playback_command_forwarding_renderer.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace cast_streaming {
 namespace {
@@ -48,11 +50,9 @@ class RendererCommandForwarder : public media::mojom::Renderer {
       std::optional<
           std::vector<::mojo::PendingRemote<::media::mojom::DemuxerStream>>>
           streams,
-      media::mojom::MediaUrlParamsPtr media_url_params,
       InitializeCallback callback) override {
     owning_renderer_->MojoRendererInitialize(
-        std::move(client), std::move(streams), std::move(media_url_params),
-        std::move(callback));
+        std::move(client), std::move(streams), std::move(callback));
   }
 
   void StartPlayingFrom(::base::TimeDelta time) override {
@@ -120,7 +120,7 @@ void PlaybackCommandForwardingRenderer::Initialize(
 void PlaybackCommandForwardingRenderer::SetCdm(media::CdmContext* cdm_context,
                                                CdmAttachedCB cdm_attached_cb) {
   // CDM should not be set for current mirroring use cases.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void PlaybackCommandForwardingRenderer::SetLatencyHint(
@@ -169,9 +169,7 @@ void PlaybackCommandForwardingRenderer::MojoRendererInitialize(
     std::optional<
         std::vector<::mojo::PendingRemote<::media::mojom::DemuxerStream>>>
         streams,
-    media::mojom::MediaUrlParamsPtr media_url_params,
     media::mojom::Renderer::InitializeCallback callback) {
-  DCHECK(!media_url_params);
   DCHECK(client);
 
   // NOTE: To maintain existing functionality, and ensure mirroring continues
@@ -186,7 +184,7 @@ void PlaybackCommandForwardingRenderer::MojoRendererInitialize(
         base::BindOnce(
             &PlaybackCommandForwardingRenderer::MojoRendererInitialize,
             weak_factory_.GetWeakPtr(), std::move(client), std::move(streams),
-            std::move(media_url_params), std::move(callback)));
+            std::move(callback)));
     return;
   }
 
@@ -254,8 +252,7 @@ void PlaybackCommandForwardingRenderer::MojoRendererSetVolume(float volume) {
 void PlaybackCommandForwardingRenderer::MojoRendererSetCdm(
     const std::optional<::base::UnguessableToken>& cdm_id,
     media::mojom::Renderer::SetCdmCallback callback) {
-  NOTREACHED_IN_MIGRATION()
-      << "Use of a CDM is not supported by the remoting protocol.";
+  NOTREACHED() << "Use of a CDM is not supported by the remoting protocol.";
 }
 
 void PlaybackCommandForwardingRenderer::OnError(media::PipelineStatus status) {

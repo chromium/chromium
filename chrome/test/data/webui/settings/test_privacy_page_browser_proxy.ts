@@ -22,8 +22,6 @@ export class TestPrivacyPageBrowserProxy extends TestBrowserProxy implements
     super([
       'getMetricsReporting',
       'setMetricsReportingEnabled',
-      'showManageSslCertificates',
-      'setBlockAutoplayEnabled',
       'getSecureDnsResolverList',
       'getSecureDnsSetting',
       'isValidConfig',
@@ -39,9 +37,12 @@ export class TestPrivacyPageBrowserProxy extends TestBrowserProxy implements
       mode: SecureDnsMode.AUTOMATIC,
       config: '',
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
-      // <if expr="chromeos_ash">
+      // <if expr="is_chromeos">
+      osMode: SecureDnsMode.AUTOMATIC,
+      osConfig: '',
       dohWithIdentifiersActive: false,
       configForDisplay: '',
+      dohDomainConfigSet: false,
       // </if>
     };
 
@@ -55,14 +56,6 @@ export class TestPrivacyPageBrowserProxy extends TestBrowserProxy implements
 
   setMetricsReportingEnabled(enabled: boolean) {
     this.methodCalled('setMetricsReportingEnabled', enabled);
-  }
-
-  showManageSslCertificates() {
-    this.methodCalled('showManageSslCertificates');
-  }
-
-  setBlockAutoplayEnabled(enabled: boolean) {
-    this.methodCalled('setBlockAutoplayEnabled', enabled);
   }
 
   /**

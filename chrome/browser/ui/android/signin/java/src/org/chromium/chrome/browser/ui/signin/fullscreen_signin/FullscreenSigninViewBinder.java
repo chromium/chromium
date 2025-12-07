@@ -4,33 +4,28 @@
 
 package org.chromium.chrome.browser.ui.signin.fullscreen_signin;
 
-import android.content.Context;
-import android.content.res.ColorStateList;
 import android.text.method.LinkMovementMethod;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
 import android.view.View;
-import android.view.ViewGroup.MarginLayoutParams;
-import android.widget.ImageView;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ProgressBar;
 
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.widget.ImageViewCompat;
+import com.airbnb.lottie.LottieAnimationView;
 
-import com.google.android.material.color.MaterialColors;
-
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.account_picker.ExistingAccountRowViewBinder;
-import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.Objects;
+
 /** Stateless FullscreenSignin view binder. */
+@NullMarked
 class FullscreenSigninViewBinder {
     static void bind(PropertyModel model, FullscreenSigninView view, PropertyKey propertyKey) {
         if (propertyKey == FullscreenSigninProperties.ON_CONTINUE_AS_CLICKED) {
@@ -71,25 +66,62 @@ class FullscreenSigninViewBinder {
                 // this case.
                 initialLoadProgressSpinner.animate().alpha(1.0f).setStartDelay(500);
             } else {
-                // Native needs to be ready before feature flag can be checked. Therefore the flag
-                // guarded layout update is done once the initial loading spinner disappears, since
-                // native is initialized at this point.
-                revampSelectedAccountViewIfNecessary(view.getSelectedAccountView());
                 TransitionManager.beginDelayedTransition(view);
                 initialLoadProgressSpinner.setVisibility(View.GONE);
             }
             updateBottomGroupVisibility(view, model);
+            updateBrowserManagedHeaderView(view, model);
         } else if (propertyKey == FullscreenSigninProperties.SHOW_ENTERPRISE_MANAGEMENT_NOTICE) {
             updateBrowserManagedHeaderView(view, model);
         } else if (propertyKey == FullscreenSigninProperties.IS_SIGNIN_SUPPORTED) {
             updateSelectedAccount(view, model);
             updateBottomGroupVisibility(view, model);
-        } else if (propertyKey == FullscreenSigninProperties.TITLE_STRING_ID) {
-            @StringRes int textId = model.get(FullscreenSigninProperties.TITLE_STRING_ID);
-            view.getTitle().setText(textId);
-        } else if (propertyKey == FullscreenSigninProperties.SUBTITLE_STRING_ID) {
-            @StringRes int textId = model.get(FullscreenSigninProperties.SUBTITLE_STRING_ID);
-            view.getSubtitle().setText(textId);
+        } else if (propertyKey == FullscreenSigninProperties.LOGO_DRAWABLE_ID) {
+            int logoId = model.get(FullscreenSigninProperties.LOGO_DRAWABLE_ID);
+            LayoutParams params = view.getIcon().getLayoutParams();
+
+            // TODO(crbug.com/390418475): Remove the if block below and
+            // fullscreen_signin_logo_default_height when fre_product_logo will be a VectorDrawable
+            // with appropriate height.
+            if (logoId == 0) {
+                logoId = R.drawable.fre_product_logo;
+                params.height =
+                        view.getContext()
+                                .getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.fullscreen_signin_logo_default_height);
+            } else {
+                params.height = LayoutParams.WRAP_CONTENT;
+            }
+            view.getIcon().setImageResource(logoId);
+            view.getIcon().setLayoutParams(params);
+        } else if (propertyKey == FullscreenSigninProperties.PROFILE_PICTURE) {
+            view.getIcon().setImageDrawable(model.get(FullscreenSigninProperties.PROFILE_PICTURE));
+        } else if (propertyKey == FullscreenSigninProperties.SHOW_ANIMATION) {
+            boolean visible = model.get(FullscreenSigninProperties.SHOW_ANIMATION);
+            view.getAnimationView().setVisibility(visible ? View.VISIBLE : View.GONE);
+        } else if (propertyKey == FullscreenSigninProperties.START_ANIMATION) {
+            boolean startAnimation = model.get(FullscreenSigninProperties.START_ANIMATION);
+            LottieAnimationView animation = view.getAnimationView();
+            if (startAnimation) {
+                animation.playAnimation();
+            }
+        } else if (propertyKey == FullscreenSigninProperties.ANIMATOR_LISTENER) {
+            LottieAnimationView animation = view.getAnimationView();
+            animation.removeAllAnimatorListeners();
+            animation.addAnimatorListener(model.get(FullscreenSigninProperties.ANIMATOR_LISTENER));
+        } else if (Objects.equals(propertyKey, FullscreenSigninProperties.TITLE_STRING)) {
+            String text = model.get(FullscreenSigninProperties.TITLE_STRING);
+            view.getTitle().setText(text);
+        } else if (Objects.equals(propertyKey, FullscreenSigninProperties.SUBTITLE_STRING)) {
+            String text = model.get(FullscreenSigninProperties.SUBTITLE_STRING);
+            if (text != null) {
+                view.getSubtitle().setText(text);
+            }
+            updateBottomGroupVisibility(view, model);
+        } else if (Objects.equals(propertyKey, FullscreenSigninProperties.DISMISS_BUTTON_STRING)) {
+            String text = model.get(FullscreenSigninProperties.DISMISS_BUTTON_STRING);
+            view.getDismissButtonView().setText(text);
         } else if (propertyKey == FullscreenSigninProperties.FOOTER_STRING) {
             final CharSequence footerText = model.get(FullscreenSigninProperties.FOOTER_STRING);
             if (footerText == null) {
@@ -112,6 +144,11 @@ class FullscreenSigninViewBinder {
         // entangled nature of IS_SELECTED_ACCOUNT_SUPERVISED and SHOW_ENTERPRISE_MANAGEMENT_NOTICE
         // they are both handled in this function as one of these properties will get updated before
         // the other.
+
+        // Only display the managed header after all other elements have loaded
+        if (model.get(FullscreenSigninProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER)) {
+            return;
+        }
         if (model.get(FullscreenSigninProperties.IS_SELECTED_ACCOUNT_SUPERVISED)) {
             view.getBrowserManagedHeaderView().setVisibility(View.VISIBLE);
             view.getPrivacyDisclaimer().setText(R.string.fre_browser_managed_by_parent);
@@ -164,12 +201,14 @@ class FullscreenSigninViewBinder {
                 model.get(FullscreenSigninProperties.IS_SELECTED_ACCOUNT_SUPERVISED);
         final boolean showManagementNotice =
                 model.get(FullscreenSigninProperties.SHOW_ENTERPRISE_MANAGEMENT_NOTICE);
+        final String text = model.get(FullscreenSigninProperties.SUBTITLE_STRING);
         view.getTitle().setVisibility(showInitialLoadProgressSpinner ? View.GONE : View.VISIBLE);
         view.getSubtitle()
                 .setVisibility(
                         !showInitialLoadProgressSpinner
                                         && !isSelectedAccountSupervised
                                         && !showManagementNotice
+                                        && text != null
                                 ? View.VISIBLE
                                 : View.GONE);
 
@@ -230,38 +269,6 @@ class FullscreenSigninViewBinder {
         view.getSigninProgressSpinner()
                 .setVisibility(showSigninProgressSpinner ? View.VISIBLE : View.GONE);
         view.getSigninProgressText().setVisibility(showSigningInText ? View.VISIBLE : View.GONE);
-    }
-
-    // TODO(b/40944124): Move the layout configurations to the xml file after UNO is launched.
-    public static void revampSelectedAccountViewIfNecessary(View accountPickerView) {
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-            Context context = accountPickerView.getContext();
-            accountPickerView.setBackground(
-                    AppCompatResources.getDrawable(
-                            context, R.drawable.account_row_background_rounded_all));
-
-            int padding = ViewUtils.dpToPx(context, 16);
-            accountPickerView.setPadding(padding, padding, padding, padding);
-            int sideMargin = ViewUtils.dpToPx(context, 24);
-            // Total margin should be 24dp but the continue button xml file adds an 8dp top margin.
-            int bottomMargin = ViewUtils.dpToPx(context, 16);
-            MarginLayoutParams params = (MarginLayoutParams) accountPickerView.getLayoutParams();
-            params.setMargins(
-                    /* left= */ sideMargin,
-                    /* top= */ 0,
-                    /* right= */ sideMargin,
-                    /* bottom= */ bottomMargin);
-
-            ImageView moreArrow =
-                    accountPickerView.findViewById(R.id.signin_fre_selected_account_expand_icon);
-            moreArrow.setImageResource(R.drawable.ic_expand_more_black_24dp);
-            ColorStateList colorStateList =
-                    ColorStateList.valueOf(
-                            MaterialColors.getColor(
-                                    accountPickerView, R.attr.colorOnSurfaceVariant));
-            ImageViewCompat.setImageTintList(moreArrow, colorStateList);
-        }
     }
 
     private FullscreenSigninViewBinder() {}

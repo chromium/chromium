@@ -22,8 +22,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chrome {
-
 using ::testing::StrictMock;
 
 class SingleFileTarFileExtractorTest : public testing::Test {
@@ -194,5 +192,3 @@ TEST_F(SingleFileTarFileExtractorTest, CorruptedFile) {
   const chrome::file_util::mojom::ExtractionResult& result = future.Get();
   EXPECT_EQ(chrome::file_util::mojom::ExtractionResult::kGenericError, result);
 }
-
-}  // namespace chrome

@@ -92,6 +92,11 @@ class WebTestRuntimeFlags {
   // all four sides of the page.
   DEFINE_INT_WEB_TEST_RUNTIME_FLAG(printing_margin)
 
+  // Printable safe inset. Printers usually have unprintable areas near the
+  // paper edges, due to the paper handling mechanism. This is the larger inset
+  // of those areas.
+  DEFINE_INT_WEB_TEST_RUNTIME_FLAG(safe_printable_inset)
+
   // If true, don't dump output until notifyDone is called.
   DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(wait_until_done)
 

@@ -5,7 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_PROMISE_TESTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_PROMISE_TESTER_H_
 
+#include "base/memory/stack_allocated.h"
 #include "base/memory/weak_ptr.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -14,7 +16,6 @@
 namespace blink {
 
 class ScriptState;
-class ScriptPromiseUntyped;
 
 // Utility for writing unit tests involving promises.
 // Typical usage:
@@ -26,7 +27,23 @@ class ScriptPromiseTester final {
   STACK_ALLOCATED();
 
  public:
-  ScriptPromiseTester(ScriptState*, ScriptPromiseUntyped);
+  template <typename IDLType>
+  ScriptPromiseTester(ScriptState* script_state,
+                      ScriptPromise<IDLType> script_promise,
+                      ExceptionState* exception_state = nullptr)
+      : script_state_(script_state),
+        value_object_(MakeGarbageCollected<ScriptValueObject>()),
+        exception_state_(exception_state) {
+    CHECK(script_state);
+    if (script_promise.IsEmpty()) {
+      return;
+    }
+    script_promise.Then(script_state,
+                        MakeGarbageCollected<ThenFunction<IDLType>>(
+                            weak_factory_.GetWeakPtr(), State::kFulfilled),
+                        MakeGarbageCollected<ThenFunction<IDLAny>>(
+                            weak_factory_.GetWeakPtr(), State::kRejected));
+  }
 
   ScriptPromiseTester(const ScriptPromiseTester&) = delete;
   ScriptPromiseTester& operator=(const ScriptPromiseTester&) = delete;
@@ -44,12 +61,58 @@ class ScriptPromiseTester final {
   // The value the promise fulfilled or rejected with.
   ScriptValue Value() const;
 
+  String ValueAsString() const;
+
  private:
-  class ThenFunction;
+  enum class State { kNotSettled, kFulfilled, kRejected };
+
+  template <typename IDLType>
+  class ThenFunction : public ThenCallable<IDLType, ThenFunction<IDLType>> {
+   public:
+    ThenFunction(base::WeakPtr<ScriptPromiseTester> owner, State target_state)
+        : owner_(std::move(owner)), target_state_(target_state) {}
+
+    using BlinkType =
+        std::conditional_t<IsGarbageCollectedTypeV<IDLType>,
+                           std::add_pointer_t<IDLType>,
+                           typename IDLTypeToBlinkImplType<IDLType>::type>;
+
+    template <typename T = IDLType>
+      requires(!std::is_same_v<T, IDLUndefined>)
+    void React(ScriptState* script_state, BlinkType value) {
+      if (!owner_) {
+        return;
+      }
+
+      CHECK_EQ(owner_->state_, State::kNotSettled);
+      owner_->state_ = target_state_;
+
+      CHECK(owner_->value_object_->Value().IsEmpty());
+      owner_->value_object_->Value() =
+          ScriptValue(script_state->GetIsolate(),
+                      ToV8Traits<IDLType>::ToV8(script_state, value));
+    }
+
+    template <typename T = IDLType>
+      requires(std::is_same_v<T, IDLUndefined>)
+    void React(ScriptState* script_state) {
+      if (!owner_) {
+        return;
+      }
+      CHECK_EQ(owner_->state_, State::kNotSettled);
+      owner_->state_ = target_state_;
+      owner_->value_object_->Value() =
+          ScriptValue(script_state->GetIsolate(),
+                      v8::Undefined(script_state->GetIsolate()));
+    }
+
+   private:
+    STACK_ALLOCATED_IGNORE("Pointer to on-stack class is valid here.")
+    base::WeakPtr<ScriptPromiseTester> owner_;
+    State target_state_;
+  };
 
   using ScriptValueObject = DisallowNewWrapper<ScriptValue>;
-
-  enum class State { kNotSettled, kFulfilled, kRejected };
 
   ScriptState* script_state_;
   State state_ = State::kNotSettled;
@@ -57,6 +120,7 @@ class ScriptPromiseTester final {
   // tests with `ScriptPromiseTester` that pump the message loop and invoke GCs
   // without stack.
   Persistent<ScriptValueObject> value_object_;
+  ExceptionState* exception_state_;
 
   base::WeakPtrFactory<ScriptPromiseTester> weak_factory_{this};
 };

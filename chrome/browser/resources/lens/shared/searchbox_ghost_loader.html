@@ -1,0 +1,259 @@
+<style include="searchbox-shared-style cr-spinner-style">
+#content {
+  background-color: var(--color-searchbox-results-background);
+  border-radius: calc(0.5 * var(--cr-searchbox-height));
+  box-shadow: var(--cr-searchbox-shadow);
+  margin-bottom: 8px;
+  overflow: hidden;
+  padding-bottom: 8px;
+  padding-top: var(--cr-searchbox-height);
+  align-items: center;
+}
+
+#content::before {
+  content: '';
+  position: relative;
+  height: 1px;
+  background-color: var(--color-searchbox-dropdown-divider);
+  top: 0;
+  width: calc(var(--cr-searchbox-min-width) - 24px);
+  display: block;
+  inset-inline-start: 12px;
+}
+
+.status-container {
+  display: none;
+  align-items: center;
+  color: var(--color-searchbox-placeholder);
+  height: 48px;
+  padding-inline-start: 14px;
+  padding-inline-end: 14px;
+  padding-top: 4px;
+}
+
+:host([enable-csb-motion-tweaks]) #loadingState.status-container {
+  display: none;
+}
+
+.loader-text {
+  font-weight: var(--cr-searchbox-match-font-weight);
+  font-size: 14px;
+  position: relative;
+  width: 100%;
+}
+
+#hint-text2 {
+  opacity: 0;
+}
+
+.hint-text {
+  align-items: center;
+  display: flex;
+  inset: 0;
+  position: absolute;
+}
+
+:host([enable-summarize-suggestion-hint]) #hint-text1 {
+  animation: flipText 6s ease-in-out infinite;
+}
+
+:host([enable-summarize-suggestion-hint]) #hint-text2 {
+  animation: flipText 6s ease-in-out infinite reverse;
+}
+
+@keyframes flipText {
+  0% {
+    opacity: 1;
+  }
+  49% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.spinner {
+  --cr-spinner-color: var(--color-searchbox-ghost-loader-spinner);
+  --cr-spinner-size: 20px;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  /* 28px to match the error icon size. */
+  width: 28px;
+}
+
+.suggestion-loader-container {
+  display: none;
+}
+
+:host([enable-csb-motion-tweaks]) .suggestion-loader-container {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  margin: 4px 20px 0 12px;
+}
+
+.ghost-loader-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 48px;
+}
+
+
+/* Fade out animation for the ghost loader items when real suggestions are shown. */
+:host([enable-csb-motion-tweaks][should-fade-out])
+  .ghost-loader-item {
+  animation: 400ms ghost-loader-exit-animation cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.searchbox-icon {
+  --cr-searchbox-icon-border-radius: 12px;
+  margin-right: 10px;
+}
+
+/* Individual animation delays for each bar */
+.ghost-loader-item:nth-child(1) .loading-bar {
+  --loading-bar-animation-delay: 1;
+}
+
+.ghost-loader-item:nth-child(2) .loading-bar {
+  --loading-bar-animation-delay: 2;
+}
+
+.ghost-loader-item:nth-child(3) .loading-bar {
+  --loading-bar-animation-delay: 3;
+}
+
+.ghost-loader-item:nth-child(4) .loading-bar {
+  --loading-bar-animation-delay: 4;
+}
+
+.ghost-loader-item:nth-child(5) .loading-bar {
+  --loading-bar-animation-delay: 5;
+}
+
+.loading-bar {
+  animation: 2s fadeInOut calc(0.1s * var(--loading-bar-animation-delay)) infinite;
+  /* The initial background color of the loading bar before the fade in/out animation starts. */
+  background-color: var(--color-searchbox-ghost-loader-loading-bar-1);
+  border-radius: 4px;
+  height: 20px;
+  width: 100%;
+}
+
+:host([dark-mode]) .loading-bar {
+  background-color: #9e9e9e;
+}
+
+@keyframes fadeInOut {
+  0% {
+    background-color: var(--color-searchbox-ghost-loader-loading-bar-1);
+  }
+
+  50% {
+    background-color: var(--color-searchbox-ghost-loader-loading-bar-2);
+  }
+
+  100% {
+    background-color: var(--color-searchbox-ghost-loader-loading-bar-1);
+  }
+}
+
+#loadingState,
+:host([show-error-state]) #errorState,
+#hintState {
+  display: flex;
+  gap: 16px;
+}
+
+:host([show-error-state]) #loadingState,
+:host([show-error-state]) .suggestion-loader-container,
+#errorState {
+  display: none;
+}
+
+#errorState {
+  height: 48px;
+}
+
+#errorIconContainer {
+  background-color: var(--color-searchbox-results-icon-container-background);
+  border-radius: 40px;
+  height: 28px;
+  width: 28px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#errorIcon {
+  width: 20px;
+  height: 20px;
+  mask-position: center;
+  mask-repeat: no-repeat;
+  mask-image: url('/lens/shared/info.svg');
+  mask-size: 20px;
+  background-color: var(--color-searchbox-results-icon);
+}
+
+/* Set styles for high contrast mode in Windows. */
+@media (forced-colors: active) {
+  .spinner {
+    --cr-spinner-color: ButtonText;
+  }
+
+  #errorIcon {
+    /* Set the icon color to hcm (high contrast mode) value. */
+    background-color: ButtonText;
+  }
+}
+</style>
+<!-- LINT.IfChange(GhostLoaderText) -->
+<div id="content">
+  <template is="dom-if" if="[[showContextualSearchboxLoadingState]]">
+    <div id="loadingState" class="status-container">
+      <div class="spinner"></div>
+      <div class="loader-text">
+        <span id="hint-text1" class="hint-text">
+          [[ghostLoaderPrimaryMessage]]
+        </span>
+        <span id="hint-text2" class="hint-text">
+          $i18n{searchboxGhostLoaderHintTextSecondary}
+        </span>
+      </div>
+    </div>
+    <div class="suggestion-loader-container">
+      <template is="dom-repeat"
+          items="[[getSuggestionItems(suggestionCount)]]" as="item">
+        <div class="ghost-loader-item">
+          <cr-searchbox-icon
+            class="searchbox-icon"
+            match=""
+            default-icon="//resources/cr_components/searchbox/icons/search_cr23.svg"
+          ></cr-searchbox-icon>
+          <div class="loading-bar"></div>
+        </div>
+      </template>
+    </div>
+    <div id="errorState" class="status-container">
+      <div id="errorIconContainer">
+        <div id="errorIcon"></div>
+      </div>
+      <span class="loader-text">$i18n{searchboxGhostLoaderErrorText}</span>
+    </div>
+  </template>
+  <template is="dom-if" if="[[!showContextualSearchboxLoadingState]]">
+    <div id="hintState" class="status-container">
+      <div id="errorIconContainer">
+        <div id="errorIcon"></div>
+      </div>
+      <span class="loader-text">$i18n{searchboxGhostLoaderNoSuggestText}</span>
+    </div>
+  </template>
+</div>
+<!-- LINT.ThenChange(//chrome/browser/resources/lens/shared/searchbox_ghost_loader.ts:GhostLoaderText) -->

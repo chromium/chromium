@@ -440,7 +440,7 @@ GLuint GLES2Implementation::CreateProgram() {
   GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCreateProgram(" << ")");
   GLuint client_id;
   GetIdHandler(SharedIdNamespaces::kProgramsAndShaders)
-      ->MakeIds(this, 0, 1, &client_id);
+      ->MakeIds(this, 1, &client_id);
   helper_->CreateProgram(client_id);
   GPU_CLIENT_LOG("returned " << client_id);
   CheckGLError();
@@ -453,7 +453,7 @@ GLuint GLES2Implementation::CreateShader(GLenum type) {
                      << GLES2Util::GetStringShaderType(type) << ")");
   GLuint client_id;
   GetIdHandler(SharedIdNamespaces::kProgramsAndShaders)
-      ->MakeIds(this, 0, 1, &client_id);
+      ->MakeIds(this, 1, &client_id);
   helper_->CreateShader(type, client_id);
   GPU_CLIENT_LOG("returned " << client_id);
   CheckGLError();
@@ -677,7 +677,7 @@ GLsync GLES2Implementation::FenceSync(GLenum condition, GLbitfield flags) {
     return 0;
   }
   GLuint client_id;
-  GetIdHandler(SharedIdNamespaces::kSyncs)->MakeIds(this, 0, 1, &client_id);
+  GetIdHandler(SharedIdNamespaces::kSyncs)->MakeIds(this, 1, &client_id);
   helper_->FenceSync(client_id);
   GPU_CLIENT_LOG("returned " << client_id);
   CheckGLError();
@@ -745,11 +745,9 @@ void GLES2Implementation::GenBuffers(GLsizei n, GLuint* buffers) {
     return;
   }
   GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GetIdHandler(SharedIdNamespaces::kBuffers)->MakeIds(this, 0, n, buffers);
+  GetIdHandler(SharedIdNamespaces::kBuffers)->MakeIds(this, n, buffers);
   GenBuffersHelper(n, buffers);
   helper_->GenBuffersImmediate(n, buffers);
-  if (share_group_->bind_generates_resource())
-    helper_->CommandBufferHelper::Flush();
   GPU_CLIENT_LOG_CODE_BLOCK({
     for (GLsizei i = 0; i < n; ++i) {
       GPU_CLIENT_LOG("  " << i << ": " << buffers[i]);
@@ -796,11 +794,9 @@ void GLES2Implementation::GenRenderbuffers(GLsizei n, GLuint* renderbuffers) {
   }
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   GetIdHandler(SharedIdNamespaces::kRenderbuffers)
-      ->MakeIds(this, 0, n, renderbuffers);
+      ->MakeIds(this, n, renderbuffers);
   GenRenderbuffersHelper(n, renderbuffers);
   helper_->GenRenderbuffersImmediate(n, renderbuffers);
-  if (share_group_->bind_generates_resource())
-    helper_->CommandBufferHelper::Flush();
   GPU_CLIENT_LOG_CODE_BLOCK({
     for (GLsizei i = 0; i < n; ++i) {
       GPU_CLIENT_LOG("  " << i << ": " << renderbuffers[i]);
@@ -817,11 +813,9 @@ void GLES2Implementation::GenSamplers(GLsizei n, GLuint* samplers) {
     return;
   }
   GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GetIdHandler(SharedIdNamespaces::kSamplers)->MakeIds(this, 0, n, samplers);
+  GetIdHandler(SharedIdNamespaces::kSamplers)->MakeIds(this, n, samplers);
   GenSamplersHelper(n, samplers);
   helper_->GenSamplersImmediate(n, samplers);
-  if (share_group_->bind_generates_resource())
-    helper_->CommandBufferHelper::Flush();
   GPU_CLIENT_LOG_CODE_BLOCK({
     for (GLsizei i = 0; i < n; ++i) {
       GPU_CLIENT_LOG("  " << i << ": " << samplers[i]);
@@ -838,11 +832,9 @@ void GLES2Implementation::GenTextures(GLsizei n, GLuint* textures) {
     return;
   }
   GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GetIdHandler(SharedIdNamespaces::kTextures)->MakeIds(this, 0, n, textures);
+  GetIdHandler(SharedIdNamespaces::kTextures)->MakeIds(this, n, textures);
   GenTexturesHelper(n, textures);
   helper_->GenTexturesImmediate(n, textures);
-  if (share_group_->bind_generates_resource())
-    helper_->CommandBufferHelper::Flush();
   GPU_CLIENT_LOG_CODE_BLOCK({
     for (GLsizei i = 0; i < n; ++i) {
       GPU_CLIENT_LOG("  " << i << ": " << textures[i]);
@@ -3557,122 +3549,17 @@ void GLES2Implementation::EndSharedImageAccessDirectCHROMIUM(GLuint texture) {
   CheckGLError();
 }
 
-void GLES2Implementation::ConvertRGBAToYUVAMailboxesINTERNAL(
-    GLenum planes_yuv_color_space,
-    GLenum plane_config,
-    GLenum subsampling,
-    const GLbyte* mailboxes) {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix()
-                     << "] glConvertRGBAToYUVAMailboxesINTERNAL("
-                     << GLES2Util::GetStringEnum(planes_yuv_color_space) << ", "
-                     << GLES2Util::GetStringEnum(plane_config) << ", "
-                     << GLES2Util::GetStringEnum(subsampling) << ", "
-                     << static_cast<const void*>(mailboxes) << ")");
-  uint32_t count = 80;
-  for (uint32_t ii = 0; ii < count; ++ii) {
-    GPU_CLIENT_LOG("value[" << ii << "]: " << mailboxes[ii]);
-  }
-  helper_->ConvertRGBAToYUVAMailboxesINTERNALImmediate(
-      planes_yuv_color_space, plane_config, subsampling, mailboxes);
-  CheckGLError();
-}
-
-void GLES2Implementation::ConvertYUVAMailboxesToRGBINTERNAL(
-    GLint src_x,
-    GLint src_y,
-    GLsizei width,
-    GLsizei height,
-    GLenum planes_yuv_color_space,
-    GLenum plane_config,
-    GLenum subsampling,
-    const GLbyte* mailboxes) {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix()
-                     << "] glConvertYUVAMailboxesToRGBINTERNAL(" << src_x
-                     << ", " << src_y << ", " << width << ", " << height << ", "
-                     << GLES2Util::GetStringEnum(planes_yuv_color_space) << ", "
-                     << GLES2Util::GetStringEnum(plane_config) << ", "
-                     << GLES2Util::GetStringEnum(subsampling) << ", "
-                     << static_cast<const void*>(mailboxes) << ")");
-  uint32_t count = 144;
-  for (uint32_t ii = 0; ii < count; ++ii) {
-    GPU_CLIENT_LOG("value[" << ii << "]: " << mailboxes[ii]);
-  }
-  if (width < 0) {
-    SetGLError(GL_INVALID_VALUE, "glConvertYUVAMailboxesToRGBINTERNAL",
-               "width < 0");
-    return;
-  }
-  if (height < 0) {
-    SetGLError(GL_INVALID_VALUE, "glConvertYUVAMailboxesToRGBINTERNAL",
-               "height < 0");
-    return;
-  }
-  helper_->ConvertYUVAMailboxesToRGBINTERNALImmediate(
-      src_x, src_y, width, height, planes_yuv_color_space, plane_config,
-      subsampling, mailboxes);
-  CheckGLError();
-}
-
-void GLES2Implementation::ConvertYUVAMailboxesToTextureINTERNAL(
-    GLuint texture,
-    GLenum target,
-    GLuint internal_format,
-    GLenum type,
-    GLint src_x,
-    GLint src_y,
-    GLsizei width,
-    GLsizei height,
-    GLboolean flip_y,
-    GLenum planes_yuv_color_space,
-    GLenum plane_config,
-    GLenum subsampling,
-    const GLbyte* mailboxes) {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG(
-      "[" << GetLogPrefix() << "] glConvertYUVAMailboxesToTextureINTERNAL("
-          << texture << ", " << GLES2Util::GetStringEnum(target) << ", "
-          << internal_format << ", " << GLES2Util::GetStringEnum(type) << ", "
-          << src_x << ", " << src_y << ", " << width << ", " << height << ", "
-          << GLES2Util::GetStringBool(flip_y) << ", "
-          << GLES2Util::GetStringEnum(planes_yuv_color_space) << ", "
-          << GLES2Util::GetStringEnum(plane_config) << ", "
-          << GLES2Util::GetStringEnum(subsampling) << ", "
-          << static_cast<const void*>(mailboxes) << ")");
-  uint32_t count = 64;
-  for (uint32_t ii = 0; ii < count; ++ii) {
-    GPU_CLIENT_LOG("value[" << ii << "]: " << mailboxes[ii]);
-  }
-  if (width < 0) {
-    SetGLError(GL_INVALID_VALUE, "glConvertYUVAMailboxesToTextureINTERNAL",
-               "width < 0");
-    return;
-  }
-  if (height < 0) {
-    SetGLError(GL_INVALID_VALUE, "glConvertYUVAMailboxesToTextureINTERNAL",
-               "height < 0");
-    return;
-  }
-  helper_->ConvertYUVAMailboxesToTextureINTERNALImmediate(
-      texture, target, internal_format, type, src_x, src_y, width, height,
-      flip_y, planes_yuv_color_space, plane_config, subsampling, mailboxes);
-  CheckGLError();
-}
-
 void GLES2Implementation::CopySharedImageINTERNAL(GLint xoffset,
                                                   GLint yoffset,
                                                   GLint x,
                                                   GLint y,
                                                   GLsizei width,
                                                   GLsizei height,
-                                                  GLboolean unpack_flip_y,
                                                   const GLbyte* mailboxes) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCopySharedImageINTERNAL("
                      << xoffset << ", " << yoffset << ", " << x << ", " << y
                      << ", " << width << ", " << height << ", "
-                     << GLES2Util::GetStringBool(unpack_flip_y) << ", "
                      << static_cast<const void*>(mailboxes) << ")");
   uint32_t count = 32;
   for (uint32_t ii = 0; ii < count; ++ii) {
@@ -3687,7 +3574,7 @@ void GLES2Implementation::CopySharedImageINTERNAL(GLint xoffset,
     return;
   }
   helper_->CopySharedImageINTERNALImmediate(xoffset, yoffset, x, y, width,
-                                            height, unpack_flip_y, mailboxes);
+                                            height, mailboxes);
   CheckGLError();
 }
 
@@ -3700,7 +3587,7 @@ void GLES2Implementation::CopySharedImageToTextureINTERNAL(
     GLint src_y,
     GLsizei width,
     GLsizei height,
-    GLboolean flip_y,
+    GLboolean is_dst_origin_top_left,
     const GLbyte* src_mailbox) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   GPU_CLIENT_LOG(
@@ -3708,7 +3595,7 @@ void GLES2Implementation::CopySharedImageToTextureINTERNAL(
           << texture << ", " << GLES2Util::GetStringEnum(target) << ", "
           << internal_format << ", " << GLES2Util::GetStringEnum(type) << ", "
           << src_x << ", " << src_y << ", " << width << ", " << height << ", "
-          << GLES2Util::GetStringBool(flip_y) << ", "
+          << GLES2Util::GetStringBool(is_dst_origin_top_left) << ", "
           << static_cast<const void*>(src_mailbox) << ")");
   uint32_t count = 16;
   for (uint32_t ii = 0; ii < count; ++ii) {
@@ -3726,7 +3613,7 @@ void GLES2Implementation::CopySharedImageToTextureINTERNAL(
   }
   helper_->CopySharedImageToTextureINTERNALImmediate(
       texture, target, internal_format, type, src_x, src_y, width, height,
-      flip_y, src_mailbox);
+      is_dst_origin_top_left, src_mailbox);
   CheckGLError();
 }
 

@@ -5,8 +5,8 @@
 // API which provides support for ChromeOS Accessibility features in the
 // browser.
 
-[platforms=("chromeos", "lacros"),
-  implemented_in="chrome/browser/chromeos/extensions/accessibility_service_private.h"]
+[platforms=("chromeos"),
+  implemented_in="chrome/browser/chromeos/extensions/accessibility_service_private/accessibility_service_private.h"]
 
 namespace accessibilityServicePrivate {
   callback VoidCallback = void();

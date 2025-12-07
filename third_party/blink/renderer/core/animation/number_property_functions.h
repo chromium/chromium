@@ -23,10 +23,17 @@ class NumberPropertyFunctions {
   static std::optional<double> GetInitialNumber(
       const CSSProperty&,
       const ComputedStyle& initial_style);
+  static std::optional<double> GetInitialPercentage(
+      const CSSProperty&,
+      const ComputedStyle& initial_style);
   static std::optional<double> GetNumber(const CSSProperty&,
                                          const ComputedStyle&);
+  static std::optional<double> GetPercentage(const CSSProperty&,
+                                             const ComputedStyle&);
   static double ClampNumber(const CSSProperty&, double);
+  static double ClampPercentage(const CSSProperty&, double);
   static bool SetNumber(const CSSProperty&, ComputedStyleBuilder&, double);
+  static bool SetPercentage(const CSSProperty&, ComputedStyleBuilder&, double);
 };
 
 }  // namespace blink

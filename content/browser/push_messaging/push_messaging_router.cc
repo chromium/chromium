@@ -123,19 +123,22 @@ void PushMessagingRouter::DeliverMessage(
     int64_t service_worker_registration_id,
     const std::string& message_id,
     std::optional<std::string> payload,
+    bool record_network_requests,
     PushEventCallback deliver_message_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   StartServiceWorkerForDispatch(
       ServiceWorkerMetrics::EventType::PUSH, browser_context, origin,
       service_worker_registration_id,
       base::BindOnce(&PushMessagingRouter::DeliverMessageToWorker, message_id,
-                     std::move(payload), std::move(deliver_message_callback)));
+                     std::move(payload), record_network_requests,
+                     std::move(deliver_message_callback)));
 }
 
 // static
 void PushMessagingRouter::DeliverMessageToWorker(
     const std::string& message_id,
     std::optional<std::string> payload,
+    bool record_network_requests,
     PushEventCallback deliver_message_callback,
     scoped_refptr<ServiceWorkerVersion> service_worker,
     scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
@@ -169,8 +172,13 @@ void PushMessagingRouter::DeliverMessageToWorker(
       base::Seconds(blink::mojom::kPushEventTimeoutSeconds),
       ServiceWorkerVersion::KILL_ON_TIMEOUT);
 
-  service_worker->endpoint()->DispatchPushEvent(
-      payload, service_worker->CreateSimpleEventCallback(request_id));
+  if (record_network_requests) {
+    service_worker->endpoint()->DispatchPushEventRecordingNetworkRequests(
+        payload, service_worker->CreatePushEventCallback(request_id));
+  } else {
+    service_worker->endpoint()->DispatchPushEvent(
+        payload, service_worker->CreateSimpleEventCallback(request_id));
+  }
 
   auto* devtools_context =
       GetDevTools(CHECK_DEREF(service_worker_context.get()));
@@ -232,12 +240,9 @@ void PushMessagingRouter::DeliverMessageEnd(
     case blink::ServiceWorkerStatusCode::kErrorInvalidArguments:
     case blink::ServiceWorkerStatusCode::kErrorStorageDisconnected:
     case blink::ServiceWorkerStatusCode::kErrorStorageDataCorrupted:
-      NOTREACHED_IN_MIGRATION()
-          << "Got unexpected error code: "
-          << static_cast<uint32_t>(service_worker_status) << " "
-          << blink::ServiceWorkerStatusToString(service_worker_status);
-      push_event_status = blink::mojom::PushEventStatus::SERVICE_WORKER_ERROR;
-      break;
+      NOTREACHED() << "Got unexpected error code: "
+                   << static_cast<uint32_t>(service_worker_status) << " "
+                   << blink::ServiceWorkerStatusToString(service_worker_status);
   }
   RunPushEventCallback(std::move(deliver_message_callback), push_event_status);
 
@@ -264,7 +269,7 @@ void PushMessagingRouter::FireSubscriptionChangeEvent(
     blink::mojom::PushSubscriptionPtr old_subscription,
     PushEventCallback subscription_change_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(base::FeatureList::IsEnabled(features::kPushSubscriptionChangeEvent));
+  CHECK(features::IsPushSubscriptionChangeEventEnabled());
 
   StartServiceWorkerForDispatch(
       ServiceWorkerMetrics::EventType::PUSH_SUBSCRIPTION_CHANGE,
@@ -283,7 +288,7 @@ void PushMessagingRouter::FireSubscriptionChangeEventToWorker(
     scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
     blink::ServiceWorkerStatusCode status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(base::FeatureList::IsEnabled(features::kPushSubscriptionChangeEvent));
+  CHECK(features::IsPushSubscriptionChangeEventEnabled());
 
   if (!service_worker) {
     DCHECK_NE(blink::ServiceWorkerStatusCode::kOk, status);

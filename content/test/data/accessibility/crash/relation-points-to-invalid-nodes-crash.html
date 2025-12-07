@@ -1,0 +1,45 @@
+<!--
+@BLINK-DENY:*
+-->
+<!-- We don't actually care about the output for this test.
+    We just want to make sure we don't crash. -->
+<head id="head">
+    <title id="title">Test</title>
+    <style id="style"></style>
+</head>
+<body lang="@NO_DUMP" >
+    <script id="script"></script>
+    <area id="area" />
+    <optgroup id="optgroup"></optgroup>
+
+    <script>
+        const relationsToTest = [
+            'aria-activedescendant',
+            'aria-controls',
+            'aria-describedby',
+            'aria-details',
+            'aria-errormessage',
+            'aria-flowto',
+            'aria-labelledby',
+            'aria-owns',
+        ];
+        // Nodes that aren't allowed to have an AXObject,
+        // or atleast don't satisfy the criteria to have one.
+        const invalidNodes = [
+            'head',
+            'title',
+            'style',
+            'script',
+            'area',
+            'optgroup'
+        ];
+        for (const invalidNode of invalidNodes) {
+                const source = document.createElement('div');
+                source.setAttribute('aria-invalid', 'true');
+                for (const relation of relationsToTest) {
+                        source.setAttribute(relation, invalidNode);
+                }
+                document.body.appendChild(source);
+        }
+    </script>
+</body>

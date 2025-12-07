@@ -2,12 +2,17 @@ noparent = True
 include_rules = [
   "+base/android",
   "+base/test/android",
+  "+build/android",
   "+content/public/test/android",
   "+chrome/browser/android/lifecycle",
+  "+chrome/browser/feature_engagement",
   "+chrome/browser/flags",
   "+chrome/browser/profiles/android",
   "+chrome/browser/preferences",
   "+chrome/test/android",
   "+components/browser_ui/widget/android",
+  "+components/feature_engagement/public",
+  "+components/search_engines/android",
+  "+components/messages",
   "+ui/android",
 ]

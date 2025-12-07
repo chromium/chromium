@@ -4,14 +4,12 @@
 
 #include <string>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 
 namespace syncer {
 
 std::string GetPersonalizableDeviceNameInternal() {
-  base::android::BuildInfo* android_build_info =
-      base::android::BuildInfo::GetInstance();
-  return android_build_info->model();
+  return base::android::android_info::model();
 }
 
 }  // namespace syncer

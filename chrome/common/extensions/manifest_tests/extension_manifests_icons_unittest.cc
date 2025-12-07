@@ -3,18 +3,21 @@
 // found in the LICENSE file.
 
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/icons/extension_icon_set.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions {
 
 using IconsManifestTest = ChromeManifestTest;
 
 TEST_F(IconsManifestTest, NormalizeIconPaths) {
-  scoped_refptr<extensions::Extension> extension(
+  scoped_refptr<Extension> extension(
       LoadAndExpectSuccess("normalize_icon_paths.json"));
   const ExtensionIconSet& icons = IconsInfo::GetIcons(extension.get());
 
@@ -25,7 +28,7 @@ TEST_F(IconsManifestTest, NormalizeIconPaths) {
 }
 
 TEST_F(IconsManifestTest, IconSizes) {
-  scoped_refptr<extensions::Extension> extension(
+  scoped_refptr<Extension> extension(
       LoadAndExpectSuccess("init_icon_size.json"));
   const ExtensionIconSet& icons = IconsInfo::GetIcons(extension.get());
 

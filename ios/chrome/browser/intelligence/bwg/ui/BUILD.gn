@@ -1,0 +1,88 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "bwg_consent_mutator.h",
+    "bwg_consent_view_controller.h",
+    "bwg_consent_view_controller.mm",
+    "bwg_fre_view_controller_protocol.h",
+    "bwg_fre_wrapper_view_controller.h",
+    "bwg_fre_wrapper_view_controller.mm",
+    "bwg_promo_view_controller.h",
+    "bwg_promo_view_controller.mm",
+    "bwg_promo_view_controller_delegate.h",
+    "bwg_ui_utils.h",
+    "bwg_ui_utils.mm",
+  ]
+  deps = [
+    "//base",
+    "//build:branding_buildflags",
+    "//components/feature_engagement/public",
+    "//components/feature_engagement/public:feature_constants",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/intelligence/bwg/metrics",
+    "//ios/chrome/browser/intelligence/bwg/utils:constants",
+    "//ios/chrome/browser/promos_manager/model:types",
+    "//ios/chrome/browser/promos_manager/ui_bundled:promos",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/symbols:buildflags",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common:string_util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/font:font_api",
+    "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
+  ]
+  public_deps = [ ":bwg_lottie_resources" ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "gemini_egtest.mm" ]
+  deps = [
+    "//base/test:test_support",
+    "//components/signin/internal/identity_manager:capabilities",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/intelligence/page_action_menu/utils",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+bundle_data("bwg_lottie_resources") {
+  sources = [ "resources/FRE_Banner.json" ]
+  outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "bwg_consent_view_controller_unittest.mm",
+    "gemini_fre_wrapper_view_controller_unittest.mm",
+  ]
+  deps = [
+    ":ui",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/intelligence/bwg/metrics",
+    "//ios/chrome/browser/intelligence/bwg/ui",
+    "//ios/chrome/browser/intelligence/bwg/utils:constants",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+    "//url",
+  ]
+}

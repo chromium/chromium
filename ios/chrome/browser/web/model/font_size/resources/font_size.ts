@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 /**
  * @fileoverview Add functionality related to font size adjustment.
@@ -14,7 +14,7 @@ import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
  * is experimential, so it is not included in the CSSStyleDeclaration
  * object.
  */
-declare interface CSSTextSizeAdjust extends CSSStyleDeclaration {
+interface CssTextSizeAdjust extends CSSStyleDeclaration {
   webkitTextSizeAdjust: string;
 }
 
@@ -29,9 +29,13 @@ declare interface CSSTextSizeAdjust extends CSSStyleDeclaration {
  */
 function adjustFontSize(size: number): void {
   try {
-    (document.body.style as CSSTextSizeAdjust).webkitTextSizeAdjust
-        = `${size}%`;
+    (document.body.style as CssTextSizeAdjust).webkitTextSizeAdjust =
+        `${size}%`;
   } catch (error) {}
 }
 
-gCrWeb.font_size = { adjustFontSize };
+const fontSizeApi = new CrWebApi();
+
+fontSizeApi.addFunction('adjustFontSize', adjustFontSize);
+
+gCrWeb.registerApi('font_size', fontSizeApi);

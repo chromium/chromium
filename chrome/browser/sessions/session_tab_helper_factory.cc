@@ -17,7 +17,7 @@
 #include "content/public/browser/web_contents.h"
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/browser/extension_web_contents_observer.h"
 #endif
 
@@ -51,7 +51,7 @@ void CreateSessionServiceTabHelper(content::WebContents* contents) {
 #endif
   sessions::SessionTabHelper::CreateForWebContents(contents, std::move(lookup));
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   auto* observer =
       extensions::ExtensionWebContentsObserver::GetForWebContents(contents);
 

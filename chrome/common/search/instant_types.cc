@@ -28,11 +28,11 @@ InstantMostVisitedItem::InstantMostVisitedItem() = default;
 InstantMostVisitedItem::InstantMostVisitedItem(
     const InstantMostVisitedItem& other) = default;
 
-InstantMostVisitedItem::~InstantMostVisitedItem() {}
+InstantMostVisitedItem::~InstantMostVisitedItem() = default;
 
 InstantMostVisitedInfo::InstantMostVisitedInfo() = default;
 
 InstantMostVisitedInfo::InstantMostVisitedInfo(
     const InstantMostVisitedInfo& other) = default;
 
-InstantMostVisitedInfo::~InstantMostVisitedInfo() {}
+InstantMostVisitedInfo::~InstantMostVisitedInfo() = default;

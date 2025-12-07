@@ -1,0 +1,5 @@
+specific_include_rules = {
+  "best_features_item\.mm": [
+  "+ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_util.h"
+],
+}

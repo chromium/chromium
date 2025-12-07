@@ -11,7 +11,8 @@
 
   .anchor-a { anchor-name: --a; }
   .anchor-b { anchor-name: --b; }
-  .anchor-a, .anchor-b {
+  .anchor-ab { anchor-name: --a, --b; }
+  .anchor-a, .anchor-b, .anchor-ab {
     background: skyblue;
     height: 10px;
   }
@@ -37,15 +38,39 @@
 </style>
 <script>
   function inflate(t, template_element) {
-    if (!template_element.hasAttribute('debug')) {
-      t.add_cleanup(() => main.replaceChildren());
-    }
+    t.add_cleanup(() => main.replaceChildren());
     main.append(template_element.content.cloneNode(true));
   }
 </script>
 
 <main id=main>
 </main>
+
+<template id=test_inclusive_subtree>
+  <div class="scope-a anchor-a"> <!--A-->
+    <div class=anchored-a></div>
+  </div>
+</template>
+<script>
+  test((t) => {
+    inflate(t, test_inclusive_subtree);
+    assert_equals(getComputedStyle(main.querySelector('.anchored-a')).top, '10px');
+  }, 'Can anchor to a name both defined and scoped by the same element');
+</script>
+
+<template id=test_skips_named_anchor_with_scope>
+  <div class="anchor-a"></div>
+  <div class="anchor-a"></div>
+  <div class="anchor-a"></div> <!--A-->
+  <div class="scope-a anchor-a"></div>
+  <div class=anchored-a></div>
+</template>
+<script>
+  test((t) => {
+    inflate(t, test_skips_named_anchor_with_scope);
+    assert_equals(getComputedStyle(main.querySelector('.anchored-a')).top, '30px');
+  }, 'Sibling can not anchor into anchor-scope, even when anchor-name present');
+</script>
 
 <template id=test_scope_all_common_ancestor>
   <div class=scope-all>
@@ -135,7 +160,8 @@
   <div class=anchor-b></div>
   <div class=anchor-a></div><!--A-->
   <div class=scope-a>
-    <div class=anchor-b></div><!--B-->
+    <div class=anchor-b></div>
+    <div class=anchor-ab></div><!--B-->
     <div class=anchor-a></div>
   </div>
   <div class=anchored-a></div>
@@ -145,7 +171,7 @@
   test((t) => {
     inflate(t, test_scope_a);
     assert_equals(getComputedStyle(main.querySelector('.anchored-a')).top, '20px');
-    assert_equals(getComputedStyle(main.querySelector('.anchored-b')).top, '30px');
+    assert_equals(getComputedStyle(main.querySelector('.anchored-b')).top, '40px');
   }, 'anchor-scope:--a scopes only --a');
 </script>
 
@@ -153,8 +179,8 @@
   <div class=anchor-b></div><!--B-->
   <div class=anchor-a></div>
   <div class=scope-b>
-    <div class=anchor-b></div>
     <div class=anchor-a></div><!--A-->
+    <div class=anchor-b></div>
   </div>
   <div class=anchored-a></div>
   <div class=anchored-b></div>
@@ -162,7 +188,7 @@
 <script>
   test((t) => {
     inflate(t, test_scope_b);
-    assert_equals(getComputedStyle(main.querySelector('.anchored-a')).top, '40px');
+    assert_equals(getComputedStyle(main.querySelector('.anchored-a')).top, '30px');
     assert_equals(getComputedStyle(main.querySelector('.anchored-b')).top, '10px');
   }, 'anchor-scope:--b scopes only --b');
 </script>

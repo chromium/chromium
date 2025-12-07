@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/browser/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 
@@ -27,14 +26,16 @@ source_set("link_capturing") {
   }
 
   deps = [
-    ":features",
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:features",
     "//chrome/common:chrome_features",
     "//components/keep_alive_registry",
     "//components/page_load_metrics/browser",
-    "//components/webapps/common:common",
+    "//components/page_load_metrics/google/browser",
+    "//components/webapps/common",
+    "//components/webapps/isolated_web_apps:scheme",
     "//content/public/browser",
     "//third_party/abseil-cpp:absl",
     "//url",
@@ -49,12 +50,17 @@ source_set("link_capturing") {
       "chromeos_apps_intent_picker_delegate.h",
       "chromeos_link_capturing_delegate.cc",
       "chromeos_link_capturing_delegate.h",
+      "chromeos_reimpl_navigation_capturing_throttle.cc",
+      "chromeos_reimpl_navigation_capturing_throttle.h",
       "metrics/intent_handling_metrics.cc",
       "metrics/intent_handling_metrics.h",
+      "navigation_capturing_settings_cros_impl.cc",
+      "navigation_capturing_settings_cros_impl.h",
     ]
     deps += [
       "//ash/webui/projector_app/public/cpp",
       "//chrome/browser/apps/app_service",
+      "//chromeos/ash/experiences/arc",
     ]
 
     # Needed only to allow circular includes.
@@ -78,19 +84,6 @@ source_set("link_capturing") {
       "//components/vector_icons",
     ]
   }
-
-  if (is_chromeos_ash) {
-    deps += [ "//ash/components/arc:arc" ]
-  }
-}
-
-source_set("features") {
-  sources = [
-    "link_capturing_features.cc",
-    "link_capturing_features.h",
-  ]
-  public_deps = [ "//base" ]
-  deps = [ "//chrome/common:chrome_features" ]
 }
 
 source_set("test_support") {
@@ -103,10 +96,14 @@ source_set("test_support") {
     ":link_capturing",
     "//base/test:test_support",
     "//chrome/browser:test_support",
-    "//chrome/browser/apps/link_capturing:features",
-    "//chrome/browser/web_applications:web_applications",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:features",
     "//chrome/common:chrome_features",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
     "//components/webapps/common",
+    "//content/test:test_support",
+    "//testing/gtest",
   ]
 }
 
@@ -114,12 +111,14 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "link_capturing_navigation_throttle_unittest.cc" ]
   deps = [
-    ":features",
     ":link_capturing",
     "//base/test:test_support",
     "//chrome/browser/ui/views/toolbar",
+    "//chrome/browser/web_applications:features",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
     "//testing/gtest",
-    "//ui/base:base",
+    "//ui/base",
     "//ui/display:test_support",
     "//url",
   ]
@@ -131,9 +130,7 @@ source_set("unit_tests") {
     ]
     deps += [
       "//chrome/browser/apps/app_service",
-      "//chrome/test:test_support",
       "//components/prefs:test_support",
-      "//content/test:test_support",
     ]
   }
 }
@@ -151,6 +148,7 @@ source_set("app_service_browser_tests") {
     ":test_support",
     "//chrome/browser/apps/app_service:app_registry_cache_waiter",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/common:chrome_features",

@@ -9,7 +9,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/test/mock_callback.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/image_fetcher/core/image_fetcher.h"
@@ -104,13 +104,13 @@ MATCHER_P(ImagesAreEqual, img, "") {
 }
 
 favicon_base::LargeIconResult GetFaviconResult(const gfx::Image& image) {
-  scoped_refptr<base::RefCountedBytes> data =
-      base::MakeRefCounted<base::RefCountedBytes>();
-  gfx::PNGCodec::EncodeBGRASkBitmap(
-      /*input=*/*image.ToSkBitmap(),
-      /*discard_transparency=*/false, /*output=*/&data->as_vector());
+  std::optional<std::vector<uint8_t>> encoded =
+      gfx::PNGCodec::EncodeBGRASkBitmap(
+          /*input=*/*image.ToSkBitmap(),
+          /*discard_transparency=*/false);
   favicon_base::FaviconRawBitmapResult bitmap_result;
-  bitmap_result.bitmap_data = data;
+  bitmap_result.bitmap_data =
+      base::MakeRefCounted<base::RefCountedBytes>(std::move(encoded.value()));
   return favicon_base::LargeIconResult(bitmap_result);
 }
 
@@ -142,8 +142,6 @@ auto MockFetchImageAndData(
     std::move(callback_handler).Call(std::move(callback));
   };
 }
-
-}  // namespace
 
 class PasswordFaviconLoaderTest : public testing::Test {
  public:
@@ -320,4 +318,6 @@ TEST_F(PasswordFaviconLoaderTest, ImagesFromImageFetcherAreCached) {
                                  /*can_be_requested_from_google=*/false),
       /*task_tracker=*/nullptr, on_success.Get(), on_fail.Get());
 }
+
+}  // namespace
 }  // namespace autofill

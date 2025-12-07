@@ -23,6 +23,8 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <variants name="LevelDBClient">
+  <variant name="AutofillAiModelCache"
+      summary="Database that acts as a cache for AutofillAI model responses"/>
   <variant name="BudgetManager"
       summary="Database for storing budget information for origins."/>
   <variant name="CachedImageFetcherDatabase"
@@ -35,6 +37,8 @@ chromium-metrics-reviews@google.com.
   <variant name="CommerceSubscriptionDatabase"
       summary="Database for Chrome commerce subscriptions."/>
   <variant name="CouponDatabase" summary="Database for coupons in Chrome."/>
+  <variant name="DiscountInfosDatabase"
+      summary="Database for shopping discounts."/>
   <variant name="DiscountsDatabase" summary="Database for shopping discounts."/>
   <variant name="DownloadDB" summary="Databases for in-progress download."/>
   <variant name="DownloadService" summary="Databases for download service."/>
@@ -129,76 +133,16 @@ chromium-metrics-reviews@google.com.
   <token key="LevelDBClient" variants="LevelDBClient"/>
 </histogram>
 
-<histogram name="ProtoDB.DestroySuccess.{LevelDBClient}" enum="BooleanSuccess"
-    expires_after="2024-01-14">
-  <owner>nyquist@chromium.org</owner>
-  <owner>ssid@chromium.org</owner>
-  <summary>Whether a ProtoDB Destroy call was successful or not.</summary>
-  <token key="LevelDBClient" variants="LevelDBClient"/>
-</histogram>
-
-<histogram name="ProtoDB.GetErrorStatus.{LevelDBClient}" enum="LevelDBStatus"
-    expires_after="2024-01-14">
-  <owner>nyquist@chromium.org</owner>
-  <owner>ssid@chromium.org</owner>
-  <summary>
-    The LevelDB Status returned from a failed ProtoDatabase Get call.
-  </summary>
-  <token key="LevelDBClient" variants="LevelDBClient"/>
-</histogram>
-
-<histogram name="ProtoDB.GetFound.{LevelDBClient}" enum="Boolean"
-    expires_after="2024-01-14">
-  <owner>nyquist@chromium.org</owner>
-  <owner>ssid@chromium.org</owner>
-  <summary>Whether a ProtoDB Get call found what was requested.</summary>
-  <token key="LevelDBClient" variants="LevelDBClient"/>
-</histogram>
-
-<histogram name="ProtoDB.GetSuccess.{LevelDBClient}" enum="BooleanSuccess"
-    expires_after="2024-03-17">
-  <owner>nyquist@chromium.org</owner>
-  <owner>ssid@chromium.org</owner>
-  <summary>Whether a ProtoDB Get call was successful or not.</summary>
-  <token key="LevelDBClient" variants="LevelDBClient"/>
-</histogram>
-
-<histogram name="ProtoDB.InitStatus.{LevelDBClient}" enum="LevelDBStatus"
-    expires_after="2024-01-14">
-  <owner>nyquist@chromium.org</owner>
-  <owner>ssid@chromium.org</owner>
-  <summary>The LevelDB Status from a ProtoDatabase Init call.</summary>
-  <token key="LevelDBClient" variants="LevelDBClient"/>
-</histogram>
-
 <histogram name="ProtoDB.LoadEntriesSuccess.{LevelDBClient}"
-    enum="BooleanSuccess" expires_after="2024-12-08">
+    enum="BooleanSuccess" expires_after="2025-02-10">
   <owner>nyquist@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>Whether a ProtoDB LoadEntries call was successful or not.</summary>
   <token key="LevelDBClient" variants="LevelDBClient"/>
 </histogram>
 
-<histogram name="ProtoDB.LoadKeysAndEntriesSuccess.{LevelDBClient}"
-    enum="BooleanSuccess" expires_after="2024-01-14">
-  <owner>nyquist@chromium.org</owner>
-  <owner>ssid@chromium.org</owner>
-  <summary>
-    Whether a ProtoDB LoadKeysAndEntries call was successful or not.
-  </summary>
-  <token key="LevelDBClient" variants="LevelDBClient"/>
-</histogram>
-
-<histogram name="ProtoDB.LoadKeysSuccess.{LevelDBClient}" enum="BooleanSuccess"
-    expires_after="2024-01-14">
-  <owner>nyquist@chromium.org</owner>
-  <owner>ssid@chromium.org</owner>
-  <summary>Whether a ProtoDB LoadKeys call was successful or not.</summary>
-  <token key="LevelDBClient" variants="LevelDBClient"/>
-</histogram>
-
 <histogram name="ProtoDB.SharedDbInitStatus" enum="ProtoDatabaseInitState"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>ssid@chromium.org</owner>
   <owner>salg@chromium.org</owner>
   <summary>
@@ -211,18 +155,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ProtoDB.UpdateErrorStatus.{LevelDBClient}"
-    enum="LevelDBStatus" expires_after="2024-03-17">
-  <owner>nyquist@chromium.org</owner>
-  <owner>ssid@chromium.org</owner>
-  <summary>
-    The LevelDB Status returned from a failed Protodatabase UpdateEntries call.
-  </summary>
-  <token key="LevelDBClient" variants="LevelDBClient"/>
-</histogram>
-
 <histogram name="ProtoDB.UpdateSuccess.{LevelDBClient}" enum="BooleanSuccess"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>nyquist@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>Whether a ProtoDB UpdateEntries call was successful or not.</summary>

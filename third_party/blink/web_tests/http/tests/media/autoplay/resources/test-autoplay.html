@@ -6,8 +6,6 @@ var jsTestIsAsync = true;
 let results = {};
 
 function tearDown() {
-  internals.settings.setAutoplayPolicy('no-user-gesture-required');
-
   shouldBeUndefined(results.media);
   shouldBeEqualToString('results.webAudio', 'running');
 

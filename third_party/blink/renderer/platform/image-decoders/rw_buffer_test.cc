@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/image-decoders/rw_buffer.h"
 
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "base/threading/platform_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkStream.h"
@@ -23,32 +19,35 @@ const char gABC[] = "abcdefghijklmnopqrstuvwxyz";
 void check_abcs(const char buffer[], size_t size) {
   ASSERT_EQ(size % 26, 0u);
   for (size_t offset = 0; offset < size; offset += 26) {
-    EXPECT_TRUE(!memcmp(&buffer[offset], gABC, 26));
+    UNSAFE_TODO(EXPECT_TRUE(!memcmp(&buffer[offset], gABC, 26)));
   }
 }
 
 // reader should contains an integral number of copies of gABC.
 void check_alphabet_buffer(const ROBuffer* reader) {
-  size_t size = reader->size();
+  const size_t size = reader->size();
   ASSERT_EQ(size % 26, 0u);
 
   std::vector<char> storage(size);
+  auto dest = base::as_writable_byte_span(storage);
+
   ROBuffer::Iter iter(reader);
-  size_t offset = 0;
   do {
-    ASSERT_LE(offset + iter.size(), size);
-    memcpy(storage.data() + offset, iter.data(), iter.size());
-    offset += iter.size();
+    auto src = *iter;
+    ASSERT_LE(src.size(), dest.size());
+    dest.copy_prefix_from(src);
+    dest = dest.subspan(src.size());
   } while (iter.Next());
-  ASSERT_EQ(offset, size);
+  ASSERT_TRUE(dest.empty());
   check_abcs(storage.data(), size);
 }
 
-size_t write_into_buffer(size_t reps, void* buffer, size_t capacity) {
-  size_t len = std::min(capacity, reps * sizeof(gABC));
+size_t write_into_buffer(size_t reps, base::span<uint8_t> buffer) {
+  size_t len = std::min(buffer.size(), reps * sizeof(gABC));
   for (size_t i = 0; i < len; i += 26U) {
-    memcpy(static_cast<char*>(buffer) + i, gABC,
-           std::min<size_t>(26U, len - i));
+    const size_t copy_size = std::min<size_t>(26U, len - i);
+    buffer.subspan(i).copy_prefix_from(
+        base::byte_span_from_cstring(gABC).first(copy_size));
   }
   return len;
 }
@@ -81,7 +80,7 @@ TEST(RWBufferTest, Append) {
   {
     RWBuffer buffer;
     for (size_t i = 0; i < N; ++i) {
-      buffer.Append(gABC, 26);
+      buffer.Append(base::byte_span_from_cstring(gABC));
       readers[i] = buffer.MakeROBufferSnapshot();
     }
     EXPECT_EQ(N * 26, buffer.size());
@@ -104,7 +103,7 @@ TEST(RWBufferTest, Threaded) {
   std::array<base::PlatformThreadHandle, N> handlers;
 
   for (size_t i = 0; i < N; ++i) {
-    buffer.Append(gABC, 26);
+    buffer.Append(base::byte_span_from_cstring(gABC));
     scoped_refptr<ROBuffer> reader = buffer.MakeROBufferSnapshot();
     EXPECT_EQ(reader->size(), buffer.size());
 
@@ -123,16 +122,16 @@ TEST(RWBufferTest, Threaded) {
 // Tests that it is safe to call ROBuffer::Iter::size() when exhausted.
 TEST(RWBufferTest, Size) {
   RWBuffer buffer;
-  buffer.Append(gABC, 26);
+  buffer.Append(base::byte_span_from_cstring(gABC));
 
   scoped_refptr<ROBuffer> roBuffer(buffer.MakeROBufferSnapshot());
   ROBuffer::Iter iter(roBuffer.get());
-  EXPECT_TRUE(iter.data());
-  EXPECT_EQ(iter.size(), 26u);
+  EXPECT_TRUE((*iter).data());
+  EXPECT_EQ((*iter).size(), 26u);
 
   // There is only one block in this buffer.
   EXPECT_TRUE(!iter.Next());
-  EXPECT_EQ(0u, iter.size());
+  EXPECT_TRUE((*iter).empty());
 }
 
 // Tests that operations (including the destructor) are safe on an RWBuffer
@@ -146,8 +145,8 @@ TEST(RWBufferTest, Empty) {
   if (roBuffer) {
     EXPECT_EQ(roBuffer->size(), 0u);
     ROBuffer::Iter iter(roBuffer.get());
-    EXPECT_EQ(iter.size(), 0u);
-    EXPECT_TRUE(!iter.data());
+    EXPECT_TRUE((*iter).empty());
+    EXPECT_TRUE(!(*iter).data());
     EXPECT_TRUE(!iter.Next());
   }
 }
@@ -179,7 +178,7 @@ TEST(RWBufferTest, HasNoSnapshots) {
   RWBuffer buffer;
   ASSERT_EQ(0u, buffer.size());
 
-  buffer.Append(gABC, 26);
+  buffer.Append(base::byte_span_from_cstring(gABC));
 
   EXPECT_TRUE(buffer.HasNoSnapshots());
 
@@ -203,7 +202,7 @@ TEST(RWBufferTest, FunctionConstructorSmall) {
 
   scoped_refptr<ROBuffer> roBuffer = buffer.MakeROBufferSnapshot();
   ROBuffer::Iter iter(roBuffer.get());
-  EXPECT_EQ(0, memcmp(iter.data(), gABC, 20U));
+  EXPECT_EQ(*iter, base::span_from_cstring(gABC).first(20U));
 }
 
 TEST(RWBufferTest, FunctionConstructorLarge) {

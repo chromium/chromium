@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>caret-shape underscore in a textarea with vertical-rl writing mode</title>
+<link rel="help" href="https://drafts.csswg.org/css-ui/#caret-shape">
+<meta name="flags" content="interact">
+<meta name="assert" content="Test checks that caret-shape underscore can be set in a textarea with vertical-rl writing mode.">
+<style>
+  textarea {
+    font-size: 1em;
+    font-weight: bold;
+    width: 50em;
+    padding: 10px;
+    background: white;
+    color: blue;
+    caret-color: red;
+    caret-shape: underscore;
+    writing-mode: vertical-rl;
+  }
+</style>
+
+<body>
+  <p>Test passes if, when the text area below is focused for editing in vertical-rl writing mode, the text insertion caret is an underscore.</p>
+  <p>Whether the caret flashes or how it flashes, are not part of the test.</p>
+  <textarea id="test">The text insertion caret should be an underscore under the following character.</textarea>
+  <script>
+    window.onload = function () {
+      document.getElementById("test").focus();
+    }
+  </script>
+</body>

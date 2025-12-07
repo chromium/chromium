@@ -28,6 +28,7 @@ enum SourceType {
   CHROMEOS_WEBSITE_ID = 11;
   EXTENSION_ID = 12;
   NOTIFICATION_ID = 13;
+  CDM_ID = 14;
 }
 
 // Android Activity Type defined by
@@ -39,6 +40,7 @@ enum AndroidActivityType {
   WEB_APP = 3;
   WEB_APK = 4;
   PRE_FIRST_TAB = 5;
+  AUTH_TAB = 6;
 }
 
 // This signifies if the reported source is a navigation to the same origin as
@@ -128,9 +130,9 @@ message Source {
   // navigation source in a tab.
   optional int64 opener_source_id = 12;
 
-  // Data about each URL associated with the Source within the record's
-  // scope, in the order that the URLs were encountered. Data may include full
-  // or partial redirect chains for main frame navigations.
+  // URL information linked to the Source within the record. Only URLs from main
+  // frames are recorded. For redirects, only the initial and final URLs in the
+  // redirect chain are recorded, in that order.
   repeated UrlInfo urls = 8;
 
   // Data about the URL of the Document, copied from the Source message whose
@@ -149,6 +151,7 @@ message Source {
   // discovered by Google's crawler, it should not be recorded.
   // Replaced by |urls| field.
   optional string deprecated_url = 2 [deprecated = true];
+
   reserved 5;
   reserved "deprecated_url_origin";
   reserved 9;

@@ -1,0 +1,8 @@
+include_rules = [
+  # Minimize dependencies on internal code, but allow set up of testing delegates.
+  # It might be worth adding better testing framework in  data_sharing/test_support to avoid these deps.
+  "+components/data_sharing/internal/android/java/src/org/chromium/components/data_sharing/DataSharingServiceImpl.java",
+  "+components/data_sharing/internal/android/java/src/org/chromium/components/data_sharing/DataSharingSDKDelegateBridge.java",
+  "+components/data_sharing/internal/android/java/src/org/chromium/components/data_sharing/DataSharingSDKDelegateTestImpl.java",
+  "+chrome/android/javatests/src/org/chromium/chrome/browser/sync/SyncTestRule.java",
+]

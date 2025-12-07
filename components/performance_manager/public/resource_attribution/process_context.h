@@ -8,11 +8,12 @@
 #include <compare>
 #include <optional>
 #include <string>
+#include <utility>
+#include <variant>
 
 #include "base/memory/weak_ptr.h"
 #include "components/performance_manager/public/browser_child_process_host_id.h"
 #include "components/performance_manager/public/render_process_host_id.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
 class BrowserChildProcessHost;
@@ -109,16 +110,9 @@ class ProcessContext {
   std::string ToString() const;
 
   // Compare ProcessContexts by process host id.
-  constexpr friend std::weak_ordering operator<=>(const ProcessContext& a,
-                                                  const ProcessContext& b) {
-    // absl::variant doesn't define <=>.
-    if (a.id_ < b.id_) {
-      return std::weak_ordering::less;
-    }
-    if (a.id_ == b.id_) {
-      return std::weak_ordering::equivalent;
-    }
-    return std::weak_ordering::greater;
+  constexpr friend auto operator<=>(const ProcessContext& a,
+                                    const ProcessContext& b) {
+    return a.id_ <=> b.id_;
   }
 
   // Test ProcessContexts for equality by process host id.
@@ -127,21 +121,20 @@ class ProcessContext {
     return a.id_ == b.id_;
   }
 
+  // Add ProcessContexts to absl hashes.
+  template <typename H>
+  friend H AbslHashValue(H h, const ProcessContext& c) {
+    return H::combine(std::move(h), c.id_);
+  }
+
  private:
   // A tag for the browser process which has no id.
-  struct BrowserProcessTag {
-    friend constexpr auto operator<=>(const BrowserProcessTag&,
-                                      const BrowserProcessTag&) = default;
-    friend constexpr bool operator==(const BrowserProcessTag&,
-                                     const BrowserProcessTag&) = default;
-  };
-  static_assert(BrowserProcessTag{} == BrowserProcessTag{},
-                "empty structs should always compare equal");
+  using BrowserProcessTag = std::monostate;
 
   using AnyProcessHostId =
-      absl::variant<BrowserProcessTag,
-                    performance_manager::RenderProcessHostId,
-                    performance_manager::BrowserChildProcessHostId>;
+      std::variant<BrowserProcessTag,
+                   performance_manager::RenderProcessHostId,
+                   performance_manager::BrowserChildProcessHostId>;
 
   ProcessContext(AnyProcessHostId id,
                  base::WeakPtr<performance_manager::ProcessNode> weak_node);

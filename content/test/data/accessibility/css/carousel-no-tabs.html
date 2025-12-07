@@ -1,0 +1,31 @@
+<!--
+@BLINK-ALLOW:setSize*
+@BLINK-ALLOW:posInSet*
+@BLINK-ALLOW:focusable*
+@BLINK-ALLOW:name*
+-->
+<!doctype html>
+
+<style>
+.carousel {
+  overflow: auto;
+  columns: 1;
+  height: 200px;
+
+  /* Request buttons for the carousel by setting a non-none content */
+  /* Name will come from fallback */
+  &::scroll-button(left) { content: '' ; }
+  /* Name will come from Css Alt */
+  &::scroll-button(right) { content: '>' / 'next'; }
+  /* Name will come from content */
+  &::scroll-button(up) { content: 'u'; }
+  &::scroll-button(down) { content: 'd'; }
+  & > div { height: 100%; }
+}
+</style>
+
+<div class=carousel>
+  <div>One</div>
+  <div>Two</div>
+  <div>Three</div>
+</div>

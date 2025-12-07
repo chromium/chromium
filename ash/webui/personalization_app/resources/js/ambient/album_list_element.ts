@@ -10,9 +10,10 @@ import 'chrome://resources/ash/common/personalization/common.css.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
-import {AmbientModeAlbum, TopicSource} from '../../personalization_app.mojom-webui.js';
+import type {AmbientModeAlbum} from '../../personalization_app.mojom-webui.js';
+import {TopicSource} from '../../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {getCountText, isRecentHighlightsAlbum} from '../utils.js';
 
@@ -74,7 +75,7 @@ export class AlbumListElement extends WithPersonalizationStore {
     this.updateList(
         /*propertyPath=*/ 'albumsForDisplay_',
         /*identityGetter=*/
-        (album: AmbientModeAlbum) => album.id,
+        (album: AmbientModeAlbum) => album.id + `${album.numberOfPhotos}`,
         /*newList=*/ albums,
         /*identityBasedUpdate=*/ true,
     );

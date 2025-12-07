@@ -9,13 +9,14 @@
 #include <utility>
 
 #include "base/notreached.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/views/layout/box_layout.h"
@@ -78,10 +79,10 @@ DlpWarnDialog::DlpWarnDialog(WarningCallback callback,
 
   set_margins(gfx::Insets::TLBR(20, 0, 20, 0));
 
-  SetModalType(ui::MODAL_TYPE_SYSTEM);
+  SetModalType(ui::mojom::ModalType::kSystem);
 
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, GetOkButton());
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, GetCancelButton());
+  SetButtonLabel(ui::mojom::DialogButton::kOk, GetOkButton());
+  SetButtonLabel(ui::mojom::DialogButton::kCancel, GetCancelButton());
 
   AddGeneralInformation();
   MaybeAddConfidentialRows();
@@ -141,8 +142,7 @@ std::u16string DlpWarnDialog::GetOkButton() {
       return l10n_util::GetStringUTF16(
           IDS_POLICY_DLP_SCREEN_SHARE_WARN_CONTINUE_BUTTON);
     case DlpWarnDialog::Restriction::kFiles:
-      NOTREACHED_IN_MIGRATION();
-      return u"";
+      NOTREACHED();
   }
 }
 
@@ -156,8 +156,7 @@ std::u16string DlpWarnDialog::GetCancelButton() {
     case DlpWarnDialog::Restriction::kScreenShare:
       return l10n_util::GetStringUTF16(IDS_POLICY_DLP_WARN_CANCEL_BUTTON);
     case DlpWarnDialog::Restriction::kFiles:
-      NOTREACHED_IN_MIGRATION();
-      return u"";
+      NOTREACHED();
   }
 }
 
@@ -173,8 +172,7 @@ std::u16string DlpWarnDialog::GetTitle() {
     case DlpWarnDialog::Restriction::kScreenShare:
       return l10n_util::GetStringUTF16(IDS_POLICY_DLP_SCREEN_SHARE_WARN_TITLE);
     case DlpWarnDialog::Restriction::kFiles:
-      NOTREACHED_IN_MIGRATION();
-      return u"";
+      NOTREACHED();
   }
 }
 
@@ -193,8 +191,7 @@ std::u16string DlpWarnDialog::GetMessage() {
       return l10n_util::GetStringFUTF16(
           IDS_POLICY_DLP_SCREEN_SHARE_WARN_MESSAGE, application_title_.value());
     case DlpWarnDialog::Restriction::kFiles:
-      NOTREACHED_IN_MIGRATION();
-      return u"";
+      NOTREACHED();
   }
 }
 

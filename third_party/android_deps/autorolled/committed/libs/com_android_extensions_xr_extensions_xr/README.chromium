@@ -1,0 +1,16 @@
+Name: extensions-xr
+Short Name: extensions-xr
+URL: https://dl.google.com/dl/android/maven2/com/android/extensions/xr/extensions-xr/1.1.0/extensions-xr-1.1.0.jar
+Version: 1.1.0
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: no
+Shipped: no
+
+Description:
+Extensions xr extensions xr pulled in via gradle.
+
+Local Modifications:
+No modifications.

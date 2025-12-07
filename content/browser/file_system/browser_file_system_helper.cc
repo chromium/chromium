@@ -17,7 +17,6 @@
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -187,15 +186,19 @@ void PrepareDropDataForChildProcess(
     ChildProcessSecurityPolicyImpl* security_policy,
     int child_id,
     const storage::FileSystemContext* file_system_context) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // The externalfile:// scheme is used in Chrome OS to open external files in a
   // browser tab.
   // TODO(https://crbug.com/858972): This seems like it could be forged by the
   // renderer. This probably needs to check that this didn't originate from the
   // renderer... Also, this probably can just be GrantRequestURL (which doesn't
   // yet exist) instead of GrantCommitURL.
-  if (drop_data->url.SchemeIs(content::kExternalFileScheme))
-    security_policy->GrantCommitURL(child_id, drop_data->url);
+  if (!drop_data->url_infos.empty()) {
+    const GURL& url = drop_data->url_infos.front().url;
+    if (url.SchemeIs(content::kExternalFileScheme)) {
+      security_policy->GrantCommitURL(child_id, url);
+    }
+  }
 #endif
 
   std::string filesystem_id = PrepareDataTransferFilenamesForChildProcess(
@@ -260,8 +263,7 @@ std::string PrepareDataTransferFilenamesForChildProcess(
     // which will happen at this point, so generously grant both access
     // and request permissions to the specific file to cover both cases.
     // We do not give it the permission to request all file:// URLs.
-    security_policy->GrantRequestSpecificFileURL(
-        child_id, net::FilePathToFileURL(filename.path));
+    security_policy->GrantRequestOfSpecificFile(child_id, filename.path);
 
     // If the renderer already has permission to read these paths, we don't need
     // to re-grant them. This prevents problems with DnD for files in the CrOS

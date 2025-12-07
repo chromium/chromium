@@ -1,0 +1,73 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+
+assert(!is_android, "AXTreeFixingService does not run on Android.")
+
+source_set("service") {
+  sources = [
+    "ax_tree_fixing_services_router.cc",
+    "ax_tree_fixing_services_router.h",
+    "ax_tree_fixing_services_router_factory.cc",
+    "ax_tree_fixing_services_router_factory.h",
+  ]
+
+  deps = [
+    ":internal",
+    ":prefs",
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/sync_preferences",
+    "//content/public/browser",
+  ]
+
+  if (is_chromeos) {
+    deps += [ "//chrome/browser/ash/accessibility" ]
+  }
+}
+
+source_set("prefs") {
+  sources = [
+    "pref_names.cc",
+    "pref_names.h",
+  ]
+
+  deps = [
+    "//chrome/browser/profiles:profile",
+    "//components/prefs",
+  ]
+}
+
+# All clients that want to use AXTreeFixing need to do so via
+# the router, and only the router can access the internal
+# connections to downstream services.
+source_set("internal") {
+  visibility = [ ":service" ]
+
+  sources = [
+    "internal/ax_tree_fixing_optimization_guide_service.cc",
+    "internal/ax_tree_fixing_optimization_guide_service.h",
+    "internal/ax_tree_fixing_screen_ai_service.cc",
+    "internal/ax_tree_fixing_screen_ai_service.h",
+    "internal/ax_tree_fixing_screenshotter.cc",
+    "internal/ax_tree_fixing_screenshotter.h",
+  ]
+
+  public_deps = [ "//ui/accessibility:ax_base" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/screen_ai:screen_ai_service_router_factory",
+    "//components/paint_preview/browser",
+    "//components/paint_preview/common",
+    "//components/paint_preview/public",
+    "//content/public/browser",
+    "//services/screen_ai/public/mojom",
+  ]
+}

@@ -5,6 +5,7 @@
 #include "net/socket/socks_connect_job.h"
 
 #include <memory>
+#include <set>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -82,8 +83,7 @@ LoadState SOCKSConnectJob::GetLoadState() const {
     case STATE_SOCKS_CONNECT_COMPLETE:
       return LOAD_STATE_CONNECTING;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return LOAD_STATE_IDLE;
+      NOTREACHED();
   }
 }
 
@@ -118,7 +118,15 @@ void SOCKSConnectJob::OnNeedsProxyAuth(
     base::OnceClosure restart_with_auth_callback,
     ConnectJob* job) {
   // A SOCKSConnectJob can't be on top of an HttpProxyConnectJob.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
+}
+
+Error SOCKSConnectJob::OnDestinationDnsAliasesResolved(
+    const std::set<std::string>& aliases,
+    ConnectJob* job) {
+  // Do nothing and return OK when DNS aliases for socks proxy hostnames since
+  // higher-level layers will not take action on these.
+  return OK;
 }
 
 int SOCKSConnectJob::DoLoop(int result) {
@@ -144,9 +152,7 @@ int SOCKSConnectJob::DoLoop(int result) {
         rv = DoSOCKSConnectComplete(rv);
         break;
       default:
-        NOTREACHED_IN_MIGRATION() << "bad state";
-        rv = ERR_FAILED;
-        break;
+        NOTREACHED() << "bad state";
     }
   } while (rv != ERR_IO_PENDING && next_state_ != STATE_NONE);
 
@@ -183,6 +189,7 @@ int SOCKSConnectJob::DoSOCKSConnect() {
         transport_connect_job_->PassSocket(), socks_params_->destination(),
         socks_params_->traffic_annotation());
   } else {
+    // TODO(crbug.com/393349123): Handle resolved DNS aliases for socks4.
     auto socks_socket = std::make_unique<SOCKSClientSocket>(
         transport_connect_job_->PassSocket(), socks_params_->destination(),
         socks_params_->network_anonymization_key(), priority(), host_resolver(),

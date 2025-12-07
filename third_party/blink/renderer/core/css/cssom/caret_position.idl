@@ -4,7 +4,6 @@
 
 // https://www.w3.org/TR/cssom-view/#caretposition
 [
-    RuntimeEnabled=CaretPositionFromPoint,
     Exposed=Window
 ] interface CaretPosition {
     readonly attribute Node offsetNode;

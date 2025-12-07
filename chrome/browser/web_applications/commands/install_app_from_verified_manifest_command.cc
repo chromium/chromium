@@ -15,6 +15,8 @@
 #include "base/containers/flat_tree.h"
 #include "base/functional/bind.h"
 #include "base/strings/to_string.h"
+#include "chrome/browser/web_applications/commands/command_metrics.h"
+#include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
@@ -43,9 +45,9 @@ namespace web_app {
 
 namespace {
 
-// TODO(crbug.com/40273612): Find a better way to do Lacros testing so that we
-// don't have to pass localhost into the allowlist. Allowlisted host must be
-// from a Google server.
+// TODO(crbug.com/40273612): Figure out why tests fail when removing
+// 127.0.0.1 even though that was added only for Lacros testing and hence
+// shouldn't be needed anymore.
 constexpr auto kHostAllowlist = base::MakeFixedFlatSet<std::string_view>(
     {"googleusercontent.com", "gstatic.com", "youtube.com",
      "127.0.0.1" /*FOR TESTING*/});
@@ -70,6 +72,7 @@ InstallAppFromVerifiedManifestCommand::InstallAppFromVerifiedManifestCommand(
     GURL verified_manifest_url,
     std::string verified_manifest_contents,
     webapps::AppId expected_id,
+    bool is_diy_app,
     std::optional<WebAppInstallParams> install_params,
     OnceInstallCallback callback)
     : WebAppCommand<SharedWebContentsLock,
@@ -87,6 +90,7 @@ InstallAppFromVerifiedManifestCommand::InstallAppFromVerifiedManifestCommand(
       verified_manifest_url_(std::move(verified_manifest_url)),
       verified_manifest_contents_(std::move(verified_manifest_contents)),
       expected_id_(std::move(expected_id)),
+      is_diy_app_(is_diy_app),
       install_params_(std::move(install_params)) {
   if (install_params_) {
     // Not every `install_params` option has an effect, check that unused params
@@ -125,6 +129,12 @@ void InstallAppFromVerifiedManifestCommand::StartWithLock(
 
 void InstallAppFromVerifiedManifestCommand::OnAboutBlankLoaded(
     webapps::WebAppUrlLoaderResult result) {
+  if (result != webapps::WebAppUrlLoaderResult::kUrlLoaded) {
+    Abort(CommandResult::kFailure,
+          webapps::InstallResultCode::kInstallURLLoadFailed);
+    return;
+  }
+
   // The shared web contents must have been reset to about:blank before command
   // execution.
   DCHECK_EQ(web_contents_lock_->shared_web_contents().GetURL(),
@@ -165,31 +175,44 @@ void InstallAppFromVerifiedManifestCommand::OnManifestParsed(
   }
 
   GetMutableDebugValue().Set("manifest_parsed", true);
-  web_app_info_ =
-      std::make_unique<WebAppInstallInfo>(manifest->id, manifest->start_url);
-  web_app_info_->user_display_mode = mojom::UserDisplayMode::kStandalone;
 
-  UpdateWebAppInfoFromManifest(*manifest, web_app_info_.get());
-
-  if (install_params_) {
-    // TODO(crbug.com/354981650): Remove this call.
-    ApplyParamsToWebAppInstallInfo(*install_params_, *web_app_info_);
-  }
-
-  IconUrlSizeSet icon_urls = GetValidIconUrlsToDownload(*web_app_info_);
-  base::EraseIf(icon_urls, [](const IconUrlWithSize& url_with_size) {
-    for (const auto& allowed_host : kHostAllowlist) {
-      const GURL& icon_url = url_with_size.url;
-      if (icon_url.DomainIs(allowed_host)) {
-        // Found a match, don't erase this url!
-        return false;
+  auto icon_url_modifications = [](IconUrlSizeSet& icon_urls) {
+    base::EraseIf(icon_urls, [](const IconUrlWithSize& url_with_size) {
+      for (const auto& allowed_host : kHostAllowlist) {
+        const GURL& icon_url = url_with_size.url;
+        if (icon_url.DomainIs(allowed_host)) {
+          // Found a match, don't erase this url!
+          return false;
+        }
       }
-    }
-    // No matches, erase this url!
-    return true;
-  });
+      // No matches, erase this url!
+      return true;
+    });
+  };
 
-  if (icon_urls.empty()) {
+  // This is needed to differentiate between icons being generated and no icon
+  // urls left to download.
+  WebAppInstallInfoConstructOptions construct_options;
+  construct_options.bypass_icon_generation_if_no_url = true;
+
+  manifest_to_install_info_job_ =
+      ManifestToWebAppInstallInfoJob::CreateAndStart(
+          *manifest, *data_retriever_.get(), /*background_installation=*/true,
+          install_source_,
+          web_contents_lock_->shared_web_contents().GetWeakPtr(),
+          icon_url_modifications, GetMutableDebugValue(),
+          base::BindOnce(&InstallAppFromVerifiedManifestCommand::
+                             OnInstallInfoParsedFromManifest,
+                         weak_ptr_factory_.GetWeakPtr()),
+          construct_options);
+}
+
+void InstallAppFromVerifiedManifestCommand::OnInstallInfoParsedFromManifest(
+    std::unique_ptr<WebAppInstallInfo> install_info) {
+  CHECK(install_info);
+  web_app_info_ = std::move(install_info);
+
+  if (web_app_info_->icon_bitmaps.empty()) {
     // Abort if there are no icons to download, so we can distinguish this case
     // from having icons but failing to download them.
     Abort(CommandResult::kFailure,
@@ -197,31 +220,23 @@ void InstallAppFromVerifiedManifestCommand::OnManifestParsed(
     return;
   }
 
-  data_retriever_->GetIcons(
-      &web_contents_lock_->shared_web_contents(), std::move(icon_urls),
-      /*skip_page_favicons=*/true,
-      /*fail_all_if_any_fail=*/false,
-      base::BindOnce(&InstallAppFromVerifiedManifestCommand::OnIconsRetrieved,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void InstallAppFromVerifiedManifestCommand::OnIconsRetrieved(
-    IconsDownloadedResult result,
-    IconsMap icons_map,
-    DownloadedIconsHttpResults icons_http_results) {
-  DCHECK(web_app_info_);
-
-  PopulateProductIcons(web_app_info_.get(), &icons_map);
   if (web_app_info_->is_generated_icon) {
-    // PopulateProductIcons sets is_generated_icon if it had to generate a
-    // product icon due a lack of successfully downloaded product icons. In
-    // this case, abort the installation and report the error.
+    // PopulateProductIcons() inside the ManifestToWebAppInstallInfoJob sets
+    // `is_generated_icon` if it had to generate a product icon due a lack of
+    // successfully downloaded product icons. In this case, abort the
+    // installation and report the error.
     Abort(CommandResult::kFailure,
           webapps::InstallResultCode::kIconDownloadingFailed);
     return;
   }
 
-  PopulateOtherIcons(web_app_info_.get(), icons_map);
+  web_app_info_->user_display_mode = mojom::UserDisplayMode::kStandalone;
+  web_app_info_->is_diy_app = is_diy_app_;
+
+  if (install_params_) {
+    // TODO(crbug.com/354981650): Remove this call.
+    ApplyParamsToWebAppInstallInfo(*install_params_, *web_app_info_);
+  }
 
   webapps::AppId app_id =
       GenerateAppIdFromManifestId(web_app_info_->manifest_id());
@@ -232,15 +247,16 @@ void InstallAppFromVerifiedManifestCommand::OnIconsRetrieved(
     return;
   }
 
+  app_lock_ = std::make_unique<SharedWebContentsWithAppLock>();
   command_manager()->lock_manager().UpgradeAndAcquireLock(
-      std::move(web_contents_lock_), {app_id},
+      std::move(web_contents_lock_), *app_lock_, {app_id},
       base::BindOnce(&InstallAppFromVerifiedManifestCommand::OnAppLockAcquired,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void InstallAppFromVerifiedManifestCommand::OnAppLockAcquired(
-    std::unique_ptr<SharedWebContentsWithAppLock> app_lock) {
-  app_lock_ = std::move(app_lock);
+void InstallAppFromVerifiedManifestCommand::OnAppLockAcquired() {
+  CHECK(app_lock_);
+  CHECK(app_lock_->IsGranted());
   WebAppInstallFinalizer::FinalizeOptions finalize_options(install_source_);
   finalize_options.add_to_quick_launch_bar = false;
   finalize_options.overwrite_existing_manifest_fields = false;
@@ -262,6 +278,9 @@ void InstallAppFromVerifiedManifestCommand::OnAppLockAcquired(
 void InstallAppFromVerifiedManifestCommand::OnInstallFinalized(
     const webapps::AppId& app_id,
     webapps::InstallResultCode code) {
+  GetMutableDebugValue().Set("error_code", base::ToString(code));
+  RecordInstallMetrics(InstallCommand::kInstallAppFromVerifiedManifest,
+                       WebAppType::kCraftedApp, code, install_source_);
   CompleteAndSelfDestruct(webapps::IsSuccess(code) ? CommandResult::kSuccess
                                                    : CommandResult::kFailure,
                           app_id, code);
@@ -271,6 +290,8 @@ void InstallAppFromVerifiedManifestCommand::Abort(
     CommandResult result,
     webapps::InstallResultCode code) {
   GetMutableDebugValue().Set("error_code", base::ToString(code));
+  RecordInstallMetrics(InstallCommand::kInstallAppFromVerifiedManifest,
+                       WebAppType::kCraftedApp, code, install_source_);
   CompleteAndSelfDestruct(result, webapps::AppId(), code);
 }
 

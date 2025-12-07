@@ -4,7 +4,6 @@
 
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
-import("//build/config/locales.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 import("//tools/grit/grit_rule.gni")
 
@@ -60,6 +59,7 @@ android_library("java") {
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
     "//ui/android:ui_utils_java",
+    "//ui/edge_to_edge:java",
     "//url:gurl_java",
   ]
   srcjar_deps = [
@@ -150,10 +150,6 @@ android_resources("java_resources") {
 
 java_strings_grd("webapps_strings_grd") {
   grd_file = "android_webapps_strings.grd"
-  outputs = [ "values/android_webapps_strings.xml" ] +
-            process_file_template(
-                android_bundle_locales_as_resources,
-                [ "values-{{source_name_part}}/android_webapps_strings.xml" ])
 }
 
 source_set("unit_tests") {
@@ -170,6 +166,7 @@ source_set("unit_tests") {
   ]
   deps = [
     "//base",
+    "//build:android_buildflags",
     "//components/favicon/content",
     "//components/favicon_base",
     "//components/prefs:test_support",
@@ -181,7 +178,7 @@ source_set("unit_tests") {
     "//net:test_support",
     "//services/network:test_support",
     "//testing/gtest",
-    "//third_party/blink/public/common:common",
+    "//third_party/blink/public/common",
     "//third_party/blink/public/mojom:mojom_platform",
     "//ui/gfx:test_support",
     "//url",
@@ -192,6 +189,10 @@ source_set("unit_tests") {
     "//components/test/data/webapps/simple.html",
     "//components/test/data/webapps/title1.html",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 robolectric_library("junit") {
@@ -208,6 +209,8 @@ robolectric_library("junit") {
   deps = [
     ":java",
     ":java_resources",
+    ":pwa_restore_bottom_sheet_mediator_jni_headers_java",
+    ":webapps_jni_headers_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base:tasks_java",
@@ -238,6 +241,7 @@ android_library("unit_device_javatests") {
   sources = [ "java/src/org/chromium/components/webapps/pwa_restore_ui/PwaRestoreBottomSheetViewRenderTest.java" ]
   deps = [
     ":java",
+    ":pwa_restore_bottom_sheet_mediator_jni_headers_java",
     "//base:base_java_test_support",
     "//base:tasks_java",
     "//chrome/android:chrome_java",
@@ -247,7 +251,7 @@ android_library("unit_device_javatests") {
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/jni_zero:jni_zero_java",
-    "//third_party/junit:junit",
+    "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
     "//ui/android:ui_java_test_support",

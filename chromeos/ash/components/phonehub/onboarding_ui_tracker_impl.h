@@ -14,8 +14,7 @@
 class PrefRegistrySimple;
 class PrefService;
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 // OnboardingUiTracker implementation that uses the
 // |kHideOnboardingUi| pref to determine whether the Onboarding UI should be
@@ -60,7 +59,6 @@ class OnboardingUiTrackerImpl
   base::RepeatingClosure show_multidevice_setup_dialog_callback_;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_ONBOARDING_UI_TRACKER_IMPL_H_

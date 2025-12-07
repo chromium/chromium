@@ -39,16 +39,12 @@ void AccessibilityHighlightLayer::Set(const std::vector<gfx::Rect>& rects,
 
   // Calculate the bounds of all the rects together, that represents
   // the bounds of the full layer.
-  gfx::Rect bounds;
-  for (const gfx::Rect rect : rects_) {
-    bounds.Union(rect);
-  }
+  gfx::Rect bounds = gfx::UnionRects(rects_);
 
   int inset = kLayerMargin;
   bounds.Inset(-inset);
 
-  display::Display display =
-      display::Screen::GetScreen()->GetDisplayMatching(bounds);
+  display::Display display = display::Screen::Get()->GetDisplayMatching(bounds);
   aura::Window* root_window = Shell::GetRootWindowForDisplayId(display.id());
   aura::Window* container = Shell::GetContainer(
       root_window, kShellWindowId_AccessibilityPanelContainer);

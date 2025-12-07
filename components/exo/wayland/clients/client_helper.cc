@@ -4,11 +4,9 @@
 
 #include "components/exo/wayland/clients/client_helper.h"
 
-#include <chrome-color-management-client-protocol.h>
 #include <content-type-v1-client-protocol.h>
 #include <input-timestamps-unstable-v1-client-protocol.h>
 #include <linux-dmabuf-unstable-v1-client-protocol.h>
-#include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
 #include <presentation-time-client-protocol.h>
 #include <single-pixel-buffer-v1-client-protocol.h>
 #include <wayland-client-core.h>
@@ -61,25 +59,12 @@ DEFAULT_DELETER(zaura_shell, zaura_shell_destroy)
 DEFAULT_DELETER(zaura_surface, zaura_surface_destroy)
 DEFAULT_DELETER(zaura_toplevel, zaura_toplevel_destroy)
 DEFAULT_DELETER(zaura_output, zaura_output_destroy)
-DEFAULT_DELETER(zcr_color_manager_v1, zcr_color_manager_v1_destroy)
-DEFAULT_DELETER(zcr_color_management_output_v1,
-                zcr_color_management_output_v1_destroy)
-DEFAULT_DELETER(zcr_color_management_surface_v1,
-                zcr_color_management_surface_v1_destroy)
-DEFAULT_DELETER(zcr_color_space_creator_v1, zcr_color_space_creator_v1_destroy)
-DEFAULT_DELETER(zcr_color_space_v1, zcr_color_space_v1_destroy)
-DEFAULT_DELETER(zwp_linux_buffer_release_v1,
-                zwp_linux_buffer_release_v1_destroy)
 DEFAULT_DELETER(zwp_fullscreen_shell_v1, zwp_fullscreen_shell_v1_destroy)
 DEFAULT_DELETER(zwp_input_timestamps_manager_v1,
                 zwp_input_timestamps_manager_v1_destroy)
 DEFAULT_DELETER(zwp_input_timestamps_v1, zwp_input_timestamps_v1_destroy)
 DEFAULT_DELETER(zwp_linux_buffer_params_v1, zwp_linux_buffer_params_v1_destroy)
 DEFAULT_DELETER(zwp_linux_dmabuf_v1, zwp_linux_dmabuf_v1_destroy)
-DEFAULT_DELETER(zwp_linux_explicit_synchronization_v1,
-                zwp_linux_explicit_synchronization_v1_destroy)
-DEFAULT_DELETER(zwp_linux_surface_synchronization_v1,
-                zwp_linux_surface_synchronization_v1_destroy)
 DEFAULT_DELETER(zcr_vsync_feedback_v1, zcr_vsync_feedback_v1_destroy)
 DEFAULT_DELETER(zcr_vsync_timing_v1, zcr_vsync_timing_v1_destroy)
 DEFAULT_DELETER(wl_data_device_manager, wl_data_device_manager_destroy)

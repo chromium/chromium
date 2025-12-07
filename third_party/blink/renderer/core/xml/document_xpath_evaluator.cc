@@ -32,18 +32,11 @@
 
 namespace blink {
 
-// static
-const char DocumentXPathEvaluator::kSupplementName[] = "DocumentXPathEvaluator";
-
-DocumentXPathEvaluator::DocumentXPathEvaluator(Document& document)
-    : Supplement<Document>(document) {}
-
 DocumentXPathEvaluator& DocumentXPathEvaluator::From(Document& document) {
-  DocumentXPathEvaluator* cache =
-      Supplement<Document>::From<DocumentXPathEvaluator>(document);
+  DocumentXPathEvaluator* cache = document.GetDocumentXPathEvaluator();
   if (!cache) {
-    cache = MakeGarbageCollected<DocumentXPathEvaluator>(document);
-    Supplement<Document>::ProvideTo(document, cache);
+    cache = MakeGarbageCollected<DocumentXPathEvaluator>();
+    document.SetDocumentXPathEvaluator(cache);
   }
   return *cache;
 }
@@ -85,7 +78,6 @@ XPathResult* DocumentXPathEvaluator::evaluate(Document& document,
 
 void DocumentXPathEvaluator::Trace(Visitor* visitor) const {
   visitor->Trace(xpath_evaluator_);
-  Supplement<Document>::Trace(visitor);
 }
 
 }  // namespace blink

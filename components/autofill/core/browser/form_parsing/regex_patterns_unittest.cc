@@ -8,20 +8,35 @@
 // components/autofill/core/browser/autofill_regexes_unittest.cc.
 // Only these tests will be kept once the pattern provider launches.
 
+#include <ranges>
 #include <string>
 #include <string_view>
 #include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
-#include "base/ranges/ranges.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/form_parsing/buildflags.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns_inl.h"
+#include "components/autofill/core/browser/form_parsing/regex_patterns_test_api.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace autofill {
+
+bool operator==(MatchPatternRef a, MatchPatternRef b) {
+  return test_api(a).is_supplementary() == test_api(b).is_supplementary() &&
+         test_api(a).index() == test_api(b).index();
+}
+
+void PrintTo(MatchPatternRef p, std::ostream* os) {
+  *os << "MatchPatternRef(" << test_api(p).is_supplementary() << ","
+      << test_api(p).index() << ")";
+}
+
+namespace {
 
 using ::testing::Contains;
 using ::testing::Each;
@@ -30,34 +45,6 @@ using ::testing::ElementsAreArray;
 using ::testing::IsSupersetOf;
 using ::testing::Not;
 using ::testing::UnorderedElementsAreArray;
-
-namespace autofill {
-
-class MatchPatternRefTestApi {
- public:
-  using UnderlyingType = MatchPatternRef::UnderlyingType;
-
-  explicit MatchPatternRefTestApi(MatchPatternRef p) : p_(p) {}
-
-  std::optional<MatchPatternRef> MakeSupplementary() const {
-    if (!(*p_).match_field_attributes.contains(MatchAttribute::kName))
-      return std::nullopt;
-    return MatchPatternRef(true, index());
-  }
-
-  UnderlyingType is_supplementary() const { return p_.is_supplementary(); }
-
-  UnderlyingType index() const { return p_.index(); }
-
- private:
-  MatchPatternRef p_;
-};
-
-namespace {
-
-MatchPatternRefTestApi test_api(MatchPatternRef p) {
-  return MatchPatternRefTestApi(p);
-}
 
 auto Matches(std::u16string_view regex) {
   icu::RegexPattern regex_pattern = *CompileRegex(regex);
@@ -93,37 +80,19 @@ bool IsEmpty(const char* s) {
   return s == nullptr || s[0] == '\0';
 }
 
-}  // namespace
-
-bool operator==(MatchPatternRef a, MatchPatternRef b) {
-  return test_api(a).is_supplementary() == test_api(b).is_supplementary() &&
-         test_api(a).index() == test_api(b).index();
-}
-
-bool operator!=(MatchPatternRef a, MatchPatternRef b) {
-  return !(a == b);
-}
-
-void PrintTo(MatchPatternRef p, std::ostream* os) {
-  *os << "MatchPatternRef(" << test_api(p).is_supplementary() << ","
-      << test_api(p).index() << ")";
-}
-
-// The parameter is the PatternSource to pass to GetMatchPatterns().
-class RegexPatternsTest : public testing::TestWithParam<PatternSource> {
+// The parameter is the PatternFile to pass to GetMatchPatterns().
+class RegexPatternsTest : public testing::TestWithParam<PatternFile> {
  public:
-  PatternSource pattern_source() const { return GetParam(); }
+  PatternFile pattern_file() const { return GetParam(); }
 };
 
 INSTANTIATE_TEST_SUITE_P(RegexPatternsTest,
                          RegexPatternsTest,
                          ::testing::Values(
 #if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-                             PatternSource::kLegacy
+                             PatternFile::kLegacy
 #else
-                             PatternSource::kLegacy,
-                             PatternSource::kDefault,
-                             PatternSource::kExperimental
+                             PatternFile::kDefault
 #endif
                              ));
 
@@ -166,10 +135,10 @@ TEST_F(RegexPatternsTest, MatchPatternRefDereference) {
   EXPECT_TRUE((*a).negative_pattern);
   EXPECT_EQ((*a).positive_pattern, (*b).positive_pattern);
   EXPECT_EQ((*a).negative_pattern, (*b).negative_pattern);
-  EXPECT_EQ((*a).positive_score, (*b).positive_score);
   EXPECT_EQ((*a).form_control_types, (*b).form_control_types);
   EXPECT_THAT((*a).match_field_attributes, Contains(MatchAttribute::kLabel));
   EXPECT_THAT((*b).match_field_attributes, ElementsAre(MatchAttribute::kName));
+  EXPECT_EQ((*a).feature.has_value(), (*b).feature.has_value());
 }
 
 TEST_F(RegexPatternsTest, IsSupportedLanguageCode) {
@@ -199,15 +168,15 @@ TEST_P(RegexPatternsTest, PseudoLanguageIsUnionOfLanguages) {
   std::vector<MatchPatternRef> expected;
   for (const std::string& lang : kLanguagesOfPattern) {
     const auto& patterns =
-        GetMatchPatterns(kSomeName, LanguageCode(lang), pattern_source());
+        GetMatchPatterns(kSomeName, LanguageCode(lang), pattern_file());
     expected.insert(expected.end(), patterns.begin(), patterns.end());
   }
   std::erase_if(expected,
                 [](auto p) { return test_api(p).is_supplementary(); });
 
-  EXPECT_THAT(GetMatchPatterns(kSomeName, std::nullopt, pattern_source()),
+  EXPECT_THAT(GetMatchPatterns(kSomeName, LanguageCode(""), pattern_file()),
               UnorderedElementsAreArray(expected));
-  EXPECT_THAT(GetMatchPatterns(kSomeName, std::nullopt, pattern_source()),
+  EXPECT_THAT(GetMatchPatterns(kSomeName, LanguageCode(""), pattern_file()),
               Each(Not(IsSupplementary)));
 }
 
@@ -216,10 +185,9 @@ TEST_P(RegexPatternsTest, PseudoLanguageIsUnionOfLanguages) {
 TEST_P(RegexPatternsTest, FallbackToPseudoLanguageIfLanguageDoesNotExist) {
   const std::string kSomeName = "ADDRESS_LINE_1";
   const LanguageCode kNonexistingLanguage("foo");
-  EXPECT_THAT(
-      GetMatchPatterns(kSomeName, kNonexistingLanguage, pattern_source()),
-      ElementsAreArray(
-          GetMatchPatterns(kSomeName, std::nullopt, pattern_source())));
+  EXPECT_THAT(GetMatchPatterns(kSomeName, kNonexistingLanguage, pattern_file()),
+              ElementsAreArray(GetMatchPatterns(kSomeName, LanguageCode(""),
+                                                pattern_file())));
 }
 
 // Tests that for a given pattern name, the non-English languages are
@@ -228,9 +196,9 @@ TEST_P(RegexPatternsTest,
        EnglishPatternsAreAddedToOtherLanguagesAsSupplementaryPatterns) {
   const std::string kSomeName = "ADDRESS_LINE_1";
   auto de_patterns =
-      GetMatchPatterns(kSomeName, LanguageCode("de"), pattern_source());
+      GetMatchPatterns(kSomeName, LanguageCode("de"), pattern_file());
   auto en_patterns =
-      GetMatchPatterns(kSomeName, LanguageCode("en"), pattern_source());
+      GetMatchPatterns(kSomeName, LanguageCode("en"), pattern_file());
   ASSERT_FALSE(de_patterns.empty());
   ASSERT_FALSE(en_patterns.empty());
 
@@ -253,15 +221,15 @@ TEST_P(RegexPatternsTest,
 struct PatternTestCase {
   // The set of patterns. In non-branded builds, only the default set is
   // supported.
-  PatternSource pattern_source = PatternSource::kLegacy;
+  PatternFile pattern_file;
   // Reference to the pattern name in the resources/regex_patterns.json file.
   const char* pattern_name;
   // Language selector for the pattern, refers to the detected language of a
   // website.
   const char* language = "en";
   // Strings that should be matched by the pattern.
-  std::vector<std::string> positive_samples = {};
-  std::vector<std::string> negative_samples = {};
+  std::vector<std::string> positive_samples;
+  std::vector<std::string> negative_samples;
 };
 
 class RegexPatternsTestWithSamples
@@ -274,9 +242,8 @@ TEST_P(RegexPatternsTestWithSamples, TestPositiveAndNegativeCases) {
     EXPECT_THAT(sample,
                 MatchesAny(GetMatchPatterns(test_case.pattern_name,
                                             LanguageCode(test_case.language),
-                                            test_case.pattern_source)))
-        << "pattern_source=" << static_cast<int>(test_case.pattern_source)
-        << ","
+                                            test_case.pattern_file)))
+        << "pattern_file=" << static_cast<int>(test_case.pattern_file) << ","
         << "pattern_name=" << test_case.pattern_name << ","
         << "language=" << test_case.language;
   }
@@ -285,178 +252,130 @@ TEST_P(RegexPatternsTestWithSamples, TestPositiveAndNegativeCases) {
     EXPECT_THAT(sample,
                 Not(MatchesAny(GetMatchPatterns(
                     test_case.pattern_name, LanguageCode(test_case.language),
-                    test_case.pattern_source))))
+                    test_case.pattern_file))))
         << "pattern_name=" << test_case.pattern_name << ","
         << "language=" << test_case.language;
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    RegexPatternsTest,
-    RegexPatternsTestWithSamples,
-    testing::Values(
+INSTANTIATE_TEST_SUITE_P(RegexPatternsTest,
+                         RegexPatternsTestWithSamples,
+                         testing::Values(
 #if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-        PatternTestCase{.pattern_source = PatternSource::kLegacy,
-                        .pattern_name = "PATTERN_SOURCE_DUMMY",
-                        .language = "en",
-                        .positive_samples = {"legacy"},
-                        .negative_samples = {"default", "experimental"}},
+                             PatternTestCase {
+                               .pattern_file = PatternFile::kLegacy,
+                               .pattern_name = "PATTERN_FILE_DUMMY",
+                               .language = "en", .positive_samples = {"legacy"},
+                               .negative_samples = {"default"}}
 #else
-        PatternTestCase{.pattern_source = PatternSource::kDefault,
-                        .pattern_name = "PATTERN_SOURCE_DUMMY",
-                        .language = "en",
-                        .positive_samples = {"default"},
-                        .negative_samples = {"legacy", "experimental"}},
-        PatternTestCase{.pattern_source = PatternSource::kExperimental,
-                        .pattern_name = "PATTERN_SOURCE_DUMMY",
-                        .language = "en",
-                        .positive_samples = {"experimental"},
-                        .negative_samples = {"default", "legacy"}},
-        PatternTestCase{.pattern_source = PatternSource::kLegacy,
-                        .pattern_name = "PATTERN_SOURCE_DUMMY",
-                        .language = "en",
-                        .positive_samples = {"legacy"},
-                        .negative_samples = {"default", "experimental"}},
+                             PatternTestCase{
+                                 .pattern_file = PatternFile::kDefault,
+                                 .pattern_name = "PATTERN_FILE_DUMMY",
+                                 .language = "en",
+                                 .positive_samples = {"default"},
+                                 .negative_samples = {"legacy"}},
+                             PatternTestCase{
+                                 .pattern_file = PatternFile::kDefault,
+                                 .pattern_name =
+                                     "CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR",
+                                 .language = "en",
+                                 .positive_samples =
+                                     {"mm / yy", "mm/ yy", "mm /yy", "mm/yy",
+                                      "mm - yy", "mm- yy", "mm -yy", "mm-yy",
+                                      "mmyy",
+                                      // Complex two year cases
+                                      "Expiration Date (MM / YY)",
+                                      "Expiration Date (MM/YY)",
+                                      "Expiration Date (MM - YY)",
+                                      "Expiration Date (MM-YY)",
+                                      "Expiration Date MM / YY",
+                                      "Expiration Date MM/YY",
+                                      "Expiration Date MM - YY",
+                                      "Expiration Date MM-YY",
+                                      "expiration date yy",
+                                      "Exp Date     (MM / YY)"},
+                                 .negative_samples =
+                                     {"", "Look, ma' -- an invalid string!",
+                                      "mmfavouritewordyy", "mm a yy",
+                                      "mm a yyyy",
+                                      // Simple four year cases
+                                      "mm / yyyy", "mm/ yyyy", "mm /yyyy",
+                                      "mm/yyyy", "mm - yyyy", "mm- yyyy",
+                                      "mm -yyyy", "mm-yyyy", "mmyyyy",
+                                      // Complex four year cases
+                                      "Expiration Date (MM / YYYY)",
+                                      "Expiration Date (MM/YYYY)",
+                                      "Expiration Date (MM - YYYY)",
+                                      "Expiration Date (MM-YYYY)",
+                                      "Expiration Date MM / YYYY",
+                                      "Expiration Date MM/YYYY",
+                                      "Expiration Date MM - YYYY",
+                                      "Expiration Date MM-YYYY",
+                                      "expiration date yyyy",
+                                      "Exp Date     (MM / YYYY)"}},
+                             PatternTestCase{
+                                 .pattern_file = PatternFile::kDefault,
+                                 .pattern_name =
+                                     "CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR",
+                                 .language = "en",
+                                 .positive_samples =
+                                     {// Simple four year cases
+                                      "mm / yyyy", "mm/ yyyy", "mm /yyyy",
+                                      "mm/yyyy", "mm - yyyy", "mm- yyyy",
+                                      "mm -yyyy", "mm-yyyy", "mmyyyy",
+                                      // Complex four year cases
+                                      "Expiration Date (MM / YYYY)",
+                                      "Expiration Date (MM/YYYY)",
+                                      "Expiration Date (MM - YYYY)",
+                                      "Expiration Date (MM-YYYY)",
+                                      "Expiration Date MM / YYYY",
+                                      "Expiration Date MM/YYYY",
+                                      "Expiration Date MM - YYYY",
+                                      "Expiration Date MM-YYYY",
+                                      "expiration date yyyy",
+                                      "Exp Date     (MM / YYYY)"},
+                                 .negative_samples =
+                                     {"", "Look, ma' -- an invalid string!",
+                                      "mmfavouritewordyy", "mm a yy",
+                                      "mm a yyyy",
+                                      // Simple two year cases
+                                      "mm / yy", "mm/ yy", "mm /yy", "mm/yy",
+                                      "mm - yy", "mm- yy", "mm -yy", "mm-yy",
+                                      "mmyy",
+                                      // Complex two year cases
+                                      "Expiration Date (MM / YY)",
+                                      "Expiration Date (MM/YY)",
+                                      "Expiration Date (MM - YY)",
+                                      "Expiration Date (MM-YY)",
+                                      "Expiration Date MM / YY",
+                                      "Expiration Date MM/YY",
+                                      "Expiration Date MM - YY",
+                                      "Expiration Date MM-YY",
+                                      "expiration date yy",
+                                      "Exp Date     (MM / YY)"}},
+                             PatternTestCase{
+                                 .pattern_file = PatternFile::kDefault,
+                                 .pattern_name = "ZIP_CODE",
+                                 .language = "en",
+                                 .positive_samples = {"Zip code",
+                                                      "postal code"},
+                                 .negative_samples =
+                                     {// Not matching for "en" language:
+                                      "postleitzahl",
+                                      // Not referring to a ZIP code:
+                                      "Supported file formats: .docx, .rar, "
+                                      ".zip."}},
+                             PatternTestCase{
+                                 .pattern_file = PatternFile::kDefault,
+                                 .pattern_name = "ZIP_CODE",
+                                 .language = "de",
+                                 .positive_samples =
+                                     {// Inherited from "en":
+                                      "Zip code", "postal code",
+                                      // Specifically added for "de":
+                                      "postleitzahl"}}
 #endif
-        PatternTestCase{
-            .pattern_source = PatternSource::kLegacy,
-            .pattern_name = "CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR",
-            .language = "en",
-            .positive_samples =
-                {"mm / yy", "mm/ yy", "mm /yy", "mm/yy", "mm - yy", "mm- yy",
-                 "mm -yy", "mm-yy", "mmyy",
-                 // Complex two year cases
-                 "Expiration Date (MM / YY)", "Expiration Date (MM/YY)",
-                 "Expiration Date (MM - YY)", "Expiration Date (MM-YY)",
-                 "Expiration Date MM / YY", "Expiration Date MM/YY",
-                 "Expiration Date MM - YY", "Expiration Date MM-YY",
-                 "expiration date yy", "Exp Date     (MM / YY)"},
-            .negative_samples =
-                {"", "Look, ma' -- an invalid string!", "mmfavouritewordyy",
-                 "mm a yy", "mm a yyyy",
-                 // Simple four year cases
-                 "mm / yyyy", "mm/ yyyy", "mm /yyyy", "mm/yyyy", "mm - yyyy",
-                 "mm- yyyy", "mm -yyyy", "mm-yyyy", "mmyyyy",
-                 // Complex four year cases
-                 "Expiration Date (MM / YYYY)", "Expiration Date (MM/YYYY)",
-                 "Expiration Date (MM - YYYY)", "Expiration Date (MM-YYYY)",
-                 "Expiration Date MM / YYYY", "Expiration Date MM/YYYY",
-                 "Expiration Date MM - YYYY", "Expiration Date MM-YYYY",
-                 "expiration date yyyy", "Exp Date     (MM / YYYY)"}},
-        PatternTestCase{
-            .pattern_source = PatternSource::kLegacy,
-            .pattern_name = "CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR",
-            .language = "en",
-            .positive_samples =
-                {// Simple four year cases
-                 "mm / yyyy", "mm/ yyyy", "mm /yyyy", "mm/yyyy", "mm - yyyy",
-                 "mm- yyyy", "mm -yyyy", "mm-yyyy", "mmyyyy",
-                 // Complex four year cases
-                 "Expiration Date (MM / YYYY)", "Expiration Date (MM/YYYY)",
-                 "Expiration Date (MM - YYYY)", "Expiration Date (MM-YYYY)",
-                 "Expiration Date MM / YYYY", "Expiration Date MM/YYYY",
-                 "Expiration Date MM - YYYY", "Expiration Date MM-YYYY",
-                 "expiration date yyyy", "Exp Date     (MM / YYYY)"},
-            .negative_samples =
-                {"", "Look, ma' -- an invalid string!", "mmfavouritewordyy",
-                 "mm a yy", "mm a yyyy",
-                 // Simple two year cases
-                 "mm / yy", "mm/ yy", "mm /yy", "mm/yy", "mm - yy", "mm- yy",
-                 "mm -yy", "mm-yy", "mmyy",
-                 // Complex two year cases
-                 "Expiration Date (MM / YY)", "Expiration Date (MM/YY)",
-                 "Expiration Date (MM - YY)", "Expiration Date (MM-YY)",
-                 "Expiration Date MM / YY", "Expiration Date MM/YY",
-                 "Expiration Date MM - YY", "Expiration Date MM-YY",
-                 "expiration date yy", "Exp Date     (MM / YY)"}},
-        PatternTestCase{.pattern_source = PatternSource::kLegacy,
-                        .pattern_name = "ZIP_CODE",
-                        .language = "en",
-                        .positive_samples = {"Zip code", "postal code"},
-                        .negative_samples =
-                            {// Not matching for "en" language:
-                             "postleitzahl",
-                             // Not referring to a ZIP code:
-                             "Supported file formats: .docx, .rar, .zip."}},
-        PatternTestCase{.pattern_source = PatternSource::kLegacy,
-                        .pattern_name = "ZIP_CODE",
-                        .language = "de",
-                        .positive_samples =
-                            {// Inherited from "en":
-                             "Zip code", "postal code",
-                             // Specifically added for "de":
-                             "postleitzahl"}}
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-        ,
-        PatternTestCase{
-            .pattern_source = PatternSource::kExperimental,
-            .pattern_name = "CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR",
-            .language = "en",
-            .positive_samples =
-                {"mm / yy", "mm/ yy", "mm /yy", "mm/yy", "mm - yy", "mm- yy",
-                 "mm -yy", "mm-yy", "mmyy",
-                 // Complex two year cases
-                 "Expiration Date (MM / YY)", "Expiration Date (MM/YY)",
-                 "Expiration Date (MM - YY)", "Expiration Date (MM-YY)",
-                 "Expiration Date MM / YY", "Expiration Date MM/YY",
-                 "Expiration Date MM - YY", "Expiration Date MM-YY",
-                 "expiration date yy", "Exp Date     (MM / YY)"},
-            .negative_samples =
-                {"", "Look, ma' -- an invalid string!", "mmfavouritewordyy",
-                 "mm a yy", "mm a yyyy",
-                 // Simple four year cases
-                 "mm / yyyy", "mm/ yyyy", "mm /yyyy", "mm/yyyy", "mm - yyyy",
-                 "mm- yyyy", "mm -yyyy", "mm-yyyy", "mmyyyy",
-                 // Complex four year cases
-                 "Expiration Date (MM / YYYY)", "Expiration Date (MM/YYYY)",
-                 "Expiration Date (MM - YYYY)", "Expiration Date (MM-YYYY)",
-                 "Expiration Date MM / YYYY", "Expiration Date MM/YYYY",
-                 "Expiration Date MM - YYYY", "Expiration Date MM-YYYY",
-                 "expiration date yyyy", "Exp Date     (MM / YYYY)"}},
-        PatternTestCase{
-            .pattern_source = PatternSource::kExperimental,
-            .pattern_name = "CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR",
-            .language = "en",
-            .positive_samples =
-                {// Simple four year cases
-                 "mm / yyyy", "mm/ yyyy", "mm /yyyy", "mm/yyyy", "mm - yyyy",
-                 "mm- yyyy", "mm -yyyy", "mm-yyyy", "mmyyyy",
-                 // Complex four year cases
-                 "Expiration Date (MM / YYYY)", "Expiration Date (MM/YYYY)",
-                 "Expiration Date (MM - YYYY)", "Expiration Date (MM-YYYY)",
-                 "Expiration Date MM / YYYY", "Expiration Date MM/YYYY",
-                 "Expiration Date MM - YYYY", "Expiration Date MM-YYYY",
-                 "expiration date yyyy", "Exp Date     (MM / YYYY)"},
-            .negative_samples =
-                {"", "Look, ma' -- an invalid string!", "mmfavouritewordyy",
-                 "mm a yy", "mm a yyyy",
-                 // Simple two year cases
-                 "mm / yy", "mm/ yy", "mm /yy", "mm/yy", "mm - yy", "mm- yy",
-                 "mm -yy", "mm-yy", "mmyy",
-                 // Complex two year cases
-                 "Expiration Date (MM / YY)", "Expiration Date (MM/YY)",
-                 "Expiration Date (MM - YY)", "Expiration Date (MM-YY)",
-                 "Expiration Date MM / YY", "Expiration Date MM/YY",
-                 "Expiration Date MM - YY", "Expiration Date MM-YY",
-                 "expiration date yy", "Exp Date     (MM / YY)"}},
-        PatternTestCase{.pattern_source = PatternSource::kExperimental,
-                        .pattern_name = "ZIP_CODE",
-                        .language = "en",
-                        .positive_samples = {"Zip code", "postal code"},
-                        .negative_samples =
-                            {// Not matching for "en" language:
-                             "postleitzahl",
-                             // Not referring to a ZIP code:
-                             "Supported file formats: .docx, .rar, .zip."}},
-        PatternTestCase{.pattern_source = PatternSource::kExperimental,
-                        .pattern_name = "ZIP_CODE",
-                        .language = "de",
-                        .positive_samples =
-                            {// Inherited from "en":
-                             "Zip code", "postal code",
-                             // Specifically added for "de":
-                             "postleitzahl"}}
-#endif
-        ));
+                             ));
 
+}  // namespace
 }  // namespace autofill

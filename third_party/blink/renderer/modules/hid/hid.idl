@@ -8,6 +8,7 @@
 
 [
     Exposed(ServiceWorker WebHIDOnServiceWorkers,
+            DedicatedWorker WebHID,
             Window WebHID),
     SecureContext
 ] interface HID : EventTarget {

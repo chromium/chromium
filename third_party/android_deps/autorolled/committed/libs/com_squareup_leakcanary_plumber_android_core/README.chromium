@@ -1,0 +1,19 @@
+Name: Plumber for Android - Core
+Short Name: plumber-android-core
+URL: https://repo.maven.apache.org/maven2/com/squareup/leakcanary/plumber-android-core/3.0-alpha-8/plumber-android-core-3.0-alpha-8.aar
+Version: 3.0-alpha-8
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+LeakCanary
+
+See also: https://github.com/square/leakcanary/
+
+
+Local Modifications:
+No modifications.

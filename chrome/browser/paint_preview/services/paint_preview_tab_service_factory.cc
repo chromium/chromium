@@ -54,7 +54,6 @@ PaintPreviewTabServiceFactory::BuildServiceInstanceFor(
   if (key->IsOffTheRecord())
     return nullptr;
 
-  // TODO(crbug.com/40122082): Inject a useful policy.
   return std::make_unique<paint_preview::PaintPreviewTabService>(
       std::make_unique<PaintPreviewTabServiceFileMixin>(key->GetPath(),
                                                         kFeatureDirname),
@@ -67,7 +66,7 @@ SimpleFactoryKey* PaintPreviewTabServiceFactory::GetKeyToUse(
 }
 
 #if BUILDFLAG(IS_ANDROID)
-base::android::ScopedJavaLocalRef<jobject>
+static base::android::ScopedJavaLocalRef<jobject>
 JNI_PaintPreviewTabServiceFactory_GetServiceInstanceForCurrentProfile(
     JNIEnv* env) {
   ProfileKey* profile_key =
@@ -80,3 +79,7 @@ JNI_PaintPreviewTabServiceFactory_GetServiceInstanceForCurrentProfile(
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace paint_preview
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(PaintPreviewTabServiceFactory)
+#endif

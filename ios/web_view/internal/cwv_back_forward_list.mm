@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/cwv_back_forward_list_internal.h"
-
 #import "base/strings/sys_string_conversions.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web_view/internal/cwv_back_forward_list_internal.h"
 #import "net/base/apple/url_conversions.h"
 
 @implementation CWVBackForwardListItemArray {
@@ -66,6 +65,12 @@
   web::NavigationItem* item =
       self.list.navigationManager->GetItemAtIndex(internalIndex);
   DCHECK(item);
+  // TODO(crbug.com/462520371): This is a defensive check to prevent a crash.
+  // The root cause of the null item needs to be investigated.
+  if (!item) {
+    return nil;
+  }
+
   return [[CWVBackForwardListItem alloc] initWithNavigationItem:item];
 }
 

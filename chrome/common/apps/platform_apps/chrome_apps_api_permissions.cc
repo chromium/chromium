@@ -42,7 +42,7 @@ constexpr extensions::APIPermissionInfo::InitInfo permissions_to_register[] = {
 }  // namespace
 
 base::span<const extensions::APIPermissionInfo::InitInfo> GetPermissionInfos() {
-  return base::make_span(permissions_to_register);
+  return base::span(permissions_to_register);
 }
 
 }  // namespace chrome_apps_api_permissions

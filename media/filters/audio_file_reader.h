@@ -10,27 +10,30 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "media/base/audio_codecs.h"
 #include "media/base/media_export.h"
+#include "media/base/media_util.h"
 #include "media/ffmpeg/ffmpeg_deleters.h"
+#include "media/filters/ffmpeg_audio_decoder.h"
 #include "media/filters/ffmpeg_glue.h"
 
 struct AVCodecContext;
-struct AVFrame;
 struct AVPacket;
 struct AVStream;
 
-namespace base { class TimeDelta; }
+namespace base {
+class TimeDelta;
+}  // namespace base
 
 namespace media {
 
 class AudioBus;
 class FFmpegURLProtocol;
+class ScopedAVPacket;
 
 class MEDIA_EXPORT AudioFileReader {
  public:
   // Audio file data will be read using the given protocol.
-  // The AudioFileReader does not take ownership of |protocol| and
+  // The AudioFileReader does not take ownership of `protocol` and
   // simply maintains a weak reference to it.
   explicit AudioFileReader(FFmpegURLProtocol* protocol);
 
@@ -41,26 +44,25 @@ class MEDIA_EXPORT AudioFileReader {
 
   // Open() reads the audio data format so that the sample_rate(),
   // channels(), GetDuration(), and GetNumberOfFrames() methods can be called.
-  // It returns |true| on success.
+  // It returns `true` on success.
   bool Open();
   void Close();
 
-  // After a call to Open(), attempts to decode the data of |packets_to_read|,
-  // updating |decodedAudioPackets| with each decoded packet in order.
-  // The caller must convert these packets into one complete set of
+  // After a call to Open(), attempts to decode up to `packets_to_read` amount
+  // of packets, updating `decoded_audio_packets` with each decoded packet in
+  // order.  The caller must convert these packets into one complete set of
   // decoded audio data.  The audio data will be decoded as
   // floating-point linear PCM with a nominal range of -1.0 -> +1.0.
-  // Returns the number of sample-frames actually read which will
-  // always be the total size of all the frames in
-  // |decodedAudioPackets|.
-  // If |packets_to_read| is std::numeric_limits<int>::max(), decodes the entire
-  // data.
-  int Read(std::vector<std::unique_ptr<AudioBus>>* decoded_audio_packets,
-           int packets_to_read = std::numeric_limits<int>::max());
+  //
+  // Returns the number of sample-frames read, i.e. the combined size of all
+  // frames in `decoded_audio_packets`.
+  size_t Read(std::vector<std::unique_ptr<AudioBus>>* decoded_audio_packets,
+              int packets_to_read = std::numeric_limits<int>::max());
 
-  // These methods can be called once Open() has been called.
-  int channels() const { return channels_; }
-  int sample_rate() const { return sample_rate_; }
+  // These methods can be called once Open() has been called and `config_` has
+  // been populated.
+  int channels() const { return config_->channels(); }
+  int sample_rate() const { return config_->samples_per_second(); }
 
   // Returns true if (an estimated) duration of the audio data is
   // known.  Must be called after Open();
@@ -82,14 +84,10 @@ class MEDIA_EXPORT AudioFileReader {
   bool OpenDemuxerForTesting();
 
   // Returns true if a packet could be demuxed from the first audio stream in
-  // the file, |output_packet| will contain the demuxed packet then.
+  // the file, `output_packet` will contain the demuxed packet then.
   bool ReadPacketForTesting(AVPacket* output_packet);
 
-  // Seeks to the given point and returns true if successful.  |seek_time| will
-  // be converted to the stream's time base automatically.
-  bool SeekForTesting(base::TimeDelta seek_time);
-
-  const AVStream* GetAVStreamForTesting() const;
+  const AVStream* GetAVStreamForTesting() const { return stream(); }
   const AVCodecContext* codec_context_for_testing() const {
     return codec_context_.get();
   }
@@ -98,23 +96,38 @@ class MEDIA_EXPORT AudioFileReader {
   bool OpenDemuxer();
   bool OpenDecoder();
   bool ReadPacket(AVPacket* output_packet);
-  bool OnNewFrame(int* total_frames,
-                  std::vector<std::unique_ptr<AudioBus>>* decoded_audio_packets,
-                  AVFrame* frame);
+  bool DecodePacket(const ScopedAVPacket& packet);
+  void OnOutput(scoped_refptr<AudioBuffer> buffer);
   bool IsMp3File();
 
-  // Destruct |glue_| after |codec_context_|.
+  const AVStream* stream() const;
+
+  // Destruct `glue_` after `codec_context_`.
   std::unique_ptr<FFmpegGlue> glue_;
+  std::unique_ptr<AudioDecoder> decoder_;
   std::unique_ptr<AVCodecContext, ScopedPtrAVFreeContext> codec_context_;
 
-  int stream_index_;
   raw_ptr<FFmpegURLProtocol, DanglingUntriaged> protocol_;
-  AudioCodec audio_codec_;
-  int channels_;
-  int sample_rate_;
 
-  // AVSampleFormat initially requested; not Chrome's SampleFormat.
-  int av_sample_format_;
+  // Set once the demuxer is opened.
+  std::optional<int> stream_index_;
+
+  // Set once the decoder is opened.
+  std::optional<AudioDecoderConfig> config_;
+
+  media::NullMediaLog media_log_;
+
+  // Last timestamp starts at a valid value of zero.
+  base::TimeDelta last_packet_timestamp_;
+  base::TimeDelta last_packet_duration_ = kNoTimestamp;
+
+  // Used in `OnOutput` to report errors that should cause the entire Read() to
+  // to stop.
+  bool on_output_error_ = false;
+
+  // Temporary pointer to the vector of audio buses for the current Read() call.
+  raw_ptr<std::vector<std::unique_ptr<AudioBus>>> decoded_audio_packets_ =
+      nullptr;
 };
 
 }  // namespace media

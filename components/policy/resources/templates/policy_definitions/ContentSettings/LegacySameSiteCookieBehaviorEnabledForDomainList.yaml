@@ -5,17 +5,16 @@ desc: |-
 
             For cookies on domains not covered by the patterns specified here, or for all cookies if this policy is not set, the global default value will be the user's personal configuration.
 
-            For detailed information on valid patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+            For detailed information on valid patterns, please see https://chromeenterprise.google/policies/url-patterns.
 
             Note that patterns you list here are treated as domains, not URLs, so you should not specify a scheme or port.
 example_value:
 - www.example.com
 - '[*.]example.edu'
+deprecated: true
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 owners:
 - bingler@chromium.org
 - file://net/cookies/OWNERS
@@ -24,8 +23,9 @@ schema:
     type: string
   type: array
 supported_on:
-- chrome.*:79-
-- chrome_os:79-
-- android:79-
+# TODO(crbug.com/376084059): Clean up policy and supporting code
+- chrome.*:79-131
+- chrome_os:79-131
+- android:79-131
 tags: []
 type: list

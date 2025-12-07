@@ -107,8 +107,7 @@ void ArCoreInstallHelper::ShowMessage(int render_process_id,
       break;
     }
     case ArCoreAvailability::kSupportedInstalled:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   DCHECK_NE(-1, message_title);
@@ -173,3 +172,5 @@ void ArCoreInstallHelper::RunInstallFinishedCallback(bool succeeded) {
 }
 
 }  // namespace webxr
+
+DEFINE_JNI(ArCoreInstallUtils)

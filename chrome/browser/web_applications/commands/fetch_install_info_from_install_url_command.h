@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -21,19 +22,37 @@ namespace web_app {
 
 class WebAppDataRetriever;
 
+// The result of fetching the `WebAppInstallInfo` from an `install_url`.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(FetchInstallInfoResult)
 enum class FetchInstallInfoResult {
-  kAppInfoObtained,
-  kWebContentsDestroyed,
-  kUrlLoadingFailure,
-  kNoValidManifest,
-  kWrongManifestId,
-  kFailure
+  // Successfully fetched the `WebAppInstallInfo`.
+  kAppInfoObtained = 0,
+  // The web contents was destroyed before the command could complete.
+  kWebContentsDestroyed = 1,
+  // The given `install_url` failed to load.
+  kUrlLoadingFailure = 2,
+  // The site did not have a valid web app manifest.
+  kNoValidManifest = 3,
+  // The manifest ID of the fetched manifest did not match the expected ID.
+  kWrongManifestId = 4,
+  // A generic failure occurred.
+  kFailure = 5,
+  // The system was shut down.
+  kShutdown = 6,
+  kMaxValue = kShutdown
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:FetchInstallInfoResult)
 
 std::ostream& operator<<(std::ostream& os, FetchInstallInfoResult result);
 
+// Fetches the WebAppInstallInfo for a given install URL. This is used for
+// installing sub-apps, where the manifest ID and parent manifest ID are known,
+// and a full install process is not necessary.
 class FetchInstallInfoFromInstallUrlCommand
     : public WebAppCommand<SharedWebContentsLock,
+                           FetchInstallInfoResult,
                            std::unique_ptr<WebAppInstallInfo>> {
  public:
   FetchInstallInfoFromInstallUrlCommand(
@@ -56,14 +75,25 @@ class FetchInstallInfoFromInstallUrlCommand
   void OnWebAppUrlLoadedGetWebAppInstallInfo(
       webapps::WebAppUrlLoaderResult result);
   void OnGetWebAppInstallInfo(std::unique_ptr<WebAppInstallInfo> install_info);
-  void OnManifestRetrieved(std::unique_ptr<WebAppInstallInfo> web_app_info,
-                           blink::mojom::ManifestPtr opt_manifest,
-                           bool valid_manifest_for_web_app,
-                           webapps::InstallableStatusCode error_code);
-  void OnIconsRetrieved(std::unique_ptr<WebAppInstallInfo> web_app_info,
-                        IconsDownloadedResult result,
-                        IconsMap icons_map,
-                        DownloadedIconsHttpResults icons_http_results);
+
+  // The command divides and goes into 2 paths here:
+  // 1. If an opt_manifest is found and is valid, it uses that information to
+  // create a `WebAppInstallInfo` instance, and carries over any fields from the
+  // `WebAppInstallInfo` instance created from the page metadata if needed.
+  // 2. Else, it uses the `WebAppInstallInfo` obtained from the page metadata to
+  // retrieve icons and progress.
+  void OnManifestRetrievedMaybeFetchInstallInfo(
+      std::unique_ptr<WebAppInstallInfo> web_app_info,
+      blink::mojom::ManifestPtr opt_manifest,
+      bool valid_manifest_for_web_app,
+      webapps::InstallableStatusCode error_code);
+  void OnIconsRetrievedForNoManifest(
+      std::unique_ptr<WebAppInstallInfo> web_app_info,
+      IconsDownloadedResult result,
+      IconsMap icons_map,
+      DownloadedIconsHttpResults icons_http_results);
+  void OnInstallInfoFetched(
+      std::unique_ptr<WebAppInstallInfo> info_from_manifest);
   void CompleteCommandAndSelfDestruct(
       FetchInstallInfoResult result,
       std::unique_ptr<WebAppInstallInfo> install_info);
@@ -76,8 +106,7 @@ class FetchInstallInfoFromInstallUrlCommand
 
   std::unique_ptr<webapps::WebAppUrlLoader> url_loader_;
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
-
-  InstallErrorLogEntry install_error_log_entry_;
+  std::unique_ptr<ManifestToWebAppInstallInfoJob> manifest_to_install_info_job_;
 
   base::WeakPtrFactory<FetchInstallInfoFromInstallUrlCommand> weak_ptr_factory_{
       this};

@@ -19,6 +19,7 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -26,7 +27,6 @@ using CertificateStatus =
     ash::attestation::EnrollmentCertificateUploader::Status;
 using ash::attestation::MockEnrollmentCertificateUploader;
 using testing::_;
-using testing::Invoke;
 
 namespace policy {
 
@@ -80,10 +80,10 @@ class LookupKeyUploaderTest : public ash::DeviceSettingsTestBase {
 
 TEST_F(LookupKeyUploaderTest, Uploads) {
   EXPECT_CALL(certificate_uploader_, ObtainAndUploadCertificate(_))
-      .WillOnce(Invoke(
+      .WillOnce(
           [](base::OnceCallback<void(CertificateStatus status)> callback) {
             std::move(callback).Run(CertificateStatus::kSuccess);
-          }));
+          });
   SetCryptohomeReplyTo(kValidRsuDeviceId);
   Start();
   ExpectSavedIdToBe(kValidRsuDeviceIdEncoded);
@@ -120,10 +120,10 @@ TEST_F(LookupKeyUploaderTest, DoesNotUploadVeryFrequently) {
   AdvanceTime();
 
   EXPECT_CALL(certificate_uploader_, ObtainAndUploadCertificate(_))
-      .WillOnce(Invoke(
+      .WillOnce(
           [](base::OnceCallback<void(CertificateStatus status)> callback) {
             std::move(callback).Run(CertificateStatus::kSuccess);
-          }));
+          });
   Start();
   ExpectSavedIdToBe(kValidRsuDeviceIdEncoded);
   EXPECT_FALSE(NeedsUpload());
@@ -132,10 +132,10 @@ TEST_F(LookupKeyUploaderTest, DoesNotUploadVeryFrequently) {
 TEST_F(LookupKeyUploaderTest, UploadsEvenWhenSubmittedBeforeIfForcedByPolicy) {
   EXPECT_CALL(certificate_uploader_, ObtainAndUploadCertificate(_))
       .Times(2)
-      .WillRepeatedly(Invoke(
+      .WillRepeatedly(
           [](base::OnceCallback<void(CertificateStatus status)> callback) {
             std::move(callback).Run(CertificateStatus::kSuccess);
-          }));
+          });
   SetCryptohomeReplyTo(kValidRsuDeviceId);
   Start();
   ExpectSavedIdToBe(kValidRsuDeviceIdEncoded);

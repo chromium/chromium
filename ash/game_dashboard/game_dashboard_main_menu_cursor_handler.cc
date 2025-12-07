@@ -44,8 +44,6 @@ void GameDashboardMainMenuCursorHandler::OnMouseEvent(ui::MouseEvent* event) {
 
 bool GameDashboardMainMenuCursorHandler::IsEventInWindowFrameHeader(
     const ui::LocatedEvent& event) {
-  // TODO(b/324268128): Update the logic to handle a LaCrOS window's
-  // FrameHeader.
   if (auto* frame_header = chromeos::FrameHeader::Get(
           views::Widget::GetWidgetForNativeWindow(context_->game_window()))) {
     const auto* frame_header_view = frame_header->view();

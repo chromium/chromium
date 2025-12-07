@@ -10,7 +10,6 @@
 #include "media/base/video_frame.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
@@ -28,13 +27,13 @@ namespace blink {
 // which could add 1000s of observers per second. It also avoids the use of
 // a pre-finzalizer on VideoFrames, which could have a GC performance impact.
 class MODULES_EXPORT WebCodecsLogger : public GarbageCollected<WebCodecsLogger>,
-                                       public Supplement<ExecutionContext> {
+                                       public GarbageCollectedMixin {
  public:
   // Class that reports when blink::VideoFrames have been garbage collected
   // without having close() called on them. This is a web page application
   // error which can cause a web page to stall.
   class VideoFrameCloseAuditor
-      : public WTF::ThreadSafeRefCounted<VideoFrameCloseAuditor> {
+      : public ThreadSafeRefCounted<VideoFrameCloseAuditor> {
    public:
     void ReportUnclosedFrame();
     void Clear();
@@ -42,13 +41,11 @@ class MODULES_EXPORT WebCodecsLogger : public GarbageCollected<WebCodecsLogger>,
     bool were_frames_not_closed() { return were_frames_not_closed_; }
 
    private:
-    friend class WTF::ThreadSafeRefCounted<VideoFrameCloseAuditor>;
+    friend class ThreadSafeRefCounted<VideoFrameCloseAuditor>;
     ~VideoFrameCloseAuditor() = default;
 
     bool were_frames_not_closed_ = false;
   };
-
-  static const char kSupplementName[];
 
   static WebCodecsLogger& From(ExecutionContext&);
 
@@ -67,6 +64,7 @@ class MODULES_EXPORT WebCodecsLogger : public GarbageCollected<WebCodecsLogger>,
  private:
   void LogCloseErrors(TimerBase*);
 
+  Member<ExecutionContext> execution_context_;
   base::TimeTicks last_auditor_access_;
   scoped_refptr<VideoFrameCloseAuditor> close_auditor_;
   HeapTaskRunnerTimer<WebCodecsLogger> timer_;

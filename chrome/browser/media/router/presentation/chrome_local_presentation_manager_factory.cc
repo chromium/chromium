@@ -31,7 +31,7 @@ ChromeLocalPresentationManagerFactory::
 content::BrowserContext*
 ChromeLocalPresentationManagerFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
+  return GetBrowserContextRedirectedInIncognito(context);
 }
 
 }  // namespace media_router

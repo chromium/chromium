@@ -4,6 +4,7 @@
 
 #include "components/webapps/services/web_app_origin_association/web_app_origin_association_fetcher.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -88,7 +89,7 @@ bool ShouldFetchAssociationFile(const GURL& resource_url) {
 
   // Host cannot be a TLD or invalid.
   if (registry_length == 0 || registry_length == std::string::npos ||
-      registry_length >= resource_url.host().length()) {
+      registry_length >= resource_url.GetHost().length()) {
     return false;
   }
 
@@ -119,7 +120,7 @@ void WebAppOriginAssociationFetcher::FetchWebAppOriginAssociationFile(
     webapps::WebAppOriginAssociationMetrics::RecordFetchResult(
         webapps::WebAppOriginAssociationMetrics::FetchResult::
             kFetchFailedInvalidUrl);
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -141,7 +142,7 @@ void WebAppOriginAssociationFetcher::SendRequest(
 
 void WebAppOriginAssociationFetcher::OnResponse(
     FetchFileCallback callback,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   if (!response_body) {
     webapps::WebAppOriginAssociationMetrics::RecordFetchResult(
         webapps::WebAppOriginAssociationMetrics::FetchResult::

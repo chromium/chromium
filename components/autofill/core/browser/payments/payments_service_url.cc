@@ -12,6 +12,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
+#include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -34,20 +36,38 @@ const char kSandboxGooglePayScriptOrigin[] = "https://pay.sandbox.google.com/";
 // URLs used when opening the Payment methods management page from
 // chrome://settings/payments.
 const char kProdPaymentsManageCardsUrl[] =
-    "https://pay.google.com/"
-    "pay?p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign="
-    "payment_methods";
+    "https://wallet.google.com/wallet?"
+    "p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign="
+    "paymentmethods";
 const char kSandboxPaymentsManageCardsUrl[] =
-    "https://pay.sandbox.google.com/"
-    "pay?p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign="
-    "payment_methods";
+    "https://wallet-web.sandbox.google.com/wallet?"
+    "p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign="
+    "paymentmethods";
+
+// URL used when opening the Loyalty cards page from chrome://settings/payments.
+const char kManageLoyaltyCardsUrl[] =
+    "https://wallet.google.com/wallet?"
+    "p=passes&utm_source=chrome&utm_medium=settings&utm_campaign=loyalty";
+
 // LINT.IfChange
 const char kVirtualCardEnrollmentSupportUrl[] =
     "https://support.google.com/googlepay/answer/11234179";
 // LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/ChromeStringConstants.java)
+
+// BNPL provider terms support URLs.
+// TODO(crbug.com/397446359): Change URL once terms redirect support pages are
+// finalized.
+constexpr char kBnplAffirmTermsUrl[] =
+    "https://support.google.com/googlepay?p=bnpl_autofill_chrome";
+constexpr char kBnplZipTermsUrl[] =
+    "https://support.google.com/googlepay?p=bnpl_autofill_chrome";
+constexpr char kBnplKlarnaTermsUrl[] =
+    "https://support.google.com/googlepay?p=bnpl_autofill_chrome";
 }  // namespace
 
 namespace payments {
+
+using IssuerId = autofill::BnplIssuer::IssuerId;
 
 bool IsPaymentsProductionEnabled() {
   // If the command line flag exists, it takes precedence.
@@ -76,11 +96,15 @@ GURL GetManageInstrumentsUrl() {
 
 GURL GetManageInstrumentUrl(int64_t instrument_id) {
   GURL url = GetManageInstrumentsUrl();
-  std::string new_query =
-      base::StrCat({url.query(), "&id=", base::NumberToString(instrument_id)});
+  std::string new_query = base::StrCat(
+      {url.GetQuery(), "&id=", base::NumberToString(instrument_id)});
   GURL::Replacements replacements;
   replacements.SetQueryStr(new_query);
   return url.ReplaceComponents(replacements);
+}
+
+GURL GetManageLoyaltyCardsUrl() {
+  return GURL(kManageLoyaltyCardsUrl);
 }
 
 GURL GetManageAddressesUrl() {
@@ -90,6 +114,22 @@ GURL GetManageAddressesUrl() {
 
 GURL GetVirtualCardEnrollmentSupportUrl() {
   return GURL(kVirtualCardEnrollmentSupportUrl);
+}
+
+GURL GetBnplTermsUrl(IssuerId issuer_id) {
+  switch (issuer_id) {
+    case IssuerId::kBnplAffirm:
+      return GURL(kBnplAffirmTermsUrl);
+    case IssuerId::kBnplZip:
+      return GURL(kBnplZipTermsUrl);
+    // TODO(crbug.com/408268581): Handle Afterpay issuer enum value when adding
+    // Afterpay to the BNPL flow.
+    case IssuerId::kBnplAfterpay:
+      NOTREACHED();
+    case IssuerId::kBnplKlarna:
+      return GURL(kBnplKlarnaTermsUrl);
+  }
+  NOTREACHED();
 }
 
 }  // namespace payments

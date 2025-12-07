@@ -10,6 +10,7 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
@@ -62,10 +63,14 @@ std::optional<MantaStatusCode> MapServerStatusCodeToMantaStatusCode(
 }
 
 void LogTimeCost(const MantaMetricType request_type,
-                 const base::TimeDelta& time_cost) {
+                 base::TimeDelta time_cost) {
   switch (request_type) {
     case MantaMetricType::kOrca:
       base::UmaHistogramTimes("Ash.MantaService.OrcaProvider.TimeCost",
+                              time_cost);
+      break;
+    case MantaMetricType::kScanner:
+      base::UmaHistogramTimes("Ash.MantaService.ScannerProvider.TimeCost",
                               time_cost);
       break;
     case MantaMetricType::kSnapper:
@@ -76,16 +81,20 @@ void LogTimeCost(const MantaMetricType request_type,
       base::UmaHistogramTimes("Ash.MantaService.MahiProvider.Summary.TimeCost",
                               time_cost);
       break;
+    case MantaMetricType::kMahiElucidation:
+      base::UmaHistogramTimes(
+          "Ash.MantaService.MahiProvider.Elucidation.TimeCost", time_cost);
+      break;
     case MantaMetricType::kMahiQA:
       base::UmaHistogramTimes("Ash.MantaService.MahiProvider.QA.TimeCost",
                               time_cost);
       break;
-    case manta::MantaMetricType::kSparky:
-      base::UmaHistogramTimes("Ash.MantaService.SparkyProvider.TimeCost",
-                              time_cost);
-      break;
     case MantaMetricType::kAnchovy:
       base::UmaHistogramTimes("Ash.MantaService.AnchovyProvider.TimeCost",
+                              time_cost);
+      break;
+    case MantaMetricType::kWalrus:
+      base::UmaHistogramTimes("Ash.MantaService.WalrusProvider.TimeCost",
                               time_cost);
       break;
   }
@@ -98,6 +107,10 @@ void LogMantaStatusCode(const MantaMetricType request_type,
       base::UmaHistogramEnumeration("Ash.MantaService.OrcaProvider.StatusCode",
                                     status_code);
       break;
+    case MantaMetricType::kScanner:
+      base::UmaHistogramEnumeration(
+          "Ash.MantaService.ScannerProvider.StatusCode", status_code);
+      break;
     case MantaMetricType::kSnapper:
       base::UmaHistogramEnumeration(
           "Ash.MantaService.SnapperProvider.StatusCode", status_code);
@@ -106,27 +119,32 @@ void LogMantaStatusCode(const MantaMetricType request_type,
       base::UmaHistogramEnumeration(
           "Ash.MantaService.MahiProvider.Summary.StatusCode", status_code);
       break;
+    case MantaMetricType::kMahiElucidation:
+      base::UmaHistogramEnumeration(
+          "Ash.MantaService.MahiProvider.Elucidation.StatusCode", status_code);
+      break;
     case MantaMetricType::kMahiQA:
       base::UmaHistogramEnumeration(
           "Ash.MantaService.MahiProvider.QA.StatusCode", status_code);
-      break;
-    case manta::MantaMetricType::kSparky:
-      base::UmaHistogramEnumeration(
-          "Ash.MantaService.SparkyProvider.StatusCode", status_code);
       break;
     case MantaMetricType::kAnchovy:
       base::UmaHistogramEnumeration(
           "Ash.MantaService.AnchovyProvider.StatusCode", status_code);
       break;
+    case MantaMetricType::kWalrus:
+      base::UmaHistogramEnumeration(
+          "Ash.MantaService.WalrusProvider.StatusCode", status_code);
+      break;
   }
 }
 }  // namespace
 
-void OnEndpointFetcherComplete(MantaProtoResponseCallback callback,
-                               const base::Time& start_time,
-                               const MantaMetricType request_type,
-                               std::unique_ptr<EndpointFetcher> fetcher,
-                               std::unique_ptr<EndpointResponse> responses) {
+void OnEndpointFetcherComplete(
+    MantaProtoResponseCallback callback,
+    base::Time start_time,
+    const MantaMetricType request_type,
+    std::unique_ptr<endpoint_fetcher::EndpointFetcher> fetcher,
+    std::unique_ptr<endpoint_fetcher::EndpointResponse> responses) {
   // Tries to parse the response as a Response proto and return to the
   // `callback` together with a OK status, or capture the errors and return a
   // proper error status.
@@ -149,7 +167,8 @@ void OnEndpointFetcherComplete(MantaProtoResponseCallback callback,
     MantaStatusCode manta_status_code = MantaStatusCode::kBackendFailure;
 
     if (responses->error_type.has_value() &&
-        responses->error_type.value() == FetchErrorType::kNetError) {
+        responses->error_type.value() ==
+            endpoint_fetcher::FetchErrorType::kNetError) {
       manta_status_code = MantaStatusCode::kNoInternetConnection;
     }
 

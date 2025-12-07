@@ -53,7 +53,6 @@ class PLATFORM_EXPORT IdleTimeEstimator : public base::TaskObserver {
   double estimation_percentile_;
 
   base::TimeTicks task_start_time_;
-  base::TimeTicks prev_commit_time_;
   base::TimeDelta cumulative_compositor_runtime_;
   int nesting_level_;
   bool did_commit_;

@@ -57,7 +57,7 @@ class ProtocolHandlersHandler
   void OnWebAppInstallManagerDestroyed() override;
 
   // web_app::WebAppRegistrarObserver:
-  void OnWebAppProtocolSettingsChanged() override;
+  void OnWebAppProtocolSettingsChanged(const webapps::AppId& app_id) override;
   void OnAppRegistrarDestroyed() override;
 
  private:

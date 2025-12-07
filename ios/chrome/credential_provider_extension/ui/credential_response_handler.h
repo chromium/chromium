@@ -7,6 +7,11 @@
 
 #import <AuthenticationServices/AuthenticationServices.h>
 
+#import <vector>
+
+@class PasskeyRequestDetails;
+@protocol Credential;
+
 // A handler to allow children to communicate selected credentials back to the
 // parent. This is essentially a wrapper for
 // `ASCredentialProviderExtensionContext` to force all calls through the parent.
@@ -14,12 +19,17 @@
 
 - (void)userSelectedPassword:(ASPasswordCredential*)credential;
 
-- (void)userSelectedPasskey:(ASPasskeyAssertionCredential*)credential
-    API_AVAILABLE(ios(17.0));
+- (void)userSelectedPasskey:(ASPasskeyAssertionCredential*)credential;
+
+- (void)userSelectedPasskey:(id<Credential>)passkey
+      passkeyRequestDetails:(PasskeyRequestDetails*)passkeyRequestDetails;
 
 - (void)userCancelledRequestWithErrorCode:(ASExtensionErrorCode)errorCode;
 
 - (void)completeExtensionConfigurationRequest;
+
+// Returns the gaia for the account used for credential creation.
+- (NSString*)gaia;
 
 @end
 

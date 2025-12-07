@@ -4,34 +4,31 @@
 
 #include "android_webview/browser/gfx/aw_draw_fn_impl.h"
 
-#include <sys/prctl.h>
 #include <utility>
 
 #include "android_webview/browser/gfx/aw_vulkan_context_provider.h"
-#include "base/android/build_info.h"
-#include "base/threading/platform_thread.h"
+#include "base/android/android_info.h"
+#include "base/compiler_specific.h"
 #include "base/trace_event/trace_event.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
-#include "third_party/skia/include/gpu/vk/GrVkTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkTypes.h"
 #include "third_party/skia/include/private/chromium/GrVkSecondaryCBDrawContext.h"
 #include "ui/gfx/color_space.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/AwDrawFnImpl_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using content::BrowserThread;
 
 namespace android_webview {
 
 namespace {
 
-BASE_FEATURE(kCheckDrawFunctorThread,
-             "CheckDrawFunctorThread",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+int g_instance_count = 0;
 
 // Set once during process-wide initialization.
 AwDrawFnFunctionTable* g_draw_fn_function_table = nullptr;
@@ -129,8 +126,7 @@ OverlaysParams::Mode GetOverlaysMode(AwDrawFnOverlaysMode mode) {
     case AW_DRAW_FN_OVERLAYS_MODE_ENABLED:
       return OverlaysParams::Mode::Enabled;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return OverlaysParams::Mode::Disabled;
+      NOTREACHED();
   }
 }
 
@@ -151,7 +147,7 @@ HardwareRendererDrawParams CreateHRDrawParams(T* params,
                     std::size(hr_params.transform),
                 "transform size mismatch");
   for (size_t i = 0; i < std::size(hr_params.transform); ++i) {
-    hr_params.transform[i] = params->transform[i];
+    UNSAFE_TODO(hr_params.transform[i]) = UNSAFE_TODO(params->transform[i]);
   }
 
   return hr_params;
@@ -178,8 +174,8 @@ sk_sp<SkColorSpace> CreateColorSpace(T* params) {
   skcms_Matrix3x3 to_xyz;
   static_assert(sizeof(to_xyz.vals) == sizeof(params->color_space_toXYZD50),
                 "Color space matrix sizes do not match");
-  memcpy(&to_xyz.vals[0][0], &params->color_space_toXYZD50[0],
-         sizeof(to_xyz.vals));
+  UNSAFE_TODO(memcpy(&to_xyz.vals[0][0], &params->color_space_toXYZD50[0],
+                     sizeof(to_xyz.vals)));
   return SkColorSpace::MakeRGB(transfer_fn, to_xyz);
 }
 
@@ -213,6 +209,8 @@ AwDrawFnImpl::AwDrawFnImpl()
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(g_draw_fn_function_table);
 
+  ++g_instance_count;
+
   static AwDrawFnFunctorCallbacks g_functor_callbacks{
       &OnSyncWrapper,      &OnContextDestroyedWrapper,
       &OnDestroyedWrapper, &DrawGLWrapper,
@@ -228,25 +226,21 @@ AwDrawFnImpl::AwDrawFnImpl()
   }
 }
 
-AwDrawFnImpl::~AwDrawFnImpl() {}
+AwDrawFnImpl::~AwDrawFnImpl() = default;
 
-void AwDrawFnImpl::ReleaseHandle(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+void AwDrawFnImpl::ReleaseHandle(JNIEnv* env) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  --g_instance_count;
   render_thread_manager_.RemoveFromCompositorFrameProducerOnUI();
   g_draw_fn_function_table->release_functor(functor_handle_);
 }
 
-jint AwDrawFnImpl::GetFunctorHandle(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+jint AwDrawFnImpl::GetFunctorHandle(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return functor_handle_;
 }
 
-jlong AwDrawFnImpl::GetCompositorFrameConsumer(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+jlong AwDrawFnImpl::GetCompositorFrameConsumer(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return reinterpret_cast<intptr_t>(GetCompositorFrameConsumer());
 }
@@ -263,54 +257,27 @@ void AwDrawFnImpl::OnSync(AwDrawFn_OnSyncParams* params) {
 }
 
 void AwDrawFnImpl::OnContextDestroyed() {
-  if (render_thread_id_) {
-    auto current_id = base::PlatformThread::CurrentId();
-    if (render_thread_id_.value() != current_id) {
-      constexpr size_t kBufferLen = 64;
-      char name[kBufferLen] = {};
-      int err = prctl(PR_GET_NAME, name);
-
-      if (!err) {
-        LOG(FATAL) << "OnContextDestroyed called on: " << current_id << "/"
-                   << name << " rt: " << render_thread_id_.value();
-      } else {
-        LOG(FATAL) << "OnContextDestroyed called on: " << current_id
-                   << " rt: " << render_thread_id_.value();
-      }
-    }
-  }
-
   {
     RenderThreadManager::InsideHardwareReleaseReset release_reset(
         &render_thread_manager_);
     render_thread_manager_.DestroyHardwareRendererOnRT(
-        false /* save_restore */, false /* abandon_context */);
+        false /* abandon_context */);
   }
 
   vulkan_context_provider_.reset();
 }
 
 void AwDrawFnImpl::DrawGL(AwDrawFn_DrawGLParams* params) {
-  if (!render_thread_id_ &&
-      base::FeatureList::IsEnabled(kCheckDrawFunctorThread)) {
-    render_thread_id_ = base::PlatformThread::CurrentId();
-  }
-
   auto color_space = params->version >= 2 ? CreateColorSpace(params) : nullptr;
   HardwareRendererDrawParams hr_params =
       CreateHRDrawParams(params, color_space.get());
   OverlaysParams overlays_params = CreateOverlaysParams(params);
   render_thread_manager_.DrawOnRT(
-      /*save_restore=*/false, hr_params, overlays_params,
+      hr_params, overlays_params,
       base::BindOnce(&AwDrawFnImpl::ReportRenderingThreads, functor_handle_));
 }
 
 void AwDrawFnImpl::InitVk(AwDrawFn_InitVkParams* params) {
-  if (!render_thread_id_ &&
-      base::FeatureList::IsEnabled(kCheckDrawFunctorThread)) {
-    render_thread_id_ = base::PlatformThread::CurrentId();
-  }
-
   // We should never have a |vulkan_context_provider_| if we are calling VkInit.
   // This means context destroyed was not correctly called.
   DCHECK(!vulkan_context_provider_);
@@ -330,8 +297,8 @@ void AwDrawFnImpl::DrawVk(AwDrawFn_DrawVkParams* params) {
   // GrVkSecondaryCBDrawContext currently does not expect or support R8 format
   // so just skip these draw calls before Android side is fixed.
   if (params->format == VK_FORMAT_R8_UNORM &&
-      base::android::BuildInfo::GetInstance()->sdk_int() ==
-          base::android::SDK_VERSION_S) {
+      base::android::android_info::sdk_int() ==
+          base::android::android_info::SDK_VERSION_S) {
     skip_next_post_draw_vk_ = true;
     return;
   }
@@ -355,7 +322,7 @@ void AwDrawFnImpl::DrawVk(AwDrawFn_DrawVkParams* params) {
   scoped_secondary_cb_draw_.emplace(vulkan_context_provider_.get(),
                                     std::move(draw_context));
   render_thread_manager_.DrawOnRT(
-      false /* save_restore */, hr_params, overlays_params,
+      hr_params, overlays_params,
       base::BindOnce(&AwDrawFnImpl::ReportRenderingThreads, functor_handle_));
 }
 
@@ -377,4 +344,11 @@ void AwDrawFnImpl::RemoveOverlays(AwDrawFn_RemoveOverlaysParams* params) {
   render_thread_manager_.RemoveOverlaysOnRT(params->merge_transaction);
 }
 
+static jint JNI_AwDrawFnImpl_GetReferenceInstanceCount(JNIEnv* env) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return g_instance_count;
+}
+
 }  // namespace android_webview
+
+DEFINE_JNI(AwDrawFnImpl)

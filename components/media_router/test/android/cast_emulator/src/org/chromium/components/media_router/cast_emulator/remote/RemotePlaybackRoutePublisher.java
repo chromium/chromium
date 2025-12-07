@@ -49,7 +49,7 @@ public final class RemotePlaybackRoutePublisher implements RoutePublisher {
     private int mVolume = 5;
 
     private final MediaRouteProvider mProvider;
-    private final List<String> mControlCategories = new ArrayList<String>();
+    private final List<String> mControlCategories = new ArrayList<>();
 
     public RemotePlaybackRoutePublisher(MediaRouteProvider provider) {
         mProvider = provider;
@@ -100,7 +100,7 @@ public final class RemotePlaybackRoutePublisher implements RoutePublisher {
         f2.addAction(MediaControlIntent.ACTION_END_SESSION);
         f2.addAction(CastMediaControlIntent.ACTION_SYNC_STATUS);
 
-        ArrayList<IntentFilter> controlFilters = new ArrayList<IntentFilter>();
+        ArrayList<IntentFilter> controlFilters = new ArrayList<>();
         controlFilters.add(f1);
         controlFilters.add(f2);
 
@@ -226,11 +226,6 @@ public final class RemotePlaybackRoutePublisher implements RoutePublisher {
             return false;
         }
 
-        /**
-         * @param intent
-         * @param callback
-         * @return
-         */
         private boolean handleSyncStatus(Intent intent, ControlRequestCallback callback) {
             String sid = intent.getStringExtra(MediaControlIntent.EXTRA_SESSION_ID);
             Log.v(TAG, "%s: Received syncStatus request, sid=%s", mRouteId, sid);

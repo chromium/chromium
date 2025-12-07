@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "components/webcrypto/algorithms/rsa.h"
 #include "components/webcrypto/algorithms/util.h"
@@ -61,7 +62,7 @@ Status CommonEncryptDecrypt(InitFunc init_func,
     return Status::OperationError();
   }
 
-  const blink::WebVector<uint8_t>& label =
+  const std::vector<uint8_t>& label =
       algorithm.RsaOaepParams()->OptionalLabel();
 
   if (label.size()) {
@@ -69,7 +70,7 @@ Status CommonEncryptDecrypt(InitFunc init_func,
     // calling set0_rsa_oaep_label().
     bssl::UniquePtr<uint8_t> label_copy;
     label_copy.reset(static_cast<uint8_t*>(OPENSSL_malloc(label.size())));
-    memcpy(label_copy.get(), label.data(), label.size());
+    UNSAFE_TODO(memcpy(label_copy.get(), label.data(), label.size()));
 
     if (1 != EVP_PKEY_CTX_set0_rsa_oaep_label(ctx.get(), label_copy.release(),
                                               label.size())) {

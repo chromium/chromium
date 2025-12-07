@@ -3,6 +3,10 @@
 // found in the LICENSE file.
 
 #include <limits>
+
+#include "base/compiler_specific.h"
+#include "include/core/SkPathBuilder.h"
+#include "include/core/SkRRect.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "skia/ext/skcolorspace_primaries.h"
 #include "skia/public/mojom/bitmap.mojom.h"
@@ -13,12 +17,15 @@
 #include "skia/public/mojom/skcolorspace_mojom_traits.h"
 #include "skia/public/mojom/skcolorspace_primaries.mojom.h"
 #include "skia/public/mojom/skcolorspace_primaries_mojom_traits.h"
+#include "skia/public/mojom/skpath.mojom.h"
+#include "skia/public/mojom/skpath_mojom_traits.h"
 #include "skia/public/mojom/tile_mode.mojom.h"
 #include "skia/public/mojom/tile_mode_mojom_traits.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkString.h"
 #include "third_party/skia/include/core/SkTileMode.h"
 #include "third_party/skia/modules/skcms/skcms.h"
@@ -31,10 +38,10 @@ namespace {
 // to bypass checks on the sending/serialization side.
 mojo::StructPtr<skia::mojom::BitmapN32> ConstructBitmapN32(
     SkImageInfo info,
-    std::vector<unsigned char> pixels) {
+    const std::vector<unsigned char>& pixels) {
   auto mojom_bitmap = skia::mojom::BitmapN32::New();
   mojom_bitmap->image_info = std::move(info);
-  mojom_bitmap->pixel_data = std::move(pixels);
+  mojom_bitmap->pixel_data = {pixels};
   return mojom_bitmap;
 }
 
@@ -43,24 +50,25 @@ mojo::StructPtr<skia::mojom::BitmapN32> ConstructBitmapN32(
 mojo::StructPtr<skia::mojom::BitmapWithArbitraryBpp>
 ConstructBitmapWithArbitraryBpp(SkImageInfo info,
                                 int row_bytes,
-                                std::vector<unsigned char> pixels) {
+                                const std::vector<unsigned char>& pixels) {
   auto mojom_bitmap = skia::mojom::BitmapWithArbitraryBpp::New();
   mojom_bitmap->image_info = std::move(info);
   mojom_bitmap->UNUSED_row_bytes = row_bytes;
-  mojom_bitmap->pixel_data = std::move(pixels);
+  mojom_bitmap->pixel_data = {pixels};
   return mojom_bitmap;
 }
 
 // A helper to construct a skia.mojom.BitmapMappedFromTrustedProcess without
 // using StructTraits to bypass checks on the sending/serialization side.
 mojo::StructPtr<skia::mojom::BitmapMappedFromTrustedProcess>
-ConstructBitmapMappedFromTrustedProcess(SkImageInfo info,
-                                        int row_bytes,
-                                        std::vector<unsigned char> pixels) {
+ConstructBitmapMappedFromTrustedProcess(
+    SkImageInfo info,
+    int row_bytes,
+    const std::vector<unsigned char>& pixels) {
   auto mojom_bitmap = skia::mojom::BitmapMappedFromTrustedProcess::New();
   mojom_bitmap->image_info = std::move(info);
   mojom_bitmap->UNUSED_row_bytes = row_bytes;
-  mojom_bitmap->pixel_data = mojo_base::BigBuffer(std::move(pixels));
+  mojom_bitmap->pixel_data = {pixels};
   return mojom_bitmap;
 }
 
@@ -68,11 +76,11 @@ ConstructBitmapMappedFromTrustedProcess(SkImageInfo info,
 // to bypass checks on the sending/serialization side.
 mojo::StructPtr<skia::mojom::InlineBitmap> ConstructInlineBitmap(
     SkImageInfo info,
-    std::vector<unsigned char> pixels) {
+    const std::vector<unsigned char>& pixels) {
   DCHECK_EQ(info.colorType(), kN32_SkColorType);
   auto mojom_bitmap = skia::mojom::InlineBitmap::New();
   mojom_bitmap->image_info = std::move(info);
-  mojom_bitmap->pixel_data = std::move(pixels);
+  mojom_bitmap->pixel_data = {pixels};
   return mojom_bitmap;
 }
 
@@ -89,6 +97,14 @@ mojo::StructPtr<skia::mojom::ImageInfo> ConstructImageInfo(
   mojom_info->width = width;
   mojom_info->height = height;
   return mojom_info;
+}
+
+void TestSkPathSerialization(const SkPath& input) {
+  SkPath output;
+  ASSERT_TRUE(
+      mojo::test::SerializeAndDeserialize<skia::mojom::SkPath>(input, output));
+
+  EXPECT_EQ(input, output);
 }
 
 TEST(StructTraitsTest, ImageInfo) {
@@ -156,14 +172,15 @@ TEST(StructTraitsTest, SkColorSpace) {
   ASSERT_TRUE(
       mojo::test::SerializeAndDeserialize<skia::mojom::SkcmsTransferFunction>(
           in_trfn, out_trfn));
-  EXPECT_EQ(memcmp(&in_trfn, &out_trfn, sizeof(in_trfn)), 0);
+  UNSAFE_TODO(EXPECT_EQ(memcmp(&in_trfn, &out_trfn, sizeof(in_trfn)), 0));
 
   skcms_Matrix3x3 in_to_xyzd50{
       .vals = {{0.1f, 0.2f, 0.3f}, {0.4f, 0.5f, 0.6f}, {0.7f, 0.8f, 0.9f}}};
   skcms_Matrix3x3 out_to_xyzd50;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<skia::mojom::SkcmsMatrix3x3>(
       in_to_xyzd50, out_to_xyzd50));
-  EXPECT_EQ(memcmp(&in_to_xyzd50, &out_to_xyzd50, sizeof(in_to_xyzd50)), 0);
+  UNSAFE_TODO(EXPECT_EQ(
+      memcmp(&in_to_xyzd50, &out_to_xyzd50, sizeof(in_to_xyzd50)), 0));
 
   sk_sp<SkColorSpace> in_cs = SkColorSpace::MakeRGB(in_trfn, in_to_xyzd50);
   sk_sp<SkColorSpace> out_cs;
@@ -177,7 +194,7 @@ TEST(StructTraitsTest, SkColorSpace) {
       in_null_cs, out_null_cs));
   EXPECT_EQ(out_null_cs.get(), nullptr);
 
-  SkColorSpacePrimaries in_p = SkNamedPrimariesExt::kGenericFilm;
+  SkColorSpacePrimaries in_p = SkNamedPrimaries::kGenericFilm;
   SkColorSpacePrimaries out_p;
   ASSERT_TRUE(
       mojo::test::SerializeAndDeserialize<skia::mojom::SkColorSpacePrimaries>(
@@ -203,6 +220,18 @@ TEST(StructTraitsTest, TileMode) {
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<skia::mojom::TileMode>(
       input, output));
   EXPECT_EQ(input, output);
+}
+
+TEST(StructTraitsTest, SkPath) {
+  TestSkPathSerialization(SkPath::Rect(SkRect::MakeWH(100, 200)));
+  TestSkPathSerialization(SkPath::Circle(100, 0, 30));
+  TestSkPathSerialization(
+      SkPath::Polygon({{0, 10}, {10, 0}, {10, 10}}, /*isClosed=*/true));
+  TestSkPathSerialization(SkPathBuilder()
+                              .addRRect(SkRRect::MakeRectXY(
+                                  SkRect::MakeLTRB(10, 10, 30, 50), 2.5, 3))
+                              .cubicTo({0, 10}, {30, 50}, {-5, .8})
+                              .detach());
 }
 
 TEST(StructTraitsTest, Bitmap) {

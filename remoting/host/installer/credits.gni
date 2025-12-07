@@ -1,0 +1,46 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//remoting/build/config/remoting_build.gni")
+
+# Generates the CREDITS.txt file in $root_build_dir/gen/remoting.
+# Parameters:
+#   gn_target: The target whose dependencies should be listed in the credits.
+template("remoting_credits") {
+  action(target_name) {
+    credits_source_dir = "//remoting/host/installer"
+    credits_template = "$credits_source_dir/credits.tmpl"
+    credits_entry_template = "$credits_source_dir/credits_entry.tmpl"
+
+    # We put this in $root_build_dir/gen/remoting instead of
+    # $root_build_dir/gen/remoting/host (target_gen_dir) for
+    # compatibility w/ GYP, since the installer needs the file to
+    # be at the same location.
+    about_credits_file = "$root_build_dir/gen/remoting/CREDITS.txt"
+    script = "//tools/licenses/licenses.py"
+    depfile = "$target_gen_dir/$target_name.d"
+
+    inputs = [
+      credits_template,
+      credits_entry_template,
+    ]
+
+    outputs = [ about_credits_file ]
+
+    args = [
+      "credits",
+      rebase_path(about_credits_file, root_build_dir),
+      "--file-template",
+      rebase_path(credits_template, root_build_dir),
+      "--entry-template",
+      rebase_path(credits_entry_template, root_build_dir),
+      "--depfile",
+      rebase_path(depfile, root_build_dir),
+      "--gn-target",
+      invoker.gn_target,
+      "--gn-out-dir",
+      ".",
+    ]
+  }
+}

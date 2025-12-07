@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef SANDBOX_WIN_SRC_POLICY_ENGINE_OPCODES_H_
 #define SANDBOX_WIN_SRC_POLICY_ENGINE_OPCODES_H_
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "sandbox/win/src/policy_engine_params.h"
@@ -157,7 +153,8 @@ class PolicyOpcode {
   template <typename T>
   void GetArgument(size_t index, T* argument) const {
     static_assert(sizeof(T) <= sizeof(arguments_[0]), "invalid size");
-    *argument = *reinterpret_cast<const T*>(&arguments_[index].mem);
+    *argument =
+        *reinterpret_cast<const T*>(&UNSAFE_TODO(arguments_[index]).mem);
   }
 
   // Sets a stored argument by index. Valid index values are
@@ -165,7 +162,7 @@ class PolicyOpcode {
   template <typename T>
   void SetArgument(size_t index, const T& argument) {
     static_assert(sizeof(T) <= sizeof(arguments_[0]), "invalid size");
-    *reinterpret_cast<T*>(&arguments_[index].mem) = argument;
+    *reinterpret_cast<T*>(&UNSAFE_TODO(arguments_[index]).mem) = argument;
   }
 
   // Retrieves the actual address of a string argument. When using
@@ -176,7 +173,8 @@ class PolicyOpcode {
   const wchar_t* GetRelativeString(size_t index) const {
     ptrdiff_t str_delta = 0;
     GetArgument(index, &str_delta);
-    const char* delta = reinterpret_cast<const char*>(this) + str_delta;
+    const char* delta =
+        UNSAFE_TODO(reinterpret_cast<const char*>(this) + str_delta);
     return reinterpret_cast<const wchar_t*>(delta);
   }
 
@@ -267,14 +265,14 @@ class OpcodeFactory {
   // memory: base pointer to a chunk of memory where the opcodes are created.
   // memory_size: the size in bytes of the memory chunk.
   OpcodeFactory(char* memory, size_t memory_size) : memory_top_(memory) {
-    memory_bottom_ = &memory_top_[memory_size];
+    memory_bottom_ = &UNSAFE_TODO(memory_top_[memory_size]);
   }
 
   // policy: contains the raw memory where the opcodes are created.
   // memory_size: contains the actual size of the policy argument.
   OpcodeFactory(PolicyBuffer* policy, size_t memory_size) {
     memory_top_ = reinterpret_cast<char*>(&policy->opcodes[0]);
-    memory_bottom_ = &memory_top_[memory_size];
+    memory_bottom_ = &UNSAFE_TODO(memory_top_[memory_size]);
   }
 
   OpcodeFactory(const OpcodeFactory&) = delete;
@@ -322,7 +320,7 @@ class OpcodeFactory {
   // current implementation.
   // All comparisons are case-insensitive.
   PolicyOpcode* MakeOpWStringMatch(uint8_t selected_param,
-                                   const wchar_t* match_str,
+                                   std::wstring_view match_str,
                                    int start_position,
                                    uint32_t options,
                                    bool final_token);
@@ -343,9 +341,9 @@ class OpcodeFactory {
                          uint32_t options,
                          uint8_t selected_param);
 
-  // Allocates (and copies) a string (of size length) inside the buffer and
-  // returns the displacement with respect to start.
-  ptrdiff_t AllocRelative(void* start, const wchar_t* str, size_t length);
+  // Allocates (and copies) a string inside the buffer and returns the
+  // displacement with respect to start.
+  ptrdiff_t AllocRelative(void* start, std::wstring_view str);
 
   // Points to the lowest currently available address of the memory
   // used to make the opcodes. This pointer increments as opcodes are made.

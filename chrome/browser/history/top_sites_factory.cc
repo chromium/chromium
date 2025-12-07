@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/history/top_sites_factory.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 
 #include "base/command_line.h"
@@ -61,14 +57,14 @@ struct RawPrepopulatedPage {
 
 #if !BUILDFLAG(IS_ANDROID)
 // Android does not use prepopulated pages.
-const RawPrepopulatedPage kRawPrepopulatedPages[] = {
+constexpr auto kRawPrepopulatedPages = std::to_array<RawPrepopulatedPage>({
     {
         IDS_WEBSTORE_URL,
         IDS_EXTENSION_WEB_STORE_TITLE_SHORT,
         IDR_WEBSTORE_ICON_32,
         SkColorSetRGB(63, 132, 197),
     },
-};
+});
 #endif
 
 void InitializePrepopulatedPageList(

@@ -8,6 +8,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
+
 #include "base/containers/span.h"
 #include "media/base/media_export.h"
 
@@ -118,7 +120,7 @@ struct JpegFrameHeader {
   uint16_t coded_width;
   uint16_t coded_height;
   uint8_t num_components;
-  JpegComponent components[kJpegMaxComponents];
+  std::array<JpegComponent, kJpegMaxComponents> components;
 };
 
 // Parsing result of JPEG SOS marker.
@@ -128,7 +130,8 @@ struct JpegScanHeader {
     uint8_t component_selector;
     uint8_t dc_selector;
     uint8_t ac_selector;
-  } components[kJpegMaxComponents];
+  };
+  std::array<Component, kJpegMaxComponents> components;
 };
 
 struct JpegParseResult {

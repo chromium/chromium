@@ -35,12 +35,10 @@
 namespace blink {
 
 TrackBase::TrackBase(WebMediaPlayer::TrackType type,
-                     const AtomicString& kind,
                      const AtomicString& label,
                      const AtomicString& language,
                      const String& id)
     : type_(type),
-      kind_(kind),
       label_(label),
       language_(language),
       id_(id),
@@ -49,7 +47,7 @@ TrackBase::TrackBase(WebMediaPlayer::TrackType type,
 TrackBase::~TrackBase() = default;
 
 void TrackBase::Trace(Visitor* visitor) const {
-  Supplementable<TrackBase>::Trace(visitor);
+  visitor->Trace(source_buffer_track_base_supplement_);
   visitor->Trace(media_element_);
 }
 

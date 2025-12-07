@@ -22,6 +22,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 
 namespace ash {
@@ -355,6 +356,17 @@ TEST_F(WmModeTests, MoveWindowToDeskFromPieMenu) {
   EXPECT_TRUE(controller->is_active());
   EXPECT_FALSE(controller->selected_window());
   EXPECT_FALSE(controller->pie_menu_widget()->IsVisible());
+}
+
+TEST_F(WmModeTests, AccessibleName) {
+  WmModeButtonTray* tray =
+      GetWmModeButtonTrayForRoot(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(tray);
+
+  ui::AXNodeData node_data;
+  tray->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"WM Mode");
 }
 
 }  // namespace ash

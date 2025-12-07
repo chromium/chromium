@@ -57,8 +57,7 @@ class FormDataIterationSource final
 
   bool FetchNextItem(ScriptState* script_state,
                      String& name,
-                     V8FormDataEntryValue*& value,
-                     ExceptionState& exception_state) override {
+                     V8FormDataEntryValue*& value) override {
     if (current_ >= form_data_->size())
       return false;
 
@@ -85,14 +84,14 @@ class FormDataIterationSource final
 
 }  // namespace
 
-FormData::FormData(const WTF::TextEncoding& encoding) : encoding_(encoding) {}
+FormData::FormData(const TextEncoding& encoding) : encoding_(encoding) {}
 
 FormData::FormData(const FormData& form_data)
     : encoding_(form_data.encoding_),
       entries_(form_data.entries_),
       contains_password_data_(form_data.contains_password_data_) {}
 
-FormData::FormData() : encoding_(UTF8Encoding()) {}
+FormData::FormData() : encoding_(Utf8Encoding()) {}
 
 FormData* FormData::Create(HTMLFormElement* form,
                            ExceptionState& exception_state) {
@@ -128,7 +127,7 @@ FormData* FormData::Create(HTMLFormElement* form,
   }
   // 1.2. Let list be the result of constructing the entry list for form and
   // submitter.
-  FormData* form_data = form->ConstructEntryList(control, UTF8Encoding());
+  FormData* form_data = form->ConstructEntryList(control, Utf8Encoding());
   // 1.3. If list is null, then throw an "InvalidStateError" DOMException.
   if (!form_data) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -259,7 +258,8 @@ void FormData::AppendFromElement(const String& name, const String& value) {
 }
 
 std::string FormData::Encode(const String& string) const {
-  return encoding_.Encode(string, WTF::kEntitiesForUnencodables);
+  return encoding_.Encode(string,
+                          UnencodableHandling::kEntitiesForUnencodables);
 }
 
 scoped_refptr<EncodedFormData> FormData::EncodeFormData(
@@ -274,7 +274,7 @@ scoped_refptr<EncodedFormData> FormData::EncodeFormData(
             : Encode(entry->Value()),
         encoding_type);
   }
-  form_data->AppendData(encoded_data.data(), encoded_data.size());
+  form_data->AppendData(encoded_data);
   return form_data;
 }
 
@@ -327,7 +327,7 @@ scoped_refptr<EncodedFormData> FormData::EncodeMultiPartFormData() {
     FormDataEncoder::FinishMultiPartHeader(header);
 
     // Append body
-    form_data->AppendData(header.data(), header.size());
+    form_data->AppendData(header);
     if (entry->GetBlob()) {
       if (entry->GetBlob()->HasBackingFile()) {
         auto* file = To<File>(entry->GetBlob());
@@ -335,27 +335,23 @@ scoped_refptr<EncodedFormData> FormData::EncodeMultiPartFormData() {
         if (!file->GetPath().empty())
           form_data->AppendFile(file->GetPath(), file->LastModifiedTime());
       } else {
-        form_data->AppendBlob(entry->GetBlob()->Uuid(),
-                              entry->GetBlob()->GetBlobDataHandle());
+        form_data->AppendBlob(entry->GetBlob()->GetBlobDataHandle());
       }
     } else {
       std::string encoded_value =
           Encode(NormalizeLineEndingsToCRLF(entry->Value()));
-      form_data->AppendData(
-          encoded_value.c_str(),
-          base::checked_cast<wtf_size_t>(encoded_value.length()));
+      form_data->AppendData(encoded_value);
     }
-    form_data->AppendData("\r\n", 2);
+    form_data->AppendData(base::span_from_cstring("\r\n"));
   }
   FormDataEncoder::AddBoundaryToMultiPartHeader(
       encoded_data, form_data->Boundary().data(), true);
-  form_data->AppendData(encoded_data.data(), encoded_data.size());
+  form_data->AppendData(encoded_data);
   return form_data;
 }
 
 PairSyncIterable<FormData>::IterationSource* FormData::CreateIterationSource(
-    ScriptState*,
-    ExceptionState&) {
+    ScriptState*) {
   return MakeGarbageCollected<FormDataIterationSource>(this);
 }
 

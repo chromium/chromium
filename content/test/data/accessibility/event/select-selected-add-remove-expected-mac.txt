@@ -6,7 +6,6 @@ AXSelectedChildrenChanged on AXList AXDescription='Combo2'
 === Start Continuation ===
 AXSelectedChildrenChanged on AXList AXDescription='Combo2'
 === Start Continuation ===
-AXSelectedChildrenChanged on AXMenu
 AXValueChanged on AXPopUpButton AXDescription='Combo3' AXValue='Option8'
 === Start Continuation ===
 AXSelectedChildrenChanged on AXList AXDescription='Combo4'

@@ -7,9 +7,13 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 source_set("common") {
   sources = [
+    "aw_cached_flags.cc",
+    "aw_cached_flags.h",
     "aw_content_client.cc",
     "aw_content_client.h",
     "aw_descriptors.h",
+    "aw_feature_map.cc",
+    "aw_feature_map.h",
     "aw_features.cc",
     "aw_features.h",
     "aw_media_drm_bridge_client.cc",
@@ -27,6 +31,8 @@ source_set("common") {
     "crash_reporter/crash_keys.cc",
     "crash_reporter/crash_keys.h",
     "devtools_instrumentation.h",
+    "gfx/aw_gr_context_options_provider.cc",
+    "gfx/aw_gr_context_options_provider.h",
     "url_constants.cc",
     "url_constants.h",
   ]
@@ -39,11 +45,14 @@ source_set("common") {
     "//components/crash/core/common:crash_key",
     "//components/embedder_support/origin_trials",
     "//components/gwp_asan/common:crash_keys",
+    "//components/safe_browsing/core/common:features",
+    "//components/sensitive_content:features",
     "//components/services/heap_profiling/public/cpp",
     "//components/version_info",
     "//components/version_info:generate_version_info",
     "//components/version_info/android:channel_getter",
     "//content/public/common",
+    "//gpu/command_buffer/service:gles2",
     "//gpu/config",
     "//ipc",
     "//mojo/public/cpp/bindings",

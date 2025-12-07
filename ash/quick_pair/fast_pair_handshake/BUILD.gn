@@ -2,11 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
-assert(is_chromeos_ash,
-       "Quick Pair protocols (e.g. Fast Pair) are ash-chrome only")
+assert(is_chromeos, "Quick Pair protocols (e.g. Fast Pair) are ash-chrome only")
 
 source_set("fast_pair_handshake") {
   sources = [
@@ -50,11 +48,15 @@ source_set("fast_pair_handshake") {
     "//base",
     "//chromeos/ash/services/quick_pair",
     "//chromeos/ash/services/quick_pair/public/cpp",
-    "//components/cross_device/logging:logging",
-    "//crypto:crypto",
+    "//components/cross_device/logging",
+    "//crypto",
     "//device/bluetooth",
     "//third_party/protobuf:protobuf_lite",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 static_library("test_support") {
@@ -98,7 +100,7 @@ source_set("unit_tests") {
   deps = [
     ":fast_pair_handshake",
     ":test_support",
-    "//ash/constants:constants",
+    "//ash/constants",
     "//ash/quick_pair/common",
     "//ash/quick_pair/common:test_support",
     "//ash/quick_pair/repository:test_support",
@@ -111,6 +113,10 @@ source_set("unit_tests") {
     "//device/bluetooth:mocks",
     "//testing/gtest",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 fuzzer_test("fast_pair_encryption_fuzzer") {

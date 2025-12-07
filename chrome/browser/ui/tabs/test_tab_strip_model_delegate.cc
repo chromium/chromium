@@ -8,6 +8,7 @@
 
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "components/tab_groups/tab_group_id.h"
 
 TestTabStripModelDelegate::TestTabStripModelDelegate() = default;
@@ -18,7 +19,8 @@ void TestTabStripModelDelegate::AddTabAt(
     const GURL& url,
     int index,
     bool foreground,
-    std::optional<tab_groups::TabGroupId> group) {}
+    std::optional<tab_groups::TabGroupId> group,
+    bool pinned) {}
 
 Browser* TestTabStripModelDelegate::CreateNewStripWithTabs(
     std::vector<NewStripContents> tabs,
@@ -47,8 +49,12 @@ bool TestTabStripModelDelegate::IsTabStripEditable() {
   return true;
 }
 
-void TestTabStripModelDelegate::DuplicateContentsAt(int index) {
+content::WebContents* TestTabStripModelDelegate::DuplicateContentsAt(
+    int index) {
+  return nullptr;
 }
+
+void TestTabStripModelDelegate::DuplicateSplit(split_tabs::SplitTabId split) {}
 
 void TestTabStripModelDelegate::MoveToExistingWindow(
     const std::vector<int>& indices,
@@ -92,17 +98,12 @@ bool TestTabStripModelDelegate::RunUnloadListenerBeforeClosing(
   return false;
 }
 
-bool TestTabStripModelDelegate::ShouldDisplayFavicon(
-    content::WebContents* web_contents) const {
-  return true;
-}
-
 bool TestTabStripModelDelegate::CanReload() const {
   return true;
 }
 
 void TestTabStripModelDelegate::AddToReadLater(
-    content::WebContents* web_contents) {}
+    std::vector<content::WebContents*> web_contentses) {}
 
 bool TestTabStripModelDelegate::SupportsReadLater() {
   return true;
@@ -124,13 +125,18 @@ bool TestTabStripModelDelegate::IsNormalWindow() {
   return true;
 }
 
+void TestTabStripModelDelegate::NewSplitTab(
+    std::vector<int> indices,
+    split_tabs::SplitTabCreatedSource source) {}
+
 BrowserWindowInterface* TestTabStripModelDelegate::GetBrowserWindowInterface() {
-  return nullptr;
+  return browser_window_interface_;
 }
 
 void TestTabStripModelDelegate::OnGroupsDestruction(
     const std::vector<tab_groups::TabGroupId>& group_ids,
-    base::OnceCallback<void()> callback) {
+    base::OnceCallback<void()> callback,
+    bool delete_groups) {
   std::move(callback).Run();
 }
 
@@ -139,3 +145,21 @@ void TestTabStripModelDelegate::OnRemovingAllTabsFromGroups(
     base::OnceCallback<void()> callback) {
   std::move(callback).Run();
 }
+
+#if BUILDFLAG(ENABLE_GLIC)
+bool TestTabStripModelDelegate::IsTabGlicPinned(tabs::TabHandle tab_handle) {
+  return true;
+}
+
+bool TestTabStripModelDelegate::GlicPinTabs(
+    base::span<const tabs::TabHandle> tab_handles) {
+  return true;
+}
+
+bool TestTabStripModelDelegate::GlicUnpinTabs(
+    base::span<const tabs::TabHandle> tab_handles) {
+  return true;
+}
+
+void TestTabStripModelDelegate::OpenGlicWindowFromSharedTab() {}
+#endif

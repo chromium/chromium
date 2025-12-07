@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "net/base/ip_address.h"
+#include "net/base/ip_endpoint.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/cpp/private_network_access_check_result.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
@@ -44,12 +45,20 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrivateNetworkAccessChecker {
  public:
   // `resource_request` and `url_load_options` correspond to `URLLoader`
   // constructor arguments.
-  // `factory_client_security_state` should point to the client security
-  // state object coming from the factory that built the owner `URLLoader`. It
+  //
+  // `client_security_state` should point to the client security to use for the
+  // request, and must outlive the PrivateNetworkAccessChecker, if non-null. It
   // can be nullptr when the factory doesn't use a client security state.
+  // `resource_request's` ClientSecurityState, if it has one, is ignored.
   PrivateNetworkAccessChecker(
       const ResourceRequest& resource_request,
-      const mojom::ClientSecurityState* factory_client_security_state,
+      const mojom::ClientSecurityState* client_security_state,
+      int32_t url_load_options);
+  PrivateNetworkAccessChecker(
+      const GURL& url,
+      const std::optional<url::Origin>& request_initiator,
+      mojom::IPAddressSpace required_ip_address_space,
+      const mojom::ClientSecurityState* client_security_state,
       int32_t url_load_options);
 
   // Instances of this class are neither copyable nor movable.
@@ -62,9 +71,19 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrivateNetworkAccessChecker {
   // Checks whether the client should be allowed to use the given transport.
   //
   // Implements the following "Private Network Access check" algorithm:
-  // https://wicg.github.io/private-network-access/#private-network-access-check
+  //
+  // https://wicg.github.io/local-network-access/#fetching
   PrivateNetworkAccessCheckResult Check(
       const net::TransportInfo& transport_info);
+
+  // Same as above, but on an IP EndPoint. Skips proxying checks that the
+  // net::TransportInfo version does.
+  PrivateNetworkAccessCheckResult Check(const net::IPEndPoint& server_address);
+
+  // Same as Check(), for the case where the `resource_address_space` is already
+  // known.
+  PrivateNetworkAccessCheckResult CheckAddressSpace(
+      mojom::IPAddressSpace resource_address_space);
 
   // Returns the IP address space derived from the `transport_info` argument
   // passed to the last call to `Check()`, if any.
@@ -74,15 +93,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrivateNetworkAccessChecker {
   std::optional<mojom::IPAddressSpace> ResponseAddressSpace() const {
     return response_address_space_;
   }
-
-  // The target IP address space applied to subsequent checks.
-  //
-  // Spec:
-  // https://wicg.github.io/private-network-access/#request-target-ip-address-space
-  mojom::IPAddressSpace TargetAddressSpace() const {
-    return target_address_space_;
-  }
-
   mojom::IPAddressSpace RequiredAddressSpace() const {
     return required_address_space_;
   }
@@ -90,17 +100,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrivateNetworkAccessChecker {
   // Clears state from all checks this instance has performed, and sets the
   // request URL to `new_url`.
   //
-  // This instance will behave as if newly constructed once more. In addition,
-  // resets this instance's target IP address space to `kUnknown`.
+  // This instance will behave as if newly constructed once more.
   //
-  // This should be called upon following a redirect or after a cache result
-  // blocked without preflight because we'll try fetching from the network.
+  // This should be called upon following a redirect.
   void ResetForRedirect(const GURL& new_url);
 
   // Clears state from all checks this instance has performed.
   //
-  // This instance will behave as if newly constructed once more. In addition,
-  // resets this instance's target IP address space to `kUnknown`.
+  // This instance will behave as if newly constructed once more.
   //
   // This should be called after a cache result was blocked without preflight,
   // because we'll try fetching from the network again.
@@ -121,28 +128,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrivateNetworkAccessChecker {
   // Returns `kUnknown` if `client_security_state()` is nullptr.
   mojom::IPAddressSpace ClientAddressSpace() const;
 
-  static bool NeedPermission(const GURL& url,
-                             bool is_web_secure_context,
-                             mojom::IPAddressSpace target_address_space);
-
  private:
-  // Returns whether this instance has a client security state containing a
-  // policy set to `kPreflightWarn`.
-  bool IsPolicyPreflightWarn() const;
-
-  // Helper for `Check()`.
-  PrivateNetworkAccessCheckResult CheckInternal(
-      mojom::IPAddressSpace resource_address_space);
-
   // Sets the current request URL (it may change after redirects).
   void SetRequestUrl(const GURL& url);
-
-  // The client security state copied from the request's trusted params.
-  // May be nullptr.
-  //
-  // Should not be used directly. Use `client_security_state_` instead, which
-  // points to the same struct iff this client security state should be used.
-  const mojom::ClientSecurityStatePtr request_client_security_state_;
 
   // The security state of the client of the fetch. May be nullptr.
   const raw_ptr<const mojom::ClientSecurityState> client_security_state_;
@@ -166,16 +154,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrivateNetworkAccessChecker {
   //
   // Used to compute metrics for https://crbug.com/1381471.
   std::optional<net::IPAddress> request_url_private_ip_;
-
-  // The target IP address space set on the request. Ignored if `kUnknown`.
-  //
-  // Copied from `ResourceRequest::target_ip_address_space`.
-  //
-  // Invariant: always `kUnknown` if `client_security_state_` is nullptr, or
-  // if `client_security_state_->private_network_request_policy` is `kAllow`.
-  //
-  // https://wicg.github.io/private-network-access/#request-target-ip-address-space
-  mojom::IPAddressSpace target_address_space_;
 
   // The IP address space derived from the `transport_info` argument passed to
   // the last call to `Check()`.

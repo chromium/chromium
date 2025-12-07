@@ -9,13 +9,16 @@ import android.graphics.Rect;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.resources.Resource;
 import org.chromium.ui.resources.ResourceFactory;
 
 /** A basic implementation of {@link DynamicResource} to handle updatable bitmaps. */
+@NullMarked
 public class BitmapDynamicResource implements DynamicResource {
     private final int mResId;
-    private Bitmap mBitmap;
+    private @Nullable Bitmap mBitmap;
     private final Rect mSize = new Rect();
 
     private final ObserverList<Callback<Resource>> mOnResourceReadyObservers = new ObserverList<>();
@@ -34,7 +37,7 @@ public class BitmapDynamicResource implements DynamicResource {
     /**
      * @param bitmap A bitmap to update this resource.
      */
-    public void setBitmap(Bitmap bitmap) {
+    public void setBitmap(@Nullable Bitmap bitmap) {
         // Not updating bitmap is still bad, but better than a crash. We will still crash if there
         // is no bitmap to start with. See http://crbug.com/471234 for more.
         if (bitmap == null) return;
@@ -47,7 +50,7 @@ public class BitmapDynamicResource implements DynamicResource {
         if (!mOnResourceReadyObservers.isEmpty() && mBitmap != null) {
             Resource resource =
                     new DynamicResourceSnapshot(
-                            mBitmap, false, mSize, ResourceFactory.createBitmapResource(null));
+                            mBitmap, mSize, ResourceFactory.createBitmapResource(null));
             for (Callback<Resource> observer : mOnResourceReadyObservers) {
                 observer.onResult(resource);
             }

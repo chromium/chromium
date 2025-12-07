@@ -7,17 +7,15 @@
 
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
 class Document;
 
 class RenderBlockingMetricsReporter final
-    : public GarbageCollected<RenderBlockingMetricsReporter>,
-      public Supplement<Document> {
+    : public GarbageCollected<RenderBlockingMetricsReporter> {
  public:
-  static const char kSupplementName[];
   static RenderBlockingMetricsReporter& From(Document&);
 
   explicit RenderBlockingMetricsReporter(Document&);
@@ -29,11 +27,13 @@ class RenderBlockingMetricsReporter final
   void PreloadedFontStartedLoading();
   void PreloadedFontFinishedLoading();
 
-  void Trace(Visitor*) const override;
+  void Trace(Visitor*) const;
 
  private:
   base::TimeDelta GetDeltaFromTimeOrigin();
   void Report();
+
+  Member<Document> document_;
 
   int pending_preloaded_fonts_ = 0;
   // Ensure that we don't report multiple times, in case some late preloaded

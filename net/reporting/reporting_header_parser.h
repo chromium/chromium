@@ -12,7 +12,6 @@
 #include "base/values.h"
 #include "net/base/net_export.h"
 #include "net/http/structured_headers.h"
-#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace net {

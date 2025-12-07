@@ -62,16 +62,14 @@ PowerButtonMenuView::PowerButtonMenuView(
   SetPaintToLayer();
   SetBorder(std::make_unique<views::HighlightBorder>(
       kPowerButtonMenuCornerRadius,
-      chromeos::features::IsJellyrollEnabled()
-          ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-          : kPowerButtonMenuBorderType));
+      views::HighlightBorder::Type::kHighlightBorderOnShadow));
   SetBackground(
-      views::CreateThemedSolidBackground(kPowerButtonMenuBackgroundColorId));
-
+      views::CreateSolidBackground(kPowerButtonMenuBackgroundColorId));
   layer()->SetFillsBoundsOpaquely(false);
+
   layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF(kPowerButtonMenuCornerRadius));
-  if (features::IsBackgroundBlurEnabled()) {
+  if (chromeos::features::IsSystemBlurEnabled()) {
     layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   }
@@ -116,7 +114,7 @@ PowerButtonMenuView::TransformDisplacement
 PowerButtonMenuView::GetTransformDisplacement() const {
   TransformDisplacement transform_displacement;
   if (power_button_position_ == PowerButtonPosition::NONE ||
-      !display::Screen::GetScreen()->InTabletMode()) {
+      !display::Screen::Get()->InTabletMode()) {
     transform_displacement.direction = TransformDirection::Y;
     transform_displacement.distance = kPowerButtonMenuTransformDistanceDp;
     return transform_displacement;
@@ -193,7 +191,7 @@ void PowerButtonMenuView::RecreateItems() {
   const bool create_lock_screen = login_status != LoginStatus::LOCKED &&
                                   session_controller->CanLockScreen();
   const bool create_capture_mode =
-      display::Screen::GetScreen()->InTabletMode() &&
+      display::Screen::Get()->InTabletMode() &&
       !session_controller->IsUserSessionBlocked() &&
       login_status != LoginStatus::KIOSK_APP;
   const bool create_feedback = login_status != LoginStatus::LOCKED &&

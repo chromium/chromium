@@ -7,7 +7,7 @@
 
 #include "chrome/browser/ui/startup/startup_types.h"
 
-class Browser;
+class BrowserWindowInterface;
 class Profile;
 
 namespace base {
@@ -15,10 +15,12 @@ class CommandLine;
 }
 
 // Adds any startup infobars to the selected tab of the given browser.
-void AddInfoBarsIfNecessary(Browser* browser,
+void AddInfoBarsIfNecessary(BrowserWindowInterface* browser,
                             Profile* profile,
                             const base::CommandLine& startup_command_line,
                             chrome::startup::IsFirstRun is_first_run,
-                            bool is_web_app);
+                            bool is_web_app,
+                            bool is_post_crash_launch,
+                            bool was_restarted);
 
 #endif  // CHROME_BROWSER_UI_STARTUP_INFOBAR_UTILS_H_

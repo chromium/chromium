@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 
 #include <numeric>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-death-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_internals.h"
@@ -120,17 +117,14 @@ TEST(NativeValueTraitsImplTest, IDLRecord) {
                                 "})")
             .As<v8::Proxy>();
 
-    ExceptionState exception_state_from_proxy(
-        scope.GetIsolate(), v8::ExceptionContext::kOperation,
-        "NativeValueTraitsImplTest", "IDLRecordTest");
+    v8::TryCatch try_catch(scope.GetIsolate());
     const auto& record_from_proxy =
         NativeValueTraits<IDLRecord<IDLString, IDLLong>>::NativeValue(
-            scope.GetIsolate(), proxy, exception_state_from_proxy);
+            scope.GetIsolate(), proxy,
+            PassThroughException(scope.GetIsolate()));
     EXPECT_EQ(0U, record_from_proxy.size());
-    EXPECT_TRUE(exception_state_from_proxy.HadException());
-    EXPECT_TRUE(exception_state_from_proxy.Message().empty());
-    v8::Local<v8::Value> v8_exception =
-        exception_state_from_proxy.GetException();
+    EXPECT_TRUE(try_catch.HasCaught());
+    v8::Local<v8::Value> v8_exception = try_catch.Exception();
     EXPECT_TRUE(v8_exception->IsString());
     EXPECT_TRUE(
         V8String(scope.GetIsolate(), "bogus!")
@@ -390,13 +384,22 @@ TEST(NativeValueTraitsImplTest, IDLBigint) {
         scope.GetIsolate(), v8_string, exception_state);
     EXPECT_TRUE(exception_state.HadException());
   }
+  {
+    // Construction from uint128 works
+    const absl::uint128 bigint_absl = absl::Uint128Max();
+    const auto bigint_absl_converted_around =
+        blink::BigInt(bigint_absl).ToUInt128();
+    EXPECT_TRUE(bigint_absl_converted_around.has_value());
+    EXPECT_EQ(bigint_absl, bigint_absl_converted_around.value());
+  }
 }
 
 template <typename Arr>
 v8::Local<Arr> MakeArray(v8::Isolate* isolate, size_t size) {
   auto arr = Arr::New(isolate, size);
-  uint8_t* it = static_cast<uint8_t*>(arr->Data());
-  std::iota(it, it + arr->ByteLength(), 0);
+  v8::MemorySpan<uint8_t> span(static_cast<uint8_t*>(arr->Data()),
+                               arr->ByteLength());
+  std::iota(span.begin(), span.end(), 0);
   return arr;
 }
 
@@ -598,7 +601,7 @@ TEST(NativeValueTraitsImplTest, TypedPassAsSpanSubarray) {
 
   auto v8_arraybuffer =
       MakeArray<v8::ArrayBuffer>(scope.GetIsolate(), sizeof kRawData);
-  memcpy(v8_arraybuffer->Data(), kRawData, sizeof kRawData);
+  UNSAFE_TODO(memcpy(v8_arraybuffer->Data(), kRawData, sizeof kRawData));
   v8::Local<v8::Int32Array> int32_array = v8::Int32Array::New(
       v8_arraybuffer, /* byte_offset=*/1 * sizeof(int32_t), /* length=*/2);
 
@@ -616,7 +619,7 @@ TEST(NativeValueTraitsImplTest, TypedPassAsSpanBadType) {
 
   auto v8_arraybuffer =
       MakeArray<v8::ArrayBuffer>(scope.GetIsolate(), sizeof kRawData);
-  memcpy(v8_arraybuffer->Data(), kRawData, sizeof kRawData);
+  UNSAFE_TODO(memcpy(v8_arraybuffer->Data(), kRawData, sizeof kRawData));
 
   {
     DummyExceptionStateForTesting exception_state;
@@ -725,6 +728,30 @@ TEST(NativeValueTraitsImplTest, PassAsSpanAllowSequence) {
                     .as_span(),
                 testing::ElementsAre(1, 2, 3));
   }
+}
+
+TEST(NativeValueTraitsImplTest, PassAsSpanSequenceOfUnrestricted) {
+  test::TaskEnvironment task_environment;
+  NonThrowableExceptionState exception_state;
+  V8TestingScope scope;
+
+  v8::Local<v8::Object> v8_object =
+      EvaluateScriptForObject(scope, "[1, -Infinity, NaN, Infinity, 42]");
+
+  using testing::Eq;
+  using testing::IsNan;
+  EXPECT_THAT(
+      NativeValueTraits<PassAsSpanSequence<float>>::ArgumentValue(
+          scope.GetIsolate(), 0, v8_object, exception_state)
+          .as_span(),
+      testing::ElementsAre(1, -std::numeric_limits<float>::infinity(), IsNan(),
+                           std::numeric_limits<float>::infinity(), 42));
+  EXPECT_THAT(
+      NativeValueTraits<PassAsSpanSequence<double>>::ArgumentValue(
+          scope.GetIsolate(), 0, v8_object, exception_state)
+          .as_span(),
+      testing::ElementsAre(1, -std::numeric_limits<double>::infinity(), IsNan(),
+                           std::numeric_limits<double>::infinity(), 42));
 }
 
 }  // namespace

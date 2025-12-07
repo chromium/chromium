@@ -39,13 +39,16 @@
       case net::SHADER_CACHE:                                               \
         break;                                                              \
       default:                                                              \
-        NOTREACHED_IN_MIGRATION();                                          \
-        break;                                                              \
+        NOTREACHED();                                                       \
     }                                                                       \
   } while (0)
 
 #define SIMPLE_CACHE_UMA(uma_type, uma_name, cache_type, ...) \
   SIMPLE_CACHE_HISTO(UMA, uma_type, uma_name, cache_type, ##__VA_ARGS__)
+
+#define DEPRECATED_SIMPLE_CACHE_UMA_MEDIUM_TIMES(uma_name, cache_type, ...) \
+  SIMPLE_CACHE_HISTO(DEPRECATED_UMA, MEDIUM_TIMES, uma_name, cache_type,     \
+                     ##__VA_ARGS__)
 
 #define SIMPLE_CACHE_LOCAL(uma_type, uma_name, cache_type, ...) \
   SIMPLE_CACHE_HISTO(LOCAL, uma_type, uma_name, cache_type, ##__VA_ARGS__)

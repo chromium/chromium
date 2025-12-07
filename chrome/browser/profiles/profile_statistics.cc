@@ -4,29 +4,43 @@
 
 #include "chrome/browser/profiles/profile_statistics.h"
 
-#include "base/functional/bind.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include <utility>
+
 #include "chrome/browser/profiles/profile_statistics_aggregator.h"
 
-ProfileStatistics::ProfileStatistics(Profile* profile)
-    : profile_(profile), aggregator_(nullptr) {}
+ProfileStatistics::ProfileStatistics(
+    scoped_refptr<autofill::AutofillWebDataService> autofill_web_data_service,
+    autofill::PersonalDataManager* personal_data_manager,
+    const autofill::EntityDataManager* entity_data_manager,
+    bookmarks::BookmarkModel* bookmark_model,
+    history::HistoryService* history_service,
+    scoped_refptr<password_manager::PasswordStoreInterface>
+        profile_password_store,
+    PrefService* pref_service,
+    std::unique_ptr<device::fido::PlatformCredentialStore>
+        platform_credential_store)
+    : autofill_web_data_service_(std::move(autofill_web_data_service)),
+      personal_data_manager_(personal_data_manager),
+      entity_data_manager_(entity_data_manager),
+      bookmark_model_(bookmark_model),
+      history_service_(history_service),
+      profile_password_store_(profile_password_store),
+      pref_service_(pref_service),
+      platform_credential_store_(std::move(platform_credential_store)),
+      aggregator_(nullptr) {}
 
-ProfileStatistics::~ProfileStatistics() {
-}
+ProfileStatistics::~ProfileStatistics() = default;
 
 void ProfileStatistics::GatherStatistics(
     profiles::ProfileStatisticsCallback callback) {
-  // IsValidProfile() can be false in unit tests.
-  if (!g_browser_process->profile_manager()->IsValidProfile(profile_))
-    return;
-  DCHECK(!profile_->IsOffTheRecord() && !profile_->IsSystemProfile());
-
   if (!aggregator_) {
     aggregator_ = std::make_unique<ProfileStatisticsAggregator>(
-        profile_, base::BindOnce(&ProfileStatistics::DeregisterAggregator,
-                                 weak_ptr_factory_.GetWeakPtr()));
+        autofill_web_data_service_, personal_data_manager_,
+        entity_data_manager_, bookmark_model_, history_service_,
+        profile_password_store_, pref_service_,
+        std::move(platform_credential_store_),
+        base::BindOnce(&ProfileStatistics::DeregisterAggregator,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
   aggregator_->AddCallbackAndStartAggregator(std::move(callback));
 }
@@ -34,4 +48,3 @@ void ProfileStatistics::GatherStatistics(
 void ProfileStatistics::DeregisterAggregator() {
   aggregator_ = nullptr;
 }
-

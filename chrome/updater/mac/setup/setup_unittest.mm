@@ -113,9 +113,7 @@ const base::FilePath& GetTestSuiteDirPath() {
 }  // namespace
 
 class ChromeUpdaterMacSetupTest : public testing::Test {
- public:
-  ~ChromeUpdaterMacSetupTest() override = default;
-
+ protected:
   static void SetUpTestSuite() {
     // SetUpTestSuite will run a script (install_test_helper.sh), which will set
     // up all the necessary things for running the mac installer test. This will
@@ -228,7 +226,7 @@ TEST_F(ChromeUpdaterMacSetupTest, InstallFromArchivePreinstallPostinstall) {
 
   ASSERT_EQ(updater::InstallFromArchive(
                 test_dir.Append("setup_test_envcheck").Append("marker.app"),
-                base::FilePath::FromASCII("xc_path"), "ap",
+                base::FilePath().Append("xc_path"), "ap",
                 updater::UpdaterScope::kUser, base::Version("0"), "arg1 arg2",
                 {}, false, TestTimeouts::action_timeout()),
             0);

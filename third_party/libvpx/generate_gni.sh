@@ -235,10 +235,9 @@ function make_clean() {
 # Lint a pair of vpx_config.h and vpx_config.asm to make sure they match.
 # $1 - Header file directory.
 function lint_config() {
-  # mips, native client and loongarch do not contain any assembly so the
-  # headers do not need to be compared to the asm.
-  if [[ "$1" != *mipsel && "$1" != *mips64el && "$1" != nacl \
-      && "$1" != *loongarch ]]; then
+  # mips and loongarch do not contain any assembly so the headers do not need
+  # to be compared to the asm.
+  if [[ "$1" != *mipsel && "$1" != *mips64el && "$1" != *loongarch ]]; then
     $BASE_DIR/lint_config.sh \
       -h $BASE_DIR/$LIBVPX_CONFIG_DIR/$1/vpx_config.h \
       -a $BASE_DIR/$LIBVPX_CONFIG_DIR/$1/vpx_config.asm
@@ -277,8 +276,7 @@ function gen_rtcd_header() {
   format="clang-format -i -style=Chromium"
 
   rm -rf $BASE_DIR/$TEMP_DIR/libvpx.config
-  if [[ "$2" == "mipsel" || "$2" == "mips64el" || "$2" == nacl \
-      || "$2" == "loongarch" ]]; then
+  if [[ "$2" == "mipsel" || "$2" == "mips64el" || "$2" == "loongarch" ]]; then
     print_config_basic $1 > $BASE_DIR/$TEMP_DIR/libvpx.config
   else
     $BASE_DIR/lint_config.sh -p \
@@ -350,10 +348,8 @@ function gen_config_files() {
     local ASM_CONV=ads2gas_apple.pl
   fi
 
-  # Generate vpx_config.asm. Do not create one for mips, native client or
-  # loongarch.
-  if [[ "$1" != *mipsel && "$1" != *mips64el && "$1" != nacl \
-      && "$1" != *loongarch ]]; then
+  # Generate vpx_config.asm. Do not create one for mips or loongarch.
+  if [[ "$1" != *mipsel && "$1" != *mips64el && "$1" != *loongarch ]]; then
     if [[ "$1" == *x64* ]] || [[ "$1" == *ia32* ]]; then
       egrep "#define [A-Z0-9_]+ [01]" vpx_config.h \
         | awk '{print "%define " $2 " " $3}' > vpx_config.asm
@@ -448,7 +444,6 @@ gen_config_files mac/x64 \
 gen_config_files ios/arm-neon "--target=armv7-linux-gcc \
   --disable-runtime-cpu-detect ${all_platforms}"
 gen_config_files ios/arm64 "--target=armv8-linux-gcc ${all_platforms}"
-gen_config_files nacl "--target=generic-gnu $HIGHBD ${all_platforms}"
 
 echo "Remove temporary directory."
 cd $BASE_DIR
@@ -475,7 +470,6 @@ lint_config mac/ia32
 lint_config mac/x64
 lint_config ios/arm-neon
 lint_config ios/arm64
-lint_config nacl
 
 echo "Create temporary directory."
 TEMP_DIR="$LIBVPX_SRC_DIR.temp"
@@ -483,11 +477,12 @@ rm -rf $TEMP_DIR
 cp -R $LIBVPX_SRC_DIR $TEMP_DIR
 cd $TEMP_DIR
 
-# chromium has required sse2 for x86 since 2014
-require_sse2="--require-mmx --require-sse --require-sse2"
+# chromium has required sse3 for x86 since 2020:
+# http://crrev.com/5bb2864fdd57e45c84459520234b37a01e7a015a
+require_sse3="--require-mmx --require-sse --require-sse2 --require-sse3"
 require_neon="--require-neon"
 
-gen_rtcd_header linux/ia32 x86 "${require_sse2}"
+gen_rtcd_header linux/ia32 x86 "${require_sse3}"
 gen_rtcd_header linux/x64 x86_64
 gen_rtcd_header linux/arm armv7 "--disable-neon --disable-neon_asm"
 gen_rtcd_header linux/arm-neon armv7 "${require_neon}"
@@ -501,13 +496,12 @@ gen_rtcd_header linux/loongarch loongarch
 gen_rtcd_header linux/ppc64 ppc
 gen_rtcd_header linux/generic generic
 gen_rtcd_header win/arm64-highbd armv8 "${require_neon} ${disable_sve}"
-gen_rtcd_header win/ia32 x86 "${require_sse2}"
+gen_rtcd_header win/ia32 x86 "${require_sse3}"
 gen_rtcd_header win/x64 x86_64
-gen_rtcd_header mac/ia32 x86 "${require_sse2}"
+gen_rtcd_header mac/ia32 x86 "${require_sse3}"
 gen_rtcd_header mac/x64 x86_64
 gen_rtcd_header ios/arm-neon armv7 "${require_neon}"
 gen_rtcd_header ios/arm64 armv8 "${require_neon}"
-gen_rtcd_header nacl nacl
 
 echo "Prepare Makefile."
 ./configure --target=generic-gnu > /dev/null
@@ -598,12 +592,6 @@ if [[ -z $ONLY_CONFIGS ]]; then
   make_clean
   make libvpx_srcs.txt target=libs $config > /dev/null
   convert_srcs_to_project_files libvpx_srcs.txt libvpx_srcs_ppc64
-
-  echo "Generate NaCl source list."
-  config=$(print_config_basic nacl)
-  make_clean
-  make libvpx_srcs.txt target=libs $config > /dev/null
-  convert_srcs_to_project_files libvpx_srcs.txt libvpx_srcs_nacl
 
   echo "Generate GENERIC source list."
   config=$(print_config_basic linux/generic)

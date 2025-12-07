@@ -13,8 +13,6 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/browser_app_launcher.h"
-#include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/extensions/api/notifications/extension_notification_display_helper.h"
 #include "chrome/browser/extensions/api/notifications/extension_notification_display_helper_factory.h"
 #include "chrome/browser/extensions/api/notifications/extension_notification_handler.h"
@@ -25,8 +23,6 @@
 #include "chrome/browser/notifications/notifier_state_tracker.h"
 #include "chrome/browser/notifications/notifier_state_tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/interactive_test_utils.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/test/test_api.h"
@@ -36,6 +32,7 @@
 #include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_test_helper.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/view_type.mojom.h"
@@ -48,7 +45,23 @@
 #include "base/mac/mac_util.h"
 #endif
 
-using ContextType = extensions::ExtensionBrowserTest::ContextType;
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "base/auto_reset.h"
+#include "chrome/browser/web_applications/extension_status_utils.h"
+#endif
+
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+#include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/interactive_test_utils.h"
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 using extensions::AppWindow;
 using extensions::AppWindowRegistry;
 using extensions::Extension;
@@ -67,11 +80,10 @@ enum class WindowState {
 
 class NotificationsApiTest : public extensions::ExtensionApiTest {
  public:
-  explicit NotificationsApiTest(ContextType context_type = ContextType::kNone)
-      : ExtensionApiTest(context_type) {}
-  ~NotificationsApiTest() override = default;
+  NotificationsApiTest() = default;
   NotificationsApiTest(const NotificationsApiTest&) = delete;
   NotificationsApiTest& operator=(const NotificationsApiTest&) = delete;
+  ~NotificationsApiTest() override = default;
 
   const Extension* LoadExtensionAndWait(
       const std::string& test_name) {
@@ -86,6 +98,7 @@ class NotificationsApiTest : public extensions::ExtensionApiTest {
     return extension;
   }
 
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
   const Extension* LoadAppWithWindowState(
       const std::string& test_name, WindowState window_state) {
     const char* window_state_string = nullptr;
@@ -113,8 +126,8 @@ class NotificationsApiTest : public extensions::ExtensionApiTest {
   }
 
   AppWindow* GetFirstAppWindow(const std::string& app_id) {
-    AppWindowRegistry::AppWindowList app_windows = AppWindowRegistry::Get(
-        browser()->profile())->GetAppWindowsForApp(app_id);
+    AppWindowRegistry::AppWindowList app_windows =
+        AppWindowRegistry::Get(profile())->GetAppWindowsForApp(app_id);
 
     AppWindowRegistry::const_iterator iter = app_windows.begin();
     if (iter != app_windows.end())
@@ -122,6 +135,7 @@ class NotificationsApiTest : public extensions::ExtensionApiTest {
 
     return nullptr;
   }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
   ExtensionNotificationDisplayHelper* GetDisplayHelper() {
     return ExtensionNotificationDisplayHelperFactory::GetForProfile(profile());
@@ -165,43 +179,32 @@ class NotificationsApiTest : public extensions::ExtensionApiTest {
     return GetDisplayHelper()->GetByNotificationId(delegate_id)->id();
   }
 
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
   void LaunchPlatformApp(const Extension* extension) {
-    apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
-        ->BrowserAppLauncher()
-        ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
+    apps::AppServiceProxyFactory::GetForProfile(profile())->LaunchAppWithParams(
+        apps::AppLaunchParams(
             extension->id(), apps::LaunchContainer::kLaunchContainerNone,
             WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest));
   }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
+
+#if BUILDFLAG(IS_CHROMEOS)
+  base::test::ScopedFeatureList scoped_feature_list_{
+      apps::chrome_app_deprecation::kAllowUserInstalledChromeApps};
+#endif  // BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  base::AutoReset<bool> enable_chrome_apps_{
+      &extensions::testing::g_enable_chrome_apps_for_testing, true};
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
 };
 
 // TODO(crbug.com/40170747): We should merge this class with the base
 // class once the issues mentioned in the bug are resolved.
-class NotificationsApiTestWithBackgroundType
-    : public NotificationsApiTest,
-      public testing::WithParamInterface<ContextType> {
- public:
-  NotificationsApiTestWithBackgroundType() : NotificationsApiTest(GetParam()) {}
-  ~NotificationsApiTestWithBackgroundType() override = default;
-  NotificationsApiTestWithBackgroundType(
-      const NotificationsApiTestWithBackgroundType&) = delete;
-  NotificationsApiTestWithBackgroundType& operator=(
-      const NotificationsApiTestWithBackgroundType&) = delete;
-};
+using NotificationsApiTestWithServiceWorker = NotificationsApiTest;
 
 }  // namespace
-
-INSTANTIATE_TEST_SUITE_P(PersistentBackground,
-                         NotificationsApiTestWithBackgroundType,
-                         testing::Values(ContextType::kPersistentBackground));
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         NotificationsApiTestWithBackgroundType,
-                         testing::Values(ContextType::kServiceWorker));
-
-IN_PROC_BROWSER_TEST_P(NotificationsApiTestWithBackgroundType, TestBasicUsage) {
-  ASSERT_TRUE(RunExtensionTest("notifications/api/basic_usage")) << message_;
-}
 
 // Flaky on TSan, see crbug.com/1304777.
 #if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
@@ -209,13 +212,40 @@ IN_PROC_BROWSER_TEST_P(NotificationsApiTestWithBackgroundType, TestBasicUsage) {
 #else
 #define MAYBE_TestEvents TestEvents
 #endif
-IN_PROC_BROWSER_TEST_P(NotificationsApiTestWithBackgroundType,
+IN_PROC_BROWSER_TEST_F(NotificationsApiTestWithServiceWorker,
                        MAYBE_TestEvents) {
   ASSERT_TRUE(RunExtensionTest("notifications/api/events")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(NotificationsApiTestWithBackgroundType, TestCSP) {
+IN_PROC_BROWSER_TEST_F(NotificationsApiTestWithServiceWorker, TestBasicUsage) {
+  ASSERT_TRUE(RunExtensionTest("notifications/api/basic_usage")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(NotificationsApiTestWithServiceWorker, TestCSP) {
   ASSERT_TRUE(RunExtensionTest("notifications/api/csp")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(NotificationsApiTestWithServiceWorker,
+                       TestPartialUpdate) {
+  ASSERT_TRUE(RunExtensionTest("notifications/api/partial_update")) << message_;
+  const extensions::Extension* extension = GetSingleLoadedExtension();
+  ASSERT_TRUE(extension) << message_;
+
+  const char16_t kNewTitle[] = u"Changed!";
+  const char16_t kNewMessage[] = u"Too late! The show ended yesterday";
+  int kNewPriority = 2;
+  const char16_t kButtonTitle[] = u"NewButton";
+
+  message_center::Notification* notification =
+      GetNotificationForExtension(extension);
+  ASSERT_TRUE(notification);
+
+  EXPECT_EQ(kNewTitle, notification->title());
+  EXPECT_EQ(kNewMessage, notification->message());
+  EXPECT_EQ(kNewPriority, notification->priority());
+  EXPECT_TRUE(notification->silent());
+  EXPECT_EQ(1u, notification->buttons().size());
+  EXPECT_EQ(kButtonTitle, notification->buttons()[0].title);
 }
 
 // Native notifications don't support (or use) observers.
@@ -259,29 +289,6 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestByUser) {
   }
 }
 #endif  // !BUILDFLAG(IS_MAC)
-
-IN_PROC_BROWSER_TEST_P(NotificationsApiTestWithBackgroundType,
-                       TestPartialUpdate) {
-  ASSERT_TRUE(RunExtensionTest("notifications/api/partial_update")) << message_;
-  const extensions::Extension* extension = GetSingleLoadedExtension();
-  ASSERT_TRUE(extension) << message_;
-
-  const char16_t kNewTitle[] = u"Changed!";
-  const char16_t kNewMessage[] = u"Too late! The show ended yesterday";
-  int kNewPriority = 2;
-  const char16_t kButtonTitle[] = u"NewButton";
-
-  message_center::Notification* notification =
-      GetNotificationForExtension(extension);
-  ASSERT_TRUE(notification);
-
-  EXPECT_EQ(kNewTitle, notification->title());
-  EXPECT_EQ(kNewMessage, notification->message());
-  EXPECT_EQ(kNewPriority, notification->priority());
-  EXPECT_TRUE(notification->silent());
-  EXPECT_EQ(1u, notification->buttons().size());
-  EXPECT_EQ(kButtonTitle, notification->buttons()[0].title);
-}
 
 IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestGetPermissionLevel) {
   scoped_refptr<const Extension> empty_extension(
@@ -414,6 +421,8 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestRequireInteraction) {
   EXPECT_TRUE(notification->never_timeout());
 }
 
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+// The following tests exercise platform app behavior.
 IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestShouldDisplayNormal) {
   ExtensionTestMessageListener notification_created_listener("created");
   const Extension* extension = LoadAppWithWindowState(
@@ -541,3 +550,4 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestSmallImage) {
   EXPECT_FALSE(notification->small_image().IsEmpty());
   EXPECT_TRUE(notification->small_image_needs_additional_masking());
 }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)

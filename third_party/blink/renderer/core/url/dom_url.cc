@@ -29,10 +29,12 @@
 #include "base/auto_reset.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
+#include "third_party/blink/renderer/core/url/dom_origin.h"
 #include "third_party/blink/renderer/core/url/url_search_params.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 
@@ -68,6 +70,11 @@ DOMURL::DOMURL(PassKey, const KURL& url): url_(url) {
 }
 
 DOMURL::~DOMURL() = default;
+
+DOMOrigin* DOMURL::GetDOMOrigin(LocalDOMWindow*) const {
+  // No access check is required, as URLs are not accessible cross-origin.
+  return DOMOrigin::Create(SecurityOrigin::Create(Url()));
+}
 
 void DOMURL::Trace(Visitor* visitor) const {
   visitor->Trace(search_params_);
@@ -131,14 +138,15 @@ String DOMURL::CreatePublicURL(ExecutionContext* execution_context,
 }
 
 URLSearchParams* DOMURL::searchParams() {
-  if (!search_params_)
-    search_params_ = URLSearchParams::Create(Url().Query(), this);
+  if (!search_params_) {
+    search_params_ = URLSearchParams::Create(Url().Query().ToString(), this);
+  }
 
   return search_params_.Get();
 }
 
 void DOMURL::Update() {
-  UpdateSearchParams(Url().Query());
+  UpdateSearchParams(Url().Query().ToString());
 }
 
 void DOMURL::UpdateSearchParams(const String& query_string) {

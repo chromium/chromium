@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="generate-id-multiple-calls-same-value.xsl"?>
+<root>
+  <value>1</value>
+  <value>2</value>
+  <value>3</value>
+</root>

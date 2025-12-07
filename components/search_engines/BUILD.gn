@@ -2,8 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/features.gni")
+import("//build/config/chrome_build.gni")
 import("//tools/json_to_struct/json_to_struct.gni")
 if (is_android) {
   import("//build/config/android/config.gni")
@@ -15,21 +14,21 @@ static_library("search_engines") {
     "choice_made_location.h",
     "default_search_manager.cc",
     "default_search_manager.h",
-    "default_search_policy_handler.cc",
-    "default_search_policy_handler.h",
-    "eea_countries_ids.h",
-    "enterprise_site_search_manager.cc",
-    "enterprise_site_search_manager.h",
+    "enterprise/default_search_policy_handler.cc",
+    "enterprise/default_search_policy_handler.h",
+    "enterprise/enterprise_search_manager.cc",
+    "enterprise/enterprise_search_manager.h",
     "keyword_table.cc",
     "keyword_table.h",
     "keyword_web_data_service.cc",
     "keyword_web_data_service.h",
+    "reconciling_template_url_data_holder.cc",
+    "reconciling_template_url_data_holder.h",
     "search_engine_choice/search_engine_choice_metrics_service_accessor.h",
     "search_engine_choice/search_engine_choice_service.cc",
     "search_engine_choice/search_engine_choice_service.h",
     "search_engine_choice/search_engine_choice_utils.cc",
     "search_engine_choice/search_engine_choice_utils.h",
-    "search_engines_pref_names.h",
     "search_host_to_urls_map.cc",
     "search_host_to_urls_map.h",
     "search_terms_data.cc",
@@ -47,6 +46,8 @@ static_library("search_engines") {
     "template_url_parser.h",
     "template_url_prepopulate_data.cc",
     "template_url_prepopulate_data.h",
+    "template_url_prepopulate_data_resolver.cc",
+    "template_url_prepopulate_data_resolver.h",
     "template_url_service.cc",
     "template_url_service.h",
     "template_url_service_client.h",
@@ -58,7 +59,7 @@ static_library("search_engines") {
   ]
 
   public_deps = [
-    ":prepopulated_engines",
+    ":search_engine_pref_names",
     ":search_engine_type",
     ":search_engine_utils",
     ":search_engines_switches",
@@ -70,6 +71,7 @@ static_library("search_engines") {
     "//components/webdata/common",
     "//third_party/metrics_proto",
     "//third_party/omnibox_proto",
+    "//third_party/search_engines_data:prepopulated_engines",
   ]
 
   deps = [
@@ -78,13 +80,19 @@ static_library("search_engines") {
     "//components/crash/core/common:crash_key",
     "//components/database_utils",
     "//components/infobars/core",
-    "//components/lens:lens",
+    "//components/lens:features",
+    "//components/lens:mime_type",
     "//components/lens/proto/server:proto",
     "//components/metrics",
     "//components/omnibox/common",
     "//components/policy:generated",
     "//components/policy/core/browser",
     "//components/pref_registry",
+    "//components/regional_capabilities",
+    "//components/regional_capabilities:country_access_reason",
+    "//components/regional_capabilities:data",
+    "//components/search_engines/search_engine_choice:buildflags",
+    "//components/search_engines/search_engine_choice:switches",
     "//components/search_provider_logos:switches",
     "//components/signin/public/base",
     "//components/strings",
@@ -95,7 +103,10 @@ static_library("search_engines") {
     "//services/data_decoder/public/cpp",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
+    "//services/preferences/tracked",
+    "//services/preferences/tracked:features",
     "//sql",
+    "//third_party/lens_server_proto:lens_overlay_proto",
     "//third_party/metrics_proto",
     "//third_party/omnibox_proto",
     "//ui/base",
@@ -119,26 +130,23 @@ static_library("search_engines") {
     deps += [ "//components/search_engines/android:jni_headers" ]
   }
 
-  if (!is_android) {
-    sources += [ "search_engine_choice/generated_marketing_snippets.cc" ]
-    deps += [
-      ":generate_search_engine_icons",
-      "//components/resources:components_scaled_resources_grit",
-      "//ui/resources",
-    ]
+  deps += [
+    "//components/resources:components_scaled_resources_grit",
+    "//ui/resources",
+  ]
+
+  if (enable_builtin_search_provider_assets) {
+    deps += [ "//third_party/search_engines_data:resources" ]
   }
 
   if (is_linux || is_win || is_mac || is_chromeos) {
     sources += [
-      "site_search_policy_handler.cc",
-      "site_search_policy_handler.h",
-    ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
+      "enterprise/search_aggregator_policy_handler.cc",
+      "enterprise/search_aggregator_policy_handler.h",
+      "enterprise/search_engine_fields_validators.cc",
+      "enterprise/search_engine_fields_validators.h",
+      "enterprise/site_search_policy_handler.cc",
+      "enterprise/site_search_policy_handler.h",
     ]
   }
 }
@@ -150,9 +158,9 @@ source_set("search_engine_utils") {
   ]
 
   public_deps = [
-    ":prepopulated_engines",
     ":search_engine_type",
     "//components/google/core/common",
+    "//third_party/search_engines_data:prepopulated_engines",
   ]
 
   deps = [ "//url" ]
@@ -160,6 +168,10 @@ source_set("search_engine_utils") {
 
 source_set("search_engine_type") {
   sources = [ "search_engine_type.h" ]
+}
+
+source_set("search_engine_pref_names") {
+  sources = [ "search_engines_pref_names.h" ]
 }
 
 static_library("test_support") {
@@ -181,9 +193,15 @@ static_library("test_support") {
     "//base/test:test_support",
     "//components/country_codes",
     "//components/metrics:metrics_pref_names",
+    "//components/os_crypt/async/browser:test_support",
+    "//components/policy/core/common",
     "//components/prefs:test_support",
+    "//components/regional_capabilities",
+    "//components/regional_capabilities:test_support",
+    "//components/signin/public/identity_manager:test_support",
     "//components/sync_preferences:test_support",
     "//testing/gtest",
+    "//third_party/search_engines_data:regional_settings",
   ]
 }
 
@@ -191,8 +209,12 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "default_search_manager_unittest.cc",
-    "enterprise_site_search_manager_unittest.cc",
+    "enterprise/enterprise_search_manager_unittest.cc",
     "keyword_table_unittest.cc",
+    "reconciling_template_url_data_holder_unittest.cc",
+    "search_engine_choice/search_engine_choice_eligibility_unittest.cc",
+    "search_engine_choice/search_engine_choice_service_test_base.cc",
+    "search_engine_choice/search_engine_choice_service_test_base.h",
     "search_engine_choice/search_engine_choice_service_unittest.cc",
     "search_engine_choice/search_engine_choice_utils_unittest.cc",
     "search_host_to_urls_map_unittest.cc",
@@ -204,39 +226,50 @@ source_set("unit_tests") {
   ]
 
   deps = [
-    ":prepopulated_engines",
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//build:branding_buildflags",
     "//components/country_codes",
     "//components/google/core/common",
     "//components/metrics",
     "//components/omnibox/common",
     "//components/policy/core/common",
     "//components/policy/core/common:test_support",
-    "//components/pref_registry:pref_registry",
+    "//components/pref_registry",
     "//components/prefs",
     "//components/prefs:test_support",
+    "//components/regional_capabilities",
+    "//components/regional_capabilities:data",
+    "//components/search_engines/search_engine_choice:buildflags",
+    "//components/search_engines/search_engine_choice:switches",
     "//components/sync:test_support",
     "//components/sync_preferences:test_support",
     "//components/variations:test_support",
     "//components/webdata/common",
-    "//net:net",
+    "//net",
     "//services/network:test_support",
     "//services/network/public/cpp",
+    "//services/preferences/tracked",
+    "//services/preferences/tracked:features",
     "//sql",
+    "//sql:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/search_engines_data:prepopulated_engines",
     "//ui/base",
     "//url",
   ]
 
   if (is_linux || is_win || is_mac || is_chromeos) {
-    sources += [ "site_search_policy_handler_unittest.cc" ]
+    sources += [
+      "enterprise/search_aggregator_policy_handler_unittest.cc",
+      "enterprise/site_search_policy_handler_unittest.cc",
+    ]
   }
 
   if (!is_ios) {
-    sources += [ "default_search_policy_handler_unittest.cc" ]
+    sources += [ "enterprise/default_search_policy_handler_unittest.cc" ]
 
     deps += [
       "//components/policy:generated",
@@ -246,20 +279,12 @@ source_set("unit_tests") {
 
   if (is_android) {
     sources += [ "android/template_url_service_android_unittest.cc" ]
-    deps += [
-      "//components/search_engines/android:jni_headers",
-      "//components/search_engines/android:test_utils_jni_headers",
-    ]
+    deps += [ "//components/search_engines/android:jni_headers" ]
   }
-}
 
-json_to_struct("prepopulated_engines") {
-  visibility = [ ":*" ]
-
-  source = "prepopulated_engines.json"
-  schema_file = "prepopulated_engines_schema.json"
-  namespace = "TemplateURLPrepopulateData"
-  deps = [ ":search_engine_type" ]
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (is_android) {
@@ -282,33 +307,4 @@ component("search_engines_switches") {
   ]
 
   deps = [ "//base" ]
-}
-
-if (!is_android) {
-  action("generate_search_engine_icons") {
-    script = "//tools/search_engine_choice/generate_search_engine_icons.py"
-
-    inputs = [
-      "//tools/search_engine_choice/generate_search_engine_icons_config.json",
-      "//components/search_engines/prepopulated_engines.json",
-      "//components/search_engines/search_engine_countries-inc.cc",
-      "//tools/json_comment_eater/json_comment_eater.py",
-      "//tools/search_engine_choice/generate_search_engine_icons.py",
-      "//tools/search_engine_choice/search_engine_icons_utils.py",
-    ]
-
-    outputs = [
-      "$root_gen_dir/chrome/browser/ui/webui/search_engine_choice/generated_icon_utils-inc.cc",
-      "$target_gen_dir/generated_search_engine_resource_ids-inc.cc",
-    ]
-
-    args = [
-      rebase_path("//", root_build_dir),
-      rebase_path("$target_gen_dir/generated_search_engine_resource_ids-inc.cc",
-                  root_build_dir),
-      rebase_path(
-          "$target_gen_dir/../../chrome/browser/ui/webui/search_engine_choice/generated_icon_utils-inc.cc",
-          root_build_dir),
-    ]
-  }
 }

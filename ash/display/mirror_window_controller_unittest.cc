@@ -124,7 +124,9 @@ TEST_F(MirrorOnBootTest, MirrorOnBoot) {
 class MirrorWindowControllerRotationAndPanelOrientationTest
     : public MirrorWindowControllerTest,
       public testing::WithParamInterface<
-          std::tuple<display::Display::Rotation, display::PanelOrientation>> {};
+          std::tuple<display::Display::Rotation,
+                     display::Display::Rotation,
+                     display::PanelOrientation>> {};
 
 // Test that the mirror display matches the size and rotation of the source.
 TEST_P(MirrorWindowControllerRotationAndPanelOrientationTest, MirrorSize) {
@@ -132,7 +134,8 @@ TEST_P(MirrorWindowControllerRotationAndPanelOrientationTest, MirrorSize) {
   const int64_t mirror_id = 2;
 
   const display::Display::Rotation active_rotation = std::get<0>(GetParam());
-  const display::PanelOrientation panel_orientation = std::get<1>(GetParam());
+  const display::Display::Rotation mirror_rotation = std::get<1>(GetParam());
+  const display::PanelOrientation panel_orientation = std::get<2>(GetParam());
 
   // Run the test with and without display scaling.
   int scale_factors[] = {1, 2};
@@ -143,8 +146,10 @@ TEST_P(MirrorWindowControllerRotationAndPanelOrientationTest, MirrorSize) {
     primary_display_info.SetRotation(active_rotation,
                                      display::Display::RotationSource::ACTIVE);
 
-    const display::ManagedDisplayInfo mirror_display_info =
+    display::ManagedDisplayInfo mirror_display_info =
         CreateDisplayInfo(mirror_id, gfx::Rect(400, 0, 600, 500), scale);
+    mirror_display_info.SetRotation(mirror_rotation,
+                                    display::Display::RotationSource::ACTIVE);
     std::vector<display::ManagedDisplayInfo> display_info_list = {
         primary_display_info, mirror_display_info};
 
@@ -164,10 +169,10 @@ TEST_P(MirrorWindowControllerRotationAndPanelOrientationTest, MirrorSize) {
     EXPECT_EQ(primary_display.GetSizeInPixel(), root_window->bounds().size());
     EXPECT_EQ(primary_display.GetSizeInPixel(), mirror_window->bounds().size());
 
-    // Mirror should have a display transform hint that matches the active
-    // rotation (excluding the panel orientation) of the source.
-    EXPECT_EQ(display::DisplayRotationToOverlayTransform(active_rotation),
-              root_window->GetHost()->compositor()->display_transform_hint());
+    // Mirror Display should not have its rotation changed no matter what the
+    // primary display's rotation or orientation.
+    mirror_display_info = display_manager()->GetDisplayInfo(mirror_id);
+    EXPECT_EQ(mirror_rotation, mirror_display_info.GetLogicalActiveRotation());
   }
 }
 
@@ -175,6 +180,10 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     MirrorWindowControllerRotationAndPanelOrientationTest,
     testing::Combine(testing::Values(display::Display::ROTATE_0,
+                                     display::Display::ROTATE_90,
+                                     display::Display::ROTATE_180,
+                                     display::Display::ROTATE_270),
+                     testing::Values(display::Display::ROTATE_0,
                                      display::Display::ROTATE_90,
                                      display::Display::ROTATE_180,
                                      display::Display::ROTATE_270),

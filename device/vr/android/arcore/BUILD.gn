@@ -10,7 +10,6 @@ component("arcore") {
   output_name = "vr_arcore"
   defines = [ "IS_VR_ARCORE_IMPL" ]
   sources = [
-    "address_to_id_map.h",
     "ar_compositor_frame_sink.cc",
     "ar_compositor_frame_sink.h",
     "ar_image_transport.cc",

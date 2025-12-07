@@ -13,6 +13,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/privacy/screen_security_controller.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -110,6 +111,15 @@ void AshMessageCenterLockScreenController::DismissLockScreenThenExecute(
 
 bool AshMessageCenterLockScreenController::IsScreenLocked() const {
   return locked_;
+}
+
+bool AshMessageCenterLockScreenController::IsNotificationAllowedOnLockScreen(
+    const std::string& id) const {
+  // Remote screen sharing is enabled on lock screen. In order to terminate an
+  // active session a user has to click the "Stop" button on the remote screen
+  // notification. Hence, the notification has to be allowed at the lock screen
+  // to allow user interaction without needing to unlock the device.
+  return id == ash::kRemotingScreenShareNotificationId;
 }
 
 void AshMessageCenterLockScreenController::EncourageUserToUnlock(

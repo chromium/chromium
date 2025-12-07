@@ -333,7 +333,7 @@ RefreshResponseData TranslateWireResponse(
         response_metadata.event_id().SerializeAsString());
   }
   result->stream_data.set_signed_in(!account_info.IsEmpty());
-  result->stream_data.set_gaia(account_info.gaia);
+  result->stream_data.set_gaia(account_info.gaia.ToString());
   result->stream_data.set_email(account_info.email);
   result->stream_data.set_logging_enabled(
       chrome_response_metadata.logging_enabled());
@@ -383,6 +383,15 @@ RefreshResponseData TranslateWireResponse(
           feed_response->feed_response_metadata().event_id().time_usec());
   response_data.server_response_sent_timestamp = feedstore::FromTimestampMillis(
       feed_response->feed_response_metadata().response_time_ms());
+  if (feed_response->feed_response_metadata()
+          .has_feed_launch_cui_server_metadata()) {
+    std::string feed_launch_cui_metadata =
+        feed_response->feed_response_metadata()
+            .feed_launch_cui_server_metadata()
+            .SerializeAsString();
+    response_data.feed_launch_cui_metadata =
+        std::move(feed_launch_cui_metadata);
+  }
   response_data.last_fetch_timestamp = current_time;
   response_data.web_and_app_activity_enabled =
       chrome_response_metadata.web_and_app_activity_enabled();

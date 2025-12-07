@@ -8,7 +8,8 @@ import os
 import tempfile
 import unittest
 
-from pyfakefs import fake_filesystem_unittest
+# vpython-provided modules.
+from pyfakefs import fake_filesystem_unittest  # pylint: disable=import-error
 
 from test_results import TestResult
 
@@ -20,6 +21,8 @@ from rust_main_program import _scrape_test_results
 from rust_main_program import _parse_args
 from rust_main_program import _TestExecutableWrapper
 
+# Protected access is allowed for unittests.
+# pylint: disable=protected-access
 
 class Tests(fake_filesystem_unittest.TestCase):
     def test_format_test_name(self):
@@ -57,7 +60,8 @@ test_benchmark: benchmark
 running 1 test
 test test_hello ... ok
 
-test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; \
+finished in 0.00s
         """.strip()
         with self.assertRaises(ValueError):
             _scrape_test_list(test_input, 'test_exe_name')
@@ -82,7 +86,8 @@ note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 failures:
     test_foobar
 
-test result: FAILED. 3 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: FAILED. 3 passed; 1 failed; 0 ignored; 0 measured; \
+0 filtered out; finished in 0.00s
         """.strip()
         list_of_expected_test_names = [
             'test_foo', 'test_bar', 'foo::test_in_mod', 'test_foobar'
@@ -107,8 +112,8 @@ test result: FAILED. 3 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; 
 
     def test_get_exe_specific_tests(self):
         result = _get_exe_specific_tests(
-            "exe_name",
-            ["exe_name//foo1", "exe_name//foo2", "other_exe//foo3"])
+            'exe_name',
+            ['exe_name//foo1', 'exe_name//foo2', 'other_exe//foo3'])
         self.assertEqual(['foo1', 'foo2'], result)
 
     def test_executable_wrapper_basic_construction(self):

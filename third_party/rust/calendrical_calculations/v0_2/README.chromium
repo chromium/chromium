@@ -1,0 +1,11 @@
+Name: calendrical_calculations
+URL: https://crates.io/crates/calendrical_calculations
+Version: 0.2.3
+Revision: 29dfe2790b6cfdab94ca6a6b69f58ce54802dbf7
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/calendrical_calculations-v0_2/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: Calendrical calculations in Rust

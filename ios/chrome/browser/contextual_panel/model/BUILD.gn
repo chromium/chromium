@@ -9,20 +9,20 @@ source_set("model") {
     "contextual_panel_model_service.mm",
     "contextual_panel_model_service_factory.h",
     "contextual_panel_model_service_factory.mm",
-    "contextual_panel_tab_helper.h",
     "contextual_panel_tab_helper.mm",
   ]
   deps = [
     ":public",
     "//base",
-    "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//ios/chrome/browser/contextual_panel/sample/model",
     "//ios/chrome/browser/contextual_panel/utils",
     "//ios/chrome/browser/price_insights/model",
     "//ios/chrome/browser/price_insights/model:feature",
+    "//ios/chrome/browser/reader_mode/model",
+    "//ios/chrome/browser/reader_mode/model:features",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
@@ -39,6 +39,7 @@ source_set("public") {
     "contextual_panel_item_type.h",
     "contextual_panel_item_type.mm",
     "contextual_panel_model.h",
+    "contextual_panel_tab_helper.h",
     "contextual_panel_tab_helper_observer.h",
     "contextual_panel_tab_helper_observer_bridge.h",
     "contextual_panel_tab_helper_observer_bridge.mm",
@@ -47,6 +48,8 @@ source_set("public") {
   deps = [
     "//base",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/web/public",
   ]
 }
 

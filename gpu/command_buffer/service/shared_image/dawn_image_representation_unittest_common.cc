@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/service/shared_image/dawn_image_representation_unittest_common.h"
 
+#include "base/compiler_specific.h"
 #include "base/threading/platform_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -16,12 +17,12 @@ void CopyTexelToBuffer(const wgpu::CommandEncoder& encoder,
                        uint32_t x,
                        uint32_t y,
                        const wgpu::Buffer& buffer) {
-  wgpu::ImageCopyBuffer buffer_copy;
+  wgpu::TexelCopyBufferInfo buffer_copy;
   buffer_copy.buffer = buffer;
   buffer_copy.layout =
-      wgpu::TextureDataLayout{.bytesPerRow = kBufferSizeMinAlignment};
+      wgpu::TexelCopyBufferLayout{.bytesPerRow = kBufferSizeMinAlignment};
 
-  wgpu::ImageCopyTexture texture_copy;
+  wgpu::TexelCopyTextureInfo texture_copy;
   texture_copy.texture = texture;
   texture_copy.mipLevel = 0;
   texture_copy.origin = wgpu::Origin3D{.x = x, .y = y, .z = 0};
@@ -35,7 +36,7 @@ void CopyTexelToBuffer(const wgpu::CommandEncoder& encoder,
 
 wgpu::ShaderModule CreateShaderModule(const wgpu::Device& device,
                                       const char* source) {
-  wgpu::ShaderModuleWGSLDescriptor wgsl_desc;
+  wgpu::ShaderSourceWGSL wgsl_desc;
   wgsl_desc.code = source;
   wgpu::ShaderModuleDescriptor descriptor;
   descriptor.nextInChain = &wgsl_desc;
@@ -232,7 +233,7 @@ struct VertexOut {
   wgpu::FutureWaitInfo wait_info{readback_buffer.MapAsync(
       wgpu::MapMode::Read, 0, wgpu::kWholeMapSize,
       wgpu::CallbackMode::WaitAnyOnly,
-      [](wgpu::MapAsyncStatus status, const char*) {
+      [](wgpu::MapAsyncStatus status, wgpu::StringView) {
         ASSERT_EQ(status, wgpu::MapAsyncStatus::Success);
       })};
 
@@ -242,8 +243,8 @@ struct VertexOut {
 
   uint8_t pixel_color[4];
 
-  memcpy(pixel_color, readback_buffer.GetConstMappedRange(),
-         sizeof(pixel_color));
+  UNSAFE_TODO(memcpy(pixel_color, readback_buffer.GetConstMappedRange(),
+                     sizeof(pixel_color)));
 
   EXPECT_EQ(expected_y_value, pixel_color[0]);
   EXPECT_EQ(expected_u_value, pixel_color[1]);

@@ -5,6 +5,10 @@
 #include "cc/input/snap_selection_strategy.h"
 
 #include <cmath>
+#include <limits>
+
+#include "cc/input/scroll_utils.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace cc {
 
@@ -21,16 +25,55 @@ SnapSelectionStrategy::CreateForDirection(gfx::PointF current_position,
                                           gfx::Vector2dF step,
                                           bool use_fractional_offsets,
                                           SnapStopAlwaysFilter filter) {
-  return std::make_unique<DirectionStrategy>(current_position, step, filter,
-                                             use_fractional_offsets);
+  return std::make_unique<DirectionStrategy>(
+      current_position, step, DirectionStrategy::StepPreference::kDirection,
+      gfx::Vector2dF(), gfx::Vector2dF(), filter, use_fractional_offsets);
 }
 
 std::unique_ptr<SnapSelectionStrategy>
-SnapSelectionStrategy::CreateForEndAndDirection(gfx::PointF current_position,
-                                                gfx::Vector2dF displacement,
-                                                bool use_fractional_offsets) {
-  return std::make_unique<EndAndDirectionStrategy>(
-      current_position, displacement, use_fractional_offsets);
+SnapSelectionStrategy::CreateForDisplacement(gfx::PointF current_position,
+                                             gfx::Vector2dF displacement,
+                                             bool use_fractional_offsets,
+                                             SnapStopAlwaysFilter filter) {
+  return std::make_unique<DirectionStrategy>(
+      current_position, displacement,
+      DirectionStrategy::StepPreference::kDistance, gfx::Vector2dF(),
+      gfx::Vector2dF(std::numeric_limits<float>::max(),
+                     std::numeric_limits<float>::max()),
+      filter, use_fractional_offsets);
+}
+
+std::unique_ptr<SnapSelectionStrategy>
+SnapSelectionStrategy::CreateForPageScroll(
+    gfx::PointF current_position,
+    gfx::Vector2dF direction,
+    gfx::Size page_size,
+    bool use_fractional_offsets,
+    SnapStopAlwaysFilter filter) {
+  // When scrolling by a page, we prefer that we scroll no more than a page,
+  // but at least by a reasonable proportion of that page.
+  gfx::Vector2dF displacement(
+      direction.x() * ScrollUtils::CalculatePageStep(page_size.width()),
+      direction.y() * ScrollUtils::CalculatePageStep(page_size.height()));
+  gfx::Vector2dF min_displacement = gfx::Vector2dF(
+    direction.x() * ScrollUtils::CalculateMinPageSnap(page_size.width()),
+    direction.y() * ScrollUtils::CalculateMinPageSnap(page_size.height()));
+  gfx::Vector2dF max_displacement = gfx::Vector2dF(
+    direction.x() * ScrollUtils::CalculateMaxPageSnap(page_size.width()),
+    direction.y() * ScrollUtils::CalculateMaxPageSnap(page_size.height()));
+
+  // No limit to the maximum displacement of preferred snap areas in the
+  // other axis.
+  if (direction.x() == 0.f) {
+    max_displacement.set_x(std::numeric_limits<float>::max());
+  }
+  if (direction.y() == 0.f) {
+    max_displacement.set_y(std::numeric_limits<float>::max());
+  }
+  return std::make_unique<DirectionStrategy>(
+      current_position, displacement,
+      DirectionStrategy::StepPreference::kDistance, min_displacement,
+      max_displacement, filter, use_fractional_offsets);
 }
 
 std::unique_ptr<SnapSelectionStrategy>
@@ -79,6 +122,11 @@ gfx::PointF EndPositionStrategy::base_position() const {
   return current_position_;
 }
 
+bool EndPositionStrategy::IsPreferredSnapPosition(SearchAxis axis,
+                                                  float position) const {
+  return true;
+}
+
 // |position| is unused in this method.
 bool EndPositionStrategy::IsValidSnapPosition(SearchAxis axis,
                                               float position) const {
@@ -117,7 +165,22 @@ gfx::PointF DirectionStrategy::intended_position() const {
 }
 
 gfx::PointF DirectionStrategy::base_position() const {
-  return current_position_;
+  return preferred_step_ == StepPreference::kDirection
+             ? current_position_
+             : current_position_ + step_;
+}
+
+bool DirectionStrategy::IsPreferredSnapPosition(SearchAxis axis,
+                                                float position) const {
+  if (axis == SearchAxis::kX) {
+    float delta = position - current_position_.x();
+    return std::abs(delta) >= std::abs(preferred_min_displacement_.x()) &&
+           std::abs(delta) <= std::abs(preferred_max_displacement_.x());
+  } else {
+    float delta = position - current_position_.y();
+    return std::abs(delta) >= std::abs(preferred_min_displacement_.y()) &&
+           std::abs(delta) <= std::abs(preferred_max_displacement_.y());
+  }
 }
 
 bool DirectionStrategy::IsValidSnapPosition(SearchAxis axis,
@@ -148,6 +211,10 @@ bool DirectionStrategy::IsValidSnapArea(SearchAxis axis,
           area.must_snap);
 }
 
+bool DirectionStrategy::ShouldRespectSnapStop() const {
+  return true;
+}
+
 const std::optional<SnapSearchResult>& DirectionStrategy::PickBestResult(
     const std::optional<SnapSearchResult>& closest,
     const std::optional<SnapSearchResult>& covering) const {
@@ -160,15 +227,25 @@ const std::optional<SnapSearchResult>& DirectionStrategy::PickBestResult(
   if (!covering.has_value())
     return closest;
 
-  // "Right" or "Down" arrow.
-  if ((step_.x() > 0 || step_.y() > 0) &&
-      closest.value().snap_offset() < covering.value().snap_offset()) {
-    return closest;
+  // If covering and closest represent the same snap area, covering best
+  // preserves the intended scroll position.
+  if (covering->element_id() == closest->element_id()) {
+    return covering;
   }
-  // "Left" or "Up" arrow.
-  if ((step_.x() < 0 || step_.y() < 0) &&
-      closest.value().snap_offset() > covering.value().snap_offset()) {
-    return closest;
+
+  // If we only intend to scroll in the given direction, prefer the closer
+  // snap position.
+  if (preferred_step_ == StepPreference::kDirection) {
+    // Scroll right or down.
+    if ((step_.x() > 0 || step_.y() > 0) &&
+        closest.value().snap_offset() < covering.value().snap_offset()) {
+      return closest;
+    }
+    // Scroll left or up.
+    if ((step_.x() < 0 || step_.y() < 0) &&
+        closest.value().snap_offset() > covering.value().snap_offset()) {
+      return closest;
+    }
   }
 
   return covering;
@@ -180,61 +257,6 @@ bool DirectionStrategy::UsingFractionalOffsets() const {
 
 std::unique_ptr<SnapSelectionStrategy> DirectionStrategy::Clone() const {
   return std::make_unique<DirectionStrategy>(*this);
-}
-
-bool EndAndDirectionStrategy::ShouldSnapOnX() const {
-  return displacement_.x() != 0;
-}
-
-bool EndAndDirectionStrategy::ShouldSnapOnY() const {
-  return displacement_.y() != 0;
-}
-
-gfx::PointF EndAndDirectionStrategy::intended_position() const {
-  return current_position_ + displacement_;
-}
-
-gfx::PointF EndAndDirectionStrategy::base_position() const {
-  return current_position_ + displacement_;
-}
-
-bool EndAndDirectionStrategy::IsValidSnapPosition(SearchAxis axis,
-                                                  float position) const {
-  // If not using fractional offsets then it is possible for the currently
-  // snapped area's offset, which is fractional, to not be equal to the current
-  // scroll offset, which is not fractional. Therefore we round the offsets so
-  // that any position within 0.5 of the current position is ignored.
-  if (axis == SearchAxis::kX) {
-    float delta = position - current_position_.x();
-    if (!use_fractional_offsets_)
-      delta = std::round(delta);
-    return (displacement_.x() > 0 && delta > 0) ||  // Right
-           (displacement_.x() < 0 && delta < 0);    // Left
-  } else {
-    float delta = position - current_position_.y();
-    if (!use_fractional_offsets_)
-      delta = std::round(delta);
-    return (displacement_.y() > 0 && delta > 0) ||  // Down
-           (displacement_.y() < 0 && delta < 0);    // Up
-  }
-}
-
-bool EndAndDirectionStrategy::ShouldRespectSnapStop() const {
-  return true;
-}
-
-const std::optional<SnapSearchResult>& EndAndDirectionStrategy::PickBestResult(
-    const std::optional<SnapSearchResult>& closest,
-    const std::optional<SnapSearchResult>& covering) const {
-  return covering.has_value() ? covering : closest;
-}
-
-bool EndAndDirectionStrategy::UsingFractionalOffsets() const {
-  return use_fractional_offsets_;
-}
-
-std::unique_ptr<SnapSelectionStrategy> EndAndDirectionStrategy::Clone() const {
-  return std::make_unique<EndAndDirectionStrategy>(*this);
 }
 
 }  // namespace cc

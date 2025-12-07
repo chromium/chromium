@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<org.chromium.chrome.browser.compositor.layouts.phone.NewBackgroundTabAnimationHostView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipToPadding="false"
+    android:layoutDirection="ltr">
+
+    <include
+        layout="@layout/new_background_tab_animation_tab_switcher_icon"/>
+
+    <!--View is invisible to avoid displaying the icon prematurely. The reason is that one of the
+    animators updates the View.X and View.Y values, overwriting its screen location.-->
+    <ImageView
+        android:id="@+id/new_tab_background_animation_link_icon"
+        android:importantForAccessibility="no"
+        android:layout_width="@dimen/new_bg_tab_animation_size"
+        android:layout_height="@dimen/new_bg_tab_animation_size"
+        android:layout_gravity="center"
+        android:background="@drawable/new_tab_animation_rounded_rect"
+        android:elevation="@dimen/new_bg_tab_animation_link_elevation"
+        android:src="@drawable/ic_link"
+        android:padding="@dimen/new_bg_tab_animation_padding"
+        android:visibility="invisible"/>
+</org.chromium.chrome.browser.compositor.layouts.phone.NewBackgroundTabAnimationHostView>

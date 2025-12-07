@@ -10,6 +10,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
@@ -30,8 +31,8 @@
 #include "third_party/leveldatabase/leveldb_chrome.h"
 #include "third_party/leveldatabase/src/include/leveldb/comparator.h"
 
-namespace content {
-namespace leveldb_unittest {
+namespace content::indexed_db {
+namespace {
 
 static const size_t kDefaultMaxOpenIteratorsPerDatabase = 50;
 
@@ -43,7 +44,7 @@ class SimpleLDBComparator : public leveldb::Comparator {
   }
   int Compare(const leveldb::Slice& a, const leveldb::Slice& b) const override {
     size_t len = std::min(a.size(), b.size());
-    return memcmp(a.data(), b.data(), len);
+    return UNSAFE_TODO(memcmp(a.data(), b.data(), len));
   }
   const char* Name() const override { return "temp_comparator"; }
   void FindShortestSeparator(std::string* start,
@@ -165,5 +166,5 @@ TEST(LevelDB, Locking) {
   EXPECT_TRUE(status.ok());
 }
 
-}  // namespace leveldb_unittest
-}  // namespace content
+}  // namespace
+}  // namespace content::indexed_db

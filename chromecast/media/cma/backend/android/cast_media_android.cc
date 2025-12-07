@@ -67,23 +67,20 @@ MediaPipelineBackend* CastMediaShlib::CreateMediaPipelineBackend(
 }
 
 double CastMediaShlib::GetMediaClockRate() {
-  NOTREACHED_IN_MIGRATION();
-  return 0.0;
+  NOTREACHED();
 }
 
 double CastMediaShlib::MediaClockRatePrecision() {
-  NOTREACHED_IN_MIGRATION();
-  return 0.0;
+  NOTREACHED();
 }
 
 void CastMediaShlib::MediaClockRateRange(double* minimum_rate,
                                          double* maximum_rate) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool CastMediaShlib::SetMediaClockRate(double new_rate) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool CastMediaShlib::SupportsMediaClockRateChange() {

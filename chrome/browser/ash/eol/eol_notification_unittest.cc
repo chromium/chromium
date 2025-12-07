@@ -30,16 +30,12 @@
 
 namespace ash {
 
-class EolNotificationTest : public BrowserWithTestWindowTest,
-                            public testing::WithParamInterface<bool> {
+class EolNotificationTest : public BrowserWithTestWindowTest {
  public:
   EolNotificationTest() = default;
   ~EolNotificationTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kSuppressFirstEolWarning, SuppressFirstWarningEnabled());
-
     fake_update_engine_client_ = UpdateEngineClient::InitializeFakeForTest();
     ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     BrowserWithTestWindowTest::SetUp();
@@ -87,20 +83,14 @@ class EolNotificationTest : public BrowserWithTestWindowTest,
     fake_update_engine_client_->set_eol_date(utc_date);
   }
 
-  bool SuppressFirstWarningEnabled() { return GetParam(); }
-
  protected:
   raw_ptr<FakeUpdateEngineClient> fake_update_engine_client_;
   std::unique_ptr<NotificationDisplayServiceTester> tester_;
   std::unique_ptr<EolNotification> eol_notification_;
   std::unique_ptr<base::SimpleTestClock> clock_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, EolNotificationTest, testing::Bool());
-
-TEST_P(EolNotificationTest, TestNoNotifciationBeforeEol) {
+TEST_F(EolNotificationTest, TestNoNotifciationBeforeEol) {
   SetCurrentTimeToUtc("1 January 2019");
   SetEolDateUtc("1 December 2019");
 
@@ -109,26 +99,13 @@ TEST_P(EolNotificationTest, TestNoNotifciationBeforeEol) {
   ASSERT_FALSE(notification);
 }
 
-TEST_P(EolNotificationTest, TestFirstWarningNotification) {
+TEST_F(EolNotificationTest, TestFirstWarningNotification) {
   SetCurrentTimeToUtc("1 August 2019");
   SetEolDateUtc("1 December 2019");
 
   CheckEolInfo();
   auto notification = tester_->GetNotification("chrome://product_eol");
-
-  if (SuppressFirstWarningEnabled()) {
-    ASSERT_FALSE(notification);
-  } else {
-    ASSERT_TRUE(notification);
-    std::u16string expected_title = u"Updates end December 2019";
-    std::u16string expected_message =
-        u"You'll still be able to use this Chrome device after that time, but "
-        u"it will no longer get automatic software and security updates";
-    EXPECT_EQ(notification->title(), expected_title);
-    EXPECT_EQ(notification->message(), expected_message);
-
-    DismissNotification();
-  }
+  ASSERT_FALSE(notification);
 
   SetCurrentTimeToUtc("15 August 2019");
   CheckEolInfo();
@@ -136,7 +113,7 @@ TEST_P(EolNotificationTest, TestFirstWarningNotification) {
   ASSERT_FALSE(notification);
 }
 
-TEST_P(EolNotificationTest, TestSecondWarningNotification) {
+TEST_F(EolNotificationTest, TestSecondWarningNotification) {
   SetCurrentTimeToUtc("1 November 2019");
   SetEolDateUtc("1 December 2019");
 
@@ -164,7 +141,7 @@ TEST_P(EolNotificationTest, TestSecondWarningNotification) {
   ASSERT_FALSE(notification);
 }
 
-TEST_P(EolNotificationTest, TestFinalEolNotification) {
+TEST_F(EolNotificationTest, TestFinalEolNotification) {
   SetEolDateUtc("1 December 2019");
   SetCurrentTimeToUtc("2 December 2019");
 
@@ -187,7 +164,7 @@ TEST_P(EolNotificationTest, TestFinalEolNotification) {
   ASSERT_FALSE(notification);
 }
 
-TEST_P(EolNotificationTest, TestOnEolDateChangeBeforeFirstWarning) {
+TEST_F(EolNotificationTest, TestOnEolDateChangeBeforeFirstWarning) {
   SetCurrentTimeToUtc("1 January 2019");
   SetEolDateUtc("1 December 2019");
   CheckEolInfo();
@@ -201,19 +178,12 @@ TEST_P(EolNotificationTest, TestOnEolDateChangeBeforeFirstWarning) {
   ASSERT_FALSE(notification);
 }
 
-TEST_P(EolNotificationTest, TestOnEolDateChangeBeforeSecondWarning) {
+TEST_F(EolNotificationTest, TestOnEolDateChangeBeforeSecondWarning) {
   SetCurrentTimeToUtc("1 August 2019");
   SetEolDateUtc("1 December 2019");
   CheckEolInfo();
   auto notification = tester_->GetNotification("chrome://product_eol");
-  if (SuppressFirstWarningEnabled()) {
-    ASSERT_FALSE(notification);
-  } else {
-    ASSERT_TRUE(notification);
-
-    // Dismiss first warning notification.
-    DismissNotification();
-  }
+  ASSERT_FALSE(notification);
 
   CheckEolInfo();
   notification = tester_->GetNotification("chrome://product_eol");
@@ -223,15 +193,10 @@ TEST_P(EolNotificationTest, TestOnEolDateChangeBeforeSecondWarning) {
   SetEolDateUtc("2 December 2019");
   CheckEolInfo();
   notification = tester_->GetNotification("chrome://product_eol");
-
-  if (SuppressFirstWarningEnabled()) {
-    ASSERT_FALSE(notification);
-  } else {
-    ASSERT_TRUE(notification);
-  }
+  ASSERT_FALSE(notification);
 }
 
-TEST_P(EolNotificationTest, TestOnEolDateChangeBeforeFinalWarning) {
+TEST_F(EolNotificationTest, TestOnEolDateChangeBeforeFinalWarning) {
   SetCurrentTimeToUtc("1 November 2019");
   SetEolDateUtc("1 December 2019");
   CheckEolInfo();
@@ -251,7 +216,7 @@ TEST_P(EolNotificationTest, TestOnEolDateChangeBeforeFinalWarning) {
   ASSERT_TRUE(notification);
 }
 
-TEST_P(EolNotificationTest, TestOnEolDateChangedAfterFinalWarning) {
+TEST_F(EolNotificationTest, TestOnEolDateChangedAfterFinalWarning) {
   SetEolDateUtc("1 December 2019");
   SetCurrentTimeToUtc("3 December 2019");
   CheckEolInfo();
@@ -277,23 +242,12 @@ TEST_P(EolNotificationTest, TestOnEolDateChangedAfterFinalWarning) {
   ASSERT_TRUE(notification);
 }
 
-TEST_P(EolNotificationTest, TestNotificationUpdatesProperlyWithoutDismissal) {
+TEST_F(EolNotificationTest, TestNotificationUpdatesProperlyWithoutDismissal) {
   SetCurrentTimeToUtc("1 August 2019");
   SetEolDateUtc("1 December 2019");
   CheckEolInfo();
   auto notification = tester_->GetNotification("chrome://product_eol");
-
-  if (SuppressFirstWarningEnabled()) {
-    ASSERT_FALSE(notification);
-  } else {
-    ASSERT_TRUE(notification);
-    std::u16string expected_title = u"Updates end December 2019";
-    std::u16string expected_message =
-        u"You'll still be able to use this Chrome device after that time, but "
-        u"it will no longer get automatic software and security updates";
-    EXPECT_EQ(notification->title(), expected_title);
-    EXPECT_EQ(notification->message(), expected_message);
-  }
+  ASSERT_FALSE(notification);
 
   // EOL date arrives and the user has not dismissed the notification.
   SetCurrentTimeToUtc("1 December 2019");
@@ -312,7 +266,7 @@ TEST_P(EolNotificationTest, TestNotificationUpdatesProperlyWithoutDismissal) {
   ASSERT_FALSE(notification);
 }
 
-TEST_P(EolNotificationTest, TestBackwardsCompatibilityFinalUpdateAlreadyShown) {
+TEST_F(EolNotificationTest, TestBackwardsCompatibilityFinalUpdateAlreadyShown) {
   SetEolDateUtc("1 December 2019");
   SetCurrentTimeToUtc("2 December 2019");
 
@@ -325,7 +279,7 @@ TEST_P(EolNotificationTest, TestBackwardsCompatibilityFinalUpdateAlreadyShown) {
   ASSERT_FALSE(notification);
 }
 
-TEST_P(EolNotificationTest, TestOnEolInfoCallsExtendedUpdatesController) {
+TEST_F(EolNotificationTest, TestOnEolInfoCallsExtendedUpdatesController) {
   SetCurrentTimeToUtc("10 October 2024");
 
   base::Time eol_date, extended_date;
@@ -346,103 +300,6 @@ TEST_P(EolNotificationTest, TestOnEolInfoCallsExtendedUpdatesController) {
   CheckEolInfo();
   auto notification = tester_->GetNotification("chrome://product_eol");
   EXPECT_FALSE(notification);
-}
-
-class EolIncentiveNotificationTest : public EolNotificationTest {
- public:
-  void SetUp() override {
-    EolNotificationTest::SetUp();
-
-    // Set the profile creation date to be at least 6 months before the current
-    // time set in these unittests, to correctly show the incentive.
-    base::Time creation_time;
-    ASSERT_TRUE(base::Time::FromUTCString("1 February 2023", &creation_time));
-    profile()->SetCreationTimeForTesting(creation_time);
-
-    scoped_feature_list_.InitAndEnableFeature(ash::features::kEolIncentive);
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All, EolIncentiveNotificationTest, testing::Bool());
-
-TEST_P(EolIncentiveNotificationTest, TestIncentiveFarBeforeEolDate) {
-  SetCurrentTimeToUtc("1 January 2023");
-  SetEolDateUtc("1 December 2023");
-
-  CheckEolInfo();
-  auto notification = tester_->GetNotification("chrome://product_eol");
-  ASSERT_FALSE(notification);
-}
-
-TEST_P(EolIncentiveNotificationTest, TestIncentiveBeforeEolDate) {
-  SetCurrentTimeToUtc("1 November 2023");
-  SetEolDateUtc("1 December 2023");
-
-  CheckEolInfo();
-  auto notification = tester_->GetNotification("chrome://product_eol");
-  ASSERT_TRUE(notification);
-
-  DismissNotification();
-  ASSERT_TRUE(profile()->GetPrefs()->GetBoolean(
-      prefs::kEolApproachingIncentiveNotificationDismissed));
-}
-
-TEST_P(EolIncentiveNotificationTest, TestIncentiveOnEolDate) {
-  SetCurrentTimeToUtc("1 December 2023");
-  SetEolDateUtc("1 December 2023");
-
-  CheckEolInfo();
-  auto notification = tester_->GetNotification("chrome://product_eol");
-  ASSERT_TRUE(notification);
-
-  DismissNotification();
-  ASSERT_TRUE(profile()->GetPrefs()->GetBoolean(
-      prefs::kEolPassedFinalIncentiveDismissed));
-}
-
-TEST_P(EolIncentiveNotificationTest, TestIncentiveAfterEolDate) {
-  SetCurrentTimeToUtc("3 December 2023");
-  SetEolDateUtc("1 December 2023");
-
-  CheckEolInfo();
-  auto notification = tester_->GetNotification("chrome://product_eol");
-  ASSERT_TRUE(notification);
-
-  DismissNotification();
-  ASSERT_TRUE(profile()->GetPrefs()->GetBoolean(
-      prefs::kEolPassedFinalIncentiveDismissed));
-}
-
-TEST_P(EolIncentiveNotificationTest, TestIncentiveFarAfterEolDate) {
-  SetCurrentTimeToUtc("20 December 2023");
-  SetEolDateUtc("1 December 2023");
-
-  profile()->GetPrefs()->SetBoolean(prefs::kEolPassedFinalIncentiveDismissed,
-                                    true);
-
-  CheckEolInfo();
-  auto notification = tester_->GetNotification("chrome://product_eol");
-  // Check that no notification is shown far ater EOL date if the final
-  // incentive was dismissed.
-  ASSERT_FALSE(notification);
-}
-
-TEST_P(EolIncentiveNotificationTest,
-       TestIncentiveFarAfterEolDateIncentiveNotShown) {
-  SetCurrentTimeToUtc("20 December 2023");
-  SetEolDateUtc("1 December 2023");
-
-  CheckEolInfo();
-  auto notification = tester_->GetNotification("chrome://product_eol");
-  // Check that a notification is shown far after EOL date if the final
-  // incentive was not dismissed.
-  ASSERT_TRUE(notification);
-
-  DismissNotification();
-  ASSERT_TRUE(
-      profile()->GetPrefs()->GetBoolean(prefs::kEolNotificationDismissed));
 }
 
 }  // namespace ash

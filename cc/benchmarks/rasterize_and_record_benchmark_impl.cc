@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/benchmarks/rasterize_and_record_benchmark_impl.h"
 
 #include <stddef.h>
@@ -26,9 +21,11 @@
 #include "cc/paint/display_item_list.h"
 #include "cc/raster/playback_image_provider.h"
 #include "cc/raster/raster_buffer_provider.h"
+#include "cc/tiles/tile_priority.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "skia/ext/legacy_display_globals.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -134,10 +131,6 @@ class FixedInvalidationPictureLayerTilingClient
     return base_client_->GetPaintWorkletRecords();
   }
 
-  void OnAllTilesDoneCleared() override {
-    base_client_->OnAllTilesDoneCleared();
-  }
-
   std::vector<const DrawImage*> GetDiscardableImagesInRect(
       const gfx::Rect& rect) const override {
     return base_client_->GetDiscardableImagesInRect(rect);
@@ -145,6 +138,10 @@ class FixedInvalidationPictureLayerTilingClient
 
   ScrollOffsetMap GetRasterInducingScrollOffsets() const override {
     return base_client_->GetRasterInducingScrollOffsets();
+  }
+
+  const GlobalStateThatImpactsTilePriority& global_tile_state() const override {
+    return base_client_->global_tile_state();
   }
 
  private:

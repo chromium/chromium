@@ -66,6 +66,7 @@ class TestResult(object):
                  test_name,
                  retry_attempt=0,
                  failures=None,
+                 expected=frozenset([ResultType.Pass]),
                  test_run_time=None,
                  reftest_type=None,
                  pid=None,
@@ -99,7 +100,9 @@ class TestResult(object):
         assert len(results) <= 2, (
             'single_test_runner.py incorrectly reported results %s for test %s'
             % (', '.join(results), test_name))
-        if len(results) == 2:
+        if self.device_failed:
+            self.type = ResultType.Timeout
+        elif len(results) == 2:
             assert results.issubset({ResultType.Timeout,
                                      ResultType.Failure,
                                      ResultType.Crash}), (
@@ -137,6 +140,13 @@ class TestResult(object):
                                    retry_attempt,
                                    ARTIFACTS_SUB_DIR,
                                    repeat_tests=self.repeat_tests)
+        # Default can be overwritten by the `WebTestRunner` (i.e., manager
+        # process).
+        self.expected = expected
+
+    @property
+    def is_expected(self) -> bool:
+        return self.type in self.expected
 
     @property
     def actual_image_hash(self) -> Optional[str]:

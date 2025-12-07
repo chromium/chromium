@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_TEST_WITH_BROWSER_VIEW_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
@@ -14,8 +15,14 @@
 
 class BrowserView;
 
+// WARNING WARNING WARNING WARNING
+// Do not use this class. See docs/chrome_browser_design_principles.md for
+// details. If you want to write a test that has both a Browser and a
+// BrowserView, create a browser_test. If you want to write a unit_test, your
+// code must not reference Browser*.
+//
 // Base class for BrowserView based unit tests. TestWithBrowserView creates
-// a Browser with a valid BrowserView and BrowserFrame with as little else as
+// a Browser with a valid BrowserView and BrowserWidget with as little else as
 // possible.
 class TestWithBrowserView : public BrowserWithTestWindowTest {
  public:
@@ -40,11 +47,19 @@ class TestWithBrowserView : public BrowserWithTestWindowTest {
 
   BrowserView* browser_view() { return browser_view_; }
 
+  Browser* CreateBrowserWithBrowserView(Profile* profile,
+                                        Browser::Type browser_type);
+
  private:
   // The BrowserWindow created because GetBrowserWindow was overridden to return
   // nil. While it's not actually "owned" by this code, this code is responsible
   // for ensuring it gets cleaned up.
   raw_ptr<BrowserView> browser_view_;
+
+  // Stores additional Browser instances created via
+  // `CreateBrowserWithBrowserView()`.
+  std::vector<std::unique_ptr<Browser>> additional_browsers_;
+
   base::test::ScopedFeatureList feature_list_;
 };
 

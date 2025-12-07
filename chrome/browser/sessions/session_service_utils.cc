@@ -4,7 +4,7 @@
 
 #include "chrome/browser/sessions/session_service_utils.h"
 
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 
 sessions::SessionWindow::WindowType WindowTypeForBrowserType(
     Browser::Type type) {
@@ -22,13 +22,12 @@ sessions::SessionWindow::WindowType WindowTypeForBrowserType(
       return sessions::SessionWindow::TYPE_DEVTOOLS;
     case Browser::TYPE_APP_POPUP:
       return sessions::SessionWindow::TYPE_APP_POPUP;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     case Browser::TYPE_CUSTOM_TAB:
       return sessions::SessionWindow::TYPE_CUSTOM_TAB;
 #endif
   }
-  NOTREACHED_IN_MIGRATION();
-  return sessions::SessionWindow::TYPE_NORMAL;
+  NOTREACHED();
 }
 
 Browser::Type BrowserTypeForWindowType(
@@ -44,11 +43,10 @@ Browser::Type BrowserTypeForWindowType(
       return Browser::TYPE_DEVTOOLS;
     case sessions::SessionWindow::TYPE_APP_POPUP:
       return Browser::TYPE_APP_POPUP;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     case sessions::SessionWindow::TYPE_CUSTOM_TAB:
       return Browser::TYPE_CUSTOM_TAB;
 #endif
   }
-  NOTREACHED_IN_MIGRATION();
-  return Browser::TYPE_NORMAL;
+  NOTREACHED();
 }

@@ -5,17 +5,17 @@
 #ifndef IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARK_CLIENT_IMPL_H_
 #define IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARK_CLIENT_IMPL_H_
 
-#include <set>
-#include <string>
-#include <vector>
+#import <set>
+#import <string>
+#import <vector>
 
-#include "base/memory/raw_ptr.h"
-#include "base/task/deferred_sequenced_task_runner.h"
-#include "components/power_bookmarks/core/bookmark_client_base.h"
+#import "base/memory/raw_ptr.h"
+#import "base/task/deferred_sequenced_task_runner.h"
+#import "components/power_bookmarks/core/bookmark_client_base.h"
 
 class BookmarkUndoService;
-class ChromeBrowserState;
 class GURL;
+class ProfileIOS;
 
 namespace bookmarks {
 class BookmarkModel;
@@ -29,7 +29,7 @@ class BookmarkSyncService;
 class BookmarkClientImpl : public power_bookmarks::BookmarkClientBase {
  public:
   BookmarkClientImpl(
-      ChromeBrowserState* browser_state,
+      ProfileIOS* profile,
       bookmarks::ManagedBookmarkService* managed_bookmark_service,
       sync_bookmarks::BookmarkSyncService*
           local_or_syncable_bookmark_sync_service,
@@ -40,8 +40,6 @@ class BookmarkClientImpl : public power_bookmarks::BookmarkClientBase {
   BookmarkClientImpl& operator=(const BookmarkClientImpl&) = delete;
 
   ~BookmarkClientImpl() override;
-
-  void SetIsSyncFeatureEnabledIncludingBookmarksForTest();
 
   // bookmarks::BookmarkClient:
   void Init(bookmarks::BookmarkModel* model) override;
@@ -64,18 +62,20 @@ class BookmarkClientImpl : public power_bookmarks::BookmarkClientBase {
   void DecodeLocalOrSyncableBookmarkSyncMetadata(
       const std::string& metadata_str,
       const base::RepeatingClosure& schedule_save_closure) override;
-  void DecodeAccountBookmarkSyncMetadata(
+  DecodeAccountBookmarkSyncMetadataResult DecodeAccountBookmarkSyncMetadata(
       const std::string& metadata_str,
       const base::RepeatingClosure& schedule_save_closure) override;
   void OnBookmarkNodeRemovedUndoable(
       const bookmarks::BookmarkNode* parent,
       size_t index,
       std::unique_ptr<bookmarks::BookmarkNode> node) override;
+  void SchedulePersistentTimerForDailyMetrics(
+      base::RepeatingClosure metrics_callback) override;
 
  private:
-  // Pointer to the associated ChromeBrowserState. Must outlive
+  // Pointer to the associated ProfileIOS. Must outlive
   // BookmarkClientImpl.
-  const raw_ptr<ChromeBrowserState> browser_state_;
+  const raw_ptr<ProfileIOS> profile_;
 
   // Pointer to the ManagedBookmarkService responsible for bookmark policy. May
   // be null during testing.
@@ -92,8 +92,6 @@ class BookmarkClientImpl : public power_bookmarks::BookmarkClientBase {
   const raw_ptr<BookmarkUndoService> bookmark_undo_service_;
 
   raw_ptr<bookmarks::BookmarkModel> model_ = nullptr;
-
-  bool is_sync_feature_enabled_including_bookmarks_for_test_ = false;
 };
 
 #endif  // IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARK_CLIENT_IMPL_H_

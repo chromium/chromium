@@ -8,15 +8,17 @@
 #include <optional>
 #include <utility>
 
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/autofill/core/browser/mock_autofill_manager.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/autofill/core/browser/test_autofill_driver.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_test_helpers.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/browser/foundations/mock_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/foundations/test_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_test_helpers.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
@@ -35,9 +37,11 @@
 
 namespace {
 
-using autofill::EqualsSuggestion;
-using autofill::Suggestion;
-using autofill::SuggestionType;
+using ::autofill::EqualsSuggestion;
+using ::autofill::FormFieldData;
+using ::autofill::Suggestion;
+using ::autofill::SuggestionType;
+using ::autofill::test::WithoutUnserializedData;
 using ::testing::_;
 using ::testing::Optional;
 using ::testing::Pair;
@@ -78,15 +82,20 @@ class MockAutofillDriver : public autofill::TestAutofillDriver {
  public:
   using autofill::TestAutofillDriver::TestAutofillDriver;
   MOCK_METHOD(void,
-              ExtractForm,
-              (autofill::FormGlobalId form,
+              ExtractFormWithField,
+              (autofill::FieldGlobalId field_id,
                AutofillDriver::BrowserFormHandler response_handler),
               (override));
 };
 
 }  // namespace
 
-class ComposeManagerImplTest : public testing::Test {
+class ComposeManagerImplTest
+    : public testing::Test,
+      public autofill::WithTestAutofillClientDriverManager<
+          autofill::TestAutofillClient,
+          testing::NiceMock<MockAutofillDriver>,
+          testing::NiceMock<autofill::MockAutofillManager>> {
  public:
   void SetUp() override {
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
@@ -95,12 +104,8 @@ class ComposeManagerImplTest : public testing::Test {
     page_ukm_tracker_ =
         std::make_unique<compose::PageUkmTracker>(valid_test_source_id);
 
-    std::unique_ptr<testing::NiceMock<autofill::MockAutofillManager>>
-        mock_autofill_manager =
-            std::make_unique<testing::NiceMock<autofill::MockAutofillManager>>(
-                &mock_autofill_driver_);
-    mock_autofill_driver_.set_autofill_manager(
-        std::move(mock_autofill_manager));
+    InitAutofillClient();
+    CreateAutofillDriver();
 
     // Needed for feature params to reset.
     compose::ResetConfigForTesting();
@@ -111,9 +116,9 @@ class ComposeManagerImplTest : public testing::Test {
     // Record the FormFieldData sent to the client.
     ON_CALL(mock_compose_client(), ShowComposeDialog(_, _, _, _))
         .WillByDefault(testing::WithArg<1>(
-            testing::Invoke([&](const autofill::FormFieldData& trigger_field) {
+            [&](const autofill::FormFieldData& trigger_field) {
               last_form_field_to_client_ = trigger_field;
-            })));
+            }));
     ON_CALL(mock_compose_client(), ShouldTriggerPopup)
         .WillByDefault(testing::Return(true));
     compose_manager_impl_ =
@@ -123,6 +128,7 @@ class ComposeManagerImplTest : public testing::Test {
   void TearDown() override {
     // Needed for feature params to reset.
     compose::ResetConfigForTesting();
+    DestroyAutofillClient();
   }
 
   // Helper method to retrieve compose suggestions, if it exists.
@@ -147,7 +153,6 @@ class ComposeManagerImplTest : public testing::Test {
     return *compose_manager_impl_;
   }
   MockComposeClient& mock_compose_client() { return mock_compose_client_; }
-  MockAutofillDriver& mock_autofill_driver() { return mock_autofill_driver_; }
   const base::HistogramTester& histograms() const { return histogram_tester_; }
   const autofill::FormFieldData& last_form_field_to_client() const {
     return last_form_field_to_client_;
@@ -178,10 +183,7 @@ class ComposeManagerImplTest : public testing::Test {
   autofill::test::AutofillUnitTestEnvironment autofill_test_environment_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
   testing::NiceMock<MockComposeClient> mock_compose_client_;
-  autofill::TestAutofillClient test_autofill_client_;
   autofill::FormFieldData last_form_field_to_client_;
-  testing::NiceMock<MockAutofillDriver> mock_autofill_driver_{
-      &test_autofill_client_};
   std::unique_ptr<compose::PageUkmTracker> page_ukm_tracker_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<compose::ComposeManagerImpl> compose_manager_impl_;
@@ -197,9 +199,7 @@ TEST_F(
               Optional(EqualsSuggestion(
                   SuggestionType::kComposeSavedStateNotification,
                   l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_SAVED_TEXT),
-                  Suggestion::Icon::kPenSpark,
-                  {{Suggestion::Text(l10n_util::GetStringUTF16(
-                      IDS_COMPOSE_SUGGESTION_SAVED_LABEL))}})));
+                  Suggestion::Icon::kPenSpark)));
 }
 
 TEST_F(
@@ -237,6 +237,8 @@ TEST_F(
 TEST_F(
     ComposeManagerImplTest,
     SuggestionGeneration_HasSession_ControlElementClicked_ApplyExpectedTextAndLabel) {
+  compose::Config& config = compose::GetMutableConfigForTesting();
+  config.proactive_nudge_compact_ui = true;
   std::optional<Suggestion> suggestion = GetSuggestion(
       autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked,
       /*has_session=*/true);
@@ -244,13 +246,13 @@ TEST_F(
               Optional(EqualsSuggestion(
                   SuggestionType::kComposeResumeNudge,
                   l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_SAVED_TEXT),
-                  Suggestion::Icon::kPenSpark,
-                  {{Suggestion::Text(l10n_util::GetStringUTF16(
-                      IDS_COMPOSE_SUGGESTION_SAVED_LABEL))}})));
+                  Suggestion::Icon::kPenSpark)));
 }
 
 TEST_F(ComposeManagerImplTest,
        SuggestionGeneration_NoSession_ExpectedTextAndLabel) {
+  compose::Config& config = compose::GetMutableConfigForTesting();
+  config.proactive_nudge_compact_ui = false;
   std::optional<Suggestion> suggestion = GetSuggestion(
       autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked,
       /*has_session=*/false);
@@ -278,14 +280,14 @@ TEST_F(ComposeManagerImplTest,
                   Suggestion::Icon::kPenSpark)));
 }
 
-TEST_F(ComposeManagerImplTest,
-       SuggestionGeneration_ShouldNotTriggerPopup_NoSuggestionReturned) {
+TEST_F(ComposeManagerImplTest, ShouldTriggerComposePopup) {
   ON_CALL(mock_compose_client(), ShouldTriggerPopup)
       .WillByDefault(testing::Return(false));
-  std::optional<Suggestion> suggestion = GetSuggestion(
-      autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked,
-      /*has_session=*/false);
-  EXPECT_FALSE(suggestion.has_value());
+  const autofill::FormData form_data = CreateTestFormDataWith3TextAreaFields();
+  const autofill::FormFieldData selected_form_field = form_data.fields()[1];
+  EXPECT_FALSE(compose_manager_impl().ShouldTriggerComposePopup(
+      form_data, selected_form_field,
+      autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked));
 }
 
 TEST_F(ComposeManagerImplTest, TestOpenCompose_Success) {
@@ -294,11 +296,8 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_Success) {
   const autofill::FormFieldData selected_form_field = form_data.fields()[1];
 
   // Emulates the expected Autofill driver response.
-  EXPECT_CALL(mock_autofill_driver(), ExtractForm(_, _))
-      .WillOnce(testing::WithArg<1>(testing::Invoke(
-          [&](autofill::AutofillDriver::BrowserFormHandler callback) {
-            std::move(callback).Run(&mock_autofill_driver(), form_data);
-          })));
+  EXPECT_CALL(autofill_driver(), ExtractFormWithField)
+      .WillOnce(base::test::RunOnceCallback<1>(&autofill_driver(), form_data));
 
   const UiEntryPoint ui_entry_point = UiEntryPoint::kContextMenu;
   EXPECT_CALL(
@@ -308,8 +307,7 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_Success) {
 
   base::RunLoop run_loop;
   compose_manager_impl().OpenCompose(
-      mock_autofill_driver(), form_data.global_id(),
-      selected_form_field.global_id(), ui_entry_point);
+      autofill_driver(), selected_form_field.global_id(), ui_entry_point);
   run_loop.RunUntilIdle();
   SimulateComposeSessionEnd();
 
@@ -332,7 +330,9 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_Success) {
       compose::kComposeContextMenuCtr,
       compose::ComposeContextMenuCtrEvent::kMenuItemClicked, 1);
 
-  EXPECT_TRUE(selected_form_field.SameFieldAs(last_form_field_to_client()));
+  EXPECT_TRUE(FormFieldData::IdenticalAndEquivalentDomElements(
+      selected_form_field, last_form_field_to_client(),
+      {FormFieldData::Exclusion::kValue}));
   EXPECT_EQ(last_form_field_to_client().selected_text(), u"value1");
 }
 
@@ -342,11 +342,8 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_FormDataMissing) {
   const autofill::FormFieldData selected_form_field = form_data.fields()[1];
 
   // Autofill driver returns no FormData.
-  EXPECT_CALL(mock_autofill_driver(), ExtractForm(_, _))
-      .WillOnce(testing::WithArg<1>(testing::Invoke(
-          [&](autofill::AutofillDriver::BrowserFormHandler callback) {
-            std::move(callback).Run(&mock_autofill_driver(), std::nullopt);
-          })));
+  EXPECT_CALL(autofill_driver(), ExtractFormWithField)
+      .WillOnce(base::test::RunOnceCallback<1>(nullptr, std::nullopt));
   // There should be no attempt to open the dialog.
   EXPECT_CALL(mock_compose_client(),
               ShowComposeDialog(/*ui_entry_point=*/_, /*trigger_field=*/_,
@@ -354,9 +351,9 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_FormDataMissing) {
       .Times(0);
 
   base::RunLoop run_loop;
-  compose_manager_impl().OpenCompose(
-      mock_autofill_driver(), form_data.global_id(),
-      selected_form_field.global_id(), UiEntryPoint::kContextMenu);
+  compose_manager_impl().OpenCompose(autofill_driver(),
+                                     selected_form_field.global_id(),
+                                     UiEntryPoint::kContextMenu);
   run_loop.RunUntilIdle();
   SimulateComposeSessionEnd();
 
@@ -388,11 +385,8 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_FormFieldDataMissing) {
   test_api(form_data).Remove(-1);
 
   // Emulates the expected Autofill driver response.
-  EXPECT_CALL(mock_autofill_driver(), ExtractForm(_, _))
-      .WillOnce(testing::WithArg<1>(testing::Invoke(
-          [&](autofill::AutofillDriver::BrowserFormHandler callback) {
-            std::move(callback).Run(&mock_autofill_driver(), form_data);
-          })));
+  EXPECT_CALL(autofill_driver(), ExtractFormWithField)
+      .WillOnce(base::test::RunOnceCallback<1>(&autofill_driver(), form_data));
   // There should be no attempt to open the dialog.
   EXPECT_CALL(mock_compose_client(),
               ShowComposeDialog(/*ui_entry_point=*/_, /*trigger_field=*/_,
@@ -400,9 +394,9 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_FormFieldDataMissing) {
       .Times(0);
 
   base::RunLoop run_loop;
-  compose_manager_impl().OpenCompose(
-      mock_autofill_driver(), form_data.global_id(),
-      selected_form_field.global_id(), UiEntryPoint::kContextMenu);
+  compose_manager_impl().OpenCompose(autofill_driver(),
+                                     selected_form_field.global_id(),
+                                     UiEntryPoint::kContextMenu);
   run_loop.RunUntilIdle();
   SimulateComposeSessionEnd();
 
@@ -429,51 +423,21 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_FormFieldDataMissing) {
 
 TEST_F(ComposeManagerImplTest, NeverShowForOrigin_MetricsTest) {
   auto test_origin = url::Origin::Create(GURL("http://foo"));
+
+  EXPECT_CALL(mock_compose_client(), AddSiteToNeverPromptList(test_origin));
+
   compose_manager_impl().NeverShowComposeForOrigin(test_origin);
   SimulateComposeSessionEnd();
-
-  histograms().ExpectUniqueSample(
-      compose::kComposeProactiveNudgeCtr,
-      compose::ComposeProactiveNudgeCtrEvent::kUserDisabledSite, 1);
-
-  auto ukm_entries = GetUkmPageEntries(
-      {ukm::builders::Compose_PageEvents::kProactiveNudgeDisabledGloballyName,
-       ukm::builders::Compose_PageEvents::kProactiveNudgeDisabledForSiteName});
-  ASSERT_EQ(ukm_entries.size(), 1UL);
-  EXPECT_THAT(ukm_entries[0].metrics,
-              UnorderedElementsAre(Pair(ukm::builders::Compose_PageEvents::
-                                            kProactiveNudgeDisabledGloballyName,
-                                        0),
-                                   Pair(ukm::builders::Compose_PageEvents::
-                                            kProactiveNudgeDisabledForSiteName,
-                                        1)));
 }
 
 TEST_F(ComposeManagerImplTest, DisableCompose_MetricTest) {
+  EXPECT_CALL(mock_compose_client(), DisableProactiveNudge());
+
   compose_manager_impl().DisableCompose();
   SimulateComposeSessionEnd();
-
-  histograms().ExpectUniqueSample(
-      compose::kComposeProactiveNudgeCtr,
-      compose::ComposeProactiveNudgeCtrEvent::kUserDisabledProactiveNudge, 1);
-
-  auto ukm_entries = GetUkmPageEntries(
-      {ukm::builders::Compose_PageEvents::kProactiveNudgeDisabledGloballyName,
-       ukm::builders::Compose_PageEvents::kProactiveNudgeDisabledForSiteName});
-  ASSERT_EQ(ukm_entries.size(), 1UL);
-  EXPECT_THAT(ukm_entries[0].metrics,
-              UnorderedElementsAre(Pair(ukm::builders::Compose_PageEvents::
-                                            kProactiveNudgeDisabledGloballyName,
-                                        1),
-                                   Pair(ukm::builders::Compose_PageEvents::
-                                            kProactiveNudgeDisabledForSiteName,
-                                        0)));
 }
 
 TEST_F(ComposeManagerImplTest, GoToSettings_HistogramTest) {
+  EXPECT_CALL(mock_compose_client(), OpenProactiveNudgeSettings());
   compose_manager_impl().GoToSettings();
-
-  histograms().ExpectUniqueSample(
-      compose::kComposeProactiveNudgeCtr,
-      compose::ComposeProactiveNudgeCtrEvent::kOpenSettings, 1);
 }

@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.share.long_screenshots;
 import android.view.View;
 import android.widget.ImageButton;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Class responsible for binding the model and the view. */
+@NullMarked
 class LongScreenshotsAreaSelectionDialogViewBinder {
     static void bind(PropertyModel model, View parent, PropertyKey propertyKey) {
         if (LongScreenshotsAreaSelectionDialogProperties.CLOSE_BUTTON_CALLBACK.equals(

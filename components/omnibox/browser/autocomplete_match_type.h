@@ -21,13 +21,9 @@ struct AutocompleteMatchType {
   // GENERATED_JAVA_CLASS_NAME_OVERRIDE: OmniboxSuggestionType
   // clang-format off
   //
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused. The values should remain
-  // synchronized with the enum AutocompleteMatchType in
-  // //tools/metrics/histograms/enums.xml.
-  //
   // Any changes to this enum also requires an update to:
   //  - `AutocompleteMatch::GetOmniboxEventResultType()`
+  //  - `AutocompleteMatch::GetVectorIcon()`
   //  - `GetClientSummarizedResultType()`
   //  - `AutocompleteMatchType::ToString()`
   //  - `AutocompleteMatchType::GetAccessibilityBaseLabel()`
@@ -96,6 +92,8 @@ struct AutocompleteMatchType {
                                        // similar embeddings to the query.
     FEATURED_ENTERPRISE_SEARCH  = 37,  // Site search engines featured by
                                        // Enterprise policy.
+    HISTORY_EMBEDDINGS_ANSWER   = 38,
+    TAB_GROUP                   = 39,  // A tab group match.
     NUM_TYPES,
   };
   // clang-format on
@@ -128,6 +126,7 @@ struct AutocompleteMatchType {
   // like it could replace |match_text|. Investigate this.
   static std::u16string ToAccessibilityLabel(
       const AutocompleteMatch& match,
+      const std::u16string& header_text,
       const std::u16string& match_text,
       size_t match_index = 0,
       size_t total_matches = 0,

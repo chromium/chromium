@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -54,7 +55,7 @@ class NotificationHeaderViewTest : public views::ViewsTestBase {
 
     notification_header_view_ =
         new NotificationHeaderView(views::Button::PressedCallback());
-    container->AddChildView(notification_header_view_.get());
+    container->AddChildViewRaw(notification_header_view_.get());
 
     widget_.Show();
   }
@@ -279,7 +280,7 @@ TEST_F(NotificationHeaderViewTest, AccessibleExpandAndCollapse) {
   notification_header_view_->SetExpandButtonEnabled(true);
   notification_header_view_->SetExpanded(false);
 
-  views::test::AXEventCounter ax_counter(views::AXEventManager::Get());
+  views::test::AXEventCounter ax_counter(views::AXUpdateNotifier::Get());
   ui::AXNodeData data;
 
   // Initially the view is collapsed and there are no expanded-changed events.
@@ -420,6 +421,47 @@ TEST_F(NotificationHeaderViewTest, AccessibleRoleTest) {
   EXPECT_EQ(data.role, ax::mojom::Role::kButton);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName), u"");
   EXPECT_EQ(data.GetNameFrom(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+}
+
+TEST_F(NotificationHeaderViewTest, AccessibleDescription) {
+  EXPECT_EQ(
+      notification_header_view_->GetViewAccessibility().GetCachedDescription(),
+      u" ");
+
+  notification_header_view_->SetSummaryText(u"Example Summary");
+
+  EXPECT_EQ(
+      notification_header_view_->GetViewAccessibility().GetCachedDescription(),
+      u"Example Summary ");
+
+  auto* timestamp_view =
+      notification_header_view_->timestamp_view_for_testing();
+
+  notification_header_view_->SetTimestamp(base::Time::Now() + base::Hours(3) +
+                                          base::Minutes(30));
+
+  EXPECT_EQ(
+      notification_header_view_->GetViewAccessibility().GetCachedDescription(),
+      base::StrCat({u"Example Summary ", timestamp_view->GetText()}));
+
+  int progress = 1;
+  notification_header_view_->SetProgress(progress);
+
+  EXPECT_EQ(
+      notification_header_view_->GetViewAccessibility().GetCachedDescription(),
+      l10n_util::GetStringFUTF16Int(
+          IDS_MESSAGE_CENTER_NOTIFICATION_PROGRESS_PERCENTAGE, progress) +
+          base::StrCat({u" ", timestamp_view->GetText()}));
+
+  int count = 4;
+  notification_header_view_->SetOverflowIndicator(count);
+
+  EXPECT_EQ(
+      notification_header_view_->GetViewAccessibility().GetCachedDescription(),
+      l10n_util::GetStringFUTF16Int(
+          IDS_MESSAGE_CENTER_LIST_NOTIFICATION_HEADER_OVERFLOW_INDICATOR,
+          count) +
+          base::StrCat({u" ", timestamp_view->GetText()}));
 }
 
 TEST_F(NotificationHeaderViewTest, MetadataTest) {

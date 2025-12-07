@@ -48,10 +48,11 @@ template <bool kEnabled, class BaseTest>
 class WebUiTabStripOverrideTest : public BaseTest {
  public:
   WebUiTabStripOverrideTest() {
-    if (kEnabled)
+    if (kEnabled) {
       feature_override_.InitAndEnableFeature(features::kWebUITabStrip);
-    else
+    } else {
       feature_override_.InitAndDisableFeature(features::kWebUITabStrip);
+    }
   }
   ~WebUiTabStripOverrideTest() override = default;
 
@@ -67,6 +68,7 @@ class ImmersiveModeTester : public ImmersiveModeController::Observer {
   ImmersiveModeTester& operator=(const ImmersiveModeTester&) = delete;
   ~ImmersiveModeTester() override;
 
+  ImmersiveModeController* GetController();
   BrowserView* GetBrowserView();
 
   // Runs the given command, verifies that a reveal happens and the expected tab

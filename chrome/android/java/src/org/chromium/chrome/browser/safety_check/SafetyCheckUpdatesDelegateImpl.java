@@ -4,11 +4,10 @@
 
 package org.chromium.chrome.browser.safety_check;
 
-import android.content.Context;
-
 import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omaha.OmahaBase.UpdateStatus;
 import org.chromium.chrome.browser.omaha.OmahaService;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.UpdatesState;
@@ -22,13 +21,12 @@ import java.lang.ref.WeakReference;
  * while Safety check is modularized in //chrome/browser. Once Omaha is
  * modularized as well, this class will not be needed anymore.
  */
+@NullMarked
 public class SafetyCheckUpdatesDelegateImpl implements SafetyCheckUpdatesDelegate {
-    private OmahaService mOmaha;
+    private final OmahaService mOmaha;
 
     /**
-     * Creates a new instance of the glue class to be passed to
-     * {@link SafetyCheckSettingsFragment}.
-     * @param context A {@link Context} object, used by Omaha.
+     * Creates a new instance of the glue class to be passed to {@link SafetyCheckSettingsFragment}.
      */
     public SafetyCheckUpdatesDelegateImpl() {
         mOmaha = OmahaService.getInstance();

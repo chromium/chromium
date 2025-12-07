@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {HatsBrowserProxy, SafeBrowsingSetting, SecurityPageInteraction, TrustSafetyInteraction} from 'chrome://settings/settings.js';
+import type {HatsBrowserProxy, SafeBrowsingSetting, SecurityPageV2Interaction, SecuritySettingsBundleSetting, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestHatsBrowserProxy extends TestBrowserProxy implements
@@ -23,11 +23,15 @@ export class TestHatsBrowserProxy extends TestBrowserProxy implements
   }
 
   securityPageHatsRequest(
-      securityPageInteraction: SecurityPageInteraction,
-      safeBrowsingSetting: SafeBrowsingSetting, totalTimeOnPage: number) {
-    this.methodCalled(
-        'securityPageHatsRequest',
-        [securityPageInteraction, safeBrowsingSetting, totalTimeOnPage]);
+      securityPageInteractions: SecurityPageV2Interaction[],
+      safeBrowsingSetting: SafeBrowsingSetting, totalTimeOnPage: number,
+      securitySettingsBundleSetting: SecuritySettingsBundleSetting) {
+    this.methodCalled('securityPageHatsRequest', [
+      securityPageInteractions,
+      safeBrowsingSetting,
+      totalTimeOnPage,
+      securitySettingsBundleSetting,
+    ]);
   }
 
   setNow(now: number) {

@@ -1,0 +1,58 @@
+# Copyright 2017 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "main_content_ui.h",
+    "main_content_ui_state.h",
+    "main_content_ui_state.mm",
+    "web_scroll_view_main_content_ui_forwarder.h",
+    "web_scroll_view_main_content_ui_forwarder.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/browser/broadcaster/ui_bundled",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/web/model/web_view_proxy",
+    "//ios/web/public",
+  ]
+}
+
+source_set("ui_broadcasting_util") {
+  sources = [
+    "main_content_ui_broadcasting_util.h",
+    "main_content_ui_broadcasting_util.mm",
+  ]
+
+  deps = [
+    ":ui",
+    "//base",
+    "//ios/chrome/browser/broadcaster/ui_bundled",
+    "//ios/web/common:features",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "main_content_ui_broadcasting_util_unittest.mm",
+    "main_content_ui_state_unittest.mm",
+  ]
+
+  deps = [
+    ":ui",
+    ":ui_broadcasting_util",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/broadcaster/ui_bundled",
+    "//ios/chrome/browser/main_content/ui_bundled/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/common/ui/util",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+  ]
+}

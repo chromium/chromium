@@ -4,6 +4,8 @@
 
 #include "ui/display/mojom/display_layout_mojom_traits.h"
 
+#include "base/notreached.h"
+
 namespace mojo {
 
 display::mojom::Position
@@ -19,8 +21,7 @@ EnumTraits<display::mojom::Position, display::DisplayPlacement::Position>::
     case display::DisplayPlacement::LEFT:
       return display::mojom::Position::LEFT;
   }
-  NOTREACHED_IN_MIGRATION();
-  return display::mojom::Position::TOP;
+  NOTREACHED();
 }
 
 bool EnumTraits<display::mojom::Position, display::DisplayPlacement::Position>::
@@ -53,8 +54,7 @@ EnumTraits<display::mojom::OffsetReference,
     case display::DisplayPlacement::BOTTOM_RIGHT:
       return display::mojom::OffsetReference::BOTTOM_RIGHT;
   }
-  NOTREACHED_IN_MIGRATION();
-  return display::mojom::OffsetReference::TOP_LEFT;
+  NOTREACHED();
 }
 
 bool EnumTraits<display::mojom::OffsetReference,

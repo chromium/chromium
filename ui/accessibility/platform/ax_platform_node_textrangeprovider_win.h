@@ -19,13 +19,15 @@
 #include "ui/accessibility/platform/sequence_affine_com_object_root_win.h"
 
 namespace ui {
-class COMPONENT_EXPORT(AX_PLATFORM) __declspec(uuid(
-    "3071e40d-a10d-45ff-a59f-6e8e1138e2c1")) AXPlatformNodeTextRangeProviderWin
-    : public SequenceAffineComObjectRoot,
-      public ITextRangeProvider {
+class COMPONENT_EXPORT(AX_PLATFORM)
+    __declspec(uuid("3071e40d-a10d-45ff-a59f-6e8e1138e2c1"))
+    AXPlatformNodeTextRangeProviderWin : public SequenceAffineComObjectRoot,
+                                         public ITextRangeProvider,
+                                         public IFastRundown {
  public:
   BEGIN_COM_MAP(AXPlatformNodeTextRangeProviderWin)
   COM_INTERFACE_ENTRY(ITextRangeProvider)
+  COM_INTERFACE_ENTRY(IFastRundown)
   COM_INTERFACE_ENTRY(AXPlatformNodeTextRangeProviderWin)
   END_COM_MAP()
 
@@ -163,7 +165,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(uuid(
                                         const int count,
                                         int* units_moved);
   AXPositionInstance MoveEndpointByFormat(const AXPositionInstance& endpoint,
-                                          const bool is_start_endpoint,
                                           const int count,
                                           int* units_moved);
   AXPositionInstance MoveEndpointByDocument(const AXPositionInstance& endpoint,
@@ -191,7 +192,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(uuid(
   static void NormalizeAsUnignoredTextRange(AXPositionInstance& start,
                                             AXPositionInstance& end);
 
-  AXPlatformNodeDelegate* GetRootDelegate(const ui::AXTreeID tree_id);
+  AXPlatformNodeDelegate* GetRootDelegate(const AXTreeID tree_id);
   AXNode* GetSelectionCommonAnchor();
   void RemoveFocusFromPreviousSelectionIfNeeded(
       const AXNodeRange& new_selection);

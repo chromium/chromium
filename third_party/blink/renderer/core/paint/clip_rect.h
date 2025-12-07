@@ -29,10 +29,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-
-namespace WTF {
-class String;
-}  // namespace WTF
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
@@ -68,9 +65,6 @@ class CORE_EXPORT ClipRect {
   bool operator==(const ClipRect& other) const {
     return Rect() == other.Rect() && HasRadius() == other.HasRadius();
   }
-  bool operator!=(const ClipRect& other) const {
-    return Rect() != other.Rect() || HasRadius() != other.HasRadius();
-  }
   bool operator!=(const PhysicalRect& other_rect) const {
     return Rect() != other_rect;
   }
@@ -85,7 +79,7 @@ class CORE_EXPORT ClipRect {
 
   void Reset();
 
-  WTF::String ToString() const;
+  String ToString() const;
 
  private:
   void SetRectInternal(const FloatClipRect&);

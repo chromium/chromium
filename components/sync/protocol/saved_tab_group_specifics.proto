@@ -16,6 +16,7 @@ package sync_pb;
 
 import "components/sync/protocol/tab_group_attribution_metadata.proto";
 
+// LINT.IfChange(SavedTabGroupSpecifics)
 // Sync protocol datatype extension for saved tab groups. Saved Tab Groups are
 // tab groups which can be recalled between browser sessions, and if sync is
 // turned on, cross device. A saved tab group contains tabs which are stored as
@@ -55,6 +56,10 @@ message SavedTabGroup {
   optional int64 pinned_position = 4;
 
   reserved 5;
+
+  // The guid of a bookmark node. This is used for associating a bookmark
+  // folder with a tab group by bookmarks tab group conversion.
+  optional string bookmark_node_id = 6;
 }
 
 // Sync protocol datatype extension for saved tab group tabs. SavedTabGroupTab
@@ -93,4 +98,12 @@ message SavedTabGroupSpecifics {
 
   // Attribution metadata about the associated tab group or tab.
   optional AttributionMetadata attribution_metadata = 6;
+
+  // A mechanism to identify the client version that wrote this specifics.
+  // Designed to aid business logic when reading newly added fields that
+  // didn't exist in older clients.
+  // The client version must be incremented whenever a new field is added to the
+  // specifics.
+  optional int32 version = 7;
 }
+// LINT.ThenChange(//components/saved_tab_groups/internal/saved_tab_group_sync_bridge.cc:TrimAllSupportedFieldsFromRemoteSpecifics)

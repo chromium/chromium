@@ -6,14 +6,16 @@
 #define REMOTING_PROTOCOL_SESSION_AUTHZ_AUTHENTICATOR_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "remoting/base/constants.h"
-#include "remoting/base/protobuf_http_status.h"
+#include "remoting/base/http_status.h"
 #include "remoting/base/session_authz_service_client.h"
+#include "remoting/base/session_policies.h"
 #include "remoting/proto/session_authz_service.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/channel_authenticator.h"
@@ -58,22 +60,30 @@ class SessionAuthzAuthenticator : public Authenticator {
   // will be an empty string.
   const std::string& session_id() const { return session_id_; }
 
+  // The host token returned by the SessionAuthz server. This is only set if
+  // the GenerateHostToken API call has completed and succeeded. Otherwise, this
+  // will be an empty string.
+  const std::string& host_token() const { return host_token_; }
+
   // Authenticator implementation.
   CredentialsType credentials_type() const override;
   const Authenticator& implementing_authenticator() const override;
   State state() const override;
   bool started() const override;
   RejectionReason rejection_reason() const override;
+  RejectionDetails rejection_details() const override;
   void ProcessMessage(const jingle_xmpp::XmlElement* message,
                       base::OnceClosure resume_callback) override;
   std::unique_ptr<jingle_xmpp::XmlElement> GetNextMessage() override;
   const std::string& GetAuthKey() const override;
+  const SessionPolicies* GetSessionPolicies() const override;
   std::unique_ptr<ChannelAuthenticator> CreateChannelAuthenticator()
       const override;
 
   void SetReauthorizerForTesting(
       std::unique_ptr<SessionAuthzReauthorizer> reauthorizer);
   void SetSessionIdForTesting(std::string_view session_id);
+  void SetHostTokenForTesting(std::string_view host_token);
 
  private:
   enum class SessionAuthzState {
@@ -109,7 +119,7 @@ class SessionAuthzAuthenticator : public Authenticator {
   void GenerateHostToken(base::OnceClosure resume_callback);
   void OnHostTokenGenerated(
       base::OnceClosure resume_callback,
-      const ProtobufHttpStatus& status,
+      const HttpStatus& status,
       std::unique_ptr<internal::GenerateHostTokenResponseStruct> response);
   void AddHostTokenElement(jingle_xmpp::XmlElement* message);
   void VerifySessionToken(const jingle_xmpp::XmlElement& message,
@@ -117,12 +127,13 @@ class SessionAuthzAuthenticator : public Authenticator {
   void OnVerifiedSessionToken(
       const jingle_xmpp::XmlElement& message,
       base::OnceClosure resume_callback,
-      const ProtobufHttpStatus& status,
+      const HttpStatus& status,
       std::unique_ptr<internal::VerifySessionTokenResponseStruct> response);
   void HandleSessionAuthzError(const std::string_view& action_name,
-                               const ProtobufHttpStatus& status);
+                               const HttpStatus& status);
   void StartReauthorizerIfNecessary();
-  void OnReauthorizationFailed();
+  void OnReauthorizationFailed(HttpStatus::Code error_code,
+                               const Authenticator::RejectionDetails& details);
 
   CredentialsType credentials_type_;
   std::unique_ptr<SessionAuthzServiceClient> service_client_;
@@ -130,6 +141,7 @@ class SessionAuthzAuthenticator : public Authenticator {
   std::unique_ptr<Authenticator> underlying_;
   std::unique_ptr<internal::VerifySessionTokenResponseStruct>
       verify_token_response_;
+  std::optional<SessionPolicies> session_policies_;
   std::unique_ptr<SessionAuthzReauthorizer> reauthorizer_;
 
   SessionAuthzState session_authz_state_ = SessionAuthzState::NOT_STARTED;
@@ -138,6 +150,8 @@ class SessionAuthzAuthenticator : public Authenticator {
   // SessionAuthz. If |session_authz_state_| is NOT `ERROR`, the actual
   // rejection reason is delegated to `underlying_->rejection_reason()`.
   RejectionReason session_authz_rejection_reason_;
+
+  RejectionDetails rejection_details_;
 
   std::string session_id_;
   std::string host_token_;

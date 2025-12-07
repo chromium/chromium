@@ -13,7 +13,8 @@ import "url/mojom/url.mojom";
 // chooser dialog.
 struct FileChooserParams {
   enum Mode {
-    // Requires that the file exists before allowing the user to pick it.
+    // For opening a single file (not directory). Requires that the file exists
+    // before allowing the user to pick it.
     kOpen,
 
     // Like Open, but allows picking multiple files to open.
@@ -22,10 +23,15 @@ struct FileChooserParams {
     // Like Open, but selects a folder for upload.  This mode returns multiple
     // FileChooserFileInfo objects for descendant files, rather than a single
     // FileChooserFileInfo for the selected directory.
+    // This is used for <input type="file" webkitdirectory> and for drag-drop of
+    // a directory.
     kUploadFolder,
 
+    // For opening a single directory. Requires that the directory exists.
+    kOpenDirectory,
+
     // Allows picking a nonexistent file, and prompts to overwrite if the file
-    // already exists. This is not for Blink but for PPAPI.
+    // already exists.
     kSave,
   };
   Mode mode = kOpen;
@@ -34,7 +40,8 @@ struct FileChooserParams {
   // which will be either "Open" or "Save" depending on the mode.
   mojo_base.mojom.String16 title;
 
-  // Default file name to select in the dialog with kSave mode.
+  // Default file name to select in the dialog with kSave mode. This value
+  // is cleared if mode is not kSave.
   mojo_base.mojom.FilePath default_file_name;
 
   // |selected_files| has filenames which a file upload control already
@@ -60,6 +67,12 @@ struct FileChooserParams {
   // If true, the data should be obtained using the device's camera/mic/etc.
   bool use_media_capture = false;
 
+  // Whether files are required to be open for writing. This should be set to
+  // true if the caller needs to write to files. e.g. File System Access APIs
+  // such as showOpenFilePicker(), but should be false for read-only controls
+  // such as `<input type=file>`.
+  bool open_writable = false;
+
   // If non-empty, represents the URL of the requestor if the request was
   // initiated by a document. Note that this value should be considered
   // untrustworthy since it is specified by the sandbox and not validated.
@@ -67,11 +80,24 @@ struct FileChooserParams {
 };
 
 struct NativeFileInfo {
+  // The full path of the file. For android, this can be a content-URI such
+  // as 'content://authoryt/id-123', and `display_name` and `base_subdirs`
+  // are required to know the name of the file and its parent dirs.
   mojo_base.mojom.FilePath file_path;
 
   // The display name of the file that is to be exposed as File.name in the
   // DOM layer.  If it is empty, the base part of the |file_path| is used.
   mojo_base.mojom.String16 display_name;
+
+  // Optional subdir display names of this file starting from FileChooserResult
+  // `base_directory`. Used only by android in EnumerateChosenDirectory() to
+  // collect the display-name of each ancestor directory of a file which will be
+  // used to create `webkitRelativePath`. This is required since android
+  // content-URIs are opaque identifiers such as 'content://authority/id-123'
+  // and do not use tree paths with separators showing each ancestor such as
+  // 'root/subdir/file.txt' like posix or windows so we need base_subdirs =
+  // ['root', 'subdir'] to get all the information required.
+  array<mojo_base.mojom.String16> base_subdirs;
 };
 
 struct FileSystemFileInfo {

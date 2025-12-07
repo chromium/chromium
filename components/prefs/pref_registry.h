@@ -53,6 +53,17 @@ class COMPONENTS_PREFS_EXPORT PrefRegistry
   // Registering a pref as public allows other services to access it.
   static constexpr PrefRegistrationFlags PUBLIC = 1 << 9;
 
+  // Enum for pref types that are stored as string but have different semantic
+  // meaning. This is used to prevent accidentally reading a pref as a wrong
+  // type.
+  enum class RegisteredPrefType {
+    // For all prefs that are not registered as any of the more specific types
+    // below.
+    kOther,
+    kInt64,
+    kTime,
+  };
+
   using const_iterator = PrefValueMap::const_iterator;
   using PrefRegistrationFlagsMap = TransparentUnorderedStringMap<uint32_t>;
 
@@ -64,6 +75,13 @@ class COMPONENTS_PREFS_EXPORT PrefRegistry
   // Retrieve the set of registration flags for the given preference. The return
   // value is a bitmask of PrefRegistrationFlags.
   uint32_t GetRegistrationFlags(std::string_view pref_name) const;
+
+  // Retrieve the registered type for the given preference.
+  //
+  // TODO(crbug.com/438680281): Fix all test code to always register preferences
+  // before Get/Set calls, then remove the std::optional from the return value.
+  std::optional<RegisteredPrefType> GetRegisteredPrefType(
+      std::string_view pref_name) const;
 
   // Gets the registered defaults.
   scoped_refptr<PrefStore> defaults();
@@ -82,10 +100,16 @@ class COMPONENTS_PREFS_EXPORT PrefRegistry
   virtual ~PrefRegistry();
 
   // Used by subclasses to register a default value and registration flags for
-  // a preference. `flags` is a bitmask of `PrefRegistrationFlags`.
+  // a preference. `flags` is a bitmask of `PrefRegistrationFlags`. `type` can
+  // be specified for prefs that need more specific type-checking than their
+  // storage `base::Value::Type`.
+  //
+  // TODO(crbug.com/438680281): Migrate all pref types to specify the `type`
+  // parameter, then remove the default value.
   void RegisterPreference(std::string_view path,
                           base::Value default_value,
-                          uint32_t flags);
+                          uint32_t flags,
+                          RegisteredPrefType type = RegisteredPrefType::kOther);
 
   // Allows subclasses to hook into pref registration.
   virtual void OnPrefRegistered(std::string_view path, uint32_t flags);
@@ -94,6 +118,11 @@ class COMPONENTS_PREFS_EXPORT PrefRegistry
 
   // A map of pref name to a bitmask of PrefRegistrationFlags.
   PrefRegistrationFlagsMap registration_flags_;
+
+  // A map of pref name to its registered type.
+  using PrefRegistrationTypeMap =
+      TransparentUnorderedStringMap<RegisteredPrefType>;
+  PrefRegistrationTypeMap registration_types_;
 };
 
 #endif  // COMPONENTS_PREFS_PREF_REGISTRY_H_

@@ -355,7 +355,7 @@ public class HistogramWatcher implements AutoCloseable {
         if (expectedExtraRecords == null) {
             expectedExtraRecords = 0;
         }
-        if (!allowAnyNumberOfExtraRecords && actualExtraRecords > expectedExtraRecords
+        if ((!allowAnyNumberOfExtraRecords && actualExtraRecords > expectedExtraRecords)
                 || actualExtraRecords < expectedExtraRecords) {
             // Expected |extraRecordsExpected| records with any value, found |extraActualRecords|.
             unexpected = true;
@@ -446,10 +446,8 @@ public class HistogramWatcher implements AutoCloseable {
 
             int delta = finalBucket.mCount - totalInEquivalentStartingBuckets;
 
-            if (delta == 0) {
-                // Empty buckets don't need to be printed.
-                continue;
-            } else {
+            // Empty buckets don't need to be printed.
+            if (delta != 0) {
                 deltaBuckets.add(new HistogramBucket(finalBucket.mMin, finalBucket.mMax, delta));
             }
         }

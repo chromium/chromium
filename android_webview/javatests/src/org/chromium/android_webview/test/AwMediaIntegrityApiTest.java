@@ -21,18 +21,17 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.JsReplyProxy;
 import org.chromium.android_webview.WebMessageListener;
-import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.MediaIntegrityApiStatus;
 import org.chromium.android_webview.common.MediaIntegrityErrorCode;
+import org.chromium.android_webview.common.MediaIntegrityErrorWrapper;
 import org.chromium.android_webview.common.MediaIntegrityProvider;
+import org.chromium.android_webview.common.NoOpPlatformServiceBridge;
 import org.chromium.android_webview.common.PlatformServiceBridge;
-import org.chromium.android_webview.common.PlatformServiceBridgeImpl;
 import org.chromium.android_webview.common.ValueOrErrorCallback;
 import org.chromium.android_webview.test.AwActivityTestRule.TestDependencyFactory;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
 import org.chromium.net.test.util.TestWebServer;
@@ -42,7 +41,6 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -103,8 +101,6 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
                 .setWebViewIntegrityApiStatus(
                         MediaIntegrityApiStatus.ENABLED, Collections.emptyMap());
 
-        // TODO(crbug.com/330151742): AWMI doesn't use the origin of the base URL set by loads from
-        // loadDataWithBaseUrl. For now, use a TestWebServer to load a default HTTPS page.
         try (TestWebServer server = TestWebServer.startSsl()) {
             String url = server.setEmptyResponse("");
             mRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
@@ -113,9 +109,6 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({
-        "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
-    })
     public void testApiSurfaceExposed() throws Exception {
         // Check the method name is exposed
         assertJsTruthy("android.webview.getExperimentalMediaIntegrityTokenProvider");
@@ -136,18 +129,6 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({
-        "disable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
-    })
-    public void testApiSurfaceNotExposedWhenFeatureDisabled() throws Exception {
-        assertJsTruthy("!('android' in window)");
-    }
-
-    @Test
-    @MediumTest
-    @CommandLineFlags.Add({
-        "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
-    })
     public void testProviderGetterNotExposedForDataUris() throws Throwable {
         mRule.loadDataSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), "", "text/html", false);
@@ -156,9 +137,6 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({
-        "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
-    })
     public void testProviderGetterExposedButRejectedForDataUrisWithHttpsBaseUrls()
             throws Throwable {
         // An HTTPS base URL has a secure context, unlike a plain data URL. This exposes the API,
@@ -180,9 +158,6 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({
-        "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
-    })
     public void testProviderGetterNotExposedForAboutBlank() throws Throwable {
         mRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), "about:blank");
         assertNotExposed();
@@ -190,9 +165,6 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({
-        "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
-    })
     public void testProviderGetterNotExposedForPlaintextHttp() throws Throwable {
         mRule.loadDataWithBaseUrlSync(
                 mAwContents,
@@ -207,9 +179,6 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({
-        "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
-    })
     public void testProviderGetterUseableForLocalhostHttp() throws Throwable {
         try (TestWebServer server = TestWebServer.start()) {
             String url = server.setEmptyResponse("");
@@ -242,9 +211,6 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({
-        "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
-    })
     public void testProviderGetterExposedButRejectedForFileUris() throws Throwable {
         mRule.loadUrlSync(
                 mAwContents,
@@ -259,9 +225,6 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({
-        "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
-    })
     public void testProviderGetterExposedButRejectedForContentUris() throws Throwable {
         final String testHtmlContentPath = "hello.html";
         final String testHtmlContent =
@@ -282,9 +245,6 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({
-        "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
-    })
     public void testTokenProviderIsNotConstructable() throws Exception {
         // Try to construct a new token provider and turn the error into a string.
         String script =
@@ -301,14 +261,14 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
 
         String result =
                 mRule.executeJavaScriptAndWaitForResult(mAwContents, mContentsClient, script);
-        Assert.assertEquals("\"TypeError: Illegal constructor\"", result);
+        Assert.assertEquals(
+                "\"TypeError: Failed to construct 'MediaIntegrityTokenProvider': Illegal"
+                        + " constructor\"",
+                result);
     }
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({
-        "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
-    })
     public void testAbleToGetTokenProviderAndToken() throws Exception {
         String mockToken = "abc123def456";
         MockTokenProvider mockTokenProvider = new MockTokenProvider();
@@ -337,9 +297,6 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({
-        "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
-    })
     public void testErrorWhenAppDisablesApiGlobally() throws Exception {
         mAwContents
                 .getSettings()
@@ -356,9 +313,6 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({
-        "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
-    })
     public void testErrorWhenAppDisabledApiForUrl() throws Exception {
         String testScript =
                 getTestScript(CLOUD_PROJECT_NUMBER, asStringConstant(CONTENT_BINDING_HASH));
@@ -380,9 +334,6 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({
-        "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
-    })
     public void testErrorWhenApiDisabledForSourceButEnabledForTopLevel() throws Exception {
         final String result;
         try (final TestWebServer topLevelServer = TestWebServer.startSsl();
@@ -412,9 +363,6 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({
-        "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
-    })
     public void testGetTokenWhenApiEnabledForSourceButDisabledForTopLevel() throws Exception {
         final String mockToken = "abc123def456";
         final MockTokenProvider mockTokenProvider = new MockTokenProvider();
@@ -448,9 +396,6 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({
-        "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
-    })
     public void testCloudProjectNumberAccessibleOnTokenProvider() throws Exception {
         MockTokenProvider mockTokenProvider = new MockTokenProvider();
         mPlatformBridge.addProviderResponse(
@@ -479,9 +424,6 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({
-        "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
-    })
     public void testTokenProviderReusedWhenUsingSamePartition() throws Exception {
         String mockToken = "abc123def456";
 
@@ -505,9 +447,6 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({
-        "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
-    })
     public void testTokenProviderNotReusedAfterApiModeChange() throws Exception {
         String mockToken = "abc123def456";
 
@@ -559,9 +498,6 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({
-        "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
-    })
     public void testTokenProviderNotReusedAcrossDistinctOrigins() throws Exception {
         String mockTokenTestServer1 = "abc123def456";
         String mockTokenTestServer2 = "555555555";
@@ -623,9 +559,6 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({
-        "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
-    })
     public void testTokenProviderNotReusedAcrossDistinctPartyIFrames() throws Exception {
         String mockTokenA = "abc123def456";
         String mockTokenB = "555555555";
@@ -680,9 +613,6 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({
-        "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
-    })
     public void testTokenProviderNotReusedIfInvalid() throws Exception {
 
         MockTokenProvider mockTokenProvider1 = new MockTokenProvider();
@@ -717,9 +647,6 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({
-        "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
-    })
     public void testTokenRequestAcceptsEmptyString() throws Exception {
         String mockToken = "abc123def456";
 
@@ -738,9 +665,6 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({
-        "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
-    })
     public void testTokenRequestAcceptsNull() throws Exception {
         String mockToken = "abc123def456";
 
@@ -759,9 +683,6 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({
-        "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
-    })
     public void testTokenRequestAcceptsMissingParameterAsNull() throws Exception {
         String mockToken = "abc123def456";
 
@@ -780,9 +701,6 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({
-        "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
-    })
     public void testInvalidCloudProjectNumbersAreRejected() throws Exception {
         // Only numbers up to 2^53-1 can be represented correctly in JavaScript.
         // Test that numbers larger than this are rejected.
@@ -803,9 +721,6 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({
-        "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
-    })
     public void testErrorsMappedGetTokenProvider() throws Exception {
         mPlatformBridge.addProviderError(
                 CLOUD_PROJECT_NUMBER,
@@ -850,9 +765,6 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({
-        "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
-    })
     public void testErrorsMappedRequestToken() throws Exception {
         MockTokenProvider mockTokenProvider = new MockTokenProvider();
         mPlatformBridge.addProviderResponse(
@@ -1028,18 +940,20 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
         }
 
         public void addRequestToken(@Nullable String contentBinding, @NonNull String token) {
-            mResponses.computeIfAbsent(contentBinding, s -> new LinkedList<>()).offer(token);
+            mResponses.computeIfAbsent(contentBinding, s -> new ArrayDeque<>()).offer(token);
         }
 
         public void addRequestError(
                 @Nullable String contentBinding, @MediaIntegrityErrorCode int errorCode) {
-            mResponses.computeIfAbsent(contentBinding, s -> new LinkedList<>()).offer(errorCode);
+            mResponses
+                    .computeIfAbsent(contentBinding, s -> new ArrayDeque<>())
+                    .offer(new MediaIntegrityErrorWrapper(errorCode));
         }
 
         @Override
-        public void requestToken(
+        public void requestToken2(
                 @Nullable String contentBinding,
-                @NonNull ValueOrErrorCallback<String, Integer> callback) {
+                @NonNull ValueOrErrorCallback<String, MediaIntegrityErrorWrapper> callback) {
             mCallCount++;
             Queue<Object> responseQueue = mResponses.get(contentBinding);
             mCallCounts.compute(contentBinding, (s, count) -> count == null ? 1 : count + 1);
@@ -1049,8 +963,8 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
                     callback.onResult(token);
                     return;
                 }
-                if (response instanceof Integer errorCode) {
-                    callback.onError(errorCode);
+                if (response instanceof MediaIntegrityErrorWrapper error) {
+                    callback.onError(error);
                     return;
                 }
             }
@@ -1059,12 +973,12 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
     }
 
     /** PlatformServiceBridge where MediaIntegrityProvider responses can be queued. */
-    private static class MockPlatformServiceBridge extends PlatformServiceBridgeImpl {
+    private static class MockPlatformServiceBridge extends NoOpPlatformServiceBridge {
 
         private static class CallKey {
 
-            long mCloudProjectNumber;
-            int mApiStatus;
+            final long mCloudProjectNumber;
+            final int mApiStatus;
 
             public CallKey(long cloudProjectNumber, int apiStatus) {
                 mCloudProjectNumber = cloudProjectNumber;
@@ -1095,7 +1009,7 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
                 @MediaIntegrityApiStatus int apiStatus,
                 MediaIntegrityProvider provider) {
             CallKey key = new CallKey(cloudProjectNumber, apiStatus);
-            mResponses.computeIfAbsent(key, k -> new LinkedList<>()).offer(provider);
+            mResponses.computeIfAbsent(key, k -> new ArrayDeque<>()).offer(provider);
         }
 
         public void addProviderError(
@@ -1103,7 +1017,9 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
                 @MediaIntegrityApiStatus int apiStatus,
                 @MediaIntegrityErrorCode int errorCode) {
             CallKey key = new CallKey(cloudProjectNumber, apiStatus);
-            mResponses.computeIfAbsent(key, k -> new LinkedList<>()).offer(errorCode);
+            mResponses
+                    .computeIfAbsent(key, k -> new ArrayDeque<>())
+                    .offer(new MediaIntegrityErrorWrapper(errorCode));
         }
 
         public int getProviderCallCount(
@@ -1117,10 +1033,10 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
         }
 
         @Override
-        public void getMediaIntegrityProvider(
+        public void getMediaIntegrityProvider2(
                 long cloudProjectNumber,
                 @MediaIntegrityApiStatus int apiStatus,
-                ValueOrErrorCallback<MediaIntegrityProvider, Integer> callback) {
+                ValueOrErrorCallback<MediaIntegrityProvider, MediaIntegrityErrorWrapper> callback) {
             CallKey key = new CallKey(cloudProjectNumber, apiStatus);
             Queue<Object> responseQueue = mResponses.get(key);
             mCallCounts.compute(key, (callKey, counts) -> counts == null ? 1 : counts + 1);
@@ -1132,8 +1048,8 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
                     callback.onResult(provider);
                     return;
                 }
-                if (response instanceof Integer errorCode) {
-                    callback.onError(errorCode);
+                if (response instanceof MediaIntegrityErrorWrapper error) {
+                    callback.onError(error);
                     return;
                 }
             }

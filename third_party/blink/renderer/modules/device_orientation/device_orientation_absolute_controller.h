@@ -13,8 +13,6 @@ namespace blink {
 class MODULES_EXPORT DeviceOrientationAbsoluteController final
     : public DeviceOrientationController {
  public:
-  static const char kSupplementName[];
-
   explicit DeviceOrientationAbsoluteController(LocalDOMWindow&);
   ~DeviceOrientationAbsoluteController() override;
 

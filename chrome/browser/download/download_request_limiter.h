@@ -266,6 +266,9 @@ class DownloadRequestLimiter
                            DownloadRequestLimiterIsUnaffectedByPrerendering);
   FRIEND_TEST_ALL_PREFIXES(FencedFrameDownloadTest,
                            DownloadRequestLimiterIsUnaffectedByFencedFrame);
+  FRIEND_TEST_ALL_PREFIXES(
+      ContentSettingBubbleModelUnusedPermissionRevocationForAllSurfacesTest,
+      AutomaticDownloads_LastVisited);
   friend class base::RefCountedThreadSafe<DownloadRequestLimiter>;
   friend class BackgroundFetchBrowserTest;
   friend class ContentSettingBubbleDialogTest;
@@ -286,7 +289,8 @@ class DownloadRequestLimiter
 
   // Does the work of updating the download status on the UI thread and
   // potentially prompting the user.
-  void CanDownloadImpl(content::WebContents* originating_contents,
+  void CanDownloadImpl(const GURL& url,
+                       content::WebContents* originating_contents,
                        const std::string& request_method,
                        std::optional<url::Origin> request_initiator,
                        bool from_download_cross_origin_redirect,
@@ -294,6 +298,7 @@ class DownloadRequestLimiter
 
   // Invoked when decision to download has been made.
   void OnCanDownloadDecided(
+      const GURL& url,
       const content::WebContents::Getter& web_contents_getter,
       const std::string& request_method,
       std::optional<url::Origin> request_initiator,
@@ -325,7 +330,9 @@ class DownloadRequestLimiter
   // if the state is other than ALLOW_ONE_DOWNLOAD. Similarly once the state
   // transitions from anything but ALLOW_ONE_DOWNLOAD back to ALLOW_ONE_DOWNLOAD
   // the TabDownloadState is removed and deleted (by way of Remove).
-  typedef std::map<content::WebContents*, TabDownloadState*> StateMap;
+  typedef std::map<content::WebContents*,
+                   raw_ptr<TabDownloadState, CtnExperimental>>
+      StateMap;
   StateMap state_map_;
 
   CanDownloadDecidedCallback on_can_download_decided_callback_;

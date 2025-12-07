@@ -19,7 +19,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/AutoSigninFirstRunDialog_jni.h"
@@ -42,7 +42,7 @@ AutoSigninFirstRunDialogAndroid::AutoSigninFirstRunDialogAndroid(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents), web_contents_(web_contents) {}
 
-AutoSigninFirstRunDialogAndroid::~AutoSigninFirstRunDialogAndroid() {}
+AutoSigninFirstRunDialogAndroid::~AutoSigninFirstRunDialogAndroid() = default;
 
 void AutoSigninFirstRunDialogAndroid::ShowDialog() {
   gfx::NativeWindow native_window = web_contents_->GetTopLevelNativeWindow();
@@ -73,18 +73,17 @@ void AutoSigninFirstRunDialogAndroid::ShowDialog() {
   }
 }
 
-void AutoSigninFirstRunDialogAndroid::Destroy(JNIEnv* env, jobject obj) {
+void AutoSigninFirstRunDialogAndroid::Destroy(JNIEnv* env) {
   delete this;
 }
 
-void AutoSigninFirstRunDialogAndroid::OnOkClicked(JNIEnv* env, jobject obj) {
+void AutoSigninFirstRunDialogAndroid::OnOkClicked(JNIEnv* env) {
   password_manager::metrics_util::LogAutoSigninPromoUserAction(
       password_manager::metrics_util::AUTO_SIGNIN_OK_GOT_IT);
   MarkAutoSignInFirstRunExperienceShown(web_contents_);
 }
 
-void AutoSigninFirstRunDialogAndroid::OnTurnOffClicked(JNIEnv* env,
-                                                       jobject obj) {
+void AutoSigninFirstRunDialogAndroid::OnTurnOffClicked(JNIEnv* env) {
   password_manager::metrics_util::LogAutoSigninPromoUserAction(
       password_manager::metrics_util::AUTO_SIGNIN_TURN_OFF);
   Profile* profile =
@@ -92,15 +91,18 @@ void AutoSigninFirstRunDialogAndroid::OnTurnOffClicked(JNIEnv* env,
   // This dialog is not and should never be shown in incognito as it offers the
   // possibility to change user settings.
   DCHECK(!profile->IsOffTheRecord());
-  PasswordManagerSettingsService* service =
+  password_manager::PasswordManagerSettingsService* service =
       PasswordManagerSettingsServiceFactory::GetForProfile(profile);
+  // The service can be null if the password manger is not available, but there
+  // shouldn't be any credential to auto-sign in with in that case.
+  CHECK(service);
   service->TurnOffAutoSignIn();
   MarkAutoSignInFirstRunExperienceShown(web_contents_);
 }
 
-void AutoSigninFirstRunDialogAndroid::CancelDialog(JNIEnv* env, jobject obj) {}
+void AutoSigninFirstRunDialogAndroid::CancelDialog(JNIEnv* env) {}
 
-void AutoSigninFirstRunDialogAndroid::OnLinkClicked(JNIEnv* env, jobject obj) {
+void AutoSigninFirstRunDialogAndroid::OnLinkClicked(JNIEnv* env) {
   web_contents_->OpenURL(
       content::OpenURLParams(
           GURL(password_manager::kPasswordManagerHelpCenterSmartLock),
@@ -125,3 +127,5 @@ void AutoSigninFirstRunDialogAndroid::OnVisibilityChanged(
     Java_AutoSigninFirstRunDialog_dismissDialog(env, dialog_jobject_);
   }
 }
+
+DEFINE_JNI(AutoSigninFirstRunDialog)

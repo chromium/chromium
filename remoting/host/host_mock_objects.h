@@ -5,19 +5,23 @@
 #ifndef REMOTING_HOST_HOST_MOCK_OBJECTS_H_
 #define REMOTING_HOST_HOST_MOCK_OBJECTS_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 
+#include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "net/base/ip_endpoint.h"
+#include "remoting/base/errors.h"
+#include "remoting/base/session_policies.h"
 #include "remoting/host/action_executor.h"
 #include "remoting/host/active_display_monitor.h"
 #include "remoting/host/audio_capturer.h"
+#include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/base/screen_controls.h"
-#include "remoting/host/base/screen_resolution.h"
-#include "remoting/host/chromoting_host_context.h"
 #include "remoting/host/chromoting_host_services_provider.h"
 #include "remoting/host/client_session.h"
 #include "remoting/host/client_session_control.h"
@@ -30,16 +34,18 @@
 #include "remoting/host/input_injector.h"
 #include "remoting/host/keyboard_layout_monitor.h"
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
-#include "remoting/host/mojom/remote_security_key.mojom.h"
+#include "remoting/host/mojom/remote_url_opener.mojom.h"
+#include "remoting/host/mojom/webauthn_proxy.mojom.h"
 #include "remoting/host/remote_open_url/url_forwarder_configurator.h"
 #include "remoting/host/security_key/security_key_auth_handler.h"
 #include "remoting/host/webauthn/remote_webauthn_state_change_notifier.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/proto/event.pb.h"
+#include "remoting/protocol/clipboard_stub.h"
+#include "remoting/protocol/mouse_cursor_monitor.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
-#include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
-#include "ui/events/event.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
+#include "ui/events/types/event_type.h"
 
 namespace base {
 class TimeDelta;
@@ -76,7 +82,7 @@ class MockDesktopEnvironment : public DesktopEnvironment {
               GetDisplayInfoMonitor,
               (),
               (override));
-  MOCK_METHOD(std::unique_ptr<webrtc::MouseCursorMonitor>,
+  MOCK_METHOD(std::unique_ptr<protocol::MouseCursorMonitor>,
               CreateMouseCursorMonitor,
               (),
               (override));
@@ -102,7 +108,7 @@ class MockDesktopEnvironment : public DesktopEnvironment {
               (override));
   MOCK_METHOD(std::string, GetCapabilities, (), (const, override));
   MOCK_METHOD(void, SetCapabilities, (const std::string&), (override));
-  MOCK_METHOD(uint32_t, GetDesktopSessionId, (), (const, override));
+  MOCK_METHOD(std::uint32_t, GetDesktopSessionId, (), (const, override));
 };
 
 class MockClientSessionControl : public ClientSessionControl {
@@ -115,12 +121,17 @@ class MockClientSessionControl : public ClientSessionControl {
   ~MockClientSessionControl() override;
 
   MOCK_METHOD(const std::string&, client_jid, (), (const, override));
-  MOCK_METHOD(void, DisconnectSession, (protocol::ErrorCode), (override));
+  MOCK_METHOD(void,
+              DisconnectSession,
+              (ErrorCode error,
+               std::string_view error_details,
+               const SourceLocation& error_location),
+              (override));
   MOCK_METHOD(void,
               OnLocalPointerMoved,
               (const webrtc::DesktopVector&, ui::EventType),
               (override));
-  MOCK_METHOD(void, OnLocalKeyPressed, (uint32_t), (override));
+  MOCK_METHOD(void, OnLocalKeyPressed, (std::uint32_t), (override));
   MOCK_METHOD(void, SetDisableInputs, (bool), (override));
   MOCK_METHOD(void,
               OnDesktopDisplayChanged,
@@ -138,7 +149,7 @@ class MockClientSessionDetails : public ClientSessionDetails {
   ~MockClientSessionDetails() override;
 
   MOCK_METHOD(ClientSessionControl*, session_control, (), (override));
-  MOCK_METHOD(uint32_t, desktop_session_id, (), (const, override));
+  MOCK_METHOD(std::uint32_t, desktop_session_id, (), (const, override));
 };
 
 class MockClientSessionEvents : public ClientSessionEvents {
@@ -146,7 +157,7 @@ class MockClientSessionEvents : public ClientSessionEvents {
   MockClientSessionEvents();
   ~MockClientSessionEvents() override;
 
-  MOCK_METHOD(void, OnDesktopAttached, (uint32_t session_id), (override));
+  MOCK_METHOD(void, OnDesktopAttached, (std::uint32_t session_id), (override));
   MOCK_METHOD(void, OnDesktopDetached, (), (override));
 };
 
@@ -177,6 +188,10 @@ class MockClientSessionEventHandler : public ClientSession::EventHandler {
                const std::string&,
                const protocol::TransportRoute&),
               (override));
+  MOCK_METHOD(std::optional<ErrorCode>,
+              OnSessionPoliciesReceived,
+              (const SessionPolicies& policies),
+              (override));
 };
 
 class MockDesktopEnvironmentFactory : public DesktopEnvironmentFactory {
@@ -189,11 +204,12 @@ class MockDesktopEnvironmentFactory : public DesktopEnvironmentFactory {
 
   ~MockDesktopEnvironmentFactory() override;
 
-  MOCK_METHOD(std::unique_ptr<DesktopEnvironment>,
+  MOCK_METHOD(void,
               Create,
               (base::WeakPtr<ClientSessionControl>,
                base::WeakPtr<ClientSessionEvents>,
-               const DesktopEnvironmentOptions&),
+               const DesktopEnvironmentOptions&,
+               CreateCallback),
               (override));
   MOCK_METHOD(bool, SupportsAudioCapture, (), (const, override));
 };
@@ -269,7 +285,10 @@ class MockSecurityKeyAuthHandler : public SecurityKeyAuthHandler {
   MOCK_METHOD(bool, IsValidConnectionId, (int), (const, override));
   MOCK_METHOD(void, SendClientResponse, (int, const std::string&), (override));
   MOCK_METHOD(void, SendErrorAndCloseConnection, (int), (override));
-  MOCK_METHOD(size_t, GetActiveConnectionCountForTest, (), (const, override));
+  MOCK_METHOD(std::size_t,
+              GetActiveConnectionCountForTest,
+              (),
+              (const, override));
   MOCK_METHOD(void, SetRequestTimeoutForTest, (base::TimeDelta), (override));
 #if BUILDFLAG(IS_WIN)
   MOCK_METHOD(void,
@@ -286,7 +305,7 @@ class MockSecurityKeyAuthHandler : public SecurityKeyAuthHandler {
   SecurityKeyAuthHandler::SendMessageCallback callback_;
 };
 
-class MockMouseCursorMonitor : public webrtc::MouseCursorMonitor {
+class MockMouseCursorMonitor : public protocol::MouseCursorMonitor {
  public:
   MockMouseCursorMonitor();
 
@@ -295,8 +314,11 @@ class MockMouseCursorMonitor : public webrtc::MouseCursorMonitor {
 
   ~MockMouseCursorMonitor() override;
 
-  MOCK_METHOD(void, Init, (Callback*, Mode), (override));
-  MOCK_METHOD(void, Capture, (), (override));
+  MOCK_METHOD(void,
+              Init,
+              (protocol::MouseCursorMonitor::Callback*),
+              (override));
+  MOCK_METHOD(void, SetPreferredCaptureInterval, (base::TimeDelta), (override));
 };
 
 class MockUrlForwarderConfigurator final : public UrlForwarderConfigurator {
@@ -361,6 +383,10 @@ class MockChromotingHostServicesProvider
               GetSessionServices,
               (),
               (const, override));
+  MOCK_METHOD(void,
+              set_disconnect_handler,
+              (base::OnceClosure disconnect_handler),
+              (override));
 };
 
 }  // namespace remoting

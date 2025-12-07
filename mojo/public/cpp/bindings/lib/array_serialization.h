@@ -2,24 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_LIB_ARRAY_SERIALIZATION_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_LIB_ARRAY_SERIALIZATION_H_
 
 #include <stddef.h>
 #include <string.h>  // For |memcpy()|.
 
-#include <limits>
 #include <type_traits>
 #include <utility>
-#include <vector>
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/types/is_instantiation.h"
 #include "mojo/public/cpp/bindings/array_data_view.h"
 #include "mojo/public/cpp/bindings/lib/array_internal.h"
 #include "mojo/public/cpp/bindings/lib/message_fragment.h"
@@ -165,7 +160,7 @@ struct ArraySerializer<
 template <typename MojomType,
           typename MaybeConstUserType,
           typename UserTypeIterator>
-  requires(!base::is_instantiation<std::optional, typename MojomType::Element>)
+  requires(!base::is_instantiation<typename MojomType::Element, std::optional>)
 struct ArraySerializer<
     MojomType,
     MaybeConstUserType,
@@ -193,7 +188,7 @@ struct ArraySerializer<
     Data* output = fragment.data();
     size_t size = input->GetSize();
     for (size_t i = 0; i < size; ++i)
-      Serialize<Element>(input->GetNext(), output->storage() + i);
+      Serialize<Element>(input->GetNext(), UNSAFE_TODO(output->storage() + i));
   }
 
   static bool DeserializeElements(Data* input,
@@ -214,7 +209,7 @@ struct ArraySerializer<
 template <typename MojomType,
           typename MaybeConstUserType,
           typename UserTypeIterator>
-  requires(base::is_instantiation<std::optional, typename MojomType::Element>)
+  requires(base::is_instantiation<typename MojomType::Element, std::optional>)
 struct ArraySerializer<
     MojomType,
     MaybeConstUserType,
@@ -227,7 +222,7 @@ struct ArraySerializer<
   using Element = typename MojomType::Element;
   using Traits = ArrayTraits<UserType>;
 
-  static_assert(IsAbslOptional<typename Traits::Element>::value,
+  static_assert(IsStdOptional<typename Traits::Element>::value,
                 "Output type should be optional");
   static_assert(sizeof(Element) == sizeof(DataElement),
                 "Incorrect array serializer");
@@ -358,9 +353,11 @@ struct ArraySerializer<
                         MojomTypeCategory::kAssociatedInterfaceRequest>::value
               ? VALIDATION_ERROR_UNEXPECTED_INVALID_INTERFACE_ID
               : VALIDATION_ERROR_UNEXPECTED_INVALID_HANDLE;
-      MOJO_INTERNAL_DLOG_SERIALIZATION_WARNING(
-          !validate_params->element_is_nullable &&
-              !IsHandleOrInterfaceValid(output->at(i)),
+
+      MOJO_INTERNAL_CHECK_SERIALIZATION(
+          SendValidation::kDefault,
+          !(!validate_params->element_is_nullable &&
+            !IsHandleOrInterfaceValid(output->at(i))),
           kError,
           MakeMessageWithArrayIndex("invalid handle or interface ID in array "
                                     "expecting valid handles or interface IDs",
@@ -413,8 +410,10 @@ struct ArraySerializer<MojomType,
                                     validate_params->element_validate_params);
       fragment->at(i).Set(data_fragment.is_null() ? nullptr
                                                   : data_fragment.data());
-      MOJO_INTERNAL_DLOG_SERIALIZATION_WARNING(
-          !validate_params->element_is_nullable && data_fragment.is_null(),
+
+      MOJO_INTERNAL_CHECK_SERIALIZATION(
+          SendValidation::kDefault,
+          !(!validate_params->element_is_nullable && data_fragment.is_null()),
           VALIDATION_ERROR_UNEXPECTED_NULL_POINTER,
           MakeMessageWithArrayIndex("null in array expecting valid pointers",
                                     size, i));
@@ -483,12 +482,14 @@ struct ArraySerializer<MojomType,
     size_t size = input->GetSize();
     for (size_t i = 0; i < size; ++i) {
       MessageFragment<DataElement> inlined_union_element(fragment.message());
-      inlined_union_element.Claim(fragment->storage() + i);
+      inlined_union_element.Claim(UNSAFE_TODO(fragment->storage() + i));
       decltype(auto) next = input->GetNext();
       Serialize<Element>(next, inlined_union_element, true);
-      MOJO_INTERNAL_DLOG_SERIALIZATION_WARNING(
-          !validate_params->element_is_nullable &&
-              inlined_union_element.is_null(),
+
+      MOJO_INTERNAL_CHECK_SERIALIZATION(
+          SendValidation::kDefault,
+          !(!validate_params->element_is_nullable &&
+            inlined_union_element.is_null()),
           VALIDATION_ERROR_UNEXPECTED_NULL_POINTER,
           MakeMessageWithArrayIndex("null in array expecting valid unions",
                                     size, i));
@@ -525,13 +526,16 @@ struct Serializer<ArrayDataView<Element>, MaybeConstUserType> {
       return;
 
     const size_t size = Traits::GetSize(input);
-    MOJO_INTERNAL_DLOG_SERIALIZATION_WARNING(
-        validate_params->expected_num_elements != 0 &&
-            size != validate_params->expected_num_elements,
-        internal::VALIDATION_ERROR_UNEXPECTED_ARRAY_HEADER,
-        internal::MakeMessageWithExpectedArraySize(
+
+    MOJO_INTERNAL_CHECK_SERIALIZATION(
+        SendValidation::kDefault,
+        !(validate_params->expected_num_elements != 0 &&
+          size != validate_params->expected_num_elements),
+        VALIDATION_ERROR_UNEXPECTED_ARRAY_HEADER,
+        MakeMessageWithExpectedArraySize(
             "fixed-size array has wrong number of elements", size,
             validate_params->expected_num_elements));
+
     fragment.AllocateArrayData(size);
     ArrayIterator<Traits, MaybeConstUserType> iterator(input);
     Impl::SerializeElements(&iterator, fragment, validate_params);

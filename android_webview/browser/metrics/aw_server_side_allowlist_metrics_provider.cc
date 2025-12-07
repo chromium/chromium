@@ -6,7 +6,6 @@
 
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "android_webview/common/aw_features.h"
-#include "components/embedder_support/android/metrics/android_metrics_service_client.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
 namespace android_webview {
@@ -32,10 +31,10 @@ void AwServerSideAllowlistMetricsProvider::ProvideSystemProfileMetrics(
 
 bool AwServerSideAllowlistMetricsProvider::IsAppPackageNameSystemApp() {
   return GetInstallerPackageType() ==
-         metrics::AndroidMetricsServiceClient::InstallerPackageType::SYSTEM_APP;
+         AwMetricsServiceClient::InstallerPackageType::SYSTEM_APP;
 }
 
-metrics::AndroidMetricsServiceClient::InstallerPackageType
+AwMetricsServiceClient::InstallerPackageType
 AwServerSideAllowlistMetricsProvider::GetInstallerPackageType() {
   DCHECK(client_);
   return client_->GetInstallerPackageType();

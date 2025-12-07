@@ -87,7 +87,7 @@ class CORE_EXPORT EditingStyle final : public GarbageCollected<EditingStyle> {
   explicit EditingStyle(const CSSPropertyValueSet*);
   EditingStyle(CSSPropertyID, const String& value, SecureContextMode);
 
-  MutableCSSPropertyValueSet* Style() { return mutable_style_.Get(); }
+  MutableCSSPropertyValueSet* Style() const { return mutable_style_.Get(); }
   bool GetTextDirection(mojo_base::mojom::blink::TextDirection&) const;
   bool IsEmpty() const;
   void OverrideWithStyle(const CSSPropertyValueSet*);
@@ -186,6 +186,7 @@ class CORE_EXPORT EditingStyle final : public GarbageCollected<EditingStyle> {
       EditingStyle* extracted_style,
       Vector<CSSPropertyID>* conflicting_properties) const;
   void MergeStyle(const CSSPropertyValueSet*, CSSPropertyOverrideMode);
+  void ComputeValues(Element*);
 
   Member<MutableCSSPropertyValueSet> mutable_style_;
   // This |EditingStyle| is constructed from |node_|. |node_| is null when
@@ -229,7 +230,7 @@ class StyleChange {
   String FontFace() { return apply_font_face_; }
   String FontSize() { return apply_font_size_; }
 
-  bool operator==(const StyleChange& other) {
+  bool operator==(const StyleChange& other) const {
     return css_style_ == other.css_style_ && apply_bold_ == other.apply_bold_ &&
            apply_italic_ == other.apply_italic_ &&
            apply_underline_ == other.apply_underline_ &&
@@ -240,7 +241,6 @@ class StyleChange {
            apply_font_face_ == other.apply_font_face_ &&
            apply_font_size_ == other.apply_font_size_;
   }
-  bool operator!=(const StyleChange& other) { return !(*this == other); }
 
  private:
   void ExtractTextStyles(Document*,

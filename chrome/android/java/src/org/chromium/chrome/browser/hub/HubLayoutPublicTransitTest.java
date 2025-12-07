@@ -4,73 +4,70 @@
 
 package org.chromium.chrome.browser.hub;
 
-import static org.junit.Assert.assertEquals;
-
 import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestination;
+import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestinations;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.START_SURFACE_RETURN_TIME;
-
-import android.os.Build;
 
 import androidx.test.filters.LargeTest;
 
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.transit.BlankCTATabInitialStatePublicTransitRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.hub.IncognitoTabSwitcherStation;
+import org.chromium.chrome.test.transit.hub.NewTabGroupDialogFacility;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.TabSwitcherAppMenuFacility;
+import org.chromium.chrome.test.transit.hub.TabSwitcherListEditorFacility;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
-import org.chromium.chrome.test.transit.page.PageAppMenuFacility;
-import org.chromium.chrome.test.transit.page.PageStation;
-import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
+import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.components.omnibox.OmniboxFeatureList;
+import org.chromium.components.tab_groups.TabGroupColorId;
 
 /** Public transit instrumentation/integration test of Hub. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+// TODO(crbug.com/419289558): Re-enable color surface feature
+@Features.DisableFeatures({
+    ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE,
+    ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
+    ChromeFeatureList.GRID_TAB_SWITCHER_UPDATE,
+    ChromeFeatureList.ANDROID_THEME_MODULE,
+    OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS
+})
 @Batch(Batch.PER_CLASS)
 public class HubLayoutPublicTransitTest {
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStatePublicTransitRule mInitialStateRule =
-            new BlankCTATabInitialStatePublicTransitRule(sActivityTestRule);
+    public AutoResetCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.autoResetCtaActivityRule();
 
     @Test
     @LargeTest
     public void testEnterAndExitHub() {
-        PageStation page = mInitialStateRule.startOnBlankPage();
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
+        RegularTabSwitcherStation tabSwitcher = firstPage.openRegularTabSwitcher();
 
-        RegularTabSwitcherStation tabSwitcher = page.openRegularTabSwitcher();
+        firstPage = tabSwitcher.leaveHubToPreviousTabViaBack(WebPageStation.newBuilder());
 
-        PageStation previousTab = tabSwitcher.leaveHubToPreviousTabViaBack();
-
-        assertFinalDestination(previousTab);
+        assertFinalDestination(firstPage);
     }
 
     @Test
     @LargeTest
     public void testEnterHubAndLeaveViaAppMenuNewTab() {
-        PageStation page = mInitialStateRule.startOnBlankPage();
-
-        RegularTabSwitcherStation tabSwitcher = page.openRegularTabSwitcher();
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
+        RegularTabSwitcherStation tabSwitcher = firstPage.openRegularTabSwitcher();
 
         TabSwitcherAppMenuFacility appMenu = tabSwitcher.openAppMenu();
-
         RegularNewTabPageStation newTab = appMenu.openNewTab();
 
         assertFinalDestination(newTab);
@@ -79,91 +76,128 @@ public class HubLayoutPublicTransitTest {
     @Test
     @LargeTest
     public void testEnterHubAndLeaveViaAppMenuNewIncognitoTab() {
-        PageStation page = mInitialStateRule.startOnBlankPage();
-
-        RegularTabSwitcherStation tabSwitcher = page.openRegularTabSwitcher();
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
+        RegularTabSwitcherStation tabSwitcher = firstPage.openRegularTabSwitcher();
 
         TabSwitcherAppMenuFacility appMenu = tabSwitcher.openAppMenu();
+        IncognitoNewTabPageStation newIncognitoTab = appMenu.openNewIncognitoTabOrWindow();
 
-        IncognitoNewTabPageStation newIncognitoTab = appMenu.openNewIncognitoTab();
-
-        assertFinalDestination(newIncognitoTab);
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            assertFinalDestinations(tabSwitcher, newIncognitoTab);
+        } else {
+            assertFinalDestination(newIncognitoTab);
+        }
     }
 
     @Test
     @LargeTest
+    // TODO(crbug.com/457847264): Test disabled for Incognito windowing.
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testChangeTabSwitcherPanes() {
-        PageStation page = mInitialStateRule.startOnBlankPage();
-
-        PageAppMenuFacility appMenu = page.openGenericAppMenu();
-        IncognitoNewTabPageStation incognitoNewTabPage = appMenu.openNewIncognitoTab();
-
         IncognitoTabSwitcherStation incognitoTabSwitcher =
-                incognitoNewTabPage.openIncognitoTabSwitcher();
-        assertEquals(
-                incognitoTabSwitcher,
-                incognitoTabSwitcher.selectPane(
-                        PaneId.INCOGNITO_TAB_SWITCHER, IncognitoTabSwitcherStation.class));
+                mCtaTestRule
+                        .startOnBlankPage()
+                        .openNewIncognitoTabFast()
+                        .openIncognitoTabSwitcher();
 
-        RegularTabSwitcherStation tabSwitcher =
-                incognitoTabSwitcher.selectPane(
-                        PaneId.TAB_SWITCHER, RegularTabSwitcherStation.class);
+        RegularTabSwitcherStation regularTabSwitcher = incognitoTabSwitcher.selectRegularTabsPane();
+        incognitoTabSwitcher = regularTabSwitcher.selectIncognitoTabsPane();
 
         // Go back to a PageStation for BlankCTATabInitialStateRule to reset state.
-        PageStation blankTab = tabSwitcher.selectTabAtIndex(0);
-        assertFinalDestination(blankTab);
+        incognitoTabSwitcher.selectTabAtIndex(0, IncognitoNewTabPageStation.newBuilder());
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
+    // TODO(crbug.com/461916575): Test disabled for Incognito windowing, delete once fixed
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void testTabGroupPane_newTabGroup() {
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
+        int firstTabId = firstPage.loadedTabElement.value().getId();
+        RegularTabSwitcherStation tabSwitcher = firstPage.openRegularTabSwitcher();
+        TabSwitcherListEditorFacility<RegularTabSwitcherStation> editor =
+                tabSwitcher.openAppMenu().clickSelectTabs();
+        editor = editor.addTabToSelection(0, firstTabId);
+
+        NewTabGroupDialogFacility<RegularTabSwitcherStation> dialog =
+                editor.openAppMenuWithEditor().groupTabs();
+        dialog = dialog.inputName("test_tab_group_name");
+        dialog = dialog.pickColor(TabGroupColorId.RED);
+        dialog.pressDone();
+
+        RegularNewTabPageStation finalStation =
+                tabSwitcher
+                        .selectTabGroupsPane()
+                        .createNewTabGroup()
+                        .pressDoneAsPartOfFlow()
+                        // Go back to a PageStation for BlankCTATabInitialStateRule to reset state.
+                        .openNewRegularTab();
+        assertFinalDestination(finalStation);
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
+    public void testRegularTabSwitcher_newTabGroup() {
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
+        RegularNewTabPageStation finalPage =
+                firstPage
+                        .openRegularTabSwitcher()
+                        .openAppMenu()
+                        .openNewTabGroup()
+                        .pressDoneAsPartOfFlow()
+                        // Go back to a PageStation for BlankCTATabInitialStateRule to reset state.
+                        .openNewRegularTab();
+
+        assertFinalDestination(finalPage);
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
+    public void testIncognitoTabSwitcherStation_newTabGroup() {
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
+        IncognitoNewTabPageStation incognitoNewTabPageStation =
+                firstPage
+                        .openNewIncognitoTabOrWindowFast()
+                        .openIncognitoTabSwitcher()
+                        .openAppMenu()
+                        .openNewTabGroup()
+                        .pressDoneAsPartOfFlow()
+                        .openNewIncognitoTab();
+
+        // Go back to a PageStation for BlankCTATabInitialStateRule to reset state.
+        // Reset not needed for incognito window.
+        if (!IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            RegularNewTabPageStation secondPage =
+                    incognitoNewTabPageStation.openAppMenu().openNewTab();
+            assertFinalDestination(secondPage);
+        } else {
+            assertFinalDestinations(firstPage, incognitoNewTabPageStation);
+        }
     }
 
     @Test
     @LargeTest
     @EnableFeatures({START_SURFACE_RETURN_TIME})
     public void testExitHubOnStartSurfaceAsNtp() {
-        ReturnToChromeUtil.HOME_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
+        ChromeFeatureList.sStartSurfaceReturnTimeTabletSecs.setForTesting(0);
 
-        PageStation page = mInitialStateRule.startOnBlankPage();
-
-        PageAppMenuFacility appMenu = page.openGenericAppMenu();
-        RegularNewTabPageStation newTabPage = appMenu.openNewTab();
-
+        WebPageStation blankPage = mCtaTestRule.startOnBlankPage();
+        RegularNewTabPageStation newTabPage = blankPage.openNewTabFast();
         RegularTabSwitcherStation tabSwitcher = newTabPage.openRegularTabSwitcher();
-        page = tabSwitcher.selectTabAtIndex(0);
+        blankPage = tabSwitcher.selectTabAtIndex(0, WebPageStation.newBuilder());
+        tabSwitcher = blankPage.openRegularTabSwitcher();
 
-        tabSwitcher = page.openRegularTabSwitcher();
-        newTabPage = pauseAndResumeActivity(tabSwitcher);
+        newTabPage =
+                mCtaTestRule
+                        .pauseAndResumeActivityTo(tabSwitcher)
+                        .arriveAt(
+                                RegularNewTabPageStation.newBuilder()
+                                        .initSelectingExistingTab()
+                                        .build());
 
         assertFinalDestination(newTabPage);
-    }
-
-    private RegularNewTabPageStation pauseAndResumeActivity(Station currentStation) {
-        RegularNewTabPageStation destination =
-                RegularNewTabPageStation.newBuilder()
-                        .withIsOpeningTabs(0)
-                        .withIsSelectingTabs(1)
-                        .build();
-        currentStation.travelToSync(
-                destination,
-                () -> {
-                    ChromeTabbedActivity cta = sActivityTestRule.getActivity();
-                    ChromeApplicationTestUtils.fireHomeScreenIntent(cta);
-                    try {
-                        sActivityTestRule.resumeMainActivityFromLauncher();
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-
-        // crbug.com/324106495: Add an extra sleep in Android 12+ because SnapshotStartingWindow
-        // occludes the ChromeActivity and any input is considered an untrusted input until the
-        // SnapshotStartingWindow disappears.
-        // Since it is a system window being drawn on top, we don't have access to any signals that
-        // the SnapshotStartingWindow disappeared that we can wait for.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
-            }
-        }
-
-        return destination;
     }
 }

@@ -105,10 +105,9 @@ ASSERT_ENUM_EQ(BITMAP_FORMAT_ARGB_4444, ANDROID_BITMAP_FORMAT_RGBA_4444);
 ASSERT_ENUM_EQ(BITMAP_FORMAT_ARGB_8888, ANDROID_BITMAP_FORMAT_RGBA_8888);
 ASSERT_ENUM_EQ(BITMAP_FORMAT_RGB_565, ANDROID_BITMAP_FORMAT_RGB_565);
 
-JavaBitmap::JavaBitmap(const JavaRef<jobject>& bitmap)
-    : bitmap_(bitmap), pixels_(NULL) {
-  int err =
-      AndroidBitmap_lockPixels(AttachCurrentThread(), bitmap_.obj(), &pixels_);
+JavaBitmap::JavaBitmap(const JavaRef<jobject>& bitmap) : bitmap_(bitmap) {
+  int err = AndroidBitmap_lockPixels(AttachCurrentThread(), bitmap_.obj(),
+                                     &pixels_.AsEphemeralRawAddr());
   DCHECK(!err);
   DCHECK(pixels_);
 
@@ -173,3 +172,5 @@ SkColorType ConvertToSkiaColorType(const JavaRef<jobject>& bitmap_config) {
 }
 
 }  //  namespace gfx
+
+DEFINE_JNI(BitmapHelper)

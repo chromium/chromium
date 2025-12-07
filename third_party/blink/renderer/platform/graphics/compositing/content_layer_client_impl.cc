@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk_subset.h"
 #include "third_party/blink/renderer/platform/graphics/paint/raster_invalidation_tracking.h"
+#include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
@@ -36,16 +37,13 @@ namespace {
 bool DrawingShouldFillScrollingContentsLayer(
     const PropertyTreeState& layer_state,
     const cc::PictureLayer& layer) {
-  if (!RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
-    return false;
-  }
   if (!layer.draws_content()) {
     return false;
   }
   if (const auto* scroll_node = layer_state.Transform().ScrollNode()) {
     // If the layer covers the whole scrolling contents area, we should fill
-    // the layer with (empty) drawing to disable UseRecordedBoundsForTiling
-    // for this layer, to avoid tiling rect change during scroll.
+    // the layer with (empty) drawing to avoid recorded bounds and tiling rect
+    // changes (which cause re-rasterization) during scroll.
     return layer.bounds().width() >= scroll_node->ContentsRect().width() &&
            layer.bounds().height() >= scroll_node->ContentsRect().height();
   }
@@ -100,6 +98,7 @@ void ContentLayerClientImpl::AppendAdditionalInfoAsJSON(
 void ContentLayerClientImpl::UpdateCcPictureLayer(
     const PendingLayer& pending_layer) {
   const auto& paint_chunks = pending_layer.Chunks();
+  CHECK_EQ(cc_picture_layer_->client(), this);
 #if EXPENSIVE_DCHECKS_ARE_ON()
   paint_chunk_debug_data_ = std::make_unique<JSONArray>();
   for (auto it = paint_chunks.begin(); it != paint_chunks.end(); ++it) {
@@ -114,8 +113,7 @@ void ContentLayerClientImpl::UpdateCcPictureLayer(
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
 
   auto layer_state = pending_layer.GetPropertyTreeState();
-  gfx::Size layer_bounds = pending_layer.LayerBounds();
-  gfx::Vector2dF layer_offset = pending_layer.LayerOffset();
+  auto [layer_offset, layer_bounds] = pending_layer.Bounds();
   gfx::Size old_layer_bounds = raster_invalidator_->LayerBounds();
 
   bool is_mask_layer = layer_state.Effect().BlendMode() == SkBlendMode::kDstIn;
@@ -125,6 +123,7 @@ void ContentLayerClientImpl::UpdateCcPictureLayer(
   }
 
   DCHECK_EQ(old_layer_bounds, cc_picture_layer_->bounds());
+  has_empty_invalidations_ = false;
   raster_invalidator_->Generate(paint_chunks, layer_offset, layer_bounds,
                                 layer_state);
 
@@ -145,23 +144,45 @@ void ContentLayerClientImpl::UpdateCcPictureLayer(
   cc_picture_layer_->SetOffsetToTransformParent(layer_offset);
 
   cc_picture_layer_->SetBounds(layer_bounds);
-  pending_layer.UpdateCcLayerHitTestOpaqueness();
+  cc_picture_layer_->SetHitTestOpaqueness(pending_layer.GetHitTestOpaqueness());
 
   // If nothing changed in the layer, keep the original display item list.
   // Here check layer_bounds because RasterInvalidator doesn't issue raster
   // invalidation when only layer_bounds changes.
-  if (cc_display_item_list_ && layer_bounds == old_layer_bounds &&
+  bool may_be_unchanged =
+      cc_display_item_list_ && layer_bounds == old_layer_bounds &&
       cc_picture_layer_->draws_content() == pending_layer.DrawsContent() &&
-      !raster_under_invalidation_params) {
+      !raster_under_invalidation_params;
+  bool only_empty_invalidations =
+      has_empty_invalidations_ && cc_display_item_list_;
+  if (may_be_unchanged) {
     DCHECK_EQ(cc_picture_layer_->bounds(), layer_bounds);
-    return;
+    if (!RuntimeEnabledFeatures::RasterInducingScrollEnabled() ||
+        // See InvalidateRect().
+        !only_empty_invalidations) {
+      return;
+    }
   }
 
+  bool had_raster_inducing_scroll = HasRasterInducingScroll();
+  auto previous_display_list = std::move(cc_display_item_list_);
   cc_display_item_list_ = base::MakeRefCounted<cc::DisplayItemList>();
   PaintChunksToCcLayer::ConvertInto(
       paint_chunks, layer_state, layer_offset,
       base::OptionalToPtr(raster_under_invalidation_params),
       *cc_display_item_list_);
+
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
+    if ((had_raster_inducing_scroll || HasRasterInducingScroll()) &&
+        only_empty_invalidations) {
+      // See InvalidateRect().
+      cc_picture_layer_->SetForceUpdateRecordingSource();
+    } else if (may_be_unchanged) {
+      // Still use the original display item list to save memory.
+      cc_display_item_list_ = std::move(previous_display_list);
+      return;
+    }
+  }
 
   // DrawingShouldFillScrollingContentsLayer() depends on this.
   cc_picture_layer_->SetIsDrawable(pending_layer.DrawsContent());
@@ -182,8 +203,8 @@ void ContentLayerClientImpl::UpdateCcPictureLayer(
       // pixels during rasterization.
       cc_picture_layer_->background_color() != SkColors::kTransparent &&
       pending_layer.RectKnownToBeOpaque().Contains(
-          gfx::RectF(gfx::PointAtOffsetFromOrigin(pending_layer.LayerOffset()),
-                     gfx::SizeF(pending_layer.LayerBounds())));
+          gfx::RectF(gfx::PointAtOffsetFromOrigin(layer_offset),
+                     gfx::SizeF(layer_bounds)));
   cc_picture_layer_->SetContentsOpaque(contents_opaque);
   if (!contents_opaque) {
     cc_picture_layer_->SetContentsOpaqueForText(
@@ -192,7 +213,26 @@ void ContentLayerClientImpl::UpdateCcPictureLayer(
   }
 }
 
+bool ContentLayerClientImpl::HasRasterInducingScroll() const {
+  return cc_display_item_list_ &&
+         !cc_display_item_list_->raster_inducing_scrolls().empty();
+}
+
 void ContentLayerClientImpl::InvalidateRect(const gfx::Rect& rect) {
+  if (rect.IsEmpty()) {
+    // In RasterInducingScroll, even the visual rect is empty, paint operations
+    // about DrawScrollingContentsOp may change in the following cases:
+    // - the existence of a raster-inducing scroller changes while the scroller
+    //   doesn't have any visual rendering for now;
+    // - a scrolling content out of the scrollport of a raster-inducing
+    //   scroller changes.
+    // Set a flag so that UpdateCcPictureLayer can force update of the layer to
+    // ensure the recording source is up to date.
+    if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
+      has_empty_invalidations_ = true;
+    }
+    return;
+  }
   cc_display_item_list_ = nullptr;
   cc_picture_layer_->SetNeedsDisplayRect(rect);
 }

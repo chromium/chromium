@@ -14,12 +14,13 @@ limitations under the License.
 ==============================================================================*/
 #include "tensorflow_lite_support/cc/task/vision/utils/image_tensor_specs.h"
 
+#include <cstdint>
+
 #include "absl/algorithm/container.h"  // from @com_google_absl
 #include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/str_cat.h"  // from @com_google_absl
 #include "absl/types/optional.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/common.h"
-#include "tensorflow_lite_support/cc/port/integral_types.h"
 #include "tensorflow_lite_support/cc/port/status_macros.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
 #include "tensorflow_lite_support/cc/task/core/tflite_engine.h"
@@ -200,7 +201,7 @@ StatusOr<ImageTensorSpecs> BuildInputImageTensorSpecs(
   }
   int bytes_size = input_tensor->bytes;
   size_t byte_depth =
-      input_type == kTfLiteFloat32 ? sizeof(float) : sizeof(uint8);
+      input_type == kTfLiteFloat32 ? sizeof(float) : sizeof(uint8_t);
 
   // Sanity checks.
   if (input_type == kTfLiteFloat32) {

@@ -35,21 +35,21 @@ class VideoAutoFullscreenFrameHost : public FakeLocalFrameHost {
     std::move(callback).Run(true);
     web_view_->MainFrameImpl()
         ->GetTaskRunner(TaskType::kInternalNavigationAssociated)
-        ->PostTask(FROM_HERE, WTF::BindOnce(
+        ->PostTask(FROM_HERE, BindOnce(
                                   [](WebViewImpl* web_view) {
                                     web_view->DidEnterFullscreen();
                                   },
-                                  WTF::Unretained(web_view_)));
+                                  Unretained(web_view_)));
   }
 
   void ExitFullscreen() override {
     web_view_->MainFrameImpl()
         ->GetTaskRunner(TaskType::kInternalNavigationAssociated)
-        ->PostTask(FROM_HERE, WTF::BindOnce(
+        ->PostTask(FROM_HERE, BindOnce(
                                   [](WebViewImpl* web_view) {
                                     web_view->DidExitFullscreen();
                                   },
-                                  WTF::Unretained(web_view_)));
+                                  Unretained(web_view_)));
   }
 
   void set_web_view(WebViewImpl* web_view) { web_view_ = web_view; }
@@ -176,7 +176,7 @@ TEST_F(VideoAutoFullscreen, ExitFullscreenDoesNotPauseWithPlaysInline) {
   Video()->Play();
 
   MakeGarbageCollected<WaitForEvent>(Video(), event_type_names::kPlay);
-  Video()->webkitEnterFullscreen();
+  Video()->EnterFullscreen();
   test::RunPendingTasks();
   UpdateLifecyclePhases();
   ASSERT_TRUE(Video()->IsFullscreen());

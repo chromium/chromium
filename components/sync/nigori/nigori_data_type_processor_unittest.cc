@@ -41,7 +41,7 @@ const char kNigoriNonUniqueName[] = "nigori";
 const char kNigoriServerId[] = "nigori_server_id";
 const char kCacheGuid[] = "generated_id";
 
-// |*arg| must be of type std::optional<EntityData>.
+// `*arg` must be of type std::optional<EntityData>.
 MATCHER_P(OptionalEntityDataHasDecryptorTokenKeyName, expected_key_name, "") {
   return arg->specifics.nigori().keystore_decryptor_token().key_name() ==
          expected_key_name;
@@ -89,7 +89,6 @@ CommitResponseData CreateNigoriCommitResponseData(
   commit_response_data.sequence_number = commit_request_data.sequence_number;
   commit_response_data.response_version = response_version;
   commit_response_data.specifics_hash = commit_request_data.specifics_hash;
-  commit_response_data.unsynced_time = commit_request_data.unsynced_time;
   return commit_response_data;
 }
 
@@ -183,8 +182,7 @@ class NigoriDataTypeProcessorTest : public testing::Test {
   NigoriDataTypeProcessor processor_;
 };
 
-TEST_F(NigoriDataTypeProcessorTest,
-       ShouldTrackTheMetadataWhenInitialSyncDone) {
+TEST_F(NigoriDataTypeProcessorTest, ShouldTrackTheMetadataWhenInitialSyncDone) {
   // Build a data type state with a specific cache guid.
   const std::string kOtherCacheGuid = "cache_guid";
   sync_pb::DataTypeState data_type_state;
@@ -238,9 +236,9 @@ TEST_F(NigoriDataTypeProcessorTest, ShouldIncrementSequenceNumberWhenPut) {
 TEST_F(NigoriDataTypeProcessorTest, ShouldGetEmptyLocalChanges) {
   SimulateModelReadyToSync(/*initial_sync_done=*/true);
   {
-    base::MockOnceCallback<void(bool)> has_unsynced_data_cb;
-    EXPECT_CALL(has_unsynced_data_cb, Run(false));
-    processor()->HasUnsyncedData(has_unsynced_data_cb.Get());
+    base::MockOnceCallback<void(size_t)> get_unsynced_data_cb;
+    EXPECT_CALL(get_unsynced_data_cb, Run(0));
+    processor()->GetUnsyncedDataCount(get_unsynced_data_cb.Get());
   }
   CommitRequestDataList commit_request;
   processor()->GetLocalChanges(
@@ -253,9 +251,9 @@ TEST_F(NigoriDataTypeProcessorTest, ShouldGetLocalChangesWhenPut) {
   SimulateModelReadyToSync(/*initial_sync_done=*/true);
 
   {
-    base::MockOnceCallback<void(bool)> has_unsynced_data_cb;
-    EXPECT_CALL(has_unsynced_data_cb, Run(false));
-    processor()->HasUnsyncedData(has_unsynced_data_cb.Get());
+    base::MockOnceCallback<void(size_t)> get_unsynced_data_cb;
+    EXPECT_CALL(get_unsynced_data_cb, Run(0));
+    processor()->GetUnsyncedDataCount(get_unsynced_data_cb.Get());
   }
 
   auto entity_data = std::make_unique<syncer::EntityData>();
@@ -265,9 +263,9 @@ TEST_F(NigoriDataTypeProcessorTest, ShouldGetLocalChangesWhenPut) {
   processor()->Put(std::move(entity_data));
 
   {
-    base::MockOnceCallback<void(bool)> has_unsynced_data_cb;
-    EXPECT_CALL(has_unsynced_data_cb, Run(true));
-    processor()->HasUnsyncedData(has_unsynced_data_cb.Get());
+    base::MockOnceCallback<void(size_t)> get_unsynced_data_cb;
+    EXPECT_CALL(get_unsynced_data_cb, Run(1));
+    processor()->GetUnsyncedDataCount(get_unsynced_data_cb.Get());
   }
 
   CommitRequestDataList commit_request;
@@ -283,9 +281,9 @@ TEST_F(NigoriDataTypeProcessorTest,
   SimulateModelReadyToSync(/*initial_sync_done=*/true);
 
   {
-    base::MockOnceCallback<void(bool)> has_unsynced_data_cb;
-    EXPECT_CALL(has_unsynced_data_cb, Run(false));
-    processor()->HasUnsyncedData(has_unsynced_data_cb.Get());
+    base::MockOnceCallback<void(size_t)> get_unsynced_data_cb;
+    EXPECT_CALL(get_unsynced_data_cb, Run(0));
+    processor()->GetUnsyncedDataCount(get_unsynced_data_cb.Get());
   }
 
   auto entity_data = std::make_unique<syncer::EntityData>();
@@ -295,9 +293,9 @@ TEST_F(NigoriDataTypeProcessorTest,
   processor()->Put(std::move(entity_data));
 
   {
-    base::MockOnceCallback<void(bool)> has_unsynced_data_cb;
-    EXPECT_CALL(has_unsynced_data_cb, Run(true));
-    processor()->HasUnsyncedData(has_unsynced_data_cb.Get());
+    base::MockOnceCallback<void(size_t)> get_unsynced_data_cb;
+    EXPECT_CALL(get_unsynced_data_cb, Run(1));
+    processor()->GetUnsyncedDataCount(get_unsynced_data_cb.Get());
   }
 
   CommitRequestDataList commit_request_list;
@@ -323,9 +321,9 @@ TEST_F(NigoriDataTypeProcessorTest,
 
   // There should be no more local changes.
   {
-    base::MockOnceCallback<void(bool)> has_unsynced_data_cb;
-    EXPECT_CALL(has_unsynced_data_cb, Run(false));
-    processor()->HasUnsyncedData(has_unsynced_data_cb.Get());
+    base::MockOnceCallback<void(size_t)> get_unsynced_data_cb;
+    EXPECT_CALL(get_unsynced_data_cb, Run(0));
+    processor()->GetUnsyncedDataCount(get_unsynced_data_cb.Get());
   }
   commit_response_list.clear();
   processor()->GetLocalChanges(
@@ -461,16 +459,15 @@ TEST_F(NigoriDataTypeProcessorTest, ShouldInvokeSyncStartCallback) {
   base::MockCallback<DataTypeControllerDelegate::StartCallback> start_callback;
   std::unique_ptr<DataTypeActivationResponse> captured_response;
   EXPECT_CALL(start_callback, Run)
-      .WillOnce(testing::Invoke(
-          [&captured_response](
-              std::unique_ptr<DataTypeActivationResponse> response) {
-            captured_response = std::move(response);
-          }));
+      .WillOnce([&captured_response](
+                    std::unique_ptr<DataTypeActivationResponse> response) {
+        captured_response = std::move(response);
+      });
   processor()->OnSyncStarting(request, start_callback.Get());
   ASSERT_THAT(captured_response, NotNull());
   EXPECT_EQ(kCacheGuid, captured_response->data_type_state.cache_guid());
 
-  // Test that the |processor()| has been set in the activation response.
+  // Test that the `processor()` has been set in the activation response.
   ASSERT_FALSE(processor()->IsConnectedForTest());
   captured_response->type_processor->ConnectSync(
       std::make_unique<testing::NiceMock<MockCommitQueue>>());
@@ -635,7 +632,8 @@ TEST_F(NigoriDataTypeProcessorTest,
   // Simulate returning error at MergeFullSyncData()
   ON_CALL(*mock_nigori_sync_bridge(), MergeFullSyncData)
       .WillByDefault([&](const std::optional<EntityData>& data) {
-        return ModelError(FROM_HERE, "some error");
+        return ModelError(FROM_HERE,
+                          syncer::ModelError::Type::kGenericTestError);
       });
 
   UpdateResponseDataList updates;
@@ -664,7 +662,8 @@ TEST_F(NigoriDataTypeProcessorTest,
   // Simulate returning error at ApplyIncrementalSyncChanges()
   ON_CALL(*mock_nigori_sync_bridge(), ApplyIncrementalSyncChanges)
       .WillByDefault([&](const std::optional<EntityData>& data) {
-        return ModelError(FROM_HERE, "some error");
+        return ModelError(FROM_HERE,
+                          syncer::ModelError::Type::kGenericTestError);
       });
 
   UpdateResponseDataList updates;
@@ -681,7 +680,8 @@ TEST_F(NigoriDataTypeProcessorTest,
 
 TEST_F(NigoriDataTypeProcessorTest,
        ShouldCallErrorHandlerIfModelErrorBeforeSyncStarts) {
-  processor()->ReportError(ModelError(FROM_HERE, "some error"));
+  processor()->ReportError(
+      ModelError(FROM_HERE, syncer::ModelError::Type::kGenericTestError));
 
   syncer::DataTypeActivationRequest request;
   base::MockCallback<ModelErrorHandler> error_handler_callback;
@@ -713,6 +713,30 @@ TEST_F(NigoriDataTypeProcessorTest,
 
   EXPECT_EQ(inv_2.hint(), data_type_state.invalidations(1).hint());
   EXPECT_EQ(inv_2.version(), data_type_state.invalidations(1).version());
+}
+
+// Regression test for crbug.com/422542565: processor should not accept metadata
+// if it's invalid. Before the fix, the processor only partially reset its
+// state and this lead to crash.
+TEST_F(NigoriDataTypeProcessorTest, ShouldIgnoreMetadataIfNotValid) {
+  NigoriMetadataBatch metadata_batch;
+  metadata_batch.data_type_state.set_initial_sync_state(
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+
+  // Create metadata that is invalid, because `sequence_number` <
+  // `acked_sequence_number`. This should cause
+  // ProcessorEntity::CreateFromMetadata() to return nullptr.
+  sync_pb::EntityMetadata entity_metadata;
+  entity_metadata.set_creation_time(TimeToProtoTime(base::Time::Now()));
+  entity_metadata.set_sequence_number(1);
+  entity_metadata.set_acked_sequence_number(2);
+  metadata_batch.entity_metadata = std::move(entity_metadata);
+
+  processor()->ModelReadyToSync(mock_nigori_sync_bridge(),
+                                std::move(metadata_batch));
+
+  // The processor should not track metadata because it's invalid.
+  EXPECT_FALSE(processor()->IsTrackingMetadata());
 }
 
 }  // namespace

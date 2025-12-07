@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] .aqua 1
+  assert_equals: \n<span class="aqua" style="text-box: ex alphabetic;" data-offset-y="16" data-expected-height="2">ApÃ‰x</span>\nheight expected 2 but got 15
+[FAIL] .aqua 3
+  assert_equals: \n<span class="aqua" style="text-box: trim-end text alphabetic;" data-offset-y="8" data-expected-height="10">ApÃ‰x</span>\nheight expected 10 but got 15
+[FAIL] .aqua 4
+  assert_equals: \n<div class="aqua" data-expected-height="18">\n  <span style="font-size: 18px; text-box: ex alphabetic;">ApÃ‰x</span>\n</div>\nheight expected 18 but got 21
+Harness: the test ran to completion.
+

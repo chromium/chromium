@@ -81,7 +81,8 @@ class BinaryDataHistogram {
 
   // 2^16 buckets holding counts of all 2-byte sequences in the data. The counts
   // are stored as signed values to simplify computing the distance between two
-  // histograms.
+  // histograms. Note that HeapArray is intentionally not used due to its
+  // overhead being unacceptable (see crbug.com/381332105).
   std::unique_ptr<int32_t[]> histogram_;
 };
 

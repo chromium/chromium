@@ -5,7 +5,6 @@
 package org.chromium.components.browser_ui.sms;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.SystemClock;
 import android.view.View;
 
@@ -14,6 +13,8 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.infobars.ConfirmInfoBar;
 import org.chromium.components.infobars.InfoBarControlLayout;
 import org.chromium.components.infobars.InfoBarLayout;
@@ -21,12 +22,13 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
 
 /** An InfoBar that asks for the user's permission to share the SMS with the page. */
+@NullMarked
 public class WebOTPServiceInfoBar extends ConfirmInfoBar {
     private static final String TAG = "WebOTPServiceInfoBar";
     private static final boolean DEBUG = false;
-    private String mMessage;
-    private WindowAndroid mWindowAndroid;
-    private Long mKeyboardDismissedTime;
+    private final String mMessage;
+    private final WindowAndroid mWindowAndroid;
+    private @Nullable Long mKeyboardDismissedTime;
 
     @VisibleForTesting
     @CalledByNative
@@ -73,8 +75,7 @@ public class WebOTPServiceInfoBar extends ConfirmInfoBar {
             View focusedView = activity.getCurrentFocus();
             KeyboardVisibilityDelegate keyboardVisibilityDelegate =
                     KeyboardVisibilityDelegate.getInstance();
-            if (focusedView != null
-                    && keyboardVisibilityDelegate.isKeyboardShowing(activity, focusedView)) {
+            if (focusedView != null && keyboardVisibilityDelegate.isKeyboardShowing(focusedView)) {
                 keyboardVisibilityDelegate.hideKeyboard(focusedView);
                 WebOTPServiceUma.recordInfobarAction(
                         WebOTPServiceUma.InfobarAction.KEYBOARD_DISMISSED);
@@ -82,7 +83,6 @@ public class WebOTPServiceInfoBar extends ConfirmInfoBar {
             }
         }
 
-        Context context = layout.getContext();
         InfoBarControlLayout control = layout.addControlLayout();
         control.addDescription(mMessage);
     }

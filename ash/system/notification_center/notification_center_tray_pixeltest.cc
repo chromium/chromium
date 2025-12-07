@@ -6,13 +6,16 @@
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
+#include "ash/test/pixel/ash_pixel_test_helper.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/message_center/message_center.h"
 
 namespace ash {
 
-class NotificationCenterTrayPixelTest : public AshTestBase {
+class NotificationCenterTrayPixelTest
+    : public AshTestBase,
+      public testing::WithParamInterface</*enable_system_blur=*/bool> {
  public:
   NotificationCenterTrayPixelTest() = default;
   NotificationCenterTrayPixelTest(const NotificationCenterTrayPixelTest&) =
@@ -33,17 +36,24 @@ class NotificationCenterTrayPixelTest : public AshTestBase {
   // AshTestBase:
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
-    return pixel_test::InitParams();
+    pixel_test::InitParams init_params;
+    init_params.system_blur_enabled = GetParam();
+    return init_params;
   }
 
  private:
   std::unique_ptr<NotificationCenterTestApi> test_api_;
 };
 
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    NotificationCenterTrayPixelTest,
+    testing::Bool());
+
 // Tests the UI of the notification center tray when connecting a secondary
 // display while two notification icons are present. This was added for
 // b/284313750.
-TEST_F(NotificationCenterTrayPixelTest,
+TEST_P(NotificationCenterTrayPixelTest,
        NotificationTrayOnSecondaryDisplayWithTwoNotificationIcons) {
   // Add two pinned notifications to make two notification icons show up in the
   // notification center tray.
@@ -64,7 +74,9 @@ TEST_F(NotificationCenterTrayPixelTest,
 
   // Check the UI of the notification center tray on the secondary display.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnSecondaryScreen(
-      "check_view", /*revision_number=*/3, tray));
+      GenerateScreenshotName("check_view"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 3 : 0,
+      tray));
 }
 
 }  // namespace ash

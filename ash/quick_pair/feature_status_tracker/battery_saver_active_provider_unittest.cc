@@ -6,6 +6,7 @@
 
 #include "ash/display/refresh_rate_controller.h"
 #include "ash/shell.h"
+#include "ash/system/power/battery_saver_controller.h"
 #include "ash/system/power/power_status.h"
 #include "ash/test/ash_test_base.h"
 
@@ -23,6 +24,10 @@ class BatterySaverActiveProviderTest : public AshTestBase {
     // pointer.
     ash::Shell::Get()
         ->refresh_rate_controller()
+        ->StopObservingPowerStatusForTest();
+    // And BatterySaverController.
+    ash::Shell::Get()
+        ->battery_saver_controller()
         ->StopObservingPowerStatusForTest();
   }
 
@@ -72,9 +77,8 @@ class BatterySaverActiveProviderTest : public AshTestBase {
   std::unique_ptr<BatterySaverActiveProvider> battery_saver_active_provider_;
 };
 
-// TODO(b/355485660): This test is failing on chromeos builders.
 TEST_F(BatterySaverActiveProviderTest,
-       DISABLED_ProviderDisabledIfPowerStatusNotInitialized) {
+       ProviderDisabledIfPowerStatusNotInitialized) {
   InitializePowerStatus(/*should_initialize=*/false);
   InitializeProvider();
   EXPECT_FALSE(IsBatterySaverActive());

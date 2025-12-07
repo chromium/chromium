@@ -4,14 +4,16 @@
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,
+      "use_reclient": false,
       "use_remoteexec": true
     }
   },
-  "chromium_mac_x64": {
+  "chromium_mac_arm64": {
     "gn_args": {
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,
+      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -20,6 +22,7 @@
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,
+      "use_reclient": false,
       "use_remoteexec": true
     }
   }

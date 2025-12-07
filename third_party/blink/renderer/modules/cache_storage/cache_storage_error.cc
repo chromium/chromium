@@ -7,6 +7,7 @@
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/quota_exceeded_error.h"
 #include "third_party/blink/renderer/modules/cache_storage/cache.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -39,8 +40,7 @@ String GetDefaultMessage(mojom::CacheStorageError web_error) {
     case mojom::CacheStorageError::kErrorCrossOriginResourcePolicy:
       return "Failed Cross-Origin-Resource-Policy check.";
   }
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -49,13 +49,11 @@ void RejectCacheStorageWithError(ScriptPromiseResolverBase* resolver,
                                  mojom::blink::CacheStorageError web_error,
                                  const String& message) {
   String final_message =
-
       !message.empty() ? message : GetDefaultMessage(web_error);
   switch (web_error) {
     case mojom::CacheStorageError::kSuccess:
       // This function should only be called with an error.
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     case mojom::CacheStorageError::kErrorExists:
       resolver->RejectWithDOMException(DOMExceptionCode::kInvalidAccessError,
                                        final_message);
@@ -69,8 +67,7 @@ void RejectCacheStorageWithError(ScriptPromiseResolverBase* resolver,
                                        final_message);
       return;
     case mojom::CacheStorageError::kErrorQuotaExceeded:
-      resolver->RejectWithDOMException(DOMExceptionCode::kQuotaExceededError,
-                                       final_message);
+      QuotaExceededError::Reject(resolver, final_message);
       return;
     case mojom::CacheStorageError::kErrorCacheNameNotFound:
       resolver->RejectWithDOMException(DOMExceptionCode::kNotFoundError,

@@ -2,18 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
 
 #include <algorithm>
+#include <functional>
 
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/dom/node.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
@@ -26,11 +20,6 @@
 namespace blink {
 
 namespace {
-
-// Note: LayoutFlowThread, used for multicol, can't provide offset mapping.
-bool CanUseOffsetMapping(const LayoutObject& object) {
-  return object.IsLayoutBlockFlow() && !object.IsLayoutFlowThread();
-}
 
 Position CreatePositionForOffsetMapping(const Node& node, unsigned dom_offset) {
   if (auto* text_node = DynamicTo<Text>(node)) {
@@ -74,11 +63,7 @@ std::pair<const Node&, unsigned> ToNodeOffsetPair(const Position& position) {
 }  // namespace
 
 LayoutBlockFlow* NGInlineFormattingContextOf(const Position& position) {
-  LayoutBlockFlow* block_flow =
-      OffsetMapping::GetInlineFormattingContextOf(position);
-  if (!block_flow || !block_flow->IsLayoutNGObject())
-    return nullptr;
-  return block_flow;
+  return OffsetMapping::GetInlineFormattingContextOf(position);
 }
 
 // static
@@ -180,7 +165,9 @@ unsigned OffsetMappingUnit::ConvertDOMOffsetToTextContent(
   if (text_content_start_ == text_content_end_)
     return text_content_start_;
   // Handle has identity mapping.
-  return offset - dom_start_ + text_content_start_;
+  unsigned text_content_offset = offset - dom_start_ + text_content_start_;
+  return text_content_offset < text_content_end_ ? text_content_offset
+                                                 : text_content_end_;
 }
 
 unsigned OffsetMappingUnit::ConvertTextContentToFirstDOMOffset(
@@ -259,10 +246,9 @@ LayoutBlockFlow* OffsetMapping::GetInlineFormattingContextOf(
     const LayoutObject& object) {
   for (LayoutObject* runner = object.Parent(); runner;
        runner = runner->Parent()) {
-    if (!CanUseOffsetMapping(*runner)) {
-      continue;
+    if (auto* block_flow = DynamicTo<LayoutBlockFlow>(runner)) {
+      return block_flow;
     }
-    return To<LayoutBlockFlow>(runner);
   }
   return nullptr;
 }
@@ -302,14 +288,13 @@ const OffsetMappingUnit* OffsetMapping::GetMappingUnitForPosition(
   if (range_start == range_end || units_[range_start].DOMStart() > offset)
     return nullptr;
   // Find the last unit where unit.dom_start <= offset
-  auto unit = std::prev(std::upper_bound(
-      units_.begin() + range_start, units_.begin() + range_end, offset,
-      [](unsigned offset, const OffsetMappingUnit& unit) {
-        return offset < unit.DOMStart();
-      }));
+  auto range = base::span(units_).subspan(range_start, range_end - range_start);
+  auto i = std::ranges::upper_bound(range, offset, std::ranges::less(),
+                                    &OffsetMappingUnit::DOMStart);
+  const OffsetMappingUnit* unit = &range[std::distance(range.begin(), i) - 1];
   if (unit->DOMEnd() < offset)
     return nullptr;
-  return &*unit;
+  return unit;
 }
 
 OffsetMapping::UnitVector OffsetMapping::GetMappingUnitsForDOMRange(
@@ -332,22 +317,25 @@ OffsetMapping::UnitVector OffsetMapping::GetMappingUnitsForDOMRange(
     return UnitVector();
 
   // Find the first unit where unit.dom_end >= start_offset
-  auto result_begin = std::lower_bound(
-      units_.begin() + range_start, units_.begin() + range_end, start_offset,
-      [](const OffsetMappingUnit& unit, unsigned offset) {
-        return unit.DOMEnd() < offset;
-      });
+  auto span1 = base::span(units_).subspan(range_start, range_end - range_start);
+  size_t result_begin =
+      range_start +
+      std::distance(span1.begin(), std::ranges::lower_bound(
+                                       span1, start_offset, std::ranges::less(),
+                                       &OffsetMappingUnit::DOMEnd));
 
   // Find the next of the last unit where unit.dom_start <= end_offset
-  auto result_end =
-      std::upper_bound(result_begin, units_.begin() + range_end, end_offset,
-                       [](unsigned offset, const OffsetMappingUnit& unit) {
-                         return offset < unit.DOMStart();
-                       });
+  auto span2 =
+      base::span(units_).subspan(result_begin, range_end - result_begin);
+  size_t result_size = std::distance(
+      span2.begin(),
+      std::ranges::upper_bound(span2, end_offset, std::ranges::less(),
+                               &OffsetMappingUnit::DOMStart));
 
   UnitVector result;
-  result.reserve(base::checked_cast<wtf_size_t>(result_end - result_begin));
-  for (const auto& unit : base::make_span(result_begin, result_end)) {
+  result.reserve(base::checked_cast<wtf_size_t>(result_size));
+  for (const auto& unit :
+       base::span(units_).subspan(result_begin, result_size)) {
     // If the unit isn't fully within the range, create a new unit that's
     // within the range.
     const unsigned clamped_start = std::max(unit.DOMStart(), start_offset);
@@ -370,15 +358,15 @@ base::span<const OffsetMappingUnit> OffsetMapping::GetMappingUnitsForNode(
   if (it == ranges_.end()) {
     return {};
   }
-  return base::make_span(units_.begin() + it->value.first,
-                         units_.begin() + it->value.second);
+  const auto [first, last] = it->value;
+  return base::span(units_).subspan(first, last - first);
 }
 
 base::span<const OffsetMappingUnit>
 OffsetMapping::GetMappingUnitsForLayoutObject(
     const LayoutObject& layout_object) const {
-  const auto begin = base::ranges::find(units_, layout_object,
-                                        &OffsetMappingUnit::GetLayoutObject);
+  const auto begin = std::ranges::find(units_, layout_object,
+                                       &OffsetMappingUnit::GetLayoutObject);
   CHECK_NE(begin, units_.end());
   const auto end =
       std::find_if(std::next(begin), units_.end(),
@@ -386,7 +374,8 @@ OffsetMapping::GetMappingUnitsForLayoutObject(
                      return unit.GetLayoutObject() != layout_object;
                    });
   DCHECK_LT(begin, end);
-  return base::make_span(begin, end);
+  // SAFETY: Both of `begin` and `end` are valid iterators for `units_`.
+  return UNSAFE_BUFFERS(base::span(begin, end));
 }
 
 base::span<const OffsetMappingUnit>
@@ -398,21 +387,18 @@ OffsetMapping::GetMappingUnitsForTextContentOffsetRange(unsigned start,
     return {};
 
   // Find the first unit where unit.text_content_end > start
-  auto result_begin =
-      std::lower_bound(units_.begin(), units_.end(), start,
-                       [](const OffsetMappingUnit& unit, unsigned offset) {
-                         return unit.TextContentEnd() <= offset;
-                       });
-  if (result_begin == units_.end() || result_begin->TextContentStart() >= end)
+  auto result_begin = std::ranges::lower_bound(
+      units_, start, std::less_equal<>{}, &OffsetMappingUnit::TextContentEnd);
+  if (result_begin == units_.end() || result_begin->TextContentStart() >= end) {
     return {};
+  }
 
   // Find the next of the last unit where unit.text_content_start < end
-  auto result_end =
-      std::upper_bound(units_.begin(), units_.end(), end,
-                       [](unsigned offset, const OffsetMappingUnit& unit) {
-                         return offset <= unit.TextContentStart();
-                       });
-  return base::make_span(result_begin, result_end);
+  auto result_end = std::ranges::upper_bound(
+      units_, end, std::less_equal<>{}, &OffsetMappingUnit::TextContentStart);
+  // SAFETY: Both of `result_begin` and `result_end` are valid iterators for
+  // `units_`.
+  return UNSAFE_BUFFERS(base::span(result_begin, result_end));
 }
 
 std::optional<unsigned> OffsetMapping::GetTextContentOffset(
@@ -434,14 +420,15 @@ Position OffsetMapping::StartOfNextNonCollapsedContent(
   const auto node_and_offset = ToNodeOffsetPair(position);
   const Node& node = node_and_offset.first;
   const unsigned offset = node_and_offset.second;
-  while (unit != units_.data() + units_.size() &&
-         unit->AssociatedNode() == node) {
-    if (unit->DOMEnd() > offset &&
-        unit->GetType() != OffsetMappingUnitType::kCollapsed) {
-      const unsigned result = std::max(offset, unit->DOMStart());
+  for (const auto& u : base::span(units_).subspan(
+           base::checked_cast<size_t>(std::distance(units_.data(), unit)))) {
+    if (u.AssociatedNode() != node) {
+      break;
+    }
+    if (u.DOMEnd() > offset && !u.IsCollapsed()) {
+      const unsigned result = std::max(offset, u.DOMStart());
       return CreatePositionForOffsetMapping(node, result);
     }
-    ++unit;
   }
   return Position();
 }
@@ -456,16 +443,16 @@ Position OffsetMapping::EndOfLastNonCollapsedContent(
   const auto node_and_offset = ToNodeOffsetPair(position);
   const Node& node = node_and_offset.first;
   const unsigned offset = node_and_offset.second;
-  while (unit->AssociatedNode() == node) {
-    if (unit->DOMStart() < offset &&
-        unit->GetType() != OffsetMappingUnitType::kCollapsed) {
-      const unsigned result = std::min(offset, unit->DOMEnd());
-      return CreatePositionForOffsetMapping(node, result);
-    }
-    if (unit == units_.data()) {
+  auto unit_span = base::span(units_).subspan(
+      0u, base::checked_cast<size_t>(std::distance(units_.data(), unit) + 1));
+  for (const auto& u : base::Reversed(unit_span)) {
+    if (u.AssociatedNode() != node) {
       break;
     }
-    --unit;
+    if (u.DOMStart() < offset && !u.IsCollapsed()) {
+      const unsigned result = std::min(offset, u.DOMEnd());
+      return CreatePositionForOffsetMapping(node, result);
+    }
   }
   return Position();
 }
@@ -475,8 +462,7 @@ bool OffsetMapping::IsBeforeNonCollapsedContent(
   DCHECK(OffsetMapping::AcceptsPosition(position));
   const OffsetMappingUnit* unit = GetMappingUnitForPosition(position);
   const unsigned offset = ToNodeOffsetPair(position).second;
-  return unit && offset < unit->DOMEnd() &&
-         unit->GetType() != OffsetMappingUnitType::kCollapsed;
+  return unit && offset < unit->DOMEnd() && !unit->IsCollapsed();
 }
 
 bool OffsetMapping::IsAfterNonCollapsedContent(const Position& position) const {
@@ -490,8 +476,7 @@ bool OffsetMapping::IsAfterNonCollapsedContent(const Position& position) const {
   // |offset|, we need to find the former. Hence, search with |offset - 1|.
   const OffsetMappingUnit* unit = GetMappingUnitForPosition(
       CreatePositionForOffsetMapping(node, offset - 1));
-  return unit && offset > unit->DOMStart() &&
-         unit->GetType() != OffsetMappingUnitType::kCollapsed;
+  return unit && offset > unit->DOMStart() && !unit->IsCollapsed();
 }
 
 std::optional<UChar> OffsetMapping::GetCharacterBefore(
@@ -604,7 +589,7 @@ unsigned OffsetMapping::LayoutObjectConverter::TextContentOffset(
     unsigned offset) const {
   auto iter = offset >= last_offset_ ? last_unit_ : units_.begin();
   if (offset >= iter->DOMEnd()) {
-    iter = base::ranges::find_if(
+    iter = std::ranges::find_if(
         iter, units_.end(), [offset](const OffsetMappingUnit& unit) {
           return unit.DOMStart() <= offset && offset < unit.DOMEnd();
         });

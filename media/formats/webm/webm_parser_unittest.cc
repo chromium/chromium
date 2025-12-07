@@ -2,18 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/formats/webm/webm_parser.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "media/formats/webm/cluster_builder.h"
 #include "media/formats/webm/webm_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -262,7 +259,7 @@ TEST_F(WebMParserTest, ParseListElementWithMultipleCalls) {
 
     parse_size = default_parse_size;
 
-    data += result;
+    UNSAFE_TODO(data += result);
     size -= result;
 
     EXPECT_EQ((size == 0), parser.IsParsingComplete());
@@ -349,8 +346,12 @@ TEST_F(WebMParserTest, ReservedIds) {
   const uint8_t k2ByteReservedId[] = {0x7F, 0xFF, 0x81};
   const uint8_t k3ByteReservedId[] = {0x3F, 0xFF, 0xFF, 0x81};
   const uint8_t k4ByteReservedId[] = {0x1F, 0xFF, 0xFF, 0xFF, 0x81};
-  const uint8_t* kBuffers[] = {k1ByteReservedId, k2ByteReservedId,
-                               k3ByteReservedId, k4ByteReservedId};
+  auto kBuffers = std::to_array<const uint8_t*>({
+      k1ByteReservedId,
+      k2ByteReservedId,
+      k3ByteReservedId,
+      k4ByteReservedId,
+  });
 
   for (size_t i = 0; i < std::size(kBuffers); i++) {
     int id;
@@ -375,10 +376,16 @@ TEST_F(WebMParserTest, ReservedSizes) {
                                         0xFF, 0xFF, 0xFF, 0xFF};
   const uint8_t k8ByteReservedSize[] = {0xA3, 0x01, 0xFF, 0xFF, 0xFF,
                                         0xFF, 0xFF, 0xFF, 0xFF};
-  const uint8_t* kBuffers[] = {k1ByteReservedSize, k2ByteReservedSize,
-                               k3ByteReservedSize, k4ByteReservedSize,
-                               k5ByteReservedSize, k6ByteReservedSize,
-                               k7ByteReservedSize, k8ByteReservedSize};
+  auto kBuffers = std::to_array<const uint8_t*>({
+      k1ByteReservedSize,
+      k2ByteReservedSize,
+      k3ByteReservedSize,
+      k4ByteReservedSize,
+      k5ByteReservedSize,
+      k6ByteReservedSize,
+      k7ByteReservedSize,
+      k8ByteReservedSize,
+  });
 
   for (size_t i = 0; i < std::size(kBuffers); i++) {
     int id;

@@ -31,6 +31,7 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
@@ -41,10 +42,11 @@
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_renderer_sink.h"
 #include "third_party/blink/public/platform/web_audio_device.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
+#include "third_party/blink/renderer/platform/audio/audio_destination_uma_reporter.h"
 #include "third_party/blink/renderer/platform/audio/audio_io_callback.h"
 #include "third_party/blink/renderer/platform/audio/media_multi_channel_resampler.h"
+#include "third_party/blink/renderer/platform/audio/push_pull_fifo.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -60,16 +62,13 @@ class PushPullFIFO;
 class WebAudioLatencyHint;
 class WebAudioSinkDescriptor;
 
-// The AudioDestination class is an audio sink interface between the media
-// renderer and the Blink's WebAudio module. It has a FIFO to adapt the
-// different processing block sizes of WebAudio renderer and actual hardware
-// audio callback.
+// `AudioDestination` is an audio sink that bridges the WebAudio module with the
+// underlying media renderer. It uses a FIFO to adapt the different processing
+// block sizes between the WebAudio renderer and the actual hardware audio
+// callback.
 //
-// Currently AudioDestination supports two types of threading models:
-//  - Single-thread (default): process the entire WebAudio render call chain by
-//    AudioDeviceThread.
-//  - Dual-thread (experimental): Use WebThread for the WebAudio rendering with
-//    AudioWorkletThread.
+// For a detailed architectural overview of this class, see the documentation at
+// `docs/audio_destination_lifetime_threading.md`.
 class PLATFORM_EXPORT AudioDestination final
     : public ThreadSafeRefCounted<AudioDestination>,
       public media::AudioRendererSink::RenderCallback {
@@ -120,7 +119,7 @@ class PLATFORM_EXPORT AudioDestination final
   void StartWithWorkletTaskRunner(
       scoped_refptr<base::SingleThreadTaskRunner> worklet_task_runner);
 
-  bool IsPlaying();
+  bool IsPlaying() const;
 
   // This is the context sample rate, not the device one.
   double SampleRate() const;
@@ -146,6 +145,25 @@ class PLATFORM_EXPORT AudioDestination final
   // from the constructor of AudioContext and AudioContext.setSinkId() method.
   media::OutputDeviceStatus MaybeCreateSinkAndGetStatus();
 
+  // Returns the elapsed frames of the destination. This only gets called when
+  // switching sink devices. (i.e. stopped destinations)
+  size_t FramesElapsed() const;
+
+  // Transfer the elapsed frame from the previous platform destination to
+  // the new one. This ensures the timestamp, which is based on the frame
+  // count, does not go backward. This only gets called when switching sink
+  // devices.
+  void TransferElapsedFramesFrom(
+      const scoped_refptr<AudioDestination> previous_platform_destination);
+
+  const PushPullFIFOStateForTest GetPushPullFIFOStateForTest() {
+    return fifo_->GetStateForTest();
+  }
+
+  MediaMultiChannelResampler* GetResamplerForTesting() {
+    return resampler_.get();
+  }
+
  private:
   explicit AudioDestination(AudioIOCallback&,
                             const WebAudioSinkDescriptor& sink_descriptor,
@@ -163,12 +181,18 @@ class PLATFORM_EXPORT AudioDestination final
                          size_t frames_to_render,
                          base::TimeDelta delay,
                          base::TimeTicks delay_timestamp,
-                         const media::AudioGlitchInfo& glitch_info);
-  void RequestRender(size_t frames_requested,
+                         const media::AudioGlitchInfo& glitch_info,
+                         base::TimeTicks request_timestamp);
+
+  // Returns true if it was able to provide audio, false otherwise (this would
+  // happen if and only if rendering is stopping or stopped.
+  bool RequestRender(size_t frames_requested,
                      size_t frames_to_render,
                      base::TimeDelta delay,
                      base::TimeTicks delay_timestamp,
-                     const media::AudioGlitchInfo& glitch_info);
+                     const media::AudioGlitchInfo& glitch_info,
+                     base::TimeTicks request_timestamp,
+                     bool has_fifo_underrun_occurred = false);
 
   // Provide input to the resampler (if used).
   void ProvideResamplerInput(int resampler_frame_delay, AudioBus* dest);
@@ -177,7 +201,9 @@ class PLATFORM_EXPORT AudioDestination final
   // into it.
   void PullFromCallback(AudioBus* destination_bus, base::TimeDelta delay);
 
-  void SendLogMessage(const String& message) const;
+  // https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/media/capture/README.md#logs
+  void SendLogMessage(const char* const function_name,
+                      const String& message) const;
 
   // Accessed by the main thread.
   std::unique_ptr<WebAudioDevice> web_audio_device_;
@@ -235,8 +261,9 @@ class PLATFORM_EXPORT AudioDestination final
   DeviceState device_state_ = kStopped;
 
   AudioCallbackMetricReporter metric_reporter_;
+  AudioDestinationUmaReporter uma_reporter_;
 
-  // Collect the device latency matric only from the initial callback.
+  // Collect the device latency metric only from the initial callback.
   bool is_latency_metric_collected_ = false;
 
   // This WaitableEvent is only for use with the kWebAudioBypassOutputBuffering
@@ -244,6 +271,7 @@ class PLATFORM_EXPORT AudioDestination final
   base::WaitableEvent output_buffer_bypass_wait_event_;
 
   const bool is_output_buffer_bypassed_ = false;
+  bool state_change_underrun_in_bypass_mode_ = false;
 };
 
 }  // namespace blink

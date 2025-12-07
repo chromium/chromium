@@ -32,6 +32,12 @@
 - (NSCollectionLayoutSection*)verticalListSectionForLayoutEnvironment:
     (id<NSCollectionLayoutEnvironment>)layoutEnvironment;
 
+// Returns a section representing a horizontal list of backgrounds.
+- (NSCollectionLayoutSection*)
+    backgroundCellSectionForLayoutEnvironment:
+        (id<NSCollectionLayoutEnvironment>)layoutEnvironment
+                                   windowSize:(CGSize)windowSize;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_COLLECTION_CONFIGURATOR_H_

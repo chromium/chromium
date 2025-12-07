@@ -10,7 +10,7 @@
 
 #include "base/test/mock_callback.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/browser_ui/device_lock/android/test_device_lock_bridge.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,8 +20,6 @@ namespace autofill {
 namespace {
 
 const std::u16string kUserProvidedNickname = u"My doctor's IBAN";
-
-}  // namespace
 
 using SaveIbanOfferUserDecision =
     payments::PaymentsAutofillClient::SaveIbanOfferUserDecision;
@@ -159,4 +157,5 @@ TEST_F(AutofillSaveIbanDelegateTest, DeviceLockRequirementsNotMet) {
                                          /*user_provided_nickname=*/u"")));
 }
 
+}  // namespace
 }  // namespace autofill

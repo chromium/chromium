@@ -28,6 +28,7 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
@@ -37,7 +38,6 @@
 #include "base/path_service.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/posix/global_descriptors.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -80,7 +80,7 @@ namespace {
 char* g_upload_url = nullptr;
 void SetUploadURL(const std::string& url) {
   DCHECK(!g_upload_url);
-  g_upload_url = strdup(url.c_str());
+  g_upload_url = UNSAFE_TODO(strdup(url.c_str()));
 }
 
 bool g_is_crash_reporter_enabled = false;
@@ -99,7 +99,7 @@ void write_uint64_hex(char* output, uint64_t v) {
   static const char hextable[] = "0123456789abcdef";
 
   for (int i = 15; i >= 0; --i) {
-    output[i] = hextable[v & 15];
+    UNSAFE_TODO(output[i]) = hextable[v & 15];
     v >>= 4;
   }
 }
@@ -155,11 +155,11 @@ unsigned my_uint64_len(uint64_t i) {
 // a non-negative integer to a string (not null-terminated).
 void my_uint64tos(char* output, uint64_t i, unsigned i_len) {
   for (unsigned index = i_len; index; --index, i /= 10)
-    output[index - 1] = '0' + (i % 10);
+    UNSAFE_TODO(output[index - 1]) = '0' + (i % 10);
 }
 
 size_t LengthWithoutTrailingSpaces(const char* str, size_t len) {
-  while (len > 0 && str[len - 1] == ' ') {
+  while (len > 0 && UNSAFE_TODO(str[len - 1]) == ' ') {
     len--;
   }
   return len;
@@ -335,9 +335,9 @@ void MimeWriter::AddPairDataInChunks(const char* msg_type,
     AddString(g_rn);
     AddString(g_rn);
     if (strip_trailing_spaces) {
-      AddItemWithoutTrailingSpaces(msg_data + done, chunk_len);
+      AddItemWithoutTrailingSpaces(UNSAFE_TODO(msg_data + done), chunk_len);
     } else {
-      AddItem(msg_data + done, chunk_len);
+      AddItem(UNSAFE_TODO(msg_data + done), chunk_len);
     }
     AddString(g_rn);
     AddBoundary();
@@ -365,8 +365,8 @@ void MimeWriter::AddItem(const void* base, size_t size) {
   if (iov_index_ == kIovCapacity) {
     Flush();
   }
-  iov_[iov_index_].iov_base = const_cast<void*>(base);
-  iov_[iov_index_].iov_len = size;
+  UNSAFE_TODO(iov_[iov_index_]).iov_base = const_cast<void*>(base);
+  UNSAFE_TODO(iov_[iov_index_]).iov_len = size;
   ++iov_index_;
 }
 
@@ -466,7 +466,8 @@ void EnableCrashDumping(bool unattended) {
     std::string logfile_str = logfile.value();
     const size_t crash_log_path_len = logfile_str.size() + 1;
     g_crash_log_path = new char[crash_log_path_len];
-    strncpy(g_crash_log_path, logfile_str.c_str(), crash_log_path_len);
+    UNSAFE_TODO(
+        strncpy(g_crash_log_path, logfile_str.c_str(), crash_log_path_len));
   }
   DCHECK(!g_breakpad);
   MinidumpDescriptor minidump_descriptor(dumps_path.value());
@@ -693,7 +694,7 @@ char* StringFromPrefixAndUint(const char* prefix,
   char number_buf[kUint64StringSize];
   const unsigned number_len = my_uint64_len(number);
   my_uint64tos(number_buf, number, number_len);
-  number_buf[number_len] = '\0';
+  UNSAFE_TODO(number_buf[number_len]) = '\0';
 
   // Concatenate the prefix and number.
   size_t output_len = my_strlen(prefix) + my_strlen(number_buf) + 1;
@@ -771,7 +772,8 @@ void ExecUploadProcessOrTerminate(const BreakpadInfo& info,
   char* const header_content_type = reinterpret_cast<char*>(allocator->Alloc(
       header_content_type_size));
   my_strlcpy(header_content_type, header_msg, header_content_type_size);
-  my_strlcat(header_content_type, mime_boundary + 2, header_content_type_size);
+  my_strlcat(header_content_type, UNSAFE_TODO(mime_boundary + 2),
+             header_content_type_size);
 
   // The --post-file argument to wget looks like:
   //   --post-file=/tmp/...
@@ -829,8 +831,8 @@ size_t WaitForCrashReportUploadProcess(int fd, size_t bytes_to_read,
     }
     if (ret > 0) {
       // There is data to read.
-      ssize_t len = HANDLE_EINTR(
-          sys_read(fd, buf + bytes_read, bytes_to_read - bytes_read));
+      ssize_t len = UNSAFE_TODO(HANDLE_EINTR(
+          sys_read(fd, buf + bytes_read, bytes_to_read - bytes_read)));
       if (len < 0)
         break;
       bytes_read += len;
@@ -840,7 +842,7 @@ size_t WaitForCrashReportUploadProcess(int fd, size_t bytes_to_read,
     // |ret| == 0 -> timed out, continue waiting.
     // or |bytes_read| < |bytes_to_read| still, keep reading.
   }
-  buf[bytes_to_read] = 0;  // Always NUL terminate the buffer.
+  UNSAFE_TODO(buf[bytes_to_read]) = 0;  // Always NUL terminate the buffer.
   return bytes_read;
 }
 
@@ -852,8 +854,8 @@ bool IsValidCrashReportId(const char* buf, size_t bytes_read,
     WriteLog(msg, sizeof(msg) - 1);
     return false;
   }
-  return base::ranges::all_of(base::span(buf, bytes_read),
-                              base::IsHexDigit<char>);
+  return std::ranges::all_of(UNSAFE_TODO(base::span(buf, bytes_read)),
+                             base::IsHexDigit<char>);
 }
 
 // |buf| should be |expected_len| + 1 characters in size and nullptr terminated.
@@ -910,7 +912,7 @@ void CloseAllFileDescriptors() {
     const char* name;
     while (reader.GetNextEntry(&name)) {
       int i;
-      if (my_strtoui(&i, name) && i > 2 && i != fd)
+      if (my_strtoi_nonneg(&i, name) && i > 2 && i != fd)
         IGNORE_RET(sys_close(i));
       reader.PopEntry();
     }
@@ -986,12 +988,14 @@ void HandleCrashDump(const BreakpadInfo& info) {
     }
   } else {
     if (info.upload) {
-      my_memcpy(temp_file, temp_file_template, sizeof(temp_file_template));
+      UNSAFE_TODO(
+          my_memcpy(temp_file, temp_file_template, sizeof(temp_file_template)));
 
       for (unsigned i = 0; i < 10; ++i) {
         uint64_t t;
         sys_read(ufd, &t, sizeof(t));
-        write_uint64_hex(temp_file + sizeof(temp_file) - (16 + 1), t);
+        write_uint64_hex(UNSAFE_TODO(temp_file + sizeof(temp_file) - (16 + 1)),
+                         t);
 
         temp_file_fd = sys_open(temp_file, O_WRONLY | O_CREAT | O_EXCL, 0600);
         if (temp_file_fd >= 0)
@@ -1021,7 +1025,7 @@ void HandleCrashDump(const BreakpadInfo& info) {
   my_memset(mime_boundary, '-', 28);
   uint64_t boundary_rand;
   sys_read(ufd, &boundary_rand, sizeof(boundary_rand));
-  write_uint64_hex(mime_boundary + 28, boundary_rand);
+  write_uint64_hex(UNSAFE_TODO(mime_boundary + 28), boundary_rand);
   mime_boundary[28 + 16] = 0;
   IGNORE_RET(sys_close(ufd));
 
@@ -1066,15 +1070,13 @@ void HandleCrashDump(const BreakpadInfo& info) {
 
   MimeWriter writer(temp_file_fd, mime_boundary);
   {
-    const char* product_name = "";
-    const char* version = "";
-
-    GetCrashReporterClient()->GetProductNameAndVersion(&product_name, &version);
+    crash_reporter::ProductInfo product_info;
+    GetCrashReporterClient()->GetProductInfo(&product_info);
 
     writer.AddBoundary();
-    writer.AddPairString("prod", product_name);
+    writer.AddPairString("prod", product_info.product_name.c_str());
     writer.AddBoundary();
-    writer.AddPairString("ver", version);
+    writer.AddPairString("ver", product_info.version.c_str());
     writer.AddBoundary();
     if (info.pid > 0) {
       char pid_value_buf[kUint64StringSize];

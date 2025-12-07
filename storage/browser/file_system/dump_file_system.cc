@@ -26,20 +26,17 @@
 // children, and file_content_path is empty if the file is a directory.
 //
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/stack.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -114,24 +111,21 @@ static void DumpDirectoryTree(const std::string& origin_name,
     }
 
     // +1 for the leading extra slash.
-    const char* display_name = name.c_str() + 1;
+    const char* display_name = UNSAFE_TODO(name.c_str() + 1);
     const char* directory_suffix = info.is_directory() ? "/" : "";
     if (g_opt_long) {
       int64_t size;
       if (info.is_directory()) {
         size = static_cast<int64_t>(children.size());
       } else {
-        base::GetFileSize(origin_dir.Append(info.data_path), &size);
+        size = base::GetFileSize(origin_dir.Append(info.data_path)).value_or(0);
       }
       // TODO(hamaji): Modification time?
-      printf("%s%s %" PRId64 " %" PRId64 " %s\n",
-             display_name,
-             directory_suffix,
-             id,
-             size,
-             FilePathToString(info.data_path).c_str());
+      UNSAFE_TODO(printf("%s%s %" PRId64 " %" PRId64 " %s\n", display_name,
+                         directory_suffix, id, size,
+                         FilePathToString(info.data_path).c_str()));
     } else {
-      printf("%s%s\n", display_name, directory_suffix);
+      UNSAFE_TODO(printf("%s%s\n", display_name, directory_suffix));
     }
   }
 }
@@ -178,18 +172,18 @@ int main(int argc, char* argv[]) {
     if (argc < 2)
       ShowUsageAndExit(arg0);
 
-    if (std::string(argv[1]) == "-l") {
+    if (std::string(UNSAFE_TODO(argv[1])) == "-l") {
       g_opt_long = true;
       argc--;
-      argv++;
-    } else if (std::string(argv[1]) == "-t") {
+      UNSAFE_TODO(argv++);
+    } else if (std::string(UNSAFE_TODO(argv[1])) == "-t") {
       g_opt_fs_type = FILE_PATH_LITERAL("t");
       argc--;
-      argv++;
-    } else if (std::string(argv[1]) == "-s") {
+      UNSAFE_TODO(argv++);
+    } else if (std::string(UNSAFE_TODO(argv[1])) == "-s") {
       g_opt_fs_type = FILE_PATH_LITERAL("s");
       argc--;
-      argv++;
+      UNSAFE_TODO(argv++);
     } else {
       break;
     }
@@ -198,7 +192,8 @@ int main(int argc, char* argv[]) {
   if (argc < 2)
     ShowUsageAndExit(arg0);
 
-  const base::FilePath file_system_dir = storage::StringToFilePath(argv[1]);
+  const base::FilePath file_system_dir =
+      storage::StringToFilePath(UNSAFE_TODO(argv[1]));
   if (!base::DirectoryExists(file_system_dir)) {
     ShowMessageAndExit(storage::FilePathToString(file_system_dir) +
                        " is not a filesystem directory");
@@ -208,7 +203,7 @@ int main(int argc, char* argv[]) {
     storage::DumpFileSystem(file_system_dir);
   } else {
     for (int i = 2; i < argc; i++) {
-      storage::DumpOrigin(file_system_dir, argv[i]);
+      storage::DumpOrigin(file_system_dir, UNSAFE_TODO(argv[i]));
     }
   }
   return 0;

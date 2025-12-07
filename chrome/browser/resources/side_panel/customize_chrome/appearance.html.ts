@@ -32,7 +32,17 @@ export function getHtml(this: AppearanceElement) {
     label="$i18n{yourSearchedImage}"
     label-description="$i18n{currentTheme}">
 </customize-chrome-hover-button>
-<div id="editButtonsContainer" ?hidden="${!this.isSourceTabFirstPartyNtp_}">
+${this.showManagedButton_ ? html`
+  <customize-chrome-hover-button id="thirdPartyManageLinkButton"
+      aria-button-label="${this.i18n('newTabPageManagedByA11yLabel',
+                           this.managedByName_)}"
+      class="link-out-button theme-button"
+      @click="${this.onNewTabPageManageByButtonClicked_}"
+      label="${this.managedByName_}"
+      label-description="${this.managedByDesc_}">
+  </customize-chrome-hover-button>
+  `: ''}
+<div id="editButtonsContainer" ?hidden="${!this.showEditTheme_}">
   <cr-button id="editThemeButton" @click="${this.onEditThemeClicked_}"
       class="floating-button">
     <div id="editThemeIcon" class="cr-icon edit-theme-icon" slot="prefix-icon"
@@ -48,16 +58,7 @@ export function getHtml(this: AppearanceElement) {
     </cr-button>
   ` : ''}
 </div>
-<hr class="sp-hr" ?hidden="${!this.isSourceTabFirstPartyNtp_}">
-${(!this.isSourceTabFirstPartyNtp_ && this.ntpManagedByName_ !== '') ? html`
-  <customize-chrome-hover-button id="thirdPartyManageLinkButton"
-      class="link-out-button theme-button"
-      @click="${this.onNewTabPageManageByButtonClicked_}"
-      label-description="${this.i18n('newTabPageManagedBy',
-                           this.ntpManagedByName_)}">
-  </customize-chrome-hover-button>
-  <hr class="sp-hr">
-  `: ''}
+<hr class="sp-hr" ?hidden="${!this.showEditTheme_}">
 <customize-color-scheme-mode></customize-color-scheme-mode>
 <cr-theme-color-picker id="chromeColors" ?hidden="${!this.showColorPicker_}">
 </cr-theme-color-picker>

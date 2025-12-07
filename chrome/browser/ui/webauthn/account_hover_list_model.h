@@ -6,13 +6,12 @@
 #define CHROME_BROWSER_UI_WEBAUTHN_ACCOUNT_HOVER_LIST_MODEL_H_
 
 #include <stddef.h>
+
 #include <string>
 #include <vector>
 
-#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webauthn/hover_list_model.h"
-#include "device/fido/discoverable_credential_metadata.h"
 #include "ui/base/models/image_model.h"
 
 struct AuthenticatorRequestDialogModel;

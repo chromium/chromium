@@ -1,0 +1,12 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module notifications_internals.mojom;
+
+// Browser interface for the page. Consists of calls for data and hooks for
+// interactivity.
+interface PageHandler {
+  // Schedule a notification.
+  ScheduleNotification(string feature);
+};

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -15,7 +16,10 @@
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
+#include "chromeos/components/quick_answers/public/cpp/constants.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
+
+// TODO(b/340628526): Put this under quick_answers namespace.
 
 // The consent will appear up to a total of 6 times.
 constexpr int kConsentImpressionCap = 6;
@@ -35,6 +39,7 @@ enum class ConsentResultType {
 // A checked observer which receives Quick Answers state change.
 class QuickAnswersStateObserver : public base::CheckedObserver {
  public:
+  virtual void OnFeatureTypeChanged() {}
   virtual void OnSettingsEnabled(bool enabled) {}
   virtual void OnConsentStatusUpdated(
       quick_answers::prefs::ConsentStatus status) {}
@@ -61,6 +66,42 @@ class QuickAnswersStateObserver : public base::CheckedObserver {
 //   Answers capabpility.
 // - Hmr feature: a feature called Hmr. It provides Mahi and Quick Answers
 //   capability.
+//
+// ## Quick Answers pref model
+//
+// The table below shows the behavior of the Quick Answers feature based on its
+// two main preferences.
+//
+// | Enabled         | Consent Status       | Behavior         |
+// |:----------------|:---------------------|:-----------------|
+// | false (default) | `kUnknown` (default) | Shows consent UI |
+// | false           | `kAccepted`          | Disabled         |
+// | false           | `kRejected`          | Disabled         |
+// | true            | `kUnknown`           | N/A              |
+// | true            | `kAccepted`          | Shows QA UI      |
+// | true            | `kRejected`          | N/A              |
+//
+// ## Pref model differences between Quick Answers and Magic Boost
+//
+// Quick Answers feature and Hmr feature have different pref values model and
+// default values.
+//
+// For Quick Answers, `kQuickAnswersEnabled` is false by default, and
+// `kQuickAnswersConsentStatus` is `kUnknown`. The consent UI is triggered when
+// the feature is not enabled and the consent status is `kUnknown`. The feature
+// UI is shown when the feature is enabled.
+//
+// For Magic Boost (HMR), `kHmrEnabled` is true by default, but the
+// `kHMRConsentStatus` is `kUnset`. This blocks the feature from being provided
+// initially. The consent UI is triggered when HMR is enabled but the consent is
+// not approved. The feature UI is shown only when HMR is enabled and the
+// consent has been approved.
+//
+// Read `magic_boost_state.h` for details of its pref model.
+//
+// `QuickAnswersState` works as an abstraction layer. All Quick Answers code
+// expects the above Quick Answers pref value model even if it's running as part
+// of HMR.
 class QuickAnswersState : chromeos::MagicBoostState::Observer {
  public:
   enum class FeatureType {
@@ -90,6 +131,12 @@ class QuickAnswersState : chromeos::MagicBoostState::Observer {
   static base::expected<quick_answers::prefs::ConsentStatus,
                         QuickAnswersState::Error>
   GetConsentStatusAs(FeatureType feature_type);
+  // Intent generation can be done before a feature is enabled to show a user
+  // consent UI. Use a word eligible instead of enabled to make it clear that
+  // it's not gated by `IsEnabled`.
+  static bool IsIntentEligible(quick_answers::Intent intent);
+  static bool IsIntentEligibleAs(quick_answers::Intent intent,
+                                 FeatureType feature_type);
 
   QuickAnswersState();
 
@@ -103,6 +150,7 @@ class QuickAnswersState : chromeos::MagicBoostState::Observer {
   void RemoveObserver(QuickAnswersStateObserver* observer);
 
   // chromeos::MagicBoostState::Observer:
+  void OnUserEligibleForGenAIFeaturesUpdated(bool eligible) override;
   void OnHMREnabledUpdated(bool enabled) override;
   void OnHMRConsentStatusUpdated(
       chromeos::HMRConsentStatus consent_status) override;
@@ -124,11 +172,8 @@ class QuickAnswersState : chromeos::MagicBoostState::Observer {
 
   bool ShouldUseQuickAnswersTextAnnotator();
 
-  bool IsSupportedLanguage(const std::string& language) const;
+  bool IsSupportedLanguage(std::string_view language) const;
 
-  bool definition_enabled() const { return definition_enabled_; }
-  bool translation_enabled() const { return translation_enabled_; }
-  bool unit_conversion_enabled() const { return unit_conversion_enabled_; }
   const std::string& application_locale() const {
     return resolved_application_locale_;
   }
@@ -152,9 +197,15 @@ class QuickAnswersState : chromeos::MagicBoostState::Observer {
       quick_answers::prefs::ConsentStatus consent_status) = 0;
   virtual void AsyncWriteEnabled(bool enabled) = 0;
 
+  // `FakeQuickAnswersState` overrides this method to fake feature type.
+  virtual base::expected<FeatureType, Error> GetFeatureTypeExpected() const;
+
   // Set consent status of Quick Answers capability as a Quick Answers feature.
   void SetQuickAnswersFeatureConsentStatus(
       quick_answers::prefs::ConsentStatus consent_status);
+
+  void SetIntentEligibilityAsQuickAnswers(quick_answers::Intent intent,
+                                          bool eligible);
 
   void InitializeObserver(QuickAnswersStateObserver* observer);
 
@@ -169,14 +220,7 @@ class QuickAnswersState : chromeos::MagicBoostState::Observer {
                            int nth_impression,
                            const base::TimeDelta duration);
 
-  // Whether the Quick Answers definition is enabled.
-  bool definition_enabled_ = true;
 
-  // Whether the Quick Answers translation is enabled.
-  bool translation_enabled_ = true;
-
-  // Whether the Quick Answers unit conversion is enabled.
-  bool unit_conversion_enabled_ = true;
 
   // The resolved application locale.
   std::string resolved_application_locale_;
@@ -204,6 +248,7 @@ class QuickAnswersState : chromeos::MagicBoostState::Observer {
   base::ObserverList<QuickAnswersStateObserver> observers_;
 
  private:
+  void MaybeNotifyFeatureTypeChanged();
   void MaybeNotifyConsentStatusChanged();
 
   // Holds consent status of Quick Answers capability as a Quick Answers
@@ -211,15 +256,26 @@ class QuickAnswersState : chromeos::MagicBoostState::Observer {
   base::expected<quick_answers::prefs::ConsentStatus, Error>
       quick_answers_consent_status_ = base::unexpected(Error::kUninitialized);
 
+  // Whether the definition is eligible as Quick Answers feature.
+  base::expected<bool, Error> quick_answers_definition_eligible_ =
+      base::unexpected(Error::kUninitialized);
+
+  // Whether the translation is eligible as Quick Answers feature.
+  base::expected<bool, Error> quick_answers_translation_eligible_ =
+      base::unexpected(Error::kUninitialized);
+
+  // Whether the unit conversion is eligible as Quick Answers feature.
+  base::expected<bool, Error> quick_answers_unit_conversion_eligible_ =
+      base::unexpected(Error::kUninitialized);
+
   // Use `base::expected` instead of `std::optional` to avoid implicit bool
   // conversion: https://abseil.io/tips/141.
-  // TODO(b/340628526): Implement functions for:
-  // - IsIntentEnabled
   //
   // Dependencies:
   // - IsEligible <- ApplicationLocale
   // - IsEnabled <- IsEligible, GetConsentStatus
   // - GetConsentStatus <- none
+  // - IsIntentEligible <- IsEligible
   //
   // Remember to call dependent values notify method if a value has changed,
   // e.g., call `MaybeNotifyIsEnabled` from `MaybeNotifyGetConsentStatus`.
@@ -233,8 +289,15 @@ class QuickAnswersState : chromeos::MagicBoostState::Observer {
   GetConsentStatusExpected() const;
   base::expected<quick_answers::prefs::ConsentStatus, Error>
   GetConsentStatusExpectedAs(FeatureType feature_type) const;
+  base::expected<bool, Error> IsIntentEligibleExpected(
+      quick_answers::Intent intent) const;
+  base::expected<bool, Error> IsIntentEligibleExpectedAs(
+      quick_answers::Intent intent,
+      FeatureType feature_type) const;
 
   // Last notified values in the current feature type.
+  base::expected<QuickAnswersState::FeatureType, Error>
+      last_notified_feature_type_ = base::unexpected(Error::kUninitialized);
   base::expected<bool, Error> last_notified_is_eligible_ =
       base::unexpected(Error::kUninitialized);
   base::expected<bool, Error> last_notified_is_enabled_ =

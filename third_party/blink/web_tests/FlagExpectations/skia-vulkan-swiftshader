@@ -1,10 +1,6 @@
-# tags: [ Android Fuchsia Linux Mac Mac11 Mac12 Mac13 Mac13-arm64 Mac14 Mac14-arm64 Mac15 Mac15-arm64 Win Win10.20h2 Win11 Win11-arm64 ]
+# tags: [ Android Fuchsia Linux Mac Mac12 Mac13 Mac13-arm64 Mac14 Mac14-arm64 Mac15 Mac15-arm64 Win Win10.20h2 Win11 Win11-arm64 ]
 # tags: [ Release Debug ]
 # results: [ Timeout Crash Pass Failure Slow Skip ]
-
-# Flaky tests.
-crbug.com/1229016 fast/canvas/canvas-composite-video.html [ Failure Pass ]
-crbug.com/1229002 fast/canvas/canvas-composite-video-shadow.html [ Failure Pass ]
 
 # One portion of the image is offset.
 crbug.com/1002522 fast/canvas/canvas-toDataURL-webp.html [ Skip ]
@@ -58,7 +54,6 @@ crbug.com/1266821 media/controls/paint-controls-webkit-appearance-none.html [ Fa
 crbug.com/1266821 media/track/track-cue-rendering-horizontal.html [ Failure ]
 crbug.com/1266821 media/video-no-audio.html [ Failure ]
 crbug.com/1266821 media/video-poster-scale.html [ Failure ]
-crbug.com/1266821 transforms/3d/point-mapping/3d-point-mapping-origins.html [ Failure ]
 crbug.com/1266821 transforms/shadows.html [ Failure ]
 crbug.com/1266821 transforms/svg-vs-css.xhtml [ Failure ]
 crbug.com/1266821 transforms/transformed-caret.html [ Failure ]

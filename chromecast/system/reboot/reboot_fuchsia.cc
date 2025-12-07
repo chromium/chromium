@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chromecast/system/reboot/reboot_fuchsia.h"
+
 #include <fuchsia/feedback/cpp/fidl.h>
 #include <fuchsia/hardware/power/statecontrol/cpp/fidl.h>
 #include <fuchsia/recovery/cpp/fidl.h>
@@ -12,23 +14,21 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/no_destructor.h"
 #include "chromecast/public/reboot_shlib.h"
 #include "chromecast/system/reboot/fuchsia_component_restart_reason.h"
-#include "chromecast/system/reboot/reboot_fuchsia.h"
 #include "chromecast/system/reboot/reboot_util.h"
 
 using fuchsia::feedback::LastReboot;
 using fuchsia::feedback::LastRebootInfoProviderSyncPtr;
 using fuchsia::feedback::RebootReason;
-using fuchsia::hardware::power::statecontrol::Admin_Reboot_Result;
+using fuchsia::hardware::power::statecontrol::Admin_PerformReboot_Result;
 using fuchsia::hardware::power::statecontrol::AdminPtr;
 using fuchsia::recovery::FactoryResetPtr;
 using StateControlRebootReason =
-    fuchsia::hardware::power::statecontrol::RebootReason;
+    fuchsia::hardware::power::statecontrol::RebootReason2;
 
 namespace chromecast {
 
@@ -137,12 +137,15 @@ bool RebootShlib::RebootNow(RebootSource reboot_source) {
   // Intentionally using async Ptr to avoid deadlock
   // Otherwise caller is blocked, and if caller needs to be notified
   // as well, it will go into a deadlock state.
-  GetAdminPtr()->Reboot(reason, [](Admin_Reboot_Result out_result) {
-    if (out_result.is_err()) {
-      LOG(ERROR) << "Failed to reboot after requested: "
-                 << zx_status_get_string(out_result.err());
-    }
-  });
+  fuchsia::hardware::power::statecontrol::RebootOptions reboot_options;
+  reboot_options.set_reasons({reason});
+  GetAdminPtr()->PerformReboot(
+      std::move(reboot_options), [](Admin_PerformReboot_Result out_result) {
+        if (out_result.is_err()) {
+          LOG(ERROR) << "Failed to reboot after requested: "
+                     << zx_status_get_string(out_result.err());
+        }
+      });
   return true;
 }
 

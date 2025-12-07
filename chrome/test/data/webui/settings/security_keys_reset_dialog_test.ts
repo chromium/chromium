@@ -47,12 +47,12 @@ suite('SecurityKeysResetDialog', function() {
   });
 
   function assertComplete() {
-    assertEquals(dialog.$.button.textContent!.trim(), 'OK');
+    assertEquals(dialog.$.button.textContent.trim(), 'OK');
     assertEquals(dialog.$.button.className, 'action-button');
   }
 
   function assertNotComplete() {
-    assertEquals(dialog.$.button.textContent!.trim(), 'Cancel');
+    assertEquals(dialog.$.button.textContent.trim(), 'Cancel');
     assertEquals(dialog.$.button.className, 'cancel-button');
   }
 
@@ -94,7 +94,7 @@ suite('SecurityKeysResetDialog', function() {
     assertComplete();
     assertShown(allDivs, dialog, 'resetFailed');
     assertTrue(
-        dialog.$.resetFailed.textContent!.trim().includes(error.toString()));
+        dialog.$.resetFailed.textContent.trim().includes(error.toString()));
   });
 
   test('ImmediateUnknownError', async function() {
@@ -125,7 +125,7 @@ suite('SecurityKeysResetDialog', function() {
     assertComplete();
     assertShown(allDivs, dialog, 'resetFailed');
     assertTrue(
-        dialog.$.resetFailed.textContent!.trim().includes(error.toString()));
+        dialog.$.resetFailed.textContent.trim().includes(error.toString()));
   });
 
   test('ResetRejected', async function() {

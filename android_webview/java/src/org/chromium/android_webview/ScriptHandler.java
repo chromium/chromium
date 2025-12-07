@@ -5,13 +5,15 @@
 package org.chromium.android_webview;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.ref.WeakReference;
 
 /** Used for Js Java interaction, to delete the document start JavaScript snippet. */
+@NullMarked
 public class ScriptHandler {
-    private WeakReference<AwContents> mAwContentsRef;
-    private int mScriptId;
+    private final WeakReference<AwContents> mAwContentsRef;
+    private final int mScriptId;
 
     public ScriptHandler(AwContents awContents, int scriptId) {
         assert scriptId >= 0;

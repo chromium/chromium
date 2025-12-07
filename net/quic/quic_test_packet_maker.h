@@ -68,7 +68,7 @@ class QuicTestPacketMaker {
   QuicTestPacketMaker(quic::ParsedQuicVersion version,
                       quic::QuicConnectionId connection_id,
                       const quic::QuicClock* clock,
-                      const std::string& host,
+                      std::string_view host,
                       quic::Perspective perspective,
                       bool client_priority_uses_incremental = false,
                       bool use_priority_header = false);
@@ -96,14 +96,6 @@ class QuicTestPacketMaker {
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeDummyCHLOPacket(
       uint64_t packet_number);
-
-  std::unique_ptr<quic::QuicReceivedPacket> MakeAckAndDataPacket(
-      uint64_t packet_number,
-      quic::QuicStreamId stream_id,
-      uint64_t largest_received,
-      uint64_t smallest_received,
-      bool fin,
-      std::string_view data);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeAckAndDatagramPacket(
       uint64_t packet_number,

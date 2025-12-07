@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -24,7 +25,6 @@
 #include "content/public/browser/child_process_termination_info.h"
 #include "content/public/common/result_codes.h"
 #include "mojo/public/cpp/system/invitation.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -37,6 +37,11 @@
 
 #if BUILDFLAG(IS_POSIX)
 #include "base/files/scoped_file.h"
+#endif
+
+#if BUILDFLAG(IS_MAC)
+#include "base/process/port_provider_mac.h"
+#include "base/scoped_observation.h"
 #endif
 
 namespace base {
@@ -84,37 +89,24 @@ static_assert(static_cast<int>(LAUNCH_RESULT_START) >
 struct RenderProcessPriority {
   RenderProcessPriority(bool visible,
                         bool has_media_stream,
+                        bool has_immersive_xr_session,
                         bool has_foreground_service_worker,
                         unsigned int frame_depth,
                         bool intersects_viewport,
                         bool boost_for_pending_views,
-                        bool boost_for_loading
+                        bool boost_for_loading,
+                        bool boost_for_discard,
 #if BUILDFLAG(IS_ANDROID)
-                        ,
+                        bool is_spare_renderer,
                         ChildProcessImportance importance
-#endif
-#if !BUILDFLAG(IS_ANDROID)
-                        ,
+#else
                         std::optional<base::Process::Priority> priority_override
 #endif
-                        )
-      : visible(visible),
-        has_media_stream(has_media_stream),
-        has_foreground_service_worker(has_foreground_service_worker),
-        frame_depth(frame_depth),
-        intersects_viewport(intersects_viewport),
-        boost_for_pending_views(boost_for_pending_views),
-        boost_for_loading(boost_for_loading)
-#if BUILDFLAG(IS_ANDROID)
-        ,
-        importance(importance)
-#endif
-#if !BUILDFLAG(IS_ANDROID)
-        ,
-        priority_override(priority_override)
-#endif
-  {
-  }
+  );
+
+  RenderProcessPriority(const RenderProcessPriority&);
+
+  RenderProcessPriority& operator=(const RenderProcessPriority&);
 
   // Returns true if the child process is backgrounded.
   // DEPRECATED NOTICE: Use GetProcessPriority() instead.
@@ -124,7 +116,6 @@ struct RenderProcessPriority {
   base::Process::Priority GetProcessPriority() const;
 
   bool operator==(const RenderProcessPriority& other) const;
-  bool operator!=(const RenderProcessPriority& other) const;
 
   using TraceProto = perfetto::protos::pbzero::ChildProcessLauncherPriority;
   void WriteIntoTrace(perfetto::TracedProto<TraceProto> proto) const;
@@ -141,6 +132,11 @@ struct RenderProcessPriority {
   // |has_media_stream| is true when the process is responsible for "hearable"
   // content.
   bool has_media_stream;
+
+  // |has_immersive_xr_session| is true when the process is responsible for
+  // rendering an XrSession. Such sessions typically take over the full screen
+  // for rendering, and may otherwise "background" the current process.
+  bool has_immersive_xr_session;
 
   // |has_foreground_service_worker| is true when the process has a service
   // worker that may need to service timely events from other, possibly visible,
@@ -169,7 +165,16 @@ struct RenderProcessPriority {
   // navigation and initial loading.
   bool boost_for_loading;
 
+  // |boost_for_discard| is true if this process is responsible for executing
+  // discard logic.
+  bool boost_for_discard;
+
 #if BUILDFLAG(IS_ANDROID)
+  // |is_spare_renderer| is true if this process should be treated as a spare
+  // renderer. The process will be given a moderate priority even it is not
+  // visible and used.
+  bool is_spare_renderer;
+
   ChildProcessImportance importance;
 #endif
 
@@ -201,7 +206,7 @@ struct ChildProcessLauncherFileData {
   //
   // Currently only supported on Linux, ChromeOS and Android platforms.
   // TODO(crbug.com/40253015): this currently silently fails on Android.
-  std::map<std::string, absl::variant<base::FilePath, base::ScopedFD>>
+  std::map<std::string, std::variant<base::FilePath, base::ScopedFD>>
       files_to_preload;
 #endif
 };
@@ -209,7 +214,14 @@ struct ChildProcessLauncherFileData {
 // Launches a process asynchronously and notifies the client of the process
 // handle when it's available.  It's used to avoid blocking the calling thread
 // on the OS since often it can take > 100 ms to create the process.
-class CONTENT_EXPORT ChildProcessLauncher {
+
+// On MacOS, observes the PortProvider to allow re-setting the priority of the
+// process when its task port is available.
+class CONTENT_EXPORT ChildProcessLauncher
+#if BUILDFLAG(IS_MAC)
+    : public base::PortProvider::Observer
+#endif
+{
  public:
   class CONTENT_EXPORT Client {
    public:
@@ -222,6 +234,15 @@ class CONTENT_EXPORT ChildProcessLauncher {
 #if BUILDFLAG(IS_ANDROID)
     // Whether the process can use pre-warmed up connection.
     virtual bool CanUseWarmUpConnection();
+    // Whether the process should be set to the priority of a spare renderer.
+    virtual bool HasSpareRendererPriority();
+    // The callback function triggered when the spare renderer priority has been
+    // successfully updated to normal renderer priority.
+    // If the child process is dead when trying to update
+    // the priority, is_alive will be false. The callback will be triggered
+    // after calling
+    // RenderProcessHostImpl::GraduateSpareToNormalRendererPriority.
+    virtual void OnSpareRendererPriorityGraduated(bool is_alive) {}
 #endif
 
    protected:
@@ -240,19 +261,26 @@ class CONTENT_EXPORT ChildProcessLauncher {
   ChildProcessLauncher(
       std::unique_ptr<SandboxedProcessLauncherDelegate> delegate,
       std::unique_ptr<base::CommandLine> cmd_line,
-      int child_process_id,
+      ChildProcessId child_process_id,
       Client* client,
       mojo::OutgoingInvitation mojo_invitation,
       const mojo::ProcessErrorCallback& process_error_callback,
       std::unique_ptr<ChildProcessLauncherFileData> file_data,
-      base::UnsafeSharedMemoryRegion = {},
-      base::ReadOnlySharedMemoryRegion = {},
-      bool terminate_on_shutdown = true);
+      scoped_refptr<base::RefCountedData<base::UnsafeSharedMemoryRegion>>
+          histogram_memory_region = nullptr,
+      scoped_refptr<base::RefCountedData<base::ReadOnlySharedMemoryRegion>>
+          trace_config_memory_region = nullptr,
+      scoped_refptr<base::RefCountedData<base::UnsafeSharedMemoryRegion>>
+          trace_output_memory_region = nullptr);
 
   ChildProcessLauncher(const ChildProcessLauncher&) = delete;
   ChildProcessLauncher& operator=(const ChildProcessLauncher&) = delete;
 
-  ~ChildProcessLauncher();
+  ~ChildProcessLauncher()
+#if BUILDFLAG(IS_MAC)
+      override
+#endif
+      ;
 
   // True if the process is being launched and so the handle isn't available.
   bool IsStarting();
@@ -262,7 +290,7 @@ class CONTENT_EXPORT ChildProcessLauncher {
 
   // Call this when the child process exits to know what happened to it.
   // |known_dead| can be true if we already know the process is dead as it can
-  // help the implemention figure the proper TerminationStatus.
+  // help the implementation figure the proper TerminationStatus.
   // On Linux, the use of |known_dead| is subtle and can be crucial if an
   // accurate status is important. With |known_dead| set to false, a dead
   // process could be seen as running. With |known_dead| set to true, the
@@ -312,6 +340,19 @@ class CONTENT_EXPORT ChildProcessLauncher {
 #endif
               int error_code);
 
+#if BUILDFLAG(IS_ANDROID)
+  void OnSpareRendererPriorityGraduated(bool is_alive);
+#endif
+
+#if BUILDFLAG(IS_MAC)
+  // base::PortProvider::Observer:
+  void OnReceivedTaskPort(base::ProcessHandle process_handle) override;
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+  void SetProcessPriorityImpl(base::Process::Priority priority);
+#endif
+
   raw_ptr<Client> client_;
 
   // The process associated with this ChildProcessLauncher. Set in Notify by
@@ -331,6 +372,18 @@ class CONTENT_EXPORT ChildProcessLauncher {
   bool should_launch_elevated_ = false;
 
   scoped_refptr<internal::ChildProcessLauncherHelper> helper_;
+
+  // The priority of the process. The state is stored to avoid changing the
+  // setting repeatedly.
+  //
+  // On MacOS, this is also used to re-set the priority when the task port of
+  // the process is available.
+  std::optional<base::Process::Priority> priority_;
+
+#if BUILDFLAG(IS_MAC)
+  base::ScopedObservation<base::PortProvider, base::PortProvider::Observer>
+      scoped_port_provider_observation_{this};
+#endif
 
   base::WeakPtrFactory<ChildProcessLauncher> weak_factory_{this};
 };

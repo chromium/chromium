@@ -27,10 +27,15 @@ BitMapBlocklistState GetExtensionBlocklistState(
     const ExtensionId& extension_id,
     const ExtensionPrefs* extension_prefs);
 
-// Returns whether the extension with |extension_id| is blocklisted for malware
+// Returns whether the extension with `extension_id` is blocklisted for malware
 // by the Safe Browsing blocklist or the Omaha attribute blocklist.
 bool IsExtensionBlocklisted(const ExtensionId& extension_id,
                             ExtensionPrefs* extension_prefs);
+
+// Returns whether the extension with `extension_id` is greylisted
+// by the Safe Browsing blocklist or the Omaha attribute blocklist.
+bool IsExtensionGreylisted(const ExtensionId& extension_id,
+                           ExtensionPrefs* extension_prefs);
 
 // Adds the `state` to the Omaha blocklist state pref.
 void AddOmahaBlocklistState(const ExtensionId& extension_id,

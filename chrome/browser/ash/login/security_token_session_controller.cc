@@ -20,25 +20,23 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
+#include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/certificate_provider/certificate_provider.h"
-#include "chrome/browser/certificate_provider/certificate_provider_service.h"
-#include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/security_token_session_restriction_view.h"
+#include "chrome/browser/ui/ash/security_token_restriction/security_token_session_restriction_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/login/auth/challenge_response/known_user_pref_utils.h"
 #include "chromeos/ash/components/login/auth/public/challenge_response_key.h"
 #include "chromeos/components/certificate_provider/certificate_info.h"
+#include "chromeos/components/certificate_provider/certificate_provider.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -105,7 +103,7 @@ std::string SerializeBehaviorValue(
     case SecurityTokenSessionController::Behavior::kLock:
       return std::string(kLockPrefValue);
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Checks if `domain` represents a valid domain. Returns false if `domain` is
@@ -120,7 +118,7 @@ bool SanitizeDomain(const std::string& domain, std::string& sanitized_domain) {
     return false;
   if (!url.has_host())
     return false;
-  sanitized_domain = url.host();
+  sanitized_domain = url.GetHost();
   return true;
 }
 
@@ -213,7 +211,6 @@ SecurityTokenSessionController::SecurityTokenSessionController(
       &observed_extensions_);
   UpdateNotificationPref();
   behavior_ = GetBehaviorFromPrefAndSessionState();
-  UpdateKeepAlive();
   pref_change_registrar_.Init(local_state_);
   base::RepeatingClosure behavior_pref_changed_callback =
       base::BindRepeating(&SecurityTokenSessionController::UpdateBehavior,
@@ -381,23 +378,12 @@ void SecurityTokenSessionController::MaybeDisplayLoginScreenNotification() {
 void SecurityTokenSessionController::UpdateBehavior() {
   Behavior previous_behavior = behavior_;
   behavior_ = GetBehaviorFromPrefAndSessionState();
-  UpdateKeepAlive();
   if (behavior_ == Behavior::kIgnore) {
     Reset();
   } else if (previous_behavior == Behavior::kIgnore) {
     // Request all available certificates to ensure that all required
     // certificates are still present.
     certificate_provider_->GetCertificates(base::DoNothing());
-  }
-}
-
-void SecurityTokenSessionController::UpdateKeepAlive() {
-  if (behavior_ == Behavior::kIgnore ||
-      crosapi::browser_util::IsAshWebBrowserEnabled()) {
-    keep_alive_.reset();
-  } else if (!keep_alive_) {
-    keep_alive_ = crosapi::BrowserManager::Get()->KeepAlive(
-        crosapi::BrowserManager::Feature::kSmartCardSessionController);
   }
 }
 
@@ -431,8 +417,7 @@ bool SecurityTokenSessionController::ShouldApplyPolicyInCurrentSessionState()
       }
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 SecurityTokenSessionController::Behavior
@@ -465,7 +450,7 @@ void SecurityTokenSessionController::TriggerAction() {
       ScheduleLogoutNotification();
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SecurityTokenSessionController::StartSessionActivation() {
@@ -533,7 +518,7 @@ void SecurityTokenSessionController::ExtensionStopsProvidingCertificate() {
             base::BindOnce(&SecurityTokenSessionController::TriggerAction,
                            weak_ptr_factory_.GetWeakPtr()),
             behavior_,
-            chrome::enterprise_util::GetDomainFromEmail(
+            enterprise_util::GetDomainFromEmail(
                 primary_user_->GetDisplayEmail())),
         nullptr, nullptr);
     fullscreen_notification_->Show();
@@ -547,8 +532,8 @@ void SecurityTokenSessionController::AddLockNotification() {
     return;
   SetNotificationDisplayedKnownUserFlag();
 
-  std::string domain = chrome::enterprise_util::GetDomainFromEmail(
-      primary_user_->GetDisplayEmail());
+  std::string domain =
+      enterprise_util::GetDomainFromEmail(primary_user_->GetDisplayEmail());
   DisplayNotification(
       l10n_util::GetStringFUTF16(IDS_SECURITY_TOKEN_SESSION_LOCK_MESSAGE_TITLE,
                                  ui::GetChromeOSDeviceName()),
@@ -566,8 +551,7 @@ void SecurityTokenSessionController::ScheduleLogoutNotification() {
 
   local_state_->SetString(
       prefs::kSecurityTokenSessionNotificationScheduledDomain,
-      chrome::enterprise_util::GetDomainFromEmail(
-          primary_user_->GetDisplayEmail()));
+      enterprise_util::GetDomainFromEmail(primary_user_->GetDisplayEmail()));
 }
 
 void SecurityTokenSessionController::Reset() {

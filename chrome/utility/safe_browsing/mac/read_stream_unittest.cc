@@ -11,6 +11,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -93,7 +94,8 @@ std::unique_ptr<ReadStream> ReadStreamTest<FileReadStreamTest>::CreateStream(
 
   for (size_t i = 0; i < data_size; ++i) {
     char value = i % 255;
-    EXPECT_EQ(1, test_helper_.file.WriteAtCurrentPos(&value, 1));
+    EXPECT_TRUE(test_helper_.file.WriteAtCurrentPosAndCheck(
+        base::byte_span_from_ref(value)));
   }
 
   test_helper_.file.Close();
@@ -116,21 +118,21 @@ TYPED_TEST_SUITE(ReadStreamTest, ReadStreamImpls);
 TYPED_TEST(ReadStreamTest, Read) {
   std::unique_ptr<ReadStream> stream =
       ReadStreamTest<TypeParam>::CreateStream(128);
-  uint8_t buf[128] = {0};
+  uint8_t buf[128] = {};
   size_t bytes_read;
 
   {
     EXPECT_TRUE(stream->Read(base::span(buf).first(4u), &bytes_read));
     EXPECT_EQ(4u, bytes_read);
     uint8_t expected[] = { 0, 1, 2, 3, 0, 0, 0 };
-    EXPECT_EQ(0, memcmp(expected, buf, sizeof(expected)));
+    EXPECT_EQ(base::span(buf).first(std::size(expected)), base::span(expected));
   }
 
   {
     EXPECT_TRUE(stream->Read(base::span(buf).first(9u), &bytes_read));
     EXPECT_EQ(9u, bytes_read);
     uint8_t expected[] = { 4, 5, 6, 7, 8, 9, 10, 11, 12, 0, 0 };
-    EXPECT_EQ(0, memcmp(expected, buf, sizeof(expected)));
+    EXPECT_EQ(base::span(buf).first(std::size(expected)), base::span(expected));
   }
 }
 
@@ -171,7 +173,7 @@ TYPED_TEST(ReadStreamTest, ReadAll) {
 TYPED_TEST(ReadStreamTest, SeekSet) {
   std::unique_ptr<ReadStream> stream =
       ReadStreamTest<TypeParam>::CreateStream(255);
-  uint8_t buf[32] = {0};
+  uint8_t buf[32] = {};
   size_t bytes_read;
 
   {
@@ -179,7 +181,7 @@ TYPED_TEST(ReadStreamTest, SeekSet) {
     EXPECT_TRUE(stream->Read(buf, &bytes_read));
     EXPECT_EQ(5u, bytes_read);
     uint8_t expected[] = { 250, 251, 252, 253, 254, 0, 0 };
-    EXPECT_EQ(0, memcmp(expected, buf, sizeof(expected)));
+    EXPECT_EQ(base::span(buf).first(std::size(expected)), base::span(expected));
   }
 
   {
@@ -187,14 +189,14 @@ TYPED_TEST(ReadStreamTest, SeekSet) {
     EXPECT_TRUE(stream->Read(base::span(buf).first(3u), &bytes_read));
     EXPECT_EQ(3u, bytes_read);
     uint8_t expected[] = { 5, 6, 7, 253, 254, 0, 0 };
-    EXPECT_EQ(0, memcmp(expected, buf, sizeof(expected)));
+    EXPECT_EQ(base::span(buf).first(std::size(expected)), base::span(expected));
   }
 }
 
 TYPED_TEST(ReadStreamTest, SeekEnd) {
   std::unique_ptr<ReadStream> stream =
       ReadStreamTest<TypeParam>::CreateStream(32);
-  uint8_t buf[32] = {0};
+  uint8_t buf[32] = {};
   size_t bytes_read;
 
   {
@@ -208,7 +210,7 @@ TYPED_TEST(ReadStreamTest, SeekEnd) {
     EXPECT_TRUE(stream->Read(buf, &bytes_read));
     EXPECT_EQ(4u, bytes_read);
     uint8_t expected[] = { 28, 29, 30, 31, 0, 0, 0 };
-    EXPECT_EQ(0, memcmp(expected, buf, sizeof(expected)));
+    EXPECT_EQ(base::span(buf).first(std::size(expected)), base::span(expected));
   }
 }
 

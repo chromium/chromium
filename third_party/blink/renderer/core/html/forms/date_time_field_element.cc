@@ -27,7 +27,6 @@
 
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/position.h"
@@ -208,8 +207,9 @@ AtomicString DateTimeFieldElement::LocaleIdentifier() const {
 }
 
 float DateTimeFieldElement::MaximumWidth(const ComputedStyle&) {
-  const float kPaddingLeftAndRight = 2;  // This should match to html.css.
-  return kPaddingLeftAndRight;
+  // This should be equal to twice the padding set in input_multiple_fields.css.
+  const float kPaddingLeftAndRightCSSPixels = 2;
+  return kPaddingLeftAndRightCSSPixels * GetDocument().DevicePixelRatio();
 }
 
 void DateTimeFieldElement::SetDisabled() {
@@ -222,8 +222,10 @@ void DateTimeFieldElement::SetDisabled() {
                           style_change_extra_data::g_disabled));
 }
 
-bool DateTimeFieldElement::SupportsFocus(UpdateBehavior) const {
-  return !IsDisabled() && !IsFieldOwnerDisabled();
+FocusableState DateTimeFieldElement::SupportsFocus(UpdateBehavior) const {
+  return (!IsDisabled() && !IsFieldOwnerDisabled())
+             ? FocusableState::kFocusable
+             : FocusableState::kNotFocusable;
 }
 
 void DateTimeFieldElement::UpdateVisibleValue(EventBehavior event_behavior) {

@@ -5,6 +5,7 @@
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_request.h"
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/base64.h"
@@ -16,8 +17,14 @@
 namespace payments::facilitated {
 
 namespace {
+
 const char kInitiatePaymentRequestPath[] =
-    "payments/apis/chromepaymentsservice/initiatepayment";
+    "payments/apis-secure/chromepaymentsservice/initiatepayment";
+
+// Billable service number is defined in Payments server to distinguish
+// different requests.
+constexpr int kFacilitatedPaymentsBillableServiceNumber = 70154;
+
 }  // namespace
 
 FacilitatedPaymentsInitiatePaymentRequest::
@@ -33,7 +40,11 @@ FacilitatedPaymentsInitiatePaymentRequest::
                         FacilitatedPaymentsInitiatePaymentResponseDetails>()),
       response_callback_(std::move(response_callback)),
       app_locale_(app_locale),
-      full_sync_enabled_(full_sync_enabled) {}
+      full_sync_enabled_(full_sync_enabled) {
+  CHECK(!request_details_->payment_link_.empty() ||
+        (request_details_->pix_code_.has_value() &&
+         !request_details_->pix_code_.value().empty()));
+}
 
 FacilitatedPaymentsInitiatePaymentRequest::
     ~FacilitatedPaymentsInitiatePaymentRequest() = default;
@@ -91,17 +102,17 @@ std::string FacilitatedPaymentsInitiatePaymentRequest::GetRequestContent() {
   base::Value::Dict payment_details;
   if (request_details_->pix_code_.has_value()) {
     // TODO(b/332602034): Pass the payment rail to be used for payment as an
-    // enum. In future, some other payment rail could also support PIX codes.
+    // enum. In future, some other payment rail could also support Pix codes.
     payment_details.Set("payment_rail", "PIX");
     payment_details.Set("qr_code", request_details_->pix_code_.value());
   }
-  // The request should have a payment rail.
-  DCHECK(payment_details.FindString("payment_rail"));
+  if (!request_details_->payment_link_.empty()) {
+    payment_details.Set("payment_rail", "PAYMENT_HYPERLINK");
+    payment_details.Set("payment_hyperlink", request_details_->payment_link_);
+  }
   request_dict.Set("payment_details", std::move(payment_details));
 
-  std::string request_content;
-  base::JSONWriter::Write(request_dict, &request_content);
-  return request_content;
+  return base::WriteJson(request_dict).value_or("");
 }
 
 void FacilitatedPaymentsInitiatePaymentRequest::ParseResponse(
@@ -114,22 +125,54 @@ void FacilitatedPaymentsInitiatePaymentRequest::ParseResponse(
     }
     return;
   }
+  const base::Value::Dict* trigger_purchase_manager =
+      response.FindDict("trigger_purchase_manager");
+  if (!trigger_purchase_manager) {
+    return;
+  }
+  const base::Value::Dict* secure_payload_json =
+      trigger_purchase_manager->FindDict("secure_payload");
+  if (!secure_payload_json) {
+    return;
+  }
 
-  if (const base::Value::Dict* trigger_purchase_manager =
-          response.FindDict("trigger_purchase_manager")) {
-    if (const std::string* action_token =
-            trigger_purchase_manager->FindString("o2_action_token")) {
-      std::optional<std::vector<uint8_t>> decoded_bytes =
-          base::Base64Decode(*action_token);
-      if (decoded_bytes.has_value()) {
-        response_details_->action_token_ = std::move(*decoded_bytes);
+  // Extract the action token and set it on the response. The action token is
+  // required to trigger purchase manager, thus if the parsing fails at point,
+  // simply return.
+  const std::string* action_token =
+      secure_payload_json->FindString("opaque_token");
+  if (!action_token) {
+    return;
+  }
+  std::optional<std::vector<uint8_t>> decoded_bytes =
+      base::Base64Decode(*action_token);
+  if (!decoded_bytes.has_value()) {
+    return;
+  }
+  SecurePayload secure_payload;
+  secure_payload.action_token = std::move(*decoded_bytes);
+
+  // Extract the secure data and set it on the response. The secure data is an
+  // optional field.
+  const auto* response_secure_data_list =
+      secure_payload_json->FindList("secure_data");
+  if (response_secure_data_list) {
+    std::vector<SecureData> secure_data;
+    for (const base::Value& secure_data_json : *response_secure_data_list) {
+      std::optional<int> key = secure_data_json.GetDict().FindInt("key");
+      const std::string* value = secure_data_json.GetDict().FindString("value");
+      if (key.has_value() && value) {
+        secure_data.emplace_back(*key, *value);
       }
     }
+    secure_payload.secure_data = std::move(secure_data);
   }
+
+  response_details_->secure_payload_ = std::move(secure_payload);
 }
 
 bool FacilitatedPaymentsInitiatePaymentRequest::IsResponseComplete() {
-  return !response_details_->action_token_.empty();
+  return !response_details_->secure_payload_.action_token.empty();
 }
 
 void FacilitatedPaymentsInitiatePaymentRequest::RespondToDelegate(

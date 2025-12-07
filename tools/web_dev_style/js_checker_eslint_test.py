@@ -41,13 +41,9 @@ class JsCheckerEsLintTest(unittest.TestCase):
     output = checker.RunEsLintChecks(input_api.AffectedFiles(),
                                      format='json')[0]
 
-    # Extract ESLint's error from the PresubmitError. This is added in
-    # third_party/node/node.py.
-    search_token = '\' failed\n'
-    json_start_index = output.message.index(search_token)
-    json_error_str = output.message[json_start_index + len(search_token):]
+    # Extract ESLint's error from the PresubmitError.
     # ESLint's errors are in JSON format.
-    return json.loads(json_error_str)[0].get('messages')
+    return json.loads(output.message)[0].get('messages')
 
   def _assertError(self, results, rule_id, line):
     self.assertEqual(1, len(results))

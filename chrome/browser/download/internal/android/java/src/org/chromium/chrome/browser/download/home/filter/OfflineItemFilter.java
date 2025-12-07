@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.download.home.filter;
 
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.offline_items_collection.OfflineItem;
 
 import java.util.Collection;
@@ -23,6 +23,7 @@ import java.util.Set;
  * populate this class with the correctly filtered set of objects.  This constructor cannot call
  * that method as {@link #isFilteredOut(OfflineItem)} might access unconstructed subclass state.
  */
+@NullMarked
 public abstract class OfflineItemFilter
         implements OfflineItemFilterObserver, OfflineItemFilterSource {
     private final OfflineItemFilterSource mSource;
@@ -120,10 +121,10 @@ public abstract class OfflineItemFilter
             for (OfflineItemFilterObserver obs : mObservers) obs.onItemUpdated(oldItem, item);
         } else if (!oldInList && newInList) {
             mItems.add(item);
-            Collection<OfflineItem> newItems = CollectionUtil.newHashSet(item);
+            Collection<OfflineItem> newItems = Set.of(item);
             for (OfflineItemFilterObserver obs : mObservers) obs.onItemsAdded(newItems);
         } else if (oldInList && !newInList) {
-            Collection<OfflineItem> oldItems = CollectionUtil.newHashSet(oldItem);
+            Collection<OfflineItem> oldItems = Set.of(oldItem);
             for (OfflineItemFilterObserver obs : mObservers) obs.onItemsRemoved(oldItems);
         }
     }

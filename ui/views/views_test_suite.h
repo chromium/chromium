@@ -6,8 +6,8 @@
 #define UI_VIEWS_VIEWS_TEST_SUITE_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/test_discardable_memory_allocator.h"
 #include "base/test/test_suite.h"
-
 #include "build/build_config.h"
 
 #if defined(USE_AURA)
@@ -50,6 +50,7 @@ class ViewsTestSuite : public base::TestSuite {
 
   int argc_;
   raw_ptr<char*> argv_;
+  base::TestDiscardableMemoryAllocator discardable_memory_allocator_;
 };
 
 }  // namespace views

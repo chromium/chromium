@@ -11,9 +11,9 @@ namespace content_settings {
 // ObservableProvider
 //
 
-ObservableProvider::ObservableProvider() {}
+ObservableProvider::ObservableProvider() = default;
 
-ObservableProvider::~ObservableProvider() {}
+ObservableProvider::~ObservableProvider() = default;
 
 void ObservableProvider::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
@@ -26,16 +26,12 @@ void ObservableProvider::RemoveObserver(Observer* observer) {
 void ObservableProvider::NotifyObservers(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type,
-    const PartitionKey* partition_key) {
+    ContentSettingsType content_type) {
   DCHECK(primary_pattern.IsValid())
       << "pattern: " << primary_pattern.ToString();
   DCHECK(secondary_pattern.IsValid())
       << "pattern: " << secondary_pattern.ToString();
   for (Observer& observer : observer_list_) {
-    observer.OnContentSettingChanged(primary_pattern, secondary_pattern,
-                                     ContentSettingsTypeSet(content_type),
-                                     partition_key);
     observer.OnContentSettingChanged(primary_pattern, secondary_pattern,
                                      ContentSettingsTypeSet(content_type));
     observer.OnContentSettingChanged(primary_pattern, secondary_pattern,

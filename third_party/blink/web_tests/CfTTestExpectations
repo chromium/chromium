@@ -1,0 +1,12 @@
+# tags: [ Android Fuchsia Linux Mac Mac12 Mac12-arm64 Mac13 Mac13-arm64 Mac14 Mac14-arm64 Mac15 Mac15-arm64 Webview Win Win10.20h2 Win11 Win11-arm64 iOS17-simulator ]
+# tags: [ Release Debug ]
+# results: [ Timeout Crash Pass Failure Slow Skip ]
+
+# This file is used for tests that only need to be suppressed on
+# the Chromium Blink CfT bots.
+
+crbug.com/380778943 external/wpt/ai/translator/* [ Skip ]
+
+# These tests require the component updater and thus do not run on CfT bots.
+external/wpt/speech-api/SpeechRecognition-installOnDevice.https.html [ Skip Timeout ]
+virtual/speech-with-unified-autoplay/external/wpt/speech-api/SpeechRecognition-installOnDevice.https.html [ Skip Timeout ]

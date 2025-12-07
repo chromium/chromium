@@ -4,18 +4,32 @@
 
 #include "services/viz/public/cpp/compositing/transferable_resource_mojom_traits.h"
 
-#include "base/functional/overloaded.h"
+#include <utility>
+
 #include "build/build_config.h"
+#include "gpu/ipc/common/exported_shared_image_mojom_traits.h"
 #include "gpu/ipc/common/mailbox_mojom_traits.h"
 #include "gpu/ipc/common/sync_token_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/resource_id_mojom_traits.h"
-#include "services/viz/public/cpp/compositing/shared_bitmap_id_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/shared_image_format_mojom_traits.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "ui/gfx/mojom/color_space_mojom_traits.h"
 #include "ui/gfx/mojom/hdr_metadata_mojom_traits.h"
 
 namespace mojo {
+
+// static
+bool StructTraits<viz::mojom::MetadataOverrideDataView,
+                  viz::TransferableResource::MetadataOverride>::
+    Read(viz::mojom::MetadataOverrideDataView data,
+         viz::TransferableResource::MetadataOverride* out) {
+  out->is_overlay_candidate = data.is_overlay_candidate();
+  if (!data.ReadColorSpace(&out->color_space) ||
+      !data.ReadOrigin(&out->origin) || !data.ReadAlphaType(&out->alpha_type)) {
+    return false;
+  }
+  return true;
+}
 
 // static
 viz::mojom::SynchronizationType
@@ -30,8 +44,7 @@ EnumTraits<viz::mojom::SynchronizationType,
     case viz::TransferableResource::SynchronizationType::kReleaseFence:
       return viz::mojom::SynchronizationType::kReleaseFence;
   }
-  NOTREACHED_IN_MIGRATION();
-  return viz::mojom::SynchronizationType::kSyncToken;
+  NOTREACHED();
 }
 
 // static
@@ -55,6 +68,106 @@ bool EnumTraits<viz::mojom::SynchronizationType,
 }
 
 // static
+viz::mojom::ResourceSource
+EnumTraits<viz::mojom::ResourceSource,
+           viz::TransferableResource::ResourceSource>::
+    ToMojom(viz::TransferableResource::ResourceSource type) {
+  switch (type) {
+    case viz::TransferableResource::ResourceSource::kUnknown:
+      return viz::mojom::ResourceSource::kUnknown;
+    case viz::TransferableResource::ResourceSource::kAR:
+      return viz::mojom::ResourceSource::kAR;
+    case viz::TransferableResource::ResourceSource::kCanvas:
+      return viz::mojom::ResourceSource::kCanvas;
+    case viz::TransferableResource::ResourceSource::kDrawingBuffer:
+      return viz::mojom::ResourceSource::kDrawingBuffer;
+    case viz::TransferableResource::ResourceSource::kExoBuffer:
+      return viz::mojom::ResourceSource::kExoBuffer;
+    case viz::TransferableResource::ResourceSource::kHeadsUpDisplay:
+      return viz::mojom::ResourceSource::kHeadsUpDisplay;
+    case viz::TransferableResource::ResourceSource::kImageLayerBridge:
+      return viz::mojom::ResourceSource::kImageLayerBridge;
+    case viz::TransferableResource::ResourceSource::kPPBGraphics3D:
+      return viz::mojom::ResourceSource::kPPBGraphics3D;
+    case viz::TransferableResource::ResourceSource::kPepperGraphics2D:
+      return viz::mojom::ResourceSource::kPepperGraphics2D;
+    case viz::TransferableResource::ResourceSource::kViewTransition:
+      return viz::mojom::ResourceSource::kViewTransition;
+    case viz::TransferableResource::ResourceSource::kStaleContent:
+      return viz::mojom::ResourceSource::kStaleContent;
+    case viz::TransferableResource::ResourceSource::kTest:
+      return viz::mojom::ResourceSource::kTest;
+    case viz::TransferableResource::ResourceSource::kTileRasterTask:
+      return viz::mojom::ResourceSource::kTileRasterTask;
+    case viz::TransferableResource::ResourceSource::kUI:
+      return viz::mojom::ResourceSource::kUI;
+    case viz::TransferableResource::ResourceSource::kVideo:
+      return viz::mojom::ResourceSource::kVideo;
+    case viz::TransferableResource::ResourceSource::kWebGPUSwapBuffer:
+      return viz::mojom::ResourceSource::kWebGPUSwapBuffer;
+  }
+  NOTREACHED();
+}
+
+// static
+bool EnumTraits<viz::mojom::ResourceSource,
+                viz::TransferableResource::ResourceSource>::
+    FromMojom(viz::mojom::ResourceSource input,
+              viz::TransferableResource::ResourceSource* out) {
+  switch (input) {
+    case viz::mojom::ResourceSource::kUnknown:
+      *out = viz::TransferableResource::ResourceSource::kUnknown;
+      return true;
+    case viz::mojom::ResourceSource::kAR:
+      *out = viz::TransferableResource::ResourceSource::kAR;
+      return true;
+    case viz::mojom::ResourceSource::kCanvas:
+      *out = viz::TransferableResource::ResourceSource::kCanvas;
+      return true;
+    case viz::mojom::ResourceSource::kDrawingBuffer:
+      *out = viz::TransferableResource::ResourceSource::kDrawingBuffer;
+      return true;
+    case viz::mojom::ResourceSource::kExoBuffer:
+      *out = viz::TransferableResource::ResourceSource::kExoBuffer;
+      return true;
+    case viz::mojom::ResourceSource::kHeadsUpDisplay:
+      *out = viz::TransferableResource::ResourceSource::kHeadsUpDisplay;
+      return true;
+    case viz::mojom::ResourceSource::kImageLayerBridge:
+      *out = viz::TransferableResource::ResourceSource::kImageLayerBridge;
+      return true;
+    case viz::mojom::ResourceSource::kPPBGraphics3D:
+      *out = viz::TransferableResource::ResourceSource::kPPBGraphics3D;
+      return true;
+    case viz::mojom::ResourceSource::kPepperGraphics2D:
+      *out = viz::TransferableResource::ResourceSource::kPepperGraphics2D;
+      return true;
+    case viz::mojom::ResourceSource::kViewTransition:
+      *out = viz::TransferableResource::ResourceSource::kViewTransition;
+      return true;
+    case viz::mojom::ResourceSource::kStaleContent:
+      *out = viz::TransferableResource::ResourceSource::kStaleContent;
+      return true;
+    case viz::mojom::ResourceSource::kTest:
+      *out = viz::TransferableResource::ResourceSource::kTest;
+      return true;
+    case viz::mojom::ResourceSource::kTileRasterTask:
+      *out = viz::TransferableResource::ResourceSource::kTileRasterTask;
+      return true;
+    case viz::mojom::ResourceSource::kUI:
+      *out = viz::TransferableResource::ResourceSource::kUI;
+      return true;
+    case viz::mojom::ResourceSource::kVideo:
+      *out = viz::TransferableResource::ResourceSource::kVideo;
+      return true;
+    case viz::mojom::ResourceSource::kWebGPUSwapBuffer:
+      *out = viz::TransferableResource::ResourceSource::kWebGPUSwapBuffer;
+      return true;
+  }
+  return false;
+}
+
+// static
 bool StructTraits<viz::mojom::TransferableResourceDataView,
                   viz::TransferableResource>::
     Read(viz::mojom::TransferableResourceDataView data,
@@ -62,26 +175,33 @@ bool StructTraits<viz::mojom::TransferableResourceDataView,
   viz::ResourceId id;
 
   gpu::SyncToken sync_token;
-  viz::MemoryBufferId memory_buffer_id;
-  if (!data.ReadSize(&out->size) || !data.ReadFormat(&out->format) ||
-      !data.ReadMemoryBufferId(&memory_buffer_id) ||
+  gpu::ExportedSharedImage exported_shared_image;
+  viz::TransferableResource::MetadataOverride metadata_override;
+
+  if (!data.ReadSharedImage(&exported_shared_image) ||
       !data.ReadSyncToken(&sync_token) ||
-      !data.ReadColorSpace(&out->color_space) ||
-      !data.ReadHdrMetadata(&out->hdr_metadata) ||
-      !data.ReadYcbcrInfo(&out->ycbcr_info) || !data.ReadId(&id) ||
-      !data.ReadSynchronizationType(&out->synchronization_type)) {
+      !data.ReadMetadataOverride(&metadata_override) ||
+      !data.ReadHdrMetadata(&out->hdr_metadata) || !data.ReadId(&id) ||
+      !data.ReadSynchronizationType(&out->synchronization_type) ||
+      !data.ReadResourceSource(&out->resource_source)) {
     return false;
   }
+#if BUILDFLAG(IS_ANDROID)
+  if (!data.ReadYcbcrInfo(&out->ycbcr_info)) {
+    return false;
+  }
+#endif
+
   out->id = id;
-  out->is_software = data.is_software();
-  out->set_memory_buffer_id(memory_buffer_id);
+  out->set_shared_image(
+      gpu::ClientSharedImage::ImportUnowned(std::move(exported_shared_image)));
   out->set_sync_token(sync_token);
-  out->set_texture_target(data.texture_target());
-  out->is_overlay_candidate = data.is_overlay_candidate();
+  out->set_metadata_override(metadata_override);
+  out->is_low_latency_rendering = data.is_low_latency_rendering();
   out->needs_detiling = data.needs_detiling();
 
 #if BUILDFLAG(IS_ANDROID)
-  out->is_backed_by_surface_texture = data.is_backed_by_surface_texture();
+  out->is_backed_by_surface_view = data.is_backed_by_surface_view();
 #endif
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
@@ -89,48 +209,6 @@ bool StructTraits<viz::mojom::TransferableResourceDataView,
 #endif
 
   return true;
-}
-
-// static
-viz::mojom::MemoryBufferIdDataView::Tag
-UnionTraits<viz::mojom::MemoryBufferIdDataView, viz::MemoryBufferId>::GetTag(
-    const viz::MemoryBufferId& memory_buffer_id) {
-  return absl::visit(
-      base::Overloaded{
-          [](gpu::Mailbox) {
-            return viz::mojom::MemoryBufferIdDataView::Tag::kMailbox;
-          },
-
-          [](viz::SharedBitmapId) {
-            return viz::mojom::MemoryBufferIdDataView::Tag::kSharedBitmapId;
-          },
-      },
-      memory_buffer_id);
-}
-
-// static
-bool UnionTraits<viz::mojom::MemoryBufferIdDataView, viz::MemoryBufferId>::Read(
-    viz::mojom::MemoryBufferIdDataView memory_buffer_id,
-    viz::MemoryBufferId* out) {
-  switch (memory_buffer_id.tag()) {
-    case viz::mojom::MemoryBufferIdDataView::Tag::kMailbox: {
-      gpu::Mailbox mailbox;
-      if (!memory_buffer_id.ReadMailbox(&mailbox)) {
-        return false;
-      }
-      *out = mailbox;
-      return true;
-    }
-    case viz::mojom::MemoryBufferIdDataView::Tag::kSharedBitmapId: {
-      viz::SharedBitmapId shared_bitmap_id;
-      if (!memory_buffer_id.ReadSharedBitmapId(&shared_bitmap_id)) {
-        return false;
-      }
-      *out = shared_bitmap_id;
-      return true;
-    }
-  }
-  return false;
 }
 
 }  // namespace mojo

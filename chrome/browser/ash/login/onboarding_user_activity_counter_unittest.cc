@@ -13,6 +13,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -51,7 +52,8 @@ class OnboardingUserActivityCounterTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   TestingPrefServiceSimple prefs_;
-  session_manager::SessionManager session_manager_;
+  session_manager::SessionManager session_manager_{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
 
   std::unique_ptr<OnboardingUserActivityCounter> counter_;
   base::TimeDelta activity_time_left_;

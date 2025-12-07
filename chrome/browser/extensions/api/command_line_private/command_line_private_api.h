@@ -13,7 +13,7 @@ class CommandLinePrivateHasSwitchFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("commandLinePrivate.hasSwitch",
                              COMMANDLINEPRIVATE_HASSWITCH)
  protected:
-  ~CommandLinePrivateHasSwitchFunction() override {}
+  ~CommandLinePrivateHasSwitchFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;

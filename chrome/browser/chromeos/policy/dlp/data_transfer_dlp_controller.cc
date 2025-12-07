@@ -5,7 +5,9 @@
 #include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
 
 #include <string>
+#include <variant>
 
+#include "ash/webui/file_manager/url_constants.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
@@ -13,7 +15,6 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "base/types/optional_util.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
@@ -26,10 +27,6 @@
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/webui/file_manager/url_constants.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace policy {
 
@@ -45,13 +42,9 @@ const base::TimeDelta kSkipReportingTimeout = base::Milliseconds(75);
 // be shared with Arc, Crostini, and Plugin VM without waiting for the
 // user decision.
 bool IsVM(const ui::EndpointType type) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   return type == ui::EndpointType::kArc ||
          type == ui::EndpointType::kPluginVm ||
          type == ui::EndpointType::kCrostini;
-#else
-  return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 // Returns true if `endpoint` has no value or its type is kDefault.
@@ -61,7 +54,6 @@ bool IsNullEndpoint(const std::optional<ui::DataTransferEndpoint>& endpoint) {
 }
 
 bool IsFilesApp(base::optional_ref<const ui::DataTransferEndpoint> data_dst) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!data_dst.has_value() || !data_dst->IsUrlType()) {
     return false;
   }
@@ -70,16 +62,13 @@ bool IsFilesApp(base::optional_ref<const ui::DataTransferEndpoint> data_dst) {
   // TODO(b/207576430): Once Files Extension is removed, remove this condition.
   bool is_files_extension =
       url.has_scheme() && url.SchemeIs(extensions::kExtensionScheme) &&
-      url.has_host() && url.host() == extension_misc::kFilesManagerAppId;
-  bool is_files_swa = url.has_scheme() &&
-                      url.SchemeIs(content::kChromeUIScheme) &&
-                      url.has_host() &&
-                      url.host() == ash::file_manager::kChromeUIFileManagerHost;
+      url.has_host() && url.GetHost() == extension_misc::kFilesManagerAppId;
+  bool is_files_swa =
+      url.has_scheme() && url.SchemeIs(content::kChromeUIScheme) &&
+      url.has_host() &&
+      url.GetHost() == ash::file_manager::kChromeUIFileManagerHost;
 
   return is_files_extension || is_files_swa;
-#else
-  return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 bool IsClipboardHistory(
@@ -132,7 +121,6 @@ DlpRulesManager::Level IsDataTransferAllowed(
   DlpRulesManager::Level level = DlpRulesManager::Level::kAllow;
 
   switch (dst_type) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     case ui::EndpointType::kCrostini: {
       level = dlp_rules_manager.IsRestrictedComponent(
           src_url, data_controls::Component::kCrostini,
@@ -157,16 +145,8 @@ DlpRulesManager::Level IsDataTransferAllowed(
       break;
     }
 
-    case ui::EndpointType::kLacros: {
-      // Return ALLOW for Lacros destinations, as Lacros itself will make DLP
-      // checks.
-      level = DlpRulesManager::Level::kAllow;
-      break;
-    }
-
     case ui::EndpointType::kUnknownVm:
     case ui::EndpointType::kBorealis:
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     case ui::EndpointType::kDefault: {
       // Passing empty URL will return restricted if there's a rule restricting
       // the src against any dst (*), otherwise it will return ALLOW.
@@ -190,7 +170,7 @@ DlpRulesManager::Level IsDataTransferAllowed(
     }
 
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   return level;
@@ -257,7 +237,9 @@ bool DataTransferDlpController::IsClipboardReadAllowed(
                    dst_pattern, level,
                    /*is_clipboard_event=*/true, rule_metadata);
 
-  bool notify_on_paste = ShouldNotifyOnPaste(destination.as_ptr());
+  // Use original destination as OffTheRecord destinations might also have
+  // `notify_if_restricted` param to be checked in case of system tools access.
+  bool notify_on_paste = ShouldNotifyOnPaste(data_dst.as_ptr());
 
   bool is_read_allowed = true;
 
@@ -314,7 +296,7 @@ bool DataTransferDlpController::IsClipboardReadAllowed(
 void DataTransferDlpController::PasteIfAllowed(
     base::optional_ref<const ui::DataTransferEndpoint> data_src,
     base::optional_ref<const ui::DataTransferEndpoint> data_dst,
-    absl::variant<size_t, std::vector<base::FilePath>> pasted_content,
+    std::variant<size_t, std::vector<base::FilePath>> pasted_content,
     content::RenderFrameHost* rfh,
     base::OnceCallback<void(bool)> paste_cb) {
   // To simplify logic that would have to check OTR in every sub-call of DLP
@@ -327,22 +309,22 @@ void DataTransferDlpController::PasteIfAllowed(
       data_dst.has_value() && !data_dst->off_the_record() ? data_dst
                                                           : std::nullopt;
 
-  if (absl::holds_alternative<std::vector<base::FilePath>>(pasted_content) &&
-      !IsFilesApp(destination)) {
+  if (std::holds_alternative<std::vector<base::FilePath>>(pasted_content) &&
+      !IsFilesApp(destination) && destination.has_value()) {
     auto pasted_files =
-        std::move(absl::get<std::vector<base::FilePath>>(pasted_content));
+        std::move(std::get<std::vector<base::FilePath>>(pasted_content));
     auto* files_controller = dlp_rules_manager_->GetDlpFilesController();
     if (files_controller) {
       files_controller->CheckIfPasteOrDropIsAllowed(
           pasted_files, destination.as_ptr(), std::move(paste_cb));
+      return;
     }
-    return;
   }
 
-  if (absl::holds_alternative<size_t>(pasted_content) &&
-      absl::get<size_t>(pasted_content) > 0) {
+  if (std::holds_alternative<size_t>(pasted_content) &&
+      std::get<size_t>(pasted_content) > 0) {
     ContinuePasteIfClipboardRestrictionsAllow(source, destination,
-                                              absl::get<size_t>(pasted_content),
+                                              std::get<size_t>(pasted_content),
                                               rfh, std::move(paste_cb));
     return;
   }
@@ -366,7 +348,7 @@ void DataTransferDlpController::DropIfAllowed(
                                                           : std::nullopt;
 
   if (filenames.has_value() && !filenames->empty() &&
-      !IsFilesApp(destination)) {
+      !IsFilesApp(destination) && destination.has_value()) {
     auto* files_controller = dlp_rules_manager_->GetDlpFilesController();
     if (files_controller) {
       CHECK(destination.has_value());
@@ -422,7 +404,7 @@ void DataTransferDlpController::ReportWarningProceededEvent(
   }
 
   if (data_dst.has_value() && IsVM(data_dst->type())) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   } else {
     const std::string src_url = (data_src.has_value() && data_src->IsUrlType())
                                     ? data_src->GetURL()->spec()
@@ -548,7 +530,6 @@ void DataTransferDlpController::ReportEvent(
   ui::EndpointType dst_type =
       data_dst.has_value() ? data_dst->type() : ui::EndpointType::kDefault;
   switch (dst_type) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     case ui::EndpointType::kCrostini:
       reporting_manager->ReportEvent(
           src_url, data_controls::Component::kCrostini,
@@ -569,7 +550,6 @@ void DataTransferDlpController::ReportEvent(
                                      level, rule_metadata.name,
                                      rule_metadata.obfuscated_id);
       break;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     default:
       const std::string dst_url =
           (data_dst.has_value() && data_dst->IsUrlType())
@@ -627,7 +607,7 @@ void DataTransferDlpController::ContinueDropIfAllowed(
       break;
 
     case DlpRulesManager::Level::kNotSet:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   const bool is_drop_allowed = (level == DlpRulesManager::Level::kAllow) ||
@@ -642,9 +622,6 @@ void DataTransferDlpController::ContinuePasteIfClipboardRestrictionsAllow(
     size_t size,
     content::RenderFrameHost* rfh,
     base::OnceCallback<void(bool)> paste_cb) {
-  DCHECK(data_dst.has_value());
-  DCHECK(data_dst->IsUrlType());
-
   auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
   if (!web_contents) {
     std::move(paste_cb).Run(false);

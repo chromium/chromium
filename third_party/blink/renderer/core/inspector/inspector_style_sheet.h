@@ -27,12 +27,15 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_STYLE_SHEET_H_
 
 #include <memory>
-#include "base/memory/scoped_refptr.h"
+
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/css_font_face_rule.h"
+#include "third_party/blink/renderer/core/css/css_font_feature_values_rule.h"
 #include "third_party/blink/renderer/core/css/css_font_palette_values_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_source_data.h"
 #include "third_party/blink/renderer/core/css/css_scope_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
+#include "third_party/blink/renderer/core/inspector/inspector_css_parser_observer.h"
 #include "third_party/blink/renderer/core/inspector/inspector_diff.h"
 #include "third_party/blink/renderer/core/inspector/protocol/css.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -46,6 +49,7 @@ class CSSKeyframeRule;
 class CSSMediaRule;
 class CSSContainerRule;
 class CSSPositionTryRule;
+class CSSPropertySourceData;
 class CSSPropertyRule;
 class CSSStyleDeclaration;
 class CSSStyleRule;
@@ -57,9 +61,9 @@ class ExceptionState;
 class InspectorNetworkAgent;
 class InspectorResourceContainer;
 class InspectorStyleSheetBase;
+class SourceRange;
 
 typedef HeapVector<Member<CSSRule>> CSSRuleVector;
-typedef Vector<unsigned> LineEndings;
 
 class InspectorStyle final : public GarbageCollected<InspectorStyle> {
  public:
@@ -186,6 +190,7 @@ class InspectorStyleSheet : public InspectorStyleSheetBase {
                         const String& text,
                         SourceRange* new_range,
                         String* old_selector,
+                        StyleRuleFontFeature::FeatureType* font_feature_type,
                         ExceptionState&);
   CSSMediaRule* SetMediaRuleText(const SourceRange&,
                                  const String& selector,
@@ -214,6 +219,8 @@ class InspectorStyleSheet : public InspectorStyleSheetBase {
   bool DeleteRule(const SourceRange&, ExceptionState&);
   std::unique_ptr<protocol::Array<String>> CollectClassNames();
   CSSStyleSheet* PageStyleSheet() { return page_style_sheet_.Get(); }
+  String Origin() { return origin_; }
+  bool CanBindOrigin();
 
   std::unique_ptr<protocol::CSS::CSSStyleSheetHeader>
   BuildObjectForStyleSheetInfo();
@@ -226,8 +233,16 @@ class InspectorStyleSheet : public InspectorStyleSheetBase {
                                                                     bool);
   std::unique_ptr<protocol::CSS::CSSPositionTryRule>
   BuildObjectForPositionTryRule(CSSPositionTryRule*, bool active);
-  std::unique_ptr<protocol::CSS::CSSFontPaletteValuesRule>
-  BuildObjectForFontPaletteValuesRule(CSSFontPaletteValuesRule*);
+  std::unique_ptr<protocol::CSS::CSSAtRule>
+  BuildAtRuleObjectForFontPaletteValuesRule(CSSFontPaletteValuesRule*);
+  std::unique_ptr<protocol::CSS::CSSAtRule> BuildAtRuleObjectForFontFaceRule(
+      CSSFontFaceRule*);
+  std::unique_ptr<protocol::CSS::CSSStyle> BuildStyleObjectForFontFeatureRule(
+      CSSFontFeatureValuesRule*,
+      StyleRuleFontFeature::FeatureType);
+  std::unique_ptr<protocol::CSS::CSSAtRule>
+  BuildAtRuleObjectForFontFeatureValuesRule(CSSFontFeatureValuesRule*,
+                                            StyleRuleFontFeature::FeatureType);
   std::unique_ptr<protocol::CSS::CSSPropertyRule> BuildObjectForPropertyRule(
       CSSPropertyRule*);
   std::unique_ptr<protocol::CSS::CSSKeyframeRule> BuildObjectForKeyframeRule(
@@ -235,7 +250,6 @@ class InspectorStyleSheet : public InspectorStyleSheetBase {
       Element*);
   std::unique_ptr<protocol::CSS::SelectorList> BuildObjectForSelectorList(
       CSSStyleRule*);
-
   std::unique_ptr<protocol::CSS::SourceRange> RuleHeaderSourceRange(CSSRule*);
   std::unique_ptr<protocol::CSS::SourceRange> MediaQueryExpValueSourceRange(
       CSSRule*,
@@ -253,7 +267,7 @@ class InspectorStyleSheet : public InspectorStyleSheetBase {
  private:
   CSSRuleSourceData* RuleSourceDataAfterSourceRange(const SourceRange&);
   CSSRuleSourceData* FindRuleByHeaderRange(const SourceRange&);
-  CSSRuleSourceData* FindRuleByBodyRange(const SourceRange&);
+  CSSRuleSourceData* FindRuleByDeclarationsRange(const SourceRange&);
   CSSRule* RuleForSourceData(CSSRuleSourceData*);
   CSSStyleRule* InsertCSSOMRuleInStyleSheet(CSSRule* insert_before,
                                             const String& rule_text,
@@ -298,7 +312,7 @@ class InspectorStyleSheet : public InspectorStyleSheetBase {
   Member<CSSStyleSheet> page_style_sheet_;
   String origin_;
   String document_url_;
-  Member<CSSRuleSourceDataList> source_data_;
+  Member<GCedCSSRuleSourceDataList> source_data_;
   String text_;
   CSSRuleVector cssom_flat_rules_;
   CSSRuleVector parsed_flat_rules_;

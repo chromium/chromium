@@ -50,8 +50,5 @@ message LevelDBScopesCleanupTask {
     bytes begin = 1;
     bytes end = 2;
   }
-  oneof operation {
-    DeleteRange delete_range = 1;
-    DeleteRange delete_range_and_compact = 2;
-  }
+  optional DeleteRange delete_range_and_compact = 2;
 }

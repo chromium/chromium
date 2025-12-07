@@ -1,0 +1,82 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+
+assert(is_chromeos, "Graduation is ChromeOS only")
+
+static_library("graduation") {
+  sources = [
+    "graduation_state_tracker.cc",
+    "graduation_state_tracker.h",
+    "graduation_ui.cc",
+    "graduation_ui.h",
+    "graduation_ui_handler.cc",
+    "graduation_ui_handler.h",
+    "webview_auth_handler.cc",
+    "webview_auth_handler.h",
+  ]
+
+  public_deps = [ ":url_constants" ]
+
+  deps = [
+    "mojom",
+    "resources",
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/webui/common:chrome_os_webui_config",
+    "//ash/webui/common:trusted_types_util",
+    "//ash/webui/system_apps/public:system_web_app_config",
+    "//ash/webui/system_apps/public:system_web_app_type",
+    "//base",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/strings",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/webui",
+    "//ui/webui/resources",
+  ]
+}
+
+# Url constants pulled out to enable depending on production url constants in
+# browser tests.
+source_set("url_constants") {
+  sources = [
+    "url_constants.cc",
+    "url_constants.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "graduation_ui_handler_unittest.cc",
+    "webview_auth_handler_unittest.cc",
+  ]
+
+  deps = [
+    "mojom",
+    "//ash/public/cpp",
+    "//ash/webui/graduation",
+    "//base",
+    "//components/account_id",
+    "//components/prefs:test_support",
+    "//components/signin/public/base",
+    "//components/signin/public/base:test_support",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/sync_preferences:test_support",
+    "//components/user_manager:test_support",
+    "//content/test:test_support",
+    "//google_apis",
+    "//mojo/public/cpp/bindings",
+    "//services/network:test_support",
+    "//testing/gtest",
+  ]
+}

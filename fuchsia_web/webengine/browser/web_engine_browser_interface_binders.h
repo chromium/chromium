@@ -5,11 +5,14 @@
 #ifndef FUCHSIA_WEB_WEBENGINE_BROWSER_WEB_ENGINE_BROWSER_INTERFACE_BINDERS_H_
 #define FUCHSIA_WEB_WEBENGINE_BROWSER_WEB_ENGINE_BROWSER_INTERFACE_BINDERS_H_
 
-#include "mojo/public/cpp/bindings/binder_map.h"
-
 namespace content {
 class RenderFrameHost;
 }  // namespace content
+
+namespace mojo {
+template <typename>
+class BinderMapWithContext;
+}  // namespace mojo
 
 // PopulateFuchsiaFrameBinders() registers BrowserInterfaceBroker's
 // GetInterface() handler callbacks for Fuchsia-specific RenferFrame-scoped

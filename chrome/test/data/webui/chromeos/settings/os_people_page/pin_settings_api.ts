@@ -4,7 +4,8 @@
 
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {PinSettingsApiInterface, PinSettingsApiReceiver, PinSettingsApiRemote} from '../pin_settings_api.test-mojom-webui.js';
+import type {PinSettingsApiInterface, PinSettingsApiRemote} from '../pin_settings_api.test-mojom-webui.js';
+import {PinSettingsApiReceiver} from '../pin_settings_api.test-mojom-webui.js';
 import {assertAsync, assertForDuration, hasBooleanProperty, retry, retryUntilSome} from '../utils.js';
 
 import {PinDialogApi} from './pin_dialog_api.js';
@@ -292,6 +293,14 @@ export class PinSettingsApi implements PinSettingsApiInterface {
     return toggle !== null && toggle.checked;
   }
 
+  private isMoreButtonDisabled(): boolean {
+    const button = this.moreButton();
+    if (button === null) {
+      return true;
+    }
+    return (button as HTMLButtonElement).disabled;
+  }
+
   async assertPinAutosubmitEnabled(isEnabled: boolean): Promise<void> {
     const check = () => this.isPinAutosubmitEnabled() === isEnabled;
     await assertAsync(check);
@@ -368,5 +377,11 @@ export class PinSettingsApi implements PinSettingsApiInterface {
     await assertAsync(() => this.isPinAutosubmitEnabled() === true);
     (await retryUntilSome(() => this.autosubmitToggle())).click();
     await assertAsync(() => this.isPinAutosubmitEnabled() === false);
+  }
+
+  async assertMoreButtonDisabled(disabled: boolean): Promise<void> {
+    const check = () => this.isMoreButtonDisabled() === disabled;
+    await assertAsync(check);
+    await assertForDuration(check);
   }
 }

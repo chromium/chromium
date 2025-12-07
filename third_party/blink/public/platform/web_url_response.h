@@ -33,6 +33,7 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -45,11 +46,11 @@
 #include "third_party/blink/public/common/security/security_style.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
 
 namespace network {
 namespace mojom {
 enum class AlternateProtocolUsage;
+enum class DeviceBoundSessionUsage;
 enum class FetchResponseSource;
 enum class FetchResponseType : int32_t;
 enum class IPAddressSpace : int32_t;
@@ -58,6 +59,7 @@ class URLResponseHead;
 class LoadTimingInfo;
 class ServiceWorkerRouterInfo;
 }  // namespace mojom
+struct IntegrityMetadata;
 }  // namespace network
 
 namespace net {
@@ -119,6 +121,9 @@ class BLINK_PLATFORM_EXPORT WebURLResponse {
   base::Time ResponseTime() const;
   void SetResponseTime(base::Time);
 
+  base::Time OriginalResponseTime() const;
+  void SetOriginalResponseTime(base::Time);
+
   WebString MimeType() const;
   void SetMimeType(const WebString&);
 
@@ -177,6 +182,9 @@ class BLINK_PLATFORM_EXPORT WebURLResponse {
   bool WasFetchedViaServiceWorker() const;
   void SetWasFetchedViaServiceWorker(bool);
 
+  bool FromSyntheticResponse() const;
+  void SetFromSyntheticResponse(bool);
+
   // Set when this request was loaded via a ServiceWorker.
   // See network.mojom.URLResponseHead.service_worker_response_source.
   network::mojom::FetchResponseSource GetServiceWorkerResponseSource() const;
@@ -202,7 +210,7 @@ class BLINK_PLATFORM_EXPORT WebURLResponse {
   // The URL list of the Response object the ServiceWorker passed to
   // respondWith().
   // See network.mojom.URLResponseHead.url_list_via_service_worker.
-  void SetUrlListViaServiceWorker(const WebVector<WebURL>&);
+  void SetUrlListViaServiceWorker(const std::vector<WebURL>&);
   // Returns true if the URL list is not empty.
   bool HasUrlListViaServiceWorker() const;
 
@@ -213,8 +221,8 @@ class BLINK_PLATFORM_EXPORT WebURLResponse {
 
   // The headers that should be exposed according to CORS. Only guaranteed
   // to be set if the response was served by a ServiceWorker.
-  WebVector<WebString> CorsExposedHeaderNames() const;
-  void SetCorsExposedHeaderNames(const WebVector<WebString>&);
+  std::vector<WebString> CorsExposedHeaderNames() const;
+  void SetCorsExposedHeaderNames(const std::vector<WebString>&);
 
   // Whether service worker navigation preload occurred.
   // See network.mojom.URLResponseHead.did_navigation_preload.
@@ -278,7 +286,7 @@ class BLINK_PLATFORM_EXPORT WebURLResponse {
   // Sets any DNS aliases for the requested URL. The alias chain order is
   // expected to be in reverse, from canonical name (i.e. address record name)
   // through to query name.
-  void SetDnsAliases(const WebVector<WebString>&);
+  void SetDnsAliases(const std::vector<WebString>&);
 
   void SetAuthChallengeInfo(const std::optional<net::AuthChallengeInfo>&);
   const std::optional<net::AuthChallengeInfo>& AuthChallengeInfo() const;
@@ -293,6 +301,15 @@ class BLINK_PLATFORM_EXPORT WebURLResponse {
   bool ShouldUseSourceHashForJSCodeCache() const;
 
   void SetWasFetchedViaCache(bool);
+
+  void SetDeviceBoundSessionUsage(network::mojom::DeviceBoundSessionUsage);
+  network::mojom::DeviceBoundSessionUsage DeviceBoundSessionUsage() const;
+
+  // Whether the request was actually deferred by any device bound sessions.
+  void SetWasDeferredByDeviceBoundSession(bool);
+  bool WasDeferredByDeviceBoundSession() const;
+
+  void SetUnencodedDigests(std::vector<network::IntegrityMetadata>);
 
 #if INSIDE_BLINK
  protected:

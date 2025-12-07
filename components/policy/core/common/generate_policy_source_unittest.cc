@@ -2,18 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
+#include <array>
 #include <cstring>
-#include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/policy_details.h"
 #include "components/policy/core/common/proxy_settings_constants.h"
 #include "components/policy/core/common/schema.h"
@@ -27,7 +22,7 @@ namespace policy {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Checks if two schemas are the same or not. Note that this function doesn't
 // consider restrictions on integers and strings nor pattern properties.
 bool IsSameSchema(Schema a, Schema b) {
@@ -47,8 +42,9 @@ bool IsSameSchema(Schema a, Schema b) {
   while (!a_it.IsAtEnd()) {
     if (b_it.IsAtEnd())
       return false;
-    if (strcmp(a_it.key(), b_it.key()) != 0)
+    if (std::string_view(a_it.key()) != std::string_view(b_it.key())) {
       return false;
+    }
     if (!IsSameSchema(a_it.schema(), b_it.schema()))
       return false;
     a_it.Advance();
@@ -87,7 +83,7 @@ TEST(GeneratePolicySource, ChromeSchemaData) {
   for (Schema::Iterator it = schema.GetPropertiesIterator(); !it.IsAtEnd();
        it.Advance()) {
     EXPECT_TRUE(it.key());
-    EXPECT_FALSE(std::string(it.key()).empty());
+    EXPECT_FALSE(std::string_view(it.key()).empty());
     EXPECT_TRUE(GetChromePolicyDetails(it.key()));
   }
 
@@ -113,32 +109,33 @@ TEST(GeneratePolicySource, ChromeSchemaData) {
   ASSERT_TRUE(subschema.GetProperty(key::kProxyBypassList).valid());
 
   // The properties are iterated in order.
-  const char* kExpectedProperties[] = {
+  const auto kExpectedProperties = std::to_array<std::string_view>({
       key::kProxyBypassList,
       key::kProxyMode,
       kProxyPacMandatory,
       key::kProxyPacUrl,
       key::kProxyServer,
       key::kProxyServerMode,
-      nullptr,
-  };
-  const char** next = kExpectedProperties;
-  for (Schema::Iterator it(subschema.GetPropertiesIterator());
-       !it.IsAtEnd(); it.Advance(), ++next) {
-    ASSERT_TRUE(*next != nullptr);
-    EXPECT_STREQ(*next, it.key());
+  });
+  auto next = kExpectedProperties.begin();
+  Schema::Iterator it(subschema.GetPropertiesIterator());
+  for (; !it.IsAtEnd() && next != kExpectedProperties.end();
+       it.Advance(), ++next) {
+    EXPECT_EQ(*next, std::string_view(it.key()));
     ASSERT_TRUE(it.schema().valid());
-    if (it.key() == key::kProxyServerMode)
+    if (it.key() == key::kProxyServerMode) {
       EXPECT_EQ(base::Value::Type::INTEGER, it.schema().type());
-    else if (strcmp(it.key(), kProxyPacMandatory) == 0)
+    } else if (std::string_view(it.key()) == kProxyPacMandatory) {
       EXPECT_EQ(base::Value::Type::BOOLEAN, it.schema().type());
-    else
+    } else {
       EXPECT_EQ(base::Value::Type::STRING, it.schema().type());
+    }
   }
-  EXPECT_TRUE(*next == nullptr);
+  EXPECT_TRUE(it.IsAtEnd());
+  EXPECT_TRUE(next == kExpectedProperties.end());
 #endif  // !BUILDFLAG(IS_IOS)
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
   subschema = schema.GetProperty(key::kExtensionSettings);
   ASSERT_TRUE(subschema.valid());
   ASSERT_EQ(base::Value::Type::DICT, subschema.type());
@@ -170,7 +167,7 @@ TEST(GeneratePolicySource, ChromeSchemaData) {
   ASSERT_EQ(base::Value::Type::STRING, subschema.type());
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   subschema = schema.GetKnownProperty(key::kPowerManagementIdleSettings);
   ASSERT_TRUE(subschema.valid());
 
@@ -201,7 +198,7 @@ TEST(GeneratePolicySource, PolicyScope) {
   ASSERT_TRUE(details);
   EXPECT_EQ(kBrowser, details->scope);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   details = GetChromePolicyDetails(key::kDeviceGuestModeEnabled);
   ASSERT_TRUE(details);
   EXPECT_EQ(kDevice, details->scope);
@@ -232,7 +229,7 @@ TEST(GeneratePolicySource, PolicyDetails) {
   EXPECT_EQ(0u, details->max_external_data_size);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   details = GetChromePolicyDetails(key::kDevicePolicyRefreshRate);
   ASSERT_TRUE(details);
   EXPECT_FALSE(details->is_deprecated);

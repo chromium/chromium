@@ -17,15 +17,15 @@ let same_page_navigate_test = async_test("Ensure that the scroll position is cor
 
 same_page_navigate_test.step(async () => {
   await waitForCompositorCommit();
-  // exit in second load, using scale to detect
-  if (internals.pageScaleFactor() == 2) {
+  // exit in second load, using localStorage to detect
+  if (localStorage.getItem("is_loaded")) {
     assert_equals(scrollX, 0);
     assert_equals(scrollY, 0);
     same_page_navigate_test.done();
     return;
   }
 
-  internals.setPageScaleFactor(2);
+  localStorage.setItem("is_loaded", true);
   await waitForCompositorCommit();
 
   scrollTo(0, 10000);

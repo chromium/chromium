@@ -47,11 +47,15 @@ class ASH_EXPORT VcEffectsDelegate {
   // Returns the number of hosted effects.
   int GetNumEffects();
 
-  // Retrieves the `VcHostedEffect` given its `effect_id`.
+  // Gets the `VcHostedEffect` given its `effect_id`.
   const VcHostedEffect* GetEffectById(VcEffectId effect_id);
 
-  // Retrieves a std::vector<> of hosted effects of the passed-in `type`.
-  std::vector<VcHostedEffect*> GetEffects(VcEffectType type);
+  // Gets all `VcHostedEffect`'s of `type` regardless of their dependencies.
+  std::vector<VcHostedEffect*> GetAllEffects(VcEffectType type);
+
+  // Gets the `VcHostedEffect`'s of `type`. Only effects whose dependencies are
+  // satisfied will be returned.
+  std::vector<VcHostedEffect*> GetAvailableEffects(VcEffectType type);
 
   // Records the state of all effects.
   void RecordInitialStates();

@@ -7,9 +7,10 @@
 
 #include "cc/tiles/image_decode_cache_utils.h"
 
+#include "base/byte_count.h"
 #include "base/check.h"
+#include "base/notreached.h"
 #include "cc/paint/paint_flags.h"
-#include "components/miracle_parameter/common/public/miracle_parameter.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkPixmap.h"
@@ -20,74 +21,38 @@
 
 namespace cc {
 
-namespace {
-
-BASE_FEATURE(kImageDecodeConfigurableFeature,
-             "ImageDecodeConfigurableFeature",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-MIRACLE_PARAMETER_FOR_INT(GetDefaultDecodedImageWorkingSetBudgetBytes,
-                          kImageDecodeConfigurableFeature,
-                          "DefaultDecodedImageWorkingSetBudgetBytes",
-                          128 * 1024 * 1024)
-
-#if !BUILDFLAG(IS_ANDROID)
-
-MIRACLE_PARAMETER_FOR_INT(GetDecodedImageWorkingSetBudgetBytesForLowEndDevice,
-                          kImageDecodeConfigurableFeature,
-                          "DecodedImageWorkingSetBudgetBytesForLowEndDevice",
-                          32 * 1024 * 1024)
-
-MIRACLE_PARAMETER_FOR_INT(GetDecodedImageWorkingSetBudgetBytesForAboveThreshold,
-                          kImageDecodeConfigurableFeature,
-                          "DecodedImageWorkingSetBudgetBytesForAboveThreshold",
-                          256 * 1024 * 1024)
-
-MIRACLE_PARAMETER_FOR_INT(GetImageDecodeMemoryThresholdMB,
-                          kImageDecodeConfigurableFeature,
-                          "ImageDecodeMemoryThresholdMB",
-                          4 * 1024)
-
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-}  // namespace
-
 // static
 bool ImageDecodeCacheUtils::ShouldEvictCaches(
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+    base::MemoryPressureLevel memory_pressure_level) {
   switch (memory_pressure_level) {
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
+    case base::MEMORY_PRESSURE_LEVEL_NONE:
+    case base::MEMORY_PRESSURE_LEVEL_MODERATE:
       return false;
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
+    case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static
 size_t ImageDecodeCacheUtils::GetWorkingSetBytesForImageDecode(
     bool for_renderer) {
-  size_t decoded_image_working_set_budget_bytes =
-      GetDefaultDecodedImageWorkingSetBudgetBytes();
+  base::ByteCount decoded_image_working_set_budget = base::MiB(128);
 #if !BUILDFLAG(IS_ANDROID)
   if (for_renderer) {
     const bool using_low_memory_policy = base::SysInfo::IsLowEndDevice();
-    // If there's over `kImageDecodeMemoryThresholdMB` of RAM, increase the
-    // working set size to `kDecodedImageWorkingSetBudgetBytesForAboveThreshold`
-    // for both gpu and software.
+    // If there's over 4GB of RAM, increase the working set size to 256MB for
+    // both gpu and software.
+    constexpr base::ByteCount kImageDecodeMemoryThreshold = base::GiB(4);
     if (using_low_memory_policy) {
-      decoded_image_working_set_budget_bytes =
-          GetDecodedImageWorkingSetBudgetBytesForLowEndDevice();
-    } else if (base::SysInfo::AmountOfPhysicalMemoryMB() >=
-               GetImageDecodeMemoryThresholdMB()) {
-      decoded_image_working_set_budget_bytes =
-          GetDecodedImageWorkingSetBudgetBytesForAboveThreshold();
+      decoded_image_working_set_budget = base::MiB(32);
+    } else if (base::SysInfo::AmountOfPhysicalMemory() >=
+               kImageDecodeMemoryThreshold) {
+      decoded_image_working_set_budget = base::MiB(256);
     }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
-  return decoded_image_working_set_budget_bytes;
+  return decoded_image_working_set_budget.InBytesUnsigned();
 }
 
 }  // namespace cc

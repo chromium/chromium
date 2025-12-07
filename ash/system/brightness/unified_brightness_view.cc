@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/system/brightness/unified_brightness_view.h"
 
 #include <memory>
@@ -96,7 +91,7 @@ UnifiedBrightnessView::UnifiedBrightnessView(
     // and the brightness slider popup is shown, do not allow the more_button to
     // open quick settings.
     auto* window = Shell::Get()->screen_pinning_controller()->pinned_window();
-    if (window && WindowState::Get(window)->IsTrustedPinned()) {
+    if (window && WindowState::Get(window)->IsLockedFullscreen()) {
       more_button_->SetEnabled(false);
     }
 

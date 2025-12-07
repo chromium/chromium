@@ -12,6 +12,7 @@
 #include <iterator>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "components/zucchini/buffer_view.h"
 
 namespace zucchini {
@@ -39,7 +40,7 @@ class BufferSink : public MutableBufferView {
     DCHECK_NE(begin(), nullptr);
     if (Remaining() < sizeof(T))
       return false;
-    ::memcpy(begin(), &value, sizeof(T));
+    UNSAFE_TODO(::memcpy(begin(), &value, sizeof(T)));
     remove_prefix(sizeof(T));
     return true;
   }

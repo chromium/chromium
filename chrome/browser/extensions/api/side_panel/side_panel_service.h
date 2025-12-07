@@ -120,6 +120,47 @@ class SidePanelService : public BrowserContextKeyedAPI,
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  // Returns the side panel layout for the associated BrowserContext.
+  api::side_panel::PanelLayout GetSidePanelLayout();
+
+  // Closes the `extension`'s side panel for the specified `tab_id` and profile
+  // specified by `context`. `include_incognito_information` indicates whether
+  // the registry should allow crossing incognito contexts when looking up
+  // `tab_id`. If `window_id` is specified, checks that the given `tab_id`
+  // belongs to the `window_id`. Returns true on success; returns
+  // an error string on failure.
+  base::expected<bool, std::string> CloseSidePanelForTab(
+      const Extension& extension,
+      content::BrowserContext* context,
+      int tab_id,
+      std::optional<int> window_id,
+      bool include_incognito_information);
+
+  // Closes the `extension`'s side panel for the specified `window_id` and
+  // profile specified by `context`. This is only valid if the extension has an
+  // active side panel in the window. This will close the global side panel
+  // in the window but will not affect contextual panels in other tabs.
+  // `include_incognito_information` indicates whether the registry should allow
+  // crossing incognito contexts when looking up the window. Returns true on
+  // success; returns an error string on failure.
+  base::expected<bool, std::string> CloseSidePanelForWindow(
+      const Extension& extension,
+      content::BrowserContext* context,
+      int window_id,
+      bool include_incognito_information);
+
+  // Dispatch the sidePanel.onOpened event to the extension.
+  void DispatchOnOpenedEvent(const ExtensionId& extension_id,
+                             int window_id,
+                             std::optional<int> tab_id,
+                             const std::string& path);
+
+  // Dispatch the sidePanel.onClosed event to the extension.
+  void DispatchOnClosedEvent(const ExtensionId& extension_id,
+                             int window_id,
+                             std::optional<int> tab_id,
+                             const std::string& path);
+
  private:
   friend class BrowserContextKeyedAPIFactory<SidePanelService>;
 

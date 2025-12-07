@@ -6,8 +6,8 @@
 
 #include <drm_fourcc.h>
 
+#include "base/files/platform_file.h"
 #include "base/logging.h"
-#include "build/chromeos_buildflags.h"
 #include "media/media_buildflags.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/ozone/platform/drm/common/scoped_drm_types.h"
@@ -39,9 +39,8 @@ uint32_t OverlayTransformToDrmRotationPropertyValue(
     case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_90:
     case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_270:
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return 0;
 }
 
 // Rotations are dependent on modifiers. Tiled formats can be rotated,
@@ -211,6 +210,14 @@ bool HardwareDisplayPlaneAtomic::SetPlaneProps(drmModeAtomicReq* property_set) {
   // Update properties_ if the setting the props succeeded.
   properties_ = assigned_props_;
   return true;
+}
+
+void HardwareDisplayPlaneAtomic::AssignDisableProps() {
+  set_in_use(false);
+  set_owning_crtc(0);
+  AssignPlaneProps(nullptr, 0, 0, gfx::Rect(), gfx::Rect(), gfx::Rect(),
+                   gfx::OVERLAY_TRANSFORM_NONE, gfx::ColorSpace(),
+                   base::kInvalidPlatformFile, DRM_FORMAT_INVALID, false);
 }
 
 uint32_t HardwareDisplayPlaneAtomic::AssignedCrtcId() const {

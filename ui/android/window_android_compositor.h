@@ -10,12 +10,13 @@
 #include "base/observer_list_types.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
+#include "gpu/ipc/common/surface_handle.h"
 #include "ui/android/ui_android_export.h"
 #include "ui/compositor/compositor_lock.h"
 
 namespace viz {
 class SurfaceId;
-struct FrameTimingDetails;
+class FrameTimingDetails;
 }
 
 namespace ui {
@@ -27,39 +28,33 @@ class UI_ANDROID_EXPORT WindowAndroidCompositor {
  public:
   virtual ~WindowAndroidCompositor() {}
 
-  // Ref must be destroyed on same thread as WindowAndroidCompositor.
-  class ReadbackRef {
-   public:
-    virtual ~ReadbackRef() = default;
-
-   protected:
-    ReadbackRef() = default;
-  };
-
   class FrameSubmissionObserver : public base::CheckedObserver {
    public:
     virtual void DidSubmitCompositorFrame() {}
   };
 
-  // While there are outstanding ReadbackRefs, Compositor will attempt to
-  // ensure any pending viz::CopyOutputRequest in any part of the compositor
-  // surface tree are fulfilled in a timely manner. `surface_id` corresponds to
-  // the `Surface` being copied. The GPU contents of this `surface_id` are kept
-  // alive as long as there is an outstanding `ReadbackRef` for it.
-  virtual std::unique_ptr<ReadbackRef> TakeReadbackRef(
+  // While there are outstanding `ScopedKeepSurfaceAlive`, Compositor will
+  // attempt to ensure any pending `viz::CopyOutputRequest` in any part of the
+  // compositor surface tree are fulfilled in a timely manner. `surface_id`
+  // corresponds to the `Surface` being copied. The GPU contents of this
+  // `surface_id` are kept alive as long as there is an outstanding
+  // `ScopedKeepSurfaceAlive` for it.
+  using ScopedKeepSurfaceAliveCallback = base::OnceCallback<void()>;
+  virtual ScopedKeepSurfaceAliveCallback TakeScopedKeepSurfaceAliveCallback(
       const viz::SurfaceId& surface_id) = 0;
   virtual void RequestCopyOfOutputOnRootLayer(
       std::unique_ptr<viz::CopyOutputRequest> request) = 0;
   virtual void SetNeedsAnimate() = 0;
   virtual ResourceManager& GetResourceManager() = 0;
   virtual viz::FrameSinkId GetFrameSinkId() = 0;
+  virtual gpu::SurfaceHandle GetSurfaceHandle() = 0;
   virtual void AddChildFrameSink(const viz::FrameSinkId& frame_sink_id) = 0;
   virtual void RemoveChildFrameSink(const viz::FrameSinkId& frame_sink_id) = 0;
   virtual bool IsDrawingFirstVisibleFrame() const = 0;
-  virtual void SetVSyncPaused(bool paused) = 0;
   virtual void OnUpdateRefreshRate(float refresh_rate) = 0;
   virtual void OnUpdateSupportedRefreshRates(
       const std::vector<float>& supported_refresh_rates) = 0;
+  virtual void OnAdaptiveRefreshRateInfoChanged() = 0;
   virtual std::unique_ptr<ui::CompositorLock> GetCompositorLock(
       base::TimeDelta timeout) = 0;
   virtual void OnUpdateOverlayTransform() = 0;

@@ -57,7 +57,9 @@ CryptohomeRecoverySetupScreen::CryptohomeRecoverySetupScreen(
       view_(std::move(view)),
       exit_callback_(std::move(exit_callback)),
       auth_performer_(UserDataAuthClient::Get()),
-      cryptohome_pin_engine_(&auth_performer_) {}
+      // TODO(crbug.com/404133029): Remove g_browser_process usage.
+      cryptohome_pin_engine_(g_browser_process->local_state(),
+                             &auth_performer_) {}
 
 CryptohomeRecoverySetupScreen::~CryptohomeRecoverySetupScreen() = default;
 

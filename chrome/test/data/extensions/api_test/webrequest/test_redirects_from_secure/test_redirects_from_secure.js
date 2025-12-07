@@ -21,8 +21,9 @@ loadScript.then(async function() {
   runTests([
     function redirectToInsecure() {
       var listener = function(details) {
-        if (details.url.endsWith("page_with_referrer.html"))
+        if (details.url.endsWith("page_with_referrer.html")) {
           return {redirectUrl: redirectURL};
+        }
       };
       chrome.webRequest.onHeadersReceived.addListener(listener,
           {urls: ['<all_urls>'] }, ['blocking']);

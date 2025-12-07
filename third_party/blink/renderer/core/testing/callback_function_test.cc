@@ -71,10 +71,10 @@ Vector<String> CallbackFunctionTest::testSequenceCallback(
 }
 
 void CallbackFunctionTest::testEnumCallback(V8TestEnumCallback* callback,
-                                            const String& enum_value,
+                                            const V8InternalEnum& enum_value,
                                             ExceptionState& exception_state) {
   callback->InvokeAndReportException(
-      nullptr, V8InternalEnum::Create(enum_value).value());
+      nullptr, V8InternalEnum::Create(enum_value.AsString()).value());
 }
 
 }  // namespace blink

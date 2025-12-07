@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/geometry/skia_conversions.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
+#include "third_party/skia/include/core/SkM44.h"
+#include "third_party/skia/include/core/SkMatrix.h"
+#include "third_party/skia/include/core/SkRect.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
 
 namespace gfx {
@@ -89,9 +89,9 @@ Size SkISizeToSize(const SkISize& size) {
 
 void QuadFToSkPoints(const QuadF& quad, SkPoint points[4]) {
   points[0] = PointFToSkPoint(quad.p1());
-  points[1] = PointFToSkPoint(quad.p2());
-  points[2] = PointFToSkPoint(quad.p3());
-  points[3] = PointFToSkPoint(quad.p4());
+  UNSAFE_TODO(points[1]) = PointFToSkPoint(quad.p2());
+  UNSAFE_TODO(points[2]) = PointFToSkPoint(quad.p3());
+  UNSAFE_TODO(points[3]) = PointFToSkPoint(quad.p4());
 }
 
 SkMatrix AxisTransform2dToSkMatrix(const AxisTransform2d& transform) {
@@ -116,12 +116,6 @@ Transform SkM44ToTransform(const SkM44& matrix) {
       matrix.rc(1, 0), matrix.rc(1, 1), matrix.rc(1, 2), matrix.rc(1, 3),
       matrix.rc(2, 0), matrix.rc(2, 1), matrix.rc(2, 2), matrix.rc(2, 3),
       matrix.rc(3, 0), matrix.rc(3, 1), matrix.rc(3, 2), matrix.rc(3, 3));
-}
-
-// TODO(crbug.com/40237414): Remove this function in favor of the other form.
-void TransformToFlattenedSkMatrix(const gfx::Transform& transform,
-                                  SkMatrix* flattened) {
-  *flattened = TransformToFlattenedSkMatrix(transform);
 }
 
 SkMatrix TransformToFlattenedSkMatrix(const Transform& matrix) {

@@ -12,10 +12,15 @@
 
 #include "base/containers/contains.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "sql/database.h"
 #include "sql/test/scoped_error_expecter.h"
+#include "sql/test/test_helpers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/sqlite/sqlite3.h"
 
@@ -24,11 +29,7 @@ namespace {
 
 class StatementTest : public testing::Test {
  public:
-  ~StatementTest() override = default;
-
   void SetUp() override {
-    db_.set_histogram_tag("Test");
-
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     ASSERT_TRUE(
         db_.Open(temp_dir_.GetPath().AppendASCII("statement_test.sqlite")));
@@ -36,7 +37,7 @@ class StatementTest : public testing::Test {
 
  protected:
   base::ScopedTempDir temp_dir_;
-  Database db_;
+  Database db_{test::kTestTag};
 };
 
 TEST_F(StatementTest, Assign) {
@@ -256,9 +257,7 @@ TEST_F(StatementTest, BindBlob) {
   Statement select(db_.GetUniqueStatement("SELECT b FROM blobs ORDER BY id"));
   for (const std::vector<uint8_t>& value : values) {
     ASSERT_TRUE(select.Step());
-    std::vector<uint8_t> column_value;
-    EXPECT_TRUE(select.ColumnBlobAsVector(0, &column_value));
-    EXPECT_EQ(value, column_value);
+    EXPECT_EQ(value, select.ColumnBlobAsVector(0));
   }
   EXPECT_FALSE(select.Step());
 }
@@ -289,11 +288,61 @@ TEST_F(StatementTest, BindBlob_String16Overload) {
   Statement select(db_.GetUniqueStatement("SELECT b FROM blobs ORDER BY id"));
   for (const std::u16string& value : values) {
     ASSERT_TRUE(select.Step());
-    std::u16string column_value;
-    EXPECT_TRUE(select.ColumnBlobAsString16(0, &column_value));
-    EXPECT_EQ(value, column_value);
+    EXPECT_THAT(select.ColumnBlobAsString16(0), testing::Optional(value));
   }
   EXPECT_FALSE(select.Step());
+}
+
+TEST_F(StatementTest, BlobStressTest) {
+  // Create a table that holds a whole lot of blobs. This could tickle
+  // pointer-stability related bugs in the container that stores blob data
+  // before it's being written.
+  const int kMany = 200;
+  std::string create_table_sql(
+      "CREATE TABLE blobs(id INTEGER PRIMARY KEY NOT NULL ");
+  for (int i = 0; i < kMany; ++i) {
+    base::StrAppend(&create_table_sql,
+                    {", a", base::NumberToString(i), " BLOB NOT NULL"});
+  }
+  create_table_sql.append(")");
+
+  ASSERT_TRUE(db_.Execute(create_table_sql));
+
+  std::vector<std::string> param_markers(kMany + 1, "?");
+  const std::string insert_sql =
+      base::StrCat({"INSERT INTO blobs VALUES(",
+                    base::JoinString(param_markers, ", "), ")"});
+  sql::StatementID kInsertStatementId = SQL_FROM_HERE;
+  {
+    Statement insert(db_.GetCachedStatement(kInsertStatementId, insert_sql));
+    // ID row.
+    insert.BindInt64(0, 1);
+    for (int i = 0; i < kMany; ++i) {
+      insert.BindBlob(i + 1, std::string(100, 'a' + i % 26));
+    }
+
+    // Make sure overwriting a blob works as expected.
+    insert.BindBlob(50, std::string("overwrite"));
+    ASSERT_TRUE(insert.Run());
+  }
+
+  // Verify the blobs read out as expected.
+  {
+    Statement select(db_.GetUniqueStatement("SELECT * FROM blobs"));
+    ASSERT_TRUE(select.Step());
+    EXPECT_EQ("overwrite", select.ColumnBlobAsString(50));
+    EXPECT_EQ(std::string(100, 'y'), select.ColumnBlobAsString(51));
+  }
+
+  // Make sure the underlying statement is reset i.e. the old bindings don't
+  // persist across different invocations of `GetCachedStatement`.
+  {
+    Statement insert(db_.GetCachedStatement(kInsertStatementId,
+                                            base::cstring_view(insert_sql)));
+    // ID row.
+    insert.BindInt64(0, 2);
+    ASSERT_FALSE(insert.Run());
+  }
 }
 
 TEST_F(StatementTest, BindString) {
@@ -320,12 +369,23 @@ TEST_F(StatementTest, BindString) {
     insert.Reset(/*clear_bound_vars=*/true);
   }
 
-  Statement select(db_.GetUniqueStatement("SELECT t FROM texts ORDER BY id"));
-  for (const std::string& value : values) {
-    ASSERT_TRUE(select.Step());
-    EXPECT_EQ(value, select.ColumnString(0));
+  {
+    Statement select(db_.GetUniqueStatement("SELECT t FROM texts ORDER BY id"));
+    for (const std::string& value : values) {
+      ASSERT_TRUE(select.Step());
+      EXPECT_EQ(value, select.ColumnString(0));
+    }
+    EXPECT_FALSE(select.Step());
   }
-  EXPECT_FALSE(select.Step());
+
+  {
+    Statement select(db_.GetUniqueStatement("SELECT t FROM texts ORDER BY id"));
+    for (const std::string& value : values) {
+      ASSERT_TRUE(select.Step());
+      EXPECT_EQ(value, select.ColumnStringView(0));
+    }
+    EXPECT_FALSE(select.Step());
+  }
 }
 
 TEST_F(StatementTest, BindString_NullData) {

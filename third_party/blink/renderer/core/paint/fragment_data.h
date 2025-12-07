@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
-#include "third_party/blink/renderer/platform/graphics/paint/ref_counted_property_tree_state.h"
+#include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -60,28 +60,19 @@ class CORE_EXPORT FragmentData : public GarbageCollected<FragmentData> {
     EnsureRareData().sticky_constraints = constraints;
   }
 
-  // A fragment ID unique within the LayoutObject. It is the same as the
-  // fragmentainer index.
-  wtf_size_t FragmentID() const {
-    return rare_data_ ? rare_data_->fragment_id : 0;
-  }
-  void SetFragmentID(wtf_size_t id) {
-    if (!rare_data_ && id == 0)
-      return;
-    EnsureRareData().fragment_id = id;
-  }
-
   // Holds references to the paint property nodes created by this object.
   const ObjectPaintProperties* PaintProperties() const {
-    return rare_data_ ? rare_data_->paint_properties.get() : nullptr;
+    return rare_data_ ? rare_data_->paint_properties.Get() : nullptr;
   }
   ObjectPaintProperties* PaintProperties() {
-    return rare_data_ ? rare_data_->paint_properties.get() : nullptr;
+    return rare_data_ ? rare_data_->paint_properties.Get() : nullptr;
   }
   ObjectPaintProperties& EnsurePaintProperties() {
     EnsureRareData();
-    if (!rare_data_->paint_properties)
-      rare_data_->paint_properties = ObjectPaintProperties::Create();
+    if (!rare_data_->paint_properties) {
+      rare_data_->paint_properties =
+          MakeGarbageCollected<ObjectPaintProperties>();
+    }
     return *rare_data_->paint_properties;
   }
   void ClearPaintProperties() {
@@ -103,30 +94,23 @@ class CORE_EXPORT FragmentData : public GarbageCollected<FragmentData> {
   //   properties would have a transform node that points to the div's
   //   ancestor transform space.
   PropertyTreeStateOrAlias LocalBorderBoxProperties() const {
-    DCHECK(HasLocalBorderBoxProperties());
-
-    // TODO(chrishtr): this should never happen, but does in practice and
-    // we haven't been able to find all of the cases where it happens yet.
-    // See crbug.com/1137883. Once we find more of them, remove this.
-    if (!rare_data_ || !rare_data_->local_border_box_properties)
-      return PropertyTreeState::Root();
-    return rare_data_->local_border_box_properties->GetPropertyTreeState();
+    if (!HasLocalBorderBoxProperties()) [[unlikely]] {
+      return LocalBorderBoxPropertiesFallback();
+    }
+    return PropertyTreeStateOrAlias(rare_data_->local_border_box_properties);
   }
   bool HasLocalBorderBoxProperties() const {
-    return rare_data_ && rare_data_->local_border_box_properties;
+    return rare_data_ &&
+           rare_data_->local_border_box_properties.IsInitialized();
   }
   void ClearLocalBorderBoxProperties() {
-    if (rare_data_)
-      rare_data_->local_border_box_properties = nullptr;
+    if (rare_data_) {
+      rare_data_->local_border_box_properties.SetUninitialized();
+    }
   }
   void SetLocalBorderBoxProperties(const PropertyTreeStateOrAlias& state) {
-    EnsureRareData();
-    if (!rare_data_->local_border_box_properties) {
-      rare_data_->local_border_box_properties =
-          std::make_unique<RefCountedPropertyTreeStateOrAlias>(state);
-    } else {
-      *rare_data_->local_border_box_properties = state;
-    }
+    DCHECK(state.IsInitialized());
+    EnsureRareData().local_border_box_properties = state;
   }
 
   void SetCullRect(const CullRect& cull_rect) {
@@ -169,6 +153,8 @@ class CORE_EXPORT FragmentData : public GarbageCollected<FragmentData> {
  protected:
   friend class FragmentDataTest;
 
+  NOINLINE PropertyTreeStateOrAlias LocalBorderBoxPropertiesFallback() const;
+
 #if DCHECK_IS_ON()
   void AssertIsFirst() const { DCHECK(is_first_); }
 #else
@@ -196,13 +182,12 @@ class CORE_EXPORT FragmentData : public GarbageCollected<FragmentData> {
     HeapVector<Member<FragmentData>> additional_fragments;
 
     // Fragment specific data.
-    std::unique_ptr<ObjectPaintProperties> paint_properties;
-    std::unique_ptr<RefCountedPropertyTreeStateOrAlias>
-        local_border_box_properties;
+    Member<ObjectPaintProperties> paint_properties;
+    TraceablePropertyTreeStateOrAlias local_border_box_properties{
+        TraceablePropertyTreeStateOrAlias::kUninitialized};
     CullRect cull_rect_;
     CullRect contents_cull_rect_;
     UniqueObjectId unique_id = 0;
-    wtf_size_t fragment_id = 0;
   };
 
   RareData& EnsureRareData();

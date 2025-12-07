@@ -28,8 +28,8 @@ class FakeAssistiveSuggester : public SuggestionsSource {
     return suggestions_;
   }
 
-  void SetSuggestions(const std::vector<AssistiveSuggestion> suggestions) {
-    suggestions_ = suggestions;
+  void SetSuggestions(std::vector<AssistiveSuggestion> suggestions) {
+    suggestions_ = std::move(suggestions);
   }
 
  private:
@@ -48,8 +48,8 @@ class FakeSuggestionsService : public AsyncSuggestionsSource {
 
   bool IsAvailable() override { return is_available_; }
 
-  void SetSuggestions(const std::vector<AssistiveSuggestion> suggestions) {
-    suggestions_ = suggestions;
+  void SetSuggestions(std::vector<AssistiveSuggestion> suggestions) {
+    suggestions_ = std::move(suggestions);
   }
 
   void SetIsAvailable(bool is_available) { is_available_ = is_available; }

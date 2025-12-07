@@ -5,8 +5,7 @@
       "mac",
       "linux",
       "android",
-      "chromeos_ash",
-      "chromeos_lacros",
+      "chromeos",
       "fuchsia"
     ],
     "policy_pref_mapping_tests": [

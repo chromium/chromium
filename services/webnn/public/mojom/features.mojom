@@ -16,3 +16,42 @@ feature kExperimentalWebMachineLearningNeuralNetwork {
   const string name = "ExperimentalWebMachineLearningNeuralNetwork";
   const bool default_state = false;
 };
+
+// Enables the Core ML backend for WebNN.
+[EnableIf=is_apple]
+feature kWebNNCoreML {
+  const string name = "WebNNCoreML";
+
+  // macOS default state is enabled.
+  [EnableIf=is_mac]
+  const bool default_state = true;
+
+  // iOS default state is disabled since there are sandbox issues
+  // with using CoreML in the GPU process, we are waiting to hear back
+  // from Apple. https://crbug.com/417496826
+  [EnableIf=is_ios]
+  const bool default_state = false;
+};
+
+// Passes MLComputeUnitsCPUAndGPU or MLComputeUnitsCPUAndNPU to Core ML instead
+// of MLComputeUnitsAll when the "gpu" or "npu" device types are passed.
+[EnableIf=is_apple]
+feature kWebNNCoreMLExplicitGPUOrNPU {
+  const string name = "WebNNCoreMLExplicitGPUOrNPU";
+  // Disabled by default due to https://crbug.com/344935458.
+  const bool default_state = false;
+};
+
+// Enables the DirectML backend for WebNN.
+[EnableIf=is_win]
+feature kWebNNDirectML {
+  const string name = "WebNNDirectML";
+  const bool default_state = false;
+};
+
+// Enables the ONNX Runtime backend for WebNN.
+[EnableIf=is_win]
+feature kWebNNOnnxRuntime {
+  const string name = "WebNNOnnxRuntime";
+  const bool default_state = true;
+};

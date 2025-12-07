@@ -476,6 +476,7 @@ suite('CrActionMenu', function() {
     });
 
     // Still anchored at the right place after content size changes.
+    items[0]!.style.whiteSpace = 'nowrap';  // prevent text wrapping
     items[0]!.textContent = 'this is a long string to make menu wide';
   }
 
@@ -606,11 +607,12 @@ suite('CrActionMenu', function() {
         </style>
         <test-element></test-element>`);
 
-      const testElement = document.querySelector('test-element')!;
-      menu = testElement.shadowRoot!.querySelector('cr-action-menu')!;
+      const testElement =
+          document.body.querySelector<TestElement>('test-element')!;
+      menu = testElement.shadowRoot.querySelector('cr-action-menu')!;
       dialog = menu.getDialog();
-      dots = testElement.shadowRoot!.querySelector('#dots')!;
-      container = testElement.shadowRoot!.querySelector('#container')!;
+      dots = testElement.shadowRoot.querySelector('#dots')!;
+      container = testElement.shadowRoot.querySelector('#container')!;
     });
 
     // Show the menu, scrolling the body to the button.

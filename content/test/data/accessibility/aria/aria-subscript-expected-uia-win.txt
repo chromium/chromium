@@ -9,7 +9,7 @@ Document
 ++++Text
 ++++++Text Name=' '
 ++++++Group IsControlElement=false
-++++++++Group Name='3'
+++++++++Group
 ++++++++++Group
 ++++++++++++Text Name='3'
 ++++++Text Name=' '

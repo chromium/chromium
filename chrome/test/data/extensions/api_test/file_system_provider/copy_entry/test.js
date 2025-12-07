@@ -4,6 +4,8 @@
 
 'use strict';
 
+let testUtil;
+
 /**
  * @type {Object}
  * @const
@@ -29,7 +31,7 @@ var TESTING_NEW_FILE_NAME = 'puppy.txt';
  * @param {function(string)} onError Error callback with an error code.
  */
 function onCopyEntryRequested(options, onSuccess, onError) {
-  if (options.fileSystemId !== test_util.FILE_SYSTEM_ID) {
+  if (options.fileSystemId !== testUtil.FILE_SYSTEM_ID) {
     onError('SECURITY');  // enum ProviderError.
     return;
   }
@@ -39,21 +41,21 @@ function onCopyEntryRequested(options, onSuccess, onError) {
     return;
   }
 
-  if (!(options.sourcePath in test_util.defaultMetadata)) {
+  if (!(options.sourcePath in testUtil.defaultMetadata)) {
     onError('NOT_FOUND');
     return;
   }
 
-  if (options.targetPath in test_util.defaultMetadata) {
+  if (options.targetPath in testUtil.defaultMetadata) {
     onError('EXISTS');
     return;
   }
 
   // Copy the metadata, but change the 'name' field.
   var newMetadata =
-      structuredClone(test_util.defaultMetadata[options.sourcePath]);
+      structuredClone(testUtil.defaultMetadata[options.sourcePath]);
   newMetadata.name = options.targetPath.split('/').pop();
-  test_util.defaultMetadata[options.targetPath] = newMetadata;
+  testUtil.defaultMetadata[options.targetPath] = newMetadata;
 
   onSuccess();  // enum ProviderError.
 }
@@ -66,14 +68,14 @@ function onCopyEntryRequested(options, onSuccess, onError) {
  */
 function setUp(callback) {
   chrome.fileSystemProvider.onGetMetadataRequested.addListener(
-      test_util.onGetMetadataRequestedDefault);
+      testUtil.onGetMetadataRequestedDefault);
 
-  test_util.defaultMetadata['/' + TESTING_FILE.name] = TESTING_FILE;
+  testUtil.defaultMetadata['/' + TESTING_FILE.name] = TESTING_FILE;
 
   chrome.fileSystemProvider.onCopyEntryRequested.addListener(
       onCopyEntryRequested);
 
-  test_util.mountFileSystem(callback);
+  testUtil.mountFileSystem(callback);
 }
 
 /**
@@ -83,13 +85,13 @@ function runTests() {
   chrome.test.runTests([
     // Copy an existing file to a non-existing destination. Should succeed.
     function copyEntrySuccess() {
-      test_util.fileSystem.root.getFile(
+      testUtil.fileSystem.root.getFile(
           TESTING_FILE.name, {create: false},
           chrome.test.callbackPass(function(sourceEntry) {
             chrome.test.assertEq(TESTING_FILE.name, sourceEntry.name);
             chrome.test.assertFalse(sourceEntry.isDirectory);
             sourceEntry.copyTo(
-                test_util.fileSystem.root,
+                testUtil.fileSystem.root,
                 TESTING_NEW_FILE_NAME,
                 chrome.test.callbackPass(function(targetEntry) {
                   chrome.test.assertEq(TESTING_NEW_FILE_NAME, targetEntry.name);
@@ -105,13 +107,13 @@ function runTests() {
     // Copy an existing file to a location which already holds a file.
     // Should fail.
     function copyEntryExistsError() {
-      test_util.fileSystem.root.getFile(
+      testUtil.fileSystem.root.getFile(
           TESTING_FILE.name, {create: false},
           chrome.test.callbackPass(function(sourceEntry) {
             chrome.test.assertEq(TESTING_FILE.name, sourceEntry.name);
             chrome.test.assertFalse(sourceEntry.isDirectory);
             sourceEntry.copyTo(
-                test_util.fileSystem.root,
+                testUtil.fileSystem.root,
                 TESTING_NEW_FILE_NAME,
                 function(targetEntry) {
                   chrome.test.fail('Succeeded, but should fail.');
@@ -125,5 +127,12 @@ function runTests() {
   ]);
 }
 
-// Setup and run all of the test cases.
-setUp(runTests);
+// This works-around that background scripts can't import because they aren't
+// considered modules.
+(async () => {
+  testUtil = await import(
+    '/_test_resources/api_test/file_system_provider/test_util.js');
+
+  // Setup and run all of the test cases.
+  setUp(runTests);
+})();

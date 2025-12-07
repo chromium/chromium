@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM_FAMILY) && \
@@ -15,7 +20,6 @@
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace media {
 namespace {
@@ -44,7 +48,7 @@ TEST(MT21UtilTest, TestBitstreamReader) {
 
 TEST(MT21UtilTest, TestReadGolombRiceSymbol) {
   constexpr int k = 2;
-  uint8_t buf[64] = {0};
+  uint8_t buf[64] = {};
   // 00=0  010=1  011=-1 1000=2  11111111100000001=-18
   buf[15] = 0b00010011;
   buf[14] = 0b10001111;
@@ -63,7 +67,7 @@ TEST(MT21UtilTest, TestFastReadGolombRiceSymbol) {
   GolombRiceTableEntry cache[kGolombRiceCacheSize];
   PopulateGolombRiceCache(cache);
   constexpr int k = 2;
-  uint8_t buf[64] = {0};
+  uint8_t buf[64] = {};
   // 00=0  010=1 011=-1 1000 = 2 11111111100000001=-18
   buf[15] = 0b00010011;
   buf[14] = 0b10001111;
@@ -102,8 +106,8 @@ TEST(MT21UtilTest, TestPredictionMethods) {
 TEST(MT21UtilTest, TestSolidColorBlocks) {
   GolombRiceTableEntry cache[kGolombRiceCacheSize];
   PopulateGolombRiceCache(cache);
-  uint8_t buf[64] = {0};
-  uint8_t dest_buf[64] = {0};
+  uint8_t buf[64] = {};
+  uint8_t dest_buf[64] = {};
 
   buf[15] = 0xF0;
   buf[14] = 0x1D;
@@ -136,7 +140,7 @@ TEST(MT21UtilTest, TestCompressedBlocks) {
       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   };
-  uint8_t dest_buf[64] = {0};
+  uint8_t dest_buf[64] = {};
   uint8_t expected_buf[64] = {
       0xD4, 0xD4, 0xD4, 0xD4, 0xD4, 0xD4, 0xD4, 0xD4, 0xD3, 0xD3, 0xD3,
       0xD3, 0xD3, 0xD3, 0xD2, 0xD2, 0xD4, 0xD4, 0xD4, 0xD4, 0xD4, 0xD5,
@@ -161,7 +165,7 @@ TEST(MT21UtilTest, TestVectorReadGolombRiceSymbol) {
   uint32x4_t k_vals[4];
   uint32x4_t dword_solid_color_mask[4];
   uint8x16_t solid_color_mask;
-  uint8_t buf[64] = {0};
+  uint8_t buf[64] = {};
   // 001=(k=2)  10000000=(top_right=0x80)
   buf[63] = 0b00110000;
   // 00=0  010=1
@@ -320,8 +324,8 @@ TEST(MT21UtilTest, TestSubblockTransposeScatter) {
 }
 
 TEST(MT21UtilTest, TestVectorSolidColorBlocks) {
-  uint8_t buf[64] = {0};
-  uint8_t dest_buf[64 * 16] = {0};
+  uint8_t buf[64] = {};
+  uint8_t dest_buf[64 * 16] = {};
   std::vector<MT21YSubblock> y_subblocks;
   std::vector<MT21UVSubblock> uv_subblocks;
   uint8_t scratch[kMT21ScratchMemorySize] __attribute__((aligned(16)));
@@ -359,7 +363,7 @@ TEST(MT21UtilTest, TestVectorCompressedBlocks) {
       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   };
-  uint8_t dest_buf[64 * 16] = {0};
+  uint8_t dest_buf[64 * 16] = {};
   uint8_t expected_buf[64] = {
       0xD4, 0xD4, 0xD4, 0xD4, 0xD4, 0xD4, 0xD4, 0xD4, 0xD3, 0xD3, 0xD3,
       0xD3, 0xD3, 0xD3, 0xD2, 0xD2, 0xD4, 0xD4, 0xD4, 0xD4, 0xD4, 0xD5,

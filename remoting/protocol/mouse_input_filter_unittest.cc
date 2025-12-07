@@ -4,6 +4,10 @@
 
 #include "remoting/protocol/mouse_input_filter.h"
 
+#include <array>
+#include <utility>
+
+#include "base/containers/span.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/protocol/protocol_mock_objects.h"
 #include "remoting/protocol/test_event_matchers.h"
@@ -18,6 +22,10 @@ namespace remoting::protocol {
 
 using test::EqualsMouseMoveEvent;
 
+namespace {
+
+using Point = std::pair</* x */ int, /* y */ int>;
+
 static MouseEvent MouseMoveEvent(int x, int y) {
   MouseEvent event;
   event.set_x(x);
@@ -25,14 +33,11 @@ static MouseEvent MouseMoveEvent(int x, int y) {
   return event;
 }
 
-struct Point {
-  int x;
-  int y;
-};
+}  // namespace
 
 class MouseInputFilterTest : public testing::Test {
  public:
-  MouseInputFilterTest() : mouse_filter_(&mock_stub_) {}
+  MouseInputFilterTest() = default;
 
   // Set the size of the client viewing rectangle.
   void SetClientSize(int width, int height) {
@@ -51,69 +56,55 @@ class MouseInputFilterTest : public testing::Test {
     mouse_filter_.set_output_size(width, height);
   }
 
-  void InjectMouse(const Point& point, bool swap = false) {
-    mouse_filter_.InjectMouseEvent(MouseMoveEvent(point.x, point.y));
-    if (swap) {
-      mouse_filter_.InjectMouseEvent(MouseMoveEvent(point.y, point.x));
-    }
-  }
-
-  void ExpectNoMouse() {
-    EXPECT_CALL(mock_stub_, InjectMouseEvent(_)).Times(0);
-  }
-
-  void ExpectMouse(const Point& point, bool swap = false) {
-    EXPECT_CALL(mock_stub_,
-                InjectMouseEvent(EqualsMouseMoveEvent(point.x, point.y)))
-        .Times(1);
-    if (swap) {
-      EXPECT_CALL(mock_stub_,
-                  InjectMouseEvent(EqualsMouseMoveEvent(point.y, point.x)))
-          .Times(1);
-    }
-  }
-
-  void RunMouseTests(unsigned int len,
-                     const Point* injected,
-                     const Point* expected,
+  void RunMouseTests(base::span<const Point> injected,
+                     base::span<const Point> expected,
                      bool swap = false) {
+    ASSERT_EQ(injected.size(), expected.size());
     {
-      InSequence s;
-      for (unsigned int i = 0; i < len; ++i) {
-        ExpectMouse(expected[i], swap);
+      InSequence seq;
+      for (const auto& [x, y] : expected) {
+        EXPECT_CALL(mock_stub_, InjectMouseEvent(EqualsMouseMoveEvent(x, y)))
+            .Times(1);
+        if (swap) {
+          EXPECT_CALL(mock_stub_, InjectMouseEvent(EqualsMouseMoveEvent(y, x)))
+              .Times(1);
+        }
       }
     }
 
-    for (unsigned int i = 0; i < len; ++i) {
-      InjectMouse(injected[i], swap);
+    for (const auto& [x, y] : injected) {
+      mouse_filter_.InjectMouseEvent(MouseMoveEvent(x, y));
+      if (swap) {
+        mouse_filter_.InjectMouseEvent(MouseMoveEvent(y, x));
+      }
     }
   }
 
  protected:
   MockInputStub mock_stub_;
-  MouseInputFilter mouse_filter_;
+  MouseInputFilter mouse_filter_{&mock_stub_};
 };
 
 // Verify that no events get through if we don't set either dimensions.
 TEST_F(MouseInputFilterTest, NoDimensionsSet) {
-  ExpectNoMouse();
-  InjectMouse({10, 10});
+  EXPECT_CALL(mock_stub_, InjectMouseEvent(_)).Times(0);
+  mouse_filter_.InjectMouseEvent(MouseMoveEvent(10, 10));
 }
 
 // Verify that no events get through if there's no input size.
 TEST_F(MouseInputFilterTest, InputDimensionsZero) {
   SetHostDesktop(50, 50);
 
-  ExpectNoMouse();
-  InjectMouse({10, 10});
+  EXPECT_CALL(mock_stub_, InjectMouseEvent(_)).Times(0);
+  mouse_filter_.InjectMouseEvent(MouseMoveEvent(10, 10));
 }
 
 // Verify that no events get through if there's no output size.
 TEST_F(MouseInputFilterTest, OutputDimensionsZero) {
   SetClientSize(40, 40);
 
-  ExpectNoMouse();
-  InjectMouse({10, 10});
+  EXPECT_CALL(mock_stub_, InjectMouseEvent(_)).Times(0);
+  mouse_filter_.InjectMouseEvent(MouseMoveEvent(10, 10));
 }
 
 // Verify that no events get through when input and output are both set to zero.
@@ -121,8 +112,8 @@ TEST_F(MouseInputFilterTest, BothDimensionsZero) {
   SetClientSize(0, 0);
   SetHostDesktop(0, 0);
 
-  ExpectNoMouse();
-  InjectMouse({10, 10});
+  EXPECT_CALL(mock_stub_, InjectMouseEvent(_)).Times(0);
+  mouse_filter_.InjectMouseEvent(MouseMoveEvent(10, 10));
 }
 
 // Verify that no events get through if the input and output are both set to
@@ -132,8 +123,8 @@ TEST_F(MouseInputFilterTest, BothDimensionsOne) {
   SetClientSize(1, 1);
   SetHostDesktop(1, 1);
 
-  ExpectNoMouse();
-  InjectMouse({10, 10});
+  EXPECT_CALL(mock_stub_, InjectMouseEvent(_)).Times(0);
+  mouse_filter_.InjectMouseEvent(MouseMoveEvent(10, 10));
 }
 
 // Verify that a min-size desktop (2x2) is handled. This is an edge case test,
@@ -142,9 +133,9 @@ TEST_F(MouseInputFilterTest, BothDimensionsTwo) {
   SetClientSize(2, 2);
   SetHostDesktop(2, 2);
 
-  const Point injected[] = {{1, 1}};
-  const Point expected[] = {{1, 1}};
-  RunMouseTests(std::size(expected), injected, expected, true);
+  constexpr auto injected = std::to_array<Point>({{1, 1}});
+  constexpr auto expected = std::to_array<Point>({{1, 1}});
+  RunMouseTests(injected, expected, true);
 }
 
 // Verify that no events get through if negative dimensions are provided.
@@ -152,8 +143,8 @@ TEST_F(MouseInputFilterTest, NegativeDimensionsHandled) {
   SetClientSize(-42, -42);
   SetHostDesktop(-84, -84);
 
-  ExpectNoMouse();
-  InjectMouse({10, 10});
+  EXPECT_CALL(mock_stub_, InjectMouseEvent(_)).Times(0);
+  mouse_filter_.InjectMouseEvent(MouseMoveEvent(10, 10));
 }
 
 // Verify that all events get through, clamped to the output.
@@ -161,12 +152,12 @@ TEST_F(MouseInputFilterTest, NoScalingOrClipping) {
   SetClientSize(40, 40);
   SetHostDesktop(40, 40);
 
-  const Point injected[] = {{-5, 10}, {0, 10},  {-1, 10}, {15, 40},
-                            {15, 45}, {15, 39}, {15, 25}};
-  const Point expected[] = {{0, 10},  {0, 10},  {0, 10}, {15, 39},
-                            {15, 39}, {15, 39}, {15, 25}};
+  constexpr auto injected = std::to_array<Point>(
+      {{-5, 10}, {0, 10}, {-1, 10}, {15, 40}, {15, 45}, {15, 39}, {15, 25}});
+  constexpr auto expected = std::to_array<Point>(
+      {{0, 10}, {0, 10}, {0, 10}, {15, 39}, {15, 39}, {15, 39}, {15, 25}});
 
-  RunMouseTests(std::size(expected), injected, expected, true);
+  RunMouseTests(injected, expected, true);
 }
 
 // Verify that we can up-scale with clamping.
@@ -174,12 +165,12 @@ TEST_F(MouseInputFilterTest, UpScalingAndClamping) {
   SetClientSize(40, 40);
   SetHostDesktop(80, 80);
 
-  const Point injected[] = {{-5, 10}, {0, 10},  {-1, 10}, {15, 40},
-                            {15, 45}, {15, 39}, {15, 25}};
-  const Point expected[] = {{0, 20},  {0, 20},  {0, 20}, {30, 79},
-                            {30, 79}, {30, 79}, {30, 51}};
+  constexpr auto injected = std::to_array<Point>(
+      {{-5, 10}, {0, 10}, {-1, 10}, {15, 40}, {15, 45}, {15, 39}, {15, 25}});
+  constexpr auto expected = std::to_array<Point>(
+      {{0, 20}, {0, 20}, {0, 20}, {30, 79}, {30, 79}, {30, 79}, {30, 51}});
 
-  RunMouseTests(std::size(expected), injected, expected, true);
+  RunMouseTests(injected, expected, true);
 }
 
 // Verify that we can down-scale with clamping.
@@ -187,12 +178,12 @@ TEST_F(MouseInputFilterTest, DownScalingAndClamping) {
   SetClientSize(40, 40);
   SetHostDesktop(30, 30);
 
-  const Point injected[] = {{-5, 10}, {0, 10},  {-1, 10}, {15, 40},
-                            {15, 45}, {15, 39}, {15, 25}};
-  const Point expected[] = {{0, 7},   {0, 7},   {0, 7},  {11, 29},
-                            {11, 29}, {11, 29}, {11, 19}};
+  constexpr auto injected = std::to_array<Point>(
+      {{-5, 10}, {0, 10}, {-1, 10}, {15, 40}, {15, 45}, {15, 39}, {15, 25}});
+  constexpr auto expected = std::to_array<Point>(
+      {{0, 7}, {0, 7}, {0, 7}, {11, 29}, {11, 29}, {11, 29}, {11, 19}});
 
-  RunMouseTests(std::size(expected), injected, expected, true);
+  RunMouseTests(injected, expected, true);
 }
 
 // Multimon tests
@@ -210,32 +201,30 @@ TEST_F(MouseInputFilterTest, MultimonLeftDefault_FullDesktop) {
   SetClientSize(5120, 1728);
   SetHostMultimonSingleDisplay(0, 0, 6400, 2160);
 
-  const Point injected[] = {
-      {9, 10}, {1559, 372}, {3053, 1662}, {4167, 99}, {5093, 889}};
-  const Point expected[] = {
-      {11, 13}, {1949, 465}, {3816, 2078}, {5209, 124}, {6366, 1111}};
+  constexpr auto injected = std::to_array<Point>(
+      {{9, 10}, {1559, 372}, {3053, 1662}, {4167, 99}, {5093, 889}});
+  constexpr auto expected = std::to_array<Point>(
+      {{11, 13}, {1949, 465}, {3816, 2078}, {5209, 124}, {6366, 1111}});
 
-  RunMouseTests(std::size(expected), injected, expected);
+  RunMouseTests(injected, expected);
 }
 
 TEST_F(MouseInputFilterTest, MultimonLeftDefault_ShowLeftDisplay) {
   SetClientSize(2048, 1152);
   SetHostMultimonSingleDisplay(0, 0, 2560, 1440);
 
-  const Point injected[] = {{12, 25}, {2011, 1099}};
-  const Point expected[] = {{15, 31}, {2514, 1374}};
-
-  RunMouseTests(std::size(expected), injected, expected);
+  constexpr auto injected = std::to_array<Point>({{12, 25}, {2011, 1099}});
+  constexpr auto expected = std::to_array<Point>({{15, 31}, {2514, 1374}});
+  RunMouseTests(injected, expected);
 }
 
 TEST_F(MouseInputFilterTest, MultimonLeftDefault_ShowRightDisplay) {
   SetClientSize(3072, 1728);
   SetHostMultimonSingleDisplay(2560, 0, 3840, 2160);
 
-  const Point injected[] = {{175, 165}, {2948, 1532}};
-  const Point expected[] = {{2779, 206}, {6245, 1915}};
-
-  RunMouseTests(std::size(expected), injected, expected);
+  constexpr auto injected = std::to_array<Point>({{175, 165}, {2948, 1532}});
+  constexpr auto expected = std::to_array<Point>({{2779, 206}, {6245, 1915}});
+  RunMouseTests(injected, expected);
 }
 
 // Default display = Right (A)
@@ -251,20 +240,18 @@ TEST_F(MouseInputFilterTest, MultimonRightDefault_ShowLeftDisplay) {
   SetClientSize(3072, 1728);
   SetHostMultimonSingleDisplay(0, 0, 3840, 2160);
 
-  const Point injected[] = {{64, 61}, {3029, 1649}};
-  const Point expected[] = {{80, 76}, {3786, 2061}};
-
-  RunMouseTests(std::size(expected), injected, expected);
+  constexpr auto injected = std::to_array<Point>({{64, 61}, {3029, 1649}});
+  constexpr auto expected = std::to_array<Point>({{80, 76}, {3786, 2061}});
+  RunMouseTests(injected, expected);
 }
 
 TEST_F(MouseInputFilterTest, MultimonRightDefault_ShowRightDisplay) {
   SetClientSize(2048, 1152);
   SetHostMultimonSingleDisplay(3840, 0, 2560, 1440);
 
-  const Point injected[] = {{19, 20}, {2014, 1095}};
-  const Point expected[] = {{3864, 25}, {6358, 1369}};
-
-  RunMouseTests(std::size(expected), injected, expected);
+  constexpr auto injected = std::to_array<Point>({{19, 20}, {2014, 1095}});
+  constexpr auto expected = std::to_array<Point>({{3864, 25}, {6358, 1369}});
+  RunMouseTests(injected, expected);
 }
 
 }  // namespace remoting::protocol

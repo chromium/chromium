@@ -21,9 +21,12 @@
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/gpu_fence.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include <fcntl.h>
+#endif
 
 #if BUILDFLAG(IS_FUCHSIA)
 #include "base/fuchsia/fuchsia_logging.h"
@@ -46,30 +49,6 @@ gfx::GpuMemoryBufferType GetNativeBufferType() {
   // Ozone
   return gfx::NATIVE_PIXMAP;
 #endif
-}
-
-// Creates a shared memory region and returns a handle to it.
-gfx::GpuMemoryBufferHandle CreateGMBHandle(
-    const gfx::BufferFormat& buffer_format,
-    const gfx::Size& size,
-    gfx::BufferUsage buffer_usage) {
-  static int last_handle_id = 0;
-  size_t buffer_size = 0u;
-  CHECK(
-      gfx::BufferSizeForBufferFormatChecked(size, buffer_format, &buffer_size));
-  auto shared_memory_region =
-      base::UnsafeSharedMemoryRegion::Create(buffer_size);
-  CHECK(shared_memory_region.IsValid());
-
-  gfx::GpuMemoryBufferHandle handle;
-  handle.type = gfx::SHARED_MEMORY_BUFFER;
-  handle.id = gfx::GpuMemoryBufferId(last_handle_id++);
-  handle.offset = 0;
-  handle.stride = static_cast<uint32_t>(
-      gfx::RowSizeForBufferFormat(size.width(), buffer_format, 0));
-  handle.region = std::move(shared_memory_region);
-
-  return handle;
 }
 
 }  // namespace
@@ -148,9 +127,31 @@ TestSharedImageInterface::TestSharedImageInterface() {
 
 TestSharedImageInterface::~TestSharedImageInterface() = default;
 
-scoped_refptr<ClientSharedImage>
-TestSharedImageInterface::CreateSharedImage(const SharedImageInfo& si_info,
-                                            SurfaceHandle surface_handle) {
+// static
+gfx::GpuMemoryBufferHandle TestSharedImageInterface::CreateGMBHandle(
+    const viz::SharedImageFormat& format,
+    const gfx::Size& size) {
+  size_t buffer_size =
+      viz::SharedMemorySizeForSharedImageFormat(format, size).value();
+  CHECK(buffer_size);
+  auto shared_memory_region =
+      base::UnsafeSharedMemoryRegion::Create(buffer_size);
+  CHECK(shared_memory_region.IsValid());
+
+  gfx::GpuMemoryBufferHandle handle(std::move(shared_memory_region));
+  handle.offset = 0;
+  handle.stride =
+      static_cast<uint32_t>(viz::SharedMemoryRowSizeForSharedImageFormat(
+                                format, /*plane*/ 0, size.width())
+                                .value());
+
+  return handle;
+}
+
+scoped_refptr<ClientSharedImage> TestSharedImageInterface::CreateSharedImage(
+    const SharedImageInfo& si_info,
+    SurfaceHandle surface_handle,
+    std::optional<SharedImagePoolId> pool_id) {
   SyncToken sync_token = GenUnverifiedSyncToken();
   base::AutoLock locked(lock_);
   auto mailbox = Mailbox::Generate();
@@ -159,8 +160,8 @@ TestSharedImageInterface::CreateSharedImage(const SharedImageInfo& si_info,
   auto gmb_handle_type = emulate_client_provided_native_buffer_
                              ? GetNativeBufferType()
                              : gfx::EMPTY_BUFFER;
-  return base::MakeRefCounted<ClientSharedImage>(
-      mailbox, si_info.meta, sync_token, holder_, gmb_handle_type);
+  return base::MakeRefCounted<ClientSharedImage>(mailbox, si_info, sync_token,
+                                                 holder_, gmb_handle_type);
 }
 
 scoped_refptr<ClientSharedImage>
@@ -171,14 +172,17 @@ TestSharedImageInterface::CreateSharedImage(
   base::AutoLock locked(lock_);
   auto mailbox = Mailbox::Generate();
   shared_images_.insert(mailbox);
-  return base::MakeRefCounted<ClientSharedImage>(
-      mailbox, si_info.meta, sync_token, holder_, gfx::EMPTY_BUFFER);
+  return base::MakeRefCounted<ClientSharedImage>(mailbox, si_info, sync_token,
+                                                 holder_, gfx::EMPTY_BUFFER);
 }
 
-scoped_refptr<ClientSharedImage>
-TestSharedImageInterface::CreateSharedImage(const SharedImageInfo& si_info,
-                                            SurfaceHandle surface_handle,
-                                            gfx::BufferUsage buffer_usage) {
+scoped_refptr<ClientSharedImage> TestSharedImageInterface::CreateSharedImage(
+    const SharedImageInfo& si_info,
+    SurfaceHandle surface_handle,
+    gfx::BufferUsage buffer_usage,
+    std::optional<SharedImagePoolId> pool_id) {
+  DoCreateSharedImage(si_info.meta.size, si_info.meta.format, surface_handle,
+                      buffer_usage);
   if (fail_shared_image_creation_with_buffer_usage_) {
     return nullptr;
   }
@@ -190,34 +194,26 @@ TestSharedImageInterface::CreateSharedImage(const SharedImageInfo& si_info,
   shared_images_.insert(mailbox);
   most_recent_size_ = si_info.meta.size;
 
-  auto buffer_format =
-      viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
-          si_info.meta.format);
-  if (test_gmb_manager_) {
-    auto gpu_memory_buffer = test_gmb_manager_->CreateGpuMemoryBuffer(
-        si_info.meta.size, buffer_format, buffer_usage, surface_handle,
-        nullptr);
+  // Copy which can be modified.
+  SharedImageInfo si_info_copy = si_info;
+  // Set CPU read/write usage based on buffer usage.
+  si_info_copy.meta.usage |= GetCpuSIUsage(buffer_usage);
 
-    // Since the |gpu_memory_buffer| here is always a shared memory, clear the
-    // external sampler prefs if it is already set by client.
-    // https://issues.chromium.org/339546249.
-    SharedImageInfo si_info_copy = si_info;
-    if (si_info_copy.meta.format.PrefersExternalSampler()) {
-      si_info_copy.meta.format.ClearPrefersExternalSampler();
-    }
-    return ClientSharedImage::CreateForTesting(
-        mailbox, si_info_copy.meta, sync_token, std::move(gpu_memory_buffer),
-        holder_);
+  // Since the GMB handle that we create here is always shared memory, clear
+  // the external sampler prefs to avoid a CHECK within ClientSI that external
+  // sampling is set only with a native GMB handle.
+  if (si_info_copy.meta.format.PrefersExternalSampler()) {
+    si_info_copy.meta.format.ClearPrefersExternalSampler();
   }
 
   auto gmb_handle =
-      CreateGMBHandle(buffer_format, si_info.meta.size, buffer_usage);
+      CreateGMBHandle(si_info.meta.format, si_info_copy.meta.size);
 
-  return base::MakeRefCounted<ClientSharedImage>(
-      mailbox, si_info.meta, sync_token,
-      GpuMemoryBufferHandleInfo(std::move(gmb_handle), si_info.meta.format,
-                                     si_info.meta.size, buffer_usage),
-      holder_);
+  auto client_si = base::MakeRefCounted<ClientSharedImage>(
+      mailbox, si_info_copy, sync_token,
+      GpuMemoryBufferHandleInfo(std::move(gmb_handle), buffer_usage), holder_);
+  most_recent_mappable_shared_image_ = client_si.get();
+  return client_si;
 }
 
 scoped_refptr<ClientSharedImage>
@@ -232,11 +228,23 @@ TestSharedImageInterface::CreateSharedImage(
   shared_images_.insert(mailbox);
   most_recent_size_ = si_info.meta.size;
 
+  // Copy which can be modified.
+  SharedImageInfo si_info_copy = si_info;
+  // Set CPU read/write usage based on buffer usage.
+  si_info_copy.meta.usage |= GetCpuSIUsage(buffer_usage);
+
+  // If the GMB handle passed here is shared memory (e.g. because it was created
+  // by a unittest that is simulating a production flow with native handles),
+  // clear the external sampler prefs to avoid a CHECK within ClientSI that
+  // external sampling is set only with a native GMB handle.
+  if (buffer_handle.type == gfx::SHARED_MEMORY_BUFFER &&
+      si_info_copy.meta.format.PrefersExternalSampler()) {
+    si_info_copy.meta.format.ClearPrefersExternalSampler();
+  }
+
   return base::MakeRefCounted<ClientSharedImage>(
-      mailbox, si_info.meta, sync_token,
-      GpuMemoryBufferHandleInfo(std::move(buffer_handle),
-                                     si_info.meta.format, si_info.meta.size,
-                                     buffer_usage),
+      mailbox, si_info_copy, sync_token,
+      GpuMemoryBufferHandleInfo(std::move(buffer_handle), buffer_usage),
       holder_);
 }
 
@@ -250,14 +258,14 @@ TestSharedImageInterface::CreateSharedImage(
   if (buffer_handle.type == gfx::GpuMemoryBufferType::NATIVE_PIXMAP) {
     zx_koid_t id =
         base::GetRelatedKoid(
-            buffer_handle.native_pixmap_handle.buffer_collection_handle)
+            buffer_handle.native_pixmap_handle().buffer_collection_handle)
             .value();
     auto collection_it = sysmem_buffer_collections_.find(id);
 
     // NOTE: Not all unittests invoke RegisterSysmemBufferCollection(), but
     // the below CHECK should hold for those that do.
     if (collection_it != sysmem_buffer_collections_.end()) {
-      CHECK_LT(buffer_handle.native_pixmap_handle.buffer_index,
+      CHECK_LT(buffer_handle.native_pixmap_handle().buffer_index,
                collection_it->second->GetNumBuffers());
     }
   }
@@ -265,21 +273,32 @@ TestSharedImageInterface::CreateSharedImage(
   auto mailbox = Mailbox::Generate();
   shared_images_.insert(mailbox);
   most_recent_size_ = si_info.meta.size;
-  return base::MakeRefCounted<ClientSharedImage>(
-      mailbox, si_info.meta, sync_token, holder_, buffer_handle.type);
+  return base::MakeRefCounted<ClientSharedImage>(mailbox, si_info, sync_token,
+                                                 holder_, buffer_handle.type);
 }
 
-SharedImageInterface::SharedImageMapping
-TestSharedImageInterface::CreateSharedImage(
+scoped_refptr<ClientSharedImage>
+TestSharedImageInterface::CreateSharedImageForSoftwareCompositor(
     const SharedImageInfo& si_info) {
-  SyncToken sync_token = GenUnverifiedSyncToken();
-  base::AutoLock locked(lock_);
+  base::WritableSharedMemoryMapping mapping;
+  gfx::GpuMemoryBufferHandle handle;
+  CreateSharedMemoryRegionFromSIInfo(si_info, mapping, handle);
+
   auto mailbox = Mailbox::Generate();
   shared_images_.insert(mailbox);
   most_recent_size_ = si_info.meta.size;
-  return {base::MakeRefCounted<ClientSharedImage>(
-              mailbox, si_info.meta, sync_token, holder_, gfx::EMPTY_BUFFER),
-          base::WritableSharedMemoryMapping()};
+
+  return base::MakeRefCounted<ClientSharedImage>(
+      mailbox, si_info, GenUnverifiedSyncToken(), holder_, std::move(mapping));
+}
+
+scoped_refptr<ClientSharedImage>
+TestSharedImageInterface::CreateSharedImageForMLTensor(
+    std::string debug_label,
+    viz::SharedImageFormat format,
+    const gfx::Size& size,
+    gpu::SharedImageUsageSet usage) {
+  NOTREACHED();
 }
 
 void TestSharedImageInterface::UpdateSharedImage(
@@ -287,6 +306,7 @@ void TestSharedImageInterface::UpdateSharedImage(
     const Mailbox& mailbox) {
   base::AutoLock locked(lock_);
   DCHECK(shared_images_.find(mailbox) != shared_images_.end());
+  num_update_shared_image_no_fence_calls_++;
 }
 
 void TestSharedImageInterface::UpdateSharedImage(
@@ -297,24 +317,29 @@ void TestSharedImageInterface::UpdateSharedImage(
   DCHECK(shared_images_.find(mailbox) != shared_images_.end());
 }
 
-scoped_refptr<ClientSharedImage>
-TestSharedImageInterface::ImportSharedImage(
-    const ExportedSharedImage& exported_shared_image) {
+scoped_refptr<ClientSharedImage> TestSharedImageInterface::ImportSharedImage(
+    ExportedSharedImage exported_shared_image) {
   shared_images_.insert(exported_shared_image.mailbox_);
 
   return base::WrapRefCounted<ClientSharedImage>(
-      new ClientSharedImage(
-          exported_shared_image.mailbox_, exported_shared_image.metadata_,
-          exported_shared_image.creation_sync_token_, holder_,
-          exported_shared_image.texture_target_));
+      new ClientSharedImage(std::move(exported_shared_image), holder_));
 }
 
 void TestSharedImageInterface::DestroySharedImage(
     const SyncToken& sync_token,
     const Mailbox& mailbox) {
   base::AutoLock locked(lock_);
+  if (most_recent_mappable_shared_image_ &&
+      mailbox == most_recent_mappable_shared_image_->mailbox()) {
+    most_recent_mappable_shared_image_ = nullptr;
+  }
+
   shared_images_.erase(mailbox);
   most_recent_destroy_token_ = sync_token;
+
+  if (test_client_) {
+    test_client_->DidDestroySharedImage();
+  }
 }
 
 void TestSharedImageInterface::DestroySharedImage(
@@ -324,42 +349,14 @@ void TestSharedImageInterface::DestroySharedImage(
   client_shared_image->UpdateDestructionSyncToken(sync_token);
 }
 
-SharedImageInterface::SwapChainSharedImages
-TestSharedImageInterface::CreateSwapChain(viz::SharedImageFormat format,
-                                          const gfx::Size& size,
-                                          const gfx::ColorSpace& color_space,
-                                          GrSurfaceOrigin surface_origin,
-                                          SkAlphaType alpha_type,
-                                          gpu::SharedImageUsageSet usage) {
-  auto front_buffer = Mailbox::Generate();
-  auto back_buffer = Mailbox::Generate();
-  SyncToken sync_token = GenUnverifiedSyncToken();
-  shared_images_.insert(front_buffer);
-  shared_images_.insert(back_buffer);
-  return {base::MakeRefCounted<ClientSharedImage>(
-              front_buffer,
-              SharedImageMetadata(format, size, color_space,
-                                       surface_origin, alpha_type, usage),
-              sync_token, holder_, gfx::EMPTY_BUFFER),
-          base::MakeRefCounted<ClientSharedImage>(
-              back_buffer,
-              SharedImageMetadata(format, size, color_space,
-                                       surface_origin, alpha_type, usage),
-              sync_token, holder_, gfx::EMPTY_BUFFER)};
-}
-
-void TestSharedImageInterface::PresentSwapChain(
-    const SyncToken& sync_token,
-    const Mailbox& mailbox) {}
-
 #if BUILDFLAG(IS_FUCHSIA)
 void TestSharedImageInterface::RegisterSysmemBufferCollection(
     zx::eventpair service_handle,
     zx::channel sysmem_token,
-    gfx::BufferFormat format,
+    const viz::SharedImageFormat& format,
     gfx::BufferUsage usage,
     bool register_with_image_pipe) {
-  EXPECT_EQ(format, gfx::BufferFormat::YUV_420_BIPLANAR);
+  EXPECT_EQ(format, viz::MultiPlaneFormat::kNV12);
   EXPECT_EQ(usage, gfx::BufferUsage::GPU_READ);
   zx_koid_t id = base::GetKoid(service_handle).value();
   std::unique_ptr<TestBufferCollection>& collection =
@@ -392,17 +389,61 @@ void TestSharedImageInterface::VerifySyncToken(SyncToken& sync_token) {
 }
 
 void TestSharedImageInterface::WaitSyncToken(const SyncToken& sync_token) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
-void TestSharedImageInterface::Flush() {
-  // No need to flush in this implementation.
+bool TestSharedImageInterface::CanVerifySyncToken(
+    const gpu::SyncToken& sync_token) {
+  return true;
 }
 
-scoped_refptr<gfx::NativePixmap> TestSharedImageInterface::GetNativePixmap(
-    const Mailbox& mailbox) {
-  return nullptr;
+void TestSharedImageInterface::VerifyFlush() {}
+
+scoped_refptr<ClientSharedImage>
+TestSharedImageInterface::CreateSharedImageWithAsyncMapControl(
+    const SharedImageInfo& si_info,
+    gfx::BufferUsage buffer_usage,
+    bool premapped,
+    const ClientSharedImage::AsyncMapInvokedCallback& callback) {
+  Mailbox mailbox;
+  {
+    base::AutoLock locked(lock_);
+    mailbox = Mailbox::Generate();
+    shared_images_.insert(mailbox);
+  }
+
+  auto image = ClientSharedImage::CreateForTesting(
+      mailbox, si_info.meta, GenUnverifiedSyncToken(), premapped, callback,
+      buffer_usage, holder_);
+  return image;
 }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+scoped_refptr<ClientSharedImage>
+TestSharedImageInterface::CreateNativePixmapBackedSharedImage(
+    const SharedImageInfo& si_info,
+    SurfaceHandle surface_handle,
+    gfx::BufferUsage buffer_usage) {
+  const auto& format = si_info.meta.format;
+  const auto& size = si_info.meta.size;
+
+  gfx::NativePixmapHandle native_pixmap_handle;
+  for (int i = 0; i < format.NumberOfPlanes(); i++) {
+    size_t height_in_pixels = format.GetPlaneSize(i, size).height();
+    CHECK(height_in_pixels);
+    size_t stride =
+        viz::SharedMemoryRowSizeForSharedImageFormat(format, i, size.width())
+            .value();
+    native_pixmap_handle.planes.emplace_back(
+        stride, 0, height_in_pixels * stride,
+        base::ScopedFD(open("/dev/zero", O_RDWR)));
+  }
+
+  return CreateSharedImage(
+      si_info, surface_handle, buffer_usage,
+      gfx::GpuMemoryBufferHandle(std::move(native_pixmap_handle)));
+}
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 bool TestSharedImageInterface::CheckSharedImageExists(
     const Mailbox& mailbox) const {

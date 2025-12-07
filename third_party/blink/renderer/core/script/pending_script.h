@@ -32,6 +32,7 @@
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/probe/async_task_context.h"
 #include "third_party/blink/renderer/core/script/script.h"
 #include "third_party/blink/renderer/core/script/script_element_base.h"
 #include "third_party/blink/renderer/core/script/script_scheduling_type.h"
@@ -90,7 +91,7 @@ class CORE_EXPORT PendingScript : public GarbageCollected<PendingScript>,
   virtual mojom::blink::ScriptType GetScriptType() const = 0;
 
   virtual void Trace(Visitor*) const;
-  const char* NameInHeapSnapshot() const override { return "PendingScript"; }
+  const char* GetHumanReadableName() const override { return "PendingScript"; }
 
   // Returns nullptr when "script's script is null", i.e. an error occurred.
   virtual Script* GetSource() const = 0;
@@ -153,7 +154,7 @@ class CORE_EXPORT PendingScript : public GarbageCollected<PendingScript>,
  protected:
   PendingScript(ScriptElementBase*,
                 const TextPosition& starting_position,
-                scheduler::TaskAttributionInfo* parent_task);
+                scheduler::TaskAttributionInfo* task_state);
 
   virtual void DisposeInternal() = 0;
 
@@ -208,9 +209,10 @@ class CORE_EXPORT PendingScript : public GarbageCollected<PendingScript>,
   WeakMember<ExecutionContext> original_execution_context_;
 
   const bool created_during_document_write_;
+  probe::AsyncTaskContext async_task_context_;
 
-  // The ID of the parent task that loaded the script.
-  Member<scheduler::TaskAttributionInfo> parent_task_;
+  // The `TaskAttributionInfo` associated with the task that loaded the script.
+  Member<scheduler::TaskAttributionInfo> task_state_;
 };
 
 }  // namespace blink

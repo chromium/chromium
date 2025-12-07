@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_event_listener_options.h"
@@ -45,7 +40,7 @@ LocalFrame* GetLocalFrameForTarget(EventTarget* target) {
   } else if (LocalDOMWindow* dom_window = target->ToLocalDOMWindow()) {
     frame = dom_window->GetFrame();
   } else {
-    NOTREACHED_IN_MIGRATION() << "Unexpected target type for event handler.";
+    NOTREACHED() << "Unexpected target type for event handler.";
   }
   return frame;
 }
@@ -121,14 +116,13 @@ void EventHandlerRegistry::UpdateEventHandlerTargets(
       targets->insert(target);
       return;
     case kRemove:
-      DCHECK(targets->Contains(target));
       targets->erase(target);
       return;
     case kRemoveAll:
       targets->RemoveAll(target);
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool EventHandlerRegistry::UpdateEventHandlerInternal(
@@ -182,7 +176,7 @@ void EventHandlerRegistry::DidRemoveEventHandler(
   UpdateEventHandlerInternal(kRemove, handler_class, &target);
 }
 
-void EventHandlerRegistry::DidMoveIntoPage(EventTarget& target) {
+void EventHandlerRegistry::DidMoveIntoLocalRoot(EventTarget& target) {
   if (!target.HasEventListeners())
     return;
 
@@ -204,12 +198,12 @@ void EventHandlerRegistry::DidMoveIntoPage(EventTarget& target) {
   }
 }
 
-void EventHandlerRegistry::DidMoveOutOfPage(EventTarget& target) {
+void EventHandlerRegistry::DidMoveOutOfLocalRoot(EventTarget& target) {
   DidRemoveAllEventHandlers(target);
 }
 
 void EventHandlerRegistry::DidRemoveAllEventHandlers(EventTarget& target) {
-  bool handlers_changed[kEventHandlerClassCount];
+  std::array<bool, kEventHandlerClassCount> handlers_changed;
 
   for (int i = 0; i < kEventHandlerClassCount; ++i) {
     EventHandlerClass handler_class = static_cast<EventHandlerClass>(i);
@@ -285,8 +279,7 @@ void EventHandlerRegistry::NotifyHandlersChanged(
       break;
 #endif
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   if (handler_class == kTouchStartOrMoveEventBlocking ||
@@ -371,7 +364,7 @@ void EventHandlerRegistry::DocumentDetached(Document& document) {
           // DOMWindows may outlive their documents, so we shouldn't remove
           // their handlers here.
         } else {
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
         }
       }
     }
@@ -391,7 +384,7 @@ void EventHandlerRegistry::CheckConsistency(
   const EventTargetSet* targets = &targets_[handler_class];
   for (const auto& event_target : *targets) {
     if (Node* node = event_target.key->ToNode()) {
-      // See the header file comment for |documentDetached| if either of these
+      // See the header file comment for `DocumentDetached()` if either of these
       // assertions fails.
       DCHECK(node->GetDocument().GetPage());
       DCHECK_EQ(frame_, &node->GetDocument().GetFrame()->LocalFrameRoot());

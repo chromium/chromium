@@ -8,6 +8,7 @@ import static org.chromium.components.browser_ui.site_settings.WebsitePreference
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -19,7 +20,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -27,29 +27,32 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.CheckBoxWithDescription;
+import org.chromium.components.embedder_support.util.ExtensionUrlUtil;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.text.EmptyTextWatcher;
 
 /** A utility class for the UI recording exceptions to the blocked list for site settings. */
+@NullMarked
 public class AddExceptionPreference extends Preference
         implements Preference.OnPreferenceClickListener {
     // The callback to notify when the user adds a site.
-    private SiteAddedCallback mSiteAddedCallback;
+    private final SiteAddedCallback mSiteAddedCallback;
 
     // The accent color to use for the icon and title view.
-    private int mPrefAccentColor;
+    private final int mPrefAccentColor;
 
     // The custom message to show in the dialog.
-    private String mDialogMessage;
+    private final String mDialogMessage;
 
     // The Site Settings Category of the exception we are adding.
     private final SiteSettingsCategory mCategory;
 
     // The colors for the site URL EditText
-    private int mErrorColor;
-    private int mDefaultColor;
+    private final int mErrorColor;
+    private final int mDefaultColor;
 
     /** An interface to implement to get a callback when a site exception needs to be added. */
     public interface SiteAddedCallback {
@@ -62,7 +65,7 @@ public class AddExceptionPreference extends Preference
          *     sites the primary pattern is affected. Usually the wildcard or a specific host (for
          *     third-party cookies).
          */
-        public void onAddSite(String primaryPattern, String secondaryPattern);
+        void onAddSite(String primaryPattern, String secondaryPattern);
     }
 
     /**
@@ -77,6 +80,7 @@ public class AddExceptionPreference extends Preference
             Context context,
             String key,
             String message,
+            boolean isEnabled,
             SiteSettingsCategory category,
             SiteAddedCallback callback) {
         super(context);
@@ -87,11 +91,17 @@ public class AddExceptionPreference extends Preference
 
         setKey(key);
         Resources resources = context.getResources();
-        mPrefAccentColor = SemanticColorUtils.getDefaultControlColorActive(context);
         mErrorColor = context.getColor(R.color.default_red);
-        mDefaultColor =
-                AppCompatResources.getColorStateList(context, R.color.default_text_color_list)
-                        .getDefaultColor();
+        ColorStateList textColorList =
+                AppCompatResources.getColorStateList(context, R.color.default_text_color_list);
+        mDefaultColor = textColorList.getDefaultColor();
+
+        int enabledAccentColor = SemanticColorUtils.getDefaultControlColorActive(context);
+        mPrefAccentColor =
+                isEnabled
+                        ? enabledAccentColor
+                        : textColorList.getColorForState(
+                                new int[] {-android.R.attr.state_enabled}, enabledAccentColor);
 
         Drawable plusIcon = ApiCompatibilityUtils.getDrawable(resources, R.drawable.plus);
         plusIcon.mutate();
@@ -99,6 +109,7 @@ public class AddExceptionPreference extends Preference
         setIcon(plusIcon);
 
         setTitle(resources.getString(R.string.website_settings_add_site));
+        setEnabled(isEnabled);
     }
 
     @Override
@@ -204,7 +215,7 @@ public class AddExceptionPreference extends Preference
     }
 
     @VisibleForTesting
-    static String updatePatternIfNeeded(@NonNull String pattern, int type, boolean isChecked) {
+    static String updatePatternIfNeeded(String pattern, int type, boolean isChecked) {
         if (type == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE) {
             if (isChecked) {
                 return WebsitePreferenceBridge.toDomainWildcardPattern(pattern);
@@ -216,7 +227,7 @@ public class AddExceptionPreference extends Preference
     }
 
     @VisibleForTesting
-    static String getPrimaryPattern(@NonNull String pattern, int type, boolean isChecked) {
+    static String getPrimaryPattern(String pattern, int type, boolean isChecked) {
         if (type == SiteSettingsCategory.Type.THIRD_PARTY_COOKIES) {
             return SITE_WILDCARD;
         }
@@ -224,7 +235,7 @@ public class AddExceptionPreference extends Preference
     }
 
     @VisibleForTesting
-    static String getSecondaryPattern(@NonNull String pattern, int type, boolean isChecked) {
+    static String getSecondaryPattern(String pattern, int type, boolean isChecked) {
         if (type == SiteSettingsCategory.Type.THIRD_PARTY_COOKIES) {
             return pattern;
         }
@@ -232,11 +243,11 @@ public class AddExceptionPreference extends Preference
     }
 
     @VisibleForTesting
-    static boolean isPatternValid(@NonNull String pattern, int type) {
+    static boolean isPatternValid(String pattern, int type) {
         if (pattern.length() == 0) {
             return true;
         }
-        if (pattern.contains(":") && !isColonAllowed(type)) {
+        if (pattern.contains(":") && !isColonAllowed(pattern, type)) {
             return false;
         }
         if (pattern.contains(" ") || pattern.startsWith(".")) {
@@ -245,7 +256,8 @@ public class AddExceptionPreference extends Preference
         return WebsitePreferenceBridgeJni.get().isContentSettingsPatternValid(pattern);
     }
 
-    private static boolean isColonAllowed(int type) {
-        return type == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE;
+    private static boolean isColonAllowed(String pattern, int type) {
+        return ExtensionUrlUtil.isExtensionUrl(pattern)
+                || type == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE;
     }
 }

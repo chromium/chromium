@@ -5,11 +5,13 @@
 #include "components/pdf/browser/pdf_document_helper.h"
 
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "components/pdf/browser/pdf_document_helper_client.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/touch_selection_controller_client_manager.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -19,8 +21,8 @@
 #include "pdf/pdf_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/pointer/touch_editing_controller.h"
 #include "ui/gfx/selection_bound.h"
+#include "ui/touch_selection/touch_editing_controller.h"
 
 namespace pdf {
 
@@ -41,27 +43,40 @@ class FakePdfListener : public pdf::mojom::PdfListener {
               SetSelectionBounds,
               (const gfx::PointF&, const gfx::PointF&),
               (override));
+  MOCK_METHOD(void,
+              GetPdfBytes,
+              (uint32_t, GetPdfBytesCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              GetPageText,
+              (int32_t, GetPageTextCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              GetMostVisiblePageIndex,
+              (GetMostVisiblePageIndexCallback callback),
+              (override));
+#if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+  MOCK_METHOD(void,
+              GetSaveDataBufferHandlerForDrive,
+              (pdf::mojom::SaveRequestType,
+               GetSaveDataBufferHandlerForDriveCallback callback),
+              (override));
+#endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 };
 
 class TestPDFDocumentHelperClient : public PDFDocumentHelperClient {
  public:
   TestPDFDocumentHelperClient() = default;
-  ~TestPDFDocumentHelperClient() override = default;
   TestPDFDocumentHelperClient(const TestPDFDocumentHelperClient&) = delete;
   TestPDFDocumentHelperClient& operator=(const TestPDFDocumentHelperClient&) =
       delete;
+  ~TestPDFDocumentHelperClient() override = default;
 
   const gfx::SelectionBound& GetSelectionBoundStart() const { return start_; }
   const gfx::SelectionBound& GetSelectionBoundEnd() const { return end_; }
 
  private:
   // PDFDocumentHelperClient:
-  void UpdateContentRestrictions(content::RenderFrameHost* render_frame_host,
-                                 int content_restrictions) override {}
-  void OnPDFHasUnsupportedFeature(content::WebContents* contents) override {}
-  void OnSaveURL(content::WebContents* contents) override {}
-  void SetPluginCanSave(content::RenderFrameHost* render_frame_host,
-                        bool can_save) override {}
   void OnDidScroll(const gfx::SelectionBound& start,
                    const gfx::SelectionBound& end) override {
     start_ = start;
@@ -252,6 +267,21 @@ IN_PROC_BROWSER_TEST_P(PDFDocumentHelperTest, DefaultImplementation) {
   EXPECT_FALSE(pdf_document_helper()->CreateDrawable());
   EXPECT_FALSE(pdf_document_helper()->ShouldShowQuickMenu());
   EXPECT_TRUE(pdf_document_helper()->GetSelectedText().empty());
+}
+
+IN_PROC_BROWSER_TEST_P(PDFDocumentHelperTest, DocumentLoadComplete) {
+  base::test::TestFuture<void> load_complete_future;
+  EXPECT_FALSE(pdf_document_helper()->IsDocumentLoadComplete());
+  pdf_document_helper()->RegisterForDocumentLoadComplete(
+      load_complete_future.GetCallback());
+  pdf_document_helper()->OnDocumentLoadComplete();
+  EXPECT_TRUE(load_complete_future.WaitAndClear());
+  EXPECT_TRUE(pdf_document_helper()->IsDocumentLoadComplete());
+
+  // Immediately called when document is already load complete.
+  pdf_document_helper()->RegisterForDocumentLoadComplete(
+      load_complete_future.GetCallback());
+  EXPECT_TRUE(load_complete_future.WaitAndClear());
 }
 
 // TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer

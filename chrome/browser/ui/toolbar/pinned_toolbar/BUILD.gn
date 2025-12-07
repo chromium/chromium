@@ -1,0 +1,73 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("pinned_toolbar") {
+  sources = []
+  public_deps = []
+
+  if (!is_android) {
+    sources += [
+      "pinned_toolbar_actions_model.h",
+      "pinned_toolbar_actions_model_factory.h",
+      "pinned_translate_action_listener.h",
+      "tab_search_toolbar_button_controller.h",
+    ]
+    public_deps += [
+      "//base",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/views",
+      "//components/keyed_service/core",
+      "//components/prefs",
+      "//components/tabs:public",
+      "//components/translate/content/browser",
+      "//ui/actions:actions_headers",
+    ]
+  }
+}
+
+source_set("impl") {
+  sources = []
+  public_deps = []
+
+  if (!is_android) {
+    sources += [
+      "pinned_toolbar_actions_model.cc",
+      "pinned_toolbar_actions_model_factory.cc",
+      "pinned_translate_action_listener.cc",
+      "tab_search_toolbar_button_controller.cc",
+    ]
+    deps = [
+      "//chrome/browser:primitives",
+      "//chrome/browser/translate",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/actions:actions_headers",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/toolbar",
+      "//chrome/browser/ui/views/page_action",
+      "//chrome/browser/ui/views/toolbar",
+    ]
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  }
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "pinned_toolbar_actions_model_browsertest.cc" ]
+    deps = [
+      ":pinned_toolbar",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/actions:actions_headers",
+      "//chrome/browser/ui/toolbar",
+      "//chrome/common:constants",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//content/test:test_support",
+      "//testing/gtest",
+      "//ui/actions:actions_headers",
+      "//ui/base:features",
+    ]
+  }
+}

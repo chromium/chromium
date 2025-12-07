@@ -24,6 +24,13 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
 #endif //_WIN32
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+IDENTITY LIMITEDACCESSFEATURE {L"google-chrome_0qgpfzgh1edfy"}
+#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+IDENTITY LIMITEDACCESSFEATURE {L"google-chrome_0qgpfzgh1edfy"}
+#else
+IDENTITY LIMITEDACCESSFEATURE {L"chromium_b06a12530me7r"}
+#endif
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -63,9 +70,13 @@ IDR_X002_APP_LIST_SXS   ICON       "theme\\google_chrome\\win\\app_list_sxs.ico"
 IDR_X003_INCOGNITO      ICON       "theme\\google_chrome\\win\\incognito.ico"
 IDR_X004_DEV            ICON       "theme\\google_chrome\\win\\chrome_dev.ico"
 IDR_X005_BETA           ICON       "theme\\google_chrome\\win\\chrome_beta.ico"
+IDR_X006_HTML_DOC       ICON       "theme\\google_chrome\\win\\chrome_doc.ico"
+IDR_X007_PDF_DOC        ICON       "theme\\google_chrome\\win\\chrome_pdf.ico"
 #else
 IDR_X001_APP_LIST       ICON       "theme\\chromium\\win\\app_list.ico"
 IDR_X003_INCOGNITO      ICON       "theme\\chromium\\win\\incognito.ico"
+IDR_X006_HTML_DOC       ICON       "theme\\chromium\\win\\chromium_doc.ico"
+IDR_X007_PDF_DOC        ICON       "theme\\chromium\\win\\chromium_pdf.ico"
 #endif
 
 

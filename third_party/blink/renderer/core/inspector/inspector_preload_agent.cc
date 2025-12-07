@@ -9,6 +9,10 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
+#include "third_party/blink/renderer/core/inspector/inspected_frames.h"
+#include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
+#include "third_party/blink/renderer/core/inspector/protocol/preload.h"
+#include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 #include "third_party/blink/renderer/core/speculation_rules/speculation_candidate.h"
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rule_set.h"
 
@@ -25,6 +29,8 @@ std::optional<protocol::Preload::RuleSetErrorType> GetProtocolRuleSetErrorType(
       return protocol::Preload::RuleSetErrorTypeEnum::SourceIsNotJsonObject;
     case SpeculationRuleSetErrorType::kInvalidRulesSkipped:
       return protocol::Preload::RuleSetErrorTypeEnum::InvalidRulesSkipped;
+    case SpeculationRuleSetErrorType::kInvalidRulesetLevelTag:
+      return protocol::Preload::RuleSetErrorTypeEnum::InvalidRulesetLevelTag;
   }
 }
 
@@ -34,6 +40,7 @@ String GetProtocolRuleSetErrorMessage(const SpeculationRuleSet& rule_set) {
       return String();
     case SpeculationRuleSetErrorType::kSourceIsNotJsonObject:
     case SpeculationRuleSetErrorType::kInvalidRulesSkipped:
+    case SpeculationRuleSetErrorType::kInvalidRulesetLevelTag:
       return rule_set.error_message();
   }
 }
@@ -53,11 +60,11 @@ bool operator==(const PreloadingAttemptKey& a, const PreloadingAttemptKey& b) {
 }
 
 struct PreloadingAttemptKeyHashTraits
-    : WTF::GenericHashTraits<PreloadingAttemptKey> {
+    : GenericHashTraits<PreloadingAttemptKey> {
   static unsigned GetHash(const PreloadingAttemptKey& key) {
-    unsigned hash = WTF::GetHash(key.action);
-    hash = WTF::HashInts(hash, WTF::GetHash(key.url));
-    hash = WTF::HashInts(hash, WTF::GetHash(key.target_hint));
+    unsigned hash = blink::GetHash(key.action);
+    hash = HashInts(hash, blink::GetHash(key.url));
+    hash = HashInts(hash, blink::GetHash(key.target_hint));
     return hash;
   }
 
@@ -89,9 +96,10 @@ protocol::Preload::SpeculationAction GetProtocolSpeculationAction(
       return protocol::Preload::SpeculationActionEnum::Prerender;
     case mojom::blink::SpeculationAction::kPrefetch:
       return protocol::Preload::SpeculationActionEnum::Prefetch;
+    case mojom::blink::SpeculationAction::kPrerenderUntilScript:
+      return protocol::Preload::SpeculationActionEnum::PrerenderUntilScript;
     case mojom::blink::SpeculationAction::kPrefetchWithSubresources:
-      NOTREACHED_IN_MIGRATION();
-      return String();
+      NOTREACHED();
   }
 }
 
@@ -134,14 +142,14 @@ BuildProtocolPreloadingAttemptSource(
       BuildProtocolPreloadingAttemptKey(key, document);
 
   HeapHashSet<Member<SpeculationRuleSet>> unique_rule_sets;
-  HeapHashSet<Member<HTMLAnchorElement>> unique_anchors;
+  HeapHashSet<Member<HTMLAnchorElementBase>> unique_anchors;
   auto rule_set_ids = std::make_unique<protocol::Array<String>>();
   auto node_ids = std::make_unique<protocol::Array<int>>();
   for (SpeculationCandidate* candidate : candidates) {
     if (unique_rule_sets.insert(candidate->rule_set()).is_new_entry) {
       rule_set_ids->push_back(candidate->rule_set()->InspectorId());
     }
-    if (HTMLAnchorElement* anchor = candidate->anchor();
+    if (HTMLAnchorElementBase* anchor = candidate->anchor();
         anchor && unique_anchors.insert(anchor).is_new_entry) {
       node_ids->push_back(anchor->GetDomNodeId());
     }
@@ -190,13 +198,18 @@ std::unique_ptr<protocol::Preload::RuleSet> BuildProtocolRuleSet(
     builder->setErrorMessage(GetProtocolRuleSetErrorMessage(rule_set));
   }
 
+  if (!rule_set.tag().IsNull()) {
+    builder->setTag(rule_set.tag());
+  }
+
   return builder;
 }
 
 }  // namespace internal
 
-InspectorPreloadAgent::InspectorPreloadAgent()
-    : enabled_(&agent_state_, /*default_value=*/false) {}
+InspectorPreloadAgent::InspectorPreloadAgent(InspectedFrames* inspected_frames)
+    : enabled_(&agent_state_, /*default_value=*/false),
+      inspected_frames_(inspected_frames) {}
 
 InspectorPreloadAgent::~InspectorPreloadAgent() = default;
 
@@ -234,37 +247,39 @@ void InspectorPreloadAgent::SpeculationCandidatesUpdated(
     return;
   }
 
-  HeapHashMap<PreloadingAttemptKey,
-              Member<HeapVector<Member<SpeculationCandidate>>>,
+  HeapHashMap<PreloadingAttemptKey, HeapVector<Member<SpeculationCandidate>>,
               PreloadingAttemptKeyHashTraits>
       preloading_attempts;
   for (SpeculationCandidate* candidate : candidates) {
-    // We are explicitly not reporting candidates for kPrefetchWithSubresources
-    // to clients, they are currently only interested in kPrefetch and
-    // kPrerender.
+    // We are explicitly not reporting candidates for kPrefetchWithSubresources,
+    // because it is supposed to be replaced by kPrerenderUntilScript soon.
     if (candidate->action() ==
         mojom::blink::SpeculationAction::kPrefetchWithSubresources) {
       continue;
     }
     PreloadingAttemptKey key = {candidate->action(), candidate->url(),
                                 candidate->target_hint()};
-    auto& value = preloading_attempts.insert(key, nullptr).stored_value->value;
-    if (!value) {
-      value = MakeGarbageCollected<HeapVector<Member<SpeculationCandidate>>>();
-    }
-    value->push_back(candidate);
+    auto& value = preloading_attempts
+                      .insert(key, HeapVector<Member<SpeculationCandidate>>())
+                      .stored_value->value;
+    value.push_back(candidate);
   }
 
   auto preloading_attempt_sources = std::make_unique<
       protocol::Array<protocol::Preload::PreloadingAttemptSource>>();
   for (auto it : preloading_attempts) {
     preloading_attempt_sources->push_back(
-        BuildProtocolPreloadingAttemptSource(it.key, *(it.value), document));
+        BuildProtocolPreloadingAttemptSource(it.key, it.value, document));
   }
 
   GetFrontend()->preloadingAttemptSourcesUpdated(
       IdentifiersFactory::LoaderId(document.Loader()),
       std::move(preloading_attempt_sources));
+}
+
+void InspectorPreloadAgent::Trace(Visitor* visitor) const {
+  InspectorBaseAgent<protocol::Preload::Metainfo>::Trace(visitor);
+  visitor->Trace(inspected_frames_);
 }
 
 protocol::Response InspectorPreloadAgent::enable() {
@@ -283,6 +298,31 @@ void InspectorPreloadAgent::EnableInternal() {
 
   enabled_.Set(true);
   instrumenting_agents_->AddInspectorPreloadAgent(this);
+
+  ReportRuleSetsAndSources();
+}
+
+void InspectorPreloadAgent::ReportRuleSetsAndSources() {
+  for (LocalFrame* inspected_frame : *inspected_frames_) {
+    Document* document = inspected_frame->GetDocument();
+    String loader_id = IdentifiersFactory::LoaderId(document->Loader());
+    auto* speculation_rules = DocumentSpeculationRules::FromIfExists(*document);
+    if (!speculation_rules) {
+      continue;
+    }
+
+    // Report existing rule sets.
+    for (const SpeculationRuleSet* speculation_rule_set :
+         speculation_rules->rule_sets()) {
+      GetFrontend()->ruleSetUpdated(
+          internal::BuildProtocolRuleSet(*speculation_rule_set, loader_id));
+    }
+
+    // Queues an update that will result in `SpeculationCandidatesUpdated` being
+    // called asynchronously and sources being reported to the frontend.
+    speculation_rules->QueueUpdateSpeculationCandidates(
+        /*force_style_update=*/true);
+  }
 }
 
 }  // namespace blink

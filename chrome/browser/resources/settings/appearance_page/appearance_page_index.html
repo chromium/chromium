@@ -1,0 +1,18 @@
+<style include="settings-shared">
+  cr-view-manager [hidden-by-search],
+  cr-view-manager[show-all] [slot=view][data-parent-view-id] {
+    display: none;
+  }
+</style>
+
+<cr-view-manager id="viewManager" class="cr-centered-card-container"
+    show-all$="[[shouldShowAll]]">
+  <settings-appearance-page slot="view" id="parent" prefs="{{prefs}}"
+      route-path$="[[routes_.APPEARANCE.path]]">
+  </settings-appearance-page>
+
+  <settings-appearance-fonts-page slot="view" id="fonts"
+      data-parent-view-id="parent" prefs="{{prefs}}"
+      route-path$="[[routes_.FONTS.path]]">
+  </settings-appearance-fonts-page>
+</cr-view-manager>

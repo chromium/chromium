@@ -7,21 +7,18 @@
 
 #import <Foundation/Foundation.h>
 
-class ChromeBrowserState;
-
 // Class handling all startup tasks.
 @interface StartupTasks : NSObject
 
-// Asynchronously finishes the browser state initialization by starting the
-// deferred task runners.
-+ (void)scheduleDeferredBrowserStateInitialization:
-    (ChromeBrowserState*)browserState;
 // Starts Omaha and, if first run, sets install time.  For official builds only.
 - (void)initializeOmaha;
 // Registers to receive UIApplicationWillResignActiveNotification.
 - (void)registerForApplicationWillResignActiveNotification;
 // Logs the number of Chrome Siri Shortcuts to UMA.
 - (void)logSiriShortcuts;
+// Removes the files that were scheduled for automatic deletion and were
+// downloaded more than 30 days ago.
+- (void)removeFilesScheduledForAutoDeletion;
 
 @end
 

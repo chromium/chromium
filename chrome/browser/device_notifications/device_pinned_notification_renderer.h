@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_DEVICE_NOTIFICATIONS_DEVICE_PINNED_NOTIFICATION_RENDERER_H_
 
 #include "ash/constants/notifier_catalogs.h"
+#include "build/build_config.h"
 #include "chrome/browser/device_notifications/device_system_tray_icon.h"
 #include "chrome/browser/device_notifications/device_system_tray_icon_renderer.h"
 #include "device_connection_tracker.h"
@@ -16,7 +17,7 @@ class DevicePinnedNotificationRenderer : public DeviceSystemTrayIconRenderer {
   explicit DevicePinnedNotificationRenderer(
       DeviceSystemTrayIcon* device_system_tray_icon,
       const std::string& notification_id_prefix,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       const ash::NotificationCatalogName notification_catalog_name,
 #endif
       const int message_id);
@@ -46,7 +47,7 @@ class DevicePinnedNotificationRenderer : public DeviceSystemTrayIconRenderer {
 
   std::string notification_id_prefix_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::NotificationCatalogName notification_catalog_name_;
 #endif
 

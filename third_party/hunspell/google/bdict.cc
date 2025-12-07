@@ -5,7 +5,15 @@
 #include <string.h>
 
 #include "base/numerics/safe_math.h"
+#include "crypto/obsolete/md5.h"
 #include "third_party/hunspell/google/bdict.h"
+
+namespace hunspell {
+std::array<uint8_t, crypto::obsolete::kMd5Size> Md5ForBdict(
+    base::span<const uint8_t> data) {
+  return crypto::obsolete::Md5::Hash(data);
+}
+}  // namespace hunspell
 
 // static
 bool hunspell::BDict::Verify(base::span<const uint8_t> bdict) {
@@ -48,8 +56,8 @@ bool hunspell::BDict::Verify(base::span<const uint8_t> bdict) {
   // The new BDICT header has a MD5 digest of the dictionary data. Compare the
   // MD5 digest of the data with the one in the BDICT header.
   if (header->major_version >= 2) {
-    base::MD5Digest digest;
-    base::MD5Sum(bdict.subspan(header->aff_offset), &digest);
+    std::array<uint8_t, 16> digest =
+        Md5ForBdict(bdict.subspan(header->aff_offset));
     if (memcmp(&digest, &header->digest, sizeof(digest)))
       return false;
   }

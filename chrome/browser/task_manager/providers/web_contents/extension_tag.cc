@@ -9,7 +9,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/browser/process_manager.h"
 #endif
 
@@ -32,7 +32,6 @@ ExtensionTag::ExtensionTag(content::WebContents* web_contents,
                            const extensions::mojom::ViewType view_type)
     : WebContentsTag(web_contents), view_type_(view_type) {}
 
-ExtensionTag::~ExtensionTag() {
-}
+ExtensionTag::~ExtensionTag() = default;
 
 }  // namespace task_manager

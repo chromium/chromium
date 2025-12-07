@@ -8,8 +8,9 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/memory/weak_ptr.h"
+#include "base/containers/flat_set.h"
 #include "base/run_loop.h"
+#include "base/timer/timer.h"
 #include "third_party/win_virtual_display/controller/display_driver_controller.h"
 #include "third_party/win_virtual_display/driver/public/properties.h"
 #include "ui/display/display_observer.h"
@@ -39,11 +40,9 @@ class VirtualDisplayUtilWin : public display::DisplayObserver,
   static bool IsAPIAvailable();
 
   // VirtualDisplayUtil overrides:
-  int64_t AddDisplay(uint8_t id, const DisplayParams& display_params) override;
+  int64_t AddDisplay(const DisplayParams& display_params) override;
   void RemoveDisplay(int64_t display_id) override;
   void ResetDisplays() override;
-  static const DisplayParams k1920x1080;
-  static const DisplayParams k1024x768;
 
  private:
   // display::DisplayObserver:
@@ -56,14 +55,22 @@ class VirtualDisplayUtilWin : public display::DisplayObserver,
   void StartWaiting();
   void StopWaiting();
 
+  // Ensures that display topology is in extend mode (not mirror).
+  void EnsureExtendMode();
+
+  // Creates a new internal display ID to identify the display to the driver.
+  static uint8_t SynthesizeInternalDisplayId();
+
   raw_ptr<Screen> screen_;
   // True if the environment was considered headless during initialization.
   const bool is_headless_;
   std::unique_ptr<base::RunLoop> run_loop_;
+  // Periodically ensures that display topology is in extended mode.
+  base::RepeatingTimer ensure_extended_timer_;
   DisplayDriverController driver_controller_;
   // Contains the last configuration that was set.
   DriverProperties current_config_;
-  // Map of virtual display ID (product code) to corresponding display ID.
+  // Map of internal display ID (product code) to corresponding display ID.
   base::flat_map<unsigned short, int64_t> virtual_displays_;
   // Copy of the display list when this utility was constructed.
   std::vector<display::Display> initial_displays_;

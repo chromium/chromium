@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/core/css/cascade_layered.h"
 #include "third_party/blink/renderer/core/css/counter_style_map.h"
-
 #include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/keywords.h"
@@ -514,7 +514,8 @@ CounterStyle& CounterStyleMap::CreateUACounterStyle(const AtomicString& name) {
   DCHECK(IsA<StyleRuleCounterStyle>(sheet->ChildRules()[0].Get()));
   const auto* rule = To<StyleRuleCounterStyle>(sheet->ChildRules()[0].Get());
 
-  CounterStyle* counter_style = CounterStyle::Create(*rule);
+  CounterStyle* counter_style = CounterStyle::Create(
+      CascadeLayered<const StyleRuleCounterStyle>(rule, /*layer=*/nullptr));
   DCHECK(counter_style) << "Predefined counter style " << name
                         << " has invalid symbols";
   counter_style->SetIsPredefined();

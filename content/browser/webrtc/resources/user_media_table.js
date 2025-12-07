@@ -147,12 +147,16 @@ export class UserMediaTable {
       .style.fontWeight = 'normal';
     appendChildWithText(el, 'div', 'Stream id: ' + data.stream_id)
       .style.fontWeight = 'normal';
-    if (data.audio_track_info) {
-      appendChildWithText(el, 'div', 'Audio track: ' + data.audio_track_info)
+    const audio = JSON.parse(data.audio_track_info);
+    if (audio) {
+      appendChildWithText(el, 'div',
+          ['Audio track:', 'id=' + audio.id, 'label:' + audio.label].join(' '))
           .style.fontWeight = 'normal';
     }
-    if (data.video_track_info) {
-      appendChildWithText(el, 'div', 'Video track: ' + data.video_track_info)
+    const video = JSON.parse(data.video_track_info);
+    if (video) {
+      appendChildWithText(el, 'div',
+          ['Video track:', 'id=' + video.id, 'label:' + video.label].join(' '))
           .style.fontWeight = 'normal';
     }
   }

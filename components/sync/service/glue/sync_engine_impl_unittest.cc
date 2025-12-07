@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -20,10 +19,11 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
@@ -31,11 +31,13 @@
 #include "components/sync/engine/net/http_bridge.h"
 #include "components/sync/engine/sync_engine_host.h"
 #include "components/sync/engine/sync_manager_factory.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/protocol/sync_invalidations_payload.pb.h"
 #include "components/sync/service/active_devices_provider.h"
 #include "components/sync/service/glue/sync_transport_data_prefs.h"
 #include "components/sync/test/fake_sync_manager.h"
 #include "components/sync/test/mock_sync_invalidations_service.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,7 +54,7 @@ namespace {
 
 static const base::FilePath::CharType kTestSyncDir[] =
     FILE_PATH_LITERAL("sync-test");
-constexpr char kTestGaiaId[] = "test_gaia_id";
+constexpr GaiaId::Literal kTestGaiaId("test_gaia_id");
 constexpr char kTestCacheGuid[] = "test_cache_guid";
 constexpr char kTestBirthday[] = "test_birthday";
 
@@ -193,7 +195,7 @@ class SyncEngineImplTest : public testing::Test {
 
   // Synchronously initializes the backend.
   void InitializeBackend(bool expect_success = true,
-                         const std::string& gaia_id = kTestGaiaId) {
+                         const GaiaId& gaia_id = kTestGaiaId) {
     SyncEngine::InitParams params;
     params.host = &mock_host_;
     params.http_factory_getter = base::BindOnce(&CreateHttpBridgeFactory);
@@ -201,13 +203,21 @@ class SyncEngineImplTest : public testing::Test {
     params.authenticated_account_info.account_id =
         CoreAccountId::FromGaiaId(gaia_id);
     params.sync_manager_factory = std::move(fake_manager_factory_);
+    if (base::FeatureList::IsEnabled(syncer::kSyncUseOsCryptAsync)) {
+      std::unique_ptr<os_crypt_async::OSCryptAsync> os_cryp_async =
+          os_crypt_async::GetTestOSCryptAsyncForTesting();
+      base::test::TestFuture<os_crypt_async::Encryptor> future;
+      os_cryp_async->GetInstance(future.GetCallback());
+      params.encryptor =
+          std::make_unique<os_crypt_async::Encryptor>(future.Take());
+    }
 
     EXPECT_CALL(mock_host_, OnEngineInitialized(expect_success, _))
         .WillOnce(
             testing::InvokeWithoutArgs(this, &SyncEngineImplTest::QuitRunLoop));
     backend_->Initialize(std::move(params));
     PumpSyncThread();
-    // |fake_manager_| is set on the sync thread, but we can rely on the message
+    // `fake_manager_` is set on the sync thread, but we can rely on the message
     // loop barriers to guarantee that we see the updated value.
     DCHECK(fake_manager_);
 
@@ -235,13 +245,12 @@ class SyncEngineImplTest : public testing::Test {
 
   DataTypeSet ConfigureDataTypesWithUnready(DataTypeSet unready_types) {
     DataTypeConfigurer::ConfigureParams params;
-    params.reason = CONFIGURE_REASON_RECONFIGURATION;
+    params.reason = ConfigureReason::kReconfiguration;
     DataTypeSet enabled_types = Difference(enabled_types_, unready_types);
     params.to_download = Difference(enabled_types, engine_types_);
     if (!params.to_download.empty()) {
       params.to_download.Put(NIGORI);
     }
-    params.to_purge = Difference(engine_types_, enabled_types_);
     params.ready_task = base::BindOnce(&SyncEngineImplTest::DownloadReady,
                                        base::Unretained(this));
 
@@ -475,7 +484,7 @@ TEST_F(SyncEngineImplTest, ForwardLocalRefreshRequest) {
 // Test that configuration on signin sends the proper GU source.
 TEST_F(SyncEngineImplTest, DownloadControlTypesNewClient) {
   InitializeBackend();
-  EXPECT_EQ(CONFIGURE_REASON_NEW_CLIENT,
+  EXPECT_EQ(ConfigureReason::kNewClient,
             fake_manager_->GetAndResetConfigureReason());
 }
 
@@ -484,33 +493,8 @@ TEST_F(SyncEngineImplTest, DownloadControlTypesRestart) {
   fake_manager_factory_->set_progress_marker_types(enabled_types_);
   fake_manager_factory_->set_initial_sync_ended_types(enabled_types_);
   InitializeBackend();
-  EXPECT_EQ(CONFIGURE_REASON_NEWLY_ENABLED_DATA_TYPE,
+  EXPECT_EQ(ConfigureReason::kExistingClientRestart,
             fake_manager_->GetAndResetConfigureReason());
-}
-
-// If bookmarks encounter an error that results in disabling without purging
-// (such as when the type is unready), and then is explicitly disabled, the
-// SyncEngine needs to tell the manager to purge the type, even though
-// it's already disabled (crbug.com/386778).
-TEST_F(SyncEngineImplTest, DisableThenPurgeType) {
-  const DataTypeSet error_types = {BOOKMARKS};
-
-  InitializeBackend();
-
-  // First enable the types.
-  DataTypeSet ready_types = ConfigureDataTypes();
-
-  // Nigori is always downloaded so won't be ready.
-  EXPECT_EQ(Difference(ControlTypes(), {NIGORI}), ready_types);
-
-  // Then mark the error types as unready (disables without purging).
-  ready_types = ConfigureDataTypesWithUnready(error_types);
-  EXPECT_EQ(Difference(enabled_types_, error_types), ready_types);
-
-  // Lastly explicitly disable the error types, which should result in a purge.
-  enabled_types_.RemoveAll(error_types);
-  ready_types = ConfigureDataTypes();
-  EXPECT_EQ(Difference(enabled_types_, error_types), ready_types);
 }
 
 // Tests that SyncEngineImpl retains DataTypeConnector after call to
@@ -645,28 +629,6 @@ TEST_F(SyncEngineImplTest, ShouldLoadSyncDataUponInitialization) {
   EXPECT_EQ(kTestGaiaId, transport_data_prefs.GetCurrentSyncingGaiaId());
   EXPECT_EQ(kTestCacheGuid, transport_data_prefs.GetCacheGuid());
   EXPECT_EQ(kTestBirthday, transport_data_prefs.GetBirthday());
-}
-
-// Verifies that local sync transport data is thrown away if there is a mismatch
-// between the account ID cached in SyncPrefs and the actual one.
-TEST_F(SyncEngineImplTest,
-       ShouldClearLocalSyncTransportDataDueToAccountIdMismatch) {
-  // If the account-scoped transport prefs are enabled, the concept of account
-  // ID mismatch doesn't exist anymore.
-  base::test::ScopedFeatureList disable_account_scoped;
-  disable_account_scoped.InitAndDisableFeature(kSyncAccountKeyedTransportPrefs);
-
-  SyncTransportDataPrefs transport_data_prefs(
-      &pref_service_, signin::GaiaIdHash::FromGaiaId(kTestGaiaId));
-  transport_data_prefs.SetCacheGuid(kTestCacheGuid);
-  transport_data_prefs.SetBirthday(kTestBirthday);
-  transport_data_prefs.SetCurrentSyncingGaiaId("corrupt_gaia_id");
-
-  InitializeBackend();
-
-  EXPECT_EQ(kTestGaiaId, transport_data_prefs.GetCurrentSyncingGaiaId());
-  EXPECT_NE(kTestCacheGuid, transport_data_prefs.GetCacheGuid());
-  EXPECT_NE(kTestBirthday, transport_data_prefs.GetBirthday());
 }
 
 TEST_F(SyncEngineImplTest, ShouldNotifyOnNewInvalidatedDataTypes) {

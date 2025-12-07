@@ -6,17 +6,18 @@
 
 #include <utility>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/trace_event/trace_event.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -24,21 +25,18 @@
 #include "components/services/app_service/public/cpp/icon_effects.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"  // nogncheck
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/menu_item_constants.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_web_apps_utils.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
-#include "chrome/browser/ash/mall/mall_url.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/grit/generated_resources.h"
@@ -54,9 +52,8 @@ WebApps::WebApps(apps::AppServiceProxy* proxy)
     : apps::AppPublisher(proxy),
       profile_(proxy->profile()),
       provider_(WebAppProvider::GetForLocalAppsUnchecked(profile_)),
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       instance_registry_(&proxy->InstanceRegistry()),
-      device_info_manager_(profile_),
 #endif
       publisher_helper_(profile_, provider_, this) {
   Initialize();
@@ -101,7 +98,7 @@ void WebApps::LoadIcon(const std::string& app_id,
                               std::move(callback));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void WebApps::GetCompressedIconData(const std::string& app_id,
                                     int32_t size_in_dip,
                                     ui::ResourceScaleFactor scale_factor,
@@ -115,20 +112,6 @@ void WebApps::Launch(const std::string& app_id,
                      int32_t event_flags,
                      apps::LaunchSource launch_source,
                      apps::WindowInfoPtr window_info) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Redirect launches of the Mall app so that we can add additional context to
-  // the URL. Loading the context will cause a slight delay on first launch, but
-  // it is then cached in the DeviceInfoManager for subsequent launches.
-  // TODO(b/331702863): Remove this custom integration.
-  if (chromeos::features::IsCrosMallWebAppEnabled() && app_id == kMallAppId) {
-    device_info_manager_.GetDeviceInfo(base::BindOnce(
-        &WebApps::LaunchMallWithContext, weak_ptr_factory_.GetWeakPtr(),
-        event_flags, launch_source, std::move(window_info)));
-
-    return;
-  }
-#endif
-
   publisher_helper().Launch(app_id, event_flags, launch_source,
                             std::move(window_info), base::DoNothing());
 }
@@ -167,13 +150,6 @@ void WebApps::LaunchAppWithParams(apps::AppLaunchParams&& params,
           std::move(callback)));
 }
 
-void WebApps::LaunchShortcut(const std::string& app_id,
-                             const std::string& shortcut_id,
-                             int64_t display_id) {
-  publisher_helper().ExecuteContextMenuCommand(app_id, shortcut_id, display_id,
-                                               base::DoNothing());
-}
-
 void WebApps::SetPermission(const std::string& app_id,
                             apps::PermissionPtr permission) {
   publisher_helper().SetPermission(app_id, std::move(permission));
@@ -192,7 +168,7 @@ void WebApps::Uninstall(const std::string& app_id,
                                      report_abuse);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void WebApps::GetMenuModel(const std::string& app_id,
                            apps::MenuType menu_type,
                            int64_t display_id,
@@ -228,8 +204,14 @@ void WebApps::GetMenuModel(const std::string& app_id,
   } else if (can_close) {
     // Isolated web apps can only be launched in new window.
     if (web_app->isolation_data().has_value()) {
-      apps::AddCommandItem(ash::LAUNCH_NEW,
-                           IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW, menu_items);
+      // Isolated Web Apps with focus-existing or navigate-existing do not need
+      // a new window button.
+      if (!web_app->launch_handler()
+               .value_or(LaunchHandler{})
+               .TargetsExistingClients()) {
+        apps::AddCommandItem(ash::LAUNCH_NEW,
+                             IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW, menu_items);
+      }
     } else {
       apps::CreateOpenNewSubmenu(
           publisher_helper().GetWindowMode(app_id) == apps::WindowMode::kBrowser
@@ -289,7 +271,7 @@ void WebApps::PublishWebApps(std::vector<apps::AppPtr> apps) {
   if (apps.empty()) {
     return;
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // This is for prototyping and testing only. It is to provide an easy way to
   // simulate web app promise icon behaviour for the UI/ client development of
   // web app promise icons.
@@ -300,25 +282,25 @@ void WebApps::PublishWebApps(std::vector<apps::AppPtr> apps) {
       apps::MaybeSimulatePromiseAppInstallationEvents(proxy(), app.get());
     }
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-  apps::AppPublisher::Publish(std::move(apps), app_type(),
+  apps::AppPublisher::Publish(std::move(apps), apps::AppType::kWeb,
                               /*should_notify_initialized=*/false);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   const WebApp* web_app = GetWebApp(ash::kChromeUIUntrustedProjectorSwaAppId);
   if (web_app) {
     proxy()->SetSupportedLinksPreference(
         ash::kChromeUIUntrustedProjectorSwaAppId);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void WebApps::PublishWebApp(apps::AppPtr app) {
   if (!is_ready_) {
     return;
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   bool is_projector = app->app_id == ash::kChromeUIUntrustedProjectorSwaAppId;
 
   // This is for prototyping and testing only.
@@ -327,11 +309,11 @@ void WebApps::PublishWebApp(apps::AppPtr app) {
   if (ash::features::ArePromiseIconsForWebAppsEnabled()) {
     apps::MaybeSimulatePromiseAppInstallationEvents(proxy(), app.get());
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   apps::AppPublisher::Publish(std::move(app));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (is_projector) {
     // After OOBE, PublishWebApps() above could execute before the Projector app
     // has been registered. Since we need to call SetSupportedLinksPreference()
@@ -340,7 +322,7 @@ void WebApps::PublishWebApp(apps::AppPtr app) {
     proxy()->SetSupportedLinksPreference(
         ash::kChromeUIUntrustedProjectorSwaAppId);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void WebApps::ModifyWebAppCapabilityAccess(
@@ -365,16 +347,15 @@ void WebApps::InitWebApps() {
   TRACE_EVENT0("ui", "WebApps::InitWebApps");
   is_ready_ = true;
 
-  RegisterPublisher(app_type());
+  RegisterPublisher(apps::AppType::kWeb);
 
   std::vector<apps::AppPtr> apps = CreateWebApps();
 
-  apps::AppPublisher::Publish(std::move(apps), app_type(),
+  apps::AppPublisher::Publish(std::move(apps), apps::AppType::kWeb,
                               /*should_notify_initialized=*/true);
 }
 
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void WebApps::PauseApp(const std::string& app_id) {
   publisher_helper().PauseApp(app_id);
 }
@@ -481,17 +462,6 @@ void WebApps::ExecuteContextMenuCommand(const std::string& app_id,
   }
   publisher_helper().ExecuteContextMenuCommand(app_id, shortcut_id, display_id,
                                                base::DoNothing());
-}
-
-void WebApps::LaunchMallWithContext(int32_t event_flags,
-                                    apps::LaunchSource launch_source,
-                                    apps::WindowInfoPtr window_info,
-                                    apps::DeviceInfo device_info) {
-  LaunchAppWithIntent(
-      kMallAppId, event_flags,
-      std::make_unique<apps::Intent>(apps_util::kIntentActionView,
-                                     ash::GetMallLaunchUrl(device_info)),
-      launch_source, std::move(window_info), base::DoNothing());
 }
 
 #endif

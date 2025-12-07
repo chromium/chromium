@@ -1,16 +1,17 @@
 package org.chromium.base.task.test;
 
-import org.chromium.base.task.AsyncTask;
 import org.robolectric.annotation.internal.DoNotInstrument;
 import org.robolectric.util.ReflectionHelpers;
 import org.robolectric.util.ReflectionHelpers.ClassParameter;
+
+import org.chromium.base.task.AsyncTask;
 
 /**
  * Bridge between shadows and {@link org.chromium.base.task.AsyncTask}.
  */
 @DoNotInstrument
 public class ShadowAsyncTaskBridge<Result> {
-    private AsyncTask<Result> asyncTask;
+    private final AsyncTask<Result> asyncTask;
 
     public ShadowAsyncTaskBridge(AsyncTask<Result> asyncTask) {
         this.asyncTask = asyncTask;

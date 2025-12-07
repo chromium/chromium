@@ -7,13 +7,15 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/logging/logging_settings.h"
 #include "base/no_destructor.h"
+#include "base/notimplemented.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/nacl/common/buildflags.h"
 #include "content/public/browser/browser_main_runner.h"
 #include "content/public/common/content_switches.h"
+#include "content/shell/common/shell_paths.h"
 #include "content/shell/common/shell_switches.h"
 #include "extensions/common/extension_paths.h"
 #include "extensions/shell/browser/default_shell_browser_main_delegate.h"
@@ -23,22 +25,9 @@
 #include "ui/base/resource/resource_bundle.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_paths.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_paths.h"
-#endif
-
-#if BUILDFLAG(ENABLE_NACL)
-#include "components/nacl/common/nacl_switches.h"  // nogncheck
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#include "components/nacl/common/nacl_paths.h"  // nogncheck
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
-#include "components/nacl/zygote/nacl_fork_delegate_linux.h"
-#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
-#endif  // BUILDFLAG(ENABLE_NACL)
 
 #if BUILDFLAG(IS_WIN)
 #include "base/base_paths_win.h"
@@ -135,16 +124,12 @@ ShellMainDelegate::~ShellMainDelegate() {
 std::optional<int> ShellMainDelegate::BasicStartupComplete() {
   InitLogging();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::RegisterPathProvider();
-#endif
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::dbus_paths::RegisterPathProvider();
 #endif
-#if BUILDFLAG(ENABLE_NACL) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
-  nacl::RegisterPathProvider();
-#endif
   extensions::RegisterPathProvider();
+  content::RegisterShellPathProvider();
   return std::nullopt;
 }
 
@@ -178,14 +163,11 @@ void ShellMainDelegate::ProcessExiting(const std::string& process_type) {
   logging::CloseLogFile();
 }
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(USE_ZYGOTE)
 void ShellMainDelegate::ZygoteStarting(
     std::vector<std::unique_ptr<content::ZygoteForkDelegate>>* delegates) {
-#if BUILDFLAG(ENABLE_NACL)
-  nacl::AddNaClZygoteForkDelegates(delegates);
-#endif  // BUILDFLAG(ENABLE_NACL)
 }
-#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(USE_ZYGOTE)
 
 // static
 bool ShellMainDelegate::ProcessNeedsResourceBundle(
@@ -194,9 +176,6 @@ bool ShellMainDelegate::ProcessNeedsResourceBundle(
   // On Linux the zygote process opens the resources for the renderers.
   return process_type.empty() || process_type == switches::kZygoteProcess ||
          process_type == switches::kRendererProcess ||
-#if BUILDFLAG(ENABLE_NACL)
-         process_type == switches::kNaClLoaderProcess ||
-#endif
 #if BUILDFLAG(IS_MAC)
          process_type == switches::kGpuProcess ||
 #endif

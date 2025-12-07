@@ -4,31 +4,32 @@
 
 #import "ios/chrome/browser/power_bookmarks/model/power_bookmark_service_factory.h"
 
+#import "base/task/sequenced_task_runner.h"
+#import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/power_bookmarks/core/power_bookmark_service.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/web/public/thread/web_task_traits.h"
-#import "ios/web/public/thread/web_thread.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // static
 power_bookmarks::PowerBookmarkService*
-PowerBookmarkServiceFactory::GetForBrowserState(web::BrowserState* state) {
-  return static_cast<power_bookmarks::PowerBookmarkService*>(
-      GetInstance()->GetServiceForBrowserState(state, true));
+PowerBookmarkServiceFactory::GetForProfile(ProfileIOS* profile) {
+  return GetInstance()
+      ->GetServiceForProfileAs<power_bookmarks::PowerBookmarkService>(
+          profile, /*create=*/true);
 }
 
 // static
 PowerBookmarkServiceFactory* PowerBookmarkServiceFactory::GetInstance() {
-  return base::Singleton<PowerBookmarkServiceFactory>::get();
+  static base::NoDestructor<PowerBookmarkServiceFactory> instance;
+  return instance.get();
 }
 
 PowerBookmarkServiceFactory::PowerBookmarkServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "PowerBookmarkService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("PowerBookmarkService",
+                                    ProfileSelection::kRedirectedInIncognito,
+                                    ServiceCreation::kCreateWithProfile,
+                                    TestingCreation::kNoServiceForTests) {
   DependsOn(ios::BookmarkModelFactory::GetInstance());
 }
 
@@ -36,30 +37,14 @@ PowerBookmarkServiceFactory::~PowerBookmarkServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 PowerBookmarkServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* state) const {
-  ChromeBrowserState* chrome_state =
-      ChromeBrowserState::FromBrowserState(state);
-
+    ProfileIOS* profile) const {
   bookmarks::BookmarkModel* bookmark_model =
-      ios::BookmarkModelFactory::GetForBrowserState(chrome_state);
+      ios::BookmarkModelFactory::GetForProfile(profile);
 
   return std::make_unique<power_bookmarks::PowerBookmarkService>(
-      bookmark_model, state->GetStatePath().AppendASCII("power_bookmarks"),
-      web::GetUIThreadTaskRunner({}),
+      bookmark_model, profile->GetStatePath().AppendASCII("power_bookmarks"),
+      base::SequencedTaskRunner::GetCurrentDefault(),
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
-}
-
-web::BrowserState* PowerBookmarkServiceFactory::GetBrowserStateToUse(
-    web::BrowserState* state) const {
-  return GetBrowserStateRedirectedInIncognito(state);
-}
-
-bool PowerBookmarkServiceFactory::ServiceIsCreatedWithBrowserState() const {
-  return true;
-}
-
-bool PowerBookmarkServiceFactory::ServiceIsNULLWhileTesting() const {
-  return true;
 }

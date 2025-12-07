@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/persistent_cache/pending_backend.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/test/render_view_test.h"
@@ -35,7 +36,6 @@ namespace content_settings {
 namespace {
 
 constexpr char kAllowlistScheme[] = "foo";
-constexpr char kEndUrl[] = ":something";
 
 class MockContentSettingsManagerImpl : public mojom::ContentSettingsManager {
  public:
@@ -115,7 +115,6 @@ MockContentSettingsAgentImpl::MockContentSettingsAgentImpl(
     content::RenderFrame* render_frame)
     : ContentSettingsAgentImpl(
           render_frame,
-          false,
           std::make_unique<MockContentSettingsAgentDelegate>()),
       image_url_("http://www.foo.com/image.jpg"),
       image_origin_("http://www.foo.com") {}
@@ -207,6 +206,10 @@ class ContentSettingsAgentImplBrowserTest
       receiver_.Bind(std::move(receiver));
     }
 
+    void GetPendingBackend(blink::mojom::CodeCacheType cache_type,
+                           GetPendingBackendCallback callback) override {
+      std::move(callback).Run(std::nullopt);
+    }
     void DidGenerateCacheableMetadata(blink::mojom::CodeCacheType cache_type,
                                       const GURL& url,
                                       base::Time expected_response_time,
@@ -214,7 +217,7 @@ class ContentSettingsAgentImplBrowserTest
     void FetchCachedCode(blink::mojom::CodeCacheType cache_type,
                          const GURL& url,
                          FetchCachedCodeCallback callback) override {
-      std::move(callback).Run(base::Time(), std::vector<uint8_t>());
+      std::move(callback).Run(base::Time(), {});
     }
     void ClearCodeCacheEntry(blink::mojom::CodeCacheType cache_type,
                              const GURL& url) override {}
@@ -257,34 +260,6 @@ INSTANTIATE_TEST_SUITE_P(
           return "BackgroundResourceFetchDisabled";
       }
     });
-
-TEST_P(ContentSettingsAgentImplBrowserTest, AllowlistedSchemes) {
-  url::ScopedSchemeRegistryForTests scoped_registry;
-  url::AddStandardScheme(kAllowlistScheme, url::SCHEME_WITH_HOST);
-
-  MockContentSettingsAgentImpl mock_agent(GetMainRenderFrame());
-  GURL chrome_ui_url =
-      GURL(std::string(content::kChromeUIScheme).append(kEndUrl));
-  LoadHTMLWithUrlOverride("<html></html>", chrome_ui_url.spec().c_str());
-  EXPECT_TRUE(mock_agent.IsAllowlistedForContentSettings());
-
-  GURL chrome_dev_tools_url =
-      GURL(std::string(content::kChromeDevToolsScheme).append(kEndUrl));
-  LoadHTMLWithUrlOverride("<html></html>", chrome_dev_tools_url.spec().c_str());
-  EXPECT_TRUE(mock_agent.IsAllowlistedForContentSettings());
-
-  GURL allowlist_url = GURL(std::string(kAllowlistScheme).append(kEndUrl));
-  LoadHTMLWithUrlOverride("<html></html>", allowlist_url.spec().c_str());
-  EXPECT_TRUE(mock_agent.IsAllowlistedForContentSettings());
-
-  LoadHTMLWithUrlOverride("<html></html>", "file:///dir/");
-  EXPECT_TRUE(mock_agent.IsAllowlistedForContentSettings());
-  LoadHTMLWithUrlOverride("<html></html>", "file:///dir/file");
-  EXPECT_FALSE(mock_agent.IsAllowlistedForContentSettings());
-
-  LoadHTMLWithUrlOverride("<html></html>", "http://server.com/path");
-  EXPECT_FALSE(mock_agent.IsAllowlistedForContentSettings());
-}
 
 TEST_P(ContentSettingsAgentImplBrowserTest, DidBlockContentType) {
   MockContentSettingsAgentImpl mock_agent(GetMainRenderFrame());

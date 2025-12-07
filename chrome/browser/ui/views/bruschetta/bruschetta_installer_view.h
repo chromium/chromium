@@ -12,11 +12,13 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_installer.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/button/radio_button.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/window/dialog_delegate.h"
 
+class PrefService;
 class Profile;
 
 namespace views {
@@ -41,9 +43,12 @@ class BruschettaInstallerView
   using InstallResultCallback =
       base::OnceCallback<void(bruschetta::BruschettaInstallResult)>;
 
-  static void Show(Profile* profile, const guest_os::GuestId& guest_id);
+  static void Show(Profile* profile,
+                   PrefService& local_state,
+                   const guest_os::GuestId& guest_id);
 
   explicit BruschettaInstallerView(Profile* profile,
+                                   PrefService& local_state,
                                    guest_os::GuestId guest_id);
 
   // Disallow copy and assign.
@@ -99,7 +104,8 @@ class BruschettaInstallerView
   int GetCurrentDialogButtons() const;
 
   // Returns the label for a dialog |button|, based on the current |state_|.
-  std::u16string GetCurrentDialogButtonLabel(ui::DialogButton button) const;
+  std::u16string GetCurrentDialogButtonLabel(
+      ui::mojom::DialogButton button) const;
 
   // views::DialogDelegateView implementation.
   void AddedToWidget() override;

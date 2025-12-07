@@ -7,12 +7,15 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/screens/consolidated_consent_screen.h"
+#include "chrome/browser/ash/login/startup_utils.h"
+#include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
+#include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/browser_process.h"
@@ -30,6 +33,7 @@
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace ash {
 namespace {
@@ -51,11 +55,14 @@ class OobeMetricsTest : public OobeBaseTest {
   }
 
   void SetUpOnMainThread() override {
+    fake_gaia_.SetupFakeGaiaForLoginWithDefaults();
     structured_metrics_recorder_ =
         std::make_unique<metrics::structured::TestStructuredMetricsRecorder>();
     structured_metrics_recorder_->Initialize();
     LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
         true;
+    cryptohome_mixin_.ApplyAuthConfigIfUserExists(
+        user_, test::UserAuthConfig::Create(test::kDefaultAuthSetup));
 
     // Set a fake touchpad device to ensure that CHOOBE screen is shown.
     test::SetFakeTouchpadDevice();
@@ -86,11 +93,12 @@ class OobeMetricsTest : public OobeBaseTest {
   LoginManagerMixin login_manager_mixin_{&mixin_host_, {}, &fake_gaia_};
   std::unique_ptr<metrics::structured::TestStructuredMetricsRecorder>
       structured_metrics_recorder_;
-  AccountId user_{
-      AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId)};
+  AccountId user_{AccountId::FromUserEmailGaiaId(test::kTestEmail,
+                                                 GaiaId(test::kTestGaiaId))};
 
  private:
   FakeGaiaMixin fake_gaia_{&mixin_host_};
+  CryptohomeMixin cryptohome_mixin_{&mixin_host_};
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -173,8 +181,7 @@ IN_PROC_BROWSER_TEST_F(OobeMetricsTest, PageSkipped) {
   ValidateEventRecorded(page_skipped_event);
 }
 
-// TODO(crbug.com/337379954): Flaky on linux-chromeos-chrome.
-IN_PROC_BROWSER_TEST_F(OobeMetricsTest, DISABLED_SignInEvents) {
+IN_PROC_BROWSER_TEST_F(OobeMetricsTest, SignInEvents) {
   // `login_manager_mixin_.LoginAsNewRegularUser()` can not be used in this test
   // since a simulation of login steps are required to get Sign-in events
   // recorded.
@@ -265,13 +272,20 @@ class FirstUserOobeMetricsTest : public OobeMetricsTest {
 
 IN_PROC_BROWSER_TEST_F(FirstUserOobeMetricsTest,
                        OobeBoundaryMilestonesMetrics) {
-  login_manager_mixin_.LoginAsNewRegularUser();
-  OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
+  LoginDisplayHost::default_host()->StartWizard(GetFirstSigninScreen());
+  OobeScreenWaiter(GetFirstSigninScreen()).Wait();
 
   cros_events::OOBE_OobeStarted oobe_started_event;
   oobe_started_event.SetIsFlexFlow(false).SetChromeMilestone(
       version_info::GetMajorVersionNumberAsInt());
   ValidateEventRecorded(oobe_started_event);
+
+  if (ash::features::IsOobeAutoEnrollmentCheckForcedEnabled()) {
+    // Showing the GAIA screen requires OOBE to be marked complete.
+    StartupUtils::MarkOobeCompleted();
+  }
+  login_manager_mixin_.LoginAsNewRegularUser();
+  OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
 
   cros_events::OOBE_PreLoginOobeCompleted prelogin_oobe_completed_event;
   prelogin_oobe_completed_event
@@ -327,6 +341,13 @@ IN_PROC_BROWSER_TEST_F(FirstUserOobeMetricsTest,
 // So, the following tests should only run on branded builds.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 IN_PROC_BROWSER_TEST_F(FirstUserOobeMetricsTest, ClientIdNotReset) {
+  LoginDisplayHost::default_host()->StartWizard(GetFirstSigninScreen());
+  OobeScreenWaiter(GetFirstSigninScreen()).Wait();
+  if (ash::features::IsOobeAutoEnrollmentCheckForcedEnabled()) {
+    // Showing the GAIA screen requires OOBE to be marked complete.
+    StartupUtils::MarkOobeCompleted();
+  }
+
   login_manager_mixin_.LoginAsNewRegularUser();
   OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
 
@@ -340,6 +361,8 @@ IN_PROC_BROWSER_TEST_F(FirstUserOobeMetricsTest, ClientIdNotReset) {
               ElementsAre(base::Bucket(0, 1)));
   EXPECT_THAT(histogram_tester_.GetAllSamples("OOBE.MetricsClientIdReset"),
               ElementsAre(base::Bucket(0, 1)));
+  EXPECT_THAT(histogram_tester_.GetAllSamples("OOBE.MetricsClientIdReset2"),
+              ElementsAre(base::Bucket(0, 1)));
 
   // Verify that `kOobeMetricsClientIdAtOobeStart` preference was cleared.
   EXPECT_FALSE(g_browser_process->local_state()->HasPrefPath(
@@ -347,6 +370,12 @@ IN_PROC_BROWSER_TEST_F(FirstUserOobeMetricsTest, ClientIdNotReset) {
 }
 
 IN_PROC_BROWSER_TEST_F(FirstUserOobeMetricsTest, ClientIdReset) {
+  LoginDisplayHost::default_host()->StartWizard(GetFirstSigninScreen());
+  OobeScreenWaiter(GetFirstSigninScreen()).Wait();
+  if (ash::features::IsOobeAutoEnrollmentCheckForcedEnabled()) {
+    StartupUtils::MarkOobeCompleted();
+  }
+
   login_manager_mixin_.LoginAsNewRegularUser();
   OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
 
@@ -354,8 +383,13 @@ IN_PROC_BROWSER_TEST_F(FirstUserOobeMetricsTest, ClientIdReset) {
   // the stats reporting setting from enabled to disabled to trigger the
   // unexpected switch causing the reset. Later enable the stats reporting
   // controller again to get the histograms to be recorded.
-  StatsReportingController::Get()->SetEnabled(
-      ProfileManager::GetActiveUserProfile(), true);
+  if (!ash::features::IsOobePreConsentMetricsEnabled()) {
+    // If OOBE preconsent metrics feature is enabled, metrics reporting status
+    // is by default enabled so there is no need to manually set it to true for
+    // testing.
+    StatsReportingController::Get()->SetEnabled(
+        ProfileManager::GetActiveUserProfile(), true);
+  }
   WaitForPrefValue(g_browser_process->local_state(),
                    prefs::kOobeMetricsReportedAsEnabled, base::Value(true));
 
@@ -377,6 +411,8 @@ IN_PROC_BROWSER_TEST_F(FirstUserOobeMetricsTest, ClientIdReset) {
                   "OOBE.StatsReportingControllerReportedReset"),
               ElementsAre(base::Bucket(1, 1)));
   EXPECT_THAT(histogram_tester_.GetAllSamples("OOBE.MetricsClientIdReset"),
+              ElementsAre(base::Bucket(1, 1)));
+  EXPECT_THAT(histogram_tester_.GetAllSamples("OOBE.MetricsClientIdReset2"),
               ElementsAre(base::Bucket(1, 1)));
 
   // Verify that `kOobeMetricsClientIdAtOobeStart` preference was cleared.

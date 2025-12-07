@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_DEVICE_DISABLED_SCREEN_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/system/device_disabling_manager.h"
 
@@ -26,6 +27,7 @@ class DeviceDisabledScreen : public BaseScreen,
 
   // system::DeviceDisablingManager::Observer:
   void OnDisabledMessageChanged(const std::string& disabled_message) override;
+  void OnRestrictionScheduleMessageChanged() override;
 
  private:
   // BaseScreen:
@@ -33,6 +35,8 @@ class DeviceDisabledScreen : public BaseScreen,
   void HideImpl() override;
 
   base::WeakPtr<DeviceDisabledScreenView> view_;
+  base::ScopedObservation<system::DeviceDisablingManager, DeviceDisabledScreen>
+      observation_{this};
 };
 
 }  // namespace ash

@@ -6,21 +6,23 @@
 #define IOS_CHROME_BROWSER_BROWSER_VIEW_UI_BUNDLED_BROWSER_COORDINATOR_TESTING_H_
 
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_coordinator.h"
-
+#import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
+#import "ios/chrome/browser/save_to_photos/ui_bundled/save_to_photos_coordinator.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
-#import "ios/chrome/browser/ui/save_to_photos/save_to_photos_coordinator.h"
 
 @class NewTabPageCoordinator;
 
 // Coordinator for BrowserViewController. Testing category to expose properties
 // used for tests only.
-@interface BrowserCoordinator (Testing) <ActivityServiceCommands>
+@interface BrowserCoordinator (Testing) <ActivityServiceCommands,
+                                         OverscrollActionsControllerDelegate>
 
 // The coordinator used for the New Tab Page.
 @property(nonatomic, strong, readonly) NewTabPageCoordinator* NTPCoordinator;
 
 // Coordinator for displaying the Save to Photos UI.
-@property(nonatomic, strong, readonly) SaveToPhotosCoordinator* saveToPhotosCoordinator;
+@property(nonatomic, strong, readonly)
+    SaveToPhotosCoordinator* saveToPhotosCoordinator;
 
 @end
 

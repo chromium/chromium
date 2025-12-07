@@ -1,0 +1,5 @@
+This is a wdspec test.
+[FAIL] test_element_not_interactable_pointer_events_none
+  AssertionError: assert 'element click intercepted' == 'element not interactable'
+Harness: the test ran to completion.
+

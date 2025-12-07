@@ -13,7 +13,8 @@
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_math_support.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
-#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_inline_headers.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_run.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -135,14 +136,18 @@ const ShapeResult* StretchyOperatorShaper::Shape(const Font* font,
   const SimpleFontData* primary_font = font->PrimaryFont();
   const HarfBuzzFace* harfbuzz_face =
       primary_font->PlatformData().GetHarfBuzzFace();
-  Glyph base_glyph = primary_font->GlyphForCharacter(stretchy_character_);
+  Glyph base_glyph =
+      primary_font->GlyphForMathCharacter(stretchy_character_, direction_);
   float italic_correction = 0.0;
   if (metrics)
     *metrics = Metrics();
 
   Glyph glyph_variant;
   float glyph_variant_stretch_size;
-  TextDirection direction = TextDirection::kLtr;
+  TextDirection direction =
+      RuntimeEnabledFeatures::MathMLOperatorRTLMirroringEnabled()
+          ? direction_
+          : TextDirection::kLtr;
 
   // Try different glyph variants.
   for (auto& variant : OpenTypeMathSupport::GetGlyphVariantRecords(

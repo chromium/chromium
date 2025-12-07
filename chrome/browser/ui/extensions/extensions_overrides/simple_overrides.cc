@@ -26,7 +26,7 @@ namespace {
 //      to be simple overrides).
 // If the field controls anything else, it should be disallowed, and added to
 // this file's corresponding unittest.cc.
-const char* kAllowlistedManifestKeys[] = {
+constexpr const char* kAllowlistedManifestKeys[] = {
     "author",  // "author" is a recognized key, but never used as a constant.
     extensions::manifest_keys::kAboutPage,
     extensions::manifest_keys::kCurrentLocale,
@@ -59,7 +59,7 @@ bool IsSimpleOverrideExtension(const extensions::Extension& extension) {
   // Return true only if the extension has exclusively allowlisted keys in the
   // manifest.
   for (const auto [key, value] : extension.manifest()->available_values()) {
-    if (base::ranges::find(kAllowlistedManifestKeys, key) ==
+    if (std::ranges::find(kAllowlistedManifestKeys, key) ==
         std::end(kAllowlistedManifestKeys)) {
       return false;
     }

@@ -59,6 +59,9 @@ std::optional<CSSSyntaxType> ParseSyntaxType(StringView type) {
   if (type == "custom-ident") {
     return CSSSyntaxType::kCustomIdent;
   }
+  if (type == "string") {
+    return CSSSyntaxType::kString;
+  }
   return std::nullopt;
 }
 
@@ -69,14 +72,22 @@ bool IsPreMultiplied(CSSSyntaxType type) {
 }  // namespace
 
 CSSSyntaxStringParser::CSSSyntaxStringParser(const String& string)
-    : string_(string.StripWhiteSpace()), input_(string_) {}
+    : input_(string) {}
 
 std::optional<CSSSyntaxDefinition> CSSSyntaxStringParser::Parse() {
-  if (string_.empty()) {
+  input_.AdvanceUntilNonWhitespace();
+
+  if (!input_.length()) {
     return std::nullopt;
   }
-  if (string_.length() == 1 && string_[0] == '*') {
-    return CSSSyntaxDefinition::CreateUniversal();
+  if (input_.NextInputChar() == '*') {
+    input_.Advance();
+    input_.AdvanceUntilNonWhitespace();
+    if (input_.NextInputChar() == '\0') {
+      return CSSSyntaxDefinition::CreateUniversal();
+    } else {
+      return std::nullopt;
+    }
   }
 
   Vector<CSSSyntaxComponent> components;
@@ -97,7 +108,7 @@ std::optional<CSSSyntaxDefinition> CSSSyntaxStringParser::Parse() {
     return std::nullopt;
   }
 
-  return CSSSyntaxDefinition(std::move(components), string_);
+  return CSSSyntaxDefinition(std::move(components));
 }
 
 bool CSSSyntaxStringParser::ConsumeSyntaxComponent(

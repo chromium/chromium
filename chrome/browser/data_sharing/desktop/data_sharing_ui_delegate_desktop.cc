@@ -4,9 +4,15 @@
 
 #include "chrome/browser/data_sharing/desktop/data_sharing_ui_delegate_desktop.h"
 
+#include "chrome/browser/collaboration/collaboration_service_factory.h"
+#include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/views/data_sharing/collaboration_controller_delegate_desktop.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
+#include "components/collaboration/public/collaboration_service.h"
+#include "components/data_sharing/public/data_sharing_service.h"
 #include "url/gurl.h"
 
 namespace data_sharing {
@@ -16,14 +22,15 @@ DataSharingUIDelegateDesktop::DataSharingUIDelegateDesktop(Profile* profile)
 
 DataSharingUIDelegateDesktop::~DataSharingUIDelegateDesktop() = default;
 
-void DataSharingUIDelegateDesktop::HandleShareURLIntercepted(const GURL& url) {
+void DataSharingUIDelegateDesktop::HandleShareURLIntercepted(
+    const GURL& url,
+    std::unique_ptr<ShareURLInterceptionContext> context) {
   Browser* browser = chrome::FindLastActiveWithProfile(profile_);
   if (browser) {
-    // Placeholder implementation to simply show the UI sharing bubble.
-    // TODO(b/347754188): Start the receive flow.
-    DataSharingBubbleController::GetOrCreateForBrowser(
-        chrome::FindLastActiveWithProfile(profile_))
-        ->Show();
+    auto delegate =
+        std::make_unique<CollaborationControllerDelegateDesktop>(browser);
+    collaboration::CollaborationServiceFactory::GetForProfile(profile_)
+        ->StartJoinFlow(std::move(delegate), url);
   }
 }
 

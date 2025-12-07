@@ -78,11 +78,9 @@ void MediaItemUIListView::ShowItem(const std::string& id,
   DCHECK(!base::Contains(items_, id));
   DCHECK_NE(nullptr, item.get());
 
-#if BUILDFLAG(IS_CHROMEOS)
-  bool use_updated_ui =
-      base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI);
-#else
-  bool use_updated_ui =
+  bool use_updated_ui = true;
+#if !BUILDFLAG(IS_CHROMEOS)
+  use_updated_ui =
       base::FeatureList::IsEnabled(media::kGlobalMediaControlsUpdatedUI);
 #endif
 

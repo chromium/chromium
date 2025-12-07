@@ -3,12 +3,11 @@
 // found in the LICENSE file.
 
 import type {BookmarksCommandManagerElement, BookmarksItemElement, BookmarksListElement} from 'chrome://bookmarks/bookmarks.js';
-import {DialogFocusManager, MenuSource} from 'chrome://bookmarks/bookmarks.js';
+import {Command, DialogFocusManager, MenuSource} from 'chrome://bookmarks/bookmarks.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestCommandManager} from './test_command_manager.js';
 import {TestStore} from './test_store.js';
@@ -26,7 +25,7 @@ suite('DialogFocusManager', function() {
     keyDownOn(el, 0, [], key);
   }
 
-  setup(function() {
+  setup(async function() {
     const nodes = testTree(createFolder('1', [
       createItem('2'),
       createItem('3'),
@@ -48,8 +47,9 @@ suite('DialogFocusManager', function() {
     list.style.width = '100%';
     list.style.position = 'absolute';
     replaceBody(list);
-    flush();
-    items = list.shadowRoot!.querySelectorAll('bookmarks-item');
+    await eventToPromise('viewport-filled', list.$.list);
+    await microtasksFinished();
+    items = list.shadowRoot.querySelectorAll('bookmarks-item');
 
     commandManager = new TestCommandManager().getCommandManager();
     document.body.appendChild(commandManager);
@@ -64,6 +64,7 @@ suite('DialogFocusManager', function() {
     assertEquals(focusedItem, getDeepActiveElement());
 
     commandManager.openCommandMenuAtPosition(0, 0, MenuSource.ITEM);
+    await microtasksFinished();
     const dropdown = commandManager.$.dropdown.getIfExists()!;
 
     assertTrue(dropdown.open);
@@ -83,11 +84,15 @@ suite('DialogFocusManager', function() {
     assertEquals(focusedItem, getDeepActiveElement());
 
     commandManager.openCommandMenuAtPosition(0, 0, MenuSource.ITEM);
+    await microtasksFinished();
     const dropdown = commandManager.$.dropdown.getIfExists();
     assertTrue(!!dropdown);
 
-    const editDialog = commandManager.$.editDialog.get();
-    editDialog.showEditDialog(store.data.nodes['2']!);
+    commandManager.handle(Command.EDIT, new Set(['2']));
+    await microtasksFinished();
+    const editDialog =
+        commandManager.shadowRoot.querySelector('bookmarks-edit-dialog');
+    assertTrue(!!editDialog);
     dropdown.close();
     assertNotEquals(focusedItem, getDeepActiveElement());
 
@@ -105,6 +110,7 @@ suite('DialogFocusManager', function() {
     assertEquals(focusedItem, getDeepActiveElement());
 
     commandManager.openCommandMenuAtPosition(0, 0, MenuSource.ITEM);
+    await microtasksFinished();
     assertNotEquals(focusedItem, getDeepActiveElement());
     const dropdown = commandManager.$.dropdown.getIfExists()!;
     dropdown.close();

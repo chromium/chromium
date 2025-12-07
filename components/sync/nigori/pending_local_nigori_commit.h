@@ -37,20 +37,20 @@ class PendingLocalNigoriCommit {
 
   virtual ~PendingLocalNigoriCommit() = default;
 
-  // Attempts to modify |*state| to reflect the intended commit. Returns true if
+  // Attempts to modify `*state` to reflect the intended commit. Returns true if
   // the change was successfully applied (which may include the no-op case) or
   // false if it no longer applies (leading to OnFailure()).
   //
-  // |state| must not be null.
+  // `state` must not be null.
   virtual bool TryApply(NigoriState* state) const = 0;
 
   // Invoked when the commit has been successfully acked by the server.
-  // |observer| must not be null.
+  // `observer` must not be null.
   virtual void OnSuccess(const NigoriState& state,
                          SyncEncryptionHandler::Observer* observer) = 0;
 
   // Invoked when the change no longer applies or was aborted for a different
-  // reason (e.g. sync disabled). |observer| must not be null.
+  // reason (e.g. sync disabled). `observer` must not be null.
   virtual void OnFailure(SyncEncryptionHandler::Observer* observer) = 0;
 };
 

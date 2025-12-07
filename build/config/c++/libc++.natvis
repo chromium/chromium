@@ -2,28 +2,6 @@
 <AutoVisualizer
   xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
 
-  <!-- libc++'s __compressed_pair is an internal type used pervasively for
-       doing the empty base class optimization.
-
-       __compressed_pair<U,V> derives from __compressed_pair_elem<U,0> and
-       __compressed_pair_elem<V,1>. __compressed_pair_elem<T> is specialized on
-       a 3rd template parameter:
-       * if T is empty and non-final the 3rd param is 1 and it derives from T
-       * else it has a member variable __value_ of type T
-  -->
-  <Type Name="std::__Cr::__compressed_pair_elem&lt;*,*,0&gt;">
-    <DisplayString>{__value_}</DisplayString>
-    <Expand>
-      <ExpandedItem>__value_</ExpandedItem>
-    </Expand>
-  </Type>
-  <Type Name="std::__Cr::__compressed_pair_elem&lt;*,*,1&gt;">
-    <DisplayString>{*($T1*)this}</DisplayString>
-    <Expand>
-      <ExpandedItem>*($T1*)this</ExpandedItem>
-    </Expand>
-  </Type>
-
   <Type Name="std::__Cr::array&lt;*,*&gt;">
     <DisplayString>{{ size={$T2} }}</DisplayString>
     <Expand>
@@ -32,6 +10,14 @@
         <ValuePointer>__elems_</ValuePointer>
       </ArrayItems>
     </Expand>
+  </Type>
+
+  <Type Name="std::__Cr::atomic&lt;*&gt;">
+      <Intrinsic Optional="true" Name="value" Expression="*($T1*)this"/>
+      <DisplayString>{value()}</DisplayString>
+      <Expand>
+          <Item Name="[value]">value()</Item>
+      </Expand>
   </Type>
 
   <!--libc++'s short string optimization:
@@ -49,67 +35,48 @@
       capacity. A short string here stores its length in the first byte
       and the inline data in the remaining storage.)
   -->
+  <Type Name="std::__Cr::basic_string&lt;*&gt;">
+    <Intrinsic Name="is_wide" Expression="sizeof($T1) > 1" />
+    <Intrinsic Name="is_long" Expression="__rep_.__s.__is_long_" />
+    <Intrinsic Name="size" Expression="is_long() ? __rep_.__l.__size_ : (size_t)__rep_.__s.__size_" />
+    <!-- Mask off the top bit which stores __is_long_. -->
+    <Intrinsic Name="long_cap" Expression="__rep_.__l.__cap_ &amp; 0x7FFFFFFFFFFFFFFF" />
+    <!-- Short string capacity is buffer size minus 1 for null terminator. -->
+    <Intrinsic Name="short_cap" Expression="sizeof(__rep_.__s.__data_) / sizeof($T1) - 1" />
+    <Intrinsic Name="data" Expression="is_long() ? __rep_.__l.__data_ : __rep_.__s.__data_" />
+    <Intrinsic Name="contains_embedded_nul" Expression="size() != (is_wide() ? wcslen(data()) : strlen(data()))" />
 
-  <Type Name="std::__Cr::basic_string&lt;char,*&gt;">
-    <!--<Intrinsic Name="is_long"
-            Expression="((__rep*)&amp;__r_)-&gt;__s.__size_ &amp; 0x80" />-->
-    <!-- The above doesn't work because of https://llvm.org/PR41615
-         TODO(thakis): Now that we have clang r362038, try the above approach
-                       again.
-         The below assumes the alternate string layout and little endianness :/
-    -->
-    <Intrinsic Name="is_long"
-        Expression="*(((char*)this) + 3*sizeof(size_t) - 1) &amp; 0x80" />
-    <DisplayString Condition="is_long()">{*(char**)this}</DisplayString>
-    <DisplayString Condition="!is_long()">{(char*)this}</DisplayString>
-    <StringView Condition="is_long()">*(char**)this</StringView>
-    <StringView Condition="!is_long()">(char*)this</StringView>
-    <Expand>
-      <Item Name="[size]" Condition="is_long()"
-          ExcludeView="simple">((size_t*)this)[1]</Item>
-      <Item Name="[size]" Condition="!is_long()"
-          ExcludeView="simple">*(((char*)this) + 3*sizeof(size_t) - 1)</Item>
-      <Item Name="[capacity]" Condition="is_long()" ExcludeView="simple">
-        ((size_t*)this)[2] &amp; (~((size_t)0) &gt;&gt; 1)
-      </Item>
-      <Item Name="[capacity]" Condition="!is_long()"
-          ExcludeView="simple">22</Item>
-      <ArrayItems>
-        <Size Condition="is_long()">((size_t*)this)[1]</Size>
-        <Size Condition="!is_long()">
-          *(((char*)this) + 3*sizeof(size_t) - 1)
-        </Size>
-        <ValuePointer Condition="is_long()">*(char**)this</ValuePointer>
-        <ValuePointer Condition="!is_long()">(char*)this</ValuePointer>
-      </ArrayItems>
-    </Expand>
-  </Type>
+    <DisplayString Condition="contains_embedded_nul() &amp;&amp; !is_wide()">{data(),[size()]s} (data after NUL exists)</DisplayString>
+    <DisplayString Condition="contains_embedded_nul()">{data(),[size()]su} (data after NUL exists)</DisplayString>
+    <DisplayString Condition="!is_wide()">{data(),[size()]s}</DisplayString>
+    <DisplayString>{data(),[size()]su}</DisplayString>
 
-  <Type Name="std::__Cr::basic_string&lt;wchar_t,*&gt;">
-    <Intrinsic Name="is_long"
-        Expression="*(((char*)this) + 3*sizeof(size_t) - 1) &amp; 0x80" />
-    <DisplayString Condition="is_long()">{*(wchar_t**)this}</DisplayString>
-    <DisplayString Condition="!is_long()">{(wchar_t*)this}</DisplayString>
-    <StringView Condition="is_long()">*(wchar_t**)this</StringView>
-    <StringView Condition="!is_long()">(wchar_t*)this</StringView>
+    <StringView>data(),[size()]</StringView>
+
     <Expand>
-      <Item Name="[size]" Condition="is_long()"
-          ExcludeView="simple">((size_t*)this)[1]</Item>
-      <Item Name="[size]" Condition="!is_long()"
-          ExcludeView="simple">*(((char*)this) + 3*sizeof(size_t) - 1)</Item>
-      <Item Name="[capacity]" Condition="is_long()" ExcludeView="simple">
-        ((size_t*)this)[2] &amp; (~((size_t)0) &gt;&gt; 1)
-      </Item>
-      <Item Name="[capacity]" Condition="!is_long()"
-          ExcludeView="simple">10</Item>
+      <Item Name="[size]" ExcludeView="simple">size()</Item>
+      <Item Name="[capacity]" Condition="is_long()" ExcludeView="simple">long_cap()</Item>
+      <Item Name="[capacity]" Condition="!is_long()" ExcludeView="simple">short_cap()</Item>
+      <Item Name="[data]" Condition="!is_long()" ExcludeView="simple">data()</Item>
       <ArrayItems>
-        <Size Condition="is_long()">((size_t*)this)[1]</Size>
-        <Size Condition="!is_long()">
-          *(((char*)this) + 3*sizeof(size_t) - 1)
-        </Size>
-        <ValuePointer Condition="is_long()">*(wchar_t**)this</ValuePointer>
-        <ValuePointer Condition="!is_long()">(wchar_t*)this</ValuePointer>
+        <Size>size()</Size>
+        <ValuePointer>data()</ValuePointer>
       </ArrayItems>
+      <!-- Offer to show nul-delimited substrings if there are any (the debugger will not show it at all otherwise). -->
+      <Synthetic Name="[nul-delimited substrings]" Condition="contains_embedded_nul()">
+        <Expand>
+          <CustomListItems>
+            <Variable Name="p" InitialValue="is_wide() ? (const wchar*)data() : (const char*)data()" />
+            <Variable Name="end" InitialValue="p + (size())" />
+            <Loop>
+              <Break Condition="p &gt;= end" />
+              <Item>p</Item>
+              <!-- +1 to advance past the nul character. -->
+              <Exec>p += (is_wide() ? wcslen(p) : strlen(p)) + 1</Exec>
+            </Loop>
+          </CustomListItems>
+        </Expand>
+      </Synthetic>
     </Expand>
   </Type>
 
@@ -155,7 +122,7 @@
   </Type>
 
   <Type Name="std::__Cr::list&lt;*&gt;">
-    <Intrinsic Name="size" Expression="*(size_type*)&amp;__size_alloc_" />
+    <Intrinsic Name="size" Expression="__size_" />
     <DisplayString>{{ size={size()} }}</DisplayString>
     <Expand>
       <LinkedListItems>
@@ -171,14 +138,14 @@
   </Type>
 
   <Type Name="std::__Cr::map&lt;*&gt;">
-    <Intrinsic Name="size" Expression="*(size_type*)&amp;__tree_.__pair3_" />
+    <Intrinsic Name="size" Expression="__tree_.__size_" />
     <DisplayString>{{ size={size()} }}</DisplayString>
     <Expand>
       <Item Name="[size]">size()</Item>
       <TreeItems>
         <Size>size()</Size>
         <HeadPointer>
-          ((__node_pointer)&amp;__tree_.__pair1_)-&gt;__left_
+          ((__node_pointer)&amp;__tree_.__end_node_)-&gt;__left_
         </HeadPointer>
         <LeftPointer>
           ((std::__Cr::map&lt;$T1,$T2,$T3,$T4&gt;::__node_pointer)this)
@@ -190,21 +157,21 @@
         </RightPointer>
         <ValueNode>
           ((std::__Cr::map&lt;$T1,$T2,$T3,$T4&gt;::__node_pointer)this)
-              -&gt;__value_.__cc_
+              -&gt;__value_
         </ValueNode>
       </TreeItems>
     </Expand>
   </Type>
 
   <Type Name="std::__Cr::multimap&lt;*&gt;">
-    <Intrinsic Name="size" Expression="*(size_type*)&amp;__tree_.__pair3_" />
+    <Intrinsic Name="size" Expression="__tree_.__size_" />
     <DisplayString>{{ size={size()} }}</DisplayString>
     <Expand>
       <Item Name="[size]">size()</Item>
       <TreeItems>
         <Size>size()</Size>
         <HeadPointer>
-          ((__node_pointer)&amp;__tree_.__pair1_)-&gt;__left_
+          ((__node_pointer)&amp;__tree_.__end_node_)-&gt;__left_
         </HeadPointer>
         <LeftPointer>
           ((std::__Cr::multimap&lt;$T1,$T2,$T3,$T4&gt;::__node_pointer)this)
@@ -216,21 +183,21 @@
         </RightPointer>
         <ValueNode>
           ((std::__Cr::multimap&lt;$T1,$T2,$T3,$T4&gt;::__node_pointer)this)
-              -&gt;__value_.__cc_
+              -&gt;__value_
         </ValueNode>
       </TreeItems>
     </Expand>
   </Type>
 
   <Type Name="std::__Cr::multiset&lt;*&gt;">
-    <Intrinsic Name="size" Expression="*(size_type*)&amp;__tree_.__pair3_" />
+    <Intrinsic Name="size" Expression="__tree_.__size_" />
     <DisplayString>{{ size={size()} }}</DisplayString>
     <Expand>
       <Item Name="[size]">size()</Item>
       <TreeItems>
         <Size>size()</Size>
         <HeadPointer>
-          ((__base::__node_pointer)&amp;__tree_.__pair1_)-&gt;__left_
+          ((__base::__node_pointer)&amp;__tree_.__end_node_)-&gt;__left_
         </HeadPointer>
         <LeftPointer>
           ((std::__Cr::multiset&lt;$T1,$T2,$T3&gt;::__base::__node_pointer)this)
@@ -256,6 +223,87 @@
     </Expand>
   </Type>
 
+  <!-- Inspired by https://github.com/microsoft/STL/blob/main/stl/debugger/STL.natvis -->
+  <Type Name="std::__Cr::variant&lt;*&gt;">
+    <Intrinsic Name="index" Expression="(int)__impl_.__index"/>
+    <DisplayString Condition="index() &lt; 0">[valueless_by_exception]</DisplayString>
+    <DisplayString Condition="index() ==  0" Optional="true">{{ index=0, value={__impl_.__data.__head.__value} }}</DisplayString>
+    <DisplayString Condition="index() ==  1" Optional="true">{{ index=1, value={__impl_.__data.__tail.__head.__value} }}</DisplayString>
+    <DisplayString Condition="index() ==  2" Optional="true">{{ index=2, value={__impl_.__data.__tail.__tail.__head.__value} }}</DisplayString>
+    <DisplayString Condition="index() ==  3" Optional="true">{{ index=3, value={__impl_.__data.__tail.__tail.__tail.__head.__value} }}</DisplayString>
+    <DisplayString Condition="index() ==  4" Optional="true">{{ index=4, value={__impl_.__data.__tail.__tail.__tail.__tail.__head.__value} }}</DisplayString>
+    <DisplayString Condition="index() ==  5" Optional="true">{{ index=5, value={__impl_.__data.__tail.__tail.__tail.__tail.__tail.__head.__value} }}</DisplayString>
+    <DisplayString Condition="index() ==  6" Optional="true">{{ index=6, value={__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value} }}</DisplayString>
+    <DisplayString Condition="index() ==  7" Optional="true">{{ index=7, value={__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value} }}</DisplayString>
+    <DisplayString Condition="index() ==  8" Optional="true">{{ index=8, value={__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value} }}</DisplayString>
+    <DisplayString Condition="index() ==  9" Optional="true">{{ index=9, value={__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value} }}</DisplayString>
+    <DisplayString Condition="index() == 10" Optional="true">{{ index=10, value={__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value} }}</DisplayString>
+    <DisplayString Condition="index() == 11" Optional="true">{{ index=11, value={__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value} }}</DisplayString>
+    <DisplayString Condition="index() == 12" Optional="true">{{ index=12, value={__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value} }}</DisplayString>
+    <DisplayString Condition="index() == 13" Optional="true">{{ index=13, value={__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value} }}</DisplayString>
+    <DisplayString Condition="index() == 14" Optional="true">{{ index=14, value={__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value} }}</DisplayString>
+    <DisplayString Condition="index() == 15" Optional="true">{{ index=15, value={__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value} }}</DisplayString>
+    <DisplayString Condition="index() == 16" Optional="true">{{ index=16, value={__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value} }}</DisplayString>
+    <DisplayString Condition="index() == 17" Optional="true">{{ index=17, value={__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value} }}</DisplayString>
+    <DisplayString Condition="index() == 18" Optional="true">{{ index=18, value={__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value} }}</DisplayString>
+    <DisplayString Condition="index() == 19" Optional="true">{{ index=19, value={__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value} }}</DisplayString>
+    <DisplayString Condition="index() == 20" Optional="true">{{ index=20, value={__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value} }}</DisplayString>
+    <DisplayString Condition="index() == 21" Optional="true">{{ index=21, value={__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value} }}</DisplayString>
+    <DisplayString Condition="index() == 22" Optional="true">{{ index=22, value={__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value} }}</DisplayString>
+    <DisplayString Condition="index() == 23" Optional="true">{{ index=23, value={__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value} }}</DisplayString>
+    <DisplayString Condition="index() == 24" Optional="true">{{ index=24, value={__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value} }}</DisplayString>
+    <DisplayString Condition="index() == 25" Optional="true">{{ index=25, value={__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value} }}</DisplayString>
+    <DisplayString Condition="index() == 26" Optional="true">{{ index=26, value={__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value} }}</DisplayString>
+    <DisplayString Condition="index() == 27" Optional="true">{{ index=27, value={__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value} }}</DisplayString>
+    <DisplayString Condition="index() == 28" Optional="true">{{ index=28, value={__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value} }}</DisplayString>
+    <DisplayString Condition="index() == 29" Optional="true">{{ index=29, value={__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value} }}</DisplayString>
+    <DisplayString Condition="index() == 30" Optional="true">{{ index=30, value={__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value} }}</DisplayString>
+    <DisplayString Condition="index() == 31" Optional="true">{{ index=31, value={__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value} }}</DisplayString>
+    <Expand>
+      <Item Name="index">index()</Item>
+      <Item Name="[value]" Condition="index() ==  0" Optional="true">__impl_.__data.__head.__value</Item>
+      <Item Name="[value]" Condition="index() ==  1" Optional="true">__impl_.__data.__tail.__head.__value</Item>
+      <Item Name="[value]" Condition="index() ==  2" Optional="true">__impl_.__data.__tail.__tail.__head.__value</Item>
+      <Item Name="[value]" Condition="index() ==  3" Optional="true">__impl_.__data.__tail.__tail.__tail.__head.__value</Item>
+      <Item Name="[value]" Condition="index() ==  4" Optional="true">__impl_.__data.__tail.__tail.__tail.__tail.__head.__value</Item>
+      <Item Name="[value]" Condition="index() ==  5" Optional="true">__impl_.__data.__tail.__tail.__tail.__tail.__tail.__head.__value</Item>
+      <Item Name="[value]" Condition="index() ==  6" Optional="true">__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value</Item>
+      <Item Name="[value]" Condition="index() ==  7" Optional="true">__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value</Item>
+      <Item Name="[value]" Condition="index() ==  8" Optional="true">__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value</Item>
+      <Item Name="[value]" Condition="index() ==  9" Optional="true">__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value</Item>
+      <Item Name="[value]" Condition="index() == 10" Optional="true">__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value</Item>
+      <Item Name="[value]" Condition="index() == 11" Optional="true">__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value</Item>
+      <Item Name="[value]" Condition="index() == 12" Optional="true">__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value</Item>
+      <Item Name="[value]" Condition="index() == 13" Optional="true">__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value</Item>
+      <Item Name="[value]" Condition="index() == 14" Optional="true">__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value</Item>
+      <Item Name="[value]" Condition="index() == 15" Optional="true">__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value</Item>
+      <Item Name="[value]" Condition="index() == 16" Optional="true">__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value</Item>
+      <Item Name="[value]" Condition="index() == 17" Optional="true">__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value</Item>
+      <Item Name="[value]" Condition="index() == 18" Optional="true">__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value</Item>
+      <Item Name="[value]" Condition="index() == 19" Optional="true">__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value</Item>
+      <Item Name="[value]" Condition="index() == 20" Optional="true">__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value</Item>
+      <Item Name="[value]" Condition="index() == 21" Optional="true">__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value</Item>
+      <Item Name="[value]" Condition="index() == 22" Optional="true">__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value</Item>
+      <Item Name="[value]" Condition="index() == 23" Optional="true">__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value</Item>
+      <Item Name="[value]" Condition="index() == 24" Optional="true">__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value</Item>
+      <Item Name="[value]" Condition="index() == 25" Optional="true">__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value</Item>
+      <Item Name="[value]" Condition="index() == 26" Optional="true">__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value</Item>
+      <Item Name="[value]" Condition="index() == 27" Optional="true">__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value</Item>
+      <Item Name="[value]" Condition="index() == 28" Optional="true">__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value</Item>
+      <Item Name="[value]" Condition="index() == 29" Optional="true">__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value</Item>
+      <Item Name="[value]" Condition="index() == 30" Optional="true">__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value</Item>
+      <Item Name="[value]" Condition="index() == 31" Optional="true">__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="std::__Cr::pair&lt;*,*&gt;">
+    <DisplayString>{first}, {second}</DisplayString>
+    <Expand>
+      <Item Name="first">first</Item>
+      <Item Name="second">second</Item>
+    </Expand>
+  </Type>
+
   <Type Name="std::__Cr::priority_queue&lt;*&gt;">
     <DisplayString>{c}</DisplayString>
     <Expand>
@@ -265,14 +313,14 @@
   </Type>
 
   <Type Name="std::__Cr::set&lt;*&gt;">
-    <Intrinsic Name="size" Expression="*(size_type*)&amp;__tree_.__pair3_" />
+    <Intrinsic Name="size" Expression="__tree_.__size_" />
     <DisplayString>{{ size={size()} }}</DisplayString>
     <Expand>
       <Item Name="[size]">size()</Item>
       <TreeItems>
         <Size>size()</Size>
         <HeadPointer>
-          ((__base::__node_pointer)&amp;__tree_.__pair1_)-&gt;__left_
+          ((__base::__node_pointer)&amp;__tree_.__end_node_)-&gt;__left_
         </HeadPointer>
         <LeftPointer>
           ((std::__Cr::set&lt;$T1,$T2,$T3&gt;::__base::__node_pointer)this)
@@ -387,46 +435,53 @@
       </Expand>
   </Type>
 
-<Type Name="std::__Cr::unordered_map&lt;*&gt;">
+  <Type Name="std::__Cr::unordered_map&lt;*&gt;">
     <AlternativeType Name="std::__Cr::unordered_multimap&lt;*&gt;" />
-    <AlternativeType Name="std::__Cr::unordered_multiset&lt;*&gt;" />
-    <AlternativeType Name="std::__Cr::unordered_set&lt;*&gt;" />
-    <Intrinsic Name="size" Expression="*(size_type*)&amp;__table_.__p2_" />
-    <Intrinsic Name="bucket_count"
-        Expression="*(size_type*)&amp;
-                    ((__table::__bucket_list_deleter*)
-                        ((void**)&amp;__table_.__bucket_list_ + 1))
-                        -&gt;__data_" />
+    <Intrinsic Name="size" Expression="__table_.__size_" />
+    <Intrinsic Name="bucket_count" Expression="__table_.__bucket_list_.__deleter_.__size_" />
+    <Intrinsic Name="max_load_factor" Expression="__table_.__max_load_factor_" />
     <DisplayString>{{ size={size()} }}</DisplayString>
     <Expand>
+      <Item Name="[size]">size()</Item>
       <Item Name="[bucket_count]">bucket_count()</Item>
-      <Item Name="[load_factor]">
-        bucket_count() != 0 ? (float)size() / bucket_count() : 0.f</Item>
-      <Item Name="[max_load_factor]">*(float*)&amp;__table_.__p3_</Item>
-      <!-- Use CustomListItems instead of LinkedListItems because we
-        need to cast to __table::__node_pointer and LinkedListItems
-        evaluates <Value> in the context of the node, not of the container,
-        so we'd have to say std::unordered_map<$T1,...>::__table::__node_pointer
-        and then we couldn't share this <Type> between unordered_(multi)map
-        and unordered_(multi)set. -->
-      <CustomListItems>
-        <Variable Name="node"
-            InitialValue="*(__table::__next_pointer*)&amp;__table_.__p1_" />
+      <Item Name="[load_factor]">bucket_count() != 0 ? (float)size() / bucket_count() : 0.f</Item>
+      <Item Name="[max_load_factor]">max_load_factor()</Item>
+      <LinkedListItems>
         <Size>size()</Size>
-        <Loop>
-          <Item>(*(__table::__node_pointer*)&amp;node)-&gt;__value_</Item>
-          <Exec>node = node-&gt;__next_</Exec>
-        </Loop>
-      </CustomListItems>
+        <HeadPointer>__table_.__first_node_.__next_</HeadPointer>
+        <NextPointer>__next_</NextPointer>
+        <ValueNode>((std::__Cr::__hash_node&lt;std::__Cr::__hash_value_type&lt;$T1,$T2&gt;,void *&gt; *)this)-&gt;__value_</ValueNode>
+      </LinkedListItems>
     </Expand>
   </Type>
+
+  <Type Name="std::__Cr::unordered_set&lt;*&gt;">
+    <AlternativeType Name="std::__Cr::unordered_multiset&lt;*&gt;" />
+    <Intrinsic Name="size" Expression="__table_.__size_" />
+    <Intrinsic Name="bucket_count" Expression="__table_.__bucket_list_.__deleter_.__size_" />
+    <Intrinsic Name="max_load_factor" Expression="__table_.__max_load_factor_" />
+    <DisplayString>{{ size={size()} }}</DisplayString>
+    <Expand>
+      <Item Name="[size]">size()</Item>
+      <Item Name="[bucket_count]">bucket_count()</Item>
+      <Item Name="[load_factor]">bucket_count() != 0 ? (float)size() / bucket_count() : 0.f</Item>
+      <Item Name="[max_load_factor]">max_load_factor()</Item>
+      <LinkedListItems>
+        <Size>size()</Size>
+        <HeadPointer>__table_.__first_node_.__next_</HeadPointer>
+        <NextPointer>__next_</NextPointer>
+        <ValueNode>((std::__Cr::__hash_node&lt;$T1,void *&gt; *)this)-&gt;__value_</ValueNode>
+      </LinkedListItems>
+    </Expand>
+  </Type>
+
   <!-- This is the node __value_ of an unordered_(multi)map. Expand it through
     a separate formatter instead of in the <Item> expression above so that the
     same <Type> works for unordered_(multi)set and unordered_(multi)map. -->
   <Type Name="std::__Cr::__hash_value_type&lt;*&gt;">
-    <DisplayString>{__cc}</DisplayString>
+    <DisplayString>{__cc_}</DisplayString>
     <Expand>
-      <ExpandedItem>__cc</ExpandedItem>
+      <ExpandedItem>__cc_</ExpandedItem>
     </Expand>
   </Type>
 

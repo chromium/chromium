@@ -7,8 +7,8 @@
 
 namespace ui {
 
-EmptyFilter::EmptyFilter() {}
-EmptyFilter::~EmptyFilter() {}
+EmptyFilter::EmptyFilter() = default;
+EmptyFilter::~EmptyFilter() = default;
 
 bool EmptyFilter::Filter(const base::TimeTicks& timestamp,
                          gfx::PointF* position) const {

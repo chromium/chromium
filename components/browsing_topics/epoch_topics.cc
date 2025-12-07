@@ -81,11 +81,13 @@ EpochTopics::~EpochTopics() = default;
 EpochTopics EpochTopics::FromDictValue(const base::Value::Dict& dict_value) {
   const base::Value* calculation_time_value =
       dict_value.Find(kCalculationTimeNameKey);
-  if (!calculation_time_value)
+  std::optional<base::Time> maybe_calculation_time =
+      base::ValueToTime(calculation_time_value);
+  if (!maybe_calculation_time) {
     return EpochTopics(base::Time());
+  }
 
-  base::Time calculation_time =
-      base::ValueToTime(calculation_time_value).value();
+  base::Time calculation_time = maybe_calculation_time.value();
 
   std::vector<TopicAndDomains> top_topics_and_observing_domains;
   const base::Value::List* top_topics_and_observing_domains_value =
@@ -245,6 +247,17 @@ void EpochTopics::ClearContextDomain(
   for (TopicAndDomains& topic_and_domains : top_topics_and_observing_domains_) {
     topic_and_domains.ClearDomain(hashed_context_domain);
   }
+}
+
+void EpochTopics::ScheduleExpiration(base::OnceClosure on_expiration_callback) {
+  CHECK(!expiration_timer_);
+  expiration_timer_ = std::make_unique<base::WallClockTimer>();
+
+  expiration_timer_->Start(
+      FROM_HERE,
+      calculation_time_ +
+          blink::features::kBrowsingTopicsEpochRetentionDuration.Get(),
+      std::move(on_expiration_callback));
 }
 
 }  // namespace browsing_topics

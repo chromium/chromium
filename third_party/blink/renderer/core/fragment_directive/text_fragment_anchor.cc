@@ -296,8 +296,7 @@ bool TextFragmentAnchor::InvokeSelector() {
 
 void TextFragmentAnchor::Installed() {
   AnnotationAgentContainerImpl* container =
-      Supplement<Document>::From<AnnotationAgentContainerImpl>(
-          frame_->GetDocument());
+      frame_->GetDocument()->GetAnnotationAgentContainerImpl();
   CHECK(container);
   container->AddObserver(this);
 }
@@ -424,7 +423,7 @@ void TextFragmentAnchor::ApplyEffectsToFirstMatch() {
 
   const RangeInFlatTree& range = first_match_->GetAttachedRange();
 
-  // Apply :target pseudo class.
+  // Apply :target pseudo-class.
   ApplyTargetToCommonAncestor(range.ToEphemeralRange());
   frame_->GetDocument()->UpdateStyleAndLayout(
       DocumentUpdateReason::kFindInPage);
@@ -439,12 +438,6 @@ void TextFragmentAnchor::ApplyEffectsToFirstMatch() {
   }
 
   metrics_->DidInvokeScrollIntoView();
-
-  // Set the sequential focus navigation to the start of selection.
-  // Even if this element isn't focusable, "Tab" press will
-  // start the search to find the next focusable element from this element.
-  frame_->GetDocument()->SetSequentialFocusNavigationStartingPoint(
-      range.StartPosition().NodeAsRangeFirstNode());
 }
 
 bool TextFragmentAnchor::EnsureFirstMatchInViewIfNeeded() {
@@ -461,7 +454,7 @@ bool TextFragmentAnchor::EnsureFirstMatchInViewIfNeeded() {
   // Ensure we don't treat the text fragment ScrollIntoView as a user scroll
   // so reset user_scrolled_ when it's done.
   base::AutoReset<bool> reset_user_scrolled(&user_scrolled_, user_scrolled_);
-  first_match_->ScrollIntoView();
+  first_match_->ScrollIntoView(/*applies_focus=*/false);
 
   return true;
 }
@@ -475,8 +468,7 @@ void TextFragmentAnchor::DidFinishSearch() {
   }
 
   AnnotationAgentContainerImpl* container =
-      Supplement<Document>::From<AnnotationAgentContainerImpl>(
-          frame_->GetDocument());
+      frame_->GetDocument()->GetAnnotationAgentContainerImpl();
   CHECK(container);
   container->RemoveObserver(this);
 
@@ -498,8 +490,8 @@ void TextFragmentAnchor::DidFinishSearch() {
 
   // Finalizing the anchor may cause script execution so schedule a new frame
   // to perform finalization.
-  frame_->GetDocument()->EnqueueAnimationFrameTask(WTF::BindOnce(
-      &TextFragmentAnchor::FinalizeAnchor, WrapWeakPersistent(this)));
+  frame_->GetDocument()->EnqueueAnimationFrameTask(
+      BindOnce(&TextFragmentAnchor::FinalizeAnchor, WrapWeakPersistent(this)));
   finalize_pending_ = true;
 }
 

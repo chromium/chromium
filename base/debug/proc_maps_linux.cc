@@ -11,10 +11,16 @@
 
 #include <fcntl.h>
 #include <stddef.h>
+#include <unistd.h>
 
-#include "base/files/file_util.h"
+#include <string_view>
+#include <unordered_map>
+
 #include "base/files/scoped_file.h"
+#include "base/format_macros.h"
 #include "base/logging.h"
+#include "base/memory/page_size.h"
+#include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 
@@ -22,8 +28,15 @@
 #include <inttypes.h>
 #endif
 
-namespace base {
-namespace debug {
+namespace base::debug {
+
+MappedMemoryRegion::MappedMemoryRegion() = default;
+MappedMemoryRegion::MappedMemoryRegion(const MappedMemoryRegion&) = default;
+MappedMemoryRegion::MappedMemoryRegion(MappedMemoryRegion&&) noexcept = default;
+MappedMemoryRegion& MappedMemoryRegion::operator=(MappedMemoryRegion&) =
+    default;
+MappedMemoryRegion& MappedMemoryRegion::operator=(
+    MappedMemoryRegion&&) noexcept = default;
 
 // Scans |proc_maps| starting from |pos| returning true if the gate VMA was
 // found, otherwise returns false.
@@ -70,8 +83,9 @@ bool ReadProcMaps(std::string* proc_maps) {
     // ... and don't forget to trim off excess bytes.
     proc_maps->resize(pos + static_cast<size_t>(bytes_read));
 
-    if (bytes_read == 0)
+    if (bytes_read == 0) {
       break;
+    }
 
     // The gate VMA is handled as a special case after seq_file has finished
     // iterating through all entries in the virtual memory table.
@@ -81,22 +95,23 @@ bool ReadProcMaps(std::string* proc_maps) {
     // entries including the gate VMA again.
     //
     // Avoid this by searching for the gate VMA and breaking early.
-    if (ContainsGateVMA(proc_maps, pos))
+    if (ContainsGateVMA(proc_maps, pos)) {
       break;
+    }
   }
 
   return true;
 }
 
-bool ParseProcMaps(const std::string& input,
+bool ParseProcMaps(std::string_view input,
                    std::vector<MappedMemoryRegion>* regions_out) {
   CHECK(regions_out);
   std::vector<MappedMemoryRegion> regions;
 
   // This isn't async safe nor terribly efficient, but it doesn't need to be at
   // this point in time.
-  std::vector<std::string> lines = SplitString(
-      input, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  std::vector<std::string> lines =
+      SplitString(input, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
   for (size_t i = 0; i < lines.size(); ++i) {
     // Due to splitting on '\n' the last line should be empty.
@@ -110,7 +125,7 @@ bool ParseProcMaps(const std::string& input,
 
     MappedMemoryRegion region;
     const char* line = lines[i].c_str();
-    char permissions[5] = {'\0'};  // Ensure NUL-terminated string.
+    char permissions[5] = {};  // Ensure NUL-terminated string.
     uint8_t dev_major = 0;
     uint8_t dev_minor = 0;
     long inode = 0;
@@ -131,27 +146,36 @@ bool ParseProcMaps(const std::string& input,
       return false;
     }
 
+    region.inode = inode;
+    region.dev_major = dev_major;
+    region.dev_minor = dev_minor;
+
     region.permissions = 0;
 
-    if (permissions[0] == 'r')
+    if (permissions[0] == 'r') {
       region.permissions |= MappedMemoryRegion::READ;
-    else if (permissions[0] != '-')
+    } else if (permissions[0] != '-') {
       return false;
+    }
 
-    if (permissions[1] == 'w')
+    if (permissions[1] == 'w') {
       region.permissions |= MappedMemoryRegion::WRITE;
-    else if (permissions[1] != '-')
+    } else if (permissions[1] != '-') {
       return false;
+    }
 
-    if (permissions[2] == 'x')
+    if (permissions[2] == 'x') {
       region.permissions |= MappedMemoryRegion::EXECUTE;
-    else if (permissions[2] != '-')
+    } else if (permissions[2] != '-') {
       return false;
+    }
 
-    if (permissions[3] == 'p')
+    if (permissions[3] == 'p') {
       region.permissions |= MappedMemoryRegion::PRIVATE;
-    else if (permissions[3] != 's' && permissions[3] != 'S')  // Shared memory.
+    } else if (permissions[3] != 's' &&
+               permissions[3] != 'S') {  // Shared memory.
       return false;
+    }
 
     // Pushing then assigning saves us a string copy.
     regions.push_back(region);
@@ -162,5 +186,71 @@ bool ParseProcMaps(const std::string& input,
   return true;
 }
 
-}  // namespace debug
-}  // namespace base
+std::optional<SmapsRollup> ParseSmapsRollup(const std::string& buffer) {
+  std::vector<std::string> lines =
+      SplitString(buffer, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+
+  std::unordered_map<std::string, ByteCount> tmp;
+  for (const auto& line : lines) {
+    // This should be more than enough space for any output we get (but we also
+    // verify the size below).
+    std::string key;
+    key.resize(100);
+    size_t val;
+    if (sscanf(line.c_str(), "%99s %" PRIuS " kB", key.data(), &val) == 2) {
+      // sscanf writes a nul-byte at the end of the result, so |strlen| is safe
+      // here. |resize| does not count the length of the nul-byte, and we want
+      // to trim off the trailing colon at the end, so we use |strlen - 1| here.
+      key.resize(strlen(key.c_str()) - 1);
+      tmp[key] = KiB(val);
+    }
+  }
+
+  SmapsRollup smaps_rollup;
+
+  smaps_rollup.rss = tmp["Rss"];
+  smaps_rollup.pss = tmp["Pss"];
+  smaps_rollup.pss_anon = tmp["Pss_Anon"];
+  smaps_rollup.pss_file = tmp["Pss_File"];
+  smaps_rollup.pss_shmem = tmp["Pss_Shmem"];
+  smaps_rollup.private_dirty = tmp["Private_Dirty"];
+  smaps_rollup.swap = tmp["Swap"];
+  smaps_rollup.swap_pss = tmp["SwapPss"];
+
+  return smaps_rollup;
+}
+
+std::optional<SmapsRollup> ReadAndParseSmapsRollup() {
+  const size_t read_size = base::GetPageSize();
+
+  base::ScopedFD fd(HANDLE_EINTR(open("/proc/self/smaps_rollup", O_RDONLY)));
+  if (!fd.is_valid()) {
+    DPLOG(ERROR) << "Couldn't open /proc/self/smaps_rollup";
+    return std::nullopt;
+  }
+
+  std::string buffer;
+  buffer.resize(read_size);
+
+  ssize_t bytes_read = HANDLE_EINTR(
+      read(fd.get(), static_cast<void*>(buffer.data()), read_size));
+  if (bytes_read < 0) {
+    DPLOG(ERROR) << "Couldn't read /proc/self/smaps_rollup";
+    return std::nullopt;
+  }
+
+  // We expect to read a few hundred bytes, which should be significantly less
+  // the page size.
+  DCHECK(static_cast<size_t>(bytes_read) < read_size);
+
+  buffer.resize(static_cast<size_t>(bytes_read));
+
+  return ParseSmapsRollup(buffer);
+}
+
+std::optional<SmapsRollup> ParseSmapsRollupForTesting(
+    const std::string& smaps_rollup) {
+  return ParseSmapsRollup(smaps_rollup);
+}
+
+}  // namespace base::debug

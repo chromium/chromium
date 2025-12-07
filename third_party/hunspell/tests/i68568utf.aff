@@ -1,8 +1,0 @@
-# Sant'Elia -> SANT'ELIA (Italian)
-# OpenOffice.org Issue 68658
-SET UTF-8
-
-PFX a Y 1
-PFX a 0 Foó' B
-
-WORDCHARS '

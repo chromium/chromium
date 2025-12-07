@@ -4,12 +4,10 @@
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
-import type {Signals} from '../omnibox.mojom-webui.js';
+import type {Signals} from '../omnibox_internals.mojom-webui.js';
 import {clamp, signalNames} from '../omnibox_util.js';
 
 import type {MlBrowserProxy} from './ml_browser_proxy.js';
-/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
-// @ts-ignore:next-line
 import sheet from './ml_chart.css' with {type : 'css'};
 import {getTemplate} from './ml_chart.html.js';
 
@@ -338,7 +336,7 @@ export class MlChartElement extends CustomElement {
           tickLength.setX(0), 1, xAxisColor);
       if (closestPlot) {
         const tickLabel =
-            (tickGrid.x * closestPlot.xAxisScale + closestPlot!.xAxisOffset)
+            (tickGrid.x * closestPlot.xAxisScale + closestPlot.xAxisOffset)
                 .toLocaleString(
                     'en-US',
                     {minimumFractionDigits: 1, maximumFractionDigits: 1});
@@ -359,7 +357,7 @@ export class MlChartElement extends CustomElement {
     // Draw the axes titles.
     if (closestPlot) {
       this.drawText(
-          closestPlot!.xAxisLabel,
+          closestPlot.xAxisLabel,
           axisOrigin.add(axisLength.scale(.5).setY(0))
               .add(labelOffset.scale(2).setX(0)),
           xAxisColor, 12, false, 'center', 'middle');
@@ -401,9 +399,9 @@ export class MlChartElement extends CustomElement {
 
     // Draw the tooltip if the mouse is hovering near a plot.
     if (closestPlot) {
-      this.drawPoint(this.xy(closestPoint!.position!), 7, closestPlot!.color);
+      this.drawPoint(this.xy(closestPoint!.position), 7, closestPlot.color);
       this.drawMultilineText(
-          closestPoint!.label, mouse!.add(labelOffset), closestPlot!.color,
+          closestPoint!.label, mouse!.add(labelOffset), closestPlot.color,
           this.clearColor, 'left');
     }
   }

@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/mock_callback.h"
 #include "components/gcm_driver/crypto/gcm_encryption_result.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
 #include "components/sharing_message/features.h"
@@ -18,28 +19,22 @@
 #include "components/sharing_message/sharing_message_bridge.h"
 #include "components/sharing_message/sharing_sync_preference.h"
 #include "components/sharing_message/sharing_utils.h"
-#include "components/sharing_message/vapid_key_manager.h"
-#include "components/sharing_message/web_push/web_push_sender.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/fake_device_info_sync_service.h"
 #include "components/sync_device_info/fake_local_device_info_provider.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "crypto/ec_private_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
-const char kMessageId[] = "message_id";
-const char kVapidFcmToken[] = "vapid_fcm_token";
-const char kVapidP256dh[] = "vapid_p256dh";
-const char kVapidAuthSecret[] = "vapid_id_auth_secret";
+using testing::_;
+
 const char kSenderIdFcmToken[] = "sender_id_fcm_token";
 const char kSenderIdP256dh[] = "sender_id_p256dh";
 const char kSenderIdAuthSecret[] = "sender_id_auth_secret";
-const char kAuthorizedEntity[] = "authorized_entity";
 const int kTtlSeconds = 10;
 const char kServerConfiguration[] = "test_server_configuration";
 const char kServerP256dh[] = "test_server_p256_dh";
@@ -75,39 +70,6 @@ class FakeGCMDriver : public gcm::FakeGCMDriver {
 
  private:
   std::string app_id_, authorized_entity_, p256dh_, auth_secret_;
-};
-
-class FakeWebPushSender : public WebPushSender {
- public:
-  FakeWebPushSender() : WebPushSender(/*url_loader_factory=*/nullptr) {}
-
-  FakeWebPushSender(const FakeWebPushSender&) = delete;
-  FakeWebPushSender& operator=(const FakeWebPushSender&) = delete;
-
-  ~FakeWebPushSender() override = default;
-
-  void SendMessage(const std::string& fcm_token,
-                   crypto::ECPrivateKey* vapid_key,
-                   WebPushMessage message,
-                   WebPushCallback callback) override {
-    fcm_token_ = fcm_token;
-    vapid_key_ = vapid_key;
-    message_ = std::move(message);
-    std::move(callback).Run(result_,
-                            std::make_optional<std::string>(kMessageId));
-  }
-
-  const std::string& fcm_token() { return fcm_token_; }
-  crypto::ECPrivateKey* vapid_key() { return vapid_key_; }
-  const std::optional<WebPushMessage>& message() { return message_; }
-
-  void set_result(SendWebPushMessageResult result) { result_ = result; }
-
- private:
-  std::string fcm_token_;
-  raw_ptr<crypto::ECPrivateKey, DanglingUntriaged> vapid_key_;
-  std::optional<WebPushMessage> message_;
-  SendWebPushMessageResult result_;
 };
 
 class FakeSharingMessageBridge : public SharingMessageBridge {
@@ -146,17 +108,8 @@ class FakeSharingMessageBridge : public SharingMessageBridge {
 
  private:
   std::optional<sync_pb::SharingMessageSpecifics> specifics_;
-  sync_pb::SharingMessageCommitError::ErrorCode error_code_;
-};
-
-class MockVapidKeyManager : public VapidKeyManager {
- public:
-  MockVapidKeyManager()
-      : VapidKeyManager(/*sharing_sync_preference=*/nullptr,
-                        /*sync_service=*/nullptr) {}
-  ~MockVapidKeyManager() override {}
-
-  MOCK_METHOD0(GetOrCreateKey, crypto::ECPrivateKey*());
+  sync_pb::SharingMessageCommitError::ErrorCode error_code_ =
+      sync_pb::SharingMessageCommitError::NONE;
 };
 
 class SharingFCMSenderTest : public testing::Test {
@@ -174,52 +127,35 @@ class SharingFCMSenderTest : public testing::Test {
 
  protected:
   SharingFCMSenderTest()
-      : fake_web_push_sender_(new FakeWebPushSender()),
-        sync_prefs_(&prefs_, &fake_device_info_sync_service_),
+      : sync_prefs_(&prefs_, &fake_device_info_sync_service_),
         sharing_fcm_sender_(
-            base::WrapUnique(fake_web_push_sender_.get()),
             &fake_sharing_message_bridge_,
             &sync_prefs_,
-            &vapid_key_manager_,
             &fake_gcm_driver_,
             fake_device_info_sync_service_.GetDeviceInfoTracker(),
             &fake_local_device_info_provider_,
-            &test_sync_service_) {
+            &test_sync_service_,
+            mock_sync_flare_.Get()) {
     SharingSyncPreference::RegisterProfilePrefs(prefs_.registry());
   }
 
   sync_preferences::TestingPrefServiceSyncable prefs_;
-  raw_ptr<FakeWebPushSender, DanglingUntriaged> fake_web_push_sender_;
   FakeSharingMessageBridge fake_sharing_message_bridge_;
   syncer::FakeDeviceInfoSyncService fake_device_info_sync_service_;
   SharingSyncPreference sync_prefs_;
-  testing::NiceMock<MockVapidKeyManager> vapid_key_manager_;
   FakeGCMDriver fake_gcm_driver_;
   syncer::FakeLocalDeviceInfoProvider fake_local_device_info_provider_;
   syncer::TestSyncService test_sync_service_;
+  base::MockCallback<syncer::SyncableService::StartSyncFlare> mock_sync_flare_;
 
   SharingFCMSender sharing_fcm_sender_;
-};  // namespace
-
-}  // namespace
+};
 
 TEST_F(SharingFCMSenderTest, NoFcmRegistration) {
-  // Make sync unavailable to force using vapid.
-  test_sync_service_.SetFailedDataTypes({syncer::SHARING_MESSAGE});
   sync_prefs_.ClearFCMRegistration();
 
-  std::unique_ptr<crypto::ECPrivateKey> vapid_key =
-      crypto::ECPrivateKey::Create();
-  ON_CALL(vapid_key_manager_, GetOrCreateKey())
-      .WillByDefault(testing::Return(vapid_key.get()));
-
+  // Do not populate sender ID channel.
   components_sharing_message::FCMChannelConfiguration fcm_channel;
-  fcm_channel.set_vapid_fcm_token(kVapidFcmToken);
-  fcm_channel.set_vapid_p256dh(kVapidP256dh);
-  fcm_channel.set_vapid_auth_secret(kVapidAuthSecret);
-  fcm_channel.set_sender_id_fcm_token(kSenderIdFcmToken);
-  fcm_channel.set_sender_id_p256dh(kSenderIdP256dh);
-  fcm_channel.set_sender_id_auth_secret(kSenderIdAuthSecret);
 
   SharingSendMessageResult result;
   std::optional<std::string> message_id;
@@ -232,52 +168,14 @@ TEST_F(SharingFCMSenderTest, NoFcmRegistration) {
                      base::Unretained(this), &result, &message_id,
                      &channel_type));
 
-  EXPECT_EQ(SharingSendMessageResult::kInternalError, result);
+  EXPECT_EQ(SharingSendMessageResult::kDeviceNotFound, result);
   EXPECT_FALSE(message_id);
   EXPECT_EQ(SharingChannelType::kUnknown, channel_type);
 }
 
-TEST_F(SharingFCMSenderTest, NoVapidKey) {
-  // Make sync unavailable to force using vapid.
-  test_sync_service_.SetFailedDataTypes({syncer::SHARING_MESSAGE});
-  sync_prefs_.SetFCMRegistration(SharingSyncPreference::FCMRegistration(
-      kAuthorizedEntity, base::Time::Now()));
-
-  ON_CALL(vapid_key_manager_, GetOrCreateKey())
-      .WillByDefault(testing::Return(nullptr));
-
-  components_sharing_message::FCMChannelConfiguration fcm_channel;
-  fcm_channel.set_vapid_fcm_token(kVapidFcmToken);
-  fcm_channel.set_vapid_p256dh(kVapidP256dh);
-  fcm_channel.set_vapid_auth_secret(kVapidAuthSecret);
-  fcm_channel.set_sender_id_fcm_token(kSenderIdFcmToken);
-  fcm_channel.set_sender_id_p256dh(kSenderIdP256dh);
-  fcm_channel.set_sender_id_auth_secret(kSenderIdAuthSecret);
-
-  SharingSendMessageResult result;
-  std::optional<std::string> message_id;
-  SharingChannelType channel_type;
-  components_sharing_message::SharingMessage sharing_message;
-  sharing_message.mutable_ack_message();
-  sharing_fcm_sender_.SendMessageToFcmTarget(
-      fcm_channel, base::Seconds(kTtlSeconds), std::move(sharing_message),
-      base::BindOnce(&SharingFCMSenderTest::OnMessageSent,
-                     base::Unretained(this), &result, &message_id,
-                     &channel_type));
-
-  EXPECT_EQ(SharingSendMessageResult::kInternalError, result);
-  EXPECT_FALSE(message_id);
-  EXPECT_EQ(SharingChannelType::kFcmVapid, channel_type);
-}
-
 TEST_F(SharingFCMSenderTest, NoChannelsSpecified) {
-  sync_prefs_.SetFCMRegistration(SharingSyncPreference::FCMRegistration(
-      kAuthorizedEntity, base::Time::Now()));
-
-  std::unique_ptr<crypto::ECPrivateKey> vapid_key =
-      crypto::ECPrivateKey::Create();
-  ON_CALL(vapid_key_manager_, GetOrCreateKey())
-      .WillByDefault(testing::Return(vapid_key.get()));
+  sync_prefs_.SetFCMRegistration(
+      SharingSyncPreference::FCMRegistration(base::Time::Now()));
 
   components_sharing_message::FCMChannelConfiguration fcm_channel;
   // Don't set any channels.
@@ -299,23 +197,13 @@ TEST_F(SharingFCMSenderTest, NoChannelsSpecified) {
 }
 
 TEST_F(SharingFCMSenderTest, PreferSync) {
-  sync_prefs_.SetFCMRegistration(SharingSyncPreference::FCMRegistration(
-      kAuthorizedEntity, base::Time::Now()));
+  sync_prefs_.SetFCMRegistration(
+      SharingSyncPreference::FCMRegistration(base::Time::Now()));
 
-  fake_web_push_sender_->set_result(SendWebPushMessageResult::kSuccessful);
   fake_sharing_message_bridge_.set_error_code(
       sync_pb::SharingMessageCommitError::NONE);
 
-  std::unique_ptr<crypto::ECPrivateKey> vapid_key =
-      crypto::ECPrivateKey::Create();
-  ON_CALL(vapid_key_manager_, GetOrCreateKey())
-      .WillByDefault(testing::Return(vapid_key.get()));
-
   components_sharing_message::FCMChannelConfiguration fcm_channel;
-  // Set both VAPID and Sender ID channel.
-  fcm_channel.set_vapid_fcm_token(kVapidFcmToken);
-  fcm_channel.set_vapid_p256dh(kVapidP256dh);
-  fcm_channel.set_vapid_auth_secret(kVapidAuthSecret);
   fcm_channel.set_sender_id_fcm_token(kSenderIdFcmToken);
   fcm_channel.set_sender_id_p256dh(kSenderIdP256dh);
   fcm_channel.set_sender_id_auth_secret(kSenderIdAuthSecret);
@@ -339,87 +227,7 @@ TEST_F(SharingFCMSenderTest, PreferSync) {
   message_sent.ParseFromString(
       fake_sharing_message_bridge_.specifics()->payload());
   EXPECT_TRUE(message_sent.has_ping_message());
-  // Ensures that no message is sent through WebPushSender.
-  EXPECT_FALSE(fake_web_push_sender_->message());
 }
-
-struct WebPushResultTestData {
-  const SendWebPushMessageResult web_push_result;
-  const SharingSendMessageResult expected_result;
-} kWebPushResultTestData[] = {{SendWebPushMessageResult::kSuccessful,
-                               SharingSendMessageResult::kSuccessful},
-                              {SendWebPushMessageResult::kSuccessful,
-                               SharingSendMessageResult::kSuccessful},
-                              {SendWebPushMessageResult::kDeviceGone,
-                               SharingSendMessageResult::kDeviceNotFound},
-                              {SendWebPushMessageResult::kNetworkError,
-                               SharingSendMessageResult::kNetworkError},
-                              {SendWebPushMessageResult::kPayloadTooLarge,
-                               SharingSendMessageResult::kPayloadTooLarge},
-                              {SendWebPushMessageResult::kEncryptionFailed,
-                               SharingSendMessageResult::kInternalError},
-                              {SendWebPushMessageResult::kCreateJWTFailed,
-                               SharingSendMessageResult::kInternalError},
-                              {SendWebPushMessageResult::kServerError,
-                               SharingSendMessageResult::kInternalError},
-                              {SendWebPushMessageResult::kParseResponseFailed,
-                               SharingSendMessageResult::kInternalError},
-                              {SendWebPushMessageResult::kVapidKeyInvalid,
-                               SharingSendMessageResult::kInternalError}};
-
-class SharingFCMSenderWebPushResultTest
-    : public SharingFCMSenderTest,
-      public testing::WithParamInterface<WebPushResultTestData> {};
-
-TEST_P(SharingFCMSenderWebPushResultTest, ResultTest) {
-  sync_prefs_.SetFCMRegistration(SharingSyncPreference::FCMRegistration(
-      kAuthorizedEntity, base::Time::Now()));
-  fake_web_push_sender_->set_result(GetParam().web_push_result);
-
-  std::unique_ptr<crypto::ECPrivateKey> vapid_key =
-      crypto::ECPrivateKey::Create();
-  ON_CALL(vapid_key_manager_, GetOrCreateKey())
-      .WillByDefault(testing::Return(vapid_key.get()));
-
-  components_sharing_message::FCMChannelConfiguration fcm_channel;
-  fcm_channel.set_vapid_fcm_token(kVapidFcmToken);
-  fcm_channel.set_vapid_p256dh(kVapidP256dh);
-  fcm_channel.set_vapid_auth_secret(kVapidAuthSecret);
-
-  SharingSendMessageResult result;
-  std::optional<std::string> message_id;
-  SharingChannelType channel_type;
-  components_sharing_message::SharingMessage sharing_message;
-  sharing_message.mutable_ping_message();
-  sharing_fcm_sender_.SendMessageToFcmTarget(
-      fcm_channel, base::Seconds(kTtlSeconds), std::move(sharing_message),
-      base::BindOnce(&SharingFCMSenderTest::OnMessageSent,
-                     base::Unretained(this), &result, &message_id,
-                     &channel_type));
-
-  EXPECT_EQ(kSharingFCMAppID, fake_gcm_driver_.app_id());
-  EXPECT_EQ(kAuthorizedEntity, fake_gcm_driver_.authorized_entity());
-  EXPECT_EQ(kVapidP256dh, fake_gcm_driver_.p256dh());
-  EXPECT_EQ(kVapidAuthSecret, fake_gcm_driver_.auth_secret());
-
-  EXPECT_EQ(kVapidFcmToken, fake_web_push_sender_->fcm_token());
-  EXPECT_EQ(vapid_key.get(), fake_web_push_sender_->vapid_key());
-  EXPECT_EQ(kTtlSeconds, fake_web_push_sender_->message()->time_to_live);
-  EXPECT_EQ(WebPushMessage::Urgency::kHigh,
-            fake_web_push_sender_->message()->urgency);
-  components_sharing_message::SharingMessage message_sent;
-  ASSERT_TRUE(fake_web_push_sender_->message());
-  message_sent.ParseFromString(fake_web_push_sender_->message()->payload);
-  EXPECT_TRUE(message_sent.has_ping_message());
-
-  EXPECT_EQ(GetParam().expected_result, result);
-  EXPECT_EQ(kMessageId, message_id);
-  EXPECT_EQ(SharingChannelType::kFcmVapid, channel_type);
-}
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         SharingFCMSenderWebPushResultTest,
-                         testing::ValuesIn(kWebPushResultTestData));
 
 struct CommitErrorCodeTestData {
   const sync_pb::SharingMessageCommitError::ErrorCode commit_error_code;
@@ -540,3 +348,66 @@ TEST_F(SharingFCMSenderTest, ServerTarget) {
   EXPECT_TRUE(message_id);
   EXPECT_EQ(SharingChannelType::kServer, channel_type);
 }
+
+TEST_F(SharingFCMSenderTest, ShouldPostponeSendingMessageViaSync) {
+  // Make sync unavailable to simulate browser startup.
+  test_sync_service_.SetFailedDataTypes({syncer::SHARING_MESSAGE});
+  sync_prefs_.SetFCMRegistration(
+      SharingSyncPreference::FCMRegistration(base::Time::Now()));
+
+  components_sharing_message::FCMChannelConfiguration fcm_channel;
+  fcm_channel.set_sender_id_fcm_token(kSenderIdFcmToken);
+  fcm_channel.set_sender_id_p256dh(kSenderIdP256dh);
+  fcm_channel.set_sender_id_auth_secret(kSenderIdAuthSecret);
+
+  base::MockCallback<
+      SharingMessageSender::SendMessageDelegate::SendMessageCallback>
+      callback;
+  EXPECT_CALL(callback, Run).Times(0);
+
+  // Sync flare should be called to speed up sync start.
+  EXPECT_CALL(mock_sync_flare_, Run(syncer::SHARING_MESSAGE));
+  components_sharing_message::SharingMessage sharing_message;
+  sharing_message.mutable_ack_message();
+  sharing_fcm_sender_.SendMessageToFcmTarget(
+      fcm_channel, base::Seconds(kTtlSeconds), std::move(sharing_message),
+      callback.Get());
+  testing::Mock::VerifyAndClearExpectations(&callback);
+
+  // Once SHARING_MESSAGE becomes active, the message should be sent.
+  EXPECT_CALL(callback, Run(SharingSendMessageResult::kSuccessful, _,
+                            SharingChannelType::kFcmSenderId));
+  test_sync_service_.SetFailedDataTypes({});
+  test_sync_service_.FireStateChanged();
+}
+
+TEST_F(SharingFCMSenderTest, ShouldClearPendingMessages) {
+  // Make sync unavailable to simulate browser startup.
+  test_sync_service_.SetFailedDataTypes({syncer::SHARING_MESSAGE});
+  sync_prefs_.SetFCMRegistration(
+      SharingSyncPreference::FCMRegistration(base::Time::Now()));
+
+  components_sharing_message::FCMChannelConfiguration fcm_channel;
+  fcm_channel.set_sender_id_fcm_token(kSenderIdFcmToken);
+  fcm_channel.set_sender_id_p256dh(kSenderIdP256dh);
+  fcm_channel.set_sender_id_auth_secret(kSenderIdAuthSecret);
+
+  base::MockCallback<
+      SharingMessageSender::SendMessageDelegate::SendMessageCallback>
+      callback;
+  EXPECT_CALL(callback, Run).Times(0);
+  components_sharing_message::SharingMessage sharing_message;
+  sharing_message.mutable_ack_message();
+  sharing_fcm_sender_.SendMessageToFcmTarget(
+      fcm_channel, base::Seconds(kTtlSeconds), std::move(sharing_message),
+      callback.Get());
+
+  // Clear any pending messages and verify that nothing is sent once
+  // SHARING_MESSAGE becomes active (the `callback` above should not be called).
+  sharing_fcm_sender_.ClearPendingMessages();
+
+  test_sync_service_.SetFailedDataTypes({});
+  test_sync_service_.FireStateChanged();
+}
+
+}  // namespace

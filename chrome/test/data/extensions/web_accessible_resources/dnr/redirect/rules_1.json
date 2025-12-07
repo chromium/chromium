@@ -1,0 +1,17 @@
+[
+  {
+    "action": {
+      "redirect": {
+        "extensionPath": "/war.js"
+      },
+      "type": "redirect"
+    },
+    "condition": {
+      "regexFilter": ".*/simple_script.js",
+      "resourceTypes": [
+        "script"
+      ]
+    },
+    "id": 1
+  }
+]

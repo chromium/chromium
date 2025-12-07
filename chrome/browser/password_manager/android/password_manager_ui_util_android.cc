@@ -5,6 +5,7 @@
 #include "chrome/browser/password_manager/android/password_manager_ui_util_android.h"
 
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
+#include "components/url_formatter/elide_url.h"
 
 using autofill::mojom::FocusedFieldType;
 
@@ -30,4 +31,9 @@ bool ShouldAcceptFocusEvent(
     return true;
   }
   return false;
+}
+
+std::string GetDisplayOrigin(const url::Origin& origin) {
+  return base::UTF16ToUTF8(url_formatter::FormatOriginForSecurityDisplay(
+      origin, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
 }

@@ -75,7 +75,7 @@ std::string SecurityStatePageLoadMetricsObserver::
 
 SecurityStatePageLoadMetricsObserver::SecurityStatePageLoadMetricsObserver(
     site_engagement::SiteEngagementService* engagement_service)
-    : content::WebContentsObserver(), engagement_service_(engagement_service) {}
+    : engagement_service_(engagement_service) {}
 
 SecurityStatePageLoadMetricsObserver::~SecurityStatePageLoadMetricsObserver() =
     default;
@@ -146,6 +146,9 @@ void SecurityStatePageLoadMetricsObserver::OnComplete(
   // prerendered page is not used.
   if (GetDelegate().GetPrerenderingState() ==
       page_load_metrics::PrerenderingState::kInPrerendering) {
+    return;
+  }
+  if (!security_state_tab_helper_) {
     return;
   }
 
@@ -228,6 +231,13 @@ void SecurityStatePageLoadMetricsObserver::RecordSecurityLevelHistogram(
   // resolved.
   security_state_tab_helper_ =
       SecurityStateTabHelper::FromWebContents(web_contents);
+  // TODO(https://crbug.com/355894536): There are some features that currently
+  // instantiate a SecurityStatePageLoadMetricsObserver without a
+  // ChromeSecurityStateTabHelper. This does not make sense conceptually. For
+  // now add an early return.
+  if (!security_state_tab_helper_) {
+    return;
+  }
 
   DCHECK_EQ(initial_security_level_, security_state::NONE);
   DCHECK_EQ(current_security_level_, security_state::NONE);

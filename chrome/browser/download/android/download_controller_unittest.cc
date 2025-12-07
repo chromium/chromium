@@ -24,8 +24,6 @@ using ::testing::Return;
 class DownloadControllerTest : public testing::Test {
  public:
   DownloadControllerTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        safe_browsing::kGooglePlayProtectPrompt);
     content::DownloadItemUtils::AttachInfoForTesting(&item_, &profile_,
                                                      nullptr);
   }
@@ -41,7 +39,6 @@ class DownloadControllerTest : public testing::Test {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   DownloadController controller_;

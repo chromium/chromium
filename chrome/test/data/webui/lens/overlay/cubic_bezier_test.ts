@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome-untrusted://lens/cubic_bezier.js';
+import 'chrome-untrusted://lens-overlay/cubic_bezier.js';
 
-import {CubicBezier} from 'chrome-untrusted://lens/cubic_bezier.js';
+import {CubicBezier} from 'chrome-untrusted://lens-overlay/cubic_bezier.js';
 import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 // The tests for the cubic bezier easing calculations. Many of the tests in

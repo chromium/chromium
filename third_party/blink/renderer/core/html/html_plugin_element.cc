@@ -22,12 +22,13 @@
 
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 
+#include <algorithm>
+
 #include "base/feature_list.h"
-#include "base/ranges/algorithm.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/policy_value.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
@@ -66,13 +67,14 @@
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/scheduling_policy.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
 namespace {
 
 String GetMIMETypeFromURL(const KURL& url) {
-  String filename = url.LastPathComponent();
+  String filename = url.LastPathComponent().ToString();
   int extension_pos = filename.ReverseFind('.');
   if (extension_pos >= 0) {
     String extension = filename.Substring(extension_pos + 1);
@@ -110,13 +112,13 @@ void PluginParameters::AppendNameWithValue(const String& name,
 }
 
 void PluginParameters::MapDataParamToSrc() {
-  if (base::ranges::any_of(names_, [](auto name) {
+  if (std::ranges::any_of(names_, [](auto name) {
         return EqualIgnoringASCIICase(name, "src");
       })) {
     return;
   }
 
-  auto data = base::ranges::find_if(
+  auto data = std::ranges::find_if(
       names_, [](auto name) { return EqualIgnoringASCIICase(name, "data"); });
 
   if (data != names_.end()) {
@@ -260,9 +262,9 @@ void HTMLPlugInElement::AttachLayoutTree(AttachContext& context) {
   dispose_view_ = false;
 }
 
-void HTMLPlugInElement::IntrinsicSizingInfoChanged() {
+void HTMLPlugInElement::NaturalSizingInfoChanged() {
   if (auto* embedded_object = GetLayoutEmbeddedObject())
-    embedded_object->IntrinsicSizeChanged();
+    embedded_object->NaturalSizeChanged();
 }
 
 void HTMLPlugInElement::UpdatePlugin() {
@@ -293,7 +295,8 @@ bool HTMLPlugInElement::ShouldAccelerate() const {
   return plugin && plugin->CcLayer();
 }
 
-ParsedPermissionsPolicy HTMLPlugInElement::ConstructContainerPolicy() const {
+network::ParsedPermissionsPolicy HTMLPlugInElement::ConstructContainerPolicy()
+    const {
   return GetLegacyFramePolicies();
 }
 
@@ -476,8 +479,7 @@ NamedPropertySetterResult HTMLPlugInElement::AnonymousNamedSetter(
   v8::Local<v8::String> v8_name =
       V8AtomicString(script_state->GetIsolate(), name);
   v8::Local<v8::Object> this_wrapper =
-      ToV8Traits<HTMLPlugInElement>::ToV8(script_state, this)
-          .As<v8::Object>();
+      ToV8Traits<HTMLPlugInElement>::ToV8(script_state, this).As<v8::Object>();
   bool instance_has_property;
   bool holder_has_property;
   if (!instance->HasOwnProperty(context, v8_name).To(&instance_has_property) ||
@@ -529,7 +531,7 @@ bool HTMLPlugInElement::IsPresentationAttribute(
 void HTMLPlugInElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (name == html_names::kWidthAttr) {
     AddHTMLLengthToStyle(style, CSSPropertyID::kWidth, value);
   } else if (name == html_names::kHeightAttr) {
@@ -586,9 +588,9 @@ LayoutEmbeddedContent* HTMLPlugInElement::LayoutEmbeddedContentForJSBindings()
   return ExistingLayoutEmbeddedContent();
 }
 
-bool HTMLPlugInElement::IsKeyboardFocusable(
+bool HTMLPlugInElement::IsKeyboardFocusableSlow(
     UpdateBehavior update_behavior) const {
-  if (HTMLFrameOwnerElement::IsKeyboardFocusable(update_behavior)) {
+  if (HTMLFrameOwnerElement::IsKeyboardFocusableSlow(update_behavior)) {
     return true;
   }
 
@@ -625,7 +627,8 @@ void HTMLPlugInElement::DisconnectContentFrame() {
 }
 
 bool HTMLPlugInElement::IsFocusableStyle(UpdateBehavior update_behavior) const {
-  if (HTMLFrameOwnerElement::SupportsFocus(update_behavior) &&
+  if (HTMLFrameOwnerElement::SupportsFocus(update_behavior) !=
+          FocusableState::kNotFocusable &&
       HTMLFrameOwnerElement::IsFocusableStyle(update_behavior)) {
     return true;
   }
@@ -824,6 +827,12 @@ bool HTMLPlugInElement::AllowedToLoadObject(const KURL& url,
   if (url.IsEmpty() && mime_type.empty())
     return false;
 
+  // If present, `url` must contain a valid non-empty URL potentially surrounded
+  // by spaces.
+  if (!url.IsEmpty() && !url.IsValid()) {
+    return false;
+  }
+
   LocalFrame* frame = GetDocument().GetFrame();
   Settings* settings = frame->GetSettings();
   if (!settings)
@@ -859,10 +868,9 @@ bool HTMLPlugInElement::AllowedToLoadPlugin(const KURL& url) {
         MakeGarbageCollected<ConsoleMessage>(
             mojom::blink::ConsoleMessageSource::kSecurity,
             mojom::blink::ConsoleMessageLevel::kError,
-            "Failed to load '" + url.ElidedString() +
-                "' as a plugin, because the "
-                "frame into which the plugin "
-                "is loading is sandboxed."));
+            StrCat({"Failed to load '", url.ElidedString(),
+                    "' as a plugin, because the frame into which the plugin is "
+                    "loading is sandboxed."})));
     return false;
   }
   return true;

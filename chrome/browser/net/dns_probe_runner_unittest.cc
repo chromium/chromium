@@ -141,7 +141,7 @@ TEST_F(DnsProbeRunnerTest, Probe_OK) {
 
 TEST_F(DnsProbeRunnerTest, Probe_EMPTY) {
   SetupTest(net::OK, net::ResolveErrorInfo(net::OK),
-            FakeHostResolver::kEmptyResponse);
+            FakeHostResolver::kNoResponse);
   RunTest(DnsProbeRunner::INCORRECT);
 }
 

@@ -75,6 +75,11 @@ class TwoClientAppListSyncTest : public SyncTest {
     return true;
   }
 
+  // This test suite is ChromeOS specific, where there's only Sync-the-feature.
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTheFeature;
+  }
+
   void AwaitQuiescenceAndInstallAppsPendingForSync() {
     ASSERT_TRUE(AwaitQuiescence());
     InstallAppsPendingForSync(GetProfile(0));

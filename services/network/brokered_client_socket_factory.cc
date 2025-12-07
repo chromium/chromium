@@ -5,6 +5,7 @@
 #include "services/network/brokered_client_socket_factory.h"
 
 #include "build/build_config.h"
+#include "net/base/address_list.h"
 #include "net/socket/datagram_client_socket.h"
 #include "net/socket/tcp_client_socket.h"
 #include "net/socket/udp_client_socket.h"
@@ -14,7 +15,6 @@
 
 namespace net {
 
-class AddressList;
 class HostPortPair;
 class NetLog;
 struct NetLogSource;
@@ -83,10 +83,16 @@ void BrokeredClientSocketFactory::BrokerCreateUdpSocket(
 }
 
 bool BrokeredClientSocketFactory::ShouldBroker(
+    const net::IPAddress& address) const {
+  return broker_helper_.ShouldBroker(address);
+}
+
+bool BrokeredClientSocketFactory::ShouldBroker(
     const net::AddressList& addresses) const {
   for (const auto& address : addresses) {
-    if (broker_helper_.ShouldBroker(address.address()))
+    if (ShouldBroker(address.address())) {
       return true;
+    }
   }
   return false;
 }

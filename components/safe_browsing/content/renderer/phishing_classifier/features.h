@@ -26,11 +26,9 @@
 #define COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_PHISHING_CLASSIFIER_FEATURES_H_
 
 #include <stddef.h>
+
 #include <string>
 #include <unordered_map>
-
-#include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
 
 namespace safe_browsing {
 
@@ -72,12 +70,6 @@ class FeatureMap {
  private:
   std::unordered_map<std::string, double> features_;
 };
-
-BASE_DECLARE_FEATURE(kConditionalImageResize);
-
-BASE_DECLARE_FEATURE(kClientSideDetectionRetryLimit);
-
-extern const base::FeatureParam<int> kClientSideDetectionRetryLimitTime;
 
 namespace features {
 // Constants for the various feature names that we use.

@@ -6,8 +6,7 @@
 
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 bool PhoneStatusModel::MobileConnectionMetadata::operator==(
     const MobileConnectionMetadata& other) const {
@@ -159,5 +158,4 @@ std::ostream& operator<<(
   return stream;
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

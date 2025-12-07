@@ -11,6 +11,10 @@
 
 #include "base/memory/scoped_refptr.h"
 
+namespace auto_deletion {
+class AutoDeletionService;
+}  // namespace auto_deletion
+
 namespace component_updater {
 class ComponentUpdateService;
 }
@@ -48,12 +52,17 @@ namespace network_time {
 class NetworkTimeTracker;
 }
 
+namespace optimization_guide {
+class OptimizationGuideGlobalState;
+}  // namespace optimization_guide
+
 namespace os_crypt_async {
 class OSCryptAsync;
 }
 
-namespace segmentation_platform {
-class OTRWebStateObserver;
+namespace signin {
+class ActivePrimaryAccountsMetricsRecorder;
+class AvatarProvider;
 }
 
 namespace ukm {
@@ -64,17 +73,21 @@ namespace variations {
 class VariationsService;
 }
 
+class AdditionalFeaturesController;
 class AccountProfileMapper;
 class ApplicationContext;
+class ApplicationLocaleStorage;
 class BrowserPolicyConnectorIOS;
-class ChromeBrowserStateManager;
+class IncognitoSessionTracker;
 class IOSChromeIOThread;
 class PrefService;
+
+class ProfileManagerIOS;
+
 class PushNotificationService;
 class SafeBrowsingService;
 @protocol SingleSignOnService;
 class SystemIdentityManager;
-@class UpgradeCenter;
 
 // Gets the global application context. Cannot return null.
 ApplicationContext* GetApplicationContext();
@@ -88,14 +101,23 @@ class ApplicationContext {
 
   virtual ~ApplicationContext();
 
-  // Invoked when application enters foreground. Cancels the effect of
+  // Invoked when the application enters the foreground. Cancels the effect of
   // OnAppEnterBackground(), in particular removes the boolean preference
-  // indicating that the ChromeBrowserStates have been shutdown.
+  // indicating that the Profiles have been shutdown.
   virtual void OnAppEnterForeground() = 0;
 
-  // Invoked when application enters background. Saves any state that must be
-  // saved before shutdown can continue.
+  // Invoked when the application enters the background from the foreground.
+  // Saves any state that must be saved before shutdown can continue.
   virtual void OnAppEnterBackground() = 0;
+
+  // Invoked when the application is launched in the background and begins doing
+  // background update work.
+  virtual void OnAppStartedBackgroundProcessing() = 0;
+
+  // Invoked when the application has completed update work in the background,
+  // but is not yet in the foreground. At this stage the app is effectively
+  // "background idle".
+  virtual void OnAppFinishedBackgroundProcessing() = 0;
 
   // Returns whether the last complete shutdown was clean (i.e. happened while
   // the application was backgrounded).
@@ -115,14 +137,14 @@ class ApplicationContext {
   // GetSystemURLRequestContext().
   virtual network::mojom::NetworkContext* GetSystemNetworkContext() = 0;
 
-  // Gets the locale used by the application.
-  virtual const std::string& GetApplicationLocale() = 0;
+  // Gets the ApplicationLocaleStorage associated with this application.
+  virtual ApplicationLocaleStorage* GetApplicationLocaleStorage() = 0;
 
   // Gets the country locale used by the application
   virtual const std::string& GetApplicationCountry() = 0;
 
-  // Gets the ChromeBrowserStateManager used by this application.
-  virtual ChromeBrowserStateManager* GetChromeBrowserStateManager() = 0;
+  // Gets the Profile Manager used by this application.
+  virtual ProfileManagerIOS* GetProfileManager() = 0;
 
   // Gets the manager for the various metrics-related service, constructing it
   // if necessary. May return null.
@@ -131,6 +153,11 @@ class ApplicationContext {
 
   // Gets the MetricsService used by this application. May return null.
   virtual metrics::MetricsService* GetMetricsService() = 0;
+
+  // Gets the ActivePrimaryAccountsMetricsRecorder used by this application. May
+  // return null.
+  virtual signin::ActivePrimaryAccountsMetricsRecorder*
+  GetActivePrimaryAccountsMetricsRecorder() = 0;
 
   // Gets the UkmRecorder used by this application. May return null.
   virtual ukm::UkmRecorder* GetUkmRecorder() = 0;
@@ -169,27 +196,36 @@ class ApplicationContext {
   // Returns the SingleSignOnService instance used by this application.
   virtual id<SingleSignOnService> GetSingleSignOnService() = 0;
 
+  // Returns the caches for avatars of accounts on the device.
+  virtual signin::AvatarProvider* GetIdentityAvatarProvider() = 0;
+
   // Returns the SystemIdentityManager instance used by this application.
   virtual SystemIdentityManager* GetSystemIdentityManager() = 0;
 
   // Returns the AccountProfileMapper instance used by this application.
   virtual AccountProfileMapper* GetAccountProfileMapper() = 0;
 
-  // Returns the application's OTRWebStateObserver for segmentation platform.
-  virtual segmentation_platform::OTRWebStateObserver*
-  GetSegmentationOTRWebStateObserver() = 0;
+  // Returns the application's IncognitoSessionTracker instance.
+  virtual IncognitoSessionTracker* GetIncognitoSessionTracker() = 0;
 
   // Returns the application's PushNotificationService that handles all
   // interactions with the push notification server
   virtual PushNotificationService* GetPushNotificationService() = 0;
 
-  // Returns the application's UpgradeCenter that handle presenting all the
-  // notification to upgrade Chrome on iOS.
-  virtual UpgradeCenter* GetUpgradeCenter() = 0;
-
   // Returns the application's OSCryptAsync instance which can be used to create
   // instances of Encryptor for data encryption.
   virtual os_crypt_async::OSCryptAsync* GetOSCryptAsync() = 0;
+
+  // Returns the application's AdditionalFeaturesController that manages some
+  // features not declared by `BASE_DECLARE_FEATURE()`.
+  virtual AdditionalFeaturesController* GetAdditionalFeaturesController() = 0;
+
+  // Returns the AutoDeletionService instance.
+  virtual auto_deletion::AutoDeletionService* GetAutoDeletionService() = 0;
+
+  // Returns the OptimizationGuideGlobalState instance.
+  virtual optimization_guide::OptimizationGuideGlobalState*
+  GetOptimizationGuideGlobalState() = 0;
 
  protected:
   // Sets the global ApplicationContext instance.

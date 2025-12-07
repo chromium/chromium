@@ -37,7 +37,6 @@ import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,31 +47,30 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.UiRestriction;
 
 /** Tests for {@link ChromeTabModalPresenter}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -102,14 +100,11 @@ public class ChromeTabModalPresenterTest {
         }
     }
 
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, true);
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.autoResetCtaActivityRule();
 
+    private WebPageStation mPage;
     private ChromeTabbedActivity mActivity;
     private ModalDialogManager mManager;
     private ChromeTabModalPresenter mTabModalPresenter;
@@ -119,7 +114,8 @@ public class ChromeTabModalPresenterTest {
 
     @Before
     public void setUp() {
-        mActivity = sActivityTestRule.getActivity();
+        mPage = mActivityTestRule.startOnBlankPage();
+        mActivity = mPage.getActivity();
         mOmnibox = new OmniboxTestUtils(mActivity);
         mManager = ThreadUtils.runOnUiThreadBlocking(mActivity::getModalDialogManager);
         mTestObserver = new TestObserver();
@@ -195,7 +191,7 @@ public class ChromeTabModalPresenterTest {
     @Test
     @SmallTest
     @Feature({"ModalDialog"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     @DisabledTest(message = "https://crbug.com/1420186")
     public void testSuspend_ToggleOverview() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
@@ -283,12 +279,12 @@ public class ChromeTabModalPresenterTest {
     @Test
     @SmallTest
     @Feature({"ModalDialog"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testSuspend_LastTabClosed() throws Exception {
         PropertyModel dialog1 = createDialog(mActivity, mManager, "1", null);
 
         // Make sure there is only one opened tab.
-        while (mActivity.getCurrentTabModel().getCount() > 1) {
+        while (ChromeTabUtils.getTabCountOnUiThread(mActivity.getCurrentTabModel()) > 1) {
             ChromeTabUtils.closeCurrentTab(InstrumentationRegistry.getInstrumentation(), mActivity);
         }
 
@@ -324,12 +320,12 @@ public class ChromeTabModalPresenterTest {
     @SmallTest
     @Feature({"ModalDialog"})
     @DisabledTest(message = "https://crbug.com/1382221")
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testSuspend_TabClosed() throws Exception {
         PropertyModel dialog1 = createDialog(mActivity, mManager, "1", null);
         PropertyModel dialog2 = createDialog(mActivity, mManager, "2", null);
         PropertyModel dialog3 = createDialog(mActivity, mManager, "3", null);
-        sActivityTestRule.loadUrlInNewTab("about:blank");
+        mActivityTestRule.loadUrlInNewTab("about:blank");
 
         // Initially there are no dialogs in the pending list. Browser controls are not restricted.
         checkPendingSize(mManager, ModalDialogType.APP, 0);
@@ -384,7 +380,7 @@ public class ChromeTabModalPresenterTest {
         PropertyModel dialog2 = createDialog(mActivity, mManager, "2", null);
 
         // Open a new tab and make sure that the current tab is at index 0.
-        sActivityTestRule.loadUrlInNewTab("about:blank");
+        mActivityTestRule.loadUrlInNewTab("about:blank");
         ChromeTabUtils.switchTabInCurrentTabModel(mActivity, 0);
 
         // Initially there are no dialogs in the pending list. Browser controls are not restricted.
@@ -420,7 +416,6 @@ public class ChromeTabModalPresenterTest {
     @Test
     @SmallTest
     @Feature({"ModalDialog"})
-    @Features.DisableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
     public void testDismiss_BackPressed() {
         PropertyModel dialog1 = createDialog(mActivity, mManager, "1", null);
         PropertyModel dialog2 = createDialog(mActivity, mManager, "2", null);
@@ -467,14 +462,6 @@ public class ChromeTabModalPresenterTest {
     @Test
     @SmallTest
     @Feature({"ModalDialog"})
-    @Features.EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
-    public void testDismiss_BackPressed_BackPressRefactor() {
-        testDismiss_BackPressed();
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"ModalDialog"})
     public void testDismiss_CancelOnTouchOutside() throws Exception {
         PropertyModel dialog1 = createDialog(mActivity, mManager, "1", null);
 
@@ -505,7 +492,6 @@ public class ChromeTabModalPresenterTest {
     @Test
     @SmallTest
     @Feature({"ModalDialog"})
-    @Features.DisableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
     public void testDismiss_DismissalCause_BackPressed() throws Exception {
         PropertyModel dialog1 = createDialog(mActivity, mManager, "1", mTestObserver);
         mExpectedDismissalCause = DialogDismissalCause.NAVIGATE_BACK;
@@ -523,21 +509,13 @@ public class ChromeTabModalPresenterTest {
     @Test
     @SmallTest
     @Feature({"ModalDialog"})
-    @Features.EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
-    public void testDismiss_DismissalCause_BackPressed_BackPressRefactor() throws Exception {
-        testDismiss_DismissalCause_BackPressed();
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"ModalDialog"})
     public void testDismiss_DismissalCause_TabSwitched() throws Exception {
         PropertyModel dialog1 = createDialog(mActivity, mManager, "1", mTestObserver);
         mExpectedDismissalCause = DialogDismissalCause.TAB_SWITCHED;
         int callCount = mTestObserver.onDialogDismissedCallback.getCallCount();
 
         // Open a new tab and make sure that the current tab is at index 0.
-        sActivityTestRule.loadUrlInNewTab("about:blank");
+        mActivityTestRule.loadUrlInNewTab("about:blank");
         ChromeTabUtils.switchTabInCurrentTabModel(mActivity, 0);
 
         // Show a tab modal dialog and then switch tab.
@@ -577,7 +555,7 @@ public class ChromeTabModalPresenterTest {
         EmbeddedTestServer server =
                 EmbeddedTestServer.createAndStartServer(
                         ApplicationProvider.getApplicationContext());
-        sActivityTestRule.loadUrl(server.getURL("/chrome/test/data/android/simple.html"));
+        mActivityTestRule.loadUrl(server.getURL("/chrome/test/data/android/simple.html"));
         mTestObserver.onDialogDismissedCallback.waitForCallback(callCount);
 
         mExpectedDismissalCause = null;

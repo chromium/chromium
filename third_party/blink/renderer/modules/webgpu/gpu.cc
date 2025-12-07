@@ -7,14 +7,12 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/synchronization/waitable_event.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/gpu/gpu.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
@@ -23,6 +21,7 @@
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_request_adapter_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_format.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
@@ -38,12 +37,12 @@
 #include "third_party/blink/renderer/modules/webgpu/wgsl_language_features.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_callback.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_cpp.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_util.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
@@ -71,14 +70,30 @@ wgpu::PowerPreference AsDawnType(V8GPUPowerPreference power_preference) {
   }
 }
 
+wgpu::FeatureLevel AsDawnFeatureLevel(const String& feature_level) {
+  CHECK(feature_level == "core" || feature_level == "compatibility");
+
+  if (feature_level == "compatibility") {
+    return wgpu::FeatureLevel::Compatibility;
+  }
+
+  return wgpu::FeatureLevel::Core;
+}
+
 wgpu::RequestAdapterOptions AsDawnType(
-    const GPURequestAdapterOptions* webgpu_options) {
+    const GPURequestAdapterOptions* webgpu_options,
+    const ExecutionContext* execution_context) {
   DCHECK(webgpu_options);
 
-  wgpu::RequestAdapterOptions dawn_options = {
-      .forceFallbackAdapter = webgpu_options->forceFallbackAdapter(),
-      .compatibilityMode = webgpu_options->compatibilityMode(),
-  };
+  wgpu::RequestAdapterOptions dawn_options;
+  dawn_options.forceFallbackAdapter = webgpu_options->forceFallbackAdapter();
+
+  if (RuntimeEnabledFeatures::WebGPUCompatibilityModeEnabled(
+          execution_context)) {
+    dawn_options.featureLevel =
+        AsDawnFeatureLevel(webgpu_options->featureLevel());
+  }
+
   if (webgpu_options->hasPowerPreference()) {
     dawn_options.powerPreference =
         AsDawnType(webgpu_options->powerPreference());
@@ -113,30 +128,25 @@ WebGPUExecutionContextToken GetExecutionContextToken(
   if (execution_context->IsWindow()) {
     return To<LocalDOMWindow>(execution_context)->document()->Token();
   }
-  NOTREACHED_IN_MIGRATION();
-  return WebGPUExecutionContextToken();
+  NOTREACHED();
 }
 
 }  // anonymous namespace
 
 // static
-const char GPU::kSupplementName[] = "GPU";
-
-// static
 GPU* GPU::gpu(NavigatorBase& navigator) {
-  GPU* gpu = Supplement<NavigatorBase>::From<GPU>(navigator);
+  GPU* gpu = navigator.GetGPU();
   if (!gpu) {
     gpu = MakeGarbageCollected<GPU>(navigator);
-    ProvideTo(navigator, gpu);
+    navigator.SetGPU(gpu);
   }
   return gpu;
 }
 
 GPU::GPU(NavigatorBase& navigator)
-    : Supplement<NavigatorBase>(navigator),
-      ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
-      wgsl_language_features_(
-          MakeGarbageCollected<WGSLLanguageFeatures>(GatherWGSLFeatures())),
+    : ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
+      wgsl_language_features_(MakeGarbageCollected<WGSLLanguageFeatures>(
+          GatherWGSLLanguageFeatures())),
       mappable_buffer_handles_(
           base::MakeRefCounted<BoxedMappableWGPUBufferHandles>()) {}
 
@@ -148,7 +158,6 @@ WGSLLanguageFeatures* GPU::wgslLanguageFeatures() const {
 
 void GPU::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
-  Supplement<NavigatorBase>::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
   visitor->Trace(mappable_buffers_);
   visitor->Trace(wgsl_language_features_);
@@ -187,23 +196,30 @@ void GPU::OnRequestAdapterCallback(
     ScriptPromiseResolver<IDLNullable<GPUAdapter>>* resolver,
     wgpu::RequestAdapterStatus status,
     wgpu::Adapter adapter,
-    const char* error_message) {
+    wgpu::StringView error_message) {
   GPUAdapter* gpu_adapter = nullptr;
+
+  // wgpu::RequestAdapterStatus is part of the stable API, so is safe to log to
+  // histograms. The macro + `to_underlying` converts the enum to an int to
+  // calculate the max range.
+  UMA_HISTOGRAM_ENUMERATION(
+      "GPU.RequestAdapterStatus.WebGPU", status,
+      base::to_underlying(wgpu::RequestAdapterStatus::Error) + 1);
+
   switch (status) {
     case wgpu::RequestAdapterStatus::Success:
-      gpu_adapter = MakeGarbageCollected<GPUAdapter>(this, std::move(adapter),
-                                                     dawn_control_client_);
+      gpu_adapter = MakeGarbageCollected<GPUAdapter>(
+          this, std::move(adapter), dawn_control_client_, options);
       break;
 
     // Note: requestAdapter never rejects, but we print a console warning if
     // there are error messages.
     case wgpu::RequestAdapterStatus::Unavailable:
     case wgpu::RequestAdapterStatus::Error:
-    case wgpu::RequestAdapterStatus::Unknown:
-    case wgpu::RequestAdapterStatus::InstanceDropped:
+    case wgpu::RequestAdapterStatus::CallbackCancelled:
       break;
   }
-  if (error_message) {
+  if (error_message.length != 0) {
     ExecutionContext* execution_context = ExecutionContext::From(script_state);
     auto* console_message = MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kRendering,
@@ -211,40 +227,7 @@ void GPU::OnRequestAdapterCallback(
         StringFromASCIIAndUTF8(error_message));
     execution_context->AddConsoleMessage(console_message);
   }
-  RecordAdapterForIdentifiability(script_state, options, gpu_adapter);
   resolver->Resolve(gpu_adapter);
-}
-
-void GPU::RecordAdapterForIdentifiability(
-    ScriptState* script_state,
-    const GPURequestAdapterOptions* options,
-    GPUAdapter* adapter) const {
-  constexpr IdentifiableSurface::Type type =
-      IdentifiableSurface::Type::kGPU_RequestAdapter;
-  if (!IdentifiabilityStudySettings::Get()->ShouldSampleType(type))
-    return;
-  ExecutionContext* context = GetExecutionContext();
-  if (!context)
-    return;
-
-  IdentifiableTokenBuilder input_builder;
-  if (options && options->hasPowerPreference()) {
-    input_builder.AddToken(
-        IdentifiabilityBenignStringToken(options->powerPreference()));
-  }
-  const auto surface =
-      IdentifiableSurface::FromTypeAndToken(type, input_builder.GetToken());
-
-  IdentifiableTokenBuilder output_builder;
-  if (adapter) {
-    for (const auto& feature : adapter->features()->FeatureNameSet()) {
-      output_builder.AddToken(IdentifiabilityBenignStringToken(feature));
-    }
-  }
-
-  IdentifiabilityMetricBuilder(context->UkmSourceID())
-      .Add(surface, output_builder.GetToken())
-      .Record(context->UkmRecorder());
 }
 
 std::unique_ptr<WebGraphicsContext3DProvider> CheckContextProvider(
@@ -279,8 +262,20 @@ void GPU::RequestAdapterImpl(
     const GPURequestAdapterOptions* options,
     ScriptPromiseResolver<IDLNullable<GPUAdapter>>* resolver) {
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
+
+  // Validate that the featureLevel is an allowed feature level string value. If
+  // not return a null adapter. This logic will evolve as feature levels are
+  // added in the future.
+  if (options->featureLevel() != "core" &&
+      options->featureLevel() != "compatibility") {
+    OnRequestAdapterCallback(script_state, options, resolver,
+                             wgpu::RequestAdapterStatus::Error, nullptr,
+                             "Unknown feature level");
+    return;
+  }
+
   if (!dawn_control_client_ || dawn_control_client_->IsContextLost()) {
-    dawn_control_client_initialized_callbacks_.push_back(WTF::BindOnce(
+    dawn_control_client_initialized_callbacks_.push_back(BindOnce(
         [](GPU* gpu, ScriptState* script_state,
            const GPURequestAdapterOptions* options,
            ScriptPromiseResolver<IDLNullable<GPUAdapter>>* resolver) {
@@ -338,7 +333,7 @@ void GPU::RequestAdapterImpl(
                     execution_context->GetTaskRunner(TaskType::kWebGPU));
               }
 
-              WTF::Vector<base::OnceCallback<void()>> callbacks =
+              Vector<base::OnceCallback<void()>> callbacks =
                   std::move(gpu->dawn_control_client_initialized_callbacks_);
               for (auto& callback : callbacks) {
                 std::move(callback).Run();
@@ -351,10 +346,41 @@ void GPU::RequestAdapterImpl(
 
   DCHECK_NE(dawn_control_client_, nullptr);
 
-  wgpu::RequestAdapterOptions dawn_options = AsDawnType(options);
+#if BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/369219127): Chrome always uses the same GPU adapter that's
+  // been allocated for other Chrome workloads on Windows, which for laptops is
+  // generally the integrated graphics card, due to the power usage aspect (ie:
+  // power saving).
+  if (options->hasPowerPreference()) {
+    AddConsoleWarning(
+        execution_context,
+        "The powerPreference option is currently ignored when calling "
+        "requestAdapter() on Windows. See https://crbug.com/369219127");
+  }
+#endif
+
+  if (options->featureLevel() == "compatibility" &&
+      !RuntimeEnabledFeatures::WebGPUCompatibilityModeEnabled(
+          execution_context)) {
+    AddConsoleWarning(
+        execution_context,
+        "Beware! featureLevel was set to \"compatibility\", but this request "
+        "is being ignored. Compatibility restrictions will start being "
+        "enforced as soon as Chromium ships Compatibility Mode, potentially "
+        "breaking this webpage. See "
+        "https://github.com/gpuweb/gpuweb/issues/4266");
+  }
+
+  wgpu::RequestAdapterOptions dawn_options =
+      AsDawnType(options, execution_context);
   auto* callback = MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(
-      WTF::BindOnce(&GPU::OnRequestAdapterCallback, WrapPersistent(this),
-                    WrapPersistent(script_state), WrapPersistent(options))));
+      BindOnce(&GPU::OnRequestAdapterCallback, WrapPersistent(this),
+               WrapPersistent(script_state), WrapPersistent(options))));
+
+  if (dawn_options.featureLevel == wgpu::FeatureLevel::Compatibility) {
+    UseCounter::Count(execution_context,
+                      WebFeature::kWebGPUFeatureLevelCompatibility);
+  }
 
   dawn_control_client_->GetWGPUInstance().RequestAdapter(
       &dawn_options, wgpu::CallbackMode::AllowSpontaneous,
@@ -388,12 +414,14 @@ ScriptPromise<IDLNullable<GPUAdapter>> GPU::requestAdapter(
   return promise;
 }
 
-String GPU::getPreferredCanvasFormat() {
-  return FromDawnEnum(preferred_canvas_format());
+V8GPUTextureFormat GPU::getPreferredCanvasFormat() {
+  return FromDawnEnum(GetPreferredCanvasFormat());
 }
 
-wgpu::TextureFormat GPU::preferred_canvas_format() {
-#if BUILDFLAG(IS_ANDROID)
+wgpu::TextureFormat GPU::GetPreferredCanvasFormat() {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+  // Interop of vulkan and GL has mesa driver bugs for BGRA format
+  // See anglebug.com/40644739
   return wgpu::TextureFormat::RGBA8Unorm;
 #else
   return wgpu::TextureFormat::BGRA8Unorm;

@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {UserImage, UserImageObserverInterface, UserImageObserverReceiver, UserProviderInterface} from '../../personalization_app.mojom-webui.js';
+import type {UserImage, UserImageObserverInterface, UserProviderInterface} from '../../personalization_app.mojom-webui.js';
+import {UserImageObserverReceiver} from '../../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
 
 import {setIsCameraPresentAction, setProfileImageAction, setUserImageAction, setUserImageIsEnterpriseManagedAction} from './user_actions.js';

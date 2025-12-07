@@ -6,6 +6,8 @@ package org.chromium.android_webview;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.net.URISyntaxException;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -16,21 +18,19 @@ import java.util.regex.Pattern;
  * methods removed and formatting, so we don't depend on the class in Android. We should eventually
  * remove its usage in Chromium, because using regex to parse Url isn't generally working.
  *
- * Renamed to WebAddressParser to be able to use with the WebAddress class in the same place.
+ * <p>Renamed to WebAddressParser to be able to use with the WebAddress class in the same place.
  *
- * Web Address Parser
+ * <p>Web Address Parser
  *
- * This is called WebAddress, rather than URL or URI, because it
- * attempts to parse the stuff that a user will actually type into a
- * browser address widget.
+ * <p>This is called WebAddress, rather than URL or URI, because it attempts to parse the stuff that
+ * a user will actually type into a browser address widget.
  *
- * Unlike java.net.uri, this parser will not choke on URIs missing
- * schemes.  It will only throw a URISyntaxException if the input is
- * really hosed.
+ * <p>Unlike java.net.uri, this parser will not choke on URIs missing schemes. It will only throw a
+ * URISyntaxException if the input is really hosed.
  *
- * If given an https scheme but no port, fills in port
- *
+ * <p>If given an https scheme but no port, fills in port
  */
+@NullMarked
 public class WebAddressParser {
     private String mScheme;
     private String mHost;
@@ -62,10 +62,6 @@ public class WebAddressParser {
 
     /** parses given uriString. */
     public WebAddressParser(String address) throws URISyntaxException {
-        if (address == null) {
-            throw new NullPointerException();
-        }
-
         mScheme = "";
         mHost = "";
         mPort = -1;

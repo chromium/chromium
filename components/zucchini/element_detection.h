@@ -42,12 +42,14 @@ std::optional<Element> DetectElementFromDisassembler(ConstBufferView image);
 // A class to scan through an image and iteratively detect elements.
 class ElementFinder {
  public:
-  ElementFinder(ConstBufferView image, ElementDetector&& detector);
+  ElementFinder(ConstBufferView image,
+                ElementDetector&& detector,
+                offset_t init_pos);
   ElementFinder(const ElementFinder&) = delete;
   const ElementFinder& operator=(const ElementFinder&) = delete;
   ~ElementFinder();
 
-  // Scans for the next executable using |detector|. Returns the next element
+  // Scans for the next executable using |detector_|. Returns the next element
   // found, or nullopt if no more element can be found.
   std::optional<Element> GetNext();
 

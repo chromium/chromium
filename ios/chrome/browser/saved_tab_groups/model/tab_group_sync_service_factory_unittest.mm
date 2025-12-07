@@ -6,7 +6,7 @@
 
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -17,35 +17,21 @@ namespace tab_groups {
 class TabGroupSyncServiceFactoryTest : public PlatformTest {
  public:
   TabGroupSyncServiceFactoryTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {
-            kTabGroupSync,
-            kTabGroupsIPad,
-            kModernTabStrip,
-            kTabGroupsInGrid,
-        },
-        /*disable_features=*/{});
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    TestProfileIOS::Builder builder;
+    profile_ = std::move(builder).Build();
   }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
 };
 
-// Tests the creation of the service in regular.
-TEST_F(TabGroupSyncServiceFactoryTest, ServiceCreatedInRegularProfile) {
+// Tests that TabGroupSyncServiceFactory does not create TabGroupSyncService
+// for TestProfileIOS.
+TEST_F(TabGroupSyncServiceFactoryTest, NoServiceForTests) {
   TabGroupSyncService* service =
-      TabGroupSyncServiceFactory::GetForBrowserState(browser_state_.get());
-  EXPECT_TRUE(service);
-}
-
-// Tests that the factory is returning a nil pointer for incognito.
-TEST_F(TabGroupSyncServiceFactoryTest, ServiceNotCreatedInIncognito) {
-  TabGroupSyncService* service = TabGroupSyncServiceFactory::GetForBrowserState(
-      browser_state_->GetOffTheRecordChromeBrowserState());
+      TabGroupSyncServiceFactory::GetForProfile(profile_.get());
   EXPECT_FALSE(service);
 }
 

@@ -5,7 +5,7 @@
 #include "ash/system/input_device_settings/pref_handlers/stylus_pref_handler_impl.h"
 
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {

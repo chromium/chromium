@@ -7,7 +7,9 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -75,12 +77,6 @@ using google_apis::drive::UploadRangeCallback;
 namespace drive {
 
 namespace {
-
-// OAuth2 scopes for Drive API.
-const char kDriveScope[] = "https://www.googleapis.com/auth/drive";
-const char kDriveAppsReadonlyScope[] =
-    "https://www.googleapis.com/auth/drive.apps.readonly";
-const char kDriveAppsScope[] = "https://www.googleapis.com/auth/drive.apps";
 
 // Mime type to create a directory.
 const char kFolderMimeType[] = "application/vnd.google-apps.folder";
@@ -164,6 +160,7 @@ BatchRequestConfigurator::~BatchRequestConfigurator() {
 google_apis::CancelCallbackOnce
 BatchRequestConfigurator::MultipartUploadNewFile(
     const std::string& content_type,
+    std::optional<std::string_view> converted_mime_type,
     int64_t content_length,
     const std::string& parent_resource_id,
     const std::string& title,
@@ -177,9 +174,9 @@ BatchRequestConfigurator::MultipartUploadNewFile(
   std::unique_ptr<google_apis::BatchableDelegate> delegate(
       new google_apis::drive::MultipartUploadNewFileDelegate(
           task_runner_.get(), title, parent_resource_id, content_type,
-          content_length, options.modified_date, options.last_viewed_by_me_date,
-          local_file_path, options.properties, url_generator_,
-          std::move(callback), progress_callback));
+          std::move(converted_mime_type), content_length, options.modified_date,
+          options.last_viewed_by_me_date, local_file_path, options.properties,
+          url_generator_, std::move(callback), progress_callback));
   // Batch request can be null when pre-authorization for the requst is failed
   // in request sender.
   if (batch_request_)
@@ -249,14 +246,10 @@ DriveAPIService::~DriveAPIService() {
 void DriveAPIService::Initialize(const CoreAccountId& account_id) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  std::vector<std::string> scopes;
-  scopes.push_back(kDriveScope);
-  scopes.push_back(kDriveAppsReadonlyScope);
-  scopes.push_back(kDriveAppsScope);
-
   sender_ = std::make_unique<RequestSender>(
-      std::make_unique<google_apis::AuthService>(identity_manager_, account_id,
-                                                 url_loader_factory_, scopes),
+      std::make_unique<google_apis::AuthService>(
+          identity_manager_, account_id, url_loader_factory_,
+          signin::OAuthConsumerId::kAuthServiceDriveApi),
       url_loader_factory_, blocking_task_runner_.get(), custom_user_agent_,
       traffic_annotation_);
   sender_->auth_service()->AddObserver(this);
@@ -730,6 +723,7 @@ CancelCallbackOnce DriveAPIService::GetUploadStatus(
 
 CancelCallbackOnce DriveAPIService::MultipartUploadNewFile(
     const std::string& content_type,
+    std::optional<std::string_view> converted_mime_type,
     int64_t content_length,
     const std::string& parent_resource_id,
     const std::string& title,
@@ -745,10 +739,10 @@ CancelCallbackOnce DriveAPIService::MultipartUploadNewFile(
           sender_.get(),
           std::make_unique<google_apis::drive::MultipartUploadNewFileDelegate>(
               sender_->blocking_task_runner(), title, parent_resource_id,
-              content_type, content_length, options.modified_date,
-              options.last_viewed_by_me_date, local_file_path,
-              options.properties, url_generator_, std::move(callback),
-              progress_callback)));
+              content_type, std::move(converted_mime_type), content_length,
+              options.modified_date, options.last_viewed_by_me_date,
+              local_file_path, options.properties, url_generator_,
+              std::move(callback), progress_callback)));
 }
 
 CancelCallbackOnce DriveAPIService::MultipartUploadExistingFile(

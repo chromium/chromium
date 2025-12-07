@@ -29,10 +29,7 @@
 
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
-
-namespace WTF {
-class String;
-}  // namespace WTF
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
@@ -51,7 +48,7 @@ class XPathExpression : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static XPathExpression* CreateExpression(const WTF::String& expression,
+  static XPathExpression* CreateExpression(const String& expression,
                                            V8XPathNSResolver*,
                                            ExecutionContext* execution_context,
                                            ExceptionState&);

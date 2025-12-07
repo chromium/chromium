@@ -11,13 +11,13 @@
 
 #include "base/files/file_path.h"
 #include "base/files/safe_base_name.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/common/buildflags.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/webapps/common/web_app_id.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #error shell_integration_linux is for desktop linux only.
 #endif
 
@@ -93,6 +93,7 @@ std::string GetDesktopFileContentsForCommand(
     const std::string& categories,
     const std::string& mime_type,
     bool no_display,
+    std::string_view extra_mime_types,
     std::set<web_app::DesktopActionInfo> action_info);
 
 // Returns contents for a .desktop file that launches chrome at the given url
@@ -122,6 +123,9 @@ base::FilePath GetMimeTypesRegistrationFilename(
 // passed to `xdg-mime` to register one or more custom MIME types in Linux.
 std::string GetMimeTypesRegistrationFileContents(
     const apps::FileHandlers& file_handlers);
+
+// Returns the mime type handler for direct launch.
+std::string GetDirectLaunchMimeTypeHandler();
 
 // Windows that correspond to web apps need to have a deterministic (and
 // different) WMClass than normal chrome windows so the window manager groups

@@ -33,7 +33,12 @@
 }
 
 - (UIEdgeInsets)safeArea {
-  return self.sceneState.window.safeAreaInsets;
+  return self.rootView.safeAreaInsets;
+}
+
+- (NSDirectionalEdgeInsets)directionalEdgeInsetsForLayoutRegion:
+    (UIViewLayoutRegion*)layoutRegion API_AVAILABLE(ios(26.0)) {
+  return [self.rootView directionalEdgeInsetsForLayoutRegion:layoutRegion];
 }
 
 #pragma mark - Private properties
@@ -44,6 +49,11 @@
     return nil;
   }
   return browser->GetSceneState();
+}
+
+// Root view of the window.
+- (UIView*)rootView {
+  return self.sceneState.window.rootViewController.view;
 }
 
 @end

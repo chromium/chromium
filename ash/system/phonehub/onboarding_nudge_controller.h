@@ -9,6 +9,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/phonehub/feature_status_provider.h"
 
 class PrefRegistrySimple;
@@ -84,6 +85,9 @@ class ASH_EXPORT OnboardingNudgeController
   FRIEND_TEST_ALL_PREFIXES(OnboardingNudgeControllerTest,
                            DoNotAddToSyncedDeviceListIfAlreadyFound);
 
+  static constexpr int kPhoneHubNudgeTotalAppearancesAllowed = 3;
+  static constexpr base::TimeDelta kPhoneHubNudgeDelay = base::Hours(24);
+
   bool IsDeviceStoredInPref(const multidevice::RemoteDeviceRef& device);
 
   void AddToEligibleDevicesPref(const multidevice::RemoteDeviceRef& device);
@@ -94,8 +98,6 @@ class ASH_EXPORT OnboardingNudgeController
   void OnFeatureStatusChanged() override {}
   void OnEligiblePhoneHubHostFound(
       const multidevice::RemoteDeviceRefList eligible_devices) override;
-
-  bool IsInPhoneHubNudgeExperimentGroup();
 
   bool ShouldShowNudge();
 

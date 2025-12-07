@@ -31,7 +31,7 @@ class TestHistoryProvider : public HistoryProvider {
 void TestHistoryProvider::Start(const AutocompleteInput& input,
                                 bool minimal_changes) {}
 
-TestHistoryProvider::~TestHistoryProvider() {}
+TestHistoryProvider::~TestHistoryProvider() = default;
 
 class HistoryProviderTest : public testing::Test {
  public:

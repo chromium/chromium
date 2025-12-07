@@ -15,7 +15,7 @@ KeywordRanker::KeywordRanker()
 KeywordRanker::~KeywordRanker() = default;
 
 void KeywordRanker::Start(const std::u16string& query,
-                          CategoriesList& categories) {
+                          const CategoriesList& categories) {
   // When the user start input, this function will be called.
   last_query_ = query;
   matched_provider_score_.clear();

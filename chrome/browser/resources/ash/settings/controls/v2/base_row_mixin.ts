@@ -68,6 +68,8 @@ export const BaseRowMixin = dedupingMixin(
           };
         }
 
+        override ariaDescription: string;
+        override ariaLabel: string;
         label?: string;
         sublabel?: string;
         icon?: string;

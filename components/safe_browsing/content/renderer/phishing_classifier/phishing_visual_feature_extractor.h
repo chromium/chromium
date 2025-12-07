@@ -10,8 +10,11 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_PHISHING_CLASSIFIER_PHISHING_VISUAL_FEATURE_EXTRACTOR_H_
 #define COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_PHISHING_CLASSIFIER_PHISHING_VISUAL_FEATURE_EXTRACTOR_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/elapsed_timer.h"
 #include "cc/paint/paint_recorder.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -40,6 +43,10 @@ class PhishingVisualFeatureExtractor {
   void RunCallback(std::unique_ptr<SkBitmap> bitmap);
 
   DoneCallback done_callback_;
+
+  // Timer for histograms, runs while visual feature extraction is occurring.
+  // This elapsed time includes queueing delay from PostTask.
+  std::optional<base::ElapsedTimer> timer_;
 
   base::WeakPtrFactory<PhishingVisualFeatureExtractor> weak_factory_{this};
 };

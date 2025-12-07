@@ -1,0 +1,13 @@
+Test that Attribution Reporting API surfaces are deprecated.
+fetch
+xhr
+open
+<img attributionsrc>
+<script attributionsrc>
+<a attributionsrc>
+<area attributionsrc>
+HTMLImageElement
+HTMLScriptElement
+HTMLAnchorElement
+HTMLAreaElement
+

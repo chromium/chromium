@@ -1,0 +1,8 @@
+include_rules = [
+    "+base/metrics/metrics_hashes.h",
+    "+components/language_detection/content/common/language_detection.mojom-blink.h",
+    "+components/language_detection/content/common/language_detection.mojom-blink-forward.h",
+    "+components/language_detection/content/common/language_detection.mojom-shared.h",
+    "+media/base/audio_bus.h",
+    "+services/on_device_model/public/mojom/on_device_model.mojom-blink.h",
+]

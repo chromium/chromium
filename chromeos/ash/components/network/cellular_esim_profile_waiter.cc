@@ -5,9 +5,9 @@
 #include "chromeos/ash/components/network/cellular_esim_profile_waiter.h"
 
 #include <string>
+
 #include "base/check.h"
 #include "base/containers/flat_map.h"
-#include "base/functional/callback_forward.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
 #include "components/device_event_log/device_event_log.h"

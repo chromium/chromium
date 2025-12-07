@@ -24,7 +24,12 @@ component("compositor") {
     "compositor_export.h",
     "compositor_lock.cc",
     "compositor_lock.h",
+    "compositor_metrics_tracker.cc",
+    "compositor_metrics_tracker.h",
+    "compositor_metrics_tracker_host.h",
     "compositor_observer.h",
+    "compositor_property_tree_delegate.cc",
+    "compositor_property_tree_delegate.h",
     "compositor_switches.cc",
     "compositor_switches.h",
     "debug_utils.cc",
@@ -67,13 +72,9 @@ component("compositor") {
     "presentation_time_recorder.cc",
     "presentation_time_recorder.h",
     "property_change_reason.h",
-    "scoped_animation_duration_scale_mode.cc",
     "scoped_animation_duration_scale_mode.h",
     "scoped_layer_animation_settings.cc",
     "scoped_layer_animation_settings.h",
-    "throughput_tracker.cc",
-    "throughput_tracker.h",
-    "throughput_tracker_host.h",
     "total_animation_throughput_reporter.cc",
     "total_animation_throughput_reporter.h",
     "transform_animation_curve_adapter.cc",
@@ -94,7 +95,6 @@ component("compositor") {
   public_deps = [ "//cc" ]
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//cc/animation",
     "//cc/paint",
     "//components/viz/host",
@@ -126,16 +126,16 @@ component("compositor") {
 static_library("test_support") {
   testonly = true
   sources = [
-    "test/animation_throughput_reporter_test_base.cc",
-    "test/animation_throughput_reporter_test_base.h",
     "test/begin_main_frame_waiter.cc",
     "test/begin_main_frame_waiter.h",
+    "test/compositor_metrics_report_checker.cc",
+    "test/compositor_metrics_report_checker.h",
+    "test/compositor_metrics_reporter_test_base.cc",
+    "test/compositor_metrics_reporter_test_base.h",
     "test/direct_layer_tree_frame_sink.cc",
     "test/direct_layer_tree_frame_sink.h",
     "test/draw_waiter_for_test.cc",
     "test/draw_waiter_for_test.h",
-    "test/fake_context_factory.cc",
-    "test/fake_context_factory.h",
     "test/in_process_context_factory.cc",
     "test/in_process_context_factory.h",
     "test/layer_animation_observer_test_api.cc",
@@ -161,8 +161,6 @@ static_library("test_support") {
     "test/test_suite.h",
     "test/test_utils.cc",
     "test/test_utils.h",
-    "test/throughput_report_checker.cc",
-    "test/throughput_report_checker.h",
   ]
 
   if (is_android) {
@@ -184,7 +182,6 @@ static_library("test_support") {
   public_deps = [ ":compositor" ]
   deps = [
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//cc",
     "//cc:test_support",
     "//components/viz/host",
@@ -194,6 +191,7 @@ static_library("test_support") {
     "//gpu/command_buffer/client:raster",
     "//gpu/command_buffer/common",
     "//gpu/ipc:gl_in_process_context",
+    "//gpu/ipc/client",
     "//gpu/skia_bindings",
     "//skia",
     "//testing/gtest",
@@ -206,7 +204,7 @@ static_library("test_support") {
 
   if (is_apple) {
     deps += [
-      "//gpu/ipc/service:service",
+      "//gpu/ipc/service",
       "//ui/accelerated_widget_mac",
     ]
   }
@@ -231,7 +229,9 @@ test("compositor_unittests") {
     "callback_layer_animation_observer_unittest.cc",
     "canvas_painter_unittest.cc",
     "compositor_lock_unittest.cc",
+    "compositor_metrics_tracker_unittest.cc",
     "compositor_unittest.cc",
+    "host_begin_frame_observer_unittest.cc",
     "layer_animation_element_unittest.cc",
     "layer_animation_sequence_unittest.cc",
     "layer_animator_unittest.cc",
@@ -239,7 +239,6 @@ test("compositor_unittests") {
     "layer_unittest.cc",
     "presentation_time_recorder_unittest.cc",
     "run_all_unittests.cc",
-    "throughput_tracker_unittest.cc",
     "transform_animation_curve_adapter_unittest.cc",
   ]
 
@@ -250,7 +249,6 @@ test("compositor_unittests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//cc",
     "//cc:test_support",
     "//components/viz/common",
@@ -260,6 +258,7 @@ test("compositor_unittests") {
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base",
+    "//ui/display",
     "//ui/gfx",
     "//ui/gfx:test_support",
     "//ui/gfx/geometry",

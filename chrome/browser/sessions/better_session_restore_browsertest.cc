@@ -8,15 +8,13 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/lazy_instance.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
-#include "chrome/browser/background/background_mode_manager.h"
+#include "chrome/browser/background/extensions/background_mode_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/defaults.h"
@@ -24,18 +22,18 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_impl.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sessions/session_data_service.h"
 #include "chrome/browser/sessions/session_data_service_factory.h"
 #include "chrome/browser/sessions/session_restore_test_helper.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/session_service_test_helper.h"
-#include "chrome/browser/sessions/sessions_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/buildflags.h"
@@ -63,13 +61,6 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/scoped_nsautorelease_pool.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_init_params.h"
-#include "components/account_manager_core/account.h"
-#include "components/account_manager_core/account_manager_util.h"
-#include "components/signin/public/identity_manager/identity_test_utils.h"
 #endif
 
 namespace {
@@ -129,7 +120,7 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
     url_loader_interceptor_ = std::make_unique<content::URLLoaderInterceptor>(
         base::BindLambdaForTesting(
             [&](content::URLLoaderInterceptor::RequestParams* params) {
-              std::string path = params->url_request.url.path();
+              std::string path = params->url_request.url.GetPath();
               std::string path_prefix = std::string("/") + test_path_;
               for (auto& it : test_files_) {
                 std::string file = path_prefix + it;
@@ -162,22 +153,6 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
 
   BetterSessionRestoreTest(const BetterSessionRestoreTest&) = delete;
   BetterSessionRestoreTest& operator=(const BetterSessionRestoreTest&) = delete;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void CreatedBrowserMainParts(
-      content::BrowserMainParts* browser_main_parts) override {
-    crosapi::mojom::BrowserInitParamsPtr init_params =
-        crosapi::mojom::BrowserInitParams::New();
-    std::string device_account_email = "primaryaccount@gmail.com";
-    account_manager::AccountKey key(
-        signin::GetTestGaiaIdForEmail(device_account_email),
-        ::account_manager::AccountType::kGaia);
-    init_params->device_account =
-        account_manager::ToMojoAccount({key, device_account_email});
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-    InProcessBrowserTest::CreatedBrowserMainParts(browser_main_parts);
-  }
-#endif
 
  protected:
   void SetUpOnMainThread() override {
@@ -325,12 +300,9 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
     helper.SetForceBrowserNotAliveWithNoWindows(true);
 
     // Create a new window, which may trigger session restore.
-    size_t count = BrowserList::GetInstance()->size();
+    ui_test_utils::BrowserCreatedObserver created_observer;
     chrome::NewEmptyWindow(profile);
-    if (count == BrowserList::GetInstance()->size())
-      return ui_test_utils::WaitForBrowserToOpen();
-
-    return BrowserList::GetInstance()->get(count);
+    return created_observer.Wait();
   }
 
   std::string fake_server_address() {
@@ -574,9 +546,10 @@ IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest,
 }
 
 #endif  // BUILDFLAG(ENABLE_BACKGROUND_MODE)
+
 // ChromeOS does not override the SessionStartupPreference upon controlled
 // system restart.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 class RestartTest : public BetterSessionRestoreTest {
  public:
   RestartTest() = default;
@@ -589,12 +562,16 @@ class RestartTest : public BetterSessionRestoreTest {
  protected:
   void Restart() {
     // Simulate restarting the browser, but let the test exit peacefully.
-    for (Browser* browser : *BrowserList::GetInstance()) {
-      browser->profile()->SaveSessionState();
-      SessionDataServiceFactory::GetForProfile(browser->profile())
-          ->SetForceKeepSessionState();
-    }
-    PrefService* pref_service = g_browser_process->local_state();
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [](BrowserWindowInterface* browser) {
+          Profile* const profile = browser->GetProfile();
+          profile->SaveSessionState();
+
+          SessionDataServiceFactory::GetForProfile(profile)
+              ->SetForceKeepSessionState();
+          return true;
+        });
+    PrefService* const pref_service = g_browser_process->local_state();
     pref_service->SetBoolean(prefs::kWasRestarted, true);
   }
 };
@@ -780,56 +757,6 @@ IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest, PRE_LocalStorageClearedOnStartup) {
 IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest, LocalStorageClearedOnStartup) {
   // Check that the deletion is performed on startup instead.
   StoreDataWithPage("local_storage.html");
-}
-
-class NoSessionRestoreTestWithStartupDeletionDisabled
-    : public NoSessionRestoreTest {
- public:
-  NoSessionRestoreTestWithStartupDeletionDisabled() {
-    feature_list_.InitAndDisableFeature(kDeleteSessionOnlyDataOnStartup);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(NoSessionRestoreTestWithStartupDeletionDisabled,
-                       PRE_CookiesClearedOnStartup) {
-  // Normally cookies are restored.
-  StoreDataWithPage("cookies.html");
-  content::EnsureCookiesFlushed(browser()->profile());
-  // ... but not if the content setting is set to clear on exit.
-  CookieSettingsFactory::GetForProfile(browser()->profile())
-      ->SetDefaultCookieSetting(CONTENT_SETTING_SESSION_ONLY);
-
-  // Disable cookie and storage deletion handling on shutdown to simulate the
-  // process being killed before cleanup is finished.
-  browser()->profile()->SaveSessionState();
-}
-
-IN_PROC_BROWSER_TEST_F(NoSessionRestoreTestWithStartupDeletionDisabled,
-                       CookiesClearedOnStartup) {
-  // Check that the deletion is not performed when the feature is disabled.
-  NavigateAndCheckStoredData("cookies.html");
-}
-
-IN_PROC_BROWSER_TEST_F(NoSessionRestoreTestWithStartupDeletionDisabled,
-                       PRE_LocalStorageClearedOnStartup) {
-  // Normally localStorage is persisted.
-  StoreDataWithPage("local_storage.html");
-  // ... but not if it's set to clear on exit.
-  CookieSettingsFactory::GetForProfile(browser()->profile())
-      ->SetDefaultCookieSetting(CONTENT_SETTING_SESSION_ONLY);
-
-  // Disable cookie and storage deletion handling on shutdown to simulate the
-  // process being killed before cleanup is finished.
-  browser()->profile()->SaveSessionState();
-}
-
-IN_PROC_BROWSER_TEST_F(NoSessionRestoreTestWithStartupDeletionDisabled,
-                       LocalStorageClearedOnStartup) {
-  // Check that the deletion is not performed when the feature is disabled.
-  NavigateAndCheckStoredData("local_storage.html");
 }
 
 // Tests that session cookies are not cleared when only a popup window is open.

@@ -7,13 +7,13 @@
 #include <string>
 
 #include "ash/constants/notifier_catalogs.h"
-#include "ash/test/ash_test_base.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/input_method/fake_suggestion_handler.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
+#include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
@@ -33,7 +33,7 @@ struct DiacriticsTestCase {
 };
 
 class LongpressDiacriticsSuggesterTest
-    : public AshTestBase,
+    : public ChromeAshTestBase,
       public testing::WithParamInterface<DiacriticsTestCase> {};
 
 using AssistiveWindowButton = ui::ime::AssistiveWindowButton;

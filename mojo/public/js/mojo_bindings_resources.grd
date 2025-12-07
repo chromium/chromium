@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+<grit latest_public_release="0" current_release="1">
   <outputs>
     <output filename="grit/mojo_bindings_resources.h" type="rc_header">
       <emit emit_type='prepend'></emit>
@@ -32,8 +32,6 @@
             use_base_dir="false"
             resource_path="mojo/mojo/public/js/mojo_bindings_lite.js"
             type="BINDATA" />
-      </if>
-      <if expr="chromeos_ash">
         <include name="IDR_MOJO_BIG_BUFFER_MOJOM_LITE_JS"
             file="${root_gen_dir}/mojo/public/mojom/base/big_buffer.mojom-lite.js"
             use_base_dir="false"

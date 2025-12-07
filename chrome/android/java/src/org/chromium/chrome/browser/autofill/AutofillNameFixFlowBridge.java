@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.autofill;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.app.Activity;
 
 import org.jni_zero.CalledByNative;
@@ -13,20 +15,23 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.AutofillNameFixFlowPrompt.AutofillNameFixFlowPromptDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 
 /** JNI call glue for AutofillNameFixFlowPrompt C++ and Java objects. */
 @JNINamespace("autofill")
+@NullMarked
 final class AutofillNameFixFlowBridge implements AutofillNameFixFlowPromptDelegate {
     private final long mNativeCardNameFixFlowViewAndroid;
-    private final Activity mActivity;
+    private final @Nullable Activity mActivity;
     private final String mTitle;
     private final String mInferredName;
     private final String mConfirmButtonLabel;
     private final int mIconId;
-    private AutofillNameFixFlowPrompt mNameFixFlowPrompt;
+    private @Nullable AutofillNameFixFlowPrompt mNameFixFlowPrompt;
 
     private AutofillNameFixFlowBridge(
             long nativeCardNameFixFlowViewAndroid,
@@ -69,8 +74,7 @@ final class AutofillNameFixFlowBridge implements AutofillNameFixFlowPromptDelega
 
     @Override
     public void onPromptDismissed() {
-        AutofillNameFixFlowBridgeJni.get()
-                .promptDismissed(mNativeCardNameFixFlowViewAndroid, AutofillNameFixFlowBridge.this);
+        AutofillNameFixFlowBridgeJni.get().promptDismissed(mNativeCardNameFixFlowViewAndroid);
     }
 
     @Override
@@ -80,9 +84,7 @@ final class AutofillNameFixFlowBridge implements AutofillNameFixFlowPromptDelega
 
     @Override
     public void onUserAcceptCardholderName(String name) {
-        AutofillNameFixFlowBridgeJni.get()
-                .onUserAccept(
-                        mNativeCardNameFixFlowViewAndroid, AutofillNameFixFlowBridge.this, name);
+        AutofillNameFixFlowBridgeJni.get().onUserAccept(mNativeCardNameFixFlowViewAndroid, name);
     }
 
     /* no-op. Legal lines aren't set. */
@@ -94,7 +96,12 @@ final class AutofillNameFixFlowBridge implements AutofillNameFixFlowPromptDelega
     private void show(WindowAndroid windowAndroid) {
         mNameFixFlowPrompt =
                 AutofillNameFixFlowPrompt.createAsInfobarFixFlowPrompt(
-                        mActivity, this, mInferredName, mTitle, mIconId, mConfirmButtonLabel);
+                        assertNonNull(mActivity),
+                        this,
+                        mInferredName,
+                        mTitle,
+                        mIconId,
+                        mConfirmButtonLabel);
 
         if (mNameFixFlowPrompt != null) {
             mNameFixFlowPrompt.show(
@@ -112,14 +119,11 @@ final class AutofillNameFixFlowBridge implements AutofillNameFixFlowPromptDelega
 
     @NativeMethods
     interface Natives {
-        void promptDismissed(
-                long nativeCardNameFixFlowViewAndroid, AutofillNameFixFlowBridge caller);
+        void promptDismissed(long nativeCardNameFixFlowViewAndroid);
 
         void onUserDismiss(long nativeCardNameFixFlowViewAndroid);
 
         void onUserAccept(
-                long nativeCardNameFixFlowViewAndroid,
-                AutofillNameFixFlowBridge caller,
-                @JniType("std::u16string") String name);
+                long nativeCardNameFixFlowViewAndroid, @JniType("std::u16string") String name);
     }
 }

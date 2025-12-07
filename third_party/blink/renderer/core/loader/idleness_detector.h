@@ -17,11 +17,13 @@ namespace blink {
 class LocalFrame;
 class ResourceFetcher;
 
-// IdlenessDetector observes the resource request count every time a load is
-// finshed after DOMContentLoadedEventEnd is fired. It emits a network almost
-// idle signal when there are no more than 2 network connections active in 0.5
-// seconds, and a network idle signal when there are 0 network connections
-// active in 0.5 seconds.
+// Once started, IdlenessDetector observes the resource request count every time
+// a resource load is finished. It emits a network almost idle signal when there
+// are no more than 2 network connections active in 0.5 seconds, and a network
+// idle signal when there are 0 network connections active in 0.5 seconds and
+// then stops observing. The detector is always run after a
+// DOMContentLoadedEventEnd is fired but can also be re-started explicitly after
+// it finishes observation.
 class CORE_EXPORT IdlenessDetector
     : public GarbageCollected<IdlenessDetector>,
       public base::sequence_manager::TaskTimeObserver {
@@ -36,6 +38,8 @@ class CORE_EXPORT IdlenessDetector
   void WillCommitLoad();
   void DomContentLoadedEventFired();
   void DidDropNavigation();
+  void StartIfNeeded();
+
   // TODO(lpy) Don't need to pass in fetcher once the command line of disabling
   // PlzNavigate is removed.
   void OnWillSendRequest(ResourceFetcher*);

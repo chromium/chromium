@@ -66,12 +66,6 @@ bool StructTraits<device_signals::mojom::AntiVirusSignalDataView,
   }
   output->display_name = display_name;
 
-  std::string product_id;
-  if (!data.ReadProductId(&product_id)) {
-    return false;
-  }
-  output->product_id = product_id;
-
   device_signals::AvProductState state;
   if (!data.ReadState(&state)) {
     return false;

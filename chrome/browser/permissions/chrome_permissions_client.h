@@ -5,14 +5,18 @@
 #ifndef CHROME_BROWSER_PERMISSIONS_CHROME_PERMISSIONS_CLIENT_H_
 #define CHROME_BROWSER_PERMISSIONS_CHROME_PERMISSIONS_CLIENT_H_
 
+#include <optional>
+
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permissions_client.h"
+#include "components/permissions/resolvers/permission_prompt_options.h"
 
 class ChromePermissionsClient : public permissions::PermissionsClient {
  public:
@@ -72,7 +76,8 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
           permissions::feature_params::PermissionElementPromptPosition>
           pepc_prompt_position,
       ContentSetting initial_permission_status,
-      base::OnceCallback<void()> hats_shown_callback_) override;
+      base::OnceCallback<void()> hats_shown_callback,
+      PromptOptions prompt_options) override;
 
 #if !BUILDFLAG(IS_ANDROID)
   permissions::PermissionIgnoredReason DetermineIgnoreReason(
@@ -80,12 +85,10 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
 #endif
 
   void OnPromptResolved(
-      permissions::RequestType request_type,
+      const permissions::PermissionRequest* request,
       permissions::PermissionAction action,
-      const GURL& origin,
       permissions::PermissionPromptDisposition prompt_disposition,
       permissions::PermissionPromptDispositionReason prompt_disposition_reason,
-      permissions::PermissionRequestGestureType gesture_type,
       std::optional<QuietUiReason> quiet_ui_reason,
       base::TimeDelta prompt_display_duration,
       std::optional<
@@ -116,12 +119,6 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
 #if BUILDFLAG(IS_ANDROID)
   bool IsDseOrigin(content::BrowserContext* browser_context,
                    const url::Origin& origin) override;
-  infobars::InfoBarManager* GetInfoBarManager(
-      content::WebContents* web_contents) override;
-  infobars::InfoBar* MaybeCreateInfoBar(
-      content::WebContents* web_contents,
-      ContentSettingsType type,
-      base::WeakPtr<permissions::PermissionPromptAndroid> prompt) override;
   std::unique_ptr<PermissionMessageDelegate> MaybeCreateMessageUI(
       content::WebContents* web_contents,
       ContentSettingsType type,
@@ -136,6 +133,7 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
   int MapToJavaDrawableId(int resource_id) override;
   favicon::FaviconService* GetFaviconService(
       content::BrowserContext* browser_context) override;
+  const std::u16string GetClientApplicationName() const override;
 #else
   std::unique_ptr<permissions::PermissionPrompt> CreatePrompt(
       content::WebContents* web_contents,
@@ -144,6 +142,20 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
 
   bool HasDevicePermission(ContentSettingsType type) const override;
   bool CanRequestDevicePermission(ContentSettingsType type) const override;
+  bool IsPermissionBlockedByDevicePolicy(
+      content::WebContents* web_contents,
+      PermissionSetting setting,
+      const content_settings::SettingInfo& info,
+      ContentSettingsType type) const override;
+  bool IsPermissionAllowedByDevicePolicy(
+      content::WebContents* web_contents,
+      PermissionSetting setting,
+      const content_settings::SettingInfo& info,
+      ContentSettingsType type) const override;
+  bool IsSystemDenied(ContentSettingsType type) const override;
+  bool CanPromptSystemPermission(ContentSettingsType type) const override;
+  bool IsActorOperatingOnWebContents(
+      content::WebContents* web_contents) const override;
 
  private:
   friend base::NoDestructor<ChromePermissionsClient>;

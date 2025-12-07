@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/widget/widget.h"
 
 namespace gfx {
@@ -15,14 +16,14 @@ class Point;
 }  // namespace gfx
 
 namespace views {
-class NonClientFrameView;
+class FrameView;
 }
 
 namespace chromeos {
 
 // Returns the HitTestCompat for the specified point.
 COMPONENT_EXPORT(CHROMEOS_UI_FRAME)
-int FrameBorderNonClientHitTest(views::NonClientFrameView* view,
+int FrameBorderNonClientHitTest(views::FrameView* view,
                                 const gfx::Point& point_in_widget);
 
 // Resolve the inferred opacity and updates the params.
@@ -37,25 +38,13 @@ bool ShouldUseRestoreFrame(const views::Widget* widget);
 // right/bottom. Takes into account the orientation of the display.
 SnapDirection GetSnapDirectionForWindow(aura::Window* window, bool left_top);
 
-// Returns the corner radius of frame based on the state of the `native_window`
-// associated with the frame.
+// Returns the radii of the window's corners.
 COMPONENT_EXPORT(CHROMEOS_UI_FRAME)
-int GetFrameCornerRadius(const aura::Window* native_window);
+gfx::RoundedCornersF GetWindowRoundedCorners();
 
-// Returns true if the ClassProperty associated with native_window of the frame
-// can effect the radius of the frame.
+// Returns true if the ClassProperty can effect the radii of the window.
 COMPONENT_EXPORT(CHROMEOS_UI_FRAME)
-bool CanPropertyEffectFrameRadius(const void* class_property_key);
-
-// Returns true if window should have rounded corners for a given
-// `window_state`.
-COMPONENT_EXPORT(CHROMEOS_UI_FRAME)
-bool ShouldWindowStateHaveRoundedCorners(WindowStateType window_state);
-
-// Returns true if the `native_window` that is associated with the frame should
-// have rounded corners.
-COMPONENT_EXPORT(CHROMEOS_UI_FRAME)
-bool ShouldWindowHaveRoundedCorners(const aura::Window* native_window);
+bool CanPropertyEffectWindowRoundedCorners(const void* class_property_key);
 
 }  // namespace chromeos
 

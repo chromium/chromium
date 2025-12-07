@@ -151,10 +151,10 @@ system](https://developer.android.com/ndk/downloads/) and expand it to a
 suitable location. These instructions assume that it’s been expanded to
 `~/android-ndk-r21b`.
 
-Note that Chrome uses Android API level 21 for both 64-bit platforms and
+Note that Chrome uses Android API level 26 for both 64-bit platforms and
 32-bit platforms. See Chrome’s
 [`build/config/android/config.gni`](https://chromium.googlesource.com/chromium/src/+/main/build/config/android/config.gni)
-which sets `android32_ndk_api_level` and `android64_ndk_api_level`.
+which sets `android_ndk_api_level`.
 
 Set these gn args
 ```

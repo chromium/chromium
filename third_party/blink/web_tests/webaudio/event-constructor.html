@@ -6,147 +6,129 @@
     </title>
     <script src="../resources/testharness.js"></script>
     <script src="../resources/testharnessreport.js"></script>
-    <script src="resources/audit-util.js"></script>
-    <script src="resources/audit.js"></script>
   </head>
   <body>
     <script id="layout-test-code">
-      let audit = Audit.createTaskRunner();
 
-      audit.define('offline-constructor', (task, should) => {
-        should(function() {
-          new OfflineAudioCompletionEvent();
-        }, 'new OfflineAudioCompletionEvent()').throw(TypeError);
+      test(t => {
+        // Verify that various invalid constructor calls throw.
+        assert_throws_js(
+          TypeError,
+          () => new OfflineAudioCompletionEvent(),
+          'new OfflineAudioCompletionEvent()'
+        );
 
-        should(function() {
-          new OfflineAudioCompletionEvent('complete');
-        }, 'new OfflineAudioCompletionEvent("complete")').throw(TypeError);
+        assert_throws_js(
+          TypeError,
+          () => new OfflineAudioCompletionEvent('complete'),
+          'new OfflineAudioCompletionEvent("complete")'
+        );
 
-        should(
-            function() {
-              new OfflineAudioCompletionEvent('complete', {});
-            },
-            'new OfflineAudioCompletionEvent("complete", {})')
-            .throw(TypeError);
+        assert_throws_js(
+          TypeError,
+          () => new OfflineAudioCompletionEvent('complete', {}),
+          'new OfflineAudioCompletionEvent("complete", {})'
+        );
 
-        should(
-            function() {
-              new OfflineAudioCompletionEvent('complete', {foo: 42});
-            },
-            'new OfflineAudioCompletionEvent("complete", {foo: 42})')
-            .throw(TypeError);
+        assert_throws_js(
+          TypeError,
+          () => new OfflineAudioCompletionEvent('complete', {foo: 42}),
+          'new OfflineAudioCompletionEvent("complete", {foo: 42})'
+        );
 
-        let context = new OfflineAudioContext(1, 100, 48000);
-        let buffer = new AudioBuffer(context, {length: 42});
-
-        should(
-            function() {
-              new OfflineAudioCompletionEvent(
-                  'complete', {renderedBuffer: buffer});
-            },
-            'new OfflineAudioCompletionEvent("complete", {renderedBuffer: buffer})')
-            .notThrow();
-
-        task.done();
-      });
-
-      audit.define('offline-event', (task, should) => {
-        // Only need the context for constructing the AudioBuffers for the
-        // tests.
-        let context = new OfflineAudioContext(1, 100, 48000);
-
-        // Just an arbitrary AudioBuffer.
-        let buffer = new AudioBuffer(context, {length: 10});
+        // Valid constructor call with a renderedBuffer.
+        const context = new OfflineAudioContext(1, 100, 48000);
+        const buffer = new AudioBuffer(context, {length: 42});
 
         let event;
-        should(function() {
-          event =
-              new OfflineAudioCompletionEvent('foo', {renderedBuffer: buffer});
-        }, 'new OfflineAudioCompletionEvent()').notThrow();
+        assert_not_equals(
+          event = new OfflineAudioCompletionEvent('complete', {
+        renderedBuffer: buffer
+          }),
+          undefined,
+          'new OfflineAudioCompletionEvent("complete",' +
+              '{renderedBuffer: buffer}) should not throw'
+        );
 
-        should(event.renderedBuffer == buffer, 'event.renderedBuffer == buffer')
-            .beEqualTo(true);
+        // Confirm the renderedBuffer property was stored correctly.
+        assert_equals(
+          event.renderedBuffer,
+          buffer,
+          'event.renderedBuffer == buffer'
+        );
+      }, 'OfflineAudioCompletionEvent constructor validation');
 
-        task.done();
-      });
+      test(t => {
+        // Context is only required for constructing AudioBuffers below.
+        const context = new OfflineAudioContext(1, 100, 48000);
 
-      audit.define('audio-processing', (task, should) => {
-        // Only need the context for constructing the AudioBuffers for the
-        // tests.
-        let context = new OfflineAudioContext(1, 100, 48000);
+        // Arbitrary buffers and playback time.
+        const input  = new AudioBuffer(context, {length: 10});
+        const output = new AudioBuffer(context, {length: 20});
+        const time   = Math.PI;
 
-        // Fairly arbitrary buffers and time
-        let input = new AudioBuffer(context, {length: 10});
-        let output = new AudioBuffer(context, {length: 20});
-        let time = Math.PI;
+        // Verify that various invalid constructor calls throw.
+        assert_throws_js(
+          TypeError,
+          () => new AudioProcessingEvent(),
+          'new AudioProcessingEvent()'
+        );
 
-        // Verify required arguments.
-        should(function() {
-          new AudioProcessingEvent();
-        }, 'new AudioProcessingEvent()').throw(TypeError);
+        assert_throws_js(
+          TypeError,
+          () => new AudioProcessingEvent('proc'),
+          'new AudioProcessingEvent("proc")'
+        );
 
-        should(function() {
-          new AudioProcessingEvent('proc');
-        }, 'new AudioProcessingEvent("proc")').throw(TypeError);
+        assert_throws_js(
+          TypeError,
+          () => new AudioProcessingEvent('proc', {foo: 99}),
+          'new AudioProcessingEvent("proc", {foo: 99})'
+        );
 
-        should(function() {
-          new AudioProcessingEvent('proc', {foo: 99});
-        }, 'new AudioProcessingEvent("proc", {foo: 99})').throw(TypeError);
+        assert_throws_js(
+          TypeError,
+          () => new AudioProcessingEvent(
+        'proc',
+        {inputBuffer: input, outputBuffer: output}
+          ),
+          'new AudioProcessingEvent("proc",' +
+              '{inputBuffer: input, outputBuffer: output})'
+        );
 
-        should(
-            function() {
-              new AudioProcessingEvent(
-                  'proc', {inputBuffer: input, outputBuffer: output});
-            },
-            'new AudioProcessingEvent("proc", ' +
-                '{inputBuffer: input, outputBuffer: output})')
-            .throw(TypeError);
+        assert_throws_js(
+          TypeError,
+          () => new AudioProcessingEvent(
+        'proc',
+        {inputBuffer: input, playbackTime: time}
+          ),
+          'new AudioProcessingEvent("proc", {inputBuffer: ' +
+              'input, playbackTime: time})'
+        );
 
-        should(
-            function() {
-              new AudioProcessingEvent(
-                  'proc', {inputBuffer: input, playbackTime: time});
-            },
-            'new AudioProcessingEvent("proc", ' +
-                '{inputBuffer: input, playbackTime: time})')
-            .throw(TypeError);
+        assert_throws_js(
+          TypeError,
+          () => new AudioProcessingEvent(
+        'proc',
+        {outputBuffer: output, playbackTime: time}
+          ),
+            'new AudioProcessingEvent("proc", {outputBuffer: output, ' +
+              'playbackTime: time})'
+        );
 
-        should(
-            function() {
-              new AudioProcessingEvent(
-                  'proc', {outputBuffer: output, playbackTime: time});
-            },
-            'new AudioProcessingEvent("proc", ' +
-                '{outputBuffer: output, playbackTime: time})')
-            .throw(TypeError);
+        // Finally, verify that a valid constructor call succeeds.
+        const event = new AudioProcessingEvent('proc', {
+          inputBuffer: input,
+          outputBuffer: output,
+          playbackTime: time
+        });
 
-
-        // Finally test valid call
-        let event;
-        should(
-            function() {
-              event = new AudioProcessingEvent('proc', {
-                inputBuffer: input,
-                outputBuffer: output,
-                playbackTime: time
-              });
-            },
-            'new AudioProcessingEvent("proc", ' +
-                '{inputBuffer: input, outputBuffer: output, playbackTime: time})')
-            .notThrow();
-
-        should(event.playbackTime, 'event.playbackTime').beEqualTo(time);
-
-        should(event.inputBuffer == input, 'event.inputBuffer == input')
-            .beEqualTo(true);
-
-        should(event.outputBuffer == output, 'event.outputBuffer == output')
-            .beEqualTo(true);
-
-        task.done();
-      });
-
-      audit.run();
+        // Property checks.
+        assert_equals(event.playbackTime, time, 'event.playbackTime');
+        assert_equals(event.inputBuffer,  input,  'event.inputBuffer == input');
+        assert_equals(
+            event.outputBuffer, output, 'event.outputBuffer == output');
+            }, 'AudioProcessingEvent constructor validation');
     </script>
   </body>
 </html>

@@ -27,13 +27,13 @@
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/permission_request_observer.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
@@ -101,7 +101,8 @@ IFrameLoader::IFrameLoader(Browser* browser, int iframe_id, const GURL& url)
       "window.domAutomationController.send(addIFrame(%d, \"%s\"));",
       iframe_id, url.spec().c_str()));
   web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      base::UTF8ToUTF16(script), base::NullCallback());
+      base::UTF8ToUTF16(script), base::NullCallback(),
+      content::ISOLATED_WORLD_ID_GLOBAL);
 
   quit_closure_ = run_loop.QuitWhenIdleClosure();
   run_loop.Run();
@@ -113,8 +114,7 @@ IFrameLoader::IFrameLoader(Browser* browser, int iframe_id, const GURL& url)
   iframe_url_ = GURL(RunScript(web_contents->GetPrimaryMainFrame(), script));
 }
 
-IFrameLoader::~IFrameLoader() {
-}
+IFrameLoader::~IFrameLoader() = default;
 
 void IFrameLoader::DidStopLoading() {
   navigation_completed_ = true;
@@ -240,9 +240,6 @@ class GeolocationBrowserTest : public InProcessBrowserTest {
   bool SetPositionAndWaitUntilUpdated(double latitude, double longitude);
 
  protected:
-  // BrowserTestBase:
-  void SetUpCommandLine(base::CommandLine* command_line) override;
-
   // The values used for the position override.
   double fake_latitude_ = 1.23;
   double fake_longitude_ = 4.56;
@@ -286,7 +283,7 @@ GeolocationBrowserTest::GeolocationBrowserTest()
 void GeolocationBrowserTest::SetUpOnMainThread() {
   current_browser_ = browser();
   host_resolver()->AddRule("*", "127.0.0.1");
-  https_test_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  https_test_server_.SetCertHostnames({"a.test", "b.test", "localhost"});
   https_test_server_.AddDefaultHandlers(GetChromeTestDataDir());
   ASSERT_TRUE(test_server_handle_ = https_test_server_.StartAndReturnHandle());
 }
@@ -408,12 +405,6 @@ bool GeolocationBrowserTest::SetPositionAndWaitUntilUpdated(double latitude,
 
   return content::EvalJs(render_frame_host_, "geopositionUpdates.pop();")
              .ExtractString() == "geoposition-updated";
-}
-
-void GeolocationBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
-  // For using an HTTPS server.
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kIgnoreCertificateErrors);
 }
 
 // Tests ----------------------------------------------------------------------
@@ -657,11 +648,11 @@ IN_PROC_BROWSER_TEST_F(GeolocationPrerenderBrowserTest,
       current_browser(), https_test_server_.GetURL("/empty.html")));
 
   // Start a prerender with the geolocation test URL.
-  int host_id = prerender_helper_.AddPrerender(GetTestURL());
+  content::FrameTreeNodeId host_id =
+      prerender_helper_.AddPrerender(GetTestURL());
   content::test::PrerenderHostObserver prerender_observer(*web_contents(),
                                                           host_id);
-  ASSERT_NE(prerender_helper_.GetHostForUrl(GetTestURL()),
-            content::RenderFrameHost::kNoFrameTreeNodeId);
+  ASSERT_TRUE(prerender_helper_.GetHostForUrl(GetTestURL()));
 
   permissions::PermissionRequestObserver observer(web_contents());
   content::RenderFrameHost* prerender_rfh =

@@ -5,8 +5,9 @@
 #include "third_party/blink/renderer/modules/smart_card/smart_card_resource_manager.h"
 
 #include "services/device/public/mojom/smart_card.mojom-blink.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/smart_card/smart_card.mojom-blink.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/core/execution_context/navigator_base.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/smart_card/smart_card_context.h"
@@ -31,11 +32,12 @@ bool ShouldBlockSmartCardServiceCall(ExecutionContext* context,
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       kContextGone);
   } else if (!context->IsIsolatedContext() ||
-             !context->IsFeatureEnabled(mojom::blink::PermissionsPolicyFeature::
-                                            kCrossOriginIsolated)) {
+             !context->IsFeatureEnabled(
+                 network::mojom::PermissionsPolicyFeature::
+                     kCrossOriginIsolated)) {
     exception_state.ThrowSecurityError(kNotSufficientlyIsolated);
   } else if (!context->IsFeatureEnabled(
-                 mojom::blink::PermissionsPolicyFeature::kSmartCard,
+                 network::mojom::PermissionsPolicyFeature::kSmartCard,
                  ReportOptions::kReportOnFailure)) {
     exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
   }
@@ -45,23 +47,18 @@ bool ShouldBlockSmartCardServiceCall(ExecutionContext* context,
 
 }  // namespace
 
-const char SmartCardResourceManager::kSupplementName[] =
-    "SmartCardResourceManager";
-
 SmartCardResourceManager* SmartCardResourceManager::smartCard(
     NavigatorBase& navigator) {
-  SmartCardResourceManager* smartcard =
-      Supplement<NavigatorBase>::From<SmartCardResourceManager>(navigator);
+  SmartCardResourceManager* smartcard = navigator.GetSmartCardResourceManager();
   if (!smartcard) {
     smartcard = MakeGarbageCollected<SmartCardResourceManager>(navigator);
-    ProvideTo(navigator, smartcard);
+    navigator.SetSmartCardResourceManager(smartcard);
   }
   return smartcard;
 }
 
 SmartCardResourceManager::SmartCardResourceManager(NavigatorBase& navigator)
-    : Supplement<NavigatorBase>(navigator),
-      ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
+    : ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
       service_(navigator.GetExecutionContext()) {}
 
 void SmartCardResourceManager::ContextDestroyed() {
@@ -72,7 +69,6 @@ void SmartCardResourceManager::Trace(Visitor* visitor) const {
   visitor->Trace(service_);
   visitor->Trace(create_context_promises_);
   ScriptWrappable::Trace(visitor);
-  Supplement<NavigatorBase>::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
@@ -91,8 +87,8 @@ ScriptPromise<SmartCardContext> SmartCardResourceManager::establishContext(
   EnsureServiceConnection();
 
   service_->CreateContext(
-      WTF::BindOnce(&SmartCardResourceManager::OnCreateContextDone,
-                    WrapPersistent(this), WrapPersistent(resolver)));
+      BindOnce(&SmartCardResourceManager::OnCreateContextDone,
+               WrapPersistent(this), WrapPersistent(resolver)));
   return resolver->Promise();
 }
 
@@ -108,8 +104,8 @@ void SmartCardResourceManager::EnsureServiceConnection() {
   GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
       service_.BindNewPipeAndPassReceiver(task_runner));
   service_.set_disconnect_handler(
-      WTF::BindOnce(&SmartCardResourceManager::CloseServiceConnection,
-                    WrapWeakPersistent(this)));
+      BindOnce(&SmartCardResourceManager::CloseServiceConnection,
+               WrapWeakPersistent(this)));
 }
 
 void SmartCardResourceManager::OnCreateContextDone(

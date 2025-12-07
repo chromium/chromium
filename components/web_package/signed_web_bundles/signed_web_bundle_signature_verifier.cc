@@ -5,13 +5,13 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/containers/extend.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/overloaded.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
@@ -23,7 +23,6 @@
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "components/web_package/signed_web_bundles/constants.h"
-#include "components/web_package/signed_web_bundles/ecdsa_p256_utils.h"
 #include "components/web_package/signed_web_bundles/identity_validator.h"
 #include "components/web_package/signed_web_bundles/integrity_block_parser.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
@@ -31,33 +30,26 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack_entry.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_utils.h"
-#include "crypto/secure_hash.h"
+#include "crypto/hash.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
 
 namespace web_package {
 
 namespace {
 
-// Creates a CBOR-encoded integrity block with an empty signature array.
-std::vector<uint8_t> CreateIntegrityBlockV1Cbor() {
-  cbor::Value::ArrayValue ib_cbor;
-
-  ib_cbor.emplace_back(kIntegrityBlockMagicBytes);
-  ib_cbor.emplace_back(kIntegrityBlockV1VersionBytes);
-  // Encode an empty signature array.
-  ib_cbor.emplace_back(cbor::Value::ArrayValue());
-
-  CHECK_EQ(ib_cbor.size(), kIntegrityBlockV1TopLevelArrayLength);
-
-  // This call can only fail in case the nesting depth is more than 16 (which is
-  // not the case here).
-  return *cbor::Writer::Write(cbor::Value(std::move(ib_cbor)));
-}
-
-std::vector<uint8_t> CreateIntegrityBlockV2Cbor(
+std::vector<uint8_t> CreateIntegrityBlockCbor(
     const SignedWebBundleIntegrityBlock& integrity_block) {
-  CHECK(integrity_block.is_v2());
-
+  // This function looks like it should use a cbor::Value::ArrayValue to build
+  // the outer array, but it can't: one of the elements is a pre-encoded CBOR
+  // value which we can't safely decode because it's untrusted input. This is
+  // obviously undesirable, because there's no guarantee at all that the
+  // pre-encoded value is actually valid CBOR.
+  //
+  // TODO(https://crbug.com/454485901): once there's a memory-safe CBOR parser,
+  // re-parse the pre-encoded value, then re-encode it here instead of
+  // constructing a CBOR array by hand so that we're guaranteed that the result
+  // of this function is valid.
   std::vector<uint8_t> ib_cbor;
 
   // 0x84 is the encoding byte for an array of length 4.
@@ -68,7 +60,7 @@ std::vector<uint8_t> CreateIntegrityBlockV2Cbor(
                             cbor::Value(kIntegrityBlockV2VersionBytes)));
   // We cannot parse `attributes().cbor()` back to a cbor::Value as they
   // technically represent untrusted input.
-  base::Extend(ib_cbor, integrity_block.attributes().cbor());
+  base::Extend(ib_cbor, integrity_block.attributes_cbor());
   // Encode an empty signature array.
   base::Extend(ib_cbor,
                *cbor::Writer::Write(cbor::Value(cbor::Value::ArrayValue())));
@@ -77,23 +69,10 @@ std::vector<uint8_t> CreateIntegrityBlockV2Cbor(
 }
 
 base::expected<void, SignedWebBundleSignatureVerifier::Error>
-ValidateWebBundleId(
-    const std::string& web_bundle_id,
-    const std::vector<SignedWebBundleSignatureStackEntry>& signatures) {
-  std::vector<PublicKey> public_keys;
-  for (const auto& signature : signatures) {
-    absl::visit(
-        base::Overloaded{[&](const auto& signature_info) {
-                           public_keys.push_back(signature_info.public_key());
-                         },
-                         [](const SignedWebBundleSignatureInfoUnknown&) {
-                           // Unknown signatures are ignored during web bundle
-                           // id validation.
-                         }},
-        signature.signature_info());
-  }
+ValidateWebBundleId(const std::string& web_bundle_id,
+                    const SignedWebBundleSignatureStack& signatures) {
   return IdentityValidator::GetInstance()
-      ->ValidateWebBundleIdentity(web_bundle_id, public_keys)
+      ->ValidateWebBundleIdentity(web_bundle_id, signatures.public_keys())
       .transform_error([](const std::string& error) {
         return SignedWebBundleSignatureVerifier::Error::ForWebBundleIdError(
             error);
@@ -150,8 +129,7 @@ SignedWebBundleSignatureVerifier::CalculateHashOfUnsignedWebBundle(
     return base::unexpected(base::File::ErrorToString(file.GetLastFileError()));
   }
 
-  auto secure_hash =
-      crypto::SecureHash::Create(crypto::SecureHash::Algorithm::SHA512);
+  crypto::hash::Hasher hash(crypto::hash::kSha512);
 
   // Calculate the hash of the Signed Web Bundle excluding its integrity block.
   // The file might be too big to read it into memory all at once, which is why
@@ -168,16 +146,15 @@ SignedWebBundleSignatureVerifier::CalculateHashOfUnsignedWebBundle(
           base::File::ErrorToString(file.GetLastFileError()));
     }
     data.resize(*bytes_read);
-    secure_hash->Update(data.data(), data.size());
+    hash.Update(data);
 
     if (!base::CheckAdd(offset, *bytes_read).AssignIfValid(&offset)) {
       return base::unexpected("The Signed Web Bundle is too large.");
     }
   }
 
-  CHECK_EQ(kSHA512DigestLength, secure_hash->GetHashLength());
   SHA512Digest digest;
-  secure_hash->Finish(digest.data(), digest.size());
+  hash.Finish(digest);
   return digest;
 }
 
@@ -209,90 +186,43 @@ void SignedWebBundleSignatureVerifier::OnHashOfUnsignedWebBundleCalculated(
   // [1]
   // https://github.com/WICG/webpackage/blob/main/explainers/integrity-signature.md
 
-  std::move(callback).Run(
-      integrity_block.is_v2()
-          ? VerifyWithHashForIntegrityBlockV2(*unsigned_web_bundle_hash,
-                                              std::move(integrity_block))
-          : VerifyWithHashForIntegrityBlockV1(*unsigned_web_bundle_hash,
-                                              std::move(integrity_block)));
+  std::move(callback).Run(VerifyWithHashForIntegrityBlock(
+      *unsigned_web_bundle_hash, std::move(integrity_block)));
 }
 
 base::expected<void, SignedWebBundleSignatureVerifier::Error>
-SignedWebBundleSignatureVerifier::VerifyWithHashForIntegrityBlockV1(
+SignedWebBundleSignatureVerifier::VerifyWithHashForIntegrityBlock(
     SHA512Digest unsigned_web_bundle_hash,
-    SignedWebBundleIntegrityBlock integrity_block_v1) const {
+    SignedWebBundleIntegrityBlock integrity_block) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (integrity_block_v1.signature_stack().size() != 1) {
-    return base::unexpected(Error::ForInvalidSignature(
-        base::StringPrintf("Only a single signature is currently supported for "
-                           "the v1 integrity block, got %zu signatures.",
-                           integrity_block_v1.signature_stack().size())));
-  }
+  const auto& signatures = integrity_block.signature_stack();
+  RETURN_IF_ERROR(ValidateWebBundleId(integrity_block.web_bundle_id().id(),
+                                      integrity_block.signature_stack()));
 
-  const SignedWebBundleSignatureStackEntry& signature_stack_entry =
-      integrity_block_v1.signature_stack().entries()[0];
-
-  std::vector<uint8_t> payload_to_verify = CreateSignaturePayload({
-      .unsigned_web_bundle_hash = unsigned_web_bundle_hash,
-      .integrity_block_cbor = CreateIntegrityBlockV1Cbor(),
-      .attributes_cbor = signature_stack_entry.attributes_cbor(),
-  });
-
-  bool valid_signature = absl::visit(
-      base::Overloaded{[&payload_to_verify](const auto& signature_info) {
-                         return signature_info.signature().Verify(
-                             payload_to_verify, signature_info.public_key());
-                       },
-                       [](const SignedWebBundleSignatureInfoUnknown&) -> bool {
-                         // Note that SignedWebBundleIntegrityBlock can only
-                         // be created if there's at least one valid signature
-                         // in the list. Coupled with the size check above, this
-                         // path must not be reachable.
-                         NOTREACHED_NORETURN();
-                       }},
-      signature_stack_entry.signature_info());
-
-  if (!valid_signature) {
-    return base::unexpected(
-        Error::ForInvalidSignature("The signature is invalid."));
-  }
-  return base::ok();
-}
-
-base::expected<void, SignedWebBundleSignatureVerifier::Error>
-SignedWebBundleSignatureVerifier::VerifyWithHashForIntegrityBlockV2(
-    SHA512Digest unsigned_web_bundle_hash,
-    SignedWebBundleIntegrityBlock integrity_block_v2) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  const auto& signatures = integrity_block_v2.signature_stack().entries();
-  RETURN_IF_ERROR(ValidateWebBundleId(
-      integrity_block_v2.attributes().web_bundle_id(), signatures));
-
-  std::vector<uint8_t> ib_cbor = CreateIntegrityBlockV2Cbor(integrity_block_v2);
-  for (const auto& signature_stack_entry : signatures) {
+  std::vector<uint8_t> ib_cbor = CreateIntegrityBlockCbor(integrity_block);
+  for (const auto& signature_stack_entry : signatures.entries()) {
     std::vector<uint8_t> payload_to_verify = CreateSignaturePayload({
         .unsigned_web_bundle_hash = unsigned_web_bundle_hash,
         .integrity_block_cbor = ib_cbor,
         .attributes_cbor = signature_stack_entry.attributes_cbor(),
     });
 
-    bool valid_signature = absl::visit(
-        base::Overloaded{[&payload_to_verify](const auto& signature_info) {
-                           return signature_info.signature().Verify(
-                               payload_to_verify, signature_info.public_key());
-                         },
-                         [&](const SignedWebBundleSignatureInfoUnknown&) {
-                           // For the v2 integrity block, unknown signatures
-                           // imply something that the current version of the
-                           // browser cannot really process; such entries can
-                           // thus be safely skipped.
-                           // Note that SignedWebBundleIntegrityBlock can only
-                           // be created if there's at least one valid signature
-                           // with a known type in the list.
-                           return true;
-                         }},
+    bool valid_signature = std::visit(
+        absl::Overload{[&payload_to_verify](const auto& signature_info) {
+                         return signature_info.signature().Verify(
+                             payload_to_verify, signature_info.public_key());
+                       },
+                       [&](const SignedWebBundleSignatureInfoUnknown&) {
+                         // For the v2 integrity block, unknown signatures
+                         // imply something that the current version of the
+                         // browser cannot really process; such entries can
+                         // thus be safely skipped.
+                         // Note that SignedWebBundleIntegrityBlock can only
+                         // be created if there's at least one valid signature
+                         // with a known type in the list.
+                         return true;
+                       }},
         signature_stack_entry.signature_info());
 
     if (!valid_signature) {

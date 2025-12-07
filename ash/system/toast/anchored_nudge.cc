@@ -22,9 +22,10 @@
 #include "base/i18n/rtl.h"
 #include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -117,8 +118,8 @@ AnchoredNudge::AnchoredNudge(
       anchor_widget_corner_(nudge_data.arrow),
       click_callback_(std::move(nudge_data.click_callback)),
       dismiss_callback_(std::move(nudge_data.dismiss_callback)) {
-  SetButtons(ui::DIALOG_BUTTON_NONE);
-  set_color(SK_ColorTRANSPARENT);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+  SetBackgroundColor(SK_ColorTRANSPARENT);
   set_margins(gfx::Insets());
   set_close_on_deactivate(false);
   set_highlight_button_when_shown(nudge_data.highlight_anchor_button);
@@ -199,8 +200,8 @@ void AnchoredNudge::OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
       kShellWindowId_SettingBubbleContainer);
 }
 
-std::unique_ptr<views::NonClientFrameView>
-AnchoredNudge::CreateNonClientFrameView(views::Widget* widget) {
+std::unique_ptr<views::FrameView> AnchoredNudge::CreateFrameView(
+    views::Widget* widget) {
   // Create the customized bubble border.
   std::unique_ptr<views::BubbleBorder> bubble_border =
       std::make_unique<views::BubbleBorder>(arrow(),
@@ -208,7 +209,7 @@ AnchoredNudge::CreateNonClientFrameView(views::Widget* widget) {
   bubble_border->set_avoid_shadow_overlap(true);
   bubble_border->set_insets(kBubbleBorderInsets);
 
-  auto frame = BubbleDialogDelegateView::CreateNonClientFrameView(widget);
+  auto frame = BubbleDialogDelegateView::CreateFrameView(widget);
   static_cast<views::BubbleFrameView*>(frame.get())
       ->SetBubbleBorder(std::move(bubble_border));
   return frame;

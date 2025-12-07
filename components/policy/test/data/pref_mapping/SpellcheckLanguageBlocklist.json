@@ -3,8 +3,7 @@
     "os": [
       "win",
       "linux",
-      "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos"
     ],
     "policy_pref_mapping_tests": [
       {

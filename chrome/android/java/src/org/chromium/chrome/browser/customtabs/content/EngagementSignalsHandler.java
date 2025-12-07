@@ -4,35 +4,35 @@
 
 package org.chromium.chrome.browser.customtabs.content;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.os.Bundle;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.EngagementSignalsCallback;
 
-import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
+import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
-import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
-import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager.Observer;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
+import org.chromium.chrome.browser.tab.Tab;
 
 /**
- * Handles the initialization of Engagement Signals when the client sets an
- * {@link androidx.browser.customtabs.EngagementSignalsCallback}.
+ * Handles the initialization of Engagement Signals when the client sets an {@link
+ * androidx.browser.customtabs.EngagementSignalsCallback}.
  */
+@NullMarked
 public class EngagementSignalsHandler {
-    private final CustomTabsConnection mConnection;
     private final CustomTabsSessionToken mSession;
-    @Nullable private EngagementSignalsInitialScrollObserver mInitialScrollObserver;
-    @Nullable private RealtimeEngagementSignalObserver mObserver;
-    private TabObserverRegistrar mTabObserverRegistrar;
-    private EngagementSignalsCallback mCallback;
-    private PrivacyPreferencesManager.Observer mPrivacyPreferencesObserver;
+    private @Nullable EngagementSignalsInitialScrollObserver mInitialScrollObserver;
+    private @Nullable RealtimeEngagementSignalObserver mObserver;
+    private @Nullable TabObserverRegistrar mTabObserverRegistrar;
+    private @Nullable EngagementSignalsCallback mCallback;
+    private @Nullable Callback<Boolean> mPrivacyPreferencesObserver;
 
-    public EngagementSignalsHandler(
-            CustomTabsConnection connection, CustomTabsSessionToken session) {
-        mConnection = connection;
+    public EngagementSignalsHandler(CustomTabsSessionToken session) {
         mSession = session;
     }
 
@@ -72,6 +72,19 @@ public class EngagementSignalsHandler {
         }
     }
 
+    /** Notify that Open in Browser is being invoked on the given tab. */
+    public void notifyOpenInBrowser(Tab tab) {
+        // When Open in Browser is tapped we need to manually collect user interactions, to ensure
+        // the ensuing invocation of EngagementSignalsCallback#onSessionEnded correctly signals
+        // whether user interactions occurred. We need to do this manually because the usual
+        // triggers for collecting user interactions (TabObserver#webContentsWillSwap,
+        // TabObserver#onClosingStateChanged, and TabObserver#onDestroyed) do not get invoked when
+        // Open in Browser is used.
+        if (mObserver != null) {
+            mObserver.collectUserInteraction(tab);
+        }
+    }
+
     private void createEngagementSignalsObserver() {
         if (!PrivacyPreferencesManagerImpl.getInstance().isUsageAndCrashReportingPermitted()) {
             return;
@@ -88,31 +101,31 @@ public class EngagementSignalsHandler {
                         && mInitialScrollObserver.hasCurrentPageHadScrollDown();
         mObserver =
                 new RealtimeEngagementSignalObserver(
-                        mTabObserverRegistrar, mConnection, mSession, mCallback, hadScrollDown);
+                        mTabObserverRegistrar, mSession, mCallback, hadScrollDown);
         if (mInitialScrollObserver != null) {
             mInitialScrollObserver.destroy();
             mInitialScrollObserver = null;
         }
 
         mPrivacyPreferencesObserver =
-                new Observer() {
-                    @Override
-                    public void onIsUsageAndCrashReportingPermittedChanged(boolean permitted) {
-                        if (!permitted) {
-                            if (mObserver != null) {
-                                if (mCallback != null) {
-                                    mCallback.onSessionEnded(false, Bundle.EMPTY);
-                                }
-                                mObserver.destroy();
-                                mObserver = null;
+                (permitted) -> {
+                    if (!permitted) {
+                        if (mObserver != null) {
+                            if (mCallback != null) {
+                                mCallback.onSessionEnded(false, Bundle.EMPTY);
                             }
-                            PrivacyPreferencesManagerImpl.getInstance()
-                                    .removeObserver(mPrivacyPreferencesObserver);
-                            mPrivacyPreferencesObserver = null;
+                            mObserver.destroy();
+                            mObserver = null;
                         }
+                        PrivacyPreferencesManagerImpl.getInstance()
+                                .getUsageAndCrashReportingPermittedObservableSupplier()
+                                .removeObserver(assumeNonNull(mPrivacyPreferencesObserver));
+                        mPrivacyPreferencesObserver = null;
                     }
                 };
-        PrivacyPreferencesManagerImpl.getInstance().addObserver(mPrivacyPreferencesObserver);
+        PrivacyPreferencesManagerImpl.getInstance()
+                .getUsageAndCrashReportingPermittedObservableSupplier()
+                .addObserver(mPrivacyPreferencesObserver);
         mTabObserverRegistrar.registerActivityTabObserver(
                 new CustomTabTabObserver() {
                     @Override
@@ -127,6 +140,7 @@ public class EngagementSignalsHandler {
                         }
                         if (mPrivacyPreferencesObserver != null) {
                             PrivacyPreferencesManagerImpl.getInstance()
+                                    .getUsageAndCrashReportingPermittedObservableSupplier()
                                     .removeObserver(mPrivacyPreferencesObserver);
                             mPrivacyPreferencesObserver = null;
                         }
@@ -135,8 +149,7 @@ public class EngagementSignalsHandler {
     }
 
     @VisibleForTesting
-    @Nullable
-    public RealtimeEngagementSignalObserver getEngagementSignalsObserverForTesting() {
+    public @Nullable RealtimeEngagementSignalObserver getEngagementSignalsObserverForTesting() {
         return mObserver;
     }
 }

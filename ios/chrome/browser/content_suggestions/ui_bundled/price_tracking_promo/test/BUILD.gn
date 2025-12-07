@@ -1,0 +1,22 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("eg2_tests") {
+  testonly = true
+  configs += [ "//build/config/ios:xctest_config" ]
+  sources = [ "price_tracking_promo_view_egtest.mm" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/commerce/core:feature_list",
+    "//components/segmentation_platform/embedder/home_modules:constants",
+    "//components/segmentation_platform/public",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/public:constants",
+    "//ios/chrome/browser/push_notification/ui_bundled:test_support",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

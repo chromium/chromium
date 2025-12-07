@@ -4,6 +4,7 @@
 
 #include "content/public/test/content_browser_test.h"
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/files/file.h"
@@ -13,7 +14,6 @@
 #include "base/task/current_thread.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_paths.h"
@@ -23,19 +23,17 @@
 #include "content/public/test/test_browser_context.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_browser_context.h"
-#include "content/shell/browser/shell_paths.h"
+#include "content/shell/common/shell_paths.h"
 #include "content/shell/common/shell_switches.h"
 #include "content/test/test_content_client.h"
 #include "ui/events/platform/platform_event_source.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/foundation_util.h"
-#include "content/shell/app/paths_mac.h"
+#include "content/shell/app/paths_apple.h"
 #endif
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #include "ui/base/ime/init/input_method_initializer.h"
 #endif
 
@@ -64,27 +62,22 @@ ContentBrowserTest::ContentBrowserTest() {
   content_shell_path = content_shell_path.Append(
       FILE_PATH_LITERAL("Content Shell.app/Contents/MacOS/Content Shell"));
   CHECK(base::CreateDirectory(content_shell_path.DirName()));
-  CHECK(base::File(content_shell_path,
-                   base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_WRITE)
-            .IsValid());
+  if (base::File file(content_shell_path,
+                      base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_WRITE);
+      !file.IsValid()) {
+    // Diagnostics for https://crbug.com/345765743.
+    const auto last_errno = errno;
+    CHECK(base::PathExists(content_shell_path))
+        << "Failed to create \"" << content_shell_path
+        << "\": " << base::File::ErrorToString(file.error_details())
+        << "; errno = " << last_errno;
+  }
   file_exe_override_.emplace(base::FILE_EXE, content_shell_path,
                              /*is_absolute=*/false, /*create=*/false);
 #endif
 
-  // The HTTPS test server must be setup here as different browser test suites
-  // have different bundle behavior on macOS, and the HTTPS test server
-  // constructor reads in the local test root cert. It might be possible
-  // to move this to BrowserTestBase in the future.
-  embedded_https_test_server_ = std::make_unique<net::EmbeddedTestServer>(
-      net::EmbeddedTestServer::TYPE_HTTPS);
-  // Default hostnames for the HTTPS test server. Test fixtures can call this
-  // with different hostnames (before starting the server) to override.
-  embedded_https_test_server_->SetCertHostnames(
-      {"example.com", "*.example.com", "foo.com", "*.foo.com", "bar.com",
-       "*.bar.com", "a.com", "*.a.com", "b.com", "*.b.com", "c.com",
-       "*.c.com"});
-
   embedded_test_server()->AddDefaultHandlers(GetTestDataFilePath());
+  InitializeHTTPSTestServer();
   embedded_https_test_server().AddDefaultHandlers(GetTestDataFilePath());
 }
 
@@ -123,9 +116,7 @@ void ContentBrowserTest::SetUp() {
 #endif
 
   // LinuxInputMethodContextFactory has to be initialized.
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   ui::InitializeInputMethodForTesting();
 #endif
 
@@ -148,9 +139,7 @@ void ContentBrowserTest::TearDown() {
   }
 
   // LinuxInputMethodContextFactory has to be shutdown.
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   ui::ShutdownInputMethodForTesting();
 #endif
 }
@@ -215,6 +204,12 @@ Shell* ContentBrowserTest::CreateOffTheRecordBrowser() {
   return Shell::CreateNewWindow(
       ShellContentBrowserClient::Get()->off_the_record_browser_context(),
       GURL(url::kAboutBlankURL), nullptr, gfx::Size());
+}
+
+void ContentBrowserTest::RecreateWindow() {
+  Shell* new_shell = CreateBrowser();
+  shell_->Close();
+  shell_ = new_shell;
 }
 
 std::unique_ptr<TestBrowserContext>

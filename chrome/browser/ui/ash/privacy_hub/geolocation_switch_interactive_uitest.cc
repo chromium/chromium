@@ -17,6 +17,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/message_center/message_center.h"
+#include "ui/views/views_switches.h"
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
@@ -52,6 +53,13 @@ class GeolocationSwitchInteractiveTest : public InteractiveBrowserTest {
     https_server()->StartAcceptingConnections();
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InteractiveBrowserTestMixin::SetUpCommandLine(command_line);
+    // Disables the disregarding of potentially unintended input events.
+    command_line->AppendSwitch(
+        views::switches::kDisableInputEventActivationProtectionForTesting);
+  }
+
   void TearDownOnMainThread() override {
     EXPECT_TRUE(https_server()->ShutdownAndWaitUntilComplete());
     InteractiveBrowserTest::TearDownOnMainThread();
@@ -84,12 +92,8 @@ class GeolocationSwitchInteractiveTest : public InteractiveBrowserTest {
           CheckJsResult(kWebContentsElementId, "geoStartWithSyncResponse",
                         "requested"),
           WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
-          WaitForShow(PermissionPromptBubbleBaseView::kAllowButtonElementId)
-          // We need to call `FlushEvents` here before `PressButton` because a
-          // `view_` variable in PermissionRequestManager is not yet
-          // initialized.
-          ,
-          FlushEvents(),
+          WaitForShow(PermissionPromptBubbleBaseView::kAllowButtonElementId),
+
           PressButton(PermissionPromptBubbleBaseView::kAllowButtonElementId),
           WaitForHide(PermissionPromptBubbleBaseView::kMainViewId));
     } else {

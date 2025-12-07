@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr_exclusion.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
@@ -17,20 +16,20 @@ namespace autofill {
 
 class TravelFieldParser : public FormFieldParser {
  public:
+  TravelFieldParser();
   ~TravelFieldParser() override;
 
   static std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
-                                                AutofillScanner* scanner);
+                                                AutofillScanner& scanner);
 
  protected:
   void AddClassifications(FieldCandidatesMap& field_candidates) const override;
 
  private:
-  // All of the following fields are optional.
-  raw_ptr<AutofillField> passport_;
-  raw_ptr<AutofillField> origin_;
-  raw_ptr<AutofillField> destination_;
-  raw_ptr<AutofillField> flight_;
+  std::optional<FieldAndMatchInfo> passport_;
+  std::optional<FieldAndMatchInfo> origin_;
+  std::optional<FieldAndMatchInfo> destination_;
+  std::optional<FieldAndMatchInfo> flight_;
 };
 }  // namespace autofill
 

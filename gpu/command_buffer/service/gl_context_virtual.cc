@@ -92,7 +92,7 @@ unsigned int GLContextVirtual::CheckStickyGraphicsResetStatusImpl() {
   if (reset_status == GL_NO_ERROR)
     return GL_NO_ERROR;
   // Don't pretend we know which one of the virtual contexts was responsible.
-  return GL_UNKNOWN_CONTEXT_RESET_ARB;
+  return GL_UNKNOWN_CONTEXT_RESET_EXT;
 }
 
 void GLContextVirtual::SetUnbindFboOnMakeCurrent() {
@@ -102,21 +102,6 @@ void GLContextVirtual::SetUnbindFboOnMakeCurrent() {
 void GLContextVirtual::ForceReleaseVirtuallyCurrent() {
   shared_context_->OnReleaseVirtuallyCurrent(this);
 }
-
-#if BUILDFLAG(IS_APPLE)
-void GLContextVirtual::AddMetalSharedEventsForBackpressure(
-    std::vector<std::unique_ptr<BackpressureMetalSharedEvent>> events) {
-  shared_context_->AddMetalSharedEventsForBackpressure(std::move(events));
-}
-
-uint64_t GLContextVirtual::BackpressureFenceCreate() {
-  return shared_context_->BackpressureFenceCreate();
-}
-
-void GLContextVirtual::BackpressureFenceWait(uint64_t fence) {
-  shared_context_->BackpressureFenceWait(fence);
-}
-#endif
 
 #if BUILDFLAG(IS_MAC)
 void GLContextVirtual::FlushForDriverCrashWorkaround() {

@@ -22,10 +22,12 @@ EXTRA_PATHS_COMPONENTS = [
     ('build', 'fuchsia', 'test'),
     ('build', 'util'),
     ('testing', ),
+    ('third_party', 'blink', 'tools'),
     ('third_party', 'catapult', 'common', 'py_utils'),
     ('third_party', 'catapult', 'devil'),
     ('third_party', 'catapult', 'telemetry'),
     ('third_party', 'catapult', 'third_party', 'typ'),
+    ('third_party', 'catapult', 'tracing'),
     ('tools', 'perf'),
 ]
 EXTRA_PATHS = [
@@ -35,12 +37,14 @@ EXTRA_PATHS.append(GPU_DIR)
 
 FILES_AND_DIRECTORIES_TO_CHECK = [
     # Directories.
+    'bad_machine_finder',
     'flake_suppressor',
     'gold_inexact_matching',
     'gpu_tests',
     'machine_times',
     'unexpected_passes',
     # Files.
+    'find_bad_machines.py',
     'get_machine_times.py',
     'unexpected_pass_finder.py',
 ]

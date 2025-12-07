@@ -43,12 +43,15 @@ class LayoutSVGEllipse final : public LayoutSVGShape {
   }
 
  private:
-  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+  void StyleDidChange(StyleDifference,
+                      const ComputedStyle* old_style,
+                      const StyleChangeContext&) override;
 
   gfx::RectF UpdateShapeFromElement() override;
   bool ShapeDependentStrokeContains(const HitTestLocation&) override;
   bool ShapeDependentFillContains(const HitTestLocation&,
                                   const WindRule) const override;
+  bool CalculateGeometryDependsOnViewport() const;
   void CalculateRadiiAndCenter();
   bool CanUseStrokeHitTestFastPath() const;
   bool HasContinuousStroke() const;

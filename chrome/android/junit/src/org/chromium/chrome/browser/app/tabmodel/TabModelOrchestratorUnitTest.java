@@ -12,11 +12,13 @@ import static org.mockito.Mockito.when;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -24,34 +26,32 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager.TabModelStartupInfo;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
+import org.chromium.chrome.browser.tabmodel.TabPersistencePolicy;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStoreObserver;
 
 /** Tests for {@link TabModelOrchestrator} */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabModelOrchestratorUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private ObservableSupplierImpl<TabModelStartupInfo> mMockTabModelStartupInfoSupplier;
     @Mock private TabModel mMockTabModel;
     @Mock private TabModelSelectorBase mMockTabModelSelectorBase;
     @Mock private TabPersistentStore mMockTabPersistentStore;
+    @Mock private TabPersistencePolicy mTabPersistencePolicy;
 
     private TabModelOrchestrator mTabModelOrchestrator;
     private ArgumentCaptor<TabPersistentStoreObserver> mObserverCaptor;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         when(mMockTabModelSelectorBase.getModel(anyBoolean())).thenReturn(mMockTabModel);
 
-        mTabModelOrchestrator =
-                new TabModelOrchestrator() {
-                    @Override
-                    public TabModelSelectorBase getTabModelSelector() {
-                        return mMockTabModelSelectorBase;
-                    }
-                };
-        mTabModelOrchestrator.setTabPersistentStoreForTesting(mMockTabPersistentStore);
+        mTabModelOrchestrator = new TabModelOrchestrator();
+        mTabModelOrchestrator.initForTesting(
+                mMockTabModelSelectorBase, mMockTabPersistentStore, mTabPersistencePolicy);
+        when(mTabPersistencePolicy.getMetadataFileName()).thenReturn("metadata");
 
         mObserverCaptor = ArgumentCaptor.forClass(TabPersistentStoreObserver.class);
         mTabModelOrchestrator.wireSelectorAndStore();

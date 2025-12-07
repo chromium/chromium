@@ -1,0 +1,12 @@
+include_rules = [
+  "+chromeos/ash/components/file_manager",
+  "+content/public/browser",
+
+  # TODO(crbug.com/402346171): Components should not have dependencies to //ash.
+  # Resolve it.
+  "+ash/webui/mall/app_id.h",
+
+  # TODO(crbug.com/402346171): Components should not have dependencies to
+  # //chromeos/ash/experiences. Resolve it.
+  "+chromeos/ash/experiences/arc/app",
+]

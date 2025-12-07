@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
@@ -145,6 +146,11 @@ void BackgroundFetchDelegateImpl::ResumeDownload(
     const offline_items_collection::ContentId& id) {
   UpdateOfflineItem(id.id);
   BackgroundFetchDelegateBase::ResumeDownload(id.id);
+}
+
+void BackgroundFetchDelegateImpl::ValidateDangerousDownload(
+    const offline_items_collection::ContentId& id) {
+  NOTREACHED();
 }
 
 void BackgroundFetchDelegateImpl::GetItemById(
@@ -320,8 +326,7 @@ void BackgroundFetchDelegateImpl::UpdateOfflineItem(const std::string& job_id) {
       break;
     case JobState::kJobComplete:
       // There shouldn't be any updates at this point.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     default:
       offline_item->state = OfflineItemState::IN_PROGRESS;
   }

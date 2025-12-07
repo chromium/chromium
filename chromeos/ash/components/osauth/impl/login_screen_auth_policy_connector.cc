@@ -43,6 +43,20 @@ std::optional<bool> LoginScreenAuthPolicyConnector::GetRecoveryMandatoryState(
   return std::nullopt;
 }
 
+std::optional<LocalAuthFactorsComplexity>
+LoginScreenAuthPolicyConnector::GetLocalAuthFactorsComplexity(
+    const AccountId& account) {
+  NOTIMPLEMENTED();
+  return std::nullopt;
+}
+
+std::optional<AuthFactorsSet>
+LoginScreenAuthPolicyConnector::AllowedLocalAuthFactors(
+    const AccountId& account) {
+  NOTIMPLEMENTED();
+  return {};
+}
+
 bool LoginScreenAuthPolicyConnector::IsAuthFactorManaged(
     const AccountId& account,
     AshAuthFactor auth_factor) {

@@ -4,6 +4,8 @@
 
 #include "ui/accessibility/mojom/ax_tree_id_mojom_traits.h"
 
+#include "base/notreached.h"
+
 namespace mojo {
 
 // static
@@ -21,8 +23,7 @@ bool UnionTraits<ax::mojom::AXTreeIDDataView, ui::AXTreeID>::Read(
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace mojo

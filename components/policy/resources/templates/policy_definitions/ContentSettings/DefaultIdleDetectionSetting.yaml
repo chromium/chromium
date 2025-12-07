@@ -1,0 +1,40 @@
+caption: Default idle detection setting
+desc: |-
+  Allows you to set whether websites are allowed to use the Idle Detection API.
+
+  When this policy is set to 1 - <ph name="ALLOW_IDLE_DETECTION_VALUE_NAME">AllowIdleDetection</ph>, websites can use the API without asking the user for permission.
+
+  When this policy is set to 2 - <ph name="BLOCK_IDLE_DETECTION_VALUE_NAME">BlockIdleDetection</ph>, websites can't use the API, regardless of the user's permission.
+
+  When this policy is set to 3 - <ph name="ASK_IDLE_DETECTION_VALUE_NAME">AskIdleDetection</ph> or not set, websites can't use the API without the user's permission.
+example_value: 1
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Allow sites to detect idle state without asking the user
+  name: AllowIdleDetection
+  value: 1
+- caption: Do not allow any site to detect the user's idle state
+  name: BlockIdleDetection
+  value: 2
+- caption: Ask every time a site wants to detect the user's idle state
+  name: AskIdleDetection
+  value: 3
+label: Idle detection
+owners:
+- pastarmovj@chromium.org
+- zmin@chromium.org
+future_on:
+- chrome.*
+- chrome_os
+- android
+tags:
+- website-sharing
+type: int-enum
+schema:
+  enum:
+  - 1
+  - 2
+  - 3
+  type: integer

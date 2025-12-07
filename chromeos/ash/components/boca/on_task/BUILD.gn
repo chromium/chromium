@@ -2,34 +2,86 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash, "OnTask is only supported in Ash")
+assert(is_chromeos, "OnTask is only supported on ChromeOS")
 
 static_library("on_task") {
   sources = [
+    "notification_constants.cc",
+    "notification_constants.h",
+    "on_task_blocklist.cc",
+    "on_task_blocklist.h",
+    "on_task_extensions_manager.h",
+    "on_task_notification_blocker.cc",
+    "on_task_notification_blocker.h",
+    "on_task_notifications_manager.cc",
+    "on_task_notifications_manager.h",
+    "on_task_prefs.cc",
+    "on_task_prefs.h",
     "on_task_session_manager.cc",
     "on_task_session_manager.h",
     "on_task_system_web_app_manager.h",
   ]
 
   deps = [
-    "//ash/webui/boca_ui",
+    ":activity",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/resources/vector_icons",
+    "//ash/webui/boca_ui:constants",
     "//base",
+    "//chromeos/ash/components/boca",
+    "//chromeos/ash/components/boca:spotlight_notification_constants",
     "//chromeos/ash/components/boca/proto",
+    "//chromeos/strings:strings_grit",
+    "//components/google/core/common",
+    "//components/policy/core/browser",
+    "//components/pref_registry",
+    "//components/sessions",
     "//components/sessions:session_id",
+    "//components/url_matcher",
+    "//content/public/browser",
+    "//ui/message_center",
   ]
+}
+
+static_library("activity") {
+  sources = [
+    "activity/active_tab_tracker.cc",
+    "activity/active_tab_tracker.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/ash/components/boca",
+  ]
+}
+
+static_library("util") {
+  sources = [
+    "util/mock_clock.cc",
+    "util/mock_clock.h",
+  ]
+
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "on_task_session_manager_unittest.cc" ]
+  sources = [
+    "on_task_notification_blocker_unittest.cc",
+    "on_task_notifications_manager_unittest.cc",
+    "on_task_session_manager_unittest.cc",
+  ]
 
   deps = [
+    ":activity",
     ":on_task",
+    "//ash/webui/boca_ui:constants",
     "//base",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/boca/proto",
+    "//chromeos/strings:strings_grit",
     "//components/sessions:session_id",
   ]
 }

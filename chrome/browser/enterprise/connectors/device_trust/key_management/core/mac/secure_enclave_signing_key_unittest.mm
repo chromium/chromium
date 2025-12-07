@@ -175,9 +175,9 @@ TEST_F(SecureEnclaveSigningKeyTest, SignSlowly) {
         output.assign(test_data.begin(), test_data.end());
         return true;
       });
-  EXPECT_EQ(
-      std::vector<uint8_t>(test_data.begin(), test_data.end()),
-      key_->SignSlowly(base::as_bytes(base::make_span("data to be sign"))));
+  EXPECT_EQ(std::vector<uint8_t>(test_data.begin(), test_data.end()),
+            key_->SignSlowly(
+                base::byte_span_with_nul_from_cstring("data to be sign")));
 }
 
 }  // namespace enterprise_connectors

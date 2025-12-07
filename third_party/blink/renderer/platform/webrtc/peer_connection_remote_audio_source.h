@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
@@ -20,6 +21,8 @@ class AudioBus;
 }
 
 namespace blink {
+
+PLATFORM_EXPORT BASE_DECLARE_FEATURE(kPropagateEnabledEventForWebRtcAudioTrack);
 
 // PeerConnectionRemoteAudioTrack is a WebRTC specific implementation of an
 // audio track whose data is sourced from a PeerConnection.

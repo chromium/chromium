@@ -5,9 +5,10 @@
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message.h"
 
 #include <utility>
+
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "third_party/blink/public/mojom/blob/blob.mojom-blink.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/renderer/core/frame/user_activation.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
@@ -54,7 +55,7 @@ BlinkTransferableMessage BlinkTransferableMessage::FromTransferableMessage(
   }
   result.delegated_capability = message.delegated_capability;
 
-  result.parent_task_id = message.parent_task_id;
+  result.task_state_id = message.task_state_id;
 
   if (!message.array_buffer_contents_array.empty()) {
     SerializedScriptValue::ArrayBufferContentsArray array_buffer_contents_array;
@@ -68,13 +69,14 @@ BlinkTransferableMessage BlinkTransferableMessage::FromTransferableMessage(
       if (item->is_resizable_by_user_javascript) {
         max_byte_length = base::checked_cast<size_t>(item->max_byte_length);
       }
-      ArrayBufferContents contents(big_buffer.size(), max_byte_length, 1,
-                                   ArrayBufferContents::kNotShared,
-                                   ArrayBufferContents::kDontInitialize);
+      ArrayBufferContents contents(
+          big_buffer.size(), max_byte_length, 1,
+          ArrayBufferContents::kNotShared, ArrayBufferContents::kDontInitialize,
+          ArrayBufferContents::AllocationFailureBehavior::kCrash);
       // Check if we allocated the backing store of the ArrayBufferContents
       // correctly.
       CHECK_EQ(contents.DataLength(), big_buffer.size());
-      memcpy(contents.Data(), big_buffer.data(), big_buffer.size());
+      contents.ByteSpan().copy_from(base::span(big_buffer));
       array_buffer_contents_array.push_back(std::move(contents));
     }
     result.message->SetArrayBufferContentsArray(
@@ -137,9 +139,8 @@ scoped_refptr<StaticBitmapImage> ToStaticBitmapImage(
 
 scoped_refptr<StaticBitmapImage> WrapAcceleratedBitmapImage(
     AcceleratedImageInfo image) {
-  return AcceleratedStaticBitmapImage::CreateFromExternalMailbox(
-      image.mailbox_holder, image.usage, image.image_info,
-      image.is_origin_top_left, image.supports_display_compositing,
-      image.is_overlay_candidate, std::move(image.release_callback));
+  return AcceleratedStaticBitmapImage::CreateFromExternalSharedImage(
+      std::move(image.shared_image), image.sync_token, image.alpha_type,
+      std::move(image.release_callback));
 }
 }  // namespace blink

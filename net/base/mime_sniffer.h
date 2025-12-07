@@ -14,6 +14,19 @@
 
 class GURL;
 
+// -----------------------------------------------------------------------------
+// When the MIME type of a resource is sniffed, it will potentially be used in
+// a manner other than that the server-provided Content-Type indicated it should
+// be used in. This may have security implications. As such, MIME sniffing
+// should generally not be expanded to cover more types of files, to sniff more
+// files, or to more aggressively sniff already supported MIME types.
+//
+// Please do not increased the capabilities of the MIME sniffer. MIME sniffing
+// only continues to be supported because of the many sites that depend on the
+// existing behavior, not because it's a good idea. Most sites are working with
+// the MIME sniffer as-is, so there's no need to expand upon it.
+// -----------------------------------------------------------------------------
+
 namespace net {
 
 // The maximum number of bytes used by any internal mime sniffing routine. May

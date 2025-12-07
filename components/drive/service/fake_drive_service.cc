@@ -7,17 +7,17 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/hash/md5.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/ptr_util.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
@@ -31,6 +31,7 @@
 #include "base/values.h"
 #include "components/drive/drive_api_util.h"
 #include "components/drive/file_system_core_util.h"
+#include "crypto/obsolete/md5.h"
 #include "google_apis/common/test_util.h"
 #include "google_apis/drive/drive_api_parser.h"
 #include "google_apis/drive/drive_common_callbacks.h"
@@ -110,6 +111,11 @@ bool EntryMatchWithQuery(const ChangeResource& entry,
       return false;
   }
   return true;
+}
+
+std::string GetMd5Checksum(std::string_view input) {
+  return base::HexEncodeLower(
+      crypto::obsolete::Md5::HashForTesting(base::as_byte_span(input)));
 }
 
 void ScheduleUploadRangeCallback(UploadRangeCallback callback,
@@ -196,8 +202,7 @@ std::string GetTeamDriveId(const google_apis::ChangeResource& change_resource) {
       team_drive_id = change_resource.team_drive_id();
       break;
     case ChangeResource::UNKNOWN:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return team_drive_id;
 }
@@ -519,8 +524,8 @@ CancelCallbackOnce FakeDriveService::GetRemainingChangeList(
   // The URL should be the one filled in GetChangeListInternal of the
   // previous method invocation, so it should start with "http://localhost/?".
   // See also GetChangeListInternal.
-  DCHECK_EQ(next_link.host(), "localhost");
-  DCHECK_EQ(next_link.path(), "/");
+  DCHECK_EQ(next_link.GetHost(), "localhost");
+  DCHECK_EQ(next_link.GetPath(), "/");
 
   int64_t start_changestamp = 0;
   std::string search_query;
@@ -529,7 +534,7 @@ CancelCallbackOnce FakeDriveService::GetRemainingChangeList(
   int start_offset = 0;
   int max_results = default_max_results_;
   base::StringPairs parameters;
-  if (base::SplitStringIntoKeyValuePairs(next_link.query(), '=', '&',
+  if (base::SplitStringIntoKeyValuePairs(next_link.GetQuery(), '=', '&',
                                          &parameters)) {
     for (const auto& param : parameters) {
       if (param.first == "changestamp") {
@@ -649,7 +654,7 @@ CancelCallbackOnce FakeDriveService::GetStartPageToken(
     start_page_token = std::make_unique<StartPageToken>(*start_page_token_);
   } else {
     auto it = team_drive_start_page_tokens_.find(team_drive_id);
-    CHECK(it != team_drive_start_page_tokens_.end(), base::NotFatalUntil::M130);
+    CHECK(it != team_drive_start_page_tokens_.end());
     start_page_token = std::make_unique<StartPageToken>(*(it->second));
   }
   ++start_page_token_load_count_;
@@ -1265,7 +1270,7 @@ CancelCallbackOnce FakeDriveService::ResumeUpload(
     return CancelCallbackOnce();
   }
 
-  file->set_md5_checksum(base::MD5String(content_data));
+  file->set_md5_checksum(GetMd5Checksum(content_data));
   entry->content_data = content_data;
   file->set_file_size(end_position);
   AddNewChangestamp(change, file->team_drive_id());
@@ -1281,6 +1286,7 @@ CancelCallbackOnce FakeDriveService::ResumeUpload(
 
 CancelCallbackOnce FakeDriveService::MultipartUploadNewFile(
     const std::string& content_type,
+    std::optional<std::string_view> converted_mime_type,
     int64_t content_length,
     const std::string& parent_resource_id,
     const std::string& title,
@@ -1288,15 +1294,17 @@ CancelCallbackOnce FakeDriveService::MultipartUploadNewFile(
     const UploadNewFileOptions& options,
     FileResourceCallback callback,
     ProgressCallback progress_callback) {
+  std::string destination_mime_type(converted_mime_type.value_or(content_type));
+
   CallResumeUpload* const call_resume_upload = new CallResumeUpload();
   call_resume_upload->service = weak_ptr_factory_.GetWeakPtr();
-  call_resume_upload->content_type = content_type;
+  call_resume_upload->content_type = destination_mime_type;
   call_resume_upload->content_length = content_length;
   call_resume_upload->local_file_path = local_file_path;
   call_resume_upload->callback = std::move(callback);
   call_resume_upload->progress_callback = progress_callback;
   InitiateUploadNewFile(
-      content_type, content_length, parent_resource_id, title, options,
+      destination_mime_type, content_length, parent_resource_id, title, options,
       base::BindOnce(&CallResumeUpload::Run, base::Owned(call_resume_upload)));
   return CancelCallbackOnce();
 }
@@ -1650,7 +1658,7 @@ const FakeDriveService::EntryInfo* FakeDriveService::AddNewEntry(
       !util::IsKnownHostedDocumentMimeType(content_type)) {
     new_entry->content_data = content_data;
     new_file->set_file_size(content_data.size());
-    new_file->set_md5_checksum(base::MD5String(content_data));
+    new_file->set_md5_checksum(GetMd5Checksum(content_data));
   }
 
   if (shared_with_me) {
@@ -1788,8 +1796,7 @@ void FakeDriveService::GetChangeListInternal(
         }
         break;
       case ChangeResource::UNKNOWN:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
 
     // If |start_changestamp| is set, exclude the entry if the
@@ -1897,16 +1904,14 @@ CancelCallbackOnce FakeDriveService::AddPermission(
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(callback);
 
-  NOTREACHED_IN_MIGRATION();
-  return CancelCallbackOnce();
+  NOTREACHED();
 }
 
 std::unique_ptr<BatchRequestConfiguratorInterface>
 FakeDriveService::StartBatchRequest() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void FakeDriveService::NotifyObservers() {

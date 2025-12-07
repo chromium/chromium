@@ -14,6 +14,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -28,6 +29,9 @@ DeskTextfield::DeskTextfield(Type type) : SystemTextfield(type) {
   views::Builder<DeskTextfield>(this).SetCursorEnabled(true).BuildChildren();
 
   GetRenderText()->SetElideBehavior(gfx::ELIDE_TAIL);
+  text_changed_subscription_ = AddTextChangedCallback(base::BindRepeating(
+      &DeskTextfield::UpdateTooltipText, base::Unretained(this)));
+  UpdateTooltipText();
 }
 
 DeskTextfield::~DeskTextfield() = default;
@@ -46,10 +50,9 @@ void DeskTextfield::CommitChanges(views::Widget* widget) {
 
 gfx::Size DeskTextfield::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  const std::u16string& text = GetText();
   int width = 0;
   int height = 0;
-  gfx::Canvas::SizeStringInt(text, GetFontList(), &width, &height, 0,
+  gfx::Canvas::SizeStringInt(GetText(), GetFontList(), &width, &height, 0,
                              gfx::Canvas::NO_ELLIPSIS);
   gfx::Size size{width + GetCaretBounds().width(), height};
   const auto insets = GetInsets();
@@ -63,15 +66,6 @@ bool DeskTextfield::SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) {
   // available view. This is done in either in `OverviewSession::OnKeyEvent()`
   // or `DeskBarController::OnKeyEvent()`.
   return event.key_code() == ui::VKEY_TAB;
-}
-
-std::u16string DeskTextfield::GetTooltipText(const gfx::Point& p) const {
-  return GetPreferredSize().width() > width() ? GetText() : std::u16string();
-}
-
-void DeskTextfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  Textfield::GetAccessibleNodeData(node_data);
-  node_data->SetNameChecked(GetViewAccessibility().GetCachedName());
 }
 
 ui::Cursor DeskTextfield::GetCursor(const ui::MouseEvent& event) {
@@ -111,6 +105,24 @@ void DeskTextfield::OnDragEntered(const ui::DropTargetEvent& event) {
 void DeskTextfield::OnDragExited() {
   GetRenderText()->SetElideBehavior(gfx::ELIDE_TAIL);
   views::Textfield::OnDragExited();
+}
+
+void DeskTextfield::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  SystemTextfield::OnBoundsChanged(previous_bounds);
+  UpdateTooltipText();
+}
+
+void DeskTextfield::PreferredSizeChanged() {
+  SystemTextfield::PreferredSizeChanged();
+  UpdateTooltipText();
+}
+
+void DeskTextfield::UpdateTooltipText() {
+  if (GetPreferredSize().width() > width()) {
+    SetTooltipText(std::u16string(GetText()));
+  } else {
+    SetTooltipText(std::u16string());
+  }
 }
 
 BEGIN_METADATA(DeskTextfield)

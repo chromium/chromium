@@ -24,8 +24,7 @@ class SyncableService;
 // not the UI thread, including the construction and destruction of objects
 // (most notably SyncableServiceBasedBridge) in the model thread as specified
 // in the constructor.
-class NonUiSyncableServiceBasedDataTypeController
-    : public DataTypeController {
+class NonUiSyncableServiceBasedDataTypeController : public DataTypeController {
  public:
   using SyncableServiceProvider =
       base::OnceCallback<base::WeakPtr<syncer::SyncableService>()>;

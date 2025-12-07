@@ -30,14 +30,14 @@ class HistoryBackendNotifier {
   virtual void NotifyFaviconsChanged(const std::set<GURL>& page_urls,
                                      const GURL& icon_url) = 0;
 
-  // Sends notification that a visit to `url_row` occurred with the details
-  // (transition type, visit time, etc) given in `visit_row` and the associated
-  // `local_navigation_id` from the underlying `content::NavigationHandle`,
-  // which will be non-null only for navigations on the local device.
-  // It is valid to call NotifyURLVisited() with an empty `local_navigation_id`.
-  virtual void NotifyURLVisited(const URLRow& url_row,
-                                const VisitRow& visit_row,
-                                std::optional<int64_t> local_navigation_id) = 0;
+  // Sends notification that a visit to `url_row` in `visited_url_info` occurred
+  // with the details (transition type, visit time, etc) given in `visit_row`,
+  // the associated `response_code_category` that indicates if the visit had a
+  // 404 response or not, and the associated `local_navigation_id` from the
+  // underlying `content::NavigationHandle`, which will be non-null only for
+  // navigations on the local device. It is valid to call NotifyURLVisited()
+  // with an empty `local_navigation_id` in `visited_url_info`.
+  virtual void NotifyURLVisited(VisitedURLInfo visited_url_info) = 0;
 
   // Sends notification that `changed_urls` have been changed or added.
   virtual void NotifyURLsModified(const URLRows& changed_urls,

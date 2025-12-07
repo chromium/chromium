@@ -85,7 +85,7 @@ class DeskModel {
         GetAllEntriesStatus status,
         std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>>
             entries);
-    GetAllEntriesResult(GetAllEntriesResult& other);
+    GetAllEntriesResult(const GetAllEntriesResult& other);
     ~GetAllEntriesResult();
 
     GetAllEntriesStatus status;
@@ -166,6 +166,9 @@ class DeskModel {
   // Gets the number of desk templates currently saved.
   virtual size_t GetDeskTemplateEntryCount() const = 0;
 
+  // Gets the number of coral saved groups currently saved.
+  virtual size_t GetCoralEntryCount() const = 0;
+
   // Gets the maximum number of save and recall desks entry this storage backend
   // could hold.
   virtual size_t GetMaxSaveAndRecallDeskEntryCount() const = 0;
@@ -173,6 +176,10 @@ class DeskModel {
   // Gets the maximum number of desk template entry this storage backend
   // could hold.
   virtual size_t GetMaxDeskTemplateEntryCount() const = 0;
+
+  // Gets the maximum number of coral saved groups this storage backend could
+  // hold.
+  virtual size_t GetMaxCoralEntryCount() const = 0;
 
   // Returns a vector of desk template UUIDs.
   // This method assumes each implementation has a cache and can return the

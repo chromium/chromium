@@ -1,0 +1,28 @@
+include_rules = [
+  "+ios/chrome/browser/autocomplete/model",
+  "+ios/chrome/browser/bookmarks/model",
+  "+ios/chrome/browser/default_browser/model",
+  "+ios/chrome/browser/download/model/external_app_util.h",
+  "+ios/chrome/browser/favicon/model",
+  "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
+  "+ios/chrome/browser/history/model/top_sites_factory.h",
+  "+ios/chrome/browser/https_upgrades/model/https_upgrade_service_factory.h",
+  "+ios/chrome/browser/intents/model/intents_donation_helper.h",
+  "+ios/chrome/browser/location_bar/ui_bundled",
+  "+ios/chrome/browser/net/model",
+  "+ios/chrome/browser/ntp/model",
+  "+ios/chrome/browser/ntp/shared/metrics/home_metrics.h",
+  "+ios/chrome/browser/orchestrator/ui_bundled",
+  "+ios/chrome/browser/policy/model/policy_util.h",
+  "+ios/chrome/browser/prerender/model",
+  "+ios/chrome/browser/search_engines/model",
+  "+ios/chrome/browser/toolbar/ui_bundled/public",
+  "+ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h",
+  "+ios/chrome/browser/url_loading/model",
+]
+
+specific_include_rules = {
+  "^omnibox_coordinator.mm": [
+    "+ios/chrome/browser/bubble/ui_bundled/bubble_presenter.h",
+  ],
+}

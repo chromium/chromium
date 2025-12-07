@@ -35,7 +35,7 @@ namespace partition_alloc::internal::base::debug {
 //   strncpy(name_copy, p->name, sizeof(name_copy)-1);
 //   name_copy[sizeof(name_copy)-1] = '\0';;
 //   base::debug::alias(name_copy);
-//   CHECK(false);
+//   NOTREACHED();
 //
 // Case #2: Prevent a tail call into a function. This is useful to make sure the
 // function containing the call to base::debug::Alias() will be present in the

@@ -33,57 +33,6 @@ class SwapManagementClientImpl : public SwapManagementClient {
         dbus::ObjectPath(swap_management::kSwapManagementServicePath));
   }
 
-  void SwapZramEnableWriteback(
-      uint32_t size,
-      chromeos::VoidDBusMethodCallback callback) override {
-    dbus::MethodCall method_call(swap_management::kSwapManagementInterface,
-                                 swap_management::kSwapZramEnableWriteback);
-    dbus::MessageWriter writer(&method_call);
-    writer.AppendUint32(size);
-    swap_management_proxy_->CallMethod(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&SwapManagementClientImpl::OnResponse,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  }
-
-  void SwapZramSetWritebackLimit(
-      uint32_t limit,
-      chromeos::VoidDBusMethodCallback callback) override {
-    dbus::MethodCall method_call(swap_management::kSwapManagementInterface,
-                                 swap_management::kSwapZramSetWritebackLimit);
-    dbus::MessageWriter writer(&method_call);
-    writer.AppendUint32(limit);
-    swap_management_proxy_->CallMethod(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&SwapManagementClientImpl::OnResponse,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  }
-
-  void SwapZramMarkIdle(uint32_t age,
-                        chromeos::VoidDBusMethodCallback callback) override {
-    dbus::MethodCall method_call(swap_management::kSwapManagementInterface,
-                                 swap_management::kSwapZramMarkIdle);
-    dbus::MessageWriter writer(&method_call);
-    writer.AppendUint32(age);
-    swap_management_proxy_->CallMethod(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&SwapManagementClientImpl::OnResponse,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  }
-
-  void InitiateSwapZramWriteback(
-      swap_management::ZramWritebackMode mode,
-      chromeos::VoidDBusMethodCallback callback) override {
-    dbus::MethodCall method_call(swap_management::kSwapManagementInterface,
-                                 swap_management::kSwapZramWriteback);
-    dbus::MessageWriter writer(&method_call);
-    writer.AppendUint32(mode);
-    swap_management_proxy_->CallMethod(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&SwapManagementClientImpl::OnResponse,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  }
-
   void MGLRUSetEnable(uint8_t value,
                       chromeos::VoidDBusMethodCallback callback) override {
     dbus::MethodCall method_call(swap_management::kSwapManagementInterface,

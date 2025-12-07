@@ -1,0 +1,23 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+
+test(() => assert_selection(
+  [
+    `<div contenteditable><table style="display:table-row;">
+    <tbody><tr><td>
+    <textarea></textarea>^</td></tr></tbody>
+    </table>|
+    </div>`,
+  ],
+  'insertText',
+  [
+    `<div contenteditable><table style="display:table-row;">
+    <tbody><tr><td>
+    <textarea></textarea>|</td></tr></tbody></table>
+    </div>`,
+  ]),
+  'InsertText should not crash.');
+</script>

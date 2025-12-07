@@ -3,7 +3,7 @@
 <script src="../../resources/testharnessreport.js"></script>
 <body>
 <script>
-function testDataset(getTestElement) {
+function testDataset(testPrefix, getTestElement) {
 	function testGet(attr, expected)
 	{
 	    var e = getTestElement();
@@ -30,7 +30,7 @@ function testDataset(getTestElement) {
 		assert_true(testGet('data-r-7', 'r-7'));
 		assert_true(testGet('data-r-7-k', 'r-7K'));
 		assert_equals(document.body.dataset.nonExisting, undefined);
-	},'This tests Get function');
+  },`${testPrefix}: This tests Get function`);
 
 	test (function() {
 		var e = getTestElement();
@@ -40,7 +40,7 @@ function testDataset(getTestElement) {
 			assert_true(e.dataset['foo'] == "value");
 		else
 			assert_true(e.dataset['Foo'] == "value");
-	}, 'This tests case sensitive scenario');
+  }, `${testPrefix}: This tests case sensitive scenario`);
 
 
 	function testIsUndefined(attr, prop)
@@ -53,7 +53,7 @@ function testDataset(getTestElement) {
 	test (function() {
 		assert_true(testIsUndefined('data-022', '22'));
 		assert_true(testIsUndefined('data-22', '022'));
-	},'Tests Undefined');
+  },`${testPrefix}: Tests Undefined`);
 
 
 	function matchesNothingInDataset(attr)
@@ -69,7 +69,7 @@ function testDataset(getTestElement) {
 
 	test (function() {
 		assert_true(matchesNothingInDataset('dataFoo'));
-	},'Tests matchesNothingInDataset');
+  },`${testPrefix}: Tests matchesNothingInDataset`);
 
 
 	function testSet(prop, expected)
@@ -96,8 +96,8 @@ function testDataset(getTestElement) {
 		assert_true(testSet('A--S', 'data--a---s'));
 		assert_throws_dom("SyntaxError", function() { testSet('-foo', 'dummy'); }, '"SyntaxError: Failed to set the \'-foo\' property on \'DOMStringMap\': \'-foo\' is not a valid property name."');
 		assert_throws_dom("InvalidCharacterError", function() { testSet('foo\x20', 'dummy'); }, '"InvalidCharacterError: Failed to set the \'foo\x20\' property on \'DOMStringMap\': \'data-foo\x20\' is not a valid attribute name."');
-		assert_throws_dom("InvalidCharacterError", function() { testSet('foo\uF900', 'dummy'); }, '"InvalidCharacterError: Failed to set the \'foo\uF900\' property on \'DOMStringMap\': \'data-foo\uF900\' is not a valid attribute name."');
-	},'Tests Set');
+    assert_true(testSet('foo\uF900', 'data-foo\uF900'));
+  },`${testPrefix}: Tests Set`);
 
 
 	function testIsNull(prop, attr)
@@ -110,7 +110,7 @@ function testDataset(getTestElement) {
 	test (function() {
 		assert_true(testIsNull('0123', 'data-123'));
 		assert_true(testIsNull('123', 'data-0123'));
-	},'Tests Is Null');
+  },`${testPrefix}: Tests Is Null`);
 
 
 	function testDelete(attr, prop)
@@ -138,7 +138,7 @@ function testDataset(getTestElement) {
 		assert_true(testDelete('data--r-2r', 'R-2r'));
 		assert_true(testDelete('data--r-2-----r', 'R-2----R'));
 		assert_false(testDelete('dummy', '-foo'));
-	},'Tests Delete');
+  },`${testPrefix}: Tests Delete`);
 
 
 
@@ -156,7 +156,7 @@ function testDataset(getTestElement) {
 	test (function() {
 		assert_throws_dom("SyntaxError", function() { testNativeDelete('-r-2-', false); }, '"SyntaxError: Failed to set a named property on \'DOMStringMap\': \'-r-2-\' is not a valid property name."');
 		assert_true(testNativeDelete('foo', true));
-	},'Tests Native Delete');
+  },`${testPrefix}: Tests Native Delete`);
 
 
 	function testForIn(array)
@@ -183,13 +183,13 @@ function testDataset(getTestElement) {
 		assert_equals(testForIn(['data-foo', 'data-oric1', 'data-bar']), 3);
 		assert_equals(testForIn(['data-foo', 'data-oric-1', 'data-bar']), 3);
 		assert_equals(testForIn(['data-foo', 'data-oric-1x', 'data-bar']), 3);
-	},'Tests For In');
+  },`${testPrefix}: Tests For In`);
 
 	test (function() {
 		var e = getTestElement();
 		e.dataset.foo = null;
 		assert_equals(e.dataset.foo, 'null');
-	},'Set null');
+  },`${testPrefix}: Set null`);
 }
 
 function testDatasetPropertyOverride(getTestElement) {
@@ -270,8 +270,8 @@ function testDatasetPropertyOverride(getTestElement) {
 }
 
 var svgNS = "http://www.w3.org/2000/svg";
-testDataset(function() { return document.createElement("div"); });
-testDataset(function() { return document.createElementNS(svgNS, "circle"); });
+testDataset('div', function() { return document.createElement("div"); });
+testDataset('svg:circle', function() { return document.createElementNS(svgNS, "circle"); });
 testDatasetPropertyOverride(function() { return document.createElement("div"); });
 testDatasetPropertyOverride(function() { return document.createElementNS(svgNS, "circle"); });
 </script>

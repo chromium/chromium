@@ -20,7 +20,7 @@ items:
   value: 2
 owners:
 - michaelcheco@google.com
-- cros-peripherals@google.com
+- cros-device-enablement@google.com
 schema:
   # These values correspond to the `SixPackShortcutModifier` mojom enum.
   # "1" is omitted since there is no alt-based shortcut for the "Insert" key

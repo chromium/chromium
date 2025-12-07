@@ -4,7 +4,8 @@
 
 #include "gpu/vulkan/vulkan_image.h"
 
-#include "base/android/android_hardware_buffer_compat.h"
+#include <android/hardware_buffer.h>
+
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -15,7 +16,6 @@ namespace gpu {
 
 namespace {
 BASE_FEATURE(kLimitVkImageUsageToFormatFeaturesForAHB,
-             "LimitVkImageUsageToFormatFeaturesForAHB",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsSinglePlaneRGBVulkanAHBFormat(VkFormat format) {
@@ -51,29 +51,6 @@ VkImageUsageFlags AHBUsageToImageUsage(uint64_t ahb_usage) {
   // All AHB support these usages when imported into vulkan.
   usage_flags |=
       VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-  return usage_flags;
-}
-
-VkImageUsageFlags VkFormatFeaturesToImageUsage(VkFormatFeatureFlags features) {
-  VkImageUsageFlags usage_flags = 0;
-
-  if (features & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT) {
-    usage_flags |= VK_IMAGE_USAGE_SAMPLED_BIT;
-  }
-
-  if (features & VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT) {
-    usage_flags |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
-                   VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
-  }
-
-  if (features & VK_FORMAT_FEATURE_TRANSFER_SRC_BIT) {
-    usage_flags |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
-  }
-
-  if (features & VK_FORMAT_FEATURE_TRANSFER_DST_BIT) {
-    usage_flags |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-  }
-
   return usage_flags;
 }
 
@@ -151,8 +128,7 @@ bool VulkanImage::InitializeFromGpuMemoryBufferHandle(
 
   // Get the AHB description.
   AHardwareBuffer_Desc ahb_desc = {};
-  base::AndroidHardwareBufferCompat::GetInstance().Describe(ahb_handle.get(),
-                                                            &ahb_desc);
+  AHardwareBuffer_describe(ahb_handle.get(), &ahb_desc);
 
   // Get Vulkan Image usage flag equivalence of AHB usage.
   VkImageUsageFlags usage_flags = AHBUsageToImageUsage(ahb_desc.usage);
@@ -167,8 +143,13 @@ bool VulkanImage::InitializeFromGpuMemoryBufferHandle(
   // format features.
   if (should_use_external_format &&
       base::FeatureList::IsEnabled(kLimitVkImageUsageToFormatFeaturesForAHB)) {
-    usage_flags &=
-        VkFormatFeaturesToImageUsage(ahb_format_props.formatFeatures);
+    // VUID-VkImageCreateInfo-pNext-02397 was requiring only
+    // VK_IMAGE_USAGE_SAMPLED_BIT to be set. With
+    // VK_ANDROID_external_format_resolve condition got relaxed to support
+    // input/color attachments, but it requires `externalFormatResolve` feature
+    // to be enabled. We never use image as attachment, so we limit it to
+    // VK_IMAGE_USAGE_SAMPLED_BIT only.
+    usage_flags &= VK_IMAGE_USAGE_SAMPLED_BIT;
   }
 
   VkImageCreateFlags create_flags = 0;

@@ -3,7 +3,7 @@
  * found in the LICENSE file. */
 
 /* #css_wrapper_metadata_start
- * #type=style
+ * #type=style-lit
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
  * #import=./signin_vars.css.js
  * #css_wrapper_metadata_end */
@@ -63,6 +63,7 @@
   width: var(--badge-width);
 }
 
+.tangible-sync-style .work-badge > cr-icon,
 .tangible-sync-style .work-badge > iron-icon {
   --work-icon-size: 14px;
   background-color: var(--signin-work-badge-background-color);

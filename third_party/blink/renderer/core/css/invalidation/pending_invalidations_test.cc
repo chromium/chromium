@@ -33,7 +33,7 @@ void PendingInvalidationsTest::SetUp() {
 }
 
 TEST_F(PendingInvalidationsTest, ScheduleOnDocumentNode) {
-  GetDocument().body()->setInnerHTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<div id='d'></div><i id='i'></i><span></span>");
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
@@ -65,7 +65,7 @@ TEST_F(PendingInvalidationsTest, ScheduleOnDocumentNode) {
 }
 
 TEST_F(PendingInvalidationsTest, DescendantInvalidationOnDisplayNone) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       #a { display: none }
       .a .b { color: green }

@@ -63,6 +63,8 @@ source_set("dns") {
     "dns_udp_tracker.h",
     "dns_util.cc",
     "dns_util.h",
+    "filtering_details_url_generator.cc",
+    "filtering_details_url_generator.h",
     "host_cache.cc",
     "host_resolver.cc",
     "host_resolver_cache.cc",
@@ -103,6 +105,8 @@ source_set("dns") {
     "resolve_context.h",
     "serial_worker.cc",
     "serial_worker.h",
+    "stale_host_resolver.cc",
+    "stale_host_resolver.h",
     "system_dns_config_change_notifier.cc",
     "system_dns_config_change_notifier.h",
     "test_dns_config_service.cc",
@@ -137,6 +141,8 @@ source_set("dns") {
     sources += [
       "dns_config_service_android.cc",
       "dns_config_service_android.h",
+      "platform_dns_query_executor_android.cc",
+      "platform_dns_query_executor_android.h",
     ]
   } else if (is_linux) {
     sources += [
@@ -180,6 +186,10 @@ source_set("dns") {
     ":mdns_client",
     "//net:net_public_deps",
   ]
+
+  if (enable_mdns) {
+    public_deps += [ "//third_party/re2" ]
+  }
 
   allow_circular_includes_from = [
     ":dns_client",
@@ -422,12 +432,14 @@ source_set("tests") {
     "dns_transaction_unittest.cc",
     "dns_udp_tracker_unittest.cc",
     "dns_util_unittest.cc",
+    "filtering_details_url_generator_unittest.cc",
     "host_cache_unittest.cc",
     "host_resolver_cache_unittest.cc",
     "host_resolver_internal_result_unittest.cc",
     "host_resolver_manager_ipv6_reachability_override_unittest.cc",
     "host_resolver_manager_unittest.cc",
     "host_resolver_service_endpoint_request_unittest.cc",
+    "host_resolver_system_task_unittest.cc",
     "https_record_rdata_unittest.cc",
     "httpssvc_metrics_unittest.cc",
     "loopback_only_unittest.cc",
@@ -438,6 +450,7 @@ source_set("tests") {
     "record_rdata_unittest.cc",
     "resolve_context_unittest.cc",
     "serial_worker_unittest.cc",
+    "stale_host_resolver_unittest.cc",
     "system_dns_config_change_notifier_unittest.cc",
   ]
 
@@ -446,7 +459,10 @@ source_set("tests") {
   }
 
   if (is_android) {
-    sources += [ "dns_config_service_android_unittest.cc" ]
+    sources += [
+      "dns_config_service_android_unittest.cc",
+      "platform_dns_query_executor_android_unittest.cc",
+    ]
   } else if (is_linux) {
     sources += [ "dns_config_service_linux_unittest.cc" ]
   } else if (is_posix) {
@@ -477,6 +493,10 @@ source_set("tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("test_support") {

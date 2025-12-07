@@ -24,14 +24,6 @@ ConditionValue::ConditionValue(const std::string& value,
 
 ConditionValue::~ConditionValue() = default;
 
-bool ConditionValue::operator==(const ConditionValue& other) const {
-  return value == other.value && match_type == other.match_type;
-}
-
-bool ConditionValue::operator!=(const ConditionValue& other) const {
-  return !(*this == other);
-}
-
 std::string ConditionValue::ToString() const {
   std::stringstream out;
   if (match_type == PatternMatchType::kSuffix) {
@@ -63,10 +55,6 @@ bool Condition::operator==(const Condition& other) const {
   }
 
   return condition_type == other.condition_type;
-}
-
-bool Condition::operator!=(const Condition& other) const {
-  return !(*this == other);
 }
 
 ConditionPtr Condition::Clone() const {
@@ -104,10 +92,6 @@ bool IntentFilter::operator==(const IntentFilter& other) const {
 
   return activity_name == other.activity_name &&
          activity_label == other.activity_label;
-}
-
-bool IntentFilter::operator!=(const IntentFilter& other) const {
-  return !(*this == other);
 }
 
 IntentFilterPtr IntentFilter::Clone() const {
@@ -273,6 +257,16 @@ bool IsEqual(const IntentFilters& source, const IntentFilters& target) {
     }
   }
   return true;
+}
+
+bool IsEqual(const std::optional<IntentFilters>& source,
+             const std::optional<IntentFilters>& target) {
+  bool source_empty = !source || source->empty();
+  bool target_empty = !target || target->empty();
+  if (!source_empty && !target_empty) {
+    return IsEqual(*source, *target);
+  }
+  return source_empty == target_empty;
 }
 
 bool Contains(const IntentFilters& intent_filters,

@@ -18,7 +18,7 @@ namespace web {
 NSString* const kNSErrorPeerCertificateChainKey =
     @"NSErrorPeerCertificateChainKey";
 NSString* const kNSErrorFailingURLKey = @"NSErrorFailingURLKey";
-}
+}  // namespace web
 
 namespace {
 
@@ -38,8 +38,7 @@ net::CertStatus GetCertStatusFromNSErrorCode(NSInteger code) {
     case NSURLErrorServerCertificateNotYetValid:
       return net::CERT_STATUS_DATE_INVALID;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -47,8 +46,9 @@ net::CertStatus GetCertStatusFromNSErrorCode(NSInteger code) {
 namespace web {
 
 scoped_refptr<net::X509Certificate> CreateCertFromChain(NSArray* certs) {
-  if (certs.count == 0)
+  if (certs.count == 0) {
     return nullptr;
+  }
   std::vector<base::apple::ScopedCFTypeRef<SecCertificateRef>> intermediates;
   for (NSUInteger i = 1; i < certs.count; i++) {
     base::apple::ScopedCFTypeRef<SecCertificateRef> cert(
@@ -62,8 +62,9 @@ scoped_refptr<net::X509Certificate> CreateCertFromChain(NSArray* certs) {
 }
 
 scoped_refptr<net::X509Certificate> CreateCertFromTrust(SecTrustRef trust) {
-  if (!trust)
+  if (!trust) {
     return nullptr;
+  }
 
   CFIndex cert_count = SecTrustGetCertificateCount(trust);
   if (cert_count == 0) {
@@ -93,8 +94,9 @@ base::apple::ScopedCFTypeRef<SecTrustRef> CreateServerTrustFromChain(
     NSArray* certs,
     NSString* host) {
   base::apple::ScopedCFTypeRef<SecTrustRef> scoped_result;
-  if (certs.count == 0)
+  if (certs.count == 0) {
     return scoped_result;
+  }
 
   base::apple::ScopedCFTypeRef<SecPolicyRef> policy(
       SecPolicyCreateSSL(TRUE, static_cast<CFStringRef>(host)));
@@ -157,6 +159,14 @@ SecurityStyle GetSecurityStyleFromTrustResult(SecTrustResultType result) {
     case kSecTrustResultFatalTrustFailure:
     case kSecTrustResultOtherError:
       return SECURITY_STYLE_AUTHENTICATION_BROKEN;
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    // "This return value is no longer used, but may occur in older versions of
+    // macOS."
+    case kSecTrustResultConfirm:
+      NOTREACHED();
+#pragma clang diagnostic pop
   }
 }
 

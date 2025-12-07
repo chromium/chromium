@@ -4,12 +4,12 @@
       "win",
       "linux",
       "mac",
-      "chromeos_lacros",
-      "chromeos_ash"
+      "chromeos"
     ],
     "simple_policy_pref_mapping_test": {
       "pref_name": "lens.policy.lens_overlay_settings",
       "default_value": 0,
+      "default_for_enterprise_users": 0,
       "values_to_test": [
         0,
         1
@@ -17,4 +17,3 @@
     }
   }
 ]
-

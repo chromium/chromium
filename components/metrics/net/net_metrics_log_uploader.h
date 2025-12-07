@@ -6,6 +6,7 @@
 #define COMPONENTS_METRICS_NET_NET_METRICS_LOG_UPLOADER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -73,7 +74,7 @@ class NetMetricsLogUploader : public MetricsLogUploader {
   // the payload.
   void HTTPFallbackAborted();
 
-  void OnURLLoadComplete(std::unique_ptr<std::string> response_body);
+  void OnURLLoadComplete(std::optional<std::string> response_body);
 
   // The URLLoader factory for loads done using the network stack.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

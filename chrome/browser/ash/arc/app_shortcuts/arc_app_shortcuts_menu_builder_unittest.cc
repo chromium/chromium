@@ -16,8 +16,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/display/types/display_constants.h"
+#include "ui/menus/simple_menu_model.h"
 
 namespace arc {
 
@@ -42,14 +42,16 @@ class ArcAppShortcutsMenuBuilderTest : public testing::Test {
   ~ArcAppShortcutsMenuBuilderTest() override = default;
 
   void SetUp() override {
+    arc_app_test_.PreProfileSetUp();
     profile_ = std::make_unique<TestingProfile>();
-    arc_app_test_.SetUp(profile_.get());
+    arc_app_test_.PostProfileSetUp(profile_.get());
     IconDecodeRequest::DisableSafeDecodingForTesting();
   }
 
   void TearDown() override {
-    arc_app_test_.TearDown();
+    arc_app_test_.PreProfileTearDown();
     profile_.reset();
+    arc_app_test_.PostProfileTearDown();
   }
 
   Profile* profile() { return profile_.get(); }

@@ -4,7 +4,7 @@
 
 #include "chromecast/app/android/cast_crash_reporter_client_android.h"
 
-#include "base/android/build_info.h"
+#include "base/android/apk_info.h"
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -18,24 +18,19 @@ namespace chromecast {
 
 CastCrashReporterClientAndroid::CastCrashReporterClientAndroid(
     const std::string& process_type)
-    : process_type_(process_type) {
-}
+    : process_type_(process_type) {}
 
-CastCrashReporterClientAndroid::~CastCrashReporterClientAndroid() {
-}
+CastCrashReporterClientAndroid::~CastCrashReporterClientAndroid() {}
 
-void CastCrashReporterClientAndroid::GetProductNameAndVersion(
-    std::string* product_name,
-    std::string* version,
-    std::string* channel) {
-  *product_name = "media_shell";
-  *version = CAST_BUILD_RELEASE ".";
-  *version += base::android::BuildInfo::GetInstance()->package_version_code();
+void CastCrashReporterClientAndroid::GetProductInfo(ProductInfo* product_info) {
+  product_info->product_name = "media_shell";
+  product_info->version = CAST_BUILD_RELEASE ".";
+  product_info->version += base::android::apk_info::package_version_code();
 #if CAST_IS_DEBUG_BUILD()
-  *version += ".debug";
+  product_info->version += ".debug";
 #endif
   CastSysInfoAndroid sys_info;
-  *channel = sys_info.GetSystemReleaseChannel();
+  product_info->channel = sys_info.GetSystemReleaseChannel();
 }
 
 base::FilePath CastCrashReporterClientAndroid::GetReporterLogFilename() {
@@ -73,12 +68,8 @@ bool CastCrashReporterClientAndroid::GetCrashDumpLocation(
     return false;
   }
 
-  *crash_dir = app_data.Append("Crashpad");
+  *crash_dir = app_data.Append("CrashpadBrowser");
   return true;
-}
-
-int CastCrashReporterClientAndroid::GetAndroidMinidumpDescriptor() {
-  return kAndroidMinidumpDescriptor;
 }
 
 bool CastCrashReporterClientAndroid::EnableBreakpadForProcess(

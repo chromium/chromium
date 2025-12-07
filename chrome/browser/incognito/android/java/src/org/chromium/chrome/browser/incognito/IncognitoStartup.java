@@ -11,10 +11,14 @@ import android.app.ActivityManager.RecentTaskInfo;
 import android.util.Pair;
 
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.cookies.CookiesFetcher;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
@@ -23,33 +27,33 @@ import java.util.HashSet;
 import java.util.Set;
 
 /** Operations that need to be executed on startup for incognito mode. */
+@NullMarked
 public class IncognitoStartup {
     public static void onResumeWithNative(
+            ProfileProvider profileProvider,
+            CookiesFetcher cookiesFetcher,
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             Set<String> componentNames) {
-        if (shouldDestroyIncognitoProfileOnStartup(
-                tabModelSelectorSupplier.get().getCurrentModel().isIncognito(), componentNames)) {
-            ProfileManager.destroyWhenAppropriate(
-                    ProfileManager.getLastUsedRegularProfile()
-                            .getPrimaryOTRProfile(/* createIfNeeded= */ true));
+        Profile otrProfile = profileProvider.getOffTheRecordProfile();
+        if (otrProfile != null
+                && shouldDestroyIncognitoProfileOnStartup(
+                        tabModelSelectorSupplier.get().getCurrentModel().isIncognito(),
+                        componentNames)) {
+            ProfileManager.destroyWhenAppropriate(otrProfile);
         } else {
-            CookiesFetcher.restoreCookies();
+            cookiesFetcher.restoreCookies(CallbackUtils.emptyRunnable());
         }
     }
 
     /**
-     * Determine whether the incognito profile needs to be destroyed as part of startup.  This is
+     * Determine whether the incognito profile needs to be destroyed as part of startup. This is
      * only needed on L+ when it is possible to swipe away tasks from Android recents without
-     * killing the process.  When this occurs, the normal incognito profile shutdown does not
-     * happen, which can leave behind incognito cookies from an existing session.
+     * killing the process. When this occurs, the normal incognito profile shutdown does not happen,
+     * which can leave behind incognito cookies from an existing session.
      */
     @SuppressLint("NewApi")
     private static boolean shouldDestroyIncognitoProfileOnStartup(
             boolean selectedTabModelIsIncognito, Set<String> componentNames) {
-        if (!ProfileManager.getLastUsedRegularProfile().hasPrimaryOTRProfile()) {
-            return false;
-        }
-
         Set<Pair<AppTask, RecentTaskInfo>> tabbedModeTasks =
                 AndroidTaskUtils.getRecentAppTasksMatchingComponentNames(
                         ContextUtils.getApplicationContext(), componentNames);

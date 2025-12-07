@@ -1,0 +1,25 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("history_sync") {
+  sources = [
+    "history_sync_signin_coordinator.h",
+    "history_sync_signin_coordinator.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/sync/service",
+    "//ios/chrome/browser/authentication/history_sync/coordinator",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_in_progress",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_protected",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/ui/util/identity_snackbar:utils",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/sync/model",
+  ]
+}

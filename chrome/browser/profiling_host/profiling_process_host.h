@@ -11,7 +11,6 @@
 
 #include "base/memory/singleton.h"
 #include "base/timer/timer.h"
-#include "components/services/heap_profiling/public/mojom/heap_profiling_client.mojom-forward.h"
 
 namespace base {
 class FilePath;

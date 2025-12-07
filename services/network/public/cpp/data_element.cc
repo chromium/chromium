@@ -9,7 +9,9 @@
 
 #include <algorithm>
 
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/chunked_data_pipe_getter.mojom.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
@@ -23,6 +25,10 @@ DataElementBytes::DataElementBytes(DataElementBytes&& other) = default;
 DataElementBytes& DataElementBytes::operator=(DataElementBytes&& other) =
     default;
 DataElementBytes::~DataElementBytes() = default;
+
+std::string_view DataElementBytes::AsStringView() const {
+  return base::as_string_view(bytes_);
+}
 
 DataElementBytes DataElementBytes::Clone() const {
   return DataElementBytes(bytes_);
@@ -112,9 +118,8 @@ DataElement DataElement::Clone() const {
     case network::DataElement::Tag::kChunkedDataPipe:
       // DataElementChunkedDataPipe is not generally copyable, especially if
       // `read_only_once` is true.
-      // We want to be strict on this case, and use CHECK rather than DCHECK.
-      CHECK(false);
-      return DataElement();
+      // We want to be strict on this case, and use NOTREACHED().
+      NOTREACHED();
   }
 }
 

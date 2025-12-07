@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addWebUiListener, removeWebUiListener, WebUiListener} from 'chrome://resources/js/cr.js';
+import type {WebUiListener} from 'chrome://resources/js/cr.js';
+import {addWebUiListener, removeWebUiListener} from 'chrome://resources/js/cr.js';
 
 import {findDifference} from './cups_printer_dialog_util.js';
-import {PrinterListEntry, PrinterType} from './cups_printer_types.js';
-import {CupsPrinterInfo, CupsPrintersBrowserProxyImpl, CupsPrintersList} from './cups_printers_browser_proxy.js';
+import type {PrinterListEntry} from './cups_printer_types.js';
+import {PrinterType} from './cups_printer_types.js';
+import type {CupsPrinterInfo, CupsPrintersList} from './cups_printers_browser_proxy.js';
+import {CupsPrintersBrowserProxyImpl} from './cups_printers_browser_proxy.js';
 
 /**
  * Function which provides the client with metadata about a change

@@ -1,7 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ml">
+<translation id="1149198577555059081">തിരയുക അല്ലെങ്കിൽ URL ടൈപ്പ് ചെയ്യുക</translation>
 <translation id="1324575488877808473">നിങ്ങൾ ഏറ്റവുമധികം സന്ദർശിച്ച സൈറ്റുകൾ ഇവിടെ കാണാൻ Chrome തുറക്കുക.</translation>
+<translation id="1861587787412926934">ഡിഫോൾട്ട്</translation>
+<translation id="2378341468609349249">പാസ്‌വേഡുകൾ തിരയുക</translation>
 <translation id="2513892053093488070">ശബ്ദ തിരയൽ</translation>
 <translation id="2535710892645968259">നിങ്ങളുടെ ലോക്ക് സ്‌ക്രീനിൽ നിന്ന് Chrome ദിനോസർ ഗെയിമിലേക്ക് പോകുക.</translation>
 <translation id="2542770169955243077">Chrome ദിനോസർ ഗെയിം</translation>
@@ -11,15 +14,16 @@
 <translation id="3464120926993669599">അദൃശ്യ മോഡിലെ തിരയൽ</translation>
 <translation id="3501428580460217920">Chrome-ലെ പുതിയ അദൃശ്യ ടാബിൽ തിരയുക അല്ലെങ്കിൽ നാവിഗേറ്റ് ചെയ്യുക.</translation>
 <translation id="3528874492835415837">തിരയുക അല്ലെങ്കിൽ URL ടൈപ്പ് ചെയ്യുക</translation>
+<translation id="3606473512813866845">Google Account</translation>
 <translation id="3798529146539130967">നിങ്ങളുടെ ശബ്ദം ഉപയോഗിച്ച് Chrome-ൽ തിരയുക.</translation>
 <translation id="405442954313519726">നിങ്ങളുടെ ശബ്‌ദമോ QR കോഡോ ഉപയോഗിച്ച് അദൃശ്യ മോഡിലെ പുതിയ ടാബിൽ തിരയുക അല്ലെങ്കിൽ നാവിഗേറ്റ് ചെയ്യുക.</translation>
 <translation id="4557098988773644458">Chrome ദിനോസർ ഗെയിമിലേക്ക് പോകുക</translation>
 <translation id="4678859075583681103">ഒരു പുതിയ തിരയൽ ആരംഭിക്കൂ അല്ലെങ്കിൽ നിങ്ങളുടെ iPhone-ന്റെ ഹോംപേജിൽ നിന്ന് ഏറ്റവും കൂടുതൽ സന്ദർശിച്ച സൈറ്റുകൾ തുറക്കൂ.</translation>
-<translation id="4954445889641385956">തിരയുക അല്ലെങ്കിൽ URL ടൈപ്പ് ചെയ്യുക</translation>
 <translation id="4962772945748414465">WEBSITE_PLACEHOLDER തുറക്കുക</translation>
 <translation id="5234725349196694896">നിങ്ങളുടെ പ്രിയപ്പെട്ട തിരയൽ യന്ത്രം ഉപയോഗിച്ച് Chrome-ൽ തിരയുക.</translation>
 <translation id="5277852985315196237">തിരയുക അല്ലെങ്കിൽ URL ടൈപ്പ് ചെയ്യുക</translation>
 <translation id="529497070985873480">Chrome ദിനോസർ</translation>
+<translation id="5325847452011598583">അക്കൗണ്ടൊന്നുമില്ല</translation>
 <translation id="5683557219437283801">ശബ്‌ദ തിരയൽ</translation>
 <translation id="6179961764474023795">ദ്രുത നടപടികൾ</translation>
 <translation id="6330929932864892436">തിരയുക അല്ലെങ്കിൽ URL ടൈപ്പ് ചെയ്യുക</translation>
@@ -28,6 +32,7 @@
 <translation id="6663288906398689853">തിരയുക</translation>
 <translation id="6691821786147477657">ഒരു പുതിയ തിരയൽ ആരംഭിക്കൂ അല്ലെങ്കിൽ നിങ്ങളുടെ iPad-ന്റെ ഹോംപേജിൽ നിന്ന് ഏറ്റവും കൂടുതൽ സന്ദർശിച്ച സൈറ്റുകൾ തുറക്കൂ.</translation>
 <translation id="6721566127904256183">കൂടുതൽ സന്ദർശിച്ച സൈറ്റുകൾ ഇവിടെ കാണാം.</translation>
+<translation id="6804899947889706382">തിരയുക അല്ലെങ്കിൽ URL ടൈപ്പ് ചെയ്യുക</translation>
 <translation id="6855322554930231468">തിരയുക</translation>
 <translation id="6973491011026415905">Google Password Manager-ൽ പാസ്‌വേഡ് തിരയൂ</translation>
 <translation id="7010831364920321713">അദൃശ്യ മോഡിലെ തിരയൽ</translation>
@@ -39,7 +44,9 @@ URL ടെെപ്പ് ചെയ്യുക</translation>
 <translation id="8104498668011127805">Chrome ദിനോസർ ഗെയിമിലേക്ക് പോകുക</translation>
 <translation id="8150601371542319992">Lens</translation>
 <translation id="8171952085734471362">അദൃശ്യ മോഡിലെ തിരയൽ</translation>
+<translation id="8310150944719146950">അക്കൗണ്ട്</translation>
 <translation id="8564942608461410346">നിങ്ങളുടെ പ്രിയപ്പെട്ട തിരയൽ യന്ത്രം ഉപയോഗിച്ച് Chrome-ൽ തിരയുക.</translation>
+<translation id="8858765528951093286">വിജറ്റിനൊപ്പം ഉപയോഗിക്കുന്ന അക്കൗണ്ട് നീക്കം ചെയ്തു. മറ്റൊരു അക്കൗണ്ട് തിരഞ്ഞെടുക്കാൻ, 'വിജറ്റ് എഡിറ്റ് ചെയ്യുക' ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="9175676375569833962">പാസ്‌വേഡുകൾ
 തിരയുക</translation>
 </translationbundle>

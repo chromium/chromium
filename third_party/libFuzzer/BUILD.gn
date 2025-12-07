@@ -51,7 +51,10 @@ source_set("libfuzzer") {
 
   configs -= fuzzing_engine_remove_configs
   configs += fuzzing_engine_add_configs
-  configs += [ ":warnings" ]
+  configs += [
+    ":warnings",
+    "//build/config/compiler:no_exit_time_destructors",
+  ]
 
   deps = []
   if (is_fuchsia) {

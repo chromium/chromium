@@ -1,0 +1,61 @@
+This is a testharness.js-based test.
+[FAIL] SFrameTransform interface: existence and properties of interface object
+  assert_own_property: self does not have own property "SFrameTransform" expected property "SFrameTransform" missing
+[FAIL] SFrameTransform interface object length
+  assert_own_property: self does not have own property "SFrameTransform" expected property "SFrameTransform" missing
+[FAIL] SFrameTransform interface object name
+  assert_own_property: self does not have own property "SFrameTransform" expected property "SFrameTransform" missing
+[FAIL] SFrameTransform interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "SFrameTransform" expected property "SFrameTransform" missing
+[FAIL] SFrameTransform interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "SFrameTransform" expected property "SFrameTransform" missing
+[FAIL] SFrameTransform interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "SFrameTransform" expected property "SFrameTransform" missing
+[FAIL] SFrameTransform interface: operation setEncryptionKey(CryptoKey, optional CryptoKeyID)
+  assert_own_property: self does not have own property "SFrameTransform" expected property "SFrameTransform" missing
+[FAIL] SFrameTransform interface: attribute onerror
+  assert_own_property: self does not have own property "SFrameTransform" expected property "SFrameTransform" missing
+[FAIL] SFrameEncrypterStream interface: existence and properties of interface object
+  assert_own_property: self does not have own property "SFrameEncrypterStream" expected property "SFrameEncrypterStream" missing
+[FAIL] SFrameEncrypterStream interface object length
+  assert_own_property: self does not have own property "SFrameEncrypterStream" expected property "SFrameEncrypterStream" missing
+[FAIL] SFrameEncrypterStream interface object name
+  assert_own_property: self does not have own property "SFrameEncrypterStream" expected property "SFrameEncrypterStream" missing
+[FAIL] SFrameEncrypterStream interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "SFrameEncrypterStream" expected property "SFrameEncrypterStream" missing
+[FAIL] SFrameEncrypterStream interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "SFrameEncrypterStream" expected property "SFrameEncrypterStream" missing
+[FAIL] SFrameEncrypterStream interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "SFrameEncrypterStream" expected property "SFrameEncrypterStream" missing
+[FAIL] SFrameDecrypterStream interface: existence and properties of interface object
+  assert_own_property: self does not have own property "SFrameDecrypterStream" expected property "SFrameDecrypterStream" missing
+[FAIL] SFrameDecrypterStream interface object length
+  assert_own_property: self does not have own property "SFrameDecrypterStream" expected property "SFrameDecrypterStream" missing
+[FAIL] SFrameDecrypterStream interface object name
+  assert_own_property: self does not have own property "SFrameDecrypterStream" expected property "SFrameDecrypterStream" missing
+[FAIL] SFrameDecrypterStream interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "SFrameDecrypterStream" expected property "SFrameDecrypterStream" missing
+[FAIL] SFrameDecrypterStream interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "SFrameDecrypterStream" expected property "SFrameDecrypterStream" missing
+[FAIL] SFrameDecrypterStream interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "SFrameDecrypterStream" expected property "SFrameDecrypterStream" missing
+[FAIL] SFrameTransformErrorEvent interface: existence and properties of interface object
+  assert_own_property: self does not have own property "SFrameTransformErrorEvent" expected property "SFrameTransformErrorEvent" missing
+[FAIL] SFrameTransformErrorEvent interface object length
+  assert_own_property: self does not have own property "SFrameTransformErrorEvent" expected property "SFrameTransformErrorEvent" missing
+[FAIL] SFrameTransformErrorEvent interface object name
+  assert_own_property: self does not have own property "SFrameTransformErrorEvent" expected property "SFrameTransformErrorEvent" missing
+[FAIL] SFrameTransformErrorEvent interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "SFrameTransformErrorEvent" expected property "SFrameTransformErrorEvent" missing
+[FAIL] SFrameTransformErrorEvent interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "SFrameTransformErrorEvent" expected property "SFrameTransformErrorEvent" missing
+[FAIL] SFrameTransformErrorEvent interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "SFrameTransformErrorEvent" expected property "SFrameTransformErrorEvent" missing
+[FAIL] SFrameTransformErrorEvent interface: attribute errorType
+  assert_own_property: self does not have own property "SFrameTransformErrorEvent" expected property "SFrameTransformErrorEvent" missing
+[FAIL] SFrameTransformErrorEvent interface: attribute keyID
+  assert_own_property: self does not have own property "SFrameTransformErrorEvent" expected property "SFrameTransformErrorEvent" missing
+[FAIL] SFrameTransformErrorEvent interface: attribute frame
+  assert_own_property: self does not have own property "SFrameTransformErrorEvent" expected property "SFrameTransformErrorEvent" missing
+Harness: the test ran to completion.
+

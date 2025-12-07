@@ -12,7 +12,6 @@
   "app": {
     "background": {
       "scripts": [
-        "chrome-extension://gfnblenhaahcnmfdbebgincjohfkbnch/test_util.js",
         "test.js"
       ]
     }

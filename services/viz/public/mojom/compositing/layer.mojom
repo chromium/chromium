@@ -5,10 +5,252 @@
 module viz.mojom;
 
 import "cc/mojom/element_id.mojom";
+import "cc/mojom/hit_test_opaqueness.mojom";
 import "cc/mojom/layer_type.mojom";
+import "cc/mojom/paint_flags.mojom";
+import "cc/mojom/render_surface_reason.mojom";
+import "cc/mojom/synced_scroll_offset.mojom";
+import "cc/mojom/ui_resource_id.mojom";
 import "skia/public/mojom/skcolor4f.mojom";
+import "skia/public/mojom/skpath.mojom";
+import "services/viz/public/mojom/compositing/surface_range.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/mask_filter_info.mojom";
+import "ui/gfx/mojom/rrect_f.mojom";
+import "services/viz/public/mojom/compositing/copy_output_request.mojom";
+import "services/viz/public/mojom/compositing/filter_operations.mojom";
+import "services/viz/public/mojom/compositing/region_capture_bounds.mojom";
+import "services/viz/public/mojom/compositing/resource_id.mojom";
+import "services/viz/public/mojom/compositing/subtree_capture_id.mojom";
+import "services/viz/public/mojom/compositing/transferable_resource.mojom";
+import "services/viz/public/mojom/compositing/view_transition_element_resource_id.mojom";
+import "ui/gfx/mojom/display_color_spaces.mojom";
 import "ui/gfx/mojom/transform.mojom";
+
+// Some properties on the Layer are rarely set, and so are bundled
+// under a single optional field.
+// NOTE: This struct's default values should be kept in sync with those of the
+// C++-level RareProperties struct.
+// TODO(crbug.com/408008599): Enforce this via struct_traits.
+struct RareProperties {
+  cc.mojom.FilterQuality filter_quality = cc.mojom.FilterQuality.kLow;
+
+  // NOTE: Instances of this struct are initialized by reading the
+  // corresponding instances of the C++-level struct, and thus no explicit
+  // default value is needed here.
+  cc.mojom.DynamicRangeLimit dynamic_range_limit;
+
+  // The bounds of elements marked for potential region capture, stored in
+  // the coordinate space of this layer.
+  // NOTE: This field has no explicitly-set default value in the C++ struct.
+  RegionCaptureBounds capture_bounds;
+};
+
+// Extra fields in a cc::MirrorLayerImpl that has been added to a tree or
+// modified in some interesting way since a prior tree update.
+struct MirrorLayerExtra {
+  int32 mirrored_layer_id;
+};
+
+// Extra fields in a cc::SurfaceLayerImpl that has been added to a tree or
+// modified in some interesting way since a prior tree update.
+struct SurfaceLayerExtra {
+  // This represents a range of surfaces the surface layer contains.
+  SurfaceRange surface_range;
+
+  // Number of frames to activation deadline.
+  // If nullopt, use the default lower bound deadline instead.
+  uint32? deadline_in_frames;
+
+  // This flag indicates whether the surface layer stretches content to fill
+  // bounds or not.
+  bool stretch_content_to_fill_bounds;
+
+  // This flag indicates whether the surface layer is hit testable or not.
+  bool surface_hit_testable;
+
+  // This flag indicates whether the surface layer has "pointer-events: none"
+  // or not.
+  bool has_pointer_events_none;
+
+  // This flag indicates whether the surface layer is refelction or not.
+  bool is_reflection;
+
+  // This flag tracks if a visibility reset took place in the associated
+  // SurfaceLayer and is used to update |will_draw_| on that layer accordingly.
+  bool will_draw_needs_reset;
+
+  // This flag indicates whether child paint flags (filter quality and
+  // dynamic range limit) should be overridden or not.
+  bool override_child_paint_flags;
+};
+
+// Extra fields in a cc::TextureLayerImpl that has been added to a tree or
+// modified in some interesting way since a prior tree update.
+struct TextureLayerExtra {
+  bool blend_background_color;
+  bool force_texture_to_opaque;
+  gfx.mojom.PointF uv_top_left;
+  gfx.mojom.PointF uv_bottom_right;
+  TransferableResource? transferable_resource;
+};
+
+// Extra fields in a cc::UIResourceLayerImpl that has been added to a tree or
+// modified in some interesting way since a prior tree update.
+struct UIResourceLayerExtra {
+  cc.mojom.UIResourceId ui_resource_id;
+  gfx.mojom.Size image_bounds;
+  gfx.mojom.PointF uv_top_left;
+  gfx.mojom.PointF uv_bottom_right;
+};
+
+// Extra fields in a cc::TileDisplayLayerImpl that has been added to a tree or
+// modified in some interesting way since a prior tree update.
+struct TileDisplayLayerExtra {
+  // Optional field that will be set if this Layer is a PictureLayer that is
+  // actually a solid color.
+  skia.mojom.SkColor4f? solid_color;
+
+  // Will be set to true for PictureLayers that are backdrop filter masks.
+  bool is_backdrop_filter_mask;
+
+  // Will be set to true for PictureLayers that are directly composited images.
+  bool is_directly_composited_image;
+
+  // Will be set to true for PictureLayers that use nearest neighbor filtering.
+  bool nearest_neighbor;
+
+  // The color usage of the layer's content.
+  gfx.mojom.ContentColorUsage content_color_usage;
+
+  // Valid rectangle in which anything is recorded and can be rastered from.
+  // This is also used during AppendQuads to decide if a quad needs to be
+  // drawn.
+  gfx.mojom.Rect recorded_bounds;
+
+  // Scales of tilings that the renderer proposes can be deleted.
+  array<float> proposed_tiling_scales_for_deletion;
+};
+
+// Extra fields in a cc::ScrollbarLayerImplBase that has been added
+// to a tree or modified in some interesting way since a prior tree update.
+struct ScrollbarLayerBaseExtra {
+  cc.mojom.ElementId scroll_element_id;
+  bool is_overlay_scrollbar;
+  bool is_web_test;
+  float thumb_thickness_scale_factor;
+  float current_pos;
+  float clip_layer_length;
+  float scroll_layer_length;
+  bool is_horizontal_orientation;
+  bool is_left_side_vertical_scrollbar;
+  float vertical_adjust;
+  bool has_find_in_page_tickmarks;
+};
+
+// Extra fields in a cc::NinePatchThumbScrollbarLayerImpl that has been added
+// to a tree or modified in some interesting way since a prior tree update.
+struct NinePatchThumbScrollbarLayerExtra {
+  ScrollbarLayerBaseExtra scrollbar_base_extra;
+
+  int32 thumb_thickness;
+  int32 thumb_length;
+  int32 track_start;
+  int32 track_length;
+  gfx.mojom.Size image_bounds;
+  gfx.mojom.Rect aperture;
+  cc.mojom.UIResourceId thumb_ui_resource_id;
+  cc.mojom.UIResourceId track_and_buttons_ui_resource_id;
+};
+
+// Extra fields in a cc::PaintedScrollbarLayerImpl that has been added
+// to a tree or modified in some interesting way since a prior tree update.
+struct PaintedScrollbarLayerExtra {
+  ScrollbarLayerBaseExtra scrollbar_base_extra;
+
+  float internal_contents_scale;
+  gfx.mojom.Size internal_content_bounds;
+  bool jump_on_track_click;
+  bool supports_drag_snap_back;
+  int32 thumb_thickness;
+  int32 thumb_length;
+  gfx.mojom.Rect back_button_rect;
+  gfx.mojom.Rect forward_button_rect;
+  gfx.mojom.Rect track_rect;
+  skia.mojom.SkColor4f? thumb_color;
+  bool uses_nine_patch_track_and_buttons;
+  gfx.mojom.Size track_and_buttons_image_bounds;
+  gfx.mojom.Rect track_and_buttons_aperture;
+  float painted_opacity;
+  cc.mojom.UIResourceId track_and_buttons_ui_resource_id;
+  cc.mojom.UIResourceId thumb_ui_resource_id;
+};
+
+// Extra fields in a cc::SolidColorScrollbarLayerImpl that has been added
+// to a tree or modified in some interesting way since a prior tree update.
+struct SolidColorScrollbarLayerExtra {
+  ScrollbarLayerBaseExtra scrollbar_base_extra;
+
+  int32 thumb_thickness;
+  int32 track_start;
+  skia.mojom.SkColor4f color;
+};
+
+// Extra fields in a cc::ViewTransitionContentLayerImpl that has been added
+// to a tree or modified in some interesting way since a prior tree update.
+struct ViewTransitionContentLayerExtra {
+  // The corresponding element resource id to be drawn.
+  ViewTransitionElementResourceId resource_id;
+
+  // Live content layers that don't have a corresponding resource render
+  // passes are skipped for drawing.
+  bool is_live_content_layer;
+
+  // max_extents_rect is the maximum possible size of the originating layer, as
+  // known to blink, in the originating layer's coordinate space.
+  gfx.mojom.RectF max_extents_rect;
+};
+
+// Extra fields in a cc::NinePatchLayerImpl that has been added to a tree or
+// modified in some interesting way since a prior tree update.
+struct NinePatchLayerExtra {
+  // From NinePatchLayer quad_generator_ properties
+  gfx.mojom.Rect image_aperture;
+  gfx.mojom.Rect border;
+  gfx.mojom.Rect layer_occlusion;
+  bool fill_center;
+
+  // From UIResourceLayer properties
+  cc.mojom.UIResourceId ui_resource_id;
+  gfx.mojom.Size image_bounds;
+  gfx.mojom.PointF uv_top_left;
+  gfx.mojom.PointF uv_bottom_right;
+};
+
+
+// Extra properties that are specific to a LayerImpl type.
+union LayerExtra {
+  // Extra properties that are specific to MirrorLayerImpl.
+  MirrorLayerExtra mirror_layer_extra;
+  // Extra properties that are specific to NinePatchThumbScrollbarLayerImpl.
+  NinePatchThumbScrollbarLayerExtra nine_patch_thumb_scrollbar_layer_extra;
+  // Extra properties that are specific to PaintedScrollbarLayerImpl.
+  PaintedScrollbarLayerExtra painted_scrollbar_layer_extra;
+  // Extra properties that are specific to SolidColorScrollbarLayerImpl.
+  SolidColorScrollbarLayerExtra solid_color_scrollbar_layer_extra;
+  // Extra properties that are specific to SurfaceLayerImpl.
+  SurfaceLayerExtra surface_layer_extra;
+  // Extra properties that are specific to TextureLayerImpl.
+  TextureLayerExtra texture_layer_extra;
+  // Extra properties that are specific to UIResourceLayerImpl.
+  UIResourceLayerExtra ui_resource_layer_extra;
+  // Extra properties that are specific to TileDisplayLayerImpl.
+  TileDisplayLayerExtra tile_display_layer_extra;
+  // Extra properties that are specific to ViewTransitionContentLayerImpl.
+  ViewTransitionContentLayerExtra view_transition_content_layer_extra;
+  // Extra properties that are specific to NinePatchLayerImpl.
+  NinePatchLayerExtra nine_patch_layer_extra;
+};
 
 // Details about a cc::LayerImpl that has been added to a tree or modified in
 // some interesting way since a prior tree update.
@@ -36,6 +278,14 @@ struct Layer {
   // Indicates whether the layer produces any visual output for the compositor.
   bool is_drawable;
 
+  // Indicate that layer properties have changed and the layer's content area
+  // needs to be redrawn.
+  bool layer_property_changed_not_from_property_trees;
+  bool layer_property_changed_from_property_trees;
+
+  // Describes the opaqueness for hit testing in a layered content e.g. a layer.
+  cc.mojom.HitTestOpaqueness hit_test_opaqueness;
+
   // The background color (and safe opaque background color) used by this Layer.
   // See comments for equivalent fields on cc::Layer.
   skia.mojom.SkColor4f background_color;
@@ -44,7 +294,7 @@ struct Layer {
   // Optional stable identifier that may be referenced in property trees and
   // animations. Identifies a client-side object which can be represented by
   // multiple layers over time but only by a single layer at once.
-  cc.mojom.ElementId? element_id;
+  cc.mojom.ElementId element_id;
 
   // Current cumulative dirty rect for the layer since last update, in layer
   // space.
@@ -59,6 +309,59 @@ struct Layer {
   int32 clip_tree_index;
   int32 effect_tree_index;
   int32 scroll_tree_index;
+
+  bool should_check_backface_visibility;
+
+  RareProperties? rare_properties;
+
+  // Extra properties that are specific to a layerImpl type.
+  LayerExtra? layer_extra;
+};
+
+// See blink::AnchorPositionScrollData, from which the fields here are derived.
+struct AnchorPositionScrollData {
+  array<cc.mojom.ElementId> adjustment_container_ids;
+  gfx.mojom.Vector2d accumulated_scroll_origin;
+  bool needs_scroll_adjustment_in_x;
+  bool needs_scroll_adjustment_in_y;
+};
+
+// See blink::StickyPositionScrollingConstraints for documentation on this data.
+struct StickyPositionNodeData {
+  // Must be a valid index into the scroll tree.
+  int32 scroll_ancestor;
+
+  // Additional fields derived from StickyPositionConstraint (which itself is
+  // populated from StickyPositionScrollingConstraints).
+  bool is_anchored_left;
+  bool is_anchored_right;
+  bool is_anchored_top;
+  bool is_anchored_bottom;
+  float left_offset;
+  float right_offset;
+  float top_offset;
+  float bottom_offset;
+  gfx.mojom.RectF constraint_box_rect;
+  gfx.mojom.RectF scroll_container_relative_sticky_box_rect;
+  gfx.mojom.RectF scroll_container_relative_containing_block_rect;
+  gfx.mojom.Vector2dF pixel_snap_offset;
+  int32 nearest_node_shifting_sticky_box;
+  int32 nearest_node_shifting_containing_block;
+  gfx.mojom.Vector2dF total_sticky_box_sticky_offset;
+  gfx.mojom.Vector2dF total_containing_block_sticky_offset;
+};
+
+// Updates to a transform tree, not including the nodes themselves. These
+// correspond to data members of cc::TransformTree.
+struct TransformTreeUpdate {
+  float page_scale_factor = 1.0;
+  float device_scale_factor = 1.0;
+  float device_transform_scale_factor = 1.0;
+  array<int32> nodes_affected_by_outer_viewport_bounds_delta;
+  array<int32> nodes_affected_by_safe_area_bottom;
+  array<StickyPositionNodeData> sticky_position_data;
+  array<AnchorPositionScrollData> anchor_position_scroll_data;
+  map<cc.mojom.ElementId, gfx.mojom.Vector2dF> drawn_elastic_overscroll;
 };
 
 // Details about a new or updated node within a transform property tree.
@@ -79,17 +382,60 @@ struct TransformNode {
 
   // The stable ElementId of the client-side object to which this transform node
   // applies.
-  cc.mojom.ElementId? element_id;
+  cc.mojom.ElementId element_id;
 
   // Actual transformation parameters for this node. See cc::TransformNode.
   gfx.mojom.Transform local;
   gfx.mojom.Point3F origin;
+  gfx.mojom.Vector2dF post_translation;
+  gfx.mojom.Transform to_parent;
   gfx.mojom.PointF scroll_offset;
+  gfx.mojom.Vector2dF snap_amount;
+
+  // Optional index into the tree's sticky position constraint data.
+  uint32? sticky_position_constraint_id;
+
+  // Optional index into the tree's anchor position scroll data.
+  uint32? anchor_position_scroll_data_id;
+
+  // Arbitrary rendering context ID for sorting. This affects draw order within
+  // the layer tree relative to other nodes with sorting context IDs. Does not
+  // need to be validated.
+  int32 sorting_context_id;
+
+  // Flags reflecting client-side changes to transform state. These all
+  // correspond to equivalent flags on cc::TransformNode.
+  bool has_potential_animation;
+  bool is_currently_animating;
+  bool flattens_inherited_transform;
+  bool scrolls;
+  bool should_undo_overscroll;
+  bool should_be_snapped;
+  bool moved_by_outer_viewport_bounds_delta_y;
+  bool in_subtree_of_page_scale_layer;
+  bool transform_changed;
+  bool delegates_to_parent_for_backface;
+  bool will_change_transform;
+  float maximum_animation_scale;
+  bool node_and_ancestors_are_animated_or_invertible;
+  bool is_invertible;
+  bool ancestors_are_invertible;
+  bool node_and_ancestors_are_flat;
+  bool node_or_ancestors_will_change_transform;
 
   // The stable ElementId of the client-side object (e.g. document, in Blink)
   // corresponding to this node, if this node corresponds to the root of a
   // visible frame.
-  cc.mojom.ElementId? visible_frame_element_id;
+  cc.mojom.ElementId visible_frame_element_id;
+
+  // cc::DamageReasonsSet bit mask tracking the damage reasons for changes to
+  // this node.
+  uint64 damage_reasons_bit_mask;
+
+  // Used by the compositor to determine which layers need to be repositioned by
+  // the compositor as a result of safe area inset bottom before Blink
+  // repositions the fixed layers.
+  bool moved_by_safe_area_bottom;
 };
 
 // Details about a new or updated node within a clip property tree.
@@ -110,6 +456,9 @@ struct ClipNode {
   // The clip rectangle for this node, in the space of the corresponding
   // transform node.
   gfx.mojom.RectF clip;
+
+  // The ID of this node's pixel-moving filter in the effect tree, or -1.
+  int32 pixel_moving_filter_id;
 };
 
 // Details about a new or updated node within an effect property tree.
@@ -133,15 +482,111 @@ struct EffectNode {
 
   // The stable ElementId of the client-side object to which this effect node
   // applies.
-  cc.mojom.ElementId? element_id;
+  cc.mojom.ElementId element_id;
 
   // The opacity of drawn layers associated with this effect node.
   float opacity;
 
-  // TODO(rockot): Replace this with a RenderSurfaceReason enumeration. In
-  // practice the specific reason is only useful for metrics, and for now all we
-  // need is to know whether or not the reason is kNone.
-  bool has_render_surface;
+  // RenderSurfaceReason::kNone if this effect node should not create a render
+  // surface, or the reason that this effect node should create one.
+  cc.mojom.RenderSurfaceReason render_surface_reason;
+
+  // Scale applied to the contents of the render surface. Ignored if this node
+  // doesn't induce a render surface.
+  gfx.mojom.Vector2dF surface_contents_scale;
+
+  SubtreeCaptureId subtree_capture_id;
+  gfx.mojom.Size subtree_size;
+
+  // This is an SkBlendMode, which has no mojom definition yet. Must be manually
+  // validated to be no greater than SkBlendMode::kLastMode.
+  uint32 blend_mode;
+
+  // The index of the ancestor EffectNode which induces a render surface. Must
+  // be a valid index in the same effect tree.
+  int32 target_id;
+
+  // If this node is tagged with a ViewTransitionElementResourceId, it means it
+  // produces a snapshot for an element participating in a transition. This
+  // target id corresponds to the effect node where the
+  // ViewTransitionContentLayer using this resource draws. Can be unset if no
+  // layer using this resource is being drawn.
+  int32 view_transition_target_id;
+
+  // The ancestor ids indicate the existence of render surfaces, copy requests,
+  // or captures on ancestor effect nodes.
+  int32 closest_ancestor_with_cached_render_surface_id;
+  int32 closest_ancestor_with_copy_request_id;
+  int32 closest_ancestor_being_captured_id;
+  int32 closest_ancestor_with_shared_element_id;
+
+  // Represents a resource id for a resource cached or generated in the Viz
+  // process.
+  ViewTransitionElementResourceId view_transition_element_resource_id;
+
+  FilterOperations filters;
+  FilterOperations backdrop_filters;
+  skia.mojom.SkPath? backdrop_filter_bounds;
+  float backdrop_filter_quality = 1.0;
+
+  // The element id corresponding to the mask to apply to the filtered backdrop
+  // image.
+  cc.mojom.ElementId backdrop_mask_element_id;
+
+  // The mask filter information applied to this effect node. The coordinates of
+  // in the mask info is in the space of the transform node associated with this
+  // effect node.
+  gfx.mojom.MaskFilterInfo mask_filter_info;
+
+  bool cache_render_surface;
+  // Whether the contents should continue to be visible when rotated such that
+  // its back face is facing toward the camera. It's true by default.
+  bool double_sided;
+  bool trilinear_filtering;
+
+  // TODO(crbug.com/40461368): Delete this after implementation of
+  // SetHideLayerAndSubtree is cleaned up.
+  bool subtree_hidden;
+  // Whether this node has a potentially running (i.e., irrespective
+  // of exact timeline) filter animation.
+  bool has_potential_filter_animation;
+  // Whether this node has a potentially running (i.e., irrespective
+  // of exact timeline) backdrop-filter animation.
+  bool has_potential_backdrop_filter_animation;
+  // Whether this node has a potentially running (i.e., irrespective
+  // of exact timeline) opacity animation.
+  bool has_potential_opacity_animation;
+
+  // Whether this node's effect has been changed since the last
+  // frame. Needed in order to compute damage rect.
+  bool effect_changed;
+
+  // If set, the node's subtree has a copy request and the layer should
+  // not be skipped for draw property computation.
+  // TODO(crbug.com/406652614): Compute subtree_has_copy_request in
+  // EffectTree::UpdateEffects() instead of serializing it.
+  bool subtree_has_copy_request;
+
+  // If set, the effect node tries to not trigger a render surface due to it
+  // having a rounded corner.
+  bool is_fast_rounded_corner;
+  // True if a backdrop effect may be present on this effect (and therefore
+  // any side-effects on ancestors should be taken into account).
+  bool may_have_backdrop_effect;
+  // Whether this effect is triggered by a non-identity 2D scale transform
+  // (and no other transform).
+  bool needs_effect_for_2d_scale_transform;
+
+  // The CopyOutputRequests that have been made for this node.
+  array<CopyOutputRequest> copy_output_requests;
+};
+
+// Updates to a scroll tree, not including the nodes themselves. These
+// correspond to data members of cc::ScrollTree.
+struct ScrollTreeUpdate {
+  map<cc.mojom.ElementId, cc.mojom.SyncedScrollOffset> synced_scroll_offsets;
+  map<cc.mojom.ElementId, gfx.mojom.Rect> scrolling_contents_cull_rects;
+  map<cc.mojom.ElementId, gfx.mojom.Vector2dF> elastic_overscroll;
 };
 
 // Details about a new or updated node within a scroll property tree.
@@ -168,11 +613,14 @@ struct ScrollNode {
 
   // The stable ElementId of the scrollable client-side object to which this
   // scroll node applies.
-  cc.mojom.ElementId? element_id;
+  cc.mojom.ElementId element_id;
 
   // Flags specifying the behavior of scrolls on this node.
+  bool max_scroll_offset_affected_by_page_scale;
   bool scrolls_inner_viewport;
   bool scrolls_outer_viewport;
+  bool prevent_viewport_scrolling_from_inner;
   bool user_scrollable_horizontal;
   bool user_scrollable_vertical;
+  bool is_composited;
 };

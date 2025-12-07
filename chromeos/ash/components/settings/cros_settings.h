@@ -18,12 +18,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "components/user_manager/user_type.h"
 
-static_assert(BUILDFLAG(IS_CHROMEOS_ASH), "For ChromeOS ash-chrome only");
+static_assert(BUILDFLAG(IS_CHROMEOS), "For ChromeOS only");
 
 namespace ash {
 
@@ -111,7 +110,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS) CrosSettings {
 
   // Add an observer Callback for changes for the given |path|.
   [[nodiscard]] base::CallbackListSubscription AddSettingsObserver(
-      const std::string& path,
+      std::string_view path,
       base::RepeatingClosure callback);
 
   // Returns the provider that handles settings with the |path| or prefix.
@@ -123,19 +122,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS) CrosSettings {
   }
 
  private:
-  friend class CrosSettingsTest;
-
-  // Allows accessing to SetInstance.
   friend class CrosSettingsHolder;
-  friend class ScopedTestingCrosSettings;
-
-  // Sets `cros_settings` as a global instance. This does not take ownership,
-  // so the caller still has the responsibility to destroy the instance
-  // on appropriate timing. Also, the caller has the responsibility to call
-  // `SetInstance(nullptr)` before destroying the instance.
-  // If this is called while the global instance is already set, this will
-  // cause crash.
-  static void SetInstance(CrosSettings* cros_settings);
+  friend class CrosSettingsTest;
 
   // Fires system setting change callback.
   void FireObservers(const std::string& path);
@@ -148,7 +136,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS) CrosSettings {
 
   // A map from settings names to a list of observers. Observers get fired in
   // the order they are added.
-  std::map<std::string, std::unique_ptr<base::RepeatingClosureList>>
+  std::map<std::string, base::RepeatingClosureList, std::less<>>
       settings_observers_;
 
   SEQUENCE_CHECKER(sequence_checker_);

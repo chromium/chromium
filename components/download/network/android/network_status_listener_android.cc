@@ -18,7 +18,6 @@ NetworkStatusListenerAndroid::~NetworkStatusListenerAndroid() = default;
 
 void NetworkStatusListenerAndroid::OnNetworkStatusReady(
     JNIEnv* env,
-    const base::android::JavaRef<jobject>& jobj,
     jint connectionType) {
   DCHECK(observer_);
   using ConnectionType = network::mojom::ConnectionType;
@@ -28,7 +27,6 @@ void NetworkStatusListenerAndroid::OnNetworkStatusReady(
 
 void NetworkStatusListenerAndroid::NotifyNetworkChange(
     JNIEnv* env,
-    const base::android::JavaRef<jobject>& jobj,
     jint connectionType) {
   DCHECK(observer_);
   using ConnectionType = network::mojom::ConnectionType;
@@ -43,8 +41,7 @@ void NetworkStatusListenerAndroid::Start(
   NetworkStatusListener::Start(observer);
   JNIEnv* env = base::android::AttachCurrentThread();
   java_obj_.Reset(env, Java_NetworkStatusListenerAndroid_create(
-                           env, reinterpret_cast<intptr_t>(this))
-                           .obj());
+                           env, reinterpret_cast<intptr_t>(this)));
 }
 
 void NetworkStatusListenerAndroid::Stop() {
@@ -62,3 +59,5 @@ NetworkStatusListenerAndroid::GetConnectionType() {
 }
 
 }  // namespace download
+
+DEFINE_JNI(NetworkStatusListenerAndroid)

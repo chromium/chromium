@@ -15,27 +15,20 @@
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
 #include "third_party/blink/renderer/platform/peerconnection/fake_connection_test_base.h"
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_connection_matchers.h"
-
+#include "third_party/webrtc/api/units/time_delta.h"
+#include "third_party/webrtc/api/units/timestamp.h"
 #include "third_party/webrtc/p2p/base/ice_controller_interface.h"
 #include "third_party/webrtc/p2p/base/ice_switch_reason.h"
 #include "third_party/webrtc/p2p/base/mock_ice_agent.h"
 #include "third_party/webrtc/p2p/base/mock_ice_controller.h"
-
 #include "third_party/webrtc_overrides/p2p/base/fake_connection_factory.h"
 #include "third_party/webrtc_overrides/p2p/base/ice_connection.h"
 #include "third_party/webrtc_overrides/p2p/base/ice_interaction_interface.h"
 #include "third_party/webrtc_overrides/p2p/base/ice_ping_proposal.h"
 #include "third_party/webrtc_overrides/p2p/base/ice_prune_proposal.h"
 #include "third_party/webrtc_overrides/p2p/base/ice_switch_proposal.h"
-
-namespace cricket {
-// This is an opaque type for the purposes of this test, so a forward
-// declaration suffices
-struct IceConfig;
-}  // namespace cricket
 
 namespace {
 
@@ -48,18 +41,17 @@ using ::blink::IcePingProposal;
 using ::blink::IcePruneProposal;
 using ::blink::IceSwitchProposal;
 
-using ::cricket::Candidate;
-using ::cricket::Connection;
-using ::cricket::IceConfig;
-using ::cricket::IceControllerFactoryArgs;
-using ::cricket::IceControllerInterface;
-using ::cricket::IceMode;
-using ::cricket::IceRecheckEvent;
-using ::cricket::IceSwitchReason;
-using ::cricket::MockIceAgent;
-using ::cricket::MockIceController;
-using ::cricket::MockIceControllerFactory;
-using ::cricket::NominationMode;
+using ::webrtc::Candidate;
+using ::webrtc::Connection;
+using ::webrtc::IceConfig;
+using ::webrtc::IceControllerInterface;
+using ::webrtc::IceMode;
+using ::webrtc::IceRecheckEvent;
+using ::webrtc::IceSwitchReason;
+using ::webrtc::MockIceAgent;
+using ::webrtc::MockIceController;
+using ::webrtc::MockIceControllerFactory;
+using ::webrtc::NominationMode;
 
 using ::testing::_;
 using ::testing::Combine;
@@ -192,8 +184,7 @@ TEST_F(BridgeIceControllerTest, ObserverAttached) {
   MockIceAgent agent;
   MockIceControllerObserver observer1;
   MockIceControllerObserver observer2;
-  std::unique_ptr<MockIceController> will_move =
-      std::make_unique<MockIceController>(IceControllerFactoryArgs{});
+  auto will_move = std::make_unique<MockIceController>();
 
   scoped_refptr<IceInteractionInterface> interaction_agent = nullptr;
   EXPECT_CALL(observer1, OnObserverAttached).WillOnce(WithArgs<0>([&](auto ia) {
@@ -215,8 +206,7 @@ TEST_F(BridgeIceControllerTest, PassthroughIceControllerInterface) {
   MockIceAgent agent;
   MockIceControllerObserver observer1;
   MockIceControllerObserver observer2;
-  std::unique_ptr<MockIceController> will_move =
-      std::make_unique<MockIceController>(IceControllerFactoryArgs{});
+  auto will_move = std::make_unique<MockIceController>();
   MockIceController* wrapped = will_move.get();
 
   EXPECT_CALL(observer1, OnObserverAttached(_));
@@ -298,8 +288,7 @@ TEST_F(BridgeIceControllerTest, PassthroughIceControllerInterface) {
 TEST_F(BridgeIceControllerTest, HandlesImmediateSwitchRequest) {
   NiceMock<MockIceAgent> agent;
   MockIceControllerObserver observer;
-  std::unique_ptr<MockIceController> will_move =
-      std::make_unique<MockIceController>(IceControllerFactoryArgs{});
+  auto will_move = std::make_unique<MockIceController>();
   MockIceController* wrapped = will_move.get();
 
   scoped_refptr<IceInteractionInterface> interaction_agent = nullptr;
@@ -375,8 +364,7 @@ TEST_F(BridgeIceControllerTest, HandlesImmediateSwitchRequest) {
 TEST_P(BridgeIceControllerProposalTest, HandlesImmediateSortAndSwitchRequest) {
   NiceMock<MockIceAgent> agent;
   MockIceControllerObserver observer;
-  std::unique_ptr<MockIceController> will_move =
-      std::make_unique<MockIceController>(IceControllerFactoryArgs{});
+  auto will_move = std::make_unique<MockIceController>();
   MockIceController* wrapped = will_move.get();
 
   scoped_refptr<IceInteractionInterface> interaction_agent = nullptr;
@@ -485,8 +473,7 @@ TEST_P(BridgeIceControllerProposalTest, HandlesImmediateSortAndSwitchRequest) {
 TEST_P(BridgeIceControllerProposalTest, HandlesSortAndSwitchRequest) {
   NiceMock<MockIceAgent> agent;
   MockIceControllerObserver observer;
-  std::unique_ptr<MockIceController> will_move =
-      std::make_unique<MockIceController>(IceControllerFactoryArgs{});
+  auto will_move = std::make_unique<MockIceController>();
   MockIceController* wrapped = will_move.get();
 
   scoped_refptr<IceInteractionInterface> interaction_agent = nullptr;
@@ -562,8 +549,7 @@ TEST_P(BridgeIceControllerProposalTest, HandlesSortAndSwitchRequest) {
 TEST_P(BridgeIceControllerProposalTest, StartPingingAfterSortAndSwitch) {
   NiceMock<MockIceAgent> agent;
   MockIceControllerObserver observer;
-  std::unique_ptr<MockIceController> will_move =
-      std::make_unique<MockIceController>(IceControllerFactoryArgs{});
+  auto will_move = std::make_unique<MockIceController>();
   MockIceController* wrapped = will_move.get();
 
   scoped_refptr<IceInteractionInterface> interaction_agent = nullptr;
@@ -583,7 +569,7 @@ TEST_P(BridgeIceControllerProposalTest, StartPingingAfterSortAndSwitch) {
 
   // Pinging does not start automatically, unless triggered through a sort.
   EXPECT_CALL(*wrapped, HasPingableConnection()).Times(0);
-  EXPECT_CALL(*wrapped, SelectConnectionToPing(_)).Times(0);
+  EXPECT_CALL(*wrapped, GetConnectionToPing).Times(0);
   EXPECT_CALL(observer, OnPingProposal(_)).Times(0);
   EXPECT_CALL(agent, OnStartedPinging()).Times(0);
 
@@ -600,7 +586,7 @@ TEST_P(BridgeIceControllerProposalTest, StartPingingAfterSortAndSwitch) {
   EXPECT_CALL(observer, OnPruneProposal).Times(0);
   EXPECT_CALL(agent, PruneConnections(IsEmpty()));
   EXPECT_CALL(*wrapped, HasPingableConnection()).WillOnce(Return(false));
-  EXPECT_CALL(*wrapped, SelectConnectionToPing(_)).Times(0);
+  EXPECT_CALL(*wrapped, GetConnectionToPing).Times(0);
   EXPECT_CALL(observer, OnPingProposal(_)).Times(0);
   EXPECT_CALL(agent, OnStartedPinging()).Times(0);
 
@@ -608,9 +594,10 @@ TEST_P(BridgeIceControllerProposalTest, StartPingingAfterSortAndSwitch) {
   env.FastForwardBy(kTick);
 
   const int recheck_delay_ms = 10;
-  const IceControllerInterface::PingResult ping_result(conn, recheck_delay_ms);
-  const IceControllerInterface::PingResult empty_ping_result(nullptr,
-                                                             recheck_delay_ms);
+  const IceControllerInterface::PingResult ping_result(
+      conn, webrtc::TimeDelta::Millis(recheck_delay_ms));
+  const IceControllerInterface::PingResult empty_ping_result(
+      nullptr, webrtc::TimeDelta::Millis(recheck_delay_ms));
 
   // Pinging starts when there is a pingable connection.
   Sequence start_pinging;
@@ -631,10 +618,10 @@ TEST_P(BridgeIceControllerProposalTest, StartPingingAfterSortAndSwitch) {
       .InSequence(start_pinging)
       .WillOnce(Return(true));
   EXPECT_CALL(agent, OnStartedPinging()).InSequence(start_pinging);
-  EXPECT_CALL(agent, GetLastPingSentMs())
+  EXPECT_CALL(agent, GetLastPingSent)
       .InSequence(start_pinging)
-      .WillOnce(Return(123));
-  EXPECT_CALL(*wrapped, SelectConnectionToPing(123))
+      .WillOnce(Return(webrtc::Timestamp::Millis(123)));
+  EXPECT_CALL(*wrapped, GetConnectionToPing(webrtc::Timestamp::Millis(123)))
       .InSequence(start_pinging)
       .WillOnce(Return(ping_result));
   EXPECT_CALL(observer, OnPingProposal(_))
@@ -659,8 +646,9 @@ TEST_P(BridgeIceControllerProposalTest, StartPingingAfterSortAndSwitch) {
 
   // ICE controller should recheck and ping after the recheck delay.
   // No ping should be sent if no connection selected to ping.
-  EXPECT_CALL(agent, GetLastPingSentMs()).WillOnce(Return(456));
-  EXPECT_CALL(*wrapped, SelectConnectionToPing(456))
+  EXPECT_CALL(agent, GetLastPingSent)
+      .WillOnce(Return(webrtc::Timestamp::Millis(456)));
+  EXPECT_CALL(*wrapped, GetConnectionToPing(webrtc::Timestamp::Millis(456)))
       .WillOnce(Return(empty_ping_result));
   EXPECT_CALL(observer,
               OnPingProposal(PingProposalEq(empty_ping_result,
@@ -676,9 +664,7 @@ class BridgeIceControllerInvalidProposalTest : public BridgeIceControllerTest {
   BridgeIceControllerInvalidProposalTest()
       : recheck_event(IceSwitchReason::ICE_CONTROLLER_RECHECK,
                       recheck_delay_ms) {
-    std::unique_ptr<StrictMock<MockIceController>> will_move =
-        std::make_unique<StrictMock<MockIceController>>(
-            IceControllerFactoryArgs{});
+    auto will_move = std::make_unique<StrictMock<MockIceController>>();
     wrapped_controller = will_move.get();
 
     EXPECT_CALL(observer, OnObserverAttached(_))
@@ -727,30 +713,32 @@ using BridgeIceControllerDeathTest = BridgeIceControllerInvalidProposalTest;
 using BridgeIceControllerNoopTest = BridgeIceControllerInvalidProposalTest;
 
 TEST_F(BridgeIceControllerDeathTest, AcceptUnsolicitedPingProposal) {
-  const IceControllerInterface::PingResult ping_result(conn, recheck_delay_ms);
+  const IceControllerInterface::PingResult ping_result(
+      conn, webrtc::TimeDelta::Millis(recheck_delay_ms));
   const IcePingProposal proposal(ping_result, /*reply_expected=*/false);
   EXPECT_DCHECK_DEATH_WITH(interaction_agent->AcceptPingProposal(proposal),
                            "unsolicited");
 }
 
 TEST_F(BridgeIceControllerDeathTest, RejectUnsolicitedPingProposal) {
-  const IceControllerInterface::PingResult ping_result(conn, recheck_delay_ms);
+  const IceControllerInterface::PingResult ping_result(
+      conn, webrtc::TimeDelta::Millis(recheck_delay_ms));
   const IcePingProposal proposal(ping_result, /*reply_expected=*/false);
   EXPECT_DCHECK_DEATH_WITH(interaction_agent->RejectPingProposal(proposal),
                            "unsolicited");
 }
 
 TEST_F(BridgeIceControllerDeathTest, AcceptEmptyPingProposal) {
-  const IceControllerInterface::PingResult null_ping_result(nullptr,
-                                                            recheck_delay_ms);
+  const IceControllerInterface::PingResult null_ping_result(
+      nullptr, webrtc::TimeDelta::Millis(recheck_delay_ms));
   const IcePingProposal proposal(null_ping_result, /*reply_expected=*/true);
   EXPECT_DCHECK_DEATH_WITH(interaction_agent->AcceptPingProposal(proposal),
                            "without a connection");
 }
 
 TEST_F(BridgeIceControllerNoopTest, AcceptUnknownPingProposal) {
-  const IceControllerInterface::PingResult ping_result(conn_two,
-                                                       recheck_delay_ms);
+  const IceControllerInterface::PingResult ping_result(
+      conn_two, webrtc::TimeDelta::Millis(recheck_delay_ms));
   const IcePingProposal proposal(ping_result, /*reply_expected=*/true);
   interaction_agent->AcceptPingProposal(proposal);
   Recheck();
@@ -827,8 +815,7 @@ TEST_F(BridgeIceControllerInvalidProposalTest, AcceptUnknownPruneProposal) {
 TEST_F(BridgeIceControllerTest, HandlesPingRequest) {
   NiceMock<MockIceAgent> agent;
   MockIceControllerObserver observer;
-  std::unique_ptr<MockIceController> will_move =
-      std::make_unique<MockIceController>(IceControllerFactoryArgs{});
+  auto will_move = std::make_unique<MockIceController>();
   MockIceController* wrapped = will_move.get();
 
   scoped_refptr<IceInteractionInterface> interaction_agent = nullptr;
@@ -861,8 +848,7 @@ TEST_F(BridgeIceControllerTest, HandlesPingRequest) {
 TEST_F(BridgeIceControllerTest, HandlesSwitchRequest) {
   NiceMock<MockIceAgent> agent;
   MockIceControllerObserver observer;
-  std::unique_ptr<MockIceController> will_move =
-      std::make_unique<MockIceController>(IceControllerFactoryArgs{});
+  auto will_move = std::make_unique<MockIceController>();
   MockIceController* wrapped = will_move.get();
 
   scoped_refptr<IceInteractionInterface> interaction_agent = nullptr;
@@ -897,8 +883,7 @@ TEST_F(BridgeIceControllerTest, HandlesSwitchRequest) {
 TEST_F(BridgeIceControllerTest, HandlesPruneRequest) {
   NiceMock<MockIceAgent> agent;
   MockIceControllerObserver observer;
-  std::unique_ptr<MockIceController> will_move =
-      std::make_unique<MockIceController>(IceControllerFactoryArgs{});
+  auto will_move = std::make_unique<MockIceController>();
   MockIceController* wrapped = will_move.get();
 
   scoped_refptr<IceInteractionInterface> interaction_agent = nullptr;

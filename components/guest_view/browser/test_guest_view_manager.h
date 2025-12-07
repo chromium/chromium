@@ -36,19 +36,11 @@ class TestGuestViewManager : public GuestViewManager {
   // While the GuestViewBase directly represents a guest view, the
   // RenderFrameHost version exposes the guest view's main frame for the ease of
   // testing.
-  //
-  // All the WebContents versions APIs (here and on) will be removed during the
-  // MPArch migration. Consider using GuestViewBase or RenderFrameHost versions,
-  // unless necessary.
-  //
-  // TODO(crbug.com/40202416): Remove all the WebContents version.
   GuestViewBase* WaitForSingleGuestViewCreated();
   content::RenderFrameHost* WaitForSingleGuestRenderFrameHostCreated();
-  content::WebContents* DeprecatedWaitForSingleGuestCreated();
 
   GuestViewBase* WaitForNextGuestViewCreated();
   content::RenderFrameHost* WaitForNextGuestRenderFrameHostCreated();
-  content::WebContents* DeprecatedWaitForNextGuestCreated();
 
   void WaitForNumGuestsCreated(size_t count);
 
@@ -56,9 +48,9 @@ class TestGuestViewManager : public GuestViewManager {
 
   GuestViewBase* GetLastGuestViewCreated();
   content::RenderFrameHost* GetLastGuestRenderFrameHostCreated();
-  content::WebContents* DeprecatedGetLastGuestCreated();
 
   void WaitUntilAttached(GuestViewBase* guest_view);
+  [[nodiscard]] bool WaitUntilAttachedAndLoaded(GuestViewBase* guest_view);
 
   // Returns the number of guests currently still alive at the time of calling
   // this method.
@@ -102,9 +94,14 @@ class TestGuestViewManager : public GuestViewManager {
 
   // guest_view::GuestViewManager:
   void AddGuest(GuestViewBase* guest) override;
-  void EmbedderProcessDestroyed(int embedder_process_id) override;
-  void ViewGarbageCollected(int embedder_process_id,
+  void EmbedderProcessDestroyed(
+      content::ChildProcessId embedder_process_id) override;
+  void ViewGarbageCollected(content::ChildProcessId embedder_process_id,
                             int view_instance_id) override;
+  void AttachGuest(content::ChildProcessId embedder_process_id,
+                   int element_instance_id,
+                   int guest_instance_id,
+                   const base::Value::Dict& attach_params) override;
   void AttachGuest(int embedder_process_id,
                    int element_instance_id,
                    int guest_instance_id,

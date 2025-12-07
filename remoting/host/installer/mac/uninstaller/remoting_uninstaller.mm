@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "remoting/host/installer/mac/uninstaller/remoting_uninstaller.h"
 
 #import <Cocoa/Cocoa.h>
@@ -9,6 +14,7 @@
 
 #include "base/mac/authorization_util.h"
 #include "base/mac/scoped_authorizationref.h"
+#include "base/strings/stringprintf.h"
 #include "remoting/host/mac/constants_mac.h"
 
 void logOutput(FILE* pipe) {
@@ -99,7 +105,7 @@ NSArray<NSString*>* convertToNSArray(const char** array) {
   [self sudoCommand:"/bin/rm" withArguments:args usingAuth:authRef];
 }
 
-- (void)shutdownService {
+- (void)shutdownServiceUsingAuth:(AuthorizationRef)authRef {
   const char* launchCtl = "/bin/launchctl";
   const char* argsStop[] = { "stop", remoting::kServiceName, nullptr };
   [self runCommand:launchCtl withArguments:argsStop];
@@ -110,6 +116,19 @@ NSArray<NSString*>* convertToNSArray(const char** array) {
                                 remoting::kServicePlistPath, nullptr };
     [self runCommand:launchCtl withArguments:argsUnload];
   }
+
+  const char* argsUnloadBroker[] = {"bootout", remoting::kBrokerServiceTarget,
+                                    nullptr};
+  [self sudoCommand:launchCtl withArguments:argsUnloadBroker usingAuth:authRef];
+}
+
+- (void)killAllRemotingProcessesUsingAuth:(AuthorizationRef)authRef {
+  const char* pkill = "/usr/bin/pkill";
+  std::string remoting_processes_regex =
+      base::StringPrintf("^%s.*$", remoting::kHostBinaryPath);
+  const char* argsPkill[] = {"-9", "-f", remoting_processes_regex.data(),
+                             nullptr};
+  [self sudoCommand:pkill withArguments:argsPkill usingAuth:authRef];
 }
 
 - (void)keystoneUnregisterUsingAuth:(AuthorizationRef)authRef {
@@ -143,9 +162,11 @@ NSArray<NSString*>* convertToNSArray(const char** array) {
   // restart itself.
   [self sudoDelete:remoting::kHostEnabledPath usingAuth:authRef];
 
-  [self shutdownService];
+  [self shutdownServiceUsingAuth:authRef];
+  [self killAllRemotingProcessesUsingAuth:authRef];
 
   [self sudoDelete:remoting::kServicePlistPath usingAuth:authRef];
+  [self sudoDelete:remoting::kBrokerPlistPath usingAuth:authRef];
   [self sudoDelete:remoting::kHostBinaryPath usingAuth:authRef];
   [self sudoDelete:remoting::kHostLegacyBinaryPath usingAuth:authRef];
   [self sudoDelete:remoting::kOldHostHelperScriptPath usingAuth:authRef];

@@ -30,11 +30,11 @@ ScopedSid GetLogonSid(HANDLE token);
 // Converts a security descriptor in self-relative format to a security
 // descriptor in absolute format.
 bool MakeScopedAbsoluteSd(const ScopedSd& relative_sd,
-                          ScopedSd* absolute_sd,
-                          ScopedAcl* dacl,
-                          ScopedSid* group,
-                          ScopedSid* owner,
-                          ScopedAcl* sacl);
+                          ScopedSd& absolute_sd,
+                          ScopedAcl& dacl,
+                          ScopedSid& group,
+                          ScopedSid& owner,
+                          ScopedAcl& sacl);
 
 }  // namespace remoting
 

@@ -13,7 +13,7 @@
 
 MachineIdStatus GetDeterministicMachineSpecificId(std::string* machine_id) {
   base::mac::ScopedIOObject<io_service_t> platform_expert(
-      IOServiceGetMatchingService(kIOMasterPortDefault,
+      IOServiceGetMatchingService(kIOMainPortDefault,
                                   IOServiceMatching("IOPlatformExpertDevice")));
   if (!platform_expert.get())
     return MachineIdStatus::FAILURE;

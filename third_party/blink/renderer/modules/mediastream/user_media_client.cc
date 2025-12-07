@@ -110,7 +110,7 @@ UserMediaClient::RequestQueue::RequestQueue(
       apply_constraints_processor_(
           MakeGarbageCollected<ApplyConstraintsProcessor>(
               frame,
-              WTF::BindRepeating(
+              BindRepeating(
                   [](UserMediaClient* client)
                       -> mojom::blink::MediaDevicesDispatcherHost* {
                     // |client| is guaranteed to be not null because |client|
@@ -141,17 +141,7 @@ void UserMediaClient::RequestQueue::EnqueueAndMaybeProcess(Request* request) {
 void UserMediaClient::RequestQueue::CancelUserMediaRequest(
     UserMediaRequest* user_media_request) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  {
-    // TODO(guidou): Remove this conditional logging. https://crbug.com/764293
-    UserMediaRequest* request = user_media_processor_->CurrentRequest();
-    if (request == user_media_request) {
-      blink::WebRtcLogMessage(
-          base::StringPrintf("UMCI::CancelUserMediaRequest. request_id=%d",
-                             request->request_id()));
-    }
-  }
-
-  if (!user_media_processor_->DeleteUserMediaRequest(user_media_request)) {
+  if (!user_media_processor_->CancelRequest(user_media_request)) {
     for (auto it = pending_requests_.begin(); it != pending_requests_.end();
          ++it) {
       if ((*it)->IsUserMedia() &&
@@ -199,21 +189,21 @@ void UserMediaClient::RequestQueue::MaybeProcessNextRequestInfo() {
   if (current_request->IsUserMedia()) {
     user_media_processor_->ProcessRequest(
         current_request->MoveUserMediaRequest(),
-        WTF::BindOnce(&UserMediaClient::RequestQueue::CurrentRequestCompleted,
-                      WrapWeakPersistent(this)));
+        BindOnce(&UserMediaClient::RequestQueue::CurrentRequestCompleted,
+                 WrapWeakPersistent(this)));
   } else if (current_request->IsApplyConstraints()) {
     apply_constraints_processor_->ProcessRequest(
         current_request->apply_constraints_request(),
-        WTF::BindOnce(&UserMediaClient::RequestQueue::CurrentRequestCompleted,
-                      WrapWeakPersistent(this)));
+        BindOnce(&UserMediaClient::RequestQueue::CurrentRequestCompleted,
+                 WrapWeakPersistent(this)));
   } else {
     DCHECK(current_request->IsStopTrack());
     MediaStreamTrackPlatform* track = MediaStreamTrackPlatform::GetTrack(
         WebMediaStreamTrack(current_request->track_to_stop()));
     if (track) {
       track->StopAndNotify(
-          WTF::BindOnce(&UserMediaClient::RequestQueue::CurrentRequestCompleted,
-                        WrapWeakPersistent(this)));
+          BindOnce(&UserMediaClient::RequestQueue::CurrentRequestCompleted,
+                   WrapWeakPersistent(this)));
     } else {
       CurrentRequestCompleted();
     }
@@ -227,7 +217,7 @@ void UserMediaClient::RequestQueue::CurrentRequestCompleted() {
     frame_->GetTaskRunner(blink::TaskType::kInternalMedia)
         ->PostTask(
             FROM_HERE,
-            WTF::BindOnce(
+            BindOnce(
                 &UserMediaClient::RequestQueue::MaybeProcessNextRequestInfo,
                 WrapWeakPersistent(this)));
   }
@@ -267,8 +257,8 @@ UserMediaClient::UserMediaClient(
     UserMediaProcessor* user_media_processor,
     UserMediaProcessor* display_user_media_processor,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : Supplement<LocalDOMWindow>(*frame->DomWindow()),
-      ExecutionContextLifecycleObserver(frame->DomWindow()),
+    : ExecutionContextLifecycleObserver(frame->DomWindow()),
+      local_dom_window_(*frame->DomWindow()),
       frame_(frame),
       media_devices_dispatcher_(frame->DomWindow()),
       pending_device_requests_(
@@ -284,7 +274,7 @@ UserMediaClient::UserMediaClient(
   CHECK(frame_);
 
   // WrapWeakPersistent is safe because the |frame_| owns UserMediaClient.
-  frame_->SetIsCapturingMediaCallback(WTF::BindRepeating(
+  frame_->SetIsCapturingMediaCallback(BindRepeating(
       [](UserMediaClient* client) { return client && client->IsCapturing(); },
       WrapWeakPersistent(this)));
 }
@@ -296,7 +286,7 @@ UserMediaClient::UserMediaClient(
           frame,
           MakeGarbageCollected<UserMediaProcessor>(
               frame,
-              WTF::BindRepeating(
+              BindRepeating(
                   [](UserMediaClient* client)
                       -> mojom::blink::MediaDevicesDispatcherHost* {
                     // |client| is guaranteed to be not null because |client|
@@ -308,7 +298,7 @@ UserMediaClient::UserMediaClient(
               frame->GetTaskRunner(blink::TaskType::kInternalMedia)),
           MakeGarbageCollected<UserMediaProcessor>(
               frame,
-              WTF::BindRepeating(
+              BindRepeating(
                   [](UserMediaClient* client)
                       -> mojom::blink::MediaDevicesDispatcherHost* {
                     // |client| is guaranteed to be not null because
@@ -433,7 +423,7 @@ void UserMediaClient::ContextDestroyed() {
 }
 
 void UserMediaClient::Trace(Visitor* visitor) const {
-  Supplement<LocalDOMWindow>::Trace(visitor);
+  visitor->Trace(local_dom_window_);
   ExecutionContextLifecycleObserver::Trace(visitor);
   visitor->Trace(frame_);
   visitor->Trace(media_devices_dispatcher_);
@@ -460,20 +450,18 @@ UserMediaClient::GetMediaDevicesDispatcher() {
   return media_devices_dispatcher_.get();
 }
 
-const char UserMediaClient::kSupplementName[] = "UserMediaClient";
-
 UserMediaClient* UserMediaClient::From(LocalDOMWindow* window) {
   if (!window) {
     return nullptr;
   }
-  auto* client = Supplement<LocalDOMWindow>::From<UserMediaClient>(window);
+  UserMediaClient* client = window->GetUserMediaClient();
   if (!client) {
     if (!window->GetFrame()) {
       return nullptr;
     }
     client = MakeGarbageCollected<UserMediaClient>(
         window->GetFrame(), window->GetTaskRunner(TaskType::kInternalMedia));
-    Supplement<LocalDOMWindow>::ProvideTo(*window, client);
+    window->SetUserMediaClient(client);
   }
   return client;
 }
@@ -488,6 +476,8 @@ void UserMediaClient::KeepDeviceAliveForTransfer(
 
 UserMediaClient::RequestQueue* UserMediaClient::GetRequestQueue(
     mojom::blink::MediaStreamType media_stream_type) {
+  // TODO(crbug.com/410466097): Remove the additional DISPLAY_AUDIO_CAPTURE
+  // check once kDisplayAudioCaptureKillSwitch is removed.
   if (IsScreenCaptureMediaType(media_stream_type) ||
       media_stream_type ==
           mojom::blink::MediaStreamType::DISPLAY_AUDIO_CAPTURE) {

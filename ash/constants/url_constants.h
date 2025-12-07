@@ -15,6 +15,10 @@
 
 namespace chrome {
 
+// URL for the Google Privacy Policy.
+inline constexpr char kGooglePrivacyPolicyUrl[] =
+    "https://policies.google.com/privacy";
+
 // The URL for the "Learn more" link for Android Messages.
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAndroidMessagesLearnMoreURL[];
@@ -22,6 +26,10 @@ extern const char kAndroidMessagesLearnMoreURL[];
 // "Learn more" URL for APN settings.
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char16_t kApnSettingsLearnMoreUrl[];
+
+// The host and URL for the Borealis MOTD Dialog
+inline constexpr char kChromeUIBorealisMOTDHost[] = "borealis-motd";
+inline constexpr char kChromeUIBorealisMOTDURL[] = "chrome://borealis-motd";
 
 // The host and URL for the Focus Mode media player.
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -32,6 +40,18 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kChromeUIFocusModePlayerHost[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kChromeUIFocusModePlayerURL[];
+
+// "Learn more" URL for Help Me Read and Help Me Write feature on ChromeOS.
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kHelpMeReadWriteLearnMoreURL[];
+
+// "Learn more" URL for Lobster feature on ChromeOS.
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kLobsterLearnMoreURL[];
+
+// "Learn more" URL for Scanner feature on ChromeOS.
+inline constexpr char kScannerLearnMoreUrl[] =
+    "https://support.google.com/chromebook?p=dugong3";
 
 // The URL for additional help that is given when Linux export/import fails.
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLinuxExportImportHelpURL[];

@@ -13,16 +13,15 @@
 
 namespace {
 
-BASE_FEATURE(kProfileBasedInstantService,
-             "ProfileBasedInstantService",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kProfileBasedInstantService, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
 
 // static
 InstantService* InstantServiceFactory::GetForProfile(Profile* profile) {
   DCHECK(search::IsInstantExtendedAPIEnabled());
-  TRACE_EVENT0("loading", "InstantServiceFactory::GetForProfile");
+  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("loading"),
+              "InstantServiceFactory::GetForProfile");
   if (base::FeatureList::IsEnabled(kProfileBasedInstantService)) {
     if (!profile->instant_service()) {
       profile->set_instant_service(static_cast<InstantService*>(

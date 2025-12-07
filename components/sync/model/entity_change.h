@@ -17,13 +17,16 @@ class EntityChange {
  public:
   enum ChangeType { ACTION_ADD, ACTION_UPDATE, ACTION_DELETE };
 
+  // Note: `storage_key` may be empty, for data types where
+  // DataTypeSyncBridge::SupportsGetStorageKey() returns false.
   static std::unique_ptr<EntityChange> CreateAdd(const std::string& storage_key,
                                                  EntityData data);
   static std::unique_ptr<EntityChange> CreateUpdate(
       const std::string& storage_key,
       EntityData data);
   static std::unique_ptr<EntityChange> CreateDelete(
-      const std::string& storage_key);
+      const std::string& storage_key,
+      EntityData data);
   static std::unique_ptr<EntityChange> CreateDeletedCollaborationMembership(
       const std::string& storage_key);
 

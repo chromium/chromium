@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] cookieStore.get with whitespace
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'name')"
+Harness: the test ran to completion.
+

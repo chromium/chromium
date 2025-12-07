@@ -18,7 +18,6 @@ interface ContentSettingsManager {
   Clone(pending_receiver<ContentSettingsManager> clone);
 
   enum StorageType {
-    DATABASE,
     LOCAL_STORAGE,
     SESSION_STORAGE,
     FILE_SYSTEM,

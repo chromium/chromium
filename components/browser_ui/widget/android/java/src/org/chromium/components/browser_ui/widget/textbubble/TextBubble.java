@@ -20,24 +20,26 @@ import android.widget.PopupWindow.OnDismissListener;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.RectProvider;
-import org.chromium.ui.widget.ViewRectProvider;
 
 import java.util.HashSet;
 import java.util.Set;
 
 /** UI component that handles showing a text callout bubble. */
+@NullMarked
 public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
     /**
      * Specifies no limit to the popup duration.
@@ -52,8 +54,8 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
     private static final Set<TextBubble> sBubbles = new HashSet<>();
 
     /** A supplier which notifies of changes of text bubbles count. */
-    private static final ObservableSupplierImpl<Integer> sCountSupplier =
-            new ObservableSupplierImpl<>();
+    private static final SettableNonNullObservableSupplier<Integer> sCountSupplier =
+            ObservableSuppliers.createNonNull(0);
 
     /** Disable assert error if it fails to be displayed. */
     private static boolean sSkipShowCheckForTesting;
@@ -66,15 +68,15 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
     private final AnchoredPopupWindow mPopupWindow;
 
     /** The {@link Drawable} that is responsible for drawing the bubble and the arrow. */
-    @Nullable private ArrowBubbleDrawable mBubbleDrawable;
+    private @Nullable ArrowBubbleDrawable mBubbleDrawable;
 
     /** The {@link Drawable} that precedes the text in the bubble. */
-    protected final Drawable mImageDrawable;
+    protected final @Nullable Drawable mImageDrawable;
 
     /** Runnables for snoozable text bubble option. */
-    private final Runnable mSnoozeRunnable;
+    private final @Nullable Runnable mSnoozeRunnable;
 
-    private final Runnable mSnoozeDismissRunnable;
+    private final @Nullable Runnable mSnoozeDismissRunnable;
 
     /** Time tracking for histograms. */
     private long mBubbleShowStartTime;
@@ -97,10 +99,12 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
             };
 
     /**
-     * How long to wait before automatically dismissing the bubble.  {@link #NO_TIMEOUT} is the
+     * How long to wait before automatically dismissing the bubble. {@link #NO_TIMEOUT} is the
      * default and means the bubble will stay visible indefinitely.
      */
     private long mAutoDismissTimeoutMs = NO_TIMEOUT;
+
+    private boolean mDismissOnTouchInteraction;
 
     // Content specific variables.
     /** The string to show in the bubble. */
@@ -115,94 +119,9 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
     protected View mContentView;
 
     /**
-     * Constructs a {@link TextBubble} instance using the default arrow drawable background. Creates
-     * a {@link ViewRectProvider} using the provided {@code anchorView}.
-     * @param context  Context to draw resources from.
-     * @param rootView The {@link View} to use for size calculations and for display.
-     * @param stringId The id of the string resource for the text that should be shown.
-     * @param accessibilityStringId The id of the string resource of the accessibility text.
-     * @param anchorView The {@link View} used to anchor the bubble.
-     * @param isAccessibilityEnabled Whether accessibility mode is enabled. Used to determine bubble
-     *         text and dismiss UX.
-     */
-    public TextBubble(
-            Context context,
-            View rootView,
-            @StringRes int stringId,
-            @StringRes int accessibilityStringId,
-            View anchorView,
-            boolean isAccessibilityEnabled) {
-        this(
-                context,
-                rootView,
-                stringId,
-                accessibilityStringId,
-                true,
-                new ViewRectProvider(anchorView),
-                isAccessibilityEnabled);
-    }
-
-    /**
-     * Constructs a {@link TextBubble} instance using the default arrow drawable background. Creates
-     * a {@link RectProvider} using the provided {@code anchorRect}.
-     * @param context  Context to draw resources from.
-     * @param rootView The {@link View} to use for size calculations and for display.
-     * @param stringId The id of the string resource for the text that should be shown.
-     * @param accessibilityStringId The id of the string resource of the accessibility text.
-     * @param anchorRect The {@link Rect} used to anchor the text bubble.
-     * @param isAccessibilityEnabled Whether accessibility mode is enabled. Used to determine bubble
-     *         text and dismiss UX.
-     */
-    public TextBubble(
-            Context context,
-            View rootView,
-            @StringRes int stringId,
-            @StringRes int accessibilityStringId,
-            Rect anchorRect,
-            boolean isAccessibilityEnabled) {
-        this(
-                context,
-                rootView,
-                stringId,
-                accessibilityStringId,
-                true,
-                new RectProvider(anchorRect),
-                isAccessibilityEnabled);
-    }
-
-    /**
-     * Constructs a {@link TextBubble} instance. Creates a {@link RectProvider} using the provided
-     * {@code anchorRect}.
-     * @param context  Context to draw resources from.
-     * @param rootView The {@link View} to use for size calculations and for display.
-     * @param stringId The id of the string resource for the text that should be shown.
-     * @param accessibilityStringId The id of the string resource of the accessibility text.
-     * @param showArrow Whether the bubble should have an arrow.
-     * @param anchorRect The {@link Rect} used to anchor the text bubble.
-     * @param isAccessibilityEnabled Whether accessibility mode is enabled. Used to determine bubble
-     *         text and dismiss UX.
-     */
-    public TextBubble(
-            Context context,
-            View rootView,
-            @StringRes int stringId,
-            @StringRes int accessibilityStringId,
-            boolean showArrow,
-            Rect anchorRect,
-            boolean isAccessibilityEnabled) {
-        this(
-                context,
-                rootView,
-                stringId,
-                accessibilityStringId,
-                showArrow,
-                new RectProvider(anchorRect),
-                isAccessibilityEnabled);
-    }
-
-    /**
      * Constructs a {@link TextBubble} instance using the default arrow drawable background.
-     * @param context  Context to draw resources from.
+     *
+     * @param context Context to draw resources from.
      * @param rootView The {@link View} to use for size calculations and for display.
      * @param stringId The id of the string resource for the text that should be shown.
      * @param accessibilityStringId The id of the string resource of the accessibility text.
@@ -489,7 +408,14 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
         mPopupWindow.dismiss();
     }
 
-    /** @return Whether the bubble is currently showing. */
+    /** Used for testing only. Explicitly trigger dismiss listeners. */
+    public void onDismissForTesting(boolean byInsideTouch) {
+        mPopupWindow.onDismissForTesting(byInsideTouch);
+    }
+
+    /**
+     * @return Whether the bubble is currently showing.
+     */
     public boolean isShowing() {
         return mPopupWindow.isShowing();
     }
@@ -504,8 +430,8 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
 
     /**
      * @return A supplier which notifies of changes of text bubbles count.
-     * */
-    public static ObservableSupplier<Integer> getCountSupplier() {
+     */
+    public static NonNullObservableSupplier<Integer> getCountSupplier() {
         return sCountSupplier;
     }
 
@@ -513,7 +439,7 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
      * @param onTouchListener A callback for all touch events being dispatched to the bubble.
      * @see PopupWindow#setTouchInterceptor(OnTouchListener)
      */
-    public void setTouchInterceptor(OnTouchListener onTouchListener) {
+    public void setTouchInterceptor(@Nullable OnTouchListener onTouchListener) {
         mPopupWindow.setTouchInterceptor(onTouchListener);
     }
 
@@ -567,7 +493,12 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
     public void setDismissOnTouchInteraction(boolean dismiss) {
         // For accessibility mode, since there is no timeout value, the bubble can be dismissed
         // only on touch interaction.
-        mPopupWindow.setDismissOnTouchInteraction(mIsAccessibilityEnabled || dismiss);
+        mDismissOnTouchInteraction = mIsAccessibilityEnabled || dismiss;
+        mPopupWindow.setDismissOnTouchInteraction(mDismissOnTouchInteraction);
+    }
+
+    public boolean getDismissOnTouchInteractionForTesting() {
+        return mDismissOnTouchInteraction;
     }
 
     /**
@@ -578,6 +509,15 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
     public void setPreferredVerticalOrientation(
             @AnchoredPopupWindow.VerticalOrientation int orientation) {
         mPopupWindow.setPreferredVerticalOrientation(orientation);
+    }
+
+    /**
+     * Return if the popup was dismissed by inside touch last time. It shouldn't be called when the
+     * popup is showing
+     */
+    public boolean wasDismissedByInsideTouch() {
+        assert !isShowing();
+        return mPopupWindow.wasDismissedByInsideTouch();
     }
 
     @Override
@@ -623,7 +563,7 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
             }
 
             if (mSnoozeRunnable != null) {
-                Button snoozeButton = (Button) view.findViewById(R.id.button_snooze);
+                Button snoozeButton = view.findViewById(R.id.button_snooze);
                 snoozeButton.setVisibility(View.VISIBLE);
                 snoozeButton.setOnClickListener(
                         v -> {
@@ -631,7 +571,7 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
                             mDismissRunnable.run();
                         });
             } else if (mSnoozeDismissRunnable != null) {
-                Button dismissButton = (Button) view.findViewById(R.id.button_dismiss);
+                Button dismissButton = view.findViewById(R.id.button_dismiss);
                 dismissButton.setVisibility(View.VISIBLE);
                 dismissButton.setOnClickListener(
                         v -> {

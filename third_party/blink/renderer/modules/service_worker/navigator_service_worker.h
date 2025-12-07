@@ -11,8 +11,8 @@
 
 namespace blink {
 
+class ExecutionContext;
 class ExceptionState;
-class LocalDOMWindow;
 class Navigator;
 class ScriptState;
 class ServiceWorkerContainer;
@@ -21,7 +21,7 @@ class MODULES_EXPORT NavigatorServiceWorker {
   STATIC_ONLY(NavigatorServiceWorker);
 
  public:
-  static ServiceWorkerContainer* From(LocalDOMWindow&);
+  static ServiceWorkerContainer* From(ExecutionContext&);
   static ServiceWorkerContainer* serviceWorker(ScriptState*,
                                                Navigator&,
                                                ExceptionState&);

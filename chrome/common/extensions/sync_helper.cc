@@ -5,6 +5,7 @@
 #include "chrome/common/extensions/sync_helper.h"
 
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "components/app_constants/constants.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -57,10 +58,9 @@ bool IsSyncable(const Extension* extension) {
       return false;
 
     case Manifest::NUM_LOAD_TYPES:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool IsSyncableComponentExtension(const Extension* extension) {

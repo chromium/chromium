@@ -3,7 +3,14 @@
 // found in the LICENSE file.
 
 #include "base/win/scoped_handle.h"
+
+#include <string>
+
+#include "base/check_op.h"
+#include "base/debug/alias.h"
+#include "base/logging.h"
 #include "base/win/scoped_handle_verifier.h"
+#include "base/win/win_util.h"
 #include "base/win/windows_types.h"
 
 namespace base {
@@ -53,6 +60,22 @@ void DisableHandleVerifier() {
 
 void OnHandleBeingClosed(HANDLE handle, HandleOperation operation) {
   return ScopedHandleVerifier::Get()->OnHandleBeingClosed(handle, operation);
+}
+
+expected<ScopedHandle, NTSTATUS> TakeHandleOfType(
+    HANDLE handle,
+    std::wstring_view object_type_name) {
+  // Invalid and pseudo handle values are rejected by GetObjectTypeName().
+  auto type_name = GetObjectTypeName(handle);
+  if (!type_name.has_value()) {
+    // `handle` is invalid. Return the error to the caller.
+    return unexpected(type_name.error());
+  }
+  // Crash if `handle` is an unexpected type. This represents a dangerous
+  // type confusion condition that should never happen.
+  base::debug::Alias(&handle);
+  CHECK_EQ(*type_name, object_type_name);
+  return ScopedHandle(handle);  // Ownership of `handle` goes to the caller.
 }
 
 }  // namespace win

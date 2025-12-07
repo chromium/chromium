@@ -10,8 +10,8 @@
 #import "base/notreached.h"
 
 using base::RecordAction;
-using base::UserMetricsAction;
 using base::UmaHistogramEnumeration;
+using base::UserMetricsAction;
 
 void LogNonModalPromoAction(NonModalPromoAction action,
                             NonModalPromoTriggerType type,
@@ -37,8 +37,7 @@ void LogNonModalPromoAction(NonModalPromoAction action,
       // No-op.
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   std::string histogramString;
@@ -85,8 +84,7 @@ void LogNonModalPromoAction(NonModalPromoAction action,
       break;
 
     default:
-      // TODO(crbug.com/327429982): M124 validation necessary.
-      NOTREACHED(base::NotFatalUntil::M126);
+      NOTREACHED();
   }
 
   UmaHistogramEnumeration(histogramString, action);
@@ -107,8 +105,7 @@ void LogNonModalPromoAction(NonModalPromoAction action,
 
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

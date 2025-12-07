@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -62,9 +59,8 @@ class MessageDumper : public mojo::MessageFilter {
     }
 
     size_t size = message->data_num_bytes();
-    const char* data = reinterpret_cast<const char*>(message->data());
-    int ret = file.WriteAtCurrentPos(data, size);
-    if (ret != static_cast<int>(size)) {
+    const uint8_t* data = message->data();
+    if (!file.WriteAtCurrentPosAndCheck(UNSAFE_TODO(base::span(data, size)))) {
       LOG(ERROR) << "Failed to write " << size << " bytes.";
       return false;
     }
@@ -269,10 +265,10 @@ void DumpMessages(std::string output_directory) {
 
 int main(int argc, char** argv) {
   if (argc < 2) {
-    printf("Usage: %s [output_directory]\n", argv[0]);
+    UNSAFE_TODO(printf("Usage: %s [output_directory]\n", argv[0]));
     exit(1);
   }
-  std::string output_directory(argv[1]);
+  std::string output_directory(UNSAFE_TODO(argv[1]));
 
   /* Dump the messages from a TaskExecutor, and wait for it to finish. */
   env->main_thread_task_executor.task_runner()->PostTask(

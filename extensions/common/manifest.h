@@ -27,22 +27,36 @@ class Manifest final {
   // Do not change the order of entries or remove entries in this list as this
   // is used in ExtensionType enum in
   // tools/metrics/histograms/metadata/extensions/enums.xml.
+  // TODO(crbug.com/420858216): Add add "class" to declaration.
   enum Type {
-    TYPE_UNKNOWN = 0,
-    TYPE_EXTENSION = 1,
-    TYPE_THEME = 2,
-    TYPE_USER_SCRIPT = 3,
-    TYPE_HOSTED_APP = 4,
+    kUnknown = 0,
+    kExtension = 1,
+    kTheme = 2,
+    kUserScript = 3,
+    kHostedApp = 4,
     // This is marked legacy because platform apps are preferred. For
     // backwards compatibility, we can't remove support for packaged apps
-    TYPE_LEGACY_PACKAGED_APP = 5,
-    TYPE_PLATFORM_APP = 6,
-    TYPE_SHARED_MODULE = 7,
-    TYPE_LOGIN_SCREEN_EXTENSION = 8,
-    TYPE_CHROMEOS_SYSTEM_EXTENSION = 9,
+    kLegacyPackagedApp = 5,
+    kPlatformApp = 6,
+    kSharedModule = 7,
+    kLoginScreenExtension = 8,
+    kChromeOSSystemExtension = 9,
 
     // New enum values must go above here.
-    NUM_LOAD_TYPES
+    kNumLoadTypes,
+
+    // TODO(crbug.com/420858216): Remove these legacy values/names.
+    TYPE_UNKNOWN = kUnknown,
+    TYPE_EXTENSION = kExtension,
+    TYPE_THEME = kTheme,
+    TYPE_USER_SCRIPT = kUserScript,
+    TYPE_HOSTED_APP = kHostedApp,
+    TYPE_LEGACY_PACKAGED_APP = kLegacyPackagedApp,
+    TYPE_PLATFORM_APP = kPlatformApp,
+    TYPE_SHARED_MODULE = kSharedModule,
+    TYPE_LOGIN_SCREEN_EXTENSION = kLoginScreenExtension,
+    TYPE_CHROMEOS_SYSTEM_EXTENSION = kChromeOSSystemExtension,
+    NUM_LOAD_TYPES = kNumLoadTypes
   };
 
   // Given two install sources, return the one which should take priority
@@ -52,7 +66,7 @@ class Manifest final {
       mojom::ManifestLocation loc1,
       mojom::ManifestLocation loc2);
 
-  // Whether the |location| is external or not.
+  // Whether the `location` is external or not.
   static inline bool IsExternalLocation(mojom::ManifestLocation location) {
     return location == mojom::ManifestLocation::kExternalPref ||
            location == mojom::ManifestLocation::kExternalRegistry ||
@@ -62,13 +76,13 @@ class Manifest final {
            location == mojom::ManifestLocation::kExternalComponent;
   }
 
-  // Whether the |location| is unpacked (no CRX) or not.
+  // Whether the `location` is unpacked (no CRX) or not.
   static inline bool IsUnpackedLocation(mojom::ManifestLocation location) {
     return location == mojom::ManifestLocation::kUnpacked ||
            location == mojom::ManifestLocation::kCommandLine;
   }
 
-  // Whether extensions with |location| are auto-updatable or not.
+  // Whether extensions with `location` are auto-updatable or not.
   static inline bool IsAutoUpdateableLocation(
       mojom::ManifestLocation location) {
     // Only internal and external extensions can be autoupdated.
@@ -76,14 +90,14 @@ class Manifest final {
            IsExternalLocation(location);
   }
 
-  // Whether the |location| is a source of extensions force-installed through
+  // Whether the `location` is a source of extensions force-installed through
   // policy.
   static inline bool IsPolicyLocation(mojom::ManifestLocation location) {
     return location == mojom::ManifestLocation::kExternalPolicy ||
            location == mojom::ManifestLocation::kExternalPolicyDownload;
   }
 
-  // Whether the |location| is an extension intended to be an internal part of
+  // Whether the `location` is an extension intended to be an internal part of
   // Chrome.
   static inline bool IsComponentLocation(mojom::ManifestLocation location) {
     return location == mojom::ManifestLocation::kComponent ||
@@ -102,17 +116,17 @@ class Manifest final {
     return IsUnpackedLocation(location);
   }
 
-  // Returns the Manifest::Type for the given |value|.
+  // Returns the Manifest::Type for the given `value`.
   static Type GetTypeFromManifestValue(const base::Value::Dict& value,
                                        bool for_login_screen = false);
 
-  // Returns true if an item with the given |location| should always be loaded,
+  // Returns true if an item with the given `location` should always be loaded,
   // even if extensions are otherwise disabled.
   static bool ShouldAlwaysLoadExtension(mojom::ManifestLocation location,
                                         bool is_theme);
 
   // Creates a Manifest for a login screen context. Note that this won't always
-  // result in a Manifest of TYPE_LOGIN_SCREEN_EXTENSION, since other items
+  // result in a Manifest of Type::kLoginScreenExtension, since other items
   // (like platform apps) may be installed in the same login screen profile.
   static std::unique_ptr<Manifest> CreateManifestForLoginScreen(
       mojom::ManifestLocation location,
@@ -133,7 +147,7 @@ class Manifest final {
 
   mojom::ManifestLocation location() const { return location_; }
 
-  // Populates |warnings| if manifest contains keys not permitted for the
+  // Populates `warnings` if manifest contains keys not permitted for the
   // chosen extension type.
   void ValidateManifest(std::vector<InstallWarning>* warnings) const;
 
@@ -146,22 +160,22 @@ class Manifest final {
   // Returns the manifest type.
   Type type() const { return type_; }
 
-  bool is_theme() const { return type_ == TYPE_THEME; }
+  bool is_theme() const { return type_ == Type::kTheme; }
   bool is_app() const {
     return is_legacy_packaged_app() || is_hosted_app() || is_platform_app();
   }
-  bool is_platform_app() const { return type_ == TYPE_PLATFORM_APP; }
-  bool is_hosted_app() const { return type_ == TYPE_HOSTED_APP; }
+  bool is_platform_app() const { return type_ == Type::kPlatformApp; }
+  bool is_hosted_app() const { return type_ == Type::kHostedApp; }
   bool is_legacy_packaged_app() const {
-    return type_ == TYPE_LEGACY_PACKAGED_APP;
+    return type_ == Type::kLegacyPackagedApp;
   }
-  bool is_extension() const { return type_ == TYPE_EXTENSION; }
+  bool is_extension() const { return type_ == Type::kExtension; }
   bool is_login_screen_extension() const {
-    return type_ == TYPE_LOGIN_SCREEN_EXTENSION;
+    return type_ == Type::kLoginScreenExtension;
   }
-  bool is_shared_module() const { return type_ == TYPE_SHARED_MODULE; }
+  bool is_shared_module() const { return type_ == Type::kSharedModule; }
   bool is_chromeos_system_extension() const {
-    return type_ == TYPE_CHROMEOS_SYSTEM_EXTENSION;
+    return type_ == Type::kChromeOSSystemExtension;
   }
 
   // These access the wrapped manifest value, returning nullptr/nullopt when the
@@ -177,7 +191,7 @@ class Manifest final {
   // Deprecated: Use the FindDictPath(asValue) functions instead.
   bool GetList(const std::string& path, const base::Value** out_value) const;
 
-  // Returns true if this equals the |other| manifest.
+  // Returns true if this equals the `other` manifest.
   bool EqualsForTesting(const Manifest& other) const;
 
   // Gets the underlying base::Value::Dict representing the manifest.
@@ -212,7 +226,7 @@ class Manifest final {
   // The underlying dictionary representation of the manifest.
   const base::Value::Dict value_;
 
-  // Same as |value_| but comprises only of keys available to this manifest.
+  // Same as `value_` but comprises only of keys available to this manifest.
   base::Value::Dict available_values_;
 
   const Type type_;

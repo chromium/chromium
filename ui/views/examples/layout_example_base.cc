@@ -49,25 +49,6 @@ class LayoutPanel : public View {
 BEGIN_METADATA(LayoutPanel)
 END_METADATA
 
-// This View holds two other views which consists of a view on the left onto
-// which the BoxLayout is attached for demonstrating its features. The view
-// on the right contains all the various controls which allow the user to
-// interactively control the various features/properties of BoxLayout.
-// Layout will ensure the left view takes 75% and the right view fills the
-// remaining 25%.
-class FullPanel : public View {
-  METADATA_HEADER(FullPanel, View)
-
- public:
-  FullPanel() = default;
-  FullPanel(const FullPanel&) = delete;
-  FullPanel& operator=(const FullPanel&) = delete;
-  ~FullPanel() override = default;
-};
-
-BEGIN_METADATA(FullPanel)
-END_METADATA
-
 std::unique_ptr<Textfield> CreateCommonTextfield(
     TextfieldController* container) {
   auto textfield = std::make_unique<Textfield>();
@@ -118,8 +99,9 @@ LayoutExampleBase::ChildPanel::~ChildPanel() = default;
 
 bool LayoutExampleBase::ChildPanel::OnMousePressed(
     const ui::MouseEvent& event) {
-  if (event.IsOnlyLeftMouseButton())
+  if (event.IsOnlyLeftMouseButton()) {
     SetSelected(true);
+  }
   return true;
 }
 
@@ -176,8 +158,9 @@ void LayoutExampleBase::ChildPanel::SetSelected(bool value) {
     OnThemeChanged();
     if (selected_ && parent()) {
       for (View* child : parent()->children()) {
-        if (child != this && child->GetGroup() == GetGroup())
+        if (child != this && child->GetGroup() == GetGroup()) {
           static_cast<ChildPanel*>(child)->SetSelected(false);
+        }
       }
     }
     margin_.left->SetVisible(selected_);
@@ -207,10 +190,11 @@ void LayoutExampleBase::ChildPanel::ContentsChanged(
     Textfield* sender,
     const std::u16string& new_contents) {
   const gfx::Insets margins = LayoutExampleBase::TextfieldsToInsets(margin_);
-  if (!margins.IsEmpty())
+  if (!margins.IsEmpty()) {
     SetProperty(kMarginsKey, margins);
-  else
+  } else {
     ClearProperty(kMarginsKey);
+  }
   example_->RefreshLayoutPanel(sender == flex_);
 }
 
@@ -237,8 +221,9 @@ LayoutExampleBase::~LayoutExampleBase() {
 }
 
 void LayoutExampleBase::RefreshLayoutPanel(bool update_layout) {
-  if (update_layout)
+  if (update_layout) {
     UpdateLayoutManager();
+  }
   layout_panel_->InvalidateLayout();
   layout_panel_->SchedulePaint();
 }
@@ -247,14 +232,18 @@ gfx::Insets LayoutExampleBase::TextfieldsToInsets(
     const InsetTextfields& textfields,
     const gfx::Insets& default_insets) {
   int top, left, bottom, right;
-  if (!base::StringToInt(textfields.top->GetText(), &top))
+  if (!base::StringToInt(textfields.top->GetText(), &top)) {
     top = default_insets.top();
-  if (!base::StringToInt(textfields.left->GetText(), &left))
+  }
+  if (!base::StringToInt(textfields.left->GetText(), &left)) {
     left = default_insets.left();
-  if (!base::StringToInt(textfields.bottom->GetText(), &bottom))
+  }
+  if (!base::StringToInt(textfields.bottom->GetText(), &bottom)) {
     bottom = default_insets.bottom();
-  if (!base::StringToInt(textfields.right->GetText(), &right))
+  }
+  if (!base::StringToInt(textfields.right->GetText(), &right)) {
     right = default_insets.right();
+  }
   return gfx::Insets::TLBR(std::max(0, top), std::max(0, left),
                            std::max(0, bottom), std::max(0, right));
 }
@@ -328,19 +317,24 @@ Checkbox* LayoutExampleBase::CreateAndAddCheckbox(
 
 void LayoutExampleBase::CreateExampleView(View* container) {
   container->SetLayoutManager(std::make_unique<FillLayout>());
-  View* full_panel = container->AddChildView(std::make_unique<FullPanel>());
+  View* full_panel = container->AddChildView(std::make_unique<View>());
 
   auto* const manager = full_panel->SetLayoutManager(
       std::make_unique<BoxLayout>(views::BoxLayout::Orientation::kHorizontal));
   layout_panel_ = full_panel->AddChildView(std::make_unique<LayoutPanel>());
-  manager->SetFlexForView(layout_panel_, 3);
+  // Expand the layout panel as much as possible.
+  manager->SetFlexForView(layout_panel_, 1);
 
   control_panel_ = full_panel->AddChildView(std::make_unique<View>());
-  manager->SetFlexForView(control_panel_, 1);
-  control_panel_->SetLayoutManager(std::make_unique<BoxLayout>(
-      BoxLayout::Orientation::kVertical,
-      gfx::Insets::VH(kLayoutExampleVerticalSpacing, kLayoutExampleLeftPadding),
-      kLayoutExampleVerticalSpacing));
+  // Used the preferred width for control panel.
+  manager->SetFlexForView(control_panel_, 0);
+  control_panel_
+      ->SetLayoutManager(std::make_unique<BoxLayout>(
+          BoxLayout::Orientation::kVertical,
+          gfx::Insets::VH(kLayoutExampleVerticalSpacing,
+                          kLayoutExampleLeftPadding),
+          kLayoutExampleVerticalSpacing))
+      ->set_cross_axis_alignment(LayoutAlignment::kStart);
 
   auto* const row = control_panel_->AddChildView(std::make_unique<View>());
   row->SetLayoutManager(std::make_unique<BoxLayout>(
@@ -367,12 +361,14 @@ void LayoutExampleBase::CreateExampleView(View* container) {
 
 gfx::Size LayoutExampleBase::GetNewChildPanelPreferredSize() {
   int width;
-  if (!base::StringToInt(preferred_width_view_->GetText(), &width))
+  if (!base::StringToInt(preferred_width_view_->GetText(), &width)) {
     width = kLayoutExampleDefaultChildSize.width();
+  }
 
   int height;
-  if (!base::StringToInt(preferred_height_view_->GetText(), &height))
+  if (!base::StringToInt(preferred_height_view_->GetText(), &height)) {
     height = kLayoutExampleDefaultChildSize.height();
+  }
 
   return gfx::Size(std::max(0, width), std::max(0, height));
 }

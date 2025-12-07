@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/notreached.h"
 
 namespace base {
 
@@ -18,7 +19,7 @@ TestIOThread::TestIOThread(Mode mode)
     case kManualStart:
       return;
   }
-  CHECK(false) << "Invalid mode";
+  NOTREACHED() << "Invalid mode";
 }
 
 TestIOThread::~TestIOThread() {

@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/printing/print_servers_manager.h"
 #include "chrome/common/buildflags.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
@@ -59,9 +58,7 @@ class PrintPreviewHandlerChromeOS
 
  private:
   friend class PrintPreviewHandlerChromeOSTest;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   friend class TestPrintServersManager;
-#endif
 
   PrintPreviewHandler* GetPrintPreviewHandler();
 
@@ -135,10 +132,6 @@ class PrintPreviewHandlerChromeOS
 
   void SetInitiatorForTesting(content::WebContents* test_initiator);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  int GetLocalPrinterVersionForTesting() { return local_printer_version_; }
-#endif
-
   mojo::Receiver<crosapi::mojom::PrintServerObserver> receiver_{this};
 
   mojo::Receiver<crosapi::mojom::LocalPrintersObserver>
@@ -149,18 +142,12 @@ class PrintPreviewHandlerChromeOS
   // to find the initiator.
   raw_ptr<content::WebContents> test_initiator_ = nullptr;
 
-  // Used to transmit mojo interface method calls to ash chrome.
-  // Null if the interface is unavailable.
-  // Note that this is not propagated to LocalPrinterHandlerLacros.
-  // The pointer is constant - if ash crashes and the mojo connection is lost,
-  // lacros will automatically be restarted.
+  // Used to transmit mojo interface method calls to ash chrome. Null if
+  // CrosapiManager is unavailable. In the post-Lacros world, it still bears the
+  // responsibility of talking to other parts of Ash for printer related
+  // business logic.
   raw_ptr<crosapi::mojom::LocalPrinter, DanglingUntriaged> local_printer_ =
       nullptr;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Version number of the LocalPrinter mojo service.
-  int local_printer_version_ = 0;
-#endif
 
   base::WeakPtrFactory<PrintPreviewHandlerChromeOS> weak_factory_{this};
 };

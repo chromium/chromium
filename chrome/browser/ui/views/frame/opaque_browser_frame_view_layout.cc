@@ -22,6 +22,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/window/caption_button_layout_constants.h"
+#include "ui/views/window/frame_buttons.h"
 #include "ui/views/window/frame_caption_button.h"
 
 namespace {
@@ -73,6 +74,20 @@ void OpaqueBrowserFrameViewLayout::SetButtonOrdering(
   trailing_buttons_ = trailing_buttons;
 }
 
+const views::Button* OpaqueBrowserFrameViewLayout::GetFrameButton(
+    views::FrameButton which) const {
+  switch (which) {
+    case views::FrameButton::kClose:
+      return close_button_;
+    case views::FrameButton::kMinimize:
+      return minimize_button_;
+    case views::FrameButton::kMaximize:
+      return delegate_->IsMaximized() || delegate_->IsMinimized()
+                 ? restore_button_
+                 : maximize_button_;
+  }
+}
+
 gfx::Rect OpaqueBrowserFrameViewLayout::GetBoundsForTabStripRegion(
     const gfx::Size& tabstrip_minimum_size,
     int total_width) const {
@@ -84,10 +99,6 @@ gfx::Rect OpaqueBrowserFrameViewLayout::GetBoundsForTabStripRegion(
 
 gfx::Rect OpaqueBrowserFrameViewLayout::GetBoundsForWebAppFrameToolbar(
     const gfx::Size& toolbar_preferred_size) const {
-  if (delegate_->IsFullscreen()) {
-    return gfx::Rect();
-  }
-
   // Adding 2px of vertical padding puts at least 1 px of space on the top and
   // bottom of the element.
   constexpr int kVerticalPadding = 2;
@@ -98,16 +109,6 @@ gfx::Rect OpaqueBrowserFrameViewLayout::GetBoundsForWebAppFrameToolbar(
                    std::max(0, available_width),
                    toolbar_preferred_size.height() + kVerticalPadding +
                        kContentEdgeShadowThickness);
-}
-
-void OpaqueBrowserFrameViewLayout::LayoutWebAppWindowTitle(
-    const gfx::Rect& available_space,
-    views::Label& window_title_label) const {
-  gfx::Rect bounds = available_space;
-  bounds.Inset(gfx::Insets::TLBR(0, kIconTitleSpacing, 0, kCaptionSpacing));
-  window_title_label.SetSubpixelRenderingEnabled(false);
-  window_title_label.SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  window_title_label.SetBoundsRect(bounds);
 }
 
 gfx::Size OpaqueBrowserFrameViewLayout::GetMinimumSize(
@@ -122,8 +123,9 @@ gfx::Size OpaqueBrowserFrameViewLayout::GetMinimumSize(
 
   // Ensure that we can, at minimum, hold our window controls and a tab strip.
   int top_width = minimum_size_for_buttons_;
-  if (delegate_->IsTabStripVisible())
+  if (delegate_->IsTabStripVisible()) {
     top_width += delegate_->GetTabstripMinimumSize().width();
+  }
   min_size.set_width(std::max(min_size.width(), top_width));
 
   // Account for the frame.
@@ -154,14 +156,16 @@ gfx::Insets OpaqueBrowserFrameViewLayout::FrameBorderInsets(
 
 int OpaqueBrowserFrameViewLayout::FrameTopBorderThickness(bool restored) const {
   int thickness = FrameBorderInsets(restored).top();
-  if ((restored || !delegate_->IsFrameCondensed()) && thickness > 0)
+  if ((restored || !delegate_->IsFrameCondensed()) && thickness > 0) {
     thickness += NonClientExtraTopThickness();
+  }
   return thickness;
 }
 
 int OpaqueBrowserFrameViewLayout::NonClientTopHeight(bool restored) const {
-  if (!delegate_->ShouldShowWindowTitle())
+  if (!delegate_->ShouldShowWindowTitle()) {
     return FrameTopBorderThickness(restored);
+  }
 
   // Adding 2px of vertical padding puts at least 1 px of space on the top and
   // bottom of the element.
@@ -190,7 +194,7 @@ int OpaqueBrowserFrameViewLayout::DefaultCaptionButtonY(bool restored) const {
   // Maximized buttons start at window top, since the window has no border. This
   // offset is for the image (the actual clickable bounds extend all the way to
   // the top to take Fitts' Law into account).
-  return views::NonClientFrameView::kFrameShadowThickness;
+  return kFrameShadowThickness;
 }
 
 int OpaqueBrowserFrameViewLayout::CaptionButtonY(views::FrameButton button_id,
@@ -226,12 +230,12 @@ int OpaqueBrowserFrameViewLayout::GetWindowCaptionSpacing(
       // If we're the first button and maximized, add width to the right
       // hand side of the screen.
       return delegate_->IsFrameCondensed() && is_leading_button
-                 ? kFrameBorderThickness -
-                       views::NonClientFrameView::kFrameShadowThickness
+                 ? kFrameBorderThickness - kFrameShadowThickness
                  : 0;
     }
-    if (forced_window_caption_spacing_ >= 0)
+    if (forced_window_caption_spacing_ >= 0) {
       return forced_window_caption_spacing_;
+    }
   }
   return 0;
 }
@@ -239,15 +243,17 @@ int OpaqueBrowserFrameViewLayout::GetWindowCaptionSpacing(
 void OpaqueBrowserFrameViewLayout::SetWindowControlsOverlayEnabled(
     bool enabled,
     views::View* host) {
-  if (enabled == is_window_controls_overlay_enabled_)
+  if (enabled == is_window_controls_overlay_enabled_) {
     return;
+  }
 
   is_window_controls_overlay_enabled_ = enabled;
 
   for (const raw_ptr<views::Button>& button :
        {minimize_button_, maximize_button_, restore_button_, close_button_}) {
-    if (!button)
+    if (!button) {
       continue;
+    }
 
     if (is_window_controls_overlay_enabled_) {
       // Move button to top of hierarchy to ensure that it receives events
@@ -307,18 +313,19 @@ void OpaqueBrowserFrameViewLayout::LayoutWindowControls() {
 
   if (delegate_->ShouldShowCaptionButtons()) {
     for (const auto& button : leading_buttons_) {
-      ConfigureButton(button, ALIGN_LEADING);
+      ConfigureButton(button, ButtonAlignment::kAlignLeading);
       std::erase(buttons_not_shown, button);
     }
 
     for (const auto& button : base::Reversed(trailing_buttons_)) {
-      ConfigureButton(button, ALIGN_TRAILING);
+      ConfigureButton(button, ButtonAlignment::kAlignTrailing);
       std::erase(buttons_not_shown, button);
     }
   }
 
-  for (const auto& button_id : buttons_not_shown)
+  for (const auto& button_id : buttons_not_shown) {
     HideButton(button_id);
+  }
 }
 
 void OpaqueBrowserFrameViewLayout::LayoutTitleBar() {
@@ -369,8 +376,9 @@ void OpaqueBrowserFrameViewLayout::LayoutTitleBar() {
 
   if (window_icon_) {
     SetViewVisibility(window_icon_, should_show_icon);
-    if (should_show_icon)
+    if (should_show_icon) {
       window_icon_->SetBoundsRect(window_icon_bounds_);
+    }
   }
 
   if (window_title_) {
@@ -477,7 +485,7 @@ void OpaqueBrowserFrameViewLayout::SetBoundsForButton(
   gfx::Size button_size = button->GetPreferredSize();
   if (delegate_->GetFrameButtonStyle() ==
       OpaqueBrowserFrameViewLayoutDelegate::FrameButtonStyle::kMdButton) {
-    DCHECK_EQ(std::string(views::FrameCaptionButton::kViewClassName),
+    DCHECK_EQ(views::FrameCaptionButton::kViewClassName,
               button->GetClassName());
     const int caption_button_center_size =
         button_width - 2 * views::kCaptionButtonInkDropDefaultCornerRadius;
@@ -493,19 +501,19 @@ void OpaqueBrowserFrameViewLayout::SetBoundsForButton(
   } else if (delegate_->GetFrameButtonStyle() ==
              OpaqueBrowserFrameViewLayoutDelegate::FrameButtonStyle::
                  kImageButton) {
-    DCHECK_EQ(std::string(views::ImageButton::kViewClassName),
-              button->GetClassName());
+    DCHECK_EQ(views::ImageButton::kViewClassName, button->GetClassName());
     auto* const image_button = static_cast<views::ImageButton*>(button);
     image_button->SetImageHorizontalAlignment(
-        (alignment == ALIGN_LEADING) ? views::ImageButton::ALIGN_RIGHT
-                                     : views::ImageButton::ALIGN_LEFT);
+        (alignment == ButtonAlignment::kAlignLeading)
+            ? views::ImageButton::ALIGN_RIGHT
+            : views::ImageButton::ALIGN_LEFT);
     image_button->SetImageVerticalAlignment(views::ImageButton::ALIGN_BOTTOM);
   }
 
   TopAreaPadding top_area_padding = GetTopAreaPadding();
 
   switch (alignment) {
-    case ALIGN_LEADING: {
+    case ButtonAlignment::kAlignLeading: {
       int extra_width = top_area_padding.leading;
       int button_start_spacing =
           GetWindowCaptionSpacing(button_id, true, !placed_leading_button_);
@@ -533,7 +541,7 @@ void OpaqueBrowserFrameViewLayout::SetBoundsForButton(
       placed_leading_button_ = true;
       break;
     }
-    case ALIGN_TRAILING: {
+    case ButtonAlignment::kAlignTrailing: {
       int extra_width = top_area_padding.trailing;
       int button_start_spacing =
           GetWindowCaptionSpacing(button_id, true, !placed_trailing_button_);
@@ -583,11 +591,7 @@ void OpaqueBrowserFrameViewLayout::SetView(int id, views::View* view) {
       window_icon_ = view;
       break;
     case VIEW_ID_WINDOW_TITLE:
-      if (view) {
-        DCHECK_EQ(std::string(views::Label::kViewClassName),
-                  view->GetClassName());
-      }
-      window_title_ = static_cast<views::Label*>(view);
+      window_title_ = views::AsViewClass<views::Label>(view);
       break;
   }
 
@@ -635,10 +639,11 @@ void OpaqueBrowserFrameViewLayout::Layout(views::View* host) {
   placed_trailing_button_ = false;
 
   LayoutWindowControls();
-  if (is_window_controls_overlay_enabled_)
+  if (is_window_controls_overlay_enabled_) {
     LayoutTitleBarForWindowControlsOverlay(host);
-  else
+  } else {
     LayoutTitleBar();
+  }
 
   // Any buttons/icon/title were laid out based on the frame border thickness,
   // but the tabstrip bounds need to be based on the non-client border thickness
@@ -667,7 +672,7 @@ gfx::Size OpaqueBrowserFrameViewLayout::GetPreferredSize(
     const views::View* host) const {
   // This is never used; NonClientView::CalculatePreferredSize() will be called
   // instead.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 gfx::Size OpaqueBrowserFrameViewLayout::GetPreferredSize(
@@ -675,7 +680,7 @@ gfx::Size OpaqueBrowserFrameViewLayout::GetPreferredSize(
     const views::SizeBounds& available_size) const {
   // This is never used; NonClientView::CalculatePreferredSize() will be called
   // instead.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void OpaqueBrowserFrameViewLayout::ViewAdded(views::View* host,

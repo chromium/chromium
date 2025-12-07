@@ -4,15 +4,13 @@
 //
 #include "chromecast/common/user_agent.h"
 
-#include "base/android/build_info.h"
+#include "base/android/device_info.h"
 #include "components/embedder_support/user_agent_utils.h"
 
 namespace chromecast {
 
 std::string GetDeviceUserAgentSuffix() {
-  auto* build_info = base::android::BuildInfo::GetInstance();
-
-  if (build_info->is_tv()) {
+  if (base::android::device_info::is_tv()) {
     return "DeviceType/AndroidTV";
   } else {
     return "DeviceType/Android";

@@ -6,8 +6,8 @@
  * #type=style-lit
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
  * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
- * #import=./pdf_shared_lit.css.js
- * #include=pdf-shared-lit cr-hidden-style-lit
+ * #import=./pdf_shared.css.js
+ * #include=pdf-shared cr-hidden-style-lit
  * #css_wrapper_metadata_end */
 
 #item {

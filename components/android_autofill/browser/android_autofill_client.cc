@@ -17,15 +17,19 @@
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/credential_management/android/features.h"
+#include "components/credential_management/android/third_party_credential_manager_impl.h"
 #include "components/prefs/pref_service.h"
+#include "components/security_state/content/security_state_tab_helper.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/storage_partition.h"
@@ -45,10 +49,22 @@ void AndroidAutofillClient::CreateForWebContents(
 }
 
 AndroidAutofillClient::AndroidAutofillClient(content::WebContents* web_contents)
-    : autofill::ContentAutofillClient(web_contents) {}
+    : autofill::ContentAutofillClient(web_contents),
+      content_credential_manager_(
+          std::make_unique<
+              credential_management::ThirdPartyCredentialManagerImpl>(
+              web_contents)) {}
 
 AndroidAutofillClient::~AndroidAutofillClient() {
   HideAutofillSuggestions(autofill::SuggestionHidingReason::kTabGone);
+}
+
+base::WeakPtr<autofill::AutofillClient> AndroidAutofillClient::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
+const std::string& AndroidAutofillClient::GetAppLocale() const {
+  NOTREACHED();
 }
 
 bool AndroidAutofillClient::IsOffTheRecord() const {
@@ -64,28 +80,46 @@ AndroidAutofillClient::GetURLLoaderFactory() {
       ->GetURLLoaderFactoryForBrowserProcess();
 }
 
-autofill::AutofillCrowdsourcingManager*
+autofill::AutofillCrowdsourcingManager&
 AndroidAutofillClient::GetCrowdsourcingManager() {
-  if (autofill::AutofillProvider::
-          is_crowdsourcing_manager_disabled_for_testing()) {
-    return nullptr;
-  }
   if (!crowdsourcing_manager_) {
     // Lazy initialization to avoid virtual function calls in the constructor.
     crowdsourcing_manager_ =
-        std::make_unique<autofill::AutofillCrowdsourcingManager>(
-            this, GetChannel(), GetLogManager());
+        std::make_unique<autofill::AutofillCrowdsourcingManager>(this,
+                                                                 GetChannel());
   }
-  return crowdsourcing_manager_.get();
+  return *crowdsourcing_manager_;
 }
 
-autofill::PersonalDataManager* AndroidAutofillClient::GetPersonalDataManager() {
+autofill::VotesUploader& AndroidAutofillClient::GetVotesUploader() {
+  return votes_uploader_;
+}
+
+bool AndroidAutofillClient::HasPersonalDataManager() const {
+  return false;
+}
+
+autofill::PersonalDataManager& AndroidAutofillClient::GetPersonalDataManager() {
+  NOTREACHED();
+}
+
+autofill::ValuablesDataManager*
+AndroidAutofillClient::GetValuablesDataManager() {
   return nullptr;
+}
+
+autofill::EntityDataManager* AndroidAutofillClient::GetEntityDataManager() {
+  return nullptr;
+}
+
+autofill::SingleFieldFillRouter&
+AndroidAutofillClient::GetSingleFieldFillRouter() {
+  NOTREACHED();
 }
 
 autofill::AutocompleteHistoryManager*
 AndroidAutofillClient::GetAutocompleteHistoryManager() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 PrefService* AndroidAutofillClient::GetPrefs() {
@@ -105,22 +139,21 @@ signin::IdentityManager* AndroidAutofillClient::GetIdentityManager() {
   return nullptr;
 }
 
+const signin::IdentityManager* AndroidAutofillClient::GetIdentityManager()
+    const {
+  return nullptr;
+}
+
 autofill::FormDataImporter* AndroidAutofillClient::GetFormDataImporter() {
   return nullptr;
 }
 
-autofill::StrikeDatabase* AndroidAutofillClient::GetStrikeDatabase() {
+strike_database::StrikeDatabase* AndroidAutofillClient::GetStrikeDatabase() {
   return nullptr;
 }
 
 ukm::UkmRecorder* AndroidAutofillClient::GetUkmRecorder() {
   return nullptr;
-}
-
-ukm::SourceId AndroidAutofillClient::GetUkmSourceId() {
-  // TODO(crbug.com/321677608): Consider UKM recording via delegate (non-WebView
-  // only).
-  return ukm::kInvalidSourceId;
 }
 
 autofill::AddressNormalizer* AndroidAutofillClient::GetAddressNormalizer() {
@@ -138,8 +171,14 @@ url::Origin AndroidAutofillClient::GetLastCommittedPrimaryMainFrameOrigin()
 
 security_state::SecurityLevel
 AndroidAutofillClient::GetSecurityLevelForUmaHistograms() {
-  // TODO(crbug.com/321677908): Consider recording for non-webview.
-  // Return the count value which will not be recorded.
+  if (SecurityStateTabHelper* helper =
+          ::SecurityStateTabHelper::FromWebContents(&GetWebContents())) {
+    return helper->GetSecurityLevel();
+  }
+
+  // If there is no helper, it means we are not in a "web" state or the embedder
+  // doesn't support the state helper. Return SECURITY_LEVEL_COUNT which will
+  //  not be logged.
   return security_state::SecurityLevel::SECURITY_LEVEL_COUNT;
 }
 
@@ -156,32 +195,20 @@ void AndroidAutofillClient::ShowAutofillSettings(
   NOTIMPLEMENTED();
 }
 
-void AndroidAutofillClient::ShowEditAddressProfileDialog(
-    const autofill::AutofillProfile& profile,
-    AddressProfileSavePromptCallback on_user_decision_callback) {
-  NOTREACHED_IN_MIGRATION();
-}
-
-void AndroidAutofillClient::ShowDeleteAddressProfileDialog(
-    const autofill::AutofillProfile& profile,
-    AddressProfileDeleteDialogCallback delete_dialog_callback) {
-  NOTREACHED_IN_MIGRATION();
-}
-
 void AndroidAutofillClient::ConfirmSaveAddressProfile(
     const autofill::AutofillProfile& profile,
     const autofill::AutofillProfile* original_profile,
-    SaveAddressProfilePromptOptions options,
+    SaveAddressBubbleType save_address_bubble_type,
     AddressProfileSavePromptCallback callback) {
   NOTIMPLEMENTED();
 }
 
-void AndroidAutofillClient::HideTouchToFillCreditCard() {}
-
-void AndroidAutofillClient::ShowAutofillSuggestions(
+autofill::AutofillClient::SuggestionUiSessionId
+AndroidAutofillClient::ShowAutofillSuggestions(
     const autofill::AutofillClient::PopupOpenArgs& open_args,
     base::WeakPtr<autofill::AutofillSuggestionDelegate> delegate) {
   NOTIMPLEMENTED();
+  return SuggestionUiSessionId();
 }
 
 void AndroidAutofillClient::UpdateAutofillDataListValues(
@@ -191,54 +218,56 @@ void AndroidAutofillClient::UpdateAutofillDataListValues(
   // APIs.
 }
 
-void AndroidAutofillClient::PinAutofillSuggestions() {
-  NOTIMPLEMENTED();
-}
-
-void AndroidAutofillClient::UpdatePopup(
-    const std::vector<autofill::Suggestion>& suggestions,
-    autofill::FillingProduct main_filling_product,
-    autofill::AutofillSuggestionTriggerSource trigger_source) {
-  NOTIMPLEMENTED();
-}
-
 void AndroidAutofillClient::HideAutofillSuggestions(
     autofill::SuggestionHidingReason reason) {
   // TODO(321950502): Analyze hiding the datalist popup here.
+}
+
+bool AndroidAutofillClient::IsAutofillEnabled() const {
+  NOTREACHED();
+}
+
+bool AndroidAutofillClient::IsAutofillProfileEnabled() const {
+  NOTREACHED();
+}
+
+bool AndroidAutofillClient::IsWalletStorageEnabled() const {
+  return false;
 }
 
 bool AndroidAutofillClient::IsAutocompleteEnabled() const {
   return false;
 }
 
-bool AndroidAutofillClient::IsPasswordManagerEnabled() {
+bool AndroidAutofillClient::IsPasswordManagerEnabled() const {
   // Android 3P mode and WebView rely on the AndroidAutofillManager which
   // doesn't call this function. If it ever does, the function needs to
   // be implemented in a meaningful way.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
-void AndroidAutofillClient::DidFillOrPreviewForm(
-    autofill::mojom::ActionPersistence action_persistence,
+void AndroidAutofillClient::DidFillForm(
     autofill::AutofillTriggerSource trigger_source,
     bool is_refill) {}
 
 bool AndroidAutofillClient::IsContextSecure() const {
-  content::SSLStatus ssl_status;
+  // Note: As of crbug.com/701018, Chrome relies on ChromeSecurityStateTabHelper
+  // to determine whether the page is secure, but WebView can only access a
+  // small part of the functionality so the helper will be null for now.
+  if (SecurityStateTabHelper* helper =
+          SecurityStateTabHelper::FromWebContents(&GetWebContents())) {
+    return security_state::IsSslCertificateValid(helper->GetSecurityLevel());
+  }
+
   content::NavigationEntry* navigation_entry =
       GetWebContents().GetController().GetLastCommittedEntry();
-  if (!navigation_entry) {
+  if (!navigation_entry ||
+      !navigation_entry->GetURL().SchemeIsCryptographic()) {
     return false;
   }
 
-  ssl_status = navigation_entry->GetSSL();
-  // Note: As of crbug.com/701018, Chrome relies on SecurityStateTabHelper to
-  // determine whether the page is secure, but WebView has no equivalent class.
-  // TODO(crbug.com/321679324): Consider injecting SecurityStateTabHelper for 3P
-  // chrome.
-
-  return navigation_entry->GetURL().SchemeIsCryptographic() &&
-         ssl_status.certificate &&
+  content::SSLStatus ssl_status = navigation_entry->GetSSL();
+  return ssl_status.certificate &&
          !net::IsCertStatusError(ssl_status.cert_status) &&
          !(ssl_status.content_status &
            content::SSLStatus::RAN_INSECURE_CONTENT);
@@ -249,6 +278,11 @@ AndroidAutofillClient::GetCurrentFormInteractionsFlowId() {
   // Currently not in use here. See `ChromeAutofillClient` for a proper
   // implementation.
   return {};
+}
+
+autofill::autofill_metrics::FormInteractionsUkmLogger&
+AndroidAutofillClient::GetFormInteractionsUkmLogger() {
+  return form_interactions_ukm_logger_;
 }
 
 content::WebContents& AndroidAutofillClient::GetWebContents() const {
@@ -263,6 +297,16 @@ std::unique_ptr<autofill::AutofillManager> AndroidAutofillClient::CreateManager(
     base::PassKey<autofill::ContentAutofillDriver> pass_key,
     autofill::ContentAutofillDriver& driver) {
   return base::WrapUnique(new autofill::AndroidAutofillManager(&driver));
+}
+
+credential_management::ContentCredentialManager*
+AndroidAutofillClient::GetContentCredentialManager() {
+  if (base::FeatureList::IsEnabled(
+          credential_management::features::
+              kCredentialManagementThirdPartyWebApiRequestForwarding)) {
+    return &content_credential_manager_;
+  }
+  return nullptr;
 }
 
 }  // namespace android_autofill

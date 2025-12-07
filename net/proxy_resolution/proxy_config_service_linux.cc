@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/proxy_resolution/proxy_config_service_linux.h"
 
 #include <errno.h>
@@ -16,8 +11,10 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -43,6 +40,9 @@
 
 #if defined(USE_GIO)
 #include <gio/gio.h>
+
+#include "ui/base/glib/gsettings.h"
+#include "ui/base/glib/scoped_gobject.h"
 #endif  // defined(USE_GIO)
 
 namespace net {
@@ -54,7 +54,7 @@ namespace {
 // This turns all rules with a hostname into wildcard matches, which will
 // match not just the indicated hostname but also any hostname that ends with
 // it.
-void RewriteRulesForSuffixMatching(ProxyBypassRules* out) {
+void RewriteRulesForSuffixMatching(ProxyHostMatchingRules* out) {
   // Prepend a wildcard (*) to any hostname based rules, provided it isn't an IP
   // address.
   for (size_t i = 0; i < out->rules().size(); ++i) {
@@ -124,19 +124,18 @@ ProxyConfigWithAnnotation GetConfigOrDirect(
 ProxyConfigServiceLinux::Delegate::~Delegate() = default;
 
 bool ProxyConfigServiceLinux::Delegate::GetProxyFromEnvVarForScheme(
-    std::string_view variable,
+    base::cstring_view variable,
     ProxyServer::Scheme scheme,
     ProxyChain* result_chain) {
-  std::string env_value;
-  if (!env_var_getter_->GetVar(variable, &env_value))
+  std::optional<std::string> env_value = env_var_getter_->GetVar(variable);
+  if (!env_value.has_value() || env_value->empty()) {
     return false;
+  }
 
-  if (env_value.empty())
-    return false;
-
-  env_value = FixupProxyHostScheme(scheme, env_value);
+  std::string fixed_host =
+      FixupProxyHostScheme(scheme, std::move(env_value.value()));
   ProxyChain proxy_chain =
-      ProxyUriToProxyChain(env_value, ProxyServer::SCHEME_HTTP);
+      ProxyUriToProxyChain(fixed_host, ProxyServer::SCHEME_HTTP);
   if (proxy_chain.IsValid() &&
       (proxy_chain.is_direct() || proxy_chain.is_single_proxy())) {
     *result_chain = proxy_chain;
@@ -147,7 +146,7 @@ bool ProxyConfigServiceLinux::Delegate::GetProxyFromEnvVarForScheme(
 }
 
 bool ProxyConfigServiceLinux::Delegate::GetProxyFromEnvVar(
-    std::string_view variable,
+    base::cstring_view variable,
     ProxyChain* result_chain) {
   return GetProxyFromEnvVarForScheme(variable, ProxyServer::SCHEME_HTTP,
                                      result_chain);
@@ -161,14 +160,14 @@ ProxyConfigServiceLinux::Delegate::GetConfigFromEnv() {
   // "auto_proxy". Possibly only the "environment_proxy" firefox
   // extension has ever used this, but it still sounds like a good
   // idea.
-  std::string auto_proxy;
-  if (env_var_getter_->GetVar("auto_proxy", &auto_proxy)) {
-    if (auto_proxy.empty()) {
+  std::optional<std::string> auto_proxy = env_var_getter_->GetVar("auto_proxy");
+  if (auto_proxy.has_value()) {
+    if (auto_proxy->empty()) {
       // Defined and empty => autodetect
       config.set_auto_detect(true);
     } else {
       // specified autoconfig URL
-      config.set_pac_url(GURL(auto_proxy));
+      config.set_pac_url(GURL(auto_proxy.value()));
     }
     return ProxyConfigWithAnnotation(
         config, NetworkTrafficAnnotationTag(traffic_annotation_));
@@ -204,18 +203,18 @@ ProxyConfigServiceLinux::Delegate::GetConfigFromEnv() {
     // For environment variables, we default to version 5, per the gnome
     // documentation: http://library.gnome.org/devel/gnet/stable/gnet-socks.html
     ProxyServer::Scheme scheme = ProxyServer::SCHEME_SOCKS5;
-    std::string env_version;
-    if (env_var_getter_->GetVar("SOCKS_VERSION", &env_version)
-        && env_version == "4")
+    std::optional<std::string> env_version =
+        env_var_getter_->GetVar("SOCKS_VERSION");
+    if (env_version.has_value() && env_version.value() == "4") {
       scheme = ProxyServer::SCHEME_SOCKS4;
+    }
     if (GetProxyFromEnvVarForScheme("SOCKS_SERVER", scheme, &proxy_chain)) {
       config.proxy_rules().type = ProxyConfig::ProxyRules::Type::PROXY_LIST;
       config.proxy_rules().single_proxies.SetSingleProxyChain(proxy_chain);
     }
   }
   // Look for the proxy bypass list.
-  std::string no_proxy;
-  env_var_getter_->GetVar("no_proxy", &no_proxy);
+  std::string no_proxy = env_var_getter_->GetVar("no_proxy").value_or("");
   if (config.proxy_rules().empty()) {
     // Having only "no_proxy" set, presumably to "*", makes it
     // explicit that env vars do specify a configuration: having no
@@ -268,14 +267,14 @@ class SettingGetterImplGSettings
         ShutDown();
       } else {
         LOG(WARNING) << "~SettingGetterImplGSettings: leaking gsettings client";
-        client_.ExtractAsDangling();
+        client_.release();
       }
     }
     DCHECK(!client_);
   }
 
   // CheckVersion() must be called *before* Init()!
-  bool CheckVersion(base::Environment* env);
+  bool CheckVersion();
 
   bool Init(const scoped_refptr<base::SingleThreadTaskRunner>& glib_task_runner)
       override {
@@ -283,10 +282,8 @@ class SettingGetterImplGSettings
     DCHECK(!client_);
     DCHECK(!task_runner_.get());
 
-    if (!g_settings_schema_source_lookup(g_settings_schema_source_get_default(),
-                                         kProxyGSettingsSchema, TRUE) ||
-        !(client_ = g_settings_new(kProxyGSettingsSchema))) {
-      // It's not clear whether/when this can return NULL.
+    client_ = ui::GSettingsNew(kProxyGSettingsSchema);
+    if (!client_) {
       LOG(ERROR) << "Unable to create a gsettings client";
       return false;
     }
@@ -308,9 +305,7 @@ class SettingGetterImplGSettings
       g_object_unref(ftp_client_.ExtractAsDangling());
       g_object_unref(https_client_.ExtractAsDangling());
       g_object_unref(http_client_.ExtractAsDangling());
-      g_object_unref(client_.ExtractAsDangling());
-      // We only need to null client_ because it's the only one that we check.
-      client_ = nullptr;
+      client_.Reset();
       task_runner_ = nullptr;
     }
     debounce_timer_.reset();
@@ -440,9 +435,9 @@ class SettingGetterImplGSettings
     gchar** list = g_settings_get_strv(client, key.data());
     if (!list)
       return false;
-    for (size_t i = 0; list[i]; ++i) {
-      result->push_back(static_cast<char*>(list[i]));
-      g_free(list[i]);
+    for (size_t i = 0; UNSAFE_TODO(list[i]); ++i) {
+      result->push_back(static_cast<char*>(UNSAFE_TODO(list[i])));
+      g_free(UNSAFE_TODO(list[i]));
     }
     g_free(list);
     return true;
@@ -475,7 +470,7 @@ class SettingGetterImplGSettings
     setting_getter->OnChangeNotification();
   }
 
-  raw_ptr<GSettings> client_ = nullptr;
+  ScopedGObject<GSettings> client_;
   raw_ptr<GSettings> http_client_ = nullptr;
   raw_ptr<GSettings> https_client_ = nullptr;
   raw_ptr<GSettings> ftp_client_ = nullptr;
@@ -489,23 +484,16 @@ class SettingGetterImplGSettings
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
-bool SettingGetterImplGSettings::CheckVersion(
-    base::Environment* env) {
+bool SettingGetterImplGSettings::CheckVersion() {
   // CheckVersion() must be called *before* Init()!
   DCHECK(!client_);
 
-  GSettings* client = nullptr;
-  if (g_settings_schema_source_lookup(g_settings_schema_source_get_default(),
-                                      kProxyGSettingsSchema, TRUE)) {
-    client = g_settings_new(kProxyGSettingsSchema);
-  }
-  if (!client) {
+  if (!ui::GSettingsNew(kProxyGSettingsSchema)) {
     VLOG(1) << "Cannot create gsettings client.";
     return false;
   }
-  g_object_unref(client);
 
-  VLOG(1) << "All gsettings tests OK. Will get proxy config from gsettings.";
+  VLOG(1) << "Will get proxy config from gsettings.";
   return true;
 }
 #endif  // defined(USE_GIO)
@@ -531,16 +519,18 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
     ScopedAllowBlockingForSettingGetter allow_blocking;
 
     // Derive the location(s) of the kde config dir from the environment.
-    std::string home;
-    if (env_var_getter->GetVar("KDEHOME", &home) && !home.empty()) {
+    std::string home = env_var_getter->GetVar("KDEHOME").value_or("");
+    if (!home.empty()) {
       // $KDEHOME is set. Use it unconditionally.
       kde_config_dirs_.emplace_back(KDEHomeToConfigPath(base::FilePath(home)));
     } else {
       // $KDEHOME is unset. Try to figure out what to use. This seems to be
       // the common case on most distributions.
-      if (!env_var_getter->GetVar(base::env_vars::kHome, &home))
+      home = env_var_getter->GetVar(base::env_vars::kHome).value_or("");
+      if (home.empty()) {
         // User has no $HOME? Give up. Later we'll report the failure.
         return;
+      }
       auto desktop = base::nix::GetDesktopEnvironment(env_var_getter);
       if (desktop == base::nix::DESKTOP_ENVIRONMENT_KDE3) {
         // KDE3 always uses .kde for its configuration.
@@ -584,8 +574,9 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
         kde_config_dirs_.emplace_back(base::FilePath(home).Append(".config"));
 
         // kioslaverc also can be stored in any of XDG_CONFIG_DIRS
-        std::string config_dirs;
-        if (env_var_getter_->GetVar("XDG_CONFIG_DIRS", &config_dirs)) {
+        std::string config_dirs =
+            env_var_getter_->GetVar("XDG_CONFIG_DIRS").value_or("");
+        if (!config_dirs.empty()) {
           auto dirs = base::SplitString(config_dirs, ":", base::KEEP_WHITESPACE,
                                         base::SPLIT_WANT_NONEMPTY);
           for (const auto& dir : dirs) {
@@ -595,7 +586,7 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
 
         // Reverses the order of paths to store them in ascending order of
         // priority
-        std::reverse(kde_config_dirs_.begin(), kde_config_dirs_.end());
+        std::ranges::reverse(kde_config_dirs_);
       }
     }
   }
@@ -741,7 +732,7 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
       // port number from the hostname. If we find this, we need to convert it.
       std::string fixed = value;
       fixed[space] = ':';
-      string_table_[host_key] = fixed;
+      string_table_[host_key] = std::move(fixed);
     } else {
       // We don't need to parse the port number out; GetProxyFromSettings()
       // would only append it right back again. So we just leave the port
@@ -821,23 +812,29 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
   void ResolveIndirect(StringSetting key) {
     auto it = string_table_.find(key);
     if (it != string_table_.end()) {
-      std::string value;
-      if (env_var_getter_->GetVar(it->second.c_str(), &value))
-        it->second = value;
-      else
+      std::optional<std::string> value = env_var_getter_->GetVar(it->second);
+      if (value.has_value() && !value->empty()) {
+        it->second = value.value();
+      } else {
         string_table_.erase(it);
+      }
     }
   }
 
   void ResolveIndirectList(StringListSetting key) {
     auto it = strings_table_.find(key);
     if (it != strings_table_.end()) {
-      std::string value;
-      if (!it->second.empty() &&
-          env_var_getter_->GetVar(it->second[0].c_str(), &value))
-        AddHostList(key, value);
-      else
+      if (!it->second.empty()) {
+        std::optional<std::string> value =
+            env_var_getter_->GetVar(it->second[0]);
+        if (value.has_value() && !value->empty()) {
+          AddHostList(key, value.value());
+        } else {
+          strings_table_.erase(it);
+        }
+      } else {
         strings_table_.erase(it);
+      }
     }
   }
 
@@ -880,13 +877,13 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
       bool line_too_long = false;
       char line[BUFFER_SIZE];
       // fgets() will return NULL on EOF or error.
-      while (fgets(line, sizeof(line), input.get())) {
+      while (UNSAFE_TODO(fgets(line, sizeof(line), input.get()))) {
         // fgets() guarantees the line will be properly terminated.
         size_t length = strlen(line);
         if (!length)
           continue;
         // This should be true even with CRLF endings.
-        if (line[length - 1] != '\n') {
+        if (UNSAFE_TODO(line[length - 1]) != '\n') {
           line_too_long = true;
           continue;
         }
@@ -898,22 +895,24 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
           continue;
         }
         // Remove the LF at the end, and the CR if there is one.
-        line[--length] = '\0';
-        if (length && line[length - 1] == '\r')
-          line[--length] = '\0';
+        UNSAFE_TODO(line[--length]) = '\0';
+        if (length && UNSAFE_TODO(line[length - 1]) == '\r') {
+          UNSAFE_TODO(line[--length]) = '\0';
+        }
         // Now parse the line.
         if (line[0] == '[') {
           // Switching sections. All we care about is whether this is
           // the (a?) proxy settings section, for both KDE3 and KDE4.
-          in_proxy_settings = !strncmp(line, "[Proxy Settings]", 16);
+          in_proxy_settings =
+              !UNSAFE_TODO(strncmp(line, "[Proxy Settings]", 16));
         } else if (in_proxy_settings) {
           // A regular line, in the (a?) proxy settings section.
-          char* split = strchr(line, '=');
+          char* split = UNSAFE_TODO(strchr(line, '='));
           // Skip this line if it does not contain an = sign.
           if (!split)
             continue;
           // Split the line on the = and advance |split|.
-          *(split++) = 0;
+          *(UNSAFE_TODO(split++)) = 0;
           std::string key = line;
           std::string value = split;
           base::TrimWhitespaceASCII(key, base::TRIM_ALL, &key);
@@ -971,15 +970,16 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
       // inotify returns variable-length structures, which is why we have
       // this strange-looking loop instead of iterating through an array.
       char* event_ptr = event_buf;
-      while (event_ptr < event_buf + r) {
+      while (event_ptr < UNSAFE_TODO(event_buf + r)) {
         inotify_event* event = reinterpret_cast<inotify_event*>(event_ptr);
         // The kernel always feeds us whole events.
-        CHECK_LE(event_ptr + sizeof(inotify_event), event_buf + r);
-        CHECK_LE(event->name + event->len, event_buf + r);
-        if (!strcmp(event->name, "kioslaverc"))
+        UNSAFE_TODO(CHECK_LE(event_ptr + sizeof(inotify_event), event_buf + r));
+        UNSAFE_TODO(CHECK_LE(event->name + event->len, event_buf + r));
+        if (!UNSAFE_TODO(strcmp(event->name, "kioslaverc"))) {
           kioslaverc_touched = true;
+        }
         // Advance the pointer just past the end of the filename.
-        event_ptr = event->name + event->len;
+        event_ptr = UNSAFE_TODO(event->name + event)->len;
       }
       // We keep reading even if |kioslaverc_touched| is true to drain the
       // inotify event queue.
@@ -1065,7 +1065,7 @@ bool ProxyConfigServiceLinux::Delegate::GetProxyFromSettings(
   ProxyServer::Scheme scheme = host_key == SettingGetter::PROXY_SOCKS_HOST
                                    ? ProxyServer::SCHEME_SOCKS5
                                    : ProxyServer::SCHEME_HTTP;
-  host = FixupProxyHostScheme(scheme, host);
+  host = FixupProxyHostScheme(scheme, std::move(host));
   ProxyServer proxy_server =
       ProxyUriToProxyServer(host, ProxyServer::SCHEME_HTTP);
   if (proxy_server.is_valid()) {
@@ -1242,16 +1242,18 @@ ProxyConfigServiceLinux::Delegate::Delegate(
     case base::nix::DESKTOP_ENVIRONMENT_PANTHEON:
     case base::nix::DESKTOP_ENVIRONMENT_UKUI:
     case base::nix::DESKTOP_ENVIRONMENT_UNITY:
+    case base::nix::DESKTOP_ENVIRONMENT_COSMIC:
 #if defined(USE_GIO)
-      {
+    {
       auto gs_getter = std::make_unique<SettingGetterImplGSettings>();
       // We have to load symbols and check the GNOME version in use to decide
       // if we should use the gsettings getter. See CheckVersion().
-      if (gs_getter->CheckVersion(env_var_getter_.get()))
+      if (gs_getter->CheckVersion()) {
         setting_getter_ = std::move(gs_getter);
       }
+    }
 #endif
-      break;
+    break;
     case base::nix::DESKTOP_ENVIRONMENT_KDE3:
     case base::nix::DESKTOP_ENVIRONMENT_KDE4:
     case base::nix::DESKTOP_ENVIRONMENT_KDE5:

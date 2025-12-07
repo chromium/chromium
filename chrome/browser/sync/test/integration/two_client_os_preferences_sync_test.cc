@@ -25,15 +25,15 @@ class TwoClientOsPreferencesSyncTest : public SyncTest {
   TwoClientOsPreferencesSyncTest() : SyncTest(TWO_CLIENT) {}
   ~TwoClientOsPreferencesSyncTest() override = default;
 
-  // Needed for AwaitQuiescence().
-  bool TestUsesSelfNotifications() override { return true; }
+  // This test suite is ChromeOS specific, where there's only Sync-the-feature.
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTheFeature;
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientOsPreferencesSyncTest, E2E_ENABLED(Sanity)) {
-  ResetSyncForPrimaryAccount();
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
-  // Wait until sync settles before we override the prefs below.
-  ASSERT_TRUE(AwaitQuiescence());
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
+  ASSERT_TRUE(SetupSync());
 
   // Shelf alignment is a Chrome OS only preference.
   ASSERT_TRUE(StringPrefMatchChecker(ash::prefs::kShelfAlignment).Wait());
@@ -68,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientOsPreferencesSyncTest, E2E_ENABLED(Sanity)) {
 
 IN_PROC_BROWSER_TEST_F(TwoClientOsPreferencesSyncTest,
                        E2E_ENABLED(Bidirectional)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
 
   ASSERT_TRUE(StringPrefMatchChecker(ash::prefs::kShelfAlignment).Wait());
@@ -85,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientOsPreferencesSyncTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientOsPreferencesSyncTest, E2E_ENABLED(ClearPref)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   ChangeStringPref(0, ash::prefs::kShelfAlignment, ash::kShelfAlignmentRight);
   ASSERT_TRUE(StringPrefMatchChecker(ash::prefs::kShelfAlignment).Wait());
@@ -97,13 +97,13 @@ IN_PROC_BROWSER_TEST_F(TwoClientOsPreferencesSyncTest, E2E_ENABLED(ClearPref)) {
 
 // OS Settings syncing even when browser sync is disabled.
 IN_PROC_BROWSER_TEST_F(TwoClientOsPreferencesSyncTest, BrowserSyncDisabled) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   for (int i = 0; i < num_clients(); ++i) {
     // Disable all browser types.
     GetSyncService(i)->GetUserSettings()->SetSelectedTypes(
         false, syncer::UserSelectableTypeSet());
-    ASSERT_TRUE(GetClient(i)->AwaitSyncSetupCompletion());
+    ASSERT_TRUE(GetClient(i)->AwaitSyncTransportActive());
   }
 
   ChangeStringPref(0, ash::prefs::kShelfAlignment, ash::kShelfAlignmentRight);

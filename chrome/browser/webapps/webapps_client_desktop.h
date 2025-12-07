@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_WEBAPPS_WEBAPPS_CLIENT_DESKTOP_H_
 #define CHROME_BROWSER_WEBAPPS_WEBAPPS_CLIENT_DESKTOP_H_
 
-#include "base/auto_reset.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/webapps/chrome_webapps_client.h"
@@ -35,10 +34,11 @@ class WebappsClientDesktop : public ChromeWebappsClient {
   //   installation has the user display mode as kBrowser. (this allows us to
   //   upgrade to a standalone experience through a reinstall).
   // - The controlling app is a DIY app.
-  bool DoesNewWebAppConflictWithExistingInstallation(
-      content::BrowserContext* browsing_context,
+  void DoesNewWebAppConflictWithExistingInstallation(
+      content::BrowserContext* browser_context,
       const GURL& start_url,
-      const ManifestId& manifest_id) const override;
+      const ManifestId& manifest_id,
+      WebAppInstallationConflictCallback callback) const override;
   bool IsInAppBrowsingContext(
       content::WebContents* web_contents) const override;
   bool IsAppPartiallyInstalledForSiteUrl(
@@ -46,6 +46,10 @@ class WebappsClientDesktop : public ChromeWebappsClient {
       const GURL& site_url) const override;
   bool IsAppFullyInstalledForSiteUrl(content::BrowserContext* browsing_context,
                                      const GURL& site_url) const override;
+  bool IsUrlControlledBySeenManifest(content::BrowserContext* browsing_context,
+                                     const GURL& site_url) const override;
+  void OnManifestSeen(content::BrowserContext* browsing_context,
+                      const blink::mojom::Manifest& manifest) const override;
   void SaveInstallationIgnoredForMl(content::BrowserContext* browsing_context,
                                     const GURL& manifest_id) const override;
   void SaveInstallationDismissedForMl(content::BrowserContext* browsing_context,
@@ -58,6 +62,8 @@ class WebappsClientDesktop : public ChromeWebappsClient {
   segmentation_platform::SegmentationPlatformService*
   GetSegmentationPlatformService(
       content::BrowserContext* browsing_context) const override;
+  std::optional<webapps::AppId> GetAppIdForWebContents(
+      content::WebContents* web_contents) override;
 
  private:
   friend base::NoDestructor<WebappsClientDesktop>;

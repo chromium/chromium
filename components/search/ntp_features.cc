@@ -5,6 +5,7 @@
 #include "components/search/ntp_features.h"
 
 #include <string>
+#include <vector>
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
@@ -12,6 +13,14 @@
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+
+namespace {
+
+const char kMobilePromoQRCodeURL[] =
+    "https://apps.apple.com/app/apple-store/"
+    "id535886823?pt=9008&ct=desktop-chr-ntp&mt=8";
+
+}  // namespace
 
 namespace ntp_features {
 
@@ -21,68 +30,28 @@ BASE_FEATURE(kConfirmSuggestionRemovals,
              "ConfirmNtpSuggestionRemovals",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, the OneGooleBar cached response is sent back to NTP.
-BASE_FEATURE(kCacheOneGoogleBar,
-             "CacheOneGoogleBar",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, Chrome theme color will be set to match the NTP background
-// on NTP Customize Chrome background change.
-BASE_FEATURE(kCustomizeChromeColorExtraction,
-             "CustomizeChromeColorExtraction",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, shows an extension card within the Customize Chrome Side
 // Panel for access to the Chrome Web Store extensions.
 BASE_FEATURE(kCustomizeChromeSidePanelExtensionsCard,
-             "CustomizeChromeSidePanelExtensionsCard",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, shows wallpaper search within the Customize Chrome Side Panel.
 // This is a kill switch. Keep indefinitely.
 BASE_FEATURE(kCustomizeChromeWallpaperSearch,
-             "CustomizeChromeWallpaperSearch",
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
              base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 // If enabled, shows entry point on Customize Chrome Side Panel's Appearance
 // page for Wallpaper Search.";
 BASE_FEATURE(kCustomizeChromeWallpaperSearchButton,
-             "CustomizeChromeWallpaperSearchButton",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, shows inspiration card in Customize Chrome Side Panel Wallpaper
 // Search.
 BASE_FEATURE(kCustomizeChromeWallpaperSearchInspirationCard,
-             "CustomizeChromeWallpaperSearchInspirationCard",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, all NTP "realbox" Chrome Refresh features will be enabled
-BASE_FEATURE(kRealboxCr23All,
-             "NtpRealboxCr23All",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, NTP "realbox" will have consistent row height. Includes changing
-// entity sizes and inlining subtitles.
-BASE_FEATURE(kRealboxCr23ConsistentRowHeight,
-             "NtpRealboxCr23ConsistentRowHeight",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, NTP "realbox" expanded state icon CR23 updates will appear.
-// Includes CR23 icons as well as backgrounds for AiS and pedal suggestions and
-// updated entity corner radii.
-BASE_FEATURE(kRealboxCr23ExpandedStateIcons,
-             "NtpRealboxCr23ExpandedStateIcons",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, NTP "realbox" expanded state layout CR23 updates will
-// appear.
-BASE_FEATURE(kRealboxCr23ExpandedStateLayout,
-             "NtpRealboxCr23ExpandedStateLayout",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, NTP "realbox" will use CR23 hover fill shape.
-BASE_FEATURE(kRealboxCr23HoverFillShape,
-             "NtpRealboxCr23HoverFillShape",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, NTP "realbox" will be themed for CR23. Includes realbox
@@ -105,315 +74,188 @@ BASE_FEATURE(kRealboxUseGoogleGIcon,
 
 // If enabled, alpha NTP backgrounds will show in Customize Chrome.
 // This is a development switch. Keep indefinitely.
-BASE_FEATURE(kNtpAlphaBackgroundCollections,
-             "NtpAlphaBackgroundCollections",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNtpAlphaBackgroundCollections, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, NTP background image links will be checked for HTTP status
 // errors."
 BASE_FEATURE(kNtpBackgroundImageErrorDetection,
-             "NtpBackgroundImageErrorDetection",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, calendar module will be shown.
-BASE_FEATURE(kNtpCalendarModule,
-             "NtpCalendarModule",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNtpCalendarModule, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, chrome cart module will be shown.
-BASE_FEATURE(kNtpChromeCartModule,
-             "NtpChromeCartModule",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kNtpChromeCartModule, base::FEATURE_ENABLED_BY_DEFAULT);
+
+// If enabled, customization of Chrome will be promoted on the NTP.
+BASE_FEATURE(kNtpCustomizeChromeAutoOpen, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if !defined(OFFICIAL_BUILD)
 // If enabled, dummy modules will be shown.
 // This is a development switch. Keep indefinitely.
-BASE_FEATURE(kNtpDummyModules,
-             "NtpDummyModules",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNtpDummyModules, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // If enabled, Google Drive module will be shown.
 // This is a kill switch. Keep indefinitely.
-BASE_FEATURE(kNtpDriveModule,
-             "NtpDriveModule",
+BASE_FEATURE(kNtpDriveModule, base::FEATURE_ENABLED_BY_DEFAULT);
+
+// If enabled, the NTP Drive module does not require sync.
+BASE_FEATURE(kNtpDriveModuleHistorySyncRequirement,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, segmentation data will be collected to decide whether or not to
 // show the Drive module.
-BASE_FEATURE(kNtpDriveModuleSegmentation,
-             "NtpDriveModuleSegmentation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNtpDriveModuleSegmentation, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, six files show in the NTP Drive module, instead of three.
-BASE_FEATURE(kNtpDriveModuleShowSixFiles,
-             "NtpDriveModuleShowSixFiles",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, handles navigations from the Most Visited tiles explicitly and
-// overrides the navigation's transition type to bookmark navigation before the
-// navigation is issued.
-// TODO(crbug.com/40730793): When removing this flag, also remove the workaround
-// in ChromeContentBrowserClient::OverrideNavigationParams.
-BASE_FEATURE(kNtpHandleMostVisitedNavigationExplicitly,
-             "HandleMostVisitedNavigationExplicitly",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kNtpDriveModuleShowSixFiles, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, logo will be shown.
 // This is a kill switch. Keep indefinitely.
-BASE_FEATURE(kNtpLogo, "NtpLogo", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kNtpLogo, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, middle slot promo will be shown.
 // This is a kill switch. Keep indefinitely.
-BASE_FEATURE(kNtpMiddleSlotPromo,
-             "NtpMiddleSlotPromo",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kNtpMiddleSlotPromo, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, middle slot promo will be dismissed from New Tab Page until new
 // promo message is populated
-BASE_FEATURE(kNtpMiddleSlotPromoDismissal,
-             "NtpMiddleSlotPromoDismissal",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kNtpMiddleSlotPromoDismissal, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Dummy feature to set param "NtpModulesLoadTimeoutMillisecondsParam".
 // This is used for an emergency Finch param. Keep indefinitely.
 BASE_FEATURE(kNtpModulesLoadTimeoutMilliseconds,
-             "NtpModulesLoadTimeoutMilliseconds",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If true, extends width of modules if space allows.
-BASE_FEATURE(kNtpWideModules,
-             "NtpWideModules",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Dummy feature to set param "NtpModulesOrderParam".
 // This is used for an emergency Finch param. Keep indefinitely.
-BASE_FEATURE(kNtpModulesOrder,
-             "NtpModulesOrder",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNtpModulesOrder, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Dummy feature to set param "NtpModulesMaxColumnCountParam".
 // This is used for an emergency Finch param. Keep indefinitely.
-BASE_FEATURE(kNtpModulesMaxColumnCount,
-             "NtpModulesMaxColumnCount",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNtpModulesMaxColumnCount, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Dummy feature to set param "NtpModulesLoadedWithOtherModulesMaxInstanceCount"
 // This is used for an emergency Finch param. Keep indefinitely.
 BASE_FEATURE(kNtpModulesLoadedWithOtherModulesMaxInstanceCount,
-             "NtpModulesLoadedWithOtherModulesMaxInstanceCount",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If true, displays a horizontal scrollbar on overflowing modules.
-BASE_FEATURE(kNtpModulesOverflowScrollbar,
-             "NtpModulesOverflowScrollbar",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, modules will be able to be reordered via dragging and dropping
-BASE_FEATURE(kNtpModulesDragAndDrop,
-             "NtpModulesDragAndDrop",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNtpModulesDragAndDrop, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, modules will be loaded but not shown. This is useful to determine
 // if a user would have seen modules in order to counterfactually log or
 // trigger.
-BASE_FEATURE(kNtpModulesLoad,
-             "NtpModulesLoad",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNtpModulesLoad, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, redesigned NTP launchpad + modules will be shown.
-BASE_FEATURE(kNtpModulesRedesigned,
-             "NtpModulesRedesigned",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+// If enabled, makes browser sign-in requirement per-module, instead of a
+// requirement for all modules.
+BASE_FEATURE(kNtpModuleSignInRequirement, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, OneGoogleBar will be shown.
 // This is a kill switch. Keep indefinitely.
-BASE_FEATURE(kNtpOneGoogleBar,
-             "NtpOneGoogleBar",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kNtpOneGoogleBar, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, outlook calendar module will be shown.
-BASE_FEATURE(kNtpOutlookCalendarModule,
-             "NtpOutlookCalendarModule",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNtpOutlookCalendarModule, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, Google Photos module will be shown.
-BASE_FEATURE(kNtpPhotosModule,
-             "NtpPhotosModule",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNtpPhotosModule, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, a customized title will be shown on the opt-in card.
 BASE_FEATURE(kNtpPhotosModuleCustomizedOptInTitle,
-             "NtpPhotosModuleCustomizedOptInTitle",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, a customized art work will be shown on the opt-in card.
 BASE_FEATURE(kNtpPhotosModuleCustomizedOptInArtWork,
-             "NtpPhotosModuleCustomizedOptInArtWork",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, Google Photos opt-in card will show a button to soft opt-out.
-BASE_FEATURE(kNtpPhotosModuleSoftOptOut,
-             "NtpPhotosModuleSoftOptOut",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNtpPhotosModuleSoftOptOut, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, the single svg image show in Photos opt-in screen will be
 // replaced by constituent images to support i18n.
 BASE_FEATURE(kNtpPhotosModuleSplitSvgOptInArtWork,
-             "NtpPhotosModuleSplitSvgOptInArtWork",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, Following Feed module will be shown.
-BASE_FEATURE(kNtpFeedModule,
-             "NtpFeedModule",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, Google Lens image search will call Lens v3 direct upload
-// endpoint instead of uploading to Scotty.
-BASE_FEATURE(kNtpLensDirectUpload,
-             "NtpLensDirectUpload",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kNtpFeedModule, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, SafeBrowsing module will be shown to a target user.
-BASE_FEATURE(kNtpSafeBrowsingModule,
-             "NtpSafeBrowsingModule",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNtpSafeBrowsingModule, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, sharepoint module will be shown.
-BASE_FEATURE(kNtpSharepointModule,
-             "NtpSharepointModule",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNtpSharepointModule, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, shortcuts will be shown.
 // This is a kill switch. Keep indefinitely.
-BASE_FEATURE(kNtpShortcuts, "NtpShortcuts", base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, the History clusters module will be shown.
-BASE_FEATURE(kNtpHistoryClustersModule,
-             "NtpHistoryClustersModule",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Dummy feature to set kNtpHistoryClustersModuleMinimumVisitsRequiredParam.
-BASE_FEATURE(kNtpHistoryClustersModuleMinimumVisitsRequired,
-             "NtpHistoryClustersModuleMinimumVisitsRequired",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Dummy feature to set kNtpHistoryClustersModuleMinimumImagesRequiredParam.
-BASE_FEATURE(kNtpHistoryClustersModuleMinimumImagesRequired,
-             "NtpHistoryClustersModuleMinimumImagesRequired",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Dummy feature to set kNtpHistoryClustersModuleCategoriesParam.
-BASE_FEATURE(kNtpHistoryClustersModuleCategories,
-             "NtpHistoryClustersModuleCategories",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, the history clusters module will be loaded but not shown. This is
-// useful to determine if a user would have seen modules in order to
-// counterfactually log or trigger.
-BASE_FEATURE(kNtpHistoryClustersModuleLoad,
-             "NtpHistoryClustersModuleLoad",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Dummy feature to set kNtpHistoryClustersModuleMaxClustersParam.
-BASE_FEATURE(kNtpHistoryClustersModuleMaxClusters,
-             "NtpHistoryClustersMaxClusters",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Dummy feature to set the history clusters rankers' metrics data query time
-// range in days.
-BASE_FEATURE(kNtpHistoryClustersModuleRankingMetricsQueryDays,
-             "NtpHistoryClustersModuleRankingMetricsQueryDays",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, module headers will display an associated icon.
-BASE_FEATURE(kNtpModulesHeaderIcon,
-             "NtpModulesHeaderIcon",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled a suggestion chip will show in the header for Quests V2.
-BASE_FEATURE(kNtpHistoryClustersModuleSuggestionChipHeader,
-             "NtpHistoryClustersModuleSuggestionChipHeader",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, ChromeCart tile will show in the History clusters module when
-// available.
-BASE_FEATURE(kNtpChromeCartInHistoryClusterModule,
-             "NtpChromeCartInHistoryClusterModule",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kNtpHistoryClustersModuleUseModelRanking,
-             "NtpHistoryClustersModuleUseModelRanking",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kNtpHistoryClustersModuleTextOnly,
-             "NtpHistoryClustersModuleTextOnly",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, ChromeCart module will show together with ChromeCart+History
-// cluster module when available.
-BASE_FEATURE(kNtpChromeCartHistoryClusterCoexist,
-             "NtpChromeCartHistoryClusterCoexist",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, the History Clusters module will attempt to fetch clusters until
-// it has enough clusters for the module or the History Clusters service says
-// that all visits have been exhausted.
-BASE_FEATURE(kNtpHistoryClustersModuleFetchClustersUntilExhausted,
-             "NtpHistoryClustersModuleFetchClustersUntilExhausted",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, the History clusters module will contain visits from other
-// devices.
-BASE_FEATURE(kNtpHistoryClustersModuleIncludeSyncedVisits,
-             "NtpHistoryClustersModuleIncludeSyncedVisits",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, the History clsuters module will enable content clustering for
-// the displayed clusters.
-BASE_FEATURE(kNtpHistoryClustersModuleEnableContentClustering,
-             "HistoryClustersModuleEnableContentClustering",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNtpShortcuts, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, the Tab Resumption module will be shown.
 BASE_FEATURE(kNtpMostRelevantTabResumptionModule,
-             "NtpMostRelevantTabResumptionModule",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, the Tab Resumption module with the device icon will be shown.
-BASE_FEATURE(kNtpMostRelevantTabResumptionModuleDeviceIcon,
-             "NtpMostRelevantTabResumptionModuleDeviceIcon",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+// If enabled, the Tab Resumption module will be allowed to fallback to the
+// favicon server when fetching favicons for displayed continuation suggestions.
+BASE_FEATURE(kNtpMostRelevantTabResumptionAllowFaviconServerFallback,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, the Tab Resumption module will be shown.
-BASE_FEATURE(kNtpTabResumptionModule,
-             "NtpTabResumptionModule",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+// If enabled, the Tab Resumption module will fallback to host url to find a
+// favicon if there are none locally available.
+BASE_FEATURE(kNtpMostRelevantTabResumptionModuleFallbackToHost,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNtpTabResumptionModuleCategories,
-             "NtpTabResumptionModuleCategories",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Dummy feature to set how recent tabs must be to be shown.
 BASE_FEATURE(kNtpTabResumptionModuleTimeLimit,
-             "NtpTabResumptionModuleTimeLimit",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, shows entry point on New Tab Page for Customize Chrome Side Panel
 // Wallpaper Search.
-BASE_FEATURE(kNtpWallpaperSearchButton,
-             "NtpWallpaperSearchButton",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNtpWallpaperSearchButton, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, animates New Tab Page's Wallpaper Search Button.
 BASE_FEATURE(kNtpWallpaperSearchButtonAnimation,
-             "NtpWallpaperSearchButtonAnimation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Dummy feature to set param "NtpWallpaperSearchButtonHideCondition".
+// This is used for an emergency Finch param. Keep indefinitely.
+BASE_FEATURE(kNtpWallpaperSearchButtonHideCondition,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Dummy feature to set param "NtpWallpaperSearchButtonAnimationShownThreshold".
 // This is used for an emergency Finch param. Keep indefinitely.
 BASE_FEATURE(kNtpWallpaperSearchButtonAnimationShownThreshold,
-             "NtpWallpaperSearchButtonAnimationShownThreshold",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Feature to control the display of a mobile promo on the NTP.
+BASE_FEATURE(kNtpMobilePromo, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, the Microsoft Authentication module will be shown.
+BASE_FEATURE(kNtpMicrosoftAuthenticationModule,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// If enabled, the features of NTP Next (AI action chips etc.) will be shown.
+BASE_FEATURE(kNtpNextFeatures, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, the OGB loader will request for the async bar parts payload type.
+BASE_FEATURE(kNtpOneGoogleBarAsyncBarParts, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, a footer will show on the NTP.
+BASE_FEATURE(kNtpFooter, base::FEATURE_ENABLED_BY_DEFAULT);
+
+// If enabled, tab groups module will be shown.
+BASE_FEATURE(kNtpTabGroupsModule,
+             "kNtpTabGroupsModule",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, zero tab group card will be shown if the user doesn't have any
+// tab groups.
+BASE_FEATURE(kNtpTabGroupsModuleZeroState,
+             "kNtpTabGroupsModuleZeroState",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kNtpModuleIgnoredCriteriaThreshold[] =
@@ -446,6 +288,8 @@ const char kNtpDriveModuleCacheMaxAgeSParam[] =
     "NtpDriveModuleCacheMaxAgeSParam";
 const char kNtpDriveModuleExperimentGroupParam[] =
     "NtpDriveModuleExperimentGroupParam";
+const char kNtpOutlookCalendarModuleDataParam[] =
+    "NtpOutlookCalendarModuleDataParam";
 const char kNtpMiddleSlotPromoDismissalParam[] =
     "NtpMiddleSlotPromoDismissalParam";
 const char kNtpPhotosModuleDataParam[] = "NtpPhotosModuleDataParam";
@@ -456,32 +300,15 @@ const char kNtpSafeBrowsingModuleCooldownPeriodDaysParam[] =
     "NtpSafeBrowsingModuleCooldownPeriodDaysParam";
 const char kNtpSafeBrowsingModuleCountMaxParam[] =
     "NtpSafeBrowsingModuleCountMaxParam";
-const char kNtpHistoryClustersModuleBeginTimeDurationHoursParam[] =
-    "NtpHistoryClustersModuleBeginTimeDurationHoursParam";
-const char kNtpHistoryClustersModuleMinimumVisitsRequiredParam[] =
-    "NtpHistoryClustersModuleMinimumVisitsRequiredParam";
-const char kNtpHistoryClustersModuleMinimumImagesRequiredParam[] =
-    "NtpHistoryClustersModuleMinimumImagesRequiredParam";
-const char kNtpHistoryClustersModuleCategoriesAllowlistParam[] =
-    "NtpHistoryClustersModuleCategoriesParam";
-const char kNtpHistoryClustersModuleCategoriesBlocklistParam[] =
-    "NtpHistoryClustersModuleCategoriesBlocklistParam";
-const char kNtpHistoryClustersModuleCategoriesBoostlistParam[] =
-    "NtpHistoryClustersModuleCategoriesBoostlistParam";
-const char kNtpHistoryClustersModuleMaxClustersParam[] =
-    "NtpHistoryClustersModuleMaxClustersParam";
-const char kNtpHistoryClustersModuleMaxCategoriesToRecordParam[] =
-    "NtpHistoryClustersModuleMaxCategoriesToRecordParam";
-const char kNtpHistoryClustersModuleMinCategoryWeightToRecordParam[] =
-    "NtpHistoryClustersModuleMinCategoryWeightToRecordParam";
-const char kNtpHistoryClustersModuleRankingMetricsQueryDaysParam[] =
-    "NtpHistoryClustersModuleRankingMetricsQueryDaysParam";
-const char kNtpHistoryClustersModuleScoreThresholdParam[] =
-    "NtpHistoryClustersModuleScoreThresholdParam";
-const char kNtpTabResumptionModuleCategoriesBlocklistParam[] =
-    "NtpTabResumptionModuleCategoriesBlocklistParam";
 const char kNtpMostRelevantTabResumptionModuleDataParam[] =
     "NtpMostRelevantTabResumptionModuleDataParam";
+const char kNtpMostRelevantTabResumptionModuleMaxVisitsParam[] =
+    "NtpMostRelevantTabResumptionModuleMaxVisitsParam";
+const char kNtpTabGroupsModuleDataParam[] = "NtpTabGroupsModuleDataParam";
+const char kNtpTabResumptionModuleCategoriesBlocklistParam[] =
+    "NtpTabResumptionModuleCategoriesBlocklistParam";
+const char kNtpTabResumptionModuleDismissalDurationParam[] =
+    "NtpMostRelevantTabResumptionModuleDismissalDurationParam";
 const char kNtpTabResumptionModuleDataParam[] =
     "NtpTabResumptionModuleDataParam";
 const char kNtpTabResumptionModuleResultTypesParam[] =
@@ -490,9 +317,45 @@ const char kNtpTabResumptionModuleTimeLimitParam[] =
     "NtpTabResumptionModuleTimeLimitParam";
 const char kNtpTabResumptionModuleVisibilityThresholdDataParam[] =
     "NtpTabResumptionModuleVisibilityThresholdDataParam";
+const char kNtpWallpaperSearchButtonHideConditionParam[] =
+    "NtpWallpaperSearchButtonHideConditionParam";
 const char kNtpWallpaperSearchButtonAnimationShownThresholdParam[] =
     "NtpWallpaperSearchButtonAnimationShownThresholdParam";
 const char kWallpaperSearchHatsDelayParam[] = "WallpaperSearchHatsDelayParam";
+const char kNtpMobilePromoTargetUrlParam[] = "NtpMobilePromoTargetUrlParam";
+
+const base::FeatureParam<bool> kNtpNextShowStaticTextParam(
+    &ntp_features::kNtpNextFeatures,
+    "NtpNextShowStaticTextParam",
+    false);
+const base::FeatureParam<bool> kNtpNextShowDeepDiveSuggestionsParam(
+    &ntp_features::kNtpNextFeatures,
+    "NtpNextShowDeepDiveSuggestionsParam",
+    false);
+const base::FeatureParam<bool>
+    kNtpNextSuggestionsFromNewSearchSuggestionsEndpointParam(
+        &ntp_features::kNtpNextFeatures,
+        "NtpNextSuggestionsFromNewSearchSuggestionsEndpointParam",
+        false);
+const base::FeatureParam<bool> kNtpNextShowSimplificationUIParam(
+    &ntp_features::kNtpNextFeatures,
+    "NtpNextShowSimplificationUIParam",
+    false);
+const base::FeatureParam<int> kMaxTilesBeforeShowMore{
+    &ntp_features::kNtpNextFeatures, "max_tiles_before_show_more", 5};
+const base::FeatureParam<bool> kAddTabUploadDelayOnActionChipClick(
+    &ntp_features::kNtpNextFeatures,
+    "AddTabUploadDelayOnActionChipClick",
+    true);
+
+const base::FeatureParam<int> kNtpCustomizeChromeAutoShownMaxCount(
+    &ntp_features::kNtpCustomizeChromeAutoOpen,
+    "max_customize_chrome_auto_shown_count",
+    5);
+const base::FeatureParam<int> kNtpCustomizeChromeAutoShownSessionMaxCount(
+    &ntp_features::kNtpCustomizeChromeAutoOpen,
+    "max_customize_chrome_auto_shown_session_count",
+    5);
 
 const base::FeatureParam<std::string> kNtpCalendarModuleExperimentParam(
     &ntp_features::kNtpCalendarModule,
@@ -501,7 +364,7 @@ const base::FeatureParam<std::string> kNtpCalendarModuleExperimentParam(
 const base::FeatureParam<int> kNtpCalendarModuleMaxEventsParam(
     &ntp_features::kNtpCalendarModule,
     "NtpCalendarModuleMaxEventsParam",
-    6);
+    5);
 const base::FeatureParam<base::TimeDelta> kNtpCalendarModuleWindowEndDeltaParam(
     &ntp_features::kNtpCalendarModule,
     "NtpCalendarModuleWindowEndDeltaParam",
@@ -511,6 +374,24 @@ const base::FeatureParam<base::TimeDelta>
         &ntp_features::kNtpCalendarModule,
         "NtpCalendarModuleWindowStartDeltaParam",
         base::Minutes(-15));
+const base::FeatureParam<bool> kNtpOutlookCalendarModuleAttachmentCheckParam(
+    &ntp_features::kNtpOutlookCalendarModule,
+    "NtpOutlookCalendarModuleAttachmentCheckParam",
+    true);
+extern const base::FeatureParam<bool>
+    kNtpOutlookCalendarModuleDisableAttachmentsParam(
+        &ntp_features::kNtpOutlookCalendarModule,
+        "NtpOutlookCalendarModuleDisableAttachmentsParam",
+        false);
+const base::FeatureParam<int> kNtpOutlookCalendarModuleMaxEventsParam(
+    &ntp_features::kNtpOutlookCalendarModule,
+    "NtpOutlookCalendarModuleMaxEventsParam",
+    5);
+const base::FeatureParam<base::TimeDelta>
+    kNtpOutlookCalendarModuleRetrievalWindowParam(
+        &ntp_features::kNtpOutlookCalendarModule,
+        "NtpOutlookCalendarModuleRetrievalWindowParam",
+        base::Hours(12));
 const base::FeatureParam<bool> kNtpRealboxCr23ExpandedStateBgMatchesOmnibox(
     &ntp_features::kRealboxCr23Theming,
     "kNtpRealboxCr23ExpandedStateBgMatchesOmnibox",
@@ -519,6 +400,59 @@ const base::FeatureParam<bool> kNtpRealboxCr23SteadyStateShadow(
     &ntp_features::kRealboxCr23Theming,
     "kNtpRealboxCr23SteadyStateShadow",
     false);
+const base::FeatureParam<int> kNtpMobilePromoImpressionLimit(
+    &ntp_features::kNtpMobilePromo,
+    "kNtpMobilePromoImpressionLimit",
+    10);
+const base::FeatureParam<bool>
+    kNtpMostRelevantTabResumptionModuleFilterLocalTabsParam{
+        &kNtpMostRelevantTabResumptionModule,
+        /*name=*/"local_tab_filter",
+        /*default_value=*/true};
+
+const base::FeatureParam<NtpSharepointModuleDataType>::Option
+    kNtpSharepointModuleDataTypeOptions[] = {
+        {NtpSharepointModuleDataType::kTrendingInsights, "trending-insights"},
+        {NtpSharepointModuleDataType::kNonInsights, "non-insights"},
+        {NtpSharepointModuleDataType::kTrendingInsightsFakeData,
+         "fake-trending"},
+        {NtpSharepointModuleDataType::kNonInsightsFakeData,
+         "fake-non-insights"},
+        {NtpSharepointModuleDataType::kCombinedSuggestions, "combined"}};
+
+const base::FeatureParam<NtpSharepointModuleDataType>
+    kNtpSharepointModuleDataParam{&ntp_features::kNtpSharepointModule,
+                                  "NtpSharepointModuleDataParam",
+                                  NtpSharepointModuleDataType::kNonInsights,
+                                  &kNtpSharepointModuleDataTypeOptions};
+
+const base::FeatureParam<int> kNtpMicrosoftFilesModuleMaxFilesParam(
+    &ntp_features::kNtpSharepointModule,
+    "NtpMicrosoftFilesModuleMaxFilesParam",
+    6);
+
+const base::FeatureParam<int>
+    kNtpMicrosoftFilesModuleMaxTrendingFilesForCombinedParam(
+        &ntp_features::kNtpSharepointModule,
+        "NtpMicrosoftFilesModuleMaxTrendingFilesForCombinedParam",
+        2);
+
+const base::FeatureParam<int>
+    kNtpMicrosoftFilesModuleMaxNonInsightsFilesForCombinedParam(
+        &ntp_features::kNtpSharepointModule,
+        "NtpMicrosoftFilesModuleMaxNonInsightsFilesForCombinedParam",
+        4);
+
+const base::FeatureParam<base::TimeDelta>
+    kNtpTabGroupsModuleWindowEndDeltaParam(
+        &ntp_features::kNtpTabGroupsModule,
+        "NtpTabGroupsModuleWindowEndDeltaParam",
+        base::Hours(12));
+
+const base::FeatureParam<size_t> kNtpTabGroupsModuleMaxGroupCountParam(
+    &ntp_features::kNtpTabGroupsModule,
+    "kNtpTabGroupsModuleMaxGroupCountParam",
+    4);
 
 base::TimeDelta GetModulesLoadTimeout() {
   std::string param_value = base::GetFieldTrialParamValueByFeature(
@@ -556,4 +490,22 @@ int GetWallpaperSearchButtonAnimationShownThreshold() {
       kNtpWallpaperSearchButtonAnimationShownThreshold,
       kNtpWallpaperSearchButtonAnimationShownThresholdParam, 15);
 }
+
+int GetWallpaperSearchButtonHideCondition() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      kNtpWallpaperSearchButtonHideCondition,
+      kNtpWallpaperSearchButtonHideConditionParam, 2);
+}
+
+std::string GetMobilePromoTargetURL() {
+  std::string field_trial_url = base::GetFieldTrialParamValueByFeature(
+      ntp_features::kNtpMobilePromo,
+      ntp_features::kNtpMobilePromoTargetUrlParam);
+  return (field_trial_url.empty()) ? kMobilePromoQRCodeURL : field_trial_url;
+}
+
+int GetMaxTilesBeforeShowMore() {
+  return kMaxTilesBeforeShowMore.Get();
+}
+
 }  // namespace ntp_features

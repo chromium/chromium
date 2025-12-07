@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
 
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 
 const int ContextualPanelItemConfiguration::high_relevance = 80;
 
@@ -17,11 +18,18 @@ ContextualPanelItemConfiguration::ContextualPanelItemConfiguration(
 ContextualPanelItemConfiguration::~ContextualPanelItemConfiguration() = default;
 
 bool ContextualPanelItemConfiguration::CanShowLargeEntrypoint() {
-  return !entrypoint_message.empty() && relevance >= high_relevance;
+  return !entrypoint_message.empty() &&
+         (relevance >= high_relevance ||
+          entrypoint_message_large_entrypoint_always_shown);
 }
 
 bool ContextualPanelItemConfiguration::CanShowEntrypointIPH() {
   return iph_feature && !iph_text.empty() && !iph_title.empty() &&
-         !iph_image_name.empty() && !iph_entrypoint_used_event_name.empty() &&
+         !iph_entrypoint_used_event_name.empty() &&
+         !iph_entrypoint_explicitly_dismissed.empty() &&
          relevance >= high_relevance;
+}
+
+void ContextualPanelItemConfiguration::DidTransitionToSmallEntrypoint() {
+  // No-op by default.
 }

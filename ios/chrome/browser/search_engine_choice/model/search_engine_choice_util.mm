@@ -6,25 +6,23 @@
 
 #import "base/check_deref.h"
 #import "base/command_line.h"
-#import "components/prefs/pref_service.h"
+#import "components/regional_capabilities/regional_capabilities_metrics.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_service.h"
-#import "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
-#import "components/search_engines/search_engines_pref_names.h"
 #import "components/search_engines/search_engines_switches.h"
 #import "ios/chrome/app/tests_hook.h"
-#import "ios/chrome/browser/policy/model/browser_state_policy_connector.h"
+#import "ios/chrome/browser/policy/model/profile_policy_connector.h"
+#import "ios/chrome/browser/search_engine_choice/model/search_engine_choice_triggering_service.h"
+#import "ios/chrome/browser/search_engine_choice/model/search_engine_choice_triggering_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_choice_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_ui_util.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"
 
 namespace {
 // Whether the choice screen might be displayed. The choice screen is by default
 // disabled for tests or for non-branded builds. This method eliminates those
 // cases, unless it is force-enabled by flag.
-bool IsChoiceEnabled(search_engines::ChoicePromo promo) {
+bool IsChoiceEnabled() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceSearchEngineChoiceScreen)) {
     return true;
@@ -37,63 +35,52 @@ bool IsChoiceEnabled(search_engines::ChoicePromo promo) {
     // Outside of tests, this view should be disabled upstream.
     return false;
   }
-  return search_engines::IsChoiceScreenFlagEnabled(promo);
+  return true;
 }
 }  // namespace
 
 bool ShouldDisplaySearchEngineChoiceScreen(
-    ChromeBrowserState& browser_state,
-    search_engines::ChoicePromo promo,
+    ProfileIOS& profile,
+    bool is_first_run_entrypoint,
     bool app_started_via_external_intent) {
-  if (!IsChoiceEnabled(promo)) {
+  if (!IsChoiceEnabled()) {
     // This build is not eligible for the choice screen.
     return false;
   }
-  ChromeBrowserState* original_browser_state =
-      browser_state.GetOriginalChromeBrowserState();
-  // Getting data needed to check condition.
+  ProfileIOS* original_profile = profile.GetOriginalProfile();
   search_engines::SearchEngineChoiceService* search_engine_choice_service =
-      ios::SearchEngineChoiceServiceFactory::GetForBrowserState(
-          original_browser_state);
-  BrowserStatePolicyConnector* policy_connector =
-      original_browser_state->GetPolicyConnector();
-  const policy::PolicyService& policy_service =
-      *policy_connector->GetPolicyService();
-  TemplateURLService* template_url_service =
-      ios::TemplateURLServiceFactory::GetForBrowserState(
-          original_browser_state);
+      ios::SearchEngineChoiceServiceFactory::GetForProfile(original_profile);
+  ios::SearchEngineChoiceTriggeringService* triggering_service =
+      ios::SearchEngineChoiceTriggeringServiceFactory::GetForProfile(&profile);
 
-  // Checking whether the user is eligible for the screen.
-  auto condition =
-      search_engine_choice_service->GetStaticChoiceScreenConditions(
-          policy_service, /*is_regular_profile=*/true,
-          CHECK_DEREF(template_url_service));
-  if (condition ==
-      search_engines::SearchEngineChoiceScreenConditions::kEligible) {
-    condition = search_engine_choice_service->GetDynamicChoiceScreenConditions(
-        *template_url_service);
-  }
-
-  // If the app has been started via an external intent, and skip the Dialog
-  // promo up to switches::kSearchEngineChoiceMaximumSkipCount() times.
-  if (app_started_via_external_intent &&
-      promo == search_engines::ChoicePromo::kDialog &&
-      condition ==
-          search_engines::SearchEngineChoiceScreenConditions::kEligible) {
-    PrefService* pref_service = original_browser_state->GetPrefs();
-    const int count = pref_service->GetInteger(
-        prefs::kDefaultSearchProviderChoiceScreenSkippedCount);
-
-    if (count < switches::kSearchEngineChoiceMaximumSkipCount.Get()) {
-      pref_service->SetInteger(
-          prefs::kDefaultSearchProviderChoiceScreenSkippedCount, count + 1);
-
+  search_engines::SearchEngineChoiceScreenConditions condition;
+  if (triggering_service) {
+    condition = triggering_service->EvaluateTriggeringConditions(
+        is_first_run_entrypoint, app_started_via_external_intent);
+    search_engine_choice_service->RecordTriggeringEligibility(condition);
+  } else {
+    // TODO(crbug.com/438717568): This branch is added only to record the legacy
+    // histograms. Investigate whether we need to keep it, or if we're fine with
+    // updating the record timing of these old histogram.
+    const policy::PolicyService& policy_service =
+        *original_profile->GetPolicyConnector()->GetPolicyService();
+    TemplateURLService* template_url_service =
+        ios::TemplateURLServiceFactory::GetForProfile(original_profile);
+    condition = search_engine_choice_service->GetStaticChoiceScreenConditions(
+        policy_service, CHECK_DEREF(template_url_service));
+    if (condition ==
+        search_engines::SearchEngineChoiceScreenConditions::kEligible) {
+      // If we didn't get a `triggering_service`, the search engine should not
+      // be eligible for choice screens either.
       condition = search_engines::SearchEngineChoiceScreenConditions::
-          kAppStartedByExternalIntent;
+          kUnsupportedBrowserType;
     }
   }
 
-  RecordChoiceScreenProfileInitCondition(condition);
+  // This is today recording a combination of the static & dynamic
+  // eligibilities.
+  // TODO(crbug.com/426533078): Split this.
+  search_engine_choice_service->RecordLegacyStaticEligibility(condition);
   return condition ==
          search_engines::SearchEngineChoiceScreenConditions::kEligible;
 }

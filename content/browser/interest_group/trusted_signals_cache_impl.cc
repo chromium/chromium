@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <list>
 #include <map>
 #include <memory>
 #include <optional>
@@ -16,17 +17,24 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
+#include "base/types/optional_ref.h"
 #include "base/unguessable_token.h"
+#include "base/values.h"
+#include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
 #include "content/browser/interest_group/trusted_signals_fetcher.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -34,6 +42,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -44,8 +53,7 @@ namespace {
 
 // The data stored in each CompressionGroupData.
 using CachedResult =
-    base::expected<TrustedSignalsFetcher::CompressionGroupResult,
-                   TrustedSignalsFetcher::ErrorInfo>;
+    base::expected<TrustedSignalsFetcher::CompressionGroupResult, std::string>;
 
 // Bind `pending_client` and then send result` to it.
 void SendResultToClient(
@@ -60,9 +68,9 @@ void SendResultToClient(
 
   if (result.has_value()) {
     client->OnSuccess(result.value().compression_scheme,
-                      result.value().compression_group_data);
+                      {result.value().compression_group_data});
   } else {
-    client->OnError(result.error().error_msg);
+    client->OnError(result.error());
   }
 }
 
@@ -72,28 +80,66 @@ void SendResultToClient(
 void SendNoLiveEntryErrorToClient(
     mojo::PendingRemote<auction_worklet::mojom::TrustedSignalsCacheClient>
         pending_client) {
-  SendResultToClient(
-      std::move(pending_client),
-      base::unexpected(TrustedSignalsFetcher::ErrorInfo{"Request cancelled"}));
+  SendResultToClient(std::move(pending_client),
+                     base::unexpected("Request cancelled"));
 }
 
 }  // namespace
 
-TrustedSignalsCacheImpl::Handle::Handle() = default;
+TrustedSignalsCacheImpl::NetworkPartitionNonceKey::NetworkPartitionNonceKey() =
+    default;
 
-TrustedSignalsCacheImpl::Handle::~Handle() = default;
+TrustedSignalsCacheImpl::NetworkPartitionNonceKey::NetworkPartitionNonceKey(
+    const url::Origin& script_origin,
+    SignalsType signals_type,
+    const GURL& trusted_signals_url)
+    : script_origin(script_origin),
+      signals_type(signals_type),
+      trusted_signals_url(trusted_signals_url) {}
+
+TrustedSignalsCacheImpl::NetworkPartitionNonceKey::NetworkPartitionNonceKey(
+    const NetworkPartitionNonceKey&) = default;
+
+TrustedSignalsCacheImpl::NetworkPartitionNonceKey::NetworkPartitionNonceKey(
+    NetworkPartitionNonceKey&&) = default;
+
+TrustedSignalsCacheImpl::NetworkPartitionNonceKey::~NetworkPartitionNonceKey() =
+    default;
+
+TrustedSignalsCacheImpl::NetworkPartitionNonceKey&
+TrustedSignalsCacheImpl::NetworkPartitionNonceKey::operator=(
+    const NetworkPartitionNonceKey&) = default;
+
+TrustedSignalsCacheImpl::NetworkPartitionNonceKey&
+TrustedSignalsCacheImpl::NetworkPartitionNonceKey::operator=(
+    NetworkPartitionNonceKey&&) = default;
+
+bool TrustedSignalsCacheImpl::NetworkPartitionNonceKey::operator<(
+    const NetworkPartitionNonceKey& other) const {
+  return std::tie(script_origin, signals_type, trusted_signals_url) <
+         std::tie(other.script_origin, other.signals_type,
+                  other.trusted_signals_url);
+}
 
 TrustedSignalsCacheImpl::FetchKey::FetchKey() = default;
 
 TrustedSignalsCacheImpl::FetchKey::FetchKey(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    FrameTreeNodeId frame_tree_node_id,
     const url::Origin& main_frame_origin,
+    network::mojom::IPAddressSpace ip_address_space,
     SignalsType signals_type,
     const url::Origin& script_origin,
-    const GURL& trusted_signals_url)
-    : script_origin(script_origin),
-      signals_type(signals_type),
+    const GURL& trusted_signals_url,
+    const url::Origin& coordinator)
+    : network_partition_nonce_key(script_origin,
+                                  signals_type,
+                                  trusted_signals_url),
+      url_loader_factory(std::move(url_loader_factory)),
       main_frame_origin(main_frame_origin),
-      trusted_signals_url(trusted_signals_url) {}
+      coordinator(coordinator),
+      ip_address_space(ip_address_space),
+      frame_tree_node_id(frame_tree_node_id) {}
 
 TrustedSignalsCacheImpl::FetchKey::FetchKey(const FetchKey&) = default;
 TrustedSignalsCacheImpl::FetchKey::FetchKey(FetchKey&&) = default;
@@ -106,10 +152,12 @@ TrustedSignalsCacheImpl::FetchKey& TrustedSignalsCacheImpl::FetchKey::operator=(
 TrustedSignalsCacheImpl::FetchKey::~FetchKey() = default;
 
 bool TrustedSignalsCacheImpl::FetchKey::operator<(const FetchKey& other) const {
-  return std::tie(script_origin, signals_type, main_frame_origin,
-                  trusted_signals_url) <
-         std::tie(other.script_origin, other.signals_type,
-                  other.main_frame_origin, other.trusted_signals_url);
+  return std::tie(network_partition_nonce_key, url_loader_factory,
+                  main_frame_origin, coordinator, ip_address_space,
+                  frame_tree_node_id) <
+         std::tie(other.network_partition_nonce_key, other.url_loader_factory,
+                  other.main_frame_origin, other.coordinator,
+                  other.ip_address_space, other.frame_tree_node_id);
 }
 
 struct TrustedSignalsCacheImpl::Fetch {
@@ -156,13 +204,44 @@ struct TrustedSignalsCacheImpl::Fetch {
   };
 
   using CompressionGroupMap = std::map<CompressionGroupKey, CompressionGroup>;
+
+  explicit Fetch(TrustedSignalsCacheImpl* trusted_signals_cache)
+      : weak_ptr_factory(trusted_signals_cache) {}
+
+  // Adds devtools auction ID to the Fetch, if the Fetch hasn't yet started.
+  // Note that devtools IDs cannot currently be removed from fetches, to make
+  // bookkeeping simpler, and are only logged on fetch start.
+  void AddDevtoolsAuctionId(const std::string& devtools_auction_id) {
+    // If fetch has started, do nothing.
+    if (fetcher) {
+      return;
+    }
+
+    devtools_auction_ids.insert(devtools_auction_id);
+  }
+
   CompressionGroupMap compression_groups;
 
-  // Timer to start request. At all points in time, either this should be
-  // running (possibly with a 0 delay) or `fetcher` should be non-null.
-  base::OneShotTimer timer_;
-
   std::unique_ptr<TrustedSignalsFetcher> fetcher;
+
+  // Before a request can be started, `can_start` must be true, and it must have
+  // a `coordinator_key`. `can_start` can be set by the caller, or is
+  // automatically set on a delay for sellers, and `coordinator_key` is
+  // retrieved by the GetCoordinatorKeyCallback.
+  bool can_start = false;
+  std::optional<BiddingAndAuctionServerKey> coordinator_key;
+
+  // Devtools IDs of all associated auctions. They're all logged on fetch start,
+  // and the set is permanently cleared. Use `flat_set` because expected use
+  // case is a few Fetches shared by a lot of IGs in a small number of auctions,
+  // so most insertion attempts should not modify the set, and the better lookup
+  // performance seems more likely to matter.
+  base::flat_set<std::string> devtools_auction_ids;
+
+  // Weak reference to the TrustedSignalsCacheImpl. Used for calls to
+  // GetCoordinatorKeyCallback, and delayed calls to set `can_start` to true, so
+  // that destroying the fetch aborts the callback.
+  base::WeakPtrFactory<TrustedSignalsCacheImpl> weak_ptr_factory;
 };
 
 TrustedSignalsCacheImpl::BiddingCacheKey::BiddingCacheKey() = default;
@@ -171,16 +250,26 @@ TrustedSignalsCacheImpl::BiddingCacheKey::BiddingCacheKey(
     const url::Origin& interest_group_owner,
     std::optional<std::string> interest_group_name,
     const GURL& trusted_signals_url,
+    const url::Origin& coordinator,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    FrameTreeNodeId frame_tree_node_id,
     const url::Origin& main_frame_origin,
+    network::mojom::IPAddressSpace ip_address_space,
     const url::Origin& joining_origin,
-    base::Value::Dict additional_params)
+    base::Value::Dict additional_params,
+    base::optional_ref<const std::string> buyer_tkv_signals)
     : interest_group_name(std::move(interest_group_name)),
-      fetch_key(main_frame_origin,
+      fetch_key(std::move(url_loader_factory),
+                frame_tree_node_id,
+                main_frame_origin,
+                ip_address_space,
                 SignalsType::kBidding,
                 interest_group_owner,
-                trusted_signals_url),
+                trusted_signals_url,
+                coordinator),
       joining_origin(joining_origin),
-      additional_params(std::move(additional_params)) {}
+      additional_params(std::move(additional_params)),
+      buyer_tkv_signals(buyer_tkv_signals.CopyAsOptional()) {}
 
 TrustedSignalsCacheImpl::BiddingCacheKey::BiddingCacheKey(BiddingCacheKey&&) =
     default;
@@ -194,9 +283,10 @@ TrustedSignalsCacheImpl::BiddingCacheKey::operator=(BiddingCacheKey&&) =
 bool TrustedSignalsCacheImpl::BiddingCacheKey::operator<(
     const BiddingCacheKey& other) const {
   return std::tie(interest_group_name, fetch_key, joining_origin,
-                  additional_params) <
+                  additional_params, buyer_tkv_signals) <
          std::tie(other.interest_group_name, other.fetch_key,
-                  other.joining_origin, other.additional_params);
+                  other.joining_origin, other.additional_params,
+                  other.buyer_tkv_signals);
 }
 
 struct TrustedSignalsCacheImpl::BiddingCacheEntry {
@@ -293,22 +383,32 @@ TrustedSignalsCacheImpl::ScoringCacheKey::ScoringCacheKey() = default;
 TrustedSignalsCacheImpl::ScoringCacheKey::ScoringCacheKey(
     const url::Origin& seller,
     const GURL& trusted_signals_url,
+    const url::Origin& coordinator,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    FrameTreeNodeId frame_tree_node_id,
     const url::Origin& main_frame_origin,
+    network::mojom::IPAddressSpace ip_address_space,
     const url::Origin& interest_group_owner,
     const url::Origin& joining_origin,
     const GURL& render_url,
     const std::vector<GURL>& component_render_urls,
-    base::Value::Dict additional_params)
+    base::Value::Dict additional_params,
+    base::optional_ref<const std::string> seller_tkv_signals)
     : render_url(render_url),
       component_render_urls(component_render_urls.begin(),
                             component_render_urls.end()),
-      fetch_key(main_frame_origin,
+      fetch_key(std::move(url_loader_factory),
+                frame_tree_node_id,
+                main_frame_origin,
+                ip_address_space,
                 SignalsType::kScoring,
                 seller,
-                trusted_signals_url),
+                trusted_signals_url,
+                coordinator),
       joining_origin(joining_origin),
       interest_group_owner(interest_group_owner),
-      additional_params(std::move(additional_params)) {}
+      additional_params(std::move(additional_params)),
+      seller_tkv_signals(seller_tkv_signals.CopyAsOptional()) {}
 
 TrustedSignalsCacheImpl::ScoringCacheKey::ScoringCacheKey(ScoringCacheKey&&) =
     default;
@@ -322,10 +422,11 @@ TrustedSignalsCacheImpl::ScoringCacheKey::operator=(ScoringCacheKey&&) =
 bool TrustedSignalsCacheImpl::ScoringCacheKey::operator<(
     const ScoringCacheKey& other) const {
   return std::tie(render_url, component_render_urls, fetch_key, joining_origin,
-                  interest_group_owner, additional_params) <
+                  interest_group_owner, additional_params, seller_tkv_signals) <
          std::tie(other.render_url, other.component_render_urls,
                   other.fetch_key, other.joining_origin,
-                  other.interest_group_owner, other.additional_params);
+                  other.interest_group_owner, other.additional_params,
+                  other.seller_tkv_signals);
 }
 
 struct TrustedSignalsCacheImpl::ScoringCacheEntry {
@@ -344,7 +445,8 @@ struct TrustedSignalsCacheImpl::ScoringCacheEntry {
   int partition_id = 0;
 };
 
-class TrustedSignalsCacheImpl::CompressionGroupData : public Handle {
+class TrustedSignalsCacheImpl::CompressionGroupData
+    : public base::RefCounted<CompressionGroupData> {
  public:
   // Creates a CompressionGroupData.
   //
@@ -357,6 +459,9 @@ class TrustedSignalsCacheImpl::CompressionGroupData : public Handle {
   // and `fetch` must remain valid until the CompressionGroupData is destroyed
   // or SetData() is invoked.
   //
+  // `receiver_restrictions` restrict which pipes may request data from the
+  // CompressionGroup.
+  //
   // `fetch` and `fetch_compression_group` are iterators to the pending fetch
   // that will populate the CompressionGroupData, and the compression group
   // within that fetch that corresponds to the created CompressionGroupData.
@@ -365,19 +470,22 @@ class TrustedSignalsCacheImpl::CompressionGroupData : public Handle {
   // before the TrustedSignalsCacheImpl is destroyed.
   CompressionGroupData(
       TrustedSignalsCacheImpl* cache,
+      ReceiverRestrictions receiver_restrictions,
       FetchMap::iterator fetch,
       Fetch::CompressionGroupMap::iterator fetch_compression_group)
       : cache_(cache),
+        receiver_restrictions_(std::move(receiver_restrictions)),
         fetch_(fetch),
         fetch_compression_group_(fetch_compression_group) {}
 
-  // Sets the received data. May only be called once. Clears information about
-  // the Fetch, since it's now completed.
+  // Sets the received data and sets `size_` accordingly. May only be called
+  // once. Clears information about the Fetch, since it's now completed.
   //
   // Also sends `data` to all pending clients waiting on it, if there are any,
   // and clears them all.
   void SetData(CachedResult data) {
     DCHECK(!data_);
+    DCHECK_EQ(size_, 0u);
     data_ = std::make_unique<CachedResult>(std::move(data));
 
     // Errors are given TTLs of 0.
@@ -385,6 +493,15 @@ class TrustedSignalsCacheImpl::CompressionGroupData : public Handle {
       expiry_ = base::TimeTicks::Now();
     } else {
       expiry_ = base::TimeTicks::Now() + data_->value().ttl;
+
+      // Calculate size. Leave it as zero on errors, since errors are instantly
+      // expired and won't be added to the LruList, anyways.
+      //
+      // TODO(https://crbug.com/333445540): Consider including more in this
+      // measurement, and including the size of everything other than
+      // `compression_group_data` in its value on construction.
+      size_ = sizeof(CompressionGroupData) +
+              (*data_)->compression_group_data.size();
     }
 
     // The fetch has now completed and the caller will delete it once it's done
@@ -405,6 +522,10 @@ class TrustedSignalsCacheImpl::CompressionGroupData : public Handle {
   // May only be called if has_data() returns true.
   const CachedResult& data() const { return *data_; }
 
+  const ReceiverRestrictions& receiver_restrictions() const {
+    return receiver_restrictions_;
+  }
+
   // Returns true if the data has expired. If there's still a pending fetch,
   // `expiry_` won't have been set yet, but the data is considered not to be
   // expired.
@@ -421,6 +542,7 @@ class TrustedSignalsCacheImpl::CompressionGroupData : public Handle {
   void AddBiddingEntry(BiddingCacheEntryMap::iterator bidding_cache_entry) {
     // `this` may only have bidding or scoring signals, not both.
     DCHECK(scoring_cache_entries_.empty());
+    DCHECK_EQ(receiver_restrictions_.signals_type, SignalsType::kBidding);
 
     bidding_cache_entries_.emplace(bidding_cache_entry->second.partition_id,
                                    bidding_cache_entry);
@@ -432,6 +554,7 @@ class TrustedSignalsCacheImpl::CompressionGroupData : public Handle {
   void AddScoringEntry(ScoringCacheEntryMap::iterator scoring_cache_entry) {
     // `this` may only have bidding or scoring signals, not both.
     DCHECK(bidding_cache_entries_.empty());
+    DCHECK_EQ(receiver_restrictions_.signals_type, SignalsType::kScoring);
 
     scoring_cache_entries_.emplace(scoring_cache_entry->second.partition_id,
                                    scoring_cache_entry);
@@ -499,14 +622,108 @@ class TrustedSignalsCacheImpl::CompressionGroupData : public Handle {
   // Fetch starts, but safest to track this separately.
   int GetNextPartitionId() { return next_partition_id_++; }
 
+  void StartFetch() {
+    // If there's no fetch,  the fetch has already completed (or failed), so
+    // there's nothing to do.
+    if (!fetch_) {
+      return;
+    }
+
+    cache_->SetFetchCanStart(*fetch_);
+  }
+
+  base::UnguessableToken compression_group_token() const {
+    return compression_group_token_;
+  }
+
+  // Used, along with total size of all compression groups, to determine if an
+  // entry should be added to the LruList or discarded.
+  bool IsLoadedAndCanBeUsedByNewRequests() const {
+    // If there's a Fetch, then the data hasn't finished loading yet.
+    if (fetch_) {
+      return false;
+    }
+
+    // If expired, can't be used by new requests. Note that failed fetches are
+    // considered instantly expired, so will always fail this check.
+    if (IsExpired()) {
+      return false;
+    }
+
+    // Return whether there are any entries in the index that point at `this`.
+    return !bidding_cache_entries_.empty() || !scoring_cache_entries_.empty();
+  }
+
+  // The approximate size of the entry. Starts at 0, and only set to anything
+  // else in SetData().
+  size_t size() const { return size_; }
+
+  // Called by Handle on construction. The Handle must be holding onto a
+  // reference to the CompressionGroupData, as this will remove it from the
+  // LruList, if it's in the list, so would otherwise result in destruction of
+  // `this`.
+  void OnHandleCreated() {
+    if (lru_list_it_) {
+      cache_->RemoveFromLruList(*lru_list_it_);
+    }
+    ++num_handles_;
+  }
+
+  // Called by Handle's destructor. Returns number of outstanding Handles. If
+  // it's 0, the Handle should inform the TrustedSignalsCacheImpl.
+  uint32_t OnHandleDestroyed() {
+    // All Handles should be destroyed before this is added to the LruList.
+    DCHECK(!lru_list_it_);
+    return --num_handles_;
+  }
+
+  // Sets `lru_list_it_` and calculates `scheduled_cleanup_time_`, though the
+  // caller is responsible for destroying `this` once the cleanup time is
+  // reached.
+  void SetLruListIt(LruList::iterator lru_list_it) {
+    // There should be no Handles when calling this method - it should be
+    // removed from the LruList before any handle is created.
+    DCHECK_EQ(num_handles_, 0u);
+    DCHECK(!lru_list_it_);
+    DCHECK(!scheduled_cleanup_time_);
+
+    lru_list_it_ = std::move(lru_list_it);
+    scheduled_cleanup_time_ = base::TimeTicks::Now() + kMinUnusedCleanupTime;
+  }
+
+  // Clears `lru_list_it_` and `scheduled_cleanup_time_`. Should be called when
+  // removing `this` from the LruList, either for use by a Handle or in order to
+  // destroy it.
+  void ClearLruListIt() {
+    // This should be called before adding any handles.
+    DCHECK_EQ(num_handles_, 0u);
+
+    lru_list_it_ = std::nullopt;
+    scheduled_cleanup_time_ = std::nullopt;
+  }
+
+  // Returns `scheduled_cleanup_time_`. To call this method, `this` must be in
+  // the LruList, and thus have a scheduled removal time.
+  base::TimeTicks scheduled_cleanup_time() const {
+    return *scheduled_cleanup_time_;
+  }
+
  private:
   friend class base::RefCounted<CompressionGroupData>;
 
-  ~CompressionGroupData() override {
+  virtual ~CompressionGroupData() {
+    // The CompressionGroupData should be have no Handles and not be in the LRU
+    // list when destroyed.
+    DCHECK_EQ(num_handles_, 0u);
+    DCHECK(lru_list_it_ == std::nullopt);
+
     cache_->OnCompressionGroupDataDestroyed(*this);
   }
 
   const raw_ptr<TrustedSignalsCacheImpl> cache_;
+
+  // Restrictions on what receivers can use this cache entry.
+  const ReceiverRestrictions receiver_restrictions_;
 
   // Information about a pending or live Fetch. Iterators make it convenient for
   // TrustedSignalsCacheImpl::OnCompressionGroupDataDestroyed() to remove the
@@ -523,6 +740,10 @@ class TrustedSignalsCacheImpl::CompressionGroupData : public Handle {
 
   // Expiration time. Populated when `data_` is set.
   std::optional<base::TimeTicks> expiry_;
+
+  // When `this` should be removed from the LruList to reduce memory usage. Only
+  // set when added to the LRUCache.
+  std::optional<base::TimeTicks> scheduled_cleanup_time_;
 
   // All *CacheEntries associated with this CompressionGroupData. The maps are
   // indexed by partition ID. Each CompressionGroupData may only have bidding or
@@ -546,42 +767,114 @@ class TrustedSignalsCacheImpl::CompressionGroupData : public Handle {
       pending_clients_;
 
   int next_partition_id_ = 0;
+
+  // The number of Handles. Maintained by calls made from Handle's
+  // constructor/destructor. When non-zero, `lru_list_it_` should be nullopt.
+  // This is used to determine when an entry should be added to the LruList.
+  // While CompressionGroupData is refcounted, and the reference count could
+  // theoretically be used for this purpose, references may be owned by things
+  // other than Handles as well, so it's safest to maintain this count
+  // separately.
+  uint32_t num_handles_ = 0;
+
+  // Corresponding entry in `cache_->lru_list_`, if there currently is one.
+  std::optional<LruList::iterator> lru_list_it_;
+
+  // Approximate size of the entry. Calculated when the fetch completes.
+  size_t size_ = 0;
+
+  // The token that needs to be passed to GetTrustedSignals() to retrieve the
+  // response.
+  const base::UnguessableToken compression_group_token_{
+      base::UnguessableToken::Create()};
 };
 
-TrustedSignalsCacheImpl::TrustedSignalsCacheImpl(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : url_loader_factory_(std::move(url_loader_factory)) {}
+TrustedSignalsCacheImpl::Handle::Handle(
+    TrustedSignalsCacheImpl* trusted_signals_cache,
+    scoped_refptr<CompressionGroupData> compression_group_data)
+    : trusted_signals_cache_(trusted_signals_cache),
+      compression_group_data_(std::move(compression_group_data)) {
+  compression_group_data_->OnHandleCreated();
+}
 
-TrustedSignalsCacheImpl::~TrustedSignalsCacheImpl() = default;
+TrustedSignalsCacheImpl::Handle::~Handle() {
+  if (compression_group_data_->OnHandleDestroyed() == 0u) {
+    trusted_signals_cache_->OnLastHandleDestroyed(
+        std::move(compression_group_data_));
+  }
+}
+
+base::UnguessableToken
+TrustedSignalsCacheImpl::Handle::compression_group_token() const {
+  return compression_group_data_->compression_group_token();
+}
+
+void TrustedSignalsCacheImpl::Handle::StartFetch() {
+  compression_group_data_->StartFetch();
+}
+
+bool TrustedSignalsCacheImpl::ReceiverRestrictions::operator==(
+    const ReceiverRestrictions& other) const = default;
+
+TrustedSignalsCacheImpl::TrustedSignalsCacheImpl(
+    DataDecoderManager* data_decoder_manager,
+    GetCoordinatorKeyCallback get_coordinator_key_callback)
+    : data_decoder_manager_(data_decoder_manager),
+      get_coordinator_key_callback_(std::move(get_coordinator_key_callback)),
+      network_partition_nonce_cache_(kNonceCacheSize) {
+  DCHECK(data_decoder_manager_);
+}
+
+TrustedSignalsCacheImpl::~TrustedSignalsCacheImpl() {
+  // Clearing the LruList should delete all remaining compression group entries.
+  // Need to call RemoveFromLruList() for each entry to avoid DCHECKs in
+  // CompressionGroupData's destructor, due to `lru_list_it_` not being cleared
+  // before destruction.
+  while (!lru_list_.empty()) {
+    RemoveFromLruList(lru_list_.begin());
+  }
+  lru_list_.clear();
+  DCHECK(compression_group_data_map_.empty());
+  DCHECK_EQ(size_, 0u);
+}
 
 mojo::PendingRemote<auction_worklet::mojom::TrustedSignalsCache>
-TrustedSignalsCacheImpl::CreateMojoPipe() {
+TrustedSignalsCacheImpl::CreateRemote(SignalsType signals_type,
+                                      const url::Origin& script_origin) {
   mojo::PendingRemote<auction_worklet::mojom::TrustedSignalsCache> out;
-  receiver_set_.Add(this, out.InitWithNewPipeAndPassReceiver());
+  receiver_set_.Add(this, out.InitWithNewPipeAndPassReceiver(),
+                    ReceiverRestrictions{signals_type, script_origin});
   return out;
 }
 
-scoped_refptr<TrustedSignalsCacheImpl::Handle>
+std::unique_ptr<TrustedSignalsCacheImpl::Handle>
 TrustedSignalsCacheImpl::RequestTrustedBiddingSignals(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    FrameTreeNodeId frame_tree_node_id,
+    const std::string& devtools_auction_id,
     const url::Origin& main_frame_origin,
+    network::mojom::IPAddressSpace ip_address_space,
     const url::Origin& interest_group_owner,
     const std::string& interest_group_name,
     blink::mojom::InterestGroup_ExecutionMode execution_mode,
     const url::Origin& joining_origin,
     const GURL& trusted_signals_url,
+    const url::Origin& coordinator,
     base::optional_ref<const std::vector<std::string>>
         trusted_bidding_signals_keys,
     base::Value::Dict additional_params,
+    base::optional_ref<const std::string> buyer_tkv_signals,
     int& partition_id) {
   bool is_group_by_origin =
       execution_mode ==
       blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
-  BiddingCacheKey cache_key(interest_group_owner,
-                            is_group_by_origin
-                                ? std::nullopt
-                                : std::make_optional(interest_group_name),
-                            trusted_signals_url, main_frame_origin,
-                            joining_origin, std::move(additional_params));
+  BiddingCacheKey cache_key(
+      interest_group_owner,
+      is_group_by_origin ? std::nullopt
+                         : std::make_optional(interest_group_name),
+      trusted_signals_url, coordinator, std::move(url_loader_factory),
+      frame_tree_node_id, main_frame_origin, ip_address_space, joining_origin,
+      std::move(additional_params), buyer_tkv_signals);
 
   BiddingCacheEntryMap::iterator cache_entry_it =
       bidding_cache_entries_.find(cache_key);
@@ -593,23 +886,26 @@ TrustedSignalsCacheImpl::RequestTrustedBiddingSignals(
     // If `cache_entry`'s Fetch hasn't yet started, update the BiddingCacheEntry
     // to include any new keys, and return the entry's CompressionGroupData. The
     // Fetch will get the updated keys when it's started, so it does not need to
-    // be modified.
+    // be modified, other than adding `devtools_auction_id`.
     if (!compression_group_data->has_data() &&
         !compression_group_data->fetch()->second.fetcher) {
       cache_entry->AddInterestGroup(interest_group_name,
                                     trusted_bidding_signals_keys);
+      compression_group_data->fetch()->second.AddDevtoolsAuctionId(
+          devtools_auction_id);
       partition_id = cache_entry->partition_id;
-      return scoped_refptr<Handle>(compression_group_data);
+      return std::make_unique<Handle>(this,
+                                      scoped_refptr(compression_group_data));
     }
 
-    // Otherwise, check if the entry is not expired and all necessary value that
-    // aren't part of the BiddingCacheKey appear in the entry. If both are the
-    // case, reuse the cache entry without doing any more work.
+    // Otherwise, check if the entry is not expired and all necessary values
+    // that aren't part of the BiddingCacheKey appear in the entry. If both are
+    // the case, reuse the cache entry without doing any more work.
     if (!compression_group_data->IsExpired() &&
         cache_entry->ContainsInterestGroup(interest_group_name,
                                            trusted_bidding_signals_keys)) {
       partition_id = cache_entry->partition_id;
-      return scoped_refptr<Handle>(compression_group_data);
+      return std::make_unique<Handle>(this, compression_group_data);
     }
 
     // Otherwise, delete the cache entry. Even if its `compression_group_data`
@@ -644,6 +940,7 @@ TrustedSignalsCacheImpl::RequestTrustedBiddingSignals(
   scoped_refptr<CompressionGroupData> compression_group_data =
       FindOrCreateCompressionGroupDataAndQueueFetch(
           cache_entry_it->first.fetch_key, cache_entry_it->first.joining_origin,
+          devtools_auction_id,
           /*interest_group_owner_if_scoring_signals=*/std::nullopt);
 
   // The only thing left to do is set up pointers so objects can look up each
@@ -661,24 +958,31 @@ TrustedSignalsCacheImpl::RequestTrustedBiddingSignals(
   compression_group_data->AddBiddingEntry(cache_entry_it);
 
   partition_id = cache_entry_it->second.partition_id;
-  return compression_group_data;
+  return std::make_unique<Handle>(this, std::move(compression_group_data));
 }
 
-scoped_refptr<TrustedSignalsCacheImpl::Handle>
+std::unique_ptr<TrustedSignalsCacheImpl::Handle>
 TrustedSignalsCacheImpl::RequestTrustedScoringSignals(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    FrameTreeNodeId frame_tree_node_id,
+    const std::string& devtools_auction_id,
     const url::Origin& main_frame_origin,
+    network::mojom::IPAddressSpace ip_address_space,
     const url::Origin& seller,
     const GURL& trusted_signals_url,
+    const url::Origin& coordinator,
     const url::Origin& interest_group_owner,
     const url::Origin& joining_origin,
     const GURL& render_url,
     const std::vector<GURL>& component_render_urls,
     base::Value::Dict additional_params,
+    base::optional_ref<const std::string> seller_tkv_signals,
     int& partition_id) {
-  ScoringCacheKey cache_key(seller, trusted_signals_url, main_frame_origin,
-                            interest_group_owner, joining_origin, render_url,
-                            component_render_urls,
-                            std::move(additional_params));
+  ScoringCacheKey cache_key(
+      seller, trusted_signals_url, coordinator, std::move(url_loader_factory),
+      frame_tree_node_id, main_frame_origin, ip_address_space,
+      interest_group_owner, joining_origin, render_url, component_render_urls,
+      std::move(additional_params), seller_tkv_signals);
 
   ScoringCacheEntryMap::iterator cache_entry_it =
       scoring_cache_entries_.find(cache_key);
@@ -693,8 +997,14 @@ TrustedSignalsCacheImpl::RequestTrustedScoringSignals(
     // all parameters are in the key, which must match exactly.
     if (!compression_group_data->has_data() ||
         !compression_group_data->IsExpired()) {
+      // If there's a pending fetch, need to call AddDevtoolsAuctionId().
+      if (!compression_group_data->has_data()) {
+        compression_group_data->fetch()->second.AddDevtoolsAuctionId(
+            devtools_auction_id);
+      }
       partition_id = cache_entry->partition_id;
-      return scoped_refptr<Handle>(compression_group_data);
+      return std::make_unique<Handle>(this,
+                                      scoped_refptr(compression_group_data));
     }
 
     // Otherwise, delete the cache entry. Even if its `compression_group_data`
@@ -722,7 +1032,7 @@ TrustedSignalsCacheImpl::RequestTrustedScoringSignals(
   scoped_refptr<CompressionGroupData> compression_group_data =
       FindOrCreateCompressionGroupDataAndQueueFetch(
           cache_entry_it->first.fetch_key, cache_entry_it->first.joining_origin,
-          interest_group_owner);
+          devtools_auction_id, interest_group_owner);
 
   // The only thing left to do is set up pointers so objects can look up each
   // other and return the result. When it's time to send a request, the Fetch
@@ -739,13 +1049,14 @@ TrustedSignalsCacheImpl::RequestTrustedScoringSignals(
   compression_group_data->AddScoringEntry(cache_entry_it);
 
   partition_id = cache_entry_it->second.partition_id;
-  return compression_group_data;
+  return std::make_unique<Handle>(this, scoped_refptr(compression_group_data));
 }
 
 scoped_refptr<TrustedSignalsCacheImpl::CompressionGroupData>
 TrustedSignalsCacheImpl::FindOrCreateCompressionGroupDataAndQueueFetch(
     const FetchKey& fetch_key,
     const url::Origin& joining_origin,
+    const std::string& devtools_auction_id,
     base::optional_ref<const url::Origin>
         interest_group_owner_if_scoring_signals) {
   // If there are any Fetches with the correct FetchKey, check if the last one
@@ -765,30 +1076,28 @@ TrustedSignalsCacheImpl::FindOrCreateCompressionGroupDataAndQueueFetch(
   if (fetch_it == fetches_.end()) {
     fetch_it = fetches_.emplace(std::piecewise_construct,
                                 std::forward_as_tuple(fetch_key),
-                                std::forward_as_tuple());
+                                std::forward_as_tuple(this));
 
-    // If the fetch is new, post a task to start it asynchronously. This should
-    // allow all the interest groups from a single auction with the same owner
-    // have their fetches group, if possible.
-    //
-    // * TODO(https://crbug.com/333445540): The fact that
-    // AuctionWorkletManager::WorkletOwner::MaybeQueueNotifications() splits up
-    // notifications is an issue that can cause problems with this assumption,
-    // potentially reducing cache hit rates in the case where multiple requests
-    // share a partition. This should only be an issue in the group-by-origin
-    // case, but is still worth investigating.
-    //
-    // TODO(https://crbug.com/333445540): This also doesn't work at all for
-    // sellers. Once this API has been extended to support sellers as well,
-    // figure out something better for them. Maybe a 10 ms delay + flush
-    // messages, like we do for the legacy non-TEE requests?
-    fetch_it->second.timer_.Start(
-        FROM_HERE, base::TimeDelta(),
-        base::BindOnce(&TrustedSignalsCacheImpl::StartFetch,
-                       base::Unretained(this), fetch_it));
+    // If the fetch is new, post a task to get the coordinator key. Since
+    // GetCoordinatorKey can complete synchronously with an error, which results
+    // in resolving the fetch, it's not safe to call it immediately.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&TrustedSignalsCacheImpl::GetCoordinatorKey,
+                       fetch_it->second.weak_ptr_factory.GetWeakPtr(),
+                       fetch_it));
+
+    // Automatically start fetch if no consumer starts it soon enough.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&TrustedSignalsCacheImpl::SetFetchCanStart,
+                       fetch_it->second.weak_ptr_factory.GetWeakPtr(),
+                       fetch_it),
+        kAutoStartDelay);
   }
 
   Fetch* fetch = &fetch_it->second;
+  fetch->AddDevtoolsAuctionId(devtools_auction_id);
 
   // Now that we have a matching Fetch, check if there's an existing compression
   // group that can be reused.
@@ -808,8 +1117,11 @@ TrustedSignalsCacheImpl::FindOrCreateCompressionGroupDataAndQueueFetch(
   // `compression_group_id` is left as -1. One will be assigned when the request
   // is sent over the wire.
   scoped_refptr<CompressionGroupData> compression_group_data =
-      base::MakeRefCounted<CompressionGroupData>(this, fetch_it,
-                                                 compression_group_it);
+      base::MakeRefCounted<CompressionGroupData>(
+          this,
+          ReceiverRestrictions{fetch_key.signals_type(),
+                               fetch_key.script_origin()},
+          fetch_it, compression_group_it);
   compression_group_it->second.compression_group_data =
       compression_group_data.get();
   compression_group_data_map_.emplace(
@@ -836,6 +1148,13 @@ void TrustedSignalsCacheImpl::GetTrustedSignals(
 
   CompressionGroupData* compression_group_data =
       compression_group_data_it->second;
+  if (receiver_set_.current_context() !=
+      compression_group_data->receiver_restrictions()) {
+    receiver_set_.ReportBadMessage(
+        "Data from wrong compression group requested.");
+    return;
+  }
+
   // If the fetch is still pending, add to the list of pending clients.
   if (!compression_group_data->has_data()) {
     compression_group_data->AddPendingClient(std::move(client));
@@ -847,14 +1166,70 @@ void TrustedSignalsCacheImpl::GetTrustedSignals(
   SendResultToClient(std::move(client), compression_group_data->data());
 }
 
-void TrustedSignalsCacheImpl::StartFetch(FetchMap::iterator fetch_it) {
+void TrustedSignalsCacheImpl::GetCoordinatorKey(FetchMap::iterator fetch_it) {
   // Fetch should not have started yet.
   DCHECK(!fetch_it->second.fetcher);
   // If all the compression groups were deleted, the Fetch should have been
   // destroyed.
   DCHECK(!fetch_it->second.compression_groups.empty());
 
-  if (fetch_it->first.signals_type == SignalsType::kBidding) {
+  // Invoking the callback to get the key here instead of in the
+  // TrustedSignalsFetcher allows new partitions to be added to the fetch while
+  // retrieving the key, and means that the Fetcher doesn't need to cache the
+  // request body, or the information needed to create it, while waiting for the
+  // key to be received.
+  get_coordinator_key_callback_.Run(
+      url::Origin::Create(fetch_it->first.trusted_signals_url()),
+      fetch_it->first.coordinator,
+      base::BindOnce(&TrustedSignalsCacheImpl::OnCoordinatorKeyReceived,
+                     fetch_it->second.weak_ptr_factory.GetWeakPtr(), fetch_it));
+}
+
+void TrustedSignalsCacheImpl::OnCoordinatorKeyReceived(
+    FetchMap::iterator fetch_it,
+    base::expected<BiddingAndAuctionServerKey, std::string>
+        bidding_and_auction_server_key) {
+  // Fetch should not have started yet.
+  DCHECK(!fetch_it->second.fetcher);
+  // If all the compression groups were deleted, the Fetch should have been
+  // destroyed.
+  DCHECK(!fetch_it->second.compression_groups.empty());
+
+  // On failure, synchronously call OnFetchComplete(). This method may be called
+  // re-entrantly from FetchCoordinatorKey(), but that's safe, since this class
+  // doesn't report errors directly to the caller, so no need to worry about
+  // issues with the caller tearing down objects in OnFetchComplete().
+  if (!bidding_and_auction_server_key.has_value()) {
+    OnFetchComplete(
+        fetch_it,
+        base::unexpected(std::move(bidding_and_auction_server_key).error()));
+    return;
+  }
+
+  fetch_it->second.coordinator_key =
+      std::move(bidding_and_auction_server_key).value();
+  StartFetchIfReady(fetch_it);
+}
+
+void TrustedSignalsCacheImpl::SetFetchCanStart(FetchMap::iterator fetch_it) {
+  // Nothing to do it already set.
+  if (fetch_it->second.can_start) {
+    return;
+  }
+
+  fetch_it->second.can_start = true;
+  StartFetchIfReady(fetch_it);
+}
+
+void TrustedSignalsCacheImpl::StartFetchIfReady(FetchMap::iterator fetch_it) {
+  // Fetch should not have been started yet.
+  DCHECK(!fetch_it->second.fetcher);
+
+  if (!fetch_it->second.can_start || !fetch_it->second.coordinator_key) {
+    return;
+  }
+
+  if (fetch_it->first.signals_type() == SignalsType::kBidding) {
     StartBiddingSignalsFetch(fetch_it);
   } else {
     StartScoringSignalsFetch(fetch_it);
@@ -865,7 +1240,12 @@ void TrustedSignalsCacheImpl::StartBiddingSignalsFetch(
     FetchMap::iterator fetch_it) {
   std::map<int, std::vector<TrustedSignalsFetcher::BiddingPartition>>
       bidding_partition_map;
+  const FetchKey* fetch_key = &fetch_it->first;
   Fetch* fetch = &fetch_it->second;
+  DCHECK(!fetch->fetcher);
+  DCHECK(fetch->coordinator_key);
+  DCHECK(fetch->can_start);
+
   fetch->fetcher = CreateFetcher();
 
   int next_compression_group_id = 0;
@@ -883,33 +1263,40 @@ void TrustedSignalsCacheImpl::StartBiddingSignalsFetch(
          compression_group->compression_group_data->bidding_cache_entries()) {
       auto* cache_entry = &cache_entry_it.second->second;
       auto* cache_key = &cache_entry_it.second->first;
-      bidding_partitions.emplace_back();
-      auto* bidding_partition = &bidding_partitions.back();
-
-      bidding_partition->partition_id = cache_entry->partition_id;
-      bidding_partition->interest_group_names =
-          cache_entry->interest_group_names;
-      bidding_partition->keys = cache_entry->keys;
-      bidding_partition->hostname =
-          cache_key->fetch_key.main_frame_origin.host();
-      bidding_partition->additional_params =
-          cache_key->additional_params.Clone();
+      // Passing int all these pointers is safe, since `bidding_partitions` will
+      // be destroyed at the end of this function, and FetchBiddingSignals()
+      // will not retain pointers to them.
+      bidding_partitions.emplace_back(
+          cache_entry->partition_id, &cache_entry->interest_group_names,
+          &cache_entry->keys, &cache_key->additional_params,
+          cache_key->buyer_tkv_signals.has_value()
+              ? &cache_key->buyer_tkv_signals.value()
+              : nullptr);
     }
   }
   fetch->fetcher->FetchBiddingSignals(
-      url_loader_factory_.get(), fetch_it->first.trusted_signals_url,
-      bidding_partition_map,
+      *data_decoder_manager_, fetch_key->url_loader_factory.get(),
+      fetch_key->frame_tree_node_id, std::move(fetch->devtools_auction_ids),
+      fetch_key->main_frame_origin, fetch_key->ip_address_space,
+      GetNetworkPartitionNonce(fetch_key->network_partition_nonce_key),
+      fetch_key->script_origin(), fetch_key->trusted_signals_url(),
+      *fetch->coordinator_key, bidding_partition_map,
       base::BindOnce(&TrustedSignalsCacheImpl::OnFetchComplete,
                      base::Unretained(this), fetch_it));
 }
 
 void TrustedSignalsCacheImpl::StartScoringSignalsFetch(
     FetchMap::iterator fetch_it) {
-  std::map<int, std::vector<TrustedSignalsFetcher::ScoringPartition>>
-      scoring_partition_map;
+  const FetchKey* fetch_key = &fetch_it->first;
   Fetch* fetch = &fetch_it->second;
+  DCHECK(!fetch->fetcher);
+  DCHECK(fetch->coordinator_key);
+  DCHECK(fetch->can_start);
+
   fetch->fetcher = CreateFetcher();
 
+  std::map<int, std::vector<TrustedSignalsFetcher::ScoringPartition>>
+      scoring_partition_map;
   int next_compression_group_id = 0;
   for (auto& compression_group_pair : fetch->compression_groups) {
     auto* compression_group = &compression_group_pair.second;
@@ -925,24 +1312,27 @@ void TrustedSignalsCacheImpl::StartScoringSignalsFetch(
          compression_group->compression_group_data->scoring_cache_entries()) {
       auto* cache_entry = &cache_entry_it.second->second;
       auto* cache_key = &cache_entry_it.second->first;
-      scoring_partitions.emplace_back();
-      auto* scoring_partition = &scoring_partitions.back();
-
-      scoring_partition->partition_id = cache_entry->partition_id;
-      scoring_partition->render_url = cache_key->render_url;
-      scoring_partition->component_render_urls =
-          cache_key->component_render_urls;
-      scoring_partition->hostname =
-          cache_key->fetch_key.main_frame_origin.host();
-      scoring_partition->additional_params =
-          cache_key->additional_params.Clone();
+      // Passing int all these pointers is safe, since `scoring_partitions` will
+      // be destroyed at the end of this function, and FetchBiddingSignals()
+      // will not retain pointers to them.
+      scoring_partitions.emplace_back(
+          cache_entry->partition_id, &cache_key->render_url,
+          &cache_key->component_render_urls, &cache_key->additional_params,
+          cache_key->seller_tkv_signals.has_value()
+              ? &cache_key->seller_tkv_signals.value()
+              : nullptr);
     }
   }
   fetch->fetcher->FetchScoringSignals(
-      url_loader_factory_.get(), fetch_it->first.trusted_signals_url,
-      scoring_partition_map,
+      *data_decoder_manager_, fetch_key->url_loader_factory.get(),
+      fetch_key->frame_tree_node_id, std::move(fetch->devtools_auction_ids),
+      fetch_key->main_frame_origin, fetch_key->ip_address_space,
+      GetNetworkPartitionNonce(fetch_key->network_partition_nonce_key),
+      fetch_key->script_origin(), fetch_key->trusted_signals_url(),
+      *fetch->coordinator_key, scoring_partition_map,
       base::BindOnce(&TrustedSignalsCacheImpl::OnFetchComplete,
                      base::Unretained(this), fetch_it));
+  fetch->devtools_auction_ids.clear();
 }
 
 void TrustedSignalsCacheImpl::OnFetchComplete(
@@ -972,9 +1362,8 @@ void TrustedSignalsCacheImpl::OnFetchComplete(
         compression_group_results.clear();
 
         signals_fetch_result = base::unexpected(
-            TrustedSignalsFetcher::ErrorInfo{base::StringPrintf(
-                "Fetched signals missing compression group %i.",
-                compression_group->compression_group_id)});
+            base::StringPrintf("Fetched signals missing compression group %i.",
+                               compression_group->compression_group_id));
         break;
       }
       result = std::move(signals_fetch_result_it->second);
@@ -995,6 +1384,9 @@ void TrustedSignalsCacheImpl::OnFetchComplete(
     for (auto& compression_group_result : compression_group_results) {
       compression_group_result.first->SetData(
           std::move(compression_group_result.second));
+      // Update `size_`, now that SetData() caused in the compression group's
+      // size to be calculated.
+      size_ += compression_group_result.first->size();
     }
   } else {
     // On error, copy the shared error value to each group's
@@ -1004,7 +1396,17 @@ void TrustedSignalsCacheImpl::OnFetchComplete(
           compression_group_pair.second.compression_group_data;
       compression_group->SetData(
           base::unexpected(signals_fetch_result.error()));
+      // On error, the size of compression groups is treated as zero, as they'll
+      // be discarded as soon as they fall out of use.
+      DCHECK_EQ(compression_group->size(), 0u);
     }
+  }
+
+  // While the cache is too large, remove entries from `lru_cache_`, if there
+  // are any. May not get below max cache size, due to not being able to delete
+  // live entries.
+  while (size_ > kMaxCacheSizeBytes && !lru_list_.empty()) {
+    RemoveFromLruList(lru_list_.begin());
   }
 
   // The SetData() calls above cleared the references to the fetch held by the
@@ -1012,8 +1414,50 @@ void TrustedSignalsCacheImpl::OnFetchComplete(
   fetches_.erase(fetch_it);
 }
 
+void TrustedSignalsCacheImpl::OnLastHandleDestroyed(
+    scoped_refptr<CompressionGroupData> compression_group_data) {
+  // If the maximum size has already been exceeded, don't add the entry to the
+  // LruList.
+  if (size_ > kMaxCacheSizeBytes) {
+    // In this case, `lru_list_` should have no entries in it, since only
+    // entries with live Handles can exceed the limit, and entries in the list
+    // should not have any live Handles.
+    DCHECK(lru_list_.empty());
+    return;
+  }
+
+  // If the entry is still loading, or can't be used by new requests, due to
+  // expiration or having been removed from the index, discard it.
+  if (!compression_group_data->IsLoadedAndCanBeUsedByNewRequests()) {
+    return;
+  }
+
+  // Add entry to the LruList. This is the inverse of RemoveFromLruList(),
+  // below.
+  auto it =
+      lru_list_.emplace(lru_list_.end(), std::move(compression_group_data));
+  (*it)->SetLruListIt(it);
+  MaybeStartCleanupTimer();
+}
+
+void TrustedSignalsCacheImpl::RemoveFromLruList(LruList::iterator lru_list_it) {
+  // This needs to be done before removing the CompressionGroupData from the
+  // LruList, as removal may destroy the CompressionGroupData.
+  (*lru_list_it)->ClearLruListIt();
+  lru_list_.erase(lru_list_it);
+
+  // Stop the timer if it's no longer needed. This makes timeouts a easier to
+  // reason about for testing.
+  if (lru_list_.empty()) {
+    cleanup_timer_.Stop();
+  }
+}
+
 void TrustedSignalsCacheImpl::OnCompressionGroupDataDestroyed(
     CompressionGroupData& compression_group_data) {
+  DCHECK_LE(compression_group_data.size(), size_);
+  size_ -= compression_group_data.size();
+
   // Need to clean up the *CacheEntries associated with the
   // CompressionGroupData.
   for (auto cache_entry_it : compression_group_data.bidding_cache_entries()) {
@@ -1078,6 +1522,39 @@ void TrustedSignalsCacheImpl::DestroyScoringCacheEntry(
         compression_group_data->fetch()->second.fetcher);
   compression_group_data->RemoveScoringCacheEntry(&cache_entry_it->second);
   scoring_cache_entries_.erase(cache_entry_it);
+}
+
+base::UnguessableToken TrustedSignalsCacheImpl::GetNetworkPartitionNonce(
+    const NetworkPartitionNonceKey& network_partition_nonce_key) {
+  auto it = network_partition_nonce_cache_.Get(network_partition_nonce_key);
+  if (it == network_partition_nonce_cache_.end()) {
+    it = network_partition_nonce_cache_.Put(network_partition_nonce_key,
+                                            base::UnguessableToken::Create());
+  }
+  return it->second;
+}
+
+void TrustedSignalsCacheImpl::MaybeStartCleanupTimer() {
+  if (cleanup_timer_.IsRunning() || lru_list_.empty()) {
+    return;
+  }
+
+  // Unretained is safe here because `cleanup_timer_` won't run tasks after it
+  // has been destroyed, and `this` owns `cleanup_timer_`.
+  cleanup_timer_.Start(FROM_HERE,
+                       (*lru_list_.begin())->scheduled_cleanup_time() -
+                           base::TimeTicks::Now() + kCleanupInterval,
+                       base::BindOnce(&TrustedSignalsCacheImpl::Cleanup,
+                                      base::Unretained(this)));
+}
+
+void TrustedSignalsCacheImpl::Cleanup() {
+  base::TimeTicks now = base::TimeTicks::Now();
+  while (!lru_list_.empty() &&
+         (*lru_list_.begin())->scheduled_cleanup_time() <= now) {
+    RemoveFromLruList(lru_list_.begin());
+  }
+  MaybeStartCleanupTimer();
 }
 
 std::unique_ptr<TrustedSignalsFetcher>

@@ -26,6 +26,10 @@ class LegacyChromeTableViewControllerTest : public BlockCleanupTest {
   // Tests should call this function to create their controller for testing.
   void CreateController();
 
+  // Creates the controller without forcing the view to be built, for tests that
+  // require that.
+  void CreateControllerWithoutView();
+
   // Will call CreateController() if `controller_` is nil.
   LegacyChromeTableViewController* controller();
 
@@ -79,6 +83,12 @@ class LegacyChromeTableViewControllerTest : public BlockCleanupTest {
   // Verifies that the text cell at `item` in `section` has a text property
   // which matches the l10n string for `expected_text_id`.
   void CheckTextCellTextWithId(int expected_text_id, int section, int item);
+
+  // Verifies that the text cell at `item` in `section` has an leadingDetailText
+  // property matching `expected_text`.
+  void CheckTextCellLeadingDetailText(NSString* expected_text,
+                                      int section,
+                                      int item);
 
   // Verifies that the text cell at `item` in `section` has a text and
   // detailText properties which match strings for `expected_text` and

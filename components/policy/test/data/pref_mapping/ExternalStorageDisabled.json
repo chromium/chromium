@@ -1,37 +1,15 @@
 [
   {
     "os": [
-      "chromeos_ash"
+      "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "hardware.external_storage_disabled": {
-            "default_value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "ExternalStorageDisabled": false
-        },
-        "prefs": {
-          "hardware.external_storage_disabled": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "ExternalStorageDisabled": true
-        },
-        "prefs": {
-          "hardware.external_storage_disabled": {
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "hardware.external_storage_disabled",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

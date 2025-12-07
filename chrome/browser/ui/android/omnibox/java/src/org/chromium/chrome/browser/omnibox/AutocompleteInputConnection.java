@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox;
 
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.inputmethod.CompletionInfo;
 import android.view.inputmethod.CorrectionInfo;
@@ -17,10 +18,14 @@ import android.view.inputmethod.InputContentInfo;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.components.omnibox.OmniboxFeatures;
 
+@NullMarked
 class AutocompleteInputConnection extends InputConnectionWrapper {
     private static final String TAG = "AutocompleteInput";
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = OmniboxFeatures.sDiagInputConnection.getValue();
 
     /** Interface defining the delegate for handling input-related actions. */
     public interface InputDelegate {
@@ -143,7 +148,7 @@ class AutocompleteInputConnection extends InputConnectionWrapper {
         if (DEBUG) Log.i(TAG, "commitAutocomplete");
         if (!mInputDelegate.hasAutocomplete()) return;
 
-        String autocompleteText = mInputDelegate.getCurrentState().getAutocompleteText().get();
+        String autocompleteText = mInputDelegate.getCurrentState().getAutocompleteText();
 
         mInputDelegate.getCurrentState().commitAutocompleteText();
         // Invalidate previous state.
@@ -156,7 +161,9 @@ class AutocompleteInputConnection extends InputConnectionWrapper {
             decrementBatchEditCount();
         } else {
             // We have already removed span in the onBeginImeCommand(), just append the text.
-            mInputDelegate.getAutocompleteEditTextModelBaseDelegate().append(autocompleteText);
+            if (autocompleteText != null) {
+                mInputDelegate.getAutocompleteEditTextModelBaseDelegate().append(autocompleteText);
+            }
         }
     }
 
@@ -227,6 +234,17 @@ class AutocompleteInputConnection extends InputConnectionWrapper {
                     mInputDelegate.getPreviouslySetState(),
                     mInputDelegate.getCurrentState());
         }
+
+        mInputDelegate
+                .getAutocompleteEditTextModelBaseDelegate()
+                .setInputIsMultilineEligible(
+                        TextUtils.indexOf(
+                                        OmniboxFeatures.sWrapAutocompleteText.getValue()
+                                                ? mInputDelegate.getCurrentState().getText()
+                                                : mInputDelegate.getCurrentState().getUserText(),
+                                        ' ')
+                                >= 0);
+
         if (!mInputDelegate.getCurrentState().isCursorAtEndOfUserText()) return false;
 
         if (mInputDelegate
@@ -254,14 +272,14 @@ class AutocompleteInputConnection extends InputConnectionWrapper {
      * @return {@code true} if the batch edit is still in progress. {@code false} otherwise.
      */
     public boolean onEndImeCommand() {
-        if (DEBUG) Log.i(TAG, "onEndImeCommand: " + (mInputDelegate.isInBatchEdit()));
+        if (DEBUG) Log.i(TAG, "onEndImeCommand: " + mInputDelegate.isInBatchEdit());
         AutocompleteState currentState = mInputDelegate.getCurrentState();
         String diff = currentState.getBackwardDeletedTextFrom(mPreBatchEditState);
         if (diff != null) {
             // Update selection first such that keyboard app gets what it expects.
             boolean retVal = decrementBatchEditCount();
 
-            if (mPreBatchEditState.getAutocompleteText().isPresent()) {
+            if (mPreBatchEditState.getAutocompleteText() != null) {
                 // Undo delete to retain the last character and only remove autocomplete text.
                 restoreBackspacedText(diff);
             }
@@ -368,7 +386,7 @@ class AutocompleteInputConnection extends InputConnectionWrapper {
     }
 
     @Override
-    public CharSequence getTextAfterCursor(final int n, final int flags) {
+    public @Nullable CharSequence getTextAfterCursor(final int n, final int flags) {
         if (DEBUG) Log.i(TAG, "getTextAfterCursor");
         onBeginImeCommand();
         CharSequence retVal = super.getTextAfterCursor(n, flags);
@@ -377,7 +395,7 @@ class AutocompleteInputConnection extends InputConnectionWrapper {
     }
 
     @Override
-    public CharSequence getTextBeforeCursor(final int n, final int flags) {
+    public @Nullable CharSequence getTextBeforeCursor(final int n, final int flags) {
         if (DEBUG) Log.i(TAG, "getTextBeforeCursor");
         onBeginImeCommand();
         CharSequence retVal = super.getTextBeforeCursor(n, flags);
@@ -455,5 +473,11 @@ class AutocompleteInputConnection extends InputConnectionWrapper {
         boolean retVal = super.clearMetaKeyStates(states);
         onEndImeCommand();
         return retVal;
+    }
+
+    @Override
+    public void closeConnection() {
+        if (DEBUG) Log.i(TAG, "closeConnection");
+        super.closeConnection();
     }
 }

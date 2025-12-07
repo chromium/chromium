@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
@@ -52,16 +53,31 @@ BoundSessionCookieRefreshServiceFactory::
 BoundSessionCookieRefreshServiceFactory::
     ~BoundSessionCookieRefreshServiceFactory() = default;
 
+bool BoundSessionCookieRefreshServiceFactory::ServiceIsNULLWhileTesting()
+    const {
+  // Avoid building the service in tests that don't have a proper network
+  // context.
+  return true;
+}
+
 std::unique_ptr<KeyedService>
 BoundSessionCookieRefreshServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  if (base::FeatureList::IsEnabled(
+          switches::kBoundSessionCredentialsKillSwitch)) {
+    return nullptr;
+  }
+
   Profile* profile = Profile::FromBrowserContext(context);
-  if (!switches::IsBoundSessionCredentialsEnabled(profile->GetPrefs())) {
+  if (!switches::IsBoundSessionCredentialsEnabled(profile->GetPrefs()) &&
+      !base::FeatureList::IsEnabled(kEnableBoundSessionCredentialsContinuity)) {
     return nullptr;
   }
 
   unexportable_keys::UnexportableKeyService* key_service =
-      UnexportableKeyServiceFactory::GetForProfile(profile);
+      UnexportableKeyServiceFactory::GetForProfileAndPurpose(
+          profile, UnexportableKeyServiceFactory::KeyPurpose::
+                       kDeviceBoundSessionCredentialsPrototype);
 
   if (!key_service) {
     // A bound session requires a crypto provider.
@@ -73,9 +89,7 @@ BoundSessionCookieRefreshServiceFactory::BuildServiceInstanceForBrowserContext(
   bool should_create_service =
       account_consistency_method ==
           signin::AccountConsistencyMethod::kDisabled ||
-      (account_consistency_method == signin::AccountConsistencyMethod::kDice &&
-       switches::kEnableBoundSessionCredentialsDiceSupport.Get() ==
-           switches::EnableBoundSessionCredentialsDiceSupport::kEnabled);
+      account_consistency_method == signin::AccountConsistencyMethod::kDice;
 
   if (!should_create_service) {
     return nullptr;
@@ -87,7 +101,7 @@ BoundSessionCookieRefreshServiceFactory::BuildServiceInstanceForBrowserContext(
               *key_service,
               BoundSessionParamsStorage::CreateForProfile(*profile),
               profile->GetDefaultStoragePartition(),
-              content::GetNetworkConnectionTracker(),
+              content::GetNetworkConnectionTracker(), profile->GetPrefs(),
               profile->IsOffTheRecord());
   bound_session_cookie_refresh_service->Initialize();
   return bound_session_cookie_refresh_service;

@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/editing/state_machines/backspace_state_machine.h"
 
+#include <array>
 #include <ostream>
 
+#include "third_party/blink/renderer/core/editing/state_machines/state_machine_util.h"
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
@@ -54,15 +51,14 @@ enum class BackspaceStateMachine::BackspaceState {
 
 std::ostream& operator<<(std::ostream& os,
                          BackspaceStateMachine::BackspaceState state) {
-  static const char* const kTexts[] = {
+  static const auto kTexts = std::to_array<const char*>({
 #define V(name) #name,
       FOR_EACH_BACKSPACE_STATE_MACHINE_STATE(V)
 #undef V
-  };
-  auto* const* const it = std::begin(kTexts) + static_cast<size_t>(state);
-  DCHECK_GE(it, std::begin(kTexts)) << "Unknown backspace value";
-  DCHECK_LT(it, std::end(kTexts)) << "Unknown backspace value";
-  return os << *it;
+  });
+  DCHECK_LT(static_cast<size_t>(state), kTexts.size())
+      << "Unknown backspace value";
+  return os << kTexts[static_cast<size_t>(state)];
 }
 
 BackspaceStateMachine::BackspaceStateMachine()
@@ -99,22 +95,26 @@ TextSegmentationMachineState BackspaceStateMachine::FeedPrecedingCodeUnit(
   switch (state_) {
     case BackspaceState::kStart:
       code_units_to_be_deleted_ = U16_LENGTH(code_point);
-      if (code_point == kNewlineCharacter)
+      if (code_point == uchar::kLineFeed) {
         return MoveToNextState(BackspaceState::kBeforeLF);
+      }
       if (u_hasBinaryProperty(code_point, UCHAR_VARIATION_SELECTOR))
         return MoveToNextState(BackspaceState::kBeforeVS);
       if (Character::IsRegionalIndicator(code_point))
         return MoveToNextState(BackspaceState::kOddNumberedRIS);
       if (Character::IsModifier(code_point))
         return MoveToNextState(BackspaceState::kBeforeEmojiModifier);
-      if (Character::IsEmoji(code_point))
+      if (IsExtendedPictographicGb11(code_point)) {
         return MoveToNextState(BackspaceState::kBeforeZWJEmoji);
-      if (code_point == kCombiningEnclosingKeycapCharacter)
+      }
+      if (code_point == uchar::kCombiningEnclosingKeycap) {
         return MoveToNextState(BackspaceState::kBeforeKeycap);
+      }
       return Finish();
     case BackspaceState::kBeforeLF:
-      if (code_point == kCarriageReturnCharacter)
+      if (code_point == uchar::kCarriageReturn) {
         ++code_units_to_be_deleted_;
+      }
       return Finish();
     case BackspaceState::kBeforeKeycap:
       if (u_hasBinaryProperty(code_point, UCHAR_VARIATION_SELECTOR)) {
@@ -153,7 +153,7 @@ TextSegmentationMachineState BackspaceStateMachine::FeedPrecedingCodeUnit(
       }
       return Finish();
     case BackspaceState::kBeforeVS:
-      if (Character::IsEmoji(code_point)) {
+      if (IsExtendedPictographicGb11(code_point)) {
         code_units_to_be_deleted_ += U16_LENGTH(code_point);
         return MoveToNextState(BackspaceState::kBeforeZWJEmoji);
       }
@@ -162,11 +162,11 @@ TextSegmentationMachineState BackspaceStateMachine::FeedPrecedingCodeUnit(
         code_units_to_be_deleted_ += U16_LENGTH(code_point);
       return Finish();
     case BackspaceState::kBeforeZWJEmoji:
-      return code_point == kZeroWidthJoinerCharacter
+      return code_point == uchar::kZeroWidthJoiner
                  ? MoveToNextState(BackspaceState::kBeforeZWJ)
                  : Finish();
     case BackspaceState::kBeforeZWJ:
-      if (Character::IsEmoji(code_point)) {
+      if (IsExtendedPictographicGb11(code_point)) {
         code_units_to_be_deleted_ += U16_LENGTH(code_point) + 1;  // +1 for ZWJ
         return Character::IsModifier(code_point)
                    ? MoveToNextState(BackspaceState::kBeforeEmojiModifier)
@@ -179,8 +179,9 @@ TextSegmentationMachineState BackspaceStateMachine::FeedPrecedingCodeUnit(
       }
       return Finish();
     case BackspaceState::kBeforeVSAndZWJ:
-      if (!Character::IsEmoji(code_point))
+      if (!IsExtendedPictographicGb11(code_point)) {
         return Finish();
+      }
 
       DCHECK_GT(last_seen_vs_code_units_, 0);
       DCHECK_LE(last_seen_vs_code_units_, 2);
@@ -200,14 +201,10 @@ TextSegmentationMachineState BackspaceStateMachine::FeedPrecedingCodeUnit(
       code_units_to_be_deleted_ -= 2;  // Code units of RIS
       return MoveToNextState(BackspaceState::kOddNumberedRIS);
     case BackspaceState::kFinished:
-      NOTREACHED_IN_MIGRATION()
-          << "Do not call feedPrecedingCodeUnit() once it finishes.";
-      break;
+      NOTREACHED() << "Do not call feedPrecedingCodeUnit() once it finishes.";
     default:
-      NOTREACHED_IN_MIGRATION() << "Unhandled state: " << state_;
+      NOTREACHED() << "Unhandled state: " << state_;
   }
-  NOTREACHED_IN_MIGRATION() << "Unhandled state: " << state_;
-  return TextSegmentationMachineState::kInvalid;
 }
 
 TextSegmentationMachineState BackspaceStateMachine::TellEndOfPrecedingText() {
@@ -221,8 +218,7 @@ TextSegmentationMachineState BackspaceStateMachine::TellEndOfPrecedingText() {
 
 TextSegmentationMachineState BackspaceStateMachine::FeedFollowingCodeUnit(
     UChar code_unit) {
-  NOTREACHED_IN_MIGRATION();
-  return TextSegmentationMachineState::kInvalid;
+  NOTREACHED();
 }
 
 int BackspaceStateMachine::FinalizeAndGetBoundaryOffset() {

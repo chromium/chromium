@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <algorithm>
+#include <array>
 #include <string>
 #include <vector>
 
@@ -14,10 +16,10 @@
 #include "base/containers/contains.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/uuid.h"
@@ -31,7 +33,9 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_field_trial.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_result.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/preloading_test_util.h"
@@ -85,11 +89,13 @@ const std::vector<TestUrlInfo>& TestUrlDb() {
         u"just", 3, 1, ExpectedActionBasedOnConfidenceOnly(3, 1)},
        {GURL("http://www.testsite.com/f.html"), u"Test - site - just a test", 8,
         u"just", 3, 0, ExpectedActionBasedOnConfidenceOnly(3, 0)},
-       {GURL("http://www.testsite.com/g.html"), u"Test - site - just a test",
-        12, std::u16string(), 5, 0, AutocompleteActionPredictor::ACTION_NONE},
+       {GURL("http://www.testsite.com/g.html"), u"Test - site - just a test", 8,
+        u"just", 3, 4, ExpectedActionBasedOnConfidenceOnly(3, 4)},
        {GURL("http://www.testsite.com/h.html"), u"Test - site - just a test",
-        21, u"just a test", 2, 0, AutocompleteActionPredictor::ACTION_NONE},
+        12, std::u16string(), 5, 0, AutocompleteActionPredictor::ACTION_NONE},
        {GURL("http://www.testsite.com/i.html"), u"Test - site - just a test",
+        21, u"just a test", 2, 0, AutocompleteActionPredictor::ACTION_NONE},
+       {GURL("http://www.testsite.com/j.html"), u"Test - site - just a test",
         28, u"just a test", 2, 0, AutocompleteActionPredictor::ACTION_NONE}}};
   return *db;
 }
@@ -119,9 +125,19 @@ const std::vector<TestUrlInfo>& TestUrlConfidenceDb() {
 
 namespace predictors {
 
-class AutocompleteActionPredictorTest : public testing::Test {
+class AutocompleteActionPredictorTest
+    : public testing::Test,
+      public ::testing::WithParamInterface<bool> {
  public:
   AutocompleteActionPredictorTest() : predictor_(nullptr) {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(
+          omnibox::kPreconnectNonSearchOmniboxSuggestions);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          omnibox::kPreconnectNonSearchOmniboxSuggestions);
+    }
+
     TestingProfile::Builder profile_builder;
     profile_builder.AddTestingFactory(
         HistoryServiceFactory::GetInstance(),
@@ -134,7 +150,6 @@ class AutocompleteActionPredictorTest : public testing::Test {
         std::make_unique<content::test::PreloadingPredictionUkmEntryBuilder>(
             chrome_preloading_predictor::kOmniboxDirectURLInput);
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
-    test_timer_ = std::make_unique<base::ScopedMockElapsedTimersForTest>();
 
     predictor_ = std::make_unique<AutocompleteActionPredictor>(profile_.get());
     profile_->BlockUntilHistoryProcessesPendingRequests();
@@ -335,11 +350,15 @@ class AutocompleteActionPredictorTest : public testing::Test {
   std::unique_ptr<WebContents> web_contents_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
-  std::unique_ptr<base::ScopedMockElapsedTimersForTest> test_timer_;
+  base::ScopedMockElapsedTimersForTest test_timer_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
+INSTANTIATE_TEST_SUITE_P(AutocompleteActionPredictorTest,
+                         AutocompleteActionPredictorTest,
+                         testing::Bool());
 
-TEST_F(AutocompleteActionPredictorTest, AddRow) {
+TEST_P(AutocompleteActionPredictorTest, AddRow) {
   // Add a test entry to the predictor.
   std::string guid = AddRow(TestUrlDb()[0]);
 
@@ -358,7 +377,7 @@ TEST_F(AutocompleteActionPredictorTest, AddRow) {
   EXPECT_EQ(guid, id_it->second);
 }
 
-TEST_F(AutocompleteActionPredictorTest, UpdateRow) {
+TEST_P(AutocompleteActionPredictorTest, UpdateRow) {
   ASSERT_NO_FATAL_FAILURE(AddAllRows());
 
   EXPECT_EQ(std::size(TestUrlDb()), db_cache()->size());
@@ -394,7 +413,7 @@ TEST_F(AutocompleteActionPredictorTest, UpdateRow) {
   EXPECT_EQ(id_it->second, update_id_it->second);
 }
 
-TEST_F(AutocompleteActionPredictorTest, DeleteAllRows) {
+TEST_P(AutocompleteActionPredictorTest, DeleteAllRows) {
   ASSERT_NO_FATAL_FAILURE(AddAllRows());
 
   EXPECT_EQ(std::size(TestUrlDb()), db_cache()->size());
@@ -406,7 +425,7 @@ TEST_F(AutocompleteActionPredictorTest, DeleteAllRows) {
   EXPECT_TRUE(db_id_cache()->empty());
 }
 
-TEST_F(AutocompleteActionPredictorTest, DeleteRowsFromCaches) {
+TEST_P(AutocompleteActionPredictorTest, DeleteRowsFromCaches) {
   std::vector<AutocompleteActionPredictorTable::Row::Id> all_ids;
   history::URLRows rows;
   for (size_t i = 0; i < std::size(TestUrlDb()); ++i) {
@@ -437,7 +456,7 @@ TEST_F(AutocompleteActionPredictorTest, DeleteRowsFromCaches) {
   }
 }
 
-TEST_F(AutocompleteActionPredictorTest, DeleteOldIdsFromCaches) {
+TEST_P(AutocompleteActionPredictorTest, DeleteOldIdsFromCaches) {
   std::vector<AutocompleteActionPredictorTable::Row::Id> expected;
   std::vector<AutocompleteActionPredictorTable::Row::Id> all_ids;
 
@@ -446,7 +465,7 @@ TEST_F(AutocompleteActionPredictorTest, DeleteOldIdsFromCaches) {
     all_ids.push_back(row_id);
 
     bool exclude_url =
-        base::StartsWith(TestUrlDb()[i].url.path(), "/d",
+        base::StartsWith(TestUrlDb()[i].url.GetPath(), "/d",
                          base::CompareCase::SENSITIVE) ||
         (TestUrlDb()[i].days_from_now > maximum_days_to_keep_entry());
 
@@ -469,7 +488,7 @@ TEST_F(AutocompleteActionPredictorTest, DeleteOldIdsFromCaches) {
   }
 }
 
-TEST_F(AutocompleteActionPredictorTest,
+TEST_P(AutocompleteActionPredictorTest,
        DeleteLowestConfidenceRowsFromCaches_OneByOne) {
   std::vector<AutocompleteActionPredictorTable::Row::Id> test_url_ids;
   for (const auto& info : TestUrlConfidenceDb())
@@ -490,7 +509,7 @@ TEST_F(AutocompleteActionPredictorTest,
   }
 }
 
-TEST_F(AutocompleteActionPredictorTest,
+TEST_P(AutocompleteActionPredictorTest,
        DeleteLowestConfidenceRowsFromCaches_Bulk) {
   std::vector<AutocompleteActionPredictorTable::Row::Id> test_url_ids;
   for (const auto& info : TestUrlConfidenceDb())
@@ -516,15 +535,15 @@ TEST_F(AutocompleteActionPredictorTest,
   }
 }
 
-TEST_F(AutocompleteActionPredictorTest, OnURLsDeletedExpired) {
+TEST_P(AutocompleteActionPredictorTest, OnURLsDeletedExpired) {
   OnURLsDeletedTest(true);
 }
 
-TEST_F(AutocompleteActionPredictorTest, OnURLsDeletedNonExpired) {
+TEST_P(AutocompleteActionPredictorTest, OnURLsDeletedNonExpired) {
   OnURLsDeletedTest(false);
 }
 
-TEST_F(AutocompleteActionPredictorTest, RecommendActionURL) {
+TEST_P(AutocompleteActionPredictorTest, RecommendActionURL) {
   ASSERT_NO_FATAL_FAILURE(AddAllRows());
 
   // Navigate to kInitial URL.
@@ -575,7 +594,7 @@ TEST_F(AutocompleteActionPredictorTest, RecommendActionURL) {
                                                          expected_entry);
 }
 
-TEST_F(AutocompleteActionPredictorTest, RecommendActionSearch) {
+TEST_P(AutocompleteActionPredictorTest, RecommendActionSearch) {
   ASSERT_NO_FATAL_FAILURE(AddAllRows());
 
   AutocompleteMatch match;
@@ -594,12 +613,38 @@ TEST_F(AutocompleteActionPredictorTest, RecommendActionSearch) {
   }
 }
 
-TEST_F(AutocompleteActionPredictorTest,
+TEST_P(AutocompleteActionPredictorTest, RecommendActionNonSearch) {
+  ASSERT_NO_FATAL_FAILURE(AddAllRows());
+
+  AutocompleteMatch match;
+  match.type = AutocompleteMatchType::URL_WHAT_YOU_TYPED;
+
+  for (const auto& i : TestUrlDb()) {
+    match.destination_url = GURL(i.url);
+    EXPECT_EQ(i.expected_action,
+              predictor()->RecommendAction(i.user_text, match, nullptr))
+        << "Unexpected action for " << match.destination_url;
+  }
+}
+
+TEST_P(AutocompleteActionPredictorTest, PreconnectableTypes) {
+  AutocompleteMatch match;
+  for (int i = 0; i < AutocompleteMatchType::NUM_TYPES; i++) {
+    EXPECT_TRUE(AutocompleteMatchType::FromInteger(i, &match.type));
+    EXPECT_EQ(AutocompleteActionPredictor::IsPreconnectable(match),
+              GetParam() ? AutocompleteMatch::IsPreconnectableType(match.type)
+                         : AutocompleteMatch::IsSearchType(match.type));
+  }
+}
+
+TEST_P(AutocompleteActionPredictorTest,
        RegisterTransitionalMatchesUserTextSizeLimits) {
   auto test = [this](const std::u16string& user_text,
                      bool should_be_registered) {
     predictor()->RegisterTransitionalMatches(user_text, AutocompleteResult());
-    bool registered = base::Contains(*transitional_matches(), user_text);
+    bool registered = base::Contains(
+        *transitional_matches(), user_text,
+        &AutocompleteActionPredictor::TransitionalMatch::user_text);
     EXPECT_EQ(registered, should_be_registered);
   };
 
@@ -620,15 +665,18 @@ TEST_F(AutocompleteActionPredictorTest,
   test(too_long_text, false);
 }
 
-TEST_F(AutocompleteActionPredictorTest,
+TEST_P(AutocompleteActionPredictorTest,
        RegisterTransitionalMatchesURLSizeLimits) {
   const auto test_url = [](size_t size) {
     const std::string kPrefix = "http://b/";
     return GURL(kPrefix + std::string(size - kPrefix.size(), 'c'));
   };
-  GURL urls[] = {test_url(10), test_url(maximum_string_length()),
-                 test_url(maximum_string_length() + 1),
-                 test_url(maximum_string_length() * 10)};
+  auto urls = std::to_array<GURL>({
+      test_url(10),
+      test_url(maximum_string_length()),
+      test_url(maximum_string_length() + 1),
+      test_url(maximum_string_length() * 10),
+  });
   ACMatches matches;
   for (const auto& url : urls) {
     AutocompleteMatch match;
@@ -639,12 +687,14 @@ TEST_F(AutocompleteActionPredictorTest,
   result.AppendMatches(matches);
   std::u16string user_text = u"google";
   predictor()->RegisterTransitionalMatches(user_text, result);
-  auto it = base::ranges::find(*transitional_matches(), user_text);
+  auto it = std::ranges::find(
+      *transitional_matches(), user_text,
+      &AutocompleteActionPredictor::TransitionalMatch::user_text);
   ASSERT_NE(it, transitional_matches()->end());
   EXPECT_THAT(it->urls, ::testing::ElementsAre(urls[0], urls[1]));
 }
 
-TEST_F(AutocompleteActionPredictorTest, UpdateDatabaseFromTransitionalMatches) {
+TEST_P(AutocompleteActionPredictorTest, UpdateDatabaseFromTransitionalMatches) {
   ACMatches matches;
   AutocompleteMatch match;
   GURL clicked_url = GURL("https://foo-clicked.com");

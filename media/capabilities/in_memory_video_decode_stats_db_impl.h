@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "media/base/media_export.h"
 #include "media/base/video_codecs.h"

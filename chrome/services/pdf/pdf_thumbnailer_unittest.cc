@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/services/pdf/pdf_thumbnailer.h"
+
 #include <stdint.h>
 #include <string.h>
 
@@ -9,10 +11,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/test/task_environment.h"
-#include "build/chromeos_buildflags.h"
-#include "chrome/services/pdf/pdf_thumbnailer.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/codec/SkCodec.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -86,7 +88,8 @@ class PdfThumbnailerTest : public testing::Test {
   base::ReadOnlySharedMemoryRegion CreatePdfRegion(const std::string& content) {
     auto pdf_region = base::ReadOnlySharedMemoryRegion::Create(content.size());
     EXPECT_TRUE(pdf_region.IsValid());
-    memcpy(pdf_region.mapping.memory(), content.data(), content.size());
+    UNSAFE_TODO(
+        memcpy(pdf_region.mapping.memory(), content.data(), content.size()));
     return std::move(pdf_region.region);
   }
 
@@ -97,7 +100,7 @@ class PdfThumbnailerTest : public testing::Test {
   base::WeakPtrFactory<PdfThumbnailerTest> weak_factory_{this};
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // A valid PDF should produce a valid PNG thumbnail.
 TEST_F(PdfThumbnailerTest, CreatePdfThumbnail) {
   base::RunLoop run_loop;
@@ -208,6 +211,6 @@ TEST_F(PdfThumbnailerTest, CreatePdfThumbnailWithSkiaPolicyDisabled) {
   EXPECT_EQ(kThumbWidth, bitmap_.width());
   EXPECT_EQ(kThumbHeight, bitmap_.height());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace pdf

@@ -22,7 +22,6 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Return;
 
 namespace ash {
@@ -46,7 +45,7 @@ class FakeRmadClientTest : public testing::Test {
   void TearDown() override { RmadClient::Shutdown(); }
 
   FakeRmadClient* fake_client_() {
-    return google::protobuf::down_cast<FakeRmadClient*>(client_.get());
+    return static_cast<FakeRmadClient*>(client_.get());
   }
 
   raw_ptr<RmadClient, DanglingUntriaged> client_ =
@@ -650,17 +649,20 @@ TEST_F(FakeRmadClientTest, ExternalDiskStateObservation) {
 TEST_F(FakeRmadClientTest, HardwareVerificationResultObservation) {
   TestObserver observer_1(client_);
 
-  fake_client_()->TriggerHardwareVerificationResultObservation(false,
-                                                               "fatal error");
+  fake_client_()->TriggerHardwareVerificationResultObservation(
+      false, "fatal error", false);
   EXPECT_EQ(observer_1.num_hardware_verification_result(), 1);
   EXPECT_FALSE(observer_1.last_hardware_verification_result().is_compliant());
   EXPECT_EQ(observer_1.last_hardware_verification_result().error_str(),
             "fatal error");
+  EXPECT_FALSE(observer_1.last_hardware_verification_result().is_skipped());
 
-  fake_client_()->TriggerHardwareVerificationResultObservation(true, "ok");
+  fake_client_()->TriggerHardwareVerificationResultObservation(true, "ok",
+                                                               true);
   EXPECT_EQ(observer_1.num_hardware_verification_result(), 2);
   EXPECT_TRUE(observer_1.last_hardware_verification_result().is_compliant());
   EXPECT_EQ(observer_1.last_hardware_verification_result().error_str(), "ok");
+  EXPECT_TRUE(observer_1.last_hardware_verification_result().is_skipped());
 }
 
 // Tests that synchronous observers are notified about ro firmware update

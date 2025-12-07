@@ -42,6 +42,9 @@ void AddAggregateVisitDataFromSession(
         int selected_index =
             std::min(tab->current_navigation_index,
                      static_cast<int>(tab->navigations.size() - 1));
+        if (selected_index < 0) {
+          continue;
+        }
         const sessions::SerializedNavigationEntry& current_navigation =
             tab->navigations.at(selected_index);
         const GURL& tab_url = current_navigation.virtual_url();
@@ -49,7 +52,8 @@ void AddAggregateVisitDataFromSession(
           continue;
         }
 
-        auto url_key = ComputeURLMergeKey(tab_url, deduplication_helper);
+        auto url_key = ComputeURLMergeKey(tab_url, current_navigation.title(),
+                                          deduplication_helper);
         bool tab_data_map_already_has_url_entry =
             url_visit_tab_data_map.find(url_key) !=
             url_visit_tab_data_map.end();
@@ -57,7 +61,8 @@ void AddAggregateVisitDataFromSession(
           auto last_active_tab = URLVisitAggregate::Tab(
               tab->tab_id.id(),
               URLVisit(tab_url, current_navigation.title(), tab->timestamp,
-                       session->GetDeviceFormFactor(), source),
+                       session->GetDeviceFormFactor(), source,
+                       session->GetSessionName()),
               session->GetSessionTag(), session->GetSessionName());
           auto tab_data =
               URLVisitAggregate::TabData(std::move(last_active_tab));
@@ -108,26 +113,28 @@ void SessionURLVisitDataFetcher::FetchURLVisitData(
     return;
   }
 
-  // TODO(crbug.com/335200723): Integrate client configurable merging and
-  // deduplication strategies provided via `FetchOptions`.
   std::map<URLMergeKey, URLVisitAggregate::TabData> url_visit_tab_data_map;
-  if (base::Contains(fetcher_sources, Source::kForeign)) {
-    std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
-        sessions;
-    open_tabs_ui_delegate->GetAllForeignSessions(&sessions);
-    for (const sync_sessions::SyncedSession* session : sessions) {
-      AddAggregateVisitDataFromSession(
-          session, Source::kForeign, options.begin_time, url_visit_tab_data_map,
-          config.deduplication_helper);
-    }
+  const sync_sessions::SyncedSession* local_session = nullptr;
+  open_tabs_ui_delegate->GetLocalSession(&local_session);
+  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
+      sessions;
+  open_tabs_ui_delegate->GetAllForeignSessions(&sessions);
+  if (local_session) {
+    sessions.push_back(local_session);
   }
-  if (base::Contains(fetcher_sources, Source::kLocal)) {
-    const sync_sessions::SyncedSession* local_session = nullptr;
-    open_tabs_ui_delegate->GetLocalSession(&local_session);
-    if (local_session) {
+  for (const sync_sessions::SyncedSession* session : sessions) {
+    if (local_session &&
+        local_session->GetSessionName() == session->GetSessionName()) {
+      if (!base::Contains(fetcher_sources, Source::kLocal)) {
+        continue;
+      }
       AddAggregateVisitDataFromSession(
           local_session, Source::kLocal, options.begin_time,
           url_visit_tab_data_map, config.deduplication_helper);
+    } else if (base::Contains(fetcher_sources, Source::kForeign)) {
+      AddAggregateVisitDataFromSession(
+          session, Source::kForeign, options.begin_time, url_visit_tab_data_map,
+          config.deduplication_helper);
     }
   }
 

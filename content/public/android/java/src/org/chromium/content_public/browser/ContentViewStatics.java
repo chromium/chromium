@@ -4,9 +4,11 @@
 
 package org.chromium.content_public.browser;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content.browser.ContentViewStaticsImpl;
 
 /** Implementations of various static methods. */
+@NullMarked
 public class ContentViewStatics {
     /**
      * Suspends Webkit timers in all renderers.
@@ -17,21 +19,5 @@ public class ContentViewStatics {
      */
     public static void setWebKitSharedTimersSuspended(boolean suspend) {
         ContentViewStaticsImpl.setWebKitSharedTimersSuspended(suspend);
-    }
-
-    /**
-     * Enables platform notifications of data state and proxy changes.
-     * Notifications are enabled by default.
-     */
-    public static void enablePlatformNotifications() {
-        ContentViewStaticsImpl.enablePlatformNotifications();
-    }
-
-    /**
-     * Disables platform notifications of data state and proxy changes.
-     * Notifications are enabled by default.
-     */
-    public static void disablePlatformNotifications() {
-        ContentViewStaticsImpl.disablePlatformNotifications();
     }
 }

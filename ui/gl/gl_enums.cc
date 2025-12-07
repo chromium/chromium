@@ -2,25 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gl/gl_enums.h"
+
+#include <GLES2/gl2.h>
 
 #include <sstream>
 
-#include "ui/gl/gl_bindings.h"
+#include "ui/gl/gl_enums_implementation_autogen.h"
 
 namespace gl {
 
 std::string GLEnums::GetStringEnum(uint32_t value) {
-  const EnumToString* entry = enum_to_string_table_;
-  const EnumToString* end = entry + enum_to_string_table_len_;
-  for (;entry < end; ++entry) {
-    if (value == entry->value) {
-      return entry->name;
+  for (const auto& entry : kEnumToStringTable) {
+    if (value == entry.value) {
+      return std::string(entry.name);
     }
   }
   std::stringstream ss;
@@ -39,7 +34,5 @@ std::string GLEnums::GetStringError(uint32_t value) {
 std::string GLEnums::GetStringBool(uint32_t value) {
   return value ? "GL_TRUE" : "GL_FALSE";
 }
-
-#include "ui/gl/gl_enums_implementation_autogen.h"
 
 }  // namespace gl

@@ -11,12 +11,13 @@
 #include <string>
 
 #include "base/time/time.h"
+#include "base/types/id_type.h"
 #include "media/base/container_names.h"
+#include "media/base/demuxer.h"
+#include "media/base/picture_in_picture_events_info.h"
 #include "media/base/pipeline_status.h"
 #include "media/base/renderer_factory_selector.h"
 #include "media/base/timestamp_constants.h"
-#include "media/learning/common/learning_session.h"
-#include "media/learning/common/value.h"
 #include "media/mojo/mojom/media_metrics_provider.mojom.h"
 #include "media/mojo/services/media_mojo_export.h"
 #include "media/mojo/services/video_decode_perf_history.h"
@@ -25,6 +26,11 @@
 #include "url/gurl.h"
 
 namespace media {
+
+// alias the name for readability
+using MediaPlayerUkmId = base::IdTypeU64<class MediaPlayerUkmIDTag>;
+
+MEDIA_MOJO_EXPORT MediaPlayerUkmId GetNextMediaPlayerUkmId();
 
 class VideoDecodePerfHistory;
 
@@ -36,18 +42,15 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
 
   enum class FrameStatus : bool { kTopFrame, kNotTopFrame };
 
-  using GetLearningSessionCallback =
-      base::RepeatingCallback<learning::LearningSession*()>;
-
   using IsShuttingDownCallback = base::RepeatingCallback<bool(void)>;
 
-  MediaMetricsProvider(BrowsingMode is_incognito,
-                       FrameStatus is_top_frame,
-                       ukm::SourceId source_id,
-                       learning::FeatureValue origin,
-                       VideoDecodePerfHistory::SaveCallback save_cb,
-                       GetLearningSessionCallback learning_session_cb,
-                       IsShuttingDownCallback is_shutting_down_cb);
+  MediaMetricsProvider(
+      BrowsingMode is_incognito,
+      FrameStatus is_top_frame,
+      ukm::SourceId source_id,
+      VideoDecodePerfHistory::SaveCallback save_cb,
+      IsShuttingDownCallback is_shutting_down_cb,
+      PictureInPictureEventsInfo::AutoPipReasonCallback auto_pip_reason_cb);
 
   MediaMetricsProvider(const MediaMetricsProvider&) = delete;
   MediaMetricsProvider& operator=(const MediaMetricsProvider&) = delete;
@@ -60,22 +63,15 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
   using GetLastCommittedURLCallback =
       base::RepeatingCallback<const GURL&(void)>;
 
-  // TODO(liberato): This should be from a FeatureProvider, but the way in which
-  // we attach LearningHelper more or less precludes it.  Per-frame task
-  // controllers would make this easy, but we bypass that here.
-  using GetOriginCallback =
-      base::RepeatingCallback<learning::FeatureValue(void)>;
-
   // Creates a MediaMetricsProvider, |perf_history| may be nullptr if perf
   // history database recording is disabled.
   static void Create(
       BrowsingMode is_incognito,
       FrameStatus is_top_frame,
       ukm::SourceId source_id,
-      learning::FeatureValue origin,
       VideoDecodePerfHistory::SaveCallback save_cb,
-      GetLearningSessionCallback learning_session_cb,
       IsShuttingDownCallback is_shutting_down_cb,
+      PictureInPictureEventsInfo::AutoPipReasonCallback auto_pip_reason_cb,
       mojo::PendingReceiver<mojom::MediaMetricsProvider> receiver);
 
  private:
@@ -114,6 +110,7 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
   void SetContainerName(
       container_names::MediaContainerName container_name) override;
   void SetRendererType(RendererType renderer_type) override;
+  void SetDemuxerType(DemuxerType renderer_type) override;
   void SetKeySystem(const std::string& key_system) override;
   void SetHasWaitingForKey() override;
   void SetIsHardwareSecure() override;
@@ -134,10 +131,6 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
       mojo::PendingReceiver<mojom::VideoDecodeStatsRecorder> receiver) override;
   void AcquirePlaybackEventsRecorder(
       mojo::PendingReceiver<mojom::PlaybackEventsRecorder> receiver) override;
-  void AcquireLearningTaskController(
-      const std::string& taskName,
-      mojo::PendingReceiver<learning::mojom::LearningTaskController> receiver)
-      override;
 
   void ReportPipelineUMA();
   std::string GetUMANameForAVStream(const PipelineInfo& player_info);
@@ -146,17 +139,16 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
 
   // Session unique ID which maps to a given WebMediaPlayerImpl instances. Used
   // to coordinate multiply logged events with a singly logged metric.
-  const uint64_t player_id_;
+  const MediaPlayerUkmId player_id_;
 
   // Are UKM reports for the main frame or for a subframe?
   const bool is_top_frame_;
 
   const ukm::SourceId source_id_;
-  const learning::FeatureValue origin_;
 
   const VideoDecodePerfHistory::SaveCallback save_cb_;
-  const GetLearningSessionCallback learning_session_cb_;
   const IsShuttingDownCallback is_shutting_down_cb_;
+  const PictureInPictureEventsInfo::AutoPipReasonCallback auto_pip_reason_cb_;
 
   // UMA pipeline packaged data
   PipelineInfo uma_info_;
@@ -165,6 +157,7 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
   std::optional<MediaInfo> media_info_;
 
   RendererType renderer_type_ = RendererType::kRendererImpl;
+  DemuxerType demuxer_type_ = DemuxerType::kUnknownDemuxer;
   std::string key_system_;
   bool has_waiting_for_key_ = false;
   bool is_hardware_secure_ = false;

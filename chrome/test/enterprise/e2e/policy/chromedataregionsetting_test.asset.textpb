@@ -1,0 +1,53 @@
+# The network. There should be at least one. Hosts in the same network can
+# talk to each other without any restrictions.
+network {
+  name: "primary"
+}
+
+# An ActiveDirectory domain.
+ad_domain {
+  name: "cbcmdrz.com"
+  netbios_name: "cbcmdrz"
+
+  # The domain controller of this AD Domain.
+  domain_controller {
+    windows_machine: "win2022-dc"
+  }
+}
+
+# A Windows machine as the domain conroller of test1.com
+windows_machine {
+  name: "win2022-dc"
+  machine_type: "win2022"
+  network_interface { network: "primary" }
+}
+
+# Multiple client machines that will join the domain,
+# and each one will be used for E2E test case
+windows_machine {
+  name: "cbcmdrz-nopref"
+  machine_type: "win2022"
+  network_interface { network: "primary" }
+  container { ad_domain: "cbcmdrz.com" }
+}
+
+windows_machine {
+  name: "cbcmdrz-europe"
+  machine_type: "win2022"
+  network_interface { network: "primary" }
+  container { ad_domain: "cbcmdrz.com" }
+}
+
+# For the signed-in user test cases, use fresh machines without enrollment
+# tokens set in the managed browser test cases.
+windows_machine {
+  name: "drz-user-nopref"
+  machine_type: "win2022"
+  network_interface { network: "primary" }
+}
+
+windows_machine {
+  name: "drz-user-europe"
+  machine_type: "win2022"
+  network_interface { network: "primary" }
+}

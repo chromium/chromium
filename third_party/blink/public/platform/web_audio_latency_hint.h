@@ -29,8 +29,7 @@ class WebAudioLatencyHint {
     } else if (category == "playback") {
       category_ = kCategoryPlayback;
     } else {
-      NOTREACHED_IN_MIGRATION();
-      category_ = kCategoryInteractive;
+      NOTREACHED();
     }
   }
 
@@ -43,6 +42,21 @@ class WebAudioLatencyHint {
   double Seconds() const {
     DCHECK_EQ(category_, kCategoryExact);
     return seconds_;
+  }
+
+  static const char* AsString(const WebAudioLatencyHint& hint) {
+    switch (hint.Category()) {
+      case kCategoryInteractive:
+        return "LatencyInteractive";
+      case kCategoryBalanced:
+        return "LatencyBalanced";
+      case kCategoryPlayback:
+        return "LatencyPlayback";
+      case kCategoryExact:
+        return "LatencyExactMs";
+      default:
+        return "LatencyUnknown";
+    }
   }
 
  private:

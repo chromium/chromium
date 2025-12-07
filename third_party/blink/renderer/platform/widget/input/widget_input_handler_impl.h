@@ -5,15 +5,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_INPUT_WIDGET_INPUT_HANDLER_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_INPUT_WIDGET_INPUT_HANDLER_IMPL_H_
 
+#include <variant>
+
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "cc/input/browser_controls_offset_tags_info.h"
+#include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "cc/input/browser_controls_state.h"
-#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/direct_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 
@@ -63,8 +63,11 @@ class WidgetInputHandlerImpl : public mojom::blink::WidgetInputHandler {
   void RequestTextInputStateUpdate() override;
   void RequestCompositionUpdates(bool immediate_request,
                                  bool monitor_request) override;
-  void DispatchEvent(std::unique_ptr<WebCoalescedInputEvent>,
-                     DispatchEventCallback callback) override;
+  void DispatchEvent(
+      std::unique_ptr<WebCoalescedInputEvent> event,
+      std::optional<std::unique_ptr<blink::WebCoalescedInputEvent>>
+          original_event_for_gesture,
+      DispatchEventCallback callback) override;
   void DispatchNonBlockingEvent(
       std::unique_ptr<WebCoalescedInputEvent>) override;
   void WaitForInputProcessed(WaitForInputProcessedCallback callback) override;
@@ -84,8 +87,8 @@ class WidgetInputHandlerImpl : public mojom::blink::WidgetInputHandler {
       cc::BrowserControlsState constraints,
       cc::BrowserControlsState current,
       bool animate,
-      const std::optional<cc::BrowserControlsOffsetTagsInfo>& offset_tags_info)
-      override;
+      const std::optional<cc::BrowserControlsOffsetTagModifications>&
+          offset_tag_modifications) override;
 
   void InputWasProcessed();
 
@@ -109,7 +112,7 @@ class WidgetInputHandlerImpl : public mojom::blink::WidgetInputHandler {
 
   using Receiver = mojo::Receiver<mojom::blink::WidgetInputHandler>;
   using DirectReceiver = mojo::DirectReceiver<mojom::blink::WidgetInputHandler>;
-  absl::variant<absl::monostate, Receiver, DirectReceiver> receiver_;
+  std::variant<std::monostate, Receiver, DirectReceiver> receiver_;
 
   base::WeakPtrFactory<WidgetInputHandlerImpl> weak_ptr_factory_{this};
 };

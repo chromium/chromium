@@ -9,7 +9,8 @@
 #include "base/android/jni_android.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
+#include "chrome/browser/ui/safety_hub/unused_site_permissions_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
@@ -37,13 +38,16 @@ class UnusedSitePermissionsBridgeTest : public testing::Test {
   UnusedSitePermissionsBridgeTest() : env_(AttachCurrentThread()) {}
 
   void SetUp() override {
+    safety_hub_test_util::CreateRevokedPermissionsService(profile());
+
     hcsm_ = HostContentSettingsMapFactory::GetForProfile(profile());
   }
 
   void AddRevokedPermissions() {
     base::Value::List revoked_permissions_list;
     for (ContentSettingsType type : kUnusedPermissionList) {
-      revoked_permissions_list.Append(static_cast<int32_t>(type));
+      revoked_permissions_list.Append(
+          UnusedSitePermissionsManager::ConvertContentSettingsTypeToKey(type));
     }
     auto dict = base::Value::Dict().Set(permissions::kRevokedKey,
                                         revoked_permissions_list.Clone());
@@ -72,6 +76,7 @@ TEST_F(UnusedSitePermissionsBridgeTest, TestJavaRoundTrip) {
   expected.constraints =
       content_settings::ContentSettingConstraints(kExpiration - kLifetime);
   expected.constraints.set_lifetime(kLifetime);
+  expected.revocation_type = PermissionsRevocationType::kUnusedPermissions;
 
   const auto jobject = ToJavaPermissionsData(env(), expected);
   PermissionsData converted = FromJavaPermissionsData(env(), jobject);
@@ -80,6 +85,8 @@ TEST_F(UnusedSitePermissionsBridgeTest, TestJavaRoundTrip) {
   EXPECT_EQ(expected.permission_types, converted.permission_types);
   EXPECT_EQ(kExpiration, converted.constraints.expiration());
   EXPECT_EQ(kLifetime, converted.constraints.lifetime());
+  EXPECT_EQ(PermissionsRevocationType::kUnusedPermissions,
+            converted.revocation_type);
 }
 
 TEST_F(UnusedSitePermissionsBridgeTest, TestDefaultValuesRoundTrip) {
@@ -96,6 +103,7 @@ TEST_F(UnusedSitePermissionsBridgeTest, TestDefaultValuesRoundTrip) {
   EXPECT_EQ(expected.constraints.expiration(),
             converted.constraints.expiration());
   EXPECT_EQ(expected.constraints.lifetime(), converted.constraints.lifetime());
+  EXPECT_EQ(expected.revocation_type, converted.revocation_type);
 }
 
 TEST_F(UnusedSitePermissionsBridgeTest, TestGetRevokedPermissions) {

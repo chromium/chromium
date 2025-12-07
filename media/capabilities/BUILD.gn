@@ -24,8 +24,6 @@ source_set("capabilities") {
     "bucket_utility.h",
     "in_memory_video_decode_stats_db_impl.cc",
     "in_memory_video_decode_stats_db_impl.h",
-    "learning_helper.cc",
-    "learning_helper.h",
     "pending_operations.cc",
     "pending_operations.h",
     "video_decode_stats_db.cc",
@@ -49,11 +47,6 @@ source_set("capabilities") {
     "//components/leveldb_proto",
     "//media/base",
     "//ui/gfx/geometry",
-  ]
-
-  deps = [
-    "//media/learning/common",
-    "//media/learning/impl",
   ]
 
   configs += [ "//media:subcomponent_config" ]

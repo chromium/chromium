@@ -6,6 +6,7 @@
 
 #import "base/no_destructor.h"
 #import "base/strings/strcat.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/common/channel_info.h"
@@ -28,5 +29,5 @@ std::string IOSChromeUpdateQueryParamsDelegate::GetExtraParams() {
 
 // static
 const std::string& IOSChromeUpdateQueryParamsDelegate::GetLang() {
-  return GetApplicationContext()->GetApplicationLocale();
+  return GetApplicationContext()->GetApplicationLocaleStorage()->Get();
 }

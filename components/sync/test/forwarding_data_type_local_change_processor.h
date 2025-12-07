@@ -14,13 +14,15 @@
 
 namespace syncer {
 
-// A DataTypeLocalChangeProcessor implementation that forwards all calls to another
-// DataTypeLocalChangeProcessor instance, useful when a client wants ownership of
-// the processor.
-class ForwardingDataTypeLocalChangeProcessor : public DataTypeLocalChangeProcessor {
+// A DataTypeLocalChangeProcessor implementation that forwards all calls to
+// another DataTypeLocalChangeProcessor instance, useful when a client wants
+// ownership of the processor.
+class ForwardingDataTypeLocalChangeProcessor
+    : public DataTypeLocalChangeProcessor {
  public:
-  // |other| must not be nullptr and must outlive this object.
-  explicit ForwardingDataTypeLocalChangeProcessor(DataTypeLocalChangeProcessor* other);
+  // `other` must not be nullptr and must outlive this object.
+  explicit ForwardingDataTypeLocalChangeProcessor(
+      DataTypeLocalChangeProcessor* other);
   ~ForwardingDataTypeLocalChangeProcessor() override;
 
   void Put(const std::string& client_tag,
@@ -44,7 +46,7 @@ class ForwardingDataTypeLocalChangeProcessor : public DataTypeLocalChangeProcess
   void OnModelStarting(DataTypeSyncBridge* bridge) override;
   void ModelReadyToSync(std::unique_ptr<MetadataBatch> batch) override;
   bool IsTrackingMetadata() const override;
-  std::string TrackedAccountId() const override;
+  GaiaId TrackedGaiaId() const override;
   std::string TrackedCacheGuid() const override;
   void ReportError(const ModelError& error) override;
   std::optional<ModelError> GetError() const override;

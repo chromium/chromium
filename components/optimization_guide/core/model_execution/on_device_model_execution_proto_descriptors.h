@@ -12,57 +12,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/values.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_status.h"
 #include "components/optimization_guide/proto/descriptors.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 
 namespace optimization_guide {
-
-// A utility object for iterating over nested messages as MessageLite objects.
-// This is basically a workaround for the fact that there is no public common
-// base class for RepeatedPtrField<Msg>.
-class NestedMessageIterator {
- public:
-  NestedMessageIterator(const google::protobuf::MessageLite* parent,
-                        int32_t tag_number,
-                        int32_t field_size,
-                        int32_t offset);
-
-  NestedMessageIterator begin() const {
-    return NestedMessageIterator(parent_, tag_number_, field_size_, 0);
-  }
-
-  NestedMessageIterator end() const {
-    return NestedMessageIterator(parent_, tag_number_, field_size_,
-                                 field_size_);
-  }
-
-  bool operator==(const NestedMessageIterator& rhs) const {
-    DCHECK_EQ(tag_number_, rhs.tag_number_);
-    DCHECK_EQ(field_size_, rhs.field_size_);
-    return offset_ == rhs.offset_;
-  }
-
-  bool operator!=(const NestedMessageIterator& rhs) const {
-    return !operator==(rhs);
-  }
-
-  const google::protobuf::MessageLite* operator*() const { return Get(); }
-
-  NestedMessageIterator& operator++() {
-    Advance();
-    return *this;
-  }
-
- private:
-  void Advance() { ++offset_; }
-
-  const google::protobuf::MessageLite* Get() const;
-
-  const raw_ptr<const google::protobuf::MessageLite> parent_;
-  int32_t tag_number_;
-  int32_t field_size_;
-  int32_t offset_ = 0;
-};
 
 // Returns the value of `proto_field` from `msg`.
 // Returns nullopt when the `proto_field` does not reference a valid field, or
@@ -76,20 +30,50 @@ std::optional<proto::Value> GetProtoValue(
 std::unique_ptr<google::protobuf::MessageLite> GetProtoFromAny(
     const proto::Any& msg);
 
-// Constructs a new proto of `proto_name` type, and sets `value` in it's
-// `proto_field` and returns it wrapped in a proto::Any.
-// Returns nullopt if `proto_field` is not a valid string type field.
-std::optional<proto::Any> SetProtoValue(const std::string& proto_name,
-                                        const proto::ProtoField& proto_field,
-                                        const std::string& value);
+// Builds a new proto message of type `proto_name`.
+std::unique_ptr<google::protobuf::MessageLite> BuildMessage(
+    const std::string& proto_name);
 
-// Returns all of the values of some repeated field.
-//
-// Returns nullopt if proto_field does not reference a valid repeated field.
-// The return result should be used via a range-based for loop.
-std::optional<NestedMessageIterator> GetProtoRepeated(
+// Sets `value` in `msg`'s `proto_field`. Converts to non-string fields using
+// ValueConverter<T>::TryConvertFromString(). Returns kError if the value is not
+// convertible to the `proto_field` type.
+ProtoStatus SetProtoValueFromString(google::protobuf::MessageLite* msg,
+                                    const proto::ProtoField& proto_field,
+                                    const std::string& value);
+
+// Get immutable value for a singular message field.
+// Analogous to google::protobuf::Reflection::GetMessage.
+const google::protobuf::MessageLite* GetProtoMessage(
     const google::protobuf::MessageLite* msg,
-    const proto::ProtoField& proto_field);
+    int32_t tag_number);
+
+// Get mutable value for a singular message field.
+// Analogous to google::protobuf::Reflection::MutableMessage.
+google::protobuf::MessageLite* GetProtoMutableMessage(
+    google::protobuf::MessageLite* msg,
+    int32_t tag_number);
+
+// Appends a new empty message to a repeated message field.
+// Returns the number of elements in the field after adding it (or zero if
+// the field or message is not supported)
+int AddProtoMessage(google::protobuf::MessageLite* msg, int32_t tag_number);
+
+// Gets a mutable message for one value from a repeated message field.
+// 'tag_number' identifies the field, and 'offset' is which value.
+// Analogous to google::protobuf::Reflection::MutableRepeatedMessage.
+google::protobuf::MessageLite* GetProtoMutableRepeatedMessage(
+    google::protobuf::MessageLite* parent,
+    int32_t tag_number,
+    int offset);
+
+// Returns the size of a repeated message field.
+int GetProtoRepeatedSize(const google::protobuf::MessageLite* msg,
+                         int32_t tag_number);
+
+// Set the field of 'msg' with the given 'tag' to have provided 'value'.
+ProtoStatus SetProtoField(google::protobuf::MessageLite* msg,
+                          int32_t tag,
+                          const std::string& value);
 
 // Converts a base::Value to a proto of the given type, wrapped in a proto::Any.
 std::optional<proto::Any> ConvertToAnyWrappedProto(

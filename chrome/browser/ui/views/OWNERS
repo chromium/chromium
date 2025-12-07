@@ -3,21 +3,23 @@
 # individuals. These CLs will be automatically reassigned to a reviewer within
 # about 5 minutes. This approach helps our team to load-balance incoming
 # reviews. Googlers can read more about this at go/gwsq-gerrit.
+#
+# To join the rotation modify the OWNERS and gwsq files in
+# go/gwsq-gerrit-cbuiviews
+chromium-chrome-browser-ui-views-reviews@google.com
 
-bsep@chromium.org
-collinbaker@chromium.org
-corising@chromium.org
-dfried@chromium.org
-dpenning@chromium.org
-ellyjones@chromium.org
-emshack@chromium.org
-kylixrd@chromium.org
-msw@chromium.org
-pbos@chromium.org
-pkasting@chromium.org
-sky@chromium.org
-tbergquist@chromium.org
-dljames@chromium.org
+# The find-owners plugin does not support groups, so the actual c/b/ui/views
+# reviewers are listed below but tagged with {LAST_RESORT_SUGGESTION} so that
+# Gerrit will preferentially suggest the review alias above.
+agale@chromium.org        #{LAST_RESORT_SUGGESTION}
+corising@chromium.org     #{LAST_RESORT_SUGGESTION}
+dfried@chromium.org       #{LAST_RESORT_SUGGESTION}
+dljames@chromium.org      #{LAST_RESORT_SUGGESTION}
+dpenning@chromium.org     #{LAST_RESORT_SUGGESTION}
+ellyjones@chromium.org    #{LAST_RESORT_SUGGESTION}
+emshack@chromium.org      #{LAST_RESORT_SUGGESTION}
+kylixrd@chromium.org      #{LAST_RESORT_SUGGESTION}
+msw@chromium.org          #{LAST_RESORT_SUGGESTION}
 
 per-file content_settings*=file://components/content_settings/OWNERS
 
@@ -27,7 +29,5 @@ per-file drag_and_drop_interactive_uitest.*=file://content/OWNERS
 per-file hung_renderer*=file://chrome/browser/ui/hung_renderer/OWNERS
 
 per-file intent_picker_*test*=file://chrome/browser/apps/intent_helper/OWNERS
-
-per-file select_file_dialog_extension*=file://ui/file_manager/OWNERS
 
 per-file incognito_clear_browsing_data_dialog*=file://chrome/browser/incognito/OWNERS

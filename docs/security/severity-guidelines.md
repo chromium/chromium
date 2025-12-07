@@ -54,7 +54,9 @@ if there is evidence of active exploitation.
 
 Example bugs:
 
-* Memory corruption in the browser process ([319125](https://crbug.com/319125#c10)).
+* Memory corruption in the browser process
+  ([319125](https://crbug.com/319125#c10)) which is directly or indirectly
+  reachable from web content.
 * Memory corruption in an unsandboxed GPU process when it is reachable directly from web
   content without compromising the renderer.
   ([1420130](https://crbug.com/1420130), [1427865](https://crbug.com/1427865)).
@@ -129,6 +131,9 @@ information that an attacker can exfiltrate. Bugs that would normally be rated
 at a higher severity level with unusual mitigating factors may be rated as
 medium severity.
 
+Certain vulnerabilities in [sandboxed GPU shader compilers](#TOC-Sandboxed-shader-compilers)
+should be marked as medium severity.
+
 They are normally assigned Priority **P1** and assigned to the current stable
 milestone (or earliest milestone affected). If the fix seems too complicated to
 merge to the current stable milestone, they may be assigned to the next stable
@@ -169,9 +174,20 @@ Low severity (S3) vulnerabilities are usually bugs that would normally be a
 higher severity, but which have extreme mitigating factors or highly limited
 scope.
 
-They are normally assigned Priority **P2**. Milestones can be assigned to low
-severity bugs on a case-by-case basis, but they are not normally merged to
-stable or beta branches.
+They are normally initially assigned Priority **P3**. Milestones can be assigned
+to low severity bugs on a case-by-case basis, but they are not normally merged
+to Stable or Beta branches.
+
+After a bug has been at low severity (S3) for 30 days:
+
+* It becomes exempt from the usual rule requiring security bugs to be assigned
+  to a developer.
+* It will be made visible to everyone in edit-bug-access@chromium.org (i.e.,
+  all chromium committers), rather than just the security team.
+
+This policy is intended to strike a balance between ensuring bugs are triaged
+and fixed in a timely manner and ensuring that low severity bugs are visible for
+opportunistic fixes by engineers who happen to be working in the affected area.
 
 Example bugs:
 
@@ -232,3 +248,20 @@ BRP is now enabled in all active release channels.
 As of 128, if a bug is marked `MiraclePtr Status:PROTECTED`, it is not
 considered a security issue. It should be converted to type:Bug and assigned to
 the appropriate engineering team as functional issue.
+
+## Sandboxed GPU Shader Compilers {#TOC-Sandboxed-shader-compilers}
+
+If a GPU shader compiler is in a separate process outside the GPU process and sandboxed, the
+overall attack surface of a vulnerability in that specific compiler may be much lower than an
+in-GPU-process shader compiler. Unlike the renderer process, which can make hundreds of different
+IPCs to the browser process, a well sandboxed shader compiler process can make a very limited number
+of IPCs back to the GPU process. Furthermore, code execution in a sandboxed GPU shader compiler
+is now limited to writing arbitrary shaders, which is a much lower threat surface than code execution
+in the GPU process as a whole.
+
+Currently, only the Metal shader compiler is in its own sandboxed process, so vulnerabilities that would
+otherwise be high severity should be considered medium severity if they are specific to that compiler.
+
+Vulnerabilities specific to the Metal shader compiler will typically call into the `MTLCompiler` in
+the stack trace, and a PoC will only be reproducible on MacOS devices. An example of a stack trace
+specific to the metal shader compiler can be found at ([40074630](https://crbug.com/40074630)).

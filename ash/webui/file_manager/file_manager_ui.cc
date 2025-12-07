@@ -2,14 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "ash/webui/file_manager/file_manager_ui.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/webui/common/trusted_types_util.h"
@@ -19,7 +14,6 @@
 #include "ash/webui/file_manager/resources/grit/file_manager_swa_resources_map.h"
 #include "ash/webui/file_manager/url_constants.h"
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -33,7 +27,6 @@
 #include "ui/file_manager/grit/file_manager_gen_resources.h"
 #include "ui/file_manager/grit/file_manager_gen_resources_map.h"
 #include "ui/file_manager/grit/file_manager_resources_map.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 
 namespace ash::file_manager {
 namespace {
@@ -41,8 +34,11 @@ namespace {
 bool IsKioskSession() {
   auto* session_controller = Shell::Get()->session_controller();
   auto account_id = session_controller->GetActiveAccountId();
-  const auto user_type =
-      session_controller->GetUserSessionByAccountId(account_id)->user_info.type;
+  auto* session = session_controller->GetUserSessionByAccountId(account_id);
+  if (!session) {
+    return false;
+  }
+  const auto user_type = session->user_info.type;
 
   switch (user_type) {
     case user_manager::UserType::kRegular:
@@ -50,8 +46,10 @@ bool IsKioskSession() {
     case user_manager::UserType::kGuest:
     case user_manager::UserType::kPublicAccount:
       return false;
-    case user_manager::UserType::kKioskApp:
-    case user_manager::UserType::kWebKioskApp:
+    case user_manager::UserType::kKioskChromeApp:
+    case user_manager::UserType::kKioskWebApp:
+    case user_manager::UserType::kKioskIWA:
+    case user_manager::UserType::kKioskArcvmApp:
       return true;
   }
 }
@@ -67,11 +65,9 @@ FileManagerUIConfig::FileManagerUIConfig(
 bool FileManagerUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
   // Enable file manager WebUI if enable for SWA config or
-  // for the Kiosk session if SWAs are disabled there.
+  // for the Kiosk session.
   return SystemWebAppUIConfig::IsWebUIEnabled(browser_context) ||
-         (!base::FeatureList::IsEnabled(
-              ash::features::kKioskEnableSystemWebApps) &&
-          IsKioskSession());
+         IsKioskSession();
 }
 
 FileManagerUI::FileManagerUI(content::WebUI* web_ui,
@@ -106,13 +102,10 @@ void FileManagerUI::CreateAndAddTrustedAppDataSource(content::WebUI* web_ui,
   // Setup chrome://file-manager main and default page.
   source->AddResourcePath("", IDR_FILE_MANAGER_MAIN_HTML);
   // Add chrome://file-manager content.
-  source->AddResourcePaths(
-      base::make_span(kFileManagerSwaResources, kFileManagerSwaResourcesSize));
+  source->AddResourcePaths(kFileManagerSwaResources);
 
-  AddFilesAppResources(source, kFileManagerResources,
-                       kFileManagerResourcesSize);
-  AddFilesAppResources(source, kFileManagerGenResources,
-                       kFileManagerGenResourcesSize);
+  AddFilesAppResources(source, kFileManagerResources);
+  AddFilesAppResources(source, kFileManagerGenResources);
 
   // Load time data: add files app strings and feature flags.
   source->EnableReplaceI18nInJS();
@@ -168,12 +161,6 @@ void FileManagerUI::BindInterface(
   if (page_factory_receiver_.is_bound())
     page_factory_receiver_.reset();
   page_factory_receiver_.Bind(std::move(pending_receiver));
-}
-
-void FileManagerUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 void FileManagerUI::CreatePageHandler(

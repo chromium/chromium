@@ -11,7 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/device_identity/device_oauth2_token_store.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_oauth_client.h"
@@ -78,7 +78,7 @@ class DeviceOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
 
   OAuth2AccessTokenManager* GetAccessTokenManager();
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Used on non-ChromeOS platforms to set the email associated with the
   // current service account. On ChromeOS, this function isn't used because
   // the service account identity comes from CrosSettings.

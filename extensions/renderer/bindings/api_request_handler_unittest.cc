@@ -434,7 +434,7 @@ TEST_F(APIRequestHandlerTest, ResultModifier) {
             v8_helpers::GetProperty(context, result_obj, "prop2", &prop_2);
         DCHECK(success);
 
-        v8::LocalVector<v8::Value> new_args(context->GetIsolate(),
+        v8::LocalVector<v8::Value> new_args(v8::Isolate::GetCurrent(),
                                             {prop_1, prop_2});
         return new_args;
       });
@@ -769,7 +769,7 @@ TEST_F(APIRequestHandlerTest, AddPendingRequestWithResultModifier) {
             v8_helpers::GetProperty(context, result_obj, "prop2", &prop_2);
         DCHECK(success);
 
-        v8::LocalVector<v8::Value> new_args(context->GetIsolate(),
+        v8::LocalVector<v8::Value> new_args(v8::Isolate::GetCurrent(),
                                             {prop_1, prop_2});
         return new_args;
       });

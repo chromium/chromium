@@ -1,0 +1,388 @@
+This is a testharness.js-based test.
+Found 192 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Success: generateKey(CHACHA20-POLY1305, false, [encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(CHACHA20-POLY1305, true, [encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(CHACHA20-POLY1305, false, [decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(CHACHA20-POLY1305, true, [decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(CHACHA20-POLY1305, false, [wrapKey, decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(CHACHA20-POLY1305, true, [wrapKey, decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(CHACHA20-POLY1305, false, [unwrapKey, wrapKey, decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(CHACHA20-POLY1305, true, [unwrapKey, wrapKey, decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(CHACHA20-POLY1305, false, [unwrapKey, decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(CHACHA20-POLY1305, true, [unwrapKey, decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(CHACHA20-POLY1305, false, [wrapKey, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(CHACHA20-POLY1305, true, [wrapKey, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(CHACHA20-POLY1305, false, [unwrapKey, wrapKey, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(CHACHA20-POLY1305, true, [unwrapKey, wrapKey, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(CHACHA20-POLY1305, false, [unwrapKey, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(CHACHA20-POLY1305, true, [unwrapKey, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(CHACHA20-POLY1305, false, [decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(CHACHA20-POLY1305, true, [decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(CHACHA20-POLY1305, false, [wrapKey, decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(CHACHA20-POLY1305, true, [wrapKey, decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(CHACHA20-POLY1305, false, [unwrapKey, wrapKey, decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(CHACHA20-POLY1305, true, [unwrapKey, wrapKey, decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(CHACHA20-POLY1305, false, [unwrapKey, decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(CHACHA20-POLY1305, true, [unwrapKey, decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(CHACHA20-POLY1305, false, [wrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(CHACHA20-POLY1305, true, [wrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(CHACHA20-POLY1305, false, [unwrapKey, wrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(CHACHA20-POLY1305, true, [unwrapKey, wrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(CHACHA20-POLY1305, false, [unwrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(CHACHA20-POLY1305, true, [unwrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(CHACHA20-POLY1305, false, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(CHACHA20-POLY1305, true, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: CHACHA20-POLY1305}, false, [encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: CHACHA20-POLY1305}, true, [encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: CHACHA20-POLY1305}, false, [decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: CHACHA20-POLY1305}, true, [decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: CHACHA20-POLY1305}, false, [wrapKey, decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: CHACHA20-POLY1305}, true, [wrapKey, decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: CHACHA20-POLY1305}, false, [unwrapKey, wrapKey, decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: CHACHA20-POLY1305}, true, [unwrapKey, wrapKey, decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: CHACHA20-POLY1305}, false, [unwrapKey, decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: CHACHA20-POLY1305}, true, [unwrapKey, decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: CHACHA20-POLY1305}, false, [wrapKey, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: CHACHA20-POLY1305}, true, [wrapKey, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: CHACHA20-POLY1305}, false, [unwrapKey, wrapKey, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: CHACHA20-POLY1305}, true, [unwrapKey, wrapKey, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: CHACHA20-POLY1305}, false, [unwrapKey, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: CHACHA20-POLY1305}, true, [unwrapKey, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: CHACHA20-POLY1305}, false, [decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: CHACHA20-POLY1305}, true, [decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: CHACHA20-POLY1305}, false, [wrapKey, decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: CHACHA20-POLY1305}, true, [wrapKey, decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: CHACHA20-POLY1305}, false, [unwrapKey, wrapKey, decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: CHACHA20-POLY1305}, true, [unwrapKey, wrapKey, decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: CHACHA20-POLY1305}, false, [unwrapKey, decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: CHACHA20-POLY1305}, true, [unwrapKey, decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: CHACHA20-POLY1305}, false, [wrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: CHACHA20-POLY1305}, true, [wrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: CHACHA20-POLY1305}, false, [unwrapKey, wrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: CHACHA20-POLY1305}, true, [unwrapKey, wrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: CHACHA20-POLY1305}, false, [unwrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: CHACHA20-POLY1305}, true, [unwrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: CHACHA20-POLY1305}, false, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: CHACHA20-POLY1305}, true, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(chacha20-poly1305, false, [encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(chacha20-poly1305, true, [encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(chacha20-poly1305, false, [decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(chacha20-poly1305, true, [decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(chacha20-poly1305, false, [wrapKey, decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(chacha20-poly1305, true, [wrapKey, decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(chacha20-poly1305, false, [unwrapKey, wrapKey, decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(chacha20-poly1305, true, [unwrapKey, wrapKey, decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(chacha20-poly1305, false, [unwrapKey, decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(chacha20-poly1305, true, [unwrapKey, decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(chacha20-poly1305, false, [wrapKey, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(chacha20-poly1305, true, [wrapKey, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(chacha20-poly1305, false, [unwrapKey, wrapKey, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(chacha20-poly1305, true, [unwrapKey, wrapKey, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(chacha20-poly1305, false, [unwrapKey, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(chacha20-poly1305, true, [unwrapKey, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(chacha20-poly1305, false, [decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(chacha20-poly1305, true, [decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(chacha20-poly1305, false, [wrapKey, decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(chacha20-poly1305, true, [wrapKey, decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(chacha20-poly1305, false, [unwrapKey, wrapKey, decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(chacha20-poly1305, true, [unwrapKey, wrapKey, decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(chacha20-poly1305, false, [unwrapKey, decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(chacha20-poly1305, true, [unwrapKey, decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(chacha20-poly1305, false, [wrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(chacha20-poly1305, true, [wrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(chacha20-poly1305, false, [unwrapKey, wrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(chacha20-poly1305, true, [unwrapKey, wrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(chacha20-poly1305, false, [unwrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(chacha20-poly1305, true, [unwrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(chacha20-poly1305, false, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(chacha20-poly1305, true, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: chacha20-poly1305}, false, [encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: chacha20-poly1305}, true, [encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: chacha20-poly1305}, false, [decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: chacha20-poly1305}, true, [decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: chacha20-poly1305}, false, [wrapKey, decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: chacha20-poly1305}, true, [wrapKey, decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: chacha20-poly1305}, false, [unwrapKey, wrapKey, decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: chacha20-poly1305}, true, [unwrapKey, wrapKey, decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: chacha20-poly1305}, false, [unwrapKey, decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: chacha20-poly1305}, true, [unwrapKey, decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: chacha20-poly1305}, false, [wrapKey, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: chacha20-poly1305}, true, [wrapKey, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: chacha20-poly1305}, false, [unwrapKey, wrapKey, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: chacha20-poly1305}, true, [unwrapKey, wrapKey, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: chacha20-poly1305}, false, [unwrapKey, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: chacha20-poly1305}, true, [unwrapKey, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: chacha20-poly1305}, false, [decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: chacha20-poly1305}, true, [decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: chacha20-poly1305}, false, [wrapKey, decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: chacha20-poly1305}, true, [wrapKey, decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: chacha20-poly1305}, false, [unwrapKey, wrapKey, decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: chacha20-poly1305}, true, [unwrapKey, wrapKey, decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: chacha20-poly1305}, false, [unwrapKey, decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: chacha20-poly1305}, true, [unwrapKey, decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: chacha20-poly1305}, false, [wrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: chacha20-poly1305}, true, [wrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: chacha20-poly1305}, false, [unwrapKey, wrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: chacha20-poly1305}, true, [unwrapKey, wrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: chacha20-poly1305}, false, [unwrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: chacha20-poly1305}, true, [unwrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: chacha20-poly1305}, false, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: chacha20-poly1305}, true, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Chacha20-poly1305, false, [encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Chacha20-poly1305, true, [encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Chacha20-poly1305, false, [decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Chacha20-poly1305, true, [decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Chacha20-poly1305, false, [wrapKey, decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Chacha20-poly1305, true, [wrapKey, decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Chacha20-poly1305, false, [unwrapKey, wrapKey, decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Chacha20-poly1305, true, [unwrapKey, wrapKey, decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Chacha20-poly1305, false, [unwrapKey, decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Chacha20-poly1305, true, [unwrapKey, decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Chacha20-poly1305, false, [wrapKey, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Chacha20-poly1305, true, [wrapKey, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Chacha20-poly1305, false, [unwrapKey, wrapKey, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Chacha20-poly1305, true, [unwrapKey, wrapKey, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Chacha20-poly1305, false, [unwrapKey, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Chacha20-poly1305, true, [unwrapKey, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Chacha20-poly1305, false, [decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Chacha20-poly1305, true, [decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Chacha20-poly1305, false, [wrapKey, decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Chacha20-poly1305, true, [wrapKey, decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Chacha20-poly1305, false, [unwrapKey, wrapKey, decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Chacha20-poly1305, true, [unwrapKey, wrapKey, decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Chacha20-poly1305, false, [unwrapKey, decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Chacha20-poly1305, true, [unwrapKey, decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Chacha20-poly1305, false, [wrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Chacha20-poly1305, true, [wrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Chacha20-poly1305, false, [unwrapKey, wrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Chacha20-poly1305, true, [unwrapKey, wrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Chacha20-poly1305, false, [unwrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Chacha20-poly1305, true, [unwrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Chacha20-poly1305, false, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Chacha20-poly1305, true, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Chacha20-poly1305}, false, [encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Chacha20-poly1305}, true, [encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Chacha20-poly1305}, false, [decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Chacha20-poly1305}, true, [decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Chacha20-poly1305}, false, [wrapKey, decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Chacha20-poly1305}, true, [wrapKey, decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Chacha20-poly1305}, false, [unwrapKey, wrapKey, decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Chacha20-poly1305}, true, [unwrapKey, wrapKey, decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Chacha20-poly1305}, false, [unwrapKey, decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Chacha20-poly1305}, true, [unwrapKey, decrypt, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Chacha20-poly1305}, false, [wrapKey, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Chacha20-poly1305}, true, [wrapKey, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Chacha20-poly1305}, false, [unwrapKey, wrapKey, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Chacha20-poly1305}, true, [unwrapKey, wrapKey, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Chacha20-poly1305}, false, [unwrapKey, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Chacha20-poly1305}, true, [unwrapKey, encrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Chacha20-poly1305}, false, [decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Chacha20-poly1305}, true, [decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Chacha20-poly1305}, false, [wrapKey, decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Chacha20-poly1305}, true, [wrapKey, decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Chacha20-poly1305}, false, [unwrapKey, wrapKey, decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Chacha20-poly1305}, true, [unwrapKey, wrapKey, decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Chacha20-poly1305}, false, [unwrapKey, decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Chacha20-poly1305}, true, [unwrapKey, decrypt])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Chacha20-poly1305}, false, [wrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Chacha20-poly1305}, true, [wrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Chacha20-poly1305}, false, [unwrapKey, wrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Chacha20-poly1305}, true, [unwrapKey, wrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Chacha20-poly1305}, false, [unwrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Chacha20-poly1305}, true, [unwrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Chacha20-poly1305}, false, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Chacha20-poly1305}, true, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+Harness: the test ran to completion.
+

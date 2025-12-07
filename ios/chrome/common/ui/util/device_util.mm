@@ -5,6 +5,7 @@
 #import "ios/chrome/common/ui/util/device_util.h"
 
 #import <UIKit/UIKit.h>
+
 #import "ios/chrome/common/constants.h"
 
 CGFloat CurrentScreenHeight() {

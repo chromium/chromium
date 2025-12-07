@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/power_monitor_test.h"
+#include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/device_service_test_base.h"
 #include "services/device/public/cpp/power_monitor/power_monitor_broadcast_source.h"
@@ -23,7 +24,8 @@ class MockClient : public PowerMonitorBroadcastSource::Client {
   ~MockClient() override = default;
 
   // Implement device::mojom::PowerMonitorClient
-  void PowerStateChange(bool on_battery_power) override {
+  void PowerStateChange(base::PowerStateObserver::BatteryPowerStatus
+                            battery_power_status) override {
     power_state_changes_++;
     if (service_connected_)
       std::move(service_connected_).Run();
@@ -58,11 +60,14 @@ class PowerMonitorMessageBroadcasterTest : public DeviceServiceTestBase {
     DeviceServiceTestBase::SetUp();
   }
 
-  void SetOnBatteryPower(bool on_battery_power) {
-    power_monitor_source_.SetOnBatteryPower(on_battery_power);
+  void SetBatteryPowerStatus(
+      base::PowerStateObserver::BatteryPowerStatus battery_power_status) {
+    power_monitor_source_.SetBatteryPowerStatus(battery_power_status);
   }
 
-  bool IsOnBatteryPower() { return power_monitor_source_.IsOnBatteryPower(); }
+  base::PowerStateObserver::BatteryPowerStatus GetBatteryPowerStatus() const {
+    return power_monitor_source_.GetBatteryPowerStatus();
+  }
 
   void TearDown() override {
     DestroyDeviceService();
@@ -73,22 +78,24 @@ class PowerMonitorMessageBroadcasterTest : public DeviceServiceTestBase {
 };
 
 TEST_F(PowerMonitorMessageBroadcasterTest, PowerMessageBroadcast) {
-  base::RunLoop run_loop;
+  base::test::TestFuture<void> future;
 
   std::unique_ptr<PowerMonitorBroadcastSource> broadcast_source(
       new PowerMonitorBroadcastSource(
-          std::make_unique<MockClient>(run_loop.QuitClosure()),
+          std::make_unique<MockClient>(future.GetCallback()),
           base::SequencedTaskRunner::GetCurrentDefault()));
   mojo::PendingRemote<mojom::PowerMonitor> remote_monitor;
   device_service()->BindPowerMonitor(
       remote_monitor.InitWithNewPipeAndPassReceiver());
   broadcast_source->Init(std::move(remote_monitor));
-  run_loop.RunUntilIdle();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(future.IsReady());
 
   MockClient* client =
       static_cast<MockClient*>(broadcast_source->client_for_testing());
 
-  ASSERT_FALSE(IsOnBatteryPower());
+  EXPECT_EQ(GetBatteryPowerStatus(),
+            base::PowerStateObserver::BatteryPowerStatus::kUnknown);
 
   // Above PowerMonitorBroadcastSource::Init() will connect to Device Service to
   // bind device::mojom::PowerMonitor interface, on which AddClient() will be
@@ -119,19 +126,23 @@ TEST_F(PowerMonitorMessageBroadcasterTest, PowerMessageBroadcast) {
   EXPECT_EQ(client->resumes(), 1);
 
   // Pretend the device has gone on battery power
-  power_monitor_source_.GeneratePowerStateEvent(true);
+  power_monitor_source_.GeneratePowerStateEvent(
+      base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
   EXPECT_EQ(client->power_state_changes(), 1);
 
   // Repeated indications the device is on battery power should be suppressed.
-  power_monitor_source_.GeneratePowerStateEvent(true);
+  power_monitor_source_.GeneratePowerStateEvent(
+      base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
   EXPECT_EQ(client->power_state_changes(), 1);
 
   // Pretend the device has gone off battery power
-  power_monitor_source_.GeneratePowerStateEvent(false);
+  power_monitor_source_.GeneratePowerStateEvent(
+      base::PowerStateObserver::BatteryPowerStatus::kExternalPower);
   EXPECT_EQ(client->power_state_changes(), 2);
 
   // Repeated indications the device is off battery power should be suppressed.
-  power_monitor_source_.GeneratePowerStateEvent(false);
+  power_monitor_source_.GeneratePowerStateEvent(
+      base::PowerStateObserver::BatteryPowerStatus::kExternalPower);
   EXPECT_EQ(client->power_state_changes(), 2);
 
   broadcast_source.reset();
@@ -145,19 +156,20 @@ TEST_F(PowerMonitorMessageBroadcasterTest, PowerMessageBroadcast) {
 // This test sets the device's is_on_battery state to true and confirms
 // that a new client receives an OnPowerStateChange() message.
 TEST_F(PowerMonitorMessageBroadcasterTest, PowerClientUpdateWhenOnBattery) {
-  base::RunLoop run_loop;
+  base::test::TestFuture<void> future;
 
-  SetOnBatteryPower(true);
+  SetBatteryPowerStatus(
+      base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
 
   std::unique_ptr<PowerMonitorBroadcastSource> broadcast_source(
       new PowerMonitorBroadcastSource(
-          std::make_unique<MockClient>(run_loop.QuitClosure()),
+          std::make_unique<MockClient>(future.GetCallback()),
           base::SequencedTaskRunner::GetCurrentDefault()));
   mojo::PendingRemote<mojom::PowerMonitor> remote_monitor;
   device_service()->BindPowerMonitor(
       remote_monitor.InitWithNewPipeAndPassReceiver());
   broadcast_source->Init(std::move(remote_monitor));
-  run_loop.Run();
+  EXPECT_TRUE(future.Wait());
 
   MockClient* client =
       static_cast<MockClient*>(broadcast_source->client_for_testing());

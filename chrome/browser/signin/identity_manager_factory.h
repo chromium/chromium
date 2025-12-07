@@ -26,7 +26,7 @@ class IdentityManagerFactory : public ProfileKeyedServiceFactory {
         signin::IdentityManager* identity_manager) {}
 
    protected:
-    ~Observer() override {}
+    ~Observer() override = default;
   };
 
   static signin::IdentityManager* GetForProfile(Profile* profile);
@@ -54,7 +54,7 @@ class IdentityManagerFactory : public ProfileKeyedServiceFactory {
   ~IdentityManagerFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;

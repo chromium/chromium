@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/shell_integration.h"
+#include "build/branding_buildflags.h"
 
 namespace shell_integration {
 
@@ -32,6 +33,16 @@ bool IsFirefoxDefaultBrowser() {
 
 DefaultWebClientState IsDefaultClientForScheme(const std::string& scheme) {
   return UNKNOWN_DEFAULT;
+}
+
+std::string GetDirectLaunchUrlScheme() {
+  // ChromeOS does not allow side-by-side Chrome installs of different
+  // channels, so the scheme does not vary by channel on ChromeOS.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return "google-chrome";
+#else
+  return "chromium";
+#endif
 }
 
 namespace internal {

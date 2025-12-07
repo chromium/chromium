@@ -45,6 +45,7 @@ namespace blink {
 
 class ExceptionState;
 class FrameSelection;
+class GetComposedRangesOptions;
 class Node;
 class Range;
 class SetSelectionOptions;
@@ -92,7 +93,7 @@ class CORE_EXPORT DOMSelection final : public ScriptWrappable,
   void collapseToStart(ExceptionState&);
   void extend(Node*, unsigned offset, ExceptionState&);
   Range* getRangeAt(unsigned, ExceptionState&) const;
-  void removeRange(Range*);
+  void removeRange(Range*, ExceptionState&);
   void removeAllRanges();
   void addRange(Range*);
   void deleteFromDocument();
@@ -106,8 +107,9 @@ class CORE_EXPORT DOMSelection final : public ScriptWrappable,
 
   // Selection API across shadow DOM
   String direction() const;
+
   const StaticRangeVector getComposedRanges(
-      const HeapVector<Member<ShadowRoot>>&) const;
+      const GetComposedRangesOptions*) const;
 
   void Trace(Visitor*) const override;
 

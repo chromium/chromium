@@ -56,7 +56,7 @@ void SharedStorageWorkletMessagingProxy::
             receiver) {
   DCHECK(worker_thread->IsCurrentThread());
 
-  auto disconnect_handler = WTF::BindOnce(
+  auto disconnect_handler = blink::BindOnce(
       &SharedStorageWorkletMessagingProxy::
           OnSharedStorageWorkletServiceDisconnectedOnWorkletThread,
       std::move(main_thread_runner), std::move(cross_thread_handle));

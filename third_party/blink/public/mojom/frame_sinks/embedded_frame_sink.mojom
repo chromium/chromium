@@ -15,6 +15,10 @@ import "services/viz/public/mojom/compositing/local_surface_id.mojom";
 interface SurfaceEmbedder {
   // Called by the embedee when a new LocalSurfaceId is allocated.
   SetLocalSurfaceId(viz.mojom.LocalSurfaceId local_surface_id);
+
+  // Called by the embedee when it submits a frame with a different opacity
+  // from previous frames, including the very first frame.
+  OnOpacityChanged(bool is_opaque);
 };
 
 // Interface from browser to the embedder. Closing this interface will destroy

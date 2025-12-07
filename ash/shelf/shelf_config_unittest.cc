@@ -24,7 +24,7 @@ class ShelfConfigTest : public AshTestBase {
  protected:
   bool is_dense() { return ShelfConfig::Get()->is_dense_; }
 
-  bool IsTabletMode() { return display::Screen::GetScreen()->InTabletMode(); }
+  bool IsTabletMode() { return display::Screen::Get()->InTabletMode(); }
 
   void SetTabletMode(bool is_tablet_mode) {
     Shell::Get()->tablet_mode_controller()->SetEnabledForTest(is_tablet_mode);

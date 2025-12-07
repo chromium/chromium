@@ -9,9 +9,13 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
+#include <unordered_set>
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/task_manager/providers/task.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
 #include "ui/base/models/table_model.h"
 
@@ -20,6 +24,19 @@ class WebContents;
 }
 
 namespace task_manager {
+
+// Do not reuse integers. This enum is required to be stable because the integer
+// values are saved to the user's profile.
+//
+// Determines what OTHER processes to filter out from the Task List.
+// For example, if the selected DisplayCategory is kTabs, Tab processes will be
+// kept, and Extension and System processes will be filtered out.
+enum class DisplayCategory : uint8_t {
+  kAll = 0,
+  kTabsAndExtensions = 1,
+  kSystem = 2,
+  kMax = kSystem
+};
 
 class TaskManagerValuesStringifier;
 
@@ -56,18 +73,20 @@ class TableViewDelegate {
 
   virtual void SetSortDescriptor(
       const TableSortDescriptor& sort_descriptor) = 0;
-
-  // Highlight task if no task is currently highlighted and `active_task_id_`
-  // has value and is present in Task Manager, otherwise do nothing. Highlight
-  // task will happen most likely right after task manager is open. We do not
-  // want to override user selection if user has selected any tasks.
-  virtual void MaybeHighlightActiveTask() = 0;
 };
 
 class TaskManagerTableModel : public TaskManagerObserver,
                               public ui::TableModel {
  public:
-  explicit TaskManagerTableModel(TableViewDelegate* delegate);
+  static constexpr DisplayCategory kDefaultCategory =
+      DisplayCategory::kTabsAndExtensions;
+
+  // TODO(crbug.com/364926055): Once the refreshed Task Manager has launched,
+  // change the initial display category to kDefaultCategory. Required to be
+  // kAll for backwards compatibility with prod.
+  explicit TaskManagerTableModel(
+      TableViewDelegate* delegate,
+      DisplayCategory initial_display_category = DisplayCategory::kAll);
   TaskManagerTableModel(const TaskManagerTableModel&) = delete;
   TaskManagerTableModel& operator=(const TaskManagerTableModel&) = delete;
   ~TaskManagerTableModel() override;
@@ -78,12 +97,27 @@ class TaskManagerTableModel : public TaskManagerObserver,
   ui::ImageModel GetIcon(size_t row) override;
   void SetObserver(ui::TableModelObserver* observer) override;
   int CompareValues(size_t row1, size_t row2, int column_id) override;
+  std::u16string GetAXNameForHeader(
+      const std::vector<std::u16string>& visible_column_titles,
+      const std::vector<std::u16string>& visible_column_sortable) override;
+  std::u16string GetAXNameForHeaderCell(
+      const std::u16string& visible_column_title,
+      const std::u16string& visible_column_sortable) override;
+  std::u16string GetAXNameForRow(
+      size_t row,
+      const std::vector<int>& visible_column_ids) override;
+
+  static std::u16string FormatListToString(
+      base::span<const std::u16string> items);
+
+  void FilterTaskList(TaskIdList& tasks);
 
   // task_manager::TaskManagerObserver:
   void OnTaskAdded(TaskId id) override;
   void OnTaskToBeRemoved(TaskId id) override;
   void OnTasksRefreshed(const TaskIdList& task_ids) override;
-  void OnActiveTaskFetched(TaskId id) override;
+  void OnTasksRefreshedWithBackgroundCalculations(
+      const TaskIdList& task_ids) override;
 
   // Gets the start index and length of the group to which the task at
   // |row_index| belongs.
@@ -96,7 +130,8 @@ class TaskManagerTableModel : public TaskManagerObserver,
   void ActivateTask(size_t row_index);
 
   // Kills the process on which the task at |row_index| is running.
-  void KillTask(size_t row_index);
+  // Returns true if the process terminates.
+  bool KillTask(size_t row_index);
 
   // Based on the given |visibility| and the |column_id|, a particular refresh
   // type will be enabled or disabled.
@@ -107,7 +142,8 @@ class TaskManagerTableModel : public TaskManagerObserver,
 
   // Restores the saved columns settings from a previous session into
   // |columns_settings_| and updates the table view.
-  void RetrieveSavedColumnsSettingsAndUpdateTable();
+  void RetrieveSavedColumnsSettingsAndUpdateTable(
+      bool default_sorted_column_to_cpu = false);
 
   // Stores the current values in |column_settings_| to the user prefs so that
   // it can be restored later next time the task manager view is opened.
@@ -121,7 +157,17 @@ class TaskManagerTableModel : public TaskManagerObserver,
   std::optional<size_t> GetRowForWebContents(
       content::WebContents* web_contents);
 
-  std::optional<size_t> GetRowForActiveTask();
+  // Updates the total time spent in the provided category based on the current
+  // time (base::TimeTicks::Now()).
+  void UpdateOldTabTime(DisplayCategory old_category);
+
+  // Start the timer for the new category.
+  void StartNewTabTime(DisplayCategory new_category);
+
+  // Updates task positions based on category and search filters. Returns true
+  // if the model is changed.
+  bool UpdateModel(const DisplayCategory display_category,
+                   std::u16string_view search_term);
 
  private:
   friend class TaskManagerTester;
@@ -130,11 +176,38 @@ class TaskManagerTableModel : public TaskManagerObserver,
   void StartUpdating();
   void StopUpdating();
 
-  void OnRefresh();
+  void OnRefresh(const TaskIdList& task_ids);
 
   // Checks whether the task at |row_index| is the first task in its process
   // group of tasks.
   bool IsTaskFirstInGroup(size_t row_index) const;
+
+  // Retrieves task types for `child_task_id`. If it has a parent, its parent
+  // task types are retrieved instead.
+  //
+  // Returns true if the `out_*` parameters were populated successfully, and
+  // false if types could not be retrieved from the root or `child_task_id`.
+  bool FetchTaskTypes(TaskId child_task_id,
+                      Task::Type& out_type,
+                      Task::SubType& out_subtype) const;
+
+  // Checks whether the task falls in `Tabs`, `Extensions` or `Systems`
+  // category.
+  bool ShouldKeepTaskForSupportedType(TaskId task_id) const;
+
+  // Determines whether a TaskId should be kept based on the DisplayCategory.
+  bool ShouldKeepTask(TaskId task_id) const;
+
+  // Returns whether `task_id` related task group has matching tasks in current
+  // task list.
+  bool HasMatchInTasksSharingSameProcess(TaskId task_id) const;
+
+  // Goes through the task list to get matched process ids based on search
+  // terms.
+  void UpdateMatchedProcessSet();
+
+  // Updates matched process set by single task based on search terms.
+  void UpdateMatchedProcessSetById(TaskId task_id);
 
   // The delegate that will be used to communicate with the platform-specific
   // TableView.
@@ -157,16 +230,24 @@ class TaskManagerTableModel : public TaskManagerObserver,
   // values to string16.
   std::unique_ptr<TaskManagerValuesStringifier> stringifier_;
 
-  // The status of the flag #enable-nacl-debug.
-  bool is_nacl_debugging_flag_enabled_;
+  // Determines which rows should be kept from GetTaskIdsList().
+  DisplayCategory display_category_;
 
-  // Active task id when task manager is open. This variable will only set once
-  // after task manager is open. In desktop platforms other than Lacros, active
-  // tab is automatically highlighted when task manager is open. But in ash and
-  // Lacros it needs to wait for CROS API to passed back active task id to
-  // support that. This is currently only used in tracking Lacros active tab
-  // from ash through crosapi.
-  std::optional<TaskId> active_task_id_;
+  // Search keyword to filter tasks.
+  std::u16string search_terms_;
+
+  // Contains the process IDs for tasks whose titles match the search
+  // terms. Tasks linked to these processes should be kept.
+  std::unordered_set<base::ProcessId> matched_process_set_;
+
+  // Stores the total time spent in the category for this Task Manager session.
+  base::TimeTicks tabs_and_ex_start_time_ = base::TimeTicks::Now();
+  base::TimeTicks system_start_time_ = base::TimeTicks::Now();
+  base::TimeTicks all_start_time_ = base::TimeTicks::Now();
+
+  base::TimeDelta tabs_and_ex_total_time_;
+  base::TimeDelta system_total_time_;
+  base::TimeDelta all_total_time_;
 };
 
 }  // namespace task_manager

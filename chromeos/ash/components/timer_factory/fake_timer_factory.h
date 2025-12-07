@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ash/components/timer_factory/timer_factory_impl.h"
@@ -61,7 +62,8 @@ class FakeTimerFactory : public ash::timer_factory::TimerFactory {
     id_to_active_one_shot_timer_map_.erase(id);
   }
 
-  base::flat_map<base::UnguessableToken, FakeOneShotTimer*>&
+  base::flat_map<base::UnguessableToken,
+                 raw_ptr<FakeOneShotTimer, CtnExperimental>>&
   id_to_active_one_shot_timer_map() {
     return id_to_active_one_shot_timer_map_;
   }
@@ -77,7 +79,8 @@ class FakeTimerFactory : public ash::timer_factory::TimerFactory {
   void OnOneShotTimerDeleted(const base::UnguessableToken& deleted_timer_id);
 
   base::UnguessableToken id_for_last_created_one_shot_timer_;
-  base::flat_map<base::UnguessableToken, FakeOneShotTimer*>
+  base::flat_map<base::UnguessableToken,
+                 raw_ptr<FakeOneShotTimer, CtnExperimental>>
       id_to_active_one_shot_timer_map_;
   size_t num_instances_created_ = 0u;
 

@@ -23,31 +23,37 @@ import android.util.AttributeSet;
 import android.widget.ImageView;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.core.view.ViewCompat;
+
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * A custom {@link ImageView} that is able to render bitmaps and colors with rounded off corners.
  * The corner radii should be set through attributes. E.g.
  *
- *   <org.chromium.components.browser_ui.widget.RoundedCornerImageView
- *      app:cornerRadiusTopStart="8dp"
- *      app:cornerRadiusTopEnd="8dp"
- *      app:cornerRadiusBottomStart="8dp"
- *      app:cornerRadiusBottomEnd="8dp"
- *      app:roundedfillColor="@android:color/white"/>
+ * <pre>
+ *     <org.chromium.components.browser_ui.widget.RoundedCornerImageView
+ *        app:cornerRadiusTopStart="8dp"
+ *        app:cornerRadiusTopEnd="8dp"
+ *        app:cornerRadiusBottomStart="8dp"
+ *        app:cornerRadiusBottomEnd="8dp"
+ *        app:roundedfillColor="@android:color/white"/>
+ * </pre>
  *
  * Note : This does not properly handle padding. Padding will not be taken into account when rounded
- * corners are used.
+ * corners are used. DO NOT use android:background with {@link RoundedCornerImageView}, as corner
+ * radius will not be applied in that case.
  */
+@NullMarked
 public class RoundedCornerImageView extends AppCompatImageView {
     private final RectF mTmpRect = new RectF();
     private final Matrix mTmpMatrix = new Matrix();
 
     private final Paint mRoundedBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private Paint mRoundedContentPaint;
-    private boolean mRoundCorners;
+    private @Nullable Paint mRoundedContentPaint;
     // True, if constructor had a chance to run.
     // This is needed, because ImageView's constructor may trigger updates on our end
     // if certain attributes (eg. Drawable) are supplied via layout attributes.
@@ -64,7 +70,7 @@ public class RoundedCornerImageView extends AppCompatImageView {
         this(context, attrs, 0);
     }
 
-    public RoundedCornerImageView(Context context, AttributeSet attrs, int defStyle) {
+    public RoundedCornerImageView(Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
         // Set attribute indicating that all required objects are created.
@@ -131,23 +137,25 @@ public class RoundedCornerImageView extends AppCompatImageView {
     }
 
     @Override
-    public void setImageBitmap(Bitmap bm) {
+    public void setImageBitmap(@Nullable Bitmap bm) {
         super.setImageBitmap(bm);
         refreshState();
     }
 
+    @Override
+    public void setBackgroundColor(@ColorInt int color) {
+        super.setBackgroundColor(color);
+        assert false
+                : "Setting background color on a RoundedCornerImageView results in no rounding of"
+                        + " corners, use setRoundedFillColor instead.";
+    }
+
+    @EnsuresNonNull("mRoundedRectangle")
     public void setRoundedCorners(
             int cornerRadiusTopStart,
             int cornerRadiusTopEnd,
             int cornerRadiusBottomStart,
             int cornerRadiusBottomEnd) {
-        mRoundCorners =
-                (cornerRadiusTopStart != 0
-                        || cornerRadiusTopEnd != 0
-                        || cornerRadiusBottomStart != 0
-                        || cornerRadiusBottomEnd != 0);
-        if (!mRoundCorners) return;
-
         float[] radii;
         if (ViewCompat.getLayoutDirection(this) == ViewCompat.LAYOUT_DIRECTION_LTR) {
             radii =
@@ -207,11 +215,6 @@ public class RoundedCornerImageView extends AppCompatImageView {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if (!mRoundCorners) {
-            super.onDraw(canvas);
-            return;
-        }
-
         final int width = getWidth() - getPaddingLeft() - getPaddingRight();
         final int height = getHeight() - getPaddingTop() - getPaddingBottom();
         if (width <= 0 || height <= 0) return;

@@ -1,0 +1,9 @@
+This is a wdspec test.
+[FAIL] test_payload
+  AssertionError: assert 'window' == 'tab'
+[FAIL] test_sets_no_window_name
+  AssertionError: invalid session id (404): invalid session id: session deleted as the browser has closed the connection
+[FAIL] test_initial_selection_for_contenteditable
+  AssertionError: invalid session id (404): invalid session id: session deleted as the browser has closed the connection
+Harness: the test ran to completion.
+

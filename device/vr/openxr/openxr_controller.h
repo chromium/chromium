@@ -53,13 +53,18 @@ class OpenXrController {
   mojom::XRInputSourceDescriptionPtr GetDescription(
       XrTime predicted_display_time);
 
+  mojom::XRHandedness GetHandness() const;
   std::optional<GamepadButton> GetButton(OpenXrButtonType type) const;
   std::optional<Gamepad> GetWebXRGamepad() const;
+
+  XrSpace GetInputSpace(mojom::XRInputSourceSpaceType space_type) const;
 
   std::optional<gfx::Transform> GetMojoFromGripTransform(
       XrTime predicted_display_time,
       XrSpace local_space,
       bool* emulated_position) const;
+
+  std::optional<gfx::Transform> GetMojoFromJoint(XrHandJointEXT joint) const;
 
   // Returns true if this controller can supply HandTracking data.
   bool IsHandTrackingEnabled() const;
@@ -102,15 +107,13 @@ class OpenXrController {
       XrTime predicted_display_time) const;
 
   mojom::XRTargetRayMode GetTargetRayMode() const;
-  mojom::XRHandedness GetHandness() const;
   std::vector<double> GetAxis(OpenXrAxisType type) const;
 
   template <typename T>
   XrResult QueryState(XrAction action, T* action_state) const {
     // this function should never be called because each valid XrActionState
     // has its own template function defined below.
-    NOTREACHED_IN_MIGRATION();
-    return XR_ERROR_ACTION_TYPE_MISMATCH;
+    NOTREACHED();
   }
 
   template <>

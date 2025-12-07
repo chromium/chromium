@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_RESET_RESET_SECTION_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_RESET_RESET_SECTION_H_
 
+#include "base/containers/span.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h"
 
@@ -37,8 +38,7 @@ class ResetSection : public OsSettingsSection {
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
 
  private:
-  const bool isRevampWayfindingEnabled_;
-  const std::vector<SearchConcept>& GetPowerwashSearchConcept();
+  base::span<const SearchConcept> GetPowerwashSearchConcept();
 };
 
 }  // namespace ash::settings

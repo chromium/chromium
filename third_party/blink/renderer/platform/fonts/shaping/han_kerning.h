@@ -6,7 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_HAN_KERNING_H_
 
 #include "base/gtest_prod_util.h"
+#include "third_party/blink/renderer/platform/fonts/font_description.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/font_features.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/text/han_kerning_char_type.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -14,9 +17,8 @@
 
 namespace blink {
 
-class FontDescription;
-class FontFeatures;
 class LayoutLocale;
+class ShapeResult;
 class SimpleFontData;
 
 //
@@ -55,24 +57,32 @@ class PLATFORM_EXPORT HanKerning {
   HanKerning(const String& text,
              wtf_size_t start,
              wtf_size_t end,
-             const SimpleFontData& font_data,
-             const FontDescription& font_description,
-             Options options,
-             FontFeatures* features) {
-    if (text.Is8Bit()) {
-      return;
-    }
-    Compute(text, start, end, font_data, font_description, options, features);
-  }
-  ~HanKerning() {
-    if (features_) [[unlikely]] {
-      ResetFeatures();
-    }
-  }
+             const FontDescription& font_description)
+      : may_apply_(MayApply(StringView(text, start, end - start)) &&
+                   font_description.GetTextSpacingTrim() !=
+                       TextSpacingTrim::kSpaceAll),
+        segment_start_(start),
+        segment_end_(end) {}
+
+  bool MayApply() const { return may_apply_; }
+  static bool MayApply(StringView text);
 
   const Vector<unsigned, 32>& UnsafeToBreakBefore() const {
     return unsafe_to_break_before_;
   }
+  void ClearUnsafeToBreakBefore() { unsafe_to_break_before_.Shrink(0); }
+
+  bool AppendFontFeatures(const String& text,
+                          wtf_size_t start,
+                          wtf_size_t end,
+                          const SimpleFontData& font_data,
+                          const LayoutLocale& locale,
+                          Options options,
+                          FontFeatureRanges& features);
+
+  void PrepareFallback(const String& text);
+
+  void DidShapeSegment(ShapeResult& result);
 
   using CharType = HanKerningCharType;
 
@@ -108,27 +118,47 @@ class PLATFORM_EXPORT HanKerning {
  private:
   FRIEND_TEST_ALL_PREFIXES(HanKerningTest, MayApply);
 
-  static CharType GetCharType(UChar ch, const FontData& font_data);
+  enum class Priority : uint8_t { kText, kCache };
 
-  static bool MayApply(StringView text);
+  static CharType GetCharType(UChar ch, const FontData& font_data);
+  CharType GetCharType(const String& text,
+                       wtf_size_t index,
+                       const FontData& font_data,
+                       Priority priority = Priority::kText);
+  CharType GetCharTypeWithCache(const String& text,
+                                wtf_size_t index,
+                                const FontData& font_data,
+                                Priority priority);
 
   static bool ShouldKern(CharType type, CharType last_type);
   static bool ShouldKernLast(CharType type, CharType last_type);
 
-  void Compute(const String& text,
-               wtf_size_t start,
-               wtf_size_t end,
-               const SimpleFontData& font_data,
-               const FontDescription& font_description,
-               Options options,
-               FontFeatures* features);
+  void ApplyKerning(ShapeResult& result);
 
-  void ResetFeatures();
-
-  FontFeatures* features_ = nullptr;
-  wtf_size_t num_features_before_;
+  bool may_apply_;
+  bool is_start_prev_used_ = false;
+  bool is_end_next_used_ = false;
+  wtf_size_t segment_start_;
+  wtf_size_t segment_end_;
+  wtf_size_t last_start_ = 0;
+  wtf_size_t last_end_ = 0;
+  const FontData* last_font_data_ = nullptr;
+  Vector<CharType> char_types_;
   Vector<unsigned, 32> unsafe_to_break_before_;
+  Vector<wtf_size_t> changed_indexes_;
 };
+
+inline bool HanKerning::MayApply(StringView text) {
+  return !text.Is8Bit() && !text.IsAllSpecialCharacters<[](UChar ch) {
+    return !Character::MaybeHanKerningOpenOrCloseFast(ch);
+  }>();
+}
+
+inline void HanKerning::DidShapeSegment(ShapeResult& result) {
+  if (!changed_indexes_.empty()) [[unlikely]] {
+    ApplyKerning(result);
+  }
+}
 
 }  // namespace blink
 

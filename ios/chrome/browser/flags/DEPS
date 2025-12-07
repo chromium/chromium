@@ -1,18 +1,20 @@
 specific_include_rules = {
   # Flag list can depends on everything.
   "^about_flags.mm": [
+    "+components/collaboration/public/features.h",
+    "+components/data_sharing/public/features.h",
+    "+components/data_sharing/public/switches.h",
+    "+components/desktop_to_mobile_promos",
     "+components/page_content_annotations/core",
-    "+components/page_image_service/features.h",
+    "+components/sharing_message/features.h",
     "+ios/chrome/browser",
+    "+ios/components/enterprise/data_controls/features.h",
   ],
   "^ios_chrome_field_trials.mm": [
     "+ios/chrome/browser/variations/model",
-    "+ios/chrome/browser/ui/content_suggestions",
+    "+ios/chrome/browser/content_suggestions/ui_bundled",
     "+ios/chrome/browser/first_run/ui_bundled",
-    "+ios/chrome/browser/ui/ntp",
+    "+ios/chrome/browser/ntp/ui_bundled",
   ],
-  "^system_flags.mm": [
-    "+ios/chrome/browser/ui/ui_feature_flags.h",
-  ]
 }
 

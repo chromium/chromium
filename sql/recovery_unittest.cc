@@ -6,30 +6,29 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <cstdint>
 #include <string>
 #include <tuple>
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
+#include "base/dcheck_is_on.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
-#include "sql/sql_features.h"
 #include "sql/sqlite_result_code.h"
 #include "sql/sqlite_result_code_values.h"
 #include "sql/statement.h"
@@ -42,8 +41,8 @@ namespace sql {
 
 namespace {
 
-using sql::test::ExecuteWithResult;
-using sql::test::ExecuteWithResults;
+using test::ExecuteWithResult;
+using test::ExecuteWithResults;
 
 constexpr char kRecoveryResultHistogramName[] = "Sql.Recovery.Result";
 constexpr char kRecoveryResultCodeHistogramName[] = "Sql.Recovery.ResultCode";
@@ -62,16 +61,13 @@ std::string GetSchema(Database* db) {
 class SqlRecoveryTest : public testing::Test,
                         public testing::WithParamInterface<bool> {
  public:
-  SqlRecoveryTest() : db_(DatabaseOptions{.wal_mode = ShouldEnableWal()}) {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kEnableWALModeByDefault, ShouldEnableWal()}});
+  SqlRecoveryTest()
+      : db_(DatabaseOptions().set_wal_mode(ShouldEnableWal()), test::kTestTag) {
   }
 
   bool ShouldEnableWal() { return GetParam(); }
 
   void SetUp() override {
-    db_.set_histogram_tag("MyFeatureDatabase");
-
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_path_ = temp_dir_.GetPath().AppendASCII("recovery_test.sqlite");
     ASSERT_TRUE(db_.Open(db_path_));
@@ -97,11 +93,10 @@ class SqlRecoveryTest : public testing::Test,
                     base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
     static constexpr char kText[] = "Now is the winter of our discontent.";
     constexpr int kTextBytes = sizeof(kText) - 1;
-    return file.Write(0, kText, kTextBytes) == kTextBytes;
+    return UNSAFE_TODO(file.Write(0, kText, kTextBytes)) == kTextBytes;
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir temp_dir_;
   base::FilePath db_path_;
   Database db_;
@@ -126,7 +121,7 @@ TEST_P(SqlRecoveryTest, ShouldAttemptRecovery) {
   EXPECT_FALSE(Recovery::ShouldAttemptRecovery(nullptr, SQLITE_CORRUPT));
 
   // Do not attempt to recover closed databases.
-  Database invalid_db;
+  Database invalid_db(test::kTestTag);
   EXPECT_FALSE(Recovery::ShouldAttemptRecovery(&invalid_db, SQLITE_CORRUPT));
 
   // Do not attempt to recover in-memory databases.
@@ -156,7 +151,7 @@ TEST_P(SqlRecoveryTest, RecoverCorruptIndex) {
   ASSERT_TRUE(db_.Execute("INSERT INTO rows(indexed, unindexed) VALUES(8, 8)"));
 
   db_.Close();
-  ASSERT_TRUE(sql::test::CorruptIndexRootPage(db_path_, "rows_index"));
+  ASSERT_TRUE(test::CorruptIndexRootPage(db_path_, "rows_index"));
   ASSERT_TRUE(Reopen());
 
   int error = SQLITE_OK;
@@ -233,8 +228,8 @@ TEST_P(SqlRecoveryTest, RecoverCorruptTable) {
     ASSERT_EQ(db_.page_size(), kDbPageSize)
         << "Page overflow relies on specific size";
     large_buffer.resize(kDbPageSize * 2);
-    base::ranges::fill(large_buffer, '8');
-    sql::Statement insert(db_.GetUniqueStatement(
+    std::ranges::fill(large_buffer, '8');
+    Statement insert(db_.GetUniqueStatement(
         "INSERT INTO rows(indexed,unindexed,filler) VALUES(8,8,?)"));
     insert.BindBlob(0, large_buffer);
     ASSERT_TRUE(insert.Run());
@@ -255,7 +250,7 @@ TEST_P(SqlRecoveryTest, RecoverCorruptTable) {
   }
 
   {
-    sql::test::ScopedErrorExpecter expecter;
+    test::ScopedErrorExpecter expecter;
     expecter.ExpectError(SQLITE_CORRUPT);
     ASSERT_FALSE(Reopen());
     EXPECT_TRUE(expecter.SawExpectedErrors());
@@ -473,7 +468,7 @@ void TestRecoverDatabase(Database& db,
   // Save aside a copy of the original schema, verifying that it has the created
   // items plus the sqlite_sequence table.
   const std::string original_schema = GetSchema(&db);
-  ASSERT_EQ(with_meta ? 6 : 4, base::ranges::count(original_schema, '\n'))
+  ASSERT_EQ(with_meta ? 6 : 4, std::ranges::count(original_schema, '\n'))
       << original_schema;
 
   static constexpr char kTable1Sql[] = "SELECT * FROM table1 ORDER BY 1";
@@ -614,18 +609,20 @@ TEST_P(SqlRecoveryTest, RecoverIfPossibleWithPerDatabaseUma) {
                                        /*expected_bucket_count=*/1);
   // And the histograms for this specific feature.
   histogram_tester_.ExpectUniqueSample(
-      base::StrCat({kRecoveryResultHistogramName, ".MyFeatureDatabase"}),
+      base::StrCat({kRecoveryResultHistogramName, ".", test::kTestTag.value}),
       Recovery::Result::kSuccess,
       /*expected_bucket_count=*/1);
   histogram_tester_.ExpectUniqueSample(
-      base::StrCat({kRecoveryResultCodeHistogramName, ".MyFeatureDatabase"}),
+      base::StrCat(
+          {kRecoveryResultCodeHistogramName, ".", test::kTestTag.value}),
       SqliteLoggedResultCode::kNoError,
       /*expected_bucket_count=*/1);
 }
 
 TEST_P(SqlRecoveryTest, RecoverDatabaseWithView) {
   db_.Close();
-  sql::Database db({.enable_views_discouraged = true});
+  Database db(DatabaseOptions().set_enable_views_discouraged(true),
+              test::kTestTag);
   ASSERT_TRUE(db.Open(db_path_));
 
   ASSERT_TRUE(db.Execute(
@@ -654,7 +651,7 @@ TEST_P(SqlRecoveryTest, RecoverDatabaseWithView) {
   // Save aside a copy of the original schema, verifying that it has the created
   // items plus the sqlite_sequence table.
   const std::string original_schema = GetSchema(&db);
-  ASSERT_EQ(4, base::ranges::count(original_schema, '\n')) << original_schema;
+  ASSERT_EQ(4, std::ranges::count(original_schema, '\n')) << original_schema;
 
   // Database handle is valid before recovery, poisoned after.
   static constexpr char kTrivialSql[] = "SELECT COUNT(*) FROM sqlite_schema";
@@ -680,7 +677,7 @@ TEST_P(SqlRecoveryTest, RecoverDatabaseDelete) {
   ASSERT_TRUE(OverwriteDatabaseHeader());
 
   {
-    sql::test::ScopedErrorExpecter expecter;
+    test::ScopedErrorExpecter expecter;
     expecter.ExpectError(SQLITE_NOTADB);
 
     // Reopen() here because it will see SQLITE_NOTADB.
@@ -722,13 +719,13 @@ TEST_P(SqlRecoveryTest, BeginRecoverDatabase) {
   ASSERT_TRUE(db_.Execute("INSERT INTO rows(indexed, unindexed) VALUES(8, 8)"));
 
   db_.Close();
-  ASSERT_TRUE(sql::test::CorruptIndexRootPage(db_path_, "rows_index"));
+  ASSERT_TRUE(test::CorruptIndexRootPage(db_path_, "rows_index"));
   ASSERT_TRUE(Reopen());
 
   static const char kIndexedCountSql[] =
       "SELECT SUM(indexed) FROM rows INDEXED BY rows_index";
   {
-    sql::test::ScopedErrorExpecter expecter;
+    test::ScopedErrorExpecter expecter;
     expecter.ExpectError(SQLITE_CORRUPT);
     EXPECT_EQ("", ExecuteWithResult(&db_, kIndexedCountSql))
         << "Index should still be corrupted after recovery rollback";
@@ -755,7 +752,7 @@ TEST_P(SqlRecoveryTest, AttachFailure) {
   ASSERT_TRUE(OverwriteDatabaseHeader());
 
   {
-    sql::test::ScopedErrorExpecter expecter;
+    test::ScopedErrorExpecter expecter;
     expecter.ExpectError(SQLITE_NOTADB);
 
     // Reopen() here because it will see SQLITE_NOTADB.
@@ -792,7 +789,8 @@ void TestPageSize(const base::FilePath& db_prefix,
   const base::FilePath db_path = db_prefix.InsertBeforeExtensionASCII(
       base::NumberToString(initial_page_size));
   Database::Delete(db_path);
-  Database db({.page_size = initial_page_size});
+  Database db{DatabaseOptions().set_page_size(initial_page_size),
+              test::kTestTag};
   ASSERT_TRUE(db.Open(db_path));
   ASSERT_TRUE(db.Execute(kCreateSql));
   ASSERT_TRUE(db.Execute(kInsertSql1));
@@ -802,7 +800,8 @@ void TestPageSize(const base::FilePath& db_prefix,
   db.Close();
 
   // Re-open the database while setting a new |options.page_size| in the object.
-  Database recover_db({.page_size = final_page_size});
+  Database recover_db(DatabaseOptions().set_page_size(final_page_size),
+                      test::kTestTag);
   ASSERT_TRUE(recover_db.Open(db_path));
   // Recovery will use the page size set in the database object, which may not
   // match the file's page size.
@@ -814,7 +813,7 @@ void TestPageSize(const base::FilePath& db_prefix,
   recover_db.Close();
 
   // Make sure the page size is read from the file.
-  Database recovered_db({.page_size = DatabaseOptions::kDefaultPageSize});
+  Database recovered_db(test::kTestTag);
   ASSERT_TRUE(recovered_db.Open(db_path));
   ASSERT_EQ(expected_final_page_size,
             ExecuteWithResult(&recovered_db, "PRAGMA page_size"));
@@ -870,8 +869,17 @@ TEST_P(SqlRecoveryTest, CannotRecoverDbWithErrorCallback) {
 // that it is passed a non-null database pointer and will instead likely result
 // in unexpected behavior or crashes.
 TEST_P(SqlRecoveryTest, CannotRecoverNullDb) {
-  EXPECT_CHECK_DEATH(std::ignore = Recovery::RecoverDatabase(
-                         nullptr, Recovery::Strategy::kRecoverOrRaze));
+  // TODO(pbos): Consider consolidating these so that DCHECK builds crash in the
+  // same spot. Probably either by upgrading DCHECKs to CHECKs, or if feasible
+  // by setting up the test to make it past failing DCHECKs to the expected
+  // CHECK.
+  if (DCHECK_IS_ON()) {
+    EXPECT_DCHECK_DEATH(std::ignore = Recovery::RecoverDatabase(
+                            nullptr, Recovery::Strategy::kRecoverOrRaze));
+  } else {
+    EXPECT_CHECK_DEATH(std::ignore = Recovery::RecoverDatabase(
+                           nullptr, Recovery::Strategy::kRecoverOrRaze));
+  }
 }
 
 // TODO(crbug.com/40199997): Ideally this would be a
@@ -879,7 +887,7 @@ TEST_P(SqlRecoveryTest, CannotRecoverNullDb) {
 // whether the database is in-memory and will instead likely result in
 // unexpected behavior or crashes.
 TEST_P(SqlRecoveryTest, CannotRecoverInMemoryDb) {
-  Database in_memory_db;
+  Database in_memory_db(test::kTestTag);
   ASSERT_TRUE(in_memory_db.OpenInMemory());
 
   EXPECT_CHECK_DEATH(std::ignore = Recovery::RecoverDatabase(
@@ -895,7 +903,7 @@ TEST_P(SqlRecoveryTest, PRE_RecoverFormerlyWalDbAfterCrash) {
       temp_dir_.GetPath().AppendASCII("recovery_wal_test.sqlite");
 
   // Open the DB in WAL mode to set journal_mode="wal".
-  Database wal_db{{.wal_mode = true}};
+  Database wal_db{DatabaseOptions().set_wal_mode(true), test::kTestTag};
   ASSERT_TRUE(wal_db.Open(wal_db_path));
 
   EXPECT_TRUE(wal_db.UseWALMode());
@@ -910,7 +918,7 @@ TEST_P(SqlRecoveryTest, RecoverFormerlyWalDbAfterCrash) {
   base::FilePath wal_db_path =
       temp_dir_.GetPath().AppendASCII("recovery_wal_test.sqlite");
 
-  Database non_wal_db{{.wal_mode = false}};
+  Database non_wal_db{DatabaseOptions().set_wal_mode(false), test::kTestTag};
   ASSERT_TRUE(non_wal_db.Open(wal_db_path));
 
   auto run_recovery = base::BindLambdaForTesting([&]() {

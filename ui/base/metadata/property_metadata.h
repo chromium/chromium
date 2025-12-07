@@ -7,6 +7,7 @@
 
 #include <concepts>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 
@@ -42,7 +43,7 @@ struct ClassPropertyMetaDataTypeHelper<const ui::ClassProperty<TKValue_>* const,
     if constexpr (std::same_as<TKValue, TValue>) {
       return value;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 
@@ -92,8 +93,8 @@ class ObjectPropertyReadOnlyMetaData : public ui::metadata::MemberMetaDataBase {
     return ui::metadata::PropertyFlags::kReadOnly;
   }
 
-  const char* GetMemberNamePrefix() const override {
-    return TConverter::PropertyNamePrefix();
+  std::string_view GetMemberNamePrefix() const override {
+    return TConverter::property_name_prefix;
   }
 
  private:

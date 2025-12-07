@@ -18,7 +18,6 @@
 #include "cc/metrics/submit_info.h"
 #include "cc/scheduler/begin_frame_tracker.h"
 #include "cc/scheduler/draw_result.h"
-#include "cc/scheduler/redraw_reason.h"
 #include "cc/scheduler/scheduler_settings.h"
 #include "cc/scheduler/scheduler_state_machine.h"
 #include "cc/tiles/tile_priority.h"
@@ -38,7 +37,7 @@ class SingleThreadTaskRunner;
 }
 
 namespace viz {
-struct FrameTimingDetails;
+class FrameTimingDetails;
 }
 
 namespace cc {
@@ -61,7 +60,6 @@ class SchedulerClient {
       const viz::BeginFrameArgs& args) = 0;
   virtual DrawResult ScheduledActionDrawIfPossible() = 0;
   virtual DrawResult ScheduledActionDrawForced() = 0;
-  virtual void ScheduledActionUpdateDisplayTree() = 0;
 
   // The Commit step occurs when the client received the BeginFrame from the
   // source and we perform at most one commit per BeginFrame. In this step the
@@ -86,6 +84,7 @@ class SchedulerClient {
   virtual void DidNotProduceFrame(const viz::BeginFrameAck& ack,
                                   FrameSkippedReason reason) = 0;
   virtual void WillNotReceiveBeginFrame() = 0;
+  virtual void DidChangeBeginFrameSourcePaused(bool paused) = 0;
   virtual void SendBeginMainFrameNotExpectedSoon() = 0;
   virtual void ScheduledActionBeginMainFrameNotExpectedUntil(
       base::TimeTicks time) = 0;
@@ -110,9 +109,12 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
 
   Scheduler& operator=(const Scheduler&) = delete;
 
-  // This is needed so that the scheduler doesn't perform spurious actions while
-  // the compositor is being torn down.
+  // This is needed so that the scheduler doesn't perform scheduled actions
+  // while the compositor is being torn down.
   void Stop();
+
+  // Cleans up references to other objects just before being destroyed.
+  void TearDown();
 
   // BeginFrameObserverBase
   void OnBeginFrameSourcePausedChanged(bool paused) override;
@@ -156,14 +158,18 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   // source to be told to send BeginFrames to this client so that this client
   // can send a CompositorFrame to the display compositor with appropriate
   // timing.
-  void SetNeedsBeginMainFrame();
+  //
+  // Set `now` to true if the BeginMainFrame() should not be throttled, but
+  // happen as the next opportunity. This is useful when main frame updates are
+  // running at a lower rate than compositor frames, but we don't want to wait
+  // (e.g. there is an input event).
+  void SetNeedsBeginMainFrame(bool now = false);
 
   // Requests a single impl frame (after the current frame if there is one
   // active).
   void SetNeedsOneBeginImplFrame();
 
-  void SetNeedsRedraw(RedrawReason reason);
-  void SetNeedsUpdateDisplayTree();
+  void SetNeedsRedraw();
 
   void SetNeedsPrepareTiles();
 
@@ -177,9 +183,7 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   // If |needs_first_draw_on_activation| is set to true, an impl-side pending
   // tree creates for this invalidation must be drawn at least once before a
   // new tree can be activated.
-  // |reason| will be applied to draw if this ends up being drawn.
-  void SetNeedsImplSideInvalidation(bool needs_first_draw_on_activation,
-                                    RedrawReason reason);
+  void SetNeedsImplSideInvalidation(bool needs_first_draw_on_activation);
 
   bool pending_tree_is_ready_for_activation() const {
     return state_machine_.pending_tree_is_ready_for_activation();
@@ -193,7 +197,8 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   void DidReceiveCompositorFrameAck();
 
   void SetTreePrioritiesAndScrollState(TreePriority tree_priority,
-                                       ScrollHandlerState scroll_handler_state);
+                                       ScrollHandlerState scroll_handler_state,
+                                       bool is_current_scroll_main_painted);
 
   // Commit step happens after the main thread has completed updating for a
   // BeginMainFrame request from the compositor, and blocks the main thread
@@ -272,8 +277,6 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
 
   viz::BeginFrameAck CurrentBeginFrameAckForActiveTree() const;
 
-  RedrawReasonSet GetRedrawReasons() const;
-
   const viz::BeginFrameArgs& last_dispatched_begin_main_frame_args() const {
     return last_dispatched_begin_main_frame_args_;
   }
@@ -287,6 +290,8 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   void ClearHistory();
 
   size_t CommitDurationSampleCountForTesting() const;
+
+  void SetShouldThrottleFrameRate(bool flag);
 
  protected:
   // Virtual for testing.
@@ -306,7 +311,7 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
 
   // Owned by LayerTreeHostImpl and is destroyed when LayerTreeHostImpl is
   // destroyed.
-  raw_ptr<CompositorFrameReportingController, AcrossTasksDanglingUntriaged>
+  raw_ptr<CompositorFrameReportingController>
       compositor_frame_reporting_controller_;
 
   // What the latest deadline was, and when it was scheduled.
@@ -388,7 +393,6 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   void BeginMainFrameNotExpectedSoon();
   void DrawIfPossible();
   void DrawForced();
-  void UpdateDisplayTree();
   void ProcessScheduledActions();
   void UpdateCompositorTimingHistoryRecordingEnabled();
   void AdvanceCommitStateIfPossible();

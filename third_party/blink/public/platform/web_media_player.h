@@ -37,9 +37,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/viz/common/surfaces/surface_id.h"
+#include "media/base/picture_in_picture_events_info.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_metadata.h"
-#include "third_party/blink/public/common/media/display_type.h"
 #include "third_party/blink/public/platform/web_audio_source_provider_impl.h"
 #include "third_party/blink/public/platform/web_content_decryption_module.h"
 #include "third_party/blink/public/platform/web_media_source.h"
@@ -121,6 +121,58 @@ class WebMediaPlayer {
   // of pre-rendering)
   enum LoadTiming { kImmediate, kDeferred };
 
+  enum class DisplayType {
+    // Playback is happening inline.
+    kInline,
+    // Playback is happening either with the video fullscreen. It may also be
+    // set when Blink detects that the video is effectively fullscreen even if
+    // the element is not.
+    kFullscreen,
+    // Playback is happening in a video Picture-in-Picture window.
+    kVideoPictureInPicture,
+    // Playback is happening in a document Picture-in-Picture window.
+    kDocumentPictureInPicture,
+  };
+
+  // This is the reason supplied to `WebMediaPlayer::Pause()`. A
+  // `WebMediaPlayer` can be paused for many reasons that affect the internal
+  // state — including resumption strategies — differently. For example, a
+  // player can be paused to optimize a background tab, in which case
+  // foregrounding the tab could resume playback. Conversely, a non-optimized
+  // backgrounded tab can pause its media explicitly via
+  // `HTMLMediaElement::pause()`; in that case, foregrounding the tab should NOT
+  // resume playback.
+  enum class PauseReason {
+    // The player's tab is in the background.
+    kPageHidden,
+    // The player's frame is frozen.
+    kFrameFrozen,
+    // The player's frame is not rendered.
+    kFrameHidden,
+    // The player has been backgrounded for too long and will be paused to save
+    // resources.
+    kSuspendedPlayerIdleTimeout,
+    // The remote cast device has requested to pause the media.
+    kRemotePlayStateChange,
+    kEndOfPlayback,
+    // HTMLMediaElement::pause() was called.
+    kPauseCalled,
+    // The Browser process has requested to pause the media.
+    // TODO(crbug.com/40623496): Make sure that this is only used when there is
+    // a user gesture.
+    kPauseRequestedByUser,
+    kPauseRequestedInternally,
+    // The media element has been removed from the document.
+    kRemovedFromDocument,
+    // The Autoplay policy has requested to pause the media. This can happen
+    // when a muted HTMLMediaElement has started autoplaying and is not rendered
+    // in the viewport anymore.
+    kAutoplayAutoPause,
+    // The audio description track is lagging behind and we need to pause for it
+    // to catch up.
+    kLetAudioDescriptionFinish,
+  };
+
   // For video.requestVideoFrameCallback(). https://wicg.github.io/video-rvfc/
   struct VideoFramePresentationMetadata {
     uint32_t presented_frames;
@@ -143,7 +195,7 @@ class WebMediaPlayer {
 
   // Playback controls.
   virtual void Play() = 0;
-  virtual void Pause() = 0;
+  virtual void Pause(PauseReason pause_reason) = 0;
   virtual void Seek(double seconds) = 0;
   virtual void SetRate(double) = 0;
   virtual void SetVolume(double) = 0;
@@ -159,9 +211,15 @@ class WebMediaPlayer {
   virtual void SetPreservesPitch(bool preserves_pitch) = 0;
 
   // Sets a flag indicating whether the audio stream was played with user
-  // activation.
-  virtual void SetWasPlayedWithUserActivation(
-      bool was_played_with_user_activation) = 0;
+  // activation and high media engagement.
+  virtual void SetWasPlayedWithUserActivationAndHighMediaEngagement(
+      bool was_played_with_user_activation_and_high_media_engagement) = 0;
+
+  // Sets a flag indicating whether media playback should be paused when the
+  // the iframe is hidden.
+  virtual void SetShouldPauseWhenFrameIsHidden(
+      bool should_pause_when_frame_is_hidden) = 0;
+  virtual bool GetShouldPauseWhenFrameIsHidden() { return false; }
 
   // The associated media element is going to enter Picture-in-Picture. This
   // method should make sure the player is set up for this and has a SurfaceId
@@ -211,8 +269,6 @@ class WebMediaPlayer {
   virtual double CurrentTime() const = 0;
   virtual bool IsEnded() const = 0;
 
-  virtual bool PausedWhenHidden() const { return false; }
-
   // Internal states of loading and network.
   virtual NetworkState GetNetworkState() const = 0;
   virtual ReadyState GetReadyState() const = 0;
@@ -237,14 +293,6 @@ class WebMediaPlayer {
   virtual unsigned CorruptedFrameCount() const { return 0; }
   virtual uint64_t AudioDecodedByteCount() const = 0;
   virtual uint64_t VideoDecodedByteCount() const = 0;
-
-  // Returns false if any of the HTTP responses which make up the video data
-  // loaded so far have failed the TAO check as defined by Fetch
-  // (https://fetch.spec.whatwg.org/#tao-check), or true otherwise. Video
-  // streams which do not originate from HTTP responses should return true here.
-  // This check is used to determine if timing information from those responses
-  // may be exposed to the page in Largest Contentful Paint performance entries.
-  virtual bool PassedTimingAllowOriginCheck() const = 0;
 
   // Set the volume multiplier to control audio ducking.
   // Output volume should be set to |player_volume| * |multiplier|. The range
@@ -272,7 +320,9 @@ class WebMediaPlayer {
   virtual bool HasReadableVideoFrame() const = 0;
 
   // Renders the current frame into the provided cc::PaintCanvas.
-  virtual void Paint(cc::PaintCanvas*, const gfx::Rect&, cc::PaintFlags&) = 0;
+  virtual void Paint(cc::PaintCanvas*,
+                     const gfx::Rect&,
+                     const cc::PaintFlags&) = 0;
 
   // Similar to Paint(), but just returns the frame directly instead of trying
   // to upload or convert it. Note: This may kick off a process to update the
@@ -305,6 +355,10 @@ class WebMediaPlayer {
         kWebContentDecryptionModuleExceptionNotSupportedError, 0, "ERROR");
   }
 
+  // Sets a flag indicating whether to render muted audio to the active sink or
+  // switch to a null sink.
+  virtual void SetRenderMutedAudio(bool render_muted_audio) {}
+
   // Sets the poster image URL.
   virtual void SetPoster(const WebURL& poster) {}
 
@@ -327,9 +381,9 @@ class WebMediaPlayer {
   virtual void SetIsEffectivelyFullscreen(WebFullscreenVideoStatus) {}
 
   virtual void EnabledAudioTracksChanged(
-      const WebVector<TrackId>& enabled_track_ids) {}
-  // |selected_track_id| is null if no track is selected.
-  virtual void SelectedVideoTrackChanged(TrackId* selected_track_id) {}
+      std::optional<TrackId> enabled_track_id) {}
+  virtual void SelectedVideoTrackChanged(
+      std::optional<TrackId> selected_track_id) {}
 
   // Callback called whenever the media element may have received or last native
   // controls. It might be called twice with the same value: the caller has to
@@ -351,10 +405,9 @@ class WebMediaPlayer {
 
   virtual bool IsOpaque() const { return false; }
 
-  // Returns the id given by the WebMediaPlayerDelegate. This is used by the
-  // Blink code to pass a player id to mojo services.
-  // TODO(mlamouri): remove this and move the id handling to Blink.
-  virtual int GetDelegateId() { return -1; }
+  // Returns a per-process unique ID for this WebMediaPlayer that can
+  // be passed to mojo services.
+  virtual int GetPlayerId() { return -1; }
 
   // Returns the SurfaceId the video element is currently using.
   // Returns std::nullopt if the element isn't a video or doesn't have a
@@ -391,6 +444,13 @@ class WebMediaPlayer {
   // HTMLVideoElement visibility is reported. The state is recorded using
   // `MediaLogEvent` s.
   virtual void RecordVideoOcclusionState(std::string_view occlusion_state) {}
+
+  // Request the media player to record auto picture in picture related
+  // information. This information helps identify why a request to enter picture
+  // in picture automatically is denied/accepted.
+  virtual void RecordAutoPictureInPictureInfo(
+      const media::PictureInPictureEventsInfo::AutoPipInfo&
+          auto_picture_in_picture_info) = 0;
 };
 
 }  // namespace blink

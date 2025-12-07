@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+Found 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Property translate value 'random(fixed random(1, 2), 10%, 100%)'
+  assert_true: 'random(fixed random(1, 2), 10%, 100%)' is a supported value for translate. expected true got false
+[FAIL] Property translate value 'random(fixed random(-2, -1), 10%, 100%)'
+  assert_true: 'random(fixed random(-2, -1), 10%, 100%)' is a supported value for translate. expected true got false
+[FAIL] Maximum random: 'random(a, b)'
+  assert_false: expected false got true
+[FAIL] Maximum random - shorthand: random(a, b)
+  assert_false: expected false got true
+Harness: the test ran to completion.
+

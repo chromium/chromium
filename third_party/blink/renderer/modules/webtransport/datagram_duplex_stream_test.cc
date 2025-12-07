@@ -43,14 +43,14 @@ class StubWebTransport final : public network::mojom::blink::WebTransport {
   // Implementation of WebTransport.
   void SendDatagram(base::span<const uint8_t> data,
                     base::OnceCallback<void(bool)>) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void CreateStream(
       mojo::ScopedDataPipeConsumerHandle output_consumer,
       mojo::ScopedDataPipeProducerHandle input_producer,
       base::OnceCallback<void(bool, uint32_t)> callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void AcceptBidirectionalStream(
@@ -109,8 +109,8 @@ class ScopedWebTransport final {
   // This constructor runs the event loop.
   explicit ScopedWebTransport(const V8TestingScope& scope) {
     creator_.Init(scope.GetScriptState(),
-                  WTF::BindRepeating(&ScopedWebTransport::CreateStub,
-                                     weak_ptr_factory_.GetWeakPtr()));
+                  blink::BindRepeating(&ScopedWebTransport::CreateStub,
+                                       weak_ptr_factory_.GetWeakPtr()));
   }
 
   WebTransport* GetWebTransport() const { return creator_.GetWebTransport(); }

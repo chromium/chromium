@@ -21,6 +21,8 @@ struct AllocatorSettings {
   size_t num_metadata;
   size_t total_pages;
   size_t sampling_frequency;
+  size_t sampling_min_size;
+  size_t sampling_max_size;
 };
 
 }  // namespace internal

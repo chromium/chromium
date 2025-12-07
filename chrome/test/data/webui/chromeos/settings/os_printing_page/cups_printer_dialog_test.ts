@@ -2,14 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AddPrinterManuallyDialogElement, AddPrinterManufacturerModelDialogElement, CupsPrintersBrowserProxyImpl, PrinterSetupResult, SettingsCupsAddPrinterDialogElement, SettingsCupsEditPrinterDialogElement, SettingsCupsPrintersElement} from 'chrome://os-settings/lazy_load.js';
-import {CrInputElement, CrSearchableDropDownElement, Router, routes} from 'chrome://os-settings/os_settings.js';
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import type {AddPrinterManuallyDialogElement, AddPrinterManufacturerModelDialogElement, SettingsCupsAddPrinterDialogElement, SettingsCupsEditPrinterDialogElement, SettingsCupsPrintersElement} from 'chrome://os-settings/lazy_load.js';
+import {CupsPrintersBrowserProxyImpl, PrinterSetupResult} from 'chrome://os-settings/lazy_load.js';
+import type {CrInputElement, CrSearchableDropDownElement} from 'chrome://os-settings/os_settings.js';
+import {Router, routes} from 'chrome://os-settings/os_settings.js';
+import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {DomIf, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomIf} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 

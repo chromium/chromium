@@ -8,9 +8,12 @@
 #include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
-#include "components/plus_addresses/features.h"
+#include "components/plus_addresses/core/common/features.h"
 #include "google_apis/gaia/gaia_constants.h"
+
+#if !BUILDFLAG(IS_FUCHSIA)
+#include "pdf/buildflags.h"  // nogncheck
+#endif                       // !BUILDFLAG(IS_FUCHSIA)
 
 namespace signin {
 
@@ -31,8 +34,14 @@ bool IsUnrestrictedOAuth2Scopes(const std::string& scope) {
       GaiaConstants::kGoogleUserInfoProfile,
 
       // Required to fetch the ManagedAccounsSigninRestriction policy during
-      //sign in.
+      // sign in.
       GaiaConstants::kSecureConnectOAuth2Scope,
+
+#if !BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+      GaiaConstants::kDriveOAuth2Scope,
+#endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
       // TODO(b/321900823): Fix tests and move below scopes to require the
       // browser to be signed in.
@@ -114,30 +123,54 @@ bool IsUnconsentedSignedInOAuth2Scopes(const std::string& scope) {
       // Required by Omnibox / DocumentSuggestionsService.
       GaiaConstants::kCloudSearchQueryOAuth2Scope,
 
+      // Required by Omnibox / EnterpriseSearchAggregatorSuggestionsService.
+      GaiaConstants::kDiscoveryEngineCompleteQueryOAuth2Scope,
+
+      // Required by Access Code Cast.
+      GaiaConstants::kDiscoveryOAuth2Scope,
+
       // Used by AdvancedProtectionStatusManager, as well as internally by the
       // identity system.
       GaiaConstants::kOAuth1LoginScope,
 
-      // Required by the Google Calendar NTP module and ChromeOS.
+      // Required by the Desktop NTP and ChromeOS.
       GaiaConstants::kCalendarReadOnlyOAuth2Scope,
+      GaiaConstants::kDriveReadOnlyOAuth2Scope,
+
+      // Used by DevTools GenAI features
+      GaiaConstants::kAidaOAuth2Scope,
+
+      // Used by DevTools Google Developer Program features
+      GaiaConstants::kGdpOAuth2Scope,
+
+      // Required for certain Gemini features.
+      GaiaConstants::kGeminiOAuth2Scope,
+
+      // Used by private webstore extension API.
+      GaiaConstants::kWebstoreOAuth2Scope,
+
+      // Required for Save to Drive and ChromeOS.
+      GaiaConstants::kDriveOAuth2Scope,
+
+      // Required for Contextual Tasks.
+      GaiaConstants::kClearCutOAuth2Scope,
 
     // Required by ChromeOS only.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       GaiaConstants::kAssistantOAuth2Scope,
       GaiaConstants::kAuditRecordingOAuth2Scope,
       GaiaConstants::kCastBackdropOAuth2Scope,
-      GaiaConstants::kClearCutOAuth2Scope,
-      GaiaConstants::kDriveOAuth2Scope,
-      GaiaConstants::kDriveReadOnlyOAuth2Scope,
+      GaiaConstants::kClientChannelOAuth2Scope,
       GaiaConstants::kExperimentsAndConfigsOAuth2Scope,
       GaiaConstants::kGCMGroupServerOAuth2Scope,
-      GaiaConstants::kCloudPlatformProjectsOAuth2Scope,
+      GaiaConstants::kNearbyDevicesOAuth2Scope,
       GaiaConstants::kNearbyShareOAuth2Scope,
       GaiaConstants::kNearbyPresenceOAuth2Scope,
       GaiaConstants::kPeopleApiReadOnlyOAuth2Scope,
+      GaiaConstants::kContactsOAuth2Scope,
       GaiaConstants::kPhotosOAuth2Scope,
       GaiaConstants::kTachyonOAuthScope,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
       // clang-format on
   });
 

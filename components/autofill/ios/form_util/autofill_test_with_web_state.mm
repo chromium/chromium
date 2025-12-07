@@ -7,7 +7,7 @@
 #import "base/test/ios/wait_util.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
-#include "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #import "ios/web/public/web_client.h"
@@ -20,8 +20,7 @@ AutofillTestWithWebState::AutofillTestWithWebState(
     std::unique_ptr<web::WebClient> web_client)
     : web::WebTestWithWebState(std::move(web_client)) {}
 
-void AutofillTestWithWebState::TrackFormMutations(web::WebFrame* frame,
-                                                  bool allow_batching) {
+void AutofillTestWithWebState::TrackFormMutations(web::WebFrame* frame) {
   // Override |__gCrWeb.formHandlers.trackFormMutations| to set a boolean
   // trackFormMutationsComplete after the function is called.
   ExecuteJavaScript(
@@ -35,7 +34,7 @@ void AutofillTestWithWebState::TrackFormMutations(web::WebFrame* frame,
       @"};");
 
   autofill::FormHandlersJavaScriptFeature::GetInstance()->TrackFormMutations(
-      frame, kTrackFormMutationsDelayInMs, allow_batching);
+      frame, kTrackFormMutationsDelayInMs);
 
   // Wait for |TrackFormMutations| to add form listeners.
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
@@ -48,7 +47,7 @@ id AutofillTestWithWebState::ExecuteJavaScript(NSString* script) {
   // although `FormHandlersJavaScriptFeature` is specified, all autofill
   // features must live in the same content world so any one of them could be
   // used here.
-  return web::test::ExecuteJavaScriptForFeature(
+  return web::test::ExecuteJavaScriptForFeatureAndReturnResult(
       web_state(), script,
       autofill::FormHandlersJavaScriptFeature::GetInstance());
 }

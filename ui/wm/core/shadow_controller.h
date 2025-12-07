@@ -64,6 +64,8 @@ class COMPONENT_EXPORT(UI_WM) ShadowController
                          aura::Window* gained_active,
                          aura::Window* lost_active) override;
 
+  bool IsObservingWindowForTest(aura::Window* window) const;
+
  private:
   class Impl;
 

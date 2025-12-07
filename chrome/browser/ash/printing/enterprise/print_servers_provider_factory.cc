@@ -58,7 +58,7 @@ void PrintServersProviderFactory::RemoveForAccountId(
   providers_by_user_.erase(account_id);
 }
 
-void PrintServersProviderFactory::Shutdown() {
+void PrintServersProviderFactory::ShutdownForTesting() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   providers_by_user_.clear();
   device_provider_ = nullptr;

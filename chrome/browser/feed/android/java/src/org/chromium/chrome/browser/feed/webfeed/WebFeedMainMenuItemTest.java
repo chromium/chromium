@@ -35,7 +35,8 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLog;
@@ -44,7 +45,6 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feed.test.R;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -73,7 +73,7 @@ import java.util.ArrayList;
 public final class WebFeedMainMenuItemTest {
     private static final GURL TEST_URL = JUnitTestGURLs.EXAMPLE_URL;
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
@@ -92,16 +92,15 @@ public final class WebFeedMainMenuItemTest {
     private Activity mActivity;
     private Class<?> mCreatorActivityClass;
     private WebFeedMainMenuItem mWebFeedMainMenuItem;
-    private TestWebFeedFaviconFetcher mFaviconFetcher = new TestWebFeedFaviconFetcher();
-    private ArrayList<Callback<WebFeedBridge.WebFeedMetadata>> mWaitingMetadataCallbacks =
+    private final TestWebFeedFaviconFetcher mFaviconFetcher = new TestWebFeedFaviconFetcher();
+    private final ArrayList<Callback<WebFeedBridge.WebFeedMetadata>> mWaitingMetadataCallbacks =
             new ArrayList();
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         // Print logs to stdout.
         ShadowLog.stream = System.out;
-        mJniMocker.mock(WebFeedBridge.getTestHooksForTesting(), mWebFeedBridgeJniMock);
+        WebFeedBridgeJni.setInstanceForTesting(mWebFeedBridgeJniMock);
 
         when(mWebFeedBridgeJniMock.isCormorantEnabledForLocale()).thenReturn(true);
 
@@ -135,8 +134,8 @@ public final class WebFeedMainMenuItemTest {
 
         mWebFeedMainMenuItem =
                 (WebFeedMainMenuItem)
-                        (LayoutInflater.from(mActivity)
-                                .inflate(R.layout.web_feed_main_menu_item, null));
+                        LayoutInflater.from(mActivity)
+                                .inflate(R.layout.web_feed_main_menu_item, null);
 
         LoadingView.setDisableAnimationForTest(true);
     }
@@ -201,12 +200,8 @@ public final class WebFeedMainMenuItemTest {
         assertTrue(intent.hasExtra(CreatorIntentConstants.CREATOR_URL));
         assertNotNull(intent.getExtras().getString(CreatorIntentConstants.CREATOR_URL));
         assertTrue(intent.hasExtra(CreatorIntentConstants.CREATOR_ENTRY_POINT));
-        assertNotNull(intent.getExtras().getInt(CreatorIntentConstants.CREATOR_ENTRY_POINT));
         assertTrue(intent.hasExtra(CreatorIntentConstants.CREATOR_FOLLOWING));
-        assertNotNull(
-                intent.getExtras().getBoolean(CreatorIntentConstants.CREATOR_FOLLOWING, false));
         assertTrue(intent.hasExtra(CreatorIntentConstants.CREATOR_TAB_ID));
-        assertNotNull(intent.getExtras().getInt(CreatorIntentConstants.CREATOR_TAB_ID));
     }
 
     @Test

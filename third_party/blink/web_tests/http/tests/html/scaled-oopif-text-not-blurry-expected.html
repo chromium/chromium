@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <h1>Mainframe with text and an out-of-process iframe</h1>
+    <div style="transform: scale(0.9)">
+      This is some mainframe text.<p>
+      <!-- For generating expected output, use a same-process iframe -->
+      <iframe style="border: 1px solid black"
+              srcdoc="<!doctype html>This is some text"></iframe>
+    </div>
+  </body>
+</html>

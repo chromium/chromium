@@ -121,7 +121,7 @@ const LayoutResult* CustomLayoutAlgorithm::Layout() {
       fragment_result_options->childFragments();
 
   LayoutInputNode child = Node().FirstChild();
-  for (auto fragment : child_fragments) {
+  for (const auto& fragment : child_fragments) {
     if (!fragment->IsValid()) {
       // TODO(ikilpatrick): Report this error to the developer.
       return FallbackLayout();
@@ -195,7 +195,8 @@ void CustomLayoutAlgorithm::AddAnyOutOfFlowPositionedChildren(
   DCHECK(child);
   while (*child && child->IsOutOfFlowPositioned()) {
     container_builder_.AddOutOfFlowChildCandidate(
-        To<BlockNode>(*child), BorderScrollbarPadding().StartOffset());
+        To<BlockNode>(*child),
+        LogicalStaticPosition(BorderScrollbarPadding().StartOffset()));
     *child = child->NextSibling();
   }
 }

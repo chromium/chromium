@@ -1,0 +1,55 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "whats_new_coordinator.h",
+    "whats_new_coordinator.mm",
+    "whats_new_detail_coordinator.h",
+    "whats_new_detail_coordinator.mm",
+    "whats_new_instructions_coordinator.h",
+    "whats_new_instructions_coordinator.mm",
+    "whats_new_instructions_coordinator_delegate.h",
+    "whats_new_mediator.h",
+    "whats_new_mediator.mm",
+  ]
+  deps = [
+    ":util",
+    "//base",
+    "//components/feature_engagement/public",
+    "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",
+    "//ios/chrome/browser/promos_manager/ui_bundled:promos",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/utils",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/whats_new/public:constants",
+    "//ios/chrome/browser/whats_new/ui",
+    "//ios/chrome/browser/whats_new/ui/data_source",
+    "//ios/chrome/browser/whats_new/ui/data_source:whats_new_item",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//url",
+  ]
+}
+
+source_set("util") {
+  sources = [
+    "whats_new_util.h",
+    "whats_new_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/promos_manager/model",
+    "//ios/chrome/browser/promos_manager/model:constants",
+    "//ios/chrome/browser/promos_manager/model:features",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/whats_new/public:constants",
+    "//ios/chrome/browser/whats_new/ui/data_source:whats_new_item",
+  ]
+}

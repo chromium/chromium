@@ -5,6 +5,7 @@
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -14,8 +15,11 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/browser/supervised_user_test_environment.h"
+#include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 
@@ -88,36 +92,51 @@ void SetSupervisedUserGeolocationEnabledContentSetting(Profile* profile,
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
-void PopulateAccountInfoWithName(AccountInfo& info,
-                                 const std::string& given_name) {
-  info.given_name = given_name;
-  info.full_name = "fullname";
-  info.hosted_domain = "example.com";
-  info.locale = "en";
-  info.picture_url = "https://example.com";
+AccountInfo PopulateAccountInfoWithName(const AccountInfo& info,
+                                        const std::string& given_name) {
+  AccountInfo populated_info = AccountInfo::Builder(info)
+                                   .SetFullName("fullname")
+                                   .SetGivenName(given_name)
+                                   .SetHostedDomain("example.com")
+                                   .SetAvatarUrl("https://example.com")
+                                   .SetLocale("en")
+                                   .Build();
+  AccountCapabilitiesTestMutator(&populated_info.capabilities)
+      .set_is_subject_to_enterprise_features(true);
 
-  CHECK(info.IsValid());
+  CHECK(populated_info.IsValid());
+  return populated_info;
 }
 
 void SetManualFilterForHost(Profile* profile,
-                            const std::string& host,
+                            std::string_view host,
                             bool allowlist) {
-  supervised_user::SupervisedUserSettingsService* settings_service =
+  supervised_user::SupervisedUserTestEnvironment::SetManualFilterForHost(
+      host, allowlist,
+      *SupervisedUserSettingsServiceFactory::GetForKey(
+          profile->GetProfileKey()));
+}
+
+void SetManualFilterForUrl(Profile* profile,
+                           std::string_view url,
+                           bool allowlist) {
+  supervised_user::SupervisedUserTestEnvironment::SetManualFilterForUrl(
+      url, allowlist,
+      *SupervisedUserSettingsServiceFactory::GetForKey(
+          profile->GetProfileKey()));
+}
+
+void SetWebFilterType(const Profile* profile,
+                      supervised_user::WebFilterType web_filter_type) {
+  supervised_user::SupervisedUserSettingsService* service =
       SupervisedUserSettingsServiceFactory::GetForKey(profile->GetProfileKey());
-
-  const base::Value::Dict& local_settings =
-      settings_service->LocalSettingsForTest();
-  base::Value::Dict dict_to_insert;
-
-  if (const base::Value::Dict* dict_value = local_settings.FindDict(
-          supervised_user::kContentPackManualBehaviorHosts)) {
-    dict_to_insert = dict_value->Clone();
-  }
-
-  dict_to_insert.Set(host, allowlist);
-  settings_service->SetLocalSetting(
-      supervised_user::kContentPackManualBehaviorHosts,
-      std::move(dict_to_insert));
+  CHECK(service) << "Missing settings service might indicate misconfigured "
+                    "test environment. If this is a unittest, consider using "
+                    "SupervisedUserSyncDataFake";
+  CHECK(service->IsReady())
+      << "If settings service is not ready, the change will not be successful";
+  supervised_user::SupervisedUserTestEnvironment::SetWebFilterType(
+      web_filter_type, *service);
 }
 
 }  // namespace supervised_user_test_util

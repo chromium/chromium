@@ -34,6 +34,7 @@ class ReceiverPresentationServiceDelegateImpl
           ReceiverPresentationServiceDelegateImpl>,
       public content::ReceiverPresentationServiceDelegate {
  public:
+  ~ReceiverPresentationServiceDelegateImpl() override;
   // Creates an instance of ReceiverPresentationServiceDelegateImpl under
   // |web_contents| and registers it as the receiver of the local
   // presentation |presentation_id| with LocalPresentationManager.

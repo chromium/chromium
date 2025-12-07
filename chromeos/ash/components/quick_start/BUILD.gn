@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //ash")
 
 static_library("quick_start") {
   sources = [
@@ -29,7 +27,7 @@ static_library("quick_start") {
     "//components/cbor",
     "//components/metrics/structured:structured_events",
     "//crypto",
-    "//google_apis:google_apis",
+    "//google_apis",
     "//sandbox/policy",
     "//url",
   ]
@@ -40,10 +38,10 @@ source_set("test_support") {
   deps = [
     "//base",
     "//chromeos/ash/components/nearby/common/connections_manager",
-    "//chromeos/ash/services/nearby/public/mojom:mojom",
+    "//chromeos/ash/services/nearby/public/mojom",
     "//components/cbor",
     "//crypto",
-    "//mojo/public/cpp/bindings:bindings",
+    "//mojo/public/cpp/bindings",
     "//sandbox/policy",
     "//url",
   ]

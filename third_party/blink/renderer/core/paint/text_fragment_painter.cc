@@ -11,11 +11,10 @@
 #include "third_party/blink/renderer/core/editing/markers/text_match_marker.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
+#include "third_party/blink/renderer/core/layout/inline/fit_text_scale.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
-#include "third_party/blink/renderer/core/layout/layout_ruby_column.h"
-#include "third_party/blink/renderer/core/layout/layout_ruby_text.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/list/list_marker.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
@@ -37,9 +36,11 @@
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/text_fragment_paint_info.h"
+#include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
+#include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
@@ -95,15 +96,6 @@ inline const InlineCursor& InlineCursorForBlockFlow(
   return **storage;
 }
 
-// Check if text-emphasis and ruby annotation text are on different sides.
-//
-// TODO(layout-dev): The current behavior is compatible with the legacy layout.
-// However, the specification asks to draw emphasis marks over ruby annotation
-// text.
-// https://drafts.csswg.org/css-text-decor-4/#text-emphasis-position-property
-// > If emphasis marks are applied to characters for which ruby is drawn in the
-// > same position as the emphasis mark, the emphasis marks are placed outside
-// > the ruby.
 bool ShouldPaintEmphasisMark(const ComputedStyle& style,
                              const LayoutObject& layout_object,
                              const FragmentItem& text_item) {
@@ -113,31 +105,18 @@ bool ShouldPaintEmphasisMark(const ComputedStyle& style,
   // emphasis mark at left/right side of |LayoutTextCombine|.
   DCHECK(!IsA<LayoutTextCombine>(layout_object.Parent()));
 
-  if (RuntimeEnabledFeatures::RubyLineBreakableEnabled()) {
-    if (style.GetTextEmphasisLineLogicalSide() == LineLogicalSide::kOver) {
-      return !text_item.HasOverAnnotation();
-    }
-    return !text_item.HasUnderAnnotation();
+  if (text_item.IsEllipsis()) {
+    return false;
   }
 
-  const LayoutObject* containing_block = layout_object.ContainingBlock();
-  if (!containing_block || !containing_block->IsRubyBase())
-    return true;
-  const LayoutObject* parent = containing_block->Parent();
-  if (!parent || !parent->IsRubyColumn()) {
+  if (RuntimeEnabledFeatures::TextEmphasisWithRubyEnabled()) {
     return true;
   }
-  const auto* ruby_text = To<LayoutRubyColumn>(parent)->RubyText();
-  if (!ruby_text)
-    return true;
-  if (!InlineCursor(*ruby_text)) {
-    return true;
+
+  if (style.GetTextEmphasisLineLogicalSide() == LineLogicalSide::kOver) {
+    return !text_item.HasOverAnnotation();
   }
-  const LineLogicalSide ruby_logical_side =
-      parent->StyleRef().GetRubyPosition() == RubyPosition::kOver
-          ? LineLogicalSide::kOver
-          : LineLogicalSide::kUnder;
-  return ruby_logical_side != style.GetTextEmphasisLineLogicalSide();
+  return !text_item.HasUnderAnnotation();
 }
 
 PhysicalDirection GetDisclosureOrientation(const ComputedStyle& style,
@@ -146,37 +125,47 @@ PhysicalDirection GetDisclosureOrientation(const ComputedStyle& style,
   return is_open ? direction_mode.BlockEnd() : direction_mode.InlineEnd();
 }
 
-Path CreatePath(base::span<const gfx::PointF, 4> path) {
-  Path result;
-  result.MoveTo(gfx::PointF(path[0].x(), path[0].y()));
-  for (int i = 1; i < 4; ++i) {
-    result.AddLineTo(gfx::PointF(path[i].x(), path[i].y()));
+base::span<const gfx::PointF, 3> GetDisclosurePathPoints(
+    PhysicalDirection direction) {
+  static constexpr gfx::PointF kLeftPoints[3] = {
+      {1.0f, 0.0f}, {0.14f, 0.5f}, {1.0f, 1.0f}};
+  static constexpr gfx::PointF kRightPoints[3] = {
+      {0.0f, 0.0f}, {0.86f, 0.5f}, {0.0f, 1.0f}};
+  static constexpr gfx::PointF kUpPoints[3] = {
+      {0.0f, 0.93f}, {0.5f, 0.07f}, {1.0f, 0.93f}};
+  static constexpr gfx::PointF kDownPoints[3] = {
+      {0.0f, 0.07f}, {0.5f, 0.93f}, {1.0f, 0.07f}};
+
+  switch (direction) {
+    case PhysicalDirection::kLeft:
+      return kLeftPoints;
+    case PhysicalDirection::kRight:
+      return kRightPoints;
+    case PhysicalDirection::kUp:
+      return kUpPoints;
+    case PhysicalDirection::kDown:
+      return kDownPoints;
   }
-  return result;
 }
 
-Path GetCanonicalDisclosurePath(const ComputedStyle& style, bool is_open) {
-  constexpr gfx::PointF kLeftPoints[4] = {
-      {1.0f, 0.0f}, {0.14f, 0.5f}, {1.0f, 1.0f}, {1.0f, 0.0f}};
-  constexpr gfx::PointF kRightPoints[4] = {
-      {0.0f, 0.0f}, {0.86f, 0.5f}, {0.0f, 1.0f}, {0.0f, 0.0f}};
-  constexpr gfx::PointF kUpPoints[4] = {
-      {0.0f, 0.93f}, {0.5f, 0.07f}, {1.0f, 0.93f}, {0.0f, 0.93f}};
-  constexpr gfx::PointF kDownPoints[4] = {
-      {0.0f, 0.07f}, {0.5f, 0.93f}, {1.0f, 0.07f}, {0.0f, 0.07f}};
+Path GetCanonicalDisclosurePath(const ComputedStyle& style,
+                                const gfx::RectF& bounding_box,
+                                bool is_open) {
+  auto points =
+      GetDisclosurePathPoints(GetDisclosureOrientation(style, is_open));
+  auto map_unit_point = [&bounding_box](const gfx::PointF& p) {
+    return gfx::ScalePoint(p, bounding_box.size().width(),
+                           bounding_box.size().height()) +
+           bounding_box.OffsetFromOrigin();
+  };
 
-  switch (GetDisclosureOrientation(style, is_open)) {
-    case PhysicalDirection::kLeft:
-      return CreatePath(kLeftPoints);
-    case PhysicalDirection::kRight:
-      return CreatePath(kRightPoints);
-    case PhysicalDirection::kUp:
-      return CreatePath(kUpPoints);
-    case PhysicalDirection::kDown:
-      return CreatePath(kDownPoints);
+  PathBuilder result;
+  result.MoveTo(map_unit_point(points[0]));
+  for (size_t i = 1; i < points.size(); ++i) {
+    result.LineTo(map_unit_point(points[i]));
   }
-
-  return Path();
+  result.Close();
+  return result.Finalize();
 }
 
 }  // namespace
@@ -221,14 +210,11 @@ void TextFragmentPainter::PaintSymbol(const LayoutObject* layout_object,
     context.FillRect(snapped_rect, color, auto_dark_mode);
   } else if (type == keywords::kDisclosureOpen ||
              type == keywords::kDisclosureClosed) {
-    Path path =
-        GetCanonicalDisclosurePath(style, type == keywords::kDisclosureOpen);
-    path.Transform(AffineTransform::MakeScaleNonUniform(marker_rect.Width(),
-                                                        marker_rect.Height()));
-    path.Translate(gfx::Vector2dF(marker_rect.X(), marker_rect.Y()));
+    const Path path = GetCanonicalDisclosurePath(
+        style, gfx::RectF(marker_rect), type == keywords::kDisclosureOpen);
     context.FillPath(path, auto_dark_mode);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -245,8 +231,9 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
     return;
 
   const ComputedStyle& style = text_item.Style();
-  if (style.Visibility() != EVisibility::kVisible)
+  if (style.Visibility() != EVisibility::kVisible) {
     return;
+  }
 
   const TextFragmentPaintInfo& fragment_paint_info =
       cursor_.Current()->TextPaintInfo(cursor_.Items());
@@ -266,11 +253,13 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   }
 #endif
 
-  ObjectPainter object_painter(*layout_object);
-  if (object_painter.ShouldRecordSpecialHitTestData(paint_info)) {
-    object_painter.RecordHitTestData(paint_info,
-                                     ToPixelSnappedRect(physical_box),
-                                     *text_item.GetDisplayItemClient());
+  if (paint_info.phase == PaintPhase::kForeground) {
+    ObjectPainter object_painter(*layout_object);
+    if (object_painter.ShouldRecordSpecialHitTestData(paint_info)) {
+      object_painter.RecordHitTestData(paint_info,
+                                       ToPixelSnappedRect(physical_box),
+                                       *text_item.GetDisplayItemClient());
+    }
   }
 
   // Determine whether or not we’ll need a writing-mode rotation, but don’t
@@ -318,6 +307,7 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   const auto* const svg_inline_text =
       DynamicTo<LayoutSVGInlineText>(layout_object);
   float scaling_factor = 1.0f;
+  bool is_scaled_inline_only = false;
   if (svg_inline_text) [[unlikely]] {
     DCHECK(text_item.IsSvgText());
     scaling_factor = svg_inline_text->ScalingFactor();
@@ -326,9 +316,35 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
         svg_inline_text->Parent()->VisualRectInLocalSVGCoordinates());
   } else {
     DCHECK(!text_item.IsSvgText());
+    if (RuntimeEnabledFeatures::CssFitWidthTextEnabled()) {
+      auto fit_text_scale = text_item.GetFitTextScale();
+      scaling_factor = fit_text_scale.first;
+      is_scaled_inline_only = fit_text_scale.second;
+    }
     PhysicalRect ink_overflow = text_item.SelfInkOverflowRect();
     ink_overflow.Move(physical_box.offset);
     visual_rect = ToEnclosingRect(ink_overflow);
+
+    // Expand |visual_rect| to prevent emphasis mark clipping if emphasis mark
+    // and nested ruby annotation exist on the same side.
+    bool has_over_text_emphasis =
+        style.GetTextEmphasisLineLogicalSide() == LineLogicalSide::kOver;
+    if (RuntimeEnabledFeatures::TextEmphasisWithRubyEnabled() &&
+        ShouldPaintEmphasisMark(style, *layout_object, text_item) &&
+        ((has_over_text_emphasis && text_item.HasOverAnnotation()) ||
+         (!has_over_text_emphasis && text_item.HasUnderAnnotation()))) {
+      gfx::Rect emphasis_rect = visual_rect;
+      FontHeight annotation_metrics = text_item.AnnotationMetrics();
+      if (has_over_text_emphasis) {
+        const auto ascent = annotation_metrics.ascent.Ceil();
+        emphasis_rect.set_y(emphasis_rect.y() - ascent);
+        emphasis_rect.set_height(emphasis_rect.height() + ascent);
+      } else {
+        const auto descent = annotation_metrics.descent.Ceil();
+        emphasis_rect.set_height(emphasis_rect.height() + descent);
+      }
+      visual_rect.Union(emphasis_rect);
+    }
   }
 
   // Ensure the selection bounds are recorded on the paint chunk regardless of
@@ -345,8 +361,7 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
           selection_for_bounds_recording->State(),
           selection_for_bounds_recording->PhysicalSelectionRect(),
           paint_info.context.GetPaintController(),
-          cursor_.Current().ResolvedDirection(), style.GetWritingMode(),
-          *cursor_.Current().GetLayoutObject());
+          cursor_.Current().ResolvedDirection(), style.GetWritingMode());
     }
   }
 
@@ -399,15 +414,19 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
 
   GraphicsContextStateSaver state_saver(context, /*save_and_restore=*/false);
   const int ascent = font_data ? font_data->GetFontMetrics().Ascent() : 0;
-  LineRelativeOffset text_origin{physical_box.offset.left,
-                                 physical_box.offset.top + ascent};
+  LayoutUnit top = physical_box.offset.top + ascent;
+  if (RuntimeEnabledFeatures::CssFitWidthTextEnabled() &&
+      !is_scaled_inline_only && !svg_inline_text) {
+    top = LayoutUnit(physical_box.offset.top + ascent * scaling_factor);
+  }
+  LineRelativeOffset text_origin{physical_box.offset.left, top};
   if (text_combine) [[unlikely]] {
     text_origin.line_over =
         text_combine->AdjustTextTopForPaint(physical_box.offset.top);
   }
 
   TextPainter text_painter(context, paint_info.GetSvgContextPaints(), *font,
-                           visual_rect, text_origin, is_horizontal);
+                           visual_rect, text_origin);
   TextDecorationPainter decoration_painter(text_painter, inline_context_,
                                            paint_info, style, text_style,
                                            rotated_box, selection);
@@ -446,6 +465,21 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
       svg_state.EnsureShaderTransform().PostConcat(
           fragment_transform.Inverse());
     }
+  } else if (RuntimeEnabledFeatures::CssFitWidthTextEnabled() &&
+             scaling_factor != 1.0f) {
+    state_saver.SaveIfNeeded();
+    AffineTransform t;
+    if (is_scaled_inline_only) {
+      t.SetMatrix(
+          scaling_factor, 0, 0, 1,
+          text_origin.line_left - scaling_factor * text_origin.line_left, 0);
+    } else {
+      t.SetMatrix(
+          scaling_factor, 0, 0, scaling_factor,
+          text_origin.line_left - scaling_factor * text_origin.line_left,
+          text_origin.line_over - scaling_factor * text_origin.line_over);
+    }
+    context.ConcatCTM(t);
   }
 
   const bool paint_marker_backgrounds =
@@ -487,7 +521,8 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   // overlays are active, but paint shadows in full <https://crbug.com/1147859>
   if (ShouldPaintEmphasisMark(style, *layout_object, text_item)) {
     text_painter.SetEmphasisMark(style.TextEmphasisMarkString(),
-                                 style.GetTextEmphasisPosition());
+                                 style.GetTextEmphasisLineLogicalSide(),
+                                 &text_item);
   }
 
   DOMNodeId node_id = kInvalidDOMNodeId;
@@ -504,21 +539,26 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   HighlightPainter::Case highlight_case = highlight_painter.PaintCase();
   switch (highlight_case) {
     case HighlightPainter::kNoHighlights:
+    case HighlightPainter::kFastSpellingGrammar: {
       // Fast path: just paint the text, including its decorations.
+      // Shadows must paint before decorations, but painting shadows in their
+      // own pass is less efficient, so only do it when decorations are present.
+      bool paint_shadows_first =
+          text_style.shadow && style.HasAppliedTextDecorations();
+      if (paint_shadows_first) {
+        highlight_painter.PaintOriginatingShadow(text_style, node_id);
+      }
       decoration_painter.Begin(text_item, TextDecorationPainter::kOriginating);
       decoration_painter.PaintExceptLineThrough(fragment_paint_info);
-      text_painter.Paint(fragment_paint_info, text_style, node_id,
-                         auto_dark_mode);
+      text_painter.Paint(
+          fragment_paint_info, text_style, node_id, auto_dark_mode,
+          paint_shadows_first ? TextPainter::kTextProperOnly
+                              : TextPainter::kBothShadowsAndTextProper);
       decoration_painter.PaintOnlyLineThrough();
-      break;
-    case HighlightPainter::kFastSpellingGrammar:
-      decoration_painter.Begin(text_item, TextDecorationPainter::kOriginating);
-      decoration_painter.PaintExceptLineThrough(fragment_paint_info);
-      text_painter.Paint(fragment_paint_info, text_style, node_id,
-                         auto_dark_mode);
-      decoration_painter.PaintOnlyLineThrough();
-      highlight_painter.FastPaintSpellingGrammarDecorations();
-      break;
+      if (highlight_case == HighlightPainter::kFastSpellingGrammar) {
+        highlight_painter.FastPaintSpellingGrammarDecorations();
+      }
+    } break;
     case HighlightPainter::kFastSelection:
       highlight_painter.Selection()->PaintSuppressingTextProperWhereSelected(
           text_painter, fragment_paint_info, text_style, node_id,
@@ -571,7 +611,7 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
         break;
       case HighlightPainter::kFastSpellingGrammar:
       case HighlightPainter::kNoHighlights:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 }

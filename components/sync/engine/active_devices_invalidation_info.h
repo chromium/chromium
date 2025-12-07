@@ -22,9 +22,9 @@ class ActiveDevicesInvalidationInfo {
   static ActiveDevicesInvalidationInfo CreateUninitialized();
 
   // Creates and initializes the object with all collected
-  // |all_fcm_registration_tokens| and |interested_data_types| from all other
+  // `all_fcm_registration_tokens` and `interested_data_types` from all other
   // devices (and the local device if the client waits for self-invalidations).
-  // |fcm_token_and_interested_data_types| contains FCM registration tokens and
+  // `fcm_token_and_interested_data_types` contains FCM registration tokens and
   // a corresponding interested data type list.
   static ActiveDevicesInvalidationInfo Create(
       std::vector<std::string> all_fcm_registration_tokens,
@@ -41,24 +41,24 @@ class ActiveDevicesInvalidationInfo {
   ActiveDevicesInvalidationInfo& operator=(ActiveDevicesInvalidationInfo&&);
 
   // Returns true if there are no other devices interested in invalidations for
-  // the given |types|. Otherwise returns false (and in case when it's unknown,
+  // the given `types`. Otherwise returns false (and in case when it's unknown,
   // e.g. while DeviceInfo is not initialized). When reflections are enabled,
   // returns false even if current client is the only one.
   bool IsSingleClientForTypes(const DataTypeSet& types) const;
 
   // Returns true if there are no other active DeviceInfos with enabled sync
-  // standalone invalidations interested in the given |types|. Returns false in
+  // standalone invalidations interested in the given `types`. Returns false in
   // all other cases:
   // * When it's unknown if there are other clients (e.g. when DeviceInfo data
   //   type is not initialized yet.
   // * There is at least one client with enabled sync standalone invalidations
-  //   subscribed for the given |types| (including current client if reflections
+  //   subscribed for the given `types` (including current client if reflections
   //   are enabled).
   bool IsSingleClientWithStandaloneInvalidationsForTypes(
       const DataTypeSet& types) const;
 
   // Returns true if there are no other active DeviceInfos with *disabled* synce
-  // standalone invalidations interested in the given |types|.
+  // standalone invalidations interested in the given `types`.
   bool IsSingleClientWithOldInvalidationsForTypes(
       const DataTypeSet& types) const;
 
@@ -70,7 +70,7 @@ class ActiveDevicesInvalidationInfo {
   }
 
   // Returns a list of all remote FCM registration tokens known to current
-  // device which are interested in at least one of the given |types|. This is a
+  // device which are interested in at least one of the given `types`. This is a
   // subset of the list returned by all_fcm_registration_tokens().
   std::vector<std::string> GetFcmRegistrationTokensForInterestedClients(
       DataTypeSet types) const;

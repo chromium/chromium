@@ -16,7 +16,7 @@
 #include "components/grit/download_internals_resources.h"
 #include "components/grit/download_internals_resources_map.h"
 #include "ios/chrome/browser/download/model/background_service/background_download_service_factory.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #include "ios/web/public/webui/web_ui_ios.h"
 #include "ios/web/public/webui/web_ui_ios_data_source.h"
@@ -59,14 +59,14 @@ class DownloadInternalsUIMessageHandler : public web::WebUIIOSMessageHandler,
             &DownloadInternalsUIMessageHandler::HandleStartDownload,
             weak_ptr_factory_.GetWeakPtr()));
 
-    ChromeBrowserState* browser_state =
-        ChromeBrowserState::FromWebUIIOS(web_ui());
+    ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui());
     download_service_ =
-        BackgroundDownloadServiceFactory::GetForBrowserState(browser_state);
+        BackgroundDownloadServiceFactory::GetForProfile(profile);
 
     // download_service_ will be null in incognito mode on iOS.
-    if (download_service_)
+    if (download_service_) {
       download_service_->GetLogger()->AddObserver(this);
+    }
   }
 
   // download::Logger::Observer implementation.
@@ -96,24 +96,27 @@ class DownloadInternalsUIMessageHandler : public web::WebUIIOSMessageHandler,
   }
 
   void HandleGetServiceStatus(const base::Value::List& args) {
-    if (!download_service_)
+    if (!download_service_) {
       return;
+    }
 
     web_ui()->ResolveJavascriptCallback(
         args[0], download_service_->GetLogger()->GetServiceStatus());
   }
 
   void HandleGetServiceDownloads(const base::Value::List& args) {
-    if (!download_service_)
+    if (!download_service_) {
       return;
+    }
 
     web_ui()->ResolveJavascriptCallback(
         args[0], download_service_->GetLogger()->GetServiceDownloads());
   }
 
   void HandleStartDownload(const base::Value::List& args) {
-    if (!download_service_)
+    if (!download_service_) {
       return;
+    }
 
     CHECK_GT(args.size(), 1u) << "Missing argument download URL.";
     GURL url = GURL(args[1].GetString());
@@ -168,12 +171,10 @@ DownloadInternalsUI::DownloadInternalsUI(web::WebUIIOS* web_ui,
   web::WebUIIOSDataSource* html_source =
       web::WebUIIOSDataSource::Create(kChromeUIDownloadInternalsHost);
   html_source->UseStringsJs();
-  html_source->AddResourcePaths(base::make_span(
-      kDownloadInternalsResources, kDownloadInternalsResourcesSize));
+  html_source->AddResourcePaths(kDownloadInternalsResources);
   html_source->SetDefaultResource(
       IDR_DOWNLOAD_INTERNALS_DOWNLOAD_INTERNALS_HTML);
-  web::WebUIIOSDataSource::Add(ChromeBrowserState::FromWebUIIOS(web_ui),
-                               html_source);
+  web::WebUIIOSDataSource::Add(ProfileIOS::FromWebUIIOS(web_ui), html_source);
 }
 
 DownloadInternalsUI::~DownloadInternalsUI() = default;

@@ -5,7 +5,6 @@
 #ifndef UI_AURA_CLIENT_DRAG_DROP_CLIENT_OBSERVER_H_
 #define UI_AURA_CLIENT_DRAG_DROP_CLIENT_OBSERVER_H_
 
-#include "build/chromeos_buildflags.h"
 #include "ui/aura/aura_export.h"
 
 namespace ui {
@@ -55,13 +54,18 @@ class AURA_EXPORT DragDropClientObserver {
   // called for this drop.
   virtual void OnDropCompleted(ui::mojom::DragOperation drag_operation) {}
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Called when the set of currently selected drag operation changes during the
   // drag. |action| is a bitmask of the actions selected by the client. This is
   // to provide feedback during the operation, it does not take precedence over
   // the operation returned from StartDragAndDrop.
   virtual void OnDragActionsChanged(int actions) {}
 #endif
+
+  // Called during destruction of the observed `DragDropClient`. Note that the
+  // client being destroyed does not necessarily imply the end of the drag
+  // session.
+  virtual void OnDragDropClientDestroying() {}
 };
 
 }  // namespace client

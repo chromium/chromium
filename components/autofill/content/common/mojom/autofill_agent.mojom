@@ -10,11 +10,12 @@ import "mojo/public/mojom/base/string16.mojom";
 // There is one instance of this interface per render frame in the render
 // process. All methods are called by browser on renderer.
 interface AutofillAgent {
-  // Triggers form re-extraction the new forms. This is done when a form is seen
-  // in a subframe and it is not known which form is its parent.
+  // Triggers extraction of new or updated forms. This is called when a form is
+  // seen in a subframe and it is not known yet which form in the parent frame
+  // contains the form in the subframe.
   TriggerFormExtraction();
 
-  // Triggers form re-extraction the new forms and notifies the caller when
+  // Triggers extraction of new or updated forms and notifies the caller when
   // it's done.
   // If `success == false`, TriggerFormExtractionWithResponse() was triggered
   // while another TriggerFormExtractionWithResponse() was ongoing.
@@ -24,8 +25,8 @@ interface AutofillAgent {
   // fields. `action_type` denotes if the action is a Fill or Undo.
   // `action_persistence` denotes if the operation is a Fill or Preview.
   ApplyFieldsAction(FormActionType action_type,
-                  ActionPersistence action_persistence,
-                  array<FormFieldData_FillData> fields);
+                    ActionPersistence action_persistence,
+                    array<FormFieldData_FillData> fields);
 
   // Fills or previews the field identified by `field` with `value`.
   // `action_persistence` denotes if the operation is a Fill or Preview.
@@ -40,12 +41,26 @@ interface AutofillAgent {
                    FieldRendererId field,
                    mojo_base.mojom.String16 value);
 
-  // Extracts the given form and responds with the FormData if that form can
-  // be found and extracted.
-  ExtractForm(FormRendererId form) => (FormData? form);
+  // Extracts the form that contains the given field and responds with the
+  // FormData, if that form can be found and extracted.
+  ExtractFormWithField(FieldRendererId field_id) => (FormData? form);
+
+  // Tries to extract the node value from the DOM and returns the extracted
+  // value back to the browser process. The response string contains the
+  // node value if present. If the string is empty, it means no node value
+  // was found.
+  // See `form_util::ExtractFinalCheckoutAmountFromDom()` for details.
+  ExtractLabeledTextNodeValue(mojo_base.mojom.String16 value_regex,
+                        mojo_base.mojom.String16 label_regex,
+                        uint32 number_of_ancestor_levels_to_search) =>
+      (string value);
 
   // Sends the heuristic and server field type predictions to the renderer.
   FieldTypePredictionsAvailable(array<FormDataPredictions> forms);
+
+  // For all elements the DOM Node ID will be exposed on the DOM
+  // as attribute "dom-node-id". This is done for data collection purposes.
+  ExposeDomNodeIds();
 
   // Tells the renderer that the Autofill previewed form should be cleared.
   ClearPreviewedForm();
@@ -61,24 +76,24 @@ interface AutofillAgent {
   // its coordinates to be re-extracted.
   // Assuming the `field` is found, the driver's `AskForValuesToFill()` will be
   // called.
-  TriggerSuggestions(FieldRendererId field,
-                     AutofillSuggestionTriggerSource trigger_source);
+  TriggerSuggestions(
+      FieldRendererId field, AutofillSuggestionTriggerSource trigger_source);
 
   // Sets the autofill/autocomplete suggestion availability of `field` (if it is
   // still the currently selected node).
   SetSuggestionAvailability(
-    FieldRendererId field,
-    AutofillSuggestionAvailability suggestion_availability);
+      FieldRendererId field,
+      AutofillSuggestionAvailability suggestion_availability);
 
   // Sets the value of `field` (if it is still the currently selected node).
   // to the given data list value.
-  AcceptDataListSuggestion(FieldRendererId field,
-                           mojo_base.mojom.String16 value);
+  AcceptDataListSuggestion(
+      FieldRendererId field, mojo_base.mojom.String16 value);
 
   // Tells the renderer to preview the username and password with the given
   // values.
-  PreviewPasswordSuggestion(mojo_base.mojom.String16 username,
-                            mojo_base.mojom.String16 password);
+  PreviewPasswordSuggestion(
+      mojo_base.mojom.String16 username, mojo_base.mojom.String16 password);
 
   // Tells the renderer to preview the generated password.
   PreviewPasswordGenerationSuggestion(mojo_base.mojom.String16 password);
@@ -87,47 +102,81 @@ interface AutofillAgent {
   // webpage. Used to check for the presence of the virtual card last four in
   // the DOM prior to offering CVC autofill for a virtual card saved on a
   // merchant website.
-  GetPotentialLastFourCombinationsForStandaloneCvc() =>
-      (array<string> potential_matches);
+  GetPotentialLastFourCombinationsForStandaloneCvc()
+      => (array<string> potential_matches);
+
+  // Asks the renderer to dispatch a custom DOM event on a specific field.
+  // The event will be of type VerifiedEvent.
+  DispatchEmailVerifiedEvent(
+      FieldRendererId field_id, string presentation_token);
 };
 
 // There is one instance of this interface per render frame in the render
-// process.
+// process. This renderer interface is called by the browser.
 interface PasswordAutofillAgent {
   // Provides fill information for a password form, which can fill the form and
   // prepare field autocomplete for multiple matching logins. Lets the renderer
   // know if it should disable the popup because the browser process will own
   // the popup UI.
-  SetPasswordFillData(PasswordFormFillData form_data);
+  ApplyFillDataOnParsingCompletion(PasswordFormFillData form_data);
 
-  // Tells the renderer to fill the username and password with with given
-  // values.
-  FillPasswordSuggestion(mojo_base.mojom.String16 username,
-                         mojo_base.mojom.String16 password);
+  // Fills the username and password with with given values.
+  FillPasswordSuggestion(
+      mojo_base.mojom.String16 username, mojo_base.mojom.String16 password)
+         => (bool success);
 
-  // Lets the renderer know that there are no saved credentials for filling.
-  // This is the "no results" equivalent of SetPasswordFillData.
-  InformNoSavedCredentials(bool should_show_popup_without_passwords);
+  // Similar to FillPasswordSuggestion, but is also provided the
+  // FieldRendererIds of the elements to be filled.
+  // `suggestion_source` specified how the user has interacted with
+  // PWM suggestions, such as manual fallback. Used to update the
+  // `FieldPropertiesMask` of the filled fields.
+  FillPasswordSuggestionById(FieldRendererId username_element_id,
+                             FieldRendererId password_element_id,
+                             mojo_base.mojom.String16 username,
+                             mojo_base.mojom.String16 password,
+                             AutofillSuggestionTriggerSource suggestion_source);
+
+  // Previews the username and password, determined from the given
+  // FieldRendererIds, with the given values.
+  PreviewPasswordSuggestionById(FieldRendererId username_element_id,
+                                FieldRendererId password_element_id,
+                                mojo_base.mojom.String16 username,
+                                mojo_base.mojom.String16 password);
+
+  // Informs that there are no saved credentials for filling.
+  // This is the "no results" equivalent of ApplyFillDataOnParsingCompletion. In
+  // certain cases the password manager shows popups (e.g. promo UIs) even if
+  // there are no saved credentials.
+ InformNoSavedCredentials(bool should_show_popup_without_passwords);
 
   // Fills the given `credential` into the last focused text input.
-  FillIntoFocusedField(bool is_password, mojo_base.mojom.String16 credential);
+  FillIntoFocusedField(
+      bool is_password, mojo_base.mojom.String16 credential);
 
   // Previews the given `value` into the field identified by `field_id`.
   PreviewField(FieldRendererId field_id, mojo_base.mojom.String16 value);
 
   // Fills the given `value` into the field identified by `field_id`.
-  FillField(FieldRendererId field_id, mojo_base.mojom.String16 value);
+  // `field_properties` will be used to update the field data map with
+  // metadata about filling. See `FieldPropertiesFlags` for potential
+  // values.
+  FillField(FieldRendererId field_id, mojo_base.mojom.String16 value,
+    uint32 field_properties) => (bool success);
+
+  // Fills a given change password form, specifically `password_element_id` with
+  // `old_password` and `new_password_element_id`, `confirm_password_element_id`
+  // with `new_password`. Upon completion asynchronously returns `form_data`
+  // with filled values if the form was successfully filled.
+  FillChangePasswordForm(FieldRendererId password_element_id,
+                         FieldRendererId new_password_element_id,
+                         FieldRendererId confirm_password_element_id,
+                         mojo_base.mojom.String16 old_password,
+                         mojo_base.mojom.String16 new_password)
+      => (FormData? form_data);
 
   // Notification to start (`active` == true) or stop (`active` == false)
   // logging the decisions made about saving the password.
   SetLoggingState(bool active);
-
-  // Informs the renderer that the Keyboard Replacing Surface has been closed.
-  // Indicates whether the virtual keyboard should be shown instead.
-  // TODO(crbug.com/40274966): Remove this API once PasswordSuggestionBottomSheetV2
-  // is launched.
-  [EnableIf=is_android]
-  KeyboardReplacingSurfaceClosed(bool show_virtual_keyboard);
 
   // Triggers a form submission on the last interacted element.
   [EnableIf=is_android]
@@ -136,6 +185,10 @@ interface PasswordAutofillAgent {
   // Annotate password related (username, password) DOM input elements with
   // corresponding HTML attributes. It is used only for debugging.
   AnnotateFieldsWithParsingResult(ParsingResult parsing_result);
+
+  // Scrolls to the element if needed and checks if the view area of the field
+  // is visible.
+  CheckViewAreaVisible(FieldRendererId field_id) => (bool is_visible);
 };
 
 // There is one instance of this interface per render frame in the render
@@ -144,6 +197,10 @@ interface PasswordGenerationAgent {
   // Tells the renderer to populate the correct password fields with this
   // generated password.
   GeneratedPasswordAccepted(mojo_base.mojom.String16 generated_password);
+
+  // Tells the renderer that the generated password was rejected by the user
+  // and should not be shown again in the same generation flow.
+  GeneratedPasswordRejected();
 
   // Tells the renderer to find a focused element, and if it is a password field
   // eligible for generation then to trigger generation by returning

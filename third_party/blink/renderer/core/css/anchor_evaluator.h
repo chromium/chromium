@@ -10,9 +10,9 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_anchor_query_enums.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
-#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/style/position_area.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -22,7 +22,7 @@ namespace blink {
 class AnchorQuery;
 class AnchorScope;
 class ComputedStyleBuilder;
-class ScopedCSSName;
+class StylePositionAnchor;
 
 class CORE_EXPORT AnchorEvaluator {
   DISALLOW_NEW();
@@ -45,8 +45,8 @@ class CORE_EXPORT AnchorEvaluator {
   // inset properties, and allow anchor() queries [1] (with restrictions),
   // but not anchor-size() queries.
   //
-  // The value kSize represents supported sizing properties [2], and allows
-  // anchor-size(), but not anchor().
+  // The values kWidth and kHeight represent supported sizing properties [2],
+  // and allow anchor-size(), but not anchor().
   //
   // The current mode can be set by placing an AnchorScope object on the
   // stack.
@@ -63,7 +63,8 @@ class CORE_EXPORT AnchorEvaluator {
     kBottom,
 
     // anchor-size()
-    kSize
+    kWidth,
+    kHeight,
   };
 
   // Evaluates an anchor() or anchor-size() query.
@@ -71,19 +72,24 @@ class CORE_EXPORT AnchorEvaluator {
   // axis.), in which case the fallback should be used.
   virtual std::optional<LayoutUnit> Evaluate(
       const AnchorQuery&,
-      const ScopedCSSName* position_anchor,
+      const StylePositionAnchor& position_anchor,
       const std::optional<PositionAreaOffsets>&) = 0;
 
   // Take the computed position-area and position-anchor and compute the
   // physical offsets to inset the containing block with.
   virtual std::optional<PositionAreaOffsets>
-  ComputePositionAreaOffsetsForLayout(const ScopedCSSName* position_anchor,
-                                      PositionArea position_area) = 0;
+  ComputePositionAreaOffsetsForLayout(
+      const StylePositionAnchor& position_anchor,
+      PositionArea position_area) = 0;
 
   // Take the computed position-area and position-anchor from the builder and
   // compute the physical offset for anchor-center
   virtual std::optional<PhysicalOffset> ComputeAnchorCenterOffsets(
       const ComputedStyleBuilder&) = 0;
+
+  // Return the writing-direction of the abs-pos container for the anchored
+  // element.
+  virtual WritingDirectionMode GetContainerWritingDirection() const = 0;
 
   virtual void Trace(Visitor*) const {}
 
@@ -136,12 +142,17 @@ class CORE_EXPORT AnchorScope {
       case CSSPropertyID::kLeft:
         return Mode::kLeft;
       case CSSPropertyID::kWidth:
-      case CSSPropertyID::kHeight:
       case CSSPropertyID::kMinWidth:
-      case CSSPropertyID::kMinHeight:
       case CSSPropertyID::kMaxWidth:
+      case CSSPropertyID::kMarginLeft:
+      case CSSPropertyID::kMarginRight:
+        return Mode::kWidth;
+      case CSSPropertyID::kHeight:
+      case CSSPropertyID::kMinHeight:
       case CSSPropertyID::kMaxHeight:
-        return Mode::kSize;
+      case CSSPropertyID::kMarginTop:
+      case CSSPropertyID::kMarginBottom:
+        return Mode::kHeight;
       default:
         return Mode::kNone;
     }

@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
 import("//media/media_options.gni")
 import("//remoting/remoting_options.gni")
 
@@ -20,7 +19,7 @@ static_library("transport") {
     ":errors",
     "//base",
     "//net",
-    "//remoting/base:base",
+    "//remoting/base",
   ]
 }
 
@@ -70,6 +69,10 @@ static_library("protocol") {
     "connection_to_host.h",
     "content_description.cc",
     "content_description.h",
+    "coordinate_conversion.cc",
+    "coordinate_conversion.h",
+    "coordinate_converter.cc",
+    "coordinate_converter.h",
     "credentials_type.h",
     "data_channel_manager.cc",
     "data_channel_manager.h",
@@ -98,7 +101,13 @@ static_library("protocol") {
     "host_video_stats_dispatcher.h",
     "ice_config.cc",
     "ice_config.h",
-    "ice_config_request.h",
+    "ice_config_fetcher.h",
+    "ice_config_fetcher_cloud.cc",
+    "ice_config_fetcher_cloud.h",
+    "ice_config_fetcher_corp.cc",
+    "ice_config_fetcher_corp.h",
+    "ice_config_fetcher_default.cc",
+    "ice_config_fetcher_default.h",
     "ice_connection_to_host.cc",
     "ice_connection_to_host.h",
     "ice_transport.cc",
@@ -132,6 +141,7 @@ static_library("protocol") {
     "message_serialization.h",
     "monitored_video_stub.cc",
     "monitored_video_stub.h",
+    "mouse_cursor_monitor.h",
     "mouse_input_filter.cc",
     "mouse_input_filter.h",
     "named_message_pipe_handler.cc",
@@ -142,6 +152,7 @@ static_library("protocol") {
     "negotiating_client_authenticator.h",
     "negotiating_host_authenticator.cc",
     "negotiating_host_authenticator.h",
+    "network_settings.cc",
     "network_settings.h",
     "observing_input_filter.cc",
     "observing_input_filter.h",
@@ -160,17 +171,16 @@ static_library("protocol") {
     "performance_tracker.h",
     "port_allocator.cc",
     "port_allocator.h",
+    "port_allocator_factory.cc",
     "port_allocator_factory.h",
-    "port_range.cc",
-    "port_range.h",
+    "pseudo_tcp.cc",
+    "pseudo_tcp.h",
     "pseudotcp_adapter.cc",
     "pseudotcp_adapter.h",
     "pseudotcp_channel_factory.cc",
     "pseudotcp_channel_factory.h",
     "rejecting_authenticator.cc",
     "rejecting_authenticator.h",
-    "remoting_ice_config_request.cc",
-    "remoting_ice_config_request.h",
     "sdp_message.cc",
     "sdp_message.h",
     "secure_channel_factory.cc",
@@ -236,21 +246,22 @@ static_library("protocol") {
   ]
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//components/webrtc:net_address_utils",
     "//components/webrtc:thread_wrapper",
     "//crypto",
-    "//google_apis:google_apis",
+    "//google_apis",
     "//net",
     "//remoting/base",
     "//remoting/base:authorization",
     "//remoting/base:logging",
     "//remoting/base:name_value_map",
+    "//remoting/base:session_policies",
     "//remoting/codec:decoder",
     "//remoting/proto:internal_structs",
+    "//remoting/proto/google/internal/remoting/cloud/v1alpha:messages",
     "//remoting/proto/remoting/v1:network_traversal_proto",
     "//remoting/signaling",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//third_party/abseil-cpp:absl",
     "//third_party/boringssl",
     "//third_party/libyuv",
@@ -261,7 +272,7 @@ static_library("protocol") {
   defines = []
 
   # Must be a subset of the platforms built in //remoting/codec/BUILD.gn
-  if (is_win) {
+  if (remoting_enable_h264 && is_win) {
     defines += [ "USE_H264_ENCODER" ]
     deps += [
       "//media",
@@ -307,8 +318,7 @@ static_library("protocol") {
     ]
 
     deps += [
-      "//media:media",
-      "//media:shared_memory_support",
+      "//media",
       "//remoting/codec:encoder",
     ]
   }
@@ -364,14 +374,16 @@ static_library("test_support") {
   ]
 
   deps = [
-    "//base:base",
-    "//net:net",
+    "//base",
+    "//net",
+    "//net/traffic_annotation",
     "//net/traffic_annotation:test_support",
-    "//net/traffic_annotation:traffic_annotation",
-    "//remoting/base:base",
+    "//remoting/base",
+    "//remoting/base:errors",
+    "//remoting/base:session_policies",
     "//remoting/codec:encoder",
-    "//remoting/signaling:signaling",
-    "//testing/gtest:gtest",
+    "//remoting/signaling",
+    "//testing/gtest",
     "//third_party/libjingle_xmpp:rtc_xmllite",
   ]
 }
@@ -392,9 +404,13 @@ source_set("unit_tests") {
     "connection_tester.cc",
     "connection_tester.h",
     "content_description_unittest.cc",
+    "coordinate_conversion_test.cc",
+    "coordinate_converter_unittest.cc",
     "data_channel_manager_unittest.cc",
     "fractional_input_filter_unittest.cc",
     "frame_stats_unittest.cc",
+    "ice_config_fetcher_cloud_unittest.cc",
+    "ice_config_fetcher_default_unittest.cc",
     "ice_config_unittest.cc",
     "ice_transport_unittest.cc",
     "input_event_tracker_unittest.cc",
@@ -406,10 +422,10 @@ source_set("unit_tests") {
     "monitored_video_stub_unittest.cc",
     "mouse_input_filter_unittest.cc",
     "negotiating_authenticator_unittest.cc",
+    "network_settings_unittest.cc",
     "pairing_registry_unittest.cc",
-    "port_range_unittest.cc",
+    "pseudo_tcp_unittest.cc",
     "pseudotcp_adapter_unittest.cc",
-    "remoting_ice_config_request_unittest.cc",
     "sdp_message_unittest.cc",
     "session_authz_authenticator_unittest.cc",
     "session_authz_reauthorizer_unittest.cc",
@@ -437,17 +453,25 @@ source_set("unit_tests") {
 
   deps = [
     ":test_support",
+    "//base",
     "//components/webrtc:thread_wrapper",
     "//net:test_support",
-    "//remoting/base:base",
+    "//remoting/base",
+    "//remoting/base:session_policies",
     "//remoting/base:test_support",
     "//remoting/codec:encoder",
     "//remoting/proto:internal_structs",
+    "//remoting/proto/google/internal/remoting/cloud/v1alpha:messages",
     "//remoting/proto/remoting/v1:network_traversal_proto",
     "//remoting/signaling:test_support",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/libjingle_xmpp:rtc_xmllite",
+    "//third_party/webrtc_overrides:webrtc_component",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

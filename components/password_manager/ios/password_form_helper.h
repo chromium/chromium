@@ -7,12 +7,12 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/memory/ref_counted_memory.h"
-#include "components/autofill/core/common/unique_ids.h"
+#import "base/memory/ref_counted_memory.h"
+#import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/web_state_observer_bridge.h"
-#include "url/gurl.h"
+#import "url/gurl.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

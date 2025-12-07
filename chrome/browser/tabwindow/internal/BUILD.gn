@@ -1,0 +1,70 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  visibility = [
+    "//chrome/android:*",
+    "//chrome/android/javatests:*",
+    "//chrome/android/junit:*",
+  ]
+
+  sources = [
+    # This factory needs to stay as a Java file for the
+    # //chrome/browser/tabwindow:factory_javafactory target.
+    "android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManagerFactory.java",
+
+    # Please keep the following file in Java for build_speed/benchmark.py.
+    "android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManagerImpl.java",
+  ]
+  deps = [
+    "//base:base_java",
+    "//build/android:build_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tab_group_sync:factory_java",
+    "//chrome/browser/tab_group_sync:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/tabwindow:java",
+    "//chrome/browser/ui/android/multiwindow:java",
+    "//chrome/browser/util:java",
+    "//components/cached_flags:java",
+    "//components/saved_tab_groups/public:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    "//ui/android:ui_java",
+  ]
+}
+
+robolectric_library("junit") {
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManagerImplUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManagerUtilsUnitTest.java",
+  ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//base/test:test_support_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tab_group_sync:factory_java",
+    "//chrome/browser/tabmodel:factory_java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/tabwindow:factory_java",
+    "//chrome/browser/tabwindow:java",
+    "//chrome/browser/ui/android/multiwindow:java",
+    "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/saved_tab_groups/public:java",
+    "//components/tab_groups:tab_groups_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
+  ]
+}

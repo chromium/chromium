@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] direction returns "none" when there is a double click selection(directionless)
+  assert_equals: expected "none" but got "forward"
+Harness: the test ran to completion.

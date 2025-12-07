@@ -1,0 +1,36 @@
+caption: Use the <ph name="HAPPY_EYEBALLS_V3">Happy Eyeballs V3</ph> algorithm
+desc: |-
+  This feature enables the <ph name="HAPPY_EYEBALLS_V3">Happy Eyeballs V3</ph> algorithm to make connection attempts. See https://datatracker.ietf.org/doc/draft-pauly-happy-happyeyeballs-v3 for details.
+
+  Setting the policy to Enabled means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will use the <ph name="HAPPY_EYEBALLS_V3">Happy Eyeballs V3</ph> algorithm for connection attempts.
+
+  Setting the policy to Disabled turns off the <ph name="HAPPY_EYEBALLS_V3">Happy Eyeballs V3</ph> algorithm.
+
+  Not setting the policy, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will turn on or off the <ph name="HAPPY_EYEBALLS_V3">Happy Eyeballs V3</ph> algorithm based on chrome://flags/#happy-eyeballs-v3.
+
+  This policy supports dynamic refresh.
+
+  This policy is a temporary measure and will be removed in future versions of <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
+default: null
+owners:
+- bashi@chromium.org
+- file://net/OWNERS
+supported_on:
+- android:136-
+- chrome.*:136-
+- chrome_os:136-
+features:
+  dynamic_refresh: true
+  per_profile: false
+type: main
+schema:
+  type: boolean
+items:
+- caption: Using the <ph name="HAPPY_EYEBALLS_V3">Happy Eyeballs V3</ph> algorithm.
+  value: true
+- caption: Do not use the <ph name="HAPPY_EYEBALLS_V3">Happy Eyeballs V3</ph> algorithm.
+  value: false
+- caption: Allow <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to decide
+  value: null
+example_value: true
+tags: []

@@ -3,6 +3,7 @@ desc: |-
   If <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME">RemoteAccessHostFirewallTraversal</ph> is set to Enabled, setting <ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME">RemoteAccessHostAllowRelayedConnection</ph> to Enabled or leaving it unset allows the use of remote clients to use relay servers to connect to this machine when a direct connection is not available, for example, because of firewall restrictions.
 
         Setting the policy to Disabled doesn't turn remote access off, but only allows connections from the same network (not NAT traversal or relay).
+default: true
 example_value: false
 features:
   dynamic_refresh: true

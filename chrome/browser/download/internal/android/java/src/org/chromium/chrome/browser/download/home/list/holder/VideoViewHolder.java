@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.home.list.ListItem;
 import org.chromium.chrome.browser.download.home.list.UiUtils;
 import org.chromium.chrome.browser.download.internal.R;
@@ -16,6 +17,7 @@ import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** A {@link RecyclerView.ViewHolder} specifically meant to display a video {@code OfflineItem}. */
+@NullMarked
 public class VideoViewHolder extends OfflineItemViewHolder {
     private final TextView mTitle;
     private final TextView mCaption;

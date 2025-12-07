@@ -17,6 +17,20 @@
 #
 #   visibility (optional)
 #       Normal meaning.
+JSON_TO_STRUCT_FILES = [
+  "//tools/json_to_struct/aggregation.py",
+  "//tools/json_to_struct/element_generator.py",
+  "//tools/json_to_struct/java_element_generator.py",
+  "//tools/json_to_struct/json_to_struct.py",
+  "//tools/json_to_struct/class_generator.py",
+  "//tools/json_to_struct/struct_generator.py",
+]
+
+JSON_TO_STRUCT_TEST_FILES = [
+  "//tools/json_to_struct/element_generator_test.py",
+  "//tools/json_to_struct/struct_generator_test.py",
+]
+
 template("json_to_struct") {
   assert(defined(invoker.source), "source required in $target_name")
   assert(defined(invoker.schema_file), "schema_file required in $target_name")
@@ -29,12 +43,10 @@ template("json_to_struct") {
     visibility = [ ":$source_set_name" ]
     script = "//tools/json_to_struct/json_to_struct.py"
 
-    inputs = [
-      "//tools/json_to_struct/element_generator.py",
-      "//tools/json_to_struct/struct_generator.py",
-      invoker.source,
-      invoker.schema_file,
-    ]
+    inputs = JSON_TO_STRUCT_FILES + [
+               invoker.source,
+               invoker.schema_file,
+             ]
 
     out_dir = get_path_info(invoker.source, "gen_dir")
     out_name = get_path_info(invoker.source, "name")

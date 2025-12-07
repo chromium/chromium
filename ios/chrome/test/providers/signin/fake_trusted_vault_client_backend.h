@@ -16,33 +16,38 @@ class FakeTrustedVaultClientBackend final : public TrustedVaultClientBackend {
   ~FakeTrustedVaultClientBackend() final;
 
   // TrustedVaultClientBackend implementation.
-  void SetDeviceRegistrationPublicKeyVerifierForUMA(
-      VerifierCallback verifier) final;
   void FetchKeys(id<SystemIdentity> identity,
-                 const std::string& security_domain_path,
-                 KeyFetchedCallback completion) final;
+                 trusted_vault::SecurityDomainId security_domain_id,
+                 KeysFetchedCallback completion) final;
   void MarkLocalKeysAsStale(id<SystemIdentity> identity,
-                            const std::string& security_domain_path,
+                            trusted_vault::SecurityDomainId security_domain_id,
                             base::OnceClosure completion) final;
   void GetDegradedRecoverabilityStatus(
       id<SystemIdentity> identity,
-      const std::string& security_domain_path,
+      trusted_vault::SecurityDomainId security_domain_id,
       base::OnceCallback<void(bool)> completion) final;
   CancelDialogCallback Reauthentication(
       id<SystemIdentity> identity,
-      const std::string& security_domain_path,
+      trusted_vault::SecurityDomainId security_domain_id,
+      trusted_vault::TrustedVaultUserActionTriggerForUMA trigger,
       UIViewController* presenting_view_controller,
       CompletionBlock completion) final;
   CancelDialogCallback FixDegradedRecoverability(
       id<SystemIdentity> identity,
-      const std::string& security_domain_path,
+      trusted_vault::SecurityDomainId security_domain_id,
       UIViewController* presenting_view_controller,
       CompletionBlock completion) final;
   void ClearLocalData(id<SystemIdentity> identity,
-                      const std::string& security_domain_path,
+                      trusted_vault::SecurityDomainId security_domain_id,
                       base::OnceCallback<void(bool)> completion) final;
   void GetPublicKeyForIdentity(id<SystemIdentity> identity,
                                GetPublicKeyCallback completion) final;
+  void UpdateGPMPinForAccount(
+      id<SystemIdentity> identity,
+      trusted_vault::SecurityDomainId security_domain_id,
+      UINavigationController* navigationController,
+      UIView* brandedNavigationItemTitleView,
+      UpdateGPMPinCompletionCallback completion) final;
 
   // Simulates user cancelling the reauth dialog.
   void SimulateUserCancel();

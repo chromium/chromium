@@ -14,16 +14,13 @@ include_rules = [
   # Files residing in certain directories (e.g., //chrome/browser) are listed
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
-  "+chrome/browser/ash/crosapi",
   "+chrome/browser/ash/extensions/file_manager",
   "+chrome/browser/ash/fileapi",
   "+chrome/browser/ash/file_manager",
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/profiles",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/chromeos/drivefs",
   "+chrome/browser/download",
-  "+chrome/browser/drive",
   "+chrome/browser/net",
   "+chrome/browser/notifications",
   "+chrome/browser/policy",
@@ -35,7 +32,14 @@ include_rules = [
   "+chrome/common/chrome_paths_internal.h",
   "+chrome/common/pref_names.h",
   "+chrome/test/base",
-
-  # Dependencies outside of //chrome:
-  "+services/device/public/mojom",
 ]
+
+specific_include_rules = {
+  "drive_integration_service_factory\\.cc": [
+    "+chrome/browser/browser_process.h",
+  ],
+
+  "drive_integration_service_browser_test_base\\.cc": [
+    "+chrome/browser/browser_process.h",
+  ],
+}

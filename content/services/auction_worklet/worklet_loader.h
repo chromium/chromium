@@ -7,12 +7,16 @@
 
 #include <stddef.h>
 
+#include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -22,6 +26,7 @@
 #include "content/services/auction_worklet/auction_worklet_service_impl.h"
 #include "content/services/auction_worklet/public/cpp/auction_downloader.h"
 #include "content/services/auction_worklet/public/cpp/auction_network_events_delegate.h"
+#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "url/gurl.h"
@@ -122,7 +127,7 @@ class CONTENT_EXPORT WorkletLoaderBase {
       network::mojom::URLLoaderFactory* url_loader_factory,
       mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
           auction_network_events_handler,
-      const GURL& source_url,
+      mojom::InProgressAuctionDownloadPtr in_progress_load,
       AuctionDownloader::MimeType mime_type,
       std::vector<scoped_refptr<AuctionV8Helper>> v8_helpers,
       std::vector<scoped_refptr<AuctionV8Helper::DebugId>> debug_ids,
@@ -131,7 +136,7 @@ class CONTENT_EXPORT WorkletLoaderBase {
   ~WorkletLoaderBase();
 
  private:
-  void OnDownloadComplete(std::unique_ptr<std::string> body,
+  void OnDownloadComplete(std::optional<std::string> body,
                           scoped_refptr<net::HttpResponseHeaders> headers,
                           std::optional<std::string> error_msg);
 
@@ -140,18 +145,24 @@ class CONTENT_EXPORT WorkletLoaderBase {
       AuctionDownloader::MimeType mime_type,
       scoped_refptr<AuctionV8Helper> v8_helper,
       scoped_refptr<AuctionV8Helper::DebugId> debug_id,
-      std::unique_ptr<std::string> body,
+      std::optional<std::string> body,
       std::optional<std::string> error_msg,
+      const std::optional<scoped_refptr<base::RefCountedBytes>>
+          cached_data_to_use,
       WorkletLoaderBase::Result::V8Data* out_data,
       scoped_refptr<base::SequencedTaskRunner> user_thread_task_runner,
       base::WeakPtr<WorkletLoaderBase> weak_instance);
 
-  static bool CompileJs(const std::string& body,
-                        scoped_refptr<AuctionV8Helper> v8_helper,
-                        const GURL& source_url,
-                        AuctionV8Helper::DebugId* debug_id,
-                        std::optional<std::string>& error_msg,
-                        WorkletLoaderBase::Result::V8Data* out_data);
+  static bool CompileJs(
+      const std::string& body,
+      scoped_refptr<AuctionV8Helper> v8_helper,
+      const GURL& source_url,
+      AuctionV8Helper::DebugId* debug_id,
+      std::optional<std::string>& error_msg,
+      const std::optional<scoped_refptr<base::RefCountedBytes>>
+          cached_data_to_use,
+      std::optional<scoped_refptr<base::RefCountedBytes>>& cached_data_output,
+      WorkletLoaderBase::Result::V8Data* out_data);
 
   static bool CompileWasm(const std::string& body,
                           scoped_refptr<AuctionV8Helper> v8_helper,
@@ -160,15 +171,20 @@ class CONTENT_EXPORT WorkletLoaderBase {
                           std::optional<std::string>& error_msg,
                           WorkletLoaderBase::Result::V8Data* out_data);
 
-  void DeliverCallbackOnUserThread(bool success,
-                                   std::optional<std::string> error_msg,
-                                   bool download_success);
+  void DeliverCallbackOnUserThread(
+      bool success,
+      std::optional<std::string> error_msg,
+      bool download_success,
+      std::optional<scoped_refptr<base::RefCountedBytes>> cached_data);
 
   const GURL source_url_;
   const AuctionDownloader::MimeType mime_type_;
   const std::vector<scoped_refptr<AuctionV8Helper>> v8_helpers_;
   const std::vector<scoped_refptr<AuctionV8Helper::DebugId>> debug_ids_;
   const base::TimeTicks start_time_;
+
+  std::optional<std::string> body_;
+  std::optional<std::string> error_msg_;
 
   size_t response_received_count_ = 0;
 
@@ -210,7 +226,7 @@ class CONTENT_EXPORT WorkletLoader : public WorkletLoaderBase {
       network::mojom::URLLoaderFactory* url_loader_factory,
       mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
           auction_network_events_handler,
-      const GURL& source_url,
+      mojom::InProgressAuctionDownloadPtr in_progress_load,
       std::vector<scoped_refptr<AuctionV8Helper>> v8_helpers,
       std::vector<scoped_refptr<AuctionV8Helper::DebugId>> debug_ids,
       AllowTrustedScoringSignalsCallback allow_trusted_scoring_signals_callback,
@@ -250,7 +266,7 @@ class CONTENT_EXPORT WorkletWasmLoader : public WorkletLoaderBase {
       network::mojom::URLLoaderFactory* url_loader_factory,
       mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
           auction_network_events_handler,
-      const GURL& source_url,
+      mojom::InProgressAuctionDownloadPtr in_progress_load,
       std::vector<scoped_refptr<AuctionV8Helper>> v8_helpers,
       std::vector<scoped_refptr<AuctionV8Helper::DebugId>> debug_ids,
       LoadWorkletCallback load_worklet_callback);

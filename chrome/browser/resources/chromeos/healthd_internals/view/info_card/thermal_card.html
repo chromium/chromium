@@ -1,0 +1,31 @@
+<style include="healthd-internals-shared cr-shared-style md-select">
+  #cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  #headerEndContainer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-inline-end: 16px;
+  }
+
+  #temperatureUnitSelector {
+    width: 100px;
+  }
+</style>
+<div id="cardHeader">
+  <h2>Thermal</h2>
+  <div id="headerEndContainer">
+    <label>Unit: </label>
+    <select id="temperatureUnitSelector" class="md-select"
+        on-change="onTemperatureUnitChanged" value="[[temperatureUnit]]">
+      <option value="celsius">Celsius</option>
+      <option value="fahrenheit">Fahrenheit</option>
+    </select>
+  </div>
+</div>
+<healthd-internals-info-card id="infoCard">
+</healthd-internals-info-card>

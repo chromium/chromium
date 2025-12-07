@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <grit latest_public_release="0" current_release="1"
-      output_all_resource_defines="false" source_lang_id="en" enc_check="möl">
+      source_lang_id="en" enc_check="möl">
   <outputs>
     <output filename="grit/privacy_sandbox_strings.h" type="rc_header">
       <emit emit_type='prepend'></emit>
@@ -280,218 +280,419 @@
     <file path="strings/privacy_sandbox_strings_zu.xtb" lang="zu" />
   </translations>
   <release seq="1">
+    <!--For strings used exclusively within the Privacy Sandbox Dialogs, those containing the word "Chrome" do not require a "Chromium" conditional variant, as these dialogs only appear in Chrome-branded builds-->
     <messages fallback_to_english="true">
+      <!-- Ad Topics Page disclaimer -->
       <message name="IDS_SETTINGS_TOPICS_PAGE_DISCLAIMER_CLANK" desc="Disclaimer of the new Ad topics setting. This text appears beneath the sublabel." formatter_data="android_java">
         Ad topics are just one of many things a site can use to personalize ads. Even without ad topics, sites can still show you ads but they may be less personalized. Learn more about <ph name="BEGIN_LINK_1">&lt;link1&gt;</ph>managing your ad privacy<ph name="END_LINK_1">&lt;/link1&gt;</ph>.
       </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_TITLE_ON" desc="" formatter_data="android_java" translateable="false">
-        Protections are on
+      <!-- Third Party Cookie settings  -->
+      <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_LINK_ROW_SUB_LABEL_LIMITED" desc="Sub-label for a button that links to the 'Third-party cookies' settings page when the user has third-party cookies limited.">
+        Third-party cookies are limited
       </message>
+      <!-- PS Internals UI - Private State Tokens -->
       <message name="IDS_PRIVATE_STATE_TOKENS_HEADING_LABEL" desc="Title of the page that contains information about Private State Tokens." translateable="false">
         Private State Tokens
       </message>
       <message name="IDS_PRIVATE_STATE_TOKENS_DESCRIPTION_LABEL" desc="Label that provides the user more details about what they can see on this page i.e. the tokens that have been issued and by whom and if and when they were redeemed." translateable="false">
         See who has issued private state tokens on your device and how they are used.
       </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_TITLE_OFF" desc="" formatter_data="android_java" translateable="false">
-        {COUNT, plural,
-              =1 {Protections are off until tomorrow}
-              other {Protections are off for # days}}
+      <!-- Mode B Rollback -->
+      <message name="IDS_MODE_B_ROLLBACK_GOT_IT" desc="Label for a button on the 3PCD rollback notice that acknowledges and closes the notice." formatter_data="android_java">
+        Got it
       </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_TITLE_OFF_TODAY" desc="" formatter_data="android_java" translateable="false">
-        Protections are off until today
+      <message name="IDS_MODE_B_ROLLBACK_SETTINGS" desc="Label for a button on the 3PCD rollback notice that opens the third-party cookie settings page.">
+        Settings
       </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_TITLE_OFF_PERMANENT" desc="" formatter_data="android_java" translateable="false">
-        Protections are off
-      </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_MANAGED_TITLE" desc="" formatter_data="android_java" translateable="false">
-        Managed protections
-      </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_TOGGLE_ON" desc="" formatter_data="android_java" translateable="false">
-        You have extra protections on this site to limit tracking while you browse, but some features might not work.
-      </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_TOGGLE_OFF" desc="" formatter_data="android_java" translateable="false">
-        You temporarily allowed this site to use trackers, which means less browsing protection but site features are more likely to work as expected.
-      </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_IP_PROTECTION_OFF" desc="" formatter_data="android_java" translateable="false">
-        IP address visible
-      </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_IP_PROTECTION_ON" desc="" formatter_data="android_java" translateable="false">
-        IP address hidden
-      </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_ANTI_FINGERPRINTING_OFF" desc="" formatter_data="android_java" translateable="false">
-        Digital fingerprinting allowed
-      </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_ANTI_FINGERPRINTING_ON" desc="" formatter_data="android_java" translateable="false">
-        Digital fingerprinting limited
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_SNACKBAR_TITLE" desc="Title of the Tracking Protection snackbar." formatter_data="android_java" translateable="false">
-        App not working?
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_SNACKBAR_ACTION" desc="Action of the Tracking Protection snackbar." formatter_data="android_java" translateable="false">
-        Change protections
-      </message>
-      <message name="IDS_TRACKING_PROTECTION_IP_PROTECTION_TOGGLE_TITLE" desc="Label for a toggle that controls the IP protection feature." formatter_data="android_java">
-        Hide your IP address
-      </message>
-      <message name="IDS_TRACKING_PROTECTION_IP_PROTECTION_TOGGLE_SUMMARY" desc="Summary for the IP protection toggle. Explains that some traffic may be sent through privacy servers when the feature is on." formatter_data="android_java">
-        When you're signed in to Chrome, this setting helps keep your IP address private. If Chrome suspects a site may be tracking you, some of your traffic may be sent through privacy servers.
-      </message>
-      <message name="IDS_TRACKING_PROTECTION_IP_PROTECTION_LEARN_MORE" desc="Learn more label for the IP protection feature. Provides a link to a help center article." formatter_data="android_java">
-        Learn <ph name="BEGIN_LINK">&lt;link&gt;</ph>how IP protection works<ph name="END_LINK">&lt;/link&gt;</ph>
-      </message>
-      <message name="IDS_TRACKING_PROTECTION_FINGERPRINTING_PROTECTION_TITLE" desc="" formatter_data="android_java" translateable="false">
-        Limit digital fingerprinting
-      </message>
-      <message name="IDS_TRACKING_PROTECTION_FINGERPRINTING_PROTECTION_TOGGLE_SUMMARY" desc="" formatter_data="android_java" translateable="false">
-        Prevent sites from collecting settings from your browser and computer to create a unique digital fingerprint which can be used to track you.
-      </message>
-      <message name="IDS_TRACKING_PROTECTION_FINGERPRINTING_PROTECTION_LEARN_MORE" desc="" formatter_data="android_java" translateable="false">
-        Learn <ph name="BEGIN_LINK">&lt;link&gt;</ph>how limiting digital fingerprinting works<ph name="END_LINK">&lt;/link&gt;</ph>
-      </message>
-      <!-- User Bypass -->
-      <message name="IDS_TRACKING_PROTECTION_BUBBLE_3PC_ALLOWED_SUBTITLE" desc="The subtitle label for the third-party cookies item in User Bypass when 3PC are allowed." translateable="false">
-        Allowed
-      </message>
-      <message name="IDS_TRACKING_PROTECTION_BUBBLE_3PC_BLOCKED_SUBTITLE" desc="The subtitle label for the third-party cookies item in User Bypass when 3PC are blocked." translateable="false">
-        Blocked
-      </message>
-      <message name="IDS_TRACKING_PROTECTION_BUBBLE_3PC_LIMITED_SUBTITLE" desc="The subtitle label for the third-party cookies item in User Bypass when 3PC are limited (i.e. blocked with mitigations)." translateable="false">
-        Limited
-      </message>
-      <message name="IDS_TRACKING_PROTECTION_BUBBLE_MANAGED_PROTECTIONS_LABEL" desc="The title label for the section in User Bypass containing managed Tracking Protection features." translateable="false">
-        Managed protections
-      </message>
-      <!-- Tracking Protection WebUI -->
-      <!-- General -->
-      <message name="IDS_SETTINGS_3PC_AND_KNOWN_TRACKERS_PAGE_TITLE" desc="Updated title for the third-party cookie settings page (chrome://settings/cookies) for when the page has additional features related to preventing tracking." translateable="false">
-        Third-party cookies and known trackers
-      </message>
-      <message name="IDS_SETTINGS_TRACKING_PROTECTION_DEFAULT_HEADER" desc="Header for text describing the default Tracking Protection settings state." translateable="false">
-        Default
-      </message>
-      <message name="IDS_SETTINGS_TRACKING_PROTECTION_TPCD_BULLET_TWO_DESCRIPTION" desc="Description of the second bullet for Tracking Protection settings. Explains that you can temporarily give a site access to third-party cookies if the site isn't working." translateable="false">
-        If a site isn’t working, you can try giving it temporary access to third-party cookies
-      </message>
-      <message name="IDS_SETTINGS_TRACKING_PROTECTION_ADDITIONAL_PROTECTIONS_HEADER" desc="Header for a section on the Tracking Protection settings page that contains settings for additional tracking tracking protections." translateable="false">
-        Additional protections
-      </message>
-      <message name="IDS_SETTINGS_TRACKING_PROTECTION_ADDITIONAL_PROTECTIONS_DESCRIPTION" desc="Text linking out to a help center article that details additional Tracking Protection settings." translateable="false">
-        Learn more about <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1" aria-label="$2" aria-description="$3"&gt;</ph>how these settings can help limit tracking<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
-      </message>
-      <message name="IDS_SETTINGS_TRACKING_PROTECTION_ADDITIONAL_PROTECTIONS_LEARN_MORE_ARIA_LABEL" desc="Screenreader text for the help center article link in the Tracking Protection additional protections description." translateable="false">
-        Learn how these additional protection settings can help limit tracking
-      </message>
-      <message name="IDS_SETTINGS_TRACKING_PROTECTION_BLOCK_ALL_3PCS_SUB_LABEL" desc="Sub-label for the block all third-party cookies toggle. Explains that features on some sites may not work when the toggle is on and all third-party cookies are blocked." translateable="false">
-        Features on some sites may not work
-      </message>
-      <message name="IDS_SETTINGS_TRACKING_PROTECTION_EXCEPTIONS_LIST_TITLE" desc="Title of the section on the Tracking Protection settings page that lets users manage which sites have Tracking Protection turned off." translateable="false">
-        Sites with Tracking Protection turned off
-      </message>
-      <message name="IDS_SETTINGS_TRACKING_PROTECTION_EXCEPTIONS_LIST_DESCRIPTION" desc="Description of the section on the Tracking Protection settings page that lets users manage which sites have Tracking Protection turned off. Explains how to use a wildcard to create an exception for an entire domain." translateable="false">
-        Inserting “[*.]” before a domain name creates an exception for the entire domain. For example, adding “[*.]google.com” means that Tracking Protection will also be off for mail.google.com, because it’s part of google.com.
-      </message>
-      <message name="IDS_SETTINGS_3PC_AND_KNOWN_TRACKERS_EXCEPTIONS_LIST_TITLE" desc="Title of the section on the third-party cookies and known trackers settings page that lets users manage which sites are allowed to use third-party cookies and known trackers." translateable="false">
-        Sites allowed to use third-party cookies and known trackers
-      </message>
-      <message name="IDS_SETTINGS_3PC_AND_KNOWN_TRACKERS_EXCEPTIONS_LIST_DESCRIPTION" desc="Description of the section on the third-party cookies and known trackers settings page that lets users manage which sites are allowed to use third-party cookies and known trackers. Explains how to use a wildcard to create an exception for an entire domain." translateable="false">
-        Inserting “[*.]” before a domain name creates an exception for the entire domain. For example, adding “[*.]google.com” means that third-party cookies and known trackers can also be active for mail.google.com, because it’s part of google.com.
-      </message>
-      <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_ONLY_EXCEPTION_LABEL" desc="Label for an exception in the Tracking Protection exceptions list indicating that the exception only applies to third-party cookie blocking." translateable="false">
-        Only applies to third-party cookie blocking
-      </message>
-      <message name="IDS_SETTINGS_3PC_AND_KNOWN_TRACKERS_LINK_ROW_LABEL" desc="Label for the third-party cookies and known trackers settings page entry point." translateable="false">
-        Third-party cookies and known trackers
-      </message>
-
-      <!-- ACT -->
-      <message name="IDS_SETTINGS_TRACKING_PROTECTION_IP_PROTECTION_TOGGLE_LABEL" desc="Label for a toggle that controls the IP protection feature.">
-        Hide your IP address
-      </message>
-      <message name="IDS_SETTINGS_TRACKING_PROTECTION_IP_PROTECTION_TOGGLE_LEARN_MORE_ARIA_LABEL" desc="Screenreader text for the help center article link in the sub-label text of the IP protection toggle.">
-       Learn more about hiding your IP address
-      </message>
-      <message name="IDS_SETTINGS_TRACKING_PROTECTION_FINGERPRINTING_PROTECTION_TOGGLE_LABEL" desc="Label for a toggle that controls the fingerprinting protection feature." translateable="false">
-        Limit digital fingerprinting
-      </message>
-      <message name="IDS_SETTINGS_TRACKING_PROTECTION_FINGERPRINTING_PROTECTION_TOGGLE_SUB_LABEL" desc="Sub-label for the fingerprinting protection toggle. Explains that the feature helps prevent sites from tracking users via identifiers related to their device or browser." translateable="false">
-        This setting makes it harder for sites to identify you using data about your device and browser, such as your device model or browser version
-      </message>
-
       <if expr="_google_chrome">
         <then>
-          <message name="IDS_SETTINGS_TRACKING_PROTECTION_IP_PROTECTION_TOGGLE_SUB_LABEL" desc="Sub-label for the IP protection toggle. Explains that the feature only works for signed-in users and that some traffic may be sent through privacy servers when the feature is on. Provides a link to a help center article.">
-              When you're signed in to Chrome, this setting helps keep your IP address private. If Chrome suspects a site may be tracking you, some of your traffic may be sent through privacy servers. Learn more about <ph name="LINK_BEGIN">&lt;a href="#" aria-label="$1" aria-description="$2" target="_blank"&gt;</ph>how IP protection works<ph name="LINK_END">&lt;/a&gt;</ph>
-          </message>
-          <message name="IDS_SETTINGS_TRACKING_PROTECTION_DEFAULT_DESCRIPTION" desc="Text describing the default Tracking Protection settings state. Contains a learn more link to a help center article." translateable="false">
-              Chrome limits the type of information sites can use to track you as you browse.<ph name="BR">&lt;br&gt;</ph>Learn more about <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1" aria-label="$2" aria-description="$3"&gt;</ph>Tracking Protection on Chrome<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>.
-          </message>
-          <message name="IDS_SETTINGS_TRACKING_PROTECTION_DEFAULT_LEARN_MORE_ARIA_LABEL" desc="Screenreader text for the help center article link in the Tracking Protection default description." translateable="false">
-              Learn about Tracking Protection on Chrome
-          </message>
-          <message name="IDS_SETTINGS_TRACKING_PROTECTION_TPCD_BULLET_ONE" desc="The first bullet on the Tracking Protection settings page. Informs users that Chrome limits third-party cookies by default." translateable="false">
-              Chrome automatically limits third-party cookies
+          <message name="IDS_MODE_B_ROLLBACK_DESCRIPTION" desc="Description text on the 3PCD rollback notice. Explains to the user that their settings state has been updated to allow third-party cookies and that this can be changed in settings." formatter_data="android_java">
+            Your current Chrome settings have been updated to allow websites to access third-party cookies. You can change this setting any time.
           </message>
         </then>
         <else>
-          <message name="IDS_SETTINGS_TRACKING_PROTECTION_IP_PROTECTION_TOGGLE_SUB_LABEL" desc="Sub-label for the IP protection toggle. Explains that the feature only works for signed-in users and that some traffic may be sent through privacy servers when the feature is on. Provides a link to a help center article.">
-              When you're signed in to Chromium, this setting helps keep your IP address private. If Chromium suspects a site may be tracking you, some of your traffic may be sent through privacy servers. Learn more about <ph name="LINK_BEGIN">&lt;a href="#" aria-label="$1" aria-description="$2" target="_blank"&gt;</ph>how IP protection works<ph name="LINK_END">&lt;/a&gt;</ph>
-          </message>
-          <message name="IDS_SETTINGS_TRACKING_PROTECTION_DEFAULT_DESCRIPTION" desc="Text describing the default Tracking Protection settings state. Contains a learn more link to a help center article." translateable="false">
-              Chromium limits the type of information sites can use to track you as you browse.<ph name="BR">&lt;br&gt;</ph>Learn more about <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1" aria-label="$2" aria-description="$3"&gt;</ph>Tracking Protection on Chromium<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>.
-          </message>
-          <message name="IDS_SETTINGS_TRACKING_PROTECTION_DEFAULT_LEARN_MORE_ARIA_LABEL" desc="Screenreader text for the help center article link in the Tracking Protection default description." translateable="false">
-              Learn about Tracking Protection on Chromium
-          </message>
-          <message name="IDS_SETTINGS_TRACKING_PROTECTION_TPCD_BULLET_ONE" desc="The first bullet on the Tracking Protection settings page. Informs users that Chromium limits third-party cookies by default." translateable="false">
-              Chromium automatically limits third-party cookies
+          <message name="IDS_MODE_B_ROLLBACK_DESCRIPTION" desc="Description text on the 3PCD rollback notice. Explains to the user that their settings state has been updated to allow third-party cookies and that this can be changed in settings." formatter_data="android_java">
+            Your current Chromium settings have been updated to allow websites to access third-party cookies. You can change this setting any time.
           </message>
         </else>
       </if>
-
-      <!-- Privacy Guide -->
-      <message name="IDS_SETTINGS_PRIVACY_GUIDE_COMPLETION_CARD_TRACKING_PROTECTION_LABEL" desc="Text of the Tracking Protection label in the completion card of the 'Privacy Guide'." translateable="false">
-        Tracking Protection
+      <!-- User Bypass -->
+      <message name="IDS_TRACKING_PROTECTION_BUBBLE_3PC_ALLOWED_SUBTITLE" desc="The subtitle label for the third-party cookies item in User Bypass when 3PC are allowed.">
+        Allowed
       </message>
-      <message name="IDS_SETTINGS_PRIVACY_GUIDE_COMPLETION_CARD_TRACKING_PROTECTION_SUB_LABEL" desc="Text of the Tracking Protection sub-label in the completion card of the 'Privacy Guide'." translateable="false">
-        Manage your tracking protections to make your experience more private on the web
+      <message name="IDS_TRACKING_PROTECTION_BUBBLE_3PC_BLOCKED_SUBTITLE" desc="The subtitle label for the third-party cookies item in User Bypass when 3PC are blocked.">
+        Blocked
+      </message>
+      <message name="IDS_TRACKING_PROTECTION_BUBBLE_3PC_LIMITED_SUBTITLE" desc="The subtitle label for the third-party cookies item in User Bypass when 3PC are limited (i.e. blocked with mitigations).">
+        Limited
+      </message>
+      <message name="IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_LIMITED_TITLE" desc="Title shown on the cookie controls bubble when third-party cookies are limited.">
+        Third-party cookies limited
+      </message>
+      <!-- Privacy UX WebUI -->
+      <!-- Privacy Sandbox Ads Notice -->
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_LEARN_MORE_V2_CLANK" desc="A sentence that appears alone at the bottom of the learn more page. It offers the user a path towards additional information about how Google protects their data." formatter_data="android_java">
+        Learn more about how Google protects your data in our <ph name="BEGIN_LINK">&lt;link&gt;</ph>Privacy Policy<ph name="END_LINK">&lt;/link&gt;</ph>.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_LEARN_MORE_V2_DESKTOP" desc="A sentence that appears alone at the bottom of the learn more page. It offers the user a path towards additional information about how Google protects their data.">
+        Learn more about how Google protects your data in our <ph name="BEGIN_LINK1">&lt;a href="#" id="$1" aria-description="$2" on-click="$3"&gt;</ph>Privacy Policy<ph name="LINK_END1">&lt;/a&gt;</ph>.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_LEARN_MORE_V2_DESKTOP_ARIA_DESCRIPTION" desc="Screenreader text for the 'Privacy Policy' link.">
+        Learn more about how Google protects your data in our Privacy Policy.
+      </message>
+      <!-- Ad Topics EEA consent - Ads API UX Enhancements -->
+      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_DESCRIPTION_2_V2" desc="This string gives an overview of “ad topics”, an ad privacy feature. “Topics of interest” refers to topics that are relevant or interesting to the user based on their browsing activity online." formatter_data="android_java">
+        Ad topics help websites show you relevant ads while protecting your browsing history and identity. Chrome can note topics of interest based on your recent browsing history. Later, a site you visit can ask Chrome for relevant topics to personalize the ads you see.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_DESCRIPTION_4_V2" desc="This string notifies users that they can make changes to their ad topics in the “ad privacy” section of settings." formatter_data="android_java">
+        You can make changes in ad privacy settings
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_1_V2" desc="This string appears when the user expands on the “More about ad topics” label. It explains to the user in second person that their browsing history is used to generate ad topics. “Site” refers to a website a user may visit." formatter_data="android_java">
+        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>What data is used?<ph name="END_BOLD">&lt;/b&gt;</ph> Your ad topics are based on your recent browsing history, a list of sites you've visited using Chrome on this device.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_2_V2" desc="This string appears when the user expands on the “More about ad topics” label. It explains to the user in second person that Chrome uses their browsing activity to note topics of interest. When a user visits a site, that site can ask Chrome for these topics of interest to personalize ads for the user. “Site” refers to a website a user may visit." formatter_data="android_java">
+        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>How do sites use this data?<ph name="END_BOLD">&lt;/b&gt;</ph> Chrome notes topics of interest as you browse. Topic labels are predefined and include things like, Arts &amp; Entertainment, Shopping, and Sports. Later, a site you visit can ask Chrome for a few of your topics to personalize the ads you see.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_2_DESCRIPTION" desc="This string appears when the user expands on the “More about ad topics” label.  “Sites” refers to websites that the user visits. The tone is informative. “Companies” refers to businesses or organizations that these websites belong to. This is intended to explain the possible user risks currently available with our evolving privacy-preserving technologies, in neutral language.">
+        Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalize your experience for more than just ads. They may also combine it with other information they already know about you. Companies are responsible for letting you know how they use your data. <ph name="BEGIN_LINK1">&lt;a href="#" id="$1" aria-description="$2" on-click="$3"&gt;</ph>Learn more in our Privacy Policy<ph name="LINK_END1">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_2_DESCRIPTION_CLANK" desc="This string appears when the user expands on the “More about ad topics” label.  “Sites” refers to websites that the user visits. The tone is informative. “Companies” refers to businesses or organizations that these websites belong to. This is intended to explain the possible user risks currently available with our evolving privacy-preserving technologies, in neutral language." formatter_data="android_java">
+        Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalize your experience for more than just ads. They may also combine it with other information they already know about you. Companies are responsible for letting you know how they use your data. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more in our Privacy Policy<ph name="END_LINK">&lt;/link&gt;</ph>
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_3_V2" desc="This string appears when the user expands on the “More about ad topics” label. “Auto-deletes” is short for “automatically deletes”. “A topic” refers to one of the ad topics generated by Chrome. “Block topics” means a user can stop Chrome from sharing an ad topic with sites. " formatter_data="android_java">
+        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>How can you manage this data?<ph name="END_BOLD">&lt;/b&gt;</ph> Chrome auto-deletes topics that are older than 4 weeks. As you keep browsing, a topic might reappear on the list. You can also block topics you don't want Chrome to share with sites and turn ad topics off at any time in Chrome settings.
       </message>
 
-      <!--Privacy Guide - Ad Topics-->
-      <!-- TODO(crbug.com/331970504): Make privacy guide ad topics strings translateable. -->
-      <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_HEADING" desc="Header text on the Ad Topics card of the Privacy Guide." translateable="false">
+      <!--Ad Topics EEA Notice - Ads API UX Enhancements -->
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_DESCRIPTION_1_V2" desc="This string explains the function of “ad privacy features”. “Ad” is short for “advertisement”." formatter_data="android_java">
+        Ad privacy features help limit what websites and their advertising partners can learn about you when they show you personalized ads.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_SITE_SUGGESTED_ADS_TITLE" desc="This is a header for more information about site-suggested, an ad privacy feature." formatter_data="android_java">
+        Site-suggested ads
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_SITE_SUGGESTED_ADS_DESCRIPTION" desc="This string explains the function of “site-suggested ads” using second person. “Sites” refers to websites the user visits." formatter_data="android_java">
+        Site-suggested ads help protect your browsing history and identity while allowing sites to show you relevant ads. Using your activity, such as how you spend your time on sites you visit, other sites can suggest related ads as you continue browsing. You can see a list of these sites and block the ones you don't want in settings.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_SITE_SUGGESTED_ADS_LEARN_MORE_LABEL" desc="This is an actionable string. When a user clicks on it, a drop down menu opens to give additional information about how the “site-suggested ads” feature works." formatter_data="android_java">
+        More about site-suggested ads
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_SITE_SUGGESTED_ADS_LEARN_MORE_BULLET_1" desc="This string appears when the user expands the “More about site-suggested ads” card. It explains to the user, in second person, how a website they visit may use their activity to recommend ads that are personal to the user. The user is also provided with an example of how a website may do so." formatter_data="android_java">
+       <ph name="BEGIN_BOLD">&lt;b&gt;</ph>How do sites use this data?<ph name="END_BOLD">&lt;/b&gt;</ph> Sites and their advertising partners can use your activity to personalize ads on other sites. For example, if you visit a site to find recipes for dinner, the site might decide that you're interested in cooking. Later, another site may show you a related ad for a grocery delivery service suggested by the first site.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_SITE_SUGGESTED_ADS_LEARN_MORE_BULLET_1_DESCRIPTION" desc="This string appears when the user expands on the “More about ad topics” label.  “Sites” refers to websites that the user visits. The tone is informative. “Companies” refers to businesses or organizations that these websites belong to. This string is intended to explain the possible user risks currently available with our evolving privacy-preserving technologies, in neutral language.">
+        Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalize your experience for more than just ads. They may also combine it with other information they already know about you. Companies are responsible for letting you know how they use your data. <ph name="BEGIN_LINK1">&lt;a href="#" id="$1" aria-description="$2" on-click="$3"&gt;</ph>Learn more in our Privacy Policy<ph name="LINK_END1">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_SITE_SUGGESTED_ADS_LEARN_MORE_BULLET_1_DESCRIPTION_CLANK" desc="This string appears when the user expands on the “More about ad topics” label.  “Sites” refers to websites that the user visits. The tone is informative. “Companies” refers to businesses or organizations that these websites belong to. This string is intended to explain the possible user risks currently available with our evolving privacy-preserving technologies, in neutral language." formatter_data="android_java">
+        Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalize your experience for more than just ads. They may also combine it with other information they already know about you. Companies are responsible for letting you know how they use your data. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more in our Privacy Policy<ph name="END_LINK">&lt;/link&gt;</ph>
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_SITE_SUGGESTED_ADS_LEARN_MORE_BULLET_2" desc="This string appears when the user expands on the “More about ad topics” label and explains to the user how they can manage what data is used by websites. “Auto-deletes” is short for “automatically deletes”." formatter_data="android_java">
+       <ph name="BEGIN_BOLD">&lt;b&gt;</ph>How can you manage this data?<ph name="END_BOLD">&lt;/b&gt;</ph> Chrome auto-deletes sites that are older than 30 days. A site you visit again might reappear on the list. You can also block a site from suggesting ads for you and turn site-suggested ads off at any time in Chrome settings.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_AD_MEASUREMENT_TITLE" desc="This is a header for more information about ad measurement, an ad privacy feature." formatter_data="android_java">
+        Ad measurement
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_AD_MEASUREMENT_DESCRIPTION" desc="This string explains how the “ad measurement” feature, explaining that data is shared between websites to measure how their ads are doing. “Performance” refers to how well or poorly an ad is working. In addition, it gives a real life example for the user to understand the feature." formatter_data="android_java">
+        With ad measurement, limited types of data are shared between sites to measure the performance of their ads, such as whether you made a purchase after visiting a site.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_AD_MEASUREMENT_LEARN_MORE_LABEL" desc="This is an actionable string. When a user clicks on it, a drop down menu opens to give additional information about how the “ad measurement” feature works." formatter_data="android_java">
+        More about ad measurement
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_AD_MEASUREMENT_LEARN_MORE_BULLET_1" desc="This string appears when the user expands the “More about ad measurement” card. It explains how sites visited by the user may ask Chrome for information to measure the performance of their advertisements." formatter_data="android_java">
+       <ph name="BEGIN_BOLD">&lt;b&gt;</ph>How do sites use this data?<ph name="END_BOLD">&lt;/b&gt;</ph> Sites you visit can ask Chrome for information that helps them measure the performance of their ads. Chrome protects your privacy by limiting the information sites can share with one another.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_LAST_TEXT" desc="This string notifies users that they can make changes to their ad topics in the “ad privacy” section of settings." formatter_data="android_java">
+        You can make changes in ad privacy settings
+      </message>
+      <!--Ad Topics ROW Notice - Ads API UX Enhancements -->
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_BULLET_2_V2" desc="This string appears when the user clicks on the “More about ads in Chrome” under the “More useful ads” header. It explains to the user, in second person, how a website they visit may use their activity to recommend ads that are personal to the user. The user is also provided with an example of how a website may do so." formatter_data="android_java">
+        Sites and their advertising partners can use your activity, such as how you spend your time on sites you visit, to personalize ads on other sites. For example, if you visit a site to find recipes for dinner, the site might decide that you're interested in cooking. Later, another site may show you a related ad for a grocery delivery service suggested by the first site.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_2_V2" desc="This string appears when the user clicks on the “More about ads in Chrome” under the “More useful ads” header. It explains that a website can ask Chrome for this information. “Ads suggested by sites” is the same as “site-suggested ads”." formatter_data="android_java">
+        A site you visit can ask for this information — either your ad topics or ads suggested by sites you've visited.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_HEADING_3" desc="This string appears when the user clicks on the “More about ads in Chrome” under the “Measuring how well an ad performs” header. " formatter_data="android_java">
+        How sites use your data
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_5_V2" desc="This string appears when the user expands on the “More about ads in Chrome” label.  “Sites” refers to websites that the user visits. The tone is informative. “Companies” refers to businesses or organizations that these websites belong to. This is intended to explain the possible user risks currently available with our evolving privacy-preserving technologies, in neutral language.">
+        Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalize your experience for more than just ads. They may also combine it with other information they already know about you. Companies are responsible for letting you know how they use your data. <ph name="BEGIN_LINK1">&lt;a href="#" id="$1" aria-description="$2" on-click="$3"&gt;</ph>Learn more in our Privacy Policy<ph name="LINK_END1">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_5_V2_CLANK" desc="This string appears when the user expands on the “More about ads in Chrome” label.  “Sites” refers to websites that the user visits. The tone is informative. “Companies” refers to businesses or organizations that these websites belong to. This is intended to explain the possible user risks currently available with our evolving privacy-preserving technologies, in neutral language." formatter_data="android_java">
+        Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalize your experience for more than just ads. They may also combine it with other information they already know about you. Companies are responsible for letting you know how they use your data. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more in our Privacy Policy<ph name="END_LINK">&lt;/link&gt;</ph>
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LAST_TEXT" desc="This string notifies users that they can make changes to their ad topics in the “ad privacy” section of settings." formatter_data="android_java">
+        You can make changes in ad privacy settings
+      </message>
+
+      <!--Site suggested ads settings page - Ads API UX Enhancement-->
+      <if expr="_google_chrome">
+        <then>
+          <message name="IDS_SETTINGS_SITE_SUGGESTED_ADS_CURRENT_SITES_DESCRIPTION_V2" desc="This string signals to users that they have the ability to block any website they don’t want using their activity. “Auto-deletes” means “automatically deletes”." formatter_data="android_java">
+            You can block sites you don't want. Chrome also auto-deletes sites from the list that are older than 30 days.
+          </message>
+          <message name="IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_LEARN_MORE_BULLET_3_V2" desc="This string appears in the “More about site-suggested ads” dialog. “Activity data” refers to information about a user's actions or behaviors on the internet.">
+            Chrome deletes any activity data that you've shared with sites after 30 days. If you visit a site again it may reappear on the list. Learn more about <ph name="BEGIN_LINK1">&lt;a href="$1" aria-description="$2" target="_blank"&gt;</ph>managing your ad privacy in Chrome<ph name="LINK_END1">&lt;/a&gt;</ph>.
+          </message>
+          <message name="IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_LEARN_MORE_BULLET_3_V2_CLANK" desc="This string appears in the “More about site-suggested ads” dialog. “Activity data” refers to information about a user's actions or behaviors on the internet." formatter_data="android_java">
+            Chrome deletes any activity data that you've shared with sites after 30 days. If you visit a site again it may reappear on the list. Learn more about <ph name="BEGIN_LINK">&lt;link&gt;</ph>managing your ad privacy in Chrome<ph name="END_LINK">&lt;/link&gt;</ph>.
+          </message>
+        </then>
+        <else>
+          <message name="IDS_SETTINGS_SITE_SUGGESTED_ADS_CURRENT_SITES_DESCRIPTION_V2" desc="This string signals to users that they have the ability to block any website they don’t want using their activity. “Auto-deletes” means “automatically deletes”." formatter_data="android_java">
+            You can block sites you don't want. Chromium also auto-deletes sites from the list that are older than 30 days.
+          </message>
+          <message name="IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_LEARN_MORE_BULLET_3_V2" desc="This string appears in the “More about site-suggested ads” dialog. “Activity data” refers to information about a user's actions or behaviors on the internet.">
+            Chromium deletes any activity data that you've shared with sites after 30 days. If you visit a site again it may reappear on the list. Learn more about <ph name="BEGIN_LINK1">&lt;a href="$1" aria-description="$2" target="_blank"&gt;</ph>managing your ad privacy in Chromium<ph name="LINK_END1">&lt;/a&gt;</ph>.
+          </message>
+          <message name="IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_LEARN_MORE_BULLET_3_V2_CLANK" desc="This string appears in the “More about site-suggested ads” dialog. “Activity data” refers to information about a user's actions or behaviors on the internet." formatter_data="android_java">
+            Chromium deletes any activity data that you've shared with sites after 30 days. If you visit a site again it may reappear on the list. Learn more about <ph name="BEGIN_LINK">&lt;link&gt;</ph>managing your ad privacy in Chromium<ph name="END_LINK">&lt;/link&gt;</ph>.
+          </message>
+        </else>
+      </if>
+      <message name="IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_TOGGLE_SUB_LABEL_V2" desc="This string appears on the “Site-suggested ads” settings page. It explains to the user how websites can use the user’s activity to personalize ads. “How you spend your time” refers to the user’s online activity." formatter_data="android_java">
+        Websites and their advertising partners can use your activity, such as how you spend your time on sites you visit, to personalize ads for you
+      </message>
+      <message name="IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_EXPLANATION_V2_CLANK" desc="“Your activity” refers to the user's actions or behaviors while browsing the internet. The string explains that advertisements shown to the user by websites might be less personalized when the feature is turned off." formatter_data="android_java">
+        Your activity is one of the many things a site can use to suggest ads. When site-suggested ads is turned off, sites can still show you ads but they may be less personalized. Learn more about <ph name="BEGIN_LINK">&lt;link&gt;</ph>site-suggested ads<ph name="END_LINK">&lt;/link&gt;</ph>.
+      </message>
+      <message name="IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_EXPLANATION_V2" desc="“Your activity” refers to the user's actions or behaviors while browsing the internet. The string explains that advertisements shown to the user by websites might be less personalized when the feature is turned off.">
+        Your activity is one of the many things a site can use to suggest ads. When site-suggested ads is turned off, sites can still show you ads but they may be less personalized. Learn more about
+      </message>
+      <message name="IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_EXPLANATION_V2_LINK_TEXT" desc="Clicking on this hyperlink opens the “More about site-suggested ads” dialog.">
+        site-suggested ads.
+      </message>
+      <message name="IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_EXPLANATION_V2_LINK_ARIA_DESCRIPTION" desc="Aria description - for the hyperlinked text 'site-suggested ads'. Clicking on this hyperlink opens the “More about site-suggested ads” dialog.">
+        Learn more about site-suggested ads
+      </message>
+      <message name="IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_LEARN_MORE_BULLET_1_V2" desc="This string appears in the “More about site-suggested ads” dialog.  This string explains the function of “site-suggested ads” and how to manage them in settings “Sites” refers to websites the user visits." formatter_data="android_java">
+        Site-suggested ads help protect your browsing history and identity while allowing sites to show you relevant ads. Using your activity, other sites can suggest related ads as you continue browsing. You can see a list of these sites and block the ones you don't want in settings.
+      </message>
+      <message name="IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_LEARN_MORE_BULLET_2_V2" desc="This string appears in the “More about site-suggested ads” dialog. It gives an example in second person of how  websites might use a user’s online history and activity to show them relevant ads." formatter_data="android_java">
+        For example, if you visit a site to find recipes for dinner, the site might decide that you're interested in cooking. Later, another site may show you a related ad for a grocery delivery service suggested by the first site.
+      </message>
+      <message name="IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_LEARN_MORE_BULLET_3_V2_LINK_ARIA_DESCRIPTION" desc="Aria Description for string. This string appears in the “More about site-suggested ads” dialog. It navigates users to the help center.">
+        Learn more about managing your ad privacy
+      </message>
+      <message name="IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_FOOTER_V2_DESKTOP" desc="This string tells the user how an ad may be tailored to them. “Ad topics” and “cookie settings” are hyperlinks. When clicked on, they lead to their respective settings pages.">
+        Whether an ad you see is personalized can depend on many things including this setting, <ph name="BEGIN_LINK1">&lt;a href="$1" aria-description="$2" target="_blank"&gt;</ph>ad topics<ph name="LINK_END1">&lt;/a&gt;</ph>, your <ph name="BEGIN_LINK2">&lt;a href="$3" aria-description="$4" target="_blank"&gt;</ph>cookie settings<ph name="LINK_END2">&lt;/a&gt;</ph>, and if the site you're viewing personalizes ads.
+      </message>
+      <message name="IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_FOOTER_V2" desc="This string tells the user how an ad may be tailored to them. “Ad topics” and “cookie settings” are hyperlinks. When clicked on, they lead to their respective settings pages." formatter_data="android_java">
+        Whether an ad you see is personalized can depend on many things including this setting, <ph name="BEGIN_LINK_1">&lt;link1&gt;</ph>ad topics<ph name="END_LINK_1">&lt;/link1&gt;</ph>, your <ph name="BEGIN_LINK_2">&lt;link2&gt;</ph>cookie settings<ph name="END_LINK_2">&lt;/link2&gt;</ph>, and if the site you're viewing personalizes ads.
+      </message>
+      <message name="IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_DISCLAIMER_CLANK" desc="This string appears at the bottom of the “Site-suggested ads” settings page. “Sites” refers to websites that the user visits. The tone is informative. “Companies” refers to businesses or organizations that these websites belong to. This is intended to explain the possible user risks currently available with our evolving privacy-preserving technologies, in neutral language." formatter_data="android_java">
+        Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalize your experience for more than just ads. They may also combine it with other information they already know about you. Companies are responsible for letting you know how they use your data. Learn more in our <ph name="BEGIN_LINK">&lt;link&gt;</ph>Privacy Policy<ph name="END_LINK">&lt;/link&gt;</ph>.
+      </message>
+      <message name="IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_DISCLAIMER" desc="This string appears at the bottom of the “Site-suggested ads” settings page. “Sites” refers to websites that the user visits. The tone is informative. “Companies” refers to businesses or organizations that these websites belong to. This is intended to explain the possible user risks currently available with our evolving privacy-preserving technologies, in neutral language.">
+        Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalize your experience for more than just ads. They may also combine it with other information they already know about you. Companies are responsible for letting you know how they use your data. Learn more in our <ph name="BEGIN_LINK1">&lt;a href="$1" aria-description="$2" on-click="$3" id="$4" target="_blank"&gt;</ph>Privacy Policy<ph name="LINK_END1">&lt;/a&gt;</ph>.
+      </message>
+      <message name="IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_DISCLAIMER_LINK_ARIA_DESCRIPTION" desc="Aria Description for 'Privacy Policy' hyperlink. This opens up Google's Privacy Policy page in a new tab.">
+        Opens Privacy Policy in a new tab
+      </message>
+      <!--Ad topics page - Ads API UX Enhancement-->
+      <message name="IDS_SETTINGS_AD_TOPICS_PAGE_DISCLAIMER" desc="This string appears at the bottom of the “Ad topics” settings page. “Sites” refers to websites that the user visits. The tone is informative. “Companies” refers to businesses or organizations that these websites belong to. This is intended to explain the possible user risks currently available with our evolving privacy-preserving technologies, in neutral language.">
+        Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalize your experience for more than just ads. They may also combine it with other information they already know about you. Companies are responsible for letting you know how they use your data. Learn more in our <ph name="BEGIN_LINK1">&lt;a href="$1" aria-description="$2" on-click="$3" id="$4" target="_blank"&gt;</ph>Privacy Policy<ph name="LINK_END1">&lt;/a&gt;</ph>.
+      </message>
+      <message name="IDS_SETTINGS_AD_TOPICS_PAGE_DISCLAIMER_CLANK" desc="This string appears at the bottom of the “Ad topics” settings page. “Sites” refers to websites that the user visits. The tone is informative. “Companies” refers to businesses or organizations that these websites belong to. This is intended to explain the possible user risks currently available with our evolving privacy-preserving technologies, in neutral language." formatter_data="android_java">
+        Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalize your experience for more than just ads. They may also combine it with other information they already know about you. Companies are responsible for letting you know how they use your data. Learn more in our <ph name="BEGIN_LINK">&lt;link&gt;</ph>Privacy Policy<ph name="END_LINK">&lt;/link&gt;</ph>.
+      </message>
+      <message name="IDS_SETTINGS_AD_TOPICS_PAGE_FOOTER_V2_DESKTOP" desc="This string tells the user how an ad may be tailored to them. “site-suggested ads” and “cookie settings” are hyperlinks. When clicked on, they lead to their respective settings pages.">
+        Whether an ad you see is personalized can depend on many things including this setting, <ph name="BEGIN_LINK1">&lt;a href="$1" aria-description="$2" target="_blank"&gt;</ph>site-suggested ads<ph name="LINK_END1">&lt;/a&gt;</ph>, your <ph name="BEGIN_LINK2">&lt;a href="$3" aria-description="$4" target="_blank"&gt;</ph>cookie settings<ph name="LINK_END2">&lt;/a&gt;</ph>, and if the site you're viewing personalizes ads.
+      </message>
+      <message name="IDS_SETTINGS_AD_TOPICS_PAGE_FOOTER_V2" desc="This string tells the user how an ad may be tailored to them. “site-suggested ads” and “cookie settings” are hyperlinks. When clicked on, they lead to their respective settings pages." formatter_data="android_java">
+        Whether an ad you see is personalized can depend on many things including this setting, <ph name="BEGIN_LINK_1">&lt;link1&gt;</ph>site-suggested ads<ph name="END_LINK_1">&lt;/link1&gt;</ph>, your <ph name="BEGIN_LINK_2">&lt;link2&gt;</ph>cookie settings<ph name="END_LINK_2">&lt;/link2&gt;</ph>, and if the site you're viewing personalizes ads.
+      </message>
+      <!--Ad measurement page - Ads API UX Enhancement-->
+      <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_DISCLAIMER" desc="This string appears at the bottom of the “Ad measurement” settings page.  “Sites” refers to websites that the user visits. The tone is informative. “Companies” refers to businesses or organizations that these websites belong to. This is intended to explain the possible user risks currently available with our evolving privacy-preserving technologies, in neutral language.">
+        Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalize your experience for more than just ads. They may also combine it with other information they already know about you. Companies are responsible for letting you know how they use your data. Learn more in our <ph name="BEGIN_LINK1">&lt;a href="$1" aria-description="$2" on-click="$3" id="$4" target="_blank"&gt;</ph>Privacy Policy<ph name="LINK_END1">&lt;/a&gt;</ph>.
+      </message>
+      <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_DISCLAIMER_CLANK" desc="This string appears at the bottom of the “Ad measurement” settings page.  “Sites” refers to websites that the user visits. The tone is informative. “Companies” refers to businesses or organizations that these websites belong to. This is intended to explain the possible user risks currently available with our evolving privacy-preserving technologies, in neutral language." formatter_data="android_java">
+        Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalize your experience for more than just ads. They may also combine it with other information they already know about you. Companies are responsible for letting you know how they use your data. Learn more about how Google protects your data in our <ph name="BEGIN_LINK">&lt;link&gt;</ph>Privacy Policy<ph name="END_LINK">&lt;/link&gt;</ph>.
+      </message>
+      <!--Ad Topics Content Parity - Privacy Guide Ad Topics Card-->
+      <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_HEADING" desc="Header text on the Ad Topics card of the Privacy Guide.">
         Review your ad topics setting
       </message>
-      <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_TOGGLE_LABEL" desc="Text for the Ad topics toggle button on the Ad Topics card of the Privacy Guide." translateable="false" formatter_data="android_java">
+      <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_TOGGLE_LABEL" desc="Text for the Ad topics toggle button on the Ad Topics card of the Privacy Guide." formatter_data="android_java">
         Ad topics
-      </message>
-      <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_THINGS_TO_CONSIDER_BULLET1" desc="A part of the things to consider section of the Ad Topics card in the Privacy Guide." translateable="false" formatter_data="android_java">
-        Ad topics older than 4 weeks are automatically deleted. Topics include things like Sports, Apparel, and more
       </message>
       <if expr="_google_chrome">
         <then>
-          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET1" desc="A part of the feature description of Ad Topics card in the Privacy Guide." translateable="false" formatter_data="android_java">
-            Chrome notes topics of interest based on your recent browsing history
+          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET1" desc="A part of the feature description of Ad Topics card in the Privacy Guide." formatter_data="android_java">
+            Chrome notes topics of interest based on your recent browsing history. For example, things like Sports, Apparel, and more
           </message>
-          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET2" desc="A part of the feature description of Ad Topics card in the Privacy Guide." translateable="false" formatter_data="android_java">
-            Sites you visit can ask Chrome for up to 3 topics to show you relevant ads while protecting your browsing history and identity
+          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET3" desc="A part of the feature description of Ad Topics card in the Privacy Guide." formatter_data="android_java">
+            Chrome auto-deletes ad topics that are older than 4 weeks
           </message>
-          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_THINGS_TO_CONSIDER_BULLET2" desc="A part of the things to consider section of the Ad Topics card in the Privacy Guide." translateable="false" formatter_data="android_java">
+          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_THINGS_TO_CONSIDER_BULLET1" desc="A part of the things to consider section of the Ad Topics card in the Privacy Guide." formatter_data="android_java">
             You can see your ad topics in Chrome settings and block the ones you don't want shared with sites
           </message>
         </then>
         <else>
-          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET1" desc="A part of the feature description of Ad Topics card in the Privacy Guide." translateable="false" formatter_data="android_java">
-            Chromium notes topics of interest based on your recent browsing history
+          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET1" desc="A part of the feature description of Ad Topics card in the Privacy Guide." formatter_data="android_java">
+            Chromium notes topics of interest based on your recent browsing history. For example, things like Sports, Apparel, and more
           </message>
-          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET2" desc="A part of the feature description of Ad Topics card in the Privacy Guide." translateable="false" formatter_data="android_java">
-            Sites you visit can ask Chromium for up to 3 topics to show you relevant ads while protecting your browsing history and identity
+          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET3" desc="A part of the feature description of Ad Topics card in the Privacy Guide." formatter_data="android_java">
+            Chromium auto-deletes ad topics that are older than 4 weeks
           </message>
-          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_THINGS_TO_CONSIDER_BULLET2" desc="A part of the things to consider section of the Ad Topics card in the Privacy Guide." translateable="false" formatter_data="android_java">
+          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_THINGS_TO_CONSIDER_BULLET1" desc="A part of the things to consider section of the Ad Topics card in the Privacy Guide." formatter_data="android_java">
             You can see your ad topics in Chromium settings and block the ones you don't want shared with sites
           </message>
         </else>
       </if>
+      <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET2" desc="A part of the feature description of Ad Topics card in the Privacy Guide." formatter_data="android_java">
+        Websites and their advertising partners can use ad topics to personalize content for you. Compared to third-party cookies, ad topics helps to limit what sites can learn about you as you browse
+      </message>
+      <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_THINGS_TO_CONSIDER_BULLET2" desc="A part of the things to consider section of the Ad Topics card in the Privacy Guide." formatter_data="android_java">
+        Some sites may use your activity to personalize your experience for more than just ads. They may also store ad topics for longer than 4 weeks and may combine it with other information they already know about you
+      </message>
+      <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_THINGS_TO_CONSIDER_BULLET3_DESKTOP" desc="A part of the things to consider section of the Ad Topics card in the Privacy Guide.">
+        Google requires companies to state publicly that they won't use this data to track you across sites. Companies are responsible for letting you know how they use your data. <ph name="BEGIN_LINK1">&lt;a href="$1" aria-description="$2" on-click="$3" id="$4" target="_blank"&gt;</ph>Learn more in our Privacy Policy<ph name="LINK_END1">&lt;/a&gt;</ph>.
+      </message>
+      <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_THINGS_TO_CONSIDER_BULLET3_CLANK" desc="A part of the things to consider section of the Ad Topics card in the Privacy Guide." formatter_data="android_java">
+        Google requires companies to state publicly that they won't use this data to track you across sites. Companies are responsible for letting you know how they use your data. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more in our Privacy Policy<ph name="END_LINK">&lt;/link&gt;</ph>.
+      </message>
+      <!--Ad Topics Content Parity - Ad Topics Settings-->
+      <message name="IDS_SETTINGS_AD_TOPICS_PAGE_TOGGLE_SUB_LABEL" desc="A description of the new Ad topics setting page. This sits under the toggle to turn on the topics API." formatter_data="android_java">
+        Topics are based on your recent browsing history and help limit what sites and their advertising partners can learn about you to show you personalized ads
+      </message>
+      <if expr="_google_chrome">
+        <then>
+          <message name="IDS_SETTINGS_AD_TOPICS_PAGE_ACTIVE_TOPICS_DESCRIPTION" desc="A description that appears beneath the 'Active topics' label." formatter_data="android_java">
+            Chrome auto-deletes ad topics that are older than 4 weeks
+          </message>
+        </then>
+        <else>
+          <message name="IDS_SETTINGS_AD_TOPICS_PAGE_ACTIVE_TOPICS_DESCRIPTION" desc="A description that appears beneath the 'Active topics' label." formatter_data="android_java">
+            Chromium auto-deletes ad topics that are older than 4 weeks
+          </message>
+        </else>
+      </if>
+      <message name="IDS_SETTINGS_AD_TOPICS_PAGE_DISCLAIMER_V2_DESKTOP" desc="This string appears at the bottom of the “Ad topics” settings page. “Sites” refers to websites that the user visits. The tone is informative. “Companies” refers to businesses or organizations that these websites belong to. This is intended to explain the possible user risks currently available with our evolving privacy-preserving technologies, in neutral language.">
+        Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalize your experience for more than just ads. They may also store ad topics for longer than 4 weeks and combine it with other information they already know about you. Companies are responsible for letting you know how they use your data. Learn more in our <ph name="BEGIN_LINK1">&lt;a href="$1" aria-description="$2" on-click="$3" id="$4" target="_blank"&gt;</ph>Privacy Policy<ph name="LINK_END1">&lt;/a&gt;</ph>.
+      </message>
+      <message name="IDS_SETTINGS_AD_TOPICS_PAGE_DISCLAIMER_V2_CLANK" desc="This string appears at the bottom of the “Ad topics” settings page. “Sites” refers to websites that the user visits. The tone is informative. “Companies” refers to businesses or organizations that these websites belong to. This is intended to explain the possible user risks currently available with our evolving privacy-preserving technologies, in neutral language." formatter_data="android_java">
+        Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalize your experience for more than just ads. They may also store ad topics for longer than 4 weeks and combine it with other information they already know about you. Companies are responsible for letting you know how they use your data. Learn more in our <ph name="BEGIN_LINK">&lt;link&gt;</ph>Privacy Policy<ph name="END_LINK">&lt;/link&gt;</ph>.
+      </message>
+      <!--Ad Topics Content Parity - Topics EEA Consent Dialog -->
+      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_DESCRIPTION_1_CONTENT_PARITY" desc="This string gives an overview of “ad topics”, an ad privacy feature. “Topics of interest” refers to topics that are relevant or interesting to the user based on their browsing activity online." formatter_data="android_java">
+        Ad topics limit what sites and their advertising partners can learn about you to show you personalized ads. Chrome can note topics of interest based on your recent browsing history. Later, a site you visit can ask Chrome for relevant topics to personalize the ads you see.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_2_DESCRIPTION_CONTENT_PARITY" desc="This string appears at the bottom of the “Ad topics” settings page. “Sites” refers to websites that the user visits. The tone is informative. “Companies” refers to businesses or organizations that these websites belong to. This is intended to explain the possible user risks currently available with our evolving privacy-preserving technologies, in neutral language.">
+        Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalize your experience for more than just ads. They may also store ad topics for longer than 4 weeks and combine it with other information they already know about you. Companies are responsible for letting you know how they use your data. <ph name="BEGIN_LINK1">&lt;a href="#" id="$1" aria-description="$2" on-click="$3"&gt;</ph>Learn more in our Privacy Policy<ph name="LINK_END1">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_2_DESCRIPTION_CONTENT_PARITY_CLANK" desc="This string appears at the bottom of the “Ad topics” settings page. “Sites” refers to websites that the user visits. The tone is informative. “Companies” refers to businesses or organizations that these websites belong to. This is intended to explain the possible user risks currently available with our evolving privacy-preserving technologies, in neutral language." formatter_data="android_java">
+        Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalize your experience for more than just ads. They may also store ad topics for longer than 4 weeks and combine it with other information they already know about you. Companies are responsible for letting you know how they use your data. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more in our Privacy Policy<ph name="END_LINK">&lt;/link&gt;</ph>.
+      </message>
+      <!--Privacy Sandbox Privacy Policy-->
+      <message name="IDS_PRIVACY_SANDBOX_PRIVACY_POLICY_PAGE_TITLE" desc="Title for Google's Privacy Policy page." formatter_data="android_java">
+        Google Privacy Policy
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_PRIVACY_POLICY_BACK_BUTTON" desc="Content description for the Privacy Policy page back button." formatter_data="android_java">
+        Back
+      </message>
+
+      <!-- 3PC Settings -->
+      <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_SETTINGS_ALLOW_BULLET_ONE" desc="This text is for a bullet that provides detail about the first setting option. It describes the primary privacy and content impacts of selecting the “Allow third-party cookies” option." formatter_data="android_java">
+        Sites can use third-party cookies to personalize content and ads, and learn about actions you take on other sites
+      </message>
+      <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_SETTINGS_ALLOW_BULLET_TWO" desc="This text is for a bullet that provides detail about the first setting option. It describes the functional consequence of selecting the “Allow third-party cookies” option, especially in contrast to the “Block third-party cookies” option." formatter_data="android_java">
+        Site features that rely on third-party cookies should work as expected
+      </message>
+      <if expr="_google_chrome">
+        <then>
+          <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_SETTINGS_ALLOW_BULLET_THREE" desc="This text is for a bullet that provides detail about the first setting option. It describes the key new detail that now applies to this setting option." formatter_data="android_java">
+            When you're in Incognito mode, Chrome blocks sites from using third-party cookies
+          </message>
+        </then>
+        <else>
+          <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_SETTINGS_ALLOW_BULLET_THREE" desc="This text is for a bullet that provides detail about the first setting option. It describes the key new detail that now applies to this setting option." formatter_data="android_java">
+            When you're in Incognito mode, Chromium blocks sites from using third-party cookies
+          </message>
+        </else>
+      </if>
+      <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_SETTINGS_BLOCK_BULLET_ONE" desc="This text is for a bullet that provides detail about the second setting option. It describes the primary privacy and content impacts of selecting the “Block third-party cookies” option." formatter_data="android_java">
+        Sites can't use third-party cookies to personalize content and ads, and learn about actions you take on other sites, unless you allow related sites to access them
+      </message>
+      <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_SETTINGS_BLOCK_BULLET_TWO" desc="This text is for a bullet that provides detail about the second setting option. It describes the extent of how sites can use cookies when the “Block third-party cookies” option is selected." formatter_data="android_java">
+        Sites can still use cookies to see browsing activity on their own site
+      </message>
+      <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_SETTINGS_BLOCK_BULLET_THREE" desc="This text is for a bullet that provides detail about the second setting option. It describes the functional consequence of selecting the “Block third-party cookies” option, especially in contrast to the “Allow third-party cookies” option." formatter_data="android_java">
+        Site features that rely on third-party cookies may not work
+      </message>
+      <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_SETTINGS_BLOCK_SUBLABEL_RWS_ENABLED" desc="This text is for the description of the second setting option. It describes the primary point of contrast to the first setting option and features as a preview of details and sub-settings of the “Block third-party cookies” option. This string is dynamic and the text shown here is specific to when the “Allow related sites to see your activity in the group” switch is toggled to the On state." formatter_data="android_java">
+        Some features may not work. Related sites can still use third-party cookies.
+      </message>
+      <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_SETTINGS_ALLOW_SUBLABEL" desc="This text is for the description of the first setting option. It describes the primary point of contrast to the second setting option and features as a preview of details about the “Allow third-party cookies” option." formatter_data="android_java">
+        Sites that rely on third-party cookies should work as expected
+      </message>
+
+      <!-- Privacy Guide - Settings P1 -->
+      <message name="IDS_PRIVACY_GUIDE_COOKIE_SETTINGS_ALLOW_WHEN_ON_BULLET_ONE" desc="This text is for a bullet that provides detail about the first setting option. It describes the primary content and site experience impacts of selecting the “Allow third-party cookies” option.">
+        Sites can use third-party cookies to personalize content and ads
+      </message>
+      <message name="IDS_PRIVACY_GUIDE_COOKIE_SETTINGS_ALLOW_WHEN_ON_BULLET_TWO" desc="This text is for a bullet that provides detail about the first setting option. It describes the functional consequence of selecting the “Allow third-party cookies” option, especially in contrast to the “Block third-party cookies” option.">
+        Site features that rely on third-party cookies should work as expected
+      </message>
+      <message name="IDS_PRIVACY_GUIDE_COOKIE_SETTINGS_ALLOW_THINGS_TO_CONSIDER_BULLET_ONE" desc="This text is for a bullet that provides key considerations about the first setting option. It describes the primary privacy considerations of selecting the “Allow third-party cookies” option.">
+        Sites can use third-party cookies to learn about actions you take on other sites
+      </message>
+      <if expr="_google_chrome">
+        <then>
+          <message name="IDS_PRIVACY_GUIDE_COOKIE_SETTINGS_ALLOW_THINGS_TO_CONSIDER_BULLET_TWO" desc="This text is for a bullet that provides key considerations about the first setting option. It describes the key new detail that now applies to this setting option.">
+            When you're in Incognito mode, Chrome blocks sites from using third-party cookies
+          </message>
+        </then>
+        <else>
+          <message name="IDS_PRIVACY_GUIDE_COOKIE_SETTINGS_ALLOW_THINGS_TO_CONSIDER_BULLET_TWO" desc="This text is for a bullet that provides key considerations about the first setting option. It describes the key new detail that now applies to this setting option.">
+            When you're in Incognito mode, Chromium blocks sites from using third-party cookies
+          </message>
+        </else>
+      </if>
+      <message name="IDS_PRIVACY_GUIDE_COOKIE_SETTINGS_BLOCK_WHEN_ON_BULLET_ONE" desc="This text is for a bullet that provides detail about the second setting option. It describes the primary privacy impacts of selecting the “Block third-party cookies” option.">
+        Sites can't use third-party cookies to personalize content and ads, and learn about actions you take on other sites, unless you give related sites access to them
+      </message>
+      <message name="IDS_PRIVACY_GUIDE_COOKIE_SETTINGS_BLOCK_WHEN_ON_BULLET_TWO" desc="This text is for a bullet that provides detail about the second setting option. It describes the functional consequence of selecting the “Block third-party cookies” option, especially in contrast to the “Allow third-party cookies” option.">
+        Features on some sites may not work
+      </message>
+      <message name="IDS_PRIVACY_GUIDE_COOKIE_SETTINGS_BLOCK_THINGS_TO_CONSIDER_BULLET_ONE" desc="This text is for a bullet that provides key considerations about the second setting option. It informs the user of possible functional impacts and that there are means of addressing it.">
+        If a site doesn't work as expected, you can try temporarily allowing third-party cookies for a specific site you visit
+      </message>
+      <message name="IDS_PRIVACY_GUIDE_COOKIE_SETTINGS_BLOCK_THINGS_TO_CONSIDER_BULLET_TWO" desc="This text is for a bullet that provides key considerations about the second setting option. It informs the user of advanced settings they can use to modify the scope of impact of selecting the “Block third-party cookies” option.">
+        You can create exceptions in Settings to always allow specific sites to use third-party cookies
+      </message>
+      <message name="IDS_SETTINGS_PRIVACY_GUIDE_COOKIES_CARD_BLOCK_TPC_ALLOW_SUBHEADER" desc="This text is for the label of the first setting option." formatter_data="android_java">
+        Allow third-party cookies
+      </message>
+      <message name="IDS_SETTINGS_PRIVACY_GUIDE_COOKIES_CARD_BLOCK_TPC_BLOCK_SUBHEADER" desc="This text is for the label of the second setting option." formatter_data="android_java">
+        Block third-party cookies
+      </message>
+      <message name="IDS_PRIVACY_GUIDE_COOKIES_HEADER" desc="This text is for the title header of the third-party cookie step in the Privacy Guide flow. It prompts the user to make a choice according to their privacy and browsing experience priorities." formatter_data="android_java">
+        Choose your third-party cookie preferences
+      </message>
+      <message name="IDS_PRIVACY_GUIDE_COOKIES_ALLOW_DESCRIPTION" desc="This text is for the description of the first setting option. It describes the primary site experience and privacy impacts of selecting the “Allow third-party cookies” option." formatter_data="android_java">
+        Sites can use third-party cookies to personalize content and ads, and learn about actions you take on other sites
+      </message>
+      <message name="IDS_PRIVACY_GUIDE_COOKIES_BLOCK_DESCRIPTION" desc="This text is for the description of the second setting option. It describes the primary site experience and privacy impacts of selecting the “Block third-party cookies” option." formatter_data="android_java">
+        Sites can't use third-party cookies to personalize content and ads, and learn about actions you take on other sites, unless you allow related sites to access them. Some site features may not work as expected.
+      </message>
+
+      <!-- A11y Labels - Settings P1 -->
+      <message name="IDS_SETTINGS_ALLOW_THIRD_PARTY_COOKIES_EXPAND_A11Y_LABEL" desc="This text is read by screenreaders and helps users find more info about this choice.">
+        More about the Allow third-party cookies option
+      </message>
+      <message name="IDS_SETTINGS_BLOCK_THIRD_PARTY_COOKIES_EXPAND_A11Y_LABEL" desc="This text is read by screenreaders and helps users find more info about this choice.">
+        More about the Block third-party cookies option
+      </message>
+
+      <!-- NTP - Settings P1 -->
+      <message name="IDS_INCOGNITO_NTP_BLOCK_THIRD_PARTY_COOKIES_HEADER" desc="This text is for the header of the emphasized detail, “Third-party cookies are blocked” section." formatter_data="android_java">
+        Third-party cookies are blocked
+      </message>
+      <message name="IDS_INCOGNITO_NTP_BLOCK_THIRD_PARTY_COOKIES_DESCRIPTION_DESKTOP" desc="This text is for the body of the “Third-party cookies are blocked” section. It specifies the scope of blocking third-party cookies and informs the user of possible functional impacts, a means of addressing it, and a link to learn how to do so.">
+        When you're in Incognito mode, sites can't use third-party cookies. If a site that relies on these cookies isn't working, you can <ph name="START_LINK">&lt;a target="_blank" href="$1" aria-description="$2"&gt;</ph>try giving that site temporary access to third-party cookies<ph name="END_LINK">&lt;/a&gt;</ph>.
+      </message>
+      <message name="IDS_INCOGNITO_NTP_BLOCK_THIRD_PARTY_COOKIES_DESCRIPTION_ANDROID" desc="This text is for the body of the “Third-party cookies are blocked” section. It specifies the scope of blocking third-party cookies and informs the user of possible functional impacts, a means of addressing it, and a link to learn how to do so." formatter_data="android_java">
+        When you're in Incognito mode, sites can't use third-party cookies. If a site that relies on these cookies isn't working, you can <ph name="BEGIN_LINK">&lt;link&gt;</ph>try giving that site temporary access to third-party cookies<ph name="END_LINK">&lt;/link&gt;</ph>.
+      </message>
     </messages>
   </release>
 </grit>

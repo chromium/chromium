@@ -9,6 +9,7 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{1 күн мурун}other{# күн мурун}}</translation>
 <translation id="1181037720776840403">Алып салуу</translation>
 <translation id="1243314992276662751">Жүктөп берүү</translation>
+<translation id="1253734725326687145">Сенсордук бөлүк жогорку оң жакка жылды. Бул жерди таптаңыз.</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> менен бөлүшүлгөн жок</translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1291104554099683393">Текстти бир нече бөлүккө бөлүп анан бөлүшүп көрүңүз.</translation>
@@ -38,6 +39,7 @@
 <translation id="19085484004813472">Бул жаңы функция</translation>
 <translation id="2006524834898217237">Бул түзмөк интернетке туташканын текшериңиз.</translation>
 <translation id="208586643495776849">Кайталап көрүңүз</translation>
+<translation id="2111134541987263231"><ph name="BEGIN_BOLD" />Жашыруун режимде уруксат берүүнү<ph name="END_BOLD" /> күйгүзүңүз</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 к.}other{# к.}}</translation>
 <translation id="2148716181193084225">Бүгүн</translation>
 <translation id="2168039046890040389">Өйдө баракта</translation>
@@ -48,12 +50,14 @@
 <translation id="2289052229480071835">Экраныңыздагы интерактивдүү элементтерди басыңыз.</translation>
 <translation id="2295140143284145483">Сурамжылоо</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> Тб/с</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> идентификатору бар кеңейтүү табылбай жатат. Администраторуңуз менен байланышыңыз.}other{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> идентификаторлору бар кеңейтүүлөр табылбай жатат. Администраторуңуз менен байланышыңыз.}}</translation>
 <translation id="2353636109065292463">Интернет байланышыңызды текшериңиз</translation>
 <translation id="2359808026110333948">Улантуу</translation>
 <translation id="2388990488038464401">Бул номерге телефонуңуздан чаласызбы?</translation>
 <translation id="2435457462613246316">Сырсөздү көрсөтүү</translation>
 <translation id="24452542372838207">Эскертмени жайып көрсөтүү</translation>
 <translation id="2445449901874883781">Терезелерди көп көрсөтүү</translation>
+<translation id="2448407890032181691">Сенсордук бөлүк төмөнкү оң жакка жылды. Бул жерди таптаңыз.</translation>
 <translation id="2482878487686419369">Билдирмелер</translation>
 <translation id="2497284189126895209">Бардык файлдар</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -70,6 +74,7 @@
 <translation id="2878511608894704031">Баарын жок кылуу</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 к. кийин}other{# к. кийин}}</translation>
 <translation id="2922712708897119705"><ph name="COLUMN_NAME" /> тилкеси азаюу тартибинде иреттелди.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Кеңейтүү табылбай жатат}other{Кеңейтүүлөр табылбай жатат}}</translation>
 <translation id="3036649622769666520">Файлдарды ачуу</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> Мб</translation>
 <translation id="3087734570205094154">Аягы</translation>
@@ -82,6 +87,7 @@
 <translation id="3295886253693811851">Төмөнкү аркылуу чалуу:</translation>
 <translation id="3306688585798492231">Кыстарылган дисплей</translation>
 <translation id="335581015389089642">Кеп</translation>
+<translation id="3372635229069101468"><ph name="BEGIN_BOLD" />Толук маалымат<ph name="END_BOLD" /> дегенди басыңыз</translation>
 <translation id="3389286852084373014">Тексттин көлөмү өтө чоң</translation>
 <translation id="3406306243914553062">HTML мазмуну</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{1 күн калды}other{# күн калды}}</translation>
@@ -102,7 +108,9 @@
 <translation id="3994749195054421561"><ph name="COLUMN_NAME" /> тилкеси өсүү тартибинде иреттелди.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 жаңы билдирме}other{# жаңы билдирме}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Жашыруун режимде төмөнкү кеңейтүүнү күйгүзүңүз:}other{Жашыруун режимде төмөнкү кеңейтүүлөрдү күйгүзүңүз:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 ай мурун}other{# ай мурун}}</translation>
+<translation id="4277033906326892359"><ph name="COLUMN_NAME" /> тилкеси өсүү тартибинде иреттелди</translation>
 <translation id="4289300219472526559">Сүйлөп баштаңыз</translation>
 <translation id="4289540628985791613">Сереп салуу</translation>
 <translation id="4491109536499578614">Сүрөт</translation>
@@ -113,6 +121,8 @@
 <translation id="4729257764711776855">номер</translation>
 <translation id="4746179598275229723">Кеңейтүү бошотулду</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 ай калды}other{# ай калды}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{Жашыруун режимди колдонуу үчүн уюмуңузга кеңейтүү керектелет}other{Жашыруун режимди колдонуу үчүн уюмуңузга кеңейтүүлөр керектелет}}</translation>
+<translation id="482932175346970750">Серепчиңизде төмөнкүнү териңиз: <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /></translation>
 <translation id="4888938634149558681">Чалуу</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 секунд}other{# секунд}}</translation>
@@ -121,6 +131,7 @@
 <translation id="5076340679995252485">&amp;Чаптоо</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> Пб</translation>
 <translation id="5278860589123563674">Жөнөтүлгөн жок</translation>
+<translation id="5283101102242354279">Жашыруун режимде кеңейтүүнү күйгүзүңүз:</translation>
 <translation id="528468243742722775">Бүтүрүү</translation>
 <translation id="5329858601952122676">&amp;Жок кылуу</translation>
 <translation id="5361107212971249203">текст</translation>
@@ -129,13 +140,16 @@
 <translation id="5528053674512161860">Иштеп чыгаруучунун колдонуучу интерфейсинин модулу орнотулган эмес, андыктан барак жүктөлбөй калды</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> тутуму</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5606865426897221650">Өтмөк</translation>
 <translation id="5613020302032141669">Сол жебе</translation>
 <translation id="5633029987065897167">Бош</translation>
+<translation id="5651438382973553530">Сенсордук бөлүк төмөнкү сол жакка жылды. Бул жерди таптаңыз.</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 мүн.}other{# мүн.}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Соңку аракеттер: бүгүн}=1{Соңку аракеттер: 1 күн мурун}other{Соңку аракеттер: # күн мурун}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 күн жана }other{# күн жана }}</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5843690142429128814">Сүрөт.</translation>
+<translation id="5860491529813859533">Күйгүзүү</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{1 ж. кийин}other{# ж. кийин}}</translation>
 <translation id="588258955323874662">Толук экран</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 секунд калды}other{# секунд калды}}</translation>
@@ -151,6 +165,7 @@
 <translation id="6264365405983206840">&amp;Баарын тандоо</translation>
 <translation id="6346952829206698721">Алмашуу буферинен чаптоо</translation>
 <translation id="6364916375976753737">Солго сыдырып кароо</translation>
+<translation id="63712816010840859">Эгер учурдагы дисплей сенсордук экран болбосо, "Esc" баскычын басыңыз.</translation>
 <translation id="6394627529324717982">Үтүр</translation>
 <translation id="6397363302884558537">Сүйлөөнү токтот</translation>
 <translation id="6404817160109697034">{SECONDS,plural, =1{1 сек. мурун}other{# сек. мурун}}</translation>
@@ -162,6 +177,8 @@
 <translation id="6612467943526193239">Калибрлөө режиминен чыгуу үчүн "Esc" басыңыз.</translation>
 <translation id="6620110761915583480">Файлды сактоо</translation>
 <translation id="6699343763173986273">Кийинки трек медиасы</translation>
+<translation id="6738856801552481343">Эгер бул дисплей сенсордук экран болбосо, "Esc" баскычын басыңыз.</translation>
+<translation id="6807086321996342431"><ph name="COLUMN_NAME" />-мамыча</translation>
 <translation id="6808150112686056157">Медианы токтотуу</translation>
 <translation id="6845383723252244143">Куржун тандоо</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{1 саат калды}other{# саат калды}}</translation>
@@ -176,6 +193,7 @@
 <translation id="7170202025028120564">Колдонмонун экран параметрлери, аны өчүрүп күйгүзгөндө иштеп баштайт.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 мүн. калды}other{# мүн. калды}}</translation>
+<translation id="7252604552361840748">Жогору жактан кеңейтүүнү табыңыз</translation>
 <translation id="7363164521834647158">Жооп жөнөтүү</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1 мүн. мурун}other{# мүн. мурун}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
@@ -192,16 +210,15 @@
 <translation id="7969046989155602842">Буйрук</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{1 ашык окулбаган билдирме}other{# ашык окулбаган билдирме}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{1 мүн. кийин}other{# мүн. кийин}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568">Номер <ph name="ORIGIN" /> сайтынан алынды</translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{1 саат мурун}other{# саат мурун}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{1 сек. калды}other{# сек. калды}}</translation>
 <translation id="8134065097954893699">Бул баракты кайрадан жүктөңүз</translation>
+<translation id="813785873406874127"><ph name="COLUMN_NAME" /> тилкеси иреттелген жок</translation>
 <translation id="815598010540052116">Ылдый сыдыруу</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Ылдый барактоо</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8245914219290430011">Өтмөк</translation>
 <translation id="8259556432390118667">Он алты түстүү код</translation>
 <translation id="8328145009876646418">Сол жак чети</translation>
 <translation id="8331626408530291785">Өйдө сыдырып кароо</translation>
@@ -209,6 +226,7 @@
 <translation id="8393700583063109961">Билдирүү жөнөтүү</translation>
 <translation id="8394908167088220973">Медиа файлды ойнотуу/бир азга токтотуу</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 ж.}other{# ж.}}</translation>
+<translation id="8582972250170726813"><ph name="COLUMN_NAME" /> тилкеси азаюу тартибинде иреттелди</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> файл (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> Кб/сек</translation>
@@ -225,6 +243,8 @@
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 сек.}other{# сек.}}</translation>
 <translation id="9059834730836941392">Эскертмени жыйыштыруу</translation>
 <translation id="9170848237812810038">&amp;Кайтаруу</translation>
+<translation id="9195990613383871904">Эртең</translation>
+<translation id="928628199082367701">Super</translation>
 <translation id="932327136139879170">Башкы</translation>
 <translation id="944069440740578670">Окулбаган билдирмелер</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{1 секунд мурун}other{# секунд мурун}}</translation>

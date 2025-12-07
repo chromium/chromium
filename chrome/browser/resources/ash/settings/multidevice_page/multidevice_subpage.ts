@@ -17,7 +17,6 @@ import './multidevice_combined_setup_item.js';
 import './multidevice_feature_item.js';
 import './multidevice_feature_toggle.js';
 import './multidevice_task_continuation_item.js';
-import './multidevice_task_continuation_item_lacros.js';
 import './multidevice_tether_item.js';
 import './multidevice_wifi_sync_item.js';
 import './multidevice_forget_device_dialog.js';
@@ -25,12 +24,13 @@ import './multidevice_forget_device_dialog.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {routes} from '../router.js';
 
-import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_browser_proxy.js';
+import type {MultiDeviceBrowserProxy} from './multidevice_browser_proxy.js';
+import {MultiDeviceBrowserProxyImpl} from './multidevice_browser_proxy.js';
 import {MultiDeviceFeature, MultiDeviceSettingsMode, PhoneHubFeatureAccessProhibitedReason, PhoneHubPermissionsSetupFeatureCombination} from './multidevice_constants.js';
 import {MultiDeviceFeatureMixin} from './multidevice_feature_mixin.js';
 import {getTemplate} from './multidevice_subpage.html.js';
@@ -48,44 +48,21 @@ export class SettingsMultideviceSubpageElement extends
     return getTemplate();
   }
 
-  static get properties() {
-    return {
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kInstantTetheringOnOff,
-          Setting.kMultiDeviceOnOff,
-          Setting.kSmartLockOnOff,
-          Setting.kForgetPhone,
-          Setting.kPhoneHubOnOff,
-          Setting.kPhoneHubCameraRollOnOff,
-          Setting.kPhoneHubNotificationsOnOff,
-          Setting.kPhoneHubTaskContinuationOnOff,
-          Setting.kWifiSyncOnOff,
-          Setting.kPhoneHubAppsOnOff,
-        ]),
-      },
-
-      isRevampWayfindingEnabled_: {
-        type: Boolean,
-        value: () => {
-          return isRevampWayfindingEnabled();
-        },
-      },
-
-      shouldShowForgetDeviceDialog_: {
-        type: Boolean,
-        value: false,
-      },
-    };
-  }
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kInstantTetheringOnOff,
+    Setting.kMultiDeviceOnOff,
+    Setting.kSmartLockOnOff,
+    Setting.kForgetPhone,
+    Setting.kPhoneHubOnOff,
+    Setting.kPhoneHubCameraRollOnOff,
+    Setting.kPhoneHubNotificationsOnOff,
+    Setting.kPhoneHubTaskContinuationOnOff,
+    Setting.kWifiSyncOnOff,
+    Setting.kPhoneHubAppsOnOff,
+  ]);
 
   private browserProxy_: MultiDeviceBrowserProxy;
-  private isRevampWayfindingEnabled_: boolean;
-  private shouldShowForgetDeviceDialog_: boolean;
 
   constructor() {
     super();
@@ -123,14 +100,6 @@ export class SettingsMultideviceSubpageElement extends
         MultiDeviceSettingsMode.HOST_SET_VERIFIED;
   }
 
-  private handleForgetDeviceClick_(): void {
-    this.shouldShowForgetDeviceDialog_ = true;
-  }
-
-  private onCloseForgetDeviceDialog_(): void {
-    this.shouldShowForgetDeviceDialog_ = false;
-  }
-
   private getStatusInnerHtml_(): TrustedHTML {
     if ([
           MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_SERVER,
@@ -139,10 +108,7 @@ export class SettingsMultideviceSubpageElement extends
       return this.i18nAdvanced('multideviceVerificationText');
     }
 
-    return this.isRevampWayfindingEnabled_ ?
-        this.i18nAdvanced(`multideviceSuiteToggleLabel`) :
-        (this.isSuiteOn() ? this.i18nAdvanced('multideviceEnabled') :
-                            this.i18nAdvanced('multideviceDisabled'));
+    return this.i18nAdvanced('multideviceSuiteToggleLabel');
   }
 
   private getPhoneHubNotificationsTooltip_(): string {
@@ -234,10 +200,6 @@ export class SettingsMultideviceSubpageElement extends
 
   private isPhoneHubDisabled_(): boolean {
     return !this.isSuiteOn() || !this.isPhoneHubOn();
-  }
-
-  private isSyncedSessionSharingEnabled_(): boolean {
-    return this.pageContentData.isChromeOSSyncedSessionSharingEnabled;
   }
 }
 

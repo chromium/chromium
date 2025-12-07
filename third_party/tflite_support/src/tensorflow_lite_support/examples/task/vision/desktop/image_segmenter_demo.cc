@@ -83,12 +83,12 @@ absl::Status EncodeMaskToPngFile(const SegmentationResult& result) {
   }
   const Segmentation& segmentation = result.segmentation(0);
   // Extract raw mask data as a uint8 pointer.
-  const uint8* raw_mask =
-      reinterpret_cast<const uint8*>(segmentation.category_mask().data());
+  const uint8_t* raw_mask =
+      reinterpret_cast<const uint8_t*>(segmentation.category_mask().data());
 
   // Create RgbImageData for the output mask.
-  uint8* pixel_data = static_cast<uint8*>(
-      malloc(segmentation.width() * segmentation.height() * 3 * sizeof(uint8)));
+  uint8_t* pixel_data = static_cast<uint8_t*>(malloc(
+      segmentation.width() * segmentation.height() * 3 * sizeof(uint8_t)));
   ImageData mask = {.pixel_data = pixel_data,
                     .width = segmentation.width(),
                     .height = segmentation.height(),

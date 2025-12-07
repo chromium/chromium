@@ -12,11 +12,12 @@
 #include "base/logging.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/policy/core/cached_policy_key_loader.h"
 #include "chrome/browser/ash/policy/value_validation/onc_user_policy_value_validator.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_util.h"
+#include "chromeos/ash/components/dbus/session_manager/policy_descriptor.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
@@ -52,7 +53,7 @@ UserCloudPolicyStoreAsh::UserCloudPolicyStoreAsh(
                                                   account_id,
                                                   user_policy_key_dir)) {}
 
-UserCloudPolicyStoreAsh::~UserCloudPolicyStoreAsh() {}
+UserCloudPolicyStoreAsh::~UserCloudPolicyStoreAsh() = default;
 
 void UserCloudPolicyStoreAsh::Store(const em::PolicyFetchResponse& policy) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -73,10 +74,12 @@ void UserCloudPolicyStoreAsh::Load() {
   // Cancel all pending requests.
   weak_factory_.InvalidateWeakPtrs();
 
-  session_manager_client_->RetrievePolicyForUser(
-      cryptohome::CreateAccountIdentifierFromAccountId(account_id_),
-      base::BindOnce(&UserCloudPolicyStoreAsh::OnPolicyRetrieved,
-                     weak_factory_.GetWeakPtr()));
+  login_manager::PolicyDescriptor descriptor =
+      ash::MakeChromePolicyDescriptor(login_manager::ACCOUNT_TYPE_USER,
+                                      cryptohome::GetCryptohomeId(account_id_));
+  session_manager_client_->RetrievePolicy(
+      descriptor, base::BindOnce(&UserCloudPolicyStoreAsh::OnPolicyRetrieved,
+                                 weak_factory_.GetWeakPtr()));
 }
 
 std::unique_ptr<UserCloudPolicyValidator>
@@ -101,10 +104,11 @@ void UserCloudPolicyStoreAsh::LoadImmediately() {
   // Profile initialization never sees unmanaged prefs, which would lead to
   // data loss. http://crbug.com/263061
   std::string policy_blob;
+  login_manager::PolicyDescriptor descriptor =
+      ash::MakeChromePolicyDescriptor(login_manager::ACCOUNT_TYPE_USER,
+                                      cryptohome::GetCryptohomeId(account_id_));
   RetrievePolicyResponseType response_type =
-      session_manager_client_->BlockingRetrievePolicyForUser(
-          cryptohome::CreateAccountIdentifierFromAccountId(account_id_),
-          &policy_blob);
+      session_manager_client_->BlockingRetrievePolicy(descriptor, &policy_blob);
 
   if (response_type == RetrievePolicyResponseType::GET_SERVICE_FAIL) {
     LOG(ERROR)
@@ -254,8 +258,7 @@ void UserCloudPolicyStoreAsh::OnRetrievedPolicyValidated(
     return;
   }
 
-  InstallPolicy(std::move(validator->policy()),
-                std::move(validator->policy_data()),
+  InstallPolicy(std::move(validator->policy_data()),
                 std::move(validator->payload()),
                 cached_policy_key_loader_->cached_policy_key());
   status_ = STATUS_OK;

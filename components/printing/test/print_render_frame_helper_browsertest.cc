@@ -13,14 +13,13 @@
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
-#include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/printing/common/print.mojom-test-utils.h"
 #include "components/printing/common/print.mojom.h"
 #include "components/printing/common/print_params.h"
@@ -29,7 +28,6 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/test/mock_render_thread.h"
 #include "content/public/test/render_view_test.h"
-#include "ipc/ipc_listener.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/image.h"
 #include "printing/mojom/print.mojom.h"
@@ -86,7 +84,7 @@ const char kMultipageHTML[] =
     "<div>page3</div>"
     "</body></html>";
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // A simple webpage with a button to print itself with.
 const char kPrintOnUserAction[] =
     "<body>"
@@ -149,7 +147,7 @@ const char kHTMLWithManyLinesOfText[] =
     "<p>The quick brown fox jumped over the lazy dog.</p>"
     "</body></html>";
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 class FakePrintPreviewUI : public mojom::PrintPreviewUI {
@@ -1711,7 +1709,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, PrintWithIframe) {
 #endif  // MOCK_PRINTER_SUPPORTS_PAGE_IMAGES
 
 // These print preview tests do not work on Chrome OS yet.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 class PrintRenderFrameHelperPreviewTest
@@ -1740,7 +1738,7 @@ class PrintRenderFrameHelperPreviewTest
     PrintRenderFrameHelper* print_render_frame_helper =
         GetPrintRenderFrameHelper();
     print_render_frame_helper->InitiatePrintPreview(
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         mojo::NullAssociatedRemote(),
 #endif
         /*has_selection=*/false);
@@ -1775,7 +1773,7 @@ class PrintRenderFrameHelperPreviewTest
         GetPrintRenderFrameHelperForFrame(render_frame);
     print_render_frame_helper->SetPrintPreviewUI(preview_ui->BindReceiver());
     print_render_frame_helper->InitiatePrintPreview(
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         mojo::NullAssociatedRemote(),
 #endif
         has_selection);
@@ -1901,7 +1899,9 @@ class PrintRenderFrameHelperPreviewTest
                  static_cast<int>(mojom::MarginType::kDefaultMargins))
             .Set(kSettingPagesPerSheet, 1)
             .Set(kSettingPreviewModifiable, true)
+#if BUILDFLAG(IS_CHROMEOS)
             .Set(kSettingPreviewIsFromArc, false)
+#endif
             .Set(kSettingHeaderFooterEnabled, false)
             .Set(kSettingShouldPrintBackgrounds, false)
             .Set(kSettingShouldPrintSelectionOnly, false);
@@ -3219,6 +3219,66 @@ TEST_F(PrintRenderFrameHelperPreviewTest, TextSelectionPageRules) {
   OnClosePrintPreviewDialog();
 }
 
+TEST_F(PrintRenderFrameHelperPreviewTest, TextSelectionPageMediaStyles) {
+  LoadHTML(R"HTML(
+    <style>
+      .showForPrint { display: none; }
+      .hideForPrint { display: block; }
+      @media print {
+        .hideForPrint { display: none; }
+        .showForPrint { display: block; }
+      }
+    </style>
+    <div id="startSelect">x</div>
+    <div style="width:100px; background: #ff0000;">
+      <div class="showForPrint" style="height:100px; background:#00ff00;"></div>
+      <div class="hideForPrint" style="height:200px; background:#ff0000;"></div>
+    </div>
+    <div id="endSelect">x</div>
+    <div style="height:100px; background:#ff0000;"></div>
+    <script>
+      var range = document.createRange();
+      range.setStart(document.getElementById("startSelect"), 0);
+      range.setEnd(document.getElementById("endSelect"), 0)
+      window.getSelection().addRange(range);
+    </script>
+  )HTML");
+  print_settings().Set(kSettingShouldPrintSelectionOnly, true);
+  print_settings().Set(kSettingShouldPrintBackgrounds, true);
+  printer()->set_should_generate_page_images(true);
+
+  OnPrintPreview();
+
+  VerifyPreviewPageCount(1);
+
+  const MockPrinterPage* page = printer()->GetPrinterPage(0);
+  ASSERT_TRUE(page);
+  const Image& image = page->image();
+  EXPECT_EQ(image.size(), gfx::Size(612, 792));
+
+  // PrintRenderFrameHelperPreviewTest has some default margins. In addition,
+  // the default BODY margin of 8px is inserted when printing a selection.
+  // Although the page margins could be removed in this test, the BODY margins
+  // cannot be overridden. 8px doesn't even translate cleanly to points. So just
+  // look for some green at all, and verify that there's no red at all.
+
+  bool found_green = false;
+  for (int y = 0; y < 792; y++) {
+    for (int x = 0; x < 612; x++) {
+      auto pixel = image.pixel_at(x, y);
+      if (pixel == 0x00ff00) {
+        found_green = true;
+      } else {
+        // No red should be seen.
+        ASSERT_TRUE(pixel != 0xff0000);
+      }
+    }
+  }
+  EXPECT_TRUE(found_green);
+
+  OnClosePrintPreviewDialog();
+}
+
 #endif  // MOCK_PRINTER_SUPPORTS_PAGE_IMAGES
 
 // Tests that cancelling print preview works.
@@ -3652,6 +3712,6 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace printing

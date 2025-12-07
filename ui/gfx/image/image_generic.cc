@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/gfx/image/image_platform.h"
-
 #include <memory>
 #include <set>
 #include <utility>
 
 #include "base/logging.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/image/image_platform.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_skia_source.h"
 
@@ -73,8 +74,8 @@ class PNGImageSource : public ImageSkiaSource {
   static ImageSkiaRep ToImageSkiaRep(const ImagePNGRep& png_rep) {
     scoped_refptr<base::RefCountedMemory> raw_data = png_rep.raw_data;
     CHECK(raw_data.get());
-    SkBitmap bitmap;
-    if (!PNGCodec::Decode(raw_data->data(), raw_data->size(), &bitmap)) {
+    SkBitmap bitmap = PNGCodec::Decode(*raw_data);
+    if (bitmap.isNull()) {
       LOG(ERROR) << "Unable to decode PNG for " << png_rep.scale << ".";
       return ImageSkiaRep();
     }
@@ -114,14 +115,17 @@ ImageSkia ImageSkiaFromPNG(const std::vector<ImagePNGRep>& image_png_reps) {
 scoped_refptr<base::RefCountedMemory> Get1xPNGBytesFromImageSkia(
     const ImageSkia* image_skia) {
   ImageSkiaRep image_skia_rep = image_skia->GetRepresentation(1.0f);
-
-  scoped_refptr<base::RefCountedBytes> png_bytes(new base::RefCountedBytes());
-  if (image_skia_rep.scale() != 1.0f ||
-      !PNGCodec::EncodeBGRASkBitmap(image_skia_rep.GetBitmap(), false,
-                                    &png_bytes->as_vector())) {
+  if (image_skia_rep.scale() != 1.0f) {
     return nullptr;
   }
-  return png_bytes;
+
+  std::optional<std::vector<uint8_t>> result = PNGCodec::EncodeBGRASkBitmap(
+      image_skia_rep.GetBitmap(), /*discard_transparency=*/false);
+  if (!result) {
+    return nullptr;
+  }
+
+  return base::MakeRefCounted<base::RefCountedBytes>(std::move(result.value()));
 }
 
 }  // namespace internal

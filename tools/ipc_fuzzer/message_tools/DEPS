@@ -1,5 +1,0 @@
-include_rules = [
-  "+chrome/common/all_messages.h",
-  "+chrome/common/safe_browsing/ipc_protobuf_message_null_macros.h",
-  "+content/common/all_messages.h",
-]

@@ -24,6 +24,7 @@
 
 #include "third_party/blink/renderer/core/html/html_object_element.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_trustedscripturl_usvstring.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -32,6 +33,7 @@
 #include "third_party/blink/renderer/core/dom/tag_collection.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
+#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -61,8 +63,10 @@ void HTMLObjectElement::Trace(Visitor* visitor) const {
 const AttrNameToTrustedType& HTMLObjectElement::GetCheckedAttributeTypes()
     const {
   DEFINE_STATIC_LOCAL(AttrNameToTrustedType, attribute_map,
-                      ({{"data", SpecificTrustedType::kScriptURL},
-                        {"codebase", SpecificTrustedType::kScriptURL}}));
+                      ({{"data", std::pair{SpecificTrustedType::kScriptURL,
+                                           "HTMLObjectElement"}},
+                        {"codebase", std::pair{SpecificTrustedType::kScriptURL,
+                                               "HTMLObjectElement"}}}));
   return attribute_map;
 }
 
@@ -82,7 +86,7 @@ bool HTMLObjectElement::IsPresentationAttribute(
 void HTMLObjectElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (name == html_names::kBorderAttr)
     ApplyBorderAttributeToStyle(value, style);
   else
@@ -174,8 +178,7 @@ void HTMLObjectElement::ReloadPluginOnAttributeChange(
   } else if (name == html_names::kClassidAttr) {
     needs_invalidation = true;
   } else {
-    NOTREACHED_IN_MIGRATION();
-    needs_invalidation = false;
+    NOTREACHED();
   }
   SetNeedsPluginUpdate(true);
   if (needs_invalidation)
@@ -221,7 +224,8 @@ void HTMLObjectElement::UpdatePluginInternal() {
       GetDocument().GetFrame()->Client()->OverrideFlashEmbedWithHTML(
           GetDocument().CompleteURL(url_));
   if (!overriden_url.IsEmpty()) {
-    UseCounter::Count(GetDocument(), WebFeature::kOverrideFlashEmbedwithHTML);
+    Deprecation::CountDeprecation(GetDocument().GetExecutionContext(),
+                                  WebFeature::kOverrideFlashEmbedwithHTML);
     url_ = overriden_url.GetString();
     SetServiceType("text/html");
   }
@@ -322,10 +326,47 @@ void HTMLObjectElement::RenderFallbackContent(
     }
   }
 
-  // TODO(dcheng): Detach the content frame here.
+  // To discard the nested browsing context, detach the content frame.
+  DisconnectContentFrame();
+
   UseCounter::Count(GetDocument(), WebFeature::kHTMLObjectElementFallback);
   use_fallback_content_ = true;
   ReattachFallbackContent();
+}
+
+V8UnionTrustedScriptURLOrUSVString* HTMLObjectElement::data() {
+  return MakeGarbageCollected<V8UnionTrustedScriptURLOrUSVString>(
+      GetURLAttribute(html_names::kDataAttr));
+}
+
+void HTMLObjectElement::setData(const V8UnionTrustedScriptURLOrUSVString* value,
+                                ExceptionState& exception_state) {
+  String compliant_value = TrustedTypesCheckForScriptURL(
+      value, GetExecutionContext(), "HTMLObjectElement", "data",
+      exception_state);
+  if (exception_state.HadException()) {
+    return;
+  }
+  SetAttributeWithoutValidation(html_names::kDataAttr,
+                                AtomicString(compliant_value));
+}
+
+V8UnionTrustedScriptURLOrUSVString* HTMLObjectElement::codeBase() {
+  return MakeGarbageCollected<V8UnionTrustedScriptURLOrUSVString>(
+      GetURLAttribute(html_names::kCodebaseAttr));
+}
+
+void HTMLObjectElement::setCodeBase(
+    const V8UnionTrustedScriptURLOrUSVString* value,
+    ExceptionState& exception_state) {
+  String compliant_value = TrustedTypesCheckForScriptURL(
+      value, GetExecutionContext(), "HTMLObjectElement", "codeBase",
+      exception_state);
+  if (exception_state.HadException()) {
+    return;
+  }
+  SetAttributeWithoutValidation(html_names::kCodebaseAttr,
+                                AtomicString(compliant_value));
 }
 
 bool HTMLObjectElement::IsExposed() const {
@@ -373,6 +414,10 @@ HTMLFormElement* HTMLObjectElement::formOwner() const {
   return ListedElement::Form();
 }
 
+HTMLElement* HTMLObjectElement::formForBinding() const {
+  return ListedElement::RetargetedForm();
+}
+
 bool HTMLObjectElement::UseFallbackContent() const {
   return HTMLPlugInElement::UseFallbackContent() || use_fallback_content_;
 }
@@ -402,23 +447,6 @@ bool HTMLObjectElement::DidFinishLoading() const {
 
 int HTMLObjectElement::DefaultTabIndex() const {
   return 0;
-}
-
-const HTMLObjectElement* ToHTMLObjectElementFromListedElement(
-    const ListedElement* element) {
-  SECURITY_DCHECK(!element || !element->IsFormControlElement());
-  const HTMLObjectElement* object_element =
-      static_cast<const HTMLObjectElement*>(element);
-  // We need to assert after the cast because ListedElement doesn't
-  // have hasTagName.
-  SECURITY_DCHECK(!object_element ||
-                  object_element->HasTagName(html_names::kObjectTag));
-  return object_element;
-}
-
-const HTMLObjectElement& ToHTMLObjectElementFromListedElement(
-    const ListedElement& element) {
-  return *ToHTMLObjectElementFromListedElement(&element);
 }
 
 }  // namespace blink

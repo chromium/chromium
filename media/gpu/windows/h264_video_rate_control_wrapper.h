@@ -5,13 +5,13 @@
 #ifndef MEDIA_GPU_WINDOWS_H264_VIDEO_RATE_CONTROL_WRAPPER_H_
 #define MEDIA_GPU_WINDOWS_H264_VIDEO_RATE_CONTROL_WRAPPER_H_
 
+#include "media/gpu/h264_ratectrl_rtc.h"
 #include "media/gpu/windows/video_rate_control_wrapper.h"
 
 namespace media {
 struct H264RateControllerSettings;
 typedef H264RateControllerSettings H264RateControlConfigRTC;
 struct H264FrameParamsRTC;
-class H264RateCtrlRTC;
 
 using H264RateControl =
     VideoRateControlWrapperInternal<H264RateControlConfigRTC,

@@ -34,6 +34,8 @@ struct UrlHandlerInfo {
   URLPatternSet patterns;
 };
 
+// UrlHandlers allow platform apps to declare they handle specific URLs. See
+// https://developer.chrome.com/docs/apps/manifest/url_handlers
 struct UrlHandlers : public Extension::ManifestData {
   UrlHandlers();
   ~UrlHandlers() override;
@@ -45,9 +47,6 @@ struct UrlHandlers : public Extension::ManifestData {
   // Determines whether |app| has at least one URL handler that matches
   // |url|.
   static bool CanPlatformAppHandleUrl(const Extension* app, const GURL& url);
-
-  // Determines whether |app| has at least one URL handler that matches |url|.
-  static bool CanBookmarkAppHandleUrl(const Extension* app, const GURL& url);
 
   // Finds a matching URL handler for |app|, if any. Returns nullptr if none
   // are found.

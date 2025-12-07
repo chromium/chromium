@@ -66,7 +66,7 @@ CaptivePortalService::CaptivePortalService(
       state_(STATE_IDLE),
       enabled_(false),
       last_detection_result_(RESULT_INTERNET_CONNECTED),
-      test_url_(CaptivePortalDetector::kDefaultURL),
+      test_url_(CaptivePortalDetector::GetDefaultUrl()),
       tick_clock_for_testing_(clock_for_testing) {
   network::mojom::URLLoaderFactory* loader_factory;
   if (loader_factory_for_testing) {

@@ -16,7 +16,8 @@ import '../../common/icons.html.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {CurrentAttribution, CurrentWallpaper, WallpaperType} from '../../personalization_app.mojom-webui.js';
+import type {CurrentAttribution, CurrentWallpaper} from '../../personalization_app.mojom-webui.js';
+import {WallpaperType} from '../../personalization_app.mojom-webui.js';
 import {Paths, PersonalizationRouterElement} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 

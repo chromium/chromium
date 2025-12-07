@@ -12,11 +12,12 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/boca/babelorca/token_data_wrapper.h"
 #include "chromeos/ash/components/boca/babelorca/token_fetcher.h"
@@ -24,7 +25,6 @@
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
 namespace ash::babelorca {
@@ -38,8 +38,13 @@ bool IsOAuthTokenFetchRetryableError(
 
 }  // namespace
 
-OAuthTokenFetcher::OAuthTokenFetcher(signin::IdentityManager* identity_manager)
-    : identity_manager_(identity_manager) {}
+OAuthTokenFetcher::OAuthTokenFetcher(
+    signin::IdentityManager* identity_manager,
+    const signin::OAuthConsumerId oauth_consumer_id,
+    const std::string& uma_name)
+    : identity_manager_(identity_manager),
+      oauth_consumer_id_(oauth_consumer_id),
+      uma_name_(uma_name) {}
 
 OAuthTokenFetcher::~OAuthTokenFetcher() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -49,7 +54,6 @@ OAuthTokenFetcher::~OAuthTokenFetcher() {
 void OAuthTokenFetcher::FetchToken(TokenFetchCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (access_token_fetcher_) {
-    LOG(ERROR) << "Tachyon oauth token fetch is already in progress.";
     std::move(callback).Run(std::nullopt);
     return;
   }
@@ -60,10 +64,9 @@ void OAuthTokenFetcher::FetchTokenInternal(TokenFetchCallback callback,
                                            int retry_num) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(identity_manager_);
-  static constexpr char kOauthConsumerName[] = "babel_orca";
   access_token_fetcher_ = identity_manager_->CreateAccessTokenFetcherForAccount(
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-      kOauthConsumerName, {GaiaConstants::kTachyonOAuthScope},
+      oauth_consumer_id_,
       base::BindOnce(
           &OAuthTokenFetcher::OnOAuthTokenRequestCompleted,
           // base::Unretained is safe, `this` owns `access_token_fetcher_`.
@@ -77,9 +80,14 @@ void OAuthTokenFetcher::OnOAuthTokenRequestCompleted(
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  static constexpr int kMaxRetries = 2;
-  static constexpr base::TimeDelta kRetryInitialBackoff =
-      base::Milliseconds(500);
+  constexpr int kMaxRetries = 2;
+  constexpr base::TimeDelta kRetryInitialBackoff = base::Milliseconds(500);
+  constexpr char kErrorUmaPathTemplate[] =
+      "Ash.Boca.Babelorca.$1.OAuthFetchError";
+  base::UmaHistogramEnumeration(
+      base::ReplaceStringPlaceholders(kErrorUmaPathTemplate, {uma_name_},
+                                      /*=offsets*/ nullptr),
+      error.state(), GoogleServiceAuthError::NUM_STATES);
   if (retry_num < kMaxRetries &&
       IsOAuthTokenFetchRetryableError(error.state())) {
     retry_timer_.Start(FROM_HERE, (retry_num + 1) * kRetryInitialBackoff,
@@ -95,6 +103,9 @@ void OAuthTokenFetcher::OnOAuthTokenRequestCompleted(
         std::move(access_token_info.token), access_token_info.expiration_time));
     return;
   }
+  VLOG(1) << "OAuth token fetch failed for consumer id:"
+          << static_cast<int>(oauth_consumer_id_)
+          << " with error: " << error.state();
   std::move(callback).Run(std::nullopt);
 }
 

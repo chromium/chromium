@@ -14,6 +14,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -35,7 +36,7 @@ std::string GetStorageKeyFromSpecifics(const UserEventSpecifics& specifics) {
   // which allows leveldb to append new writes, which it is best at.
   // TODO(skym): Until we force |event_time_usec| to never conflict, this has
   // the potential for errors.
-  std::array<uint8_t, 8> key =
+  const std::array<uint8_t, 8> key =
       base::U64ToBigEndian(specifics.event_time_usec());
   return std::string(key.begin(), key.end());
 }
@@ -70,7 +71,13 @@ UserEventSyncBridge::UserEventSyncBridge(
                           weak_ptr_factory_.GetWeakPtr()));
 }
 
-UserEventSyncBridge::~UserEventSyncBridge() = default;
+UserEventSyncBridge::~UserEventSyncBridge() {
+  // TODO(crbug.com/362428820): Remove logging once investigation is complete.
+  if (store_) {
+    VLOG(1) << "UserEvents during destruction: "
+            << store_->in_memory_data().size();
+  }
+}
 
 std::unique_ptr<MetadataChangeList>
 UserEventSyncBridge::CreateMetadataChangeList() {
@@ -82,7 +89,7 @@ std::optional<ModelError> UserEventSyncBridge::MergeFullSyncData(
     EntityChangeList entity_data) {
   DCHECK(entity_data.empty());
   DCHECK(change_processor()->IsTrackingMetadata());
-  DCHECK(!change_processor()->TrackedAccountId().empty());
+  DCHECK(!change_processor()->TrackedGaiaId().empty());
   return ApplyIncrementalSyncChanges(std::move(metadata_change_list),
                                      std::move(entity_data));
 }
@@ -108,7 +115,7 @@ std::optional<ModelError> UserEventSyncBridge::ApplyIncrementalSyncChanges(
   std::erase_if(
       in_flight_nav_linked_events_,
       [&deleted_event_times](
-          const std::pair<int64_t, sync_pb::UserEventSpecifics> kv) {
+          const std::pair<int64_t, sync_pb::UserEventSpecifics>& kv) {
         return deleted_event_times.contains(kv.second.event_time_usec());
       });
 
@@ -147,12 +154,20 @@ std::unique_ptr<DataBatch> UserEventSyncBridge::GetAllDataForDebugging() {
   return batch;
 }
 
-std::string UserEventSyncBridge::GetClientTag(const EntityData& entity_data) {
+std::string UserEventSyncBridge::GetClientTag(
+    const EntityData& entity_data) const {
   return GetStorageKey(entity_data);
 }
 
-std::string UserEventSyncBridge::GetStorageKey(const EntityData& entity_data) {
+std::string UserEventSyncBridge::GetStorageKey(
+    const EntityData& entity_data) const {
   return GetStorageKeyFromSpecifics(entity_data.specifics.user_event());
+}
+
+bool UserEventSyncBridge::IsEntityDataValid(
+    const EntityData& entity_data) const {
+  // USER_EVENTS is a commit only data type so this method is not called.
+  NOTREACHED();
 }
 
 void UserEventSyncBridge::ApplyDisableSyncChanges(
@@ -189,7 +204,7 @@ void UserEventSyncBridge::RecordUserEventImpl(
     return;
   }
 
-  std::string storage_key = GetStorageKeyFromSpecifics(*specifics);
+  const std::string storage_key = GetStorageKeyFromSpecifics(*specifics);
   // There are two scenarios we need to guard against here. First, the given
   // user even may have been read from an old global_id timestamp off of a
   // navigation, which has already been re-written. In this case, we should be
@@ -200,7 +215,7 @@ void UserEventSyncBridge::RecordUserEventImpl(
   // scenario, we store a specifics copy in |in in_flight_nav_linked_events_|,
   // and will re-record in HandleGlobalIdChange.
   if (specifics->has_navigation_id()) {
-    int64_t latest_global_id =
+    const int64_t latest_global_id =
         global_id_mapper_->GetLatestGlobalId(specifics->navigation_id());
     specifics->set_navigation_id(latest_global_id);
     in_flight_nav_linked_events_.insert(

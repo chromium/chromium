@@ -12,4 +12,5 @@ include_rules = [
   "+services/network/public",
   "+services/network/test",
   "+third_party/boringssl",
+  "+third_party/libxml/chromium",
 ]

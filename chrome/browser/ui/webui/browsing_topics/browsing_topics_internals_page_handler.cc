@@ -6,12 +6,14 @@
 
 #include <utility>
 
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/browsing_topics/mojom/browsing_topics_internals.mojom.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "content/public/common/content_features.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 
 BrowsingTopicsInternalsPageHandler::BrowsingTopicsInternalsPageHandler(
@@ -26,7 +28,7 @@ void BrowsingTopicsInternalsPageHandler::GetBrowsingTopicsConfiguration(
     browsing_topics::mojom::PageHandler::GetBrowsingTopicsConfigurationCallback
         callback) {
   auto config = browsing_topics::mojom::WebUIBrowsingTopicsConfiguration::New(
-      base::FeatureList::IsEnabled(blink::features::kBrowsingTopics),
+      base::FeatureList::IsEnabled(network::features::kBrowsingTopics),
       base::FeatureList::IsEnabled(features::kPrivacySandboxAdsAPIsOverride),
       base::FeatureList::IsEnabled(
           privacy_sandbox::kOverridePrivacySandboxSettingsLocalTesting),

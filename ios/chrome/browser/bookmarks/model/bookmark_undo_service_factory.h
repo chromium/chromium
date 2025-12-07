@@ -5,28 +5,20 @@
 #ifndef IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARK_UNDO_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARK_UNDO_SERVICE_FACTORY_H_
 
-#include <memory>
-
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "base/no_destructor.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class BookmarkUndoService;
-class ChromeBrowserState;
+class ProfileIOS;
 
 namespace ios {
 // Singleton that owns all FaviconServices and associates them with
-// ChromeBrowserState.
-class BookmarkUndoServiceFactory : public BrowserStateKeyedServiceFactory {
+// ProfileIOS.
+class BookmarkUndoServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  static BookmarkUndoService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
-  static BookmarkUndoService* GetForBrowserStateIfExists(
-      ChromeBrowserState* browser_state);
+  static BookmarkUndoService* GetForProfile(ProfileIOS* profile);
+  static BookmarkUndoService* GetForProfileIfExists(ProfileIOS* profile);
   static BookmarkUndoServiceFactory* GetInstance();
-
-  BookmarkUndoServiceFactory(const BookmarkUndoServiceFactory&) = delete;
-  BookmarkUndoServiceFactory& operator=(const BookmarkUndoServiceFactory&) =
-      delete;
 
  private:
   friend class base::NoDestructor<BookmarkUndoServiceFactory>;
@@ -34,9 +26,9 @@ class BookmarkUndoServiceFactory : public BrowserStateKeyedServiceFactory {
   BookmarkUndoServiceFactory();
   ~BookmarkUndoServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 }  // namespace ios

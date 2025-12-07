@@ -18,8 +18,7 @@ WebApkHandlerDelegate::WebApkHandlerDelegate(const WebApkInfoCallback& callback)
     : callback_(callback) {
   JNIEnv* env = base::android::AttachCurrentThread();
   j_obj_.Reset(env, Java_WebApkHandlerDelegate_create(
-                        env, reinterpret_cast<intptr_t>(this))
-                        .obj());
+                        env, reinterpret_cast<intptr_t>(this)));
 }
 
 WebApkHandlerDelegate::~WebApkHandlerDelegate() {
@@ -44,7 +43,7 @@ void WebApkHandlerDelegate::OnWebApkInfoRetrieved(
     const std::string& jscope,
     const std::string& jmanifest_url,
     const std::string& jmanifest_start_url,
-    const base::android::JavaParamRef<jstring>& jmanifest_id,
+    const base::android::JavaRef<jstring>& jmanifest_id,
     const jint jdisplay_mode,
     const jint jorientation,
     const jlong jtheme_color,
@@ -54,7 +53,7 @@ void WebApkHandlerDelegate::OnWebApkInfoRetrieved(
     const jlong jlast_update_check_time_ms,
     const jlong jlast_update_completion_time_ms,
     const jboolean jrelax_updates,
-    const base::android::JavaParamRef<jstring>& jbacking_browser_package_name,
+    const base::android::JavaRef<jstring>& jbacking_browser_package_name,
     const jboolean jis_backing_browser,
     const std::string& jupdate_status) {
   std::string backing_browser_package_name;
@@ -84,3 +83,5 @@ void WebApkHandlerDelegate::OnWebApkInfoRetrieved(
       static_cast<bool>(jrelax_updates), backing_browser_package_name,
       static_cast<bool>(jis_backing_browser), jupdate_status));
 }
+
+DEFINE_JNI(WebApkHandlerDelegate)

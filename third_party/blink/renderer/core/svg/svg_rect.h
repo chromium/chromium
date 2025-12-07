@@ -20,7 +20,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_RECT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_RECT_H_
 
-#include "third_party/blink/renderer/core/svg/properties/svg_property_helper.h"
+#include "third_party/blink/renderer/core/svg/properties/svg_property.h"
 #include "third_party/blink/renderer/core/svg/svg_parsing_error.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -30,7 +30,7 @@ namespace blink {
 
 class SVGRectTearOff;
 
-class SVGRect final : public SVGPropertyHelper<SVGRect> {
+class SVGRect final : public SVGPropertyBase {
  public:
   typedef SVGRectTearOff TearOffType;
 
@@ -74,13 +74,14 @@ class SVGRect final : public SVGPropertyHelper<SVGRect> {
                           const SVGElement* context_element) const override;
 
   static AnimatedPropertyType ClassType() { return kAnimatedRect; }
+  AnimatedPropertyType GetType() const override { return ClassType(); }
 
  private:
   friend class SVGFitToViewBox;
   bool IsValid() const { return is_valid_; }
 
   template <typename CharType>
-  SVGParsingError Parse(const CharType*& ptr, const CharType* end);
+  SVGParsingError Parse(base::span<const CharType>);
   void Set(float x, float y, float width, float height);
   void Add(float x, float y, float width, float height);
 

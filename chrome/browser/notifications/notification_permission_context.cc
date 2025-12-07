@@ -18,13 +18,18 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_request_id.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
+#include "content/public/browser/permission_descriptor_util.h"
+#include "content/public/browser/permission_request_description.h"
+#include "content/public/browser/permission_result.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "chrome/browser/android/flags/chrome_cached_flags.h"
 #include "chrome/browser/android/shortcut_helper.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -57,20 +62,26 @@ void NotificationPermissionContext::UpdatePermission(
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
 NotificationPermissionContext::NotificationPermissionContext(
     content::BrowserContext* browser_context)
-    : PermissionContextBase(browser_context,
-                            ContentSettingsType::NOTIFICATIONS,
-                            blink::mojom::PermissionsPolicyFeature::kNotFound) {
+    : ContentSettingPermissionContextBase(
+          browser_context,
+          ContentSettingsType::NOTIFICATIONS,
+          network::mojom::PermissionsPolicyFeature::kNotFound) {
+#if BUILDFLAG(IS_ANDROID)
+  if (Profile::FromBrowserContext(browser_context)->AsTestingProfile()) {
+    enabled_app_level_notification_permission_for_testing_ = true;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
-NotificationPermissionContext::~NotificationPermissionContext() {}
+NotificationPermissionContext::~NotificationPermissionContext() = default;
 
-ContentSetting NotificationPermissionContext::GetPermissionStatusInternal(
+ContentSetting NotificationPermissionContext::GetContentSettingStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
@@ -83,9 +94,9 @@ ContentSetting NotificationPermissionContext::GetPermissionStatusInternal(
     return extension_status;
 #endif
 
-  ContentSetting setting =
-      permissions::PermissionContextBase::GetPermissionStatusInternal(
-          render_frame_host, requesting_origin, embedding_origin);
+  ContentSetting setting = permissions::ContentSettingPermissionContextBase::
+      GetContentSettingStatusInternal(render_frame_host, requesting_origin,
+                                      embedding_origin);
 
   content_settings::PageSpecificContentSettings::NotificationsAccessed(
       render_frame_host, /*blocked=*/setting != CONTENT_SETTING_ALLOW);
@@ -107,7 +118,7 @@ ContentSetting NotificationPermissionContext::GetPermissionStatusForExtension(
       extensions::ExtensionRegistry::Get(
           Profile::FromBrowserContext(browser_context()))
           ->enabled_extensions()
-          .GetByID(origin.host());
+          .GetByID(origin.GetHost());
 
   if (!extension || !extension->permissions_data()->HasAPIPermission(
                         extensions::mojom::APIPermissionID::kNotifications)) {
@@ -130,7 +141,7 @@ ContentSetting NotificationPermissionContext::GetPermissionStatusForExtension(
 #endif
 
 void NotificationPermissionContext::DecidePermission(
-    permissions::PermissionRequestData request_data,
+    std::unique_ptr<permissions::PermissionRequestData> request_data,
     permissions::BrowserPermissionCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -139,13 +150,15 @@ void NotificationPermissionContext::DecidePermission(
   // continue to be allowed in all iframes: such frames could trivially work
   // around the restriction by posting a message to their Service Worker, where
   // showing a notification is allowed.
-  if (request_data.requesting_origin != request_data.embedding_origin) {
-    std::move(callback).Run(CONTENT_SETTING_BLOCK);
+  if (request_data->requesting_origin != request_data->embedding_origin) {
+    std::move(callback).Run(content::PermissionResult(
+        blink::mojom::PermissionStatus::DENIED,
+        content::PermissionStatusSource::UNSPECIFIED));
     return;
   }
 
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
-      request_data.id.global_render_frame_host_id());
+      request_data->id.global_render_frame_host_id());
 
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(rfh);
@@ -164,52 +177,66 @@ void NotificationPermissionContext::DecidePermission(
     VisibilityTimerTabHelper::FromWebContents(web_contents)
         ->PostTaskAfterVisibleDelay(
             FROM_HERE,
-            base::BindOnce(&NotificationPermissionContext::NotifyPermissionSet,
-                           weak_factory_ui_thread_.GetWeakPtr(),
-                           request_data.id, request_data.requesting_origin,
-                           request_data.embedding_origin, std::move(callback),
-                           /*persist=*/true, CONTENT_SETTING_BLOCK,
-                           /*is_one_time=*/false,
-                           /*is_final_decision=*/true),
+            base::BindOnce(
+                [](base::WeakPtr<NotificationPermissionContext> context,
+                   std::unique_ptr<permissions::PermissionRequestData>
+                       request_data,
+                   permissions::BrowserPermissionCallback callback) {
+                  if (context) {
+                    context->NotifyPermissionSet(
+                        *request_data, std::move(callback),
+                        /*persist=*/true, PermissionDecision::kDeny,
+                        /*is_final_decision=*/true);
+                  }
+                },
+                weak_factory_ui_thread_.GetWeakPtr(), std::move(request_data),
+                std::move(callback)),
             base::Seconds(delay_seconds));
     return;
   }
 
 #if BUILDFLAG(IS_ANDROID)
   bool contains_webapk = ShortcutHelper::DoesOriginContainAnyInstalledWebApk(
-      request_data.requesting_origin);
+      request_data->requesting_origin);
   bool contains_twa =
       ShortcutHelper::DoesOriginContainAnyInstalledTrustedWebActivity(
-          request_data.requesting_origin);
+          request_data->requesting_origin);
   bool contains_installed_webapp = contains_twa || contains_webapk;
-  if (base::android::BuildInfo::GetInstance()->is_at_least_t() &&
+  if (base::android::android_info::sdk_int() >=
+          base::android::android_info::SDK_VERSION_T &&
       contains_installed_webapp) {
     // WebAPKs match URLs using a scope URL which may contain a path. An origin
     // has no path and would not fall within such a scope. So to find a matching
     // WebAPK we must pass a more complete URL e.g. GetLastCommittedURL.
     InstalledWebappBridge::DecidePermission(
-        ContentSettingsType::NOTIFICATIONS, request_data.requesting_origin,
+        ContentSettingsType::NOTIFICATIONS, request_data->requesting_origin,
         web_contents->GetLastCommittedURL(),
         base::BindOnce(&NotificationPermissionContext::NotifyPermissionSet,
-                       weak_factory_ui_thread_.GetWeakPtr(), request_data.id,
-                       request_data.requesting_origin,
-                       request_data.embedding_origin, std::move(callback),
+                       weak_factory_ui_thread_.GetWeakPtr(),
+                       permissions::PermissionRequestData(
+                           this, request_data->id,
+                           content::PermissionRequestDescription(
+                               content::PermissionDescriptorUtil::
+                                   CreatePermissionDescriptorForPermissionType(
+                                       blink::PermissionType::NOTIFICATIONS)),
+                           request_data->requesting_origin,
+                           request_data->embedding_origin),
+                       std::move(callback),
                        /*persist=*/false));
     return;
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  permissions::PermissionContextBase::DecidePermission(std::move(request_data),
-                                                       std::move(callback));
+  permissions::ContentSettingPermissionContextBase::DecidePermission(
+      std::move(request_data), std::move(callback));
 }
 
 void NotificationPermissionContext::UpdateTabContext(
-    const permissions::PermissionRequestID& id,
-    const GURL& requesting_frame,
+    const permissions::PermissionRequestData& request_data,
     bool allowed) {
   auto* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
-          id.global_render_frame_host_id());
+          request_data.id.global_render_frame_host_id());
   if (!content_settings) {
     return;
   }

@@ -10,7 +10,6 @@
 
 #include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "ash/public/cpp/login_screen.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
@@ -23,7 +22,6 @@
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -36,6 +34,10 @@ namespace ash {
 namespace {
 
 constexpr base::TimeDelta kUsageTimeLimitWarningTime = base::Minutes(15);
+
+// Delay the check until after the lock screen is expected to be dismissed.
+// Otherwise, requesting lock does not work.
+constexpr base::TimeDelta kCheckLoginDelay = base::Seconds(15);
 
 // Dictionary keys for prefs::kScreenTimeLastState.
 constexpr char kScreenStateLocked[] = "locked";
@@ -59,8 +61,7 @@ AuthDisabledReason ConvertLockReason(
     case usage_time_limit::PolicyType::kNoPolicy:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return AuthDisabledReason();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -164,16 +165,15 @@ void ScreenTimeController::CheckTimeLimit(const std::string& source) {
   if (state.is_locked) {
     OnScreenLockByPolicy(state.active_policy, state.next_unlock_time);
     DCHECK(!state.next_unlock_time.is_null());
-    if (!session_manager::SessionManager::Get()->IsScreenLocked())
+    if (!session_manager::SessionManager::Get()->IsScreenLocked()) {
       ForceScreenLockByPolicy();
+    }
   } else {
     OnScreenLockByPolicyEnd();
     std::optional<TimeLimitNotifier::LimitType> notification_type =
         ConvertPolicyType(state.next_state_active_policy);
     if (notification_type.has_value()) {
       // Schedule notification based on the remaining screen time until lock.
-      // TODO(crbug.com/41422189): Dismiss a shown notification when it no
-      // longer applies.
       const base::TimeDelta remaining_time = state.next_state_change_time - now;
       time_limit_notifier_.MaybeScheduleLockNotifications(
           notification_type.value(), remaining_time);
@@ -219,11 +219,8 @@ void ScreenTimeController::ForceScreenLockByPolicy() {
   // Avoid abrupt session restart that looks like a crash and happens when lock
   // screen is requested before sign in completion. It is safe, because time
   // limits will be reevaluated when session state changes to active.
-  // TODO(agawronska): Remove the flag when it is confirmed that this does not
-  // cause a bug (https://crbug.com/924844).
-  if (base::FeatureList::IsEnabled(features::kDMServerOAuthForChildUser) &&
-      session_manager::SessionManager::Get()->session_state() !=
-          session_manager::SessionState::ACTIVE) {
+  if (session_manager::SessionManager::Get()->session_state() !=
+      session_manager::SessionState::ACTIVE) {
     return;
   }
 
@@ -482,11 +479,23 @@ void ScreenTimeController::OnSessionStateChanged() {
   TRACE_EVENT0("ui", "ScreenTimeController::OnSessionStateChanged");
   session_manager::SessionState session_state =
       session_manager::SessionManager::Get()->session_state();
-  std::optional<usage_time_limit::State> last_state = GetLastStateFromPref();
-  if (session_state == session_manager::SessionState::LOCKED && last_state &&
-      last_state->is_locked) {
-    OnScreenLockByPolicy(last_state->active_policy,
-                         last_state->next_unlock_time);
+  if (session_state == session_manager::SessionState::ACTIVE) {
+    // Schedule a check after login. There are rare circumstances
+    // where login can happen just before policy enforcement is scheduled where
+    // the next event check is not scheduled.
+    next_state_timer_->Start(
+        FROM_HERE, kCheckLoginDelay,
+        base::BindOnce(&ScreenTimeController::CheckTimeLimit,
+                       base::Unretained(this), "Login"));
+    return;
+  }
+
+  if (session_state == session_manager::SessionState::LOCKED) {
+    std::optional<usage_time_limit::State> last_state = GetLastStateFromPref();
+    if (last_state && last_state->is_locked) {
+      OnScreenLockByPolicy(last_state->active_policy,
+                           last_state->next_unlock_time);
+    }
   }
 }
 

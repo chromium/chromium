@@ -134,7 +134,7 @@ If your tutorial launches from an IPH, you can test it any of the ways you could
 test an IPH, suggestions are [in the documentation](./feature-promos.md).
 
 You can also launch your Tutorial directly from the tester page
-(chrome://internals/user-education). Note that unlike IPH, you do not need to
+(chrome://user-education-internals). Note that unlike IPH, you do not need to
 have the starting point of the tutorial present when you click the "Launch"
 button; you merely need to be able to bring it up in 20-30 seconds. The tutorial
 will start as soon as the anchor view for the first bubble of the tutorial
@@ -150,7 +150,7 @@ In the second case, press the promo's action button to start the Tutorial.
 
 To launch a Tutorial directly in an `interactive_ui_tests` test, invoke the
 instance of
-[`TutorialService`](/components/user_education/common/tutorial_service.h) you
+[`TutorialService`](/components/user_education/common/tutorial/tutorial_service.h) you
 get from the current profile's
 [`UserEducationService`](/chrome/browser/user_education/user_education_service.h)
 via `UserEducationServiceFactory::GetForBrowserContext()`.

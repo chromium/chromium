@@ -8,7 +8,6 @@
 #include "base/memory/protected_memory.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
@@ -18,14 +17,11 @@ class ExecutionContext;
 // pertaining to the enabled/disabled state of any platform API features which
 // are gated behind a ContextEnabled extended attribute in IDL.
 class CORE_EXPORT ContextFeatureSettings final
-    : public GarbageCollected<ContextFeatureSettings>,
-      public Supplement<ExecutionContext> {
+    : public GarbageCollected<ContextFeatureSettings> {
  public:
-  static const char kSupplementName[];
-
   enum class CreationMode { kCreateIfNotExists, kDontCreateIfNotExists };
 
-  explicit ContextFeatureSettings(ExecutionContext&);
+  ContextFeatureSettings() = default;
 
   // Returns the ContextFeatureSettings for an ExecutionContext. If one does not
   // already exist for the given context, one is created.
@@ -67,7 +63,7 @@ class CORE_EXPORT ContextFeatureSettings final
     return enable_private_aggregation_in_shared_storage_;
   }
 
-  void Trace(Visitor*) const override;
+  void Trace(Visitor*) const;
 
  private:
   bool enable_mojo_js_ = false;

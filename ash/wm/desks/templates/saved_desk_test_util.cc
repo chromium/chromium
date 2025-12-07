@@ -6,6 +6,7 @@
 
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
+#include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/overview_desk_bar_view.h"
 #include "ash/wm/desks/templates/saved_desk_controller.h"
 #include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
@@ -13,10 +14,12 @@
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
 #include "ash/wm/desks/templates/saved_desk_save_desk_button.h"
 #include "ash/wm/overview/overview_grid.h"
+#include "ash/wm/overview/overview_grid_test_api.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/animation/bounds_animator_observer.h"
@@ -108,7 +111,7 @@ SavedDeskLibraryViewTestApi::SavedDeskLibraryViewTestApi(
     : library_view_(library_view) {}
 
 void SavedDeskLibraryViewTestApi::WaitForAnimationDone() {
-  for (ash::SavedDeskGridView* grid_view : library_view_->grid_views()) {
+  for (SavedDeskGridView* grid_view : library_view_->grid_views()) {
     SavedDeskGridViewTestApi(grid_view).WaitForItemMoveAnimationDone();
   }
 }
@@ -189,8 +192,7 @@ std::vector<SavedDeskItemView*> GetItemViewsFromDeskLibrary(
     SavedDeskLibraryView* saved_desk_library_view) {
   DCHECK(saved_desk_library_view);
   std::vector<SavedDeskItemView*> grid_items;
-  for (ash::SavedDeskGridView* grid_view :
-       saved_desk_library_view->grid_views()) {
+  for (SavedDeskGridView* grid_view : saved_desk_library_view->grid_views()) {
     auto& items = grid_view->grid_items();
     grid_items.insert(grid_items.end(), items.begin(), items.end());
   }
@@ -227,16 +229,6 @@ const views::Button* GetLibraryButton() {
   return desks_bar_view->library_button();
 }
 
-const views::Button* GetSaveDeskAsTemplateButton() {
-  auto* overview_grid = GetPrimaryOverviewGrid();
-  return overview_grid ? overview_grid->GetSaveDeskAsTemplateButton() : nullptr;
-}
-
-const views::Button* GetSaveDeskForLaterButton() {
-  auto* overview_grid = GetPrimaryOverviewGrid();
-  return overview_grid ? overview_grid->GetSaveDeskForLaterButton() : nullptr;
-}
-
 const views::Button* GetSavedDeskItemButton(int index) {
   auto* item = GetItemViewFromSavedDeskGrid(index);
   return item ? static_cast<views::Button*>(item) : nullptr;
@@ -265,6 +257,11 @@ void WaitForSavedDeskUI() {
   SavedDeskPresenterTestApi(overview_session->saved_desk_presenter())
       .SetOnUpdateUiClosure(run_loop.QuitClosure());
   run_loop.Run();
+}
+
+bool WaitForLibraryButtonVisible() {
+  return base::test::RunUntil(
+      []() { return IsLazyInitViewVisible(GetLibraryButton()); });
 }
 
 const app_restore::AppRestoreData* QueryRestoreData(
@@ -299,7 +296,7 @@ void AddSavedDeskEntry(desks_storage::DeskModel* desk_model,
       std::move(saved_desk),
       base::BindLambdaForTesting(
           [&](desks_storage::DeskModel::AddOrUpdateEntryStatus status,
-              std::unique_ptr<ash::DeskTemplate> new_entry) {
+              std::unique_ptr<DeskTemplate> new_entry) {
             CHECK_EQ(desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk,
                      status);
             loop.Quit();

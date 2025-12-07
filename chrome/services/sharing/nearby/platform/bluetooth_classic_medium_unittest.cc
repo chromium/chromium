@@ -19,8 +19,7 @@
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 namespace {
 const char kDeviceAddress1[] = "DeviceAddress1";
@@ -376,5 +375,4 @@ TEST_F(BluetoothClassicMediumTest, TestListenForService_Failure) {
       kNearbySharingServiceName, kNearbySharingServiceUuid.value()));
 }
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome

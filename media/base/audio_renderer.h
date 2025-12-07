@@ -72,10 +72,14 @@ class MEDIA_EXPORT AudioRenderer {
   // preservation when playing back at speeds other than 1.0.
   virtual void SetPreservesPitch(bool preserves_pitch) = 0;
 
+  // Sets a flag indicating whether to render muted audio to the active sink or
+  // switch to a null sink.
+  virtual void SetRenderMutedAudio(bool render_muted_audio) {}
+
   // Sets a flag indicating whether the audio stream was played with user
-  // activation.
-  virtual void SetWasPlayedWithUserActivation(
-      bool was_played_with_user_activation) = 0;
+  // activation and high media engagement.
+  virtual void SetWasPlayedWithUserActivationAndHighMediaEngagement(
+      bool was_played_with_user_activation_and_high_media_engagement) = 0;
 };
 
 }  // namespace media

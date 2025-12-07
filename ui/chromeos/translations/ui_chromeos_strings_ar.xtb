@@ -19,6 +19,7 @@
 <translation id="115443833402798225">هانغول أهنماتي</translation>
 <translation id="1155759005174418845">الكتالانية</translation>
 <translation id="1168100932582989117">‏خوادم أسماء Google</translation>
+<translation id="1170788066030116158">تاريخ التقاط الصورة</translation>
 <translation id="1172970565351728681">تبقّى <ph name="REMAINING_TIME" /> تقريبًا</translation>
 <translation id="1173894706177603556">إعادة تسمية</translation>
 <translation id="1173916544412572294">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الهاتف<ph name="PHONE_NAME" />، حالة الاتصال <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، بطارية الهاتف <ph name="BATTERY_STATUS" />%، التفاصيل</translation>
@@ -34,6 +35,7 @@
 <translation id="1249250836236328755">النوع</translation>
 <translation id="1254593899333212300">اتصال مباشر بالإنترنت</translation>
 <translation id="1272293450992660632">لا تتطابق قيم أرقام التعريف الشخصية.</translation>
+<translation id="1279040297980392566">في انتظار اكتمال عملية البحث. يُرجى إعادة المحاولة لاحقًا</translation>
 <translation id="1280820357415527819">جارٍ البحث عن شبكات الجوّال</translation>
 <translation id="1293556467332435079">ملفات</translation>
 <translation id="1297922636971898492">‏Google Drive غير متاح في الوقت الحالي. ستتم إعادة تشغيل التحميل تلقائيًا فور توفر Google Drive.</translation>
@@ -72,10 +74,11 @@
 <translation id="1577977504532381335">مراجعة سياسة المشرف</translation>
 <translation id="158849752021629804">يلزم توفر الشبكة الرئيسية</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> بيتابايت</translation>
+<translation id="1601786938618212857">‏إنشاء أرشيف ZIP</translation>
 <translation id="1620510694547887537">الكاميرا</translation>
 <translation id="162175252992296058">البرتغالية باستخدام لوحة المفاتيح الأمريكية الدولية</translation>
 <translation id="1629521517399325891">شهادة المستخدم غير متاحة لعملية مصادقة الشبكة.</translation>
-<translation id="1641780993263690097">‏الصينية باستخدام لوحة مفاتيح Pinyin</translation>
+<translation id="1641780993263690097">الصينية باستخدام لوحة مفاتيح بنيين</translation>
 <translation id="164969095109328410">‏جهاز Chrome</translation>
 <translation id="1661207570040737402">‏لقد استهلكت كل مساحة التخزين السحابي المشتركة في Google Workspace.</translation>
 <translation id="1661867754829461514">رقم التعريف الشخصي غير موجود</translation>
@@ -105,6 +108,7 @@
 <translation id="1810764548349082891">لا تتوفر معاينة</translation>
 <translation id="1812302367230252929">تحويل صوتي إلى اللغة الأمهرية</translation>
 <translation id="1813278315230285598">الخدمات</translation>
+<translation id="181434555916624618">لن يتم عرض النتائج التي تتضمّن أشخاصًا في الوقت الحالي. يُرجى تجربة طلب آخر.</translation>
 <translation id="1829129547161959350">بطريق</translation>
 <translation id="183183971458492120">جارٍ تحميل المعلومات...</translation>
 <translation id="1832073788765803750">أحرف كاتاكانا بوضع نصف العرض</translation>
@@ -135,7 +139,6 @@
 <translation id="2084809735218147718">شخص يقول "شكرًا لك" بلغة الإشارة</translation>
 <translation id="2088690981887365033">‏شبكة VPN</translation>
 <translation id="209653272837065803">لا تتوفّر مساحة تخزين كافية لمواصلة مزامنة الملفات.</translation>
-<translation id="2111134541987263231">تفعيل <ph name="BEGIN_BOLD" />السماح بالإضافة في وضع التصفّح المتخفي<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086">سيتم حذف <ph name="NUMBER_OF_ITEMS" /> ملف أو دليل، ولن تتمكّن من استعادتها.</translation>
 <translation id="2122305276694332719">يسمح الاتصال تلقائيًا بشبكة مخفية للمستخدمين الآخرين رؤية جهازك وبعض إعدادات الشبكة، ولا ننصح بذلك.</translation>
 <translation id="2125607626296734455">الخميرية</translation>
@@ -166,7 +169,6 @@
 <translation id="2304820083631266885">كوكب</translation>
 <translation id="2305020378527873881">تم إخراج <ph name="VOLUME_NAME" />.</translation>
 <translation id="2307462900900812319">إعداد الشبكة</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{لا يمكن تحديد مكان الإضافة التي تتضمّن المعرّف: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> يُرجى التواصل مع المشرف.}zero{لا يمكن تحديد مكان الإضافات التي تتضمّن المعرّفات: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> يُرجى التواصل مع المشرف.}two{لا يمكن تحديد مكان الإضافتَين اللتَين تتضمّنَان المعرّفَين: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> يُرجى التواصل مع المشرف.}few{لا يمكن تحديد مكان الإضافات التي تتضمّن المعرّفات: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> يُرجى التواصل مع المشرف.}many{لا يمكن تحديد مكان الإضافات التي تتضمّن المعرّفات: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> يُرجى التواصل مع المشرف.}other{لا يمكن تحديد مكان الإضافات التي تتضمّن المعرّفات: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> يُرجى التواصل مع المشرف.}}</translation>
 <translation id="2325650632570794183">‏نوع الملف هذا غير متوافق. يُرجى الانتقال إلى سوق Chrome الإلكتروني للعثور على تطبيق يمكنه فتح هذا النوع من الملفات.</translation>
 <translation id="2326539130272988168">البلغارية</translation>
 <translation id="233822363739146957">لا تتوفّر مساحة تخزين كافية لمزامنة جميع ملفاتك.</translation>
@@ -238,7 +240,6 @@
 <translation id="290843123675549676">المراثية</translation>
 <translation id="2923240520113693977">الإستونية</translation>
 <translation id="2938685643439809023">المنغولية</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{يتعذّر العثور على الإضافة}zero{يتعذّر العثور على الإضافات}two{يتعذّر العثور على الإضافتَين}few{يتعذّر العثور على الإضافات}many{يتعذّر العثور على الإضافات}other{يتعذّر العثور على الإضافات}}</translation>
 <translation id="2943503720238418293">استخدم اسم أقصر</translation>
 <translation id="2949781154072577687">جارٍ ضبط <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">قنديل البحر</translation>
@@ -295,7 +296,6 @@
 <translation id="3356580349448036450">مكتمل</translation>
 <translation id="3358452157379365236">قيثارة</translation>
 <translation id="3368922792935385530">متصل</translation>
-<translation id="3372635229069101468">النقر على <ph name="BEGIN_BOLD" />التفاصيل<ph name="END_BOLD" /></translation>
 <translation id="3382143449143186018">‏النيبالية باستخدام لوحة مفاتيح InScript</translation>
 <translation id="338691029516748599">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، حالة الأمان <ph name="SECURITY_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، يديرها المشرف، الاتصال</translation>
 <translation id="3408072735282270043">تفعيل، <ph name="NETWORK_NAME" /></translation>
@@ -354,7 +354,6 @@
 <translation id="3811494700605067549">تم اختيار ملف واحد</translation>
 <translation id="3817579325494460411">غير متوفِّر</translation>
 <translation id="3819448694985509187">رقم التعريف الشخصي غير صحيح. يتبقى لديك محاولة واحدة.</translation>
-<translation id="3822559385185038546">تم فرض هذا الخادم الوكيل بواسطة المشرف</translation>
 <translation id="3830674330436234648">لا تتوفر أي عملية تشغيل</translation>
 <translation id="383652340667548381">الصربية</translation>
 <translation id="3839045880592694915">لا يسمح مشغّل شبكة الجوّال بالاتصال بشبكة الإنترنت باستخدام المودم. ننصحك بالتواصل مع مشغِّل شبكة الجوّال للحصول على مزيد من التفاصيل.</translation>
@@ -385,7 +384,6 @@
 <translation id="4124935795427217608">أحادي القرن</translation>
 <translation id="4131235941541910880">يمكنك نقل العناصر التي لا تحتاج إليها إلى "المهملات".</translation>
 <translation id="4134804435730168042">الشبكة <ph name="NETWORK_INDEX" /> من إجمالي الشبكات البالغ عددها <ph name="NETWORK_COUNT" />، شبكة "<ph name="NETWORK_NAME" />" من "<ph name="NETWORK_PROVIDER_NAME" />"، يمكنك تفعيل الشبكة بعد إعداد الجهاز</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{يجب تفعيل الإضافة التالية في وضع التصفّح المتخفي:}zero{يجب تفعيل الإضافات التالية في وضع التصفّح المتخفي:}two{يجب تفعيل الإضافتَين التاليتَين في وضع التصفّح المتخفي:}few{يجب تفعيل الإضافات التالية في وضع التصفّح المتخفي:}many{يجب تفعيل الإضافات التالية في وضع التصفّح المتخفي:}other{يجب تفعيل الإضافات التالية في وضع التصفّح المتخفي:}}</translation>
 <translation id="4153015322587141338">انقر بزر الماوس الأيمن على ملف واختَر "<ph name="PIN_COMMAND" />" للوصول سريعًا إلى هذا الملف في الرف.</translation>
 <translation id="4157569377477607576">لا تنصح سياسة المشرف بما يلي:</translation>
 <translation id="4159731583141908892">تم نقل <ph name="FILE_NAME" />.</translation>
@@ -393,7 +391,6 @@
 <translation id="4179621117429069925">هذا العنصر موضوع في "المهملات"</translation>
 <translation id="4186579485882418952">‏تفعيل "مستندات Google بلا إنترنت"</translation>
 <translation id="4193154014135846272">‏مستند Google</translation>
-<translation id="4197674956721858839">تحديد ملف مضغوط</translation>
 <translation id="4202378258276439759">الإسبانية (أمريكا اللاتينية)</translation>
 <translation id="4202977638116331303">الجورجية</translation>
 <translation id="421017592316736757">يجب أن تكون متصلاً بالإنترنت للدخول إلى هذا الملف.</translation>
@@ -421,6 +418,7 @@
 <translation id="4387004326333427325">تم رفض شهادة المصادقة عن بُعد</translation>
 <translation id="4394214039309501350">رابط خارجي</translation>
 <translation id="4394980935660306080">في وقت سابق من هذا الأسبوع</translation>
+<translation id="4397435965699247285">‏لا يتوفّر استخدام OneDrive بلا إنترنت</translation>
 <translation id="4398096759193130964">يمكنك استعادة العناصر أو سحبها إلى مجلد جديد خارج "المهملات".</translation>
 <translation id="4401287888955153199">استخراج الكل</translation>
 <translation id="4410695710508688828">تعذّرت عملية استخراج الملفات. <ph name="ERROR_MESSAGE" /></translation>
@@ -483,9 +481,7 @@
 <translation id="4801956050125744859">الاحتفاظ بالاثنتين</translation>
 <translation id="4804827417948292437">أفوكادو</translation>
 <translation id="4805966553127040832">جارٍ استعادة <ph name="COUNT" /> عنصر…</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{يجب تفعيل إضافة واحدة في حساب مؤسستك لاستخدام وضع التصفّح المتخفي}zero{يجب تفعيل بعض الإضافات في حساب مؤسستك لاستخدام وضع التصفّح المتخفي}two{يجب تفعيل إضافتَين في حساب مؤسستك لاستخدام وضع التصفّح المتخفي}few{يجب تفعيل بعض الإضافات في حساب مؤسستك لاستخدام وضع التصفّح المتخفي}many{يجب تفعيل بعض الإضافات في حساب مؤسستك لاستخدام وضع التصفّح المتخفي}other{يجب تفعيل بعض الإضافات في حساب مؤسستك لاستخدام وضع التصفّح المتخفي}}</translation>
 <translation id="4826849268470072925">‏التاميلية باستخدام لوحة مفاتيح ITRANS</translation>
-<translation id="482932175346970750">‏كتابة <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> في المتصفِّح</translation>
 <translation id="4843566743023903107">‏أجهزة Chromebase</translation>
 <translation id="4850886885716139402">عرض</translation>
 <translation id="485316830061041779">الألمانية</translation>
@@ -546,7 +542,7 @@
 <translation id="5194713942430106590">انقر لترتيب محتوى العمود ترتيبًا تصاعديًا.</translation>
 <translation id="5211614973734216083">الفاروية</translation>
 <translation id="5218183485292899140">الفرنسية السويسرية</translation>
-<translation id="5234764350956374838">تجاهل</translation>
+<translation id="5234764350956374838">إغلاق</translation>
 <translation id="5253070652067921974">مُنشئ الملف:</translation>
 <translation id="5254207638927440400">يتعذّر نقل الملف. الملف قيد الاستخدام.</translation>
 <translation id="5257456363153333584">يعسوب</translation>
@@ -558,7 +554,6 @@
     في الملفات مع الآخرين في مكانٍ واحد.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">‏الملفات المستردة من Google Drive</translation>
 <translation id="5278111733643988471">لاستعادة هذا العنصر، اسحبه إلى مجلد جديد خارج المهملات. تم حذف المجلد الأصلي "<ph name="PARENT_FOLDER_NAME" />" لهذا العنصر.</translation>
-<translation id="5283101102242354279">لتفعيل إضافة في وضع التصفّح المتخفي، يُرجى اتّباع الخطوات الآتية:</translation>
 <translation id="5288441970121584418">برغر</translation>
 <translation id="5293615890992542006">تحظر سياسة المشرف إمكانية نقل هذا الملف.</translation>
 <translation id="5305688511332277257">لم يتم تثبيت أي شهادات</translation>
@@ -601,6 +596,7 @@
 <translation id="5596627076506792578">خيارات إضافية</translation>
 <translation id="5602622065581044566">البلغارية باستخدام لوحة المفاتيح الصوتية</translation>
 <translation id="5605830556594064952">‏الأمريكية Dvorak</translation>
+<translation id="560739212255190568">وضَعَ المشرف قواعد تجاوز الخادم الوكيل بالإضافة إلى فرض الخادم الوكيل التالي</translation>
 <translation id="5618330573454123917">‏هذا الملف غير متوافق مع جهازك الذي يعمل بنظام التشغيل Chrome لأنّه مُصمّم لأجهزة الكمبيوتر التي تستخدم نظام التشغيل Macintosh. <ph name="BEGIN_LINK_HELP" />مزيد من المعلومات<ph name="END_LINK_HELP" /> حول فتح الملفات على نظام التشغيل Chrome</translation>
 <translation id="5625294776298156701">‏التاميلية باستخدام لوحة مفاتيح Tamil99</translation>
 <translation id="5633226425545095130">يؤدي نقل هذا الملف إلى مشاركته مع جميع المستخدمين الذين يمكنهم الاطّلاع على المجلد المشترك "<ph name="DESTINATION_NAME" />".</translation>
@@ -812,7 +808,6 @@
 <translation id="7238643356913091553">الشبكة <ph name="NETWORK_NAME" />، التفاصيل</translation>
 <translation id="7246947237293279874">الخادم الوكيل لبروتوكول نقل الملفات</translation>
 <translation id="7248671827512403053">تطبيق</translation>
-<translation id="7252604552361840748">البحث عن الإضافات الموضَّحة أعلاه</translation>
 <translation id="7256405249507348194">خطأ غير معروف: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">الخدمات المتوفرة</translation>
 <translation id="7291818353625820805">هل تريد أن يتم تكرار الحرف الذي يكتبه المفتاح؟ يمكنك إيقاف ميزة إظهار علامات التشكيل من خلال "إعدادات لوحة المفاتيح".</translation>
@@ -1001,6 +996,7 @@
 <translation id="8540608333167683902">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، حالة الاتصال <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، التفاصيل</translation>
 <translation id="8545476925160229291">الإنجليزية (الولايات المتحدة)</translation>
 <translation id="854655314928502177">‏عنوان URL لاكتشاف الخادم الوكيل للويب تلقائيًا:</translation>
+<translation id="8547747809824590510">وضَعَ المشرف قواعد لتجاوز الخادم الوكيل</translation>
 <translation id="8549186985808798022">الإيطالية</translation>
 <translation id="8551494947769799688">اللاتفية</translation>
 <translation id="8560515948038859357">الكانتونية</translation>
@@ -1050,7 +1046,7 @@
 <translation id="8965697826696209160">ليست هناك مساحة كافية.</translation>
 <translation id="8970887620466824814">حدث خطأ.</translation>
 <translation id="8971742885766657349">جارٍ المزامنة - ‫%<ph name="PERCENT" /></translation>
-<translation id="8997962250644902079">‏الصينية (التقليدية) باستخدام لوحة مفاتيح Pinyin</translation>
+<translation id="8997962250644902079">الصينية (التقليدية) باستخدام لوحة مفاتيح بنيين</translation>
 <translation id="8998871447376656508">‏لا تتوفّر مساحة كافية في Google Drive لإكمال التحميل.</translation>
 <translation id="9003940392834790328">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، حالة الاتصال <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، يديرها المشرف، التفاصيل</translation>
 <translation id="9007990314804111233">‏سجِّل الدخول إلى حسابك على Microsoft</translation>
@@ -1061,10 +1057,11 @@
 <translation id="9038620279323455325">الملف الذي يحمل الاسم "<ph name="FILE_NAME" />" موجود من قبل. يُرجى اختيار اسم مختلف.</translation>
 <translation id="9046895021617826162">تعذّر الاتصال</translation>
 <translation id="9065512565307033593">‏إذا تعذّر عليك تأكيد رمز PUK، سيتم إيقاف إمكانية الوصول إلى الشبكة.</translation>
+<translation id="9079844694307518094">يفرض المشرف استخدام الخادم الوكيل التالي</translation>
 <translation id="908378762078012445">‏الروسية باستخدام لوحة مفاتيح AATSEEL الصوتية</translation>
 <translation id="9086302186042011942">جارٍ المزامنة</translation>
 <translation id="9099674669267916096">عدد الصفحات</translation>
-<translation id="9100610230175265781">عبارة المرور مطلوبة</translation>
+<translation id="9100610230175265781">يجب إدخال عبارة المرور</translation>
 <translation id="9110990317705400362">‏نحن نبحث باستمرار عن طرق من شأنها زيادة أمان تجربة تصفحك. في السابق، كان من الممكن لأي موقع إلكتروني أن يطالبك بتثبيت إضافة في متصفحك. أما في أحدث إصدارات Google Chrome، فيجب أن تبلغ Chrome صراحة أنك تريد تثبيت هذه الإضافات عن طريق إضافتها عبر صفحة الإضافات. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">فتح القفل</translation>
 <translation id="9116909380156770361">نقْل الملف إلى <ph name="RESTRICTED_COMPONENTS" /></translation>
@@ -1084,6 +1081,7 @@
 <translation id="9213073329713032541">بدأ التثبيت بنجاح.</translation>
 <translation id="9219103736887031265">الصور</translation>
 <translation id="9219908252191632183">قمري</translation>
+<translation id="931652069802536959">سياسة المؤسسة تحظر هذه الشبكة</translation>
 <translation id="938470336146445890">يُرجى تثبيت شهادة مستخدم.</translation>
 <translation id="939736085109172342">مجلد جديد</translation>
 <translation id="943972244133411984">تم التعديل بواسطة</translation>

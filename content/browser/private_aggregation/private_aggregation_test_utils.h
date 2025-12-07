@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_TEST_UTILS_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include <optional>
 #include <set>
@@ -17,8 +18,10 @@
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_budgeter.h"
+#include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/browser/private_aggregation/private_aggregation_host.h"
 #include "content/browser/private_aggregation/private_aggregation_manager_impl.h"
+#include "content/browser/private_aggregation/private_aggregation_pending_contributions.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/test_content_browser_client.h"
@@ -44,7 +47,24 @@ class MockPrivateAggregationBudgeter : public PrivateAggregationBudgeter {
               ConsumeBudget,
               (int,
                const PrivateAggregationBudgetKey&,
+               int,
                base::OnceCallback<void(RequestResult)>),
+              (override));
+
+  MOCK_METHOD(void,
+              InspectBudgetAndLock,
+              (const std::vector<
+                   blink::mojom::AggregatableReportHistogramContribution>&,
+               const PrivateAggregationBudgetKey&,
+               base::OnceCallback<void(InspectBudgetCallResult)>),
+              (override));
+  MOCK_METHOD(void,
+              ConsumeBudget,
+              (Lock,
+               const std::vector<
+                   blink::mojom::AggregatableReportHistogramContribution>&,
+               const PrivateAggregationBudgetKey&,
+               base::OnceCallback<void(BudgetQueryResult)>),
               (override));
 
   MOCK_METHOD(void,
@@ -79,11 +99,12 @@ class MockPrivateAggregationHost : public PrivateAggregationHost {
               BindNewReceiver,
               (url::Origin,
                url::Origin,
-               PrivateAggregationBudgetKey::Api,
+               PrivateAggregationCallerApi,
                std::optional<std::string>,
                std::optional<base::TimeDelta>,
                std::optional<url::Origin>,
                size_t,
+               std::optional<size_t>,
                mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>),
               (override));
 
@@ -108,11 +129,12 @@ class MockPrivateAggregationManagerImpl : public PrivateAggregationManagerImpl {
               BindNewReceiver,
               (url::Origin,
                url::Origin,
-               PrivateAggregationBudgetKey::Api,
+               PrivateAggregationCallerApi,
                std::optional<std::string>,
                std::optional<base::TimeDelta>,
                std::optional<url::Origin>,
                size_t,
+               std::optional<size_t>,
                mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>),
               (override));
 
@@ -156,11 +178,17 @@ class MockPrivateAggregationContentBrowserClientBase : public SuperClass {
                bool* out_block_is_site_setting_specific),
               (override));
   MOCK_METHOD(bool,
+              IsFencedStorageReadAllowed,
+              (content::BrowserContext * browser_context,
+               content::RenderFrameHost* rfh,
+               const url::Origin& top_frame_origin,
+               const url::Origin& accessing_origin),
+              (override));
+  MOCK_METHOD(bool,
               IsPrivacySandboxReportingDestinationAttested,
               (content::BrowserContext * browser_context,
                const url::Origin& destination_origin,
-               content::PrivacySandboxInvokingAPI invoking_api,
-               bool post_impression_reporting),
+               content::PrivacySandboxInvokingAPI invoking_api),
               (override));
 };
 
@@ -172,6 +200,13 @@ bool operator==(const PrivateAggregationBudgetKey::TimeWindow&,
 
 bool operator==(const PrivateAggregationBudgetKey&,
                 const PrivateAggregationBudgetKey&);
+
+// Helper that correctly invokes the pending contributions object (if
+// `kPrivateAggregationApiErrorReporting` is enabled), approving all
+// contributions.
+AggregatableReportRequest GenerateReportRequest(
+    PrivateAggregationHost::ReportRequestGenerator generator,
+    PrivateAggregationPendingContributions::Wrapper contributions);
 
 }  // namespace content
 

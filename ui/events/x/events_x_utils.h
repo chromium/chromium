@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "ui/events/event_constants.h"
@@ -23,10 +22,11 @@ namespace ui {
 // Gets the EventType from a x11::Event.
 EVENTS_X_EXPORT EventType EventTypeFromXEvent(const x11::Event& xev);
 
-// Gets the EventFlags from a x11::KeyEvent.  `send_event` indicates if the
-// event was sent by an X11 client instead of the server.
-EVENTS_X_EXPORT int GetEventFlagsFromXKeyEvent(const x11::KeyEvent& key,
-                                               bool send_event);
+// Gets the event flags given a `keycode` a modifier `state`, and `send_event`
+// which indicates if the event was sent by an X11 client instead of the server.
+EVENTS_X_EXPORT int GetEventFlagsFromXEvent(x11::KeyCode keycode,
+                                            uint32_t state,
+                                            bool send_event);
 
 // Gets the EventFlags from a x11::Event.
 EVENTS_X_EXPORT int EventFlagsFromXEvent(const x11::Event& xev);
@@ -112,6 +112,12 @@ EVENTS_X_EXPORT bool IsAltPressed();
 EVENTS_X_EXPORT int GetModifierKeyState();
 
 EVENTS_X_EXPORT void ResetTimestampRolloverCountersForTesting();
+
+// This function is a shim for approximately emulating the state field of
+// legacy XKB key events, using information from XI2 key events, for
+// consumption by GTK.
+EVENTS_X_EXPORT uint32_t
+XkbStateFromXI2Event(const x11::Input::DeviceEvent& xievent);
 
 }  // namespace ui
 

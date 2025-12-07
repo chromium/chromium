@@ -11,7 +11,7 @@ namespace extensions {
 // speech recognition events.
 class SpeechRecognitionPrivateDelegate {
  public:
-  virtual ~SpeechRecognitionPrivateDelegate() {}
+  virtual ~SpeechRecognitionPrivateDelegate() = default;
 
   // Below are methods to handle speech recognition events. `key` is used to
   // specify which SpeechRecognitionPrivateRecognizer this request came from.

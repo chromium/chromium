@@ -507,11 +507,11 @@ TEST_F(LocalDeskDataManagerTest, GetAllEntriesIncludesPolicyValues) {
   EXPECT_TRUE(FindUuidInUuidList(GetTestUuid(TestUuidId(9)), result.entries));
 
   // One of these templates should be from policy.
-  EXPECT_EQ(base::ranges::count_if(result.entries,
-                                   [](const ash::DeskTemplate* entry) {
-                                     return entry->source() ==
-                                            ash::DeskTemplateSource::kPolicy;
-                                   }),
+  EXPECT_EQ(std::ranges::count_if(result.entries,
+                                  [](const ash::DeskTemplate* entry) {
+                                    return entry->source() ==
+                                           ash::DeskTemplateSource::kPolicy;
+                                  }),
             1l);
 
   // Sanity check for the search function.
@@ -1098,7 +1098,8 @@ TEST_F(LocalDeskDataManagerTest, IngoresUpdateForNonExistantTemplate) {
 
 TEST_F(LocalDeskDataManagerTest, DoesNotUpdateWhenRestoreContentIsTheSame) {
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
-      std::string_view(desk_test_util::kAdminTemplatePolicyWithOneTemplate));
+      std::string_view(desk_test_util::kAdminTemplatePolicyWithOneTemplate),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   EXPECT_TRUE(parsed_json.has_value());
   EXPECT_TRUE(parsed_json->is_list());
@@ -1118,7 +1119,8 @@ TEST_F(LocalDeskDataManagerTest, DoesNotUpdateWhenRestoreContentIsTheSame) {
 
 TEST_F(LocalDeskDataManagerTest, DoesNotOverwriteOnDifferentPolicy) {
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
-      std::string_view(desk_test_util::kAdminTemplatePolicyWithOneTemplate));
+      std::string_view(desk_test_util::kAdminTemplatePolicyWithOneTemplate),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   EXPECT_TRUE(parsed_json.has_value());
   EXPECT_TRUE(parsed_json->is_list());

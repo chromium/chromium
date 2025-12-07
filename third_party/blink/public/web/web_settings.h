@@ -101,6 +101,7 @@ class WebSettings {
   // value set by this method.
   virtual void SetAllowRunningOfInsecureContent(bool) = 0;
   virtual void SetAllowScriptsToCloseWindows(bool) = 0;
+  virtual void SetAllowWindowFocusWithoutUserGesture(bool) = 0;
   virtual void SetAllowUniversalAccessFromFileURLs(bool) = 0;
   virtual void SetAccessibilityFontWeightAdjustment(int) = 0;
   virtual void SetAlwaysShowContextMenuOnTouch(bool) = 0;
@@ -110,7 +111,6 @@ class WebSettings {
   virtual void SetRequireTransientActivationForGetDisplayMedia(bool) = 0;
   virtual void SetRequireTransientActivationForShowFileOrDirectoryPicker(
       bool) = 0;
-  virtual void SetRequireTransientActivationForHtmlFullscreen(bool) = 0;
   virtual void SetAutoZoomFocusedEditableToLegibleScale(bool) = 0;
   virtual void SetCaretBrowsingEnabled(bool) = 0;
   virtual void SetClobberUserAgentInitialScaleQuirk(bool) = 0;
@@ -129,6 +129,7 @@ class WebSettings {
   virtual void SetDontSendKeyEventsToJavascript(bool) = 0;
   virtual void SetDoubleTapToZoomEnabled(bool) = 0;
   virtual void SetDownloadableBinaryFontsEnabled(bool) = 0;
+  virtual void SetDynamicSafeAreaInsetsEnabled(bool) = 0;
   virtual void SetEditingBehavior(mojom::EditingBehavior) = 0;
   virtual void SetEnableScrollAnimator(bool) = 0;
   virtual void SetPrefersReducedMotion(bool) = 0;
@@ -174,7 +175,8 @@ class WebSettings {
   virtual void SetHideScrollbars(bool) = 0;
   virtual void SetPrefersDefaultScrollbarStyles(bool) = 0;
   virtual void SetPasswordEchoDurationInSeconds(double) = 0;
-  virtual void SetPasswordEchoEnabled(bool) = 0;
+  virtual void SetPasswordEchoEnabledPhysical(bool) = 0;
+  virtual void SetPasswordEchoEnabledTouch(bool) = 0;
   virtual void SetPluginsEnabled(bool) = 0;
   virtual void SetPresentationReceiver(bool) = 0;
   virtual void SetAvailablePointerTypes(int) = 0;
@@ -220,8 +222,8 @@ class WebSettings {
   virtual void SetSyncXHRInDocumentsEnabled(bool) = 0;
   // TODO(https://crbug.com/1163644): Remove once Chrome Apps are deprecated.
   virtual void SetTargetBlankImpliesNoOpenerEnabledWillBeRemoved(bool) = 0;
-  // TODO(https://crbug.com/1172495): Remove once Chrome Apps are deprecated.
-  virtual void SetAllowNonEmptyNavigatorPlugins(bool) = 0;
+  // TODO(https://crbug.com/404106817): Remove once Chrome Apps are deprecated.
+  virtual void SetIgnorePermissionForDeviceChangedEvent(bool) = 0;
   virtual void SetTextAreasAreResizable(bool) = 0;
   virtual void SetTextAutosizingEnabled(bool) = 0;
   virtual void SetAccessibilityFontScaleFactor(float) = 0;
@@ -279,11 +281,13 @@ class WebSettings {
   virtual void SetNavigationControls(NavigationControls) = 0;
   virtual void SetAriaModalPrunesAXTree(bool) = 0;
   virtual void SetSelectionClipboardBufferAvailable(bool) = 0;
+  virtual void SetMiddleClickPasteAllowed(bool) = 0;
   virtual void SetAccessibilityIncludeSvgGElement(bool) = 0;
   virtual void SetWebXRImmersiveArAllowed(bool) = 0;
   virtual void SetModalContextMenu(bool) = 0;
   virtual void SetRequireTransientActivationAndAuthorizationForSubAppsAPIs(
       bool) = 0;
+  virtual void SetRootScrollbarThemeColor(std::optional<SkColor>) = 0;
 
  protected:
   ~WebSettings() = default;

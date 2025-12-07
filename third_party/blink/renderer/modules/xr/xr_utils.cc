@@ -7,6 +7,9 @@
 #include <cmath>
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_webgl2renderingcontext_webglrenderingcontext.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_eye.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_layer_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_layer_layout.h"
 #include "third_party/blink/renderer/core/geometry/dom_point_read_only.h"
 #include "third_party/blink/renderer/modules/webgl/webgl2_rendering_context.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context.h"
@@ -15,21 +18,16 @@
 
 namespace blink {
 
-DOMFloat32Array* transformationMatrixToDOMFloat32Array(
+NotShared<DOMFloat32Array> transformationMatrixToDOMFloat32Array(
     const gfx::Transform& matrix) {
   float array[16];
   matrix.GetColMajorF(array);
-  return DOMFloat32Array::Create(array, 16);
+  return NotShared<DOMFloat32Array>(DOMFloat32Array::Create(array));
 }
 
-gfx::Transform DOMFloat32ArrayToTransform(DOMFloat32Array* m) {
-  DCHECK_EQ(m->length(), 16u);
-  return gfx::Transform::ColMajorF(m->Data());
-}
-
-gfx::Transform WTFFloatVectorToTransform(const Vector<float>& m) {
-  DCHECK_EQ(m.size(), 16u);
-  return gfx::Transform::ColMajorF(m.data());
+gfx::Transform DOMFloat32ArrayToTransform(NotShared<DOMFloat32Array> m) {
+  CHECK_EQ(m->length(), 16u);
+  return gfx::Transform::ColMajorF(m->AsSpan().first<16>());
 }
 
 // Normalize to have length = 1.0
@@ -55,8 +53,7 @@ WebGLRenderingContextBase* webglRenderingContextBaseFromUnion(
     case V8XRWebGLRenderingContext::ContentType::kWebGLRenderingContext:
       return context->GetAsWebGLRenderingContext();
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 std::optional<device::Pose> CreatePose(const gfx::Transform& matrix) {
@@ -117,66 +114,64 @@ device::mojom::blink::XRHandJoint StringToMojomHandJoint(
     return device::mojom::blink::XRHandJoint::kPinkyFingerTip;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return device::mojom::blink::XRHandJoint::kMaxValue;
+  NOTREACHED();
 }
 
-String MojomHandJointToString(device::mojom::blink::XRHandJoint hand_joint) {
+V8XRHandJoint::Enum MojomHandJointToV8Enum(
+    device::mojom::blink::XRHandJoint hand_joint) {
   switch (hand_joint) {
     case device::mojom::blink::XRHandJoint::kWrist:
-      return "wrist";
+      return V8XRHandJoint::Enum::kWrist;
     case device::mojom::blink::XRHandJoint::kThumbMetacarpal:
-      return "thumb-metacarpal";
+      return V8XRHandJoint::Enum::kThumbMetacarpal;
     case device::mojom::blink::XRHandJoint::kThumbPhalanxProximal:
-      return "thumb-phalanx-proximal";
+      return V8XRHandJoint::Enum::kThumbPhalanxProximal;
     case device::mojom::blink::XRHandJoint::kThumbPhalanxDistal:
-      return "thumb-phalanx-distal";
+      return V8XRHandJoint::Enum::kThumbPhalanxDistal;
     case device::mojom::blink::XRHandJoint::kThumbTip:
-      return "thumb-tip";
+      return V8XRHandJoint::Enum::kThumbTip;
     case device::mojom::blink::XRHandJoint::kIndexFingerMetacarpal:
-      return "index-finger-metacarpal";
+      return V8XRHandJoint::Enum::kIndexFingerMetacarpal;
     case device::mojom::blink::XRHandJoint::kIndexFingerPhalanxProximal:
-      return "index-finger-phalanx-proximal";
+      return V8XRHandJoint::Enum::kIndexFingerPhalanxProximal;
     case device::mojom::blink::XRHandJoint::kIndexFingerPhalanxIntermediate:
-      return "index-finger-phalanx-intermediate";
+      return V8XRHandJoint::Enum::kIndexFingerPhalanxIntermediate;
     case device::mojom::blink::XRHandJoint::kIndexFingerPhalanxDistal:
-      return "index-finger-phalanx-distal";
+      return V8XRHandJoint::Enum::kIndexFingerPhalanxDistal;
     case device::mojom::blink::XRHandJoint::kIndexFingerTip:
-      return "index-finger-tip";
+      return V8XRHandJoint::Enum::kIndexFingerTip;
     case device::mojom::blink::XRHandJoint::kMiddleFingerMetacarpal:
-      return "middle-finger-metacarpal";
+      return V8XRHandJoint::Enum::kMiddleFingerMetacarpal;
     case device::mojom::blink::XRHandJoint::kMiddleFingerPhalanxProximal:
-      return "middle-finger-phalanx-proximal";
+      return V8XRHandJoint::Enum::kMiddleFingerPhalanxProximal;
     case device::mojom::blink::XRHandJoint::kMiddleFingerPhalanxIntermediate:
-      return "middle-finger-phalanx-intermediate";
+      return V8XRHandJoint::Enum::kMiddleFingerPhalanxIntermediate;
     case device::mojom::blink::XRHandJoint::kMiddleFingerPhalanxDistal:
-      return "middle-finger-phalanx-distal";
+      return V8XRHandJoint::Enum::kMiddleFingerPhalanxDistal;
     case device::mojom::blink::XRHandJoint::kMiddleFingerTip:
-      return "middle-finger-tip";
+      return V8XRHandJoint::Enum::kMiddleFingerTip;
     case device::mojom::blink::XRHandJoint::kRingFingerMetacarpal:
-      return "ring-finger-metacarpal";
+      return V8XRHandJoint::Enum::kRingFingerMetacarpal;
     case device::mojom::blink::XRHandJoint::kRingFingerPhalanxProximal:
-      return "ring-finger-phalanx-proximal";
+      return V8XRHandJoint::Enum::kRingFingerPhalanxProximal;
     case device::mojom::blink::XRHandJoint::kRingFingerPhalanxIntermediate:
-      return "ring-finger-phalanx-intermediate";
+      return V8XRHandJoint::Enum::kRingFingerPhalanxIntermediate;
     case device::mojom::blink::XRHandJoint::kRingFingerPhalanxDistal:
-      return "ring-finger-phalanx-distal";
+      return V8XRHandJoint::Enum::kRingFingerPhalanxDistal;
     case device::mojom::blink::XRHandJoint::kRingFingerTip:
-      return "ring-finger-tip";
+      return V8XRHandJoint::Enum::kRingFingerTip;
     case device::mojom::blink::XRHandJoint::kPinkyFingerMetacarpal:
-      return "pinky-finger-metacarpal";
+      return V8XRHandJoint::Enum::kPinkyFingerMetacarpal;
     case device::mojom::blink::XRHandJoint::kPinkyFingerPhalanxProximal:
-      return "pinky-finger-phalanx-proximal";
+      return V8XRHandJoint::Enum::kPinkyFingerPhalanxProximal;
     case device::mojom::blink::XRHandJoint::kPinkyFingerPhalanxIntermediate:
-      return "pinky-finger-phalanx-intermediate";
+      return V8XRHandJoint::Enum::kPinkyFingerPhalanxIntermediate;
     case device::mojom::blink::XRHandJoint::kPinkyFingerPhalanxDistal:
-      return "pinky-finger-phalanx-distal";
+      return V8XRHandJoint::Enum::kPinkyFingerPhalanxDistal;
     case device::mojom::blink::XRHandJoint::kPinkyFingerTip:
-      return "pinky-finger-tip";
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      return V8XRHandJoint::Enum::kPinkyFingerTip;
   }
+  NOTREACHED();
 }
 
 std::optional<device::mojom::XRSessionFeature> StringToXRSessionFeature(
@@ -215,12 +210,14 @@ std::optional<device::mojom::XRSessionFeature> StringToXRSessionFeature(
     return device::mojom::XRSessionFeature::LAYERS;
   } else if (feature_string == "front-facing") {
     return device::mojom::XRSessionFeature::FRONT_FACING;
+  } else if (feature_string == "webgpu") {
+    return device::mojom::XRSessionFeature::WEBGPU;
   }
 
   return std::nullopt;
 }
 
-String XRSessionFeatureToString(device::mojom::XRSessionFeature feature) {
+StringView XRSessionFeatureToString(device::mojom::XRSessionFeature feature) {
   switch (feature) {
     case device::mojom::XRSessionFeature::REF_SPACE_VIEWER:
       return "viewer";
@@ -256,6 +253,8 @@ String XRSessionFeatureToString(device::mojom::XRSessionFeature feature) {
       return "layers";
     case device::mojom::XRSessionFeature::FRONT_FACING:
       return "front-facing";
+    case device::mojom::XRSessionFeature::WEBGPU:
+      return "webgpu";
   }
 
   return "";
@@ -268,12 +267,13 @@ bool IsFeatureEnabledForContext(device::mojom::XRSessionFeature feature,
       return RuntimeEnabledFeatures::WebXRPlaneDetectionEnabled(context);
     case device::mojom::XRSessionFeature::IMAGE_TRACKING:
       return RuntimeEnabledFeatures::WebXRImageTrackingEnabled(context);
-    case device::mojom::XRSessionFeature::HAND_INPUT:
-      return RuntimeEnabledFeatures::WebXRHandInputEnabled(context);
     case device::mojom::XRSessionFeature::LAYERS:
       return RuntimeEnabledFeatures::WebXRLayersEnabled(context);
+    case device::mojom::XRSessionFeature::WEBGPU:
+      return RuntimeEnabledFeatures::WebXRGPUBindingEnabled(context);
     case device::mojom::XRSessionFeature::FRONT_FACING:
       return RuntimeEnabledFeatures::WebXRFrontFacingEnabled(context);
+    case device::mojom::XRSessionFeature::HAND_INPUT:
     case device::mojom::XRSessionFeature::HIT_TEST:
     case device::mojom::XRSessionFeature::LIGHT_ESTIMATION:
     case device::mojom::XRSessionFeature::ANCHORS:
@@ -288,6 +288,65 @@ bool IsFeatureEnabledForContext(device::mojom::XRSessionFeature feature,
     case device::mojom::XRSessionFeature::SECONDARY_VIEWS:
       return true;
   }
+}
+
+V8XREye GetV8Eye(const device::mojom::blink::XREye& eye) {
+  switch (eye) {
+    case device::mojom::blink::XREye::kLeft:
+      return V8XREye(V8XREye::Enum::kLeft);
+    case device::mojom::blink::XREye::kRight:
+      return V8XREye(V8XREye::Enum::kRight);
+    case device::mojom::blink::XREye::kNone:
+      return V8XREye(V8XREye::Enum::kNone);
+  }
+  NOTREACHED();
+}
+
+device::mojom::blink::XRLayerLayout V8ToMojomLayerLayout(
+    V8XRLayerLayout::Enum layout) {
+  switch (layout) {
+    case V8XRLayerLayout::Enum::kDefault:
+      return device::mojom::blink::XRLayerLayout::kDefault;
+    case V8XRLayerLayout::Enum::kMono:
+      return device::mojom::blink::XRLayerLayout::kMono;
+    case V8XRLayerLayout::Enum::kStereo:
+      return device::mojom::blink::XRLayerLayout::kStereo;
+    case V8XRLayerLayout::Enum::kStereoLeftRight:
+      return device::mojom::blink::XRLayerLayout::kStereoLeftRight;
+    case V8XRLayerLayout::Enum::kStereoTopBottom:
+      return device::mojom::blink::XRLayerLayout::kStereoTopBottom;
+  }
+}
+
+uint16_t GetHorizontalViewCount(V8XRLayerLayout layout) {
+  switch (layout.AsEnum()) {
+    case V8XRLayerLayout::Enum::kDefault:
+    case V8XRLayerLayout::Enum::kMono:
+    case V8XRLayerLayout::Enum::kStereo:
+    case V8XRLayerLayout::Enum::kStereoTopBottom:
+      return 1;
+    case V8XRLayerLayout::Enum::kStereoLeftRight:
+      return 2;
+  }
+}
+
+uint16_t GetVerticalViewCount(V8XRLayerLayout layout) {
+  switch (layout.AsEnum()) {
+    case V8XRLayerLayout::Enum::kDefault:
+    case V8XRLayerLayout::Enum::kMono:
+    case V8XRLayerLayout::Enum::kStereo:
+    case V8XRLayerLayout::Enum::kStereoLeftRight:
+      return 1;
+    case V8XRLayerLayout::Enum::kStereoTopBottom:
+      return 2;
+  }
+}
+
+float ExcludeNegativeAndNoise(float value) {
+  if (value < std::numeric_limits<float>::epsilon()) {
+    return 0.f;
+  }
+  return value;
 }
 
 }  // namespace blink

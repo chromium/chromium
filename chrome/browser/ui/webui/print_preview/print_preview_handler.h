@@ -20,7 +20,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/printing/common/print.mojom.h"
@@ -48,9 +47,6 @@ class WebContents;
 
 namespace printing {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-class ExtensionPrinterHandlerAdapterAsh;
-#endif
 class PdfPrinterHandler;
 class PrinterHandler;
 class PrintPreviewUI;
@@ -266,8 +262,7 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
   // |callback_id|: The javascript callback to run.
   // |error|: The returned print job error. Useful for reporting a specific
   //     error. None type implies no error.
-  void OnPrintResult(const std::string& callback_id,
-                     const base::Value& error);
+  void OnPrintResult(const std::string& callback_id, const base::Value& error);
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   // Called when enterprise policy returns a verdict.
@@ -317,24 +312,12 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
   mojo::AssociatedRemote<mojom::PrintRenderFrame> print_render_frame_;
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // Used to transmit mojo interface method calls to ash chrome.
-  // Null if the interface is unavailable.
-  // Note that this is not propagated to LocalPrinterHandlerLacros.
-  // The pointer is constant - if ash crashes and the mojo connection is lost,
-  // lacros will automatically be restarted.
+  // Used to transmit mojo interface method calls to ash chrome. Null if
+  // CrosapiManager is unavailable. In the post-Lacros world, it still bears the
+  // responsibility of talking to other parts of Ash for printer related
+  // business logic.
   raw_ptr<crosapi::mojom::LocalPrinter, DanglingUntriaged> local_printer_ =
       nullptr;
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Used when Lacros is enabled.
-  std::unique_ptr<ExtensionPrinterHandlerAdapterAsh>
-      extension_printer_handler_adapter_;
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Version number of the LocalPrinter mojo service.
-  int local_printer_version_ = 0;
 #endif
 
   base::WeakPtrFactory<PrintPreviewHandler> weak_factory_{this};

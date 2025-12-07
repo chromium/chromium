@@ -13,6 +13,7 @@
 #include "base/token.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tabs/public/split_tab_id.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {
@@ -29,7 +30,9 @@ class SessionRestoreDelegate {
                 bool is_active,
                 bool is_app,
                 bool is_pinned,
-                const std::optional<tab_groups::TabGroupId>& group);
+                const std::optional<tab_groups::TabGroupId>& group,
+                const std::optional<split_tabs::SplitTabId>& split);
+
     RestoredTab(const RestoredTab&);
     RestoredTab& operator=(const RestoredTab&);
 
@@ -46,6 +49,10 @@ class SessionRestoreDelegate {
       return group_;
     }
 
+    const std::optional<split_tabs::SplitTabId>& split() const {
+      return split_;
+    }
+
    private:
     // During restore it's possible for some WebContents to be deleted, which
     // is why this is a WeakPtr. Before SessionRestore calls to RestoreTabs()
@@ -59,6 +66,9 @@ class SessionRestoreDelegate {
     // The ID for the tab group that this tab belonged to, if any. See
     // |TabStripModel::AddToNewGroup()| for more documentation.
     std::optional<tab_groups::TabGroupId> group_;
+
+    // The ID for a split tab. This can also be a part of a group.
+    std::optional<split_tabs::SplitTabId> split_;
   };
 
   SessionRestoreDelegate() = delete;

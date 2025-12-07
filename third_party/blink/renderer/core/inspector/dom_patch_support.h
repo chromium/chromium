@@ -63,8 +63,8 @@ class DOMPatchSupport final {
     explicit Digest(Node* node) : node_(node) {}
     void Trace(Visitor*) const;
 
-    String sha1_;
-    String attrs_sha1_;
+    String sha256_;
+    String attrs_sha256_;
     Member<Node> node_;
     HeapVector<Member<Digest>> children_;
   };

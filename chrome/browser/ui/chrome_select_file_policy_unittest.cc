@@ -12,11 +12,12 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
 #if defined(USE_AURA)
@@ -31,11 +32,12 @@ namespace {
 
 class FileSelectionUser : public ui::SelectFileDialog::Listener {
  public:
-  FileSelectionUser() : file_selection_initialisation_in_progress(false) {}
+  FileSelectionUser() = default;
 
   ~FileSelectionUser() override {
-    if (select_file_dialog_.get())
+    if (select_file_dialog_.get()) {
       select_file_dialog_->ListenerDestroyed();
+    }
   }
 
   void StartFileSelection() {
@@ -47,9 +49,9 @@ class FileSelectionUser : public ui::SelectFileDialog::Listener {
     const std::u16string title = std::u16string();
 
     file_selection_initialisation_in_progress = true;
-    select_file_dialog_->SelectFile(ui::SelectFileDialog::SELECT_OPEN_FILE,
-                                    title, file_path, nullptr, 0,
-                                    base::FilePath::StringType(), nullptr);
+    select_file_dialog_->SelectFile(
+        ui::SelectFileDialog::SELECT_OPEN_FILE, title, file_path, nullptr, 0,
+        base::FilePath::StringType(), gfx::NativeWindow());
     file_selection_initialisation_in_progress = false;
   }
 
@@ -68,7 +70,7 @@ class FileSelectionUser : public ui::SelectFileDialog::Listener {
  private:
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
 
-  bool file_selection_initialisation_in_progress;
+  bool file_selection_initialisation_in_progress = false;
 };
 
 }  // namespace
@@ -80,14 +82,12 @@ typedef testing::Test ChromeSelectFilePolicyTest;
 TEST_F(ChromeSelectFilePolicyTest, MAYBE_ExpectAsynchronousListenerCall) {
   content::BrowserTaskEnvironment task_environment;
 
-  ScopedTestingLocalState local_state(TestingBrowserProcess::GetGlobal());
-
   std::unique_ptr<FileSelectionUser> file_selection_user(
       new FileSelectionUser());
 
   // Disallow file-selection dialogs.
-  local_state.Get()->SetManagedPref(prefs::kAllowFileSelectionDialogs,
-                                    std::make_unique<base::Value>(false));
+  TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetManagedPref(
+      prefs::kAllowFileSelectionDialogs, std::make_unique<base::Value>(false));
 
   file_selection_user->StartFileSelection();
 }

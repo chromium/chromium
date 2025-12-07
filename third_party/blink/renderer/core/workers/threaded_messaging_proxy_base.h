@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/sequence_checker.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -15,6 +16,7 @@
 #include "third_party/blink/renderer/core/workers/parent_execution_context_task_runners.h"
 #include "third_party/blink/renderer/core/workers/worker_backing_thread_startup_data.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
+#include "third_party/blink/renderer/platform/bindings/cross_thread_source_location.h"
 #include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -28,7 +30,6 @@ class WaitableEvent;
 namespace blink {
 
 class ExecutionContext;
-class SourceLocation;
 struct GlobalScopeCreationParams;
 
 // The base proxy class to talk to Worker/WorkletGlobalScope on a worker thread
@@ -62,7 +63,7 @@ class CORE_EXPORT ThreadedMessagingProxyBase
   void ReportConsoleMessage(mojom::ConsoleMessageSource,
                             mojom::ConsoleMessageLevel,
                             const String& message,
-                            std::unique_ptr<SourceLocation>);
+                            const CrossThreadSourceLocation&);
 
   virtual void WorkerThreadTerminated();
 
@@ -84,7 +85,7 @@ class CORE_EXPORT ThreadedMessagingProxyBase
   // where the original Window context isn't directly accessible,
   // `client_provided_devtools_params` will be pre-calculated and passed to this
   // function, and this param will be used directly to start the worklet thread.
-  void InitializeWorkerThread(
+  bool InitializeWorkerThread(
       std::unique_ptr<GlobalScopeCreationParams>,
       const std::optional<WorkerBackingThreadStartupData>&,
       const std::optional<const blink::DedicatedWorkerToken>&,
@@ -118,6 +119,7 @@ class CORE_EXPORT ThreadedMessagingProxyBase
       parent_execution_context_task_runners_;
   scoped_refptr<base::SingleThreadTaskRunner> parent_agent_group_task_runner_;
 
+  SEQUENCE_CHECKER(sequence_checker_);
   std::unique_ptr<WorkerThread> worker_thread_;
 
   bool asked_to_terminate_ = false;

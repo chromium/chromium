@@ -7,20 +7,16 @@ package org.chromium.chrome.browser.toolbar;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 
-import org.chromium.base.ResettersForTesting;
+import org.chromium.base.DeviceInfo;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 
 /** Utility class for toolbar code interacting with features and params. */
+@NullMarked
 public final class ToolbarFeatures {
-
-    private static Boolean sTabStripLayoutOptimizationEnabledForTesting;
-
     /** Private constructor to avoid instantiation. */
     private ToolbarFeatures() {}
-
-    public static boolean shouldSuppressCaptures() {
-        return ChromeFeatureList.sSuppressionToolbarCaptures.isEnabled();
-    }
 
     /**
      * Returns whether to record metrics from suppression experiment. This allows an arm of
@@ -31,19 +27,22 @@ public final class ToolbarFeatures {
         return ChromeFeatureList.sRecordSuppressionMetrics.isEnabled();
     }
 
-    /** Returns if we are using optimized window layout for tab strip. */
-    public static boolean isTabStripWindowLayoutOptimizationEnabled(boolean isTablet) {
-        if (sTabStripLayoutOptimizationEnabledForTesting != null) {
-            return sTabStripLayoutOptimizationEnabledForTesting;
+    /**
+     * Returns if app header customization is supported. This feature enables rendering the tab
+     * strip in the caption bar when applicable.
+     */
+    public static boolean isAppHeaderCustomizationSupported(
+            boolean isTablet, boolean isDefaultDisplay) {
+        if (DeviceInfo.isAutomotive()) {
+            return false;
         }
-        return ChromeFeatureList.sTabStripLayoutOptimization.isEnabled()
-                && isTablet
-                && VERSION.SDK_INT >= VERSION_CODES.R;
-    }
 
-    /** Set the return value for {@link #isTabStripWindowLayoutOptimizationEnabled(boolean)}. */
-    public static void setIsTabStripLayoutOptimizationEnabledForTesting(boolean enabled) {
-        sTabStripLayoutOptimizationEnabledForTesting = enabled;
-        ResettersForTesting.register(() -> sTabStripLayoutOptimizationEnabledForTesting = null);
+        // Determine if app header customization will be supported on an external display.
+        if (!AppHeaderUtils.shouldAllowHeaderCustomizationOnNonDefaultDisplay()
+                && !isDefaultDisplay) {
+            return false;
+        }
+
+        return isTablet && VERSION.SDK_INT >= VERSION_CODES.R;
     }
 }

@@ -7,6 +7,7 @@ module blink.mojom;
 import "cc/mojom/render_frame_metadata.mojom";
 import "cc/mojom/touch_action.mojom";
 import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/source_location.mojom";
 import "services/network/public/mojom/storage_access_api.mojom";
@@ -35,7 +36,7 @@ import "third_party/blink/public/mojom/input/scroll_direction.mojom";
 import "third_party/blink/public/mojom/loader/referrer.mojom";
 import "third_party/blink/public/mojom/messaging/transferable_message.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_policy.mojom";
-import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
+import "services/network/public/mojom/permissions_policy/permissions_policy.mojom";
 import "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom";
 import "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom";
 import "third_party/blink/public/mojom/timing/resource_timing.mojom";
@@ -97,6 +98,18 @@ struct OpenURLParams {
   // only be sent for about:blank and about:srcdoc navigations, and be nullopt
   // otherwise.
   url.mojom.Url? initiator_base_url;
+
+  // An earlier and more accurate representation of the starting time of the
+  // navigation (based on the creation of the FrameLoadRequest), compared to the
+  // `navigation_start` that is passed through many of the navigation APIs
+  // (which is delayed until after the renderer process runs beforeunload
+  // handlers). The goal is to later use this in many navigation metrics to
+  // better identify performance improvements and regressions, while excluding
+  // just the time spent in beforeunload handlers. This value is currently only
+  // used in trace events and limited metrics to gauge the impact the change.
+  // TODO(crbug.com/385170155): Use this for most navigation metrics, with
+  // better ways to exclude beforeunload time.
+  mojo_base.mojom.TimeTicks actual_navigation_start;
 
   // The token of the RenderFrameHost that initiated the navigation. It might
   // refer to a RenderFrameHost that doesn't exist anymore when the IPC reaches
@@ -231,21 +244,30 @@ interface RemoteFrameHost {
 
   // Sent to the browser to post a message to the frame's active renderer, which
   // will receive the re-routed message from the browser process via the method
-  // PostMessageEvent(), from the blink.mojom.LocalFrame interface.
+  // PostMessageEvent(), from the blink.mojom.LocalFrame interface:
+  //
   // |source_frame_token| is the frame token of the LocalFrame in the renderer
-  // process originating the request, which will be translated by the browser
-  // process to the frame token of the equivalent RemoteFrame in the target
-  // renderer process.
-  // |source_origin| is the origin of the source frame when the message was
-  // sent, and |target_origin| specifies what the origin of the target frame
-  // must be for the message to be dispatched. |source_origin| has an Origin
-  // type since it will be validated by the browser process, even when opaque
-  // with a precursor, while |target_origin| is a string since the web page
-  // specifies it, and might use an asterisk as a wildcard. |message| is the
-  // encoded data, plus any extra properties such as transferred ports or blobs.
+  // process from which the message originated, which will be translated by the
+  // browser process into the frame token of the equivalent RemoteFrame in the
+  // target renderer process.
+  //
+  // |source_origin| is the origin of the source from which the message was
+  // sent. Unlike `blink.mojom.LocalFrame.postMessageEvent`, this value will
+  // always be set; the exceptions which can deliver messages without source
+  // origins to not apply to this method, which only handles messages posted
+  // from a LocalFrame with a clearly specified origin.
+  //
+  // |target_origin| specifies the origin of the message's intended target. If
+  // the intended origin does not match the destination frame's origin, the
+  // message will be discarded. If |target_origin| is null, then the caller
+  // has specified a wildcard, allowing the message to be delivered regardless
+  // of the destination frame's origin.
+  //
+  // |message| is the encoded data, and any extra properties such as
+  // transferred ports or blobs.
   RouteMessageEvent(blink.mojom.LocalFrameToken? source_frame_token,
                     url.mojom.Origin source_origin,
-                    mojo_base.mojom.String16 target_origin,
+                    url.mojom.Origin? target_origin,
                     blink.mojom.TransferableMessage message);
 
   // Ask the frame host to print a cross-process subframe.
@@ -395,7 +417,7 @@ interface RemoteFrame {
   // Used to replicate the updated sandbox flags and permissions policy headers to
   // all corresponding remote frames of a local frame when a navigation commits.
   DidSetFramePolicyHeaders(network.mojom.WebSandboxFlags sandbox_flags,
-      array<blink.mojom.ParsedPermissionsPolicyDeclaration> parsed_permissions_policy);
+      array<network.mojom.ParsedPermissionsPolicyDeclaration> parsed_permissions_policy);
 
   // Notifies the frame that its parent has changed the frame's sandbox flags or
   // container policy.
@@ -470,7 +492,11 @@ interface RemoteFrame {
   // at the root (see https://crbug.com/1393697).
   //
   // `params`: An array of the root's immediate children.
-  CreateRemoteChildren(array<CreateRemoteChildParams> params);
+  // `navigation_metrics_token`: Identifies the navigation responsible for
+  //    creating these RemoteFrames, if any, for tracing/metrics purposes.
+  CreateRemoteChildren(
+      array<CreateRemoteChildParams> params,
+      mojo_base.mojom.UnguessableToken? navigation_metrics_token);
 
   // Propagates a censored version of the event from a fenced frame to its
   // embedder that omits privacy-sensitive information like mouse coordinates or

@@ -14,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/service/display/direct_renderer.h"
 #include "components/viz/service/display/display_resource_provider_skia.h"
 #include "components/viz/service/display_embedder/buffer_queue.h"
@@ -22,7 +23,6 @@
 #include "gpu/vulkan/buildflags.h"
 #include "media/gpu/buildflags.h"
 #include "third_party/skia/include/core/SkCanvas.h"
-#include "ui/gfx/color_conversion_sk_filter_cache.h"
 #include "ui/gfx/geometry/mask_filter_info.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/latency/latency_info.h"
@@ -39,7 +39,6 @@ class SkiaOutputSurface;
 class SolidColorDrawQuad;
 class TextureDrawQuad;
 class TileDrawQuad;
-class YUVVideoDrawQuad;
 
 // TODO(crbug.com/40554816): SkColorSpace is only a subset comparing to
 // gfx::ColorSpace. Need to figure out support for color space that is not
@@ -122,7 +121,6 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   struct RenderPassOverlayParams;
   struct OverlayLock;
   class ScopedSkImageBuilder;
-  class ScopedYUVSkImageBuilder;
   class VizDebuggerLog;
 
   void ClearCanvas(SkColor4f color);
@@ -241,9 +239,6 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   void DrawTileDrawQuad(const TileDrawQuad* quad,
                         const DrawRPDQParams* rpdq_params,
                         DrawQuadParams* params);
-  void DrawYUVVideoQuad(const YUVVideoDrawQuad* quad,
-                        const DrawRPDQParams* rpdq_params,
-                        DrawQuadParams* params);
 
   void DrawUnsupportedQuad(const DrawQuad* quad,
                            const DrawRPDQParams* rpdq_params,
@@ -254,21 +249,13 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
 
   // skia_renderer can draw most single-quad passes directly, regardless of
   // blend mode or image filtering.
-  const DrawQuad* CanPassBeDrawnDirectly(
+  std::optional<const DrawQuad*> CanPassBeDrawnDirectly(
       const AggregatedRenderPass* pass,
       const RenderPassRequirements& requirements) override;
 
-  void DrawDelegatedInkTrail() override;
+  void DrawDelegatedInkTrail(
+      const gfx::Transform& root_target_to_render_pass_transform);
 
-  // Get a color filter that converts from |src| color space to |dst| color
-  // space using a shader constructed from gfx::ColorTransform.  The color
-  // filters are cached in |color_filter_cache_|.
-  sk_sp<SkColorFilter> GetColorSpaceConversionFilter(
-      const gfx::ColorSpace& src,
-      std::optional<uint32_t> src_bit_depth,
-      std::optional<gfx::HDRMetadata> src_hdr_metadata,
-      const gfx::ColorSpace& dst,
-      bool is_video_frame);
   // Returns the color filter that should be applied to the current canvas.
   sk_sp<SkColorFilter> GetContentColorFilter();
 
@@ -348,10 +335,10 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   // A map from RenderPass id to the texture used to draw the RenderPass from.
   base::flat_map<AggregatedRenderPassId, RenderPassBacking>
       render_pass_backings_;
-  sk_sp<SkColorSpace> RenderPassBackingSkColorSpace(
+  gfx::ColorSpace RenderPassBackingColorSpace(
       const RenderPassBacking& backing) {
-    return backing.color_space.GetWithSdrWhiteLevel(CurrentFrameSDRWhiteLevel())
-        .ToSkColorSpace();
+    return backing.color_space.GetWithSdrWhiteLevel(
+        CurrentFrameSDRWhiteLevel());
   }
 
   // Contains every render pass ID that this renderer has allocated. Values are
@@ -412,10 +399,6 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   // order.
   std::vector<RenderPassOverlayParams> in_flight_render_pass_overlay_backings_;
   std::vector<RenderPassOverlayParams> available_render_pass_overlay_backings_;
-
-  // A feature flag that allows unchanged render pass draw quad in the overlay
-  // list to skip.
-  const bool can_skip_render_pass_overlay_;
 #endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN)
 
   // Lock set for resources that are used for the current frame. All resources
@@ -489,15 +472,18 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
       return resource_lock->sync_token();
     }
 
-    void SetReleaseFence(gfx::GpuFenceHandle release_fence) {
-      if (resource_lock.has_value()) {
-        resource_lock->SetReleaseFence(std::move(release_fence));
+    void MaybeCopyReleaseFence(const gfx::GpuFenceHandle& release_fence) {
+      if (resource_lock.has_value() &&
+          resource_lock->SynchronizationType() ==
+              TransferableResource::SynchronizationType::kReleaseFence) {
+        resource_lock->SetReleaseFence(release_fence.Clone());
       }
     }
 
     bool HasReadLockFence() {
       if (resource_lock.has_value()) {
-        return resource_lock->HasReadLockFence();
+        return resource_lock->SynchronizationType() ==
+               TransferableResource::SynchronizationType::kGpuCommandsCompleted;
       }
       return false;
     }
@@ -543,8 +529,6 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
 #endif  // BUILDFLAG(IS_APPLE)
 
   const bool is_using_raw_draw_;
-
-  gfx::ColorConversionSkFilterCache color_filter_cache_;
 
   // Returns true if we need to push a color conversion layer to correctly draw
   // |render_pass|'s contents.

@@ -32,6 +32,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
 
@@ -107,12 +108,22 @@ class AutoclickTest : public AshTestBase {
         ->menu_view_;
   }
 
+  AutoclickScrollBubbleController* GetAutoclickScrollBubbleController() {
+    return GetAutoclickController()
+        ->GetMenuBubbleControllerForTesting()
+        ->scroll_bubble_controller_.get();
+  }
+
   AutoclickScrollView* GetAutoclickScrollView() {
     AutoclickScrollBubbleController* controller =
-        GetAutoclickController()
-            ->GetMenuBubbleControllerForTesting()
-            ->scroll_bubble_controller_.get();
+        GetAutoclickScrollBubbleController();
     return controller ? controller->scroll_view_.get() : nullptr;
+  }
+
+  AutoclickScrollBubbleView* GetAutoclickScrollBubbleView() {
+    AutoclickScrollBubbleController* controller =
+        GetAutoclickScrollBubbleController();
+    return controller ? controller->bubble_view_.get() : nullptr;
   }
 
   views::Widget* GetAutoclickBubbleWidget() {
@@ -283,9 +294,8 @@ TEST_F(AutoclickTest, MovementThreshold) {
       // location should never get a click.
       FastForwardBy(full_delay * 2);
       EXPECT_EQ(2u, GetMouseEvents().size());
-      gfx::Rect display_bounds = display::Screen::GetScreen()
-                                     ->GetDisplayNearestWindow(root_window)
-                                     .bounds();
+      gfx::Rect display_bounds =
+          display::Screen::Get()->GetDisplayNearestWindow(root_window).bounds();
       EXPECT_EQ(center - gfx::Vector2d(display_bounds.origin().x(),
                                        display_bounds.origin().y()),
                 GetMouseEvents()[0].location());
@@ -456,8 +466,8 @@ TEST_F(AutoclickTest, SynthesizedMouseMovesIgnored) {
   // result, synthesized mouse events will be dispatched to the window, but it
   // should not trigger an autoclick.
   aura::test::EventCountDelegate delegate;
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-      &delegate, 123, gfx::Rect(50, 50, 100, 100)));
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.delegate = &delegate, .bounds = {50, 50, 100, 100}, .window_id = 123}));
   window->Show();
   events = WaitForMouseEvents();
   EXPECT_EQ(0u, events.size());
@@ -1298,6 +1308,28 @@ TEST_F(AutoclickTest, ScrollMenuBubblePostioning) {
   Shell::Get()->accessibility_controller()->SetAutoclickMenuPosition(
       FloatingMenuPosition::kBottomRight);
   EXPECT_EQ(GetAutoclickScrollView()->GetBoundsInScreen(), scroll_bounds);
+}
+
+TEST_F(AutoclickTest, ScrollBubbleViewAccessibleName) {
+  GetAutoclickController()->SetEnabled(true,
+                                       /*show_confirmation_dialog=*/false);
+  GetAutoclickController()->SetAutoclickEventType(
+      AutoclickEventType::kLeftClick);
+  EXPECT_FALSE(GetAutoclickScrollView());
+  EXPECT_FALSE(GetAutoclickScrollBubbleView());
+
+  // Enable scroll.
+  GetAutoclickController()->SetAutoclickEventType(AutoclickEventType::kScroll);
+  ASSERT_TRUE(GetAutoclickScrollView());
+  ASSERT_TRUE(GetAutoclickScrollBubbleView());
+
+  AutoclickScrollBubbleController* controller =
+      GetAutoclickScrollBubbleController();
+  AutoclickScrollBubbleView* bubble_view = GetAutoclickScrollBubbleView();
+  ui::AXNodeData node_data;
+  bubble_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            controller->GetAccessibleNameForBubble());
 }
 
 }  // namespace ash

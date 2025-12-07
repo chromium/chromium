@@ -4,18 +4,22 @@
 
 #include "chrome/browser/ui/views/crostini/crostini_ansible_software_config_view.h"
 
+#include <string_view>
+
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/crostini/ansible/ansible_management_service.h"
+#include "chrome/browser/ash/crostini/ansible/ansible_management_service_factory.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/network_service_instance.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/layout/box_layout.h"
@@ -27,14 +31,14 @@ bool CrostiniAnsibleSoftwareConfigView::Accept() {
     state_ = State::CONFIGURING;
     OnStateChanged();
 
-    crostini::AnsibleManagementService::GetForProfile(profile_)
+    crostini::AnsibleManagementServiceFactory::GetForProfile(profile_)
         ->RetryConfiguration(container_id_);
     return false;
   }
   DCHECK_EQ(state_, State::ERROR);
-  crostini::AnsibleManagementService::GetForProfile(profile_)->RemoveObserver(
-      this);
-  crostini::AnsibleManagementService::GetForProfile(profile_)
+  crostini::AnsibleManagementServiceFactory::GetForProfile(profile_)
+      ->RemoveObserver(this);
+  crostini::AnsibleManagementServiceFactory::GetForProfile(profile_)
       ->CompleteConfiguration(container_id_, false);
   return true;
 }
@@ -42,13 +46,13 @@ bool CrostiniAnsibleSoftwareConfigView::Accept() {
 bool CrostiniAnsibleSoftwareConfigView::Cancel() {
   if (state_ == State::CONFIGURING) {
     // Cancel anything running/waiting on this specific configuration task.
-    crostini::AnsibleManagementService::GetForProfile(profile_)
+    crostini::AnsibleManagementServiceFactory::GetForProfile(profile_)
         ->CancelConfiguration(container_id_);
   }
   // Always close.
-  crostini::AnsibleManagementService::GetForProfile(profile_)->RemoveObserver(
-      this);
-  crostini::AnsibleManagementService::GetForProfile(profile_)
+  crostini::AnsibleManagementServiceFactory::GetForProfile(profile_)
+      ->RemoveObserver(this);
+  crostini::AnsibleManagementServiceFactory::GetForProfile(profile_)
       ->CompleteConfiguration(container_id_, false);
   return true;
 }
@@ -67,12 +71,12 @@ std::u16string CrostiniAnsibleSoftwareConfigView::GetSubtextLabel() const {
   }
 }
 
-std::u16string
+std::u16string_view
 CrostiniAnsibleSoftwareConfigView::GetSubtextLabelStringForTesting() {
   return subtext_label_->GetText();
 }
 
-std::u16string
+std::u16string_view
 CrostiniAnsibleSoftwareConfigView::GetProgressLabelStringForTesting() {
   return progress_label_->GetText();
 }
@@ -81,8 +85,8 @@ CrostiniAnsibleSoftwareConfigView::CrostiniAnsibleSoftwareConfigView(
     Profile* profile,
     guest_os::GuestId container_id)
     : profile_(profile), container_id_(container_id) {
-  set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_STANDALONE_BUBBLE_PREFERRED_WIDTH));
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
   views::LayoutProvider* provider = views::LayoutProvider::Get();
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -117,7 +121,8 @@ CrostiniAnsibleSoftwareConfigView::CrostiniAnsibleSoftwareConfigView(
       crostini::prefs::kCrostiniAnsiblePlaybookFilePath);
 
   container_name_ = base::UTF8ToUTF16(container_id.container_name);
-  crostini::AnsibleManagementService::GetForProfile(profile)->AddObserver(this);
+  crostini::AnsibleManagementServiceFactory::GetForProfile(profile)
+      ->AddObserver(this);
   OnStateChanged();
 }
 
@@ -151,8 +156,9 @@ void CrostiniAnsibleSoftwareConfigView::OnAnsibleSoftwareConfigurationProgress(
     const std::vector<std::string>& status_lines) {
   // Pass if this isn't for the current dialog.
   LOG(ERROR) << "Progress: " << status_lines.back();
-  if (container_id != container_id_)
+  if (container_id != container_id_) {
     return;
+  }
   progress_label_->SetText(base::UTF8ToUTF16(status_lines.back()));
   OnStateChanged();
 }
@@ -161,22 +167,24 @@ void CrostiniAnsibleSoftwareConfigView::OnAnsibleSoftwareConfigurationFinished(
     const guest_os::GuestId& container_id,
     bool success) {
   // Pass if this isn't for the current dialog.
-  if (container_id != container_id_)
+  if (container_id != container_id_) {
     return;
+  }
 
   DCHECK_EQ(state_, State::CONFIGURING);
   if (!success) {
-    if (content::GetNetworkConnectionTracker()->IsOffline())
+    if (content::GetNetworkConnectionTracker()->IsOffline()) {
       state_ = State::ERROR_OFFLINE;
-    else
+    } else {
       state_ = State::ERROR;
+    }
 
     OnStateChanged();
     return;
   }
-  crostini::AnsibleManagementService::GetForProfile(profile_)->RemoveObserver(
-      this);
-  crostini::AnsibleManagementService::GetForProfile(profile_)
+  crostini::AnsibleManagementServiceFactory::GetForProfile(profile_)
+      ->RemoveObserver(this);
+  crostini::AnsibleManagementServiceFactory::GetForProfile(profile_)
       ->CompleteConfiguration(container_id_, true);
 }
 
@@ -184,18 +192,22 @@ void CrostiniAnsibleSoftwareConfigView::OnStateChanged() {
   SetTitle(GetWindowTitleForState(state_));
   progress_bar_->SetVisible(state_ == State::CONFIGURING);
   subtext_label_->SetText(GetSubtextLabel());
-  SetButtons(state_ == State::CONFIGURING
-                 ? ui::DIALOG_BUTTON_CANCEL
-                 : (state_ == State::ERROR
-                        ? ui::DIALOG_BUTTON_OK
-                        : ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL));
+  SetButtons(
+      state_ == State::CONFIGURING
+          ? static_cast<int>(ui::mojom::DialogButton::kCancel)
+          : (state_ == State::ERROR
+                 ? static_cast<int>(ui::mojom::DialogButton::kOk)
+                 : static_cast<int>(ui::mojom::DialogButton::kOk) |
+                       static_cast<int>(ui::mojom::DialogButton::kCancel)));
   // The cancel button, even when present, always uses the default text.
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, l10n_util::GetStringUTF16(IDS_APP_OK));
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
+                 l10n_util::GetStringUTF16(IDS_APP_OK));
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  l10n_util::GetStringUTF16(IDS_APP_CANCEL));
   DialogModelChanged();
-  if (GetWidget())
+  if (GetWidget()) {
     GetWidget()->SetSize(GetWidget()->non_client_view()->GetPreferredSize());
+  }
 }
 
 BEGIN_METADATA(CrostiniAnsibleSoftwareConfigView)

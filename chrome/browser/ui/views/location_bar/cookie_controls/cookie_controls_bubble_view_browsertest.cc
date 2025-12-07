@@ -8,9 +8,12 @@
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_coordinator.h"
+#include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_view_controller.h"
+#include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_view_impl.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -18,6 +21,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
+#include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -66,9 +70,21 @@ class CookieControlsBubbleViewBrowserTest : public InProcessBrowserTest {
     controller_ = std::make_unique<content_settings::CookieControlsController>(
         CookieSettingsFactory::GetForProfile(browser()->profile()), nullptr,
         HostContentSettingsMapFactory::GetForProfile(browser()->profile()),
-        TrackingProtectionSettingsFactory::GetForProfile(browser()->profile()));
+        TrackingProtectionSettingsFactory::GetForProfile(browser()->profile()),
+        /*is_incognito_profile=*/false);
 
-    coordinator_ = std::make_unique<CookieControlsBubbleCoordinator>();
+    incognito_controller_ =
+        std::make_unique<content_settings::CookieControlsController>(
+            CookieSettingsFactory::GetForProfile(incognito_profile()),
+            CookieSettingsFactory::GetForProfile(browser()->profile()),
+            HostContentSettingsMapFactory::GetForProfile(incognito_profile()),
+            TrackingProtectionSettingsFactory::GetForProfile(
+                incognito_profile()),
+            /*is_incognito_profile=*/true);
+  }
+
+  CookieControlsBubbleCoordinator* coordinator() {
+    return CookieControlsBubbleCoordinator::From(browser());
   }
 
   void TearDownOnMainThread() override {
@@ -77,14 +93,22 @@ class CookieControlsBubbleViewBrowserTest : public InProcessBrowserTest {
     // If the test did not close the bubble, close and wait for it here.
     WaitForBubbleClose();
 
-    coordinator_ = nullptr;
     controller_ = nullptr;
+    incognito_controller_ = nullptr;
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
  protected:
   void ShowBubble() {
-    coordinator_->ShowBubble(active_web_contents(), controller_.get());
+    coordinator()->ShowBubble(
+        browser()->GetBrowserView().toolbar_button_provider(),
+        active_web_contents(), controller_.get());
+  }
+
+  void ShowIncognitoBubble() {
+    coordinator()->ShowBubble(
+        browser()->GetBrowserView().toolbar_button_provider(),
+        active_web_contents(), incognito_controller_.get());
   }
 
   void WaitForBubbleClose() {
@@ -92,7 +116,7 @@ class CookieControlsBubbleViewBrowserTest : public InProcessBrowserTest {
       views::test::WidgetDestroyedWaiter waiter(bubble_view()->GetWidget());
       bubble_view()->GetWidget()->Close();
       waiter.Wait();
-      EXPECT_EQ(coordinator_->GetBubble(), nullptr);
+      EXPECT_EQ(coordinator()->GetBubble(), nullptr);
     }
   }
 
@@ -123,10 +147,10 @@ class CookieControlsBubbleViewBrowserTest : public InProcessBrowserTest {
                                   "/third_party_partitioned_cookies.html");
   }
   CookieControlsBubbleViewImpl* bubble_view() {
-    return coordinator_->GetBubble();
+    return coordinator()->GetBubble();
   }
   CookieControlsBubbleViewController* view_controller() {
-    return coordinator_->GetViewControllerForTesting();
+    return coordinator()->GetViewControllerForTesting();
   }
   HostContentSettingsMap* host_content_settings_map() {
     return HostContentSettingsMapFactory::GetForProfile(browser()->profile());
@@ -135,11 +159,16 @@ class CookieControlsBubbleViewBrowserTest : public InProcessBrowserTest {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
+  Profile* incognito_profile() {
+    return browser()->profile()->GetPrimaryOTRProfile(true);
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-  std::unique_ptr<CookieControlsBubbleCoordinator> coordinator_;
   std::unique_ptr<content_settings::CookieControlsController> controller_;
+  std::unique_ptr<content_settings::CookieControlsController>
+      incognito_controller_;
 };
 
 IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewBrowserTest,
@@ -154,50 +183,14 @@ IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewBrowserTest,
   CheckCookiesException(third_party_cookie_page_url(), /*should_exist=*/false);
 }
 
-class TrackingProtectionBubbleViewBrowserTest
-    : public CookieControlsBubbleViewBrowserTest {
- public:
-  TrackingProtectionBubbleViewBrowserTest() {
-    https_server_ = std::make_unique<net::EmbeddedTestServer>(
-        net::EmbeddedTestServer::TYPE_HTTPS);
-    // Enable FPP to display UB UX with ACT features
-    feature_list_.InitWithFeatures(
-        {privacy_sandbox::kFingerprintingProtectionUserBypass,
-         privacy_sandbox::kFingerprintingProtectionSetting},
-        {});
-  }
-
-  ContentSetting GetTrackingProtectionSetting() {
-    return host_content_settings_map()->GetContentSetting(
-        GURL(), third_party_cookie_page_url(),
-        ContentSettingsType::TRACKING_PROTECTION);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<net::EmbeddedTestServer> https_server_;
-};
-
-IN_PROC_BROWSER_TEST_F(TrackingProtectionBubbleViewBrowserTest,
-                       ToggleCreatesTrackingProtectionException) {
-  browser()->profile()->GetPrefs()->SetBoolean(
-      prefs::kFingerprintingProtectionEnabled, true);
-  ShowBubble();
-  EXPECT_EQ(GetTrackingProtectionSetting(), CONTENT_SETTING_BLOCK);
-  SimulateTogglePress(false);
-  EXPECT_EQ(GetTrackingProtectionSetting(), CONTENT_SETTING_ALLOW);
-  SimulateTogglePress(true);
-  EXPECT_EQ(GetTrackingProtectionSetting(), CONTENT_SETTING_BLOCK);
-}
 
 IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewBrowserTest,
                        HidingControlsClosesBubble) {
   ShowBubble();
   views::test::WidgetDestroyedWaiter waiter(bubble_view()->GetWidget());
   view_controller()->OnStatusChanged(
-      /*controls_visible=*/false,
-      /*protections_on=*/false, CookieControlsEnforcement::kNoEnforcement,
-      CookieBlocking3pcdStatus::kNotIn3pcd, base::Time(), /*features=*/{});
+      CookieControlsState::kHidden, CookieControlsEnforcement::kNoEnforcement,
+      CookieBlocking3pcdStatus::kNotIn3pcd, base::Time());
   waiter.Wait();
   EXPECT_EQ(bubble_view(), nullptr);
 }

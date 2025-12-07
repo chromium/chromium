@@ -14,12 +14,21 @@ XRLightEstimate::XRLightEstimate(
     const device::mojom::blink::XRLightProbe& light_probe) {
   const device::mojom::blink::XRSphericalHarmonics& spherical_harmonics =
       *light_probe.spherical_harmonics;
-  DCHECK_EQ(spherical_harmonics.coefficients.size(), 9u);
+  // We must send 9 coefficients worth of data to the page.
+  CHECK_EQ(spherical_harmonics.coefficients.size(), 9u);
+  // We need to send a red, blue, and green channel for each coefficient.
+  constexpr size_t kSphericalHarmonicsChannels = 3u;
 
-  sh_coefficients_ = DOMFloat32Array::Create(
-      spherical_harmonics.coefficients.data()->components,
-      spherical_harmonics.coefficients.size() *
-          device::RgbTupleF32::kNumComponents);
+  sh_coefficients_ = NotShared(DOMFloat32Array::Create(
+      spherical_harmonics.coefficients.size() * kSphericalHarmonicsChannels));
+
+  auto sh_span = sh_coefficients_->AsSpan();
+  for (const auto& coefficient : spherical_harmonics.coefficients) {
+    sh_span[0] = coefficient.red();
+    sh_span[1] = coefficient.green();
+    sh_span[2] = coefficient.blue();
+    sh_span = sh_span.subspan(kSphericalHarmonicsChannels);
+  }
 
   primary_light_direction_ =
       DOMPointReadOnly::Create(light_probe.main_light_direction.x(),

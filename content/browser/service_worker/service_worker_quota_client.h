@@ -11,7 +11,6 @@
 #include "base/thread_annotations.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "storage/browser/quota/quota_client_type.h"
-#include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
 namespace storage {
 struct BucketLocator;
@@ -40,12 +39,10 @@ class ServiceWorkerQuotaClient : public storage::mojom::QuotaClient {
   // storage::mojom::QuotaClient override methods.
   void GetBucketUsage(const storage::BucketLocator& bucket,
                       GetBucketUsageCallback callback) override;
-  void GetStorageKeysForType(blink::mojom::StorageType type,
-                             GetStorageKeysForTypeCallback callback) override;
+  void GetDefaultStorageKeys(GetDefaultStorageKeysCallback callback) override;
   void DeleteBucketData(const storage::BucketLocator& bucket,
                         DeleteBucketDataCallback callback) override;
-  void PerformStorageCleanup(blink::mojom::StorageType type,
-                             PerformStorageCleanupCallback callback) override;
+  void PerformStorageCleanup(PerformStorageCleanupCallback callback) override;
 
  private:
   friend class ServiceWorkerContextWrapper;

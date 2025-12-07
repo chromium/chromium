@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <item>
+    <shape android:shape="rectangle">
+      <solid android:color="@android:color/transparent" />
+      <stroke
+          android:width="@dimen/ntp_customization_theme_collections_list_item_selected_background_width"
+          android:color="@color/baseline_primary_40" />
+      <corners android:radius="@dimen/ntp_customization_theme_collections_list_item_background_radius" />
+    </shape>
+  </item>
+
+  <item
+      android:bottom="@dimen/ntp_customization_theme_collections_list_item_selected_background_width"
+      android:left="@dimen/ntp_customization_theme_collections_list_item_selected_background_width"
+      android:right="@dimen/ntp_customization_theme_collections_list_item_selected_background_width"
+      android:top="@dimen/ntp_customization_theme_collections_list_item_selected_background_width">
+    <shape android:shape="rectangle">
+      <solid android:color="@android:color/transparent" />
+      <stroke
+          android:width="@dimen/ntp_customization_theme_collections_list_item_selected_background_width"
+          android:color="@android:color/white" />
+      <corners android:radius="@dimen/ntp_customization_theme_collections_list_item_selected_background_inner_radius" />
+    </shape>
+  </item>
+
+</layer-list>

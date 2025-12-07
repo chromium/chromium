@@ -11,11 +11,13 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ui/web_applications/web_app_run_on_os_login_notification.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 
 namespace web_app {
@@ -94,19 +96,10 @@ bool FakeWebAppUiManager::IsAppInQuickLaunchBar(
   return false;
 }
 
-bool FakeWebAppUiManager::IsInAppWindow(
-    content::WebContents* web_contents) const {
-  return false;
-}
-
-const webapps::AppId* FakeWebAppUiManager::GetAppIdForWindow(
-    const content::WebContents* web_contents) const {
-  return nullptr;
-}
-
 bool FakeWebAppUiManager::CanReparentAppTabToWindow(
     const webapps::AppId& app_id,
-    bool shortcut_created) const {
+    bool shortcut_created,
+    content::WebContents* web_contents) const {
   return true;
 }
 
@@ -115,6 +108,15 @@ Browser* FakeWebAppUiManager::ReparentAppTabToWindow(
     const webapps::AppId& app_id,
     bool shortcut_created) {
   ++num_reparent_tab_calls_;
+  return nullptr;
+}
+
+Browser* FakeWebAppUiManager::ReparentAppTabToWindow(
+    content::WebContents* contents,
+    const webapps::AppId& app_id,
+    base::OnceCallback<void(content::WebContents*)> completion_callback) {
+  ++num_reparent_tab_calls_;
+  std::move(completion_callback).Run(contents);
   return nullptr;
 }
 
@@ -158,12 +160,6 @@ void FakeWebAppUiManager::LaunchWebApp(apps::AppLaunchParams params,
   }
 }
 
-void FakeWebAppUiManager::WaitForFirstRunService(
-    Profile& profile,
-    FirstRunServiceCompletedCallback callback) {
-  std::move(callback).Run(/*success=*/true);
-}
-
 #if BUILDFLAG(IS_CHROMEOS)
 void FakeWebAppUiManager::MigrateLauncherState(
     const webapps::AppId& from_app_id,
@@ -200,7 +196,32 @@ bool FakeWebAppUiManager::IsWebContentsActiveTabInBrowser(
 }
 
 void FakeWebAppUiManager::TriggerInstallDialog(
-    content::WebContents* web_contents) {}
+    content::WebContents* web_contents,
+    webapps::WebappInstallSource source,
+    InstallCallback callback) {
+  std::move(callback).Run("",
+                          webapps::InstallResultCode::kWebAppProviderNotReady);
+}
+
+void FakeWebAppUiManager::TriggerInstallDialogForBackgroundInstall(
+    content::WebContents* initiating_web_contents,
+    std::unique_ptr<webapps::MlInstallOperationTracker> tracker,
+    const GURL& install_url,
+    const std::optional<GURL>& manifest_id,
+    const GURL& last_committed_url,
+    InstallCallback callback) {
+  NOTIMPLEMENTED();
+}
+
+void FakeWebAppUiManager::TriggerLaunchDialogForBackgroundInstall(
+    content::WebContents* initiating_web_contents,
+    const webapps::AppId& app_id,
+    Profile* profile,
+    const std::string& app_name,
+    const SkBitmap& icon,
+    base::OnceCallback<void(bool accepted)> callback) {
+  NOTIMPLEMENTED();
+}
 
 void FakeWebAppUiManager::PresentUserUninstallDialog(
     const webapps::AppId& app_id,
@@ -228,6 +249,11 @@ void FakeWebAppUiManager::PresentUserUninstallDialog(
   std::move(callback).Run(webapps::UninstallResultCode::kAppRemoved);
 }
 
+void FakeWebAppUiManager::ShowIntentPicker(
+    const GURL& url,
+    content::WebContents* web_contents,
+    ShowIntentPickerBubbleCallback callback) {}
+
 void FakeWebAppUiManager::LaunchOrFocusIsolatedWebAppInstaller(
     const base::FilePath& bundle_path) {}
 
@@ -236,7 +262,7 @@ void FakeWebAppUiManager::MaybeCreateEnableSupportedLinksInfobar(
     const std::string& launch_name) {}
 
 void FakeWebAppUiManager::MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
-    content::WebContents* web_contents,
+    Browser* browser,
     Profile* profile,
     const std::string& app_id) {}
 

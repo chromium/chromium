@@ -5,18 +5,26 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_GROWTH_CAMPAIGNS_MANAGER_H_
 #define CHROMEOS_ASH_COMPONENTS_GROWTH_CAMPAIGNS_MANAGER_H_
 
+#include <string>
+
 #include "base/component_export.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chromeos/ash/components/growth/action_performer.h"
+#include "chromeos/ash/components/growth/campaigns_logger.h"
 #include "chromeos/ash/components/growth/campaigns_manager_client.h"
 #include "chromeos/ash/components/growth/campaigns_matcher.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
 
 class PrefService;
 class PrefRegistrySimple;
+
+namespace signin {
+enum class Tribool;
+}
 
 namespace growth {
 
@@ -42,6 +50,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   ~CampaignsManager();
 
   // Static.
+  // Returns nullptr if no CampaignsManager has been created (e.g. in tests).
   static CampaignsManager* Get();
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
@@ -73,7 +82,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
 
   // Set the current opened app. Used in `CampaignsMatcher` for matching
   // opened app targeting.
-  void SetOpenedApp(const std::string& app_id);
+  void SetOpenedApp(std::string app_id);
 
   // Get latest trigger.
   const Trigger& GetTrigger() const;
@@ -100,21 +109,45 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
                      const base::Value::Dict* params);
 
   // Clear event stored in the Feature Engagement framework.
-  void ClearEvent(CampaignEvent event, const std::string& id);
-  void ClearEvent(const std::string& event);
+  void ClearEvent(CampaignEvent event, std::string_view id);
+  void ClearEvent(std::string_view event);
+
+  // Clear all events associated by all the campaigns.
+  // Only used by the `growth-internals` page.
+  void ClearAllEvents();
 
   // Record event to the Feature Engagement framework. Event will be stored and
   // could be used for targeting.
-  // TODO: b/342283711 - Refactor this into two functions with
-  // `RecordSurfaceUiEvent` and `RecordEventAppOpened`.
-  void RecordEventForTargeting(growth::CampaignEvent event,
-                               const std::string& id);
+  // If `trigger campaigns` is true, it will try to trigger the campaign if the
+  // campaign is selected.
+  // For example, `RecordEvent("hover_on_hotseat", true)` will record an event
+  // in the Feature Engagement framework and try to trigger campaigns by this
+  // event.
+  void RecordEvent(const std::string& event, bool trigger_campaigns = false);
 
+  void SetMantaCapabilityForTesting(signin::Tribool value);
+  void SetBoardForTesting(std::optional<std::string> board);
   void SetOobeCompleteTimeForTesting(base::Time time);
   void SetTrackerInitializedForTesting();
   const Campaigns* GetCampaignsBySlotForTesting(Slot slot) const;
+  std::optional<base::Time> GetRegisteredTimeForTesting();
+  base::flat_set<std::string> queued_events_record_only_for_testing() const {
+    return queued_events_record_only_;
+  }
+  base::flat_set<std::string> queued_events_record_and_trigger_for_testing()
+      const {
+    return queued_events_record_and_trigger_;
+  }
+
+  void SetCampaignsForTesting(const base::Value::Dict* campaigns) {
+    campaigns_ = campaigns->Clone();
+  }
 
  private:
+  // Record queued events before `campaigns_loaded_` is set to true. Trigger
+  // campaigns if needed.
+  void RecordQueuedEventsAndMaybeTrigger();
+
   // Triggred when campaigns component loaded.
   void OnCampaignsComponentLoaded(
       base::OnceClosure load_callback,
@@ -140,11 +173,18 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   // to query.
   void NotifyCampaignsLoaded();
 
+  // Record impression events if the campaign is a control campaigns.
+  void MaybeRecordImpressionForControl(const Campaign* campaign) const;
+
   // Register synthetic trial for growth. It will not work if campaign is
   // incomplete, i.e. missing id.
   void RegisterTrialForCampaign(const Campaign* campaign) const;
 
-  void RecordEvent(const std::string& event);
+  // Clear events used in `events_targeting` from the DB of feature engagement
+  // framework. Only used by `growth-internals` page.
+  void ClearEventsByTargeting(const EventsTargeting& events_targeting,
+                              int campaign_id,
+                              std::optional<int> group_id);
 
   raw_ptr<CampaignsManagerClient> client_ = nullptr;
 
@@ -157,6 +197,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   // Campaigns matcher for selecting campaigns based on criteria.
   CampaignsMatcher matcher_;
 
+  CampaignsLogger logger_;
+
   // Maps action type to the action.
   ActionMap actions_map_;
 
@@ -168,6 +210,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   bool tracker_initialized_for_test_ = false;
 
   base::ObserverList<Observer> observers_;
+
+  // Queued events to record and trigger before `campaigns_loaded_` is true.
+  // We do not keep the order when the events is received. One event could be
+  // queued in the two sets if one is record only and the other one is to
+  // trigger.
+  base::flat_set<std::string> queued_events_record_only_;
+  base::flat_set<std::string> queued_events_record_and_trigger_;
 
   base::WeakPtrFactory<CampaignsManager> weak_factory_{this};
 };

@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "remoting/base/constants.h"
@@ -88,7 +88,7 @@ class WebrtcVideoStream : public VideoStream, public VideoChannelStateObserver {
   struct FrameStats;
 
   // Called by |video_track_source_|.
-  void OnSinkAddedOrUpdated(const rtc::VideoSinkWants& wants);
+  void OnSinkAddedOrUpdated(const webrtc::VideoSinkWants& wants);
 
   // Called from |core_|.
   void OnVideoSizeChanged(webrtc::DesktopSize frame_size,
@@ -102,10 +102,10 @@ class WebrtcVideoStream : public VideoStream, public VideoChannelStateObserver {
   int target_framerate_ = kTargetFrameRate;
 
   // Used to send captured frames to the encoder.
-  rtc::scoped_refptr<WebrtcVideoTrackSource> video_track_source_;
+  webrtc::scoped_refptr<WebrtcVideoTrackSource> video_track_source_;
 
   // The transceiver created for this video-stream.
-  rtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver_;
+  webrtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver_;
 
   scoped_refptr<webrtc::PeerConnectionInterface> peer_connection_;
 

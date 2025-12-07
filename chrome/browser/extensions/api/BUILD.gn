@@ -8,8 +8,8 @@ import("//extensions/buildflags/buildflags.gni")
 import("//pdf/features.gni")
 import("//tools/json_schema_compiler/json_schema_api.gni")
 
-assert(enable_extensions,
-       "Cannot depend on extensions because enable_extensions=false.")
+assert(enable_extensions_core,
+       "Cannot depend on extensions because enable_extensions_core=false.")
 
 # This should be:
 # The set of all targets needed to build out the extension API implementations
@@ -23,30 +23,85 @@ group("api") {
 
 # The collection of API implementations.
 group("api_implementations") {
-  # TODO(crbug.com/40245282): Add more API implementations here.
+  # APIs supported on Win/Mac/Linux and desktop Android go here.
+  # TODO(https://crbug.com/356905053): Add more APIs here.
   public_deps = [
-    "//chrome/browser/extensions/api/command_line_private",
+    "//chrome/browser/extensions/api/activity_log_private",
+    "//chrome/browser/extensions/api/browsing_data",
     "//chrome/browser/extensions/api/context_menus",
+    "//chrome/browser/extensions/api/cookies",
+    "//chrome/browser/extensions/api/debugger",
     "//chrome/browser/extensions/api/desktop_capture",
+    "//chrome/browser/extensions/api/downloads_internal",
+    "//chrome/browser/extensions/api/enterprise_hardware_platform",
+    "//chrome/browser/extensions/api/extension_action",
+    "//chrome/browser/extensions/api/font_settings",
     "//chrome/browser/extensions/api/module",
+    "//chrome/browser/extensions/api/notifications",
+    "//chrome/browser/extensions/api/omnibox",
     "//chrome/browser/extensions/api/page_capture",
     "//chrome/browser/extensions/api/permissions",
+    "//chrome/browser/extensions/api/preference",
+    "//chrome/browser/extensions/api/processes",
+    "//chrome/browser/extensions/api/proxy",
+    "//chrome/browser/extensions/api/reading_list",
+    "//chrome/browser/extensions/api/runtime",
     "//chrome/browser/extensions/api/scripting",
-    "//chrome/browser/extensions/api/webrtc_desktop_capture_private",
+    "//chrome/browser/extensions/api/search",
+    "//chrome/browser/extensions/api/tab_capture",
+    "//chrome/browser/extensions/api/web_authentication_proxy",
+    "//chrome/browser/extensions/api/web_navigation",
+    "//chrome/browser/extensions/api/webrtc_audio_private",
+    "//chrome/browser/extensions/api/webrtc_logging_private",
   ]
 
-  if (enable_pdf) {
-    public_deps += [ "//chrome/browser/extensions/api/pdf_viewer_private" ]
+  if (enable_service_discovery) {
+    public_deps += [ "//chrome/browser/extensions/api/mdns" ]
   }
 
-  if (is_chromeos) {
-    public_deps +=
-        [ "//chrome/browser/chromeos/extensions/smart_card_provider_private" ]
-  }
+  if (enable_extensions) {
+    # APIs supported on Win/Mac/Linux but NOT desktop Android go here.
+    # TODO(crbug.com/40245282): Add more API implementations here.
+    public_deps += [
+      "//chrome/browser/extensions/api/autofill_private",
+      "//chrome/browser/extensions/api/braille_display_private",
+      "//chrome/browser/extensions/api/command_line_private",
+      "//chrome/browser/extensions/api/content_settings",
+      "//chrome/browser/extensions/api/experimental_actor",
+      "//chrome/browser/extensions/api/experimental_ai_data",
+      "//chrome/browser/extensions/api/idltest",
+      "//chrome/browser/extensions/api/networking_private",
+      "//chrome/browser/extensions/api/resources_private",
+      "//chrome/browser/extensions/api/safe_browsing_private",
+      "//chrome/browser/extensions/api/settings_overrides",
+      "//chrome/browser/extensions/api/side_panel",
+      "//chrome/browser/extensions/api/tab_groups",
+      "//chrome/browser/extensions/api/web_view",
+      "//chrome/browser/extensions/api/webrtc_desktop_capture_private",
+    ]
 
-  if (is_chromeos_ash) {
-    public_deps += [ "//chrome/browser/extensions/api/crash_report_private" ]
-  }
+    if (enable_pdf) {
+      public_deps += [ "//chrome/browser/extensions/api/pdf_viewer_private" ]
+    }
+
+    if (is_chromeos) {
+      public_deps += [
+        "//chrome/browser/chromeos/extensions/smart_card_provider_private",
+        "//chrome/browser/extensions/api/crash_report_private",
+        "//chrome/browser/extensions/api/document_scan",
+        "//chrome/browser/extensions/api/enterprise_device_attributes",
+        "//chrome/browser/extensions/api/enterprise_kiosk_input",
+        "//chrome/browser/extensions/api/enterprise_login",
+        "//chrome/browser/extensions/api/enterprise_networking_attributes",
+        "//chrome/browser/extensions/api/enterprise_platform_keys",
+        "//chrome/browser/extensions/api/enterprise_platform_keys_private",
+        "//chrome/browser/extensions/api/input_ime",
+        "//chrome/browser/extensions/api/platform_keys",
+        "//chrome/browser/extensions/api/quick_unlock_private",
+        "//chrome/browser/extensions/api/terminal",
+      ]
+    }
+  }  # if (enable_extensions)
 }
 
 # The step necessary to generate the code to register the corresponding
@@ -68,6 +123,7 @@ function_registration("api_registration") {
     "//components/policy/proto",
 
     # Different APIs include headers from these targets.
+    "//chrome/browser/ai",
     "//chrome/common",
     "//chrome/common:mojo_bindings",
     "//components/autofill/core/common/mojom:mojo_types",
@@ -88,14 +144,45 @@ function_registration("api_registration") {
     "//third_party/metrics_proto",
     "//ui/accessibility:ax_enums_mojo",
   ]
-  if (is_chromeos) {
-    deps += [ "//chrome/browser/chromeos/extensions:constants" ]
-  }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [
       "//chrome/browser/ash/extensions/autotest_private",
       "//chrome/browser/ash/extensions/file_manager",
+
+      # TODO: We should pull these out into a separate build and function
+      # generation step so that //chrome/browser/extensions has fewer
+      # dependencies on //chrome/browser/chromeos.
+      "//chrome/browser/chromeos/extensions/accessibility_service_private",
+      "//chrome/browser/chromeos/extensions/info_private",
+      "//chrome/browser/chromeos/extensions/login_screen/login_screen_storage",
+      "//chrome/browser/chromeos/extensions/system_log",
+      "//chrome/browser/chromeos/extensions/wallpaper",
+    ]
+  }
+}
+
+# KeyedService factories initialization.
+source_set("keyed_service_factories") {
+  sources = [
+    "api_browser_context_keyed_service_factories.cc",
+    "api_browser_context_keyed_service_factories.h",
+  ]
+
+  deps = [
+    ":api_implementations",
+    "//chrome/browser/extensions",
+    "//chrome/common:buildflags",
+    "//components/safe_browsing:buildflags",
+    "//extensions/buildflags",
+    "//pdf:buildflags",
+    "//printing/buildflags",
+  ]
+
+  if (is_chromeos) {
+    deps += [
+      "//chrome/browser/chromeos/extensions/login_screen/login_state",
+      "//chrome/browser/chromeos/extensions/wm",
     ]
   }
 }

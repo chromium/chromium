@@ -17,7 +17,7 @@ namespace feature_engagement {
 class AvailabilityModel;
 struct Comparator;
 struct EventConfig;
-class EventModel;
+class EventModelReader;
 class TimeProvider;
 
 // A ConditionValidator that uses the FeatureConfigs as the source of truth.
@@ -37,7 +37,7 @@ class FeatureConfigConditionValidator : public ConditionValidator {
       const base::Feature& feature,
       const FeatureConfig& config,
       const std::vector<GroupConfig>& group_configs,
-      const EventModel& event_model,
+      const EventModelReader& event_model_reader,
       const AvailabilityModel& availability_model,
       const DisplayLockController& display_lock_controller,
       const Configuration* configuration,
@@ -54,7 +54,7 @@ class FeatureConfigConditionValidator : public ConditionValidator {
 
  private:
   bool EventConfigMeetsConditions(const EventConfig& event_config,
-                                  const EventModel& event_model,
+                                  const EventModelReader& event_model_reader,
                                   uint32_t current_day) const;
 
   bool AvailabilityMeetsConditions(const base::Feature& feature,

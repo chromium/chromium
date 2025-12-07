@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/node/node.gni")
 
 template("bundle_js") {
@@ -100,7 +99,7 @@ template("bundle_js") {
     is_chrome_untrusted =
         string_replace(invoker.host, "chrome-untrusted://", "") != invoker.host
 
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       ash_resources_path =
           rebase_path("$root_gen_dir/ash/webui/common/resources/preprocessed/",
                       root_build_dir)

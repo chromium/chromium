@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <memory>
 #include <string>
 
@@ -38,7 +39,6 @@
 #include "ash/app_list/views/search_result_list_view.h"
 #include "ash/app_list/views/search_result_page_anchored_dialog.h"
 #include "ash/app_list/views/search_result_page_view.h"
-#include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/display/display_configuration_controller.h"
 #include "ash/display/display_configuration_controller_test_api.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
@@ -78,16 +78,17 @@
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_targeter.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
@@ -99,6 +100,7 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/touch_selection/touch_selection_menu_runner.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -119,7 +121,7 @@ SearchModel* GetSearchModel() {
 }
 
 int64_t GetPrimaryDisplayId() {
-  return display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  return display::Screen::Get()->GetPrimaryDisplay().id();
 }
 
 void EnableTabletMode(bool enable) {
@@ -181,7 +183,7 @@ void SanityCheckSearchResultsAnchoredDialogBounds(
 // Returns the search box view from either the clamshell bubble or the tablet
 // mode fullscreen launcher.
 SearchBoxView* GetSearchBoxViewFromHelper(AppListTestHelper* helper) {
-  if (!Shell::Get()->IsInTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     DCHECK(Shell::Get()->app_list_controller()->IsVisible());
     return helper->GetBubbleSearchBoxView();
   }
@@ -332,6 +334,11 @@ class AppListBubbleAndTabletTestBase : public AshTestBase {
 
     // Make the display big enough to hold the app list.
     UpdateDisplay("1024x768");
+  }
+
+  void TearDown() override {
+    apps_grid_view_ = nullptr;
+    AshTestBase::TearDown();
   }
 
   AppsGridView* GetAppsGridView() {
@@ -497,7 +504,7 @@ class AppListBubbleAndTabletTestBase : public AshTestBase {
   }
 
   void EnsureLauncherShown() {
-    const bool in_tablet_mode = Shell::Get()->IsInTabletMode();
+    const bool in_tablet_mode = display::Screen::Get()->InTabletMode();
 
     // App list always visible in tablet mode, so launcher needs to explicitly
     // be shown only when in clamshell mode.
@@ -535,7 +542,7 @@ class AppListBubbleAndTabletTestBase : public AshTestBase {
   const bool tablet_mode_;
 
   std::unique_ptr<test::AppsGridViewTestApi> grid_test_api_;
-  raw_ptr<AppsGridView, DanglingUntriaged> apps_grid_view_ = nullptr;
+  raw_ptr<AppsGridView> apps_grid_view_ = nullptr;
 };
 
 // Parameterized by tablet/clamshell mode.
@@ -560,33 +567,23 @@ INSTANTIATE_TEST_SUITE_P(TabletMode,
 // tablet/clamshell mode and drag and whether drag and drop refactor is enabled.
 class AppListBubbleAndTabletDragTest
     : public AppListBubbleAndTabletTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<bool> {
  public:
   AppListBubbleAndTabletDragTest()
       : AppListBubbleAndTabletTestBase(
-            /*tablet_mode=*/std::get<0>(GetParam())) {
-    scoped_feature_list_.InitWithFeatureState(
-        app_list_features::kDragAndDropRefactor,
-        is_drag_drop_refactor_enabled());
-  }
+            /*tablet_mode=*/GetParam()) {}
   AppListBubbleAndTabletDragTest(const AppListBubbleAndTabletDragTest&) =
       delete;
   AppListBubbleAndTabletDragTest& operator=(
       const AppListBubbleAndTabletDragTest&) = delete;
   ~AppListBubbleAndTabletDragTest() override = default;
-
-  bool is_drag_drop_refactor_enabled() { return std::get<1>(GetParam()); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Instantiate the values in the parameterized tests. The boolean
-// determines whether to run the test in tablet mode with or without drag and
-// drop refactor feature enabled.
+// determines whether to run the test in tablet mode.
 INSTANTIATE_TEST_SUITE_P(TabletMode,
                          AppListBubbleAndTabletDragTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+                         testing::Bool());
 
 // Tests only tablet mode.
 class AppListTabletTest : public AppListBubbleAndTabletTestBase {
@@ -598,17 +595,13 @@ class AppListTabletTest : public AppListBubbleAndTabletTestBase {
 };
 
 // Used to test app_list behavior with a populated apps_grid.
-class PopulatedAppListTest : public AshTestBase,
-                             public testing::WithParamInterface<bool> {
+class PopulatedAppListTest : public AshTestBase {
  public:
-  PopulatedAppListTest() : is_drag_drop_refactor_enabled_(GetParam()) {}
+  PopulatedAppListTest() {}
   ~PopulatedAppListTest() override = default;
 
   void SetUp() override {
     AppListConfigProvider::Get().ResetForTesting();
-    scoped_feature_list_.InitWithFeatureState(
-        app_list_features::kDragAndDropRefactor,
-        is_drag_drop_refactor_enabled_);
     AshTestBase::SetUp();
 
     // Make the display big enough to hold the app list.
@@ -616,6 +609,12 @@ class PopulatedAppListTest : public AshTestBase,
 
     // Fullscreen launcher is used only in tablet mode, so enable tablet mode.
     EnableTabletMode(true);
+  }
+
+  void TearDown() override {
+    app_list_view_ = nullptr;
+    apps_grid_view_ = nullptr;
+    AshTestBase::TearDown();
   }
 
  protected:
@@ -691,8 +690,7 @@ class PopulatedAppListTest : public AshTestBase,
   }
 
   void RotateScreen() {
-    display::Display display =
-        display::Screen::GetScreen()->GetPrimaryDisplay();
+    display::Display display = display::Screen::Get()->GetPrimaryDisplay();
     display_manager()->SetDisplayRotation(
         display.id(), display::Display::ROTATE_90,
         display::Display::RotationSource::ACTIVE);
@@ -703,20 +701,11 @@ class PopulatedAppListTest : public AshTestBase,
     app_list_view_->OnParentWindowBoundsChanged();
   }
 
-  bool is_drag_drop_refactor_enabled() {
-    return is_drag_drop_refactor_enabled_;
-  }
-
   std::unique_ptr<test::AppsGridViewTestApi> apps_grid_test_api_;
-  raw_ptr<AppListView, DanglingUntriaged> app_list_view_ =
-      nullptr;  // Owned by native widget.
-  raw_ptr<PagedAppsGridView, DanglingUntriaged> apps_grid_view_ =
+  raw_ptr<AppListView> app_list_view_ = nullptr;  // Owned by native widget.
+  raw_ptr<PagedAppsGridView> apps_grid_view_ =
       nullptr;  // Owned by |app_list_view_|.
-  base::test::ScopedFeatureList scoped_feature_list_;
-  const bool is_drag_drop_refactor_enabled_;
 };
-
-INSTANTIATE_TEST_SUITE_P(All, PopulatedAppListTest, testing::Bool());
 
 // Subclass of PopulatedAppListTest which enables the virtual keyboard.
 class PopulatedAppListWithVKEnabledTest : public PopulatedAppListTest {
@@ -730,20 +719,6 @@ class PopulatedAppListWithVKEnabledTest : public PopulatedAppListTest {
     PopulatedAppListTest::SetUp();
   }
 };
-INSTANTIATE_TEST_SUITE_P(All,
-                         PopulatedAppListWithVKEnabledTest,
-                         testing::Values(true));
-
-// Subclass of PopulatedAppListTest which tests legacy behavior for the apps
-// grid without the drag and drop refactoring enabled.
-class PopulatedAppListLegacyBehaviourTest : public PopulatedAppListTest {
- public:
-  PopulatedAppListLegacyBehaviourTest() = default;
-  ~PopulatedAppListLegacyBehaviourTest() override = default;
-};
-INSTANTIATE_TEST_SUITE_P(All,
-                         PopulatedAppListLegacyBehaviourTest,
-                         testing::Values(false));
 
 // Subclass of PopulatedAppListTest which tests the apps grid drag behavior
 // interrumpted during a screen rotation. Enables drag and drop refactor by
@@ -753,14 +728,11 @@ class PopulatedAppListScreenRotationTest : public PopulatedAppListTest {
   PopulatedAppListScreenRotationTest() = default;
   ~PopulatedAppListScreenRotationTest() override = default;
 };
-INSTANTIATE_TEST_SUITE_P(All,
-                         PopulatedAppListScreenRotationTest,
-                         testing::Values(true));
 
 // Verify that open folders are closed after sorting apps grid.
 TEST_P(AppListBubbleAndTabletTest, SortingClosesOpenFolderView) {
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   GetAppListModel()->CreateAndPopulateFolderWithApps(4);
 
@@ -794,8 +766,8 @@ TEST_P(AppListBubbleAndTabletTest,
   EnsureLauncherShown();
   SetupGridTestApi();
 
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Cache the initial folder item bounds.
   const gfx::Rect original_folder_item_bounds =
@@ -865,8 +837,8 @@ TEST_P(AppListBubbleAndTabletTest,
   EnsureLauncherShown();
   SetupGridTestApi();
 
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   grid_test_api_->PressItemAt(2);
   EXPECT_TRUE(AppListIsInFolderView());
@@ -982,8 +954,8 @@ TEST_P(AppListBubbleAndTabletTest,
   EnsureLauncherShown();
   SetupGridTestApi();
 
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   grid_test_api_->PressItemAt(2);
   EXPECT_TRUE(AppListIsInFolderView());
@@ -1103,8 +1075,8 @@ TEST_P(AppListBubbleAndTabletTest,
   EnsureLauncherShown();
   SetupGridTestApi();
 
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   grid_test_api_->PressItemAt(2);
   EXPECT_TRUE(AppListIsInFolderView());
@@ -1224,8 +1196,8 @@ TEST_P(AppListBubbleAndTabletTest,
   EnsureLauncherShown();
   SetupGridTestApi();
 
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   grid_test_api_->PressItemAt(2);
   EXPECT_TRUE(AppListIsInFolderView());
@@ -1310,8 +1282,8 @@ TEST_P(AppListBubbleAndTabletTest,
   EnsureLauncherShown();
   SetupGridTestApi();
 
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   grid_test_api_->PressItemAt(2);
   EXPECT_TRUE(AppListIsInFolderView());
@@ -1410,8 +1382,8 @@ TEST_P(AppListBubbleAndTabletTest,
   EnsureLauncherShown();
   SetupGridTestApi();
 
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   grid_test_api_->PressItemAt(2);
   EXPECT_TRUE(AppListIsInFolderView());
@@ -1508,8 +1480,8 @@ TEST_P(AppListBubbleAndTabletTest,
   EnsureLauncherShown();
   SetupGridTestApi();
 
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   grid_test_api_->PressItemAt(2);
   EXPECT_TRUE(AppListIsInFolderView());
@@ -1582,8 +1554,8 @@ TEST_P(AppListBubbleAndTabletTest, ReorderedFolderItemDeletionDuringShow) {
   EnsureLauncherShown();
   SetupGridTestApi();
 
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   grid_test_api_->PressItemAt(2);
   EXPECT_TRUE(AppListIsInFolderView());
@@ -1692,41 +1664,6 @@ TEST_P(AppListBubbleAndTabletTest, ClearSearchButtonClearsSearch) {
 
   EXPECT_EQ(std::vector<std::u16string>({u""}),
             client->GetAndResetPastSearchQueries());
-}
-
-// Regression test for b/204482740.
-TEST_P(AppListBubbleAndTabletTest, AppListEventTargeterForAssistantScrolling) {
-  EnableTabletMode(tablet_mode_param());
-  EnsureLauncherShown();
-
-  // A custom event targeter is installed.
-  aura::Window* window = Shell::Get()->app_list_controller()->GetWindow();
-  ASSERT_TRUE(window);
-  aura::WindowTargeter* targeter = window->targeter();
-  ASSERT_TRUE(targeter);
-
-  // Simulate an assistant card with a webview being shown, which sets a window
-  // property on its window. See AssistantCardElementView::AddedToWidget().
-  aura::Window* child =
-      aura::test::CreateTestWindowWithBounds(gfx::Rect(100, 100), window);
-  child->SetProperty(assistant::ui::kOnlyAllowMouseClickEvents, true);
-
-  // Scroll events are blocked for that window.
-  constexpr int offset = 10;
-  ui::ScrollEvent scroll_down(ui::EventType::kScroll, gfx::Point(),
-                              base::TimeTicks::Now(), ui::EF_NONE, 0, offset, 0,
-                              offset, /*finger_count=*/2);
-  EXPECT_FALSE(targeter->SubtreeShouldBeExploredForEvent(child, scroll_down));
-
-  // Click events are not blocked.
-  ui::MouseEvent press(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
-                       base::TimeTicks::Now(), ui::EF_NONE,
-                       ui::EF_LEFT_MOUSE_BUTTON);
-  ui::MouseEvent release(ui::EventType::kMouseReleased, gfx::Point(),
-                         gfx::Point(), base::TimeTicks::Now(), ui::EF_NONE,
-                         ui::EF_LEFT_MOUSE_BUTTON);
-  EXPECT_TRUE(targeter->SubtreeShouldBeExploredForEvent(child, press));
-  EXPECT_TRUE(targeter->SubtreeShouldBeExploredForEvent(child, press));
 }
 
 // Tests that apps container/page does not have a separator between apps grid
@@ -1878,8 +1815,8 @@ TEST_P(AppListPresenterTest, ClickSearchBoxInTabletMode) {
 
   // Necessary for AppListView::StateAnimationMetricsReporter::Report being
   // called when animation ends.
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   ui::test::EventGenerator* generator = GetEventGenerator();
 
@@ -2322,7 +2259,7 @@ TEST_P(AppListBubbleAndTabletTest, RotationAnimationSmoke) {
   EnableTabletMode(tablet_mode_param());
   EnsureLauncherShown();
 
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  display::Display display = display::Screen::Get()->GetPrimaryDisplay();
   ScreenRotationAnimator* animator =
       DisplayConfigurationControllerTestApi(
           Shell::Get()->display_configuration_controller())
@@ -2343,13 +2280,13 @@ TEST_P(AppListBubbleAndTabletTest, ShutdownDuringRotationAnimationSmoke) {
   EnableTabletMode(tablet_mode_param());
   EnsureLauncherShown();
 
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  display::Display display = display::Screen::Get()->GetPrimaryDisplay();
   ScreenRotationAnimator* animator =
       DisplayConfigurationControllerTestApi(
           Shell::Get()->display_configuration_controller())
           .GetScreenRotationAnimatorForDisplay(display.id());
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   animator->Rotate(display::Display::ROTATE_90,
                    display::Display::RotationSource::USER,
                    DisplayConfigurationController::ANIMATION_SYNC);
@@ -2369,7 +2306,7 @@ TEST_P(AppListBubbleAndTabletTest, RotationAnimationWithFolderSmoke) {
   GestureTapOn(apps_grid_view_->GetItemViewAt(1));
   ASSERT_TRUE(AppListIsInFolderView());
 
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  display::Display display = display::Screen::Get()->GetPrimaryDisplay();
   ScreenRotationAnimator* animator =
       DisplayConfigurationControllerTestApi(
           Shell::Get()->display_configuration_controller())
@@ -2408,7 +2345,7 @@ TEST_P(AppListBubbleAndTabletTest, RotationAnimationInSearchSmoke) {
   // The result list is updated asynchronously.
   base::RunLoop().RunUntilIdle();
 
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  display::Display display = display::Screen::Get()->GetPrimaryDisplay();
   ScreenRotationAnimator* animator =
       DisplayConfigurationControllerTestApi(
           Shell::Get()->display_configuration_controller())
@@ -2420,7 +2357,7 @@ TEST_P(AppListBubbleAndTabletTest, RotationAnimationInSearchSmoke) {
 
 // Tests that mouse app list item drag is cancelled when mouse capture is lost
 // (e.g. on screen rotation).
-TEST_P(PopulatedAppListTest, CancelItemDragOnMouseCaptureLoss) {
+TEST_F(PopulatedAppListTest, CancelItemDragOnMouseCaptureLoss) {
   InitializeAppsGrid();
   PopulateApps(apps_grid_test_api_->TilesPerPageInPagedGrid(0) + 1);
 
@@ -2456,7 +2393,7 @@ TEST_P(PopulatedAppListTest, CancelItemDragOnMouseCaptureLoss) {
 
 // Tests that app list item drag gets canceled if the dragged app list item gets
 // deleted.
-TEST_P(PopulatedAppListTest, CancelItemDragOnDragItemDeletion) {
+TEST_F(PopulatedAppListTest, CancelItemDragOnDragItemDeletion) {
   InitializeAppsGrid();
   PopulateApps(4);
 
@@ -2501,7 +2438,7 @@ TEST_P(PopulatedAppListTest, CancelItemDragOnDragItemDeletion) {
 
 // Tests that app list item drag in folder gets canceled if the dragged app list
 // item gets deleted.
-TEST_P(PopulatedAppListTest, CancelFolderItemDragOnDragItemDeletion) {
+TEST_F(PopulatedAppListTest, CancelFolderItemDragOnDragItemDeletion) {
   InitializeAppsGrid();
   PopulateApps(2);
   AppListFolderItem* folder = CreateAndPopulateFolderWithApps(3);
@@ -2554,7 +2491,7 @@ TEST_P(PopulatedAppListTest, CancelFolderItemDragOnDragItemDeletion) {
 
 // Tests that app list item drag from folder to root apps grid gets canceled if
 // the dragged app list item gets deleted.
-TEST_P(PopulatedAppListTest, CancelFolderItemReparentDragOnDragItemDeletion) {
+TEST_F(PopulatedAppListTest, CancelFolderItemReparentDragOnDragItemDeletion) {
   InitializeAppsGrid();
   PopulateApps(2);
   AppListFolderItem* folder = CreateAndPopulateFolderWithApps(3);
@@ -2586,8 +2523,6 @@ TEST_P(PopulatedAppListTest, CancelFolderItemReparentDragOnDragItemDeletion) {
     event_generator->MoveTouch(
         apps_grid_view_->GetItemViewAt(1)->GetBoundsInScreen().CenterPoint());
     event_generator->MoveTouchBy(2, 2);
-    EXPECT_TRUE(
-        folder_view()->items_grid_view()->FireFolderItemReparentTimerForTest());
     EXPECT_FALSE(AppListIsInFolderView());
   }));
   tasks.push_back(base::BindLambdaForTesting([&]() {
@@ -2595,8 +2530,7 @@ TEST_P(PopulatedAppListTest, CancelFolderItemReparentDragOnDragItemDeletion) {
     event_generator->MoveTouch(
         apps_grid_view_->GetItemViewAt(3)->GetBoundsInScreen().CenterPoint());
     EXPECT_TRUE(apps_grid_view_->IsDragging());
-    EXPECT_EQ(!is_drag_drop_refactor_enabled(),
-              folder_view()->items_grid_view()->IsDragging());
+    EXPECT_FALSE(folder_view()->items_grid_view()->IsDragging());
   }));
   tasks.push_back(base::BindLambdaForTesting([&]() {
     // Delete the dragged item.
@@ -2626,7 +2560,7 @@ TEST_P(PopulatedAppListTest, CancelFolderItemReparentDragOnDragItemDeletion) {
   helper->DismissAndRunLoop();
 }
 
-TEST_P(PopulatedAppListTest,
+TEST_F(PopulatedAppListTest,
        CancelFolderItemReparentDragOnDragItemAndFolderDeletion) {
   InitializeAppsGrid();
   PopulateApps(2);
@@ -2659,9 +2593,6 @@ TEST_P(PopulatedAppListTest,
         apps_grid_view_->GetItemViewAt(1)->GetBoundsInScreen().CenterPoint());
     event_generator->MoveTouchBy(2, 2);
 
-    // Fire reparenting timer.
-    EXPECT_TRUE(
-        folder_view()->items_grid_view()->FireFolderItemReparentTimerForTest());
     EXPECT_FALSE(AppListIsInFolderView());
   }));
   tasks.push_back(base::BindLambdaForTesting([&]() {
@@ -2670,8 +2601,7 @@ TEST_P(PopulatedAppListTest,
         apps_grid_view_->GetItemViewAt(3)->GetBoundsInScreen().CenterPoint());
 
     EXPECT_TRUE(apps_grid_view_->IsDragging());
-    EXPECT_EQ(!is_drag_drop_refactor_enabled(),
-              folder_view()->items_grid_view()->IsDragging());
+    EXPECT_FALSE(folder_view()->items_grid_view()->IsDragging());
   }));
   tasks.push_back(base::BindLambdaForTesting([&]() {
     // Leave the dragged item as it's folder only child, and then delete it,
@@ -2706,14 +2636,14 @@ TEST_P(PopulatedAppListTest,
 
 // Tests that apps grid item layers are not destroyed immediately after item
 // drag ends.
-TEST_P(PopulatedAppListTest,
+TEST_F(PopulatedAppListTest,
        ItemLayersNotDestroyedDuringBoundsAnimationAfterDrag) {
   InitializeAppsGrid();
   const int kItemCount = 5;
   PopulateApps(kItemCount);
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   AppListItemView* const dragged_view = apps_grid_view_->GetItemViewAt(0);
 
@@ -2762,50 +2692,9 @@ TEST_P(PopulatedAppListTest,
   }
 }
 
-// Tests that apps grid item drag operation can continue normally after display
-// rotation (and app list config change).
-TEST_P(PopulatedAppListLegacyBehaviourTest,
-       ScreenRotationDuringAppsGridItemDrag) {
-  // Set the display dimensions so rotation also changes the app list config.
-  UpdateDisplay("1200x600");
-
-  InitializeAppsGrid();
-  PopulateApps(apps_grid_test_api_->TilesPerPageInPagedGrid(0) + 1);
-
-  AppListItemView* const dragged_view = apps_grid_view_->GetItemViewAt(0);
-
-  // Start dragging the first item.
-  ui::test::EventGenerator* event_generator = GetEventGenerator();
-  event_generator->MoveTouch(dragged_view->GetBoundsInScreen().CenterPoint());
-  event_generator->PressTouch();
-  ASSERT_TRUE(dragged_view->FireTouchDragTimerForTest());
-
-  event_generator->MoveTouch(
-      apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen().CenterPoint());
-
-  UpdateDisplay("600x1200");
-  // AppListView is usually notified of display bounds changes by
-  // AppListPresenter, though the test delegate implementation does not
-  // track display metrics changes, so OnParentWindowBoundsChanged() has to be
-  // explicitly called here.
-  app_list_view_->OnParentWindowBoundsChanged();
-
-  // End drag at the in between items 1 and 2 - note that these have been
-  // translated one slot left to fill in space left by the dragged view, so the
-  // expected drop slot is actually slot 1.
-  gfx::Point target =
-      apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen().left_center();
-  event_generator->MoveTouch(target);
-  event_generator->ReleaseTouch();
-
-  EXPECT_EQ("Item 1", apps_grid_view_->GetItemViewAt(0)->item()->id());
-  EXPECT_EQ("Item 0", apps_grid_view_->GetItemViewAt(1)->item()->id());
-  EXPECT_EQ("Item 2", apps_grid_view_->GetItemViewAt(2)->item()->id());
-}
-
 // Tests screen rotation during apps grid item drag where the drag gets
 // canceled.
-TEST_P(PopulatedAppListScreenRotationTest,
+TEST_F(PopulatedAppListScreenRotationTest,
        ScreenRotationDuringAppsGridItemDragCancelsOperation) {
   // Set the display dimensions so rotation also changes the app list config.
   UpdateDisplay("1200x600");
@@ -2838,7 +2727,7 @@ TEST_P(PopulatedAppListScreenRotationTest,
 
 // Tests screen rotation during a folder apps grid item reparent drag where the
 // drag gets canceled.
-TEST_P(PopulatedAppListScreenRotationTest,
+TEST_F(PopulatedAppListScreenRotationTest,
        ScreenRotationDuringFolderAppsGridItemDragCancelsOperation) {
   InitializeAppsGrid();
   PopulateApps(2);
@@ -2882,7 +2771,7 @@ TEST_P(PopulatedAppListScreenRotationTest,
 // Tests screen rotation during apps grid item drag where the drag gets
 // canceled after a page change. Verifies the correct page is selected for the
 // item that started the drag.
-TEST_P(PopulatedAppListScreenRotationTest,
+TEST_F(PopulatedAppListScreenRotationTest,
        ScreenRotationDuringAppsGridItemWithPageChange) {
   // Set the display dimensions so rotation also changes the app list config.
   UpdateDisplay("1200x600");
@@ -2932,7 +2821,7 @@ TEST_P(PopulatedAppListScreenRotationTest,
 // Tests screen rotation during apps grid item drag where the drag gets
 // canceled after a page change. Verifies that the correct page is selected for
 // them item that started the drag even if the item ends up in a different page.
-TEST_P(PopulatedAppListScreenRotationTest,
+TEST_F(PopulatedAppListScreenRotationTest,
        ScreenRotationDuringAppsGridItemWithPageNumberChange) {
   // Set the display dimensions so rotation also changes the app list config.
   UpdateDisplay("1200x600");
@@ -2980,153 +2869,6 @@ TEST_P(PopulatedAppListScreenRotationTest,
   EXPECT_EQ("Item 2", apps_grid_view_->GetItemViewAt(2)->item()->id());
 }
 
-// Tests screen rotation during apps grid item drag where the drag item ends up
-// in page-scroll area. Tests that the apps grid page scrolls without a crash,
-// and that releasing drag does not change the item position in the model.
-TEST_P(PopulatedAppListLegacyBehaviourTest,
-       ScreenRotationDuringAppsGridItemDragWithPageScroll) {
-  // Set the display dimensions so rotation also changes the app list config.
-  UpdateDisplay("1200x600");
-
-  InitializeAppsGrid();
-  PopulateApps(apps_grid_test_api_->TilesPerPageInPagedGrid(0) +
-               apps_grid_test_api_->TilesPerPageInPagedGrid(1));
-
-  AppListItemView* const dragged_view = apps_grid_view_->GetItemViewAt(0);
-
-  // Start dragging the first item.
-  ui::test::EventGenerator* event_generator = GetEventGenerator();
-  event_generator->MoveTouch(dragged_view->GetBoundsInScreen().CenterPoint());
-  event_generator->PressTouch();
-  ASSERT_TRUE(dragged_view->FireTouchDragTimerForTest());
-
-  // Move the item close to screen edge, so it ends up in area that triggers
-  // page scroll after rotation.
-  event_generator->MoveTouch(app_list_view_->GetBoundsInScreen().left_center() +
-                             gfx::Vector2d(64, 0));
-
-  RotateScreen();
-
-  ASSERT_EQ(2, apps_grid_view_->pagination_model()->total_pages());
-  event_generator->MoveTouchBy(0, 10);
-  EXPECT_TRUE(apps_grid_view_->FirePageFlipTimerForTest());
-  // Move the pointer away from the grid horizontally for it to get out ouf apps
-  // grid drag buffer, so the release results in a canceled drag
-  // The grid is spread out vertically so there is no area under the grid
-  // that's: in page flip area, outside of apps grid drag buffer, and outside of
-  // shelf bounds.
-  event_generator->MoveTouchBy(0, 270);
-  event_generator->ReleaseTouch();
-
-  // The model state should not have been changed.
-  EXPECT_EQ("Item 0", apps_grid_view_->GetItemViewAt(0)->item()->id());
-  EXPECT_EQ("Item 1", apps_grid_view_->GetItemViewAt(1)->item()->id());
-  EXPECT_EQ("Item 2", apps_grid_view_->GetItemViewAt(2)->item()->id());
-}
-
-// Tests screen rotation while app list folder item is in progress, and the item
-// remains in the folder bounds during the drag.
-TEST_P(PopulatedAppListLegacyBehaviourTest,
-       ScreenRotationDuringFolderItemDrag) {
-  // Set the display dimensions so rotation also changes the app list config.
-  UpdateDisplay("1200x600");
-
-  InitializeAppsGrid();
-  PopulateApps(2);
-  AppListFolderItem* folder = CreateAndPopulateFolderWithApps(3);
-  PopulateApps(10);
-
-  // Tap the folder item to show it.
-  GestureTapOn(apps_grid_view_->GetItemViewAt(2));
-  ASSERT_TRUE(AppListIsInFolderView());
-
-  // Start dragging the first item in the active folder.
-  AppListItemView* const dragged_view =
-      folder_view()->items_grid_view()->GetItemViewAt(0);
-  ui::test::EventGenerator* event_generator = GetEventGenerator();
-  event_generator->MoveTouch(dragged_view->GetBoundsInScreen().CenterPoint());
-  event_generator->PressTouch();
-  ASSERT_TRUE(dragged_view->FireTouchDragTimerForTest());
-
-  // Drag the item within the folder bounds.
-  event_generator->MoveTouch(
-      apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen().CenterPoint());
-
-  UpdateDisplay("600x1200");
-  // AppListView is usually notified of display bounds changes by
-  // AppListPresenter, though the test delegate implementation does not
-  // track display metrics changes, so OnParentWindowBoundsChanged() has to be
-  // explicitly called here.
-  app_list_view_->OnParentWindowBoundsChanged();
-
-  // The current behavior on app list bounds change is to close the active
-  // folder, canceling the drag.
-  EXPECT_FALSE(AppListIsInFolderView());
-  EXPECT_FALSE(apps_grid_view_->IsDragging());
-  EXPECT_FALSE(folder_view()->items_grid_view()->IsDragging());
-
-  EXPECT_EQ("Item 0", apps_grid_view_->GetItemViewAt(0)->item()->id());
-  EXPECT_EQ("Item 1", apps_grid_view_->GetItemViewAt(1)->item()->id());
-  EXPECT_EQ(folder->id(), apps_grid_view_->GetItemViewAt(2)->item()->id());
-  EXPECT_EQ("Item 5", apps_grid_view_->GetItemViewAt(3)->item()->id());
-}
-
-// Tests that app list folder item reparenting drag (where a folder item is
-// dragged outside the folder bounds, and dropped within the apps grid) can
-// continue normally after screen rotation.
-TEST_P(PopulatedAppListLegacyBehaviourTest,
-       ScreenRotationDuringAppsGridItemReparentDrag) {
-  UpdateDisplay("1200x600");
-
-  InitializeAppsGrid();
-  PopulateApps(2);
-  AppListFolderItem* folder = CreateAndPopulateFolderWithApps(3);
-  PopulateApps(10);
-
-  // Tap the folder item to show it.
-  GestureTapOn(apps_grid_view_->GetItemViewAt(2));
-  ASSERT_TRUE(AppListIsInFolderView());
-
-  // Start dragging the first item in the active folder.
-  AppListItemView* dragged_view =
-      folder_view()->items_grid_view()->GetItemViewAt(0);
-  AppListItem* dragged_item = dragged_view->item();
-  ui::test::EventGenerator* event_generator = GetEventGenerator();
-  event_generator->MoveTouch(dragged_view->GetBoundsInScreen().CenterPoint());
-  event_generator->PressTouch();
-  ASSERT_TRUE(dragged_view->FireTouchDragTimerForTest());
-
-  // Drag the item outside the folder bounds.
-  event_generator->MoveTouch(
-      apps_grid_view_->GetItemViewAt(1)->GetBoundsInScreen().CenterPoint());
-  event_generator->MoveTouchBy(2, 2);
-
-  // Fire reparenting timer.
-  EXPECT_TRUE(
-      folder_view()->items_grid_view()->FireFolderItemReparentTimerForTest());
-  EXPECT_FALSE(AppListIsInFolderView());
-
-  UpdateDisplay("600x1200");
-  // AppListView is usually notified of display bounds changes by
-  // AppListPresenter, though the test delegate implementation does not
-  // track display metrics changes, so OnParentWindowBoundsChanged() has to be
-  // explicitly called here.
-  app_list_view_->OnParentWindowBoundsChanged();
-
-  gfx::Point target =
-      apps_grid_view_->GetItemViewAt(1)->GetBoundsInScreen().right_center();
-  // End drag at the in between items 1 and 2.
-  event_generator->MoveTouch(target);
-  event_generator->ReleaseTouch();
-
-  // Verify the new item location within the apps grid.
-  EXPECT_EQ("Item 0", apps_grid_view_->GetItemViewAt(0)->item()->id());
-  EXPECT_EQ("Item 1", apps_grid_view_->GetItemViewAt(1)->item()->id());
-  EXPECT_EQ(dragged_item->id(),
-            apps_grid_view_->GetItemViewAt(2)->item()->id());
-  EXPECT_EQ(folder->id(), apps_grid_view_->GetItemViewAt(3)->item()->id());
-}
-
 // Tests that app list folder item reparenting drag to another folder.
 TEST_P(AppListBubbleAndTabletDragTest, AppsGridItemReparentToFolderDrag) {
   UpdateDisplay("1200x600");
@@ -3162,8 +2904,6 @@ TEST_P(AppListBubbleAndTabletDragTest, AppsGridItemReparentToFolderDrag) {
         apps_grid_view_->GetItemViewAt(0)->GetBoundsInScreen().CenterPoint());
     event_generator->MoveTouchBy(2, 2);
 
-    EXPECT_TRUE(
-        folder_view()->items_grid_view()->FireFolderItemReparentTimerForTest());
     EXPECT_FALSE(AppListIsInFolderView());
   }));
   tasks.push_back(base::BindLambdaForTesting([&]() {
@@ -3195,7 +2935,7 @@ TEST_P(AppListBubbleAndTabletDragTest, AppsGridItemReparentToFolderDrag) {
 
 // Tests that an item can be removed just after creating a folder that contains
 // that item. See https://crbug.com/1083942
-TEST_P(PopulatedAppListTest, RemoveFolderItemAfterFolderCreation) {
+TEST_F(PopulatedAppListTest, RemoveFolderItemAfterFolderCreation) {
   InitializeAppsGrid();
   const int kItemCount = 6;
   PopulateApps(kItemCount);
@@ -3273,7 +3013,7 @@ TEST_P(PopulatedAppListTest, RemoveFolderItemAfterFolderCreation) {
   apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
 }
 
-TEST_P(PopulatedAppListTest, ReparentLastFolderItemAfterFolderCreation) {
+TEST_F(PopulatedAppListTest, ReparentLastFolderItemAfterFolderCreation) {
   InitializeAppsGrid();
   const int kItemCount = 5;
   PopulateApps(kItemCount);
@@ -3348,7 +3088,7 @@ TEST_P(PopulatedAppListTest, ReparentLastFolderItemAfterFolderCreation) {
   apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
 }
 
-TEST_P(PopulatedAppListWithVKEnabledTest,
+TEST_F(PopulatedAppListWithVKEnabledTest,
        TappingAppsGridClosesVirtualKeyboard) {
   InitializeAppsGrid();
   PopulateApps(2);
@@ -3381,7 +3121,8 @@ TEST_P(AppListPresenterTest, HideOnFocusOut) {
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   GetAppListTestHelper()->CheckVisibility(true);
 
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShell({.window_id = 0}));
   wm::ActivateWindow(window.get());
   GetAppListTestHelper()->WaitUntilIdle();
   GetAppListTestHelper()->CheckVisibility(false);
@@ -3395,8 +3136,8 @@ TEST_P(AppListPresenterTest, RemainVisibleWhenFocusingToApplistContainer) {
 
   aura::Window* applist_container = Shell::GetContainer(
       Shell::GetPrimaryRootWindow(), kShellWindowId_AppListContainer);
-  std::unique_ptr<aura::Window> window(
-      aura::test::CreateTestWindowWithId(0, applist_container));
+  std::unique_ptr<aura::Window> window = aura::test::CreateTestWindow(
+      {.parent = applist_container, .bounds = {100, 100}, .window_id = 0});
   wm::ActivateWindow(window.get());
   GetAppListTestHelper()->WaitUntilIdle();
 
@@ -3584,7 +3325,8 @@ TEST_F(AppListPresenterTest, ShelfAutoHiddenWhenFullscreen) {
 
   // Create and fullscreen a window. The shelf should be auto hidden.
   auto window = CreateTestWindow();
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_FULLSCREEN);
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kFullscreen);
   EXPECT_EQ(ShelfVisibilityState::SHELF_AUTO_HIDE, shelf->GetVisibilityState());
   EXPECT_EQ(ShelfAutoHideState::SHELF_AUTO_HIDE_HIDDEN,
             shelf->GetAutoHideState());
@@ -3973,7 +3715,7 @@ TEST_F(AppListPresenterTest, ClickingShelfArrowDoesNotHideAppList) {
 
 // Tests that the touch selection menu created when tapping an open folder's
 // folder name view be interacted with.
-TEST_P(PopulatedAppListTest, TouchSelectionMenu) {
+TEST_F(PopulatedAppListTest, TouchSelectionMenu) {
   InitializeAppsGrid();
 
   AppListFolderItem* folder_item = CreateAndPopulateFolderWithApps(4);
@@ -4148,13 +3890,15 @@ TEST_F(AppListPresenterHomeLauncherTest,
        RunZeroStateSearchWhenShownAfterMinimizingWindows) {
   EXPECT_EQ(0, GetTestAppListClient()->start_zero_state_search_count());
   GetAppListTestHelper()->CheckVisibility(false);
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShell({.window_id = 0}));
 
   EnableTabletMode(true);
   GetAppListTestHelper()->CheckVisibility(false);
   EXPECT_EQ(0, GetTestAppListClient()->start_zero_state_search_count());
 
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MINIMIZED);
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kMinimized);
   GetAppListTestHelper()->CheckVisibility(true);
   EXPECT_EQ(1, GetTestAppListClient()->start_zero_state_search_count());
 }
@@ -4275,7 +4019,8 @@ TEST_F(AppListPresenterHomeLauncherTest, FocusOutToDismiss) {
   // Show app list in non-tablet mode. Move focus to another window.
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   GetAppListTestHelper()->CheckVisibility(true);
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShell({.window_id = 0}));
   wm::ActivateWindow(window.get());
   GetAppListTestHelper()->WaitUntilIdle();
   GetAppListTestHelper()->CheckVisibility(false);
@@ -4293,7 +4038,8 @@ TEST_F(AppListPresenterHomeLauncherTest, FocusOutToDismiss) {
 
   // Minimizing the focused window with no remaining windows should result in a
   // shown applist.
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MINIMIZED);
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kMinimized);
 
   GetAppListTestHelper()->WaitUntilIdle();
   GetAppListTestHelper()->CheckVisibility(true);
@@ -4383,9 +4129,10 @@ TEST_F(AppListPresenterHomeLauncherTest, GoingHomeMinimizesAllWindows) {
   // Show app list in tablet mode. Maximize all windows.
   EnableTabletMode(true);
   GetAppListTestHelper()->CheckVisibility(true);
-  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(0)),
-      window2(CreateTestWindowInShellWithId(1)),
-      window3(CreateTestWindowInShellWithId(2));
+  std::unique_ptr<aura::Window> window1(
+      CreateTestWindowInShell({.window_id = 0})),
+      window2(CreateTestWindowInShell({.window_id = 1})),
+      window3(CreateTestWindowInShell({.window_id = 2}));
   WindowState* state1 = WindowState::Get(window1.get());
   WindowState* state2 = WindowState::Get(window2.get());
   WindowState* state3 = WindowState::Get(window3.get());
@@ -4412,7 +4159,7 @@ TEST_F(AppListPresenterHomeLauncherTest, GoingHomeMinimizesAllWindows) {
   // Tests that the window ordering remains the same as before we minimize.
   auto new_order =
       Shell::Get()->mru_window_tracker()->BuildWindowForCycleList(kActiveDesk);
-  EXPECT_TRUE(base::ranges::equal(ordering, new_order));
+  EXPECT_TRUE(std::ranges::equal(ordering, new_order));
 }
 
 // Tests that going home will end split view mode.
@@ -4420,7 +4167,8 @@ TEST_F(AppListPresenterHomeLauncherTest, GoingHomeEndsSplitViewMode) {
   // Show app list in tablet mode. Enter split view mode.
   EnableTabletMode(true);
   GetAppListTestHelper()->CheckVisibility(true);
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShell({.window_id = 0}));
   split_view_controller()->SnapWindow(window.get(), SnapPosition::kPrimary);
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
 
@@ -4434,7 +4182,8 @@ TEST_F(AppListPresenterHomeLauncherTest, GoingHomeEndOverviewMode) {
   // Show app list in tablet mode. Enter overview mode.
   EnableTabletMode(true);
   GetAppListTestHelper()->CheckVisibility(true);
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShell({.window_id = 0}));
   OverviewController* overview_controller = OverviewController::Get();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
@@ -4452,8 +4201,10 @@ TEST_F(AppListPresenterHomeLauncherTest,
   EnableTabletMode(true);
   GetAppListTestHelper()->CheckVisibility(true);
 
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
-  std::unique_ptr<aura::Window> dummy_window(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShell({.window_id = 0}));
+  std::unique_ptr<aura::Window> dummy_window(
+      CreateTestWindowInShell({.window_id = 1}));
 
   OverviewController* overview_controller = OverviewController::Get();
   EnterOverview();
@@ -4490,7 +4241,7 @@ TEST_F(AppListPresenterHomeLauncherTest, WallpaperContextMenu) {
   const aura::Window* root = window_util::GetRootWindowAt(onscreen_point);
   const RootWindowController* root_window_controller =
       RootWindowController::ForWindow(root);
-  EXPECT_TRUE(root_window_controller->IsContextMenuShown());
+  EXPECT_TRUE(root_window_controller->IsContextMenuShownForTest());
 
   // Tap down to close the context menu.
   ui::GestureEvent tap_down(
@@ -4498,19 +4249,19 @@ TEST_F(AppListPresenterHomeLauncherTest, WallpaperContextMenu) {
       ui::GestureEventDetails(ui::EventType::kGestureTapDown));
   generator->Dispatch(&tap_down);
   GetAppListTestHelper()->WaitUntilIdle();
-  EXPECT_FALSE(root_window_controller->IsContextMenuShown());
+  EXPECT_FALSE(root_window_controller->IsContextMenuShownForTest());
 
   // Right click to open the context menu.
   generator->MoveMouseTo(onscreen_point);
   generator->ClickRightButton();
   GetAppListTestHelper()->WaitUntilIdle();
-  EXPECT_TRUE(root_window_controller->IsContextMenuShown());
+  EXPECT_TRUE(root_window_controller->IsContextMenuShownForTest());
 
   // Left click to close the context menu.
   generator->MoveMouseTo(onscreen_point);
   generator->ClickLeftButton();
   GetAppListTestHelper()->WaitUntilIdle();
-  EXPECT_FALSE(root_window_controller->IsContextMenuShown());
+  EXPECT_FALSE(root_window_controller->IsContextMenuShownForTest());
 }
 
 // Test backdrop exists for active non-fullscreen window in tablet mode.
@@ -4546,7 +4297,8 @@ TEST_F(AppListPresenterHomeLauncherTest,
   EXPECT_EQ(nullptr, window_util::GetActiveWindow());
 
   // Activate a window.
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShell({.window_id = 0}));
   WindowState::Get(window.get())->Activate();
   EXPECT_EQ(window.get(), window_util::GetActiveWindow());
 
@@ -4840,8 +4592,8 @@ TEST_F(AppListPresenterWithScaleAnimationOnTabletModeTransitionTest,
 TEST_F(AppListPresenterWithScaleAnimationOnTabletModeTransitionTest,
        TransitionContinuesWhereItWasInterrupted) {
   EnsureAppListViewIsCached();
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   auto* const layer = GetAppListTestHelper()
                           ->GetAppListView()
                           ->GetWidget()
@@ -4887,8 +4639,8 @@ TEST_F(AppListPresenterWithScaleAnimationOnTabletModeTransitionTest,
 
   // Switch to tablet mode and set normal animation duration.
   ash::TabletModeControllerTestApi().EnterTabletMode();
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   EXPECT_EQ(visibility_observer->visibility_changed_to_hidden_times(), 0);
   ash::TabletModeControllerTestApi().LeaveTabletMode();

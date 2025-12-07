@@ -6,26 +6,34 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/device_reauth/device_authenticator.h"
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/device_info.h"
 #endif
 
 namespace autofill::payments {
 
 using autofill_metrics::MandatoryReauthOfferOptInDecision;
+using ::base::test::RunOnceCallbackRepeatedly;
+using ::testing::Return;
+
+#if BUILDFLAG(IS_ANDROID)
+using device_reauth::BiometricStatus;
+#endif
 
 class MandatoryReauthManagerTest : public testing::Test {
  public:
@@ -35,16 +43,12 @@ class MandatoryReauthManagerTest : public testing::Test {
         mock_device_authenticator =
             std::make_unique<device_reauth::MockDeviceAuthenticator>();
 
-    ON_CALL(*mock_device_authenticator,
-            CanAuthenticateWithBiometricOrScreenLock)
-        .WillByDefault(testing::Return(true));
-
     autofill_client_->SetDeviceAuthenticator(
         std::move(mock_device_authenticator));
     mandatory_reauth_manager_ =
         std::make_unique<MandatoryReauthManager>(autofill_client_.get());
-    autofill_client_->GetPersonalDataManager()->SetPrefService(
-        autofill_client_->GetPrefs());
+    SetUpAuthentication(/*biometrics_available=*/true,
+                        /*screen_lock_available=*/true);
     test::SetCreditCardInfo(&server_card_, "Test User", "1111" /* Visa */,
                             test::NextMonth().c_str(), test::NextYear().c_str(),
                             "1");
@@ -62,6 +66,25 @@ class MandatoryReauthManagerTest : public testing::Test {
         "Autofill.PaymentMethods.MandatoryReauth.CheckoutFlow."
         "ReauthOfferOptInDecision2",
         opt_in_decision, 1);
+  }
+
+  void SetUpAuthentication(bool biometrics_available,
+                           bool screen_lock_available) {
+#if BUILDFLAG(IS_ANDROID)
+    BiometricStatus biometric_status = BiometricStatus::kUnavailable;
+    if (biometrics_available) {
+      biometric_status = BiometricStatus::kBiometricsAvailable;
+    } else if (screen_lock_available) {
+      biometric_status = BiometricStatus::kOnlyLskfAvailable;
+    }
+    ON_CALL(device_authenticator(), GetBiometricAvailabilityStatus)
+        .WillByDefault(Return(biometric_status));
+#else
+    ON_CALL(device_authenticator(), CanAuthenticateWithBiometrics)
+        .WillByDefault(Return(biometrics_available));
+    ON_CALL(device_authenticator(), CanAuthenticateWithBiometricOrScreenLock)
+        .WillByDefault(Return(screen_lock_available));
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -92,28 +115,24 @@ TEST_F(MandatoryReauthManagerTest, AuthenticateWithMessage) {
 }
 
 TEST_F(MandatoryReauthManagerTest, GetAuthenticationMethod_Biometric) {
-  ON_CALL(device_authenticator(), CanAuthenticateWithBiometrics)
-      .WillByDefault(testing::Return(true));
+  SetUpAuthentication(/*biometrics_available=*/true,
+                      /*screen_lock_available=*/true);
 
   EXPECT_EQ(mandatory_reauth_manager_->GetAuthenticationMethod(),
             MandatoryReauthAuthenticationMethod::kBiometric);
 }
 
 TEST_F(MandatoryReauthManagerTest, GetAuthenticationMethod_ScreenLock) {
-  ON_CALL(device_authenticator(), CanAuthenticateWithBiometrics)
-      .WillByDefault(testing::Return(false));
-  ON_CALL(device_authenticator(), CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(testing::Return(true));
+  SetUpAuthentication(/*biometrics_available=*/false,
+                      /*screen_lock_available=*/true);
 
   EXPECT_EQ(mandatory_reauth_manager_->GetAuthenticationMethod(),
             MandatoryReauthAuthenticationMethod::kScreenLock);
 }
 
 TEST_F(MandatoryReauthManagerTest, GetAuthenticationMethod_UnsupportedMethod) {
-  ON_CALL(device_authenticator(), CanAuthenticateWithBiometrics)
-      .WillByDefault(testing::Return(false));
-  ON_CALL(device_authenticator(), CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(testing::Return(false));
+  SetUpAuthentication(/*biometrics_available=*/false,
+                      /*screen_lock_available=*/false);
 
   EXPECT_EQ(mandatory_reauth_manager_->GetAuthenticationMethod(),
             MandatoryReauthAuthenticationMethod::kUnsupportedMethod);
@@ -123,7 +142,7 @@ TEST_F(MandatoryReauthManagerTest, GetAuthenticationMethod_UnsupportedMethod) {
 // opt-in if the conditions for offering it are all met for local cards.
 TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_LocalCard) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     // Skip the test for automotive as Mandatory Re-auth should always be turned
     // on for automotive users.
     GTEST_SKIP() << "This test should not run on automotive.";
@@ -131,7 +150,7 @@ TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_LocalCard) {
 #endif  // BUILDFLAG(IS_ANDROID)
 
   autofill_client_->GetPersonalDataManager()
-      ->payments_data_manager()
+      .payments_data_manager()
       .AddCreditCard(local_card_);
 
   EXPECT_TRUE(mandatory_reauth_manager_->ShouldOfferOptin(
@@ -144,7 +163,7 @@ TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_LocalCard) {
 // record mode.
 TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_Incognito) {
   autofill_client_->GetPersonalDataManager()
-      ->payments_data_manager()
+      .payments_data_manager()
       .AddCreditCard(local_card_);
 
   autofill_client_->set_is_off_the_record(true);
@@ -159,7 +178,7 @@ TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_Incognito) {
 // opt-in if the conditions for offering it are all met for virtual cards.
 TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_VirtualCard) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     // Skip the test for automotive as Mandatory Re-auth should always be turned
     // on for automotive users.
     GTEST_SKIP() << "This test should not run on automotive.";
@@ -175,7 +194,7 @@ TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_VirtualCard) {
 // opt-in if the conditions for offering it are all met for masked server cards.
 TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_MaskedServerCard) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     // Skip the test for automotive as Mandatory Re-auth should always be turned
     // on for automotive users.
     GTEST_SKIP() << "This test should not run on automotive.";
@@ -192,7 +211,7 @@ TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_MaskedServerCard) {
 // re-auth.
 TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_UserAlreadyMadeDecision) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     // Skip the test for automotive as Mandatory Re-auth should always be turned
     // on for automotive users.
     GTEST_SKIP() << "This test should not run on automotive.";
@@ -202,7 +221,7 @@ TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_UserAlreadyMadeDecision) {
   mandatory_reauth_manager_->OnUserCancelledOptInPrompt();
 
   autofill_client_->GetPersonalDataManager()
-      ->payments_data_manager()
+      .payments_data_manager()
       .AddCreditCard(local_card_);
 
   EXPECT_FALSE(mandatory_reauth_manager_->ShouldOfferOptin(
@@ -216,18 +235,18 @@ TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_UserAlreadyMadeDecision) {
 TEST_F(MandatoryReauthManagerTest,
        ShouldOfferOptin_AuthenticationNotAvailable) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     // Skip the test for automotive as Mandatory Re-auth should always be turned
     // on for automotive users.
     GTEST_SKIP() << "This test should not run on automotive.";
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  ON_CALL(device_authenticator(), CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(testing::Return(false));
+  SetUpAuthentication(/*biometrics_available=*/false,
+                      /*screen_lock_available=*/false);
 
   autofill_client_->GetPersonalDataManager()
-      ->payments_data_manager()
+      .payments_data_manager()
       .AddCreditCard(local_card_);
 
   EXPECT_FALSE(mandatory_reauth_manager_->ShouldOfferOptin(
@@ -244,7 +263,7 @@ TEST_F(
     MandatoryReauthManagerTest,
     ShouldOfferOptin_FilledCardWentThroughInteractiveAuthenticationOrNoAutofill) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     // Skip the test for automotive as Mandatory Re-auth should always be turned
     // on for automotive users.
     GTEST_SKIP() << "This test should not run on automotive.";
@@ -252,7 +271,7 @@ TEST_F(
 #endif  // BUILDFLAG(IS_ANDROID)
 
   autofill_client_->GetPersonalDataManager()
-      ->payments_data_manager()
+      .payments_data_manager()
       .AddCreditCard(local_card_);
 
   // 'card_identifier_if_non_interactive_authentication_flow_completed' is not
@@ -270,7 +289,7 @@ TEST_F(
     MandatoryReauthManagerTest,
     ShouldOfferOptin_ServerCardWithMatchingLocalCard_LastFilledCardWasLocalCard) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     // Skip the test for automotive as Mandatory Re-auth should always be turned
     // on for automotive users.
     GTEST_SKIP() << "This test should not run on automotive.";
@@ -278,7 +297,7 @@ TEST_F(
 #endif  // BUILDFLAG(IS_ANDROID)
 
   autofill_client_->GetPersonalDataManager()
-      ->payments_data_manager()
+      .payments_data_manager()
       .AddCreditCard(local_card_);
 
   // Test that if the last filled card is the matching local card, we offer
@@ -302,16 +321,13 @@ TEST_F(MandatoryReauthManagerTest, OnUserAcceptedOptInPrompt) {
 #if BUILDFLAG(IS_ANDROID)
   // Opt-in prompts are not shown on automotive as mandatory reauth is always
   // enabled.
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     GTEST_SKIP() << "This test should not run on automotive.";
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
   ON_CALL(device_authenticator(), AuthenticateWithMessage)
-      .WillByDefault(
-          testing::WithArg<1>([](base::OnceCallback<void(bool)> callback) {
-            std::move(callback).Run(false);
-          }));
+      .WillByDefault(RunOnceCallbackRepeatedly<1>(false));
 
   // We need to call `StartOptInFlow()` here to ensure the device
   // authenticator gets set.
@@ -335,10 +351,7 @@ TEST_F(MandatoryReauthManagerTest, OnUserAcceptedOptInPrompt) {
       std::move(mock_device_authenticator2));
 
   ON_CALL(device_authenticator(), AuthenticateWithMessage)
-      .WillByDefault(
-          testing::WithArg<1>([](base::OnceCallback<void(bool)> callback) {
-            std::move(callback).Run(true);
-          }));
+      .WillByDefault(RunOnceCallbackRepeatedly<1>(true));
 
   // We need to call `StartOptInFlow()` here to ensure the device
   // authenticator gets set.
@@ -358,7 +371,7 @@ TEST_F(MandatoryReauthManagerTest, OnUserAcceptedOptInPrompt) {
 // user cancels the re-auth prompt.
 TEST_F(MandatoryReauthManagerTest, OnUserCancelledOptInPrompt) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     // Skip the test for automotive as Mandatory Re-auth should always be turned
     // on for automotive users.
     GTEST_SKIP() << "This test should not run on automotive.";
@@ -380,7 +393,7 @@ TEST_F(MandatoryReauthManagerTest, OnUserCancelledOptInPrompt) {
 // user closed the re-auth prompt.
 TEST_F(MandatoryReauthManagerTest, OnUserClosedOptInPrompt) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     // Skip the test for automotive as Mandatory Re-auth should always be turned
     // on for automotive users.
     GTEST_SKIP() << "This test should not run on automotive.";
@@ -408,8 +421,8 @@ class MandatoryReauthManagerOptInFlowTest
     MandatoryReauthManagerTest::SetUp();
     mandatory_reauth_manager_->SetDeviceAuthenticatorPtrForTesting(
         std::make_unique<device_reauth::MockDeviceAuthenticator>());
-    ON_CALL(device_authenticator(), CanAuthenticateWithBiometricOrScreenLock)
-        .WillByDefault(testing::Return(true));
+    SetUpAuthentication(/*biometrics_available=*/true,
+                        /*screen_lock_available=*/true);
   }
 
   std::string GetOptInSource() {
@@ -447,18 +460,15 @@ class MandatoryReauthManagerOptInFlowTest
 
   void SetUpDeviceAuthenticator(bool success) {
     ON_CALL(device_authenticator(), AuthenticateWithMessage)
-        .WillByDefault(testing::WithArg<1>(
-            [success](base::OnceCallback<void(bool)> callback) {
-              std::move(callback).Run(success);
-            }));
+        .WillByDefault(RunOnceCallbackRepeatedly<1>(success));
   }
 };
 
 TEST_P(MandatoryReauthManagerOptInFlowTest,
        StartDeviceAuthentication_Biometric) {
   base::HistogramTester histogram_tester;
-  ON_CALL(device_authenticator(), CanAuthenticateWithBiometrics)
-      .WillByDefault(testing::Return(true));
+  SetUpAuthentication(/*biometrics_available=*/true,
+                      /*screen_lock_available=*/true);
 
   EXPECT_CALL(device_authenticator(), AuthenticateWithMessage);
   mandatory_reauth_manager_->StartDeviceAuthentication(GetParam(),
@@ -474,10 +484,8 @@ TEST_P(MandatoryReauthManagerOptInFlowTest,
        StartDeviceAuthentication_ScreenLock) {
   base::HistogramTester histogram_tester;
 
-  ON_CALL(device_authenticator(), CanAuthenticateWithBiometrics)
-      .WillByDefault(testing::Return(false));
-  ON_CALL(device_authenticator(), CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(testing::Return(true));
+  SetUpAuthentication(/*biometrics_available=*/false,
+                      /*screen_lock_available=*/true);
 
   mandatory_reauth_manager_->StartDeviceAuthentication(GetParam(),
                                                        base::DoNothing());
@@ -492,10 +500,8 @@ TEST_P(MandatoryReauthManagerOptInFlowTest,
 TEST_P(MandatoryReauthManagerOptInFlowTest,
        StartDeviceAuthentication_Unsupported) {
   base::HistogramTester histogram_tester;
-  ON_CALL(device_authenticator(), CanAuthenticateWithBiometrics)
-      .WillByDefault(testing::Return(false));
-  ON_CALL(device_authenticator(), CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(testing::Return(false));
+  SetUpAuthentication(/*biometrics_available=*/false,
+                      /*screen_lock_available=*/false);
 
   base::MockCallback<base::OnceCallback<void(bool)>> callback;
   EXPECT_CALL(callback, Run(true));
@@ -511,7 +517,7 @@ TEST_P(MandatoryReauthManagerOptInFlowTest,
 
 TEST_P(MandatoryReauthManagerOptInFlowTest, OptInSuccess) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     // Skip the test for automotive as Mandatory Re-auth should always be turned
     // on for automotive users.
     GTEST_SKIP() << "This test should not run on automotive.";
@@ -563,7 +569,7 @@ TEST_P(MandatoryReauthManagerOptInFlowTest, OptInSuccess) {
 
 TEST_P(MandatoryReauthManagerOptInFlowTest, OptInShownButAuthFailure) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     // Skip the test for automotive as Mandatory Re-auth should always be turned
     // on for automotive users.
     GTEST_SKIP() << "This test should not run on automotive.";

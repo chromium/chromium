@@ -272,7 +272,7 @@ TEST_F(WaylandRemoteShellTest, DisplayZoom) {
   auto* surface = shell_surface->root_surface();
   auto* window = shell_surface->GetWidget()->GetNativeWindow();
   const display::Display& display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+      display::Screen::Get()->GetDisplayNearestWindow(window);
 
   ResetEventRecords();
   ash::Shell::Get()->display_manager()->ZoomDisplay(display.id(), /*up=*/true);
@@ -334,7 +334,7 @@ TEST_F(WaylandRemoteShellTest, DisplayRotation) {
   auto* surface = shell_surface->root_surface();
   auto* window = shell_surface->GetWidget()->GetNativeWindow();
   const display::Display& display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+      display::Screen::Get()->GetDisplayNearestWindow(window);
 
   ResetEventRecords();
   ash::Shell::Get()->display_manager()->SetDisplayRotation(
@@ -383,7 +383,7 @@ TEST_F(WaylandRemoteShellTest, DisplayRotation) {
   const auto bounds_change = remote_shell_requested_bounds_changes()[0];
   EXPECT_EQ(display.id(), bounds_change.display_id);
   const display::Display& rotated_display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+      display::Screen::Get()->GetDisplayNearestWindow(window);
   const int expected_x =
       rotated_display.bounds().right() - right_inset - kDefaultWindowLength;
   const int expected_y =
@@ -412,7 +412,7 @@ TEST_F(WaylandRemoteShellTest, DisplayRotationInTabletMode) {
   auto* const widget = shell_surface->GetWidget();
   auto* const window = widget->GetNativeWindow();
   const display::Display& display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+      display::Screen::Get()->GetDisplayNearestWindow(window);
 
   // Snap window.
   ash::WindowSnapWMEvent event(ash::WM_EVENT_SNAP_SECONDARY);

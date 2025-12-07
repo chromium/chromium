@@ -8,5 +8,6 @@
   "background": {
     "scripts": ["test_redirects.js"],
     "persistent": true
-  }
+  },
+  "web_accessible_resources": ["simpleLoad/a.html"]
 }

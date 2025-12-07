@@ -2,7 +2,7 @@
   const base = 'https://a.test:8443/inspector-protocol/resources/'
   const bp = testRunner.browserP();
   const {page, session, dp} = await testRunner.startBlank(
-      'Tracing of FLEDGE worklets.', {url: base + 'fledge_join.html?40'});
+      'Tracing of FLEDGE worklets.', {url: base + 'fledge_join.html?count=40'});
 
   await dp.Target.setAutoAttach({autoAttach: true, flatten: true, waitForDebuggerOnStart: false});
   const TracingHelper =

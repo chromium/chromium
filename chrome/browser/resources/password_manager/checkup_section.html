@@ -1,4 +1,4 @@
-<style include="shared-style cr-shared-style">
+<style include="shared-style cr-shared-style cr-spinner-style">
   #checkupContent {
     margin-top: 16px;
   }
@@ -30,11 +30,8 @@
   }
 
   #spinner {
-    --paper-spinner-stroke-width: 2px;
-    height: 16px;
-    line-height: 100%;
+    --cr-spinner-size: 16px;
     margin-inline-start: 20px;
-    width: 16px;
   }
 
   #labelWrapper {
@@ -45,6 +42,13 @@
 
   #refreshButton {
     margin-inline-end: 10px;
+    --cr-icon-button-fill-color: var(--google-grey-700);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #refreshButton {
+      --cr-icon-button-fill-color: var(--google-grey-300);
+    }
   }
 
   #retryButton {
@@ -68,6 +72,13 @@
     --cr-link-row-start-icon-color: var(--google-red-600);
   }
 
+  .secondary-text-on-surface {
+    /* Change the color of the sublabel. It's sadly not exposed as its own
+       variable in the <cr-link-row>, so we override this existing variable,
+       which is close enough. */
+    --cr-secondary-text-color: var(--google-grey-700);
+  }
+
   @media (prefers-color-scheme: dark) {
     cr-link-row {
       --cr-link-row-start-icon-color: var(--google-green-300);
@@ -80,12 +91,11 @@
     cr-link-row[show-red-icon] {
       --cr-link-row-start-icon-color: var(--google-red-300);
     }
-  }
 
-  #checkupResult,
-  #weakRow {
-    border-bottom-left-radius: inherit;
-    border-bottom-right-radius: inherit;
+    .secondary-text-on-surface {
+      /* Change the color of the sublabel, see above. */
+      --cr-secondary-text-color: var(--google-grey-400);
+    }
   }
 </style>
 <h2 class="page-title">$i18n{checkupTitle}</h2>
@@ -99,8 +109,7 @@
     </picture>
   </div>
   <div class="hr" id="checkupStatus">
-    <paper-spinner-lite id="spinner" active hidden="[[!isCheckRunning_]]">
-    </paper-spinner-lite>
+    <div id="spinner" class="spinner" hidden$="[[!isCheckRunning_]]"></div>
     <div id="labelWrapper">
       <div id="checkupStatusLabel" class="title">[[checkedPasswordsText_]]</div>
       <div id="checkupStatusSubLabel" class="cr-secondary-text label">
@@ -120,26 +129,29 @@
     </div>
   </div>
   <div id="checkupResult" hidden="[[!showCheckupResult_(status_)]]">
-    <cr-link-row id="compromisedRow" class="hr"
+    <cr-link-row id="compromisedRow" class="hr secondary-text-on-surface"
         start-icon="[[getIcon_(compromisedPasswords_, 'true', status_)]]"
         label="[[getCompromisedSectionLabel_(status_, compromisedPasswordsText_)]]"
-        sub-label="[[getCompromisedSectionSublabel_(status_, compromisedPasswords_)]]"
+        sub-label="[[getCompromisedSectionSublabel_(
+            status_, compromisedPasswordsSuggestion_)]]"
         show-yellow-icon$="[[didCompromiseCheckFail_(status_)]]"
         show-red-icon$="[[hasIssues_(compromisedPasswords_)]]"
         non-clickable$="[[!hasIssues_(compromisedPasswords_)]]"
         on-click="onCompromisedClick_" role-description="button"
         aria-show-label aria-show-sublabel>
     </cr-link-row>
-    <cr-link-row id="reusedRow" start-icon="[[getIcon_(reusedPasswords_)]]"
-        label="[[reusedPasswordsText_]]" class="hr"
+    <cr-link-row id="reusedRow" class="hr secondary-text-on-surface"
+        start-icon="[[getIcon_(reusedPasswords_)]]"
+        label="[[reusedPasswordsText_]]"
         sub-label="[[getReusedSectionSublabel_(reusedPasswords_)]]"
         show-yellow-icon$="[[hasIssues_(reusedPasswords_)]]"
         non-clickable$="[[!hasIssues_(reusedPasswords_)]]"
         on-click="onReusedClick_" role-description="button"
         aria-show-label aria-show-sublabel>
     </cr-link-row>
-    <cr-link-row id="weakRow" start-icon="[[getIcon_(weakPasswords_)]]"
-        label="[[weakPasswordsText_]]" class="hr"
+    <cr-link-row id="weakRow" class="hr secondary-text-on-surface"
+        start-icon="[[getIcon_(weakPasswords_)]]"
+        label="[[weakPasswordsText_]]"
         sub-label="[[getWeakSectionSublabel_(weakPasswords_)]]"
         show-yellow-icon$="[[hasIssues_(weakPasswords_)]]"
         non-clickable$="[[!hasIssues_(weakPasswords_)]]"

@@ -8,8 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/functional/callback.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 
 namespace autofill {
@@ -18,7 +17,7 @@ namespace autofill {
 // Only used on mobile.
 class CardExpirationDateFixFlowController {
  public:
-  virtual ~CardExpirationDateFixFlowController() {}
+  virtual ~CardExpirationDateFixFlowController() = default;
 
   // Interaction.
   virtual void OnAccepted(const std::u16string& month,

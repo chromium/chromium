@@ -25,8 +25,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "ui/base/accelerators/accelerator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/manager/display_manager.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
 
@@ -36,7 +37,8 @@ constexpr char kNotificationCenterTrayNoNotificationsToastId[] =
 class NotificationCenterTrayTestBase : public AshTestBase {
  public:
   NotificationCenterTrayTestBase(bool enable_notification_center_controller)
-      : enable_notification_center_controller_(
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        enable_notification_center_controller_(
             enable_notification_center_controller) {
     scoped_feature_list_.InitWithFeatureState(
         features::kNotificationCenterController,
@@ -176,8 +178,8 @@ TEST_P(NotificationCenterTrayTest, ClickOnTrayAfterRemovingNotifications) {
 
   // Make sure animations don't complete immediately for the rest of the test,
   // so that we can click on the tray while its running its hide animation.
-  ui::ScopedAnimationDurationScaleMode animation_duration_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_duration_scale(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Remove all notifications and verify that the tray's hide animation is
   // running.
@@ -316,17 +318,6 @@ TEST_P(NotificationCenterTrayTest, DoNotDisturbUpdatesPinnedIcons) {
   EXPECT_TRUE(test_api()->IsNotificationIconShown());
 }
 
-TEST_P(NotificationCenterTrayTest, NoPrivacyIndicatorsWhenVcEnabled) {
-  // No privacy indicators when `kVideoConference` is enabled.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kFeatureManagementVideoConference);
-
-  auto notification_tray =
-      std::make_unique<NotificationCenterTray>(GetPrimaryShelf());
-  EXPECT_FALSE(notification_tray->privacy_indicators_view());
-}
-
 // Tests that the focus ring is visible and has proper size when the
 // notification center tray is focused.
 TEST_P(NotificationCenterTrayTest, FocusRing) {
@@ -388,8 +379,8 @@ TEST_P(NotificationCenterTrayTest,
   // scheduled, but `TrayItemView` animations are bypassed when the animation
   // duration scale mode is set to ZERO_DURATION. Hence, set the animation
   // duration scale mode to something else for this test.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // This test relies on the lock screen actually being created (and creating
   // the lock screen requires the existence of an `AuthEventsRecorder`).
@@ -453,7 +444,24 @@ TEST_P(NotificationCenterTrayTest, PrivacyIndicatorsVisibility) {
       /*app_id=*/"app_id", /*app_name=*/u"App Name",
       /*is_camera_used=*/false,
       /*is_microphone_used=*/false, delegate, PrivacyIndicatorsSource::kApps);
+  // Fast forward by the minimum duration the privacy indicator should be held.
+  task_environment()->FastForwardBy(
+      PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
   EXPECT_FALSE(privacy_indicators_view->GetVisible());
+}
+
+// Tests that the TrayBubbleView instance has the correct name in the
+// accessibility cache.
+TEST_P(NotificationCenterTrayTest, BubbleViewAccessibleName) {
+  test_api()->AddNotification();
+  test_api()->ToggleBubble();
+  EXPECT_TRUE(test_api()->IsBubbleShown());
+
+  TrayBubbleView* bubble_view = test_api()->GetBubble()->GetBubbleView();
+  ui::AXNodeData node_data;
+  bubble_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            test_api()->GetTray()->GetAccessibleNameForBubble());
 }
 
 // Test fixture that disables notification popups.

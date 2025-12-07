@@ -15,6 +15,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/memory/weak_ptr.h"
 #include "components/account_id/account_id.h"
+#include "ui/base/models/image_model.h"
 
 namespace ash {
 
@@ -71,6 +72,7 @@ class TestAppListClient : public AppListClient {
       const std::vector<std::string>& apps_below_the_fold,
       bool is_apps_collections_page) override;
   bool HasReordered() override;
+  gfx::Image GetGeminiIcon() override;
 
   int start_zero_state_search_count() const {
     return start_zero_state_search_count_;

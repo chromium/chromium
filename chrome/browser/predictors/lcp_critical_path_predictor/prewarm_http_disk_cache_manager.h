@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PREDICTORS_LCP_CRITICAL_PATH_PREDICTOR_PREWARM_HTTP_DISK_CACHE_MANAGER_H_
 
 #include <queue>
-#include <tuple>
 
 #include "base/containers/lru_cache.h"
 #include "base/memory/weak_ptr.h"
@@ -41,15 +40,35 @@ class PrewarmHttpDiskCacheManager
       delete;
 
   void MaybePrewarmResources(
+      const std::optional<url::Origin>& initiator_origin,
       const GURL& top_frame_main_resource_url,
       const std::vector<GURL>& top_frame_subresource_urls);
+
+  struct PrewarmJob {
+    PrewarmJob();
+    PrewarmJob(std::optional<url::Origin> initiator_origin,
+               url::Origin top_frame_origin,
+               GURL url,
+               net::IsolationInfo::RequestType request_type);
+    PrewarmJob(PrewarmJob&&);
+    PrewarmJob& operator=(PrewarmJob&&);
+    PrewarmJob(const PrewarmJob&);
+    PrewarmJob& operator=(const PrewarmJob&);
+    ~PrewarmJob();
+
+    bool operator==(const PrewarmJob& other) const;
+    auto operator<=>(const PrewarmJob& other) const;
+
+    std::optional<url::Origin> initiator_origin;
+    url::Origin top_frame_origin;
+    GURL url;
+    net::IsolationInfo::RequestType request_type;
+  };
 
  private:
   friend class PrewarmHttpDiskCacheManagerTest;
 
-  void MaybeAddPrewarmJob(const url::Origin& top_frame_origin,
-                          const GURL& url,
-                          net::IsolationInfo::RequestType request_type);
+  void MaybeAddPrewarmJob(const PrewarmJob& prewarm_job);
   void MaybeProcessNextQueuedJob();
   void PrewarmHttpDiskCache(GURL url);
 
@@ -66,14 +85,11 @@ class PrewarmHttpDiskCacheManager
   void DoComplete();
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  std::queue<std::tuple<url::Origin, GURL, net::IsolationInfo::RequestType>>
-      queued_jobs_;
+  std::queue<PrewarmJob> queued_jobs_;
   // Keeps recent warm-up history to prevent excessive duplicate
   // warm-up. The maximum size of prewarm_history_ must be large enough
   // to avoid excessive duplicated warm-up requests.
-  base::LRUCache<std::tuple<url::Origin, GURL, net::IsolationInfo::RequestType>,
-                 base::TimeTicks>
-      prewarm_history_;
+  base::LRUCache<PrewarmJob, base::TimeTicks> prewarm_history_;
   const base::TimeDelta reprewarm_period_;
   const bool use_read_and_discard_body_option_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

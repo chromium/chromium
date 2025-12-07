@@ -21,7 +21,6 @@
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_utils.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -30,6 +29,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
@@ -90,8 +90,7 @@ const gfx::VectorIcon& GetIconForTool(AnnotatorToolType tool, SkColor color) {
       }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return kPaletteTrayIconProjectorIcon;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -117,6 +116,8 @@ AnnotationTray::AnnotationTray(Shelf* shelf)
   image_view_->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
   image_view_->SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize));
   ResetTray();
+
+  UpdateAccessibleName(IsAnnotatorEnabled());
 
   session_observer_.Observe(Shell::Get()->session_controller());
 }
@@ -146,16 +147,6 @@ void AnnotationTray::UpdateTrayItemColor(bool is_active) {
   SetIconImage(is_active);
 }
 
-std::u16string AnnotationTray::GetAccessibleNameForTray() {
-  std::u16string enabled_state = l10n_util::GetStringUTF16(
-      GetCurrentTool() == AnnotatorToolType::kToolNone
-          ? IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_OFF_STATE
-          : IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_ON_STATE);
-  return l10n_util::GetStringFUTF16(
-      IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_ACCESSIBLE_TITLE,
-      enabled_state);
-}
-
 void AnnotationTray::HandleLocaleChange() {}
 
 void AnnotationTray::HideBubbleWithView(
@@ -164,7 +155,7 @@ void AnnotationTray::HideBubbleWithView(
     CloseBubble();
 }
 
-void AnnotationTray::CloseBubble() {
+void AnnotationTray::CloseBubbleInternal() {
   pen_view_ = nullptr;
   bubble_.reset();
   // Annotator can be enabled after closing the bubble so set the activity state
@@ -234,6 +225,11 @@ void AnnotationTray::HideBubble(const TrayBubbleView* bubble_view) {
   CloseBubble();
 }
 
+std::u16string AnnotationTray::GetAccessibleNameForBubble() {
+  return l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_BUBBLE_ACCESSIBLE_TITLE);
+}
+
 void AnnotationTray::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
   const uint64_t color =
@@ -268,12 +264,10 @@ void AnnotationTray::SetTrayEnabled(bool enabled) {
     return;
 
   // For disabled state, set icon color to kIconColorPrimary with 30% opacity.
-  SkColor disabled_icon_color =
-      SkColorSetA(AshColorProvider::Get()->GetContentLayerColor(
-                      AshColorProvider::ContentLayerType::kIconColorPrimary),
-                  0x4D);
-  image_view_->SetImage(gfx::CreateVectorIcon(kPaletteTrayIconProjectorIcon,
-                                              disabled_icon_color));
+  SkColor disabled_icon_color = SkColorSetA(
+      GetColorProvider()->GetColor(cros_tokens::kIconColorPrimary), 0x4D);
+  image_view_->SetImage(ui::ImageModel::FromVectorIcon(
+      kPaletteTrayIconProjectorIcon, disabled_icon_color));
   image_view_->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_UNAVAILABLE));
 }
@@ -288,6 +282,16 @@ void AnnotationTray::ToggleAnnotator() {
     CloseBubble();
   }
   UpdateIcon();
+}
+
+void AnnotationTray::UpdateAccessibleName(bool is_annotator_enabled) {
+  std::u16string enabled_state = l10n_util::GetStringUTF16(
+      is_annotator_enabled
+          ? IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_ON_STATE
+          : IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_OFF_STATE);
+  GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
+      IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_ACCESSIBLE_TITLE,
+      enabled_state));
 }
 
 void AnnotationTray::EnableAnnotatorWithPenColor() {
@@ -311,15 +315,10 @@ void AnnotationTray::UpdateIcon() {
     SetIsActive(IsAnnotatorEnabled());
     annotator_toggled = true;
   }
-  // Only sets the image if Jelly is not enabled or if the annotator was not
-  // toggled, since `UpdateTrayItemColor()` will be called in `SetIsActive()` to
-  // set the image for Jelly only when active state changes.
-  if (!chromeos::features::IsJellyEnabled()) {
-    image_view_->SetImage(gfx::CreateVectorIcon(
-        GetIconForTool(GetCurrentTool(), current_pen_color_),
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorPrimary)));
-  } else if (!annotator_toggled) {
+  // Only sets the image if the annotator was not toggled, since
+  // `UpdateTrayItemColor()` will be called in `SetIsActive()` to set the image
+  // only when active state changes.
+  if (!annotator_toggled) {
     SetIconImage(is_active());
   }
   image_view_->SetTooltipText(GetTooltip());
@@ -343,8 +342,7 @@ int AnnotationTray::GetAccessibleNameForColor(SkColor color) {
     case kAnnotatorMagentaPenColor:
       return IDS_MAGENTA_COLOR_BUTTON;
   }
-  NOTREACHED_IN_MIGRATION();
-  return IDS_RED_COLOR_BUTTON;
+  NOTREACHED();
 }
 
 void AnnotationTray::ResetTray() {
@@ -362,7 +360,6 @@ std::u16string AnnotationTray::GetTooltip() {
 }
 
 void AnnotationTray::SetIconImage(bool is_active) {
-  DCHECK(chromeos::features::IsJellyEnabled());
   image_view_->SetImage(ui::ImageModel::FromVectorIcon(
       GetIconForTool(GetCurrentTool(), current_pen_color_),
       is_active ? cros_tokens::kCrosSysSystemOnPrimaryContainer

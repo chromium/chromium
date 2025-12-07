@@ -36,7 +36,7 @@ class V8TestingScope {
   ExecutionContext* GetExecutionContext() const;
   v8::Isolate* GetIsolate() const;
   v8::Local<v8::Context> GetContext() const;
-  ExceptionState& GetExceptionState();
+  DummyExceptionStateForTesting& GetExceptionState();
   Page& GetPage();
   LocalFrame& GetFrame();
   LocalDOMWindow& GetWindow();
@@ -47,7 +47,8 @@ class V8TestingScope {
   void PerformMicrotaskCheckpoint();
 
  private:
-  std::unique_ptr<DummyPageHolder> holder_;
+  std::unique_ptr<DummyPageHolder> const holder_;
+  v8::Isolate* const isolate_;
   v8::HandleScope handle_scope_;
   v8::Local<v8::Context> context_;
   v8::Context::Scope context_scope_;

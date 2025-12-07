@@ -99,6 +99,10 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
   std::optional<gfx::Rect> GetDeskPreviewBoundsForLaunch(
       const DeskMiniView* mini_view);
 
+  // The grid labels will get hidden if the corresponding grid has no items, or
+  // if landscape/portrait mode was changed.
+  void UpdateGridLabels();
+
   // views::View:
   void AddedToWidget() override;
   void Layout(PassKey) override;
@@ -111,6 +115,7 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
   // depending on which features are enabled.
   raw_ptr<SavedDeskGridView> desk_template_grid_view_ = nullptr;
   raw_ptr<SavedDeskGridView> save_and_recall_grid_view_ = nullptr;
+  raw_ptr<SavedDeskGridView> coral_grid_view_ = nullptr;
 
   // Used for scroll functionality of the library page. Owned by views
   // hierarchy.
@@ -121,6 +126,10 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
 
   // Holds the active ones, for convenience.
   std::vector<raw_ptr<SavedDeskGridView, VectorExperimental>> grid_views_;
+
+  // Owned by views hierarchy. Section headers above grids. Will match size and
+  // order of items in `grid_views_`.
+  std::vector<raw_ptr<views::Label, VectorExperimental>> grid_labels_;
 
   // Label that shows up when the library has no items.
   raw_ptr<views::Label> no_items_label_ = nullptr;

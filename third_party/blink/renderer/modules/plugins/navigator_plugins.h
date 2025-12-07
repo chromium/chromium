@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PLUGINS_NAVIGATOR_PLUGINS_H_
 
 #include "third_party/blink/renderer/core/frame/navigator.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
@@ -16,10 +15,8 @@ class LocalDOMWindow;
 class Navigator;
 
 class NavigatorPlugins final : public GarbageCollected<NavigatorPlugins>,
-                               public Supplement<Navigator> {
+                               public GarbageCollectedMixin {
  public:
-  static const char kSupplementName[];
-
   static NavigatorPlugins& From(Navigator&);
   static NavigatorPlugins* ToNavigatorPlugins(Navigator&);
 
@@ -29,7 +26,7 @@ class NavigatorPlugins final : public GarbageCollected<NavigatorPlugins>,
 
   static bool javaEnabled(Navigator&);
 
-  explicit NavigatorPlugins(Navigator&);
+  NavigatorPlugins() = default;
 
   void Trace(Visitor*) const override;
 
@@ -37,8 +34,6 @@ class NavigatorPlugins final : public GarbageCollected<NavigatorPlugins>,
   DOMPluginArray* plugins(LocalDOMWindow*) const;
   DOMMimeTypeArray* mimeTypes(LocalDOMWindow*) const;
   bool pdfViewerEnabled(LocalDOMWindow* window) const;
-
-  const bool should_return_fixed_plugin_data_;
 
   mutable Member<DOMPluginArray> plugins_;
   mutable Member<DOMMimeTypeArray> mime_types_;

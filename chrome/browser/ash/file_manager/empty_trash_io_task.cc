@@ -25,13 +25,11 @@ EmptyTrashIOTask::EmptyTrashIOTask(
     blink::StorageKey storage_key,
     Profile* profile,
     scoped_refptr<storage::FileSystemContext> file_system_context,
-    base::FilePath base_path,
     bool show_notification)
     : IOTask(show_notification),
       file_system_context_(std::move(file_system_context)),
       storage_key_(std::move(storage_key)),
-      profile_(profile),
-      base_path_(std::move(base_path)) {
+      profile_(profile) {
   progress_.state = State::kQueued;
   progress_.type = OperationType::kEmptyTrash;
 }
@@ -49,7 +47,7 @@ void EmptyTrashIOTask::Execute(IOTask::ProgressCallback /*progress_callback*/,
 
   // A map containing paths which are enabled for trashing.
   const trash::TrashPathsMap locations =
-      trash::GenerateEnabledTrashLocationsForProfile(profile_, base_path_);
+      trash::GenerateEnabledTrashLocationsForProfile(profile_);
 
   if (locations.empty()) {
     progress_.state = State::kSuccess;
@@ -72,9 +70,10 @@ void EmptyTrashIOTask::Execute(IOTask::ProgressCallback /*progress_callback*/,
     VLOG(1) << "Removing " << entry.url.path();
 
     // Double-check the path to delete.
-    CHECK(dir.IsAbsolute()) << dir;
-    CHECK(!dir.ReferencesParent()) << dir;
-    CHECK_EQ(dir.BaseName().value(), trash::kTrashFolderName) << dir;
+    CHECK(dir.IsAbsolute()) << " for " << dir;
+    CHECK(!dir.ReferencesParent()) << " for " << dir;
+    CHECK(dir.BaseName().value().starts_with(trash::kTrashFolderName))
+        << " for " << dir;
 
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock()},

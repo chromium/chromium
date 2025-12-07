@@ -6,49 +6,75 @@
 #define SERVICES_WEBNN_COREML_CONTEXT_IMPL_COREML_H_
 
 #include "base/memory/weak_ptr.h"
-#include "services/webnn/webnn_buffer_impl.h"
+#include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
+#include "services/webnn/webnn_tensor_impl.h"
 
-namespace webnn::coreml {
+namespace webnn {
+
+class WebNNConstantOperand;
+
+namespace coreml {
 
 // `ContextImplCoreml` is created by `WebNNContextProviderImpl` and responsible
-// for creating a `GraphImplCoreml` for the CoreML backend on macOS. Mac OS
-// 13.0+ is required for model compilation
-// https://developer.apple.com/documentation/coreml/mlmodel/3931182-compilemodel
-// Mac OS 14.0+ is required to support WebNN logical binary operators because
-// the cast operator does not support casting to uint8 prior to Mac OS 14.0.
-// CoreML returns bool tensors for logical operators which need to be cast to
-// uint8 tensors to match WebNN expectations.
-class API_AVAILABLE(macos(14.0)) ContextImplCoreml final
+// for creating a `GraphImplCoreml` for the CoreML backend on macOS.
+class API_AVAILABLE(macos(14.4)) ContextImplCoreml final
     : public WebNNContextImpl {
  public:
-  ContextImplCoreml(mojo::PendingReceiver<mojom::WebNNContext> receiver,
-                    WebNNContextProviderImpl* context_provider,
-                    mojom::CreateContextOptionsPtr options);
+  // Constructs a new `ContextImplCoreml`.
+  static std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter> Create(
+      mojo::PendingReceiver<mojom::WebNNContext> receiver,
+      base::WeakPtr<WebNNContextProviderImpl> context_provider,
+      mojom::CreateContextOptionsPtr options,
+      std::unique_ptr<ScopedGpuSequence> gpu_sequence,
+      scoped_refptr<gpu::MemoryTracker> memory_tracker,
+      scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
+      gpu::SharedImageManager* shared_image_manager,
+      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
+
+  ContextImplCoreml(
+      mojo::PendingReceiver<mojom::WebNNContext> receiver,
+      base::WeakPtr<WebNNContextProviderImpl> context_provider,
+      mojom::CreateContextOptionsPtr options,
+      std::unique_ptr<ScopedGpuSequence> gpu_sequence,
+      scoped_refptr<gpu::MemoryTracker> memory_tracker,
+      scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
+      gpu::SharedImageManager* shared_image_manager,
+      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
 
   ContextImplCoreml(const WebNNContextImpl&) = delete;
   ContextImplCoreml& operator=(const ContextImplCoreml&) = delete;
-
-  ~ContextImplCoreml() override;
 
   // WebNNContextImpl:
   base::WeakPtr<WebNNContextImpl> AsWeakPtr() override;
 
  private:
+  ~ContextImplCoreml() override;
+
   void CreateGraphImpl(
+      mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
       mojom::GraphInfoPtr graph_info,
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
+      base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
+          constant_operands,
+      base::flat_map<OperandId, WebNNTensorImpl*> constant_tensor_operands,
       CreateGraphImplCallback callback) override;
 
-  void CreateBufferImpl(
-      mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
-      mojom::BufferInfoPtr buffer_info,
-      CreateBufferImplCallback callback) override;
+  base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>
+  CreateTensorImpl(mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
+                   mojom::TensorInfoPtr tensor_info) override;
+
+  base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>
+  CreateTensorFromSharedImageImpl(
+      mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
+      mojom::TensorInfoPtr tensor_info,
+      WebNNTensorImpl::RepresentationPtr representation) override;
 
   base::WeakPtrFactory<ContextImplCoreml> weak_factory_{this};
 };
 
-}  // namespace webnn::coreml
+}  // namespace coreml
+}  // namespace webnn
 
 #endif  // SERVICES_WEBNN_COREML_CONTEXT_IMPL_COREML_H_

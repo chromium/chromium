@@ -4,17 +4,18 @@
 
 #include "ash/system/keyboard_brightness/keyboard_brightness_controller.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/system/power/power_status.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/known_user.h"
 
 namespace ash {
@@ -53,7 +54,8 @@ bool ShouldRestoreKeyboardAmbientLightSensor(
   // Retrieve the reason.
   const int keyboard_ambient_light_sensor_disabled_reason =
       known_user
-          .FindIntPath(account_id, prefs::kAmbientLightSensorDisabledReason)
+          .FindIntPath(account_id,
+                       prefs::kKeyboardAmbientLightSensorDisabledReason)
           .value_or(static_cast<int>(
               power_manager::
                   AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP));
@@ -110,6 +112,37 @@ KeyboardBrightnessChangeSourceToCause(KeyboardBrightnessChangeSource source) {
   }
 }
 
+std::string GetBrightnessActionName(BrightnessAction brightness_action) {
+  switch (brightness_action) {
+    case BrightnessAction::kDecreaseBrightness:
+      return "Decrease";
+    case BrightnessAction::kIncreaseBrightness:
+      return "Increase";
+    case BrightnessAction::kToggleBrightness:
+      return "Toggle";
+    case BrightnessAction::kSetBrightness:
+      return "Set";
+  }
+}
+
+// Returns true if the device is currently connected to a charger.
+// Note: This is the same logic that ambient_controller.cc uses.
+bool IsChargerConnected() {
+  DCHECK(PowerStatus::IsInitialized());
+  auto* power_status = PowerStatus::Get();
+  if (power_status->IsBatteryPresent()) {
+    // If battery is charging, that implies sufficient power is connected. If
+    // battery is not charging, return true only if an official, non-USB charger
+    // is connected. This will happen if the battery is fully charged or
+    // charging is delayed by Adaptive Charging.
+    return power_status->IsBatteryCharging() ||
+           power_status->IsMainsChargerConnected();
+  }
+
+  // Chromeboxes have no battery.
+  return power_status->IsLinePowerConnected();
+}
+
 }  // namespace
 
 KeyboardBrightnessController::KeyboardBrightnessController(
@@ -136,8 +169,17 @@ KeyboardBrightnessController::KeyboardBrightnessController(
       &KeyboardBrightnessController::OnReceiveHasAmbientLightSensor,
       weak_ptr_factory_.GetWeakPtr()));
 
+  // Get the initial lid state.
+  power_manager_client->GetSwitchStates(
+      base::BindOnce(&KeyboardBrightnessController::OnReceiveSwitchStates,
+                     weak_ptr_factory_.GetWeakPtr()));
+
   // Add LoginScreenController observer.
   Shell::Get()->login_screen_controller()->data_dispatcher()->AddObserver(this);
+
+  // Record a timestamp when this is constructed so last_session_change_time_ is
+  // guaranteed to have a value.
+  last_session_change_time_ = base::TimeTicks::Now();
 }
 
 KeyboardBrightnessController::~KeyboardBrightnessController() {
@@ -176,6 +218,11 @@ void KeyboardBrightnessController::OnActiveUserSessionChanged(
     const AccountId& account_id) {
   active_account_id_ = account_id;
 
+  // Do not retrieve and save current brightness to pref if lid is closed.
+  if (lid_state_ == chromeos::PowerManagerClient::LidState::CLOSED) {
+    return;
+  }
+
   // On login, retrieve the current keyboard brightness and save it to prefs.
   HandleGetKeyboardBrightness(base::BindOnce(
       &KeyboardBrightnessController::OnReceiveKeyboardBrightnessAfterLogin,
@@ -186,12 +233,6 @@ void KeyboardBrightnessController::OnActiveUserSessionChanged(
 void KeyboardBrightnessController::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
   pref_service_ = pref_service;
-
-  // Don't restore the ambient light sensor value if the relevant flag is
-  // disabled.
-  if (!features::IsKeyboardBacklightControlInSettingsEnabled()) {
-    return;
-  }
 
   // Only restore the profile-synced ambient light sensor setting if it's a
   // user's first time logging in to a new device.
@@ -214,6 +255,14 @@ void KeyboardBrightnessController::OnActiveUserPrefServiceChanged(
   }
 }
 
+// SessionObserver:
+void KeyboardBrightnessController::OnSessionStateChanged(
+    session_manager::SessionState state) {
+  // Whenever the SessionState changes (e.g. LOGIN_PRIMARY to ACTIVE), record
+  // the timestamp.
+  last_session_change_time_ = base::TimeTicks::Now();
+}
+
 // PowerManagerClient::Observer:
 void KeyboardBrightnessController::KeyboardAmbientLightSensorEnabledChanged(
     const power_manager::AmbientLightSensorChange& change) {
@@ -230,19 +279,17 @@ void KeyboardBrightnessController::KeyboardAmbientLightSensorEnabledChanged(
   // (e.g. those who didn't manually disable the sensor from the Settings app).
   if (!change.sensor_enabled()) {
     known_user.SetPath(
-        active_account_id_.value(),
-        prefs::kKeyboardAmbientLightSensorDisabledReason,
+        *active_account_id_, prefs::kKeyboardAmbientLightSensorDisabledReason,
         std::make_optional<base::Value>(static_cast<int>(change.cause())));
-    keyboard_ambient_light_sensor_disabled_timestamp_ = base::Time::Now();
   } else {
     // If the ambient light sensor was enabled, remove the existing "disabled
     // reason" pref.
-    known_user.RemovePref(active_account_id_.value(),
+    known_user.RemovePref(*active_account_id_,
                           prefs::kKeyboardAmbientLightSensorDisabledReason);
   }
 
   // Save the current ambient light sensor enabled status into local state.
-  known_user.SetPath(active_account_id_.value(),
+  known_user.SetPath(*active_account_id_,
                      prefs::kKeyboardAmbientLightSensorEnabled,
                      std::make_optional<base::Value>(change.sensor_enabled()));
 
@@ -275,62 +322,43 @@ void KeyboardBrightnessController::KeyboardBrightnessChanged(
           power_manager::
               BacklightBrightnessChange_Cause_USER_REQUEST_FROM_SETTINGS_APP) {
     user_manager::KnownUser known_user(local_state_);
-    known_user.SetPath(active_account_id_.value(),
-                       prefs::kKeyboardBrightnessPercent,
+    known_user.SetPath(*active_account_id_, prefs::kKeyboardBrightnessPercent,
                        std::make_optional<base::Value>(change.percent()));
   }
 }
 
-// PowerManagerClient::Observer:
-void KeyboardBrightnessController::SuspendImminent(
-    power_manager::SuspendImminent::Reason reason) {
-  if (!features::IsKeyboardBacklightControlInSettingsEnabled()) {
-    return;
-  }
-  // In tests, these may not be present.
-  if (!active_account_id_.has_value() || !local_state_) {
-    return;
-  }
-  if (!keyboard_ambient_light_sensor_disabled_timestamp_.has_value()) {
-    return;
-  }
-
-  user_manager::KnownUser known_user(local_state_);
-  base::Time now = base::Time::Now();
-
-  // Re-enable ALS if it passed local midnight.
-  if (now.LocalMidnight() -
-          keyboard_ambient_light_sensor_disabled_timestamp_.value()
-              .LocalMidnight() >=
-      base::Days(1)) {
-    if (ShouldReenableKeyboardAmbientLightSensor(active_account_id_.value(),
-                                                 known_user)) {
-      HandleSetKeyboardAmbientLightSensorEnabled(
-          true,
-          KeyboardAmbientLightSensorEnabledChangeSource::kSystemReenabled);
-    }
-  }
+void KeyboardBrightnessController::LidEventReceived(
+    chromeos::PowerManagerClient::LidState state,
+    base::TimeTicks timestamp) {
+  lid_state_ = state;
 }
 
 // LoginDataDispatcher::Observer:
 void KeyboardBrightnessController::OnFocusPod(const AccountId& account_id) {
   active_account_id_ = account_id;
 
-  if (features::IsKeyboardBacklightControlInSettingsEnabled()) {
-    RestoreKeyboardBrightnessSettings(account_id);
+  session_manager::SessionState session_state =
+      Shell::Get()->session_controller()->GetSessionState();
+  if (session_state == session_manager::SessionState::LOGIN_PRIMARY ||
+      session_state == session_manager::SessionState::LOGIN_SECONDARY) {
+    // Restore brightness settings only when device reboots.
+    MaybeRestoreKeyboardBrightnessSettings();
   }
 }
 
 void KeyboardBrightnessController::HandleKeyboardBrightnessDown() {
   chromeos::PowerManagerClient::Get()->DecreaseKeyboardBrightness();
+  RecordHistogramForBrightnessAction(BrightnessAction::kDecreaseBrightness);
 }
 
 void KeyboardBrightnessController::HandleKeyboardBrightnessUp() {
   chromeos::PowerManagerClient::Get()->IncreaseKeyboardBrightness();
+  RecordHistogramForBrightnessAction(BrightnessAction::kIncreaseBrightness);
 }
 
 void KeyboardBrightnessController::HandleToggleKeyboardBacklight() {
   chromeos::PowerManagerClient::Get()->ToggleKeyboardBacklight();
+  RecordHistogramForBrightnessAction(BrightnessAction::kToggleBrightness);
 }
 
 void KeyboardBrightnessController::HandleSetKeyboardBrightness(
@@ -345,6 +373,12 @@ void KeyboardBrightnessController::HandleSetKeyboardBrightness(
           : power_manager::SetBacklightBrightnessRequest_Transition_INSTANT);
   request.set_cause(KeyboardBrightnessChangeSourceToCause(source));
   chromeos::PowerManagerClient::Get()->SetKeyboardBrightness(request);
+
+  // Record the brightness action only if it was not initiated by the system's
+  // brightness restoration.
+  if (source != KeyboardBrightnessChangeSource::kRestoredFromUserPref) {
+    RecordHistogramForBrightnessAction(BrightnessAction::kSetBrightness);
+  }
 }
 
 void KeyboardBrightnessController::HandleGetKeyboardAmbientLightSensorEnabled(
@@ -369,9 +403,38 @@ void KeyboardBrightnessController::HandleSetKeyboardAmbientLightSensorEnabled(
       request);
 }
 
+void KeyboardBrightnessController::MaybeRestoreKeyboardBrightnessSettings() {
+  if (!active_account_id_.has_value() || !has_keyboard_backlight_.has_value() ||
+      !has_sensor_.has_value()) {
+    return;
+  }
+
+  if (*has_keyboard_backlight_) {
+    RestoreKeyboardBrightnessSettings(*active_account_id_);
+  }
+}
+
 void KeyboardBrightnessController::RestoreKeyboardBrightnessSettings(
     const AccountId& account_id) {
+  // In tests, local_state_ may not be present.
+  if (!local_state_) {
+    return;
+  }
   user_manager::KnownUser known_user(local_state_);
+  const std::optional<double> keyboard_brightness_for_account =
+      known_user.FindDoublePath(account_id, prefs::kKeyboardBrightnessPercent);
+  if (!*has_sensor_) {
+    // Only restore brightness percent if device does not have sensor.
+    if (keyboard_brightness_for_account.has_value()) {
+      HandleSetKeyboardBrightness(
+          *keyboard_brightness_for_account,
+          /*gradual=*/true,
+          KeyboardBrightnessChangeSource::kRestoredFromUserPref);
+    }
+    return;
+  }
+  // If device has a sensor, restore both ambient light sensor and brightness
+  // percent.
   bool keyboard_ambient_light_sensor_enabled_for_account = true;
 
   if (ShouldReenableKeyboardAmbientLightSensor(account_id, known_user)) {
@@ -383,28 +446,26 @@ void KeyboardBrightnessController::RestoreKeyboardBrightnessSettings(
         known_user
             .FindBoolPath(account_id, prefs::kKeyboardAmbientLightSensorEnabled)
             .value_or(true);
-    if (!keyboard_ambient_light_sensor_enabled_for_account) {
-      // If the keyboard ambient light sensor is disabled, restore the user's
-      // preferred keyboard brightness level.
-      const std::optional<double> keyboard_brightness_for_account =
-          known_user.FindPath(account_id, prefs::kKeyboardBrightnessPercent)
-              ->GetIfDouble();
-      if (keyboard_brightness_for_account.has_value()) {
-        HandleSetKeyboardBrightness(
-            keyboard_brightness_for_account.value(),
-            /*gradual=*/true,
-            KeyboardBrightnessChangeSource::kRestoredFromUserPref);
-      }
-    }
     if (ShouldRestoreKeyboardAmbientLightSensor(account_id, known_user)) {
       HandleSetKeyboardAmbientLightSensorEnabled(
           keyboard_ambient_light_sensor_enabled_for_account,
           KeyboardAmbientLightSensorEnabledChangeSource::kRestoredFromUserPref);
     }
+    if (!keyboard_ambient_light_sensor_enabled_for_account) {
+      // If the keyboard ambient light sensor is disabled, restore the user's
+      // preferred keyboard brightness level.
+      if (keyboard_brightness_for_account.has_value()) {
+        HandleSetKeyboardBrightness(
+            *keyboard_brightness_for_account,
+            /*gradual=*/true,
+            KeyboardBrightnessChangeSource::kRestoredFromUserPref);
+      }
+    }
   }
 
   // Record the keyboard ambient light sensor status at login.
-  if (has_sensor_ && !has_keyboard_ambient_light_sensor_status_been_recorded_) {
+  if (*has_sensor_ &&
+      !has_keyboard_ambient_light_sensor_status_been_recorded_) {
     base::UmaHistogramBoolean(
         "ChromeOS.Keyboard.Startup.AmbientLightSensorEnabled",
         keyboard_ambient_light_sensor_enabled_for_account);
@@ -414,8 +475,7 @@ void KeyboardBrightnessController::RestoreKeyboardBrightnessSettings(
 
 void KeyboardBrightnessController::
     RestoreKeyboardAmbientLightSensorSettingOnFirstLogin() {
-  if (!features::IsKeyboardBacklightControlInSettingsEnabled() ||
-      !pref_service_ ||
+  if (!pref_service_ ||
       has_keyboard_ambient_light_sensor_been_restored_for_new_user_) {
     return;
   }
@@ -433,8 +493,10 @@ void KeyboardBrightnessController::
 void KeyboardBrightnessController::OnReceiveHasKeyboardBacklight(
     std::optional<bool> has_keyboard_backlight) {
   if (has_keyboard_backlight.has_value()) {
+    has_keyboard_backlight_ = has_keyboard_backlight;
+    MaybeRestoreKeyboardBrightnessSettings();
     base::UmaHistogramBoolean("ChromeOS.Keyboard.HasBacklight",
-                              has_keyboard_backlight.value());
+                              *has_keyboard_backlight);
     return;
   }
   LOG(ERROR) << "KeyboardBrightnessController: Failed to get the keyboard "
@@ -449,9 +511,10 @@ void KeyboardBrightnessController::OnReceiveHasAmbientLightSensor(
            "sensor status";
     return;
   }
-  has_sensor_ = has_sensor.value();
+  has_sensor_ = has_sensor;
+  MaybeRestoreKeyboardBrightnessSettings();
   base::UmaHistogramBoolean("ChromeOS.Keyboard.HasAmbientLightSensor",
-                            has_sensor.value());
+                            *has_sensor);
 }
 
 void KeyboardBrightnessController::OnReceiveKeyboardBrightnessAfterLogin(
@@ -469,9 +532,56 @@ void KeyboardBrightnessController::OnReceiveKeyboardBrightnessAfterLogin(
 
   // Save keyboard brightness to local state after login.
   user_manager::KnownUser known_user(local_state_);
-  known_user.SetPath(
-      active_account_id_.value(), prefs::kKeyboardBrightnessPercent,
-      std::make_optional<base::Value>(keyboard_brightness.value()));
+  known_user.SetPath(*active_account_id_, prefs::kKeyboardBrightnessPercent,
+                     std::make_optional<base::Value>(*keyboard_brightness));
+}
+
+void KeyboardBrightnessController::OnReceiveSwitchStates(
+    std::optional<chromeos::PowerManagerClient::SwitchStates> switch_states) {
+  if (switch_states.has_value()) {
+    lid_state_ = switch_states->lid_state;
+  }
+}
+
+void KeyboardBrightnessController::RecordHistogramForBrightnessAction(
+    BrightnessAction brightness_action) {
+  // Only record the first brightness adjustment (resets on reboot).
+  if (has_brightness_been_adjusted_) {
+    return;
+  }
+  has_brightness_been_adjusted_ = true;
+
+  CHECK(!last_session_change_time_.is_null());
+
+  const base::TimeDelta time_since_last_session_change =
+      base::TimeTicks::Now() - last_session_change_time_;
+
+  // Don't record a metric if the first brightness adjustment occurred >1 hour
+  // after the last session change.
+  if (time_since_last_session_change >= base::Hours(1)) {
+    return;
+  }
+
+  const session_manager::SessionState session_state =
+      session_controller_->GetSessionState();
+  const bool is_on_login_screen =
+      session_state == session_manager::SessionState::LOGIN_PRIMARY ||
+      session_state == session_manager::SessionState::LOGIN_SECONDARY;
+  const bool is_active_session =
+      session_state == session_manager::SessionState::ACTIVE;
+
+  // Disregard brightness events that don't occur on the login screen or in an
+  // active user session.
+  if (!(is_on_login_screen || is_active_session)) {
+    return;
+  }
+
+  base::UmaHistogramLongTimes100(
+      base::StrCat({"ChromeOS.Keyboard.TimeUntilFirstBrightnessChange.",
+                    is_on_login_screen ? "OnLoginScreen" : "AfterLogin", ".",
+                    GetBrightnessActionName(brightness_action), "Brightness.",
+                    IsChargerConnected() ? "Charger" : "Battery", "Power"}),
+      time_since_last_session_change);
 }
 
 }  // namespace ash

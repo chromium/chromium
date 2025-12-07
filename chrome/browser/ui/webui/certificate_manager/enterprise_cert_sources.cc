@@ -6,14 +6,20 @@
 
 #include <vector>
 
+#include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/certificate_dialogs.h"
 #include "chrome/browser/ui/webui/certificate_manager/certificate_manager_handler.h"
 #include "chrome/browser/ui/webui/certificate_manager/certificate_manager_utils.h"
-#include "chrome/browser/ui/webui/certificate_viewer_webui.h"
+#include "chrome/browser/ui/webui/certificate_viewer/certificate_viewer_webui.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/net/x509_certificate_model.h"
+#include "components/server_certificate_database/server_certificate_database.pb.h"
 #include "content/public/browser/web_contents.h"
 #include "crypto/sha2.h"
 #include "net/cert/x509_util.h"
@@ -23,12 +29,13 @@ EnterpriseCertSource::EnterpriseCertSource(std::string export_file_name)
 
 void EnterpriseCertSource::GetCertificateInfos(
     CertificateManagerPageHandler::GetCertificatesCallback callback) {
-  std::vector<certificate_manager_v2::mojom::SummaryCertInfoPtr> cert_infos;
+  std::vector<certificate_manager::mojom::SummaryCertInfoPtr> cert_infos;
   for (const auto& cert : GetCerts()) {
     x509_certificate_model::X509CertificateModel model(
-        net::x509_util::CreateCryptoBuffer(cert), "");
-    cert_infos.push_back(certificate_manager_v2::mojom::SummaryCertInfo::New(
-        model.HashCertSHA256(), model.GetTitle()));
+        net::x509_util::CreateCryptoBuffer(cert));
+    cert_infos.push_back(certificate_manager::mojom::SummaryCertInfo::New(
+        model.HashCertSHA256(), model.GetTitle(),
+        /*is_deletable=*/false));
   }
   std::move(callback).Run(std::move(cert_infos));
 }
@@ -113,17 +120,35 @@ void EnterpriseTrustedCertSource::ViewCertificate(
 
   // Certs with additional constraints outside of the cert are handled
   // differently so that the outside constraints can be shown.
-  // TODO(crbug.com/40928765): pass in additional outside constraints once
-  // view cert dialog can show them.
   for (const auto& cert_with_constraints :
        policies.certificate_policies
            ->trust_anchors_with_additional_constraints) {
     if (hash == crypto::SHA256Hash(cert_with_constraints->certificate)) {
       // Found the cert, open cert viewer dialog if able and then exit
       // function.
+      chrome_browser_server_certificate_database::CertificateMetadata metadata;
+      metadata.mutable_constraints()->mutable_dns_names()->Add(
+          cert_with_constraints->permitted_dns_names.begin(),
+          cert_with_constraints->permitted_dns_names.end());
+      for (auto const& cidr : cert_with_constraints->permitted_cidrs) {
+        net::IPAddress ip(cidr->ip);
+        net::IPAddress mask(cidr->mask);
+        if (!ip.IsValid() || !mask.IsValid()) {
+          continue;
+        }
+        chrome_browser_server_certificate_database::CIDR proto_cidr;
+        proto_cidr.set_ip(std::string(base::as_string_view(ip.bytes())));
+        proto_cidr.set_prefix_length(net::MaskPrefixLength(mask));
+        metadata.mutable_constraints()->mutable_cidrs()->Add(
+            std::move(proto_cidr));
+      }
+      metadata.mutable_trust()->set_trust_type(
+          chrome_browser_server_certificate_database::CertificateTrust::
+              CERTIFICATE_TRUST_TYPE_TRUSTED);
       ShowCertificateDialog(std::move(web_contents),
                             net::x509_util::CreateCryptoBuffer(
-                                cert_with_constraints->certificate));
+                                cert_with_constraints->certificate),
+                            std::move(metadata), base::NullCallback());
       return;
     }
   }

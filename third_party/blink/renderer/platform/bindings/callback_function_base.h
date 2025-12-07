@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_CALLBACK_FUNCTION_BASE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_CALLBACK_FUNCTION_BASE_H_
 
-#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -128,12 +128,12 @@ class PLATFORM_EXPORT CallbackFunctionWithTaskAttributionBase
  public:
   ~CallbackFunctionWithTaskAttributionBase() override = default;
 
-  scheduler::TaskAttributionInfo* GetParentTask() const {
-    return parent_task_.Get();
+  scheduler::TaskAttributionInfo* GetTaskState() const {
+    return task_state_.Get();
   }
 
-  void SetParentTask(scheduler::TaskAttributionInfo* task) {
-    parent_task_ = task;
+  void SetTaskState(scheduler::TaskAttributionInfo* task) {
+    task_state_ = task;
   }
 
   void Trace(Visitor* visitor) const override;
@@ -143,7 +143,7 @@ class PLATFORM_EXPORT CallbackFunctionWithTaskAttributionBase
       : CallbackFunctionBase(object) {}
 
  private:
-  Member<scheduler::TaskAttributionInfo> parent_task_;
+  Member<scheduler::TaskAttributionInfo> task_state_;
 };
 
 }  // namespace blink

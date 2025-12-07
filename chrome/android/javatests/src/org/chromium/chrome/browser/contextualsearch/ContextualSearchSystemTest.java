@@ -24,6 +24,8 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -34,7 +36,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Tests system and application interaction with Contextual Search using instrumentation tests. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -67,7 +69,7 @@ public class ContextualSearchSystemTest extends ContextualSearchInstrumentationB
 
     private void closeAppMenu() {
         ThreadUtils.runOnUiThreadBlocking(
-                () -> sActivityTestRule.getAppMenuCoordinator().getAppMenuHandler().hideAppMenu());
+                () -> mActivityTestRule.getAppMenuCoordinator().getAppMenuHandler().hideAppMenu());
     }
 
     /** Asserts whether the App Menu is visible. */
@@ -75,7 +77,7 @@ public class ContextualSearchSystemTest extends ContextualSearchInstrumentationB
         CriteriaHelper.pollInstrumentationThread(
                 () -> {
                     Criteria.checkThat(
-                            sActivityTestRule
+                            mActivityTestRule
                                     .getAppMenuCoordinator()
                                     .getAppMenuHandler()
                                     .isAppMenuShowing(),
@@ -91,7 +93,7 @@ public class ContextualSearchSystemTest extends ContextualSearchInstrumentationB
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    // Previously flaky and disabled in 2018.  See https://crbug.com/832539.
+    @DisabledTest(message = "Please see crbug.com/832539 for all the details.")
     public void testContextualSearchDismissedOnForegroundTabCrash() throws Exception {
         triggerResolve(SEARCH_NODE);
         Assert.assertEquals(SEARCH_NODE_TERM, getSelectedText());
@@ -101,7 +103,7 @@ public class ContextualSearchSystemTest extends ContextualSearchInstrumentationB
                 TaskTraits.UI_DEFAULT,
                 () -> {
                     ChromeTabUtils.simulateRendererKilledForTesting(
-                            sActivityTestRule.getActivity().getActivityTab());
+                            mActivityTestRule.getActivity().getActivityTab());
                 });
 
         // Give the panelState time to change
@@ -117,17 +119,17 @@ public class ContextualSearchSystemTest extends ContextualSearchInstrumentationB
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // See https://crbug.com/382637778
     // Revived 6/2022 based on reviver: https://crbug.com/1333277
     // Previously disabled: https://crbug.com/1192285, https://crbug.com/1192561
     public void testContextualSearchNotDismissedOnBackgroundTabCrash() throws Exception {
         ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity());
-        final Tab tab2 =
-                TabModelUtils.getCurrentTab(sActivityTestRule.getActivity().getCurrentTabModel());
+                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        final Tab tab2 = mActivityTestRule.getActivityTab();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    TabModelUtils.setIndex(sActivityTestRule.getActivity().getCurrentTabModel(), 0);
+                    TabModelUtils.setIndex(mActivityTestRule.getActivity().getCurrentTabModel(), 0);
                 });
 
         triggerResolve(SEARCH_NODE);
@@ -151,7 +153,7 @@ public class ContextualSearchSystemTest extends ContextualSearchInstrumentationB
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testAppMenuSuppressedWhenExpanded() throws Exception {
         triggerPanelPeek();
         expandPanelAndAssert();

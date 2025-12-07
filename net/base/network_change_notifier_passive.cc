@@ -9,9 +9,9 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/notimplemented.h"
 #include "base/task/task_traits.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "net/dns/dns_config_service_posix.h"
 #include "net/dns/system_dns_config_change_notifier.h"
 
@@ -53,9 +53,10 @@ void NetworkChangeNotifierPassive::OnDNSChanged() {
   GetCurrentSystemDnsConfigNotifier()->RefreshConfig();
 }
 
-void NetworkChangeNotifierPassive::OnIPAddressChanged() {
+void NetworkChangeNotifierPassive::OnIPAddressChanged(
+    IPAddressChangeType change_type) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  NetworkChangeNotifier::NotifyObserversOfIPAddressChange();
+  NetworkChangeNotifier::NotifyObserversOfIPAddressChange(change_type);
 }
 
 void NetworkChangeNotifierPassive::OnConnectionChanged(

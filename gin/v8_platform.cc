@@ -8,6 +8,7 @@
 
 #include "base/bit_cast.h"
 #include "base/check_op.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -19,16 +20,15 @@
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/threading/scoped_blocking_call_internal.h"
 #include "base/trace_event/trace_event.h"
 #include "base/tracing_buildflags.h"
 #include "build/build_config.h"
 #include "gin/converter.h"
 #include "gin/per_isolate_data.h"
 #include "gin/thread_isolation.h"
+#include "gin/v8_platform_page_allocator.h"
 #include "gin/v8_platform_thread_isolated_allocator.h"
 #include "partition_alloc/buildflags.h"
-#include "v8_platform_page_allocator.h"
 
 namespace gin {
 
@@ -217,21 +217,24 @@ std::shared_ptr<v8::TaskRunner> V8Platform::GetForegroundTaskRunner(
     v8::Isolate* isolate,
     v8::TaskPriority priority) {
   PerIsolateData* data = PerIsolateData::From(isolate);
-  if (!data->low_priority_task_runner()) {
-    return data->task_runner();
-  }
-
   switch (priority) {
+    case v8::TaskPriority::kBestEffort:
+      // blink::scheduler::TaskPriority::kLowPriority
+      if (data->best_effort_task_runner()) {
+        return data->best_effort_task_runner();
+      }
+      [[fallthrough]];
+    case v8::TaskPriority::kUserVisible:
+      // blink::scheduler::TaskPriority::kLowPriority
+      if (data->user_visible_task_runner()) {
+        return data->user_visible_task_runner();
+      }
+      [[fallthrough]];
     case v8::TaskPriority::kUserBlocking:
       // blink::scheduler::TaskPriority::kDefaultPriority
       return data->task_runner();
-    case v8::TaskPriority::kUserVisible:
-    case v8::TaskPriority::kBestEffort:
-      // blink::scheduler::TaskPriority::kLowPriority
-      return data->low_priority_task_runner();
     default:
-      NOTREACHED_IN_MIGRATION() << "Unsupported TaskPriority.";
-      return data->task_runner();
+      NOTREACHED() << "Unsupported TaskPriority.";
   }
 }
 
@@ -326,7 +329,17 @@ v8::TracingController* V8Platform::GetTracingController() {
 }
 
 v8::Platform::StackTracePrinter V8Platform::GetStackTracePrinter() {
+#if BUILDFLAG(IS_WIN)
+  // Sandboxed processes in release builds cannot symbolize stacks.
+  if (!base::debug::InProcessStackDumpingEnabled()) {
+    return nullptr;
+  }
+#endif
   return PrintStackTrace;
+}
+
+void V8Platform::DumpWithoutCrashing() {
+  base::debug::DumpWithoutCrashing();
 }
 
 }  // namespace gin

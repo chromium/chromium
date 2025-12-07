@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_paths.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/task/task_traits.h"
@@ -19,11 +19,11 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/early_prefs/early_prefs_reader.h"
 #include "chromeos/ash/components/osauth/impl/early_login_auth_policy_connector.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/user_login_permission_tracker.h"
 #include "components/account_id/account_id.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -34,7 +34,7 @@ ChromeLoginPerformer::ChromeLoginPerformer(Delegate* delegate,
                                            AuthEventsRecorder* metrics_recorder)
     : LoginPerformer(delegate, metrics_recorder) {}
 
-ChromeLoginPerformer::~ChromeLoginPerformer() {}
+ChromeLoginPerformer::~ChromeLoginPerformer() = default;
 
 ////////////////////////////////////////////////////////////////////////////////
 // ChromeLoginPerformer, public:
@@ -51,7 +51,7 @@ bool ChromeLoginPerformer::RunTrustedCheck(base::OnceClosure callback) {
     if (delegate_) {
       delegate_->PolicyLoadFailed();
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
     return true;  // Some callback was called.
   } else if (status == CrosSettingsProvider::TEMPORARILY_UNTRUSTED) {
@@ -78,7 +78,7 @@ void ChromeLoginPerformer::DidRunTrustedCheck(base::OnceClosure* callback) {
     if (delegate_) {
       delegate_->PolicyLoadFailed();
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   } else if (status == CrosSettingsProvider::TEMPORARILY_UNTRUSTED) {
     // Value of AllowNewUser setting is still not verified.
@@ -94,8 +94,8 @@ bool ChromeLoginPerformer::IsUserAllowlisted(
     const AccountId& account_id,
     bool* wildcard_match,
     const std::optional<user_manager::UserType>& user_type) {
-  return CrosSettings::Get()->IsUserAllowlisted(account_id.GetUserEmail(),
-                                                wildcard_match, user_type);
+  return UserLoginPermissionTracker::Get()->IsUserAllowlisted(
+      account_id.GetUserEmail(), wildcard_match, user_type);
 }
 
 void ChromeLoginPerformer::RunOnlineAllowlistCheck(
@@ -112,10 +112,7 @@ void ChromeLoginPerformer::RunOnlineAllowlistCheck(
           account_id.GetUserEmail())) {
     wildcard_login_checker_ = std::make_unique<policy::WildcardLoginChecker>();
     if (refresh_token.empty()) {
-      NOTREACHED_IN_MIGRATION() << "Refresh token must be present.";
-      OnlineWildcardLoginCheckCompleted(
-          std::move(success_callback), std::move(failure_callback),
-          policy::WildcardLoginChecker::RESULT_FAILED);
+      NOTREACHED() << "Refresh token must be present.";
     } else {
       wildcard_login_checker_->StartWithRefreshToken(
           refresh_token,
@@ -132,13 +129,9 @@ void ChromeLoginPerformer::RunOnlineAllowlistCheck(
 void ChromeLoginPerformer::LoadAndApplyEarlyPrefs(
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback) {
-  if (!base::FeatureList::IsEnabled(ash::features::kEnableEarlyPrefs)) {
-    std::move(callback).Run(std::move(context), std::nullopt);
-    return;
-  }
   base::FilePath early_prefs_dir;
-  bool success = base::PathService::Get(chrome::DIR_CHROMEOS_HOMEDIR_MOUNT,
-                                        &early_prefs_dir);
+  bool success =
+      base::PathService::Get(ash::DIR_HOMEDIR_MOUNT, &early_prefs_dir);
   CHECK(success);
   early_prefs_dir = early_prefs_dir.Append(context->GetUserIDHash());
 

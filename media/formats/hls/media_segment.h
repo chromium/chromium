@@ -8,7 +8,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
-#include "crypto/symmetric_key.h"
 #include "media/base/media_export.h"
 #include "media/formats/hls/tags.h"
 #include "media/formats/hls/types.h"
@@ -18,9 +17,13 @@ namespace media::hls {
 
 class MEDIA_EXPORT MediaSegment : public base::RefCounted<MediaSegment> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   class MEDIA_EXPORT InitializationSegment
       : public base::RefCounted<InitializationSegment> {
    public:
+    REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
     InitializationSegment(GURL uri, std::optional<types::ByteRange>);
     InitializationSegment(const InitializationSegment& copy) = delete;
     InitializationSegment(InitializationSegment&& copy) = delete;
@@ -46,6 +49,8 @@ class MEDIA_EXPORT MediaSegment : public base::RefCounted<MediaSegment> {
 
   class MEDIA_EXPORT EncryptionData : public base::RefCounted<EncryptionData> {
    public:
+    REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
     using IVType = types::parsing::HexRepr<128>;
     using IVContainer = std::optional<IVType::Container>;
 
@@ -60,10 +65,10 @@ class MEDIA_EXPORT MediaSegment : public base::RefCounted<MediaSegment> {
 
     const GURL& GetUri() const { return uri_; }
     XKeyTagMethod GetMethod() const { return method_; }
-    crypto::SymmetricKey* GetKey() const { return key_.get(); }
+    std::vector<uint8_t> GetKey() const { return key_; }
     XKeyTagKeyFormat GetKeyFormat() const { return format_; }
 
-    bool NeedsKeyFetch() const { return !key_; }
+    bool NeedsKeyFetch() const { return key_.empty(); }
 
     // Gets the InitializationVector, if it exists. If there is no IV, but the
     // `identity_` flag is set, then use the media sequence number as the IV.
@@ -86,7 +91,7 @@ class MEDIA_EXPORT MediaSegment : public base::RefCounted<MediaSegment> {
     const XKeyTagKeyFormat format_;
 
     // Used for clear key AES128 and AES256 full segment encryption.
-    std::unique_ptr<crypto::SymmetricKey> key_;
+    std::vector<uint8_t> key_;
   };
 
   MediaSegment(base::TimeDelta duration,
@@ -161,6 +166,14 @@ class MEDIA_EXPORT MediaSegment : public base::RefCounted<MediaSegment> {
   // Returns the approximate bitrate of this segment (+-10%), expressed in
   // bits-per-second.
   std::optional<types::DecimalInteger> GetBitRate() const { return bitrate_; }
+
+  // Using the cryptographic properties of this segment, convert the source data
+  // associated to plaintext. This operation might be a no-op, in the case where
+  // this segment is unencrypted. In the case where decryption must be done,
+  // `mem` is used as a backing store for `dest`, as this method owns no memory.
+  bool GetPlaintextStreamSource(base::span<const uint8_t> src,
+                                base::span<const uint8_t>* dest,
+                                std::vector<uint8_t>* mem) const;
 
  private:
   friend class base::RefCounted<MediaSegment>;

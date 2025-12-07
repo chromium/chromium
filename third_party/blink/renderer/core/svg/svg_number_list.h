@@ -69,7 +69,7 @@ class SVGNumberList final
 
  private:
   template <typename CharType>
-  SVGParsingError Parse(const CharType*& ptr, const CharType* end);
+  SVGParsingError Parse(base::span<const CharType>);
 };
 
 template <>

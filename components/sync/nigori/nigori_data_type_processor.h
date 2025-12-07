@@ -10,11 +10,11 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/sequence_checker.h"
 #include "components/sync/engine/data_type_processor.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/nigori/nigori_local_change_processor.h"
-#include "components/sync/protocol/data_type_state.pb.h"
 
 namespace syncer {
 
@@ -22,8 +22,8 @@ class NigoriSyncBridge;
 class ProcessorEntity;
 
 class NigoriDataTypeProcessor : public DataTypeProcessor,
-                                 public DataTypeControllerDelegate,
-                                 public NigoriLocalChangeProcessor {
+                                public DataTypeControllerDelegate,
+                                public NigoriLocalChangeProcessor {
  public:
   NigoriDataTypeProcessor();
 
@@ -46,14 +46,14 @@ class NigoriDataTypeProcessor : public DataTypeProcessor,
       UpdateResponseDataList updates,
       std::optional<sync_pb::GarbageCollectionDirective> gc_directive) override;
   void StorePendingInvalidations(
-      std::vector<sync_pb::DataTypeState::Invalidation> invalidations_to_store)
+      std::vector<sync_pb::DataTypeState_Invalidation> invalidations_to_store)
       override;
 
   // DataTypeControllerDelegate implementation.
   void OnSyncStarting(const DataTypeActivationRequest& request,
                       StartCallback callback) override;
   void OnSyncStopping(SyncStopMetadataFate metadata_fate) override;
-  void HasUnsyncedData(base::OnceCallback<void(bool)> callback) override;
+  void GetUnsyncedDataCount(base::OnceCallback<void(size_t)> callback) override;
   void GetAllNodesForDebugging(AllNodesCallback callback) override;
   void GetTypeEntitiesCountForDebugging(
       base::OnceCallback<void(const TypeEntitiesCount&)> callback)
@@ -87,7 +87,7 @@ class NigoriDataTypeProcessor : public DataTypeProcessor,
 
   // Clears all metadata and directs the bridge to clear the persisted metadata
   // as well. In addition, it resets the state of the processor and clears
-  // tracking |entity_|.
+  // tracking `entity_`.
   void ClearMetadataAndReset();
 
   // The bridge owns this processor instance so the pointer should never become

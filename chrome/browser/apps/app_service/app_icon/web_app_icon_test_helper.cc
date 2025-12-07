@@ -13,6 +13,7 @@
 #include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/extensions/chrome_app_icon.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
+#include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -21,10 +22,10 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_skia_rep.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "ui/base/resource/resource_scale_factor.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace apps {
 
@@ -52,7 +53,7 @@ void WebAppIconTestHelper::WriteIcons(const std::string& app_id,
   }
 
   base::test::TestFuture<bool> future;
-  icon_manager().WriteData(app_id, std::move(icon_bitmaps), {}, {},
+  icon_manager().WriteData(app_id, std::move(icon_bitmaps), {}, {}, {},
                            future.GetCallback());
   bool success = future.Get();
   EXPECT_TRUE(success);
@@ -64,9 +65,10 @@ gfx::ImageSkia WebAppIconTestHelper::GenerateWebAppIcon(
     const std::vector<int>& sizes_px,
     apps::ScaleToSize scale_to_size_in_px,
     bool skip_icon_effects) {
-  base::test::TestFuture<std::map<web_app::SquareSizePx, SkBitmap>> future;
-  icon_manager().ReadIcons(app_id, purpose, sizes_px, future.GetCallback());
-  auto icon_bitmaps = future.Take();
+  base::test::TestFuture<web_app::IconMetadataFromDisk> future;
+  icon_manager().ReadTrustedIconsWithFallbackToManifestIcons(
+      app_id, sizes_px, purpose, future.GetCallback());
+  web_app::SizeToBitmap icon_bitmaps = std::move(future.Take().icons_map);
 
   gfx::ImageSkia output_image_skia;
 
@@ -117,11 +119,9 @@ std::vector<uint8_t> WebAppIconTestHelper::GenerateWebAppCompressedIcon(
   CHECK_EQ(image_skia_rep.scale(), scale);
 
   const SkBitmap& bitmap = image_skia_rep.GetBitmap();
-  const bool discard_transparency = false;
-  std::vector<uint8_t> result;
-  CHECK(
-      gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, discard_transparency, &result));
-  return result;
+  return gfx::PNGCodec::EncodeBGRASkBitmap(bitmap,
+                                           /*discard_transparency=*/false)
+      .value();
 }
 
 std::vector<uint8_t> WebAppIconTestHelper::GenerateWebAppCompressedIcon(
@@ -149,11 +149,9 @@ std::vector<uint8_t> WebAppIconTestHelper::GenerateWebAppCompressedIcon(
   CHECK_EQ(image_skia_rep.scale(), scale);
 
   const SkBitmap& bitmap = image_skia_rep.GetBitmap();
-  const bool discard_transparency = false;
-  std::vector<uint8_t> result;
-  CHECK(
-      gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, discard_transparency, &result));
-  return result;
+  return gfx::PNGCodec::EncodeBGRASkBitmap(bitmap,
+                                           /*discard_transparency=*/false)
+      .value();
 }
 
 void WebAppIconTestHelper::RegisterApp(

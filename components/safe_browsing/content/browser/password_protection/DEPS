@@ -6,6 +6,7 @@ include_rules = [
   "+components/sessions",
   "+components/signin/public/identity_manager",
   "+components/url_formatter",
+  "+components/viz/common",
   "+components/zoom",
   "+content/public/test",
   "+net",

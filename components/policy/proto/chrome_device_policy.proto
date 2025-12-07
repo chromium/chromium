@@ -479,7 +479,6 @@ message KioskAppInfoProto {
 }
 
 // Describes which Android application is to be launched.
-// Deprecated. Unsupported starting with M126.
 message AndroidKioskAppInfoProto {
   // Package name (must be present).
   // In the event this is the only field that is specified, runtime may use
@@ -528,6 +527,34 @@ message WebKioskAppInfoProto {
   optional string icon_url = 3;
 }
 
+// Parameters for Isolated Web App kiosk device local accounts.
+message IsolatedWebAppKioskInfoProto {
+  // Signed Web Bundle ID (required).
+  // A base32 [a-z2-7] string of 56 or 58 characters.
+  // The public key of the Signed Web Bundle is used to create the Web Bundle ID
+  // that identifies the IWA.
+  optional string web_bundle_id = 1;
+
+  // Update URL of the isolated app (required).
+  // Specifies the app version and where to download the web bundle from.
+  optional string update_manifest_url = 2;
+
+  // The IWA release/update channel name (optional).
+  // If unset, the "default" channel is used.
+  optional string update_channel = 3;
+
+  // A specific version number to install (optional).
+  // ChromeOS will attempt to install this version if available on the current
+  // update channel. Pinning prevents further app updates.
+  // If unset, the IWA updates to the latest version on the current channel.
+  optional string pinned_version = 4;
+
+  // Enables downgrading to older versions of the IWA (optional).
+  // Ignored if `pinned_version` is not specified.
+  // If unset, defaults to false, i.e. downgrading is disabled for this IWA.
+  optional bool allow_downgrades = 5;
+}
+
 // Describes a single device-local account.
 message DeviceLocalAccountInfoProto {
   // Deprecated: Account identifier for a public session device-local account.
@@ -554,10 +581,18 @@ message DeviceLocalAccountInfoProto {
     // An account that serves as a container for a single full-screen
     // Android app. Deprecated.
     ACCOUNT_TYPE_KIOSK_ANDROID_APP = 2 [deprecated = true];
-    // SAML public session account
+    // SAML public session account.
     ACCOUNT_TYPE_SAML_PUBLIC_SESSION = 3;
-    // Web App.
+    // An account that serves as a container for a single full-screen Web App.
     ACCOUNT_TYPE_WEB_KIOSK_APP = 4;
+    // An account that serves as a container for a single full-screen
+    // Isolated Web App (IWA).
+    ACCOUNT_TYPE_KIOSK_IWA = 5;
+    // An account that serves as a container for a single full-screen
+    // Android app running inside ARCVM. This is different from the deprecated
+    // ACCOUNT_TYPE_KIOSK_ANDROID_APP as this will be used only for Project
+    // Starline devices.
+    ACCOUNT_TYPE_KIOSK_ARCVM = 6;
   }
   // Should keep ChromeServletUtil.toDimensionAccountType logic in sync with
   // AccountType enum.
@@ -604,6 +639,14 @@ message DeviceLocalAccountInfoProto {
   // Relevant if `type` is ACCOUNT_TYPE_KIOSK_APP,
   // ACCOUNT_TYPE_KIOSK_ANDROID_APP or ACCOUNT_TYPE_WEB_KIOSK_APP.
   optional EphemeralMode ephemeral_mode = 7;
+
+  // Kiosk App parameters, relevant if |type| is ACCOUNT_TYPE_KIOSK_IWA.
+  optional IsolatedWebAppKioskInfoProto isolated_kiosk_app = 8;
+
+  // Kiosk App parameters, relevant if |type| is ACCOUNT_TYPE_KIOSK_ARCVM.
+  // This is different from the deprecated android_kiosk_app field as this will
+  // be used only for Project Starline devices.
+  optional AndroidKioskAppInfoProto arcvm_kiosk_app = 9;
 }
 
 message DeviceLocalAccountsProto {
@@ -791,6 +834,8 @@ message AccessibilitySettingsProto {
   //    PolicyOptions: login_screen_sticky_keys_enabled_options
   // 15) Accessibility shortcuts: login_screen_shortcuts_enabled
   //    PolicyOptions: login_screen_shortcuts_enabled_options
+  // 16) Face control: login_screen_face_gaze_enabled
+  //    PolicyOptions: login_screen_face_gaze_enabled_options
   //
   // For all the aforementioned accessibility policies:
   //  - If this policy is set to true, the accessibility feature will be enabled
@@ -855,6 +900,9 @@ message AccessibilitySettingsProto {
 
   optional bool login_screen_shortcuts_enabled = 34;
   optional PolicyOptions login_screen_shortcuts_enabled_options = 35;
+
+  optional bool login_screen_face_gaze_enabled = 36;
+  optional PolicyOptions login_screen_face_gaze_enabled_options = 37;
 }
 
 message OBSOLETE_SupervisedUsersSettingsProto {
@@ -1798,12 +1846,6 @@ message RevenDeviceHWDataUsageEnabledProto {
   optional bool hardware_data_usage_enabled = 1 [default = false];
 }
 
-// Controls whether Login WebUI will be explicitly loaded on start.
-// Overrides EnableLazyLoginWebUILoading feature.
-message DeviceLoginScreenWebUILazyLoadingProto {
-  optional bool enabled = 1 [default = false];
-}
-
 // Setting that controls different configurations for the Encrypted Reporting
 // Pipeline.
 message EncryptedReportingPipelineConfigurationProto {
@@ -1848,7 +1890,7 @@ message OBSOLETE_ExtendedFkeysModifierProto {
 }
 
 message ChromeDeviceSettingsProto {
-  reserved 61, 71, 90;
+  reserved 61, 71, 90, 131;
   optional DevicePolicyRefreshRateProto device_policy_refresh_rate = 1;
   optional UserWhitelistProto user_whitelist = 2;
   optional GuestModeEnabledProto guest_mode_enabled = 3;
@@ -2019,8 +2061,6 @@ message ChromeDeviceSettingsProto {
   optional DeviceI18nShortcutsEnabledProto device_i18n_shortcuts_enabled = 128;
   optional BooleanPolicyProto chromad_to_cloud_migration_enabled = 129;
   optional RevenDeviceHWDataUsageEnabledProto hardware_data_usage_enabled = 130;
-  optional DeviceLoginScreenWebUILazyLoadingProto login_web_ui_lazy_loading =
-      131;
   optional DeviceKeylockerForStorageEncryptionEnabledProto
       keylocker_for_storage_encryption_enabled = 132;
   optional BooleanPolicyProto device_run_automatic_cleanup_on_login = 133;
@@ -2078,4 +2118,16 @@ message ChromeDeviceSettingsProto {
       1268;
   optional BooleanPolicyProto DevicePostQuantumKeyAgreementEnabled = 1276;
   optional StringPolicyProto DeviceRestrictionSchedule = 1290;
+  optional BooleanPolicyProto DeviceNativeClientForceAllowed = 1314
+      [deprecated = true];
+  optional IntegerPolicyProto DevicePowerBatteryChargingOptimization = 1319;
+  optional BooleanPolicyProto DeviceFlexArcPreloadEnabled = 1320;
+  optional BooleanPolicyProto DeviceUserInitiatedFirmwareUpdatesEnabled = 1356;
+  optional BooleanPolicyProto DeviceBluetoothJustWorksPairingEnabled = 1373;
+  optional BooleanPolicyProto
+      DeviceUserInitiatedFlexSystemFirmwareUpdatesEnabled = 1375;
+  optional StringListPolicyProto DeviceLoginScreenSecurityKeyPermitAttestation =
+      1385;
+  optional StringPolicyProto DeviceLoginScreenPreferSlowKexAlgorithms = 1414;
+  optional StringPolicyProto DeviceLoginScreenPreferSlowCiphers = 1415;
 }

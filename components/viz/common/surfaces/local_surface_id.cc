@@ -9,6 +9,8 @@
 #include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
 
 namespace viz {
 

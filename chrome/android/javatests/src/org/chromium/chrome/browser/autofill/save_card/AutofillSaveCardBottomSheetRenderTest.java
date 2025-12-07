@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.autofill.save_card;
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.view.ViewGroup;
 
 import androidx.test.filters.LargeTest;
@@ -34,7 +33,8 @@ import org.chromium.components.autofill.payments.LegalMessageLine.Link;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -58,7 +58,7 @@ public class AutofillSaveCardBottomSheetRenderTest {
     @Rule
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(2)
+                    .setRevision(3)
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
 
@@ -78,23 +78,11 @@ public class AutofillSaveCardBottomSheetRenderTest {
                     mActivity = sActivityTestRule.getActivity();
                     ViewGroup activityContentView = mActivity.findViewById(android.R.id.content);
                     activityContentView.removeAllViews();
-                    ScrimCoordinator scrimCoordinator =
-                            new ScrimCoordinator(
-                                    mActivity,
-                                    new ScrimCoordinator.SystemUiScrimDelegate() {
-                                        @Override
-                                        public void setStatusBarScrimFraction(
-                                                float scrimFraction) {}
-
-                                        @Override
-                                        public void setNavigationBarScrimFraction(
-                                                float scrimFraction) {}
-                                    },
-                                    activityContentView,
-                                    Color.WHITE);
+                    ScrimManager scrimManager =
+                            new ScrimManager(mActivity, activityContentView, ScrimClient.NONE);
                     mBottomSheetController =
                             BottomSheetControllerFactory.createFullWidthBottomSheetController(
-                                    () -> scrimCoordinator,
+                                    () -> scrimManager,
                                     (unused) -> {},
                                     mActivity.getWindow(),
                                     KeyboardVisibilityDelegate.getInstance(),
@@ -120,6 +108,7 @@ public class AutofillSaveCardBottomSheetRenderTest {
                 new AutofillSaveCardUiInfo.Builder()
                         .withIsForUpload(true)
                         .withLogoIcon(R.drawable.google_pay)
+                        .withLogoIconDescription("Google Pay logo")
                         .withCardDetail(
                                 new CardDetail(R.drawable.visa_card, "Card label", "Card sublabel"))
                         .withLegalMessageLines(
@@ -137,6 +126,8 @@ public class AutofillSaveCardBottomSheetRenderTest {
                         .withCancelText("Cancel text")
                         .withDescriptionText("Description text.")
                         .withIsGooglePayBrandingEnabled(true)
+                        .withCardDescription("")
+                        .withLoadingDescription("")
                         .build());
         runOnUiThreadBlocking(
                 () -> {
@@ -158,6 +149,7 @@ public class AutofillSaveCardBottomSheetRenderTest {
                 new AutofillSaveCardUiInfo.Builder()
                         .withIsForUpload(false)
                         .withLogoIcon(R.drawable.arrow_up) // The logo should not be shown.
+                        .withLogoIconDescription("")
                         .withCardDetail(
                                 new CardDetail(R.drawable.visa_card, "Card label", "Card sublabel"))
                         .withLegalMessageLines(Collections.emptyList()) // No legal message
@@ -167,6 +159,8 @@ public class AutofillSaveCardBottomSheetRenderTest {
                         .withCancelText("Cancel text")
                         .withIsGooglePayBrandingEnabled(false)
                         .withDescriptionText("") // Description text is empty on local save.
+                        .withCardDescription("")
+                        .withLoadingDescription("")
                         .build());
         runOnUiThreadBlocking(
                 () -> {
@@ -193,6 +187,9 @@ public class AutofillSaveCardBottomSheetRenderTest {
                                 AutofillSaveCardBottomSheetProperties.LOGO_ICON,
                                 uiInfo.isForUpload() ? uiInfo.getLogoIcon() : 0)
                         .with(
+                                AutofillSaveCardBottomSheetProperties.LOGO_ICON_DESCRIPTION,
+                                uiInfo.getLogoIconDescription())
+                        .with(
                                 AutofillSaveCardBottomSheetProperties.CARD_DESCRIPTION,
                                 uiInfo.getCardDescription())
                         .with(
@@ -217,6 +214,7 @@ public class AutofillSaveCardBottomSheetRenderTest {
                         .with(
                                 AutofillSaveCardBottomSheetProperties.LOADING_DESCRIPTION,
                                 uiInfo.getLoadingDescription())
+                        .with(AutofillSaveCardBottomSheetProperties.SHOW_LOADING_STATE, false)
                         .build();
         PropertyModelChangeProcessor.create(
                 model, view, AutofillSaveCardBottomSheetViewBinder::bind);

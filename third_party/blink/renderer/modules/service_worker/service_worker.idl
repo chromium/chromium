@@ -31,6 +31,7 @@
 // https://w3c.github.io/ServiceWorker/#serviceworker-interface
 
 enum ServiceWorkerState {
+    "parsed",
     "installing",
     "installed",
     "activating",
@@ -41,10 +42,10 @@ enum ServiceWorkerState {
 [
     ActiveScriptWrappable,
     SecureContext,
-    // TODO(https://crbug.com/999023): Expose this to Worker (not only to
-    // ServiceWorker) after Service Worker APIs are supported on dedicated
+    // TODO(https://crbug.com/422940475): Expose this to Worker
+    // after Service Worker APIs are supported on dedicated
     // workers and shared workers.
-    Exposed=(Window,ServiceWorker)
+    Exposed(Window StableBlinkFeatures,ServiceWorker StableBlinkFeatures,DedicatedWorker ServiceWorkerInDedicatedWorker)
 ] interface ServiceWorker : EventTarget {
 
     [CallWith=ScriptState, RaisesException] void postMessage(any message, sequence<object> transfer);

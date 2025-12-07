@@ -1,0 +1,7 @@
+monorail: {
+  component: "UI>Browser>Search>ContextualSearch"
+}
+team_email: "contextual-search-dev@chromium.org"
+buganizer_public: {
+  component_id: 1457396
+}

@@ -47,22 +47,29 @@ void fct() {
   // base::span<int> e = d;
   int* e = d.get();
 
+  // Expected rewrite:
+  // base::PostIncrementSpan(e);
   e++;  // Buffer usage, leads e to be rewritten.
 
   // Expected rewrite:
   // base::span<int> f = get<int>();
   int* f = get<int>();
 
+  // Expected rewrite:
+  // base::PreIncrementSpan(f);
   ++f;  // Leads to f being rewritten.
 
   // Exptected rewrite:
   // base::span<int> g = (condition) ? ctn1 : ctn2;
   int* g = (condition) ? ctn1.data() : ctn2.data();
 
-  g += 1;  // buffer udage: leads g to be rewritten.
+  // Buffer usage: leads `g` to be rewritten.
+  // Expected rewrite:
+  // g = g.subspan(1u);
+  g += 1;
 
   // Expected rewrite:
-  // base::span<char> h = reinterpret_cast<char*>(g);
+  // base::span<char> h = base::as_writable_byte_span(g);
   char* h = reinterpret_cast<char*>(g);
   h[index] = 'x';
 }
@@ -105,26 +112,37 @@ void raw_ptr_variables() {
 
   // Expected rewrite:
   // base::span<char> buf2 = new char[5];
+  // buf2 = buf2.subspan(1);
   char* buf2 = new char[5];
+  // Expected rewrite:
+  // buf2 = buf2.subspan(1u);
   buf2 += 1;
 
   // Expected rewrite:
   // base::raw_span<char> buf3 = buf2;
+  // buf3 = buf3.subspan(1);
   raw_ptr<char> buf3 = buf2;
+  // Expected rewrite:
+  // buf3 = buf3.subspan(1u);
   buf3 += 1;
 
   // Expected rewrite:
   // base::raw_span<char> buf4 = buf3;
+  // base::PostIncrementSpan(buf4);
   base::raw_ptr<char> buf4 = buf3;
   buf4++;
 
   // Expected rewrite:
   // base::raw_span<char> buf5 = buf4;
+  // buf5 = buf5.subspan(1);
   raw_ptr<char> buf5 = buf4;
+  // Expected rewrite:
+  // buf5 = buf5.subspan(1u);
   buf5 = buf5 + 1;
 
   // Expected rewrite:
   // base::raw_span<char> buf6 = buf5;
+  // base::PreIncrementSpan(buf6);
   raw_ptr<char> buf6 = buf5;
   ++buf6;
 
@@ -134,7 +152,8 @@ void raw_ptr_variables() {
 
   int index = 1;
   // Expected rewrite:
-  // raw_ptr<char> buf7 = (buf6 + index).data();
+  // raw_ptr<char> buf7 =
+  // buf6.subspan(base::checked_cast<size_t>(index)).data();
   raw_ptr<char> buf7 = buf6 + index;
   (void)buf7;
 }

@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <script src="../../../resources/testharness.js"></script>
+  <script src="../../../resources/testharnessreport.js"></script>
+</head>
+
+<body>
+  <div class="container">
+    <input id="input-1" aria-describedby="x-description-1">
+    <x-description-1 id="x-description-1">
+      <template shadowrootmode="closed" shadowrootreferencetarget="description-1">
+        <span>FAIL IF INCLUDED</span>
+        <span id="description-1">Description 1</span>
+      </template>
+      </x-listbox1>
+  </div>
+
+  <script>
+    test(function (t) {
+      const axInput = accessibilityController.accessibleElementById("input-1");
+      assert_equals(axInput.description, "Description 1");
+    }, "Input with aria-activedescendant targeting a declarative custom element.");
+  </script>
+
+
+</body>
+
+</html>

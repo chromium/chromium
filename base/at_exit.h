@@ -56,6 +56,11 @@ class BASE_EXPORT AtExitManager {
   // process mode.
   static void DisableAllAtExitManagers();
 
+  // Marks the current AtExitManager as one that can be shadowed by another.
+  // This is useful when a test wants to run code that creates its own
+  // AtExitManager, and as such ShadowingAtExitManager can't be used.
+  static void AllowShadowingForTesting();
+
  protected:
   // This constructor will allow this instance of AtExitManager to be created
   // even if one already exists.  This should only be used for testing!
@@ -74,6 +79,7 @@ class BASE_EXPORT AtExitManager {
 
   // Stack of managers to allow shadowing.
   const raw_ptr<AtExitManager, DanglingUntriaged> next_manager_;
+  bool allow_shadowing_ = false;
 };
 
 #if defined(UNIT_TEST)

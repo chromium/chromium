@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
@@ -26,13 +25,10 @@ class ScriptState;
 class MODULES_EXPORT NavigatorManagedData final
     : public EventTarget,
       public ActiveScriptWrappable<NavigatorManagedData>,
-      public Supplement<Navigator>,
       public mojom::blink::ManagedConfigurationObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
-
   // Web-based getter for navigator.managed.
   static NavigatorManagedData* managed(Navigator&);
 
@@ -63,13 +59,19 @@ class MODULES_EXPORT NavigatorManagedData final
                                   kManagedconfigurationchange)
 
   // Device Attributes API:
-  ScriptPromise<IDLNullable<IDLString>> getDirectoryId(ScriptState*);
-  ScriptPromise<IDLNullable<IDLString>> getHostname(ScriptState*);
-  ScriptPromise<IDLNullable<IDLString>> getSerialNumber(ScriptState*);
-  ScriptPromise<IDLNullable<IDLString>> getAnnotatedAssetId(ScriptState*);
-  ScriptPromise<IDLNullable<IDLString>> getAnnotatedLocation(ScriptState*);
+  ScriptPromise<IDLNullable<IDLString>> getDirectoryId(ScriptState*,
+                                                       ExceptionState&);
+  ScriptPromise<IDLNullable<IDLString>> getHostname(ScriptState*,
+                                                    ExceptionState&);
+  ScriptPromise<IDLNullable<IDLString>> getSerialNumber(ScriptState*,
+                                                        ExceptionState&);
+  ScriptPromise<IDLNullable<IDLString>> getAnnotatedAssetId(ScriptState*,
+                                                            ExceptionState&);
+  ScriptPromise<IDLNullable<IDLString>> getAnnotatedLocation(ScriptState*,
+                                                             ExceptionState&);
 
  private:
+  bool CheckDeviceAttributesAllowed(ExceptionState&);
   // ManagedConfigurationObserver:
   void OnConfigurationChanged() override;
 
@@ -91,6 +93,7 @@ class MODULES_EXPORT NavigatorManagedData final
   void OnServiceConnectionError();
   void StopObserving();
 
+  Member<Navigator> navigator_;
   HeapMojoRemote<mojom::blink::DeviceAPIService> device_api_service_;
   HeapMojoRemote<mojom::blink::ManagedConfigurationService>
       managed_configuration_service_;

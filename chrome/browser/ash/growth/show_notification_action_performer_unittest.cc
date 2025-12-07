@@ -7,7 +7,6 @@
 #include <memory>
 #include <optional>
 
-#include "ash/test/ash_test_base.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -15,6 +14,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/growth/mock_ui_performer_observer.h"
+#include "chrome/test/base/chrome_ash_test_base.h"
+#include "chromeos/ash/components/growth/campaigns_logger.h"
 #include "chromeos/ash/grit/ash_resources.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "content/public/test/browser_task_environment.h"
@@ -45,7 +46,7 @@ constexpr char kNotificationIdTemplate[] = "growth_campaign_%d";
 
 }  // namespace
 
-class ShowNotificationActionPerformerTest : public ash::AshTestBase {
+class ShowNotificationActionPerformerTest : public ChromeAshTestBase {
  public:
   ShowNotificationActionPerformerTest() = default;
   ShowNotificationActionPerformerTest(
@@ -55,7 +56,7 @@ class ShowNotificationActionPerformerTest : public ash::AshTestBase {
   ~ShowNotificationActionPerformerTest() override = default;
 
   void SetUp() override {
-    ash::AshTestBase::SetUp();
+    ChromeAshTestBase::SetUp();
     action_ = std::make_unique<ShowNotificationActionPerformer>();
     scoped_observation_.Observe(action_.get());
     message_center_ = message_center::MessageCenter::Get();
@@ -66,7 +67,7 @@ class ShowNotificationActionPerformerTest : public ash::AshTestBase {
 
   void TearDown() override {
     message_center_ = nullptr;
-    AshTestBase::TearDown();
+    ChromeAshTestBase::TearDown();
     scoped_observation_.Reset();
   }
 
@@ -105,6 +106,7 @@ class ShowNotificationActionPerformerTest : public ash::AshTestBase {
       action_failed_run_loop_.QuitClosure();
 
   std::unique_ptr<ShowNotificationActionPerformer> action_;
+  growth::CampaignsLogger logger_;
   base::ScopedObservation<UiActionPerformer, UiActionPerformer::Observer>
       scoped_observation_{&mock_observer_};
 };
@@ -112,7 +114,8 @@ class ShowNotificationActionPerformerTest : public ash::AshTestBase {
 TEST_F(ShowNotificationActionPerformerTest, TestValidParams) {
   const auto valid_params = base::StringPrintf(kShowNotificationParamTemplate,
                                                kTestTitle, kTestMessage);
-  auto value = base::JSONReader::Read(valid_params);
+  auto value = base::JSONReader::Read(valid_params,
+                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value());
   EXPECT_CALL(mock_observer_, OnReadyToLogImpression(
                                   testing::Eq(kTestCampaignId),
@@ -162,7 +165,8 @@ TEST_F(ShowNotificationActionPerformerTest, TestUnrecognizedImage) {
       }
     }
 )";
-  auto value = base::JSONReader::Read(valid_params);
+  auto value = base::JSONReader::Read(valid_params,
+                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value());
   EXPECT_CALL(
       mock_observer_,
@@ -194,7 +198,8 @@ TEST_F(ShowNotificationActionPerformerTest, TestUnrecognizedImage) {
 
 TEST_F(ShowNotificationActionPerformerTest, TestInvalidParams) {
   auto* const invalid_params = "{}";
-  auto value = base::JSONReader::Read(invalid_params);
+  auto value = base::JSONReader::Read(invalid_params,
+                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value());
   EXPECT_CALL(mock_observer_, OnReadyToLogImpression(
                                   testing::Eq(kTestCampaignId),

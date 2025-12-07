@@ -27,13 +27,11 @@ constexpr int kInsetSize = 1;
 namespace views {
 
 FocusableBorder::FocusableBorder()
-    : insets_(kInsetSize), corner_radius_(FocusRing::kDefaultCornerRadiusDp) {}
+    : insets_(kInsetSize), corner_radius_(FocusRing::kDefaultCornerRadiusDp) {
+  SetColor(ui::kColorFocusableBorderUnfocused);
+}
 
 FocusableBorder::~FocusableBorder() = default;
-
-void FocusableBorder::SetColorId(const std::optional<ui::ColorId>& color_id) {
-  override_color_id_ = color_id;
-}
 
 void FocusableBorder::Paint(const View& view, gfx::Canvas* canvas) {
   cc::PaintFlags flags;
@@ -50,11 +48,10 @@ void FocusableBorder::Paint(const View& view, gfx::Canvas* canvas) {
   gfx::RectF rect(gfx::ScaleToEnclosedRect(view.GetLocalBounds(), dsf));
   rect.Inset(gfx::InsetsF(kStrokeWidth / 2.0f));
 
-  SkPath path;
   flags.setAntiAlias(true);
   float corner_radius_px = corner_radius_ * dsf;
-  path.addRoundRect(gfx::RectFToSkRect(rect), corner_radius_px,
-                    corner_radius_px);
+  const SkPath path = SkPath::RRect(gfx::RectFToSkRect(rect), corner_radius_px,
+                                    corner_radius_px);
 
   canvas->DrawPath(path, flags);
 }
@@ -76,14 +73,10 @@ void FocusableBorder::SetCornerRadius(float radius) {
 }
 
 SkColor FocusableBorder::GetCurrentColor(const View& view) const {
-  ui::ColorId color_id = ui::kColorFocusableBorderUnfocused;
-  if (override_color_id_)
-    color_id = *override_color_id_;
-
-  SkColor color = view.GetColorProvider()->GetColor(color_id);
-  return view.GetEnabled() ? color
+  SkColor resolved_color = color().ResolveToSkColor(view.GetColorProvider());
+  return view.GetEnabled() ? resolved_color
                            : color_utils::BlendTowardMaxContrast(
-                                 color, gfx::kDisabledControlAlpha);
+                                 resolved_color, gfx::kDisabledControlAlpha);
 }
 
 }  // namespace views

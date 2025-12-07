@@ -10,9 +10,9 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/client/focus_client.h"
@@ -21,8 +21,11 @@
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/test/window_occlusion_tracker_test_api.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_processor.h"
 #include "ui/events/event_utils.h"
@@ -135,7 +138,7 @@ TEST_F(DesktopNativeWidgetAuraTest, WidgetNotVisibleOnlyWindowTreeHostShown) {
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // TODO(crbug.com/40607034): investigate fixing and enabling on Chrome OS.
 #define MAYBE_GlobalCursorState DISABLED_GlobalCursorState
 #else
@@ -159,6 +162,14 @@ TEST_F(DesktopNativeWidgetAuraTest, MAYBE_GlobalCursorState) {
       widget_a.GetNativeView()->GetHost()->window());
   aura::client::CursorClient* cursor_client_b = aura::client::GetCursorClient(
       widget_b.GetNativeView()->GetHost()->window());
+
+#if BUILDFLAG(IS_WIN)
+  // The cursor might be considered invisible after initialization on some
+  // machines (e.g. mouse-less) as |CursorClient|s read the cursor visibility
+  // from OS info. So force the cursor to be visible here.
+  cursor_client_a->UpdateSystemCursorVisibilityForTest(true);
+  cursor_client_b->UpdateSystemCursorVisibilityForTest(true);
+#endif
 
   // Verify the cursor can be locked using one client and unlocked using
   // another.
@@ -272,7 +283,7 @@ std::unique_ptr<Widget> CreateAndShowControlWidget(aura::Window* parent) {
 
 }  // namespace
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // TODO(crbug.com/40607034): investigate fixing and enabling on Chrome OS.
 #define MAYBE_ReorderDoesntRecomputeOcclusion \
   DISABLED_ReorderDoesntRecomputeOcclusion
@@ -301,15 +312,15 @@ TEST_F(DesktopNativeWidgetAuraTest, MAYBE_ReorderDoesntRecomputeOcclusion) {
   // Create child views.
   View* host_view1 = new View();
   w1->GetNativeView()->SetProperty(kHostViewKey, host_view1);
-  contents_view->AddChildView(host_view1);
+  contents_view->AddChildViewRaw(host_view1);
 
   View* host_view2 = new View();
   w2->GetNativeView()->SetProperty(kHostViewKey, host_view2);
-  contents_view->AddChildView(host_view2);
+  contents_view->AddChildViewRaw(host_view2);
 
   View* host_view3 = new View();
   w3->GetNativeView()->SetProperty(kHostViewKey, host_view3);
-  contents_view->AddChildView(host_view3);
+  contents_view->AddChildViewRaw(host_view3);
 
   // Reorder child views. Expect occlusion to only be recomputed once.
   aura::test::WindowOcclusionTrackerTestApi window_occlusion_tracker_test_api(
@@ -552,7 +563,7 @@ class DesktopAuraTopLevelWindowTest : public aura::WindowObserver {
     owned_window_->SetName("TestTopLevelWindow");
     if (fullscreen) {
       owned_window_->SetProperty(aura::client::kShowStateKey,
-                                 ui::SHOW_STATE_FULLSCREEN);
+                                 ui::mojom::WindowShowState::kFullscreen);
     } else {
       owned_window_->SetType(aura::client::WINDOW_TYPE_MENU);
     }
@@ -561,10 +572,10 @@ class DesktopAuraTopLevelWindowTest : public aura::WindowObserver {
         owned_window_, widget_.GetNativeView()->GetRootWindow(),
         gfx::Rect(0, 0, 1900, 1600), display::kInvalidDisplayId);
     owned_window_->Show();
-    owned_window_->AddObserver(this);
+    window_observations_.AddObservation(owned_window_);
 
     ASSERT_TRUE(owned_window_->parent() != nullptr);
-    owned_window_->parent()->AddObserver(this);
+    window_observations_.AddObservation(owned_window_->parent());
 
     top_level_widget_ =
         views::Widget::GetWidgetForNativeView(owned_window_->parent());
@@ -575,8 +586,7 @@ class DesktopAuraTopLevelWindowTest : public aura::WindowObserver {
     ASSERT_TRUE(owned_window_ != nullptr);
     // If async mode is off then clean up state here.
     if (!use_async_mode_) {
-      owned_window_->RemoveObserver(this);
-      owned_window_->parent()->RemoveObserver(this);
+      window_observations_.RemoveAllObservations();
       owner_destroyed_ = true;
       owned_window_destroyed_ = true;
       delete owned_window_.ExtractAsDangling();
@@ -593,7 +603,9 @@ class DesktopAuraTopLevelWindowTest : public aura::WindowObserver {
   }
 
   void OnWindowDestroying(aura::Window* window) override {
-    window->RemoveObserver(this);
+    if (window_observations_.IsObservingSource(window)) {
+      window_observations_.RemoveObservation(window);
+    }
     if (window == owned_window_) {
       owned_window_destroyed_ = true;
       owned_window_ = nullptr;
@@ -615,6 +627,8 @@ class DesktopAuraTopLevelWindowTest : public aura::WindowObserver {
   views::Widget widget_;
   raw_ptr<views::Widget> top_level_widget_ = nullptr;
   raw_ptr<aura::Window> owned_window_ = nullptr;
+  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
+      window_observations_{this};
   bool owner_destroyed_ = false;
   bool owned_window_destroyed_ = false;
   aura::test::TestWindowDelegate child_window_delegate_;
@@ -684,8 +698,7 @@ TEST_F(DesktopNativeWidgetAuraTest, TopLevelOwnedPopupRepositionTest) {
 
   gfx::Rect new_pos(10, 10, 400, 400);
   popup_window.owned_window()->SetBoundsInScreen(
-      new_pos,
-      display::Screen::GetScreen()->GetDisplayNearestPoint(gfx::Point()));
+      new_pos, display::Screen::Get()->GetDisplayNearestPoint(gfx::Point()));
 
   EXPECT_EQ(new_pos,
             popup_window.top_level_widget()->GetWindowBoundsInScreen());
@@ -741,23 +754,24 @@ void GenerateMouseEvents(Widget* widget, ui::EventType last_event_type) {
   ui::MouseEvent release_event(ui::EventType::kMouseReleased, end_point,
                                end_point, ui::EventTimeForNow(), 0, 0);
   details = sink->OnEventFromSource(&release_event);
-  if (details.dispatcher_destroyed)
+  if (details.dispatcher_destroyed) {
     return;
+  }
 }
 
 // Creates a widget and invokes GenerateMouseEvents() with |last_event_type|.
 void RunCloseWidgetDuringDispatchTest(WidgetTest* test,
                                       ui::EventType last_event_type) {
   // |widget| is deleted by CloseWidgetView.
-  Widget* widget = new Widget;
-  Widget::InitParams params =
-      test->CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
-                         Widget::InitParams::TYPE_POPUP);
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams params = test->CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
   params.bounds = gfx::Rect(0, 0, 50, 100);
   widget->Init(std::move(params));
   widget->SetContentsView(std::make_unique<CloseWidgetView>(last_event_type));
   widget->Show();
-  GenerateMouseEvents(widget, last_event_type);
+  GenerateMouseEvents(widget.get(), last_event_type);
+  EXPECT_TRUE(widget->IsClosed());
 }
 
 // Verifies deleting the widget from a mouse pressed event doesn't crash.
@@ -770,7 +784,7 @@ TEST_F(DesktopNativeWidgetAuraTest, CloseWidgetDuringMouseReleased) {
   RunCloseWidgetDuringDispatchTest(this, ui::EventType::kMouseReleased);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // TODO(crbug.com/40607034): investigate fixing and enabling on Chrome OS.
 #define MAYBE_WindowMouseModalityTest DISABLED_WindowMouseModalityTest
 #else
@@ -784,7 +798,7 @@ TEST_F(DesktopNativeWidgetAuraTest, MAYBE_WindowMouseModalityTest) {
   Widget top_level_widget;
   Widget::InitParams init_params = CreateParams(
       Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
-  init_params.show_state = ui::SHOW_STATE_NORMAL;
+  init_params.show_state = ui::mojom::WindowShowState::kNormal;
   gfx::Rect initial_bounds(0, 0, 500, 500);
   init_params.bounds = initial_bounds;
   top_level_widget.Init(std::move(init_params));
@@ -794,7 +808,7 @@ TEST_F(DesktopNativeWidgetAuraTest, MAYBE_WindowMouseModalityTest) {
   // Create a view and validate that a mouse moves makes it to the view.
   EventCountView* widget_view = new EventCountView();
   widget_view->SetBounds(0, 0, 10, 10);
-  top_level_widget.GetRootView()->AddChildView(widget_view);
+  top_level_widget.GetRootView()->AddChildViewRaw(widget_view);
 
   gfx::Point cursor_location_main(5, 5);
   ui::MouseEvent move_main(ui::EventType::kMouseMoved, cursor_location_main,
@@ -811,15 +825,16 @@ TEST_F(DesktopNativeWidgetAuraTest, MAYBE_WindowMouseModalityTest) {
   // the main view within the dialog.
 
   // This instance will be destroyed when the dialog is destroyed.
-  auto dialog_delegate = std::make_unique<DialogDelegateView>();
-  dialog_delegate->SetModalType(ui::MODAL_TYPE_WINDOW);
+  auto dialog_delegate =
+      std::make_unique<DialogDelegateView>(DialogDelegateView::CreatePassKey());
+  dialog_delegate->SetModalType(ui::mojom::ModalType::kWindow);
 
   Widget* modal_dialog_widget = views::DialogDelegate::CreateDialogWidget(
       dialog_delegate.release(), nullptr, top_level_widget.GetNativeView());
   modal_dialog_widget->SetBounds(gfx::Rect(100, 100, 200, 200));
   EventCountView* dialog_widget_view = new EventCountView();
   dialog_widget_view->SetBounds(0, 0, 50, 50);
-  modal_dialog_widget->GetRootView()->AddChildView(dialog_widget_view);
+  modal_dialog_widget->GetRootView()->AddChildViewRaw(dialog_widget_view);
   modal_dialog_widget->Show();
   EXPECT_TRUE(modal_dialog_widget->IsVisible());
 
@@ -852,9 +867,8 @@ TEST_F(DesktopNativeWidgetAuraTest, MAYBE_WindowMouseModalityTest) {
 // active.
 TEST_F(DesktopNativeWidgetAuraTest, WindowModalityActivationTest) {
   TestDesktopWidgetDelegate widget_delegate;
-  widget_delegate.InitWidget(
-      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
-                   Widget::InitParams::TYPE_WINDOW));
+  widget_delegate.InitWidget(CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW));
 
   Widget* top_level_widget = widget_delegate.GetWidget();
   top_level_widget->Show();
@@ -867,8 +881,9 @@ TEST_F(DesktopNativeWidgetAuraTest, WindowModalityActivationTest) {
   // says no, when a modal dialog is active.
   widget_delegate.SetCanActivate(false);
 
-  auto dialog_delegate = std::make_unique<DialogDelegateView>();
-  dialog_delegate->SetModalType(ui::MODAL_TYPE_WINDOW);
+  auto dialog_delegate =
+      std::make_unique<DialogDelegateView>(DialogDelegateView::CreatePassKey());
+  dialog_delegate->SetModalType(ui::mojom::ModalType::kWindow);
 
   Widget* modal_dialog_widget = views::DialogDelegate::CreateDialogWidget(
       dialog_delegate.release(), nullptr, top_level_widget->GetNativeView());

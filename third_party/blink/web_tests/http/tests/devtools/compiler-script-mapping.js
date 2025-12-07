@@ -7,6 +7,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
 
 import * as Bindings from 'devtools/models/bindings/bindings.js'
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
 import * as Workspace from 'devtools/models/workspace/workspace.js';
 
 (async function() {
@@ -73,12 +74,12 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
             script, 1, 140, (await Bindings.DebuggerWorkspaceBinding.DebuggerWorkspaceBinding.instance().uiLocationToRawLocations(uiSourceCode2, 5, 2))[0]);
 
         TestRunner.addResult('Location checks passed. Requesting content');
-        uiSourceCode1.requestContent().then(didRequestContent1);
+        uiSourceCode1.requestContentData().then(TextUtils.ContentData.ContentData.asDeferredContent).then(didRequestContent1);
 
         function didRequestContent1({ content, error, isEncoded }) {
           TestRunner.addResult('Content1 arrived.');
           TestRunner.assertEquals(0, content.indexOf('window.addEventListener'));
-          uiSourceCode2.requestContent().then(didRequestContent2);
+          uiSourceCode2.requestContentData().then(TextUtils.ContentData.ContentData.asDeferredContent).then(didRequestContent2);
         }
 
         function didRequestContent2({ content, error, isEncoded }) {
@@ -125,7 +126,7 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
             script, 0, 18, (await Bindings.DebuggerWorkspaceBinding.DebuggerWorkspaceBinding.instance().uiLocationToRawLocations(uiSourceCode, 2, 4))[0]);
 
         TestRunner.addResult('Location checks passed. Requesting content');
-        uiSourceCode.requestContent().then(didRequestContent);
+        uiSourceCode.requestContentData().then(TextUtils.ContentData.ContentData.asDeferredContent).then(didRequestContent);
 
         function didRequestContent({ content, error, isEncoded }) {
           TestRunner.addResult('<source content> === ' + content);

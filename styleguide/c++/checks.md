@@ -1,23 +1,27 @@
-# CHECK(), DCHECK(), NOTREACHED_NORETURN() and NOTREACHED_IN_MIGRATION()
+# CHECK(), DCHECK() and NOTREACHED()
 
-`CHECK()`, `DCHECK()`, `NOTREACHED_NORETURN()` and `NOTREACHED()` are all used
-to ensure that invariants hold.  They document (and verify) programmer
-expectations that either some statement *always* holds true at the point of
-`(D)CHECK`ing or that a piece of code is unreachable. They should not be used to
-validate data that is provided by end-users or website developers. Such data is
-untrusted, and must be validated by standard control flow.
+`CHECK()`, `DCHECK()` and `NOTREACHED()` are all used to ensure that invariants
+hold. They document (and verify) programmer expectations that either some
+statement *always* holds true at the point of `(D)CHECK`ing or that a piece of
+code is unreachable (for `NOTREACHED`). `CHECK` failures and reachable
+`NOTREACHED`s result in an application crash (generating a crash report).
+`DCHECK`s are only evaluated on developer builds, test infrastructure and a
+minuscule in-the-wild population that does not currently represent all
+platforms. None of these should be used to validate data that is provided by
+end-users or website developers. Such data is untrusted, and must be validated
+by standard control flow.
 
 An invariant that does not hold should be seen as Undefined Behavior, and
 continuing past it puts the program into an unexpected state. This applies in
-particular to `DCHECK()` and `NOTREACHED()` since they do not test anything in
-production and thus do not stop the program from continuing with the invariant
-being violated. All invariant failures should be seen as P1 bugs, regardless of
-their crash rate. Continuing past an invariant failure can cause crashes and
-incorrect behaviour for our users, but also frequently presents security
-vulnerabilities as attackers may leverage the unexpected state to take control
-of the program. In the future we may let the compiler assume and optimize around
-`DCHECK()`s holding true in non-DCHECK builds using `__builtin_assume()`, which
-further formalizes undefined behavior.
+particular to `DCHECK()`s as they do not test anything in production and thus do
+not stop the program from continuing with the invariant being violated. All
+invariant failures should be seen as P1 bugs, regardless of their crash rate.
+Continuing past an invariant failure can cause crashes and incorrect behaviour
+for our users, but also frequently presents security vulnerabilities as
+attackers may leverage the unexpected state to take control of the program. In
+the future we may let the compiler assume and optimize around `DCHECK()`s
+holding true in non-DCHECK builds using `__builtin_assume()`, which further
+formalizes undefined behavior.
 
 ## Failures beyond Chromium's control
 
@@ -72,33 +76,26 @@ designed to run against arbitrary code modification.
 
 ## Invariant-verification mechanisms
 
-Prefer `CHECK()` and `NOTREACHED_NORETURN()` as they ensure that if an invariant
-fails, the program does not continue in an unexpected state, and we hear about
-the failure either through a test failure or a crash report. This helps prevent
-user harm such as security bugs when our software does what we did not expect.
-Historically, `CHECK()` was seen as expensive but great effort and care has gone
-into making the crash instructions nearly free on modern CPUs. Log messages are
-discarded from `CHECK()`s in production builds but provide additional
-information in debug and `DCHECK` builds.
+Prefer `CHECK()` and `NOTREACHED()` over `DCHECK()`s as they ensure that if an
+invariant fails, the program does not continue in an unexpected state, and we
+hear about the failure either through a test failure or a crash report. This
+helps prevent user harm such as security bugs when our software does what we did
+not expect. Historically, `CHECK()` was seen as expensive but great effort and
+care has gone into making the crash instructions nearly free on modern CPUs. Log
+messages are discarded from `CHECK()`s in production builds but provide
+additional information in debug and `DCHECK` builds.
 
 `DCHECK()` (and `DCHECK_EQ()`, `DCHECK_LT()`, etc) provide a fallback mechanism
 to check for invariants where the test being performed is too expensive (either
 in terms of generated code size or performance) to verify in production builds.
 The risk of depending on `DCHECK()` is that, since it disappears in production
-builds, it only exists in tests, on developer machines and a very small subset
-of Canary builds. Any side effects intended to happen inside the `DCHECK()`
-disappear from production along with it, and unexpected behaviour can happen
-afterward as a result.
+builds, it's only verified in tests, on developer machines and a very small
+subset of Canary builds. Any side effects intended to happen inside the
+`DCHECK()` disappear from production along with it, and unexpected behaviour can
+happen afterward as a result.
 
-`NOTREACHED_NORETURN()` signals that a piece of code is intended to be
-unreachable, and lets the compiler optimize based on that fact, while
-terminating if it is in fact reached. Like `CHECK()`, this ensures we hear about
-the invariant failing through a test failure or a crash report, and prevents
-user harm. Historically we used the shorter `NOTREACHED()` to indicate code was
-unreachable, however it disappears in production builds and we have observed
-that these are in fact commonly reached. Prefer `NOTREACHED_NORETURN()` in new
-code, while we migrate the preexisting cases to it with care. See
-https://crbug.com/851128.
+`NOTREACHED()` signals that a piece of code is intended to be unreachable while
+also terminating if it is in fact reached, as if a `CHECK()` failure.
 
 ## Examples
 
@@ -126,13 +123,13 @@ DCHECK(|invoke an O(n^2) operation|);
 // This switch handles all cases, but enums can technically hold any integer
 // value (even if all enum members are enumerated), so the compiler must try to
 // handle other cases too. We can avoid dealing with values outside enums by
-// using NOTREACHED_NORETURN() while also making sure we hear about it.
+// using NOTREACHED() while also making sure we hear about it.
 switch (my_enum) {
   case A: return 1;
   case B: return 5;
   case C: return 3;
 }
-NOTREACHED_NORETURN();
+NOTREACHED();
 
 // Bad:
 //
@@ -147,26 +144,33 @@ if (!foo) {
 //
 // Use CHECK(bar); instead.
 if (!bar) {
-  NOTREACHED_IN_MIGRATION();
-  return;
+  NOTREACHED();
 }
 ```
 
-## More cautious CHECK() rollouts and DCHECK() upgrades
+## More cautious CHECK() / NOTREACHED() rollouts and DCHECK() upgrades
 
 If you're not confident that an unexpected situation can't happen in practice,
 an additional `base::NotFatalUntil::M120` argument after the condition may be
 used to gather non-fatal diagnostics before turning fatal in a future milestone.
-Make sure to either prioritize these invariant failures once discovered, and
-punt the milestone where this invocation turns fatal to avoid rolling out a
-stability risk. Macros with a `base::NotFatalUntil` argument will provide
-non-fatal crash reports before the fatal milestone is hit. They preserve and upload logged arguments that are uploaded along the report which is useful
-for debugging failures as well.
+`CHECK()` and `NOTREACHED()` with a `base::NotFatalUntil` argument will provide
+non-fatal crash reports before the fatal milestone is hit. They preserve and
+upload logged arguments which is useful for debugging failures during rollout as
+well.
 
-This extra argument can be used to more cautiously add or upgrade to `CHECK()`s.
-This is appropriate when we're uncertain of whether the invariant currently
-holds true or when there's low pre-stable coverage. Specifically consider using
-these:
+Since these variants are non-fatal and do not terminate make best-effort
+attempts to handle the situation, like an early return and try to reason about
+that being at least "probably safe" in calling contexts. Do not use
+`base::NotFatalUntil` if there's no reasonable way to recover from the invariant
+failure (i.e. if this is wrong we're about to crash or hit a memory bug).
+
+Any invariant failures should be resolved before turning fatal even if they only
+fail for a very low number of users (above the noise floor). Once fatal they
+will be invariants that we collectively trust to hold true (other code may be
+rewritten with these assumptions).
+
+Using non-fatal invariant validation is especially appropriate when there's low
+pre-stable coverage. Specifically consider using these:
 
 * When working on iOS code (low pre-stable coverage).
 * Upgrading `DCHECK()s`.
@@ -184,6 +188,40 @@ problem rather than resolving it. In rare exceptions you could use
 `DUMP_WILL_BE_CHECK()` macros for similar semantics (report on failure) without
 timeline expectations, though in this case you must also handle failure as best
 you can as failures are known to happen.
+
+## Non-fatal crash reporting
+
+For non-invariant situations we'd like to be notified about, such as an OS API
+returning undocumented or unexpected values, we'd like to collect enough
+information to diagnose what's going on. Here non-fatal crash reporting can be
+done with `base::debug::DumpWithoutCrashing()`. Using crash keys is helpful for
+gathering enough information to take action. When doing so, provide enough
+context (such as a link to a bug) to explain why the information is being
+collected and actions to take when it fires.
+
+Note that this should only be used in cases where crash dumping yields something
+actionable and should not be kept dumping indefinitely. Crash dumping causes
+jank and is rate limited which hides (throttles) other crash reporting. As a
+`DumpWithoutCrashing()` starts firing, it should be made to stop firing. Either
+remove it if this was part of a one-off investigation (and we have enough data)
+or update the code to make sure it no longer generates reports (for instance,
+handle a new OS API result). In either case consider merging to release branches
+to avoid generating a large number of crash reports.
+
+As an illustrative example here's a snippet that notifies us of unexpected OS
+API results and the last reported error from WaitableEvent on Windows. When this
+hits we want to update surrounding code to handle the new return code or prevent
+it from happening. If we're generating a concerning number of crash reports we
+should also decide whether to merge a fix to release branches or remove
+`base::debug::DumpWithoutCrashing();` on branch to prevent excessive flooding.
+
+```c++
+NOINLINE void ReportInvalidWaitableEventResult(DWORD result) {
+  SCOPED_CRASH_KEY_NUMBER("WaitableEvent", "result", result);
+  SCOPED_CRASH_KEY_NUMBER("WaitableEvent", "last_error", ::GetLastError());
+  base::debug::DumpWithoutCrashing();  // https://crbug.com/1478972.
+}
+```
 
 ## Alternatives in tests
 

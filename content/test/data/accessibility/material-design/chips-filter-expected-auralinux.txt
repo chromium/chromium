@@ -1,0 +1,63 @@
+[document web] name='Material Web Filter Chips'
+++[section] name='Ready'
+++++[tool bar] horizontal
+++++++[panel]
+++++++++[section]
+++++++++++[toggle button] name='Filter chip'
+++++++[section]
+++++++++[section]
+++++++++++[toggle button] name='Selected' pressed
+++++++[section]
+++++++++[section]
+++++++++++[toggle button] name='With icon' pressed
+=== Start Continuation ===
+[document web] name='Material Web Filter Chips'
+++[section] name='Ready'
+++++[tool bar] horizontal
+++++++[panel]
+++++++++[section]
+++++++++++[toggle button] name='Filter chip' pressed
+++++++[section]
+++++++++[section]
+++++++++++[toggle button] name='Selected' pressed
+++++++[section]
+++++++++[section]
+++++++++++[toggle button] name='With icon' pressed
+++++[section]
+++++++[static] name='Filter Chip 1 Selected'
+=== Start Continuation ===
+[document web] name='Material Web Filter Chips'
+++[section] name='Ready'
+++++[tool bar] horizontal
+++++++[panel]
+++++++++[section]
+++++++++++[toggle button] name='Filter chip' pressed
+++++++[section]
+++++++++[section]
+++++++++++[toggle button] name='Selected'
+++++++[section]
+++++++++[section]
+++++++++++[toggle button] name='With icon' pressed
+++++[section]
+++++++[static] name='Filter Chip 1 Selected'
+++++[section]
+++++++[static] name='Filter Chip 2 Deselected'
+=== Start Continuation ===
+[document web] name='Material Web Filter Chips'
+++[section] name='Ready'
+++++[tool bar] horizontal
+++++++[panel]
+++++++++[section]
+++++++++++[toggle button] name='Filter chip'
+++++++[section]
+++++++++[section]
+++++++++++[toggle button] name='Selected'
+++++++[section]
+++++++++[section]
+++++++++++[toggle button] name='With icon' pressed
+++++[section]
+++++++[static] name='Filter Chip 1 Selected'
+++++[section]
+++++++[static] name='Filter Chip 2 Deselected'
+++++[section]
+++++++[static] name='Filter Chip 1 Deselected'

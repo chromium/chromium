@@ -1,0 +1,15 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module mojo_base.mojom;
+
+// Corresponds to `base::ByteSize` in base/byte_size.h.
+struct ByteSize {
+  uint64 size;
+};
+
+// Corresponds to `base::ByteSizeDelta` in base/byte_size.h.
+struct ByteSizeDelta {
+  int64 delta;
+};

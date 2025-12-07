@@ -1,0 +1,90 @@
+{
+  "cwd": "/example/path",
+  "browsers": {
+    "chrome_v139_android.arm64.remote_0": {
+      "cwd": "/example/path/chrome_v139_android.arm64.remote_0/stories",
+      "probes": {
+        "perfetto": null,
+        "embedder": {
+          "json": [
+            "/example/path/chrome_v139_android.arm64.remote_0/stories/embedder.json"
+          ],
+          "csv": [
+            "/example/path/chrome_v139_android.arm64.remote_0/stories/embedder.csv"
+          ]
+        },
+        "chrome_histograms": {
+          "json": [
+            "/example/path/chrome_v139_android.arm64.remote_0/stories/chrome_histograms.json"
+          ],
+          "csv": [
+            "/example/path/chrome_v139_android.arm64.remote_0/stories/chrome_histograms.csv"
+          ]
+        },
+        "trace_processor": null,
+        "cb.thermal_monitor": {
+          "json": [
+            "/example/path/chrome_v139_android.arm64.remote_0/stories/cb.thermal_monitor.json"
+          ]
+        },
+        "cb.system.details": null,
+        "cb.log": null,
+        "cb.errors": null,
+        "cb.durations": {
+          "json": [
+            "/example/path/chrome_v139_android.arm64.remote_0/stories/cb.durations.json"
+          ]
+        }
+      },
+      "errors": []
+    }
+  },
+  "probes": {
+    "perfetto": null,
+    "embedder": {
+      "json": [
+        "/example/path/embedder.json"
+      ],
+      "csv": [
+        "/example/path/embedder.csv"
+      ],
+      "xlsx": [
+        "/example/path/embedder.xlsx"
+      ]
+    },
+    "chrome_histograms": {
+      "json": [
+        "/example/path/chrome_histograms.json"
+      ],
+      "csv": [
+        "/example/path/chrome_histograms.csv"
+      ],
+      "xlsx": [
+        "/example/path/chrome_histograms.xlsx"
+      ]
+    },
+    "trace_processor": {
+      "csv": [
+        "/example/path/trace_processor/query_name.csv"
+      ],
+      "json": [
+        "/example/path/trace_processor/query_name.json"
+      ]
+    },
+    "cb.thermal_monitor": {
+      "json": [
+        "/example/path/cb.thermal_monitor.json"
+      ]
+    },
+    "cb.system.details": null,
+    "cb.log": null,
+    "cb.errors": null,
+    "cb.durations": {
+      "json": [
+        "/example/path/cb.durations.json"
+      ]
+    }
+  },
+  "success": true,
+  "errors": []
+}

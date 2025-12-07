@@ -11,6 +11,11 @@
 #include "base/threading/platform_thread.h"
 #include "components/viz/service/viz_service_export.h"
 
+namespace base {
+class TimeDelta;
+class TimeTicks;
+}  // namespace base
+
 namespace viz {
 
 // This is a wrapper for the Android `android.os.PerformanceHintManager` APIs
@@ -22,8 +27,12 @@ class VIZ_SERVICE_EXPORT HintSession {
  public:
   enum class BoostType {
     kDefault,
-    kScrollBoost,
     kWakeUpBoost,
+  };
+
+  enum class SessionType {
+    kAnimation = 0,
+    kRendererMain = 1,
   };
 
   virtual ~HintSession() = default;
@@ -37,6 +46,12 @@ class VIZ_SERVICE_EXPORT HintSession {
   virtual void ReportCpuCompletionTime(base::TimeDelta actual_duration,
                                        base::TimeTicks draw_start,
                                        BoostType preferable_boost_type) = 0;
+
+  virtual void SetThreads(
+      const base::flat_set<base::PlatformThreadId>& thread_ids) = 0;
+
+  virtual void NotifyWorkloadReset() = 0;
+  virtual void NotifyWorkloadIncrease() = 0;
 };
 
 class VIZ_SERVICE_EXPORT HintSessionFactory {
@@ -49,17 +64,33 @@ class VIZ_SERVICE_EXPORT HintSessionFactory {
 
   virtual ~HintSessionFactory() = default;
 
-  // `transient_thread_ids` are added to `permanent_thread_ids` to create this
-  // session. Chanting `transient_thread_ids` still requires deleting and
-  // recreating the session.
+  // For animation (SessionType::kAnimation) sessions, `transient_thread_ids`
+  // are added to `permanent_thread_ids` to create this session. Changing
+  // `transient_thread_ids` still requires deleting and recreating the session.
   // `target_duration` is compared to `actual_duration` in
   // `ReportCpuCompletionTime` to determine the performance of a frame.
+  //
+  // For renderer main (SessionType::kRendererMain) sessions, the session
+  // includes only `transient_thread_ids`. These sessions never send any timing
+  // hints, i.e. `ReportCpuCompletionTime` calls are no-op.
   virtual std::unique_ptr<HintSession> CreateSession(
       base::flat_set<base::PlatformThreadId> transient_thread_ids,
-      base::TimeDelta target_duration) = 0;
+      base::TimeDelta target_duration,
+      HintSession::SessionType type) = 0;
 
   // Issue an early hint to wake up some session.
   virtual void WakeUp() = 0;
+
+  virtual void NotifyWorkloadIncrease() = 0;
+
+  // Returns the full list of threads for the given session type.
+  // For animation (SessionType::kAnimation) sessions, this is a union of
+  // `transient_thread_ids` and `permanent_thread_ids_`.
+  // For renderer main (SessionType::kRendererMain) sessions, this is just
+  // `transient_thread_ids`.
+  virtual base::flat_set<base::PlatformThreadId> GetSessionThreadIds(
+      base::flat_set<base::PlatformThreadId> transient_thread_ids,
+      HintSession::SessionType type) = 0;
 };
 
 }  // namespace viz

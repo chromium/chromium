@@ -4,6 +4,7 @@
 
 #include "ui/accessibility/ax_enum_localization_util.h"
 
+#include "base/notreached.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ax_strings.h"
@@ -32,6 +33,9 @@ std::string ToLocalizedString(ax::mojom::DefaultActionVerb action_verb) {
       return l10n_util::GetStringUTF8(IDS_AX_SELECT_ACTION_VERB);
     case ax::mojom::DefaultActionVerb::kUncheck:
       return l10n_util::GetStringUTF8(IDS_AX_UNCHECK_ACTION_VERB);
+    case ax::mojom::DefaultActionVerb::kClickInHitTest:
+    case ax::mojom::DefaultActionVerb::kClickNotInHitTest:
+      NOTREACHED();
   }
 
   return "";

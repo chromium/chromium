@@ -77,7 +77,7 @@ bool IsViewFocused(const Browser* browser, ViewID vid) {
 void ClickOnView(views::View* view) {
   DCHECK(view);
   base::RunLoop loop;
-  MoveMouseToCenterAndPress(view, ui_controls::LEFT,
+  MoveMouseToCenterAndClick(view, ui_controls::LEFT,
                             ui_controls::DOWN | ui_controls::UP,
                             loop.QuitClosure());
   loop.Run();
@@ -94,16 +94,16 @@ void FocusView(const Browser* browser, ViewID vid) {
   view->RequestFocus();
 }
 
-void MoveMouseToCenterAndPress(views::View* view,
+void MoveMouseToCenterAndClick(views::View* view,
                                ui_controls::MouseButton button,
                                int button_state,
                                base::OnceClosure closure,
                                int accelerator_state) {
-  MoveMouseToCenterWithOffsetAndPress(view, /*offset=*/{}, button, button_state,
+  MoveMouseToCenterWithOffsetAndClick(view, /*offset=*/{}, button, button_state,
                                       std::move(closure), accelerator_state);
 }
 
-void MoveMouseToCenterWithOffsetAndPress(views::View* view,
+void MoveMouseToCenterWithOffsetAndClick(views::View* view,
                                          const gfx::Vector2d& offset,
                                          ui_controls::MouseButton button,
                                          int button_state,

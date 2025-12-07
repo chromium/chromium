@@ -6,12 +6,12 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
+#import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_consumer.h"
 #import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
-#import "ios/chrome/browser/settings/model/sync/utils/sync_error_infobar_delegate.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/ui/infobars/banners/infobar_banner_consumer.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/infobar_banner_overlay_mediator+consumer_support.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_mediator+subclassing.h"
+#import "ios/chrome/browser/settings/model/sync/utils/sync_error_infobar_delegate.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 @interface SyncErrorInfobarBannerOverlayMediator ()
@@ -56,6 +56,15 @@
   [self dismissOverlay];
 }
 
+- (void)dismissInfobarBannerForUserInteraction:(BOOL)userInitiated {
+  SyncErrorInfoBarDelegate* delegate = self.syncErrorDelegate;
+  if (delegate && !userInitiated) {
+    // Notify `delegate` that infobar was dismissed by its timeout.
+    delegate->InfoBarDismissedByTimeout();
+  }
+  [super dismissInfobarBannerForUserInteraction:userInitiated];
+}
+
 @end
 
 @implementation SyncErrorInfobarBannerOverlayMediator (ConsumerSupport)
@@ -68,13 +77,13 @@
   [consumer setButtonText:base::SysUTF16ToNSString(delegate->GetButtonLabel(
                               SyncErrorInfoBarDelegate::BUTTON_OK))];
 
-  UIImage* iconImage = DefaultSymbolTemplateWithPointSize(
-      kSyncErrorSymbol, kInfobarSymbolPointSize);
-
-  [consumer setIconImage:iconImage];
-  [consumer setUseIconBackgroundTint:YES];
+  // TODO(crbug.com/408165259): Use a dedicated icon in case when
+  // `delegate->DisplayPasswordErrorIcon()` is true.
+  [consumer setIconImage:DefaultSymbolTemplateWithPointSize(
+                             kSyncErrorSymbol, kInfobarSymbolPointSize)];
   [consumer setIconBackgroundColor:[UIColor colorNamed:kRed500Color]];
   [consumer setIconImageTintColor:[UIColor colorNamed:kPrimaryBackgroundColor]];
+  [consumer setUseIconBackgroundTint:YES];
 
   [consumer setPresentsModal:NO];
   if (delegate->GetTitleText().empty()) {

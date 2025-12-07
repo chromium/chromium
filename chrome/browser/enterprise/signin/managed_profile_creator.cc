@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_delegate_impl.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -35,12 +36,11 @@ ManagedProfileCreator::ManagedProfileCreator(
       profile_manager->GetProfileAttributesStorage();
   profile_observation_.Observe(&storage);
 
-  auto icon_index = storage.ChooseAvatarIconIndexForNewProfile();
   std::u16string name = local_profile_name.empty()
-                            ? storage.ChooseNameForNewProfile(icon_index)
+                            ? storage.ChooseNameForNewProfile()
                             : local_profile_name;
   ProfileManager::CreateMultiProfileAsync(
-      name, icon_index, /*is_hidden=*/id_.empty(),
+      name, profiles::GetPlaceholderAvatarIndex(), /*is_hidden=*/id_.empty(),
       base::BindRepeating(&ManagedProfileCreator::OnNewProfileInitialized,
                           weak_pointer_factory_.GetWeakPtr()),
       base::BindOnce(&ManagedProfileCreator::OnNewProfileCreated,
@@ -89,7 +89,7 @@ void ManagedProfileCreator::OnProfileCreationStarted(Profile* profile) {
     return;
   }
 
-  enterprise::PresetProfileManagmentData::Get(profile)->SetGuid(preset_guid_);
+  enterprise::PresetProfileManagementData::Get(profile)->SetGuid(preset_guid_);
   profile_manager_observer_.Reset();
 }
 

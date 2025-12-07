@@ -6,13 +6,16 @@ package org.chromium.chrome.browser.locale;
 
 import android.app.Activity;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelper;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -25,6 +28,7 @@ import java.util.List;
  * Manager for some locale specific logics. TODO(crbug.com/40177565) Turn this into a per-activity
  * object.
  */
+@NullMarked
 public class LocaleManager implements DefaultSearchEngineDialogHelper.Delegate {
     private static final LocaleManager sInstance = new LocaleManager();
 
@@ -41,8 +45,13 @@ public class LocaleManager implements DefaultSearchEngineDialogHelper.Delegate {
 
     /** Default constructor. */
     private LocaleManager() {
-        mDelegate = new LocaleManagerDelegateImpl();
-        mDelegate.setDefaulSearchEngineDelegate(this);
+        LocaleManagerDelegate delegate = ServiceLoaderUtil.maybeCreate(LocaleManagerDelegate.class);
+        if (delegate == null) {
+            // Fallback if no @ServiceImpl is found.
+            delegate = new LocaleManagerDelegate();
+        }
+        mDelegate = delegate;
+        mDelegate.setDefaultSearchEngineDelegate(this);
     }
 
     /** Starts listening to state changes of the phone. */
@@ -87,6 +96,11 @@ public class LocaleManager implements DefaultSearchEngineDialogHelper.Delegate {
         mDelegate.setSnackbarManager(manager);
     }
 
+    /** Shows a snackbar notifying the user that the default search engine has changed. */
+    public void showSnackbarForDeviceSearchEngineUpdate() {
+        mDelegate.showSnackbarForDeviceSearchEngineUpdate();
+    }
+
     /** Returns whether and which search engine promo should be shown. */
     public @SearchEnginePromoType int getSearchEnginePromoShowType() {
         return mDelegate.getSearchEnginePromoShowType();
@@ -96,7 +110,7 @@ public class LocaleManager implements DefaultSearchEngineDialogHelper.Delegate {
      * @return The referral ID to be passed when searching with Yandex as the DSE.
      */
     @CalledByNative
-    protected String getYandexReferralId() {
+    protected @JniType("std::string") String getYandexReferralId() {
         return mDelegate.getYandexReferralId();
     }
 
@@ -104,7 +118,7 @@ public class LocaleManager implements DefaultSearchEngineDialogHelper.Delegate {
      * @return The referral ID to be passed when searching with Mail.RU as the DSE.
      */
     @CalledByNative
-    protected String getMailRUReferralId() {
+    protected @JniType("std::string") String getMailRUReferralId() {
         return mDelegate.getMailRUReferralId();
     }
 
@@ -144,6 +158,6 @@ public class LocaleManager implements DefaultSearchEngineDialogHelper.Delegate {
     @VisibleForTesting
     public void setDelegateForTest(LocaleManagerDelegate delegate) {
         mDelegate = delegate;
-        mDelegate.setDefaulSearchEngineDelegate(this);
+        mDelegate.setDefaultSearchEngineDelegate(this);
     }
 }

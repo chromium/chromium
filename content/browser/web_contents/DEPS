@@ -8,5 +8,8 @@ specific_include_rules = {
   ],
   "view_structure_builder_android.h": [
     "+third_party/jni_zero",
-  ]
+  ],
+  "web_contents_impl.*\.cc": [
+    "+components/fingerprinting_protection_filter/interventions/common/interventions_features.h",
+  ],
 }

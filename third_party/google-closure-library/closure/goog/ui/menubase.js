@@ -58,6 +58,7 @@ goog.ui.MenuBase.Events = {};
 
 /**
  * Event fired by the Menu when an item is "clicked".
+ * @const {string}
  */
 goog.ui.MenuBase.Events.ITEM_ACTION = 'itemaction';
 

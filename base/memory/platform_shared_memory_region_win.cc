@@ -9,11 +9,14 @@
 #include <stdint.h>
 
 #include "base/bits.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_util.h"
+#include "base/types/expected.h"
 #include "partition_alloc/page_allocator.h"
 
 namespace base::subtle {
@@ -50,8 +53,9 @@ bool IsSectionSafeToMap(HANDLE handle) {
   ULONG status =
       nt_query_section_func(handle, SectionBasicInformation, &basic_information,
                             sizeof(basic_information), nullptr);
-  if (status)
+  if (status) {
     return false;
+  }
   return (basic_information.Attributes & SEC_IMAGE) != SEC_IMAGE;
 }
 
@@ -68,10 +72,10 @@ bool IsSectionSafeToMap(HANDLE handle) {
 // In order to remove the access control permissions, after being created the
 // handle is duplicated with only the file access permissions.
 HANDLE CreateFileMappingWithReducedPermissions(SECURITY_ATTRIBUTES* sa,
-                                               size_t rounded_size,
+                                               size_t size,
                                                LPCWSTR name) {
   HANDLE h = CreateFileMapping(INVALID_HANDLE_VALUE, sa, PAGE_READWRITE, 0,
-                               static_cast<DWORD>(rounded_size), name);
+                               static_cast<DWORD>(size), name);
   if (!h) {
     return nullptr;
   }
@@ -94,27 +98,32 @@ HANDLE CreateFileMappingWithReducedPermissions(SECURITY_ATTRIBUTES* sa,
 }  // namespace
 
 // static
-PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Take(
-    win::ScopedHandle handle,
-    Mode mode,
-    size_t size,
-    const UnguessableToken& guid) {
-  if (!handle.is_valid())
+expected<PlatformSharedMemoryRegion, PlatformSharedMemoryRegion::TakeError>
+PlatformSharedMemoryRegion::TakeOrFail(win::ScopedHandle handle,
+                                       Mode mode,
+                                       size_t size,
+                                       const UnguessableToken& guid) {
+  if (!handle.is_valid()) {
     return {};
+  }
 
-  if (size == 0)
+  if (size == 0) {
     return {};
+  }
 
-  if (size > static_cast<size_t>(std::numeric_limits<int>::max()))
+  if (size > static_cast<size_t>(std::numeric_limits<int>::max())) {
     return {};
+  }
 
-  if (!IsSectionSafeToMap(handle.get()))
+  if (!IsSectionSafeToMap(handle.get())) {
     return {};
+  }
 
-  CHECK(
-      CheckPlatformHandlePermissionsCorrespondToMode(handle.get(), mode, size));
-
-  return PlatformSharedMemoryRegion(std::move(handle), mode, size, guid);
+  return CheckPlatformHandlePermissionsCorrespondToMode(handle.get(), mode,
+                                                        size)
+      .transform([&] {
+        return PlatformSharedMemoryRegion(std::move(handle), mode, size, guid);
+      });
 }
 
 HANDLE PlatformSharedMemoryRegion::GetPlatformHandle() const {
@@ -126,8 +135,9 @@ bool PlatformSharedMemoryRegion::IsValid() const {
 }
 
 PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Duplicate() const {
-  if (!IsValid())
+  if (!IsValid()) {
     return {};
+  }
 
   CHECK_NE(mode_, Mode::kWritable)
       << "Duplicating a writable shared memory region is prohibited";
@@ -137,16 +147,18 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Duplicate() const {
   BOOL success =
       ::DuplicateHandle(process, handle_.get(), process, &duped_handle, 0,
                         FALSE, DUPLICATE_SAME_ACCESS);
-  if (!success)
+  if (!success) {
     return {};
+  }
 
   return PlatformSharedMemoryRegion(win::ScopedHandle(duped_handle), mode_,
                                     size_, guid_);
 }
 
 bool PlatformSharedMemoryRegion::ConvertToReadOnly() {
-  if (!IsValid())
+  if (!IsValid()) {
     return false;
+  }
 
   CHECK_EQ(mode_, Mode::kWritable)
       << "Only writable shared memory region can be converted to read-only";
@@ -158,8 +170,9 @@ bool PlatformSharedMemoryRegion::ConvertToReadOnly() {
   BOOL success =
       ::DuplicateHandle(process, handle_copy.get(), process, &duped_handle,
                         FILE_MAP_READ | SECTION_QUERY, FALSE, 0);
-  if (!success)
+  if (!success) {
     return false;
+  }
 
   handle_.Set(duped_handle);
   mode_ = Mode::kReadOnly;
@@ -167,8 +180,9 @@ bool PlatformSharedMemoryRegion::ConvertToReadOnly() {
 }
 
 bool PlatformSharedMemoryRegion::ConvertToUnsafe() {
-  if (!IsValid())
+  if (!IsValid()) {
     return false;
+  }
 
   CHECK_EQ(mode_, Mode::kWritable)
       << "Only writable shared memory region can be converted to unsafe";
@@ -180,15 +194,22 @@ bool PlatformSharedMemoryRegion::ConvertToUnsafe() {
 // static
 PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
                                                               size_t size) {
-  // TODO(crbug.com/40307662): NaCl forces us to round up 64k here, wasting 32k
-  // per mapping on average.
-  static const size_t kSectionSize = 65536;
   if (size == 0) {
     return {};
   }
 
-  // Aligning may overflow so check that the result doesn't decrease.
+  // Historically, //base aligned sizes to 64k due to NaCl constraints (see
+  // crbug.com/40307662). Windows itself doesn't enforce any alignment on
+  // sizes (internally, it appears to align on page size though).
+  //
+  // However, Windows also has the concept of "allocation granularity", which
+  // is 64K–this is probably the origin of NaCl's constraints. However, even
+  // though NaCl is gone, V8's address space management has many `CHECK()`s
+  // throughout that the size is aligned to allocation granularity–so for now,
+  // preserve the old alignment behavior to avoid breaking V8.
+  static const size_t kSectionSize = 65536;
   size_t rounded_size = bits::AlignUp(size, kSectionSize);
+  // Aligning may overflow so check that the result doesn't decrease.
   if (rounded_size < size ||
       rounded_size > static_cast<size_t>(std::numeric_limits<int>::max())) {
     return {};
@@ -232,7 +253,8 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
 }
 
 // static
-bool PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
+expected<void, PlatformSharedMemoryRegion::TakeError>
+PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
     PlatformSharedMemoryHandle handle,
     Mode mode,
     size_t size) {
@@ -251,13 +273,11 @@ bool PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
   bool expected_read_only = mode == Mode::kReadOnly;
 
   if (is_read_only != expected_read_only) {
-    DLOG(ERROR) << "File mapping handle has wrong access rights: it is"
-                << (is_read_only ? " " : " not ") << "read-only but it should"
-                << (expected_read_only ? " " : " not ") << "be";
-    return false;
+    return unexpected(expected_read_only ? TakeError::kExpectedReadOnlyButNot
+                                         : TakeError::kExpectedWritableButNot);
   }
 
-  return true;
+  return ok();
 }
 
 PlatformSharedMemoryRegion::PlatformSharedMemoryRegion(

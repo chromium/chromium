@@ -4,9 +4,13 @@
 
 #include "ui/gl/dcomp_presenter.h"
 
+#include <winerror.h>
+
 #include <memory>
 #include <utility>
 
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -19,10 +23,8 @@
 
 namespace gl {
 
-DCompPresenter::PendingFrame::PendingFrame(
-    Microsoft::WRL::ComPtr<ID3D11Query> query,
-    PresentationCallback callback)
-    : query(std::move(query)), callback(std::move(callback)) {}
+DCompPresenter::PendingFrame::PendingFrame(PresentationCallback callback)
+    : callback(std::move(callback)) {}
 DCompPresenter::PendingFrame::PendingFrame(PendingFrame&& other) = default;
 DCompPresenter::PendingFrame::~PendingFrame() = default;
 DCompPresenter::PendingFrame& DCompPresenter::PendingFrame::operator=(
@@ -35,6 +37,7 @@ DCompPresenter::DCompPresenter(const Settings& settings)
           settings.disable_vp_auto_hdr,
           settings.disable_vp_scaling,
           settings.disable_vp_super_resolution,
+          settings.disable_dc_letterbox_video_optimization,
           settings.force_dcomp_triple_buffer_video_swap_chain,
           settings.no_downscaled_overlay_promotion)),
       use_gpu_vsync_(features::UseGpuVsync()) {
@@ -45,10 +48,6 @@ DCompPresenter::DCompPresenter(const Settings& settings)
 }
 
 DCompPresenter::~DCompPresenter() {
-  Destroy();
-}
-
-void DCompPresenter::Destroy() {
   for (auto& frame : pending_frames_)
     std::move(frame.callback).Run(gfx::PresentationFeedback::Failure());
   pending_frames_.clear();
@@ -56,16 +55,26 @@ void DCompPresenter::Destroy() {
   if (observing_vsync_) {
     VSyncThreadWin::GetInstance()->RemoveObserver(this);
   }
+}
 
-  // Freeing DComp resources such as visuals and surfaces causes the
-  // device to become 'dirty'. We must commit the changes to the device
-  // in order for the objects to actually be destroyed.
-  // Leaving the device in the dirty state for long periods of time means
-  // that if DWM.exe crashes, the Chromium window will become black until
-  // the next Commit.
+bool DCompPresenter::DestroyDCLayerTree() {
+  CHECK(layer_tree_);
+
+  // Freeing DComp resources such as visuals and surfaces causes the device to
+  // become 'dirty'. We must commit the changes to the device in order for the
+  // objects to actually be destroyed.
+  // Leaving the device in the dirty state for long periods of time means that
+  // if DWM.exe crashes, the Chromium window will become black until the next
+  // Commit.
   layer_tree_.reset();
-  if (auto* dcomp_device = GetDirectCompositionDevice())
-    dcomp_device->Commit();
+  if (auto* dcomp_device = GetDirectCompositionDevice()) {
+    HRESULT hr = dcomp_device->Commit();
+    if (FAILED(hr)) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 bool DCompPresenter::Resize(const gfx::Size& size,
@@ -92,18 +101,11 @@ void DCompPresenter::OnVSync(base::TimeTicks vsync_time,
                      weak_factory_.GetWeakPtr(), vsync_time, interval));
 }
 
-void DCompPresenter::ScheduleDCLayer(
-    std::unique_ptr<DCLayerOverlayParams> params) {
-  pending_overlays_.push_back(std::move(params));
-}
-
-void DCompPresenter::SetFrameRate(float frame_rate) {
-  // Only try to reduce vsync frequency through the video swap chain.
-  // This allows us to experiment UseSetPresentDuration optimization to
-  // fullscreen video overlays only and avoid compromising
-  // UsePreferredIntervalForVideo optimization where we skip compositing
-  // every other frame when fps <= half the vsync frame rate.
-  layer_tree_->SetFrameRate(frame_rate);
+void DCompPresenter::ScheduleDCLayers(
+    std::vector<DCLayerOverlayParams> overlays) {
+  // We expect alternating calls to `ScheduleDCLayers` and `Present`.
+  DCHECK_EQ(0u, pending_overlays_.size());
+  pending_overlays_ = std::move(overlays);
 }
 
 void DCompPresenter::Present(SwapCompletionCallback completion_callback,
@@ -112,12 +114,27 @@ void DCompPresenter::Present(SwapCompletionCallback completion_callback,
   TRACE_EVENT0("gpu", "DCompPresenter::Present");
 
   // Callback will be dequeued on next vsync.
-  EnqueuePendingFrame(std::move(presentation_callback),
-                      /*create_query=*/create_query_this_frame_);
-  create_query_this_frame_ = false;
+  EnqueuePendingFrame(std::move(presentation_callback));
 
-  if (!layer_tree_->CommitAndClearPendingOverlays(
-          std::move(pending_overlays_))) {
+  base::expected<void, CommitError> result =
+      layer_tree_->CommitAndClearPendingOverlays(std::move(pending_overlays_));
+  if (!result.has_value()) {
+    const HRESULT device_removed_reason =
+        gl::GetDirectCompositionD3D11Device()->GetDeviceRemovedReason();
+    const bool not_device_removed = SUCCEEDED(device_removed_reason);
+    if (not_device_removed && result.error().hr != PRESENTATION_ERROR_LOST) {
+      SCOPED_CRASH_KEY_NUMBER("gpu", "DCompPresenter.SWAP_FAILED.reason",
+                              static_cast<int>(result.error().reason));
+      SCOPED_CRASH_KEY_NUMBER(
+          "gpu", "DCompPresenter.SWAP_FAILED.hr?",
+          static_cast<int>(result.error().hr.value_or(S_OK)));
+      base::debug::DumpWithoutCrashing();
+    } else {
+      // Ignore device removed cases as they don't usually indicate a problem
+      // originating from viz. `PRESENTATION_ERROR_LOST` usually happens when
+      // device removed is caught internally in DWM when using DComp textures.
+    }
+
     std::move(completion_callback)
         .Run(gfx::SwapCompletionResult(gfx::SwapResult::SWAP_FAILED));
     return;
@@ -153,17 +170,18 @@ DCompPresenter::GetWindowTaskRunnerForTesting() {
 }
 
 Microsoft::WRL::ComPtr<IDXGISwapChain1>
-DCompPresenter::GetLayerSwapChainForTesting(size_t index) const {
-  return layer_tree_->GetLayerSwapChainForTesting(index);  // IN-TEST
+DCompPresenter::GetLayerSwapChainForTesting(
+    const gfx::OverlayLayerId& layer_id) const {
+  return layer_tree_->GetLayerSwapChainForTesting(layer_id);  // IN-TEST
 }
 
 void DCompPresenter::GetSwapChainVisualInfoForTesting(
-    size_t index,
-    gfx::Transform* transform,
-    gfx::Point* offset,
-    gfx::Rect* clip_rect) const {
+    const gfx::OverlayLayerId& layer_id,
+    gfx::Transform* out_transform,
+    gfx::Point* out_offset,
+    gfx::Rect* out_clip_rect) const {
   layer_tree_->GetSwapChainVisualInfoForTesting(  // IN-TEST
-      index, transform, offset, clip_rect);
+      layer_id, out_transform, out_offset, out_clip_rect);
 }
 
 void DCompPresenter::HandleVSyncOnMainThread(base::TimeTicks vsync_time,
@@ -197,16 +215,6 @@ void DCompPresenter::CheckPendingFrames() {
   d3d11_device_->GetImmediateContext(&context);
   while (!pending_frames_.empty()) {
     auto& frame = pending_frames_.front();
-    // Query isn't created if there was no damage for previous frame.
-    if (frame.query) {
-      HRESULT hr = context->GetData(frame.query.Get(), nullptr, 0,
-                                    D3D11_ASYNC_GETDATA_DONOTFLUSH);
-      // When the GPU completes execution past the event query, GetData() will
-      // return S_OK, and S_FALSE otherwise.  Do not use SUCCEEDED() because
-      // S_FALSE is also a success code.
-      if (hr != S_OK)
-        break;
-    }
     std::move(frame.callback)
         .Run(
             gfx::PresentationFeedback(last_vsync_time_, last_vsync_interval_,
@@ -220,24 +228,8 @@ void DCompPresenter::CheckPendingFrames() {
   }
 }
 
-void DCompPresenter::EnqueuePendingFrame(PresentationCallback callback,
-                                         bool create_query) {
-  Microsoft::WRL::ComPtr<ID3D11Query> query;
-  if (create_query) {
-    D3D11_QUERY_DESC desc = {};
-    desc.Query = D3D11_QUERY_EVENT;
-    HRESULT hr = d3d11_device_->CreateQuery(&desc, &query);
-    if (SUCCEEDED(hr)) {
-      Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
-      d3d11_device_->GetImmediateContext(&context);
-      context->End(query.Get());
-      context->Flush();
-    } else {
-      DLOG(ERROR) << "CreateQuery failed with error 0x" << std::hex << hr;
-    }
-  }
-
-  pending_frames_.emplace_back(std::move(query), std::move(callback));
+void DCompPresenter::EnqueuePendingFrame(PresentationCallback callback) {
+  pending_frames_.emplace_back(std::move(callback));
 
   if (use_gpu_vsync_) {
     StartOrStopVSyncThread();

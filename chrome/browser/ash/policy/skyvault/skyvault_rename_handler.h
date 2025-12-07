@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_POLICY_SKYVAULT_SKYVAULT_RENAME_HANDLER_H_
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/download/public/common/download_item_rename_handler.h"
 #include "storage/browser/file_system/file_system_url.h"

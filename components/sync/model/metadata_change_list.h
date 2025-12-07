@@ -24,8 +24,8 @@ namespace syncer {
 // same metadata record the last one is supposed to win.
 class MetadataChangeList {
  public:
-  MetadataChangeList() {}
-  virtual ~MetadataChangeList() {}
+  MetadataChangeList() = default;
+  virtual ~MetadataChangeList() = default;
 
   // Requests DataTypeState to be updated in the storage.
   virtual void UpdateDataTypeState(
@@ -43,6 +43,11 @@ class MetadataChangeList {
 
   // Requests metadata entry to be cleared from the storage.
   virtual void ClearMetadata(const std::string& storage_key) = 0;
+
+  // Moves all currently accumulated changes into `*other`, resetting this
+  // change list to a default, empty state. `other` must not be null. Not all
+  // implementations support this operation.
+  virtual void TransferChangesTo(MetadataChangeList* other) = 0;
 };
 
 }  // namespace syncer

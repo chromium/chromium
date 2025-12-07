@@ -33,13 +33,24 @@ class CC_EXPORT LayerTreeSettings {
   // If true, this tree doesn't draw itself. Instead upon activation it pushes
   // differential updates to a remote (GPU-side) display tree which is drawn
   // using tile resources prepared by this tree.
-  bool UseLayerContextForDisplay() const;
+  bool TreesInVizInClientProcess() const;
+
+  // If true, the remote display tree handles its own composited animations.
+  // This can only be true when TreesInVizInClientProcess() is also true.
+  bool TreeAnimationsInVizInClientProcess() const;
+
+  // If true, the GPU-side display tree handles its own composited animation.
+  // This can only be true when |trees_in_viz_in_viz_process| is also true.
+  bool TreeAnimationsInVizInVizProcess() const;
 
   // If true, this is a GPU-side display tree receiving updates from a remote
   // client via the LayerContext API. Such trees do no raster work of their own
   // and submit compositor frames directly within Viz using tiles rastered by
   // the remote client.
-  bool is_display_tree = false;
+  bool trees_in_viz_in_viz_process = false;
+
+  // If true, the client requested display tree draw mode to be GPU.
+  bool display_tree_draw_mode_is_gpu = false;
 
   bool single_thread_proxy_scheduler = true;
   bool main_frame_before_activation_enabled = false;
@@ -52,8 +63,6 @@ class CC_EXPORT LayerTreeSettings {
   bool gpu_rasterization_disabled = false;
   int gpu_rasterization_msaa_sample_count = -1;
   float gpu_rasterization_skewport_target_time_in_seconds = 0.2f;
-  bool create_low_res_tiling = false;
-  bool use_stream_video_draw_quad = false;
   bool use_gpu_memory_buffer_resources = false;
 
   enum ScrollbarAnimator {
@@ -67,9 +76,11 @@ class CC_EXPORT LayerTreeSettings {
   base::TimeDelta scrollbar_thinning_duration;
   float idle_thickness_scale = 0.4f;
   bool scrollbar_flash_after_any_scroll_update = false;
+  bool scrollbar_flash_once_after_scroll_update = false;
+  bool scrollbar_flash_once_visible_on_viewport = false;
+  bool scrollbar_flash_when_mouse_enter = false;
   base::TimeDelta scroll_animation_duration_for_testing;
   bool layers_always_allowed_lcd_text = false;
-  float low_res_contents_scale_factor = 0.25f;
   float top_controls_show_threshold = 0.5f;
   float top_controls_hide_threshold = 0.5f;
   gfx::Size default_tile_size;
@@ -110,17 +121,11 @@ class CC_EXPORT LayerTreeSettings {
           /*for_renderer=*/false);
   int max_preraster_distance_in_screen_pixels = 1000;
   bool use_rgba_4444 = false;
-  bool unpremultiply_and_dither_low_bit_depth_tiles = false;
 
   // If set to true, the compositor may selectively defer image decodes to the
   // Image Decode Service and raster tiles without images until the decode is
   // ready.
   bool enable_checker_imaging = false;
-
-  // When content needs a wide color gamut, raster in wide if available.
-  // But when the content is sRGB, some situations prefer to raster in
-  // wide while others prefer to raster in sRGB.
-  bool prefer_raster_in_srgb = false;
 
   // The minimum size of an image we should considering decoding using the
   // deferred path.
@@ -149,9 +154,6 @@ class CC_EXPORT LayerTreeSettings {
   // completed the current BeginFrame before triggering their own BeginFrame
   // deadlines.
   bool wait_for_all_pipeline_stages_before_draw = false;
-
-  // If enabled, the scroll deltas will be a percentage of the target scroller.
-  bool percent_based_scrolling = false;
 
   // Determines whether animated scrolling is supported. If true, and the
   // incoming gesture scroll is of a type that would normally be animated (e.g.
@@ -223,10 +225,6 @@ class CC_EXPORT LayerTreeSettings {
 
   // Whether to disable the frame rate limit in the scheduler.
   bool disable_frame_rate_limit = false;
-
-  // Enables shared image cache for gpu.
-  // TODO(crbug.com/40243842): not ready to be used by renderer cc instance yet.
-  bool enable_shared_image_cache_for_gpu = false;
 
   // Maximum size for buffers allocated for rendering when GPU compositing is
   // disabled. This size is equivalent to the max texture size in GPU mode.

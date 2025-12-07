@@ -6,7 +6,7 @@
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsPaymentsSectionElement, SettingsCreditCardListEntryElement, SettingsIbanListEntryElement} from 'chrome://settings/lazy_load.js';
 import {PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
-import {assertTrue, assertLT} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue, assertLT} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, whenAttributeIs} from 'chrome://webui-test/test_util.js';
 // <if expr="is_win or is_macosx">
@@ -15,6 +15,7 @@ import {loadTimeData} from 'chrome://settings/settings.js';
 // </if>
 
 import {PaymentsManagerExpectations, TestPaymentsManager} from './autofill_fake_data.js';
+import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 // clang-format on
 
@@ -25,11 +26,13 @@ import {PaymentsManagerExpectations, TestPaymentsManager} from './autofill_fake_
 export async function createPaymentsSection(
     creditCards: chrome.autofillPrivate.CreditCardEntry[],
     ibans: chrome.autofillPrivate.IbanEntry[],
+    payOverTimeIssuers: chrome.autofillPrivate.PayOverTimeIssuerEntry[],
     prefValues: any): Promise<SettingsPaymentsSectionElement> {
   // Override the PaymentsManagerImpl for testing.
   const paymentsManager = new TestPaymentsManager();
   paymentsManager.data.creditCards = creditCards;
   paymentsManager.data.ibans = ibans;
+  paymentsManager.data.payOverTimeIssuers = payOverTimeIssuers;
   // <if expr="is_win or is_macosx">
   paymentsManager.setIsDeviceAuthAvailable(
       loadTimeData.getBoolean('deviceAuthAvailable'));
@@ -59,6 +62,7 @@ export function getDefaultExpectations(): PaymentsManagerExpectations {
   expected.requestedIbans = 1;
   expected.removedIbans = 0;
   expected.isValidIban = 0;
+  expected.requestedPayOverTimeIssuers = 0;
   expected.authenticateUserAndFlipMandatoryAuthToggle = 0;
   expected.getLocalCard = 0;
   expected.bulkDeleteAllCvcs = 0;
@@ -84,7 +88,6 @@ export function getCardRowShadowRoot(paymentsList: HTMLElement): ShadowRoot {
   assertTrue(!!row);
   return row.shadowRoot!;
 }
-
 
 type PaymentEntryElement =
     SettingsCreditCardListEntryElement|SettingsIbanListEntryElement;
@@ -168,7 +171,34 @@ export async function deletePaymentMethod(
   paymentMethodItems.splice(index, 1);
   manager.data[dataProperty] = paymentMethodItems;
   manager.lastCallback.setPersonalDataManagerListener!
-      ([], manager.data.creditCards, manager.data.ibans);
+      ([], manager.data.creditCards, manager.data.ibans,
+       manager.data.payOverTimeIssuers);
 
   await flushTasks();
+}
+
+/**
+ * Verifies that a given boolean `histogramName` was recorded exactly once and
+ * with the given `value`.
+ */
+export async function verifyBooleanHistogramRecorded(
+    testMetricsBrowserProxy: TestMetricsBrowserProxy, histogramName: string,
+    value: boolean) {
+  const recordedHistograms =
+      await testMetricsBrowserProxy.getArgs('recordBooleanHistogram');
+  const filteredHistograms =
+      recordedHistograms.filter(histogram => histogram[0] === histogramName);
+  assertEquals(1, filteredHistograms.length);
+  assertEquals(value, filteredHistograms[0][1]);
+}
+
+/**
+ * Verifies that a given boolean `histogramName` was not recorded.
+ */
+export async function verifyBooleanHistogramNotRecorded(
+    testMetricsBrowserProxy: TestMetricsBrowserProxy, histogramName: string) {
+  const recordedHistograms =
+      await testMetricsBrowserProxy.getArgs('recordBooleanHistogram');
+  assertFalse(
+      recordedHistograms.some(histogram => histogram[0] === histogramName));
 }

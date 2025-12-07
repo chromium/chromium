@@ -11,9 +11,11 @@
 #include <unordered_map>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/command_line.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -58,8 +60,16 @@ power_manager::PowerSupplyProperties SanitizePowerSupplyProperties(
     const power_manager::PowerSupplyProperties& proto) {
   power_manager::PowerSupplyProperties sanitized = proto;
 
+  // This code is used to round the battery percent (say 99.2%) to exactly
+  // 100% when the battery is reported as full. However when charge limited, the
+  // battery is still reported as full, but it's not actually full. Therefore,
+  // this rounding should not occur, since the battery could be significantly
+  // lowered than 99.2% (e.g., somewhere between 80% <= x <= 100%).
+  const bool isChargeLimitFeatureEnabled =
+      base::FeatureList::IsEnabled(ash::features::kBatteryChargeLimit);
   if (sanitized.battery_state() ==
-      power_manager::PowerSupplyProperties_BatteryState_FULL) {
+          power_manager::PowerSupplyProperties_BatteryState_FULL &&
+      (isChargeLimitFeatureEnabled ? !sanitized.charge_limited() : true)) {
     sanitized.set_battery_percent(100.0);
   }
 
@@ -87,8 +97,7 @@ PowerManagerClient::LidState GetLidStateFromProtoEnum(
     case power_manager::SwitchStates_LidState_NOT_PRESENT:
       return PowerManagerClient::LidState::NOT_PRESENT;
   }
-  NOTREACHED_IN_MIGRATION() << "Unhandled lid state " << state;
-  return PowerManagerClient::LidState::NOT_PRESENT;
+  NOTREACHED() << "Unhandled lid state " << state;
 }
 
 // Converts a TabletMode value from a power_manager::SwitchStates proto to the
@@ -103,8 +112,7 @@ PowerManagerClient::TabletMode GetTabletModeFromProtoEnum(
     case power_manager::SwitchStates_TabletMode_UNSUPPORTED:
       return PowerManagerClient::TabletMode::UNSUPPORTED;
   }
-  NOTREACHED_IN_MIGRATION() << "Unhandled tablet mode " << mode;
-  return PowerManagerClient::TabletMode::UNSUPPORTED;
+  NOTREACHED() << "Unhandled tablet mode " << mode;
 }
 
 // Converts a ThermalState value from a power_manager::ThermalEvent proto to the
@@ -123,8 +131,7 @@ base::PowerThermalObserver::DeviceThermalState GetThermalStateFromProtoEnum(
     case power_manager::ThermalEvent_ThermalState_CRITICAL:
       return base::PowerThermalObserver::DeviceThermalState::kCritical;
   }
-  NOTREACHED_IN_MIGRATION() << "Unhandled thermal state " << state;
-  return base::PowerThermalObserver::DeviceThermalState::kUnknown;
+  NOTREACHED() << "Unhandled thermal state " << state;
 }
 
 // Callback for D-Bus call made in |CreateArcTimers|.
@@ -1286,7 +1293,10 @@ class PowerManagerClientImpl : public PowerManagerClient {
     const bool on_battery =
         proto_->external_power() ==
         power_manager::PowerSupplyProperties_ExternalPower_DISCONNECTED;
-    base::PowerMonitorDeviceSource::SetPowerSource(on_battery);
+    base::PowerMonitorDeviceSource::SetPowerSource(
+        on_battery
+            ? base::PowerStateObserver::BatteryPowerStatus::kBatteryPower
+            : base::PowerStateObserver::BatteryPowerStatus::kExternalPower);
   }
 
   void HandleRegisterSuspendDelayReply(bool dark_suspend,
@@ -1627,7 +1637,9 @@ class PowerManagerClientImpl : public PowerManagerClient {
 
   raw_ptr<dbus::ObjectProxy, LeakedDanglingUntriaged> power_manager_proxy_ =
       nullptr;
-  base::ObserverList<Observer>::Unchecked observers_;
+  // TODO(b/370501118): Make the observer list check it's empty once all
+  // observers unsubscribe on shutdown.
+  base::ObserverList<Observer> observers_;
 
   std::optional<bool> service_available_;
 

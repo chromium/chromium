@@ -10,12 +10,15 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/sequence_checker.h"
+#include "build/build_config.h"
 #include "chrome/enterprise_companion/enterprise_companion_service.h"
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
+#include "chrome/enterprise_companion/global_constants.h"
 #include "chrome/enterprise_companion/mojom/enterprise_companion.mojom.h"
 #include "components/named_mojo_ipc_server/connection_info.h"
 #include "components/named_mojo_ipc_server/endpoint_options.h"
 #include "components/named_mojo_ipc_server/named_mojo_ipc_server.h"
+#include "components/policy/core/common/policy_types.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 
@@ -33,7 +36,8 @@ class UntrustedCallerStub final : public mojom::EnterpriseCompanion {
             .ToMojomStatus());
   }
 
-  void FetchPolicies(FetchPoliciesCallback callback) override {
+  void FetchPolicies(policy::PolicyFetchReason reason,
+                     FetchPoliciesCallback callback) override {
     std::move(callback).Run(
         EnterpriseCompanionStatus(ApplicationError::kIpcCallerNotAllowed)
             .ToMojomStatus());
@@ -53,9 +57,9 @@ class Stub final : public mojom::EnterpriseCompanion {
                     [](IpcTrustDecider trust_decider,
                        mojom::EnterpriseCompanion* stub,
                        mojom::EnterpriseCompanion* untrusted_stub,
-                       std::unique_ptr<named_mojo_ipc_server::ConnectionInfo>
+                       const named_mojo_ipc_server::ConnectionInfo&
                            connection_info) {
-                      return trust_decider.Run(*connection_info)
+                      return trust_decider.Run(connection_info)
                                  ? stub
                                  : untrusted_stub;
                     },
@@ -70,9 +74,8 @@ class Stub final : public mojom::EnterpriseCompanion {
     }
     server_.StartServer();
   }
-  ~Stub() override = default;
 
-  // Overrides for mjom::EnterpriseCompanion.
+  // Overrides for mojom::EnterpriseCompanion.
   void Shutdown(ShutdownCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     service_->Shutdown(
@@ -80,12 +83,13 @@ class Stub final : public mojom::EnterpriseCompanion {
                        EnterpriseCompanionStatus::Success().ToMojomStatus()));
   }
 
-  void FetchPolicies(FetchPoliciesCallback callback) override {
+  void FetchPolicies(policy::PolicyFetchReason reason,
+                     FetchPoliciesCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     service_->FetchPolicies(
-        base::BindOnce([](const EnterpriseCompanionStatus& status) {
-          return status.ToMojomStatus();
-        }).Then(std::move(callback)));
+        reason, base::BindOnce([](const EnterpriseCompanionStatus& status) {
+                  return status.ToMojomStatus();
+                }).Then(std::move(callback)));
   }
 
  private:
@@ -99,26 +103,16 @@ class Stub final : public mojom::EnterpriseCompanion {
 
 }  // namespace
 
-IpcTrustDecider CreateIpcTrustDecider() {
-  return base::BindRepeating(
-      [](const named_mojo_ipc_server::ConnectionInfo& info) {
-        // TODO(342180612): Implement in the style of
-        // updater::IsConnectionTrusted.
-        return false;
-      });
-}
-
 named_mojo_ipc_server::EndpointOptions CreateServerEndpointOptions(
     const mojo::NamedPlatformChannel::ServerName& server_name) {
-  return {
-      .server_name = server_name,
-      .message_pipe_id =
-          named_mojo_ipc_server::EndpointOptions::kUseIsolatedConnection,
+  named_mojo_ipc_server::EndpointOptions options{
+      server_name,
+      named_mojo_ipc_server::EndpointOptions::kUseIsolatedConnection};
 #if BUILDFLAG(IS_WIN)
-      // Allow read access from local system account only.
-      .security_descriptor = L"D:(A;;0x1200a9;;;SY)",
+  options.security_descriptor =
+      GetGlobalConstants()->NamedPipeSecurityDescriptor();
 #endif
-  };
+  return options;
 }
 
 // Creates a stub that receives RPC calls from the client and delegates them to

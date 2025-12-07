@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
+#include "ui/strings/grit/ax_strings.h"
 
 namespace blink {
 
@@ -18,7 +19,7 @@ MediaControlPlaybackSpeedButtonElement::MediaControlPlaybackSpeedButtonElement(
     MediaControlsImpl& media_controls)
     : MediaControlInputElement(media_controls) {
   setAttribute(html_names::kAriaLabelAttr,
-               WTF::AtomicString(GetLocale().QueryString(
+               AtomicString(GetLocale().QueryString(
                    IDS_AX_MEDIA_SHOW_PLAYBACK_SPEED_MENU_BUTTON)));
   setType(input_type_names::kButton);
   SetShadowPseudoId(

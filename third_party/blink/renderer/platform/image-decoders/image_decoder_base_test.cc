@@ -2,27 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_base_test.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/hash/md5.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "crypto/obsolete/md5.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 
 // Uncomment this to recalculate the MD5 sums; see header comments.
@@ -41,27 +38,26 @@ bool ShouldSkipFile(const base::FilePath& path,
     return false;
   }
 
-  int64_t image_size = 0;
-  base::GetFileSize(path, &image_size);
+  int64_t image_size = base::GetFileSize(path).value_or(0);
   return (file_selection ==
           blink::ImageDecoderBaseTest::FileSelection::kSmaller) ==
          (image_size > threshold);
 }
 
-void ReadFileToVector(const base::FilePath& path, Vector<char>* contents) {
+void ReadFileToVector(const base::FilePath& path,
+                      blink::Vector<char>* contents) {
   std::string raw_image_data;
   base::ReadFileToString(path, &raw_image_data);
   contents->resize(raw_image_data.size());
-  memcpy(&contents->front(), raw_image_data.data(), raw_image_data.size());
+  UNSAFE_TODO(
+      memcpy(&contents->front(), raw_image_data.data(), raw_image_data.size()));
 }
 
-base::MD5Digest ComputeMD5Sum(const blink::ImageFrame& frame_buffer) {
+std::array<uint8_t, 16> ComputeMD5Sum(const blink::ImageFrame& frame_buffer) {
   SkBitmap bitmap = frame_buffer.Bitmap();
-  base::MD5Digest digest;
-  base::MD5Sum(base::make_span(static_cast<const uint8_t*>(bitmap.getPixels()),
-                               bitmap.computeByteSize()),
-               &digest);
-  return digest;
+  return crypto::obsolete::Md5::HashForTesting(
+      UNSAFE_TODO(base::span(static_cast<const uint8_t*>(bitmap.getPixels()),
+                             bitmap.computeByteSize())));
 }
 
 #if defined(CALCULATE_MD5_SUMS)
@@ -69,7 +65,7 @@ void SaveMD5Sum(const base::FilePath& path,
                 const blink::ImageFrame* frame_buffer) {
   // Calculate MD5 sum.
   ASSERT_TRUE(frame_buffer);
-  base::MD5Digest digest = ComputeMD5Sum(*frame_buffer);
+  std::array<uint8_t, 16> digest = ComputeMD5Sum(*frame_buffer);
 
   // Write sum to disk.
   ASSERT_TRUE(base::WriteFile(path, base::byte_span_from_ref(digest)));
@@ -92,17 +88,19 @@ void VerifyImage(blink::ImageDecoder& decoder,
   EXPECT_FALSE(decoder.Failed());
 
   // Calculate MD5 sum.
-  base::MD5Digest actual_digest = ComputeMD5Sum(*frame_buffer);
+  std::array<uint8_t, 16> actual_digest = ComputeMD5Sum(*frame_buffer);
 
   // Read the MD5 sum off disk.
   std::string file_bytes;
   base::ReadFileToString(md5_sum_path, &file_bytes);
-  base::MD5Digest expected_digest;
+  std::array<uint8_t, 16> expected_digest;
   ASSERT_EQ(sizeof expected_digest, file_bytes.size());
-  memcpy(&expected_digest, file_bytes.data(), sizeof expected_digest);
+  UNSAFE_TODO(
+      memcpy(&expected_digest, file_bytes.data(), sizeof expected_digest));
 
   // Verify that the sums are the same.
-  EXPECT_EQ(0, memcmp(&expected_digest, &actual_digest, sizeof actual_digest));
+  UNSAFE_TODO(EXPECT_EQ(
+      0, memcmp(&expected_digest, &actual_digest, sizeof actual_digest)));
 }
 #endif
 
@@ -188,14 +186,13 @@ void ImageDecoderBaseTest::TestImageDecoder(const base::FilePath& image_path,
   EXPECT_TRUE(image_contents.size());
   std::unique_ptr<ImageDecoder> decoder(CreateImageDecoder());
   EXPECT_FALSE(decoder->Failed());
-  const char* data_ptr = reinterpret_cast<const char*>(&(image_contents.at(0)));
 
 #if !defined(CALCULATE_MD5_SUMS)
   // Test chunking file into half.
   const size_t partial_size = image_contents.size() / 2;
 
   scoped_refptr<SharedBuffer> partial_data =
-      SharedBuffer::Create(data_ptr, partial_size);
+      SharedBuffer::Create(base::span(image_contents).first(partial_size));
 
   // Make Sure the image decoder doesn't fail when we ask for the frame
   // buffer for this partial image.
@@ -207,8 +204,7 @@ void ImageDecoderBaseTest::TestImageDecoder(const base::FilePath& image_path,
 #endif
 
   // Make sure passing the complete image results in successful decoding.
-  scoped_refptr<SharedBuffer> data =
-      SharedBuffer::Create(data_ptr, image_contents.size());
+  scoped_refptr<SharedBuffer> data = SharedBuffer::Create(image_contents);
   decoder->SetData(data, true);
   if (ShouldImageFail(image_path)) {
     blink::ImageFrame* const frame_buffer =

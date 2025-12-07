@@ -7,7 +7,6 @@
 #import "base/feature_list.h"
 #import "base/metrics/field_trial_params.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/parcel_tracking/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/web/model/annotations/annotations_util.h"
 #import "ios/web/common/features.h"
@@ -73,7 +72,7 @@ WebAnnotationPolicyValue GetPolicyForType(PrefService* prefs,
 
 bool IsAddressDetectionEnabled() {
   if (@available(iOS 16.4, *)) {
-    return base::FeatureList::IsEnabled(web::features::kOneTapForMaps);
+    return true;
   }
   return false;
 }
@@ -89,30 +88,6 @@ bool IsAddressAutomaticDetectionAccepted(PrefService* prefs) {
 }
 
 bool ShouldPresentConsentIPH(PrefService* prefs) {
-  std::string param = base::GetFieldTrialParamValueByFeature(
-      web::features::kOneTapForMaps,
-      web::features::kOneTapForMapsConsentModeParamTitle);
-  if (param == web::features::kOneTapForMapsConsentModeIPHForcedParam) {
-    return true;
-  }
-  if (param == web::features::kOneTapForMapsConsentModeIPHParam) {
-    return !IsAddressAutomaticDetectionAccepted(prefs);
-  }
-  return false;
-}
-
-bool ShouldPresentConsentScreen(PrefService* prefs) {
-  std::string param = base::GetFieldTrialParamValueByFeature(
-      web::features::kOneTapForMaps,
-      web::features::kOneTapForMapsConsentModeParamTitle);
-  if (param == web::features::kOneTapForMapsConsentModeForcedParam) {
-    return true;
-  }
-  if (param == web::features::kOneTapForMapsConsentModeDisabledParam ||
-      param == web::features::kOneTapForMapsConsentModeIPHParam ||
-      param == web::features::kOneTapForMapsConsentModeIPHForcedParam) {
-    return false;
-  }
   return !IsAddressAutomaticDetectionAccepted(prefs);
 }
 
@@ -143,7 +118,8 @@ bool IsLongPressAnnotationEnabledForType(PrefService* prefs,
     case WebAnnotationType::kEMailAddresses:
       return true;
     case WebAnnotationType::kPackage:
-      return IsIOSParcelTrackingEnabled();
+      // Package tracking was turned down in https://crbug.com/377724731
+      return false;
     case WebAnnotationType::kPhoneNumbers:
       return true;
     case WebAnnotationType::kUnits:
@@ -168,7 +144,8 @@ bool IsOneTapAnnotationEnabledForType(PrefService* prefs,
     case WebAnnotationType::kEMailAddresses:
       return true;
     case WebAnnotationType::kPackage:
-      return IsIOSParcelTrackingEnabled();
+      // Package tracking was turned down in https://crbug.com/377724731
+      return false;
     case WebAnnotationType::kPhoneNumbers:
       return true;
     case WebAnnotationType::kUnits:

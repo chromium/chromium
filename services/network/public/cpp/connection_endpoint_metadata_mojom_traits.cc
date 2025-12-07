@@ -17,6 +17,9 @@ bool StructTraits<network::mojom::ConnectionEndpointMetadataDataView,
     return false;
   if (!data.ReadTargetName(&out->target_name))
     return false;
+  if (!data.ReadTrustAnchorIds(&out->trust_anchor_ids)) {
+    return false;
+  }
   return true;
 }
 

@@ -1,0 +1,22 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+include_rules = [
+  "+components/collaboration/public",
+  "+components/saved_tab_groups/public",
+  "+components/saved_tab_groups/test_support",
+  "+ios/chrome/browser/bubble/model",
+  "+ios/chrome/browser/collaboration/model",
+  "+ios/chrome/browser/commerce/model",
+  "+ios/chrome/browser/drag_and_drop/model",
+  "+ios/chrome/browser/favicon/model",
+  "+ios/chrome/browser/feature_engagement/model",
+  "+ios/chrome/browser/menu/ui_bundled",
+  "+ios/chrome/browser/reading_list/model",
+  "+ios/chrome/browser/saved_tab_groups/model",
+  "+ios/chrome/browser/snapshots/model",
+  "+ios/chrome/browser/tabs_search/model",
+  "+ios/chrome/browser/tab_switcher/tab_grid/base_grid/ui",
+  "+ios/chrome/browser/url_loading/model",
+]

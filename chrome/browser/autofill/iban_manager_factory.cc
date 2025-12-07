@@ -7,6 +7,8 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/payments/iban_manager.h"
 
 namespace autofill {
@@ -40,11 +42,13 @@ IbanManagerFactory::IbanManagerFactory()
 
 IbanManagerFactory::~IbanManagerFactory() = default;
 
-KeyedService* IbanManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+IbanManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  IbanManager* service = new IbanManager(
-      PersonalDataManagerFactory::GetForBrowserContext(context));
-  return service;
+  PersonalDataManager* pdm =
+      PersonalDataManagerFactory::GetForBrowserContext(context);
+  PaymentsDataManager* paydm = pdm ? &pdm->payments_data_manager() : nullptr;
+  return std::make_unique<IbanManager>(paydm);
 }
 
 }  // namespace autofill

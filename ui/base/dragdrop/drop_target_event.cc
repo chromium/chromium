@@ -4,6 +4,7 @@
 
 #include "ui/base/dragdrop/drop_target_event.h"
 
+#include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/events/event_utils.h"
 
 namespace ui {

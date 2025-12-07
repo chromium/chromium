@@ -35,7 +35,7 @@ base::Value::List GetDevToolsListFromPort(uint16_t port) {
   if (result.empty())
     return base::Value::List();
 
-  return base::JSONReader::Read(result)
+  return base::JSONReader::Read(result, base::JSON_PARSE_CHROMIUM_EXTENSIONS)
       .value_or(base::Value())
       .GetList()
       .Clone();

@@ -5,8 +5,15 @@
 #ifndef CHROME_BROWSER_ASH_FLOATING_SSO_COOKIE_SYNC_CONVERSIONS_H_
 #define CHROME_BROWSER_ASH_FLOATING_SSO_COOKIE_SYNC_CONVERSIONS_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
+#include <string>
+
+namespace base {
+class Time;
+}
 
 namespace net {
 class CanonicalCookie;
@@ -17,6 +24,13 @@ class CookieSpecifics;
 }
 
 namespace ash::floating_sso {
+
+// Time format used in CookieSpecifics.
+int64_t ToMicrosSinceWindowsEpoch(const base::Time& time);
+
+// String representation of `cookie.StrictlyUniqueKey()` which we use as a
+// client tag in Sync. Returns empty optional if serialization is not possible.
+std::optional<std::string> SerializedKey(const net::CanonicalCookie& cookie);
 
 // Returns nullptr if some members of `proto` can't be deserialized or
 // if the cookie saved in `proto` is not canonical.

@@ -10,7 +10,9 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
+#include "components/facilitated_payments/core/browser/model/secure_payload.h"
+#include "components/facilitated_payments/core/utils/facilitated_payments_utils.h"
 
 struct CoreAccountInfo;
 
@@ -35,19 +37,6 @@ namespace payments::facilitated {
 //                                        weak_ptr_factory_.GetWeakPtr()));
 class FacilitatedPaymentsApiClient {
  public:
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.facilitated_payments
-  // The result of invoking the purchase manager with an action token.
-  enum class PurchaseActionResult : int {
-    // Could not invoke the purchase manager.
-    kCouldNotInvoke,
-
-    // The purchase manager was invoked successfully.
-    kResultOk,
-
-    // The user cancelled out of the purchase manager flow.
-    kResultCanceled,
-  };
-
   virtual ~FacilitatedPaymentsApiClient() = default;
 
   // Checks whether the facilitated payment API is available and invokes the
@@ -56,6 +45,10 @@ class FacilitatedPaymentsApiClient {
   // should be made at a time, because, if more than one IsAvailable() call is
   // made at a time, then only the last callback will be invoked.
   virtual void IsAvailable(base::OnceCallback<void(bool)> callback) = 0;
+
+  // The synchronous version to check whether the facilitated payment API is
+  // available.
+  virtual bool IsAvailableSync() = 0;
 
   // Retrieves the client token to be used to initiate a payment and invokes the
   // given `callback` with the result. Only one GetClientToken() call per API
@@ -71,13 +64,17 @@ class FacilitatedPaymentsApiClient {
   // will be invoked.
   virtual void InvokePurchaseAction(
       CoreAccountInfo primary_account,
-      base::span<const uint8_t> action_token,
+      const SecurePayload& secure_payload,
       base::OnceCallback<void(PurchaseActionResult)> callback) = 0;
 };
 
-// A one time use factory for the facilitated payment API client.
+// A reusable factory for the facilitated payment API client. Since the api
+// client can be required by multiple features in the same session, it is
+// intended to be called multiple times.
+// TODO(crbug.com/395702223): Move the use of
+// `FacilitatedPaymentsApiClientCreator` from content/ to core/
 using FacilitatedPaymentsApiClientCreator =
-    base::OnceCallback<std::unique_ptr<FacilitatedPaymentsApiClient>()>;
+    base::RepeatingCallback<std::unique_ptr<FacilitatedPaymentsApiClient>()>;
 
 }  // namespace payments::facilitated
 

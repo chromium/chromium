@@ -16,8 +16,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 namespace {
 
@@ -68,7 +67,7 @@ void CameraRollThumbnailDecoderImpl::DecoderDelegate::DecodeThumbnail(
     data_decoder::DecodeImageCallback callback) {
   const std::string& encoded_thumbnail = request.GetEncodedThumbnail();
   data_decoder::DecodeImage(
-      &data_decoder_, base::as_bytes(base::make_span(encoded_thumbnail)),
+      &data_decoder_, base::as_byte_span(encoded_thumbnail),
       data_decoder::mojom::ImageCodec::kDefault,
       /*shrink_to_fit=*/true, data_decoder::kDefaultMaxSizeInBytes,
       /*desired_image_frame_size=*/gfx::Size(), std::move(callback));
@@ -170,5 +169,4 @@ void CameraRollThumbnailDecoderImpl::CancelPendingRequests() {
   }
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

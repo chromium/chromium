@@ -10,6 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -204,6 +205,10 @@ void MojoVideoEncoderMetricsProviderService::SetEncodedFrameCount(
 void MojoVideoEncoderMetricsProviderService::SetError(
     uint64_t encoder_id,
     const EncoderStatus& status) {
+  if (status.is_ok()) {
+    // Nothing to do, it's not an error, but success is reported via Complete().
+    return;
+  }
   auto it = encoders_.find(encoder_id);
   if (it == encoders_.end()) {
     mojo::ReportBadMessage(base::StrCat(

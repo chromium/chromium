@@ -10,8 +10,10 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.components.signin.base.CoreAccountId;
+import org.chromium.google_apis.gaia.GaiaId;
 
 import java.util.List;
 
@@ -19,21 +21,22 @@ import java.util.List;
  * This class is used to pass consent records from Android Java UI to the C++
  * consent_auditor component.
  */
+@NullMarked
 public final class ConsentAuditorBridge {
-    private static ConsentAuditorBridge sInstance;
+    private static @Nullable ConsentAuditorBridge sInstance;
 
     /**
      * Records that the user consented to a feature.
      *
      * @param profile The {@link Profile} associated with this consent record.
-     * @param accountId The account Id for which to record the consent.
+     * @param gaiaId The Gaia Id for which to record the consent.
      * @param feature The {@link ConsentAuditorFeature} for which to record the consent.
      * @param consentDescription The resource IDs of the text the user read before consenting.
      * @param consentConfirmation The resource ID of the text the user clicked when consenting.
      */
     public void recordConsent(
             Profile profile,
-            CoreAccountId accountId,
+            GaiaId gaiaId,
             @ConsentAuditorFeature int feature,
             List<Integer> consentDescription,
             @StringRes int consentConfirmation) {
@@ -43,12 +46,7 @@ public final class ConsentAuditorBridge {
         }
         ConsentAuditorBridgeJni.get()
                 .recordConsent(
-                        ConsentAuditorBridge.this,
-                        profile,
-                        accountId,
-                        feature,
-                        consentDescriptionArray,
-                        consentConfirmation);
+                        profile, gaiaId, feature, consentDescriptionArray, consentConfirmation);
     }
 
     private ConsentAuditorBridge() {}
@@ -63,9 +61,8 @@ public final class ConsentAuditorBridge {
     @NativeMethods
     interface Natives {
         void recordConsent(
-                ConsentAuditorBridge caller,
                 @JniType("Profile*") Profile profile,
-                CoreAccountId accountId,
+                @JniType("GaiaId") GaiaId gaiaId,
                 int feature,
                 int[] consentDescription,
                 int consentConfirmation);

@@ -78,7 +78,7 @@ class FrameworkArgumentForwarder(ArgumentForwarder):
     ArgumentForwarder.__init__(self,
                                arg_name,
                                arg_join=lambda _: len(arg_name) == 1,
-                               to_swift=lambda _: True,
+                               to_swift=lambda _: arg_name != '-iframework',
                                to_clang=lambda _: True)
 
 
@@ -99,6 +99,7 @@ ARGUMENT_FORWARDER_FOR_ATTR = (
     ('system_include_dirs', IncludeArgumentForwarder('-isystem')),
     ('framework_dirs', FrameworkArgumentForwarder('-F')),
     ('system_framework_dirs', FrameworkArgumentForwarder('-Fsystem')),
+    ('iframework_dirs', FrameworkArgumentForwarder('-iframework')),
     ('defines', DefineArgumentForwarder('-D')),
 )
 
@@ -191,7 +192,7 @@ def ensure_directory(path):
   """Creates directory at `path` if it does not exists."""
   if not os.path.isdir(path):
     os.makedirs(path)
-  return path
+  return os.path.abspath(path)
 
 
 def build_signature(env, args):
@@ -384,6 +385,7 @@ def invoke_swift_compiler(args, extras_args, build_cache_dir, output_file_map):
       '-save-temps',
       '-no-color-diagnostics',
       '-serialize-diagnostics',
+      '-explicit-module-build',
       '-emit-dependencies',
       '-emit-module',
       '-emit-module-path',
@@ -418,6 +420,11 @@ def invoke_swift_compiler(args, extras_args, build_cache_dir, output_file_map):
   for (attr_name, forwarder) in ARGUMENT_FORWARDER_FOR_ATTR:
     forwarder.forward(swiftc_args, getattr(args, attr_name), args.target_triple)
 
+  # Handle optional -Xcc arguments.
+  if args.xcc_args:
+    for xcc_arg in args.xcc_args:
+      swiftc_args.extend(['-Xcc', xcc_arg])
+
   # Handle -whole-module-optimization flag.
   num_threads = max(1, multiprocessing.cpu_count() // 2)
   if args.whole_module_optimization:
@@ -436,8 +443,8 @@ def invoke_swift_compiler(args, extras_args, build_cache_dir, output_file_map):
         f'-j{num_threads}',
     ])
 
-  # Handle -file-prefix-map flag.
-  if args.file_prefix_map:
+  # Handle -file-prefix-map flag unless --swift-keep-intermediate-files is set.
+  if args.file_prefix_map and not args.swift_keep_intermediate_files:
     swiftc_args.extend([
         '-file-prefix-map',
         args.file_prefix_map,
@@ -590,6 +597,11 @@ def main(args):
                       action='store_true',
                       help='enable whole module optimisation')
 
+  parser.add_argument('--swift-keep-intermediate-files',
+                      default=False,
+                      action='store_true',
+                      help='keep intermediate files')
+
   # Required arguments (forwarded to the Swift compiler).
   parser.add_argument('-target',
                       required=True,
@@ -622,13 +634,18 @@ def main(args):
                       dest='system_framework_dirs',
                       help='add directory to system framework search path')
 
+  parser.add_argument('-iframework',
+                      action='append',
+                      dest='iframework_dirs',
+                      help='add directory to system framework search path')
+
   parser.add_argument('-D',
                       action='append',
                       dest='defines',
                       help='add preprocessor define')
 
   parser.add_argument('-swift-version',
-                      default='5',
+                      default='6',
                       help='version of the Swift language')
 
   parser.add_argument(
@@ -639,6 +656,11 @@ def main(args):
   parser.add_argument('sources',
                       nargs='+',
                       help='Swift source files to compile')
+
+  parser.add_argument('-Xcc',
+                      action='append',
+                      dest='xcc_args',
+                      help='add argument to the clang compiler')
 
   parsed, extras = parser.parse_known_args(args)
   compile_module(parsed, extras, build_signature(os.environ, args))

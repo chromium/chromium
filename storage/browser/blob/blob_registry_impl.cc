@@ -11,7 +11,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "storage/browser/blob/blob_builder_from_stream.h"
 #include "storage/browser/blob/blob_data_builder.h"
@@ -386,8 +385,7 @@ void BlobRegistryImpl::BlobUnderConstruction::ResolvedAllBlobDependencies() {
                            f->expected_modification_time.value_or(base::Time()),
                            base::NullCallback());
     } else if (element->is_blob()) {
-      CHECK(blob_uuid_it != referenced_blob_uuids_.end(),
-            base::NotFatalUntil::M130);
+      CHECK(blob_uuid_it != referenced_blob_uuids_.end());
       const std::string& blob_uuid = *blob_uuid_it++;
       builder_->AppendBlob(blob_uuid, element->get_blob()->offset,
                            element->get_blob()->length, context()->registry());
@@ -585,29 +583,6 @@ void BlobRegistryImpl::RegisterFromStream(
   blobs_being_streamed_.insert(std::move(blob_builder));
   blob_builder_ptr->Start(expected_length, std::move(data),
                           std::move(progress_client));
-}
-
-void BlobRegistryImpl::GetBlobFromUUID(
-    mojo::PendingReceiver<blink::mojom::Blob> blob,
-    const std::string& uuid,
-    GetBlobFromUUIDCallback callback) {
-  if (!context_) {
-    std::move(callback).Run();
-    return;
-  }
-
-  if (uuid.empty()) {
-    receivers_.ReportBadMessage(
-        "Invalid UUID passed to BlobRegistry::GetBlobFromUUID");
-    return;
-  }
-  if (!context_->registry().HasEntry(uuid)) {
-    LOG(ERROR) << "Invalid UUID: " << uuid;
-    std::move(callback).Run();
-    return;
-  }
-  BlobImpl::Create(context_->GetBlobDataFromUUID(uuid), std::move(blob));
-  std::move(callback).Run();
 }
 
 void BlobRegistryImpl::BlobBuildAborted(const std::string& uuid) {

@@ -8,7 +8,8 @@
 
 namespace blink {
 
-WebGLPolygonMode::WebGLPolygonMode(WebGLRenderingContextBase* context)
+WebGLPolygonMode::WebGLPolygonMode(WebGLRenderingContextBase* context,
+                                   ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled("GL_ANGLE_polygon_mode");
 }

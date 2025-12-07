@@ -43,12 +43,12 @@ bool GetMetaDataPaddingBytes(const char* data,
   padding_bytes =
       // NOTE: This cast may convert large unsigned values to negative values.
       // We check for and reject negative values below.
-      static_cast<int32_t>(base::numerics::U32FromBigEndian(
+      static_cast<int32_t>(base::U32FromBigEndian(
           base::as_bytes(
               // TODO(crbug.com/402847551): This span construction is unsound as
               // we can't know that the size is right, the function should be
               // receiving a span.
-              UNSAFE_BUFFERS(base::span(data, size)))
+              UNSAFE_TODO(base::span(data, size)))
               .first<sizeof(padding_bytes)>()));
   size -= sizeof(padding_bytes);
 
@@ -149,7 +149,7 @@ void AudioSocket::PrepareAudioBuffer(net::IOBuffer* audio_buffer,
   auto buffer = base::as_writable_bytes(audio_buffer->span());
 
   buffer.first<sizeof(uint16_t)>().copy_from(
-      base::numerics::U16ToBigEndian(payload_size));
+      base::U16ToBigEndian(payload_size));
   buffer = buffer.subspan(sizeof(uint16_t));
 
   buffer.first<sizeof(uint16_t)>().copy_from(
@@ -172,7 +172,7 @@ bool AudioSocket::SendAudioBuffer(scoped_refptr<net::IOBuffer> audio_buffer,
 
 bool AudioSocket::SendPreparedAudioBuffer(
     scoped_refptr<net::IOBuffer> audio_buffer) {
-  uint16_t payload_size = base::numerics::U16FromBigEndian(
+  uint16_t payload_size = base::U16FromBigEndian(
       base::as_bytes(base::as_bytes(audio_buffer->span()).first<2>()));
   DCHECK_GE(payload_size, kAudioHeaderSize);
   return SendBuffer(0, std::move(audio_buffer),
@@ -265,8 +265,8 @@ void AudioSocket::OnSendUnblocked() {
   base::flat_map<int, scoped_refptr<net::IOBuffer>> pending;
   pending_writes_.swap(pending);
   for (auto& m : pending) {
-    uint16_t message_size = base::numerics::U16FromBigEndian(
-        base::as_bytes(m.second->span().first<2u>()));
+    uint16_t message_size =
+        base::U16FromBigEndian(base::as_bytes(m.second->span().first<2u>()));
     SendBufferToSocket(m.first, std::move(m.second),
                        sizeof(uint16_t) + message_size);
   }
@@ -297,8 +297,8 @@ bool AudioSocket::OnMessage(char* data, size_t size) {
     return false;
   }
 
-  memcpy(&packet_type, data, sizeof(packet_type));
-  data += sizeof(packet_type);
+  UNSAFE_TODO(memcpy(&packet_type, data, sizeof(packet_type)));
+  UNSAFE_TODO(data += sizeof(packet_type));
   size -= sizeof(packet_type);
 
   switch (static_cast<MessageType>(packet_type)) {
@@ -307,7 +307,8 @@ bool AudioSocket::OnMessage(char* data, size_t size) {
       if (!GetMetaDataPaddingBytes(data, size, padding_bytes)) {
         return false;
       }
-      return ParseMetadata(data + sizeof(padding_bytes), size - padding_bytes);
+      return ParseMetadata(UNSAFE_TODO(data + sizeof(padding_bytes)),
+                           size - padding_bytes);
     case MessageType::kAudio:
       return ParseAudio(data, size);
     default:
@@ -323,11 +324,11 @@ bool AudioSocket::OnMessageBuffer(scoped_refptr<net::IOBuffer> buffer,
     return false;
   }
 
-  char* data = buffer->data() + sizeof(uint16_t);
+  char* data = UNSAFE_TODO(buffer->data() + sizeof(uint16_t));
   size -= sizeof(uint16_t);
   int16_t type;
-  memcpy(&type, data, sizeof(type));
-  data += sizeof(type);
+  UNSAFE_TODO(memcpy(&type, data, sizeof(type)));
+  UNSAFE_TODO(data += sizeof(type));
   size -= sizeof(type);
 
   switch (static_cast<MessageType>(type)) {
@@ -336,7 +337,8 @@ bool AudioSocket::OnMessageBuffer(scoped_refptr<net::IOBuffer> buffer,
       if (!GetMetaDataPaddingBytes(data, size, padding_bytes)) {
         return false;
       }
-      return ParseMetadata(data + sizeof(padding_bytes), size - padding_bytes);
+      return ParseMetadata(UNSAFE_TODO(data + sizeof(padding_bytes)),
+                           size - padding_bytes);
     case MessageType::kAudio:
       return ParseAudioBuffer(std::move(buffer), data, size);
     default:
@@ -352,12 +354,12 @@ bool AudioSocket::ParseAudio(char* data, size_t size) {
     return false;
   }
 
-  memcpy(&timestamp, data, sizeof(timestamp));
-  data += sizeof(timestamp);
+  UNSAFE_TODO(memcpy(&timestamp, data, sizeof(timestamp)));
+  UNSAFE_TODO(data += sizeof(timestamp));
   size -= sizeof(timestamp);
 
   // Handle padding bytes.
-  data += sizeof(int32_t);
+  UNSAFE_TODO(data += sizeof(int32_t));
   size -= sizeof(int32_t);
 
   return delegate_->HandleAudioData(data, size, timestamp);
@@ -373,12 +375,12 @@ bool AudioSocket::ParseAudioBuffer(scoped_refptr<net::IOBuffer> buffer,
     return false;
   }
 
-  memcpy(&timestamp, data, sizeof(timestamp));
-  data += sizeof(timestamp);
+  UNSAFE_TODO(memcpy(&timestamp, data, sizeof(timestamp)));
+  UNSAFE_TODO(data += sizeof(timestamp));
   size -= sizeof(timestamp);
 
   // Handle padding bytes.
-  data += sizeof(int32_t);
+  UNSAFE_TODO(data += sizeof(int32_t));
   size -= sizeof(int32_t);
 
   return delegate_->HandleAudioBuffer(std::move(buffer), data, size, timestamp);

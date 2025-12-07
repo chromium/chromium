@@ -7,7 +7,7 @@
 
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
 #include "chrome/browser/ash/input_method/suggestion_handler_interface.h"
-#include "chrome/browser/ash/input_method/ui/suggestion_details.h"
+#include "chrome/browser/ui/ash/input_method/suggestion_details.h"
 
 namespace ash {
 namespace input_method {
@@ -41,7 +41,6 @@ class FakeSuggestionHandler : public SuggestionHandlerInterface {
   bool AcceptSuggestionCandidate(int context_id,
                                  const std::u16string& candidate,
                                  size_t delete_previous_utf16_len,
-                                 bool use_replace_surrounding_text,
                                  std::string* error) override;
   bool SetAssistiveWindowProperties(
       int context_id,

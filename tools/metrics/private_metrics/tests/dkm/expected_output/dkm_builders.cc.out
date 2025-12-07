@@ -1,0 +1,45 @@
+// Generated from gen_private_metrics_builders.py.  DO NOT EDIT!
+// source: dkm.xml
+
+#include "test-relpath/dkm_builders.h"
+
+#include "base/metrics/metrics_hashes.h"
+
+namespace metrics::private_metrics::builders::dkm {
+
+const char PrivateMetricsTestMetric::kEntryName[] = "PrivateMetricsTestMetric";
+const uint64_t PrivateMetricsTestMetric::kEntryNameHash;
+
+PrivateMetricsTestMetric::PrivateMetricsTestMetric(ukm::SourceIdObj source_id) :
+  internal::DkmEntryBuilderBase(source_id, kEntryNameHash) {
+  AddToStudiesOfInterestInternal(kStudyAName);
+  AddToStudiesOfInterestInternal(kStudyBName);
+  AddToStudiesOfInterestInternal(kStudyCName);
+
+}
+
+PrivateMetricsTestMetric::PrivateMetricsTestMetric(PrivateMetricsTestMetric&&) = default;
+
+PrivateMetricsTestMetric& PrivateMetricsTestMetric::operator=(PrivateMetricsTestMetric&&) = default;
+
+PrivateMetricsTestMetric::~PrivateMetricsTestMetric() = default;
+
+
+const char PrivateMetricsTestMetric::kHasVideoName[] = "HasVideo";
+const uint64_t PrivateMetricsTestMetric::kHasVideoNameHash;
+
+PrivateMetricsTestMetric& PrivateMetricsTestMetric::SetHasVideo(int64_t value) {
+  SetMetricInternal(kHasVideoNameHash, value);
+  return *this;
+}
+
+const char PrivateMetricsTestMetric::kLatencyName[] = "Latency";
+const uint64_t PrivateMetricsTestMetric::kLatencyNameHash;
+
+PrivateMetricsTestMetric& PrivateMetricsTestMetric::SetLatency(int64_t value) {
+  SetMetricInternal(kLatencyNameHash, value);
+  return *this;
+}
+
+
+}  // namespace metrics::private_metrics::builders::dkm

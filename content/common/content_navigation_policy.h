@@ -5,27 +5,10 @@
 #ifndef CONTENT_COMMON_CONTENT_NAVIGATION_POLICY_H_
 #define CONTENT_COMMON_CONTENT_NAVIGATION_POLICY_H_
 
-#include "base/feature_list.h"
-#include "content/common/content_export.h"
-
 #include <array>
 #include <string>
 
-namespace features {
-
-// The BackForwardCache_NoMemoryLimit_Trial feature flag's sole purpose is to
-// make it possible to get a group for "all devices except when BackForwardCache
-// feature is specifically disabled due to non-memory-control reasons". This is
-// done by querying the flag if and only if the device satisifes one of the
-// following:
-// 1) The device does not have enough memory for BackForwardCache, or
-// 2) The device has enough memory and the BackForwardCache feature is enabled.
-// With that, we will include the devices that don't have enough memory while
-// avoiding activating the BackForwardCache experiment, and won’t include
-// devices that do have enough memory but have the BackForwardCache flag
-// disabled.
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kBackForwardCache_NoMemoryLimit_Trial);
-}  // namespace features
+#include "content/common/content_export.h"
 
 namespace content {
 
@@ -56,22 +39,25 @@ enum class RenderDocumentLevel {
   kAllFrames = 4,
 };
 
-// Whether same-site navigations will result in a change of RenderFrameHosts,
-// which will happen when RenderDocument is enabled. Due to the various levels
-// of the feature, the result may differ depending on whether the
-// RenderFrameHost is a main/local root/non-local-root frame, whether it has
+// Whether same-SiteInstance navigations will result in a change of
+// RenderFrameHosts, which will happen when RenderDocument is enabled. Due to
+// the various levels of the feature, the result may differ depending on whether
+// the RenderFrameHost is a main/local root/non-local-root frame, whether it has
 // committed any navigations or not, and whether it's a crashed frame that
 // must be replaced or not.
+// Note: It is up to the caller to ensure this is called for same-SiteInstance
+// navigations.
 CONTENT_EXPORT bool ShouldCreateNewRenderFrameHostOnSameSiteNavigation(
     bool is_main_frame,
     bool is_local_root = true,
     bool has_committed_any_navigation = true,
-    bool must_be_replaced = false);
+    bool must_be_replaced = false,
+    bool client_overrides_level = false);
 CONTENT_EXPORT bool ShouldCreateNewHostForAllFrames();
 CONTENT_EXPORT RenderDocumentLevel GetRenderDocumentLevel();
 CONTENT_EXPORT std::string GetRenderDocumentLevelName(
     RenderDocumentLevel level);
-CONTENT_EXPORT extern const char kRenderDocumentLevelParameterName[];
+inline constexpr char kRenderDocumentLevelParameterName[] = "level";
 
 // If this is false we continue the old behaviour of doing an early call to
 // RenderFrameHostManager::CommitPending when we are replacing a crashed
@@ -103,13 +89,14 @@ CONTENT_EXPORT bool ShouldAvoidRedundantNavigationCancellations();
 // Returns true if GetNavigationQueueingFeatureLevel() is kFull.
 CONTENT_EXPORT bool ShouldQueueNavigationsWhenPendingCommitRFHExists();
 
-// As part of the Citadel desktop protections, we want to stop allowing calls to
-// CanAccessDataForOrigin on the IO thread, and only allow it on the UI thread.
-CONTENT_EXPORT bool ShouldRestrictCanAccessDataForOriginToUIThread();
-
 // Returns true if data: URL subframes should be put in a separate SiteInstance
 // in the SiteInstanceGroup of the initiator.
 CONTENT_EXPORT bool ShouldCreateSiteInstanceForDataUrls();
+
+// Returns true if non-isolated sites should be put in a default
+// SiteInstanceGroup in separate SiteInstances, rather than sharing a default
+// SiteInstance.
+CONTENT_EXPORT bool ShouldUseDefaultSiteInstanceGroup();
 }  // namespace content
 
 #endif  // CONTENT_COMMON_CONTENT_NAVIGATION_POLICY_H_

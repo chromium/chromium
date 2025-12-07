@@ -1,39 +1,7 @@
 /* Portions are Copyright (C) 2011 Google Inc */
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is the Netscape Portable Runtime (NSPR).
- *
- * The Initial Developer of the Original Code is
- * Netscape Communications Corporation.
- * Portions created by the Initial Developer are Copyright (C) 1998-2000
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 /*
  *---------------------------------------------------------------------------
@@ -88,11 +56,11 @@ typedef enum { PR_FAILURE = -1, PR_SUCCESS = 0 } PRStatus;
 /************************* TYPES AND CONSTANTS ************************/
 /**********************************************************************/
 
-#define PR_MSEC_PER_SEC		1000UL
-#define PR_USEC_PER_SEC		1000000UL
-#define PR_NSEC_PER_SEC		1000000000UL
-#define PR_USEC_PER_MSEC	1000UL
-#define PR_NSEC_PER_MSEC	1000000UL
+#define PR_MSEC_PER_SEC     1000L
+#define PR_USEC_PER_SEC     1000000L
+#define PR_NSEC_PER_SEC     1000000000L
+#define PR_USEC_PER_MSEC    1000L
+#define PR_NSEC_PER_MSEC    1000000L
 
 /*
  * PRTime --
@@ -145,21 +113,21 @@ typedef struct PRTimeParameters {
  */
 
 typedef struct PRExplodedTime {
-    PRInt32 tm_usec;		    /* microseconds past tm_sec (0-99999)  */
+    PRInt32 tm_usec;            /* microseconds past tm_sec (0-99999)  */
     PRInt32 tm_sec;             /* seconds past tm_min (0-61, accomodating
-                                   up to two leap seconds) */	
+                                   up to two leap seconds) */
     PRInt32 tm_min;             /* minutes past tm_hour (0-59) */
     PRInt32 tm_hour;            /* hours past tm_day (0-23) */
     PRInt32 tm_mday;            /* days past tm_mon (1-31, note that it
-				                starts from 1) */
+                                starts from 1) */
     PRInt32 tm_month;           /* months past tm_year (0-11, Jan = 0) */
     PRInt16 tm_year;            /* absolute year, AD (note that we do not
-				                count from 1900) */
+                                count from 1900) */
 
-    PRInt8 tm_wday;		        /* calculated day of the week
-				                (0-6, Sun = 0) */
+    PRInt8 tm_wday;             /* calculated day of the week
+                                (0-6, Sun = 0) */
     PRInt16 tm_yday;            /* calculated day of the year
-				                (0-365, Jan 1 = 0) */
+                                (0-365, Jan 1 = 0) */
 
     PRTimeParameters tm_params;  /* time parameters used by conversion */
 } PRExplodedTime;
@@ -256,8 +224,8 @@ NSPR_API(PRTimeParameters) PR_GMTParameters(const PRExplodedTime *gmt);
  */
 
 BASE_EXPORT PRStatus PR_ParseTimeString (
-	const char *string,
-	PRBool default_to_gmt,
-	PRTime *result);
+    const char *string,
+    PRBool default_to_gmt,
+    PRTime *result);
 
 #endif  // BASE_PRTIME_H__

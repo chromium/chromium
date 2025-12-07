@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/chrome_elf/nt_registry/nt_registry.h"
 
 #include <windows.h>
@@ -14,6 +9,10 @@
 #include <rpc.h>
 #include <stddef.h>
 
+#include <array>
+#include <string_view>
+
+#include "base/containers/span.h"
 #include "base/test/test_reg_util_win.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
@@ -122,19 +121,19 @@ void DoRedirectTest(nt::ROOT_KEY nt_root_key,
 }
 
 // These test reg paths match |kClassesSubtree| in nt_registry.cc.
-constexpr const wchar_t* kClassesRedirects[] = {
-    L"SOFTWARE\\Classes\\CLSID\\chrome_testing",
-    L"SOFTWARE\\Classes\\WOW6432Node\\CLSID\\chrome_testing",
-    L"SOFTWARE\\Classes\\DirectShow\\chrome_testing",
-    L"SOFTWARE\\Classes\\WOW6432Node\\DirectShow\\chrome_testing",
-    L"SOFTWARE\\Classes\\Interface\\chrome_testing",
-    L"SOFTWARE\\Classes\\WOW6432Node\\Interface\\chrome_testing",
-    L"SOFTWARE\\Classes\\Media Type\\chrome_testing",
-    L"SOFTWARE\\Classes\\WOW6432Node\\Media Type\\chrome_testing",
-    L"SOFTWARE\\Classes\\MediaFoundation\\chrome_testing",
-    L"SOFTWARE\\Classes\\WOW6432Node\\MediaFoundation\\chrome_testing"};
+constexpr std::array<std::wstring_view, 10> kClassesRedirects =
+    {L"SOFTWARE\\Classes\\CLSID\\chrome_testing",
+     L"SOFTWARE\\Classes\\WOW6432Node\\CLSID\\chrome_testing",
+     L"SOFTWARE\\Classes\\DirectShow\\chrome_testing",
+     L"SOFTWARE\\Classes\\WOW6432Node\\DirectShow\\chrome_testing",
+     L"SOFTWARE\\Classes\\Interface\\chrome_testing",
+     L"SOFTWARE\\Classes\\WOW6432Node\\Interface\\chrome_testing",
+     L"SOFTWARE\\Classes\\Media Type\\chrome_testing",
+     L"SOFTWARE\\Classes\\WOW6432Node\\Media Type\\chrome_testing",
+     L"SOFTWARE\\Classes\\MediaFoundation\\chrome_testing",
+     L"SOFTWARE\\Classes\\WOW6432Node\\MediaFoundation\\chrome_testing"};
 
-static_assert((_countof(kClassesRedirects) & 0x01) == 0,
+static_assert((std::size(kClassesRedirects) & 0x01) == 0,
               "Must have an even number of kClassesRedirects.");
 
 // This test does NOT use NtRegistryTest class.  It requires Windows WOW64
@@ -142,14 +141,14 @@ static_assert((_countof(kClassesRedirects) & 0x01) == 0,
 // layer.
 TEST(NtRegistryTestRedirection, Wow64RedirectionHKCU) {
   // Using two elements for each loop.
-  for (size_t index = 0; index < _countof(kClassesRedirects); index += 2) {
-    DoRedirectTest(nt::HKCU, kClassesRedirects[index],
-                   kClassesRedirects[index + 1]);
+  for (size_t index = 0; index < kClassesRedirects.size(); index += 2) {
+    DoRedirectTest(nt::HKCU, kClassesRedirects[index].data(),
+                   kClassesRedirects[index + 1].data());
   }
 }
 
 // These test reg paths match |kHklmSoftwareSubtree| in nt_registry.cc.
-constexpr const wchar_t* kHKLMNoRedirects[] = {
+constexpr std::array<std::wstring_view, 49> kHKLMNoRedirects = {
     L"SOFTWARE\\Classes\\chrome_testing",
     L"SOFTWARE\\Clients\\chrome_testing",
     L"SOFTWARE\\Microsoft\\COM3\\chrome_testing",
@@ -234,15 +233,15 @@ TEST(NtRegistryTestRedirection, DISABLED_Wow64RedirectionHKLM) {
                  L"SOFTWARE\\WOW6432Node\\chrome_testing");
 
   // 2) Except some subkeys are not.
-  for (size_t index = 0; index < _countof(kHKLMNoRedirects); ++index) {
-    DoRedirectTest(nt::HKLM, kHKLMNoRedirects[index], nullptr);
+  for (size_t index = 0; index < kHKLMNoRedirects.size(); ++index) {
+    DoRedirectTest(nt::HKLM, kHKLMNoRedirects[index].data(), nullptr);
   }
 
   // 3) But then some Classes subkeys are redirected.
   // Using two elements for each loop.
-  for (size_t index = 0; index < _countof(kClassesRedirects); index += 2) {
-    DoRedirectTest(nt::HKLM, kClassesRedirects[index],
-                   kClassesRedirects[index + 1]);
+  for (size_t index = 0; index < kClassesRedirects.size(); index += 2) {
+    DoRedirectTest(nt::HKLM, kClassesRedirects[index].data(),
+                   kClassesRedirects[index + 1].data());
   }
 
   // 4) And just make sure other Classes subkeys are shared.
@@ -358,10 +357,8 @@ TEST_F(NtRegistryTest, ApiSz) {
   const wchar_t* sz_val_name3 = L"SzTestValueMalformed";
   const wchar_t* sz_val_name4 = L"SzTestValueMalformed2";
   std::wstring sz_val3 = L"malformed";
-  BYTE* sz_val3_byte = reinterpret_cast<BYTE*>(&sz_val3[0]);
-  std::vector<BYTE> malform;
-  for (size_t i = 0; i < (sz_val3.size() * sizeof(wchar_t)); i++)
-    malform.push_back(sz_val3_byte[i]);
+  auto malform_span = base::as_byte_span(sz_val3);
+  std::vector<BYTE> malform(malform_span.begin(), malform_span.end());
   const wchar_t* sz_val_name5 = L"SzTestValueSize0";
 
   // Create a subkey to play under.
@@ -461,10 +458,8 @@ TEST_F(NtRegistryTest, ApiMultiSz) {
   // ------------------------------
   std::wstring multisz_val3 = L"malformed";
   multisz_val_set.push_back(multisz_val3);
-  BYTE* multisz_val3_byte = reinterpret_cast<BYTE*>(&multisz_val3[0]);
-  std::vector<BYTE> malform;
-  for (size_t i = 0; i < (multisz_val3.size() * sizeof(wchar_t)); i++)
-    malform.push_back(multisz_val3_byte[i]);
+  auto malform_span = base::as_byte_span(multisz_val3);
+  std::vector<BYTE> malform(malform_span.begin(), malform_span.end());
 
   // 3.1: No null terminator.
   // ------------------------------

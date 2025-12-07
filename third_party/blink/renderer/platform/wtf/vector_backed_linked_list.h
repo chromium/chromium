@@ -12,12 +12,17 @@
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partition_allocator.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/sanitizers.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
-namespace WTF {
+namespace blink {
+
+template <typename ValueArg, typename TraitsArg, typename Allocator>
+class LinkedHashSet;
 
 // VectorBackedLinkedList iterators are not invalidated by mutation of the
 // collection, unless they point to removed items. This means, for example, that
@@ -67,7 +72,7 @@ class VectorBackedLinkedListNode {
   void Trace(auto visitor) const
     requires Allocator::kIsGarbageCollected
   {
-    if (!WTF::IsWeak<ValueType>::value) {
+    if (!IsWeakV<ValueType>) {
       visitor->Trace(value_);
     }
   }
@@ -76,6 +81,7 @@ class VectorBackedLinkedListNode {
   // VectorBackedLinkedList won't be initialized with memset.
   wtf_size_t prev_index_ = kNotFound;
   wtf_size_t next_index_ = kNotFound;
+  GC_PLUGIN_IGNORE("crbug.com/428987863")
   ValueType value_ = HashTraits<ValueType>::EmptyValue();
 };
 
@@ -101,17 +107,17 @@ struct VectorTraits<VectorBackedLinkedListNode<ValueType, Allocator>>
 };
 
 template <typename ValueType, typename Traits, typename Allocator>
-class ConstructTraits<VectorBackedLinkedListNode<ValueType, Allocator>,
+class ConstructTraits<blink::VectorBackedLinkedListNode<ValueType, Allocator>,
                       Traits,
                       Allocator> {
   STATIC_ONLY(ConstructTraits);
 
-  using Node = VectorBackedLinkedListNode<ValueType, Allocator>;
+  using Node = blink::VectorBackedLinkedListNode<ValueType, Allocator>;
 
  public:
   template <typename... Args>
   static Node* Construct(void* location, Args&&... args) {
-    return new (NotNullTag::kNotNull, location)
+    return new (base::NotNullTag::kNotNull, location)
         Node(std::forward<Args>(args)...);
   }
 
@@ -127,8 +133,8 @@ class ConstructTraits<VectorBackedLinkedListNode<ValueType, Allocator>,
     return object;
   }
 
-  static void NotifyNewElements(Node* array, size_t len) {
-    Allocator::template NotifyNewObjects<Node, Traits>(array, len);
+  static void NotifyNewElements(base::span<Node> nodes) {
+    Allocator::template NotifyNewObjects<Node, Traits>(nodes);
   }
 
  private:
@@ -163,11 +169,15 @@ class ConstructTraits<VectorBackedLinkedListNode<ValueType, Allocator>,
 // iterating it yields values in the order in which they were inserted.
 // The linked list is implementing in a vector (with links being indexes instead
 // of pointers), to simplify the move of backing during GC compaction.
+//
+// Unlike normal linked-list implementations, keeping a pointer to an element is
+// unsafe because elements would be moved by vector buffer reallocation. Use
+// index numbers instead.
 template <typename ValueType, typename Allocator = PartitionAllocator>
 class VectorBackedLinkedList {
   USE_ALLOCATOR(VectorBackedLinkedList, Allocator);
 
-  static_assert(!IsStackAllocatedType<ValueType>);
+  static_assert(!IsStackAllocatedTypeV<ValueType>);
 
  private:
   using Node = VectorBackedLinkedListNode<ValueType, Allocator>;
@@ -188,6 +198,9 @@ class VectorBackedLinkedList {
   using const_reverse_iterator =
       VectorBackedLinkedListConstReverseIterator<VectorBackedLinkedList>;
 
+  VectorBackedLinkedList();
+  ~VectorBackedLinkedList() = default;
+
   void swap(VectorBackedLinkedList&);
 
   bool empty() const { return size_ == 0; }
@@ -196,9 +209,9 @@ class VectorBackedLinkedList {
   iterator begin() { return MakeIterator(UsedFirstIndex()); }
   const_iterator begin() const { return MakeConstIterator(UsedFirstIndex()); }
   const_iterator cbegin() const { return MakeConstIterator(UsedFirstIndex()); }
-  iterator end() { return MakeIterator(anchor_index_); }
-  const_iterator end() const { return MakeConstIterator(anchor_index_); }
-  const_iterator cend() const { return MakeConstIterator(anchor_index_); }
+  iterator end() { return MakeIterator(kAnchorIndex); }
+  const_iterator end() const { return MakeConstIterator(kAnchorIndex); }
+  const_iterator cend() const { return MakeConstIterator(kAnchorIndex); }
   reverse_iterator rbegin() { return MakeReverseIterator(UsedLastIndex()); }
   const_reverse_iterator rbegin() const {
     return MakeConstReverseIterator(UsedLastIndex());
@@ -206,13 +219,14 @@ class VectorBackedLinkedList {
   const_reverse_iterator crbegin() const {
     return MakeConstReverseIterator(UsedLastIndex());
   }
-  reverse_iterator rend() { return MakeReverseIterator(anchor_index_); }
+  reverse_iterator rend() { return MakeReverseIterator(kAnchorIndex); }
   const_reverse_iterator rend() const {
-    return MakeConstReverseIterator(anchor_index_);
+    return MakeConstReverseIterator(kAnchorIndex);
   }
   const_reverse_iterator crend() const {
-    return MakeConstReverseIterator(anchor_index_);
+    return MakeConstReverseIterator(kAnchorIndex);
   }
+  iterator MakeIterator(wtf_size_t index) { return iterator(index, this); }
 
   Value& front();
   const Value& front() const;
@@ -251,9 +265,9 @@ class VectorBackedLinkedList {
   void clear() {
     // Keep anchor so that we can insert elements after this operation.
     nodes_.ShrinkCapacity(1);
-    nodes_[anchor_index_].prev_index_ = anchor_index_;
-    nodes_[anchor_index_].next_index_ = anchor_index_;
-    free_head_index_ = anchor_index_;
+    nodes_[kAnchorIndex].prev_index_ = kAnchorIndex;
+    nodes_[kAnchorIndex].next_index_ = kAnchorIndex;
+    free_head_index_ = kAnchorIndex;
     size_ = 0;
   }
 
@@ -261,7 +275,7 @@ class VectorBackedLinkedList {
     requires Allocator::kIsGarbageCollected
   {
     nodes_.Trace(visitor);
-    if (WTF::IsWeak<ValueType>::value) {
+    if (IsWeakV<ValueType>) {
       visitor->template RegisterWeakCallbackMethod<
           VectorBackedLinkedList,
           &VectorBackedLinkedList::ProcessCustomWeakness>(this);
@@ -269,30 +283,16 @@ class VectorBackedLinkedList {
   }
 
  private:
-  // The constructors are private, because the class is used only by
-  // LinkedHashSet and we don't want it to be instantiated directly otherwise.
-  // There are a couple resonts for that:
-  // 1. We know that usage of VectorBackedLinkedList in LinkedHashSet is safe,
-  //    since it is limited to Member and WeakMember for GCed sets. Other
-  //    potential usages might not be safe.
-  // 2. LinkedHashSet relies on indices inside VectorBackedLinkedList not
-  //    changing. Usage of VectorBackedLinkedList outside of LinkedHashSet may
-  //    encourage code optimizations that may break that assumption.
-  VectorBackedLinkedList();
   VectorBackedLinkedList(const VectorBackedLinkedList&) = default;
   VectorBackedLinkedList(VectorBackedLinkedList&&) = default;
   VectorBackedLinkedList& operator=(const VectorBackedLinkedList&) = default;
   VectorBackedLinkedList& operator=(VectorBackedLinkedList&&) = default;
-  ~VectorBackedLinkedList() = default;
 
-  bool IsFreeListEmpty() const { return free_head_index_ == anchor_index_; }
+  bool IsFreeListEmpty() const { return free_head_index_ == kAnchorIndex; }
 
-  wtf_size_t UsedFirstIndex() const {
-    return nodes_[anchor_index_].next_index_;
-  }
-  wtf_size_t UsedLastIndex() const { return nodes_[anchor_index_].prev_index_; }
+  wtf_size_t UsedFirstIndex() const { return nodes_[kAnchorIndex].next_index_; }
+  wtf_size_t UsedLastIndex() const { return nodes_[kAnchorIndex].prev_index_; }
 
-  iterator MakeIterator(wtf_size_t index) { return iterator(index, this); }
   const_iterator MakeConstIterator(wtf_size_t index) const {
     return const_iterator(index, this);
   }
@@ -307,7 +307,7 @@ class VectorBackedLinkedList {
     return 0 <= index && index < nodes_.size();
   }
 
-  bool IsAnchor(wtf_size_t index) const { return index == anchor_index_; }
+  bool IsAnchor(wtf_size_t index) const { return index == kAnchorIndex; }
 
   void Unlink(const Node&);
 
@@ -328,11 +328,11 @@ class VectorBackedLinkedList {
     }
   }
 
-  VectorType nodes_;
-  static constexpr wtf_size_t anchor_index_ = 0;
+  GC_PLUGIN_IGNORE("crbug.com/428987863") VectorType nodes_;
+  static constexpr wtf_size_t kAnchorIndex = 0;
   // Anchor is not included in the free list, but it serves as the list's
   // terminator.
-  wtf_size_t free_head_index_ = anchor_index_;
+  wtf_size_t free_head_index_ = kAnchorIndex;
   wtf_size_t size_ = 0;
 
   template <typename T, typename U, typename V>
@@ -353,7 +353,7 @@ class VectorBackedLinkedList {
 
 template <typename VectorBackedLinkedListType>
 class VectorBackedLinkedListIterator {
-  DISALLOW_NEW();
+  STACK_ALLOCATED();
 
   using const_iterator =
       VectorBackedLinkedListConstIterator<VectorBackedLinkedListType>;
@@ -405,15 +405,12 @@ class VectorBackedLinkedListIterator {
     return iterator_ == other.iterator_;
   }
 
-  bool operator!=(const VectorBackedLinkedListIterator& other) const {
-    return !(*this == other);
-  }
-
   operator const_iterator() const { return iterator_; }
 
+  // Returns the index number of an element to which this iterator points.
+  wtf_size_t GetIndex() const { return iterator_.GetIndex(); }
+
  private:
-  template <typename T, typename U, typename V>
-  friend class LinkedHashSet;
   template <typename T, typename Allocator>
   friend class VectorBackedLinkedList;
 
@@ -422,14 +419,14 @@ class VectorBackedLinkedListIterator {
       : iterator_(index, container) {}
 
   pointer Get() const { return const_cast<pointer>(iterator_.Get()); }
-  wtf_size_t GetIndex() const { return iterator_.GetIndex(); }
 
   const_iterator iterator_;
 };
 
 template <typename VectorBackedLinkedListType>
 class VectorBackedLinkedListConstIterator {
-  DISALLOW_NEW();
+  STACK_ALLOCATED();
+
  public:
   using value_type = typename VectorBackedLinkedListType::Value;
   using size_type = wtf_size_t;
@@ -483,10 +480,6 @@ class VectorBackedLinkedListConstIterator {
     return index_ == other.index_;
   }
 
-  bool operator!=(const VectorBackedLinkedListConstIterator& other) const {
-    return !(*this == other);
-  }
-
  protected:
   VectorBackedLinkedListConstIterator(
       const wtf_size_t index,
@@ -514,7 +507,7 @@ class VectorBackedLinkedListConstIterator {
 
 template <typename VectorBackedLinkedListType>
 class VectorBackedLinkedListReverseIterator {
-  DISALLOW_NEW();
+  STACK_ALLOCATED();
 
   using const_reverse_iterator =
       VectorBackedLinkedListConstReverseIterator<VectorBackedLinkedListType>;
@@ -565,10 +558,6 @@ class VectorBackedLinkedListReverseIterator {
 
   bool operator==(const VectorBackedLinkedListReverseIterator& other) const {
     return iterator_ == other.iterator_;
-  }
-
-  bool operator!=(const VectorBackedLinkedListReverseIterator& other) const {
-    return !(*this == other);
   }
 
   operator const_reverse_iterator() const { return iterator_; }
@@ -657,7 +646,7 @@ template <typename T, typename Allocator>
 VectorBackedLinkedList<T, Allocator>::VectorBackedLinkedList() {
   // First inserts anchor, which serves as the beginning and the end of
   // the used list.
-  nodes_.push_back(Node(anchor_index_, anchor_index_));
+  nodes_.push_back(Node(kAnchorIndex, kAnchorIndex));
 }
 
 template <typename T, typename Allocator>
@@ -776,8 +765,6 @@ void VectorBackedLinkedList<T, Allocator>::Unlink(const Node& node) {
   next_node.prev_index_ = prev_index;
 }
 
-}  // namespace WTF
-
-using WTF::VectorBackedLinkedList;
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_VECTOR_BACKED_LINKED_LIST_H_

@@ -18,6 +18,7 @@
 namespace syncer {
 
 class SyncChangeProcessor;
+struct EntityData;
 
 // DEPRECATED: new code should use DataTypeSyncBridge instead.
 // See https://www.chromium.org/developers/design-documents/sync/model-api/ for
@@ -50,9 +51,14 @@ class SyncableService {
   // wait (per datatype, if the SyncableService supports multiple).
   virtual void WaitUntilReadyToSync(base::OnceClosure done) = 0;
 
-  // Informs the service to begin syncing the specified synced datatype |type|.
-  // The service should then merge |initial_sync_data| into it's local data,
-  // calling |sync_processor|'s ProcessSyncChanges as necessary to reconcile the
+  // Informs the service that initial sync is about start. This is to allow the
+  // service to differentiate between browser startup and initial sync since
+  // MergeDataAndStartSyncing is called during both.
+  virtual void WillStartInitialSync();
+
+  // Informs the service to begin syncing the specified synced datatype `type`.
+  // The service should then merge `initial_sync_data` into it's local data,
+  // calling `sync_processor`'s ProcessSyncChanges as necessary to reconcile the
   // two. After this, the SyncableService's local data should match the server
   // data, and the service should be ready to receive and process any further
   // SyncChange's as they occur.
@@ -63,13 +69,32 @@ class SyncableService {
       const SyncDataList& initial_sync_data,
       std::unique_ptr<SyncChangeProcessor> sync_processor) = 0;
 
-  // Stop syncing the specified type and reset state.
+  // Stop syncing the specified type and reset state. The syncable service may
+  // want to clear data as a result, specially data that is known to be strictly
+  // bound to an account (and should not be kept in local storage after
+  // signout). Note that, if the syncable service implements such data cleanup
+  // in this function, it should very likely implement analogous logic in
+  // `StayStoppedAndMaybeClearData()` (retries to ensure reliable deletions).
+  // TODO(crbug.com/401453180): Rename this method to
+  // StopSyncingAndMaybeClearData().
   virtual void StopSyncing(DataType type) = 0;
 
   // Notifies the syncable service to stop syncing on browser shutdown. This is
   // a separate method from StopSyncing() to let implementations do something
   // different in case of shutdown.
   virtual void OnBrowserShutdown(DataType type);
+
+  // Notifies the syncable service (while it is not running) that no data should
+  // currently exist, specially data that is known to be strictly bound to an
+  // account (and should not be kept in local storage after signout). This is
+  // triggered when the bridge detects an empty or an invalid metadata upon
+  // profile load, to cover cases like the user being signed out upon profile
+  // load. The main purpose is that, if the syncable service implements some
+  // deletion/cleanup logic in StopSyncing(), this function gives the syncable
+  // service the opportunity to verify or retry those deletions (e.g. if it
+  // previously ran into I/O errors or the browser crashed before changes were
+  // flushed to disk or the account state changed upon startup).
+  virtual void StayStoppedAndMaybeClearData(DataType type);
 
   // SyncChangeProcessor interface.
   // Process a list of new SyncChanges and update the local data as necessary.
@@ -78,6 +103,14 @@ class SyncableService {
   virtual std::optional<ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const SyncChangeList& change_list) = 0;
+
+  // Returns the client tag of the entity data. This is also used as the storage
+  // key for the entity data.
+  virtual std::string GetClientTag(const EntityData& entity_data) const = 0;
+
+  // Whether or not the syncable service is capable of producing a client tag
+  // from `EntityData` (usually remote changes), via GetClientTag().
+  virtual bool SupportsGetClientTag() const;
 
   // Get a WeakPtr to the instance.
   virtual base::WeakPtr<SyncableService> AsWeakPtr() = 0;

@@ -3,9 +3,13 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.password_manager;
 
+
 import android.app.Activity;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Shows the Google Password Manager UI if possible. */
+@NullMarked
 public interface GooglePasswordManagerUIProvider {
     /**
      * Shows the Google Password Manager UI if possible.
@@ -23,6 +27,6 @@ public interface GooglePasswordManagerUIProvider {
      *
      * @param activity The activity from which to launch the Password Checkup.
      * @return Whether launching the Password Checkup was possible or not.
-     **/
+     */
     boolean launchPasswordCheckup(Activity activity);
 }

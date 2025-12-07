@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './strings.m.js';
+import '/strings.m.js';
 import '//resources/ash/common/cr_elements/cr_button/cr_button.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
@@ -46,11 +46,11 @@ export class OfficeFallbackElement extends HTMLElement {
     return OfficeFallbackBrowserProxy.getInstance();
   }
 
-  async connectedCallback() {
-    const tryAgainButton = this.$('#try-again-button')!;
-    const cancelButton = this.$('#cancel-button')!;
-    const okButton = this.$('#ok-button')!;
-    const quickOfficeButton = this.$('#quick-office-button')!;
+  connectedCallback() {
+    const tryAgainButton = this.$('#try-again-button');
+    const cancelButton = this.$('#cancel-button');
+    const okButton = this.$('#ok-button');
+    const quickOfficeButton = this.$('#quick-office-button');
     tryAgainButton.addEventListener(
         'click', () => this.onTryAgainButtonClick());
     cancelButton.addEventListener('click', () => this.onCancelButtonClick());
@@ -59,16 +59,16 @@ export class OfficeFallbackElement extends HTMLElement {
         'click', () => this.onQuickOfficeButtonClick());
     document.addEventListener('keydown', this.onKeyDown.bind(this));
     if (this.enableRetryOption) {
-      this.$('#ok-button')!.style.display = 'none';
+      this.$('#ok-button').style.display = 'none';
     } else {
-      this.$('#try-again-button')!.style.display = 'none';
-      this.$('#cancel-button')!.style.display = 'none';
+      this.$('#try-again-button').style.display = 'none';
+      this.$('#cancel-button').style.display = 'none';
     }
     if (!this.enableQuickOfficeOption) {
-      this.$('#quick-office-button')!.style.display = 'none';
+      this.$('#quick-office-button').style.display = 'none';
     }
     if (this.reasonMessage === '') {
-      this.$('#reason-message')!.style.display = 'none';
+      this.$('#reason-message').style.display = 'none';
     }
   }
 

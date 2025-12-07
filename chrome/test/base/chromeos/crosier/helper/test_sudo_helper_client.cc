@@ -15,6 +15,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -94,7 +95,7 @@ bool TestSudoHelperClient::WaitForServer(base::TimeDelta max_wait) {
 }
 
 TestSudoHelperClient::Result TestSudoHelperClient::RunCommand(
-    const std::string_view command) {
+    std::string_view command) {
   // This is a test-only function that does a blocking call to the test helper
   // process that should already be running. Synchronuos blocking operation is
   // expected in this testing context.
@@ -121,6 +122,11 @@ TestSudoHelperClient::Result TestSudoHelperClient::StartSessionManager(
 
   base::ScopedFD sock;
   Result result = SendDictAndGetResult(dict, &sock);
+
+  // If session_manager failed to start, we should not start the watcher thread.
+  if (result.return_code != 0) {
+    return result;
+  }
 
   session_manager_watcher_thread_ =
       std::make_unique<base::Thread>("SessionManagerWatcherThread");
@@ -157,7 +163,7 @@ void TestSudoHelperClient::EnsureSessionManagerStopped() {
 
 // static
 TestSudoHelperClient::Result TestSudoHelperClient::ConnectAndRunCommand(
-    const std::string_view command) {
+    std::string_view command) {
   return TestSudoHelperClient().RunCommand(command);
 }
 
@@ -167,7 +173,8 @@ base::ScopedFD TestSudoHelperClient::ConnectToServer(
 
   struct sockaddr_un addr = {0};
   addr.sun_family = AF_UNIX;
-  strncpy(addr.sun_path, server_path_.c_str(), sizeof(sockaddr_un::sun_path));
+  UNSAFE_TODO(strncpy(addr.sun_path, server_path_.c_str(),
+                      sizeof(sockaddr_un::sun_path)));
 
   socklen_t addr_len =
       offsetof(struct sockaddr_un, sun_path) + server_path_.size();

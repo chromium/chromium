@@ -29,7 +29,7 @@ namespace manta {
 
 namespace {
 
-constexpr char kOauthConsumerName[] = "manta_orca";
+constexpr base::TimeDelta kTimeout = base::Seconds(30);
 
 using Tone = proto::RequestConfig::Tone;
 
@@ -174,10 +174,10 @@ void OrcaProvider::Call(const std::map<std::string, std::string>& input,
 
   RequestInternal(
       GURL{GetProviderEndpoint(features::IsOrcaUseProdServerEnabled())},
-      kOauthConsumerName, traffic_annotation, request.value(),
-      MantaMetricType::kOrca,
+      traffic_annotation, request.value(), MantaMetricType::kOrca,
       base::BindOnce(&OnServerResponseOrErrorReceived,
-                     std::move(done_callback)));
+                     std::move(done_callback)),
+      kTimeout);
 }
 
 }  // namespace manta

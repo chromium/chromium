@@ -10,10 +10,6 @@ mojom_component("mojom") {
   macro_prefix = "TRACING_MOJOM"
   enabled_features = []
 
-  if (is_linux || is_chromeos) {
-    enabled_features += [ "is_linux_or_chromeos" ]
-  }
-
   sources = [
     "background_tracing_agent.mojom",
     "system_tracing_service.mojom",
@@ -26,7 +22,7 @@ mojom_component("mojom") {
     "//sandbox/policy/mojom",
   ]
 
-  if (!is_nacl && use_blink) {
+  if (use_blink) {
     enabled_features += [ "is_perfetto_supported_os" ]
     sources += [
       "constants.mojom",
@@ -53,7 +49,7 @@ mojom_component("mojom") {
             cpp = "::perfetto::CommitDataRequest::ChunkToPatch::Patch"
           },
           {
-            mojom = "tracing.mojom.ChunkToPatch"
+            mojom = "tracing.mojom.ChunksToPatch"
             cpp = "::perfetto::CommitDataRequest::ChunkToPatch"
           },
           {

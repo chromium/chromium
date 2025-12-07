@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_SYSTEM_SIGNALS_SERVICE_HOST_H_
 #define COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_SYSTEM_SIGNALS_SERVICE_HOST_H_
 
+#include "base/observer_list_types.h"
 #include "components/device_signals/core/common/mojom/system_signals.mojom-forward.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -17,8 +18,20 @@ class SystemSignalsServiceHost : public KeyedService {
  public:
   ~SystemSignalsServiceHost() override = default;
 
+  class Observer : public base::CheckedObserver {
+   public:
+    // Invoked if the systems signals service disconnects.
+    virtual void OnServiceDisconnect() = 0;
+  };
+
   // Returns a pointer to the currently available SystemSignalsService instance.
   virtual device_signals::mojom::SystemSignalsService* GetService() = 0;
+
+  virtual void AddObserver(SystemSignalsServiceHost::Observer* observer) = 0;
+
+  virtual void RemoveObserver(SystemSignalsServiceHost::Observer* observer) = 0;
+
+  virtual void NotifyServiceDisconnect() = 0;
 };
 
 }  // namespace device_signals

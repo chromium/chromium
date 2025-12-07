@@ -1,0 +1,218 @@
+{
+  "ios-vm": {
+    "additional_compile_targets": [
+      "all"
+    ],
+    "isolated_scripts": [
+      {
+        "args": [
+          "--clones",
+          "2",
+          "--platform",
+          "iPhone 16",
+          "--version",
+          "26.0",
+          "--xcodebuild-sim-runner",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "17a400",
+          "--xctest"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module",
+        "module_scheme": "xctest",
+        "name": "ios_chrome_integration_eg2tests_module iPhone 16 26.0",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:4c7290150d1c360cecc6a93c0214dc531585c3ab"
+            }
+          ],
+          "dimensions": {
+            "cpu": "Apple_(Virtual)",
+            "os": "Mac",
+            "pool": "chromium.tests.macvm"
+          },
+          "named_caches": [
+            {
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
+            },
+            {
+              "name": "xcode_ios_17a400",
+              "path": "Xcode.app"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 9
+        },
+        "test": "ios_chrome_integration_eg2tests_module",
+        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
+        "variant_id": "iPhone 16 26.0"
+      },
+      {
+        "args": [
+          "--platform",
+          "iPad (10th generation)",
+          "--version",
+          "26.0",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "17a400",
+          "--xctest"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//ios/chrome/test:ios_chrome_unittests",
+        "module_scheme": "gtest",
+        "name": "ios_chrome_unittests iPad (10th generation) 26.0",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:4c7290150d1c360cecc6a93c0214dc531585c3ab"
+            }
+          ],
+          "dimensions": {
+            "cpu": "Apple_(Virtual)",
+            "os": "Mac",
+            "pool": "chromium.tests.macvm"
+          },
+          "named_caches": [
+            {
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
+            },
+            {
+              "name": "xcode_ios_17a400",
+              "path": "Xcode.app"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "ios_chrome_unittests",
+        "test_id_prefix": "ninja://ios/chrome/test:ios_chrome_unittests/",
+        "variant_id": "iPad (10th generation) 26.0"
+      },
+      {
+        "args": [
+          "--platform",
+          "iPhone 16",
+          "--version",
+          "26.0",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "17a400",
+          "--xctest"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//ios/chrome/test:ios_chrome_unittests",
+        "module_scheme": "gtest",
+        "name": "ios_chrome_unittests iPhone 16 26.0",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:4c7290150d1c360cecc6a93c0214dc531585c3ab"
+            }
+          ],
+          "dimensions": {
+            "cpu": "Apple_(Virtual)",
+            "os": "Mac",
+            "pool": "chromium.tests.macvm"
+          },
+          "named_caches": [
+            {
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
+            },
+            {
+              "name": "xcode_ios_17a400",
+              "path": "Xcode.app"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "ios_chrome_unittests",
+        "test_id_prefix": "ninja://ios/chrome/test:ios_chrome_unittests/",
+        "variant_id": "iPhone 16 26.0"
+      },
+      {
+        "args": [
+          "--platform",
+          "iPhone 16",
+          "--version",
+          "26.0",
+          "--xcodebuild-sim-runner",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "17a400",
+          "--xctest"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//ios/web/shell/test:ios_web_shell_eg2tests_module",
+        "module_scheme": "xctest",
+        "name": "ios_web_shell_eg2tests_module iPhone 16 26.0",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:4c7290150d1c360cecc6a93c0214dc531585c3ab"
+            }
+          ],
+          "dimensions": {
+            "cpu": "Apple_(Virtual)",
+            "os": "Mac",
+            "pool": "chromium.tests.macvm"
+          },
+          "named_caches": [
+            {
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
+            },
+            {
+              "name": "xcode_ios_17a400",
+              "path": "Xcode.app"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "ios_web_shell_eg2tests_module",
+        "test_id_prefix": "ninja://ios/web/shell/test:ios_web_shell_eg2tests_module/",
+        "variant_id": "iPhone 16 26.0"
+      }
+    ]
+  }
+}

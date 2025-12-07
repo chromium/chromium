@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["defaultparagraphseparator","div"],["delete",""]] "<div>foo[bar</div><p>baz]quz" queryCommandValue("defaultparagraphseparator") before
   assert_equals: Wrong result returned expected "p" but got "div"
 [FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["delete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandState("stylewithcss") before
@@ -16,14 +16,6 @@ Found 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foobar<br>baz</p>" but got "<p>foobar</p><p>baz</p>"
 [FAIL] [["defaultparagraphseparator","p"],["delete",""]] "<p>foo[</p><p>]bar<br>baz</p>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foobar<br>baz</p>" but got "<p>foobar</p><p>baz</p>"
-[FAIL] [["delete",""]] "foo<p>{bar</p>}baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<p>baz</p>" but got "foo<p>baz<br></p>"
-[FAIL] [["delete",""]] "<p>foo<br><br>{</p>]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo<br>bar</p>" but got "<p>foo<br>bar<br></p>"
-[FAIL] [["defaultparagraphseparator","div"],["delete",""]] "<p>foo<br><br>{</p><p>}bar</p>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo<br>bar</p>" but got "<p>foo<br>bar<br></p>"
-[FAIL] [["defaultparagraphseparator","p"],["delete",""]] "<p>foo<br><br>{</p><p>}bar</p>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo<br>bar</p>" but got "<p>foo<br>bar<br></p>"
 [FAIL] [["delete",""]] "<table><tbody><tr><th>fo[o<th>bar<th>b]az<tr><td>quz<td>qoz<td>qiz</table>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<table><tbody><tr><th>fo</th><th><br></th><th>az</th></tr><tr><td>quz</td><td>qoz</td><td>qiz</td></tr></tbody></table>" but got "<table><tbody><tr><th>fo</th><th></th><th>az</th></tr><tr><td>quz</td><td>qoz</td><td>qiz</td></tr></tbody></table>"
 [FAIL] [["delete",""]] "<table><tbody><tr><th>[foo<th>bar<th>baz]<tr><td>quz<td>qoz<td>qiz</table>" compare innerHTML

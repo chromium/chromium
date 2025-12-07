@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ACCESSIBILITY_ACCESSIBILITY_TEST_UTILS_H_
 #define CHROME_BROWSER_ASH_ACCESSIBILITY_ACCESSIBILITY_TEST_UTILS_H_
 
+#include <set>
 #include <string>
 #include <vector>
 
@@ -13,7 +14,7 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
-#include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/extensions/extension_browser_test_util.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "ui/base/ime/input_method_base.h"
@@ -21,7 +22,7 @@
 
 namespace ash {
 
-using ContextType = ::extensions::ExtensionBrowserTest::ContextType;
+using ContextType = ::extensions::browser_test_util::ContextType;
 using ::extensions::ErrorConsole;
 
 enum class ManifestVersion { kTwo, kThree };
@@ -75,6 +76,9 @@ class CaretBoundsChangedWaiter : public ui::InputMethodObserver {
 //        browser()->profile(), extension_misc::kSelectToSpeakExtensionId);
 class ExtensionConsoleErrorObserver : public ErrorConsole::Observer {
  public:
+  static constexpr char16_t kErrorBrowserIsShuttingDown[] =
+      u"The browser is shutting down.";
+
   ExtensionConsoleErrorObserver(Profile* profile, const char* extension_id);
   virtual ~ExtensionConsoleErrorObserver();
 
@@ -93,31 +97,13 @@ class ExtensionConsoleErrorObserver : public ErrorConsole::Observer {
   // Get the number of errors and warnings received.
   size_t GetErrorsAndWarningsCount() const;
 
+  // Add an allowed error message.
+  void AddAllowedError(const std::u16string& allowed);
+
  private:
   std::vector<std::u16string> errors_;
   raw_ptr<ErrorConsole> error_console_;
-};
-
-// Listens for changes to the histogram provided at construction. This class
-// only allows `Wait()` to be called once. If you need to call `Wait()` multiple
-// times, create multiple instances of this class.
-class HistogramWaiter {
- public:
-  explicit HistogramWaiter(const char* metric_name);
-  ~HistogramWaiter();
-  HistogramWaiter(const HistogramWaiter&) = delete;
-  HistogramWaiter& operator=(const HistogramWaiter&) = delete;
-
-  // Waits for the next update to the observed histogram.
-  void Wait();
-  void OnHistogramCallback(const char* metric_name,
-                           uint64_t name_hash,
-                           base::HistogramBase::Sample sample);
-
- private:
-  std::unique_ptr<base::StatisticsRecorder::ScopedHistogramSampleObserver>
-      histogram_observer_;
-  base::RunLoop run_loop_;
+  std::set<std::u16string> allowed_errors_;
 };
 
 // FullscreenMagnifierController moves the magnifier window with animation
@@ -141,6 +127,9 @@ class MagnifierAnimationWaiter {
   raw_ptr<FullscreenMagnifierController> controller_;  // not owned
   scoped_refptr<content::MessageLoopRunner> runner_;
 };
+
+// Helper to convert `ManifestVersion` to string.
+std::string ManifestVersionToString(ManifestVersion version);
 
 }  // namespace ash
 #endif  // CHROME_BROWSER_ASH_ACCESSIBILITY_ACCESSIBILITY_TEST_UTILS_H_

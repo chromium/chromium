@@ -22,6 +22,7 @@
 #include "extensions/browser/api/feedback_private/feedback_private_api.h"
 #include "extensions/common/api/feedback_private.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
@@ -56,8 +57,7 @@ void FeedbackDialog::CreateOrShow(
     const extensions::api::feedback_private::FeedbackInfo& info) {
   if (current_instance_) {
     DCHECK(current_instance_->widget_);
-    const Profile* current_profile =
-        current_instance_->profile_keep_alive_.profile();
+    Profile* current_profile = current_instance_->profile_keep_alive_.profile();
     if (profile == current_profile) {
       // Focus the window hosting the dialog that has already been created.
       current_instance_->widget_->Show();
@@ -81,7 +81,7 @@ void FeedbackDialog::CreateOrShow(
 
   current_instance_ = new FeedbackDialog(profile, info);
   gfx::NativeWindow window =
-      chrome::ShowWebDialog(nullptr, profile, current_instance_,
+      chrome::ShowWebDialog(gfx::NativeView(), profile, current_instance_,
                             /*show=*/false);
   current_instance_->widget_ = views::Widget::GetWidgetForNativeWindow(window);
   views::View* root = current_instance_->widget_->GetRootView();
@@ -116,8 +116,8 @@ FeedbackDialog::FeedbackDialog(
   // For other cases, set to none Modal mode so the user can navigate to
   // other windows.
   set_dialog_modal_type(info.flow == FeedbackFlow::kLogin
-                            ? ui::MODAL_TYPE_SYSTEM
-                            : ui::MODAL_TYPE_NONE);
+                            ? ui::mojom::ModalType::kSystem
+                            : ui::mojom::ModalType::kNone);
   set_dialog_size(kDefaultSize);
   set_dialog_title(l10n_util::GetStringUTF16(
       info.flow == FeedbackFlow::kSadTabCrash
@@ -140,8 +140,9 @@ void FeedbackDialog::Show() const {
   // The widget_ is set to null when the FeedbackDialog is constructed.
   // After the following two function calls, it is finally initialized.
   // Therefore, it is safer to check whether the widget_ is null
-  if (this->widget_)
+  if (this->widget_) {
     this->widget_->Show();
+  }
 }
 
 views::Widget* FeedbackDialog::GetWidget() const {

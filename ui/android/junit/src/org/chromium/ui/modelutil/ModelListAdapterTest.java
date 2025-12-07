@@ -59,15 +59,15 @@ public class ModelListAdapterTest {
         }
     }
 
-    private class TestViewBuilder implements ModelListAdapter.ViewBuilder<View> {
+    private static class TestViewBuilder implements MVCListAdapter.ViewBuilder<View> {
         @Override
         public View buildView(ViewGroup parent) {
             return new View(parent.getContext());
         }
     }
 
-    private class TestObject {
-        private String mId;
+    private static class TestObject {
+        private final String mId;
 
         public TestObject(String id) {
             mId = id;
@@ -94,11 +94,11 @@ public class ModelListAdapterTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        ModelListAdapter.ModelList testData = new ModelListAdapter.ModelList();
+        MVCListAdapter.ModelList testData = new MVCListAdapter.ModelList();
         mModel = new PropertyModel(BOOLEAN_PROPERTY, FLOAT_PROPERTY, INT_PROPERTY, OBJECT_PROPERTY);
-        testData.add(new ModelListAdapter.ListItem(VIEW_TYPE_1, mModel));
-        testData.add(new ModelListAdapter.ListItem(VIEW_TYPE_2, mModel));
-        testData.add(new ModelListAdapter.ListItem(VIEW_TYPE_3_INFLATED, mModel));
+        testData.add(new MVCListAdapter.ListItem(VIEW_TYPE_1, mModel));
+        testData.add(new MVCListAdapter.ListItem(VIEW_TYPE_2, mModel));
+        testData.add(new MVCListAdapter.ListItem(VIEW_TYPE_3_INFLATED, mModel));
         mList = new LinearLayout(RuntimeEnvironment.application);
 
         mModelListAdapter = new ModelListAdapter(testData);

@@ -9,14 +9,15 @@ import android.content.Intent;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.creator.CreatorActivity;
+import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
-import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.feed.FeedActionDelegate;
 import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.feed.SingleWebFeedEntryPoint;
-import org.chromium.chrome.browser.feed.signinbottomsheet.SigninBottomSheetCoordinator;
 import org.chromium.chrome.browser.feed.webfeed.CreatorIntentConstants;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -24,17 +25,19 @@ import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.offlinepages.RequestCoordinatorBridge;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
-import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
-import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -43,11 +46,11 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.net.NetError;
 import org.chromium.ui.base.PageTransition;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 
 /** Implements some actions for the Feed */
+@NullMarked
 public class FeedActionDelegateImpl implements FeedActionDelegate {
     private static final String NEW_TAB_URL_HELP = "https://support.google.com/chrome/?p=new_tab";
     private final NativePageNavigationDelegate mNavigationDelegate;
@@ -77,9 +80,11 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
 
     @Override
     public void downloadPage(String url) {
-        RequestCoordinatorBridge.getForProfile(mProfile)
-                .savePageLater(
-                        url, OfflinePageBridge.NTP_SUGGESTIONS_NAMESPACE, true /* user requested*/);
+        RequestCoordinatorBridge requestCoordinatorBridge =
+                RequestCoordinatorBridge.getForProfile(mProfile);
+        assert requestCoordinatorBridge != null;
+        requestCoordinatorBridge.savePageLater(
+                url, OfflinePageBridge.NTP_SUGGESTIONS_NAMESPACE, true /* user requested*/);
     }
 
     @Override
@@ -149,7 +154,9 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
                             new GURL(url),
                             mSnackbarManager,
                             mProfile,
-                            mBottomSheetController);
+                            mBottomSheetController,
+                            new BookmarkManagerOpenerImpl(),
+                            PriceDropNotificationManagerFactory.create(mProfile));
                 });
     }
 
@@ -169,90 +176,72 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
     }
 
     @Override
-    public void showSyncConsentActivity(@SigninAccessPoint int signinAccessPoint) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_SHOW_SIGN_IN_COMMAND)) {
-            SyncConsentActivityLauncherImpl.get()
-                    .launchActivityIfAllowed(mActivity, signinAccessPoint);
-        }
-    }
-
-    @Override
     public void startSigninFlow(@SigninAccessPoint int signinAccessPoint) {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_SHOW_SIGN_IN_COMMAND)) {
             return;
         }
         AccountPickerBottomSheetStrings bottomSheetStrings =
                 new AccountPickerBottomSheetStrings.Builder(
-                                R.string.signin_account_picker_bottom_sheet_title)
+                                mActivity.getString(
+                                        R.string.signin_account_picker_bottom_sheet_title))
                         .build();
-        SigninAndHistorySyncActivityLauncherImpl.get()
-                .launchActivityIfAllowed(
-                        mActivity,
-                        mProfile,
-                        bottomSheetStrings,
-                        SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
-                        SigninAndHistorySyncCoordinator.WithAccountSigninMode
-                                .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                        SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE,
-                        signinAccessPoint);
+        BottomSheetSigninAndHistorySyncConfig config =
+                new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                bottomSheetStrings,
+                                NoAccountSigninMode.BOTTOM_SHEET,
+                                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                HistorySyncConfig.OptInMode.NONE,
+                                mActivity.getString(R.string.history_sync_title),
+                                mActivity.getString(R.string.history_sync_subtitle))
+                        .build();
+
+        @Nullable Intent intent =
+                SigninAndHistorySyncActivityLauncherImpl.get()
+                        .createBottomSheetSigninIntentOrShowError(
+                                mActivity, mProfile, config, signinAccessPoint);
+        if (intent != null) {
+            mActivity.startActivity(intent);
+        }
     }
 
     @Override
     public void showSignInInterstitial(
-            @SigninAccessPoint int signinAccessPoint,
-            BottomSheetController bottomSheetController,
-            WindowAndroid windowAndroid) {
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-            AccountPickerBottomSheetStrings bottomSheetStrings =
-                    new AccountPickerBottomSheetStrings.Builder(
-                                    R.string
-                                            .signin_account_picker_bottom_sheet_title_for_back_of_card_menu_signin)
-                            .setSubtitleStringId(
-                                    R.string
-                                            .signin_account_picker_bottom_sheet_subtitle_for_back_of_card_menu_signin)
-                            .setDismissButtonStringId(R.string.cancel)
-                            .build();
-            SigninAndHistorySyncActivityLauncherImpl.get()
-                    .launchActivityIfAllowed(
-                            mActivity,
-                            mProfile,
-                            bottomSheetStrings,
-                            SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
-                            SigninAndHistorySyncCoordinator.WithAccountSigninMode
-                                    .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                            SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE,
-                            signinAccessPoint);
-            return;
-        }
+            @SigninAccessPoint int signinAccessPoint, BottomSheetController bottomSheetController) {
         AccountPickerBottomSheetStrings bottomSheetStrings =
                 new AccountPickerBottomSheetStrings.Builder(
-                                R.string
-                                        .signin_account_picker_bottom_sheet_title_for_back_of_card_menu_signin)
-                        .setSubtitleStringId(
-                                R.string
-                                        .signin_account_picker_bottom_sheet_subtitle_for_back_of_card_menu_signin_old)
-                        .setDismissButtonStringId(R.string.close)
+                                mActivity.getString(
+                                        R.string
+                                                .signin_account_picker_bottom_sheet_title_for_back_of_card_menu_signin))
+                        .setSubtitleString(
+                                mActivity.getString(
+                                        R.string
+                                                .signin_account_picker_bottom_sheet_subtitle_for_back_of_card_menu_signin))
+                        .setDismissButtonString(mActivity.getString(R.string.cancel))
                         .build();
-        SigninMetricsUtils.logSigninStarted(signinAccessPoint);
-        SigninMetricsUtils.logSigninUserActionForAccessPoint(signinAccessPoint);
-        SigninBottomSheetCoordinator signinCoordinator =
-                new SigninBottomSheetCoordinator(
-                        windowAndroid,
-                        DeviceLockActivityLauncherImpl.get(),
-                        bottomSheetController,
-                        mProfile,
-                        bottomSheetStrings,
-                        null,
-                        signinAccessPoint);
-        signinCoordinator.show();
+        BottomSheetSigninAndHistorySyncConfig config =
+                new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                bottomSheetStrings,
+                                NoAccountSigninMode.BOTTOM_SHEET,
+                                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                HistorySyncConfig.OptInMode.NONE,
+                                mActivity.getString(R.string.history_sync_title),
+                                mActivity.getString(R.string.history_sync_subtitle))
+                        .build();
+
+        @Nullable Intent intent =
+                SigninAndHistorySyncActivityLauncherImpl.get()
+                        .createBottomSheetSigninIntentOrShowError(
+                                mActivity, mProfile, config, signinAccessPoint);
+        if (intent != null) {
+            mActivity.startActivity(intent);
+        }
     }
 
     /**
      * A {@link TabObserver} that observes navigation related events that originate from Feed
      * interactions. Calls reportPageLoaded when navigation completes.
      */
-    private class FeedTabNavigationObserver extends EmptyTabObserver {
+    private static class FeedTabNavigationObserver extends EmptyTabObserver {
         private final boolean mInNewTab;
         private final int mPageId;
         private final PageLoadObserver mPageLoadObserver;

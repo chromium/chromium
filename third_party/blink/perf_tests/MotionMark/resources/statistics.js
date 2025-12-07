@@ -177,50 +177,43 @@ Experiment.defaults =
 };
 
 Regression = Utilities.createClass(
-    function(samples, getComplexity, getFrameLength, startIndex, endIndex, options)
+    // `samples` is [ [ complexity, frameLength ], [ complexity, frameLength ], ... ]
+    // All samples are analyzed. startIndex, endIndex are just stored for use by the caller.
+    function(samples, startIndex, endIndex, options)
     {
-        var targetFrameRate = options["frame-rate"] || 60;
-        var desiredFrameLength = options.desiredFrameLength || 1000/targetFrameRate;
-        var bestProfile;
+        const desiredFrameLength = options.desiredFrameLength;
+        var profile;
 
         if (!options.preferredProfile || options.preferredProfile == Strings.json.profiles.slope) {
-            var slope = this._calculateRegression(samples, getComplexity, getFrameLength, startIndex, endIndex, {
+            profile = this._calculateRegression(samples, {
                 shouldClip: true,
                 s1: desiredFrameLength,
                 t1: 0
             });
-            if (!bestProfile || slope.error < bestProfile.error) {
-                bestProfile = slope;
-                this.profile = Strings.json.profiles.slope;
-            }
-        }
-        if (!options.preferredProfile || options.preferredProfile == Strings.json.profiles.flat) {
-            var flat = this._calculateRegression(samples, getComplexity, getFrameLength, startIndex, endIndex, {
+            this.profile = Strings.json.profiles.slope;
+        } else if (options.preferredProfile == Strings.json.profiles.flat) {
+            profile = this._calculateRegression(samples, {
                 shouldClip: true,
                 s1: desiredFrameLength,
                 t1: 0,
                 t2: 0
             });
-
-            if (!bestProfile || flat.error < bestProfile.error) {
-                bestProfile = flat;
-                this.profile = Strings.json.profiles.flat;
-            }
+            this.profile = Strings.json.profiles.flat;
         }
 
         this.startIndex = Math.min(startIndex, endIndex);
         this.endIndex = Math.max(startIndex, endIndex);
 
-        this.complexity = bestProfile.complexity;
-        this.s1 = bestProfile.s1;
-        this.t1 = bestProfile.t1;
-        this.s2 = bestProfile.s2;
-        this.t2 = bestProfile.t2;
-        this.stdev1 = bestProfile.stdev1;
-        this.stdev2 = bestProfile.stdev2;
-        this.n1 = bestProfile.n1;
-        this.n2 = bestProfile.n2;
-        this.error = bestProfile.error;
+        this.complexity = profile.complexity;
+        this.s1 = profile.s1;
+        this.t1 = profile.t1;
+        this.s2 = profile.s2;
+        this.t2 = profile.t2;
+        this.stdev1 = profile.stdev1;
+        this.stdev2 = profile.stdev2;
+        this.n1 = profile.n1;
+        this.n2 = profile.n2;
+        this.error = profile.error;
     }, {
 
     valueAt: function(complexity)
@@ -241,11 +234,14 @@ Regression = Utilities.createClass(
     //
     // x is assumed to be complexity, y is frame length. Can be used for pure complexity-FPS
     // analysis or for ramp controllers since complexity monotonically decreases with time.
-    _calculateRegression: function(samples, getComplexity, getFrameLength, startIndex, endIndex, options)
+    _calculateRegression: function(samples, options)
     {
-        if (startIndex == endIndex) {
+        const complexityIndex = 0;
+        const frameLengthIndex = 1;
+
+        if (samples.length == 1) {
             // Only one sample point; we can't calculate any regression.
-            var x = getComplexity(samples, startIndex);
+            var x = samples[0][complexityIndex];
             return {
                 complexity: x,
                 s1: x,
@@ -257,17 +253,19 @@ Regression = Utilities.createClass(
             };
         }
 
+        // Sort by increasing complexity.
+        var sortedSamples = samples.slice().sort((a, b) => a[complexityIndex] - b[complexityIndex]);
+        
         // x is expected to increase in complexity
-        var iterationDirection = endIndex > startIndex ? 1 : -1;
-        var lowComplexity = getComplexity(samples, startIndex);
-        var highComplexity = getComplexity(samples, endIndex);
+        var lowComplexity = sortedSamples[0][complexityIndex];
+        var highComplexity = sortedSamples[samples.length - 1][complexityIndex];
+
         var a1 = 0, b1 = 0, c1 = 0, d1 = 0, h1 = 0, k1 = 0;
         var a2 = 0, b2 = 0, c2 = 0, d2 = 0, h2 = 0, k2 = 0;
 
-        // Iterate from low to high complexity
-        for (var i = startIndex; iterationDirection * (endIndex - i) > -1; i += iterationDirection) {
-            var x = getComplexity(samples, i);
-            var y = getFrameLength(samples, i);
+        for (var i = 0; i < sortedSamples.length; ++i) {
+            var x = sortedSamples[i][complexityIndex];
+            var y = sortedSamples[i][frameLengthIndex];
             a2 += 1;
             b2 += x;
             c2 += x * x;
@@ -287,9 +285,9 @@ Regression = Utilities.createClass(
             t2_best = t2;
             error2_best = error2;
             // Number of samples included in the first segment, inclusive of splitIndex
-            n1_best = iterationDirection * (splitIndex - startIndex) + 1;
+            n1_best = splitIndex + 1;
             // Number of samples included in the second segment
-            n2_best = iterationDirection * (endIndex - splitIndex);
+            n2_best = samples.length - splitIndex - 1;
             if (!options.shouldClip || (x_prime >= lowComplexity && x_prime <= highComplexity))
                 x_best = x_prime;
             else {
@@ -298,21 +296,21 @@ Regression = Utilities.createClass(
             }
         }
 
-        // Iterate from startIndex to endIndex - 1, inclusive
-        for (var i = startIndex; iterationDirection * (endIndex - i) > 0; i += iterationDirection) {
-            var x = getComplexity(samples, i);
-            var y = getFrameLength(samples, i);
+        // Iterate from 0 to n - 2, inclusive
+        for (var i = 0; i < sortedSamples.length - 1; ++i) {
+            var x = sortedSamples[i][complexityIndex];
+            var y = sortedSamples[i][frameLengthIndex];
             var xx = x * x;
             var yx = y * x;
             var yy = y * y;
-            // a1, b1, etc. is sum from startIndex to i, inclusive
+            // a1, b1, etc. is sum from 0 to i, inclusive
             a1 += 1;
             b1 += x;
             c1 += xx;
             d1 += y;
             h1 += yx;
             k1 += yy;
-            // a2, b2, etc. is sum from i+1 to endIndex, inclusive
+            // a2, b2, etc. is sum from i+1 to sortedSamples.length - 1, inclusive
             a2 -= 1;
             b2 -= x;
             c2 -= xx;
@@ -336,7 +334,7 @@ Regression = Utilities.createClass(
             var error1 = (k1 + a1*s1*s1 + c1*t1*t1 - 2*d1*s1 - 2*h1*t1 + 2*b1*s1*t1) || Number.MAX_VALUE;
             var error2 = (k2 + a2*s2*s2 + c2*t2*t2 - 2*d2*s2 - 2*h2*t2 + 2*b2*s2*t2) || Number.MAX_VALUE;
 
-            if (i == startIndex) {
+            if (i == 0) {
                 setBest(s1, t1, error1, s2, t2, error2, i, x_prime, x);
                 continue;
             }
@@ -345,7 +343,8 @@ Regression = Utilities.createClass(
                 continue;
 
             // Projected point is not between this and the next sample
-            if (x_prime > getComplexity(samples, i + iterationDirection) || x_prime < x) {
+            var nextSampleComplexity = sortedSamples[i + 1][complexityIndex];
+            if (x_prime > nextSampleComplexity || x_prime < x) {
                 // Calculate lambda, which divides the weight of this sample between the two lines
 
                 // These values remove the influence of this sample

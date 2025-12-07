@@ -1,0 +1,17 @@
+include_rules = [
+  "-chrome",
+  "+chrome/browser/ui/ash/editor_menu",
+
+  "+chrome/browser/ash/input_method",
+  "+chrome/browser/ash/lobster",
+  "+chrome/browser/profiles/profile.h",
+  "+chrome/browser/ui/ash/read_write_cards",
+  "+chrome/browser/ui/browser.h",
+  "+chrome/test/views/chrome_views_test_base.h",
+]
+
+specific_include_rules = {
+  ".*unittest\\.cc": [
+    "+chrome/browser/global_features.h",
+  ],
+}

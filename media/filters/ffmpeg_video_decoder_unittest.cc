@@ -2,19 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/filters/ffmpeg_video_decoder.h"
+
 #include <stdint.h>
 
 #include <list>
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/test/gmock_callback_support.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/limits.h"
@@ -29,7 +31,6 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "media/ffmpeg/ffmpeg_common.h"
-#include "media/filters/ffmpeg_video_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using ::testing::_;
@@ -64,12 +65,11 @@ class FFmpegVideoDecoderTest : public testing::Test {
   FFmpegVideoDecoderTest()
       : decoder_(std::make_unique<FFmpegVideoDecoder>(&media_log_)) {
     // Initialize various test buffers.
-    frame_buffer_ = std::make_unique<uint8_t[]>(kCodedSize.GetArea());
     end_of_stream_buffer_ = DecoderBuffer::CreateEOSBuffer();
     i_frame_buffer_ = ReadTestDataFile("h264-320x180-frame-0");
     corrupt_i_frame_buffer_ = ReadTestDataFile("h264-320x180-frame-0");
-    memset(corrupt_i_frame_buffer_->writable_data(), 0,
-           corrupt_i_frame_buffer_->size() / 2);
+    UNSAFE_TODO(memset(corrupt_i_frame_buffer_->writable_data(), 0,
+                       corrupt_i_frame_buffer_->size() / 2));
   }
 
   FFmpegVideoDecoderTest(const FFmpegVideoDecoderTest&) = delete;
@@ -142,8 +142,7 @@ class FFmpegVideoDecoderTest : public testing::Test {
         case DecoderStatus::Codes::kOk:
           break;
         case DecoderStatus::Codes::kAborted:
-          NOTREACHED_IN_MIGRATION();
-          [[fallthrough]];
+          NOTREACHED();
         default:
           DCHECK(output_frames_.empty());
           return status;
@@ -162,37 +161,6 @@ class FFmpegVideoDecoderTest : public testing::Test {
     input_buffers.push_back(end_of_stream_buffer_);
 
     return DecodeMultipleFrames(input_buffers);
-  }
-
-  // Decodes |i_frame_buffer_| and then decodes the data contained in
-  // the file named |test_file_name|. This function expects both buffers
-  // to decode to frames that are the same size.
-  void DecodeIFrameThenTestFile(const std::string& test_file_name,
-                                int expected_width,
-                                int expected_height,
-                                size_t expected_frames = 2u) {
-    Initialize();
-    scoped_refptr<DecoderBuffer> buffer = ReadTestDataFile(test_file_name);
-
-    InputBuffers input_buffers;
-    input_buffers.push_back(i_frame_buffer_);
-    input_buffers.push_back(buffer);
-    input_buffers.push_back(end_of_stream_buffer_);
-
-    DecoderStatus status = DecodeMultipleFrames(input_buffers);
-
-    EXPECT_TRUE(status.is_ok());
-    ASSERT_EQ(expected_frames, output_frames_.size());
-
-    gfx::Size original_size = kVisibleRect.size();
-    EXPECT_EQ(original_size.width(),
-              output_frames_[0]->visible_rect().size().width());
-    EXPECT_EQ(original_size.height(),
-              output_frames_[0]->visible_rect().size().height());
-    EXPECT_EQ(expected_width,
-              output_frames_[1]->visible_rect().size().width());
-    EXPECT_EQ(expected_height,
-              output_frames_[1]->visible_rect().size().height());
   }
 
   DecoderStatus Decode(scoped_refptr<DecoderBuffer> buffer) {
@@ -217,11 +185,9 @@ class FFmpegVideoDecoderTest : public testing::Test {
   StrictMock<MockMediaLog> media_log_;
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_{kBuiltInH264Decoder};
   std::unique_ptr<FFmpegVideoDecoder> decoder_;
 
   // Various buffers for testing.
-  std::unique_ptr<uint8_t[]> frame_buffer_;
   scoped_refptr<DecoderBuffer> end_of_stream_buffer_;
   scoped_refptr<DecoderBuffer> i_frame_buffer_;
   scoped_refptr<DecoderBuffer> corrupt_i_frame_buffer_;
@@ -309,13 +275,44 @@ TEST_F(FFmpegVideoDecoderTest, DecodeFrame_DecodeErrorAtEndOfStream) {
 // Decode |i_frame_buffer_| and then a smaller frame and verify the output size
 // was adjusted.
 TEST_F(FFmpegVideoDecoderTest, DecodeFrame_Smaller) {
-  DecodeIFrameThenTestFile("red-green.h264", 80, 128, /*expected_frames=*/4);
+  Initialize();
+
+  InputBuffers input_buffers;
+  input_buffers.push_back(
+      ReadTestDataFile("bear-320x192-baseline-frame-0.h264"));
+  input_buffers.push_back(i_frame_buffer_);
+  input_buffers.push_back(end_of_stream_buffer_);
+
+  DecoderStatus status = DecodeMultipleFrames(input_buffers);
+
+  EXPECT_TRUE(status.is_ok());
+  ASSERT_EQ(2u, output_frames_.size());
+
+  constexpr gfx::Size kExpectedSize(320, 192);
+  EXPECT_EQ(kExpectedSize, output_frames_[0]->visible_rect().size());
+  EXPECT_EQ(kVisibleRect.size(), output_frames_[1]->visible_rect().size());
 }
 
 // Decode |i_frame_buffer_| and then a larger frame and verify the output size
 // was adjusted.
 TEST_F(FFmpegVideoDecoderTest, DecodeFrame_Larger) {
-  DecodeIFrameThenTestFile("bear-320x192-baseline-frame-0.h264", 320, 192);
+  Initialize();
+
+  InputBuffers input_buffers;
+  input_buffers.push_back(i_frame_buffer_);
+  input_buffers.push_back(
+      ReadTestDataFile("bear-320x192-baseline-frame-0.h264"));
+  input_buffers.push_back(end_of_stream_buffer_);
+
+  DecoderStatus status = DecodeMultipleFrames(input_buffers);
+
+  EXPECT_TRUE(status.is_ok());
+  ASSERT_EQ(2u, output_frames_.size());
+
+  EXPECT_EQ(kVisibleRect.size(), output_frames_[0]->visible_rect().size());
+
+  constexpr gfx::Size kExpectedSize(320, 192);
+  EXPECT_EQ(kExpectedSize, output_frames_[1]->visible_rect().size());
 }
 
 // Test resetting when decoder has initialized but not decoded.

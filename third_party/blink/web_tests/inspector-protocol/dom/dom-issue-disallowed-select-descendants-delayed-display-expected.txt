@@ -1,0 +1,84 @@
+Test reported issues for customizable <select> accessibility
+[
+    [0] : {
+        method : Audits.issueAdded
+        params : {
+            issue : {
+                code : ElementAccessibilityIssue
+                details : {
+                    elementAccessibilityIssueDetails : {
+                        elementAccessibilityIssueReason : DisallowedSelectChild
+                        hasDisallowedAttributes : false
+                        nodeId : <number>
+                    }
+                }
+            }
+        }
+        sessionId : <string>
+    }
+    [1] : {
+        method : Audits.issueAdded
+        params : {
+            issue : {
+                code : ElementAccessibilityIssue
+                details : {
+                    elementAccessibilityIssueDetails : {
+                        elementAccessibilityIssueReason : InteractiveContentOptionChild
+                        hasDisallowedAttributes : true
+                        nodeId : <number>
+                    }
+                }
+            }
+        }
+        sessionId : <string>
+    }
+    [2] : {
+        method : Audits.issueAdded
+        params : {
+            issue : {
+                code : ElementAccessibilityIssue
+                details : {
+                    elementAccessibilityIssueDetails : {
+                        elementAccessibilityIssueReason : InteractiveContentOptionChild
+                        hasDisallowedAttributes : true
+                        nodeId : <number>
+                    }
+                }
+            }
+        }
+        sessionId : <string>
+    }
+    [3] : {
+        method : Audits.issueAdded
+        params : {
+            issue : {
+                code : ElementAccessibilityIssue
+                details : {
+                    elementAccessibilityIssueDetails : {
+                        elementAccessibilityIssueReason : InteractiveContentOptionChild
+                        hasDisallowedAttributes : true
+                        nodeId : <number>
+                    }
+                }
+            }
+        }
+        sessionId : <string>
+    }
+    [4] : {
+        method : Audits.issueAdded
+        params : {
+            issue : {
+                code : ElementAccessibilityIssue
+                details : {
+                    elementAccessibilityIssueDetails : {
+                        elementAccessibilityIssueReason : InteractiveContentOptionChild
+                        hasDisallowedAttributes : true
+                        nodeId : <number>
+                    }
+                }
+            }
+        }
+        sessionId : <string>
+    }
+]
+

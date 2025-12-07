@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
 #endif
 
 #include "base/process/process_metrics.h"
@@ -12,12 +12,15 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
+#include <array>
 #include <memory>
 #include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/byte_count.h"
 #include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -29,7 +32,6 @@
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -42,7 +44,6 @@
 #include "base/types/expected.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
@@ -55,13 +56,12 @@
 #include <mach/mach.h>
 
 #include "base/apple/mach_logging.h"
+#include "base/apple/mach_port_rendezvous.h"
 #include "base/apple/scoped_mach_port.h"
-#include "base/mac/mach_port_rendezvous.h"
 #include "base/process/port_provider_mac.h"
 #endif
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||      \
-    BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN) || \
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_APPLE)
 #define ENABLE_CPU_TESTS 1
 #else
@@ -149,7 +149,7 @@ class TestChildLauncher {
 
 #if BUILDFLAG(IS_MAC)
 
-// Adapted from base/mac/mach_port_rendezvous_unittest.cc and
+// Adapted from base/apple/mach_port_rendezvous_unittest.cc and
 // https://mw.foldr.org/posts/computers/macosx/task-info-fun-with-mach/
 
 constexpr MachPortsForRendezvous::key_type kTestChildRendezvousKey = 'test';
@@ -341,7 +341,7 @@ TEST_F(SystemMetricsTest, IsValidDiskName) {
 }
 
 TEST_F(SystemMetricsTest, ParseMeminfo) {
-  SystemMemoryInfoKB meminfo;
+  SystemMemoryInfo meminfo;
   const char invalid_input1[] = "abc";
   const char invalid_input2[] = "MemTotal:";
   // Partial file with no MemTotal
@@ -425,45 +425,45 @@ TEST_F(SystemMetricsTest, ParseMeminfo) {
       "Hugepagesize:     4096 kB\n";
 
   EXPECT_TRUE(ParseProcMeminfo(valid_input1, &meminfo));
-  EXPECT_EQ(meminfo.total, 3981504);
-  EXPECT_EQ(meminfo.free, 140764);
-  EXPECT_EQ(meminfo.available, 535413);
-  EXPECT_EQ(meminfo.buffers, 116480);
-  EXPECT_EQ(meminfo.cached, 406160);
-  EXPECT_EQ(meminfo.active_anon, 2972352);
-  EXPECT_EQ(meminfo.active_file, 179688);
-  EXPECT_EQ(meminfo.inactive_anon, 270108);
-  EXPECT_EQ(meminfo.inactive_file, 202748);
-  EXPECT_EQ(meminfo.swap_total, 5832280);
-  EXPECT_EQ(meminfo.swap_free, 3672368);
-  EXPECT_EQ(meminfo.dirty, 184);
-  EXPECT_EQ(meminfo.reclaimable, 30936);
+  EXPECT_EQ(meminfo.total.InKiB(), 3981504);
+  EXPECT_EQ(meminfo.free.InKiB(), 140764);
+  EXPECT_EQ(meminfo.available.InKiB(), 535413);
+  EXPECT_EQ(meminfo.buffers.InKiB(), 116480);
+  EXPECT_EQ(meminfo.cached.InKiB(), 406160);
+  EXPECT_EQ(meminfo.active_anon.InKiB(), 2972352);
+  EXPECT_EQ(meminfo.active_file.InKiB(), 179688);
+  EXPECT_EQ(meminfo.inactive_anon.InKiB(), 270108);
+  EXPECT_EQ(meminfo.inactive_file.InKiB(), 202748);
+  EXPECT_EQ(meminfo.swap_total.InKiB(), 5832280);
+  EXPECT_EQ(meminfo.swap_free.InKiB(), 3672368);
+  EXPECT_EQ(meminfo.dirty.InKiB(), 184);
+  EXPECT_EQ(meminfo.reclaimable.InKiB(), 30936);
 #if BUILDFLAG(IS_CHROMEOS)
-  EXPECT_EQ(meminfo.shmem, 140204);
-  EXPECT_EQ(meminfo.slab, 54212);
+  EXPECT_EQ(meminfo.shmem.InKiB(), 140204);
+  EXPECT_EQ(meminfo.slab.InKiB(), 54212);
 #endif
-  EXPECT_EQ(355725u,
-            base::SysInfo::AmountOfAvailablePhysicalMemory(meminfo) / 1024);
+  EXPECT_EQ(355725,
+            base::SysInfo::AmountOfAvailablePhysicalMemory(meminfo).InKiB());
   // Simulate as if there is no MemAvailable.
-  meminfo.available = 0;
+  meminfo.available = ByteCount(0);
   EXPECT_EQ(374448u,
-            base::SysInfo::AmountOfAvailablePhysicalMemory(meminfo) / 1024);
+            base::SysInfo::AmountOfAvailablePhysicalMemory(meminfo).InKiB());
   meminfo = {};
   EXPECT_TRUE(ParseProcMeminfo(valid_input2, &meminfo));
-  EXPECT_EQ(meminfo.total, 255908);
-  EXPECT_EQ(meminfo.free, 69936);
-  EXPECT_EQ(meminfo.available, 0);
-  EXPECT_EQ(meminfo.buffers, 15812);
-  EXPECT_EQ(meminfo.cached, 115124);
-  EXPECT_EQ(meminfo.swap_total, 524280);
-  EXPECT_EQ(meminfo.swap_free, 524200);
-  EXPECT_EQ(meminfo.dirty, 4);
+  EXPECT_EQ(meminfo.total.InKiB(), 255908);
+  EXPECT_EQ(meminfo.free.InKiB(), 69936);
+  EXPECT_EQ(meminfo.available.InKiB(), 0);
+  EXPECT_EQ(meminfo.buffers.InKiB(), 15812);
+  EXPECT_EQ(meminfo.cached.InKiB(), 115124);
+  EXPECT_EQ(meminfo.swap_total.InKiB(), 524280);
+  EXPECT_EQ(meminfo.swap_free.InKiB(), 524200);
+  EXPECT_EQ(meminfo.dirty.InKiB(), 4);
   EXPECT_EQ(69936u,
-            base::SysInfo::AmountOfAvailablePhysicalMemory(meminfo) / 1024);
+            base::SysInfo::AmountOfAvailablePhysicalMemory(meminfo).InKiB());
 
   // output from a system with a large page cache, to catch arithmetic errors
   // that incorrectly assume free + buffers + cached <= total. (Copied from
-  // ash/components/arc/test/data/mem_profile/16G.)
+  // chromeos/ash/experiences/arc/test/data/mem_profile/16G.)
   const char large_cache_input[] =
       "MemTotal:       18025572 kB\n"
       "MemFree:        13150176 kB\n"
@@ -509,10 +509,10 @@ TEST_F(SystemMetricsTest, ParseMeminfo) {
 
   meminfo = {};
   EXPECT_TRUE(ParseProcMeminfo(large_cache_input, &meminfo));
-  EXPECT_EQ(meminfo.total, 18025572);
-  EXPECT_EQ(meminfo.free, 13150176);
-  EXPECT_EQ(meminfo.buffers, 1524852);
-  EXPECT_EQ(meminfo.cached, 12645260);
+  EXPECT_EQ(meminfo.total.InKiB(), 18025572);
+  EXPECT_EQ(meminfo.free.InKiB(), 13150176);
+  EXPECT_EQ(meminfo.buffers.InKiB(), 1524852);
+  EXPECT_EQ(meminfo.cached.InKiB(), 12645260);
   EXPECT_EQ(GetSystemCommitChargeFromMeminfo(meminfo), 0u);
 }
 
@@ -736,6 +736,32 @@ TEST_F(SystemMetricsTest, InvalidProcessCpuUsage) {
 
 #endif  // ENABLE_CPU_TESTS
 
+TEST_F(SystemMetricsTest, TestValidMemoryInfo) {
+  std::unique_ptr<ProcessMetrics> metrics =
+      ProcessMetrics::CreateCurrentProcessMetrics();
+
+  auto memory_info = metrics->GetMemoryInfo();
+  EXPECT_TRUE(memory_info.has_value());
+  EXPECT_GT(memory_info->resident_set_bytes, 0U);
+
+#if BUILDFLAG(IS_APPLE)
+  EXPECT_GT(memory_info->physical_footprint_bytes, 0U);
+  EXPECT_GT(memory_info->internal_bytes, 0U);
+  EXPECT_GE(memory_info->compressed_bytes, 0U);
+#endif  // BUILDFLAG(IS_APPLE)
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_FUCHSIA)
+  EXPECT_GT(memory_info->rss_anon_bytes, 0U);
+  EXPECT_GE(memory_info->vm_swap_bytes, 0U);
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_WIN)
+  EXPECT_GT(memory_info->private_bytes, 0U);
+#endif  // BUILDFLAG(IS_WIN)
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(SystemMetricsTest, ParseZramMmStat) {
   SwapInfo swapinfo;
@@ -776,21 +802,21 @@ TEST_F(SystemMetricsTest, ParseZramStat) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 TEST(SystemMetrics2Test, GetSystemMemoryInfo) {
-  SystemMemoryInfoKB info;
+  SystemMemoryInfo info;
   EXPECT_TRUE(GetSystemMemoryInfo(&info));
 
   // Ensure each field received a value.
-  EXPECT_GT(info.total, 0);
+  EXPECT_GT(info.total, ByteCount(0));
 #if BUILDFLAG(IS_WIN)
-  EXPECT_GT(info.avail_phys, 0);
+  EXPECT_GT(info.avail_phys, ByteCount(0));
 #else
-  EXPECT_GT(info.free, 0);
+  EXPECT_GT(info.free, ByteCount(0));
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-  EXPECT_GT(info.buffers, 0);
-  EXPECT_GT(info.cached, 0);
-  EXPECT_GT(info.active_anon + info.inactive_anon, 0);
-  EXPECT_GT(info.active_file + info.inactive_file, 0);
+  EXPECT_GT(info.buffers, ByteCount(0));
+  EXPECT_GT(info.cached, ByteCount(0));
+  EXPECT_GT(info.active_anon + info.inactive_anon, ByteCount(0));
+  EXPECT_GT(info.active_file + info.inactive_file, ByteCount(0));
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
 
@@ -810,12 +836,12 @@ TEST(SystemMetrics2Test, GetSystemMemoryInfo) {
         // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_APPLE)
-  EXPECT_GT(info.file_backed, 0);
+  EXPECT_GT(info.file_backed, ByteCount(0));
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Chrome OS exposes shmem.
-  EXPECT_GT(info.shmem, 0);
+  EXPECT_GT(info.shmem, ByteCount(0));
   EXPECT_LT(info.shmem, info.total);
 #endif
 }
@@ -869,7 +895,7 @@ TEST(ProcessMetricsTest, DISABLED_GetNumberOfThreads) {
   ASSERT_GT(initial_threads, 0);
   const int kNumAdditionalThreads = 10;
   {
-    std::unique_ptr<Thread> my_threads[kNumAdditionalThreads];
+    std::array<std::unique_ptr<Thread>, kNumAdditionalThreads> my_threads;
     for (int i = 0; i < kNumAdditionalThreads; ++i) {
       my_threads[i] = std::make_unique<Thread>("GetNumberOfThreadsTest");
       my_threads[i]->Start();
@@ -1047,12 +1073,12 @@ TEST(ProcessMetricsTestLinux, GetCumulativeCPUUsagePerThread) {
 
   // Should have at least the test runner thread and the thread spawned above.
   EXPECT_GE(prev_thread_times.size(), 2u);
-  EXPECT_TRUE(ranges::any_of(
+  EXPECT_TRUE(std::ranges::any_of(
       prev_thread_times,
       [&thread1](const std::pair<PlatformThreadId, base::TimeDelta>& entry) {
         return entry.first == thread1.GetThreadId();
       }));
-  EXPECT_TRUE(ranges::any_of(
+  EXPECT_TRUE(std::ranges::any_of(
       prev_thread_times,
       [](const std::pair<PlatformThreadId, base::TimeDelta>& entry) {
         return entry.first == base::PlatformThread::CurrentId();
@@ -1069,7 +1095,7 @@ TEST(ProcessMetricsTestLinux, GetCumulativeCPUUsagePerThread) {
 
   // The stopped thread may still be reported until the kernel cleans it up.
   EXPECT_GE(prev_thread_times.size(), 1u);
-  EXPECT_TRUE(ranges::any_of(
+  EXPECT_TRUE(std::ranges::any_of(
       current_thread_times,
       [](const std::pair<PlatformThreadId, base::TimeDelta>& entry) {
         return entry.first == base::PlatformThread::CurrentId();
@@ -1077,7 +1103,7 @@ TEST(ProcessMetricsTestLinux, GetCumulativeCPUUsagePerThread) {
 
   // Reported times should not decrease.
   for (const auto& entry : current_thread_times) {
-    auto prev_it = ranges::find_if(
+    auto prev_it = std::ranges::find_if(
         prev_thread_times,
         [&entry](
             const std::pair<PlatformThreadId, base::TimeDelta>& prev_entry) {

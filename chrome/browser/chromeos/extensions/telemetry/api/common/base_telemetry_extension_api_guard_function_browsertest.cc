@@ -7,12 +7,13 @@
 
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/test/regular_logged_in_browser_test_mixin.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/api_guard_delegate.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/base_telemetry_extension_browser_test.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/fake_api_guard_delegate.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/remote_probe_service_strategy.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/crosapi/cpp/telemetry/fake_probe_service.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
@@ -24,20 +25,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
-#include "chromeos/startup/browser_init_params.h"
-#include "components/policy/core/common/policy_loader_lacros.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace chromeos {
 
@@ -750,7 +737,8 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionApiGuardBrowserTest,
 
 // Class that use real ApiGuardDelegate instance to verify its behavior.
 class TelemetryExtensionApiGuardRealDelegateBrowserTest
-    : public BaseTelemetryExtensionBrowserTest {
+    : public InProcessBrowserTestMixinHostSupport<
+          BaseTelemetryExtensionBrowserTest> {
  public:
   TelemetryExtensionApiGuardRealDelegateBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
@@ -768,11 +756,13 @@ class TelemetryExtensionApiGuardRealDelegateBrowserTest
     https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
     ASSERT_TRUE(https_server_.InitializeAndListen());
 
-    BaseTelemetryExtensionBrowserTest::SetUp();
+    InProcessBrowserTestMixinHostSupport<
+        BaseTelemetryExtensionBrowserTest>::SetUp();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    BaseTelemetryExtensionBrowserTest::SetUpCommandLine(command_line);
+    InProcessBrowserTestMixinHostSupport<
+        BaseTelemetryExtensionBrowserTest>::SetUpCommandLine(command_line);
 
     command_line->AppendSwitchASCII(
         chromeos::switches::kTelemetryExtensionPwaOriginOverrideForTesting,
@@ -782,13 +772,8 @@ class TelemetryExtensionApiGuardRealDelegateBrowserTest
   void SetUpOnMainThread() override {
     // Skip BaseTelemetryExtensionBrowserTest::SetUpOnMainThread() as it sets up
     // a FakeApiGuardDelegate instance.
+    mixin_host_.SetUpOnMainThread();
     extensions::ExtensionBrowserTest::SetUpOnMainThread();
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // Must be initialized before dealing with UserManager.
-    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<ash::FakeChromeUserManager>());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     https_server_.StartAcceptingConnections();
 
@@ -810,36 +795,7 @@ class TelemetryExtensionApiGuardRealDelegateBrowserTest
         fake_probe_service_->BindNewPipeAndPassRemote());
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  void TearDownOnMainThread() override {
-    // Explicitly removing the user is required; otherwise ProfileHelper keeps
-    // a dangling pointer to the User.
-    // TODO(b/208629291): Consider removing all users from ProfileHelper in the
-    // destructor of ash::FakeChromeUserManager.
-    GetFakeUserManager()->RemoveUserFromList(
-        GetFakeUserManager()->GetActiveUser()->GetAccountId());
-    user_manager_enabler_.reset();
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
  protected:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<ash::FakeChromeUserManager*>(
-        user_manager::UserManager::Get());
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Returns whether the Diagnostics interface is available. It may
-  // not be available on earlier versions of ash-chrome.
-  bool IsServiceAvailable() const {
-    chromeos::LacrosService* lacros_service = chromeos::LacrosService::Get();
-    return lacros_service &&
-           lacros_service->IsAvailable<crosapi::DiagnosticsService>();
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   GURL GetPwaGURL() const { return https_server_.GetURL("/ssl/google.html"); }
 
   // BaseTelemetryExtensionBrowserTest:
@@ -850,9 +806,9 @@ class TelemetryExtensionApiGuardRealDelegateBrowserTest
 
   std::unique_ptr<FakeProbeService> fake_probe_service_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::RegularLoggedInBrowserTestMixin logged_in_mixin_{
+      &mixin_host_,
+      AccountId::FromUserEmailGaiaId("test@test", GaiaId("12345"))};
 };
 
 // Smoke test to verify that real ApiGuardDelegate works in prod.
@@ -860,28 +816,6 @@ class TelemetryExtensionApiGuardRealDelegateBrowserTest
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionApiGuardRealDelegateBrowserTest,
                        DISABLED_CanAccessRunBatteryCapacityRoutine) {
   SetUpProbeService();
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // We can't run this test if Ash doesn't support the crosapi
-  // interface.
-  if (!IsServiceAvailable()) {
-    return;
-  }
-
-  // Check that device ownership is set up.
-  ASSERT_TRUE(
-      chromeos::BrowserInitParams::GetForTests()->is_current_user_device_owner);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Add a new user and make it owner.
-  auto* const user_manager = GetFakeUserManager();
-  const AccountId account_id = AccountId::FromUserEmail("user@example.com");
-  user_manager->AddUser(account_id);
-  user_manager->LoginUser(account_id);
-  user_manager->SwitchActiveUser(account_id);
-  user_manager->SetOwnerId(account_id);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Make sure PWA UI is open and secure.
   auto* pwa_page_rfh =
@@ -906,28 +840,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionApiGuardRealDelegateBrowserTest,
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionApiGuardRealDelegateBrowserTest,
                        DISABLED_UseCacheForMultipleApiAccess) {
   SetUpProbeService();
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // We can't run this test if Ash doesn't support the crosapi
-  // interface.
-  if (!IsServiceAvailable()) {
-    return;
-  }
-
-  auto init_params = chromeos::BrowserInitParams::GetForTests()->Clone();
-  init_params->is_current_user_device_owner = true;
-  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Add a new user and make it owner.
-  auto* const user_manager = GetFakeUserManager();
-  const AccountId account_id = AccountId::FromUserEmail("user@example.com");
-  user_manager->AddUser(account_id);
-  user_manager->LoginUser(account_id);
-  user_manager->SwitchActiveUser(account_id);
-  user_manager->SetOwnerId(account_id);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Make sure PWA UI is open and secure.
   auto* pwa_page_rfh =

@@ -7,6 +7,8 @@
 
 #include <stddef.h>
 
+#include <array>
+
 #include "build/build_config.h"
 
 // Only enable leak tracking in non-uClibc debug builds.
@@ -79,16 +81,16 @@ class LeakTracker : public base::LinkNode<LeakTracker<T>> {
     // Copy the first 3 leak allocation callstacks onto the stack.
     // This way if we hit the CHECK() in a release build, the leak
     // information will be available in mini-dump.
-    const size_t kMaxStackTracesToCopyOntoStack = 3;
-    base::debug::StackTrace stacktraces[kMaxStackTracesToCopyOntoStack];
+    std::array<base::debug::StackTrace, 3> stacktraces;
 
     for (base::LinkNode<LeakTracker<T>>* node = instances()->head();
          node != instances()->end(); node = node->next()) {
       base::debug::StackTrace& allocation_stack =
           node->value()->allocation_stack_;
 
-      if (count < kMaxStackTracesToCopyOntoStack)
+      if (count < stacktraces.size()) {
         stacktraces[count] = allocation_stack;
+      }
 
       ++count;
       if (LOG_IS_ON(ERROR)) {
@@ -102,8 +104,9 @@ class LeakTracker : public base::LinkNode<LeakTracker<T>> {
     // Hack to keep `stacktraces` and `count` alive (so compiler
     // doesn't optimize it out, and it will appear in mini-dumps).
     if (count == 0x1234) {
-      for (size_t i = 0; i < kMaxStackTracesToCopyOntoStack; ++i)
-        stacktraces[i].Print();
+      for (const base::debug::StackTrace& stacktrace : stacktraces) {
+        stacktrace.Print();
+      }
     }
   }
 

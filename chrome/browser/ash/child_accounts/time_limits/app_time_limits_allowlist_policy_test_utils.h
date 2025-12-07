@@ -9,8 +9,7 @@
 
 #include "base/values.h"
 
-namespace ash {
-namespace app_time {
+namespace ash::app_time {
 
 class AppId;
 
@@ -25,6 +24,7 @@ class AppTimeLimitsAllowlistPolicyBuilder {
       const AppTimeLimitsAllowlistPolicyBuilder&) = delete;
 
   void SetUp();
+  void Clear();
   void AppendToAllowlistAppList(const AppId& app_id);
 
   const base::Value::Dict& dict() const { return dict_; }
@@ -35,7 +35,6 @@ class AppTimeLimitsAllowlistPolicyBuilder {
   base::Value::Dict dict_;
 };
 
-}  // namespace app_time
-}  // namespace ash
+}  // namespace ash::app_time
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_APP_TIME_LIMITS_ALLOWLIST_POLICY_TEST_UTILS_H_

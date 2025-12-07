@@ -4,9 +4,13 @@
 
 #include "chrome/browser/policy/chrome_browser_cloud_management_controller_android.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/android/cloud_management_shared_preferences.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
+#include "components/enterprise/client_certificates/core/features.h"
 #include "components/policy/core/browser/browser_policy_connector_base.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/policy_constants.h"
@@ -26,6 +30,10 @@ class ChromeBrowserCloudManagementControllerAndroidTest : public testing::Test {
   ~ChromeBrowserCloudManagementControllerAndroidTest() override = default;
 
   void SetUp() override {
+    // SystemNetworkContextManager is a dependency for the provisioning service.
+    // It must be initialized for the test.
+    SystemNetworkContextManager::CreateInstance(
+        TestingBrowserProcess::GetGlobal()->local_state());
     BrowserPolicyConnectorBase::SetPolicyServiceForTesting(
         &mock_policy_service_);
   }
@@ -33,6 +41,8 @@ class ChromeBrowserCloudManagementControllerAndroidTest : public testing::Test {
   void TearDown() override {
     BrowserPolicyConnectorBase::SetPolicyServiceForTesting(nullptr);
     android::SaveDmTokenInSharedPreferences(std::string());
+    // Clean up the SystemNetworkContextManager.
+    SystemNetworkContextManager::DeleteInstance();
   }
 
  protected:
@@ -147,6 +157,20 @@ TEST_F(ChromeBrowserCloudManagementControllerAndroidTest, DeferInitialization) {
   captured_observer->OnProviderUpdatePropagated(
       g_browser_process->browser_policy_connector()->GetPlatformProvider());
   EXPECT_TRUE(callback_invoked);
+}
+
+TEST_F(ChromeBrowserCloudManagementControllerAndroidTest,
+       CreateCertificateProvisioningService_FeatureDisabled) {
+  ChromeBrowserCloudManagementControllerAndroid delegate;
+  // The test setup using TestingBrowserProcess provides the necessary
+  // dependencies like local_state and a device_management_service, so the
+  // service should be created successfully.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      client_certificates::features::
+          kEnableClientCertificateProvisioningOnAndroid);
+  auto service = delegate.CreateCertificateProvisioningService();
+  EXPECT_EQ(service, nullptr);
 }
 
 }  // namespace policy

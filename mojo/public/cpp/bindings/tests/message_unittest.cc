@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "mojo/public/cpp/bindings/message.h"
 
 #include <stdint.h>
 
@@ -13,7 +10,7 @@
 #include <tuple>
 #include <vector>
 
-#include "mojo/public/cpp/bindings/message.h"
+#include "base/compiler_specific.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -30,8 +27,13 @@ void CreateTestMessagePayload(std::vector<uint8_t>* bytes,
   Message message(kTestMessageName, kTestMessageFlags, 0, kTestPayloadSize,
                   nullptr);
   message.header()->trace_nonce = 0;
+  if (message.version() >= 3) {
+    message.header_v3()->creation_timeticks_us = 0;
+  }
+
   bytes->resize(message.data_num_bytes());
-  std::copy(message.data(), message.data() + message.data_num_bytes(),
+  std::copy(message.data(),
+            UNSAFE_TODO(message.data() + message.data_num_bytes()),
             bytes->begin());
 
   MessagePipe pipe;

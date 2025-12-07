@@ -17,6 +17,7 @@
 #include "media/parsers/vp9_parser.h"
 
 #include <algorithm>
+#include <array>
 
 #include "base/containers/circular_deque.h"
 #include "base/containers/span.h"
@@ -24,7 +25,6 @@
 #include "base/logging.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
-#include "media/parsers/vp9_compressed_header_parser.h"
 #include "media/parsers/vp9_uncompressed_header_parser.h"
 
 namespace media {
@@ -39,7 +39,7 @@ constexpr size_t kQIndexRange = 256;
 // libva is the only user of high bit depth VP9 formats and only supports
 // 10 bits per component, see https://github.com/01org/libva/issues/137.
 // TODO(mcasas): Add the 12 bit versions of these tables.
-const int16_t kDcQLookup[][kQIndexRange] = {
+constexpr auto kDcQLookup = std::to_array<std::array<const int16_t, kQIndexRange>>({
     {
         4,    8,    8,    9,    10,   11,   12,   12,  13,   14,   15,   16,
         17,   18,   19,   19,   20,   21,   22,   23,  24,   25,   26,   26,
@@ -88,9 +88,9 @@ const int16_t kDcQLookup[][kQIndexRange] = {
         3188, 3280, 3375, 3478, 3586, 3702, 3823, 3953, 4089, 4236, 4394, 4559,
         4737, 4929, 5130, 5347
    }
-};
+});
 
-const int16_t kAcQLookup[][kQIndexRange] = {
+constexpr auto kAcQLookup = std::to_array<std::array<const int16_t, kQIndexRange>>({
     {
         4,    8,    9,    10,   11,   12,   13,   14,   15,   16,   17,   18,
         19,   20,   21,   22,   23,   24,   25,   26,   27,   28,   29,   30,
@@ -139,7 +139,7 @@ const int16_t kAcQLookup[][kQIndexRange] = {
         5476, 5584, 5692, 5804, 5916, 6032, 6148, 6268, 6388, 6512, 6640, 6768,
         6900, 7036, 7172, 7312
    }
-};
+});
 // clang-format on
 
 static_assert(std::size(kDcQLookup[0]) == std::size(kAcQLookup[0]),
@@ -287,6 +287,13 @@ bool IsByteNEncrypted(off_t byte,
 
 }  // namespace
 
+Vp9FrameHeader::Vp9FrameHeader() = default;
+Vp9FrameHeader::Vp9FrameHeader(const Vp9FrameHeader&) = default;
+Vp9FrameHeader::Vp9FrameHeader(Vp9FrameHeader&&) = default;
+Vp9FrameHeader& Vp9FrameHeader::operator=(const Vp9FrameHeader&) = default;
+Vp9FrameHeader& Vp9FrameHeader::operator=(Vp9FrameHeader&&) = default;
+Vp9FrameHeader::~Vp9FrameHeader() = default;
+
 bool Vp9FrameHeader::IsKeyframe() const {
   // When show_existing_frame is true, the frame header does not precede an
   // actual frame to be decoded, so frame_type does not apply (and is not read
@@ -338,28 +345,15 @@ VideoColorSpace Vp9FrameHeader::GetColorSpace() const {
 
 Vp9Parser::FrameInfo::FrameInfo() = default;
 
-Vp9Parser::FrameInfo::~FrameInfo() = default;
-
 Vp9Parser::FrameInfo::FrameInfo(const uint8_t* ptr, off_t size)
     : ptr(ptr), size(size) {}
 
-Vp9Parser::FrameInfo::FrameInfo(const FrameInfo& copy_from)
-    : ptr(copy_from.ptr),
-      size(copy_from.size),
-      allocate_size(copy_from.allocate_size),
-      decrypt_config(copy_from.decrypt_config
-                         ? copy_from.decrypt_config->Clone()
-                         : nullptr) {}
+Vp9Parser::FrameInfo::FrameInfo(FrameInfo&& other) = default;
 
-Vp9Parser::FrameInfo& Vp9Parser::FrameInfo::operator=(
-    const FrameInfo& copy_from) {
-  this->ptr = copy_from.ptr;
-  this->size = copy_from.size;
-  this->allocate_size = copy_from.allocate_size;
-  this->decrypt_config =
-      copy_from.decrypt_config ? copy_from.decrypt_config->Clone() : nullptr;
-  return *this;
-}
+Vp9Parser::FrameInfo& Vp9Parser::FrameInfo::operator=(FrameInfo&& other) =
+    default;
+
+Vp9Parser::FrameInfo::~FrameInfo() = default;
 
 bool Vp9FrameContext::IsValid() const {
   // probs should be in [1, 255] range.
@@ -471,8 +465,7 @@ void Vp9Parser::Context::UpdateRefSlot(
   ref_slots_[ref_type] = ref_slot;
 }
 
-Vp9Parser::Vp9Parser(bool parsing_compressed_header)
-    : parsing_compressed_header_(parsing_compressed_header) {
+Vp9Parser::Vp9Parser() {
   Reset();
 }
 
@@ -501,7 +494,6 @@ void Vp9Parser::Reset() {
   bytes_left_ = 0;
   frames_.clear();
   spatial_layer_frame_size_.clear();
-  curr_frame_info_.Reset();
 
   context_.Reset();
 }
@@ -548,23 +540,6 @@ bool Vp9Parser::ParseUncompressedHeader(const FrameInfo& frame_info,
   return false;
 }
 
-bool Vp9Parser::ParseCompressedHeader(const FrameInfo& frame_info,
-                                      Result* result) {
-  *result = kInvalidStream;
-
-  Vp9CompressedHeaderParser compressed_parser;
-  bool parse_success;
-  parse_success = compressed_parser.ParseNoContext(
-      frame_info.ptr + curr_frame_header_.uncompressed_header_size,
-      curr_frame_header_.header_size_in_bytes, &curr_frame_header_);
-  if (!parse_success) {
-    *result = kInvalidStream;
-    return true;
-  }
-
-  return false;
-}
-
 Vp9Parser::Result Vp9Parser::ParseNextFrame(
     Vp9FrameHeader* fhdr,
     gfx::Size* allocate_size,
@@ -575,55 +550,39 @@ Vp9Parser::Result Vp9Parser::ParseNextFrame(
   FrameInfo frame_info;
   Result result;
 
-  // If |curr_frame_info_| is valid, uncompressed header was parsed into
-  // |curr_frame_header_| and we are awaiting context update to proceed with
-  // compressed header parsing.
-  if (curr_frame_info_.IsValid()) {
-    DCHECK(parsing_compressed_header_);
-    frame_info = curr_frame_info_;
-    curr_frame_info_.Reset();
-  } else {
+  if (frames_.empty()) {
+    // No frames to be decoded, if there is no more stream, request more.
+    if (!stream_) {
+      return kEOStream;
+    }
+
+    // New stream to be parsed, parse it and fill frames_.
+    if (!spatial_layer_frame_size_.empty()) {
+      // If it is SVC stream, we have to parse the stream with
+      // |spatial_layer_frame_size_|.
+      frames_ = ParseSVCFrame();
+    } else {
+      frames_ = ParseSuperframe();
+    }
+
     if (frames_.empty()) {
-      // No frames to be decoded, if there is no more stream, request more.
-      if (!stream_) {
-        return kEOStream;
-      }
-
-      // New stream to be parsed, parse it and fill frames_.
-      if (!spatial_layer_frame_size_.empty()) {
-        // If it is SVC stream, we have to parse the stream with
-        // |spatial_layer_frame_size_|.
-        frames_ = ParseSVCFrame();
-      } else {
-        frames_ = ParseSuperframe();
-      }
-
-      if (frames_.empty()) {
-        DVLOG(1) << "Failed parsing superframes/SVC frame";
-        return kInvalidStream;
-      }
-    }
-
-    frame_info = frames_.front();
-    frames_.pop_front();
-    if (frame_decrypt_config) {
-      if (frame_info.decrypt_config) {
-        *frame_decrypt_config = frame_info.decrypt_config->Clone();
-      } else {
-        *frame_decrypt_config = nullptr;
-      }
-    }
-
-    if (ParseUncompressedHeader(frame_info, fhdr, &result, &context_)) {
-      return result;
+      DVLOG(1) << "Failed parsing superframes/SVC frame";
+      return kInvalidStream;
     }
   }
 
-  if (parsing_compressed_header_) {
-    if (ParseCompressedHeader(frame_info, &result)) {
-      DCHECK(curr_frame_info_.IsValid());
-      return result;
+  frame_info = std::move(frames_.front());
+  frames_.pop_front();
+  if (frame_decrypt_config) {
+    if (frame_info.decrypt_config) {
+      *frame_decrypt_config = frame_info.decrypt_config->Clone();
+    } else {
+      *frame_decrypt_config = nullptr;
     }
+  }
+
+  if (ParseUncompressedHeader(frame_info, fhdr, &result, &context_)) {
+    return result;
   }
 
   if (!SetupSegmentationDequant()) {
@@ -799,11 +758,6 @@ base::circular_deque<Vp9Parser::FrameInfo> Vp9Parser::ParseSuperframe() {
 }
 
 base::circular_deque<Vp9Parser::FrameInfo> Vp9Parser::ParseSVCFrame() {
-  if (parsing_compressed_header_) {
-    LOG(ERROR) << "Vp9Parser doesn't support parsing SVC stream when "
-               << "a compressed header needs to be parsed";
-    return {};
-  }
   if (stream_decrypt_config_) {
     LOG(ERROR) << "Encrypted frame with SVC stream is not supported";
     return {};

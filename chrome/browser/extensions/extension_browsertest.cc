@@ -1,102 +1,88 @@
-// Copyright 2012 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/extension_browsertest.h"
 
-#include <stddef.h>
-
-#include <memory>
-#include <optional>
-#include <utility>
-#include <vector>
-
-#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
-#include "base/functional/bind.h"
-#include "base/json/json_file_value_serializer.h"
 #include "base/path_service.h"
-#include "base/run_loop.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/test_future.h"
-#include "base/threading/thread_restrictions.h"
-#include "base/values.h"
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
-#include "chrome/browser/apps/app_service/app_launch_params.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/browser_app_launcher.h"
-#include "chrome/browser/extensions/browsertest_util.h"
+#include "base/version_info/channel.h"
 #include "chrome/browser/extensions/chrome_extension_test_notification_observer.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/crx_installer.h"
+#include "chrome/browser/extensions/extension_browser_test_util.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
-#include "chrome/browser/extensions/extension_install_prompt_show_params.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
-#include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
+#include "chrome/browser/extensions/window_controller.h"
+#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/webui/theme_source.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "components/crx_file/crx_verifier.h"
-#include "components/services/app_service/public/cpp/app_launch_util.h"
-#include "components/sync/model/string_ordinal.h"
-#include "components/version_info/version_info.h"
-#include "content/public/browser/browser_context.h"
-#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_view_host.h"
-#include "content/public/browser/url_data_source.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/browsertest_util.h"
-#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_host.h"
-#include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_util.h"
+#include "extensions/browser/scoped_ignore_content_verifier_for_test.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
 #include "extensions/browser/test_extension_registry_observer.h"
-#include "extensions/browser/uninstall_reason.h"
 #include "extensions/browser/updater/extension_cache_fake.h"
-#include "extensions/common/api/web_accessible_resources.h"
-#include "extensions/common/api/web_accessible_resources_mv2.h"
-#include "extensions/common/constants.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
-#include "extensions/common/extension_set.h"
-#include "extensions/common/file_util.h"
-#include "extensions/common/manifest_constants.h"
+#include "extensions/common/extension_paths.h"
+#include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_handlers/background_info.h"
-#include "extensions/common/switches.h"
+#include "extensions/test/extension_background_page_waiter.h"
+#include "extensions/test/extension_test_notification_observer.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/ui_test_utils.h"
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/check.h"
+#include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
+#include "chrome/test/base/android/android_ui_test_utils.h"
+#include "content/public/browser/web_contents.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #endif
 
-using extensions::mojom::ManifestLocation;
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
+namespace {
 
+using ContextType = extensions::browser_test_util::ContextType;
 using extensions::service_worker_test_utils::TestServiceWorkerContextObserver;
 
-namespace {
+void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
+  NotificationDisplayServiceTester::EnsureFactoryBuilt();
+}
 
 // Maps all chrome-extension://<id>/_test_resources/foo requests to
 // <test_dir_root>/foo or <test_dir_gen_root>/foo, where |test_dir_gen_root| is
@@ -134,8 +120,9 @@ void ExtensionProtocolTestResourcesHandler(const base::FilePath& test_dir_root,
       relative_path->GetComponents();
   DCHECK_GT(components.size(), 1u);
   base::FilePath new_relative_path;
-  for (size_t i = 1u; i < components.size(); ++i)
+  for (size_t i = 1u; i < components.size(); ++i) {
     new_relative_path = new_relative_path.Append(components[i]);
+  }
   *relative_path = new_relative_path;
 
   // Check if the file exists in the |test_dir_root| folder first.
@@ -172,200 +159,17 @@ void ExtensionProtocolTestResourcesHandler(const base::FilePath& test_dir_root,
   }
 }
 
-// Creates a copy of `source` within `temp_dir` and populates `out` with the
-// destination path. Returns true on success.
-bool CreateTempDirectoryCopy(const base::FilePath& temp_dir,
-                             const base::FilePath& source,
-                             base::FilePath* out) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-
-  base::FilePath temp_subdir;
-  if (!base::CreateTemporaryDirInDir(temp_dir, base::FilePath::StringType(),
-                                     &temp_subdir)) {
-    ADD_FAILURE() << "Could not create temporary dir for test under "
-                  << temp_dir;
-    return false;
-  }
-
-  // Copy all files from `source` to `temp_subdir`.
-  if (!base::CopyDirectory(source, temp_subdir, true /* recursive */)) {
-    ADD_FAILURE() << source.value() << " could not be copied to "
-                  << temp_subdir.value();
-    return false;
-  }
-
-  *out = temp_subdir.Append(source.BaseName());
-  return true;
-}
-
-// Moves match patterns from the `permissions_key` list to the
-// `host_permissions_key` list.
-void DoMoveHostPermissions(base::Value::Dict& manifest_dict,
-                           const char* permissions_key,
-                           const char* host_permissions_key) {
-  base::Value::List* const permissions =
-      manifest_dict.FindList(permissions_key);
-  if (!permissions) {
-    return;
-  }
-
-  // Add the permissions to the appropriate destinations, then update/add
-  // the target lists as appropriate.
-  base::Value::List permissions_list;
-  base::Value::List host_permissions_list;
-  for (auto& value : *permissions) {
-    CHECK(value.is_string());
-    const std::string& str_value = value.GetString();
-    if (str_value == "<all_urls>" ||
-        str_value.find("://") != std::string::npos) {
-      host_permissions_list.Append(std::move(value));
-    } else {
-      permissions_list.Append(std::move(value));
-    }
-  }
-
-  if (permissions_list.empty()) {
-    manifest_dict.Remove(permissions_key);
-  } else {
-    *permissions = std::move(permissions_list);
-  }
-
-  if (!host_permissions_list.empty()) {
-    manifest_dict.Set(host_permissions_key, std::move(host_permissions_list));
-  }
-}
-
-// Moves match patterns from permissions/optional_permissions to the
-// host_permissions/optional_host_permissions.
-void MoveHostPermissions(base::Value::Dict& manifest_dict) {
-  DoMoveHostPermissions(manifest_dict, manifest_keys::kPermissions,
-                        manifest_keys::kHostPermissions);
-  DoMoveHostPermissions(manifest_dict, manifest_keys::kOptionalPermissions,
-                        manifest_keys::kOptionalHostPermissions);
-}
-
-using web_accessible_resource =
-    api::web_accessible_resources::WebAccessibleResource;
-
-// Upgrades MV2 format to MV3 format.
-void UpgradeWebAccessibleResources(base::Value::Dict& manifest_dict) {
-  base::Value::List* const web_accessible_resources = manifest_dict.FindList(
-      api::web_accessible_resources::ManifestKeys::kWebAccessibleResources);
-  if (!web_accessible_resources) {
-    return;
-  }
-
-  // Copy all of the entries to a single dictionary entry that matches all
-  // URLs.
-  auto war_dict = base::Value::Dict()
-                      .Set(web_accessible_resource::kResources,
-                           web_accessible_resources->Clone())
-                      .Set(web_accessible_resource::kMatches,
-                           base::Value::List().Append("<all_urls>"));
-
-  // Clear the list and append the dictionary.
-  web_accessible_resources->clear();
-  web_accessible_resources->Append(std::move(war_dict));
-}
-
-// Modifies `manifest_dict` changing its manifest version to 3.
-bool ModifyManifestForManifestVersion3(base::Value::Dict& manifest_dict) {
-  // This should only be used for manifest v2 extension.
-  std::optional<int> current_manifest_version =
-      manifest_dict.FindInt(manifest_keys::kManifestVersion);
-  if (!current_manifest_version || *current_manifest_version != 2) {
-    ADD_FAILURE() << manifest_dict << " should have a manifest version of 2.";
-    return false;
-  }
-
-  UpgradeWebAccessibleResources(manifest_dict);
-  MoveHostPermissions(manifest_dict);
-
-  manifest_dict.Set(manifest_keys::kManifestVersion, 3);
-
-  return true;
-}
-
-// Modifies extension at `extension_root` and its `manifest_dict` converting it
-// to a service worker based extension.
-// NOTE: The conversion works only for extensions with background.scripts and
-// requires the background.persistent key. The background.page key is not
-// supported.
-bool ModifyExtensionForServiceWorker(const base::FilePath& extension_root,
-                                     base::Value::Dict& manifest_dict) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-
-  // Retrieve the value of the `background` key and verify that it has
-  // the `persistent` key and specifies JS files.
-  // Background pages that specify HTML files are not supported.
-  base::Value::Dict* background_dict = manifest_dict.FindDict("background");
-  if (!background_dict) {
-    ADD_FAILURE() << extension_root.value()
-                  << " 'background' key not found in manifest.json";
-    return false;
-  }
-  {
-    std::optional<bool> background_persistent =
-        background_dict->FindBool("persistent");
-    if (!background_persistent.has_value()) {
-      ADD_FAILURE() << extension_root.value()
-                    << ": The \"persistent\" key must be specified to run as a "
-                       "Service Worker-based extension.";
-      return false;
-    }
-  }
-  base::Value::List* background_scripts_list =
-      background_dict->FindList("scripts");
-  // Number of JS scripts must be >= 1.
-  if (!background_scripts_list || background_scripts_list->empty()) {
-    ADD_FAILURE() << extension_root.value()
-                  << ": Only extensions with JS script(s) can be loaded "
-                     "as a sw-based extension.";
-    return false;
-  }
-
-  // Generate combined script as Service Worker script using importScripts().
-  static constexpr const char kGeneratedSWFileName[] =
-      "generated_service_worker__.js";
-
-  std::vector<std::string> script_filenames;
-  for (const base::Value& script : *background_scripts_list)
-    script_filenames.push_back(base::StrCat({"'", script.GetString(), "'"}));
-
-  base::FilePath combined_script_filepath =
-      extension_root.AppendASCII(kGeneratedSWFileName);
-  // Collision with generated script filename.
-  if (base::PathExists(combined_script_filepath)) {
-    ADD_FAILURE() << combined_script_filepath.value()
-                  << " already exists, make sure " << extension_root.value()
-                  << " does not contained file named " << kGeneratedSWFileName;
-    return false;
-  }
-  std::string generated_sw_script_content = base::StringPrintf(
-      "importScripts(%s);", base::JoinString(script_filenames, ",").c_str());
-  if (!base::WriteFile(combined_script_filepath, generated_sw_script_content)) {
-    ADD_FAILURE() << "Could not write combined Service Worker script to: "
-                  << combined_script_filepath.value();
-    return false;
-  }
-
-  // Remove the existing background specification and replace it with a service
-  // worker.
-  background_dict->Remove("persistent");
-  background_dict->Remove("scripts");
-  background_dict->Set("service_worker", kGeneratedSWFileName);
-
-  return true;
-}
+#if BUILDFLAG(IS_ANDROID)
+// ActivityType that doesn't restore tabs on cold start. Any type other than
+// kTabbed is fine.
+const auto kTestActivityType = chrome::android::ActivityType::kCustomTab;
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
 ExtensionBrowserTest::ExtensionBrowserTest(ContextType context_type)
-    :
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      set_chromeos_user_(true),
-#endif
-      context_type_(context_type),
+    : context_type_(context_type),
+      platform_delegate_(*this),
       // TODO(crbug.com/40261741): Move this ScopedCurrentChannel down into
       // tests that specifically require it.
       current_channel_(version_info::Channel::UNKNOWN),
@@ -379,43 +183,11 @@ ExtensionBrowserTest::ExtensionBrowserTest(ContextType context_type)
       start_menu_override_(base::DIR_START_MENU),
       common_start_menu_override_(base::DIR_COMMON_START_MENU),
 #endif
-      profile_(nullptr),
       verifier_format_override_(crx_file::VerifierFormat::CRX3) {
   EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
 }
 
-ExtensionBrowserTest::~ExtensionBrowserTest() {
-}
-
-ExtensionService* ExtensionBrowserTest::extension_service() {
-  return ExtensionSystem::Get(profile())->extension_service();
-}
-
-ExtensionRegistry* ExtensionBrowserTest::extension_registry() {
-  return ExtensionRegistry::Get(profile());
-}
-
-void ExtensionBrowserTest::OnExtensionLoaded(
-    content::BrowserContext* browser_context,
-    const Extension* extension) {
-  last_loaded_extension_id_ = extension->id();
-  VLOG(1) << "Got EXTENSION_LOADED notification.";
-}
-
-void ExtensionBrowserTest::OnShutdown(ExtensionRegistry* registry) {
-  registry_observation_.Reset();
-}
-
-Profile* ExtensionBrowserTest::profile() {
-  if (!profile_) {
-    if (browser()) {
-      profile_ = browser()->profile();
-    } else {
-      profile_ = ProfileManager::GetLastUsedProfile();
-    }
-  }
-  return profile_;
-}
+ExtensionBrowserTest::~ExtensionBrowserTest() = default;
 
 bool ExtensionBrowserTest::ShouldEnableContentVerification() {
   return false;
@@ -427,15 +199,6 @@ bool ExtensionBrowserTest::ShouldEnableInstallVerification() {
 
 bool ExtensionBrowserTest::ShouldAllowMV2Extensions() {
   return true;
-}
-
-base::FilePath ExtensionBrowserTest::GetTestResourcesParentDir() {
-  // Don't use |test_data_dir_| here (even though it points to
-  // chrome/test/data/extensions by default) because subclasses have the ability
-  // to alter it by overriding the SetUpCommandLine() method.
-  base::FilePath test_root_path;
-  base::PathService::Get(chrome::DIR_TEST_DATA, &test_root_path);
-  return test_root_path.AppendASCII("extensions");
 }
 
 // static
@@ -455,12 +218,19 @@ const Extension* ExtensionBrowserTest::GetExtensionByPath(
 
 void ExtensionBrowserTest::SetUp() {
   test_extension_cache_ = std::make_unique<ExtensionCacheFake>();
-  InProcessBrowserTest::SetUp();
+
+  EnsureBrowserContextKeyedServiceFactoriesBuilt();
+  PlatformBrowserTest::SetUp();
 }
 
 void ExtensionBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
+  PlatformBrowserTest::SetUpCommandLine(command_line);
+
+  // On Android, these are handled in SetUpOnMainThread().
+#if !BUILDFLAG(IS_ANDROID)
   base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir_);
   test_data_dir_ = test_data_dir_.AppendASCII("extensions");
+#endif
 
   if (!ShouldEnableContentVerification()) {
     ignore_content_verification_ =
@@ -472,11 +242,7 @@ void ExtensionBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
         std::make_unique<ScopedInstallVerifierBypassForTest>();
   }
 
-  if (ShouldAllowMV2Extensions()) {
-    mv2_enabler_.emplace();
-  }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (set_chromeos_user_) {
     // This makes sure that we create the Default profile first, with no
     // ExtensionService and then the real profile with one, as we do when
@@ -486,27 +252,88 @@ void ExtensionBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
     command_line->AppendSwitchASCII(ash::switches::kLoginProfile, "user");
   }
 #endif
+
+  if (ShouldAllowMV2Extensions()) {
+    mv2_enabler_.emplace();
+  }
 }
 
 void ExtensionBrowserTest::SetUpOnMainThread() {
-  observer_ =
-      std::make_unique<ChromeExtensionTestNotificationObserver>(browser());
-  if (extension_service()->updater()) {
-    extension_service()->updater()->SetExtensionCacheForTesting(
-        test_extension_cache_.get());
+  PlatformBrowserTest::SetUpOnMainThread();
+
+  // On non-Android, these are handled in SetUpCommandLine().
+#if BUILDFLAG(IS_ANDROID)
+  RegisterPathProvider();
+  base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir_);
+  test_data_dir_ = test_data_dir_.AppendASCII("extensions");
+#endif
+
+  SetUpTestProtocolHandler();
+  registry_observation_.Observe(ExtensionRegistry::Get(profile()));
+  content::WebContents* web_contents = GetActiveWebContents();
+  // `web_contents` may be null if the test doesn't open an immediate browser
+  // window.
+  if (web_contents) {
+    web_contents_ = web_contents->GetWeakPtr();
   }
 
-  test_protocol_handler_ = base::BindRepeating(
-      &ExtensionProtocolTestResourcesHandler, GetTestResourcesParentDir());
-  SetExtensionProtocolTestHandler(&test_protocol_handler_);
-  content::URLDataSource::Add(profile(),
-                              std::make_unique<ThemeSource>(profile()));
-  registry_observation_.Observe(ExtensionRegistry::Get(profile()));
+  test_notification_observer_ =
+      std::make_unique<ExtensionTestNotificationObserver>(profile());
+
+  ExtensionUpdater* updater = ExtensionUpdater::Get(profile());
+  if (updater->enabled()) {
+    updater->SetExtensionCacheForTesting(test_extension_cache_.get());
+  }
+
+  platform_delegate_.SetUpOnMainThread();
+}
+
+void ExtensionBrowserTest::TearDown() {
+  web_contents_.reset();
+  PlatformBrowserTest::TearDown();
 }
 
 void ExtensionBrowserTest::TearDownOnMainThread() {
-  SetExtensionProtocolTestHandler(nullptr);
+  TearDownTestProtocolHandler();
+
+#if BUILDFLAG(IS_ANDROID)
+  // Close any incognito tabs.
+  incognito_tab_model_.reset();
+#endif
+
+  // Stop observing any notifications when we're tearing down the test.
+  test_notification_observer_.reset();
+
   registry_observation_.Reset();
+  PlatformBrowserTest::TearDownOnMainThread();
+}
+
+void ExtensionBrowserTest::OnExtensionLoaded(
+    content::BrowserContext* browser_context,
+    const Extension* extension) {
+  last_loaded_extension_id_ = extension->id();
+  VLOG(1) << "Got EXTENSION_LOADED notification.";
+}
+
+void ExtensionBrowserTest::OnShutdown(ExtensionRegistry* registry) {
+  registry_observation_.Reset();
+}
+
+ExtensionRegistry* ExtensionBrowserTest::extension_registry() {
+  return ExtensionRegistry::Get(profile());
+}
+
+ExtensionRegistrar* ExtensionBrowserTest::extension_registrar() {
+  return ExtensionRegistrar::Get(profile());
+}
+
+base::FilePath ExtensionBrowserTest::GetTestResourcesParentDir() {
+  // Don't use |test_data_dir_| here (even though it points to
+  // chrome/test/data/extensions by default) because subclasses have the ability
+  // to alter it by overriding the SetUpCommandLine() method.
+  base::FilePath test_root_path;
+  base::PathService::Get(chrome::DIR_TEST_DATA, &test_root_path);
+  return test_root_path.AppendASCII("extensions");
 }
 
 const Extension* ExtensionBrowserTest::LoadExtension(
@@ -518,7 +345,9 @@ const Extension* ExtensionBrowserTest::LoadExtension(
     const base::FilePath& path,
     const LoadOptions& options) {
   base::FilePath extension_path;
-  if (!ModifyExtensionIfNeeded(options, path, &extension_path)) {
+  if (!extensions::browser_test_util::ModifyExtensionIfNeeded(
+          options, context_type_, GetTestPreCount(), temp_dir_.GetPath(), path,
+          &extension_path)) {
     return nullptr;
   }
 
@@ -533,6 +362,7 @@ const Extension* ExtensionBrowserTest::LoadExtension(
     DCHECK(!options.wait_for_registration_stored);
     return LoadExtensionAsComponent(extension_path);
   }
+
   ChromeTestExtensionLoader loader(profile());
   loader.set_allow_incognito_access(options.allow_in_incognito);
   loader.set_allow_file_access(options.allow_file_access);
@@ -547,15 +377,20 @@ const Extension* ExtensionBrowserTest::LoadExtension(
 
   if (options.wait_for_registration_stored) {
     registration_observer =
-        std::make_unique<TestServiceWorkerContextObserver>(profile_);
+        std::make_unique<TestServiceWorkerContextObserver>(profile());
   }
 
   scoped_refptr<const Extension> extension =
       loader.LoadExtension(extension_path);
-  if (extension) {
-    last_loaded_extension_id_ = extension->id();
+  if (!extension) {
+    return nullptr;
   }
 
+  last_loaded_extension_id_ = extension->id();
+
+  // Note: `options.wait_for_registration_stored` may be set even if an
+  // extension isn't service worker-based if the test is using LoadExtension()
+  // in a parameterized test exercising both MV2 and MV3 extensions.
   if (options.wait_for_registration_stored &&
       BackgroundInfo::IsServiceWorkerBased(extension.get())) {
     registration_observer->WaitForRegistrationStored();
@@ -573,16 +408,15 @@ const Extension* ExtensionBrowserTest::LoadExtensionAsComponentWithManifest(
     return nullptr;
   }
 
-  extension_service()->component_loader()->set_ignore_allowlist_for_testing(
-      true);
-  extensions::ExtensionId extension_id =
-      extension_service()->component_loader()->Add(manifest, path);
+  auto* component_loader = ComponentLoader::Get(profile());
+  component_loader->set_ignore_allowlist_for_testing(true);
+  extensions::ExtensionId extension_id = component_loader->Add(manifest, path);
   const Extension* extension =
       extension_registry()->enabled_extensions().GetByID(extension_id);
   if (!extension) {
     return nullptr;
   }
-  last_loaded_extension_id_ = extension->id();
+  set_last_loaded_extension_id(extension->id());
   return extension;
 }
 
@@ -591,27 +425,305 @@ const Extension* ExtensionBrowserTest::LoadExtensionAsComponent(
   return LoadExtensionAsComponentWithManifest(path, kManifestFilename);
 }
 
-const Extension* ExtensionBrowserTest::LoadAndLaunchApp(
+const Extension* ExtensionBrowserTest::InstallExtension(
     const base::FilePath& path,
-    bool uses_guest_view) {
-  const Extension* app = LoadExtension(path);
-  CHECK(app);
-  content::CreateAndLoadWebContentsObserver app_loaded_observer(
-      /*num_expected_contents=*/uses_guest_view ? 2 : 1);
-  apps::AppLaunchParams params(
-      app->id(), apps::LaunchContainer::kLaunchContainerNone,
-      WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest);
-  params.command_line = *base::CommandLine::ForCurrentProcess();
-  apps::AppServiceProxyFactory::GetForProfile(profile())
-      ->BrowserAppLauncher()
-      ->LaunchAppWithParamsForTesting(std::move(params));
-  app_loaded_observer.Wait();
-
-  return app;
+    std::optional<int> expected_change) {
+  return InstallOrUpdateExtension(
+      std::string(), path, InstallUIType::kNone, std::move(expected_change),
+      mojom::ManifestLocation::kInternal, GetActiveWebContents(),
+      Extension::NO_FLAGS, /*wait_for_idle=*/true,
+      /*grant_permissions=*/false, /*was_triggered_by_user_download=*/false);
 }
 
-Browser* ExtensionBrowserTest::LaunchAppBrowser(const Extension* extension) {
-  return browsertest_util::LaunchAppBrowser(profile(), extension);
+const Extension* ExtensionBrowserTest::InstallExtension(
+    const base::FilePath& path,
+    std::optional<int> expected_change,
+    mojom::ManifestLocation install_source) {
+  return InstallOrUpdateExtension(
+      std::string(), path, InstallUIType::kNone, std::move(expected_change),
+      install_source, GetActiveWebContents(), Extension::NO_FLAGS,
+      /*wait_for_idle=*/true, /*grant_permissions=*/false,
+      /*was_triggered_by_user_download=*/false);
+}
+
+const Extension* ExtensionBrowserTest::InstallExtensionWithPermissionsGranted(
+    const base::FilePath& file_path,
+    std::optional<int> expected_change) {
+  return ExtensionBrowserTest::InstallOrUpdateExtension(
+      std::string(), file_path, InstallUIType::kNone,
+      std::move(expected_change), mojom::ManifestLocation::kInternal,
+      GetActiveWebContents(), Extension::NO_FLAGS,
+      /*wait_for_idle=*/false, /*grant_permissions=*/true,
+      /*was_triggered_by_user_download=*/false);
+}
+
+const Extension* ExtensionBrowserTest::InstallExtensionFromWebstore(
+    const base::FilePath& path,
+    std::optional<int> expected_change) {
+  return InstallOrUpdateExtension(
+      std::string(), path, InstallUIType::kAutoConfirm,
+      std::move(expected_change), mojom::ManifestLocation::kInternal,
+      GetActiveWebContents(), Extension::FROM_WEBSTORE,
+      /*wait_for_idle=*/true, /*grant_permissions=*/false,
+      /*installed_by_user_download*/ false);
+}
+
+const Extension*
+ExtensionBrowserTest::InstallExtensionFromWebstoreTriggeredByUserDownload(
+    const base::FilePath& path,
+    std::optional<int> expected_change) {
+  return InstallOrUpdateExtension(
+      std::string(), path, InstallUIType::kAutoConfirm,
+      std::move(expected_change), mojom::ManifestLocation::kInternal,
+      GetActiveWebContents(), Extension::FROM_WEBSTORE,
+      /*wait_for_idle=*/true, /*grant_permissions=*/false,
+      /*was_triggered_by_user_download=*/true);
+}
+
+const Extension* ExtensionBrowserTest::InstallExtensionWithUIAutoConfirm(
+    const base::FilePath& path,
+    std::optional<int> expected_change) {
+  return InstallOrUpdateExtension(
+      std::string(), path, InstallUIType::kAutoConfirm,
+      std::move(expected_change), mojom::ManifestLocation::kInternal,
+      GetActiveWebContents(), Extension::NO_FLAGS, /*wait_for_idle=*/true,
+      /*grant_permissions=*/false, /*was_triggered_by_user_download=*/false);
+}
+
+const Extension* ExtensionBrowserTest::InstallExtensionWithSourceAndFlags(
+    const base::FilePath& path,
+    std::optional<int> expected_change,
+    mojom::ManifestLocation install_source,
+    Extension::InitFromValueFlags creation_flags) {
+  return ExtensionBrowserTest::InstallOrUpdateExtension(
+      std::string(), path, InstallUIType::kNone, std::move(expected_change),
+      install_source, GetActiveWebContents(), creation_flags,
+      /*wait_for_idle=*/false, /*grant_permissions=*/false,
+      /*was_triggered_by_user_download=*/false);
+}
+
+const Extension* ExtensionBrowserTest::StartInstallButCancel(
+    const base::FilePath& path) {
+  return InstallOrUpdateExtension(std::string(), path, InstallUIType::kCancel,
+                                  0, mojom::ManifestLocation::kInternal,
+                                  GetActiveWebContents(), Extension::NO_FLAGS,
+                                  /*wait_for_idle=*/true,
+                                  /*grant_permissions=*/false,
+                                  /*was_triggered_by_user_download=*/false);
+}
+
+const Extension* ExtensionBrowserTest::UpdateExtension(
+    const extensions::ExtensionId& id,
+    const base::FilePath& path,
+    std::optional<int> expected_change) {
+  return InstallOrUpdateExtension(
+      id, path, InstallUIType::kNone, std::move(expected_change),
+      mojom::ManifestLocation::kInternal, GetActiveWebContents(),
+      Extension::NO_FLAGS,
+      /*wait_for_idle=*/true, /*grant_permissions=*/false,
+      /*was_triggered_by_user_download=*/false);
+}
+
+const Extension* ExtensionBrowserTest::UpdateExtensionWaitForIdle(
+    const extensions::ExtensionId& id,
+    const base::FilePath& path,
+    std::optional<int> expected_change) {
+  return InstallOrUpdateExtension(
+      id, path, InstallUIType::kNone, std::move(expected_change),
+      mojom::ManifestLocation::kInternal, GetActiveWebContents(),
+      Extension::NO_FLAGS,
+      /*wait_for_idle=*/false, /*grant_permissions=*/false,
+      /*was_triggered_by_user_download=*/false);
+}
+
+const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
+    const extensions::ExtensionId& id,
+    const base::FilePath& path,
+    InstallUIType ui_type,
+    std::optional<int> expected_change,
+    mojom::ManifestLocation install_source,
+    content::WebContents* active_web_contents,
+    Extension::InitFromValueFlags creation_flags,
+    bool install_immediately,
+    bool grant_permissions,
+    bool was_triggered_by_user_download) {
+  ExtensionRegistry* registry = extension_registry();
+  size_t num_before = registry->enabled_extensions().size();
+
+  scoped_refptr<CrxInstaller> installer;
+  std::optional<CrxInstallError> install_error;
+  {
+    std::unique_ptr<ScopedTestDialogAutoConfirm> prompt_auto_confirm;
+    if (ui_type == InstallUIType::kCancel) {
+      prompt_auto_confirm = std::make_unique<ScopedTestDialogAutoConfirm>(
+          ScopedTestDialogAutoConfirm::CANCEL);
+    } else if (ui_type == InstallUIType::kNormal) {
+      prompt_auto_confirm = std::make_unique<ScopedTestDialogAutoConfirm>(
+          ScopedTestDialogAutoConfirm::NONE);
+    } else if (ui_type == InstallUIType::kAutoConfirm) {
+      prompt_auto_confirm = std::make_unique<ScopedTestDialogAutoConfirm>(
+          ScopedTestDialogAutoConfirm::ACCEPT);
+    }
+
+    // TODO(tessamac): Update callers to always pass an unpacked extension
+    //                 and then always pack the extension here.
+    base::FilePath crx_path = path;
+    if (crx_path.Extension() != FILE_PATH_LITERAL(".crx")) {
+      crx_path = PackExtension(path, ExtensionCreator::kNoRunFlags);
+    }
+    if (crx_path.empty()) {
+      return nullptr;
+    }
+
+    std::unique_ptr<ExtensionInstallPrompt> install_ui;
+    if (prompt_auto_confirm) {
+      install_ui =
+          std::make_unique<ExtensionInstallPrompt>(active_web_contents);
+    }
+    installer = CrxInstaller::Create(profile(), std::move(install_ui));
+    installer->set_expected_id(id);
+    installer->set_creation_flags(creation_flags);
+    installer->set_install_source(install_source);
+    installer->set_install_immediately(install_immediately);
+    installer->set_allow_silent_install(grant_permissions);
+    if (!installer->is_gallery_install()) {
+      installer->set_off_store_install_allow_reason(
+          CrxInstaller::OffStoreInstallAllowedInTest);
+    }
+    if (was_triggered_by_user_download) {
+      installer->set_was_triggered_by_user_download();
+    }
+
+    base::test::TestFuture<std::optional<CrxInstallError>>
+        installer_done_future;
+    installer->AddInstallerCallback(
+        installer_done_future
+            .GetCallback<const std::optional<CrxInstallError>&>());
+
+    installer->InstallCrx(crx_path);
+
+    install_error = installer_done_future.Get();
+  }
+
+  if (expected_change.has_value()) {
+    size_t num_after = registry->enabled_extensions().size();
+    EXPECT_EQ(num_before + expected_change.value(), num_after);
+    if (num_before + expected_change.value() != num_after) {
+      VLOG(1) << "Num extensions before: " << base::NumberToString(num_before)
+              << " num after: " << base::NumberToString(num_after)
+              << " Installed extensions follow:";
+
+      for (const scoped_refptr<const Extension>& extension :
+           registry->enabled_extensions()) {
+        VLOG(1) << "  " << extension->id();
+      }
+
+      VLOG(1) << "Errors follow:";
+      const std::vector<std::u16string>* errors =
+          LoadErrorReporter::GetInstance()->GetErrors();
+      for (const auto& error : *errors) {
+        VLOG(1) << error;
+      }
+
+      return nullptr;
+    }
+  }
+
+  // If possible, wait for the extension's background context to be loaded.
+  // `WaitForExtensionViewsToLoad()` by itself is insufficient for this, since
+  // it only waits for existent views registered in the process manager, and
+  // the background context may not be registered yet.
+  std::string reason_unused;
+  bool extension_enabled =
+      !install_error &&
+      registry->enabled_extensions().Contains(installer->extension()->id());
+  if (extension_enabled && ExtensionBackgroundPageWaiter::CanWaitFor(
+                               *installer->extension(), reason_unused)) {
+    ExtensionBackgroundPageWaiter(profile(), *installer->extension())
+        .WaitForBackgroundInitialized();
+  }
+
+  if (!test_notification_observer()->WaitForExtensionViewsToLoad()) {
+    return nullptr;
+  }
+
+  if (install_error) {
+    return nullptr;
+  }
+
+  // Even though we can already get the Extension from the CrxInstaller,
+  // ensure it's also in the list of enabled extensions.
+  return registry->enabled_extensions().GetByID(installer->extension()->id());
+}
+
+void ExtensionBrowserTest::DisableExtension(const ExtensionId& extension_id) {
+  DisableExtension(extension_id, {disable_reason::DISABLE_USER_ACTION});
+}
+
+void ExtensionBrowserTest::DisableExtension(
+    const ExtensionId& extension_id,
+    const DisableReasonSet& disable_reasons) {
+  extension_registrar()->DisableExtension(extension_id, disable_reasons);
+}
+
+void ExtensionBrowserTest::UnloadExtension(
+    const extensions::ExtensionId& extension_id) {
+  extension_registrar()->RemoveExtension(extension_id,
+                                         UnloadedExtensionReason::DISABLE);
+}
+
+void ExtensionBrowserTest::UninstallExtension(
+    const extensions::ExtensionId& extension_id) {
+  extension_registrar()->UninstallExtension(
+      extension_id, UNINSTALL_REASON_FOR_TESTING, nullptr);
+}
+
+void ExtensionBrowserTest::EnableExtension(
+    const extensions::ExtensionId& extension_id) {
+  extension_registrar()->EnableExtension(extension_id);
+}
+
+void ExtensionBrowserTest::ReloadExtension(
+    const extensions::ExtensionId& extension_id) {
+  scoped_refptr<const Extension> extension =
+      extension_registry()->GetInstalledExtension(extension_id);
+  ASSERT_TRUE(extension);
+  TestExtensionRegistryObserver observer(extension_registry(), extension_id);
+  extension_registrar()->ReloadExtension(extension_id);
+  // Re-grab the extension after the reload to get the updated copy.
+  extension = observer.WaitForExtensionLoaded();
+  // We need to let other ExtensionRegistryObservers handle the extension load
+  // in order to finish initialization.
+  base::RunLoop().RunUntilIdle();
+
+  // Wait for the background context, if any, to start up.
+  std::string reason_unused;
+  if (extension_registry()->enabled_extensions().Contains(extension_id) &&
+      ExtensionBackgroundPageWaiter::CanWaitFor(*extension, reason_unused)) {
+    ExtensionBackgroundPageWaiter(profile(), *extension)
+        .WaitForBackgroundInitialized();
+  }
+
+  // Wait for any additionally-registered extension views to load.
+  test_notification_observer_->WaitForExtensionViewsToLoad();
+}
+
+content::WebContents* ExtensionBrowserTest::GetActiveWebContents() {
+  if (!browser_window_interface()) {
+    return nullptr;
+  }
+  tabs::TabInterface* active_tab =
+      TabListInterface::From(browser_window_interface())->GetActiveTab();
+  return active_tab ? active_tab->GetContents() : nullptr;
+}
+
+content::WebContents* ExtensionBrowserTest::GetWebContentsAt(int index) {
+  if (!browser_window_interface()) {
+    return nullptr;
+  }
+  return TabListInterface::From(browser_window_interface())
+      ->GetTab(index)
+      ->GetContents();
 }
 
 base::FilePath ExtensionBrowserTest::PackExtension(
@@ -659,11 +771,11 @@ base::FilePath ExtensionBrowserTest::PackExtensionWithOptions(
     return base::FilePath();
   }
 
-  std::unique_ptr<ExtensionCreator> creator(new ExtensionCreator());
-  if (!creator->Run(dir_path, crx_path, pem_path, pem_out_path,
-                    extra_run_flags | ExtensionCreator::kOverwriteCRX)) {
+  ExtensionCreator creator;
+  if (!creator.Run(dir_path, crx_path, pem_path, pem_out_path,
+                   extra_run_flags | ExtensionCreator::kOverwriteCRX)) {
     ADD_FAILURE() << "ExtensionCreator::Run() failed: "
-                  << creator->error_message();
+                  << creator.error_message();
     return base::FilePath();
   }
 
@@ -674,217 +786,81 @@ base::FilePath ExtensionBrowserTest::PackExtensionWithOptions(
   return crx_path;
 }
 
-const Extension* ExtensionBrowserTest::UpdateExtensionWaitForIdle(
-    const extensions::ExtensionId& id,
-    const base::FilePath& path,
-    std::optional<int> expected_change) {
-  return InstallOrUpdateExtension(id, path, InstallUIType::kNone,
-                                  std::move(expected_change),
-                                  ManifestLocation::kInternal, browser(),
-                                  Extension::NO_FLAGS, false, false);
+bool ExtensionBrowserTest::NavigateToURL(content::WebContents* web_contents,
+                                         const GURL& url) {
+  return chrome_test_utils::NavigateToURL(web_contents, url);
 }
 
-const Extension* ExtensionBrowserTest::InstallExtensionFromWebstore(
-    const base::FilePath& path,
-    std::optional<int> expected_change) {
-  return InstallOrUpdateExtension(
-      std::string(), path, InstallUIType::kAutoConfirm,
-      std::move(expected_change), ManifestLocation::kInternal, browser(),
-      Extension::FROM_WEBSTORE, true, false);
+bool ExtensionBrowserTest::NavigateToURL(BrowserWindowInterface* browser_window,
+                                         const GURL& url) {
+#if BUILDFLAG(IS_ANDROID)
+  NOTREACHED() << "Not supported on Android.";
+#else
+  auto* web_contents =
+      browser_window->GetTabStripModel()->GetActiveWebContents();
+  return NavigateToURL(web_contents, url);
+#endif
 }
 
-const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
-    const extensions::ExtensionId& id,
-    const base::FilePath& path,
-    InstallUIType ui_type,
-    std::optional<int> expected_change) {
-  return InstallOrUpdateExtension(id, path, ui_type, std::move(expected_change),
-                                  ManifestLocation::kInternal, browser(),
-                                  Extension::NO_FLAGS, true, false);
-}
-
-const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
-    const extensions::ExtensionId& id,
-    const base::FilePath& path,
-    InstallUIType ui_type,
-    std::optional<int> expected_change,
-    Browser* browser,
-    Extension::InitFromValueFlags creation_flags) {
-  return InstallOrUpdateExtension(id, path, ui_type, std::move(expected_change),
-                                  ManifestLocation::kInternal, browser,
-                                  creation_flags, true, false);
-}
-
-const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
-    const extensions::ExtensionId& id,
-    const base::FilePath& path,
-    InstallUIType ui_type,
-    std::optional<int> expected_change,
-    ManifestLocation install_source) {
-  return InstallOrUpdateExtension(id, path, ui_type, std::move(expected_change),
-                                  install_source, browser(),
-                                  Extension::NO_FLAGS, true, false);
-}
-
-const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
-    const extensions::ExtensionId& id,
-    const base::FilePath& path,
-    InstallUIType ui_type,
-    std::optional<int> expected_change,
-    ManifestLocation install_source,
-    Browser* browser,
-    Extension::InitFromValueFlags creation_flags,
-    bool install_immediately,
-    bool grant_permissions) {
-  ExtensionRegistry* registry = extension_registry();
-  size_t num_before = registry->enabled_extensions().size();
-
-  scoped_refptr<CrxInstaller> installer;
-  std::optional<CrxInstallError> install_error;
-  {
-    std::unique_ptr<ScopedTestDialogAutoConfirm> prompt_auto_confirm;
-    if (ui_type == InstallUIType::kCancel) {
-      prompt_auto_confirm = std::make_unique<ScopedTestDialogAutoConfirm>(
-          ScopedTestDialogAutoConfirm::CANCEL);
-    } else if (ui_type == InstallUIType::kNormal) {
-      prompt_auto_confirm = std::make_unique<ScopedTestDialogAutoConfirm>(
-          ScopedTestDialogAutoConfirm::NONE);
-    } else if (ui_type == InstallUIType::kAutoConfirm) {
-      prompt_auto_confirm = std::make_unique<ScopedTestDialogAutoConfirm>(
-          ScopedTestDialogAutoConfirm::ACCEPT);
-    }
-
-    // TODO(tessamac): Update callers to always pass an unpacked extension
-    //                 and then always pack the extension here.
-    base::FilePath crx_path = path;
-    if (crx_path.Extension() != FILE_PATH_LITERAL(".crx")) {
-      crx_path = PackExtension(path, ExtensionCreator::kNoRunFlags);
-    }
-    if (crx_path.empty()) {
-      return nullptr;
-    }
-
-    std::unique_ptr<ExtensionInstallPrompt> install_ui;
-    if (prompt_auto_confirm) {
-      install_ui = std::make_unique<ExtensionInstallPrompt>(
-          browser->tab_strip_model()->GetActiveWebContents());
-    }
-    installer =
-        CrxInstaller::Create(extension_service(), std::move(install_ui));
-    installer->set_expected_id(id);
-    installer->set_creation_flags(creation_flags);
-    installer->set_install_source(install_source);
-    installer->set_install_immediately(install_immediately);
-    installer->set_allow_silent_install(grant_permissions);
-    if (!installer->is_gallery_install()) {
-      installer->set_off_store_install_allow_reason(
-          CrxInstaller::OffStoreInstallAllowedInTest);
-    }
-
-    base::test::TestFuture<std::optional<CrxInstallError>>
-        installer_done_future;
-    installer->AddInstallerCallback(
-        installer_done_future
-            .GetCallback<const std::optional<CrxInstallError>&>());
-
-    installer->InstallCrx(crx_path);
-
-    install_error = installer_done_future.Get();
+bool ExtensionBrowserTest::GetCurrentTabTitle(std::u16string* title) {
+  content::WebContents* web_contents = GetActiveWebContents();
+  if (!web_contents) {
+    return false;
   }
-
-  if (expected_change.has_value()) {
-    size_t num_after = registry->enabled_extensions().size();
-    EXPECT_EQ(num_before + expected_change.value(), num_after);
-    if (num_before + expected_change.value() != num_after) {
-      VLOG(1) << "Num extensions before: " << base::NumberToString(num_before)
-              << " num after: " << base::NumberToString(num_after)
-              << " Installed extensions follow:";
-
-      for (const scoped_refptr<const Extension>& extension :
-           registry->enabled_extensions()) {
-        VLOG(1) << "  " << extension->id();
-      }
-
-      VLOG(1) << "Errors follow:";
-      const std::vector<std::u16string>* errors =
-          LoadErrorReporter::GetInstance()->GetErrors();
-      for (const auto& error : *errors) {
-        VLOG(1) << error;
-      }
-
-      return nullptr;
-    }
+  content::NavigationEntry* last_entry =
+      web_contents->GetController().GetActiveEntry();
+  if (!last_entry) {
+    return false;
   }
-
-  if (!observer_->WaitForExtensionViewsToLoad()) {
-    return nullptr;
-  }
-
-  if (install_error) {
-    return nullptr;
-  }
-
-  // Even though we can already get the Extension from the CrxInstaller,
-  // ensure it's also in the list of enabled extensions.
-  return registry->enabled_extensions().GetByID(installer->extension()->id());
+  title->assign(last_entry->GetTitleForDisplay());
+  return true;
 }
 
-void ExtensionBrowserTest::ReloadExtension(
-    const extensions::ExtensionId& extension_id) {
-  const Extension* extension =
-      extension_registry()->GetInstalledExtension(extension_id);
-  ASSERT_TRUE(extension);
-  TestExtensionRegistryObserver observer(extension_registry(), extension_id);
-  extension_service()->ReloadExtension(extension_id);
-  observer.WaitForExtensionLoaded();
-
-  // We need to let other ExtensionRegistryObservers handle the extension load
-  // in order to finish initialization. This has to be done before waiting for
-  // extension views to load, since we only register views after observing
-  // extension load.
-  base::RunLoop().RunUntilIdle();
-  observer_->WaitForExtensionViewsToLoad();
+content::WebContents* ExtensionBrowserTest::PlatformOpenURLOffTheRecord(
+    Profile* profile,
+    const GURL& url) {
+#if BUILDFLAG(IS_ANDROID)
+  // Android doesn't have an OpenURLOffTheRecord() helper so we roll our own.
+  // TODO(crbug.com/424860292): Delete this code when CreateBrowserWindow()
+  // works on desktop Android for incognito windows.
+  Profile* incognito_profile =
+      this->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  // Close any old incognito tabs before creating the new tab model.
+  incognito_tab_model_.reset();
+  // Create a tab model for the incognito profile.
+  incognito_tab_model_ = std::make_unique<OwningTestTabModel>(
+      incognito_profile, kTestActivityType);
+  incognito_tab_model_->SetIsActiveModel(true);
+  incognito_tab_model_->AddEmptyTab(0, /*select=*/true);
+  content::WebContents* web_contents =
+      incognito_tab_model_->GetActiveWebContents();
+  TabAndroid::AttachTabHelpers(web_contents);
+  // This blocks until the navigation completes. The return value is ignored
+  // because some tests intentionally navigate to blocked URLs which fail to
+  // load.
+  (void)content::NavigateToURL(web_contents, url);
+  return web_contents;
+#else
+  Browser* otr_browser = OpenURLOffTheRecord(profile, url);
+  return otr_browser->tab_strip_model()->GetActiveWebContents();
+#endif
 }
 
-void ExtensionBrowserTest::UnloadExtension(
-    const extensions::ExtensionId& extension_id) {
-  extension_service()->UnloadExtension(extension_id,
-                                       UnloadedExtensionReason::DISABLE);
-}
-
-void ExtensionBrowserTest::UninstallExtension(
-    const extensions::ExtensionId& extension_id) {
-  extension_service()->UninstallExtension(
-      extension_id, UNINSTALL_REASON_FOR_TESTING, nullptr);
-}
-
-void ExtensionBrowserTest::DisableExtension(
-    const extensions::ExtensionId& extension_id) {
-  extension_service()->DisableExtension(extension_id,
-                                        disable_reason::DISABLE_USER_ACTION);
-}
-
-void ExtensionBrowserTest::EnableExtension(
-    const extensions::ExtensionId& extension_id) {
-  extension_service()->EnableExtension(extension_id);
-}
-
-bool ExtensionBrowserTest::WaitForPageActionVisibilityChangeTo(int count) {
-  return observer_->WaitForPageActionVisibilityChangeTo(count);
-}
-
-bool ExtensionBrowserTest::WaitForExtensionViewsToLoad() {
-  return observer_->WaitForExtensionViewsToLoad();
-}
-
-bool ExtensionBrowserTest::WaitForExtensionIdle(
-    const extensions::ExtensionId& extension_id) {
-  return observer_->WaitForExtensionIdle(extension_id);
-}
-
-bool ExtensionBrowserTest::WaitForExtensionNotIdle(
-    const extensions::ExtensionId& extension_id) {
-  return observer_->WaitForExtensionNotIdle(extension_id);
+content::RenderFrameHost* ExtensionBrowserTest::NavigateToURLInNewTab(
+    const GURL& url) {
+#if BUILDFLAG(IS_ANDROID)
+  // Navigate and block until navigation finishes.
+  android_ui_test_utils::OpenUrlInNewTab(profile(), GetActiveWebContents(),
+                                         url);
+  content::WebContents* new_web_contents = GetActiveWebContents();
+  // Mimic BROWSER_TEST_WAIT_FOR_LOAD_STOP like above.
+  content::WaitForLoadStop(new_web_contents);
+  return content::ConvertToRenderFrameHost(new_web_contents);
+#else
+  return ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+#endif
 }
 
 void ExtensionBrowserTest::OpenWindow(content::WebContents* contents,
@@ -939,7 +915,7 @@ ExtensionHost* ExtensionBrowserTest::FindHostWithPath(ProcessManager* manager,
   ExtensionHost* result_host = nullptr;
   int num_hosts = 0;
   for (ExtensionHost* host : manager->background_hosts()) {
-    if (host->GetLastCommittedURL().path() == path) {
+    if (host->GetLastCommittedURL().GetPath() == path) {
       EXPECT_FALSE(result_host);
       result_host = host;
     }
@@ -947,6 +923,36 @@ ExtensionHost* ExtensionBrowserTest::FindHostWithPath(ProcessManager* manager,
   }
   EXPECT_EQ(expected_hosts, num_hosts);
   return result_host;
+}
+
+content::ServiceWorkerContext* ExtensionBrowserTest::GetServiceWorkerContext() {
+  return GetServiceWorkerContext(profile());
+}
+
+// static
+content::ServiceWorkerContext* ExtensionBrowserTest::GetServiceWorkerContext(
+    content::BrowserContext* browser_context) {
+  return service_worker_test_utils::GetServiceWorkerContext(browser_context);
+}
+
+int ExtensionBrowserTest::GetTabCount() {
+  return TabListInterface::From(browser_window_interface())->GetTabCount();
+}
+
+bool ExtensionBrowserTest::IsTabSelected(int index) {
+  return TabListInterface::From(browser_window_interface())->GetActiveIndex() ==
+         index;
+}
+
+void ExtensionBrowserTest::CloseTabForWebContents(
+    content::WebContents* web_contents) {
+  content::WebContentsDestroyedWatcher destroyed_watcher(web_contents);
+  TabListInterface* tab_list = nullptr;
+  int tab_index = -1;
+  ASSERT_TRUE(ExtensionTabUtil::GetTabListInterface(*web_contents, &tab_list,
+                                                    &tab_index));
+  tab_list->CloseTab(tab_list->GetTab(tab_index)->GetHandle());
+  destroyed_watcher.Wait();
 }
 
 base::Value ExtensionBrowserTest::ExecuteScriptInBackgroundPage(
@@ -973,88 +979,73 @@ bool ExtensionBrowserTest::ExecuteScriptInBackgroundPageNoWait(
       profile(), extension_id, script, script_user_activation);
 }
 
-content::ServiceWorkerContext* ExtensionBrowserTest::GetServiceWorkerContext() {
-  return GetServiceWorkerContext(profile());
+void ExtensionBrowserTest::SetUpTestProtocolHandler() {
+  test_protocol_handler_ = base::BindRepeating(
+      &ExtensionProtocolTestResourcesHandler, GetTestResourcesParentDir());
+  SetExtensionProtocolTestHandler(&test_protocol_handler_);
 }
 
-// static
-content::ServiceWorkerContext* ExtensionBrowserTest::GetServiceWorkerContext(
-    content::BrowserContext* browser_context) {
-  return service_worker_test_utils::GetServiceWorkerContext(browser_context);
+void ExtensionBrowserTest::TearDownTestProtocolHandler() {
+  SetExtensionProtocolTestHandler(nullptr);
 }
 
-bool ExtensionBrowserTest::ModifyExtensionIfNeeded(
-    const LoadOptions& options,
-    const base::FilePath& input_path,
-    base::FilePath* out_path) {
-  base::ScopedAllowBlockingForTesting scoped_allow_blocking;
+bool ExtensionBrowserTest::WaitForExtensionViewsToLoad() {
+  return test_notification_observer_->WaitForExtensionViewsToLoad();
+}
 
-  const ContextType context_type_to_use =
-      options.context_type == ContextType::kNone ? context_type_
-                                                 : options.context_type;
+bool ExtensionBrowserTest::WaitForExtensionIdle(
+    const ExtensionId& extension_id) {
+  return test_notification_observer_->WaitForExtensionIdle(extension_id);
+}
 
-  // Use context_type_ if LoadOptions.context_type is unspecified.
-  // Otherwise, use LoadOptions.context_type.
-  const bool load_as_service_worker =
-      IsServiceWorkerContext(context_type_to_use);
+bool ExtensionBrowserTest::WaitForExtensionNotIdle(
+    const ExtensionId& extension_id) {
+  return test_notification_observer_->WaitForExtensionNotIdle(extension_id);
+}
 
-  // Early return if no modification is needed.
-  if (!load_as_service_worker && !options.load_as_manifest_version_3) {
-    *out_path = input_path;
-    return true;
-  }
+bool ExtensionBrowserTest::WaitForPageActionVisibilityChangeTo(int count) {
+  // Note: It's okay if the visibility is already at `count` (i.e., that we're
+  // constructing this observer "late"); the observer handles that case
+  // gracefully.
+  ChromeExtensionTestNotificationObserver observer(GetProfile());
+  return observer.WaitForPageActionVisibilityChangeTo(GetActiveWebContents(),
+                                                      count);
+}
 
-  // Tests that have a PRE_ stage need to exist in a temporary directory that
-  // persists after the test fixture is destroyed. The test bots are configured
-  // to use a unique temp directory that's cleaned up after the tests run, so
-  // this won't pollute the system tmp directory.
-  base::FilePath temp_dir;
-  if (GetTestPreCount() == 0) {
-    temp_dir = temp_dir_.GetPath();
-  } else if (!base::GetTempDir(&temp_dir)) {
-    ADD_FAILURE() << "Could not get temporary dir for test.";
-    return false;
-  }
+const Extension* ExtensionBrowserTest::LoadAndLaunchApp(
+    const base::FilePath& path,
+    bool uses_guest_view) {
+  return platform_delegate_.LoadAndLaunchApp(path, uses_guest_view);
+}
 
-  base::FilePath extension_root;
-  if (!CreateTempDirectoryCopy(temp_dir, input_path, &extension_root)) {
-    return false;
-  }
+Profile* ExtensionBrowserTest::profile() {
+  return platform_delegate_.GetProfile();
+}
 
-  std::string error;
-  std::optional<base::Value::Dict> manifest_dict =
-      file_util::LoadManifest(extension_root, &error);
-  if (!manifest_dict) {
-    ADD_FAILURE() << extension_root.value()
-                  << " could not load manifest: " << error;
-    return false;
-  }
+content::WebContents* ExtensionBrowserTest::web_contents() {
+  return web_contents_.get();
+}
 
-  if (load_as_service_worker &&
-      !ModifyExtensionForServiceWorker(extension_root, *manifest_dict)) {
-    return false;
-  }
+BrowserWindowInterface* ExtensionBrowserTest::browser_window_interface() {
+#if BUILDFLAG(IS_ANDROID)
+  std::vector<BrowserWindowInterface*> all_browsers =
+      GetAllBrowserWindowInterfaces();
+  return all_browsers.empty() ? nullptr : all_browsers.front();
+#else
+  return browser();
+#endif
+}
 
-  const bool is_service_worker_mv3 =
-      context_type_to_use == ContextType::kServiceWorker;
+ExtensionService* ExtensionBrowserTest::extension_service() {
+  return ExtensionSystem::Get(profile())->extension_service();
+}
 
-  // Update the manifest if converting to a service worker MV3-based
-  // extension or if requested in `options`.
-  if ((is_service_worker_mv3 || options.load_as_manifest_version_3) &&
-      !ModifyManifestForManifestVersion3(*manifest_dict)) {
-    return false;
-  }
-
-  // Write out manifest.json.
-  base::FilePath manifest_path = extension_root.Append(kManifestFilename);
-  if (!JSONFileValueSerializer(manifest_path).Serialize(*manifest_dict)) {
-    ADD_FAILURE() << "Could not write manifest file to "
-                  << manifest_path.value();
-    return false;
-  }
-
-  *out_path = extension_root;
-  return true;
+void ExtensionBrowserTest::UseHttpsTestServer(
+    net::EmbeddedTestServer::ServerCertificate server_certificate) {
+  https_test_server_ = std::make_unique<net::EmbeddedTestServer>(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  https_test_server_.get()->AddDefaultHandlers(GetChromeTestDataDir());
+  https_test_server_.get()->SetSSLConfig(server_certificate);
 }
 
 }  // namespace extensions

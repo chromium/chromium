@@ -51,9 +51,7 @@ enum WebCryptoKeyUsage {
   kWebCryptoKeyUsageWrapKey = 1 << 5,
   kWebCryptoKeyUsageUnwrapKey = 1 << 6,
   kWebCryptoKeyUsageDeriveBits = 1 << 7,
-#if INSIDE_BLINK
   kEndOfWebCryptoKeyUsage,
-#endif
 };
 
 // A bitfield of WebCryptoKeyUsage

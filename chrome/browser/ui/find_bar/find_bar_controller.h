@@ -6,16 +6,16 @@
 #define CHROME_BROWSER_UI_FIND_BAR_FIND_BAR_CONTROLLER_H_
 
 #include <memory>
-#include <string>
+#include <string_view>
 
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/find_bar/find_bar_platform_helper.h"
+#include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "components/find_in_page/find_result_observer.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "content/public/browser/web_contents_observer.h"
 
 class FindBar;
+class FindBarPlatformHelper;
 
 namespace content {
 class WebContents;
@@ -61,6 +61,7 @@ class FindBarController : public content::WebContentsObserver,
   // content::WebContentsObserver:
   void NavigationEntryCommitted(
       const content::LoadCommittedDetails& load_details) override;
+  void AboutToBeDiscarded(content::WebContents* new_contents) override;
 
   // find_in_page::FindResultObserver:
   void OnFindEmptyText(content::WebContents* web_contents) override;
@@ -69,9 +70,15 @@ class FindBarController : public content::WebContentsObserver,
   void SetText(std::u16string text);
 
   // Called when the find text is updated in response to a user action.
-  void OnUserChangedFindText(std::u16string text);
+  void OnUserChangedFindText(std::u16string_view text);
+
+  // Will be called only from `Browser`.
+  void HandleActiveTabChanged(content::WebContents* new_contents);
 
   FindBar* find_bar() const { return find_bar_.get(); }
+
+  // Updates the page action, which the find bar appears anchored to.
+  void UpdatePageAction();
 
  private:
   // Sends an update to the find bar with the tab contents' current result. The
@@ -101,6 +108,10 @@ class FindBarController : public content::WebContentsObserver,
   // If the user has changed the text in the find bar. Used to avoid
   // replacing user-entered text with selection.
   bool has_user_modified_text_ = false;
+
+  // Manages the highlight on the page action.
+  std::optional<page_actions::ScopedPageActionActivity>
+      find_bar_page_action_activity_ = std::nullopt;
 
   base::ScopedObservation<find_in_page::FindTabHelper,
                           find_in_page::FindResultObserver>

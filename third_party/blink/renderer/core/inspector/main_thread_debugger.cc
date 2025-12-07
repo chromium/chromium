@@ -36,7 +36,7 @@
 #include "base/feature_list.h"
 #include "base/synchronization/lock.h"
 #include "base/unguessable_token.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
@@ -178,7 +178,7 @@ void MainThreadDebugger::ExceptionThrown(ExecutionContext* context,
       return;
     script_state = scope->ScriptController()->GetScriptState();
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   frame->Console().ReportMessageToClient(
@@ -305,7 +305,7 @@ v8::Local<v8::Context> MainThreadDebugger::ensureDefaultContextInGroup(
   // CrOS and this check failed when tested on an experimental builder. Revert
   // https://crrev.com/c/2727867 to enable it.
   // See go/chrome-dcheck-on-cros or http://crbug.com/1113456 for more details.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   DCHECK(!frame->IsProvisional());
 #endif
   if (frame->IsProvisional())
@@ -378,13 +378,12 @@ void MainThreadDebugger::consoleAPIMessage(
     return;
   // TODO(dgozman): we can save a copy of message and url here by making
   // FrameConsole work with StringView.
-  std::unique_ptr<SourceLocation> location = std::make_unique<SourceLocation>(
+  SourceLocation* location = MakeGarbageCollected<SourceLocation>(
       ToCoreString(url), String(), line_number, column_number,
       stack_trace ? stack_trace->clone() : nullptr, 0);
   frame->Console().ReportMessageToClient(
       mojom::ConsoleMessageSource::kConsoleApi,
-      V8MessageLevelToMessageLevel(level), ToCoreString(message),
-      location.get());
+      V8MessageLevelToMessageLevel(level), ToCoreString(message), location);
 }
 
 void MainThreadDebugger::consoleClear(int context_group_id) {
@@ -444,16 +443,19 @@ void MainThreadDebugger::QuerySelectorCallback(
   auto* container_node = DynamicTo<ContainerNode>(SecondArgumentAsNode(info));
   if (!container_node)
     return;
-  ExceptionState exception_state(info.GetIsolate(),
-                                 v8::ExceptionContext::kOperation,
-                                 "CommandLineAPI", "$");
-  Element* element =
-      container_node->QuerySelector(AtomicString(selector), exception_state);
-  if (exception_state.HadException())
+  ScriptState* script_state =
+      ScriptState::ForRelevantRealm(info.GetIsolate(), info.This());
+  v8::TryCatch try_catch(info.GetIsolate());
+  Element* element = container_node->QuerySelector(
+      AtomicString(selector), PassThroughException(info.GetIsolate()));
+  if (try_catch.HasCaught()) {
+    ApplyContextToException(script_state, try_catch.Exception(),
+                            v8::ExceptionContext::kOperation, "CommandLineAPI",
+                            "$");
+    try_catch.ReThrow();
     return;
+  }
   if (element) {
-    ScriptState* script_state =
-        ScriptState::ForRelevantRealm(info.GetIsolate(), info.This());
     info.GetReturnValue().Set(ToV8Traits<Element>::ToV8(script_state, element));
   } else {
     info.GetReturnValue().Set(v8::Null(info.GetIsolate()));
@@ -471,20 +473,26 @@ void MainThreadDebugger::QuerySelectorAllCallback(
   auto* container_node = DynamicTo<ContainerNode>(SecondArgumentAsNode(info));
   if (!container_node)
     return;
-  ExceptionState exception_state(info.GetIsolate(),
-                                 v8::ExceptionContext::kOperation,
-                                 "CommandLineAPI", "$$");
+  ScriptState* script_state =
+      ScriptState::ForRelevantRealm(info.GetIsolate(), info.This());
+  v8::TryCatch try_catch(info.GetIsolate());
   // ToV8(elementList) doesn't work here, since we need a proper Array instance,
   // not NodeList.
-  StaticElementList* element_list =
-      container_node->QuerySelectorAll(AtomicString(selector), exception_state);
-  if (exception_state.HadException() || !element_list)
+  StaticElementList* element_list = container_node->QuerySelectorAll(
+      AtomicString(selector), PassThroughException(info.GetIsolate()));
+  if (try_catch.HasCaught()) {
+    ApplyContextToException(script_state, try_catch.Exception(),
+                            v8::ExceptionContext::kOperation, "CommandLineAPI",
+                            "$$");
+    try_catch.ReThrow();
     return;
+  }
+  if (!element_list) {
+    return;
+  }
   v8::Isolate* isolate = info.GetIsolate();
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   v8::Local<v8::Array> nodes = v8::Array::New(isolate, element_list->length());
-  ScriptState* script_state =
-      ScriptState::ForRelevantRealm(info.GetIsolate(), info.This());
   for (wtf_size_t i = 0; i < element_list->length(); ++i) {
     Element* element = element_list->item(i);
     v8::Local<v8::Value> value =
@@ -500,46 +508,61 @@ void MainThreadDebugger::XpathSelectorCallback(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
   if (info.Length() < 1)
     return;
+  v8::Isolate* isolate = info.GetIsolate();
   const String& selector =
-      ToCoreStringWithUndefinedOrNullCheck(info.GetIsolate(), info[0]);
+      ToCoreStringWithUndefinedOrNullCheck(isolate, info[0]);
   if (selector.empty())
     return;
   Node* node = SecondArgumentAsNode(info);
   if (!node || !node->IsContainerNode())
     return;
 
-  ExceptionState exception_state(info.GetIsolate(),
-                                 v8::ExceptionContext::kOperation,
-                                 "CommandLineAPI", "$x");
+  ScriptState* script_state =
+      ScriptState::ForRelevantRealm(isolate, info.This());
+  v8::TryCatch try_catch(isolate);
   XPathResult* result = XPathEvaluator::Create()->evaluate(
       nullptr, selector, node, nullptr, XPathResult::kAnyType, ScriptValue(),
-      exception_state);
-  if (exception_state.HadException() || !result)
+      PassThroughException(isolate));
+  if (try_catch.HasCaught()) {
+    ApplyContextToException(script_state, try_catch.Exception(),
+                            v8::ExceptionContext::kOperation, "CommandLineAPI",
+                            "$x");
+    try_catch.ReThrow();
     return;
-  ScriptState* script_state =
-      ScriptState::ForRelevantRealm(info.GetIsolate(), info.This());
+  }
+  if (!result) {
+    return;
+  }
+
   if (result->resultType() == XPathResult::kNumberType) {
-    bindings::V8SetReturnValue(info, result->numberValue(exception_state));
+    bindings::V8SetReturnValue(
+        info, result->numberValue(PassThroughException(isolate)));
   } else if (result->resultType() == XPathResult::kStringType) {
-    bindings::V8SetReturnValue(info, result->stringValue(exception_state),
-                               info.GetIsolate(),
-                               bindings::V8ReturnValue::kNonNullable);
+    bindings::V8SetReturnValue(
+        info, result->stringValue(PassThroughException(isolate)), isolate,
+        bindings::V8ReturnValue::kNonNullable);
   } else if (result->resultType() == XPathResult::kBooleanType) {
-    bindings::V8SetReturnValue(info, result->booleanValue(exception_state));
+    bindings::V8SetReturnValue(
+        info, result->booleanValue(PassThroughException(isolate)));
   } else {
-    v8::Isolate* isolate = info.GetIsolate();
     v8::Local<v8::Context> context = isolate->GetCurrentContext();
     v8::Local<v8::Array> nodes = v8::Array::New(isolate);
     wtf_size_t index = 0;
-    while (Node* next_node = result->iterateNext(exception_state)) {
-      if (exception_state.HadException())
-        return;
+    while (Node* next_node =
+               result->iterateNext(PassThroughException(isolate))) {
       v8::Local<v8::Value> value =
           ToV8Traits<Node>::ToV8(script_state, next_node);
       if (!CreateDataPropertyInArray(context, nodes, index++, value)
                .FromMaybe(false)) {
         return;
       }
+    }
+    if (try_catch.HasCaught()) {
+      ApplyContextToException(script_state, try_catch.Exception(),
+                              v8::ExceptionContext::kOperation,
+                              "CommandLineAPI", "$x");
+      try_catch.ReThrow();
+      return;
     }
     info.GetReturnValue().Set(nodes);
   }

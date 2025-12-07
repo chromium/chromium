@@ -17,7 +17,6 @@
 #include "third_party/blink/renderer/core/css/cssom/css_unsupported_color.h"
 #include "third_party/blink/renderer/core/css/properties/longhands/custom_property.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
@@ -117,7 +116,7 @@ TEST_F(PaintWorkletStylePropertyMapTest, UnregisteredCustomProperty) {
   Vector<CSSPropertyID> native_properties;
   Vector<AtomicString> custom_properties({AtomicString("--x")});
 
-  GetDocument().documentElement()->setInnerHTML(
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<div id='target' style='--x:50'></div>");
   UpdateAllLifecyclePhasesForTest();
 
@@ -166,7 +165,7 @@ TEST_F(PaintWorkletStylePropertyMapTest, SupportedCrossThreadData) {
   css_test_helpers::RegisterProperty(GetDocument(), "--gar", "<color>",
                                      "rgb(0, 255, 0)", false);
 
-  GetDocument().documentElement()->setInnerHTML(
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<div id='target' style='--foo:10px; --bar:15; --gar:rgb(255, 0, "
       "0)'></div>");
   UpdateAllLifecyclePhasesForTest();
@@ -213,7 +212,7 @@ TEST_F(PaintWorkletStylePropertyMapTest, UnsupportedCrossThreadData) {
   css_test_helpers::RegisterProperty(GetDocument(), "--loo", "test", "test",
                                      false);
 
-  GetDocument().documentElement()->setInnerHTML(
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<div id='target' style='--foo:url(https://crbug.com/); "
       "--bar:15;'></div>");
   UpdateAllLifecyclePhasesForTest();

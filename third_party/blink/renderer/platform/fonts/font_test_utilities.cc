@@ -6,9 +6,10 @@
 
 namespace blink {
 
-String To16Bit(const char* text, unsigned length) {
-  return String::Make16BitFrom8BitSource(reinterpret_cast<const LChar*>(text),
-                                         length);
+String To16Bit(std::string_view text) {
+  String s = String::FromUTF8(text);
+  s.Ensure16Bit();
+  return s;
 }
 
 }  // namespace blink

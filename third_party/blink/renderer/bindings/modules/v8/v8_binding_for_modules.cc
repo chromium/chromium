@@ -23,13 +23,10 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
 
+#include "base/containers/span.h"
+#include "base/debug/crash_logging.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
@@ -85,9 +82,11 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromSimpleValue(
   if (value->IsNumber() && !std::isnan(value.As<v8::Number>()->Value()))
     return IDBKey::CreateNumber(value.As<v8::Number>()->Value());
 
-  if (value->IsString())
+  if (value->IsString()) {
+    SCOPED_CRASH_KEY_NUMBER("CreateIDBKey", "String",
+                            value.As<v8::String>()->Length());
     return IDBKey::CreateString(ToCoreString(isolate, value.As<v8::String>()));
-
+  }
   if (value->IsDate() && !std::isnan(value.As<v8::Date>()->ValueOf()))
     return IDBKey::CreateDate(value.As<v8::Date>()->ValueOf());
 
@@ -101,11 +100,11 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromSimpleValue(
                                         "The ArrayBuffer is detached.");
       return IDBKey::CreateInvalid();
     }
-    const char* start = static_cast<const char*>(buffer->Data());
-    size_t length = buffer->ByteLength();
+    SCOPED_CRASH_KEY_NUMBER("CreateIDBKey", "ArrayBuffer",
+                            buffer->ByteLength());
     return IDBKey::CreateBinary(
         base::MakeRefCounted<base::RefCountedData<Vector<char>>>(
-            Vector<char>(base::span(start, length))));
+            Vector<char>(base::as_chars(buffer->ByteSpan()))));
   }
 
   if (value->IsArrayBufferView()) {
@@ -120,11 +119,10 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromSimpleValue(
                                         "The viewed ArrayBuffer is detached.");
       return IDBKey::CreateInvalid();
     }
-    const char* start = static_cast<const char*>(view->BaseAddress());
-    size_t length = view->byteLength();
+    SCOPED_CRASH_KEY_NUMBER("CreateIDBKey", "ArrayBuffer", view->byteLength());
     return IDBKey::CreateBinary(
         base::MakeRefCounted<base::RefCountedData<Vector<char>>>(
-            Vector<char>(base::span(start, length))));
+            Vector<char>(base::as_chars(view->ByteSpan()))));
   }
 
   return IDBKey::CreateInvalid();
@@ -181,7 +179,7 @@ std::unique_ptr<IDBKey> CreateIDBKeyFromValue(v8::Isolate* isolate,
   }
 
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
-  v8::TryCatch try_block(isolate);
+  TryRethrowScope rethrow_scope(isolate, exception_state);
   v8::MicrotasksScope microtasks_scope(
       isolate, context->GetMicrotaskQueue(),
       v8::MicrotasksScope::kDoNotRunMicrotasks);
@@ -210,14 +208,12 @@ std::unique_ptr<IDBKey> CreateIDBKeyFromValue(v8::Isolate* isolate,
     bool has_own_property;
     if (!top->array->HasOwnProperty(context, item_index)
              .To(&has_own_property)) {
-      exception_state.RethrowV8Exception(try_block.Exception());
       return IDBKey::CreateInvalid();
     }
     if (!has_own_property)
       return IDBKey::CreateInvalid();
     v8::Local<v8::Value> item;
     if (!top->array->Get(context, item_index).ToLocal(&item)) {
-      exception_state.RethrowV8Exception(try_block.Exception());
       return IDBKey::CreateInvalid();
     }
 
@@ -225,7 +221,6 @@ std::unique_ptr<IDBKey> CreateIDBKeyFromValue(v8::Isolate* isolate,
       // A non-array: convert it directly.
       auto key = CreateIDBKeyFromSimpleValue(isolate, item, exception_state);
       if (exception_state.HadException()) {
-        DCHECK(!try_block.HasCaught());
         return IDBKey::CreateInvalid();
       }
       top->subkeys.push_back(std::move(key));
@@ -291,7 +286,7 @@ std::unique_ptr<IDBKey> CreateIDBKeyFromValueAndKeyPath(
 
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
-  v8::TryCatch block(isolate);
+  TryRethrowScope rethrow_scope(isolate, exception_state);
   v8::MicrotasksScope microtasks_scope(
       isolate, context->GetMicrotaskQueue(),
       v8::MicrotasksScope::kDoNotRunMicrotasks);
@@ -341,7 +336,7 @@ std::unique_ptr<IDBKey> CreateIDBKeyFromValueAndKeyPath(
       }
       if (element == "lastModifiedDate") {
         ScriptState* script_state = ScriptState::From(isolate, context);
-        v8_value = file->lastModifiedDate(script_state).V8Value();
+        v8_value = file->lastModifiedDate(script_state).V8Object();
         ExecutionContext* execution_context = ToExecutionContext(script_state);
         UseCounter::Count(execution_context,
                           WebFeature::kIndexedDBFileLastModifiedDate);
@@ -353,13 +348,11 @@ std::unique_ptr<IDBKey> CreateIDBKeyFromValueAndKeyPath(
     v8::Local<v8::String> key = V8String(isolate, element);
     bool has_own_property;
     if (!object->HasOwnProperty(context, key).To(&has_own_property)) {
-      exception_state.RethrowV8Exception(block.Exception());
       return nullptr;
     }
     if (!has_own_property)
       return nullptr;
     if (!object->Get(context, key).ToLocal(&v8_value)) {
-      exception_state.RethrowV8Exception(block.Exception());
       return nullptr;
     }
   }
@@ -569,8 +562,7 @@ bool InjectV8KeyIntoV8Value(v8::Isolate* isolate,
   // The conbination of a key generator and an empty key path is forbidden by
   // spec.
   if (!key_path_elements.size()) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   v8::HandleScope handle_scope(isolate);
@@ -700,22 +692,6 @@ ScriptValue DeserializeScriptValue(ScriptState* script_state,
   options.blob_info = blob_info;
   return ScriptValue(isolate, serialized_value->Deserialize(isolate, options));
 }
-
-SQLValue NativeValueTraits<SQLValue>::NativeValue(
-    v8::Isolate* isolate,
-    v8::Local<v8::Value> value,
-    ExceptionState& exception_state) {
-  if (value.IsEmpty() || value->IsNull())
-    return SQLValue();
-  if (value->IsNumber())
-    return SQLValue(value.As<v8::Number>()->Value());
-  V8StringResource<> string_value(isolate, value);
-  if (!string_value.Prepare(exception_state)) {
-    return SQLValue();
-  }
-  return SQLValue(string_value);
-}
-
 
 #if DCHECK_IS_ON()
 // This assertion is used when a value has been retrieved from an object store

@@ -9,7 +9,6 @@
 
 #include <optional>
 
-#include "ui/gfx/buffer_types.h"
 #include "ui/gl/gl_implementation.h"
 
 namespace gl {
@@ -25,15 +24,6 @@ class GLTestSupport {
 
   // Cleanup GL after being initialized for image testing.
   static void CleanupGL(GLDisplay* display);
-
-  // Initialize buffer of a specific |format| to |color|.
-  static void SetBufferDataToColor(int width,
-                                   int height,
-                                   int stride,
-                                   int plane,
-                                   gfx::BufferFormat format,
-                                   const uint8_t color[4],
-                                   uint8_t* data);
 };
 
 }  // namespace gl

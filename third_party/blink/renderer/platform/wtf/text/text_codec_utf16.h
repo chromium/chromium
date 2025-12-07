@@ -28,26 +28,21 @@
 
 #include "third_party/blink/renderer/platform/wtf/text/text_codec.h"
 
-namespace WTF {
+namespace blink {
 
-class TextCodecUTF16 final : public TextCodec {
+class TextCodecUtf16 final : public TextCodec {
  public:
   static void RegisterEncodingNames(EncodingNameRegistrar);
   static void RegisterCodecs(TextCodecRegistrar);
 
-  TextCodecUTF16(bool little_endian) : little_endian_(little_endian) {}
+  TextCodecUtf16(bool little_endian) : little_endian_(little_endian) {}
 
-  String Decode(const char*,
-                wtf_size_t length,
+  String Decode(base::span<const uint8_t> data,
                 FlushBehavior,
                 bool stop_on_error,
                 bool& saw_error) override;
-  std::string Encode(const UChar*,
-                     wtf_size_t length,
-                     UnencodableHandling) override;
-  std::string Encode(const LChar*,
-                     wtf_size_t length,
-                     UnencodableHandling) override;
+  std::string Encode(base::span<const UChar>, UnencodableHandling) override;
+  std::string Encode(base::span<const LChar>, UnencodableHandling) override;
 
  private:
   bool little_endian_;
@@ -57,6 +52,6 @@ class TextCodecUTF16 final : public TextCodec {
   UChar lead_surrogate_;
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_TEXT_CODEC_UTF16_H_

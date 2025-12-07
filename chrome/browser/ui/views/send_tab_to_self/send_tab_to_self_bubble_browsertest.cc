@@ -11,9 +11,9 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "components/send_tab_to_self/target_device_info.h"
@@ -93,9 +93,6 @@ class SendTabToSelfBubbleTest : public DialogBrowserTest {
                                          /*show_signin_button=*/false);
     }
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_{features::kToolbarPinning};
 };
 
 // TODO(crbug.com/40927205): Flakily fails on some Windows builders.

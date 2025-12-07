@@ -20,7 +20,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     targetAdded: async function(target) {
       if (!target.name().startsWith('inner'))
         return;
-      target.pageAgent().setLifecycleEventsEnabled(true);
+      target.pageAgent().invoke_setLifecycleEventsEnabled({enabled: true});
       target.model(SDK.ResourceTreeModel.ResourceTreeModel).addEventListener(SDK.ResourceTreeModel.Events.LifecycleEvent, async (event) => {
         if (event.data.name !== 'load')
           return;
@@ -29,7 +29,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
         await ElementsTestRunner.expandAndDump();
 
         // Navigate iframe to in-process
-        let rootTarget = SDK.TargetManager.TargetManager.instance().rootTarget();
+        let rootTarget = SDK.TargetManager.TargetManager.instance().primaryPageTarget();
         await rootTarget.model(SDK.ResourceTreeModel.ResourceTreeModel)._agent.setLifecycleEventsEnabled(true);
         TestRunner.evaluateInPagePromise(`document.getElementById('page-iframe').src = 'http://127.0.0.1:8000/devtools/oopif/resources/inner-iframe.html';`);
         rootTarget.model(SDK.ResourceTreeModel.ResourceTreeModel).addEventListener(SDK.ResourceTreeModel.Events.LifecycleEvent, async (event) => {

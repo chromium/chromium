@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/login/login_handler.h"
+
 #include <stddef.h>
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/browser/ui/login/login_tab_helper.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -108,22 +109,23 @@ std::u16string ExpectedAuthority(bool is_proxy, const char* prefix) {
 #if BUILDFLAG(IS_ANDROID)
   extra_text = true;
 #endif
-  if (extra_text)
+  if (extra_text) {
     str += u" requires a username and password.";
+  }
 
   return str;
 }
 
 class LoginHandlerWithWebContentsTest : public ChromeRenderViewHostTestHarness {
  public:
-  LoginHandlerWithWebContentsTest() {}
+  LoginHandlerWithWebContentsTest() = default;
 
   LoginHandlerWithWebContentsTest(const LoginHandlerWithWebContentsTest&) =
       delete;
   LoginHandlerWithWebContentsTest& operator=(
       const LoginHandlerWithWebContentsTest&) = delete;
 
-  ~LoginHandlerWithWebContentsTest() override {}
+  ~LoginHandlerWithWebContentsTest() override = default;
 };
 
 }  // namespace

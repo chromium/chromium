@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "chrome/browser/performance_monitor/system_monitor.h"
 
 namespace performance_monitor {

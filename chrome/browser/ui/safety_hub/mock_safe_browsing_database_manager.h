@@ -5,12 +5,15 @@
 #ifndef CHROME_BROWSER_UI_SAFETY_HUB_MOCK_SAFE_BROWSING_DATABASE_MANAGER_H_
 #define CHROME_BROWSER_UI_SAFETY_HUB_MOCK_SAFE_BROWSING_DATABASE_MANAGER_H_
 
+#include "base/auto_reset.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/test_database_manager.h"
 
 class MockSafeBrowsingDatabaseManager
     : public safe_browsing::TestSafeBrowsingDatabaseManager {
  public:
+  using ScopedSimulateSafeSynchronousResponse = base::AutoReset<bool>;
+
   MockSafeBrowsingDatabaseManager();
 
   MockSafeBrowsingDatabaseManager(const MockSafeBrowsingDatabaseManager&) =
@@ -31,6 +34,14 @@ class MockSafeBrowsingDatabaseManager
     urls_threat_type_[gurl.spec()] = threat_type;
   }
 
+  ScopedSimulateSafeSynchronousResponse
+  CreateSimulateSafeSynchronousResponseScope(
+      bool simulate_safe_synchronous_response);
+
+  bool SimulateSafeSynchronousResponse() const {
+    return simulate_safe_synchronous_response_;
+  }
+
  protected:
   ~MockSafeBrowsingDatabaseManager() override;
 
@@ -39,6 +50,7 @@ class MockSafeBrowsingDatabaseManager
 
   base::flat_map<std::string, safe_browsing::SBThreatType> urls_threat_type_;
   bool called_cancel_check_ = false;
+  bool simulate_safe_synchronous_response_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_SAFETY_HUB_MOCK_SAFE_BROWSING_DATABASE_MANAGER_H_

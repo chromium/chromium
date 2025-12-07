@@ -16,7 +16,8 @@ namespace google_apis::tasks {
 using ::base::JSONReader;
 
 TEST(TasksApiResponseTypesTest, CreatesTaskListsFromResponse) {
-  const auto raw_task_lists = JSONReader::Read(R"(
+  const auto raw_task_lists =
+      JSONReader::Read(R"(
       {
         "kind": "tasks#taskLists",
         "items": [
@@ -33,7 +34,8 @@ TEST(TasksApiResponseTypesTest, CreatesTaskListsFromResponse) {
             "updated": "2022-12-21T23:38:22.590Z"
           }
         ]
-      })");
+      })",
+                       base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(raw_task_lists);
 
   const auto task_lists = TaskLists::CreateFrom(*raw_task_lists);
@@ -53,12 +55,14 @@ TEST(TasksApiResponseTypesTest, CreatesTaskListsFromResponse) {
 }
 
 TEST(TasksApiResponseTypesTest, CreatesTaskListsWithNextPageTokenFromResponse) {
-  const auto raw_task_lists = JSONReader::Read(R"(
+  const auto raw_task_lists =
+      JSONReader::Read(R"(
       {
         "kind": "tasks#taskLists",
         "items": [],
         "nextPageToken": "qwerty"
-      })");
+      })",
+                       base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(raw_task_lists);
 
   const auto task_lists = TaskLists::CreateFrom(*raw_task_lists);
@@ -67,11 +71,13 @@ TEST(TasksApiResponseTypesTest, CreatesTaskListsWithNextPageTokenFromResponse) {
 }
 
 TEST(TasksApiResponseTypesTest, FailsToCreateTaskListsFromInvalidResponse) {
-  const auto raw_task_lists = JSONReader::Read(R"(
+  const auto raw_task_lists =
+      JSONReader::Read(R"(
       {
         "kind": "invalid_kind",
         "items": true
-      })");
+      })",
+                       base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(raw_task_lists);
 
   const auto task_lists = TaskLists::CreateFrom(*raw_task_lists);
@@ -103,7 +109,8 @@ TEST(TasksApiResponseTypesTest, CreatesTasksFromResponse) {
             "webViewLink": "invalid_url"
           }
         ]
-      })");
+      })",
+                                          base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(raw_tasks);
 
   const auto tasks = Tasks::CreateFrom(*raw_tasks);
@@ -144,7 +151,8 @@ TEST(TasksApiResponseTypesTest, CreatesTasksWithNextPageTokenFromResponse) {
         "kind": "tasks#tasks",
         "items": [],
         "nextPageToken": "qwerty"
-      })");
+      })",
+                                          base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(raw_tasks);
 
   const auto tasks = Tasks::CreateFrom(*raw_tasks);
@@ -165,7 +173,8 @@ TEST(TasksApiResponseTypesTest, ConvertsTaskLinks) {
             ]
           }
         ]
-      })");
+      })",
+                                          base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(raw_tasks);
 
   const auto tasks = Tasks::CreateFrom(*raw_tasks);
@@ -204,7 +213,8 @@ TEST(TasksApiResponseTypesTest, ConvertsTaskAssignmentInfo) {
             }
           }
         ]
-      })");
+      })",
+                                          base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(raw_tasks);
 
   const auto tasks = Tasks::CreateFrom(*raw_tasks);
@@ -232,7 +242,8 @@ TEST(TasksApiResponseTypesTest, FailsToCreateTasksFromInvalidResponse) {
       {
         "kind": "invalid_kind",
         "items": true
-      })");
+      })",
+                                          base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(raw_tasks);
 
   const auto tasks = Tasks::CreateFrom(*raw_tasks);
@@ -249,7 +260,8 @@ TEST(TasksApiResponseTypesTest, CreatesTaskFromResponse) {
         "status": "needsAction",
         "due": "2023-04-19T00:00:00.000Z",
         "notes": "Lorem ipsum dolor sit amet"
-      })");
+      })",
+                                         base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(raw_task);
 
   const auto task = Task::CreateFrom(*raw_task);
@@ -270,7 +282,8 @@ TEST(TasksApiResponseTypesTest, FailsToCreateTaskFromInvalidResponse) {
       {
         "kind": "invalid_kind",
         "id": true
-      })");
+      })",
+                                         base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(raw_task);
 
   const auto task = Task::CreateFrom(*raw_task);

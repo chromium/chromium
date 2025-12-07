@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] XHR method GET with MIME type image/png
-  assert_equals: expected "Hello, World!" but got "Hello,World!"
-Harness: the test ran to completion.
-

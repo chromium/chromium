@@ -7,11 +7,13 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/timer/elapsed_timer.h"
 
 namespace content {
 
 StartupTaskRunner::StartupTaskRunner(
-    base::OnceCallback<void(int)> startup_complete_callback,
+    base::OnceCallback<void(int, base::TimeDelta, base::TimeDelta)>
+        startup_complete_callback,
     scoped_refptr<base::SingleThreadTaskRunner> proxy)
     : startup_complete_callback_(std::move(startup_complete_callback)),
       proxy_(proxy) {}
@@ -27,7 +29,11 @@ void StartupTaskRunner::StartRunningTasksAsync() {
   int result = 0;
   if (task_list_.empty()) {
     if (!startup_complete_callback_.is_null()) {
-      std::move(startup_complete_callback_).Run(result);
+      std::move(startup_complete_callback_)
+          .Run(result, /*longest_duration_of_posted_startup_tasks=*/
+               longest_duration_of_posted_startup_tasks_,
+               /* total_duration_of_posted_startup_tasks= */
+               total_duration_of_posted_startup_tasks_);
     }
   } else {
     base::OnceClosure next_task =
@@ -36,15 +42,26 @@ void StartupTaskRunner::StartRunningTasksAsync() {
   }
 }
 
-void StartupTaskRunner::RunAllTasksNow() {
+void StartupTaskRunner::RunAllTasksNow(bool was_posted) {
   int result = 0;
-  for (auto it = task_list_.begin(); it != task_list_.end(); it++) {
-    result = std::move(*it).Run();
+  base::ElapsedTimer timer;
+  for (auto& it : task_list_) {
+    result = std::move(it).Run();
     if (result > 0) break;
   }
   task_list_.clear();
+  if (was_posted) {
+    base::TimeDelta duration = timer.Elapsed();
+    longest_duration_of_posted_startup_tasks_ =
+        std::max(longest_duration_of_posted_startup_tasks_, duration);
+    total_duration_of_posted_startup_tasks_ += duration;
+  }
   if (!startup_complete_callback_.is_null()) {
-    std::move(startup_complete_callback_).Run(result);
+    std::move(startup_complete_callback_)
+        .Run(result, /*longest_duration_of_posted_startup_tasks=*/
+             longest_duration_of_posted_startup_tasks_,
+             /* total_duration_of_posted_startup_tasks= */
+             total_duration_of_posted_startup_tasks_);
   }
 }
 
@@ -56,15 +73,24 @@ void StartupTaskRunner::WrappedTask() {
     return;
   }
 
+  base::ElapsedTimer timer;
   int result = std::move(task_list_.front()).Run();
   task_list_.pop_front();
   if (result > 0) {
     // Stop now and throw away the remaining tasks
     task_list_.clear();
   }
+  base::TimeDelta duration = timer.Elapsed();
+  longest_duration_of_posted_startup_tasks_ =
+      std::max(longest_duration_of_posted_startup_tasks_, duration);
+  total_duration_of_posted_startup_tasks_ += duration;
   if (task_list_.empty()) {
     if (!startup_complete_callback_.is_null()) {
-      std::move(startup_complete_callback_).Run(result);
+      std::move(startup_complete_callback_)
+          .Run(result, /*longest_duration_of_posted_startup_tasks=*/
+               longest_duration_of_posted_startup_tasks_,
+               /* total_duration_of_posted_startup_tasks= */
+               total_duration_of_posted_startup_tasks_);
     }
   } else {
     base::OnceClosure next_task =

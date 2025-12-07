@@ -4,40 +4,38 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
-import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
 import 'chrome://resources/js/action_link.js';
-import 'chrome://resources/cr_elements/action_link.css.js';
 import './icons.html.js';
-import './shared_style.css.js';
-import './shared_vars.css.js';
-import './strings.m.js';
-import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '/strings.m.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 
 import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {TooltipPosition} from 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
-import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {isRTL} from 'chrome://resources/js/util.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {ExtensionsHatsBrowserProxyImpl} from './extension_hats_browser_proxy.js';
-import {getTemplate} from './item.html.js';
+import {getCss} from './item.css.js';
+import {getHtml} from './item.html.js';
 import {ItemMixin} from './item_mixin.js';
-import {computeInspectableViewLabel, EnableControl, getEnableControl, getEnableToggleAriaLabel, getEnableToggleTooltipText, getItemSource, getItemSourceString, isEnabled, sortViews, SourceType, userCanChangeEnablement} from './item_util.js';
+import {computeInspectableViewLabel, createDummyExtensionInfo, EnableControl, getEnableControl, getEnableToggleAriaLabel, getEnableToggleTooltipText, getItemSource, getItemSourceString, isEnabled, sortViews, SourceType, UPLOAD_EXTENSION_TO_ACCOUNT_ITEMS_LIST_PAGE_HISTOGRAM_NAME, userCanChangeEnablement} from './item_util.js';
+import {Mv2ExperimentStage} from './mv2_deprecation_util.js';
 import {navigation, Page} from './navigation_helper.js';
 
 export interface ItemDelegate {
   deleteItem(id: string): void;
   deleteItems(ids: string[]): Promise<void>;
   uninstallItem(id: string): Promise<void>;
-  setItemEnabled(id: string, isEnabled: boolean): void;
+  setItemEnabled(id: string, isEnabled: boolean): Promise<void>;
   setItemAllowedIncognito(id: string, isAllowedIncognito: boolean): void;
+  setItemAllowedUserScripts(id: string, isAllowedUserScripts: boolean): void;
   setItemAllowedOnFileUrls(id: string, isAllowedOnFileUrls: boolean): void;
   setItemHostAccess(id: string, hostAccess: chrome.developerPrivate.HostAccess):
       void;
@@ -57,12 +55,68 @@ export interface ItemDelegate {
       reason: chrome.developerPrivate.SafetyCheckWarningReason): void;
   setShowAccessRequestsInToolbar(id: string, showRequests: boolean): void;
   setItemPinnedToToolbar(id: string, pinnedToToolbar: boolean): void;
+  uploadItemToAccount(id: string): Promise<boolean>;
 
   // TODO(tjudkins): This function is not specific to items, so should be pulled
   // out to a more generic place when we need to access it from elsewhere.
   recordUserAction(metricName: string): void;
   getItemStateChangedTarget():
       ChromeEvent<(data: chrome.developerPrivate.EventData) => void>;
+  showSiteSettings(id: string): void;
+}
+
+export class FakeChromeEvent {
+  addListener(_listener: Function) {}
+  removeListener(_listener: Function) {}
+  callListeners(..._args: any[]) {}
+}
+
+export class DummyItemDelegate {
+  deleteItem(_id: string) {}
+  deleteItems(_ids: string[]) {
+    return Promise.resolve();
+  }
+  uninstallItem(_id: string) {
+    return Promise.resolve();
+  }
+  setItemEnabled(_id: string, _isEnabled: boolean) {
+    return Promise.resolve();
+  }
+  setItemAllowedIncognito(_id: string, _isAllowedIncognito: boolean) {}
+  setItemAllowedUserScripts(_id: string, _isAllowedUserScripts: boolean) {}
+  setItemAllowedOnFileUrls(_id: string, _isAllowedOnFileUrls: boolean) {}
+  setItemHostAccess(
+      _id: string, _hostAccess: chrome.developerPrivate.HostAccess) {}
+  setItemCollectsErrors(_id: string, _collectsErrors: boolean) {}
+  inspectItemView(_id: string, _view: chrome.developerPrivate.ExtensionView) {}
+  openUrl(_url: string) {}
+  reloadItem(_id: string) {
+    return Promise.resolve();
+  }
+  repairItem(_id: string) {}
+  showItemOptionsPage(_extension: chrome.developerPrivate.ExtensionInfo) {}
+  showInFolder(_id: string) {}
+  getExtensionSize(_id: string) {
+    return Promise.resolve('');
+  }
+  addRuntimeHostPermission(_id: string, _host: string) {
+    return Promise.resolve();
+  }
+  removeRuntimeHostPermission(_id: string, _host: string) {
+    return Promise.resolve();
+  }
+  setItemSafetyCheckWarningAcknowledged(
+      _id: string, _reason: chrome.developerPrivate.SafetyCheckWarningReason) {}
+  setShowAccessRequestsInToolbar(_id: string, _showRequests: boolean) {}
+  setItemPinnedToToolbar(_id: string, _pinnedToToolbar: boolean) {}
+  uploadItemToAccount(_id: string) {
+    return Promise.resolve(false);
+  }
+  recordUserAction(_metricName: string) {}
+  getItemStateChangedTarget() {
+    return new FakeChromeEvent();
+  }
+  showSiteSettings(_id: string) {}
 }
 
 export interface ExtensionsItemElement {
@@ -75,65 +129,63 @@ export interface ExtensionsItemElement {
   };
 }
 
-const ExtensionsItemElementBase = I18nMixin(ItemMixin(PolymerElement));
+const ExtensionsItemElementBase = I18nMixinLit(ItemMixin(CrLitElement));
 
 export class ExtensionsItemElement extends ExtensionsItemElementBase {
   static get is() {
     return 'extensions-item';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       // The item's delegate, or null.
-      delegate: Object,
+      delegate: {type: Object},
 
       // Whether or not dev mode is enabled.
-      inDevMode: {
-        type: Boolean,
-        value: false,
-      },
-
-      safetyCheckShowing: {
-        type: Boolean,
-        value: false,
-      },
+      inDevMode: {type: Boolean},
+      safetyCheckShowing: {type: Boolean},
 
       // The underlying ExtensionInfo itself. Public for use in declarative
       // bindings.
-      data: Object,
+      data: {type: Object},
 
-      // Whether or not the expanded view of the item is shown.
-      showingDetails_: {
-        type: Boolean,
-        value: false,
-      },
+      mv2ExperimentStage: {type: Number},
 
       // First inspectable view after sorting.
-      firstInspectView_: {
-        type: Object,
-        computed: 'computeFirstInspectView_(data.views)',
-      },
+      firstInspectView_: {type: Object},
+      enableToggleTooltipPosition_: {type: String},
     };
   }
 
-  static get observers() {
-    return ['observeIdVisibility_(inDevMode, showingDetails_, data.id)'];
+  accessor delegate: ItemDelegate|null = null;
+  accessor inDevMode: boolean = false;
+  accessor mv2ExperimentStage: Mv2ExperimentStage = Mv2ExperimentStage.NONE;
+  accessor safetyCheckShowing: boolean = false;
+  accessor data: chrome.developerPrivate.ExtensionInfo =
+      createDummyExtensionInfo();
+  private accessor firstInspectView_: chrome.developerPrivate.ExtensionView|
+      undefined;
+  protected accessor enableToggleTooltipPosition_ = TooltipPosition.LEFT;
+
+  override firstUpdated() {
+    this.enableToggleTooltipPosition_ =
+        isRTL() ? TooltipPosition.RIGHT : TooltipPosition.LEFT;
   }
 
-  delegate: ItemDelegate;
-  inDevMode: boolean;
-  safetyCheckShowing: boolean;
-  data: chrome.developerPrivate.ExtensionInfo;
-  private showingDetails_: boolean;
-  private firstInspectView_: chrome.developerPrivate.ExtensionView;
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
 
-  private fire_(eventName: string, detail?: any) {
-    this.dispatchEvent(
-        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
+    if (changedProperties.has('data')) {
+      this.firstInspectView_ = this.computeFirstInspectView_();
+    }
   }
 
   /** @return The "Details" button. */
@@ -148,29 +200,24 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
 
   /** @return The "Errors" button, if it exists. */
   getErrorsButton(): HTMLElement|null {
-    return this.shadowRoot!.querySelector('#errors-button');
+    return this.shadowRoot.querySelector('#errors-button');
   }
 
-  private getEnableToggleAriaLabel_(): string {
+  protected getEnableToggleAriaLabel_(): string {
     return getEnableToggleAriaLabel(
         this.isEnabled_(), this.data.type, this.i18n('appEnabled'),
         this.i18n('extensionEnabled'), this.i18n('itemOff'));
   }
 
-  private getEnableToggleTooltipText_(): string {
+  protected getEnableToggleTooltipText_(): string {
     return getEnableToggleTooltipText(this.data);
   }
 
-  private observeIdVisibility_() {
-    flush();
-    const idElement = this.shadowRoot!.querySelector('#extension-id');
-    if (idElement) {
-      assert(this.data);
-      idElement.textContent = this.i18n('itemId', this.data.id);
-    }
+  protected getIdElementText_() {
+    return this.i18n('itemId', this.data.id);
   }
 
-  private shouldShowErrorsButton_(): boolean {
+  protected shouldShowErrorsButton_(): boolean {
     // When the error console is disabled (happens when
     // --disable-error-console command line flag is used or when in the
     // Stable/Beta channel), |installWarnings| is populated.
@@ -184,81 +231,92 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
         this.data.runtimeErrors.length > 0;
   }
 
-  private onRemoveClick_() {
+  protected onRemoveClick_() {
     if (this.safetyCheckShowing) {
       const actionToRecord = this.data.safetyCheckText ?
           'SafetyCheck.ReviewPanelRemoveClicked' :
           'SafetyCheck.NonTriggeringExtensionRemoved';
-      ExtensionsHatsBrowserProxyImpl.getInstance()
-          .nonTriggerExtensionRemovedAction();
       chrome.metricsPrivate.recordUserAction(actionToRecord);
     }
+    assert(this.delegate);
     this.delegate.deleteItem(this.data.id);
   }
 
-  private onEnableToggleChange_() {
+  protected onEnableToggleChange_() {
+    assert(this.delegate);
     this.delegate.setItemEnabled(this.data.id, this.$.enableToggle.checked);
     this.$.enableToggle.checked = this.isEnabled_();
   }
 
-  private onErrorsClick_() {
+  protected onErrorsClick_() {
     if (this.data.installWarnings && this.data.installWarnings.length > 0) {
-      this.fire_('show-install-warnings', this.data.installWarnings);
+      this.fire('show-install-warnings', this.data.installWarnings);
       return;
     }
 
     navigation.navigateTo({page: Page.ERRORS, extensionId: this.data.id});
   }
 
-  private onDetailsClick_() {
+  protected onDetailsClick_() {
     navigation.navigateTo({page: Page.DETAILS, extensionId: this.data.id});
   }
 
-  private computeFirstInspectView_(): chrome.developerPrivate.ExtensionView {
-    return sortViews(this.data.views)[0];
+  private computeFirstInspectView_(): (chrome.developerPrivate.ExtensionView|
+                                       undefined) {
+    return this.data.views.length === 0 ? undefined :
+                                          sortViews(this.data.views)[0]!;
   }
 
-  private onInspectClick_() {
+  protected onInspectClick_() {
+    assert(this.delegate && this.firstInspectView_);
     this.delegate.inspectItemView(this.data.id, this.firstInspectView_);
   }
 
-  private onExtraInspectClick_() {
+  protected onExtraInspectClick_() {
     navigation.navigateTo({page: Page.DETAILS, extensionId: this.data.id});
   }
 
-  private onReloadClick_() {
-    this.reloadItem().catch((loadError) => this.fire_('load-error', loadError));
+  protected onReloadClick_() {
+    this.reloadItem().catch((loadError) => this.fire('load-error', loadError));
   }
 
-  private onRepairClick_() {
+  protected async onUploadClick_() {
+    assert(this.delegate);
+    const uploaded = await this.delegate.uploadItemToAccount(this.data.id);
+    chrome.metricsPrivate.recordBoolean(
+        UPLOAD_EXTENSION_TO_ACCOUNT_ITEMS_LIST_PAGE_HISTOGRAM_NAME, uploaded);
+  }
+
+  protected onRepairClick_() {
+    assert(this.delegate);
     this.delegate.repairItem(this.data.id);
   }
 
-  private isEnabled_(): boolean {
+  protected isEnabled_(): boolean {
     return isEnabled(this.data.state);
   }
 
-  private isEnableToggleEnabled_(): boolean {
-    return userCanChangeEnablement(this.data);
+  protected isEnableToggleEnabled_(): boolean {
+    return userCanChangeEnablement(this.data, this.mv2ExperimentStage);
   }
 
   /** @return Whether the reload button should be shown. */
-  private showReloadButton_(): boolean {
+  protected showReloadButton_(): boolean {
     return getEnableControl(this.data) === EnableControl.RELOAD;
   }
 
   /** @return Whether the repair button should be shown. */
-  private showRepairButton_(): boolean {
+  protected showRepairButton_(): boolean {
     return getEnableControl(this.data) === EnableControl.REPAIR;
   }
 
 
   /** @return Whether the enable toggle should be shown. */
-  private showEnableToggle_(): boolean {
+  protected showEnableToggle_(): boolean {
     return getEnableControl(this.data) === EnableControl.ENABLE_TOGGLE;
   }
 
-  private computeClasses_(): string {
+  protected computeClasses_(): string {
     let classes = this.isEnabled_() ? 'enabled' : 'disabled';
     if (this.inDevMode) {
       classes += ' dev-mode';
@@ -266,7 +324,7 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
     return classes;
   }
 
-  private computeSourceIndicatorIcon_(): string {
+  protected computeSourceIndicatorIcon_(): string {
     switch (getItemSource(this.data)) {
       case SourceType.POLICY:
         return 'extensions-icons:business';
@@ -285,7 +343,7 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
     }
   }
 
-  private computeSourceIndicatorText_(): string {
+  protected computeSourceIndicatorText_(): string {
     if (this.data.locationText) {
       return this.data.locationText;
     }
@@ -295,35 +353,39 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
                                                 getItemSourceString(sourceType);
   }
 
-  private computeInspectViewsHidden_(): boolean {
+  protected computeInspectViewsHidden_(): boolean {
     return !this.data.views || this.data.views.length === 0;
   }
 
-  private computeFirstInspectTitle_(): string {
+  protected computeFirstInspectTitle_(): string {
     // Note: theoretically, this wouldn't be called without any inspectable
     // views (because it's in a dom-if="!computeInspectViewsHidden_()").
     // However, due to the recycling behavior of iron list, it seems that
     // sometimes it can. Even when it is, the UI behaves properly, but we
     // need to handle the case gracefully.
     return this.data.views.length > 0 ?
-        computeInspectableViewLabel(this.firstInspectView_) :
+        computeInspectableViewLabel(this.firstInspectView_!) :
         '';
   }
 
-  private computeFirstInspectLabel_(): string {
+  protected computeFirstInspectLabel_(): string {
     const label = this.computeFirstInspectTitle_();
     return label && this.data.views.length > 1 ? label + ',' : label;
   }
 
-  private computeExtraViewsHidden_(): boolean {
+  protected computeExtraViewsHidden_(): boolean {
     return this.data.views.length <= 1;
   }
 
-  private computeDevReloadButtonHidden_(): boolean {
-    return !this.canReloadItem();
+  protected showAccountUploadButton_(): boolean {
+    return this.data.canUploadAsAccountExtension;
   }
 
-  private computeExtraInspectLabel_(): string {
+  protected showDevReloadButton_(): boolean {
+    return this.canReloadItem();
+  }
+
+  protected computeExtraInspectLabel_(): string {
     return this.i18n(
         'itemInspectViewsExtra', (this.data.views.length - 1).toString());
   }
@@ -335,7 +397,8 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
   private hasSevereWarnings_(): boolean {
     return this.data.disableReasons.corruptInstall ||
         this.data.disableReasons.suspiciousInstall ||
-        this.data.runtimeWarnings.length > 0 || !!this.data.blacklistText;
+        this.data.disableReasons.unsupportedDeveloperExtension ||
+        this.data.runtimeWarnings.length > 0 || !!this.data.blocklistText;
   }
 
   /**
@@ -354,18 +417,18 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
     return this.data.showSafeBrowsingAllowlistWarning;
   }
 
-  private showDescription_(): boolean {
+  protected showDescription_(): boolean {
     // Description is only visible iff no warnings are visible.
     return !this.hasSevereWarnings_() && !this.hasMv2DeprecationWarning_() &&
         !this.hasAllowlistWarning_();
   }
 
-  private showSevereWarnings(): boolean {
+  protected showSevereWarnings(): boolean {
     // Severe warning are always visible, if they exist.
     return this.hasSevereWarnings_();
   }
 
-  private showMv2DeprecationWarning_(): boolean {
+  protected showMv2DeprecationWarning_(): boolean {
     // MV2 deprecation warning is visible, if existent, if there are no severe
     // warnings visible.
     // Note: The item card has a fixed height and the content might get cropped
@@ -373,7 +436,7 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
     return this.hasMv2DeprecationWarning_() && !this.hasSevereWarnings_();
   }
 
-  private showAllowlistWarning_(): boolean {
+  protected showAllowlistWarning_(): boolean {
     // Allowlist warning is visible, if existent, if there are no severe
     // warnings or mv2 deprecation warnings visible.
     // Note: The item card has a fixed height and the content might get cropped
@@ -382,7 +445,21 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
     return this.hasAllowlistWarning_() && !this.hasSevereWarnings_() &&
         !this.hasMv2DeprecationWarning_();
   }
+
+  protected showErrorsAsWarningsButtonLabel_(): boolean {
+    // If there are runtime errors or install warnings, show as errors.
+    if (this.data.runtimeErrors?.length || this.data.installWarnings?.length) {
+      return false;
+    }
+
+    // All manifest errors are considered warnings, so if there are no
+    // runtime/install issues, label is 'Warnings'.
+    return true;
+  }
 }
+
+// Exported to be used in the autogenerated Lit template file
+export type ItemElement = ExtensionsItemElement;
 
 declare global {
   interface HTMLElementTagNameMap {

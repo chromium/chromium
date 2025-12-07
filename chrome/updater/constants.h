@@ -5,6 +5,8 @@
 #ifndef CHROME_UPDATER_CONSTANTS_H_
 #define CHROME_UPDATER_CONSTANTS_H_
 
+#include <optional>
+
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/update_client/update_client_errors.h"
@@ -14,20 +16,15 @@ namespace updater {
 // Key for storing the installer version in the install settings dictionary.
 inline constexpr char kInstallerVersion[] = "installer_version";
 
-// The updater specific app ID. Defined in the .cc file so that the updater
-// branding constants don't leak in this public header.
-extern const char kUpdaterAppId[];
-
-// The app ID used to qualify the updater. Defined in the .cc file so that the
-// updater branding constants don't leak in this public header.
-extern const char kQualificationAppId[];
-
 // The name of the updater program image.
 #if BUILDFLAG(IS_WIN)
 inline constexpr char kExecutableName[] = "updater.exe";
 #else
 inline constexpr char kExecutableName[] = "updater";
 #endif
+
+// Uninstall switch for the enterprise companion app.
+inline constexpr char kUninstallCompanionAppSwitch[] = "uninstall";
 
 // A suffix appended to the updater executable name before any file extension.
 extern const char kExecutableSuffix[];
@@ -93,6 +90,15 @@ inline constexpr char kCrashHandlerSwitch[] = "crash-handler";
 // Updates the updater.
 inline constexpr char kUpdateSwitch[] = "update";
 
+// Updates the apps.
+inline constexpr char kUpdateAppsSwitch[] = "update-apps";
+
+// Run as a patch worker.
+inline constexpr char kPatchWorkerSwitch[] = "patch-worker";
+
+// Run as an unzip worker.
+inline constexpr char kUnzipWorkerSwitch[] = "unzip-worker";
+
 // Run as a network worker.
 inline constexpr char kNetWorkerSwitch[] = "net-worker";
 
@@ -139,6 +145,14 @@ inline constexpr char kTestSwitch[] = "test";
 // Run in recovery mode.
 inline constexpr char kRecoverSwitch[] = "recover";
 
+// This switch does the following:
+// * Force-installs the metainstaller that is run with this switch and makes it
+//   the active `updater`.
+// * Installs the application(s) that are implicitly specified in the tagged
+//   metainstaller, or explicitly specified using the `--install` or `--handoff`
+//   parameters.
+inline constexpr char kForceInstallSwitch[] = "force-install";
+
 // The version of the program triggering recovery.
 inline constexpr char kBrowserVersionSwitch[] = "browser-version";
 
@@ -148,10 +162,6 @@ inline constexpr char kSessionIdSwitch[] =
 
 // The app ID of the program triggering recovery.
 inline constexpr char kAppGuidSwitch[] = "appguid";
-
-// Disables throttling for the crash reported until the following bug is fixed:
-// https://bugs.chromium.org/p/crashpad/issues/detail?id=23
-inline constexpr char kNoRateLimitSwitch[] = "no-rate-limit";
 
 // Causes crashpad handler to start a second instance to monitor the first
 // instance for exceptions.
@@ -174,7 +184,9 @@ inline constexpr char kLoggingModuleSwitchValue[] =
 #if BUILDFLAG(IS_WIN)
     "*/components/winhttp/*=1,"
 #endif
-    "*/components/update_client/*=2,*/chrome/updater/*=2";
+    "*/components/update_client/*=2,"
+    "*/chrome/enterprise_companion/*=2,"
+    "*/chrome/updater/*=2";
 
 // Specifies the application that the Updater needs to install.
 inline constexpr char kAppIdSwitch[] = "app-id";
@@ -226,19 +238,15 @@ inline constexpr char kAppArgsSwitch[] = "appargs";  // backward-compatibility.
 // to install on a standard user account with UAC disabled.
 inline constexpr char kCmdLineExpectElevated[] = "expect-elevated";
 
-// The "de-elevation-id" switch indicates that updater setup should be running
-// de-elevated (at medium integrity), and also includes a unique guid that is
-// used by the child process to communicate the pid via the registry.
-inline constexpr char kCmdLineDeElevationId[] = "de-elevation-id";
+// The "expect-de-elevated" switch indicates that updater setup should be
+// running de-elevated (at medium integrity). This switch is needed to avoid
+// running into a loop trying (but failing repeatedly) to de-elevate updater
+// setup when attempting to install as a standard user account with UAC enabled.
+inline constexpr char kCmdLineExpectDeElevated[] = "expect-de-elevated";
 
 // The "prefers-user" switch indicates that updater setup could not elevate, and
 // is now trying to install the app per-user.
 inline constexpr char kCmdLinePrefersUser[] = "prefers-user";
-
-// Environment variables. Defined in the .cc file so that the updater branding
-// constants don't leak in this public header.
-extern const char kUsageStatsEnabled[];
-extern const char kUsageStatsEnabledValueEnabled[];
 
 // File system paths.
 //
@@ -253,16 +261,30 @@ inline constexpr char kUninstallScript[] = "uninstall.cmd";
 // Developer override keys.
 inline constexpr char kDevOverrideKeyUrl[] = "url";
 inline constexpr char kDevOverrideKeyCrashUploadUrl[] = "crash_upload_url";
-inline constexpr char kDevOverrideKeyDeviceManagementUrl[] =
-    "device_management_url";
 inline constexpr char kDevOverrideKeyAppLogoUrl[] = "app_logo_url";
+inline constexpr char kDevOverrideKeyEventLoggingUrl[] = "event_logging_url";
 inline constexpr char kDevOverrideKeyUseCUP[] = "use_cup";
 inline constexpr char kDevOverrideKeyInitialDelay[] = "initial_delay";
 inline constexpr char kDevOverrideKeyServerKeepAliveSeconds[] =
     "server_keep_alive";
 inline constexpr char kDevOverrideKeyCrxVerifierFormat[] =
     "crx_verifier_format";
+inline constexpr char kDevOverrideKeyCrxPublicKeyHash[] = "crx_public_key_hash";
+inline constexpr char kDevOverrideKeyMinumumEventLoggingCooldownSeconds[] =
+    "minimum_event_logging_cooldown_seconds";
+inline constexpr char kDevOverrideKeyEventLoggingPermissionProviderAppId[] =
+    "event_logging_permission_provider_app_id";
+#if BUILDFLAG(IS_MAC)
+inline constexpr char
+    kDevOverrideKeyEventLoggingPermissionProviderDirectoryName[] =
+        "event_logging_permission_provider_directory_name";
+#endif
+inline constexpr char kDevOverrideKeyDictPolicies[] = "dict_policies";
+
+// TODO(crbug.com/389965546): remove this once the checked-in old updater builds
+// recognize "dict_policies".
 inline constexpr char kDevOverrideKeyGroupPolicies[] = "group_policies";
+
 inline constexpr char kDevOverrideKeyOverinstallTimeout[] =
     "overinstall_timeout";
 inline constexpr char kDevOverrideKeyIdleCheckPeriodSeconds[] =
@@ -270,6 +292,8 @@ inline constexpr char kDevOverrideKeyIdleCheckPeriodSeconds[] =
 inline constexpr char kDevOverrideKeyManagedDevice[] = "managed_device";
 inline constexpr char kDevOverrideKeyEnableDiffUpdates[] =
     "enable_diff_updates";
+inline constexpr char kDevOverrideKeyCecaConnectionTimeout[] =
+    "ceca_connection_timeout";
 
 // Timing constants.
 // How long to wait for an application installer (such as chrome_installer.exe)
@@ -284,20 +308,27 @@ inline constexpr base::TimeDelta kWaitForSetupLock = base::Seconds(5);
 inline constexpr base::TimeDelta kDefaultLastCheckPeriod =
     base::Hours(4) + base::Minutes(30);
 
-#if BUILDFLAG(IS_WIN)
-// How often the installer progress from registry is sampled. This value may
-// be changed to provide a smoother progress experience (crbug.com/1067475).
-inline constexpr int kWaitForInstallerProgressSec = 1;
-#elif BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
 // How long to wait for launchd changes to be reported by launchctl.
 inline constexpr int kWaitForLaunchctlUpdateSec = 5;
 #endif  // BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(IS_MAC)
-// The user defaults suite name. Defined in the .cc file so that the updater
-// branding constants don't leak in this public header.
-extern const char kUserDefaultsSuiteName[];
-#endif  // BUILDFLAG(IS_MAC)
+// The minimum period between remote event logging transmissions. The server may
+// instruct the client to backoff for a longer period.
+inline constexpr base::TimeDelta kMinimumEventLoggingCooldown =
+    base::Minutes(15);
+
+// The minimum factor by which kDefaultLastCheckPeriod can be
+// multiplied to get the next check delay.
+inline constexpr double kUpdateCheckMinDelayFactor = 1.0;
+
+// The maximum factor by which kDefaultLastCheckPeriod can be
+// multiplied to get the next check delay.
+inline constexpr double kUpdateCheckMaxDelayFactor = 1.2;
+
+// Probability of applying kUpdateCheckMaxDelayFactor to the next
+// check delay.
+inline constexpr double kProbabilityOfIncreasedDelay = 0.1;
 
 // Install Errors.
 //
@@ -327,10 +358,6 @@ inline constexpr int kErrorApplicationInstallerFailed =
 // response does not include the name of the installer and its command line
 // arguments.
 inline constexpr int kErrorMissingInstallParams = kCustomInstallErrorBase + 1;
-
-// The file specified by the manifest |run| attribute could not be found
-// inside the CRX.
-inline constexpr int kErrorMissingRunableFile = kCustomInstallErrorBase + 2;
 
 // The file extension for the installer is not supported. For instance, on
 // Windows, only `.exe` and `.msi` extensions are supported.
@@ -517,6 +544,26 @@ inline constexpr int kErrorMojoRequestRejected = kUpdaterErrorBase + 77;
 // Cannot find the console user, for example when the user is not logged on.
 inline constexpr int kErrorNoConsoleUser = kUpdaterErrorBase + 78;
 
+// Failed to fetch enterprise policies.
+inline constexpr int kErrorPolicyFetchFailed = kUpdaterErrorBase + 79;
+
+// Failed to uninstall the enterprise companion app.
+inline constexpr int kErrorFailedToUninstallCompanionApp =
+    kUpdaterErrorBase + 80;
+
+// Failed to uninstall the other versions of updater.
+inline constexpr int kErrorFailedToUninstallOtherVersion =
+    kUpdaterErrorBase + 81;
+
+// No observer completion info for the install.
+inline constexpr int kErrorNoObserverCompletionInfo = kUpdaterErrorBase + 82;
+
+// No apps to install.
+inline constexpr int kErrorNoApps = kUpdaterErrorBase + 83;
+
+// A path references the parent directory.
+inline constexpr int kErrorPathReferencesParent = kUpdaterErrorBase + 84;
+
 // Policy Management constants.
 // The maximum value allowed for policy AutoUpdateCheckPeriodMinutes.
 inline constexpr int kMaxAutoUpdateCheckPeriodMinutes = 43200;
@@ -548,22 +595,38 @@ inline constexpr int kPolicyForceInstallUser = 6;
 inline constexpr bool kInstallPolicyDefault = kPolicyEnabled;
 inline constexpr bool kUpdatePolicyDefault = kPolicyEnabled;
 
-// Policy manager `source()` constants.
-inline constexpr char kSourceGroupPolicyManager[] = "Group Policy";
+// Policy manager constants.
 inline constexpr char kSourceDMPolicyManager[] = "Device Management";
-inline constexpr char kSourceManagedPreferencePolicyManager[] =
-    "Managed Preferences";
 inline constexpr char kSourceDefaultValuesPolicyManager[] = "Default";
 inline constexpr char kSourceDictValuesPolicyManager[] = "DictValuePolicy";
+#if BUILDFLAG(IS_WIN)
+inline constexpr bool kPlatformPolicyManagerDefined = true;
+inline constexpr char kSourcePlatformPolicyManager[] = "Group Policy";
 
-// Serializes updater installs. Defined in the .cc file so that the updater
-// branding constants don't leak in this public header.
-extern const char kSetupMutex[];
+// On Windows, by default, Group Policy has a higher priority than the
+// clould policy.
+inline constexpr bool kCloudPolicyOverridesPlatformPolicyDefaultValue = false;
+#elif BUILDFLAG(IS_MAC)
+inline constexpr bool kPlatformPolicyManagerDefined = true;
+inline constexpr char kSourcePlatformPolicyManager[] = "Managed Preferences";
 
-inline constexpr int kUninstallPingReasonUninstalled = 0;
-inline constexpr int kUninstallPingReasonUserNotAnOwner = 1;
-inline constexpr int kUninstallPingReasonNoAppsRemain = 2;
-inline constexpr int kUninstallPingReasonNeverHadApps = 3;
+// On macOS, cloud policy has a higher priority than the Managed Preferences.
+inline constexpr bool kCloudPolicyOverridesPlatformPolicyDefaultValue = true;
+#else
+inline constexpr bool kPlatformPolicyManagerDefined = false;
+inline constexpr char kSourcePlatformPolicyManager[] = "not-defined";
+
+// On other platforms, there's no platform policy at the moment, the value
+// doesn't actually matter.
+inline constexpr bool kCloudPolicyOverridesPlatformPolicyDefaultValue = true;
+#endif
+
+enum class UninstallPingReason {
+  kUninstalled = 0,
+  kUserNotAnOwner = 1,
+  kNoAppsRemain = 2,
+  kNeverHadApps = 3,
+};
 
 // The file downloaded to a temporary location could not be moved.
 inline constexpr int kErrorFailedToMoveDownloadedFile = 5;
@@ -571,8 +634,10 @@ inline constexpr int kErrorFailedToMoveDownloadedFile = 5;
 // Error occurred during file writing.
 inline constexpr int kErrorFailedToWriteFile = 6;
 
-inline constexpr base::TimeDelta kInitialDelay = base::Minutes(1);
+inline constexpr base::TimeDelta kInitialDelay = base::Seconds(1);
 inline constexpr base::TimeDelta kServerKeepAliveTime = base::Seconds(10);
+
+inline constexpr base::TimeDelta kCecaConnectionTimeout = base::Seconds(30);
 
 // The maximum number of server starts before the updater uninstalls itself
 // while waiting for the first app registration.
@@ -604,6 +669,9 @@ inline constexpr char kInstallSourceTaggedMetainstaller[] = "taggedmi";
 inline constexpr char kInstallSourceOffline[] = "offline";
 inline constexpr char kInstallSourcePolicy[] = "policy";
 inline constexpr char kInstallSourceOnDemand[] = "ondemand";
+
+inline constexpr int kRegistrationSuccess = 0;
+inline constexpr int kRegistrationError = 1;
 
 }  // namespace updater
 

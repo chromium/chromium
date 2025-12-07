@@ -62,6 +62,18 @@ self.addEventListener('pushsubscriptionchange', function(event) {
       event.oldSubscription ? event.oldSubscription.endpoint : 'null';
   const data = {oldEndpoint, newEndpoint};
   sendMessageToClients('pushsubscriptionchange', data);
+
+  if (shouldAutoResubscribe()) {
+    self.registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: kApplicationServerKey.buffer
+    }).then(function(subscription) {
+          sendMessageToClients(
+              'autoresubscribe', {endpoint: subscription.endpoint});
+        }, function(error) {
+          sendErrorToClients(error);
+        });
+  }
 });
 
 self.addEventListener('message', function handler (event) {
@@ -90,6 +102,11 @@ self.addEventListener('message', function handler (event) {
         sendErrorToClients(error);
       });
 });
+
+function shouldAutoResubscribe() {
+  const searchParams = new URL(self.serviceWorker.scriptURL).searchParams;
+  return searchParams.has('autoResubscribe');
+}
 
 function sendErrorToClients(error) {
   sendMessageToClients('error', error.name + ' - ' + error.message);

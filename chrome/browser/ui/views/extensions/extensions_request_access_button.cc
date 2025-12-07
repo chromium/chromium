@@ -16,17 +16,21 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
+#include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/extensions/extensions_container.h"
-#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
-#include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
+#include "chrome/browser/ui/extensions/extension_dialog_utils.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+#include "chrome/browser/ui/views/extensions/extension_view_utils.h"
+#include "chrome/browser/ui/views/extensions/extensions_container_views.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_hover_card_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_chip_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/event_constants.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -44,7 +48,7 @@ std::vector<const extensions::Extension*> GetExtensions(
   const extensions::ExtensionSet& enabled_extensions =
       extensions::ExtensionRegistry::Get(profile)->enabled_extensions();
   std::vector<const extensions::Extension*> extensions;
-  for (auto extension_id : extension_ids) {
+  for (const auto& extension_id : extension_ids) {
     extensions.push_back(enabled_extensions.GetByID(extension_id));
   }
   return extensions;
@@ -54,7 +58,7 @@ std::vector<const extensions::Extension*> GetExtensions(
 
 ExtensionsRequestAccessButton::ExtensionsRequestAccessButton(
     Browser* browser,
-    ExtensionsContainer* extensions_container)
+    ExtensionsContainerViews* extensions_container)
     : ToolbarChipButton(
           base::BindRepeating(&ExtensionsRequestAccessButton::OnButtonPressed,
                               base::Unretained(this)),
@@ -66,9 +70,14 @@ ExtensionsRequestAccessButton::ExtensionsRequestAccessButton(
   // Set button for IPH.
   SetProperty(views::kElementIdentifierKey,
               kExtensionsRequestAccessButtonElementId);
+
+  UpdateTooltipText();
+  browser_->tab_strip_model()->AddObserver(this);
 }
 
-ExtensionsRequestAccessButton::~ExtensionsRequestAccessButton() = default;
+ExtensionsRequestAccessButton::~ExtensionsRequestAccessButton() {
+  browser_->tab_strip_model()->RemoveObserver(this);
+}
 
 void ExtensionsRequestAccessButton::Update(
     std::vector<extensions::ExtensionId>& extension_ids) {
@@ -76,6 +85,7 @@ void ExtensionsRequestAccessButton::Update(
 
   extension_ids_ = extension_ids;
   SetVisible(!extension_ids_.empty());
+  UpdateTooltipText();
 
   if (extension_ids_.empty()) {
     return;
@@ -108,7 +118,7 @@ void ExtensionsRequestAccessButton::MaybeShowHoverCard() {
 void ExtensionsRequestAccessButton::ResetConfirmation() {
   SetVisible(false);
   confirmation_origin_ = std::nullopt;
-  collapse_timer_.AbandonAndStop();
+  collapse_timer_.Stop();
 }
 
 bool ExtensionsRequestAccessButton::IsShowingConfirmation() const {
@@ -134,35 +144,53 @@ bool ExtensionsRequestAccessButton::IsShowingConfirmationFor(
   return confirmation_origin_ == origin;
 }
 
-std::u16string ExtensionsRequestAccessButton::GetTooltipText(
-    const gfx::Point& p) const {
+bool ExtensionsRequestAccessButton::ShouldShowInkdropAfterIphInteraction() {
+  return false;
+}
+
+void ExtensionsRequestAccessButton::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  if (selection.active_tab_changed()) {
+    UpdateTooltipText();
+  }
+}
+
+void ExtensionsRequestAccessButton::TabChangedAt(content::WebContents* contents,
+                                                 int index,
+                                                 TabChangeType change_type) {
+  if (contents == GetActiveWebContents()) {
+    UpdateTooltipText();
+  }
+}
+
+void ExtensionsRequestAccessButton::UpdateTooltipText() {
   std::vector<std::u16string> tooltip_parts;
   content::WebContents* active_contents = GetActiveWebContents();
 
   // Active contents can be null if the window is closing.
   if (!active_contents) {
-    return std::u16string();
+    SetTooltipText(std::u16string());
+    return;
   }
+
   tooltip_parts.push_back(l10n_util::GetStringFUTF16(
       IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_TOOLTIP_MULTIPLE_EXTENSIONS,
-      GetCurrentHost(active_contents)));
+      extensions::ui_util::GetFormattedHostForDisplay(*active_contents)));
   for (const auto& extension_id : extension_ids_) {
-    ToolbarActionViewController* action =
+    ToolbarActionViewModel* view_model =
         extensions_container_->GetActionForId(extension_id);
-    tooltip_parts.push_back(action->GetActionName());
+    tooltip_parts.push_back(view_model->GetActionName());
   }
-  return base::JoinString(tooltip_parts, u"\n");
-}
-
-bool ExtensionsRequestAccessButton::ShouldShowInkdropAfterIphInteraction() {
-  return false;
+  SetTooltipText(base::JoinString(tooltip_parts, u"\n"));
 }
 
 void ExtensionsRequestAccessButton::OnButtonPressed() {
   // Record IPH usage.
-  browser_->window()->NotifyFeatureEngagementEvent(
-      feature_engagement::events::kExtensionsRequestAccessButtonClicked);
-
+  BrowserUserEducationInterface::From(browser_)->NotifyFeaturePromoFeatureUsed(
+      feature_engagement::kIPHExtensionsRequestAccessButtonFeature,
+      FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   content::WebContents* web_contents = GetActiveWebContents();
   extensions::ExtensionActionRunner* action_runner =
       extensions::ExtensionActionRunner::GetForWebContents(web_contents);
@@ -176,17 +204,14 @@ void ExtensionsRequestAccessButton::OnButtonPressed() {
   confirmation_origin_ =
       web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
 
-  // Grant tab permission to all extensions.
+  // Always grant access to this site to all extensions.
   DCHECK_GT(extension_ids_.size(), 0u);
   std::vector<const extensions::Extension*> extensions_to_run =
       GetExtensions(browser_->profile(), extension_ids_);
-
-  base::RecordAction(base::UserMetricsAction(
-      "Extensions.Toolbar.ExtensionsActivatedFromRequestAccessButton"));
-  UMA_HISTOGRAM_COUNTS_100(
-      "Extensions.Toolbar.ExtensionsActivatedFromRequestAccessButton",
-      extension_ids_.size());
-  action_runner->GrantTabPermissions(extensions_to_run);
+  extensions::SitePermissionsHelper(browser_->profile())
+      .UpdateSiteAccess(
+          extensions_to_run, web_contents,
+          extensions::PermissionsManager::UserSiteAccess::kOnSite);
 
   // Show confirmation message, and disable the button, for a specific duration.
   std::optional<SkColor> color;
@@ -198,12 +223,18 @@ void ExtensionsRequestAccessButton::OnButtonPressed() {
   base::TimeDelta collapse_duration = remove_confirmation_for_testing_
                                           ? base::Seconds(0)
                                           : kConfirmationDisplayDuration;
-  // base::Unretained() below is safe because this view is tied to the lifetime
-  // of `extensions_container_`.
+  // base::Unretained() below is safe because this view is tied to the
+  // lifetime of `extensions_container_`.
   collapse_timer_.Start(
       FROM_HERE, collapse_duration,
-      base::BindOnce(&ExtensionsContainer::CollapseConfirmation,
+      base::BindOnce(&ExtensionsContainerViews::CollapseConfirmation,
                      base::Unretained(extensions_container_)));
+
+  base::RecordAction(base::UserMetricsAction(
+      "Extensions.Toolbar.ExtensionsActivatedFromRequestAccessButton"));
+  UMA_HISTOGRAM_COUNTS_100(
+      "Extensions.Toolbar.ExtensionsActivatedFromRequestAccessButton",
+      extension_ids_.size());
 }
 
 content::WebContents* ExtensionsRequestAccessButton::GetActiveWebContents()

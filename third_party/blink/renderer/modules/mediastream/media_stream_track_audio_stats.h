@@ -32,7 +32,7 @@ class MODULES_EXPORT MediaStreamTrackAudioStats : public ScriptWrappable {
   DOMHighResTimeStamp maximumLatency(ScriptState* script_state);
   void resetLatency(ScriptState* script_state);
 
-  ScriptValue toJSON(ScriptState* script_state);
+  ScriptObject toJSON(ScriptState* script_state);
 
   void Trace(Visitor*) const override;
 

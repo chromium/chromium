@@ -100,7 +100,14 @@ class CONTENT_EXPORT StartupTracingController {
   // Used for testing only
   bool should_continue_on_shutdown_ = false;
 
-  TempFilePolicy temp_file_policy_ = TempFilePolicy::kUseTemporaryFile;
+  // Write directly to trace file on iOS since there might not be a graceful
+  // shutdown for tracing to stop with continuous background tracing.
+  TempFilePolicy temp_file_policy_ =
+#if BUILDFLAG(IS_IOS)
+      TempFilePolicy::kWriteDirectly;
+#else
+      TempFilePolicy::kUseTemporaryFile;
+#endif
 };
 
 }  // namespace content

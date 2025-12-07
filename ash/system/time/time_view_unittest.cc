@@ -16,6 +16,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/widget/widget.h"
@@ -79,6 +80,19 @@ class TimeViewTest : public AshTestBase {
 
   void UpdateText() { time_view_->UpdateText(); }
 
+  void SetTimeTo0701Local() {
+    // Set current time to 07:01.
+    task_environment()->AdvanceClock(base::Time::Now().LocalMidnight() +
+                                     base::Hours(31) + base::Minutes(1) -
+                                     base::Time::Now());
+  }
+
+  void SetTimeTo0800Local() {
+    // Set current time to 08:00.
+    task_environment()->AdvanceClock(base::Time::Now().LocalMidnight() +
+                                     base::Hours(32) - base::Time::Now());
+  }
+
   // Creates a time view with horizontal or vertical |clock_layout|.
   void CreateTimeView(TimeView::ClockLayout clock_layout,
                       TimeView::Type type = TimeView::kTime) {
@@ -140,10 +154,17 @@ TEST_F(TimeViewTest, Basics) {
 
 // Test accessibility events emitted by the time view's labels during updates.
 TEST_F(TimeViewTest, TimeViewFiresAccessibilityEvents) {
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
+
+  // Set current time to 07:01. Otherwise the below CreateTimeView() would
+  // create a TimeView that is based on the system's current local time, which
+  // may lead to test flakes.
+  SetTimeTo0701Local();
 
   CreateTimeView(TimeView::ClockLayout::HORIZONTAL_CLOCK);
 
+  // There should be no text-changed accessibility event as CreateTimeView() is
+  // called after SetTimeTo0701Local().
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged,
                                 horizontal_date_label()));
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged,
@@ -156,11 +177,10 @@ TEST_F(TimeViewTest, TimeViewFiresAccessibilityEvents) {
                                 vertical_label_minutes()));
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged, time_view()));
 
-  // Set current time to 08:00.
+  // Set current time from 07:01 to 08:00.
   // There should be one text-changed accessibility event for each time-related
   // label, none for the date-related labels, and one for the time view button.
-  task_environment()->AdvanceClock(base::Time::Now().LocalMidnight() +
-                                   base::Hours(32) - base::Time::Now());
+  SetTimeTo0800Local();
   UpdateText();
 
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged,
@@ -312,11 +332,17 @@ TEST_F(TimeViewTest, DateView) {
 
 // Test accessibility events emitted by the date view's labels during updates.
 TEST_F(TimeViewTest, DateViewFiresAccessibilityEvents) {
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
+
+  // Set current time to 07:01. Otherwise the below CreateTimeView() would
+  // create a TimeView that is based on the system's current local time, which
+  // may lead to test flakes.
+  SetTimeTo0701Local();
 
   CreateTimeView(TimeView::ClockLayout::HORIZONTAL_CLOCK, TimeView::kDate);
-  // We shouldn't fire any events through the construction of the view with
-  // default values.
+
+  // There should be no text-changed accessibility event as CreateTimeView() is
+  // called after SetTimeTo0701Local().
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged,
                                 horizontal_time_label_()));
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged,
@@ -329,11 +355,10 @@ TEST_F(TimeViewTest, DateViewFiresAccessibilityEvents) {
                                 vertical_date_label()));
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged, time_view()));
 
-  // Set current time to 08:00.
+  // Set current time from 07:01 to 08:00.
   // There should be one text-changed accessibility event for each date-related
   // label, none for the time-related labels, and one for the time view button.
-  task_environment()->AdvanceClock(base::Time::Now().LocalMidnight() +
-                                   base::Hours(32) - base::Time::Now());
+  SetTimeTo0800Local();
   UpdateText();
 
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged,
@@ -399,6 +424,14 @@ TEST_F(TimeViewTest, DateViewFiresAccessibilityEvents) {
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged,
                                 vertical_date_label()));
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged, time_view()));
+}
+
+TEST_F(TimeViewTest, AccessibleProperties) {
+  CreateTimeView(TimeView::ClockLayout::HORIZONTAL_CLOCK);
+  ui::AXNodeData data;
+
+  time_view()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kTime);
 }
 
 }  // namespace ash

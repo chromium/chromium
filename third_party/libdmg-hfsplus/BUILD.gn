@@ -1,0 +1,159 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+if(is_mac) {
+    import("//build/config/mac/mac_sdk.gni")
+}
+
+group("all") {
+    public_deps = [
+        ":common",
+        ":hfs_library",
+        ":dmg_library",
+        ":hfs_tool",
+        ":dmg_tool",
+    ]
+}
+
+source_set("common") {
+    sources = [
+        "src/common/abstractfile.c",
+        "src/common/base64.c",
+        "src/includes/abstractfile.h",
+        "src/includes/common.h",
+    ]
+
+    include_dirs = [ "src/includes" ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+}
+
+source_set("hfs_library") {
+    sources = [
+        "src/hfs/btree.c",
+        "src/hfs/catalog.c",
+        "src/hfs/extents.c",
+        "src/hfs/fastunicodecompare.c",
+        "src/hfs/flatfile.c",
+        "src/hfs/hfscompress.c",
+        "src/hfs/hfslib.c",
+        "src/hfs/rawfile.c",
+        "src/hfs/utility.c",
+        "src/hfs/volume.c",
+        "src/hfs/xattr.c",
+        "src/includes/hfs/hfscompress.h",
+        "src/includes/hfs/hfslib.h",
+        "src/includes/hfs/hfsplus.h",
+    ]
+
+    deps = [
+        ":common",
+        "//third_party/zlib",
+    ]
+    include_dirs = ["src/includes"]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+
+    cflags = [
+        "-Wno-implicit-fallthrough",
+        "-Wno-unreachable-code-break",
+
+        # libdmg-hfsplus relies on type punning via illegal pointer cast when
+        # parsing HFS+ catalog data records. -fno-strict-aliasing makes this
+        # behave as intended, at the cost of shutting off many optimizations
+        # that would otherwise use type information to conclude that various
+        # pointers, references, fields, etc. cannot alias each other.
+        "-fno-strict-aliasing",
+    ]
+}
+
+executable("hfs_tool") {
+    sources = [
+        "src/hfs/hfs.c",
+    ]
+
+    deps = [
+        ":common",
+        ":hfs_library",
+    ]
+
+    include_dirs = ["src/includes"]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+
+    cflags = [
+        # The command line handler alone uses some of the same questionable
+        # patterns of the library it calls into.
+        "-fno-strict-aliasing",
+    ]
+}
+
+source_set("dmg_library") {
+    # Currently (2025-Dec-1), this is a minimal set of dependencies required
+    # to build the target with none of its optional features. However,
+    # we need LZMA and we *might* want cryptography. These require porting
+    # logic for xz to lzma_sdk and logic for OpenSSL to BoringSSL. This work
+    # is scheduled under the following bugs:
+    # TODO(crbug.com/456506377): LZMA support; -DHAVE_LIBLZMA
+    # TODO(crbug.com/456512616): BoringSSL support; -DHAVE_CRYPT
+    # No plans for LZFSE support.
+    deps = [
+        ":common",
+        ":hfs_library",
+        "//third_party/zlib",
+    ]
+
+    libs = [ "bz2" ]
+
+    sources = [
+        "src/dmg/adc.c",
+        "src/dmg/attribution.c",
+        "src/dmg/checksum.c",
+        "src/dmg/compress.c",
+        "src/dmg/dmgfile.c",
+        "src/dmg/dmglib.c",
+        "src/dmg/filevault.c",
+        "src/dmg/io.c",
+        "src/dmg/partition.c",
+        "src/dmg/resources.c",
+        "src/dmg/udif.c",
+        "src/includes/dmg/adc.h",
+        "src/includes/dmg/attribution.h",
+        "src/includes/dmg/compress.h",
+        "src/includes/dmg/dmg.h",
+        "src/includes/dmg/dmgfile.h",
+        "src/includes/dmg/dmglib.h",
+        "src/includes/dmg/filevault.h",
+    ]
+
+    include_dirs = [ "src/includes" ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+
+    cflags = [
+        # TODO(crbug.com/456839050): figure out what is going on with
+        # the ResourceData.name field in resources.c and attribution.c
+        # to try to clean up the warning requiring -Wno-pointer-sign.
+        "-Wno-pointer-sign",
+        "-fno-strict-aliasing",
+    ]
+}
+
+executable("dmg_tool") {
+    deps = [
+        ":common",
+        ":dmg_library",
+    ]
+
+    sources = [ "src/dmg/dmg.c" ]
+
+    include_dirs = [ "src/includes" ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+}

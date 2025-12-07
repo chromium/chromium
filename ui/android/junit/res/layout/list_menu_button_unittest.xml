@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+  <org.chromium.ui.listmenu.ListMenuButton
+      android:id="@+id/button_default"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:background="@null"
+      android:src="@android:drawable/btn_default" />
+
+  <org.chromium.ui.listmenu.ListMenuButton
+      android:id="@+id/button_menu_start"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:background="@null"
+      android:src="@android:drawable/btn_default"
+      app:menuPositionedAtStart="true" />
+
+  <org.chromium.ui.listmenu.ListMenuButton
+      android:id="@+id/button_menu_end"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:background="@null"
+      android:src="@android:drawable/btn_default"
+      app:menuPositionedAtEnd="true" />
+
+</LinearLayout>

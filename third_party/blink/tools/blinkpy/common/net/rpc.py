@@ -33,8 +33,6 @@ import json
 from typing import List, Literal, NamedTuple, Optional
 from urllib.parse import urlunsplit
 
-import six
-
 from blinkpy.common.memoized import memoized
 from blinkpy.common.net.luci_auth import LuciAuth
 from blinkpy.common.net.network_transaction import (
@@ -156,7 +154,7 @@ class BaseRPC:
             'Content-Type': 'application/json',
         }
         url = self._make_url(method)
-        body = six.ensure_binary(json.dumps(data, separators=(',', ':')))
+        body = json.dumps(data, separators=(',', ':')).encode()
         make_request = functools.partial(self._web.request_and_read,
                                          'POST',
                                          url,

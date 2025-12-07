@@ -21,7 +21,7 @@ found in the LICENSE file.
         android:shortcutId="new-incognito-tab-shortcut"
         android:enabled="false"
         android:icon="@drawable/shortcut_incognito"
-        android:shortcutShortLabel="@string/accessibility_tabstrip_incognito_identifier"
+        android:shortcutShortLabel="@string/accessibility_incognito_tab"
         android:shortcutLongLabel="@string/menu_new_incognito_tab"
         android:shortcutDisabledMessage="@string/disabled_incognito_launcher_shortcut_message" >
         <intent

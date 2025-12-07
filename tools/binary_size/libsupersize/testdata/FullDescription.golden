@@ -15,10 +15,9 @@ Section Sizes (Total=128.0mb (134218045 bytes)):
     .data.rel.ro: 1.02mb (1065224 bytes) (0.8%)
     .data.rel.ro.local: 771kb (790024 bytes) (0.6%)
     .other: 86.2mb (90351129 bytes) (67.3%)
+    .part.end: 16 bytes (16 bytes) (not included in totals)
     .rel.dyn: 2.53mb (2655384 bytes) (2.0%) (counted in .other)
     .rodata: 5.65mb (5927652 bytes) (4.4%)
-    .strtab: 33.2mb (34841854 bytes) (26.0%) (counted in .other)
-    .symtab: 16.4mb (17166112 bytes) (12.8%) (counted in .other)
     .text: 34.3mb (35982248 bytes) (26.8%)
 
 Other section sizes:
@@ -37,7 +36,6 @@ Other section sizes:
     .init_array: 8 bytes (8 bytes) (counted in .other)
     .interp: 19 bytes (19 bytes) (counted in .other)
     .note.gnu.build-id: 36 bytes (36 bytes) (counted in .other)
-    .note.gnu.gold-version: 28 bytes (28 bytes) (counted in .other)
     .plt: 4.14kb (4244 bytes) (counted in .other)
     .rel.plt: 2.75kb (2816 bytes) (counted in .other)
     .shstrtab: 436 bytes (436 bytes) (counted in .other)
@@ -82,12 +80,12 @@ Section .data: has 100.0% of 101768 bytes accounted for from 6 symbols. 0 bytes 
 * 5 have a component assigned. Accounts for 168 bytes (0.2%).
 * 1 placeholders exist (symbols that start with **). Accounts for 101600 bytes (99.8%).
 * 0 symbols have shared ownership.
-Section .bss: has 40.3% of 524520 bytes accounted for from 6 symbols. 775936 bytes are unaccounted for.
-* Padding accounts for 196 bytes (0.0%)
-* 6 have source paths. Accounts for 524520 bytes (100.0%).
-* 6 have a component assigned. Accounts for 524520 bytes (100.0%).
+Section .bss: has 0.0% of 255 bytes accounted for from 6 symbols. 1300201 bytes are unaccounted for.
+* Padding accounts for 207 bytes (81.2%)
+* 6 have source paths. Accounts for 255 bytes (100.0%).
+* 6 have a component assigned. Accounts for 255 bytes (100.0%).
 * 0 symbols have shared ownership.
-* 3 symbols are from generated sources. Accounts for 232 bytes (0.0%).
+* 3 symbols are from generated sources. Accounts for 232 bytes (91.0%).
 Section .dex: 0 bytes from 0 symbols.
 * Padding accounts for 0 bytes (0.0%)
 * 0 have source paths. Accounts for 0 bytes (0.0%).
@@ -108,21 +106,21 @@ Section .pak.nontranslated: 0 bytes from 0 symbols.
 * 0 have source paths. Accounts for 0 bytes (0.0%).
 * 0 have a component assigned. Accounts for 0 bytes (0.0%).
 * 0 symbols have shared ownership.
-Section .other: has 100.0% of 90351129 bytes accounted for from 23 symbols. 0 bytes are unaccounted for.
-* Padding accounts for 33902635 bytes (37.5%)
+Section .other: has 100.0% of 90351129 bytes accounted for from 20 symbols. 0 bytes are unaccounted for.
+* Padding accounts for 85910629 bytes (95.1%)
 * 0 have source paths. Accounts for 0 bytes (0.0%).
 * 0 have a component assigned. Accounts for 0 bytes (0.0%).
-* 22 placeholders exist (symbols that start with **). Accounts for 56448494 bytes (62.5%).
+* 19 placeholders exist (symbols that start with **). Accounts for 4440500 bytes (4.9%).
 * 0 symbols have shared ownership.
 
-Showing 79 symbols (72 unique) with total pss: 134218029 bytes
+Showing 77 symbols (70 unique) with total pss: 134218029 bytes
 Histogram of symbols based on PSS:
-      [2,4): 7      [32,64): 10      [512,1024): 1     [65536,131072): 2     [1048576,2097152): 3
-      [4,8): 6     [64,128): 2      [2048,4096): 5    [131072,262144): 3     [2097152,4194304): 2
-     [8,16): 5    [128,256): 2      [4096,8192): 3    [262144,524288): 1   [16777216,33554432): 1
-    [16,32): 17   [256,512): 3    [32768,65536): 1   [524288,1048576): 2   [33554432,67108864): 3
-Sizes: .text=34.3mb     .rodata=5.65mb     .data.rel.ro=1.02mb     .data=99.4kb     .bss=512kb      .other=86.2mb     total=128.0mb
-Counts: .text=23 .rodata=12 .data.rel.ro=4 .data=6 .bss=6 .other=23
+      [2,4): 7      [32,64): 10      [512,1024): 1      [65536,131072): 2      [2097152,4194304): 2
+      [4,8): 8     [64,128): 2      [2048,4096): 5     [131072,262144): 1    [33554432,67108864): 1
+     [8,16): 6    [128,256): 2      [4096,8192): 3    [524288,1048576): 2   [67108864,134217728): 1
+    [16,32): 17   [256,512): 3    [32768,65536): 1   [1048576,2097152): 3
+Sizes: .text=34.3mb     .rodata=5.65mb     .data.rel.ro=1.02mb     .data=99.4kb     .bss=255 bytes  .other=86.2mb     total=128.0mb
+Counts: .text=23 .rodata=12 .data.rel.ro=4 .data=6 .bss=6 .other=20
 Number of unique paths: 10
 
 Section Legend: t=.text, r=.rodata, R=.data.rel.ro, d=.data, b=.bss, o=.other
@@ -290,102 +288,96 @@ Index | Running Total | Section@Address | ...
 49)  43866900 (32.7%) d@0x2de70a8  pss=101600  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** .data (unattributed)
-50)  43866900 (32.7%) b@0x0        pss=262144  padding=0  num_aliases=1
-             source_path=third_party/fft_float.cc 	object_path=third_party/ffmpeg/libffmpeg_internal.a/fft_float.o
-             flags={}  name=ff_cos_131072
-51)  43866900 (32.7%) b@0x0        pss=131072  padding=0  num_aliases=1
-             source_path=third_party/fft_fixed.cc 	object_path=third_party/ffmpeg/libffmpeg_internal.a/fft_fixed.o
-             flags={}  name=ff_cos_131072_fixed
-52)  43866900 (32.7%) b@0x0        pss=131072  padding=0  num_aliases=1
-             source_path=third_party/fft_float.cc 	object_path=third_party/ffmpeg/libffmpeg_internal.a/fft_float.o
-             flags={}  name=ff_cos_65536
-53)  43866900 (32.7%) b@0x2dffda0  pss=28  padding=0  num_aliases=1
+50)  43866900 (32.7%) b@0x0        pss=16  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .part.end
+51)  43866900 (32.7%) b@0x2dffda0  pss=28  padding=0  num_aliases=1
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={gen}  name=g_chrome_content_browser_client
-54)  43866900 (32.7%) b@0x2dffe80  pss=200  padding=196  num_aliases=1
+52)  43866900 (32.7%) b@0x2dffe80  pss=200  padding=196  num_aliases=1
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={gen}  name=SaveHistogram::atomic_histogram_pointer
                   full_name=SaveHistogram(_JNIEnv*, base::android::JavaParamRef<_jobject*> const&, base::android::JavaParamRef<_jstring*> const&, base::android::JavaParamRef<_jlongArray*> const&, int)::atomic_histogram_pointer
-55)  43866900 (32.7%) b@0x2dffe84  pss=4  padding=0  num_aliases=1
+53)  43866900 (32.7%) b@0x2dffe84  pss=4  padding=0  num_aliases=1
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={anon,gen}  name=g_AnimationFrameTimeHistogram_clazz
-56)  43866960 (32.7%) o@0x0        pss=60  padding=0  num_aliases=1
+54)  43866900 (32.7%) b@0x2dffe88  pss=4  padding=0  num_aliases=1
+             source_path=third_party/fft_float.cc 	object_path=third_party/ffmpeg/libffmpeg_internal.a/fft_float.o
+             flags={}  name=ff_cos_131072
+55)  43866900 (32.7%) b@0x2dffe8c  pss=4  padding=0  num_aliases=1
+             source_path=third_party/fft_fixed.cc 	object_path=third_party/ffmpeg/libffmpeg_internal.a/fft_fixed.o
+             flags={}  name=ff_cos_131072_fixed
+56)  43866900 (32.7%) b@0x2dffe9b  pss=15  padding=11  num_aliases=1
+             source_path=third_party/fft_float.cc 	object_path=third_party/ffmpeg/libffmpeg_internal.a/fft_float.o
+             flags={}  name=ff_cos_65536
+57)  43866960 (32.7%) o@0x0        pss=60  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** ELF Section: .ARM.attributes
-57)  45403416 (33.8%) o@0x0        pss=1536456  padding=0  num_aliases=1
+58)  45403416 (33.8%) o@0x0        pss=1536456  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** ELF Section: .ARM.exidx
-58)  45587048 (34.0%) o@0x0        pss=183632  padding=0  num_aliases=1
+59)  45587048 (34.0%) o@0x0        pss=183632  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** ELF Section: .ARM.extab
-59)  45587352 (34.0%) o@0x0        pss=304  padding=0  num_aliases=1
+60)  45587352 (34.0%) o@0x0        pss=304  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** ELF Section: .dynamic
-60)  45591377 (34.0%) o@0x0        pss=4025  padding=0  num_aliases=1
+61)  45591377 (34.0%) o@0x0        pss=4025  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** ELF Section: .dynstr
-61)  45597873 (34.0%) o@0x0        pss=6496  padding=0  num_aliases=1
+62)  45597873 (34.0%) o@0x0        pss=6496  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** ELF Section: .dynsym
-62)  45597881 (34.0%) o@0x0        pss=8  padding=0  num_aliases=1
+63)  45597881 (34.0%) o@0x0        pss=8  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** ELF Section: .fini_array
-63)  45598693 (34.0%) o@0x0        pss=812  padding=0  num_aliases=1
+64)  45598693 (34.0%) o@0x0        pss=812  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** ELF Section: .gnu.version
-64)  45598721 (34.0%) o@0x0        pss=28  padding=0  num_aliases=1
+65)  45598721 (34.0%) o@0x0        pss=28  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** ELF Section: .gnu.version_d
-65)  45598817 (34.0%) o@0x0        pss=96  padding=0  num_aliases=1
+66)  45598817 (34.0%) o@0x0        pss=96  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** ELF Section: .gnu.version_r
-66)  45641773 (34.0%) o@0x0        pss=42956  padding=0  num_aliases=1
+67)  45641773 (34.0%) o@0x0        pss=42956  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** ELF Section: .got
-67)  45644457 (34.0%) o@0x0        pss=2684  padding=0  num_aliases=1
+68)  45644457 (34.0%) o@0x0        pss=2684  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** ELF Section: .hash
-68)  45644465 (34.0%) o@0x0        pss=8  padding=0  num_aliases=1
+69)  45644465 (34.0%) o@0x0        pss=8  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** ELF Section: .init_array
-69)  45644484 (34.0%) o@0x0        pss=19  padding=0  num_aliases=1
+70)  45644484 (34.0%) o@0x0        pss=19  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** ELF Section: .interp
-70)  45644520 (34.0%) o@0x0        pss=36  padding=0  num_aliases=1
+71)  45644520 (34.0%) o@0x0        pss=36  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** ELF Section: .note.gnu.build-id
-71)  45644548 (34.0%) o@0x0        pss=28  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .note.gnu.gold-version
-72)  45648792 (34.0%) o@0x0        pss=4244  padding=0  num_aliases=1
+72)  45648764 (34.0%) o@0x0        pss=4244  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** ELF Section: .plt
-73)  48304176 (36.0%) o@0x0        pss=2655384  padding=0  num_aliases=1
+73)  48304148 (36.0%) o@0x0        pss=2655384  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** ELF Section: .rel.dyn
-74)  48306992 (36.0%) o@0x0        pss=2816  padding=0  num_aliases=1
+74)  48306964 (36.0%) o@0x0        pss=2816  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** ELF Section: .rel.plt
-75)  48307428 (36.0%) o@0x0        pss=436  padding=0  num_aliases=1
+75)  48307400 (36.0%) o@0x0        pss=436  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** ELF Section: .shstrtab
-76)  83149282 (62.0%) o@0x0        pss=34841854  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .strtab
-77)  100315394 (74.7%) o@0x0        pss=17166112  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .symtab
-78)  134218029 (100.0%) o@0x0        pss=33902635  padding=33902635  num_aliases=1
+76)  134218029 (100.0%) o@0x0        pss=85910629  padding=85910629  num_aliases=1
              source_path= 	object_path=
              flags={}  name=Overhead: ELF file
-Showing 78 symbols (71 unique) with total pss: 134218029 bytes
+Showing 76 symbols (69 unique) with total pss: 134218029 bytes
 Histogram of symbols based on PSS:
-      [2,4): 7      [32,64): 10     [512,1024): 1     [32768,65536): 1      [524288,1048576): 2   [33554432,67108864): 3
-      [4,8): 6     [64,128): 2     [2048,4096): 4    [65536,131072): 2     [1048576,2097152): 3
-     [8,16): 5    [128,256): 2     [4096,8192): 2   [131072,262144): 3     [2097152,4194304): 2
-    [16,32): 17   [256,512): 3    [8192,16384): 1   [262144,524288): 1   [16777216,33554432): 1
-Sizes: .text=34.3mb     .rodata=5.65mb     .data.rel.ro=1.02mb     .data=99.4kb     .bss=512kb      .other=86.2mb     total=128.0mb
-Counts: .text=23 .rodata=12 .data.rel.ro=4 .data=6 .bss=6 .other=23
+      [2,4): 7      [32,64): 10     [512,1024): 1      [32768,65536): 1      [1048576,2097152): 3
+      [4,8): 8     [64,128): 2     [2048,4096): 4     [65536,131072): 2      [2097152,4194304): 2
+     [8,16): 6    [128,256): 2     [4096,8192): 2    [131072,262144): 1    [33554432,67108864): 1
+    [16,32): 17   [256,512): 3    [8192,16384): 1   [524288,1048576): 2   [67108864,134217728): 1
+Sizes: .text=34.3mb     .rodata=5.65mb     .data.rel.ro=1.02mb     .data=99.4kb     .bss=255 bytes  .other=86.2mb     total=128.0mb
+Counts: .text=23 .rodata=12 .data.rel.ro=4 .data=6 .bss=6 .other=20
 Number of unique paths: 10
 
 Section Legend: t=.text, r=.rodata, R=.data.rel.ro, d=.data, b=.bss, o=.other
@@ -556,91 +548,85 @@ Index | Running Total | Section@Address | ...
 48)  43866900 (32.7%) d@0x2de70a8  pss=101600  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** .data (unattributed)
-49)  43866900 (32.7%) b@0x0        pss=262144  padding=0  num_aliases=1
-             source_path=third_party/fft_float.cc 	object_path=third_party/ffmpeg/libffmpeg_internal.a/fft_float.o
-             flags={}  name=ff_cos_131072
-50)  43866900 (32.7%) b@0x0        pss=131072  padding=0  num_aliases=1
-             source_path=third_party/fft_fixed.cc 	object_path=third_party/ffmpeg/libffmpeg_internal.a/fft_fixed.o
-             flags={}  name=ff_cos_131072_fixed
-51)  43866900 (32.7%) b@0x0        pss=131072  padding=0  num_aliases=1
-             source_path=third_party/fft_float.cc 	object_path=third_party/ffmpeg/libffmpeg_internal.a/fft_float.o
-             flags={}  name=ff_cos_65536
-52)  43866900 (32.7%) b@0x2dffda0  pss=28  padding=0  num_aliases=1
+49)  43866900 (32.7%) b@0x0        pss=16  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .part.end
+50)  43866900 (32.7%) b@0x2dffda0  pss=28  padding=0  num_aliases=1
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={gen}  name=g_chrome_content_browser_client
-53)  43866900 (32.7%) b@0x2dffe80  pss=200  padding=196  num_aliases=1
+51)  43866900 (32.7%) b@0x2dffe80  pss=200  padding=196  num_aliases=1
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={gen}  name=SaveHistogram::atomic_histogram_pointer
                   full_name=SaveHistogram(_JNIEnv*, base::android::JavaParamRef<_jobject*> const&, base::android::JavaParamRef<_jstring*> const&, base::android::JavaParamRef<_jlongArray*> const&, int)::atomic_histogram_pointer
-54)  43866900 (32.7%) b@0x2dffe84  pss=4  padding=0  num_aliases=1
+52)  43866900 (32.7%) b@0x2dffe84  pss=4  padding=0  num_aliases=1
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={anon,gen}  name=g_AnimationFrameTimeHistogram_clazz
-55)  43866960 (32.7%) o@0x0        pss=60  padding=0  num_aliases=1
+53)  43866900 (32.7%) b@0x2dffe88  pss=4  padding=0  num_aliases=1
+             source_path=third_party/fft_float.cc 	object_path=third_party/ffmpeg/libffmpeg_internal.a/fft_float.o
+             flags={}  name=ff_cos_131072
+54)  43866900 (32.7%) b@0x2dffe8c  pss=4  padding=0  num_aliases=1
+             source_path=third_party/fft_fixed.cc 	object_path=third_party/ffmpeg/libffmpeg_internal.a/fft_fixed.o
+             flags={}  name=ff_cos_131072_fixed
+55)  43866900 (32.7%) b@0x2dffe9b  pss=15  padding=11  num_aliases=1
+             source_path=third_party/fft_float.cc 	object_path=third_party/ffmpeg/libffmpeg_internal.a/fft_float.o
+             flags={}  name=ff_cos_65536
+56)  43866960 (32.7%) o@0x0        pss=60  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** ELF Section: .ARM.attributes
-56)  45403416 (33.8%) o@0x0        pss=1536456  padding=0  num_aliases=1
+57)  45403416 (33.8%) o@0x0        pss=1536456  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** ELF Section: .ARM.exidx
-57)  45587048 (34.0%) o@0x0        pss=183632  padding=0  num_aliases=1
+58)  45587048 (34.0%) o@0x0        pss=183632  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** ELF Section: .ARM.extab
-58)  45587352 (34.0%) o@0x0        pss=304  padding=0  num_aliases=1
+59)  45587352 (34.0%) o@0x0        pss=304  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** ELF Section: .dynamic
-59)  45591377 (34.0%) o@0x0        pss=4025  padding=0  num_aliases=1
+60)  45591377 (34.0%) o@0x0        pss=4025  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** ELF Section: .dynstr
-60)  45597873 (34.0%) o@0x0        pss=6496  padding=0  num_aliases=1
+61)  45597873 (34.0%) o@0x0        pss=6496  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** ELF Section: .dynsym
-61)  45597881 (34.0%) o@0x0        pss=8  padding=0  num_aliases=1
+62)  45597881 (34.0%) o@0x0        pss=8  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** ELF Section: .fini_array
-62)  45598693 (34.0%) o@0x0        pss=812  padding=0  num_aliases=1
+63)  45598693 (34.0%) o@0x0        pss=812  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** ELF Section: .gnu.version
-63)  45598721 (34.0%) o@0x0        pss=28  padding=0  num_aliases=1
+64)  45598721 (34.0%) o@0x0        pss=28  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** ELF Section: .gnu.version_d
-64)  45598817 (34.0%) o@0x0        pss=96  padding=0  num_aliases=1
+65)  45598817 (34.0%) o@0x0        pss=96  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** ELF Section: .gnu.version_r
-65)  45641773 (34.0%) o@0x0        pss=42956  padding=0  num_aliases=1
+66)  45641773 (34.0%) o@0x0        pss=42956  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** ELF Section: .got
-66)  45644457 (34.0%) o@0x0        pss=2684  padding=0  num_aliases=1
+67)  45644457 (34.0%) o@0x0        pss=2684  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** ELF Section: .hash
-67)  45644465 (34.0%) o@0x0        pss=8  padding=0  num_aliases=1
+68)  45644465 (34.0%) o@0x0        pss=8  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** ELF Section: .init_array
-68)  45644484 (34.0%) o@0x0        pss=19  padding=0  num_aliases=1
+69)  45644484 (34.0%) o@0x0        pss=19  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** ELF Section: .interp
-69)  45644520 (34.0%) o@0x0        pss=36  padding=0  num_aliases=1
+70)  45644520 (34.0%) o@0x0        pss=36  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** ELF Section: .note.gnu.build-id
-70)  45644548 (34.0%) o@0x0        pss=28  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .note.gnu.gold-version
-71)  45648792 (34.0%) o@0x0        pss=4244  padding=0  num_aliases=1
+71)  45648764 (34.0%) o@0x0        pss=4244  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** ELF Section: .plt
-72)  48304176 (36.0%) o@0x0        pss=2655384  padding=0  num_aliases=1
+72)  48304148 (36.0%) o@0x0        pss=2655384  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** ELF Section: .rel.dyn
-73)  48306992 (36.0%) o@0x0        pss=2816  padding=0  num_aliases=1
+73)  48306964 (36.0%) o@0x0        pss=2816  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** ELF Section: .rel.plt
-74)  48307428 (36.0%) o@0x0        pss=436  padding=0  num_aliases=1
+74)  48307400 (36.0%) o@0x0        pss=436  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** ELF Section: .shstrtab
-75)  83149282 (62.0%) o@0x0        pss=34841854  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .strtab
-76)  100315394 (74.7%) o@0x0        pss=17166112  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .symtab
-77)  134218029 (100.0%) o@0x0        pss=33902635  padding=33902635  num_aliases=1
+75)  134218029 (100.0%) o@0x0        pss=85910629  padding=85910629  num_aliases=1
              source_path= 	object_path=
              flags={}  name=Overhead: ELF file

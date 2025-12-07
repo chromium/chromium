@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/hash/sha1.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/sys_byteorder.h"
 #include "net/server/http_connection.h"
@@ -20,6 +21,7 @@
 #include "net/server/web_socket_encoder.h"
 #include "net/websockets/websocket_deflate_parameters.h"
 #include "net/websockets/websocket_extension.h"
+#include "net/websockets/websocket_handshake_challenge.h"
 #include "net/websockets/websocket_handshake_constants.h"
 
 namespace net {
@@ -39,7 +41,7 @@ std::string ExtensionsHeaderString(
 
 std::string ValidResponseString(
     const std::string& accept_hash,
-    const std::vector<WebSocketExtension> extensions) {
+    const std::vector<WebSocketExtension>& extensions) {
   return base::StringPrintf(
       "HTTP/1.1 101 WebSocket Protocol Handshake\r\n"
       "Upgrade: WebSocket\r\n"
@@ -74,8 +76,7 @@ void WebSocket::Accept(const HttpServerRequestInfo& request,
         traffic_annotation);
     return;
   }
-  std::string encoded_hash = base::Base64Encode(
-      base::SHA1HashString(key + websockets::kWebSocketGuid));
+  std::string encoded_hash = ComputeSecWebSocketAccept(key);
 
   std::vector<WebSocketExtension> response_extensions;
   auto i = request.headers.find("sec-websocket-extensions");
@@ -100,9 +101,9 @@ void WebSocket::Accept(const HttpServerRequestInfo& request,
       NetworkTrafficAnnotationTag(traffic_annotation));
 }
 
-WebSocket::ParseResult WebSocket::Read(std::string* message) {
+WebSocketParseResult WebSocket::Read(std::string* message) {
   if (closed_)
-    return FRAME_CLOSE;
+    return WebSocketParseResult::FRAME_CLOSE;
 
   if (!encoder_) {
     // RFC6455, section 4.1 says "Once the client's opening handshake has been
@@ -112,17 +113,17 @@ WebSocket::ParseResult WebSocket::Read(std::string* message) {
     // a server handshake. Either way, the client clearly couldn't have gotten
     // a proper server handshake, so error out, especially since this method
     // can't proceed without an |encoder_|.
-    return FRAME_ERROR;
+    return WebSocketParseResult::FRAME_ERROR;
   }
 
-  ParseResult result = FRAME_OK_MIDDLE;
+  WebSocketParseResult result = WebSocketParseResult::FRAME_OK_MIDDLE;
   HttpConnection::ReadIOBuffer* read_buf = connection_->read_buf();
-  std::string_view frame(read_buf->StartOfBuffer(), read_buf->GetSize());
+  std::string_view frame = base::as_string_view(read_buf->readable_bytes());
   int bytes_consumed = 0;
   result = encoder_->DecodeFrame(frame, &bytes_consumed, message);
   read_buf->DidConsume(bytes_consumed);
 
-  if (result == FRAME_CLOSE) {
+  if (result == WebSocketParseResult::FRAME_CLOSE) {
     // The current websocket implementation does not initiate the Close
     // handshake before closing the connection.
     // Therefore the received Close frame most likely belongs to the client that
@@ -142,9 +143,9 @@ WebSocket::ParseResult WebSocket::Read(std::string* message) {
     closed_ = true;
   }
 
-  if (result == FRAME_PING) {
+  if (result == WebSocketParseResult::FRAME_PING) {
     if (!traffic_annotation_)
-      return FRAME_ERROR;
+      return WebSocketParseResult::FRAME_ERROR;
     Send(*message, WebSocketFrameHeader::kOpCodePong, *traffic_annotation_);
   }
   return result;
@@ -167,7 +168,7 @@ void WebSocket::Send(std::string_view message,
 
     default:
       // Only Pong and Text frame types are supported.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   server_->SendRaw(connection_->id(), encoded, traffic_annotation);
 }

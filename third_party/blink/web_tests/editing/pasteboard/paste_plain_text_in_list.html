@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<body>
+  <div contenteditable="true">
+    <ol id="target"><li></li></ol>
+  </div>
+  <textarea id="source">a
+b</textarea>
+</body>
+<script>
+  const target = document.getElementById("target");
+  const source = document.getElementById("source");
+  function pastePlainTextInList(collapseAnchor,offset, expectedHTML){
+    const selection = document.getSelection();
+    source.select();
+    document.execCommand("copy");
+    selection.collapse(collapseAnchor, offset);
+    document.execCommand("paste");
+    assert_equals(
+      target.innerHTML,
+      expectedHTML
+    );
+    target.innerHTML = "<li>Hello</li>";
+  }
+  test(() => {
+    pastePlainTextInList(target.firstChild,0, "<li>a</li><li>b</li>");
+  }, "Paste plain text in empty list");
+
+  test(() => {
+    pastePlainTextInList(target.firstChild.firstChild, 5,
+      "<li>Hello</li><li>a</li><li>b</li>");
+  }, "Paste plain text after Hello");
+  test(() => {
+    pastePlainTextInList(target.firstChild.firstChild, 0,
+      "<li>a</li><li>b</li><li>Hello</li>");
+  }, "Paste plain text before Hello");
+  test(() => {
+    pastePlainTextInList(target.firstChild.firstChild, 3,
+      "<li>Hel</li><li>a</li><li>b</li><li>lo</li>");
+  }, "Paste plain text between Hello");
+</script>

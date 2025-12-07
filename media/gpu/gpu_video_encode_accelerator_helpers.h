@@ -67,6 +67,25 @@ AllocateBitrateForDefaultEncodingWithBitrates(
     const std::vector<uint32_t>& spatial_layer_bitrates,
     const size_t num_temporal_layers,
     const bool uses_vbr);
+
+VideoBitrateAllocation MEDIA_GPU_EXPORT
+BitrateToBitrateAllocation(const Bitrate& bitrate);
+
+class MEDIA_GPU_EXPORT VEAEncodingLatencyMetricsHelper {
+ public:
+  explicit VEAEncodingLatencyMetricsHelper(const std::string& uma_prefix,
+                                           VideoCodec codec);
+  VEAEncodingLatencyMetricsHelper() = delete;
+  ~VEAEncodingLatencyMetricsHelper();
+
+  void EncodeOneFrame(bool is_key_frame, base::TimeDelta start_time);
+
+ private:
+  const std::string uma_name_;
+  uint32_t frame_count_ = 0;
+  int64_t total_encode_time_ms_ = 0;
+};
+
 }  // namespace media
 
 #endif  // MEDIA_GPU_GPU_VIDEO_ENCODE_ACCELERATOR_HELPERS_H_

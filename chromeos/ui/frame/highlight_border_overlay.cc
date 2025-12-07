@@ -7,10 +7,13 @@
 #include <algorithm>
 #include <map>
 
+#include "base/check.h"
 #include "base/memory/raw_ptr.h"
+#include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/frame_utils.h"
+#include "chromeos/ui/frame/highlight_border_overlay_delegate.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -96,14 +99,30 @@ gfx::ImageSkia GetHighlightBorderImageMatching(
   return iterator->second;
 }
 
+int GetCornerRadius(const aura::Window* window,
+                    HighlightBorderOverlayDelegate* delegate) {
+  auto window_radii =
+      window->GetProperty(aura::client::kWindowRoundedCornersKey);
+  const bool should_rounded_border =
+      delegate ? delegate->ShouldRoundHighlightBorderForWindow(window) : true;
+  if (window_radii && should_rounded_border) {
+    return window_radii->upper_left();
+  }
+
+  return 0;
+}
+
 }  // namespace
 
-HighlightBorderOverlay::HighlightBorderOverlay(views::Widget* widget)
+HighlightBorderOverlay::HighlightBorderOverlay(
+    views::Widget* widget,
+    std::unique_ptr<HighlightBorderOverlayDelegate> delegate)
     : layer_(ui::LAYER_NINE_PATCH),
       widget_(widget),
-      window_(widget->GetNativeWindow()) {
-  rounded_corner_radius_ =
-      std::max(0, window_->GetProperty(aura::client::kWindowCornerRadiusKey));
+      window_(widget->GetNativeWindow()),
+      delegate_(std::move(delegate)) {
+  rounded_corner_radius_ = GetCornerRadius(window_, delegate_.get());
+  layer_.SetName("HighlightBorderOverlay");
   layer_.SetFillsBoundsOpaquely(false);
 
   UpdateNinePatchLayer();
@@ -150,14 +169,19 @@ void HighlightBorderOverlay::OnWindowPropertyChanged(aura::Window* window,
 
   // We need to update the highlight border radius to match the radius of the
   // frame.
-  if (key == aura::client::kWindowCornerRadiusKey) {
-    const int corner_radius =
-        std::max(0, window_->GetProperty(aura::client::kWindowCornerRadiusKey));
+  if (chromeos::CanPropertyEffectWindowRoundedCorners(key)) {
+    const int corner_radius = GetCornerRadius(window_, delegate_.get());
     if (rounded_corner_radius_ != corner_radius) {
       rounded_corner_radius_ = corner_radius;
       UpdateNinePatchLayer();
     }
+
+    return;
+  }
+
+  if (key == chromeos::kWindowStateTypeKey) {
     UpdateLayerVisibilityAndBounds();
+    return;
   }
 }
 
@@ -184,7 +208,7 @@ void HighlightBorderOverlay::UpdateLayerVisibilityAndBounds() {
   layer_bounds.Inset(-gfx::Insets(views::kHighlightBorderThickness));
 
   // TabletState might be nullptr in some tests.
-  const bool in_tablet_mode = display::Screen::GetScreen()->InTabletMode();
+  const bool in_tablet_mode = display::Screen::Get()->InTabletMode();
   const auto window_state_type =
       window_->GetProperty(chromeos::kWindowStateTypeKey);
 

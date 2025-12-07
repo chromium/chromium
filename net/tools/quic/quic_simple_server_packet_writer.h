@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_connection.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packet_writer.h"
@@ -40,7 +39,7 @@ class QuicSimpleServerPacketWriter : public quic::QuicPacketWriter {
   quic::WriteResult WritePacket(
       const char* buffer,
       size_t buf_len,
-      const quic::QuicIpAddress& self_address,
+      const quiche::QuicheIpAddress& self_address,
       const quic::QuicSocketAddress& peer_address,
       quic::PerPacketOptions* options,
       const quic::QuicPacketWriterParams& params) override;
@@ -57,7 +56,7 @@ class QuicSimpleServerPacketWriter : public quic::QuicPacketWriter {
   bool IsBatchMode() const override;
   bool SupportsEcn() const override;
   quic::QuicPacketBuffer GetNextWriteLocation(
-      const quic::QuicIpAddress& self_address,
+      const quiche::QuicheIpAddress& self_address,
       const quic::QuicSocketAddress& peer_address) override;
   quic::WriteResult Flush() override;
 

@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_BROWSER_SWITCHER_BROWSER_SWITCHER_NAVIGATION_THROTTLE_H_
 #define CHROME_BROWSER_BROWSER_SWITCHER_BROWSER_SWITCHER_NAVIGATION_THROTTLE_H_
 
-#include "content/public/browser/navigation_throttle.h"
+namespace content {
+class NavigationThrottleRegistry;
+}  // namespace content
 
 namespace browser_switcher {
 
@@ -19,9 +21,8 @@ class BrowserSwitcherNavigationThrottle {
   BrowserSwitcherNavigationThrottle& operator=(
       const BrowserSwitcherNavigationThrottle&) = delete;
 
-  // Creates a |NavigationThrottle| if needed for the navigation.
-  static std::unique_ptr<content::NavigationThrottle> MaybeCreateThrottleFor(
-      content::NavigationHandle* navigation);
+  // Creates a `NavigationThrottle` if needed for the navigation.
+  static void MaybeCreateAndAdd(content::NavigationThrottleRegistry& registry);
 };
 
 }  // namespace browser_switcher

@@ -31,23 +31,26 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_THEME_ENGINE_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_THEME_ENGINE_H_
 
-#include <map>
 #include <optional>
+#include <variant>
 
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/css/forced_colors.h"
-#include "third_party/blink/public/mojom/frame/color_scheme.mojom-shared.h"
+#include "third_party/blink/public/mojom/css/preferred_contrast.mojom-forward.h"
+#include "third_party/blink/public/mojom/frame/color_scheme.mojom-forward.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/color/color_provider_utils.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace cc {
 class PaintCanvas;
+}
+
+namespace ui {
+class ColorProvider;
 }
 
 namespace blink {
@@ -60,8 +63,6 @@ class WebThemeEngine {
     kStateHover,
     kStateNormal,
     kStatePressed,
-    kStateFocused,
-    kStateReadonly,
   };
 
   // The UI part which is being accessed.
@@ -87,21 +88,6 @@ class WebThemeEngine {
     kPartSliderThumb,
     kPartInnerSpinButton,
     kPartProgressBar
-  };
-
-  enum class SystemThemeColor {
-    kNotSupported,
-    kButtonFace,
-    kButtonText,
-    kGrayText,
-    kHighlight,
-    kHighlightText,
-    kHotlight,
-    kMenuHighlight,
-    kScrollbar,
-    kWindow,
-    kWindowText,
-    kMaxValue = kWindowText,
   };
 
   // Extra parameters for drawing the PartScrollbarHorizontalTrack and
@@ -193,6 +179,7 @@ class WebThemeEngine {
   // Extra parameters for scrollbar thumb.
   struct ScrollbarThumbExtraParams {
     std::optional<SkColor> thumb_color;
+    std::optional<SkColor> track_color;
     bool is_thumb_minimal_mode = false;
     bool is_web_test = false;
   };
@@ -227,18 +214,18 @@ class WebThemeEngine {
   };
 #endif
 
-  using ExtraParams = absl::variant<ScrollbarTrackExtraParams,
-                                    ButtonExtraParams,
-                                    TextFieldExtraParams,
-                                    MenuListExtraParams,
-                                    SliderExtraParams,
-                                    InnerSpinButtonExtraParams,
-                                    ProgressBarExtraParams,
-                                    ScrollbarThumbExtraParams,
+  using ExtraParams = std::variant<ScrollbarTrackExtraParams,
+                                   ButtonExtraParams,
+                                   TextFieldExtraParams,
+                                   MenuListExtraParams,
+                                   SliderExtraParams,
+                                   InnerSpinButtonExtraParams,
+                                   ProgressBarExtraParams,
+                                   ScrollbarThumbExtraParams,
 #if BUILDFLAG(IS_MAC)
-                                    ScrollbarExtraParams,
+                                   ScrollbarExtraParams,
 #endif
-                                    ScrollbarButtonExtraParams>;
+                                   ScrollbarButtonExtraParams>;
 
   virtual ~WebThemeEngine() {}
 
@@ -272,8 +259,6 @@ class WebThemeEngine {
     // NativeTheme so these fields are unused in non-Android WebThemeEngines.
   }
 
-  virtual bool IsFluentScrollbarEnabled() const { return false; }
-  virtual bool IsFluentOverlayScrollbarEnabled() const { return false; }
   virtual int GetPaintedScrollbarTrackInset() const { return 0; }
   virtual gfx::Insets GetScrollbarSolidColorThumbInsets(Part) const {
     return gfx::Insets();
@@ -283,7 +268,7 @@ class WebThemeEngine {
   virtual SkColor4f GetScrollbarThumbColor(State,
                                            const ExtraParams*,
                                            const ui::ColorProvider*) const {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // Paint the given the given theme part.
@@ -293,8 +278,9 @@ class WebThemeEngine {
       State,
       const gfx::Rect&,
       const ExtraParams*,
-      blink::mojom::ColorScheme,
-      bool in_forced_colors,
+      bool,
+      mojom::ColorScheme,
+      mojom::PreferredContrast,
       const ui::ColorProvider*,
       const std::optional<SkColor>& accent_color = std::nullopt) {}
 

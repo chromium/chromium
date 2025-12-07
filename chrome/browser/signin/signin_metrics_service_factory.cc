@@ -3,16 +3,15 @@
 // found in the LICENSE file.
 #include "chrome/browser/signin/signin_metrics_service_factory.h"
 
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/signin/core/browser/signin_metrics_service.h"
 
 SigninMetricsServiceFactory::SigninMetricsServiceFactory()
-    : ProfileKeyedServiceFactory("SigninMetricsHelper",
-                                 ProfileSelections::Builder()
-                                     .WithAshInternals(ProfileSelection::kNone)
-                                     .Build()) {
+    : ProfileKeyedServiceFactory("SigninMetricsHelper") {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 
@@ -31,11 +30,13 @@ SigninMetricsServiceFactory* SigninMetricsServiceFactory::GetInstance() {
   return instance.get();
 }
 
-KeyedService* SigninMetricsServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SigninMetricsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new SigninMetricsService(
-      *IdentityManagerFactory::GetForProfile(profile), *profile->GetPrefs());
+  return std::make_unique<SigninMetricsService>(
+      *IdentityManagerFactory::GetForProfile(profile), *profile->GetPrefs(),
+      g_browser_process->active_primary_accounts_metrics_recorder());
 }
 
 bool SigninMetricsServiceFactory::ServiceIsCreatedWithBrowserContext() const {

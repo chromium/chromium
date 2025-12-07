@@ -4,17 +4,22 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/policy/policy_constants.h"
-#import "components/search_engines/prepopulated_engines.h"
+#import "components/regional_capabilities/regional_capabilities_switches.h"
+#import "components/regional_capabilities/regional_capabilities_test_utils.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #import "components/search_engines/search_engines_switches.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/test/signin_matchers.h"
+#import "ios/chrome/browser/first_run/ui_bundled/first_run_app_interface.h"
+#import "ios/chrome/browser/first_run/ui_bundled/first_run_test_case_base.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
-#import "ios/chrome/browser/first_run/ui_bundled/first_run_test_case_base.h"
-#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_constants.h"
-#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_earl_grey_ui_test_util.h"
-#import "ios/chrome/browser/ui/settings/settings_app_interface.h"
-#import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
+#import "ios/chrome/browser/search_engine_choice/test/search_engine_choice_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/search_engine_choice/ui/search_engine_choice_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_app_interface.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -22,6 +27,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 // Tests first run stages with search engine choice
@@ -37,10 +43,24 @@
   config.additional_args.push_back(
       "--" + std::string(switches::kSearchEngineChoiceCountry) + "=" +
       switches::kEeaListCountryOverride);
-  config.features_enabled.push_back(switches::kSearchEngineChoiceTrigger);
   config.additional_args.push_back(
       "--" + std::string(switches::kForceSearchEngineChoiceScreen));
   config.additional_args.push_back("true");
+  /// Disable post FRE actions so the test cases could open Settings sooner.
+  config.additional_args.push_back(
+      "--disable-features=UpdatedFirstRunSequence");
+  config.additional_args.push_back(
+      "--disable-features=AnimatedDefaultBrowserPromoInFRE");
+
+  if ([self isRunningTest:@selector
+            (testNoDefaultBrowserPromoAfterSearchEngineChoiceScreen)]) {
+    config.additional_args.push_back(
+        "--enable-features=SkipDefaultBrowserPromoInFirstRun");
+  } else {
+    config.additional_args.push_back(
+        "--disable-features=SkipDefaultBrowserPromoInFirstRun");
+  }
+
   return config;
 }
 
@@ -51,10 +71,10 @@
   [SettingsAppInterface resetSearchEngine];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   // Reset the search engine for any other tests.
   [SettingsAppInterface resetSearchEngine];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - Tests
@@ -64,8 +84,8 @@
 // scrolls down and that it correctly sets the default search engine.
 - (void)testSearchEngineChoiceScreenSelectThenScroll {
   // Skip sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::PromoStyleSecondaryActionButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               ButtonStackSecondaryButton()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -96,7 +116,7 @@
       assertWithMatcher:grey_nil()];
 
   [SearchEngineChoiceEarlGreyUI confirmSearchEngineChoiceScreen];
-  [[self class] dismissDefaultBrowserAndOmniboxPositionSelectionScreens];
+  [[self class] dismissDefaultBrowserAndRemainingScreens];
   [SearchEngineChoiceEarlGreyUI
       verifyDefaultSearchEngineSetting:searchEngineToSelect];
 }
@@ -106,8 +126,8 @@
 // search engine and that it correctly sets the default search engine.
 - (void)testSearchEngineChoiceScreenScrollThenSelect {
   // Skip sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::PromoStyleSecondaryActionButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               ButtonStackSecondaryButton()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -141,7 +161,7 @@
                               amount:300];
   [SearchEngineChoiceEarlGreyUI confirmSearchEngineChoiceScreen];
 
-  [[self class] dismissDefaultBrowserAndOmniboxPositionSelectionScreens];
+  [[self class] dismissDefaultBrowserAndRemainingScreens];
   [SearchEngineChoiceEarlGreyUI
       verifyDefaultSearchEngineSetting:searchEngineToSelect];
 }
@@ -162,13 +182,13 @@
   policy_test_utils::MergePolicy(true,
                                  policy::key::kDefaultSearchProviderEnabled);
   // Skip sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::PromoStyleSecondaryActionButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               ButtonStackSecondaryButton()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
   // Dismiss the default browser screen.
-  [[self class] dismissDefaultBrowserAndOmniboxPositionSelectionScreens];
+  [[self class] dismissDefaultBrowserAndRemainingScreens];
   // Open the default search engine settings menu.
   [ChromeEarlGreyUI openSettingsMenu];
   // Verify that the correct search engine is selected. The enterprise search
@@ -196,27 +216,23 @@
   NSString* const eventHistogram =
       @(search_engines::kSearchEngineChoiceScreenEventsHistogram);
   // Skip sign-in.
-  GREYAssertNil([MetricsAppInterface expectTotalCount:0
-                                         forHistogram:eventHistogram],
-                @"Failed to record event histogram");
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::PromoStyleSecondaryActionButtonMatcher()
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface expectTotalCount:0 forHistogram:eventHistogram]);
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               ButtonStackSecondaryButton()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
   // Check that the choice screen is shown
   [SearchEngineChoiceEarlGreyUI verifySearchEngineChoiceScreenIsDisplayed];
-  GREYAssertNil([MetricsAppInterface expectTotalCount:1
-                                         forHistogram:eventHistogram],
-                @"Failed to record event histogram");
-  GREYAssertNil(
-      [MetricsAppInterface
-           expectCount:1
-             forBucket:static_cast<int>(
-                           search_engines::SearchEngineChoiceScreenEvents::
-                               kFreChoiceScreenWasDisplayed)
-          forHistogram:eventHistogram],
-      @"Failed to record event histogram");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface expectTotalCount:1 forHistogram:eventHistogram]);
+  chrome_test_util::GREYAssertErrorNil([MetricsAppInterface
+       expectCount:1
+         forBucket:static_cast<int>(
+                       search_engines::SearchEngineChoiceScreenEvents::
+                           kFreChoiceScreenWasDisplayed)
+      forHistogram:eventHistogram]);
   // Scroll down and open the Learn More dialog.
   id<GREYMatcher> learnMoreLinkMatcher = grey_allOf(
       grey_accessibilityLabel(@"Learn more"), grey_sufficientlyVisible(), nil);
@@ -228,17 +244,14 @@
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
                       grey_accessibilityID(
                           kSearchEngineChoiceLearnMoreAccessibilityIdentifier)];
-  GREYAssertNil([MetricsAppInterface expectTotalCount:2
-                                         forHistogram:eventHistogram],
-                @"Failed to record event histogram");
-  GREYAssertNil(
-      [MetricsAppInterface
-           expectCount:1
-             forBucket:static_cast<int>(
-                           search_engines::SearchEngineChoiceScreenEvents::
-                               kFreLearnMoreWasDisplayed)
-          forHistogram:eventHistogram],
-      @"Failed to record event histogram");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface expectTotalCount:2 forHistogram:eventHistogram]);
+  chrome_test_util::GREYAssertErrorNil([MetricsAppInterface
+       expectCount:1
+         forBucket:static_cast<int>(
+                       search_engines::SearchEngineChoiceScreenEvents::
+                           kFreLearnMoreWasDisplayed)
+      forHistogram:eventHistogram]);
   // Close the Learn More dialog.
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
@@ -256,18 +269,87 @@
   [[[EarlGrey selectElementWithMatcher:continueButtonMatcher]
       assertWithMatcher:grey_notNil()] performAction:grey_tap()];
   [SearchEngineChoiceEarlGreyUI confirmSearchEngineChoiceScreen];
-  GREYAssertNil([MetricsAppInterface expectTotalCount:3
-                                         forHistogram:eventHistogram],
-                @"Failed to record event histogram");
-  GREYAssertNil(
-      [MetricsAppInterface
-           expectCount:1
-             forBucket:static_cast<int>(
-                           search_engines::SearchEngineChoiceScreenEvents::
-                               kFreDefaultWasSet)
-          forHistogram:eventHistogram],
-      @"Failed to record event histogram");
-  [[self class] dismissDefaultBrowserAndOmniboxPositionSelectionScreens];
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface expectTotalCount:3 forHistogram:eventHistogram]);
+  chrome_test_util::GREYAssertErrorNil([MetricsAppInterface
+       expectCount:1
+         forBucket:static_cast<int>(
+                       search_engines::SearchEngineChoiceScreenEvents::
+                           kFreDefaultWasSet)
+      forHistogram:eventHistogram]);
+  [[self class] dismissDefaultBrowserAndRemainingScreens];
+}
+
+// Tests that incognito can be forced through the FRE with search engine screen.
+- (void)testIncognitoForcedByPolicy {
+  // Configure the policy to force sign-in.
+  [self relaunchAppWithPolicyKey:policy::key::kIncognitoModeAvailability
+                  xmlPolicyValue:"<integer>2</integer>"];
+
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  GREYAssertTrue(
+      [SigninEarlGrey isIdentityAdded:fakeIdentity],
+      @"Identity not added by kSignInAtStartup flag, in "
+      @"`relaunchAppWithPolicyKey:xmlPolicyValue:`, during the relaunch.");
+
+  // Verify 2 steps FRE.
+  [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
+            FRESigninIntentSigninWithPolicy];
+  // Accept sign-in.
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               ButtonStackPrimaryButton()
+                      scrollViewIdentifier:
+                          kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  // Accept sync.
+  [self acceptSyncOrHistory];
+  // Check that UMA is on.
+  GREYAssertTrue(
+      [FirstRunAppInterface isUMACollectionEnabled],
+      @"kMetricsReportingEnabled pref was unexpectedly false by default.");
+  // Check signed in.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+  // Select a search engine.
+  NSString* searchEngineToSelect = [SearchEngineChoiceEarlGreyUI
+      searchEngineNameWithPrepopulatedEngine:TemplateURLPrepopulateData::bing];
+  [SearchEngineChoiceEarlGreyUI
+      selectSearchEngineCellWithName:searchEngineToSelect
+                     scrollDirection:kGREYDirectionDown
+                              amount:50];
+  // Tap on the Continue button. This scrolls the table down to the bottom.
+  id<GREYMatcher> continueButtonMatcher =
+      grey_accessibilityID(kSearchEngineContinueButtonIdentifier);
+  [[[EarlGrey selectElementWithMatcher:continueButtonMatcher]
+      assertWithMatcher:grey_notNil()] performAction:grey_tap()];
+  [SearchEngineChoiceEarlGreyUI confirmSearchEngineChoiceScreen];
+}
+
+// Tests that the Default Browser Promo is not shown in the EEA region if
+// `kSkipDefaultBrowserInFirstRun` is enabled.
+- (void)testNoDefaultBrowserPromoAfterSearchEngineChoiceScreen {
+  // Skip sign-in.
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               ButtonStackSecondaryButton()
+                      scrollViewIdentifier:
+                          kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+
+  // Select a search engine.
+  NSString* searchEngineToSelect = [SearchEngineChoiceEarlGreyUI
+      searchEngineNameWithPrepopulatedEngine:TemplateURLPrepopulateData::bing];
+  [SearchEngineChoiceEarlGreyUI
+      selectSearchEngineCellWithName:searchEngineToSelect
+                     scrollDirection:kGREYDirectionDown
+                              amount:50];
+
+  // Tap on the Continue button. This scrolls the table down to the bottom.
+  id<GREYMatcher> continueButtonMatcher =
+      grey_accessibilityID(kSearchEngineContinueButtonIdentifier);
+  [[[EarlGrey selectElementWithMatcher:continueButtonMatcher]
+      assertWithMatcher:grey_notNil()] performAction:grey_tap()];
+
+  // Verify that the Default Browser Promo doesn't appear.
+  [self verifyDefaultBrowserNotDisplayed];
 }
 
 @end

@@ -10,6 +10,7 @@
 
 #include <stddef.h>
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 
@@ -36,6 +37,20 @@ class SlopBucket final {
  public:
   using PassKey = base::PassKey<SlopBucket>;
 
+  // Chunk allocation errors for UMA.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(ChunkAllocationFailedReason)
+  enum ChunkAllocationFailedReason {
+    kOK = 0,
+    kDisabled = 1,
+    kMaxChunksPerRequest = 2,
+    kMaxChunksGlobal = 3,
+    kMaxValue = kMaxChunksGlobal
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/network/enums.xml:SlopBucketChunkAllocationFailedReason)
+
   // Returns a SlopBucket object for the request to use if it is eligible. The
   // returned SlopBucket object must be destroyed before `for_request`.
   static std::unique_ptr<SlopBucket> RequestSlopBucket(
@@ -60,14 +75,14 @@ class SlopBucket final {
   // must be informed by passing the value of `bytes_read` to this function.
   void OnReadCompleted(int bytes_read);
 
-  // Writes up to `max` cached bytes into `buffer`, and returns the number of
-  // bytes written. The bytes will be removed from the bucket. If the return
+  // Writes up cached bytes into `buffer` up to its size, and returns the number
+  // of bytes written. The bytes will be removed from the bucket. If the return
   // value is zero, then the bucket was empty. If the return value is less than
-  // `max`, then the bucket is now empty. Once the bucket is empty it will not
-  // become non-empty until there is another call to AttemptRead() or
-  // OnReadCompleted(). If the return value is `max`, there may or may not still
-  // be bytes remaining in the bucket.
-  size_t Consume(void* buffer, size_t max);
+  // `buffer.size()`, then the bucket is now empty. Once the bucket is empty it
+  // will not become non-empty until there is another call to AttemptRead() or
+  // OnReadCompleted(). If the return value is `buffer.size`, there may or may
+  // not still be bytes remaining in the bucket.
+  size_t Consume(base::span<uint8_t> buffer);
 
   // True if we are currently reading from `request_`.
   bool read_in_progress() const { return read_in_progress_; }
@@ -92,7 +107,7 @@ class SlopBucket final {
 
   // To make it easy for the compiler to optimize, the part of Consume() that
   // copies data is split off into a separate method.
-  size_t ConsumeSlowPath(void* buffer, size_t max)
+  size_t ConsumeSlowPath(base::span<uint8_t> buffer)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Attempts to allocates a new chunk. On success, the new chunk is pushed onto
@@ -104,6 +119,10 @@ class SlopBucket final {
 
   // The largest size reached by `chunks_`. For metrics.
   size_t peak_chunks_allocated_ = 0;
+
+  // The first Chunk allocation blocked reason if it has.
+  std::optional<ChunkAllocationFailedReason>
+      first_chunk_allocation_failed_reason_;
 
   // The URLRequest to which reads will be issued.
   const raw_ptr<net::URLRequest> request_;

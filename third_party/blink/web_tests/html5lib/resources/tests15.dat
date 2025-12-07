@@ -1,8 +1,8 @@
 #data
 <!DOCTYPE html><p><b><i><u></p> <p>X
 #errors
-Line: 1 Col: 31 Unexpected end tag (p). Ignored.
-Line: 1 Col: 36 Expected closing tag. Unexpected end of file.
+(1,31): unexpected-end-tag
+(1,36): expected-closing-tag-but-got-eof
 #document
 | <!DOCTYPE html>
 | <html>
@@ -23,9 +23,9 @@ Line: 1 Col: 36 Expected closing tag. Unexpected end of file.
 <p><b><i><u></p>
 <p>X
 #errors
-Line: 1 Col: 3 Unexpected start tag (p). Expected DOCTYPE.
-Line: 1 Col: 16 Unexpected end tag (p). Ignored.
-Line: 2 Col: 4 Expected closing tag. Unexpected end of file.
+(1,3): expected-doctype-but-got-start-tag
+(1,16): unexpected-end-tag
+(2,4): expected-closing-tag-but-got-eof
 #document
 | <html>
 |   <head>
@@ -45,7 +45,8 @@ Line: 2 Col: 4 Expected closing tag. Unexpected end of file.
 #data
 <!doctype html></html> <head>
 #errors
-Line: 1 Col: 22 Unexpected end tag (html) after the (implied) root element.
+(1,29): expected-eof-but-got-start-tag
+(1,29): unexpected-start-tag-ignored
 #document
 | <!DOCTYPE html>
 | <html>
@@ -56,7 +57,7 @@ Line: 1 Col: 22 Unexpected end tag (html) after the (implied) root element.
 #data
 <!doctype html></body><meta>
 #errors
-Line: 1 Col: 22 Unexpected end tag (body) after the (implied) root element.
+(1,28): unexpected-start-tag-after-body
 #document
 | <!DOCTYPE html>
 | <html>
@@ -67,8 +68,7 @@ Line: 1 Col: 22 Unexpected end tag (body) after the (implied) root element.
 #data
 <html></html><!-- foo -->
 #errors
-Line: 1 Col: 6 Unexpected start tag (html). Expected DOCTYPE.
-Line: 1 Col: 13 Unexpected end tag (html) after the (implied) root element.
+(1,6): expected-doctype-but-got-start-tag
 #document
 | <html>
 |   <head>
@@ -78,7 +78,7 @@ Line: 1 Col: 13 Unexpected end tag (html) after the (implied) root element.
 #data
 <!doctype html></body><title>X</title>
 #errors
-Line: 1 Col: 22 Unexpected end tag (body) after the (implied) root element.
+(1,29): unexpected-start-tag-after-body
 #document
 | <!DOCTYPE html>
 | <html>
@@ -90,8 +90,9 @@ Line: 1 Col: 22 Unexpected end tag (body) after the (implied) root element.
 #data
 <!doctype html><table> X<meta></table>
 #errors
-Line: 1 Col: 24 Unexpected non-space characters in table context caused voodoo mode.
-Line: 1 Col: 30 Unexpected start tag (meta) in table context caused voodoo mode.
+(1,23): foster-parenting-character
+(1,24): foster-parenting-character
+(1,30): foster-parenting-start-character
 #document
 | <!DOCTYPE html>
 | <html>
@@ -104,7 +105,8 @@ Line: 1 Col: 30 Unexpected start tag (meta) in table context caused voodoo mode.
 #data
 <!doctype html><table> x</table>
 #errors
-Line: 1 Col: 24 Unexpected non-space characters in table context caused voodoo mode.
+(1,23): foster-parenting-character
+(1,24): foster-parenting-character
 #document
 | <!DOCTYPE html>
 | <html>
@@ -116,7 +118,9 @@ Line: 1 Col: 24 Unexpected non-space characters in table context caused voodoo m
 #data
 <!doctype html><table> x </table>
 #errors
-Line: 1 Col: 25 Unexpected non-space characters in table context caused voodoo mode.
+(1,23): foster-parenting-character
+(1,24): foster-parenting-character
+(1,25): foster-parenting-character
 #document
 | <!DOCTYPE html>
 | <html>
@@ -128,7 +132,8 @@ Line: 1 Col: 25 Unexpected non-space characters in table context caused voodoo m
 #data
 <!doctype html><table><tr> x</table>
 #errors
-Line: 1 Col: 28 Unexpected non-space characters in table context caused voodoo mode.
+(1,27): foster-parenting-character
+(1,28): foster-parenting-character
 #document
 | <!DOCTYPE html>
 | <html>
@@ -142,7 +147,7 @@ Line: 1 Col: 28 Unexpected non-space characters in table context caused voodoo m
 #data
 <!doctype html><table>X<style> <tr>x </style> </table>
 #errors
-Line: 1 Col: 23 Unexpected non-space characters in table context caused voodoo mode.
+(1,23): foster-parenting-character
 #document
 | <!DOCTYPE html>
 | <html>
@@ -157,8 +162,11 @@ Line: 1 Col: 23 Unexpected non-space characters in table context caused voodoo m
 #data
 <!doctype html><div><table><a>foo</a> <tr><td>bar</td> </tr></table></div>
 #errors
-Line: 1 Col: 30 Unexpected start tag (a) in table context caused voodoo mode.
-Line: 1 Col: 37 Unexpected end tag (a) in table context caused voodoo mode.
+(1,30): foster-parenting-start-tag
+(1,31): foster-parenting-character
+(1,32): foster-parenting-character
+(1,33): foster-parenting-character
+(1,37): foster-parenting-end-tag
 #document
 | <!DOCTYPE html>
 | <html>
@@ -178,14 +186,13 @@ Line: 1 Col: 37 Unexpected end tag (a) in table context caused voodoo mode.
 #data
 <frame></frame></frame><frameset><frame><frameset><frame></frameset><noframes></frameset><noframes>
 #errors
-6: Start tag seen without seeing a doctype first. Expected “<!DOCTYPE html>”.
-13: Stray start tag “frame”.
-21: Stray end tag “frame”.
-29: Stray end tag “frame”.
-39: “frameset” start tag after “body” already open.
-105: End of file seen inside an [R]CDATA element.
-105: End of file seen and there were open elements.
-XXX: These errors are wrong, please fix me!
+(1,7): expected-doctype-but-got-start-tag
+(1,7): unexpected-start-tag-ignored
+(1,15): unexpected-end-tag
+(1,23): unexpected-end-tag
+(1,33): unexpected-start-tag
+(1,99): expected-named-closing-tag-but-got-eof
+(1,99): eof-in-frameset
 #document
 | <html>
 |   <head>
@@ -199,7 +206,8 @@ XXX: These errors are wrong, please fix me!
 #data
 <!DOCTYPE html><object></html>
 #errors
-1: Expected closing tag. Unexpected end of file
+(1,30): expected-body-in-scope
+(1,30): expected-closing-tag-but-got-eof
 #document
 | <!DOCTYPE html>
 | <html>

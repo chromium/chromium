@@ -7,6 +7,7 @@ desc: |-
             If this policy is set to enabled or not set, the context menu item for your default search provider will be available.
 
             The policy value is only appled when the <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME">DefaultSearchProviderEnabled</ph> policy is enabled, and is not applicable otherwise.
+default: true
 example_value: true
 features:
   can_be_recommended: true

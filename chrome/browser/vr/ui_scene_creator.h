@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/vr/elements/ui_element_name.h"
-#include "ui/gfx/geometry/size_f.h"
 
 namespace vr {
 

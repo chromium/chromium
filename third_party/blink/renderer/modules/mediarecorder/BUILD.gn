@@ -5,7 +5,6 @@
 import("//build/buildflag_header.gni")
 import("//media/media_options.gni")
 import("//third_party/blink/renderer/modules/modules.gni")
-import("//third_party/libaom/options.gni")
 
 blink_modules_sources("mediarecorder") {
   sources = [
@@ -31,18 +30,13 @@ blink_modules_sources("mediarecorder") {
     "media_recorder_handler.h",
     "track_recorder.cc",
     "track_recorder.h",
-    "vea_encoder.cc",
-    "vea_encoder.h",
     "video_track_recorder.cc",
     "video_track_recorder.h",
-    "vpx_encoder.cc",
-    "vpx_encoder.h",
   ]
 
   deps = [
-    "//build:chromeos_buildflags",
     "//media",
-    "//media/gpu:gpu",
+    "//media/gpu",
     "//media/mojo/clients",
     "//media/mojo/mojom",
     "//third_party/blink/renderer/modules/mediastream",
@@ -50,17 +44,4 @@ blink_modules_sources("mediarecorder") {
     "//third_party/libyuv",
     "//third_party/opus",
   ]
-
-  if (media_use_openh264) {
-    sources += [
-      "h264_encoder.cc",
-      "h264_encoder.h",
-    ]
-
-    deps += [ "//third_party/openh264:encoder" ]
-  }
-
-  if (enable_libaom) {
-    deps += [ "//third_party/libaom" ]
-  }
 }

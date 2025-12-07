@@ -36,7 +36,8 @@ class PrintingRestrictionsPolicyHandlerTest : public testing::Test {
 
   void CheckValidPolicy(const std::string& policy_value) {
     std::optional<base::Value> printing_paper_size_default =
-        base::JSONReader::Read(policy_value);
+        base::JSONReader::Read(policy_value,
+                               base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(printing_paper_size_default.has_value());
     EXPECT_TRUE(CheckPolicy(printing_paper_size_default.value().Clone()));
     EXPECT_EQ(0U, errors_.size());
@@ -50,7 +51,8 @@ class PrintingRestrictionsPolicyHandlerTest : public testing::Test {
 
   void CheckInvalidPolicy(const std::string& policy_value) {
     std::optional<base::Value> printing_paper_size_default =
-        base::JSONReader::Read(policy_value);
+        base::JSONReader::Read(policy_value,
+                               base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(printing_paper_size_default.has_value());
     EXPECT_FALSE(CheckPolicy(printing_paper_size_default.value().Clone()));
     EXPECT_EQ(1U, errors_.size());

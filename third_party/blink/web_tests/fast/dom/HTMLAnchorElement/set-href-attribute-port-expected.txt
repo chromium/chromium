@@ -17,7 +17,7 @@ PASS a.href is 'https://www.mydomain.com/path/testurl.html?key=value'
 Set port to undefined
 PASS a.href is 'https://www.mydomain.com:8080/path/testurl.html?key=value'
 Set port to URL with foo: protocol
-FAIL a.href should be foo://bar:50/. Was foo://bar/.
+PASS a.href is 'foo://bar:50/'
 PASS successfullyParsed is true
 
 TEST COMPLETE

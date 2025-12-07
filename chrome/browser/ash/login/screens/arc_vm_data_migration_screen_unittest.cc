@@ -6,8 +6,6 @@
 
 #include <optional>
 
-#include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/arc_util.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/memory/raw_ptr.h"
@@ -34,8 +32,11 @@
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/time_format.h"
 
@@ -45,7 +46,7 @@ namespace {
 constexpr char kArcRemoveDataJobName[] = "arc_2dremove_2ddata";
 
 constexpr char kProfileName[] = "user@gmail.com";
-constexpr char kGaiaId[] = "1234567890";
+constexpr GaiaId::Literal kGaiaId("1234567890");
 
 constexpr uint64_t kDefaultAndroidDataSize = 8ULL << 30;
 
@@ -433,7 +434,7 @@ TEST_F(ArcVmDataMigrationScreenTest, StopArcVmFailureIsFatal) {
 
 TEST_F(ArcVmDataMigrationScreenTest, StopArcVmSuccess) {
   auto* fake_concierge_client = FakeConciergeClient::Get();
-  vm_tools::concierge::StopVmResponse stop_vm_response;
+  vm_tools::concierge::SuccessFailureResponse stop_vm_response;
   stop_vm_response.set_success(true);
   fake_concierge_client->set_stop_vm_response(stop_vm_response);
 

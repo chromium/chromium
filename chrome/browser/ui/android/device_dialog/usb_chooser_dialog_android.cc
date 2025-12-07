@@ -6,13 +6,13 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <utility>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
-#include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
@@ -79,9 +79,8 @@ UsbChooserDialogAndroid::CreateInternal(
   const auto origin = url::Origin::Create(
       permissions::PermissionUtil::GetLastCommittedOriginAsURL(
           render_frame_host->GetMainFrame()));
-  base::android::ScopedJavaLocalRef<jstring> origin_string =
-      base::android::ConvertUTF16ToJavaString(
-          env, url_formatter::FormatOriginForSecurityDisplay(origin));
+  std::u16string origin_string =
+      url_formatter::FormatOriginForSecurityDisplay(origin);
   SecurityStateTabHelper* helper =
       SecurityStateTabHelper::FromWebContents(web_contents);
   DCHECK(helper);
@@ -101,8 +100,9 @@ UsbChooserDialogAndroid::CreateInternal(
       std::move(create_java_dialog_callback)
           .Run(env, window_android, origin_string, helper->GetSecurityLevel(),
                j_profile_android, reinterpret_cast<intptr_t>(dialog.get())));
-  if (dialog->java_dialog_.is_null())
+  if (dialog->java_dialog_.is_null()) {
     return nullptr;
+  }
 
   return dialog;
 }
@@ -123,8 +123,9 @@ UsbChooserDialogAndroid::~UsbChooserDialogAndroid() {
 }
 
 void UsbChooserDialogAndroid::OnOptionsInitialized() {
-  for (size_t i = 0; i < controller_->NumOptions(); ++i)
+  for (size_t i = 0; i < controller_->NumOptions(); ++i) {
     OnOptionAdded(i);
+  }
 
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_UsbChooserDialog_setIdleState(env, java_dialog_);
@@ -139,10 +140,7 @@ void UsbChooserDialogAndroid::OnOptionAdded(size_t index) {
   item_id_map_.insert(item_id_map_.begin() + index, item_id_str);
 
   std::u16string device_name = controller_->GetOption(index);
-  Java_UsbChooserDialog_addDevice(
-      env, java_dialog_,
-      base::android::ConvertUTF8ToJavaString(env, item_id_str),
-      base::android::ConvertUTF16ToJavaString(env, device_name));
+  Java_UsbChooserDialog_addDevice(env, java_dialog_, item_id_str, device_name);
 }
 
 void UsbChooserDialogAndroid::OnOptionRemoved(size_t index) {
@@ -152,29 +150,25 @@ void UsbChooserDialogAndroid::OnOptionRemoved(size_t index) {
   std::string item_id = item_id_map_[index];
   item_id_map_.erase(item_id_map_.begin() + index);
 
-  Java_UsbChooserDialog_removeDevice(
-      env, java_dialog_, base::android::ConvertUTF8ToJavaString(env, item_id));
+  Java_UsbChooserDialog_removeDevice(env, java_dialog_, item_id);
 }
 
 void UsbChooserDialogAndroid::OnOptionUpdated(size_t index) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void UsbChooserDialogAndroid::OnAdapterEnabledChanged(bool enabled) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void UsbChooserDialogAndroid::OnRefreshStateChanged(bool refreshing) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
-void UsbChooserDialogAndroid::OnItemSelected(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& item_id_jstring) {
-  std::string item_id =
-      base::android::ConvertJavaStringToUTF8(env, item_id_jstring);
-  auto it = base::ranges::find(item_id_map_, item_id);
-  CHECK(it != item_id_map_.end(), base::NotFatalUntil::M130);
+void UsbChooserDialogAndroid::OnItemSelected(JNIEnv* env,
+                                             std::string& item_id) {
+  auto it = std::ranges::find(item_id_map_, item_id);
+  CHECK(it != item_id_map_.end());
   controller_->Select(
       {static_cast<size_t>(std::distance(item_id_map_.begin(), it))});
   std::move(on_close_).Run();
@@ -193,3 +187,5 @@ void UsbChooserDialogAndroid::Cancel() {
   controller_->Cancel();
   std::move(on_close_).Run();
 }
+
+DEFINE_JNI(UsbChooserDialog)

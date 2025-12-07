@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/passwords/bubble_controllers/biometric_authentication_confirmation_bubble_controller.h"
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
@@ -41,6 +41,9 @@ std::u16string BiometricAuthenticationConfirmationBubbleController::GetTitle()
 #elif BUILDFLAG(IS_WIN)
   return l10n_util::GetStringUTF16(
       IDS_PASSWORD_MANAGER_BIOMETRIC_AUTHENTICATION_CONFIRMATION_TITLE_WIN);
+#elif BUILDFLAG(IS_CHROMEOS)
+  return l10n_util::GetStringUTF16(
+      IDS_PASSWORD_MANAGER_BIOMETRIC_AUTHENTICATION_CONFIRMATION_TITLE_CHROMEOS);
 #else
   NOTIMPLEMENTED();
 #endif

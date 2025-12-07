@@ -7,7 +7,9 @@
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
+#include "components/country_codes/country_codes.h"
 #include "components/search_engines/default_search_manager.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_data_util.h"
@@ -52,7 +54,7 @@ void ExpectSimilar(const TemplateURLData* expected,
   EXPECT_EQ(expected->safe_for_autoreplace, actual->safe_for_autoreplace);
   EXPECT_EQ(expected->input_encodings, actual->input_encodings);
   EXPECT_EQ(expected->alternate_urls, actual->alternate_urls);
-  EXPECT_EQ(expected->created_from_play_api, actual->created_from_play_api);
+  EXPECT_EQ(expected->regulatory_origin, actual->regulatory_origin);
 }
 
 void SetExtensionDefaultSearchInPrefs(
@@ -68,4 +70,42 @@ void RemoveExtensionDefaultSearchFromPrefs(
     sync_preferences::TestingPrefServiceSyncable* prefs) {
   prefs->RemoveExtensionPref(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName);
+}
+
+FakeSearchEngineChoiceServiceClient::FakeSearchEngineChoiceServiceClient(
+    country_codes::CountryId variations_country,
+    bool is_profile_eligible_for_dse_guest_propagation,
+    bool is_device_restore_detected_in_current_session,
+    bool does_choice_predate_device_restore)
+    : variations_country_(variations_country),
+      is_profile_eligible_for_dse_guest_propagation_(
+          is_profile_eligible_for_dse_guest_propagation),
+      is_device_restore_detected_in_current_session_(
+          is_device_restore_detected_in_current_session),
+      does_choice_predate_device_restore_(does_choice_predate_device_restore) {}
+
+FakeSearchEngineChoiceServiceClient::~FakeSearchEngineChoiceServiceClient() =
+    default;
+
+country_codes::CountryId
+FakeSearchEngineChoiceServiceClient::GetVariationsCountry() {
+  return variations_country_;
+}
+
+bool FakeSearchEngineChoiceServiceClient::
+    IsProfileEligibleForDseGuestPropagation() {
+  return is_profile_eligible_for_dse_guest_propagation_;
+}
+
+bool FakeSearchEngineChoiceServiceClient::
+    IsDeviceRestoreDetectedInCurrentSession() {
+  return is_device_restore_detected_in_current_session_;
+}
+
+bool FakeSearchEngineChoiceServiceClient::DoesChoicePredateDeviceRestore(
+    const search_engines::ChoiceCompletionMetadata& choice_metadata) {
+  if (restore_detection_time_.has_value()) {
+    return choice_metadata.timestamp < restore_detection_time_.value();
+  }
+  return does_choice_predate_device_restore_;
 }

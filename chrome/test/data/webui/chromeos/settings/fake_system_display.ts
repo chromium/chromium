@@ -49,12 +49,17 @@ export class FakeSystemDisplay implements SystemDisplayApi {
         let displays: DisplayUnitInfo[] = [];
         if (this.fakeDisplays.length > 0 &&
             this.fakeDisplays[0]!.mirroringSourceId) {
-          // When mirroring is enabled, send only the info for the display
-          // being mirrored.
+          // When mirroring is enabled, send the info for the displays not in
+          // destination.
           const display =
               this.getFakeDisplay_(this.fakeDisplays[0]!.mirroringSourceId);
           assert(display);
-          displays = [display];
+          for (const fakeDisplay of this.fakeDisplays) {
+            if (display.mirroringDestinationIds &&
+                !display.mirroringDestinationIds.includes(fakeDisplay.id)) {
+              displays.push(fakeDisplay);
+            }
+          }
         } else {
           displays = this.fakeDisplays.slice();
         }
@@ -112,44 +117,56 @@ export class FakeSystemDisplay implements SystemDisplayApi {
     });
   }
 
-  async setDisplayLayout(layouts: DisplayLayout[]): Promise<void> {
+  setDisplayLayout(layouts: DisplayLayout[]): Promise<void> {
     this.fakeLayouts = layouts;
+    return Promise.resolve();
   }
 
-  async setMirrorMode(info: MirrorModeInfo): Promise<void> {
+  setMirrorMode(info: MirrorModeInfo): Promise<void> {
     let mirroringSourceId = '';
+    let mirroringDestinationIds: string[] = [];
     if (info.mode === this.MirrorMode.NORMAL) {
       // Select the primary display as the mirroring source.
       for (const fakeDisplay of this.fakeDisplays) {
         if (fakeDisplay.isPrimary) {
           mirroringSourceId = fakeDisplay.id;
-          break;
+        } else {
+          mirroringDestinationIds.push(fakeDisplay.id);
         }
       }
+    } else if (info.mode === this.MirrorMode.MIXED) {
+      mirroringSourceId = info.mirroringSourceId as string;
+      mirroringDestinationIds = info.mirroringDestinationIds as string[];
     }
+
     for (const fakeDisplay of this.fakeDisplays) {
       fakeDisplay.mirroringSourceId = mirroringSourceId;
+      fakeDisplay.mirroringDestinationIds = mirroringDestinationIds;
     }
+    return Promise.resolve();
   }
 
   // The below method is overridden to provide TS compatibility for tests.
   // But this is an unused method and hence doesn't have any implementation.
   overscanCalibrationAdjust(_id: string): void {}
 
-  async overscanCalibrationStart(): Promise<void> {
+  overscanCalibrationStart(): Promise<void> {
     this.overscanCalibrationStartCalled++;
+    return Promise.resolve();
   }
 
-  async overscanCalibrationReset(): Promise<void> {
+  overscanCalibrationReset(): Promise<void> {
     this.overscanCalibrationResetCalled++;
+    return Promise.resolve();
   }
 
-  async overscanCalibrationComplete(): Promise<void> {
+  overscanCalibrationComplete(): Promise<void> {
     this.overscanCalibrationCompleteCalled++;
+    return Promise.resolve();
   }
 
-  async showNativeTouchCalibration(_id: string): Promise<boolean> {
-    return true;
+  showNativeTouchCalibration(_id: string): Promise<boolean> {
+    return Promise.resolve(true);
   }
 
   private getFakeDisplay_(id: string): DisplayUnitInfo|undefined {

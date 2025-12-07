@@ -62,9 +62,8 @@ PushNotificationServiceDesktopImpl::~PushNotificationServiceDesktopImpl() =
 void PushNotificationServiceDesktopImpl::ShutdownHandler() {
   // Shutdown() should come before and it removes us from the list of app
   // handlers of gcm::GCMDriver so this shouldn't ever been called.
-  NOTREACHED_IN_MIGRATION()
-      << "The Push Notification Service should have removed itself "
-         "from the list of app handlers before this could be called.";
+  NOTREACHED() << "The Push Notification Service should have removed itself "
+                  "from the list of app handlers before this could be called.";
 }
 
 void PushNotificationServiceDesktopImpl::OnStoreReset() {
@@ -96,13 +95,13 @@ void PushNotificationServiceDesktopImpl::OnMessagesDeleted(
 void PushNotificationServiceDesktopImpl::OnSendError(
     const std::string& app_id,
     const gcm::GCMClient::SendErrorDetails& send_error_details) {
-  NOTREACHED_IN_MIGRATION()
+  NOTREACHED()
       << "The Push Notification Service shouldn't have sent messages upstream";
 }
 void PushNotificationServiceDesktopImpl::OnSendAcknowledged(
     const std::string& app_id,
     const std::string& message_id) {
-  NOTREACHED_IN_MIGRATION()
+  NOTREACHED()
       << "The Push Notification Service shouldn't have sent messages upstream";
 }
 

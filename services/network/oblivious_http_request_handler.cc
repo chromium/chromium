@@ -6,15 +6,17 @@
 
 #include <algorithm>
 #include <array>
+#include <optional>
+#include <string>
 
 #include "base/i18n/time_formatting.h"
-#include "base/not_fatal_until.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_log_util.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "net/log/net_log_capture_mode.h"
@@ -57,6 +59,9 @@ class StatefulObliviousHttpClient {
     auto key_configs =
         quiche::ObliviousHttpKeyConfigs::ParseConcatenatedKeys(key_config_str);
     if (!key_configs.ok()) {
+      return std::nullopt;
+    }
+    if (key_configs->NumKeys() == 0) {
       return std::nullopt;
     }
     quiche::ObliviousHttpHeaderKeyConfig key_config =
@@ -109,13 +114,14 @@ std::string CreateAndSerializeBhttpMessage(
     const std::string& method,
     mojom::ObliviousHttpRequestBodyPtr request_body,
     net::HttpRequestHeaders::HeaderVector headers) {
-  std::string host_port = request_url.host();
+  std::string host_port = request_url.GetHost();
   if (request_url.has_port()) {
-    host_port += ":" + request_url.port();
+    host_port += ":" + request_url.GetPort();
   }
 
-  quiche::BinaryHttpRequest bhttp_request(
-      {method, request_url.scheme(), host_port, request_url.PathForRequest()});
+  quiche::BinaryHttpRequest bhttp_request({method, request_url.GetScheme(),
+                                           host_port,
+                                           request_url.PathForRequest()});
   bhttp_request.AddHeaderField({net::HttpRequestHeaders::kHost, host_port});
   // Date should be provided by the client to allow for server anti-replay
   // protections (according to the OHTTP spec).
@@ -268,7 +274,7 @@ void ObliviousHttpRequestHandler::OnDoneConstructingTrustTokenHelper(
   }
 
   auto state_iter = client_state_.find(id);
-  CHECK(state_iter != client_state_.end(), base::NotFatalUntil::M130);
+  CHECK(state_iter != client_state_.end());
 
   RequestState* state = state_iter->second.get();
   state->trust_token_helper = status_or_helper.TakeOrCrash();
@@ -296,7 +302,7 @@ void ObliviousHttpRequestHandler::ContinueHandlingRequest(
     std::optional<net::HttpRequestHeaders> headers,
     mojo::RemoteSetElementId id) {
   auto state_iter = client_state_.find(id);
-  CHECK(state_iter != client_state_.end(), base::NotFatalUntil::M130);
+  CHECK(state_iter != client_state_.end());
   RequestState* state = state_iter->second.get();
 
   std::string bhttp_payload = CreateAndSerializeBhttpMessage(
@@ -396,7 +402,7 @@ void ObliviousHttpRequestHandler::RespondWithError(
   mojom::ObliviousHttpClient* client = clients_.Get(id);
   auto state_iter = client_state_.find(id);
   DCHECK(client);
-  CHECK(state_iter != client_state_.end(), base::NotFatalUntil::M130);
+  CHECK(state_iter != client_state_.end());
   RequestState* state = state_iter->second.get();
   state->net_log.EndEvent(net::NetLogEventType::OBLIVIOUS_HTTP_REQUEST, [&] {
     base::Value::Dict params;
@@ -427,9 +433,9 @@ void ObliviousHttpRequestHandler::RespondWithError(
 
 void ObliviousHttpRequestHandler::OnRequestComplete(
     mojo::RemoteSetElementId id,
-    std::unique_ptr<std::string> response) {
+    std::optional<std::string> response) {
   auto state_iter = client_state_.find(id);
-  CHECK(state_iter != client_state_.end(), base::NotFatalUntil::M130);
+  CHECK(state_iter != client_state_.end());
 
   RequestState* state = state_iter->second.get();
   if (!response) {
@@ -445,7 +451,7 @@ void ObliviousHttpRequestHandler::OnRequestComplete(
   }
 
   auto maybe_payload =
-      state->ohttp_client->DecryptResponse(std::move(*response));
+      state->ohttp_client->DecryptResponse(std::move(response).value());
   if (!maybe_payload) {
     RespondWithError(id, net::ERR_INVALID_RESPONSE,
                      /*outer_response_error_code=*/std::nullopt);
@@ -518,7 +524,7 @@ void ObliviousHttpRequestHandler::NotifyComplete(
   mojom::ObliviousHttpClient* client = clients_.Get(id);
   auto state_iter = client_state_.find(id);
   DCHECK(client);
-  CHECK(state_iter != client_state_.end(), base::NotFatalUntil::M130);
+  CHECK(state_iter != client_state_.end());
   RequestState* state = state_iter->second.get();
   net::NetLogResponseHeaders(
       state->net_log, net::NetLogEventType::OBLIVIOUS_HTTP_RESPONSE_HEADERS,

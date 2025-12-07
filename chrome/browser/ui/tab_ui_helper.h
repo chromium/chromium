@@ -6,20 +6,31 @@
 #define CHROME_BROWSER_UI_TAB_UI_HELPER_H_
 
 #include <string>
+#include <vector>
 
-#include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
-#include "ui/base/models/image_model.h"
+#include "base/callback_list.h"
+#include "base/functional/callback_forward.h"
+#include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
+
+namespace tabs {
+class TabInterface;
+}
+
+namespace ui {
+class ImageModel;
+}  // namespace ui
+
+namespace content {
+class NavigationEntry;
+class Page;
+}
 
 // TabUIHelper is used by UI code to obtain the title and favicon for a
 // WebContents. The values returned by TabUIHelper differ from the WebContents
 // when the WebContents hasn't loaded.
-class TabUIHelper : public content::WebContentsObserver,
-                    public content::WebContentsUserData<TabUIHelper> {
+class TabUIHelper : public tabs::ContentsObservingTabFeature {
  public:
-  TabUIHelper(const TabUIHelper&) = delete;
-  TabUIHelper& operator=(const TabUIHelper&) = delete;
-
+  explicit TabUIHelper(tabs::TabInterface& tab);
   ~TabUIHelper() override;
 
   // Get the title of the tab. When the associated WebContents' title is empty,
@@ -33,10 +44,21 @@ class TabUIHelper : public content::WebContentsObserver,
   // Return true if the throbber should be hidden during a page load.
   bool ShouldHideThrobber() const;
 
-  // content::WebContentsObserver implementation
-  void DidStopLoading() override;
+  void SetWasActiveAtLeastOnce();
 
-  void set_was_active_at_least_once() { was_active_at_least_once_ = true; }
+  using TitleUpdatedCallbackList =
+      base::RepeatingCallbackList<void(std::u16string)>;
+  base::CallbackListSubscription AddTitleUpdatedCallback(
+      TitleUpdatedCallbackList::CallbackType callback);
+
+  // tabs::ContentsObservingTabFeature override:
+  void TitleWasSet(content::NavigationEntry* entry) override;
+  void DidStopLoading() override;
+  void OnVisibilityChanged(content::Visibility visiblity) override;
+#if !BUILDFLAG(IS_ANDROID)
+  void PrimaryPageChanged(content::Page& page) override;
+#endif
+
   void set_created_by_session_restore(bool created_by_session_restore) {
     created_by_session_restore_ = created_by_session_restore;
   }
@@ -45,14 +67,10 @@ class TabUIHelper : public content::WebContentsObserver,
   }
 
  private:
-  friend class content::WebContentsUserData<TabUIHelper>;
-
-  explicit TabUIHelper(content::WebContents* contents);
-
   bool was_active_at_least_once_ = false;
   bool created_by_session_restore_ = false;
 
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
+  TitleUpdatedCallbackList title_change_callbacks_;
 };
 
 #endif  // CHROME_BROWSER_UI_TAB_UI_HELPER_H_

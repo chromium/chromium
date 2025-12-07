@@ -18,13 +18,13 @@ class PersistentSystemProfileTest : public testing::Test {
  public:
   const int32_t kAllocatorMemorySize = 1 << 20;  // 1 MiB
 
-  PersistentSystemProfileTest() {}
+  PersistentSystemProfileTest() = default;
 
   PersistentSystemProfileTest(const PersistentSystemProfileTest&) = delete;
   PersistentSystemProfileTest& operator=(const PersistentSystemProfileTest&) =
       delete;
 
-  ~PersistentSystemProfileTest() override {}
+  ~PersistentSystemProfileTest() override = default;
 
   void SetUp() override {
     memory_allocator_ = std::make_unique<base::LocalPersistentMemoryAllocator>(
@@ -64,6 +64,8 @@ class PersistentSystemProfileTest : public testing::Test {
   std::unique_ptr<base::PersistentMemoryAllocator> memory_allocator_;
   std::unique_ptr<PersistentSystemProfile::RecordAllocator> records_;
 };
+
+namespace {
 
 TEST_F(PersistentSystemProfileTest, Create) {
   uint32_t type;
@@ -251,4 +253,5 @@ TEST_F(PersistentSystemProfileTest, DeleteFieldTrials) {
   EXPECT_EQ(variations::HashName("bar2"), fetched.field_trial(0).group_id());
 }
 
+}  // namespace
 }  // namespace metrics

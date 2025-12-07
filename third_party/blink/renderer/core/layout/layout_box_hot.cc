@@ -20,6 +20,7 @@
 namespace blink {
 
 bool LayoutBox::HasHitTestableOverflow() const {
+  NOT_DESTROYED();
   // See MayIntersect() for the reason of using HasVisualOverflow here.
   if (!HasVisualOverflow()) {
     return false;
@@ -38,12 +39,12 @@ bool LayoutBox::MayIntersect(const HitTestResult& result,
   NOT_DESTROYED();
   // Check if we need to do anything at all.
   // The root scroller always fills the whole view.
-  if (UNLIKELY(IsEffectiveRootScroller())) {
+  if (IsEffectiveRootScroller()) [[unlikely]] {
     return true;
   }
 
   PhysicalRect overflow_box;
-  if (UNLIKELY(result.GetHitTestRequest().IsHitTestVisualOverflow())) {
+  if (result.GetHitTestRequest().IsHitTestVisualOverflow()) [[unlikely]] {
     overflow_box = VisualOverflowRectIncludingFilters();
   } else if (HasHitTestableOverflow()) {
     // PhysicalVisualOverflowRect is an approximation of
@@ -155,7 +156,7 @@ const LayoutResult* LayoutBox::CachedLayoutResult(
     }
 
     // If we've shifted our children we can't rely on their position.
-    if (physical_fragment.HasMovedChildrenInBlockDirection()) {
+    if (physical_fragment.HasMovedChildren()) {
       return nullptr;
     }
 
@@ -278,7 +279,7 @@ const LayoutResult* LayoutBox::CachedLayoutResult(
         return nullptr;
     }
 
-    if (UNLIKELY(new_space.HasBlockFragmentation())) {
+    if (new_space.HasBlockFragmentation()) [[unlikely]] {
       DCHECK(old_space.HasBlockFragmentation());
 
       // Sometimes we perform simplified layout on a block-flow which is just
@@ -295,8 +296,9 @@ const LayoutResult* LayoutBox::CachedLayoutResult(
       // containers and lay out the OOFs inside. If we do that after having hit
       // the cache (and thus kept the fragment with the OOF), we'd end up with
       // extraneous OOF fragments.
-      if (UNLIKELY(physical_fragment.HasNestedMulticolsWithOOFs()))
+      if (physical_fragment.HasNestedMulticolsWithOOFs()) [[unlikely]] {
         return nullptr;
+      }
 
       // Any fragmented out-of-flow positioned items will be placed once we
       // reach the fragmentation context root rather than the containing block,
@@ -520,7 +522,7 @@ const LayoutResult* LayoutBox::CachedLayoutResult(
     // We haven't actually performed simplified layout. Skip the checks for no
     // fragmentation, since it's okay to be fragmented in this case.
     cloned_cached_layout_result->CheckSameForSimplifiedLayout(
-        *cached_layout_result, /* check_same_block_size */ true,
+        *cached_layout_result,
         /* check_no_fragmentation*/ false);
 #endif
   }
@@ -528,7 +530,7 @@ const LayoutResult* LayoutBox::CachedLayoutResult(
   // Optimization: TableConstraintSpaceData can be large, and it is shared
   // between all the rows in a table. Make constraint space table data for
   // reused row fragment be identical to the one used by other row fragments.
-  if (IsTableRow() && IsLayoutNGObject()) {
+  if (IsTableRow()) {
     const_cast<ConstraintSpace&>(
         cached_layout_result->GetConstraintSpaceForCaching())
         .ReplaceTableRowData(*new_space.TableData(), new_space.TableRowIndex());

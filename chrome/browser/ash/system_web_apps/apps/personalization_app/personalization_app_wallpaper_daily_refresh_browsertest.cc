@@ -20,7 +20,6 @@
 #include "ash/wallpaper/wallpaper_controller_test_api.h"
 #include "ash/wallpaper/wallpaper_daily_refresh_scheduler.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -35,10 +34,11 @@
 #include "chrome/browser/ash/wallpaper_handlers/mock_wallpaper_handlers.h"
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
+#include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 
@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppWallpaperDailyRefreshBrowserTest,
     WallpaperChangedWaiter waiter(loop.QuitClosure());
     web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         u"personalizationTestApi.enableDailyRefresh('test_collection');",
-        base::DoNothing());
+        base::DoNothing(), content::ISOLATED_WORLD_ID_GLOBAL);
     loop.Run();
   }
   WallpaperInfo original_info =
@@ -237,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppWallpaperDailyRefreshBrowserTest,
     WallpaperChangedWaiter waiter(loop.QuitClosure());
     web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         u"personalizationTestApi.enableDailyRefresh('dark_light_collection');",
-        base::DoNothing());
+        base::DoNothing(), content::ISOLATED_WORLD_ID_GLOBAL);
     loop.Run();
   }
   WallpaperInfo original_info =
@@ -304,7 +304,7 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppWallpaperDailyRefreshBrowserTest,
     WallpaperChangedWaiter waiter(loop.QuitClosure());
     web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         u"personalizationTestApi.enableDailyGooglePhotosRefresh('test_album');",
-        base::DoNothing());
+        base::DoNothing(), content::ISOLATED_WORLD_ID_GLOBAL);
     loop.Run();
   }
   WallpaperInfo original_info =

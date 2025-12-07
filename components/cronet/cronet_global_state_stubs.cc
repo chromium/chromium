@@ -8,6 +8,7 @@
 
 #include "base/at_exit.h"
 #include "base/feature_list.h"
+#include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -72,7 +73,9 @@ std::unique_ptr<net::ProxyResolutionService> CreateProxyResolutionService(
     std::unique_ptr<net::ProxyConfigService> proxy_config_service,
     net::NetLog* net_log) {
   return net::ConfiguredProxyResolutionService::CreateUsingSystemProxyResolver(
-      std::move(proxy_config_service), net_log, /*quick_check_enabled=*/true);
+      std::move(proxy_config_service),
+      /*host_resolver_for_override_rules=*/nullptr, net_log,
+      /*quick_check_enabled=*/true);
 }
 
 std::string CreateDefaultUserAgent(const std::string& partial_user_agent) {

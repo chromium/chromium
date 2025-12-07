@@ -16,12 +16,14 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.autofill.data.AuthenticatorOption;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 
 import java.util.List;
 
 /** Adapter for showing the authenticator options in a {@link RecyclerView}. */
+@NullMarked
 public class AuthenticatorOptionsAdapter extends RecyclerView.Adapter<ViewHolder> {
     /** Interface for callers to be notified when an item is selected. */
     public interface ItemClickListener {

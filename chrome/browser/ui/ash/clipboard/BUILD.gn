@@ -1,0 +1,75 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/args.gni")
+
+assert(is_chromeos)
+
+if (!is_chromeos_device) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "clipboard_history_interactive_uitest.cc" ]
+
+    deps = [
+      "//ash",
+      "//base",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support_ui",
+      "//chromeos/ash/experiences/clipboard",
+      "//chromeos/ash/experiences/clipboard:test_support",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//ui/events:test_support",
+    ]
+  }
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "clipboard_history_browsertest.cc" ]
+
+  deps = [
+    "//ash",
+    "//ash:test_support",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/app:command_ids",
+    "//chrome/app:generated_resources",
+    "//chrome/browser",
+    "//chrome/browser/ash/login:test_support",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/login",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/experiences/clipboard:test_support",
+    "//chromeos/constants",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//third_party/abseil-cpp:absl",
+    "//ui/base",
+    "//ui/base/clipboard",
+    "//ui/base/clipboard:clipboard_types",
+    "//ui/base/data_transfer_policy",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/events:event_constants",
+    "//ui/events:events_base",
+    "//ui/events:test_support",
+    "//ui/strings:ui_strings",
+    "//ui/views",
+  ]
+}

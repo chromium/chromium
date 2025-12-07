@@ -5,9 +5,10 @@
 #include "chrome/browser/extensions/api/web_authentication_proxy/web_authentication_proxy_service.h"
 
 #include <limits>
+#include <optional>
+#include <variant>
 
-#include "base/functional/overloaded.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/sequence_checker.h"
@@ -15,7 +16,7 @@
 #include "chrome/common/extensions/api/web_authentication_proxy.h"
 #include "components/webauthn/json/value_conversions.h"
 #include "content/public/browser/browser_context.h"
-#include "device/fido/public_key_credential_rp_entity.h"
+#include "device/fido/public/public_key_credential_rp_entity.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_event_histogram_value.h"
@@ -23,11 +24,15 @@
 #include "extensions/browser/extension_function_histogram_value.h"
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-shared.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -228,8 +233,8 @@ WebAuthenticationProxyRegistrarFactory::WebAuthenticationProxyRegistrarFactory()
           // there.
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kRedirectedToOriginal)
-              // TODO(crbug.com/40257657): Check if this service is needed in
-              // Guest mode.
+              // TODO(crbug.com/40257657): Audit whether these should be
+              // redirected or should have their own instance.
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
               // TODO(crbug.com/41488885): Check if this service is needed for
               // Ash Internals.
@@ -300,14 +305,14 @@ void WebAuthenticationProxyService::CompleteCreateRequest(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto callback_it = pending_callbacks_.find(details.request_id);
   if (callback_it == pending_callbacks_.end() ||
-      !absl::holds_alternative<CreateCallback>(callback_it->second)) {
+      !std::holds_alternative<CreateCallback>(callback_it->second)) {
     std::move(respond_callback).Run("Invalid requestId");
     return;
   }
   if (details.error) {
     // The proxied request yielded a DOMException.
     auto create_callback =
-        absl::get<CreateCallback>(std::move(callback_it->second));
+        std::get<CreateCallback>(std::move(callback_it->second));
     pending_callbacks_.erase(callback_it);
     std::move(create_callback)
         .Run(details.request_id,
@@ -335,14 +340,14 @@ void WebAuthenticationProxyService::CompleteGetRequest(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto callback_it = pending_callbacks_.find(details.request_id);
   if (callback_it == pending_callbacks_.end() ||
-      !absl::holds_alternative<GetCallback>(callback_it->second)) {
+      !std::holds_alternative<GetCallback>(callback_it->second)) {
     std::move(respond_callback).Run("Invalid requestId");
     return;
   }
   if (details.error) {
     // The proxied request yielded a DOMException.
     GetCallback callback =
-        absl::get<GetCallback>(std::move(callback_it->second));
+        std::get<GetCallback>(std::move(callback_it->second));
     pending_callbacks_.erase(callback_it);
     std::move(callback).Run(details.request_id,
                             blink::mojom::WebAuthnDOMExceptionDetails::New(
@@ -367,11 +372,11 @@ bool WebAuthenticationProxyService::CompleteIsUvpaaRequest(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto callback_it = pending_callbacks_.find(details.request_id);
   if (callback_it == pending_callbacks_.end() ||
-      !absl::holds_alternative<IsUvpaaCallback>(callback_it->second)) {
+      !std::holds_alternative<IsUvpaaCallback>(callback_it->second)) {
     return false;
   }
   IsUvpaaCallback callback =
-      absl::get<IsUvpaaCallback>(std::move(callback_it->second));
+      std::get<IsUvpaaCallback>(std::move(callback_it->second));
   pending_callbacks_.erase(callback_it);
   std::move(callback).Run(details.is_uvpaa);
   return true;
@@ -385,7 +390,7 @@ void WebAuthenticationProxyService::CancelRequest(RequestId request_id) {
 
   auto callback_it = pending_callbacks_.find(request_id);
   if (callback_it == pending_callbacks_.end() ||
-      absl::holds_alternative<IsUvpaaCallback>(callback_it->second)) {
+      std::holds_alternative<IsUvpaaCallback>(callback_it->second)) {
     // Invalid `request_id`. Note that isUvpaa requests cannot be cancelled.
     return;
   }
@@ -423,8 +428,8 @@ void WebAuthenticationProxyService::CancelPendingCallbacks() {
   // Complete all pending callbacks with a cancellation signal.
   for (auto it = pending_callbacks_.begin(); it != pending_callbacks_.end();) {
     auto& [request_id, callback] = *it;
-    absl::visit(
-        base::Overloaded{
+    std::visit(
+        absl::Overload{
             [](IsUvpaaCallback& cb) { std::move(cb).Run(/*is_uvpaa=*/false); },
             // CreateCallback or GetCallback:
             [id = request_id](auto& cb) {
@@ -469,7 +474,7 @@ void WebAuthenticationProxyService::OnParseCreateResponse(
 
   auto callback_it = pending_callbacks_.find(request_id);
   if (callback_it == pending_callbacks_.end() ||
-      !absl::holds_alternative<CreateCallback>(callback_it->second)) {
+      !std::holds_alternative<CreateCallback>(callback_it->second)) {
     // The request was canceled while waiting for JSON decoding.
     std::move(respond_callback).Run("Invalid requestId");
     return;
@@ -477,7 +482,7 @@ void WebAuthenticationProxyService::OnParseCreateResponse(
 
   // Success.
   CreateCallback create_callback =
-      absl::get<CreateCallback>(std::move(callback_it->second));
+      std::get<CreateCallback>(std::move(callback_it->second));
   pending_callbacks_.erase(callback_it);
   std::move(create_callback).Run(request_id, nullptr, std::move(response));
   std::move(respond_callback).Run(std::nullopt);
@@ -502,7 +507,7 @@ void WebAuthenticationProxyService::OnParseGetResponse(
 
   auto callback_it = pending_callbacks_.find(request_id);
   if (callback_it == pending_callbacks_.end() ||
-      !absl::holds_alternative<GetCallback>(callback_it->second)) {
+      !std::holds_alternative<GetCallback>(callback_it->second)) {
     // The request was canceled while waiting for JSON decoding.
     std::move(respond_callback).Run("Invalid requestId");
     return;
@@ -510,7 +515,7 @@ void WebAuthenticationProxyService::OnParseGetResponse(
 
   // Success.
   GetCallback get_callback =
-      absl::get<GetCallback>(std::move(callback_it->second));
+      std::get<GetCallback>(std::move(callback_it->second));
   pending_callbacks_.erase(callback_it);
   std::move(get_callback).Run(request_id, nullptr, std::move(response));
   std::move(respond_callback).Run(std::nullopt);
@@ -537,9 +542,9 @@ WebAuthenticationProxyService::SignalCreateRequest(
   request.request_id = request_id;
 
   base::Value options_value = webauthn::ToValue(options_ptr);
-  std::string request_json;
-  JSONStringValueSerializer serializer(&request.request_details_json);
-  CHECK(serializer.Serialize(options_value));
+  std::optional<std::string> request_json = base::WriteJson(options_value);
+  CHECK(request_json);
+  request.request_details_json = *std::move(request_json);
 
   event_router_->DispatchEventToExtension(
       proxy_extension->id(),
@@ -567,9 +572,9 @@ WebAuthenticationProxyService::SignalGetRequest(
   request.request_id = request_id;
 
   base::Value options_value = webauthn::ToValue(options_ptr);
-  std::string request_json;
-  JSONStringValueSerializer serializer(&request.request_details_json);
-  CHECK(serializer.Serialize(options_value));
+  std::optional<std::string> request_json = base::WriteJson(options_value);
+  CHECK(request_json);
+  request.request_details_json = *std::move(request_json);
 
   event_router_->DispatchEventToExtension(
       proxy_extension->id(),
@@ -613,8 +618,6 @@ WebAuthenticationProxyServiceFactory::WebAuthenticationProxyServiceFactory()
           "WebAuthenticationProxyService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
-              // TODO(crbug.com/40257657): Check if this service is needed in
-              // Guest mode.
               .WithGuest(ProfileSelection::kOwnInstance)
               // TODO(crbug.com/41488885): Check if this service is needed for
               // Ash Internals.
@@ -635,9 +638,10 @@ WebAuthenticationProxyServiceFactory::GetForBrowserContext(
           ->GetServiceForBrowserContext(context, true));
 }
 
-KeyedService* WebAuthenticationProxyServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+WebAuthenticationProxyServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new WebAuthenticationProxyService(context);
+  return std::make_unique<WebAuthenticationProxyService>(context);
 }
 
 }  // namespace extensions

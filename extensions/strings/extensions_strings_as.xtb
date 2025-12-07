@@ -5,7 +5,6 @@
 <translation id="1140871961407805696">পশ্চাৎ কেমেৰা</translation>
 <translation id="1196338895211115272">ব্যক্তিগত চাবিটো ৰপ্তানি কৰিব পৰা নগ’ল৷</translation>
 <translation id="132960226125594336">সমলৰ স্ক্ৰিপ্টৰ বাবে ফাইল '<ph name="RELATIVE_PATH" />' ল’ড কৰিব পৰা নগ’ল, এইটোৱে স্ক্ৰিপ্টৰ সর্বাধিক আকাৰ অথবা এক্সটেনশ্বনৰ স্ক্ৰিপ্টৰ সর্বাধিক আকাৰ অতিক্ৰম কৰিব।</translation>
-<translation id="1420684932347524586">ওহোঁ! অনিয়মীত RSA ব্যক্তিগত চাবি সৃষ্টি কৰিব পৰা নগ’ল।</translation>
 <translation id="1445572445564823378">এই এক্সটেনশ্বনৰ কাৰণে <ph name="PRODUCT_NAME" />এ লেহেমীয়া ধৰণে কাম কৰিছে৷ <ph name="PRODUCT_NAME" />এ ভালকৈ কাম কৰিবলৈ আপুনি ইয়াক অক্ষম কৰা উচিত৷</translation>
 <translation id="1468038450257740950">WebGL সমর্থিত নহয়।</translation>
 <translation id="1610570795592207282">স্ক্ৰিপ্টৰ বাবে css ’<ph name="RELATIVE_PATH" />’ ল’ড কৰিব নোৱাৰিলে।</translation>
@@ -19,13 +18,11 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" />ৰ অজ্ঞাত প্ৰডাক্ট <ph name="PRODUCT_ID" /> (ক্ৰমিক নং <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx ফাইল সলনি কৰিব পৰা নগ‘ল। ফাইলটো ব্যৱহাৰ হৈ আছে নেকি চাওক।</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" />ৰ অজ্ঞাত প্ৰডাক্ট <ph name="PRODUCT_ID" /></translation>
-<translation id="3369521687965833290">এক্সটেনশ্বন আনপেক কৰিব নোৱাৰি।  এক্সটেনশ্বনটো সুৰক্ষিতভাৱে আনপেক কৰিবলৈ আপোনাৰ প্ৰ’ফাইল ডাইৰেক্টৰীলৈ এটা পথ থাকিব লাগিব যিটো ড্ৰাইভৰ এটা আখৰেৰে আৰম্ভ হয় আৰু য’ত জাংশ্বন, মাউণ্ট কৰা পইণ্ট বা symlink নাথাকে।  আপোনাৰ প্ৰ’ফাইলৰ কাৰণে তেনেকুৱা কোনো পথ নাই।</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (ক্ৰমিক নম্বৰ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397">বিক্ৰেতা <ph name="VENDOR_ID" />ৰ <ph name="PRODUCT_NAME" /> (ক্ৰমিক নম্বৰ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ব্যক্তিগত কীৰ বাবে ইনপুট মান কোনো মান্য পথ হ'বই লাগিব।</translation>
 <translation id="388442998277590542">বিকল্পৰ পৃষ্ঠা ’<ph name="OPTIONS_PAGE" />’ ল’ড কৰিবপৰা নগ’ল।</translation>
 <translation id="3984413272403535372">এক্সটেনশ্বন ছাইনিং কৰি থাকোঁতে আঁসোৱাহ হ’ল।</translation>
-<translation id="4115165561519362854">এই মেচিনটোৰ প্ৰশাসকে <ph name="EXTENSION_NAME" /> অতি কমেও সংস্কৰণ <ph name="EXTENSION_VERSION" /> হোৱাটো বাধ্যতামূলক কৰিছে। ইয়াক সেই সংস্কৰণ (বা তাতকৈ পিছৰ)লৈ আপডে‘ট নকৰালৈকে সক্ষম কৰিব নোৱাৰি।</translation>
 <translation id="4233778200880751280">পৃষ্ঠাৰ বিষয়ে ‘<ph name="ABOUT_PAGE" />’ তথ্য ল’ড কৰিব পৰা নগ’ল।</translation>
 <translation id="471800408830181311">ব্যক্তিগত কী আউটপুট কৰিব পৰা নগ'ল।</translation>
 <translation id="4811956658694082538">ইউটিলিটি প্ৰক্ৰিয়া ক্রেশ্ব হোৱাৰ বাবে পেকেজ ইনষ্টল কৰিব পৰা নগ’ল। Chrome ৰিষ্টার্ট কৰি পুনৰ চেষ্টা কৰক।</translation>
@@ -39,7 +36,6 @@
 <translation id="5972529113578162692">এই মেচিনটোৰ প্ৰশাসকৰ বাবে <ph name="EXTENSION_NAME" /> ইনষ্টল হৈ থকাটো আৱশ্যক। ইয়াক আনইনষ্টল কৰিব নোৱাৰি।</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" />ৰ অজ্ঞাত প্ৰডাক্ট <ph name="PRODUCT_ID" /> (ক্ৰমিক নম্বৰ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="VENDOR_ID" /> বিক্ৰেতাৰ <ph name="PRODUCT_NAME" /></translation>
-<translation id="6143635259298204954">এক্সটেনশ্বন আনপেক কৰিব নোৱাৰি।  কোনো এক্সটেনশ্বন সুৰক্ষিতভাৱে আনপেক কৰিবলৈ, আপোনাৰ প্ৰ’ফাইল ডাইৰেক্টৰীলৈ symlink অন্তর্ভুক্ত নোহোৱা এটা পথ থাকিবই লাগিব।  আপোনাৰ প্ৰ’ফাইলত তেনে কোনো পথ নাই।</translation>
 <translation id="6322279351188361895">ব্যক্তিগত চাবিটো পঢ়িব পৰা নগ’ল।</translation>
 <translation id="6391538222494443604">ইনপুট ডাইৰেক্টৰী থাকিবই লাগিব৷</translation>
 <translation id="641087317769093025">এক্সটেনশ্বন আনজিপ কৰিব পৰা নগ'ল</translation>
@@ -52,12 +48,14 @@
 <translation id="7068383018033524534">মেনিফেষ্ট ফাইলটো অমান্য</translation>
 <translation id="7217838517480956708">এই মেছিনৰ প্ৰশাসকৰ বাবে <ph name="EXTENSION_NAME" /> ইনষ্টল কৰি ৰখাটো আৱশ্যক। এইটো আঁতৰাব বা সংশোধন কৰিব নোৱাৰি।</translation>
 <translation id="7612608473764576263">ব্যক্তিগত কীৰ বাবে ইনপুট মান কোনো মান্য ফর্মেটৰ হ’বই লাগিব। (PKCS#8-যর্মেটৰ PEM-এনক’ড কৰা RSA কী)।</translation>
+<translation id="7876803335449432072">সমলৰ স্ক্ৰিপ্টৰ বাবে ফাইল '<ph name="RELATIVE_PATH" />' ল'ড কৰিব নোৱাৰি, সমলৰ স্ক্ৰিপ্টৰ শৈলী শ্বীটসমূহ .css ফাইলৰ দৰে সমৰ্থিত শৈলী শ্বীটৰ ফাইলৰ পৰাহে কেৱল ল'ড কৰিব পাৰি।</translation>
 <translation id="7939686037314084444">এই এক্সটেনশ্বনটো সঠিকভাবে ল’ড কৰিব পৰা নগ’ল। এই এক্সটেনশ্বনটো নেটৱৰ্ক সম্বন্ধীয় অনুৰোধ বাধা দিবলৈ সক্ষম নহ’বও পাৰে।</translation>
 <translation id="7972881773422714442">বিকল্প: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">ব্যৱহাৰকাৰীৰ ফালে মুখ কৰি থকা</translation>
 <translation id="8047248493720652249">এই এক্সটেনশ্বনটোৱে ডাউনল'ড হোৱা ফাইলটোৰ নাম "<ph name="ATTEMPTED_FILENAME" />" কৰিব নোৱাৰিলে কিয়নো অন্য এটা এক্সটেনশ্বন (<ph name="EXTENSION_NAME" />)এ সেইটোৰ কাৰণে এটা বেলেগ নাম "<ph name="ACTUAL_FILENAME" />" নির্ধাৰণ কৰিছে।</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" />ৰ <ph name="PRODUCT_NAME" /></translation>
 <translation id="8517576857589387417">ঘোষণা প্ৰদান কৰা ফাইলটো নাই বা সেইটো পঢ়িব নোৱাৰি</translation>
+<translation id="8621383749470166852">সমলৰ স্ক্ৰিপ্টৰ বাবে ফাইল '<ph name="RELATIVE_PATH" />' ল'ড কৰিব নোৱাৰি, সমলৰ স্ক্ৰিপ্টসমূহ .js ফাইলৰ দৰে সমৰ্থিত JavaScript ফাইলৰ পৰাহে কেৱল ল'ড কৰিব পাৰি।</translation>
 <translation id="8636666366616799973">পেকেজটো মান্য নহয়। সবিশেষ: ’<ph name="ERROR_MESSAGE" />’।</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />"এ আপোনাৰ ডিভাইচসমূহৰ মাজৰ এটা ডিভাইচত এক্সেছ অনুৰোধ কৰি আছে:</translation>
 <translation id="8885905466771744233">নিৰ্দিষ্ট কৰা এক্সটেনশ্বনৰ বাবে এটা ব্যক্তিগত চাবি ইতিমধ্যে আছেই। সেই চাবিটো পুনৰ ব্যৱহাৰ কৰক বা সেইটো প্ৰথমতে মচক।</translation>

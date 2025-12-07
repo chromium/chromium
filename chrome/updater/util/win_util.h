@@ -10,10 +10,12 @@
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
+#include <algorithm>
 #include <cstdint>
 #include <optional>
 #include <string>
 #include <tuple>
+#include <typeinfo>
 #include <utility>
 #include <vector>
 
@@ -28,15 +30,17 @@
 #include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/process/process_iterator.h"
-#include "base/ranges/algorithm.h"
 #include "base/scoped_generic.h"
+#include "base/strings/cstring_view.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "base/version.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_types.h"
 #include "chrome/updater/updater_scope.h"
+#include "chrome/updater/updater_version.h"
 #include "chrome/updater/win/scoped_handle.h"
 
 namespace base {
@@ -51,7 +55,7 @@ struct IidComparator {
       return true;
     }
     if (lhs_prefix == rhs_prefix) {
-      return base::ranges::lexicographical_compare(lhs.Data4, rhs.Data4);
+      return std::ranges::lexicographical_compare(lhs.Data4, rhs.Data4);
     }
     return false;
   }
@@ -90,7 +94,6 @@ using ScopedScHandle =
 class ProcessFilterName : public base::ProcessFilter {
  public:
   explicit ProcessFilterName(const std::wstring& process_name);
-  ~ProcessFilterName() override = default;
 
   // Overrides for base::ProcessFilter.
   bool Includes(const base::ProcessEntry& entry) const override;
@@ -104,10 +107,10 @@ class ProcessFilterName : public base::ProcessFilter {
 
 namespace internal {
 
-template <typename T>
+template <typename... T>
 using WrlRuntimeClass = Microsoft::WRL::RuntimeClass<
     Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
-    T>;
+    T...>;
 
 }  // namespace internal
 
@@ -120,26 +123,53 @@ using WrlRuntimeClass = Microsoft::WRL::RuntimeClass<
 template <typename Interface, REFIID iid_user, REFIID iid_system>
 class DynamicIIDsImpl : public internal::WrlRuntimeClass<Interface> {
  public:
-  DynamicIIDsImpl() {
+  explicit DynamicIIDsImpl(UpdaterScope scope) : scope_(scope) {
     VLOG(3) << __func__ << ": Interface: " << typeid(Interface).name()
             << ": iid_user: " << StringFromGuid(iid_user)
             << ": iid_system: " << StringFromGuid(iid_system)
-            << ": IsSystemInstall(): " << IsSystemInstall();
+            << ": scope: " << scope;
   }
 
   IFACEMETHODIMP QueryInterface(REFIID riid, void** object) override {
     return internal::WrlRuntimeClass<Interface>::QueryInterface(
-        riid == (IsSystemInstall() ? iid_system : iid_user)
+        riid == (IsSystemInstall(scope_) ? iid_system : iid_user)
             ? __uuidof(Interface)
             : riid,
         object);
   }
+
+ protected:
+  UpdaterScope scope() const { return scope_; }
+
+ private:
+  const UpdaterScope scope_;
 };
 
 // Macro that makes it easier to derive from `DynamicIIDsImpl`.
 #define DYNAMICIIDSIMPL(interface)                      \
   DynamicIIDsImpl<interface, __uuidof(interface##User), \
                   __uuidof(interface##System)>
+
+// Implements `DynamicIIDs` for multiple interfaces `Interface`, taking
+// `iid_user` and `iid_system` as maps.
+template <typename... Interface>
+class DynamicIIDsMultImpl : public internal::WrlRuntimeClass<Interface...> {
+ public:
+  DynamicIIDsMultImpl(
+      UpdaterScope scope,
+      const base::flat_map<IID, IID, IidComparator>& user_iid_map,
+      const base::flat_map<IID, IID, IidComparator>& system_iid_map)
+      : iid_map_(IsSystemInstall(scope) ? system_iid_map : user_iid_map) {}
+
+  IFACEMETHODIMP QueryInterface(REFIID riid, void** object) override {
+    const auto find_iid = iid_map_.find(riid);
+    return internal::WrlRuntimeClass<Interface...>::QueryInterface(
+        find_iid != iid_map_.end() ? find_iid->second : riid, object);
+  }
+
+ private:
+  const base::flat_map<IID, IID, IidComparator> iid_map_;
+};
 
 // Macros that makes it easier to call the `IDispatchImpl` constructor.
 #define IID_MAP_ENTRY_USER(interface) \
@@ -156,14 +186,6 @@ class DynamicIIDsImpl : public internal::WrlRuntimeClass<Interface> {
 // The macro maps a NO_ERROR to S_OK, whereas the HRESULTFromLastError maps a
 // NO_ERROR to E_FAIL.
 HRESULT HRESULTFromLastError();
-
-// Checks whether a process is running with the image |executable|. Returns true
-// if a process is found.
-bool IsProcessRunning(const wchar_t* executable);
-
-// Waits until every running instance of |executable| is stopped.
-// Returns true if every running processes are stopped.
-bool WaitForProcessesStopped(const wchar_t* executable);
 
 struct NamedObjectAttributes {
   NamedObjectAttributes(const std::wstring& name, const CSecurityDesc& sd);
@@ -196,6 +218,15 @@ std::optional<CSecurityDesc> GetCurrentUserDefaultSecurityDescriptor();
 // to admins and system.
 CSecurityDesc GetAdminDaclSecurityDescriptor(ACCESS_MASK accessmask);
 
+// Returns an SDDL string derived from `sddl`, with the addition of an allowed
+// ACE entry for the current user with the `required_permissions` and
+// `required_ace_flags`. If the addition already exists, `sddl` is returned
+// unchanged.
+std::optional<std::wstring> AddCurrentUserAllowedAce(
+    const std::wstring& sddl,
+    ACCESS_MASK required_permissions,
+    UINT8 required_ace_flags);
+
 // Returns the registry path `Software\{CompanyName}\Update\Clients\{app_id}`.
 std::wstring GetAppClientsKey(const std::string& app_id);
 std::wstring GetAppClientsKey(const std::wstring& app_id);
@@ -204,6 +235,11 @@ std::wstring GetAppClientsKey(const std::wstring& app_id);
 // `Software\{CompanyName}\Update\ClientState\{app_id}`.
 std::wstring GetAppClientStateKey(const std::string& app_id);
 std::wstring GetAppClientStateKey(const std::wstring& app_id);
+
+// Returns the registry path
+// `Software\{CompanyName}\Update\ClientStateMedium\{app_id}`.
+std::wstring GetAppClientStateMediumKey(const std::string& app_id);
+std::wstring GetAppClientStateMediumKey(const std::wstring& app_id);
 
 // Returns the registry path
 // `Software\{CompanyName}\Update\ClientState\{app_id}\cohort`.
@@ -265,12 +301,9 @@ std::string GetUACState();
 // Returns the versioned service name in the following format:
 // "{ProductName}{InternalService/Service}{UpdaterVersion}".
 // For instance: "ChromiumUpdaterInternalService92.0.0.1".
-std::wstring GetServiceName(bool is_internal_service);
-
-// Returns the versioned service name in the following format:
-// "{ProductName} {InternalService/Service} {UpdaterVersion}".
-// For instance: "ChromiumUpdater InternalService 92.0.0.1".
-std::wstring GetServiceDisplayName(bool is_internal_service);
+std::wstring GetServiceName(
+    bool is_internal_service,
+    const base::Version& version = base::Version(kUpdaterVersion));
 
 // Returns `KEY_WOW64_32KEY | access`. All registry access under the Updater key
 // should use `Wow6432(access)` as the `REGSAM`.
@@ -295,11 +328,6 @@ HResultOr<DWORD> ShellExecuteAndWait(const base::FilePath& file_path,
 HResultOr<DWORD> RunElevated(const base::FilePath& file_path,
                              const std::wstring& parameters);
 
-// Runs `path` de-elevated. `path` specifies the exe or url to be launched.
-// `parameters` can be an empty string. The function does not wait for the
-// spawned process.
-HRESULT RunDeElevated(const std::wstring& path, const std::wstring& parameters);
-
 // Runs `cmd_line` de-elevated.The function does not wait for the spawned
 // process.
 HRESULT RunDeElevatedCmdLine(const std::wstring& cmd_line);
@@ -316,14 +344,14 @@ std::optional<base::FilePath> GetGoogleUpdateExePath(UpdaterScope scope);
 // a log file in the same directory as the MSI installer.
 std::wstring BuildMsiCommandLine(
     const std::wstring& arguments,
-    const std::optional<base::FilePath>& installer_data_file,
+    std::optional<base::FilePath> installer_data_file,
     const base::FilePath& msi_installer);
 
 // Builds a command line running the provided `exe_installer`, `arguments`, and
 // `installer_data_file`.
 std::wstring BuildExeCommandLine(
     const std::wstring& arguments,
-    const std::optional<base::FilePath>& installer_data_file,
+    std::optional<base::FilePath> installer_data_file,
     const base::FilePath& exe_installer);
 
 // Returns `true` if the service specified is currently running or starting.
@@ -344,9 +372,7 @@ std::optional<OSVERSIONINFOEX> GetOSVersion();
 bool CompareOSVersions(const OSVERSIONINFOEX& os, BYTE oper);
 
 // This function calls ::SetDefaultDllDirectories to restrict DLL loads to
-// either full paths or %SYSTEM32%. ::SetDefaultDllDirectories is available on
-// Windows 8.1 and above, and on Windows Vista and above when KB2533623 is
-// applied.
+// either full paths or %SYSTEM32%.
 [[nodiscard]] bool EnableSecureDllLoading();
 
 // Enables metadata protection in the heap manager. This allows for the process
@@ -370,7 +396,7 @@ bool IsShutdownEventSignaled(UpdaterScope scope);
 // `wait_period`, and if the processes still have not exited, by terminating the
 // processes.
 void StopProcessesUnderPath(const base::FilePath& path,
-                            const base::TimeDelta& wait_period);
+                            base::TimeDelta wait_period);
 
 // Returns `true` if the argument is a guid.
 bool IsGuid(const std::wstring& s);
@@ -421,11 +447,6 @@ template <typename T, typename I, typename... TArgs>
                                        std::forward<TArgs>(args)...);
 }
 
-// Returns the base install directory for the x86 versions of the updater.
-// Does not create the directory if it does not exist.
-[[nodiscard]] std::optional<base::FilePath> GetInstallDirectoryX86(
-    UpdaterScope scope);
-
 // Gets the contents under a given registry key.
 std::optional<std::wstring> GetRegKeyContents(const std::wstring& reg_key);
 
@@ -434,6 +455,9 @@ std::optional<std::wstring> GetRegKeyContents(const std::wstring& reg_key);
 // thread is set, otherwise, the function uses the user/system default LANGID,
 // or it defaults to US English.
 std::wstring GetTextForSystemError(int error);
+
+// Returns the first instance found of explorer.exe.
+std::optional<DWORD> GetExplorerPid();
 
 // Retrieves the logged on user token for the active explorer process if one
 // exists.
@@ -456,10 +480,17 @@ bool IsOemInstalling();
 // Stores the runtime enrollment token to the persistent storage.
 bool StoreRunTimeEnrollmentToken(const std::string& enrollment_token);
 
-// Returns a unique temp file path of the form
-// `%TMP%\{name}{guid}.{fileextension}`, where `name` and `extension` are the
-// name and extension of `file`.
-std::optional<base::FilePath> GetUniqueTempFilePath(base::FilePath file);
+// Returns `true` if the service exists and has not been marked for deletion.
+[[nodiscard]] bool IsServicePresent(const std::wstring& service_name);
+
+// Returns `true` if the service exists and is not deleted or disabled.
+[[nodiscard]] bool IsServiceEnabled(const std::wstring& service_name);
+
+// Get the command line of a process, given the process id.
+HResultOr<std::wstring> GetCommandLineForPid(DWORD process_id);
+
+// Logs the COM client PID when called from a COM server.
+void LogComCaller(base::cstring_view caller_func);
 
 }  // namespace updater
 

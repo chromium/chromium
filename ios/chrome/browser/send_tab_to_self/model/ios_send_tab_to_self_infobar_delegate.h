@@ -50,7 +50,7 @@ class IOSSendTabToSelfInfoBarDelegate : public ConfirmInfoBarDelegate {
   void SendConclusionNotification();
 
   // The entry that was share to this device. Must outlive this instance.
-  raw_ptr<const SendTabToSelfEntry> entry_ = nullptr;
+  raw_ptr<const SendTabToSelfEntry, DanglingUntriaged> entry_ = nullptr;
 
   // The SendTabToSelfModel that holds the `entry_`. Must outlive this instance.
   raw_ptr<SendTabToSelfModel> model_ = nullptr;

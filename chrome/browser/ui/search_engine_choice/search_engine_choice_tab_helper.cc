@@ -8,8 +8,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -28,20 +30,13 @@ SearchEngineChoiceTabHelper::SearchEngineChoiceTabHelper(
     content::WebContents* web_contents)
     : WebContentsObserver(web_contents),
       content::WebContentsUserData<SearchEngineChoiceTabHelper>(*web_contents) {
-  CHECK(search_engines::IsChoiceScreenFlagEnabled(
-      search_engines::ChoicePromo::kDialog));
 }
 
 // static
 bool SearchEngineChoiceTabHelper::IsHelperNeeded() {
-  if (!search_engines::IsChoiceScreenFlagEnabled(
-          search_engines::ChoicePromo::kDialog)) {
-    // TODO(crbug.com/347223092): Replace this with a check of availability of
-    // `SearchEngineChoiceDialogService`. However we need to be mindful of how
-    // this might affect metrics, see https://b/351778022.
-    return false;
-  }
-
+  // TODO(crbug.com/347223092): Replace this with a check of availability of
+  // `SearchEngineChoiceDialogService`. However we need to be mindful of how
+  // this might affect metrics, see https://b/351778022.
   // We can't get a browser at this point, so checking the eligibility of the
   // browser itself is not possible now.
 
@@ -100,14 +95,18 @@ void SearchEngineChoiceTabHelper::MaybeShowDialog() {
 
   search_engines::SearchEngineChoiceScreenConditions conditions =
       search_engine_choice_dialog_service->ComputeDialogConditions(*browser);
-  search_engines::RecordChoiceScreenNavigationCondition(conditions);
+
+  search_engines::SearchEngineChoiceService* search_engine_choice_service =
+      search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
+          browser->profile());
+  search_engine_choice_service->RecordTriggeringEligibility(conditions);
 
   if (conditions !=
       search_engines::SearchEngineChoiceScreenConditions::kEligible) {
     return;
   }
 
-  ShowSearchEngineChoiceDialog(*browser);
+  SearchEngineChoiceDialog::Show(*browser);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SearchEngineChoiceTabHelper);

@@ -1,0 +1,32 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions_core,
+       "Cannot depend on extensions because enable_extensions_core=false.")
+
+source_set("preference") {
+  sources = [
+    "preference_api.cc",
+    "preference_api.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles",
+    "//components/autofill/core/common",
+    "//components/prefs",
+    "//components/privacy_sandbox:features",
+    "//extensions/browser",
+    "//extensions/browser/api/content_settings",
+    "//extensions/common",
+    "//extensions/common/api",
+    "//skia",
+  ]
+}

@@ -13,7 +13,7 @@
   .language-dropdown {
     margin-inline-start: auto;
   }
-  #captionsLanguageLabel {
+  #defaultLanguageLabel {
     color: var(--cros-sys-on_surface_variant);
   }
 </style>
@@ -28,7 +28,7 @@
   </div>
 </template>
 <template is="dom-if" if="[[enableLiveCaptionMultiLanguage_]]">
-    <div class="cr-row cr-row-with-template first">
+  <div class="cr-row cr-row-with-template first">
     <settings-toggle-button id="liveCaptionToggleButton"
         pref="{{prefs.accessibility.captions.live_caption_enabled}}"
         on-change="onLiveCaptionEnabledChanged_"
@@ -38,17 +38,6 @@
   </div>
   <iron-collapse
       opened="[[prefs.accessibility.captions.live_caption_enabled.value]]">
-    <div class="cr-row continuation">
-      <div class="start cr-padded-text" aria-hidden="true">
-        $i18n{captionsLanguage}
-      </div>
-      <settings-dropdown-menu
-          class="language-dropdown"
-          label="$i18n{captionsLanguage}"
-          pref="{{prefs.accessibility.captions.live_caption_language}}"
-          menu-options="[[languageOptions_]]">
-      </settings-dropdown-menu>
-    </div>
     <div class="cr-row continuation">
       <div class="flex settings-box-text">
         $i18n{captionsManageLanguagesTitle}
@@ -62,26 +51,31 @@
       <div id="languageList" class="vertical-list" role="list">
         <template is="dom-repeat" items="[[installedLanguagePacks_]]">
           <div class="list-item" role="listitem">
-            <div class="start cr-padded-text">[[item.displayName]]</div>
+            <div class="start cr-padded-text">[[item.displayName]]
+              <span id="defaultLanguageLabel"
+                  hidden$="[[!isDefaultLanguage_(item.code,
+                 prefs.accessibility.captions.live_caption_language.value)]]">
+                $i18n{defaultLanguageLabel}
+              </span>
+            </div>
             <span aria-live="polite" role="region" class="cr-secondary-text cr-row-gap">
               [[item.downloadProgress]]
             </span>
-            <cr-icon-button class="icon-delete-gray"
-                aria-label="[[i18n('removeLanguageAriaLabel',
-                              item.displayName)]]"
-                on-click="onRemoveLanguageClick_">
+            <cr-icon-button class="icon-more-vert" title="$i18n{moreActions}"
+                            id="more-[[item.language.code]]"
+                            on-click="onDotsClick_">
             </cr-icon-button>
           </div>
         </template>
       </div>
     </div>
-    <template is="dom-if" if="[[enableLiveTranslate_]]">
-      <settings-live-translate prefs="{{prefs}}"
-          languages="[[languages]]"
-          language-helper="[[languageHelper]]">
-      </settings-live-translate>
-    </template>
   </iron-collapse>
+  <template is="dom-if" if="[[enableLiveTranslate_]]">
+    <settings-live-translate prefs="{{prefs}}"
+        languages="[[languages]]"
+        language-helper="[[languageHelper]]">
+    </settings-live-translate>
+  </template>
 </template>
 <template is="dom-if" if="[[showAddLanguagesDialog_]]" restamp>
   <os-settings-add-items-dialog
@@ -92,3 +86,17 @@
     on-close="onAddLanguagesDialogClose_" id="liveCaptionsAddLanguagesDialog">
   </os-settings-add-items-dialog>
 </template>
+<cr-lazy-render id="menu">
+  <template>
+    <cr-action-menu role-description="$i18n{menu}">
+      <button class="dropdown-item" role="menuitem" id="make-default-button"
+          on-click="onMakeDefaultClick_">
+        $i18n{makeDefaultLanguageLabel}
+      </button>
+      <button class="dropdown-item" role="menuitem" id="remove-button"
+          on-click="onRemoveLanguageClick_">
+        $i18n{removeLanguageLabel}
+      </button>
+    </cr-action-menu>
+  </template>
+</cr-lazy-render>

@@ -3,7 +3,7 @@
   const bp = testRunner.browserP();
   const {page, session, dp} = await testRunner.startBlank(
       'Tracing of network activity FLEDGE worklets.',
-      {url: base + 'fledge_join.html?40'});
+      {url: base + 'fledge_join.html?count=40'});
   const testStart = Date.now();
   const testLimit = 5 * 60 * 1000;  // Way longer than the test may take.
 

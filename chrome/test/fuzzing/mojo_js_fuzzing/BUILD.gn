@@ -1,0 +1,495 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/test/fuzzing/in_process_fuzzer.gni")
+import("//testing/libfuzzer/research/domatolpm/domatolpm.gni")
+import("//third_party/blink/renderer/bindings/bindings.gni")
+
+group("test") {
+  testonly = true
+}
+
+renderer_ipc_fuzzing_enabled =
+    fuzzing_engine_supports_custom_main && is_linux && enable_mojom_fuzzer
+
+if (renderer_ipc_fuzzing_enabled && !is_msan) {
+  action("mojo_js_grammar_generator") {
+    testonly = true
+    script =
+        "//chrome/test/fuzzing/mojo_js_fuzzing/grammar_generator/generator.py"
+    args = [
+      "-p",
+      rebase_path(
+          "${root_gen_dir}/chrome/test/fuzzing/renderer_fuzzing/interfaces.json",
+          root_build_dir),
+      "-r",
+      rebase_path("${root_build_dir}", root_build_dir),
+      "-o",
+      rebase_path("${target_gen_dir}/mojo_js.txt", root_build_dir),
+    ]
+    deps = [ "//chrome/test/fuzzing/renderer_fuzzing:renderer_in_process_mojolpm_fuzzer_generator" ]
+    outputs = [
+      "${target_gen_dir}/mojo_js.txt",
+      "${root_build_dir}/mojo_js_in_process_fuzzer.html",
+    ]
+  }
+
+  domatolpm_fuzzer("mojo_js_fuzzer_grammar") {
+    template_file = "//chrome/test/fuzzing/mojo_js_fuzzing/template.js"
+    grammars = [ "mojo_js_fuzzer:${target_gen_dir}/mojo_js.txt" ]
+    deps = [ ":mojo_js_grammar_generator" ]
+  }
+
+  in_process_fuzzer("mojo_js_in_process_fuzzer") {
+    sources = [ "mojo_js_in_process_fuzzer.cc" ]
+
+    centipede_options = [ "symbolizer_path=/dev/null" ]
+
+    deps = [
+      ":mojo_js_fuzzer_grammar",
+      "//chrome/test/fuzzing:in_process_proto_fuzzer_runner",
+      "//testing/libfuzzer/research/domatolpm:domatolpm_context",
+      "//third_party/libprotobuf-mutator",
+    ]
+    data = [
+      "$root_gen_dir/",
+      "${root_build_dir}/mojo_js_in_process_fuzzer.html",
+    ]
+  }
+
+  action("embedded_framesink_provider_grammar_generator") {
+    testonly = true
+    script =
+        "//chrome/test/fuzzing/mojo_js_fuzzing/grammar_generator/generator.py"
+    args = [
+      "-p",
+      rebase_path(
+          "${root_gen_dir}/chrome/test/fuzzing/renderer_fuzzing/interfaces.json",
+          root_build_dir),
+      "-r",
+      rebase_path("${root_build_dir}", root_build_dir),
+      "-o",
+      rebase_path("${target_gen_dir}/EmbeddedFrameSinkProvider.txt",
+                  root_build_dir),
+      "-i",
+      "EmbeddedFrameSinkProvider",
+    ]
+    deps = [
+      "//chrome/test/fuzzing/renderer_fuzzing:renderer_in_process_mojolpm_fuzzer_generator",
+      "//third_party/blink/public/mojom:embedded_frame_sink_mojo_bindings_js",
+    ]
+    outputs = [
+      "${target_gen_dir}/EmbeddedFrameSinkProvider.txt",
+      "${root_build_dir}/EmbeddedFrameSinkProvider_in_process_fuzzer.html",
+    ]
+  }
+
+  domatolpm_fuzzer("embedded_framesink_provider_fuzzer_grammar") {
+    template_file =
+        "//chrome/test/fuzzing/mojo_js_fuzzing/framesink_provider_template.js"
+    grammars = [ "framesink_provider_fuzzer:${target_gen_dir}/EmbeddedFrameSinkProvider.txt" ]
+    deps = [ ":embedded_framesink_provider_grammar_generator" ]
+  }
+
+  in_process_fuzzer("embedded_framesink_provider_in_process_fuzzer") {
+    sources = [ "embedded_framesink_provider_in_process_fuzzer.cc" ]
+
+    centipede_options = [ "symbolizer_path=/dev/null" ]
+
+    deps = [
+      ":embedded_framesink_provider_fuzzer_grammar",
+      "//chrome/test/fuzzing:in_process_proto_fuzzer_runner",
+      "//testing/libfuzzer/research/domatolpm:domatolpm_context",
+      "//third_party/libprotobuf-mutator",
+    ]
+    data = [
+      "$root_gen_dir/",
+      "${root_build_dir}/EmbeddedFrameSinkProvider_in_process_fuzzer.html",
+    ]
+  }
+
+  action("bucket_manager_host_grammar_generator") {
+    testonly = true
+    script =
+        "//chrome/test/fuzzing/mojo_js_fuzzing/grammar_generator/generator.py"
+    args = [
+      "-p",
+      rebase_path(
+          "${root_gen_dir}/chrome/test/fuzzing/renderer_fuzzing/interfaces.json",
+          root_build_dir),
+      "-r",
+      rebase_path("${root_build_dir}", root_build_dir),
+      "-o",
+      rebase_path("${target_gen_dir}/BucketManagerHost.txt", root_build_dir),
+      "-i",
+      "BucketManagerHost",
+    ]
+    deps = [
+      "//chrome/test/fuzzing/renderer_fuzzing:renderer_in_process_mojolpm_fuzzer_generator",
+      "//third_party/blink/public/mojom:mojom_modules_js",
+    ]
+    outputs = [
+      "${target_gen_dir}/BucketManagerHost.txt",
+      "${root_build_dir}/BucketManagerHost_in_process_fuzzer.html",
+    ]
+  }
+
+  domatolpm_fuzzer("bucket_manager_host_fuzzer_grammar") {
+    template_file =
+        "//chrome/test/fuzzing/mojo_js_fuzzing/bucket_manager_host_template.js"
+    grammars =
+        [ "bucket_manager_host_fuzzer:${target_gen_dir}/BucketManagerHost.txt" ]
+    deps = [ ":bucket_manager_host_grammar_generator" ]
+  }
+
+  in_process_fuzzer("bucket_manager_host_in_process_fuzzer") {
+    sources = [ "bucket_manager_host_in_process_fuzzer.cc" ]
+
+    centipede_options = [ "symbolizer_path=/dev/null" ]
+
+    deps = [
+      ":bucket_manager_host_fuzzer_grammar",
+      "//chrome/test/fuzzing:in_process_proto_fuzzer_runner",
+      "//testing/libfuzzer/research/domatolpm:domatolpm_context",
+      "//third_party/libprotobuf-mutator",
+    ]
+    data = [
+      "$root_gen_dir/",
+      "${root_build_dir}/BucketManagerHost_in_process_fuzzer.html",
+    ]
+  }
+
+  action("cache_storage_grammar_generator") {
+    testonly = true
+    script =
+        "//chrome/test/fuzzing/mojo_js_fuzzing/grammar_generator/generator.py"
+    args = [
+      "-p",
+      rebase_path(
+          "${root_gen_dir}/chrome/test/fuzzing/renderer_fuzzing/interfaces.json",
+          root_build_dir),
+      "-r",
+      rebase_path("${root_build_dir}", root_build_dir),
+      "-o",
+      rebase_path("${target_gen_dir}/CacheStorage.txt", root_build_dir),
+      "-i",
+      "CacheStorage",
+    ]
+    deps = [ "//chrome/test/fuzzing/renderer_fuzzing:renderer_in_process_mojolpm_fuzzer_generator" ]
+    outputs = [
+      "${target_gen_dir}/CacheStorage.txt",
+      "${root_build_dir}/CacheStorage_in_process_fuzzer.html",
+    ]
+  }
+
+  domatolpm_fuzzer("cache_storage_fuzzer_grammar") {
+    template_file =
+        "//chrome/test/fuzzing/mojo_js_fuzzing/cache_storage_template.js"
+    grammars = [ "cache_storage_fuzzer:${target_gen_dir}/CacheStorage.txt" ]
+    deps = [ ":cache_storage_grammar_generator" ]
+  }
+
+  in_process_fuzzer("cache_storage_in_process_fuzzer") {
+    sources = [ "cache_storage_in_process_fuzzer.cc" ]
+
+    centipede_options = [ "symbolizer_path=/dev/null" ]
+
+    deps = [
+      ":cache_storage_fuzzer_grammar",
+      "//chrome/test/fuzzing:in_process_proto_fuzzer_runner",
+      "//testing/libfuzzer/research/domatolpm:domatolpm_context",
+      "//third_party/libprotobuf-mutator",
+    ]
+    data = [
+      "$root_gen_dir/",
+      "${root_build_dir}/CacheStorage_in_process_fuzzer.html",
+    ]
+  }
+
+  action("clipboard_host_grammar_generator") {
+    testonly = true
+    script =
+        "//chrome/test/fuzzing/mojo_js_fuzzing/grammar_generator/generator.py"
+    args = [
+      "-p",
+      rebase_path(
+          "${root_gen_dir}/chrome/test/fuzzing/renderer_fuzzing/interfaces.json",
+          root_build_dir),
+      "-r",
+      rebase_path("${root_build_dir}", root_build_dir),
+      "-o",
+      rebase_path("${target_gen_dir}/ClipboardHost.txt", root_build_dir),
+      "-i",
+      "ClipboardHost",
+    ]
+    deps = [ "//chrome/test/fuzzing/renderer_fuzzing:renderer_in_process_mojolpm_fuzzer_generator" ]
+    outputs = [
+      "${target_gen_dir}/ClipboardHost.txt",
+      "${root_build_dir}/ClipboardHost_in_process_fuzzer.html",
+    ]
+  }
+
+  domatolpm_fuzzer("clipboard_host_fuzzer_grammar") {
+    template_file =
+        "//chrome/test/fuzzing/mojo_js_fuzzing/clipboard_host_template.js"
+    grammars = [ "clipboard_host_fuzzer:${target_gen_dir}/ClipboardHost.txt" ]
+    deps = [ ":clipboard_host_grammar_generator" ]
+  }
+
+  in_process_fuzzer("clipboard_host_in_process_fuzzer") {
+    sources = [ "clipboard_host_in_process_fuzzer.cc" ]
+
+    centipede_options = [ "symbolizer_path=/dev/null" ]
+
+    deps = [
+      ":clipboard_host_fuzzer_grammar",
+      "//chrome/test/fuzzing:in_process_proto_fuzzer_runner",
+      "//testing/libfuzzer/research/domatolpm:domatolpm_context",
+      "//third_party/libprotobuf-mutator",
+    ]
+    data = [
+      "$root_gen_dir/",
+      "${root_build_dir}/ClipboardHost_in_process_fuzzer.html",
+    ]
+  }
+
+  action("credential_manager_grammar_generator") {
+    testonly = true
+    script =
+        "//chrome/test/fuzzing/mojo_js_fuzzing/grammar_generator/generator.py"
+    args = [
+      "-p",
+      rebase_path(
+          "${root_gen_dir}/chrome/test/fuzzing/renderer_fuzzing/interfaces.json",
+          root_build_dir),
+      "-r",
+      rebase_path("${root_build_dir}", root_build_dir),
+      "-o",
+      rebase_path("${target_gen_dir}/CredentialManager.txt", root_build_dir),
+      "-i",
+      "CredentialManager",
+    ]
+    deps = [ "//chrome/test/fuzzing/renderer_fuzzing:renderer_in_process_mojolpm_fuzzer_generator" ]
+    outputs = [
+      "${target_gen_dir}/CredentialManager.txt",
+      "${root_build_dir}/CredentialManager_in_process_fuzzer.html",
+    ]
+  }
+
+  domatolpm_fuzzer("credential_manager_fuzzer_grammar") {
+    template_file =
+        "//chrome/test/fuzzing/mojo_js_fuzzing/credential_manager_template.js"
+    grammars =
+        [ "credential_manager_fuzzer:${target_gen_dir}/CredentialManager.txt" ]
+    deps = [ ":credential_manager_grammar_generator" ]
+  }
+
+  in_process_fuzzer("credential_manager_in_process_fuzzer") {
+    sources = [ "credential_manager_in_process_fuzzer.cc" ]
+
+    centipede_options = [ "symbolizer_path=/dev/null" ]
+
+    deps = [
+      ":credential_manager_fuzzer_grammar",
+      "//chrome/test/fuzzing:in_process_proto_fuzzer_runner",
+      "//testing/libfuzzer/research/domatolpm:domatolpm_context",
+      "//third_party/libprotobuf-mutator",
+    ]
+    data = [
+      "$root_gen_dir/",
+      "${root_build_dir}/CredentialManager_in_process_fuzzer.html",
+    ]
+  }
+
+  action("digital_identity_request_grammar_generator") {
+    testonly = true
+    script =
+        "//chrome/test/fuzzing/mojo_js_fuzzing/grammar_generator/generator.py"
+    args = [
+      "-p",
+      rebase_path(
+          "${root_gen_dir}/chrome/test/fuzzing/renderer_fuzzing/interfaces.json",
+          root_build_dir),
+      "-r",
+      rebase_path("${root_build_dir}", root_build_dir),
+      "-o",
+      rebase_path("${target_gen_dir}/DigitalIdentityRequest.txt",
+                  root_build_dir),
+      "-i",
+      "DigitalIdentityRequest",
+    ]
+    deps = [ "//chrome/test/fuzzing/renderer_fuzzing:renderer_in_process_mojolpm_fuzzer_generator" ]
+    outputs = [
+      "${target_gen_dir}/DigitalIdentityRequest.txt",
+      "${root_build_dir}/DigitalIdentityRequest_in_process_fuzzer.html",
+    ]
+  }
+
+  domatolpm_fuzzer("digital_identity_request_fuzzer_grammar") {
+    template_file = "//chrome/test/fuzzing/mojo_js_fuzzing/digital_identity_request_template.js"
+    grammars = [ "digital_identity_request_fuzzer:${target_gen_dir}/DigitalIdentityRequest.txt" ]
+    deps = [ ":digital_identity_request_grammar_generator" ]
+  }
+
+  in_process_fuzzer("digital_identity_request_in_process_fuzzer") {
+    sources = [ "digital_identity_request_in_process_fuzzer.cc" ]
+
+    centipede_options = [ "symbolizer_path=/dev/null" ]
+
+    deps = [
+      ":digital_identity_request_fuzzer_grammar",
+      "//chrome/test/fuzzing:in_process_proto_fuzzer_runner",
+      "//testing/libfuzzer/research/domatolpm:domatolpm_context",
+      "//third_party/libprotobuf-mutator",
+    ]
+    data = [
+      "$root_gen_dir/",
+      "${root_build_dir}/DigitalIdentityRequest_in_process_fuzzer.html",
+    ]
+  }
+
+  action("media_session_service_grammar_generator") {
+    testonly = true
+    script =
+        "//chrome/test/fuzzing/mojo_js_fuzzing/grammar_generator/generator.py"
+    args = [
+      "-p",
+      rebase_path(
+          "${root_gen_dir}/chrome/test/fuzzing/renderer_fuzzing/interfaces.json",
+          root_build_dir),
+      "-r",
+      rebase_path("${root_build_dir}", root_build_dir),
+      "-o",
+      rebase_path("${target_gen_dir}/MediaSessionService.txt", root_build_dir),
+      "-i",
+      "MediaSessionService",
+    ]
+    deps = [ "//chrome/test/fuzzing/renderer_fuzzing:renderer_in_process_mojolpm_fuzzer_generator" ]
+    outputs = [
+      "${target_gen_dir}/MediaSessionService.txt",
+      "${root_build_dir}/MediaSessionService_in_process_fuzzer.html",
+    ]
+  }
+
+  domatolpm_fuzzer("media_session_service_fuzzer_grammar") {
+    template_file = "//chrome/test/fuzzing/mojo_js_fuzzing/media_session_service_template.js"
+    grammars = [
+      "media_session_service_fuzzer:${target_gen_dir}/MediaSessionService.txt",
+    ]
+    deps = [ ":media_session_service_grammar_generator" ]
+  }
+
+  in_process_fuzzer("media_session_service_in_process_fuzzer") {
+    sources = [ "media_session_service_in_process_fuzzer.cc" ]
+
+    centipede_options = [ "symbolizer_path=/dev/null" ]
+
+    deps = [
+      ":media_session_service_fuzzer_grammar",
+      "//chrome/test/fuzzing:in_process_proto_fuzzer_runner",
+      "//testing/libfuzzer/research/domatolpm:domatolpm_context",
+      "//third_party/libprotobuf-mutator",
+    ]
+    data = [
+      "$root_gen_dir/",
+      "${root_build_dir}/MediaSessionService_in_process_fuzzer.html",
+    ]
+  }
+
+  action("storage_access_handle_grammar_generator") {
+    testonly = true
+    script =
+        "//chrome/test/fuzzing/mojo_js_fuzzing/grammar_generator/generator.py"
+    args = [
+      "-p",
+      rebase_path(
+          "${root_gen_dir}/chrome/test/fuzzing/renderer_fuzzing/interfaces.json",
+          root_build_dir),
+      "-r",
+      rebase_path("${root_build_dir}", root_build_dir),
+      "-o",
+      rebase_path("${target_gen_dir}/StorageAccessHandle.txt", root_build_dir),
+      "-i",
+      "StorageAccessHandle",
+    ]
+    deps = [ "//chrome/test/fuzzing/renderer_fuzzing:renderer_in_process_mojolpm_fuzzer_generator" ]
+    outputs = [
+      "${target_gen_dir}/StorageAccessHandle.txt",
+      "${root_build_dir}/StorageAccessHandle_in_process_fuzzer.html",
+    ]
+  }
+
+  domatolpm_fuzzer("storage_access_handle_fuzzer_grammar") {
+    template_file = "//chrome/test/fuzzing/mojo_js_fuzzing/storage_access_handle_template.js"
+    grammars = [
+      "storage_access_handle_fuzzer:${target_gen_dir}/StorageAccessHandle.txt",
+    ]
+    deps = [ ":storage_access_handle_grammar_generator" ]
+  }
+
+  in_process_fuzzer("storage_access_handle_in_process_fuzzer") {
+    sources = [ "storage_access_handle_in_process_fuzzer.cc" ]
+
+    centipede_options = [ "symbolizer_path=/dev/null" ]
+
+    deps = [
+      ":storage_access_handle_fuzzer_grammar",
+      "//chrome/test/fuzzing:in_process_proto_fuzzer_runner",
+      "//testing/libfuzzer/research/domatolpm:domatolpm_context",
+      "//third_party/libprotobuf-mutator",
+    ]
+    data = [
+      "$root_gen_dir/",
+      "${root_build_dir}/StorageAccessHandle_in_process_fuzzer.html",
+    ]
+  }
+
+  action("video_capture_host_grammar_generator") {
+    testonly = true
+    script =
+        "//chrome/test/fuzzing/mojo_js_fuzzing/grammar_generator/generator.py"
+    args = [
+      "-p",
+      rebase_path(
+          "${root_gen_dir}/chrome/test/fuzzing/renderer_fuzzing/interfaces.json",
+          root_build_dir),
+      "-r",
+      rebase_path("${root_build_dir}", root_build_dir),
+      "-o",
+      rebase_path("${target_gen_dir}/VideoCaptureHost.txt", root_build_dir),
+      "-i",
+      "VideoCaptureHost",
+    ]
+    deps = [ "//chrome/test/fuzzing/renderer_fuzzing:renderer_in_process_mojolpm_fuzzer_generator" ]
+    outputs = [
+      "${target_gen_dir}/VideoCaptureHost.txt",
+      "${root_build_dir}/VideoCaptureHost_in_process_fuzzer.html",
+    ]
+  }
+
+  domatolpm_fuzzer("video_capture_host_fuzzer_grammar") {
+    template_file =
+        "//chrome/test/fuzzing/mojo_js_fuzzing/video_capture_host_template.js"
+    grammars =
+        [ "video_capture_host_fuzzer:${target_gen_dir}/VideoCaptureHost.txt" ]
+    deps = [ ":video_capture_host_grammar_generator" ]
+  }
+
+  in_process_fuzzer("video_capture_host_in_process_fuzzer") {
+    sources = [ "video_capture_host_in_process_fuzzer.cc" ]
+
+    centipede_options = [ "symbolizer_path=/dev/null" ]
+
+    deps = [
+      ":video_capture_host_fuzzer_grammar",
+      "//chrome/test/fuzzing:in_process_proto_fuzzer_runner",
+      "//testing/libfuzzer/research/domatolpm:domatolpm_context",
+      "//third_party/libprotobuf-mutator",
+    ]
+    data = [
+      "$root_gen_dir/",
+      "${root_build_dir}/VideoCaptureHost_in_process_fuzzer.html",
+    ]
+  }
+}

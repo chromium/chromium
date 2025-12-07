@@ -11,16 +11,19 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/trace_event/trace_config.h"
 #include "content/public/browser/browser_accessibility_state.h"
+#include "content/public/browser/scoped_accessibility_mode.h"
+#include "content/public/browser/web_contents.h"
 #include "content/shell/app/resource.h"
 #include "content/shell/browser/color_chooser/shell_color_chooser_ios.h"
 #include "content/shell/browser/shell.h"
+#include "content/shell/browser/shell_content_browser_client.h"
 #include "content/shell/browser/shell_file_select_helper.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "services/tracing/public/mojom/constants.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/core/trace_config.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 #include "ui/display/screen.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace {
 
@@ -31,7 +34,8 @@ static const char kGraphicsTracingCategories[] =
 static const char kDetailedGraphicsTracingCategories[] =
     "-*,blink,cc,gpu,renderer.scheduler,sequence_manager,v8,toplevel,viz,evdev,"
     "input,benchmark,disabled-by-default-skia,disabled-by-default-skia.gpu,"
-    "disabled-by-default-skia.gpu.cache,disabled-by-default-skia.shaders";
+    "disabled-by-default-skia.gpu.cache,disabled-by-default-skia.shaders,"
+    "disabled-by-default-gpu.dawn,disabled-by-default-gpu.graphite.dawn";
 
 static const char kNavigationTracingCategories[] =
     "-*,benchmark,toplevel,ipc,base,browser,navigation,omnibox,ui,shutdown,"
@@ -62,12 +66,10 @@ static const char kAllTracingCategories[] = "*";
  @private
   raw_ptr<content::Shell> _shell;
 }
-// Header containing navigation buttons and |field|.
-@property(nonatomic, strong) UIView* headerBackgroundView;
-// Header containing navigation buttons and |field|.
-@property(nonatomic, strong) UIView* headerContentView;
-// Height constraint for `headerContentView`.
-@property(nonatomic, strong) NSLayoutConstraint* headerHeightConstraint;
+// Toolbar containing navigation buttons and |urlField|.
+@property(nonatomic, strong) UIStackView* toolbarBackgroundView;
+// Toolbar containing navigation buttons and |urlField|.
+@property(nonatomic, strong) UIStackView* toolbarContentView;
 // Button to navigate backwards.
 @property(nonatomic, strong) UIButton* backButton;
 // Button to navigate forwards.
@@ -77,7 +79,7 @@ static const char kAllTracingCategories[] = "*";
 // Button that shows the menu
 @property(nonatomic, strong) UIButton* menuButton;
 // Text field used for navigating to URLs.
-@property(nonatomic, strong) UITextField* field;
+@property(nonatomic, strong) UITextField* urlField;
 // Container for |webView|.
 @property(nonatomic, strong) UIView* contentView;
 // Manages tracing and tracing state.
@@ -87,6 +89,10 @@ static const char kAllTracingCategories[] = "*";
 + (UIColor*)backgroundColorTracing;
 - (id)initWithShell:(content::Shell*)shell;
 - (content::Shell*)shell;
+- (UIStackView*)createToolbarBackgroundView;
+- (UIStackView*)createToolbarContentView;
+- (UIButton*)makeButton:(NSString*)imageName action:(SEL)action;
+- (UITextField*)makeURLBar;
 - (void)back;
 - (void)forward;
 - (void)reloadOrStop;
@@ -102,14 +108,14 @@ static const char kAllTracingCategories[] = "*";
 @implementation ContentShellWindowDelegate
 @synthesize backButton = _backButton;
 @synthesize contentView = _contentView;
-@synthesize field = _field;
+@synthesize urlField = _urlField;
 @synthesize forwardButton = _forwardButton;
 @synthesize reloadOrStopButton = _reloadOrStopButton;
 @synthesize menuButton = _menuButton;
-@synthesize headerBackgroundView = _headerBackgroundView;
-@synthesize headerContentView = _headerContentView;
-@synthesize headerHeightConstraint = _headerHeightConstraint;
+@synthesize toolbarBackgroundView = _toolbarBackgroundView;
+@synthesize toolbarContentView = _toolbarContentView;
 @synthesize tracingHandler = _tracingHandler;
+std::unique_ptr<content::ScopedAccessibilityMode> _scopedAccessibilityMode;
 
 + (UIColor*)backgroundColorDefault {
   return [UIColor colorWithRed:66.0 / 255.0
@@ -125,171 +131,135 @@ static const char kAllTracingCategories[] = "*";
                          alpha:1.0];
 }
 
+#if BUILDFLAG(IS_IOS_TVOS)
+// The following methods handle tvOS's focus engine by implementing the
+// following behavior:
+//
+// 1. The content view is focused and receives user input by default.
+// 2. Pressing the Menu button in the remote control switches focus to
+//    `_toolbarContentView` so that users can use the toolbar and the location
+//    bar.
+// 3. Pressing the Menu button again after that will switch to the home screen,
+//    and swiping down to focus the content view will reset the behavior
+//    described in 1).
+- (void)pressesBegan:(NSSet<UIPress*>*)presses
+           withEvent:(UIPressesEvent*)event {
+  for (UIPress* press in presses) {
+    if (press.type == UIPressTypeMenu) {
+      if (!content::Shell::ShouldHideToolbar() &&
+          _shell->web_contents()->GetContentNativeView().Get().focused) {
+        _toolbarContentView.userInteractionEnabled = YES;
+        [self setNeedsFocusUpdate];
+        return;
+      }
+    }
+  }
+  [super pressesBegan:presses withEvent:event];
+}
+
+- (void)didUpdateFocusInContext:(UIFocusUpdateContext*)context
+       withAnimationCoordinator:(UIFocusAnimationCoordinator*)coordinator {
+  if (_shell) {
+    const UIView* nativeWebContentsView =
+        _shell->web_contents()->GetContentNativeView().Get();
+    if (context.nextFocusedView == nativeWebContentsView) {
+      _toolbarContentView.userInteractionEnabled = NO;
+      _shell->web_contents()->Focus();
+    }
+  }
+}
+
+- (NSArray<id<UIFocusEnvironment>>*)preferredFocusEnvironments {
+  // `userInteractionEnabled` is false when we create `_toolbarContentView` so
+  // that we focus on `_contentView` by default instead of the Back button in
+  // the toolbar.
+  // We set it to true when explicitly pressing the Back button on the remote
+  // control in order to focus the toolbar.
+  return _toolbarContentView.userInteractionEnabled ? @[ _toolbarContentView ]
+                                                    : @[ _contentView ];
+}
+#endif
+
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  // View creation.
-  self.headerBackgroundView = [[UIView alloc] init];
-  self.headerContentView = [[UIView alloc] init];
+  // Create a web content view.
   self.contentView = [[UIView alloc] init];
-  self.backButton = [[UIButton alloc] init];
-  self.forwardButton = [[UIButton alloc] init];
-  self.reloadOrStopButton = [[UIButton alloc] init];
-  self.menuButton = [[UIButton alloc] init];
-  self.field = [[UITextField alloc] init];
-  self.tracingHandler = [[TracingHandler alloc] init];
-
-  // View hierarchy.
-  [self.view addSubview:_headerBackgroundView];
   [self.view addSubview:_contentView];
-  [_headerBackgroundView addSubview:_headerContentView];
-  [_headerContentView addSubview:_backButton];
-  [_headerContentView addSubview:_forwardButton];
-  [_headerContentView addSubview:_reloadOrStopButton];
-  [_headerContentView addSubview:_menuButton];
-  [_headerContentView addSubview:_field];
 
-  self.view.accessibilityElements = @[ _headerBackgroundView, _contentView ];
-  self.view.isAccessibilityElement = NO;
+  // Create a toolbar.
+  if (!content::Shell::ShouldHideToolbar()) {
+    self.toolbarBackgroundView = [self createToolbarBackgroundView];
+    self.toolbarContentView = [self createToolbarContentView];
 
-  _headerBackgroundView.backgroundColor =
-      [ContentShellWindowDelegate backgroundColorDefault];
+    self.backButton = [self makeButton:@"ic_back" action:@selector(back)];
+    self.forwardButton = [self makeButton:@"ic_forward"
+                                   action:@selector(forward)];
+    self.reloadOrStopButton = [self makeButton:@"ic_reload"
+                                        action:@selector(reloadOrStop)];
+    self.menuButton = [self makeButton:@"ic_menu"
+                                action:@selector(showMainMenu)];
+    self.urlField = [self makeURLBar];
+    self.tracingHandler = [[TracingHandler alloc] init];
 
-  [_backButton setImage:[UIImage imageNamed:@"ic_back"]
-               forState:UIControlStateNormal];
-  _backButton.tintColor = [UIColor whiteColor];
-  [_backButton addTarget:self
-                  action:@selector(back)
-        forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:_toolbarBackgroundView];
+    [_toolbarBackgroundView addArrangedSubview:_toolbarContentView];
 
-  [_forwardButton setImage:[UIImage imageNamed:@"ic_forward"]
-                  forState:UIControlStateNormal];
-  _forwardButton.tintColor = [UIColor whiteColor];
-  [_forwardButton addTarget:self
-                     action:@selector(forward)
-           forControlEvents:UIControlEventTouchUpInside];
+    [_toolbarContentView addArrangedSubview:_backButton];
+    [_toolbarContentView addArrangedSubview:_forwardButton];
+    [_toolbarContentView addArrangedSubview:_reloadOrStopButton];
+    [_toolbarContentView addArrangedSubview:_menuButton];
+    [_toolbarContentView addArrangedSubview:_urlField];
 
-  [_reloadOrStopButton setImage:[UIImage imageNamed:@"ic_reload"]
-                       forState:UIControlStateNormal];
-  _reloadOrStopButton.tintColor = [UIColor whiteColor];
-  [_reloadOrStopButton addTarget:self
-                          action:@selector(reloadOrStop)
-                forControlEvents:UIControlEventTouchUpInside];
+    self.view.accessibilityElements = @[ _toolbarBackgroundView, _contentView ];
+    self.view.isAccessibilityElement = NO;
 
-  _menuButton.tintColor = [UIColor whiteColor];
-  [_menuButton setImage:[UIImage imageNamed:@"ic_menu"]
-               forState:UIControlStateNormal];
-  [_menuButton addTarget:self
-                  action:@selector(showMainMenu)
-        forControlEvents:UIControlEventTouchUpInside];
+    // Constraint the toolbar background view.
+    _toolbarBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+    [NSLayoutConstraint activateConstraints:@[
+      [_toolbarBackgroundView.topAnchor
+          constraintEqualToAnchor:self.view.topAnchor],
+      [_toolbarBackgroundView.leadingAnchor
+          constraintEqualToAnchor:self.view.leadingAnchor],
+      [_toolbarBackgroundView.trailingAnchor
+          constraintEqualToAnchor:self.view.trailingAnchor],
+    ]];
 
-  _field.placeholder = @"Search or type URL";
-  _field.tintColor = _headerBackgroundView.backgroundColor;
-  [_field setContentHuggingPriority:UILayoutPriorityDefaultLow - 1
-                            forAxis:UILayoutConstraintAxisHorizontal];
-  _field.delegate = self;
-  _field.layer.cornerRadius = 2.0;
-  _field.keyboardType = UIKeyboardTypeWebSearch;
-  _field.autocapitalizationType = UITextAutocapitalizationTypeNone;
-  _field.clearButtonMode = UITextFieldViewModeWhileEditing;
-  _field.autocorrectionType = UITextAutocorrectionTypeNo;
-  UIView* spacerView = [[UIView alloc] init];
-  spacerView.frame = CGRectMake(0, 0, 8, 8);
-  _field.leftViewMode = UITextFieldViewModeAlways;
-  _field.leftView = spacerView;
+    // Constraint the toolbar content view.
+    _toolbarContentView.translatesAutoresizingMaskIntoConstraints = NO;
+    [NSLayoutConstraint activateConstraints:@[
+      // This height constraint is somewhat arbitrary: the idea is that it gives
+      // us enough space to centralize the buttons inside |_toolbarContentView|
+      // while having enough top and bottom margins.
+      // Twice the size of a button also accounts for platforms such as tvOS,
+      // where focused buttons are larger and have a drop shadow.
+      [_toolbarContentView.heightAnchor
+          constraintEqualToAnchor:_backButton.heightAnchor
+                       multiplier:2.0],
+    ]];
+  }  // if (!content::Shell::ShouldHideToolbar())
 
-  // Constraints.
-  _headerBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
-  [NSLayoutConstraint activateConstraints:@[
-    [_headerBackgroundView.topAnchor
-        constraintEqualToAnchor:self.view.topAnchor],
-    [_headerBackgroundView.leadingAnchor
-        constraintEqualToAnchor:self.view.leadingAnchor],
-    [_headerBackgroundView.trailingAnchor
-        constraintEqualToAnchor:self.view.trailingAnchor],
-    [_headerBackgroundView.bottomAnchor
-        constraintEqualToAnchor:_headerContentView.bottomAnchor],
-  ]];
-
-  _headerContentView.translatesAutoresizingMaskIntoConstraints = NO;
-  _headerHeightConstraint =
-      [_headerContentView.heightAnchor constraintEqualToConstant:56.0];
-  [NSLayoutConstraint activateConstraints:@[
-    [_headerContentView.topAnchor
-        constraintEqualToAnchor:_headerBackgroundView.safeAreaLayoutGuide
-                                    .topAnchor],
-    [_headerContentView.leadingAnchor
-        constraintEqualToAnchor:_headerBackgroundView.safeAreaLayoutGuide
-                                    .leadingAnchor],
-    [_headerContentView.trailingAnchor
-        constraintEqualToAnchor:_headerBackgroundView.safeAreaLayoutGuide
-                                    .trailingAnchor],
-    _headerHeightConstraint,
-  ]];
-
+  // Constraint the web content view.
   _contentView.translatesAutoresizingMaskIntoConstraints = NO;
   [NSLayoutConstraint activateConstraints:@[
     [_contentView.topAnchor
-        constraintEqualToAnchor:_headerBackgroundView.bottomAnchor],
+        constraintEqualToAnchor:content::Shell::ShouldHideToolbar()
+                                    ? self.view.safeAreaLayoutGuide.topAnchor
+                                    : _toolbarBackgroundView.bottomAnchor],
     [_contentView.leadingAnchor
-        constraintEqualToAnchor:self.view.leadingAnchor],
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor],
     [_contentView.trailingAnchor
-        constraintEqualToAnchor:self.view.trailingAnchor],
-    [_contentView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor],
-  ]];
-
-  _backButton.translatesAutoresizingMaskIntoConstraints = NO;
-  [NSLayoutConstraint activateConstraints:@[
-    [_backButton.leadingAnchor
-        constraintEqualToAnchor:_headerContentView.safeAreaLayoutGuide
-                                    .leadingAnchor
-                       constant:16.0],
-    [_backButton.centerYAnchor
-        constraintEqualToAnchor:_headerContentView.centerYAnchor],
-  ]];
-
-  _forwardButton.translatesAutoresizingMaskIntoConstraints = NO;
-  [NSLayoutConstraint activateConstraints:@[
-    [_forwardButton.leadingAnchor
-        constraintEqualToAnchor:_backButton.trailingAnchor
-                       constant:16.0],
-    [_forwardButton.centerYAnchor
-        constraintEqualToAnchor:_headerContentView.centerYAnchor],
-  ]];
-
-  _reloadOrStopButton.translatesAutoresizingMaskIntoConstraints = NO;
-  [NSLayoutConstraint activateConstraints:@[
-    [_reloadOrStopButton.leadingAnchor
-        constraintEqualToAnchor:_forwardButton.trailingAnchor
-                       constant:16.0],
-    [_reloadOrStopButton.centerYAnchor
-        constraintEqualToAnchor:_headerContentView.centerYAnchor],
-  ]];
-  _menuButton.translatesAutoresizingMaskIntoConstraints = NO;
-  [NSLayoutConstraint activateConstraints:@[
-    [_menuButton.leadingAnchor
-        constraintEqualToAnchor:_reloadOrStopButton.trailingAnchor
-                       constant:16.0],
-    [_menuButton.centerYAnchor
-        constraintEqualToAnchor:_headerContentView.centerYAnchor],
-  ]];
-
-  _field.translatesAutoresizingMaskIntoConstraints = NO;
-  [NSLayoutConstraint activateConstraints:@[
-    [_field.leadingAnchor constraintEqualToAnchor:_menuButton.trailingAnchor
-                                         constant:16.0],
-    [_field.centerYAnchor
-        constraintEqualToAnchor:_headerContentView.centerYAnchor],
-    [_field.trailingAnchor
-        constraintEqualToAnchor:_headerContentView.safeAreaLayoutGuide
-                                    .trailingAnchor
-                       constant:-16.0],
-    [_field.heightAnchor constraintEqualToConstant:32.0],
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor],
+    [_contentView.bottomAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor],
   ]];
 
   // Enable Accessibility if VoiceOver is already running.
   if (UIAccessibilityIsVoiceOverRunning()) {
-    content::BrowserAccessibilityState::GetInstance()->OnScreenReaderDetected();
+    _scopedAccessibilityMode =
+        content::BrowserAccessibilityState::GetInstance()
+            ->CreateScopedModeForProcess(ui::kAXModeComplete |
+                                         ui::AXMode::kFromPlatform);
   }
 
   // Register for VoiceOver notifications.
@@ -299,8 +269,8 @@ static const char kAllTracingCategories[] = "*";
              name:UIAccessibilityVoiceOverStatusDidChangeNotification
            object:nil];
 
-  UIView* web_contents_view = _shell->web_contents()->GetNativeView().Get();
-  [_contentView addSubview:web_contents_view];
+  UIView* webContentsView = _shell->web_contents()->GetNativeView().Get();
+  [_contentView addSubview:webContentsView];
 
   if (@available(ios 17.0, *)) {
     NSArray<UITrait>* traits = @[ UITraitUserInterfaceStyle.self ];
@@ -314,7 +284,7 @@ static const char kAllTracingCategories[] = "*";
 - (void)darkModeDidChange {
   BOOL darkModeEnabled =
       (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
-  _field.backgroundColor =
+  _urlField.backgroundColor =
       darkModeEnabled ? [UIColor darkGrayColor] : [UIColor whiteColor];
 }
 
@@ -327,6 +297,71 @@ static const char kAllTracingCategories[] = "*";
 
 - (content::Shell*)shell {
   return _shell;
+}
+
+- (UIButton*)makeButton:(NSString*)imageName action:(SEL)action {
+  UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
+  [button setImage:[UIImage imageNamed:imageName]
+          forState:UIControlStateNormal];
+  button.tintColor = [UIColor whiteColor];
+  [button addTarget:self
+                action:action
+      forControlEvents:UIControlEventTouchUpInside |
+                       UIControlEventPrimaryActionTriggered];
+  return button;
+}
+
+- (UITextField*)makeURLBar {
+  UITextField* field = [[UITextField alloc] init];
+  field.placeholder = @"Search or type URL";
+  field.tintColor = _toolbarBackgroundView.backgroundColor;
+  [field setContentHuggingPriority:UILayoutPriorityDefaultLow - 1
+                           forAxis:UILayoutConstraintAxisHorizontal];
+  field.delegate = self;
+  field.borderStyle = UITextBorderStyleRoundedRect;
+  field.keyboardType = UIKeyboardTypeWebSearch;
+  field.autocapitalizationType = UITextAutocapitalizationTypeNone;
+  field.clearButtonMode = UITextFieldViewModeWhileEditing;
+  field.autocorrectionType = UITextAutocorrectionTypeNo;
+  return field;
+}
+
+- (UIStackView*)createToolbarBackgroundView {
+  UIStackView* toolbarBackgroundView = [[UIStackView alloc] init];
+
+  // |toolbarBackgroundView| is a 1-item UIStackView. We use a UIStackView so
+  // that we can:
+  // 1. Easily hide |toolbarContentView| when entering fullscreen mode in a
+  // way that removes it from the layout.
+  // 2. Let UIStackView figure out most constraints for |toolbarContentView|
+  // so that we do not have to do it manually.
+  toolbarBackgroundView.backgroundColor =
+      [ContentShellWindowDelegate backgroundColorDefault];
+  toolbarBackgroundView.alignment = UIStackViewAlignmentBottom;
+  toolbarBackgroundView.axis = UILayoutConstraintAxisHorizontal;
+
+  // Use the root view's layout margins (which account for safe areas and the
+  // system's minimum margins).
+  toolbarBackgroundView.layoutMarginsRelativeArrangement = YES;
+  toolbarBackgroundView.preservesSuperviewLayoutMargins = YES;
+
+  return toolbarBackgroundView;
+}
+
+- (UIStackView*)createToolbarContentView {
+  UIStackView* toolbarContentView = [[UIStackView alloc] init];
+
+#if BUILDFLAG(IS_IOS_TVOS)
+  // On tvOS, make it impossible to focus `_toolbarContentView` by simply
+  // swiping up on the remote control since this behavior is not intuitive.
+  toolbarContentView.userInteractionEnabled = NO;
+#endif
+
+  toolbarContentView.alignment = UIStackViewAlignmentCenter;
+  toolbarContentView.axis = UILayoutConstraintAxisHorizontal;
+  toolbarContentView.spacing = 16.0;
+
+  return toolbarContentView;
 }
 
 - (void)back {
@@ -355,6 +390,17 @@ static const char kAllTracingCategories[] = "*";
                                        handler:nil]];
 
   __weak ContentShellWindowDelegate* weakSelf = self;
+
+  bool jitEnabled = content::ShellContentBrowserClient::Get()->IsJITEnabled();
+  NSString* jit_label = jitEnabled ? @"Disable JIT" : @"Enable JIT";
+  [alertController
+      addAction:[UIAlertAction
+                    actionWithTitle:jit_label
+                              style:UIAlertActionStyleDefault
+                            handler:^(UIAlertAction* action) {
+                              content::ShellContentBrowserClient::Get()
+                                  ->SetJITEnabled(!jitEnabled);
+                            }]];
 
   if ([_tracingHandler isTracing]) {
     [alertController
@@ -402,7 +448,7 @@ static const char kAllTracingCategories[] = "*";
 }
 
 - (void)updateBackground {
-  _headerBackgroundView.backgroundColor =
+  _toolbarBackgroundView.backgroundColor =
       [_tracingHandler isTracing]
           ? [ContentShellWindowDelegate backgroundColorTracing]
           : [ContentShellWindowDelegate backgroundColorDefault];
@@ -425,17 +471,18 @@ static const char kAllTracingCategories[] = "*";
 }
 
 - (void)setURL:(NSString*)url {
-  _field.text = url;
+  _urlField.text = url;
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField*)field {
-  std::string field_value = base::SysNSStringToUTF8(field.text);
-  GURL url(field_value);
+  std::string fieldValue = base::SysNSStringToUTF8(field.text);
+  GURL url(fieldValue);
   if (!url.has_scheme()) {
     // TODOD(dtapuska): Fix this to URL encode the query.
-    std::string search_url = "https://www.google.com/search?q=" + field_value;
-    url = GURL(search_url);
+    std::string searchUrl = "https://www.google.com/search?q=" + fieldValue;
+    url = GURL(searchUrl);
   }
+  [_urlField resignFirstResponder];
   _shell->LoadURL(url);
   return YES;
 }
@@ -461,9 +508,11 @@ static const char kAllTracingCategories[] = "*";
   content::BrowserAccessibilityState* accessibility_state =
       content::BrowserAccessibilityState::GetInstance();
   if (UIAccessibilityIsVoiceOverRunning()) {
-    accessibility_state->OnScreenReaderDetected();
+    _scopedAccessibilityMode = accessibility_state->CreateScopedModeForProcess(
+        ui::kAXModeComplete | ui::AXMode::kFromPlatform |
+        ui::AXMode::kScreenReader);
   } else {
-    accessibility_state->OnScreenReaderStopped();
+    _scopedAccessibilityMode.reset();
   }
 }
 @end
@@ -498,16 +547,16 @@ static const char kAllTracingCategories[] = "*";
 
   NSLog(@"Will trace to file: %@", filename);
 
-  perfetto::TraceConfig perfetto_config = tracing::GetDefaultPerfettoConfig(
+  perfetto::TraceConfig perfettoConfig = tracing::GetDefaultPerfettoConfig(
       base::trace_event::TraceConfig(categories, ""),
       /*privacy_filtering_enabled=*/false,
       /*convert_to_legacy_json=*/true);
 
-  perfetto_config.set_write_into_file(true);
+  perfettoConfig.set_write_into_file(true);
   _tracingSession =
       perfetto::Tracing::NewTrace(perfetto::BackendType::kCustomBackend);
 
-  _tracingSession->Setup(perfetto_config, [_traceFileHandle fileDescriptor]);
+  _tracingSession->Setup(perfettoConfig, [_traceFileHandle fileDescriptor]);
 
   __weak TracingHandler* weakSelf = self;
   auto runner = base::SequencedTaskRunner::GetCurrentDefault();
@@ -574,7 +623,10 @@ void ShellPlatformDelegate::CreatePlatformWindow(
   UIWindow* window =
       [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
   window.backgroundColor = [UIColor whiteColor];
+#if !BUILDFLAG(IS_IOS_TVOS)
+  // Leaves `tintColor` by default on tvOS. Refer to crbug.com/454180134.
   window.tintColor = [UIColor darkGrayColor];
+#endif
 
   ContentShellWindowDelegate* controller =
       [[ContentShellWindowDelegate alloc] initWithShell:shell];
@@ -614,6 +666,10 @@ void ShellPlatformDelegate::ResizeWebContent(Shell* shell,
 void ShellPlatformDelegate::EnableUIControl(Shell* shell,
                                             UIControl control,
                                             bool is_enabled) {
+  if (content::Shell::ShouldHideToolbar()) {
+    return;
+  }
+
   DCHECK(base::Contains(shell_data_map_, shell));
   ShellData& shell_data = shell_data_map_[shell];
   UIButton* button = nil;
@@ -634,8 +690,7 @@ void ShellPlatformDelegate::EnableUIControl(Shell* shell,
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION() << "Unknown UI control";
-      return;
+      NOTREACHED() << "Unknown UI control";
   }
   [button setEnabled:is_enabled];
 }
@@ -659,7 +714,8 @@ void ShellPlatformDelegate::SetTitle(Shell* shell,
   DCHECK(base::Contains(shell_data_map_, shell));
 }
 
-void ShellPlatformDelegate::MainFrameCreated(Shell* shell) {}
+void ShellPlatformDelegate::MainFrameCreated(Shell* shell,
+                                             RenderFrameHost* main_frame) {}
 
 bool ShellPlatformDelegate::DestroyShell(Shell* shell) {
   DCHECK(base::Contains(shell_data_map_, shell));
@@ -696,12 +752,8 @@ void ShellPlatformDelegate::ToggleFullscreenModeForTab(
     return;
   }
   shell_data.fullscreen = enter_fullscreen;
-  float height = enter_fullscreen ? 0.0 : 56.0;
   [((ContentShellWindowDelegate*)shell_data.window.rootViewController)
-      headerHeightConstraint]
-      .constant = height;
-  [((ContentShellWindowDelegate*)shell_data.window.rootViewController)
-      headerContentView]
+      toolbarContentView]
       .hidden = enter_fullscreen;
 }
 

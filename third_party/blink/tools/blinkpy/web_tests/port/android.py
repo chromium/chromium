@@ -38,9 +38,6 @@ class AndroidPort(linux.LinuxPort):
     FALLBACK_PATHS['android'] = (
         ['android'] + linux.LinuxPort.latest_platform_fallback_path())
 
-    def configuration_specifier_macros(self):
-        return {self.port_name: list(self.SUPPORTED_VERSIONS)}
-
     def default_expectations_files(self):
         """Returns a list of paths to expectations files that apply by default.
 
@@ -52,8 +49,6 @@ class AndroidPort(linux.LinuxPort):
             filter(None, [
                 self.path_to_generic_test_expectations_file(),
                 self._filesystem.join(self.web_tests_dir(), 'NeverFixTests'),
-                self._filesystem.join(self.web_tests_dir(),
-                                      'MobileTestExpectations'),
                 self._filesystem.join(self.web_tests_dir(),
                                       'StaleTestExpectations'),
                 self._filesystem.join(self.web_tests_dir(), 'SlowTests')

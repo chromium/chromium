@@ -87,6 +87,10 @@ xsltDocDefaultLoaderFunc(const xmlChar * URI, xmlDictPtr dict, int options,
         xmlFreeParserCtxt(pctxt);
 	return(NULL);
     }
+
+#if LIBXML_VERSION >= 21300
+    doc = xmlCtxtParseDocument(pctxt, inputStream);
+#else
     inputPush(pctxt, inputStream);
 
     xmlParseDocument(pctxt);
@@ -99,6 +103,8 @@ xsltDocDefaultLoaderFunc(const xmlChar * URI, xmlDictPtr dict, int options,
         xmlFreeDoc(pctxt->myDoc);
         pctxt->myDoc = NULL;
     }
+#endif
+
     xmlFreeParserCtxt(pctxt);
 
     return(doc);

@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #import "content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h"
 
@@ -24,12 +20,11 @@
 #import "base/mac/mac_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "components/input/web_input_event_builders_mac.h"
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
-#import "content/browser/accessibility/browser_accessibility_cocoa.h"
-#import "content/browser/accessibility/browser_accessibility_mac.h"
-#include "content/browser/accessibility/browser_accessibility_manager_mac.h"
 #import "content/browser/cocoa/system_hotkey_helper_mac.h"
 #import "content/browser/cocoa/system_hotkey_map.h"
 #include "content/browser/renderer_host/render_widget_host_view_mac.h"
@@ -37,12 +32,16 @@
 #include "content/common/features.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #import "content/public/browser/render_widget_host_view_mac_delegate.h"
+#include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/common/content_features.h"
 #include "skia/ext/skia_utils_mac.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #include "ui/accessibility/accessibility_features.h"
+#import "ui/accessibility/platform/browser_accessibility_cocoa.h"
+#import "ui/accessibility/platform/browser_accessibility_mac.h"
+#include "ui/accessibility/platform/browser_accessibility_manager_mac.h"
 #import "ui/base/clipboard/clipboard_util_mac.h"
 #import "ui/base/cocoa/appkit_utils.h"
 #import "ui/base/cocoa/nsmenu_additions.h"
@@ -57,6 +56,7 @@
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
+#include "ui/gfx/native_ui_types.h"
 
 using blink::WebGestureEvent;
 using blink::WebInputEvent;
@@ -113,11 +113,9 @@ class DummyHostHelper : public RenderWidgetHostNSViewHostHelper {
       const blink::WebMouseWheelEvent& web_event) override {}
   void ForwardMouseEvent(const blink::WebMouseEvent& web_event) override {}
   void ForwardWheelEvent(const blink::WebMouseWheelEvent& web_event) override {}
-  void GestureBegin(blink::WebGestureEvent begin_event,
-                    bool is_synthetically_injected) override {}
-  void GestureUpdate(blink::WebGestureEvent update_event) override {}
-  void GestureEnd(blink::WebGestureEvent end_event) override {}
-  void SmartMagnify(const blink::WebGestureEvent& web_event) override {}
+  void PinchEvent(blink::WebGestureEvent pinch_event,
+                  bool is_synthetically_injected) override {}
+  void SmartMagnifyEvent(const blink::WebGestureEvent& web_event) override {}
 };
 
 // Touch bar identifier.
@@ -183,8 +181,10 @@ void ExtractUnderlines(NSAttributedString* string,
 @property(getter=isAutomaticDashSubstitutionEnabled)
     BOOL automaticDashSubstitutionEnabled;
 
-- (void)processedWheelEvent:(const blink::WebMouseWheelEvent&)event
-                   consumed:(BOOL)consumed;
+// Tracks the window for which the "onWindowDidResignKey" notification was
+// deferred.
+@property(weak, nonatomic, class) NSWindow* deferredResignKeyWindow;
+
 - (void)keyEvent:(NSEvent*)theEvent wasKeyEquivalent:(BOOL)equiv;
 - (void)windowDidChangeScreenOrBackingProperties:(NSNotification*)notification;
 - (void)windowChangedGlobalFrame:(NSNotification*)notification;
@@ -228,6 +228,9 @@ void ExtractUnderlines(NSAttributedString* string,
 
   // This ivar is the cocoa delegate of the NSResponder.
   NSObject<RenderWidgetHostViewMacDelegate>* __strong _responderDelegate;
+  NSRange _preContextualMenuSelectionRange;
+  BOOL _willInvokeContextMenuWithEmptySelection;
+  BOOL _textSelectionChangedForContextualMenu;
   BOOL _canBeKeyView;
   BOOL _closeOnDeactivate;
   std::unique_ptr<content::RenderWidgetHostViewMacEditCommandHelper>
@@ -287,6 +290,7 @@ void ExtractUnderlines(NSAttributedString* string,
   // full string in the renderer.
   std::u16string _availableText;
   size_t _availableTextOffset;
+  NSUInteger _availableTextChangeCounter;
   gfx::Range _textSelectionRange;
 
   // The composition range, cached from the RenderWidgetHostView. This is only
@@ -355,12 +359,16 @@ void ExtractUnderlines(NSAttributedString* string,
   BOOL _shouldRequestTextSubstitutions;
   BOOL _substitutionWasApplied;
   bool _sonomaAccessibilityRefinementsAreActive;
+  std::unique_ptr<content::ScopedAccessibilityMode> _basic_accessibility_mode;
 }
 
 @synthesize markedRange = _markedRange;
 @synthesize textInputType = _textInputType;
 @synthesize textInputFlags = _textInputFlags;
 @synthesize spellCheckerForTesting = _spellCheckerForTesting;
+
+// Static storage for the class property deferredResignKeyWindow
+static NSWindow* __weak _deferredResignKeyWindow;
 
 + (void)initialize {
   RenderWidgetHostViewMacEditCommandHelper::AddEditingSelectorsToClass(self);
@@ -476,6 +484,8 @@ void ExtractUnderlines(NSAttributedString* string,
   NSRect textRectInViewCoordinates =
       [self convertRect:textRectInWindowCoordinates fromView:nil];
 
+  NSUInteger capturedChangeCounter = _availableTextChangeCounter;
+
   [self.spellChecker
       showCorrectionIndicatorOfType:NSCorrectionIndicatorTypeDefault
                       primaryString:candidateResult.replacementString
@@ -484,12 +494,14 @@ void ExtractUnderlines(NSAttributedString* string,
                                view:self
                   completionHandler:^(NSString* acceptedString) {
                     [self didAcceptReplacementString:acceptedString
-                               forTextCheckingResult:candidateResult];
+                               forTextCheckingResult:candidateResult
+                                    withChangeNumber:capturedChangeCounter];
                   }];
 }
 
 - (void)didAcceptReplacementString:(NSString*)acceptedString
-             forTextCheckingResult:(NSTextCheckingResult*)correction {
+             forTextCheckingResult:(NSTextCheckingResult*)correction
+                  withChangeNumber:(NSUInteger)changeNumber {
   // TODO: Keep NSSpellChecker up to date on the user's response via
   // -recordResponse:toCorrection:forWord:language:inSpellDocumentWithTag:.
   // Call it to report whether they initially accepted or rejected the
@@ -519,6 +531,19 @@ void ExtractUnderlines(NSAttributedString* string,
     if ([self.spellChecker preventsAutocorrectionBeforeString:trailingString
                                                      language:nil])
       return;
+
+    // Gather some info in case -doubleClickAtIndex: throws an exception.
+    // This change will eventually be reverted.
+    NSString* info = [NSString
+        stringWithFormat:@"%lu == %lu %lu %@ %@ %@ %@", changeNumber,
+                         _availableTextChangeCounter, attString.string.length,
+                         NSStringFromRange(availableTextRange),
+                         NSStringFromRange(correction.range),
+                         NSStringFromRange(trailingRange),
+                         NSStringFromRange(trailingRangeInAvailableText)];
+    SCOPED_CRASH_KEY_STRING256("RenderWidgetHostViewCocoa", "didAcceptTR",
+                               base::SysNSStringToUTF8(info));
+
     if ([attString doubleClickAtIndex:trailingRangeInAvailableText.location]
             .location < trailingRangeInAvailableText.location)
       return;
@@ -639,9 +664,10 @@ void ExtractUnderlines(NSAttributedString* string,
                        range:(gfx::Range)range {
   _availableText = text;
   _availableTextOffset = offset;
+  _availableTextChangeCounter++;
   _textSelectionRange = range;
   _substitutionWasApplied = NO;
-  [NSSpellChecker.sharedSpellChecker dismissCorrectionIndicatorForView:self];
+  [self.spellChecker dismissCorrectionIndicatorForView:self];
   if (_shouldRequestTextSubstitutions && !_substitutionWasApplied &&
       _textSelectionRange.is_empty()) {
     _shouldRequestTextSubstitutions = NO;
@@ -709,11 +735,6 @@ void ExtractUnderlines(NSAttributedString* string,
     [self addCursorRect:[self visibleRect] cursor:_currentCursor];
 }
 
-- (void)processedWheelEvent:(const blink::WebMouseWheelEvent&)event
-                   consumed:(BOOL)consumed {
-  [_responderDelegate rendererHandledWheelEvent:event consumed:consumed];
-}
-
 - (void)processedGestureScrollEvent:(const blink::WebGestureEvent&)event
                            consumed:(BOOL)consumed {
   [_responderDelegate rendererHandledGestureScrollEvent:event
@@ -748,11 +769,11 @@ void ExtractUnderlines(NSAttributedString* string,
   _canBeKeyView = can;
 }
 
-- (AcceptMouseEventsOption)acceptsMouseEventsOption {
+- (AcceptMouseEvents)acceptsMouseEventsOption {
   // Always-on-top windows, e.g picture-in-picture window, accepts all mouse
   // events even if the window or the application is inactive.
-  if ([[self window] level] > NSNormalWindowLevel) {
-    return kAcceptMouseEventsAlways;
+  if (self.window.level > NSNormalWindowLevel) {
+    return AcceptMouseEvents::kAlways;
   }
 
   // By default, only active window accepts mouse events. The embedder may
@@ -763,12 +784,13 @@ void ExtractUnderlines(NSAttributedString* string,
   }
 
   // By default, only active window accepts mouse events.
-  return kAcceptMouseEventsInActiveWindow;
+  return AcceptMouseEvents::kWhenInActiveWindow;
 }
 
 - (BOOL)acceptsFirstMouse:(NSEvent*)theEvent {
-  // Enable "click-through" if mouse clicks are accepted in inactive windows
-  return [self acceptsMouseEventsOption] > kAcceptMouseEventsInActiveWindow;
+  // Enable "click-through" if mouse clicks are accepted in inactive windows.
+  return
+      [self acceptsMouseEventsOption] > AcceptMouseEvents::kWhenInActiveWindow;
 }
 
 - (void)setCloseOnDeactivate:(BOOL)b {
@@ -797,7 +819,58 @@ void ExtractUnderlines(NSAttributedString* string,
   return _host == (_dummyHost.is_bound() ? _dummyHost.get() : nullptr);
 }
 
+- (void)characterPaletteWillOrderFront:(NSNotification*)notification {
+  if (!_textSelectionChangedForContextualMenu) {
+    return;
+  }
+
+  // The user has invoked the emoji palette from the contextual menu of an
+  // input field, and the text selection changed with the control-click. This
+  // means _preContextualMenuSelectionRange has a zero length, but the current
+  // selection has an extent (see setShowingContextMenu:). If the user selects
+  // a character from the palette, it will replace the selection, which is not
+  // what the user wants. We need to restore the insertion point.
+  //
+  // If the current selection extends beyond the original insertion point, we
+  // want to restore the insertion point to the start of the current selection.
+  // Otherwise, place the insertion point at the end of the current selection.
+  // We can use moveLeft: / moveRight: to both position the insertion point at
+  // either end of the selection and to clear the selection. Note that these
+  // methods flip their behavior if we're in RTL, which is what we want.
+  //
+  // An edge case we won't address is when the insertion point started off in
+  // the middle of a word or span of whitespace. A control click in this
+  // situation (empirically) creates a selection with the original insertion
+  // point somewhere in the middle. We could use moveLeft: to position the
+  // insertion point at the start of the range and call moveRight: in a loop to
+  // return to our original insertion point, but that seems kind of gross.
+  if (NSMaxRange([self selectedRange]) >
+      _preContextualMenuSelectionRange.location) {
+    [self doCommandBySelector:@selector(moveLeft:)];
+  } else {
+    [self doCommandBySelector:@selector(moveRight:)];
+  }
+
+  _textSelectionChangedForContextualMenu = NO;
+}
+
 - (void)setShowingContextMenu:(BOOL)showing {
+  // When you control-click in an input field with no existing selection, blink
+  // forces the creation of a selection. This is standard Mac behavior,
+  // fulfilling the Mac expectation that a selection exists for the contextual
+  // menu to act on. This selection change creates a problem if the user
+  // invokes the emoji palette from the contextual menu because whatever
+  // character they choose will replace the now-selected text. We make a note
+  // here of this situation so that we can restore the selection once we're
+  // sure the user has invoked the emoji panel.
+  if (_willInvokeContextMenuWithEmptySelection) {
+    if (!NSEqualRanges(_preContextualMenuSelectionRange,
+                       [self selectedRange])) {
+      _textSelectionChangedForContextualMenu = YES;
+    }
+    _willInvokeContextMenuWithEmptySelection = NO;
+  }
+
   _showingContextMenu = showing;
 
   // Create a fake mouse event to inform the render widget that the mouse
@@ -836,26 +909,32 @@ void ExtractUnderlines(NSAttributedString* string,
 }
 
 - (BOOL)shouldIgnoreMouseEvent:(NSEvent*)theEvent {
-  NSWindow* window = [self window];
-  if ([theEvent type] == NSEventTypeMouseMoved) {
-    bool inActiveWindow = [window isMainWindow] || [window isKeyWindow];
-    bool inActiveApp = [[NSApplication sharedApplication] isActive];
-    AcceptMouseEventsOption option = [self acceptsMouseEventsOption];
+  NSWindow* window = self.window;
+  if (theEvent.type == NSEventTypeMouseMoved) {
+    AcceptMouseEvents option = [self acceptsMouseEventsOption];
+
     // If events are accepted only in active window but this window is inactive,
     // ignore this event. This is the default behavior.
-    if (option == kAcceptMouseEventsInActiveWindow && !inActiveWindow) {
+    bool inActiveWindow = window.mainWindow || window.keyWindow;
+    if (option == AcceptMouseEvents::kWhenInActiveWindow && !inActiveWindow) {
       return YES;
     }
+
     // If events are accepted in active app but the app in active, ignore this
     // event. This only happens if the content embedder overrides the default
     // behavior.
-    if (option == kAcceptMouseEventsInActiveApp && !inActiveApp) {
+    bool inActiveApp = NSApplication.sharedApplication.active;
+    if (option == AcceptMouseEvents::kWhenInActiveApp && !inActiveApp) {
       return YES;
     }
   }
 
-  NSView* contentView = [window contentView];
-  NSView* view = [contentView hitTest:[theEvent locationInWindow]];
+  NSView* contentView = window.contentView;
+  // -hitTest: assumes use of the superview's coordinate system.
+  NSPoint pointForHitTestInContentView =
+      [contentView.superview convertPoint:theEvent.locationInWindow
+                                 fromView:nil];
+  NSView* view = [contentView hitTest:pointForHitTestInContentView];
   // Traverse the superview hierarchy as the hitTest will return the frontmost
   // view, such as an NSTextView, while nonWebContentView may be specified by
   // its parent view.
@@ -885,6 +964,18 @@ void ExtractUnderlines(NSAttributedString* string,
 
 - (void)mouseEvent:(NSEvent*)theEvent {
   TRACE_EVENT0("browser", "RenderWidgetHostViewCocoa::mouseEvent");
+
+  _textSelectionChangedForContextualMenu = NO;
+  if ((theEvent.type == NSEventTypeLeftMouseDown &&
+       (theEvent.modifierFlags & NSEventModifierFlagControl)) ||
+      theEvent.type == NSEventTypeRightMouseDown) {
+    _preContextualMenuSelectionRange = [self selectedRange];
+
+    if (_preContextualMenuSelectionRange.length == 0) {
+      _willInvokeContextMenuWithEmptySelection = YES;
+    }
+  }
+
   if (_responderDelegate &&
       [_responderDelegate respondsToSelector:@selector(handleEvent:)]) {
     BOOL handled = [_responderDelegate handleEvent:theEvent];
@@ -1199,8 +1290,7 @@ void ExtractUnderlines(NSAttributedString* string,
 
   _unmatchedKeyDownCodes.insert(keyCode);
 
-  RenderWidgetHostViewCocoa* __attribute__((objc_precise_lifetime))
-  keepSelfAlive = self;
+  NS_VALID_UNTIL_END_OF_SCOPE RenderWidgetHostViewCocoa* keepSelfAlive = self;
 
   // Records the current marked text state, so that we can know if the marked
   // text was deleted or not after handling the key down event.
@@ -1222,7 +1312,6 @@ void ExtractUnderlines(NSAttributedString* string,
   // only the last setMarkedText will be processed.
   ui::DomCode domCode = ui::KeycodeConverter::NativeKeycodeToDomCode(keyCode);
   _isReconversionTriggered =
-      base::FeatureList::IsEnabled(features::kMacImeLiveConversionFix) &&
       _hasMarkedText && domCode == ui::DomCode::ARROW_LEFT &&
       _markedTextSelectedRange.location == 0 && _markedRange.location != 0 &&
       _markedRange.location != NSNotFound;
@@ -1454,31 +1543,6 @@ void ExtractUnderlines(NSAttributedString* string,
   }
 }
 
-- (void)handleBeginGestureWithEvent:(NSEvent*)event
-            isSyntheticallyInjected:(BOOL)isSyntheticallyInjected {
-  [_responderDelegate beginGestureWithEvent:event];
-
-  WebGestureEvent gestureBeginEvent(WebGestureEventBuilder::Build(event, self));
-
-  _hostHelper->GestureBegin(gestureBeginEvent, isSyntheticallyInjected);
-}
-
-- (void)handleEndGestureWithEvent:(NSEvent*)event {
-  [_responderDelegate endGestureWithEvent:event];
-
-  // On macOS 10.11+, the end event has type = NSEventTypeMagnify and phase =
-  // NSEventPhaseEnded. On macOS 10.10 and older, the event has type =
-  // NSEventTypeEndGesture.
-  if ([event type] == NSEventTypeMagnify ||
-      [event type] == NSEventTypeEndGesture) {
-    WebGestureEvent endEvent(WebGestureEventBuilder::Build(event, self));
-    endEvent.SetType(WebInputEvent::Type::kGesturePinchEnd);
-    endEvent.SetSourceDevice(blink::WebGestureDevice::kTouchpad);
-    endEvent.SetNeedsWheelEvent(true);
-    _hostHelper->GestureEnd(endEvent);
-  }
-}
-
 - (void)touchesMovedWithEvent:(NSEvent*)event {
   [_responderDelegate touchesMovedWithEvent:event];
 }
@@ -1498,7 +1562,7 @@ void ExtractUnderlines(NSAttributedString* string,
 - (void)smartMagnifyWithEvent:(NSEvent*)event {
   const WebGestureEvent& smartMagnifyEvent =
       WebGestureEventBuilder::Build(event, self);
-  _hostHelper->SmartMagnify(smartMagnifyEvent);
+  _hostHelper->SmartMagnifyEvent(smartMagnifyEvent);
 }
 
 - (void)showLookUpDictionaryOverlayFromRange:(NSRange)range {
@@ -1513,40 +1577,10 @@ void ExtractUnderlines(NSAttributedString* string,
   _host->LookUpDictionaryOverlayAtPoint(rootPoint);
 }
 
-// This method handles 2 different types of hardware events.
-// (Apple does not distinguish between them).
-//  a. Scrolling the middle wheel of a mouse.
-//  b. Swiping on the track pad.
-//
-// This method is responsible for 2 types of behavior:
-//  a. Scrolling the content of window.
-//  b. Navigating forwards/backwards in history.
-//
-// This is a brief description of the logic:
-//  1. If the content can be scrolled, scroll the content.
-//     (This requires a roundtrip to blink to determine whether the content
-//      can be scrolled.)
-//     Once this logic is triggered, the navigate logic cannot be triggered
-//     until the gesture finishes.
-//  2. If the user is making a horizontal swipe, start the navigate
-//     forward/backwards UI.
-//     Once this logic is triggered, the user can either cancel or complete
-//     the gesture. If the user completes the gesture, all remaining touches
-//     are swallowed, and not allowed to scroll the content. If the user
-//     cancels the gesture, all remaining touches are forwarded to the content
-//     scroll logic. The user cannot trigger the navigation logic again.
 - (void)scrollWheel:(NSEvent*)event {
-  if (event.phase == NSEventPhaseBegan) {
-    [self handleBeginGestureWithEvent:event isSyntheticallyInjected:NO];
-  }
-
-  if (event.phase == NSEventPhaseEnded ||
-      event.phase == NSEventPhaseCancelled) {
-    [self handleEndGestureWithEvent:event];
-  }
-
-  if (_responderDelegate &&
-      [_responderDelegate respondsToSelector:@selector(handleEvent:)]) {
+  // Consult with the delegate to see if it wants to handle the event. If the
+  // delegate has handled the event, it takes priority over the page scrolling.
+  if ([_responderDelegate respondsToSelector:@selector(handleEvent:)]) {
     BOOL handled = [_responderDelegate handleEvent:event];
     if (handled)
       return;
@@ -1556,7 +1590,7 @@ void ExtractUnderlines(NSAttributedString* string,
   // the event is received even when the mouse cursor is no longer over the view
   // when the scrolling ends (e.g. if the tab was switched). This is necessary
   // for ending rubber-banding in such cases.
-  if ([event phase] == NSEventPhaseBegan && !_endWheelMonitor) {
+  if (event.phase == NSEventPhaseBegan && !_endWheelMonitor) {
     _endWheelMonitor = [NSEvent
         addLocalMonitorForEventsMatchingMask:NSEventMaskScrollWheel
                                      handler:^(NSEvent* blockEvent) {
@@ -1566,7 +1600,8 @@ void ExtractUnderlines(NSAttributedString* string,
                                      }];
   }
 
-  // This is responsible for content scrolling!
+  // At this point, the delegate has passed on handling the event itself, so
+  // build a mouse wheel event, and pass it on to the renderer for processing.
   WebMouseWheelEvent webEvent = WebMouseWheelEventBuilder::Build(event, self);
   webEvent.rails_mode = _mouseWheelFilter.UpdateRailsMode(webEvent);
   _hostHelper->RouteOrProcessWheelEvent(webEvent);
@@ -1574,27 +1609,17 @@ void ExtractUnderlines(NSAttributedString* string,
 
 // Called repeatedly during a pinch gesture, with incremental change values.
 - (void)magnifyWithEvent:(NSEvent*)event {
-  if (event.phase == NSEventPhaseBegan) {
-    [self handleBeginGestureWithEvent:event isSyntheticallyInjected:NO];
+  [self magnifyWithEvent:event isSyntheticallyInjected:NO];
+}
+
+- (void)magnifyWithEvent:(NSEvent*)event
+    isSyntheticallyInjected:(BOOL)injected {
+  if (event.phase == NSEventPhaseMayBegin) {
     return;
   }
 
-  if (event.phase == NSEventPhaseEnded ||
-      event.phase == NSEventPhaseCancelled) {
-    [self handleEndGestureWithEvent:event];
-    return;
-  }
-
-  // If this conditional evaluates to true, and the function has not
-  // short-circuited from the previous block, then this event is a duplicate of
-  // a gesture event, and should be ignored.
-  if (event.phase == NSEventPhaseBegan || event.phase == NSEventPhaseEnded ||
-      event.phase == NSEventPhaseCancelled) {
-    return;
-  }
-
-  WebGestureEvent updateEvent = WebGestureEventBuilder::Build(event, self);
-  _hostHelper->GestureUpdate(updateEvent);
+  WebGestureEvent gestureEvent = WebGestureEventBuilder::Build(event, self);
+  _hostHelper->PinchEvent(gestureEvent, injected);
 }
 
 - (void)viewWillMoveToWindow:(NSWindow*)newWindow {
@@ -1623,6 +1648,15 @@ void ExtractUnderlines(NSAttributedString* string,
     [notificationCenter removeObserver:self
                                   name:NSWindowDidResignKeyNotification
                                 object:oldWindow];
+    [notificationCenter removeObserver:self
+                                  name:NSWindowWillCloseNotification
+                                object:oldWindow];
+    [notificationCenter removeObserver:self
+                                  name:@"ChromeWillOrderFrontCharacterPalette"
+                                object:nil];
+    [notificationCenter removeObserver:self
+                                  name:NSApplicationDidResignActiveNotification
+                                object:nil];
   }
   if (newWindow) {
     [notificationCenter
@@ -1651,6 +1685,18 @@ void ExtractUnderlines(NSAttributedString* string,
                            selector:@selector(windowDidResignKey:)
                                name:NSWindowDidResignKeyNotification
                              object:newWindow];
+    [notificationCenter addObserver:self
+                           selector:@selector(windowWillClose:)
+                               name:NSWindowWillCloseNotification
+                             object:newWindow];
+    [notificationCenter addObserver:self
+                           selector:@selector(characterPaletteWillOrderFront:)
+                               name:@"ChromeWillOrderFrontCharacterPalette"
+                             object:nil];
+    [notificationCenter addObserver:self
+                           selector:@selector(applicationDidResignActive:)
+                               name:NSApplicationDidResignActiveNotification
+                             object:nil];
   }
 
   _hostHelper->SetAccessibilityWindow(newWindow);
@@ -1658,16 +1704,14 @@ void ExtractUnderlines(NSAttributedString* string,
 }
 
 - (void)updateScreenProperties {
-  NSWindow* enclosingWindow = [self window];
-  if (!enclosingWindow)
-    return;
-
-  // TODO(ccameron): This will call [enclosingWindow screen], which may return
-  // nil. Do that call here to avoid sending bogus display info to the host.
-  auto* screen = display::Screen::GetScreen();
+  // This does not require enclosing window to exist, and allowing screen
+  // properties change to propagate when it does not ensures that screen infos
+  // are properly updated when running headless.
+  // See // https://crbug.com/375425824.
+  auto* screen = display::Screen::Get();
   const display::ScreenInfos newScreenInfos =
       screen->GetScreenInfosNearestDisplay(
-          screen->GetDisplayNearestView(self).id());
+          screen->GetDisplayNearestView(gfx::NativeView(self)).id());
   _host->OnScreenInfosChanged(newScreenInfos);
 }
 
@@ -1728,6 +1772,7 @@ void ExtractUnderlines(NSAttributedString* string,
 - (void)windowDidBecomeKey:(NSNotification*)notification {
   DCHECK([self window]);
   DCHECK_EQ([self window], [notification object]);
+  [self performDeferredResignKeyWindow];
   if ([_responderDelegate respondsToSelector:@selector(windowDidBecomeKey)])
     [_responderDelegate windowDidBecomeKey];
   if ([self window].isKeyWindow)
@@ -1742,10 +1787,40 @@ void ExtractUnderlines(NSAttributedString* string,
   // message, since it just means that a menu extra (on the "system status bar")
   // was activated; we'll get another |-windowDidResignKey| if we ever really
   // lose key window status.
-  if ([NSApp isActive] && ([NSApp keyWindow] == [self window]))
+  if ([NSApp isActive] && ([NSApp keyWindow] == [self window])) {
+    // Defer processing when the window is still reported as key. This occurs
+    // in:
+    // 1. Menu extra activation (system status bar items)
+    // 2. Window switching via system notifications
+    //
+    // We cannot immediately determine if this is a transient state or true
+    // resignation, so we defer until either another window becomes key or the
+    // application resigns active status, at which point we can process
+    // correctly.
+    RenderWidgetHostViewCocoa.deferredResignKeyWindow = notification.object;
     return;
+  }
+  RenderWidgetHostViewCocoa.deferredResignKeyWindow = nil;
 
   _host->OnWindowIsKeyChanged(false);
+  if (base::FeatureList::IsEnabled(
+          features::kCancelCompositionWhenWindowLosesFocus)) {
+    // Cancel any ongoing composition when the window loses focus.
+    [self cancelComposition];
+  }
+}
+
+- (void)windowWillClose:(NSNotification*)notification {
+  // Clear deferred window if it's the one being closed. The __weak pointer
+  // could remain valid between windowWillClose: and deallocation. If
+  // performDeferredResignKeyWindow is called during this gap, it would post
+  // NSWindowDidResignKeyNotification for a closing window. Explicit nil
+  // prevents this race condition.
+  if (RenderWidgetHostViewCocoa.deferredResignKeyWindow &&
+      RenderWidgetHostViewCocoa.deferredResignKeyWindow ==
+          notification.object) {
+    RenderWidgetHostViewCocoa.deferredResignKeyWindow = nil;
+  }
 }
 
 - (BOOL)becomeFirstResponder {
@@ -1787,6 +1862,32 @@ void ExtractUnderlines(NSAttributedString* string,
   [self cancelComposition];
 
   return YES;
+}
+
+- (void)applicationDidResignActive:(NSNotification*)notification {
+  [self performDeferredResignKeyWindow];
+}
+
+- (void)performDeferredResignKeyWindow {
+  // It's now time to decide whether the previously deferred
+  // "windowDidResignKey" notification should be executed. If so, we repost
+  // the notification to allow observers to update accordingly and ensure the
+  // web contents enter the correct state.
+  if (RenderWidgetHostViewCocoa.deferredResignKeyWindow &&
+      RenderWidgetHostViewCocoa.deferredResignKeyWindow != [NSApp keyWindow]) {
+    [[NSNotificationCenter defaultCenter]
+        postNotificationName:NSWindowDidResignKeyNotification
+                      object:RenderWidgetHostViewCocoa.deferredResignKeyWindow];
+  }
+  RenderWidgetHostViewCocoa.deferredResignKeyWindow = nil;
+}
+
++ (NSWindow*)deferredResignKeyWindow {
+  return _deferredResignKeyWindow;
+}
+
++ (void)setDeferredResignKeyWindow:(NSWindow*)window {
+  _deferredResignKeyWindow = window;
 }
 
 - (BOOL)isAutomaticQuoteSubstitutionEnabled {
@@ -1971,16 +2072,16 @@ void ExtractUnderlines(NSAttributedString* string,
 
 - (NSAccessibilityRole)accessibilityRole {
   if (_sonomaAccessibilityRefinementsAreActive) {
-    content::BrowserAccessibilityState* accessibility_state =
-        content::BrowserAccessibilityState::GetInstance();
-
     // When an AT asks the application object for its role, we activate
     // nativeAPI accessibility support. If the AT descends into the AX tree
-    // and arrives here (the web contents container), activate basic support
-    // so that the AT can descend further into the web content.
-    if (!accessibility_state->GetAccessibilityMode().has_mode(
-            ui::kAXModeBasic.flags())) {
-      accessibility_state->AddAccessibilityModeFlags(ui::kAXModeBasic);
+    // and arrives here (the web contents container), activate basic support for
+    // all web content in the process so that the AT can descend further into
+    // any web content it needs.
+    if (!_basic_accessibility_mode) {
+      _basic_accessibility_mode =
+          content::BrowserAccessibilityState::GetInstance()
+              ->CreateScopedModeForProcess(ui::kAXModeBasic |
+                                           ui::AXMode::kFromPlatform);
     }
   }
 
@@ -2067,7 +2168,7 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
 
   uint32_t index = UINT32_MAX;
   _host->SyncGetCharacterIndexAtPoint(rootPoint, &index);
-  // |index| could be WTF::notFound (-1) and its value is different from
+  // |index| could be blink::kNotFound (-1) and its value is different from
   // NSNotFound so we need to convert it.
   if (index == UINT32_MAX)
     return NSNotFound;
@@ -2100,7 +2201,7 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
   // The returned rectangle is in WebKit coordinates (upper left origin), so
   // flip the coordinate system.
   NSRect viewFrame = [self frame];
-  NSRect rect = NSRectFromCGRect(gfxRect.ToCGRect());
+  NSRect rect = gfxRect.ToCGRect();
   rect.origin.y = NSHeight(viewFrame) - NSMaxY(rect);
 
   // Convert into screen coordinates for return.
@@ -2237,8 +2338,6 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
   BOOL isAttributedString = [string isKindOfClass:[NSAttributedString class]];
   NSString* imText = isAttributedString ? [string string] : string;
   int length = [imText length];
-  const BOOL fixLiveConversion =
-      base::FeatureList::IsEnabled(features::kMacImeLiveConversionFix);
 
   // |markedRange_| will get set on a callback from ImeSetComposition().
   _markedTextSelectedRange = newSelRange;
@@ -2251,14 +2350,11 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
   // characters.
   if (length > 0) {
     _hasMarkedText = YES;
-    if (!fixLiveConversion) {
-      length = [string length];
-    }
     if (replacementRange.location != NSNotFound) {
       // If the replacement range is valid, the range should be replaced with
       // the new text.
       _markedRange = NSMakeRange(replacementRange.location, length);
-    } else if (fixLiveConversion && _markedRange.location == NSNotFound) {
+    } else if (_markedRange.location == NSNotFound) {
       // If no replacement range and no marked range, the current selection
       // should be replaced.
       _markedRange = NSMakeRange(_textSelectionRange.start(), length);
@@ -2268,21 +2364,22 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
       _markedRange.length = length;
     }
 
-    if (fixLiveConversion && newSelRange.location != NSNotFound) {
+    if (newSelRange.location != NSNotFound &&
+        _markedRange.location <= std::numeric_limits<uint32_t>::max()) {
       CHECK_NE(_markedRange.location, static_cast<NSUInteger>(NSNotFound));
-      CHECK_LE(_markedRange.location, std::numeric_limits<uint32_t>::max());
       CHECK_LE(newSelRange.location, std::numeric_limits<uint32_t>::max());
       // `_markedRange.location + NSMaxRange(newSelRange)` can be larger than
       // the maximum uint32_t. See crbug.com/40060200.
       uint32_t new_end = base::saturated_cast<uint32_t>(
           _markedRange.location + NSMaxRange(newSelRange));
-      _textSelectionRange =
-          gfx::Range(_markedRange.location + newSelRange.location, new_end);
+      uint32_t new_start = base::saturated_cast<uint32_t>(
+          _markedRange.location + newSelRange.location);
+      _textSelectionRange = gfx::Range(new_start, new_end);
     }
   } else {
     // An empty text means the composition is about to be cancelled,
     // collapse the selection to the beginning of the current marked range.
-    if (fixLiveConversion && _hasMarkedText) {
+    if (_hasMarkedText) {
       CHECK_LE(_markedRange.location, std::numeric_limits<uint32_t>::max())
           << "_markedRange.location is too large.";
       _textSelectionRange =
@@ -2313,9 +2410,10 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
   if ([self isHandlingKeyDown] && !_isReconversionTriggered) {
     _setMarkedTextReplacementRange = gfx::Range(replacementRange);
   } else {
-    _host->ImeSetComposition(_markedText, _imeTextSpans,
-                             gfx::Range(replacementRange), newSelRange.location,
-                             NSMaxRange(newSelRange));
+    _host->ImeSetComposition(
+        _markedText, _imeTextSpans,
+        gfx::Range::FromPossiblyInvalidNSRange(replacementRange),
+        newSelRange.location, NSMaxRange(newSelRange));
   }
 
   [[self inputContext] invalidateCharacterCoordinates];
@@ -2401,6 +2499,21 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
     _textToBeInserted.append(base::SysNSStringToUTF16(imText));
     _shouldRequestTextSubstitutions = YES;
   } else {
+    // Fix the issue that Apple intelligence's writing tools not working. The
+    // writing tools bubble will grab the focus from browser after the user
+    // clicks replace button in the bubble which causes the replaced text can
+    // not be inserted into browser IME since the content's NSView loses focus.
+    // Please note that this is a workaround fix and should be removed after the
+    // issue is finally fixed by Apple which is tracked via FB16872510.
+    NSResponder* firstResponder = [self.window firstResponder];
+    if ([firstResponder isKindOfClass:NSClassFromString(@"NSRemoteView")]) {
+      NSView* firstResponderView = (NSView*)firstResponder;
+      NSView* superView = firstResponderView.superview;
+      if ([superView isKindOfClass:NSClassFromString(@"WTWritingToolsView")]) {
+        [self becomeFirstResponder];
+      }
+    }
+
     // The user uses mouse or touch bar to select a word on the IME.
     gfx::Range replacementGfxRange =
         gfx::Range::FromPossiblyInvalidNSRange(replacementRange);
@@ -2445,7 +2558,11 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
   // as they have not been updated while unattached to a window.
   [self sendWindowFrameInScreenToHost];
   [self sendViewBoundsInWindowToHost];
-  [self updateScreenProperties];
+
+  if ([self window]) {
+    [self updateScreenProperties];
+  }
+
   _host->OnWindowIsKeyChanged([[self window] isKeyWindow]);
   _host->OnFirstResponderChanged([[self window] firstResponder] == self);
 
@@ -2537,23 +2654,21 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
 
 - (id)validRequestorForSendType:(NSString*)sendType
                      returnType:(NSString*)returnType {
-  id requestor = nil;
-  BOOL sendTypeIsString = [sendType isEqualToString:NSPasteboardTypeString];
-  BOOL returnTypeIsString = [returnType isEqualToString:NSPasteboardTypeString];
-  BOOL hasText = !_textSelectionRange.is_empty();
-  BOOL takesText = _textInputType != ui::TEXT_INPUT_TYPE_NONE;
+  UTType* sendUTType = ui::UTTypeForServicesType(sendType);
+  UTType* acceptUTType = ui::UTTypeForServicesType(returnType);
 
-  if (sendTypeIsString && hasText && !returnType) {
-    requestor = self;
-  } else if (!sendType && returnTypeIsString && takesText) {
-    requestor = self;
-  } else if (sendTypeIsString && returnTypeIsString && hasText && takesText) {
-    requestor = self;
-  } else {
-    requestor =
-        [super validRequestorForSendType:sendType returnType:returnType];
+  const BOOL canSendText = [sendUTType isEqual:UTTypeUTF8PlainText] &&
+                           !_textSelectionRange.is_empty();
+  const BOOL canAcceptText = [acceptUTType isEqual:UTTypeUTF8PlainText] &&
+                             _textInputType != ui::TEXT_INPUT_TYPE_NONE;
+
+  // This is a valid requestor if the send/accept types can be fulfilled or if
+  // they are `nil` (and therefore not the wrong type).
+  if ((canSendText && !acceptUTType) || (!sendUTType && canAcceptText) ||
+      (canSendText && canAcceptText)) {
+    return self;
   }
-  return requestor;
+  return [super validRequestorForSendType:sendType returnType:returnType];
 }
 
 - (BOOL)shouldChangeCurrentCursor {
@@ -2649,25 +2764,11 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
 @implementation RenderWidgetHostViewCocoa (NSServicesRequests)
 
 - (BOOL)writeSelectionToPasteboard:(NSPasteboard*)pboard types:(NSArray*)types {
-  // /!\ Compatibility hack!
-  //
-  // The NSServicesMenuRequestor protocol does not pass in the correct
-  // NSPasteboardType constants in the `types` array, verified through macOS 13
-  // (FB11838671). To keep the code below clean, if an obsolete type is passed
-  // in, rewrite the array.
-  //
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  if ([types containsObject:NSStringPboardType] &&
-      ![types containsObject:NSPasteboardTypeString]) {
-    types = [types arrayByAddingObject:NSPasteboardTypeString];
-  }
-#pragma clang diagnostic pop
-  // /!\ End compatibility hack.
+  NSSet<UTType*>* typeSet = ui::UTTypesForServicesTypeArray(types);
 
   bool wasAbleToWriteAtLeastOneType = false;
 
-  if ([types containsObject:NSPasteboardTypeString] &&
+  if ([typeSet containsObject:UTTypeUTF8PlainText] &&
       !_textSelectionRange.is_empty()) {
     NSString* text = base::SysUTF16ToNSString([self selectedText]);
     wasAbleToWriteAtLeastOneType |= [pboard writeObjects:@[ text ]];

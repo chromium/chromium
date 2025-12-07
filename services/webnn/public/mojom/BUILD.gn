@@ -4,43 +4,66 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
+# The features file is separate because it is the only common WebNN header
+# that has no dependencies on other WebNN Mojom files. This separation
+# allows WebNN-dependent components to use features without importing the
+# rest of WebNN (ex. //gpu/config).
+mojom_component("features") {
+  output_prefix = "webnn_mojom_features"
+  macro_prefix = "WEBNN_MOJOM_FEATURES"
+
+  sources = [ "features.mojom" ]
+}
+
 mojom_component("mojom") {
   output_prefix = "webnn_mojom"
   macro_prefix = "WEBNN_MOJOM"
 
   sources = [
-    "features.mojom",
-    "webnn_buffer.mojom",
     "webnn_context.mojom",
     "webnn_context_properties.mojom",
     "webnn_context_provider.mojom",
+    "webnn_device.mojom",
     "webnn_error.mojom",
     "webnn_graph.mojom",
     "webnn_graph_builder.mojom",
+    "webnn_tensor.mojom",
   ]
 
+  if (is_win) {
+    sources += [ "ep_package_info.mojom" ]
+  }
+
   deps = [
+    ":features",
+    "//gpu/ipc/common:interfaces",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
     "//third_party/blink/public/mojom/tokens",
   ]
 
+  public_deps = [ ":features" ]
+
   shared_webnn_typemaps = [
     {
       types = [
-        {
-          mojom = "webnn.mojom.BufferUsage"
-          cpp = "::webnn::MLBufferUsage"
-          copyable_pass_by_value = true
-        },
         {
           mojom = "webnn.mojom.ContextProperties"
           cpp = "::webnn::ContextProperties"
           default_constructible = false
         },
         {
+          mojom = "webnn.mojom.DataType"
+          cpp = "::webnn::OperandDataType"
+        },
+        {
           mojom = "webnn.mojom.DataTypeLimits"
           cpp = "::webnn::DataTypeLimits"
+          default_constructible = false
+        },
+        {
+          mojom = "webnn.mojom.Number"
+          cpp = "::webnn::MLNumber"
           default_constructible = false
         },
         {
@@ -49,17 +72,53 @@ mojom_component("mojom") {
           default_constructible = false
         },
         {
+          mojom = "webnn.mojom.OperandId"
+          cpp = "::webnn::OperandId"
+        },
+        {
+          mojom = "webnn.mojom.Range"
+          cpp = "::webnn::Range"
+        },
+        {
           mojom = "webnn.mojom.SupportedDataTypes"
           cpp = "::webnn::SupportedDataTypes"
         },
+        {
+          mojom = "webnn.mojom.SupportedRanks"
+          cpp = "::webnn::SupportedRanks"
+        },
+        {
+          mojom = "webnn.mojom.SupportedTensors"
+          cpp = "::webnn::SupportedTensors"
+        },
+        {
+          mojom = "webnn.mojom.TensorUsage"
+          cpp = "::webnn::MLTensorUsage"
+          copyable_pass_by_value = true
+        },
       ]
       traits_headers = [
-        "buffer_usage_mojom_traits.h",
         "context_properties_mojom_traits.h",
         "data_type_limits_mojom_traits.h",
+        "number_mojom_traits.h",
         "operand_descriptor_mojom_traits.h",
+        "operand_id_mojom_traits.h",
+        "range_traits.h",
         "supported_data_types_mojom_traits.h",
+        "supported_tensors_mojom_traits.h",
+        "tensor_usage_mojom_traits.h",
       ]
+
+      if (is_win) {
+        types += [
+          {
+            mojom = "webnn.mojom.PackageVersion"
+            cpp = "::PACKAGE_VERSION"
+          },
+        ]
+        traits_headers += [ "package_version_mojom_traits.h" ]
+      }
+
       traits_public_deps = [ ":webnn_mojom_traits" ]
     },
   ]
@@ -72,6 +131,7 @@ component("webnn_mojom_traits") {
   sources = [
     "operand_descriptor_mojom_traits.cc",
     "operand_descriptor_mojom_traits.h",
+    "operand_id_mojom_traits.h",
   ]
 
   public_deps = [
@@ -79,6 +139,7 @@ component("webnn_mojom_traits") {
     "//base",
     "//mojo/public/cpp/bindings:struct_traits",
     "//services/webnn/public/cpp",
+    "//third_party/blink/renderer/modules/ml:operand_id_hash_traits",
   ]
 
   defines = [ "IS_WEBNN_MOJOM_TRAITS_IMPL" ]
@@ -97,6 +158,7 @@ source_set("tests") {
     ":webnn_mojom_traits",
     "//base/test:test_support",
     "//mojo/public/cpp/test_support:test_utils",
+    "//services/webnn:tests",
     "//testing/gtest",
   ]
 }

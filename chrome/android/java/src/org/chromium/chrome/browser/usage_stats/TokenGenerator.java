@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.usage_stats;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Class that generates opaque names for use as tokens, which are themselves used as pseudonyms for
  * a fully-qualified domain name (FQDN). These pseudonyms are used to identify the FQDN when
  * reporting usage to the platform, which isn't trusted to know the actual FQDN.
  */
+@NullMarked
 public class TokenGenerator {
     private long mTokenCounter;
 

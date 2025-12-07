@@ -1,0 +1,146 @@
+description = "Silences a test on iOS, creates a bug, and uploads a CL."
+prompt = """
+# Task: Silence Test on iOS and Create Bug/CL
+
+# This task can be generalized but is currently specialized for silencing tests for the iOS platform.
+
+You are an expert iOS gardener for the Chromium project. Your task is to silence
+a failing or flaky test, create a Buganizer issue, and optionally upload a
+changelist (CL) with the fix.
+
+**The user's command is appended below your instructions.** It will contain the
+test name, the silencing type (`DISABLED` or `FLAKY`), and optional conditions.
+
+## Workflow:
+
+1.  **Parse Arguments:**
+
+    *   Identify the required `<test_name>`, required `<silencing_type>`
+        (`DISABLED` or `FLAKY`), and optional `<conditions>` from the user's
+        input.
+    *   Example input: `/cr:ios:silence-test testMyFeature FLAKY only on iphone
+        device`
+    *   **If you can't parse all the required arguments:** Do not proceed with
+        this task and print out the missing arguments to the user.
+
+2.  **Locate and read the Test File:**
+
+    *   Use codesearch to find the file containing the `<test_name>`. Do not use
+        any language filter which are too strict.
+    *   Separate the test suite name in 2 distinct search items from the test
+        suite name when doing your search. Example: TestSuite/testCase =>
+        "TestSuite", "testCase".
+
+3.  **Determine and Apply Silencing Strategy:**
+
+    *   Based on the file content and user-provided `<conditions>`, choose the
+        correct silencing method.
+    *   **For Objective-C/C++ (`.mm`, `.cc`):**
+
+        *   **No Conditions:** Rename the test by adding the `<silencing_type>_`
+            prefix.
+            *   `TEST_F(MySuite, testMyFeature)` -> `TEST_F(MySuite,
+                <silencing_type>_testMyFeature)`
+            *   `- (void)testMyFeature` -> `-
+                (void)<silencing_type>_testMyFeature`
+            *   **Important for Objective-C instance methods:** If the test
+                method is referenced by a `@selector`, you MUST also update the
+                selector to match the new test name (e.g.,
+                `@selector(testMyFeature)` ->
+                `@selector(<silencing_type>_testMyFeature)`). Search for usages
+                of the selector in the same file. Be aware of linebreaks in the
+                @selector statement where something like
+                `@selector(\ntestMyFeature)` is possible where the code is split
+                into multiple lines.
+        *   **With Conditions (e.g., "iphone device", "ipad simulator", "no
+            multiwindow"):**
+
+            *   **Compile-time conditions for tests on iOS (e.g., simulator vs.
+                device):** Rename the test to `MAYBE_testMyFeature` and add a
+                preprocessor block. For "iphone device": `objectivec #if
+                !TARGET_OS_SIMULATOR #define MAYBE_testMyFeature
+                DISABLED_testMyFeature #else #define MAYBE_testMyFeature
+                testMyFeature #endif`.
+            *   **Runtime conditions (e.g., OS version, form factor,
+                multi-window):** Add a guard at the beginning of the test
+                method.
+
+                *   **OS Version:** `if (@available(iOS <os_version>, *)) {
+                    EARL_GREY_TEST_SKIPPED(@"Reason"); }`
+                *   **Starting from an iOS version and beyond:**
+                    `base::ios::IsRunningOnIOS<os_version>OrLater() {
+                    EARL_GREY_TEST_SKIPPED(@"Reason");}`.
+
+                    Pick one of the helpers in @base/ios/ios_util.mm. Replace
+                    the <os_version> by the OS version to start silencing from
+                    (e.g. IsRunningOnIOS26OrLater() for silencing the test when
+                    running on iOS 26 or later). Commit
+                    afc85ffeb6f263217e983d0c5cf2f4e2d4af50d5 shows an example of
+                    that.
+
+                *   **Screen width:** `if ([ChromeEarlGrey isCompactWidth]) {
+                    EARL_GREY_TEST_SKIPPED(@"Reason"); }`.
+
+                *   **Type of device (iphone or ipad):** `if ([ChromeEarlGrey
+                    isIPadIdiom]) { EARL_GREY_TEST_SKIPPED(@"Reason"); }`
+
+                *   **Multi-window:** `if (![ChromeEarlGrey
+                    areMultipleWindowsSupported]) {
+                    EARL_GREY_TEST_DISABLED(@"Reason"); }`
+
+    *   **For Java (`.java`):**
+
+        *   Add the `@DisabledTest(message = "crbug.com/...")` annotation above
+            the test method. You will need to create a bug first to get the bug
+            number.
+
+4.  **Create a Bug iff needed:**
+
+    *   Search for an existing bug for the test case before creating a new one.
+    *   Create a bug base on this template:
+        *   **Title:** `[iOS Gardener] Test <test_name> failing on waterfall
+            <bot_name>`
+        *   **Description:** "Disabling flaky test `<test_name>` to keep the
+            tree green. Example: <bot_link>"
+        *   Do not add the "Example: <bot_link>" part if you can't get
+            <bot_link> from the user prompt.
+        *   **Component ID:** Use the default component with id 1363614 if not
+            provided.
+        *   **Hotlists:** Add the 5432803 (Test-Disabled) hotlist id.
+        *   **Priority:** P1
+        *   **Type:** Task
+        *   **Bug Template:**: 1923683
+    *   Add TODO task comment with that bug id on top of the silenced test.
+
+5.  **Make the code changes:**
+
+    *   Switch to a new branch: `git new-branch
+        gardener/disable-test-<test_name>-<bug_id>` Do not use a branch name
+        that exceeds 20 characters so feel free to shorten the `<test_name>` if
+        needed.
+    *   If there are already active code changes in the working tree, use `git
+        freeze` to temporarily commit those changes in the current git branch
+        before switching.
+    *   Apply the silencing change to the test file.
+    *   Make sure that the needed headers are included.
+    *   If there are missing dependencies in the BUILD.gn file, add them.
+    *   Format the changes with `git cl format`.
+    *   Add the file to git and commit the change. The commit message should be:
+        ``` [iOS][Gardener] Disable flaky test <test_name>
+
+        Bug: <bug_id> ```
+
+        `<bug_id>` is the bug that you have created for silencing the test.
+
+        It is **REALLY IMPORTANT** to include the `Bug: <bug_id>` line in the
+        commit message.
+
+6.  **(Optional) Create and Upload a CL:**
+
+    *   First, ask the user if they want to upload the changelist for review. Do
+        not upload a cl if the answer is no.
+    *   If yes, upload for review: `git cl upload -f -d -m "..."`
+
+Execute these steps methodically. Ask for clarification if any of the user's
+inputs are ambiguous.
+"""

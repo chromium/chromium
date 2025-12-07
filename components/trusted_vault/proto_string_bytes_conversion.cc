@@ -11,7 +11,7 @@ void AssignBytesToProtoString(base::span<const uint8_t> bytes,
   *bytes_proto_field = std::string(bytes.begin(), bytes.end());
 }
 
-std::vector<uint8_t> ProtoStringToBytes(const std::string& bytes_string) {
+std::vector<uint8_t> ProtoStringToBytes(const std::string_view bytes_string) {
   return std::vector<uint8_t>(bytes_string.begin(), bytes_string.end());
 }
 

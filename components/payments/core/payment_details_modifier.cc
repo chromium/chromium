@@ -20,7 +20,7 @@ static const char kPaymentDetailsModifierData[] = "data";
 
 }  // namespace
 
-PaymentDetailsModifier::PaymentDetailsModifier() {}
+PaymentDetailsModifier::PaymentDetailsModifier() = default;
 PaymentDetailsModifier::~PaymentDetailsModifier() = default;
 
 PaymentDetailsModifier::PaymentDetailsModifier(
@@ -47,11 +47,6 @@ bool PaymentDetailsModifier::operator==(
   return method_data == other.method_data &&
          base::ValuesEquivalent(total, other.total) &&
          additional_display_items == other.additional_display_items;
-}
-
-bool PaymentDetailsModifier::operator!=(
-    const PaymentDetailsModifier& other) const {
-  return !(*this == other);
 }
 
 base::Value::Dict PaymentDetailsModifier::ToValueDict() const {

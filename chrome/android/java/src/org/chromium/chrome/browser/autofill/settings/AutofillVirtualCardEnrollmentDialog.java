@@ -11,10 +11,12 @@ import android.view.View;
 import android.widget.TextView;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeStringConstants;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
-import org.chromium.chrome.browser.autofill.PersonalDataManager;
+import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -22,6 +24,7 @@ import org.chromium.ui.modaldialog.SimpleModalDialogController;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Dialog shown to the user to enroll a credit card into the virtual card feature. */
+@NullMarked
 public class AutofillVirtualCardEnrollmentDialog {
     /** The interface that implements the action to be performed when links are clicked. */
     @FunctionalInterface
@@ -31,18 +34,17 @@ public class AutofillVirtualCardEnrollmentDialog {
 
     private final Context mContext;
     private final ModalDialogManager mModalDialogManager;
-    private final PersonalDataManager mPersonalDataManager;
+    private final AutofillImageFetcher mImageFetcher;
     private final VirtualCardEnrollmentFields mVirtualCardEnrollmentFields;
     private final String mAcceptButtonText;
     private final String mDeclineButtonText;
     private final LinkClickCallback mOnLinkClicked;
     private final Callback<Integer> mResultHandler;
-    private PropertyModel mDialogModel;
 
     public AutofillVirtualCardEnrollmentDialog(
             Context context,
             ModalDialogManager modalDialogManager,
-            PersonalDataManager personalDataManager,
+            AutofillImageFetcher imageFetcher,
             VirtualCardEnrollmentFields virtualCardEnrollmentFields,
             String acceptButtonText,
             String declineButtonText,
@@ -50,7 +52,7 @@ public class AutofillVirtualCardEnrollmentDialog {
             Callback<Integer> resultHandler) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
-        mPersonalDataManager = personalDataManager;
+        mImageFetcher = imageFetcher;
         mVirtualCardEnrollmentFields = virtualCardEnrollmentFields;
         mAcceptButtonText = acceptButtonText;
         mDeclineButtonText = declineButtonText;
@@ -72,8 +74,8 @@ public class AutofillVirtualCardEnrollmentDialog {
                                 ModalDialogProperties.CONTROLLER,
                                 new SimpleModalDialogController(
                                         mModalDialogManager, mResultHandler));
-        mDialogModel = builder.build();
-        mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.APP);
+        PropertyModel dialogModel = builder.build();
+        mModalDialogManager.showDialog(dialogModel, ModalDialogManager.ModalDialogType.APP);
     }
 
     private View getCustomViewForModalDialog() {
@@ -130,7 +132,7 @@ public class AutofillVirtualCardEnrollmentDialog {
 
         AutofillUiUtils.addCardDetails(
                 mContext,
-                mPersonalDataManager,
+                mImageFetcher,
                 customView,
                 mVirtualCardEnrollmentFields.getCardName(),
                 mVirtualCardEnrollmentFields.getCardNumber(),
@@ -138,7 +140,7 @@ public class AutofillVirtualCardEnrollmentDialog {
                         R.string.autofill_virtual_card_enrollment_dialog_card_container_title),
                 mVirtualCardEnrollmentFields.getCardArtUrl(),
                 mVirtualCardEnrollmentFields.getNetworkIconId(),
-                AutofillUiUtils.CardIconSize.LARGE,
+                ImageSize.LARGE,
                 R.dimen.virtual_card_enrollment_dialog_card_container_issuer_icon_margin_end,
                 /* cardNameAndNumberTextAppearance= */ R.style.TextAppearance_TextLarge_Primary,
                 /* cardLabelTextAppearance= */ R.style.TextAppearance_TextMedium_Secondary,

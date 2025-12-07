@@ -8,13 +8,13 @@
 #import <AppKit/AppKit.h>
 
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/base_export.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 // Launches an application.
 //
@@ -43,7 +43,7 @@ using LaunchApplicationCallback =
     base::OnceCallback<void(NSRunningApplication*, NSError*)>;
 
 using CommandLineArgs =
-    absl::variant<absl::monostate, CommandLine, std::vector<std::string>>;
+    std::variant<std::monostate, CommandLine, std::vector<std::string>>;
 
 // Launches the specified application.
 //   - `app_bundle_path`: the location of the application to launch

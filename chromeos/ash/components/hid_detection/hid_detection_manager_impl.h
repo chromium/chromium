@@ -5,14 +5,12 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_HID_DETECTION_HID_DETECTION_MANAGER_IMPL_H_
 #define CHROMEOS_ASH_COMPONENTS_HID_DETECTION_HID_DETECTION_MANAGER_IMPL_H_
 
-#include "base/memory/raw_ptr.h"
-#include "chromeos/ash/components/hid_detection/hid_detection_manager.h"
-
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/hid_detection/bluetooth_hid_detector.h"
+#include "chromeos/ash/components/hid_detection/hid_detection_manager.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/device_service.mojom.h"
 #include "services/device/public/mojom/input_service.mojom.h"

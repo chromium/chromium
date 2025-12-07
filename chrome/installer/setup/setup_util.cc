@@ -4,11 +4,6 @@
 //
 // This file declares util functions for setup project.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/installer/setup/setup_util.h"
 
 #include <objbase.h>
@@ -16,8 +11,8 @@
 #include <windows.h>
 
 #include <stddef.h>
-#include <wtsapi32.h>
 
+#include <algorithm>
 #include <initializer_list>
 #include <iterator>
 #include <limits>
@@ -29,6 +24,7 @@
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/cpu.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
@@ -38,15 +34,14 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_split_win.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/version.h"
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
+#include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_modes.h"
 #include "chrome/install_static/install_util.h"
@@ -64,11 +59,6 @@
 #include "chrome/installer/util/util_constants.h"
 #include "chrome/installer/util/work_item.h"
 #include "chrome/installer/util/work_item_list.h"
-#include "components/zucchini/zucchini.h"
-#include "components/zucchini/zucchini_integration.h"
-#include "courgette/courgette.h"
-#include "courgette/third_party/bsdiff/bsdiff.h"
-#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace installer {
 
@@ -142,74 +132,6 @@ void RemoveLegacyChromeAppCommands(const InstallerState& installer_state) {
 
 const char kUnPackStatusMetricsName[] = "Setup.Install.LzmaUnPackStatus";
 
-int CourgettePatchFiles(const base::FilePath& src,
-                        const base::FilePath& patch,
-                        const base::FilePath& dest) {
-  VLOG(1) << "Applying Courgette patch " << patch.value() << " to file "
-          << src.value() << " and generating file " << dest.value();
-
-  if (src.empty() || patch.empty() || dest.empty())
-    return installer::PATCH_INVALID_ARGUMENTS;
-
-  const courgette::Status patch_status = courgette::ApplyEnsemblePatch(
-      src.value().c_str(), patch.value().c_str(), dest.value().c_str());
-  const int exit_code =
-      (patch_status != courgette::C_OK)
-          ? static_cast<int>(patch_status) + kCourgetteErrorOffset
-          : 0;
-
-  LOG_IF(ERROR, exit_code) << "Failed to apply Courgette patch "
-                           << patch.value() << " to file " << src.value()
-                           << " and generating file " << dest.value()
-                           << ". err=" << exit_code;
-
-  return exit_code;
-}
-
-int BsdiffPatchFiles(const base::FilePath& src,
-                     const base::FilePath& patch,
-                     const base::FilePath& dest) {
-  VLOG(1) << "Applying bsdiff patch " << patch.value() << " to file "
-          << src.value() << " and generating file " << dest.value();
-
-  if (src.empty() || patch.empty() || dest.empty())
-    return installer::PATCH_INVALID_ARGUMENTS;
-
-  const int patch_status = bsdiff::ApplyBinaryPatch(src, patch, dest);
-  const int exit_code =
-      patch_status != bsdiff::OK ? patch_status + kBsdiffErrorOffset : 0;
-
-  LOG_IF(ERROR, exit_code) << "Failed to apply bsdiff patch " << patch.value()
-                           << " to file " << src.value()
-                           << " and generating file " << dest.value()
-                           << ". err=" << exit_code;
-
-  return exit_code;
-}
-
-int ZucchiniPatchFiles(const base::FilePath& src,
-                       const base::FilePath& patch,
-                       const base::FilePath& dest) {
-  VLOG(1) << "Applying Zucchini patch " << patch.value() << " to file "
-          << src.value() << " and generating file " << dest.value();
-
-  if (src.empty() || patch.empty() || dest.empty())
-    return installer::PATCH_INVALID_ARGUMENTS;
-
-  const zucchini::status::Code patch_status = zucchini::Apply(src, patch, dest);
-  const int exit_code =
-      (patch_status != zucchini::status::kStatusSuccess)
-          ? static_cast<int>(patch_status) + kZucchiniErrorOffset
-          : 0;
-
-  LOG_IF(ERROR, exit_code) << "Failed to apply Zucchini patch " << patch.value()
-                           << " to file " << src.value()
-                           << " and generating file " << dest.value()
-                           << ". err=" << exit_code;
-
-  return exit_code;
-}
-
 base::Version* GetMaxVersionFromArchiveDir(const base::FilePath& chrome_path) {
   VLOG(1) << "Looking for Chrome version folder under " << chrome_path.value();
   base::FileEnumerator version_enum(chrome_path, false,
@@ -234,39 +156,6 @@ base::Version* GetMaxVersionFromArchiveDir(const base::FilePath& chrome_path) {
   }
 
   return (version_found ? max_version.release() : nullptr);
-}
-
-base::FilePath FindArchiveToPatch(const InstallationState& original_state,
-                                  const InstallerState& installer_state,
-                                  const base::Version& desired_version) {
-  if (desired_version.IsValid()) {
-    base::FilePath archive(
-        installer_state.GetInstallerDirectory(desired_version)
-            .Append(kChromeArchive));
-    return base::PathExists(archive) ? archive : base::FilePath();
-  }
-
-  // Check based on the version number advertised to Google Update, since that
-  // is the value used to select a specific differential update. If an archive
-  // can't be found using that, fallback to using the newest version present.
-  base::FilePath patch_source;
-  const ProductState* product =
-      original_state.GetProductState(installer_state.system_install());
-  if (product) {
-    patch_source = installer_state.GetInstallerDirectory(product->version())
-                       .Append(installer::kChromeArchive);
-    if (base::PathExists(patch_source))
-      return patch_source;
-  }
-  std::unique_ptr<base::Version> version(
-      installer::GetMaxVersionFromArchiveDir(installer_state.target_path()));
-  if (version) {
-    patch_source = installer_state.GetInstallerDirectory(*version).Append(
-        installer::kChromeArchive);
-    if (base::PathExists(patch_source))
-      return patch_source;
-  }
-  return base::FilePath();
 }
 
 bool DeleteFileFromTempProcess(const base::FilePath& path,
@@ -308,8 +197,7 @@ bool DeleteFileFromTempProcess(const base::FilePath& path,
       PAPCFUNC exit_process =
           reinterpret_cast<PAPCFUNC>(::GetProcAddress(kernel32, "ExitProcess"));
       if (!sleep || !delete_file || !exit_process) {
-        NOTREACHED_IN_MIGRATION();
-        ok = FALSE;
+        NOTREACHED();
       } else {
         ::QueueUserAPC(sleep, pi.hThread, delay_before_delete_ms);
         ::QueueUserAPC(delete_file, pi.hThread,
@@ -373,8 +261,9 @@ bool ContainsUnsupportedSwitch(const base::CommandLine& cmd_line) {
       "app-launcher",
   };
   for (size_t i = 0; i < std::size(kLegacySwitches); ++i) {
-    if (cmd_line.HasSwitch(kLegacySwitches[i]))
+    if (cmd_line.HasSwitch(UNSAFE_TODO(kLegacySwitches[i]))) {
       return true;
+    }
   }
   return false;
 }
@@ -395,7 +284,7 @@ void DeleteRegistryKeyPartial(
     const std::vector<std::wstring>& keys_to_preserve) {
   // Downcase the list of keys to preserve (all must be ASCII strings).
   std::set<std::wstring> lowered_keys_to_preserve;
-  base::ranges::transform(
+  std::ranges::transform(
       keys_to_preserve,
       std::inserter(lowered_keys_to_preserve, lowered_keys_to_preserve.begin()),
       [](const std::wstring& str) {
@@ -557,14 +446,8 @@ void RecordUnPackMetrics(UnPackStatus unpack_status, UnPackConsumer consumer) {
   std::string consumer_name;
 
   switch (consumer) {
-    case UnPackConsumer::CHROME_ARCHIVE_PATCH:
-      consumer_name = "ChromeArchivePatch";
-      break;
     case UnPackConsumer::COMPRESSED_CHROME_ARCHIVE:
       consumer_name = "CompressedChromeArchive";
-      break;
-    case UnPackConsumer::SETUP_EXE_PATCH:
-      consumer_name = "SetupExePatch";
       break;
     case UnPackConsumer::UNCOMPRESSED_CHROME_ARCHIVE:
       consumer_name = "UncompressedChromeArchive";
@@ -646,30 +529,6 @@ void DoLegacyCleanups(const InstallerState& installer_state,
   RemoveBinariesVersionKey(installer_state);
   RemoveAppLauncherVersionKey(installer_state);
   RemoveLegacyChromeAppCommands(installer_state);
-}
-
-base::Time GetConsoleSessionStartTime() {
-  constexpr DWORD kInvalidSessionId = 0xFFFFFFFF;
-  DWORD console_session_id = ::WTSGetActiveConsoleSessionId();
-  if (console_session_id == kInvalidSessionId)
-    return base::Time();
-  wchar_t* buffer = nullptr;
-  DWORD buffer_size = 0;
-  if (!::WTSQuerySessionInformation(WTS_CURRENT_SERVER_HANDLE,
-                                    console_session_id, WTSSessionInfo, &buffer,
-                                    &buffer_size)) {
-    return base::Time();
-  }
-  absl::Cleanup wts_deleter = [buffer] { ::WTSFreeMemory(buffer); };
-
-  WTSINFO* wts_info = nullptr;
-  if (buffer_size < sizeof(*wts_info))
-    return base::Time();
-
-  wts_info = reinterpret_cast<WTSINFO*>(buffer);
-  FILETIME filetime = {wts_info->LogonTime.u.LowPart,
-                       static_cast<DWORD>(wts_info->LogonTime.u.HighPart)};
-  return base::Time::FromFileTime(filetime);
 }
 
 std::optional<std::string> DecodeDMTokenSwitchValue(
@@ -820,6 +679,12 @@ base::FilePath GetElevationServicePath(const base::FilePath& target_path,
       .Append(kElevationServiceExe);
 }
 
+base::FilePath GetTracingServicePath(const base::FilePath& target_path,
+                                     const base::Version& version) {
+  return target_path.AppendASCII(version.GetString())
+      .Append(kElevatedTracingServiceExe);
+}
+
 void AddUpdateDowngradeVersionItem(HKEY root,
                                    const base::Version& current_version,
                                    const base::Version& new_version,
@@ -842,29 +707,5 @@ void AddUpdateDowngradeVersionItem(HKEY root,
                                     kRegDowngradeVersion);
   }
 }
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-std::wstring UpdateLastWindowsVersion(base::wcstring_view os_version) {
-  constexpr wchar_t kLastWindowsVersion[] = L"LastWindowsVersion";
-
-  base::win::RegKey key;
-  std::wstring last_version;
-  if (key.Create(HKEY_CURRENT_USER, install_static::GetRegistryPath().c_str(),
-                 KEY_QUERY_VALUE | KEY_SET_VALUE) == ERROR_SUCCESS) {
-    key.ReadValue(kLastWindowsVersion, &last_version);
-    if (last_version == os_version) {
-      return last_version;
-    }
-    base::Version version(base::WideToASCII(last_version));
-    // Verify that last_version has a valid Windows version format, and if not,
-    // return an empty string.
-    if (!version.IsValid() || version.components().size() != 4) {
-      last_version.clear();
-    }
-    key.WriteValue(kLastWindowsVersion, os_version.c_str());
-  }
-  return last_version;
-}
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace installer

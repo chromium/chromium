@@ -1,0 +1,18 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This `Cargo.toml` is a test input for some unit tests of `gnrt`.  Output of
+# `cargo metadata` has been saved in `gnrt/lib/test_metadata4.json`.
+#
+# The main point of this test is checking conditions inferred for proc-macro
+# crates that are transitively used here (`prost-derive`) and conditions
+# inferred for *their* transitive depenencies (e.g. `anyhow`).
+
+[package]
+name = "sample_package4"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+foo = { path = "foo" }

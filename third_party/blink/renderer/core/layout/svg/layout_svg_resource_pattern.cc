@@ -73,10 +73,13 @@ void LayoutSVGResourcePattern::WillBeDestroyed() {
   LayoutSVGResourcePaintServer::WillBeDestroyed();
 }
 
-void LayoutSVGResourcePattern::StyleDidChange(StyleDifference diff,
-                                              const ComputedStyle* old_style) {
+void LayoutSVGResourcePattern::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutSVGResourcePaintServer::StyleDidChange(diff, old_style);
+  LayoutSVGResourcePaintServer::StyleDidChange(diff, old_style,
+                                               style_change_context);
   if (old_style)
     return;
   // The resource has been attached, any linked <pattern> may need to
@@ -147,11 +150,12 @@ std::unique_ptr<PatternData> LayoutSVGResourcePattern::BuildPatternData(
   AffineTransform tile_transform;
   if (attributes.HasViewBox()) {
     // An empty viewBox disables rendering of the pattern.
-    if (attributes.ViewBox().IsEmpty())
+    const gfx::RectF view_box = attributes.ViewBox()->Rect();
+    if (view_box.IsEmpty()) {
       return pattern_data;
+    }
     tile_transform = SVGFitToViewBox::ViewBoxToViewTransform(
-        attributes.ViewBox(), attributes.PreserveAspectRatio(),
-        tile_bounds.size());
+        view_box, attributes.PreserveAspectRatio(), tile_bounds.size());
   } else {
     // A viewBox overrides patternContentUnits, per spec.
     if (attributes.PatternContentUnits() ==
@@ -195,8 +199,7 @@ bool LayoutSVGResourcePattern::ApplyShader(
   AffineTransform transform = pattern_data->transform;
   if (additional_transform)
     transform = *additional_transform * transform;
-  pattern_data->pattern->ApplyToFlags(flags,
-                                      AffineTransformToSkMatrix(transform));
+  pattern_data->pattern->ApplyToFlags(flags, transform.ToSkMatrix());
   flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);
   return true;
 }
@@ -231,7 +234,7 @@ PaintRecord LayoutSVGResourcePattern::AsPaintRecord(
     SVGObjectPainter(*child, nullptr).PaintResourceSubtree(builder.Context());
   }
   canvas->save();
-  canvas->concat(AffineTransformToSkM44(tile_transform));
+  canvas->concat(tile_transform.ToSkM44());
   builder.EndRecording(*canvas);
   canvas->restore();
   return paint_recorder.finishRecordingAsPicture();

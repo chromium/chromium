@@ -28,9 +28,9 @@ using extensions::manifest_keys::kStorageManagedSchema;
 
 namespace extensions {
 
-StorageSchemaManifestHandler::StorageSchemaManifestHandler() {}
+StorageSchemaManifestHandler::StorageSchemaManifestHandler() = default;
 
-StorageSchemaManifestHandler::~StorageSchemaManifestHandler() {}
+StorageSchemaManifestHandler::~StorageSchemaManifestHandler() = default;
 
 // static
 base::expected<policy::Schema, std::string>
@@ -75,10 +75,10 @@ bool StorageSchemaManifestHandler::Parse(Extension* extension,
 }
 
 bool StorageSchemaManifestHandler::Validate(
-    const Extension* extension,
+    const Extension& extension,
     std::string* error,
     std::vector<InstallWarning>* warnings) const {
-  RETURN_IF_ERROR(GetSchema(extension), [&error](const auto& e) {
+  RETURN_IF_ERROR(GetSchema(&extension), [&error](const auto& e) {
     *error = e;
     return false;
   });

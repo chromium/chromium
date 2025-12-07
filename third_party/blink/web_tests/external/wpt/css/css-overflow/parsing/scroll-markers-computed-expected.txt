@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Property scroll-marker-group value 'before'
+  assert_equals: expected "before" but got "before links"
+[FAIL] Property scroll-marker-group value 'after'
+  assert_equals: expected "after" but got "after links"
+Harness: the test ran to completion.
+

@@ -1,0 +1,19 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+static_library("accelerator") {
+  sources = [
+    "chrome_accelerator_prefs_delegate.cc",
+    "chrome_accelerator_prefs_delegate.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//components/user_manager",
+  ]
+}

@@ -2,10 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-# App Discovery Service is Ash-only.
-assert(is_chromeos_ash)
+assert(is_chromeos, "App Discovery Service is ChromeOS-only.")
 
 source_set("app_discovery_service") {
   sources = [
@@ -69,6 +66,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:proto_test_support",
     "//base/test:test_support",
+    "//chrome/browser/apps/almanac_api_client",
     "//chrome/browser/apps/almanac_api_client:test_support",
     "//chrome/browser/apps/app_discovery_service/almanac_api:launcher_app_descriptor",
     "//chrome/browser/apps/app_discovery_service/almanac_api:proto",
@@ -77,9 +75,14 @@ source_set("unit_tests") {
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/common:constants",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/system",
     "//content/test:test_support",
     "//testing/gtest",
   ]
 
   data = [ "$root_gen_dir/chrome/browser/apps/app_discovery_service/almanac_api/launcher_app.descriptor" ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

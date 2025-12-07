@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<title>RouteEvent "activate" and "deactivate"</title>
+<link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
+<link rel="help" href="https://github.com/WICG/declarative-partial-updates?tab=readme-ov-file#part-2-route-matching">
+<script type="routemap">
+  {
+    "routes": [
+      {
+        "name": "r1",
+        "pattern": { "protocol": "http*" }
+      },
+      {
+        "name": "r2",
+        "pattern": "*different-url"
+      },
+      {
+        "name": "r3",
+        "pattern": "*another-url"
+      }
+    ]
+  }
+</script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  let r1a, r1d, r2a, r2d, r3a, r3d;
+  function reset() {
+    r1a = r1d = r2a = r2d = r3a = r3d = false;
+  }
+  reset();
+
+  const routeMap = document.routeMap;
+  const r1 = routeMap.get("r1");
+  const r2 = routeMap.get("r2");
+  const r3 = routeMap.get("r3");
+
+  r1.addEventListener("activate", e => { r1a = true; });
+  r1.addEventListener("deactivate", e => { r1d = true; });
+  r2.addEventListener("activate", e => { r2a = true; });
+  r2.addEventListener("deactivate", e => { r2d = true; });
+  r3.addEventListener("activate", e => { r3a = true; });
+  r3.addEventListener("deactivate", e => { r3d = true; });
+
+  function check_and_reset(message, e1a, e1d, e2a, e2d, e3a, e3d) {
+    assert_equals(r1a, e1a, "r1 activation for " + message);
+    assert_equals(r1d, e1d, "r1 deactivation for " + message);
+    assert_equals(r2a, e2a, "r2 activation for " + message);
+    assert_equals(r2d, e2d, "r2 deactivation for " + message);
+    assert_equals(r3a, e3a, "r3 activation for " + message);
+    assert_equals(r3d, e3d, "r3 deactivation for " + message);
+    reset();
+  }
+
+  async function go(url) {
+    history.pushState(0, null, url);
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    await new Promise(resolve => requestAnimationFrame(resolve));
+  }
+
+  async function go_back() {
+    history.back();
+    await new Promise(resolve => window.navigation.onnavigate = e => { resolve(e.destination.url); });
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    await new Promise(resolve => requestAnimationFrame(resolve));
+  }
+
+  promise_test(async t => {
+    await go("different-url");
+    check_and_reset("go to different-url", false, false, true, false, false, false);
+
+    await go("another-url");
+    check_and_reset("go to another-url", false, false, false, true, true, false);
+
+    await go_back();
+    check_and_reset("go back", false, false, true, false, false, true);
+
+    await go_back();
+    check_and_reset("go back again", false, false, false, true, false, false);
+
+    await go("different-url");
+    await go("another-url");
+    check_and_reset("go to different-url, then another-url", false, false, true, true, true, false);
+
+    await go_back();
+    await go_back();
+    check_and_reset("go back twice", false, false, true, true, false, true);
+  }, "RouteEvent");
+</script>

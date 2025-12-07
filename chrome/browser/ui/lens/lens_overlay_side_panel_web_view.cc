@@ -6,47 +6,59 @@
 
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_event_handler.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
-#include "chrome/browser/ui/lens/lens_untrusted_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/file_select_listener.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
-using SidePanelWebUIViewT_LensUntrustedUI =
-    SidePanelWebUIViewT<lens::LensUntrustedUI>;
-BEGIN_TEMPLATE_METADATA(SidePanelWebUIViewT_LensUntrustedUI,
+using SidePanelWebUIViewT_LensSidePanelUntrustedUI =
+    SidePanelWebUIViewT<lens::LensSidePanelUntrustedUI>;
+BEGIN_TEMPLATE_METADATA(SidePanelWebUIViewT_LensSidePanelUntrustedUI,
                         SidePanelWebUIViewT)
 END_METADATA
 
-namespace {
-
-}  // namespace
+namespace {}  // namespace
 
 LensOverlaySidePanelWebView::LensOverlaySidePanelWebView(
     content::BrowserContext* browser_context,
-    lens::LensOverlaySidePanelCoordinator* coordinator)
+    lens::LensOverlaySidePanelCoordinator* coordinator,
+    SidePanelEntryScope& scope)
     : SidePanelWebUIViewT(
+          scope,
           base::RepeatingClosure(),
           base::RepeatingClosure(),
-          std::make_unique<WebUIContentsWrapperT<lens::LensUntrustedUI>>(
-              GURL(chrome::kChromeUILensUntrustedSidePanelURL),
+          std::make_unique<
+              WebUIContentsWrapperT<lens::LensSidePanelUntrustedUI>>(
+              GURL(chrome::kChromeUILensUntrustedSidePanelAPIURL),
               Profile::FromBrowserContext(browser_context),
               /*task_manager_string_id=*/IDS_SIDE_PANEL_COMPANION_TITLE,
               /*esc_closes_ui=*/false)),
-      coordinator_(coordinator) {}
+      coordinator_(coordinator) {
+  CHECK(coordinator);
+  // Register the modal dialog manager for this side panel web contents so
+  // browser dialogs can open when requested by the side panel WebUI.
+  web_modal::WebContentsModalDialogManager::CreateForWebContents(
+      GetWebContents());
+  web_modal::WebContentsModalDialogManager::FromWebContents(GetWebContents())
+      ->SetDelegate(coordinator);
+}
 
 LensOverlaySidePanelWebView::~LensOverlaySidePanelWebView() {
   if (coordinator_) {
     coordinator_->WebViewClosing();
-    coordinator_ = nullptr;
+    ClearCoordinator();
   }
 }
 
 void LensOverlaySidePanelWebView::ClearCoordinator() {
+  web_modal::WebContentsModalDialogManager::FromWebContents(GetWebContents())
+      ->SetDelegate(nullptr);
   coordinator_ = nullptr;
 }
 
@@ -61,7 +73,7 @@ content::WebContents* LensOverlaySidePanelWebView::OpenURLFromTab(
     const content::OpenURLParams& params,
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {
-  coordinator_->GetLensOverlayController()
+  coordinator_->GetLensSearchController()
       ->GetTabInterface()
       ->GetBrowserWindowInterface()
       ->OpenURL(params, std::move(navigation_handle_callback));
@@ -74,7 +86,7 @@ bool LensOverlaySidePanelWebView::HandleKeyboardEvent(
   if (!coordinator_) {
     return false;
   }
-  return coordinator_->GetLensOverlayController()
+  return coordinator_->GetLensSearchController()
       ->lens_overlay_event_handler()
       ->HandleKeyboardEvent(source, event, GetFocusManager());
 }

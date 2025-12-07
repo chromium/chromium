@@ -4,11 +4,16 @@
 
 package org.chromium.chrome.browser.browser_controls;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.Nullable;
+
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerVisibility;
 
 /** Interface represented in the bottom controls stack. */
+@NullMarked
 public interface BottomControlsLayer {
     /** Return the type of the layer. This should not change once the layer is created. */
     @LayerType
@@ -23,7 +28,8 @@ public interface BottomControlsLayer {
 
     /**
      * Return the current height of the layer. Can change after the layer is created; call {@link
-     * BottomControlsStacker#requestLayerUpdate} to trigger an update.
+     * BottomControlsStacker#requestLayerUpdate} to trigger an update. When animating a layer
+     * transition with SHOWING/HIDING, the height should remain the same throughout the animation.
      */
     int getHeight();
 
@@ -33,6 +39,19 @@ public interface BottomControlsLayer {
      */
     @LayerVisibility
     int getLayerVisibility();
+
+    /**
+     * Interface method to receive OffsetTag updates.
+     *
+     * @return The additional offset this layer needs after being scrolled offscreen, to hide visual
+     *     effects that extend past the height of the composited view.
+     */
+    default int updateOffsetTag(BrowserControlsOffsetTagsInfo offsetTagsInfo) {
+        return 0;
+    }
+
+    /** Remove the OffsetTag so that viz will not apply the renderer's offset to this layer. */
+    default void clearOffsetTag() {}
 
     /**
      * Interface method to receive browser controls update. The goal is each layer will know exactly
@@ -101,4 +120,21 @@ public interface BottomControlsLayer {
      * @see BrowserControlsStateProvider.Observer#onControlsOffsetChanged
      */
     default void onBrowserControlsOffsetUpdate(int layerYOffset) {}
+
+    /**
+     * Return the background color of the layer. This is used for bottom controls color
+     * coordination. When multiple layers are visible, the bottom-most visible layer's color will be
+     * used as the dominant background color for the entire bottom controls stack. Note that layers
+     * that do not provide a valid color from getBackgroundColor should never be considered for
+     * color coordination.
+     *
+     * <p>Note: The "dominant color" might not end up being the color used if all the layers have
+     * their own defined, intrinsic background color.
+     *
+     * @return The background color of the layer, or null if the layer doesn't provide a specific
+     *     background color.
+     */
+    default @Nullable @ColorInt Integer getBackgroundColor() {
+        return null;
+    }
 }

@@ -4,54 +4,26 @@
 
 module ui.mojom;
 
-// Dialog button identifiers used to specify which buttons to show the user.
-enum DialogButton {
-  NONE,
-  OK,
-  CANCEL,
-};
-
 // Specifies the type of modality applied to a window. Different modal
 // treatments may be handled differently by the window manager.
 enum ModalType {
   // Window is not modal.
-  NONE,
+  kNone,
 
   // Window is modal to its transient parent.
-  WINDOW,
+  kWindow,
 
-  // Window is modal to a child of its transient parent.
-  CHILD,
+  // Window is modal to a specific child UI element (and its descendants) of its
+  // transient parent. Other UI elements remain interactive.
+  //
+  // Example: A tab-modal dialog disables input *only* to that tab's contents.
+  //
+  // The application is responsible for managing this modality. The OS window
+  // manager is unaware of it. The client must disable input to the target child
+  // UI and its descendants while the modal window is active.
+  kChild,
 
   // Window is modal to all other windows.
-  SYSTEM
-};
-
-// It's mapped to ui::MenuSourceType. Any new type here needs to be synced
-// with ui::MenuSourceType in ui_base_types.h.
-[Stable, Extensible]
-enum MenuSourceType {
-  [Default] NONE,
-  MOUSE,
-  KEYBOARD,
-  TOUCH,
-  TOUCH_EDIT_MENU,
-  LONG_PRESS,
-  LONG_TAP,
-  TOUCH_HANDLE,
-  STYLUS,
-  ADJUST_SELECTION,
-  ADJUST_SELECTION_RESET
-};
-
-// Mapped to ui::WindowShowState. Any new type here needs to be synced with
-// ui::MenuSourceType in ui_base_types.h.
-[Stable, Extensible]
-enum WindowShowState {
-  [Default] SHOW_STATE_DEFAULT = 0,
-  SHOW_STATE_NORMAL = 1,
-  SHOW_STATE_MINIMIZED = 2,
-  SHOW_STATE_MAXIMIZED = 3,
-  SHOW_STATE_INACTIVE = 4,
-  SHOW_STATE_FULLSCREEN = 5
+  // Only supported on ChromeOS.
+  kSystem
 };

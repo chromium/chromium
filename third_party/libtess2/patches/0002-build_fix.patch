@@ -1,0 +1,14 @@
+diff --git a/third_party/libtess2/src/Source/sweep.c b/third_party/libtess2/src/Source/sweep.c
+index 31e050efc85a8..d18ad92de91ad 100644
+--- a/third_party/libtess2/src/Source/sweep.c
++++ b/third_party/libtess2/src/Source/sweep.c
+@@ -1159,7 +1159,9 @@ static void DoneEdgeDict( TESStesselator *tess )
+ 		*/
+ 		if( ! reg->sentinel ) {
+ 			tess_assert( reg->fixUpperEdge );
++#ifndef NDEBUG
+ 			tess_assert( ++fixedEdges == 1 );
++#endif
+ 		}
+ 		tess_assert( reg->windingNumber == 0 );
+ 		DeleteRegion( tess, reg );

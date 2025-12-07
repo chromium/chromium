@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstddef>
 #include <utility>
 #include <vector>
 
@@ -15,8 +16,8 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/profiles/profile.h"
@@ -66,7 +67,7 @@
 #include "pdf/pdf_features.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
@@ -293,6 +294,11 @@ class ChromeSitePerProcessGuestViewPDFTest : public ChromeSitePerProcessTest {
                                   ->CreateGuestViewManagerDelegate());
   }
 
+  void TearDownOnMainThread() override {
+    test_guest_view_manager_ = nullptr;
+    ChromeSitePerProcessTest::TearDownOnMainThread();
+  }
+
  protected:
   guest_view::TestGuestViewManager* test_guest_view_manager() const {
     return test_guest_view_manager_;
@@ -300,8 +306,7 @@ class ChromeSitePerProcessGuestViewPDFTest : public ChromeSitePerProcessTest {
 
  private:
   guest_view::TestGuestViewManagerFactory factory_;
-  raw_ptr<guest_view::TestGuestViewManager, DanglingUntriaged>
-      test_guest_view_manager_;
+  raw_ptr<guest_view::TestGuestViewManager> test_guest_view_manager_;
 };
 
 // This test verifies that when navigating an OOPIF to a page with <embed>-ed
@@ -410,11 +415,45 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessOopifPDFTest,
       GetTestPdfViewerStreamManager()->GetStreamContainer(primary_main_frame));
 
   // Now detach the frame and observe that the stream manager is destroyed.
+  content::RenderFrameDeletedObserver deleted_observer(subframe_main_host);
   EXPECT_TRUE(
       ExecJs(primary_main_frame,
              "document.body.removeChild(document.querySelector('iframe'));"));
+  deleted_observer.WaitUntilDeleted();
 
   EXPECT_FALSE(GetPdfViewerStreamManager());
+}
+
+// Check that navigating to a PDF and then trying to access localStorage or
+// sessionStorage in the context of the PDF document fails gracefully and
+// doesn't lead to a renderer kill. PDF documents don't access these interfaces
+// directly, but the access could still happen via DevTools.  See
+// https://crbug.com/357014503.
+IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessOopifPDFTest,
+                       AccessStorageInPDFDocument) {
+  GURL pdf_url = embedded_test_server()->GetURL("/pdf/test.pdf");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), pdf_url));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(pdf_url, web_contents->GetLastCommittedURL());
+  ASSERT_TRUE(GetTestPdfViewerStreamManager()->WaitUntilPdfLoaded(
+      web_contents->GetPrimaryMainFrame()));
+
+  // The PDF document should be in the grandchild frame, embedded in the PDF
+  // viewer extension frame.
+  content::RenderFrameHost* pdf_extension_frame =
+      content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(pdf_extension_frame);
+  content::RenderFrameHost* pdf_frame =
+      content::ChildFrameAt(pdf_extension_frame, 0);
+  ASSERT_TRUE(pdf_frame);
+  EXPECT_TRUE(pdf_frame->GetProcess()->IsPdf());
+
+  // When accessed from the PDF document, both localStorage and sessionStorage
+  // should be null. These accesses shouldn't lead to a renderer kill.
+  EXPECT_EQ(base::Value(), content::EvalJs(pdf_frame, "window.localStorage"));
+  EXPECT_EQ(base::Value(), content::EvalJs(pdf_frame, "window.sessionStorage"));
+  EXPECT_TRUE(pdf_frame->IsRenderFrameLive());
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
@@ -1431,87 +1470,6 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
   EXPECT_EQ(first_web_contents, tab_strip_model->GetActiveWebContents());
 }
 
-class ChromeSitePerProcessTestWithVerifiedUserActivation
-    : public ChromeSitePerProcessTest {
- public:
-  ChromeSitePerProcessTestWithVerifiedUserActivation() {
-    feature_list()->Reset();
-    feature_list()->InitWithFeatures(
-        /*enabled_features=*/{features::kBrowserVerifiedUserActivationMouse},
-        // TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid having to
-        // disable this feature.
-        /*disabled_features=*/{features::kHttpsUpgrades});
-  }
-};
-
-// Test mouse down activation notification with browser verification.
-// TODO(crbug.com/40826005): Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_UserActivationBrowserVerificationSameOriginSite \
-  DISABLED_UserActivationBrowserVerificationSameOriginSite
-#else
-#define MAYBE_UserActivationBrowserVerificationSameOriginSite \
-  UserActivationBrowserVerificationSameOriginSite
-#endif
-IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTestWithVerifiedUserActivation,
-                       MAYBE_UserActivationBrowserVerificationSameOriginSite) {
-  // Start on a page a.com with same-origin iframe on a.com and cross-origin
-  // iframe b.com.
-  GURL main_url(embedded_test_server()->GetURL(
-      "a.com", "/cross_site_iframe_factory.html?a(a(b))"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  content::RenderFrameHost* frame_a =
-      ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
-  content::RenderFrameHost* frame_b = ChildFrameAt(frame_a, 0);
-
-  // The test becomes flaky if we don't wait for frame_a's hit-test data before
-  // sending the mouse-event below (crbug.com/1119342).
-  content::WaitForHitTestData(frame_a);
-
-  // Activate frame_a by clicking at the midpoints of top-left corners of
-  // frame_a and frame_b.
-  gfx::Rect bounds_a = frame_a->GetView()->GetViewBounds();
-  gfx::Rect bounds_b = frame_b->GetView()->GetViewBounds();
-  content::SimulateMouseClickAt(web_contents, 0 /* modifiers */,
-                                blink::WebMouseEvent::Button::kLeft,
-                                gfx::Point((bounds_a.x() + bounds_b.x()) / 2,
-                                           (bounds_a.y() + bounds_b.y()) / 2));
-
-  // Add a popup observer.
-  content::TestNavigationObserver popup_observer(nullptr);
-  popup_observer.StartWatchingNewWebContents();
-
-  // Try opening popups from frame_b and root frame.
-  GURL popup_url(embedded_test_server()->GetURL("popup.com", "/"));
-  EXPECT_TRUE(
-      ExecJs(frame_b,
-             content::JsReplace("window.w = window.open($1 + 'title1.html');",
-                                popup_url),
-             content::EXECUTE_SCRIPT_NO_USER_GESTURE));
-  EXPECT_TRUE(
-      ExecJs(web_contents,
-             content::JsReplace("window.w = window.open($1 + 'title2.html');",
-                                popup_url),
-             content::EXECUTE_SCRIPT_NO_USER_GESTURE));
-
-  // Wait and check that only one popup has opened.
-  popup_observer.Wait();
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
-
-  content::WebContents* popup =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_EQ(embedded_test_server()->GetURL("popup.com", "/title2.html"),
-            popup->GetLastCommittedURL());
-  EXPECT_NE(popup, web_contents);
-
-  // Confirm that only the root_frame opened the popup.
-  EXPECT_EQ(true, content::EvalJs(web_contents, "!!window.w"));
-
-  EXPECT_EQ(false, content::EvalJs(frame_b, "!!window.w"));
-}
-
 IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest, JSPrintDuringSwap) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -1531,7 +1489,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest, JSPrintDuringSwap) {
   EXPECT_TRUE(watcher.did_exit_normally());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // This test verifies that an OOPIF created in a tab on a secondary display
 // doesn't initialize its device scale factor based on the primary display.
 // Note: This test could probably be expanded to run on all ASH platforms.
@@ -1550,7 +1508,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
   display::test::DisplayManagerTestApi display_manager_test_api(
       shell_test_api.display_manager());
 
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   int64_t display2 = display_manager_test_api.GetSecondaryDisplay().id();
   screen->SetDisplayForNewWindows(display2);
   Browser* browser_on_secondary_display = CreateBrowser(browser()->profile());

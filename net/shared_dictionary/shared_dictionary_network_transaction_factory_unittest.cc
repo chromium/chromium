@@ -24,13 +24,10 @@ class DummyHttpTransactionFactory : public HttpTransactionFactory {
   ~DummyHttpTransactionFactory() override = default;
 
   // HttpTransactionFactory methods:
-  int CreateTransaction(RequestPriority priority,
-                        std::unique_ptr<HttpTransaction>* trans) override {
+  std::unique_ptr<HttpTransaction> CreateTransaction(
+      RequestPriority priority) override {
     create_transaction_called_ = true;
-    if (is_broken_) {
-      return ERR_FAILED;
-    }
-    return network_layer_->CreateTransaction(priority, trans);
+    return network_layer_->CreateTransaction(priority);
   }
   HttpCache* GetCache() override {
     get_cache_called_ = true;
@@ -41,13 +38,11 @@ class DummyHttpTransactionFactory : public HttpTransactionFactory {
     return network_layer_->GetSession();
   }
 
-  void set_is_broken() { is_broken_ = true; }
   bool create_transaction_called() const { return create_transaction_called_; }
   bool get_cache_called() const { return get_cache_called_; }
   bool get_session_called() const { return get_session_called_; }
 
  private:
-  bool is_broken_ = false;
   bool create_transaction_called_ = false;
   bool get_cache_called_ = false;
   bool get_session_called_ = false;
@@ -62,22 +57,9 @@ TEST(SharedDictionaryNetworkTransactionFactoryTest, CreateTransaction) {
                                                 /*enable_shared_zstd=*/true);
   std::unique_ptr<HttpTransaction> transaction;
   EXPECT_FALSE(dummy_factory_ptr->create_transaction_called());
-  EXPECT_EQ(OK, factory.CreateTransaction(DEFAULT_PRIORITY, &transaction));
+  transaction = factory.CreateTransaction(DEFAULT_PRIORITY);
   EXPECT_TRUE(dummy_factory_ptr->create_transaction_called());
   EXPECT_TRUE(transaction);
-}
-
-TEST(SharedDictionaryNetworkTransactionFactoryTest, CreateTransactionFailure) {
-  auto dummy_factory = std::make_unique<DummyHttpTransactionFactory>();
-  DummyHttpTransactionFactory* dummy_factory_ptr = dummy_factory.get();
-  SharedDictionaryNetworkTransactionFactory factory =
-      SharedDictionaryNetworkTransactionFactory(std::move(dummy_factory),
-                                                /*enable_shared_zstd=*/true);
-  dummy_factory_ptr->set_is_broken();
-  std::unique_ptr<HttpTransaction> transaction;
-  EXPECT_EQ(ERR_FAILED,
-            factory.CreateTransaction(DEFAULT_PRIORITY, &transaction));
-  EXPECT_FALSE(transaction);
 }
 
 TEST(SharedDictionaryNetworkTransactionFactoryTest, GetCache) {

@@ -5,6 +5,7 @@
 #import "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_matchers.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -19,12 +20,6 @@
 
 using base::test::ios::kWaitForActionTimeout;
 using chrome_test_util::AutofillSuggestionViewMatcher;
-using chrome_test_util::ManualFallbackFormSuggestionViewMatcher;
-using chrome_test_util::ManualFallbackKeyboardIconMatcher;
-using chrome_test_util::ManualFallbackManageProfilesMatcher;
-using chrome_test_util::ManualFallbackProfilesIconMatcher;
-using chrome_test_util::ManualFallbackProfilesTableViewMatcher;
-using chrome_test_util::ManualFallbackProfileTableViewWindowMatcher;
 
 namespace {
 
@@ -49,21 +44,12 @@ id<GREYMatcher> ProfileTableViewButtonMatcher() {
 // Opens the address manual fill view and verifies that the address view
 // controller is visible afterwards.
 void OpenAddressManualFillView() {
-  id<GREYMatcher> button_to_tap;
-  if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
-    button_to_tap = KeyboardAccessoryExpandButton();
-  } else {
-    [[EarlGrey
-        selectElementWithMatcher:ManualFallbackFormSuggestionViewMatcher()]
-        performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
-    button_to_tap = ManualFallbackProfilesIconMatcher();
-  }
-
   // Tap the button that'll open the address manual fill view.
-  [[EarlGrey selectElementWithMatcher:button_to_tap] performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:KeyboardAccessoryExpandButton()]
+      performAction:grey_tap()];
 
   // Verify the address table view controller is visible.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesTableViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::ProfilesTableViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -87,7 +73,7 @@ void OpenAddressManualFillView() {
   [ChromeEarlGrey waitForWebStateContainingText:"Profile form"];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [AutofillAppInterface clearProfilesStore];
 
   // Leaving a picker on iPads causes problems with the docking logic. This
@@ -104,7 +90,7 @@ void OpenAddressManualFillView() {
                                      grey_not(grey_notVisible()), nil)]
         assertWithMatcher:grey_nil()];
   }
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Tests that the when tapping the outside the popover on iPad, suggestions
@@ -129,11 +115,11 @@ void OpenAddressManualFillView() {
   // The way EarlGrey taps doesn't go through the window hierarchy. Because of
   // this, the tap needs to be done in the same window as the popover.
   [[EarlGrey
-      selectElementWithMatcher:ManualFallbackProfileTableViewWindowMatcher()]
+      selectElementWithMatcher:manual_fill::ProfileTableViewWindowMatcher()]
       performAction:grey_tapAtPoint(CGPointMake(0, 0))];
 
   // Verify the profiles controller table view is NOT visible.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesTableViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::ProfilesTableViewMatcher()]
       assertWithMatcher:grey_notVisible()];
 
   // Tap on the suggestion.
@@ -168,13 +154,11 @@ void OpenAddressManualFillView() {
 
   // Verify the profiles controller table view is not visible.
   [ChromeEarlGrey waitForNotSufficientlyVisibleElementWithMatcher:
-                      ManualFallbackProfilesTableViewMatcher()];
+                      manual_fill::ProfilesTableViewMatcher()];
 
-  // Verify icons are not present now that the selected field is a picker.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesIconMatcher()]
+  // Verify icon is not present now that the selected field is a picker.
+  [[EarlGrey selectElementWithMatcher:KeyboardAccessoryExpandButton()]
       assertWithMatcher:grey_notVisible()];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackKeyboardIconMatcher()]
-      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 }
 
 // Tests that the input accessory view continues working after a picker is
@@ -203,7 +187,7 @@ void OpenAddressManualFillView() {
 
   // Verify the profiles controller table view is not visible.
   [ChromeEarlGrey waitForNotSufficientlyVisibleElementWithMatcher:
-                      ManualFallbackProfilesTableViewMatcher()];
+                      manual_fill::ProfilesTableViewMatcher()];
 
   // On iPad the picker is a table view in a popover, we need to
   // dismiss that first.
@@ -230,18 +214,14 @@ void OpenAddressManualFillView() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormElementCity)];
 
-  // Verify the profiles icon is visible, and therefore also the input accessory
-  // bar.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackFormSuggestionViewMatcher()]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
-  // Verify the status of the icons.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesIconMatcher()]
+  // Verify the manual fill icon is visible, and therefore also the input
+  // accessory bar.
+  [[EarlGrey selectElementWithMatcher:KeyboardAccessoryExpandButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesIconMatcher()]
+  // Verify the status of the icon.
+  [[EarlGrey selectElementWithMatcher:KeyboardAccessoryExpandButton()]
       assertWithMatcher:grey_userInteractionEnabled()];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackKeyboardIconMatcher()]
-      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 }
 
 // Tests that the manual fallback view is present in incognito.
@@ -262,34 +242,39 @@ void OpenAddressManualFillView() {
       performAction:chrome_test_util::TapWebElementWithId(kFormElementCity)];
 
   // Verify that the manual fill button is visible.
-  if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
-    [[EarlGrey selectElementWithMatcher:KeyboardAccessoryExpandButton()]
-        assertWithMatcher:grey_sufficientlyVisible()];
-  } else {
-    [[EarlGrey
-        selectElementWithMatcher:ManualFallbackFormSuggestionViewMatcher()]
-        performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
-    [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesIconMatcher()]
-        assertWithMatcher:grey_sufficientlyVisible()];
-  }
+  [[EarlGrey selectElementWithMatcher:KeyboardAccessoryExpandButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests the mediator stops observing objects when the incognito BVC is
 // destroyed. Waiting for dealloc was causing a race condition with the
 // autorelease pool, and some times a DCHECK will be hit.
-// TODO(crbug.com/40776865) Flaky test.
-- (void)DISABLED_testOpeningIncognitoTabsDoNotLeak {
+// TODO(crbug.com/40776865): Test fails on Simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testOpeningIncognitoTabsDoNotLeak DISABLED_testOpeningIncognitoTabsDoNotLeak
+#else
+#define MAYBE_testOpeningIncognitoTabsDoNotLeak testOpeningIncognitoTabsDoNotLeak
+#endif  // TARGET_OS_SIMULATOR
+- (void)MAYBE_testOpeningIncognitoTabsDoNotLeak {
+  // TODO(crbug.com/443950620): Re-enable the test.
+#if !TARGET_OS_SIMULATOR
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+#endif
+
+  [AutofillAppInterface saveExampleProfile];
+
   const GURL URL = self.testServer->GetURL(kFormHTMLFile);
   std::string webViewText("Profile form");
-  [AutofillAppInterface saveExampleProfile];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormElementCity)];
 
   // Verify the profiles icon is visible.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackFormSuggestionViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::FormSuggestionViewMatcher()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesIconMatcher()]
+  [[EarlGrey selectElementWithMatcher:KeyboardAccessoryExpandButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Open a tab in incognito.
@@ -301,9 +286,9 @@ void OpenAddressManualFillView() {
       performAction:chrome_test_util::TapWebElementWithId(kFormElementCity)];
 
   // Verify the profiles icon is visible.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackFormSuggestionViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::FormSuggestionViewMatcher()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesIconMatcher()]
+  [[EarlGrey selectElementWithMatcher:KeyboardAccessoryExpandButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   [ChromeEarlGrey closeCurrentTab];
@@ -317,9 +302,9 @@ void OpenAddressManualFillView() {
       performAction:chrome_test_util::TapWebElementWithId(kFormElementCity)];
 
   // Verify the profiles icon is visible.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackFormSuggestionViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::FormSuggestionViewMatcher()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesIconMatcher()]
+  [[EarlGrey selectElementWithMatcher:KeyboardAccessoryExpandButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Open a tab in incognito.
@@ -343,9 +328,9 @@ void OpenAddressManualFillView() {
       performAction:chrome_test_util::TapWebElementWithId(kFormElementCity)];
 
   // This will fail if there is more than one profiles icon in the hierarchy.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackFormSuggestionViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::FormSuggestionViewMatcher()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesIconMatcher()]
+  [[EarlGrey selectElementWithMatcher:KeyboardAccessoryExpandButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -361,9 +346,9 @@ void OpenAddressManualFillView() {
       performAction:chrome_test_util::TapWebElementWithId(kFormElementCity)];
 
   // Verify the profiles icon is visible.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackFormSuggestionViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::FormSuggestionViewMatcher()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesIconMatcher()]
+  [[EarlGrey selectElementWithMatcher:KeyboardAccessoryExpandButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Open a tab in incognito.
@@ -388,9 +373,9 @@ void OpenAddressManualFillView() {
       performAction:chrome_test_util::TapWebElementWithId(kFormElementCity)];
 
   // This will fail if there is more than one profiles icon in the hierarchy.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackFormSuggestionViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::FormSuggestionViewMatcher()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesIconMatcher()]
+  [[EarlGrey selectElementWithMatcher:KeyboardAccessoryExpandButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

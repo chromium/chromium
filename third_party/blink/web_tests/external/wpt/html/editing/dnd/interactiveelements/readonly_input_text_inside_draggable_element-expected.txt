@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Readonly input text inside draggable element should not be draggable
+  assert_false: dragstart should not fire expected false got true
+[FAIL] Readonly input text inside draggable element should not be draggable while attempting to select text
+  assert_false: dragstart should not fire expected false got true
+Harness: the test ran to completion.
+

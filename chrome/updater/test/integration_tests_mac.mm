@@ -5,8 +5,10 @@
 #include "chrome/updater/test/integration_tests_mac.h"
 
 #include <cstdint>
+#include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -14,6 +16,7 @@
 #include "base/apple/foundation_util.h"
 #include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/file_version_info.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -27,6 +30,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
@@ -52,6 +56,8 @@
 #include "components/crx_file/crx_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "third_party/crashpad/crashpad/client/crash_report_database.h"
+#include "third_party/crashpad/crashpad/client/settings.h"
 #include "url/gurl.h"
 
 namespace updater::test {
@@ -74,10 +80,10 @@ std::optional<base::FilePath> GetActiveFile(UpdaterScope /*scope*/,
     return std::nullopt;
   }
 
-  return path->AppendASCII(COMPANY_SHORTNAME_STRING)
-      .AppendASCII(COMPANY_SHORTNAME_STRING "SoftwareUpdate")
-      .AppendASCII("Actives")
-      .AppendASCII(id);
+  return path->Append(COMPANY_SHORTNAME_STRING)
+      .Append(COMPANY_SHORTNAME_STRING "SoftwareUpdate")
+      .Append("Actives")
+      .Append(id);
 }
 
 }  // namespace
@@ -87,23 +93,8 @@ base::FilePath GetSetupExecutablePath() {
   return GetExecutablePath();
 }
 
-void EnterTestMode(const GURL& update_url,
-                   const GURL& crash_upload_url,
-                   const GURL& device_management_url,
-                   const GURL& app_logo_url,
-                   const base::TimeDelta& idle_timeout) {
-  ASSERT_TRUE(ExternalConstantsBuilder()
-                  .SetUpdateURL(std::vector<std::string>{update_url.spec()})
-                  .SetCrashUploadURL(crash_upload_url.spec())
-                  .SetDeviceManagementURL(device_management_url.spec())
-                  .SetAppLogoURL(app_logo_url.spec())
-                  .SetUseCUP(false)
-                  .SetInitialDelay(base::Milliseconds(100))
-                  .SetServerKeepAliveTime(base::Seconds(2))
-                  .SetCrxVerifierFormat(crx_file::VerifierFormat::CRX3)
-                  .SetOverinstallTimeout(base::Seconds(5))
-                  .SetIdleCheckPeriod(idle_timeout)
-                  .Modify());
+base::TimeDelta GetOverinstallTimeoutForEnterTestMode() {
+  return base::Seconds(5);
 }
 
 void Clean(UpdaterScope scope) {
@@ -128,11 +119,10 @@ void Clean(UpdaterScope scope) {
     EXPECT_TRUE(base::DeletePathRecursively(*keystone_path));
   }
 
-  std::optional<base::FilePath> cache_path = GetCacheBaseDirectory(scope);
-  EXPECT_TRUE(cache_path);
-  if (cache_path) {
-    EXPECT_TRUE(base::DeletePathRecursively(*cache_path));
-  }
+  // TODO(crbug.com/394302692): Delete after CIPD updater versions are M136+.
+  EXPECT_TRUE(base::DeletePathRecursively(
+      base::FilePath("/Library/Caches/").Append(MAC_BUNDLE_IDENTIFIER_STRING)));
+
   EXPECT_TRUE(RemoveWakeJobFromLaunchd(scope));
 
   // Also clean up any other versions of the updater that are around.
@@ -151,6 +141,10 @@ void Clean(UpdaterScope scope) {
       ASSERT_TRUE(base::GetAppOutput(launchctl_rm, &out_rm));
     }
   }
+
+  if (IsSystemInstall(scope)) {
+    ASSERT_NO_FATAL_FAILURE(UninstallEnterpriseCompanionApp());
+  }
 }
 
 void DeleteLegacyUpdater(UpdaterScope scope) {
@@ -165,43 +159,36 @@ void ExpectClean(UpdaterScope scope) {
   // Files must not exist on the file system.
   EXPECT_FALSE(base::PathExists(*GetWakeTaskPlistPath(scope)));
 
-  // Caches must have been removed. On Mac, this is separate from other
-  // updater directories, so we can reliably remove it completely.
-  std::optional<base::FilePath> cache_path = GetCacheBaseDirectory(scope);
-  EXPECT_TRUE(cache_path);
-  if (cache_path) {
-    EXPECT_FALSE(base::PathExists(*cache_path));
-  }
-
   std::optional<base::FilePath> path = GetInstallDirectory(scope);
   EXPECT_TRUE(path);
   if (path && base::PathExists(*path)) {
     // If the path exists, then expect only the log and json files to be
     // present.
     int count = CountDirectoryFiles(*path);
-    EXPECT_LE(count, 1) << base::JoinString(
+    for (const auto& file_name : {"updater.log", "prefs.json"}) {
+      if (base::PathExists(path->Append(file_name))) {
+        count -= 1;
+      }
+    }
+    EXPECT_EQ(count, 0) << base::JoinString(
         [](const base::FilePath& dir) {
           std::vector<base::FilePath::StringType> files;
           base::FileEnumerator(dir, false, base::FileEnumerator::FILES)
               .ForEach([&files](const base::FilePath& name) {
                 files.push_back(name.value());
               });
-
           return files;
         }(*path),
         FILE_PATH_LITERAL(","));
-
-    if (count >= 1) {
-      EXPECT_TRUE(base::PathExists(path->AppendASCII("updater.log")));
-    }
   }
   // Keystone must not exist on the file system.
   std::optional<base::FilePath> keystone_path = GetKeystoneFolderPath(scope);
   EXPECT_TRUE(keystone_path);
   if (keystone_path) {
     EXPECT_FALSE(
-        base::PathExists(keystone_path->AppendASCII(KEYSTONE_NAME ".bundle")));
+        base::PathExists(keystone_path->Append(KEYSTONE_NAME ".bundle")));
   }
+  ASSERT_NO_FATAL_FAILURE(ExpectEnterpriseCompanionAppNotInstalled());
 }
 
 void ExpectInstalled(UpdaterScope scope) {
@@ -264,45 +251,64 @@ void ExpectNotActive(UpdaterScope scope, const std::string& app_id) {
 }
 
 bool WaitForUpdaterExit() {
+  std::string last_found;
   return WaitFor(
-      [] {
+      [&] {
         std::string ps_stdout;
         EXPECT_TRUE(
             base::GetAppOutput({"ps", "ax", "-o", "command"}, &ps_stdout));
-        if (ps_stdout.find(GetExecutablePath().BaseName().AsUTF8Unsafe()) ==
-            std::string::npos) {
-          return true;
+        std::vector<std::string_view> commands = base::SplitStringPiece(
+            ps_stdout, "\n", base::WhitespaceHandling::TRIM_WHITESPACE,
+            base::SplitResult::SPLIT_WANT_NONEMPTY);
+        for (const auto& command : commands) {
+          // Skip command lines referencing the symbol files, other processes
+          // can safely have those open (and often do on ASAN bots).
+          if (command.find(GetExecutablePath().BaseName().AsUTF8Unsafe()) !=
+                  std::string::npos &&
+              command.find(".dSYM") == std::string::npos) {
+            last_found = command;
+            return false;
+          }
         }
-        return false;
+        return true;
       },
-      [] { VLOG(0) << "Still waiting for updater to exit..."; });
+      [&] { VLOG(0) << "Still waiting for updater to exit: " << last_found; });
 }
 
-void SetupRealUpdaterLowerVersion(UpdaterScope scope) {
+std::vector<TestUpdaterVersion> GetRealUpdaterLowerVersions(
+    const std::string& arch_suffix) {
   base::FilePath exe_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
-  base::FilePath old_updater_path = exe_path.Append("old_updater");
+  EXPECT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
+  base::FilePath old_updater_path =
+      exe_path.Append(FILE_PATH_LITERAL("old_updater"));
+
+  std::string arch;
 #if BUILDFLAG(CHROMIUM_BRANDING)
 #if defined(ARCH_CPU_ARM64)
-  old_updater_path = old_updater_path.Append("chromium_mac_arm64");
+  arch = "chromium_mac_arm64";
 #elif defined(ARCH_CPU_X86_64)
-  old_updater_path = old_updater_path.Append("chromium_mac_amd64");
+  arch = "chromium_mac_amd64";
 #endif
 #elif BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  old_updater_path = old_updater_path.Append("chrome_mac_universal");
+  arch = "chrome_mac_universal";
 #endif
+
+  old_updater_path = old_updater_path.Append(base::StrCat({arch, arch_suffix}));
+
 #if BUILDFLAG(CHROMIUM_BRANDING) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
   old_updater_path = old_updater_path.Append("cipd");
 #endif
-  base::CommandLine command_line(
-      old_updater_path.Append(PRODUCT_FULLNAME_STRING "_test.app")
-          .Append("Contents")
+
+  const base::FilePath updater_bundle_path =
+      old_updater_path.Append(PRODUCT_FULLNAME_STRING "_test.app");
+  const base::FilePath updater_setup_path =
+      updater_bundle_path.Append("Contents")
           .Append("MacOS")
-          .Append(PRODUCT_FULLNAME_STRING "_test"));
-  command_line.AppendSwitch(kInstallSwitch);
-  int exit_code = -1;
-  Run(scope, command_line, &exit_code);
-  ASSERT_EQ(exit_code, 0);
+          .Append(PRODUCT_FULLNAME_STRING "_test");
+  return {{updater_setup_path,
+           base::Version(base::UTF16ToUTF8(
+               FileVersionInfo::CreateFileVersionInfo(updater_bundle_path)
+                   ->file_version()))}};
 }
 
 void SetupFakeLegacyUpdater(UpdaterScope scope) {
@@ -317,11 +323,11 @@ void SetupFakeLegacyUpdater(UpdaterScope scope) {
       keystone_path.Append(FILE_PATH_LITERAL("TicketStore"));
   ASSERT_TRUE(base::CreateDirectory(keystone_ticket_store_path));
   ASSERT_TRUE(base::CopyFile(
-      updater_test_data_path.AppendASCII("Keystone.legacy.ticketstore"),
-      keystone_ticket_store_path.AppendASCII("Keystone.ticketstore")));
-  ASSERT_TRUE(base::CopyFile(
-      updater_test_data_path.AppendASCII("CountingMetrics.plist"),
-      keystone_path.AppendASCII("CountingMetrics.plist")));
+      updater_test_data_path.Append("Keystone.legacy.ticketstore"),
+      keystone_ticket_store_path.Append("Keystone.ticketstore")));
+  ASSERT_TRUE(
+      base::CopyFile(updater_test_data_path.Append("CountingMetrics.plist"),
+                     keystone_path.Append("CountingMetrics.plist")));
 }
 
 void ExpectLegacyUpdaterMigrated(UpdaterScope scope) {
@@ -331,7 +337,7 @@ void ExpectLegacyUpdaterMigrated(UpdaterScope scope) {
 
   // Keystone should not be migrated.
   EXPECT_FALSE(
-      persisted_data->GetProductVersion("com.google.keystone").IsValid());
+      persisted_data->GetProductVersion(LEGACY_GOOGLE_UPDATE_APPID).IsValid());
 
   // Uninstalled app should be migrated.
   EXPECT_TRUE(
@@ -383,7 +389,7 @@ void InstallApp(UpdaterScope scope,
                 const base::Version& version) {
   RegistrationRequest registration;
   registration.app_id = app_id;
-  registration.version = version;
+  registration.version = version.GetString();
   RegisterApp(scope, registration);
 }
 
@@ -404,7 +410,7 @@ base::CommandLine MakeElevated(base::CommandLine command_line) {
 }
 
 void SetPlatformPolicies(const base::Value::Dict& values) {
-  const CFStringRef domain = CFSTR("com.google.Keystone");
+  const CFStringRef domain = CFSTR(LEGACY_GOOGLE_UPDATE_APPID);
 
   // Synchronize just to be safe. Ignore spurious errors if the domain
   // does not yet exist.
@@ -429,8 +435,8 @@ void SetPlatformPolicies(const base::Value::Dict& values) {
 
     NSURL* const managed_preferences_url = base::apple::FilePathToNSURL(
         GetLibraryFolderPath(UpdaterScope::kSystem)
-            ->AppendASCII("Managed Preferences")
-            .AppendASCII("com.google.Keystone.plist"));
+            ->Append("Managed Preferences")
+            .Append(LEGACY_GOOGLE_UPDATE_APPID ".plist"));
     ASSERT_TRUE([[NSDictionary dictionaryWithObject:all_policies
                                              forKey:@"updatePolicies"]
         writeToURL:managed_preferences_url
@@ -445,10 +451,10 @@ void SetPlatformPolicies(const base::Value::Dict& values) {
   if (!process.IsValid()) {
     VLOG(2) << "Failed to launch the process to refresh preferences.";
   }
-  int exit_code = -1;
-  EXPECT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_timeout(),
-                                             &exit_code));
-  EXPECT_EQ(0, exit_code);
+  // Exit code is not checked because it is not 0 when `cfprefsd` is not
+  // found.
+  EXPECT_TRUE(
+      process.WaitForExitWithTimeout(TestTimeouts::action_timeout(), nullptr));
 }
 
 void PrivilegedHelperInstall(UpdaterScope scope) {
@@ -518,7 +524,7 @@ void ExpectKSAdminResult(UpdaterScope scope,
 
   base::CommandLine command_line(*ksadmin_path);
   for (const auto& [key, value] : switches) {
-    command_line.AppendSwitchASCII(key, value);
+    command_line.AppendSwitchUTF8(key, value);
   }
 
   ExpectCliResult(command_line, elevate, std::move(want_stdout),
@@ -555,6 +561,20 @@ void ExpectKSAdminFetchTag(UpdaterScope scope,
   }
 
   ExpectKSAdminResult(scope, elevate, switches, std::move(want_tag), want_exit);
+}
+
+void ExpectKSAdminXattrBrand(UpdaterScope scope,
+                             bool elevate,
+                             const base::FilePath& path,
+                             std::optional<std::string> want_brand) {
+  int want_exit = EXIT_FAILURE;
+  if (want_brand) {
+    *want_brand = base::StrCat({*want_brand, "\n"});
+    want_exit = EXIT_SUCCESS;
+  }
+  ExpectKSAdminResult(scope, elevate,
+                      {{"--print-xattr-tag-brand", path.value()}},
+                      std::move(want_brand), want_exit);
 }
 
 void ExpectCRURegistrationCannotFindKSAdmin() {
@@ -594,36 +614,68 @@ void ExpectCRURegistrationFindsKSAdmin(UpdaterScope scope) {
   }
 }
 
+/**
+ * InvokeCRURegistrationAndWait creates a CRURegistration and a semaphore, hands
+ * them off to a test-specific block, and waits for the semaphore to signal
+ * or times out after ten seconds. It returns whether the semaphore was
+ * successfully signaled. This factors out the common logic for converting
+ * CRURegistration's asynchronous operations to something functionally
+ * synchronous for test purposes. The test thread blocks while waiting.
+ *
+ * The `impl` block is responsible for invoking the (asynchronous) method
+ * under test on the provided `CRURegistration` and providing a reply block
+ * to it that stores results from CRURegistration, then signals the semaphore.
+ *
+ * Mishandling the semaphore in `impl`, or ignoring a `false` result from this
+ * function and subsequently attempting to access fields `impl` set up the
+ * CRURegistration reply block to write to, will cause a data race, which is
+ * undefined behavior in C.
+ */
+[[nodiscard]] bool InvokeCRURegistrationAndWait(
+    const std::string& app_id,
+    const base::FilePath& xc_path,
+    void (^impl)(CRURegistration*, dispatch_semaphore_t)) {
+  if (!impl) {
+    ADD_FAILURE() << "test issue - no impl provided";
+    return false;
+  }
+  NSString* ns_xc_path = @"NOT PROVIDED FOR THIS TEST";
+  if (!xc_path.empty()) {
+    ns_xc_path = base::apple::FilePathToNSString(xc_path);
+  }
+  if (!ns_xc_path) {
+    ADD_FAILURE() << "test issue - xc_path could not be converted to NSString";
+    return false;
+  }
+  CRURegistration* registration =
+      [[CRURegistration alloc] initWithAppId:base::SysUTF8ToNSString(app_id)
+                        existenceCheckerPath:ns_xc_path];
+
+  dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+  impl(registration, semaphore);
+
+  dispatch_time_t limit = dispatch_time(DISPATCH_TIME_NOW, 10L * NSEC_PER_SEC);
+  return !dispatch_semaphore_wait(semaphore, limit);
+}
+
 void ExpectCRURegistrationCannotFetchTag(const std::string& app_id,
                                          const base::FilePath& xc_path) {
   @autoreleasepool {
-    NSString* ns_xc_path = base::apple::FilePathToNSString(xc_path);
-    ASSERT_TRUE(ns_xc_path) << "test issue - xc_path was not valid";
-    CRURegistration* registration =
-        [[CRURegistration alloc] initWithAppId:base::SysUTF8ToNSString(app_id)
-                          existenceCheckerPath:ns_xc_path];
-
-    NSConditionLock* result_lock =
-        [[NSConditionLock alloc] initWithCondition:0];
     __block NSString* got_tag = nil;
     __block NSError* got_error = nil;
 
-    [registration fetchTagWithReply:^(NSString* tag, NSError* error) {
-      [result_lock lock];
-      got_tag = tag;
-      got_error = error;
-      [result_lock unlockWithCondition:1];
-    }];
-
-    ASSERT_TRUE([result_lock
-        lockWhenCondition:1
-               beforeDate:[NSDate dateWithTimeIntervalSinceNow:10.0]]);
-    absl::Cleanup result_unlocker = ^{
-      [result_lock unlock];
-    };
+    ASSERT_TRUE(InvokeCRURegistrationAndWait(
+        app_id, xc_path,
+        ^(CRURegistration* registration, dispatch_semaphore_t semaphore) {
+          [registration fetchTagWithReply:^(NSString* tag, NSError* error) {
+            got_tag = tag;
+            got_error = error;
+            dispatch_semaphore_signal(semaphore);
+          }];
+        }));
 
     EXPECT_FALSE(got_tag) << base::SysNSStringToUTF8(got_tag);
-    ASSERT_TRUE(got_error);
+    EXPECT_TRUE(got_error);
   }
 }
 
@@ -631,35 +683,145 @@ void ExpectCRURegistrationFetchesTag(const std::string& app_id,
                                      const base::FilePath& xc_path,
                                      const std::string& want_tag) {
   @autoreleasepool {
-    NSString* ns_xc_path = base::apple::FilePathToNSString(xc_path);
-    ASSERT_TRUE(ns_xc_path) << "test issue - xc_path was not valid";
-    CRURegistration* registration =
-        [[CRURegistration alloc] initWithAppId:base::SysUTF8ToNSString(app_id)
-                          existenceCheckerPath:ns_xc_path];
-
-    NSConditionLock* result_lock =
-        [[NSConditionLock alloc] initWithCondition:0];
     __block NSString* got_tag = nil;
     __block NSError* got_error = nil;
 
-    [registration fetchTagWithReply:^(NSString* tag, NSError* error) {
-      [result_lock lock];
-      got_tag = tag;
-      got_error = error;
-      [result_lock unlockWithCondition:1];
-    }];
-
-    ASSERT_TRUE([result_lock
-        lockWhenCondition:1
-               beforeDate:[NSDate dateWithTimeIntervalSinceNow:10.0]]);
-    absl::Cleanup result_unlocker = ^{
-      [result_lock unlock];
-    };
+    ASSERT_TRUE(InvokeCRURegistrationAndWait(
+        app_id, xc_path,
+        ^(CRURegistration* registration, dispatch_semaphore_t semaphore) {
+          [registration fetchTagWithReply:^(NSString* tag, NSError* error) {
+            got_tag = tag;
+            got_error = error;
+            dispatch_semaphore_signal(semaphore);
+          }];
+        }));
 
     EXPECT_FALSE(got_error) << base::SysNSStringToUTF8([got_error description]);
     ASSERT_TRUE(got_tag);
     EXPECT_EQ(want_tag, base::SysNSStringToUTF8(got_tag));
   }
+}
+
+void ExpectCRURegistrationRegisters(const std::string& app_id,
+                                    const base::FilePath& xc_path,
+                                    const std::string& version_str) {
+  @autoreleasepool {
+    __block NSError* got_error = nil;
+
+    ASSERT_TRUE(InvokeCRURegistrationAndWait(
+        app_id, xc_path,
+        ^(CRURegistration* registration, dispatch_semaphore_t semaphore) {
+          [registration registerVersion:base::SysUTF8ToNSString(version_str)
+                                  reply:^(NSError* error) {
+                                    got_error = error;
+                                    dispatch_semaphore_signal(semaphore);
+                                  }];
+        }));
+
+    EXPECT_FALSE(got_error) << base::SysNSStringToUTF8([got_error description]);
+  }
+}
+
+void ExpectCRURegistrationCannotRegister(const std::string& app_id,
+                                         const base::FilePath& xc_path,
+                                         const std::string& version_str) {
+  @autoreleasepool {
+    __block NSError* got_error = nil;
+
+    ASSERT_TRUE(InvokeCRURegistrationAndWait(
+        app_id, xc_path,
+        ^(CRURegistration* registration, dispatch_semaphore_t semaphore) {
+          [registration registerVersion:base::SysUTF8ToNSString(version_str)
+                                  reply:^(NSError* error) {
+                                    got_error = error;
+                                    dispatch_semaphore_signal(semaphore);
+                                  }];
+        }));
+
+    EXPECT_TRUE(got_error);
+  }
+}
+
+void ExpectCRURegistrationMarksActive(const std::string& app_id) {
+  @autoreleasepool {
+    __block NSError* got_error = nil;
+
+    ASSERT_TRUE(InvokeCRURegistrationAndWait(
+        app_id, {},
+        ^(CRURegistration* registration, dispatch_semaphore_t semaphore) {
+          [registration markActiveWithReply:^(NSError* error) {
+            got_error = error;
+            dispatch_semaphore_signal(semaphore);
+          }];
+        }));
+
+    EXPECT_FALSE(got_error) << base::SysNSStringToUTF8([got_error description]);
+  }
+}
+
+std::optional<base::FilePath> GetRegistrationTestAppPath() {
+  base::FilePath exe_path;
+  if (!base::PathService::Get(base::DIR_EXE, &exe_path)) {
+    return std::nullopt;
+  }
+  const base::FilePath test_app_path =
+      exe_path.Append("registration_test_app_bundle.app/Contents/MacOS/"
+                      "registration_test_app_bundle");
+  if (test_app_path.empty() || !base::PathExists(test_app_path)) {
+    return std::nullopt;
+  }
+  return test_app_path;
+}
+
+void ExpectRegistrationTestAppSuccess(const std::string& arg) {
+  std::optional<base::FilePath> test_app_path = GetRegistrationTestAppPath();
+  ASSERT_TRUE(test_app_path);
+  base::CommandLine command_line(*test_app_path);
+  command_line.AppendArg(arg);
+
+  ExpectCliResult(command_line, false, {}, 0);
+}
+
+void ExpectRegistrationTestAppUserUpdaterInstallSuccess() {
+  ExpectRegistrationTestAppSuccess("--install");
+}
+
+void ExpectRegistrationTestAppRegisterSuccess() {
+  ExpectRegistrationTestAppSuccess("--register");
+}
+
+void ExpectRegistrationTestAppInstallAndRegisterSuccess() {
+  ExpectRegistrationTestAppSuccess("--install_and_register");
+}
+
+void SetAppAllowsUsageStats(UpdaterScope scope,
+                            const std::string& identifier,
+                            bool allowed) {
+  std::optional<base::FilePath> application_support_dir =
+      GetApplicationSupportDirectory(scope);
+  ASSERT_TRUE(application_support_dir);
+  base::FilePath app_dir =
+      application_support_dir->Append(COMPANY_SHORTNAME_STRING)
+          .Append(identifier);
+
+  LOG(ERROR) << __func__ << " : " << app_dir;
+
+  ASSERT_TRUE(base::CreateDirectory(app_dir));
+  std::unique_ptr<crashpad::CrashReportDatabase> database =
+      crashpad::CrashReportDatabase::Initialize(app_dir.Append("Crashpad"));
+  ASSERT_TRUE(database && database->GetSettings()->SetUploadsEnabled(allowed));
+}
+
+void ClearAppAllowsUsageStats(UpdaterScope scope,
+                              const std::string& identifier) {
+  std::optional<base::FilePath> application_support_dir =
+      GetApplicationSupportDirectory(scope);
+  ASSERT_TRUE(application_support_dir);
+  base::FilePath app_dir =
+      application_support_dir->Append(COMPANY_SHORTNAME_STRING)
+          .Append(identifier);
+
+  ASSERT_TRUE(base::DeletePathRecursively(app_dir));
 }
 
 }  // namespace updater::test

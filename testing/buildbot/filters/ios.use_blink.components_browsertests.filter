@@ -1,7 +1,13 @@
 # TODO(crbug.com/335001216): These tests are failing due to the duplicate
 # resource assertion.
+-DistilledPageJsTest.AddClassesToYTIFramesTest
+-DistilledPageJsTest.IdentifyEmptySVGsTest
+-DistilledPageJsTest.ImageClassifierTest
+-DistilledPageJsTest.ListClassifierTest
 -DistilledPageJsTest.SettingsDialogTest
+-DistilledPageJsTest.WrapTablesTest
 -DistillerPageWebContentsTest.BasicDistillationWorks
+-DistillerPageWebContentsTest.DistillerContentsIgnoreRedirects
 -DistillerPageWebContentsTest.HandlesRelativeImages
 -DistillerPageWebContentsTest.HandlesRelativeLinks
 -DistillerPageWebContentsTest.HandlesRelativeVideos
@@ -13,4 +19,19 @@
 -DistillerPageWebContentsTest.UsingCurrentWebContentsWrongUrl
 -DistillerPageWebContentsTest.VisibilityDetection
 -DomDistillerDistillablePageUtilsTest.TestIsDistillablePage
+-DomDistillerDistillablePageUtilsTest.TestIsNotDistillablePage
 -DomDistillerJsTest.RunJsTests
+-ViewerJsTest.SanitizeLinks
+
+# These tests are hitting a NOTREACHED() in WebContentsImpl::GetSize().
+-All/PageContentProtoProviderBrowserTestMultiProcess.*
+-All/PageContentProtoProviderBrowserTestSiteIsolation.*
+-PageContentProtoProviderBrowserTest.*
+-PageContentProtoProviderBrowserTestActionableElements.AIPageContent
+-PageContentProtoProviderBrowserTestFencedFrame.AIPageContentFencedFrame
+-PageContentProtoProviderBrowserTestPaidContentDisabled.PaidContentDisabled
+-ScaledPageContentProtoProviderBrowserTest.ScaleSizes
+
+# TODO(crbug.com/460416951): The test is flaky on the bot. It occurs in Andriod
+# and Linux as well.
+-PageContentMetadataObserverBrowserTest.NoMetaTags

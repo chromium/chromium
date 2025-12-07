@@ -10,6 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -22,28 +23,29 @@ void BorealisSecurityDelegate::Build(
     std::string vm_name,
     base::OnceCallback<void(std::unique_ptr<guest_os::GuestOsSecurityDelegate>)>
         callback) {
-  BorealisService::GetForProfile(profile)->Features().IsAllowed(base::BindOnce(
-      [](Profile* profile, std::string vm_name,
-         base::OnceCallback<void(
-             std::unique_ptr<guest_os::GuestOsSecurityDelegate>)> callback,
-         BorealisFeatures::AllowStatus allow_status) {
-        if (allow_status != BorealisFeatures::AllowStatus::kAllowed) {
-          LOG(WARNING) << "Borealis is not allowed: " << allow_status;
-          std::move(callback).Run(nullptr);
-          return;
-        }
-        BorealisSecurityDelegate* delegate =
-            new BorealisSecurityDelegate(profile, std::move(vm_name));
-        // Use WrapUnique due to private constructor.
-        std::move(callback).Run(base::WrapUnique(delegate));
-      },
-      profile, std::move(vm_name), std::move(callback)));
+  BorealisServiceFactory::GetForProfile(profile)->Features().IsAllowed(
+      base::BindOnce(
+          [](Profile* profile, std::string vm_name,
+             base::OnceCallback<void(
+                 std::unique_ptr<guest_os::GuestOsSecurityDelegate>)> callback,
+             BorealisFeatures::AllowStatus allow_status) {
+            if (allow_status != BorealisFeatures::AllowStatus::kAllowed) {
+              LOG(WARNING) << "Borealis is not allowed: " << allow_status;
+              std::move(callback).Run(nullptr);
+              return;
+            }
+            BorealisSecurityDelegate* delegate =
+                new BorealisSecurityDelegate(profile, std::move(vm_name));
+            // Use WrapUnique due to private constructor.
+            std::move(callback).Run(base::WrapUnique(delegate));
+          },
+          profile, std::move(vm_name), std::move(callback)));
 }
 
 BorealisSecurityDelegate::~BorealisSecurityDelegate() = default;
 
 bool BorealisSecurityDelegate::CanSelfActivate(aura::Window* window) const {
-  return BorealisService::GetForProfile(profile_)
+  return BorealisServiceFactory::GetForProfile(profile_)
              ->WindowManager()
              .GetShelfAppId(window) == kClientAppId;
 }

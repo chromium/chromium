@@ -78,25 +78,26 @@ export class {{interface.name}}Remote {
   {{generateMethodAnnotation(method)}}
   {{method.name}}(
 {%- for param in method.parameters %}
-      {{param.name}}{%- if not loop.last %},{% endif %}
+      {{param.name|sanitize_identifier}}{%- if not loop.last %},{% endif %}
 {%- endfor -%}) {
-{%- if method.response_parameters != None %}
+{%- if method.response_parameters != None or method.result_response != None %}
     return this.proxy.sendMessage(
 {%- else %}
     this.proxy.sendMessage(
 {%- endif %}
         {{method.ordinal}},
         {{interface_message_id}}_ParamsSpec.$,
-{%-   if method.response_parameters != None %}
+{%-   if method.response_parameters != None or method.result_response != None%}
         {{interface_message_id}}_ResponseParamsSpec.$,
 {%-   else %}
         null,
 {%-   endif %}
         [
 {%- for param in method.parameters %}
-          {{param.name}}{%- if not loop.last %},{% endif %}
+          {{param.name|sanitize_identifier}}{%- if not loop.last %},{% endif %}
 {%- endfor %}
-        ]);
+        ],
+        {{'true' if method.result_response != None else 'false'}});
   }
 {%-  endfor %}
 }
@@ -126,12 +127,13 @@ export class {{interface.name}}Receiver {
     this.helper_internal_.registerHandler(
         {{method.ordinal}},
         {{interface_message_id}}_ParamsSpec.$,
-{%-   if method.response_parameters != None %}
+{%-   if method.response_parameters != None or method.result_response != None %}
         {{interface_message_id}}_ResponseParamsSpec.$,
 {%-   else %}
         null,
 {%-   endif %}
-        impl.{{method.name}}.bind(impl));
+        impl.{{method.name}}.bind(impl),
+        {{'true' if method.result_response != None else 'false'}});
 {%- endfor %}
     /** @public {!mojo.internal.interfaceSupport.ConnectionErrorEventRouter} */
     this.onConnectionError = this.helper_internal_.getConnectionErrorEventRouter();
@@ -196,12 +198,14 @@ export class {{interface.name}}CallbackRouter {
     this.helper_internal_.registerHandler(
         {{method.ordinal}},
         {{interface_message_id}}_ParamsSpec.$,
-{%-   if method.response_parameters != None %}
+{%-   if method.response_parameters != None or method.result_response != None %}
         {{interface_message_id}}_ResponseParamsSpec.$,
-        this.{{method.name}}.createReceiverHandler(true /* expectsResponse */));
+        this.{{method.name}}.createReceiverHandler(true /* expectsResponse */),
+        {{'true' if method.result_response != None else 'false'}});
 {%-   else %}
         null,
-        this.{{method.name}}.createReceiverHandler(false /* expectsResponse */));
+        this.{{method.name}}.createReceiverHandler(false /* expectsResponse */),
+        false);
 {%-   endif %}
 {%- endfor %}
     /** @public {!mojo.internal.interfaceSupport.ConnectionErrorEventRouter} */

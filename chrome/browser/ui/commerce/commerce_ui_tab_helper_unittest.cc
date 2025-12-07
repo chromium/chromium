@@ -2,13 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
+
 #include <memory>
 #include <vector>
 
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/time/default_clock.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/commerce/discounts_page_action_controller.h"
+#include "chrome/browser/ui/views/commerce/discounts_page_action_view_controller.h"
+#include "chrome/browser/ui/views/commerce/price_insights_page_action_view_controller.h"
+#include "chrome/browser/ui/views/page_action/test_support/mock_page_action_controller.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
@@ -16,12 +24,14 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/mock_account_checker.h"
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/image_fetcher/core/mock_image_fetcher.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/web_contents.h"
@@ -33,6 +43,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
@@ -75,29 +86,51 @@ class CommerceUiTabHelperTest : public testing::Test {
  public:
   CommerceUiTabHelperTest()
       : shopping_service_(std::make_unique<MockShoppingService>()),
-        image_fetcher_(std::make_unique<image_fetcher::MockImageFetcher>()) {
+        image_fetcher_(std::make_unique<image_fetcher::MockImageFetcher>()),
+        account_checker_(std::make_unique<MockAccountChecker>()) {
     auto client = std::make_unique<bookmarks::TestBookmarkClient>();
     client->SetIsSyncFeatureEnabledIncludingBookmarks(true);
     bookmark_model_ =
         bookmarks::TestBookmarkClient::CreateModelWithClient(std::move(client));
+    shopping_service_->SetAccountChecker(account_checker_.get());
   }
 
   CommerceUiTabHelperTest(const CommerceUiTabHelperTest&) = delete;
-  CommerceUiTabHelperTest operator=(const CommerceUiTabHelperTest&) =
-      delete;
+  CommerceUiTabHelperTest operator=(const CommerceUiTabHelperTest&) = delete;
   ~CommerceUiTabHelperTest() override = default;
 
   void SetUp() override {
     web_contents_ = test_web_contents_factory_.CreateWebContents(&profile_);
-    side_panel_registry_ = std::make_unique<SidePanelRegistry>();
+    ON_CALL(tab_interface_, GetContents())
+        .WillByDefault(testing::Return(web_contents_));
+    ON_CALL(tab_interface_, GetUnownedUserDataHost())
+        .WillByDefault(testing::ReturnRef(data_host_));
+    ON_CALL(tab_interface_, GetBrowserWindowInterface())
+        .WillByDefault(testing::Return(&browser_window_interface_));
+    ON_CALL(browser_window_interface_, CanShowCallToAction())
+        .WillByDefault(testing::Return(false));
+    ON_CALL(browser_window_interface_, GetUnownedUserDataHost())
+        .WillByDefault(testing::ReturnRef(data_host_));
+
+    side_panel_registry_ = std::make_unique<SidePanelRegistry>(&tab_interface_);
     tab_helper_ = std::make_unique<commerce::CommerceUiTabHelper>(
-        web_contents_.get(), shopping_service_.get(), bookmark_model_.get(),
+        tab_interface_, shopping_service_.get(), bookmark_model_.get(),
         image_fetcher_.get(), side_panel_registry_.get());
+
+    discounts_page_action_controller_ =
+        std::make_unique<DiscountsPageActionViewController>(
+            tab_interface_, page_action_controller_, *tab_helper_.get());
+
+    price_insights_page_action_controller_ =
+        std::make_unique<PriceInsightsPageActionViewController>(
+            tab_interface_, page_action_controller_);
   }
 
   void TestBody() override {}
 
   void TearDown() override {
+    price_insights_page_action_controller_.reset();
+    discounts_page_action_controller_.reset();
     // Make sure the tab helper id destroyed before any of its dependencies are.
     tab_helper_.reset();
   }
@@ -142,26 +175,30 @@ class CommerceUiTabHelperTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
+  TestingProfile profile_;
+  // Must outlive `web_contents_`.
+  content::TestWebContentsFactory test_web_contents_factory_;
+  raw_ptr<content::WebContents> web_contents_;
+  ui::UnownedUserDataHost data_host_;
+  MockBrowserWindowInterface browser_window_interface_;
+  tabs::MockTabInterface tab_interface_;
   std::unique_ptr<CommerceUiTabHelper> tab_helper_;
   std::unique_ptr<MockShoppingService> shopping_service_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
   std::unique_ptr<image_fetcher::MockImageFetcher> image_fetcher_;
   std::unique_ptr<SidePanelRegistry> side_panel_registry_;
-
- private:
-  TestingProfile profile_;
-
-  // Must outlive `web_contents_`.
-  content::TestWebContentsFactory test_web_contents_factory_;
-
- protected:
-  raw_ptr<content::WebContents> web_contents_;
+  std::unique_ptr<MockAccountChecker> account_checker_;
+  page_actions::MockPageActionController page_action_controller_;
+  std::unique_ptr<DiscountsPageActionViewController>
+      discounts_page_action_controller_;
+  std::unique_ptr<PriceInsightsPageActionViewController>
+      price_insights_page_action_controller_;
+  base::test::ScopedFeatureList features_;
 };
 
 // The price tracking icon shouldn't be available if no image URL was provided
 // by the shopping service.
-TEST_F(CommerceUiTabHelperTest,
-       TestPriceTrackingIconAvailabilityIfNoImage) {
+TEST_F(CommerceUiTabHelperTest, TestPriceTrackingIconAvailabilityIfNoImage) {
   ASSERT_FALSE(tab_helper_->IsPriceTracking());
 
   AddProductBookmark(bookmark_model_.get(), u"title", GURL(kProductUrl),
@@ -186,8 +223,7 @@ TEST_F(CommerceUiTabHelperTest,
 
 // The price tracking state should not update in the helper if there is no image
 // returbed by the shopping service.
-TEST_F(CommerceUiTabHelperTest,
-       TestPriceTrackingIconAvailabilityWithImage) {
+TEST_F(CommerceUiTabHelperTest, TestPriceTrackingIconAvailabilityWithImage) {
   ASSERT_FALSE(tab_helper_->IsPriceTracking());
 
   AddProductBookmark(bookmark_model_.get(), u"title", GURL(kProductUrl),
@@ -240,7 +276,8 @@ TEST_F(CommerceUiTabHelperTest, TestShoppingInsightsSidePanelAvailable) {
   ASSERT_FALSE(side_panel_registry_->GetEntryForKey(
       SidePanelEntry::Key(SidePanelEntry::Id::kShoppingInsights)));
 
-  shopping_service_->SetIsPriceInsightsEligible(true);
+  commerce::SetUpPriceInsightsEligibility(&features_, account_checker_.get(),
+                                          true);
 
   std::optional<ProductInfo> product_info = CreateProductInfo(
       kClusterId, GURL(kProductImageUrl), kProductClusterTitle);
@@ -264,7 +301,8 @@ TEST_F(CommerceUiTabHelperTest, TestShoppingInsightsSidePanelUnavailable) {
       SidePanelEntry::Key(SidePanelEntry::Id::kShoppingInsights)));
 
   shopping_service_->SetResponseForGetProductInfoForUrl(std::nullopt);
-  shopping_service_->SetIsPriceInsightsEligible(true);
+  commerce::SetUpPriceInsightsEligibility(&features_, account_checker_.get(),
+                                          true);
 
   SimulateNavigationCommitted(GURL(kProductUrl));
 
@@ -276,7 +314,8 @@ TEST_F(CommerceUiTabHelperTest, TestShoppingInsightsSidePanelUnavailable) {
 
 TEST_F(CommerceUiTabHelperTest,
        TestPriceInsightsIconNotAvailableIfEmptyProductInfo) {
-  shopping_service_->SetIsPriceInsightsEligible(true);
+  commerce::SetUpPriceInsightsEligibility(&features_, account_checker_.get(),
+                                          true);
   shopping_service_->SetResponseForGetProductInfoForUrl(std::nullopt);
 
   SimulateNavigationCommitted(GURL(kProductUrl));
@@ -287,7 +326,8 @@ TEST_F(CommerceUiTabHelperTest,
 
 TEST_F(CommerceUiTabHelperTest,
        TestPriceInsightsIconNotAvailableIfNoProductClusterTitle) {
-  shopping_service_->SetIsPriceInsightsEligible(true);
+  commerce::SetUpPriceInsightsEligibility(&features_, account_checker_.get(),
+                                          true);
 
   std::optional<ProductInfo> info =
       CreateProductInfo(kClusterId, GURL(kProductImageUrl));
@@ -302,7 +342,9 @@ TEST_F(CommerceUiTabHelperTest,
 TEST_F(CommerceUiTabHelperTest, TestRecordShoppingInformationUKM) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
-  shopping_service_->SetIsPriceInsightsEligible(true);
+  features_.InitWithFeatures(
+      {commerce::kPriceInsights, commerce::kEnableDiscountInfoApi}, {});
+  commerce::SetUpDiscountEligibilityForAccount(account_checker_.get(), true);
 
   std::optional<ProductInfo> product_info = CreateProductInfo(
       kClusterId, GURL(kProductImageUrl), kProductClusterTitle);
@@ -312,6 +354,15 @@ TEST_F(CommerceUiTabHelperTest, TestRecordShoppingInformationUKM) {
       CreateValidPriceInsightsInfo(true, true, PriceBucket::kLowPrice);
   shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(
       price_insights_info);
+  shopping_service_->SetResponseForGetDiscountInfoForUrl(
+      {commerce::CreateValidDiscountInfo(
+          /*detail=*/"Get 10% off",
+          /*terms_and_conditions=*/"",
+          /*value_in_text=*/"$10 off", /*discount_code=*/"discount_code",
+          /*id=*/123,
+          /*is_merchant_wide=*/true,
+          (base::DefaultClock::GetInstance()->Now() + base::Days(2))
+              .InSecondsFSinceUnixEpoch())});
 
   SimulateNavigationCommitted(GURL(kProductUrl));
 
@@ -327,7 +378,7 @@ TEST_F(CommerceUiTabHelperTest, TestRecordShoppingInformationUKM) {
   ukm_recorder.ExpectEntryMetric(
       entries[0], Shopping_ShoppingInformation::kIsShoppingContentName, 1);
   ukm_recorder.ExpectEntryMetric(
-      entries[0], Shopping_ShoppingInformation::kHasDiscountName, 0);
+      entries[0], Shopping_ShoppingInformation::kHasDiscountName, 1);
 }
 
 }  // namespace commerce

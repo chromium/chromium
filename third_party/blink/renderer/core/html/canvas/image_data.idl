@@ -28,7 +28,7 @@
 
 // https://html.spec.whatwg.org/C/#dom-imagedata
 
-typedef (Uint8ClampedArray or Uint16Array or Float32Array) ImageDataArray;
+typedef (Uint8ClampedArray or Float16Array or Float32Array) ImageDataArray;
 
 [
     Exposed=(Window,Worker),
@@ -37,12 +37,12 @@ typedef (Uint8ClampedArray or Uint16Array or Float32Array) ImageDataArray;
     [RaisesException] constructor(unsigned long sw, unsigned long sh);
     [RaisesException] constructor(unsigned long sw, unsigned long sh, ImageDataSettings settings);
     [RaisesException] constructor(Uint8ClampedArray data, unsigned long sw, optional unsigned long sh, optional ImageDataSettings settings = {});
-    [RaisesException] constructor(Uint16Array data, unsigned long sw, optional unsigned long sh, optional ImageDataSettings settings = {});
+    [RaisesException] constructor(Float16Array data, unsigned long sw, optional unsigned long sh, optional ImageDataSettings settings = {});
     [RaisesException] constructor(Float32Array data, unsigned long sw, optional unsigned long sh, optional ImageDataSettings settings = {});
 
     readonly attribute unsigned long width;
     readonly attribute unsigned long height;
     readonly attribute PredefinedColorSpace colorSpace;
-    [RuntimeEnabled=CanvasFloatingPoint] readonly attribute ImageDataStorageFormat storageFormat;
+    [RuntimeEnabled=ImageDataPixelFormat] readonly attribute ImageDataPixelFormat pixelFormat;
     readonly attribute ImageDataArray data;
 };

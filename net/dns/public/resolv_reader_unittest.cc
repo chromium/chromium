@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/dns/public/resolv_reader.h"
 
 #include <arpa/inet.h>
 #include <resolv.h>
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -19,6 +15,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/sys_byteorder.h"
@@ -35,25 +32,25 @@ namespace net {
 namespace {
 
 // MAXNS is normally 3, but let's test 4 if possible.
-const char* const kNameserversIPv4[] = {
+constexpr auto kNameserversIPv4 = std::to_array<const char*>({
     "8.8.8.8",
     "192.168.1.1",
     "63.1.2.4",
     "1.0.0.1",
-};
+});
 
 #if BUILDFLAG(IS_LINUX)
-const char* const kNameserversIPv6[] = {
+constexpr auto kNameserversIPv6 = std::to_array<const char*>({
     nullptr,
     "2001:db8::42",
     nullptr,
     "::FFFF:129.144.52.38",
-};
+});
 #endif
 
 // Fills in |res| with sane configuration.
 void InitializeResState(res_state res) {
-  memset(res, 0, sizeof(*res));
+  UNSAFE_TODO(memset(res, 0, sizeof(*res)));
   res->options = RES_INIT;
 
   for (unsigned i = 0; i < std::size(kNameserversIPv4) && i < MAXNS; ++i) {
@@ -61,7 +58,7 @@ void InitializeResState(res_state res) {
     sa.sin_family = AF_INET;
     sa.sin_port = base::HostToNet16(NS_DEFAULTPORT + i);
     inet_pton(AF_INET, kNameserversIPv4[i], &sa.sin_addr);
-    res->nsaddr_list[i] = sa;
+    UNSAFE_TODO(res->nsaddr_list[i]) = sa;
     ++res->nscount;
   }
 
@@ -78,8 +75,8 @@ void InitializeResState(res_state res) {
     sa6->sin6_family = AF_INET6;
     sa6->sin6_port = base::HostToNet16(NS_DEFAULTPORT - i);
     inet_pton(AF_INET6, kNameserversIPv6[i], &sa6->sin6_addr);
-    res->_u._ext.nsaddrs[i] = sa6;
-    memset(&res->nsaddr_list[i], 0, sizeof res->nsaddr_list[i]);
+    UNSAFE_TODO(res->_u._ext.nsaddrs[i]) = sa6;
+    UNSAFE_TODO(memset(&res->nsaddr_list[i], 0, sizeof res->nsaddr_list[i]));
     ++nscount6;
   }
   res->_u._ext.nscount6 = nscount6;
@@ -89,8 +86,9 @@ void InitializeResState(res_state res) {
 void FreeResState(struct __res_state* res) {
 #if BUILDFLAG(IS_LINUX)
   for (int i = 0; i < res->nscount; ++i) {
-    if (res->_u._ext.nsaddrs[i] != nullptr)
-      free(res->_u._ext.nsaddrs[i]);
+    if (UNSAFE_TODO(res->_u._ext.nsaddrs[i]) != nullptr) {
+      free(UNSAFE_TODO(res->_u._ext.nsaddrs[i]));
+    }
   }
 #endif
 }

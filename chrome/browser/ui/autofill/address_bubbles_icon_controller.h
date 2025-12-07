@@ -25,7 +25,7 @@ class AddressBubblesIconController {
 
   virtual bool IsBubbleActive() const = 0;
 
-  virtual std::u16string GetPageActionIconTootip() const = 0;
+  virtual std::u16string GetPageActionIconTooltip() const = 0;
 
   virtual AutofillBubbleBase* GetBubbleView() const = 0;
 };

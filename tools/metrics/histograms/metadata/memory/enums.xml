@@ -26,33 +26,9 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="AndroidEvictionReason">
-  <int value="0" label="TabUnusedTooLong"/>
-  <int value="1" label="TabUnusedInSession"/>
-  <int value="2" label="LimitOfActiveTabs"/>
-  <int value="3" label="EvictNTabs"/>
-  <int value="4" label="EvictAll"/>
-</enum>
-
-<enum name="AndroidStackUnwinder">
-  <int value="0" label="Not checked (obsolete)">
-    The stack unwinding implementation was not checked. The SamplingHeapProfiler
-    will collect stack samples but they may be invalid. (Starting in Sept 2022,
-    the implementation is always checked on Android so this is obsolete.)
-  </int>
-  <int value="1" label="Default">
-    The SamplingHeapProfiler uses the default unwind tables.
-  </int>
-  <int value="2" label="CFIBackTrace (obsolete)">
-    The SamplingHeapProfiler uses the trace_event::CFIBacktraceAndroid class.
-  </int>
-  <int value="3" label="Unavailable">
-    Stack unwinding is not available. The SamplingHeapProfiler will not collect
-    stack samples.
-  </int>
-  <int value="4" label="FramePointers">
-    The SamplingHeapProfiler uses the TraceStackFramePointers function.
-  </int>
+<enum name="BooleanAreAllPagesFrozen">
+  <int value="0" label="Not all pages are frozen"/>
+  <int value="1" label="All pages are frozen"/>
 </enum>
 
 <enum name="BooleanGreaterOrEqualThan200MB">
@@ -77,13 +53,35 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Critical memory pressure"/>
 </enum>
 
-<enum name="MemoryPressureLevelChanges">
-  <int value="0" label="No pressure to moderate pressure"/>
-  <int value="1" label="No pressure to critical pressure"/>
-  <int value="2" label="Moderate pressure to critical pressure"/>
-  <int value="3" label="Critical pressure to moderate pressure"/>
-  <int value="4" label="Critical pressure to no pressure"/>
-  <int value="5" label="Moderate pressure to no pressure"/>
+<!-- LINT.IfChange(RequestOutcome) -->
+
+<enum name="RequestOutcome">
+  <int value="0" label="Success"/>
+  <int value="1"
+      label="Periodic dump request was made with the same level of details as
+             an already queued request"/>
+  <int value="2" label="OSMetrics::FillOSMemoryDump failed"/>
+  <int value="3" label="OSMetrics::FillProcessMemoryMaps failed"/>
+  <int value="4" label="Dump was requested for a null pid"/>
+  <int value="5" label="Dump was requested for a process that was not found"/>
+  <int value="6"
+      label="A request was made via RequestGlobalMemoryDumpAndAppendToTrace
+             while tracing is disabled or not setup yet"/>
+  <int value="7"
+      label="A process that was part of the request unregistered while the
+             dump was being collected"/>
+  <int value="8"
+      label="A request could not be fulfilled within the allowed time"/>
+  <int value="9"
+      label="base::trace_event::MemoryDumpManager::CreateProcessDump failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom:RequestOutcome) -->
+
+<enum name="SelfCompactionCancellationReason">
+  <int value="0" label="Frozen by App Freezer"/>
+  <int value="1" label="Page resumed"/>
+  <int value="2" label="Timeout"/>
 </enum>
 
 <enum name="VmmmsRequestPriority">

@@ -14,10 +14,17 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/function_ref.h"
+#include "base/process/launch.h"
+#include "base/process/process_iterator.h"
 #include "base/values.h"
+#include "base/version.h"
 #include "build/build_config.h"
+#include "chrome/updater/external_constants.h"
+#include "chrome/updater/registration_data.h"
 #include "chrome/updater/test/server.h"
 #include "chrome/updater/update_service.h"
+#include "chrome/updater/updater_version.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -31,13 +38,11 @@ class GURL;
 
 namespace base {
 class CommandLine;
-class Value;
-class Version;
+class TimeDelta;
 }  // namespace base
 
 namespace updater {
 enum class UpdaterScope;
-struct RegistrationRequest;
 }  // namespace updater
 
 namespace wireless_android_enterprise_devicemanagement {
@@ -91,6 +96,11 @@ struct AppUpdateExpectation {
   const std::string response_status;
 };
 
+struct TestUpdaterVersion {
+  base::FilePath updater_setup_path;
+  base::Version version;
+};
+
 // Returns the path to the updater installer program (in the build output
 // directory). This is typically the updater setup, or the updater itself for
 // the platforms where a setup program is not provided.
@@ -99,6 +109,20 @@ base::FilePath GetSetupExecutablePath();
 // Returns the non-duplicate, unique names for processes which may be running
 // during unit tests.
 std::set<base::FilePath::StringType> GetTestProcessNames();
+
+#if BUILDFLAG(IS_WIN)
+// Filters to processes that match the current and older updater versions.
+class VersionProcessFilter : public base::ProcessFilter {
+ public:
+  VersionProcessFilter();
+  ~VersionProcessFilter() override;
+
+  bool Includes(const base::ProcessEntry& entry) const override;
+
+ private:
+  const std::vector<base::Version> versions_;
+};
+#endif  // BUILDFLAG(IS_WIN)
 
 // Ensures test processes are not running after the function is called.
 void CleanProcesses();
@@ -109,7 +133,8 @@ void ExpectCleanProcesses();
 // Prints the provided file to stdout.
 void PrintFile(const base::FilePath& file);
 
-// Returns all the updater log files found in %TMP%.
+// Returns all the `updater*.log` files found in the temp directory for the
+// current test scope.
 std::vector<base::FilePath> GetUpdaterLogFilesInTmp();
 
 // Prints the updater.log file to stdout.
@@ -120,24 +145,36 @@ void PrintLog(UpdaterScope scope);
 // the test left the updater in an installed or partially installed state.
 void Clean(UpdaterScope scope);
 
+#if BUILDFLAG(IS_WIN)
+// Expects that the no temporary directories created by `update_client` remain.
+void ExpectCleanUpdateClientTempDirectories(UpdaterScope scope);
+#endif  // BUILDFLAG(IS_WIN)
+
 // Expects that the system is in a clean state, i.e. no updater is installed and
 // no traces of an updater exist. Should be run at the start and end of each
 // test.
 void ExpectClean(UpdaterScope scope);
 
+// The overinstall timeout for `EnterTestMode`. Different for windows/mac/linux.
+base::TimeDelta GetOverinstallTimeoutForEnterTestMode();
+
 // Places the updater into test mode (redirect server URLs and disable CUP).
 void EnterTestMode(const GURL& update_url,
                    const GURL& crash_upload_url,
-                   const GURL& device_management_url,
                    const GURL& app_logo_url,
-                   const base::TimeDelta& idle_timeout);
+                   const GURL& event_logging_url,
+                   base::TimeDelta idle_timeout,
+                   base::TimeDelta server_keep_alive_time,
+                   base::TimeDelta ceca_connection_timeout,
+                   std::optional<EventLoggingPermissionProvider>
+                       event_logging_permission_provider);
 
 // Takes the updater our of the test mode by deleting the external constants
 // JSON file.
 void ExitTestMode(UpdaterScope scope);
 
-// Sets the external constants for group policies.
-void SetGroupPolicies(const base::Value::Dict& values);
+// Sets the dict policies that are surfaced via external constants.
+void SetDictPolicies(const base::Value::Dict& values);
 
 // Sets platform policies. Platform policy is group policy on Windows, and
 // Managed Preferences on macOS.
@@ -168,7 +205,11 @@ void InstallUpdaterAndApp(UpdaterScope scope,
                           const std::string& child_window_text_to_find,
                           bool always_launch_cmd,
                           bool verify_app_logo_loaded,
-                          bool expect_success);
+                          bool expect_success,
+                          bool wait_for_the_installer,
+                          int expected_exit_code,
+                          const base::Value::List& additional_switches,
+                          const base::FilePath& updater_path);
 
 // Expects that the updater is installed on the system and the specified
 // version is active.
@@ -182,7 +223,7 @@ void Uninstall(UpdaterScope scope);
 
 // Runs the wake client and wait for it to exit. Assert that it exits with
 // `exit_code`. The server should exit a few seconds after.
-void RunWake(UpdaterScope scope, int exit_code);
+void RunWake(UpdaterScope scope, int exit_code, const base::Version& version);
 
 // Runs the wake-all client and wait for it to exit. Assert that it exits with
 // kErrorOk. The server should exit a few seconds after.
@@ -199,6 +240,12 @@ void RunCrashMe(UpdaterScope scope);
 // `exit_code`.
 void RunServer(UpdaterScope scope, int exit_code, bool internal);
 
+// Runs the UpdateApps client and wait for it to exit. Assert that it exits with
+// `exit_code`. The server should exit a few seconds after.
+void RunUpdateApps(UpdaterScope scope,
+                   int exit_code,
+                   const base::Version& version);
+
 // Invokes the active instance's UpdateService::Update (via RPC) for an app.
 void Update(UpdaterScope scope,
             const std::string& app_id,
@@ -207,6 +254,11 @@ void Update(UpdaterScope scope,
 // Invokes the active instance's UpdateService::CheckForUpdate (via RPC) for an
 // app.
 void CheckForUpdate(UpdaterScope scope, const std::string& app_id);
+
+// Invokes UpdateService::CheckForUpdate (via RPC) for the opposite scope of the
+// given `scope` and `app_id`.
+void ExpectCheckForUpdateOppositeScopeFails(UpdaterScope scope,
+                                            const std::string& app_id);
 
 // Invokes the active instance's UpdateService::UpdateAll (via RPC).
 void UpdateAll(UpdaterScope scope);
@@ -236,9 +288,19 @@ void DeleteUpdaterDirectory(UpdaterScope scope);
 void DeleteActiveUpdaterExecutable(UpdaterScope scope);
 
 // Runs the command and waits for it to exit or time out.
-void Run(UpdaterScope scope,
-         base::CommandLine command_line,
-         int* exit_code = nullptr);
+void Run(
+    UpdaterScope scope,
+    base::CommandLine command_line,
+    int* exit_code = nullptr,
+    base::FunctionRef<base::Process(const base::CommandLine&)> launch_process =
+        [](const base::CommandLine& command_line) {
+          return base::LaunchProcess(command_line, {});
+        });
+
+// Similar to `Run`, but runs the command de-elevated on Windows.
+void RunDeElevated(UpdaterScope scope,
+                   base::CommandLine command_line,
+                   int* exit_code);
 
 // Runs the command (via sudo if `elevate` is true) and waits for it to exit,
 // then asserts that it returned the expected exit code (if provided) and
@@ -254,9 +316,18 @@ std::optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope);
 // Sets up a fake updater on the system at a version lower than the test.
 void SetupFakeUpdaterLowerVersion(UpdaterScope scope);
 
-// Sets up a real updater on the system at a version lower than the test. The
-// exact version of the updater is not defined.
-void SetupRealUpdaterLowerVersion(UpdaterScope scope);
+// Gets the real updater lower version paths/versions.
+std::vector<TestUpdaterVersion> GetRealUpdaterLowerVersions(
+    const std::string& arch_suffix = {});
+
+// Gets the real updater current and lower version paths/versions.
+std::vector<TestUpdaterVersion> GetRealUpdaterVersions();
+
+// Sets up a real updater on the system given any (higher or lower) version of
+// `UpdaterSetup.exe` in `updater_path`.
+void SetupRealUpdater(UpdaterScope scope,
+                      const base::FilePath& updater_path,
+                      const base::Value::List& switches);
 
 // Sets up a fake updater on the system at a version higher than the test.
 void SetupFakeUpdaterHigherVersion(UpdaterScope scope);
@@ -318,6 +389,7 @@ void ExpectLegacyUpdate3WebSucceeds(
     int expected_error_code,
     bool cancel_when_downloading);
 void ExpectLegacyProcessLauncherSucceeds(UpdaterScope scope);
+void ExpectProcessLauncherLaunchCmdLineSucceeds(UpdaterScope scope);
 void ExpectLegacyAppCommandWebSucceeds(UpdaterScope scope,
                                        const std::string& app_id,
                                        const std::string& command_id,
@@ -328,7 +400,12 @@ void ExpectPolicyStatusValues(
     const std::wstring& expected_source,
     const std::wstring& expected_value,
     VARIANT_BOOL expected_has_conflict);
-void ExpectLegacyPolicyStatusSucceeds(UpdaterScope scope);
+void ExpectLegacyPolicyStatusSucceeds(UpdaterScope scope,
+                                      const base::Version& updater_version);
+
+void LegacyInstallApp(UpdaterScope scope,
+                      const std::string& app_id,
+                      const base::Version& version);
 
 // Calls a function defined in test/service/win/rpc_client.py.
 // Entries of the `arguments` dictionary should be the function's parameter
@@ -338,6 +415,13 @@ void InvokeTestServiceFunction(const std::string& function_name,
 
 void RunUninstallCmdLine(UpdaterScope scope);
 void RunHandoff(UpdaterScope scope, const std::string& app_id);
+
+void InstallScheduledTask(const std::string& task_name,
+                          bool use_task_subfolders);
+void IsScheduledTaskRegistered(const std::string& task_name,
+                               bool use_task_subfolders);
+void DeleteScheduledTask(const std::string& task_name,
+                         bool use_task_subfolders);
 #endif  // BUILDFLAG(IS_WIN)
 
 // Returns the number of files in the directory, not including directories,
@@ -358,7 +442,8 @@ void ExpectAppCommandPing(UpdaterScope scope,
                           int errorcode,
                           int eventresult,
                           int event_type,
-                          const base::Version& version);
+                          const base::Version& version,
+                          const base::Version& updater_version);
 
 void ExpectUpdateCheckRequest(UpdaterScope scope, ScopedServer* test_server);
 
@@ -367,16 +452,22 @@ void ExpectUpdateCheckSequence(UpdaterScope scope,
                                const std::string& app_id,
                                UpdateService::Priority priority,
                                const base::Version& from_version,
-                               const base::Version& to_version);
+                               const base::Version& to_version,
+                               const base::Version& updater_version);
 
-void ExpectUpdateSequence(UpdaterScope scope,
-                          ScopedServer* test_server,
-                          const std::string& app_id,
-                          const std::string& install_data_index,
-                          UpdateService::Priority priority,
-                          const base::Version& from_version,
-                          const base::Version& to_version,
-                          bool do_fault_injection);
+void ExpectUpdateSequence(
+    UpdaterScope scope,
+    ScopedServer* test_server,
+    const std::string& app_id,
+    const std::string& install_data_index,
+    UpdateService::Priority priority,
+    const base::Version& from_version,
+    const base::Version& to_version,
+    bool do_fault_injection,
+    bool skip_download,
+    const base::Version& updater_version = base::Version(kUpdaterVersion),
+    const std::string& event_regex = ".*",
+    bool use_xz = false);
 
 void ExpectUpdateSequenceBadHash(UpdaterScope scope,
                                  ScopedServer* test_server,
@@ -393,12 +484,19 @@ void ExpectInstallSequence(UpdaterScope scope,
                            UpdateService::Priority priority,
                            const base::Version& from_version,
                            const base::Version& to_version,
-                           bool do_fault_injection);
+                           bool do_fault_injection,
+                           bool skip_download,
+                           const base::Version& updater_version,
+                           const std::string& event_regex);
 
-void ExpectAppsUpdateSequence(UpdaterScope scope,
-                              ScopedServer* test_server,
-                              const base::Value::Dict& request_attributes,
-                              const std::vector<AppUpdateExpectation>& apps);
+void ExpectEnterpriseCompanionAppOTAInstallSequence(ScopedServer* test_server);
+
+void ExpectAppsUpdateSequence(
+    UpdaterScope scope,
+    ScopedServer* test_server,
+    const base::Value::Dict& request_attributes,
+    const std::vector<AppUpdateExpectation>& apps,
+    const base::Version& updater_version = base::Version(kUpdaterVersion));
 
 void StressUpdateService(UpdaterScope scope);
 
@@ -414,7 +512,9 @@ void RunFakeLegacyUpdater(UpdaterScope scope);
 
 // Dismiss the installation completion dialog, then wait for the process
 // exit.
-void CloseInstallCompleteDialog(const std::wstring& child_window_text_to_find,
+void CloseInstallCompleteDialog(const std::u16string& bundle_name,
+                                const std::wstring& lang,
+                                const std::wstring& child_window_text_to_find,
                                 bool verify_app_logo_loaded = false);
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -430,7 +530,7 @@ void RunRecoveryComponent(UpdaterScope scope,
                           const std::string& app_id,
                           const base::Version& version);
 
-void SetLastChecked(UpdaterScope scope, const base::Time& time);
+void SetLastChecked(UpdaterScope scope, base::Time time);
 
 void ExpectLastChecked(UpdaterScope scope);
 
@@ -444,11 +544,27 @@ void UninstallApp(UpdaterScope scope, const std::string& app_id);
 
 void RunOfflineInstall(UpdaterScope scope,
                        bool is_legacy_install,
-                       bool is_silent_install);
+                       bool is_silent_install,
+                       int installer_result,
+                       int installer_error);
 
 void RunOfflineInstallOsNotSupported(UpdaterScope scope,
                                      bool is_legacy_install,
-                                     bool is_silent_install);
+                                     bool is_silent_install,
+                                     const std::string& language);
+
+void RunMockOfflineMetaInstall(UpdaterScope scope,
+                               const std::string& app_id,
+                               const base::Version& version,
+                               const std::string& tag,
+                               const base::FilePath& installer_path,
+                               const std::string& arguments,
+                               bool is_silent_install,
+                               const std::string& platform,
+                               const std::string& installer_text,
+                               const bool always_launch_cmd,
+                               const int expected_exit_code,
+                               bool expect_success);
 
 base::CommandLine MakeElevated(base::CommandLine command_line);
 
@@ -461,6 +577,40 @@ void DMDeregisterDevice(UpdaterScope scope);
 
 void DMCleanup(UpdaterScope scope);
 
+// Installs the enterprise companion app from the test's data deps, always at
+// the system scope.
+void InstallEnterpriseCompanionApp();
+
+// Installs the constants overrides for the enterprise companion app, always at
+// the system scope.
+void InstallEnterpriseCompanionAppOverrides(
+    const base::Value::Dict& external_overrides);
+
+// Expects that the enterprise companion app is not installed, always at system
+// scope.
+void ExpectEnterpriseCompanionAppNotInstalled();
+
+// Uninstalls the enterprise companion app, always at the system scope.
+void UninstallEnterpriseCompanionApp();
+
+// Configures whether an app allows the transmission of usage statistics. The
+// app is indicated by a platform-specific `identifier` following the semantics
+// of the event logging permission provider. That is, on macOS the basename of
+// an application's directory within Application Support and an AppId on
+// Windows.
+void SetAppAllowsUsageStats(UpdaterScope scope,
+                            const std::string& identifier,
+                            bool allowed);
+void ClearAppAllowsUsageStats(UpdaterScope scope,
+                              const std::string& identifier);
+
+void ExpectDeviceManagementRequest(ScopedServer* test_server,
+                                   const std::string& request_type,
+                                   const std::string& authorization_type,
+                                   const std::string& authorization_token,
+                                   net::HttpStatusCode response_status,
+                                   const std::string& response,
+                                   std::optional<GURL> target_url = {});
 void ExpectDeviceManagementRegistrationRequest(
     ScopedServer* test_server,
     const std::string& enrollment_token,
@@ -473,16 +623,9 @@ void ExpectDeviceManagementPolicyFetchRequest(
     bool first_request = true,
     bool rotate_public_key = false,
     std::optional<GURL> target_url = std::nullopt);
-void ExpectDeviceManagementPolicyFetchWithNewPublicKeyRequest(
-    ScopedServer* test_server,
-    const std::string& dm_token,
-    const ::wireless_android_enterprise_devicemanagement::
-        OmahaSettingsClientProto& omaha_settings);
 void ExpectDeviceManagementTokenDeletionRequest(ScopedServer* test_server,
                                                 const std::string& dm_token,
                                                 bool invalidate_token);
-void ExpectDeviceManagementPolicyValidationRequest(ScopedServer* test_server,
-                                                   const std::string& dm_token);
 void ExpectProxyPacScriptRequest(ScopedServer* test_server);
 
 #if BUILDFLAG(IS_MAC)
@@ -516,6 +659,21 @@ void ExpectKSAdminFetchTag(UpdaterScope scope,
                            std::optional<UpdaterScope> store_flag,
                            std::optional<std::string> want_tag);
 
+// Expect ksadmin to fetch the specified brand code from a tag stored in the
+// `com.apple.application-instance` extended attribute of the item at the
+// specified path, or to fail to retrieve a brand code.
+//
+// Params:
+//      scope -- Picks which ksadmin binary to use.
+//    elevate -- Whether to run as root instead of the current user.
+//       path -- Path to send to ksadmin via `--print-xattr-tag-brand`.
+// want_brand -- if valid, the brand code that ksadmin is expected to
+//               successfully retrieve, which may be the empty string. If
+//               nullopt, specifies that ksadmin should return EXIT_FAILURE.
+void ExpectKSAdminXattrBrand(UpdaterScope scope,
+                             bool elevate,
+                             const base::FilePath& path,
+                             std::optional<std::string> want_brand);
 #endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace updater::test

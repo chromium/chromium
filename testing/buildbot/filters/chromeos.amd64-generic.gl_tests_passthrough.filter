@@ -5,7 +5,7 @@
 
 # crbug.com/1314115
 -SharedImageGLBackingProduceDawnTest.Basic
--WebGPUMailboxTest.*
+-WebGPUMailboxTextureTest.*
 -WebGPUTest.*
 
 # crbug.com/1314118
@@ -29,3 +29,6 @@
 
 # crbug.com/1518651
 -GLReadbackTest.ReadPixelsFloat
+
+# crbug.com/404905709
+-OzoneImageBackingFactoryTest.CreateGpuMemoryBufferHandle

@@ -12,6 +12,17 @@
 
 namespace device {
 
+namespace {
+
+// We need a shorter interval when using virtual probes because some rate
+// obfuscation web tests require 50-100 updates to trigger the mitigation, and
+// sampling once per second (per PressureManagerImpl::kDefaultSamplingInterval)
+// takes too long.
+constexpr base::TimeDelta kVirtualProbeSamplingInterval =
+    base::Milliseconds(100);
+
+}  // namespace
+
 VirtualProbesManager::VirtualProbesManager(base::TimeDelta sampling_interval)
     : ProbesManager(sampling_interval) {}
 
@@ -29,7 +40,7 @@ bool VirtualProbesManager::AddOverrideForSource(
     case mojom::PressureSource::kCpu: {
       std::unique_ptr<CpuProbeManager> manager =
           metadata->available
-              ? VirtualCpuProbeManager::Create(sampling_interval(),
+              ? VirtualCpuProbeManager::Create(kVirtualProbeSamplingInterval,
                                                cpu_probe_sampling_callback())
               : nullptr;
       set_cpu_probe_manager(std::move(manager));
@@ -55,8 +66,9 @@ void VirtualProbesManager::RemoveOverrideForSource(
   }
 }
 
-void VirtualProbesManager::AddUpdate(mojom::PressureSource source,
-                                     mojom::PressureState state) {
+void VirtualProbesManager::AddDataUpdate(mojom::PressureSource source,
+                                         mojom::PressureState state,
+                                         double own_contribution_estimate) {
   if (!overridden_sources_.Has(source)) {
     return;
   }
@@ -65,6 +77,8 @@ void VirtualProbesManager::AddUpdate(mojom::PressureSource source,
     case mojom::PressureSource::kCpu: {
       if (auto* manager = cpu_probe_manager()) {
         static_cast<VirtualCpuProbeManager*>(manager)->SetPressureState(state);
+        static_cast<VirtualCpuProbeManager*>(manager)
+            ->SetOwnContributionEstimate(own_contribution_estimate);
       }
       break;
     }

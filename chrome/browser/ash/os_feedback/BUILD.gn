@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("os_feedback") {
   sources = [
@@ -25,13 +25,16 @@ static_library("os_feedback") {
     "//ash/webui/system_apps/public:system_web_app_type",
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/ash/multidevice_setup",
     "//chrome/browser/ash/system_logs",
     "//chrome/browser/ash/system_web_apps/apps",
     "//chrome/browser/feedback",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
+    "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/ash/system_web_apps",
-    "//chrome/browser/ui/webui/ash",
+    "//chrome/browser/ui/webui/ash/diagnostics_dialog",
     "//chrome/common",
     "//chromeos/ash/services/multidevice_setup/public/cpp",
     "//components/feedback",
@@ -50,7 +53,6 @@ static_library("os_feedback") {
   allow_circular_includes_from = [
     "//chrome/browser/ash/system_logs",
     "//chrome/browser/ash/system_web_apps/apps",
-    "//chrome/browser/ui/webui/ash",
   ]
 }
 
@@ -77,13 +79,15 @@ source_set("browser_tests") {
   deps = [
     ":os_feedback",
     "//ash/constants",
+    "//ash/webui/help_app_ui",
     "//base",
     "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/signin",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/system_web_apps",
-    "//chrome/browser/ui/webui/ash",
+    "//chrome/browser/ui/webui/ash/os_feedback_dialog",
     "//chrome/test:test_support",
     "//components/feedback",
     "//components/feedback/content",
@@ -97,6 +101,10 @@ source_set("browser_tests") {
     "//ui/views",
     "//url",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (!is_chromeos_device) {
@@ -108,7 +116,6 @@ if (!is_chromeos_device) {
     sources = [ "os_feedback_interactive_uitest.cc" ]
 
     deps = [
-      ":os_feedback",
       "//ash/constants",
       "//base",
       "//base/test:test_support",

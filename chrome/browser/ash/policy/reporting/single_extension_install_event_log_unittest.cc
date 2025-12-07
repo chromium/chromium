@@ -25,7 +25,7 @@ static const char kFileName[] = "event.log";
 
 class SingleExtensionInstallEventLogTest : public testing::Test {
  protected:
-  SingleExtensionInstallEventLogTest() {}
+  SingleExtensionInstallEventLogTest() = default;
 
   // testing::Test:
   void SetUp() override {

@@ -4,8 +4,8 @@
 
 package org.chromium.ui.modaldialog;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogPriority;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -22,9 +22,10 @@ import java.util.function.Consumer;
  * A container class to provide basic operations for pending dialogs with attributes {@link
  * ModalDialogType} and {@link ModalDialogPriority}.
  */
+@NullMarked
 class PendingDialogContainer {
     /** A class representing the attributes of a pending dialog. */
-    class PendingDialogType {
+    static class PendingDialogType {
         public final PropertyModel propertyModel;
         public final @ModalDialogType int dialogType;
         public final @ModalDialogPriority int dialogPriority;
@@ -75,11 +76,14 @@ class PendingDialogContainer {
     void put(
             @ModalDialogType int dialogType,
             @ModalDialogPriority int dialogPriority,
-            PropertyModel model,
+            @Nullable PropertyModel model,
             boolean showAsNext) {
         Integer key = computeKey(dialogType, dialogPriority);
         List<PropertyModel> dialogs = mPendingDialogs.get(key);
-        if (dialogs == null) mPendingDialogs.put(key, dialogs = new ArrayList<>());
+        if (dialogs == null) {
+            dialogs = new ArrayList<>();
+            mPendingDialogs.put(key, dialogs);
+        }
         dialogs.add(showAsNext ? 0 : dialogs.size(), model);
     }
 

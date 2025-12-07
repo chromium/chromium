@@ -7,15 +7,16 @@
 
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
-#include "gpu/gpu_export.h"
+#include "gpu/ipc/common/gpu_ipc_common_export.h"
 #include "gpu/ipc/common/shared_image_metadata.mojom-shared.h"
 #include "services/viz/public/cpp/compositing/shared_image_format_mojom_traits.h"
 
 namespace mojo {
 
 template <>
-struct GPU_EXPORT StructTraits<gpu::mojom::SharedImageMetadataDataView,
-                               gpu::SharedImageMetadata> {
+struct GPU_IPC_COMMON_EXPORT StructTraits<
+    gpu::mojom::SharedImageMetadataDataView,
+    gpu::SharedImageMetadata> {
   static const viz::SharedImageFormat& format(
       const gpu::SharedImageMetadata& metadata) {
     return metadata.format;

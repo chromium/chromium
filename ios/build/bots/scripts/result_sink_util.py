@@ -8,6 +8,7 @@ import cgi
 import json
 import logging
 import os
+import re
 import requests
 import sys
 import traceback
@@ -17,9 +18,12 @@ import constants
 # import protos for exceptions reporting
 THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 CHROMIUM_SRC_DIR = os.path.abspath(os.path.join(THIS_DIR, '../../../..'))
-sys.path.append(
-    os.path.abspath(os.path.join(CHROMIUM_SRC_DIR, 'build/util/lib/proto')))
-import exception_occurrences_pb2
+sys.path.extend([
+    os.path.abspath(os.path.join(CHROMIUM_SRC_DIR, 'build/util/lib/proto')),
+    os.path.abspath(os.path.join(CHROMIUM_SRC_DIR, 'build/util/'))
+])
+import measures
+import exception_recorder
 
 from google.protobuf import json_format
 from google.protobuf import any_pb2
@@ -30,6 +34,7 @@ LOGGER = logging.getLogger(__name__)
 # https://source.chromium.org/chromium/infra/infra/+/main:go/src/go.chromium.org/luci/resultdb/proto/v1/test_result.proto;drc=ca12b9f52b27f064b0fa47c39baa3b011ffa5790;l=151-174
 VALID_STATUSES = {"PASS", "FAIL", "CRASH", "ABORT", "SKIP"}
 
+EXTENDED_PROPERTIES_KEY = 'extendedProperties'
 
 def format_exception_stacktrace(e: Exception):
   exception_trace = traceback.format_exception(type(e), e, e.__traceback__)
@@ -60,7 +65,7 @@ def _compose_test_result(test_id,
         report as artifact.
 
   Returns:
-    A dict of test results with input information, confirming to
+    A dict of test results with input information, conforming to
       https://source.chromium.org/chromium/infra/infra/+/main:go/src/go.chromium.org/luci/resultdb/sink/proto/v1/test_result.proto
   """
   tags = tags or []
@@ -84,6 +89,7 @@ def _compose_test_result(test_id,
           'key': key,
           'value': value
       } for (key, value) in tags],
+      'testIdStructured': _get_struct_test_dict(test_id),
       'testMetadata': {
           'name': test_id,
           'location': test_loc,
@@ -104,15 +110,19 @@ def _compose_test_result(test_id,
       # serializable in order for the eventual json.dumps to succeed
       message = base64.b64encode(test_log.encode('utf-8')).decode('utf-8')
     test_result['summaryHtml'] = '<text-artifact artifact-id="Test Log" />'
-    if constants.CRASH_MESSAGE in test_log:
-      test_result['failureReason'] = {
-          'primaryErrorMessage': constants.CRASH_MESSAGE
-      }
     test_result['artifacts'].update({
         'Test Log': {
             'contents': message
         },
     })
+    # assign primary error message if the host app crashed
+    if constants.CRASH_MESSAGE in test_log:
+      primary_error_message = constants.CRASH_MESSAGE
+      if constants.ASAN_ERROR in test_log:
+        primary_error_message += f' {constants.ASAN_ERROR}'
+      test_result['failureReason'] = {
+          'primaryErrorMessage': primary_error_message
+      }
   if not test_result['artifacts']:
     test_result.pop('artifacts')
 
@@ -122,31 +132,82 @@ def _compose_test_result(test_id,
   return test_result
 
 
-def _compose_exception_occurrence(exception):
-  """Composes the exception_occurrence item to be posted to result sink.
+def _get_struct_test_dict(test_id):
+  """Returns a structured_test_dict with filled in fields.
 
   Args:
-    exception: (Exception) the exception to be posted to result sink.
+    test_id: A string of the test_id.
 
   Returns:
-    exception_occurrence: Conforming to protos defined in
-          //build/util/lib/proto/exception_occurrences.proto
+    A dictionary with the struct fields filled in.
   """
+  # Source comes from:
+  # infra/go/src/go.chromium.org/luci/resultdb/sink/proto/v1/test_result.proto
+  struct_test_dict = {
+      'coarseName': None,  # Not used for gtests or xctests.
+      'fineName': None,
+      'caseNameComponents': [''],
+  }
 
-  occurrence = exception_occurrences_pb2.ExceptionOccurrence(
-      name=type(exception).__name__,
-      stacktrace=format_exception_stacktrace(exception),
-  )
-  occurrence.occurred_time.GetCurrentTime()
-  return occurrence
+  found_match = False
+  # We may encounter gtests or XCTests which are parsed differently.
+  # Attempt to parse gtests based on:
+  #     infra/go/src/infra/tools/result_adapter/gtest.go
+  # Type-parameterised test (e.g. MyInstantiation/FooTest/MyType.DoesBar)
+  re_match = re.search(r'^((\w+)/)?(\w+)/(\w+)\.(\w+)$', test_id)
+  if re_match:
+    suite = re_match.group(3)
+    name = re_match.group(5)
+    instantiation = re_match.group(2)
+    case_id = re_match.group(4)
+    found_match = True
+
+  # Value-parameterised test (e.g. MyInstantiation/FooTest.DoesBar/TestValue)
+  re_match = re.search(r'^((\w+)/)?(\w+)\.(\w+)/(\w+)$', test_id)
+  if not found_match and re_match:
+    suite = re_match.group(3)
+    name = re_match.group(4)
+    instantiation = re_match.group(2)
+    case_id = re_match.group(5)
+    found_match = True
+
+  # Neither type nor value-parameterised (e.g. FooTest.DoesBar)
+  re_match = re.search(r'^(\w+)\.(\w+)$', test_id)
+  if not found_match and re_match:
+    suite = re_match.group(1)
+    name = re_match.group(2)
+    instantiation = ""
+    case_id = ""
+    found_match = True
+
+  if found_match:
+    struct_test_dict['fineName'] = suite
+    if not case_id:
+      struct_test_dict['caseNameComponents'] = [name]
+    elif not instantiation:
+      struct_test_dict['caseNameComponents'] = ['%s/%s' % (name, case_id)]
+    else:
+      struct_test_dict['caseNameComponents'] = ['%s/%s.%s' % (name, instantiation, case_id)]
+
+  # XCTests format.
+  re_match = re.search(r'(.*)/(.*)', test_id)
+  if not found_match and re_match:
+    struct_test_dict['fineName'] = re_match.group(1)
+    struct_test_dict['caseNameComponents'] = [re_match.group(2)]
+    found_match = True
+
+  # Assume it's a flat test format otherwise.
+  if not found_match:
+    struct_test_dict['caseNameComponents'] = [test_id]
+
+  return struct_test_dict
 
 
-class ExceptionResults:
-  results = []  # Static variable to hold exception results
+def _to_camel_case(s):
+  """Converts the string s from snake_case to lowerCamelCase."""
 
-  @staticmethod
-  def add_result(exception):
-    ExceptionResults.results.append(exception)
+  elems = s.split('_')
+  return elems[0] + ''.join(elem.capitalize() for elem in elems[1:])
 
 
 class ResultSinkClient(object):
@@ -211,19 +272,6 @@ class ResultSinkClient(object):
     self._post_test_result(
         _compose_test_result(test_id, status, expected, **kwargs))
 
-  def post_exceptions(self, exceptions):
-    """Composes and posts exception result to server.
-
-    Args:
-      exception: [Exception] list of exceptions to be posted to result sink.
-    """
-    if not self.sink:
-      return
-    exception_occurrences = []
-    for exception in exceptions:
-      exception_occurrences.append(_compose_exception_occurrence(exception))
-    self._post_exceptions(exception_occurrences)
-
   def _post_test_result(self, test_result):
     """Posts single test result to server.
 
@@ -240,35 +288,63 @@ class ResultSinkClient(object):
     )
     res.raise_for_status()
 
-  def _post_exceptions(self, exception_occurrences):
-    """Posts exception result to server.
-
-    This method assumes |self.sink| is not None.
-
-    Args:
-        exception_occurrences: list of exception_occurrences,
-          conforming to protos defined in
-          //build/util/lib/proto/exception_occurrences.proto
+  def post_extended_properties(self):
+    """Posts extended properties to server with retry.
     """
+    if not self.sink:
+      return
+    try_count = 0
+    try_count_max = 2
+    while try_count < try_count_max:
+      try_count += 1
+      try:
+        self._post_extended_properties()
+        break
+      except Exception as e:
+        logging.error("Got error %s when uploading extended properties.", e)
+        if try_count < try_count_max:
+          # Upload can fail due to record size being too big. In this case,
+          # report just the upload failure.
+          exception_recorder.clear()
+          measures.clear()
+          exception_recorder.register(e)
+        else:
+          # Swallow the exception if the upload fails again and hit the max
+          # try so that it won't fail the test task (and it shouldn't).
+          logging.error("Hit max retry. Skip uploading extended properties.")
 
-    occurrences = exception_occurrences_pb2.ExceptionOccurrences()
-    occurrences.datapoints.extend(exception_occurrences)
-    any_msg = any_pb2.Any()
-    any_msg.Pack(occurrences)
-    inv_data = json.dumps(
-        {
-            'invocation': {
-                'extended_properties': {
-                    'exception_occurrences':
-                        json_format.MessageToDict(
-                            any_msg, preserving_proto_field_name=True)
-                }
-            },
-            'update_mask': {
-                'paths': ['extended_properties.exception_occurrences'],
-            }
-        },
-        sort_keys=True)
+  def _post_extended_properties(self):
+    """Posts extended properties to server.
+
+    Assumes self.sink has been initialized.
+
+    Packages exception_occurrences_pb2 and test_script_metrics_pb2 and sends an
+    UpdateInvocation post request to result sink.
+    """
+    invocation = {EXTENDED_PROPERTIES_KEY: {}}
+    paths = []
+
+    # Sink server by default decodes payload with protojson, i.e. codecJSONV2
+    # in https://source.chromium.org/search?q=f:server.go%20func:requestCodec
+    # which requires loweCamelCase names in the json request.
+    # For the value for update mask, see "JSON Encoding of Field Masks" in
+    # https://protobuf.dev/reference/protobuf/google.protobuf/#field-masks
+    if exception_recorder.size() > 0:
+      invocation[EXTENDED_PROPERTIES_KEY][
+          exception_recorder.EXCEPTION_OCCURRENCES_KEY] = \
+            exception_recorder.to_dict()
+      paths.append('%s.%s' % (EXTENDED_PROPERTIES_KEY,
+                              _to_camel_case(exception_recorder.EXCEPTION_OCCURRENCES_KEY)))
+
+    if measures.size() > 0:
+      invocation[EXTENDED_PROPERTIES_KEY][measures.TEST_SCRIPT_METRICS_KEY] = \
+        measures.to_dict()
+      paths.append('%s.%s' %
+                   (EXTENDED_PROPERTIES_KEY, _to_camel_case(measures.TEST_SCRIPT_METRICS_KEY)))
+
+    req = {'invocation': invocation, 'updateMask': ','.join(paths)}
+
+    inv_data = json.dumps(req, sort_keys=True)
 
     LOGGER.info(inv_data)
 

@@ -5,15 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_READING_LIST_MODEL_READING_LIST_REMOVER_HELPER_H_
 #define IOS_CHROME_BROWSER_READING_LIST_MODEL_READING_LIST_REMOVER_HELPER_H_
 
-#include "base/functional/callback.h"
-#include "base/location.h"
-#include "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
-#include "base/sequence_checker.h"
-#include "components/reading_list/core/reading_list_model.h"
-#include "components/reading_list/core/reading_list_model_observer.h"
+#import "base/functional/callback.h"
+#import "base/location.h"
+#import "base/memory/raw_ptr.h"
+#import "base/scoped_observation.h"
+#import "base/sequence_checker.h"
+#import "components/reading_list/core/reading_list_model.h"
+#import "components/reading_list/core/reading_list_model_observer.h"
 
-class ChromeBrowserState;
+class ProfileIOS;
 class ReadingListDownloadService;
 
 namespace reading_list {
@@ -23,7 +23,7 @@ class ReadingListRemoverHelper : public ReadingListModelObserver {
  public:
   using Callback = base::OnceCallback<void(bool)>;
 
-  explicit ReadingListRemoverHelper(ChromeBrowserState* browser_state);
+  explicit ReadingListRemoverHelper(ProfileIOS* profile);
 
   ReadingListRemoverHelper(const ReadingListRemoverHelper&) = delete;
   ReadingListRemoverHelper& operator=(const ReadingListRemoverHelper&) = delete;

@@ -22,12 +22,14 @@ class SchemaRegistry;
 std::unique_ptr<SchemaRegistryService> BuildSchemaRegistryServiceForProfile(
     content::BrowserContext* context,
     const Schema& chrome_schema,
+    const Schema& extension_install_policy_schema,
     CombinedSchemaRegistry* global_registry);
 
 // Creates SchemaRegistryService without BrowserContext.
 std::unique_ptr<SchemaRegistryService> BuildSchemaRegistryService(
     std::unique_ptr<SchemaRegistry> registry,
     const Schema& chrome_schema,
+    const Schema& extension_install_policy_schema,
     CombinedSchemaRegistry* global_registry);
 
 }  // namespace policy

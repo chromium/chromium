@@ -1,0 +1,29 @@
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_READING_LIST_UI_BUNDLED_READING_LIST_CONSTANTS_H_
+#define IOS_CHROME_BROWSER_READING_LIST_UI_BUNDLED_READING_LIST_CONSTANTS_H_
+
+#import <UIKit/UIKit.h>
+
+// Accessibility identifier for reading list view.
+extern NSString* const kReadingListViewID;
+
+// Accessibility identifiers for reading list toolbar buttons.
+extern NSString* const kReadingListToolbarEditButtonID;
+extern NSString* const kReadingListToolbarDeleteButtonID;
+extern NSString* const kReadingListToolbarDeleteAllReadButtonID;
+extern NSString* const kReadingListToolbarCancelButtonID;
+extern NSString* const kReadingListToolbarMarkButtonID;
+
+// Accessibility identifier for the "local" image of the reading list items.
+extern NSString* const kReadingListLocalImageID;
+
+// Accessibility identifier for the "badge" image of the reading list items.
+extern NSString* const kReadingListItemBadgeID;
+
+// NSUserDefault key to save last time a Messages prompt was shown.
+extern NSString* const kLastReadingListEntryAddedFromMessages;
+
+#endif  // IOS_CHROME_BROWSER_READING_LIST_UI_BUNDLED_READING_LIST_CONSTANTS_H_

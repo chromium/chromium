@@ -155,11 +155,13 @@ void IOSSystemDataCollector::InstallHandlers() {
       (__bridge CFStringRef)NSSystemTimeZoneDidChangeNotification, this);
   SystemTimeZoneDidChangeNotification();
 
+#if !BUILDFLAG(IS_IOS_TVOS)
   // Orientation.
   AddObserver<IOSSystemDataCollector,
               &IOSSystemDataCollector::OrientationDidChangeNotification>(
       (__bridge CFStringRef)UIDeviceOrientationDidChangeNotification, this);
   OrientationDidChangeNotification();
+#endif
 
 #if !defined(CRASHPAD_IS_IOS_APP_EXTENSION)
   // Foreground/Background. Extensions shouldn't use UIApplication*.
@@ -214,13 +216,15 @@ void IOSSystemDataCollector::SystemTimeZoneDidChangeNotification() {
 }
 
 void IOSSystemDataCollector::OrientationDidChangeNotification() {
+#if !BUILDFLAG(IS_IOS_TVOS)
   orientation_ =
       base::saturated_cast<int>([[UIDevice currentDevice] orientation]);
+#endif
 }
 
 void IOSSystemDataCollector::ApplicationDidChangeActiveNotification() {
 #if defined(CRASHPAD_IS_IOS_APP_EXTENSION)
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #else
   dispatch_assert_queue_debug(dispatch_get_main_queue());
   bool old_active = active_;

@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("default_user_image") {
   sources = [
@@ -15,6 +13,7 @@ static_library("default_user_image") {
   public_deps = [
     "//ash/public/cpp",
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//ui/base",
     "//url",
   ]

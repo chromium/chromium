@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
 
 #include "testing/gtest/include/gtest/gtest-death-test.h"
@@ -46,34 +41,13 @@ bool operator==(const OffsetMappingUnit& unit, const OffsetMappingUnit& other) {
          unit.TextContentEnd() == other.TextContentEnd();
 }
 
-bool operator!=(const OffsetMappingUnit& unit, const OffsetMappingUnit& other) {
-  return !operator==(unit, other);
-}
-
 void PrintTo(const OffsetMappingUnit& unit, std::ostream* ostream) {
-  static const char* kTypeNames[] = {"Identity", "Collapsed", "Expanded"};
+  static const std::array<const char*, 3> kTypeNames = {"Identity", "Collapsed",
+                                                        "Expanded"};
   *ostream << "{" << kTypeNames[static_cast<unsigned>(unit.GetType())] << " "
            << unit.GetLayoutObject() << " dom=" << unit.DOMStart() << "-"
            << unit.DOMEnd() << " tc=" << unit.TextContentStart() << "-"
            << unit.TextContentEnd() << "}";
-}
-
-bool operator==(const HeapVector<OffsetMappingUnit>& units1,
-                const HeapVector<OffsetMappingUnit>& units2) {
-  if (units1.size() != units2.size())
-    return false;
-  auto it2 = units2.begin();
-  for (const auto& unit1 : units1) {
-    if (unit1 != *it2)
-      return false;
-    ++it2;
-  }
-  return true;
-}
-
-bool operator==(const HeapVector<OffsetMappingUnit>& units,
-                const base::span<const OffsetMappingUnit>& range) {
-  return units == ToVector(range);
 }
 
 void PrintTo(const HeapVector<OffsetMappingUnit>& units,
@@ -101,7 +75,6 @@ class OffsetMappingTest : public RenderingTest {
   void SetupHtml(const char* id, String html) {
     SetBodyInnerHTML(html);
     layout_block_flow_ = To<LayoutBlockFlow>(GetLayoutObjectByElementId(id));
-    DCHECK(layout_block_flow_->IsLayoutNGObject());
     layout_object_ = layout_block_flow_->FirstChild();
   }
 
@@ -125,7 +98,7 @@ class OffsetMappingTest : public RenderingTest {
       Vector<unsigned> collapsed_indexes;
       for (const auto& unit : mapping.GetMappingUnitsForDOMRange(
                EphemeralRange::RangeOfContents(node))) {
-        if (unit.GetType() != OffsetMappingUnitType::kCollapsed) {
+        if (!unit.IsCollapsed()) {
           continue;
         }
         for (unsigned i = unit.DOMStart(); i < unit.DOMEnd(); ++i)
@@ -959,7 +932,7 @@ TEST_F(OffsetMappingTest, FirstLetterInDifferentBlock) {
   const OffsetMapping& remaining_text_result = *mapping1;
   ASSERT_EQ(1u, remaining_text_result.GetUnits().size());
   TEST_UNIT(remaining_text_result.GetUnits()[0],
-            OffsetMappingUnitType::kIdentity, text_node, 1u, 3u, 1u, 3u);
+            OffsetMappingUnitType::kIdentity, text_node, 1u, 3u, 0u, 2u);
   ASSERT_EQ(1u, remaining_text_result.GetRanges().size());
   TEST_RANGE(remaining_text_result.GetRanges(), text_node, 0u, 1u);
 
@@ -978,17 +951,18 @@ TEST_F(OffsetMappingTest, FirstLetterInDifferentBlock) {
 
   EXPECT_EQ(0u,
             *first_letter_result.GetTextContentOffset(Position(text_node, 0)));
+
   EXPECT_EQ(
-      1u, *remaining_text_result.GetTextContentOffset(Position(text_node, 1)));
+      0u, *remaining_text_result.GetTextContentOffset(Position(text_node, 1)));
   EXPECT_EQ(
-      2u, *remaining_text_result.GetTextContentOffset(Position(text_node, 2)));
+      1u, *remaining_text_result.GetTextContentOffset(Position(text_node, 2)));
   EXPECT_EQ(
-      3u, *remaining_text_result.GetTextContentOffset(Position(text_node, 3)));
+      2u, *remaining_text_result.GetTextContentOffset(Position(text_node, 3)));
 
   EXPECT_EQ(Position(text_node, 1), first_letter_result.GetFirstPosition(1));
   EXPECT_EQ(Position(text_node, 1), first_letter_result.GetLastPosition(1));
-  EXPECT_EQ(Position(text_node, 1), remaining_text_result.GetFirstPosition(1));
-  EXPECT_EQ(Position(text_node, 1), remaining_text_result.GetLastPosition(1));
+  EXPECT_EQ(Position(text_node, 1), remaining_text_result.GetFirstPosition(0));
+  EXPECT_EQ(Position(text_node, 1), remaining_text_result.GetLastPosition(0));
 }
 
 TEST_F(OffsetMappingTest, WhiteSpaceTextNodeWithoutLayoutText) {

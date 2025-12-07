@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_icon/cr_icon.js';
 
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
@@ -27,14 +28,19 @@ export class ExtensionControlledIndicatorElement extends PolymerElement {
       extensionCanBeDisabled: Boolean,
       extensionId: String,
       extensionName: String,
+      extensionNameOnlyInLabel: Boolean,
     };
   }
 
-  extensionCanBeDisabled: boolean;
-  extensionId: string;
-  extensionName: string;
+  declare extensionCanBeDisabled: boolean;
+  declare extensionId: string;
+  declare extensionName: string;
+  declare extensionNameOnlyInLabel?: boolean;
 
   private getLabel_(): string {
+    if (this.extensionNameOnlyInLabel === true) {
+      return this.extensionName;
+    }
     return loadTimeData.getStringF('controlledByExtension', this.extensionName);
   }
 

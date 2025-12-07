@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_FORMATTING_ELEMENT_LIST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_FORMATTING_ELEMENT_LIST_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/html/parser/html_stack_item.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -69,12 +68,9 @@ class HTMLFormattingElementList {
     }
     void ReplaceElement(HTMLStackItem* item) { item_ = item; }
 
-    // Needed for use with Vector.  These are super-hot and must be inline.
+    // Needed for use with Vector.  This is super-hot and must be inline.
     bool operator==(Element* element) const {
       return !item_ ? !element : item_->GetElement() == element;
-    }
-    bool operator!=(Element* element) const {
-      return !item_ ? !!element : item_->GetElement() != element;
     }
 
     void Trace(Visitor* visitor) const { visitor->Trace(item_); }

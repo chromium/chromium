@@ -24,8 +24,12 @@ class PrefRegistrySimple;
 namespace update_client {
 
 extern const char kPersistedDataPreference[];
+extern const char kLastUpdateCheckErrorPreference[];
+extern const char kLastUpdateCheckErrorCategoryPreference[];
+extern const char kLastUpdateCheckErrorExtraCode1Preference[];
 
 class ActivityDataService;
+struct CategorizedError;
 
 // A PersistedData is a wrapper layer around a PrefService, designed to maintain
 // update data that outlives the browser process and isn't exposed outside of
@@ -37,6 +41,9 @@ class ActivityDataService;
 class PersistedData {
  public:
   virtual ~PersistedData() = default;
+
+  // Records the last update check error code (0 for success).
+  virtual void SetLastUpdateCheckError(const CategorizedError& error) = 0;
 
   // Returns the DateLastRollCall (the server-localized calendar date number the
   // |id| was last checked by this client on) for the specified |id|.
@@ -82,6 +89,13 @@ class PersistedData {
   // Sets InstallDate. This method should only be used for importing data from
   // other data stores.
   virtual void SetInstallDate(const std::string& id, int install_date) = 0;
+
+  // Install IDs are unique identifiers for individual installations of the app
+  // identified by `app_id`. The install ID is sent in the install ping and in
+  // the first update check, but is cleared afterward by `SetDateLastData`.
+  virtual std::string GetInstallId(const std::string& app_id) const = 0;
+  virtual void SetInstallId(const std::string& app_id,
+                            const std::string& install_id) = 0;
 
   // These functions return cohort data for the specified |id|. "Cohort"
   // indicates the membership of the client in any release channels components
@@ -138,13 +152,13 @@ class PersistedData {
   // These functions get and set the time after which update checks are allowed.
   // To clear the throttle, pass base::Time().
   virtual base::Time GetThrottleUpdatesUntil() const = 0;
-  virtual void SetThrottleUpdatesUntil(const base::Time& time) = 0;
+  virtual void SetThrottleUpdatesUntil(base::Time time) = 0;
 };
 
 // Creates a PersistedData instance. Passing null for either or both parameters
 // is safe and will disable functionality that relies on them.
 std::unique_ptr<PersistedData> CreatePersistedData(
-    PrefService* pref_service,
+    base::RepeatingCallback<PrefService*()> pref_service_provider,
     std::unique_ptr<ActivityDataService> activity_data_service);
 
 // Register prefs for a PersistedData returned by CreatePersistedData.

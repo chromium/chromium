@@ -82,9 +82,6 @@ class VIEWS_EXPORT SubmenuView : public View,
   gfx::Size CalculatePreferredSize(
       const SizeBounds& /*available_size*/) const override;
 
-  // Override from View.
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
   // Painting.
   void PaintChildren(const PaintInfo& paint_info) override;
 

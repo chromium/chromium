@@ -6,6 +6,7 @@
 #define COMPONENTS_POLICY_TEST_SUPPORT_EMBEDDED_POLICY_TEST_SERVER_TEST_BASE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -44,6 +45,7 @@ class EmbeddedPolicyTestServerTestBase : public testing::Test {
   void SetMethod(const std::string& method);
   void SetAppType(const std::string& app_type);
   void SetDeviceIdParam(const std::string& device_id);
+  void SetProfileIdParam(const std::string& profile_id);
   void SetDeviceType(const std::string& device_type);
   void SetOAuthToken(const std::string& oauth_token);
   void SetRequestTypeParam(const std::string& request_type);
@@ -80,7 +82,7 @@ class EmbeddedPolicyTestServerTestBase : public testing::Test {
   // Callback to be provided for the network request. Invokes |callback| when
   // done.
   void DownloadedToString(base::OnceClosure callback,
-                          std::unique_ptr<std::string> response_body);
+                          std::optional<std::string> response_body);
 
   base::test::TaskEnvironment task_environment_;
   EmbeddedPolicyTestServer test_server_;
@@ -88,7 +90,7 @@ class EmbeddedPolicyTestServerTestBase : public testing::Test {
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   std::unique_ptr<network::ResourceRequest> resource_request_;
   std::string payload_;
-  std::unique_ptr<std::string> response_body_;
+  std::optional<std::string> response_body_;
   bool done_ = false;
 };
 

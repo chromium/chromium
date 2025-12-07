@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include <map>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -15,29 +16,59 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "url/origin.h"
 
 namespace password_manager {
 
+namespace {
+
+using IsBackupCredential = UiCredential::IsBackupCredential;
+
+std::optional<UiCredential> GetBackupCredential(const PasswordForm& form,
+                                                const url::Origin& origin) {
+#if !BUILDFLAG(IS_ANDROID)
+  return std::nullopt;
+#else
+  std::optional<std::u16string> backup_password = form.GetPasswordBackup();
+  if (!backup_password ||
+      !base::FeatureList::IsEnabled(features::kFillRecoveryPassword)) {
+    return std::nullopt;
+  }
+  PasswordForm backup_form = form;
+  backup_form.password_value = backup_password.value();
+  UiCredential credential{backup_form, origin, IsBackupCredential(true)};
+  return credential;
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+}  // namespace
 CredentialCache::CredentialCache() = default;
 CredentialCache::~CredentialCache() = default;
 
 void CredentialCache::SaveCredentialsAndBlocklistedForOrigin(
     base::span<const PasswordForm> best_matches,
     IsOriginBlocklisted is_blocklisted,
+    std::optional<PasswordStoreBackendError> backend_error,
     const url::Origin& origin) {
   std::vector<UiCredential> credentials;
   credentials.reserve(best_matches.size());
   for (const PasswordForm& form : best_matches) {
     credentials.emplace_back(form, origin);
+    if (std::optional<UiCredential> backup_credential =
+            GetBackupCredential(form, origin)) {
+      credentials.push_back(std::move(backup_credential.value()));
+    }
   }
 
-  // Sort by origin, then username.
-  std::sort(credentials.begin(), credentials.end(),
-            [](const UiCredential& lhs, const UiCredential& rhs) {
-              return std::tie(lhs.origin(), lhs.username()) <
-                     std::tie(rhs.origin(), rhs.username());
-            });
+  // Sort by origin, then username, then whether the credential is a backup
+  // credential or not. Backup credentials should appear after main credentials
+  // and will have the same origin and username as the main one.
+  std::ranges::sort(credentials, std::less<>{}, [](const UiCredential& cred) {
+    return std::make_tuple(cred.origin(), cred.username(),
+                           cred.is_backup_credential());
+  });
+
   // Move credentials with exactly matching origins to the top.
   std::stable_partition(credentials.begin(), credentials.end(),
                         [&origin](const UiCredential& credential) {
@@ -63,16 +94,23 @@ void CredentialCache::SaveCredentialsAndBlocklistedForOrigin(
       // The cache is only useful when the sharing notification UI is displayed
       // since it is used to mark those credentials as notified after the user
       // interacts with the UI.
-        unnotified_shared_credentials.push_back(form);
+      unnotified_shared_credentials.push_back(form);
     }
   }
   GetOrCreateCredentialStore(origin).SaveUnnotifiedSharedCredentials(
       std::move(unnotified_shared_credentials));
+
+  backend_error_ = backend_error;
 }
 
 const OriginCredentialStore& CredentialCache::GetCredentialStore(
     const url::Origin& origin) {
   return GetOrCreateCredentialStore(origin);
+}
+
+const std::optional<PasswordStoreBackendError> CredentialCache::backend_error()
+    const {
+  return backend_error_;
 }
 
 void CredentialCache::ClearCredentials() {

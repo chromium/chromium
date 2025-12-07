@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/memory/userspace_swap/userspace_swap.h"
 
+#include <algorithm>
 #include <atomic>
 #include <cstdint>
 #include <functional>
@@ -11,15 +12,15 @@
 #include <optional>
 #include <random>
 #include <set>
+#include <stack>
+#include <utility>
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/files/file_util.h"
 #include "base/memory/page_size.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/process/process_handle.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chromeos/ash/components/memory/aligned_memory.h"
@@ -35,7 +36,6 @@
 #include "partition_alloc/partition_address_space.h"
 #include "partition_alloc/partition_alloc_constants.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/os_metrics.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 namespace ash {
 namespace memory {
@@ -279,7 +279,7 @@ void RendererSwapDataImpl::OnReceivedPASuperPages(
   PASuperPagesToResidentRegions(pagemap, regions, resident_regions);
   if (UserspaceSwapConfig::Get().shuffle_maps_on_swap) {
     // The regions can be shuffled to avoid always swapping the same regions.
-    base::ranges::shuffle(resident_regions, std::default_random_engine());
+    std::ranges::shuffle(resident_regions, std::default_random_engine());
   }
 
   if (VLOG_IS_ON(1)) {

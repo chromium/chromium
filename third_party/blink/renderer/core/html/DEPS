@@ -1,17 +1,21 @@
 specific_include_rules = {
-    "canvas_image_source.cc": [
-        "+gpu/command_buffer/client/shared_image_interface.h",
-    ],
     "canvas_rendering_context.cc": [
         "+services/metrics/public/cpp/ukm_builders.h",
     ],
+    "canvas_rendering_context_host.cc": [
+        "+gpu/command_buffer/common/shared_image_usage.h",
+    ],
     "client_hints_util.cc": [
         "+services/network/public/cpp/client_hints.h",
+        "+services/network/public/cpp/permissions_policy",
         "+url/gurl.h",
         "+url/origin.h",
     ],
     "client_hints_util.h": [
         "+services/network/public/cpp/client_hints.h",
+    ],
+    "html_anchor_element.cc" : [
+        "+base/command_line.h"
     ],
     "html_meta_element.h": [
         "+services/network/public/cpp/client_hints.h",

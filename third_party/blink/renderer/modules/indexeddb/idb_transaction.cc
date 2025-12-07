@@ -30,8 +30,10 @@
 
 #include "base/auto_reset.h"
 #include "base/format_macros.h"
+#include "base/not_fatal_until.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable_creation_key.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_idb_transaction_durability.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -107,8 +109,8 @@ IDBTransaction::IDBTransaction(
   ExecutionContext::From(script_state)
       ->GetAgent()
       ->event_loop()
-      ->EnqueueEndOfMicrotaskCheckpointTask(WTF::BindOnce(
-          &IDBTransaction::SetActive, WrapPersistent(this), false));
+      ->EnqueueEndOfMicrotaskCheckpointTask(
+          BindOnce(&IDBTransaction::SetActive, WrapPersistent(this), false));
 
   database_->TransactionCreated(this);
 }
@@ -327,6 +329,7 @@ void IDBTransaction::SetActive(bool new_is_active) {
   state_ = new_is_active ? kActive : kInactive;
 
   if (!new_is_active && request_list_.empty()) {
+    state_ = kCommitting;
     remote_->Commit(num_errors_handled_);
   }
 }
@@ -376,10 +379,10 @@ void IDBTransaction::commit(ExceptionState& exception_state) {
 }
 
 void IDBTransaction::RegisterRequest(IDBRequest* request) {
-  DCHECK(request);
-  DCHECK(!request_list_.Contains(request));
-  DCHECK_EQ(state_, kActive);
-  request_list_.insert(request);
+  CHECK(request, base::NotFatalUntil::M145);
+  CHECK_EQ(state_, kActive, base::NotFatalUntil::M145);
+  auto add_result = request_list_.insert(request);
+  CHECK(add_result.is_new_entry, base::NotFatalUntil::M145);
 }
 
 void IDBTransaction::UnregisterRequest(IDBRequest* request) {
@@ -457,8 +460,7 @@ void IDBTransaction::OnComplete() {
     return;
   }
 
-  DCHECK_NE(state_, kFinished);
-  state_ = kCommitting;
+  DCHECK_EQ(state_, kCommitting);
 
   // See comments in `OnAbort()` on importance of ordering.
   database_->TransactionWillFinish(this);
@@ -540,12 +542,12 @@ void IDBTransaction::Put(int64_t object_store_id,
     }
   }
 
-  size_t arg_size =
-      value->DataSize() + primary_key->SizeEstimate() + index_keys_size;
+  size_t estimated_size =
+      value->Data().size() + primary_key->SizeEstimate() + index_keys_size;
 
   const size_t max_put_value_size = max_put_value_size_override_.value_or(
       mojom::blink::kIDBMaxMessageSize - mojom::blink::kIDBMaxMessageOverhead);
-  if (arg_size >= max_put_value_size) {
+  if (estimated_size >= max_put_value_size) {
     std::move(callback).Run(
         mojom::blink::IDBTransactionPutResult::NewErrorResult(
             mojom::blink::IDBError::New(
@@ -553,12 +555,23 @@ void IDBTransaction::Put(int64_t object_store_id,
                 String::Format("The serialized keys and/or value are too large"
                                " (size=%" PRIuS " bytes, max=%" PRIuS
                                " bytes).",
-                               arg_size, max_put_value_size))));
+                               estimated_size, max_put_value_size))));
     return;
   }
 
   remote_->Put(object_store_id, std::move(value), std::move(primary_key),
                put_mode, std::move(index_keys), std::move(callback));
+}
+
+void IDBTransaction::SetIndexKeys(int64_t object_store_id,
+                                  std::unique_ptr<IDBKey> primary_key,
+                                  IDBIndexKeys index_keys) {
+  remote_->SetIndexKeys(object_store_id, std::move(primary_key),
+                        std::move(index_keys));
+}
+
+void IDBTransaction::SetIndexReady(int64_t object_store_id) {
+  remote_->SetIndexKeysDone();
 }
 
 void IDBTransaction::FlushForTesting() {
@@ -573,47 +586,47 @@ bool IDBTransaction::HasPendingActivity() const {
   return has_pending_activity_ && GetExecutionContext();
 }
 
-mojom::blink::IDBTransactionMode IDBTransaction::StringToMode(
-    const String& mode_string) {
-  if (mode_string == indexed_db_names::kReadonly)
-    return mojom::blink::IDBTransactionMode::ReadOnly;
-  if (mode_string == indexed_db_names::kReadwrite)
-    return mojom::blink::IDBTransactionMode::ReadWrite;
-  if (mode_string == indexed_db_names::kVersionchange)
-    return mojom::blink::IDBTransactionMode::VersionChange;
-  NOTREACHED_IN_MIGRATION();
-  return mojom::blink::IDBTransactionMode::ReadOnly;
+mojom::blink::IDBTransactionMode IDBTransaction::EnumToMode(
+    V8IDBTransactionMode::Enum mode) {
+  switch (mode) {
+    case V8IDBTransactionMode::Enum::kReadonly:
+      return mojom::blink::IDBTransactionMode::ReadOnly;
+    case V8IDBTransactionMode::Enum::kReadwrite:
+      return mojom::blink::IDBTransactionMode::ReadWrite;
+    case V8IDBTransactionMode::Enum::kVersionchange:
+      return mojom::blink::IDBTransactionMode::VersionChange;
+  }
 }
 
-const String& IDBTransaction::mode() const {
+V8IDBTransactionMode IDBTransaction::mode() const {
   switch (mode_) {
     case mojom::blink::IDBTransactionMode::ReadOnly:
-      return indexed_db_names::kReadonly;
+      return V8IDBTransactionMode(V8IDBTransactionMode::Enum::kReadonly);
 
     case mojom::blink::IDBTransactionMode::ReadWrite:
-      return indexed_db_names::kReadwrite;
+      return V8IDBTransactionMode(V8IDBTransactionMode::Enum::kReadwrite);
 
     case mojom::blink::IDBTransactionMode::VersionChange:
-      return indexed_db_names::kVersionchange;
+      return V8IDBTransactionMode(V8IDBTransactionMode::Enum::kVersionchange);
   }
-
-  NOTREACHED_IN_MIGRATION();
-  return indexed_db_names::kReadonly;
 }
 
-const String& IDBTransaction::durability() const {
+V8IDBTransactionDurability IDBTransaction::durability() const {
   switch (durability_) {
     case mojom::blink::IDBTransactionDurability::Default:
-      return indexed_db_names::kDefault;
+      return V8IDBTransactionDurability(
+          V8IDBTransactionDurability::Enum::kDefault);
 
     case mojom::blink::IDBTransactionDurability::Strict:
-      return indexed_db_names::kStrict;
+      return V8IDBTransactionDurability(
+          V8IDBTransactionDurability::Enum::kStrict);
 
     case mojom::blink::IDBTransactionDurability::Relaxed:
-      return indexed_db_names::kRelaxed;
+      return V8IDBTransactionDurability(
+          V8IDBTransactionDurability::Enum::kRelaxed);
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 DOMStringList* IDBTransaction::objectStoreNames() const {
@@ -639,8 +652,7 @@ const char* IDBTransaction::InactiveErrorMessage() const {
   switch (state_) {
     case kActive:
       // Callers should check !IsActive() before calling.
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
     case kInactive:
       return IDBDatabase::kTransactionInactiveErrorMessage;
     case kCommitting:
@@ -648,8 +660,7 @@ const char* IDBTransaction::InactiveErrorMessage() const {
     case kFinished:
       return IDBDatabase::kTransactionFinishedErrorMessage;
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 DispatchEventResult IDBTransaction::DispatchEventInternal(Event& event) {
@@ -676,7 +687,7 @@ DispatchEventResult IDBTransaction::DispatchEventInternal(Event& event) {
   DCHECK_NE(state_, kFinished);
   DCHECK(has_pending_activity_);
   DCHECK(GetExecutionContext());
-  DCHECK_EQ(event.target(), this);
+  DCHECK_EQ(event.RawTarget(), this);
   state_ = kFinished;
 
   DispatchEventResult dispatch_result =

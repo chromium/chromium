@@ -18,6 +18,7 @@
 
 #include <optional>
 #include <string>
+#include <typeinfo>
 
 #include "base/check.h"
 #include "base/command_line.h"
@@ -25,29 +26,44 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
-#include "base/strings/sys_string_conversions.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/task/thread_pool.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/platform_thread.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/types/expected_macros.h"
-#include "base/win/registry.h"
+#include "base/win/atl.h"
+#include "base/win/elevation_util.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_localalloc.h"
 #include "base/win/windows_version.h"
 #include "chrome/installer/util/lzma_util.h"
+#include "chrome/updater/branded_constants.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/ping_configurator.h"
 #include "chrome/updater/tag.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
+#include "chrome/updater/usage_stats_permissions.h"
 #include "chrome/updater/util/util.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/installer/configuration.h"
 #include "chrome/updater/win/installer/installer_constants.h"
 #include "chrome/updater/win/installer/pe_resource.h"
+#include "chrome/updater/win/installer/splash_wnd.h"
 #include "chrome/updater/win/ui/l10n_util.h"
+#include "chrome/updater/win/ui/ui_util.h"
 #include "chrome/updater/win/win_constants.h"
+#include "components/update_client/protocol_definition.h"
+#include "components/update_client/update_client.h"
+#include "third_party/wtl/include/atlapp.h"
 
 namespace updater {
 
@@ -65,6 +81,84 @@ std::string ExtractTag() {
              ? tagging::BinaryReadTagString(base::FilePath(path.get()))
              : std::string();
 }
+
+// Shows a splash screen "Initializing...".
+base::ScopedClosureRunner CreateSplashScreen() {
+  HWND splash_hwnd = nullptr;
+  if (GetCommandLineLegacyCompatible().HasSwitch(kSilentSwitch)) {
+    return base::ScopedClosureRunner(base::BindOnce([] {}));
+  }
+
+  base::WaitableEvent ui_initialized_event;
+  base::ThreadPool::CreateSingleThreadTaskRunner(
+      {base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::SingleThreadTaskRunnerThreadMode::DEDICATED)
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(
+                     [](base::WaitableEvent& event, HWND& splash_hwnd) {
+                       ui::SplashWnd splash;
+                       splash.Create(nullptr);
+                       splash.ShowWindow(SW_SHOW);
+                       splash_hwnd = splash.m_hWnd;
+                       event.Signal();
+
+                       WTL::CMessageLoop().Run();
+                     },
+                     std::ref(ui_initialized_event), std::ref(splash_hwnd)));
+
+  ui_initialized_event.Wait();
+  return base::ScopedClosureRunner(base::BindOnce(
+      [](HWND splash_hwnd) { ::SendMessage(splash_hwnd, WM_CLOSE, 0, 0); },
+      splash_hwnd));
+}
+
+void SendPing(int exit_code, int extra_code) {
+  struct SendPingResult : public base::RefCountedThreadSafe<SendPingResult> {
+    base::WaitableEvent ping_complete_event;
+
+   private:
+    friend class base::RefCountedThreadSafe<SendPingResult>;
+    virtual ~SendPingResult() = default;
+  };
+
+  auto result = base::MakeRefCounted<SendPingResult>();
+  base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::WithBaseSyncPrimitives(),
+       base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})
+      ->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              [](scoped_refptr<SendPingResult> result, int exit_code,
+                 int extra_code) {
+                update_client::CrxComponent ping_data;
+                ping_data.app_id = kUpdaterAppId;
+                ping_data.version = base::Version(kUpdaterVersion);
+                ping_data.requires_network_encryption = false;
+                update_client::UpdateClientFactory(CreatePingConfigurator())
+                    ->SendPing(
+                        ping_data,
+                        {
+                            .event_type =
+                                update_client::protocol_request::kEventInstall,
+                            .result = update_client::protocol_request::
+                                kEventResultError,
+                            .error_code = exit_code,
+                            .extra_code1 = extra_code,
+                        },
+                        base::BindOnce(
+                            [](scoped_refptr<SendPingResult> result,
+                               update_client::Error error) {
+                              result->ping_complete_event.Signal();
+                            },
+                            result));
+              },
+              result, exit_code, extra_code));
+
+  result->ping_complete_event.TimedWait(base::Seconds(60));
+}
+
 }  // namespace
 
 // This structure passes data back and forth for the processing
@@ -165,20 +259,16 @@ BOOL CALLBACK OnResourceFound(HMODULE module,
 
 std::optional<base::FilePath> FindOfflineDir(
     const base::FilePath& unpack_path) {
-  const base::FilePath base_offline_dir =
-      unpack_path.Append(L"bin").Append(L"Offline");
-  if (!base::PathExists(base_offline_dir)) {
-    return std::nullopt;
-  }
-  base::FileEnumerator file_enumerator(base_offline_dir, false,
-                                       base::FileEnumerator::DIRECTORIES);
+  base::FileEnumerator file_enumerator(
+      unpack_path.Append(L"bin").Append(L"Offline"), false,
+      base::FileEnumerator::DIRECTORIES);
   for (base::FilePath path = file_enumerator.Next(); !path.empty();
        path = file_enumerator.Next()) {
     if (IsGuid(path.BaseName().value())) {
       return path;
     }
   }
-  return std::nullopt;
+  return {};
 }
 
 // Finds and writes to disk resources of type 'B7' (7zip archive). Returns false
@@ -218,10 +308,10 @@ ProcessExitResult BuildInstallerCommandLineArgumentsInternal(
   // Use the tag from the `--install` command line argument if such argument
   // exists. Otherwise, try extracting a tag embedded in the program image of
   // the meta installer.
-  if (args.GetSwitchValueASCII(kInstallSwitch).empty()) {
+  if (args.GetSwitchValueUTF8(kInstallSwitch).empty()) {
     const std::string tag = ExtractTag();
     if (!tag.empty()) {
-      args.AppendSwitchASCII(kInstallSwitch, tag.c_str());
+      args.AppendSwitchUTF8(kInstallSwitch, tag.c_str());
     }
   }
 
@@ -236,7 +326,7 @@ ProcessExitResult BuildInstallerCommandLineArgumentsInternal(
   }
 
   if (!args.HasSwitch(kLoggingModuleSwitch)) {
-    args.AppendSwitchASCII(kLoggingModuleSwitch, kLoggingModuleSwitchValue);
+    args.AppendSwitchUTF8(kLoggingModuleSwitch, kLoggingModuleSwitchValue);
   }
 
   std::wstring args_str = args.GetArgumentsString();
@@ -298,7 +388,7 @@ ProcessExitResult HandleRunElevated(const base::CommandLine& command_line) {
   // The metainstaller needs elevation because unpacking files and running
   // updater.exe must happen from a secure directory.
   base::CommandLine elevated_command_line = command_line;
-  elevated_command_line.AppendSwitchASCII(kCmdLineExpectElevated, {});
+  elevated_command_line.AppendSwitchUTF8(kCmdLineExpectElevated, {});
   ASSIGN_OR_RETURN(DWORD result,
                    RunElevated(command_line.GetProgram(),
                                elevated_command_line.GetArgumentsString()),
@@ -312,7 +402,7 @@ ProcessExitResult HandleRunElevated(const base::CommandLine& command_line) {
 ProcessExitResult HandleRunDeElevated(const base::CommandLine& command_line) {
   CHECK(::IsUserAnAdmin());
 
-  if (command_line.HasSwitch(kCmdLineDeElevationId)) {
+  if (command_line.HasSwitch(kCmdLineExpectDeElevated)) {
     VLOG(1) << __func__ << "Unexpected de-elevation loop! "
             << command_line.GetCommandLineString();
     return ProcessExitResult(UNEXPECTED_DE_ELEVATION_LOOP);
@@ -322,77 +412,29 @@ ProcessExitResult HandleRunDeElevated(const base::CommandLine& command_line) {
       base::win::ScopedCOMInitializer::kMTA);
   CHECK(com_initializer.Succeeded());
 
-  // Deelevate the metainstaller. The de-elevation uses Windows explorer to run
-  // the child process at Medium integrity. Explorer does not provide a way to
-  // get the child process pid or handle. To allow waiting for the child
-  // process, this parent process takes the following steps:
-  // * Creates a unique guid, and sends it to the child process via command line
-  // parameter `kCmdLineDeElevationId`, to allow for identifying the child
-  // process `pid` and waiting for it.
-  // * Waits for the child process to write a default REG_DWORD value under
-  // `HKEY_CURRENT_USER\Software\Google\Update{guid}` that contains the child
-  // process pid.
-  // * Gets a handle to the child process via the pid.
-  // * Finally, the parent process cleans up the
-  // `HKEY_CURRENT_USER\Software\Google\Update{guid}` key, which also signals to
-  // the child process to proceed with installing at Medium integrity.
-  GUID unique_guid = {0};
-  HRESULT hr = ::CoCreateGuid(&unique_guid);
-  if (FAILED(hr)) {
-    return ProcessExitResult(FAILED_TO_DE_ELEVATE_METAINSTALLER, hr);
-  }
+  // De-elevate the metainstaller.
+  ASSIGN_OR_RETURN(
+      const base::Process process, base::win::RunDeElevated([&] {
+        base::CommandLine de_elevate_command_line = command_line;
+        de_elevate_command_line.AppendSwitch(kCmdLineExpectDeElevated);
+        return de_elevate_command_line;
+      }()),
+      [](DWORD error_code) {
+        return ProcessExitResult(FAILED_TO_DE_ELEVATE_METAINSTALLER,
+                                 HRESULT_FROM_WIN32(error_code));
+      });
 
-  const std::wstring unique_id = StringFromGuid(unique_guid);
-  hr = RunDeElevated(command_line.GetProgram().value(), [&] {
-    base::CommandLine de_elevate_command_line = command_line;
-    de_elevate_command_line.AppendSwitchNative(kCmdLineDeElevationId,
-                                               unique_id);
-    return de_elevate_command_line.GetArgumentsString();
-  }());
-  if (FAILED(hr)) {
-    return ProcessExitResult(FAILED_TO_DE_ELEVATE_METAINSTALLER, hr);
-  }
-
-  DWORD pid = 0;
-  const auto deadline = base::TimeTicks::Now() + base::Seconds(30);
-  while (true) {
-    if (base::TimeTicks::Now() >= deadline) {
-      return ProcessExitResult(FAILED_TO_DE_ELEVATE_METAINSTALLER,
-                               ERROR_TIMEOUT);
-    }
-
-    if (base::win::RegKey(
-            HKEY_CURRENT_USER,
-            base::StrCat({COMPANY_KEY, L"Update", unique_id}).c_str(),
-            Wow6432(KEY_READ))
-            .ReadValueDW(nullptr, &pid) == ERROR_SUCCESS) {
-      break;
-    }
-
-    base::PlatformThread::Sleep(base::Milliseconds(100));
-  }
-
-  if (!pid) {
-    return ProcessExitResult(FAILED_TO_DE_ELEVATE_METAINSTALLER, E_UNEXPECTED);
-  }
-
-  base::Process child = base::Process::Open(pid);
-  if (!child.IsValid()) {
-    return ProcessExitResult(FAILED_TO_DE_ELEVATE_METAINSTALLER,
-                             HRESULTFromLastError());
-  }
-
-  base::win::RegKey(HKEY_CURRENT_USER,
-                    base::StrCat({COMPANY_KEY, L"Update", unique_id}).c_str(),
-                    Wow6432(DELETE))
-      .DeleteKey(L"");
-  int exit_code = 0;
-  return child.WaitForExit(&exit_code)
-             ? ProcessExitResult(UPDATER_EXIT_CODE, exit_code)
-             : ProcessExitResult(WAIT_FOR_PROCESS_FAILED, ::GetLastError());
+  int result = 0;
+  return process.WaitForExit(&result)
+             ? ProcessExitResult(UPDATER_EXIT_CODE, result)
+             : ProcessExitResult(FAILED_TO_DE_ELEVATE_METAINSTALLER,
+                                 HRESULTFromLastError());
 }
 
-ProcessExitResult InstallerMain(HMODULE module) {
+ProcessExitResult InstallerMain(HMODULE module,
+                                bool& usage_stats_enable,
+                                std::wstring& lang,
+                                std::u16string& bundle_name) {
   CHECK(EnableSecureDllLoading());
   EnableProcessHeapMetadataProtection();
 
@@ -420,6 +462,15 @@ ProcessExitResult InstallerMain(HMODULE module) {
            L" ", cmd_line_args.get()}));
 
   const UpdaterScope scope = GetUpdaterScopeForCommandLine(command_line);
+  usage_stats_enable = AnyAppEnablesUsageStats(scope);
+  const std::optional<tagging::TagArgs> tag_args =
+      GetTagArgsForCommandLine(command_line).tag_args;
+  if (tag_args) {
+    usage_stats_enable =
+        tag_args->usage_stats_enable.value_or(usage_stats_enable);
+    lang = base::UTF8ToWide(tag_args->language);
+    bundle_name = base::UTF8ToUTF16(tag_args->bundle_name);
+  }
 
   if (!::IsUserAnAdmin() && IsSystemInstall(scope)) {
     ProcessExitResult run_elevated_result = HandleRunElevated(command_line);
@@ -431,55 +482,19 @@ ProcessExitResult InstallerMain(HMODULE module) {
     // "needsadmin=prefers" case: Could not elevate. So fall through to
     // install as a per-user app.
     if (!cmd_line_args.append(L" --") ||
-        !cmd_line_args.append(
-            base::SysUTF8ToWide(kCmdLinePrefersUser).c_str())) {
+        !cmd_line_args.append(base::UTF8ToWide(kCmdLinePrefersUser).c_str())) {
       return ProcessExitResult(COMMAND_STRING_OVERFLOW);
     }
   } else if (::IsUserAnAdmin() && !IsSystemInstall(scope) && IsUACOn()) {
     return HandleRunDeElevated(command_line);
-  } else if (command_line.HasSwitch(kCmdLineDeElevationId)) {
-    // The de-elevated metainstaller takes the following steps:
-    // * Reads the command line parameter `kCmdLineDeElevationId`.
-    // * Writes the pid for the current process under
-    // `HKEY_CURRENT_USER\Software\Google\Update{guid}`.
-    // * Waits for the parent process to clean up the
-    // `HKEY_CURRENT_USER\Software\Google\Update{guid}` key.
-    // * Finally, proceeds with installing at Medium integrity.
-    const std::wstring unique_id =
-        command_line.GetSwitchValueNative(kCmdLineDeElevationId);
-    const LONG result =
-        base::win::RegKey(
-            HKEY_CURRENT_USER,
-            base::StrCat({COMPANY_KEY, L"Update", unique_id}).c_str(),
-            Wow6432(KEY_WRITE))
-            .WriteValue(nullptr, ::GetCurrentProcessId());
-    if (result != ERROR_SUCCESS) {
-      return ProcessExitResult(FAILED_DE_ELEVATED_METAINSTALLER, result);
-    }
-
-    const auto deadline = base::TimeTicks::Now() + base::Seconds(30);
-    while (true) {
-      if (base::TimeTicks::Now() >= deadline) {
-        return ProcessExitResult(FAILED_DE_ELEVATED_METAINSTALLER,
-                                 ERROR_TIMEOUT);
-      }
-
-      if (!base::win::RegKey(
-               HKEY_CURRENT_USER,
-               base::StrCat({COMPANY_KEY, L"Update", unique_id}).c_str(),
-               Wow6432(KEY_READ))
-               .Valid()) {
-        break;
-      }
-
-      base::PlatformThread::Sleep(base::Milliseconds(100));
-    }
   }
 
   base::CommandLine::Init(0, nullptr);
   *base::CommandLine::ForCurrentProcess() = command_line;
   InitLogging(scope);
   VLOG(1) << command_line.GetCommandLineString();
+
+  base::ScopedClosureRunner cleanup(CreateSplashScreen());
 
   ProcessExitResult exit_code = ProcessExitResult(SUCCESS_EXIT_CODE);
 
@@ -548,7 +563,7 @@ ProcessExitResult InstallerMain(HMODULE module) {
   const std::optional<base::FilePath> offline_dir = FindOfflineDir(unpack_path);
   if (offline_dir.has_value()) {
     if (!cmd_line_args.append(L" --") ||
-        !cmd_line_args.append(base::SysUTF8ToWide(kOfflineDirSwitch).c_str()) ||
+        !cmd_line_args.append(base::UTF8ToWide(kOfflineDirSwitch).c_str()) ||
         !cmd_line_args.append(L"=") ||
         !cmd_line_args.append(offline_dir->BaseName().value().c_str())) {
       return ProcessExitResult(COMMAND_STRING_OVERFLOW);
@@ -560,6 +575,8 @@ ProcessExitResult InstallerMain(HMODULE module) {
       !setup_path.append(L"\\bin\\updater.exe")) {
     exit_code = ProcessExitResult(PATH_STRING_OVERFLOW);
   }
+
+  cleanup.RunAndReset();
 
   if (exit_code.IsSuccess()) {
     exit_code = RunSetup(setup_path.get(), cmd_line_args.get());
@@ -583,24 +600,34 @@ ProcessExitResult InstallerMain(HMODULE module) {
 }
 
 int WMain(HMODULE module) {
-  const ProcessExitResult result = InstallerMain(module);
-  VLOG(1) << "Metainstaller WMain returned: " << result.exit_code
-          << ", Windows error: " << result.windows_error;
+  InitializeThreadPool("windows-installer");
+  bool usage_stats_enable = false;
+  std::wstring lang;
+  std::u16string bundle_name;
+  const ProcessExitResult result =
+      InstallerMain(module, usage_stats_enable, lang, bundle_name);
+  const DWORD wmain_exit_code = result.exit_code == UPDATER_EXIT_CODE
+                                    ? result.windows_error
+                                    : result.exit_code;
+  VLOG(1) << "Metainstaller WMain returning: " << wmain_exit_code;
 
   // Display UI only for metainstaller errors.
   if (result.exit_code != SUCCESS_EXIT_CODE &&
-      result.exit_code != UPDATER_EXIT_CODE &&
-      !GetCommandLineLegacyCompatible().HasSwitch(kSilentSwitch)) {
-    base::FilePath exe_path;
-    base::PathService::Get(base::FILE_EXE, &exe_path);
-    ::MessageBoxEx(nullptr,
-                   GetLocalizedMetainstallerErrorString(result.exit_code,
-                                                        result.windows_error)
-                       .c_str(),
-                   exe_path.BaseName().value().c_str(), 0, 0);
+      result.exit_code != UPDATER_EXIT_CODE) {
+    if (!GetCommandLineLegacyCompatible().HasSwitch(kSilentSwitch)) {
+      base::FilePath exe_path;
+      base::PathService::Get(base::FILE_EXE, &exe_path);
+      ::MessageBoxEx(nullptr,
+                     GetLocalizedMetainstallerErrorString(
+                         result.exit_code, result.windows_error, lang)
+                         .c_str(),
+                     ui::GetInstallerDisplayName(bundle_name, lang).c_str(),
+                     MB_OK | MB_ICONERROR | MB_SETFOREGROUND, 0);
+    }
+    SendPing(result.exit_code, result.windows_error);
   }
-  return result.exit_code == UPDATER_EXIT_CODE ? result.windows_error
-                                               : result.exit_code;
+  base::ThreadPoolInstance::Get()->Shutdown();
+  return wmain_exit_code;
 }
 
 }  // namespace updater

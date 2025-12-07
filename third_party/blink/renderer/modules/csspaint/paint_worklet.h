@@ -22,10 +22,9 @@ class CSSPaintImageGeneratorImpl;
 
 // Manages a paint worklet:
 // https://drafts.css-houdini.org/css-paint-api/#dom-css-paintworklet
-class MODULES_EXPORT PaintWorklet : public Worklet,
-                                    public Supplement<LocalDOMWindow> {
+class MODULES_EXPORT PaintWorklet : public Worklet {
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   // At this moment, paint worklet allows at most two global scopes at any time.
   static const wtf_size_t kNumGlobalScopesPerThread;
@@ -43,7 +42,7 @@ class MODULES_EXPORT PaintWorklet : public Worklet,
   scoped_refptr<Image> Paint(const String& name,
                              const ImageResourceObserver&,
                              const gfx::SizeF& container_size,
-                             const CSSStyleValueVector*);
+                             const GCedCSSStyleValueVector*);
 
   int WorkletId() const { return worklet_id_; }
   bool IsOffMainThread() const { return is_paint_off_thread_; }
@@ -73,7 +72,7 @@ class MODULES_EXPORT PaintWorklet : public Worklet,
   void RegisterMainThreadDocumentPaintDefinition(
       const String& name,
       Vector<CSSPropertyID> native_properties,
-      Vector<String> custom_properties,
+      Vector<AtomicString> custom_properties,
       Vector<CSSSyntaxDefinition> input_argument_types,
       double alpha);
 

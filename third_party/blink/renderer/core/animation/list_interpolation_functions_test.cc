@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/animation/css_number_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/interpolation_value.h"
 #include "third_party/blink/renderer/core/animation/underlying_value.h"
+#include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -20,20 +21,14 @@ namespace {
 
 class TestNonInterpolableValue final : public NonInterpolableValue {
  public:
+  explicit TestNonInterpolableValue(int value) : value_(value) {}
   ~TestNonInterpolableValue() override = default;
-
-  static scoped_refptr<TestNonInterpolableValue> Create(int value) {
-    DCHECK_GE(value, 1);
-    return base::AdoptRef(new TestNonInterpolableValue(value));
-  }
 
   int GetValue() const { return value_; }
 
   DECLARE_NON_INTERPOLABLE_VALUE_TYPE();
 
  private:
-  explicit TestNonInterpolableValue(int value) : value_(value) {}
-
   int value_;
 };
 
@@ -62,11 +57,11 @@ class TestUnderlyingValue : public UnderlyingValue {
   }
 
   const NonInterpolableValue* GetNonInterpolableValue() const final {
-    return interpolation_value_.non_interpolable_value.get();
+    return interpolation_value_.non_interpolable_value.Get();
   }
 
   void SetNonInterpolableValue(
-      scoped_refptr<const NonInterpolableValue> non_interpolable_value) final {
+      const NonInterpolableValue* non_interpolable_value) final {
     interpolation_value_.non_interpolable_value = non_interpolable_value;
   }
 
@@ -82,7 +77,7 @@ InterpolationValue CreateInterpolableList(
       values.size(), [&values](wtf_size_t i) {
         return InterpolationValue(
             MakeGarbageCollected<InterpolableNumber>(values[i].first),
-            TestNonInterpolableValue::Create(values[i].second));
+            MakeGarbageCollected<TestNonInterpolableValue>(values[i].second));
       });
 }
 
@@ -101,8 +96,9 @@ InterpolationValue CreateInterpolableList(const Vector<double>& values) {
 InterpolationValue CreateNonInterpolableList(const Vector<int>& values) {
   return ListInterpolationFunctions::CreateList(
       values.size(), [&values](wtf_size_t i) {
-        return InterpolationValue(MakeGarbageCollected<InterpolableNumber>(0),
-                                  TestNonInterpolableValue::Create(values[i]));
+        return InterpolationValue(
+            MakeGarbageCollected<InterpolableNumber>(0),
+            MakeGarbageCollected<TestNonInterpolableValue>(values[i]));
       });
 }
 
@@ -135,8 +131,8 @@ bool NonInterpolableValuesAreCompatible(const NonInterpolableValue* a,
 
 PairwiseInterpolationValue MaybeMergeSingles(InterpolationValue&& start,
                                              InterpolationValue&& end) {
-  if (!NonInterpolableValuesAreCompatible(start.non_interpolable_value.get(),
-                                          end.non_interpolable_value.get())) {
+  if (!NonInterpolableValuesAreCompatible(start.non_interpolable_value.Get(),
+                                          end.non_interpolable_value.Get())) {
     return nullptr;
   }
   return PairwiseInterpolationValue(std::move(start.interpolable_value),
@@ -213,7 +209,8 @@ TEST(ListInterpolationFunctionsTest, EqualCompositeSameLengths) {
   auto list2 = CreateInterpolableList({{1.0, 1}, {2.0, 2}, {3.0, 3}});
 
   PropertyHandle property_handle(GetCSSPropertyZIndex());
-  CSSNumberInterpolationType interpolation_type(property_handle);
+  CSSNumberInterpolationType* interpolation_type(
+      MakeGarbageCollected<CSSNumberInterpolationType>(property_handle));
   UnderlyingValueOwner owner;
   owner.Set(interpolation_type, std::move(list1));
 
@@ -225,7 +222,7 @@ TEST(ListInterpolationFunctionsTest, EqualCompositeSameLengths) {
 
   const auto& result = To<InterpolableList>(*owner.Value().interpolable_value);
 
-  CSSToLengthConversionData length_resolver;
+  CSSToLengthConversionData length_resolver(/*element=*/nullptr);
   ASSERT_EQ(result.length(), 3u);
   EXPECT_EQ(To<InterpolableNumber>(result.Get(0))->Value(length_resolver), 2.0);
   EXPECT_EQ(To<InterpolableNumber>(result.Get(1))->Value(length_resolver), 4.0);
@@ -240,7 +237,8 @@ TEST(ListInterpolationFunctionsTest, EqualCompositeDifferentLengths) {
   auto list2 = CreateInterpolableList({4.0, 5.0});
 
   PropertyHandle property_handle(GetCSSPropertyZIndex());
-  CSSNumberInterpolationType interpolation_type(property_handle);
+  CSSNumberInterpolationType* interpolation_type(
+      MakeGarbageCollected<CSSNumberInterpolationType>(property_handle));
   UnderlyingValueOwner owner;
   owner.Set(interpolation_type, std::move(list1));
 
@@ -252,7 +250,7 @@ TEST(ListInterpolationFunctionsTest, EqualCompositeDifferentLengths) {
 
   const auto& result = To<InterpolableList>(*owner.Value().interpolable_value);
 
-  CSSToLengthConversionData length_resolver;
+  CSSToLengthConversionData length_resolver(/*element=*/nullptr);
   ASSERT_EQ(result.length(), 2u);
   EXPECT_EQ(To<InterpolableNumber>(result.Get(0))->Value(length_resolver), 4.0);
   EXPECT_EQ(To<InterpolableNumber>(result.Get(1))->Value(length_resolver), 5.0);
@@ -269,7 +267,8 @@ TEST(ListInterpolationFunctionsTest,
       {true, false, true});
 
   PropertyHandle property_handle(GetCSSPropertyZIndex());
-  CSSNumberInterpolationType interpolation_type(property_handle);
+  CSSNumberInterpolationType* interpolation_type(
+      MakeGarbageCollected<CSSNumberInterpolationType>(property_handle));
   UnderlyingValueOwner owner;
   owner.Set(interpolation_type, std::move(list1));
 
@@ -284,7 +283,7 @@ TEST(ListInterpolationFunctionsTest,
 
   const auto& result = To<InterpolableList>(*owner.Value().interpolable_value);
 
-  CSSToLengthConversionData length_resolver;
+  CSSToLengthConversionData length_resolver(/*element=*/nullptr);
   ASSERT_EQ(result.length(), 3u);
   EXPECT_EQ(To<InterpolableNumber>(result.Get(0))->Value(length_resolver), 4.0);
   EXPECT_EQ(To<InterpolableNumber>(result.Get(1))->Value(length_resolver), 5.0);
@@ -299,7 +298,8 @@ TEST(ListInterpolationFunctionsTest,
   auto list2 = CreateInterpolableList({{4.0, 1}, {5.0, 4}, {6.0, 3}});
 
   PropertyHandle property_handle(GetCSSPropertyZIndex());
-  CSSNumberInterpolationType interpolation_type(property_handle);
+  CSSNumberInterpolationType* interpolation_type(
+      MakeGarbageCollected<CSSNumberInterpolationType>(property_handle));
   UnderlyingValueOwner owner;
   owner.Set(interpolation_type, std::move(list1));
 
@@ -311,7 +311,7 @@ TEST(ListInterpolationFunctionsTest,
 
   const auto& result = To<InterpolableList>(*owner.Value().interpolable_value);
 
-  CSSToLengthConversionData length_resolver;
+  CSSToLengthConversionData length_resolver(/*element=*/nullptr);
   ASSERT_EQ(result.length(), 3u);
   EXPECT_EQ(To<InterpolableNumber>(result.Get(0))->Value(length_resolver), 4.0);
   EXPECT_EQ(To<InterpolableNumber>(result.Get(1))->Value(length_resolver), 5.0);
@@ -345,7 +345,7 @@ TEST(ListInterpolationFunctionsTest, BuilderModifyFirst) {
   {
     TestUnderlyingValue underlying_value(list);
     NonInterpolableList::AutoBuilder builder(underlying_value);
-    builder.Set(0, TestNonInterpolableValue::Create(4));
+    builder.Set(0, MakeGarbageCollected<TestNonInterpolableValue>(4));
   }
 
   auto& after = To<NonInterpolableList>(*list.non_interpolable_value);
@@ -365,7 +365,7 @@ TEST(ListInterpolationFunctionsTest, BuilderModifyMiddle) {
   {
     TestUnderlyingValue underlying_value(list);
     NonInterpolableList::AutoBuilder builder(underlying_value);
-    builder.Set(1, TestNonInterpolableValue::Create(4));
+    builder.Set(1, MakeGarbageCollected<TestNonInterpolableValue>(4));
   }
 
   auto& after = To<NonInterpolableList>(*list.non_interpolable_value);
@@ -385,7 +385,7 @@ TEST(ListInterpolationFunctionsTest, BuilderModifyLast) {
   {
     TestUnderlyingValue underlying_value(list);
     NonInterpolableList::AutoBuilder builder(underlying_value);
-    builder.Set(2, TestNonInterpolableValue::Create(4));
+    builder.Set(2, MakeGarbageCollected<TestNonInterpolableValue>(4));
   }
 
   auto& after = To<NonInterpolableList>(*list.non_interpolable_value);
@@ -405,9 +405,9 @@ TEST(ListInterpolationFunctionsTest, BuilderModifyAll) {
   {
     TestUnderlyingValue underlying_value(list);
     NonInterpolableList::AutoBuilder builder(underlying_value);
-    builder.Set(0, TestNonInterpolableValue::Create(4));
-    builder.Set(1, TestNonInterpolableValue::Create(5));
-    builder.Set(2, TestNonInterpolableValue::Create(6));
+    builder.Set(0, MakeGarbageCollected<TestNonInterpolableValue>(4));
+    builder.Set(1, MakeGarbageCollected<TestNonInterpolableValue>(5));
+    builder.Set(2, MakeGarbageCollected<TestNonInterpolableValue>(6));
   }
 
   auto& after = To<NonInterpolableList>(*list.non_interpolable_value);
@@ -427,8 +427,8 @@ TEST(ListInterpolationFunctionsTest, BuilderModifyReverse) {
   {
     TestUnderlyingValue underlying_value(list);
     NonInterpolableList::AutoBuilder builder(underlying_value);
-    builder.Set(3, TestNonInterpolableValue::Create(6));
-    builder.Set(1, TestNonInterpolableValue::Create(7));
+    builder.Set(3, MakeGarbageCollected<TestNonInterpolableValue>(6));
+    builder.Set(1, MakeGarbageCollected<TestNonInterpolableValue>(7));
   }
 
   auto& after = To<NonInterpolableList>(*list.non_interpolable_value);
@@ -450,7 +450,7 @@ TEST(ListInterpolationFunctionsTest, BuilderModifyListWithOneItem) {
   {
     TestUnderlyingValue underlying_value(list);
     NonInterpolableList::AutoBuilder builder(underlying_value);
-    builder.Set(0, TestNonInterpolableValue::Create(4));
+    builder.Set(0, MakeGarbageCollected<TestNonInterpolableValue>(4));
   }
 
   auto& after = To<NonInterpolableList>(*list.non_interpolable_value);

@@ -6,7 +6,7 @@ found in the LICENSE file.
 -->
 
 <resources>
-  <dimen name="custom_tabs_toolbar_branding_icon_width">44dp</dimen>
-  <dimen name="custom_tabs_toolbar_branding_icon_start_padding">16dp</dimen>
-  <dimen name="custom_tabs_toolbar_branding_icon_end_padding">12dp</dimen>
+  <dimen name="custom_tabs_toolbar_branding_icon_width">24dp</dimen>
+  <dimen name="custom_tabs_toolbar_branding_icon_start_padding">0dp</dimen>
+  <dimen name="custom_tabs_toolbar_branding_icon_end_padding">8dp</dimen>
 </resources>

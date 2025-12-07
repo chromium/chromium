@@ -6,13 +6,18 @@
 
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/download/download_ui_model.h"
-#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/download/public/common/download_danger_type.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
 #include "ui/views/vector_icons.h"
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/common.h"
+#endif
 
 using download::DownloadItem;
 using TailoredWarningType = DownloadUIModel::TailoredWarningType;
@@ -43,15 +48,17 @@ IconAndColor IconAndColorForInterrupted(const DownloadUIModel& model) {
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
       return IconAndColor{&views::kInfoChromeRefreshIcon,
                           kColorDownloadItemIconDangerous};
+    case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK: {
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
       if (enterprise_connectors::ShouldPromptReviewForDownload(
               model.profile(), model.GetDownloadItem())) {
         return IconAndColor{&kDownloadWarningIcon,
                             kColorDownloadItemIconDangerous};
-      } else {
-        return IconAndColor{&views::kInfoChromeRefreshIcon,
-                            kColorDownloadItemIconDangerous};
       }
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+      return IconAndColor{&views::kInfoChromeRefreshIcon,
+                          kColorDownloadItemIconDangerous};
     }
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE:
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
@@ -92,11 +99,9 @@ IconAndColor IconAndColorForTailoredWarning(const DownloadUIModel& model) {
     case DownloadUIModel::TailoredWarningType::kSuspiciousArchive:
       return IconAndColorForSuspiciousUiPattern();
     case DownloadUIModel::TailoredWarningType::kCookieTheft:
-    case DownloadUIModel::TailoredWarningType::kCookieTheftWithAccountInfo:
       return IconAndColorForDangerousUiPattern();
     case DownloadUIModel::TailoredWarningType::kNoTailoredWarning: {
-      NOTREACHED_IN_MIGRATION();
-      return IconAndColor{};
+      NOTREACHED();
     }
   }
 }
@@ -115,6 +120,7 @@ IconAndColor IconAndColorForInProgressOrComplete(const DownloadUIModel& model) {
       break;
   }
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   if (enterprise_connectors::ShouldPromptReviewForDownload(
           model.profile(), model.GetDownloadItem())) {
     switch (model.GetDangerType()) {
@@ -131,6 +137,7 @@ IconAndColor IconAndColorForInProgressOrComplete(const DownloadUIModel& model) {
         break;
     }
   }
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
   if (DownloadUIModel::TailoredWarningType type =
           model.GetTailoredWarningType();
@@ -169,6 +176,7 @@ IconAndColor IconAndColorForInProgressOrComplete(const DownloadUIModel& model) {
     case download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED:
     case download::DOWNLOAD_DANGER_TYPE_ALLOWLISTED_BY_POLICY:
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
+    case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
     case download::DOWNLOAD_DANGER_TYPE_MAX:
       break;
   }
@@ -209,7 +217,7 @@ IconAndColor IconAndColorForDownload(const DownloadUIModel& model) {
     case download::DownloadItem::CANCELLED:
       break;
     case download::DownloadItem::MAX_DOWNLOAD_STATE:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   return IconAndColorForDownloadOff();
@@ -244,6 +252,7 @@ std::vector<DownloadBubbleQuickAction> QuickActionsForDownload(
       break;
   }
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   if (enterprise_connectors::ShouldPromptReviewForDownload(
           model.profile(), model.GetDownloadItem())) {
     switch (model.GetDangerType()) {
@@ -255,6 +264,7 @@ std::vector<DownloadBubbleQuickAction> QuickActionsForDownload(
         break;
     }
   }
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
   if (model.GetTailoredWarningType() !=
       TailoredWarningType::kNoTailoredWarning) {
@@ -286,6 +296,7 @@ std::vector<DownloadBubbleQuickAction> QuickActionsForDownload(
     case download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED:
     case download::DOWNLOAD_DANGER_TYPE_ALLOWLISTED_BY_POLICY:
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
+    case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
     case download::DOWNLOAD_DANGER_TYPE_MAX:
       break;
   }
@@ -345,6 +356,7 @@ DownloadBubbleProgressBar ProgressBarForDownload(const DownloadUIModel& model) {
       break;
   }
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   if (enterprise_connectors::ShouldPromptReviewForDownload(
           model.profile(), model.GetDownloadItem())) {
     switch (model.GetDangerType()) {
@@ -356,6 +368,7 @@ DownloadBubbleProgressBar ProgressBarForDownload(const DownloadUIModel& model) {
         break;
     }
   }
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
   if (model.GetTailoredWarningType() !=
       TailoredWarningType::kNoTailoredWarning) {
@@ -388,6 +401,7 @@ DownloadBubbleProgressBar ProgressBarForDownload(const DownloadUIModel& model) {
     case download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED:
     case download::DOWNLOAD_DANGER_TYPE_ALLOWLISTED_BY_POLICY:
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
+    case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
     case download::DOWNLOAD_DANGER_TYPE_MAX:
       break;
   }

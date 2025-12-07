@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 enum DisplayMediaIncludeOrExclude { "include", "exclude" };
+enum DisplayMediaSystemWindowOrExclude { "system", "window", "exclude" };
 
 typedef DisplayMediaIncludeOrExclude SystemAudioPreferenceEnum;
+typedef DisplayMediaSystemWindowOrExclude WindowAudioPreferenceEnum;
 typedef DisplayMediaIncludeOrExclude SelfCapturePreferenceEnum;
 typedef DisplayMediaIncludeOrExclude SurfaceSwitchingPreferenceEnum;
 typedef DisplayMediaIncludeOrExclude MonitorTypeSurfacesEnum;
@@ -16,8 +18,6 @@ typedef DisplayMediaIncludeOrExclude MonitorTypeSurfacesEnum;
 dictionary UserMediaStreamConstraints {
     (boolean or MediaTrackConstraints) video = false;
     (boolean or MediaTrackConstraints) audio = false;
-    // TODO(crbug.com/1382520): Remove the controller.
-    [RuntimeEnabled = CaptureController] CaptureController controller;
 };
 
 // https://www.w3.org/TR/screen-capture/#dom-displaymediastreamoptions
@@ -27,9 +27,6 @@ dictionary DisplayMediaStreamOptions {
 
     // https://wicg.github.io/prefer-current-tab/#prefer-current-tab
     boolean preferCurrentTab = false;
-    [
-      RuntimeEnabled = GetAllScreensMedia
-    ] boolean autoSelectAllScreens = false;
 
     // https://w3c.github.io/mediacapture-screen-share/#dom-displaymediastreamoptions-controller
     [
@@ -38,6 +35,8 @@ dictionary DisplayMediaStreamOptions {
 
     SelfCapturePreferenceEnum selfBrowserSurface;
     SystemAudioPreferenceEnum systemAudio;
+    [RuntimeEnabled = GetDisplayMediaWindowAudioCapture]
+        WindowAudioPreferenceEnum windowAudio;
     SurfaceSwitchingPreferenceEnum surfaceSwitching;
     MonitorTypeSurfacesEnum monitorTypeSurfaces;
 };
@@ -51,10 +50,15 @@ dictionary MediaStreamConstraints {
     (boolean or MediaTrackConstraints) video = false;
     (boolean or MediaTrackConstraints) audio = false;
     boolean preferCurrentTab = false;
-    boolean autoSelectAllScreens = false;
     CaptureController controller;
     SelfCapturePreferenceEnum selfBrowserSurface;
     SystemAudioPreferenceEnum systemAudio;
+    [RuntimeEnabled = GetDisplayMediaWindowAudioCapture]
+        WindowAudioPreferenceEnum windowAudio;
     SurfaceSwitchingPreferenceEnum surfaceSwitching;
     MonitorTypeSurfacesEnum monitorTypeSurfaces;
+};
+
+dictionary AudioOutputOptions {
+  DOMString deviceId = "";
 };

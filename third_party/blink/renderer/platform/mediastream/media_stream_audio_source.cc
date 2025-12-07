@@ -4,12 +4,16 @@
 
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 
+#include <inttypes.h>
+
 #include <memory>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "media/base/audio_glitch_info.h"
@@ -53,7 +57,7 @@ MediaStreamAudioSource::MediaStreamAudioSource(
   LogMessage(
       base::StringPrintf("%s({is_local_source=%s}, {disable_local_echo=%s})",
                          __func__, is_local_source ? "local" : "remote",
-                         disable_local_echo ? "true" : "false"));
+                         base::ToString(disable_local_echo).c_str()));
 }
 
 MediaStreamAudioSource::MediaStreamAudioSource(
@@ -102,9 +106,8 @@ bool MediaStreamAudioSource::ConnectToInitializedTrack(
   if (is_stopped_)
     return false;
 
-  track->Start(WTF::BindOnce(&MediaStreamAudioSource::StopAudioDeliveryTo,
-                             weak_factory_.GetWeakPtr(),
-                             WTF::Unretained(track)));
+  track->Start(blink::BindOnce(&MediaStreamAudioSource::StopAudioDeliveryTo,
+                               weak_factory_.GetWeakPtr(), Unretained(track)));
   deliverer_.AddConsumer(track);
   LogMessage(
       base::StringPrintf("%s => (added new MediaStreamAudioTrack as consumer, "
@@ -251,11 +254,11 @@ void MediaStreamAudioSource::StopSourceOnErrorOnTaskRunner(
 
 void MediaStreamAudioSource::SetMutedState(bool muted_state) {
   LogMessage(base::StringPrintf("%s({muted_state=%s})", __func__,
-                                muted_state ? "true" : "false"));
+                                base::ToString(muted_state).c_str()));
   PostCrossThreadTask(
       *GetTaskRunner(), FROM_HERE,
-      WTF::CrossThreadBindOnce(&WebPlatformMediaStreamSource::SetSourceMuted,
-                               GetWeakPtr(), muted_state));
+      CrossThreadBindOnce(&WebPlatformMediaStreamSource::SetSourceMuted,
+                          GetWeakPtr(), muted_state));
 }
 
 int MediaStreamAudioSource::NumPreferredChannels() const {

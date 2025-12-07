@@ -12,10 +12,11 @@
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
+#include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
 #include "components/autofill/core/browser/payments/offer_notification_options.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/commerce/core/test_utils.h"
@@ -26,8 +27,8 @@
 #include "ui/views/interaction/element_tracker_views.h"
 
 namespace autofill {
-
 namespace {
+
 constexpr char kTestURL[] = "https://www.example.com";
 constexpr char kTestPromoCode[] = "FREEFALL1234";
 
@@ -53,7 +54,6 @@ AutofillOfferData CreateTestOffer(const std::vector<GURL>& merchant_origins,
       offer_id, expiry, merchant_origins, /*offer_details_url=*/GURL(),
       display_strings, promo_code);
 }
-}  // namespace
 
 class OfferNotificationIconViewBrowserTest
     : public UiBrowserTest,
@@ -76,10 +76,6 @@ class OfferNotificationIconViewBrowserTest
     if (name.find("show_offer_notification_icon_only") != std::string::npos) {
       autofill_client->GetPaymentsAutofillClient()->UpdateOfferNotification(
           offer, {});
-    } else if (name.find("show_offer_notification_icon_expanded") !=
-               std::string::npos) {
-      autofill_client->GetPaymentsAutofillClient()->UpdateOfferNotification(
-          offer, {.expand_notification_icon = true});
     }
   }
 
@@ -100,14 +96,6 @@ class OfferNotificationIconViewBrowserTest
     if (test_name.find("InvokeUi_show_offer_notification_icon_only") !=
         std::string::npos) {
       EXPECT_FALSE(offer_notification_icon_view->ShouldShowLabel());
-    } else if (test_name.find(
-                   "InvokeUi_show_offer_notification_icon_expanded") !=
-               std::string::npos) {
-      WaitForIconToFinishAnimating(offer_notification_icon_view);
-      EXPECT_TRUE(offer_notification_icon_view->ShouldShowLabel());
-      EXPECT_EQ(offer_notification_icon_view->GetIconLabelForTesting(),
-                l10n_util::GetStringUTF16(
-                    IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT));
     }
 
     return true;
@@ -124,16 +112,25 @@ class OfferNotificationIconViewBrowserTest
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  OfferNotificationIconView* GetIcon() {
+  IconLabelBubbleView* GetIcon() {
     const ui::ElementContext context =
         views::ElementTrackerViews::GetContextForView(GetLocationBarView());
-    views::View* matched_view =
-        views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+    views::ElementTrackerViews::ViewList matched_views =
+        views::ElementTrackerViews::GetInstance()->GetAllMatchingViews(
             kOfferNotificationChipElementId, context);
 
-    return matched_view
-               ? views::AsViewClass<OfferNotificationIconView>(matched_view)
-               : nullptr;
+    for (auto* matched_view : matched_views) {
+      // During the migration, there will be two views with the same element
+      // id. If the migration is enabled, we want the view that is a
+      // PageActionView.
+      if (IsPageActionMigrated(
+              PageActionIconType::kPaymentsOfferNotification) ==
+          views::IsViewClass<page_actions::PageActionView>(matched_view)) {
+        return views::AsViewClass<IconLabelBubbleView>(matched_view);
+      }
+    }
+
+    return nullptr;
   }
 
   void WaitForIconToFinishAnimating(OfferNotificationIconView* icon_view) {
@@ -164,8 +161,5 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationIconViewBrowserTest,
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(OfferNotificationIconViewBrowserTest,
-                       InvokeUi_show_offer_notification_icon_expanded) {
-  ShowAndVerifyUi();
-}
+}  // namespace
 }  // namespace autofill

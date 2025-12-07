@@ -11,13 +11,17 @@ import {CrSettingsPrefs} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNull, assertStringContains, assertStringExcludes, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {clearBody} from '../utils.js';
 
 import {TestCaptionsBrowserProxy} from './test_captions_browser_proxy.js';
+
+async function completePendingMicrotasks() {
+  await new Promise(resolve => setTimeout(resolve, 0));
+}
 
 suite('LiveCaptionSection', () => {
   let liveCaptionSection: SettingsLiveCaptionElement;
@@ -35,6 +39,12 @@ suite('LiveCaptionSection', () => {
     // Set up test browser proxy.
     browserProxy = new TestCaptionsBrowserProxy();
     CaptionsBrowserProxyImpl.setInstance(browserProxy);
+  });
+
+  teardown(async () => {
+    await completePendingMicrotasks();
+    liveCaptionSection.setPrefValue(
+        'accessibility.captions.live_caption_enabled', false);
   });
 
   /** Sets up the element for test. Call this after overriding loadTimeData. */
@@ -87,6 +97,18 @@ suite('LiveCaptionSection', () => {
 
   test('add languages and display download progress', async () => {
     await setupLiveCaptionSection();
+    const settingsToggle =
+        liveCaptionSection.shadowRoot!.querySelector<HTMLElement>(
+            '#liveCaptionToggleButton');
+    assertTrue(!!settingsToggle);
+    // Clicking on the toggle switches it to true.
+    settingsToggle.click();
+    const newToggleValue =
+        liveCaptionSection
+            .getPref('accessibility.captions.live_caption_enabled')
+            .value;
+    assertTrue(newToggleValue);
+
     const addLanguagesButton =
         liveCaptionSection.shadowRoot!.querySelector<HTMLElement>(
             '#addLanguage');
@@ -119,6 +141,10 @@ suite('LiveCaptionSection', () => {
     flush();
     languagePacks = languageListDiv.querySelectorAll<HTMLElement>('.list-item');
     assertEquals(2, languagePacks.length);
+
+    // Verify that English is marked as the default language.
+    assertStringContains(languagePacks[0]!.innerText, '(default)');
+    assertStringExcludes(languagePacks[1]!.innerText, '(default)');
     let hasProgress = false;
     languagePacks.forEach((lp) => {
       if (lp.innerText.includes('17')) {
@@ -126,6 +152,34 @@ suite('LiveCaptionSection', () => {
       }
     });
     assertTrue(hasProgress);
+
+    // Open the action menu for the French language pack.
+    const menuButtons = languageListDiv.querySelectorAll<HTMLElement>(
+        'cr-icon-button.icon-more-vert');
+    assertEquals(2, menuButtons.length);
+    menuButtons[1]!.click();
+    const actionMenu =
+        liveCaptionSection.shadowRoot!.querySelector('cr-action-menu')!;
+    assertTrue(actionMenu.open);
+
+    // Change the default language to French.
+    liveCaptionSection.shadowRoot!
+        .querySelector<HTMLElement>('#make-default-button')!.click();
+    assertFalse(actionMenu.open);
+    assertStringExcludes(languagePacks[0]!.innerText, '(default)');
+    assertStringContains(languagePacks[1]!.innerText, '(default)');
+
+    // Remove the French language pack and verify that English is the new
+    // default language.
+    menuButtons[1]!.click();
+    liveCaptionSection.shadowRoot!.querySelector<HTMLElement>(
+                                      '#remove-button')!.click();
+    assertFalse(actionMenu.open);
+    assertStringContains(languagePacks[0]!.innerText, '(default)');
+    flush();
+    languagePacks = languageListDiv.querySelectorAll<HTMLElement>('.list-item');
+    assertEquals(1, languagePacks.length);
+
     await Promise.all([
       whenDialogClosed,
       browserProxy.whenCalled('installLanguagePacks'),
@@ -149,4 +203,29 @@ suite('LiveCaptionSection', () => {
         liveCaptionSection.shadowRoot!.querySelector('settings-live-translate');
     assertNull(liveTranslateSection);
   });
+
+  test(
+      'Download default language even if another language is already installed',
+      async () => {
+        browserProxy.setInstalledLanguagePacks([{
+          displayName: 'Japanese',
+          nativeDisplayName: 'Japanese',
+          code: 'ja-JP',
+          downloadProgress: '100%',
+        }]);
+        await setupLiveCaptionSection();
+        const settingsToggle =
+            liveCaptionSection.shadowRoot!.querySelector<HTMLElement>(
+                '#liveCaptionToggleButton');
+        assertTrue(!!settingsToggle);
+        // Clicking on the toggle switches it to true.
+        settingsToggle.click();
+        const newToggleValue =
+            liveCaptionSection
+                .getPref('accessibility.captions.live_caption_enabled')
+                .value;
+        assertTrue(newToggleValue);
+
+        await browserProxy.whenCalled('installLanguagePacks');
+      });
 });

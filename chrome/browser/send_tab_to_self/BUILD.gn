@@ -1,0 +1,106 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("send_tab_to_self") {
+  sources = [
+    "receiving_ui_handler.h",
+    "send_tab_to_self_client_service.h",
+    "send_tab_to_self_client_service_factory.h",
+    "send_tab_to_self_util.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/notifications",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
+    "//components/send_tab_to_self",
+  ]
+
+  if (!is_android) {
+    sources += [ "desktop_notification_handler.h" ]
+  } else {
+    sources += [ "../android/send_tab_to_self/android_notification_handler.h" ]
+    public_deps += [ "//components/messages/android" ]
+  }
+}
+
+source_set("impl") {
+  sources = [
+    "send_tab_to_self_client_service.cc",
+    "send_tab_to_self_client_service_factory.cc",
+    "send_tab_to_self_util.cc",
+  ]
+  deps = [
+    ":send_tab_to_self",
+    "//chrome/browser/sync",
+    "//chrome/browser/sync:factories",
+    "//components/prefs",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/sync/service",
+    "//content/public/browser",
+    "//url",
+  ]
+
+  if (!is_android) {
+    sources += [ "desktop_notification_handler.cc" ]
+    deps += [
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/send_tab_to_self",
+    ]
+  } else {
+    sources += [
+      "../android/send_tab_to_self/android_notification_handler.cc",
+      "../android/send_tab_to_self/metrics_recorder.cc",
+      "../android/send_tab_to_self/send_tab_to_self_android_bridge.cc",
+    ]
+    deps += [ "//chrome/android:chrome_jni_headers" ]
+  }
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = []
+  deps = []
+
+  if (!is_android) {
+    sources += [ "send_tab_to_self_client_service_unittest.cc" ]
+    deps += [
+      ":send_tab_to_self",
+      "//base",
+      "//components/send_tab_to_self:test_support",
+      "//testing/gtest",
+      "//url",
+    ]
+  }
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "desktop_notification_handler_browsertest.cc" ]
+    deps = [
+      ":send_tab_to_self",
+      "//base",
+      "//chrome/browser/notifications",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/sync",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support_ui",
+      "//components/send_tab_to_self",
+      "//components/send_tab_to_self:test_support",
+      "//components/sync:test_support",
+      "//components/sync/base",
+      "//content/test:test_support",
+      "//testing/gmock",
+      "//ui/base",
+      "//ui/gfx",
+      "//ui/message_center/public/cpp",
+      "//ui/strings:ui_strings",
+      "//ui/strings:ui_strings_grit",
+    ]
+  }
+}

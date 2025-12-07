@@ -24,13 +24,14 @@
 #include "third_party/blink/renderer/platform/fonts/fallback_list_composite_key.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector.h"
-#include "third_party/blink/renderer/platform/fonts/shaping/ng_shape_cache.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/font_features.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_cache.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 
 namespace blink {
 
@@ -68,13 +69,6 @@ class PLATFORM_EXPORT FontFallbackList
   FontSelector* GetFontSelector() const { return font_selector_.Get(); }
   uint16_t Generation() const { return generation_; }
 
-  NGShapeCache& GetNGShapeCache(const FontDescription& font_description) {
-    if (!ng_shape_cache_) {
-      ng_shape_cache_ = MakeGarbageCollected<NGShapeCache>();
-    }
-    return *ng_shape_cache_;
-  }
-
   ShapeCache* GetShapeCache(const FontDescription& font_description) {
     if (!shape_cache_) {
       FallbackListCompositeKey key(font_description);
@@ -85,20 +79,55 @@ class PLATFORM_EXPORT FontFallbackList
     }
     return shape_cache_.Get();
   }
+  const ShapeResult& GetOrCreateEmphasisMarkShape(const Font&,
+                                                  const AtomicString& mark);
 
-  const SimpleFontData* PrimarySimpleFontData(
+  const SimpleFontData* PrimarySimpleFontDataWithSpace(
       const FontDescription& font_description) {
     if (nullify_primary_font_data_for_test_) {
       return nullptr;
     }
-    if (!cached_primary_simple_font_data_) {
-      cached_primary_simple_font_data_ =
-          DeterminePrimarySimpleFontData(font_description);
-      DCHECK(cached_primary_simple_font_data_);
+    if (!cached_primary_simple_font_data_with_space_) {
+      cached_primary_simple_font_data_with_space_ =
+          DeterminePrimarySimpleFontData(font_description, uchar::kSpace);
+      DCHECK(cached_primary_simple_font_data_with_space_);
     }
-    return cached_primary_simple_font_data_;
+    return cached_primary_simple_font_data_with_space_;
   }
+  const SimpleFontData* PrimarySimpleFontDataWithDigitZero(
+      const FontDescription& font_description) {
+    if (!cached_primary_simple_font_data_with_digit_zero_) {
+      cached_primary_simple_font_data_with_digit_zero_ =
+          DeterminePrimarySimpleFontData(font_description, uchar::kDigitZero);
+      DCHECK(cached_primary_simple_font_data_with_digit_zero_);
+    }
+    return cached_primary_simple_font_data_with_digit_zero_;
+  }
+
+  const SimpleFontData* PrimarySimpleFontDataWithCjkWater(
+      const FontDescription& font_description) {
+    if (!cached_primary_simple_font_data_with_cjk_water_) {
+      cached_primary_simple_font_data_with_cjk_water_ =
+          DeterminePrimarySimpleFontData(font_description, uchar::kCjkWater);
+    }
+    return cached_primary_simple_font_data_with_cjk_water_;
+  }
+
+  const SimpleFontData* PrimarySimpleFontDataForTabSize(
+      const FontDescription& font_description) {
+    if (!cached_primary_simple_font_data_for_tab_size_) {
+      cached_primary_simple_font_data_for_tab_size_ =
+          DeterminePrimarySimpleFontData(font_description, uchar::kSpace,
+                                         /*should_contain_glyph=*/true);
+      DCHECK(cached_primary_simple_font_data_for_tab_size_);
+    }
+    return cached_primary_simple_font_data_for_tab_size_;
+  }
+
   const FontData* FontDataAt(const FontDescription&, unsigned index);
+
+  base::span<const FontFeatureRange> GetFontFeatures(const FontDescription&);
+  bool HasNonInitialFontFeatures(const FontDescription&);
 
   bool CanShapeWordByWord(const FontDescription&);
 
@@ -118,26 +147,44 @@ class PLATFORM_EXPORT FontFallbackList
  private:
   const FontData* GetFontData(const FontDescription&);
 
-  const SimpleFontData* DeterminePrimarySimpleFontData(const FontDescription&);
+  const SimpleFontData* DeterminePrimarySimpleFontData(
+      const FontDescription&,
+      UChar32 lookup_character = uchar::kSpace,
+      bool should_contain_glyph = false);
   const SimpleFontData* DeterminePrimarySimpleFontDataCore(
-      const FontDescription&);
+      const FontDescription&,
+      UChar32 lookup_character = uchar::kSpace,
+      bool should_contain_glyph = false);
 
+  void ComputeFontFeatures(const FontDescription&);
   bool ComputeCanShapeWordByWord(const FontDescription&);
 
   HeapVector<Member<const FontData>, 1> font_list_;
-  Member<const SimpleFontData> cached_primary_simple_font_data_ = nullptr;
+  Member<const SimpleFontData> cached_primary_simple_font_data_with_space_;
+  Member<const SimpleFontData> cached_primary_simple_font_data_with_digit_zero_;
+  Member<const SimpleFontData> cached_primary_simple_font_data_with_cjk_water_;
+  Member<const SimpleFontData> cached_primary_simple_font_data_for_tab_size_;
   const Member<FontSelector> font_selector_;
   int family_index_ = 0;
   const uint16_t generation_;
-  bool has_loading_fallback_ : 1;
-  bool has_custom_font_ : 1;
-  bool can_shape_word_by_word_ : 1;
-  bool can_shape_word_by_word_computed_ : 1;
-  bool is_invalid_ : 1;
-  bool nullify_primary_font_data_for_test_ : 1;
+  Vector<FontFeatureRange, FontFeatureRange::kInitialSize> font_features_;
 
-  Member<NGShapeCache> ng_shape_cache_;
+  bool has_loading_fallback_ : 1 = false;
+  bool has_custom_font_ : 1 = false;
+  bool can_shape_word_by_word_ : 1 = false;
+  bool can_shape_word_by_word_computed_ : 1 = false;
+  bool is_invalid_ : 1 = false;
+  bool nullify_primary_font_data_for_test_ : 1 = false;
+  bool is_font_features_computed_ : 1 = false;
+  bool has_non_initial_font_features_ : 1 = false;
+
   Member<ShapeCache> shape_cache_;
+  // `emphasis_mark_shape_` and `emphasis_mark_text_` makes a simple cache of a
+  // ShapeResult for an emphasis mark.
+  // It doesn't use NGShapeCache, which stores only ShapeResults for the
+  // primary font.
+  Member<const ShapeResult> emphasis_mark_shape_;
+  AtomicString emphasis_mark_text_;
 };
 
 }  // namespace blink

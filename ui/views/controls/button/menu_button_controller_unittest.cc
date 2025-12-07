@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/views/controls/button/menu_button_controller.h"
+
 #include "base/functional/bind.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/test/views_test_base.h"
@@ -48,7 +49,7 @@ class MenuButtonControllerTest : public ViewsTestBase {
 
     widget_ = std::make_unique<Widget>();
     Widget::InitParams params =
-        CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+        CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
                      Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     params.bounds = gfx::Rect(0, 0, 650, 650);
     widget_->Init(std::move(params));

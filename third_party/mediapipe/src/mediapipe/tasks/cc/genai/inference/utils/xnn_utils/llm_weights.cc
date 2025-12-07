@@ -17,9 +17,11 @@
 #include <sys/stat.h>
 
 #include <cstddef>
+#include <cstring>
 #include <memory>
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "absl/log/absl_check.h"
 #include "absl/log/absl_log.h"
@@ -37,6 +39,8 @@
 #include "mediapipe/tasks/cc/genai/inference/utils/xnn_utils/tflite_weight_accessor.h"
 #include "mediapipe/tasks/cc/genai/inference/utils/xnn_utils/utils.h"
 #include "mediapipe/tasks/cc/genai/inference/utils/xnn_utils/xnn_tensor.h"
+#include "tensorflow/compiler/mlir/lite/schema/schema_generated.h"
+#include "tensorflow/lite/model_builder.h"
 
 namespace mediapipe::tasks::genai::xnn_utils {
 
@@ -58,15 +62,19 @@ LlmParams::Norm TransformerParametersProtoNormTypeToLlmParamsNormType(
       return LlmParams::Norm::RMS_NORM;
     case TransformerParameters::LAYER_NORM:
       return LlmParams::Norm::LAYER_NORM;
+    case TransformerParameters::RMS_NORM_NO_SCALE:
+      return LlmParams::Norm::RMS_NORM_NO_SCALE;
     default:
       ABSL_LOG(DFATAL) << "Unknown norm type: " << norm_type;
   }
   return LlmParams::Norm::UNSPECIFIED;
 }
 
+}  // namespace
+
 // According to norm_type, load necessary weights with given basename.
 absl::StatusOr<std::optional<LlmWeights::NormWeights>> LoadNormWeights(
-    LlmParams::Norm norm_type, const LlmParams& params,
+    LlmParams::Norm norm_type, std::vector<size_t> dims,
     absl::string_view basename, WeightAccessor& weight_accessor) {
   switch (norm_type) {
     case LlmParams::Norm::UNSPECIFIED:
@@ -77,20 +85,23 @@ absl::StatusOr<std::optional<LlmWeights::NormWeights>> LoadNormWeights(
       auto rms_norm_weights = RMSNormWeights();
       MP_ASSIGN_OR_RETURN(
           rms_norm_weights.norm_weight,
-          weight_accessor.LoadWeight(absl::StrCat(basename, ".scale"),
-                                     {params.model_dim_D}));
+          weight_accessor.LoadWeight(absl::StrCat(basename, ".scale"), dims));
       return rms_norm_weights;
     }
+    case LlmParams::Norm::RMS_NORM_NO_SCALE: {
+      break;
+    }
     case LlmParams::Norm::LAYER_NORM: {
+      RET_CHECK_EQ(dims.size(), 1);
       auto layer_norm_weights = LayerNormWeights();
       MP_ASSIGN_OR_RETURN(
           layer_norm_weights.beta,
           weight_accessor.LoadWeight(absl::StrCat(basename, ".bias"),
-                                     {1, 1, params.model_dim_D}));
+                                     {1, 1, dims[0]}));
       MP_ASSIGN_OR_RETURN(
           layer_norm_weights.gamma,
           weight_accessor.LoadWeight(absl::StrCat(basename, ".scale"),
-                                     {1, 1, params.model_dim_D}));
+                                     {1, 1, dims[0]}));
       return layer_norm_weights;
     }
     default:
@@ -98,8 +109,6 @@ absl::StatusOr<std::optional<LlmWeights::NormWeights>> LoadNormWeights(
   }
   return std::nullopt;
 }
-
-}  // namespace
 
 LlmParams LlmParams::FromLLMParametersProto(
     const odml::infra::proto::LlmParameters& llm_params) {
@@ -114,6 +123,7 @@ LlmParams LlmParams::FromLLMParametersProto(
       .head_dim_H = static_cast<size_t>(transformer_params.head_dimension()),
       .n_heads_N = static_cast<size_t>(transformer_params.num_heads()),
       .voc_size_V = static_cast<size_t>(llm_params.vocab_size()),
+      .query_rescale_factor = transformer_params.query_rescale_factor(),
 
       .num_kv_heads =
           static_cast<size_t>(transformer_params.num_kv_heads() == 0
@@ -146,6 +156,8 @@ LlmParams LlmParams::FromLLMParametersProto(
   };
   params.final_proj_params = LlmParams::FinalProjectParams{
       .no_bias = transformer_params.final_project_parameters().no_bias(),
+      .soft_cap_value =
+          transformer_params.final_project_parameters().soft_cap_value(),
   };
   switch (transformer_params.feed_forward_parameters().activation()) {
     case TransformerParameters::ACTIVATION_UNSPECIFIED:
@@ -160,6 +172,9 @@ LlmParams LlmParams::FromLLMParametersProto(
       break;
     case TransformerParameters::RELU:
       params.ff_params.activation = LlmParams::Activation::RELU;
+      break;
+    case TransformerParameters::RELU1P5:
+      params.ff_params.activation = LlmParams::Activation::RELU1P5;
       break;
     default:
       ABSL_LOG(DFATAL)
@@ -178,6 +193,8 @@ LlmParams LlmParams::FromLLMParametersProto(
           transformer_params.post_norm());
   params.sa_params.soft_cap_value =
       transformer_params.self_attention_parameters().soft_cap_value();
+  params.sa_params.qk_norm =
+      transformer_params.self_attention_parameters().qk_norm();
   params.ff_params.pre_norm =
       TransformerParametersProtoNormTypeToLlmParamsNormType(
           transformer_params.feed_forward_parameters().pre_norm());
@@ -204,6 +221,10 @@ LlmParams LlmParams::FromLLMParametersProto(
       case TransformerParameters::SCALE_TYPE_INV_SQRT_HEAD_DIM:
         params.sa_params.attention_scale_type =
             LlmParams::AttentionScaleType::INV_SQRT_HEAD_DIM;
+        break;
+      case TransformerParameters::SCALE_TYPE_RESCALE_FACTOR_INV_HEAD_DIM:
+        params.sa_params.attention_scale_type =
+            LlmParams::AttentionScaleType::RESCALE_FACTOR_INV_HEAD_DIM;
         break;
       default:
         ABSL_LOG(DFATAL) << "Unknown attention_scale_type: "
@@ -368,6 +389,25 @@ absl::StatusOr<SelfAttentionWeights> LlmWeightsLoader::LoadSelfAttention(
 
   absl::StrAppend(&sa_file_prefix, ".self_attention.");
 
+  if (params.sa_params.qk_norm) {
+    MP_ASSIGN_OR_RETURN(self_attention.q_norm_weight,
+                        LoadNormWeights(LlmParams::Norm::RMS_NORM,
+                                        std::vector<size_t>{params.head_dim_H},
+                                        absl::StrCat(sa_file_prefix, "q_norm"),
+                                        *weight_accessor_));
+    MP_ASSIGN_OR_RETURN(self_attention.k_norm_weight,
+                        LoadNormWeights(LlmParams::Norm::RMS_NORM,
+                                        std::vector<size_t>{params.head_dim_H},
+                                        absl::StrCat(sa_file_prefix, "k_norm"),
+                                        *weight_accessor_));
+    RET_CHECK(std::get<RMSNormWeights>(self_attention.q_norm_weight.value())
+                  .norm_weight &&
+              std::get<RMSNormWeights>(self_attention.k_norm_weight.value())
+                  .norm_weight)
+        << "Expected qk_norm weights " << absl::StrCat(sa_file_prefix, "q_norm")
+        << " and " << absl::StrCat(sa_file_prefix, "k_norm") << " not found.";
+  }
+
   MP_ASSIGN_OR_RETURN(
       self_attention.k_weight,
       TryCacheThenLoadSelfAttention(absl::StrCat(sa_file_prefix, "k.w"),
@@ -465,29 +505,52 @@ absl::StatusOr<LlmWeights> LlmWeightsLoader::LoadWeights() {
   }
   RET_CHECK(result.softmax_linear) << kLogitsFfnWeightFilename;
 
-  MP_ASSIGN_OR_RETURN(
-      result.token_embedding,
-      weight_accessor_->LoadWeight(kTokenEmbedding,
-                                   {params_.voc_size_V, params_.model_dim_D},
-                                   /*dim_scale_if_any=*/0));
+  result.token_embedding =
+      weight_accessor_
+          ->LoadWeight(kTokenEmbedding,
+                       {params_.voc_size_V, params_.model_dim_D},
+                       /*dim_scale_if_any=*/0)
+          .value_or(nullptr);
 
   return result;
 }
 
-DefaultLlmWeightsLoader::DefaultLlmWeightsLoader(absl::string_view weight_path,
-                                                 const LlmParams& params)
+DefaultLlmWeightsLoader::DefaultLlmWeightsLoader(
+    absl::string_view weight_path, const LlmParams& params,
+    std::shared_ptr<tflite::FlatBufferModel> flat_buffer_model,
+    std::shared_ptr<ScopedFile> scoped_cache_file)
     : LlmWeightsLoader(nullptr, params) {
-  xnn_weights_cache_ = std::make_shared<PackWeightsCache>(
-      params.cache_dir.empty()
-          ? absl::StrCat(weight_path, ".cache")
-          : mediapipe::file::JoinPath(
-                params.cache_dir,
-                absl::StrCat(mediapipe::file::Basename(weight_path),
-                             ".cache")));
+  // Prefer to load from the scoped cache file if provided.
+  if (scoped_cache_file && scoped_cache_file->IsValid()) {
+    xnn_weights_cache_ =
+        std::make_shared<PackWeightsCache>(std::move(scoped_cache_file));
+  } else {
+    xnn_weights_cache_ = std::make_shared<PackWeightsCache>(
+        params.cache_dir.empty()
+            ? absl::StrCat(weight_path, ".cache")
+            : mediapipe::file::JoinPath(
+                  params.cache_dir,
+                  absl::StrCat(mediapipe::file::Basename(weight_path),
+                               ".cache")));
+  }
   ABSL_CHECK_OK(xnn_weights_cache_->Initialize());
-  weight_accessor_ = std::make_unique<WeightAccessorCompositeWithCache>(
-      std::make_shared<TfLiteWeightAccessor>(weight_path),
-      xnn_weights_cache_.get());
+  if (flat_buffer_model != nullptr) {
+    const tflite::Model* model = flat_buffer_model->GetModel();
+    std::shared_ptr<const tflite::Model> tflite_model(
+        model, [](const tflite::Model*) { /* No deletion needed */ });
+    char* data = const_cast<char*>(
+        reinterpret_cast<const char*>(flat_buffer_model->allocation()->base()));
+    weight_accessor_ = std::make_unique<WeightAccessorCompositeWithCache>(
+        std::make_shared<TfLiteWeightAccessor>(tflite_model, data),
+        xnn_weights_cache_.get());
+  } else {
+    ABSL_CHECK(!scoped_cache_file)
+        << "loading the weight cache from a scoped file is currently only "
+           "supported if the model is passed as a FlatBufferModel";
+    weight_accessor_ = std::make_unique<WeightAccessorCompositeWithCache>(
+        std::make_shared<TfLiteWeightAccessor>(weight_path),
+        xnn_weights_cache_.get());
+  }
 }
 
 }  // namespace mediapipe::tasks::genai::xnn_utils

@@ -6,28 +6,15 @@
 
 #include "ash/public/cpp/window_properties.h"
 #include "ash/wm/window_util.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/aura/window.h"
 
 namespace ash {
 namespace input_method {
-
-namespace {
-
-void TextFieldContextualInfoWithUrl(TextFieldContextualInfoCallback cb,
-                                    TextFieldContextualInfo& info,
-                                    const std::optional<GURL>& url) {
-  if (url.has_value()) {
-    info.tab_url = url.value();
-  }
-  std::move(cb).Run(std::move(info));
-}
-
-}  // namespace
 
 TextFieldContextualInfo::TextFieldContextualInfo() = default;
 
@@ -48,50 +35,30 @@ void GetTextFieldAppTypeAndKey(TextFieldContextualInfo& info) {
   }
 }
 
-void GetTextFieldContextualInfo(TextFieldContextualInfoCallback cb) {
+TextFieldContextualInfo GetTextFieldContextualInfo() {
   TextFieldContextualInfo info;
   GetTextFieldAppTypeAndKey(info);
 
-  if (info.app_type == chromeos::AppType::LACROS) {
-    GetUrlForTextFieldOnLacros(base::BindOnce(
-        TextFieldContextualInfoWithUrl, std::move(cb), base::OwnedRef(info)));
-    return;
+  if (info.app_type == chromeos::AppType::BROWSER) {
+    if (std::optional<GURL> url = GetUrlForTextFieldOnAshChrome();
+        url.has_value()) {
+      info.tab_url = *url;
+    }
   }
 
-  TextFieldContextualInfoWithUrl(std::move(cb), info,
-                                 info.app_type == chromeos::AppType::BROWSER
-                                     ? GetUrlForTextFieldOnAshChrome()
-                                     : std::nullopt);
+  return info;
 }
 
 std::optional<GURL> GetUrlForTextFieldOnAshChrome() {
-  Browser* browser = chrome::FindLastActive();
-  // Ash chrome will return true for browser->window()->IsActive() if the
-  // user is currently typing in an ash browser tab. IsActive() will return
-  // false if the user is currently typing a lacros browser tab.
-  if (browser && browser->window() && browser->window()->IsActive() &&
-      browser->tab_strip_model() &&
-      browser->tab_strip_model()->GetActiveWebContents()) {
-    return browser->tab_strip_model()
-        ->GetActiveWebContents()
-        ->GetLastCommittedURL();
+  ash::BrowserDelegate* browser =
+      ash::BrowserController::GetInstance()->GetLastUsedBrowser();
+  // Ash chrome will return true for browser->IsActive() if the
+  // user is currently typing in an ash browser tab.
+  if (browser && browser->IsActive() && browser->GetActiveWebContents()) {
+    return browser->GetActiveWebContents()->GetLastCommittedURL();
   }
 
   return std::nullopt;
-}
-
-void GetUrlForTextFieldOnLacros(TextFieldTabUrlCallback cb) {
-  crosapi::BrowserManager* browser_manager = crosapi::BrowserManager::Get();
-  // browser_manager will exist whenever there is a lacros browser running.
-  // GetActiveTabUrlSupported() will only return true if the current lacros
-  // browser is being used by the user.
-  if (browser_manager && browser_manager->IsRunning() &&
-      browser_manager->GetActiveTabUrlSupported()) {
-    browser_manager->GetActiveTabUrl(std::move(cb));
-    return;
-  }
-
-  std::move(cb).Run(std::nullopt);
 }
 
 }  // namespace input_method

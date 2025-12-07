@@ -29,16 +29,17 @@
 #include "extensions/common/extension_features.h"
 #include "services/device/public/cpp/test/fake_hid_manager.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 
 using testing::Contains;
 using testing::StartsWith;
 
 namespace controlled_frame {
 
-using ControlledFramePermissionRequestTest =
-    ControlledFramePermissionRequestTestBase;
+class ControlledFramePermissionRequestTest
+    : public ControlledFramePermissionRequestTestBase,
+      public testing::WithParamInterface<PermissionRequestTestParam> {};
 
 IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest, Camera) {
   PermissionRequestTestCase test_case;
@@ -59,12 +60,12 @@ IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest, Camera) {
   )";
   test_case.permission_name = "media";
   test_case.policy_features.insert(
-      {blink::mojom::PermissionsPolicyFeature::kCamera});
-  test_case.embedder_content_settings_type.insert(
+      {network::mojom::PermissionsPolicyFeature::kCamera});
+  test_case.content_settings_type.insert(
       {ContentSettingsType::MEDIASTREAM_CAMERA});
 
   PermissionRequestTestParam test_param = GetParam();
-  RunTestAndVerify(test_case, test_param);
+  VerifyEnabledPermission(test_case, test_param);
 }
 
 IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest, Microphone) {
@@ -86,12 +87,12 @@ IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest, Microphone) {
   )";
   test_case.permission_name = "media";
   test_case.policy_features.insert(
-      {blink::mojom::PermissionsPolicyFeature::kMicrophone});
-  test_case.embedder_content_settings_type.insert(
+      {network::mojom::PermissionsPolicyFeature::kMicrophone});
+  test_case.content_settings_type.insert(
       {ContentSettingsType::MEDIASTREAM_MIC});
 
   PermissionRequestTestParam test_param = GetParam();
-  RunTestAndVerify(test_case, test_param);
+  VerifyEnabledPermission(test_case, test_param);
 }
 
 IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest, Geolocation) {
@@ -119,12 +120,11 @@ IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest, Geolocation) {
   )";
   test_case.permission_name = "geolocation";
   test_case.policy_features.insert(
-      {blink::mojom::PermissionsPolicyFeature::kGeolocation});
-  test_case.embedder_content_settings_type.insert(
-      {ContentSettingsType::GEOLOCATION});
+      {network::mojom::PermissionsPolicyFeature::kGeolocation});
+  test_case.content_settings_type.insert({ContentSettingsType::GEOLOCATION});
 
   PermissionRequestTestParam test_param = GetParam();
-  RunTestAndVerify(test_case, test_param);
+  VerifyEnabledPermission(test_case, test_param);
 }
 
 IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest,
@@ -158,7 +158,7 @@ IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest,
   test_case.permission_name = "filesystem";
 
   PermissionRequestTestParam test_param = GetParam();
-  RunTestAndVerify(test_case, test_param);
+  VerifyEnabledPermission(test_case, test_param);
 }
 
 class TestDownloadManagerObserver : public content::DownloadManager::Observer {
@@ -204,7 +204,7 @@ IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest, Download) {
   TestDownloadManagerObserver download_observer;
   profile()->GetDownloadManager()->AddObserver(&download_observer);
 
-  RunTestAndVerify(
+  VerifyEnabledPermission(
       test_case, test_param,
       base::BindLambdaForTesting(
           [](bool should_success) -> std::string { return "SUCCESS"; }));
@@ -237,6 +237,98 @@ IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest, Download) {
   }
 
   profile()->GetDownloadManager()->RemoveObserver(&download_observer);
+}
+
+// TODO(crbug.com/422421852): These tests require document focus,
+// and waiting for focus is flaky on mac.
+#if BUILDFLAG(IS_MAC) && defined(NDEBUG)
+#define MAYBE_ClipboardReadWrite DISABLED_ClipboardReadWrite
+#define MAYBE_ClipboardSanitizedWrite DISABLED_ClipboardSanitizedWrite
+#else
+#define MAYBE_ClipboardReadWrite ClipboardReadWrite
+#define MAYBE_ClipboardSanitizedWrite ClipboardSanitizedWrite
+#endif
+IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest,
+                       MAYBE_ClipboardReadWrite) {
+  PermissionRequestTestCase test_case;
+  test_case.test_script = R"(
+    (async function() {
+      try {
+        return await new Promise((resolve, reject) => {
+          if (!document.hasFocus()) {
+            resolve('Document must have focus');
+            return;
+          }
+          if (!navigator.userActivation.isActive) {
+            resolve('User activation must be true');
+            return;
+          }
+          navigator.clipboard.readText().then(
+            (text) => {
+              resolve('SUCCESS');
+            },
+            (error) => {
+              const errorMessage = 'FAIL: ' + error.code + error.message;
+              resolve(errorMessage);
+            }
+          );
+        });
+      } catch (err) {
+        return 'FAIL: ' + err.name + ': ' + err.message;
+      }
+    })();
+  )";
+  test_case.permission_name = "clipboardReadWrite";
+  test_case.policy_features.insert(
+      {network::mojom::PermissionsPolicyFeature::kClipboardRead});
+  test_case.content_settings_type.insert(
+      {ContentSettingsType::CLIPBOARD_READ_WRITE});
+  test_case.must_wait_for_document_focus = true;
+
+  PermissionRequestTestParam test_param = GetParam();
+  VerifyEnabledPermission(test_case, test_param);
+}
+
+IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest,
+                       MAYBE_ClipboardSanitizedWrite) {
+  PermissionRequestTestCase test_case;
+  test_case.test_script = R"(
+    (async function() {
+      try {
+        return await new Promise((resolve, reject) => {
+          if (!document.hasFocus()) {
+            resolve('Document must have focus');
+            return;
+          }
+          if (!navigator.userActivation.isActive) {
+            resolve('User activation must be true');
+            return;
+          }
+          navigator.clipboard.writeText('test text').then(
+            () => {
+              resolve('SUCCESS');
+            },
+            (error) => {
+              const errorMessage = 'FAIL: ' + error.code + error.message;
+              resolve(errorMessage);
+            }
+          );
+        });
+      } catch (err) {
+        return 'FAIL: ' + err.name + ': ' + err.message;
+      }
+    })();
+  )";
+
+  // Don't add ContentSettingType because
+  // the embedder has hardcoded ContentSetting::CONTENT_SETTING_ALLOW.
+  test_case.permission_name = "clipboardSanitizedWrite";
+  test_case.policy_features.insert(
+      {network::mojom::PermissionsPolicyFeature::kClipboardWrite});
+  test_case.must_wait_for_document_focus = true;
+
+  PermissionRequestTestParam test_param = GetParam();
+  VerifyEnabledPermission(test_case, test_param);
 }
 
 INSTANTIATE_TEST_SUITE_P(/*no prefix*/
@@ -277,13 +369,12 @@ class MockHidDelegate : public ChromeHidDelegate {
     chooser_controller_->set_view(mock_chooser_view_.get());
 
     EXPECT_CALL(*mock_chooser_view_.get(), OnOptionsInitialized)
-        .WillOnce(
-            testing::Invoke([this] { chooser_controller_->Select({0}); }));
+        .WillOnce([this] { chooser_controller_->Select({0}); });
   }
 
  private:
-  std::unique_ptr<HidChooserController> chooser_controller_;
   std::unique_ptr<permissions::MockChooserControllerView> mock_chooser_view_;
+  std::unique_ptr<HidChooserController> chooser_controller_;
 };
 
 class TestContentBrowserClient : public ChromeContentBrowserClient {
@@ -348,11 +439,11 @@ IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestWebHidTest, WebHid) {
   test_case.permission_name = "hid";
 
   test_case.policy_features.insert(
-      {blink::mojom::PermissionsPolicyFeature::kHid});
+      {network::mojom::PermissionsPolicyFeature::kHid});
   // No embedder content settings for WebHid.
 
   PermissionRequestTestParam test_param = GetParam();
-  RunTestAndVerify(test_case, test_param);
+  VerifyEnabledPermission(test_case, test_param);
 }
 
 INSTANTIATE_TEST_SUITE_P(/*no prefix*/

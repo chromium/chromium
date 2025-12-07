@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestImportManager} from './testing/test_import_manager.js';
+
 /**
  * @fileoverview Utilities for strings.
  */
@@ -131,3 +133,5 @@ export namespace StringUtil {
    */
   export const MAX_BMP_CODEPOINT = 65535;
 }
+
+TestImportManager.exportForTesting(StringUtil);

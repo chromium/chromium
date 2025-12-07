@@ -135,10 +135,6 @@ WatchedLifetimeMenuController::_deallocCalled
 blink::SegmentedSubstring::data_last_char_
 net::FixedSetIncrementalLookup::bytes_
 
-# Causes unrelated test failures.
-# TODO(crbug.com/349424269): Fix tests, rewrite, and remove.
-media::Vp9FrameHeader::data
-
 #######
 # BackupRefPtr-specific sections
 #######
@@ -231,7 +227,6 @@ WeakLinkNode::list_
 base::Location::program_counter_
 base::MessagePump::Delegate::ScopedDoWorkItem::outer_
 base::MessagePumpEpoll::RunState::delegate
-base::MessagePumpLibevent::RunState::delegate
 base::internal::SequenceLocalStorageMap::ValueDestructorPair::destructor_
 base::internal::SequenceLocalStorageMap::ValueDestructorPair::value_
 base::internal::TaskDestructionDetector::timer_
@@ -254,10 +249,10 @@ cc::PaintOpBuffer::OffsetIterator::buffer_
 cc::PaintOpBuffer::OffsetIterator::offsets_
 cc::PaintOpBuffer::OffsetIterator::ptr_
 cc::PaintOpBuffer::PlaybackFoldingIterator::current_op_
-cc::PictureLayerTiling::CoverageIterator::current_tile_
-cc::PictureLayerTiling::CoverageIterator::tiling_
 cc::PlaybackParams::image_provider
 cc::ResourcePool::InUsePoolResource::resource_
+cc::TilingCoverageIterator::current_tile_;
+cc::TilingCoverageIterator::tiling_;
 cc::TilingSetEvictionQueue::EvictionRectIterator::tilings_
 cc::TilingSetRasterQueueAll::OnePriorityRectIterator::tiling_
 cc::TilingSetRasterQueueAll::OnePriorityRectIterator::tiling_data_
@@ -332,12 +327,12 @@ cc::GlobalMetricsTrackers::scroll_jank_dropped_frame_tracker
 cc::GlobalMetricsTrackers::scroll_jank_ukm_reporter
 cc::CompositorFrameReporter::ProcessedBlinkBreakdown::Iterator::owner_
 cc::CompositorFrameReporter::ProcessedVizBreakdown::Iterator::owner_
-cc::PictureLayerTilingSet::CoverageIterator::set_
+cc::TilingSetCoverageIterator::tilings_
 cc::PrioritizedTile::tile_
 cc::PrioritizedTile::source_tiling_
-cc::LayerTreeHostImpl::FrameData::render_surface_list
+cc::FrameData::render_surface_list
 cc::PropertyTree::property_trees_
-cc::LayerTreeHostImpl::FrameData::will_draw_layers
+cc::FrameData::will_draw_layers
 cc::LayerTreeImpl::render_surface_list_
 viz::(anonymous namespace)::BspTreePerfTest::base_list_
 
@@ -362,7 +357,6 @@ base::CheckedContiguousIterator::current_
 base::CheckedContiguousIterator::end_
 base::internal::flat_tree::KeyValueCompare::comp_
 base::MadvFreeDiscardableMemoryPosix::data_
-base::i18n::IcuMergeableDataFile::lacros_data_
 base::internal::UnexpectedDeducer::lambda_
 (anonymous namespace)::CouponDataStruct::description
 (anonymous namespace)::CouponDataStruct::coupon_code
@@ -526,7 +520,7 @@ gpu::SharedImageRepresentation::ScopedAccessBase::representation_
 gpu::SharedImageRepresentation::manager_
 gpu::SharedImageRepresentation::backing_
 gpu::SharedImageRepresentation::tracker_
-gpu::SchedulerDfs::Sequence::scheduler_
+gpu::Scheduler::Sequence::scheduler_
 # crrev.com/c/5647253
 gpu::gles2::PassthroughProgramCache::ProgramCacheValue::program_cache_
 

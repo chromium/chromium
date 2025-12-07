@@ -6,6 +6,7 @@ include_rules = [
   "+components/history/core/browser",
   "+components/history/core/test",
   "+components/image_fetcher",
+  "+components/policy",
   "+components/pref_registry",
   "+components/prefs",
   "+components/search_engines",

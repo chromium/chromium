@@ -11,6 +11,8 @@ source_set("smart_card") {
       "chromeos_smart_card_delegate.h",
       "get_smart_card_context_factory.cc",
       "get_smart_card_context_factory.h",
+      "smart_card_histograms.cc",
+      "smart_card_histograms.h",
       "smart_card_permission_context.cc",
       "smart_card_permission_context.h",
       "smart_card_permission_context_factory.cc",
@@ -38,8 +40,11 @@ source_set("smart_card") {
 
     deps = [
       "//chrome/browser/chromeos/extensions/smart_card_provider_private",
+      "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/permissions",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/browser_window",
+      "//components/content_settings/browser",
       "//components/permissions",
       "//components/strings:components_strings_grit",
       "//content/public/browser",
@@ -56,12 +61,31 @@ if (is_chromeos) {
     testonly = true
     sources = [
       "smart_card_permission_context_unittest.cc",
+      "smart_card_permission_request_unittest.cc",
       "smart_card_reader_tracker_impl_unittest.cc",
     ]
     deps = [
       ":smart_card",
+      "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/permissions",
       "//chrome/test:test_support",
+      "//content/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+
+  source_set("browser_tests") {
+    testonly = true
+    sources = [ "chromeos_smart_card_delegate_browsertest.cc" ]
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    deps = [
+      "//chrome/browser/smart_card",
+      "//chrome/browser/web_applications:web_applications_test_support",
+      "//chrome/test:test_support",
+      "//components/content_settings/browser",
       "//content/test:test_support",
       "//testing/gmock",
       "//testing/gtest",
@@ -78,6 +102,9 @@ if (is_chromeos) {
     deps = [
       ":smart_card",
       "//chrome/browser",
+      "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/permissions",
+      "//chrome/browser/policy:test_support",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
       "//chrome/test:test_support_ui",

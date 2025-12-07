@@ -5,6 +5,7 @@
 #include "ui/webui/resources/cr_components/app_management/app_management_mojom_traits.h"
 
 #include <utility>
+#include <variant>
 
 namespace mojo {
 
@@ -14,8 +15,6 @@ AppType EnumTraits<AppType, apps::AppType>::ToMojom(apps::AppType input) {
       return AppType::kUnknown;
     case apps::AppType::kArc:
       return AppType::kArc;
-    case apps::AppType::kBuiltIn:
-      return AppType::kBuiltIn;
     case apps::AppType::kCrostini:
       return AppType::kCrostini;
     case apps::AppType::kChromeApp:
@@ -24,20 +23,14 @@ AppType EnumTraits<AppType, apps::AppType>::ToMojom(apps::AppType input) {
       return AppType::kWeb;
     case apps::AppType::kPluginVm:
       return AppType::kPluginVm;
-    case apps::AppType::kStandaloneBrowser:
-      return AppType::kStandaloneBrowser;
     case apps::AppType::kRemote:
       return AppType::kRemote;
     case apps::AppType::kBorealis:
       return AppType::kBorealis;
     case apps::AppType::kSystemWeb:
       return AppType::kSystemWeb;
-    case apps::AppType::kStandaloneBrowserChromeApp:
-      return AppType::kStandaloneBrowserChromeApp;
     case apps::AppType::kExtension:
       return AppType::kExtension;
-    case apps::AppType::kStandaloneBrowserExtension:
-      return AppType::kStandaloneBrowserExtension;
     case apps::AppType::kBruschetta:
       return AppType::kBruschetta;
   }
@@ -52,9 +45,6 @@ bool EnumTraits<AppType, apps::AppType>::FromMojom(AppType input,
     case AppType::kArc:
       *output = apps::AppType::kArc;
       return true;
-    case AppType::kBuiltIn:
-      *output = apps::AppType::kBuiltIn;
-      return true;
     case AppType::kCrostini:
       *output = apps::AppType::kCrostini;
       return true;
@@ -67,9 +57,6 @@ bool EnumTraits<AppType, apps::AppType>::FromMojom(AppType input,
     case AppType::kPluginVm:
       *output = apps::AppType::kPluginVm;
       return true;
-    case AppType::kStandaloneBrowser:
-      *output = apps::AppType::kStandaloneBrowser;
-      return true;
     case AppType::kRemote:
       *output = apps::AppType::kRemote;
       return true;
@@ -79,14 +66,8 @@ bool EnumTraits<AppType, apps::AppType>::FromMojom(AppType input,
     case AppType::kSystemWeb:
       *output = apps::AppType::kSystemWeb;
       return true;
-    case AppType::kStandaloneBrowserChromeApp:
-      *output = apps::AppType::kStandaloneBrowserChromeApp;
-      return true;
     case AppType::kExtension:
       *output = apps::AppType::kExtension;
-      return true;
-    case AppType::kStandaloneBrowserExtension:
-      *output = apps::AppType::kStandaloneBrowserExtension;
       return true;
     case AppType::kBruschetta:
       *output = apps::AppType::kBruschetta;
@@ -202,13 +183,12 @@ bool EnumTraits<TriState, apps::TriState>::FromMojom(TriState input,
 PermissionValueDataView::Tag
 UnionTraits<PermissionValueDataView, apps::Permission::PermissionValue>::GetTag(
     const apps::Permission::PermissionValue& r) {
-  if (absl::holds_alternative<bool>(r)) {
+  if (std::holds_alternative<bool>(r)) {
     return PermissionValueDataView::Tag::kBoolValue;
-  } else if (absl::holds_alternative<apps::TriState>(r)) {
+  } else if (std::holds_alternative<apps::TriState>(r)) {
     return PermissionValueDataView::Tag::kTristateValue;
   }
-  NOTREACHED_IN_MIGRATION();
-  return PermissionValueDataView::Tag::kBoolValue;
+  NOTREACHED();
 }
 
 bool UnionTraits<PermissionValueDataView, apps::Permission::PermissionValue>::
@@ -226,8 +206,7 @@ bool UnionTraits<PermissionValueDataView, apps::Permission::PermissionValue>::
       return true;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 InstallReason EnumTraits<InstallReason, apps::InstallReason>::ToMojom(

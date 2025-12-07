@@ -10,8 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "url/gurl.h"
-
 namespace payments::facilitated {
 
 // Contains information to make a `FacilitatedPaymentsInitiatePaymentRequest`.
@@ -24,11 +22,13 @@ class FacilitatedPaymentsInitiatePaymentRequestDetails {
       const FacilitatedPaymentsInitiatePaymentRequestDetails&) = delete;
   ~FacilitatedPaymentsInitiatePaymentRequestDetails();
 
-  // Returns true if everything that's required for making a PIX payment request
+  // Returns true if everything that's required for making a Pix payment request
   // is available.
   bool IsReadyForPixPayment();
 
   std::string risk_data_;
+  // A vector of bytes containing device information, which is needed to invoke
+  // payment server APIs.
   std::vector<uint8_t> client_token_;
   std::optional<int64_t> billing_customer_number_;
   std::optional<std::string> merchant_payment_page_hostname_;
@@ -36,6 +36,7 @@ class FacilitatedPaymentsInitiatePaymentRequestDetails {
   // required field. Its type is optional to avoid its default value being 0.
   std::optional<int64_t> instrument_id_;
   std::optional<std::string> pix_code_;
+  std::string payment_link_;
 };
 
 }  // namespace payments::facilitated

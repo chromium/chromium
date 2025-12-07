@@ -141,7 +141,7 @@ class BaseTestCase(unittest.TestCase):
                     'args': ['--disable-site-isolation-trials'],
                 },
             ]))
-        for wpt_dir in self.mac_port.WPT_DIRS:
+        for wpt_dir in self.mac_port.wpt_dirs():
             self._write(self.tool.filesystem.join(wpt_dir, 'MANIFEST.json'),
                         json.dumps({}))
 
@@ -173,7 +173,8 @@ class BaseTestCase(unittest.TestCase):
             return self.original_port_factory_get(port_name, options, **kwargs)
 
         self._mocks = contextlib.ExitStack()
-        self._mock_copier = mock.Mock(wraps=BaselineCopier(self.tool))
+        self._mock_copier = mock.Mock(
+            wraps=BaselineCopier(self.tool, self.mac_port))
         # See https://docs.python.org/3/library/unittest.mock.html#where-to-patch
         # for why `blinkpy.common.checkout.baseline_copier.BaselineCopier` is
         # not patched instead.

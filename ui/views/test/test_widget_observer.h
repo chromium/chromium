@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace views::test {
@@ -29,6 +30,7 @@ class TestWidgetObserver : public WidgetObserver {
   void OnWidgetDestroying(Widget* widget) override;
 
   raw_ptr<Widget> widget_;
+  base::ScopedObservation<Widget, TestWidgetObserver> widget_observation_{this};
 };
 
 }  // namespace views::test

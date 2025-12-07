@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "ui/events/ozone/evdev/touch_event_converter_evdev.h"
 #include "ui/ozone/public/input_controller.h"
 

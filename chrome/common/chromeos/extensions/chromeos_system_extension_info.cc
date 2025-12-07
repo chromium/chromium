@@ -8,17 +8,14 @@
 #include <optional>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace chromeos {
 
@@ -47,11 +44,17 @@ using ChromeOSSystemExtensionInfoMap =
     base::flat_map<std::string, ChromeOSSystemExtensionInfo>;
 
 ChromeOSSystemExtensionInfoMap ConstructMap() {
+  const auto lenovo_iwa_id = web_package::SignedWebBundleId::Create(
+      "huhncggoe22ofjan6nylwijltmewmbevapiotudwgbyjbhrlphrqaaic");
+  CHECK(lenovo_iwa_id.has_value());
+
   ChromeOSSystemExtensionInfoMap map{
       {/*extension_id=*/"gogonhoemckpdpadfnjnpgbjpbjnodgc",
        {
-           /*manufacturers=*/{"HP", "ASUS"},
-           /*pwa_origin=*/"*://googlechromelabs.github.io/*",
+           /*manufacturers=*/{"HP", "ASUS", "Acer", "Lenovo"},
+           /*pwa_origin=*/
+           "*://googlechromelabs.github.io/cros-sample-telemetry-extension/"
+           "test-page/*",
            /*iwa_id=*/std::nullopt,
        }},
       {/*extension_id=*/"alnedpmllcfpgldkagbfbjkloonjlfjb",
@@ -66,14 +69,28 @@ ChromeOSSystemExtensionInfoMap ConstructMap() {
            /*pwa_origin=*/"https://dlcdnccls.asus.com/*",
            /*iwa_id=*/std::nullopt,
        }},
+      {/*extension_id=*/"aoefhlbfcighemjpchndkhonjfjoehnm",
+       {
+           /*manufacturers=*/{"Acer"},
+           /*pwa_origin=*/"https://acerpartners.com/*",
+           /*iwa_id=*/std::nullopt,
+       }},
+      {/*extension_id=*/"mconamggkmbalafmibfjlcmimnlbgmlb",
+       {
+           /*manufacturers=*/{"Lenovo"},
+           /*pwa_origin=*/"https://chromebookdiags.lenovo.com/*",
+           /*iwa_id=*/lenovo_iwa_id.value(),
+       }},
   };
 
   if (IsChromeOSSystemExtensionDevExtensionEnabled()) {
     map.try_emplace(
         kChromeOSSystemExtensionDevExtensionId,
         ChromeOSSystemExtensionInfo{
-            /*manufacturers=*/{"Google", "HP", "ASUS"},
-            /*pwa_origin=*/"*://googlechromelabs.github.io/*",
+            /*manufacturers=*/{"Google", "HP", "ASUS", "Acer", "Lenovo"},
+            /*pwa_origin=*/
+            "*://googlechromelabs.github.io/cros-sample-telemetry-extension/"
+            "test-page/*",
             /*iwa_id=*/
             web_package::SignedWebBundleId::Create(
                 "pt2jysa7yu326m2cbu5mce4rrajvguagronrsqwn5dhbaris6eaaaaic")
@@ -127,11 +144,7 @@ ChromeOSSystemExtensionInfoMap*& GetMap() {
 }  // namespace
 
 bool IsChromeOSSystemExtensionDevExtensionEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   return ash::features::IsShimlessRMA3pDiagnosticsDevModeEnabled();
-#else
-  return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 ChromeOSSystemExtensionInfo::ChromeOSSystemExtensionInfo(

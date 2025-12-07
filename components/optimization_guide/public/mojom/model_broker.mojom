@@ -1,0 +1,93 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module optimization_guide.mojom;
+
+import "mojo/public/mojom/base/proto_wrapper.mojom";
+import "services/on_device_model/public/mojom/on_device_model.mojom";
+
+enum OnDeviceFeature {
+  kCompose,
+  kTest,
+  kPromptApi,
+  kHistorySearch,
+  kSummarize,
+  kHistoryQueryIntent,
+  kScamDetection,
+  kPermissionsAi,
+  kWritingAssistanceApi,
+  kOnDeviceSpeechRecognition,
+  kProofreaderApi,
+};
+
+// Describes how a particular set of models can be used to implement a
+// model based capability.
+struct ModelSolutionConfig {
+  mojo_base.mojom.ProtoWrapper feature_config;
+  mojo_base.mojom.ProtoWrapper text_safety_config;
+  mojo_base.mojom.ProtoWrapper model_versions;
+  int32 max_tokens;
+};
+
+// An interface for creating the models required for a particular
+// ModelSolutionConfig. The remote end may be held by any process, the
+// receiver should be in the browser process.
+interface ModelSolution {
+  // Creates a session for the language model described by the
+  // ModelSolutionConfig. The session receiver will be bound in the ODM
+  // process.
+  CreateSession(pending_receiver<on_device_model.mojom.Session> session,
+                on_device_model.mojom.SessionParams params);
+
+  // Creates a session for the text-safety model described by the
+  // ModelSolutionConfig. The session receiver will be bound in the ODM
+  // process.
+  CreateTextSafetySession(
+      pending_receiver<on_device_model.mojom.TextSafetySession> session);
+
+  // Report to the broker that model execution worked correctly.
+  ReportHealthyCompletion();
+};
+
+enum ModelUnavailableReason {
+  // Availability not determined yet.
+  kUnknown = 0,
+  // Skipping 1 to be consistent with Modelavailability::kAvailable = 1,
+  // Model solution won't become available.
+  kNotSupported = 2,
+  // Model solution should become available.
+  kPendingAssets = 3,
+  // Model solution might become available if requested.
+  kPendingUsage = 4,
+};
+
+// A consumer that needs to the current configs and models for some feature.
+// The receiver end may be held by any process, the remote will be in the
+// browser process.
+interface ModelSubscriber {
+  // Indicates that a model solution is currently unavailable and whether it is
+  // expected to become available. A disconnect may be sent shortly if the
+  // model will not become available later.
+  Unavailable(ModelUnavailableReason reason);
+
+  // Indicates that the model solution is available, and provides the config for
+  // how to use it. The solution may still become unavailable later or be
+  // replaced with a different solution.
+  Available(
+      ModelSolutionConfig config, pending_remote<ModelSolution> solution);
+};
+
+// Options for ModelBroker::Subscribe
+struct ModelSubscriptionOptions {
+  OnDeviceFeature feature;
+  bool mark_used;
+};
+
+// Broker for using the on-device models. The remote end may be held by any
+// process, the receiver should be in the browser process.
+interface ModelBroker {
+  // Starts listening for models that provide the requested feature.
+  Subscribe(ModelSubscriptionOptions options,
+            pending_remote<ModelSubscriber> subcriber);
+};

@@ -16,7 +16,9 @@ using features::internal::GetAllowedFeaturesForUnsignedUser;
 using testing::UnorderedElementsAre;
 
 TEST(ModelExecutionFeature, GetAllowedFeaturesForUnsignedUser) {
-  EXPECT_THAT(GetAllowedFeaturesForUnsignedUser(), UnorderedElementsAre());
+  // The kHistorySearch feature launched with `allow_unsigned_user` true.
+  EXPECT_THAT(GetAllowedFeaturesForUnsignedUser(),
+              UnorderedElementsAre(UserVisibleFeatureKey::kHistorySearch));
   {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitWithFeaturesAndParameters(
@@ -26,13 +28,16 @@ TEST(ModelExecutionFeature, GetAllowedFeaturesForUnsignedUser) {
           {{"allow_unsigned_user", "true"}}}},
         {});
     EXPECT_THAT(GetAllowedFeaturesForUnsignedUser(),
-                UnorderedElementsAre(UserVisibleFeatureKey::kCompose,
+                UnorderedElementsAre(UserVisibleFeatureKey::kHistorySearch,
+                                     UserVisibleFeatureKey::kCompose,
                                      UserVisibleFeatureKey::kTabOrganization));
   }
   {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitWithFeaturesAndParameters(
-        {{features::internal::kComposeSettingsVisibility,
+        {{features::internal::kHistorySearchSettingsVisibility,
+          {{"allow_unsigned_user", "false"}}},
+         {features::internal::kComposeSettingsVisibility,
           {{"allow_unsigned_user", "false"}}},
          {features::internal::kTabOrganizationSettingsVisibility,
           {{"allow_unsigned_user", "true"}}}},
@@ -40,26 +45,6 @@ TEST(ModelExecutionFeature, GetAllowedFeaturesForUnsignedUser) {
     EXPECT_THAT(GetAllowedFeaturesForUnsignedUser(),
                 UnorderedElementsAre(UserVisibleFeatureKey::kTabOrganization));
   }
-}
-
-TEST(ModelExecutionFeature, GetOptimizationTargetForModelAdaptation) {
-  // This tests the generic logic that we expect for all features going forward.
-  EXPECT_THAT(features::internal::GetOptimizationTargetForModelAdaptation(
-                  ModelBasedCapabilityKey::kHistorySearch),
-              proto::OptimizationTarget::
-                  OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_HISTORY_SEARCH);
-  EXPECT_THAT(features::internal::GetOptimizationTargetForModelAdaptation(
-                  ModelBasedCapabilityKey::kPromptApi),
-              proto::OptimizationTarget::
-                  OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_PROMPT_API);
-
-  // Special cases go here.
-  EXPECT_THAT(features::internal::GetOptimizationTargetForModelAdaptation(
-                  ModelBasedCapabilityKey::kTest),
-              proto::OptimizationTarget::OPTIMIZATION_TARGET_MODEL_VALIDATION);
-  EXPECT_THAT(features::internal::GetOptimizationTargetForModelAdaptation(
-                  ModelBasedCapabilityKey::kCompose),
-              proto::OptimizationTarget::OPTIMIZATION_TARGET_COMPOSE);
 }
 
 }  // namespace

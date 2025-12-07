@@ -26,7 +26,8 @@ found in the LICENSE file.
         android:background="@drawable/account_row_background_rounded_all"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:clipToOutline="true">
 
         <include layout="@layout/account_row" />
 

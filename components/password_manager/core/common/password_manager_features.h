@@ -17,31 +17,13 @@ namespace password_manager::features {
 
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
-BASE_DECLARE_FEATURE(kEnableOverwritingPlaceholderUsernames);
-
-#if BUILDFLAG(IS_IOS)
-BASE_DECLARE_FEATURE(kIOSPasswordBottomSheetAutofocus);
-#endif  // IS_IOS
-BASE_DECLARE_FEATURE(kPasswordReuseDetectionEnabled);
+BASE_DECLARE_FEATURE(kActorLoginTreatFillingAsUserInput);
+BASE_DECLARE_FEATURE(kDelaySuggestionsOnAutofocusWaitingForPasskeys);
+BASE_DECLARE_FEATURE_PARAM(int, kDelaySuggestionsOnAutofocusTimeout);
 BASE_DECLARE_FEATURE(kNoPasswordSuggestionFiltering);
 BASE_DECLARE_FEATURE(kShowSuggestionsOnAutofocus);
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_DECLARE_FEATURE(kPasswordSuggestionBottomSheetV2);
-BASE_DECLARE_FEATURE(kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
-#endif
-
 // All features parameters are in alphabetical order.
-
-#if BUILDFLAG(IS_ANDROID)
-// Whether to ignore the 1 month timeout in between migration warning prompts.
-// Used for manual testing.
-inline constexpr base::FeatureParam<bool> kIgnoreMigrationWarningTimeout = {
-    &kUnifiedPasswordManagerLocalPasswordsMigrationWarning,
-    "ignore_migration_warning_timeout", false};
-
-extern const base::FeatureParam<int> kLocalPasswordMigrationWarningPrefsVersion;
-#endif
 
 // Field trial and corresponding parameters.
 // To manually override this, start Chrome with the following parameters:

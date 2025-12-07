@@ -1,3 +1,0 @@
-include_rules = [
-  "+ios/chrome/browser/ui/account_picker/account_picker_selection/account_picker_selection_screen_identity_item_configurator.h",
-]

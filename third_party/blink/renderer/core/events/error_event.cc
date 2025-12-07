@@ -45,14 +45,17 @@ ErrorEvent* ErrorEvent::CreateSanitizedError(ScriptState* script_state) {
   DCHECK(script_state);
   return MakeGarbageCollected<ErrorEvent>(
       "Script error.",
-      std::make_unique<SourceLocation>(String(), String(), 0, 0, nullptr),
+      MakeGarbageCollected<SourceLocation>(String(), String(), 0, 0, nullptr),
       ScriptValue::CreateNull(script_state->GetIsolate()),
       &script_state->World());
 }
 
 ErrorEvent::ErrorEvent(ScriptState* script_state)
-    : location_(
-          std::make_unique<SourceLocation>(String(), String(), 0, 0, nullptr)),
+    : location_(MakeGarbageCollected<SourceLocation>(String(),
+                                                     String(),
+                                                     0,
+                                                     0,
+                                                     nullptr)),
       world_(&script_state->World()) {}
 
 ErrorEvent::ErrorEvent(ScriptState* script_state,
@@ -61,9 +64,9 @@ ErrorEvent::ErrorEvent(ScriptState* script_state,
     : Event(type, initializer),
       sanitized_message_(initializer->message()),
       world_(&script_state->World()) {
-  location_ = std::make_unique<SourceLocation>(initializer->filename(),
-                                               String(), initializer->lineno(),
-                                               initializer->colno(), nullptr);
+  location_ = MakeGarbageCollected<SourceLocation>(
+      initializer->filename(), String(), initializer->lineno(),
+      initializer->colno(), nullptr);
   if (initializer->hasError()) {
     v8::Local<v8::Value> error = initializer->error().V8Value();
     // TODO(crbug.com/1070871): Remove the following IsNullOrUndefined() check.
@@ -80,12 +83,12 @@ ErrorEvent::ErrorEvent(ScriptState* script_state,
 }
 
 ErrorEvent::ErrorEvent(const String& message,
-                       std::unique_ptr<SourceLocation> location,
+                       SourceLocation* location,
                        ScriptValue error,
                        DOMWrapperWorld* world)
     : Event(event_type_names::kError, Bubbles::kNo, Cancelable::kYes),
       sanitized_message_(message),
-      location_(std::move(location)),
+      location_(location),
       world_(world) {
   if (!error.IsEmpty())
     error_.Set(error.GetIsolate(), error.V8Value());
@@ -124,6 +127,7 @@ ScriptValue ErrorEvent::error(ScriptState* script_state) const {
 
 void ErrorEvent::Trace(Visitor* visitor) const {
   visitor->Trace(error_);
+  visitor->Trace(location_);
   visitor->Trace(world_);
   Event::Trace(visitor);
 }

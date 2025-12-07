@@ -82,6 +82,7 @@ bool OptimizationGuideModelExecutionError::transient() const {
     case ModelExecutionError::kUnsupportedLanguage:
     case ModelExecutionError::kFiltered:
     case ModelExecutionError::kDisabled:
+    case ModelExecutionError::kResponseLowQuality:
       return false;
     case ModelExecutionError::kRequestThrottled:
     case ModelExecutionError::kGenericFailure:
@@ -89,8 +90,7 @@ bool OptimizationGuideModelExecutionError::transient() const {
     case ModelExecutionError::kCancelled:
       return true;
     case ModelExecutionError::kUnknown:
-      NOTREACHED_IN_MIGRATION();
-      return true;
+      NOTREACHED();
   }
 }
 
@@ -100,6 +100,7 @@ bool OptimizationGuideModelExecutionError::ShouldLogModelQuality() const {
     case ModelExecutionError::kUnsupportedLanguage:
     case ModelExecutionError::kNonRetryableError:
     case ModelExecutionError::kRetryableError:
+    case ModelExecutionError::kResponseLowQuality:
       return true;
     case ModelExecutionError::kInvalidRequest:
     case ModelExecutionError::kPermissionDenied:
@@ -109,8 +110,7 @@ bool OptimizationGuideModelExecutionError::ShouldLogModelQuality() const {
     case ModelExecutionError::kCancelled:
       return false;
     case ModelExecutionError::kUnknown:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 

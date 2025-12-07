@@ -9,7 +9,7 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
@@ -38,11 +38,11 @@ export interface AccessCodeCastElement {
   $: {
     backButton: CrButtonElement,
     castButton: CrButtonElement,
-    codeInputView: HTMLDivElement,
+    codeInputView: HTMLElement,
     codeInput: PasscodeInputElement,
     dialog: CrDialogElement,
     errorMessage: ErrorMessageElement,
-    qrInputView: HTMLDivElement,
+    qrInputView: HTMLElement,
   };
 }
 
@@ -76,6 +76,12 @@ export class AccessCodeCastElement extends AccessCodeCastElementBase {
         value: true,
         observer: 'castStateChange',
       },
+      inputLabel: String,
+      isWin: Boolean,
+      managedFootnote: String,
+      qrScannerEnabled: Boolean,
+      rememberDevices: Boolean,
+      submitDisabled: Boolean,
     };
   }
 
@@ -84,16 +90,16 @@ export class AccessCodeCastElement extends AccessCodeCastElementBase {
 
   private static readonly ACCESS_CODE_LENGTH = 6;
 
-  private accessCode: string;
-  private canCast: boolean;
+  declare private accessCode: string;
+  declare private canCast: boolean;
   private inputEnabledStartTime: number;
-  private inputLabel: string;
-  private isWin: boolean;
-  private managedFootnote: string;
-  private qrScannerEnabled: boolean;
-  private rememberDevices: boolean;
+  declare private inputLabel: string;
+  declare private isWin: boolean;
+  declare private managedFootnote: string;
+  declare private qrScannerEnabled: boolean;
+  declare private rememberDevices: boolean;
   private state: PageState;
-  private submitDisabled: boolean;
+  declare private submitDisabled: boolean;
 
   constructor() {
     super();
@@ -307,12 +313,12 @@ export class AccessCodeCastElement extends AccessCodeCastElementBase {
       Promise<AddSinkResultCode> {
     const addSinkResult = await BrowserProxy.getInstance().handler
         .addSink(this.accessCode, method);
-    return addSinkResult.resultCode as AddSinkResultCode;
+    return addSinkResult.resultCode;
   }
 
   private async cast(): Promise<RouteRequestResultCode> {
     const castResult = await BrowserProxy.getInstance().handler.castToSink();
-    return castResult.resultCode as RouteRequestResultCode;
+    return castResult.resultCode;
   }
 
   private async makeFootnote(messageName: string, value: number) {

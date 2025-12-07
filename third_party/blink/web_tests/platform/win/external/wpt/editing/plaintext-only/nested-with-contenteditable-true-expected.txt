@@ -1,0 +1,76 @@
+This is a testharness.js-based test.
+Found 36 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] contenteditable="plaintext-only" in contenteditable="" should support style edit
+  assert_equals: expected "<div contenteditable=\\"\\"><div contenteditable=\\"plaintext-only\\"><b>abc</b></div></div>" but got "<div contenteditable=\\"\\"><div contenteditable=\\"plaintext-only\\">abc</div></div>"
+[FAIL] contenteditable="plaintext-only" in contenteditable="" should insert paragraph at typing Enter
+  assert_equals: expected "<div contenteditable=\\"\\"><div contenteditable=\\"plaintext-only\\"><p>a</p><p>c</p></div></div>" but got "<div contenteditable=\\"\\"><div contenteditable=\\"plaintext-only\\"><p>a\\nc</p></div></div>"
+[FAIL] contenteditable="plaintext-only" in contenteditable="" and contenteditable="false" should insert line break at typing Enter
+  assert_equals: expected "<div contenteditable=\\"\\"><div contenteditable=\\"false\\"><div contenteditable=\\"plaintext-only\\"><p>a<br>c</p></div></div></div>" but got "<div contenteditable=\\"\\"><div contenteditable=\\"false\\"><div contenteditable=\\"plaintext-only\\"><p>abc</p></div></div></div>"
+[FAIL] styling start boundary of contenteditable="plaintext-only" in contenteditable="" should apply the style to entire the range
+  assert_equals: expected "<div contenteditable=\\"\\">A<b>B</b><div contenteditable=\\"plaintext-only\\"><b>C</b>D</div>EF</div>" but got "<div contenteditable=\\"\\">A<b>B</b><div contenteditable=\\"plaintext-only\\">CD</div>EF</div>"
+[FAIL] styling end boundary of contenteditable="plaintext-only" in contenteditable="" should apply the style to entire the range
+  assert_equals: expected "<div contenteditable=\\"\\">AB<div contenteditable=\\"plaintext-only\\">C<b>D</b></div><b>E</b>F</div>" but got "<div contenteditable=\\"\\">AB<div contenteditable=\\"plaintext-only\\">CD</div>EF</div>"
+[FAIL] contenteditable="" in contenteditable="plaintext-only" should not support style edit
+  assert_equals: expected "<div contenteditable=\\"plaintext-only\\"><div contenteditable=\\"\\">abc</div></div>" but got "<div contenteditable=\\"plaintext-only\\"><div contenteditable=\\"\\"><b>abc</b></div></div>"
+[FAIL] contenteditable="" in contenteditable="plaintext-only" should insert line break at typing Enter
+  assert_equals: expected "<div contenteditable=\\"plaintext-only\\"><div contenteditable=\\"\\"><p>a<br>c</p></div></div>" but got "<div contenteditable=\\"plaintext-only\\"><div contenteditable=\\"\\"><p>a</p><p>c</p></div></div>"
+[FAIL] contenteditable="" in contenteditable="plaintext-only" and contenteditable="false" should insert paragraph at typing Enter
+  assert_equals: expected "<div contenteditable=\\"plaintext-only\\"><div contenteditable=\\"false\\"><div contenteditable=\\"\\"><p>a</p><p>c</p></div></div></div>" but got "<div contenteditable=\\"plaintext-only\\"><div contenteditable=\\"false\\"><div contenteditable=\\"\\"><p>abc</p></div></div></div>"
+[FAIL] styling end boundary of contenteditable="" in contenteditable="plaintext-only" should not apply the style
+  assert_equals: expected "<div contenteditable=\\"plaintext-only\\">AB<div contenteditable=\\"\\">CD</div>EF</div>" but got "<div contenteditable=\\"plaintext-only\\">AB<div contenteditable=\\"\\">C<b>D</b></div><b>E</b>F</div>"
+[FAIL] contenteditable="plaintext-only" in contenteditable="" should support style edit (explicitly setting focus to the nested one)
+  assert_equals: expected "<div contenteditable=\\"\\"><div contenteditable=\\"plaintext-only\\"><b>abc</b></div></div>" but got "<div contenteditable=\\"\\"><div contenteditable=\\"plaintext-only\\">abc</div></div>"
+[FAIL] contenteditable="plaintext-only" in contenteditable="" should insert paragraph at typing Enter (explicitly setting focus to the nested one)
+  assert_equals: expected "<div contenteditable=\\"\\"><div contenteditable=\\"plaintext-only\\"><p>a</p><p>c</p></div></div>" but got "<div contenteditable=\\"\\"><div contenteditable=\\"plaintext-only\\"><p>a\\nc</p></div></div>"
+[FAIL] contenteditable="plaintext-only" in contenteditable="" and contenteditable="false" should insert line break at typing Enter (explicitly setting focus to the nested one)
+  assert_equals: expected "<div contenteditable=\\"\\"><div contenteditable=\\"false\\"><div contenteditable=\\"plaintext-only\\"><p>a<br>c</p></div></div></div>" but got "<div contenteditable=\\"\\"><div contenteditable=\\"false\\"><div contenteditable=\\"plaintext-only\\"><p>abc</p></div></div></div>"
+[FAIL] styling start boundary of contenteditable="plaintext-only" in contenteditable="" should apply the style to entire the range (explicitly setting focus to the nested one)
+  assert_equals: expected "<div contenteditable=\\"\\">A<b>B</b><div contenteditable=\\"plaintext-only\\"><b>C</b>D</div>EF</div>" but got "<div contenteditable=\\"\\">A<b>B</b><div contenteditable=\\"plaintext-only\\">CD</div>EF</div>"
+[FAIL] styling end boundary of contenteditable="plaintext-only" in contenteditable="" should apply the style to entire the range (explicitly setting focus to the nested one)
+  assert_equals: expected "<div contenteditable=\\"\\">AB<div contenteditable=\\"plaintext-only\\">C<b>D</b></div><b>E</b>F</div>" but got "<div contenteditable=\\"\\">AB<div contenteditable=\\"plaintext-only\\">CD</div>EF</div>"
+[FAIL] contenteditable="" in contenteditable="plaintext-only" should not support style edit (explicitly setting focus to the nested one)
+  assert_equals: expected "<div contenteditable=\\"plaintext-only\\"><div contenteditable=\\"\\">abc</div></div>" but got "<div contenteditable=\\"plaintext-only\\"><div contenteditable=\\"\\"><b>abc</b></div></div>"
+[FAIL] contenteditable="" in contenteditable="plaintext-only" should insert line break at typing Enter (explicitly setting focus to the nested one)
+  assert_equals: expected "<div contenteditable=\\"plaintext-only\\"><div contenteditable=\\"\\"><p>a<br>c</p></div></div>" but got "<div contenteditable=\\"plaintext-only\\"><div contenteditable=\\"\\"><p>a</p><p>c</p></div></div>"
+[FAIL] contenteditable="" in contenteditable="plaintext-only" and contenteditable="false" should insert paragraph at typing Enter (explicitly setting focus to the nested one)
+  assert_equals: expected "<div contenteditable=\\"plaintext-only\\"><div contenteditable=\\"false\\"><div contenteditable=\\"\\"><p>a</p><p>c</p></div></div></div>" but got "<div contenteditable=\\"plaintext-only\\"><div contenteditable=\\"false\\"><div contenteditable=\\"\\"><p>abc</p></div></div></div>"
+[FAIL] styling end boundary of contenteditable="" in contenteditable="plaintext-only" should not apply the style (explicitly setting focus to the nested one)
+  assert_equals: expected "<div contenteditable=\\"plaintext-only\\">AB<div contenteditable=\\"\\">CD</div>EF</div>" but got "<div contenteditable=\\"plaintext-only\\">AB<div contenteditable=\\"\\">C<b>D</b></div><b>E</b>F</div>"
+[FAIL] contenteditable="plaintext-only" in contenteditable="true" should support style edit
+  assert_equals: expected "<div contenteditable=\\"true\\"><div contenteditable=\\"plaintext-only\\"><b>abc</b></div></div>" but got "<div contenteditable=\\"true\\"><div contenteditable=\\"plaintext-only\\">abc</div></div>"
+[FAIL] contenteditable="plaintext-only" in contenteditable="true" should insert paragraph at typing Enter
+  assert_equals: expected "<div contenteditable=\\"true\\"><div contenteditable=\\"plaintext-only\\"><p>a</p><p>c</p></div></div>" but got "<div contenteditable=\\"true\\"><div contenteditable=\\"plaintext-only\\"><p>a\\nc</p></div></div>"
+[FAIL] contenteditable="plaintext-only" in contenteditable="true" and contenteditable="false" should insert line break at typing Enter
+  assert_equals: expected "<div contenteditable=\\"true\\"><div contenteditable=\\"false\\"><div contenteditable=\\"plaintext-only\\"><p>a<br>c</p></div></div></div>" but got "<div contenteditable=\\"true\\"><div contenteditable=\\"false\\"><div contenteditable=\\"plaintext-only\\"><p>abc</p></div></div></div>"
+[FAIL] styling start boundary of contenteditable="plaintext-only" in contenteditable="true" should apply the style to entire the range
+  assert_equals: expected "<div contenteditable=\\"true\\">A<b>B</b><div contenteditable=\\"plaintext-only\\"><b>C</b>D</div>EF</div>" but got "<div contenteditable=\\"true\\">A<b>B</b><div contenteditable=\\"plaintext-only\\">CD</div>EF</div>"
+[FAIL] styling end boundary of contenteditable="plaintext-only" in contenteditable="true" should apply the style to entire the range
+  assert_equals: expected "<div contenteditable=\\"true\\">AB<div contenteditable=\\"plaintext-only\\">C<b>D</b></div><b>E</b>F</div>" but got "<div contenteditable=\\"true\\">AB<div contenteditable=\\"plaintext-only\\">CD</div>EF</div>"
+[FAIL] contenteditable="true" in contenteditable="plaintext-only" should not support style edit
+  assert_equals: expected "<div contenteditable=\\"plaintext-only\\"><div contenteditable=\\"true\\">abc</div></div>" but got "<div contenteditable=\\"plaintext-only\\"><div contenteditable=\\"true\\"><b>abc</b></div></div>"
+[FAIL] contenteditable="true" in contenteditable="plaintext-only" should insert line break at typing Enter
+  assert_equals: expected "<div contenteditable=\\"plaintext-only\\"><div contenteditable=\\"true\\"><p>a<br>c</p></div></div>" but got "<div contenteditable=\\"plaintext-only\\"><div contenteditable=\\"true\\"><p>a</p><p>c</p></div></div>"
+[FAIL] contenteditable="true" in contenteditable="plaintext-only" and contenteditable="false" should insert paragraph at typing Enter
+  assert_equals: expected "<div contenteditable=\\"plaintext-only\\"><div contenteditable=\\"false\\"><div contenteditable=\\"true\\"><p>a</p><p>c</p></div></div></div>" but got "<div contenteditable=\\"plaintext-only\\"><div contenteditable=\\"false\\"><div contenteditable=\\"true\\"><p>abc</p></div></div></div>"
+[FAIL] styling end boundary of contenteditable="true" in contenteditable="plaintext-only" should not apply the style
+  assert_equals: expected "<div contenteditable=\\"plaintext-only\\">AB<div contenteditable=\\"true\\">CD</div>EF</div>" but got "<div contenteditable=\\"plaintext-only\\">AB<div contenteditable=\\"true\\">C<b>D</b></div><b>E</b>F</div>"
+[FAIL] contenteditable="plaintext-only" in contenteditable="true" should support style edit (explicitly setting focus to the nested one)
+  assert_equals: expected "<div contenteditable=\\"true\\"><div contenteditable=\\"plaintext-only\\"><b>abc</b></div></div>" but got "<div contenteditable=\\"true\\"><div contenteditable=\\"plaintext-only\\">abc</div></div>"
+[FAIL] contenteditable="plaintext-only" in contenteditable="true" should insert paragraph at typing Enter (explicitly setting focus to the nested one)
+  assert_equals: expected "<div contenteditable=\\"true\\"><div contenteditable=\\"plaintext-only\\"><p>a</p><p>c</p></div></div>" but got "<div contenteditable=\\"true\\"><div contenteditable=\\"plaintext-only\\"><p>a\\nc</p></div></div>"
+[FAIL] contenteditable="plaintext-only" in contenteditable="true" and contenteditable="false" should insert line break at typing Enter (explicitly setting focus to the nested one)
+  assert_equals: expected "<div contenteditable=\\"true\\"><div contenteditable=\\"false\\"><div contenteditable=\\"plaintext-only\\"><p>a<br>c</p></div></div></div>" but got "<div contenteditable=\\"true\\"><div contenteditable=\\"false\\"><div contenteditable=\\"plaintext-only\\"><p>abc</p></div></div></div>"
+[FAIL] styling start boundary of contenteditable="plaintext-only" in contenteditable="true" should apply the style to entire the range (explicitly setting focus to the nested one)
+  assert_equals: expected "<div contenteditable=\\"true\\">A<b>B</b><div contenteditable=\\"plaintext-only\\"><b>C</b>D</div>EF</div>" but got "<div contenteditable=\\"true\\">A<b>B</b><div contenteditable=\\"plaintext-only\\">CD</div>EF</div>"
+[FAIL] styling end boundary of contenteditable="plaintext-only" in contenteditable="true" should apply the style to entire the range (explicitly setting focus to the nested one)
+  assert_equals: expected "<div contenteditable=\\"true\\">AB<div contenteditable=\\"plaintext-only\\">C<b>D</b></div><b>E</b>F</div>" but got "<div contenteditable=\\"true\\">AB<div contenteditable=\\"plaintext-only\\">CD</div>EF</div>"
+[FAIL] contenteditable="true" in contenteditable="plaintext-only" should not support style edit (explicitly setting focus to the nested one)
+  assert_equals: expected "<div contenteditable=\\"plaintext-only\\"><div contenteditable=\\"true\\">abc</div></div>" but got "<div contenteditable=\\"plaintext-only\\"><div contenteditable=\\"true\\"><b>abc</b></div></div>"
+[FAIL] contenteditable="true" in contenteditable="plaintext-only" should insert line break at typing Enter (explicitly setting focus to the nested one)
+  assert_equals: expected "<div contenteditable=\\"plaintext-only\\"><div contenteditable=\\"true\\"><p>a<br>c</p></div></div>" but got "<div contenteditable=\\"plaintext-only\\"><div contenteditable=\\"true\\"><p>a</p><p>c</p></div></div>"
+[FAIL] contenteditable="true" in contenteditable="plaintext-only" and contenteditable="false" should insert paragraph at typing Enter (explicitly setting focus to the nested one)
+  assert_equals: expected "<div contenteditable=\\"plaintext-only\\"><div contenteditable=\\"false\\"><div contenteditable=\\"true\\"><p>a</p><p>c</p></div></div></div>" but got "<div contenteditable=\\"plaintext-only\\"><div contenteditable=\\"false\\"><div contenteditable=\\"true\\"><p>abc</p></div></div></div>"
+[FAIL] styling end boundary of contenteditable="true" in contenteditable="plaintext-only" should not apply the style (explicitly setting focus to the nested one)
+  assert_equals: expected "<div contenteditable=\\"plaintext-only\\">AB<div contenteditable=\\"true\\">CD</div>EF</div>" but got "<div contenteditable=\\"plaintext-only\\">AB<div contenteditable=\\"true\\">C<b>D</b></div><b>E</b>F</div>"
+Harness: the test ran to completion.
+

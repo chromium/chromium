@@ -5,11 +5,15 @@
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
+import org.chromium.ui.edge_to_edge.EdgeToEdgeSupplier;
 
 /**
  * Control drawing using the Android Edge to Edge Feature. This allows drawing under Android System
  * Bars.
  */
+@NullMarked
 public interface EdgeToEdgeController extends Destroyable, EdgeToEdgeSupplier {
     /**
      * @return the inset in DPs needed for the bottom UI to adjust views to draw below the Bottom
@@ -26,6 +30,13 @@ public interface EdgeToEdgeController extends Destroyable, EdgeToEdgeSupplier {
      *     EdgeToEdgePadAdjuster}s (e.g. when browser controls are present but scrolled off).
      */
     int getBottomInsetPx();
+
+    /**
+     * @return the inset in pixels needed for the bottom UI to adjust views to draw below the Bottom
+     *     Nav Bar. This value will persist even if the controller is not drawing the page ToEdge.
+     */
+    // TODO(crbug.com/367426935) Fold into the getBottomInset* methods
+    int getSystemBottomInsetPx();
 
     /**
      * Whether the system is drawing "toEdge" (i.e. the edge-to-edge wrapper has no bottom padding).

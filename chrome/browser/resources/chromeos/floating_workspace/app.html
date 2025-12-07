@@ -1,0 +1,86 @@
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<style include="oobe-dialog-host-styles">
+  #defaultDialog {
+    background-color: var(--cros-sys-app_base_shaded);
+  }
+
+  #checkingAnimation {
+    max-height: 90%;
+  }
+
+  #networkErrorDialog {
+    background-color: var(--cros-sys-app_base_shaded);
+  }
+
+  #generalErrorDialog {
+    background-color: var(--cros-sys-app_base_shaded);
+  }
+</style>
+
+<oobe-adaptive-dialog id="defaultDialog"
+aria-live="polite" footer-shrinkable>
+  <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+  <h1 slot="title">
+    [[defaultDialogTitleString]]
+  </h1>
+  <paper-progress slot="progress" id="checking-progress" indeterminate>
+  </paper-progress>
+  <div slot="content" class="flex layout vertical center-justified center">
+    <oobe-cr-lottie id="checkingAnimation"
+    animation-url="animations/checking_for_update.json">
+    </oobe-cr-lottie>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button id="cancelButton" on-click="onCancelButtonClick_"
+    text-key="floatingWorkspaceStartupDialogButton" border>
+    </oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>
+
+<oobe-adaptive-dialog id="networkErrorDialog"
+aria-live="polite" footer-shrinkable>
+  <iron-icon slot="icon" icon="oobe-32:wifi"></iron-icon>
+  <h1 slot="title">
+    $i18n{floatingWorkspaceNetworkDialogTitle}
+  </h1>
+  <div slot="subtitle">
+    $i18n{floatingWorkspaceNetworkDialogSubtitle}
+  </div>
+  <div slot="content" class="flex layout vertical">
+    <network-select on-network-item-selected="onNetworkItemSelected"
+    on-custom-item-selected="onCustomItemSelected"
+    custom-items="[[getNetworkCustomItems()]]">
+    </network-select>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button id="cancelButton" on-click="onCancelButtonClick_"
+    text-key="floatingWorkspaceStartupDialogButton" border>
+    </oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>
+
+<oobe-adaptive-dialog id="generalErrorDialog"
+aria-live="polite" footer-shrinkable>
+  <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+  <h1 slot="title">
+    $i18n{floatingWorkspaceErrorDialogTitle}
+  </h1>
+  <div slot="subtitle">
+    $i18n{floatingWorkspaceErrorDialogSubtitle}
+  </div>
+  <div slot="content" class="flex layout vertical center center-justified">
+    <iron-icon icon="oobe-illos:error-illo" class="illustration-jelly">
+    </iron-icon>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button id="cancelButton" on-click="onCancelButtonClick_"
+    text-key="floatingWorkspaceErrorDialogButton" class="focus-on-show"
+    border>
+    </oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>

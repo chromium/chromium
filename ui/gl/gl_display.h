@@ -11,8 +11,9 @@
 #include <memory>
 #include <vector>
 
+#include "build/build_config.h"
 #include "ui/gl/gl_export.h"
-#include "ui/gl/gpu_switching_manager.h"
+#include "ui/gl/gpu_switching_observer.h"
 
 #if BUILDFLAG(IS_APPLE)
 #if __OBJC__
@@ -45,7 +46,8 @@ class EGLDisplayPlatform {
 };
 
 // If adding a new type, also add it to EGLDisplayType in
-// tools/metrics/histograms/enums.xml. Don't remove or reorder entries.
+// tools/metrics/histograms/metadata/gpu/enums.xml. Don't remove or reorder
+// entries.
 enum DisplayType {
   DEFAULT = 0,
   SWIFT_SHADER = 1,
@@ -66,7 +68,8 @@ enum DisplayType {
   ANGLE_OPENGLES_EGL = 16,
   ANGLE_METAL = 17,
   ANGLE_METAL_NULL = 18,
-  DISPLAY_TYPE_MAX = 19,
+  ANGLE_D3D11_WARP = 19,
+  DISPLAY_TYPE_MAX = 20,
 };
 
 enum DisplayPlatform {
@@ -162,7 +165,7 @@ class GL_EXPORT GLDisplayEGL : public GLDisplay {
    public:
     explicit EGLGpuSwitchingObserver(EGLDisplay display);
     ~EGLGpuSwitchingObserver() override = default;
-    void OnGpuSwitched(GpuPreference active_gpu_heuristic) override;
+    void OnGpuSwitched() override;
 
    private:
     EGLDisplay display_ = EGL_NO_DISPLAY;

@@ -1,0 +1,39 @@
+This is a wdspec test.
+[FAIL] test_set_viewport
+  AssertionError: assert {'height': 1176, 'width': 980} == {'width': 250, 'height': 300}
+[FAIL] test_undefined_viewport
+  AssertionError: assert {'height': 1176, 'width': 980} == {'width': 499, 'height': 599}
+[FAIL] test_modified_dimensions[none]
+  AssertionError: assert {'height': 1176, 'width': 980} == {'width': 250, 'height': 300}
+[FAIL] test_modified_dimensions[width]
+  AssertionError: assert {'height': 1176, 'width': 980} == {'width': 250, 'height': 300}
+[FAIL] test_modified_dimensions[height]
+  AssertionError: assert {'height': 1176, 'width': 980} == {'width': 250, 'height': 300}
+[FAIL] test_modified_dimensions[both]
+  AssertionError: assert {'height': 1176, 'width': 980} == {'width': 250, 'height': 300}
+[FAIL] test_reset_to_default
+  AssertionError: assert {'height': 490, 'width': 980} == {'width': 666, 'height': 333}
+[FAIL] test_specific_context
+  AssertionError: assert {'height': 1960, 'width': 980} == {'width': 333, 'height': 666}
+[FAIL] test_persists_on_navigation[http]
+  AssertionError: assert {'height': 1176, 'width': 980} == {'width': 499, 'height': 599}
+[FAIL] test_persists_on_navigation[https]
+  AssertionError: assert {'height': 1176, 'width': 980} == {'width': 499, 'height': 599}
+[FAIL] test_persists_on_navigation[https coop]
+  AssertionError: assert {'height': 1176, 'width': 980} == {'width': 499, 'height': 599}
+[FAIL] test_persists_on_reload
+  AssertionError: assert {'height': 1176, 'width': 980} == {'width': 499, 'height': 599}
+[FAIL] test_with_scrollbars[standard-horizontal]
+  AssertionError: assert {'height': 1306, 'width': 1088} == {'width': 499, 'height': 599}
+[FAIL] test_with_scrollbars[standard-vertical]
+  AssertionError: assert {'height': 1176, 'width': 980} == {'width': 499, 'height': 599}
+[FAIL] test_with_scrollbars[standard-both]
+  AssertionError: assert {'height': 1306, 'width': 1088} == {'width': 499, 'height': 599}
+[FAIL] test_with_scrollbars[quirks-horizontal]
+  AssertionError: assert {'height': 1306, 'width': 1088} == {'width': 499, 'height': 599}
+[FAIL] test_with_scrollbars[quirks-vertical]
+  AssertionError: assert {'height': 1176, 'width': 980} == {'width': 499, 'height': 599}
+[FAIL] test_with_scrollbars[quirks-both]
+  AssertionError: assert {'height': 1306, 'width': 1088} == {'width': 499, 'height': 599}
+Harness: the test ran to completion.
+

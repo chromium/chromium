@@ -5,6 +5,7 @@
 #define DEVICE_BLUETOOTH_FLOSS_EXPORTED_CALLBACK_MANAGER_H_
 
 #include <memory>
+#include <sstream>
 #include <type_traits>
 #include <unordered_map>
 #include <utility>

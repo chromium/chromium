@@ -1,91 +1,74 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>
-      Test linearRampToValue Updates the Param Value
-    </title>
-    <script src="../../resources/testharness.js"></script>
-    <script src="../../resources/testharnessreport.js"></script>
-    <script src="../resources/audit-util.js"></script>
-    <script src="../resources/audit.js"></script>
-  </head>
-  <body>
-    <script id="layout-test-code">
-      let renderQuantumSize = 128;
-      // Should be a power of two to get rid of rounding errors when converting
-      // between time and frame.
-      let sampleRate = 8192;
-      let renderDuration = 1;
-      // End time of the linear ramp automation
-      let rampEndTime = renderDuration / 2;
 
-      let audit = Audit.createTaskRunner();
+<head>
+  <title>
+    Test linearRampToValue Updates the Param Value
+  </title>
+  <script src="../../resources/testharness.js"></script>
+  <script src="../../resources/testharnessreport.js"></script>
+  <script src="../resources/audit-util.js"></script>
+</head>
 
-      // Test that linearRampToValue properly sets the AudioParam .value
-      // attribute when the linearRamp automation is running.
-      audit.define('propagate', (task, should) => {
-        let context =
-            new OfflineAudioContext(1, renderDuration * sampleRate, sampleRate);
+<body>
+  <script>
+    const renderQuantumSize = 128;
+    // Should be a power of two to get rid of rounding errors when converting
+    // between time and frame.
+    const sampleRate = 8192;
+    const renderDuration = 1;
+    // End time of the linear ramp automation
+    const rampEndTime = renderDuration / 2;
 
-        // Create a constant source.
-        let source = context.createBufferSource();
-        source.buffer = createConstantBuffer(context, 1, 1);
-        source.loop = true;
+    // Test that linearRampToValue properly sets the AudioParam .value
+    // attribute when the linearRamp automation is running.
+    promise_test(() => {
+      const context =
+          new OfflineAudioContext(1, renderDuration * sampleRate, sampleRate);
 
-        // The gain node to be automated for testing.
-        let gain = context.createGain();
+      // Create a constant source.
+      const bufferSource = new AudioBufferSourceNode(
+          context, {buffer: createConstantBuffer(context, 1, 1), loop: true});
 
-        gain.gain.setValueAtTime(0, 0);
-        gain.gain.linearRampToValueAtTime(1, rampEndTime);
+      // The gain node to be automated for testing.
+      const gain = new GainNode(context);
 
-        // Connect up the graph
-        source.connect(gain);
-        gain.connect(context.destination);
+      gain.gain.setValueAtTime(0, 0);
+      gain.gain.linearRampToValueAtTime(1, rampEndTime);
 
-        let success = true;
+      // Connect up the graph
+      bufferSource.connect(gain).connect(context.destination);
 
-        // The number of rendering quanta that will be processed in the context.
-        // At the beginning of each rendering quantum (except the first), we
-        // will check that gain.gain.value has the expected value.
-        let renderLoops =
-            Math.floor(renderDuration * sampleRate / renderQuantumSize);
+      // The number of rendering quanta that will be processed in the context.
+      // At the beginning of each rendering quantum (except the first), we
+      // will check that gain.gain.value has the expected value.
+      const renderLoops =
+          Math.floor(renderDuration * sampleRate / renderQuantumSize);
 
-        for (let k = 1; k < renderLoops; ++k) {
-          let time = k * renderQuantumSize / sampleRate;
-          context.suspend(time)
-              .then(function() {
-                let expected = 1;
+      for (let k = 1; k < renderLoops; ++k) {
+        const time = k * renderQuantumSize / sampleRate;
+        context.suspend(time).then(() => {
+          let expected = 1;
 
-                if (context.currentTime <= rampEndTime) {
-                  // The expected value of the gain is the last computed value
-                  // from the previous rendering quantum because suspend() stops
-                  // at the beginning of a rendering quantum, so we haven't
-                  // computed the new value yet.
-                  expected =
-                      (context.currentTime - 1 / sampleRate) / rampEndTime;
-                }
+          if (context.currentTime <= rampEndTime) {
+            // The expected value of the gain is the last computed value
+            // from the previous rendering quantum because suspend() stops
+            // at the beginning of a rendering quantum, so we haven't
+            // computed the new value yet.
+            expected = (context.currentTime - 1 / sampleRate) / rampEndTime;
+          }
 
-                let frame = context.currentTime * sampleRate - 1;
-                success =
-                    should(gain.gain.value, 'gain.gain.value at frame ' + frame)
-                        .beEqualTo(expected);
-              })
-              .then(context.resume.bind(context));
-        }
+          const frame = context.currentTime * sampleRate - 1;
+          assert_equals(
+              gain.gain.value, expected, 'gain.gain.value at frame ' + frame);
+          context.resume();
+        });
+      }
 
-        // Rock and roll!
-        source.start();
-        context.startRendering()
-            .then(function(result) {
-              should(success, 'linearRampToValue')
-                  .message(
-                      'properly set the AudioParam value',
-                      'did not properly set the AudioParam value');
-            })
-            .then(() => task.done());
-      });
-
-      audit.run();
-    </script>
-  </body>
+      // Rock and roll!
+      bufferSource.start();
+      return context.startRendering();
+    }, 'propagate: linearRampToValue properly updates AudioParam.value');
+  </script>
+</body>
 </html>

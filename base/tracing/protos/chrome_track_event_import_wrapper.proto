@@ -1,0 +1,9 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+// Import all .proto files that should be included in the proto descriptor.
+import public "base/tracing/protos/chrome_enums.proto";
+import public "base/tracing/protos/chrome_track_event.proto";

@@ -6,13 +6,13 @@
 
 #include <memory>
 
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
-#include "ash/components/arc/test/fake_arc_session.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/platform_thread.h"
 #include "chrome/browser/speech/tts_chromeos.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
+#include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "content/public/browser/tts_controller.h"
 #include "content/public/test/browser_task_environment.h"
@@ -51,6 +51,27 @@ class TestableTtsController : public content::TtsController {
   void Stop(const GURL& source_url) override {}
   void Pause() override {}
   void Resume() override {}
+  void UpdateLanguageStatus(content::BrowserContext* browser_context,
+                            const std::string& lang,
+                            content::LanguageInstallStatus install_status,
+                            const std::string& error) override {}
+  void AddUpdateLanguageStatusDelegate(
+      content::UpdateLanguageStatusDelegate* delegate) override {}
+  void RemoveUpdateLanguageStatusDelegate(
+      content::UpdateLanguageStatusDelegate* delegate) override {}
+  void UninstallLanguageRequest(content::BrowserContext* browser_context,
+                                const std::string& lang,
+                                const std::string& client_id,
+                                int source,
+                                bool uninstall_immediately) override {}
+  void InstallLanguageRequest(content::BrowserContext* browser_context,
+                              const std::string& lang,
+                              const std::string& client_id,
+                              int source) override {}
+  void LanguageStatusRequest(content::BrowserContext* browser_context,
+                             const std::string& lang,
+                             const std::string& client_id,
+                             int source) override {}
   void GetVoices(content::BrowserContext* browser_context,
                  const GURL& source_url,
                  std::vector<content::VoiceData>* out_voices) override {}
@@ -66,8 +87,6 @@ class TestableTtsController : public content::TtsController {
     return nullptr;
   }
   void RefreshVoices() override {}
-  void SetRemoteTtsEngineDelegate(
-      content::RemoteTtsEngineDelegate* delegate) override {}
   void SetTtsPlatform(content::TtsPlatform* tts_platform) override {}
   int QueueSize() override { return 0; }
   void StripSSML(

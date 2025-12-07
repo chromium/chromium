@@ -11,6 +11,7 @@
 namespace blink {
 
 class WebGLTexture;
+class ExecutionContext;
 
 class OVRMultiview2 final : public WebGLExtension {
   DEFINE_WRAPPERTYPEINFO();
@@ -19,7 +20,7 @@ class OVRMultiview2 final : public WebGLExtension {
   static bool Supported(WebGLRenderingContextBase*);
   static const char* ExtensionName();
 
-  explicit OVRMultiview2(WebGLRenderingContextBase*);
+  OVRMultiview2(WebGLRenderingContextBase*, ExecutionContext*);
 
   WebGLExtensionName GetName() const override;
 

@@ -15,8 +15,8 @@
 #include "base/token.h"
 #include "base/unguessable_token.h"
 #include "media/capture/video_capture_types.h"
-#include "third_party/blink/public/common/media/video_capture.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/platform/media/video_capture.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/video_capture/video_capturer_source.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -53,13 +53,9 @@ class MODULES_EXPORT LocalVideoCapturerSource : public VideoCapturerSource {
 
   // VideoCaptureSource Implementation.
   media::VideoCaptureFormats GetPreferredFormats() override;
-  void StartCapture(
-      const media::VideoCaptureParams& params,
-      const VideoCaptureDeliverFrameCB& new_frame_callback,
-      const VideoCaptureSubCaptureTargetVersionCB&
-          sub_capture_target_version_callback,
-      const VideoCaptureNotifyFrameDroppedCB& frame_dropped_callback,
-      const RunningCallback& running_callback) override;
+  void StartCapture(const media::VideoCaptureParams& params,
+                    VideoCaptureCallbacks video_capture_callbacks,
+                    VideoCaptureRunningCallbackCB running_callback) override;
   void RequestRefreshFrame() override;
   void MaybeSuspend() override;
   void Resume() override;
@@ -81,7 +77,7 @@ class MODULES_EXPORT LocalVideoCapturerSource : public VideoCapturerSource {
   // These two are valid between StartCapture() and StopCapture().
   // |running_call_back_| is run when capture is successfully started, and when
   // it is stopped or error happens.
-  RunningCallback running_callback_;
+  VideoCaptureRunningCallbackCB running_callback_;
   base::OnceClosure stop_capture_cb_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;

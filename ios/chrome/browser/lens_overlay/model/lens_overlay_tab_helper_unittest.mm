@@ -9,39 +9,45 @@
 #import "components/lens/lens_overlay_permission_utils.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "ui/base/device_form_factor.h"
 
 namespace {
 
 class LensOverlayTabHelperTest : public PlatformTest {
  public:
-  LensOverlayTabHelperTest() {
-    browser_state_ = browser_state_manager_.AddBrowserStateWithBuilder(
-        TestChromeBrowserState::Builder());
-  }
-
   void SetUp() override {
     PlatformTest::SetUp();
 
+    if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
+      GTEST_SKIP() << "Feature unsupported on iPad";
+    }
+
+    profile_ =
+        profile_manager_.AddProfileWithBuilder(TestProfileIOS::Builder());
+
     feature_list_.InitAndEnableFeature(kEnableLensOverlay);
 
-    GetApplicationContext()->GetLocalState()->SetInteger(
+    profile_->GetPrefs()->SetInteger(
         lens::prefs::kLensOverlaySettings,
         static_cast<int>(
             lens::prefs::LensOverlaySettingsPolicyValue::kEnabled));
 
-    web::WebState::CreateParams params(browser_state_.get());
-    web_state_ = web::WebState::Create(params);
+    web_state_ = std::make_unique<web::FakeWebState>();
+    web_state_->SetBrowserState(profile_.get());
 
     id dispatcher = [[CommandDispatcher alloc] init];
     dispatcher_ = dispatcher;
@@ -61,10 +67,10 @@ class LensOverlayTabHelperTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::MainThreadType::IO};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  TestChromeBrowserStateManager browser_state_manager_;
-  raw_ptr<ChromeBrowserState> browser_state_;
-  std::unique_ptr<web::WebState> web_state_;
-  raw_ptr<LensOverlayTabHelper> helper_ = nullptr;
+  TestProfileManagerIOS profile_manager_;
+  raw_ptr<ProfileIOS> profile_;
+  std::unique_ptr<web::FakeWebState> web_state_;
+  raw_ptr<LensOverlayTabHelper, DanglingUntriaged> helper_ = nullptr;
   id handler_;
   id dispatcher_;
   id mock_commands_handler_;
@@ -73,8 +79,10 @@ class LensOverlayTabHelperTest : public PlatformTest {
 
 // Test that web state destruction causes lens UI to destroy with no animation.
 TEST_F(LensOverlayTabHelperTest, ShouldDestroyUIOnWebStateDestruction) {
-  helper_->SetLensOverlayShown(true);
-  OCMExpect([mock_commands_handler_ destroyLensUI:NO]);
+  helper_->SetLensOverlayUIAttachedAndAlive(true);
+  OCMExpect([mock_commands_handler_
+      destroyLensUI:NO
+             reason:lens::LensOverlayDismissalSource::kTabClosed]);
   web_state_.reset();
   EXPECT_OCMOCK_VERIFY(mock_commands_handler_);
 }
@@ -82,19 +90,27 @@ TEST_F(LensOverlayTabHelperTest, ShouldDestroyUIOnWebStateDestruction) {
 // Test that destroyLensUI should not be called if the lens overlay is not
 // shown.
 TEST_F(LensOverlayTabHelperTest, ShouldNotDestroyUIOnWebStateDestruction) {
-  [[mock_commands_handler_ reject] destroyLensUI:[OCMArg any]];
-  helper_->SetLensOverlayShown(false);
+  [[[mock_commands_handler_ reject] ignoringNonObjectArgs]
+      destroyLensUI:[OCMArg any]
+             reason:lens::LensOverlayDismissalSource::kTabClosed];
+  helper_->SetLensOverlayUIAttachedAndAlive(false);
   web_state_.reset();
   EXPECT_OCMOCK_VERIFY(mock_commands_handler_);
 }
 
 // Tests that a change in the web state is propagated to the commands handler.
 TEST_F(LensOverlayTabHelperTest, ShouldShowTheUIWhenWebStateChanges) {
+  auto fake_navigation_manager = std::make_unique<web::FakeNavigationManager>();
+  std::unique_ptr<web::NavigationItem> item = web::NavigationItem::Create();
+  fake_navigation_manager->SetVisibleItem(item.get());
+  web_state_->SetNavigationManager(std::move(fake_navigation_manager));
+
   // Given a shown lens overlay state.
-  helper_->SetLensOverlayShown(true);
+  helper_->SetLensOverlayUIAttachedAndAlive(true);
+
   // Then the Lens UI should be shown.
-  OCMExpect([mock_commands_handler_ showLensUI:YES]);
-  // When the tab helper is notify of a change in the web state.
+  OCMExpect([mock_commands_handler_ showLensUI:NO]);
+  // When the tab helper is notifed of a change in the web state.
   helper_->WasShown(web_state_.get());
 
   EXPECT_OCMOCK_VERIFY(mock_commands_handler_);
@@ -103,9 +119,9 @@ TEST_F(LensOverlayTabHelperTest, ShouldShowTheUIWhenWebStateChanges) {
 // Tests that a change in the web state is propagated to the commands handler.
 TEST_F(LensOverlayTabHelperTest, ShouldHideTheUIWhenWebStateChanges) {
   // Given a shown lens overlay state.
-  helper_->SetLensOverlayShown(true);
+  helper_->SetLensOverlayUIAttachedAndAlive(true);
   // Then the Lens UI should be hidden.
-  OCMExpect([mock_commands_handler_ hideLensUI:YES]);
+  OCMExpect([mock_commands_handler_ hideLensUI:NO completion:nil]);
   // When the tab helper is notify of a change in the web state.
   helper_->WasHidden(web_state_.get());
 
@@ -116,10 +132,10 @@ TEST_F(LensOverlayTabHelperTest, ShouldHideTheUIWhenWebStateChanges) {
 // handler when the lens overlay is not shown.
 TEST_F(LensOverlayTabHelperTest, ShouldNotChangeUIStateWhenOverlayIsNotShown) {
   // Given a lens overlay not show.
-  helper_->SetLensOverlayShown(false);
+  helper_->SetLensOverlayUIAttachedAndAlive(false);
   // Then the Lens UI methods should not be called.
   OCMReject([mock_commands_handler_ showLensUI:YES]);
-  OCMReject([mock_commands_handler_ hideLensUI:YES]);
+  OCMReject([mock_commands_handler_ hideLensUI:YES completion:nil]);
   // When the tab helper is notify of a change in the web state.
   helper_->WasShown(web_state_.get());
   helper_->WasHidden(web_state_.get());

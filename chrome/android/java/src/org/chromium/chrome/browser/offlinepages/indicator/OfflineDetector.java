@@ -15,15 +15,19 @@ import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.version_info.VersionInfo;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.net.connectivitydetector.ConnectivityDetector;
 import org.chromium.chrome.browser.net.connectivitydetector.ConnectivityDetector.ConnectionState;
+
+import java.util.function.Supplier;
 
 /**
  * Class that detects if the network is offline. Waits for the network to stablize before notifying
  * the observer.
  */
+@NullMarked
 class OfflineDetector
         implements ConnectivityDetector.Observer, ApplicationStatus.ApplicationStateListener {
     // If the connection is online, then we report that immediately via |mIsOfflineCallback|.
@@ -54,10 +58,10 @@ class OfflineDetector
     static final long STATUS_INDICATOR_WAIT_ON_SWITCH_ONLINE_TO_OFFLINE_DEFAULT_DURATION_MS = 10000;
     final long mStatusIndicatorWaitOnSwitchOnlineToOfflineDurationMs;
 
-    private static ConnectivityDetector sMockConnectivityDetector;
-    private static Supplier<Long> sMockElapsedTimeSupplier;
+    private static @Nullable ConnectivityDetector sMockConnectivityDetector;
+    private static @Nullable Supplier<Long> sMockElapsedTimeSupplier;
 
-    private ConnectivityDetector mConnectivityDetector;
+    private @Nullable ConnectivityDetector mConnectivityDetector;
 
     // Maintains if the connection is effectively offline.
     // Effectively offline means that all checks have been passed and the
@@ -68,9 +72,9 @@ class OfflineDetector
     // True if the network is offline as detected by the connectivity detector.
     private boolean mIsOfflineLastReportedByConnectivityDetector;
 
-    private Context mContext;
+    private final Context mContext;
     private Handler mHandler;
-    private Runnable mUpdateOfflineStatusIndicatorDelayedRunnable;
+    private final Runnable mUpdateOfflineStatusIndicatorDelayedRunnable;
 
     // Used to inform the client when the system changes between online and offline. A value of true
     // is given when the system is offline, and a value of false is given when the system is online.
@@ -262,6 +266,7 @@ class OfflineDetector
         return mApplicationState == ApplicationState.HAS_RUNNING_ACTIVITIES;
     }
 
+    @SuppressWarnings("NullAway")
     void destroy() {
         ApplicationStatus.unregisterApplicationStateListener(this);
         if (mConnectivityDetector != null) {

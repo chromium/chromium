@@ -8,23 +8,27 @@ import android.graphics.drawable.Drawable;
 import android.view.Surface;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * Manages Surface(s), and SurfaceView(s) when necessary, for the compositor.
  *
- * See CompositorSurfaceManagerImpl for the standard implementation of this class.
+ * <p>See CompositorSurfaceManagerImpl for the standard implementation of this class.
  */
+@NullMarked
 public interface CompositorSurfaceManager {
     /** Delivers Surface lifecycle events to the target of this CompositorSurfaceManager. */
-    public interface SurfaceManagerCallbackTarget {
-        public void surfaceRedrawNeededAsync(Runnable drawingFinished);
+    interface SurfaceManagerCallbackTarget {
+        void surfaceRedrawNeededAsync(Runnable drawingFinished);
 
-        public void surfaceChanged(Surface surface, int format, int width, int height);
+        void surfaceChanged(Surface surface, int format, int width, int height);
 
-        public void surfaceCreated(Surface surface);
+        void surfaceCreated(Surface surface);
 
-        public void surfaceDestroyed(Surface surface, boolean androidSurfaceDestroyed);
+        void surfaceDestroyed(Surface surface, boolean androidSurfaceDestroyed);
 
-        public void unownedSurfaceDestroyed();
+        void unownedSurfaceDestroyed();
     }
 
     /** Turn off everything. */
@@ -63,5 +67,5 @@ public interface CompositorSurfaceManager {
     void setVisibility(int visibility);
 
     /** Gets the active {@link SurfaceView}. */
-    View getActiveSurfaceView();
+    @Nullable View getActiveSurfaceView();
 }

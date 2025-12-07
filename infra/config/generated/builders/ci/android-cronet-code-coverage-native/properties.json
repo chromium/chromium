@@ -13,11 +13,10 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-fyi-archive",
               "builder_group": "chromium.coverage",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {
-                "config": "x64_builder"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
                 "apply_configs": [
@@ -25,7 +24,8 @@
                   "mb"
                 ],
                 "build_config": "Debug",
-                "config": "android",
+                "config": "main_builder",
+                "target_arch": "intel",
                 "target_bits": 64,
                 "target_platform": "android"
               },
@@ -46,7 +46,14 @@
           "builder": "android-cronet-code-coverage-native",
           "project": "chromium"
         }
-      ]
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "android-cronet-code-coverage-native",
+          "group": "tryserver.chromium.android"
+        }
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-cronet-code-coverage-native/targets"
     }
   },
   "$build/code_coverage": {
@@ -57,18 +64,15 @@
     "export_coverage_to_zoss": true,
     "use_clang_coverage": true
   },
-  "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "metrics_project": "chromium-reclient-metrics",
-    "scandeps_server": true
-  },
   "$build/siso": {
     "configs": [
       "builder"
     ],
+    "enable_cloud_monitoring": true,
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
+    "metrics_project": "chromium-reclient-metrics",
     "project": "rbe-chromium-trusted",
     "remote_jobs": 500
   },
@@ -80,5 +84,11 @@
     ]
   },
   "builder_group": "chromium.coverage",
-  "recipe": "chromium"
+  "gardener_rotations": [
+    "cronet"
+  ],
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "cronet"
+  ]
 }

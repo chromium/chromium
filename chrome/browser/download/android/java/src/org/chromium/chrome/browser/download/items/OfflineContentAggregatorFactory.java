@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.download.items;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
 
@@ -16,9 +18,10 @@ import org.chromium.components.offline_items_collection.OfflineContentProvider;
  * Basic factory that creates and returns an {@link OfflineContentProvider} that is attached
  * natively to {@link Profile}.
  */
+@NullMarked
 public class OfflineContentAggregatorFactory {
     // We need only one provider, since OfflineContentAggregator lives in the original profile.
-    private static OfflineContentProvider sProvider;
+    private static @Nullable OfflineContentProvider sProvider;
 
     private OfflineContentAggregatorFactory() {}
 
@@ -46,8 +49,9 @@ public class OfflineContentAggregatorFactory {
         return sProvider;
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         OfflineContentProvider getOfflineContentAggregator();
     }
 }

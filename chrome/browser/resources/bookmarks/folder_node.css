@@ -1,0 +1,111 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_nav_menu_item_style_lit.css.js
+ * #import=./shared_style_lit.css.js
+ * #include=cr-shared-style-lit shared-style-lit cr-nav-menu-item-style-lit cr-icons-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: block;
+  --cr-vertical-tab-height: 33px;
+}
+
+.cr-nav-menu-item {
+  color: var(--folder-inactive-color);
+  /* Add enough space at the end for the focus outline to not be cropped. */
+  margin-inline-end: 3px;
+  padding: 0;
+}
+
+#inner-container {
+  align-items: center;
+  cursor: pointer;
+  display: grid;
+  flex: 1;
+  grid-template-areas: 'arrow folder label';
+  grid-template-columns: 40px 24px auto;
+  min-height: 0;
+  min-width: fit-content;
+  overflow: hidden;
+  padding-inline-start: calc(var(--node-depth, 0) * 15px + 4px);
+}
+
+#arrow {
+  --cr-icon-button-size: 40px;
+  grid-area: arrow;
+  justify-self: center;
+  margin: 0;
+}
+
+#arrow:not([is-open]) {
+  transform: rotate(-90deg);
+  transition: transform 150ms;
+}
+
+.folder-icon {
+  grid-area: folder;
+  justify-self: center;
+}
+
+.menu-label {
+  font-weight: 500;
+  grid-area: label;
+  padding: 0 6px;
+  white-space: nowrap;
+}
+
+@media (prefers-color-scheme: dark) {
+  .cr-nav-menu-item.drag-on {
+    color: var(--google-grey-700);
+  }
+}
+
+:host-context([dir='rtl']) #arrow:not([is-open]) {
+  transform: rotate(90deg);
+}
+
+#arrow[is-open] {
+  transform: initial;
+}
+
+.cr-vertical-tab::before {
+  display: none;
+}
+
+#container {
+  min-width: fit-content;
+  padding-inline-end: 10px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .cr-nav-menu-item[selected] #arrow,
+  .cr-nav-menu-item.drag-on #arrow {
+    --cr-icon-button-fill-color: black;
+  }
+
+  .cr-nav-menu-item.drag-on {
+    --iron-icon-fill-color: black;
+    background: var(--google-blue-300);
+    color: var(--google-grey-900);
+  }
+}
+
+/* Set styles for high contrast mode in Windows. */
+@media (forced-colors: active) {
+  .cr-nav-menu-item[selected] #arrow,
+  .cr-nav-menu-item.drag-on #arrow {
+    --cr-icon-button-fill-color: FieldText;
+  }
+
+  .cr-nav-menu-item[selected],
+  .cr-nav-menu-item.drag-on {
+    outline: var(--cr-focus-outline-hcm) !important;
+  }
+}

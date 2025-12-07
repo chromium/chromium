@@ -42,7 +42,7 @@ void RunCallbackWithConversionResult(Callback callback,
     return;
   }
 
-  memcpy(region_mapping.mapping.memory(), buffer.data(), buffer.size());
+  region_mapping.mapping.GetMemoryAsSpan<uint8_t>().copy_prefix_from(buffer);
   std::move(callback).Run(mojom::PdfNupConverter::Status::SUCCESS,
                           std::move(region_mapping.region));
 }
@@ -51,7 +51,7 @@ void RunCallbackWithConversionResult(Callback callback,
 
 PdfNupConverter::PdfNupConverter() = default;
 
-PdfNupConverter::~PdfNupConverter() {}
+PdfNupConverter::~PdfNupConverter() = default;
 
 void PdfNupConverter::NupPageConvert(
     uint32_t pages_per_sheet,

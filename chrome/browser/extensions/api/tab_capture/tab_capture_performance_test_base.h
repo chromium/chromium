@@ -12,9 +12,10 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/task/execution_fence.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/trace_event_analyzer.h"
+#include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/test/base/in_process_browser_test.h"
 
 namespace base {
@@ -137,8 +138,7 @@ class TabCapturePerformanceTestBase : public InProcessBrowserTest {
   // that would also preempt BEST_EFFORT tasks in utility processes, and
   // TabCapturePerformanceTest.Performance relies on BEST_EFFORT tasks in
   // utility process for tracing.
-  std::optional<base::ThreadPoolInstance::ScopedBestEffortExecutionFence>
-      best_effort_fence_;
+  std::optional<base::ScopedBestEffortExecutionFence> best_effort_fence_;
 
   bool is_full_performance_run_ = false;
 
@@ -152,6 +152,11 @@ class TabCapturePerformanceTestBase : public InProcessBrowserTest {
       const net::test_server::HttpRequest& request);
 
   raw_ptr<const extensions::Extension, DanglingUntriaged> extension_ = nullptr;
+
+  // Allow MV2 extensions.
+  // TODO(https://crbug.com/40804030): Remove this when tests are updated to
+  // use MV3.
+  extensions::ScopedTestMV2Enabler mv2_enabler_;
 
   // Manages the Audio Service feature set, enabled for these performance tests.
   base::test::ScopedFeatureList feature_list_;

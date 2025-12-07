@@ -6,33 +6,30 @@
 
 #import <memory>
 
-#import "base/test/task_environment.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
 class BrowserListFactoryTest : public PlatformTest {
  public:
-  BrowserListFactoryTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-  }
+  BrowserListFactoryTest() { profile_ = TestProfileIOS::Builder().Build(); }
 
-  ChromeBrowserState* browser_state() { return browser_state_.get(); }
+  ProfileIOS* profile() { return profile_.get(); }
 
  private:
-  base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<ProfileIOS> profile_;
 };
 
 // Tests that the factory returns a non-null instance.
-TEST_F(BrowserListFactoryTest, GetForBrowserState) {
-  EXPECT_TRUE(BrowserListFactory::GetForBrowserState(browser_state()));
+TEST_F(BrowserListFactoryTest, GetForProfile) {
+  EXPECT_TRUE(BrowserListFactory::GetForProfile(profile()));
 }
 
 // Tests that the factory returns the same instance for regular and
-// off-the-record ChromeBrowserState.
-TEST_F(BrowserListFactoryTest, GetForBrowserState_OffTheRecord) {
-  EXPECT_EQ(BrowserListFactory::GetForBrowserState(browser_state()),
-            BrowserListFactory::GetForBrowserState(
-                browser_state()->GetOffTheRecordChromeBrowserState()));
+// off-the-record ProfileIOS.
+TEST_F(BrowserListFactoryTest, GetForProfile_OffTheRecord) {
+  EXPECT_EQ(
+      BrowserListFactory::GetForProfile(profile()),
+      BrowserListFactory::GetForProfile(profile()->GetOffTheRecordProfile()));
 }

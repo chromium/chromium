@@ -10,22 +10,10 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/prefs/pref_service.h"
-#include "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
 using bookmarks::BookmarkNode;
-
-namespace {
-
-void LogDefaultBookmarkFolderOutcome(
-    DefaultBookmarkFolderOutcomeForMetrics value) {
-  base::UmaHistogramEnumeration("IOS.Bookmarks.DefaultBookmarkFolderOutcome",
-                                value);
-}
-
-}  // namespace
 
 const int64_t kLastUsedBookmarkFolderNone = -1;
 
@@ -54,7 +42,7 @@ std::vector<const bookmarks::BookmarkNode*> PrimaryPermanentNodes(
       return nodes;
     }
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool IsLastUsedBookmarkFolderSet(PrefService* prefs) {
@@ -85,30 +73,12 @@ const bookmarks::BookmarkNode* GetDefaultBookmarkFolder(
   int64_t node_id =
       prefs->GetInt64(prefs::kIosBookmarkLastUsedFolderReceivingBookmarks);
 
-  if (node_id == kLastUsedBookmarkFolderNone) {
-    LogDefaultBookmarkFolderOutcome(
-        DefaultBookmarkFolderOutcomeForMetrics::kUnset);
-  } else {
-    BookmarkStorageType type =
-        static_cast<BookmarkStorageType>(prefs->GetInteger(
-            prefs::kIosBookmarkLastUsedStorageReceivingBookmarks));
-
+  if (node_id != kLastUsedBookmarkFolderNone) {
     const BookmarkNode* result =
         bookmarks::GetBookmarkNodeByID(bookmark_model, node_id);
+    // Make sure the bookmark node is a folder. See crbug.com/1450146.
     if (result && result->is_folder()) {
-      // Make sure the bookmark node is a folder. See crbug.com/1450146.
-      LogDefaultBookmarkFolderOutcome(
-          bookmark_model->IsLocalOnlyNode(*result)
-              ? DefaultBookmarkFolderOutcomeForMetrics::kExistingLocalFolderSet
-              : DefaultBookmarkFolderOutcomeForMetrics::
-                    kExistingAccountFolderSet);
       return result;
-    } else {
-      LogDefaultBookmarkFolderOutcome(
-          (type == BookmarkStorageType::kLocalOrSyncable)
-              ? DefaultBookmarkFolderOutcomeForMetrics::kMissingLocalFolderSet
-              : DefaultBookmarkFolderOutcomeForMetrics::
-                    kMissingAccountFolderSet);
     }
   }
 

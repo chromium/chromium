@@ -29,7 +29,6 @@ void VerifyStats(const media::AudioProcessingStats& expected,
             expected.echo_return_loss);
   EXPECT_EQ(received.apm_statistics.echo_return_loss_enhancement,
             expected.echo_return_loss_enhancement);
-  EXPECT_FALSE(received.apm_statistics.voice_detected);
   EXPECT_FALSE(received.apm_statistics.divergent_filter_fraction);
   EXPECT_FALSE(received.apm_statistics.delay_median_ms);
   EXPECT_FALSE(received.apm_statistics.delay_standard_deviation_ms);
@@ -101,14 +100,14 @@ class AudioServiceAudioProcessorProxyTest : public testing::Test {
 
 TEST_F(AudioServiceAudioProcessorProxyTest, SafeIfNoControls) {
   scoped_refptr<AudioServiceAudioProcessorProxy> proxy =
-      new rtc::RefCountedObject<AudioServiceAudioProcessorProxy>();
+      new webrtc::RefCountedObject<AudioServiceAudioProcessorProxy>();
   VerifyStats(media::AudioProcessingStats(), proxy);
   proxy->MaybeUpdateNumPreferredCaptureChannels(2);
 }
 
 TEST_F(AudioServiceAudioProcessorProxyTest, StopDetachesFromControls) {
   scoped_refptr<AudioServiceAudioProcessorProxy> proxy =
-      new rtc::RefCountedObject<AudioServiceAudioProcessorProxy>();
+      new webrtc::RefCountedObject<AudioServiceAudioProcessorProxy>();
 
   StrictMock<MockAudioProcessorControls> controls;
 
@@ -121,7 +120,7 @@ TEST_F(AudioServiceAudioProcessorProxyTest, StopDetachesFromControls) {
 
 TEST_F(AudioServiceAudioProcessorProxyTest, StatsUpdatedOnTimer) {
   scoped_refptr<AudioServiceAudioProcessorProxy> proxy =
-      new rtc::RefCountedObject<AudioServiceAudioProcessorProxy>();
+      new webrtc::RefCountedObject<AudioServiceAudioProcessorProxy>();
   StrictMock<MockAudioProcessorControls> controls;
   media::AudioProcessingStats stats1{4, 5};
   controls.SetStats(stats1);
@@ -141,7 +140,7 @@ TEST_F(AudioServiceAudioProcessorProxyTest, StatsUpdatedOnTimer) {
 
 TEST_F(AudioServiceAudioProcessorProxyTest, SetNumChannelsIfIncreases) {
   scoped_refptr<AudioServiceAudioProcessorProxy> proxy =
-      new rtc::RefCountedObject<AudioServiceAudioProcessorProxy>();
+      new webrtc::RefCountedObject<AudioServiceAudioProcessorProxy>();
   StrictMock<MockAudioProcessorControls> controls;
   EXPECT_CALL(controls, SetPreferredNumCaptureChannelsCalled(2));
   EXPECT_CALL(controls, SetPreferredNumCaptureChannelsCalled(3));
@@ -156,7 +155,7 @@ TEST_F(AudioServiceAudioProcessorProxyTest, SetNumChannelsIfIncreases) {
 TEST_F(AudioServiceAudioProcessorProxyTest,
        DoesNotSetNumChannelsIfDoesNotChange) {
   scoped_refptr<AudioServiceAudioProcessorProxy> proxy =
-      new rtc::RefCountedObject<AudioServiceAudioProcessorProxy>();
+      new webrtc::RefCountedObject<AudioServiceAudioProcessorProxy>();
   StrictMock<MockAudioProcessorControls> controls;
   EXPECT_CALL(controls, SetPreferredNumCaptureChannelsCalled(2)).Times(1);
 
@@ -169,7 +168,7 @@ TEST_F(AudioServiceAudioProcessorProxyTest,
 
 TEST_F(AudioServiceAudioProcessorProxyTest, DoesNotSetNumChannelsIfDecreases) {
   scoped_refptr<AudioServiceAudioProcessorProxy> proxy =
-      new rtc::RefCountedObject<AudioServiceAudioProcessorProxy>();
+      new webrtc::RefCountedObject<AudioServiceAudioProcessorProxy>();
   StrictMock<MockAudioProcessorControls> controls;
   EXPECT_CALL(controls, SetPreferredNumCaptureChannelsCalled(3)).Times(1);
 

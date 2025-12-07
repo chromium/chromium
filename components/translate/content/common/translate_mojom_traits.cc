@@ -40,8 +40,7 @@ translate::mojom::TranslateError EnumTraits<
       return translate::mojom::TranslateError::TRANSLATE_ERROR_MAX;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return translate::mojom::TranslateError::NONE;
+  NOTREACHED();
 }
 
 bool EnumTraits<translate::mojom::TranslateError, translate::TranslateErrors>::
@@ -86,8 +85,7 @@ bool EnumTraits<translate::mojom::TranslateError, translate::TranslateErrors>::
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static

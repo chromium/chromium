@@ -12,17 +12,19 @@
 
 #include "device/vr/openxr/openxr_controller.h"
 #include "device/vr/openxr/openxr_interaction_profiles.h"
+#include "device/vr/public/mojom/vr_service.mojom-forward.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace device {
 
 class OpenXrExtensionHelper;
+struct XrLocation;
 
 class OpenXRInputHelper {
  public:
   static XrResult CreateOpenXRInputHelper(
       XrInstance instance,
-      XrSystemId system,
+      const std::string& system_name,
       const OpenXrExtensionHelper& extension_helper,
       XrSession session,
       XrSpace local_space,
@@ -47,9 +49,21 @@ class OpenXRInputHelper {
 
   bool ReceivedExitGesture() { return received_exit_gesture_; }
 
+  // Called when the device is going to hide input sources from the page.
+  void OnHideInputSources();
+
+  std::optional<XrLocation> GetXrLocationFromHandJoint(
+      XrSpace mojo_space,
+      const mojom::XRHandJointSpaceInfo& hand_joint_space_info,
+      const gfx::Transform& joint_from_object) const;
+
+  std::optional<XrLocation> GetXrLocationFromInputSource(
+      const mojom::XRInputSourceSpaceInfo& input_source_space_info,
+      const gfx::Transform& input_space_from_object) const;
+
  private:
   XrResult Initialize(XrInstance instance,
-                      XrSystemId system,
+                      const std::string& system_name,
                       const OpenXrExtensionHelper& extension_helper);
 
   XrResult SyncActions(XrTime predicted_display_time);
@@ -59,6 +73,8 @@ class OpenXRInputHelper {
   }
 
   void OnExitGesture() { received_exit_gesture_ = true; }
+
+  void ResetControllerButtonState();
 
   XrSession session_;
   XrSpace local_space_;

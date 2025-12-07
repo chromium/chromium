@@ -7,17 +7,21 @@
 #include <atomic>
 #include <iterator>
 #include <limits>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_error_or.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/process/process_metrics.h"
 #include "base/strings/strcat.h"
@@ -136,13 +140,14 @@ class ChromiumSequentialFile : public leveldb::SequentialFile {
   // Note: This method is relatively hot during leveldb database
   // compaction. Please avoid making them slower.
   Status Read(size_t n, Slice* result, char* scratch) override {
-    int bytes_read = file_.ReadAtCurrentPosNoBestEffort(scratch, n);
-    if (bytes_read == -1) {
+    std::optional<size_t> bytes_read = file_.ReadAtCurrentPosNoBestEffort(
+        base::as_writable_bytes(UNSAFE_TODO(base::span(scratch, n))));
+    if (!bytes_read.has_value()) {
       base::File::Error error = base::File::GetLastFileError();
       return MakeIOError(filename_, base::File::ErrorToString(error),
                          kSequentialFileRead, error);
     }
-    *result = Slice(scratch, bytes_read);
+    *result = Slice(scratch, *bytes_read);
     return Status::OK();
   }
 
@@ -171,12 +176,14 @@ Status ReadFromFileToScratch(uint64_t offset,
                              char* scratch,
                              base::File* file,
                              const base::FilePath& file_path) {
-  int bytes_read = file->Read(offset, scratch, n);
-  if (bytes_read < 0) {
+  base::span<uint8_t> scratch_span =
+      base::as_writable_bytes(UNSAFE_TODO(base::span(scratch, n)));
+  std::optional<size_t> bytes_read = file->Read(offset, scratch_span);
+  if (!bytes_read) {
     return MakeIOError(file_path.AsUTF8Unsafe(), "Could not perform read",
                        kRandomAccessFileRead);
   }
-  *result = Slice(scratch, (bytes_read < 0) ? 0 : bytes_read);
+  *result = Slice(scratch, bytes_read.value());
 
   return Status::OK();
 }
@@ -420,10 +427,9 @@ std::string GetDumpNameForCache(DBTracker::SharedReadCacheUse cache) {
     case DBTracker::SharedReadCacheUse_InMemory:
       return "leveldatabase/block_cache/in_memory";
     case DBTracker::SharedReadCacheUse_NumCacheUses:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 MemoryAllocatorDump* CreateDumpMalloced(ProcessMemoryDump* pmd,
@@ -458,7 +464,7 @@ void RecordCacheUsageInTracing(ProcessMemoryDump* pmd,
       cache_ptr = leveldb_chrome::GetSharedInMemoryBlockCache();
       break;
     case DBTracker::SharedReadCacheUse_NumCacheUses:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   if (!cache_ptr)
     return;
@@ -543,11 +549,9 @@ const char* MethodIDToString(MethodID method) {
     case kObsoleteDeleteFile:
     case kObsoleteDeleteDir:
     case kNumEntries:
-      NOTREACHED_IN_MIGRATION();
-      return "Unknown";
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return "Unknown";
+  NOTREACHED();
 }
 
 Status MakeIOError(Slice filename,
@@ -710,10 +714,6 @@ ChromiumEnv::ChromiumEnv()
           storage::FilesystemProxy::UNRESTRICTED,
           base::FilePath())) {}
 
-ChromiumEnv::ChromiumEnv(bool log_lock_errors) : ChromiumEnv() {
-  log_lock_errors_ = log_lock_errors;
-}
-
 ChromiumEnv::ChromiumEnv(std::unique_ptr<storage::FilesystemProxy> filesystem)
     : filesystem_(std::move(filesystem)) {
   DCHECK(filesystem_);
@@ -772,7 +772,7 @@ const char* ChromiumEnv::FileErrorString(base::File::Error error) {
     case base::File::FILE_OK:
       return "OK.";
     case base::File::FILE_ERROR_MAX:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   NOTIMPLEMENTED();
   return "Unknown error.";
@@ -896,28 +896,15 @@ Status ChromiumEnv::LockFile(const std::string& fname, FileLock** lock) {
   const base::FilePath path = base::FilePath::FromUTF8Unsafe(fname);
   Retrier retrier;
   FileErrorOr<std::unique_ptr<storage::FilesystemProxy::FileLock>> lock_result;
-  bool same_process_held_lock = false;
   size_t tries = 0;
   do {
     tries++;
-    same_process_held_lock = false;
-    lock_result = filesystem_->LockFile(path, &same_process_held_lock);
+    lock_result = filesystem_->LockFile(path);
   } while (!lock_result.has_value() && retrier.ShouldKeepTrying());
 
   if (!lock_result.has_value()) {
-    if (log_lock_errors_ &&
-        lock_result.error() == base::File::FILE_ERROR_IN_USE) {
-      base::UmaHistogramBoolean("LevelDBEnv.LockFileInUseByThisProcess",
-                                same_process_held_lock);
-    }
-
     return MakeIOError(fname, FileErrorString(lock_result.error()), kLockFile,
                        lock_result.error());
-  }
-
-  if (log_lock_errors_) {
-    // 100 because the retrier tries every ~10ms for ~1000ms.
-    base::UmaHistogramCounts100("LevelDBEnv.LockFileSuccessAttempts", tries);
   }
 
   *lock = new ChromiumFileLock(std::move(lock_result.value()), fname);
@@ -1096,7 +1083,7 @@ class DBTracker::TrackedDBImpl : public base::LinkNode<TrackedDBImpl>,
                                  public TrackedDB {
  public:
   TrackedDBImpl(DBTracker* tracker,
-                const std::string name,
+                const std::string& name,
                 leveldb::DB* db,
                 const leveldb::Cache* block_cache,
                 DatabaseErrorReportingCallback on_get_error,
@@ -1116,7 +1103,7 @@ class DBTracker::TrackedDBImpl : public base::LinkNode<TrackedDBImpl>,
     } else if (block_cache == leveldb_chrome::GetSharedInMemoryBlockCache()) {
       shared_read_cache_use_ = SharedReadCacheUse_InMemory;
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
     tracker_->DatabaseOpened(this);
   }
@@ -1317,7 +1304,7 @@ DBTracker::DBTracker() : mdp_(new MemoryDumpProvider()) {
 }
 
 DBTracker::~DBTracker() {
-  NOTREACHED_IN_MIGRATION();  // DBTracker is a singleton
+  NOTREACHED();  // DBTracker is a singleton
 }
 
 // static

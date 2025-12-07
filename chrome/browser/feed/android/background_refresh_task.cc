@@ -18,7 +18,7 @@ namespace feed {
 
 BackgroundRefreshTask::BackgroundRefreshTask(RefreshTaskId task_id)
     : task_id_(task_id) {}
-BackgroundRefreshTask::~BackgroundRefreshTask() {}
+BackgroundRefreshTask::~BackgroundRefreshTask() = default;
 
 void BackgroundRefreshTask::OnStartTaskInReducedMode(
     const background_task::TaskParameters& task_params,

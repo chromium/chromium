@@ -39,7 +39,6 @@
 #include "services/network/public/cpp/resource_request_body.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "third_party/blink/public/common/service_worker/service_worker_loader_helpers.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
 #include "components/offline_pages/core/request_header/offline_page_header.h"
@@ -58,12 +57,12 @@ namespace {
 // offline snapshot of the page.
 bool ShouldFallbackToLoadOfflinePage(
     const net::HttpRequestHeaders& extra_request_headers) {
-  std::string offline_header_value;
-  if (!extra_request_headers.GetHeader(offline_pages::kOfflinePageHeader,
-                                       &offline_header_value)) {
+  std::optional<std::string> offline_header_value =
+      extra_request_headers.GetHeader(offline_pages::kOfflinePageHeader);
+  if (!offline_header_value) {
     return false;
   }
-  offline_pages::OfflinePageHeader offline_header(offline_header_value);
+  offline_pages::OfflinePageHeader offline_header(*offline_header_value);
   return offline_header.reason !=
              offline_pages::OfflinePageHeader::Reason::NONE &&
          offline_header.reason !=
@@ -95,21 +94,17 @@ std::optional<int> ServiceWorkerControlleeRequestHandler::
 
 ServiceWorkerControlleeRequestHandler::ServiceWorkerControlleeRequestHandler(
     base::WeakPtr<ServiceWorkerContextCore> context,
+    std::string fetch_event_client_id,
     base::WeakPtr<ServiceWorkerClient> service_worker_client,
-    network::mojom::RequestDestination destination,
     bool skip_service_worker,
-    int frame_tree_node_id,
     ServiceWorkerAccessedCallback service_worker_accessed_callback)
     : context_(std::move(context)),
+      fetch_event_client_id_(std::move(fetch_event_client_id)),
       service_worker_client_(std::move(service_worker_client)),
-      destination_(destination),
       skip_service_worker_(skip_service_worker),
       force_update_started_(false),
-      frame_tree_node_id_(frame_tree_node_id),
       service_worker_accessed_callback_(
           std::move(service_worker_accessed_callback)) {
-  DCHECK(
-      blink::ServiceWorkerLoaderHelpers::IsMainRequestDestination(destination));
   TRACE_EVENT_WITH_FLOW0("ServiceWorker",
                          "ServiceWorkerControlleeRequestHandler::"
                          "ServiceWorkerControlleeRequestHandler",
@@ -132,7 +127,7 @@ void ServiceWorkerControlleeRequestHandler::MaybeScheduleUpdate() {
 
   // For navigations, the update logic is taken care of
   // during navigation and waits for the HintToUpdateServiceWorker message.
-  if (blink::IsRequestDestinationFrame(destination_)) {
+  if (service_worker_client_->IsContainerForWindowClient()) {
     return;
   }
 
@@ -151,7 +146,6 @@ void ServiceWorkerControlleeRequestHandler::MaybeScheduleUpdate() {
 
 void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
     const network::ResourceRequest& tentative_resource_request,
-    const blink::StorageKey& storage_key,
     BrowserContext* browser_context,
     NavigationLoaderInterceptor::LoaderCallback loader_callback,
     NavigationLoaderInterceptor::FallbackCallback fallback_callback) {
@@ -164,11 +158,6 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
     return;
   }
 
-  // Update the host. This is important to do before falling back to network
-  // below, so service worker APIs still work even if the service worker is
-  // bypassed for request interception.
-  InitializeServiceWorkerClient(tentative_resource_request, storage_key);
-
   // Fall back to network if we were instructed to bypass the service worker for
   // request interception, or if the context is gone so we have to bypass
   // anyway.
@@ -178,6 +167,34 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
     return;
   }
   ServiceWorkerMetrics::RecordSkipServiceWorkerOnNavigation(false);
+
+  // TODO(crbug.com/352578800): Revisit this to ensure the correct reload
+  // handling. Also, these check should be handled inside
+  // `service_worker_loader_helpers::IsEligibleForSyntheticResponse()` or merge
+  // the code into
+  // `ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader()` to use
+  // `skip_service_worker` flag.
+  if (service_worker_loader_helpers::IsEligibleForSyntheticResponse(
+          browser_context, tentative_resource_request.url)) {
+    const int kReloadFlags = net::LOAD_VALIDATE_CACHE | net::LOAD_BYPASS_CACHE;
+    // If the navigation is from reloading, do not inject the service worker
+    // registration.
+    if (tentative_resource_request.load_flags & kReloadFlags) {
+      CompleteWithoutLoader();
+      return;
+    }
+    // Only accepts GET.
+    if (tentative_resource_request.method !=
+        net::HttpRequestHeaders::kGetMethod) {
+      CompleteWithoutLoader();
+      return;
+    }
+    // Limit the storage key is in the first party context.
+    if (!service_worker_client_->key().IsFirstPartyContext()) {
+      CompleteWithoutLoader();
+      return;
+    }
+  }
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
   // Fall back for the subsequent offline page interceptor to load the offline
@@ -205,36 +222,13 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
       tentative_resource_request.url.spec());
 
   // Look up a registration.
-  context_->registry()->FindRegistrationForClientUrl(
-      ServiceWorkerRegistry::Purpose::kNavigation, stripped_url_, storage_key_,
+  context_->registry().FindRegistrationForClientUrl(
+      ServiceWorkerRegistry::Purpose::kNavigation,
+      service_worker_client_->url(), service_worker_client_->key(),
       base::BindOnce(
           &ServiceWorkerControlleeRequestHandler::ContinueWithRegistration,
           weak_factory_.GetWeakPtr(), /*is_for_navigation=*/true,
           base::TimeTicks::Now()));
-}
-
-void ServiceWorkerControlleeRequestHandler::InitializeServiceWorkerClient(
-    const network::ResourceRequest& tentative_resource_request,
-    const blink::StorageKey& storage_key) {
-  // Update the container host with this request, clearing old controller state
-  // if this is a redirect.
-  service_worker_client_->SetControllerRegistration(
-      nullptr,
-      /*notify_controllerchange=*/false);
-  stripped_url_ = net::SimplifyUrlForRequest(tentative_resource_request.url);
-
-  storage_key_ = storage_key;
-
-  service_worker_client_->UpdateUrls(
-      stripped_url_,
-      // The storage key only has a top_level_site, not
-      // an origin, so we must extract the origin from
-      // trusted_params.
-      tentative_resource_request.trusted_params
-          ? tentative_resource_request.trusted_params->isolation_info
-                .top_frame_origin()
-          : std::nullopt,
-      storage_key_);
 }
 
 void ServiceWorkerControlleeRequestHandler::ContinueWithRegistration(
@@ -253,14 +247,11 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithRegistration(
         "ServiceWorker.FoundServiceWorkerRegistrationOnNavigation",
         status == blink::ServiceWorkerStatusCode::kOk);
 
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
+    TRACE_EVENT_BEGIN(
         "ServiceWorker",
         "ServiceWorker.MaybeCreateLoaderToContinueWithRegistration",
-        TRACE_ID_LOCAL(this), find_registration_start_time);
-    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-        "ServiceWorker",
-        "ServiceWorker.MaybeCreateLoaderToContinueWithRegistration",
-        TRACE_ID_LOCAL(this), now);
+        perfetto::Track::FromPointer(this), find_registration_start_time);
+    TRACE_EVENT_END("ServiceWorker", perfetto::Track::FromPointer(this), now);
   }
 
   if (status != blink::ServiceWorkerStatusCode::kOk) {
@@ -303,7 +294,8 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithRegistration(
           registration->scope(),
           service_worker_security_utils::site_for_cookies(
               service_worker_client_->key()),
-          service_worker_client_->top_frame_origin(), /*script_url=*/GURL(),
+          service_worker_client_->top_frame_origin(),
+          service_worker_client_->key(), /*script_url=*/GURL(),
           context_->wrapper()->browser_context());
 
   service_worker_accessed_callback_.Run(registration->scope(),
@@ -471,7 +463,7 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
       "TypeAtContinueWithActivatedVersion",
       active_version->fetch_handler_type());
 
-  if (blink::IsRequestDestinationFrame(destination_)) {
+  if (service_worker_client_->IsContainerForWindowClient()) {
     service_worker_client_->AddServiceWorkerToUpdate(active_version);
   }
 
@@ -540,9 +532,8 @@ void ServiceWorkerControlleeRequestHandler::CreateLoaderAndStartRequest(
     base::TimeTicks find_registration_start_time) {
   loader_wrapper_ = std::make_unique<ServiceWorkerMainResourceLoaderWrapper>(
       std::make_unique<ServiceWorkerMainResourceLoader>(
-          std::move(fallback_callback_), service_worker_client_,
-          frame_tree_node_id_, std::move(find_registration_start_time)));
-  loader_wrapper_->get()->set_worker_parent_client_uuid(parent_client_uuid_);
+          std::move(fallback_callback_), fetch_event_client_id_,
+          service_worker_client_, std::move(find_registration_start_time)));
   std::move(loader_callback_)
       .Run(NavigationLoaderInterceptor::Result(
           base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
@@ -568,7 +559,7 @@ void ServiceWorkerControlleeRequestHandler::DidUpdateRegistration(
     int64_t registration_id) {
   DCHECK(force_update_started_);
 
-  if (!context_) {
+  if (!context_ || !service_worker_client_) {
     TRACE_EVENT_WITH_FLOW1(
         "ServiceWorker",
         "ServiceWorkerControlleeRequestHandler::DidUpdateRegistration",
@@ -582,9 +573,9 @@ void ServiceWorkerControlleeRequestHandler::DidUpdateRegistration(
       !original_registration->installing_version()) {
     // Update failed. Look up the registration again since the original
     // registration was possibly unregistered in the meantime.
-    context_->registry()->FindRegistrationForClientUrl(
-        ServiceWorkerRegistry::Purpose::kNotForNavigation, stripped_url_,
-        storage_key_,
+    context_->registry().FindRegistrationForClientUrl(
+        ServiceWorkerRegistry::Purpose::kNotForNavigation,
+        service_worker_client_->url(), service_worker_client_->key(),
         base::BindOnce(
             &ServiceWorkerControlleeRequestHandler::ContinueWithRegistration,
             weak_factory_.GetWeakPtr(),
@@ -618,7 +609,7 @@ void ServiceWorkerControlleeRequestHandler::DidUpdateRegistration(
 void ServiceWorkerControlleeRequestHandler::OnUpdatedVersionStatusChanged(
     scoped_refptr<ServiceWorkerRegistration> registration,
     scoped_refptr<ServiceWorkerVersion> version) {
-  if (!context_) {
+  if (!context_ || !service_worker_client_) {
     TRACE_EVENT_WITH_FLOW1(
         "ServiceWorker",
         "ServiceWorkerControlleeRequestHandler::OnUpdatedVersionStatusChanged",
@@ -640,9 +631,9 @@ void ServiceWorkerControlleeRequestHandler::OnUpdatedVersionStatusChanged(
     // When the status is REDUNDANT, the update failed (eg: script error), we
     // continue with the incumbent version.
     // In case unregister job may have run, look up the registration again.
-    context_->registry()->FindRegistrationForClientUrl(
-        ServiceWorkerRegistry::Purpose::kNotForNavigation, stripped_url_,
-        storage_key_,
+    context_->registry().FindRegistrationForClientUrl(
+        ServiceWorkerRegistry::Purpose::kNotForNavigation,
+        service_worker_client_->url(), service_worker_client_->key(),
         base::BindOnce(
             &ServiceWorkerControlleeRequestHandler::ContinueWithRegistration,
             weak_factory_.GetWeakPtr(),

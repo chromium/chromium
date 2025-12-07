@@ -7,8 +7,7 @@
 #include "ui/base/idle/idle_polling_service.h"
 #include "ui/base/idle/idle_time_provider.h"
 
-namespace ui {
-namespace test {
+namespace ui::test {
 
 ScopedIdleProviderForTest::ScopedIdleProviderForTest(
     std::unique_ptr<IdleTimeProvider> provider) {
@@ -19,5 +18,4 @@ ScopedIdleProviderForTest::~ScopedIdleProviderForTest() {
   IdlePollingService::GetInstance()->SetProviderForTest(nullptr);
 }
 
-}  // namespace test
-}  // namespace ui
+}  // namespace ui::test

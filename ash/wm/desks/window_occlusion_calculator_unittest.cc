@@ -5,6 +5,7 @@
 #include "ash/wm/desks/window_occlusion_calculator.h"
 
 #include "ash/public/cpp/window_properties.h"
+#include "ash/test/test_window_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/test/aura_test_base.h"
@@ -66,7 +67,21 @@ class WindowOcclusionCalculatorTest : public aura::test::AuraTestBase {
 
   aura::Window* CreateWindow(const gfx::Rect& bounds, aura::Window* parent) {
     ++id_assigner_;
-    return CreateNormalWindow(id_assigner_, parent, /*delegate=*/nullptr);
+    // `bounds` is intentioanlly ignored because that's how original test was
+    // written.
+    // TODO(crbug.com/436906707): Consider using aura::WindowOcclusionTracker
+    // directly instead of WindowOcclusionCalculator.
+    auto* delegate =
+        aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate();
+    return aura::test::TestWindowBuilder(
+               {.delegate = delegate,
+                .parent = parent,
+                .bounds = {100, 100},
+                .window_type = aura::client::WINDOW_TYPE_UNKNOWN,
+                .window_id = id_assigner_})
+        .AllowAllWindowStates()
+        .Build()
+        .release();
   }
 
   std::unique_ptr<WindowOcclusionCalculator> occlusion_calculator_;

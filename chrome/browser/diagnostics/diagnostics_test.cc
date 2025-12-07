@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/diagnostics/diagnostics_test.h"
+
+#include <array>
+#include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
@@ -35,7 +34,7 @@ struct TestNameInfo {
 // used for UMA metrics names (with "Diagnostics.Test." or
 // "Diagnostics.Recovery." prepended), so do not change them without
 // understanding the consequences.
-const TestNameInfo kTestNameInfo[] = {
+constexpr auto kTestNameInfo = std::to_array<TestNameInfo>({
     {"ConflictingDlls", "Conflicting modules"},
     {"DiskSpace", "Available disk space"},
     {"InstallType", "Install type"},
@@ -60,14 +59,13 @@ const TestNameInfo kTestNameInfo[] = {
     {"SQLiteIntegrityFavicons", "Favicons database"},
     {"SQLiteIntegrityTopSites", "Top Sites database"},
     // Add new entries in the same order as DiagnosticsTestId.
-};
+});
 
 static_assert(std::size(kTestNameInfo) == DIAGNOSTICS_TEST_ID_COUNT,
               "diagnostics test info mismatch");
 
-const TestNameInfo* FindTestInfo(DiagnosticsTestId id) {
-  DCHECK(id < DIAGNOSTICS_TEST_ID_COUNT);
-  return &kTestNameInfo[id];
+const TestNameInfo& FindTestInfo(DiagnosticsTestId id) {
+  return kTestNameInfo[id];
 }
 
 }  // namespace
@@ -75,7 +73,7 @@ const TestNameInfo* FindTestInfo(DiagnosticsTestId id) {
 DiagnosticsTest::DiagnosticsTest(DiagnosticsTestId id)
     : id_(id), outcome_code_(-1), result_(DiagnosticsModel::TEST_NOT_RUN) {}
 
-DiagnosticsTest::~DiagnosticsTest() {}
+DiagnosticsTest::~DiagnosticsTest() = default;
 
 bool DiagnosticsTest::Execute(DiagnosticsModel::Observer* observer,
                               DiagnosticsModel* model,
@@ -119,12 +117,12 @@ base::FilePath DiagnosticsTest::GetUserDefaultProfileDir() {
 
 int DiagnosticsTest::GetId() const { return id_; }
 
-std::string DiagnosticsTest::GetName() const {
-  return std::string(FindTestInfo(id_)->name);
+std::string_view DiagnosticsTest::GetName() const {
+  return FindTestInfo(id_).name;
 }
 
-std::string DiagnosticsTest::GetTitle() const {
-  return std::string(FindTestInfo(id_)->description);
+std::string_view DiagnosticsTest::GetTitle() const {
+  return FindTestInfo(id_).description;
 }
 
 DiagnosticsModel::TestResult DiagnosticsTest::GetResult() const {

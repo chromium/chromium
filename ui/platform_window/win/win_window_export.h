@@ -15,11 +15,7 @@
 #endif  // defined(WIN_WINDOW_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(WIN_WINDOW_IMPLEMENTATION)
 #define WIN_WINDOW_EXPORT __attribute__((visibility("default")))
-#else
-#define WIN_WINDOW_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

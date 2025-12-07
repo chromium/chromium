@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_ui.h"
 
 #include <memory>
@@ -23,7 +18,6 @@
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_handler_utils.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_metrics_recorder.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/confirm_signout_dialog.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/add_supervision_resources.h"
 #include "chrome/grit/add_supervision_resources_map.h"
@@ -36,9 +30,11 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
+#include "ui/webui/webui_util.h"
 
 namespace ash {
 
@@ -122,8 +118,8 @@ void AddSupervisionDialog::CloseNowForTesting() {
   }
 }
 
-ui::ModalType AddSupervisionDialog::GetDialogModalType() const {
-  return ui::ModalType::MODAL_TYPE_WINDOW;
+ui::mojom::ModalType AddSupervisionDialog::GetDialogModalType() const {
+  return ui::mojom::ModalType::kWindow;
 }
 
 void AddSupervisionDialog::GetDialogSize(gfx::Size* size) const {
@@ -217,10 +213,8 @@ void AddSupervisionUI::SetUpResources() {
   source->EnableReplaceI18nInJS();
 
   // Forward data to the WebUI.
-  source->AddResourcePaths(
-      base::make_span(kAddSupervisionResources, kAddSupervisionResourcesSize));
-  source->AddResourcePaths(
-      base::make_span(kSupervisionResources, kSupervisionResourcesSize));
+  source->AddResourcePaths(kAddSupervisionResources);
+  source->AddResourcePaths(kSupervisionResources);
 
   source->AddLocalizedString("pageTitle", IDS_ADD_SUPERVISION_PAGE_TITLE);
   source->AddLocalizedString("webviewLoadingMessage",

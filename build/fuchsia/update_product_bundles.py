@@ -54,7 +54,7 @@ def remove_repositories(repo_names_to_remove):
     repo_names_to_remove: List of repo names (as strings) to remove.
   """
   for repo_name in repo_names_to_remove:
-    common.run_ffx_command(cmd=('repository', 'remove', repo_name), check=True)
+    common.run_ffx_command(cmd=('repository', 'remove', repo_name))
 
 
 def get_repositories():
@@ -77,7 +77,6 @@ def get_repositories():
 
   repos = json.loads(
       common.run_ffx_command(cmd=('--machine', 'json', 'repository', 'list'),
-                             check=True,
                              capture_output=True).stdout.strip())
   to_prune = set()
   sdk_root_abspath = os.path.abspath(os.path.dirname(common.SDK_ROOT))
@@ -107,7 +106,15 @@ def get_current_signature(image_dir):
   version_file = os.path.join(image_dir, 'product_bundle.json')
   if os.path.exists(version_file):
     with open(version_file) as f:
-      return json.load(f)['product_version']
+      try:
+        data = json.load(f)
+      except json.decoder.JSONDecodeError:
+        logging.warning('product_bundle.json is not at the JSON format and may be empty.')
+        return None
+      if 'product_version' not in data:
+        logging.warning('The key "product_version" does not exist in product_bundle.json')
+        return None
+      return data['product_version']
   return None
 
 
@@ -154,11 +161,7 @@ def main():
   auth_args = [
       '--auth',
       os.path.join(os.path.dirname(__file__), 'get_auth_token.py')
-  ] if args.internal and running_unattended() else []
-  if args.internal and not running_unattended():
-    print('*** product bundle v2 requires authentication with your account and '
-          'it should already open a browser window to do it if you have not '
-          'granted the permission yet.')
+  ] if running_unattended() else []
   for product in new_products:
     prod, board = product.split('.', 1)
     if prod.startswith('smart_display_') and board in [
@@ -169,8 +172,8 @@ def main():
       # src-internal. Likely we can download two copies for a smooth
       # transition, but it would be easier to keep it as-is during the ffx
       # product v2 migration.
-      # TODO(crbug.com/40938340): Migrate the image download folder away from the
-      # following hack.
+      # TODO(crbug.com/40938340): Migrate the image download folder away from
+      # the following hack.
       prod, board = board + '-release', prod
     if args.internal:
       # sdk_override.txt does not work for internal images.
@@ -179,10 +182,10 @@ def main():
     else:
       override_url = update_sdk.GetSDKOverrideGCSPath()
       if override_url:
-        logging.debug('Using override file')
         # TODO(zijiehe): Convert to removesuffix once python 3.9 is supported.
         if override_url.endswith('/sdk'):
           override_url = override_url[:-len('/sdk')]
+        logging.debug(f'Using {override_url} from override file.')
       image_dir = os.path.join(common.IMAGES_ROOT, prod, board)
     curr_signature = get_current_signature(image_dir)
 
@@ -190,13 +193,15 @@ def main():
       continue
 
     common.make_clean_directory(image_dir)
-    base_url = 'gs://{bucket}/development/{new_hash}'.format(
+    base_url = override_url or 'gs://{bucket}/development/{new_hash}'.format(
         bucket='fuchsia-sdk' if args.internal else 'fuchsia', new_hash=new_hash)
+    effective_auth_args = auth_args if base_url.startswith(
+        'gs://fuchsia-artifacts-internal/') or base_url.startswith(
+            'gs://fuchsia-sdk/') else []
     lookup_output = common.run_ffx_command(cmd=[
         '--machine', 'json', 'product', 'lookup', product, new_hash,
-        '--base-url', override_url or base_url
-    ] + auth_args,
-                                           check=True,
+        '--base-url', base_url
+    ] + effective_auth_args,
                                            capture_output=True).stdout.strip()
     download_url = json.loads(lookup_output)['transfer_manifest_url']
     # The download_url is purely a timestamp based gs location and is fairly
@@ -204,8 +209,8 @@ def main():
     # if it's not coming from the sdk_override.txt file.
     logging.info(f'Downloading {product} from {base_url} and {download_url}.')
     common.run_ffx_command(
-        cmd=['product', 'download', download_url, image_dir] + auth_args,
-        check=True)
+        cmd=['product', 'download', download_url, image_dir] +
+        effective_auth_args)
 
   return 0
 

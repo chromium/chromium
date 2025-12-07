@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="sl">
+<translation id="1293272072740285747">Ohranite to skupino, če želite pozneje dodati zavihke, ali jo izbrišite, če je ne potrebujete več.
+
+Če jo izbrišete, bodo vsi takoj izgubili dostop do skupine zavihkov »<ph name="TITLE_OF_GROUP" />« in izbrisana bo iz vseh naprav.</translation>
+<translation id="1340839264183302272">Zapusti skupino</translation>
+<translation id="1419023007528516122">S tem boste skupino trajno izbrisali iz naprave</translation>
+<translation id="1501480321619201731">Izbriši skupino</translation>
+<translation id="2677748264148917807">Zapusti</translation>
+<translation id="3547352561153509682">S tem boste skupino izbrisali iz vseh naprav, v katerih ste prijavljeni v račun <ph name="USER_EMAIL" />.</translation>
+<translation id="381219490185664296">Želite razdružiti skupino zavihkov?</translation>
+<translation id="4139634748112164403">Zavihki bodo ostali odprti v tej napravi, vendar bo skupina trajno izbrisana</translation>
+<translation id="4431937619879060901">Takoj boste izgubili dostop do skupine zavihkov »<ph name="GROUP_NAME" />« in izbrisana bo iz vseh vaših naprav</translation>
+<translation id="4460014764210899310">Razdruži</translation>
+<translation id="4777866634702576038">Želite izbrisati skupino zavihkov?</translation>
+<translation id="5094423602314093681">Želite odstraniti zavihke in izbrisati skupino?</translation>
+<translation id="5647702255748985085">Želite zapustiti skupino?</translation>
+<translation id="742664698522525515">Želite ohraniti skupino?</translation>
+<translation id="750886945254958667">Ohranite to skupino, če želite pozneje dodati zavihke, ali jo zapustite, če ne želite več dostopati do nje</translation>
+<translation id="8261506727792406068">Izbriši</translation>
+<translation id="870736955561925754">Želite zapreti zavihek in izbrisati skupino?</translation>
+<translation id="8804742093141782941">Ohrani skupino</translation>
+<translation id="9169141410816678175">Vsi bodo takoj izgubili dostop do skupine zavihkov »<ph name="GROUP_NAME" />« in izbrisana bo iz vseh naprav</translation>
+<translation id="9216898458513705996">Zavihki bodo ostali odprti v tej napravi, vendar bo skupina izbrisana iz vseh naprav, v katerih ste prijavljeni v račun <ph name="USER_EMAIL" /></translation>
+<translation id="94870150074703282">Želite izbrisati skupino?</translation>
+</translationbundle>

@@ -13,4 +13,8 @@ ScrollSnapshotClient::ScrollSnapshotClient(LocalFrame* frame) {
     frame->AddScrollSnapshotClient(*this);
 }
 
+void ScrollSnapshotClient::UpdateSnapshotForServiceAnimations() {
+  UpdateSnapshot();
+}
+
 }  // namespace blink

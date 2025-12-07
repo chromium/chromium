@@ -33,7 +33,7 @@ class EventLogger {
 
   void AddEvent(std::string_view event) {
     AutoLock guard(lock_);
-    events_.push_back(std::string(event));
+    events_.emplace_back(event);
   }
   std::vector<std::string> TakeEvents() {
     AutoLock guard(lock_);
@@ -228,8 +228,9 @@ class BoxedValue {
   ~BoxedValue() {
     EXPECT_TRUE(sequence_checker_.CalledOnValidSequence());
     AddEventIfNeeded(StringPrintf("destroyed BoxedValue = %d", value_));
-    if (destruction_callback_)
+    if (destruction_callback_) {
       std::move(destruction_callback_).Run();
+    }
   }
 
   void set_destruction_callback(OnceClosure callback) {
@@ -820,7 +821,7 @@ TYPED_TEST(SequenceBoundTest, AsyncCallNoArgsVoidThen) {
 
   {
     RunLoop loop;
-    s.AsyncCall(&NoArgsVoidReturn::Method).Then(BindLambdaForTesting([&]() {
+    s.AsyncCall(&NoArgsVoidReturn::Method).Then(BindLambdaForTesting([&] {
       loop.Quit();
     }));
     loop.Run();
@@ -828,8 +829,9 @@ TYPED_TEST(SequenceBoundTest, AsyncCallNoArgsVoidThen) {
 
   {
     RunLoop loop;
-    s.AsyncCall(&NoArgsVoidReturn::ConstMethod)
-        .Then(BindLambdaForTesting([&]() { loop.Quit(); }));
+    s.AsyncCall(&NoArgsVoidReturn::ConstMethod).Then(BindLambdaForTesting([&] {
+      loop.Quit();
+    }));
     loop.Run();
   }
 }

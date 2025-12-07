@@ -1,19 +1,18 @@
 [
   {
     "os": [
-      "chromeos_ash"
+      "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "GaiaOfflineSigninTimeLimitDays": 8
-        },
-        "prefs": {
-          "gaia.offline_signin_time_limit": {
-            "value": 8
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "gaia.offline_signin_time_limit",
+      "default_value": -1,
+      "values_to_test": [
+        -1,
+        0,
+        1,
+        8,
+        365
+      ]
+    }
   }
 ]

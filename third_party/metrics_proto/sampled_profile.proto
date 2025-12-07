@@ -54,6 +54,7 @@ message SampledProfile {
     // interval between collections.
     PERIODIC_HEAP_COLLECTION = 7;
   }
+
   optional TriggerEvent trigger_event = 1;
 
   // The process in which the profile was collected.

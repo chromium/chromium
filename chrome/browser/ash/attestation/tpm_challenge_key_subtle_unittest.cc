@@ -22,7 +22,6 @@
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager_impl.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/mock_key_permissions_manager.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/user_private_token_kpm_service_factory.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
@@ -34,6 +33,7 @@
 #include "chromeos/ash/components/dbus/attestation/fake_attestation_client.h"
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
+#include "chromeos/ash/components/platform_keys/platform_keys.h"
 #include "chromeos/components/kiosk/kiosk_test_utils.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "components/prefs/pref_service.h"
@@ -41,6 +41,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::test::RunOnceCallback;
@@ -53,7 +54,7 @@ namespace attestation {
 namespace {
 
 constexpr char kTestUserEmail[] = "test@google.com";
-constexpr char kTestUserGaiaId[] = "test_gaia_id";
+constexpr GaiaId::Literal kTestUserGaiaId("test_gaia_id");
 constexpr char kEmptyKeyName[] = "";
 constexpr char kNonDefaultKeyName[] = "key_name_123";
 constexpr char kFakeCertificate[] = "fake_cert";
@@ -481,7 +482,7 @@ class KioskTpmChallengeKeySubtleTest : public TpmChallengeKeySubtleTestBase {
   ~KioskTpmChallengeKeySubtleTest() override = default;
 
   TestingProfile* CreateKioskProfile() override {
-    chromeos::SetUpFakeKioskSession();
+    chromeos::SetUpFakeChromeAppKioskSession();
     auto* user = fake_user_manager_->GetActiveUser();
     kiosk_user_email_ = user->GetAccountId().GetUserEmail();
     auto* testing_profile =

@@ -33,10 +33,10 @@ class PrefService;
 // associated with the profile.
 class ProxyConfigMonitor : public net::ProxyConfigService::Observer,
                            public network::mojom::ProxyConfigPollerClient
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     ,
                            public network::mojom::ProxyErrorClient
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 {
  public:
@@ -76,12 +76,12 @@ class ProxyConfigMonitor : public net::ProxyConfigService::Observer,
   // network::mojom::ProxyConfigPollerClient implementation:
   void OnLazyProxyConfigPoll() override;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // network::mojom::ProxyErrorClient implementation:
   void OnPACScriptError(int32_t line_number,
                         const std::string& details) override;
   void OnRequestMaybeFailedDueToProxySettings(int32_t net_error) override;
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   std::unique_ptr<net::ProxyConfigService> proxy_config_service_;
   // Monitors global and Profile prefs related to proxy configuration.
@@ -92,10 +92,10 @@ class ProxyConfigMonitor : public net::ProxyConfigService::Observer,
 
   mojo::RemoteSet<network::mojom::ProxyConfigClient> proxy_config_client_set_;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   mojo::ReceiverSet<network::mojom::ProxyErrorClient> error_receiver_set_;
   raw_ptr<Profile> profile_ = nullptr;
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 };
 
 #endif  // CHROME_BROWSER_NET_PROXY_CONFIG_MONITOR_H_

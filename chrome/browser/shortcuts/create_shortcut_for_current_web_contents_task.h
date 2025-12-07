@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SHORTCUTS_CREATE_SHORTCUT_FOR_CURRENT_WEB_CONTENTS_TASK_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -49,8 +50,10 @@ class CreateShortcutForCurrentWebContentsTask
     : public content::DocumentUserData<CreateShortcutForCurrentWebContentsTask>,
       public content::WebContentsObserver {
  public:
+  // Callback that returns the information in the textfield of the create
+  // desktop shortcut dialog if accepted, or std::nullopt otherwise.
   using ShortcutsDialogResultCallback =
-      base::OnceCallback<void(bool is_accepted, std::u16string title)>;
+      base::OnceCallback<void(std::optional<std::u16string>)>;
   using ShortcutsDialogCallback = base::OnceCallback<void(
       const gfx::ImageSkia& icon_for_dialog,
       std::u16string title_for_dialog,
@@ -86,10 +89,10 @@ class CreateShortcutForCurrentWebContentsTask
           callback);
   void OnIconsFetchedStartBadgingAndShowDialog(
       FetchIconsFromDocumentResult result);
-  void OnShortcutDialogResultObtained(gfx::ImageFamily results,
-                                      GURL shortcut_url,
-                                      bool dialog_result,
-                                      std::u16string title);
+  void OnShortcutDialogResultObtained(
+      gfx::ImageFamily results,
+      GURL shortcut_url,
+      std::optional<std::u16string> dialog_result);
   void OnMetadataFetchCompleteSelfDestruct(
       base::expected<ShortcutMetadata, ShortcutCreationTaskResult>
           fetch_result);

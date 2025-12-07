@@ -81,8 +81,7 @@ class MultiDisplayMetricsControllerTest : public AshTestBase {
 TEST_F(MultiDisplayMetricsControllerTest, DisplayRotated) {
   // Rotate the display. Do a double rotation so our move and resize helpers
   // work properly.
-  const int64_t display_id =
-      display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  const int64_t display_id = display::Screen::Get()->GetPrimaryDisplay().id();
   display::DisplayManager* display_manager = Shell::Get()->display_manager();
   display::test::ScopedSetInternalDisplayId set_internal(display_manager,
                                                          display_id);

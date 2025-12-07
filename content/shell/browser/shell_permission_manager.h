@@ -28,8 +28,7 @@ class ShellPermissionManager : public PermissionControllerDelegate {
   void RequestPermissions(
       RenderFrameHost* render_frame_host,
       const PermissionRequestDescription& request_description,
-      base::OnceCallback<
-          void(const std::vector<blink::mojom::PermissionStatus>&)> callback)
+      base::OnceCallback<void(const std::vector<PermissionResult>&)> callback)
       override;
   void ResetPermission(blink::PermissionType permission,
                        const GURL& requesting_origin,
@@ -37,39 +36,28 @@ class ShellPermissionManager : public PermissionControllerDelegate {
   void RequestPermissionsFromCurrentDocument(
       RenderFrameHost* render_frame_host,
       const PermissionRequestDescription& request_description,
-      base::OnceCallback<
-          void(const std::vector<blink::mojom::PermissionStatus>&)> callback)
+      base::OnceCallback<void(const std::vector<PermissionResult>&)> callback)
       override;
   blink::mojom::PermissionStatus GetPermissionStatus(
-      blink::PermissionType permission,
+      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       const GURL& requesting_origin,
       const GURL& embedding_origin) override;
   PermissionResult GetPermissionResultForOriginWithoutContext(
-      blink::PermissionType permission,
+      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       const url::Origin& requesting_origin,
       const url::Origin& embedding_origin) override;
-  blink::mojom::PermissionStatus GetPermissionStatusForCurrentDocument(
-      blink::PermissionType permission,
+  PermissionResult GetPermissionResultForCurrentDocument(
+      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       content::RenderFrameHost* render_frame_host,
       bool should_include_device_status) override;
-  blink::mojom::PermissionStatus GetPermissionStatusForWorker(
-      blink::PermissionType permission,
+  PermissionResult GetPermissionResultForWorker(
+      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       content::RenderProcessHost* render_process_host,
       const GURL& worker_origin) override;
-  blink::mojom::PermissionStatus GetPermissionStatusForEmbeddedRequester(
-      blink::PermissionType permission,
+  PermissionResult GetPermissionResultForEmbeddedRequester(
+      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       content::RenderFrameHost* render_frame_host,
       const url::Origin& overridden_origin) override;
-  SubscriptionId SubscribeToPermissionStatusChange(
-      blink::PermissionType permission,
-      RenderProcessHost* render_process_host,
-      RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin,
-      bool should_include_device_status,
-      base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback)
-      override;
-  void UnsubscribeFromPermissionStatusChange(
-      SubscriptionId subscription_id) override;
 };
 
 }  // namespace content

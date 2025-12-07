@@ -1,0 +1,19 @@
+<!doctype html>
+<html class="reftest-wait">
+<link rel="match" href="2d-presents-frame-after-context-restored-expected.html">
+<script src="./2d-presents-frame-after-context-restored-impl.js"></script>
+
+<title>
+  Tests that 2D OffscreenCanvas with placeholder can send frames to the
+  compositor after the GPU context is lost and restored.
+</title>
+
+<canvas id="canvas"></canvas>
+<script type="module">
+  const placeholder = document.getElementById('canvas');
+  const canvas = placeholder.transferControlToOffscreen();
+  await Test2dPresentsFrameAfterContextRestored(canvas);
+  await waitForFramePropagation(placeholder);
+  document.documentElement.classList.remove('reftest-wait');
+</script>
+</html>

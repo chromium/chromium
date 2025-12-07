@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "net/disk_cache/disk_cache.h"
+
 #include <cinttypes>
 #include <cstdlib>
 #include <iostream>
@@ -12,7 +14,6 @@
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -20,6 +21,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
@@ -32,13 +34,13 @@
 #include "net/base/test_completion_callback.h"
 #include "net/disk_cache/backend_cleanup_tracker.h"
 #include "net/disk_cache/blockfile/backend_impl.h"
-#include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/disk_cache_fuzzer.pb.h"
 #include "net/disk_cache/disk_cache_test_util.h"
 #include "net/disk_cache/memory/mem_backend_impl.h"
 #include "net/disk_cache/simple/simple_backend_impl.h"
 #include "net/disk_cache/simple/simple_file_tracker.h"
 #include "net/disk_cache/simple/simple_index.h"
+#include "net/disk_cache/sql/sql_backend_impl.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
 
 // To get a good idea of what a test case is doing, just run the libfuzzer
@@ -111,7 +113,7 @@ struct InitGlobals {
     // IOBuffer rules but it shouldn't cause any actual problems.
     buffer_ = base::MakeRefCounted<net::IOBufferWithSize>(
         static_cast<size_t>(kMaxEntrySize));
-    CacheTestFillBuffer(buffer_->data(), kMaxEntrySize, false);
+    CacheTestFillBuffer(buffer_->span(), false);
 
 #define CREATE_IO_CALLBACK(IO_TYPE) \
   io_callbacks_.push_back(base::BindRepeating(&IOCallback, #IO_TYPE));
@@ -187,10 +189,14 @@ class DiskCacheLPMFuzzer {
   // Closes any non-nullptr entries in open_cache_entries_.
   void CloseAllRemainingEntries();
 
-  void HandleSetMaxSize(const disk_cache_fuzzer::SetMaxSize&);
+  // Fully shuts down and cleans up the cache backend.
+  void ShutdownBackend();
+
+  int64_t ComputeMaxSize(const disk_cache_fuzzer::SetMaxSize* maybe_max_size);
   void CreateBackend(
       disk_cache_fuzzer::FuzzCommands::CacheBackend cache_backend,
       uint32_t mask,
+      const disk_cache_fuzzer::SetMaxSize* maybe_max_size,
       net::CacheType type,
       bool simple_cache_wait_for_index);
 
@@ -198,16 +204,14 @@ class DiskCacheLPMFuzzer {
   base::FilePath cache_path_;
   base::ScopedTempDir temp_dir_;
 
-  // Pointers to our backend. Only one of block_impl_, simple_cache_impl_, and
-  // mem_cache_ are active at one time.
+  // Pointers to our backend. Only one of `block_impl_`, `simple_cache_impl_`,
+  // `mem_cache_` and `sql_cache_impl_` are active at one time.
   std::unique_ptr<disk_cache::Backend> cache_;
   raw_ptr<disk_cache::BackendImpl> block_impl_ = nullptr;
   std::unique_ptr<disk_cache::SimpleFileTracker> simple_file_tracker_;
   raw_ptr<disk_cache::SimpleBackendImpl> simple_cache_impl_ = nullptr;
   raw_ptr<disk_cache::MemBackendImpl> mem_cache_ = nullptr;
-
-  // Maximum size of the cache, that we have currently set.
-  uint32_t max_size_ = kMaxSize;
+  raw_ptr<disk_cache::SqlBackendImpl> sql_cache_impl_ = nullptr;
 
   // This "consistent hash table" keeys track of the keys we've added to the
   // backend so far. This should always be indexed by a "key_id" from a
@@ -278,14 +282,6 @@ net::CacheType GetCacheTypeAndPrint(
     case disk_cache_fuzzer::FuzzCommands::SHADER_CACHE:
       MAYBE_PRINT << "Cache type = SHADER_CACHE." << std::endl;
       return net::CacheType::SHADER_CACHE;
-    case disk_cache_fuzzer::FuzzCommands::PNACL_CACHE:
-      // Simple cache won't handle PNACL_CACHE.
-      if (backend == disk_cache_fuzzer::FuzzCommands::SIMPLE) {
-        MAYBE_PRINT << "Cache type = DISK_CACHE." << std::endl;
-        return net::CacheType::DISK_CACHE;
-      }
-      MAYBE_PRINT << "Cache type = PNACL_CACHE." << std::endl;
-      return net::CacheType::PNACL_CACHE;
     case disk_cache_fuzzer::FuzzCommands::GENERATED_BYTE_CODE_CACHE:
       MAYBE_PRINT << "Cache type = GENERATED_BYTE_CODE_CACHE." << std::endl;
       return net::CacheType::GENERATED_BYTE_CODE_CACHE;
@@ -296,6 +292,7 @@ net::CacheType GetCacheTypeAndPrint(
       MAYBE_PRINT << "Cache type = DISK_CACHE." << std::endl;
       return net::CacheType::DISK_CACHE;
   }
+  NOTREACHED();
 }
 
 void IOCallback(std::string io_type, int rv) {
@@ -448,13 +445,11 @@ void DiskCacheLPMFuzzer::RunCommands(
       commands.has_set_mask() ? (commands.set_mask() ? 0x1 : 0xf) : 0;
   net::CacheType type =
       GetCacheTypeAndPrint(commands.cache_type(), commands.cache_backend());
-  CreateBackend(commands.cache_backend(), mask, type,
-                commands.simple_cache_wait_for_index());
+  CreateBackend(
+      commands.cache_backend(), mask,
+      commands.has_set_max_size() ? &commands.set_max_size() : nullptr, type,
+      commands.simple_cache_wait_for_index());
   MAYBE_PRINT << "CreateBackend()" << std::endl;
-
-  if (commands.has_set_max_size()) {
-    HandleSetMaxSize(commands.set_max_size());
-  }
 
   {
     base::Time curr_time = base::Time::Now();
@@ -470,10 +465,6 @@ void DiskCacheLPMFuzzer::RunCommands(
     init_globals->task_environment_->RunUntilIdle();
 
     switch (command.fuzz_command_oneof_case()) {
-      case disk_cache_fuzzer::FuzzCommand::kSetMaxSize: {
-        HandleSetMaxSize(command.set_max_size());
-        break;
-      }
       case disk_cache_fuzzer::FuzzCommand::kCreateEntry: {
         if (!cache_)
           continue;
@@ -1103,6 +1094,19 @@ void DiskCacheLPMFuzzer::RunCommands(
         cache_.reset();
         break;
       }
+      case disk_cache_fuzzer::FuzzCommand::kRecreateWithSize: {
+        if (!cache_) {
+          continue;
+        }
+        MAYBE_PRINT << "RecreateWithSize("
+                    << command.recreate_with_size().size() << ")" << std::endl;
+        ShutdownBackend();
+        // re-create backend with same config but (potentially) different size.
+        CreateBackend(commands.cache_backend(), mask,
+                      &command.recreate_with_size(), type,
+                      commands.simple_cache_wait_for_index());
+        break;
+      }
       case disk_cache_fuzzer::FuzzCommand::kAddRealDelay: {
         if (!command.add_real_delay().actually_delay())
           continue;
@@ -1118,90 +1122,130 @@ void DiskCacheLPMFuzzer::RunCommands(
   }
 }
 
-void DiskCacheLPMFuzzer::HandleSetMaxSize(
-    const disk_cache_fuzzer::SetMaxSize& sms) {
-  if (!cache_)
-    return;
+int64_t DiskCacheLPMFuzzer::ComputeMaxSize(
+    const disk_cache_fuzzer::SetMaxSize* maybe_max_size) {
+  if (!maybe_max_size) {
+    return 0;  // tell backend to use default.
+  }
 
-  max_size_ = sms.size();
-  max_size_ %= kMaxSizeKB;
-  max_size_ *= 1024;
-  MAYBE_PRINT << "SetMaxSize(" << max_size_ << ")" << std::endl;
-  if (simple_cache_impl_)
-    CHECK_EQ(true, simple_cache_impl_->SetMaxSize(max_size_));
-
-  if (block_impl_)
-    CHECK_EQ(true, block_impl_->SetMaxSize(max_size_));
-
-  if (mem_cache_)
-    CHECK_EQ(true, mem_cache_->SetMaxSize(max_size_));
+  int64_t max_size = maybe_max_size->size();
+  max_size %= kMaxSizeKB;
+  max_size *= 1024;
+  MAYBE_PRINT << "ComputeMaxSize(" << max_size << ")" << std::endl;
+  return max_size;
 }
 
 void DiskCacheLPMFuzzer::CreateBackend(
     disk_cache_fuzzer::FuzzCommands::CacheBackend cache_backend,
     uint32_t mask,
+    const disk_cache_fuzzer::SetMaxSize* maybe_max_size,
     net::CacheType type,
     bool simple_cache_wait_for_index) {
-  if (cache_backend == disk_cache_fuzzer::FuzzCommands::IN_MEMORY) {
-    MAYBE_PRINT << "Using in-memory cache." << std::endl;
-    auto cache = std::make_unique<disk_cache::MemBackendImpl>(nullptr);
-    mem_cache_ = cache.get();
-    cache_ = std::move(cache);
-    CHECK(cache_);
-  } else if (cache_backend == disk_cache_fuzzer::FuzzCommands::SIMPLE) {
-    MAYBE_PRINT << "Using simple cache." << std::endl;
-    net::TestCompletionCallback cb;
-    // We limit ourselves to 64 fds since OS X by default gives us 256.
-    // (Chrome raises the number on startup, but the fuzzer doesn't).
-    if (!simple_file_tracker_)
-      simple_file_tracker_ =
-          std::make_unique<disk_cache::SimpleFileTracker>(kMaxFdsSimpleCache);
-    auto simple_backend = std::make_unique<disk_cache::SimpleBackendImpl>(
-        /*file_operations=*/nullptr, cache_path_,
-        /*cleanup_tracker=*/nullptr, simple_file_tracker_.get(), max_size_,
-        type, /*net_log=*/nullptr);
-    simple_backend->Init(cb.callback());
-    CHECK_EQ(cb.WaitForResult(), net::OK);
-    simple_cache_impl_ = simple_backend.get();
-    cache_ = std::move(simple_backend);
+  scoped_refptr<disk_cache::BackendCleanupTracker> cleanup_tracker;
 
-    if (simple_cache_wait_for_index) {
-      MAYBE_PRINT << "Waiting for simple cache index to be ready..."
-                  << std::endl;
-      net::TestCompletionCallback wait_for_index_cb;
-      simple_cache_impl_->index()->ExecuteWhenReady(
-          wait_for_index_cb.callback());
-      int rv = wait_for_index_cb.WaitForResult();
-      CHECK_EQ(rv, net::OK);
-    }
-  } else {
-    MAYBE_PRINT << "Using blockfile cache";
-    std::unique_ptr<disk_cache::BackendImpl> cache;
-    if (mask) {
-      MAYBE_PRINT << ", mask = " << mask << std::endl;
-      cache = std::make_unique<disk_cache::BackendImpl>(
-          cache_path_, mask,
-          /* runner = */ nullptr, type,
-          /* net_log = */ nullptr);
-    } else {
-      MAYBE_PRINT << "." << std::endl;
-      cache = std::make_unique<disk_cache::BackendImpl>(
-          cache_path_,
-          /* cleanup_tracker = */ nullptr,
-          /* runner = */ nullptr, type,
-          /* net_log = */ nullptr);
-    }
-    block_impl_ = cache.get();
-    cache_ = std::move(cache);
-    CHECK(cache_);
-    // TODO(mpdenton) kNoRandom or not? It does a lot of waiting for IO. May be
-    // good for avoiding leaks but tests a less realistic cache.
-    // block_impl_->SetFlags(disk_cache::kNoRandom);
+  if (cache_backend != disk_cache_fuzzer::FuzzCommands::IN_MEMORY) {
+    // Make sure nothing is still messing with the directory.
+    int count = 0;
+    while (true) {
+      ++count;
+      CHECK_LT(count, 1000);
 
-    // TODO(mpdenton) should I always wait here?
-    net::TestCompletionCallback cb;
-    block_impl_->Init(cb.callback());
-    CHECK_EQ(cb.WaitForResult(), net::OK);
+      base::RunLoop run_dir_ready;
+      cleanup_tracker = disk_cache::BackendCleanupTracker::TryCreate(
+          cache_path_, run_dir_ready.QuitClosure());
+      if (cleanup_tracker) {
+        break;
+      } else {
+        run_dir_ready.Run();
+      }
+    }
+  }
+
+  switch (cache_backend) {
+    case disk_cache_fuzzer::FuzzCommands::IN_MEMORY: {
+      MAYBE_PRINT << "Using in-memory cache." << std::endl;
+      auto cache = disk_cache::MemBackendImpl::CreateBackend(
+          ComputeMaxSize(maybe_max_size), /*net_log=*/nullptr);
+      mem_cache_ = cache.get();
+      cache_ = std::move(cache);
+      CHECK(cache_);
+      break;
+    }
+    case disk_cache_fuzzer::FuzzCommands::SIMPLE: {
+      MAYBE_PRINT << "Using simple cache." << std::endl;
+      net::TestCompletionCallback cb;
+      // We limit ourselves to 64 fds since OS X by default gives us 256.
+      // (Chrome raises the number on startup, but the fuzzer doesn't).
+      if (!simple_file_tracker_) {
+        simple_file_tracker_ =
+            std::make_unique<disk_cache::SimpleFileTracker>(kMaxFdsSimpleCache);
+      }
+      auto simple_backend = std::make_unique<disk_cache::SimpleBackendImpl>(
+          /*file_operations=*/nullptr, cache_path_, std::move(cleanup_tracker),
+          simple_file_tracker_.get(), ComputeMaxSize(maybe_max_size), type,
+          /*net_log=*/nullptr, /*cache_encryption_delegate=*/nullptr);
+      simple_backend->Init(cb.callback());
+      CHECK_EQ(cb.WaitForResult(), net::OK);
+      simple_cache_impl_ = simple_backend.get();
+      cache_ = std::move(simple_backend);
+
+      if (simple_cache_wait_for_index) {
+        MAYBE_PRINT << "Waiting for simple cache index to be ready..."
+                    << std::endl;
+        net::TestCompletionCallback wait_for_index_cb;
+        simple_cache_impl_->index()->ExecuteWhenReady(
+            wait_for_index_cb.callback());
+        int rv = wait_for_index_cb.WaitForResult();
+        CHECK_EQ(rv, net::OK);
+      }
+      break;
+    }
+    case disk_cache_fuzzer::FuzzCommands::BLOCK: {
+      MAYBE_PRINT << "Using blockfile cache";
+      std::unique_ptr<disk_cache::BackendImpl> cache;
+      if (mask) {
+        MAYBE_PRINT << ", mask = " << mask << std::endl;
+        cache = std::make_unique<disk_cache::BackendImpl>(
+            cache_path_, mask,
+            /* cleanup_tracker = */ std::move(cleanup_tracker),
+            /* runner = */ nullptr, type,
+            /* net_log = */ nullptr);
+      } else {
+        MAYBE_PRINT << "." << std::endl;
+        cache = std::make_unique<disk_cache::BackendImpl>(
+            cache_path_,
+            /* cleanup_tracker = */ std::move(cleanup_tracker),
+            /* runner = */ nullptr, type,
+            /* net_log = */ nullptr);
+      }
+      cache->SetMaxSize(ComputeMaxSize(maybe_max_size));
+      block_impl_ = cache.get();
+      cache_ = std::move(cache);
+      CHECK(cache_);
+      // TODO(mpdenton) kNoRandom or not? It does a lot of waiting for IO. May
+      // be good for avoiding leaks but tests a less realistic cache.
+      // block_impl_->SetFlags(disk_cache::kNoRandom);
+
+      // TODO(mpdenton) should I always wait here?
+      net::TestCompletionCallback cb;
+      block_impl_->Init(cb.callback());
+      CHECK_EQ(cb.WaitForResult(), net::OK);
+      break;
+    }
+    case disk_cache_fuzzer::FuzzCommands::SQL: {
+      CHECK_EQ(cache_backend, disk_cache_fuzzer::FuzzCommands::SQL);
+      MAYBE_PRINT << "Using SQL cache" << std::endl;
+      std::unique_ptr<disk_cache::SqlBackendImpl> cache =
+          std::make_unique<disk_cache::SqlBackendImpl>(
+              cache_path_, ComputeMaxSize(maybe_max_size), type);
+      sql_cache_impl_ = cache.get();
+      cache_ = std::move(cache);
+      net::TestCompletionCallback cb;
+      sql_cache_impl_->EnableStrictCorruptionCheckForTesting();
+      sql_cache_impl_->Init(cb.callback());
+      CHECK_EQ(cb.WaitForResult(), net::OK);
+      break;
+    }
   }
 }
 
@@ -1217,7 +1261,7 @@ void DiskCacheLPMFuzzer::CloseAllRemainingEntries() {
   }
 }
 
-DiskCacheLPMFuzzer::~DiskCacheLPMFuzzer() {
+void DiskCacheLPMFuzzer::ShutdownBackend() {
   // |block_impl_| leaks a lot more if we don't close entries before destructing
   // the backend.
   if (block_impl_) {
@@ -1263,6 +1307,10 @@ DiskCacheLPMFuzzer::~DiskCacheLPMFuzzer() {
   if (simple_cache_impl_)
     CHECK(simple_file_tracker_->IsEmptyForTesting());
   base::RunLoop().RunUntilIdle();
+}
+
+DiskCacheLPMFuzzer::~DiskCacheLPMFuzzer() {
+  ShutdownBackend();
 
   DeleteCache(cache_path_);
 }

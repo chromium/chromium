@@ -23,18 +23,17 @@ AudioStreamBrokerFactoryImpl::CreateAudioInputStreamBroker(
     int render_frame_id,
     const std::string& device_id,
     const media::AudioParameters& params,
+    const base::UnguessableToken& group_id,
     uint32_t shared_memory_count,
-    media::UserInputMonitorBase* user_input_monitor,
     bool enable_agc,
     media::mojom::AudioProcessingConfigPtr processing_config,
     AudioStreamBroker::DeleterCallback deleter,
     mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
         renderer_factory_client) {
   return std::make_unique<AudioInputStreamBroker>(
-      render_process_id, render_frame_id, device_id, params,
-      shared_memory_count, user_input_monitor, enable_agc,
-      std::move(processing_config), std::move(deleter),
-      std::move(renderer_factory_client));
+      render_process_id, render_frame_id, device_id, params, group_id,
+      shared_memory_count, enable_agc, std::move(processing_config),
+      std::move(deleter), std::move(renderer_factory_client));
 }
 
 std::unique_ptr<AudioStreamBroker>
@@ -57,6 +56,7 @@ std::unique_ptr<AudioStreamBroker>
 AudioStreamBrokerFactoryImpl::CreateAudioOutputStreamBroker(
     int render_process_id,
     int render_frame_id,
+    const GlobalRenderFrameHostToken& main_frame_token,
     int stream_id,
     const std::string& output_device_id,
     const media::AudioParameters& params,
@@ -64,8 +64,9 @@ AudioStreamBrokerFactoryImpl::CreateAudioOutputStreamBroker(
     AudioStreamBroker::DeleterCallback deleter,
     mojo::PendingRemote<media::mojom::AudioOutputStreamProviderClient> client) {
   return std::make_unique<AudioOutputStreamBroker>(
-      render_process_id, render_frame_id, stream_id, output_device_id, params,
-      group_id, std::move(deleter), std::move(client));
+      render_process_id, render_frame_id, main_frame_token, stream_id,
+      output_device_id, params, group_id, std::move(deleter),
+      std::move(client));
 }
 
 // static

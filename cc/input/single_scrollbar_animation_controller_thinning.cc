@@ -8,6 +8,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
+#include "cc/base/math_util.h"
 #include "cc/input/scrollbar_animation_controller.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/layers/scrollbar_layer_impl_base.h"

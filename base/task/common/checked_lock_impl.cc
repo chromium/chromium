@@ -4,22 +4,22 @@
 
 #include "base/task/common/checked_lock_impl.h"
 
+#include <algorithm>
 #include <optional>
 #include <ostream>
 #include <unordered_map>
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
-#include "base/ranges/algorithm.h"
+#include "base/no_destructor.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/task/common/checked_lock.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_local.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 namespace {
 
@@ -50,8 +50,8 @@ class SafeAcquisitionTracker {
 
   void RecordRelease(const CheckedLockImpl* const lock) {
     LockVector* acquired_locks = GetAcquiredLocksOnCurrentThread();
-    const auto iter_at_lock = ranges::find(*acquired_locks, lock);
-    CHECK(iter_at_lock != acquired_locks->end(), base::NotFatalUntil::M125);
+    const auto iter_at_lock = std::ranges::find(*acquired_locks, lock);
+    CHECK(iter_at_lock != acquired_locks->end());
     acquired_locks->erase(iter_at_lock);
   }
 
@@ -70,8 +70,9 @@ class SafeAcquisitionTracker {
     const LockVector* acquired_locks = GetAcquiredLocksOnCurrentThread();
 
     // If the thread currently holds no locks, this is inherently safe.
-    if (acquired_locks->empty())
+    if (acquired_locks->empty()) {
       return;
+    }
 
     // A universal predecessor may not be acquired after any other lock.
     DCHECK(!lock->is_universal_predecessor());
@@ -79,8 +80,9 @@ class SafeAcquisitionTracker {
     // Otherwise, make sure that the previous lock acquired is either an
     // allowed predecessor for this lock or a universal predecessor.
     const CheckedLockImpl* previous_lock = acquired_locks->back();
-    if (previous_lock->is_universal_predecessor())
+    if (previous_lock->is_universal_predecessor()) {
       return;
+    }
 
     AutoLock auto_lock(allowed_predecessor_map_lock_);
     // Using at() is exception-safe here as |lock| was registered already.
@@ -116,8 +118,9 @@ class SafeAcquisitionTracker {
   }
 
   LockVector* GetAcquiredLocksOnCurrentThread() {
-    if (!tls_acquired_locks_.Get())
+    if (!tls_acquired_locks_.Get()) {
       tls_acquired_locks_.Set(std::make_unique<LockVector>());
+    }
 
     return tls_acquired_locks_.Get();
   }
@@ -135,8 +138,10 @@ class SafeAcquisitionTracker {
   RAW_PTR_EXCLUSION ThreadLocalOwnedPointer<LockVector> tls_acquired_locks_;
 };
 
-LazyInstance<SafeAcquisitionTracker>::Leaky g_safe_acquisition_tracker =
-    LAZY_INSTANCE_INITIALIZER;
+SafeAcquisitionTracker& GetSafeAcquisitionTracker() {
+  static base::NoDestructor<SafeAcquisitionTracker> tracker;
+  return *tracker;
+}
 
 }  // namespace
 
@@ -144,7 +149,7 @@ CheckedLockImpl::CheckedLockImpl() : CheckedLockImpl(nullptr) {}
 
 CheckedLockImpl::CheckedLockImpl(const CheckedLockImpl* predecessor) {
   DCHECK(predecessor == nullptr || !predecessor->is_universal_successor_);
-  g_safe_acquisition_tracker.Get().RegisterLock(this, predecessor);
+  GetSafeAcquisitionTracker().RegisterLock(this, predecessor);
 }
 
 CheckedLockImpl::CheckedLockImpl(UniversalPredecessor)
@@ -152,25 +157,25 @@ CheckedLockImpl::CheckedLockImpl(UniversalPredecessor)
 
 CheckedLockImpl::CheckedLockImpl(UniversalSuccessor)
     : is_universal_successor_(true) {
-  g_safe_acquisition_tracker.Get().RegisterLock(this, nullptr);
+  GetSafeAcquisitionTracker().RegisterLock(this, nullptr);
 }
 
 CheckedLockImpl::~CheckedLockImpl() {
-  g_safe_acquisition_tracker.Get().UnregisterLock(this);
+  GetSafeAcquisitionTracker().UnregisterLock(this);
 }
 
 void CheckedLockImpl::AssertNoLockHeldOnCurrentThread() {
-  g_safe_acquisition_tracker.Get().AssertNoLockHeldOnCurrentThread();
+  GetSafeAcquisitionTracker().AssertNoLockHeldOnCurrentThread();
 }
 
 void CheckedLockImpl::Acquire(subtle::LockTracking tracking) {
   lock_.Acquire(tracking);
-  g_safe_acquisition_tracker.Get().RecordAcquisition(this);
+  GetSafeAcquisitionTracker().RecordAcquisition(this);
 }
 
 void CheckedLockImpl::Release() {
   lock_.Release();
-  g_safe_acquisition_tracker.Get().RecordRelease(this);
+  GetSafeAcquisitionTracker().RecordRelease(this);
 }
 
 void CheckedLockImpl::AssertAcquired() const {
@@ -190,5 +195,4 @@ void CheckedLockImpl::CreateConditionVariableAndEmplace(
   opt.emplace(&lock_);
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

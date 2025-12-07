@@ -9,3 +9,6 @@ UNKNOWN focusable has_input_focus
 ++++++IMAGE label='  '
 ++++++STATIC_TEXT label=' '
 ++++++IMAGE label='SVG face'
+++++++STATIC_TEXT label=' '
+++++++++UNKNOWN label=' '
+++++++IMAGE label='clickable_image' actions='{DEFAULT}'

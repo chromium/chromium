@@ -22,7 +22,7 @@ class CrostiniProcessTask : public VmProcessTask {
   ~CrostiniProcessTask() override = default;
 
   // task_manager::Task:
-  void Kill() override;
+  bool Kill() override;
   Type GetType() const override;
 
  private:

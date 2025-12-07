@@ -30,7 +30,8 @@ class RouteRequestResult;
 //   --ui-test-action-timeout=200000
 class MediaRouterE2EBrowserTest : public MediaRouterIntegrationBrowserTest {
  public:
-  MediaRouterE2EBrowserTest();
+  MediaRouterE2EBrowserTest(
+      UiForBrowserTest test_ui_type = UiForBrowserTest::kGmc);
   ~MediaRouterE2EBrowserTest() override;
 
  protected:

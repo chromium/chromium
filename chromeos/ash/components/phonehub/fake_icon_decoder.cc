@@ -8,8 +8,7 @@
 
 #include "chromeos/ash/components/phonehub/icon_decoder.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 FakeIconDecoder::FakeIconDecoder() = default;
 FakeIconDecoder::~FakeIconDecoder() = default;
@@ -31,5 +30,4 @@ void FakeIconDecoder::BatchDecode(
   last_finished_callback_ = std::move(finished_callback);
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

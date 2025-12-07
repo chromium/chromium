@@ -179,7 +179,7 @@ function simulateMouseEnter(element: HTMLElement) {
 /** Returns the visible buttons rendered with CSS overflow ellipsis.  */
 function getEllipsisButtons(breadcrumb: XfBreadcrumb): HTMLButtonElement[] {
   const pathButtons = Array.from(
-      breadcrumb.shadowRoot!.querySelectorAll<HTMLButtonElement>('button[id]')!,
+      breadcrumb.shadowRoot!.querySelectorAll<HTMLButtonElement>('button[id]'),
   );
   if (breadcrumb.parts.length <= 4) {
     return pathButtons.filter(hasOverflowEllipsis);
@@ -187,7 +187,7 @@ function getEllipsisButtons(breadcrumb: XfBreadcrumb): HTMLButtonElement[] {
 
   const elidedButtons =
       Array.from(breadcrumb.shadowRoot!.querySelectorAll<HTMLButtonElement>(
-          'cr-action-menu button')!);
+          'cr-action-menu button'));
   const allButtons =
       [pathButtons[0]].concat(elidedButtons, pathButtons.slice(1)) as
       HTMLButtonElement[];

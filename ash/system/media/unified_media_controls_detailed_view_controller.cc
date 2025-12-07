@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/media/media_notification_provider.h"
 #include "ash/system/media/unified_media_controls_detailed_view.h"
@@ -16,6 +17,7 @@
 #include "components/global_media_controls/public/constants.h"
 #include "components/media_message_center/notification_theme.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 
 namespace ash {
 
@@ -46,18 +48,18 @@ UnifiedMediaControlsDetailedViewController::CreateView() {
   DCHECK(MediaNotificationProvider::Get());
 
   media_message_center::NotificationTheme theme;
-  theme.primary_text_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary);
-  theme.secondary_text_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorSecondary);
-  theme.enabled_icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary);
-  theme.disabled_icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorSecondary);
-  theme.separator_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kSeparatorColor);
-  theme.background_color = AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
+  theme.primary_text_color =
+      AshColorProvider::Get()->GetColor(cros_tokens::kTextColorPrimary);
+  theme.secondary_text_color =
+      AshColorProvider::Get()->GetColor(cros_tokens::kTextColorSecondary);
+  theme.enabled_icon_color =
+      AshColorProvider::Get()->GetColor(cros_tokens::kIconColorPrimary);
+  theme.disabled_icon_color =
+      AshColorProvider::Get()->GetColor(cros_tokens::kIconColorSecondary);
+  theme.separator_color =
+      AshColorProvider::Get()->GetColor(cros_tokens::kSeparatorColor);
+  theme.background_color = AshColorProvider::Get()->GetColor(
+      kColorAshControlBackgroundColorInactive);
   MediaNotificationProvider::Get()->SetColorTheme(theme);
 
   base::UmaHistogramBoolean(

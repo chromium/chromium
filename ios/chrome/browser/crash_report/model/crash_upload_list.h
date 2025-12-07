@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_CRASH_REPORT_MODEL_CRASH_UPLOAD_LIST_H_
 #define IOS_CHROME_BROWSER_CRASH_REPORT_MODEL_CRASH_UPLOAD_LIST_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/upload_list/upload_list.h"
 
 namespace ios {

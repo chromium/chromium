@@ -4,15 +4,16 @@
 
 #include "components/autofill/core/browser/webdata/addresses/contact_info_sync_util.h"
 
+#include "base/feature_list.h"
 #include "base/hash/hash.h"
 #include "base/memory/raw_ref.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/data_quality/addresses/profile_token_quality.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/country_names.h"
-#include "components/autofill/core/browser/profile_token_quality.h"
 #include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
@@ -20,6 +21,41 @@ namespace autofill {
 namespace {
 
 using sync_pb::ContactInfoSpecifics;
+
+ContactInfoSpecifics::AddressType RecordTypeToAddressType(
+    AutofillProfile::RecordType record_type) {
+  switch (record_type) {
+    case AutofillProfile::RecordType::kLocalOrSyncable:
+      // Local profiles are not synced through CONTACT_INFO.
+      // For that reason there is an early return in
+      // `ContactInfoSyncBridge::AutofillProfileChanged`,
+      // the program won't enter this case.
+      NOTREACHED();
+    case AutofillProfile::RecordType::kAccount:
+      return ContactInfoSpecifics::REGULAR;
+    case AutofillProfile::RecordType::kAccountHome:
+      return ContactInfoSpecifics::HOME;
+    case AutofillProfile::RecordType::kAccountWork:
+      return ContactInfoSpecifics::WORK;
+    case AutofillProfile::RecordType::kAccountNameEmail:
+      // Since there is an early return in
+      // `ContactInfoSyncBridge::AutofillProfileChanged`,
+      // the program won't enter this case.
+      NOTREACHED();
+  }
+}
+
+AutofillProfile::RecordType AddressTypeToRecordType(
+    ContactInfoSpecifics::AddressType record_type) {
+  switch (record_type) {
+    case ContactInfoSpecifics::REGULAR:
+      return AutofillProfile::RecordType::kAccount;
+    case ContactInfoSpecifics::HOME:
+      return AutofillProfile::RecordType::kAccountHome;
+    case ContactInfoSpecifics::WORK:
+      return AutofillProfile::RecordType::kAccountWork;
+  }
+}
 
 // Converts the verification status representation used in AutofillProfile to
 // the one used in ContactInfoSpecifics.
@@ -71,7 +107,7 @@ class EntryTokenDeleter {
     }
 
     token->clear_value();
-    return token->ByteSize() == 0;
+    return token->ByteSizeLong() == 0;
   }
 
  private:
@@ -79,7 +115,7 @@ class EntryTokenDeleter {
     metadata->clear_status();
     metadata->clear_observations();
     metadata->clear_value_hash();
-    return metadata->ByteSize() == 0;
+    return metadata->ByteSizeLong() == 0;
   }
 };
 
@@ -179,11 +215,14 @@ sync_pb::ContactInfoSpecifics ContactInfoSpecificsFromAutofillProfile(
   sync_pb::ContactInfoSpecifics specifics = base_contact_info_specifics;
 
   specifics.set_guid(profile.guid());
-  specifics.set_use_count(profile.use_count());
+  specifics.set_address_type(RecordTypeToAddressType(profile.record_type()));
+  specifics.set_use_count(profile.usage_history().use_count());
   specifics.set_use_date_unix_epoch_seconds(
-      (profile.use_date() - base::Time::UnixEpoch()).InSeconds());
+      (profile.usage_history().use_date() - base::Time::UnixEpoch())
+          .InSeconds());
   specifics.set_date_modified_unix_epoch_seconds(
-      (profile.modification_date() - base::Time::UnixEpoch()).InSeconds());
+      (profile.usage_history().modification_date() - base::Time::UnixEpoch())
+          .InSeconds());
   specifics.set_language_code(profile.language_code());
   specifics.set_profile_label(profile.profile_label());
 
@@ -195,18 +234,35 @@ sync_pb::ContactInfoSpecifics ContactInfoSpecificsFromAutofillProfile(
   s.Set(specifics.mutable_name_first(), NAME_FIRST);
   s.Set(specifics.mutable_name_middle(), NAME_MIDDLE);
   s.Set(specifics.mutable_name_last(), NAME_LAST);
+  if (base::FeatureList::IsEnabled(features::kAutofillSupportLastNamePrefix)) {
+    s.Set(specifics.mutable_name_last_prefix(), NAME_LAST_PREFIX);
+    s.Set(specifics.mutable_name_last_core(), NAME_LAST_CORE);
+  }
   s.Set(specifics.mutable_name_last_first(), NAME_LAST_FIRST);
   s.Set(specifics.mutable_name_last_conjunction(), NAME_LAST_CONJUNCTION);
   s.Set(specifics.mutable_name_last_second(), NAME_LAST_SECOND);
   s.Set(specifics.mutable_name_full(), NAME_FULL);
 
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillSupportPhoneticNameForJP)) {
+    // Set alternative name related values and statues.
+    s.Set(specifics.mutable_alternative_family_name(), ALTERNATIVE_FAMILY_NAME);
+    s.Set(specifics.mutable_alternative_given_name(), ALTERNATIVE_GIVEN_NAME);
+    s.Set(specifics.mutable_alternative_full_name(), ALTERNATIVE_FULL_NAME);
+  }
+
   // Set address-related values and statuses.
   s.Set(specifics.mutable_address_city(), ADDRESS_HOME_CITY);
   s.Set(specifics.mutable_address_state(), ADDRESS_HOME_STATE);
   s.Set(specifics.mutable_address_zip(), ADDRESS_HOME_ZIP);
+  if (base::FeatureList::IsEnabled(features::kAutofillSupportSplitZipCode)) {
+    s.Set(specifics.mutable_address_zip_prefix(), ADDRESS_HOME_ZIP_PREFIX);
+    s.Set(specifics.mutable_address_zip_suffix(), ADDRESS_HOME_ZIP_SUFFIX);
+  }
   s.Set(specifics.mutable_address_country(), ADDRESS_HOME_COUNTRY);
   s.Set(specifics.mutable_address_street_address(),
         ADDRESS_HOME_STREET_ADDRESS);
+  s.Set(specifics.mutable_address_sorting_code(), ADDRESS_HOME_SORTING_CODE);
   s.Set(specifics.mutable_address_dependent_locality(),
         ADDRESS_HOME_DEPENDENT_LOCALITY);
   s.Set(specifics.mutable_address_thoroughfare_name(),
@@ -218,50 +274,27 @@ sync_pb::ContactInfoSpecifics ContactInfoSpecificsFromAutofillProfile(
   s.Set(specifics.mutable_address_street_location(),
         ADDRESS_HOME_STREET_LOCATION);
   s.Set(specifics.mutable_address_subpremise_name(), ADDRESS_HOME_SUBPREMISE);
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForApartmentNumbers)) {
-    s.Set(specifics.mutable_address_apt(), ADDRESS_HOME_APT);
-    s.Set(specifics.mutable_address_apt_num(), ADDRESS_HOME_APT_NUM);
-    s.Set(specifics.mutable_address_apt_type(), ADDRESS_HOME_APT_TYPE);
-  }
+  s.Set(specifics.mutable_address_apt(), ADDRESS_HOME_APT);
+  s.Set(specifics.mutable_address_apt_num(), ADDRESS_HOME_APT_NUM);
+  s.Set(specifics.mutable_address_apt_type(), ADDRESS_HOME_APT_TYPE);
   s.Set(specifics.mutable_address_floor(), ADDRESS_HOME_FLOOR);
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForAddressOverflow)) {
-    s.Set(specifics.mutable_address_overflow(), ADDRESS_HOME_OVERFLOW);
-  }
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForLandmark)) {
-    s.Set(specifics.mutable_address_landmark(), ADDRESS_HOME_LANDMARK);
-  }
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForBetweenStreets)) {
-    s.Set(specifics.mutable_address_between_streets(),
-          ADDRESS_HOME_BETWEEN_STREETS);
-    s.Set(specifics.mutable_address_between_streets_1(),
-          ADDRESS_HOME_BETWEEN_STREETS_1);
-    s.Set(specifics.mutable_address_between_streets_2(),
-          ADDRESS_HOME_BETWEEN_STREETS_2);
-  }
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForBetweenStreetsOrLandmark)) {
-    s.Set(specifics.mutable_address_between_streets_or_landmark(),
-          ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK);
-  }
-
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForAddressOverflowAndLandmark)) {
-    s.Set(specifics.mutable_address_overflow_and_landmark(),
-          ADDRESS_HOME_OVERFLOW_AND_LANDMARK);
-  }
+  s.Set(specifics.mutable_address_overflow(), ADDRESS_HOME_OVERFLOW);
+  s.Set(specifics.mutable_address_landmark(), ADDRESS_HOME_LANDMARK);
+  s.Set(specifics.mutable_address_between_streets(),
+        ADDRESS_HOME_BETWEEN_STREETS);
+  s.Set(specifics.mutable_address_between_streets_1(),
+        ADDRESS_HOME_BETWEEN_STREETS_1);
+  s.Set(specifics.mutable_address_between_streets_2(),
+        ADDRESS_HOME_BETWEEN_STREETS_2);
+  s.Set(specifics.mutable_address_between_streets_or_landmark(),
+        ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK);
+  s.Set(specifics.mutable_address_overflow_and_landmark(),
+        ADDRESS_HOME_OVERFLOW_AND_LANDMARK);
   if (base::FeatureList::IsEnabled(features::kAutofillUseINAddressModel)) {
     s.Set(specifics.mutable_address_street_location_and_locality(),
           ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY);
   }
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForAdminLevel2)) {
-    s.Set(specifics.mutable_address_admin_level_2(), ADDRESS_HOME_ADMIN_LEVEL2);
-  }
-
+  s.Set(specifics.mutable_address_admin_level_2(), ADDRESS_HOME_ADMIN_LEVEL2);
   // Set email, phone and company values and statuses.
   s.Set(specifics.mutable_email_address(), EMAIL_ADDRESS);
   s.Set(specifics.mutable_company_name(), COMPANY_NAME);
@@ -274,12 +307,12 @@ std::unique_ptr<syncer::EntityData>
 CreateContactInfoEntityDataFromAutofillProfile(
     const AutofillProfile& profile,
     const sync_pb::ContactInfoSpecifics& base_contact_info_specifics) {
-  // Profiles fall into two categories, kLocalOrSyncable and kAccount.
-  // kLocalOrSyncable profiles are synced through the AutofillProfileSyncBridge,
-  // while kAccount profiles are synced through the ContactInfoSyncBridge. Make
-  // sure that syncing a profile through the wrong sync bridge fails early.
+  // Profiles fall into two categories, local and account. Local profiles are
+  // synced through the AutofillProfileSyncBridge, while account profiles are
+  // synced through the ContactInfoSyncBridge. Make sure that syncing a profile
+  // through the wrong sync bridge fails early.
   if (!base::Uuid::ParseCaseInsensitive(profile.guid()).is_valid() ||
-      profile.source() != AutofillProfile::Source::kAccount) {
+      !profile.IsAccountProfile()) {
     return nullptr;
   }
 
@@ -305,46 +338,61 @@ CreateContactInfoEntityDataFromAutofillProfile(
   return entity_data;
 }
 
-std::unique_ptr<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
+AutofillProfile CreateAutofillProfileFromContactInfoSpecifics(
     const ContactInfoSpecifics& specifics) {
-  if (!AreContactInfoSpecificsValid(specifics))
-    return nullptr;
-
   std::u16string country_name_or_code =
       base::ASCIIToUTF16(specifics.address_country().value());
   std::string country_code =
       CountryNames::GetInstance()->GetCountryCode(country_name_or_code);
 
-  std::unique_ptr<AutofillProfile> profile = std::make_unique<AutofillProfile>(
-      specifics.guid(), AutofillProfile::Source::kAccount,
-      AddressCountryCode(country_code));
+  AutofillProfile profile(specifics.guid(),
+                          AddressTypeToRecordType(specifics.address_type()),
+                          AddressCountryCode(country_code));
 
-  profile->set_use_count(specifics.use_count());
-  profile->set_use_date(base::Time::UnixEpoch() +
-                        base::Seconds(specifics.use_date_unix_epoch_seconds()));
-  profile->set_modification_date(
+  profile.usage_history().set_use_count(specifics.use_count());
+  profile.usage_history().set_use_date(
+      base::Time::UnixEpoch() +
+      base::Seconds(specifics.use_date_unix_epoch_seconds()));
+  profile.usage_history().set_modification_date(
       base::Time::UnixEpoch() +
       base::Seconds(specifics.date_modified_unix_epoch_seconds()));
-  profile->set_language_code(specifics.language_code());
-  profile->set_profile_label(specifics.profile_label());
-  profile->set_initial_creator_id(specifics.initial_creator_id());
-  profile->set_last_modifier_id(specifics.last_modifier_id());
+  profile.set_language_code(specifics.language_code());
+  profile.set_profile_label(specifics.profile_label());
+  profile.set_initial_creator_id(specifics.initial_creator_id());
+  profile.set_last_modifier_id(specifics.last_modifier_id());
 
-  ContactInfoProfileSetter s(*profile);
+  ContactInfoProfileSetter s(profile);
   // Set name-related values and statuses.
   s.Set(specifics.name_first(), NAME_FIRST);
   s.Set(specifics.name_middle(), NAME_MIDDLE);
   s.Set(specifics.name_last(), NAME_LAST);
+  if (base::FeatureList::IsEnabled(features::kAutofillSupportLastNamePrefix)) {
+    s.Set(specifics.name_last_prefix(), NAME_LAST_PREFIX);
+    s.Set(specifics.name_last_core(), NAME_LAST_CORE);
+  }
   s.Set(specifics.name_last_first(), NAME_LAST_FIRST);
   s.Set(specifics.name_last_conjunction(), NAME_LAST_CONJUNCTION);
   s.Set(specifics.name_last_second(), NAME_LAST_SECOND);
   s.Set(specifics.name_full(), NAME_FULL);
 
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillSupportPhoneticNameForJP)) {
+    // Set alternative name related values and statues.
+    s.Set(specifics.alternative_family_name(), ALTERNATIVE_FAMILY_NAME);
+    s.Set(specifics.alternative_given_name(), ALTERNATIVE_GIVEN_NAME);
+    s.Set(specifics.alternative_full_name(), ALTERNATIVE_FULL_NAME);
+  }
+
   // Set address-related values and statuses.
   s.Set(specifics.address_city(), ADDRESS_HOME_CITY);
   s.Set(specifics.address_state(), ADDRESS_HOME_STATE);
   s.Set(specifics.address_zip(), ADDRESS_HOME_ZIP);
+  if (base::FeatureList::IsEnabled(features::kAutofillSupportSplitZipCode)) {
+    s.Set(specifics.address_zip_prefix(), ADDRESS_HOME_ZIP_PREFIX);
+    s.Set(specifics.address_zip_suffix(), ADDRESS_HOME_ZIP_SUFFIX);
+  }
   s.Set(specifics.address_street_address(), ADDRESS_HOME_STREET_ADDRESS);
+  s.Set(specifics.address_sorting_code(), ADDRESS_HOME_SORTING_CODE);
   s.Set(specifics.address_dependent_locality(),
         ADDRESS_HOME_DEPENDENT_LOCALITY);
   s.Set(specifics.address_thoroughfare_name(), ADDRESS_HOME_STREET_NAME);
@@ -353,54 +401,31 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
         ADDRESS_HOME_HOUSE_NUMBER_AND_APT);
   s.Set(specifics.address_street_location(), ADDRESS_HOME_STREET_LOCATION);
   s.Set(specifics.address_subpremise_name(), ADDRESS_HOME_SUBPREMISE);
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForApartmentNumbers)) {
-    s.Set(specifics.address_apt(), ADDRESS_HOME_APT);
-    s.Set(specifics.address_apt_num(), ADDRESS_HOME_APT_NUM);
-    s.Set(specifics.address_apt_type(), ADDRESS_HOME_APT_TYPE);
-  }
+  s.Set(specifics.address_apt(), ADDRESS_HOME_APT);
+  s.Set(specifics.address_apt_num(), ADDRESS_HOME_APT_NUM);
+  s.Set(specifics.address_apt_type(), ADDRESS_HOME_APT_TYPE);
   s.Set(specifics.address_floor(), ADDRESS_HOME_FLOOR);
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForAddressOverflow)) {
-    s.Set(specifics.address_overflow(), ADDRESS_HOME_OVERFLOW);
-  }
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForLandmark)) {
-    s.Set(specifics.address_landmark(), ADDRESS_HOME_LANDMARK);
-  }
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForBetweenStreets)) {
-    s.Set(specifics.address_between_streets(), ADDRESS_HOME_BETWEEN_STREETS);
-    s.Set(specifics.address_between_streets_1(),
-          ADDRESS_HOME_BETWEEN_STREETS_1);
-    s.Set(specifics.address_between_streets_2(),
-          ADDRESS_HOME_BETWEEN_STREETS_2);
-  }
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForBetweenStreetsOrLandmark)) {
-    s.Set(specifics.address_between_streets_or_landmark(),
-          ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK);
-  }
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForAddressOverflowAndLandmark)) {
-    s.Set(specifics.address_overflow_and_landmark(),
-          ADDRESS_HOME_OVERFLOW_AND_LANDMARK);
-  }
+  s.Set(specifics.address_overflow(), ADDRESS_HOME_OVERFLOW);
+  s.Set(specifics.address_landmark(), ADDRESS_HOME_LANDMARK);
+  s.Set(specifics.address_between_streets(), ADDRESS_HOME_BETWEEN_STREETS);
+  s.Set(specifics.address_between_streets_1(), ADDRESS_HOME_BETWEEN_STREETS_1);
+  s.Set(specifics.address_between_streets_2(), ADDRESS_HOME_BETWEEN_STREETS_2);
+  s.Set(specifics.address_between_streets_or_landmark(),
+        ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK);
+  s.Set(specifics.address_overflow_and_landmark(),
+        ADDRESS_HOME_OVERFLOW_AND_LANDMARK);
   if (base::FeatureList::IsEnabled(features::kAutofillUseINAddressModel)) {
     s.Set(specifics.address_street_location_and_locality(),
           ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY);
   }
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForAdminLevel2)) {
-    s.Set(specifics.address_admin_level_2(), ADDRESS_HOME_ADMIN_LEVEL2);
-  }
 
+  s.Set(specifics.address_admin_level_2(), ADDRESS_HOME_ADMIN_LEVEL2);
   // Set email, phone and company values and statuses.
   s.Set(specifics.email_address(), EMAIL_ADDRESS);
   s.Set(specifics.company_name(), COMPANY_NAME);
   s.Set(specifics.phone_home_whole_number(), PHONE_HOME_WHOLE_NUMBER);
 
-  profile->FinalizeAfterImport();
+  profile.FinalizeAfterImport();
   return profile;
 }
 
@@ -409,12 +434,14 @@ bool AreContactInfoSpecificsValid(
   return base::Uuid::ParseLowercase(specifics.guid()).is_valid();
 }
 
+// LINT.IfChange(TrimContactInfoSpecificsData)
 sync_pb::ContactInfoSpecifics TrimContactInfoSpecificsDataForCaching(
     const sync_pb::ContactInfoSpecifics& contact_info_specifics) {
   sync_pb::ContactInfoSpecifics trimmed_specifics =
       sync_pb::ContactInfoSpecifics(contact_info_specifics);
 
   trimmed_specifics.clear_guid();
+  trimmed_specifics.clear_address_type();
   trimmed_specifics.clear_use_count();
   trimmed_specifics.clear_use_date_unix_epoch_seconds();
   trimmed_specifics.clear_date_modified_unix_epoch_seconds();
@@ -434,6 +461,14 @@ sync_pb::ContactInfoSpecifics TrimContactInfoSpecificsDataForCaching(
   if (d.Delete(trimmed_specifics.mutable_name_last())) {
     trimmed_specifics.clear_name_last();
   }
+  if (base::FeatureList::IsEnabled(features::kAutofillSupportLastNamePrefix)) {
+    if (d.Delete(trimmed_specifics.mutable_name_last_prefix())) {
+      trimmed_specifics.clear_name_last_prefix();
+    }
+    if (d.Delete(trimmed_specifics.mutable_name_last_core())) {
+      trimmed_specifics.clear_name_last_core();
+    }
+  }
   if (d.Delete(trimmed_specifics.mutable_name_last_first())) {
     trimmed_specifics.clear_name_last_first();
   }
@@ -446,6 +481,21 @@ sync_pb::ContactInfoSpecifics TrimContactInfoSpecificsDataForCaching(
   if (d.Delete(trimmed_specifics.mutable_name_full())) {
     trimmed_specifics.clear_name_full();
   }
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillSupportPhoneticNameForJP)) {
+    // Delete alternative name related values and statues.
+    if (d.Delete(trimmed_specifics.mutable_alternative_family_name())) {
+      trimmed_specifics.clear_alternative_family_name();
+    }
+    if (d.Delete(trimmed_specifics.mutable_alternative_given_name())) {
+      trimmed_specifics.clear_alternative_given_name();
+    }
+    if (d.Delete(trimmed_specifics.mutable_alternative_full_name())) {
+      trimmed_specifics.clear_alternative_full_name();
+    }
+  }
+
   // Delete address-related values and statuses.;
   if (d.Delete(trimmed_specifics.mutable_address_city())) {
     trimmed_specifics.clear_address_city();
@@ -456,11 +506,22 @@ sync_pb::ContactInfoSpecifics TrimContactInfoSpecificsDataForCaching(
   if (d.Delete(trimmed_specifics.mutable_address_zip())) {
     trimmed_specifics.clear_address_zip();
   }
+  if (base::FeatureList::IsEnabled(features::kAutofillSupportSplitZipCode)) {
+    if (d.Delete(trimmed_specifics.mutable_address_zip_prefix())) {
+      trimmed_specifics.clear_address_zip_prefix();
+    }
+    if (d.Delete(trimmed_specifics.mutable_address_zip_suffix())) {
+      trimmed_specifics.clear_address_zip_suffix();
+    }
+  }
   if (d.Delete(trimmed_specifics.mutable_address_country())) {
     trimmed_specifics.clear_address_country();
   }
   if (d.Delete(trimmed_specifics.mutable_address_street_address())) {
     trimmed_specifics.clear_address_street_address();
+  }
+  if (d.Delete(trimmed_specifics.mutable_address_sorting_code())) {
+    trimmed_specifics.clear_address_sorting_code();
   }
   if (d.Delete(trimmed_specifics.mutable_address_dependent_locality())) {
     trimmed_specifics.clear_address_dependent_locality();
@@ -535,5 +596,6 @@ sync_pb::ContactInfoSpecifics TrimContactInfoSpecificsDataForCaching(
 
   return trimmed_specifics;
 }
+// LINT.ThenChange(//components/sync/protocol/contact_info_specifics.proto:ContactInfoSpecifics)
 
 }  // namespace autofill

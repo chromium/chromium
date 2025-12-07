@@ -26,8 +26,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.net.CronetTestRule.CronetImplementation;
-import org.chromium.net.CronetTestRule.CronetTestFramework;
+import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.test.util.CertTestUtil;
 
@@ -489,9 +488,8 @@ public class PkpTest {
         expectedErrors.add(NetError.ERR_CONNECTION_REFUSED);
         expectedErrors.add(NetError.ERR_SSL_PINNED_KEY_NOT_IN_CERT_CHAIN);
         assertWithMessage(
-                        String.format(
-                                "Incorrect error code. Expected one of %s but received %s",
-                                expectedErrors, errorCode))
+                        "Incorrect error code. Expected one of %s but received %s",
+                        expectedErrors, errorCode)
                 .that(expectedErrors)
                 .contains(errorCode);
     }

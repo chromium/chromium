@@ -1,0 +1,66 @@
+include_rules = [
+  "+cc/input/touch_action.h",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor ash codes in //chrome to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  "+chrome/browser/apps/app_service",
+  "+chrome/browser/ash/api/tasks",
+  "+chrome/browser/ash/arc/arc_util.h",
+  "+chrome/browser/ash/arc/session/arc_service_launcher.h",
+  "+chrome/browser/ash/arc/locked_fullscreen/arc_locked_fullscreen_manager.h",
+  "+chrome/browser/ash/file_manager",
+  "+chrome/browser/ash/multidevice_setup",
+  "+chrome/browser/ash/profiles",
+  "+chrome/browser/ash/scanner",
+  "+chrome/browser/browser_process.h",
+  "+chrome/browser/browser_process_platform_part_ash.h",
+  "+chrome/browser/feedback",
+  "+chrome/browser/nearby_sharing",
+  "+chrome/browser/profiles",
+  "+chrome/browser/sessions",
+  "+chrome/browser/ui/ash/accelerator",
+  "+chrome/browser/ui/ash/accessibility",
+  "+chrome/browser/ui/ash/back_gesture",
+  "+chrome/browser/ui/ash/boca",
+  "+chrome/browser/ui/ash/capture_mode",
+  "+chrome/browser/ui/ash/clipboard",
+  "+chrome/browser/ui/ash/desks",
+  "+chrome/browser/ui/ash/focus_mode",
+  "+chrome/browser/ui/ash/game_dashboard",
+  "+chrome/browser/ui/ash/global_media_controls",
+  "+chrome/browser/ui/ash/keyboard",
+  "+chrome/browser/ui/ash/session",
+  "+chrome/browser/ui/ash/user_education",
+  "+chrome/browser/ui/ash/wm",
+  "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/browser_command_controller.h",
+  "+chrome/browser/ui/browser_commands.h",
+  "+chrome/browser/ui/browser_finder.h",
+  "+chrome/browser/ui/browser_list.h",
+  "+chrome/browser/ui/browser_list_observer.h",
+  "+chrome/browser/ui/browser_tabstrip.h",
+  "+chrome/browser/ui/browser_window.h",
+  "+chrome/browser/ui/chrome_pages.h",
+  "+chrome/browser/ui/scoped_tabbed_browser_displayer.h",
+  "+chrome/browser/ui/settings_window_manager_chromeos.h",
+  "+chrome/browser/ui/tabs/tab_strip_model.h",
+  "+chrome/browser/ui/views/frame",
+  "+chrome/browser/ui/views/tabs",
+  "+chrome/browser/ui/webui/ash/diagnostics_dialog/diagnostics_dialog.h",
+  "+chrome/browser/ui/webui/tab_strip",
+  "+chrome/browser/web_applications",
+  "+chrome/common",
+]
+
+specific_include_rules = {
+  # TODO(crbug.com/403153076): This should be removed along with browser_process.h.
+  "chrome_shell_delegate.cc": [
+    "+chrome/browser/global_features.h",
+  ],
+
+  ".*browsertest\\.cc": [
+    "+chrome/browser/ui/tabs/tab_enums.h",
+    "+chrome/browser/ui/tabs/tab_strip_model_observer.h",
+  ]
+}

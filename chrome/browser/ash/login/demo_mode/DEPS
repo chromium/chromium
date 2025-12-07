@@ -16,9 +16,9 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/apps/app_service",
   "+chrome/browser/apps/platform_apps",
-  "+chrome/browser/ash/extensions",
+  "+chrome/browser/ash/browser_delegate/browser_controller.h",
+  "+chrome/browser/ash/drive",
   "+chrome/browser/ash/file_manager",
-  "+chrome/browser/ash/idle_detector.h",
   "+chrome/browser/ash/login",
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/policy/enrollment",
@@ -30,20 +30,27 @@ include_rules = [
   "+chrome/browser/browser_process_platform_part.h",
   "+chrome/browser/chrome_browser_main_extra_parts.h",
   "+chrome/browser/chrome_browser_main.h",
+  "+chrome/browser/chromeos/extensions/login_screen/login/cleanup",
   "+chrome/browser/component_updater",
-  "+chrome/browser/extensions/external_loader.h",
-  "+chrome/browser/extensions/external_provider_impl.h",
   "+chrome/browser/metrics",
   "+chrome/browser/prefs",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/apps",
+  "+chrome/browser/lifetime",
   "+chrome/browser/ui/ash",
-  "+chrome/browser/ui/browser.h",
-  "+chrome/browser/ui/browser_list.h",
-  "+chrome/browser/ui/browser_list_observer.h",
   "+chrome/browser/ui/webui/ash/login",
-  "+chrome/common/chrome_paths.h",
   "+chrome/common/extensions",
   "+chrome/grit",
-  "+chrome/test/base",
+
+  # Dependencies outside of //chrome:
+  "+ui/message_center/message_center.h",
 ]
+
+specific_include_rules = {
+  ".*test(|_.*)\\.(cc|h)": [
+    "+chrome/browser/ash/browser_delegate/browser_controller_impl.h",
+    "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/browser_list.h",
+    "+chrome/browser/ui/browser_list_observer.h",
+    "+chrome/test/base",
+  ]
+}

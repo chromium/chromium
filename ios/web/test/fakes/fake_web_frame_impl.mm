@@ -10,6 +10,7 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/json/json_writer.h"
+#import "base/strings/string_split.h"
 #import "base/strings/string_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/values.h"
@@ -26,29 +27,73 @@ const char kChildFakeFrameId2[] = "1effd8f52a067c8d3a01762d3c41dfd3";
 
 // static
 std::unique_ptr<FakeWebFrame> FakeWebFrame::Create(const std::string& frame_id,
-                                                   bool is_main_frame,
-                                                   GURL security_origin) {
+                                                   bool is_main_frame) {
+  return std::make_unique<FakeWebFrameImpl>(frame_id, is_main_frame,
+                                            url::Origin());
+}
+
+// static
+std::unique_ptr<FakeWebFrame> FakeWebFrame::Create(
+    const std::string& frame_id,
+    bool is_main_frame,
+    url::Origin security_origin) {
   return std::make_unique<FakeWebFrameImpl>(frame_id, is_main_frame,
                                             security_origin);
+}
+
+// static
+std::unique_ptr<FakeWebFrame> FakeWebFrame::Create(const std::string& frame_id,
+                                                   bool is_main_frame,
+                                                   GURL security_origin) {
+  return std::make_unique<FakeWebFrameImpl>(
+      frame_id, is_main_frame, url::Origin::Create(security_origin));
+}
+
+// static
+std::unique_ptr<FakeWebFrame> FakeWebFrame::CreateMainWebFrame() {
+  return std::make_unique<FakeWebFrameImpl>(
+      kMainFakeFrameId, /*is_main_frame=*/true, url::Origin());
+}
+
+// static
+std::unique_ptr<FakeWebFrame> FakeWebFrame::CreateMainWebFrame(
+    url::Origin security_origin) {
+  return std::make_unique<FakeWebFrameImpl>(
+      kMainFakeFrameId, /*is_main_frame=*/true, security_origin);
 }
 
 // static
 std::unique_ptr<FakeWebFrame> FakeWebFrame::CreateMainWebFrame(
     GURL security_origin) {
   return std::make_unique<FakeWebFrameImpl>(
-      kMainFakeFrameId, /*is_main_frame=*/true, security_origin);
+      kMainFakeFrameId, /*is_main_frame=*/true,
+      url::Origin::Create(security_origin));
+}
+
+// static
+std::unique_ptr<FakeWebFrame> FakeWebFrame::CreateChildWebFrame() {
+  return std::make_unique<FakeWebFrameImpl>(
+      kChildFakeFrameId, /*is_main_frame=*/false, url::Origin());
+}
+
+// static
+std::unique_ptr<FakeWebFrame> FakeWebFrame::CreateChildWebFrame(
+    url::Origin security_origin) {
+  return std::make_unique<FakeWebFrameImpl>(
+      kChildFakeFrameId, /*is_main_frame=*/false, security_origin);
 }
 
 // static
 std::unique_ptr<FakeWebFrame> FakeWebFrame::CreateChildWebFrame(
     GURL security_origin) {
   return std::make_unique<FakeWebFrameImpl>(
-      kChildFakeFrameId, /*is_main_frame=*/false, security_origin);
+      kChildFakeFrameId,
+      /*is_main_frame=*/false, url::Origin::Create(security_origin));
 }
 
 FakeWebFrameImpl::FakeWebFrameImpl(const std::string& frame_id,
                                    bool is_main_frame,
-                                   GURL security_origin)
+                                   url::Origin security_origin)
     : frame_id_(base::ToLowerASCII(frame_id)),
       is_main_frame_(is_main_frame),
       security_origin_(security_origin) {}
@@ -62,11 +107,17 @@ WebFrameInternal* FakeWebFrameImpl::GetWebFrameInternal() {
 std::string FakeWebFrameImpl::GetFrameId() const {
   return frame_id_;
 }
+
 bool FakeWebFrameImpl::IsMainFrame() const {
   return is_main_frame_;
 }
-GURL FakeWebFrameImpl::GetSecurityOrigin() const {
+
+url::Origin FakeWebFrameImpl::GetSecurityOrigin() const {
   return security_origin_;
+}
+
+GURL FakeWebFrameImpl::GetUrl() const {
+  return GURL();
 }
 
 BrowserState* FakeWebFrameImpl::GetBrowserState() {
@@ -85,19 +136,36 @@ bool FakeWebFrameImpl::CallJavaScriptFunction(
     call_java_script_function_callback_.Run();
   }
 
+  std::optional<std::pair<std::string_view, std::string_view>> name_parts =
+      base::SplitStringOnce(name, ".");
+
+  std::string_view api_name_sv;
+  std::string_view function_name_sv;
+
+  if (name_parts) {
+    api_name_sv = name_parts->first;
+    function_name_sv = name_parts->second;
+  } else {
+    api_name_sv = "";
+    function_name_sv = name;
+  }
+
+  std::u16string api_name = base::UTF8ToUTF16(api_name_sv);
+  std::u16string function_name = base::UTF8ToUTF16(function_name_sv);
+
   std::u16string javascript_call =
-      std::u16string(u"__gCrWeb." + base::UTF8ToUTF16(name) + u"(");
+      std::u16string(u"__gCrWeb.callFunctionInGcrWeb('" + api_name + u"', '" +
+                     function_name + u"', " + u"[");
   bool first = true;
   for (auto& param : parameters) {
     if (!first) {
       javascript_call += u", ";
     }
     first = false;
-    std::string paramString;
-    base::JSONWriter::Write(param, &paramString);
+    std::string paramString = base::WriteJson(param).value_or("");
     javascript_call += base::UTF8ToUTF16(paramString);
   }
-  javascript_call += u");";
+  javascript_call += u"]);";
   java_script_calls_.push_back(javascript_call);
   return true;
 }

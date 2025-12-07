@@ -15,7 +15,7 @@ namespace apps {
 
 class AlmanacAppIconLoaderBrowserTest : public InProcessBrowserTest {
  public:
-  AlmanacAppIconLoaderBrowserTest() {}
+  AlmanacAppIconLoaderBrowserTest() = default;
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -71,6 +71,18 @@ IN_PROC_BROWSER_TEST_F(AlmanacAppIconLoaderBrowserTest, GetAppIconSvgFailure) {
                       /*icon_masking_allowed=*/true, future.GetCallback());
 
   EXPECT_FALSE(future.Get<0>());
+}
+
+IN_PROC_BROWSER_TEST_F(AlmanacAppIconLoaderBrowserTest,
+                       GetAppIconSvgWithMissingMimeType) {
+  base::test::TestFuture<apps::IconValuePtr> future;
+  loader_->GetAppIcon(embedded_test_server()->GetURL("/favicon/icon.svg"),
+                      /*icon_mime_type=*/"",
+                      /*icon_masking_allowed=*/true, future.GetCallback());
+
+  apps::IconValue* icon = future.Get<0>().get();
+  ASSERT_TRUE(icon);
+  EXPECT_EQ(icon->uncompressed.bitmap()->getColor(100, 100), SK_ColorBLUE);
 }
 
 }  // namespace apps

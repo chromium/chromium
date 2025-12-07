@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_UNEXPORTABLE_KEYS_BACKGROUND_LONG_TASK_SCHEDULER_H_
 #define COMPONENTS_UNEXPORTABLE_KEYS_BACKGROUND_LONG_TASK_SCHEDULER_H_
 
+#include <array>
 #include <memory>
 
 #include "base/component_export.h"
@@ -39,6 +40,8 @@ class BackgroundTask;
 //   TODO(b/263249728): support dynamic priorities.
 // - Task cancellation. A task never runs if it gets cancelled before it's been
 //   posted on the background thread.
+// - Task retries. When it makes sense to retry a task, the scheduler will
+//   re-add a task to the back of the queue and run it again.
 class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) BackgroundLongTaskScheduler {
  public:
   explicit BackgroundLongTaskScheduler(

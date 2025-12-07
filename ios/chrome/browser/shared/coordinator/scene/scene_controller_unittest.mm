@@ -10,15 +10,18 @@
 #import "components/supervised_user/test_support/kids_chrome_management_test_utils.h"
 #import "components/variations/scoped_variations_ids_provider.h"
 #import "components/variations/variations_ids_provider.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/profile/profile_init_stage.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
-#import "ios/chrome/browser/intents/intents_constants.h"
-#import "ios/chrome/browser/intents/user_activity_browser_agent.h"
-#import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
+#import "ios/chrome/browser/intents/model/intents_constants.h"
+#import "ios/chrome/browser/intents/model/user_activity_browser_agent.h"
+#import "ios/chrome/browser/main/ui_bundled/browser_view_wrangler.h"
+#import "ios/chrome/browser/main/ui_bundled/wrangled_browser.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
 #import "ios/chrome/browser/sessions/model/test_session_restoration_service.h"
@@ -27,28 +30,27 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_util_test_support.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
-#import "ios/chrome/browser/ui/main/browser_view_wrangler.h"
-#import "ios/chrome/browser/ui/main/wrangled_browser.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_data.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #import "services/network/test/test_url_loader_factory.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
 @interface InternalFakeSceneController : SceneController
-// Browser and ChromeBrowserState used to mock the currentInterface.
+// Browser and ProfileIOS used to mock the currentInterface.
 @property(nonatomic, assign) Browser* browser;
-@property(nonatomic, assign) ChromeBrowserState* chromeBrowserState;
+@property(nonatomic, assign) ProfileIOS* profile;
 // Mocked currentInterface.
-@property(nonatomic, assign) WrangledBrowser* currentInterface;
+@property(nonatomic, strong) WrangledBrowser* currentInterface;
 // BrowserViewWrangler to provide test setup for main coordinator and interface.
 @property(nonatomic, strong) BrowserViewWrangler* browserViewWrangler;
 // Argument for
@@ -85,21 +87,21 @@ class SceneControllerTest : public PlatformTest {
     base_view_controller_ = [[UIViewController alloc] init];
 
     fake_scene_ = FakeSceneWithIdentifier([[NSUUID UUID] UUIDString]);
-    AppState* appState = CreateMockAppState(InitStageFinal);
     scene_state_ = [[SceneStateWithFakeScene alloc] initWithScene:fake_scene_
-                                                         appState:appState];
+                                                         appState:nil];
+
+    profile_state_ = CreateMockProfileState(ProfileInitStage::kFinal);
+    scene_state_.profileState = profile_state_;
 
     scene_controller_ =
         [[InternalFakeSceneController alloc] initWithSceneState:scene_state_];
     scene_state_.controller = scene_controller_;
 
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
         base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
                                 BuildIdentityManagerForTests));
-    builder.AddTestingFactory(PrerenderServiceFactory::GetInstance(),
-                              PrerenderServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         SendTabToSelfSyncServiceFactory::GetInstance(),
         SendTabToSelfSyncServiceFactory::GetDefaultFactory());
@@ -120,62 +122,61 @@ class SceneControllerTest : public PlatformTest {
                               ios::BookmarkModelFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
     builder.AddTestingFactory(
         SessionRestorationServiceFactory::GetInstance(),
         TestSessionRestorationService::GetTestingFactory());
-    browser_state_ = std::move(builder).Build();
+    builder.AddTestingFactory(
+        tab_groups::TabGroupSyncServiceFactory::GetInstance(),
+        tab_groups::TabGroupSyncServiceFactory::GetDefaultFactory());
+    profile_ = std::move(builder).Build();
 
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
-
-    browser_ =
-        std::make_unique<TestBrowser>(browser_state_.get(), scene_state_);
+    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
     UserActivityBrowserAgent::CreateForBrowser(browser_.get());
 
-    browser_state_->SetSharedURLLoaderFactory(
+    profile_->SetSharedURLLoaderFactory(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_loader_factory_));
 
     scene_controller_.browserViewWrangler =
-        [[BrowserViewWrangler alloc] initWithBrowserState:browser_state_.get()
-                                               sceneState:scene_state_
-                                      applicationEndpoint:nil
-                                         settingsEndpoint:nil];
+        [[BrowserViewWrangler alloc] initWithProfile:profile_.get()
+                                          sceneState:scene_state_
+                                 applicationEndpoint:nil
+                                    settingsEndpoint:nil];
     [scene_controller_.browserViewWrangler createMainCoordinatorAndInterface];
 
     scene_controller_.browser = browser_.get();
-    scene_controller_.chromeBrowserState = browser_state_.get();
+    scene_controller_.profile = profile_.get();
     scene_controller_.currentInterface = CreateMockCurrentInterface();
     connection_information_ = scene_state_.controller;
   }
 
   ~SceneControllerTest() override { [scene_controller_ teardownUI]; }
 
-  // Mock & stub an AppState object with an arbitrary `init_stage` property.
-  id CreateMockAppState(InitStage init_stage) {
-    id mock_app_state = OCMClassMock([AppState class]);
-    OCMStub([(AppState*)mock_app_state initStage]).andReturn(init_stage);
-    return mock_app_state;
+  // Mock & stub a ProfileState object with an arbitrary `init_stage` property.
+  ProfileState* CreateMockProfileState(ProfileInitStage init_stage) {
+    ProfileState* mock_profile_state = OCMClassMock([ProfileState class]);
+    OCMStub([mock_profile_state initStage]).andReturn(init_stage);
+    OCMStub([mock_profile_state profile]).andReturn(profile_.get());
+    return mock_profile_state;
   }
 
   // Mock & stub a WrangledBrowser object.
   id CreateMockCurrentInterface() {
     id mock_wrangled_browser = OCMClassMock(WrangledBrowser.class);
-    OCMStub([mock_wrangled_browser browserState])
-        .andReturn(browser_state_.get());
+    OCMStub([mock_wrangled_browser profile]).andReturn(profile_.get());
     OCMStub([mock_wrangled_browser browser]).andReturn(browser_.get());
     return mock_wrangled_browser;
   }
 
   signin::IdentityManager* GetIdentityManager() {
-    return IdentityManagerFactory::GetForBrowserState(browser_state_.get());
+    return IdentityManagerFactory::GetForProfile(profile_.get());
   }
 
   void MakePrimaryAccountAvailable(const std::string& email) {
     signin::MakePrimaryAccountAvailable(
-        IdentityManagerFactory::GetForBrowserState(browser_state_.get()), email,
+        IdentityManagerFactory::GetForProfile(profile_.get()), email,
         signin::ConsentLevel::kSignin);
   }
 
@@ -187,13 +188,14 @@ class SceneControllerTest : public PlatformTest {
       web::WebTaskEnvironment::MainThreadType::IO,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
 
   std::unique_ptr<Browser> browser_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   InternalFakeSceneController* scene_controller_;
   SceneState* scene_state_;
+  ProfileState* profile_state_;
   id fake_scene_;
   id<ConnectionInformation> connection_information_;
 
@@ -289,7 +291,7 @@ TEST_F(SceneControllerTest, TestReportAnIssueViewControllerWithFamilyResponse) {
       base::BindRepeating(^(UserFeedbackData* data) {
         EXPECT_EQ(UserFeedbackSender::ToolsMenu, data.origin);
         EXPECT_FALSE(data.currentPageIsIncognito);
-        EXPECT_TRUE([data.familyMemberRole isEqualToString:@"child"]);
+        EXPECT_NSEQ(data.familyMemberRole, @"child");
       }).Then(run_loop.QuitClosure());
 
   [scene_controller_
@@ -305,7 +307,7 @@ TEST_F(SceneControllerTest, TestReportAnIssueViewControllerWithFamilyResponse) {
       list_family_members_response.add_members(), kidsmanagement::CHILD, "foo");
   test_loader_factory_.SimulateResponseForPendingRequest(
       "https://kidsmanagement-pa.googleapis.com/kidsmanagement/v1/families/"
-      "mine/members?alt=proto",
+      "mine/members?alt=proto&allow_empty_family=true",
       list_family_members_response.SerializeAsString());
 
   run_loop.Run();

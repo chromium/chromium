@@ -23,6 +23,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatterMac
       const AXTreeSelector& selector) const override;
 
   base::Value::Dict BuildNode(AXPlatformNodeDelegate* node) const override;
+  base::Value::Dict BuildNodeForSelector(
+      const AXTreeSelector& selector) const override;
 
   std::string EvaluateScript(const AXTreeSelector& selector,
                              const AXInspectScenario& scenario) const override;
@@ -38,14 +40,14 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatterMac
       size_t end_index) const;
 
   // AXTreeFormatterMac
-  base::Value::Dict BuildNode(const id node) const;
+  base::Value::Dict BuildNode(gfx::NativeViewAccessible node) const;
 
  protected:
   void AddDefaultFilters(
       std::vector<AXPropertyFilter>* property_filters) override;
 
  private:
-  base::Value::Dict BuildTree(const id root) const;
+  base::Value::Dict BuildTree(id root) const;
   base::Value::Dict BuildTreeForAXUIElement(AXUIElementRef node) const;
 
   void RecursiveBuildTree(const AXElementWrapper& ax_element,

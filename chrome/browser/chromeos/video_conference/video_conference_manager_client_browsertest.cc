@@ -7,22 +7,19 @@
 #include <string>
 #include <vector>
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
-#endif
 #include "base/command_line.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_manager_client_common.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_media_listener.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_web_app.h"
+#include "chrome/browser/ui/ash/main_extra_parts/chrome_browser_main_extra_parts_ash.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_activity_simulator.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -48,7 +45,10 @@ constexpr char kTestURL2[] = "https://localhost";
 class FakeVideoConferenceManagerClient
     : public VideoConferenceManagerClientImpl {
  public:
-  FakeVideoConferenceManagerClient() = default;
+  // The passed `vc_manager` must outlive this instance.
+  explicit FakeVideoConferenceManagerClient(
+      ash::VideoConferenceManagerAsh* vc_manager)
+      : VideoConferenceManagerClientImpl(vc_manager) {}
 
   FakeVideoConferenceManagerClient(const FakeVideoConferenceManagerClient&) =
       delete;
@@ -68,12 +68,12 @@ class FakeVideoConferenceManagerClient
     return VideoConferenceManagerClientImpl::GetAggregatedPermissions();
   }
 
-  bool camera_system_disabled() {
-    return media_listener_->camera_system_disabled_;
+  bool camera_system_enabled() {
+    return media_listener_->camera_system_enabled_;
   }
 
-  bool microphone_system_disabled() {
-    return media_listener_->microphone_system_disabled_;
+  bool microphone_system_enabled() {
+    return media_listener_->microphone_system_enabled_;
   }
 
   crosapi::mojom::VideoConferenceMediaUsageStatusPtr& status() {
@@ -96,14 +96,12 @@ class VideoConferenceManagerClientTest : public InProcessBrowserTest {
 
   ~VideoConferenceManagerClientTest() override = default;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
         ash::features::kFeatureManagementVideoConference);
 
     InProcessBrowserTest::SetUp();
   }
-#endif
 
   // Creates and returns a new `WebContents` at the given tab `index`.
   content::WebContents* CreateWebContentsAt(int index) {
@@ -127,15 +125,14 @@ class VideoConferenceManagerClientTest : public InProcessBrowserTest {
   }
 
  private:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::test::ScopedFeatureList scoped_feature_list_;
-#endif
 };
 
 // Tests creating VcWebApps and removing them by closing tabs.
 IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest,
                        TabCreationAndRemoval) {
-  FakeVideoConferenceManagerClient client;
+  FakeVideoConferenceManagerClient client(
+      ash::VideoConferenceManagerAsh::Get());
 
   auto* web_contents1 = CreateWebContentsAt(0);
   auto* web_contents2 = CreateWebContentsAt(1);
@@ -166,7 +163,8 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest,
 // removes it from the client.
 IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest,
                        WebContentsPrimaryPageChange) {
-  FakeVideoConferenceManagerClient client;
+  FakeVideoConferenceManagerClient client(
+      ash::VideoConferenceManagerAsh::Get());
   TabActivitySimulator tab_activity_simulator;
 
   auto* web_contents = CreateWebContentsAt(0);
@@ -190,7 +188,8 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest,
 // Tests `GetMediaApps` returns `VideoConferenceMediaAppInfo`s with expected
 // values.
 IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, GetMediaApps) {
-  FakeVideoConferenceManagerClient client;
+  FakeVideoConferenceManagerClient client(
+      ash::VideoConferenceManagerAsh::Get());
 
   auto* web_contents1 = CreateWebContentsAt(0);
   UpdateWebContentsTitle(web_contents1, u"app1");
@@ -235,15 +234,12 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, GetMediaApps) {
       }));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Tests setting/clearing system statuses for camera and microphone.
 IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest,
                        SetSystemMediaDeviceStatus) {
-  FakeVideoConferenceManagerClient client;
+  auto* vc_manager = ash::VideoConferenceManagerAsh::Get();
+  FakeVideoConferenceManagerClient client(vc_manager);
 
-  auto* vc_manager = crosapi::CrosapiManager::Get()
-                         ->crosapi_ash()
-                         ->video_conference_manager_ash();
   vc_manager->RegisterCppClient(&client, client.client_id());
 
   ash::FakeVideoConferenceTrayController* controller =
@@ -252,42 +248,40 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest,
   ASSERT_TRUE(controller);
   EXPECT_EQ(controller->device_used_while_disabled_records().size(), 0u);
 
-  EXPECT_FALSE(client.camera_system_disabled());
-  EXPECT_FALSE(client.microphone_system_disabled());
+  EXPECT_TRUE(client.camera_system_enabled());
+  EXPECT_TRUE(client.microphone_system_enabled());
 
   vc_manager->SetSystemMediaDeviceStatus(
       crosapi::mojom::VideoConferenceMediaDevice::kCamera,
-      /*disabled=*/true);
-  EXPECT_TRUE(client.camera_system_disabled());
-  EXPECT_FALSE(client.microphone_system_disabled());
+      /*enabled=*/false);
+  EXPECT_FALSE(client.camera_system_enabled());
+  EXPECT_TRUE(client.microphone_system_enabled());
 
   vc_manager->SetSystemMediaDeviceStatus(
       crosapi::mojom::VideoConferenceMediaDevice::kMicrophone,
-      /*disabled=*/true);
-  EXPECT_TRUE(client.camera_system_disabled());
-  EXPECT_TRUE(client.microphone_system_disabled());
+      /*enabled=*/false);
+  EXPECT_FALSE(client.camera_system_enabled());
+  EXPECT_FALSE(client.microphone_system_enabled());
 
   vc_manager->SetSystemMediaDeviceStatus(
       crosapi::mojom::VideoConferenceMediaDevice::kMicrophone,
-      /*disabled=*/false);
-  EXPECT_TRUE(client.camera_system_disabled());
-  EXPECT_FALSE(client.microphone_system_disabled());
+      /*enabled=*/true);
+  EXPECT_FALSE(client.camera_system_enabled());
+  EXPECT_TRUE(client.microphone_system_enabled());
 
   vc_manager->SetSystemMediaDeviceStatus(
       crosapi::mojom::VideoConferenceMediaDevice::kCamera,
-      /*disabled=*/false);
-  EXPECT_FALSE(client.camera_system_disabled());
-  EXPECT_FALSE(client.microphone_system_disabled());
+      /*enabled=*/true);
+  EXPECT_TRUE(client.camera_system_enabled());
+  EXPECT_TRUE(client.microphone_system_enabled());
 }
 
 // Tests client updates relating to adding and removing VC web apps and title
 // changes.
 IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, ClientUpdate) {
-  FakeVideoConferenceManagerClient client;
+  auto* vc_manager = ash::VideoConferenceManagerAsh::Get();
+  FakeVideoConferenceManagerClient client(vc_manager);
 
-  auto* vc_manager = crosapi::CrosapiManager::Get()
-                         ->crosapi_ash()
-                         ->video_conference_manager_ash();
   vc_manager->RegisterCppClient(&client, client.client_id());
 
   ash::FakeVideoConferenceTrayController* controller =
@@ -324,11 +318,11 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, ClientUpdate) {
             crosapi::mojom::VideoConferenceAppUpdate::kAppRemoved);
   EXPECT_FALSE(controller->last_client_update()->title_change_info);
 }
-#endif
 
 // Tests aggregated media usage status received on `HandleMediaUsageUpdate`.
 IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, MediaUsageUpdate) {
-  FakeVideoConferenceManagerClient client;
+  FakeVideoConferenceManagerClient client(
+      ash::VideoConferenceManagerAsh::Get());
 
   EXPECT_FALSE(client.status()->has_media_app);
   EXPECT_FALSE(client.status()->is_capturing_camera);
@@ -387,7 +381,8 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, MediaUsageUpdate) {
 // Tests if `ReturnToApp` correctly activates tab of the `VideoConferenceWebApp`
 // corresponding to the `id` provided.
 IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, ReturnToApp) {
-  FakeVideoConferenceManagerClient client;
+  FakeVideoConferenceManagerClient client(
+      ash::VideoConferenceManagerAsh::Get());
 
   auto* web_contents1 = CreateWebContentsAt(0);
   auto* web_contents2 = CreateWebContentsAt(1);
@@ -416,7 +411,8 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, ReturnToApp) {
 
 // Tests that for extensions, permissions equate to capturing statuses.
 IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, ExtensionPermissions) {
-  FakeVideoConferenceManagerClient client;
+  FakeVideoConferenceManagerClient client(
+      ash::VideoConferenceManagerAsh::Get());
 
   auto* web_contents = CreateWebContentsAt(0);
 

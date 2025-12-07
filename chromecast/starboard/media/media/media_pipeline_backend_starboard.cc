@@ -41,6 +41,7 @@ MediaPipelineBackendStarboard::~MediaPipelineBackendStarboard() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   video_plane_->UnregisterCallback(video_plane_callback_token_);
   if (player_) {
+    LOG(INFO) << "Destroying SbPlayer";
     starboard_->DestroyPlayer(player_);
   }
 }
@@ -220,12 +221,20 @@ void MediaPipelineBackendStarboard::OnGeometryChanged(
 void MediaPipelineBackendStarboard::CreatePlayer() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
+  bool has_drm = false;
   StarboardPlayerCreationParam params = {};
   if (audio_decoder_) {
     const std::optional<StarboardAudioSampleInfo>& audio_info =
         audio_decoder_->GetAudioSampleInfo();
     CHECK(audio_info);
     params.audio_sample_info = *audio_info;
+
+    std::optional<EncryptionScheme> encryption_scheme =
+        audio_decoder_->GetEncryptionScheme();
+    if (encryption_scheme.has_value() &&
+        *encryption_scheme != EncryptionScheme::kUnencrypted) {
+      has_drm = true;
+    }
   }
   if (video_decoder_) {
     const std::optional<StarboardVideoSampleInfo>& video_info =
@@ -238,7 +247,44 @@ void MediaPipelineBackendStarboard::CreatePlayer() {
       // prioritize minimizing latency (render the frames as soon as possible).
       params.video_sample_info.max_video_capabilities = "streaming=1";
     }
+
+    std::optional<EncryptionScheme> encryption_scheme =
+        video_decoder_->GetEncryptionScheme();
+    if (encryption_scheme.has_value() &&
+        *encryption_scheme != EncryptionScheme::kUnencrypted) {
+      has_drm = true;
+    }
   }
+
+  const bool cdm_exists = StarboardDrmWrapper::GetInstance().HasClients();
+  if (cdm_exists || has_drm) {
+    if (cdm_exists && !has_drm) {
+      // There are some cases where this may occur, e.g. if watching a movie
+      // that begins with ads. The ads won't be encrypted, but the movie will
+      // be.
+      LOG(WARNING) << "A CDM exists, but content is not encrypted. Passing an "
+                      "SbDrmSystem to SbPlayer regardless.";
+    } else if (!cdm_exists && has_drm) {
+      // There may be race conditions where content is encrypted but the media
+      // keys have not been attached yet. For example: http://crbug.com/40904510
+      //
+      // We still need an SbDrmSystem in this case.
+      LOG(WARNING) << "Content is encrypted, but no CDM exists. Passing an "
+                      "SbDrmSystem to SbPlayer regardless";
+    } else {
+      // The normal case.
+      LOG(INFO) << "A CDM exists and content is encrypted. Passing an "
+                   "SbDrmSystem to SbPlayer";
+    }
+
+    drm_resource_.emplace();
+    params.drm_system = StarboardDrmWrapper::GetInstance().GetDrmSystem();
+  } else {
+    LOG(INFO) << "Content is not encrypted, and no CDM exists. Passing a null "
+                 "SbDrmSystem to SbPlayer.";
+    params.drm_system = nullptr;
+  }
+
   params.output_mode = kStarboardPlayerOutputModePunchOut;
   player_ =
       starboard_->CreatePlayer(&params,
@@ -353,7 +399,7 @@ void MediaPipelineBackendStarboard::CallOnPlayerError(
     void* player,
     void* context,
     StarboardPlayerError error,
-    const char* message) {
+    std::string message) {
   static_cast<MediaPipelineBackendStarboard*>(context)->OnPlayerError(
       player, error, message);
 }

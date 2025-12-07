@@ -22,9 +22,12 @@
 #include "chrome/browser/ui/ash/birch/birch_release_notes_provider.h"
 #include "chrome/browser/ui/ash/birch/birch_self_share_provider.h"
 #include "chrome/browser/ui/ash/birch/refresh_token_waiter.h"
+#include "chrome/grit/chrome_unscaled_resources.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon_base/favicon_types.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 
 namespace ash {
@@ -187,6 +190,12 @@ void BirchKeyedService::GetFaviconImage(
         base::BindOnce(&OnGotFaviconImageRaw, std::move(callback)),
         &cancelable_task_tracker_);
   }
+}
+
+ui::ImageModel BirchKeyedService::GetChromeBackupIcon() {
+  return ui::ImageModel::FromImageSkia(
+      *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+          IDR_CHROME_APP_ICON_192));
 }
 
 void BirchKeyedService::ShutdownBirch() {

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 class Profile;
 
@@ -19,14 +18,15 @@ class Profile;
 //     signin::GetSigninScopedDeviceId(profile->GetPrefs());
 std::string GetSigninScopedDeviceIdForProfile(Profile* profile);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 // Helper method. The device ID should generally be obtained through
 // GetSigninScopedDeviceIdForProfile().
 // If `for_ephemeral` is true, special kind of device ID for ephemeral users is
 // generated.
 // If `for_ephemeral` is false, this function will cache (in-memory) its return
-// value and keep returning it - if `kStableDeviceId` feature is enabled.
+// value and keep returning it - if `switches::kStableDeviceId` feature is
+// enabled.
 std::string GenerateSigninScopedDeviceId(bool for_ephemeral);
 
 // Moves any existing device ID out of the pref service into the UserManager,

@@ -1,0 +1,14 @@
+include_rules = [
+  # go/keep-sorted start
+  "+content/public/browser",
+  "+content/public/common",
+  "+content/public/renderer",
+  "+content/public/test",
+  "+mojo/public/cpp/bindings",
+  "+services/service_manager/public/cpp",
+  "+skia/public/mojom",
+  "+third_party/blink/public/web",
+  "+third_party/skia/include/core",
+  "+ui/gfx/codec",
+  # go/keep-sorted end
+]

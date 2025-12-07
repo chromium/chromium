@@ -8,6 +8,8 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/clock.h"
+#include "base/time/default_clock.h"
 #include "build/build_config.h"
 #include "components/page_info/page_info_ui_delegate.h"
 #include "url/gurl.h"
@@ -50,8 +52,8 @@ class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
   void OpenMoreAboutThisPageUrl(const GURL& url, const ui::Event& event);
 
   // If PageInfo should show a link to the site or app's settings page, this
-  // will return true and set the params to the appropriate resource IDs (IDS_*).
-  // Otherwise, it will return false.
+  // will return true and set the params to the appropriate resource IDs
+  // (IDS_*). Otherwise, it will return false.
   bool ShouldShowSiteSettings(int* link_text_id, int* tooltip_text_id);
 
   // The returned string, if non-empty, should be added as a sublabel that gives
@@ -80,19 +82,25 @@ class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
   bool IsBlockAutoPlayEnabled() override;
   bool IsMultipleTabsOpen() override;
   void OpenSiteSettingsFileSystem() override;
+
+  void OpenMerchantTrustSidePanel(const GURL& url);
 #endif  // !BUILDFLAG(IS_ANDROID)
   content::PermissionResult GetPermissionResult(
       blink::PermissionType permission) override;
   std::optional<content::PermissionResult> GetEmbargoResult(
       ContentSettingsType type) override;
 
-  bool IsTrackingProtection3pcdEnabled() override;
+  void GetMerchantTrustInfo(page_info::MerchantDataCallback callback) override;
+  void RecordPageInfoWithMerchantTrustOpenTime();
+  void RecordMerchantTrustButtonShown();
+  void RecordMerchantTrustSidePanelOpened();
 
  private:
   Profile* GetProfile() const;
 
   raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> web_contents_;
   GURL site_url_;
+  raw_ptr<base::Clock> clock_ = base::DefaultClock::GetInstance();
 };
 
 #endif  // CHROME_BROWSER_UI_PAGE_INFO_CHROME_PAGE_INFO_UI_DELEGATE_H_

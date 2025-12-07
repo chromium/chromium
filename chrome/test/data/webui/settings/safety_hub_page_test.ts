@@ -7,8 +7,9 @@ import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import type {CardInfo, SettingsSafetyHubPageElement} from 'chrome://settings/lazy_load.js';
-import {CardState, ContentSettingsTypes, SafetyHubBrowserProxyImpl, SafetyHubEvent} from 'chrome://settings/lazy_load.js';
-import {LifetimeBrowserProxyImpl, MetricsBrowserProxyImpl, PasswordManagerImpl, PasswordManagerPage, Router, routes, SafetyHubModuleType, SafetyHubSurfaces} from 'chrome://settings/settings.js';
+import { CardState, ContentSettingsTypes, SafeBrowsingSetting, SafetyHubBrowserProxyImpl, SafetyHubEvent, PermissionsRevocationType } from 'chrome://settings/lazy_load.js';
+import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, LifetimeBrowserProxyImpl, MetricsBrowserProxyImpl, PasswordManagerImpl, PasswordManagerPage, Router, routes, SafetyHubModuleType, SafetyHubSurfaces} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -18,7 +19,7 @@ import {TestSafetyHubBrowserProxy} from './test_safety_hub_browser_proxy.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
-// <if expr="not chromeos_ash">
+// <if expr="not is_chromeos">
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 // </if>
 // clang-format on
@@ -29,6 +30,12 @@ suite('SafetyHubPage', function() {
   let safetyHubBrowserProxy: TestSafetyHubBrowserProxy;
   let passwordManagerProxy: TestPasswordManagerProxy;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
 
   const notificationPermissionMockData = [{
     origin: 'www.example.com',
@@ -39,6 +46,7 @@ suite('SafetyHubPage', function() {
     origin: 'www.example.com',
     permissions: [ContentSettingsTypes.CAMERA],
     expiration: '13317004800000000',  // Represents 2023-01-01T00:00:00.
+    revocationType: PermissionsRevocationType.UNUSED_PERMISSIONS,
   }];
 
   const passwordCardMockData: CardInfo = {
@@ -76,6 +84,7 @@ suite('SafetyHubPage', function() {
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('settings-safety-hub-page');
+    testElement.prefs = settingsPrefs.prefs!;
     document.body.appendChild(testElement);
     return flushTasks();
   });
@@ -85,6 +94,29 @@ suite('SafetyHubPage', function() {
         shouldBeVisible, isChildVisible(testElement, '#emptyStateModule'));
     assertEquals(
         shouldBeVisible, isChildVisible(testElement, '#userEducationModule'));
+  }
+
+  async function changeSafeBrowsingGeneratedPref(setting: SafeBrowsingSetting) {
+    testElement.set('prefs.generated.safe_browsing', {
+      value: setting,
+      type: chrome.settingsPrivate.PrefType.DICTIONARY,
+    });
+    assertEquals(setting, testElement.getPref('generated.safe_browsing').value);
+    await flushTasks();
+  }
+
+  function assertSafeBrowsingCard(newCardData: CardInfo) {
+    assertEquals(
+        1, safetyHubBrowserProxy.getCallCount('getSafeBrowsingCardData'));
+    assertTrue(isChildVisible(testElement, '#safeBrowsing'));
+    assertEquals(
+        testElement.$.safeBrowsing.shadowRoot!.querySelector('#header')!
+            .textContent.trim(),
+        newCardData.header);
+    assertEquals(
+        testElement.$.safeBrowsing.shadowRoot!.querySelector('#subheader')!
+            .textContent.trim(),
+        newCardData.subheader);
   }
 
   test(
@@ -147,7 +179,7 @@ suite('SafetyHubPage', function() {
   test('Unused Site Permissions Module Visibility', async function() {
     // The element is not visible when there is nothing to review.
     const unusedSitePermissionsElementTag =
-        'settings-safety-hub-unused-site-permissions';
+        'settings-safety-hub-unused-site-permissions-module';
     assertFalse(isChildVisible(testElement, unusedSitePermissionsElementTag));
 
     // The element becomes visible if the list of permissions is no longer
@@ -215,17 +247,17 @@ suite('SafetyHubPage', function() {
         isChildVisible(testElement, 'settings-safety-hub-extensions-module'));
   });
 
-  test('Password Card', async function() {
+  test('Password Card', function() {
     assertTrue(isChildVisible(testElement, '#passwords'));
 
     // Card header and subheader should be what the browser proxy provides.
     assertEquals(
         testElement.$.passwords.shadowRoot!.querySelector(
-                                               '#header')!.textContent!.trim(),
+                                               '#header')!.textContent.trim(),
         passwordCardMockData.header);
     assertEquals(
         testElement.$.passwords.shadowRoot!.querySelector('#subheader')!
-            .textContent!.trim(),
+            .textContent.trim(),
         passwordCardMockData.subheader);
 
     // Check that the card aria role and description are correct.
@@ -266,17 +298,17 @@ suite('SafetyHubPage', function() {
     assertEquals(PasswordManagerPage.CHECKUP, param);
   });
 
-  test('Version Card', async function() {
+  test('Version Card', function() {
     assertTrue(isChildVisible(testElement, '#version'));
 
     // Card header and subheader should be what the browser proxy provides.
     assertEquals(
         testElement.$.version.shadowRoot!.querySelector(
-                                             '#header')!.textContent!.trim(),
+                                             '#header')!.textContent.trim(),
         versionCardMockData.header);
     assertEquals(
         testElement.$.version.shadowRoot!.querySelector(
-                                             '#subheader')!.textContent!.trim(),
+                                             '#subheader')!.textContent.trim(),
         versionCardMockData.subheader);
 
     // Check that the card aria role and description are correct.
@@ -317,7 +349,7 @@ suite('SafetyHubPage', function() {
         testElement.$.version.getAttribute('aria-description'),
         testElement.i18n('safetyHubVersionRelaunchAriaLabel'));
 
-    // <if expr="not chromeos_ash">
+    // <if expr="not is_chromeos">
     lifetimeBrowserProxy.setShouldShowRelaunchConfirmationDialog(true);
     lifetimeBrowserProxy.setRelaunchConfirmationDialogDescription(
         'Test description.');
@@ -325,7 +357,7 @@ suite('SafetyHubPage', function() {
 
     testElement.$.version.click();
 
-    // <if expr="not chromeos_ash">
+    // <if expr="not is_chromeos">
     // Ensure the confirmation dialog is always shown.
     await eventToPromise('cr-dialog-open', testElement);
     const relaunchConfirmationDialogElement =
@@ -336,7 +368,7 @@ suite('SafetyHubPage', function() {
     const dialog = relaunchConfirmationDialogElement.shadowRoot!.querySelector(
         'cr-dialog')!;
     const description =
-        dialog.shadowRoot!.querySelector<HTMLSlotElement>('slot[name=body]')!;
+        dialog.shadowRoot.querySelector<HTMLSlotElement>('slot[name=body]')!;
     assertEquals(
         'Test description.', description.assignedNodes()[0]!.textContent);
 
@@ -354,31 +386,31 @@ suite('SafetyHubPage', function() {
     return lifetimeBrowserProxy.whenCalled('relaunch');
   });
 
-  test('Version Card Clicked via Enter', async function() {
+  test('Version Card Clicked via Enter', function() {
     testElement.$.passwords.dispatchEvent(
         new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}));
     // Ensure the About page is shown.
     assertEquals(routes.ABOUT, Router.getInstance().getCurrentRoute());
   });
 
-  test('Version Card Clicked via Space', async function() {
+  test('Version Card Clicked via Space', function() {
     testElement.$.passwords.dispatchEvent(
         new KeyboardEvent('keydown', {key: ' ', bubbles: true}));
     // Ensure the About page is shown.
     assertEquals(routes.ABOUT, Router.getInstance().getCurrentRoute());
   });
 
-  test('Safe Browsing Card', async function() {
+  test('Safe Browsing Card', function() {
     assertTrue(isChildVisible(testElement, '#safeBrowsing'));
 
     // Card header and subheader should be what the browser proxy provides.
     assertEquals(
         testElement.$.safeBrowsing.shadowRoot!.querySelector('#header')!
-            .textContent!.trim(),
+            .textContent.trim(),
         safeBrowsingCardMockData.header);
     assertEquals(
         testElement.$.safeBrowsing.shadowRoot!.querySelector('#subheader')!
-            .textContent!.trim(),
+            .textContent.trim(),
         safeBrowsingCardMockData.subheader);
 
     // Check that the card aria role and description are correct.
@@ -403,19 +435,62 @@ suite('SafetyHubPage', function() {
     assertEquals(safeBrowsingCardMockData.state, result[1]);
   });
 
-  test('Safe Browsing Card Clicked via Enter', async function() {
+  test('Safe Browsing Card Clicked via Enter', function() {
     testElement.$.passwords.dispatchEvent(
         new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}));
     // Ensure the Security Settings page is shown.
     assertEquals(routes.SECURITY, Router.getInstance().getCurrentRoute());
   });
 
-  test('Safe Browsing Card Clicked via Space', async function() {
+  test('Safe Browsing Card Clicked via Space', function() {
     testElement.$.passwords.dispatchEvent(
         new KeyboardEvent('keydown', {key: ' ', bubbles: true}));
     // Ensure the Security Settings page is shown.
     assertEquals(routes.SECURITY, Router.getInstance().getCurrentRoute());
   });
+
+  test(
+      `Safe Browsing Card updates upon Safe Browsing settings change`,
+      async function() {
+        const standardCardData: CardInfo = {
+          header: 'Safe Browsing is on',
+          subheader: 'You are getting a standard protection.',
+          state: CardState.SAFE,
+        };
+
+        const enhancedCardData: CardInfo = {
+          header: 'Enhanced Safe Browsing is on',
+          subheader: 'You are getting an enhanced protection.',
+          state: CardState.SAFE,
+        };
+
+        const disabledCardData: CardInfo = safeBrowsingCardMockData;
+
+        // Set the generated.safe_browsing pref to STANDARD.
+        safetyHubBrowserProxy.setSafeBrowsingCardData(standardCardData);
+        await changeSafeBrowsingGeneratedPref(SafeBrowsingSetting.STANDARD);
+
+        // Change the generated.safe_browsing pref to ENHANCED and check that it
+        // triggers getSafeBrowsingCardData call and UI change.
+        safetyHubBrowserProxy.resetResolver('getSafeBrowsingCardData');
+        safetyHubBrowserProxy.setSafeBrowsingCardData(enhancedCardData);
+        await changeSafeBrowsingGeneratedPref(SafeBrowsingSetting.ENHANCED);
+        assertSafeBrowsingCard(enhancedCardData);
+
+        // Change the generated.safe_browsing pref to DISABLED and check that it
+        // triggers getSafeBrowsingCardData call and UI change.
+        safetyHubBrowserProxy.resetResolver('getSafeBrowsingCardData');
+        safetyHubBrowserProxy.setSafeBrowsingCardData(disabledCardData);
+        await changeSafeBrowsingGeneratedPref(SafeBrowsingSetting.DISABLED);
+        assertSafeBrowsingCard(disabledCardData);
+
+        // Change the generated.safe_browsing pref to STANDARD and check that it
+        // triggers getSafeBrowsingCardData call and UI change.
+        safetyHubBrowserProxy.resetResolver('getSafeBrowsingCardData');
+        safetyHubBrowserProxy.setSafeBrowsingCardData(standardCardData);
+        await changeSafeBrowsingGeneratedPref(SafeBrowsingSetting.STANDARD);
+        assertSafeBrowsingCard(standardCardData);
+      });
 
   test('Dismiss all menu notifications on page load', async function() {
     Router.getInstance().navigateTo(routes.SAFETY_HUB);

@@ -17,7 +17,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "services/device/wake_lock/power_save_blocker/power_save_blocker.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace device {
 
@@ -58,7 +58,6 @@ class WakeLock : public mojom::WakeLock {
            const std::string& description,
            int context_id,
            WakeLockContextCallback native_view_getter,
-           scoped_refptr<base::SingleThreadTaskRunner> file_task_runner,
            Observer* observer);
 
   WakeLock(const WakeLock&) = delete;
@@ -95,7 +94,6 @@ class WakeLock : public mojom::WakeLock {
 #endif
 
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
-  scoped_refptr<base::SingleThreadTaskRunner> file_task_runner_;
 
   // The actual power save blocker for screen.
   std::unique_ptr<PowerSaveBlocker> wake_lock_;

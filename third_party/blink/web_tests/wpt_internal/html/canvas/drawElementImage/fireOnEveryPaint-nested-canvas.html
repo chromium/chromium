@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<title>fireOnEveryPaint causes callback for nested canvas changes</title>
+<link rel="help" href="https://github.com/WICG/html-in-canvas">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+  div, canvas {
+    background: blue;
+  }
+  .color-change {
+    background: green;
+  }
+  #div {
+    width: 100px;
+    height: 100px;
+  }
+  #other_div {
+    width: 50px;
+    height: 50px;
+  }
+</style>
+
+<canvas id="canvas" width="200" height="200" layoutsubtree>
+  <canvas id="nested_canvas" width="100" height="100" layoutsubtree>
+    <div id="div"></div>
+  </canvas>
+  <div id="other_div"></div>
+</canvas>
+
+<script>
+  'use strict';
+
+  function waitForOneFrame() {
+    return new Promise(resolve => {
+      requestAnimationFrame(() => {
+        setTimeout(resolve, 0);
+      });
+    });
+  }
+
+  promise_test(async t => {
+    let outerObservationCount = 0;
+    const outerResizeObserver = new ResizeObserver(entries => {
+      outerObservationCount++;
+    });
+    outerResizeObserver.observe(canvas, {fireOnEveryPaint: true});
+
+    let nestedObservationCount = 0;
+    const nestedResizeObserver = new ResizeObserver(entries => {
+      nestedObservationCount++;
+    });
+    nestedResizeObserver.observe(nested_canvas, {fireOnEveryPaint: true});
+
+    // Wait a frame and assert that the initial observations occurred.
+    await waitForOneFrame();
+    assert_equals(outerObservationCount, 1, 'An initial resize observer observation should always occur.');
+    assert_equals(nestedObservationCount, 1, 'An initial resize observer observation should always occur.');
+
+    // Wait another frame and assert that no more observations occurred.
+    await waitForOneFrame();
+    assert_equals(outerObservationCount, 1, 'No observation should occur without a repaint.');
+    assert_equals(nestedObservationCount, 1, 'No observation should occur without a repaint.');
+  }, 'fireOnEveryPaint should not trigger without changes');
+
+  promise_test(async t => {
+    let nestedObservationCount = 0;
+    const nestedResizeObserver = new ResizeObserver(entries => {
+      nestedObservationCount++;
+    });
+    nestedResizeObserver.observe(nested_canvas, {fireOnEveryPaint: true});
+
+    // 1. Wait a frame and assert that the initial observation occurred.
+    await waitForOneFrame();
+    assert_equals(nestedObservationCount, 1, 'An initial resize observer observation should always occur.');
+
+    // 2. Make a change that causes a repaint.
+    div.classList.toggle('color-change');
+
+    // 3. Wait a frame and assert that one observation occurred.
+    await waitForOneFrame();
+    assert_equals(nestedObservationCount, 2, 'One additional observation should occur for the nested observer.');
+
+    // 4. Wait another frame and assert that no additional observations occurred.
+    await waitForOneFrame();
+    assert_equals(nestedObservationCount, 2, 'No additional observation should occur without another repaint.');
+  }, 'Nested fireOnEveryPaint should fire for changes inside the nested canvas');
+
+  promise_test(async t => {
+    let nestedObservationCount = 0;
+    const nestedResizeObserver = new ResizeObserver(entries => {
+      nestedObservationCount++;
+    });
+    nestedResizeObserver.observe(nested_canvas, {fireOnEveryPaint: true});
+
+    // 1. Wait a frame and assert that the initial observation occurred.
+    await waitForOneFrame();
+    assert_equals(nestedObservationCount, 1, 'An initial resize observer observation should always occur.');
+
+    // 2. Make a change that causes a sibling of the nested canvas to repaint.
+    other_div.classList.toggle('color-change');
+
+    // 3. Wait a frame and assert that no observation occurred.
+    await waitForOneFrame();
+    assert_equals(nestedObservationCount, 1, 'No observation should occur for the nested observer.');
+  }, 'Nested fireOnEveryPaint should not fire for changes outside the nested canvas');
+</script>

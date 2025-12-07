@@ -50,6 +50,16 @@ bool SupportedVideoDecoderConfig::Matches(
   return true;
 }
 
+bool SupportedVideoDecoderConfig::IsValid() const {
+  return !coded_size_min.IsEmpty() && !coded_size_max.IsEmpty() &&
+         coded_size_min.width() <= coded_size_max.width() &&
+         coded_size_min.height() <= coded_size_max.height() &&
+         profile_min <= profile_max &&
+         profile_min > VIDEO_CODEC_PROFILE_UNKNOWN &&
+         profile_max <= VIDEO_CODEC_PROFILE_MAX &&
+         !(require_encrypted && !allow_encrypted);
+}
+
 // static
 bool IsVideoDecoderConfigSupported(
     const SupportedVideoDecoderConfigs& supported_configs,

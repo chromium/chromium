@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/filter/fuzzed_source_stream.h"
 
 #include <fuzzer/FuzzedDataProvider.h>
@@ -15,11 +10,12 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
+#include "net/filter/source_stream_type.h"
 
 namespace net {
 
@@ -31,7 +27,7 @@ const Error kReadErrors[] = {OK, ERR_FAILED, ERR_CONTENT_DECODING_FAILED};
 }  // namespace
 
 FuzzedSourceStream::FuzzedSourceStream(FuzzedDataProvider* data_provider)
-    : SourceStream(SourceStream::TYPE_NONE), data_provider_(data_provider) {}
+    : SourceStream(SourceStreamType::kNone), data_provider_(data_provider) {}
 
 FuzzedSourceStream::~FuzzedSourceStream() {
   DCHECK(!read_pending_);
@@ -54,7 +50,7 @@ int FuzzedSourceStream::Read(IOBuffer* buf,
 
   if (sync) {
     if (result > 0) {
-      base::ranges::copy(data, buf->data());
+      std::ranges::copy(data, buf->data());
     } else {
       end_returned_ = true;
     }
@@ -68,7 +64,7 @@ int FuzzedSourceStream::Read(IOBuffer* buf,
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&FuzzedSourceStream::OnReadComplete,
                                 base::Unretained(this), std::move(callback),
-                                data, pending_read_buf, result));
+                                std::move(data), pending_read_buf, result));
   return ERR_IO_PENDING;
 }
 
@@ -87,8 +83,9 @@ void FuzzedSourceStream::OnReadComplete(CompletionOnceCallback callback,
   DCHECK(read_pending_);
 
   if (result > 0) {
-    std::copy(fuzzed_data.data(), fuzzed_data.data() + result,
-              read_buf->data());
+    // FuzzedSourceStream::Read() should ensure `fuzzed_data` fits in
+    // `read_buf`.
+    read_buf->span().copy_prefix_from(base::as_byte_span(fuzzed_data));
   } else {
     end_returned_ = true;
   }

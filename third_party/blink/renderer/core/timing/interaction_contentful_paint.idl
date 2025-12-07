@@ -1,0 +1,18 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/soft-navigations
+[Exposed=Window, RuntimeEnabled=SoftNavigationHeuristics]
+interface InteractionContentfulPaint : PerformanceEntry {
+    readonly attribute DOMHighResTimeStamp renderTime;
+    readonly attribute DOMHighResTimeStamp loadTime;
+    readonly attribute unsigned long long size;
+    readonly attribute DOMString id;
+    readonly attribute DOMString url;
+    readonly attribute Element? element;
+
+    [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
+};
+
+InteractionContentfulPaint includes PaintTimingMixin;

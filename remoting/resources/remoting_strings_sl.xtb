@@ -27,6 +27,7 @@
 <translation id="2329392777730037872">Ni bilo mogoče odpreti <ph name="URL" /> v tem odjemalcu.</translation>
 <translation id="2359808026110333948">Naprej</translation>
 <translation id="2366718077645204424">Ni mogoče vzpostaviti povezave z gostiteljem; verjetno zaradi konfiguracije omrežja, ki ga uporabljate.</translation>
+<translation id="242591256144136845">Copyright 2025 Google LLC. Vse pravice pridržane.</translation>
 <translation id="2504109125669302160">Odobritev dovoljenja »Dostopnost« izdelku <ph name="PRODUCT_NAME" /></translation>
 <translation id="2540992418118313681">Ali želite ta računalnik deliti z drugimi, tako da bo imel drug uporabnik do njega dostop in ga bo lahko nadziral?</translation>
 <translation id="2579271889603567289">Gostitelj se je zrušil ali ga ni bilo mogoče zagnati.</translation>
@@ -37,6 +38,7 @@
 <translation id="2758123043070977469">Pri preverjanju pristnosti je prišlo do napake. Prijavite se znova.</translation>
 <translation id="2803375539583399270">Vnesite kodo PIN</translation>
 <translation id="2919669478609886916">Trenutno imate to napravo v skupni rabi z drugim uporabnikom. Ali želite nadaljevati skupno rabo?</translation>
+<translation id="2929683002824598593">Deljenje naprave</translation>
 <translation id="2939145106548231838">Preverjanje pristnosti pri gostitelju</translation>
 <translation id="3027681561976217984">Način z dotikanjem</translation>
 <translation id="3106379468611574572">Oddaljeni računalnik se ne odziva na zahteve za povezavo. Preverite, ali ima vzpostavljeno povezavo, in poskusite znova.</translation>
@@ -60,7 +62,7 @@
 <translation id="405887016757208221">Oddaljeni računalnik ni inicializiral seje. Če se težava ponovi, poskusite znova konfigurirati gostitelja.</translation>
 <translation id="4060747889721220580">Prenos datoteke</translation>
 <translation id="4126409073460786861">Po končani nastavitvi osvežite to stran in lahko boste dostopali do računalnika tako, da boste izbrali napravo in vnesli kodo PIN</translation>
-<translation id="4145029455188493639">Prijavljen kot <ph name="EMAIL_ADDRESS" />.</translation>
+<translation id="4145029455188493639">Prijavljeni ste kot <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="4155497795971509630">Ni nekaterih zahtevanih delov. Preverite, ali imate najnovejšo različico programske opreme in poskusite znova.</translation>
 <translation id="4176825807642096119">Koda za dostop</translation>
 <translation id="4227991223508142681">Orodje za pripravljanje gostitelja</translation>
@@ -85,6 +87,7 @@
 <translation id="4987330545941822761">Oddaljeno namizje za Chrome ne more določiti brskalnika za lokalno odpiranje URL-jev. Izberite ga na spodnjem seznamu.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (brez povezave)</translation>
 <translation id="507204348399810022">Ali ste prepričani, da želite onemogočiti oddaljene povezave z gostiteljem <ph name="HOSTNAME" />?</translation>
+<translation id="5095424396646120601">Poročanje o zrušitvah</translation>
 <translation id="5170982930780719864">Neveljaven ID gostitelja.</translation>
 <translation id="5222676887888702881">Odjava</translation>
 <translation id="5234764350956374838">Opusti</translation>
@@ -105,9 +108,11 @@
 <translation id="6122191549521593678">Dosegljiv</translation>
 <translation id="6178645564515549384">Izvorni gostitelj za sporočanje za pomoč na daljavo</translation>
 <translation id="6223301979382383752">Odpri nastavitve snemanja zaslona</translation>
+<translation id="6252344563748670011">Oseba <ph name="CLIENT_USERNAME" /> je zahtevala dostop za ogled vašega zaslona in nadziranje tipkovnice ter miške. Ali želite deliti napravo?</translation>
 <translation id="6284412385303060032">Gostitelj, ki se je izvajal na zaslonu za prijavo v konzolo, se je zaustavil zaradi podpore načinu zavese, tako da je preklopil na gostitelja, ki se izvaja v seji uporabnika.</translation>
 <translation id="6542902059648396432">Prijava težave …</translation>
 <translation id="6612717000975622067">Pošlji Ctrl + Alt + Del</translation>
+<translation id="6625262630437221505">{0,plural, =1{Če ne boste ukrepali, bo naprava samodejno začela deliti čez # sekundo.}one{Če ne boste ukrepali, bo naprava samodejno začela deliti čez # sekundo.}two{Če ne boste ukrepali, bo naprava samodejno začela deliti čez # sekundi.}few{Če ne boste ukrepali, bo naprava samodejno začela deliti čez # sekunde.}other{Če ne boste ukrepali, bo naprava samodejno začela deliti čez # sekund.}}</translation>
 <translation id="6654753848497929428">Skupna raba</translation>
 <translation id="677755392401385740">Gostitelj zagnan za uporabnika: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">Pomožna aplikacija za odpiranje URL-ja v odjemalcu <ph name="PRODUCT_NAME" />.</translation>
@@ -121,6 +126,7 @@
 <translation id="7067321367069083429">Zaslon deluje kot zaslon na dotik</translation>
 <translation id="7116737094673640201">Pozdravljeni v Oddaljenem namizju za Chrome</translation>
 <translation id="7144878232160441200">Poskusi ponovno</translation>
+<translation id="7298392173540380852">Copyright 2025 Ustvarjalci Chromiuma. Vse pravice pridržane.</translation>
 <translation id="7312846573060934304">Gostitelj ni dosegljiv.</translation>
 <translation id="7319983568955948908">Prekliči skupno rabo</translation>
 <translation id="7359298090707901886">Izbranega brskalnika ni mogoče uporabiti za odpiranje URL-jev v lokalnem računalniku.</translation>
@@ -136,7 +142,6 @@
 <translation id="7693372326588366043">Osveži seznam gostiteljev</translation>
 <translation id="7714222945760997814">Prijavite to</translation>
 <translation id="7868137160098754906">Vnesite PIN za oddaljeni računalnik.</translation>
-<translation id="7881455334687220899">Copyright 2024 Ustvarjalci Chromiuma. Vse pravice pridržane.</translation>
 <translation id="7895403300744144251">Varnostni pravilniki na oddaljenem računalniku ne dovoljujejo povezav iz vašega računa.</translation>
 <translation id="7936528439960309876">Zasidranje desno</translation>
 <translation id="7970576581263377361">Preverjanje pristnosti ni uspelo. Še enkrat se prijavite v Chromium.</translation>
@@ -166,7 +171,6 @@
 <translation id="8747048596626351634">Seja se je zrušila ali je ni bilo mogoče začeti. Če je v oddaljenem računalniku seja ~/.chrome-remote-desktop-session, poskrbite, da je v njej zagnan dolgotrajen proces v ospredju, kot je okolje namizja ali upravitelj oken.</translation>
 <translation id="8804164990146287819">Pravilnik o zasebnosti</translation>
 <translation id="8906511416443321782">Za zajem zvoka in njegovega pretočnega predvajanja v odjemalcu Oddaljenega namizja Chrome je potreben dostop do mikrofona.</translation>
-<translation id="9042277333359847053">Copyright 2024 Google LLC. Vse pravice pridržane.</translation>
 <translation id="9111855907838866522">Imate vzpostavljeno povezavo z oddaljeno napravo. Če želite odpreti meni, se dotaknite zaslona s štirimi prsti.</translation>
 <translation id="9126115402994542723">Pri povezovanju s tem gostiteljem iz tega računalnika ne zahtevaj več kode PIN.</translation>
 <translation id="916856682307586697">Zagon privzete seje XSession</translation>

@@ -18,6 +18,9 @@ dictionary VideoFrameBufferInit {
 
   DOMRectInit visibleRect;
 
+  double rotation = 0;
+  boolean flip = false;
+
   [EnforceRange] unsigned long displayWidth;
   [EnforceRange] unsigned long displayHeight;
 

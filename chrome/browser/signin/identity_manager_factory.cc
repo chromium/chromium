@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/profiles/profile.h"
@@ -26,31 +25,22 @@
 #include "components/sync/base/features.h"
 #include "content/public/browser/network_service_instance.h"
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/content_settings/cookie_settings_factory.h"
-#include "components/content_settings/core/browser/cookie_settings.h"
-#include "components/signin/core/browser/cookie_settings_util.h"
-#endif
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/signin/core/browser/cookie_settings_util.h"
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #include "chrome/browser/signin/bound_session_credentials/unexportable_key_service_factory.h"
 #include "components/unexportable_keys/unexportable_key_service.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-#endif
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/account_manager/profile_account_manager.h"
-#include "chrome/browser/lacros/account_manager/profile_account_manager_factory.h"
-#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
+#include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -80,9 +70,6 @@ IdentityManagerFactory::IdentityManagerFactory()
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   DependsOn(UnexportableKeyServiceFactory::GetInstance());
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-#endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  DependsOn(ProfileAccountManagerFactory::GetInstance());
 #endif
   DependsOn(ChromeSigninClientFactory::GetInstance());
   signin::SetIdentityManagerProvider(
@@ -131,7 +118,8 @@ void IdentityManagerFactory::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-KeyedService* IdentityManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+IdentityManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
@@ -145,44 +133,33 @@ KeyedService* IdentityManagerFactory::BuildServiceInstanceFor(
   params.profile_path = profile->GetPath();
   params.signin_client = ChromeSigninClientFactory::GetForProfile(profile);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   {
     scoped_refptr<content_settings::CookieSettings> cookie_settings =
         CookieSettingsFactory::GetForProfile(profile);
     params.delete_signin_cookies_on_exit =
         signin::SettingsDeleteSigninCookiesOnExit(cookie_settings.get());
   }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   params.token_web_data = WebDataServiceFactory::GetTokenWebDataForProfile(
       profile, ServiceAccessType::EXPLICIT_ACCESS);
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   params.unexportable_key_service =
-      UnexportableKeyServiceFactory::GetForProfile(profile);
+      UnexportableKeyServiceFactory::GetForProfileAndPurpose(
+          profile,
+          UnexportableKeyServiceFactory::KeyPurpose::kRefreshTokenBinding);
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #endif  // #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  params.account_manager_facade =
-      GetAccountManagerFacade(profile->GetPath().value());
-  params.is_regular_profile = ash::ProfileHelper::IsUserProfile(profile);
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // The system and (original profile of the) guest profiles are not regular.
-  const bool is_regular_profile = profile->IsRegularProfile();
-  const bool use_profile_account_manager =
-      is_regular_profile &&
-      // `ProfileManager` may be null in tests, and is required for account
-      // consistency.
-      g_browser_process->profile_manager();
-
-  params.account_manager_facade =
-      use_profile_account_manager
-          ? ProfileAccountManagerFactory::GetForProfile(profile)
-          : GetAccountManagerFacade(profile->GetPath().value());
-  params.is_regular_profile = is_regular_profile;
+#if BUILDFLAG(IS_CHROMEOS)
+  if (ash::ProfileHelper::IsUserProfile(profile)) {
+    params.account_manager_facade =
+        ash::AccountManagerFactory::Get()->GetAccountManagerFacade(
+            profile->GetPath().value());
+    params.is_regular_profile = true;
+  }
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -200,5 +177,5 @@ KeyedService* IdentityManagerFactory::BuildServiceInstanceFor(
   for (Observer& observer : observer_list_)
     observer.IdentityManagerCreated(identity_manager.get());
 
-  return identity_manager.release();
+  return identity_manager;
 }

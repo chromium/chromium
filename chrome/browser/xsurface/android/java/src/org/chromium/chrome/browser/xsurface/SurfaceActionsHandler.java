@@ -7,7 +7,9 @@ package org.chromium.chrome.browser.xsurface;
 import android.view.View;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
+
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -18,6 +20,7 @@ import java.util.List;
  *
  * Interface to provide chromium calling points for an external surface.
  */
+@NullMarked
 public interface SurfaceActionsHandler {
     String KEY = "GeneralActions";
 
@@ -32,7 +35,7 @@ public interface SurfaceActionsHandler {
         OpenMode.NEW_TAB_IN_GROUP
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface OpenMode {
+    @interface OpenMode {
         int UNKNOWN = 0;
         // The URL is opened in the same tab (default).
         int SAME_TAB = 1;
@@ -59,7 +62,7 @@ public interface SurfaceActionsHandler {
         OpenWebFeedEntryPoint.MAX_VALUE
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface OpenWebFeedEntryPoint {
+    @interface OpenWebFeedEntryPoint {
         /** Other */
         int OTHER = 0;
 
@@ -132,12 +135,10 @@ public interface SurfaceActionsHandler {
 
     /**
      * Notifies the host app that url with broadTopicMids and entityMids was clicked.
+     *
      * @param url The URL that the user clicked on
      * @param entityMids Sorted list (most relevant to least) of entity MIDs that correspond to the
-     *         clicked URL
-     * @param contentCategoryMediaType MediaType expresses the primary media format of the content
-     * @param cardCategory Expresses the category of the clicked card
-     * TODO(tbansal): Remove the first method once the callers have been updated.
+     *     clicked URL
      */
     default void updateUserProfileOnLinkClick(String url, List<Long> entityMids) {}
 
@@ -172,8 +173,7 @@ public interface SurfaceActionsHandler {
         }
 
         /** The callback to be informed of completion, or null. */
-        @Nullable
-        default WebFeedFollowUpdate.Callback callback() {
+        default WebFeedFollowUpdate.@Nullable Callback callback() {
             return null;
         }
 
@@ -197,15 +197,21 @@ public interface SurfaceActionsHandler {
 
     /**
      * Opens a specific WebFeed by name with a specific entrypoint.
+     *
      * @param webFeedName the relevant web feed name.
      * @param entryPoint the entry point used to launch the feed.
      */
     default void openWebFeed(String webFeedName, @OpenWebFeedEntryPoint int entryPoint) {}
 
-    /** Requests that a sync consent prompt be shown. */
+    /**
+     * Requests that sign-in flow be started.
+     *
+     * @deprecated Use startSigninFlow() instead.
+     */
+    @Deprecated
     default void showSyncConsentPrompt() {}
 
-    /** Requests that sign in flow be started. */
+    /** Requests that sign-in flow be started. */
     default void startSigninFlow() {}
 
     /** Requests that a sign-in interstitial bottom sheet be shown. */

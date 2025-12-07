@@ -16,7 +16,7 @@ namespace system {
 using icu::TimeZone;
 using icu::UnicodeString;
 
-const char* kTimeZones[] = {
+constexpr const char* kTimeZones[] = {
     "America/Los_Angeles", "America/Vancouver",   "America/Chicago",
     "America/Winnipeg",    "America/Mexico_City", "America/Buenos_Aires",
     "Asia/Ho_Chi_Minh",    "Asia/Seoul",          "Europe/Athens",

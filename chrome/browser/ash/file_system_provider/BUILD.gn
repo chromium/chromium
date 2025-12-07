@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("file_system_provider") {
   sources = [
@@ -59,18 +59,24 @@ static_library("file_system_provider") {
     "service.h",
     "service_factory.cc",
     "service_factory.h",
+    "service_worker_lifetime_manager.cc",
+    "service_worker_lifetime_manager.h",
     "throttled_file_system.cc",
     "throttled_file_system.h",
     "watcher.cc",
     "watcher.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//components/app_icon_loader",
+  ]
 
   deps = [
     "//ash/constants",
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/file_system_provider/content_cache",
     "//chrome/browser/ash/file_system_provider/operations",
@@ -79,11 +85,10 @@ static_library("file_system_provider") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/smb_client",
     "//chrome/browser/ash/system_web_apps/apps",
-    "//chrome/browser/profiles",
+    "//chrome/browser/notifications",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/multi_user",
-    "//chrome/browser/ui/webui/ash/smb_shares",
     "//chrome/common",
     "//chromeos/constants",
     "//components/pref_registry",
@@ -107,7 +112,6 @@ static_library("file_system_provider") {
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/ash/smb_client",
     "//chrome/browser/ash/system_web_apps/apps",
-    "//chrome/browser/ui/webui/ash/smb_shares",
   ]
 }
 
@@ -126,7 +130,6 @@ static_library("test_support") {
     "//base",
     "//components/services/filesystem/public/mojom",
     "//extensions/browser",
-    "//extensions/common",
     "//extensions/common",
     "//net",
     "//storage/browser",
@@ -151,6 +154,7 @@ source_set("unit_tests") {
     "registry_unittest.cc",
     "scoped_file_opener_unittest.cc",
     "service_unittest.cc",
+    "service_worker_lifetime_manager_unittest.cc",
     "throttled_file_system_unittest.cc",
   ]
 
@@ -158,8 +162,8 @@ source_set("unit_tests") {
     ":file_system_provider",
     ":test_support",
     "//base/test:test_support",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/file_system_provider/content_cache",
+    "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chrome/test:test_support",
@@ -176,6 +180,10 @@ source_set("unit_tests") {
     "//chrome/browser/ash/file_system_provider/fileapi:unit_tests",
     "//chrome/browser/ash/file_system_provider/operations:unit_tests",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("browser_tests") {
@@ -190,8 +198,6 @@ source_set("browser_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/file_manager:test_support",
     "//chrome/browser/ui",
     "//chrome/common",

@@ -5,11 +5,11 @@
 #ifndef BASE_POWER_MONITOR_THERMAL_STATE_OBSERVER_MAC_H_
 #define BASE_POWER_MONITOR_THERMAL_STATE_OBSERVER_MAC_H_
 
+#include <IOKit/pwr_mgt/IOPMLib.h>
 #include <dispatch/dispatch.h>
 
 #include <memory>
 
-#include <IOKit/pwr_mgt/IOPMLib.h>
 #include "base/base_export.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -37,7 +37,7 @@ class BASE_EXPORT ThermalStateObserverMac {
   ~ThermalStateObserverMac();
 
   PowerThermalObserver::DeviceThermalState GetCurrentThermalState();
-  int GetCurrentSpeedLimit();
+  int GetCurrentSpeedLimit() const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ThermalStateObserverMacTest, StateChange);

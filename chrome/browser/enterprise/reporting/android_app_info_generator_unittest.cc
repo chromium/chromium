@@ -6,12 +6,12 @@
 
 #include <memory>
 
-#include "ash/components/arc/test/fake_app_instance.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
 #include "content/public/test/browser_task_environment.h"
 #include "device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -67,13 +67,15 @@ class AndroidAppInfoGeneratorTest : public ::testing::Test {
   ~AndroidAppInfoGeneratorTest() override = default;
 
   void SetUp() override {
-    testing::Test::SetUp();
-    arc_app_test_.SetUp(&profile_);
+    arc_app_test_.PreProfileSetUp();
+    profile_ = std::make_unique<TestingProfile>();
+    arc_app_test_.PostProfileSetUp(profile_.get());
   }
 
   void TearDown() override {
-    arc_app_test_.TearDown();
-    testing::Test::TearDown();
+    arc_app_test_.PreProfileTearDown();
+    profile_.reset();
+    arc_app_test_.PostProfileTearDown();
   }
 
   void AddArcApp(am::AppInfoPtr arc_app_ptr) {
@@ -92,7 +94,7 @@ class AndroidAppInfoGeneratorTest : public ::testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile profile_;
+  std::unique_ptr<TestingProfile> profile_;
   AndroidAppInfoGenerator app_info_generator_;
   ArcAppTest arc_app_test_;
 };

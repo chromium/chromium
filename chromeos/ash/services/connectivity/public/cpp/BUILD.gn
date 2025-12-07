@@ -2,18 +2,41 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 source_set("cpp") {
+  defines = [ "IS_FAKE_PASSPOINT_SERVICE_IMPL" ]
   sources = [
     "connectivity_services.cc",
     "connectivity_services.h",
   ]
+  if (is_chromeos) {
+    import("//chromeos/dbus/config/use_real_dbus_clients.gni")
+    configs += [ "//chromeos/dbus/config:use_real_dbus_clients_config" ]
+    sources += [
+      "fake_passpoint_service.cc",
+      "fake_passpoint_service.h",
+      "fake_passpoint_subscription.cc",
+      "fake_passpoint_subscription.h",
+    ]
+  }
   deps = [
     "//base",
     "//chromeos/ash/components/mojo_service_manager",
     "//chromeos/ash/services/connectivity/public/mojom",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "fake_passpoint_service_unittest.cc" ]
+
+  deps = [
+    ":cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/services/connectivity/public/mojom",
+    "//testing/gtest",
   ]
 }

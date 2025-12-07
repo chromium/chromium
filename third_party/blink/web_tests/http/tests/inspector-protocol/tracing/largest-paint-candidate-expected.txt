@@ -1,0 +1,33 @@
+Tests the LargestContentfulPaint::candiate trace events
+Recording started
+Tracing complete
+Event shape:
+Object: {
+	args: {
+		data: {
+			candidateIndex: number
+			imageDiscoveryTime: number
+			imageLoadEnd: number
+			imageLoadStart: number
+			isMainFrame: boolean
+			isOutermostMainFrame: boolean
+			loadingAttr: string
+			navigationId: string
+			nodeId: number
+			nodeName: string
+			performanceTimelineNavigationId: number
+			size: number
+			type: string
+		}
+		frame: string
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+nodeName: IMG id='main-img' class='square'
+

@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_clock.h"
@@ -289,10 +288,9 @@ void WifiHotspotConnector::CompleteActiveConnectionAttempt(
     return;
   }
 
-  // UMA_HISTOGRAM_MEDIUM_TIMES is used because UMA_HISTOGRAM_TIMES has a max
-  // of 10 seconds.
+  // This doesn't use UMA_HISTOGRAM_TIMES because that has a max of 10 seconds.
   DCHECK(!connection_attempt_start_time_.is_null());
-  UMA_HISTOGRAM_MEDIUM_TIMES(
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
       "InstantTethering.Performance.ConnectToHotspotDuration",
       clock_->Now() - connection_attempt_start_time_);
   connection_attempt_start_time_ = base::Time();

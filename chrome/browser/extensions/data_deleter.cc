@@ -10,12 +10,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/task_runner.h"
 #include "chrome/browser/extensions/chrome_extension_cookies.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -24,8 +24,11 @@
 #include "extensions/browser/api/storage/storage_frontend.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using base::WeakPtr;
 using content::BrowserContext;
@@ -79,9 +82,9 @@ void DeleteOrigin(Profile* profile,
   }
 }
 
-void OnNeedsToGarbageCollectIsolatedStorage(WeakPtr<ExtensionService> es) {
-  if (es) {
-    es->profile()->GetPrefs()->SetBoolean(
+void OnNeedsToGarbageCollectIsolatedStorage(WeakPtr<Profile> profile) {
+  if (profile) {
+    profile->GetPrefs()->SetBoolean(
         prefs::kShouldGarbageCollectStoragePartitions, true);
   }
 }
@@ -93,6 +96,7 @@ void DataDeleter::StartDeleting(Profile* profile,
                                 const Extension* extension,
                                 base::OnceClosure done_callback) {
   DCHECK(profile);
+  DCHECK(!profile->IsOffTheRecord());
   DCHECK(extension);
 
   // Storage deletion can take a couple different tasks, depending on the
@@ -141,9 +145,7 @@ void DataDeleter::StartDeleting(Profile* profile,
     profile->AsyncObliterateStoragePartition(
         util::GetPartitionDomainForExtension(extension),
         base::BindOnce(&OnNeedsToGarbageCollectIsolatedStorage,
-                       ExtensionSystem::Get(profile)
-                           ->extension_service()
-                           ->AsExtensionServiceWeakPtr()),
+                       profile->GetWeakPtr()),
         subtask_done_callback);
   }
   if (delete_extension_origin) {

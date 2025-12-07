@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "net/quic/mock_quic_data.h"
+
 #include "net/base/hex_utils.h"
+#include "net/socket/socket_test_util.h"
 
 namespace net::test {
 
@@ -16,17 +18,21 @@ void MockQuicData::AddConnect(IoMode mode, int rv) {
   connect_ = std::make_unique<MockConnect>(mode, rv);
 }
 
+void MockQuicData::AddConnect(MockConnectCompleter* completer) {
+  connect_ = std::make_unique<MockConnect>(completer);
+}
+
 void MockQuicData::AddRead(IoMode mode,
                            std::unique_ptr<quic::QuicReceivedPacket> packet) {
-  reads_.emplace_back(mode, packet->data(), packet->length(),
-                      sequence_number_++,
+  reads_.emplace_back(mode, packet->AsStringPiece(), /*result=*/0,
+                      /*seq=*/sequence_number_++,
                       static_cast<uint8_t>(packet->ecn_codepoint()));
   packets_.push_back(std::move(packet));
 }
 void MockQuicData::AddRead(IoMode mode,
                            std::unique_ptr<quic::QuicEncryptedPacket> packet) {
-  reads_.emplace_back(mode, packet->data(), packet->length(),
-                      sequence_number_++, /*tos=*/0);
+  reads_.emplace_back(mode, packet->AsStringPiece(), /*result=*/0,
+                      /*seq=*/sequence_number_++, /*tos=*/0);
   packets_.push_back(std::move(packet));
 }
 void MockQuicData::AddRead(IoMode mode, int rv) {
@@ -45,8 +51,8 @@ void MockQuicData::AddReadPauseForever() {
 
 void MockQuicData::AddWrite(IoMode mode,
                             std::unique_ptr<quic::QuicEncryptedPacket> packet) {
-  writes_.emplace_back(mode, packet->data(), packet->length(),
-                       sequence_number_++);
+  writes_.emplace_back(mode, packet->AsStringPiece(), /*result=*/0,
+                       /*seq=*/sequence_number_++);
   packets_.push_back(std::move(packet));
 }
 

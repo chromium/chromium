@@ -5,7 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_WHITE_SPACE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_WHITE_SPACE_H_
 
+#include <bit>
 #include <cstdint>
+
+#include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 
 namespace blink {
 
@@ -61,22 +64,25 @@ inline bool ShouldBreakSpaces(WhiteSpaceCollapse collapse) {
 }
 
 //
-// The `text-wrap` property.
-// https://w3c.github.io/csswg-drafts/css-text-4/#propdef-text-wrap
+// The `text-wrap-mode` property.
+// https://drafts.csswg.org/css-text-4/#propdef-text-wrap-mode
 //
-enum class TextWrap : uint8_t {
-  kWrap = 0,
-  kNoWrap = 1,
-  kBalance = 2,
-  kPretty = 3,
-  // Ensure `kTextWrapBits` can hold all values.
-};
+inline constexpr unsigned kTextWrapModeBits =
+    std::bit_width(static_cast<unsigned>(TextWrapMode::kMaxEnumValue));
 
-// Ensure this is in sync with `css_properties.json5`.
-static constexpr int kTextWrapBits = 2;
+// Returns `true` if lines should wrap.
+inline bool ShouldWrapLine(TextWrapMode mode) {
+  return mode != TextWrapMode::kNowrap;
+}
 
-inline bool ShouldWrapLine(TextWrap wrap) {
-  return wrap != TextWrap::kNoWrap;
+//
+// The `text-wrap-style` property.
+// https://drafts.csswg.org/css-text-4/#propdef-text-wrap-style
+//
+
+// Returns `true` if the greedy line breaker should be used.
+inline bool ShouldWrapLineGreedy(TextWrapStyle style) {
+  return style == TextWrapStyle::kAuto || style == TextWrapStyle::kStable;
 }
 
 //
@@ -89,28 +95,33 @@ inline bool ShouldWrapLine(TextWrap wrap) {
 // of pre-defined keywords.
 //
 constexpr uint8_t ToWhiteSpaceValue(WhiteSpaceCollapse collapse,
-                                    TextWrap wrap) {
+                                    TextWrapMode wrap) {
   return static_cast<uint8_t>(collapse) |
          (static_cast<uint8_t>(wrap) << kWhiteSpaceCollapseBits);
 }
 
 enum class EWhiteSpace : uint8_t {
-  kNormal = ToWhiteSpaceValue(WhiteSpaceCollapse::kCollapse, TextWrap::kWrap),
-  kNowrap = ToWhiteSpaceValue(WhiteSpaceCollapse::kCollapse, TextWrap::kNoWrap),
-  kPre = ToWhiteSpaceValue(WhiteSpaceCollapse::kPreserve, TextWrap::kNoWrap),
-  kPreLine =
-      ToWhiteSpaceValue(WhiteSpaceCollapse::kPreserveBreaks, TextWrap::kWrap),
-  kPreWrap = ToWhiteSpaceValue(WhiteSpaceCollapse::kPreserve, TextWrap::kWrap),
+  kNormal =
+      ToWhiteSpaceValue(WhiteSpaceCollapse::kCollapse, TextWrapMode::kWrap),
+  kNowrap =
+      ToWhiteSpaceValue(WhiteSpaceCollapse::kCollapse, TextWrapMode::kNowrap),
+  kPre =
+      ToWhiteSpaceValue(WhiteSpaceCollapse::kPreserve, TextWrapMode::kNowrap),
+  kPreLine = ToWhiteSpaceValue(WhiteSpaceCollapse::kPreserveBreaks,
+                               TextWrapMode::kWrap),
+  kPreWrap =
+      ToWhiteSpaceValue(WhiteSpaceCollapse::kPreserve, TextWrapMode::kWrap),
   kBreakSpaces =
-      ToWhiteSpaceValue(WhiteSpaceCollapse::kBreakSpaces, TextWrap::kWrap),
+      ToWhiteSpaceValue(WhiteSpaceCollapse::kBreakSpaces, TextWrapMode::kWrap),
 };
 
-static_assert(kWhiteSpaceCollapseBits + kTextWrapBits <=
+static_assert(kWhiteSpaceCollapseBits + kTextWrapModeBits <=
               sizeof(EWhiteSpace) * 8);
 
 // Convert longhands of `white-space` to `EWhiteSpace`. The return value may not
 // be one of the defined enum values. Please see the comment above.
-inline EWhiteSpace ToWhiteSpace(WhiteSpaceCollapse collapse, TextWrap wrap) {
+inline EWhiteSpace ToWhiteSpace(WhiteSpaceCollapse collapse,
+                                TextWrapMode wrap) {
   return static_cast<EWhiteSpace>(ToWhiteSpaceValue(collapse, wrap));
 }
 
@@ -128,9 +139,9 @@ inline WhiteSpaceCollapse ToWhiteSpaceCollapse(EWhiteSpace whitespace) {
   return static_cast<WhiteSpaceCollapse>(static_cast<uint8_t>(whitespace) &
                                          kWhiteSpaceCollapseMask);
 }
-inline TextWrap ToTextWrap(EWhiteSpace whitespace) {
-  return static_cast<TextWrap>(static_cast<uint8_t>(whitespace) >>
-                               kWhiteSpaceCollapseBits);
+inline TextWrapMode ToTextWrapMode(EWhiteSpace whitespace) {
+  return static_cast<TextWrapMode>(static_cast<uint8_t>(whitespace) >>
+                                   kWhiteSpaceCollapseBits);
 }
 
 }  // namespace blink

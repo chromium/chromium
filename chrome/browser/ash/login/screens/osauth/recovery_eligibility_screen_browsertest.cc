@@ -25,12 +25,12 @@
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/login/test/wizard_controller_screen_exit_waiter.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/recovery_eligibility_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
@@ -40,13 +40,14 @@
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 
 class RecoveryEligibilityScreenTest : public OobeBaseTest {
  public:
-  RecoveryEligibilityScreenTest() {}
+  RecoveryEligibilityScreenTest() = default;
 
   ~RecoveryEligibilityScreenTest() override = default;
 
@@ -120,7 +121,7 @@ class RecoveryEligibilityScreenTest : public OobeBaseTest {
 class RecoveryEligibilityScreenConsumerTest
     : public RecoveryEligibilityScreenTest {
  public:
-  RecoveryEligibilityScreenConsumerTest() {}
+  RecoveryEligibilityScreenConsumerTest() = default;
   ~RecoveryEligibilityScreenConsumerTest() override = default;
 
   void LoginAsUserImpl(bool is_child) override {
@@ -136,14 +137,14 @@ class RecoveryEligibilityScreenConsumerTest
 
  protected:
   UserPolicyMixin user_policy_mixin_{
-      &mixin_host_,
-      AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId)};
+      &mixin_host_, AccountId::FromUserEmailGaiaId(test::kTestEmail,
+                                                   GaiaId(test::kTestGaiaId))};
 };
 
 class RecoveryEligibilityScreenEnterpriseTest
     : public RecoveryEligibilityScreenTest {
  public:
-  RecoveryEligibilityScreenEnterpriseTest() {}
+  RecoveryEligibilityScreenEnterpriseTest() = default;
   ~RecoveryEligibilityScreenEnterpriseTest() override = default;
 
   void LoginAsUserImpl(bool is_child) override {
@@ -156,8 +157,9 @@ class RecoveryEligibilityScreenEnterpriseTest
   EmbeddedPolicyTestServerMixin policy_server_{&mixin_host_};
   UserPolicyMixin user_policy_mixin_{
       &mixin_host_,
-      AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kEnterpriseUser1,
-                                     FakeGaiaMixin::kEnterpriseUser1GaiaId),
+      AccountId::FromUserEmailGaiaId(
+          FakeGaiaMixin::kEnterpriseUser1,
+          GaiaId(FakeGaiaMixin::kEnterpriseUser1GaiaId)),
       &policy_server_};
 };
 

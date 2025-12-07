@@ -5,7 +5,7 @@
 #include "media/gpu/vp8_decoder.h"
 
 #include "base/logging.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "media/base/limits.h"
 #include "ui/gfx/hdr_metadata.h"
 
@@ -33,24 +33,24 @@ bool VP8Decoder::Flush() {
   return true;
 }
 
-void VP8Decoder::SetStream(int32_t id, const DecoderBuffer& decoder_buffer) {
-  const uint8_t* ptr = decoder_buffer.data();
-  const size_t size = decoder_buffer.size();
-  const DecryptConfig* decrypt_config = decoder_buffer.decrypt_config();
+void VP8Decoder::SetStream(int32_t id,
+                           scoped_refptr<DecoderBuffer> decoder_buffer) {
+  CHECK(decoder_buffer);
+  curr_frame_start_ = nullptr;
+  decoder_buffer_ = std::move(decoder_buffer);
+  const DecryptConfig* decrypt_config = decoder_buffer_->decrypt_config();
 
-  DCHECK(ptr);
-  DCHECK(size);
   if (decrypt_config) {
     NOTIMPLEMENTED();
     state_ = kError;
     return;
   }
 
-  DVLOG(4) << "New input stream id: " << id << " at: " << (void*)ptr
-           << " size: " << size;
+  DVLOG(4) << "New input stream id: " << id
+           << ", buffer: " << decoder_buffer_->AsHumanReadableString();
   stream_id_ = id;
-  curr_frame_start_ = ptr;
-  frame_size_ = size;
+  curr_frame_start_ = base::span(*decoder_buffer_).data();
+  frame_size_ = decoder_buffer_->size();
 }
 
 void VP8Decoder::Reset() {
@@ -59,6 +59,7 @@ void VP8Decoder::Reset() {
   frame_size_ = 0;
 
   ref_frames_.Clear();
+  decoder_buffer_.reset();
 
   if (state_ == kDecoding)
     state_ = kAfterReset;
@@ -69,7 +70,7 @@ VP8Decoder::DecodeResult VP8Decoder::Decode() {
     return kRanOutOfStreamData;
 
   if (!curr_frame_hdr_) {
-    curr_frame_hdr_.reset(new Vp8FrameHeader());
+    curr_frame_hdr_ = std::make_unique<Vp8FrameHeader>();
     if (!parser_.ParseFrame(curr_frame_start_, frame_size_,
                             curr_frame_hdr_.get())) {
       DVLOG(1) << "Error during decode";

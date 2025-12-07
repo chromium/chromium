@@ -16,11 +16,12 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_metrics_utils.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
-#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 
 namespace ash {
 
@@ -86,8 +87,8 @@ ParentAccessDialog* ParentAccessDialog::GetInstance() {
       SystemWebDialogDelegate::FindInstance(chrome::kChromeUIParentAccessURL));
 }
 
-ui::ModalType ParentAccessDialog::GetDialogModalType() const {
-  return ui::ModalType::MODAL_TYPE_SYSTEM;
+ui::mojom::ModalType ParentAccessDialog::GetDialogModalType() const {
+  return ui::mojom::ModalType::kSystem;
 }
 
 void ParentAccessDialog::GetDialogSize(gfx::Size* size) const {

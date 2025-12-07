@@ -10,13 +10,14 @@
 import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
 import '../settings_shared.css.js';
 
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 
-import {OsResetBrowserProxy, OsResetBrowserProxyImpl} from './os_reset_browser_proxy.js';
+import type {OsResetBrowserProxy} from './os_reset_browser_proxy.js';
+import {OsResetBrowserProxyImpl} from './os_reset_browser_proxy.js';
 import {getTemplate} from './os_sanitize_dialog.html.js';
 
 export interface OsSettingsSanitizeDialogElement {

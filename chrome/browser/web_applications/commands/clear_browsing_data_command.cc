@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
+#include "chrome/browser/web_applications/visited_manifest_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -62,6 +63,7 @@ void ClearWebAppBrowsingData(const base::Time& begin_time,
     last_badging_time_removed_debug_list->Append(app_id);
     registrar->NotifyWebAppLastBadgingTimeChanged(app_id, base::Time());
   }
+  lock.visited_manifest_manager().ClearSeenScopes(begin_time, end_time);
 }
 
 }  // namespace web_app

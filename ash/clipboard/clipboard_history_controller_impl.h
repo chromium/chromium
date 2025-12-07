@@ -25,6 +25,7 @@
 #include "base/unguessable_token.h"
 #include "base/values.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 
 class PrefRegistrySimple;
 
@@ -42,8 +43,6 @@ class ClipboardHistoryControllerDelegate;
 class ClipboardHistoryItem;
 class ClipboardHistoryMenuModelAdapter;
 class ClipboardHistoryResourceManager;
-class ClipboardHistoryUrlTitleFetcher;
-class ClipboardImageModelFactory;
 class ClipboardNudgeController;
 class ScopedClipboardHistoryPause;
 enum class LoginStatus;
@@ -104,12 +103,12 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   void AddObserver(ClipboardHistoryController::Observer* observer) override;
   void RemoveObserver(ClipboardHistoryController::Observer* observer) override;
   bool ShowMenu(const gfx::Rect& anchor_rect,
-                ui::MenuSourceType source_type,
+                ui::mojom::MenuSourceType source_type,
                 crosapi::mojom::ClipboardHistoryControllerShowSource
                     show_source) override;
   bool ShowMenu(
       const gfx::Rect& anchor_rect,
-      ui::MenuSourceType source_type,
+      ui::mojom::MenuSourceType source_type,
       crosapi::mojom::ClipboardHistoryControllerShowSource show_source,
       OnMenuClosingCallback callback) override;
   void GetHistoryValues(GetHistoryValuesCallback callback) const override;
@@ -266,14 +265,6 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   // Either the browser-implemented or test-implemented delegate depending on
   // whether we are running in an Ash-only test context.
   const std::unique_ptr<ClipboardHistoryControllerDelegate> delegate_;
-
-  // The browser-implemented image model factory that renders html. This will be
-  // `nullptr` if and only if we are running in an Ash-only test context.
-  const std::unique_ptr<ClipboardImageModelFactory> image_model_factory_;
-
-  // The browser-implemented URL title fetcher. This will be `nullptr` if and
-  // only if we are running in an Ash-only test context.
-  const std::unique_ptr<ClipboardHistoryUrlTitleFetcher> url_title_fetcher_;
 
   // Observers notified when clipboard history is shown, used, or updated.
   base::ObserverList<ClipboardHistoryController::Observer> observers_;

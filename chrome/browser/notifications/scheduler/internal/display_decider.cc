@@ -4,9 +4,9 @@
 
 #include "chrome/browser/notifications/scheduler/internal/display_decider.h"
 
+#include <algorithm>
+
 #include "base/memory/raw_ptr.h"
-#include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/clock.h"
 #include "chrome/browser/notifications/scheduler/internal/impression_types.h"
 #include "chrome/browser/notifications/scheduler/internal/notification_entry.h"
@@ -83,9 +83,8 @@ class DecisionHelper {
 
     DCHECK(entry->schedule_params.deliver_time_end.has_value());
     bool meet_deliver_time_end =
-        entry->schedule_params.deliver_time_end.has_value()
-            ? now <= entry->schedule_params.deliver_time_end.value()
-            : false;
+        entry->schedule_params.deliver_time_end.has_value() &&
+        now <= entry->schedule_params.deliver_time_end.value();
     if (meet_deliver_time_start && meet_deliver_time_end) {
       return false;
     }
@@ -101,7 +100,7 @@ class DecisionHelper {
 
     // No previous shown notification, move the iterator to last element.
     // We will iterate through all client types later.
-    auto it = base::ranges::find(clients_, last_shown_type_);
+    auto it = std::ranges::find(clients_, last_shown_type_);
     if (it == clients_.end()) {
       DCHECK_EQ(last_shown_type_, SchedulerClientType::kUnknown);
       last_shown_type_ = clients_.back();
@@ -114,7 +113,7 @@ class DecisionHelper {
     // Circling around all clients to find new notification to show.
     do {
       // Move the iterator to next client type.
-      CHECK(it != clients_.end(), base::NotFatalUntil::M130);
+      CHECK(it != clients_.end());
       if (++it == clients_.end())
         it = clients_.begin();
       ++steps;
@@ -193,7 +192,7 @@ class DisplayDeciderImpl : public DisplayDecider {
             ScheduleParams::Priority::kNoThrottle) {
           results->emplace(notification->guid);
         } else {
-          throttled_notifications[type].emplace_back(std::move(notification));
+          throttled_notifications[type].emplace_back(notification);
         }
       }
     }

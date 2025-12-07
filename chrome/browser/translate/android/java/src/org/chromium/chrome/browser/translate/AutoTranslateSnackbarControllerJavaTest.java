@@ -17,17 +17,19 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 
 import java.lang.ref.WeakReference;
 import java.util.concurrent.ExecutionException;
@@ -37,10 +39,11 @@ import java.util.concurrent.ExecutionException;
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public final class AutoTranslateSnackbarControllerJavaTest {
-    @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Rule
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private static final long NATIVE_SNACKBAR_VIEW = 1001L;
 
@@ -48,21 +51,19 @@ public final class AutoTranslateSnackbarControllerJavaTest {
 
     private AutoTranslateSnackbarController mAutoTranslateSnackbarController;
     private SnackbarManager mSnackbarManager;
+    private WebPageStation mPage;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
-        mActivityTestRule.startMainActivityOnBlankPage();
-        mSnackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
-        WeakReference<Activity> weakReference =
-                new WeakReference<Activity>(mActivityTestRule.getActivity());
+        mPage = mActivityTestRule.startOnBlankPage();
+        mSnackbarManager = mPage.getActivity().getSnackbarManager();
+        WeakReference<Activity> weakReference = new WeakReference<>(mPage.getActivity());
 
         mAutoTranslateSnackbarController =
                 new AutoTranslateSnackbarController(
                         weakReference, mSnackbarManager, NATIVE_SNACKBAR_VIEW);
 
-        mJniMocker.mock(AutoTranslateSnackbarControllerJni.TEST_HOOKS, mMockJni);
+        AutoTranslateSnackbarControllerJni.setInstanceForTesting(mMockJni);
     }
 
     @Test
@@ -79,22 +80,22 @@ public final class AutoTranslateSnackbarControllerJavaTest {
                 currentSnackbar.getController() instanceof AutoTranslateSnackbarController);
         Assert.assertTrue(
                 "Incorrect ActionData type",
-                currentSnackbar.getActionDataForTesting()
+                currentSnackbar.getActionData()
                         instanceof AutoTranslateSnackbarController.TargetLanguageData);
         AutoTranslateSnackbarController.TargetLanguageData data =
                 (AutoTranslateSnackbarController.TargetLanguageData)
-                        currentSnackbar.getActionDataForTesting();
+                        currentSnackbar.getActionData();
         Assert.assertEquals("en", data.getTargetLanguage());
     }
 
-    @Test
-    @SmallTest
     /**
      * The target language is stored in Translate format, which uses the old deprecated Java codes
      * for several languages (Hebrew, Indonesian), and uses "tl" while Chromium uses "fil" for
      * Tagalog/Filipino. This tests that when using Translate format codes the Chrome version is
      * displayed in the Snackbar.
      */
+    @Test
+    @SmallTest
     public void testShowSnackbarChromeLanguage() throws Exception {
         // Use the Translate tag tl which Chrome should display as "Filipino"
         showSnackbar("tl");
@@ -105,7 +106,7 @@ public final class AutoTranslateSnackbarControllerJavaTest {
         Assert.assertEquals("Page translated to Filipino", getSnackbarMessageText());
         AutoTranslateSnackbarController.TargetLanguageData data =
                 (AutoTranslateSnackbarController.TargetLanguageData)
-                        currentSnackbar.getActionDataForTesting();
+                        currentSnackbar.getActionData();
         Assert.assertEquals("tl", data.getTargetLanguage());
     }
 

@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_navigation_preload_state.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_service_worker_update_via_cache.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -38,16 +39,15 @@ void DidUpdate(ScriptPromiseResolver<ServiceWorkerRegistration>* resolver,
                ServiceWorkerRegistration* registration,
                mojom::ServiceWorkerErrorType error,
                const String& error_msg) {
-  if (!resolver->GetExecutionContext() ||
-      resolver->GetExecutionContext()->IsContextDestroyed()) {
+  if (!resolver->GetExecutionContext()) {
     return;
   }
 
+  ScriptState::Scope scope(resolver->GetScriptState());
   if (error != mojom::ServiceWorkerErrorType::kNone) {
     DCHECK(!error_msg.IsNull());
-    ScriptState::Scope scope(resolver->GetScriptState());
-    resolver->Reject(ServiceWorkerErrorForUpdate::Take(
-        resolver, WebServiceWorkerError(error, error_msg)));
+    resolver->Reject(ServiceWorkerErrorForUpdate::AsJSException(
+        resolver->GetScriptState(), error, error_msg));
     return;
   }
   resolver->Resolve(registration);
@@ -64,8 +64,7 @@ void DidUnregister(ScriptPromiseResolver<IDLBoolean>* resolver,
   if (error != mojom::ServiceWorkerErrorType::kNone &&
       error != mojom::ServiceWorkerErrorType::kNotFound) {
     DCHECK(!error_msg.IsNull());
-    resolver->Reject(
-        ServiceWorkerError::GetException(resolver, error, error_msg));
+    resolver->Reject(ServiceWorkerError::AsException(error, error_msg));
     return;
   }
   resolver->Resolve(error == mojom::ServiceWorkerErrorType::kNone);
@@ -81,8 +80,7 @@ void DidEnableNavigationPreload(ScriptPromiseResolver<IDLUndefined>* resolver,
 
   if (error != mojom::ServiceWorkerErrorType::kNone) {
     DCHECK(!error_msg.IsNull());
-    resolver->Reject(
-        ServiceWorkerError::GetException(resolver, error, error_msg));
+    resolver->Reject(ServiceWorkerError::AsException(error, error_msg));
     return;
   }
   resolver->Resolve();
@@ -100,8 +98,7 @@ void DidGetNavigationPreloadState(
 
   if (error != mojom::ServiceWorkerErrorType::kNone) {
     DCHECK(!error_msg.IsNull());
-    resolver->Reject(
-        ServiceWorkerError::GetException(resolver, error, error_msg));
+    resolver->Reject(ServiceWorkerError::AsException(error, error_msg));
     return;
   }
   NavigationPreloadState* dict = NavigationPreloadState::Create();
@@ -121,22 +118,13 @@ void DidSetNavigationPreloadHeader(
 
   if (error != mojom::ServiceWorkerErrorType::kNone) {
     DCHECK(!error_msg.IsNull());
-    resolver->Reject(
-        ServiceWorkerError::GetException(resolver, error, error_msg));
+    resolver->Reject(ServiceWorkerError::AsException(error, error_msg));
     return;
   }
   resolver->Resolve();
 }
 
 }  // namespace
-
-ServiceWorkerRegistration* ServiceWorkerRegistration::Take(
-    ScriptPromiseResolverBase* resolver,
-    WebServiceWorkerRegistrationObjectInfo info) {
-  return ServiceWorkerContainer::From(
-             *To<LocalDOMWindow>(resolver->GetExecutionContext()))
-      ->GetOrCreateServiceWorkerRegistration(std::move(info));
-}
 
 ServiceWorkerRegistration::ServiceWorkerRegistration(
     ExecutionContext* execution_context,
@@ -185,7 +173,7 @@ ServiceWorkerRegistration::ServiceWorkerRegistration(
 void ServiceWorkerRegistration::Attach(
     WebServiceWorkerRegistrationObjectInfo info) {
   DCHECK_EQ(registration_id_, info.registration_id);
-  DCHECK_EQ(scope_.GetString(), WTF::String(info.scope.GetString()));
+  DCHECK_EQ(scope_.GetString(), String(info.scope.GetString()));
 
   // If |host_| is bound, it already points to the same object host as
   // |info.host_remote|, so there is no need to bind again.
@@ -228,17 +216,20 @@ String ServiceWorkerRegistration::scope() const {
   return scope_.GetString();
 }
 
-String ServiceWorkerRegistration::updateViaCache() const {
+V8ServiceWorkerUpdateViaCache ServiceWorkerRegistration::updateViaCache()
+    const {
   switch (update_via_cache_) {
     case mojom::ServiceWorkerUpdateViaCache::kImports:
-      return "imports";
+      return V8ServiceWorkerUpdateViaCache(
+          V8ServiceWorkerUpdateViaCache::Enum::kImports);
     case mojom::ServiceWorkerUpdateViaCache::kAll:
-      return "all";
+      return V8ServiceWorkerUpdateViaCache(
+          V8ServiceWorkerUpdateViaCache::Enum::kAll);
     case mojom::ServiceWorkerUpdateViaCache::kNone:
-      return "none";
+      return V8ServiceWorkerUpdateViaCache(
+          V8ServiceWorkerUpdateViaCache::Enum::kNone);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 void ServiceWorkerRegistration::EnableNavigationPreload(
@@ -248,8 +239,7 @@ void ServiceWorkerRegistration::EnableNavigationPreload(
     return;
   }
   host_->EnableNavigationPreload(
-      enable,
-      WTF::BindOnce(&DidEnableNavigationPreload, WrapPersistent(resolver)));
+      enable, BindOnce(&DidEnableNavigationPreload, WrapPersistent(resolver)));
 }
 
 void ServiceWorkerRegistration::GetNavigationPreloadState(
@@ -258,7 +248,7 @@ void ServiceWorkerRegistration::GetNavigationPreloadState(
     return;
   }
   host_->GetNavigationPreloadState(
-      WTF::BindOnce(&DidGetNavigationPreloadState, WrapPersistent(resolver)));
+      BindOnce(&DidGetNavigationPreloadState, WrapPersistent(resolver)));
 }
 
 void ServiceWorkerRegistration::SetNavigationPreloadHeader(
@@ -269,7 +259,7 @@ void ServiceWorkerRegistration::SetNavigationPreloadHeader(
   }
   host_->SetNavigationPreloadHeader(
       value,
-      WTF::BindOnce(&DidSetNavigationPreloadHeader, WrapPersistent(resolver)));
+      BindOnce(&DidSetNavigationPreloadHeader, WrapPersistent(resolver)));
 }
 
 ScriptPromise<ServiceWorkerRegistration> ServiceWorkerRegistration::update(
@@ -307,7 +297,7 @@ ScriptPromise<ServiceWorkerRegistration> ServiceWorkerRegistration::update(
   if (GetExecutionContext()->IsWindow()) {
     Document* document = To<LocalDOMWindow>(GetExecutionContext())->document();
     if (document->IsPrerendering()) {
-      document->AddPostPrerenderingActivationStep(WTF::BindOnce(
+      document->AddPostPrerenderingActivationStep(BindOnce(
           &ServiceWorkerRegistration::UpdateInternal, WrapWeakPersistent(this),
           std::move(mojom_settings_object), WrapPersistent(resolver)));
       return resolver->Promise();
@@ -338,8 +328,8 @@ ScriptPromise<IDLBoolean> ServiceWorkerRegistration::unregister(
     Document* document = To<LocalDOMWindow>(GetExecutionContext())->document();
     if (document->IsPrerendering()) {
       document->AddPostPrerenderingActivationStep(
-          WTF::BindOnce(&ServiceWorkerRegistration::UnregisterInternal,
-                        WrapWeakPersistent(this), WrapPersistent(resolver)));
+          BindOnce(&ServiceWorkerRegistration::UnregisterInternal,
+                   WrapWeakPersistent(this), WrapPersistent(resolver)));
       return resolver->Promise();
     }
   }
@@ -364,7 +354,16 @@ void ServiceWorkerRegistration::Trace(Visitor* visitor) const {
   visitor->Trace(receiver_);
   EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
-  Supplementable<ServiceWorkerRegistration>::Trace(visitor);
+  visitor->Trace(background_fetch_bridge_);
+  visitor->Trace(cookie_store_manager_);
+  visitor->Trace(payment_app_service_worker_registration_);
+  visitor->Trace(push_messaging_bridge_);
+  visitor->Trace(push_provider_);
+  visitor->Trace(service_worker_registration_background_fetch_);
+  visitor->Trace(service_worker_registration_content_index_);
+  visitor->Trace(service_worker_registration_notifications_);
+  visitor->Trace(service_worker_registration_push_);
+  visitor->Trace(service_worker_registration_sync_);
 }
 
 void ServiceWorkerRegistration::ContextDestroyed() {
@@ -411,9 +410,9 @@ void ServiceWorkerRegistration::UpdateInternal(
   if (!host_.is_bound()) {
     return;
   }
-  host_->Update(std::move(mojom_settings_object),
-                WTF::BindOnce(&DidUpdate, WrapPersistent(resolver),
-                              WrapPersistent(this)));
+  host_->Update(
+      std::move(mojom_settings_object),
+      BindOnce(&DidUpdate, WrapPersistent(resolver), WrapPersistent(this)));
 }
 
 void ServiceWorkerRegistration::UnregisterInternal(
@@ -421,7 +420,7 @@ void ServiceWorkerRegistration::UnregisterInternal(
   if (!host_.is_bound()) {
     return;
   }
-  host_->Unregister(WTF::BindOnce(&DidUnregister, WrapPersistent(resolver)));
+  host_->Unregister(BindOnce(&DidUnregister, WrapPersistent(resolver)));
 }
 
 }  // namespace blink

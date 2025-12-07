@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/web_test/renderer/test_runner.h"
 
 #include <stddef.h>
@@ -19,6 +14,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback_helpers.h"
@@ -31,6 +27,10 @@
 #include "build/build_config.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/skia_paint_canvas.h"
+#include "components/subresource_filter/content/renderer/web_document_subresource_filter_impl.h"
+#include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
+#include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/renderer/render_thread_impl.h"
@@ -38,15 +38,16 @@
 #include "content/web_test/common/web_test_string_util.h"
 #include "content/web_test/renderer/app_banner_service.h"
 #include "content/web_test/renderer/blink_test_helpers.h"
-#include "content/web_test/renderer/fake_subresource_filter.h"
 #include "content/web_test/renderer/spell_check_client.h"
 #include "content/web_test/renderer/test_preferences.h"
+#include "content/web_test/renderer/test_runner_utils.h"
 #include "content/web_test/renderer/web_frame_test_proxy.h"
+#include "crypto/obsolete/md5.h"
 #include "gin/arguments.h"
 #include "gin/array_buffer.h"
 #include "gin/dictionary.h"
-#include "gin/handle.h"
 #include "gin/object_template_builder.h"
+#include "gin/public/wrappable_pointer_tags.h"
 #include "gin/wrappable.h"
 #include "mojo/public/mojom/base/text_direction.mojom-forward.h"
 #include "net/base/filename_util.h"
@@ -56,6 +57,7 @@
 #include "printing/page_range.h"
 #include "printing/print_settings.h"
 #include "services/network/public/mojom/cors.mojom.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -98,6 +100,9 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/test/icc_profiles.h"
+#include "v8/include/cppgc/allocation.h"
+#include "v8/include/cppgc/prefinalizer.h"
+#include "v8/include/v8-cppgc.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 #include "third_party/blink/public/platform/web_font_render_style.h"
@@ -193,9 +198,16 @@ void ConvertAndSet(gin::Arguments* args, blink::WebString* set_param) {
 
 }  // namespace
 
-class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
+class TestRunnerBindings final : public gin::Wrappable<TestRunnerBindings> {
+  CPPGC_USING_PRE_FINALIZER(TestRunnerBindings, Dispose);
+
  public:
-  static gin::WrapperInfo kWrapperInfo;
+  static constexpr gin::WrapperInfo kWrapperInfo = {{gin::kEmbedderNativeGin},
+                                                    gin::kTestRunnerBindings};
+
+  const gin::WrapperInfo* wrapper_info() const override {
+    return &kWrapperInfo;
+  }
 
   TestRunnerBindings(const TestRunnerBindings&) = delete;
   TestRunnerBindings& operator=(const TestRunnerBindings&) = delete;
@@ -205,6 +217,8 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
                       SpellCheckClient* spell_check,
                       bool is_wpt_reftest,
                       bool is_main_test_window);
+
+  void Dispose();
 
   // Wraps the V8 function in a base::OnceCallback that binds in the given V8
   // arguments. The callback will do nothing when Run() if the
@@ -229,6 +243,10 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
     return frame_->GetWebFrame();
   }
 
+  explicit TestRunnerBindings(TestRunner* test_runner,
+                              WebFrameTestProxy* frame,
+                              SpellCheckClient* spell_check);
+
  private:
   // Watches for the RenderFrame that the TestRunnerBindings is attached to
   // being destroyed.
@@ -245,11 +263,6 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
     const raw_ptr<TestRunnerBindings> bindings_;
   };
 
-  explicit TestRunnerBindings(TestRunner* test_runner,
-                              WebFrameTestProxy* frame,
-                              SpellCheckClient* spell_check);
-  ~TestRunnerBindings() override;
-
   // gin::Wrappable overrides.
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
@@ -265,7 +278,6 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
   void CapturePrintingPixelsThen(v8::Local<v8::Function> callback);
 #endif
   void CheckForLeakedWindows();
-  void ClearAllDatabases();
   void ClearTrustTokenState(v8::Local<v8::Function> callback);
   void CopyImageThen(int x, int y, v8::Local<v8::Function> callback);
   void DisableMockScreenOrientation();
@@ -338,7 +350,6 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
                        v8::Local<v8::Function> callback);
   void SetCustomPolicyDelegate(gin::Arguments* args);
   void SetCustomTextOutput(const std::string& output);
-  void SetDatabaseQuota(int quota);
   void SetDisallowedSubresourcePathSuffixes(std::vector<std::string> suffixes,
                                             bool block_subresources);
   void SetDomainRelaxationForbiddenForURLScheme(bool forbidden,
@@ -370,6 +381,7 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
   void SetPrintingForFrame(const std::string& frame_name);
   void SetPrintingSize(int width, int height);
   void SetPrintingMargin(int);
+  void SetSafePrintableInset(int);
   void SetShouldCenterAndShrinkToFitPaper(bool);
   void SetPrintingScaleFactor(float);
   void SetShouldGeneratePixelResults(bool);
@@ -440,8 +452,6 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
   base::WeakPtrFactory<TestRunnerBindings> weak_ptr_factory_{this};
 };
 
-gin::WrapperInfo TestRunnerBindings::kWrapperInfo = {gin::kEmbedderNativeGin};
-
 // static
 void TestRunnerBindings::Install(TestRunner* test_runner,
                                  WebFrameTestProxy* frame,
@@ -456,16 +466,13 @@ void TestRunnerBindings::Install(TestRunner* test_runner,
 
   v8::Context::Scope context_scope(context);
 
-  TestRunnerBindings* wrapped =
-      new TestRunnerBindings(test_runner, frame, spell_check);
-  gin::Handle<TestRunnerBindings> bindings =
-      gin::CreateHandle(isolate, wrapped);
-  CHECK(!bindings.IsEmpty());
+  auto* bindings = cppgc::MakeGarbageCollected<TestRunnerBindings>(
+      isolate->GetCppHeap()->GetAllocationHandle(), test_runner, frame,
+      spell_check);
+  v8::Local<v8::Object> wrapper =
+      bindings->GetWrapper(isolate).ToLocalChecked();
   v8::Local<v8::Object> global = context->Global();
-  v8::Local<v8::Value> v8_bindings = bindings.ToV8();
-
-  global->Set(context, gin::StringToV8(isolate, "testRunner"), v8_bindings)
-      .Check();
+  global->Set(context, gin::StringToV8(isolate, "testRunner"), wrapper).Check();
 
   // Inject some JavaScript to the top-level frame of a reftest in the
   // web-platform-tests suite to have the same reftest screenshot timing as
@@ -533,6 +540,12 @@ void TestRunnerBindings::Install(TestRunner* test_runner,
   }
 }
 
+void TestRunnerBindings::Dispose() {
+  weak_ptr_factory_.InvalidateWeakPtrsAndDoom();
+  app_banner_service_.reset();
+  frame_observer_.Dispose();
+}
+
 TestRunnerBindings::TestRunnerBindings(TestRunner* runner,
                                        WebFrameTestProxy* frame,
                                        SpellCheckClient* spell_check)
@@ -540,8 +553,6 @@ TestRunnerBindings::TestRunnerBindings(TestRunner* runner,
       runner_(runner),
       frame_(frame),
       spell_check_(spell_check) {}
-
-TestRunnerBindings::~TestRunnerBindings() = default;
 
 gin::ObjectTemplateBuilder TestRunnerBindings::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
@@ -563,8 +574,6 @@ gin::ObjectTemplateBuilder TestRunnerBindings::GetObjectTemplateBuilder(
       // checker.
       .SetMethod("checkForLeakedWindows",
                  &TestRunnerBindings::CheckForLeakedWindows)
-      // Clears WebSQL databases.
-      .SetMethod("clearAllDatabases", &TestRunnerBindings::ClearAllDatabases)
       .SetMethod("clearBackForwardList", &TestRunnerBindings::NotImplemented)
       // Clears persistent Trust Tokens state in the browser. See
       // https://github.com/wicg/trust-token-api.
@@ -589,7 +598,7 @@ gin::ObjectTemplateBuilder TestRunnerBindings::GetObjectTemplateBuilder(
                  &TestRunnerBindings::DisableAutoResizeMode)
       .SetMethod("disableMockScreenOrientation",
                  &TestRunnerBindings::DisableMockScreenOrientation)
-      // Sets up a mock DocumentSubresourceFilter to disallow subsequent
+      // Sets up a WebDocumentSubresourceFilterImpl to disallow subsequent
       // subresource loads within the current document with the given path
       // |suffixes|. The filter is created and injected even if |suffixes| is
       // empty. If |suffixes| contains the empty string, all subresource loads
@@ -749,9 +758,6 @@ gin::ObjectTemplateBuilder TestRunnerBindings::GetObjectTemplateBuilder(
                  &TestRunnerBindings::SetCustomPolicyDelegate)
       .SetMethod("setCustomTextOutput",
                  &TestRunnerBindings::SetCustomTextOutput)
-      // Setting quota to kDefaultDatabaseQuota will reset it to the default
-      // value.
-      .SetMethod("setDatabaseQuota", &TestRunnerBindings::SetDatabaseQuota)
       .SetMethod("setDomainRelaxationForbiddenForURLScheme",
                  &TestRunnerBindings::SetDomainRelaxationForbiddenForURLScheme)
       .SetMethod("setDumpConsoleMessages",
@@ -802,6 +808,8 @@ gin::ObjectTemplateBuilder TestRunnerBindings::GetObjectTemplateBuilder(
                  &TestRunnerBindings::SetPrintingForFrame)
       .SetMethod("setPrintingSize", &TestRunnerBindings::SetPrintingSize)
       .SetMethod("setPrintingMargin", &TestRunnerBindings::SetPrintingMargin)
+      .SetMethod("setSafePrintableInset",
+                 &TestRunnerBindings::SetSafePrintableInset)
       .SetMethod("setShouldCenterAndShrinkToFitPaper",
                  &TestRunnerBindings::SetShouldCenterAndShrinkToFitPaper)
       .SetMethod("setPrintingScaleFactor",
@@ -1128,7 +1136,7 @@ void TestRunnerBindings::SetEffectiveConnectionType(
   else if (connection_type == "Type4G")
     web_type = blink::WebEffectiveConnectionType::kType4G;
   else
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
 
   if (runner_)
     runner_->SetEffectiveConnectionType(web_type);
@@ -1144,7 +1152,7 @@ std::string TestRunnerBindings::GetWritableDirectory() {
 }
 
 void TestRunnerBindings::SetFilePathForMockFileDialog(const std::string& path) {
-  if (frame_) {
+  if (!frame_) {
     return;
   }
   frame_->GetWebTestControlHostRemote()->SetFilePathForMockFileDialog(
@@ -1474,8 +1482,33 @@ void TestRunnerBindings::SetDisallowedSubresourcePathSuffixes(
   if (!frame_) {
     return;
   }
+
+  base::File ruleset_file;
+  frame_->GetWebTestControlHostRemote()->CreateSubresourceFilterRulesetFile(
+      suffixes, &ruleset_file);
+
+  scoped_refptr<subresource_filter::MemoryMappedRuleset> ruleset =
+      subresource_filter::MemoryMappedRuleset::CreateAndInitialize(
+          std::move(ruleset_file));
+
+  subresource_filter::mojom::ActivationLevel activation_level =
+      block_subresources ? subresource_filter::mojom::ActivationLevel::kEnabled
+                         : subresource_filter::mojom::ActivationLevel::kDryRun;
+
+  // Some tests rely on console loggings.
+  subresource_filter::mojom::ActivationState activation_state(
+      activation_level,
+      subresource_filter::mojom::SubresourceFilterDisabledReason::kUnknown,
+      /*filtering_disabled_for_document=*/false,
+      /*generic_blocking_rules_disabled=*/false,
+      /*measure_performance=*/false,
+      /*enable_logging=*/true);
+
   GetWebFrame()->GetDocumentLoader()->SetSubresourceFilter(
-      new FakeSubresourceFilter(std::move(suffixes), block_subresources));
+      new subresource_filter::WebDocumentSubresourceFilterImpl(
+          url::Origin::Create(GetWebFrame()->GetDocumentLoader()->GetUrl()),
+          activation_state, std::move(ruleset),
+          /*first_disallowed_load_callback=*/base::DoNothing()));
 }
 
 void TestRunnerBindings::SetPopupBlockingEnabled(bool block_popups) {
@@ -1770,6 +1803,13 @@ void TestRunnerBindings::SetPrintingMargin(int margin) {
   runner_->SetPrintingMargin(margin, *frame_);
 }
 
+void TestRunnerBindings::SetSafePrintableInset(int inset) {
+  if (!frame_) {
+    return;
+  }
+  runner_->SetSafePrintableInset(inset, *frame_);
+}
+
 void TestRunnerBindings::SetShouldCenterAndShrinkToFitPaper(bool b) {
   if (!frame_) {
     return;
@@ -1842,20 +1882,6 @@ void TestRunnerBindings::DumpNavigationPolicy() {
     return;
   }
   runner_->DumpNavigationPolicy(*frame_);
-}
-
-void TestRunnerBindings::ClearAllDatabases() {
-  if (!frame_) {
-    return;
-  }
-  frame_->GetWebTestControlHostRemote()->ClearAllDatabases();
-}
-
-void TestRunnerBindings::SetDatabaseQuota(int quota) {
-  if (!frame_) {
-    return;
-  }
-  frame_->GetWebTestControlHostRemote()->SetDatabaseQuota(quota);
 }
 
 void TestRunnerBindings::SetBlockThirdPartyCookies(bool block) {
@@ -2182,12 +2208,12 @@ void TestRunnerBindings::CopyImageThen(int x,
   frame_->GetBrowserInterfaceBroker().GetInterface(
       remote_clipboard.BindNewPipeAndPassReceiver());
 
-  blink::ClipboardSequenceNumberToken sequence_number_before;
+  absl::uint128 sequence_number_before;
   CHECK(remote_clipboard->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste,
                                             &sequence_number_before));
   GetWebFrame()->CopyImageAtForTesting(gfx::Point(x, y));
   auto sequence_number_after = sequence_number_before;
-  while (sequence_number_before.value() == sequence_number_after.value()) {
+  while (sequence_number_before == sequence_number_after) {
     // TODO(crbug.com/40588468): Ideally we would CHECK here that the mojo call
     // succeeded, but this crashes under some circumstances (crbug.com/1232810).
     remote_clipboard->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste,
@@ -2196,8 +2222,7 @@ void TestRunnerBindings::CopyImageThen(int x,
 
   mojo_base::BigBuffer png_data;
   remote_clipboard->ReadPng(ui::ClipboardBuffer::kCopyPaste, &png_data);
-  SkBitmap bitmap;
-  gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &bitmap);
+  SkBitmap bitmap = gfx::PNGCodec::Decode(png_data);
 
   blink::WebLocalFrame* web_frame = GetWebFrame();
   v8::Isolate* isolate = web_frame->GetAgentGroupScheduler()->Isolate();
@@ -2595,8 +2620,7 @@ bool TestRunner::WorkQueue::ProcessWorkItemInternal(
       source.GetWebTestControlHostRemote()->Reload();
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void TestRunner::WorkQueue::ReplicateStates(const base::Value::Dict& values,
@@ -2797,6 +2821,10 @@ int TestRunner::GetPrintingMargin() const {
   return web_test_runtime_flags_.printing_margin();
 }
 
+int TestRunner::GetSafePrintableInset() const {
+  return web_test_runtime_flags_.safe_printable_inset();
+}
+
 static std::string GetPageRangesStringFromMetadata(
     blink::WebLocalFrame* frame) {
   blink::WebElementCollection meta_iter =
@@ -2875,13 +2903,16 @@ printing::PageRanges TestRunner::GetPrintingPageRanges(
 
 SkBitmap TestRunner::PrintFrameToBitmap(blink::WebLocalFrame* frame) {
   // Page size and margins are in CSS pixels.
-  auto print_params =
-      blink::WebPrintParams(gfx::SizeF(GetPrintingPageSize(frame)));
+  gfx::SizeF page_size = gfx::SizeF(GetPrintingPageSize(frame));
+  auto print_params = blink::WebPrintParams(page_size);
   int default_margin = GetPrintingMargin();
   print_params.default_page_description.margin_top = default_margin;
   print_params.default_page_description.margin_right = default_margin;
   print_params.default_page_description.margin_bottom = default_margin;
   print_params.default_page_description.margin_left = default_margin;
+  gfx::RectF printable_area(page_size);
+  printable_area.Inset(GetSafePrintableInset());
+  print_params.printable_area_in_css_pixels = printable_area;
   print_params.scale_factor = printing_scale_factor_;
   print_params.print_scaling_option =
       should_center_and_shrink_to_fit_paper_
@@ -2894,7 +2925,7 @@ SkBitmap TestRunner::PrintFrameToBitmap(blink::WebLocalFrame* frame) {
   uint32_t page_count = frame->PrintBegin(print_params, blink::WebNode());
 
   const printing::PageRanges& page_ranges = GetPrintingPageRanges(frame);
-  blink::WebVector<uint32_t> pages(
+  std::vector<uint32_t> pages(
       printing::PageNumber::GetPages(page_ranges, page_count));
   gfx::Size spool_size = frame->SpoolSizeInPixelsForTesting(pages);
 
@@ -2946,8 +2977,7 @@ SkBitmap TestRunner::DumpPixelsInRenderer(blink::WebLocalFrame* main_frame) {
 
   return PrintFrameToBitmap(target_frame);
 #else
-  NOTREACHED_IN_MIGRATION();
-  return SkBitmap();
+  NOTREACHED();
 #endif
 }
 
@@ -3161,16 +3191,6 @@ void TestRunner::TestFinishedFromSecondaryRenderer(WebFrameTestProxy& source) {
   NotifyDone(source);
 }
 
-void TestRunner::ResetRendererAfterWebTest() {
-  WebFrameTestProxy* main_frame = FindInProcessMainWindowMainFrame();
-  // When the about:blank navigation happens in a new process, the new
-  // WebFrameTestProxy is not designated to be the "MainWindowMainFrame" one
-  // yet. It will be tracked later after receiving the SetTestConfiguration IPC.
-  if (main_frame)
-    main_frame->Reset();
-  Reset();
-}
-
 void TestRunner::AddMainFrame(WebFrameTestProxy& frame) {
   main_frames_.insert(&frame);
 }
@@ -3312,10 +3332,29 @@ void TestRunner::SetMainWindowAndTestConfiguration(
   if (!IsFrameInMainWindow(frame)) {
     main_windows_.push_back(std::make_unique<MainWindowTracker>(view, this));
   }
-  // This may be called for a local root in the same process as another local
-  // root, in which case we just keep the original config, which should match.
-  if (test_is_running_)
-    return;
+
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+
+  std::string web_settings_switch_value =
+      command_line->GetSwitchValueASCII(switches::kWebSettingsForTesting);
+  for (auto [key, value] :
+       TestRunnerUtils::ParseWebSettingsString(web_settings_switch_value)) {
+    view->GetSettings()->SetFromStrings(blink::WebString::FromASCII(key),
+                                        blink::WebString::FromASCII(value));
+  }
+
+  if (command_line->HasSwitch(switches::kTargetDeviceScaleForTesting)) {
+    auto target_scale_factor_for_testing = command_line->GetSwitchValueASCII(
+        switches::kTargetDeviceScaleForTesting);
+    double scale_factor;
+    if (base::StringToDouble(
+            TrimWhitespaceASCII(target_scale_factor_for_testing,
+                                base::TRIM_ALL),
+            &scale_factor)) {
+      frame->FrameWidget()->SetDeviceScaleFactorForTesting(scale_factor);
+    }
+  }
 
   test_config_ = std::move(*config);
   SetTestIsRunning(true);
@@ -3528,7 +3567,7 @@ void TestRunner::DumpIconChanges(WebFrameTestProxy& source) {
 void TestRunner::SetAudioData(const gin::ArrayBufferView& view) {
   uint8_t* bytes = static_cast<uint8_t*>(view.bytes());
   audio_data_.resize(view.num_bytes());
-  std::copy(bytes, bytes + view.num_bytes(), audio_data_.begin());
+  std::copy(bytes, UNSAFE_TODO(bytes + view.num_bytes()), audio_data_.begin());
   dump_as_audio_ = true;
 }
 
@@ -3599,6 +3638,11 @@ void TestRunner::SetPrintingSize(int width,
 
 void TestRunner::SetPrintingMargin(int size, WebFrameTestProxy& source) {
   web_test_runtime_flags_.set_printing_margin(size);
+  OnWebTestRuntimeFlagsChanged(source);
+}
+
+void TestRunner::SetSafePrintableInset(int inset, WebFrameTestProxy& source) {
+  web_test_runtime_flags_.set_safe_printable_inset(inset);
   OnWebTestRuntimeFlagsChanged(source);
 }
 
@@ -3843,11 +3887,10 @@ void TestRunner::FinishTest(WebFrameTestProxy& source) {
         DCHECK_GT(actual.info().width(), 0);
         DCHECK_GT(actual.info().height(), 0);
 
-        base::MD5Digest digest;
-        auto bytes = base::span(static_cast<const uint8_t*>(actual.getPixels()),
-                                actual.computeByteSize());
-        base::MD5Sum(bytes, &digest);
-        dump_result->actual_pixel_hash = base::MD5DigestToBase16(digest);
+        auto bytes = UNSAFE_TODO(
+            base::span(static_cast<const uint8_t*>(actual.getPixels()),
+                       actual.computeByteSize()));
+        dump_result->actual_pixel_hash = Md5AsHexForWebTestPixels(bytes);
 
         if (dump_result->actual_pixel_hash != test_config_.expected_pixel_hash)
           dump_result->pixels = std::move(actual);

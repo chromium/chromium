@@ -1,8 +1,0 @@
-{
-  "program": {
-    "x86-32": {"url": "doesnotexist.nexe"},
-    "x86-64": {"url": "doesnotexist.nexe"},
-    "arm": {"url": "doesnotexist.nexe"},
-    "mips32": {"url": "doesnotexist.nexe"}
-  }
-}

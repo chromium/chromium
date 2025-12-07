@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "third_party/blink/public/common/widget/device_emulation_params.h"
+#include "third_party/blink/public/mojom/page/widget.mojom-blink.h"
 #include "third_party/blink/public/mojom/widget/device_emulation_params.mojom-blink.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -32,7 +33,7 @@ class ScreenMetricsEmulator : public GarbageCollected<ScreenMetricsEmulator> {
  public:
   ScreenMetricsEmulator(WebFrameWidgetImpl* frame_widget,
                         const display::ScreenInfos& screen_infos,
-                        const gfx::Size& widget_size,
+                        const gfx::Size& widget_size_dips,
                         const gfx::Size& visible_viewport_size,
                         const gfx::Rect& view_screen_rect,
                         const gfx::Rect& window_screen_rect);
@@ -68,7 +69,10 @@ class ScreenMetricsEmulator : public GarbageCollected<ScreenMetricsEmulator> {
   void DisableAndApply();
 
   // Sets new parameters and applies them to the WebFrameWidgetImpl.
-  void ChangeEmulationParams(const DeviceEmulationParams& params);
+  void ChangeEmulationParams(
+      const DeviceEmulationParams& params,
+      const mojom::blink::DeviceEmulationCacheBehavior& cache_behavior =
+          mojom::blink::DeviceEmulationCacheBehavior::kClearCache);
 
   void UpdateVisualProperties(const VisualProperties& visual_properties);
 
@@ -84,7 +88,8 @@ class ScreenMetricsEmulator : public GarbageCollected<ScreenMetricsEmulator> {
   }
 
   // Applies emulated values to the WidgetBase.
-  void Apply();
+  void Apply(const mojom::blink::DeviceEmulationCacheBehavior& cache_behavior =
+                 mojom::blink::DeviceEmulationCacheBehavior::kClearCache);
 
   Member<WebFrameWidgetImpl> const frame_widget_;
 
@@ -93,7 +98,7 @@ class ScreenMetricsEmulator : public GarbageCollected<ScreenMetricsEmulator> {
 
   // Original values to restore back after emulation ends.
   display::ScreenInfos original_screen_infos_;
-  gfx::Size original_widget_size_;
+  gfx::Size original_widget_size_dips_;
   gfx::Size original_visible_viewport_size_;
   gfx::Rect original_view_screen_rect_;
   gfx::Rect original_window_screen_rect_;

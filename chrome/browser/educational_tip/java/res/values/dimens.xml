@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="UnusedResources">
+  <!-- Educational tip module dimens -->
+  <dimen name="educational_tip_module_size_without_padding">156dp</dimen>
+  <dimen name="educational_tip_module_content_image_size">72dp</dimen>
+  <dimen name="educational_tip_module_content_info_padding_start">16dp</dimen>
+  <dimen name="educational_tip_module_content_image_radius">12dp</dimen>
+  <dimen name="educational_tip_module_button_height">48dp</dimen>
+  <dimen name="educational_tip_module_button_padding_start">14dp</dimen>
+
+  <!-- Default browser promo card dimens -->
+  <dimen name="default_browser_bottom_sheet_drag_handel_bar_height">4dp</dimen>
+  <dimen name="default_browser_bottom_sheet_drag_handel_bar_margin_vertical">8dp</dimen>
+  <dimen name="default_browser_bottom_sheet_drag_handel_bar_width">32dp</dimen>
+  <dimen name="default_browser_bottom_sheet_scroll_view_padding_lateral">24dp</dimen>
+  <dimen name="default_browser_bottom_sheet_icon_container_height">99dp</dimen>
+  <dimen name="default_browser_bottom_sheet_icon_container_margin_top">4dp</dimen>
+  <dimen name="default_browser_bottom_sheet_icon_container_padding_top">25dp</dimen>
+  <dimen name="default_browser_bottom_sheet_icon_container_padding_bottom">26dp</dimen>
+  <dimen name="default_browser_bottom_sheet_title_margin_top">16dp</dimen>
+  <dimen name="default_browser_bottom_sheet_description_margin_top">4dp</dimen>
+  <dimen name="default_browser_bottom_sheet_steps_container_margin_top">16dp</dimen>
+  <dimen name="default_browser_bottom_sheet_step_padding_top">16dp</dimen>
+  <dimen name="default_browser_bottom_sheet_step_padding_end">8dp</dimen>
+  <dimen name="default_browser_bottom_sheet_step_number_width">24dp</dimen>
+  <dimen name="default_browser_bottom_sheet_step_content_margin_start">16dp</dimen>
+  <dimen name="default_browser_bottom_sheet_button_margin_top">16dp</dimen>
+  <dimen name="default_browser_bottom_sheet_button_margin_bottom">24dp</dimen>
+</resources>

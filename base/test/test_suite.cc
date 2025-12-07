@@ -32,6 +32,7 @@
 #include "base/i18n/icu_util.h"
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
+#include "base/logging/logging_settings.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/statistics_recorder.h"
@@ -44,7 +45,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "base/test/fuzztest_init_helper.h"
 #include "base/test/gtest_xml_unittest_result_printer.h"
 #include "base/test/gtest_xml_util.h"
 #include "base/test/icu_test_util.h"
@@ -61,9 +61,9 @@
 #include "base/tracing_buildflags.h"
 #include "build/build_config.h"
 #include "partition_alloc/buildflags.h"
-#include "partition_alloc/tagging.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "testing/libfuzzer/fuzztest_init_helper.h"
 #include "testing/multiprocess_func_list.h"
 
 #if BUILDFLAG(IS_APPLE)
@@ -82,6 +82,10 @@
 #include "base/test/test_support_android.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "partition_alloc/tagging.h"  // nogncheck
+#endif
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "third_party/test_fonts/fontconfig/fontconfig_util_linux.h"
 #endif
@@ -97,6 +101,7 @@
 #include <windows.h>
 
 #include "base/debug/handle_hooks_win.h"
+#include "base/win/win_util.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC)
@@ -160,8 +165,12 @@ class ResetCommandLineBetweenTests : public testing::EmptyTestEventListener {
 // to initialize them manually.
 class FeatureListScopedToEachTest : public testing::EmptyTestEventListener {
  public:
-  FeatureListScopedToEachTest() = default;
-  ~FeatureListScopedToEachTest() override = default;
+  FeatureListScopedToEachTest() {
+    instance_ = this;
+  }
+  ~FeatureListScopedToEachTest() override {
+    instance_ = nullptr;
+  }
 
   FeatureListScopedToEachTest(const FeatureListScopedToEachTest&) = delete;
   FeatureListScopedToEachTest& operator=(const FeatureListScopedToEachTest&) =
@@ -183,9 +192,19 @@ class FeatureListScopedToEachTest : public testing::EmptyTestEventListener {
     scoped_feature_list_.Reset();
   }
 
+  static void Reset() {
+    if (instance_) {
+      instance_->scoped_feature_list_.Reset();
+    }
+  }
+
  private:
   test::ScopedFeatureList scoped_feature_list_;
+
+  static FeatureListScopedToEachTest* instance_;
 };
+
+FeatureListScopedToEachTest* FeatureListScopedToEachTest::instance_ = nullptr;
 
 class CheckForLeakedGlobals : public testing::EmptyTestEventListener {
  public:
@@ -256,12 +275,13 @@ class CheckProcessPriority : public testing::EmptyTestEventListener {
 #endif  // !BUILDFLAG(IS_APPLE)
 
 const std::string& GetProfileName() {
-  static const NoDestructor<std::string> profile_name([]() {
+  static const NoDestructor<std::string> profile_name([] {
     const CommandLine& command_line = *CommandLine::ForCurrentProcess();
-    if (command_line.HasSwitch(switches::kProfilingFile))
+    if (command_line.HasSwitch(switches::kProfilingFile)) {
       return command_line.GetSwitchValueASCII(switches::kProfilingFile);
-    else
+    } else {
       return std::string("test-profile-{pid}");
+    }
   }());
   return *profile_name;
 }
@@ -370,8 +390,9 @@ TestSuite::TestSuite(int argc, wchar_t** argv) : argc_(argc) {
 #endif  // BUILDFLAG(IS_WIN)
 
 TestSuite::~TestSuite() {
-  if (initialized_command_line_)
+  if (initialized_command_line_) {
     CommandLine::Reset();
+  }
 }
 
 // Don't add additional code to this method.  Instead add it to
@@ -391,15 +412,17 @@ int TestSuite::Run() {
   // services, so skip this if that switch was present.
   // This must be called before Initialize() because, for example,
   // content::ContentTestSuite::Initialize() may use the cached values.
-  if (client_func.empty())
+  if (client_func.empty()) {
     CHECK(FetchAndCacheSystemInfo());
+  }
 #endif
 
   Initialize();
 
   // Check to see if we are being run as a client process.
-  if (!client_func.empty())
+  if (!client_func.empty()) {
     return multi_process_function_list::InvokeChildProcessTest(client_func);
+  }
 
 #if BUILDFLAG(IS_IOS)
   test_listener_ios::RegisterTestEndListener();
@@ -412,10 +435,10 @@ int TestSuite::Run() {
   ::partition_alloc::ChangeMemoryTaggingModeForCurrentThread(
       ::partition_alloc::TagViolationReportingMode::kSynchronous);
 #elif BUILDFLAG(IS_ANDROID)
-    // On Android, the tests are opted into synchronous MTE mode by the
-    // memtagMode attribute in an AndroidManifest.xml file or via an `am compat`
-    // command, so and explicit call to ChangeMemoryTaggingModeForCurrentThread
-    // is not needed.
+  // On Android, the tests are opted into synchronous MTE mode by the
+  // memtagMode attribute in an AndroidManifest.xml file or via an `am compat`
+  // command, so and explicit call to ChangeMemoryTaggingModeForCurrentThread
+  // is not needed.
 #endif
 
   int result = RunAllTests();
@@ -441,10 +464,14 @@ void TestSuite::DisableCheckForLeakedGlobals() {
   check_for_leaked_globals_ = false;
 }
 
+void TestSuite::ResetScopedFeatureListInstance() {
+  FeatureListScopedToEachTest::Reset();
+}
+
 void TestSuite::UnitTestAssertHandler(const char* file,
                                       int line,
-                                      const std::string_view summary,
-                                      const std::string_view stack_trace) {
+                                      std::string_view summary,
+                                      std::string_view stack_trace) {
 #if BUILDFLAG(IS_ANDROID)
   // Correlating test stdio with logcat can be difficult, so we emit this
   // helpful little hint about what was running.  Only do this for Android
@@ -538,7 +565,21 @@ void TestSuite::Initialize() {
   // ASAN.
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC) && !defined(ADDRESS_SANITIZER)
   allocator::PartitionAllocSupport::Get()->ReconfigureForTests();
-#endif  // BUILDFLAG(IS_WIN)
+
+#if GTEST_HAS_DEATH_TEST
+  // Unfortunately GTEST does not call event listeners at all inside child
+  // processes. In such case do reconfiguration here instead of inside
+  // `FeatureListScopedToEachTest`. FeatureList is not fully initialized but
+  // better than never reconfigured.
+  // TODO(https://crbug.com/432019338): Remove this once fixed.
+  if (::testing::internal::InDeathTestChild()) {
+    allocator::PartitionAllocSupport::Get()->ReconfigureAfterFeatureListInit(
+        "",
+        /*configure_dangling_pointer_detector=*/true,
+        /*is_in_death_test_child=*/true);
+  }
+#endif  // GTEST_HAS_DEATH_TEST
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC) && !defined(ADDRESS_SANITIZER)
 
   test::ScopedRunLoopTimeout::SetAddGTestFailureOnTimeout();
 
@@ -555,8 +596,9 @@ void TestSuite::Initialize() {
   // TODO(crbug.com/40120934): Remove this in favor of the codepath in
   // FeatureList::SetInstance() when/if OnTestStart() TestEventListeners
   // are fixed to be invoked in the child process as expected.
-  if (command_line->HasSwitch("gtest_internal_run_death_test"))
+  if (command_line->HasSwitch("gtest_internal_run_death_test")) {
     logging::LOGGING_DCHECK = logging::LOGGING_FATAL;
+  }
 #endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
 #if BUILDFLAG(IS_IOS)
@@ -573,6 +615,11 @@ void TestSuite::Initialize() {
   // Make sure we run with high resolution timer to minimize differences
   // between production code and test code.
   Time::EnableHighResolutionTimer(true);
+
+  if (!command_line->HasSwitch(
+          ::switches::kDisableStrictHandleCheckingForTesting)) {
+    PCHECK(win::EnableStrictHandleCheckingForCurrentProcess());
+  }
 #endif  // BUILDFLAG(IS_WIN)
 
   // In some cases, we do not want to see standard error dialogs.
@@ -605,8 +652,9 @@ void TestSuite::Initialize() {
   listeners.Append(new DisableMaybeTests);
   listeners.Append(new ResetCommandLineBetweenTests);
   listeners.Append(new FeatureListScopedToEachTest);
-  if (check_for_leaked_globals_)
+  if (check_for_leaked_globals_) {
     listeners.Append(new CheckForLeakedGlobals);
+  }
   if (check_for_thread_and_process_priority_) {
 #if !BUILDFLAG(IS_APPLE)
     listeners.Append(new CheckProcessPriority);
@@ -617,9 +665,7 @@ void TestSuite::Initialize() {
 
   TestTimeouts::Initialize();
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
   trace_to_file_.BeginTracingFromCommandLineOptions();
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
   debug::StartProfiling(GetProfileName());
 

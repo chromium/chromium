@@ -6,8 +6,7 @@
 #define CONTENT_BROWSER_ANDROID_LAUNCHER_THREAD_H_
 
 #include "base/android/java_handler_thread.h"
-
-#include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 
 namespace content {
@@ -20,7 +19,7 @@ class LauncherThread {
   static scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner();
 
  private:
-  friend base::LazyInstanceTraitsBase<LauncherThread>;
+  friend base::NoDestructor<LauncherThread>;
 
   LauncherThread();
   ~LauncherThread();

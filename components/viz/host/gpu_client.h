@@ -12,19 +12,14 @@
 #include "base/memory/weak_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/task/single_thread_task_runner.h"
-#include "build/chromeos_buildflags.h"
 #include "components/viz/host/gpu_client_delegate.h"
 #include "components/viz/host/gpu_host_impl.h"
 #include "components/viz/host/viz_host_export.h"
-#include "gpu/ipc/common/client_gmb_interface.mojom.h"
 #include "gpu/ipc/common/gpu_disk_cache_type.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/viz/public/mojom/gpu.mojom.h"
-
-#if !BUILDFLAG(IS_CHROMEOS)
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 namespace viz {
 
@@ -37,6 +32,7 @@ class VIZ_HOST_EXPORT GpuClient : public mojom::Gpu {
   GpuClient(std::unique_ptr<GpuClientDelegate> delegate,
             int client_id,
             uint64_t client_tracing_id,
+            bool enable_extra_handles_validation,
             scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   GpuClient(const GpuClient&) = delete;
@@ -58,23 +54,19 @@ class VIZ_HOST_EXPORT GpuClient : public mojom::Gpu {
   void RemoveDiskCacheHandles();
 
   base::WeakPtr<GpuClient> GetWeakPtr();
-#if !BUILDFLAG(IS_CHROMEOS)
   void BindWebNNContextProvider(
       mojo::PendingReceiver<webnn::mojom::WebNNContextProvider> receiver);
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
-  // mojom::ClientGmbInterface is direct interface between renderer and GPU
-  // process to create GpuMemoryBuffers.
-  void CreateClientGpuMemoryBufferFactory(
-      mojo::PendingReceiver<gpu::mojom::ClientGmbInterface> receiver) override;
 
   void EstablishGpuChannel(EstablishGpuChannelCallback callback) override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void SetEstablishGpuChannelCallbackForTesting(
+      base::OnceCallback<void(bool)> callback);
+
+#if BUILDFLAG(IS_CHROMEOS)
   void CreateJpegDecodeAccelerator(
       mojo::PendingReceiver<chromeos_camera::mojom::MjpegDecodeAccelerator>
           jda_receiver) override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   void CreateVideoEncodeAcceleratorProvider(
       mojo::PendingReceiver<media::mojom::VideoEncodeAcceleratorProvider>
           vea_provider_receiver) override;
@@ -98,10 +90,12 @@ class VIZ_HOST_EXPORT GpuClient : public mojom::Gpu {
   std::unique_ptr<GpuClientDelegate> delegate_;
   const int client_id_;
   const uint64_t client_tracing_id_;
+  const bool enable_extra_handles_validation_;
 
   mojo::ReceiverSet<mojom::Gpu> gpu_receivers_;
   bool gpu_channel_requested_ = false;
   EstablishGpuChannelCallback callback_;
+  base::OnceCallback<void(bool)> callback_for_testing_;
   mojo::ScopedMessagePipeHandle channel_handle_;
   gpu::GPUInfo gpu_info_;
   gpu::GpuFeatureInfo gpu_feature_info_;

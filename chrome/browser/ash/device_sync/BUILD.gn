@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("device_sync") {
   sources = [
@@ -20,6 +20,7 @@ static_library("device_sync") {
     "//chrome/browser/ash/cryptauth",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles",
+    "//chrome/browser/signin",
     "//chromeos/ash/components/multidevice:stub_multidevice_util",
     "//chromeos/ash/services/device_sync",
     "//chromeos/ash/services/device_sync:stub_device_sync",

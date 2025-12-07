@@ -6,8 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_DECODER_TEMPLATE_H_
 
 #include <stdint.h>
+
 #include <memory>
 
+#include "base/sequence_checker.h"
 #include "media/base/decoder_status.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -65,7 +67,7 @@ class MODULES_EXPORT DecoderTemplate
   ScriptPromise<IDLUndefined> flush(ExceptionState&);
   void reset(ExceptionState&);
   void close(ExceptionState&);
-  String state() const { return state_; }
+  V8CodecState state() const { return state_; }
 
   // EventTarget override.
   ExecutionContext* GetExecutionContext() const override;
@@ -101,6 +103,9 @@ class MODULES_EXPORT DecoderTemplate
   // The default implementation does nothing and must be overridden by derived
   // classes if needed.
   virtual void SetHardwarePreference(HardwarePreference preference);
+
+  // Called when the active configuration changes after a configure().
+  virtual void OnActiveConfigChanged(const MediaConfigType& config);
 
   // Virtual for UTs.
   virtual MediaDecoderType* decoder() { return decoder_.get(); }

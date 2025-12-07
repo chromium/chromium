@@ -25,6 +25,8 @@ constexpr char kReadStatusKey[] = "read_status";
 constexpr char kReadStatusRead[] = "true";
 constexpr char kReadStatusUnread[] = "false";
 
+namespace reading_list {
+
 namespace {
 
 // Sync the bookmark node with |entry|. Returns whether the conversion is
@@ -96,16 +98,6 @@ void ReadingListManagerImpl::ReadingListWillRemoveEntry(
   RemoveBookmark(url);
 }
 
-void ReadingListManagerImpl::ReadingListDidMoveEntry(
-    const ReadingListModel* model,
-    const GURL& url) {
-  DCHECK(reading_list_model_->loaded());
-  scoped_refptr<const ReadingListEntry> moved_entry =
-      reading_list_model_->GetEntryByURL(url);
-  DCHECK(moved_entry);
-  AddOrUpdateBookmark(moved_entry.get());
-}
-
 void ReadingListManagerImpl::ReadingListDidUpdateEntry(
     const ReadingListModel* model,
     const GURL& url) {
@@ -162,7 +154,8 @@ const BookmarkNode* ReadingListManagerImpl::Add(const GURL& url,
   // Add or swap the reading list entry.
   const auto& new_entry = reading_list_model_->AddOrReplaceEntry(
       url, title, reading_list::ADDED_VIA_CURRENT_APP,
-      /*estimated_read_time=*/base::TimeDelta());
+      /*estimated_read_time=*/std::nullopt,
+      /*creation_time=*/std::nullopt);
   const auto* node = FindBookmarkByURL(new_entry.URL());
   return node;
 }
@@ -283,8 +276,7 @@ bool ReadingListManagerImpl::GetReadStatus(
   if (value == kReadStatusUnread)
     return false;
 
-  NOTREACHED_IN_MIGRATION() << "May not be reading list node.";
-  return false;
+  NOTREACHED() << "May not be reading list node.";
 }
 
 bool ReadingListManagerImpl::IsLoaded() const {
@@ -332,3 +324,5 @@ void ReadingListManagerImpl::NotifyReadingListChanged() {
   for (Observer& observer : observers_)
     observer.ReadingListChanged();
 }
+
+}  // namespace reading_list

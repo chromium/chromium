@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_STATS_COLLECTING_DECODER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/peerconnection/stats_collector.h"

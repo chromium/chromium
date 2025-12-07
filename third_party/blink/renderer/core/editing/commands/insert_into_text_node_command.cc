@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -47,9 +48,10 @@ InsertIntoTextNodeCommand::InsertIntoTextNodeCommand(Text* node,
 }
 
 void InsertIntoTextNodeCommand::DoApply(EditingState*) {
-  bool password_echo_enabled =
+  const bool password_echo_enabled =
       GetDocument().GetSettings() &&
-      GetDocument().GetSettings()->GetPasswordEchoEnabled();
+      GetDocument().GetSettings()->GetPasswordEchoEnabledPhysical() &&
+      GetDocument().GetSettings()->GetPasswordEchoEnabledTouch();
   if (password_echo_enabled) {
     GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
   }
@@ -72,6 +74,11 @@ void InsertIntoTextNodeCommand::DoUnapply() {
     return;
 
   node_->deleteData(offset_, text_.length(), IGNORE_EXCEPTION_FOR_TESTING);
+}
+
+String InsertIntoTextNodeCommand::ToString() const {
+  return StrCat({"InsertIntoTextNodeCommand {offset:", String::Number(offset_),
+                 ", text:", text_.EncodeForDebugging(), "}"});
 }
 
 void InsertIntoTextNodeCommand::Trace(Visitor* visitor) const {

@@ -59,12 +59,22 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Cookie canonical form check failed"/>
   <int value="3" label="Could not open or initialize database"/>
   <int value="4" label="Attempt to delete broken (and related) rows failed"/>
+  <int value="5"
+      label="Attempt to delete cookies with matching top_frame_site_keys
+             failed"/>
+  <int value="6" label="Hash verification of encrypted value failed"/>
+  <int value="7"
+      label="Cookie was encrypted but no crypto delegate was passed"/>
+  <int value="8"
+      label="Cookie had values in both the plaintext and encrypted fields"/>
 </enum>
 
 <enum name="CookiePrefix">
   <int value="0" label="No special prefix"/>
   <int value="1" label="Secure prefix"/>
   <int value="2" label="Host prefix"/>
+  <int value="3" label="Http prefix"/>
+  <int value="4" label="HostHttp prefix"/>
 </enum>
 
 <enum name="CookieRequestScheme">
@@ -110,13 +120,6 @@ chromium-metrics-reviews@google.com.
       label="Source and destination ports do not match but are the defaults
              for their scheme."/>
   <int value="4" label="Source and destination ports match."/>
-</enum>
-
-<enum name="CookieSourceScheme">
-  <int value="0" label="Secure cookie, source scheme is cryptographic"/>
-  <int value="1" label="Secure cookie, source scheme is not cryptographic"/>
-  <int value="2" label="Not Secure cookie, source scheme is cryptographic"/>
-  <int value="3" label="Not Secure cookie, source scheme is not cryptographic"/>
 </enum>
 
 <enum name="CookieSourceSchemeName">
@@ -173,19 +176,6 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="First-Party-Only, Secure, Persistent"/>
   <int value="14" label="HttpOnly, Secure, Persistent"/>
   <int value="15" label="First-Party-Only, HttpOnly, Secure, Persistent"/>
-</enum>
-
-<enum name="HttpMethods">
-  <int value="0" label="UNKNOWN"/>
-  <int value="1" label="GET"/>
-  <int value="2" label="HEAD"/>
-  <int value="3" label="POST"/>
-  <int value="4" label="PUT"/>
-  <int value="5" label="DELETE"/>
-  <int value="6" label="CONNECT"/>
-  <int value="7" label="OPTIONS"/>
-  <int value="8" label="TRACE"/>
-  <int value="9" label="PATCH"/>
 </enum>
 
 <enum name="InterestingCookiePorts">

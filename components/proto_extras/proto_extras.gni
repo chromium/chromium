@@ -1,0 +1,334 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# Generate extra functionality for protobuf messages, including:
+# - Serialization to base::Value.
+# - Stream operator support for C++ printing.
+# - equality operator support
+# - (future) gtest matchers.
+# This does not directly generate the protobuf bindings for any language, so
+# callers must include the build target for C++ bindings in the deps. It
+# is intended to be used in conjunction with proto_library, not on its own.
+#
+# Conversion to `base::Value` support:
+# - The main generated method is `Serialize(const ProtoMessage& message)`, which
+#   returns a `base::Value` (as a dictionary), and resides in the namespace of
+#   the proto message.
+# - There is a helper method to facilitate the serialization of optional
+#   messages, called `MaybeSerialize(const std::optional<ProtoMessage>&
+#   message, std::string_view name, base::DictValue& output_dictionary)`.
+#   This will serialize the proto to a `base::DictValue` and set it on the
+#   passed in `output_dictionary` with the given `name`.
+# - Include via <name>.to_value.h.
+# - Disable via `omit_to_value_serialization` (default is false)
+# - Caveats:
+#   - Integer types in the proto that are not compatible with base::Value are
+#     serialized as strings (e.g. uint64_t).
+#   - Map field scalar keys (numbers) are always converted to a string, as
+#     `base::Value` does not support other types as keys for dictionaries.
+#
+# Stream operator (<<) support:
+# - The generated operator resides in the namespace of the proto message.
+# - Include via <name>.ostream.h.
+# - Disable via `omit_stream_operators` (default is false).
+#
+# Equality operator (==) support:
+# - The generated operator resides in the namespace of the proto message.
+# - Include via <name>.equal.h.
+# - Disable via `omit_equality` (default is false).
+#
+# The proto_extras template reads the following other properties:
+# - sources (required): The .proto files to generate from.
+# - proto_in_dir: The directory to find the proto files in. Defaults to "//".
+# - deps: These should be proto_library targets.
+# - extras_deps: These are the proto_extras targets for any proto dependencies.
+# - defines: This is forwarded to all generated targets.
+# - visibility: This is forwarded to all generated targets.
+#
+# The functionality is split up per-file (instead of everything in a 'utils' or
+# 'extras' file) as per go/no-utils guidance. This:
+# - Helps prevent scope creep of lots of functionality in one file, and
+#   provides the infrastructure to easily make more functionality in a dedicated file.
+# - Reduces header includes and build size.
+# - Minimizes the build graph if users only need one piece of functionality.
+#
+# For cases where the message uses the full google::protobuf::Message type,
+# the protobuf_full_support option can be used to ensure the generated code
+# with the full protobuf library. Due to android build complications, this also
+# requires the `use_fuzzing_engine_with_lpm` build flag to be set.
+# This option is relevant for base::Value serialization and equality.
+#
+# Example:
+#   proto_extras("foo_extras") {
+#     sources = [
+#       "foo.proto",
+#     ]
+#     deps = [
+#       ":foo",                    # The target generating foo.pb.h
+#       ":foo_dependency",         # The target generating foo_dependency.pb.h
+#     ]
+#     extras_deps = [
+#       ":foo_dependency_extras",  # The proto_extras target for foo_dependency.
+#     ]
+#     omit_to_value_serialization = true   # default is false
+#     omit_stream_operators = true         # default is false
+#     protobuf_full_support = true         # default is false
+#     # Note: This target fails as there is no functionality being generated!
+#   }
+#
+# Consumers would then depend on ":foo_extras", and include foo.to_value.h,
+# foo.ostream.h, etc.
+#
+# Other Notes:
+# - base::DictValue is the preferred type to base::Value::Dict, as it is
+#   forward-declarable, allowing for less header includes.
+
+import("//testing/libfuzzer/fuzzer_test.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+template("proto_extras") {
+  _generate_to_value = true
+  if (defined(invoker.omit_to_value_serialization) &&
+      invoker.omit_to_value_serialization) {
+    _generate_to_value = false
+  }
+  _generate_ostream = true
+  if (defined(invoker.omit_stream_operators) &&
+      invoker.omit_stream_operators) {
+    _generate_ostream = false
+  }
+  _generate_equality = true
+  if (defined(invoker.omit_equality) && invoker.omit_equality) {
+    _generate_equality = false
+  }
+  _protobuf_full_support = false
+  if (defined(invoker.protobuf_full_support) && invoker.protobuf_full_support &&
+      use_fuzzing_engine_with_lpm) {
+    _protobuf_full_support = true
+  }
+  _proto_in_dir = "//"
+  if (defined(invoker.proto_in_dir)) {
+    _proto_in_dir = invoker.proto_in_dir
+  }
+
+  assert(
+      !_generate_ostream || _generate_to_value,
+      "Stream operator generation currently depends on ToValue " +
+          "serialization. Cannot set omit_to_value_serialization = true if " +
+          "omit_stream_operators = false. Target: ${target_name}")
+
+  assert(_generate_to_value || _generate_ostream || _generate_equality,
+         "There must be one generation type enabled. Target: ${target_name}")
+
+  _extras_deps = []
+  if (defined(invoker.extras_deps)) {
+    _extras_deps += invoker.extras_deps
+  }
+
+  _all_targets = []
+  _to_value_target_name = "${target_name}_to_value"
+  if (_generate_to_value) {
+    _all_targets += [ _to_value_target_name ]
+    proto_library(_to_value_target_name) {
+      proto_in_dir = _proto_in_dir
+      forward_variables_from(invoker,
+                             [
+                               "deps",
+                               "defines",
+                               "sources",
+                               "visibility",
+                             ])
+      link_deps = [ "//components/proto_extras:proto_extras_lib" ]
+      if (_protobuf_full_support) {
+        link_deps += [ "//components/proto_extras:protobuf_full_support" ]
+      }
+
+      # Link the *_to_value targets for all extras_deps.
+      _extras_deps_to_value = []
+      foreach(_dep, _extras_deps) {
+        _extras_deps_to_value += [ "${_dep}_to_value" ]
+      }
+      link_deps += _extras_deps_to_value
+
+      generator_plugin_label = "//components/proto_extras:proto_extras_plugin"
+      generator_plugin_suffix = ".to_value"
+      generate_cc = false
+      generate_python = false
+      link_public_deps = [ "//base" ]
+      _to_value_options_list = [ "generate_to_value_serialization" ]
+      if (_protobuf_full_support) {
+        _to_value_options_list += [ "protobuf_full_support" ]
+      }
+      generator_plugin_options = string_join(",", _to_value_options_list)
+    }
+  }
+
+  if (_generate_ostream) {
+    _ostream_target_name = "${target_name}_ostream"
+    _all_targets += [ _ostream_target_name ]
+    proto_library(_ostream_target_name) {
+      proto_in_dir = _proto_in_dir
+      forward_variables_from(invoker,
+                             [
+                               "defines",
+                               "sources",
+                               "visibility",
+                             ])
+
+      deps = [ ":$_to_value_target_name" ]
+      if (defined(invoker.deps)) {
+        deps += invoker.deps
+      }
+      link_deps = [ "//base" ]
+
+      generator_plugin_label = "//components/proto_extras:proto_extras_plugin"
+      generator_plugin_suffix = ".ostream"
+      generate_cc = false
+      generate_python = false
+      generator_plugin_options = "generate_stream_operator"
+    }
+  }
+
+  if (_generate_equality) {
+    _equality_target_name = "${target_name}_equal"
+    _all_targets += [ _equality_target_name ]
+    proto_library(_equality_target_name) {
+      proto_in_dir = _proto_in_dir
+      forward_variables_from(invoker,
+                             [
+                               "deps",
+                               "defines",
+                               "sources",
+                               "visibility",
+                             ])
+
+      # Link the *_to_value targets for all extras_deps.
+      _extras_deps_equality = []
+      foreach(_dep, _extras_deps) {
+        _extras_deps_equality += [ "${_dep}_equal" ]
+      }
+      link_deps = _extras_deps_equality
+      _equality_options_list = [ "generate_equality" ]
+      if (_protobuf_full_support) {
+        _equality_options_list += [ "protobuf_full_support" ]
+        link_deps += [ "//components/proto_extras:protobuf_full_support" ]
+      }
+
+      generator_plugin_label = "//components/proto_extras:proto_extras_plugin"
+      generator_plugin_suffix = ".equal"
+      generate_cc = false
+      generate_python = false
+      generator_plugin_options = string_join(",", _equality_options_list)
+    }
+  }
+
+  # Group all generated targets into one group for the target_name.
+  # Users can techncally depend on the generated target names for a more
+  # optimized build graph, but it is uncommon in the codebase to not depend on a
+  # target that is specifically named, so this ensures that the normal behavior
+  # works.
+  group(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "defines",
+                             "visibility",
+                           ])
+    public_deps = []
+    foreach(_target, _all_targets) {
+      public_deps += [ ":$_target" ]
+    }
+  }
+}
+
+# Generate extra test functionality for protobuf messages. Similar to
+# proto_extras, this does not generate protobuf bindings, but instead generates
+# gtest matchers for the generated protobuf bindings.
+#
+# Features:
+# - Gmock matchers for all messages, for verbose equality checking in tests
+# - PrintTo implementations for gtest output.
+#
+# The functionality is output to a file named <name>.test.h.
+#
+# The proto_test_extras template supports the following other properties:
+# - test_extras_deps: These are the proto_test_extras targets for any proto
+#   dependencies.
+# - extras_deps: These are the proto_extras targets for any proto dependencies.
+# - sources: The .proto files to generate from.
+# - deps: These should be proto_library targets.
+# - defines: This is forwarded to all generated targets.
+# - visibility: This is forwarded to all generated targets.
+#
+# The reason this target needs the proto_extras target is that the generated
+# code uses the generated `Serialize` <name>.to_value.h serialization.
+#
+# Example usage:
+# proto_test_extras("foo_test_extras") {
+#   sources = [
+#     "foo.proto",
+#   ]
+#   deps = [
+#     ":foo",
+#     ":foo_dependency",         # The target generating foo_dependency.pb.h
+#   ]
+#   test_extras_deps = [
+#     ":foo_dependency_test_extras",
+#   ]
+#   extras_deps = [
+#     ":foo_dependency_extras",
+#   ]
+# }
+template("proto_test_extras") {
+  testonly = true
+  _test_extras_deps = []
+  if (defined(invoker.test_extras_deps)) {
+    _test_extras_deps += invoker.test_extras_deps
+  }
+  _extras_deps = []
+  if (defined(invoker.extras_deps)) {
+    _extras_deps += invoker.extras_deps
+  }
+  _proto_in_dir = "//"
+  if (defined(invoker.proto_in_dir)) {
+    _proto_in_dir = invoker.proto_in_dir
+  }
+  if (defined(invoker.deps) && invoker.deps != [] && _extras_deps == []) {
+    assert(
+        false,
+        "The `deps` field is set, but the `extras_deps` field is not set. " +
+        "Protobuf depependencies need to have a corresponding proto_extras " +
+        " target so the generated matchers can use the `Serialize()` call.")
+  }
+  proto_library("${target_name}") {
+    testonly = true
+    proto_in_dir = _proto_in_dir
+    forward_variables_from(invoker,
+                           [
+                             "defines",
+                             "visibility",
+                             "deps",
+                             "sources",
+                           ])
+    generator_plugin_label =
+        "//components/proto_extras:proto_test_extras_plugin"
+    generator_plugin_suffix = ".test"
+    generate_cc = false
+    generate_python = false
+
+    link_deps = []
+    foreach(_dep, _extras_deps) {
+      link_deps += [ "${_dep}_to_value" ]
+    }
+
+    # Due to gmock/gtest being an entirely header-based library, all
+    # dependencies need to be publicly linked as there is no private
+    # implementation.
+    link_public_deps = [
+      "//base",
+      "//components/proto_extras:proto_matchers",
+      "//testing/gmock",
+    ]
+    link_public_deps += _test_extras_deps
+  }
+}

@@ -24,7 +24,8 @@ class Ranker {
 
   // Called each time a new search 'session' begins, eg. when the user opens the
   // launcher or changes the query.
-  virtual void Start(const std::u16string& query, CategoriesList& categories);
+  virtual void Start(const std::u16string& query,
+                     const CategoriesList& categories);
 
   // Ranks search results. Should return a vector of scores that is the same
   // length as |results|.

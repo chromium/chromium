@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <vector>
@@ -13,22 +14,23 @@
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/address_data_manager.h"
-#include "components/autofill/core/browser/address_data_manager_test_api.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/autofill_field_test_api.h"
 #include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/form_data_importer.h"
-#include "components/autofill/core/browser/form_data_importer_test_api.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager_test_api.h"
+#include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
+#include "components/autofill/core/browser/form_import/form_data_importer.h"
+#include "components/autofill/core/browser/form_import/form_data_importer_test_api.h"
+#include "components/autofill/core/browser/form_parsing/determine_regex_types.h"
 #include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
@@ -41,8 +43,8 @@
 #endif
 
 namespace autofill {
-
 namespace {
+
 const base::FilePath::CharType kFeatureName[] = FILE_PATH_LITERAL("autofill");
 const base::FilePath::CharType kTestName[] = FILE_PATH_LITERAL("merge");
 const base::FilePath::CharType kFileNamePattern[] = FILE_PATH_LITERAL("*.in");
@@ -64,7 +66,7 @@ const FieldType kProfileFieldTypes[] = {NAME_FIRST,
                                         PHONE_HOME_WHOLE_NUMBER};
 
 const base::FilePath& GetTestDataDir() {
-  static base::NoDestructor<base::FilePath> dir([]() {
+  static base::NoDestructor<base::FilePath> dir([] {
     base::FilePath dir;
     base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &dir);
     return dir.AppendASCII("components")
@@ -94,6 +96,23 @@ const std::vector<base::FilePath> GetTestFiles() {
   return files;
 }
 
+// Fakes that a `form` has been seen (without its field value) and parsed and
+// then values have been entered. Returns the resulting FormStructure.
+std::unique_ptr<FormStructure> ConstructFormStructureFromFormData(
+    const FormData& form) {
+  auto form_structure = std::make_unique<FormStructure>(form);
+  const RegexPredictions regex_predictions =
+      DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
+                          form_structure->ToFormData(), nullptr);
+  regex_predictions.ApplyTo(form_structure->fields());
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
+  for (size_t i = 0; i < form_structure->field_count(); ++i) {
+    test_api(*form_structure->field(i)).set_initial_value(u"");
+  }
+  return form_structure;
+}
+
 // Serializes the |profiles| into a string.
 std::string SerializeProfiles(
     const std::vector<const AutofillProfile*>& profiles) {
@@ -117,8 +136,6 @@ std::string SerializeProfiles(
   return result;
 }
 
-}  // namespace
-
 // A data-driven test for verifying merging of Autofill profiles. Each input is
 // a structured dump of a set of implicitly detected autofill profiles. The
 // corresponding output file is a dump of the saved profiles that result from
@@ -137,8 +154,6 @@ class AutofillMergeTest : public testing::DataDrivenTest,
   // testing::Test:
   void SetUp() override;
 
-  void TearDown() override;
-
   // DataDrivenTest:
   void GenerateResults(const std::string& input, std::string* output) override;
 
@@ -148,8 +163,10 @@ class AutofillMergeTest : public testing::DataDrivenTest,
 
   TestAddressDataManager& test_address_data_manager() {
     return autofill_client_.GetPersonalDataManager()
-        ->test_address_data_manager();
+        .test_address_data_manager();
   }
+
+  ukm::SourceId ukm_source_id() const { return 123; }
 
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -163,19 +180,12 @@ AutofillMergeTest::AutofillMergeTest()
 AutofillMergeTest::~AutofillMergeTest() = default;
 
 void AutofillMergeTest::SetUp() {
-  test::DisableSystemServices(nullptr);
   test_api(test_address_data_manager()).set_auto_accept_address_imports(true);
   form_data_importer_ = std::make_unique<FormDataImporter>(
-      &autofill_client_, /*history_service=*/nullptr, "en");
+      &autofill_client_, /*history_service=*/nullptr);
   scoped_feature_list_.InitWithFeatures(
-      {features::kAutofillConsiderPhoneNumberSeparatorsValidLabels,
-       features::kAutofillEnableSupportForPhoneNumberTrunkTypes,
-       features::kAutofillInferCountryCallingCode},
+      /*enabled_features=*/{},
       /*disabled_features=*/{});
-}
-
-void AutofillMergeTest::TearDown() {
-  test::ReenableSystemServices();
 }
 
 void AutofillMergeTest::GenerateResults(const std::string& input,
@@ -225,12 +235,13 @@ void AutofillMergeTest::MergeProfiles(const std::string& profiles,
     // followed by an explicit separator.
     if ((i > 0 && line == kProfileSeparator) || i == lines.size() - 1) {
       // Reached the end of a profile.  Try to import it.
-      FormStructure form_structure(form);
-      for (size_t j = 0; j < form_structure.field_count(); ++j) {
+      std::unique_ptr<FormStructure> form_structure =
+          ConstructFormStructureFromFormData(form);
+      for (size_t j = 0; j < form_structure->field_count(); ++j) {
         // Set the heuristic type for each field, which is currently serialized
         // into the field's name.
         AutofillField* field =
-            const_cast<AutofillField*>(form_structure.field(j));
+            const_cast<AutofillField*>(form_structure->field(j));
         FieldType type = TypeNameToFieldType(base::UTF16ToUTF8(field->name()));
         field->set_heuristic_type(GetActiveHeuristicSource(), type);
       }
@@ -238,13 +249,13 @@ void AutofillMergeTest::MergeProfiles(const std::string& profiles,
       // Extract the profile.
       auto extracted_data =
           test_api(*form_data_importer_)
-              .ExtractFormData(form_structure,
+              .ExtractFormData(*form_structure,
                                /*profile_autofill_enabled=*/true,
                                /*payment_methods_autofill_enabled=*/true);
       test_api(*form_data_importer_)
-          .ProcessAddressProfileImportCandidates(
-              extracted_data.address_profile_import_candidates,
-              /*allow_prompt=*/true);
+          .ProcessExtractedAddressProfiles(
+              extracted_data.extracted_address_profiles,
+              /*allow_prompt=*/true, ukm_source_id());
       EXPECT_FALSE(extracted_data.extracted_credit_card);
 
       // Clear the |form| to start a new profile.
@@ -257,10 +268,11 @@ void AutofillMergeTest::MergeProfiles(const std::string& profiles,
   // To ensure a consistent order with the output files, sort the profiles by
   // modification date. This corresponds to the order in which the profiles
   // were imported (or updated).
-  base::ranges::sort(imported_profiles,
-                     [](const AutofillProfile* a, const AutofillProfile* b) {
-                       return a->modification_date() < b->modification_date();
-                     });
+  std::ranges::sort(imported_profiles,
+                    [](const AutofillProfile* a, const AutofillProfile* b) {
+                      return a->usage_history().modification_date() <
+                             b->usage_history().modification_date();
+                    });
   *merged_profiles = SerializeProfiles(imported_profiles);
 }
 
@@ -273,4 +285,5 @@ INSTANTIATE_TEST_SUITE_P(All,
                          AutofillMergeTest,
                          testing::ValuesIn(GetTestFiles()));
 
+}  // namespace
 }  // namespace autofill

@@ -1,0 +1,20 @@
+Name: WindowManager Sidecar
+Short Name: sidecar
+URL: https://androidx.dev/snapshots/builds/14500233/artifacts/repository/androidx/window/sidecar/sidecar/1.0.0-SNAPSHOT/sidecar-1.0.0-20251126.133552-1.aar
+Version: 1.0.0-SNAPSHOT
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: no
+Shipped: no
+License Android Compatible: yes
+
+Description:
+This version of the OEM extension is deprecated. Please use window:extensions:extensions.module instead.
+
+See also: https://developer.android.com/jetpack/androidx/releases/window-sidecar#1.0.0-SNAPSHOT
+
+
+Local Modifications:
+No modifications.

@@ -1,0 +1,70 @@
+.testcase {
+  --enabled-applied: 'false';
+  --disabled-applied: 'false';
+  --valid-applied: 'false';
+  --invalid-applied: 'false';
+  --required-applied: 'false';
+  --user-invalid-applied: 'false';
+  --user-valid-applied: 'false';
+  --optional-applied: 'false';
+  --read-only-applied: 'false';
+  --read-write-applied: 'false';
+  --in-range-applied: 'false';
+  --out-of-range-applied: 'false';
+  --checked-applied: 'false';
+  --indeterminate-applied: 'false';
+  --placeholder-shown-applied: 'false';
+  --autofill-applied: 'false';
+  --open-applied: 'false';
+}
+.testcase:enabled {
+  --enabled-applied: 'true';
+}
+.testcase:disabled {
+  --disabled-applied: 'true';
+}
+.testcase:valid {
+  --valid-applied: 'true';
+}
+.testcase:invalid {
+  --invalid-applied: 'true';
+}
+.testcase:user-valid {
+  --user-valid-applied: 'true';
+}
+.testcase:user-invalid {
+  --user-invalid-applied: 'true';
+}
+.testcase:required {
+  --required-applied: 'true';
+}
+.testcase:optional {
+  --optional-applied: 'true';
+}
+.testcase:read-only {
+  --read-only-applied: 'true';
+}
+.testcase:read-write {
+  --read-write-applied: 'true';
+}
+.testcase:in-range {
+  --in-range-applied: 'true';
+}
+.testcase:out-of-range {
+  --out-of-range-applied: 'true';
+}
+.testcase:checked {
+  --checked-applied: 'true';
+}
+.testcase:indeterminate {
+  --indeterminate-applied: 'true';
+}
+.testcase:placeholder-shown {
+  --placeholder-shown-applied: 'true';
+}
+.testcase:autofill {
+  --autofill-applied: 'true';
+}
+.testcase:open {
+  --open-applied: 'true';
+}

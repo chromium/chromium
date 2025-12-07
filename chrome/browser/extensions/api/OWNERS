@@ -1,0 +1,5 @@
+# Prefer rsult over directory owners.
+per-file *browser_context_keyed_service_factories*=rsult@google.com
+
+# Web accessible resources.
+per-file *web_accessible_resources*=file://extensions/browser/api/web_accessible_resources/OWNERS

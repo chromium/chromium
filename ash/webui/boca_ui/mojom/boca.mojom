@@ -4,37 +4,40 @@
 
 module ash.boca.mojom;
 
+import "chromeos/services/network_config/public/mojom/network_types.mojom";
 import "url/mojom/url.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/values.mojom";
+import "skia/public/mojom/bitmap.mojom";
+
+// Refer ///depot/google3/google/internal/chrome/cros/edu/schooltools/v1/
+// For detailed type definition.
+// TODO(b/356405813): Refactor documentation.
 
 // Represents the tab information within browser window.
 struct TabInfo {
+  // Tab id. Only present for local tab info. Will be absent for teacher-sent
+  // tab info.
+  int32? id;
   // Tab title.
   string title;
   // Tab URL.
   url.mojom.Url url;
-  //Tab favicon in the format of data url.
-  string favicon;
+  // Tab favicon URL.
+  url.mojom.Url favicon;
 };
 
-// Represents user full name.
-struct Name {
-  string full_name;
-};
 
-// Represents user profile.
-struct UserProfile {
+// Represents user identity.
+struct Identity {
   // User id.
   string id;
   // User name.
-  Name name;
+  string name;
   // User email address.
-  string email_address;
-};
-
-// Represents a student.
-struct Student {
-  // User profile.
-  UserProfile profile;
+  string email;
+  // User photo url
+  url.mojom.Url? photo_url;
 };
 
 // Represents a course.
@@ -43,34 +46,407 @@ struct Course {
   string id;
   // Course name.
   string name;
+  // Course section.
+  string section;
+};
+
+// The assignment material type.
+enum MaterialType {
+  kUnknown,
+  kSharedDriveFile,
+  kYoutubeVideo,
+  kLink,
+  kForm,
+};
+
+// Represents a material attached to a course assignment.
+struct Material {
+  string title;
+  MaterialType type;
+};
+
+// The assignment type.
+enum AssignmentType {
+  kUnspecified,
+  kAssignment,
+  kShortAnswerQuestion,
+  kMultipleChoiceQuestion,
+};
+
+// Represents a course assignment.
+struct Assignment {
+  string title;
+  // Absolute link to this assignment for students to open.
+  url.mojom.Url url;
+  mojo_base.mojom.JSTime last_update_time;
+  // Assignment materials.
+  array<Material> materials;
+  AssignmentType type;
 };
 
 // Represents a browser window.
 struct Window {
   // User-customized window name.
   string? name;
-  // Tabs within browser window. Tabs are ordererd using non-increasing order
-  // for tab's last access
-  // timestamp
+  // Tabs within browser window. Tabs are ordered using non-increasing order
+  // for tab's last access timestamp.
   array<TabInfo> tab_list;
+};
+
+// The network technology type.
+enum NetworkType {
+  kCellular,
+  kEthernet,
+  kWiFi,
+  kUnsupported,
+};
+
+// Represents the network information.
+struct NetworkInfo {
+  chromeos.network_config.mojom.ConnectionStateType state;
+  NetworkType type;
+  // The human readable name of the network.
+  string name;
+  // The signal strength of the network in percentage.
+  int32 signal_strength;
+};
+
+// The content setting permission type.
+enum Permission {
+  kMicrophone,
+  kCamera,
+};
+
+// The content setting permission setting type.
+enum PermissionSetting {
+  kAllow,
+  kAsk,
+  kBlock,
+};
+
+struct Config{
+  mojo_base.mojom.TimeDelta session_duration;
+  mojo_base.mojom.JSTime? session_start_time;
+  Identity? teacher;
+  // Students joined via Classroom roster selection.
+  array<Identity> students;
+  // Students joined via access code.
+  array<Identity> students_join_via_code;
+  OnTaskConfig on_task_config;
+  CaptionConfig caption_config;
+  // Strings allow consumer to type and join a session. Will be alphabetic
+  // characters.
+  string? access_code;
+};
+
+struct CaptionConfig {
+  // If captions are available for session consumers.
+  bool session_caption_enabled;
+  // If captions are enabled on the local device.
+  bool local_caption_enabled;
+  // If session consumers can translate the captions.
+  bool session_translation_enabled;
+};
+
+enum NavigationType {
+  kUnknown = 0,
+  kOpen ,
+  kBlock,
+  kDomain,
+  kLimited,
+  kSameDomainOpenOtherDomainLimited,
+  kWorkspace,
+};
+
+struct ControlledTab {
+  TabInfo tab;
+  NavigationType navigation_type;
+};
+
+struct OnTaskConfig {
+  // If content will be display on students' device in lock mode.
+  bool is_locked;
+  // If the entire screen will be paused.
+  bool is_paused;
+  array<ControlledTab> tabs;
+};
+
+enum JoinMethod {
+  kRoster = 0,
+  kAccessCode = 1,
+};
+
+enum BocaValidPref {
+  // Default navigation rule setting.
+  kNavigationSetting = 0,
+  // Default caption enablement setting.
+  kCaptionEnablementSetting = 1,
+  // Default mediastream setting.
+  // NOTE: Boca should only get but not set the setting.
+  kDefaultMediaStreamSetting = 2,
+  // OOBE page access count.
+  kOOBEAccessCount = 3,
+  // Kiosk receiver codes.
+  kKioskReceiverCodes = 4,
+};
+
+struct Session {
+  Config config;
+  array<IdentifiedActivity> activities;
+};
+
+enum StudentStatusDetail {
+  kUnknown = 0,
+  // Student not found.
+  kNotFound = 1,
+  // Student added, hasn't joined yet.
+  kAdded = 2,
+  // Student has joined.
+  kActive = 3,
+  // Student removed due to other session take over.
+  kRemovedByOtherSession = 4,
+  // Student removed due to being a teacher.
+  kRemovedByBeingTeacher = 5,
+  // Student removed by a teacher.
+  kRemovedByTeacher = 6,
+  // Student not added due to configured as teacher in policy.
+  kNotAddedConfiguredAsTeacher = 7,
+  // Student not added due to feature not enabled in policy.
+  kNotAddedNotConfigured = 8,
+  // Student signed into multiple devices.
+  kMultipleDeviceSignedIn = 9,
+};
+
+struct StudentActivity {
+  // The student's status detail.
+  StudentStatusDetail student_status_detail;
+  // If the current device status is active.
+  bool is_active;
+  // Current active tab title.
+  string? active_tab;
+  // If caption is enabled.
+  bool is_caption_enabled;
+  // If hand raised.
+  bool is_hand_raised;
+  // TODO(b/365191878): Remove this after refactoring existing schema to support
+  // multi-group.
+  JoinMethod join_method;
+  // A string-format code to connect to student's device.
+  string? view_screen_session_code;
+};
+
+struct IdentifiedActivity{
+  // Same id as identity.
+  string id;
+  StudentActivity activity;
+};
+
+enum GetSessionError{
+  kHTTPError,
+  kEmpty,
+};
+
+union SessionResult {
+ GetSessionError error;
+ Session session;
+};
+
+union ConfigResult{
+  GetSessionError error;
+  Config config;
+};
+
+enum UpdateSessionError{
+  kInvalid,
+  kHTTPError,
+  kPreconditionFailed,
+};
+
+enum RemoveStudentError{
+  // Invalid request state.
+  kInvalid,
+  // HTTP request failure.
+  kHTTPError,
+};
+
+enum RenotifyStudentError{
+  // Invalid request state.
+  kInvalid,
+  // HTTP request failure.
+  kHTTPError,
+};
+
+enum AddStudentsError{
+  // Invalid access code.
+  kInvalid,
+  // HTTP request failure.
+  kHTTPError,
+};
+
+enum SubmitAccessCodeError {
+  // Code is invalid.
+  kInvalid,
+  // Enforce managed network.
+  kNetworkRestriction,
+};
+
+enum ViewStudentScreenError {
+  kHTTPError,
+};
+
+enum EndViewScreenSessionError {
+  kHTTPError,
+};
+
+enum SetViewScreenSessionActiveError {
+  kHTTPError,
+};
+
+enum SpeechRecognitionInstallState {
+  kUnknown = 0,
+  kSystemLanguageUnsupported = 1,
+  kInProgress = 2,
+  kFailed = 3,
+  kReady = 4,
+};
+
+enum CreateSessionError {
+  // HTTP request failure.
+  kHTTPError,
+  // Enforce manged network.
+  kNetworkRestriction,
+};
+
+enum CrdConnectionState {
+  kUnknown = 0,
+  kConnecting = 1,
+  kConnected = 2,
+  kDisconnected = 3,
+  kFailed = 4,
 };
 
 // Implemented by browser process for page chrome-untrusted://boca-app/
 interface PageHandler {
+  // Performs authentication and sets the credential in the webview.
+  AuthenticateWebview() => (bool success);
   // Fetches a list of browser windows and tabs in it. Windows are ordered using
-  // non-increasing order for most recent tab's last
-  // access timestamp
+  // non-increasing order for most recent tab's last access timestamp.
   GetWindowsTabsList() => (array<Window> window_list);
-    // Fetch a list of courses for the current teacher.
+  // Fetch a list of courses for the current teacher.
   ListCourses() => (array<Course> courses);
   // Requested by the Boca SWA to fetch a list of students for a given
   // course. Must be called on a course_id received from the most recent
   // ListCourses call.
-  ListStudents(string course_id) => (array<Student> students);
+  ListStudents(string course_id) => (array<Identity> students);
+  // Fetch a list of assignments for the courses.
+  ListAssignments(string course_id) => (array<Assignment> assignments);
+  // Create a session with `config`.
+  CreateSession(Config config) => (CreateSessionError? error);
+  // Retrieves the current session.
+  GetSession() => (SessionResult result);
+  // End session.
+  EndSession() => (UpdateSessionError? error);
+  // Extend session duration.
+  ExtendSessionDuration(mojo_base.mojom.TimeDelta extended_duration)
+  => (UpdateSessionError? error);
+  // Remove student from session.
+  RemoveStudent(string student_id) => (RemoveStudentError? error);
+  // Resend notification to student to join session.
+  RenotifyStudent(string student_id) => (RenotifyStudentError? error);
+  // Add students to a session.
+  AddStudents(array<Identity> students) => (AddStudentsError? error);
+  // Update OnTask config.
+  UpdateOnTaskConfig(OnTaskConfig on_task_config)
+  => (UpdateSessionError? error);
+  // Update caption config.
+  UpdateCaptionConfig(CaptionConfig caption_config)
+  => (UpdateSessionError? error);
+  // Set app float mode.
+  SetFloatMode(bool is_float_mode) => (bool success);
+  // Submit access code to join a current class session.
+  SubmitAccessCode(string access_code) => (SubmitAccessCodeError? error);
+  // Requests to view screen of a given student.
+  ViewStudentScreen(string id) => (ViewStudentScreenError? error);
+  // Sets the state of the view screen session as inactive for a given student.
+  EndViewScreenSession(string id) => (EndViewScreenSessionError? error);
+  // Sets the state of the view screen session as active for a given student.
+  SetViewScreenSessionActive(string id)
+    => (SetViewScreenSessionActiveError? error);
+  // Get the value of a boca specific user pref.
+  GetUserPref(BocaValidPref pref)
+    => (mojo_base.mojom.Value value);
+  // Set the value of a boca specific user pref.
+  SetUserPref(BocaValidPref pref, mojo_base.mojom.Value value)
+    => ();
+  // Set the permission of a site.
+  SetSitePermission(string url, Permission permission, PermissionSetting
+    setting) => (bool success);
+  // Close a tab with the tab_id.
+  // NOTE: Ensure the param type is the same as SessionID::id_type.
+  CloseTab(int32 tab_id) => (bool success);
+  // Request from the Boca SWA to open the ChromeOS feedback dialog.
+  OpenFeedbackDialog() => ();
+  // Refresh the workbook for students.
+  RefreshWorkbook() => ();
+  // Gets SODA installation status.
+  GetSpeechRecognitionInstallationStatus()
+    => (SpeechRecognitionInstallState state);
+  // Notifies the client to start the Spotlight session.
+  StartSpotlight(string crd_connection_code) => ();
+  // Present the screen of the student with the given id to the given receiver.
+  // `receiver_id` should match an id of one of the registered receivers in the
+  // server, otherwise the call will fail and return false.
+  // Only one presentation is allowed at a time, an overlapping call will fail.
+  // For a second `PresentStudentScreen` to succeed, it should come either after
+  // a successful call to `StopPresentingStudentScreen` or after a Page
+  // `OnPresentStudentScreenEnded` has been triggered.
+  PresentStudentScreen(Identity student, string receiver_id) => (bool success);
+  // Stop the current screen share presentation for the student.
+  // An overlapping call will fail and return false.
+  // The call will also fail if no current connection that has started.
+  // For the call to be successful, the servervrequest should succeed and the a
+  // check for the connection on the server should indicate that the connection
+  // was ended.
+  // If called after `OnPresentStudentScreenEnded` is triggered, the call will
+  // fail. It is up to the caller to ignore this failure since it will be
+  // already notified by `OnPresentStudentScreenEnded` that the screen
+  // presentation has ended.
+  // If successful, it is guaranteed that `OnPresentStudentScreenEnded` will not
+  // be triggered for that screen presentation.
+  StopPresentingStudentScreen() => (bool success);
+  // Present the teacher's screen to the given receiver.
+  PresentOwnScreen(string receiver_id) => (bool success);
+  // Stop the current screen share presentation for the teacher.
+  StopPresentingOwnScreen() => (bool success);
 };
 
-// Implemented by renderer process
-interface Page {};
+// Implemented by renderer process. There is an implementation in the browser
+// process but nothing binds to it. The browser implementation will be removed
+// as part of crbug.com/399923859.
+interface Page {
+  // Notifies when student activities updated.
+  OnStudentActivityUpdated(array<IdentifiedActivity> activities);
+  // Notifies when session config updated.
+  OnSessionConfigUpdated(ConfigResult config);
+  // Notifies when active networks updated.
+  OnActiveNetworkStateChanged(array<NetworkInfo> active_networks);
+  // Notifies app when local captions is turned off from chrome.
+  OnLocalCaptionDisabled();
+  // Notifies when Soda Installation has succeeded or failed.
+  OnSpeechRecognitionInstallStateUpdated(SpeechRecognitionInstallState state);
+  // Notifies app when session captions is turned off from chrome.
+  OnSessionCaptionDisabled(bool is_error);
+  // Notifies when Spotlight frame data has been received.
+  OnFrameDataReceived(skia.mojom.BitmapN32 frame_data);
+  // Notifies app when Spotlight CRD session has ended.
+  OnSpotlightCrdSessionStatusUpdated(CrdConnectionState state);
+  // Notifies the app that the screen share presentation for the student has
+  // ended.
+  OnPresentStudentScreenEnded();
+  // Notify the app that the screen share presentation for the teacher has
+  // ended.
+  OnPresentOwnScreenEnded();
+};
 
 // Implemented in browser process to set up the communication between the Page
 // and PageHandler

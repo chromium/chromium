@@ -1,0 +1,16 @@
+Name: play-services-cast-framework
+Short Name: play-services-cast-framework
+URL: https://dl.google.com/dl/android/maven2/com/google/android/gms/play-services-cast-framework/22.2.0/play-services-cast-framework-22.2.0.aar
+Version: 22.2.0
+Update Mechanism: Autoroll
+License: Android Software Development Kit License
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+Cast framework library for gmscore / Google Play Services.
+
+Local Modifications:
+No modifications.

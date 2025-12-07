@@ -3,9 +3,10 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//printing/buildflags/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("history") {
   sources = [
@@ -43,8 +44,12 @@ static_library("history") {
     "//components/reporting/util:status",
     "//components/user_manager",
     "//content/public/browser",
-    "//printing/mojom:mojom",
+    "//printing/mojom",
   ]
+
+  if (use_cups) {
+    deps += [ "//chrome/browser/chromeos/printing" ]
+  }
 
   public_deps = [
     "//chrome/browser:browser_public_dependencies",
@@ -65,12 +70,27 @@ source_set("unit_tests") {
 
   deps = [
     ":history",
-    "//chrome/browser/ash:test_support",
+    ":print_job_info_proto",
+    ":test_support",
+    "//base/test:test_support",
+    "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/printing",
     "//chrome/browser/ash/printing:test_support",
     "//chrome/browser/ash/settings:test_support",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/settings",
+    "//components/prefs:test_support",
+    "//components/reporting/client:report_queue",
     "//components/reporting/client:test_support",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
+
+  if (use_cups) {
+    deps += [ "//chrome/browser/chromeos/printing" ]
+  }
 }
 
 static_library("test_support") {

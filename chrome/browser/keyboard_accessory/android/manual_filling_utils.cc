@@ -11,17 +11,17 @@ namespace autofill {
 
 AccessorySheetData CreateAccessorySheetData(
     AccessoryTabType type,
-    std::u16string title,
+    std::u16string user_info_title,
+    std::u16string plus_address_title,
     std::vector<UserInfo> user_info,
     std::vector<FooterCommand> footer_commands) {
-  AccessorySheetData data(type, std::move(title));
-  for (auto& i : user_info) {
-    data.add_user_info(std::move(i));
+  AccessorySheetData data(type, std::move(user_info_title),
+                          std::move(plus_address_title));
+  for (UserInfo& user_info_item : std::move(user_info)) {
+    data.add_user_info(std::move(user_info_item));
   }
 
-  // TODO(crbug.com/40601211): Generalize options (both adding to footer, and
-  // handling selection).
-  for (auto& footer_command : footer_commands) {
+  for (FooterCommand& footer_command : std::move(footer_commands)) {
     data.add_footer_command(std::move(footer_command));
   }
 

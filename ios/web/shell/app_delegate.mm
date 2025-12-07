@@ -24,6 +24,7 @@
 
   web::WebMainParams params(_delegate.get());
   _webMain = std::make_unique<web::WebMain>(std::move(params));
+  _webMain->Startup();
 
   return YES;
 }

@@ -7,7 +7,7 @@ desc: |-
   $1<ex>Google Chrome</ex></ph> may render web content more slowly.
 
   For detailed information on valid url patterns, please see
-  https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+  https://chromeenterprise.google/policies/url-patterns.
   Wildcards, <ph name="WILDCARD_VALUE">*</ph>, are allowed.
 
   JavaScript optimization policy exceptions will only be enforced at a site
@@ -37,11 +37,11 @@ example_value:
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- android
-- chrome.*
-- chrome_os
-- fuchsia
+supported_on:
+- android:133-
+- chrome.*:133-
+- chrome_os:133-
+- fuchsia:133-
 owners:
 - ellyjones@chromium.org
 - wfh@chromium.org

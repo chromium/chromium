@@ -19,69 +19,33 @@ namespace media {
 struct MEDIA_EXPORT AudioProcessingSettings {
   bool echo_cancellation = true;
   bool noise_suppression = true;
-  // Keytap removal, sometimes called "experimental noise suppression".
-  // TODO(https://webrtc.com/7494): Deprecate this setting.
-  bool transient_noise_suppression = true;
   bool automatic_gain_control = true;
-  bool high_pass_filter = true;
   // Multi-channel is not an individual audio effect, but determines whether the
   // processing algorithms should preserve multi-channel input audio.
   bool multi_channel_capture_processing = true;
-  bool stereo_mirroring = false;
-
-  // TODO(crbug.com/40205136): Deprecate this setting.
-  // This flag preserves the behavior of the to-be-deprecated flag / constraint
-  // |AudioProcessingProperties::goog_experimental_echo_cancellation|: It has no
-  // effect on what effects are enabled, but for legacy reasons, it forces APM
-  // to be created and used.
-  bool force_apm_creation =
-#if BUILDFLAG(IS_ANDROID)
-      false;
-#else
-      true;
-#endif
+  // If true, a system loopback stream will be used as the echo cancellation
+  // reference signal.
+  bool use_loopback_aec_reference = false;
 
   bool operator==(const AudioProcessingSettings& b) const {
     return echo_cancellation == b.echo_cancellation &&
            noise_suppression == b.noise_suppression &&
-           transient_noise_suppression == b.transient_noise_suppression &&
            automatic_gain_control == b.automatic_gain_control &&
-           high_pass_filter == b.high_pass_filter &&
            multi_channel_capture_processing ==
                b.multi_channel_capture_processing &&
-           stereo_mirroring == b.stereo_mirroring &&
-           force_apm_creation == b.force_apm_creation;
+           use_loopback_aec_reference == b.use_loopback_aec_reference;
   }
 
   bool NeedWebrtcAudioProcessing() const {
     // TODO(crbug.com/40205004): Legacy iOS-specific behavior;
     // reconsider.
-#if BUILDFLAG(IS_IOS)
-    if (stereo_mirroring)
-      return true;
-#else
+#if !BUILDFLAG(IS_IOS)
     if (echo_cancellation || automatic_gain_control) {
       return true;
     }
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-    if (force_apm_creation)
-      return true;
-#endif
-
-    return noise_suppression || high_pass_filter || transient_noise_suppression;
-  }
-
-  bool NeedAudioModification() const {
-    return NeedWebrtcAudioProcessing() || stereo_mirroring;
-  }
-
-  // Deprecated.
-  // TODO(crbug.com/40889535): Use `AudioProcessor::NeedsPlayoutReference()`
-  // instead.
-  bool NeedPlayoutReference() const {
-    return echo_cancellation || automatic_gain_control;
+    return noise_suppression;
   }
 
   // Stringifies the settings for human-readable logging.

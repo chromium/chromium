@@ -7,21 +7,24 @@
 
 #include <vector>
 
+#include "ash/webui/metrics/structured_metrics_service_wrapper.h"
 #include "ash/webui/recorder_app_ui/mojom/recorder_app.mojom.h"
 #include "ash/webui/recorder_app_ui/recorder_app_ui_delegate.h"
 #include "ash/webui/recorder_app_ui/url_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_ui_config.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/soda.mojom.h"
+#include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/message_center/message_center_observer.h"
 #include "ui/webui/mojo_web_ui_controller.h"
-#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 
 namespace ash {
 
@@ -44,7 +47,8 @@ class RecorderAppUI
     : public ui::MojoWebUIController,
       public recorder_app::mojom::PageHandler,
       public speech::SodaInstaller::Observer,
-      public on_device_model::mojom::PlatformModelProgressObserver {
+      public on_device_model::mojom::PlatformModelProgressObserver,
+      public message_center::MessageCenterObserver {
  public:
   using WithRealIdCallback =
       base::OnceCallback<void(const std::optional<std::string>&)>;
@@ -60,10 +64,9 @@ class RecorderAppUI
   void BindInterface(
       mojo::PendingReceiver<recorder_app::mojom::PageHandler> receiver);
   void BindInterface(
-      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-          receiver);
+      mojo::PendingReceiver<crosapi::mojom::StructuredMetricsService> receiver);
 
-  static constexpr std::string GetWebUIName() { return "RecorderApp"; }
+  static constexpr std::string_view GetWebUIName() { return "RecorderApp"; }
 
  private:
   using OnDeviceModelService =
@@ -84,7 +87,10 @@ class RecorderAppUI
 
   mojo::Remote<MachineLearningService>& GetMlService();
 
-  void UpdateSodaState(ModelState state);
+  bool CanUseGenerativeAi();
+
+  void UpdateSodaState(const speech::LanguageCode& language_code,
+                       ModelState state);
 
   void GetPlatformModelStateCallback(
       const base::Uuid& model_id,
@@ -92,35 +98,82 @@ class RecorderAppUI
 
   void UpdateModelState(const base::Uuid& model_id, ModelState state);
 
+  void LoadModelResultCallback(const base::Uuid& model_id,
+                               LoadModelCallback callback,
+                               on_device_model::mojom::LoadModelResult result);
+
   void GetMicrophoneInfoWithDeviceId(
       GetMicrophoneInfoCallback callback,
       const std::optional<std::string>& device_id);
 
+  bool IsSodaAvailable(const speech::LanguageCode& language_code);
+
+  ModelState GetSodaState(const speech::LanguageCode& language_code);
+
+  ModelState GetCachedSodaState(const speech::LanguageCode& language_code);
+
   // recorder_app::mojom::PageHandler:
+  void GetModelInfo(on_device_model::mojom::FormatFeature feature,
+                    GetModelInfoCallback callback) override;
+
   void LoadModel(
       const base::Uuid& model_id,
       mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
       LoadModelCallback callback) override;
+
+  void FormatModelInput(const base::Uuid& model_id,
+                        on_device_model::mojom::FormatFeature feature,
+                        const base::flat_map<std::string, std::string>& fields,
+                        FormatModelInputCallback callback) override;
+
+  void ValidateSafetyResult(
+      on_device_model::mojom::SafetyFeature safety_feature,
+      const std::string& text,
+      on_device_model::mojom::SafetyInfoPtr safety_info,
+      ValidateSafetyResultCallback callback) override;
 
   void AddModelMonitor(
       const base::Uuid& model_id,
       ::mojo::PendingRemote<recorder_app::mojom::ModelStateMonitor> monitor,
       AddModelMonitorCallback callback) override;
 
-  void LoadSpeechRecognizer(SodaClientMojoRemote soda_client,
+  void LoadSpeechRecognizer(const std::string& language,
+                            SodaClientMojoRemote soda_client,
                             SodaRecognizerMojoReceiver soda_recognizer,
                             LoadSpeechRecognizerCallback callback) override;
 
-  void InstallSoda(InstallSodaCallback callback) override;
+  void InstallSoda(const std::string& language,
+                   InstallSodaCallback callback) override;
 
   void AddSodaMonitor(
+      const std::string& language,
       ::mojo::PendingRemote<recorder_app::mojom::ModelStateMonitor> monitor,
       AddSodaMonitorCallback callback) override;
+
+  void GetAvailableLangPacks(GetAvailableLangPacksCallback callback) override;
+
+  void GetDefaultLanguage(GetDefaultLanguageCallback callback) override;
 
   void OpenAiFeedbackDialog(const std::string& description_template) override;
 
   void GetMicrophoneInfo(const std::string& source_id,
                          GetMicrophoneInfoCallback callback) override;
+
+  void AddQuietModeMonitor(
+      ::mojo::PendingRemote<recorder_app::mojom::QuietModeMonitor> monitor,
+      AddQuietModeMonitorCallback callback) override;
+
+  void SetQuietMode(bool quiet_mode) override;
+
+  void CanUseSpeakerLabel(CanUseSpeakerLabelCallback callback) override;
+
+  void RecordSpeakerLabelConsent(
+      bool consent_given,
+      const std::vector<std::string>& consent_description_names,
+      const std::string& consent_confirmation_name) override;
+
+  void CanCaptureSystemAudioWithLoopback(
+      CanCaptureSystemAudioWithLoopbackCallback callback) override;
 
   // speech::SodaInstaller::Observer
   void OnSodaInstalled(speech::LanguageCode language_code) override;
@@ -134,15 +187,26 @@ class RecorderAppUI
   // on_device_model::mojom::PlatformModelProgressObserver:
   void Progress(double progress) override;
 
+  // message_center::MessageCenterObserver
+  void OnQuietModeChanged(bool in_quiet_mode) override;
+
   mojo::Remote<MachineLearningService> ml_service_;
 
   std::unique_ptr<RecorderAppUIDelegate> delegate_;
 
   mojo::ReceiverSet<recorder_app::mojom::PageHandler> page_receivers_;
 
-  mojo::RemoteSet<recorder_app::mojom::ModelStateMonitor> soda_monitors_;
+  std::map<speech::LanguageCode,
+           mojo::RemoteSet<recorder_app::mojom::ModelStateMonitor>>
+      soda_monitors_;
 
-  ModelState soda_state_;
+  base::flat_map<speech::LanguageCode, ModelState> soda_states_;
+
+  base::flat_set<speech::LanguageCode> transcription_supported_languages_;
+
+  base::flat_set<speech::LanguageCode> gen_ai_supported_languages_;
+
+  base::flat_set<speech::LanguageCode> speaker_label_supported_languages_;
 
   std::map<base::Uuid, mojo::RemoteSet<recorder_app::mojom::ModelStateMonitor>>
       model_monitors_;
@@ -155,7 +219,12 @@ class RecorderAppUI
 
   mojo::Remote<OnDeviceModelService> on_device_model_service_;
 
-  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
+  mojo::RemoteSet<recorder_app::mojom::QuietModeMonitor> quiet_mode_monitors_;
+
+  bool in_quiet_mode_;
+
+  std::unique_ptr<ash::StructuredMetricsServiceWrapper>
+      structured_metrics_service_wrapper_;
 
   DeviceIdMappingCallback device_id_mapping_callback_;
 

@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+Found 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] DIV.setAttribute("onreadystatechange", "unsafe_handler()") does not call default policy
+  assert_equals: expected (undefined) undefined but got (string) "Element onreadystatechange"
+[FAIL] DIV.setAttribute("onvisibilitychange", "unsafe_handler()") does not call default policy
+  assert_equals: expected (undefined) undefined but got (string) "Element onvisibilitychange"
+[FAIL] DIV.setAttribute("ondevicemotion", "unsafe_handler()") does not call default policy
+  assert_equals: expected (undefined) undefined but got (string) "Element ondevicemotion"
+[FAIL] DIV.setAttribute("ondeviceorientation", "unsafe_handler()") does not call default policy
+  assert_equals: expected (undefined) undefined but got (string) "Element ondeviceorientation"
+[FAIL] DIV.setAttribute("ondeviceorientationabsolute", "unsafe_handler()") does not call default policy
+  assert_equals: expected (undefined) undefined but got (string) "Element ondeviceorientationabsolute"
+[FAIL] DIV.setAttribute("onopen", "unsafe_handler()") does not call default policy
+  assert_equals: expected (undefined) undefined but got (string) "Element onopen"
+Harness: the test ran to completion.
+

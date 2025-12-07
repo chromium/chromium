@@ -8,40 +8,41 @@
   border-bottom: var(--cr-separator-line);
 }
 </style>
-<per-device-subsection-header
-    id="subsectionHeader"
-    device-key="[[keyboard.deviceKey]]"
-    name="[[getKeyboardName(keyboard.name)]]"
-    battery-info="[[keyboard.batteryInfo]]"
-    icon="os-settings:device-keyboard">
-</per-device-subsection-header>
-<div class="subsection">
-  <template is="dom-if" if="[[showInstallAppRow(keyboard.appInfo)]]">
-    <per-device-install-row app-info="[[keyboard.appInfo]]">
-    </per-device-install-row>
-  </template>
-  <template is="dom-if" if="[[!isChromeOsKeyboard(keyboard)]]" restamp>
-    <settings-toggle-button
-        inverted="true"
-        id="externalTopRowAreFunctionKeysButton"
-        pref="{{topRowAreFunctionKeysPref}}"
-        aria-describedby="keyboardName"
-        label="$i18n{keyboardSendInvertedFunctionKeys}"
-        sub-label="$i18n{keyboardSendInvertedFunctionKeysDescription}"
-        deep-link-focus-id$="[[Setting.kKeyboardFunctionKeys]]">
-    </settings-toggle-button>
-    <settings-toggle-button
-        inverted="true"
-        class="hr" id="blockMetaFunctionKeyRewritesButton"
-        pref="{{blockMetaFunctionKeyRewritesPref}}"
-        aria-describedby="keyboardName"
-        label="$i18n{keyboardBlockMetaFunctionKeyRewrites}"
-        sub-label="$i18n{keyboardBlockMetaFunctionKeyRewritesDescription}"
-        deep-link-focus-id$="[[Setting.kKeyboardBlockMetaFkeyRewrites]]">
-    </settings-toggle-button>
-  </template>
-  <template is="dom-if" if="[[isChromeOsKeyboard(keyboard)]]" restamp>
-    <template is="dom-if" if="[[isKeyboardBacklightControlInSettingsEnabled]]">
+<template is="dom-if"
+    if="[[showKeyboardSettings(keyboard, isLidOpen)]]" restamp>
+  <per-device-subsection-header
+      id="subsectionHeader"
+      device-key="[[keyboard.deviceKey]]"
+      name="[[getKeyboardName(keyboard.name)]]"
+      battery-info="[[keyboard.batteryInfo]]"
+      icon="os-settings:device-keyboard">
+  </per-device-subsection-header>
+  <div class="subsection">
+    <template is="dom-if" if="[[showInstallAppRow(keyboard.appInfo)]]">
+      <per-device-install-row app-info="[[keyboard.appInfo]]">
+      </per-device-install-row>
+    </template>
+    <template is="dom-if" if="[[!isChromeOsKeyboard(keyboard)]]" restamp>
+      <settings-toggle-button
+          inverted="true"
+          id="externalTopRowAreFunctionKeysButton"
+          pref="{{topRowAreFunctionKeysPref}}"
+          aria-describedby="keyboardName"
+          label="$i18n{keyboardSendInvertedFunctionKeys}"
+          sub-label="$i18n{keyboardSendInvertedFunctionKeysDescription}"
+          deep-link-focus-id$="[[Setting.kKeyboardFunctionKeys]]">
+      </settings-toggle-button>
+      <settings-toggle-button
+          inverted="true"
+          class="hr" id="blockMetaFunctionKeyRewritesButton"
+          pref="{{blockMetaFunctionKeyRewritesPref}}"
+          aria-describedby="keyboardName"
+          label="$i18n{keyboardBlockMetaFunctionKeyRewrites}"
+          sub-label="$i18n{keyboardBlockMetaFunctionKeyRewritesDescription}"
+          deep-link-focus-id$="[[Setting.kKeyboardBlockMetaFkeyRewrites]]">
+      </settings-toggle-button>
+    </template>
+    <template is="dom-if" if="[[isChromeOsKeyboard(keyboard)]]" restamp>
       <template is="dom-if" if="[[hasKeyboardBacklight]]">
         <settings-toggle-button id="keyboardAutoBrightnessToggle"
             pref="{{keyboardAutoBrightnessPref}}"
@@ -69,26 +70,26 @@
         hidden="[[!isRgbKeyboardSupported]]" on-click="openPersonalizationHub"
         external>
       </cr-link-row>
+      <settings-toggle-button
+          id="internalTopRowAreFunctionKeysButton"
+          pref="{{topRowAreFunctionKeysPref}}"
+          aria-describedby="keyboardName"
+          label="$i18n{keyboardSendFunctionKeys}"
+          sub-label="[[showSendFunctionKeyDescription(keyboard)]]"
+          deep-link-focus-id$="[[Setting.kKeyboardFunctionKeys]]">
+      </settings-toggle-button>
     </template>
-    <settings-toggle-button
-        id="internalTopRowAreFunctionKeysButton"
-        pref="{{topRowAreFunctionKeysPref}}"
+    <cr-link-row id="remapKeyboardKeys"
+        class$="[[getRemapKeyboardKeysClass(keyboard)]]"
+        on-click="onRemapKeyboardKeysClick"
         aria-describedby="keyboardName"
-        label="$i18n{keyboardSendFunctionKeys}"
-        sub-label="[[showSendFunctionKeyDescription(keyboard)]]"
-        deep-link-focus-id$="[[Setting.kKeyboardFunctionKeys]]">
-    </settings-toggle-button>
-  </template>
-  <cr-link-row id="remapKeyboardKeys"
-      class$="[[getRemapKeyboardKeysClass(keyboard)]]"
-      on-click="onRemapKeyboardKeysClick"
-      aria-describedby="keyboardName"
-      label="$i18n{remapKeyboardKeysRowLabel}"
-      sub-label="[[remapKeyboardKeysSublabel]]"
-      deep-link-focus-id$="[[Setting.kKeyboardRemapKeys]]">
-  </cr-link-row>
-  <template is="dom-if" if="[[isCompanionAppInstalled(keyboard.appInfo)]]">
-    <per-device-app-installed-row app-info="[[keyboard.appInfo]]">
-    </per-device-app-installed-row>
-  </template>
-</div>
+        label="$i18n{remapKeyboardKeysRowLabel}"
+        sub-label="[[remapKeyboardKeysSublabel]]"
+        deep-link-focus-id$="[[Setting.kKeyboardRemapKeys]]">
+    </cr-link-row>
+    <template is="dom-if" if="[[isCompanionAppInstalled(keyboard.appInfo)]]">
+      <per-device-app-installed-row app-info="[[keyboard.appInfo]]">
+      </per-device-app-installed-row>
+    </template>
+  </div>
+</template>

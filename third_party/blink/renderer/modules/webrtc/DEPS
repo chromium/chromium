@@ -11,6 +11,7 @@ include_rules = [
     "+media/base/audio_parameters.h",
     "+media/base/audio_pull_fifo.h",
     "+media/base/audio_renderer_sink.h",
+    "+media/base/audio_sample_types.h",
     "+media/base/audio_timestamp_helper.h",
     "+media/base/channel_layout.h",
     "+media/base/sample_rates.h",

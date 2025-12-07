@@ -11,8 +11,7 @@ namespace chromecast {
 namespace media {
 
 void AddChromecastKeySystems(::media::KeySystemInfos* key_system_infos,
-                             bool enable_persistent_license_support,
-                             bool enable_playready);
+                             bool enable_persistent_license_support);
 
 }  // namespace media
 }  // namespace chromecast

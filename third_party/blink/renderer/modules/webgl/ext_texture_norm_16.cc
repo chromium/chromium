@@ -4,12 +4,17 @@
 
 #include "third_party/blink/renderer/modules/webgl/ext_texture_norm_16.h"
 
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
-EXTTextureNorm16::EXTTextureNorm16(WebGLRenderingContextBase* context)
+EXTTextureNorm16::EXTTextureNorm16(WebGLRenderingContextBase* context,
+                                   ExecutionContext* execution_context)
     : WebGLExtension(context) {
+  UseCounter::CountWebDXFeature(execution_context,
+                                WebDXFeature::kExtTextureNorm16);
   context->ExtensionsUtil()->EnsureExtensionEnabled("GL_EXT_texture_norm16");
 }
 
@@ -18,7 +23,7 @@ WebGLExtensionName EXTTextureNorm16::GetName() const {
 }
 
 EXTTextureNorm16* EXTTextureNorm16::Create(WebGLRenderingContextBase* context) {
-  return MakeGarbageCollected<EXTTextureNorm16>(context);
+  return MakeGarbageCollected<EXTTextureNorm16>(context, nullptr);
 }
 
 bool EXTTextureNorm16::Supported(WebGLRenderingContextBase* context) {

@@ -40,6 +40,15 @@ std::string_view COMPONENT_EXPORT(NETWORK_CPP)
 mojom::IPAddressSpace COMPONENT_EXPORT(NETWORK_CPP)
     IPAddressToIPAddressSpace(const net::IPAddress& address);
 
+// Returns the `IPAddressSpace` to which `endpoint` belongs.
+// Returns `kUnknown` for invalid IP addresses.
+//
+// WARNING: Most callers will want to use `TransportInfoToIPAddressSpace()`
+// below instead, as this does not properly account for proxies. It does account
+// for command-line overrides though.
+mojom::IPAddressSpace COMPONENT_EXPORT(NETWORK_CPP)
+    IPEndPointToIPAddressSpace(const net::IPEndPoint& endpoint);
+
 // Returns the `IPAddressSpace` to which the endpoint of `transport` belongs.
 //
 // When the transport is a proxied connection, returns `kUnknown`. See
@@ -70,11 +79,25 @@ mojom::IPAddressSpace COMPONENT_EXPORT(NETWORK_CPP)
 //
 //  - public and unknown (equivalent)
 //  - private
-//  - local
+//  - loopback
 //
 bool COMPONENT_EXPORT(NETWORK_CPP)
     IsLessPublicAddressSpace(mojom::IPAddressSpace lhs,
                              mojom::IPAddressSpace rhs);
+
+// Returns whether `lhs` is less public than `rhs`, but collapses the private
+// and loopback address spaces into the same bucket.
+//
+// This comparator is compatible with std::less.
+//
+// Address spaces go from most public to least public in the following order:
+//
+//  - public and unknown (equivalent)
+//  - private and loopback (equivalent)
+//
+bool COMPONENT_EXPORT(NETWORK_CPP)
+    IsLessPublicAddressSpaceLNA(mojom::IPAddressSpace lhs,
+                                mojom::IPAddressSpace rhs);
 
 // Represents optional parameters of CalculateClientAddressSpace().
 // This is effectively a subset of network::mojom::URLResponseHead.
@@ -122,6 +145,26 @@ mojom::IPAddressSpace COMPONENT_EXPORT(NETWORK_CPP) CalculateClientAddressSpace(
 mojom::IPAddressSpace COMPONENT_EXPORT(NETWORK_CPP)
     CalculateResourceAddressSpace(const GURL& url,
                                   const net::IPEndPoint& endpoint);
+
+// Return the IP address of the host if the host is a private IP address
+// literal, otherwise returns std::nullopt.
+//
+// This does not apply any IP address space overrides.
+std::optional<net::IPAddress> COMPONENT_EXPORT(NETWORK_CPP)
+    ParsePrivateIpFromUrl(const GURL& url);
+
+// Return the IP address space of the host if we can determine it from the URL,
+// otherwise returns std::nullopt.
+//
+// Cases in which we can determine the IP address space:
+//
+// * host is an IP address literal
+// * host is a .local domain (e.g. RFC6762), or 'local'/'local.'
+// * host is 'localhost', 'localhost.' (or a .localhost domain).
+//
+// This function will apply IP address space overrides.
+std::optional<mojom::IPAddressSpace> COMPONENT_EXPORT(NETWORK_CPP)
+    GetAddressSpaceFromUrl(const GURL& url);
 
 }  // namespace network
 

@@ -4,13 +4,14 @@
 
 #include <memory>
 #include <utility>
-#include "build/build_config.h"
 
 #include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
+#include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
 #include "chrome/browser/ash/file_system_provider/observer.h"
 #include "chrome/browser/ash/file_system_provider/operation_request_manager.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/ui/browser.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -52,7 +54,7 @@ class NotificationButtonClicker : public RequestManager::Observer {
   NotificationButtonClicker& operator=(const NotificationButtonClicker&) =
       delete;
 
-  ~NotificationButtonClicker() override {}
+  ~NotificationButtonClicker() override = default;
 
   // RequestManager::Observer overrides.
   void OnRequestCreated(int request_id, RequestType type) override {}
@@ -134,24 +136,20 @@ class AbortOnUnresponsivePerformer : public Observer {
 
 class FileSystemProviderApiTest : public ExtensionApiTest {
  public:
-  FileSystemProviderApiTest() {}
+  FileSystemProviderApiTest() = default;
 
   FileSystemProviderApiTest(const FileSystemProviderApiTest&) = delete;
   FileSystemProviderApiTest& operator=(const FileSystemProviderApiTest&) =
       delete;
 
-  // Loads a helper testing extension.
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
-    const extensions::Extension* extension = LoadExtension(
-        test_data_dir_.AppendASCII("file_system_provider/test_util"),
-        {.allow_in_incognito = true});
-    ASSERT_TRUE(extension);
 
     display_service_ = std::make_unique<NotificationDisplayServiceTester>(
         browser()->profile());
 
-    user_manager_.AddUser(AccountId::FromUserEmailGaiaId("test@test", "12345"));
+    user_manager_.AddUser(
+        AccountId::FromUserEmailGaiaId("test@test", GaiaId("12345")));
   }
 
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
@@ -426,9 +424,13 @@ IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, GetMetadata) {
 
 IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, MimeType) {
   // Install a Chrome app that handles our custom MIME type.
-  LoadExtension(test_data_dir_.AppendASCII(
-                    "file_system_provider/service_worker/mime_type/app"),
-                {.allow_in_incognito = true});
+  auto* extension =
+      LoadExtension(test_data_dir_.AppendASCII(
+                        "file_system_provider/service_worker/mime_type/app"),
+                    {.allow_in_incognito = true});
+
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+      extension->id());
 
   ASSERT_TRUE(RunExtensionTest("file_system_provider/service_worker/mime_type",
                                {.extension_url = "test.html"},
@@ -499,13 +501,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, Unmount) {
       << message_;
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_Unresponsive_Extension DISABLED_Unresponsive_Extension
-#else
-#define MAYBE_Unresponsive_Extension Unresponsive_Extension
-#endif
 IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest,
-                       MAYBE_Unresponsive_Extension) {
+                       DISABLED_Unresponsive_Extension) {
   AbortOnUnresponsivePerformer performer(browser()->profile());
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII(
       "file_system_provider/service_worker/unresponsive_extension/provider")));

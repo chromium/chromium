@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<title>Script Tools: invalid use of register/unregister tools</title>
+<link rel="author" href="mailto:khushalsagar@chromium.org">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+promise_test(async () => {
+  async function empty() {
+    return "empty";
+  }
+
+  const modelContext = navigator.modelContext;
+  assert_throws_dom(
+    'InvalidStateError',
+    () => {
+      modelContext.registerTool({
+        execute: empty,
+        name: "empty",
+        description: "echo empty",
+      });
+
+      modelContext.registerTool({
+        execute: empty,
+        name: "empty",
+        description: "echo empty",
+      });
+    },
+    "duplicate tool registration is invalid."
+  );
+}, "duplicate tool registration is invalid.");
+</script>

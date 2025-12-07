@@ -52,14 +52,10 @@ class ClickToCallUiController
   // devices.
   void OnIntentPickerShown(bool has_devices, bool has_apps);
 
-  // Called when an Intent Picker dialog containing click to call results is
-  // closed.
-  void OnIntentPickerClosed();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Overridden from SharingUiController:
   std::u16string GetTitle(SharingDialogType dialog_type) override;
-  PageActionIconType GetIconType() override;
   sync_pb::SharingSpecificFields::EnabledFeatures GetRequiredFeature()
       const override;
   void OnDeviceChosen(const SharingTargetDeviceInfo& device) override;

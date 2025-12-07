@@ -4,6 +4,7 @@
 
 #include "components/enterprise/data_controls/content/browser/last_replaced_clipboard_data.h"
 
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
@@ -30,16 +31,19 @@ class LastReplacedClipboardDataTest : public testing::Test {
 
 TEST_F(LastReplacedClipboardDataTest, WithoutPendingData) {
   ASSERT_TRUE(GetLastReplacedClipboardData().clipboard_paste_data.empty());
+  ASSERT_TRUE(GetLastReplacedClipboardData().GetAvailableTypes().empty());
 
   auto* observer = LastReplacedClipboardDataObserver::GetInstance();
   ASSERT_TRUE(observer);
 
   ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
   ASSERT_TRUE(GetLastReplacedClipboardData().clipboard_paste_data.empty());
+  ASSERT_TRUE(GetLastReplacedClipboardData().GetAvailableTypes().empty());
 }
 
 TEST_F(LastReplacedClipboardDataTest, WithPendingData) {
   ASSERT_TRUE(GetLastReplacedClipboardData().clipboard_paste_data.empty());
+  ASSERT_TRUE(GetLastReplacedClipboardData().GetAvailableTypes().empty());
 
   auto* observer = LastReplacedClipboardDataObserver::GetInstance();
   ASSERT_TRUE(observer);
@@ -68,6 +72,12 @@ TEST_F(LastReplacedClipboardDataTest, WithPendingData) {
       GetLastReplacedClipboardData().clipboard_paste_data.bitmap.empty());
   ASSERT_EQ(GetLastReplacedClipboardData().clipboard_paste_data.png,
             ui::clipboard_util::EncodeBitmapToPngAcceptJank(kBitmap));
+
+  auto available_types = GetLastReplacedClipboardData().GetAvailableTypes();
+  ASSERT_EQ(available_types.size(), 3u);
+  ASSERT_EQ(available_types[0], u"text/plain");
+  ASSERT_EQ(available_types[1], u"text/html");
+  ASSERT_EQ(available_types[2], u"image/png");
 }
 
 }  // namespace data_controls

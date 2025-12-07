@@ -10,42 +10,59 @@
 import '//resources/ash/common/cr_elements/policy/cr_tooltip_icon.js';
 import '//resources/ash/common/cr_elements/cr_hidden_style.css.js';
 
-import {CrPolicyIndicatorBehavior, CrPolicyIndicatorType} from '//resources/ash/common/cr_policy_indicator_behavior.js';
-import {ManagedBoolean, ManagedInt32, ManagedString} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {CrPolicyIndicatorBehavior, CrPolicyIndicatorBehaviorInterface, CrPolicyIndicatorType} from '//resources/ash/common/cr_policy_indicator_behavior.js';
 import {PolicySource} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrPolicyNetworkBehaviorMojo} from './cr_policy_network_behavior_mojo.js';
+import {CrPolicyNetworkBehaviorMojo, CrPolicyNetworkBehaviorMojoInterface} from './cr_policy_network_behavior_mojo.js';
 import {getTemplate} from './cr_policy_network_indicator_mojo.html.js';
 
-Polymer({
-  _template: getTemplate(),
-  is: 'cr-policy-network-indicator-mojo',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {CrPolicyIndicatorBehaviorInterface}
+ * @implements {CrPolicyNetworkBehaviorMojoInterface}
+ */
+const CrPolicyNetworkIndicatorMojoElementBase = mixinBehaviors(
+    [CrPolicyIndicatorBehavior, CrPolicyNetworkBehaviorMojo], PolymerElement);
 
-  behaviors: [CrPolicyIndicatorBehavior, CrPolicyNetworkBehaviorMojo],
+/** @polymer */
+class CrPolicyNetworkIndicatorMojoElement extends
+    CrPolicyNetworkIndicatorMojoElementBase {
+  static get is() {
+    return 'cr-policy-network-indicator-mojo';
+  }
 
-  properties: {
-    /**
-     * Network property associated with the indicator. Note: |property| may
-     * be null or undefined, depending on how the properties dictionary is
-     * generated.
-     * @type {?ManagedBoolean|
-     *        ?ManagedInt32|
-     *        ?ManagedString|undefined}
-     */
-    property: Object,
+  static get template() {
+    return getTemplate();
+  }
 
-    /** Property forwarded to the cr-tooltip-icon element. */
-    tooltipPosition: String,
+  static get properties() {
+    return {
+      /**
+       * Network property associated with the indicator. Note: |property| may
+       * be null or undefined, depending on how the properties dictionary is
+       * generated.
+       * @type {?ManagedBoolean|
+       *        ?ManagedInt32|
+       *        ?ManagedString|undefined}
+       */
+      property: Object,
 
-    /** @private */
-    indicatorTooltip_: {
-      type: String,
-      computed: 'getNetworkIndicatorTooltip_(indicatorType, property.*)',
-    },
-  },
+      /** Property forwarded to the cr-tooltip-icon element. */
+      tooltipPosition: String,
 
-  observers: ['propertyChanged_(property.*)'],
+      /** @private */
+      indicatorTooltip_: {
+        type: String,
+        computed: 'getNetworkIndicatorTooltip_(indicatorType, property.*)',
+      },
+    };
+  }
+
+  static get observers() {
+    return ['propertyChanged_(property.*)'];
+  }
 
   /** @private */
   propertyChanged_() {
@@ -73,7 +90,7 @@ Polymer({
         this.indicatorType = CrPolicyIndicatorType.EXTENSION;
         break;
     }
-  },
+  }
 
   /**
    * @return {string} The tooltip text for |type|.
@@ -87,5 +104,9 @@ Polymer({
     const matches = !!this.property &&
         this.property.activeValue === this.property.policyValue;
     return this.getIndicatorTooltip(this.indicatorType, '', matches);
-  },
-});
+  }
+}
+
+customElements.define(
+    CrPolicyNetworkIndicatorMojoElement.is,
+    CrPolicyNetworkIndicatorMojoElement);

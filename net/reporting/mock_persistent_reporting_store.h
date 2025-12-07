@@ -158,8 +158,6 @@ class MockPersistentReportingStore
 
 bool operator==(const MockPersistentReportingStore::Command& lhs,
                 const MockPersistentReportingStore::Command& rhs);
-bool operator!=(const MockPersistentReportingStore::Command& lhs,
-                const MockPersistentReportingStore::Command& rhs);
 std::ostream& operator<<(std::ostream& out,
                          const MockPersistentReportingStore::Command& cmd);
 

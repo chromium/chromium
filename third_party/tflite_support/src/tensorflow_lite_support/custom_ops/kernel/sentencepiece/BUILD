@@ -274,7 +274,6 @@ cc_test(
         ":model_converter",
         ":optimized_encoder",
         "//tensorflow_lite_support/cc/test:test_utils",
-        "@com_google_absl//absl/flags:flag",
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/strings:str_format",
         "@com_google_googletest//:gtest_main",
@@ -298,7 +297,6 @@ cc_test(
         ":model_converter",
         ":optimized_decoder",
         "//tensorflow_lite_support/cc/test:test_utils",
-        "@com_google_absl//absl/flags:flag",
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/strings:str_format",
         "@com_google_googletest//:gtest_main",
@@ -323,8 +321,8 @@ cc_library(
 
 config_setting(
     name = "armeabi_v7a_and_fastbuild",
+    constraint_values = ["@platforms//cpu:armv7"],
     values = {
-        "cpu": "armeabi-v7a",
         "compilation_mode": "fastbuild",
     },
     visibility = ["//visibility:public"],
@@ -332,16 +330,10 @@ config_setting(
 
 config_setting(
     name = "armeabi_v7a_and_dbg",
+    constraint_values = ["@platforms//cpu:armv7"],
     values = {
-        "cpu": "armeabi-v7a",
         "compilation_mode": "dbg",
     },
-    visibility = ["//visibility:public"],
-)
-
-config_setting(
-    name = "android",
-    values = {"crosstool_top": "//external:android/crosstool"},
     visibility = ["//visibility:public"],
 )
 
@@ -376,7 +368,6 @@ alias(
 config_setting(
     name = "ios",
     values = {
-        "crosstool_top": "@bazel_tools//tools/cpp:toolchain",
         "apple_platform_type": "ios",
     },
     visibility = ["//visibility:public"],

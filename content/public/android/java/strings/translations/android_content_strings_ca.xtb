@@ -10,6 +10,7 @@
 <translation id="2520230379124234395">El generador de perfils s'ha iniciat.</translation>
 <translation id="2732718972699418926">a. m.</translation>
 <translation id="2841013758207633010">Hora</translation>
+<translation id="3252174836838062892">Per mostrar el cursor, prem Esc</translation>
 <translation id="376869769528291915">:</translation>
 <translation id="3845599764535987402">Hora</translation>
 <translation id="4247305538398689241">Defineix la setmana</translation>
@@ -25,10 +26,11 @@
 <translation id="660254432468400466">No es troba el motor de text a parla de Google</translation>
 <translation id="6643016212128521049">Esborra</translation>
 <translation id="6727102863431372879">Configura</translation>
-<translation id="6849295950938417341">S'ha produït un error en iniciar el generador de perfils.</translation>
+<translation id="6849295950938417341">Hi ha hagut un error en iniciar el generador de perfils.</translation>
 <translation id="7102218676258945610">Minut</translation>
 <translation id="7138678301420049075">Altres</translation>
 <translation id="7575803462290353686">Defineix l'hora</translation>
+<translation id="7648133459447652947">Per mostrar el cursor, canvia d'aplicació, torna a carregar la pàgina o torna enrere</translation>
 <translation id="7781164152564914424">Defineix el mes</translation>
 <translation id="7821540960913969614">Defineix la data</translation>
 <translation id="8261506727792406068">Suprimeix</translation>

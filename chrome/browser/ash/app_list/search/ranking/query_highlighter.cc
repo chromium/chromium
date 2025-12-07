@@ -83,7 +83,7 @@ QueryHighlighter::QueryHighlighter() = default;
 QueryHighlighter::~QueryHighlighter() = default;
 
 void QueryHighlighter::Start(const std::u16string& query,
-                             CategoriesList& categories) {
+                             const CategoriesList& categories) {
   last_query_ = query;
 }
 

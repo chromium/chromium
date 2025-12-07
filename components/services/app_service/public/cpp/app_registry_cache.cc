@@ -4,12 +4,16 @@
 
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 
+#include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/observer_list.h"
-#include "build/chromeos_buildflags.h"
+#include "base/sequence_checker.h"
+#include "components/services/app_service/public/cpp/app.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
+#include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 
 namespace apps {
@@ -39,7 +43,7 @@ void AppRegistryCache::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-AppType AppRegistryCache::GetAppType(const std::string& app_id) {
+AppType AppRegistryCache::GetAppType(std::string_view app_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
 
   auto d_iter = deltas_in_progress_.find(app_id);
@@ -94,7 +98,7 @@ bool AppRegistryCache::IsAppTypePublished(apps::AppType app_type) const {
   return base::Contains(published_app_types_, app_type);
 }
 
-bool AppRegistryCache::IsAppInstalled(const std::string& app_id) const {
+bool AppRegistryCache::IsAppInstalled(std::string_view app_id) const {
   bool installed = false;
   ForOneApp(app_id, [&installed](const AppUpdate& update) {
     installed = apps_util::IsInstalled(update.Readiness());
@@ -109,11 +113,8 @@ void AppRegistryCache::ReinitializeForTesting() {
   in_progress_initialized_app_types_.clear();
   published_app_types_.clear();
 
-  // On most platforms, we can't clear initialized_app_types_ here as observers
+  // We can't clear initialized_app_types_ here as observers
   // expect each type to be initialized only once.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  initialized_app_types_.clear();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 void AppRegistryCache::OnAppsForTesting(std::vector<AppPtr> deltas,
@@ -288,6 +289,23 @@ void AppRegistryCache::OnAppTypeInitialized() {
       obs.OnAppTypeInitialized(app_type);
     }
   }
+}
+
+std::optional<AppUpdate> AppRegistryCache::GetAppUpdate(
+    std::string_view app_id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
+
+  auto s_iter = states_.find(app_id);
+  const App* state = (s_iter != states_.end()) ? s_iter->second.get() : nullptr;
+
+  auto d_iter = deltas_in_progress_.find(app_id);
+  const App* delta =
+      (d_iter != deltas_in_progress_.end()) ? d_iter->second : nullptr;
+
+  if (state || delta) {
+    return AppUpdate(state, delta, account_id_);
+  }
+  return std::nullopt;
 }
 
 }  // namespace apps

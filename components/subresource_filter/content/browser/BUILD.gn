@@ -44,9 +44,10 @@ static_library("browser") {
     "//base",
     "//components/content_settings/browser",
     "//components/content_settings/core/browser",
+    "//components/content_settings/core/browser:cookie_settings",
     "//components/content_settings/core/common",
     "//components/keyed_service/core",
-    "//components/prefs:prefs",
+    "//components/prefs",
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/browser/db:util",
     "//components/safe_browsing/core/common",
@@ -54,7 +55,7 @@ static_library("browser") {
     "//components/subresource_filter/content/shared/common",
     "//components/subresource_filter/core/browser",
     "//components/subresource_filter/core/common",
-    "//components/ukm:ukm",
+    "//components/ukm",
     "//content/public/browser",
     "//content/public/common",
     "//ipc",
@@ -64,28 +65,21 @@ static_library("browser") {
   ]
   public_deps = [
     "//components/subresource_filter/content/mojom",
-    "//third_party/flatbuffers:flatbuffers",
+    "//third_party/flatbuffers",
     "//ui/base",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
   if (is_android) {
     sources += [
-      "ads_blocked_infobar.cc",
-      "ads_blocked_infobar.h",
-      "ads_blocked_infobar_delegate.cc",
-      "ads_blocked_infobar_delegate.h",
       "ads_blocked_message_delegate.cc",
       "ads_blocked_message_delegate.h",
     ]
     deps += [
-      "//components/infobars/android",
-      "//components/infobars/content",
-      "//components/infobars/core",
       "//components/messages/android",
       "//components/messages/android:feature_flags",
       "//components/resources:android_resources",
       "//components/strings:components_strings_grit",
-      "//components/subresource_filter/android:android",
+      "//components/subresource_filter/android",
       "//components/subresource_filter/android:subresource_filter_jni_headers",
     ]
   }
@@ -113,6 +107,7 @@ static_library("test_support") {
     "//components/content_settings/browser",
     "//components/content_settings/browser:test_support",
     "//components/content_settings/core/browser",
+    "//components/content_settings/core/browser:cookie_settings",
     "//components/infobars/content",
     "//components/infobars/core",
     "//components/prefs:test_support",
@@ -129,7 +124,7 @@ static_library("test_support") {
     "//content/test:test_support",
     "//net",
     "//services/network/public/mojom",
-    "//testing/gtest:gtest",
+    "//testing/gtest",
     "//url",
   ]
   public_deps = [
@@ -176,11 +171,10 @@ source_set("unit_tests") {
     "//components/subresource_filter/core/mojom",
     "//components/sync_preferences:test_support",
     "//components/ukm:test_support",
-    "//components/ukm/content:content",
+    "//components/ukm/content",
     "//content/public/browser",
     "//content/test:test_support",
     "//ipc",
-    "//ipc:test_support",
     "//testing/gtest",
     "//ui/base:test_support",
     "//url",
@@ -197,4 +191,8 @@ source_set("unit_tests") {
   if (is_ios && use_blink) {
     deps += [ "//components/test:subresource_filter_test_bundle_data" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

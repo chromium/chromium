@@ -29,9 +29,11 @@ WebThreadScheduler::CreateMainThreadScheduler(
     std::unique_ptr<base::MessagePump> message_pump) {
   auto settings = base::sequence_manager::SequenceManager::Settings::Builder()
                       .SetMessagePumpType(base::MessagePumpType::DEFAULT)
-                      .SetRandomisedSamplingEnabled(true)
+                      .SetShouldSampleCPUTime(true)
                       .SetAddQueueTimeToTasks(true)
                       .SetPrioritySettings(CreatePrioritySettings())
+                      .SetIsMainThread(true)
+                      .SetShouldReportLockMetrics(true)
                       .Build();
   auto sequence_manager =
       message_pump
@@ -46,43 +48,33 @@ WebThreadScheduler::CreateMainThreadScheduler(
 // Stubs for main thread only virtual functions.
 scoped_refptr<base::SingleThreadTaskRunner>
 WebThreadScheduler::DeprecatedDefaultTaskRunner() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 std::unique_ptr<MainThread> WebThreadScheduler::CreateMainThread() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
-}
-
-void WebThreadScheduler::SetRendererHidden(bool hidden) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void WebThreadScheduler::SetRendererBackgrounded(bool backgrounded) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 #if BUILDFLAG(IS_ANDROID)
 void WebThreadScheduler::PauseTimersForAndroidWebView() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void WebThreadScheduler::ResumeTimersForAndroidWebView() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-void WebThreadScheduler::SetRendererProcessType(WebRendererProcessType type) {
-  NOTREACHED_IN_MIGRATION();
-}
-
 void WebThreadScheduler::OnUrgentMessageReceived() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void WebThreadScheduler::OnUrgentMessageProcessed() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace scheduler

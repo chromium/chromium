@@ -14,7 +14,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -38,13 +37,6 @@
 #include "content/public/browser/web_ui.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "ash/webui/settings/public/constants/routes.mojom.h"
-#include "chrome/browser/lacros/lacros_url_handling.h"
-#include "chrome/common/webui_url_constants.h"
-#include "components/sync/base/features.h"
-#endif
-
 using signin::ConsentLevel;
 
 namespace {
@@ -53,7 +45,7 @@ const int kProfileImageSize = 128;
 // Derives screen mode of sync opt in screen from the
 // CanShowHistorySyncOptInsWithoutMinorModeRestrictions capability.
 constexpr bool UseMinorModeRestrictions() {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS handles minor modes separately.
   return false;
 #else
@@ -64,47 +56,6 @@ constexpr bool UseMinorModeRestrictions() {
 inline bool ScreenModeIsPending(const AccountInfo& primary_account_info) {
   return GetScreenMode(primary_account_info.capabilities) ==
          SyncConfirmationScreenMode::kPending;
-}
-
-SyncConfirmationScreenMode GetScreenModeFromValue(const base::Value& value) {
-  if (!value.is_int()) {
-    return SyncConfirmationScreenMode::kUnsupported;
-  }
-  return static_cast<SyncConfirmationScreenMode>(value.GetInt());
-}
-
-// Records the button click in the `mode` context. `equal` denotes button to
-// record in kRestricted `mode`, and `notEqual` denotes button to record in
-// kUnrestricted `mode`.
-void RecordButtonClicked(SyncConfirmationScreenMode mode,
-                         signin_metrics::SyncButtonClicked equal,
-                         signin_metrics::SyncButtonClicked not_equal) {
-  if (mode == SyncConfirmationScreenMode::kUnsupported) {
-    // Do not record metrics from SyncConfirmation screens that don't support
-    // minor modes.
-    return;
-  }
-
-  std::optional<signin_metrics::SyncButtonClicked> button_clicked;
-  switch (mode) {
-    case SyncConfirmationScreenMode::kRestricted:
-    case SyncConfirmationScreenMode::kDeadlined:
-      button_clicked = equal;
-      break;
-    case SyncConfirmationScreenMode::kUnrestricted:
-      button_clicked = not_equal;
-      break;
-    case SyncConfirmationScreenMode::kPending:
-      // Special case: the only button that can be clicked in this mode is the
-      // settings button.
-      button_clicked =
-          signin_metrics::SyncButtonClicked::kSyncSettingsUnknownWeighted;
-      break;
-    default:
-      NOTREACHED_IN_MIGRATION();
-  }
-
-  base::UmaHistogramEnumeration("Signin.SyncButtons.Clicked", *button_clicked);
 }
 
 // Translates screen `mode` to the corresponding metric describing what type of
@@ -122,7 +73,7 @@ signin_metrics::SyncButtonsType GetButtonTypeMetricValue(
     // Metric is not emitted for these cases:
     case SyncConfirmationScreenMode::kUnsupported:
     case SyncConfirmationScreenMode::kPending:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 }  // namespace
@@ -164,8 +115,9 @@ SyncConfirmationHandler::~SyncConfirmationHandler() {
 }
 
 void SyncConfirmationHandler::OnBrowserRemoved(Browser* browser) {
-  if (browser_ == browser)
+  if (browser_ == browser) {
     browser_ = nullptr;
+  }
 }
 
 void SyncConfirmationHandler::RegisterMessages() {
@@ -187,22 +139,10 @@ void SyncConfirmationHandler::RegisterMessages() {
       "accountInfoRequest",
       base::BindRepeating(&SyncConfirmationHandler::HandleAccountInfoRequest,
                           base::Unretained(this)));
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  web_ui()->RegisterMessageCallback(
-      "openDeviceSyncSettings",
-      base::BindRepeating(
-          &SyncConfirmationHandler::HandleOpenDeviceSyncSettings,
-          base::Unretained(this)));
-#endif
 }
 
 void SyncConfirmationHandler::HandleConfirm(const base::Value::List& args) {
   CHECK_EQ(3U, args.size());
-  RecordButtonClicked(
-      GetScreenModeFromValue(args[2]),
-      signin_metrics::SyncButtonClicked::kSyncOptInEqualWeighted,
-      signin_metrics::SyncButtonClicked::kSyncOptInNotEqualWeighted);
-
   did_user_explicitly_interact_ = true;
   RecordConsent(args[0].GetList(), args[1].GetString());
   CloseModalSigninWindow(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
@@ -211,11 +151,6 @@ void SyncConfirmationHandler::HandleConfirm(const base::Value::List& args) {
 void SyncConfirmationHandler::HandleGoToSettings(
     const base::Value::List& args) {
   CHECK_EQ(3U, args.size());
-  RecordButtonClicked(
-      GetScreenModeFromValue(args[2]),
-      signin_metrics::SyncButtonClicked::kSyncSettingsEqualWeighted,
-      signin_metrics::SyncButtonClicked::kSyncSettingsNotEqualWeighted);
-
   DCHECK(SyncServiceFactory::IsSyncAllowed(profile_));
   did_user_explicitly_interact_ = true;
   RecordConsent(args[0].GetList(), args[1].GetString());
@@ -224,11 +159,6 @@ void SyncConfirmationHandler::HandleGoToSettings(
 
 void SyncConfirmationHandler::HandleUndo(const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
-  RecordButtonClicked(
-      GetScreenModeFromValue(args[0]),
-      signin_metrics::SyncButtonClicked::kSyncCancelEqualWeighted,
-      signin_metrics::SyncButtonClicked::kSyncCancelNotEqualWeighted);
-
   did_user_explicitly_interact_ = true;
   CloseModalSigninWindow(LoginUIService::ABORT_SYNC);
 }
@@ -245,15 +175,6 @@ void SyncConfirmationHandler::HandleAccountInfoRequest(
   // yet, the listener will be fired again through `OnAccountUpdated()`.
   DispatchAccountInfoUpdate(primary_account_info);
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void SyncConfirmationHandler::HandleOpenDeviceSyncSettings(
-    const base::Value::List& args) {
-  std::string os_sync_settings_url = chrome::kChromeUIOSSettingsURL;
-  os_sync_settings_url.append(chromeos::settings::mojom::kSyncSubpagePath);
-  lacros_url_handling::NavigateInAsh(GURL(os_sync_settings_url));
-}
-#endif
 
 void SyncConfirmationHandler::RecordConsent(
     const base::Value::List& consent_description,
@@ -286,7 +207,7 @@ void SyncConfirmationHandler::RecordConsent(
   consent_auditor::ConsentAuditor* consent_auditor =
       ConsentAuditorFactory::GetForProfile(profile_);
   consent_auditor->RecordSyncConsent(
-      identity_manager_->GetPrimaryAccountId(ConsentLevel::kSignin),
+      identity_manager_->GetPrimaryAccountInfo(ConsentLevel::kSignin).gaia,
       sync_consent);
 }
 
@@ -300,7 +221,7 @@ void SyncConfirmationHandler::OnAvatarChanged(const AccountInfo& info) {
 
   base::Value::Dict value;
   value.Set("src", picture_gurl_with_options.spec());
-  value.Set("showEnterpriseBadge", info.IsManaged());
+  value.Set("showEnterpriseBadge", info.IsManaged() == signin::Tribool::kTrue);
   FireWebUIListener("account-info-changed", value);
 }
 
@@ -461,6 +382,7 @@ void SyncConfirmationHandler::HandleInitializedWithSize(
                                 this, &SyncConfirmationHandler::OnDeadline);
   }
 
-  if (browser_)
+  if (browser_) {
     signin::SetInitializedModalHeight(browser_, web_ui(), args);
+  }
 }

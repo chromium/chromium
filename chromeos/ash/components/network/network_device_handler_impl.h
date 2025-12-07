@@ -123,10 +123,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkDeviceHandlerImpl
   // specified yet.
   void ApplyUsbEthernetMacAddressSourceToShill();
 
-  // Applies the current value of the |cellular-use-attach-apn| flag to all
-  // existing cellular devices of Shill.
-  void ApplyUseAttachApnToShill();
-
   // Utility function for applying enabled setting of WiFi features that needs
   // to check if the feature is supported first.
   // This function will update |supported| if it is still NOT_REQUESTED by

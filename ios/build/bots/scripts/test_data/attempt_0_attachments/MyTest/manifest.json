@@ -1,0 +1,17 @@
+[
+    {
+        "attachments": [{
+            "exportedFileName": "screenshot.png",
+            "suggestedHumanReadableName": "My Screenshot",
+            "isAssociatedWithFailure": true
+        }, {
+            "exportedFileName": "video.mp4",
+            "suggestedHumanReadableName": "My Video",
+            "isAssociatedWithFailure": false
+        }, {
+            "exportedFileName": "failure_screenshot.png",
+            "suggestedHumanReadableName": "Failure Screenshot",
+            "isAssociatedWithFailure": false
+        }]
+    }
+]

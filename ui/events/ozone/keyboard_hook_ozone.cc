@@ -9,7 +9,7 @@
 #include "ui/events/event.h"
 #include "ui/events/keyboard_hook.h"
 #include "ui/events/keycodes/dom/dom_code.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/platform_keyboard_hook.h"
 

@@ -17,6 +17,10 @@
     ]
   },
   {
+    "name": "content-extraction",
+    "args": ["--enable-blink-features=AIPageContentBuildOnLoadForTesting"]
+  },
+  {
     "name": "devtools-tab-target",
     "args": ["--content-shell-devtools-tab-target"]
   },
@@ -27,10 +31,6 @@
   {
     "name": "enable-blink-heap-concurrent-marking",
     "args": ["--enable-features=BlinkHeapConcurrentMarking"]
-  },
-  {
-    "name": "enable-percent-based-scrolling",
-    "args": ["--enable-features=PercentBasedScrolling"]
   },
   {
     "name": "force-renderer-accessibility",
@@ -58,6 +58,13 @@
           "--disable-vulkan-fallback-to-gl-for-testing"
     ],
     "smoke_file": "TestLists/skia-vulkan-swiftshader"
+  },
+  {
+    "name": "trees-in-viz",
+    "args": [
+          "--enable-features=TreesInViz"
+    ],
+    "smoke_file": "TestLists/trees-in-viz"
   },
   {
     "name": "webgpu",
@@ -202,6 +209,24 @@
     ],
     "comments": [
       "Used to test Chrome with Skia Graphite."
+    ]
+  },
+  {
+    "name": "disable-skia-graphite",
+    "args": [
+      "--disable-skia-graphite"
+    ],
+    "comments": [
+      "Used to test Chrome with Skia Ganesh."
+    ]
+  },
+  {
+    "name": "ComputePressureOwnContributionEstimate",
+    "args": [
+      "--enable-features=ComputePressureOwnContributionEstimate"
+    ],
+    "comments": [
+      "Enable experimental attribute onwContributionEstimate."
     ]
   }
 ]

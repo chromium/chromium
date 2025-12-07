@@ -21,5 +21,5 @@
 // https://dom.spec.whatwg.org/#callbackdef-eventlistener
 
 callback interface EventListener {
-    void handleEvent(Event event);
+    undefined handleEvent(Event event);
 };

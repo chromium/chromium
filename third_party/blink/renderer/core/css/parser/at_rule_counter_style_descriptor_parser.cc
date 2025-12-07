@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/css/parser/at_rule_descriptor_parser.h"
-
 #include "third_party/blink/renderer/core/css/css_string_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
+#include "third_party/blink/renderer/core/css/media_values.h"
+#include "third_party/blink/renderer/core/css/parser/at_rule_descriptor_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 
 namespace blink {
 
@@ -22,6 +22,9 @@ CSSValue* ConsumeCounterStyleSymbol(CSSParserTokenStream& stream,
     return string;
   }
   if (RuntimeEnabledFeatures::CSSAtRuleCounterStyleImageSymbolsEnabled()) {
+    // TODO(crbug.com/40747846): Image values may contain relative units and
+    // tree counting functions. They need to handled somehow. <image> values are
+    // marked at-risk in the spec.
     if (CSSValue* image = css_parsing_utils::ConsumeImage(stream, context)) {
       return image;
     }
@@ -45,11 +48,14 @@ CSSValue* ConsumeCounterStyleSystem(CSSParserTokenStream& stream,
 
   if (CSSValue* ident =
           css_parsing_utils::ConsumeIdent<CSSValueID::kFixed>(stream)) {
-    CSSValue* first_symbol_value =
+    CSSPrimitiveValue* first_symbol_value =
         css_parsing_utils::ConsumeInteger(stream, context);
     if (!first_symbol_value) {
       first_symbol_value = CSSNumericLiteralValue::Create(
           1, CSSPrimitiveValue::UnitType::kInteger);
+    }
+    if (first_symbol_value->IsElementDependent()) {
+      return nullptr;
     }
     return MakeGarbageCollected<CSSValuePair>(
         ident, first_symbol_value, CSSValuePair::kKeepIdenticalValues);
@@ -114,8 +120,11 @@ CSSValue* ConsumeCounterStyleRangeBound(CSSParserTokenStream& stream,
           css_parsing_utils::ConsumeIdent<CSSValueID::kInfinite>(stream)) {
     return infinite;
   }
-  if (CSSValue* integer = css_parsing_utils::ConsumeInteger(stream, context)) {
-    return integer;
+  if (CSSPrimitiveValue* integer =
+          css_parsing_utils::ConsumeInteger(stream, context)) {
+    if (!integer->IsElementDependent()) {
+      return integer;
+    }
   }
   return nullptr;
 }
@@ -141,9 +150,11 @@ CSSValue* ConsumeCounterStyleRange(CSSParserTokenStream& stream,
 
     // If the lower bound of any stream is higher than the upper bound, the
     // entire descriptor is invalid and must be ignored.
+    MediaValues* media_values = MediaValues::CreateDynamicIfFrameExists(
+        context.GetDocument() ? context.GetDocument()->GetFrame() : nullptr);
     if (lower_bound->IsPrimitiveValue() && upper_bound->IsPrimitiveValue() &&
-        To<CSSPrimitiveValue>(lower_bound)->GetIntValue() >
-            To<CSSPrimitiveValue>(upper_bound)->GetIntValue()) {
+        To<CSSPrimitiveValue>(lower_bound)->ComputeInteger(*media_values) >
+            To<CSSPrimitiveValue>(upper_bound)->ComputeInteger(*media_values)) {
       return nullptr;
     }
 
@@ -159,12 +170,15 @@ CSSValue* ConsumeCounterStyleRange(CSSParserTokenStream& stream,
 CSSValue* ConsumeCounterStylePad(CSSParserTokenStream& stream,
                                  const CSSParserContext& context) {
   // Syntax: <integer [0,∞]> && <symbol>
-  CSSValue* integer = nullptr;
+  CSSPrimitiveValue* integer = nullptr;
   CSSValue* symbol = nullptr;
   while (!integer || !symbol) {
     if (!integer) {
       integer = css_parsing_utils::ConsumeInteger(stream, context, 0);
       if (integer) {
+        if (integer->IsElementDependent()) {
+          return nullptr;
+        }
         continue;
       }
     }
@@ -213,6 +227,9 @@ CSSValue* ConsumeCounterStyleAdditiveSymbols(CSSParserTokenStream& stream,
       if (!integer) {
         integer = css_parsing_utils::ConsumeInteger(stream, context, 0);
         if (integer) {
+          if (integer->IsElementDependent()) {
+            return nullptr;
+          }
           continue;
         }
       }
@@ -228,7 +245,10 @@ CSSValue* ConsumeCounterStyleAdditiveSymbols(CSSParserTokenStream& stream,
     if (last_integer) {
       // The additive tuples must be specified in order of strictly descending
       // weight; otherwise, the declaration is invalid and must be ignored.
-      if (integer->GetIntValue() >= last_integer->GetIntValue()) {
+      MediaValues* media_values = MediaValues::CreateDynamicIfFrameExists(
+          context.GetDocument() ? context.GetDocument()->GetFrame() : nullptr);
+      if (integer->ComputeInteger(*media_values) >=
+          last_integer->ComputeInteger(*media_values)) {
         return nullptr;
       }
     }

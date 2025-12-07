@@ -30,7 +30,7 @@ TEST_F(InternalPopupMenuTest, ShowSelectDisplayNone) {
   auto dummy_page_holder_ =
       std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   Document& document = dummy_page_holder_->GetDocument();
-  document.body()->setInnerHTML(R"HTML(
+  document.body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id="container">
       <select id="select">
         <option>1</option>

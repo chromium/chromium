@@ -8,7 +8,6 @@
 #endif
 
 #include "media/audio/mac/audio_loopback_input_mac.h"
-#include "media/audio/mac/audio_loopback_input_mac_impl.h"
 
 #include <ScreenCaptureKit/ScreenCaptureKit.h>
 
@@ -23,9 +22,10 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "media/audio/audio_io.h"
+#include "media/audio/mac/audio_loopback_input_mac_impl.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/limits.h"
-#include "media/base/mac/audio_latency_mac.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -119,10 +119,7 @@ class SCKAudioInputStreamTest : public PlatformTest {
           .andDo(^(NSInvocation* invocation) {
             __unsafe_unretained id<SCStreamOutput> stream_output;
             [invocation getArgument:&stream_output atIndex:2];
-            stream_outputs_.erase(
-                std::remove(stream_outputs_.begin(), stream_outputs_.end(),
-                            stream_output),
-                stream_outputs_.end());
+            std::erase(stream_outputs_, stream_output);
           })
           .andReturn(TRUE);
 
@@ -290,9 +287,8 @@ class FakeAudioInputCallback : public AudioInputStream::AudioInputCallback {
               double volume,
               const AudioGlitchInfo& glitch_info) override {
     EXPECT_GE(capture_time, base::TimeTicks());
-    for (int i = 0; i < src->channels(); i++) {
-      channel_data_.insert(channel_data_.end(), src->channel(i),
-                           src->channel(i) + src->frames());
+    for (auto channel : src->AllChannels()) {
+      std::ranges::copy(channel, std::back_inserter(channel_data_));
     }
   }
 

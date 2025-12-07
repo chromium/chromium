@@ -20,21 +20,16 @@ void ExposeChildInterfacesToBrowser(
     const bool in_browser_process,
     mojo::BinderMap* binders) {
   binders->Add<metrics::mojom::ChildHistogramFetcherFactory>(
-      base::BindRepeating(&metrics::ChildHistogramFetcherFactoryImpl::Create),
-      io_task_runner);
+      &metrics::ChildHistogramFetcherFactoryImpl::Create, io_task_runner);
   binders->Add<tracing::mojom::TracedProcess>(
-      base::BindRepeating(&tracing::TracedProcess::OnTracedProcessRequest),
+      &tracing::TracedProcess::OnTracedProcessRequest,
       base::SequencedTaskRunner::GetCurrentDefault());
 
-  // TODO(crbug.com/40946277): Investiagte the reason why the mojo connection
-  // is often created and closed for the same render process on lacros-chrome.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   if (!in_browser_process) {
     binders->Add<mojom::SyntheticTrialConfiguration>(
-        base::BindRepeating(&ChildProcessSyntheticTrialSyncer::Create),
+        &ChildProcessSyntheticTrialSyncer::Create,
         base::SequencedTaskRunner::GetCurrentDefault());
   }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
   GetContentClient()->ExposeInterfacesToBrowser(io_task_runner, binders);
 }

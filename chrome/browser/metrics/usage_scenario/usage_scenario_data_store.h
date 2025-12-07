@@ -161,10 +161,6 @@ class UsageScenarioDataStoreImpl : public UsageScenarioDataStore {
   void OnUkmSourceBecameHidden(const ukm::SourceId& source,
                                const url::Origin& origin);
 
-  base::TimeTicks is_playing_full_screen_video_single_monitor_since() {
-    return is_playing_full_screen_video_single_monitor_since_;
-  }
-
   const IntervalData& GetIntervalDataForTesting() { return interval_data_; }
 
   uint16_t current_tab_count_for_testing() { return current_tab_count_; }
@@ -173,6 +169,9 @@ class UsageScenarioDataStoreImpl : public UsageScenarioDataStore {
   }
 
   base::flat_set<ukm::SourceId> GetVisibleSourceIdsForTesting();
+
+  bool TrackingPlayingVideoInActiveTabForTesting() const;
+  bool TrackingPlayingFullScreenVideoSingleMonitorForTesting() const;
 
  private:
   friend class metrics::TabUsageScenarioTrackerBrowserTest;

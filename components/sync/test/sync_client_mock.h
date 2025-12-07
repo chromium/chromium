@@ -6,7 +6,6 @@
 #define COMPONENTS_SYNC_TEST_SYNC_CLIENT_MOCK_H_
 
 #include "base/files/file_path.h"
-#include "base/functional/callback.h"
 #include "components/sync/service/local_data_description.h"
 #include "components/sync/service/sync_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -39,11 +38,6 @@ class SyncClientMock : public SyncClient {
               (override));
   MOCK_METHOD(SyncEngineFactory*, GetSyncEngineFactory, (), (override));
   MOCK_METHOD(bool, IsCustomPassphraseAllowed, (), (override));
-  MOCK_METHOD(bool, IsPasswordSyncAllowed, (), (override));
-  MOCK_METHOD(void,
-              SetPasswordSyncAllowedChangeCb,
-              (const base::RepeatingClosure&),
-              (override));
   MOCK_METHOD(void,
               RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial,
               (const TrustedVaultAutoUpgradeSyntheticFieldTrialGroup&),

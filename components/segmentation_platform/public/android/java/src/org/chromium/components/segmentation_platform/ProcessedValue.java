@@ -4,15 +4,20 @@
 
 package org.chromium.components.segmentation_platform;
 
-import androidx.annotation.NonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
+
+import java.util.Objects;
 
 /**
  * Represents a single value to be used as an input to a segmentation model. Its native equivalent
  * is found here: components/segmentation_platform/public/types/processed_value.h.
  */
+@NullMarked
 public class ProcessedValue {
     static final String TAG = "ProcessedValue";
 
@@ -21,10 +26,10 @@ public class ProcessedValue {
     public int intValue;
     public float floatValue;
     public double doubleValue;
-    public String stringValue;
+    public @Nullable String stringValue;
     public long timeValue;
     public long int64Value;
-    public GURL urlValue;
+    public @Nullable GURL urlValue;
 
     private ProcessedValue() {}
 
@@ -56,7 +61,7 @@ public class ProcessedValue {
         return processedValue;
     }
 
-    public static ProcessedValue fromString(@NonNull String stringValue) {
+    public static ProcessedValue fromString(@Nullable String stringValue) {
         ProcessedValue processedValue = new ProcessedValue();
         processedValue.type = ProcessedValueType.STRING;
         if (stringValue == null) {
@@ -89,7 +94,7 @@ public class ProcessedValue {
         return processedValue;
     }
 
-    public static ProcessedValue fromGURL(@NonNull GURL urlValue) {
+    public static ProcessedValue fromGURL(@Nullable GURL urlValue) {
         ProcessedValue processedValue = new ProcessedValue();
         processedValue.type = ProcessedValueType.URL;
         if (urlValue == null) {
@@ -99,5 +104,61 @@ public class ProcessedValue {
             processedValue.urlValue = urlValue;
         }
         return processedValue;
+    }
+
+    @Override
+    public final boolean equals(@Nullable Object other) {
+        if (other == this) return true;
+
+        if (!(other instanceof ProcessedValue)) return false;
+
+        if (type != ((ProcessedValue) other).type) {
+            return false;
+        }
+
+        switch (type) {
+            case ProcessedValueType.BOOL:
+                return booleanValue == ((ProcessedValue) other).booleanValue;
+            case ProcessedValueType.INT:
+                return intValue == ((ProcessedValue) other).intValue;
+            case ProcessedValueType.FLOAT:
+                return floatValue == ((ProcessedValue) other).floatValue;
+            case ProcessedValueType.DOUBLE:
+                return doubleValue == ((ProcessedValue) other).doubleValue;
+            case ProcessedValueType.STRING:
+                return assumeNonNull(stringValue).equals(((ProcessedValue) other).stringValue);
+            case ProcessedValueType.TIME:
+                return timeValue == ((ProcessedValue) other).timeValue;
+            case ProcessedValueType.INT64:
+                return int64Value == ((ProcessedValue) other).int64Value;
+            case ProcessedValueType.URL:
+                return assumeNonNull(urlValue).equals(((ProcessedValue) other).urlValue);
+            default:
+                throw new IllegalArgumentException("Processed value type not supported");
+        }
+    }
+
+    @Override
+    public final int hashCode() {
+        switch (type) {
+            case ProcessedValueType.BOOL:
+                return Objects.hash(type, booleanValue);
+            case ProcessedValueType.INT:
+                return Objects.hash(type, intValue);
+            case ProcessedValueType.FLOAT:
+                return Objects.hash(type, floatValue);
+            case ProcessedValueType.DOUBLE:
+                return Objects.hash(type, doubleValue);
+            case ProcessedValueType.STRING:
+                return Objects.hash(type, stringValue);
+            case ProcessedValueType.TIME:
+                return Objects.hash(type, timeValue);
+            case ProcessedValueType.INT64:
+                return Objects.hash(type, int64Value);
+            case ProcessedValueType.URL:
+                return Objects.hash(type, urlValue);
+            default:
+                throw new IllegalArgumentException("Processed value type not supported");
+        }
     }
 }

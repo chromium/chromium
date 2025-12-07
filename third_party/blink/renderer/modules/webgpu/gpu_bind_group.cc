@@ -7,13 +7,14 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_bind_group_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_bind_group_entry.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_buffer_binding.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_gpubufferbinding_gpuexternaltexture_gpusampler_gputextureview.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_gpubuffer_gpubufferbinding_gpuexternaltexture_gpusampler_gputexture_gputextureview.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_bind_group_layout.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_buffer.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_external_texture.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_sampler.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture_view.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
@@ -28,6 +29,11 @@ wgpu::BindGroupEntry AsDawnType(
   };
 
   switch (webgpu_binding->resource()->GetContentType()) {
+    case V8GPUBindingResource::ContentType::kGPUBuffer: {
+      GPUBuffer* buffer = webgpu_binding->resource()->GetAsGPUBuffer();
+      dawn_binding.buffer = AsDawnType(buffer);
+      break;
+    }
     case V8GPUBindingResource::ContentType::kGPUBufferBinding: {
       GPUBufferBinding* buffer =
           webgpu_binding->resource()->GetAsGPUBufferBinding();
@@ -42,6 +48,12 @@ wgpu::BindGroupEntry AsDawnType(
       dawn_binding.sampler =
           AsDawnType(webgpu_binding->resource()->GetAsGPUSampler());
       break;
+    case V8GPUBindingResource::ContentType::kGPUTexture: {
+      wgpu::Texture texture =
+          AsDawnType(webgpu_binding->resource()->GetAsGPUTexture());
+      dawn_binding.textureView = texture.CreateView();
+      break;
+    }
     case V8GPUBindingResource::ContentType::kGPUTextureView:
       dawn_binding.textureView =
           AsDawnType(webgpu_binding->resource()->GetAsGPUTextureView());
@@ -61,13 +73,12 @@ wgpu::BindGroupEntry AsDawnType(
   return dawn_binding;
 }
 
-std::unique_ptr<wgpu::BindGroupEntry[]> AsDawnType(
+base::HeapArray<wgpu::BindGroupEntry> AsDawnType(
     const HeapVector<Member<GPUBindGroupEntry>>& webgpu_objects,
     Vector<std::unique_ptr<wgpu::ExternalTextureBindingEntry>>*
         externalTextureBindingEntries) {
-  wtf_size_t count = webgpu_objects.size();
-  std::unique_ptr<wgpu::BindGroupEntry[]> dawn_objects(
-      new wgpu::BindGroupEntry[count]);
+  const wtf_size_t count = webgpu_objects.size();
+  auto dawn_objects = base::HeapArray<wgpu::BindGroupEntry>::WithSize(count);
   for (wtf_size_t i = 0; i < count; ++i) {
     dawn_objects[i] =
         AsDawnType(webgpu_objects[i].Get(), externalTextureBindingEntries);
@@ -83,7 +94,7 @@ GPUBindGroup* GPUBindGroup::Create(GPUDevice* device,
   DCHECK(webgpu_desc);
 
   uint32_t entry_count = 0;
-  std::unique_ptr<wgpu::BindGroupEntry[]> entries;
+  base::HeapArray<wgpu::BindGroupEntry> entries;
   Vector<std::unique_ptr<wgpu::ExternalTextureBindingEntry>>
       externalTextureBindingEntries;
   entry_count = static_cast<uint32_t>(webgpu_desc->entries().size());
@@ -95,7 +106,7 @@ GPUBindGroup* GPUBindGroup::Create(GPUDevice* device,
   wgpu::BindGroupDescriptor dawn_desc = {
       .layout = AsDawnType(webgpu_desc->layout()),
       .entryCount = entry_count,
-      .entries = entries.get(),
+      .entries = entries.data(),
   };
   std::string label = webgpu_desc->label().Utf8();
   if (!label.empty()) {

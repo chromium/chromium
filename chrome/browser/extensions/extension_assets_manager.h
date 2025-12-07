@@ -9,6 +9,9 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Profile;
 
@@ -24,14 +27,14 @@ class Extension;
 class ExtensionAssetsManager {
  public:
   // Callback that is invoked when the extension assets are installed.
-  // |file_path| is destination directory on success or empty in case of error.
+  // `file_path` is destination directory on success or empty in case of error.
   typedef base::OnceCallback<void(const base::FilePath& file_path)>
       InstallExtensionCallback;
 
   static ExtensionAssetsManager* GetInstance();
 
   // Copy extension assets to final location. This location could be under
-  // |local_install_dir| or some common location shared for multiple users.
+  // `local_install_dir` or some common location shared for multiple users.
   virtual void InstallExtension(
       const Extension* extension,
       const base::FilePath& unpacked_extension_root,
@@ -52,7 +55,7 @@ class ExtensionAssetsManager {
                                   const base::FilePath& profile_dir) = 0;
 
  protected:
-  virtual ~ExtensionAssetsManager() {}
+  virtual ~ExtensionAssetsManager() = default;
 };
 
 }  // namespace extensions

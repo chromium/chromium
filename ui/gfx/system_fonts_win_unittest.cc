@@ -7,6 +7,7 @@
 #include <windows.h>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,7 +39,7 @@ class SystemFontsWinTest : public testing::Test {
 LOGFONT CreateLOGFONT(const wchar_t* name, LONG height) {
   LOGFONT logfont = {};
   logfont.lfHeight = height;
-  auto result = wcscpy_s(logfont.lfFaceName, name);
+  auto result = UNSAFE_TODO(wcscpy_s(logfont.lfFaceName, name));
   DCHECK_EQ(0, result);
   return logfont;
 }

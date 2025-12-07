@@ -18,11 +18,16 @@
 #include <algorithm>
 
 #include "base/logging.h"
+#include "base/notimplemented.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/scoped_variant.h"
+#include "components/stylus_handwriting/win/features.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/base/ime/win/tsf_input_scope.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/display/win/screen_win.h"
 #include "ui/events/event_dispatcher.h"
 #include "ui/gfx/geometry/rect.h"
@@ -158,10 +163,39 @@ HRESULT TSFTextStore::GetACPFromPoint(TsViewCookie view_cookie,
                                       const POINT* point,
                                       DWORD flags,
                                       LONG* acp) {
-  NOTIMPLEMENTED();
-  if (view_cookie != kViewCookie)
-    return E_INVALIDARG;
-  return E_NOTIMPL;
+  if (view_cookie == kViewCookie) {
+    NOTIMPLEMENTED();
+    return E_NOTIMPL;
+  }
+  // If the `view_cookie` isn't known and StylusHandwritingWin is enabled,
+  // try to query the "proximate" bounds cache as a fallback. See comments
+  // around `IndexFromPointFlags` and its values for how each flag affects the
+  // results. When successful, yields a character index via the out parameter
+  // `acp`, otherwise returns an error HRESULT.
+  if (stylus_handwriting::win::IsStylusHandwritingWinEnabled()) {
+    IndexFromPointFlags index_flags{};
+    if (flags & GXFPF_NEAREST) {
+      index_flags |= IndexFromPointFlags::kNearestToUncontainedPoint;
+    }
+    if (flags & GXFPF_ROUND_NEAREST) {
+      index_flags |= IndexFromPointFlags::kNearestToContainedPoint;
+    }
+    const gfx::Point screen_point_in_dips =
+        gfx::ToFlooredPoint(display::win::GetScreenWin()->ScreenToDIPPoint(
+            gfx::PointF(gfx::Point(*point))));
+    const std::optional<size_t> index =
+        text_input_client_->GetProximateCharacterIndexFromPoint(
+            screen_point_in_dips, index_flags);
+    if (!index.has_value()) {
+      return TS_E_INVALIDPOINT;
+    }
+    *acp = index.value();
+    TRACE_EVENT2("ime", "TSFTextStore::GetACPFromPoint", "POINT",
+                 gfx::Point(*point).ToString(), "ACP", acp);
+    return S_OK;
+  }
+
+  return E_INVALIDARG;
 }
 
 HRESULT TSFTextStore::GetActiveView(TsViewCookie* view_cookie) {
@@ -219,8 +253,8 @@ HRESULT TSFTextStore::GetScreenExt(TsViewCookie view_cookie, RECT* rect) {
                                                             &tmp_rect);
   if (result_rect) {
     // This conversion is required for high dpi monitors.
-    *rect = display::win::ScreenWin::DIPToScreenRect(window_handle_,
-                                                     result_rect.value())
+    *rect = display::win::GetScreenWin()
+                ->DIPToScreenRect(window_handle_, result_rect.value())
                 .ToRECT();
   } else {
     // Default if the layout bounds are not present in text input client.
@@ -333,18 +367,23 @@ HRESULT TSFTextStore::GetTextExt(TsViewCookie view_cookie,
     return E_INVALIDARG;
   if (!text_input_client_)
     return E_UNEXPECTED;
-  if (view_cookie != kViewCookie)
+  const bool is_stylus_handwriting_win_enabled =
+      stylus_handwriting::win::IsStylusHandwritingWinEnabled();
+  if (view_cookie != kViewCookie && !is_stylus_handwriting_win_enabled) {
     return E_INVALIDARG;
+  }
   if (!HasReadLock())
     return TS_E_NOLOCK;
-  if (!((static_cast<LONG>(composition_start_) <= acp_start) &&
+  if (view_cookie == kViewCookie &&
+      !((static_cast<LONG>(composition_start_) <= acp_start) &&
         (acp_start <= acp_end) &&
         (acp_end <= static_cast<LONG>(string_buffer_document_.size())))) {
     return TS_E_INVALIDPOS;
   }
 
-  TRACE_EVENT1("ime", "TSFTextStore::GetTextExt", "start, end",
-               std::to_string(acp_start) + ", " + std::to_string(acp_end));
+  TRACE_EVENT1(
+      "ime", "TSFTextStore::GetTextExt", "start, end",
+      base::NumberToString(acp_start) + ", " + base::NumberToString(acp_end));
 
   // According to a behavior of notepad.exe and wordpad.exe, top left corner of
   // rect indicates a first character's one, and bottom right corner of rect
@@ -356,13 +395,15 @@ HRESULT TSFTextStore::GetTextExt(TsViewCookie view_cookie,
   const uint32_t end_pos = acp_end - composition_start_;
 
   gfx::Rect tmp_rect;
-  if (start_pos == end_pos) {
+  if (view_cookie == kViewCookie && start_pos == end_pos) {
     if (text_input_client_->HasCompositionText()) {
       // According to MSDN document, if |acp_start| and |acp_end| are equal it
       // is OK to just return E_INVALIDARG.
       // http://msdn.microsoft.com/en-us/library/ms538435
-      // But when using Pinin IME of Windows 8, this method is called with the
+      // But when using Pinyin IME of Windows 8, this method is called with the
       // equal values of |acp_start| and |acp_end|. So we handle this condition.
+      // TODO(crbug.com/371021293): Since Windows 8 is no longer a supported
+      // platform, can this now just return E_INVALIDARG?
       if (start_pos == 0) {
         if (text_input_client_->GetCompositionCharacterBounds(0, &tmp_rect)) {
           tmp_rect.set_width(0);
@@ -382,7 +423,7 @@ HRESULT TSFTextStore::GetTextExt(TsViewCookie view_cookie,
     } else {
       result_rect = gfx::Rect(text_input_client_->GetCaretBounds());
     }
-  } else {
+  } else if (view_cookie == kViewCookie) {
     if (text_input_client_->HasCompositionText()) {
       if (text_input_client_->GetCompositionCharacterBounds(start_pos,
                                                             &tmp_rect)) {
@@ -403,12 +444,23 @@ HRESULT TSFTextStore::GetTextExt(TsViewCookie view_cookie,
     } else {
       result_rect = gfx::Rect(text_input_client_->GetCaretBounds());
     }
+  } else if (is_stylus_handwriting_win_enabled) {
+    if (acp_start == acp_end) {
+      return E_INVALIDARG;
+    }
+    // If the `view_cookie` isn't known and StylusHandwritingWin is enabled,
+    // try to query the "proximate" bounds cache as a fallback.
+    result_rect = text_input_client_->GetProximateCharacterBounds(
+        gfx::Range(acp_start, acp_end));
+    if (!result_rect.has_value()) {
+      return TS_E_NOLAYOUT;
+    }
   }
   TRACE_EVENT1("ime", "TSFTextStore::GetTextExt", "DIP rect",
                result_rect->ToString());
 
-  *rect = display::win::ScreenWin::DIPToScreenRect(window_handle_,
-                                                   result_rect.value())
+  *rect = display::win::GetScreenWin()
+              ->DIPToScreenRect(window_handle_, result_rect.value())
               .ToRECT();
   *clipped = FALSE;
   TRACE_EVENT1("ime", "TSFTextStore::GetTextExt", "screen rect",
@@ -603,6 +655,9 @@ HRESULT TSFTextStore::RequestLock(DWORD lock_flags, HRESULT* result) {
   current_lock_type_ = (lock_flags & TS_LF_READWRITE);
 
   edit_flag_ = false;
+  if (features::IsHandleIMESpanChangesOnUpdateCompositionEnabled()) {
+    on_update_composition_called_ = false;
+  }
   // if there is not already some composition text, they we are about to start
   // composition. we need to set last_composition_start to the selection start.
   // Otherwise we are updating an existing composition, we should use the cached
@@ -627,7 +682,7 @@ HRESULT TSFTextStore::RequestLock(DWORD lock_flags, HRESULT* result) {
 
   // if nothing has changed from input service, then only need to
   // compare our cache with latest textinputstate.
-  if (!edit_flag_) {
+  if (!edit_flag_ || is_cancel_composition_in_progress_) {
     ResetCacheAfterEditSession();
     CalculateTextandSelectionDiffAndNotifyIfNeeded();
     return S_OK;
@@ -734,7 +789,9 @@ HRESULT TSFTextStore::RequestLock(DWORD lock_flags, HRESULT* result) {
         previous_composition_string_ != composition_string ||
         !previous_composition_selection_range_.EqualsIgnoringDirection(
             selection_) ||
-        previous_text_spans_ != text_spans_)) ||
+        ((!features::IsHandleIMESpanChangesOnUpdateCompositionEnabled() ||
+          on_update_composition_called_) &&
+         previous_text_spans_ != text_spans_))) ||
       ((wparam_keydown_fired_ != 0) &&
        text_input_client_->HasCompositionText() &&
        composition_string.empty())) {
@@ -910,6 +967,9 @@ HRESULT TSFTextStore::OnStartComposition(ITfCompositionView* composition_view,
 
 HRESULT TSFTextStore::OnUpdateComposition(ITfCompositionView* composition_view,
                                           ITfRange* range) {
+  if (features::IsHandleIMESpanChangesOnUpdateCompositionEnabled()) {
+    on_update_composition_called_ = true;
+  }
   return S_OK;
 }
 
@@ -1312,8 +1372,8 @@ void TSFTextStore::CalculateTextandSelectionDiffAndNotifyIfNeeded() {
     if (notify_text_change && text_changed) {
       TRACE_EVENT2(
           "ime", "TSFTextStore::CalculateTextandSelectionDiffAndNotifyIfNeeded",
-          "text_change_start", std::to_string(text_change.acpStart),
-          "text_change_end", std::to_string(text_change.acpNewEnd));
+          "text_change_start", base::NumberToString(text_change.acpStart),
+          "text_change_end", base::NumberToString(text_change.acpNewEnd));
       text_store_acp_sink_->OnTextChange(0, &text_change);
     }
 
@@ -1373,10 +1433,12 @@ bool TSFTextStore::CancelComposition() {
     return false;
 
   TRACE_EVENT0("ime", "TSFTextStore::CancelComposition");
-
+  is_cancel_composition_in_progress_ = true;
   ResetCompositionState();
 
-  return TerminateComposition();
+  bool result = TerminateComposition();
+  is_cancel_composition_in_progress_ = false;
+  return result;
 }
 
 bool TSFTextStore::ConfirmComposition() {
@@ -1519,6 +1581,8 @@ void TSFTextStore::CommitTextAndEndCompositionIfAny(size_t old_size,
     text_input_client_->InsertText(
         new_committed_string,
         ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+    TRACE_EVENT1("ime", "TSFTextStore::CommitTextAndEndCompositionIfAny",
+                 "data", new_committed_string);
   } else {
     text_input_client_->ClearCompositionText();
   }

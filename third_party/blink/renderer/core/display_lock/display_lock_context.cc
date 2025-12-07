@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 
 #include <string>
@@ -23,7 +18,6 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
@@ -35,6 +29,7 @@
 #include "third_party/blink/renderer/core/html_element_type_helpers.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/oof_positioned_node.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
@@ -359,6 +354,12 @@ void DisplayLockContext::DidStyleChildren() {
   element_->MarkAncestorsWithChildNeedsReattachLayoutTree();
 }
 
+bool DisplayLockContext::ShouldActivateForScreenReader() const {
+  return document_->GetStyleEngine().SkippedContainerRecalc() &&
+         IsActivatable(DisplayLockActivationReason::kAccessibility) &&
+         IsScreenReaderActive();
+}
+
 void DisplayLockContext::DidLayoutChildren() {
   // Since we did layout on children already, we'll clear this.
   child_layout_was_blocked_ = false;
@@ -516,8 +517,8 @@ void DisplayLockContext::ScheduleStateChangeEventIfNeeded() {
         ->GetTaskRunner(TaskType::kMiscPlatformAPI)
         ->PostTask(
             FROM_HERE,
-            WTF::BindOnce(&DisplayLockContext::DispatchStateChangeEventIfNeeded,
-                          WrapPersistent(this)));
+            BindOnce(&DisplayLockContext::DispatchStateChangeEventIfNeeded,
+                     WrapPersistent(this)));
     state_change_task_pending_ = true;
   }
 }
@@ -729,6 +730,11 @@ bool DisplayLockContext::MarkAncestorsForPrePaintIfNeeded() {
       // update.
       layout_object->MarkBlockingWheelEventHandlerChanged();
     }
+    if (needs_soft_navigation_context_update_ ||
+        layout_object->SoftNavigationContextChanged() ||
+        layout_object->DescendantSoftNavigationContextChanged()) {
+      layout_object->MarkSoftNavigationContextChanged();
+    }
     return true;
   }
   return compositing_dirtied;
@@ -800,7 +806,8 @@ bool DisplayLockContext::IsElementDirtyForPrePaint() const {
            PrePaintTreeWalk::ObjectRequiresTreeBuilderContext(*layout_object) ||
            needs_prepaint_subtree_walk_ ||
            needs_effective_allowed_touch_action_update_ ||
-           needs_blocking_wheel_event_handler_update_;
+           needs_blocking_wheel_event_handler_update_ ||
+           needs_soft_navigation_context_update_;
   }
   return false;
 }
@@ -1287,7 +1294,7 @@ bool DisplayLockContext::DescendantIsAnchorTargetFromOutsideDisplayLock() {
       for (const PhysicalBoxFragment& fragment :
            ancestor_box->PhysicalFragments()) {
         // Early out if there are no anchor targets in the subtree.
-        if (!fragment.HasAnchorQuery()) {
+        if (!fragment.HasChildAnchors()) {
           return false;
         }
         // Early out if there are not OOF children.
@@ -1344,6 +1351,8 @@ const char* DisplayLockContext::RenderAffectingStateName(int state) const {
       return "DescendantIsViewTransitionElement";
     case RenderAffectingState::kDescendantIsAnchorTarget:
       return "kDescendantIsAnchorTarget";
+    case RenderAffectingState::kHasScrollerWithScrollMarkerGroup:
+      return "kHasScrollerWithScrollMarkerGroup";
     case RenderAffectingState::kNumRenderAffectingStates:
       break;
   }
@@ -1383,7 +1392,8 @@ void DisplayLockContext::RestoreScrollOffsetIfStashed() {
   // Restore the offset and reset the value.
   if (auto* area = GetScrollableArea(element_)) {
     area->SetScrollOffset(*stashed_scroll_offset_,
-                          mojom::blink::ScrollType::kAnchoring);
+                          mojom::blink::ScrollType::kAnchoring,
+                          cc::ScrollSourceType::kStationaryScroll);
     stashed_scroll_offset_.reset();
   }
 }
@@ -1399,6 +1409,11 @@ bool DisplayLockContext::ActivatableDisplayLocksForced() const {
 
 void DisplayLockContext::SetAffectedByAnchorPositioning(bool val) {
   SetRenderAffectingState(RenderAffectingState::kDescendantIsAnchorTarget, val);
+}
+
+bool DisplayLockContext::IsScreenReaderActive() const {
+  return document_->ExistingAXObjectCache() &&
+         document_->ExistingAXObjectCache()->IsScreenReaderActive();
 }
 
 }  // namespace blink

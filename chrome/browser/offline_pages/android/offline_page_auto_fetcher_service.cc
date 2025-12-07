@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -32,7 +33,7 @@ constexpr int kMaximumInFlight = 3;
 
 class AutoFetchNotifierImpl : public AutoFetchNotifier {
  public:
-  ~AutoFetchNotifierImpl() override {}
+  ~AutoFetchNotifierImpl() override = default;
   // Ensures that the in-progress notification is showing with the appropriate
   // request count.
   void NotifyInProgress(int in_flight_count) override {

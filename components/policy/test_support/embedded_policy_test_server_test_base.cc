@@ -4,6 +4,8 @@
 
 #include "components/policy/test_support/embedded_policy_test_server_test_base.h"
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/check.h"
@@ -13,6 +15,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -64,6 +67,11 @@ void EmbeddedPolicyTestServerTestBase::SetAppType(const std::string& app_type) {
 void EmbeddedPolicyTestServerTestBase::SetDeviceIdParam(
     const std::string& device_id) {
   AddQueryParam(dm_protocol::kParamDeviceID, device_id);
+}
+
+void EmbeddedPolicyTestServerTestBase::SetProfileIdParam(
+    const std::string& profile_id) {
+  AddQueryParam(dm_protocol::kParamProfileID, profile_id);
 }
 
 void EmbeddedPolicyTestServerTestBase::SetDeviceType(
@@ -141,7 +149,7 @@ void EmbeddedPolicyTestServerTestBase::StartRequestAndWait() {
 
 void EmbeddedPolicyTestServerTestBase::DownloadedToString(
     base::OnceClosure callback,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   CHECK(!done_);
   CHECK(!response_body_);
   CHECK(callback);
@@ -160,7 +168,7 @@ int EmbeddedPolicyTestServerTestBase::GetResponseCode() const {
 }
 
 bool EmbeddedPolicyTestServerTestBase::HasResponseBody() const {
-  return response_body_ != nullptr;
+  return response_body_.has_value();
 }
 
 std::string EmbeddedPolicyTestServerTestBase::GetResponseBody() const {

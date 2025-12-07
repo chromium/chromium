@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+<grit latest_public_release="0" current_release="1">
   <outputs>
     <output filename="values-af/android_content_strings.xml" lang="af" type="android" />
     <output filename="values-am/android_content_strings.xml" lang="am" type="android" />
@@ -271,6 +271,13 @@
       </message>
       <message name="IDS_SPEECH_RECOGNITION_SERVICE_NOT_FOUND" desc="Toast message notifying Google speech service can't be found.">
         Google speech engine can't be found
+      </message>
+      <!-- Pointer Lock -->
+      <message name="IDS_POINTER_LOCK_API_NOTIFICATION" desc="Notification message when a site has successfully locked the pointer, with direction to the user how to show the pointer again.">
+        To show your cursor, press ESC
+      </message>
+      <message name="IDS_POINTER_LOCK_API_NOTIFICATION_NO_KEYBOARD" desc="Notification message when a site has successfully locked the pointer, with direction to the user how to show the pointer again.">
+        To show your cursor, switch apps, reload the page, or go back
       </message>
     </messages>
   </release>

@@ -31,9 +31,6 @@ if __name__ == '__main__':
       'components/guest_view/browser/bad_message.h': {
           'name': 'BadMessageReasonGuestView'
       },
-      'components/nacl/browser/bad_message.h': {
-          'name': 'BadMessageReasonNaCl'
-      },
       'components/password_manager/content/browser/bad_message.h': {
           'name': 'BadMessageReasonPasswordManager'
       },

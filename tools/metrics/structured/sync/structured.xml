@@ -964,7 +964,7 @@
 </project>
 
 <project name="StructuredMetrics">
-  <owner>jongahn@chromium.org</owner>
+  <owner>troywang@google.com</owner>
   <owner>tby@chromium.org</owner>
   <id>per-project</id>
   <scope>device</scope>
@@ -990,7 +990,7 @@
 </project>
 
 <project name="CrOSEvents" cros_events="true" targets="webui,chromium">
-  <owner>jongahn@chromium.org</owner>
+  <owner>troywang@google.com</owner>
   <id>per-project</id>
   <scope>device</scope>
   <key-rotation>120</key-rotation>
@@ -1007,6 +1007,7 @@
     <variant value="6">APP_INSTALL_URI_GETIT</variant>
     <variant value="7">APP_INSTALL_URI_LAUNCHER</variant>
     <variant value="8">APP_INSTALL_URI_PERIPHERALS</variant>
+    <variant value="9">APP_INSTALL_URI_MALL_V2</variant>
   </enum>
 
   <enum name="CameraAppLaunchType">
@@ -1222,6 +1223,9 @@
     <variant value="2">ABANDONED</variant>
     <variant value="3">REDIRECTED</variant>
     <variant value="4">FORMAT</variant>
+    <variant value="5">OPEN_FILE</variant>
+    <variant value="6">OPEN_LINK</variant>
+    <variant value="7">CREATE</variant>
   </enum>
 
   <enum name="PickerAction">
@@ -1241,6 +1245,8 @@
     <variant value="13">TRANSFORM_TITLE_CASE</variant>
     <variant value="14">CAPS_ON</variant>
     <variant value="15">CAPS_OFF</variant>
+    <variant value="16">OPEN_GIFS</variant>
+    <variant value="17">OPEN_LOBSTER</variant>
   </enum>
 
   <enum name="PickerResultSource">
@@ -1253,7 +1259,7 @@
     <variant value="6">DATES_TIMES</variant>
     <variant value="7">UNITS_MATHS</variant>
     <variant value="8">CASE_TRANSFORM</variant>
-    <variant value="9">DEPRECATED_TENOR</variant>
+    <variant value="9">TENOR</variant>
   </enum>
 
   <enum name="PickerResultType">
@@ -1266,10 +1272,102 @@
     <variant value="6">CLIPBOARD_TEXT</variant>
     <variant value="7">CLIPBOARD_IMAGE</variant>
     <variant value="8">CLIPBOARD_HTML</variant>
-    <variant value="9">DEPRECATED_GIF</variant>
+    <variant value="9">GIF</variant>
     <variant value="10">LINK</variant>
     <variant value="11">LOCAL_FILE</variant>
     <variant value="12">DRIVE_FILE</variant>
+  </enum>
+
+  <enum name="RecorderAppSpeakerLabelEnableState">
+    <variant value="0">ENABLED</variant>
+    <variant value="1">DISABLED_FIRST</variant>
+    <variant value="2">DISABLED</variant>
+    <variant value="3">UNKNOWN</variant>
+    <variant value="4">NOT_AVAILABLE</variant>
+  </enum>
+
+  <enum name="RecorderAppSummaryEnableState">
+    <variant value="0">ENABLED</variant>
+    <variant value="1">DISABLED</variant>
+    <variant value="2">UNKNOWN</variant>
+    <variant value="3">NOT_AVAILABLE</variant>
+  </enum>
+
+  <enum name="RecorderAppTranscriptionEnableState">
+    <variant value="0">ENABLED</variant>
+    <variant value="1">DISABLED_FIRST</variant>
+    <variant value="2">DISABLED</variant>
+    <variant value="3">UNKNOWN</variant>
+    <variant value="4">NOT_AVAILABLE</variant>
+  </enum>
+
+  <enum name="RecorderAppMicrophoneType">
+    <variant value="0">INTERNAL</variant>
+    <variant value="1">EXTERNAL</variant>
+  </enum>
+
+  <enum name="RecorderAppTranscriptionLocale">
+    <variant value="0">NONE</variant>
+    <variant value="1">EN_US</variant>
+    <variant value="2">JA_JP</variant>
+    <variant value="3">DE_DE</variant>
+    <variant value="4">ES_ES</variant>
+    <variant value="5">FR_FR</variant>
+    <variant value="6">IT_IT</variant>
+    <variant value="7">EN_CA</variant>
+    <variant value="8">EN_AU</variant>
+    <variant value="9">EN_GB</variant>
+    <variant value="10">EN_IE</variant>
+    <variant value="11">EN_SG</variant>
+    <variant value="12">FR_BE</variant>
+    <variant value="13">FR_CH</variant>
+    <variant value="14">EN_IN</variant>
+    <variant value="15">IT_CH</variant>
+    <variant value="16">DE_AT</variant>
+    <variant value="17">DE_BE</variant>
+    <variant value="18">DE_CH</variant>
+    <variant value="19">ES_US</variant>
+    <variant value="20">HI_IN</variant>
+    <variant value="21">PT_BR</variant>
+    <variant value="22">ID_ID</variant>
+    <variant value="23">KO_KR</variant>
+    <variant value="24">PL_PL</variant>
+    <variant value="25">TH_TH</variant>
+    <variant value="26">TR_TR</variant>
+    <variant value="27">ZH_CN</variant>
+    <variant value="28">ZH_TW</variant>
+    <variant value="29">DA_DK</variant>
+    <variant value="30">FR_CA</variant>
+    <variant value="31">NB_NO</variant>
+    <variant value="32">NL_NL</variant>
+    <variant value="33">SV_SE</variant>
+    <variant value="34">RU_RU</variant>
+    <variant value="35">VI_VN</variant>
+  </enum>
+
+  <enum name="RecorderAppModelResultStatus">
+    <variant value="0">SUCCESS</variant>
+    <variant value="1">GENERAL_ERROR</variant>
+    <variant value="2">UNSAFE</variant>
+    <variant value="3">UNSUPPORTED_TRANSCRIPTION_IS_TOO_SHORT</variant>
+    <variant value="4">UNSUPPORTED_TRANSCRIPTION_IS_TOO_LONG</variant>
+    <variant value="5">UNSUPPORTED_LANGUAGE</variant>
+  </enum>
+
+  <enum name="RecorderAppModelFeedback">
+    <variant value="0">NEGATIVE</variant>
+    <variant value="1">POSITIVE</variant>
+  </enum>
+
+  <enum name="RecorderAppAudioFormat">
+    <variant value="0">NOT_EXPORTED</variant>
+    <variant value="1">WEBM_ORIGINAL</variant>
+  </enum>
+
+  <enum name="RecorderAppTranscriptFormat">
+    <variant value="0">NOT_AVAILABLE</variant>
+    <variant value="1">NOT_EXPORTED</variant>
+    <variant value="2">TXT</variant>
   </enum>
   <event name="AppDiscovery.AppInstalled">
     <summary>
@@ -1496,7 +1594,7 @@
     </metric>
     <metric name="Language" type="int">
       <summary>
-        The integer maps to the LocaleCodeISO639 enum indicating the language that
+        The integer maps to the LocaleCodeBCP47 enum indicating the language that
         CCA UI uses.
       </summary>
     </metric>
@@ -2665,6 +2763,333 @@
     </metric>
   </event>
 
+  <event name="RecorderApp.StartSession">
+    <summary>
+      Event recorded when the app is successfully initialized and ready for user
+      to start the session.
+    </summary>
+    <metric name="SpeakerLabelEnableState" type="RecorderAppSpeakerLabelEnableState">
+      <summary>
+        Enable state of the speaker label feature.
+      </summary>
+    </metric>
+    <metric name="SummaryEnableState" type="RecorderAppSummaryEnableState">
+      <summary>
+        Enable state of the summary feature.
+      </summary>
+    </metric>
+    <metric name="TranscriptionEnableState" type="RecorderAppTranscriptionEnableState">
+      <summary>
+        Enable state of the transcription feature.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.Record">
+    <summary>
+      Event recorded when users stop or cancel an audio recording session.
+    </summary>
+    <metric name="MicrophoneType" type="RecorderAppMicrophoneType">
+      <summary>
+        Type of the microphone used in the recording.
+      </summary>
+    </metric>
+    <metric name="IncludeSystemAudio" type="int">
+      <summary>
+        Boolean indicating whether the system audio is included in the recording.
+      </summary>
+    </metric>
+    <metric name="AudioDuration" type="int">
+      <summary>
+        The duration of the recorded audio in milliseconds.
+      </summary>
+    </metric>
+    <metric name="RecordDuration" type="int">
+      <summary>
+        The total duration in recording session, including paused duration,
+        in milliseconds.
+      </summary>
+    </metric>
+    <metric name="EverPaused" type="int">
+      <summary>
+        Boolean indicating whether the recording has ever been paused.
+      </summary>
+    </metric>
+    <metric name="EverMuted" type="int">
+      <summary>
+        Boolean indicating whether the microphone input has ever been muted
+        during the recording.
+      </summary>
+    </metric>
+    <metric name="TranscriptionLocale" type="RecorderAppTranscriptionLocale">
+      <summary>
+        The locale used for the recording transcription.
+      </summary>
+    </metric>
+    <metric name="TranscriptionLabelEnableState" type="RecorderAppTranscriptionEnableState">
+      <summary>
+        Enable state of the transcription feature when the recording ends.
+      </summary>
+    </metric>
+    <metric name="SpeakerLabelEnableState" type="RecorderAppSpeakerLabelEnableState">
+      <summary>
+        Enable state of the speaker label feature when the recording ends.
+      </summary>
+    </metric>
+    <metric name="RecordingSaved" type="int">
+      <summary>
+        Boolean indicating whether the recording is saved.
+      </summary>
+    </metric>
+    <metric name="SpeakerCount" type="int">
+      <summary>
+        Number of speakers detected in the recording.
+      </summary>
+    </metric>
+    <metric name="WordCount" type="int">
+      <summary>
+        Number of words in the recording transcription.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.SuggestTitle">
+    <summary>
+      Event recorded when user chooses or dismisses the recording title
+      suggestion.
+    </summary>
+    <metric name="WordCount" type="int">
+      <summary>
+        Number of words in the recording transcription, which is used as an
+        input to generate the title.
+      </summary>
+    </metric>
+    <metric name="ResultStatus" type="RecorderAppModelResultStatus">
+      <summary>
+        Status of the recording title suggestion result.
+      </summary>
+    </metric>
+    <metric name="SuggestionAccepted" type="int">
+      <summary>
+        Boolean indicating whether the title suggestion is accepted or not.
+      </summary>
+    </metric>
+    <metric name="AcceptedSuggestionIndex" type="int">
+      <summary>
+        Zero-based index of the title suggestion that is chosen by user, set to
+        -1 if the suggestion is not accepted.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.Summarize">
+    <summary>
+      Event recorded when the recording summary is generated.
+    </summary>
+    <metric name="WordCount" type="int">
+      <summary>
+        Number of words in the recording transcription, which is used as an
+        input to generate the summary.
+      </summary>
+    </metric>
+    <metric name="ResultStatus" type="RecorderAppModelResultStatus">
+      <summary>
+        Status of the summary generation result.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.FeedbackTitleSuggestion">
+    <summary>
+      Event recorded when user give feedback to title suggestion result.
+    </summary>
+    <metric name="Feedback" type="RecorderAppModelFeedback">
+      <summary>
+        Feedback given by user
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.FeedbackSummary">
+    <summary>
+      Event recorded when user give feedback to recording summary result.
+    </summary>
+    <metric name="Feedback" type="RecorderAppModelFeedback">
+      <summary>
+        Feedback given by user
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.Onboard">
+    <summary>
+      Event recorded when user finishes onboarding steps when using app for the
+      first time.
+    </summary>
+    <metric name="TranscriptionEnableState" type="RecorderAppTranscriptionEnableState">
+      <summary>
+        Enable state of the transcription feature when onboarding is complete.
+      </summary>
+    </metric>
+    <metric name="SpeakerLabelEnableState" type="RecorderAppSpeakerLabelEnableState">
+      <summary>
+        Enable state of the speaker label feature after onboarding is complete.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.Export">
+    <summary>
+      Event recorded when user exports the recording audio, transcript, or both.
+    </summary>
+    <metric name="AudioFormat" type="RecorderAppAudioFormat">
+      <summary>
+        Format of the exported audio or NOT_EXPORTED if user does not export audio.
+      </summary>
+    </metric>
+    <metric name="TranscriptFormat" type="RecorderAppTranscriptFormat">
+      <summary>
+        Format of the exported transcription, NOT_EXPORTED, or NOT_AVAILABLE.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.ChangePlaybackSpeed">
+    <summary>
+      Event recorded when user changes the playback speed in the playback page.
+    </summary>
+    <metric name="PlaybackSpeed" type="double">
+      <summary>
+        Playback speed chosen by user.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.ChangePlaybackVolume">
+    <summary>
+      Event recorded when user changes the playback volume in the playback page.
+    </summary>
+    <metric name="Volume" type="int">
+      <summary>
+        Percent of the volume chosen by user, can be higher than zero when mute
+        is toggled on.
+      </summary>
+    </metric>
+    <metric name="Muted" type="int">
+      <summary>
+        Boolean indicating whether mute is toggled on.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.AppStartPerf">
+    <summary>
+      Performance measured during app initialization.
+    </summary>
+    <metric name="Duration" type="int">
+      <summary>
+        The duration of app initialization in milliseconds.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.TranscriptionModelDownloadPerf">
+    <summary>
+      Performance measured during transcription model download.
+    </summary>
+    <metric name="Duration" type="int">
+      <summary>
+        The duration of transcription model download in milliseconds.
+      </summary>
+    </metric>
+    <metric name="TranscriptionLocale" type="RecorderAppTranscriptionLocale">
+      <summary>
+        The locale for which to download the transcription model.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.SummaryModelDownloadPerf">
+    <summary>
+      Performance measured during summary model download.
+    </summary>
+    <metric name="Duration" type="int">
+      <summary>
+        The duration of summary model download in milliseconds.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.RecordingSavingPerf">
+    <summary>
+      Performance measured during recording saving.
+    </summary>
+    <metric name="Duration" type="int">
+      <summary>
+        The duration of recording saving in milliseconds.
+      </summary>
+    </metric>
+    <metric name="AudioDuration" type="int">
+      <summary>
+        The duration of the audio which is being saved in milliseconds.
+      </summary>
+    </metric>
+    <metric name="WordCount" type="int">
+      <summary>
+        Number of words in the recording transcription which is being saved.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.TitleSuggestionPerf">
+    <summary>
+      Performance measured during recording title suggestion.
+    </summary>
+    <metric name="Duration" type="int">
+      <summary>
+        The duration of title suggestion in milliseconds.
+      </summary>
+    </metric>
+    <metric name="WordCount" type="int">
+      <summary>
+        Number of words in the transcription which is used for title suggestion.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.SummaryPerf">
+    <summary>
+      Performance measured during recording summary generation.
+    </summary>
+    <metric name="Duration" type="int">
+      <summary>
+        The duration of the summary generation in milliseconds.
+      </summary>
+    </metric>
+    <metric name="WordCount" type="int">
+      <summary>
+        Number of words in the transcription which is used for summary
+        generation.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.ExportPerf">
+    <summary>
+      Performance measured during recording file export.
+    </summary>
+    <metric name="Duration" type="int">
+      <summary>
+        The duration of the recording file export in milliseconds.
+      </summary>
+    </metric>
+    <metric name="RecordingSize" type="int">
+      <summary>
+        Size of the exported recording in bytes.
+      </summary>
+    </metric>
+  </event>
+
   <event name="UserLogin">
     <summary>
       An event to signify a user is using the system.
@@ -2738,6 +3163,18 @@
       <summary>
         Unique ID of this debugging session. If DevTools is opened on multiple tabs,
         each instance would have a unique ID.
+      </summary>
+    </metric>
+    <metric name="IsSignedIn" type="int">
+      <summary>
+        Whether the user is signed in or not.
+        Deprecated in favor of the Tags bitmask metric
+      </summary>
+    </metric>
+    <metric name="Tags" type="int">
+      <summary>
+        Various tags associated with the session, e.g. whether the user is signed in or not,
+        if certain enterprise policies are enabled, etc. Stored as a bitmask.
       </summary>
     </metric>
   </event>
@@ -2983,6 +3420,65 @@
     <metric name="Context" type="int">
       <summary>
         Arbitrary contextual information for the event.
+      </summary>
+    </metric>
+    <metric name="TimeSinceSessionStart" type="int">
+      <summary>
+        Time in milliseconds since DevTools sessions start.
+      </summary>
+    </metric>
+    <metric name="SessionId" type="int">
+      <summary>
+        Unique ID of this debugging session. If DevTools is opened on multiple tabs,
+        each instance would have a unique ID.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="SettingAccess">
+    <summary>
+      Recorded when a setting value is first read and when it is changed.
+    </summary>
+    <metric name="Name" type="int">
+      <summary>
+        Hash of the setting name
+      </summary>
+    </metric>
+    <metric name="NumericValue" type="int">
+      <summary>
+        Value of the setting if it is numeric, enum or boolean.
+      </summary>
+    </metric>
+    <metric name="StringValue" type="int">
+      <summary>
+        Hash of the setting value if it is a string.
+      </summary>
+    </metric>
+    <metric name="TimeSinceSessionStart" type="int">
+      <summary>
+        Time in milliseconds since DevTools sessions start.
+      </summary>
+    </metric>
+    <metric name="SessionId" type="int">
+      <summary>
+        Unique ID of this debugging session. If DevTools is opened on multiple tabs,
+        each instance would have a unique ID.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="FunctionCall">
+    <summary>
+      Recorded when an instrumented function is called.
+    </summary>
+    <metric name="Name" type="int">
+      <summary>
+        Hash of the function name
+      </summary>
+    </metric>
+    <metric name="Context" type="int">
+      <summary>
+        Hash of the function's context.
       </summary>
     </metric>
     <metric name="TimeSinceSessionStart" type="int">

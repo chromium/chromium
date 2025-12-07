@@ -15,37 +15,38 @@ namespace constants {
 // enforced by `OfflineSigninLimiter` so the user will be allowed to use offline
 // authentication until a different reason than this policy enforces an online
 // login.
-constexpr int kOfflineSigninTimeLimitNotSet = -1;
+inline constexpr int kOfflineSigninTimeLimitNotSet = -1;
 
 // The value -2 means match the offline sign in time limit of the login screen,
 // so policies GaiaLockScreenOfflineSigninTimeLimitDays would get the same value
 // as GaiaOfflineSigninTimeLimitDays and
 // SamlLockScreenOfflineSigninTimeLimitDays would get the same value as
 // SAMLOfflineSigninTimeLimit
-constexpr int kLockScreenOfflineSigninTimeLimitDaysMatchLogin = -2;
+inline constexpr int kLockScreenOfflineSigninTimeLimitDaysMatchLogin = -2;
 
-constexpr int kDefaultGaiaOfflineSigninTimeLimitDays =
+inline constexpr int kDefaultGaiaOfflineSigninTimeLimitDays =
     kOfflineSigninTimeLimitNotSet;
-constexpr int kDefaultSAMLOfflineSigninTimeLimit = base::Days(14).InSeconds();
+inline constexpr int kDefaultSAMLOfflineSigninTimeLimit =
+    base::Days(14).InSeconds();
 
-constexpr int kDefaultGaiaLockScreenOfflineSigninTimeLimitDays =
+inline constexpr int kDefaultGaiaLockScreenOfflineSigninTimeLimitDays =
     kOfflineSigninTimeLimitNotSet;
-constexpr int kDefaultSamlLockScreenOfflineSigninTimeLimitDays =
+inline constexpr int kDefaultSamlLockScreenOfflineSigninTimeLimitDays =
     kOfflineSigninTimeLimitNotSet;
 
 // In-session password-change feature (includes password expiry notifications).
-const bool kDefaultSamlInSessionPasswordChangeEnabled = false;
-const int kDefaultSamlPasswordExpirationAdvanceWarningDays = 14;
+inline constexpr bool kDefaultSamlInSessionPasswordChangeEnabled = false;
+inline constexpr int kDefaultSamlPasswordExpirationAdvanceWarningDays = 14;
 
 // Online reauthentication on the lock screen.
-const bool kDefaultLockScreenReauthenticationEnabled = false;
+inline constexpr bool kDefaultLockScreenReauthenticationEnabled = false;
 
 // Default value for authentication flow automatic reloading controlled by
 // `DeviceAuthenticationFlowAutoReloadInterval` policy
 // A value of zero indicates the policy being disabled (no auto reload is
 // triggered). While a value greater than zero indicates automatically reloading
 // the authentication flow by this interval specified in minutes.
-const int kDefaultAuthenticationFlowAutoReloadInterval = 0;
+inline constexpr int kDefaultAuthenticationFlowAutoReloadInterval = 0;
 
 }  // namespace constants
 }  // namespace ash

@@ -35,8 +35,6 @@ class D3D11VP9Accelerator : public VP9Decoder::VP9Accelerator {
 
   bool OutputPicture(scoped_refptr<VP9Picture> picture) override;
 
-  bool NeedsCompressedHeaderParsed() const override;
-
  private:
   // Helper methods for SubmitDecode
   bool BeginFrame(const D3D11VP9Picture& pic);

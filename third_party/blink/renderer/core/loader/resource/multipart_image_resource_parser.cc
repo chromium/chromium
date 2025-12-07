@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/loader/resource/multipart_image_resource_parser.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -28,15 +25,14 @@ MultipartImageResourceParser::MultipartImageResourceParser(
     boundary_.push_front("--", 2);
 }
 
-void MultipartImageResourceParser::AppendData(const char* bytes,
-                                              wtf_size_t size) {
+void MultipartImageResourceParser::AppendData(base::span<const char> bytes) {
   DCHECK(!IsCancelled());
   // m_sawLastBoundary means that we've already received the final boundary
   // token. The server should stop sending us data at this point, but if it
   // does, we just throw it away.
   if (saw_last_boundary_)
     return;
-  data_.Append(bytes, size);
+  data_.AppendSpan(bytes);
 
   if (is_parsing_top_) {
     // Eat leading \r\n
@@ -52,7 +48,7 @@ void MultipartImageResourceParser::AppendData(const char* bytes,
 
     // Some servers don't send a boundary token before the first chunk of
     // data.  We handle this case anyway (Gecko does too).
-    if (0 != memcmp(data_.data(), boundary_.data(), boundary_.size())) {
+    if (base::span(data_).first(boundary_.size()) != base::span(boundary_)) {
       data_.push_front("\n", 1);
       data_.PrependVector(boundary_);
     }
@@ -83,7 +79,8 @@ void MultipartImageResourceParser::AppendData(const char* bytes,
       }
     }
     if (data_size) {
-      client_->MultipartDataReceived(data_.data(), data_size);
+      client_->MultipartDataReceived(
+          base::as_byte_span(data_).first(data_size));
       if (IsCancelled())
         return;
     }
@@ -112,9 +109,10 @@ void MultipartImageResourceParser::AppendData(const char* bytes,
   // buffered to handle a boundary that may have been truncated. "+2" for CRLF,
   // as we may ignore the last CRLF.
   if (!is_parsing_headers_ && data_.size() > boundary_.size() + 2) {
-    wtf_size_t send_length = data_.size() - boundary_.size() - 2;
-    client_->MultipartDataReceived(data_.data(), send_length);
-    data_.EraseAt(0, send_length);
+    auto send_data =
+        base::as_byte_span(data_).first(data_.size() - boundary_.size() - 2);
+    client_->MultipartDataReceived(send_data);
+    data_.EraseAt(0, send_data.size());
   }
 }
 
@@ -124,8 +122,9 @@ void MultipartImageResourceParser::Finish() {
     return;
   // If we have any pending data and we're not in a header, go ahead and send
   // it to the client.
-  if (!is_parsing_headers_ && !data_.empty())
-    client_->MultipartDataReceived(data_.data(), data_.size());
+  if (!is_parsing_headers_ && !data_.empty()) {
+    client_->MultipartDataReceived(base::as_byte_span(data_));
+  }
   data_.clear();
   saw_last_boundary_ = true;
 }
@@ -155,9 +154,10 @@ bool MultipartImageResourceParser::ParseHeaders() {
     response.AddHttpHeaderField(header.key, header.value);
 
   wtf_size_t end = 0;
-  if (!ParseMultipartHeadersFromBody(data_.data() + pos, data_.size() - pos,
-                                     &response, &end))
+  if (!ParseMultipartHeadersFromBody(base::as_byte_span(data_).subspan(pos),
+                                     &response, &end)) {
     return false;
+  }
   data_.EraseAt(0, end + pos);
   // Send the response!
   client_->OnePartInMultipartReceived(response);
@@ -168,11 +168,13 @@ bool MultipartImageResourceParser::ParseHeaders() {
 // doesn't require the dashes to exist.  See nsMultiMixedConv::FindToken.
 wtf_size_t MultipartImageResourceParser::FindBoundary(const Vector<char>& data,
                                                       Vector<char>* boundary) {
-  auto it = base::ranges::search(data, *boundary);
-  if (it == data.end())
+  auto found_boundary = std::ranges::search(data, *boundary);
+  if (found_boundary.begin() == data.end()) {
     return kNotFound;
+  }
 
-  wtf_size_t boundary_position = static_cast<wtf_size_t>(it - data.begin());
+  wtf_size_t boundary_position =
+      static_cast<wtf_size_t>(found_boundary.begin() - data.begin());
   // Back up over -- for backwards compat
   // TODO(tc): Don't we only want to do this once?  Gecko code doesn't seem to
   // care.

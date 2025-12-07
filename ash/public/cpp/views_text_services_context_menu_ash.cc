@@ -6,13 +6,13 @@
 
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "base/functional/bind.h"
-#include "chromeos/constants/chromeos_features.h"
+#include "base/notreached.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "chromeos/ui/clipboard_history/clipboard_history_submenu_model.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/menu_source_utils.h"
-#include "ui/base/pointer/touch_editing_controller.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/touch_selection/touch_editing_controller.h"
 #include "ui/views/controls/textfield/textfield.h"
 
 namespace ash {
@@ -30,32 +30,25 @@ ViewsTextServicesContextMenuAsh::ViewsTextServicesContextMenuAsh(
   }
 
   const size_t target_index = paste_index.value() + 1;
-  const int clipboard_history_string_id = GetClipboardHistoryStringId();
+  const int clipboard_history_string_id = IDS_APP_PASTE_FROM_CLIPBOARD;
 
-  // If the clipboard history refresh feature is enabled, insert a submenu of
-  // clipboard history descriptors; otherwise, insert a menu option to trigger
-  // the clipboard history menu.
+  // Insert a submenu of clipboard history descriptors.
   // NOTE: The string ID is reused as the command ID when inserting a menu item.
   // It is because Ash code does not have access to Chrome code where the IDC
   // commands are defined.
-  if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
-    // `submenu_model_` is a class member. Therefore, it is safe to use `this`
-    // pointer in the callback.
-    submenu_model_ = chromeos::clipboard_history::ClipboardHistorySubmenuModel::
-        CreateClipboardHistorySubmenuModel(
-            crosapi::mojom::ClipboardHistoryControllerShowSource::
-                kTextfieldContextSubmenu,
-            base::BindRepeating(
-                &ViewsTextServicesContextMenuAsh::ShowClipboardHistoryMenu,
-                base::Unretained(this)));
+  // `submenu_model_` is a class member. Therefore, it is safe to use `this`
+  // pointer in the callback.
+  submenu_model_ = chromeos::clipboard_history::ClipboardHistorySubmenuModel::
+      CreateClipboardHistorySubmenuModel(
+          crosapi::mojom::ClipboardHistoryControllerShowSource::
+              kTextfieldContextSubmenu,
+          base::BindRepeating(
+              &ViewsTextServicesContextMenuAsh::ShowClipboardHistoryMenu,
+              base::Unretained(this)));
 
-    menu->InsertSubMenuWithStringIdAt(target_index, clipboard_history_string_id,
-                                      clipboard_history_string_id,
-                                      submenu_model_.get());
-  } else {
-    menu->InsertItemWithStringIdAt(target_index, clipboard_history_string_id,
-                                   clipboard_history_string_id);
-  }
+  menu->InsertSubMenuWithStringIdAt(target_index, clipboard_history_string_id,
+                                    clipboard_history_string_id,
+                                    submenu_model_.get());
 }
 
 ViewsTextServicesContextMenuAsh::~ViewsTextServicesContextMenuAsh() = default;
@@ -64,13 +57,9 @@ bool ViewsTextServicesContextMenuAsh::GetAcceleratorForCommandId(
     int command_id,
     ui::Accelerator* accelerator) const {
   if (command_id == IDS_APP_SHOW_CLIPBOARD_HISTORY) {
-    // When the clipboard history refresh feature is enabled,
     // `IDS_APP_SHOW_CLIPBOARD_HISTORY` is in the clipboard history submenu.
     // Therefore, the code below should not be executed.
-    CHECK(!chromeos::features::IsClipboardHistoryRefreshEnabled());
-
-    *accelerator = ui::Accelerator(ui::VKEY_V, ui::EF_COMMAND_DOWN);
-    return true;
+    NOTREACHED();
   }
 
   return ViewsTextServicesContextMenuBase::GetAcceleratorForCommandId(
@@ -78,7 +67,7 @@ bool ViewsTextServicesContextMenuAsh::GetAcceleratorForCommandId(
 }
 
 bool ViewsTextServicesContextMenuAsh::IsCommandIdChecked(int command_id) const {
-  if (command_id == GetClipboardHistoryStringId()) {
+  if (command_id == IDS_APP_PASTE_FROM_CLIPBOARD) {
     return true;
   }
 
@@ -86,7 +75,7 @@ bool ViewsTextServicesContextMenuAsh::IsCommandIdChecked(int command_id) const {
 }
 
 bool ViewsTextServicesContextMenuAsh::IsCommandIdEnabled(int command_id) const {
-  if (command_id == GetClipboardHistoryStringId()) {
+  if (command_id == IDS_APP_PASTE_FROM_CLIPBOARD) {
     return ClipboardHistoryController::Get()->HasAvailableHistoryItems();
   }
 
@@ -96,20 +85,16 @@ bool ViewsTextServicesContextMenuAsh::IsCommandIdEnabled(int command_id) const {
 void ViewsTextServicesContextMenuAsh::ExecuteCommand(int command_id,
                                                      int event_flags) {
   if (command_id == IDS_APP_SHOW_CLIPBOARD_HISTORY) {
-    // This code path is only executed when the clipboard history refresh
-    // feature is disabled. When the feature is enabled, the menu option
-    // corresponding to `IDS_APP_SHOW_CLIPBOARD_HISTORY` is added to a submenu.
-    CHECK(!chromeos::features::IsClipboardHistoryRefreshEnabled());
-
-    ShowClipboardHistoryMenu(event_flags);
-    return;
+    // `IDS_APP_SHOW_CLIPBOARD_HISTORY` is in the clipboard history submenu.
+    // Therefore, the code below should not be executed.
+    NOTREACHED();
   }
 
   ViewsTextServicesContextMenuBase::ExecuteCommand(command_id, event_flags);
 }
 
 bool ViewsTextServicesContextMenuAsh::SupportsCommand(int command_id) const {
-  if (command_id == GetClipboardHistoryStringId()) {
+  if (command_id == IDS_APP_PASTE_FROM_CLIPBOARD) {
     return true;
   }
 

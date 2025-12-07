@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/win/src/win_utils.h"
 
 #include <windows.h>
@@ -22,6 +17,8 @@
 #include <string>
 #include <vector>
 
+#include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_util.h"
@@ -30,6 +27,12 @@
 #include "sandbox/win/src/internal_types.h"
 #include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/sandbox_nt_util.h"
+
+// Prototype for ProcessPrng.
+// See: https://learn.microsoft.com/en-us/windows/win32/seccng/processprng
+extern "C" {
+BOOL WINAPI ProcessPrng(PBYTE pbData, SIZE_T cbData);
+}
 
 namespace {
 
@@ -71,6 +74,18 @@ std::unique_ptr<std::vector<uint8_t>> QueryObjectInformation(
   return data;
 }
 
+// Import bcryptprimitives!ProcessPrng rather than cryptbase!RtlGenRandom to
+// avoid opening a handle to \\Device\KsecDD in the renderer.
+decltype(&ProcessPrng) GetProcessPrng() {
+  HMODULE hmod = LoadLibraryW(L"bcryptprimitives.dll");
+  CHECK(hmod);
+  decltype(&ProcessPrng) process_prng_fn =
+      reinterpret_cast<decltype(&ProcessPrng)>(
+          GetProcAddress(hmod, "ProcessPrng"));
+  CHECK(process_prng_fn);
+  return process_prng_fn;
+}
+
 }  // namespace
 
 namespace sandbox {
@@ -96,7 +111,7 @@ std::optional<std::wstring> GetPathFromHandle(HANDLE handle) {
   if (!buffer)
     return std::nullopt;
   OBJECT_NAME_INFORMATION* name =
-      reinterpret_cast<OBJECT_NAME_INFORMATION*>(buffer->data());
+      UNSAFE_TODO(reinterpret_cast<OBJECT_NAME_INFORMATION*>(buffer->data()));
   return std::wstring(
       name->ObjectName.Buffer,
       name->ObjectName.Length / sizeof(name->ObjectName.Buffer[0]));
@@ -109,7 +124,7 @@ std::optional<std::wstring> GetTypeNameFromHandle(HANDLE handle) {
   if (!buffer)
     return std::nullopt;
   OBJECT_TYPE_INFORMATION* name =
-      reinterpret_cast<OBJECT_TYPE_INFORMATION*>(buffer->data());
+      UNSAFE_TODO(reinterpret_cast<OBJECT_TYPE_INFORMATION*>(buffer->data()));
   return std::wstring(name->Name.Buffer,
                       name->Name.Length / sizeof(name->Name.Buffer[0]));
 }
@@ -178,40 +193,18 @@ void* GetProcessBaseAddress(HANDLE process) {
   return base_address;
 }
 
-std::optional<ProcessHandleMap> GetCurrentProcessHandles() {
-  DWORD handle_count;
-  if (!::GetProcessHandleCount(::GetCurrentProcess(), &handle_count))
-    return std::nullopt;
-
-  // The system call will return only handles up to the buffer size so add a
-  // margin of error of an additional 1000 handles.
-  std::vector<char> buffer((handle_count + 1000) * sizeof(uint32_t));
-  DWORD return_length;
-  NTSTATUS status = GetNtExports()->QueryInformationProcess(
-      ::GetCurrentProcess(), ProcessHandleTable, buffer.data(),
-      static_cast<ULONG>(buffer.size()), &return_length);
-
-  if (!NT_SUCCESS(status)) {
-    ::SetLastError(GetLastErrorFromNtStatus(status));
-    return std::nullopt;
-  }
-  DCHECK(buffer.size() >= return_length);
-  DCHECK((buffer.size() % sizeof(uint32_t)) == 0);
-  ProcessHandleMap handle_map;
-  const uint32_t* handle_values = reinterpret_cast<uint32_t*>(buffer.data());
-  size_t count = return_length / sizeof(uint32_t);
-  for (size_t index = 0; index < count; ++index) {
-    HANDLE handle = base::win::Uint32ToHandle(handle_values[index]);
-    auto type_name = GetTypeNameFromHandle(handle);
-    if (type_name)
-      handle_map[type_name.value()].push_back(handle);
-  }
-  return handle_map;
-}
-
 bool ContainsNulCharacter(std::wstring_view str) {
   wchar_t nul = '\0';
   return str.find_first_of(nul) != std::wstring::npos;
+}
+
+void WarmupRandomnessInfrastructure() {
+  BYTE data[1];
+  // TODO(crbug.com/40088338) Call a warmup function exposed by boringssl.
+  static decltype(&ProcessPrng) process_prng_fn = GetProcessPrng();
+  BOOL success = process_prng_fn(data, sizeof(data));
+  // ProcessPrng is documented to always return TRUE.
+  CHECK(success);
 }
 
 }  // namespace sandbox

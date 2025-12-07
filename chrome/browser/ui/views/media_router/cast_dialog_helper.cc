@@ -22,7 +22,7 @@ std::unique_ptr<views::View> CreateThrobber() {
       kPrimaryIconSize - throbber->CalculatePreferredSize({}).height();
   throbber_container->SetBorder(views::CreateEmptyBorder(
       gfx::Insets(extra_borders / 2) + kPrimaryIconBorder));
-  throbber_container->AddChildView(throbber);
+  throbber_container->AddChildViewRaw(throbber);
   return throbber_container;
 }
 

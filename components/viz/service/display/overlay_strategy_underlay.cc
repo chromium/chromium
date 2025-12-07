@@ -21,7 +21,7 @@ OverlayStrategyUnderlay::OverlayStrategyUnderlay(
   DCHECK(capability_checker);
 }
 
-OverlayStrategyUnderlay::~OverlayStrategyUnderlay() {}
+OverlayStrategyUnderlay::~OverlayStrategyUnderlay() = default;
 
 void OverlayStrategyUnderlay::Propose(
     const SkM44& output_color_matrix,
@@ -31,7 +31,7 @@ void OverlayStrategyUnderlay::Propose(
     const DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_pass_list,
     SurfaceDamageRectList* surface_damage_rect_list,
-    const PrimaryPlane* primary_plane,
+    const std::optional<OverlayCandidate>& primary_plane,
     std::vector<OverlayProposedCandidate>* candidates,
     std::vector<gfx::Rect>* content_bounds) {
   auto* render_pass = render_pass_list->back().get();
@@ -63,8 +63,8 @@ void OverlayStrategyUnderlay::Propose(
     // If we are requiring an overlay, then we should not block it due to this
     // condition.
     if (!candidate.requires_overlay &&
-        candidate_factory.IsOccludedByFilteredQuad(
-            candidate, quad_list.begin(), it, render_pass_backdrop_filters)) {
+        OverlayCandidateFactory::IsOccludedByFilteredQuad(
+            **it, quad_list.begin(), it, render_pass_backdrop_filters)) {
       continue;
     }
 
@@ -83,7 +83,7 @@ bool OverlayStrategyUnderlay::Attempt(
     const DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_pass_list,
     SurfaceDamageRectList* surface_damage_rect_list,
-    const PrimaryPlane* primary_plane,
+    const std::optional<OverlayCandidate>& primary_plane,
     OverlayCandidateList* candidate_list,
     std::vector<gfx::Rect>* content_bounds,
     const OverlayProposedCandidate& proposed_candidate) {
@@ -102,13 +102,13 @@ bool OverlayStrategyUnderlay::Attempt(
     // |primary_plane| unchanged. The underlay strategy only works when the
     // |primary_plane| supports blending. In order to check the hardware
     // support, make a copy of the |primary_plane| with blending enabled.
-    PrimaryPlane new_plane_candidate(*primary_plane);
-    new_plane_candidate.enable_blending = true;
+    OverlayCandidate new_plane_candidate(*primary_plane);
+    new_plane_candidate.is_opaque = false;
     // Check for support.
-    capability_checker_->CheckOverlaySupport(&new_plane_candidate,
+    capability_checker_->CheckOverlaySupport(new_plane_candidate,
                                              &new_candidate_list);
   } else {
-    capability_checker_->CheckOverlaySupport(nullptr, &new_candidate_list);
+    capability_checker_->CheckOverlaySupport(std::nullopt, &new_candidate_list);
   }
 
   if (new_candidate_list.back().overlay_handled) {
@@ -135,13 +135,11 @@ void OverlayStrategyUnderlay::CommitCandidate(
   }
 }
 
-// Turn on blending for the output surface plane so the underlay could show
-// through.
 void OverlayStrategyUnderlay::AdjustOutputSurfaceOverlay(
-    OverlayProcessorInterface::OutputSurfaceOverlayPlane*
-        output_surface_plane) {
-  if (output_surface_plane)
-    output_surface_plane->enable_blending = true;
+    std::optional<OverlayCandidate>& output_surface_plane) {
+  if (output_surface_plane) {
+    output_surface_plane->is_opaque = false;
+  }
 }
 
 OverlayStrategy OverlayStrategyUnderlay::GetUMAEnum() const {

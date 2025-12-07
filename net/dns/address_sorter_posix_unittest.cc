@@ -2,20 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/dns/address_sorter_posix.h"
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/ip_address.h"
@@ -40,7 +38,7 @@ namespace {
 // Used to map destination address to source address.
 typedef std::map<IPAddress, IPAddress> AddressMapping;
 
-IPAddress ParseIP(const std::string& str) {
+IPAddress ParseIP(std::string_view str) {
   IPAddress addr;
   CHECK(addr.AssignFromIPLiteral(str));
   return addr;
@@ -289,14 +287,16 @@ class AddressSorterPosixSyncOrAsyncTest
  protected:
   AddressSorterPosixSyncOrAsyncTest() { SetConnectMode(GetParam()); }
 
-  // Verify that NULL-terminated |addresses| matches (-1)-terminated |order|
-  // after sorting.
-  void Verify(const char* const addresses[], const int order[]) {
+  // Verify |addresses| matches |order| after sorting.
+  void Verify(base::span<const std::string_view> addresses,
+              base::span<const int> order) {
     std::vector<IPEndPoint> endpoints;
-    for (const char* const* addr = addresses; *addr != nullptr; ++addr)
-      endpoints.emplace_back(ParseIP(*addr), 80);
-    for (size_t i = 0; order[i] >= 0; ++i)
-      CHECK_LT(order[i], static_cast<int>(endpoints.size()));
+    for (auto addr : addresses) {
+      endpoints.emplace_back(ParseIP(addr), 80);
+    }
+    for (auto order_i : order) {
+      CHECK_LT(order_i, static_cast<int>(endpoints.size()));
+    }
 
     std::vector<IPEndPoint> sorted;
     TestCompletionCallback callback;
@@ -305,8 +305,9 @@ class AddressSorterPosixSyncOrAsyncTest
                                  callback.callback()));
     callback.WaitForResult();
 
-    for (size_t i = 0; (i < sorted.size()) || (order[i] >= 0); ++i) {
-      IPEndPoint expected = order[i] >= 0 ? endpoints[order[i]] : IPEndPoint();
+    for (size_t i = 0; (i < sorted.size()) || (i < order.size()); ++i) {
+      IPEndPoint expected =
+          i < order.size() ? endpoints[order[i]] : IPEndPoint();
       IPEndPoint actual = i < sorted.size() ? sorted[i] : IPEndPoint();
       EXPECT_TRUE(expected == actual)
           << "Endpoint out of order at position " << i << "\n"
@@ -326,8 +327,8 @@ INSTANTIATE_TEST_SUITE_P(
 // Rule 1: Avoid unusable destinations.
 TEST_P(AddressSorterPosixSyncOrAsyncTest, Rule1) {
   AddMapping("10.0.0.231", "10.0.0.1");
-  const char* const addresses[] = {"::1", "10.0.0.231", "127.0.0.1", nullptr};
-  const int order[] = { 1, -1 };
+  const std::string_view addresses[] = {"::1", "10.0.0.231", "127.0.0.1"};
+  const int order[] = {1};
   Verify(addresses, order);
 }
 
@@ -340,12 +341,12 @@ TEST_P(AddressSorterPosixSyncOrAsyncTest, Rule2) {
   AddMapping("fec1::2", "fe81::10");      // site-local vs. link-local
   AddMapping("8.0.0.1", "169.254.0.10");  // global vs. link-local
   // In all three cases, matching scope is preferred.
-  const int order[] = { 1, 0, -1 };
-  const char* const addresses1[] = {"3002::2", "3002::1", nullptr};
+  const int order[] = {1, 0};
+  const std::string_view addresses1[] = {"3002::2", "3002::1"};
   Verify(addresses1, order);
-  const char* const addresses2[] = {"fec1::2", "ff32::1", nullptr};
+  const std::string_view addresses2[] = {"fec1::2", "ff32::1"};
   Verify(addresses2, order);
-  const char* const addresses3[] = {"8.0.0.1", "fec1::1", nullptr};
+  const std::string_view addresses3[] = {"8.0.0.1", "fec1::1"};
   Verify(addresses3, order);
 }
 
@@ -355,8 +356,8 @@ TEST_P(AddressSorterPosixSyncOrAsyncTest, Rule3) {
   AddMapping("3002::1", "4000::10");
   GetSourceInfo("4000::10")->deprecated = true;
   AddMapping("3002::2", "4000::20");
-  const char* const addresses[] = {"3002::1", "3002::2", nullptr};
-  const int order[] = { 1, 0, -1 };
+  const std::string_view addresses[] = {"3002::1", "3002::2"};
+  const int order[] = {1, 0};
   Verify(addresses, order);
 }
 
@@ -365,8 +366,8 @@ TEST_P(AddressSorterPosixSyncOrAsyncTest, Rule4) {
   AddMapping("3002::1", "4000::10");
   AddMapping("3002::2", "4000::20");
   GetSourceInfo("4000::20")->home = true;
-  const char* const addresses[] = {"3002::1", "3002::2", nullptr};
-  const int order[] = { 1, 0, -1 };
+  const std::string_view addresses[] = {"3002::1", "3002::2"};
+  const int order[] = {1, 0};
   Verify(addresses, order);
 }
 
@@ -376,13 +377,13 @@ TEST_P(AddressSorterPosixSyncOrAsyncTest, Rule5) {
   AddMapping("::ffff:1234:1", "::ffff:1234:10");  // matching IPv4-mapped
   AddMapping("2001::1", "::ffff:1234:10");        // Teredo vs. IPv4-mapped
   AddMapping("2002::1", "2001::10");              // 6to4 vs. Teredo
-  const int order[] = { 1, 0, -1 };
+  const int order[] = {1, 0};
   {
-    const char* const addresses[] = {"2001::1", "::1", nullptr};
+    const std::string_view addresses[] = {"2001::1", "::1"};
     Verify(addresses, order);
   }
   {
-    const char* const addresses[] = {"2002::1", "::ffff:1234:1", nullptr};
+    const std::string_view addresses[] = {"2002::1", "::ffff:1234:1"};
     Verify(addresses, order);
   }
 }
@@ -393,9 +394,9 @@ TEST_P(AddressSorterPosixSyncOrAsyncTest, Rule6) {
   AddMapping("ff32::1", "fe81::10");              // multicast
   AddMapping("::ffff:1234:1", "::ffff:1234:10");  // IPv4-mapped
   AddMapping("2001::1", "2001::10");              // Teredo
-  const char* const addresses[] = {"2001::1", "::ffff:1234:1", "ff32::1", "::1",
-                                   nullptr};
-  const int order[] = { 3, 2, 1, 0, -1 };
+  const std::string_view addresses[] = {"2001::1", "::ffff:1234:1", "ff32::1",
+                                        "::1"};
+  const int order[] = {3, 2, 1, 0};
   Verify(addresses, order);
 }
 
@@ -404,8 +405,8 @@ TEST_P(AddressSorterPosixSyncOrAsyncTest, Rule7) {
   AddMapping("3002::1", "4000::10");
   AddMapping("3002::2", "4000::20");
   GetSourceInfo("4000::20")->native = true;
-  const char* const addresses[] = {"3002::1", "3002::2", nullptr};
-  const int order[] = { 1, 0, -1 };
+  const std::string_view addresses[] = {"3002::1", "3002::2"};
+  const int order[] = {1, 0};
   Verify(addresses, order);
 }
 
@@ -418,9 +419,9 @@ TEST_P(AddressSorterPosixSyncOrAsyncTest, Rule8) {
   AddMapping("ff32::1", "4000::10");  // link-local
   AddMapping("ff35::1", "4000::10");  // site-local
   AddMapping("ff38::1", "4000::10");  // org-local
-  const char* const addresses[] = {"ff38::1", "3000::1", "ff35::1",
-                                   "ff32::1", "fe81::1", nullptr};
-  const int order[] = { 4, 1, 3, 2, 0, -1 };
+  const std::string_view addresses[] = {"ff38::1", "3000::1", "ff35::1",
+                                        "ff32::1", "fe81::1"};
+  const int order[] = {4, 1, 3, 2, 0};
   Verify(addresses, order);
 }
 
@@ -432,9 +433,9 @@ TEST_P(AddressSorterPosixSyncOrAsyncTest, Rule9) {
   GetSourceInfo("4000::10")->prefix_length = 15;
   AddMapping("4002::1", "4000::10");       // 14 bit match
   AddMapping("4080::1", "4000::10");       // 8 bit match
-  const char* const addresses[] = {"4080::1", "4002::1", "4000::1", "3000::1",
-                                   nullptr};
-  const int order[] = { 3, 2, 1, 0, -1 };
+  const std::string_view addresses[] = {"4080::1", "4002::1", "4000::1",
+                                        "3000::1"};
+  const int order[] = {3, 2, 1, 0};
   Verify(addresses, order);
 }
 
@@ -443,8 +444,8 @@ TEST_P(AddressSorterPosixSyncOrAsyncTest, Rule10) {
   AddMapping("4000::1", "4000::10");
   AddMapping("4000::2", "4000::10");
   AddMapping("4000::3", "4000::10");
-  const char* const addresses[] = {"4000::1", "4000::2", "4000::3", nullptr};
-  const int order[] = { 0, 1, 2, -1 };
+  const std::string_view addresses[] = {"4000::1", "4000::2", "4000::3"};
+  const int order[] = {0, 1, 2};
   Verify(addresses, order);
 }
 
@@ -455,9 +456,9 @@ TEST_P(AddressSorterPosixSyncOrAsyncTest, MultipleRules) {
   AddMapping("4000::1", "4000::10");  // global unicast
   AddMapping("ff32::2", "fe81::20");  // deprecated link-local multicast
   GetSourceInfo("fe81::20")->deprecated = true;
-  const char* const addresses[] = {"ff3e::1", "ff32::2", "4000::1", "ff32::1",
-                                   "::1",     "8.0.0.1", nullptr};
-  const int order[] = { 4, 3, 0, 2, 1, -1 };
+  const std::string_view addresses[] = {"ff3e::1", "ff32::2", "4000::1",
+                                        "ff32::1", "::1",     "8.0.0.1"};
+  const int order[] = {4, 3, 0, 2, 1};
   Verify(addresses, order);
 }
 

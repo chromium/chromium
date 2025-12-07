@@ -16,21 +16,26 @@ namespace web_app {
 
 class WebAppLockManager;
 
-// This gives access to a `content::WebContents` instance that's managed by
-// `WebAppCommandManager`. A lock class that needs access to
-// `content::WebContents` can inherit from this class.
+// A mixin class that provides access to the shared web contents that is used by
+// the WebAppProvider system. A lock class that needs this access can inherit
+// from this class.
 //
-// Note: Accessing a lock will CHECK-fail if the WebAppProvider system has
-// shutdown (or the profile has shut down).
+// Note: Accessing resources before the lock is granted or after the
+// WebAppProvider system has shutdown (or the profile has shut down) will
+// CHECK-fail.
 class WithSharedWebContentsResources {
  public:
-  ~WithSharedWebContentsResources();
+  virtual ~WithSharedWebContentsResources();
 
+  // Will CHECK-fail if accessed before the lock is granted.
   content::WebContents& shared_web_contents() const;
 
  protected:
-  WithSharedWebContentsResources(base::WeakPtr<WebAppLockManager> lock_manager,
-                                 content::WebContents& shared_web_contents);
+  WithSharedWebContentsResources();
+
+  void GrantWithSharedWebContentsResources(
+      WebAppLockManager& lock_manager,
+      content::WebContents& shared_web_contents);
 
  private:
   base::WeakPtr<WebAppLockManager> lock_manager_;

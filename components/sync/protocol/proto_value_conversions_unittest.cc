@@ -62,16 +62,18 @@ using testing::Not;
 
 // We'd also like to check if we changed any field in our messages. However,
 // that's hard to do: sizeof could work, but it's platform-dependent.
-// default_instance().ByteSize() won't change for most changes, since most of
-// our fields are optional. So we just settle for comments in the proto files.
+// default_instance().ByteSizeLong() won't change for most changes, since most
+// of our fields are optional. So we just settle for comments in the proto
+// files.
 
 DEFINE_SPECIFICS_TO_VALUE_TEST(encrypted)
 
-static_assert(53 == syncer::GetNumDataTypes(),
+static_assert(59 == syncer::GetNumDataTypes(),
               "When adding a new field, add a DEFINE_SPECIFICS_TO_VALUE_TEST "
               "for your field below, and optionally a test for the specific "
               "conversions.");
 
+DEFINE_SPECIFICS_TO_VALUE_TEST(account_setting)
 DEFINE_SPECIFICS_TO_VALUE_TEST(app)
 DEFINE_SPECIFICS_TO_VALUE_TEST(app_list)
 DEFINE_SPECIFICS_TO_VALUE_TEST(app_setting)
@@ -101,7 +103,6 @@ DEFINE_SPECIFICS_TO_VALUE_TEST(outgoing_password_sharing_invitation)
 DEFINE_SPECIFICS_TO_VALUE_TEST(password)
 DEFINE_SPECIFICS_TO_VALUE_TEST(plus_address)
 DEFINE_SPECIFICS_TO_VALUE_TEST(plus_address_setting)
-DEFINE_SPECIFICS_TO_VALUE_TEST(power_bookmark)
 DEFINE_SPECIFICS_TO_VALUE_TEST(preference)
 DEFINE_SPECIFICS_TO_VALUE_TEST(printer)
 DEFINE_SPECIFICS_TO_VALUE_TEST(printers_authorization_server)
@@ -125,6 +126,12 @@ DEFINE_SPECIFICS_TO_VALUE_TEST(web_app)
 DEFINE_SPECIFICS_TO_VALUE_TEST(webauthn_credential)
 DEFINE_SPECIFICS_TO_VALUE_TEST(wifi_configuration)
 DEFINE_SPECIFICS_TO_VALUE_TEST(workspace_desk)
+DEFINE_SPECIFICS_TO_VALUE_TEST(autofill_valuable)
+DEFINE_SPECIFICS_TO_VALUE_TEST(autofill_valuable_metadata)
+DEFINE_SPECIFICS_TO_VALUE_TEST(shared_tab_group_account_data)
+DEFINE_SPECIFICS_TO_VALUE_TEST(shared_comment)
+DEFINE_SPECIFICS_TO_VALUE_TEST(ai_thread)
+DEFINE_SPECIFICS_TO_VALUE_TEST(contextual_task)
 
 TEST(ProtoValueConversionsTest, AutofillWalletSpecificsToValue) {
   sync_pb::AutofillWalletSpecifics specifics;
@@ -246,8 +253,9 @@ bool ValueHasSpecifics(const base::Value::Dict& value,
   }
 
   const base::Value& entry_dictionary_value = (*entities_list)[0];
-  if (!entry_dictionary_value.is_dict())
+  if (!entry_dictionary_value.is_dict()) {
     return false;
+  }
 
   const base::Value::Dict& entry_dictionary = entry_dictionary_value.GetDict();
   return entry_dictionary.FindDict("specifics") != nullptr;
@@ -282,7 +290,7 @@ MATCHER(ValueHasNonEmptyGetUpdateTriggers, "") {
 }  // namespace
 
 // Create a ClientToServerMessage with an EntitySpecifics.  Converting it to
-// a value should respect the |include_specifics| flag.
+// a value should respect the `include_specifics` flag.
 TEST(ProtoValueConversionsTest, ClientToServerMessageToValue) {
   sync_pb::ClientToServerMessage message;
   sync_pb::CommitMessage* commit_message = message.mutable_commit();
@@ -332,7 +340,7 @@ TEST(ProtoValueConversionsTest, ClientToServerMessageToValueGUTriggers) {
 }
 
 // Create a ClientToServerResponse with an EntitySpecifics.  Converting it to
-// a value should respect the |include_specifics| flag.
+// a value should respect the `include_specifics` flag.
 TEST(ProtoValueConversionsTest, ClientToServerResponseToValue) {
   sync_pb::ClientToServerResponse message;
   sync_pb::GetUpdatesResponse* response = message.mutable_get_updates();

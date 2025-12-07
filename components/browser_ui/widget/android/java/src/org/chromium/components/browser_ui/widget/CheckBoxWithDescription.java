@@ -11,10 +11,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.CheckBox;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.constraintlayout.widget.ConstraintLayout;
+
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * A CheckBox with a primary and descriptive text to the right.
@@ -22,7 +24,8 @@ import androidx.annotation.VisibleForTesting;
  * TODO(crbug.com/40862238): Add CompoundButtonWithDescription to avoid duplicate code with
  * RadioButtonWithDescription.
  */
-public class CheckBoxWithDescription extends RelativeLayout implements OnClickListener {
+@NullMarked
+public class CheckBoxWithDescription extends ConstraintLayout implements OnClickListener {
     private CheckBox mCheckBox;
     private TextView mPrimary;
     private TextView mDescription;
@@ -46,21 +49,27 @@ public class CheckBoxWithDescription extends RelativeLayout implements OnClickLi
         mDescription = getDescriptionTextView();
     }
 
-    /** @return CheckBox View inside this {@link CheckBoxWithDescription}. */
+    /**
+     * @return CheckBox View inside this {@link CheckBoxWithDescription}.
+     */
     private CheckBox getCheckBoxView() {
-        return (CheckBox) findViewById(R.id.checkbox);
+        return findViewById(R.id.checkbox);
     }
 
-    /** @return TextView displayed as primary inside this {@link CheckBoxWithDescription}. */
+    /**
+     * @return TextView displayed as primary inside this {@link CheckBoxWithDescription}.
+     */
     @VisibleForTesting
     TextView getPrimaryTextView() {
-        return (TextView) findViewById(R.id.primary);
+        return findViewById(R.id.primary);
     }
 
-    /** @return TextView displayed as description inside this {@link CheckBoxWithDescription}. */
+    /**
+     * @return TextView displayed as description inside this {@link CheckBoxWithDescription}.
+     */
     @VisibleForTesting
     TextView getDescriptionTextView() {
-        return (TextView) findViewById(R.id.description);
+        return findViewById(R.id.description);
     }
 
     @Override
@@ -84,10 +93,8 @@ public class CheckBoxWithDescription extends RelativeLayout implements OnClickLi
         mDescription.setText(text);
 
         if (TextUtils.isEmpty(text)) {
-            ((LayoutParams) mPrimary.getLayoutParams()).addRule(RelativeLayout.CENTER_VERTICAL);
             mDescription.setVisibility(View.GONE);
         } else {
-            ((LayoutParams) mPrimary.getLayoutParams()).removeRule(RelativeLayout.CENTER_VERTICAL);
             mDescription.setVisibility(View.VISIBLE);
         }
     }

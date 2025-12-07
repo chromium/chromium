@@ -5,7 +5,7 @@
 #ifndef CC_LAYERS_VIDEO_FRAME_PROVIDER_H_
 #define CC_LAYERS_VIDEO_FRAME_PROVIDER_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 

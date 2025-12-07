@@ -252,7 +252,7 @@ TEST_F(ImportantFileWriterCleanerTest, StartAddFromOtherThread) {
 
   // Add from the ThreadPool and wait for it to finish.
   TestWaitableEvent waitable_event;
-  ThreadPool::PostTask(FROM_HERE, BindLambdaForTesting([&]() {
+  ThreadPool::PostTask(FROM_HERE, BindLambdaForTesting([&] {
                          ImportantFileWriterCleaner::AddDirectory(dir_1());
                          waitable_event.Signal();
                        }));

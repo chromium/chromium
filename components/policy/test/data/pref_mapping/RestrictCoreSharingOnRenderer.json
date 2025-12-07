@@ -1,0 +1,31 @@
+[
+  {
+    "os": [
+      "win"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "RestrictCoreSharingOnRenderer": false
+        },
+        "prefs": {
+          "restrict_core_sharing_on_renderer": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "RestrictCoreSharingOnRenderer": true
+        },
+        "prefs": {
+          "restrict_core_sharing_on_renderer": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

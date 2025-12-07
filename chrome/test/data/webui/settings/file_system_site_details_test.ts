@@ -7,19 +7,18 @@ import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {FileSystemGrant, OriginFileSystemGrants} from 'chrome://settings/lazy_load.js';
-import {FileSystemSiteDetailsElement, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs, Router, routes} from 'chrome://settings/settings.js';
+import {FileSystemSiteDetailsElement, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {CrSettingsPrefs, loadTimeData, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
-import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
+import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
 
 // clang-format on
 
 suite('FileSystemSettings_EnablePersistentPermissions_SiteDetails', function() {
   let testElement: FileSystemSiteDetailsElement;
-  let browserProxy: TestSiteSettingsPrefsBrowserProxy;
+  let browserProxy: TestSiteSettingsBrowserProxy;
 
   const origin: string = 'https://a.com/';
   const filePath: string = 'a/b';
@@ -52,14 +51,14 @@ suite('FileSystemSettings_EnablePersistentPermissions_SiteDetails', function() {
     CrSettingsPrefs.setInitialized();
 
     loadTimeData.overrideValues({
-      showPersistentPermissions: true,
+      enablePersistentPermissions: true,
     });
   });
 
   // Initialize the file-system-site-details element.
   setup(async function() {
-    browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
+    browserProxy = new TestSiteSettingsBrowserProxy();
+    SiteSettingsBrowserProxyImpl.setInstance(browserProxy);
     browserProxy.setFileSystemGrants(FILE_SYSTEM_GRANTS);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = new FileSystemSiteDetailsElement();

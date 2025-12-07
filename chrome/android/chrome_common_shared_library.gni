@@ -5,7 +5,6 @@
 import("//base/android/linker/config.gni")
 import("//build/config/android/config.gni")
 import("//build/config/android/create_unwind_table.gni")
-import("//build/config/android/extract_unwind_tables.gni")
 import("//build/config/android/linker_version_script.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/compiler/compiler.gni")
@@ -13,17 +12,6 @@ import("//build/partitioned_shared_library.gni")
 import("//chrome/android/modules/buildflags.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//third_party/jni_zero/jni_zero.gni")
-
-declare_args() {
-  # Compile libmonochrome.so with RELR relocations, which are smaller and more
-  # efficient, but supported only on API 28+.
-  # This is not permanently enabled for Trichrome because it shares its native
-  # library with Monochrome.
-  # Restricted to official builds to avoid turning off is_high_end_android
-  # explicitly on all relevant non-official bots. TODO(crbug.com/41488915):
-  # Always use RELR when Android O (and O_MR1) is no longer supported.
-  use_relr_relocations = is_high_end_android && is_official_build
-}
 
 # This template contains all common configuration for native shared libraries,
 # including libchrome, monochrome, standalone webview (also called monochrome),
@@ -44,6 +32,8 @@ template("chrome_common_shared_library") {
   forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
   _is_monochrome = defined(invoker.is_monochrome) && invoker.is_monochrome
   _is_webview = defined(invoker.is_webview) && invoker.is_webview
+  _use_webview_orderfile =
+      defined(invoker.use_webview_orderfile) && invoker.use_webview_orderfile
   _collect_inputs_only =
       defined(invoker.collect_inputs_only) && invoker.collect_inputs_only
 
@@ -82,10 +72,12 @@ template("chrome_common_shared_library") {
   }
 
   target(_target_type, target_name) {
-    forward_variables_from(
-        invoker,
-        "*",
-        TESTONLY_AND_VISIBILITY + [ "define_unwind_table_target" ])
+    forward_variables_from(invoker,
+                           "*",
+                           TESTONLY_AND_VISIBILITY + [
+                                 "define_unwind_table_target",
+                                 "extra_configs",
+                               ])
 
     if (!defined(deps)) {
       deps = []
@@ -95,14 +87,24 @@ template("chrome_common_shared_library") {
       deps += [ "//chrome:chrome_android_core" ]
     }
 
-    # Warn if linking code which could implicitly disable BTI on Arm systems
-    configs += [ "//build/config/android:lld_branch_target_hardening" ]
+    if (enable_javaless_renderers) {
+      deps += [ "//content/app:javaless_renderer" ]
+    }
 
     if (!(defined(testonly) && testonly)) {
       configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
       configs += [ "//build/config/compiler:thinlto_optimize_max" ]
     }
-    configs += [ "//build/config/compiler:chrome_orderfile_config" ]
+
+    if (_use_webview_orderfile) {
+      configs += [ "//android_webview:webview_orderfile_config" ]
+    } else {
+      configs += [ "//build/config/compiler:chrome_orderfile_config" ]
+    }
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 
     # Use a dynamically-generated linker script.
     configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
@@ -128,20 +130,12 @@ template("chrome_common_shared_library") {
           deps += _module_desc.native_deps
         }
       }
-    } else if (_collect_inputs_only) {
+    } else {
       foreach(_module_desc, _module_descs) {
         if (defined(_module_desc.native_deps)) {
           deps += _module_desc.native_deps
         }
       }
-    }
-
-    # Compress relocations if needed.
-    if (use_relr_relocations) {
-      configs += [ "//build/config/android:lld_relr_relocations" ]
-    } else if ((_is_monochrome || _is_webview || chromium_linker_supported) &&
-               use_lld) {
-      configs += [ "//build/config/android:lld_pack_relocations" ]
     }
 
     if ((_is_monochrome || _is_webview || chromium_linker_supported) &&
@@ -158,6 +152,10 @@ template("chrome_common_shared_library") {
     # See crbug.com/705088.
     if (target_cpu == "arm" && is_asan) {
       ldflags += [ "-Wl,--long-plt" ]
+    }
+
+    if (defined(invoker.extra_configs)) {
+      configs += invoker.extra_configs
     }
   }
 
@@ -177,16 +175,8 @@ template("chrome_common_shared_library") {
       invoker.define_unwind_table_target) {
     _library_target = ":$target_name"
 
-    # TODO(crbug.com/40833600): Remove generation of v1 unwind asset when
-    # `CFIBacktraceAndroid` is replaced with `ChromeUnwinderAndroid`.
-    unwind_table_v1("${target_name}_unwind_table_v1") {
+    unwind_table_v2("${target_name}_unwind_table_v2") {
       library_target = _library_target
-    }
-
-    if (use_android_unwinder_v2) {
-      unwind_table_v2("${target_name}_unwind_table_v2") {
-        library_target = _library_target
-      }
     }
   }
 }

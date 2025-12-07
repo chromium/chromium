@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/media_access_handler.h"
 #include "chrome/browser/media/prefs/capture_device_ranking.h"
@@ -25,7 +26,7 @@ class MockMediaAccessHandler : public MediaAccessHandler {
       const blink::mojom::MediaStreamType supported_type)
       : supported_type_(supported_type) {}
 
-  bool SupportsStreamType(content::WebContents* web_contents,
+  bool SupportsStreamType(content::RenderFrameHost* render_frame_host,
                           const blink::mojom::MediaStreamType type,
                           const extensions::Extension* extension) override {
     return supported_type_ == type;

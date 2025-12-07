@@ -59,6 +59,9 @@ class ScriptsSmokeTest(unittest.TestCase):
       if not os.path.isabs(self.options.browser_executable):
         return
       cmdline.extend(['--browser-executable', self.options.browser_executable])
+    if self.options.chromium_output_dir:
+      cmdline.extend(
+          ['--chromium-output-dir', self.options.chromium_output_dir])
     return_code, stdout = self.RunPerfScript(cmdline)
     if sys.version_info.major == 3:
       self.assertRegex(stdout, r'Available benchmarks .*? are:')
@@ -80,7 +83,7 @@ class ScriptsSmokeTest(unittest.TestCase):
   def testRunRecordWprHelp(self):
     return_code, stdout = self.RunPerfScript('record_wpr')
     self.assertEqual(return_code, 0, stdout)
-    self.assertIn('optional arguments:', stdout)
+    self.assertIn('positional arguments:', stdout)
 
   @decorators.Disabled('chromeos')  # crbug.com/814068
   def testRunRecordWprList(self):
@@ -95,6 +98,10 @@ class ScriptsSmokeTest(unittest.TestCase):
   @decorators.Disabled('chromeos')  # crbug.com/754913
   def testRunPerformanceTestsTelemetry_end2end(self):
     tempdir = tempfile.mkdtemp()
+    # Stop the command run by this test case from uploading its own test
+    # results to ResultSink by removing LUCI_CONTEXT. A pass/fail result for
+    # the overall test case will still be reported.
+    os.environ.pop('LUCI_CONTEXT', None)
     benchmarks = ['dummy_benchmark.stable_benchmark_1',
                   'dummy_benchmark.noisy_benchmark_1']
     cmdline = ('../../testing/scripts/run_performance_tests.py '
@@ -114,6 +121,8 @@ class ScriptsSmokeTest(unittest.TestCase):
       if not os.path.isabs(self.options.browser_executable):
         return
       cmdline += ' --browser-executable=%s' % self.options.browser_executable
+    if self.options.chromium_output_dir:
+      cmdline += ' --chromium-output-dir=%s' % self.options.chromium_output_dir
     return_code, stdout = self.RunPerfScript(cmdline)
     self.assertEqual(return_code, 0, stdout)
     try:
@@ -298,12 +307,20 @@ class ScriptsSmokeTest(unittest.TestCase):
   # ChromeOS: crbug.com/754913.
   @decorators.Disabled('win', 'chromeos')
   def testRunPerformanceTestsGtest_end2end(self):
+    # Stop the command run by this test case from uploading its own test
+    # results to ResultSink by removing LUCI_CONTEXT. A pass/fail result for
+    # the overall test case will still be reported.
+    os.environ.pop('LUCI_CONTEXT', None)
     self.RunGtest(generate_trace=False)
 
   # Windows: ".exe" is auto-added which breaks Windows.
   # ChromeOS: crbug.com/754913.
   @decorators.Disabled('win', 'chromeos')
   def testRunPerformanceTestsGtestTrace_end2end(self):
+    # Stop the command run by this test case from uploading its own test
+    # results to ResultSink by removing LUCI_CONTEXT. A pass/fail result for
+    # the overall test case will still be reported.
+    os.environ.pop('LUCI_CONTEXT', None)
     self.RunGtest(generate_trace=True)
 
   def testRunPerformanceTestsShardedArgsParser(self):
@@ -393,7 +410,7 @@ class ScriptsSmokeTest(unittest.TestCase):
     class FakeCommandGenerator(object):
       def __init__(self):
         self.executable_name = 'binary_that_doesnt_exist'
-        self._ignore_shard_env_vars = False
+        self.ignore_shard_env_vars = False
 
       def generate(self, unused_path):
         return [self.executable_name]

@@ -30,6 +30,8 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/color-night/sheet_on_scrim_bg_color.xml",
+    "java/res/color/sheet_on_scrim_bg_color.xml",
     "java/res/layout/bottom_sheet.xml",
     "java/res/layout/bottom_sheet_handlebar.xml",
     "java/res/values/dimens.xml",
@@ -44,6 +46,7 @@ android_library("manager_java") {
 
   deps = [
     ":java",
+    "//components/browser_ui/desktop_windowing/android:java",
     "//components/browser_ui/widget/android:java",
     "//ui/android:ui_full_java",
   ]
@@ -56,6 +59,7 @@ android_library_factory("factory_java") {
     ":java",
     ":manager_java",
     "//base:base_java",
+    "//components/browser_ui/desktop_windowing/android:java",
     "//components/browser_ui/widget/android:java",
     "//ui/android:ui_full_java",
     "//ui/android:ui_utils_java",

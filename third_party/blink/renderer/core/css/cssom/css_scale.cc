@@ -56,8 +56,7 @@ CSSScale* FromScaleXYZ(const CSSFunctionValue& value) {
     case CSSValueID::kScaleZ:
       return CSSScale::Create(default_value, default_value, numeric_value);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -118,8 +117,7 @@ CSSScale* CSSScale::FromCSSValue(const CSSFunctionValue& value) {
     case CSSValueID::kScale3d:
       return FromScale3d(value);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 

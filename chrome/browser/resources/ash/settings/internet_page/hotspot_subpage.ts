@@ -7,7 +7,6 @@
  * Settings subpage for managing and configuring Hotspot.
  */
 
-import '/shared/settings/prefs/prefs.js';
 import '../settings_shared.css.js';
 import '../controls/settings_toggle_button.js';
 
@@ -15,14 +14,16 @@ import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {getHotspotConfig} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.js';
-import {HotspotAllowStatus, HotspotInfo, HotspotState, SetHotspotConfigResult} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.mojom-webui.js';
+import type {HotspotInfo} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.mojom-webui.js';
+import {HotspotAllowStatus, HotspotState, SetHotspotConfigResult} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {routes} from '../router.js';
 
 import {getTemplate} from './hotspot_subpage.html.js';
 
@@ -68,19 +69,17 @@ export class SettingsHotspotSubpageElement extends
           };
         },
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>(
-            [Setting.kHotspotOnOff, Setting.kHotspotAutoDisabled]),
-      },
     };
   }
 
   hotspotInfo: HotspotInfo|undefined;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kHotspotOnOff,
+    Setting.kHotspotAutoDisabled,
+  ]);
+
   private isHotspotToggleOn_: boolean;
   private autoDisableVirtualPref_: chrome.settingsPrivate.PrefObject<boolean>;
 

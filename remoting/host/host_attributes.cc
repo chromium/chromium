@@ -8,14 +8,12 @@
 #include <type_traits>
 #include <vector>
 
-#include "base/atomicops.h"
 #include "base/check_op.h"
 #include "base/strings/string_util.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "media/base/win/mf_initializer.h"
 #include "remoting/host/win/evaluate_3d_display_mode.h"
 #include "remoting/host/win/evaluate_d3d.h"
 #endif
@@ -85,8 +83,6 @@ static constexpr Attribute kAttributes[] = {
 
 }  // namespace
 
-static_assert(std::is_pod<Attribute>::value, "Attribute should be POD.");
-
 std::string GetHostAttributes() {
   std::vector<std::string> result;
   for (const auto& attribute : kAttributes) {
@@ -98,15 +94,6 @@ std::string GetHostAttributes() {
 #if BUILDFLAG(IS_WIN)
   GetD3DCapabilities(&result);
   result.push_back("Win10+");
-
-  // TODO(crbug.com/40752360): Remove this and/or the entire HostAttributes
-  // class so we can remove //remoting/host:common from //media/gpu's visibility
-  // list.
-  if (media::InitializeMediaFoundation()) {
-    result.push_back("HWEncoder");
-  }
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  result.push_back("HWEncoder");
 #endif
 
   return base::JoinString(result, kSeparator);

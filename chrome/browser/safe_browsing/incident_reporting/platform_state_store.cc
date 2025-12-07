@@ -49,8 +49,7 @@ void KeysAndDigestsToProtobuf(
     uint32_t digest = 0;
     if (!item.second.is_string() ||
         !base::StringToUint(item.second.GetString(), &digest)) {
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
     StateStoreData::Incidents::KeyDigestMapFieldEntry* key_digest =
         key_digest_pairs->Add();
@@ -68,15 +67,13 @@ void IncidentsSentToProtobuf(
   for (const auto item : incidents_sent) {
     const base::Value::Dict* keys_and_digests = item.second.GetIfDict();
     if (!keys_and_digests) {
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
     if (keys_and_digests->empty())
       continue;
     int incident_type = 0;
     if (!base::StringToInt(item.first, &incident_type)) {
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
     StateStoreData::TypeIncidentsMapFieldEntry* entry =
         type_incidents_pairs->Add();
@@ -140,8 +137,7 @@ std::optional<base::Value::Dict> Load(Profile* profile) {
       // Return nullopt for all error cases.
       return std::nullopt;
     case PlatformStateStoreLoadResult::NUM_RESULTS:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return value_dict;
 #else

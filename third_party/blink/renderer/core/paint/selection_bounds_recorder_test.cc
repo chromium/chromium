@@ -39,6 +39,122 @@ TEST_F(SelectionBoundsRecorderTest, SelectAll) {
   EXPECT_EQ(end.edge_end, gfx::Point(9, 11));
 }
 
+TEST_F(SelectionBoundsRecorderTest, SelectAllInVerticalRl) {
+  LocalFrame* local_frame = GetDocument().GetFrame();
+  LoadAhem(*local_frame);
+  SetBodyInnerHTML(R"HTML(
+      <style>body {
+        writing-mode: vertical-rl;
+        font: 20px Ahem;
+      }</style><span>AB<br>C</span>)HTML");
+
+  local_frame->Selection().SetHandleVisibleForTesting();
+  local_frame->GetPage()->GetFocusController().SetFocusedFrame(local_frame);
+  local_frame->Selection().SelectAll();
+  UpdateAllLifecyclePhasesForTest();
+
+  auto chunks = ContentPaintChunks();
+  ASSERT_EQ(chunks.size(), 1u);
+  EXPECT_TRUE(chunks[0].layer_selection_data->start.has_value());
+  EXPECT_TRUE(chunks[0].layer_selection_data->end.has_value());
+  PaintedSelectionBound start = chunks[0].layer_selection_data->start.value();
+  EXPECT_EQ(start.type, gfx::SelectionBound::LEFT);
+  EXPECT_EQ(start.edge_start, gfx::Point(772, 8));
+  EXPECT_EQ(start.edge_end, gfx::Point(792, 8));
+
+  PaintedSelectionBound end = chunks[0].layer_selection_data->end.value();
+  EXPECT_EQ(end.type, gfx::SelectionBound::RIGHT);
+  EXPECT_EQ(end.edge_start, gfx::Point(772, 28));
+  EXPECT_EQ(end.edge_end, gfx::Point(752, 28));
+}
+
+TEST_F(SelectionBoundsRecorderTest, SelectAllInVerticalLr) {
+  LocalFrame* local_frame = GetDocument().GetFrame();
+  LoadAhem(*local_frame);
+  SetBodyInnerHTML(R"HTML(
+      <style>body {
+        writing-mode: vertical-lr;
+        font: 20px Ahem;
+      }</style><span>AB<br>C</span>)HTML");
+
+  local_frame->Selection().SetHandleVisibleForTesting();
+  local_frame->GetPage()->GetFocusController().SetFocusedFrame(local_frame);
+  local_frame->Selection().SelectAll();
+  UpdateAllLifecyclePhasesForTest();
+
+  auto chunks = ContentPaintChunks();
+  ASSERT_EQ(chunks.size(), 1u);
+  EXPECT_TRUE(chunks[0].layer_selection_data->start.has_value());
+  EXPECT_TRUE(chunks[0].layer_selection_data->end.has_value());
+  PaintedSelectionBound start = chunks[0].layer_selection_data->start.value();
+  EXPECT_EQ(start.type, gfx::SelectionBound::LEFT);
+  EXPECT_EQ(start.edge_start, gfx::Point(28, 8));
+  EXPECT_EQ(start.edge_end, gfx::Point(8, 8));
+
+  PaintedSelectionBound end = chunks[0].layer_selection_data->end.value();
+  EXPECT_EQ(end.type, gfx::SelectionBound::RIGHT);
+  EXPECT_EQ(end.edge_start, gfx::Point(28, 28));
+  EXPECT_EQ(end.edge_end, gfx::Point(48, 28));
+}
+
+TEST_F(SelectionBoundsRecorderTest, SelectAllInSidewaysRl) {
+  LocalFrame* local_frame = GetDocument().GetFrame();
+  LoadAhem(*local_frame);
+  SetBodyInnerHTML(R"HTML(
+      <style>body {
+        writing-mode: sideways-rl;
+        font: 20px Ahem;
+      }</style><span>AB<br>C</span>)HTML");
+
+  local_frame->Selection().SetHandleVisibleForTesting();
+  local_frame->GetPage()->GetFocusController().SetFocusedFrame(local_frame);
+  local_frame->Selection().SelectAll();
+  UpdateAllLifecyclePhasesForTest();
+
+  auto chunks = ContentPaintChunks();
+  ASSERT_EQ(chunks.size(), 1u);
+  EXPECT_TRUE(chunks[0].layer_selection_data->start.has_value());
+  EXPECT_TRUE(chunks[0].layer_selection_data->end.has_value());
+  PaintedSelectionBound start = chunks[0].layer_selection_data->start.value();
+  EXPECT_EQ(start.type, gfx::SelectionBound::LEFT);
+  EXPECT_EQ(start.edge_start, gfx::Point(772, 8));
+  EXPECT_EQ(start.edge_end, gfx::Point(792, 8));
+
+  PaintedSelectionBound end = chunks[0].layer_selection_data->end.value();
+  EXPECT_EQ(end.type, gfx::SelectionBound::RIGHT);
+  EXPECT_EQ(end.edge_start, gfx::Point(772, 28));
+  EXPECT_EQ(end.edge_end, gfx::Point(752, 28));
+}
+
+TEST_F(SelectionBoundsRecorderTest, SelectAllInSidewaysLr) {
+  LocalFrame* local_frame = GetDocument().GetFrame();
+  LoadAhem(*local_frame);
+  SetBodyInnerHTML(R"HTML(
+      <style>body {
+        writing-mode: sideways-lr;
+        font: 20px Ahem;
+      }</style><span>AB<br>C</span>)HTML");
+
+  local_frame->Selection().SetHandleVisibleForTesting();
+  local_frame->GetPage()->GetFocusController().SetFocusedFrame(local_frame);
+  local_frame->Selection().SelectAll();
+  UpdateAllLifecyclePhasesForTest();
+
+  auto chunks = ContentPaintChunks();
+  ASSERT_EQ(chunks.size(), 1u);
+  EXPECT_TRUE(chunks[0].layer_selection_data->start.has_value());
+  EXPECT_TRUE(chunks[0].layer_selection_data->end.has_value());
+  PaintedSelectionBound start = chunks[0].layer_selection_data->start.value();
+  EXPECT_EQ(start.type, gfx::SelectionBound::LEFT);
+  EXPECT_EQ(start.edge_start, gfx::Point(8, 592));
+  EXPECT_EQ(start.edge_end, gfx::Point(28, 592));
+
+  PaintedSelectionBound end = chunks[0].layer_selection_data->end.value();
+  EXPECT_EQ(end.type, gfx::SelectionBound::RIGHT);
+  EXPECT_EQ(end.edge_start, gfx::Point(28, 572));
+  EXPECT_EQ(end.edge_end, gfx::Point(48, 572));
+}
+
 TEST_F(SelectionBoundsRecorderTest, SelectMultiline) {
   LocalFrame* local_frame = GetDocument().GetFrame();
   LoadAhem(*local_frame);
@@ -181,6 +297,59 @@ TEST_F(SelectionBoundsRecorderTest, InvalidationForEmptyBounds) {
 
   // Third div's chunk should no longer have an end value.
   EXPECT_FALSE(chunks[3].layer_selection_data);
+}
+
+TEST_F(SelectionBoundsRecorderTest, BoundsHidden) {
+  LocalFrame* local_frame = GetDocument().GetFrame();
+  LoadAhem(*local_frame);
+  SetBodyInnerHTML(R"HTML(
+    <style>body { margin: 0; font: 80px Ahem; }</style>
+    <div id="container" style="width: 100px; height: 100px; overflow: hidden">
+      X<br>X
+    </div>
+  )HTML");
+
+  local_frame->Selection().SetHandleVisibleForTesting();
+  local_frame->GetPage()->GetFocusController().SetFocusedFrame(local_frame);
+  local_frame->Selection().SelectAll();
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* host = local_frame->View()->RootCcLayer()->layer_tree_host();
+  EXPECT_FALSE(host->selection().start.hidden);
+  EXPECT_EQ(gfx::SelectionBound::LEFT, host->selection().start.type);
+  EXPECT_EQ(gfx::Point(), host->selection().start.edge_start);
+  EXPECT_EQ(gfx::Point(0, 80), host->selection().start.edge_end);
+  EXPECT_TRUE(host->selection().end.hidden);
+  EXPECT_EQ(gfx::SelectionBound::RIGHT, host->selection().end.type);
+  EXPECT_EQ(gfx::Point(80, 80), host->selection().end.edge_start);
+  EXPECT_EQ(gfx::Point(80, 160), host->selection().end.edge_end);
+
+  auto* container = GetDocument().getElementById(AtomicString("container"));
+  container->scrollToForTesting(0, 59);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(host->selection().start.hidden);
+  EXPECT_EQ(gfx::SelectionBound::LEFT, host->selection().start.type);
+  EXPECT_EQ(gfx::Point(0, -59), host->selection().start.edge_start);
+  EXPECT_EQ(gfx::Point(0, 21), host->selection().start.edge_end);
+  if (RuntimeEnabledFeatures::SelectionHandleWithBottomClippedEnabled()) {
+    EXPECT_FALSE(host->selection().end.hidden);
+  } else {
+    EXPECT_TRUE(host->selection().end.hidden);
+  }
+  EXPECT_EQ(gfx::SelectionBound::RIGHT, host->selection().end.type);
+  EXPECT_EQ(gfx::Point(80, 21), host->selection().end.edge_start);
+  EXPECT_EQ(gfx::Point(80, 101), host->selection().end.edge_end);
+
+  container->scrollToForTesting(0, 60);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(host->selection().start.hidden);
+  EXPECT_EQ(gfx::SelectionBound::LEFT, host->selection().start.type);
+  EXPECT_EQ(gfx::Point(0, -60), host->selection().start.edge_start);
+  EXPECT_EQ(gfx::Point(0, 20), host->selection().start.edge_end);
+  EXPECT_FALSE(host->selection().end.hidden);
+  EXPECT_EQ(gfx::SelectionBound::RIGHT, host->selection().end.type);
+  EXPECT_EQ(gfx::Point(80, 20), host->selection().end.edge_start);
+  EXPECT_EQ(gfx::Point(80, 100), host->selection().end.edge_end);
 }
 
 }  // namespace blink

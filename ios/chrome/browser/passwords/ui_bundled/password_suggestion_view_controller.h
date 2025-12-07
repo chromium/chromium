@@ -17,10 +17,9 @@
                                  proactive:(BOOL)proactivePasswordGeneration
     NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithNibName:(NSString*)name
-                         bundle:(NSBundle*)bundle NS_UNAVAILABLE;
-- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithConfiguration:(ButtonStackConfiguration*)configuration
+    NS_UNAVAILABLE;
 
 @end
 

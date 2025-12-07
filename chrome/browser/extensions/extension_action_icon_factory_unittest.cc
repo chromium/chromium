@@ -15,13 +15,13 @@
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/image_util.h"
 #include "extensions/grit/extensions_browser_resources.h"
@@ -34,10 +34,13 @@
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/skia_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/login/users/user_manager_delegate_impl.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#include "chrome/browser/browser_process.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_manager_impl.h"
 #endif
 
 using extensions::mojom::ManifestLocation;
@@ -75,13 +78,11 @@ gfx::Image LoadIcon(const std::string& filename) {
   base::PathService::Get(chrome::DIR_TEST_DATA, &path);
   path = path.AppendASCII("extensions/api_test").AppendASCII(filename);
 
-  std::string file_contents;
-  base::ReadFileToString(path, &file_contents);
-  const unsigned char* data =
-      reinterpret_cast<const unsigned char*>(file_contents.data());
+  std::optional<std::vector<uint8_t>> file_contents =
+      base::ReadFileToBytes(path);
 
-  SkBitmap bitmap;
-  gfx::PNGCodec::Decode(data, file_contents.length(), &bitmap);
+  SkBitmap bitmap = gfx::PNGCodec::Decode(file_contents.value());
+  CHECK(!bitmap.isNull());
 
   return gfx::Image::CreateFrom1xBitmap(bitmap);
 }
@@ -97,7 +98,7 @@ class ExtensionActionIconFactoryTest
   ExtensionActionIconFactoryTest& operator=(
       const ExtensionActionIconFactoryTest&) = delete;
 
-  ~ExtensionActionIconFactoryTest() override {}
+  ~ExtensionActionIconFactoryTest() override = default;
 
   void WaitForIconUpdate() {
     quit_in_icon_updated_ = true;
@@ -128,12 +129,14 @@ class ExtensionActionIconFactoryTest
     if (!valid_value || !valid_value->is_dict())
       return nullptr;
 
+    std::u16string utf16_error;
     scoped_refptr<Extension> extension =
         Extension::Create(test_file, location, valid_value->GetDict(),
-                          Extension::NO_FLAGS, &error);
-    EXPECT_TRUE(extension.get()) << error;
-    if (extension.get())
-      extension_service_->AddExtension(extension.get());
+                          Extension::NO_FLAGS, &utf16_error);
+    EXPECT_TRUE(extension.get()) << utf16_error;
+    if (extension) {
+      ExtensionRegistrar::Get(profile_.get())->AddExtension(extension);
+    }
     return extension;
   }
 
@@ -141,9 +144,9 @@ class ExtensionActionIconFactoryTest
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
     base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-    extension_service_ = static_cast<extensions::TestExtensionSystem*>(
-        extensions::ExtensionSystem::Get(profile_.get()))->
-        CreateExtensionService(&command_line, base::FilePath(), false);
+    static_cast<extensions::TestExtensionSystem*>(
+        extensions::ExtensionSystem::Get(profile_.get()))
+        ->CreateExtensionService(&command_line, base::FilePath(), false);
   }
 
   void TearDown() override {
@@ -170,13 +173,15 @@ class ExtensionActionIconFactoryTest
   content::BrowserTaskEnvironment task_environment_;
   bool quit_in_icon_updated_;
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<ExtensionService, DanglingUntriaged> extension_service_;
   base::RunLoop loop_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  user_manager::ScopedUserManager test_user_manager_{
-      ash::ChromeUserManagerImpl::CreateChromeUserManager()};
+  user_manager::ScopedUserManager user_manager_{
+      std::make_unique<user_manager::UserManagerImpl>(
+          std::make_unique<ash::UserManagerDelegateImpl>(),
+          g_browser_process->local_state(),
+          ash::CrosSettings::Get())};
 #endif
 };
 

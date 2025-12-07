@@ -7,20 +7,24 @@
 #import "base/check.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
-#import "ios/chrome/browser/lens_overlay/ui/lens_omnibox_mutator.h"
+#import "ios/chrome/browser/lens_overlay/public/lens_overlay_constants.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_result_page_mutator.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_mutator.h"
+#import "ios/chrome/browser/omnibox/ui/text_field_view_containing.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/ui/omnibox/text_field_view_containing.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/toolbar_progress_bar.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/components/ui_util/dynamic_type_util.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
 /// Top padding for the view content.
-const CGFloat kViewTopPadding = 19;
+const CGFloat kViewTopPadding = 22;
 
 /// Width of the back button.
 const CGFloat kBackButtonWidth = 44;
@@ -32,13 +36,30 @@ const CGFloat kCancelButtonHorizontalInset = 8;
 /// Font size for the cancel button.
 const CGFloat kCancelButtonFontSize = 15;
 
+/// Minimum leading and trailing padding for the focused omnibox container.
+const CGFloat kFocusedOmniboxContainerHorizontalPadding = 10;
 /// Minimum leading and trailing padding for the omnibox container.
-const CGFloat kOmniboxContainerHorizontalPadding = 12;
+const CGFloat kOmniboxContainerHorizontalPadding = 16;
+
 /// Minimum height of the omnibox container.
-const CGFloat kOmniboxContainerMinimumHeight = 42;
-/// Minimum padding between the top of the view and the top of the web
-/// container.
-const CGFloat kWebContainerTopPadding = 8;
+const CGFloat kOmniboxContainerMinimumHeight = 52;
+/// Corner radius of the omnibox container.
+const CGFloat kOmniboxContainerCornerRadius = 26;
+/// Padding between the omnibox and the web container.
+const CGFloat kWebContainerTopPadding = 16;
+
+/// Height of the progress bar.
+const CGFloat kProgressBarHeight = 2.0f;
+/// Value of a full progress bar.
+const CGFloat kProgressBarFull = 1.0f;
+/// Value of the grabber corner radius.
+const CGFloat kGrabberCornerRadius = 3.0;
+/// The width of the bottom sheet grabber.
+const CGFloat kGrabberWidth = 36.0;
+/// The height of the bottom sheet grabber.
+const CGFloat kGrabberHeight = 5.0;
+/// The top padding of the bottom sheet grabber.
+const CGFloat kGrabberTopPadding = 5;
 
 }  // namespace
 
@@ -49,6 +70,13 @@ const CGFloat kWebContainerTopPadding = 8;
 
 /// Edit view contained in `_omniboxContainer`.
 @property(nonatomic, strong) UIView<TextFieldViewContaining>* editView;
+
+/// Whether the back button is available. The back button might be available but
+/// hidden when the omnibox is focused.
+@property(nonatomic, assign) BOOL canGoBack;
+
+/// Whether the omnibox is currently focused.
+@property(nonatomic, assign) BOOL omniboxFocused;
 
 @end
 
@@ -65,6 +93,18 @@ const CGFloat kWebContainerTopPadding = 8;
   UIButton* _omniboxPopupContainer;
   /// Button to focus the omnibox.
   UIButton* _omniboxTapTarget;
+  /// Loading progress bar.
+  ToolbarProgressBar* _progressBar;
+  /// Whether the web view should be hidden.
+  BOOL _webViewHidden;
+  NSLayoutConstraint* _omniboxLeadingConstraint;
+  /// When set, the omnibox tap target continues to "eat" the touches, but they
+  /// are ignored, effectively preventing omnibox interaction.
+  BOOL _ignoreOmniboxTaps;
+  /// The grabber indicator for the bottom sheet.
+  UIView* _bottomSheetGrabber;
+  /// Whether to show the bottom sheet grabber.
+  BOOL _bottomSheetGrabberVisible;
 }
 
 - (instancetype)init {
@@ -72,6 +112,13 @@ const CGFloat kWebContainerTopPadding = 8;
   if (self) {
     _webViewContainer = [[UIView alloc] init];
     _omniboxPopupContainer = [[UIButton alloc] init];
+
+    // Initialize `setEditView` dependencies as it can be called before
+    // `viewDidLoad`.
+    _omniboxContainer = [[UIView alloc] init];
+    _omniboxTapTarget = [[UIButton alloc] init];
+    _progressBar = [[ToolbarProgressBar alloc] init];
+    [_omniboxContainer addSubview:_omniboxTapTarget];
   }
   return self;
 }
@@ -79,12 +126,24 @@ const CGFloat kWebContainerTopPadding = 8;
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+  self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
 
   CHECK(self.webViewContainer, kLensOverlayNotFatalUntil);
   // Webview container.
   self.webViewContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  self.webViewContainer.clipsToBounds = YES;
   [self.view addSubview:self.webViewContainer];
+
+  // Bottom sheet grabber.
+  _bottomSheetGrabber = [self createSheetGrabber];
+  [self.view addSubview:_bottomSheetGrabber];
+  [self setBottomSheetGrabberVisible:_bottomSheetGrabberVisible];
+  AddSameCenterXConstraint(_bottomSheetGrabber, self.view);
+  AddSameConstraintsToSidesWithInsets(
+      _bottomSheetGrabber, self.view, LayoutSides::kTop,
+      NSDirectionalEdgeInsetsMake(kGrabberTopPadding, 0, 0, 0));
+  AddSizeConstraints(_bottomSheetGrabber,
+                     CGSizeMake(kGrabberWidth, kGrabberHeight));
 
   // Omnibox popup container.
   _omniboxPopupContainer.translatesAutoresizingMaskIntoConstraints = NO;
@@ -97,33 +156,41 @@ const CGFloat kWebContainerTopPadding = 8;
   [self.view addSubview:_omniboxPopupContainer];
 
   // Back Button.
-  _backButton = [UIButton buttonWithType:UIButtonTypeSystem];
-  _backButton.translatesAutoresizingMaskIntoConstraints = NO;
-  _backButton.hidden = YES;
   UIImage* image =
       DefaultSymbolWithPointSize(kChevronBackwardSymbol, kBackButtonSize);
-  [_backButton setImage:image forState:UIControlStateNormal];
-  [_backButton addTarget:self
-                  action:@selector(didTapBackButton:)
-        forControlEvents:UIControlEventTouchUpInside];
+  UIButtonConfiguration* backButtonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  backButtonConfiguration.image = image;
+  // Constant to visually center the image as it's slightly left aligned.
+  backButtonConfiguration.contentInsets =
+      NSDirectionalEdgeInsetsMake(0, 4, 0, 0);
+  __weak id<LensToolbarMutator> weakToolbarMutator = self.toolbarMutator;
+  _backButton = [UIButton
+      buttonWithConfiguration:backButtonConfiguration
+                primaryAction:[UIAction actionWithHandler:^(UIAction* action) {
+                  [weakToolbarMutator goBack];
+                }]];
+  _backButton.translatesAutoresizingMaskIntoConstraints = NO;
+  _backButton.hidden = YES;
 
   // Omnibox container.
-  _omniboxContainer = [[UIView alloc] init];
   _omniboxContainer.translatesAutoresizingMaskIntoConstraints = NO;
-  _omniboxContainer.backgroundColor = [UIColor colorNamed:kGrey200Color];
-  _omniboxContainer.layer.cornerRadius = 21;
+  _omniboxContainer.backgroundColor =
+      [UIColor colorNamed:kSecondaryBackgroundColor];
+  _omniboxContainer.layer.cornerRadius = kOmniboxContainerCornerRadius;
+  _omniboxContainer.clipsToBounds = YES;
   [_omniboxContainer
       setContentHuggingPriority:UILayoutPriorityDefaultLow
                         forAxis:UILayoutConstraintAxisHorizontal];
 
   // Omnibox tap target.
-  _omniboxTapTarget = [[UIButton alloc] init];
   _omniboxTapTarget.translatesAutoresizingMaskIntoConstraints = NO;
   _omniboxTapTarget.backgroundColor = UIColor.clearColor;
   [_omniboxTapTarget addTarget:self
                         action:@selector(didTapOmniboxTapTarget:)
               forControlEvents:UIControlEventTouchUpInside];
-  [_omniboxContainer addSubview:_omniboxTapTarget];
+  _omniboxTapTarget.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_LENS_OVERLAY_OMNIBOX_FOCUS);
   AddSameConstraints(_omniboxContainer, _omniboxTapTarget);
 
   // Cancel button.
@@ -147,7 +214,7 @@ const CGFloat kWebContainerTopPadding = 8;
               attributes:attributes];
   buttonConfiguration.attributedTitle = attributedString;
   _cancelButton.configuration = buttonConfiguration;
-  _cancelButton.hidden = YES;
+  [self setCancelButtonHidden:YES animated:NO];
   [_cancelButton addTarget:self
                     action:@selector(didTapCancelButton:)
           forControlEvents:UIControlEventTouchUpInside];
@@ -161,11 +228,15 @@ const CGFloat kWebContainerTopPadding = 8;
   _horizontalStackView.distribution = UIStackViewDistributionFill;
   [self.view addSubview:_horizontalStackView];
 
-  NSLayoutConstraint* omniboxLeadingConstraint =
-      [_omniboxContainer.leadingAnchor
-          constraintEqualToAnchor:self.view.leadingAnchor
-                         constant:kOmniboxContainerHorizontalPadding];
-  omniboxLeadingConstraint.priority = UILayoutPriorityDefaultHigh;
+  // Progress bar.
+  _progressBar.translatesAutoresizingMaskIntoConstraints = NO;
+  [_progressBar setHidden:YES animated:NO completion:nil];
+  [_omniboxContainer addSubview:_progressBar];
+
+  _omniboxLeadingConstraint = [_omniboxContainer.leadingAnchor
+      constraintEqualToAnchor:self.view.leadingAnchor
+                     constant:kOmniboxContainerHorizontalPadding];
+  _omniboxLeadingConstraint.priority = UILayoutPriorityDefaultHigh;
 
   [NSLayoutConstraint activateConstraints:@[
     [_horizontalStackView.topAnchor
@@ -175,7 +246,7 @@ const CGFloat kWebContainerTopPadding = 8;
     [_horizontalStackView.heightAnchor
         constraintGreaterThanOrEqualToConstant:kOmniboxContainerMinimumHeight],
     [_backButton.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
-    omniboxLeadingConstraint,
+    _omniboxLeadingConstraint,
     [self.view.trailingAnchor
         constraintEqualToAnchor:_horizontalStackView.trailingAnchor
                        constant:kOmniboxContainerHorizontalPadding],
@@ -184,6 +255,13 @@ const CGFloat kWebContainerTopPadding = 8;
                        constant:kWebContainerTopPadding],
     [_omniboxPopupContainer.topAnchor
         constraintEqualToAnchor:_horizontalStackView.bottomAnchor],
+    [_progressBar.leadingAnchor
+        constraintEqualToAnchor:_omniboxContainer.leadingAnchor],
+    [_progressBar.trailingAnchor
+        constraintEqualToAnchor:_omniboxContainer.trailingAnchor],
+    [_progressBar.bottomAnchor
+        constraintEqualToAnchor:_omniboxContainer.bottomAnchor],
+    [_progressBar.heightAnchor constraintEqualToConstant:kProgressBarHeight],
   ]];
   AddSameConstraintsToSides(
       self.webViewContainer, self.view,
@@ -191,6 +269,35 @@ const CGFloat kWebContainerTopPadding = 8;
   AddSameConstraintsToSides(
       _omniboxPopupContainer, self.view,
       LayoutSides::kLeading | LayoutSides::kBottom | LayoutSides::kTrailing);
+
+  [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
+                     withAction:@selector(updateMutatorDarkMode)];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(updateMutatorDarkMode)
+             name:UIApplicationWillEnterForegroundNotification
+           object:nil];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+  [super viewWillDisappear:animated];
+  [[NSNotificationCenter defaultCenter]
+      removeObserver:self
+                name:UIApplicationWillEnterForegroundNotification
+              object:nil];
+}
+
+- (void)setWebViewHidden:(BOOL)hidden {
+  if (_webViewHidden == hidden) {
+    return;
+  }
+
+  _webViewHidden = hidden;
+  _webView.hidden = hidden;
 }
 
 - (void)setEditView:(UIView<TextFieldViewContaining>*)editView {
@@ -201,6 +308,42 @@ const CGFloat kWebContainerTopPadding = 8;
   _editView.translatesAutoresizingMaskIntoConstraints = NO;
   [_omniboxContainer insertSubview:_editView belowSubview:_omniboxTapTarget];
   AddSameConstraints(_editView, _omniboxContainer);
+}
+
+- (void)setBottomSheetGrabberVisible:(BOOL)bottomSheetGrabberVisible {
+  _bottomSheetGrabberVisible = bottomSheetGrabberVisible;
+  _bottomSheetGrabber.hidden = !bottomSheetGrabberVisible;
+}
+
+- (void)setMutator:(id<LensResultPageMutator>)mutator {
+  _mutator = mutator;
+  [self updateMutatorDarkMode];
+}
+
+- (void)setCancelButtonHidden:(BOOL)hidden animated:(BOOL)animated {
+  if (_cancelButton.hidden == hidden) {
+    return;
+  }
+
+  if (!animated) {
+    _cancelButton.hidden = hidden;
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  [UIView animateWithDuration:kLensResultPageButtonAnimationDuration
+                        delay:0
+                      options:UIViewAnimationOptionCurveEaseInOut
+                   animations:^{
+                     __typeof(self) strongSelf = weakSelf;
+                     if (!strongSelf) {
+                       return;
+                     }
+
+                     strongSelf->_cancelButton.hidden = hidden;
+                     [strongSelf->_horizontalStackView layoutIfNeeded];
+                   }
+                   completion:nil];
 }
 
 #pragma mark - UIResponder
@@ -216,7 +359,7 @@ const CGFloat kWebContainerTopPadding = 8;
 }
 
 - (void)keyCommand_close {
-  [self.omniboxMutator defocusOmnibox];
+  [self.toolbarMutator defocusOmnibox];
 }
 
 #pragma mark - LensResultPageConsumer
@@ -230,6 +373,7 @@ const CGFloat kWebContainerTopPadding = 8;
     [_webView removeFromSuperview];
   }
   _webView = webView;
+  _webView.hidden = _webViewHidden;
 
   _webView.translatesAutoresizingMaskIntoConstraints = NO;
   if (!_webView || !self.webViewContainer) {
@@ -240,8 +384,21 @@ const CGFloat kWebContainerTopPadding = 8;
   AddSameConstraints(_webView, self.webViewContainer);
 }
 
-- (void)setBackgroundColor:(UIColor*)backgroundColor {
-  self.view.backgroundColor = backgroundColor;
+- (void)setLoadingProgress:(float)progress {
+  [self updateProgressBarVisibilityForProgress:progress];
+  [_progressBar setProgress:progress animated:YES];
+}
+
+- (void)updateProgressBarVisibilityForProgress:(float)progress {
+  BOOL isLoading = (progress != kProgressBarFull);
+  BOOL shouldShowProgressBar = isLoading && _progressBar.hidden;
+  BOOL shouldHideProgressBar = !isLoading && !_progressBar.hidden;
+
+  if (shouldShowProgressBar) {
+    [_progressBar setHidden:NO animated:YES completion:nil];
+  } else if (shouldHideProgressBar) {
+    [_progressBar setHidden:YES animated:YES completion:nil];
+  }
 }
 
 #pragma mark - OmniboxPopupPresenterDelegate
@@ -253,6 +410,10 @@ const CGFloat kWebContainerTopPadding = 8;
 - (UIViewController*)popupParentViewControllerForPresenter:
     (OmniboxPopupPresenter*)presenter {
   return self;
+}
+
+- (UIColor*)popupBackgroundColorForPresenter:(OmniboxPopupPresenter*)presenter {
+  return [UIColor colorNamed:kPrimaryBackgroundColor];
 }
 
 - (GuideName*)omniboxGuideNameForPresenter:(OmniboxPopupPresenter*)presenter {
@@ -268,34 +429,116 @@ const CGFloat kWebContainerTopPadding = 8;
 #pragma mark - LensToolbarConsumer
 
 - (void)setOmniboxFocused:(BOOL)isFocused {
+  _omniboxFocused = isFocused;
+  _omniboxLeadingConstraint.constant =
+      isFocused ? kFocusedOmniboxContainerHorizontalPadding
+                : kOmniboxContainerHorizontalPadding;
+  [self updateBackButtonVisibilityAnimated:YES];
+
   // Visible when omnibox is focused.
-  _cancelButton.hidden = !isFocused;
+  [self setCancelButtonHidden:!isFocused animated:YES];
+
   _omniboxPopupContainer.hidden = !isFocused;
 
   // Hidden when omnibox is focused.
   _omniboxTapTarget.hidden = isFocused;
 }
 
+- (void)setCanGoBack:(BOOL)canGoBack {
+  _canGoBack = canGoBack;
+  [self updateBackButtonVisibilityAnimated:YES];
+}
+
+- (void)setOmniboxEnabled:(BOOL)enabled {
+  _ignoreOmniboxTaps = !enabled;
+}
+
 #pragma mark - Private
 
-/// Handles back button taps.
-- (void)didTapBackButton:(UIView*)button {
-  // TODO(crbug.com/347239663): Handle back button tap.
+- (UIView*)createSheetGrabber {
+  UIButton* grabber = [[UIButton alloc] init];
+  [grabber addTarget:self
+                action:@selector(didTapBottomSheetGrabber:)
+      forControlEvents:UIControlEventTouchUpInside];
+  grabber.translatesAutoresizingMaskIntoConstraints = NO;
+  grabber.backgroundColor = [UIColor colorNamed:kGrey400Color];
+  grabber.layer.cornerRadius = kGrabberCornerRadius;
+  grabber.accessibilityLabel = l10n_util::GetNSString(
+      IDS_IOS_LENS_OVERLAY_SHEET_GRABBER_ACCESSIBILITY_LABEL);
+  grabber.accessibilityHint = l10n_util::GetNSString(
+      IDS_IOS_LENS_OVERLAY_SHEET_GRABBER_ACCESSIBILITY_HINT);
+
+  return grabber;
+}
+
+- (void)didTapBottomSheetGrabber:(id)sender {
+  [_delegate lensResultPageViewControllerDidTapBottomSheetGrabber:self];
 }
 
 /// Handles omnibox tap target taps.
 - (void)didTapOmniboxTapTarget:(UIView*)view {
-  [self.omniboxMutator focusOmnibox];
+  if (_ignoreOmniboxTaps) {
+    return;
+  }
+  [self.toolbarMutator focusOmnibox];
 }
 
 /// Handles omnibox popup container taps, acting like a typing shield.
 - (void)didTapOmniboxPopupContainer:(UIView*)view {
-  [self.omniboxMutator defocusOmnibox];
+  [self.toolbarMutator defocusOmnibox];
 }
 
 /// Handles cancel button taps.
 - (void)didTapCancelButton:(UIView*)button {
-  [self.omniboxMutator defocusOmnibox];
+  [self.toolbarMutator defocusOmnibox];
+}
+
+- (void)updateBackButtonVisibilityAnimated:(BOOL)animated {
+  BOOL hidden = self.omniboxFocused || !self.canGoBack;
+
+  if (_backButton.hidden == hidden) {
+    return;
+  }
+
+  if (!animated) {
+    _backButton.hidden = hidden;
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  [UIView animateWithDuration:kLensResultPageButtonAnimationDuration
+                        delay:0
+                      options:UIViewAnimationOptionCurveEaseInOut
+                   animations:^{
+                     __typeof(self) strongSelf = weakSelf;
+                     if (!strongSelf) {
+                       return;
+                     }
+
+                     strongSelf->_backButton.hidden = hidden;
+                     [strongSelf->_horizontalStackView layoutIfNeeded];
+                   }
+                   completion:nil];
+}
+
+/// Updates the user interface style in the mutator.
+- (void)updateMutatorDarkMode {
+  // To ensure the app switcher displays the correct snapshot, the app briefly
+  // toggles between light and dark modes when it enters the background. This
+  // creates snapshots for both modes, so the switcher can show the appropriate
+  // one regardless of the user's current interface style.
+  //
+  // Refrain from doing 2 additional reload requests as a consequence of the
+  // brief switch by early exiting if the app is in background. If there is a
+  // a style change it will be scheduled when the app returns to foreground.
+  UIApplicationState currentState =
+      [[UIApplication sharedApplication] applicationState];
+  if (currentState == UIApplicationStateBackground) {
+    return;
+  }
+
+  [self.mutator setIsDarkMode:self.traitCollection.userInterfaceStyle ==
+                              UIUserInterfaceStyleDark];
 }
 
 @end

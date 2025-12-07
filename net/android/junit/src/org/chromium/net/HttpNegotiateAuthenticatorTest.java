@@ -4,11 +4,8 @@
 
 package org.chromium.net;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static com.google.common.truth.Truth.assertWithMessage;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
@@ -18,6 +15,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -35,7 +33,6 @@ import android.os.Handler;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -52,7 +49,6 @@ import org.robolectric.shadows.ShadowApplication;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.net.HttpNegotiateAuthenticator.GetAccountsCallback;
 import org.chromium.net.HttpNegotiateAuthenticator.RequestData;
 
@@ -65,9 +61,12 @@ import java.util.List;
         manifest = Config.NONE,
         shadows = {HttpNegotiateAuthenticatorTest.ExtendedShadowAccountManager.class})
 public class HttpNegotiateAuthenticatorTest {
+    private static final long MOCK_NATIVE_POINTER = 42;
+    private static final String MOCK_TOKEN_TYPE = "foo";
+
     /**
-     * User the AccountManager to inject a mock instance.
-     * Note: Shadow classes need to be public and static.
+     * User the AccountManager to inject a mock instance. Note: Shadow classes need to be public and
+     * static.
      */
     @Implements(AccountManager.class)
     public static class ExtendedShadowAccountManager extends ShadowAccountManager {
@@ -77,7 +76,6 @@ public class HttpNegotiateAuthenticatorTest {
         }
     }
 
-    @Rule public JniMocker mocker = new JniMocker();
     @Mock private static AccountManager sMockAccountManager;
     @Mock private HttpNegotiateAuthenticator.Natives mAuthenticatorJniMock;
     @Captor private ArgumentCaptor<AccountManagerCallback<Bundle>> mBundleCallbackCaptor;
@@ -87,7 +85,7 @@ public class HttpNegotiateAuthenticatorTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mocker.mock(HttpNegotiateAuthenticatorJni.TEST_HOOKS, mAuthenticatorJniMock);
+        HttpNegotiateAuthenticatorJni.setInstanceForTesting(mAuthenticatorJniMock);
     }
 
     /** Test of {@link HttpNegotiateAuthenticator#getNextAuthToken} */
@@ -110,22 +108,21 @@ public class HttpNegotiateAuthenticatorTest {
                         mBundleCallbackCaptor.capture(),
                         any(Handler.class));
 
-        assertThat(
-                "There is no existing context",
-                mBundleCaptor.getValue().get(HttpNegotiateConstants.KEY_SPNEGO_CONTEXT),
-                nullValue());
-        assertThat(
-                "The existing token is empty",
-                mBundleCaptor.getValue().getString(HttpNegotiateConstants.KEY_INCOMING_AUTH_TOKEN),
-                equalTo(""));
-        assertThat(
-                "Delegation is allowed",
-                mBundleCaptor.getValue().getBoolean(HttpNegotiateConstants.KEY_CAN_DELEGATE),
-                equalTo(true));
-        assertThat(
-                "getAuthTokenByFeatures was called with a callback",
-                mBundleCallbackCaptor.getValue(),
-                notNullValue());
+        assertWithMessage("There is no existing context")
+                .that(mBundleCaptor.getValue().get(HttpNegotiateConstants.KEY_SPNEGO_CONTEXT))
+                .isNull();
+        assertWithMessage("The existing token is empty")
+                .that(
+                        mBundleCaptor
+                                .getValue()
+                                .getString(HttpNegotiateConstants.KEY_INCOMING_AUTH_TOKEN))
+                .isEqualTo("");
+        assertWithMessage("Delegation is allowed")
+                .that(mBundleCaptor.getValue().getBoolean(HttpNegotiateConstants.KEY_CAN_DELEGATE))
+                .isEqualTo(true);
+        assertWithMessage("getAuthTokenByFeatures was called with a callback")
+                .that(mBundleCallbackCaptor.getValue())
+                .isNotNull();
     }
 
     /**
@@ -161,18 +158,18 @@ public class HttpNegotiateAuthenticatorTest {
                         any(HttpNegotiateAuthenticator.GetTokenCallback.class),
                         any(Handler.class));
 
-        assertThat(
-                "There is no existing context",
-                mBundleCaptor.getValue().get(HttpNegotiateConstants.KEY_SPNEGO_CONTEXT),
-                nullValue());
-        assertThat(
-                "The existing token is empty",
-                mBundleCaptor.getValue().getString(HttpNegotiateConstants.KEY_INCOMING_AUTH_TOKEN),
-                equalTo(""));
-        assertThat(
-                "Delegation is allowed",
-                mBundleCaptor.getValue().getBoolean(HttpNegotiateConstants.KEY_CAN_DELEGATE),
-                equalTo(true));
+        assertWithMessage("There is no existing context")
+                .that(mBundleCaptor.getValue().get(HttpNegotiateConstants.KEY_SPNEGO_CONTEXT))
+                .isNull();
+        assertWithMessage("The existing token is empty")
+                .that(
+                        mBundleCaptor
+                                .getValue()
+                                .getString(HttpNegotiateConstants.KEY_INCOMING_AUTH_TOKEN))
+                .isEqualTo("");
+        assertWithMessage("Delegation is allowed")
+                .that(mBundleCaptor.getValue().getBoolean(HttpNegotiateConstants.KEY_CAN_DELEGATE))
+                .isEqualTo(true);
     }
 
     /** Tests the behavior of {@link HttpNegotiateAuthenticator.GetAccountsCallback} */
@@ -180,19 +177,15 @@ public class HttpNegotiateAuthenticatorTest {
     public void testGetAccountCallback() {
         String type = "Dummy_Account";
         HttpNegotiateAuthenticator authenticator = createAuthenticator(type);
-        RequestData requestData = new RequestData();
-        requestData.nativeResultObject = 42;
-        requestData.accountManager = sMockAccountManager;
+        Bundle options = new Bundle();
+        RequestData requestData =
+                new RequestData(MOCK_NATIVE_POINTER, sMockAccountManager, options, MOCK_TOKEN_TYPE);
         GetAccountsCallback callback = authenticator.new GetAccountsCallback(requestData);
 
         // Should fail because there are no accounts
         callback.run(makeFuture(new Account[] {}));
         verify(mAuthenticatorJniMock)
-                .setResult(
-                        eq(42L),
-                        eq(authenticator),
-                        eq(NetError.ERR_MISSING_AUTH_CREDENTIALS),
-                        (String) isNull());
+                .setResult(eq(42L), eq(NetError.ERR_MISSING_AUTH_CREDENTIALS), (String) isNull());
 
         // Should succeed, for a single account we use it for the AccountManager#getAuthToken call.
         Account testAccount = new Account("a", type);
@@ -200,8 +193,8 @@ public class HttpNegotiateAuthenticatorTest {
         verify(sMockAccountManager)
                 .getAuthToken(
                         eq(testAccount),
-                        (String) isNull(),
-                        (Bundle) isNull(),
+                        eq(MOCK_TOKEN_TYPE),
+                        eq(options),
                         eq(true),
                         any(HttpNegotiateAuthenticator.GetTokenCallback.class),
                         any(Handler.class));
@@ -209,11 +202,7 @@ public class HttpNegotiateAuthenticatorTest {
         // Should fail because there is more than one account
         callback.run(makeFuture(new Account[] {new Account("a", type), new Account("b", type)}));
         verify(mAuthenticatorJniMock, times(2))
-                .setResult(
-                        eq(42L),
-                        eq(authenticator),
-                        eq(NetError.ERR_MISSING_AUTH_CREDENTIALS),
-                        (String) isNull());
+                .setResult(eq(42L), eq(NetError.ERR_MISSING_AUTH_CREDENTIALS), (String) isNull());
     }
 
     /**
@@ -224,22 +213,23 @@ public class HttpNegotiateAuthenticatorTest {
     public void testGetTokenCallbackWithIntent() {
         String type = "Dummy_Account";
         HttpNegotiateAuthenticator authenticator = createAuthenticator(type);
-        RequestData requestData = new RequestData();
-        requestData.nativeResultObject = 42;
-        requestData.authTokenType = "foo";
+        Bundle options = new Bundle();
+        options.putParcelable(AccountManager.KEY_INTENT, new Intent());
+        RequestData requestData =
+                new RequestData(MOCK_NATIVE_POINTER, sMockAccountManager, options, MOCK_TOKEN_TYPE);
         requestData.account = new Account("a", type);
-        requestData.accountManager = sMockAccountManager;
-        Bundle b = new Bundle();
-        b.putParcelable(AccountManager.KEY_INTENT, new Intent());
 
-        authenticator.new GetTokenCallback(requestData).run(makeFuture(b));
+        authenticator.new GetTokenCallback(requestData).run(makeFuture(options));
         verifyNoMoreInteractions(sMockAccountManager);
 
         // Verify that the broadcast receiver is registered
         Intent intent = new Intent(AccountManager.LOGIN_ACCOUNTS_CHANGED_ACTION);
-        ShadowApplication shadowApplication = ShadowApplication.getInstance();
+        ShadowApplication shadowApplication =
+                shadowOf((Application) RuntimeEnvironment.application);
         List<BroadcastReceiver> receivers = shadowApplication.getReceiversForIntent(intent);
-        assertThat("There is one registered broadcast receiver", receivers.size(), equalTo(1));
+        assertWithMessage("There is one registered broadcast receiver")
+                .that(receivers.size())
+                .isEqualTo(1);
 
         // Send the intent to the receiver.
         BroadcastReceiver receiver = receivers.get(0);
@@ -249,8 +239,8 @@ public class HttpNegotiateAuthenticatorTest {
         verify(sMockAccountManager)
                 .getAuthToken(
                         eq(new Account("a", type)),
-                        eq("foo"),
-                        (Bundle) isNull(),
+                        eq(MOCK_TOKEN_TYPE),
+                        eq(options),
                         eq(true),
                         any(HttpNegotiateAuthenticator.GetTokenCallback.class),
                         (Handler) isNull());
@@ -283,7 +273,7 @@ public class HttpNegotiateAuthenticatorTest {
         resultBundle.putBundle(HttpNegotiateConstants.KEY_SPNEGO_CONTEXT, context);
         resultBundle.putString(AccountManager.KEY_AUTHTOKEN, "output_token");
         mBundleCallbackCaptor.getValue().run(makeFuture(resultBundle));
-        verify(mAuthenticatorJniMock).setResult(1234, authenticator, 0, "output_token");
+        verify(mAuthenticatorJniMock).setResult(1234, 0, "output_token");
 
         // Check that the next call to getNextAuthToken uses the correct context
         authenticator.getNextAuthToken(5678, "test_principal", "", true);
@@ -298,16 +288,15 @@ public class HttpNegotiateAuthenticatorTest {
                         mBundleCallbackCaptor.capture(),
                         any(Handler.class));
 
-        assertThat(
-                "The spnego context is preserved between calls",
-                mBundleCaptor.getValue().getBundle(HttpNegotiateConstants.KEY_SPNEGO_CONTEXT),
-                equalTo(context));
+        assertWithMessage("The spnego context is preserved between calls")
+                .that(mBundleCaptor.getValue().getBundle(HttpNegotiateConstants.KEY_SPNEGO_CONTEXT))
+                .isEqualTo(context);
 
         // Test exception path
         mBundleCallbackCaptor
                 .getValue()
                 .run(this.<Bundle>makeFuture(new OperationCanceledException()));
-        verify(mAuthenticatorJniMock).setResult(5678, authenticator, NetError.ERR_UNEXPECTED, null);
+        verify(mAuthenticatorJniMock).setResult(5678, NetError.ERR_UNEXPECTED, null);
     }
 
     @Test
@@ -319,7 +308,6 @@ public class HttpNegotiateAuthenticatorTest {
         verify(mAuthenticatorJniMock)
                 .setResult(
                         anyLong(),
-                        eq(authenticator),
                         eq(NetError.ERR_MISCONFIGURED_AUTH_ENVIRONMENT),
                         (String) isNull());
     }
@@ -424,8 +412,7 @@ public class HttpNegotiateAuthenticatorTest {
             resultBundle.putInt(HttpNegotiateConstants.KEY_SPNEGO_RESULT, spnegoError);
         }
         mBundleCallbackCaptor.getValue().run(makeFuture(resultBundle));
-        verify(mAuthenticatorJniMock)
-                .setResult(anyLong(), eq(authenticator), eq(expectedError), (String) isNull());
+        verify(mAuthenticatorJniMock).setResult(anyLong(), eq(expectedError), (String) isNull());
     }
 
     /**
@@ -441,7 +428,7 @@ public class HttpNegotiateAuthenticatorTest {
             when(accountManagerFuture.getResult()).thenReturn(result);
         } catch (OperationCanceledException | AuthenticatorException | IOException e) {
             // Can never happen - artifact of Mockito.
-            fail();
+            throw new RuntimeException(e);
         }
         return accountManagerFuture;
     }
@@ -459,7 +446,7 @@ public class HttpNegotiateAuthenticatorTest {
             when(accountManagerFuture.getResult()).thenThrow(ex);
         } catch (OperationCanceledException | AuthenticatorException | IOException e) {
             // Can never happen - artifact of Mockito.
-            fail();
+            throw new RuntimeException(e);
         }
         return accountManagerFuture;
     }

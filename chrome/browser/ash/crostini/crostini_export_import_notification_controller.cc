@@ -10,7 +10,9 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "chrome/browser/ash/crostini/crostini_export_import.h"
+#include "chrome/browser/ash/crostini/crostini_export_import_factory.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -85,7 +87,7 @@ CrostiniExportImportNotificationController::
 void CrostiniExportImportNotificationController::ForceRedisplay() {
   hidden_ = false;
 
-  NotificationDisplayService::GetForProfile(profile_)->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
       NotificationHandler::Type::TRANSIENT, *notification_,
       /*metadata=*/nullptr);
 }
@@ -103,7 +105,7 @@ void CrostiniExportImportNotificationController::SetStatusRunningUI(
           return;
         }
         DCHECK_EQ(0, *button_index);
-        CrostiniExportImport::GetForProfile(profile)->CancelOperation(
+        CrostiniExportImportFactory::GetForProfile(profile)->CancelOperation(
             type, container_id);
       },
       profile_, type(), container_id_));
@@ -111,7 +113,8 @@ void CrostiniExportImportNotificationController::SetStatusRunningUI(
   notification_->set_type(message_center::NOTIFICATION_TYPE_PROGRESS);
   notification_->set_accent_color_id(cros_tokens::kCrosSysPrimary);
   notification_->set_title(l10n_util::GetStringUTF16(
-      type() == ExportImportType::EXPORT
+      (type() == ExportImportType::EXPORT ||
+       type() == ExportImportType::EXPORT_DISK_IMAGE)
           ? IDS_CROSTINI_EXPORT_NOTIFICATION_TITLE_RUNNING
           : IDS_CROSTINI_IMPORT_NOTIFICATION_TITLE_RUNNING));
   notification_->set_message(
@@ -136,7 +139,8 @@ void CrostiniExportImportNotificationController::SetStatusCancellingUI() {
   notification_->set_type(message_center::NOTIFICATION_TYPE_PROGRESS);
   notification_->set_accent_color_id(cros_tokens::kCrosSysPrimary);
   notification_->set_title(l10n_util::GetStringUTF16(
-      type() == ExportImportType::EXPORT
+      (type() == ExportImportType::EXPORT ||
+       type() == ExportImportType::EXPORT_DISK_IMAGE)
           ? IDS_CROSTINI_EXPORT_NOTIFICATION_TITLE_CANCELLING
           : IDS_CROSTINI_IMPORT_NOTIFICATION_TITLE_CANCELLING));
   notification_->set_message({});
@@ -149,7 +153,8 @@ void CrostiniExportImportNotificationController::SetStatusCancellingUI() {
 }
 
 void CrostiniExportImportNotificationController::SetStatusDoneUI() {
-  if (type() == ExportImportType::EXPORT) {
+  if (type() == ExportImportType::EXPORT ||
+      type() == ExportImportType::EXPORT_DISK_IMAGE) {
     delegate_->SetCallback(base::BindRepeating(
         [](Profile* profile, base::FilePath path) {
           platform_util::ShowItemInFolder(profile, path);
@@ -162,26 +167,28 @@ void CrostiniExportImportNotificationController::SetStatusDoneUI() {
 
   notification_->set_type(message_center::NOTIFICATION_TYPE_SIMPLE);
     notification_->set_accent_color_id(cros_tokens::kCrosSysPrimary);
-  notification_->set_title(l10n_util::GetStringUTF16(
-      type() == ExportImportType::EXPORT
-          ? IDS_CROSTINI_EXPORT_NOTIFICATION_TITLE_DONE
-          : IDS_CROSTINI_IMPORT_NOTIFICATION_TITLE_DONE));
-  notification_->set_message(l10n_util::GetStringUTF16(
-      type() == ExportImportType::EXPORT
-          ? IDS_CROSTINI_EXPORT_NOTIFICATION_MESSAGE_DONE
-          : IDS_CROSTINI_IMPORT_NOTIFICATION_MESSAGE_DONE));
-  notification_->set_buttons({});
-  notification_->set_never_timeout(false);
-  notification_->set_pinned(false);
+    notification_->set_title(l10n_util::GetStringUTF16(
+        (type() == ExportImportType::EXPORT ||
+         type() == ExportImportType::EXPORT_DISK_IMAGE)
+            ? IDS_CROSTINI_EXPORT_NOTIFICATION_TITLE_DONE
+            : IDS_CROSTINI_IMPORT_NOTIFICATION_TITLE_DONE));
+    notification_->set_message(l10n_util::GetStringUTF16(
+        (type() == ExportImportType::EXPORT ||
+         type() == ExportImportType::EXPORT_DISK_IMAGE)
+            ? IDS_CROSTINI_EXPORT_NOTIFICATION_MESSAGE_DONE
+            : IDS_CROSTINI_IMPORT_NOTIFICATION_MESSAGE_DONE));
+    notification_->set_buttons({});
+    notification_->set_never_timeout(false);
+    notification_->set_pinned(false);
 
-  ForceRedisplay();
+    ForceRedisplay();
 }
 
 void CrostiniExportImportNotificationController::SetStatusCancelledUI() {
   delegate_->SetCallback(
       CrostiniExportImportClickCloseDelegate::ButtonClickCallback());
 
-  NotificationDisplayService::GetForProfile(profile_)->Close(
+  NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
       NotificationHandler::Type::TRANSIENT, notification_->id());
 }
 
@@ -205,7 +212,7 @@ void CrostiniExportImportNotificationController::SetStatusFailedWithMessageUI(
                                   GURL(chrome::kLinuxExportImportHelpURL),
                                   ui::PAGE_TRANSITION_LINK);
             params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-            params.window_action = NavigateParams::SHOW_WINDOW;
+            params.window_action = NavigateParams::WindowAction::kShowWindow;
             Navigate(&params);
           },
           profile_));
@@ -228,7 +235,8 @@ void CrostiniExportImportNotificationController::SetStatusFailedWithMessageUI(
   notification_->set_type(message_center::NOTIFICATION_TYPE_SIMPLE);
   notification_->set_accent_color_id(cros_tokens::kCrosSysError);
   notification_->set_title(l10n_util::GetStringUTF16(
-      type() == ExportImportType::EXPORT
+      (type() == ExportImportType::EXPORT ||
+       type() == ExportImportType::EXPORT_DISK_IMAGE)
           ? IDS_CROSTINI_EXPORT_NOTIFICATION_TITLE_FAILED
           : IDS_CROSTINI_IMPORT_NOTIFICATION_TITLE_FAILED));
   notification_->set_message(message);

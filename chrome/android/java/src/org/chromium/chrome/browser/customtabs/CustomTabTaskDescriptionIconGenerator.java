@@ -7,10 +7,13 @@ package org.chromium.chrome.browser.customtabs;
 import android.content.Context;
 import android.graphics.Bitmap;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.url.GURL;
 
 /** Generates icons suitable for Custom Tabs in the recent tasks list. */
+@NullMarked
 public class CustomTabTaskDescriptionIconGenerator {
     private static final int APP_ICON_MIN_SIZE_DP = 32;
     private static final int APP_ICON_SIZE_DP = 64;
@@ -18,34 +21,34 @@ public class CustomTabTaskDescriptionIconGenerator {
     private static final int APP_ICON_TEXT_SIZE_DP = 30;
     private static final int APP_ICON_DEFAULT_BACKGROUND_COLOR = 0xFF323232;
 
-    private Context mContext;
-    private int mMinSizePx;
+    private final Context mContext;
+    private final int mMinSizePx;
 
     /** The page URL for which {@link #mGeneratedIcon} was generated. */
-    private GURL mGeneratedPageUrl;
+    private @Nullable GURL mGeneratedPageUrl;
 
     /** The most recently generated icon. */
-    private Bitmap mGeneratedIcon;
+    private @Nullable Bitmap mGeneratedIcon;
 
     /** Generates the icon if there is no adequate favicon. */
-    private RoundedIconGenerator mGenerator;
+    private @Nullable RoundedIconGenerator mGenerator;
 
     public CustomTabTaskDescriptionIconGenerator(Context context) {
         mContext = context;
         mMinSizePx =
-                (int) mContext.getResources().getDisplayMetrics().density * APP_ICON_MIN_SIZE_DP;
+                (int) (mContext.getResources().getDisplayMetrics().density * APP_ICON_MIN_SIZE_DP);
     }
 
     /**
      * Returns the icon to use for the Activity in the recent tasks list. Returns the favicon if it
-     * is adequate. If the passed in favicon is not adequate, an icon is generated from the
-     * page URL.
+     * is adequate. If the passed in favicon is not adequate, an icon is generated from the page
+     * URL.
      *
      * @param pageUrl The URL of the tab.
      * @param largestFavicon The largest favicon available at the page URL.
      * @return The icon to use in the recent tasks list.
      */
-    public Bitmap getBitmap(GURL pageUrl, Bitmap largestFavicon) {
+    public @Nullable Bitmap getBitmap(GURL pageUrl, @Nullable Bitmap largestFavicon) {
         if (largestFavicon != null
                 && largestFavicon.getWidth() >= mMinSizePx
                 && largestFavicon.getHeight() >= mMinSizePx) {

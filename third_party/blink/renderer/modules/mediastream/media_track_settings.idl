@@ -13,7 +13,7 @@ dictionary MediaTrackSettings {
     DOMString resizeMode;
     long sampleRate;
     long sampleSize;
-    boolean echoCancellation;
+    (boolean or DOMString) echoCancellation;
     boolean autoGainControl;
     boolean noiseSuppression;
     boolean voiceIsolation;
@@ -46,6 +46,7 @@ dictionary MediaTrackSettings {
 
     // W3C Media Capture Extensions
     [RuntimeEnabled=MediaCaptureBackgroundBlur] boolean backgroundBlur;
+    [RuntimeEnabled=MediaCaptureCameraControls] boolean backgroundSegmentationMask;
     [RuntimeEnabled=MediaCaptureCameraControls] boolean eyeGazeCorrection;
     [RuntimeEnabled=MediaCaptureCameraControls] boolean faceFraming;
 
@@ -55,4 +56,8 @@ dictionary MediaTrackSettings {
     [RuntimeEnabled=GetDisplayMedia] boolean logicalSurface;
     [RuntimeEnabled=GetDisplayMedia] DOMString cursor;
     [RuntimeEnabled=GetDisplayMedia] boolean suppressLocalAudioPlayback;
+    [RuntimeEnabled=GetDisplayMedia] boolean restrictOwnAudio;
+
+    // Capture Surface Resolution API
+    [RuntimeEnabled=CapturedSurfaceResolution] double screenPixelRatio;
 };

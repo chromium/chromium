@@ -105,7 +105,7 @@ bool HttpBasicState::GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const {
 void HttpBasicState::GetSSLInfo(SSLInfo* ssl_info) {
   CHECK(connection_);
   if (!connection_->socket() || !connection_->socket()->GetSSLInfo(ssl_info)) {
-    ssl_info->Reset();
+    *ssl_info = SSLInfo();
   }
 }
 

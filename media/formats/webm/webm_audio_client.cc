@@ -101,7 +101,7 @@ bool WebMAudioClient::OnUInt(int id, int64_t val) {
 }
 
 bool WebMAudioClient::OnFloat(int id, double val) {
-  double* dst = NULL;
+  double* dst = nullptr;
 
   switch (id) {
     case kWebMIdSamplingFrequency:

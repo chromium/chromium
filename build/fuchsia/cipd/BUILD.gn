@@ -8,6 +8,7 @@ assert(is_fuchsia)
 
 import("//build/cipd/cipd.gni")
 import("//build/config/chrome_build.gni")
+import("//build/config/clang/clang.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/util/process_version.gni")
 import("//third_party/fuchsia-gn-sdk/src/build_id_dir.gni")
@@ -41,6 +42,11 @@ _web_engine_directory = "web_engine"
 _host_tools_directory = "host_tools"
 
 _archive_suffix = "_archive"
+
+# List of directories that are excluded from the generated LICENSE file.
+# SwiftShader is excluded here because SwiftShader libraries are excluded
+# from the WebEngine package, see `fuchsia_web/common/swiftshader_exclude.gni`.
+_license_exclude_list = [ "third_party/swiftshader" ]
 
 # Extracts the numeric Chrome version and writes it to a file in the output
 # directory.
@@ -113,6 +119,8 @@ template("cipd_archive") {
       _license_target,
       "--gn-out-dir",
       ".",
+      "--exclude-dirs",
+      "$_license_exclude_list",
     ]
   }
 
@@ -134,6 +142,8 @@ template("cipd_archive") {
       "spdx",
       "--spdx-doc-name",
       "${invoker.target_name}",
+      "--exclude-dirs",
+      "$_license_exclude_list",
     ]
   }
 
@@ -263,16 +273,23 @@ action("strip_chromedriver_binary") {
   deps = [ "//chrome/test/chromedriver:chromedriver_server($host_toolchain)" ]
   script = "//build/gn_run_binary.py"
   sources = [
-    "//buildtools/third_party/eu-strip/bin/eu-strip",
+    "${clang_base_path}/bin/llvm-strip",
     prog_name,
   ]
   outputs = [ _stripped_chromedriver_file ]
   args = [
-    rebase_path("//buildtools/third_party/eu-strip/bin/eu-strip",
-                root_build_dir),
+    rebase_path("${clang_base_path}/bin/llvm-strip", root_build_dir),
+    "--strip-debug",
+    "--strip-unneeded",
     "-o",
     rebase_path(_stripped_chromedriver_file, root_build_dir),
     rebase_path(prog_name, root_build_dir),
+  ]
+
+  visibility = []
+  visibility = [
+    ":*",
+    "//fuchsia_web/av_testing:*",
   ]
 }
 

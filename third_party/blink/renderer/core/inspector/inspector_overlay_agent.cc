@@ -97,8 +97,6 @@ using crdtp::json::ConvertCBORToJSON;
 
 namespace blink {
 
-using protocol::Maybe;
-
 namespace {
 
 bool ParseQuad(std::unique_ptr<protocol::Array<double>> quad_array,
@@ -117,7 +115,7 @@ bool ParseQuad(std::unique_ptr<protocol::Array<double>> quad_array,
 v8::MaybeLocal<v8::Value> GetV8Property(v8::Local<v8::Context> context,
                                         v8::Local<v8::Value> object,
                                         const String& name) {
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   v8::Local<v8::String> name_str = V8String(isolate, name);
   v8::Local<v8::Object> object_obj;
   if (!object->ToObject(context).ToLocal(&object_obj)) {
@@ -308,6 +306,8 @@ class InspectorOverlayAgent::InspectorPageOverlayDelegate final
       return;
     }
 
+    CHECK_EQ(layer_->client(), this);
+
     overlay_->PaintOverlayPage();
 
     // The emulation scale factor is baked in the contents of the overlay layer,
@@ -318,10 +318,10 @@ class InspectorOverlayAgent::InspectorPageOverlayDelegate final
     // The overlay layer needs to be in the root property tree state (instead of
     // the default FrameOverlay state which is under the emulation scale
     // transform node) because the emulation scale is baked in the layer.
-    const auto* property_tree_state = &PropertyTreeState::Root();
+    auto property_tree_state = PropertyTreeState::Root();
     RecordForeignLayer(graphics_context, *client,
                        DisplayItem::kForeignLayerDevToolsOverlay, layer_,
-                       gfx::Point(), property_tree_state);
+                       gfx::Point(), &property_tree_state);
   }
 
   void Invalidate() override {
@@ -495,7 +495,7 @@ void InspectorOverlayAgent::EnsureAXContext(Node* node) {
 
 void InspectorOverlayAgent::EnsureAXContext(Document& document) {
   if (!document_to_ax_context_.Contains(&document)) {
-    auto context = std::make_unique<AXContext>(document, ui::kAXModeComplete);
+    auto context = std::make_unique<AXContext>(document, ui::kAXModeInspector);
     document_to_ax_context_.Set(&document, std::move(context));
   }
 }
@@ -627,8 +627,9 @@ protocol::Response InspectorOverlayAgent::setShowScrollBottleneckRects(
     cc::LayerTreeDebugState debug_state = *widget->GetLayerTreeDebugState();
     debug_state.show_touch_event_handler_rects = show;
     debug_state.show_wheel_event_handler_rects = show;
-    debug_state.show_non_fast_scrollable_rects = show;
-    debug_state.show_main_thread_scrolling_reason_rects = show;
+    debug_state.show_main_thread_scroll_hit_test_rects = show;
+    debug_state.show_main_thread_scroll_repaint_rects = show;
+    debug_state.show_raster_inducing_scroll_rects = show;
     widget->SetLayerTreeDebugState(debug_state);
   }
   return protocol::Response::Success();
@@ -646,27 +647,14 @@ protocol::Response InspectorOverlayAgent::setShowViewportSizeOnResize(
 }
 
 protocol::Response InspectorOverlayAgent::setShowWebVitals(bool show) {
-  show_web_vitals_.Set(show);
-  if (show) {
-    protocol::Response response = CompositingEnabled();
-    if (!response.IsSuccess()) {
-      return response;
-    }
-  }
-  if (FrameWidgetInitialized()) {
-    FrameWidget* widget = GetFrame()->GetWidgetForLocalRoot();
-    cc::LayerTreeDebugState debug_state = *widget->GetLayerTreeDebugState();
-    debug_state.show_web_vital_metrics = show;
-    widget->SetLayerTreeDebugState(debug_state);
-  }
   return protocol::Response::Success();
 }
 
 protocol::Response InspectorOverlayAgent::setShowWindowControlsOverlay(
-    protocol::Maybe<protocol::Overlay::WindowControlsOverlayConfig>
+    std::unique_ptr<protocol::Overlay::WindowControlsOverlayConfig>
         wco_config) {
   // Hide WCO when called without a configuration.
-  if (!wco_config.has_value()) {
+  if (!wco_config) {
     SetInspectTool(nullptr);
     return protocol::Response::Success();
   }
@@ -674,7 +662,7 @@ protocol::Response InspectorOverlayAgent::setShowWindowControlsOverlay(
   std::unique_ptr<protocol::DictionaryValue> result =
       protocol::DictionaryValue::create();
 
-  protocol::Overlay::WindowControlsOverlayConfig& config = wco_config.value();
+  protocol::Overlay::WindowControlsOverlayConfig& config = *wco_config;
 
   result->setBoolean("showCSS", config.getShowCSS());
   result->setString("selectedPlatform", config.getSelectedPlatform());
@@ -685,7 +673,7 @@ protocol::Response InspectorOverlayAgent::setShowWindowControlsOverlay(
 }
 
 protocol::Response InspectorOverlayAgent::setPausedInDebuggerMessage(
-    Maybe<String> message) {
+    std::optional<String> message) {
   paused_in_debugger_message_.Set(message.value_or(String()));
   PickTheRightTool();
   return protocol::Response::Success();
@@ -696,36 +684,32 @@ protocol::Response InspectorOverlayAgent::highlightRect(
     int y,
     int width,
     int height,
-    Maybe<protocol::DOM::RGBA> color,
-    Maybe<protocol::DOM::RGBA> outline_color) {
+    std::unique_ptr<protocol::DOM::RGBA> color,
+    std::unique_ptr<protocol::DOM::RGBA> outline_color) {
   std::unique_ptr<gfx::QuadF> quad =
       std::make_unique<gfx::QuadF>(gfx::RectF(x, y, width, height));
   return SetInspectTool(MakeGarbageCollected<QuadHighlightTool>(
-      this, GetFrontend(), std::move(quad),
-      ParseColor(color.has_value() ? &color.value() : nullptr),
-      ParseColor(outline_color.has_value() ? &outline_color.value()
-                                           : nullptr)));
+      this, GetFrontend(), std::move(quad), ParseColor(color.get()),
+      ParseColor(outline_color.get())));
 }
 
 protocol::Response InspectorOverlayAgent::highlightQuad(
     std::unique_ptr<protocol::Array<double>> quad_array,
-    Maybe<protocol::DOM::RGBA> color,
-    Maybe<protocol::DOM::RGBA> outline_color) {
+    std::unique_ptr<protocol::DOM::RGBA> color,
+    std::unique_ptr<protocol::DOM::RGBA> outline_color) {
   std::unique_ptr<gfx::QuadF> quad = std::make_unique<gfx::QuadF>();
   if (!ParseQuad(std::move(quad_array), quad.get())) {
     return protocol::Response::ServerError("Invalid Quad format");
   }
   return SetInspectTool(MakeGarbageCollected<QuadHighlightTool>(
-      this, GetFrontend(), std::move(quad),
-      ParseColor(color.has_value() ? &color.value() : nullptr),
-      ParseColor(outline_color.has_value() ? &outline_color.value()
-                                           : nullptr)));
+      this, GetFrontend(), std::move(quad), ParseColor(color.get()),
+      ParseColor(outline_color.get())));
 }
 
 protocol::Response InspectorOverlayAgent::setShowHinge(
-    protocol::Maybe<protocol::Overlay::HingeConfig> tool_config) {
+    std::unique_ptr<protocol::Overlay::HingeConfig> tool_config) {
   // Hide the hinge when called without a configuration.
-  if (!tool_config.has_value()) {
+  if (!tool_config) {
     hinge_ = nullptr;
     if (!inspect_tool_) {
       DisableFrameOverlay();
@@ -735,7 +719,7 @@ protocol::Response InspectorOverlayAgent::setShowHinge(
   }
 
   // Create a hinge
-  protocol::Overlay::HingeConfig& config = tool_config.value();
+  protocol::Overlay::HingeConfig& config = *tool_config;
   protocol::DOM::Rect* rect = config.getRect();
   int x = rect->getX();
   int y = rect->getY();
@@ -770,10 +754,10 @@ protocol::Response InspectorOverlayAgent::setShowHinge(
 protocol::Response InspectorOverlayAgent::highlightNode(
     std::unique_ptr<protocol::Overlay::HighlightConfig>
         highlight_inspector_object,
-    Maybe<int> node_id,
-    Maybe<int> backend_node_id,
-    Maybe<String> object_id,
-    Maybe<String> selector_list) {
+    std::optional<int> node_id,
+    std::optional<int> backend_node_id,
+    std::optional<String> object_id,
+    std::optional<String> selector_list) {
   Node* node = nullptr;
   protocol::Response response =
       dom_agent_->AssertNode(node_id, backend_node_id, object_id, node);
@@ -964,9 +948,9 @@ protocol::Response InspectorOverlayAgent::setShowIsolatedElements(
 protocol::Response InspectorOverlayAgent::highlightSourceOrder(
     std::unique_ptr<protocol::Overlay::SourceOrderConfig>
         source_order_inspector_object,
-    Maybe<int> node_id,
-    Maybe<int> backend_node_id,
-    Maybe<String> object_id) {
+    std::optional<int> node_id,
+    std::optional<int> backend_node_id,
+    std::optional<String> object_id) {
   Node* node = nullptr;
   protocol::Response response =
       dom_agent_->AssertNode(node_id, backend_node_id, object_id, node);
@@ -985,8 +969,8 @@ protocol::Response InspectorOverlayAgent::highlightSourceOrder(
 
 protocol::Response InspectorOverlayAgent::highlightFrame(
     const String& frame_id,
-    Maybe<protocol::DOM::RGBA> color,
-    Maybe<protocol::DOM::RGBA> outline_color) {
+    std::unique_ptr<protocol::DOM::RGBA> color,
+    std::unique_ptr<protocol::DOM::RGBA> outline_color) {
   LocalFrame* frame =
       IdentifiersFactory::FrameById(inspected_frames_, frame_id);
   // FIXME: Inspector doesn't currently work cross process.
@@ -1001,10 +985,8 @@ protocol::Response InspectorOverlayAgent::highlightFrame(
   std::unique_ptr<InspectorHighlightConfig> highlight_config =
       std::make_unique<InspectorHighlightConfig>();
   highlight_config->show_info = true;  // Always show tooltips for frames.
-  highlight_config->content =
-      ParseColor(color.has_value() ? &color.value() : nullptr);
-  highlight_config->content_outline =
-      ParseColor(outline_color.has_value() ? &outline_color.value() : nullptr);
+  highlight_config->content = ParseColor(color.get());
+  highlight_config->content_outline = ParseColor(outline_color.get());
 
   return SetInspectTool(MakeGarbageCollected<NodeHighlightTool>(
       this, GetFrontend(), frame->DeprecatedLocalOwner(), String(),
@@ -1021,10 +1003,10 @@ protocol::Response InspectorOverlayAgent::hideHighlight() {
 
 protocol::Response InspectorOverlayAgent::getHighlightObjectForTest(
     int node_id,
-    Maybe<bool> include_distance,
-    Maybe<bool> include_style,
-    Maybe<String> colorFormat,
-    Maybe<bool> show_accessibility_info,
+    std::optional<bool> include_distance,
+    std::optional<bool> include_style,
+    std::optional<String> colorFormat,
+    std::optional<bool> show_accessibility_info,
     std::unique_ptr<protocol::DictionaryValue>* result) {
   Node* node = nullptr;
   protocol::Response response = dom_agent_->AssertNode(node_id, node);
@@ -1382,9 +1364,9 @@ void InspectorOverlayAgent::LoadOverlayPageResource() {
 
   SegmentedBuffer data;
 
-  data.Append("<script>", static_cast<size_t>(8));
+  data.Append(base::span_from_cstring("<script>"));
   data.Append(UncompressResourceAsBinary(IDR_INSPECT_TOOL_MAIN_JS));
-  data.Append("</script>", static_cast<size_t>(9));
+  data.Append(base::span_from_cstring("</script>"));
 
   frame->ForceSynchronousDocumentInstall(AtomicString("text/html"),
                                          std::move(data));
@@ -1468,13 +1450,12 @@ void InspectorOverlayAgent::EvaluateInOverlay(const String& method,
   v8::Local<v8::Context> context = script_state->GetContext();
   v8::Context::Scope context_scope(context);
 
-  v8::LocalVector<v8::Value> args(context->GetIsolate());
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  v8::LocalVector<v8::Value> args(isolate);
   int args_length = 2;
-  v8::Local<v8::Array> params(
-      v8::Array::New(context->GetIsolate(), args_length));
-  v8::Local<v8::Value> local_method(V8String(context->GetIsolate(), method));
-  v8::Local<v8::Value> local_argument(
-      V8String(context->GetIsolate(), argument));
+  v8::Local<v8::Array> params(v8::Array::New(isolate, args_length));
+  v8::Local<v8::Value> local_method(V8String(isolate, method));
+  v8::Local<v8::Value> local_argument(V8String(isolate, argument));
   params->CreateDataProperty(context, 0, local_method).Check();
   params->CreateDataProperty(context, 1, local_argument).Check();
   args.push_back(params);
@@ -1501,8 +1482,7 @@ void InspectorOverlayAgent::EvaluateInOverlay(
   std::vector<uint8_t> json;
   ConvertCBORToJSON(SpanFrom(command->Serialize()), &json);
   ClassicScript::CreateUnspecifiedScript(
-      "dispatch(" +
-          String(reinterpret_cast<const char*>(json.data()), json.size()) + ")",
+      StrCat({"dispatch(", StringView(base::span(json)), ")"}),
       ScriptSourceLocationType::kInspector)
       ->RunScript(To<LocalFrame>(OverlayMainFrame())->DomWindow(),
                   ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
@@ -1594,19 +1574,19 @@ void InspectorOverlayAgent::Inspect(Node* inspected_node) {
 
 protocol::Response InspectorOverlayAgent::setInspectMode(
     const String& mode,
-    Maybe<protocol::Overlay::HighlightConfig> highlight_inspector_object) {
+    std::unique_ptr<protocol::Overlay::HighlightConfig>
+        highlight_inspector_object) {
   if (mode != protocol::Overlay::InspectModeEnum::None &&
       mode != protocol::Overlay::InspectModeEnum::SearchForNode &&
       mode != protocol::Overlay::InspectModeEnum::SearchForUAShadowDOM &&
-      mode != protocol::Overlay::InspectModeEnum::CaptureAreaScreenshot &&
-      mode != protocol::Overlay::InspectModeEnum::ShowDistances) {
+      mode != protocol::Overlay::InspectModeEnum::CaptureAreaScreenshot) {
     return protocol::Response::ServerError(
-        String("Unknown mode \"" + mode + "\" was provided.").Utf8());
+        StrCat({"Unknown mode \"", mode, "\" was provided."}).Utf8());
   }
 
   std::vector<uint8_t> serialized_config;
-  if (highlight_inspector_object.has_value()) {
-    highlight_inspector_object.value().AppendSerialized(&serialized_config);
+  if (highlight_inspector_object) {
+    highlight_inspector_object->AppendSerialized(&serialized_config);
   }
   std::unique_ptr<InspectorHighlightConfig> config;
   protocol::Response response = HighlightConfigFromInspectorObject(
@@ -1639,10 +1619,6 @@ void InspectorOverlayAgent::PickTheRightTool() {
   } else if (inspect_mode ==
              protocol::Overlay::InspectModeEnum::CaptureAreaScreenshot) {
     inspect_tool = MakeGarbageCollected<ScreenshotTool>(this, GetFrontend());
-  } else if (inspect_mode ==
-             protocol::Overlay::InspectModeEnum::ShowDistances) {
-    inspect_tool =
-        MakeGarbageCollected<NearbyDistanceTool>(this, GetFrontend());
   } else if (!paused_in_debugger_message_.Get().IsNull()) {
     inspect_tool = MakeGarbageCollected<PausedInDebuggerTool>(
         this, GetFrontend(), v8_session_, paused_in_debugger_message_.Get());
@@ -1728,15 +1704,15 @@ InspectorOverlayAgent::SourceOrderConfigFromInspectorObject(
 }
 
 protocol::Response InspectorOverlayAgent::HighlightConfigFromInspectorObject(
-    Maybe<protocol::Overlay::HighlightConfig> highlight_inspector_object,
+    std::unique_ptr<protocol::Overlay::HighlightConfig>
+        highlight_inspector_object,
     std::unique_ptr<InspectorHighlightConfig>* out_config) {
-  if (!highlight_inspector_object.has_value()) {
+  if (!highlight_inspector_object) {
     return protocol::Response::ServerError(
         "Internal error: highlight configuration parameter is missing");
   }
 
-  protocol::Overlay::HighlightConfig& config =
-      highlight_inspector_object.value();
+  protocol::Overlay::HighlightConfig& config = *highlight_inspector_object;
 
   String format = config.getColorFormat("hex");
 

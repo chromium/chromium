@@ -1,0 +1,35 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("wallet") {
+  sources = [
+    "chrome_walletable_pass_client.cc",
+    "chrome_walletable_pass_client.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/autofill",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/profiles",
+    "//chrome/browser/signin",
+    "//chrome/browser/ui/wallet",
+    "//components/optimization_guide/core",
+    "//components/variations/service",
+    "//components/wallet/content/browser",
+    "//components/wallet/core/browser",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "walletable_pass_barcode_detector_browsertest.cc" ]
+  deps = [
+    "//chrome/test:test_support",
+    "//components/wallet/content/browser",
+    "//components/wallet/content/common/mojom",
+  ]
+}

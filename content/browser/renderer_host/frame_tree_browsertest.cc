@@ -2,19 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/renderer_host/frame_tree.h"
+
 #include "base/command_line.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/common/content_navigation_policy.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/dedicated_worker_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_features.h"
@@ -32,6 +38,7 @@
 #include "content/shell/browser/shell.h"
 #include "content/shell/common/shell_switches.h"
 #include "content/test/content_browser_test_utils_internal.h"
+#include "content/test/render_document_feature.h"
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
@@ -44,6 +51,7 @@
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
 #include "url/url_constants.h"
 
@@ -306,6 +314,557 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, FrameTreeAfterCrash) {
   EXPECT_TRUE(rfh2->IsRenderFrameLive());
 }
 
+// Tests the frame discard impl, both with and without post-discard process
+// shutdown.
+class FrameTreeBrowserWithDiscardTest
+    : public FrameTreeBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  FrameTreeBrowserWithDiscardTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kWebContentsDiscard);
+  }
+
+  void DiscardFrameTree(FrameTree& frame_tree) {
+    RenderProcessHostImpl* root_rph = static_cast<RenderProcessHostImpl*>(
+        frame_tree.root()->current_frame_host()->GetProcess());
+    if (KeepAliveDiscardedProcess()) {
+      // Increment the worker ref count of the renderer process to keep it
+      // alive post discard, simulating the situation where the process may be
+      // shared by multiple frames.
+      root_rph->IncrementWorkerRefCount();
+    }
+
+    frame_tree.Discard();
+
+    if (!KeepAliveDiscardedProcess()) {
+      // If not keeping the process alive wait for it to successfully exit.
+      RenderProcessHostWatcher exit_observer(
+          root_rph, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+      exit_observer.Wait();
+    }
+  }
+
+  bool KeepAliveDiscardedProcess() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(FrameTreeBrowserWithDiscardTest, DiscardFrameTree) {
+  base::HistogramTester uma_recorder;
+  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTree& frame_tree = wc->GetPrimaryFrameTree();
+  FrameTreeNode* root = frame_tree.root();
+
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/frame_tree/top.html")));
+  EXPECT_FALSE(wc->GetController().NeedsReload());
+  EXPECT_EQ(3UL, root->child_count());
+
+  // Ensure the view and frame are live.
+  RenderFrameHostImplWrapper initial_rfh(wc->GetPrimaryMainFrame());
+  RenderViewHostImpl* initial_rvh = initial_rfh->render_view_host();
+  EXPECT_TRUE(initial_rvh->IsRenderViewLive());
+  EXPECT_TRUE(initial_rfh->IsRenderFrameLive());
+
+  const auto get_child_isn = [&](RenderFrameHostImpl* rfh, int child_pos) {
+    return rfh->child_at(child_pos)
+        ->current_frame_host()
+        ->last_committed_frame_entry()
+        ->item_sequence_number();
+  };
+  const int initial_nav_entry_id =
+      wc->GetController().GetLastCommittedEntry()->GetUniqueID();
+  const int64_t initial_isn =
+      initial_rfh->last_committed_frame_entry()->item_sequence_number();
+  const int64_t initial_isn_child1 = get_child_isn(initial_rfh.get(), 0);
+  const int64_t initial_isn_child2 = get_child_isn(initial_rfh.get(), 1);
+  const int64_t initial_isn_child3 = get_child_isn(initial_rfh.get(), 2);
+
+  // Discard the frame tree, wait until all child frames have been cleared away.
+  EXPECT_FALSE(root->was_discarded());
+  uma_recorder.ExpectUniqueSample("Discarding.DiscardFrameTree", true, 0);
+  DiscardFrameTree(frame_tree);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return 0u == root->child_count(); }));
+
+  // The root rfh and rvh should remain unchanged however the child frames
+  // should have been cleared.
+  EXPECT_EQ(initial_nav_entry_id,
+            wc->GetController().GetLastCommittedEntry()->GetUniqueID());
+  EXPECT_EQ(initial_isn,
+            initial_rfh->last_committed_frame_entry()->item_sequence_number());
+
+  EXPECT_TRUE(root->was_discarded());
+  EXPECT_TRUE(wc->GetController().NeedsReload());
+  EXPECT_EQ(initial_rfh.get(), wc->GetPrimaryMainFrame());
+  EXPECT_EQ(initial_rvh, wc->GetPrimaryMainFrame()->render_view_host());
+  EXPECT_EQ(0u, root->child_count());
+  uma_recorder.ExpectUniqueSample("Discarding.DiscardFrameTree", true, 1);
+
+  if (KeepAliveDiscardedProcess()) {
+    EXPECT_TRUE(initial_rvh->IsRenderViewLive());
+    EXPECT_TRUE(initial_rfh->IsRenderFrameLive());
+  } else {
+    // After the document has been discarded the render process should have been
+    // cleared away.
+    EXPECT_FALSE(initial_rvh->IsRenderViewLive());
+    EXPECT_FALSE(initial_rfh->IsRenderFrameLive());
+  }
+
+  // Reload the frame tree. Child frames should be reloaded and the root rfh and
+  // rvh should have changed.
+  wc->GetController().LoadIfNecessary();
+  EXPECT_TRUE(WaitForLoadStop(wc));
+
+  RenderFrameHostImplWrapper final_rfh(wc->GetPrimaryMainFrame());
+  RenderViewHostImpl* final_rvh = final_rfh->render_view_host();
+  EXPECT_EQ(initial_nav_entry_id,
+            wc->GetController().GetLastCommittedEntry()->GetUniqueID());
+  EXPECT_EQ(initial_isn,
+            final_rfh->last_committed_frame_entry()->item_sequence_number());
+  EXPECT_EQ(initial_isn_child1, get_child_isn(final_rfh.get(), 0));
+  EXPECT_EQ(initial_isn_child2, get_child_isn(final_rfh.get(), 1));
+  EXPECT_EQ(initial_isn_child3, get_child_isn(final_rfh.get(), 2));
+
+  EXPECT_FALSE(root->was_discarded());
+  EXPECT_FALSE(wc->GetController().NeedsReload());
+  EXPECT_EQ(3u, root->child_count());
+  EXPECT_NE(initial_rfh.get(), final_rfh.get());
+  EXPECT_TRUE(final_rvh->IsRenderViewLive());
+  EXPECT_TRUE(final_rfh->IsRenderFrameLive());
+
+  if (KeepAliveDiscardedProcess()) {
+    EXPECT_NE(initial_rvh, final_rvh);
+  } else {
+    // TODO(crbug.com/40228869): It should be the case that a new RVH is created
+    // when reloading from a discarded state. This expectation for when the
+    // render process is shutdown should be merged with the one above once
+    // support for terminated processes is landed and all main-frame navigations
+    // use speculative RenderViewHosts.
+    EXPECT_EQ(initial_rvh, final_rvh);
+  }
+}
+
+// Regression test for crbug.com/361658816. Ensures that same-document
+// navigations triggered in the document's unload handler are handled without
+// crashing.
+IN_PROC_BROWSER_TEST_P(FrameTreeBrowserWithDiscardTest,
+                       DiscardHandlesSameDocumentNavigationsDuringUnload) {
+  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTree& frame_tree = wc->GetPrimaryFrameTree();
+  FrameTreeNode* root = frame_tree.root();
+
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/frame_tree/top.html")));
+
+  // Setup a same-document navigation in the unload handler.
+  ASSERT_TRUE(ExecJs(shell(), R"(
+    addEventListener('unload', () => {
+      history.pushState({}, '', 'title1.html');
+    });
+  )"));
+
+  // Discard the rfh, the frame and its children should be cleared successfully.
+  EXPECT_FALSE(root->was_discarded());
+  EXPECT_FALSE(wc->GetController().NeedsReload());
+  EXPECT_EQ(3UL, root->child_count());
+  DiscardFrameTree(frame_tree);
+  EXPECT_TRUE(root->was_discarded());
+  EXPECT_TRUE(wc->GetController().NeedsReload());
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return 0u == root->child_count(); }));
+}
+
+IN_PROC_BROWSER_TEST_P(FrameTreeBrowserWithDiscardTest,
+                       DiscardClearsServiceWorkers) {
+  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTree& frame_tree = wc->GetPrimaryFrameTree();
+  FrameTreeNode* root = frame_tree.root();
+
+  // Load a new page, register a service worker and wait for it to become ready.
+  EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
+                                         "/register_service_worker.html")));
+  EXPECT_EQ("DONE", EvalJs(shell(), "register('/fetch_event_passthrough.js')"));
+  RenderFrameHostImplWrapper rfh(wc->GetPrimaryMainFrame());
+  EXPECT_EQ(1u, rfh->service_worker_clients_for_testing().size());
+
+  // Discard the frame tree.
+  EXPECT_FALSE(root->was_discarded());
+  EXPECT_FALSE(wc->GetController().NeedsReload());
+  DiscardFrameTree(frame_tree);
+  EXPECT_TRUE(root->was_discarded());
+  EXPECT_TRUE(wc->GetController().NeedsReload());
+
+  // Assert the service worker has been de-registered post discard.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return rfh->service_worker_clients_for_testing().size() == 0; }));
+}
+
+// Runs pending navigation discard browsertests with RenderDocument enabled for
+// all frames to ensure a speculative RFH is created during navigation.
+class FrameTreeDiscardPendingNavigationTest
+    : public FrameTreeBrowserWithDiscardTest {
+ public:
+  FrameTreeDiscardPendingNavigationTest() {
+    InitAndEnableRenderDocumentFeature(
+        &feature_list_,
+        GetRenderDocumentLevelName(RenderDocumentLevel::kAllFrames));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(FrameTreeDiscardPendingNavigationTest,
+                       DiscardHandlesNavigationWaitingResponse) {
+  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTree& frame_tree = wc->GetPrimaryFrameTree();
+  FrameTreeNode* root = frame_tree.root();
+
+  const GURL original_url =
+      embedded_test_server()->GetURL("/frame_tree/top.html");
+  EXPECT_TRUE(NavigateToURL(shell(), original_url));
+  EXPECT_FALSE(root->was_discarded());
+  EXPECT_FALSE(wc->GetController().NeedsReload());
+  EXPECT_EQ(3UL, root->child_count());
+
+  // Queue a navigation.
+  const GURL new_url = embedded_test_server()->GetURL("/frame_tree/1-1.html");
+  TestNavigationManager manager(shell()->web_contents(), new_url);
+  shell()->LoadURL(new_url);
+
+  // Get to the point where the frame is waiting for the response.
+  EXPECT_TRUE(manager.WaitForRequestStart());
+  manager.ResumeNavigation();
+
+  // Discard while waiting for a response for the previous navigation.
+  DiscardFrameTree(frame_tree);
+  EXPECT_TRUE(WaitForLoadStop(wc));
+  EXPECT_TRUE(root->was_discarded());
+  EXPECT_TRUE(wc->GetController().NeedsReload());
+
+  // Assert the pending navigation finished.
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
+
+  // Wait for the discarded document to be replaced and clear its children.
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return 0u == root->child_count(); }));
+  EXPECT_EQ(original_url, wc->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_P(FrameTreeDiscardPendingNavigationTest,
+                       DiscardHandlesNavigationPendingCommit) {
+  class ReadyToCommitWaiter : public content::WebContentsObserver {
+   public:
+    explicit ReadyToCommitWaiter(content::WebContents* web_contents)
+        : content::WebContentsObserver(web_contents) {}
+
+    void Wait() { run_loop_.Run(); }
+
+    void ReadyToCommitNavigation(
+        content::NavigationHandle* navigation_handle) override {
+      run_loop_.Quit();
+    }
+
+   private:
+    base::RunLoop run_loop_;
+  };
+
+  base::HistogramTester uma_recorder;
+  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTree& frame_tree = wc->GetPrimaryFrameTree();
+  FrameTreeNode* root = frame_tree.root();
+
+  const GURL original_url =
+      embedded_test_server()->GetURL("/frame_tree/top.html");
+  EXPECT_TRUE(NavigateToURL(shell(), original_url));
+  EXPECT_FALSE(root->was_discarded());
+  EXPECT_FALSE(wc->GetController().NeedsReload());
+  EXPECT_EQ(3UL, root->child_count());
+
+  RenderFrameHostImplWrapper initial_rfh(wc->GetPrimaryMainFrame());
+  EXPECT_TRUE(initial_rfh->IsRenderFrameLive());
+
+  // Queue a navigation and wait until the browser is ready to commit.
+  ReadyToCommitWaiter ready_to_commit_waiter(wc);
+  const GURL new_url = embedded_test_server()->GetURL("/title1.html");
+  shell()->LoadURL(new_url);
+  ready_to_commit_waiter.Wait();
+
+  // Discard while ready to commit the previous navigation.
+  uma_recorder.ExpectUniqueSample("Discarding.DiscardFrameTree", false, 0);
+  frame_tree.Discard();
+  EXPECT_TRUE(WaitForLoadStop(wc));
+
+  // The pending navigation will commit to a new rfh and the tab will settle to
+  // an undiscarded state.
+  EXPECT_FALSE(root->was_discarded());
+  EXPECT_FALSE(wc->GetController().NeedsReload());
+  uma_recorder.ExpectUniqueSample("Discarding.DiscardFrameTree", false, 1);
+
+  RenderFrameHostImplWrapper final_rfh(wc->GetPrimaryMainFrame());
+  EXPECT_NE(initial_rfh.get(), final_rfh.get());
+  EXPECT_EQ(new_url, root->current_url());
+}
+
+// Asserts that a process pinned with a keep-alive ref hosting only discarded
+// frames is successfully shutdown after the keep-alive timeout.
+IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest,
+                       DiscardedFrameRendererShutdownAfterKeepAliveTimeout) {
+  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTree& frame_tree = wc->GetPrimaryFrameTree();
+
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+
+  // Ensure the view, frame and process are reported alive.
+  RenderFrameHostImpl* rfh =
+      static_cast<RenderFrameHostImpl*>(wc->GetPrimaryMainFrame());
+  RenderViewHostImpl* rvh = rfh->render_view_host();
+  RenderProcessHostImpl* rph =
+      static_cast<RenderProcessHostImpl*>(rfh->GetProcess());
+  EXPECT_TRUE(rvh->IsRenderViewLive());
+  EXPECT_TRUE(rfh->IsRenderFrameLive());
+  EXPECT_TRUE(rph->IsInitializedAndNotDead());
+
+  // Set a worker on the renderer process.
+  rph->IncrementWorkerRefCount();
+
+  // Discard the frame tree. The process should remain alive.
+  frame_tree.Discard();
+  EXPECT_TRUE(rvh->IsRenderViewLive());
+  EXPECT_TRUE(rfh->IsRenderFrameLive());
+  EXPECT_TRUE(rph->IsInitializedAndNotDead());
+
+  // Simulate a keep-alive timeout, the process should be promptly shutdown.
+  rfh->SimulateDiscardShutdownKeepAliveTimeoutForTesting();
+  RenderProcessHostWatcher process_exit_observer(
+      wc, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  process_exit_observer.Wait();
+
+  // Ensure the process has been successfully shutdown.
+  EXPECT_FALSE(rvh->IsRenderViewLive());
+  EXPECT_FALSE(rfh->IsRenderFrameLive());
+  EXPECT_FALSE(rph->IsInitializedAndNotDead());
+}
+
+class DedicatedWorkerObserver : public DedicatedWorkerService::Observer {
+ public:
+  explicit DedicatedWorkerObserver(DedicatedWorkerService* worker_service) {
+    scoped_context_observation_.Observe(worker_service);
+  }
+  DedicatedWorkerObserver(const DedicatedWorkerObserver&) = delete;
+  DedicatedWorkerObserver& operator=(const DedicatedWorkerObserver&) = delete;
+  ~DedicatedWorkerObserver() override = default;
+
+  void WaitForCreated() {
+    if (!is_created_) {
+      run_loop_.emplace();
+      run_loop_->Run();
+      run_loop_.reset();
+    }
+  }
+  void WaitForDestroyed() {
+    if (!is_destroyed_) {
+      run_loop_.emplace();
+      run_loop_->Run();
+      run_loop_.reset();
+    }
+  }
+
+  // DedicatedWorkerService::Observer:
+  void OnBeforeWorkerDestroyed(const blink::DedicatedWorkerToken& worker_token,
+                               DedicatedWorkerCreator creator) override {
+    is_destroyed_ = true;
+    if (run_loop_.has_value()) {
+      run_loop_->Quit();
+    }
+  }
+  void OnWorkerCreated(const blink::DedicatedWorkerToken& worker_token,
+                       int worker_process_id,
+                       const url::Origin& security_origin,
+                       DedicatedWorkerCreator creator) override {
+    is_created_ = true;
+    if (run_loop_.has_value()) {
+      run_loop_->Quit();
+    }
+  }
+  void OnFinalResponseURLDetermined(
+      const blink::DedicatedWorkerToken& worker_token,
+      const GURL& url) override {}
+
+ private:
+  bool is_created_ = false;
+  bool is_destroyed_ = false;
+  std::optional<base::RunLoop> run_loop_;
+  base::ScopedObservation<DedicatedWorkerService,
+                          DedicatedWorkerService::Observer>
+      scoped_context_observation_{this};
+};
+
+class DedicatedWorkerFrameTreeBrowserTest
+    : public FrameTreeBrowserWithDiscardTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    FrameTreeBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
+                                    "--expose-gc");
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(DedicatedWorkerFrameTreeBrowserTest,
+                       DiscardClearsDedicatedWorkers) {
+  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTree& frame_tree = wc->GetPrimaryFrameTree();
+  FrameTreeNode* root = frame_tree.root();
+
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+
+  // Navigate to a page and register a dedicated worker.
+  DedicatedWorkerObserver worker_observer(root->current_frame_host()
+                                              ->GetStoragePartition()
+                                              ->GetDedicatedWorkerService());
+  EXPECT_TRUE(EvalJs(shell(), "const worker = new Worker('/workers/empty.js');")
+                  .is_ok());
+  worker_observer.WaitForCreated();
+
+  // Discard the rfh, the associated worker should be cleared.
+  EXPECT_FALSE(root->was_discarded());
+  EXPECT_FALSE(wc->GetController().NeedsReload());
+  DiscardFrameTree(frame_tree);
+  EXPECT_TRUE(root->was_discarded());
+  EXPECT_TRUE(wc->GetController().NeedsReload());
+
+  if (KeepAliveDiscardedProcess()) {
+    // Trigger GC to cleanup the worker in the renderer if persisted.
+    EXPECT_TRUE(EvalJs(shell(), "window.gc();").is_ok());
+  }
+
+  worker_observer.WaitForDestroyed();
+}
+
+// TODO(347770670): Consider restricting script access to discarded documents
+// from related documents.
+IN_PROC_BROWSER_TEST_P(FrameTreeBrowserWithDiscardTest,
+                       DiscardedFrameAllowsScriptAccess) {
+  if (!KeepAliveDiscardedProcess()) {
+    GTEST_SKIP() << "Not applicable when destroying process post discard.";
+  }
+
+  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTree& frame_tree = wc->GetPrimaryFrameTree();
+
+  const GURL main_url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Open a popup using window.open.
+  const GURL popup_url(embedded_test_server()->GetURL("/title2.html"));
+  Shell* new_shell = OpenPopup(shell(), popup_url, "foo");
+  EXPECT_TRUE(new_shell);
+
+  // Assert the opened window is able to script its opener.
+  EXPECT_EQ("foo", EvalJs(new_shell, "window.name;"));
+  EXPECT_TRUE(EvalJs(new_shell, "window.opener.name = 'bar';").is_ok());
+  EXPECT_EQ("bar", EvalJs(shell(), "window.name;"));
+
+  frame_tree.Discard();
+  EXPECT_TRUE(frame_tree.root()->was_discarded());
+
+  // After a discard operation the opened window should should still be able to
+  // script its opener.
+  EXPECT_TRUE(EvalJs(new_shell, "window.opener.name = 'bar2';").is_ok());
+  EXPECT_EQ("bar2", EvalJs(shell(), "window.name;"));
+
+  // After a reload the opened window should still be able to script its opener.
+  wc->GetController().LoadIfNecessary();
+  EXPECT_TRUE(WaitForLoadStop(wc));
+  EXPECT_TRUE(EvalJs(new_shell, "window.opener.name = 'bar3';").is_ok());
+  EXPECT_EQ("bar3", EvalJs(shell(), "window.name;"));
+}
+
+class FrameTreeBrowserTestWithBFCache : public FrameTreeBrowserTest {
+ public:
+  FrameTreeBrowserTestWithBFCache() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kBackForwardCache, {}},
+         {kBackForwardCacheNoTimeEviction, {}}},
+        // Allow BackForwardCache for all devices regardless of their memory.
+        {features::kBackForwardCacheMemoryControls});
+    EXPECT_TRUE(IsBackForwardCacheEnabled());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTestWithBFCache,
+                       FrameTreeBrowserWithDiscardTest) {
+  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTree& frame_tree = wc->GetPrimaryFrameTree();
+  BackForwardCacheImpl& back_forward_cache =
+      wc->GetController().GetBackForwardCache();
+
+  // The BFCache should start empty.
+  EXPECT_TRUE(back_forward_cache.GetEntries().empty());
+
+  const GURL url1(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  const GURL url2(embedded_test_server()->GetURL("b.com", "/title2.html"));
+
+  // Navigate to url1.
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  RenderFrameHostImplWrapper rfh_a(wc->GetPrimaryMainFrame());
+  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a.get());
+
+  // Navigate to url2, the frame hosting url1 should be moved to the BFCache.
+  EXPECT_TRUE(NavigateToURL(shell(), url2));
+  EXPECT_FALSE(delete_observer_rfh_a.deleted());
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  EXPECT_EQ(1u, back_forward_cache.GetEntries().size());
+
+  // Discard the frame tree, the BFCache should have been cleared.
+  frame_tree.Discard();
+  EXPECT_TRUE(frame_tree.root()->was_discarded());
+  back_forward_cache.PostTaskToDestroyEvictedFrames();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return back_forward_cache.GetEntries().empty(); }));
+  EXPECT_TRUE(delete_observer_rfh_a.deleted());
+}
+
+IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTestWithBFCache,
+                       DiscardedFrameDoesNotEnterBFCache) {
+  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTree& frame_tree = wc->GetPrimaryFrameTree();
+  BackForwardCacheImpl& back_forward_cache =
+      wc->GetController().GetBackForwardCache();
+
+  // The BFCache should start empty.
+  EXPECT_TRUE(back_forward_cache.GetEntries().empty());
+
+  const GURL url1(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  const GURL url2(embedded_test_server()->GetURL("b.com", "/title2.html"));
+
+  // Navigate to url1.
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  RenderFrameHostImplWrapper rfh_a(wc->GetPrimaryMainFrame());
+  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a.get());
+
+  // Discard the frame tree.
+  frame_tree.Discard();
+  EXPECT_TRUE(frame_tree.root()->was_discarded());
+  EXPECT_FALSE(delete_observer_rfh_a.deleted());
+
+  // Navigate to url2, the frame hosting url1 should not be moved to the
+  // BFCache.
+  EXPECT_TRUE(NavigateToURL(shell(), url2));
+  EXPECT_FALSE(frame_tree.root()->was_discarded());
+  EXPECT_TRUE(back_forward_cache.GetEntries().empty());
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return delete_observer_rfh_a.deleted(); }));
+}
+
 // Test that we can navigate away if the previous renderer doesn't clean up its
 // child frames.
 IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, NavigateWithLeftoverFrames) {
@@ -485,7 +1044,7 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, NavigateGrandchildToBlob) {
   if (AreAllSitesIsolatedForTesting())
     deleted_observer.WaitUntilDeleted();
   EXPECT_EQ(GURL(blob_url_string), target->current_url());
-  EXPECT_EQ(url::kBlobScheme, target->current_url().scheme());
+  EXPECT_EQ(url::kBlobScheme, target->current_url().GetScheme());
   EXPECT_FALSE(target->current_origin().opaque());
   EXPECT_EQ("a.com", target->current_origin().host());
   EXPECT_EQ(url::kHttpScheme, target->current_origin().scheme());
@@ -530,7 +1089,7 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, NavigateChildToAboutBlank) {
       "});");
   EXPECT_EQ(target->current_origin(), about_blank_origin);
   EXPECT_EQ(GURL(url::kAboutBlankURL), target->current_url());
-  EXPECT_EQ(url::kAboutScheme, target->current_url().scheme());
+  EXPECT_EQ(url::kAboutScheme, target->current_url().GetScheme());
   EXPECT_FALSE(target->current_origin().opaque());
   EXPECT_EQ("b.com", target->current_origin().host());
   EXPECT_EQ(url::kHttpScheme, target->current_origin().scheme());
@@ -578,7 +1137,7 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest,
              "});");
   EXPECT_EQ(target->current_origin(), about_blank_origin);
   EXPECT_EQ(GURL(url::kAboutBlankURL), target->current_url());
-  EXPECT_EQ(url::kAboutScheme, target->current_url().scheme());
+  EXPECT_EQ(url::kAboutScheme, target->current_url().GetScheme());
   EXPECT_FALSE(target->current_origin().opaque());
   EXPECT_EQ("a.com", target->current_origin().host());
   EXPECT_EQ(url::kHttpScheme, target->current_origin().scheme());
@@ -1488,8 +2047,14 @@ class IsolateIcelandFrameTreeBrowserTest : public ContentBrowserTest {
 };
 
 // Regression test for https://crbug.com/644966
+// TODO(crbug.com/432164517): The test is flaky on all platforms.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#define MAYBE_ProcessSwitchForIsolatedBlob DISABLED_ProcessSwitchForIsolatedBlob
+#else
+#define MAYBE_ProcessSwitchForIsolatedBlob ProcessSwitchForIsolatedBlob
+#endif
 IN_PROC_BROWSER_TEST_F(IsolateIcelandFrameTreeBrowserTest,
-                       ProcessSwitchForIsolatedBlob) {
+                       MAYBE_ProcessSwitchForIsolatedBlob) {
   // Set up an iframe.
   WebContents* contents = shell()->web_contents();
   FrameTreeNode* root =
@@ -1514,9 +2079,9 @@ IN_PROC_BROWSER_TEST_F(IsolateIcelandFrameTreeBrowserTest,
 
   // Make sure we did a process transfer back to "b.is".
   const std::string kExpectedSiteURL =
-      AreDefaultSiteInstancesEnabled()
-          ? SiteInstanceImpl::GetDefaultSiteURL().spec()
-          : "http://a.com/";
+      AreStrictSiteInstancesEnabled()
+          ? "http://a.com/"
+          : SiteInstanceImpl::GetDefaultSiteURL().spec();
   const std::string kExpectedSubframeSiteURL =
       SiteIsolationPolicy::IsErrorPageIsolationEnabled(/*in_main_frame*/ false)
           ? "chrome-error://chromewebdata/"
@@ -1589,5 +2154,118 @@ IN_PROC_BROWSER_TEST_F(FrameTreeCredentiallessIframeBrowserTest,
   EXPECT_EQ(true, EvalJs(root->child_at(2)->current_frame_host(),
                          "window.credentialless"));
 }
+
+class FrameTreeLastSuccessfulOriginBrowserTest : public FrameTreeBrowserTest {
+ public:
+  FrameTreeLastSuccessfulOriginBrowserTest() = default;
+};
+
+IN_PROC_BROWSER_TEST_F(FrameTreeLastSuccessfulOriginBrowserTest,
+                       SuccessfulNavigation) {
+  GURL main_url(embedded_test_server()->GetURL("a.test", "/hello.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  // After a successful navigation, the "last committed origin" and the
+  // "last successfully committed origin" should be the same.
+  EXPECT_FALSE(root->current_origin().opaque());
+  EXPECT_EQ(root->current_origin().GetTupleOrPrecursorTupleIfOpaque().host(),
+            "a.test");
+  EXPECT_EQ(root->last_successful_origin(), root->current_origin());
+}
+
+IN_PROC_BROWSER_TEST_F(FrameTreeLastSuccessfulOriginBrowserTest,
+                       FailedNavigationAfterSuccessfulNavigation) {
+  // First, perform a successful navigation, so that the root FrameTreeNode has
+  // a non-opaque `last_successful_origin()`.
+  GURL main_url(embedded_test_server()->GetURL("a.test", "/hello.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  EXPECT_EQ(root->last_successful_origin(), root->current_origin());
+  url::Origin initial_successful_origin = root->last_successful_origin();
+
+  // Now, navigate to a malformed URL to force an error page.
+  TestFrameNavigationObserver navigation_observer(root);
+  EXPECT_TRUE(ExecJs(root, R"(location.href = 'https://hello';)"));
+  navigation_observer.Wait();
+
+  EXPECT_FALSE(navigation_observer.last_navigation_succeeded());
+  EXPECT_TRUE(root->current_frame_host()->IsErrorDocument());
+
+  // The new error document should have an opaque origin, but the frame's
+  // `last_successful_origin()` should remain the same as the initial origin
+  // from the first successful navigation.
+  EXPECT_TRUE(root->current_origin().opaque());
+  EXPECT_NE(root->last_successful_origin(), root->current_origin());
+  EXPECT_EQ(root->last_successful_origin(), initial_successful_origin);
+}
+
+IN_PROC_BROWSER_TEST_F(FrameTreeLastSuccessfulOriginBrowserTest,
+                       CorrectStateForNewMainFrame) {
+  // Don't navigate the root frame to anything. It should have an empty URL with
+  // an opaque origin.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  EXPECT_TRUE(root->current_frame_host()->GetLastCommittedURL().is_empty());
+  EXPECT_TRUE(root->current_origin().opaque());
+  EXPECT_EQ(root->last_successful_origin(), root->current_origin());
+}
+
+IN_PROC_BROWSER_TEST_F(FrameTreeLastSuccessfulOriginBrowserTest,
+                       CorrectStateForNewSubframe) {
+  GURL main_url(embedded_test_server()->GetURL("a.test", "/hello.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  EXPECT_TRUE(ExecJs(root,
+                     "let frame = document.createElement('iframe');"
+                     "document.body.appendChild(frame);"));
+  EXPECT_EQ(1U, root->child_count());
+  FrameTreeNode* new_frame = root->child_at(0);
+
+  // Our new subframe hasn't been navigated yet, so its current URL is
+  // about:blank. It has also inherited the origin of its creator, and the
+  // last successful origin should be the same.
+  EXPECT_EQ(new_frame->current_url(), url::kAboutBlankURL);
+  EXPECT_EQ(new_frame->current_origin().host(), "a.test");
+  EXPECT_EQ(new_frame->last_successful_origin(), new_frame->current_origin());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    FrameTreeBrowserWithDiscardTest,
+    ::testing::Values(false, true),
+    [](const ::testing::TestParamInfo<
+        FrameTreeBrowserWithDiscardTest::ParamType>& info) {
+      return info.param ? "KeepAlive" : "NoKeepAlive";
+    });
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    FrameTreeDiscardPendingNavigationTest,
+    ::testing::Values(false, true),
+    [](const ::testing::TestParamInfo<
+        FrameTreeDiscardPendingNavigationTest::ParamType>& info) {
+      return info.param ? "KeepAlive" : "NoKeepAlive";
+    });
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    DedicatedWorkerFrameTreeBrowserTest,
+    ::testing::Values(false, true),
+    [](const ::testing::TestParamInfo<
+        DedicatedWorkerFrameTreeBrowserTest::ParamType>& info) {
+      return info.param ? "KeepAlive" : "NoKeepAlive";
+    });
 
 }  // namespace content

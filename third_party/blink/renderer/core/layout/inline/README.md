@@ -94,7 +94,7 @@ structures needed to perform line layout.
 The pre-layout pass, triggered by calling `InlineNode::PrepareLayout()`, has
 three separate steps or stages that are executed in order:
 
-  - `CollectInlines`: Performs a depth-first scan of the container collecting
+1. `CollectInlines`: Performs a depth-first scan of the container collecting
     all non-atomic inlines and `TextNodes`s. Atomic inlines are represented as a
     unicode object replacement character but are otherwise skipped.
     Each non-atomic inline and `TextNodes` is fed to a
@@ -107,11 +107,39 @@ three separate steps or stages that are executed in order:
     The CSS [text-transform] is already applied in LayoutObject tree.
     The plan is to implement in this phase when LayoutNG builds the tree from DOM.
 
-  - `SegmentText`: Performs BiDi segmentation and resolution.
-    See [Bidirectional text] below.
+2. `SegmentText` performs following segmentations.
 
-  - `ShapeText`: Shapes the resolved BiDi runs using HarfBuzz.
-    TODO(eae): Fill out
+    Each segmentation process may split an [InlineItem] into multiple items if
+    the segmentation occurs at the middle of an [InlineItem].
+
+   1. BiDi segmentation and resolution.
+      See [Bidirectional text] below.
+   2. `RunSegmenter` runs following segmentations.
+      1. `ScriptRunIterator` determines the script.
+      2. `SymbolsIterator` determines the [FontFallbackPriority] for Emoji.
+
+3. `ShapeText`: Shapes the segments using HarfBuzz.
+   1. Find the longest run of the concatenated string to shape together from the
+      concatenated string and [InlineItem]s.
+      For example, a `<span>` can produce separate [InlineItem]s, but this
+      process combines them if they have the same CSS styles and segmentations.
+   2. `HarfBuzzShaper::Shape()` performs shaping and font fallback for each run.
+      1. `FontFallbackIterator` determines the first font to shape.
+         1. In a simple example, if `font-family: A, B, C`, it’s `A`.
+         2. It also takes care of cases such as when all specified fonts are
+            exhausted and the system fallback needs to be started.
+      2. Loop:
+         1. Resolve the font family name to an actual font (`SimpleFontData`).
+            1. The CSS properties such as `font-family`, `font-style`,
+               `font-weight`, etc. are taken into account to resolve.
+            2. The segmentation properties computed in the step above (script,
+               Emoji, etc.) are also used during the resolution.
+         2. `hb_shape()` using the resolved font.
+         3. If there are any missing glyphs, ask `FontFallbackIterator` to find
+            the next font, and reshape the range of the missing glyphs.
+         4. Exit the loop if all characters are shaped.
+   3. Produce a [ShapeResult] by combining the outputs from the loop above.
+
 
 [text-transform]: https://drafts.csswg.org/css-text-3/#propdef-text-transform
 
@@ -377,6 +405,7 @@ positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 [ConstraintSpace]: ../constraint_space.h
 [ConstraintSpaceBuilder]: ../constraint_space_builder.h
 [FontBaseline]: ../../../platform/fonts/font_baseline.h
+[FontFallbackPriority]: ../../../platform/fonts/font_fallback_priority.h
 [FragmentItem]: fragment_item.h
 [FragmentItems]: fragment_items.h
 [InlineBoxState]: inline_box_state.h

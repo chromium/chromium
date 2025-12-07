@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
@@ -21,10 +20,8 @@ class LocalFrame;
 // Implementation of mojom::blink::TextSuggestionBackend
 class CORE_EXPORT TextSuggestionBackendImpl final
     : public GarbageCollected<TextSuggestionBackendImpl>,
-      public mojom::blink::TextSuggestionBackend,
-      public Supplement<LocalFrame> {
+      public mojom::blink::TextSuggestionBackend {
  public:
-  static const char kSupplementName[];
   static TextSuggestionBackendImpl* From(LocalFrame&);
   static void Bind(LocalFrame*,
                    mojo::PendingReceiver<mojom::blink::TextSuggestionBackend>);
@@ -39,7 +36,7 @@ class CORE_EXPORT TextSuggestionBackendImpl final
   TextSuggestionBackendImpl& operator=(const TextSuggestionBackendImpl&) =
       delete;
 
-  void Trace(Visitor* visitor) const override;
+  void Trace(Visitor* visitor) const;
 
   void ApplySpellCheckSuggestion(const String& suggestion) final;
   void ApplyTextSuggestion(int32_t marker_tag, int32_t suggestion_index) final;
@@ -49,6 +46,7 @@ class CORE_EXPORT TextSuggestionBackendImpl final
   void SuggestionMenuTimeoutCallback(int32_t max_number_of_suggestions) final;
 
  private:
+  Member<LocalFrame> local_frame_;
   HeapMojoReceiver<mojom::blink::TextSuggestionBackend,
                    TextSuggestionBackendImpl,
                    HeapMojoWrapperMode::kForceWithoutContextObserver>

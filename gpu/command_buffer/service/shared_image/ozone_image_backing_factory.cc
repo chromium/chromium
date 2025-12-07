@@ -11,7 +11,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/dawn_context_provider.h"
@@ -21,7 +20,8 @@
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "ui/gfx/buffer_types.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/buffer_usage_util.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_bindings.h"
@@ -60,18 +60,18 @@ gfx::BufferUsage GetBufferUsage(SharedImageUsageSet usage) {
 
 constexpr SharedImageUsageSet kSupportedUsage =
     SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
-    SHARED_IMAGE_USAGE_GLES2_FOR_RASTER_ONLY |
     SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ |
     SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
-    SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY |
-    SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_SCANOUT |
-    SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE |
-    SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE | SHARED_IMAGE_USAGE_VIDEO_DECODE |
+    SHARED_IMAGE_USAGE_SCANOUT | SHARED_IMAGE_USAGE_WEBGPU_READ |
+    SHARED_IMAGE_USAGE_WEBGPU_WRITE | SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE |
+    SHARED_IMAGE_USAGE_VIDEO_DECODE |
     SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
-    SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING |
     SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU | SHARED_IMAGE_USAGE_CPU_UPLOAD |
-    SHARED_IMAGE_USAGE_CPU_WRITE | SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE |
-    SHARED_IMAGE_USAGE_PROTECTED_VIDEO;
+    SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
+    SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE |
+    SHARED_IMAGE_USAGE_PROTECTED_VIDEO |
+    SHARED_IMAGE_USAGE_CPU_ONLY_READ_WRITE |
+    SHARED_IMAGE_USAGE_RASTER_COPY_SOURCE | SHARED_IMAGE_USAGE_CPU_READ;
 
 }  // namespace
 
@@ -83,6 +83,38 @@ OzoneImageBackingFactory::OzoneImageBackingFactory(
       workarounds_(workarounds) {}
 
 OzoneImageBackingFactory::~OzoneImageBackingFactory() = default;
+
+// static
+gfx::GpuMemoryBufferHandle
+OzoneImageBackingFactory::CreateGpuMemoryBufferHandle(
+    viz::VulkanContextProvider* vulkan_context_provider,
+    const gfx::Size& size,
+    viz::SharedImageFormat format,
+    gfx::BufferUsage usage) {
+  CHECK(viz::HasEquivalentBufferFormat(format));
+  scoped_refptr<gfx::NativePixmap> pixmap =
+      ui::OzonePlatform::GetInstance()
+          ->GetSurfaceFactoryOzone()
+          ->CreateNativePixmap(gpu::kNullSurfaceHandle,
+                               vulkan_context_provider
+                                   ? vulkan_context_provider->GetDeviceQueue()
+                                   : nullptr,
+                               size, format, usage, size);
+
+  if (!pixmap.get()) {
+    DLOG(ERROR) << "Failed to create pixmap " << size.ToString() << ",  "
+                << format.ToString() << ", usage "
+                << gfx::BufferUsageToString(usage);
+    return gfx::GpuMemoryBufferHandle();
+  }
+
+  gfx::NativePixmapHandle native_pixmap_handle = pixmap->ExportHandle();
+  if (native_pixmap_handle.planes.empty()) {
+    return gfx::GpuMemoryBufferHandle();
+  }
+
+  return gfx::GpuMemoryBufferHandle(std::move(native_pixmap_handle));
+}
 
 std::unique_ptr<OzoneImageBacking>
 OzoneImageBackingFactory::CreateSharedImageInternal(
@@ -96,7 +128,6 @@ OzoneImageBackingFactory::CreateSharedImageInternal(
     SharedImageUsageSet usage,
     std::string debug_label,
     std::optional<gfx::BufferUsage> buffer_usage) {
-  gfx::BufferFormat buffer_format = ToBufferFormat(format);
   VulkanDeviceQueue* device_queue = nullptr;
 #if BUILDFLAG(ENABLE_VULKAN)
   DCHECK(shared_context_state_);
@@ -111,13 +142,12 @@ OzoneImageBackingFactory::CreateSharedImageInternal(
   // Note that when |buffer_usage| is passed as a parameter and is not null, it
   // should be used instead of converting |usage| to it via GetBufferUsage().
   scoped_refptr<gfx::NativePixmap> pixmap = surface_factory->CreateNativePixmap(
-      surface_handle, device_queue, size, buffer_format,
+      surface_handle, device_queue, size, format,
       buffer_usage.value_or(GetBufferUsage(usage)));
   // Fallback to GPU_READ if cannot create pixmap with SCANOUT
   if (!pixmap) {
-    pixmap = surface_factory->CreateNativePixmap(surface_handle, device_queue,
-                                                 size, buffer_format,
-                                                 gfx::BufferUsage::GPU_READ);
+    pixmap = surface_factory->CreateNativePixmap(
+        surface_handle, device_queue, size, format, gfx::BufferUsage::GPU_READ);
   }
   if (!pixmap) {
     DLOG(ERROR) << "Failed to create native pixmap";
@@ -191,17 +221,26 @@ std::unique_ptr<SharedImageBacking> OzoneImageBackingFactory::CreateSharedImage(
     SkAlphaType alpha_type,
     SharedImageUsageSet usage,
     std::string debug_label,
+    bool is_thread_safe,
     gfx::GpuMemoryBufferHandle handle) {
   DCHECK_EQ(handle.type, gfx::NATIVE_PIXMAP);
+  CHECK(!is_thread_safe);
 
-  ui::SurfaceFactoryOzone* surface_factory =
-      ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
-  scoped_refptr<gfx::NativePixmap> pixmap =
-      surface_factory->CreateNativePixmapFromHandle(
-          kNullSurfaceHandle, size, ToBufferFormat(format),
-          std::move(handle.native_pixmap_handle));
-  if (!pixmap) {
-    return nullptr;
+  scoped_refptr<gfx::NativePixmap> pixmap;
+
+  // We do not create a native pixmap if the backing will be used only by the
+  // CPU. This is usually used for cases where clients needs MappableSI with a
+  // certain format which is not texturable but client wants to map the shared
+  // image in CPU for read/writes.
+  if (!usage.Has(SHARED_IMAGE_USAGE_CPU_ONLY_READ_WRITE)) {
+    ui::SurfaceFactoryOzone* surface_factory =
+        ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
+    pixmap = surface_factory->CreateNativePixmapFromHandle(
+        kNullSurfaceHandle, size, format,
+        std::move(handle).native_pixmap_handle());
+    if (!pixmap) {
+      return nullptr;
+    }
   }
 
   auto backing = std::make_unique<OzoneImageBacking>(
@@ -243,7 +282,7 @@ bool OzoneImageBackingFactory::IsSupported(
     return false;
   }
 
-  if (usage.Has(SHARED_IMAGE_USAGE_CPU_WRITE) &&
+  if (usage.Has(SHARED_IMAGE_USAGE_CPU_WRITE_ONLY) &&
       gmb_type != gfx::NATIVE_PIXMAP) {
     // Only CPU writable when the client provides a NativePixmap.
     return false;
@@ -266,13 +305,12 @@ bool OzoneImageBackingFactory::IsSupported(
   }
   auto* factory = ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
   if (viz::HasEquivalentBufferFormat(format) &&
-      !factory->CanCreateNativePixmapForFormat(ToBufferFormat(format))) {
+      !factory->CanCreateNativePixmapForFormat(format)) {
     return false;
   }
 
   ui::GLOzone* gl_ozone = factory->GetCurrentGLOzone();
-  if (used_by_gl &&
-      (!gl_ozone || !gl_ozone->CanImportNativePixmap(ToBufferFormat(format)))) {
+  if (used_by_gl && (!gl_ozone || !gl_ozone->CanImportNativePixmap(format))) {
     return false;
   }
 
@@ -317,9 +355,9 @@ bool OzoneImageBackingFactory::IsSupported(
   // For now just use OzoneImageBacking for primary plane buffers.
   // TODO(crbug.com/40219694): When Vulkan/GL interop is supported on Fuchsia
   // OzoneImageBacking should be used for all scanout buffers.
-  constexpr uint32_t kPrimaryPlaneUsageFlags =
-      SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE |
-      SHARED_IMAGE_USAGE_SCANOUT;
+  constexpr auto kPrimaryPlaneUsageFlags = SHARED_IMAGE_USAGE_DISPLAY_READ |
+                                           SHARED_IMAGE_USAGE_DISPLAY_WRITE |
+                                           SHARED_IMAGE_USAGE_SCANOUT;
   if (usage != kPrimaryPlaneUsageFlags || gmb_type != gfx::EMPTY_BUFFER) {
     return false;
   }

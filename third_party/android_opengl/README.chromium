@@ -1,7 +1,8 @@
 Name: etc1
-Version: 0
-URL: https://source.android.com/
-License: Apache 2.0
+Version: N/A
+Update Mechanism: Static.HardFork (https://crbug.com/419414843)
+URL: This is the canonical public repository
+License: Apache-2.0
 License File: LICENSE
 Security Critical: no
 Shipped: yes
@@ -10,6 +11,9 @@ Description:
 This directory contains an ETC1 encoding/decoding API.  The source derives from
 frameworks/base/opengl/include/ETC1/etc1.cpp from the Android Open Source
 Project.
+
+This library has not been reviewed by security team for handling untrusted
+input.  Contact security@chromium.org for any questions.
 
 Local modifications:
 - Removed decoding.

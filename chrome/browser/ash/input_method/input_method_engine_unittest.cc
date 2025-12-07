@@ -393,34 +393,12 @@ TEST_F(InputMethodEngineTest, AcceptSuggestionCandidateCommitsCandidate) {
 
   std::string error;
   engine_->AcceptSuggestionCandidate(context, u"suggestion", 0,
-                                     /*use_replace_surrounding_text=*/false,
                                      &error);
 
   EXPECT_EQ("", error);
   EXPECT_EQ(
       0, mock_ime_input_context_handler_->delete_surrounding_text_call_count());
   EXPECT_EQ(u"suggestion", mock_ime_input_context_handler_->last_commit_text());
-}
-
-TEST_F(InputMethodEngineTest,
-       AcceptSuggestionCandidateReplacesSurroundingText) {
-  CreateEngine(true);
-  Focus(ui::TEXT_INPUT_TYPE_TEXT);
-  engine_->Enable(kTestImeComponentId);
-
-  const int context = engine_->GetContextIdForTesting();
-
-  std::string error;
-  engine_->AcceptSuggestionCandidate(context, u"suggestion", 3,
-                                     /*use_replace_surrounding_text=*/true,
-                                     &error);
-
-  EXPECT_EQ("", error);
-  const auto& arg =
-      mock_ime_input_context_handler_->last_replace_surrounding_text_arg();
-  EXPECT_EQ(3u, arg.length_before_selection);
-  EXPECT_EQ(0u, arg.length_after_selection);
-  EXPECT_EQ(u"suggestion", arg.replacement_text);
 }
 
 TEST_F(InputMethodEngineTest,
@@ -434,7 +412,6 @@ TEST_F(InputMethodEngineTest,
   std::string error;
   engine_->CommitText(context, u"text", &error);
   engine_->AcceptSuggestionCandidate(context, u"suggestion", 1,
-                                     /*use_replace_surrounding_text=*/false,
                                      &error);
 
   EXPECT_EQ("", error);

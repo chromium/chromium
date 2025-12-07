@@ -11,6 +11,8 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.password_manager.PasswordStoreAndroidBackendReceiverBridgeImpl.JobId;
 import org.chromium.components.signin.AccountUtils;
 
@@ -21,16 +23,17 @@ import java.util.Optional;
  * password store backend that forwards password store operations to a downstream implementation.
  */
 @JNINamespace("password_manager")
+@NullMarked
 class PasswordStoreAndroidBackendDispatcherBridgeImpl {
     private final PasswordStoreAndroidBackend mBackend;
     private final PasswordStoreAndroidBackendReceiverBridgeImpl mBackendReceiverBridge;
 
     PasswordStoreAndroidBackendDispatcherBridgeImpl(
             PasswordStoreAndroidBackendReceiverBridgeImpl backendReceiverBridge,
-            PasswordStoreAndroidBackend backend) {
+            @Nullable PasswordStoreAndroidBackend backend) {
+        assert backend != null;
         mBackendReceiverBridge = backendReceiverBridge;
         mBackend = backend;
-        assert mBackend != null;
     }
 
     @CalledByNative
@@ -124,6 +127,6 @@ class PasswordStoreAndroidBackendDispatcherBridgeImpl {
 
     private Optional<Account> getAccount(String syncingAccount) {
         if (syncingAccount == null) return Optional.empty();
-        return Optional.of(AccountUtils.createAccountFromName(syncingAccount));
+        return Optional.of(AccountUtils.createAccountFromEmail(syncingAccount));
     }
 }

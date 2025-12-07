@@ -1,0 +1,9 @@
+include_rules = [
+    "+mojo/public",
+    "+net",
+    "+skia/ext",
+    "+third_party/skia",
+    "+ui/gfx",
+    "+components/tab_groups",
+    "+components/tabs",
+]

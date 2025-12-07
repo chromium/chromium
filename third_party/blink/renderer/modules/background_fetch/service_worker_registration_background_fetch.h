@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/modules/service_worker/service_worker_registration.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
@@ -15,10 +14,8 @@ class BackgroundFetchManager;
 
 class ServiceWorkerRegistrationBackgroundFetch final
     : public GarbageCollected<ServiceWorkerRegistrationBackgroundFetch>,
-      public Supplement<ServiceWorkerRegistration> {
+      public GarbageCollectedMixin {
  public:
-  static const char kSupplementName[];
-
   explicit ServiceWorkerRegistrationBackgroundFetch(
       ServiceWorkerRegistration* registration);
 
@@ -27,7 +24,7 @@ class ServiceWorkerRegistrationBackgroundFetch final
   ServiceWorkerRegistrationBackgroundFetch& operator=(
       const ServiceWorkerRegistrationBackgroundFetch&) = delete;
 
-  virtual ~ServiceWorkerRegistrationBackgroundFetch();
+  ~ServiceWorkerRegistrationBackgroundFetch();
 
   static ServiceWorkerRegistrationBackgroundFetch& From(
       ServiceWorkerRegistration& registration);
@@ -39,6 +36,7 @@ class ServiceWorkerRegistrationBackgroundFetch final
   void Trace(Visitor* visitor) const override;
 
  private:
+  Member<ServiceWorkerRegistration> service_worker_registration_;
   Member<BackgroundFetchManager> background_fetch_manager_;
 };
 

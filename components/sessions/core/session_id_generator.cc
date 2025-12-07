@@ -96,7 +96,7 @@ SessionIdGenerator::SessionIdGenerator()
       last_value_(0),
       rand_generator_(base::BindRepeating(&DefaultRandGenerator)) {}
 
-SessionIdGenerator::~SessionIdGenerator() {}
+SessionIdGenerator::~SessionIdGenerator() = default;
 
 void SessionIdGenerator::IncrementValueBy(int increment) {
   DCHECK_LT(0, increment);

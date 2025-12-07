@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <sstream>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -220,10 +221,6 @@ class TestSingleWebFeedSurface : public TestSurfaceBase {
       std::string = "",
       SingleWebFeedEntryPoint entry_point = SingleWebFeedEntryPoint::kOther);
 };
-class TestSupervisedFeedSurface : public TestSurfaceBase {
- public:
-  explicit TestSupervisedFeedSurface(FeedStream* stream = nullptr);
-};
 
 class TestImageFetcher : public ImageFetcher {
  public:
@@ -288,7 +285,11 @@ class TestFeedNetwork : public FeedNetwork {
   template <typename API>
   void InjectApiResponse(const typename API::Response& response_message) {
     RawResponse response;
-    response.response_info.status_code = 200;
+    if (error != net::Error::OK) {
+      response.response_info.status_code = error;
+    } else {
+      response.response_info.status_code = http_status_code;
+    }
     response.response_bytes = response_message.SerializeAsString();
     response.response_info.response_body_bytes = response.response_bytes.size();
     response.response_info.account_info = last_account_info;
@@ -530,13 +531,13 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
   TabGroupEnabledState GetTabGroupEnabledState() override;
   void ClearAll() override;
   AccountInfo GetAccountInfo() override;
-  bool IsSupervisedAccount() override;
   bool IsSigninAllowed() override;
   void PrefetchImage(const GURL& url) override;
   void RegisterExperiments(const Experiments& experiments) override {}
   void RegisterFollowingFeedFollowCountFieldTrial(size_t follow_count) override;
   void RegisterFeedUserSettingsFieldTrial(std::string_view group) override;
   std::string GetCountry() override;
+  void SetFeedLaunchCuiMetadata(const std::string& metadata) override;
 
   // For tests.
 
@@ -594,13 +595,13 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
   bool is_offline_ = false;
   AccountInfo account_info_ = TestAccountInfo();
   bool is_signin_allowed_ = true;
-  bool is_supervised_account_ = false;
   int prefetch_image_call_count_ = 0;
   std::vector<GURL> prefetched_images_;
   base::RepeatingClosure on_clear_all_;
   std::vector<size_t> register_following_feed_follow_count_field_trial_calls_;
   std::vector<std::string> register_feed_user_settings_field_trial_calls_;
   std::string country_ = "US";
+  std::string feed_launch_cui_metadata_;
 };
 
 class FeedStreamTestForAllStreamTypes

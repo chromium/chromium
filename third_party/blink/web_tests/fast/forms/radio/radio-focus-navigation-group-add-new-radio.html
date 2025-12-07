@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<title>Focus Navigation for the radio group</title>
+<link rel="author" href="mailto:zhoupeng.1996@bytedance.com">
+<link rel="help" href="https://issues.chromium.org/issues/421837104">
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="resources/focus-utils.js"></script>
+
+<input type="text" id="start">
+<form>
+  <input type="radio" name="radio" id="a">
+  <input type="radio" name="radio" id="b">
+</form>
+<input type="text" id="end">
+
+<script>
+function navigateFocusForward() {
+  if (window.eventSender)
+    eventSender.keyDown('\t');
+}
+
+function navigateFocusBackward() {
+  if (window.eventSender)
+    eventSender.keyDown('\t', ['shiftKey']);
+}
+
+test(() => {
+  start.focus();
+  assert_equals(document.activeElement, start);
+  navigateFocusForward();
+  assert_equals(document.activeElement, a);
+  // Append checked radio element.
+  const radio = document.createElement('input');
+  radio.type = 'radio';
+  radio.name = 'radio';
+  radio.checked = true;
+  document.querySelector('form').appendChild(radio);
+  navigateFocusForward();
+  assert_equals(document.activeElement, radio);
+  navigateFocusForward();
+  assert_equals(document.activeElement, end);
+  navigateFocusBackward();
+  assert_equals(document.activeElement, radio);
+  navigateFocusBackward();
+  assert_equals(document.activeElement, start);
+  // Force focus to the radio element.
+  a.focus();
+  assert_equals(document.activeElement, a);
+  navigateFocusForward();
+  assert_equals(document.activeElement, radio);
+  navigateFocusForward();
+  assert_equals(document.activeElement, end);
+}, 'Within focused radio group, tab navigation skip new checked radio.');
+</script>

@@ -24,7 +24,6 @@
 #include "content/public/test/test_browser_context.h"
 #include "content/test/test_navigation_url_loader_delegate.h"
 #include "content/test/test_web_contents.h"
-#include "ipc/ipc_message.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_status_flags.h"
@@ -111,7 +110,7 @@ class NavigationURLLoaderTest : public testing::Test {
     StoragePartition* storage_partition =
         browser_context_->GetDefaultStoragePartition();
 
-    uint32_t frame_tree_node_id =
+    FrameTreeNodeId frame_tree_node_id =
         web_contents_->GetPrimaryMainFrame()->GetFrameTreeNodeId();
 
     url::Origin origin = url::Origin::Create(url);
@@ -129,7 +128,6 @@ class NavigationURLLoaderTest : public testing::Test {
             nullptr /* blob_url_loader_factory */,
             base::UnguessableToken::Create() /* devtools_navigation_token */,
             base::UnguessableToken::Create() /* devtools_frame_token */,
-            net::HttpRequestHeaders() /* cors_exempt_headers */,
             nullptr /* client_security_state */,
             std::nullopt /* devtools_accepted_stream_types */,
             false /* is_pdf */,
@@ -147,7 +145,8 @@ class NavigationURLLoaderTest : public testing::Test {
         /* trust_token_observer=*/mojo::NullRemote(),
         /* shared_dictionary_observer=*/mojo::NullRemote(),
         /* url_loader_network_observer */ mojo::NullRemote(),
-        /*devtools_observer=*/mojo::NullRemote());
+        /*devtools_observer=*/mojo::NullRemote(),
+        /*device_bound_session_observer=*/mojo::NullRemote());
   }
 
  protected:
@@ -214,7 +213,7 @@ TEST_F(NavigationURLLoaderTest, RequestFailedCertErrorFatal) {
   auto* storage_partition = browser_context_->GetDefaultStoragePartition();
   base::RunLoop run_loop;
   storage_partition->GetNetworkContext()->AddHSTS(
-      url.host(), expiry, include_subdomains, run_loop.QuitClosure());
+      url.GetHost(), expiry, include_subdomains, run_loop.QuitClosure());
   run_loop.Run();
 
   TestNavigationURLLoaderDelegate delegate;

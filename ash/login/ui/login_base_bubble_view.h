@@ -88,9 +88,6 @@ class ASH_EXPORT LoginBaseBubbleView : public views::View,
   }
 
  private:
-  // Create a layer for this view if doesn't exist.
-  void EnsureLayer();
-
   // Return bounds of the anchors root view. This bounds excludes virtual
   // keyboard.
   gfx::Rect GetRootViewBounds() const;

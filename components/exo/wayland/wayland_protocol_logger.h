@@ -8,6 +8,7 @@
 #include <wayland-server-core.h>
 
 #include <memory>
+#include <string>
 #include <vector>
 
 namespace exo::wayland {

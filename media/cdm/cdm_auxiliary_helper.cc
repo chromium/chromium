@@ -16,6 +16,9 @@
 
 namespace media {
 
+CdmMetricsData::CdmMetricsData() = default;
+CdmMetricsData::~CdmMetricsData() = default;
+
 CdmAuxiliaryHelper::CdmAuxiliaryHelper() = default;
 CdmAuxiliaryHelper::~CdmAuxiliaryHelper() = default;
 
@@ -28,6 +31,8 @@ cdm::FileIO* CdmAuxiliaryHelper::CreateCdmFileIO(cdm::FileIOClient* client) {
 url::Origin CdmAuxiliaryHelper::GetCdmOrigin() {
   return url::Origin();
 }
+
+void CdmAuxiliaryHelper::RecordUkm(const CdmMetricsData& cdm_metrics_data) {}
 
 cdm::Buffer* CdmAuxiliaryHelper::CreateCdmBuffer(size_t capacity) {
   return nullptr;

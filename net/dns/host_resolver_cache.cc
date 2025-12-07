@@ -302,9 +302,8 @@ HostResolverCache::LookupInternal(
   url::StdStringCanonOutput output(&canonicalized);
   url::CanonHostInfo host_info;
 
-  url::CanonicalizeHostVerbose(domain_name.data(),
-                               url::Component(0, domain_name.size()), &output,
-                               &host_info);
+  url::CanonicalizeHostVerbose(
+      domain_name, url::Component(0, domain_name.size()), &output, &host_info);
 
   // For performance, when canonicalization can't canonicalize, minimize string
   // copies and just reuse the input std::string_view. This optimization

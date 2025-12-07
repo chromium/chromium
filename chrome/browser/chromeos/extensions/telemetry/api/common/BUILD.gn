@@ -2,10 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 assert(enable_extensions,
        "Cannot depend on extensions because enable_extensions=false.")
+assert(is_chromeos)
 
 source_set("common") {
   sources = [
@@ -20,33 +20,19 @@ source_set("common") {
   deps = [
     ":hardware_info_delegate",
     ":util",
+    "//ash/constants",
     "//base",
-    "//build:chromeos_buildflags",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/common/chromeos/extensions",
+    "//chromeos/ash/components/browser_context_helper",
+    "//components/account_id",
+    "//components/user_manager",
     "//content/public/browser",
     "//extensions/browser",
     "//extensions/common",
     "//third_party/abseil-cpp:absl",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [
-      "//ash/constants",
-      "//chromeos/ash/components/browser_context_helper",
-      "//components/account_id",
-      "//components/user_manager",
-    ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/crosapi/mojom",
-      "//chromeos/startup",
-      "//components/policy/core/common",
-    ]
-  }
 }
 
 source_set("util") {
@@ -56,8 +42,12 @@ source_set("util") {
   ]
 
   deps = [
+    "//ash/constants",
+    "//ash/webui/shimless_rma/backend",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/common",
     "//chromeos/constants",
     "//components/security_state/content",
@@ -65,11 +55,8 @@ source_set("util") {
     "//extensions/common",
   ]
 
-  if (is_chromeos_ash) {
-    deps += [
-      "//ash/constants",
-      "//ash/webui/shimless_rma/backend",
-    ]
+  if (is_mac || is_win || is_linux || is_chromeos) {
+    deps += [ "//components/webapps/isolated_web_apps:scheme" ]
   }
 }
 
@@ -80,21 +67,11 @@ source_set("remote_probe_strategy") {
   ]
 
   deps = [
-    "//build:chromeos_buildflags",
+    "//chrome/browser/ash/crosapi",
+    "//chromeos/ash/components/telemetry_extension/telemetry",
     "//chromeos/crosapi/mojom",
     "//mojo/public/cpp/bindings",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [
-      "//chrome/browser/ash/crosapi:crosapi",
-      "//chromeos/ash/components/telemetry_extension/telemetry",
-    ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros" ]
-  }
 }
 
 source_set("hardware_info_delegate") {
@@ -112,6 +89,7 @@ source_set("hardware_info_delegate") {
 
 source_set("test_support") {
   testonly = true
+
   sources = [
     "base_telemetry_extension_browser_test.cc",
     "base_telemetry_extension_browser_test.h",
@@ -135,7 +113,9 @@ source_set("test_support") {
 
 source_set("browser_tests") {
   testonly = true
+
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
   sources = [
     "base_telemetry_extension_api_guard_function_browsertest.cc",
     "telemetry_extension_capabilities_browser_test.cc",
@@ -148,10 +128,12 @@ source_set("browser_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/test:test_support",
     "//chrome/common/chromeos/extensions",
     "//chrome/test:test_support_ui",
     "//chromeos/crosapi/cpp/telemetry:test_support",
+    "//components/user_manager",
     "//content/public/browser",
     "//content/test:test_support",
     "//extensions:test_support",
@@ -164,38 +146,30 @@ source_set("browser_tests") {
   ]
 
   data = [ "//chrome/test/data" ]
-
-  if (is_chromeos_ash) {
-    deps += [
-      "//chrome/browser/ash:test_support",
-      "//components/user_manager",
-    ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/lacros",
-      "//chromeos/startup",
-      "//components/policy/core/common",
-    ]
-  }
 }
 
 source_set("unit_tests") {
   testonly = true
+
   sources = [ "api_guard_delegate_unittest.cc" ]
+
   deps = [
     ":common",
     ":hardware_info_delegate",
     ":remote_probe_strategy",
     ":test_support",
+    "//ash/webui/shimless_rma/backend",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
+    "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/extensions:test_support",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/common/chromeos/extensions",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/crosapi/cpp/telemetry:test_support",
     "//components/sync_preferences:test_support",
+    "//components/user_manager",
     "//content/public/browser",
     "//extensions/common",
     "//net",
@@ -203,20 +177,7 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
-  if (is_chromeos_ash) {
-    deps += [
-      "//ash/webui/shimless_rma/backend",
-      "//chrome/browser/ash:test_support",
-      "//chrome/common/chromeos/extensions",
-      "//components/user_manager",
-    ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/crosapi/mojom",
-      "//chromeos/startup",
-      "//components/policy/core/common",
-    ]
-  }
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

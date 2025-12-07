@@ -1,6 +1,3 @@
-# Primary
-christinesm@chromium.org
+file://chrome/browser/ui/file_system_access/OWNERS
 
-# Secondary
-ayui@chromium.org
-dslee@chromium.org
+musalmaan@chromium.org

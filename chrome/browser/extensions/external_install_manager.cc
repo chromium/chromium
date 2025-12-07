@@ -4,16 +4,19 @@
 
 #include "chrome/browser/extensions/external_install_manager.h"
 
+#include <memory>
 #include <string>
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
-#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/extension_management.h"
-#include "chrome/browser/extensions/external_install_error.h"
+#include "chrome/browser/extensions/external_install_manager_factory.h"
+#include "chrome/browser/extensions/managed_installation_mode.h"
 #include "components/version_info/version_info.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_util.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/feature_switch.h"
@@ -21,30 +24,51 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_url_handlers.h"
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/external_install_error_desktop.h"
+
+using ExternalInstallErrorType = extensions::ExternalInstallErrorDesktop;
+#else
+#include "chrome/browser/extensions/external_install_error_android.h"
+
+using ExternalInstallErrorType = extensions::ExternalInstallErrorAndroid;
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions {
 
 namespace {
 
-// Histogram values for logging events related to externally installed
-// extensions.
-enum ExternalExtensionEvent {
-  EXTERNAL_EXTENSION_INSTALLED = 0,
-  EXTERNAL_EXTENSION_IGNORED,
-  EXTERNAL_EXTENSION_REENABLED,
-  EXTERNAL_EXTENSION_UNINSTALLED,
-  EXTERNAL_EXTENSION_BUCKET_BOUNDARY,
-};
+std::unique_ptr<ExternalInstallError> CreateExternalInstallError(
+    content::BrowserContext* browser_context,
+    const std::string& extension_id,
+    ExternalInstallError::AlertType error_type,
+    ExternalInstallManager* manager) {
+  return std::make_unique<ExternalInstallErrorType>(
+      browser_context, extension_id, error_type, manager);
+}
 
-// Prompt the user this many times before considering an extension acknowledged.
+//  Prompt the user this many times before considering an extension
+//  acknowledged.
 const int kMaxExtensionAcknowledgePromptCount = 3;
+
+bool IsPromptingEnabled() {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  return util::IsPromptingEnabled();
+#else
+  // TODO(crbug.com/405391110): Enable prompting when ExternalInstallError
+  // is implemented on desktop android.
+  return false;
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+}
 
 }  // namespace
 
 ExternalInstallManager::ExternalInstallManager(
-    content::BrowserContext* browser_context,
-    bool is_first_run)
+    content::BrowserContext* browser_context)
     : browser_context_(browser_context),
-      is_first_run_(is_first_run),
+      is_first_run_(false),
       extension_prefs_(ExtensionPrefs::Get(browser_context_)),
       currently_visible_install_alert_(nullptr) {
   DCHECK(browser_context_);
@@ -66,14 +90,16 @@ ExternalInstallManager::~ExternalInstallManager() {
   DCHECK(errors_.empty());
 }
 
+// static
+ExternalInstallManager* ExternalInstallManager::Get(
+    content::BrowserContext* browser_context) {
+  return ExternalInstallManagerFactory::GetForBrowserContext(browser_context);
+}
+
 void ExternalInstallManager::Shutdown() {
   // Delete all errors when the profile is shutting down, before associated
   // services are deleted.
   errors_.clear();
-}
-
-bool ExternalInstallManager::IsPromptingEnabled() {
-  return FeatureSwitch::prompt_for_external_extensions()->IsEnabled();
 }
 
 void ExternalInstallManager::AddExternalInstallError(const Extension* extension,
@@ -89,8 +115,7 @@ void ExternalInstallManager::AddExternalInstallError(const Extension* extension,
       (extension_management->UpdatesFromWebstore(*extension) && !is_new_profile)
           ? ExternalInstallError::BUBBLE_ALERT
           : ExternalInstallError::MENU_ALERT;
-
-  std::unique_ptr<ExternalInstallError> error(new ExternalInstallError(
+  std::unique_ptr<ExternalInstallError> error(CreateExternalInstallError(
       browser_context_, extension->id(), alert_type, this));
   shown_ids_.insert(extension->id());
   errors_.insert(std::make_pair(extension->id(), std::move(error)));
@@ -116,8 +141,9 @@ void ExternalInstallManager::RemoveExternalInstallError(
 
 void ExternalInstallManager::UpdateExternalExtensionAlert() {
   // If the feature is not enabled do nothing.
-  if (!IsPromptingEnabled())
+  if (!IsPromptingEnabled()) {
     return;
+  }
 
   // Look for any extensions that were disabled because of being unacknowledged
   // external extensions.
@@ -129,13 +155,15 @@ void ExternalInstallManager::UpdateExternalExtensionAlert() {
   // The list of ids can be mutated during this loop, so make a copy.
   const std::set<ExtensionId> ids_copy = unacknowledged_ids_;
   for (const auto& id : ids_copy) {
-    if (base::Contains(errors_, id) || shown_ids_.count(id) > 0)
+    if (base::Contains(errors_, id) || shown_ids_.count(id) > 0) {
       continue;
+    }
 
     // Ignore the blocked and disabled extensions. They will be put into
     // disabled list once unblocked.
-    if (blocked_extensions.GetByID(id))
+    if (blocked_extensions.GetByID(id)) {
       continue;
+    }
 
     const Extension* extension = disabled_extensions.GetByID(id);
     CHECK(extension);
@@ -149,8 +177,9 @@ void ExternalInstallManager::UpdateExternalExtensionAlert() {
       continue;
     }
 
-    if (is_first_run_)
+    if (is_first_run_) {
       extension_prefs_->SetExternalInstallFirstRun(id);
+    }
 
     // |first_run| is true if the extension was installed during a first run
     // (even if it's post-first run now).
@@ -210,7 +239,8 @@ void ExternalInstallManager::OnExtensionInstalled(
   ExtensionManagement* settings =
       ExtensionManagementFactory::GetForBrowserContext(browser_context_);
   bool is_recommended_by_policy = settings->GetInstallationMode(extension) ==
-                                  ExtensionManagement::INSTALLATION_RECOMMENDED;
+                                  ManagedInstallationMode::kRecommended;
+
   // Certain extension locations are specific enough that we can
   // auto-acknowledge any extension that came from one of them.
   // Extensions recommended by policy can also be auto-acknowledged.
@@ -239,17 +269,19 @@ void ExternalInstallManager::OnExtensionUninstalled(
 
 bool ExternalInstallManager::IsUnacknowledgedExternalExtension(
     const Extension& extension) const {
-  if (!IsPromptingEnabled())
+  if (!util::IsPromptingEnabled()) {
     return false;
+  }
 
-  int disable_reasons = extension_prefs_->GetDisableReasons(extension.id());
+  DisableReasonSet disable_reasons =
+      extension_prefs_->GetDisableReasons(extension.id());
   bool is_from_sideload_wipeout =
-      (disable_reasons & disable_reason::DISABLE_SIDELOAD_WIPEOUT) != 0;
+      disable_reasons.contains(disable_reason::DISABLE_SIDELOAD_WIPEOUT);
   // We don't consider extensions that weren't disabled for being external so
   // that we grandfather in extensions. External extensions are only disabled on
   // install with the "prompt for external extensions" feature enabled.
   bool is_disabled_external =
-      (disable_reasons & disable_reason::DISABLE_EXTERNAL_EXTENSION) != 0;
+      disable_reasons.contains(disable_reason::DISABLE_EXTERNAL_EXTENSION);
   return is_disabled_external && !is_from_sideload_wipeout &&
          Manifest::IsExternalLocation(extension.location()) &&
          !extension_prefs_->IsExternalExtensionAcknowledged(extension.id());

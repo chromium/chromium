@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Basic B&A auction - winner with full ghost winner
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on 'Navigator': Invalid Coordinator"
+Harness: the test ran to completion.
+

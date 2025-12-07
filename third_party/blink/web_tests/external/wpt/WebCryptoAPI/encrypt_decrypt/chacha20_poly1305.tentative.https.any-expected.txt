@@ -1,0 +1,59 @@
+This is a testharness.js-based test.
+[FAIL] ChaCha20-Poly1305 encryption with empty additional data, empty data
+  assert_unreached: encrypt failed unexpectedly: Error: assert_unreached: importKey failed unexpectedly: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code Reached unreachable code
+[FAIL] ChaCha20-Poly1305 decryption with empty additional data, empty data
+  assert_unreached: decrypt failed unexpectedly: Error: assert_unreached: importKey failed unexpectedly: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code Reached unreachable code
+[FAIL] ChaCha20-Poly1305 encryption with empty additional data, short data
+  assert_unreached: encrypt failed unexpectedly: Error: assert_unreached: importKey failed unexpectedly: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code Reached unreachable code
+[FAIL] ChaCha20-Poly1305 decryption with empty additional data, short data
+  assert_unreached: decrypt failed unexpectedly: Error: assert_unreached: importKey failed unexpectedly: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code Reached unreachable code
+[FAIL] ChaCha20-Poly1305 encryption with empty additional data, medium data
+  assert_unreached: encrypt failed unexpectedly: Error: assert_unreached: importKey failed unexpectedly: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code Reached unreachable code
+[FAIL] ChaCha20-Poly1305 decryption with empty additional data, medium data
+  assert_unreached: decrypt failed unexpectedly: Error: assert_unreached: importKey failed unexpectedly: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code Reached unreachable code
+[FAIL] ChaCha20-Poly1305 encryption with empty additional data, long data
+  assert_unreached: encrypt failed unexpectedly: Error: assert_unreached: importKey failed unexpectedly: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code Reached unreachable code
+[FAIL] ChaCha20-Poly1305 decryption with empty additional data, long data
+  assert_unreached: decrypt failed unexpectedly: Error: assert_unreached: importKey failed unexpectedly: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code Reached unreachable code
+[FAIL] ChaCha20-Poly1305 encryption with short additional data, empty data
+  assert_unreached: encrypt failed unexpectedly: Error: assert_unreached: importKey failed unexpectedly: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code Reached unreachable code
+[FAIL] ChaCha20-Poly1305 decryption with short additional data, empty data
+  assert_unreached: decrypt failed unexpectedly: Error: assert_unreached: importKey failed unexpectedly: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code Reached unreachable code
+[FAIL] ChaCha20-Poly1305 encryption with short additional data, short data
+  assert_unreached: encrypt failed unexpectedly: Error: assert_unreached: importKey failed unexpectedly: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code Reached unreachable code
+[FAIL] ChaCha20-Poly1305 decryption with short additional data, short data
+  assert_unreached: decrypt failed unexpectedly: Error: assert_unreached: importKey failed unexpectedly: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code Reached unreachable code
+[FAIL] ChaCha20-Poly1305 encryption with short additional data, medium data
+  assert_unreached: encrypt failed unexpectedly: Error: assert_unreached: importKey failed unexpectedly: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code Reached unreachable code
+[FAIL] ChaCha20-Poly1305 decryption with short additional data, medium data
+  assert_unreached: decrypt failed unexpectedly: Error: assert_unreached: importKey failed unexpectedly: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code Reached unreachable code
+[FAIL] ChaCha20-Poly1305 encryption with short additional data, long data
+  assert_unreached: encrypt failed unexpectedly: Error: assert_unreached: importKey failed unexpectedly: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code Reached unreachable code
+[FAIL] ChaCha20-Poly1305 decryption with short additional data, long data
+  assert_unreached: decrypt failed unexpectedly: Error: assert_unreached: importKey failed unexpectedly: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code Reached unreachable code
+[FAIL] ChaCha20-Poly1305 encryption with medium additional data, empty data
+  assert_unreached: encrypt failed unexpectedly: Error: assert_unreached: importKey failed unexpectedly: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code Reached unreachable code
+[FAIL] ChaCha20-Poly1305 decryption with medium additional data, empty data
+  assert_unreached: decrypt failed unexpectedly: Error: assert_unreached: importKey failed unexpectedly: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code Reached unreachable code
+[FAIL] ChaCha20-Poly1305 encryption with medium additional data, short data
+  assert_unreached: encrypt failed unexpectedly: Error: assert_unreached: importKey failed unexpectedly: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code Reached unreachable code
+[FAIL] ChaCha20-Poly1305 decryption with medium additional data, short data
+  assert_unreached: decrypt failed unexpectedly: Error: assert_unreached: importKey failed unexpectedly: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code Reached unreachable code
+[FAIL] ChaCha20-Poly1305 encryption with medium additional data, medium data
+  assert_unreached: encrypt failed unexpectedly: Error: assert_unreached: importKey failed unexpectedly: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code Reached unreachable code
+[FAIL] ChaCha20-Poly1305 decryption with medium additional data, medium data
+  assert_unreached: decrypt failed unexpectedly: Error: assert_unreached: importKey failed unexpectedly: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code Reached unreachable code
+[FAIL] ChaCha20-Poly1305 encryption with medium additional data, long data
+  assert_unreached: encrypt failed unexpectedly: Error: assert_unreached: importKey failed unexpectedly: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code Reached unreachable code
+[FAIL] ChaCha20-Poly1305 decryption with medium additional data, long data
+  assert_unreached: decrypt failed unexpectedly: Error: assert_unreached: importKey failed unexpectedly: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code Reached unreachable code
+[FAIL] ChaCha20-Poly1305 round-trip encrypt/decrypt
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] ChaCha20-Poly1305 decryption with wrong additional data should fail
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] ChaCha20-Poly1305 decryption with wrong IV should fail
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] ChaCha20-Poly1305 encryption with invalid IV size should fail
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
+Harness: the test ran to completion.
+

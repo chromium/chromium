@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//components/exo/wayland/fuzzer/wayland_templater.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
@@ -20,7 +19,6 @@ kDefaultWaylandProtocols = [
   "//third_party/wayland-protocols/src/unstable/fullscreen-shell/fullscreen-shell-unstable-v1.xml",
   "//third_party/wayland-protocols/src/unstable/input-timestamps/input-timestamps-unstable-v1.xml",
   "//third_party/wayland-protocols/src/unstable/linux-dmabuf/linux-dmabuf-unstable-v1.xml",
-  "//third_party/wayland-protocols/src/unstable/linux-explicit-synchronization/linux-explicit-synchronization-unstable-v1.xml",
   "//third_party/wayland-protocols/src/unstable/pointer-gestures/pointer-gestures-unstable-v1.xml",
   "//third_party/wayland-protocols/src/unstable/relative-pointer/relative-pointer-unstable-v1.xml",
   "//third_party/wayland-protocols/src/unstable/text-input/text-input-unstable-v1.xml",
@@ -115,7 +113,7 @@ source_set("unit_tests") {
 }
 
 source_set("server_environment") {
-  assert(is_chromeos_ash)
+  assert(is_chromeos)
 
   testonly = true
 
@@ -129,7 +127,7 @@ source_set("server_environment") {
     "//base/test:test_support",
     "//chromeos/ash/components:test_support",
     "//components/exo",
-    "//components/exo/wayland:wayland",
+    "//components/exo/wayland",
     "//components/exo/wayland:wayland_client_test_helper",
     "//mojo/core/embedder",
     "//ui/aura",
@@ -158,7 +156,6 @@ source_set("harness") {
     "//third_party/wayland-protocols:keyboard_configuration_protocol",
     "//third_party/wayland-protocols:keyboard_extension_protocol",
     "//third_party/wayland-protocols:linux_dmabuf_protocol",
-    "//third_party/wayland-protocols:linux_explicit_synchronization_protocol",
     "//third_party/wayland-protocols:notification_shell_protocol",
     "//third_party/wayland-protocols:pointer_gestures_protocol",
     "//third_party/wayland-protocols:presentation_time_protocol",
@@ -182,5 +179,5 @@ fuzzable_proto_library("actions") {
   # output directory to rebase under the source root.
   proto_out_dir = rebase_path(".", "//")
 
-  deps = [ ":actions_tmpl" ]
+  proto_deps = [ ":actions_tmpl" ]
 }

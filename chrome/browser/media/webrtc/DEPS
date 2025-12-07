@@ -32,5 +32,8 @@ specific_include_rules = {
   ],
   "get_all_screens_media_browsertest\.cc": [
     "+ash/shell.h",
+  ],
+  "multi_capture/multi_capture_usage_indicator_service_browsertest\.cc": [
+    "+components/web_package/test_support/signed_web_bundles/key_pair.h",
   ]
 }

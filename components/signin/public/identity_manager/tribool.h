@@ -20,6 +20,10 @@ Tribool TriboolFromBool(bool b);
 // Returns the bool value of `tribool` and crashes if `tribool` is `kUnknown`.
 bool TriboolToBoolOrDie(Tribool tribool);
 
+// Returns the bool value of `tribool` or returns `default_value` if `tribool`
+// is `kUnknown`.
+bool TriboolToBoolOr(Tribool tribool, bool default_value);
+
 // Returns the string representation of a tribool.
 std::string TriboolToString(Tribool tribool);
 

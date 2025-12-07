@@ -48,7 +48,7 @@ class AppLaunchUtilsTest : public testing::Test {
 
     const AccountId account_id = AccountId::FromUserEmail("lala@example.com");
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
-    fake_user_manager_->AddWebKioskAppUser(account_id);
+    fake_user_manager_->AddKioskWebAppUser(account_id);
     fake_user_manager_->LoginUser(account_id);
 
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());

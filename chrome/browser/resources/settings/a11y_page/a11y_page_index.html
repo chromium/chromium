@@ -1,0 +1,19 @@
+<style include="settings-shared">
+  cr-view-manager [hidden-by-search],
+  cr-view-manager[show-all] [slot=view][data-parent-view-id] {
+    display: none;
+  }
+</style>
+
+<cr-view-manager id="viewManager" class="cr-centered-card-container"
+    show-all$="[[shouldShowAll]]">
+  <settings-a11y-page slot="view" id="parent" prefs="{{prefs}}"
+      route-path$="[[routes_.ACCESSIBILITY.path]]">
+  </settings-a11y-page>
+
+<if expr="is_linux">
+  <settings-captions-page slot="view" id="captions" data-parent-view-id="parent"
+      prefs="{{prefs}}" route-path$="[[routes_.CAPTIONS.path]]">
+  </settings-captions-page>
+</if>
+</cr-view-manager>

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/model_provider.h"
 
@@ -16,6 +15,11 @@ namespace segmentation_platform {
 // Model to predict whether the user belongs to ComposePromotion segment.
 class ComposePromotion : public DefaultModelProvider {
  public:
+  enum Feature {
+    kLabelRandom,
+    kFeatureCount,
+  };
+
   ComposePromotion();
   ~ComposePromotion() override = default;
 

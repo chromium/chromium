@@ -5,6 +5,7 @@
 // https://w3c.github.io/presentation-api/#interface-presentationconnection
 
 enum PresentationConnectionState {
+    "connecting",
     "connected",
     "closed",
     "terminated"

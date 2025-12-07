@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ios/ios_sdk.gni")
 import("//ios/build/config.gni")
 
 source_set("common") {
@@ -9,7 +10,9 @@ source_set("common") {
     "annotations_utils.h",
     "annotations_utils.mm",
     "crw_content_view.h",
+    "crw_edit_menu_builder.h",
     "crw_input_view_provider.h",
+    "crw_obscured_insets_controller.h",
     "crw_viewport_adjustment.h",
     "crw_viewport_adjustment_container.h",
     "crw_web_view_content_view.h",
@@ -23,8 +26,8 @@ source_set("common") {
   ]
 
   deps = [
+    ":crw_web_view_resizing_type",
     "//base",
-    "//ios/third_party/webkit",
     "//ios/web/public/navigation",
     "//net",
     "//services/network/public/cpp",
@@ -47,12 +50,18 @@ source_set("features") {
   ]
 }
 
-source_set("uikit") {
-  sources = [
-    "uikit_ui_util.h",
-    "uikit_ui_util.mm",
-  ]
+if (!ios_is_app_extension) {
+  source_set("uikit") {
+    sources = [
+      "uikit_ui_util.h",
+      "uikit_ui_util.mm",
+    ]
+    deps = [ "//base" ]
+  }
+}
 
+source_set("crw_web_view_resizing_type") {
+  sources = [ "crw_web_view_resizing_type.h" ]
   deps = [ "//base" ]
 }
 
@@ -65,6 +74,7 @@ source_set("web_view_creation_util") {
   deps = [
     ":user_agent",
     "//base",
+    "//ios/third_party/webkit",
     "//ios/web/web_state:web_view_internal_creation_util",
     "//ios/web/web_state/ui:wk_web_view_configuration_provider",
   ]

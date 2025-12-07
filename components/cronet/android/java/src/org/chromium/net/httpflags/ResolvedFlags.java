@@ -9,6 +9,8 @@ import androidx.annotation.VisibleForTesting;
 
 import com.google.protobuf.ByteString;
 
+import org.chromium.base.metrics.ScopedSysTraceEvent;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,9 +40,16 @@ public final class ResolvedFlags {
         private final Object mValue;
 
         @Nullable
-        private static Value resolve(FlagValue flagValue, String appId, int[] cronetVersion) {
+        private static Value resolve(
+                FlagValue flagValue,
+                String appId,
+                int[] cronetVersion,
+                boolean isTelemetryEnabled) {
             for (var constrainedValue : flagValue.getConstrainedValuesList()) {
-                if ((constrainedValue.hasAppId() && !constrainedValue.getAppId().equals(appId))
+                if ((!isTelemetryEnabled
+                                && !constrainedValue.getApplyEvenIfCronetTelemetryDisabled())
+                        || (constrainedValue.hasAppId()
+                                && !constrainedValue.getAppId().equals(appId))
                         || (constrainedValue.hasMinVersion()
                                 && !matchesVersion(
                                         cronetVersion,
@@ -168,6 +177,11 @@ public final class ResolvedFlags {
             checkType(Type.BYTES);
             return (ByteString) mValue;
         }
+
+        @Override
+        public String toString() {
+            return mValue.toString();
+        }
     }
 
     private final Map<String, Value> mFlags;
@@ -175,35 +189,45 @@ public final class ResolvedFlags {
     /**
      * Computes effective flag values based on the contents of a {@link Flags} proto.
      *
-     * <p>This method will resolve {@link FlagValue.ConstrainedValue} filters according to the
-     * other arguments, producing the final values that should apply to the caller.
+     * <p>This method will resolve {@link FlagValue.ConstrainedValue} filters according to the other
+     * arguments, producing the final values that should apply to the caller.
      *
      * <p>Note that a {@link FlagValue} that has no {@link FlagValue.ConstrainedValue} entry, or
      * where the matching entry has no value set, will not be mentioned at all in the resulting
      * {@link #flags}.
      *
      * @param flags The {@link Flags} proto to extract the flag values from. This would normally be
-     *              the return value of {@link HttpFlagsLoader#load}.
+     *     the return value of {@link HttpFlagsLoader#load}.
      * @param appId The App ID for resolving the {@link FlagValue.ConstrainedValue#getAppId} field.
-     *              This would normally be the return value of
-     *              {@link android.content.Context#getPackageName}.
+     *     This would normally be the return value of {@link
+     *     android.content.Context#getPackageName}.
      * @param cronetVersion The version to use for filtering against the {@link
-     *                      FlagValue.ConstrainedValue#getMinVersion} field.
+     *     FlagValue.ConstrainedValue#getMinVersion} field.
+     * @param isTelemetryEnabled Whether Cronet telemetry is enabled; used for filtering against the
+     *     {@link FlagValue.ConstrainedValue#getApplyEvenIfCronetTelemetryDisabled} field.
      */
-    public static ResolvedFlags resolve(Flags flags, String appId, String cronetVersion) {
-        int[] parsedCronetVersion = parseVersionString(cronetVersion);
-        Map<String, Value> resolvedFlags = new HashMap<String, Value>();
-        for (var flag : flags.getFlagsMap().entrySet()) {
-            try {
-                Value value = Value.resolve(flag.getValue(), appId, parsedCronetVersion);
-                if (value == null) continue;
-                resolvedFlags.put(flag.getKey(), value);
-            } catch (RuntimeException exception) {
-                throw new IllegalArgumentException(
-                        "Unable to resolve HTTP flag `" + flag.getKey() + "`", exception);
+    public static ResolvedFlags resolve(
+            Flags flags, String appId, String cronetVersion, boolean isTelemetryEnabled) {
+        try (var traceEvent = ScopedSysTraceEvent.scoped("Cronet ResolvedFlags#resolve")) {
+            int[] parsedCronetVersion = parseVersionString(cronetVersion);
+            Map<String, Value> resolvedFlags = new HashMap<>();
+            for (var flag : flags.getFlagsMap().entrySet()) {
+                try {
+                    Value value =
+                            Value.resolve(
+                                    flag.getValue(),
+                                    appId,
+                                    parsedCronetVersion,
+                                    isTelemetryEnabled);
+                    if (value == null) continue;
+                    resolvedFlags.put(flag.getKey(), value);
+                } catch (RuntimeException exception) {
+                    throw new IllegalArgumentException(
+                            "Unable to resolve HTTP flag `" + flag.getKey() + "`", exception);
+                }
             }
+            return new ResolvedFlags(resolvedFlags);
         }
-        return new ResolvedFlags(resolvedFlags);
     }
 
     @VisibleForTesting

@@ -1,0 +1,10 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Outputs related to the payment extension.
+dictionary AuthenticationExtensionsPaymentOutputs {
+  // A signature corresponding to the browser bound public key in
+  // clientDataJson.
+  AuthenticationExtensionsPaymentBrowserBoundSignature browserBoundSignature;
+};

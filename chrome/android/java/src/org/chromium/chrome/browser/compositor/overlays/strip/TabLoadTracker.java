@@ -6,10 +6,13 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import android.os.Handler;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * {@code TabLoadTracker} is used to handle tracking whether or not to visually show if a tab is
  * loading or not.
  */
+@NullMarked
 public class TabLoadTracker {
     private static final long LOAD_FINISHED_VISUAL_DELAY_MS = 100;
 
@@ -66,7 +69,7 @@ public class TabLoadTracker {
         return mLoading;
     }
 
-    private Runnable mLoadFinishedRunnable =
+    private final Runnable mLoadFinishedRunnable =
             new Runnable() {
                 @Override
                 public void run() {

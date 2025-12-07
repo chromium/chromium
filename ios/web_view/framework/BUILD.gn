@@ -1,0 +1,152 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/apple/tweak_info_plist.gni")
+import("//build/config/apple/arch.gni")
+import("//build/config/apple/symbols.gni")
+import("//build/config/ios/rules.gni")
+import("//ios/web_view/features.gni")
+import("//ios/web_view/framework/sources.gni")
+
+# Building the framework as app extension safe requires building with
+# `use_partition_alloc = false`. When `use_blink=true`, `gn check`
+# fails as `//third_party/blink` and its dependencies includes files
+# from `//partition_alloc` even when `use_partition_alloc = false`.
+#
+# See https://crbug.com/448107419 for example of failures for this
+# configuration. Since ChromeWebView is not shipped when building with
+# `use_blink = true`, do not build it as app extension safe in that
+# case.
+_framework_as_app_ext_safe = !use_blink
+
+# Name of the toolchain in which the framework is build.
+if (_framework_as_app_ext_safe) {
+  _framework_toolchain = default_toolchain + "_app_ext"
+} else {
+  _framework_toolchain = default_toolchain
+}
+
+config("config") {
+  defines = [ "CWV_IMPLEMENTATION" ]
+  frameworks = [
+    "CoreGraphics.framework",
+    "Foundation.framework",
+    "MobileCoreServices.framework",
+    "UIKit.framework",
+  ]
+}
+
+tweak_info_plist("info_plist") {
+  info_plists = [ "Info.plist" ]
+}
+
+action("web_view_umbrella_header") {
+  script = "//build/config/ios/generate_umbrella_header.py"
+
+  _header_path = "$target_gen_dir/$ios_web_view_output_name.h"
+  outputs = [ _header_path ]
+
+  args = [
+    "--output-path",
+    rebase_path(_header_path, root_build_dir),
+  ]
+
+  args += rebase_path(ios_web_view_public_headers, root_build_dir)
+}
+
+source_set("web_view_sources") {
+  sources = ios_web_view_public_headers + ios_web_view_sources
+
+  public_deps = ios_web_view_deps
+  deps = [
+    "//components/autofill/ios/common",
+    "//components/version_info:channel",
+  ]
+  configs += [ ":config" ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
+
+if (current_toolchain == _framework_toolchain) {
+  ios_framework_bundle("web_view") {
+    output_name = ios_web_view_output_name
+    info_plist_target = ":info_plist"
+
+    public_headers = get_target_outputs(":web_view_umbrella_header")
+    public_headers += ios_web_view_public_headers
+
+    sources =
+        [ "../internal/cwv_global_state.mm" ] + ios_web_view_public_headers
+
+    deps = [
+      ":web_view_sources",
+      ":web_view_umbrella_header",
+      "//ios/third_party/webkit",
+      "//ios/web/public/init",
+      "//testing/gtest:ios_coverage_utils",
+    ]
+
+    configs += [ ":config" ]
+  }
+} else {
+  _output_name = ios_web_view_output_name
+  _target_name = ":web_view($_framework_toolchain)"
+  _output_dir = get_label_info(_target_name, "root_out_dir")
+
+  _copy_targets = []
+  _copy_sources = [ "$_output_dir/$_output_name.framework" ]
+  if (enable_dsyms) {
+    _archs_mapping_os = archs_mapping.ios
+    _archs_mapping_os_cpu = _archs_mapping_os[current_cpu]
+    _dsym_arch = _archs_mapping_os_cpu.dsym_arch
+
+    _dsym_contents_dir = "$_output_dir/$_output_name.dSYM/Contents"
+    _copy_sources += [
+      "$_dsym_contents_dir/Info.plist",
+      "$_dsym_contents_dir/Resources/DWARF/$_output_name",
+      "$_dsym_contents_dir/Resources/Relocations/$_dsym_arch/$_output_name.yml",
+    ]
+  }
+
+  _copy_index = 0
+  foreach(_path, _copy_sources) {
+    _copy_target_name = "framework_copy_file$_copy_index"
+    _copy_targets += [ ":$_copy_target_name" ]
+    _copy_index = _copy_index + 1
+
+    copy(_copy_target_name) {
+      public_deps = [ _target_name ]
+      visibility = [ ":framework_copy" ]
+      sources = [ _path ]
+      outputs = [ string_replace(_path, "$_output_dir/", "$root_out_dir/") ]
+    }
+  }
+
+  config("framework_config") {
+    frameworks = [ "$_output_name.framework" ]
+    framework_dirs = [ root_build_dir ]
+  }
+
+  group("framework_copy") {
+    visibility = [ ":web_view" ]
+    public_deps = _copy_targets
+  }
+
+  group("web_view") {
+    public_deps = [ ":framework_copy" ]
+  }
+
+  group("web_view+link") {
+    public_deps = [ ":web_view" ]
+    public_configs = [ ":framework_config" ]
+  }
+
+  bundle_data("web_view+bundle") {
+    public_deps = [ ":web_view" ]
+    sources = [ "$root_out_dir/$_output_name.framework" ]
+    outputs = [ "{{bundle_contents_dir}}/Frameworks/$_output_name.framework" ]
+  }
+}

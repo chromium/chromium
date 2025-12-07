@@ -4,6 +4,7 @@
 
 #include "chromecast/media/cma/base/demuxer_stream_for_test.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "media/base/media_util.h"
@@ -46,8 +47,7 @@ void DemuxerStreamForTest::Read(uint32_t count, ReadCB read_cb) {
 }
 
 ::media::AudioDecoderConfig DemuxerStreamForTest::audio_decoder_config() {
-  NOTREACHED_IN_MIGRATION() << "DemuxerStreamForTest is a video DemuxerStream";
-  return ::media::AudioDecoderConfig();
+  NOTREACHED() << "DemuxerStreamForTest is a video DemuxerStream";
 }
 
 ::media::VideoDecoderConfig DemuxerStreamForTest::video_decoder_config() {
@@ -77,7 +77,7 @@ void DemuxerStreamForTest::DoRead(ReadCB read_cb) {
     return;
   }
 
-  scoped_refptr<::media::DecoderBuffer> buffer(new ::media::DecoderBuffer(16));
+  auto buffer = base::MakeRefCounted<::media::DecoderBuffer>(16);
   buffer->set_timestamp(frame_count_ *
                         base::Milliseconds(kDemuxerStreamForTestFrameDuration));
   frame_count_++;

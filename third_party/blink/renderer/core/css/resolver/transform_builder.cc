@@ -34,7 +34,7 @@
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
-#include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
+#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/platform/transforms/matrix_3d_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/matrix_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/perspective_transform_operation.h"
@@ -56,8 +56,7 @@ static TransformOperation::OperationType GetTransformOperationType(
     CSSValueID type) {
   switch (type) {
     default:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
     case CSSValueID::kScale:
       return TransformOperation::kScale;
     case CSSValueID::kScaleX:
@@ -103,26 +102,28 @@ static TransformOperation::OperationType GetTransformOperationType(
   }
 }
 
-bool TransformBuilder::HasRelativeLengths(const CSSValueList& value_list) {
+bool TransformBuilder::IsResolvableAtParseTime(const CSSValueList& value_list) {
   for (auto& value : value_list) {
     const auto* transform_value = To<CSSFunctionValue>(value.Get());
 
     for (const CSSValue* item : *transform_value) {
       const auto& primitive_value = To<CSSPrimitiveValue>(*item);
-      if (primitive_value.IsCalculated()) {
-        if (To<CSSMathFunctionValue>(primitive_value).MayHaveRelativeUnit()) {
-          return true;
+      if (const auto* math_value =
+              DynamicTo<CSSMathFunctionValue>(primitive_value)) {
+        if (math_value->MayHaveRelativeUnit() ||
+            math_value->IsElementDependent()) {
+          return false;
         }
       } else {
         CSSPrimitiveValue::UnitType unit_type =
             To<CSSNumericLiteralValue>(primitive_value).GetType();
         if (CSSPrimitiveValue::IsRelativeUnit(unit_type)) {
-          return true;
+          return false;
         }
       }
     }
   }
-  return false;
+  return true;
 }
 
 namespace {
@@ -343,8 +344,7 @@ TransformOperation* CreateTransformOperation(
       return MakeGarbageCollected<PerspectiveTransformOperation>(p);
     }
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 

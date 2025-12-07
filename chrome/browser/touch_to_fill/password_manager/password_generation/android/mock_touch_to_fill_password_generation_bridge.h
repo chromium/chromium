@@ -29,7 +29,7 @@ class MockTouchToFillPasswordGenerationBridge
   MOCK_METHOD(void, OnDismissed, (JNIEnv*, bool), (override));
   MOCK_METHOD(void,
               OnGeneratedPasswordAccepted,
-              (JNIEnv*, const base::android::JavaParamRef<jstring>&),
+              (JNIEnv*, const base::android::JavaRef<jstring>&),
               (override));
   MOCK_METHOD(void, OnGeneratedPasswordRejected, (JNIEnv*), (override));
 };

@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/content_settings/core/common/content_settings.h"
+
+#include <variant>
+
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
@@ -16,6 +20,7 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/plugins/chrome_plugin_service_filter.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -31,9 +36,7 @@
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
-#include "components/nacl/common/buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -42,8 +45,10 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/spare_render_process_host_manager.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/buildflags.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
@@ -52,7 +57,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/commit_message_delayer.h"
 #include "content/public/test/fenced_frame_test_util.h"
-#include "content/public/test/ppapi_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_utils.h"
@@ -64,7 +68,6 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/url_request/url_request_mock_http_job.h"
 #include "pdf/buildflags.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -109,7 +112,7 @@ net::CookieList ExtractCookiesFromModel(BrowsingDataModel* model) {
   net::CookieList result;
   for (const auto& [owner, key, details] : *model) {
     if (const net::CanonicalCookie* cookie =
-            absl::get_if<net::CanonicalCookie>(&key.get())) {
+            std::get_if<net::CanonicalCookie>(&key.get())) {
       result.push_back(*cookie);
     }
   }
@@ -137,44 +140,6 @@ MATCHER(IsErrorTooManyRedirects, "") {
   return arg->GetNetErrorCode() == net::ERR_TOO_MANY_REDIRECTS;
 }
 
-// Return the active RenderFrameHost loaded in the last iframe in |parent_rfh|.
-content::RenderFrameHost* LastChild(content::RenderFrameHost* parent_rfh) {
-  int child_end = 0;
-  while (ChildFrameAt(parent_rfh, child_end)) {
-    child_end++;
-  }
-  if (child_end == 0) {
-    return nullptr;
-  }
-  return ChildFrameAt(parent_rfh, child_end - 1);
-}
-
-// Create an <iframe> inside |parent_rfh|, and navigate it toward |url|.
-// |permission_policy| can be used to set permission policy to the iframe.
-// For instance:
-// ```
-// child = CreateIframe(parent, url, "geolocation *; camera *");
-// ```
-// This returns the new RenderFrameHost associated with new document created in
-// the iframe.
-content::RenderFrameHost* CreateIframe(
-    content::RenderFrameHost* parent_rfh,
-    const GURL& url,
-    const std::string& permission_policy = "") {
-  EXPECT_EQ(
-      "iframe loaded",
-      content::EvalJs(parent_rfh, content::JsReplace(R"(
-    new Promise((resolve) => {
-      const iframe = document.createElement("iframe");
-      iframe.src = $1;
-      iframe.allow = $2;
-      iframe.onload = _ => { resolve("iframe loaded"); };
-      document.body.appendChild(iframe);
-    }))",
-                                                     url, permission_policy)));
-  return LastChild(parent_rfh);
-}
-
 size_t GetModelCookieCount(const BrowsingDataModel* model) {
   size_t cookie_count = 0;
   for (const auto& [owner, key, details] : *model) {
@@ -197,6 +162,12 @@ class ContentSettingsTest : public InProcessBrowserTest {
   }
 
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+
+ private:
+  // TODO(https://crbug.com/423465927): Explore a better approach to make the
+  // existing tests run with the prewarm feature enabled.
+  test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
 };
 
 // Test the combination of different ways of accessing cookies --- JS, HTML,
@@ -230,10 +201,6 @@ class CookieSettingsTest
     if (ReadMode() == CookieMode::kCookieStoreJS ||
         WriteMode() == CookieMode::kCookieStoreJS)
       set_secure_scheme();
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentSettingsTest::SetUpCommandLine(command_line);
   }
 
   void set_secure_scheme() { secure_scheme_ = true; }
@@ -1065,7 +1032,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsTest, SendRendererContentRules) {
 IN_PROC_BROWSER_TEST_F(ContentSettingsTest,
                        SpareRenderProcessHostRulesAreUpdated) {
   // Make sure a spare RenderProcessHost exists during the test.
-  content::RenderProcessHost::WarmupSpareRenderProcessHost(
+  content::SpareRenderProcessHostManager::Get().WarmupSpare(
       browser()->profile());
 
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -1463,7 +1430,8 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWithPrerenderingBrowserTest,
   {
     NonPrimaryPageCookieAccessObserver cookie_observer(GetWebContents());
     prerender_test_helper().AddPrerender(prerender_url);
-    int host_id = prerender_test_helper().GetHostForUrl(prerender_url);
+    content::FrameTreeNodeId host_id =
+        prerender_test_helper().GetHostForUrl(prerender_url);
     content::RenderFrameHost* prerender_frame =
         prerender_test_helper().GetPrerenderedMainFrameHost(host_id);
     EXPECT_NE(prerender_frame, nullptr);
@@ -1506,7 +1474,8 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWithPrerenderingBrowserTest,
   ASSERT_FALSE(main_pscs->IsContentAllowed(ContentSettingsType::COOKIES));
 
   prerender_test_helper().AddPrerender(prerender_url);
-  int host_id = prerender_test_helper().GetHostForUrl(prerender_url);
+  content::FrameTreeNodeId host_id =
+      prerender_test_helper().GetHostForUrl(prerender_url);
   content::RenderFrameHost* prerender_frame =
       prerender_test_helper().GetPrerenderedMainFrameHost(host_id);
   EXPECT_NE(prerender_frame, nullptr);
@@ -1606,7 +1575,6 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWithFencedFrameBrowserTest,
   const GURL main_url = https_server_.GetURL("a.test", "/empty.html");
   const GURL fenced_frame_url =
       https_server_.GetURL("b.test", "/fenced_frames/page_with_script.html");
-  const GURL other_main_url = https_server_.GetURL("c.test", "/empty.html");
 
   auto NavigatePrimaryPageAndAddFencedFrame =
       [&]() -> content::RenderFrameHost* {
@@ -1620,135 +1588,29 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWithFencedFrameBrowserTest,
     return fenced_frame;
   };
 
-  auto ExpectScriptBlocked = [&](content::RenderFrameHost* fenced_frame) {
-    ui_test_utils::WaitForViewVisibility(
-        browser(), VIEW_ID_CONTENT_SETTING_JAVASCRIPT, true);
-    auto* main_pscs = PageSpecificContentSettings::GetForFrame(
-        GetWebContents()->GetPrimaryMainFrame());
-    auto* ff_pscs = PageSpecificContentSettings::GetForFrame(fenced_frame);
-    // Script should have been blocked in the fenced frame (and reflected in
-    // the PSCS of the primary page as well).
-    EXPECT_TRUE(ff_pscs->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
-    EXPECT_TRUE(main_pscs->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
-  };
-
   auto ExpectScriptAllowed = [&](content::RenderFrameHost* fenced_frame) {
     EXPECT_EQ(EvalJs(fenced_frame, "(async () => { return 1; })();"), 1);
     auto* ff_pscs = PageSpecificContentSettings::GetForFrame(fenced_frame);
     EXPECT_FALSE(ff_pscs->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
   };
 
-  // Block script in (a.test, b.test).
+  // There is no test to write for the case where script is blocked in a.test
+  // because FencedFrames cannot be loaded without javascript since they do not
+  // take a src attribute.
+  //
+  // Block script in b.test.
   auto* map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   map->SetContentSettingCustomScope(
-      ContentSettingsPattern::FromURL(main_url),
       ContentSettingsPattern::FromURL(fenced_frame_url),
+      ContentSettingsPattern::Wildcard(),
       ContentSettingsType::JAVASCRIPT, ContentSetting::CONTENT_SETTING_BLOCK);
   content::RenderFrameHost* fenced_frame =
       NavigatePrimaryPageAndAddFencedFrame();
-  ExpectScriptBlocked(fenced_frame);
 
-  // Allow script in (a.test, b.test).
-  map->SetContentSettingCustomScope(
-      ContentSettingsPattern::FromURL(main_url),
-      ContentSettingsPattern::FromURL(fenced_frame_url),
-      ContentSettingsType::JAVASCRIPT, ContentSetting::CONTENT_SETTING_ALLOW);
-  fenced_frame = NavigatePrimaryPageAndAddFencedFrame();
+  // Content settings are always determined by the outermost URL, which must be
+  // allowed in order to create the fenced frame.
   ExpectScriptAllowed(fenced_frame);
-
-  // Block script in (c.test, b.test).
-  map->SetContentSettingCustomScope(
-      ContentSettingsPattern::FromURL(other_main_url),
-      ContentSettingsPattern::FromURL(fenced_frame_url),
-      ContentSettingsType::JAVASCRIPT, ContentSetting::CONTENT_SETTING_BLOCK);
-  fenced_frame = NavigatePrimaryPageAndAddFencedFrame();
-  ExpectScriptAllowed(fenced_frame);
-
-  // Block script in (*, b.test) - this should not have any effect as the
-  // (a.test, b.test) rule is a narrower rule and should have precedence.
-  map->SetContentSettingCustomScope(
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsPattern::FromURL(fenced_frame_url),
-      ContentSettingsType::JAVASCRIPT, ContentSetting::CONTENT_SETTING_BLOCK);
-  fenced_frame = NavigatePrimaryPageAndAddFencedFrame();
-  ExpectScriptAllowed(fenced_frame);
-
-  // Remove (a.test, b.test) rule - (*, b.test) rule should now be the narrowest
-  // and will be applied.
-  map->SetContentSettingCustomScope(
-      ContentSettingsPattern::FromURL(main_url),
-      ContentSettingsPattern::FromURL(fenced_frame_url),
-      ContentSettingsType::JAVASCRIPT, ContentSetting::CONTENT_SETTING_DEFAULT);
-  fenced_frame = NavigatePrimaryPageAndAddFencedFrame();
-  ExpectScriptBlocked(fenced_frame);
-}
-
-IN_PROC_BROWSER_TEST_F(ContentSettingsWithFencedFrameBrowserTest,
-                       NestedFramesRendererContentSettings) {
-  // a.com embeds b.com, b.com embeds c.com.
-  const GURL main_url = https_server_.GetURL("a.test", "/empty.html");
-  const GURL nested_url = https_server_.GetURL("b.test", "/empty.html");
-  const GURL fenced_frame_url =
-      https_server_.GetURL("c.test", "/fenced_frames/page_with_script.html");
-  content::RenderFrameHost* crossorigin_subframe;
-
-  auto NavigatePrimaryPageAndAddNestedFrames =
-      [&]() -> content::RenderFrameHost* {
-    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-    EXPECT_FALSE(GetWebContents()->GetPrimaryMainFrame()->IsErrorDocument());
-    EXPECT_EQ(GetWebContents()->GetLastCommittedURL(), main_url);
-
-    crossorigin_subframe =
-        CreateIframe(GetWebContents()->GetPrimaryMainFrame(), nested_url);
-
-    EXPECT_NE(crossorigin_subframe, nullptr);
-
-    content::RenderFrameHost* fenced_frame =
-        fenced_frame_test_helper().CreateFencedFrame(crossorigin_subframe,
-                                                     fenced_frame_url);
-    EXPECT_NE(fenced_frame, nullptr);
-    return fenced_frame;
-  };
-
-  auto ExpectScriptAllowed = [&](content::RenderFrameHost* fenced_frame) {
-    EXPECT_EQ(EvalJs(fenced_frame, "(async () => { return 1; })();"), 1);
-    auto* ff_pscs = PageSpecificContentSettings::GetForFrame(fenced_frame);
-    EXPECT_FALSE(ff_pscs->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
-  };
-
-  auto ExpectScriptBlocked = [&](content::RenderFrameHost* fenced_frame) {
-    ui_test_utils::WaitForViewVisibility(
-        browser(), VIEW_ID_CONTENT_SETTING_JAVASCRIPT, true);
-    auto* main_pscs = PageSpecificContentSettings::GetForFrame(
-        GetWebContents()->GetPrimaryMainFrame());
-    auto* ff_pscs = PageSpecificContentSettings::GetForFrame(fenced_frame);
-    // Script should have been blocked in the fenced frame (and reflected
-    // in the PSCS of the primary page as well).
-    EXPECT_TRUE(ff_pscs->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
-    EXPECT_TRUE(main_pscs->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
-  };
-
-  content::RenderFrameHost* fenced_frame =
-      NavigatePrimaryPageAndAddNestedFrames();
-  ASSERT_TRUE(fenced_frame);
-
-  // Script is allowed by default in iframes.
-  ExpectScriptAllowed(fenced_frame);
-
-  // Block script in (a.test, c.test).
-  auto* map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
-  map->SetContentSettingCustomScope(
-      ContentSettingsPattern::FromURL(main_url),
-      ContentSettingsPattern::FromURL(fenced_frame_url),
-      ContentSettingsType::JAVASCRIPT, ContentSetting::CONTENT_SETTING_BLOCK);
-
-  fenced_frame = NavigatePrimaryPageAndAddNestedFrames();
-  ASSERT_TRUE(fenced_frame);
-
-  // Script should blocked (a.com, b.com).
-  ExpectScriptBlocked(fenced_frame);
 }
 
 IN_PROC_BROWSER_TEST_F(ContentSettingsWithFencedFrameBrowserTest,
@@ -1818,56 +1680,15 @@ class ContentSettingsWorkerModulesWithFencedFrameBrowserTest
   content::test::FencedFrameTestHelper fenced_frame_test_helper_;
 };
 
-IN_PROC_BROWSER_TEST_F(ContentSettingsWorkerModulesWithFencedFrameBrowserTest,
-                       WorkerImportModuleBlocked) {
-  const std::string script = base::StringPrintf(
-      "import('%s')\n"
-      "  .then(module => postMessage(module.msg), _ => postMessage('Failed'));",
-      "/worker_import_module_imported.js");
-  RegisterStaticFile(&https_server_, "/worker_import_module_worker.js", script,
-                     "text/javascript");
-  https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  ASSERT_TRUE(https_server_.Start());
-  GURL main_url = https_server_.GetURL("a.test", "/title1.html");
-  GURL module_url =
-      https_server_.GetURL("b.test", "/worker_import_module_imported.js");
-  GURL fenced_frame_url =
-      https_server_.GetURL("b.test", "/worker_import_module.html");
-
-  // Change the settings to block the script loading of
-  // worker_import_module_imported.js from worker_import_module.html.
-  auto* content_settings_map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
-  content_settings_map->SetWebsiteSettingCustomScope(
-      ContentSettingsPattern::FromURLNoWildcard(main_url),
-      ContentSettingsPattern::FromURLNoWildcard(module_url),
-      ContentSettingsType::JAVASCRIPT, base::Value(CONTENT_SETTING_BLOCK));
-
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-  ASSERT_FALSE(web_contents->GetPrimaryMainFrame()->IsErrorDocument());
-  content::RenderFrameHost* fenced_frame =
-      fenced_frame_test_helper().CreateFencedFrame(
-          web_contents->GetPrimaryMainFrame(), fenced_frame_url);
-  ASSERT_NE(nullptr, fenced_frame);
-
-  // The import must be blocked.
-  ui_test_utils::WaitForViewVisibility(
-      browser(), VIEW_ID_CONTENT_SETTING_JAVASCRIPT, true);
-  EXPECT_TRUE(PageSpecificContentSettings::GetForFrame(
-                  web_contents->GetPrimaryMainFrame())
-                  ->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
-}
-
 #if BUILDFLAG(ENABLE_PDF)
 class ContentSettingsPdfTest : public PDFExtensionTestBase {
  public:
   bool UseOopif() const override { return true; }
 
   testing::AssertionResult IsJavaScriptEnabled(content::RenderFrameHost* host) {
-    return content::ExecJs(host, "");
+    return content::ExecJs(
+        host, "",
+        content::EvalJsOptions::EXECUTE_SCRIPT_HONOR_JS_CONTENT_SETTINGS);
   }
 };
 

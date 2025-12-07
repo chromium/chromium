@@ -28,6 +28,7 @@ Jos <ph name="SERVICE_SCRIPT_NAME" /> on jo valittuna, poista valinta ja valitse
 <translation id="2329392777730037872"><ph name="URL" /> ei avaudu asiakassovelluksessa.</translation>
 <translation id="2359808026110333948">Jatka</translation>
 <translation id="2366718077645204424">Isäntään ei saatu yhteyttä. Tämä johtuu luultavasti käyttämäsi verkon määrityksistä.</translation>
+<translation id="242591256144136845">Copyright 2025 Google LLC. Kaikki oikeudet pidätetään.</translation>
 <translation id="2504109125669302160">Myönnä Esteettömyys-käyttölupa: <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Yhdistetty isäntään <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Haluatko jakaa tämän tietokoneen niin, että toinen käyttäjä voi käyttää ja valvoa sitä?</translation>
@@ -39,6 +40,7 @@ Jos <ph name="SERVICE_SCRIPT_NAME" /> on jo valittuna, poista valinta ja valitse
 <translation id="2758123043070977469">Todennusvirhe – kirjaudu uudelleen sisään.</translation>
 <translation id="2803375539583399270">Lisää PIN-koodi</translation>
 <translation id="2919669478609886916">Jaat tällä hetkellä tämän tietokoneen toisen käyttäjän kanssa. Haluatko jatkaa jakamista?</translation>
+<translation id="2929683002824598593">Jaa laite</translation>
 <translation id="2939145106548231838">Todenna isännälle</translation>
 <translation id="3027681561976217984">Kosketustila</translation>
 <translation id="3106379468611574572">Etätietokone ei vastaa yhteyspyyntöihin. Vahvista, että se on online-tilassa, ja yritä uudelleen.</translation>
@@ -91,6 +93,7 @@ Jos <ph name="SERVICE_SCRIPT_NAME" /> on jo valittuna, poista valinta ja valitse
 <translation id="4987330545941822761">Chrome-etäkäyttö ei tunnista URL-osoitteiden paikalliseen avaamiseen käytettävää selainta. Valitse se listalta.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (offline)</translation>
 <translation id="507204348399810022">Haluatko varmasti poistaa käytöstä etäyhteydet kohteeseen <ph name="HOSTNAME" />?</translation>
+<translation id="5095424396646120601">Crash Reporting</translation>
 <translation id="5170982930780719864">Isännän tunnus on virheellinen.</translation>
 <translation id="5204575267916639804">Usein kysytyt kysymykset</translation>
 <translation id="5222676887888702881">Kirjaudu ulos</translation>
@@ -116,10 +119,12 @@ Jos <ph name="SERVICE_SCRIPT_NAME" /> on jo valittuna, poista valinta ja valitse
 <translation id="6178645564515549384">Viestiliikenteen alkuperäinen isäntä etäavustukselle</translation>
 <translation id="618120821413932081">Päivitä etäresoluutio vastaamaan ikkunan resoluutiota</translation>
 <translation id="6223301979382383752">Avaa näytön tallennuksen asetukset</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> on pyytänyt lupaa nähdä näyttösi ja ohjata näppäimistöäsi ja hiirtäsi. Haluatko jakaa laitteesi?</translation>
 <translation id="6284412385303060032">Konsolin logiikkaruudussa käynnissä ollut isäntä sulkeutui tukeakseen verhotilaa. Vaihdetaan käyttäjäkohtaisessa istunnossa käynnissä olevaan isäntään.</translation>
 <translation id="6542902059648396432">Ilmoita ongelmasta…</translation>
 <translation id="6583902294974160967">Tuki</translation>
 <translation id="6612717000975622067">Lähetä Ctrl-Alt-Del</translation>
+<translation id="6625262630437221505">{0,plural, =1{Jos et tee mitään, laite aloittaa jakamisen automaattisesti # sekunnin päästä.}other{Jos et tee mitään, laite aloittaa jakamisen automaattisesti # sekunnin päästä.}}</translation>
 <translation id="6654753848497929428">Jaa</translation>
 <translation id="677755392401385740">Käyttäjän <ph name="HOST_USERNAME" /> isäntä käynnistettiin.</translation>
 <translation id="6902524959760471898">Apusovellus URL-osoitteen avaamiseen asiakassovelluksessa: <ph name="PRODUCT_NAME" /></translation>
@@ -133,6 +138,7 @@ Jos <ph name="SERVICE_SCRIPT_NAME" /> on jo valittuna, poista valinta ja valitse
 <translation id="7067321367069083429">Näyttö toimii kosketusnäyttönä</translation>
 <translation id="7116737094673640201">Tervetuloa Chrome-etäkäyttöön</translation>
 <translation id="7144878232160441200">Yritä uudelleen</translation>
+<translation id="7298392173540380852">Tekijänoikeudet 2025: The Chromium Authors. Kaikki oikeudet pidätetään.</translation>
 <translation id="7312846573060934304">Isäntä on offline-tilassa.</translation>
 <translation id="7319983568955948908">Lopeta jakaminen</translation>
 <translation id="7359298090707901886">Valitulla selaimella ei voi avata URL-osoitteita paikallisella laitteella.</translation>
@@ -149,7 +155,6 @@ Jos <ph name="SERVICE_SCRIPT_NAME" /> on jo valittuna, poista valinta ja valitse
 <translation id="7693372326588366043">Päivitä isäntäluettelo</translation>
 <translation id="7714222945760997814">Tee ilmoitus</translation>
 <translation id="7868137160098754906">Anna etätietokoneen PIN-koodi.</translation>
-<translation id="7881455334687220899">Tekijänoikeudet 2024: The Chromium Authors. Kaikki oikeudet pidätetään.</translation>
 <translation id="7895403300744144251">Etätietokoneen suojauskäytännöt eivät salli tililtäsi saapuvia yhteyksiä.</translation>
 <translation id="7936528439960309876">Kiinnitä oikealle</translation>
 <translation id="7970576581263377361">Todennus epäonnistui. Kirjaudu Chromiumiin uudelleen.</translation>
@@ -181,7 +186,6 @@ Jos <ph name="SERVICE_SCRIPT_NAME" /> on jo valittu, poista valinta ja valitse s
 <translation id="8747048596626351634">Istunto kaatui tai sen käynnistäminen epäonnistui. Jos ~/.chrome-remote-desktop-session on olemassa etätietokoneella, varmista, että se käynnistää pitkäkestoisen etualaprosessin, esim. työpöytäympäristön tai ikkunanhallinnan.</translation>
 <translation id="8804164990146287819">Tietosuojakäytäntö</translation>
 <translation id="8906511416443321782">Audion tallennus ja sen striimaus Chrome-etäkäyttösovellukseen edellyttävät mikrofonin käyttöoikeuksia.</translation>
-<translation id="9042277333359847053">Tekijänoikeudet 2024: Google LLC. Kaikki oikeudet pidätetään.</translation>
 <translation id="9111855907838866522">Olet yhteydessä etälaitteeseesi. Avaa valikko koskettamalla näyttöä neljällä sormella.</translation>
 <translation id="9126115402994542723">Älä kysy PIN-koodia uudelleen yhdistettäessä tähän isäntään tältä laitteelta.</translation>
 <translation id="916856682307586697">Käynnistä XSession-oletuskäyttökerta</translation>

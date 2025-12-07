@@ -4,11 +4,6 @@
 //
 // This file defines utility functions for fetching localized resources.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/installer/util/l10n_string_util.h"
 
 #include <windows.h>
@@ -19,8 +14,10 @@
 #include <limits>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/buffer_iterator.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
@@ -70,7 +67,7 @@ installer::TranslationDelegate* g_translation_delegate = nullptr;
 
 namespace installer {
 
-TranslationDelegate::~TranslationDelegate() {}
+TranslationDelegate::~TranslationDelegate() = default;
 
 void SetTranslationDelegate(TranslationDelegate* delegate) {
   g_translation_delegate = delegate;
@@ -106,7 +103,8 @@ std::wstring GetLocalizedString(int base_message_id) {
         // The bundle is a sequence of ATLSTRINGRESOURCEIMAGE structures, which
         // are each a DWORD length followed by that many wide characters.
         bundle_size = ::SizeofResource(CURRENT_MODULE(), bundle_handle);
-        base::BufferIterator<const uint8_t> iterator(bundle_data, bundle_size);
+        base::BufferIterator<const uint8_t> UNSAFE_TODO(
+            iterator(bundle_data, bundle_size));
         // Scan forward in the bundle past all preceding messages.
         for (int index = message_id & 0xF; index; --index) {
           if (const auto* length = iterator.Object<const WORD>(); length) {
@@ -139,9 +137,15 @@ std::wstring GetLocalizedString(int base_message_id) {
   DEBUG_ALIAS_FOR_WCHARCSTR(selected_translation,
                             language_selector.selected_translation().c_str(),
                             16);
-  NOTREACHED_IN_MIGRATION() << "Unable to find resource id " << message_id;
+  NOTREACHED() << "Unable to find resource id " << message_id;
+}
 
-  return std::wstring();
+std::wstring GetLocalizedStringF(int base_message_id,
+                                 std::vector<std::wstring> replacements) {
+  // Replacements start at index 1, corresponding to placeholder `$1`.
+  replacements.insert(replacements.begin(), {});
+  return base::ReplaceStringPlaceholders(GetLocalizedString(base_message_id),
+                                         replacements, /*offsets=*/{});
 }
 
 // Here we generate the url spec with the Microsoft res:// scheme which is
@@ -211,8 +215,8 @@ int GetBaseMessageIdForMode(int base_message_id) {
   }
 
   // Return the variant of |base_message_id| for the current mode.
-  return mode_strings[install_static::InstallDetails::Get()
-                          .install_mode_index()];
+  return UNSAFE_TODO(
+      mode_strings)[install_static::InstallDetails::Get().install_mode_index()];
 }
 
 }  // namespace installer

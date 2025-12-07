@@ -1,0 +1,17 @@
+[
+  {
+    "os": [
+      "win",
+      "android",
+      "chromeos"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "policy.protected_content_identifiers.allowed",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
+  }
+]

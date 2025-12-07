@@ -1,0 +1,183 @@
+// Copyright 2013 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/autofill/core/browser/data_model/usage_history_information.h"
+
+#include <stddef.h>
+
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
+#include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
+#include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_features.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace autofill {
+
+namespace {
+
+// Tests that when recording a use, the last, second to last, etc. use dates are
+// updated correctly.
+TEST(UsageHistoryInformationTest, RecordUseDate) {
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  // Data model creation counts as a use.
+  UsageHistoryInformation model(/*usage_history_size=*/3);
+  EXPECT_EQ(model.use_date(1), base::Time::Now());
+  EXPECT_FALSE(model.use_date(2).has_value());
+  EXPECT_FALSE(model.use_date(3).has_value());
+
+  // Recording a use should propagate the change.
+  task_environment.FastForwardBy(base::Seconds(123));
+  base::Time old_last_use_date = model.use_date();
+  model.RecordUseDate(base::Time::Now());
+  EXPECT_EQ(model.use_date(1), base::Time::Now());
+  EXPECT_EQ(model.use_date(2), old_last_use_date);
+  EXPECT_FALSE(model.use_date(3).has_value());
+
+  // Record a second use.
+  task_environment.FastForwardBy(base::Seconds(234));
+  old_last_use_date = model.use_date();
+  base::Time old_second_last_use_date = *model.use_date(2);
+  model.RecordUseDate(base::Time::Now());
+  EXPECT_EQ(model.use_date(1), base::Time::Now());
+  EXPECT_EQ(model.use_date(2), old_last_use_date);
+  EXPECT_EQ(model.use_date(3), old_second_last_use_date);
+}
+
+enum Expectation { GREATER, LESS };
+struct UsageHistoryInformationRankingTestCase {
+  const int use_count_a;
+  const base::Time use_date_a;
+  const int use_count_b;
+  const base::Time use_date_b;
+  Expectation expectation;
+};
+
+base::Time now = AutofillClock::Now();
+
+class HasGreaterFrecencyThanTest
+    : public testing::TestWithParam<UsageHistoryInformationRankingTestCase> {};
+
+TEST_P(HasGreaterFrecencyThanTest, HasGreaterFrecencyThan) {
+  auto test_case = GetParam();
+  UsageHistoryInformation model_a;
+  model_a.set_use_count(test_case.use_count_a);
+  model_a.set_use_date(test_case.use_date_a);
+  UsageHistoryInformation model_b;
+  model_b.set_use_count(test_case.use_count_b);
+  model_b.set_use_date(test_case.use_date_b);
+
+  EXPECT_EQ(test_case.expectation == GREATER,
+            model_a.HasGreaterRankingThan(model_b, now));
+  EXPECT_NE(test_case.expectation == GREATER,
+            model_b.HasGreaterRankingThan(model_a, now));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    UsageHistoryInformationTest,
+    HasGreaterFrecencyThanTest,
+    testing::Values(
+        // Same days since last use, model_a has a bigger use count.
+        UsageHistoryInformationRankingTestCase{10, now, 8, now, GREATER},
+        // Same days since last use, model_a has a smaller use count.
+        UsageHistoryInformationRankingTestCase{8, now, 10, now, LESS},
+        // Same days since last use, model_a has larger use count.
+        UsageHistoryInformationRankingTestCase{8, now, 8, now - base::Days(1),
+                                               GREATER},
+        // Same use count, model_a has smaller days since last use.
+        UsageHistoryInformationRankingTestCase{8, now - base::Days(1), 8, now,
+                                               LESS},
+        // Special case: occasional profiles. A profile with relatively low
+        // usage and used recently (model_b) should not rank higher than a more
+        // used profile that has been unused for a short amount of time
+        // (model_a).
+        UsageHistoryInformationRankingTestCase{300, now - base::Days(5), 10,
+                                               now - base::Days(1), GREATER},
+        // Special case: moving. A new profile used frequently (model_b) should
+        // rank higher than a profile with more usage that has not been used for
+        // a while (model_a).
+        UsageHistoryInformationRankingTestCase{300, now - base::Days(15), 10,
+                                               now - base::Days(1), LESS}));
+
+// Tests that when merging two models, the use dates are merged correctly.
+struct UsageHistoryMergeTestCase {
+  // Describes how long ago the last, second last and third last uses occurred,
+  // respectively. Nullopt indicate that the model hasn't been used this often.
+  using UsageHistory = std::array<std::optional<base::TimeDelta>, 3>;
+  const UsageHistory usage_history_a;
+  const UsageHistory usage_history_b;
+  const UsageHistory expected_merged_use_history;
+  const size_t use_count_a;
+  const size_t use_count_b;
+  const size_t expected_use_count;
+};
+class UseDateMergeTest
+    : public testing::TestWithParam<UsageHistoryMergeTestCase> {
+ public:
+  UsageHistoryInformation ModelFromUsageHistory(
+      const UsageHistoryMergeTestCase::UsageHistory& usage_history) {
+    UsageHistoryInformation model(/*usage_history_size=*/3);
+    for (int i = 0; i < 3; i++) {
+      if (usage_history[i]) {
+        model.set_use_date(base::Time::Now() - *usage_history[i], i + 1);
+      }
+    }
+    return model;
+  }
+
+ private:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+};
+
+TEST_P(UseDateMergeTest, MergeUsageHistories) {
+  const UsageHistoryMergeTestCase& test = GetParam();
+  UsageHistoryInformation a = ModelFromUsageHistory(test.usage_history_a);
+  UsageHistoryInformation b = ModelFromUsageHistory(test.usage_history_b);
+  a.set_use_count(test.use_count_a);
+  b.set_use_count(test.use_count_b);
+  const UsageHistoryInformation expected_merged_use_history =
+      ModelFromUsageHistory(test.expected_merged_use_history);
+
+  ASSERT_EQ(a.usage_history_size(), 3u);
+  a.MergeUsageHistories(b);
+  EXPECT_EQ(a.use_date(1), expected_merged_use_history.use_date(1));
+  EXPECT_EQ(a.use_date(2), expected_merged_use_history.use_date(2));
+  EXPECT_EQ(a.use_date(3), expected_merged_use_history.use_date(3));
+  EXPECT_EQ(a.use_count(), test.expected_use_count);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    UsageHistoryInformationTest,
+    UseDateMergeTest,
+    testing::Values(
+        // No second/third use date set: Expect that the more recent use date
+        // becomes the use date and the other use date the second use date.
+        UsageHistoryMergeTestCase{{base::Days(1)},
+                                  {base::Days(2)},
+                                  {base::Days(1), base::Days(2)},
+                                  /*use_count_a=*/1,
+                                  /*use_count_b=*/1,
+                                  /*expected_use_count=*/1},
+        UsageHistoryMergeTestCase{{base::Days(2)},
+                                  {base::Days(1)},
+                                  {base::Days(1), base::Days(2)},
+                                  /*use_count_a=*/1,
+                                  /*use_count_b=*/5,
+                                  /*expected_use_count=*/5},
+        // At least three use dates are set: Expect that the second and third
+        // use date of the merged profile are populated.
+        UsageHistoryMergeTestCase{{base::Days(1), base::Days(3), base::Days(5)},
+                                  {base::Days(2), base::Days(4), base::Days(6)},
+                                  {base::Days(1), base::Days(2), base::Days(3)},
+                                  /*use_count_a=*/3,
+                                  /*use_count_b=*/1,
+                                  /*expected_use_count=*/3}));
+
+}  // namespace
+
+}  // namespace autofill

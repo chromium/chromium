@@ -4,46 +4,49 @@
 
 #include "third_party/blink/renderer/core/css/cssom/paint_worklet_deferred_image.h"
 
-#include <utility>
-
+#include "base/notreached.h"
+#include "third_party/blink/renderer/core/css/cssom/paint_worklet_input.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
-#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
 
-namespace {
-void DrawInternal(cc::PaintCanvas* canvas,
-                  const cc::PaintFlags& flags,
-                  const gfx::RectF& dest_rect,
-                  const gfx::RectF& src_rect,
-                  const ImageDrawOptions& draw_options,
-                  const PaintImage& image) {
-  canvas->drawImageRect(
-      image, gfx::RectFToSkRect(src_rect), gfx::RectFToSkRect(dest_rect),
-      draw_options.sampling_options, &flags,
-      WebCoreClampingModeToSkiaRectConstraint(draw_options.clamping_mode));
+scoped_refptr<PaintWorkletDeferredImage> PaintWorkletDeferredImage::Create(
+    scoped_refptr<PaintWorkletInput> input,
+    const gfx::SizeF& size) {
+  return base::AdoptRef(new PaintWorkletDeferredImage(std::move(input), size));
 }
-}  // namespace
+
+PaintWorkletDeferredImage::PaintWorkletDeferredImage(
+    scoped_refptr<PaintWorkletInput> input,
+    const gfx::SizeF& size)
+    : GeneratedImage(size) {
+  image_ = PaintImageBuilder::WithDefault()
+               .set_deferred_paint_record(std::move(input))
+               .set_id(paint_image_id())
+               .TakePaintImage();
+}
 
 void PaintWorkletDeferredImage::Draw(cc::PaintCanvas* canvas,
                                      const cc::PaintFlags& flags,
                                      const gfx::RectF& dest_rect,
                                      const gfx::RectF& src_rect,
                                      const ImageDrawOptions& draw_options) {
-  DrawInternal(canvas, flags, dest_rect, src_rect, draw_options, image_);
+  canvas->drawImageRect(image_, gfx::RectFToSkRect(src_rect),
+                        gfx::RectFToSkRect(dest_rect),
+                        draw_options.sampling_options, &flags,
+                        ToSkiaRectConstraint(draw_options.clamping_mode));
 }
 
-void PaintWorkletDeferredImage::DrawTile(cc::PaintCanvas* canvas,
-                                         const gfx::RectF& src_rect,
-                                         const ImageDrawOptions& draw_options) {
-  cc::PaintFlags flags;
-  flags.setAntiAlias(true);
-  DrawInternal(canvas, flags, gfx::RectF(), src_rect, draw_options, image_);
+void PaintWorkletDeferredImage::DrawTile(cc::PaintCanvas*,
+                                         const gfx::RectF&,
+                                         const ImageDrawOptions&) {
+  // Because `CreateShader()` is overridden, this hook won't be used.
+  // See `GeneratedImage::CreateShader()`.
+  NOTREACHED();
 }
 
 sk_sp<PaintShader> PaintWorkletDeferredImage::CreateShader(

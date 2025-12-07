@@ -13,11 +13,14 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "content/browser/webui/url_data_manager_backend.h"
 #include "content/common/content_export.h"
 #include "content/common/web_ui.mojom.h"
 #include "content/public/browser/web_ui.h"
+#include "content/public/common/bindings_policy.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "third_party/blink/public/mojom/loader/local_resource_loader_config.mojom.h"
 
 namespace content {
 class NavigationRequest;
@@ -70,8 +73,8 @@ class CONTENT_EXPORT WebUIImpl : public WebUI, public mojom::WebUIHost {
   float GetDeviceScaleFactor() override;
   const std::u16string& GetOverriddenTitle() override;
   void OverrideTitle(const std::u16string& title) override;
-  int GetBindings() override;
-  void SetBindings(int bindings) override;
+  BindingsPolicySet GetBindings() override;
+  void SetBindings(BindingsPolicySet bindings) override;
   const std::vector<std::string>& GetRequestableSchemes() override;
   void AddRequestableScheme(const char* scheme) override;
   void AddMessageHandler(std::unique_ptr<WebUIMessageHandler> handler) override;
@@ -81,7 +84,6 @@ class CONTENT_EXPORT WebUIImpl : public WebUI, public mojom::WebUIHost {
                            const std::string& message,
                            base::Value::List args) override;
   bool CanCallJavascript() override;
-  void CallJavascriptFunctionUnsafe(std::string_view function_name) override;
   void CallJavascriptFunctionUnsafe(
       std::string_view function_name,
       base::span<const base::ValueView> args) override;
@@ -97,6 +99,9 @@ class CONTENT_EXPORT WebUIImpl : public WebUI, public mojom::WebUIHost {
 
   bool HasRenderFrameHost() const;
 
+  static blink::mojom::LocalResourceLoaderConfigPtr
+  GetLocalResourceLoaderConfigForTesting(URLDataManagerBackend* data_backend);
+
  private:
   friend class WebUIMainFrameObserver;
 
@@ -109,14 +114,18 @@ class CONTENT_EXPORT WebUIImpl : public WebUI, public mojom::WebUIHost {
   // Called internally and by the owned WebUIMainFrameObserver.
   void DisallowJavascriptOnAllHandlers();
 
+  blink::mojom::LocalResourceLoaderConfigPtr GetLocalResourceLoaderConfig();
+
   // A map of message name -> message handling callback.
   std::map<std::string, MessageCallback> message_callbacks_;
 
   // Options that may be overridden by individual Web UI implementations. The
   // bool options default to false. See the public getters for more information.
   std::u16string overridden_title_;  // Defaults to empty string.
-  // The bindings from BindingsPolicy that should be enabled for this page.
-  int bindings_;
+
+  // The bindings that should be enabled for this page.
+  BindingsPolicySet bindings_ =
+      BindingsPolicySet({BindingsPolicyValue::kWebUi});
 
   // The URL schemes that can be requested by this document.
   std::vector<std::string> requestable_schemes_;

@@ -7,10 +7,13 @@
 
 #include <stdint.h>
 
+#include <cstring>
 #include <memory>
 #include <string_view>
 #include <vector>
 
+#include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "ui/display/display.h"
 #include "ui/events/base_event_utils.h"
@@ -20,7 +23,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/platform_event.h"
 #include "ui/events/types/event_type.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
@@ -215,6 +218,16 @@ EVENTS_EXPORT void ConvertEventLocationToTargetWindowLocation(
     const gfx::Point& target_window_origin,
     const gfx::Point& current_window_origin,
     ui::LocatedEvent* located_event);
+
+// Converts a value of an unsigned integer type to an Event::PropertyValue.
+template <base::bits::UnsignedInteger T>
+Event::PropertyValue ConvertToEventPropertyValue(const T& value) {
+  Event::PropertyValue property_value;
+  property_value.resize(sizeof(T));
+  UNSAFE_TODO(
+      std::memcpy(property_value.data(), &value, property_value.size()));
+  return property_value;
+}
 
 // The following utilities are useful for debugging and tracing.
 

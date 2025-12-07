@@ -12,10 +12,12 @@ import androidx.annotation.NonNull;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
@@ -31,9 +33,10 @@ import org.chromium.url.GURL;
 @Config(manifest = Config.NONE)
 @SuppressWarnings("DoNotMock") // Mocks GURL.
 public class LongScreenshotsCompositorTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private TestPlayerCompositorDelegate mCompositorDelegate;
-    private Bitmap mTestBitmap = Bitmap.createBitmap(512, 1024, Bitmap.Config.ARGB_8888);
-    private Rect mRect = new Rect(0, 100, 200, 1100);
+    private final Bitmap mTestBitmap = Bitmap.createBitmap(512, 1024, Bitmap.Config.ARGB_8888);
+    private final Rect mRect = new Rect(0, 100, 200, 1100);
     private boolean mErrorThrown;
 
     @Mock private GURL mTestGurl;
@@ -132,7 +135,6 @@ public class LongScreenshotsCompositorTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mCompositorDelegate = new TestPlayerCompositorDelegate();
         LongScreenshotsCompositor.overrideCompositorDelegateFactoryForTesting(
                 new TestCompositorDelegateFactory());
@@ -147,7 +149,7 @@ public class LongScreenshotsCompositorTest {
     @Test
     public void testSuccessfulCompositing() {
         Callback<Bitmap> onBitmapResult =
-                new Callback<Bitmap>() {
+                new Callback<>() {
                     @Override
                     public void onResult(Bitmap result) {
                         Assert.assertEquals(mTestBitmap, result);
@@ -155,7 +157,7 @@ public class LongScreenshotsCompositorTest {
                 };
 
         Callback<Integer> compositorCallback =
-                new Callback<Integer>() {
+                new Callback<>() {
                     @Override
                     public void onResult(Integer result) {
                         Assert.assertEquals((Integer) CompositorStatus.OK, result);
@@ -195,7 +197,7 @@ public class LongScreenshotsCompositorTest {
     public void testRequestBitmapFailure() {
         mCompositorDelegate.setRequestBitmapError();
         Callback<Bitmap> onBitmapResult =
-                new Callback<Bitmap>() {
+                new Callback<>() {
                     @Override
                     public void onResult(Bitmap result) {
                         Assert.fail("Bitmap should not be returned");
@@ -203,7 +205,7 @@ public class LongScreenshotsCompositorTest {
                 };
 
         Callback<Integer> compositorCallback =
-                new Callback<Integer>() {
+                new Callback<>() {
                     @Override
                     public void onResult(Integer result) {
                         Assert.assertEquals((Integer) CompositorStatus.OK, result);
@@ -240,7 +242,7 @@ public class LongScreenshotsCompositorTest {
     @Test
     public void testCompositorError() {
         Callback<Integer> compositorCallback =
-                new Callback<Integer>() {
+                new Callback<>() {
                     @Override
                     public void onResult(Integer result) {
                         Assert.assertEquals((Integer) CompositorStatus.INVALID_REQUEST, result);

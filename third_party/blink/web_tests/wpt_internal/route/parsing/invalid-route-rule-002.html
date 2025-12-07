@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<title>Invalid @navigation rule declarations, some parsed successfully, thanks to General Enclosed, but they should never match.</title>
+<link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
+<link rel="help" href="https://drafts.csswg.org/css-navigation-1/#at-navigation">
+<script type="routemap">
+  {
+    "routes": [
+      {
+        "name": "r",
+        "pattern": "*"
+      }
+    ]
+  }
+</script>
+<style>
+  @navigation incorrect { #canary { height: 1px; } }
+  @navigation (r) incorrect { #canary { height: 2px; } }
+  @navigation (r) (r) { #canary { height: 3px; } }
+  @navigation (r r) { #canary { height: 4px; } }
+  @navigation (r r) incorrect { #canary { height: 5px; } }
+  @navigation (at: r) incorrect { #canary { height: 6px; } }
+  @navigation (at: r r) { #canary { height: 7px; } }
+  @navigation (at: r r) incorrect { #canary { height: 8px; } }
+  @navigation (at: from:) { #canary { height: 9px; } }
+  @navigation (at: from:) incorrect { #canary { height: 10px; } }
+  @navigation (at: from: whatever) { #canary { height: 11px; } }
+  @navigation (at: from: whatever) incorrect { #canary { height: 12px; } }
+  @navigation incorrect (r) { #canary { height: 13px; } }
+  @navigation incorrect (at: r) incorrect { #canary { height: 14px; } }
+  @navigation (over:) incorrect { #canary { height: 15px; } }
+  @navigation (over: rainbow) incorrect { #canary { height: 16px; } }
+  @navigation (over:) { #canary { height: 17px; } }
+  @navigation (over: rainbow) { #canary { height: 18px; } }
+  @navigation incorrect (over: rainbow) incorrect { #canary { height: 19px; } }
+
+  /* Sanity check. This one should match. */
+  @navigation (r) {
+    #sanityCheck { color: lime; }
+  }
+</style>
+<div id="canary"></div>
+<div id="sanityCheck"></div>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  test(()=> {
+    assert_equals(canary.offsetHeight, 0);
+  }, "None of the @navigation rules should match");
+  test(()=> {
+    assert_equals(getComputedStyle(sanityCheck).color, "rgb(0, 255, 0)");
+  }, "Sanity check");
+</script>

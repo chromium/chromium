@@ -35,8 +35,10 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kElementIdentifier1);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kElementIdentifier2);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kElementIdentifier3);
 
-const ElementContext kElementContext1(1);
-const ElementContext kElementContext2(2);
+constexpr ElementContext kElementContext1 =
+    ElementContext::CreateFakeContextForTesting(1);
+constexpr ElementContext kElementContext2 =
+    ElementContext::CreateFakeContextForTesting(2);
 
 class ExpectedCall {
  public:
@@ -472,51 +474,6 @@ TEST_F(ElementTrackerMacTest, NestMenusSendHideEvents_DoubleSubmenu) {
   element_tracker_->NotifyMenuItemHidden(kFakeMenu3, kElementIdentifier3);
   element_tracker_->NotifyMenuItemHidden(kFakeMenu2, kElementIdentifier2);
   element_tracker_->NotifyMenuItemHidden(kFakeMenu1, kElementIdentifier1);
-  element_tracker_->NotifyMenuDoneShowing(kFakeMenu1);
-}
-
-// The following tests are regression tests for the likely cause of
-// crbug.com/1432480.
-
-TEST_F(ElementTrackerMacTest, TrackerIsRobustToOutOfOrderActivation) {
-  ExpectedCall shown(kElementIdentifier1, kElementContext1,
-                     ExpectedCall::kShown, 1);
-  ExpectedCall hidden(kElementIdentifier1, kElementContext1,
-                      ExpectedCall::kHidden, 1);
-  ExpectedCall activated(kElementIdentifier1, kElementContext1,
-                         ExpectedCall::kActivated, 1);
-
-  element_tracker_->NotifyMenuWillShow(kFakeMenu1, kElementContext1);
-  element_tracker_->NotifyMenuItemShown(kFakeMenu1, kElementIdentifier1,
-                                        kScreenBounds1);
-  element_tracker_->NotifyMenuItemHidden(kFakeMenu1, kElementIdentifier1);
-  element_tracker_->NotifyMenuItemActivated(kFakeMenu1, kElementIdentifier1);
-  element_tracker_->NotifyMenuDoneShowing(kFakeMenu1);
-}
-
-TEST_F(ElementTrackerMacTest,
-       TrackerIsRobustToOutOfOrderActivationInNestedMenu) {
-  ExpectedCall shown(kElementIdentifier1, kElementContext1,
-                     ExpectedCall::kShown, 1);
-  ExpectedCall hidden(kElementIdentifier1, kElementContext1,
-                      ExpectedCall::kHidden, 1);
-  ExpectedCall activated(kElementIdentifier1, kElementContext1,
-                         ExpectedCall::kActivated, 0);
-  ExpectedCall shown2(kElementIdentifier2, kElementContext1,
-                      ExpectedCall::kShown, 1);
-  ExpectedCall hidden2(kElementIdentifier2, kElementContext1,
-                       ExpectedCall::kHidden, 1);
-  ExpectedCall activated2(kElementIdentifier2, kElementContext1,
-                          ExpectedCall::kActivated, 1);
-  element_tracker_->SetParent(kFakeMenu2, kFakeMenu1);
-  element_tracker_->NotifyMenuWillShow(kFakeMenu1, kElementContext1);
-  element_tracker_->NotifyMenuItemShown(kFakeMenu1, kElementIdentifier1,
-                                        kScreenBounds1);
-  element_tracker_->NotifyMenuItemShown(kFakeMenu2, kElementIdentifier2,
-                                        kScreenBounds2);
-  element_tracker_->NotifyMenuItemHidden(kFakeMenu2, kElementIdentifier2);
-  element_tracker_->NotifyMenuItemHidden(kFakeMenu1, kElementIdentifier1);
-  element_tracker_->NotifyMenuItemActivated(kFakeMenu2, kElementIdentifier2);
   element_tracker_->NotifyMenuDoneShowing(kFakeMenu1);
 }
 

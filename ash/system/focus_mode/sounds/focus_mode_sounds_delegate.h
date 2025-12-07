@@ -60,19 +60,16 @@ class ASH_EXPORT FocusModeSoundsDelegate {
   // Request the next track in `playlist_id`. The next track in a playlist is
   // implementation dependent. `callback` is called when the next track is ready
   // and is expected to be playable. If the next `Track` is unavailable due to a
-  // service failure, the value will be nullopt. Returns false if the request
-  // cannot be made (because the backend is unavailable or the `playist_id` is
-  // invalid for this backend).
+  // service failure, the value will be nullopt.
   using TrackCallback = base::OnceCallback<void(const std::optional<Track>&)>;
-  virtual bool GetNextTrack(const std::string& playlist_id,
+  virtual void GetNextTrack(const std::string& playlist_id,
                             TrackCallback callback) = 0;
 
-  // Request the list of playlists for Focus Mode. Returns true if the request
-  // will be attempted. In the event of request failure, `playlists` will be
-  // empty.
+  // Request the list of playlists for Focus Mode. In the event of request
+  // failure, `playlists` will be empty.
   using PlaylistsCallback =
       base::OnceCallback<void(const std::vector<Playlist>& playlists)>;
-  virtual bool GetPlaylists(PlaylistsCallback callback) = 0;
+  virtual void GetPlaylists(PlaylistsCallback callback) = 0;
 };
 
 }  // namespace ash

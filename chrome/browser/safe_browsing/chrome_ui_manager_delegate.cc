@@ -17,7 +17,7 @@
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "extensions/browser/process_manager.h"
+#include "extensions/browser/process_manager.h"  // nogncheck
 #endif
 
 namespace safe_browsing {
@@ -51,7 +51,6 @@ void ChromeSafeBrowsingUIManagerDelegate::
                                                  net_error_code);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void ChromeSafeBrowsingUIManagerDelegate::
     TriggerUrlFilteringInterstitialExtensionEventIfDesired(
         content::WebContents* web_contents,
@@ -61,7 +60,6 @@ void ChromeSafeBrowsingUIManagerDelegate::
   MaybeTriggerUrlFilteringInterstitialEvent(web_contents, page_url, threat_type,
                                             rt_lookup_response);
 }
-#endif
 
 prerender::NoStatePrefetchContents*
 ChromeSafeBrowsingUIManagerDelegate::GetNoStatePrefetchContentsIfExists(
@@ -108,10 +106,6 @@ PingManager* ChromeSafeBrowsingUIManagerDelegate::GetPingManager(
 
 bool ChromeSafeBrowsingUIManagerDelegate::IsMetricsAndCrashReportingEnabled() {
   return ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled();
-}
-
-bool ChromeSafeBrowsingUIManagerDelegate::IsSendingOfHitReportsEnabled() {
-  return true;
 }
 
 }  // namespace safe_browsing

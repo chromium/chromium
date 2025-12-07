@@ -8,7 +8,7 @@ try {
   chrome.runtime.sendMessage('a'.repeat(tooLarge));
   chrome.test.notifyFail();
 } catch (e) {
-  let expected = /Message length exceeded maximum allowed length/;
+  let expected = /Message exceeded maximum allowed size of 64MiB/;
   chrome.test.assertTrue(expected.test(e.message), e.message);
   chrome.test.notifyPass();
 }

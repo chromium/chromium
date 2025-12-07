@@ -13,7 +13,8 @@
 #include "third_party/blink/renderer/modules/mediasession/chapter_information.h"
 #include "third_party/blink/renderer/modules/mediasession/media_metadata.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "url/url_constants.h"
 
 namespace blink {
@@ -48,8 +49,8 @@ bool CheckMediaImageSrcSanity(const KURL& src, ExecutionContext* context) {
     context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kJavaScript,
         mojom::ConsoleMessageLevel::kWarning,
-        "MediaImage src can only be of http/https/data/blob scheme: " +
-            src.GetString()));
+        StrCat({"MediaImage src can only be of http/https/data/blob scheme: ",
+                src.GetString()})));
     return false;
   }
 
@@ -58,7 +59,8 @@ bool CheckMediaImageSrcSanity(const KURL& src, ExecutionContext* context) {
     context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kJavaScript,
         mojom::ConsoleMessageLevel::kWarning,
-        "MediaImage src exceeds maximum URL length: " + src.GetString()));
+        StrCat(
+            {"MediaImage src exceeds maximum URL length: ", src.GetString()})));
     return false;
   }
   return true;

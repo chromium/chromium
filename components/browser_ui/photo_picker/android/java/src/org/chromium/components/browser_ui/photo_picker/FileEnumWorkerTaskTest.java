@@ -82,7 +82,7 @@ public class FileEnumWorkerTaskTest implements FileEnumWorkerTask.FilesEnumerate
                 String whereClause,
                 String[] whereArgs,
                 String orderBy) {
-            ArrayList<TestData> list = new ArrayList<TestData>();
+            ArrayList<TestData> list = new ArrayList<>();
             list.add(new TestData("file0", "text/html", 0));
             list.add(new TestData("file1", "image/jpeg", 1));
             list.add(new TestData("file2", "image/jpeg", 2));
@@ -104,9 +104,9 @@ public class FileEnumWorkerTaskTest implements FileEnumWorkerTask.FilesEnumerate
     }
 
     private static class TestData {
-        public Uri mUri;
-        public String mMimeType;
-        public long mDateAdded;
+        public final Uri mUri;
+        public final String mMimeType;
+        public final long mDateAdded;
 
         public TestData(String uri, String mimeType, long dateAdded) {
             mUri = Uri.parse(uri);
@@ -116,7 +116,7 @@ public class FileEnumWorkerTaskTest implements FileEnumWorkerTask.FilesEnumerate
     }
 
     private static class FileCursor extends BaseCursor {
-        private List<TestData> mData;
+        private final List<TestData> mData;
 
         private int mIndex;
 
@@ -186,7 +186,7 @@ public class FileEnumWorkerTaskTest implements FileEnumWorkerTask.FilesEnumerate
 
     @Before
     public void setUp() {
-        ThreadUtils.setThreadAssertsDisabledForTesting(true);
+        ThreadUtils.hasSubtleSideEffectsSetThreadAssertsDisabledForTesting(true);
     }
 
     @After
@@ -228,11 +228,11 @@ public class FileEnumWorkerTaskTest implements FileEnumWorkerTask.FilesEnumerate
             MediaStore.Files.FileColumns.DATE_ADDED,
             MediaStore.Files.FileColumns.MEDIA_TYPE,
             MediaStore.Files.FileColumns.MIME_TYPE,
-            MediaStore.Files.FileColumns.DATA
+            MediaStore.Files.FileColumns.RELATIVE_PATH,
         };
         String whereClause =
-                "_data LIKE ? OR _data LIKE ? OR _data LIKE ? OR _data LIKE ? OR "
-                        + "_data LIKE ? OR _data LIKE ?";
+                "relative_path LIKE ? OR relative_path LIKE ? OR relative_path LIKE ? OR "
+                        + "relative_path LIKE ? OR relative_path LIKE ? OR relative_path LIKE ?";
         String orderBy = MediaStore.MediaColumns.DATE_ADDED + " DESC";
 
         ArgumentCaptor<String[]> argument = ArgumentCaptor.forClass(String[].class);

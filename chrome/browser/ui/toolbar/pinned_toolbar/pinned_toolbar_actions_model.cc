@@ -8,20 +8,20 @@
 #include <string>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
+#include "base/strings/strcat.h"
 #include "base/values.h"
-#include "chrome/browser/companion/core/constants.h"
-#include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -65,37 +65,44 @@ bool PinnedToolbarActionsModel::CanUpdate() {
   return profile_->IsRegularProfile();
 }
 
-bool PinnedToolbarActionsModel::Contains(
-    const actions::ActionId& action_id) const {
-  auto iter = base::ranges::find(pinned_action_ids_, action_id);
+bool PinnedToolbarActionsModel::Contains(actions::ActionId action_id) const {
+  auto iter = std::ranges::find(pinned_action_ids_, action_id);
   return iter != pinned_action_ids_.end();
 }
 
-void PinnedToolbarActionsModel::UpdatePinnedState(
-    const actions::ActionId& action_id,
-    const bool should_pin) {
+void PinnedToolbarActionsModel::UpdatePinnedState(actions::ActionId action_id,
+                                                  const bool should_pin) {
   if (!CanUpdate()) {
     // At a minimum, incognito should be read-only. Guest mode should not be
     // able to modify the prefs either.
     return;
   }
 
-  if (action_id == kActionSidePanelShowSearchCompanion) {
-    pref_service_->SetBoolean(prefs::kPinnedSearchCompanionMigrationComplete,
-                              true);
-  }
-
   const bool is_pinned = Contains(action_id);
-  if (!is_pinned && should_pin) {
-    PinAction(action_id);
-  } else if (is_pinned && !should_pin) {
-    UnpinAction(action_id);
+  const std::optional<std::string> metrics_name =
+      actions::ActionIdMap::ActionIdToString(action_id);
+  // ActionIdToStringMappings are not initialized in unit tests, therefore will
+  // not have a value. In the normal case, `metrics_name` should always have a
+  // value.
+  if (metrics_name.has_value()) {
+    if (!is_pinned && should_pin) {
+      PinAction(action_id);
+      base::RecordComputedAction(base::StrCat(
+          {"Actions.PinnedToolbarButton.Pinned.", metrics_name.value()}));
+      base::RecordAction(
+          base::UserMetricsAction("Actions.PinnedToolbarButton.Pinned"));
+    } else if (is_pinned && !should_pin) {
+      UnpinAction(action_id);
+      base::RecordComputedAction(base::StrCat(
+          {"Actions.PinnedToolbarButton.Unpinned.", metrics_name.value()}));
+      base::RecordAction(
+          base::UserMetricsAction("Actions.PinnedToolbarButton.Unpinned"));
+    }
   }
 }
 
-void PinnedToolbarActionsModel::MovePinnedAction(
-    const actions::ActionId& action_id,
-    int target_index) {
+void PinnedToolbarActionsModel::MovePinnedAction(actions::ActionId action_id,
+                                                 int target_index) {
   if (!CanUpdate()) {
     // At a minimum, incognito should be read-only. Guest mode should not be
     // able to modify the prefs either.
@@ -107,7 +114,7 @@ void PinnedToolbarActionsModel::MovePinnedAction(
     return;
   }
 
-  auto action_to_move = base::ranges::find(pinned_action_ids_, action_id);
+  auto action_to_move = std::ranges::find(pinned_action_ids_, action_id);
   if (action_to_move == pinned_action_ids_.end()) {
     // Do nothing if this action is not pinned.
     return;
@@ -120,11 +127,11 @@ void PinnedToolbarActionsModel::MovePinnedAction(
 
   std::vector<actions::ActionId> updated_pinned_action_ids = pinned_action_ids_;
 
-  auto start_iter = base::ranges::find(updated_pinned_action_ids, action_id);
+  auto start_iter = std::ranges::find(updated_pinned_action_ids, action_id);
   CHECK(start_iter != updated_pinned_action_ids.end());
 
-  auto end_iter = base::ranges::find(updated_pinned_action_ids,
-                                     pinned_action_ids_[target_index]);
+  auto end_iter = std::ranges::find(updated_pinned_action_ids,
+                                    pinned_action_ids_[target_index]);
   CHECK(end_iter != updated_pinned_action_ids.end());
 
   // Rotate |action_id| to be in the target position.
@@ -140,11 +147,11 @@ void PinnedToolbarActionsModel::MovePinnedAction(
 
   // Notify observers the action was moved.
   for (Observer& observer : observers_) {
-    observer.OnActionMoved(action_id, start_index, target_index);
+    observer.OnActionMovedLocally(action_id, start_index, target_index);
   }
 }
 
-void PinnedToolbarActionsModel::PinAction(const actions::ActionId& action_id) {
+void PinnedToolbarActionsModel::PinAction(actions::ActionId action_id) {
   std::vector<actions::ActionId> updated_pinned_action_ids = pinned_action_ids_;
 
   updated_pinned_action_ids.push_back(action_id);
@@ -154,12 +161,11 @@ void PinnedToolbarActionsModel::PinAction(const actions::ActionId& action_id) {
 
   // Notify observers the action was added.
   for (Observer& observer : observers_) {
-    observer.OnActionAdded(action_id);
+    observer.OnActionAddedLocally(action_id);
   }
 }
 
-void PinnedToolbarActionsModel::UnpinAction(
-    const actions::ActionId& action_id) {
+void PinnedToolbarActionsModel::UnpinAction(actions::ActionId action_id) {
   std::vector<actions::ActionId> updated_pinned_action_ids = pinned_action_ids_;
   std::erase(updated_pinned_action_ids, action_id);
 
@@ -168,7 +174,7 @@ void PinnedToolbarActionsModel::UnpinAction(
 
   // Notify observers the action was removed.
   for (Observer& observer : observers_) {
-    observer.OnActionRemoved(action_id);
+    observer.OnActionRemovedLocally(action_id);
   }
 }
 
@@ -207,106 +213,49 @@ void PinnedToolbarActionsModel::UpdatePinnedActionIds() {
   }
 }
 
-void PinnedToolbarActionsModel::MaybeUpdateSearchCompanionPinnedState(
-    bool companion_should_be_default_pinned) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
-  // Checks if the search companion action id is present beceause in tests this
-  // model can be created before the browser actions are initialized if testing
-  // factories are added to create this model. This prevents failures when the
-  // companion feature is enabled.
-  if (pref_service_->GetBoolean(
-          prefs::kPinnedSearchCompanionMigrationComplete) ||
-      !CanUpdate() ||
-      !actions::ActionIdMap::ActionIdToString(
-           kActionSidePanelShowSearchCompanion)
-           .has_value()) {
-    return;
-  }
-
-  if (!companion::IsCompanionFeatureEnabled()) {
-    // prefs::kSidePanelCompanionEntryPinnedToToolbar is not registered when
-    // companion is disabled.
-    return;
-  }
-
-  if (!pref_service_->GetUserPrefValue(
-          prefs::kSidePanelCompanionEntryPinnedToToolbar)) {
-    UpdateSearchCompanionDefaultState(companion_should_be_default_pinned);
-    return;
-  }
-
-  UpdatePinnedState(kActionSidePanelShowSearchCompanion,
-                    /*should_pin=*/pref_service_->GetBoolean(
-                        prefs::kSidePanelCompanionEntryPinnedToToolbar));
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-}
-
 void PinnedToolbarActionsModel::ResetToDefault() {
-  // By default, home is unpinned and forward is pinned.
   pref_service_->ClearPref(prefs::kShowHomeButton);
   pref_service_->ClearPref(prefs::kShowForwardButton);
-
-  // By default, most action items are not pinned.
-  const std::vector<actions::ActionId> pinned_ids = PinnedActionIds();
-  for (actions::ActionId id : pinned_ids) {
-    // The exception is Chrome Labs.
-    UpdatePinnedState(id, id == kActionShowChromeLabs);
-  }
+  pref_service_->ClearPref(prefs::kPinnedActions);
 }
 
 bool PinnedToolbarActionsModel::IsDefault() const {
-  // Chrome Labs is pinned by default.
-  const bool labs_is_default = Contains(kActionShowChromeLabs);
-
-  // Other than Labs, only Home is pinned by default.
-  const bool is_default =
-      !pref_service_->GetBoolean(prefs::kShowHomeButton) &&
-      pref_service_->GetBoolean(prefs::kShowForwardButton) && labs_is_default &&
-      PinnedActionIds().size() == 1;
-  return is_default;
+  const bool action_are_default =
+      pref_service_->GetDefaultPrefValue(prefs::kPinnedActions)->GetList() ==
+      pref_service_->GetList(prefs::kPinnedActions);
+  const bool home_is_default =
+      pref_service_->GetDefaultPrefValue(prefs::kShowHomeButton)->GetBool() ==
+      pref_service_->GetBoolean(prefs::kShowHomeButton);
+  const bool forward_is_default =
+      pref_service_->GetDefaultPrefValue(prefs::kShowForwardButton)
+          ->GetBool() == pref_service_->GetBoolean(prefs::kShowForwardButton);
+  return action_are_default && home_is_default && forward_is_default;
 }
 
-void PinnedToolbarActionsModel::MaybeMigrateChromeLabsPinnedState() {
-  if (!features::IsToolbarPinningEnabled()) {
+void PinnedToolbarActionsModel::MaybeMigrateExistingPinnedStates() {
+  if (!CanUpdate()) {
     return;
   }
-  if (pref_service_->GetBoolean(prefs::kPinnedChromeLabsMigrationComplete)) {
-    return;
-  }
-
-  if (CanUpdate()) {
+  if (!pref_service_->GetBoolean(prefs::kPinnedChromeLabsMigrationComplete)) {
     UpdatePinnedState(kActionShowChromeLabs, true);
     pref_service_->SetBoolean(prefs::kPinnedChromeLabsMigrationComplete, true);
+  }
+  if (features::HasTabSearchToolbarButton() &&
+      !pref_service_->GetBoolean(prefs::kTabSearchMigrationComplete)) {
+    UpdatePinnedState(kActionTabSearch, true);
+    pref_service_->SetBoolean(prefs::kTabSearchMigrationComplete, true);
+  }
+  if (!pref_service_->GetBoolean(prefs::kPinnedCastMigrationComplete)) {
+    bool previously_pinned =
+        pref_service_->GetBoolean(prefs::kShowCastIconInToolbar);
+    UpdatePinnedState(kActionRouteMedia, previously_pinned);
+    pref_service_->SetBoolean(prefs::kPinnedCastMigrationComplete, true);
   }
 }
 
 const std::vector<actions::ActionId>&
 PinnedToolbarActionsModel::PinnedActionIds() const {
   return pinned_action_ids_;
-}
-
-void PinnedToolbarActionsModel::UpdateSearchCompanionDefaultState(
-    bool companion_should_be_default_pinned) {
-  bool is_valid_pin = !Contains(kActionSidePanelShowSearchCompanion) &&
-                      companion_should_be_default_pinned;
-  bool is_valid_unpin = Contains(kActionSidePanelShowSearchCompanion) &&
-                        !companion_should_be_default_pinned;
-
-  std::vector<actions::ActionId> updated_pinned_action_ids = pinned_action_ids_;
-  const std::optional<std::string>& id = actions::ActionIdMap::ActionIdToString(
-      kActionSidePanelShowSearchCompanion);
-  // The ActionId should have a string equivalent.
-  CHECK(id.has_value());
-
-  if (is_valid_pin) {
-    updated_pinned_action_ids.push_back(kActionSidePanelShowSearchCompanion);
-  } else if (is_valid_unpin) {
-    std::erase(updated_pinned_action_ids, kActionSidePanelShowSearchCompanion);
-  }
-
-  // Updating the pref causes `UpdatePinnedActionIds()` to be called.
-  UpdatePref(updated_pinned_action_ids);
 }
 
 void PinnedToolbarActionsModel::UpdatePref(

@@ -36,10 +36,10 @@
 #include "mojo/public/cpp/bindings/tests/remote_unittest.test-mojom.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "mojo/public/cpp/system/wait.h"
-#include "mojo/public/interfaces/bindings/tests/math_calculator.mojom.h"
-#include "mojo/public/interfaces/bindings/tests/sample_interfaces.mojom.h"
-#include "mojo/public/interfaces/bindings/tests/sample_service.mojom.h"
-#include "mojo/public/interfaces/bindings/tests/scoping.mojom.h"
+#include "mojo/public/interfaces/bindings/tests/math_calculator.test-mojom.h"
+#include "mojo/public/interfaces/bindings/tests/sample_interfaces.test-mojom.h"
+#include "mojo/public/interfaces/bindings/tests/sample_service.test-mojom.h"
+#include "mojo/public/interfaces/bindings/tests/scoping.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo {
@@ -836,6 +836,16 @@ TEST_P(RemoteTest, PendingReceiverResetWithReason) {
   pending_receiver.ResetWithReason(88u, "greetings");
 
   run_loop.Run();
+}
+
+TEST_P(RemoteTest, PendingReceiverResetWithReasonAfterDisconnect) {
+  Remote<math::Calculator> calc;
+  auto pending_receiver = calc.BindNewPipeAndPassReceiver();
+
+  calc.reset();
+  // Ensure no crashes occur when ResetWithReason is called after the other
+  // side has disconnected.
+  pending_receiver.ResetWithReason(0u, "not-used");
 }
 
 TEST_P(RemoteTest, CallbackIsPassedRemote) {

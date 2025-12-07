@@ -13,11 +13,14 @@
 #import "base/numerics/math_constants.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/ntp_home_constant.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -91,10 +94,12 @@ const CGFloat kActionLabelSidePadding = 15.0;
 // This function maps a value from a range to another.
 CGFloat MapValueToRange(FloatRange from, FloatRange to, CGFloat value) {
   DCHECK(from.min < from.max);
-  if (value <= from.min)
+  if (value <= from.min) {
     return to.min;
-  if (value >= from.max)
+  }
+  if (value >= from.max) {
     return to.max;
+  }
   const CGFloat fromDst = from.max - from.min;
   const CGFloat toDst = to.max - to.min;
   return to.min + ((value - from.min) / fromDst) * toDst;
@@ -121,7 +126,7 @@ const CGFloat kActionViewBackgroundColorBrightnessNonIncognito = 242.0 / 256.0;
 // The brightness of the actions view background color for incognito mode.
 const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
 
-@interface OverscrollActionsView ()<UIGestureRecognizerDelegate> {
+@interface OverscrollActionsView () <UIGestureRecognizerDelegate> {
   // True when the first layout has been done.
   BOOL _initialLayoutDone;
   // True when an action trigger animation is currently playing.
@@ -254,7 +259,6 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
     _addTabActionImageView = [[UIImageView alloc] init];
     _addTabActionImageView.image = DefaultSymbolTemplateWithPointSize(
         kPlusSymbol, kOverScrollSymbolPointSize);
-    _addTabActionImageView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
     if (!IsHomeMemoryImprovementsEnabled()) {
       [_addTabActionImageView sizeToFit];
     }
@@ -266,7 +270,6 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
     _reloadActionImageView = [[UIImageView alloc] init];
     _reloadActionImageView.image = CustomSymbolTemplateWithPointSize(
         kArrowClockWiseSymbol, kOverScrollSymbolPointSize);
-    _reloadActionImageView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
     if (!IsHomeMemoryImprovementsEnabled()) {
       [_reloadActionImageView sizeToFit];
     }
@@ -278,7 +281,6 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
     _closeTabActionImageView = [[UIImageView alloc] init];
     _closeTabActionImageView.image = DefaultSymbolTemplateWithPointSize(
         kXMarkSymbol, kOverScrollSymbolPointSize);
-    _closeTabActionImageView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
     if (!IsHomeMemoryImprovementsEnabled()) {
       [_closeTabActionImageView sizeToFit];
     }
@@ -295,7 +297,6 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
     _addTabLabel.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
     _addTabLabel.adjustsFontForContentSizeCategory = NO;
-    _addTabLabel.textColor = [UIColor colorNamed:kToolbarButtonColor];
     _addTabLabel.text =
         l10n_util::GetNSString(IDS_IOS_OVERSCROLL_NEW_TAB_LABEL);
     [self addSubview:_addTabLabel];
@@ -308,7 +309,6 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
     _reloadLabel.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
     _reloadLabel.adjustsFontForContentSizeCategory = NO;
-    _reloadLabel.textColor = [UIColor colorNamed:kToolbarButtonColor];
     _reloadLabel.text = l10n_util::GetNSString(IDS_IOS_OVERSCROLL_RELOAD_LABEL);
     [self addSubview:_reloadLabel];
 
@@ -320,7 +320,6 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
     _closeTabLabel.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
     _closeTabLabel.adjustsFontForContentSizeCategory = NO;
-    _closeTabLabel.textColor = [UIColor colorNamed:kToolbarButtonColor];
     _closeTabLabel.text =
         l10n_util::GetNSString(IDS_IOS_OVERSCROLL_CLOSE_TAB_LABEL);
     [self addSubview:_closeTabLabel];
@@ -343,6 +342,17 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
                                                 action:@selector(tapGesture:)];
     [_tapGesture setDelegate:self];
     [self addGestureRecognizer:_tapGesture];
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
+      NewTabPageTrait.class, NewTabPageImageBackgroundTrait.class,
+      UITraitUserInterfaceStyle.class
+    ]);
+    [self registerForTraitChanges:traits
+                       withAction:@selector(updateLayerColors)];
+    [self registerForTraitChanges:
+              @[ NewTabPageTrait.class, NewTabPageImageBackgroundTrait.class ]
+                       withAction:@selector(updateViewColors)];
+    [self updateLayerColors];
+    [self updateViewColors];
   }
   return self;
 }
@@ -391,15 +401,18 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
 }
 
 - (void)updateWithHorizontalOffset:(CGFloat)offset {
-  if (_animatingActionTrigger || _viewTouched)
+  if (_animatingActionTrigger || _viewTouched) {
     return;
+  }
   self.horizontalOffset = offset;
   // Absorb out of range offset values so that the user doesn't need to
   // compensate in order to move the cursor in the other direction.
-  if ([self absoluteHorizontalOffset] < -1)
+  if ([self absoluteHorizontalOffset] < -1) {
     _snappingOffset = -self.horizontalOffset - 1;
-  if ([self absoluteHorizontalOffset] > 1)
+  }
+  if ([self absoluteHorizontalOffset] > 1) {
     _snappingOffset = 1 - self.horizontalOffset;
+  }
   [self setNeedsLayout];
 }
 
@@ -455,8 +468,9 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
 
   [CATransaction begin];
   [CATransaction setDisableActions:YES];
-  if (self.snapshotView)
+  if (self.snapshotView) {
     self.backgroundView.frame = self.snapshotView.bounds;
+  }
   _selectionCircleCroppingLayer.frame = self.bounds;
 
   [CATransaction commit];
@@ -471,18 +485,15 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
   [self centerSubviewsVertically];
   [self layoutActions];
   [self layoutActionLabels];
-  if (_deformationBehaviorEnabled)
+  if (_deformationBehaviorEnabled) {
     [self layoutSelectionCircleWithDeformation];
-  else
+  } else {
     [self layoutSelectionCircle];
+  }
   [self updateSelectedAction];
-  if (disableActionsOnInitialLayout)
+  if (disableActionsOnInitialLayout) {
     [CATransaction commit];
-}
-
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  [self updateLayerColors];
+  }
 }
 
 #pragma mark - Private
@@ -614,8 +625,9 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
   const CGFloat actionsPositionMargin = [self actionsPositionMarginFromCenter];
   const CGFloat transformedOffset = [self
       absorbsHorizontalMovementAroundActions:[self absoluteHorizontalOffset]];
-  return CGPointMake(MapValueToRange({-1, 1}, {centerX - actionsPositionMargin,
-                                               centerX + actionsPositionMargin},
+  return CGPointMake(MapValueToRange({-1, 1},
+                                     {centerX - actionsPositionMargin,
+                                      centerX + actionsPositionMargin},
                                      transformedOffset),
                      self.bounds.size.height / 2.0);
 }
@@ -672,10 +684,11 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
       [CATransaction commit];
     }
     [CATransaction begin];
-    if (!animate)
+    if (!animate) {
       [CATransaction setDisableActions:YES];
-    else
+    } else {
       [CATransaction setAnimationDuration:kSelectionSnappingAnimationDuration];
+    }
     self.selectionCircleLayer.position = [self selectionCirclePosition];
     [CATransaction commit];
   }
@@ -741,8 +754,9 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
       previousActionLabel:[self labelForAction:previousAction]];
 
   if (self.overscrollState == OverscrollViewState::PREPARE ||
-      _animatingActionTrigger)
+      _animatingActionTrigger) {
     return;
+  }
 
   __weak OverscrollActionsView* weakSelf = self;
   [UIView animateWithDuration:kSelectionSnappingAnimationDuration
@@ -793,8 +807,7 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
 
 - (void)updateState {
   if (self.verticalOffset > 1) {
-    const base::TimeDelta elapsedTime =
-        base::TimeTicks::Now() - _pullStartTime;
+    const base::TimeDelta elapsedTime = base::TimeTicks::Now() - _pullStartTime;
     const BOOL isMinimumTimeElapsed =
         elapsedTime >= kMinimumPullDurationToTransitionToReady;
     const BOOL isPullingDownOrAlreadyTriggeredOnce =
@@ -822,8 +835,9 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
 }
 
 - (void)onStateChange {
-  if (_animatingActionTrigger)
+  if (_animatingActionTrigger) {
     return;
+  }
 
   if (self.overscrollState != OverscrollViewState::NONE) {
     [UIView animateWithDuration:kSelectionSnappingAnimationDuration
@@ -932,12 +946,55 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
   [self updateLayerColors];
 }
 
+// Update the view colors based on the current theme. For non-regular NTP pages,
+// the 2 custom UITraits won't be set, so the default will always be used.
+- (void)updateViewColors {
+  UIColor* imageViewColor;
+  UIColor* labelColor;
+
+  NewTabPageColorPalette* colorPalette =
+      [self.traitCollection objectForNewTabPageTrait];
+  if ([self.traitCollection boolForNewTabPageImageBackgroundTrait]) {
+    imageViewColor = [UIColor colorNamed:kTextPrimaryColor];
+    labelColor = [UIColor colorNamed:kTextPrimaryColor];
+  } else if (colorPalette) {
+    imageViewColor = colorPalette.tintColor;
+    labelColor = colorPalette.tintColor;
+  } else {
+    imageViewColor = [UIColor colorNamed:kTextPrimaryColor];
+    labelColor = [UIColor colorNamed:kToolbarButtonColor];
+  }
+
+  _addTabActionImageView.tintColor = imageViewColor;
+  _reloadActionImageView.tintColor = imageViewColor;
+  _closeTabActionImageView.tintColor = imageViewColor;
+  _addTabLabel.textColor = labelColor;
+  _reloadLabel.textColor = labelColor;
+  _closeTabLabel.textColor = labelColor;
+}
+
 // Updates the colors based on the current trait collection. CGColor doesn't
-// support iOS 13 dynamic colors, so those must be resolved more often.
+// support dynamic colors, so those must be resolved manually when the interface
+// style changes.
 - (void)updateLayerColors {
   [self.traitCollection performAsCurrentTraitCollection:^{
     BOOL darkModeEnabled =
         (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
+
+    if ([self.traitCollection boolForNewTabPageImageBackgroundTrait]) {
+      _selectionCircleLayer.fillColor =
+          darkModeEnabled ? [UIColor colorWithWhite:0 alpha:0.4].CGColor
+                          : [UIColor colorWithWhite:1 alpha:0.4].CGColor;
+      return;
+    }
+
+    NewTabPageColorPalette* colorPalette =
+        [self.traitCollection objectForNewTabPageTrait];
+    if (colorPalette) {
+      _selectionCircleLayer.fillColor = colorPalette.headerButtonColor.CGColor;
+      return;
+    }
+
     _selectionCircleLayer.fillColor =
         darkModeEnabled ? [UIColor colorWithWhite:0.7 alpha:0.2].CGColor
                         : [UIColor colorWithWhite:0.3 alpha:0.125].CGColor;
@@ -984,8 +1041,9 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
 // Clear the direct touch interaction after a small delay to prevent graphic
 // glitch with pan gesture selection deformation animations.
 - (void)clearDirectTouchInteraction {
-  if (!_viewTouched)
+  if (!_viewTouched) {
     return;
+  }
   __weak OverscrollActionsView* weakSelf = self;
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(^{
@@ -1015,8 +1073,9 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
 - (void)fadeInActionLabel:(UILabel*)actionLabel
       previousActionLabel:(UILabel*)previousLabel {
   NSUInteger labelCount = (actionLabel ? 1 : 0) + (previousLabel ? 1 : 0);
-  if (!labelCount)
+  if (!labelCount) {
     return;
+  }
 
   NSTimeInterval duration = labelCount * kActionLabelFadeDuration;
   NSTimeInterval relativeDuration = 1.0 / labelCount;
@@ -1051,8 +1110,9 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
 
 - (void)touchesBegan:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
   [super touchesBegan:touches withEvent:event];
-  if (_viewTouched)
+  if (_viewTouched) {
     return;
+  }
 
   _deformationBehaviorEnabled = NO;
   _snappingOffset = 0;

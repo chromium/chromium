@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -15,10 +16,12 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_service_factory.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_dlc_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -200,10 +203,11 @@ void BruschettaLauncher::OnStartVm(
     return;
   }
 
-  BruschettaService::GetForProfile(profile_)->RegisterVmLaunch(vm_name_,
-                                                               launch_policy);
+  BruschettaServiceFactory::GetForProfile(profile_)->RegisterVmLaunch(
+      vm_name_, launch_policy);
 
-  auto* tracker = guest_os::GuestOsSessionTracker::GetForProfile(profile_);
+  auto* tracker =
+      guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile_);
   subscription_ = tracker->RunOnceContainerStarted(
       guest_os::GuestId{guest_os::VmType::BRUSCHETTA, vm_name_, "penguin"},
       base::BindOnce(&BruschettaLauncher::OnContainerRunning,

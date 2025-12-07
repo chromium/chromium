@@ -22,17 +22,17 @@ class WebContents;
 namespace printing::test {
 
 extern const char kPrinterName[];
-constexpr int kPrinterDpi = 600;
+inline constexpr int kPrinterDpi = 600;
 
 // Some common paper sizes that can be used for fake device configurations.
 extern const PrinterSemanticCapsAndDefaults::Paper kPaperLetter;
 extern const PrinterSemanticCapsAndDefaults::Paper kPaperLegal;
 
 // Support values for `MakeDefaultPrintSettings()`.
-constexpr int kPrinterDefaultRenderDpi = 72;
+inline constexpr int kPrinterDefaultRenderDpi = 72;
 constexpr gfx::Size kPrinterCapabilitiesDpi(kPrinterDefaultRenderDpi,
                                             kPrinterDefaultRenderDpi);
-constexpr int kPrintSettingsCopies = 42;
+inline constexpr int kPrintSettingsCopies = 42;
 extern const std::vector<gfx::Size> kPrinterCapabilitiesDefaultDpis;
 extern const PrinterBasicInfoOptions kPrintInfoOptions;
 
@@ -49,7 +49,8 @@ std::unique_ptr<PrintSettings> MakeDefaultPrintSettings(
 // `MakeDefaultPrintSettings()`, to be used if test calls
 // `PrintingContext::AskUserForSettings()`.
 std::unique_ptr<PrintSettings> MakeUserModifiedPrintSettings(
-    const std::string& printer_name);
+    const std::string& printer_name,
+    const PageRanges* page_ranges);
 
 // Simpler version of StartPrint() provided for convenience with the common
 // defaults:

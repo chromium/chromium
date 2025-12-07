@@ -4,6 +4,7 @@
 
 #include "content/public/common/drop_data.h"
 
+#include "base/pickle.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "net/base/filename_util.h"
@@ -23,10 +24,12 @@ DropData::Metadata DropData::Metadata::CreateForMimeType(
 
 // static
 DropData::Metadata DropData::Metadata::CreateForFilePath(
-    const base::FilePath& filename) {
+    const base::FilePath& filename,
+    const base::FilePath& display_name) {
   Metadata metadata;
   metadata.kind = Kind::FILENAME;
   metadata.filename = filename;
+  metadata.display_name = display_name;
   return metadata;
 }
 

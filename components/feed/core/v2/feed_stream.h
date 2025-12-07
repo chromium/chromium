@@ -87,11 +87,11 @@ class FeedStream : public FeedApi,
     virtual void ClearAll() = 0;
     virtual AccountInfo GetAccountInfo() = 0;
     virtual bool IsSigninAllowed() = 0;
-    virtual bool IsSupervisedAccount() = 0;
     virtual void PrefetchImage(const GURL& url) = 0;
     virtual void RegisterExperiments(const Experiments& experiments) = 0;
     virtual void RegisterFeedUserSettingsFieldTrial(std::string_view group) = 0;
     virtual std::string GetCountry() = 0;
+    virtual void SetFeedLaunchCuiMetadata(const std::string& metadata) = 0;
   };
 
   FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
@@ -186,6 +186,7 @@ class FeedStream : public FeedApi,
                              FeedUserActionType action_type) override;
   void ReportOtherUserAction(const StreamType& stream_type,
                              FeedUserActionType action_type) override;
+  void ReportOtherUserAction(FeedUserActionType action_type) override;
   void ReportInfoCardTrackViewStarted(SurfaceId surface_id,
                                       int info_card_type) override;
   void ReportInfoCardViewed(SurfaceId surface_id,
@@ -199,6 +200,7 @@ class FeedStream : public FeedApi,
       SurfaceId surface_id,
       base::TimeDelta elapsed) override;
   base::Time GetLastFetchTime(SurfaceId surface_id) override;
+  std::vector<std::string> GetFeedUrls(SurfaceId surface_id) override;
   void SetContentOrder(const StreamType& stream_type,
                        ContentOrder content_order) override;
   ContentOrder GetContentOrder(const StreamType& stream_type) const override;
@@ -448,11 +450,6 @@ class FeedStream : public FeedApi,
 
   // Schedule a feed-close refresh when the user has taken some kind of action
   // on the feed.
-  void ScheduleFeedCloseRefreshOnInteraction(const StreamType& type);
-  // Schedule a feed-close refresh when the user has viewed content for the
-  // first time.
-  void ScheduleFeedCloseRefreshOnFirstView(const StreamType& type);
-  // Internal method for scheduling the feed-close refresh.
   void ScheduleFeedCloseRefresh(const StreamType& type);
 
   void CheckDuplicatedContentsOnRefresh();

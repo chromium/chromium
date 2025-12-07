@@ -171,7 +171,7 @@ public class ClipboardTest {
         ClipData clipData = ClipData.newPlainText("label", "text");
         when(clipboardManager.getPrimaryClip()).thenReturn(clipData);
         assertFalse(clipboard.hasFilenames());
-        assertNull(clipboard.getFilenames());
+        assertEquals(0, clipboard.getFilenames().length);
 
         ContentResolver cr = ContextUtils.getApplicationContext().getContentResolver();
         String file1 = "content://tmp/test/file1.jpg";
@@ -179,14 +179,25 @@ public class ClipboardTest {
         clipData = ClipData.newUri(cr, "label", Uri.parse(file1));
         when(clipboardManager.getPrimaryClip()).thenReturn(clipData);
         assertTrue(clipboard.hasFilenames());
-        assertEquals(file1, clipboard.getFilenames());
+        String[][] filenames = clipboard.getFilenames();
+        assertEquals(1, filenames.length);
+        assertEquals(2, filenames[0].length);
+        assertEquals("content://tmp/test/file1.jpg", filenames[0][0]);
+        assertEquals("", filenames[0][1]);
 
         clipData = ClipData.newPlainText("label", "text");
         clipData.addItem(new ClipData.Item(Uri.parse(file1)));
         clipData.addItem(new ClipData.Item(Uri.parse(file2)));
         when(clipboardManager.getPrimaryClip()).thenReturn(clipData);
         assertTrue(clipboard.hasFilenames());
-        assertEquals(file1 + "\r\n" + file2, clipboard.getFilenames());
+        filenames = clipboard.getFilenames();
+        assertEquals(2, filenames.length);
+        assertEquals(2, filenames[0].length);
+        assertEquals("content://tmp/test/file1.jpg", filenames[0][0]);
+        assertEquals("", filenames[0][1]);
+        assertEquals(2, filenames[1].length);
+        assertEquals("content://tmp/test/file2.txt", filenames[1][0]);
+        assertEquals("", filenames[1][1]);
     }
 
     @Test
@@ -197,8 +208,7 @@ public class ClipboardTest {
 
         String file1 = "content://tmp/test/file1.jpg";
         String file2 = "content://tmp/test/file2.txt";
-        // Items should be trimmed, and empty items ignored.
-        clipboard.setFilenames(" \r\n " + file1 + "\r\n" + file2 + "\r\n\r\n ");
+        clipboard.setFilenames(new String[] {file1, file2});
 
         ArgumentCaptor<ClipData> clipCaptor = ArgumentCaptor.forClass(ClipData.class);
         verify(clipboardManager).setPrimaryClip(clipCaptor.capture());

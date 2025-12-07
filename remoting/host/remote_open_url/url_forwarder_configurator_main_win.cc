@@ -15,7 +15,6 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/notreached.h"
@@ -119,8 +118,7 @@ bool ShowSetUpUrlForwarderDialog() {
     case IDCANCEL:
       return false;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unknown button: " << *button_result;
-      return false;
+      NOTREACHED() << "Unknown button: " << *button_result;
   }
 }
 

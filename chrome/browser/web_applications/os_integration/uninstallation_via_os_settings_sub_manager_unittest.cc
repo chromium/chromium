@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -28,6 +27,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -44,7 +44,6 @@ class UninstallationViaOsSettingsSubManagerTest : public WebAppTest {
 
   void SetUp() override {
     WebAppTest::SetUp();
-    provider_ = FakeWebAppProvider::Get(profile());
 
     auto file_handler_manager =
         std::make_unique<WebAppFileHandlerManager>(profile());
@@ -54,7 +53,7 @@ class UninstallationViaOsSettingsSubManagerTest : public WebAppTest {
         profile(), std::move(file_handler_manager),
         std::move(protocol_handler_manager));
 
-    provider_->SetOsIntegrationManager(std::move(os_integration_manager));
+    fake_provider().SetOsIntegrationManager(std::move(os_integration_manager));
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
@@ -73,7 +72,7 @@ class UninstallationViaOsSettingsSubManagerTest : public WebAppTest {
         result;
     // InstallFromInfoWithParams is used instead of InstallFromInfo, because
     // InstallFromInfo doesn't register OS integration.
-    provider().scheduler().InstallFromInfoWithParams(
+    fake_provider().scheduler().InstallFromInfoWithParams(
         std::move(info), /*overwrite_existing_manifest_fields=*/true, source,
         result.GetCallback(), WebAppInstallParams());
     bool success = result.Wait();
@@ -85,12 +84,6 @@ class UninstallationViaOsSettingsSubManagerTest : public WebAppTest {
               webapps::InstallResultCode::kSuccessNewInstall);
     return result.Get<webapps::AppId>();
   }
-
- protected:
-  WebAppProvider& provider() { return *provider_; }
-
- private:
-  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_ = nullptr;
 };
 
 bool IsOsUninstallationSupported() {
@@ -106,25 +99,30 @@ TEST_F(UninstallationViaOsSettingsSubManagerTest, TestUserUninstallable) {
   const webapps::AppId& app_id =
       InstallWebApp(webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
 
+  std::vector<base::Bucket> samples = histogram_tester.GetAllSamples(
+      "WebApp.OsSettingsUninstallRegistration.Result");
 #if BUILDFLAG(IS_WIN)
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "WebApp.OsSettingsUninstallRegistration.Result"),
-              base::BucketsAre(base::Bucket(/*min=*/1, 1)));
-#endif
+  EXPECT_THAT(samples, base::BucketsAre(base::Bucket(/*min=*/1, 1)));
+#else
+  EXPECT_THAT(samples, testing::IsEmpty());
+#endif  // BUILDFLAG(IS_WIN)
 
   auto state =
-      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+      fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
+          app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
-    EXPECT_EQ(
-        IsOsUninstallationSupported(),
-        os_integration_state.uninstall_registration().registered_with_os());
+  const proto::os_state::WebAppOsIntegration& os_integration_state =
+      state.value();
+  EXPECT_EQ(IsOsUninstallationSupported(),
+            os_integration_state.uninstall_registration().registered_with_os());
+  base::expected<bool, std::string> result =
+      fake_os_integration().IsUninstallRegisteredWithOs(app_id, "Test App",
+                                                        profile());
 #if BUILDFLAG(IS_WIN)
-    base::expected<bool, std::string> result =
-        fake_os_integration().IsUninstallRegisteredWithOs(app_id, "Test App",
-                                                          profile());
     EXPECT_THAT(result, base::test::ValueIs(true));
-#endif
+#else
+    EXPECT_FALSE(result.has_value());
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 TEST_F(UninstallationViaOsSettingsSubManagerTest, TestNotUserUninstallable) {
@@ -132,21 +130,25 @@ TEST_F(UninstallationViaOsSettingsSubManagerTest, TestNotUserUninstallable) {
       InstallWebApp(webapps::WebappInstallSource::EXTERNAL_POLICY);
 
   auto state =
-      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+      fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
+          app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
-    EXPECT_FALSE(
-        os_integration_state.uninstall_registration().registered_with_os());
+  const proto::os_state::WebAppOsIntegration& os_integration_state =
+      state.value();
+  EXPECT_FALSE(
+      os_integration_state.uninstall_registration().registered_with_os());
   if (IsOsUninstallationSupported()) {
     ASSERT_FALSE(
         os_integration_state.uninstall_registration().registered_with_os());
   }
-#if BUILDFLAG(IS_WIN)
   base::expected<bool, std::string> result =
       fake_os_integration().IsUninstallRegisteredWithOs(app_id, "Test App",
                                                         profile());
+#if BUILDFLAG(IS_WIN)
   EXPECT_THAT(result, base::test::ValueIs(false));
-#endif
+#else
+  EXPECT_FALSE(result.has_value());
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 TEST_F(UninstallationViaOsSettingsSubManagerTest, UninstallApp) {
@@ -156,19 +158,21 @@ TEST_F(UninstallationViaOsSettingsSubManagerTest, UninstallApp) {
   base::HistogramTester histogram_tester;
   test::UninstallAllWebApps(profile());
   auto state =
-      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+      fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
+          app_id);
   ASSERT_FALSE(state.has_value());
-
-#if BUILDFLAG(IS_WIN)
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "WebApp.OsSettingsUninstallUnregistration.Result"),
-              base::BucketsAre(base::Bucket(/*min=*/1, 1)));
-
   base::expected<bool, std::string> install_result =
       fake_os_integration().IsUninstallRegisteredWithOs(app_id, "Test App",
                                                         profile());
+  std::vector<base::Bucket> samples = histogram_tester.GetAllSamples(
+      "WebApp.OsSettingsUninstallUnregistration.Result");
+#if BUILDFLAG(IS_WIN)
+  EXPECT_THAT(samples, base::BucketsAre(base::Bucket(/*min=*/1, 1)));
   EXPECT_THAT(install_result, base::test::ValueIs(false));
-#endif
+#else
+  EXPECT_THAT(samples, testing::IsEmpty());
+  EXPECT_FALSE(install_result.has_value());
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 // Testing crbug.com/1434577, that OS states can be cleaned up even after
@@ -179,28 +183,35 @@ TEST_F(UninstallationViaOsSettingsSubManagerTest,
   const webapps::AppId& app_id =
       InstallWebApp(webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
 
+  std::vector<base::Bucket> samples = histogram_tester.GetAllSamples(
+      "WebApp.OsSettingsUninstallRegistration.Result");
 #if BUILDFLAG(IS_WIN)
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "WebApp.OsSettingsUninstallRegistration.Result"),
-              base::BucketsAre(base::Bucket(/*min=*/1, 1)));
-#endif
+  EXPECT_THAT(samples, base::BucketsAre(base::Bucket(/*min=*/1, 1)));
+#else
+  EXPECT_THAT(samples, testing::IsEmpty());
+#endif  // BUILDFLAG(IS_WIN)
 
   auto state =
-      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+      fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
+          app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
+  const proto::os_state::WebAppOsIntegration& os_integration_state =
+      state.value();
   EXPECT_EQ(IsOsUninstallationSupported(),
             os_integration_state.uninstall_registration().registered_with_os());
-
-#if BUILDFLAG(IS_WIN)
   base::expected<bool, std::string> install_result =
       fake_os_integration().IsUninstallRegisteredWithOs(app_id, "Test App",
                                                         profile());
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "WebApp.OsSettingsUninstallUnregistration.Result"),
-              testing::IsEmpty());
+  std::vector<base::Bucket> unregistration_samples =
+      histogram_tester.GetAllSamples(
+          "WebApp.OsSettingsUninstallUnregistration.Result");
+#if BUILDFLAG(IS_WIN)
+  EXPECT_THAT(unregistration_samples, testing::IsEmpty());
   EXPECT_THAT(install_result, base::test::ValueIs(true));
-#endif
+#else
+  EXPECT_THAT(unregistration_samples, testing::IsEmpty());
+  EXPECT_FALSE(install_result.has_value());
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 }  // namespace

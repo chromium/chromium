@@ -19,7 +19,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
@@ -29,6 +28,7 @@
 #include "components/history/core/browser/history_database.h"
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -169,8 +169,7 @@ void Edit::ApplyTo(std::u16string& text) const {
     }
     case Kind::KEEP:
     default: {
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     }
   }
 }
@@ -409,8 +408,8 @@ class LoadSignificantUrls : public history::HistoryDBTask {
  public:
   using Callback = base::OnceCallback<void(Node)>;
 
-  LoadSignificantUrls(base::WaitableEvent* event, Callback callback)
-      : wait_event_(event), callback_(std::move(callback)) {}
+  explicit LoadSignificantUrls(Callback callback)
+      : callback_(std::move(callback)) {}
   ~LoadSignificantUrls() override = default;
 
   bool RunOnDBThread(history::HistoryBackend* backend,
@@ -437,12 +436,10 @@ class LoadSignificantUrls : public history::HistoryDBTask {
 
   void DoneRunOnMainThread() override {
     std::move(callback_).Run(std::move(node_));
-    wait_event_->Signal();
   }
 
  private:
   Node node_;
-  raw_ptr<base::WaitableEvent, AcrossTasksDanglingUntriaged> wait_event_;
   Callback callback_;
 };
 
@@ -452,7 +449,7 @@ class LoadSignificantUrls : public history::HistoryDBTask {
 void HistoryFuzzyProvider::RecordOpenMatchMetrics(
     const AutocompleteResult& result,
     const AutocompleteMatch& match_opened) {
-  if (base::ranges::any_of(result, [](const AutocompleteMatch& match) {
+  if (std::ranges::any_of(result, [](const AutocompleteMatch& match) {
         return match.provider && match.provider->type() ==
                                      AutocompleteProvider::TYPE_HISTORY_FUZZY;
       })) {
@@ -490,7 +487,6 @@ HistoryFuzzyProvider::HistoryFuzzyProvider(AutocompleteProviderClient* client)
     client->GetHistoryService()->ScheduleDBTask(
         FROM_HERE,
         std::make_unique<fuzzy::LoadSignificantUrls>(
-            &urls_loaded_event_,
             base::BindOnce(&HistoryFuzzyProvider::OnUrlsLoaded,
                            weak_ptr_factory_.GetWeakPtr())),
         &task_tracker_);
@@ -652,7 +648,7 @@ int HistoryFuzzyProvider::AddConvertedMatches(const ACMatches& matches,
   // so ranking of the final result set will be more nuanced than ranking here.
   ACMatches::const_iterator it = std::min_element(
       matches.begin(), matches.end(), AutocompleteMatch::MoreRelevant);
-  CHECK(it != matches.end(), base::NotFatalUntil::M130);
+  CHECK(it != matches.end());
   matches_.push_back(*it);
 
   // Update match in place. Note, `match.provider` will be reassigned after
@@ -682,16 +678,20 @@ int HistoryFuzzyProvider::AddConvertedMatches(const ACMatches& matches,
 
 void HistoryFuzzyProvider::OnUrlsLoaded(fuzzy::Node node) {
   root_ = std::move(node);
+  urls_loaded_event_.Signal();
 }
 
 void HistoryFuzzyProvider::OnURLVisited(
     history::HistoryService* history_service,
-    const history::URLRow& url_row,
-    const history::VisitRow& new_visit) {
+    const history::VisitedURLInfo& visited_url_info) {
+  if (visited_url_info.response_code_category ==
+      history::VisitResponseCodeCategory::k404) {
+    return;
+  }
   if (root_.TerminalCount() <
       std::min(OmniboxFieldTrial::MaxNumHQPUrlsIndexedAtStartup(),
                kMaxTerminalCount)) {
-    root_.Insert(UrlDomainReduction(url_row.url()), 0);
+    root_.Insert(UrlDomainReduction(visited_url_info.url_row.url()), 0);
   }
 }
 

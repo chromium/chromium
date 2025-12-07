@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/language_settings_private/language_settings_private_api.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <set>
@@ -15,14 +16,12 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/language_settings_private/language_settings_private_delegate.h"
 #include "chrome/browser/extensions/api/language_settings_private/language_settings_private_delegate_factory.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
@@ -43,11 +42,12 @@
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_prefs.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_collator.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/ime/ash/component_extension_ime_manager.h"
@@ -63,7 +63,7 @@ namespace language_settings_private = api::language_settings_private;
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 using ::ash::input_method::InputMethodDescriptor;
 using ::ash::input_method::InputMethodDescriptors;
 using ::ash::input_method::InputMethodManager;
@@ -182,7 +182,8 @@ std::vector<std::string> GetSortedThirdPartyIMEs(
 std::vector<std::string> GetInputMethodTags(
     language_settings_private::InputMethod* input_method) {
   std::vector<std::string> tags = {input_method->display_name};
-  const std::string app_locale = g_browser_process->GetApplicationLocale();
+  const std::string app_locale =
+      ExtensionsBrowserClient::Get()->GetApplicationLocale();
   for (const auto& language_code : input_method->language_codes) {
     tags.push_back(base::UTF16ToUTF8(l10n_util::GetDisplayNameForLocale(
         language_code, app_locale, /*is_for_ui=*/true)));
@@ -190,7 +191,7 @@ std::vector<std::string> GetInputMethodTags(
   return tags;
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 std::unique_ptr<translate::TranslatePrefs>
 CreateTranslatePrefsForBrowserContext(
@@ -210,7 +211,8 @@ LanguageSettingsPrivateGetLanguageListFunction::
 ExtensionFunction::ResponseAction
 LanguageSettingsPrivateGetLanguageListFunction::Run() {
   // Collect the language codes from the supported accept-languages.
-  const std::string app_locale = g_browser_process->GetApplicationLocale();
+  const std::string app_locale =
+      ExtensionsBrowserClient::Get()->GetApplicationLocale();
   const std::unique_ptr<translate::TranslatePrefs> translate_prefs =
       CreateTranslatePrefsForBrowserContext(browser_context());
 
@@ -226,10 +228,10 @@ LanguageSettingsPrivateGetLanguageListFunction::Run() {
 
   // Build the language list.
   language_list_.clear();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   const base::flat_set<std::string> allowed_ui_locales(GetAllowedLanguages(
       Profile::FromBrowserContext(browser_context())->GetPrefs()));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   for (const auto& entry : languages) {
     language_settings_private::Language language;
 
@@ -248,17 +250,17 @@ LanguageSettingsPrivateGetLanguageListFunction::Run() {
     if (l10n_util::IsUserFacingUILocale(entry.code)) {
       language.supports_ui = true;
     }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     if (!allowed_ui_locales.empty() &&
         !base::Contains(allowed_ui_locales, language.code)) {
       language.is_prohibited_language = true;
     }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     language_list_.Append(language.ToValue());
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Send the display name of the fake language for ARC IMEs to the JS side.
   // |native_display_name| does't have to be set because the language selection
   // drop-down menu doesn't list the fake language.
@@ -269,25 +271,19 @@ LanguageSettingsPrivateGetLanguageListFunction::Run() {
         l10n_util::GetStringUTF8(IDS_SETTINGS_LANGUAGES_KEYBOARD_APPS);
     language_list_.Append(base::Value(language.ToValue()));
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
   if (spellcheck::UseBrowserSpellChecker()) {
-    if (!base::FeatureList::IsEnabled(
-            spellcheck::kWinDelaySpellcheckServiceInit)) {
-      // Platform dictionary support already determined at browser startup.
-      UpdateSupportedPlatformDictionaries();
-    } else {
-      // Asynchronously load the dictionaries to determine platform support.
-      SpellcheckService* service =
-          SpellcheckServiceFactory::GetForContext(browser_context());
-      AddRef();  // Balanced in OnDictionariesInitialized
-      service->InitializeDictionaries(
-          base::BindOnce(&LanguageSettingsPrivateGetLanguageListFunction::
-                             OnDictionariesInitialized,
-                         base::Unretained(this)));
-      return RespondLater();
-    }
+    // Asynchronously load the dictionaries to determine platform support.
+    SpellcheckService* service =
+        SpellcheckServiceFactory::GetForContext(browser_context());
+    AddRef();  // Balanced in OnDictionariesInitialized
+    service->InitializeDictionaries(
+        base::BindOnce(&LanguageSettingsPrivateGetLanguageListFunction::
+                           OnDictionariesInitialized,
+                       base::Unretained(this)));
+    return RespondLater();
   }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -482,9 +478,10 @@ LanguageSettingsPrivateMoveLanguageFunction::Run() {
       language_settings_private::MoveLanguage::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
-  const std::string app_locale = g_browser_process->GetApplicationLocale();
-  std::vector<std::string> supported_language_codes;
-  l10n_util::GetAcceptLanguagesForLocale(app_locale, &supported_language_codes);
+  const std::string app_locale =
+      ExtensionsBrowserClient::Get()->GetApplicationLocale();
+  std::vector<std::string> supported_language_codes =
+      l10n_util::GetAcceptLanguagesForLocale(app_locale);
 
   const std::string& language_code = parameters->language_code;
   const language_settings_private::MoveType move_type = parameters->move_type;
@@ -509,7 +506,7 @@ LanguageSettingsPrivateMoveLanguageFunction::Run() {
 
     case language_settings_private::MoveType::kNone:
     case language_settings_private::MoveType::kMaxValue:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   // On Desktop we can only move languages by one position.
@@ -569,9 +566,9 @@ void LanguageSettingsPrivateGetSpellcheckWordsFunction::
 void LanguageSettingsPrivateGetSpellcheckWordsFunction::
     OnCustomDictionaryChanged(
         const SpellcheckCustomDictionary::Change& dictionary_change) {
-  NOTREACHED_IN_MIGRATION() << "SpellcheckCustomDictionary::Observer: "
-                               "OnCustomDictionaryChanged() called before "
-                               "OnCustomDictionaryLoaded()";
+  NOTREACHED()
+      << "SpellcheckCustomDictionary::Observer: OnCustomDictionaryChanged() "
+         "called before OnCustomDictionaryLoaded()";
 }
 
 base::Value::List
@@ -583,10 +580,11 @@ LanguageSettingsPrivateGetSpellcheckWordsFunction::GetSpellcheckWords() const {
 
   // TODO(michaelpg): Sort using app locale.
   base::Value::List word_list;
-  const std::set<std::string>& words = dictionary->GetWords();
+  std::set<std::string> words = dictionary->GetWords();
   word_list.reserve(words.size());
-  for (const std::string& word : words)
-    word_list.Append(word);
+  for (auto it = words.begin(); it != words.end();) {
+    word_list.Append(std::move(words.extract(it++).value()));
+  }
   return word_list;
 }
 
@@ -685,7 +683,7 @@ LanguageSettingsPrivateSetTranslateTargetLanguageFunction::Run() {
   return RespondNow(NoArguments());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Populates the vector of input methods using information in the list of
 // descriptors. Used for languageSettingsPrivate.getInputMethodLists().
 void PopulateInputMethodListFromDescriptors(
@@ -744,7 +742,7 @@ LanguageSettingsPrivateGetInputMethodListsFunction::
 
 ExtensionFunction::ResponseAction
 LanguageSettingsPrivateGetInputMethodListsFunction::Run() {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   EXTENSION_FUNCTION_VALIDATE(false);
   return RespondNow(NoArguments());
 #else
@@ -778,7 +776,7 @@ LanguageSettingsPrivateAddInputMethodFunction::
 
 ExtensionFunction::ResponseAction
 LanguageSettingsPrivateAddInputMethodFunction::Run() {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   EXTENSION_FUNCTION_VALIDATE(false);
 #else
   const auto params =
@@ -850,7 +848,7 @@ LanguageSettingsPrivateRemoveInputMethodFunction::
 
 ExtensionFunction::ResponseAction
 LanguageSettingsPrivateRemoveInputMethodFunction::Run() {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   EXTENSION_FUNCTION_VALIDATE(false);
 #else
   const auto params =
@@ -879,7 +877,7 @@ LanguageSettingsPrivateRemoveInputMethodFunction::Run() {
       input_method_ids, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   // Find and remove the matching input method id.
-  const auto& pos = base::ranges::find(input_method_list, input_method_id);
+  const auto& pos = std::ranges::find(input_method_list, input_method_id);
   if (pos != input_method_list.end()) {
     input_method_list.erase(pos);
     prefs->SetString(pref_name, base::JoinString(input_method_list, ","));

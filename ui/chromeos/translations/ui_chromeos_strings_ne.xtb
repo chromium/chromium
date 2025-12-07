@@ -19,13 +19,14 @@
 <translation id="115443833402798225">हंगुल Ahnmatae</translation>
 <translation id="1155759005174418845">क्याटालान</translation>
 <translation id="1168100932582989117">Google का नामसम्बन्धी सर्भरहरू</translation>
+<translation id="1170788066030116158">फोटो खिचिएको मिति</translation>
 <translation id="1172970565351728681">लगभग <ph name="REMAINING_TIME" /> बाँकी</translation>
 <translation id="1173894706177603556">पुन: नामाकरण गर्नुहोस्</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" /> सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, फोनको ब्याट्री <ph name="BATTERY_STATUS" />%, विवरणहरू</translation>
 <translation id="117624967391683467"><ph name="FILE_NAME" /> प्रतिलिपि बनाउँदै...</translation>
 <translation id="1178581264944972037">पज गर्नुहोस्</translation>
 <translation id="1190144681599273207">यो फाइललाई ल्याउँदा मोबाइल डाटाको लगभग <ph name="FILE_SIZE" /> प्रयोग हुनेछ।</translation>
-<translation id="1194390763418645112"><ph name="RESTRICTED_DESTINATIONS" /> मार्फत फाइल हेर्न तथा प्रयोग गर्न सकिन्छ</translation>
+<translation id="1194390763418645112"><ph name="RESTRICTED_DESTINATIONS" /> मार्फत फाइल एक्सेस गर्न सकिन्छ</translation>
 <translation id="1201402288615127009">अर्को</translation>
 <translation id="1209796539517632982">स्वचालित नाम सर्भरहरू</translation>
 <translation id="1210831758834677569">लाओ</translation>
@@ -34,6 +35,7 @@
 <translation id="1249250836236328755">विधा</translation>
 <translation id="1254593899333212300">प्रत्यक्ष इन्टरनेट जडान</translation>
 <translation id="1272293450992660632">PIN का मानहरू मिल्दैनन्।</translation>
+<translation id="1279040297980392566">स्क्यान गर्ने प्रक्रिया पूरा हुने प्रतीक्षा गरिँदै छ, पछि फेरि प्रयास गर्नुहोस्</translation>
 <translation id="1280820357415527819">मोबाइल नेटवर्कहरू खोज्दै</translation>
 <translation id="1293556467332435079">फाइलहरू</translation>
 <translation id="1297922636971898492">Google ड्राइभ अहिले उपलब्ध छैन। Google ड्राइभ एकपटक फर्केपचि अपलोड स्वत: सुरुवात हुनेछ।</translation>
@@ -72,6 +74,7 @@
 <translation id="1577977504532381335">एड्मिनले तोकेको नीतिको समीक्षा गर्नुहोस्</translation>
 <translation id="158849752021629804">गृह नेटवर्क आवश्यक छ</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> पि.बि.</translation>
+<translation id="1601786938618212857">Zip</translation>
 <translation id="1620510694547887537">क्यामेरा</translation>
 <translation id="162175252992296058">सं. रा. अमेरिकी अन्तर्राष्ट्रिय ढाँचाको पोर्तुगाली किबोर्ड</translation>
 <translation id="1629521517399325891">नेटवर्क प्रमाणित गर्नका लागि प्रयोगकर्ताको प्रमाणपत्र उपलब्ध छैन।</translation>
@@ -105,6 +108,7 @@
 <translation id="1810764548349082891">कुनै पूर्वावलोकन उपलब्ध छैन</translation>
 <translation id="1812302367230252929">अम्हारिक लिपि रूपान्तरण</translation>
 <translation id="1813278315230285598">सेवाहरू</translation>
+<translation id="181434555916624618">अहिलेका लागि मान्छेहरूसहितका परिणामहरू देखाइने छैनन्। अर्कै प्रम्प्ट प्रयोग गरी हेर्नुहोस्।</translation>
 <translation id="1829129547161959350">पेन्गुइन</translation>
 <translation id="183183971458492120">जानकारी लोड गर्दै...</translation>
 <translation id="1832073788765803750">आधा चौडाइ भएको काताकाना</translation>
@@ -135,7 +139,6 @@
 <translation id="2084809735218147718">साङ्केतिक भाषामा धन्यवाद भनिरहेका व्यक्ति</translation>
 <translation id="2088690981887365033">VPN नेटवर्क</translation>
 <translation id="209653272837065803">फाइलहरू सिंक गरिराख्नका निम्ति भण्डारणमा पर्याप्त खाली ठाउँ छैन</translation>
-<translation id="2111134541987263231">"<ph name="BEGIN_BOLD" />इन्कोग्निटो मोडमा अनुमति दिनुहोस्<ph name="END_BOLD" />" अन गर्नुहोस्</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> वटा सामग्री मेटाइने छन् र तपाईं ती सामग्री रिस्टोर गर्न सक्नु हुने छैन।</translation>
 <translation id="2122305276694332719">कुनै लुकाइएको नेटवर्कमा स्वतः जोड्नुले तपाईंको यन्त्र र नेटवर्कसम्बन्धी केही सेटिङ अरूले देख्न सक्ने हुनाले यसो गर्न सिफारिस गरिँदैन।</translation>
 <translation id="2125607626296734455">खमेर</translation>
@@ -166,7 +169,6 @@
 <translation id="2304820083631266885">ग्रह</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> हटाइएको छ।</translation>
 <translation id="2307462900900812319">नेटवर्क कन्फिगर गर्नुहोस्</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{निम्न ID भएको एक्स्टेन्सन <ph name="BEGIN_LIST" /><ph name="END_LIST" /> भेट्टाउन सकिएन। आफ्ना एड्मिनसँग सम्पर्क गर्नुहोस्।}other{निम्न ID भएका एक्स्टेन्सनहरू <ph name="BEGIN_LIST" /><ph name="END_LIST" /> भेट्टाउन सकिएन। आफ्ना एड्मिनसँग सम्पर्क गर्नुहोस्।}}</translation>
 <translation id="2325650632570794183">यो फाइल प्रकार समर्थन गरिएको छैन। यो फाइल खोल्न सक्ने एक अनु्प्रयोग फेला पार्नको लागि कृपया Chrome वेब भण्डार भ्रमण गर्नुहोस्।</translation>
 <translation id="2326539130272988168">बुल्गेरियाली</translation>
 <translation id="233822363739146957">तपाईंका सबै फाइलहरू सिंक गर्न भण्डारणमा पर्याप्त खाली ठाउँ छैन</translation>
@@ -186,14 +188,14 @@
 <translation id="2452444014801043526">अत्यन्तै ठुलो फोन बोकेका व्यक्ति</translation>
 <translation id="2464079411014186876">आइसक्रिम</translation>
 <translation id="2464089476039395325">HTTP को प्रोक्सी</translation>
-<translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> नेटवर्क, निष्क्रिय छ</translation>
+<translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> नेटवर्क, अफ छ</translation>
 <translation id="2468402215065996499">तामागोची</translation>
 <translation id="2468470447085858632">फाइल सिंक गर्ने सुविधा प्रयोग गरी Google Drive मा भएका आफ्ना फाइलहरू अफलाइन एक्सेस गर्नुहोस्</translation>
 <translation id="2470939964922472929">तपाईंले अत्यन्तै धेरै पटक गलत PIN हाल्नुभयो। नयाँ PIN सेटअप गर्न तपाईंको मोबाइल सेवा प्रदायकले उपलब्ध गराएको ८ अङ्कको पर्सनल अनब्लकिङ की (PUK) हाल्नुहोस्।</translation>
 <translation id="2500392669976258912">गुजराती फोनेटिक</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">स्क्यान गर्नुहोस्</translation>
-<translation id="252641322760726369">आफ्ना फाइलहरू सेल्फबाट द्रुत रूपमा हेर्न तथा प्रयोग गर्न कुनै फाइलमा टच एण्ड होल्ड गर्नुहोस् अनि <ph name="ICON" /> मा ट्याप गर्नुहोस् र "<ph name="PIN_COMMAND" />" चयन गर्नुहोस्।</translation>
+<translation id="252641322760726369">आफ्ना फाइलहरू सेल्फबाट द्रुत रूपमा एक्सेस गर्न कुनै फाइलमा टच एण्ड होल्ड गर्नुहोस् अनि <ph name="ICON" /> मा ट्याप गर्नुहोस् र "<ph name="PIN_COMMAND" />" चयन गर्नुहोस्।</translation>
 <translation id="2534460670861217804">सुरक्षित HTTP को प्रोक्सी</translation>
 <translation id="2541377937973966830">यो फोल्डरका सामग्री रिड गर्न मात्र मिल्छ। केही क्रियाकलापहरू गर्न मिल्दैन।</translation>
 <translation id="2542049655219295786">Google तालिका</translation>
@@ -238,7 +240,6 @@
 <translation id="290843123675549676">मराठी</translation>
 <translation id="2923240520113693977">इस्टोनिया</translation>
 <translation id="2938685643439809023">मङ्गोलियन</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{एक्स्टेन्सन भेटिएन}other{एक्स्टेन्सनहरू भेटिएनन्}}</translation>
 <translation id="2943503720238418293">अझ छोटो नाम प्रयोग गर्नुहोस्</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> फर्म्याट गर्दै...</translation>
 <translation id="2951236788251446349">जेलिफिस</translation>
@@ -295,7 +296,6 @@
 <translation id="3356580349448036450">पूर्ण</translation>
 <translation id="3358452157379365236">गितार</translation>
 <translation id="3368922792935385530">जडित</translation>
-<translation id="3372635229069101468"><ph name="BEGIN_BOLD" />विवरणहरू<ph name="END_BOLD" />मा क्लिक गर्नुहोस्</translation>
 <translation id="3382143449143186018">नेपाली InScript किबोर्ड</translation>
 <translation id="338691029516748599"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ, जोड्नुहोस्</translation>
 <translation id="3408072735282270043"><ph name="NETWORK_NAME" /> अन गर्नुहोस्</translation>
@@ -344,7 +344,7 @@
 <translation id="3737576078404241332">साइडबारबाट हटाउनुहोस्</translation>
 <translation id="3749289110408117711">फाइल नाम</translation>
 <translation id="3786301125658655746">तपाईं अफलाइन हुनुहुन्छ</translation>
-<translation id="3789841737615482174">स्थापना गर्नुहोस्</translation>
+<translation id="3789841737615482174">इन्स्टल गर्नुहोस्</translation>
 <translation id="3793469551756281394">लगभग <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> बाँकी</translation>
 <translation id="3798449238516105146">संस्करण</translation>
 <translation id="3801082500826908679">फारोइज</translation>
@@ -354,7 +354,6 @@
 <translation id="3811494700605067549">१ फाइललाई चयन गरियो</translation>
 <translation id="3817579325494460411">दिइएको छैन</translation>
 <translation id="3819448694985509187">PIN मिलेन। तपाईं अझै १ पटक प्रयास गर्न सक्नुहुन्छ।</translation>
-<translation id="3822559385185038546">यो प्रोक्सी तपाईंका प्रशासकद्वारा लागू गरिएको हो</translation>
 <translation id="3830674330436234648">कुनै प्लेब्याक उपलब्ध छैन</translation>
 <translation id="383652340667548381">सर्वियन</translation>
 <translation id="3839045880592694915">तपाईंको टेलिफोन कम्पनीले तपाईंको मोडेम कनेक्ट गर्न अनुमति दिएको छैन। यस सम्बन्धमा थप जानकारी प्राप्त गर्न आफ्नो टेलिफोन कम्पनीमा सम्पर्क गर्नुहोस्।</translation>
@@ -385,15 +384,13 @@
 <translation id="4124935795427217608">एक सिङे घोडा</translation>
 <translation id="4131235941541910880">आफूलाई नचाहिने फाइलहरू सारेर ट्र्यासमा लैजानुहोस्</translation>
 <translation id="4134804435730168042"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, डिभाइस सेटअप गरेपछि एक्टिभेट गर्नुहोस्</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{इन्कोग्निटो मोडमा निम्न एक्स्टेन्सन अन गर्नुहोस्:}other{इन्कोग्निटो मोडमा निम्न एक्स्टेन्सनहरू अन गर्नुहोस्:}}</translation>
-<translation id="4153015322587141338">आफ्ना फाइलहरू सेल्फबाट द्रुत रूपमा हेर्न तथा प्रयोग गर्न कुनै फाइलमा दायाँ क्लिक गर्नुहोस् र "<ph name="PIN_COMMAND" />" चयन गर्नुहोस्।</translation>
+<translation id="4153015322587141338">आफ्ना फाइलहरू सेल्फबाट द्रुत रूपमा एक्सेस गर्न कुनै फाइलमा दायाँ क्लिक गर्नुहोस् र "<ph name="PIN_COMMAND" />" चयन गर्नुहोस्।</translation>
 <translation id="4157569377477607576">एड्मिनले तोकेको नीतिअनुसार निम्न कार्य गर्न सिफारिस गरिँदैन:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> सारियो।</translation>
 <translation id="4176286497474237543">अहिले नै ट्र्यास खाली गर्नुहोस्</translation>
 <translation id="4179621117429069925">यो फाइल ट्र्यासमा छ</translation>
 <translation id="4186579485882418952">अफलाइन चलाउने सुविधा अन गर्नुहोस्</translation>
 <translation id="4193154014135846272">Google कागजात</translation>
-<translation id="4197674956721858839">जिप चयन</translation>
 <translation id="4202378258276439759">स्पेनी (ल्याटिन अमेरिका)</translation>
 <translation id="4202977638116331303">जर्जियाली</translation>
 <translation id="421017592316736757">यो फाइलको पहुँच गर्न तपाईं अनलाइन हुनु पर्छ।</translation>
@@ -421,6 +418,7 @@
 <translation id="4387004326333427325">प्रमाणीकरण प्रमाणपत्रलाई सीधै अस्वीकार गर्‍यो</translation>
 <translation id="4394214039309501350">बाह्य लिंक</translation>
 <translation id="4394980935660306080">यो हप्ताको सुरुवातमा</translation>
+<translation id="4397435965699247285">अफलाइन भएका बेला OneDrive चलाउन मिल्दैन</translation>
 <translation id="4398096759193130964">यी फाइलहरू रिस्टोर गर्नुहोस् वा यी फाइलहरू ड्र्याग गरेर ट्र्यासबाहिर रहेको नयाँ फोल्डरमा लैजानुहोस्</translation>
 <translation id="4401287888955153199">सबै सामग्री एक्स्ट्र्याक्ट गर्नुहोस्</translation>
 <translation id="4410695710508688828">एक्स्ट्र्याक्ट गर्न सकिएन। <ph name="ERROR_MESSAGE" /></translation>
@@ -478,14 +476,12 @@
 <translation id="4779136857077979611">ओनिगिरी</translation>
 <translation id="4784330909746505604">PowerPoint प्रस्तुति</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> के.बि.</translation>
-<translation id="4789067489790477934">Parallels Desktop लाई आफ्नो Google Drive मा रहेका फाइलहरूमाथि पहुँच राख्ने अनुमति दिनुहोस्। परिवर्तनहरू तपाईंका अन्य यन्त्रमा पनि सिंक हुने छन्।</translation>
+<translation id="4789067489790477934">Parallels Desktop लाई आफ्नो Google Drive मा रहेका फाइलहरूमाथि पहुँच राख्ने अनुमति दिनुहोस्। परिवर्तनहरू तपाईंका अन्य डिभाइसमा पनि सिंक हुने छन्।</translation>
 <translation id="4790766916287588578">हिन्दी इनस्क्रिप्ट किबोर्ड</translation>
 <translation id="4801956050125744859">दुवै राख्नुहोस्</translation>
 <translation id="4804827417948292437">अभोकाडो</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> वटा फाइल रिस्टोर गरिँदै छ</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{तपाईंले आफ्नो सङ्गठनले तोकेको एक्स्टेन्सन अन गरेपछि मात्र तपाईं इन्कोग्निटो मोड प्रयोग गर्न पाउनुहुन्छ}other{तपाईंले आफ्नो सङ्गठनले तोकेका केही एक्स्टेन्सन अन गरेपछि मात्र तपाईं इन्कोग्निटो मोड प्रयोग गर्न पाउनुहुन्छ}}</translation>
 <translation id="4826849268470072925">तमिल ITRANS</translation>
-<translation id="482932175346970750">आफ्नो ब्राउजरमा <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> टाइप गर्नुहोस्</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">हेर्नुहोस्</translation>
 <translation id="485316830061041779">जर्मन</translation>
@@ -558,7 +554,6 @@
     र यो सब एकै ठाउँमा गर्नुहोस्।<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google ड्राइभ फाइलहरू पुन: प्राप्त गरियो</translation>
 <translation id="5278111733643988471">तपाईं यो फाइल रिस्टोर गर्न चाहनुहुन्छ भने यो फाइल ड्र्याग गरेर ट्र्यासबाहिर रहेको नयाँ फोल्डरमा लैजानुहोस्। यो फाइलको मूल फोल्डर "<ph name="PARENT_FOLDER_NAME" />" मेटाइएको छ।</translation>
-<translation id="5283101102242354279">इन्कोग्निटो मोडमा एक्स्टेन्सन अन गर्ने तरिका:</translation>
 <translation id="5288441970121584418">बर्गर</translation>
 <translation id="5293615890992542006">एड्मिनले तोक्नुभएको नीतिअनुसार यो फाइल सार्न पाइँदैन</translation>
 <translation id="5305688511332277257">कुनै स्थापित छैन</translation>
@@ -591,7 +586,7 @@
 <translation id="5508696409934741614">डटहरू</translation>
 <translation id="5522908512596376669">फाइलको सूचीको दृश्य परिवर्तन गरी सूची दृश्य बनाइयो।</translation>
 <translation id="5524517123096967210">फाइल पढ्न सकिएन।</translation>
-<translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> छवि</translation>
+<translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> फोटो</translation>
 <translation id="5534520101572674276">परिमाण हिसाब गर्दै</translation>
 <translation id="554153475311314364">ग्रिक लिपि रूपान्तरण</translation>
 <translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> वटा फोल्डर चयन गरिएका छन्</translation>
@@ -601,6 +596,7 @@
 <translation id="5596627076506792578">अन्य विकल्पहरू</translation>
 <translation id="5602622065581044566">बुल्गेरियन फोनेटिक किबोर्ड</translation>
 <translation id="5605830556594064952">युएस ड्भोराक</translation>
+<translation id="560739212255190568">तपाईंका एड्मिनले निम्न प्रोक्सी लागू गर्नुका साथै प्रोक्सी ओभरराइडसम्बन्धी नियमहरू सेट गर्नुभएको छ</translation>
 <translation id="5618330573454123917">यो फाइल Macintosh सफ्टवेयर प्रयोग गर्ने कम्प्युटरका लागि तयार पारिएको हो। यो फाइल ChromeOS चल्ने तपाईंको डिभाइससँग कम्प्याटिबल छैन। ChromeOS मा फाइल खोल्ने तरिकाका बारेमा <ph name="BEGIN_LINK_HELP" />थप जान्नुहोस्<ph name="END_LINK_HELP" />।</translation>
 <translation id="5625294776298156701">तमिल Tamil99 किबोर्ड</translation>
 <translation id="5633226425545095130">तपाईंले यो वस्तु सार्नुभयो भने '<ph name="DESTINATION_NAME" />' नामक साझा फोल्डर हेर्न सक्ने सबै जनासँग यो वस्तु सेयर हुने छ।</translation>
@@ -812,7 +808,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, विवरणहरू</translation>
 <translation id="7246947237293279874">FTP प्रोक्सी</translation>
 <translation id="7248671827512403053">एप</translation>
-<translation id="7252604552361840748">माथि उल्लिखित एक्स्टेन्सन खोज्नुहोस्</translation>
 <translation id="7256405249507348194">पहिचान नभएको त्रुटि: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">उपलब्ध सेवाहरू</translation>
 <translation id="7291818353625820805">कीहरू दोहोर्‍याउन चाहनुहुन्छ? किबोर्डका सेटिङमा गई "एक्सेन्ट चिन्हहरू" अफ गर्नुहोस्</translation>
@@ -845,7 +840,7 @@
 <translation id="751507702149411736">बेलारूसियन</translation>
 <translation id="7521790570754130607">मोबाइल डेटा प्रयोग गर्न PIN हाल्नु पर्ने हुन्छ</translation>
 <translation id="7532029025027028521">फारसी लिपि रूपान्तरण</translation>
-<translation id="7544830582642184299">Linux का एपलाई तपाईंको Google Drive मा रहेका फाइलहरूमाथि पहुँच राख्ने अनुमति दिनुहोस्। परिवर्तनहरू तपाईंका अन्य यन्त्रमा पनि सिंक हुने छन्।</translation>
+<translation id="7544830582642184299">Linux का एपलाई तपाईंको Google Drive मा रहेका फाइलहरूमाथि पहुँच राख्ने अनुमति दिनुहोस्। परिवर्तनहरू तपाईंका अन्य डिभाइसमा पनि सिंक हुने छन्।</translation>
 <translation id="7547009467130558110">स्निकर</translation>
 <translation id="7547780573915868306">लिथुआनियाली</translation>
 <translation id="7547811415869834682">डच</translation>
@@ -1001,6 +996,7 @@
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> को <ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, विवरणहरू</translation>
 <translation id="8545476925160229291">अङ्ग्रेजी (सं. रा. अमेरिकी)</translation>
 <translation id="854655314928502177">वेब प्रोक्सी स्वतः खोजको URL</translation>
+<translation id="8547747809824590510">तपाईंका एड्मिनले प्रोक्सी ओभरराइडसम्बन्धी नियमहरू सेट गर्नुभएको छ</translation>
 <translation id="8549186985808798022">इटालियन</translation>
 <translation id="8551494947769799688">लाट्भियन</translation>
 <translation id="8560515948038859357">क्यान्टोनिज</translation>
@@ -1011,7 +1007,7 @@
 <translation id="8577897833047451336">क्रोएसियाली</translation>
 <translation id="8578308463707544055">इन्डोनेसियाली</translation>
 <translation id="8600173386174225982">फाइलको सूचीको दृश्य परिवर्तन गरी थम्बनेल दृश्य बनाइयो।</translation>
-<translation id="8601932370724196034">Crostini छवि फाइल</translation>
+<translation id="8601932370724196034">Crostini फोटो फाइल</translation>
 <translation id="8609695766746872526">आइसल्यान्डिक</translation>
 <translation id="8630384863424041081">आफ्नो SIM कार्डको PIN वा टेलिफोन कम्पनीले उपलब्ध गराएको डिफल्ट PIN हाल्नुहोस्। यस सम्बन्धमा सहायता प्राप्त गर्न आफ्नो टेलिफोन कम्पनीमा सम्पर्क गर्नुहोस्।</translation>
 <translation id="863903787380594467">PIN मिलेन। तपाईं अझै <ph name="RETRIES" /> पटक प्रयास गर्न सक्नुहुन्छ।</translation>
@@ -1035,7 +1031,7 @@
 <translation id="8810671769985673465">जिप गर्न सकिएन, विद्यमान वस्तु: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">स्पेनी (स्पेन)</translation>
 <translation id="8834164572807951958">'<ph name="DESTINATION_NAME" />' का सदस्यहरूले यी वस्तुहरूको प्रतिलिपिमाथिको पहुँच पाउनुहुनेछ।</translation>
-<translation id="8849389110234859568">एड्मिनले तोक्नुभएको नीतिअनुसार केही फाइलहरू हेर्न तथा प्रयोग गर्न मिल्दैन।</translation>
+<translation id="8849389110234859568">एड्मिनले तोक्नुभएको नीतिअनुसार केही फाइलहरू एक्सेस गर्न मिल्दैन।</translation>
 <translation id="8857149712089373752">नेपाली फोनेटिक किबोर्ड</translation>
 <translation id="8860454412039442620">Excel स्प्रेडसिट</translation>
 <translation id="8866284467018526531">अरबी लिपि रूपान्तरण</translation>
@@ -1061,6 +1057,7 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" नाम गरेको फाइल पहिलेदेखि नै अवस्थित छ। कृपया कुनै फरक नाम चयन गर्नुहोस्।</translation>
 <translation id="9046895021617826162">जडान असफल भयो,</translation>
 <translation id="9065512565307033593">तपाईंले पुष्टि गर्न सक्नुभएन भने तपाईं अब नेटवर्क प्रयोग गर्न पाउनु हुने छैन।</translation>
+<translation id="9079844694307518094">तपाईंका एड्मिन निम्न प्रोक्सी लागू गर्दै हुनुहुन्छ</translation>
 <translation id="908378762078012445">रसियाली फोनेटिक AATSEEL किबोर्ड</translation>
 <translation id="9086302186042011942">समक्रमण गर्दै</translation>
 <translation id="9099674669267916096">पृष्ठको गणना</translation>
@@ -1084,6 +1081,7 @@
 <translation id="9213073329713032541">स्थापना गर्ने कार्य सफलतापूर्वक सुरु भयो।</translation>
 <translation id="9219103736887031265">फोटो</translation>
 <translation id="9219908252191632183">लुनर</translation>
+<translation id="931652069802536959">नीतिका आधारमा नेटवर्क ब्लक गरिएको छ</translation>
 <translation id="938470336146445890">कृपया एउटा प्रयोगकर्ता सर्टिफिकेट स्थापना गर्नुहोस्।</translation>
 <translation id="939736085109172342">नयाँ फोल्डर</translation>
 <translation id="943972244133411984">निम्नद्वारा परिमार्जित</translation>

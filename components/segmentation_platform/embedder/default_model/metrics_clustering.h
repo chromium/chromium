@@ -7,16 +7,10 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/model_provider.h"
 
 namespace segmentation_platform {
-
-namespace features {
-// Feature flag for enabling MetricsClustering segment.
-BASE_DECLARE_FEATURE(kSegmentationPlatformMetricsClustering);
-}  // namespace features
 
 // Model to predict whether the user belongs to MetricsClustering segment.
 class MetricsClustering : public DefaultModelProvider {

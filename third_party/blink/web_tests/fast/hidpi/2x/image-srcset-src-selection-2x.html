@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<script src="../../../resources/js-test.js"></script>
+<script>
+    if (window.testRunner) {
+        testRunner.dumpAsText();
+    }
+    addEventListener("load", function() {
+        shouldBeTrue('document.getElementById("foo").clientWidth==200');
+    }, false);
+</script>
+<div>This test passes if the div below is a green 200px square when the deviceScaleFactor is 2. It simply ensures that the src attribute is taken into account by the selection algorithm when this one is processing the images candidates</div>
+<img id="foo" src="../resources/blue-100-px-square.png" srcset="../resources/green-400-px-square.png 2x">

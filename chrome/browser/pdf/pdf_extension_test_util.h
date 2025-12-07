@@ -67,7 +67,7 @@ std::vector<content::RenderFrameHost*> GetPdfPluginFrames(
     content::WebContents* contents);
 
 // Counts the total number of unique PDF plugin processes.
-size_t CountPdfPluginProcesses(Browser* browser);
+size_t CountPdfPluginProcesses(const Browser* browser);
 
 // Ensures, inside the given `frame`, that a PDF has either finished
 // loading or prompted a password. The result indicates success if the PDF loads
@@ -91,12 +91,6 @@ size_t CountPdfPluginProcesses(Browser* browser);
 gfx::Point ConvertPageCoordToScreenCoord(
     content::ToRenderFrameHost guest_main_frame,
     const gfx::Point& point);
-
-// Synchronously sets the input focus on the plugin frame by clicking on the
-// top-left corner of a PDF document.
-// TODO(crbug.com/40268279): Remove this once there are no more existing use
-// cases.
-void SetInputFocusOnPlugin(extensions::MimeHandlerViewGuest* guest);
 
 // Synchronously sets the input focus on the plugin frame by clicking on the
 // top-left corner of a PDF document.

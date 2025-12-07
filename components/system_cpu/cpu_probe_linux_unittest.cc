@@ -8,9 +8,9 @@
 #include <optional>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
@@ -47,7 +47,7 @@ class CpuProbeLinuxTest : public testing::Test {
       return false;
     }
     if (contents.size() > 0) {
-      if (!stat_file_.Write(0, contents.data(), contents.size())) {
+      if (!UNSAFE_TODO(stat_file_.Write(0, contents.data(), contents.size()))) {
         return false;
       }
     }

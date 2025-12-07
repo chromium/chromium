@@ -16,16 +16,22 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/token.h"
 #include "chrome/browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper.h"
+#include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service.h"
+#include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service_factory.h"
+#include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service_observer.h"
+#include "chrome/browser/new_tab_page/modules/modules_constants.h"
+#include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/new_tab_page/promos/promo_data.h"
 #include "chrome/browser/new_tab_page/promos/promo_service.h"
 #include "chrome/browser/new_tab_page/promos/promo_service_factory.h"
 #include "chrome/browser/new_tab_page/promos/promo_service_observer.h"
-#include "chrome/browser/search/background/ntp_background_data.h"
+#include "chrome/browser/promos/promos_pref_names.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_observer.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -48,6 +54,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/feature_engagement/public/event_constants.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -55,6 +62,13 @@
 #include "components/search/ntp_features.h"
 #include "components/search_provider_logos/logo_common.h"
 #include "components/search_provider_logos/logo_service.h"
+#include "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
+#include "components/segmentation_platform/public/constants.h"
+#include "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
+#include "components/sync/test/test_sync_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/themes/ntp_background_data.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
@@ -98,11 +112,18 @@ class MockPage : public new_tab_page::mojom::Page {
   MOCK_METHOD(void,
               SetDisabledModules,
               (bool, const std::vector<std::string>&));
+  MOCK_METHOD(void, SetModulesLoadable, ());
   MOCK_METHOD(void, SetModulesFreVisibility, (bool));
   MOCK_METHOD(void, SetCustomizeChromeSidePanelVisibility, (bool));
+  MOCK_METHOD(void, SetActionChipsVisibility, (bool));
   MOCK_METHOD(void, SetPromo, (new_tab_page::mojom::PromoPtr));
   MOCK_METHOD(void, ShowWebstoreToast, ());
   MOCK_METHOD(void, SetWallpaperSearchButtonVisibility, (bool));
+  MOCK_METHOD(void, FooterVisibilityUpdated, (bool));
+  MOCK_METHOD(void,
+              ConnectToParentDocument,
+              (mojo::PendingRemote<
+                  new_tab_page::mojom::MicrosoftAuthUntrustedDocument>));
 
   mojo::Receiver<new_tab_page::mojom::Page> receiver_{this};
 };
@@ -220,26 +241,10 @@ class MockCustomizeChromeTabHelper
   MOCK_METHOD(void, DeregisterEntry, (), (override));
 };
 
-class MockFeaturePromoHelper : public NewTabPageFeaturePromoHelper {
+class MockMicrosoftAuthService : public MicrosoftAuthService {
  public:
-  MOCK_METHOD(void,
-              RecordFeatureUsage,
-              (const std::string& event, content::WebContents*),
-              (override));
-  MOCK_METHOD(void,
-              MaybeShowFeaturePromo,
-              (const base::Feature& iph_feature, content::WebContents*),
-              (override));
-  MOCK_METHOD(void,
-              CloseFeaturePromo,
-              (const base::Feature& iph_feature, content::WebContents*),
-              (override));
-  MOCK_METHOD(bool,
-              IsSigninModalDialogOpen,
-              (content::WebContents*),
-              (override));
-
-  ~MockFeaturePromoHelper() override = default;
+  MOCK_METHOD0(GetAuthState, MicrosoftAuthService::AuthState());
+  MOCK_METHOD(void, AddObserver, (MicrosoftAuthServiceObserver*), (override));
 };
 
 std::unique_ptr<TestingProfile> MakeTestingProfile(
@@ -250,6 +255,12 @@ std::unique_ptr<TestingProfile> MakeTestingProfile(
       base::BindRepeating([](content::BrowserContext* context)
                               -> std::unique_ptr<KeyedService> {
         return std::make_unique<testing::NiceMock<MockPromoService>>();
+      }));
+  profile_builder.AddTestingFactory(
+      MicrosoftAuthServiceFactory::GetInstance(),
+      base::BindRepeating([](content::BrowserContext* context)
+                              -> std::unique_ptr<KeyedService> {
+        return std::make_unique<testing::NiceMock<MockMicrosoftAuthService>>();
       }));
   profile_builder.SetSharedURLLoaderFactory(url_loader_factory);
   auto profile = profile_builder.Build();
@@ -279,9 +290,6 @@ class NewTabPageHandlerTest : public testing::Test {
         mock_promo_service_(*static_cast<MockPromoService*>(
             PromoServiceFactory::GetForProfile(profile_.get()))),
         web_contents_(factory_.CreateWebContents(profile_.get())),
-        mock_feature_promo_helper_(new MockFeaturePromoHelper()),
-        mock_feature_promo_helper_ptr_(std::unique_ptr<MockFeaturePromoHelper>(
-            mock_feature_promo_helper_)),
         mock_customize_chrome_tab_helper_(
             std::make_unique<MockCustomizeChromeTabHelper>()) {
     mock_hats_service_ = static_cast<MockHatsService*>(
@@ -324,9 +332,9 @@ class NewTabPageHandlerTest : public testing::Test {
         mojo::PendingReceiver<new_tab_page::mojom::PageHandler>(),
         mock_page_.BindAndGetRemote(), profile_.get(),
         &mock_ntp_custom_background_service_, &mock_theme_service_,
-        &mock_logo_service_, web_contents_,
-        std::move(mock_feature_promo_helper_ptr_), base::Time::Now(),
-        &module_id_names, mock_customize_chrome_tab_helper_.get());
+        &mock_logo_service_, &test_sync_service_,
+        &mock_segmentation_platform_service_, web_contents_, base::Time::Now(),
+        &module_id_details);
     mock_page_.FlushForTesting();
     EXPECT_EQ(handler_.get(), theme_service_observer_);
     EXPECT_EQ(handler_.get(), ntp_custom_background_service_observer_);
@@ -340,21 +348,19 @@ class NewTabPageHandlerTest : public testing::Test {
     search_provider_logos::EncodedLogoCallback on_cached_encoded_logo_available;
     EXPECT_CALL(mock_logo_service_, GetLogo(testing::_, testing::_))
         .Times(1)
-        .WillOnce(
-            testing::Invoke([&on_cached_encoded_logo_available](
-                                search_provider_logos::LogoCallbacks callbacks,
-                                bool for_webui_ntp) {
-              on_cached_encoded_logo_available =
-                  std::move(callbacks.on_cached_encoded_logo_available);
-            }));
+        .WillOnce([&on_cached_encoded_logo_available](
+                      search_provider_logos::LogoCallbacks callbacks,
+                      bool for_webui_ntp) {
+          on_cached_encoded_logo_available =
+              std::move(callbacks.on_cached_encoded_logo_available);
+        });
     base::MockCallback<NewTabPageHandler::GetDoodleCallback> callback;
     new_tab_page::mojom::DoodlePtr doodle;
     EXPECT_CALL(callback, Run(testing::_))
         .Times(1)
-        .WillOnce(
-            testing::Invoke([&doodle](new_tab_page::mojom::DoodlePtr arg) {
-              doodle = std::move(arg);
-            }));
+        .WillOnce([&doodle](new_tab_page::mojom::DoodlePtr arg) {
+          doodle = std::move(arg);
+        });
     handler_->GetDoodle(callback.Get());
 
     std::move(on_cached_encoded_logo_available)
@@ -374,15 +380,15 @@ class NewTabPageHandlerTest : public testing::Test {
       mock_ntp_custom_background_service_;
   testing::NiceMock<MockThemeService> mock_theme_service_;
   MockLogoService mock_logo_service_;
+  syncer::TestSyncService test_sync_service_;
+  segmentation_platform::MockSegmentationPlatformService
+      mock_segmentation_platform_service_;
   MockColorProviderSource mock_color_provider_source_;
   MockHatsService* mock_hats_service() { return mock_hats_service_; }
   testing::NiceMock<MockThemeProvider> mock_theme_provider_;
   const raw_ref<MockPromoService> mock_promo_service_;
   content::TestWebContentsFactory factory_;
   raw_ptr<content::WebContents> web_contents_;  // Weak. Owned by factory_.
-  // Pointer to mock that will eventually be solely owned by the handler.
-  raw_ptr<MockFeaturePromoHelper, DanglingUntriaged> mock_feature_promo_helper_;
-  std::unique_ptr<MockFeaturePromoHelper> mock_feature_promo_helper_ptr_;
   std::unique_ptr<MockCustomizeChromeTabHelper>
       mock_customize_chrome_tab_helper_;
   base::HistogramTester histogram_tester_;
@@ -393,8 +399,8 @@ class NewTabPageHandlerTest : public testing::Test {
   raw_ptr<PromoServiceObserver> promo_service_observer_;
 
  private:
-  const std::vector<std::pair<const std::string, int>> module_id_names = {
-      {"drive", IDS_NTP_MODULES_DRIVE_SENTENCE}};
+  const std::vector<ntp::ModuleIdDetail> module_id_details = {
+      {ntp_modules::kDriveModuleId, IDS_NTP_MODULES_DRIVE_NAME}};
   raw_ptr<MockHatsService> mock_hats_service_;
 };
 
@@ -427,9 +433,9 @@ TEST_P(NewTabPageHandlerThemeTest, SetTheme) {
   new_tab_page::mojom::ThemePtr theme;
   EXPECT_CALL(mock_page_, SetTheme)
       .Times(1)
-      .WillOnce(testing::Invoke([&theme](new_tab_page::mojom::ThemePtr arg) {
+      .WillOnce([&theme](new_tab_page::mojom::ThemePtr arg) {
         theme = std::move(arg);
-      }));
+      });
   ON_CALL(mock_ntp_custom_background_service_, GetCustomBackground())
       .WillByDefault(testing::Return(std::optional<CustomBackground>()));
   mock_color_provider_source_.SetColor(kColorNewTabPageBackground,
@@ -505,9 +511,9 @@ TEST_P(NewTabPageHandlerThemeTest, SetCustomBackground) {
   new_tab_page::mojom::ThemePtr theme;
   EXPECT_CALL(mock_page_, SetTheme)
       .Times(1)
-      .WillOnce(testing::Invoke([&theme](new_tab_page::mojom::ThemePtr arg) {
+      .WillOnce([&theme](new_tab_page::mojom::ThemePtr arg) {
         theme = std::move(arg);
-      }));
+      });
   CustomBackground custom_background;
   custom_background.custom_background_url = GURL("https://foo.com/img.png");
   custom_background.custom_background_attribution_line_1 = "foo line";
@@ -549,9 +555,9 @@ TEST_P(NewTabPageHandlerThemeTest, SetDailyRefresh) {
   new_tab_page::mojom::ThemePtr theme;
   EXPECT_CALL(mock_page_, SetTheme)
       .Times(1)
-      .WillOnce(testing::Invoke([&theme](new_tab_page::mojom::ThemePtr arg) {
+      .WillOnce([&theme](new_tab_page::mojom::ThemePtr arg) {
         theme = std::move(arg);
-      }));
+      });
   CustomBackground custom_background;
   custom_background.daily_refresh_enabled = true;
   custom_background.is_uploaded_image = false;
@@ -573,9 +579,9 @@ TEST_P(NewTabPageHandlerThemeTest, SetUploadedImage) {
   new_tab_page::mojom::ThemePtr theme;
   EXPECT_CALL(mock_page_, SetTheme)
       .Times(1)
-      .WillOnce(testing::Invoke([&theme](new_tab_page::mojom::ThemePtr arg) {
+      .WillOnce([&theme](new_tab_page::mojom::ThemePtr arg) {
         theme = std::move(arg);
-      }));
+      });
   CustomBackground custom_background;
   custom_background.custom_background_url = GURL("https://foo.com/img.png");
   custom_background.is_uploaded_image = true;
@@ -599,9 +605,9 @@ TEST_P(NewTabPageHandlerThemeTest, SetWallpaperSearchImage) {
   new_tab_page::mojom::ThemePtr theme;
   EXPECT_CALL(mock_page_, SetTheme)
       .Times(1)
-      .WillOnce(testing::Invoke([&theme](new_tab_page::mojom::ThemePtr arg) {
+      .WillOnce([&theme](new_tab_page::mojom::ThemePtr arg) {
         theme = std::move(arg);
-      }));
+      });
   CustomBackground custom_background;
   custom_background.is_uploaded_image = true;
   custom_background.local_background_id = base::Token::CreateRandom();
@@ -625,9 +631,9 @@ TEST_P(NewTabPageHandlerThemeTest, SetWallpaperSearchInspirationImage) {
   new_tab_page::mojom::ThemePtr theme;
   EXPECT_CALL(mock_page_, SetTheme)
       .Times(1)
-      .WillOnce(testing::Invoke([&theme](new_tab_page::mojom::ThemePtr arg) {
+      .WillOnce([&theme](new_tab_page::mojom::ThemePtr arg) {
         theme = std::move(arg);
-      }));
+      });
   CustomBackground custom_background;
   custom_background.is_uploaded_image = true;
   custom_background.local_background_id = base::Token::CreateRandom();
@@ -652,9 +658,9 @@ TEST_P(NewTabPageHandlerThemeTest, SetThirdPartyTheme) {
   new_tab_page::mojom::ThemePtr theme;
   EXPECT_CALL(mock_page_, SetTheme)
       .Times(1)
-      .WillOnce(testing::Invoke([&theme](new_tab_page::mojom::ThemePtr arg) {
+      .WillOnce([&theme](new_tab_page::mojom::ThemePtr arg) {
         theme = std::move(arg);
-      }));
+      });
   CustomBackground custom_background;
   custom_background.custom_background_url = GURL("https://foo.com/img.png");
   custom_background.collection_id = "baz collection";
@@ -811,9 +817,9 @@ TEST_F(NewTabPageHandlerTest, UpdatePromoData) {
   new_tab_page::mojom::PromoPtr promo;
   EXPECT_CALL(mock_page_, SetPromo)
       .Times(1)
-      .WillOnce(testing::Invoke([&promo](new_tab_page::mojom::PromoPtr arg) {
+      .WillOnce([&promo](new_tab_page::mojom::PromoPtr arg) {
         promo = std::move(arg);
-      }));
+      });
   handler_->UpdatePromoData();
   mock_page_.FlushForTesting();
 
@@ -887,23 +893,112 @@ TEST_F(NewTabPageHandlerTest, OnDoodleShared) {
       "gen_204?atype=i&ct=doodle&ntp=2&cad=sh,5,ct:food_id&ei=bar_id"));
 }
 
+class NewTabPageHandlerMicrosoftAuthStateTest
+    : public NewTabPageHandlerTest,
+      public ::testing::WithParamInterface<MicrosoftAuthService::AuthState> {
+ public:
+  NewTabPageHandlerMicrosoftAuthStateTest() {
+    profile_->GetTestingPrefService()->SetManagedPref(
+        prefs::kNtpSharepointModuleVisible, base::Value(true));
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{ntp_features::kNtpMicrosoftAuthenticationModule,
+                              ntp_features::kNtpSharepointModule,
+                              ntp_features::kNtpOutlookCalendarModule},
+        /*disabled_features=*/{});
+
+    mock_microsoft_auth_service_ = static_cast<MockMicrosoftAuthService*>(
+        MicrosoftAuthServiceFactory::GetForProfile(profile_.get()));
+    EXPECT_CALL(*mock_microsoft_auth_service_, AddObserver)
+        .Times(1)
+        .WillOnce(testing::SaveArg<0>(&microsoft_auth_service_observer_));
+  }
+
+  MockMicrosoftAuthService& mock_microsoft_auth_service() {
+    return *mock_microsoft_auth_service_;
+  }
+
+  MicrosoftAuthServiceObserver& microsoft_auth_service_observer() {
+    return *microsoft_auth_service_observer_;
+  }
+
+  void SetAuthState(MicrosoftAuthService::AuthState state) {
+    ON_CALL(mock_microsoft_auth_service(), GetAuthState())
+        .WillByDefault(testing::Return(state));
+  }
+
+  MicrosoftAuthService::AuthState AuthState() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  raw_ptr<MockMicrosoftAuthService> mock_microsoft_auth_service_;
+  raw_ptr<MicrosoftAuthServiceObserver> microsoft_auth_service_observer_;
+};
+
+TEST_P(NewTabPageHandlerMicrosoftAuthStateTest, OnAuthStateUpdated) {
+  SetAuthState(AuthState());
+
+  microsoft_auth_service_observer().OnAuthStateUpdated();
+  mock_page_.FlushForTesting();
+
+  base::Value::List auth_dependent_modules;
+  for (const char* id : ntp_modules::kMicrosoftAuthDependentModuleIds) {
+    auth_dependent_modules.Append(id);
+  }
+  const std::string auth_id = ntp_modules::kMicrosoftAuthenticationModuleId;
+  base::Value::List expected_disabled_modules;
+  switch (AuthState()) {
+    case MicrosoftAuthService::AuthState::kNone:
+      break;
+    case MicrosoftAuthService::AuthState::kError:
+      expected_disabled_modules = std::move(auth_dependent_modules);
+      break;
+    case MicrosoftAuthService::AuthState::kSuccess:
+      expected_disabled_modules.Append(auth_id);
+      break;
+  }
+
+  EXPECT_EQ(profile_->GetPrefs()->GetList(prefs::kNtpHiddenModules),
+            expected_disabled_modules);
+}
+
+TEST_P(NewTabPageHandlerMicrosoftAuthStateTest,
+       UpdateModulesLoadableTriggersPageCall) {
+  SetAuthState(AuthState());
+
+  handler_->UpdateModulesLoadable();
+
+  if (AuthState() == MicrosoftAuthService::AuthState::kNone) {
+    EXPECT_CALL(mock_page_, SetModulesLoadable()).Times(0);
+  } else {
+    EXPECT_CALL(mock_page_, SetModulesLoadable()).Times(1);
+  }
+
+  mock_page_.FlushForTesting();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    NewTabPageHandlerMicrosoftAuthStateTest,
+    ::testing::Values(MicrosoftAuthService::AuthState::kNone,
+                      MicrosoftAuthService::AuthState::kError,
+                      MicrosoftAuthService::AuthState::kSuccess));
+
 TEST_F(NewTabPageHandlerTest, GetModulesIdNames) {
   std::vector<new_tab_page::mojom::ModuleIdNamePtr> modules_details;
   base::MockCallback<NewTabPageHandler::GetModulesIdNamesCallback> callback;
   EXPECT_CALL(callback, Run(_))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&modules_details](
-              std::vector<new_tab_page::mojom::ModuleIdNamePtr> arg) {
-            modules_details = std::move(arg);
-          }));
+      .WillOnce([&modules_details](
+                    std::vector<new_tab_page::mojom::ModuleIdNamePtr> arg) {
+        modules_details = std::move(arg);
+      });
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       /*enabled_features=*/{ntp_features::kNtpDriveModule},
       /*disabled_features=*/{});
   handler_->GetModulesIdNames(callback.Get());
   EXPECT_EQ(modules_details.size(), 1u);
-  EXPECT_EQ(modules_details.front()->id, "drive");
+  EXPECT_EQ(modules_details.front()->id, ntp_modules::kDriveModuleId);
 }
 
 TEST_F(NewTabPageHandlerTest, GetModulesOrder) {
@@ -913,7 +1008,7 @@ TEST_F(NewTabPageHandlerTest, GetModulesOrder) {
   base::test::ScopedFeatureList features;
   features.InitWithFeaturesAndParameters(
       {{ntp_features::kNtpModulesOrder,
-        {{ntp_features::kNtpModulesOrderParam, "bar,baz"}}},
+        {{ntp_features::kNtpModulesOrderParam, "bar,baz,drive"}}},
        {ntp_features::kNtpModulesDragAndDrop, {}}},
       {});
   base::Value::List module_ids_value;
@@ -923,7 +1018,10 @@ TEST_F(NewTabPageHandlerTest, GetModulesOrder) {
                                 std::move(module_ids_value));
 
   handler_->GetModulesOrder(callback.Get());
-  EXPECT_THAT(module_ids, ElementsAre("foo", "bar", "baz"));
+  EXPECT_THAT(module_ids, ElementsAre("foo", "bar", "baz", "drive",
+                                      "microsoft_authentication",
+                                      "outlook_calendar", "microsoft_files",
+                                      "google_calendar", "tab_resumption"));
 }
 
 TEST_F(NewTabPageHandlerTest, SurveyLaunchedEligibleModulesCriteria) {
@@ -939,8 +1037,9 @@ TEST_F(NewTabPageHandlerTest, SurveyLaunchedEligibleModulesCriteria) {
   EXPECT_CALL(*mock_hats_service(),
               LaunchDelayedSurveyForWebContents(_, _, _, _, _, _, _, _, _, _))
       .Times(1);
-  const std::vector<std::string> module_ids = {"google_calendar",
-                                               "tab_resumption"};
+  const std::vector<std::string> module_ids = {
+      ntp_modules::kGoogleCalendarModuleId,
+      ntp_modules::kMostRelevantTabResumptionModuleId};
   handler_->OnModulesLoadedWithData(module_ids);
 
   for (const auto& module_id : module_ids) {
@@ -956,14 +1055,15 @@ TEST_F(NewTabPageHandlerTest, SurveyLaunchSkippedEligibleModulesCriteria) {
       {
           {features::kHappinessTrackingSurveysForDesktopNtpModules,
            {{ntp_features::kNtpModulesEligibleForHappinessTrackingSurveyParam,
-             "drive"}}},
+             ntp_modules::kDriveModuleId}}},
       },
       {});
 
   EXPECT_CALL(*mock_hats_service(),
               LaunchDelayedSurveyForWebContents(_, _, _, _, _, _, _, _, _, _))
       .Times(0);
-  const std::vector<std::string> module_ids = {"google_calendar"};
+  const std::vector<std::string> module_ids = {
+      ntp_modules::kGoogleCalendarModuleId};
   handler_->OnModulesLoadedWithData(module_ids);
 
   for (const auto& module_id : module_ids) {
@@ -973,10 +1073,114 @@ TEST_F(NewTabPageHandlerTest, SurveyLaunchSkippedEligibleModulesCriteria) {
   }
 }
 
-TEST_F(NewTabPageHandlerTest, SetModuleDisabledTriggersPageCall) {
-  handler_->SetModuleDisabled("drive", true);
+TEST_F(NewTabPageHandlerTest, SetModuleDisabled) {
+  base::Value::List disabled_modules_list;
+  EXPECT_EQ(disabled_modules_list,
+            profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules));
+
+  handler_->SetModuleDisabled(ntp_modules::kDriveModuleId, true);
   EXPECT_CALL(mock_page_, SetDisabledModules).Times(1);
   mock_page_.FlushForTesting();
+
+  disabled_modules_list.Append(ntp_modules::kDriveModuleId);
+  EXPECT_EQ(disabled_modules_list,
+            profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules));
+}
+
+TEST_F(NewTabPageHandlerTest, SetModuleHiddenAndDisabled) {
+  bool all;
+  std::vector<std::string> disabled_module_ids;
+  EXPECT_CALL(mock_page_, SetDisabledModules)
+      .Times(2)
+      .WillRepeatedly(
+          [&all, &disabled_module_ids](
+              bool all_arg, std::vector<std::string> module_ids_arg) {
+            all = all_arg;
+            disabled_module_ids = std::move(module_ids_arg);
+          });
+  mock_page_.FlushForTesting();
+
+  base::Value::List hidden_modules_list;
+  hidden_modules_list.Append(ntp_modules::kDriveModuleId);
+  profile_->GetPrefs()->SetList(prefs::kNtpHiddenModules,
+                                std::move(hidden_modules_list));
+  mock_page_.FlushForTesting();
+  EXPECT_FALSE(all);
+  EXPECT_EQ(1u, disabled_module_ids.size());
+  EXPECT_EQ(disabled_module_ids[0], ntp_modules::kDriveModuleId);
+
+  handler_->SetModuleDisabled(ntp_modules::kDriveModuleId, true);
+  mock_page_.FlushForTesting();
+  // Ensure |disabled_module_ids| still only has one entry for
+  // `ntp_modules::kDriveModuleId`.
+  EXPECT_FALSE(all);
+  EXPECT_EQ(1u, disabled_module_ids.size());
+  EXPECT_EQ(disabled_module_ids[0], ntp_modules::kDriveModuleId);
+}
+
+TEST_F(NewTabPageHandlerTest, SetModuleHiddenAndDisabledCardsManagedVisible) {
+  profile_->GetTestingPrefService()->SetManagedPref(prefs::kNtpModulesVisible,
+                                                    base::Value(true));
+  bool all;
+  std::vector<std::string> disabled_module_ids;
+  EXPECT_CALL(mock_page_, SetDisabledModules)
+      .Times(3)
+      .WillRepeatedly(
+          [&all, &disabled_module_ids](
+              bool all_arg, std::vector<std::string> module_ids_arg) {
+            all = all_arg;
+            disabled_module_ids = std::move(module_ids_arg);
+          });
+  mock_page_.FlushForTesting();
+
+  // Managed card visibility should ignore disabling of cards.
+  handler_->SetModuleDisabled(ntp_modules::kDriveModuleId, true);
+  mock_page_.FlushForTesting();
+  EXPECT_FALSE(all);
+  EXPECT_TRUE(disabled_module_ids.empty());
+
+  // Managed card visibility that forces display of cards should respect
+  // hidden cards.
+  base::Value::List hidden_modules_list;
+  hidden_modules_list.Append(ntp_modules::kDriveModuleId);
+  profile_->GetPrefs()->SetList(prefs::kNtpHiddenModules,
+                                std::move(hidden_modules_list));
+  mock_page_.FlushForTesting();
+  EXPECT_FALSE(all);
+  EXPECT_EQ(1u, disabled_module_ids.size());
+  EXPECT_EQ(disabled_module_ids[0], ntp_modules::kDriveModuleId);
+}
+
+TEST_F(NewTabPageHandlerTest,
+       SetModuleHiddenAndDisabledCardsManagedNotVisible) {
+  profile_->GetTestingPrefService()->SetManagedPref(prefs::kNtpModulesVisible,
+                                                    base::Value(false));
+  bool all;
+  std::vector<std::string> disabled_module_ids;
+  EXPECT_CALL(mock_page_, SetDisabledModules)
+      .Times(3)
+      .WillRepeatedly(
+          [&all, &disabled_module_ids](
+              bool all_arg, std::vector<std::string> module_ids_arg) {
+            all = all_arg;
+            disabled_module_ids = std::move(module_ids_arg);
+          });
+  mock_page_.FlushForTesting();
+
+  // Managed card visibility of cards should ignore hidden and disabled cards
+  // and send a value of true for all cards being disabled.
+  base::Value::List hidden_modules_list;
+  hidden_modules_list.Append(ntp_modules::kDriveModuleId);
+  profile_->GetPrefs()->SetList(prefs::kNtpHiddenModules,
+                                std::move(hidden_modules_list));
+  mock_page_.FlushForTesting();
+  EXPECT_TRUE(all);
+  EXPECT_TRUE(disabled_module_ids.empty());
+
+  handler_->SetModuleDisabled(ntp_modules::kDriveModuleId, true);
+  mock_page_.FlushForTesting();
+  EXPECT_TRUE(all);
+  EXPECT_TRUE(disabled_module_ids.empty());
 }
 
 TEST_F(NewTabPageHandlerTest, ModulesVisiblePrefChangeTriggersPageCall) {
@@ -985,135 +1189,19 @@ TEST_F(NewTabPageHandlerTest, ModulesVisiblePrefChangeTriggersPageCall) {
   mock_page_.FlushForTesting();
 }
 
-TEST_F(NewTabPageHandlerTest, OpenSidePanel) {
-  SidePanelOpenTrigger trigger;
-  std::optional<CustomizeChromeSection> section;
-  EXPECT_CALL(*mock_customize_chrome_tab_helper_, OpenSidePanel)
+// Tests that UpdateActionChipsVisibility calls the page with
+// SetActionChipsVisibility
+TEST_F(NewTabPageHandlerTest, UpdateActionChipsVisibility) {
+  bool visible;
+  EXPECT_CALL(mock_page_, SetActionChipsVisibility)
       .Times(1)
-      .WillOnce(testing::DoAll(testing::SaveArg<0>(&trigger),
-                               testing::SaveArg<1>(&section)));
-  EXPECT_CALL(
-      *mock_feature_promo_helper_,
-      RecordFeatureUsage(feature_engagement::events::kCustomizeChromeOpened,
-                         web_contents_.get()))
-      .Times(1);
-  EXPECT_CALL(*mock_feature_promo_helper_, CloseFeaturePromo).Times(1);
+      .WillOnce([&visible](bool visible_arg) { visible = visible_arg; });
 
-  handler_->SetCustomizeChromeSidePanelVisible(
-      /*visible=*/true,
-      new_tab_page::mojom::CustomizeChromeSection::kAppearance);
-
-  EXPECT_EQ(SidePanelOpenTrigger::kNewTabPage, trigger);
-  EXPECT_EQ(CustomizeChromeSection::kAppearance, section);
-}
-
-TEST_F(NewTabPageHandlerTest, CloseSidePanel) {
-  EXPECT_CALL(*mock_customize_chrome_tab_helper_, CloseSidePanel).Times(1);
-  EXPECT_CALL(*mock_feature_promo_helper_, RecordFeatureUsage).Times(0);
-  EXPECT_CALL(*mock_feature_promo_helper_, CloseFeaturePromo).Times(0);
-
-  handler_->SetCustomizeChromeSidePanelVisible(
-      /*visible=*/false, new_tab_page::mojom::CustomizeChromeSection::kModules);
-}
-
-TEST_F(NewTabPageHandlerTest, IncrementCustomizeChromeButtonOpenCount) {
-  EXPECT_EQ(profile_->GetPrefs()->GetInteger(
-                prefs::kNtpCustomizeChromeButtonOpenCount),
-            0);
-
-  handler_->IncrementCustomizeChromeButtonOpenCount();
-
-  EXPECT_EQ(profile_->GetPrefs()->GetInteger(
-                prefs::kNtpCustomizeChromeButtonOpenCount),
-            1);
-
-  handler_->IncrementCustomizeChromeButtonOpenCount();
-
-  EXPECT_EQ(profile_->GetPrefs()->GetInteger(
-                prefs::kNtpCustomizeChromeButtonOpenCount),
-            2);
-
+  profile_->GetPrefs()->SetBoolean(prefs::kNtpToolChipsVisible, true);
   mock_page_.FlushForTesting();
-}
 
-// TODO (crbug/1521350): Fails when ChromeRefresh2023 is enabled.
-TEST_F(NewTabPageHandlerTest, DISABLED_MaybeShowFeaturePromo_CustomizeChrome) {
-  EXPECT_CALL(*mock_feature_promo_helper_, IsSigninModalDialogOpen)
-      .WillRepeatedly(testing::Return(false));
-  EXPECT_EQ(profile_->GetPrefs()->GetInteger(
-                prefs::kNtpCustomizeChromeButtonOpenCount),
-            0);
-  EXPECT_CALL(*mock_feature_promo_helper_, MaybeShowFeaturePromo).Times(1);
-
-  handler_->MaybeShowFeaturePromo(
-      new_tab_page::mojom::IphFeature::kCustomizeChrome);
-
-  handler_->IncrementCustomizeChromeButtonOpenCount();
-  EXPECT_EQ(profile_->GetPrefs()->GetInteger(
-                prefs::kNtpCustomizeChromeButtonOpenCount),
-            1);
-  EXPECT_CALL(*mock_feature_promo_helper_, MaybeShowFeaturePromo).Times(0);
-
-  handler_->MaybeShowFeaturePromo(
-      new_tab_page::mojom::IphFeature::kCustomizeChrome);
-
-  mock_page_.FlushForTesting();
-}
-
-TEST_F(NewTabPageHandlerTest, MaybeShowFeaturePromo_CustomizeChromeRefresh) {
-  EXPECT_CALL(*mock_feature_promo_helper_, IsSigninModalDialogOpen)
-      .WillRepeatedly(testing::Return(false));
-  EXPECT_CALL(*mock_feature_promo_helper_,
-              MaybeShowFeaturePromo(_, web_contents_.get()))
-      .Times(1);
-
-  handler_->MaybeShowFeaturePromo(
-      new_tab_page::mojom::IphFeature::kCustomizeChrome);
-  // Assert that the code path taken is the one that does not involve
-  // incrementing the button open count.
-  EXPECT_EQ(profile_->GetPrefs()->GetInteger(
-                prefs::kNtpCustomizeChromeButtonOpenCount),
-            0);
-
-  mock_page_.FlushForTesting();
-}
-
-TEST_F(NewTabPageHandlerTest, MaybeShowFeaturePromo_CustomizeModules) {
-  EXPECT_CALL(*mock_feature_promo_helper_, IsSigninModalDialogOpen)
-      .WillRepeatedly(testing::Return(false));
-  EXPECT_CALL(*mock_feature_promo_helper_,
-              MaybeShowFeaturePromo(_, web_contents_.get()))
-      .Times(1);
-
-  handler_->MaybeShowFeaturePromo(
-      new_tab_page::mojom::IphFeature::kCustomizeModules);
-  mock_page_.FlushForTesting();
-}
-
-TEST_F(NewTabPageHandlerTest,
-       DontShowCustomizeChromeFeaturePromoWhenModalDialogIsOpen) {
-  EXPECT_CALL(*mock_feature_promo_helper_, IsSigninModalDialogOpen)
-      .WillRepeatedly(testing::Return(true));
-  EXPECT_EQ(profile_->GetPrefs()->GetInteger(
-                prefs::kNtpCustomizeChromeButtonOpenCount),
-            0);
-  EXPECT_CALL(*mock_feature_promo_helper_, MaybeShowFeaturePromo).Times(0);
-
-  handler_->MaybeShowFeaturePromo(
-      new_tab_page::mojom::IphFeature::kCustomizeChrome);
-
-  mock_page_.FlushForTesting();
-}
-
-TEST_F(NewTabPageHandlerTest, OnModuleUsedRecordFeatureUsageAndClosePromo) {
-  EXPECT_CALL(
-      *mock_feature_promo_helper_,
-      RecordFeatureUsage(feature_engagement::events::kDesktopNTPModuleUsed,
-                         web_contents_.get()))
-      .Times(1);
-  EXPECT_CALL(*mock_feature_promo_helper_, CloseFeaturePromo).Times(1);
-
-  handler_->OnModuleUsed("module_id");
+  EXPECT_TRUE(visible);
+  EXPECT_TRUE(profile_->GetPrefs()->GetBoolean(prefs::kNtpToolChipsVisible));
 }
 
 TEST_F(NewTabPageHandlerTest, ShowWebstoreToast) {
@@ -1130,18 +1218,16 @@ TEST_F(NewTabPageHandlerTest, DoNotShowWebstoreToastOnCountExceeded) {
   mock_page_.FlushForTesting();
 }
 
-TEST_F(NewTabPageHandlerTest, IncrementWallpaperSearchButtonShownCount) {
+TEST_F(NewTabPageHandlerTest, IncrementComposeButtonShownCount) {
   EXPECT_EQ(profile_->GetPrefs()->GetInteger(
-                prefs::kNtpWallpaperSearchButtonShownCount),
+                prefs::kNtpComposeButtonShownCountPrefName),
             0);
 
-  handler_->IncrementWallpaperSearchButtonShownCount();
+  handler_->IncrementComposeButtonShownCount();
 
   EXPECT_EQ(profile_->GetPrefs()->GetInteger(
-                prefs::kNtpWallpaperSearchButtonShownCount),
+                prefs::kNtpComposeButtonShownCountPrefName),
             1);
-
-  mock_page_.FlushForTesting();
 }
 
 class NewTabPageHandlerHaTSTest : public NewTabPageHandlerTest {

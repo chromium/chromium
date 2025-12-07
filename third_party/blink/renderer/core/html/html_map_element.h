@@ -25,11 +25,11 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 
 namespace blink {
 
 class HTMLImageElement;
-struct PhysicalOffset;
 
 class CORE_EXPORT HTMLMapElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();

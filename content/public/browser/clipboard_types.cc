@@ -5,6 +5,7 @@
 #include "content/public/browser/clipboard_types.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/no_destructor.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -98,6 +99,19 @@ BrowserContext* ClipboardEndpoint::browser_context() const {
 
 WebContents* ClipboardEndpoint::web_contents() const {
   return web_contents_.get();
+}
+
+const ui::ClipboardFormatType& SourceRFHTokenType() {
+#if BUILDFLAG(IS_APPLE)
+  constexpr char kTypeName[] = "org.chromium.internal.source-rfh-token";
+#elif BUILDFLAG(IS_WIN)
+  constexpr char kTypeName[] = "Chromium internal source RFH token";
+#else
+  constexpr char kTypeName[] = "chromium/x-internal-source-rfh-token";
+#endif
+  static base::NoDestructor<ui::ClipboardFormatType> type(
+      ui::ClipboardFormatType::CustomPlatformType(kTypeName));
+  return *type;
 }
 
 }  // namespace content

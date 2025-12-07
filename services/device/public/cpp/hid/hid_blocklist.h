@@ -70,6 +70,21 @@ class HidBlocklist final {
       uint16_t product_id,
       const std::vector<mojom::HidCollectionInfoPtr>& collections);
 
+  // Returns true if |vendor_id| and |product_id| identify a known FIDO HID
+  // security key. Used when deciding device access for extensions allowed to
+  // bypass the blocklist to access FIDO HID capabilities.
+  static bool IsKnownSecurityKey(uint16_t vendor_id, uint16_t product_id);
+
+  struct VendorProduct {
+    uint16_t vendor_id;
+    uint16_t product_id;
+
+    friend bool operator==(const VendorProduct&,
+                           const VendorProduct&) = default;
+  };
+
+  static base::span<const VendorProduct> GetKnownSecurityKeysForTesting();
+
   // Returns the number of dynamic blocklist entries.
   size_t GetDynamicEntryCountForTest() const { return dynamic_entries_.size(); }
 

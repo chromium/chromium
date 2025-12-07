@@ -12,7 +12,8 @@ const wchar *NullToEmpty(const wchar *Str)
 }
 
 
-void IntToExt(const std::string &Src,std::string &Dest)
+// Convert from OEM encoding.
+void OemToExt(const std::string &Src,std::string &Dest)
 {
 #ifdef _WIN_ALL
   if (std::addressof(Src)!=std::addressof(Dest))
@@ -36,6 +37,25 @@ void IntToExt(const std::string &Src,std::string &Dest)
 // Allows user to select a code page in GUI.
 void ArcCharToWide(const char *Src,std::wstring &Dest,ACTW_ENCODING Encoding)
 {
+  // Optimized code for English only strings. Improved performance on archives
+  // with millions of small files.
+  bool IsLowAscii=true;
+  size_t SrcSize=0;
+  // "unsigned" is important here for correct comparison.
+  for (const unsigned char *S=(const unsigned char *)Src;*S!=0;S++,SrcSize++)
+    if (*S>127)
+    {
+      IsLowAscii=false;
+      break;
+    }
+  if (IsLowAscii)
+  {
+    Dest.resize(SrcSize);
+    for (size_t I=0;Src[I]!=0;I++)
+      Dest[I]=Src[I];
+    return;
+  }
+
 #if defined(_WIN_ALL) // Console Windows RAR.
   if (Encoding==ACTW_UTF8)
     UtfToWide(Src,Dest);
@@ -65,7 +85,7 @@ void ArcCharToWide(const char *Src,std::wstring &Dest,ACTW_ENCODING Encoding)
     std::string NameA;
     if (Encoding==ACTW_OEM)
     {
-      IntToExt(Src,NameA);
+      OemToExt(Src,NameA);
       Src=NameA.data();
     }
     CharToWide(Src,Dest);

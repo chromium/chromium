@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/public/browser/media_session.h"
+
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "content/public/browser/media_session.h"
 #include "content/public/browser/media_session_client.h"
 #include "content/public/browser/media_session_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "media/base/media_switches.h"
 #include "services/media_session/public/cpp/test/mock_media_session.h"
 
 class MediaSessionBrowserTest : public InProcessBrowserTest {
@@ -20,11 +22,7 @@ class MediaSessionBrowserTest : public InProcessBrowserTest {
   MediaSessionBrowserTest& operator=(const MediaSessionBrowserTest&) = delete;
 
  protected:
-  MediaSessionBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        media::kHideIncognitoMediaMetadata);
-  }
-
+  MediaSessionBrowserTest() = default;
   ~MediaSessionBrowserTest() override = default;
 
   void PlayVideoWithMetadata(Browser* browser) {
@@ -38,7 +36,7 @@ class MediaSessionBrowserTest : public InProcessBrowserTest {
     auto* web_contents = browser->tab_strip_model()->GetActiveWebContents();
 
     // Start playback.
-    ASSERT_EQ(nullptr, content::EvalJs(web_contents, "play()"));
+    ASSERT_EQ(base::Value(), content::EvalJs(web_contents, "play()"));
   }
 
   media_session::MediaMetadata GetExpectedMetadata() {
@@ -69,8 +67,6 @@ class MediaSessionBrowserTest : public InProcessBrowserTest {
 
     return expected_metadata;
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest,

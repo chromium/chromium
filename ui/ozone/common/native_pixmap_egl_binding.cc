@@ -2,17 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/ozone/common/native_pixmap_egl_binding.h"
+
+#include <array>
 
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "ui/gfx/buffer_format_util.h"
+#include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/scoped_binders.h"
@@ -43,51 +41,10 @@ namespace {
 /* Reserve 0 for the invalid format specifier */
 #define DRM_FORMAT_INVALID 0
 
-EGLint FourCC(gfx::BufferFormat format) {
-  switch (format) {
-    case gfx::BufferFormat::R_8:
-      return DRM_FORMAT_R8;
-    case gfx::BufferFormat::R_16:
-      return DRM_FORMAT_R16;
-    case gfx::BufferFormat::RG_88:
-      return DRM_FORMAT_GR88;
-    case gfx::BufferFormat::RG_1616:
-      return DRM_FORMAT_GR1616;
-    case gfx::BufferFormat::BGR_565:
-      return DRM_FORMAT_RGB565;
-    case gfx::BufferFormat::RGBA_8888:
-      return DRM_FORMAT_ABGR8888;
-    case gfx::BufferFormat::RGBX_8888:
-      return DRM_FORMAT_XBGR8888;
-    case gfx::BufferFormat::BGRA_8888:
-      return DRM_FORMAT_ARGB8888;
-    case gfx::BufferFormat::BGRX_8888:
-      return DRM_FORMAT_XRGB8888;
-    case gfx::BufferFormat::RGBA_1010102:
-      return DRM_FORMAT_ABGR2101010;
-    case gfx::BufferFormat::BGRA_1010102:
-      return DRM_FORMAT_ARGB2101010;
-    case gfx::BufferFormat::YVU_420:
-      return DRM_FORMAT_YVU420;
-    case gfx::BufferFormat::YUV_420_BIPLANAR:
-      return DRM_FORMAT_NV12;
-    case gfx::BufferFormat::P010:
-      return DRM_FORMAT_P010;
-    case gfx::BufferFormat::RGBA_F16:
-      return DRM_FORMAT_ABGR16161616F;
-    case gfx::BufferFormat::RGBA_4444:
-    case gfx::BufferFormat::YUVA_420_TRIPLANAR:
-      return DRM_FORMAT_INVALID;
-  }
-
-  NOTREACHED_IN_MIGRATION();
-  return DRM_FORMAT_INVALID;
-}
-
 }  // namespace
 
 NativePixmapEGLBinding::NativePixmapEGLBinding(const gfx::Size& size,
-                                               gfx::BufferFormat format,
+                                               viz::SharedImageFormat format,
                                                gfx::BufferPlane plane)
     : size_(size), format_(format), plane_(plane) {}
 
@@ -95,14 +52,15 @@ NativePixmapEGLBinding::~NativePixmapEGLBinding() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
-bool NativePixmapEGLBinding::IsBufferFormatSupported(gfx::BufferFormat format) {
-  return FourCC(format) != DRM_FORMAT_INVALID;
+bool NativePixmapEGLBinding::IsSharedImageFormatSupported(
+    viz::SharedImageFormat format) {
+  return GetFourCCFormatFromSharedImageFormat(format) != DRM_FORMAT_INVALID;
 }
 
 // static
 std::unique_ptr<NativePixmapGLBinding> NativePixmapEGLBinding::Create(
     scoped_refptr<gfx::NativePixmap> pixmap,
-    gfx::BufferFormat plane_format,
+    viz::SharedImageFormat plane_format,
     gfx::BufferPlane plane,
     gfx::Size plane_size,
     const gfx::ColorSpace& color_space,
@@ -127,8 +85,8 @@ bool NativePixmapEGLBinding::InitializeFromNativePixmap(
     GLenum target,
     GLuint texture_id) {
   DCHECK(!pixmap_);
-  if (FourCC(format_) == DRM_FORMAT_INVALID) {
-    LOG(ERROR) << "Unsupported format: " << gfx::BufferFormatToString(format_);
+  if (GetFourCCFormatFromSharedImageFormat(format_) == DRM_FORMAT_INVALID) {
+    LOG(ERROR) << "Unsupported format: " << format_.ToString();
     return false;
   }
 
@@ -145,11 +103,11 @@ bool NativePixmapEGLBinding::InitializeFromNativePixmap(
   attrs.push_back(EGL_HEIGHT);
   attrs.push_back(size_.height());
   attrs.push_back(EGL_LINUX_DRM_FOURCC_EXT);
-  attrs.push_back(FourCC(format_));
+  attrs.push_back(GetFourCCFormatFromSharedImageFormat(format_));
 
-  if (format_ == gfx::BufferFormat::YUV_420_BIPLANAR ||
-      format_ == gfx::BufferFormat::YVU_420 ||
-      format_ == gfx::BufferFormat::P010) {
+  if (format_ == viz::MultiPlaneFormat::kNV12 ||
+      format_ == viz::MultiPlaneFormat::kYV12 ||
+      format_ == viz::MultiPlaneFormat::kP010) {
     // TODO(b/233667677): Since https://crrev.com/c/3855381, the only NV12
     // quads that we allow to be promoted to overlays are those that don't use
     // the BT.2020 primaries and that don't use full range. Furthermore, since
@@ -185,39 +143,39 @@ bool NativePixmapEGLBinding::InitializeFromNativePixmap(
   }
 
   if (plane_ == gfx::BufferPlane::DEFAULT) {
-    constexpr EGLint kPlaneFDAttrs[] = {
+    constexpr auto kPlaneFDAttrs = std::to_array<EGLint>({
         EGL_DMA_BUF_PLANE0_FD_EXT,
         EGL_DMA_BUF_PLANE1_FD_EXT,
         EGL_DMA_BUF_PLANE2_FD_EXT,
         EGL_DMA_BUF_PLANE3_FD_EXT,
-    };
-    constexpr EGLint kPlaneOffsetAttrs[] = {
+    });
+    constexpr auto kPlaneOffsetAttrs = std::to_array<EGLint>({
         EGL_DMA_BUF_PLANE0_OFFSET_EXT,
         EGL_DMA_BUF_PLANE1_OFFSET_EXT,
         EGL_DMA_BUF_PLANE2_OFFSET_EXT,
         EGL_DMA_BUF_PLANE3_OFFSET_EXT,
-    };
+    });
 
-    constexpr EGLint kPlanePitchAttrs[] = {
+    constexpr auto kPlanePitchAttrs = std::to_array<EGLint>({
         EGL_DMA_BUF_PLANE0_PITCH_EXT,
         EGL_DMA_BUF_PLANE1_PITCH_EXT,
         EGL_DMA_BUF_PLANE2_PITCH_EXT,
         EGL_DMA_BUF_PLANE3_PITCH_EXT,
-    };
+    });
 
-    constexpr EGLint kPlaneLoModifierAttrs[] = {
+    constexpr auto kPlaneLoModifierAttrs = std::to_array<EGLint>({
         EGL_DMA_BUF_PLANE0_MODIFIER_LO_EXT,
         EGL_DMA_BUF_PLANE1_MODIFIER_LO_EXT,
         EGL_DMA_BUF_PLANE2_MODIFIER_LO_EXT,
         EGL_DMA_BUF_PLANE3_MODIFIER_LO_EXT,
-    };
+    });
 
-    constexpr EGLint kPlaneHiModifierAttrs[] = {
+    constexpr auto kPlaneHiModifierAttrs = std::to_array<EGLint>({
         EGL_DMA_BUF_PLANE0_MODIFIER_HI_EXT,
         EGL_DMA_BUF_PLANE1_MODIFIER_HI_EXT,
         EGL_DMA_BUF_PLANE2_MODIFIER_HI_EXT,
         EGL_DMA_BUF_PLANE3_MODIFIER_HI_EXT,
-    };
+    });
 
     bool has_dma_buf_import_modifier =
         gl::GLSurfaceEGL::GetGLDisplayEGL()

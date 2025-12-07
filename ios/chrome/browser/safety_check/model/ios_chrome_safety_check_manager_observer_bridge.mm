@@ -23,8 +23,10 @@ SafetyCheckObserverBridge::~SafetyCheckObserverBridge() {
 }
 
 void SafetyCheckObserverBridge::PasswordCheckStateChanged(
-    PasswordSafetyCheckState state) {
-  [delegate_ passwordCheckStateChanged:state];
+    PasswordSafetyCheckState state,
+    password_manager::InsecurePasswordCounts insecure_password_counts) {
+  [delegate_ passwordCheckStateChanged:state
+                insecurePasswordCounts:insecure_password_counts];
 }
 
 void SafetyCheckObserverBridge::SafeBrowsingCheckStateChanged(

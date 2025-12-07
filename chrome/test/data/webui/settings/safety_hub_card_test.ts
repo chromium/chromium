@@ -29,7 +29,7 @@ suite('SafetyHubCard', function() {
     testElement.remove();
   });
 
-  test('testHeaderAndSubheaderText', function() {
+  test('HeaderAndSubheaderText', function() {
     const mockData = getMockDataForState(CardState.SAFE);
     testElement.data = mockData;
     flush();
@@ -37,14 +37,14 @@ suite('SafetyHubCard', function() {
     function assertTextContent(query: string, text: string) {
       const element = testElement.shadowRoot!.querySelector(query);
       assertTrue(!!element);
-      assertEquals(text, element.textContent!.trim());
+      assertEquals(text, element.textContent.trim());
     }
 
     assertTextContent('#header', mockData.header);
     assertTextContent('#subheader', mockData.subheader);
   });
 
-  test('testIcon', async function() {
+  test('Icon', function() {
     // Check icon for SAFE state.
     testElement.data = getMockDataForState(CardState.SAFE);
     flushTasks();

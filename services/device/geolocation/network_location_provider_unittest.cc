@@ -22,7 +22,6 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
@@ -244,8 +243,8 @@ class GeolocationNetworkProviderTest : public testing::Test {
     std::string upload_data = network::GetUploadData(pending_request.request);
     ASSERT_FALSE(upload_data.empty());
 
-    std::optional<base::Value> parsed_json =
-        base::JSONReader::Read(upload_data);
+    std::optional<base::Value> parsed_json = base::JSONReader::Read(
+        upload_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(parsed_json);
     ASSERT_TRUE(parsed_json->is_dict());
 
@@ -310,15 +309,20 @@ TEST_F(GeolocationNetworkProviderTest, EmptyApiKey) {
 // Tests that, with non-empty api_key, a "key" query string parameter is
 // included in the request.
 TEST_F(GeolocationNetworkProviderTest, NonEmptyApiKey) {
-  const std::string api_key = "something";
-  std::unique_ptr<LocationProvider> provider(CreateProvider(true, api_key));
+  const char kTestGeolocationApiKey[] = "fake_api_key_for_test";
+  std::unique_ptr<LocationProvider> provider(
+      CreateProvider(true, kTestGeolocationApiKey));
   provider->StartProvider(false);
 
   ASSERT_EQ(1, test_url_loader_factory_.NumPending());
   const GURL& request_url =
       test_url_loader_factory_.pending_requests()->back().request.url;
-  EXPECT_TRUE(request_url.has_query());
-  EXPECT_TRUE(base::StartsWith(request_url.query_piece(), "key="));
+
+  std::string expected_url =
+      "https://www.googleapis.com/geolocation/v1/geolocate?key=";
+  expected_url.append(kTestGeolocationApiKey);
+
+  EXPECT_EQ(request_url.spec(), expected_url);
 }
 
 // Tests that, after StartProvider(), a TestURLFetcher can be extracted,
@@ -1010,40 +1014,6 @@ TEST_F(GeolocationNetworkProviderTest, DiagnosticsNoLocationInNetworkResponse) {
       test_url_loader_factory_.pending_requests()->back().request.url.spec(),
       kBadNetworkResponse);
   EXPECT_FALSE(response_future.Get());
-}
-
-TEST_F(GeolocationNetworkProviderTest, DiagnosticsObserverDisabled) {
-  // Disable the diagnostics observer feature.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{features::kGeolocationDiagnosticsObserver});
-
-  wifi_data_provider_->set_got_data(false);  // No initial Wi-Fi data.
-  auto provider = CreateProvider(/*set_permission_granted=*/true);
-  provider->StartProvider(/*high_accuracy=*/false);
-
-  // Simulate a Wi-Fi data update so a network request is created. The
-  // diagnostics callback is not called.
-  EXPECT_CALL(network_request_callback_, Run).Times(0);
-  wifi_data_provider_->SetData(CreateReferenceWifiScanData(/*ap_count=*/6));
-  base::RunLoop().RunUntilIdle();
-  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
-
-  // Simulate a network response. The diagnostics callback is not called.
-  EXPECT_CALL(network_response_callback_, Run).Times(0);
-  constexpr char kReferenceNetworkResponse[] =
-      "{"
-      "  \"accuracy\": 1200.4,"
-      "  \"location\": {"
-      "    \"lat\": 51.0,"
-      "    \"lng\": -0.1"
-      "  }"
-      "}";
-  test_url_loader_factory_.AddResponse(
-      test_url_loader_factory_.pending_requests()->back().request.url.spec(),
-      kReferenceNetworkResponse);
-  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace device

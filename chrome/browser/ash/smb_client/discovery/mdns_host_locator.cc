@@ -36,14 +36,12 @@ constexpr int32_t kATransactionFlags =
 }  // namespace
 
 Hostname RemoveLocal(const std::string& raw_hostname) {
-  if (!base::EndsWith(raw_hostname, kMdnsLocalString,
-                      base::CompareCase::INSENSITIVE_ASCII)) {
+  auto consumed = base::RemoveSuffix(raw_hostname, kMdnsLocalString,
+                                     base::CompareCase::INSENSITIVE_ASCII);
+  if (!consumed) {
     return raw_hostname;
   }
-
-  DCHECK_GE(raw_hostname.size(), strlen(kMdnsLocalString));
-  size_t ending_pos = raw_hostname.size() - strlen(kMdnsLocalString);
-  return raw_hostname.substr(0, ending_pos);
+  return std::string(*consumed);
 }
 
 class MDnsHostLocator::Impl {

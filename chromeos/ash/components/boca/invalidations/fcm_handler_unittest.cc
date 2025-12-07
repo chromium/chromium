@@ -1,0 +1,342 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chromeos/ash/components/boca/invalidations/fcm_handler.h"
+
+#include <set>
+#include <string>
+#include <utility>
+
+#include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
+#include "chromeos/ash/components/boca/boca_metrics_util.h"
+#include "components/gcm_driver/fake_gcm_driver.h"
+#include "components/gcm_driver/gcm_driver.h"
+#include "components/gcm_driver/instance_id/instance_id.h"
+#include "components/gcm_driver/instance_id/instance_id_driver.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+using base::test::RunOnceCallback;
+using base::test::RunOnceCallbackRepeatedly;
+using instance_id::InstanceID;
+using testing::_;
+using testing::NiceMock;
+using testing::Return;
+using testing::WithArg;
+
+namespace ash::boca {
+namespace {
+
+const int kTokenValidationPeriodMinutesDefault = 60 * 24;
+
+class MockInstanceID : public InstanceID {
+ public:
+  MockInstanceID() : InstanceID("app_id", /*gcm_driver=*/nullptr) {}
+  ~MockInstanceID() override = default;
+  MOCK_METHOD(void, GetID, (GetIDCallback callback), (override));
+  MOCK_METHOD(void,
+              GetCreationTime,
+              (GetCreationTimeCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              GetToken,
+              (const std::string& authorized_entity,
+               const std::string& scope,
+               base::TimeDelta time_to_live,
+               std::set<Flags> flags,
+               GetTokenCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              ValidateToken,
+              (const std::string& authorized_entity,
+               const std::string& scope,
+               const std::string& token,
+               ValidateTokenCallback callback),
+              (override));
+
+ protected:
+  MOCK_METHOD(void,
+              DeleteTokenImpl,
+              (const std::string& authorized_entity,
+               const std::string& scope,
+               DeleteTokenCallback callback),
+              (override));
+  MOCK_METHOD(void, DeleteIDImpl, (DeleteIDCallback callback), (override));
+};
+
+class MockInstanceIDDriver : public instance_id::InstanceIDDriver {
+ public:
+  MockInstanceIDDriver() : InstanceIDDriver(/*gcm_driver=*/nullptr) {}
+  ~MockInstanceIDDriver() override = default;
+  MOCK_METHOD(InstanceID*,
+              GetInstanceID,
+              (const std::string& app_id),
+              (override));
+  MOCK_METHOD(void, RemoveInstanceID, (const std::string& app_id), (override));
+  MOCK_METHOD(bool,
+              ExistsInstanceID,
+              (const std::string& app_id),
+              (const override));
+};
+
+class MockListener : public InvalidationsListener {
+ public:
+  MOCK_METHOD(void,
+              OnInvalidationReceived,
+              (const std::string& payload),
+              (override));
+};
+
+class MockTokenObserver : public FCMRegistrationTokenObserver {
+ public:
+  MOCK_METHOD(void, OnFCMRegistrationTokenChanged, (), (override));
+  MOCK_METHOD(void, OnFCMTokenFetchFailed, (), (override));
+};
+
+class FCMHandlerTest : public testing::Test {
+ public:
+  FCMHandlerTest()
+      : fcm_handler_(&fake_gcm_driver_, &mock_instance_id_driver_) {
+    // This is called in the FCMHandler.
+    ON_CALL(mock_instance_id_driver_,
+            GetInstanceID(fcm_handler_.GetAppIdForTesting()))
+        .WillByDefault(Return(&mock_instance_id_));
+  }
+
+ protected:
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
+
+  gcm::FakeGCMDriver fake_gcm_driver_;
+  NiceMock<MockInstanceIDDriver> mock_instance_id_driver_;
+  NiceMock<MockInstanceID> mock_instance_id_;
+
+  FCMHandlerImpl fcm_handler_;
+};
+
+TEST_F(FCMHandlerTest, ShouldReturnValidToken) {
+  base::HistogramTester histogram_tester;
+  // Check that the handler gets the token through GetToken.
+  EXPECT_CALL(mock_instance_id_, GetToken)
+      .WillOnce(RunOnceCallback<4>("token", InstanceID::Result::SUCCESS));
+  EXPECT_TRUE(fcm_handler_.IsInitialized());
+
+  fcm_handler_.StartListening();
+
+  EXPECT_EQ("token", fcm_handler_.GetFCMRegistrationToken());
+
+  histogram_tester.ExpectTotalCount(boca::kBocaTokenRetrievalIsValidation, 1);
+  histogram_tester.ExpectBucketCount(boca::kBocaTokenRetrievalIsValidation,
+                                     false, 1);
+}
+
+TEST_F(FCMHandlerTest, ShouldPropagatePayloadToListener) {
+  base::HistogramTester histogram_tester;
+  const std::string kPayloadValue = "some_payload";
+  NiceMock<MockListener> mock_listener;
+  fcm_handler_.AddListener(&mock_listener);
+
+  gcm::IncomingMessage gcm_message;
+  gcm_message.data.emplace("random_key", "random_value");
+  gcm_message.data.emplace("method", kPayloadValue);
+
+  EXPECT_CALL(mock_listener, OnInvalidationReceived(kPayloadValue));
+  fcm_handler_.OnMessage(fcm_handler_.GetAppIdForTesting(), gcm_message);
+  fcm_handler_.RemoveListener(&mock_listener);
+  histogram_tester.ExpectTotalCount(boca::kBocaTokenRetrievalIsValidation, 0);
+}
+
+TEST_F(FCMHandlerTest, MethodKeyDoesNotExistShouldPropagateEmptyString) {
+  base::HistogramTester histogram_tester;
+  NiceMock<MockListener> mock_listener;
+  fcm_handler_.AddListener(&mock_listener);
+
+  gcm::IncomingMessage gcm_message;
+  gcm_message.data.emplace("random_key", "random_value");
+
+  EXPECT_CALL(mock_listener, OnInvalidationReceived(""));
+  fcm_handler_.OnMessage(fcm_handler_.GetAppIdForTesting(), gcm_message);
+  fcm_handler_.RemoveListener(&mock_listener);
+  histogram_tester.ExpectTotalCount(boca::kBocaTokenRetrievalIsValidation, 0);
+}
+
+TEST_F(FCMHandlerTest, ShouldNotifyOnTokenChange) {
+  base::HistogramTester histogram_tester;
+  NiceMock<MockTokenObserver> mock_token_observer;
+  fcm_handler_.AddTokenObserver(&mock_token_observer);
+
+  // Check that the handler gets the token through GetToken.
+  ON_CALL(mock_instance_id_, GetToken)
+      .WillByDefault(
+          RunOnceCallbackRepeatedly<4>("token", InstanceID::Result::SUCCESS));
+
+  EXPECT_CALL(mock_token_observer, OnFCMRegistrationTokenChanged());
+  fcm_handler_.StartListening();
+
+  fcm_handler_.RemoveTokenObserver(&mock_token_observer);
+  histogram_tester.ExpectTotalCount(boca::kBocaTokenRetrievalIsValidation, 1);
+  histogram_tester.ExpectBucketCount(boca::kBocaTokenRetrievalIsValidation,
+                                     false, 1);
+}
+
+TEST_F(FCMHandlerTest, ShouldScheduleTokenValidationAndActOnNewToken) {
+  base::HistogramTester histogram_tester;
+  NiceMock<MockTokenObserver> mock_token_observer;
+  fcm_handler_.AddTokenObserver(&mock_token_observer);
+
+  // Check that the handler gets the token through GetToken and notifies the
+  // observer.
+  EXPECT_CALL(mock_instance_id_, GetToken)
+      .WillOnce(RunOnceCallback<4>("token", InstanceID::Result::SUCCESS));
+  EXPECT_CALL(mock_token_observer, OnFCMRegistrationTokenChanged()).Times(1);
+  fcm_handler_.StartListening();
+
+  // Adjust the time and check that validation will happen in time.
+  // The old token is invalid, so token observer should be informed.
+  task_environment_.FastForwardBy(
+      base::Minutes(kTokenValidationPeriodMinutesDefault) - base::Seconds(1));
+  // When it is time, validation happens.
+  EXPECT_CALL(mock_instance_id_, GetToken)
+      .WillOnce(RunOnceCallback<4>("new token", InstanceID::Result::SUCCESS));
+  EXPECT_CALL(mock_token_observer, OnFCMRegistrationTokenChanged()).Times(1);
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  fcm_handler_.RemoveTokenObserver(&mock_token_observer);
+  histogram_tester.ExpectTotalCount(boca::kBocaTokenRetrievalIsValidation, 2);
+  histogram_tester.ExpectBucketCount(boca::kBocaTokenRetrievalIsValidation,
+                                     true, 1);
+  histogram_tester.ExpectBucketCount(boca::kBocaTokenRetrievalIsValidation,
+                                     false, 1);
+}
+
+TEST_F(FCMHandlerTest, ShouldScheduleTokenValidationAndNotActOnSameToken) {
+  base::HistogramTester histogram_tester;
+  NiceMock<MockTokenObserver> mock_token_observer;
+  fcm_handler_.AddTokenObserver(&mock_token_observer);
+
+  // Check that the handler gets the token through GetToken and notifies the
+  // observer.
+  EXPECT_CALL(mock_instance_id_, GetToken)
+      .WillOnce(RunOnceCallback<4>("token", InstanceID::Result::SUCCESS));
+  EXPECT_CALL(mock_token_observer, OnFCMRegistrationTokenChanged()).Times(1);
+  fcm_handler_.StartListening();
+
+  // Adjust the time and check that validation will happen in time.
+  // The old token is valid, so token observer should not be informed.
+  task_environment_.FastForwardBy(
+      base::Minutes(kTokenValidationPeriodMinutesDefault) - base::Seconds(1));
+  // When it is time, validation happens.
+  EXPECT_CALL(mock_instance_id_, GetToken)
+      .WillOnce(RunOnceCallback<4>("token", InstanceID::Result::SUCCESS));
+  EXPECT_CALL(mock_token_observer, OnFCMRegistrationTokenChanged()).Times(0);
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  fcm_handler_.RemoveTokenObserver(&mock_token_observer);
+  histogram_tester.ExpectTotalCount(boca::kBocaTokenRetrievalIsValidation, 2);
+  histogram_tester.ExpectBucketCount(boca::kBocaTokenRetrievalIsValidation,
+                                     true, 1);
+  histogram_tester.ExpectBucketCount(boca::kBocaTokenRetrievalIsValidation,
+                                     false, 1);
+}
+
+TEST_F(FCMHandlerTest, ShouldClearTokenOnStopListeningPermanently) {
+  base::HistogramTester histogram_tester;
+  std::optional<std::string> token_on_change_event;
+  // Check that the handler gets the token through GetToken.
+  EXPECT_CALL(mock_instance_id_, GetToken)
+      .WillOnce(RunOnceCallback<4>("token", InstanceID::Result::SUCCESS));
+  fcm_handler_.StartListening();
+
+  NiceMock<MockTokenObserver> mock_token_observer;
+  fcm_handler_.AddTokenObserver(&mock_token_observer);
+
+  EXPECT_CALL(mock_instance_id_driver_,
+              ExistsInstanceID(fcm_handler_.GetAppIdForTesting()))
+      .WillOnce(Return(true));
+  // Token should be cleared when StopListeningPermanently() is called.
+  EXPECT_CALL(mock_token_observer, OnFCMRegistrationTokenChanged)
+      .WillOnce([this, &token_on_change_event]() {
+        token_on_change_event = fcm_handler_.GetFCMRegistrationToken();
+      });
+  fcm_handler_.StopListeningPermanently();
+  EXPECT_EQ(std::nullopt, token_on_change_event);
+
+  fcm_handler_.RemoveTokenObserver(&mock_token_observer);
+  histogram_tester.ExpectTotalCount(boca::kBocaTokenRetrievalIsValidation, 1);
+  histogram_tester.ExpectBucketCount(boca::kBocaTokenRetrievalIsValidation,
+                                     false, 1);
+}
+
+TEST_F(FCMHandlerTest, ShutdownHandler) {
+  EXPECT_CALL(mock_instance_id_, GetToken)
+      .WillOnce(RunOnceCallback<4>("token", InstanceID::Result::SUCCESS));
+  fcm_handler_.StartListening();
+  fcm_handler_.ShutdownHandler();
+
+  EXPECT_CALL(mock_instance_id_driver_, GetInstanceID(_)).Times(0);
+  EXPECT_CALL(mock_instance_id_, GetToken).Times(0);
+  EXPECT_CALL(mock_instance_id_driver_, ExistsInstanceID(_)).Times(0);
+
+  fcm_handler_.StartListening();
+
+  EXPECT_FALSE(fcm_handler_.IsListening());
+  EXPECT_FALSE(fcm_handler_.GetFCMRegistrationToken().has_value());
+
+  // Calling these after `ShutdownHandler` is a no-op.
+  fcm_handler_.StopListening();
+  fcm_handler_.StopListeningPermanently();
+}
+
+TEST_F(FCMHandlerTest, Init) {
+  FCMHandlerImpl fcm_handler;
+  EXPECT_FALSE(fcm_handler.IsInitialized());
+  fcm_handler.Init(&fake_gcm_driver_, &mock_instance_id_driver_);
+  EXPECT_TRUE(fcm_handler.IsInitialized());
+  fcm_handler.ShutdownHandler();
+  EXPECT_TRUE(fcm_handler.IsInitialized());
+}
+
+TEST_F(FCMHandlerTest, ShouldNotifyOnTokenFetchFailure) {
+  NiceMock<MockTokenObserver> mock_token_observer;
+  fcm_handler_.AddTokenObserver(&mock_token_observer);
+
+  // Check that the handler gets the token through GetToken.
+  EXPECT_CALL(mock_instance_id_, GetToken)
+      .WillOnce(RunOnceCallback<4>("", InstanceID::Result::NETWORK_ERROR));
+
+  EXPECT_CALL(mock_token_observer, OnFCMTokenFetchFailed());
+  fcm_handler_.StartListening();
+  EXPECT_FALSE(fcm_handler_.GetFCMRegistrationToken().has_value());
+
+  fcm_handler_.RemoveTokenObserver(&mock_token_observer);
+}
+
+TEST_F(FCMHandlerTest, ShouldNotNotifyOnTokenValidationFailure) {
+  NiceMock<MockTokenObserver> mock_token_observer;
+  fcm_handler_.AddTokenObserver(&mock_token_observer);
+
+  // First fetch is successful.
+  EXPECT_CALL(mock_instance_id_, GetToken)
+      .WillOnce(RunOnceCallback<4>("token", InstanceID::Result::SUCCESS));
+  EXPECT_CALL(mock_token_observer, OnFCMRegistrationTokenChanged()).Times(1);
+  fcm_handler_.StartListening();
+  EXPECT_EQ("token", fcm_handler_.GetFCMRegistrationToken());
+
+  // Token validation fails.
+  EXPECT_CALL(mock_instance_id_, GetToken)
+      .WillOnce(RunOnceCallback<4>("", InstanceID::Result::NETWORK_ERROR));
+  EXPECT_CALL(mock_token_observer, OnFCMTokenFetchFailed()).Times(0);
+  task_environment_.FastForwardBy(
+      base::Minutes(kTokenValidationPeriodMinutesDefault));
+
+  // Token should not change.
+  EXPECT_EQ("token", fcm_handler_.GetFCMRegistrationToken());
+
+  fcm_handler_.RemoveTokenObserver(&mock_token_observer);
+}
+
+}  // namespace
+}  // namespace ash::boca

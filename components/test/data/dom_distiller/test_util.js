@@ -28,7 +28,7 @@ function TestReporter(runner) {
     if (err.stack) {
       const stack = err.stack.split('\n');
       for (let i = 0; i < stack.length; i++) {
-        if (stack[i].indexOf('mocha.js:') == -1) {
+        if (stack[i].indexOf('mocha.js:') === -1) {
           message += stack[i] + '\n';
         }
       }

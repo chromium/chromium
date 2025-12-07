@@ -8,15 +8,17 @@
 
 #import "base/metrics/histogram_macros.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/application_delegate/tab_opening.h"
 #import "ios/chrome/app/application_delegate/url_opener_params.h"
 #import "ios/chrome/app/startup/chrome_app_startup_parameters.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/connection_information.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/components/webui/web_ui_url_constants.h"
 #import "url/gurl.h"
 
 namespace {
@@ -38,18 +40,30 @@ const char* const kUMAShowDefaultPromoFromAppsHistogram =
     connectionInformation:(id<ConnectionInformation>)connectionInformation
        startupInformation:(id<StartupInformation>)startupInformation
               prefService:(PrefService*)prefService
-                initStage:(InitStage)initStage {
+                initStage:(ProfileInitStage)initStage {
   NSURL* URL = options.URL;
   NSString* sourceApplication = options.sourceApplication;
-
-  ChromeAppStartupParameters* params =
-      [ChromeAppStartupParameters startupParametersWithURL:URL
-                                         sourceApplication:sourceApplication];
+  ChromeAppStartupParameters* params;
 
   if (IsIncognitoModeDisabled(prefService)) {
-    params.applicationMode = ApplicationModeForTabOpening::NORMAL;
+    params = [ChromeAppStartupParameters
+        startupParametersWithURL:URL
+               sourceApplication:sourceApplication
+                 applicationMode:ApplicationModeForTabOpening::NORMAL
+            forceApplicationMode:YES];
+
   } else if (IsIncognitoModeForced(prefService)) {
-    params.applicationMode = ApplicationModeForTabOpening::INCOGNITO;
+    params = [ChromeAppStartupParameters
+        startupParametersWithURL:URL
+               sourceApplication:sourceApplication
+                 applicationMode:ApplicationModeForTabOpening::INCOGNITO
+            forceApplicationMode:YES];
+  } else {
+    params = [ChromeAppStartupParameters
+        startupParametersWithURL:URL
+               sourceApplication:sourceApplication
+                 applicationMode:ApplicationModeForTabOpening::UNDETERMINED
+            forceApplicationMode:NO];
   }
 
   MobileSessionCallerApp callerApp = [params callerApp];
@@ -62,7 +76,7 @@ const char* const kUMAShowDefaultPromoFromAppsHistogram =
                               MOBILE_SESSION_CALLER_APP_COUNT);
   }
 
-  if (initStage == InitStageFirstRun) {
+  if (initStage == ProfileInitStage::kFirstRun) {
     UMA_HISTOGRAM_ENUMERATION("FirstRun.LaunchSource", [params launchSource],
                               first_run::LAUNCH_SIZE);
   } else if (applicationActive) {
@@ -78,14 +92,17 @@ const char* const kUMAShowDefaultPromoFromAppsHistogram =
       // connectionInformation.startupParamters can be not nil and what to do in
       // that case.
       [connectionInformation setStartupParameters:params];
+      if (params.openedViaShareExtensionScheme &&
+          (params.textQuery || params.imageSearchData)) {
+        return YES;
+      }
+
       ProceduralBlock tabOpenedCompletion = ^{
         [connectionInformation setStartupParameters:nil];
       };
 
       // TODO(crbug.com/41443029): Exacly the same copy of this code is present
-      // in
-      // +[UserAcrtivityHandler
-      // handleStartupParametersWithTabOpener:startupInformation:browserState:]
+      // in UserActivityBrowserAgent::RouteToCorrectTab()
 
       GURL gurl;
       GURL virtualURL;
@@ -99,26 +116,32 @@ const char* const kUMAShowDefaultPromoFromAppsHistogram =
         gurl = [params externalURL];
       }
       UrlLoadParams urlLoadParams = UrlLoadParams::InNewTab(gurl, virtualURL);
-
-      ApplicationModeForTabOpening targetMode = params.applicationMode;
-      // If the call is coming from the app, it should be opened in the current
-      // mode to avoid changing mode.
-      if (callerApp == CALLER_APP_GOOGLE_CHROME)
-        targetMode = ApplicationModeForTabOpening::CURRENT;
-
-      if (params.applicationMode != ApplicationModeForTabOpening::INCOGNITO &&
-          [tabOpener URLIsOpenedInRegularMode:urlLoadParams.web_params.url]) {
-        // Record metric.
+      if (gurl.GetScheme() == kChromeUIScheme &&
+          gurl.GetHost() == kChromeUIDinoHost) {
+        urlLoadParams.web_params.transition_type =
+            ui::PAGE_TRANSITION_AUTO_BOOKMARK;
       }
 
-      [tabOpener
-          dismissModalsAndMaybeOpenSelectedTabInMode:targetMode
-                                   withUrlLoadParams:urlLoadParams
-                                      dismissOmnibox:[params
-                                                         postOpeningAction] !=
-                                                     FOCUS_OMNIBOX
-                                          completion:tabOpenedCompletion];
+      BOOL dismissOmnibox = [params postOpeningAction] != FOCUS_OMNIBOX;
 
+      if (base::FeatureList::IsEnabled(kChromeStartupParametersAsync)) {
+        [params requestApplicationModeWithBlock:^(
+                    ApplicationModeForTabOpening applicationMode) {
+          [URLOpener handleUrlLoadParams:urlLoadParams
+                               tabOpener:tabOpener
+                               callerApp:callerApp
+                                 appMode:applicationMode
+                          dismissOmnibox:dismissOmnibox
+                              completion:tabOpenedCompletion];
+        }];
+      } else {
+        [URLOpener handleUrlLoadParams:urlLoadParams
+                             tabOpener:tabOpener
+                             callerApp:callerApp
+                               appMode:[params applicationMode]
+                        dismissOmnibox:dismissOmnibox
+                            completion:tabOpenedCompletion];
+      }
       return YES;
     }
     return NO;
@@ -135,8 +158,8 @@ const char* const kUMAShowDefaultPromoFromAppsHistogram =
                   tabOpener:(id<TabOpening>)tabOpener
       connectionInformation:(id<ConnectionInformation>)connectionInformation
          startupInformation:(id<StartupInformation>)startupInformation
-                   appState:(AppState*)appState
-                prefService:(PrefService*)prefService {
+                prefService:(PrefService*)prefService
+                  initStage:(ProfileInitStage)initStage {
   if (options.URL) {
     // This method is always called when the SceneState transitions to
     // SceneActivationLevelForegroundActive, and before the handling of
@@ -148,8 +171,31 @@ const char* const kUMAShowDefaultPromoFromAppsHistogram =
         connectionInformation:connectionInformation
            startupInformation:startupInformation
                   prefService:prefService
-                    initStage:appState.initStage];
+                    initStage:initStage];
   }
+}
+
++ (void)handleUrlLoadParams:(UrlLoadParams)urlLoadParams
+                  tabOpener:(id<TabOpening>)tabOpener
+                  callerApp:(MobileSessionCallerApp)callerApp
+                    appMode:(ApplicationModeForTabOpening)appMode
+             dismissOmnibox:(BOOL)dismissOmnibox
+                 completion:(ProceduralBlock)tabOpenedCompletion {
+  ApplicationModeForTabOpening targetMode = appMode;
+  // If the call is coming from the app, it should be opened in the current
+  // mode to avoid changing mode.
+  if (callerApp == CALLER_APP_GOOGLE_CHROME) {
+    targetMode = ApplicationModeForTabOpening::CURRENT;
+  }
+
+  if (targetMode != ApplicationModeForTabOpening::INCOGNITO &&
+      [tabOpener URLIsOpenedInRegularMode:urlLoadParams.web_params.url]) {
+    // Record metric.
+  }
+  [tabOpener dismissModalsAndMaybeOpenSelectedTabInMode:targetMode
+                                      withUrlLoadParams:urlLoadParams
+                                         dismissOmnibox:dismissOmnibox
+                                             completion:tabOpenedCompletion];
 }
 
 @end

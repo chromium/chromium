@@ -19,7 +19,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree.h"
 
@@ -38,7 +38,7 @@ class AXTreeSnapshotWaiter {
 
   const ui::AXTreeUpdate& snapshot() const { return snapshot_; }
 
-  void ReceiveSnapshot(const ui::AXTreeUpdate& snapshot) {
+  void ReceiveSnapshot(ui::AXTreeUpdate& snapshot) {
     snapshot_ = snapshot;
     loop_runner_->Quit();
   }
@@ -51,12 +51,14 @@ class AXTreeSnapshotWaiter {
 void DumpRolesAndNamesAsText(const ui::AXNode* node,
                              int indent,
                              std::string* dst) {
-  for (int i = 0; i < indent; i++)
+  for (int i = 0; i < indent; i++) {
     *dst += "  ";
+  }
   *dst += ui::ToString(node->GetRole());
-  if (node->HasStringAttribute(ax::mojom::StringAttribute::kName))
+  if (node->HasStringAttribute(ax::mojom::StringAttribute::kName)) {
     *dst += " '" + node->GetStringAttribute(ax::mojom::StringAttribute::kName) +
             "'";
+  }
   *dst += "\n";
   for (auto iter = node->UnignoredChildrenBegin();
        iter != node->UnignoredChildrenEnd(); ++iter) {
@@ -68,16 +70,8 @@ void DumpRolesAndNamesAsText(const ui::AXNode* node,
 
 class SnapshotAXTreeBrowserTest : public ContentBrowserTest {
  public:
-  SnapshotAXTreeBrowserTest() {
-#if BUILDFLAG(IS_ANDROID)
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kAccessibilitySnapshotStressTests);
-#endif
-  }
+  SnapshotAXTreeBrowserTest() = default;
   ~SnapshotAXTreeBrowserTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest,
@@ -518,16 +512,30 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest,
   auto total_attribute_count = [](const ui::AXNodeData& node_data) {
     return node_data.string_attributes.size() +
            node_data.int_attributes.size() + node_data.float_attributes.size() +
-           node_data.bool_attributes.size() +
+           node_data.bool_attributes.Size() +
            node_data.intlist_attributes.size() +
            node_data.stringlist_attributes.size() +
            node_data.html_attributes.size();
   };
 
   ASSERT_EQ(complete_nodes.size(), contents_nodes.size());
-  for (size_t i = 0; i < complete_nodes.size(); ++i)
-    EXPECT_LT(total_attribute_count(contents_nodes[i]),
-              total_attribute_count(complete_nodes[i]));
+  int num_attributes_for_all_contents_nodes = 0;
+  int num_attributes_for_all_complete_nodes = 0;
+  for (size_t i = 0; i < complete_nodes.size(); ++i) {
+    num_attributes_for_all_contents_nodes +=
+        total_attribute_count(contents_nodes[i]);
+    num_attributes_for_all_complete_nodes +=
+        total_attribute_count(complete_nodes[i]);
+    EXPECT_LE(total_attribute_count(contents_nodes[i]),
+              total_attribute_count(complete_nodes[i]))
+        << "\nComplete node should have had more attributes:"
+        << "\n* AXNodeData with AXMode=kWebContents: "
+        << contents_nodes[i].ToString()
+        << "\n* AXNodeData with AXMode=kAXModeComplete: "
+        << complete_nodes[i].ToString();
+  }
+  EXPECT_LT(num_attributes_for_all_contents_nodes,
+            num_attributes_for_all_complete_nodes);
 }
 
 IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest, SnapshotPDFMode) {
@@ -574,8 +582,9 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest, SnapshotPDFMode) {
     EXPECT_NE(ax::mojom::Role::kUnknown, node_data.role);
     EXPECT_NE(0, node_data.id);
 
-    if (node_data.GetIntAttribute(ax::mojom::IntAttribute::kDOMNodeId) != 0)
+    if (node_data.GetDOMNodeId()) {
       dom_node_id_count++;
+    }
 
     // We don't need bounding boxes to make a tagged PDF. Ensure those are
     // uninitialized.
@@ -741,7 +750,8 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest, Metadata) {
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
 
-  ui::AXMode mode(ui::AXMode::kWebContents | ui::AXMode::kHTMLMetadata);
+  ui::AXMode mode(ui::AXMode::kWebContents | ui::AXMode::kHTML |
+                  ui::AXMode::kHTMLMetadata);
 
   AXTreeSnapshotWaiter waiter;
   web_contents->RequestAXTreeSnapshot(
@@ -752,66 +762,12 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest, Metadata) {
       /* timeout= */ {}, WebContents::AXTreeSnapshotPolicy::kAll);
   waiter.Wait();
 
+  ASSERT_TRUE(waiter.snapshot().tree_data.metadata.has_value());
   EXPECT_THAT(
-      waiter.snapshot().tree_data.metadata,
+      *waiter.snapshot().tree_data.metadata,
       testing::ElementsAre(
           "<title>Hello World</title>", "<meta charset=\"utf-8\"></meta>",
           "<link ref=\"canonical\" href=\"https://abc.com\"></link>",
           "<script type=\"application/ld+json\">{}</script>"));
 }
-
-// For Android, test the field trial param to change the number of max nodes.
-#if BUILDFLAG(IS_ANDROID)
-class SnapshotAXTreeMaxNodesParamBrowserTest : public ContentBrowserTest {
- public:
-  SnapshotAXTreeMaxNodesParamBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kAccessibilitySnapshotStressTests,
-        {{"AccessibilitySnapshotStressTestsMaxNodes", "500"}});
-  }
-  ~SnapshotAXTreeMaxNodesParamBrowserTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(SnapshotAXTreeMaxNodesParamBrowserTest, MaxNodes) {
-  GURL url(R"HTML(data:text/html,<body>
-                  <style> p { margin: 50px; } </style>
-                  <script>
-                    let outerDiv = document.createElement('div');
-                    for (let i = 0; i < 200; i++) {
-                      let div = document.createElement('div');
-                      for (let j = 0; j < 20; j++) {
-                        let p = document.createElement('p');
-                        p.innerHTML = j;
-                        div.appendChild(p);
-                      }
-                      outerDiv.appendChild(div);
-                    }
-                    document.body.appendChild(outerDiv);
-                  </script>
-                  </body>)HTML");
-  EXPECT_TRUE(NavigateToURL(shell(), url));
-
-  WebContentsImpl* web_contents =
-      static_cast<WebContentsImpl*>(shell()->web_contents());
-
-  AXTreeSnapshotWaiter waiter;
-  web_contents->RequestAXTreeSnapshot(
-      base::BindOnce(&AXTreeSnapshotWaiter::ReceiveSnapshot,
-                     base::Unretained(&waiter)),
-      ui::kAXModeComplete,
-      /* max_nodes= */ 10,
-      /* timeout= */ {}, WebContents::AXTreeSnapshotPolicy::kAll);
-  waiter.Wait();
-
-  // If the feature flag and param was honored, we should see more than 100
-  // nodes (which was the value set on the method call), but less than all the
-  // possible nodes.
-  EXPECT_GT(waiter.snapshot().nodes.size(), 100U);
-  EXPECT_LT(waiter.snapshot().nodes.size(), 800U);
-}
-
-#endif
 }  // namespace content

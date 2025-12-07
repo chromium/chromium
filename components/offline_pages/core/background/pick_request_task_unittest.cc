@@ -87,8 +87,8 @@ class RequestNotifierStub : public RequestNotifier {
 
 class PickRequestTaskTest : public RequestQueueTaskTestBase {
  public:
-  PickRequestTaskTest() {}
-  ~PickRequestTaskTest() override {}
+  PickRequestTaskTest() = default;
+  ~PickRequestTaskTest() override = default;
 
   void SetUp() override;
 

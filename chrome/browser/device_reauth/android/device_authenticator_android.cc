@@ -52,6 +52,7 @@ DeviceAuthFinalResult MapUIResultToFinal(DeviceAuthUIResult result) {
     case DeviceAuthUIResult::kCanceledByUser:
       return DeviceAuthFinalResult::kCanceledByUser;
     case DeviceAuthUIResult::kFailed:
+    case DeviceAuthUIResult::kLockout:
       return DeviceAuthFinalResult::kFailed;
   }
 }
@@ -75,11 +76,6 @@ void LogCanAuthenticate(BiometricsAvailability availability) {
   base::UmaHistogramEnumeration(
       "Android.DeviceAuthenticator.CanAuthenticateWithBiometrics",
       availability);
-  // TODO (crbug.com/350658581): Remove this histogram in favor of the above
-  // because its name is misleading. Keeping now to track
-  // `DeviceAuthenticatorAndroidx` experiment.
-  base::UmaHistogramEnumeration(
-      "PasswordManager.BiometricAuthPwdFill.CanAuthenticate", availability);
 }
 
 }  // namespace
@@ -132,6 +128,29 @@ void DeviceAuthenticatorAndroid::AuthenticateWithMessage(
   bridge_->Authenticate(
       base::BindOnce(&DeviceAuthenticatorAndroid::OnAuthenticationCompleted,
                      base::Unretained(this)));
+}
+
+device_reauth::BiometricStatus
+DeviceAuthenticatorAndroid::GetBiometricAvailabilityStatus() {
+  BiometricsAvailability availability = bridge_->CanAuthenticateWithBiometric();
+  switch (availability) {
+    case device_reauth::BiometricsAvailability::kAvailable:
+      return device_reauth::BiometricStatus::kBiometricsAvailable;
+    // TODO (crbug.com/369057610): Probably return status `kAvailable` for
+    // BiometricsAvailability::kAvailableNoFallback case.
+    case device_reauth::BiometricsAvailability::kAvailableNoFallback:
+    case device_reauth::BiometricsAvailability::kNoHardware:
+    case device_reauth::BiometricsAvailability::kHwUnavailable:
+    case device_reauth::BiometricsAvailability::kNotEnrolled:
+    case device_reauth::BiometricsAvailability::kSecurityUpdateRequired:
+    case device_reauth::BiometricsAvailability::kOtherError:
+      break;
+  }
+  // TODO (crbug.com/368586157): Call just hasScreenLockSetUp here.
+  if (CanAuthenticateWithBiometricOrScreenLock()) {
+    return device_reauth::BiometricStatus::kOnlyLskfAvailable;
+  }
+  return device_reauth::BiometricStatus::kUnavailable;
 }
 
 void DeviceAuthenticatorAndroid::Cancel() {

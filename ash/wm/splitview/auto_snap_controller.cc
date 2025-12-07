@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_controller.h"
@@ -31,7 +32,7 @@ namespace {
 std::optional<float> CalculateAutoSnapRatio(
     SplitViewController* split_view_controller,
     aura::Window* window) {
-  if (Shell::Get()->IsInTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     return split_view_controller->ComputeAutoSnapRatio(window);
   }
 
@@ -209,7 +210,9 @@ bool AutoSnapController::AutoSnapWindowIfNeeded(aura::Window* window) {
 
   // Do not snap the window if the activation change is caused by dragging a
   // window.
-  if (window_state->is_dragged()) {
+  // In the case of dragging a tab out of a browser, the newly created drag
+  // window is not yet marked as `is_dragged`, hence the second condition.
+  if (window_state->is_dragged() || window->GetProperty(kIsDraggingTabsKey)) {
     return false;
   }
 
@@ -241,8 +244,6 @@ bool AutoSnapController::AutoSnapWindowIfNeeded(aura::Window* window) {
   if (!split_view_controller->CanSnapWindow(window, *auto_snap_ratio)) {
     // If the window can't fit in `auto_snap_ratio`, use its minimum size
     // instead.
-    // TODO(sophiewen): See if we can do this without recalculating the snap
-    // ratio and divider position.
     auto_snap_ratio.emplace(static_cast<float>(GetMinimumWindowLength(
                                 window, IsLayoutHorizontal(window))) /
                             static_cast<float>(GetDividerPositionUpperLimit(

@@ -5,6 +5,11 @@
 #ifndef ASH_WM_OVERVIEW_OVERVIEW_METRICS_H_
 #define ASH_WM_OVERVIEW_OVERVIEW_METRICS_H_
 
+#include "ash/ash_export.h"
+#include "ash/wm/overview/overview_types.h"
+#include "base/time/time.h"
+#include "ui/compositor/presentation_time_recorder.h"
+
 namespace ash {
 
 // Used for histograms. Current values should not be renumbered or removed.
@@ -59,16 +64,28 @@ enum class OverviewEndAction {
   kShowGlanceables_DEPRECATED,
   kWindowDeactivating,
   kFullRestore,
-  kMaxValue = kFullRestore,
+  kPine,
+  kCoral,
+  kMaxValue = kCoral,
 };
 void RecordOverviewEndAction(OverviewEndAction type);
 
-inline constexpr char kEnterOverviewPresentationHistogram[] =
-    "Ash.Overview.Enter.PresentationTime";
 inline constexpr char kExitOverviewPresentationHistogram[] =
-    "Ash.Overview.Exit.PresentationTime";
+    "Ash.Overview.Exit.PresentationTime2";
 inline constexpr char kOverviewDelayedDeskBarPresentationHistogram[] =
     "Ash.Overview.DelayedDeskBar.PresentationTime";
+
+const ui::PresentationTimeRecorder::BucketParams&
+GetOverviewPresentationTimeBucketParams();
+
+// Returns metric name with format:
+// "Ash.Overview.Enter.PresentationTime.{OverviewStartReason}"
+//
+// This segments the overview presentation time into separate categories/use
+// cases that have different profiles and characteristics and hence, should be
+// analyzed independently.
+ASH_EXPORT const char* GetOverviewEnterPresentationTimeMetricName(
+    OverviewStartAction start_action);
 
 }  // namespace ash
 

@@ -25,8 +25,6 @@
 #include "net/socket/udp_socket.h"
 #include "net/socket/udp_socket_global_limits.h"
 
-#include "services/network/broker_helper_win.h"
-
 namespace net {
 class IOBuffer;
 class IPEndPoint;
@@ -122,10 +120,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) BrokeredUdpClientSocket
   bool get_use_non_blocking_io_for_testing() {
     return socket_->get_use_non_blocking_io_for_testing();
   }
-  void SetBrokerHelperDelegateForTesting(
-      std::unique_ptr<BrokerHelperWin::Delegate> delegate) {
-    broker_helper_.SetDelegateForTesting(std::move(delegate));
-  }
 #endif
 
  private:
@@ -164,8 +158,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) BrokeredUdpClientSocket
   // The ClientSocketFactory that created this socket. Used to send IPCs to the
   // remote SocketBroker.
   const raw_ptr<BrokeredClientSocketFactory> client_socket_factory_;
-
-  BrokerHelperWin broker_helper_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

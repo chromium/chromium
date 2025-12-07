@@ -107,9 +107,15 @@ class BreadcrumbManagerTabHelper : public infobars::InfoBarManager::Observer {
   // application run only, is NOT persisted, and will change across launches.
   int GetUniqueId() const { return unique_id_; }
 
+  // Returns a new unique identifier that can be assigned to a tab helper. This
+  // can be used to reserve identifiers for tabs without creating a tab helper
+  // instance (as an optimisation to save memory if the embedders supports some
+  // notion of placeholder tabs).
+  static int ReserveUniqueId();
+
  protected:
-  explicit BreadcrumbManagerTabHelper(
-      infobars::InfoBarManager* infobar_manager);
+  BreadcrumbManagerTabHelper(infobars::InfoBarManager* infobar_manager,
+                             int unique_id);
 
   // Logs the breadcrumb event for a started navigation with |navigation_id|.
   void LogDidStartNavigation(int64_t navigation_id,
@@ -158,11 +164,11 @@ class BreadcrumbManagerTabHelper : public infobars::InfoBarManager::Observer {
   void OnInfoBarRemoved(infobars::InfoBar* infobar, bool animate) override;
   void OnInfoBarReplaced(infobars::InfoBar* old_infobar,
                          infobars::InfoBar* new_infobar) override;
-  void OnManagerShuttingDown(infobars::InfoBarManager* manager) override;
+  void OnManagerWillBeDestroyed(infobars::InfoBarManager* manager) override;
 
   // A unique identifier for this tab helper, used in breadcrumb event logs to
   // identify events associated with the underlying tab.
-  int unique_id_ = -1;
+  const int unique_id_;
 
   raw_ptr<infobars::InfoBarManager> infobar_manager_ = nullptr;
   // A counter which is incremented for each |OnInfoBarReplaced| call. This

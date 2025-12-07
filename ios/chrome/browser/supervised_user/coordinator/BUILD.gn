@@ -1,0 +1,61 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "parent_access_coordinator.h",
+    "parent_access_coordinator.mm",
+    "parent_access_mediator.h",
+    "parent_access_mediator.mm",
+    "parent_access_mediator_delegate.h",
+  ]
+  deps = [
+    "//base",
+    "//components/application_locale_storage",
+    "//components/strings",
+    "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/common",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/snackbar",
+    "//ios/chrome/browser/supervised_user/model",
+    "//ios/chrome/browser/supervised_user/ui",
+    "//ios/chrome/browser/supervised_user/ui:constants",
+    "//ios/chrome/browser/tabs/model",
+    "//ios/chrome/browser/web/model:delegate",
+    "//ios/components/ui_util",
+    "//ios/public/provider/chrome/browser/text_zoom:text_zoom_api",
+    "//ios/web/public",
+    "//ios/web/public/navigation",
+    "//ui/base",
+    "//url",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "parent_access_mediator_unittest.mm" ]
+  deps = [
+    ":coordinator",
+    "//base/test:test_support",
+    "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/common",
+    "//components/supervised_user/core/common:features",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/supervised_user/model",
+    "//ios/chrome/browser/supervised_user/ui",
+    "//ios/chrome/browser/web/model/font_size",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//net:test_support",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

@@ -15,7 +15,6 @@
 #include "base/files/file_path.h"
 #include "base/scoped_native_library.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "services/screen_ai/proto/chrome_screen_ai.pb.h"
 #include "services/screen_ai/screen_ai_library_wrapper.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -40,7 +39,7 @@ class ScreenAILibraryWrapperImpl : public ScreenAILibraryWrapper {
       void (*get_file_content)(const char* relative_file_path,
                                uint32_t buffer_size,
                                char* buffer)) override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void SetLogger() override;
 #endif
 
@@ -49,6 +48,8 @@ class ScreenAILibraryWrapperImpl : public ScreenAILibraryWrapper {
       const std::string& serialized_view_hierarchy) override;
 
   bool InitOCR() override;
+  void SetOCRLightMode(bool enabled) override;
+  uint32_t GetMaxImageDimension() override;
   std::optional<chrome_screen_ai::VisualAnnotation> PerformOcr(
       const SkBitmap& image) override;
 
@@ -80,7 +81,7 @@ class ScreenAILibraryWrapperImpl : public ScreenAILibraryWrapper {
                                char* /*buffer*/));
   SetFileContentFunctionsFn set_file_content_functions_ = nullptr;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Sets a function to receive library logs and add them to Chrome logs.
   typedef void (*SetLoggerFn)(void (*logger_func)(int /*severity*/,
                                                   const char* /*message*/));
@@ -107,6 +108,17 @@ class ScreenAILibraryWrapperImpl : public ScreenAILibraryWrapper {
   // Initializes the pipeline for OCR.
   typedef bool (*InitOCRFn)();
   InitOCRFn init_ocr_ = nullptr;
+
+  // Turns the light model on or off. If it changes the previous model and the
+  // pipeline is already initialized, it will get uninitialized.
+  typedef void (*SetOCRLightModeFn)(bool /*enabled*/);
+  SetOCRLightModeFn set_ocr_light_mode_ = nullptr;
+
+  // Returns the maximum image dimension that is not downsampled before OCR.
+  // The result of this function is expected to stay constant after each
+  // initialize.
+  typedef uint32_t (*GetMaxImageDimensionFn)();
+  GetMaxImageDimensionFn get_max_image_dimension_ = nullptr;
 
   // Sends the given bitmap to the OCR pipeline and returns visual
   // annotations. The annotations will be returned as a serialized

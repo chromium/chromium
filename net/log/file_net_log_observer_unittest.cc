@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/log/file_net_log_observer.h"
 
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -71,9 +67,7 @@ void AddEntries(FileNetLogObserver* logger,
   NetLogEntry base_entry(NetLogEventType::PAC_JAVASCRIPT_ERROR, source,
                          NetLogEventPhase::BEGIN, base::TimeTicks::Now(),
                          NetLogParamsWithString("message", ""));
-  base::Value::Dict value = base_entry.ToDict();
-  std::string json;
-  base::JSONWriter::Write(value, &json);
+  std::string json = base::WriteJson(base_entry.ToDict()).value_or("");
   size_t base_entry_size = json.size();
 
   // The maximum value of base::TimeTicks::Now() will be the maximum value of
@@ -131,7 +125,9 @@ base::expected<void, std::string> ParsedNetLog::InitFromFileContents(
     return base::unexpected("input is empty");
   }
 
-  ASSIGN_OR_RETURN(root, base::JSONReader::ReadAndReturnValueWithError(input),
+  ASSIGN_OR_RETURN(root,
+                   base::JSONReader::ReadAndReturnValueWithError(
+                       input, base::JSON_PARSE_CHROMIUM_EXTENSIONS),
                    &base::JSONReader::Error::message);
 
   const base::Value::Dict* dict = root.GetIfDict();
@@ -252,7 +248,7 @@ class FileNetLogObserverTest : public ::testing::TestWithParam<bool>,
                     base::File::FLAG_CREATE | base::File::FLAG_WRITE);
     EXPECT_TRUE(file.IsValid());
     // Stick in some nonsense to make sure the file gets cleared properly
-    file.Write(0, "not json", 8);
+    file.WriteAtCurrentPos(base::as_byte_span("not json"));
 
     logger_ = FileNetLogObserver::CreateBoundedFile(
         std::move(file), max_file_size, NetLogCaptureMode::kDefault,
@@ -269,7 +265,7 @@ class FileNetLogObserverTest : public ::testing::TestWithParam<bool>,
                     base::File::FLAG_CREATE | base::File::FLAG_WRITE);
     EXPECT_TRUE(file.IsValid());
     // Stick in some nonsense to make sure the file gets cleared properly
-    file.Write(0, "not json", 8);
+    file.WriteAtCurrentPos(base::as_byte_span("not json"));
 
     if (IsBounded()) {
       logger_ = FileNetLogObserver::CreateBoundedPreExisting(
@@ -1061,7 +1057,7 @@ TEST_F(FileNetLogObserverBoundedTest, PreExistingUsesSpecifiedDir) {
   ASSERT_TRUE(file.IsValid());
 
   // Stick in some nonsense to make sure the file gets cleared properly
-  file.Write(0, "not json", 8);
+  file.WriteAtCurrentPos(base::as_byte_span("not json"));
 
   logger_ = FileNetLogObserver::CreateBoundedPreExisting(
       scratch_dir.GetPath(), std::move(file), kLargeFileSize,

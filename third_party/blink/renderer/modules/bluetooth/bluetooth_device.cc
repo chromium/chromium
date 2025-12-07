@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "third_party/blink/renderer/bindings/core/v8/callback_promise_adapter.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
@@ -88,7 +87,7 @@ void BluetoothDevice::ClearAttributeInstanceMapAndFireEvent() {
       *Event::CreateBubble(event_type_names::kGattserverdisconnected));
 }
 
-const WTF::AtomicString& BluetoothDevice::InterfaceName() const {
+const AtomicString& BluetoothDevice::InterfaceName() const {
   return event_target_names::kBluetoothDevice;
 }
 
@@ -135,7 +134,7 @@ ScriptPromise<IDLUndefined> BluetoothDevice::watchAdvertisements(
     // 1.2.1. Abort watchAdvertisements with this.
     // 1.2.2. Reject promise with AbortError.
     if (!abort_handle_map_.Contains(options->signal())) {
-      auto* handle = options->signal()->AddAlgorithm(WTF::BindOnce(
+      auto* handle = options->signal()->AddAlgorithm(BindOnce(
           &BluetoothDevice::AbortWatchAdvertisements, WrapWeakPersistent(this),
           WrapWeakPersistent(options->signal())));
       abort_handle_map_.insert(options->signal(), handle);
@@ -173,8 +172,8 @@ ScriptPromise<IDLUndefined> BluetoothDevice::watchAdvertisements(
   // the same device.
   bluetooth_->Service()->WatchAdvertisementsForDevice(
       device_->id, std::move(client),
-      WTF::BindOnce(&BluetoothDevice::WatchAdvertisementsCallback,
-                    WrapPersistent(this)));
+      BindOnce(&BluetoothDevice::WatchAdvertisementsCallback,
+               WrapPersistent(this)));
   return watch_advertisements_resolver_->Promise();
 }
 
@@ -215,7 +214,7 @@ ScriptPromise<IDLUndefined> BluetoothDevice::forget(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   bluetooth_->Service()->ForgetDevice(
-      device_->id, WTF::BindOnce(
+      device_->id, BindOnce(
                        [](ScriptPromiseResolver<IDLUndefined>* resolver) {
                          resolver->Resolve();
                        },

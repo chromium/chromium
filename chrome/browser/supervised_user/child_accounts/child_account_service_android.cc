@@ -19,7 +19,6 @@
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::RunBooleanCallbackAndroid;
 using base::android::ScopedJavaGlobalRef;
@@ -30,11 +29,9 @@ void ReauthenticateChildAccount(
     const base::RepeatingCallback<void()>& on_failure_callback) {
   ui::WindowAndroid* window_android =
       web_contents->GetNativeView()->GetWindowAndroid();
-  if (!window_android) {
-    // The native view may not be available on shutdown (crbug.com/1468955).
-    on_failure_callback.Run();
-    return;
-  }
+  CHECK(window_android)
+      << "See SupervisedUserGoogleAuthNavigationThrottle to confirm that this "
+         "call is never called with empty `window_android`";
 
   // Make a copy of the callback which can be passed as a pointer through
   // to Java.
@@ -47,11 +44,14 @@ void ReauthenticateChildAccount(
       reinterpret_cast<jlong>(callback_copy.release()));
 }
 
-void JNI_ChildAccountService_OnReauthenticationFailed(JNIEnv* env,
-                                                      jlong jcallbackPtr) {
+static void JNI_ChildAccountService_OnReauthenticationFailed(
+    JNIEnv* env,
+    jlong jcallbackPtr) {
   // Cast the pointer value back to a Callback and take ownership of it.
   std::unique_ptr<base::RepeatingCallback<void()>> callback(
       reinterpret_cast<base::RepeatingCallback<void()>*>(jcallbackPtr));
 
   callback->Run();
 }
+
+DEFINE_JNI(ChildAccountService)

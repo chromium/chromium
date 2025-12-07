@@ -18,7 +18,8 @@
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "media/base/format_utils.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
@@ -70,13 +71,13 @@ std::unique_ptr<ImageProcessorBackend> VaapiImageProcessorBackend::Create(
   if (!IsSupported(input_config) || !IsSupported(output_config))
     return nullptr;
 
-  if (input_config.storage_type != VideoFrame::STORAGE_GPU_MEMORY_BUFFER &&
+  if (input_config.storage_type != VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE &&
       input_config.storage_type != VideoFrame::STORAGE_DMABUFS) {
     VLOGF(2) << "VaapiImageProcessorBackend supports GpuMemoryBuffer or DMABuf "
                 "based FrameResource only for input";
     return nullptr;
   }
-  if (output_config.storage_type != VideoFrame::STORAGE_GPU_MEMORY_BUFFER &&
+  if (output_config.storage_type != VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE &&
       output_config.storage_type != VideoFrame::STORAGE_DMABUFS) {
     VLOGF(2) << "VaapiImageProcessorBackend supports GpuMemoryBuffer or DMABuf "
                 "based FrameResource only for output";
@@ -110,11 +111,11 @@ VaapiImageProcessorBackend::VaapiImageProcessorBackend(
 VaapiImageProcessorBackend::~VaapiImageProcessorBackend() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
 
-  DCHECK(vaapi_wrapper_ || allocated_va_surfaces_.IsEmpty());
+  DCHECK(vaapi_wrapper_ || allocated_va_surfaces_.empty());
   if (vaapi_wrapper_) {
     // To clear |allocated_va_surfaces_|, we have to first DestroyContext().
     vaapi_wrapper_->DestroyContext();
-    allocated_va_surfaces_.Clear();
+    allocated_va_surfaces_.clear();
   }
 }
 
@@ -126,15 +127,16 @@ const ScopedVASurface* VaapiImageProcessorBackend::GetOrCreateSurfaceForFrame(
     const FrameResource& frame,
     bool use_protected) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
-  const auto shared_memory_id = frame.GetSharedMemoryId().id;
-  const auto* surface = allocated_va_surfaces_.Lookup(shared_memory_id);
-  if (surface) {
+  const auto& tracking_token = frame.tracking_token();
+  const auto iter = allocated_va_surfaces_.find(tracking_token);
+  if (iter != allocated_va_surfaces_.end()) {
+    const auto* surface = iter->second.get();
     CHECK_EQ(frame.coded_size(), surface->size());
-    const auto buffer_format =
-        VideoPixelFormatToGfxBufferFormat(frame.format());
-    CHECK(buffer_format.has_value());
+    const auto shared_image_format =
+        VideoPixelFormatToSharedImageFormat(frame.format());
+    CHECK(shared_image_format.has_value());
     const unsigned int format =
-        VaapiWrapper::BufferFormatToVARTFormat(*buffer_format);
+        VaapiWrapper::SharedImageFormatToVARTFormat(*shared_image_format);
     CHECK_NE(format, 0u);
     CHECK_EQ(format, surface->format());
     return surface;
@@ -148,8 +150,10 @@ const ScopedVASurface* VaapiImageProcessorBackend::GetOrCreateSurfaceForFrame(
     return nullptr;
   }
 
-  allocated_va_surfaces_.AddWithID(std::move(va_surface), shared_memory_id);
-  return allocated_va_surfaces_.Lookup(shared_memory_id);
+  const auto result = allocated_va_surfaces_.insert_or_assign(
+      tracking_token, std::move(va_surface));
+  CHECK(result.second);
+  return result.first->second.get();
 }
 
 void VaapiImageProcessorBackend::ProcessFrame(
@@ -191,7 +195,7 @@ void VaapiImageProcessorBackend::ProcessFrame(
   }
 
   bool use_protected = false;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   VAProtectedSessionID va_protected_session_id = VA_INVALID_ID;
   if (input_frame->metadata().hw_va_protected_session_id.has_value()) {
     static_assert(
@@ -205,7 +209,7 @@ void VaapiImageProcessorBackend::ProcessFrame(
         input_frame->metadata().hw_va_protected_session_id.value();
     use_protected = va_protected_session_id != VA_INVALID_ID;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (needs_context_ && !vaapi_wrapper_->CreateContext(gfx::Size())) {
     VLOGF(1) << "Failed to create context for VPP";
@@ -234,12 +238,12 @@ void VaapiImageProcessorBackend::ProcessFrame(
                                    dst_va_surface->id(), dst_va_surface->size(),
                                    input_frame->visible_rect(),
                                    output_frame->visible_rect()
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
                                        ,
                                    va_protected_session_id
 #endif
                                    )) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     if (use_protected &&
         vaapi_wrapper_->IsProtectedSessionDead(va_protected_session_id)) {
       DCHECK_NE(va_protected_session_id, VA_INVALID_ID);
@@ -255,7 +259,7 @@ void VaapiImageProcessorBackend::ProcessFrame(
       std::move(cb).Run(std::move(output_frame));
       return;
     }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     error_cb_.Run();
     return;
   }
@@ -270,11 +274,11 @@ void VaapiImageProcessorBackend::Reset() {
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
 
-  DCHECK(vaapi_wrapper_ || allocated_va_surfaces_.IsEmpty());
+  DCHECK(vaapi_wrapper_ || allocated_va_surfaces_.empty());
   if (vaapi_wrapper_) {
     // To clear |allocated_va_surfaces_|, we have to first DestroyContext().
     vaapi_wrapper_->DestroyContext();
-    allocated_va_surfaces_.Clear();
+    allocated_va_surfaces_.clear();
   }
   needs_context_ = true;
 }

@@ -14,7 +14,7 @@
 namespace content {
 class BrowserContext;
 class WebContents;
-}
+}  // namespace content
 
 class VersionUpdaterCros : public VersionUpdater,
                            public ash::UpdateEngineClient::Observer {
@@ -37,7 +37,7 @@ class VersionUpdaterCros : public VersionUpdater,
   void SetUpdateOverCellularOneTimePermission(StatusCallback callback,
                                               const std::string& update_version,
                                               int64_t update_size) override;
-  void ApplyDeferredUpdate() override;
+  void ApplyDeferredUpdateAdvanced() override;
 
   // Gets the last update status, without triggering a new check or download.
   void GetUpdateStatus(StatusCallback callback);

@@ -13,14 +13,16 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/uploading/upload_job.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
+
+class GURL;
 
 namespace base {
 class SequencedTaskRunner;
@@ -70,7 +72,7 @@ class SystemLogUploader : public UploadJob::Delegate {
     using ZippedLogUploadCallback =
         base::OnceCallback<void(std::string zipped_system_logs)>;
 
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // Returns current policy dump in JSON format.
     virtual std::string GetPolicyAsJSON() = 0;

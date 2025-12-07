@@ -1,4 +1,4 @@
-# tags: [ Android Fuchsia Linux Mac Mac11 Mac12 Mac13 Mac13-arm64 Mac14 Mac14-arm64 Mac15 Mac15-arm64  Win Win10.20h2 Win11 Win11-arm64 ]
+# tags: [ Android Fuchsia Linux Mac Mac12 Mac13 Mac13-arm64 Mac14 Mac14-arm64 Mac15 Mac15-arm64  Win Win10.20h2 Win11 Win11-arm64 ]
 # tags: [ Release Debug ]
 # results: [ Timeout Crash Pass Failure Slow Skip ]
 
@@ -67,7 +67,21 @@ crbug.com/1179572 animations/cross-fade-webkit-mask-box-image.html [ Failure ]
 crbug.com/1412910 virtual/threaded/external/wpt/css/css-view-transitions/fractional-translation-from-position.html [ Failure ]
 crbug.com/1414855 virtual/threaded/external/wpt/css/css-view-transitions/new-content-captures-spans.html [ Failure ]
 
-crbug.com/1314903 external/wpt/css/css-sizing/contain-intrinsic-size/animation/contain-intrinsic-size-interpolation.html [ Failure ]
+# These test expectation position things by pixels, which mismatches in hidpi.
+virtual/threaded/external/wpt/css/css-view-transitions/nested/group-children-sizing.html [ Skip ]
+virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/group-children-sizing.html [ Skip ]
+virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/group-children-sizing.html [ Skip ]
+virtual/threaded/external/wpt/css/css-view-transitions/nested/group-children-sizing-with-border.html [ Skip ]
+virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/group-children-sizing-with-border.html [ Skip ]
+virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/group-children-sizing-with-border.html [ Skip ]
+virtual/threaded/external/wpt/css/css-view-transitions/nested/group-children-sizing-with-border-props.html [ Skip ]
+virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/group-children-sizing-with-border-props.html [ Skip ]
+virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/group-children-sizing-with-border-props.html [ Skip ]
+virtual/threaded/external/wpt/css/css-view-transitions/nested/rotated-container.html [ Skip ]
+virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/rotated-container.html [ Skip ]
+virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/rotated-container.html [ Skip ]
+virtual/threaded/external/wpt/css/css-view-transitions/scoped/clip-on-target-in-callback.html [ Skip ]
+virtual/threaded/external/wpt/css/css-view-transitions/scoped/clip-on-target-in-callback-2.html [ Skip ]
 
 crbug.com/1179544 compositing/canvas-with-object-fit-contain-in-composited-layer.html [ Failure ]
 crbug.com/1179544 compositing/composited-replaced-subpixel-location.html [ Failure ]
@@ -102,6 +116,27 @@ crbug.com/1191214 css3/filters/effect-reference-subregion-zoom-hw.html [ Failure
 crbug.com/1191214 css3/filters/effect-reference-subregion-zoom.html [ Failure ]
 crbug.com/1191214 css3/filters/filterRegions.html [ Failure ]
 
+# Scroll animation tests
+crbug.com/424473138 external/wpt/scroll-animations/css/progress-based-animation-animation-longhand-properties.tentative.html [ Failure ]
+crbug.com/424473138 external/wpt/scroll-animations/css/scroll-timeline-axis-writing-mode.html [ Failure ]
+crbug.com/424473138 external/wpt/scroll-animations/css/scroll-timeline-frame-size-changed.html [ Failure ]
+crbug.com/424473138 external/wpt/scroll-animations/css/scroll-timeline-update-reversed-animation.html [ Failure ]
+crbug.com/424473138 external/wpt/scroll-animations/css/timeline-scope.html [ Failure ]
+crbug.com/424473138 external/wpt/scroll-animations/css/view-timeline-with-transform-on-subject.html [ Failure ]
+crbug.com/424473138 external/wpt/scroll-animations/scroll-timelines/current-time-root-scroller.html [ Failure ]
+crbug.com/424473138 external/wpt/scroll-animations/scroll-timelines/effect-updateTiming.html [ Failure ]
+crbug.com/424473138 external/wpt/scroll-animations/scroll-timelines/progress-based-effect-delay.tentative.html [ Failure ]
+crbug.com/424473138 external/wpt/scroll-animations/scroll-timelines/scroll-timeline-range.html [ Failure ]
+crbug.com/424473138 external/wpt/scroll-animations/view-timelines/sticky/view-timeline-sticky-offscreen-2.html [ Failure ]
+crbug.com/424473138 external/wpt/scroll-animations/view-timelines/sticky/view-timeline-sticky-offscreen-3.html [ Failure ]
+crbug.com/424473138 external/wpt/scroll-animations/view-timelines/sticky/view-timeline-sticky-offscreen-6.html [ Failure ]
+crbug.com/424473138 external/wpt/scroll-animations/view-timelines/sticky/view-timeline-sticky-offscreen-7.html [ Failure ]
+crbug.com/424473138 external/wpt/scroll-animations/view-timelines/view-timeline-get-set-range.html [ Failure ]
+crbug.com/424473138 external/wpt/scroll-animations/view-timelines/view-timeline-inset.html [ Failure ]
+crbug.com/424473138 external/wpt/scroll-animations/view-timelines/view-timeline-range.html [ Failure ]
+crbug.com/424473138 external/wpt/scroll-animations/view-timelines/view-timeline-sticky-block.html [ Failure ]
+crbug.com/424473138 external/wpt/scroll-animations/view-timelines/view-timeline-sticky-inline.html [ Failure ]
+crbug.com/424473138 external/wpt/scroll-animations/view-timelines/view-timeline-subject-size-changes.html [ Failure ]
 
 crbug.com/1191215 fast/block/positioning/offsetLeft-offsetTop-multicolumn.html [ Failure ]
 crbug.com/1191215 fast/borders/border-image-width-rounding.html [ Failure ]
@@ -354,8 +389,6 @@ crbug.com/1266821 compositing/overflow/rotate-then-clip.html [ Failure ]
 crbug.com/1266821 compositing/overflow/tiled-mask.html [ Failure ]
 crbug.com/1266821 compositing/perpendicular-layer-sorting.html [ Failure ]
 crbug.com/1266821 css3/blending/background-blend-mode-overlapping-accelerated-elements.html [ Failure ]
-crbug.com/1266821 css3/filters/backdrop-filter-border-radius.html [ Failure ]
-crbug.com/1266821 css3/filters/backdrop-filter-clip-rect-zoom.html [ Failure ]
 crbug.com/1266821 css3/filters/effect-brightness-clamping-hw.html [ Failure ]
 crbug.com/1266821 css3/filters/effect-brightness-hw.html [ Failure ]
 crbug.com/1266821 css3/filters/effect-combined-hw.html [ Failure ]
@@ -382,9 +415,7 @@ crbug.com/1266821 paint/invalidation/scroll/scrollbar-damage-and-full-viewport-r
 crbug.com/1266821 paint/invalidation/table/composited-table-background-section-composited-row-initial-empty.html [ Failure ]
 crbug.com/1266821 paint/invalidation/table/composited-table-background-section-composited-row.html [ Failure ]
 crbug.com/1266821 svg/wicd/test-scalable-background-image2.xhtml [ Failure ]
-crbug.com/1266821 transforms/3d/point-mapping/3d-point-mapping-3.html [ Failure ]
 crbug.com/1266821 transforms/3d/point-mapping/3d-point-mapping-preserve-3d.html [ Failure ]
-crbug.com/1266821 transforms/3d/point-mapping/3d-point-mapping.html [ Failure ]
 
 # Existing failures. Mark these as [ Pass ] when these tests are fixed.
 crbug.com/626703 external/wpt/acid/acid3/test.html [ Failure ]
@@ -438,3 +469,8 @@ crbug.com/1339051 fast/forms/suggestion-picker/month-suggestion-picker-appearanc
 
 # Fails with a single-pixel offset when run with single-threaded compositing.
 crbug.com/1491883 [ Linux ] fast/forms/date/date-with-csp.html [ Failure ]  # Reftest image failure
+
+# ====== New tests from wpt-importer added here ======
+crbug.com/431036874 virtual/threaded/external/wpt/css/css-view-transitions/new-content-is-inline.html [ Failure ]
+crbug.com/388319476 virtual/threaded/external/wpt/css/css-view-transitions/navigation/with-types/navigation-supersedes-types-same-rule.html [ Crash ]
+crbug.com/361611468 virtual/threaded/external/wpt/css/css-view-transitions/nested/nested-exit.tentative.html?vtmode=crossdoc [ Failure ]

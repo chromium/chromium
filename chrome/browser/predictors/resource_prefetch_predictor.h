@@ -28,8 +28,9 @@
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/optimization_guide/core/optimization_guide_decision.h"
+#include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "components/sqlite_proto/key_value_data.h"
+#include "content/public/browser/preconnect_request.h"
 #include "net/base/network_anonymization_key.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
 #include "url/gurl.h"
@@ -57,32 +58,8 @@ struct LastVisitTimeCompare {
 class TestObserver;
 class ResourcePrefetcherManager;
 
-// Stores all values needed to trigger a preconnect/preresolve job to a single
-// origin.
-struct PreconnectRequest {
-  // |network_anonymization_key| specifies the key that network requests for the
-  // preconnected URL are expected to use. If a request is issued with a
-  // different key, it may not use the preconnected socket. It has no effect
-  // when |num_sockets| == 0.
-  PreconnectRequest(
-      const url::Origin& origin,
-      int num_sockets,
-      const net::NetworkAnonymizationKey& network_anonymization_key);
-  PreconnectRequest(const PreconnectRequest&) = default;
-  PreconnectRequest(PreconnectRequest&&) = default;
-  PreconnectRequest& operator=(const PreconnectRequest&) = default;
-  PreconnectRequest& operator=(PreconnectRequest&&) = default;
-
-  url::Origin origin;
-  // A zero-value means that we need to preresolve a host only.
-  int num_sockets = 0;
-  bool allow_credentials = true;
-  net::NetworkAnonymizationKey network_anonymization_key;
-};
-
 struct PrefetchRequest {
   PrefetchRequest(const GURL& url,
-                  const net::NetworkAnonymizationKey& network_anonymization_key,
                   network::mojom::RequestDestination destination);
 
   PrefetchRequest(const PrefetchRequest&) = default;
@@ -91,7 +68,6 @@ struct PrefetchRequest {
   PrefetchRequest& operator=(PrefetchRequest&&) = default;
 
   GURL url;
-  net::NetworkAnonymizationKey network_anonymization_key;
   network::mojom::RequestDestination destination;
 };
 
@@ -109,7 +85,7 @@ struct PreconnectPrediction {
 
   bool is_redirected = false;
   std::string host;
-  std::vector<PreconnectRequest> requests;
+  std::vector<content::PreconnectRequest> requests;
   std::vector<PrefetchRequest> prefetch_requests;
 };
 
@@ -183,11 +159,6 @@ class ResourcePrefetchPredictor : public history::HistoryServiceObserver {
   // Returns true if preconnect data exists for the |main_frame_url|.
   virtual bool IsUrlPreconnectable(const GURL& main_frame_url) const;
 
-  // Sets the |observer| to be notified when the resource prefetch predictor
-  // data changes. Previously registered observer will be discarded. Call
-  // this with nullptr parameter to de-register observer.
-  void SetObserverForTesting(TestObserver* observer);
-
   // Returns true iff there is OriginData that can be used for a |url| and fills
   // |prediction| with origins and hosts that need to be preconnected and
   // preresolved respectively. |prediction| pointer may be nullptr to get return
@@ -198,6 +169,11 @@ class ResourcePrefetchPredictor : public history::HistoryServiceObserver {
   // Called by the collector after a page has finished loading resources and
   // assembled a PageRequestSummary.
   virtual void RecordPageRequestSummary(const PageRequestSummary& summary);
+
+  // Add/remove the |observer| to be notified when the resource prefetch
+  // predictor
+  void AddObserverForTesting(TestObserver* observer);
+  void RemoveObserverForTesting(TestObserver* observer);
 
   // Record LCP element locators after a page has finished loading and LCP has
   // been determined.
@@ -212,6 +188,16 @@ class ResourcePrefetchPredictor : public history::HistoryServiceObserver {
   std::optional<LcppStat> GetLcppStat(
       const std::optional<url::Origin>& initiator_origin,
       const GURL& url) const;
+
+  void OnLcpUpdatedForTesting(
+      const std::optional<std::string>& element_locator);
+  void OnLcpTimingPredictedForTesting(
+      const std::optional<std::string>& element_locator);
+
+  void GetPreconnectAndPrefetchRequest(
+      const std::optional<url::Origin>& initiator_origin,
+      const GURL& url,
+      PreconnectPrediction& prediction);
 
  private:
   friend class LoadingPredictor;
@@ -331,7 +317,7 @@ class ResourcePrefetchPredictor : public history::HistoryServiceObserver {
   }
 
   const raw_ptr<Profile, DanglingUntriaged> profile_;
-  raw_ptr<TestObserver> observer_;
+  std::set<raw_ptr<TestObserver>> test_observer_set_;
   const LoadingPredictorConfig config_;
   InitializationState initialization_state_;
   scoped_refptr<ResourcePrefetchPredictorTables> tables_;
@@ -368,6 +354,12 @@ class TestObserver {
   virtual void OnNavigationLearned(const PageRequestSummary& summary) {}
 
   virtual void OnLcppLearned() {}
+
+  virtual void OnLcpUpdated(const std::optional<std::string>& element_locator) {
+  }
+
+  virtual void OnLcpTimingPredicted(
+      const std::optional<std::string>& element_locator) {}
 
  protected:
   // |predictor| must be non-NULL and has to outlive the TestObserver.

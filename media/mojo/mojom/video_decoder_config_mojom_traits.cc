@@ -35,6 +35,11 @@ bool StructTraits<media::mojom::VideoDecoderConfigDataView,
   if (!input.ReadNaturalSize(&natural_size))
     return false;
 
+  media::VideoAspectRatio aspect_ratio;
+  if (!input.ReadAspectRatio(&aspect_ratio)) {
+    return false;
+  }
+
   std::vector<uint8_t> extra_data;
   if (!input.ReadExtraData(&extra_data))
     return false;
@@ -58,10 +63,12 @@ bool StructTraits<media::mojom::VideoDecoderConfigDataView,
                      color_space, transformation, coded_size, visible_rect,
                      natural_size, extra_data, encryption_scheme);
 
+  output->set_level(input.level());
+
+  output->set_aspect_ratio(aspect_ratio);
+
   if (hdr_metadata)
     output->set_hdr_metadata(hdr_metadata.value());
-
-  output->set_level(input.level());
 
   if (!output->IsValidConfig())
     return false;

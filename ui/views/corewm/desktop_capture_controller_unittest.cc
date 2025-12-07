@@ -121,7 +121,7 @@ TEST_F(DesktopCaptureControllerTest, CaptureWindowInputEventTest) {
 
   DesktopViewInputTest* v1 = new DesktopViewInputTest();
   v1->SetBoundsRect(gfx::Rect(0, 0, 300, 300));
-  root1->AddChildView(v1);
+  root1->AddChildViewRaw(v1);
   widget1->Show();
 
   auto widget2 = std::make_unique<Widget>();
@@ -143,7 +143,7 @@ TEST_F(DesktopCaptureControllerTest, CaptureWindowInputEventTest) {
 
   DesktopViewInputTest* v2 = new DesktopViewInputTest();
   v2->SetBoundsRect(gfx::Rect(0, 0, 300, 300));
-  root2->AddChildView(v2);
+  root2->AddChildViewRaw(v2);
   widget2->Show();
 
   EXPECT_FALSE(widget1->GetNativeView()->HasCapture());

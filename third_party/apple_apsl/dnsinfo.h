@@ -1,15 +1,15 @@
 /*
- * Copyright (c) 2004-2006, 2008, 2009, 2011 Apple Inc. All rights reserved.
+ * Copyright (c) 2004-2006, 2008, 2009, 2011-2013, 2015-2018 Apple Inc. All rights reserved.
  *
  * @APPLE_LICENSE_HEADER_START@
- * 
+ *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apple Public Source License
  * Version 2.0 (the 'License'). You may not use this file except in
  * compliance with the License. Please obtain a copy of the License at
  * http://www.opensource.apple.com/apsl/ and read it before using this
  * file.
- * 
+ *
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
  * EXPRESS OR IMPLIED, AND APPLE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
@@ -17,7 +17,7 @@
  * FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT.
  * Please see the License for the specific language governing rights and
  * limitations under the License.
- * 
+ *
  * @APPLE_LICENSE_HEADER_END@
  */
 
@@ -34,7 +34,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-#define	DNSINFO_VERSION		20111104
+#define	DNSINFO_VERSION		20170629
 
 #define DEFAULT_SEARCH_ORDER    200000   /* search order for the "default" resolver domain name */
 
@@ -72,12 +72,22 @@ typedef struct {
 	DNS_VAR(uint32_t,		if_index);
 	DNS_VAR(uint32_t,		flags);
 	DNS_VAR(uint32_t,		reach_flags);	/* SCNetworkReachabilityFlags */
-	DNS_VAR(uint32_t,		reserved[5]);
+	DNS_VAR(uint32_t,		service_identifier);
+	DNS_PTR(char *,			cid);		/* configuration identifer */
+	DNS_PTR(char *,			if_name);	/* if_index interface name */
 } dns_resolver_t;
 #pragma pack()
 
 
-#define DNS_RESOLVER_FLAGS_SCOPED	1		/* configuration is for scoped questions */
+#define DNS_RESOLVER_FLAGS_REQUEST_A_RECORDS	0x0002		/* always requesting for A dns records in queries */
+#define DNS_RESOLVER_FLAGS_REQUEST_AAAA_RECORDS	0x0004		/* always requesting for AAAA dns records in queries */
+
+#define	DNS_RESOLVER_FLAGS_REQUEST_ALL_RECORDS	\
+	(DNS_RESOLVER_FLAGS_REQUEST_A_RECORDS | DNS_RESOLVER_FLAGS_REQUEST_AAAA_RECORDS)
+
+#define DNS_RESOLVER_FLAGS_SCOPED		0x1000		/* configuration is for scoped questions */
+#define DNS_RESOLVER_FLAGS_SERVICE_SPECIFIC	0x2000		/* configuration is service-specific */
+#define DNS_RESOLVER_FLAGS_SUPPLEMENTAL		0x4000		/* supplemental match configuration */
 
 
 #pragma pack(4)
@@ -86,7 +96,10 @@ typedef struct {
 	DNS_PTR(dns_resolver_t **,	resolver);
 	DNS_VAR(int32_t,		n_scoped_resolver);	/* "scoped" resolver configurations */
 	DNS_PTR(dns_resolver_t **,	scoped_resolver);
-	DNS_VAR(uint32_t,		reserved[5]);
+	DNS_VAR(uint64_t,		generation);
+	DNS_VAR(int32_t,		n_service_specific_resolver);
+	DNS_PTR(dns_resolver_t **,	service_specific_resolver);
+	DNS_VAR(uint32_t,		version);
 } dns_config_t;
 #pragma pack()
 
@@ -97,10 +110,10 @@ __BEGIN_DECLS
  * DNS configuration access APIs
  */
 const char *
-dns_configuration_notify_key    ();
+dns_configuration_notify_key    (void);
 
 dns_config_t *
-dns_configuration_copy		();
+dns_configuration_copy		(void);
 
 void
 dns_configuration_free		(dns_config_t	*config);

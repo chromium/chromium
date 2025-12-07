@@ -132,7 +132,7 @@ found in the LICENSE file.
         android:text="@string/parent_website_approval_approve_button"
         app:buttonColor="@color/filled_button_bg"
         app:buttonTextColor="@color/default_text_color_on_accent1_baseline_list"
-        style="@style/FilledButton.Flat"/>
+        style="@style/FilledButton"/>
 
     <!-- The deny button button -->
     <org.chromium.ui.widget.ButtonCompat

@@ -5,24 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_SIGNIN_MODEL_SIGNIN_METRICS_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_SIGNIN_MODEL_SIGNIN_METRICS_SERVICE_FACTORY_H_
 
-#include <memory>
+#import <memory>
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "base/no_destructor.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
-class ChromeBrowserState;
 class SigninMetricsService;
 
-// Singleton that manages the `SigninMetricsService` service per browser state.
-class SigninMetricsServiceFactory : public BrowserStateKeyedServiceFactory {
+// Singleton that manages the `SigninMetricsService` service per profile.
+class SigninMetricsServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  static SigninMetricsService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  static SigninMetricsService* GetForProfile(ProfileIOS* profile);
   static SigninMetricsServiceFactory* GetInstance();
-
-  SigninMetricsServiceFactory(const SigninMetricsServiceFactory&) = delete;
-  SigninMetricsServiceFactory& operator=(const SigninMetricsServiceFactory&) =
-      delete;
 
  private:
   friend class base::NoDestructor<SigninMetricsServiceFactory>;
@@ -30,11 +24,10 @@ class SigninMetricsServiceFactory : public BrowserStateKeyedServiceFactory {
   SigninMetricsServiceFactory();
   ~SigninMetricsServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
-  bool ServiceIsCreatedWithBrowserState() const override;
-  void RegisterBrowserStatePrefs(
+      ProfileIOS* profile) const override;
+  void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
 };
 

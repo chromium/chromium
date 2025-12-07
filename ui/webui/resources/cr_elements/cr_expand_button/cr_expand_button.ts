@@ -8,7 +8,7 @@
  * between an opened (expanded) and closed state.
  */
 import '../cr_icon_button/cr_icon_button.js';
-import '../icons_lit.html.js';
+import '../icons.html.js';
 
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
@@ -69,13 +69,13 @@ export class CrExpandButtonElement extends CrLitElement {
     };
   }
 
-  expanded: boolean = false;
-  disabled: boolean = false;
-  expandIcon: string = 'cr:expand-more';
-  collapseIcon: string = 'cr:expand-less';
-  expandTitle?: string;
-  collapseTitle?: string;
-  override tabIndex: number = 0;
+  accessor expanded: boolean = false;
+  accessor disabled: boolean = false;
+  accessor expandIcon: string = 'cr:expand-more';
+  accessor collapseIcon: string = 'cr:expand-less';
+  accessor expandTitle: string|undefined;
+  accessor collapseTitle: string|undefined;
+  override accessor tabIndex: number = 0;
 
   override firstUpdated() {
     this.addEventListener('click', this.toggleExpand_);

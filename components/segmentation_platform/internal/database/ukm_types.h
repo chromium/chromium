@@ -9,7 +9,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "base/types/id_type.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
@@ -36,6 +35,32 @@ struct UmaMetricEntry {
   base::Time time;
   // Sample value, always 0 for user actions.
   int32_t value = 0;
+};
+
+// CleanupItem is used to store signals for cleanup.
+struct CleanupItem {
+ public:
+  CleanupItem();
+  CleanupItem(uint64_t name_hash,
+              uint64_t event_hash,
+              proto::SignalType signal_type,
+              base::Time timestamp);
+  ~CleanupItem();
+
+  bool operator==(const CleanupItem& other) const;
+
+  bool IsUma() const;
+
+  // Name of the signal to be cleaned up.
+  uint64_t name_hash;
+  // Event hash for the signal.
+  uint64_t event_hash;
+  // Type of signal.
+  proto::SignalType signal_type;
+  // Indicates the time when the signal was last cleaned up.
+  base::Time timestamp;
+  // Event hash for non UKM signals.
+  static const uint64_t kNonUkmEventHash = 0;
 };
 
 namespace processing {

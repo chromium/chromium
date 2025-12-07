@@ -10,13 +10,13 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/sharesheet/sharesheet_ui_delegate.h"
 #include "chromeos/components/sharesheet/constants.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "ui/base/accelerators/accelerator.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 class Profile;
 
@@ -37,7 +37,8 @@ namespace sharesheet {
 class SharesheetService;
 
 // The SharesheetServiceDelegator is the interface through which the business
-// logic in SharesheetService communicates with the UI.
+// logic in SharesheetService communicates with the UI. This is deleted when UI
+// is closed, and must not be reused after that.
 class SharesheetServiceDelegator {
  public:
   SharesheetServiceDelegator(gfx::NativeWindow native_window,
@@ -66,13 +67,13 @@ class SharesheetServiceDelegator {
                   DeliveredCallback delivered_callback,
                   CloseCallback close_callback);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Skips the generic Sharesheet bubble and directly displays the
   // NearbyShare bubble dialog.
   void ShowNearbyShareBubbleForArc(apps::IntentPtr intent,
                                    DeliveredCallback delivered_callback,
                                    CloseCallback close_callback);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Invoked immediately after an action has launched in the event that UI
   // changes need to occur at this point.

@@ -379,14 +379,14 @@ def WriteMacros(out_file, functions):
 
     callstat = ''
     if func in ('vkQueueSubmit', 'vkQueueWaitIdle', 'vkQueuePresentKHR'):
-        callstat = 'base::Lock* lock = nullptr;\n'
+        callstat = 'gpu::VulkanQueueLock* lock = nullptr;\n'
         callstat += '''auto it = gpu::GetVulkanFunctionPointers()->
         per_queue_lock_map.find(queue);\n'''
         callstat += '''if (it != gpu::GetVulkanFunctionPointers()->
         per_queue_lock_map.end()) {\n'''
         callstat += '\tlock = it->second.get();\n'
         callstat += '}\n'
-        callstat += 'base::AutoLockMaybe auto_lock(lock);\n'
+        callstat += 'gpu::VulkanQueueAutoLockMaybe auto_lock(lock);\n'
 
     callstat += 'return gpu::GetVulkanFunctionPointers()->%s(' % func
     paramdecl = '('
@@ -416,6 +416,75 @@ def GenerateHeaderFile(out_file):
 #define GPU_VULKAN_VULKAN_FUNCTION_POINTERS_H_
 
 #include <vulkan/vulkan.h>
+// vulkan.h includes <X11/Xlib.h> when VK_USE_PLATFORM_XLIB_KHR is defined
+// after https://github.com/KhronosGroup/Vulkan-Headers/pull/534.
+// This defines some macros which break build, so undefine them here.
+#undef Above
+#undef AllTemporary
+#undef AlreadyGrabbed
+#undef Always
+#undef AsyncBoth
+#undef AsyncKeyboard
+#undef AsyncPointer
+#undef Below
+#undef Bool
+#undef BottomIf
+#undef Button1
+#undef Button2
+#undef Button3
+#undef Button4
+#undef Button5
+#undef ButtonPress
+#undef ButtonRelease
+#undef ClipByChildren
+#undef Complex
+#undef Convex
+#undef CopyFromParent
+#undef CurrentTime
+#undef DestroyAll
+#undef DirectColor
+#undef DisplayString
+#undef EnterNotify
+#undef GrayScale
+#undef IncludeInferiors
+#undef InputFocus
+#undef InputOnly
+#undef InputOutput
+#undef KeyPress
+#undef KeyRelease
+#undef LSBFirst
+#undef LeaveNotify
+#undef LowerHighest
+#undef MSBFirst
+#undef Nonconvex
+#undef None
+#undef NotUseful
+#undef Opposite
+#undef ParentRelative
+#undef PointerRoot
+#undef PointerWindow
+#undef PseudoColor
+#undef RaiseLowest
+#undef ReplayKeyboard
+#undef ReplayPointer
+#undef RetainPermanent
+#undef RetainTemporary
+#undef StaticColor
+#undef StaticGray
+#undef Success
+#undef SyncBoth
+#undef SyncKeyboard
+#undef SyncPointer
+#undef TopIf
+#undef TrueColor
+#undef Unsorted
+#undef WhenMapped
+#undef XYBitmap
+#undef XYPixmap
+#undef YSorted
+#undef YXBanded
+#undef YXSorted
+#undef ZPixmap
 
 #include <memory>
 
@@ -423,8 +492,8 @@ def GenerateHeaderFile(out_file):
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/native_library.h"
-#include "base/synchronization/lock.h"
 #include "build/build_config.h"
+#include "gpu/vulkan/vulkan_queue_lock.h"
 #include "ui/gfx/extension_set.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -483,7 +552,7 @@ struct COMPONENT_EXPORT(VULKAN) VulkanFunctionPointers {
   // multiple gpu threads are accessing it. Note that this map will be only
   // accessed by multiple gpu threads concurrently to read the data, so it
   // should be thread safe to use this map by multiple threads.
-  base::flat_map<VkQueue, std::unique_ptr<base::Lock>> per_queue_lock_map;
+  base::flat_map<VkQueue, std::unique_ptr<VulkanQueueLock>> per_queue_lock_map;
 
   template<typename T>
   class VulkanFunction;

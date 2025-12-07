@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/frame/virtual_keyboard_overlay_changed_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace gfx {
 class Rect;
@@ -24,12 +23,10 @@ class Navigator;
 // to JS authors. The VirtualKeyboard object lives in the Navigator.
 // It is exposed to JS via a new attribute virtualKeyboard in the Navigator.
 class VirtualKeyboard final : public EventTarget,
-                              public Supplement<Navigator>,
                               public VirtualKeyboardOverlayChangedObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
   static VirtualKeyboard* virtualKeyboard(Navigator&);
 
   explicit VirtualKeyboard(Navigator& navigator);
@@ -56,6 +53,7 @@ class VirtualKeyboard final : public EventTarget,
   void Trace(Visitor*) const override;
 
  private:
+  Member<Navigator> navigator_;
   Member<DOMRect> bounding_rect_;
 };
 

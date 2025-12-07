@@ -24,9 +24,16 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_UNICODE_STRING_H_
 
 #include <unicode/stringoptions.h>
+#include <unicode/unistr.h>
 #include <unicode/ustring.h>
 
-namespace WTF {
+#include "base/containers/span.h"
+
+#if U_ICU_VERSION_MAJOR_NUM >= 59
+#include <unicode/char16ptr.h>
+#endif
+
+namespace blink {
 namespace unicode {
 
 inline int FoldCase(UChar* result,
@@ -45,7 +52,17 @@ inline int Umemcasecmp(const UChar* a, const UChar* b, int len) {
   return u_memcasecmp(a, b, len, U_FOLD_CASE_DEFAULT);
 }
 
+inline base::span<const UChar> ToSpan(const icu::UnicodeString& ustring) {
+  size_t size = static_cast<size_t>(ustring.length());
+  // SAFETY: ICU ensures ustring.length() is valid for ustring.getBuffer().
+#if U_ICU_VERSION_MAJOR_NUM >= 59
+  return UNSAFE_BUFFERS(base::span(icu::toUCharPtr(ustring.getBuffer()), size));
+#else
+  return UNSAFE_BUFFERS(base::span(ustring.getBuffer(), size));
+#endif
+}
+
 }  // namespace unicode
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_UNICODE_STRING_H_

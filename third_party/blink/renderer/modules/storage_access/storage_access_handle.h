@@ -6,13 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_STORAGE_ACCESS_STORAGE_ACCESS_HANDLE_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_storage_access_types.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
@@ -27,14 +27,12 @@ class SharedWorker;
 class StorageArea;
 class StorageEstimate;
 class V8UnionSharedWorkerOptionsOrString;
+class V8UnionTrustedScriptURLOrUSVString;
 
-class MODULES_EXPORT StorageAccessHandle final
-    : public ScriptWrappable,
-      public Supplement<LocalDOMWindow> {
+class MODULES_EXPORT StorageAccessHandle final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
   static const char kSessionStorageNotRequested[];
   static const char kLocalStorageNotRequested[];
   static const char kIndexedDBNotRequested[];
@@ -71,14 +69,17 @@ class MODULES_EXPORT StorageAccessHandle final
       ExceptionState& exception_state) const;
   blink::SharedWorker* SharedWorker(
       ExecutionContext* context,
-      const String& url,
+      const V8UnionTrustedScriptURLOrUSVString* url,
       const V8UnionSharedWorkerOptionsOrString* name_or_options,
       ExceptionState& exception_state) const;
+
+  LocalDOMWindow* GetLocalDOMWindow() const { return local_dom_window_; }
 
  private:
   void GetDirectoryImpl(
       ScriptPromiseResolver<FileSystemDirectoryHandle>* resolver) const;
 
+  Member<LocalDOMWindow> local_dom_window_;
   Member<const StorageAccessTypes> storage_access_types_;
 };
 

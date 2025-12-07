@@ -175,7 +175,7 @@ ContentVisitDelegate::ContentVisitDelegate(
   // time. Callers of either `partitioned_writer_` or `visitedlink_writer_`
   // should ensure the pointer is not null before use.
   if (base::FeatureList::IsEnabled(
-          blink::features::kPartitionVisitedLinkDatabase)) {
+          blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks)) {
     partitioned_writer_ =
         std::make_unique<visitedlink::PartitionedVisitedLinkWriter>(
             browser_context, this);
@@ -196,7 +196,7 @@ bool ContentVisitDelegate::Init(HistoryService* history_service) {
   // time. Callers of either `partitioned_writer_` or `visitedlink_writer_`
   // should ensure the pointer is not null before use.
   if (base::FeatureList::IsEnabled(
-          blink::features::kPartitionVisitedLinkDatabase)) {
+          blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks)) {
     DCHECK(partitioned_writer_);
     return partitioned_writer_->Init();
   }
@@ -265,8 +265,9 @@ void ContentVisitDelegate::DeleteAllVisitedLinks() {
 
 std::optional<uint64_t> ContentVisitDelegate::GetOrAddOriginSalt(
     const url::Origin& origin) {
-  // This function should only be called when `kPartitionVisitedLinkDatabase` is
-  // enabled, meaning partitioned_writer_ should be constructed and init.
+  // This function should only be called when
+  // `kPartitionVisitedLinkDatabaseWithSelfLinks` is enabled, meaning
+  // partitioned_writer_ should be constructed and init.
   if (partitioned_writer_) {
     return partitioned_writer_->GetOrAddOriginSalt(origin);
   }

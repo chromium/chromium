@@ -5,9 +5,9 @@
 #ifndef CONTENT_PUBLIC_BROWSER_NETWORK_SERVICE_INSTANCE_H_
 #define CONTENT_PUBLIC_BROWSER_NETWORK_SERVICE_INSTANCE_H_
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom-forward.h"
@@ -34,6 +34,10 @@ class NetworkService;
 }  // namespace network
 
 namespace content {
+
+// If this feature is enabled, the Network Service will run on its own thread
+// when running in-process; otherwise it will run on the IO thread.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kNetworkServiceDedicatedThread);
 
 // Returns a pointer to the NetworkService, creating / re-creating it as needed.
 // NetworkService will be running in-process if

@@ -71,8 +71,8 @@ class LongTaskDetectorTest : public testing::Test {
 
   void SimulateTask(base::TimeDelta duration) {
     platform_->GetMainThreadScheduler()->DefaultTaskRunner()->PostTask(
-        FROM_HERE, WTF::BindOnce(&LongTaskDetectorTest::DummyTaskWithDuration,
-                                 WTF::Unretained(this), duration));
+        FROM_HERE, blink::BindOnce(&LongTaskDetectorTest::DummyTaskWithDuration,
+                                   Unretained(this), duration));
     platform_->RunUntilIdle();
   }
 

@@ -19,8 +19,7 @@
 #define RLIMIT_NICE 20
 #endif
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 bool CanLowerNiceTo(int nice_value) {
   // On a POSIX system, the nice value of a thread can be lowered 1. by the root
@@ -58,5 +57,4 @@ bool CanLowerNiceTo(int nice_value) {
   return nice_value >= lowest_nice_allowed;
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

@@ -15,6 +15,7 @@
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace policy {
 
@@ -30,7 +31,7 @@ constexpr std::string_view kAffiliationID = "some-affiliation-id";
 constexpr std::string_view kAnotherAffiliationID = "another-affiliation-id";
 
 constexpr char kAffiliatedUserEmail[] = "affiliateduser@example.com";
-constexpr char kAffiliatedUserGaiaId[] = "1029384756";
+constexpr GaiaId::Literal kAffiliatedUserGaiaId("1029384756");
 
 }  // namespace
 

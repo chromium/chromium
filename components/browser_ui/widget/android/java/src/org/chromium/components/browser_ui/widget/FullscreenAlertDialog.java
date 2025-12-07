@@ -12,27 +12,41 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewStub;
+import android.widget.FrameLayout;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.DeviceInfo;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.AutomotiveUtils;
+import org.chromium.ui.edge_to_edge.layout.EdgeToEdgeLayoutCoordinator;
 
 /**
  * Full screen AlertDialog in Clank
  *
- * This class will automatically add the back button toolbar to automotive devices in full screen
+ * <p>This class will automatically add the back button toolbar to automotive devices in full screen
  * AlertDialogs.
  */
+@NullMarked
 public class FullscreenAlertDialog extends AlertDialog {
-    private Context mContext;
-    private Toolbar mAutomotiveToolbar;
+    private final Context mContext;
+    private final boolean mShouldPadForContent;
+    private @Nullable Toolbar mAutomotiveToolbar;
+    private @Nullable EdgeToEdgeLayoutCoordinator mEdgeToEdgeLayout;
 
-    public FullscreenAlertDialog(@NonNull Context context) {
+    /**
+     * Create a fullscreen AlertDialog.
+     *
+     * @param context Activity context used to show the dialog.
+     * @param shouldPadForContent Whether the content should be padded to avoid window insets.
+     */
+    // Note: shouldPadForContent should always be true once Chrome is drawing edge to edge.
+    public FullscreenAlertDialog(Context context, boolean shouldPadForContent) {
         super(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
         mContext = context;
+        mShouldPadForContent = shouldPadForContent;
     }
 
     @Override
@@ -43,7 +57,7 @@ public class FullscreenAlertDialog extends AlertDialog {
 
     @Override
     public void setView(View view) {
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             View automotiveLayout =
                     LayoutInflater.from(mContext)
                             .inflate(
@@ -53,6 +67,9 @@ public class FullscreenAlertDialog extends AlertDialog {
             ((ViewGroup) automotiveLayout).addView(view);
             mAutomotiveToolbar = automotiveLayout.findViewById(R.id.back_button_toolbar);
             super.setView(automotiveLayout);
+        } else if (mShouldPadForContent) {
+            mEdgeToEdgeLayout = initEdgeToEdgeLayoutCoordinator(mContext);
+            super.setView(mEdgeToEdgeLayout.wrapContentView(view));
         } else {
             super.setView(view);
         }
@@ -65,7 +82,7 @@ public class FullscreenAlertDialog extends AlertDialog {
             int viewSpacingTop,
             int viewSpacingRight,
             int viewSpacingBottom) {
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             MarginLayoutParams params = (MarginLayoutParams) view.getLayoutParams();
             params.setMargins(viewSpacingLeft, viewSpacingTop, viewSpacingRight, viewSpacingBottom);
             ViewGroup automotiveLayout =
@@ -79,6 +96,11 @@ public class FullscreenAlertDialog extends AlertDialog {
             automotiveLayout.addView(view, params);
             mAutomotiveToolbar = automotiveLayout.findViewById(R.id.back_button_toolbar);
             super.setView(automotiveLayout);
+        } else if (mShouldPadForContent) {
+            MarginLayoutParams params = (MarginLayoutParams) view.getLayoutParams();
+            params.setMargins(viewSpacingLeft, viewSpacingTop, viewSpacingRight, viewSpacingBottom);
+            mEdgeToEdgeLayout = initEdgeToEdgeLayoutCoordinator(mContext);
+            super.setView(mEdgeToEdgeLayout.wrapContentView(view, params));
         } else {
             super.setView(
                     view, viewSpacingLeft, viewSpacingTop, viewSpacingRight, viewSpacingBottom);
@@ -95,18 +117,31 @@ public class FullscreenAlertDialog extends AlertDialog {
     }
 
     public static class Builder extends AlertDialog.Builder {
-        private Context mContext;
-        private AlertDialog mAlertDialog;
-        private Toolbar mAutomotiveToolbar;
+        private final Context mContext;
+        private final @Nullable EdgeToEdgeLayoutCoordinator mEdgeToEdgeLayout;
+        private @Nullable Toolbar mAutomotiveToolbar;
 
-        public Builder(@NonNull Context context) {
+        /**
+         * Create a builder for FullscreenAlertDialog.
+         *
+         * @param context The activity context
+         * @param shouldPadForContent Whether the content should be padded to avoid window insets.
+         */
+        // Note: shouldPadForContent should always be true once Chrome is drawing edge to edge.
+        public Builder(Context context, boolean shouldPadForContent) {
             super(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
             mContext = context;
+
+            if (shouldPadForContent && !DeviceInfo.isAutomotive()) {
+                mEdgeToEdgeLayout = initEdgeToEdgeLayoutCoordinator(mContext);
+            } else {
+                mEdgeToEdgeLayout = null;
+            }
         }
 
         @Override
         public Builder setView(int layoutResId) {
-            if (BuildInfo.getInstance().isAutomotive) {
+            if (DeviceInfo.isAutomotive()) {
                 View automotiveLayout =
                         LayoutInflater.from(mContext)
                                 .inflate(
@@ -118,6 +153,11 @@ public class FullscreenAlertDialog extends AlertDialog {
                 stub.setLayoutResource(layoutResId);
                 stub.inflate();
                 super.setView(automotiveLayout);
+            } else if (mEdgeToEdgeLayout != null) {
+                FrameLayout baseLayout = new FrameLayout(mContext);
+                super.setView(mEdgeToEdgeLayout.wrapContentView(baseLayout));
+                LayoutInflater.from(mContext)
+                        .inflate(layoutResId, baseLayout, /* attachToRoot= */ true);
             } else {
                 super.setView(layoutResId);
             }
@@ -126,7 +166,7 @@ public class FullscreenAlertDialog extends AlertDialog {
 
         @Override
         public Builder setView(View view) {
-            if (BuildInfo.getInstance().isAutomotive) {
+            if (DeviceInfo.isAutomotive()) {
                 ViewGroup automotiveLayout =
                         (ViewGroup)
                                 LayoutInflater.from(mContext)
@@ -139,6 +179,8 @@ public class FullscreenAlertDialog extends AlertDialog {
                 automotiveLayout.addView(
                         view, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
                 super.setView(automotiveLayout);
+            } else if (mEdgeToEdgeLayout != null) {
+                super.setView(mEdgeToEdgeLayout.wrapContentView(view));
             } else {
                 super.setView(view);
             }
@@ -147,14 +189,19 @@ public class FullscreenAlertDialog extends AlertDialog {
 
         @Override
         public AlertDialog create() {
-            mAlertDialog = super.create();
+            AlertDialog dialog = super.create();
             if (mAutomotiveToolbar != null) {
                 mAutomotiveToolbar.setNavigationOnClickListener(
                         backButtonClick -> {
-                            mAlertDialog.getOnBackPressedDispatcher().onBackPressed();
+                            dialog.getOnBackPressedDispatcher().onBackPressed();
                         });
             }
-            return mAlertDialog;
+            return dialog;
         }
+    }
+
+    private static EdgeToEdgeLayoutCoordinator initEdgeToEdgeLayoutCoordinator(Context context) {
+        // TODO(crbug.com/401075913): Color sys bars according to dialog content.
+        return new EdgeToEdgeLayoutCoordinator(context, null);
     }
 }

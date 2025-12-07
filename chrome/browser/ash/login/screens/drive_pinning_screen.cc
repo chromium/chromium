@@ -2,15 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/login/screens/drive_pinning_screen.h"
+
 #include <iomanip>
 
 #include "ash/constants/ash_features.h"
+#include "base/byte_count.h"
 #include "base/check_is_test.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
-#include "chrome/browser/ash/login/screens/drive_pinning_screen.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/drive_pinning_screen_handler.h"
@@ -189,8 +192,10 @@ void DrivePinningScreen::OnBulkPinProgress(
   drive_pinning_stage_ = progress.stage;
   if (progress.stage == drivefs::pinning::Stage::kSuccess) {
     VLOG(1) << "Finished calculating required space";
-    std::u16string free_space = ui::FormatBytes(progress.free_space);
-    std::u16string required_space = ui::FormatBytes(progress.required_space);
+    std::u16string free_space =
+        ui::FormatBytes(base::ByteCount(progress.free_space));
+    std::u16string required_space =
+        ui::FormatBytes(base::ByteCount(progress.required_space));
     SetRequiredSpaceInfo(required_space, free_space);
   }
 }

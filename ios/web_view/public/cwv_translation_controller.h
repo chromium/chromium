@@ -12,6 +12,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class CWVTranslationLanguage;
+@class CWVTranslationLanguageDetectionDetails;
 @class CWVTranslationPolicy;
 @protocol CWVTranslationControllerDelegate;
 
@@ -56,7 +57,20 @@ CWV_EXPORT
 @property(nonatomic, readonly)
     NSSet<CWVTranslationLanguage*>* supportedLanguages;
 
+// The page's language detection details.
+// This property will be set when the delegate's didDeterminePageLanguage
+// method is called.
+// If the page language has already been determined, languageDetectionDetails
+// will be non-null.
+@property(nullable, nonatomic, readonly)
+    CWVTranslationLanguageDetectionDetails* languageDetectionDetails;
+
 - (instancetype)init NS_UNAVAILABLE;
+
+// Starts the language detection flow, if needed.
+// This method will do nothing if the page language has already been
+// determined.
+- (void)startLanguageDetection;
 
 // Begins translation on the current page from |sourceLanguage| to
 // |targetLanguage|. These language parameters must be chosen from

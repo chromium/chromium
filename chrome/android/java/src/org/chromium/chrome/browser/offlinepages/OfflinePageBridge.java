@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.offlinepages;
 
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -18,6 +17,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.browser.tab.Tab;
@@ -26,6 +27,7 @@ import org.chromium.components.offline_items_collection.LaunchLocation;
 import org.chromium.components.offlinepages.DeletePageResult;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -35,6 +37,7 @@ import java.util.Map;
 
 /** Access gate to C++ side offline pages functionalities. */
 @JNINamespace("offline_pages::android")
+@NullMarked
 public class OfflinePageBridge {
     // These constants must be kept in sync with the constants defined in
     // //components/offline_pages/core/client_namespace_constants.cc
@@ -55,12 +58,11 @@ public class OfflinePageBridge {
 
     /**
      * Retrieves the OfflinePageBridge for the given profile, creating it the first time
-     * getForProfile or getForProfileKey is called for the profile.  Must be called on the UI
-     * thread.
+     * getForProfile or getForProfileKey is called for the profile. Must be called on the UI thread.
      *
      * @param profile The profile associated with the OfflinePageBridge to get.
      */
-    public static OfflinePageBridge getForProfile(Profile profile) {
+    public static @Nullable OfflinePageBridge getForProfile(@Nullable Profile profile) {
         ThreadUtils.assertOnUiThread();
 
         if (profile == null) {
@@ -173,7 +175,7 @@ public class OfflinePageBridge {
     public void getAllPages(final Callback<List<OfflinePageItem>> callback) {
         List<OfflinePageItem> result = new ArrayList<>();
         org.chromium.chrome.browser.offlinepages.OfflinePageBridgeJni.get()
-                .getAllPages(mNativeOfflinePageBridge, OfflinePageBridge.this, result, callback);
+                .getAllPages(mNativeOfflinePageBridge, result, callback);
     }
 
     /**
@@ -196,13 +198,7 @@ public class OfflinePageBridge {
 
         List<OfflinePageItem> result = new ArrayList<>();
         org.chromium.chrome.browser.offlinepages.OfflinePageBridgeJni.get()
-                .getPagesByClientId(
-                        mNativeOfflinePageBridge,
-                        OfflinePageBridge.this,
-                        result,
-                        namespaces,
-                        ids,
-                        callback);
+                .getPagesByClientId(mNativeOfflinePageBridge, result, namespaces, ids, callback);
     }
 
     /**
@@ -214,8 +210,7 @@ public class OfflinePageBridge {
     public void getPagesByRequestOrigin(String origin, Callback<List<OfflinePageItem>> callback) {
         List<OfflinePageItem> result = new ArrayList<>();
         org.chromium.chrome.browser.offlinepages.OfflinePageBridgeJni.get()
-                .getPagesByRequestOrigin(
-                        mNativeOfflinePageBridge, OfflinePageBridge.this, result, origin, callback);
+                .getPagesByRequestOrigin(mNativeOfflinePageBridge, result, origin, callback);
     }
 
     /**
@@ -230,12 +225,7 @@ public class OfflinePageBridge {
             final String namespace, final Callback<List<OfflinePageItem>> callback) {
         List<OfflinePageItem> result = new ArrayList<>();
         org.chromium.chrome.browser.offlinepages.OfflinePageBridgeJni.get()
-                .getPagesByNamespace(
-                        mNativeOfflinePageBridge,
-                        OfflinePageBridge.this,
-                        result,
-                        namespace,
-                        callback);
+                .getPagesByNamespace(mNativeOfflinePageBridge, result, namespace, callback);
     }
 
     /**
@@ -244,17 +234,12 @@ public class OfflinePageBridge {
      * @param onlineUrl URL of the page.
      * @param tabId Android tab ID.
      * @param callback callback to pass back the matching {@link OfflinePageItem} if found. Will
-     *         pass back null if not.
+     *     pass back null if not.
      */
     public void selectPageForOnlineUrl(
             GURL onlineUrl, int tabId, Callback<OfflinePageItem> callback) {
         org.chromium.chrome.browser.offlinepages.OfflinePageBridgeJni.get()
-                .selectPageForOnlineUrl(
-                        mNativeOfflinePageBridge,
-                        OfflinePageBridge.this,
-                        onlineUrl,
-                        tabId,
-                        callback);
+                .selectPageForOnlineUrl(mNativeOfflinePageBridge, onlineUrl, tabId, callback);
     }
 
     /**
@@ -262,22 +247,21 @@ public class OfflinePageBridge {
      *
      * @param offlineId ID of the offline page.
      * @param callback callback to pass back the matching {@link OfflinePageItem} if found. Will
-     *         pass back <code>null</code> if not.
+     *     pass back <code>null</code> if not.
      */
     public void getPageByOfflineId(final long offlineId, final Callback<OfflinePageItem> callback) {
         org.chromium.chrome.browser.offlinepages.OfflinePageBridgeJni.get()
-                .getPageByOfflineId(
-                        mNativeOfflinePageBridge, OfflinePageBridge.this, offlineId, callback);
+                .getPageByOfflineId(mNativeOfflinePageBridge, offlineId, callback);
     }
 
     /**
-     * Saves the web page loaded into web contents offline.
-     * Retrieves the origin of the page from the WebContents.
+     * Saves the web page loaded into web contents offline. Retrieves the origin of the page from
+     * the WebContents.
      *
      * @param webContents Contents of the page to save.
      * @param clientId Client ID of the bookmark related to the offline page.
      * @param callback Interface that contains a callback. This may be called synchronously, e.g. if
-     *         the web contents is already destroyed.
+     *     the web contents is already destroyed.
      * @see SavePageCallback
      */
     public void savePage(
@@ -285,8 +269,9 @@ public class OfflinePageBridge {
             final ClientId clientId,
             final SavePageCallback callback) {
         OfflinePageOrigin origin;
-        Tab currentTab =
-                TabModelSelectorSupplier.getCurrentTabFrom(webContents.getTopLevelNativeWindow());
+        WindowAndroid topLevelNativeWindow = webContents.getTopLevelNativeWindow();
+        assert topLevelNativeWindow != null;
+        Tab currentTab = TabModelSelectorSupplier.getCurrentTabFrom(topLevelNativeWindow);
         if (currentTab != null) {
             origin = new OfflinePageOrigin(ContextUtils.getApplicationContext(), currentTab);
         } else {
@@ -302,7 +287,7 @@ public class OfflinePageBridge {
      * @param clientId Client ID of the bookmark related to the offline page.
      * @param origin The app that initiated the download.
      * @param callback Interface that contains a callback. This may be called synchronously, e.g. if
-     *         the web contents is already destroyed.
+     *     the web contents is already destroyed.
      * @see SavePageCallback
      */
     public void savePage(
@@ -317,7 +302,6 @@ public class OfflinePageBridge {
         org.chromium.chrome.browser.offlinepages.OfflinePageBridgeJni.get()
                 .savePage(
                         mNativeOfflinePageBridge,
-                        OfflinePageBridge.this,
                         callback,
                         webContents,
                         clientId.getNamespace(),
@@ -334,7 +318,7 @@ public class OfflinePageBridge {
     @VisibleForTesting
     public void deletePage(final ClientId clientId, Callback<Integer> callback) {
         assert mIsNativeOfflinePageModelLoaded;
-        ArrayList<ClientId> ids = new ArrayList<ClientId>();
+        ArrayList<ClientId> ids = new ArrayList<>();
         ids.add(clientId);
 
         deletePagesByClientId(ids, callback);
@@ -357,12 +341,7 @@ public class OfflinePageBridge {
         }
 
         org.chromium.chrome.browser.offlinepages.OfflinePageBridgeJni.get()
-                .deletePagesByClientId(
-                        mNativeOfflinePageBridge,
-                        OfflinePageBridge.this,
-                        namespaces,
-                        ids,
-                        callback);
+                .deletePagesByClientId(mNativeOfflinePageBridge, namespaces, ids, callback);
     }
 
     /**
@@ -386,7 +365,6 @@ public class OfflinePageBridge {
         org.chromium.chrome.browser.offlinepages.OfflinePageBridgeJni.get()
                 .deletePagesByClientIdAndOrigin(
                         mNativeOfflinePageBridge,
-                        OfflinePageBridge.this,
                         namespaces,
                         ids,
                         origin.encodeAsJsonString(),
@@ -414,8 +392,7 @@ public class OfflinePageBridge {
             offlineIds[i] = offlineIdList.get(i).longValue();
         }
         org.chromium.chrome.browser.offlinepages.OfflinePageBridgeJni.get()
-                .deletePagesByOfflineId(
-                        mNativeOfflinePageBridge, OfflinePageBridge.this, offlineIds, callback);
+                .deletePagesByOfflineId(mNativeOfflinePageBridge, offlineIds, callback);
     }
 
     /**
@@ -427,21 +404,18 @@ public class OfflinePageBridge {
     public void publishInternalPageByOfflineId(long offlineId, Callback<String> publishedCallback) {
         org.chromium.chrome.browser.offlinepages.OfflinePageBridgeJni.get()
                 .publishInternalPageByOfflineId(
-                        mNativeOfflinePageBridge,
-                        OfflinePageBridge.this,
-                        offlineId,
-                        publishedCallback);
+                        mNativeOfflinePageBridge, offlineId, publishedCallback);
     }
 
     /**
      * Ask the native code to publish the internal page asychronously.
+     *
      * @param guid Client ID of the offline page to publish.
      * @param publishedCallback Function to call when publishing is done.
      */
     public void publishInternalPageByGuid(String guid, Callback<String> publishedCallback) {
         org.chromium.chrome.browser.offlinepages.OfflinePageBridgeJni.get()
-                .publishInternalPageByGuid(
-                        mNativeOfflinePageBridge, OfflinePageBridge.this, guid, publishedCallback);
+                .publishInternalPageByGuid(mNativeOfflinePageBridge, guid, publishedCallback);
     }
 
     /** Whether or not the underlying offline page model is loaded. */
@@ -457,34 +431,31 @@ public class OfflinePageBridge {
      */
     public @Nullable String getOfflinePageHeaderForReload(WebContents webContents) {
         return org.chromium.chrome.browser.offlinepages.OfflinePageBridgeJni.get()
-                .getOfflinePageHeaderForReload(
-                        mNativeOfflinePageBridge, OfflinePageBridge.this, webContents);
+                .getOfflinePageHeaderForReload(mNativeOfflinePageBridge, webContents);
     }
 
     /**
      * @param webContents Contents of the page to check.
      * @return True if an offline preview is being shown.
      */
-    public boolean isShowingOfflinePreview(WebContents webContents) {
+    public boolean isShowingOfflinePreview(@Nullable WebContents webContents) {
         return org.chromium.chrome.browser.offlinepages.OfflinePageBridgeJni.get()
-                .isShowingOfflinePreview(
-                        mNativeOfflinePageBridge, OfflinePageBridge.this, webContents);
+                .isShowingOfflinePreview(mNativeOfflinePageBridge, webContents);
     }
 
     /**
      * @param webContents Contents of the page to check.
      * @return True if download button is being shown in the error page.
      */
-    public boolean isShowingDownloadButtonInErrorPage(WebContents webContents) {
+    public boolean isShowingDownloadButtonInErrorPage(@Nullable WebContents webContents) {
         return org.chromium.chrome.browser.offlinepages.OfflinePageBridgeJni.get()
-                .isShowingDownloadButtonInErrorPage(
-                        mNativeOfflinePageBridge, OfflinePageBridge.this, webContents);
+                .isShowingDownloadButtonInErrorPage(mNativeOfflinePageBridge, webContents);
     }
 
     /** Tells the native side that the tab of |webContents| will be closed. */
     void willCloseTab(WebContents webContents) {
         org.chromium.chrome.browser.offlinepages.OfflinePageBridgeJni.get()
-                .willCloseTab(mNativeOfflinePageBridge, OfflinePageBridge.this, webContents);
+                .willCloseTab(mNativeOfflinePageBridge, webContents);
     }
 
     /**
@@ -498,7 +469,7 @@ public class OfflinePageBridge {
      * @param uiAction UI action, like showing infobar or toast on certain case.
      */
     public void scheduleDownload(
-            WebContents webContents, String nameSpace, String url, int uiAction) {
+            @Nullable WebContents webContents, String nameSpace, String url, int uiAction) {
         scheduleDownload(webContents, nameSpace, url, uiAction, new OfflinePageOrigin());
     }
 
@@ -513,7 +484,7 @@ public class OfflinePageBridge {
      * @param origin Origin of the page.
      */
     public void scheduleDownload(
-            WebContents webContents,
+            @Nullable WebContents webContents,
             String nameSpace,
             String url,
             int uiAction,
@@ -521,7 +492,6 @@ public class OfflinePageBridge {
         org.chromium.chrome.browser.offlinepages.OfflinePageBridgeJni.get()
                 .scheduleDownload(
                         mNativeOfflinePageBridge,
-                        OfflinePageBridge.this,
                         webContents,
                         nameSpace,
                         url,
@@ -531,42 +501,46 @@ public class OfflinePageBridge {
 
     /**
      * Checks if an offline page is shown for the webContents.
+     *
      * @param webContents Web contents used to find the offline page.
      * @return True if the offline page is opened.
      */
     public boolean isOfflinePage(WebContents webContents) {
         return org.chromium.chrome.browser.offlinepages.OfflinePageBridgeJni.get()
-                .isOfflinePage(mNativeOfflinePageBridge, OfflinePageBridge.this, webContents);
+                .isOfflinePage(mNativeOfflinePageBridge, webContents);
     }
 
     /**
      * Returns whether |nameSpace| is a temporary namespace.
+     *
      * @param nameSpace Namespace of the page in question.
      * @return true if the page is in a temporary namespace.
      */
     public boolean isTemporaryNamespace(String nameSpace) {
         return org.chromium.chrome.browser.offlinepages.OfflinePageBridgeJni.get()
-                .isTemporaryNamespace(mNativeOfflinePageBridge, OfflinePageBridge.this, nameSpace);
+                .isTemporaryNamespace(mNativeOfflinePageBridge, nameSpace);
     }
 
     /**
      * Checks if the supplied file path is in a private dir internal to chrome.
+     *
      * @param filePath Path of the file to check.
      * @return True if the file is in a private directory.
      */
     public boolean isInPrivateDirectory(String filePath) {
         return org.chromium.chrome.browser.offlinepages.OfflinePageBridgeJni.get()
-                .isInPrivateDirectory(mNativeOfflinePageBridge, OfflinePageBridge.this, filePath);
+                .isInPrivateDirectory(mNativeOfflinePageBridge, filePath);
     }
 
     /**
      * Retrieves the offline page that is shown for the tab.
+     *
      * @param webContents Web contents used to find the offline page.
      * @return The offline page if tab currently displays it, null otherwise.
      */
     public @Nullable OfflinePageItem getOfflinePage(WebContents webContents) {
         return org.chromium.chrome.browser.offlinepages.OfflinePageBridgeJni.get()
-                .getOfflinePage(mNativeOfflinePageBridge, OfflinePageBridge.this, webContents);
+                .getOfflinePage(mNativeOfflinePageBridge, webContents);
     }
 
     /**
@@ -583,11 +557,7 @@ public class OfflinePageBridge {
             long offlineId, @LaunchLocation int location, Callback<LoadUrlParams> callback) {
         org.chromium.chrome.browser.offlinepages.OfflinePageBridgeJni.get()
                 .getLoadUrlParamsByOfflineId(
-                        mNativeOfflinePageBridge,
-                        OfflinePageBridge.this,
-                        offlineId,
-                        location,
-                        callback);
+                        mNativeOfflinePageBridge, offlineId, location, callback);
     }
 
     /**
@@ -600,30 +570,18 @@ public class OfflinePageBridge {
             String url, Callback<LoadUrlParams> callback) {
         org.chromium.chrome.browser.offlinepages.OfflinePageBridgeJni.get()
                 .getLoadUrlParamsForOpeningMhtmlFileOrContent(
-                        mNativeOfflinePageBridge, OfflinePageBridge.this, url, callback);
+                        mNativeOfflinePageBridge, url, callback);
     }
 
     /**
      * Checks if the web contents is showing a trusted offline page.
+     *
      * @param webContents Web contents shown.
      * @return True if a trusted offline page is shown.
      */
     public boolean isShowingTrustedOfflinePage(WebContents webContents) {
         return org.chromium.chrome.browser.offlinepages.OfflinePageBridgeJni.get()
-                .isShowingTrustedOfflinePage(
-                        mNativeOfflinePageBridge, OfflinePageBridge.this, webContents);
-    }
-
-    /**
-     * Tries to acquire the storage access permssion if not yet.
-     *
-     * @param webContents Contents of the page to check.
-     * @param callback Callback to notify the result.
-     */
-    public void acquireFileAccessPermission(WebContents webContents, Callback<Boolean> callback) {
-        org.chromium.chrome.browser.offlinepages.OfflinePageBridgeJni.get()
-                .acquireFileAccessPermission(
-                        mNativeOfflinePageBridge, OfflinePageBridge.this, webContents, callback);
+                .isShowingTrustedOfflinePage(mNativeOfflinePageBridge, webContents);
     }
 
     @CalledByNative
@@ -740,7 +698,7 @@ public class OfflinePageBridge {
         LoadUrlParams loadUrlParams = new LoadUrlParams(url);
         if (!TextUtils.isEmpty(extraHeaderKey) && !TextUtils.isEmpty(extraHeaderValue)) {
             // Set both map-based and collapsed headers to support all use scenarios.
-            Map<String, String> headers = new HashMap<String, String>();
+            Map<String, String> headers = new HashMap<>();
             headers.put(extraHeaderKey, extraHeaderValue);
             loadUrlParams.setExtraHeaders(headers);
             loadUrlParams.setVerbatimHeaders(extraHeaderKey + ":" + extraHeaderValue);
@@ -756,22 +714,16 @@ public class OfflinePageBridge {
 
         void getAllPages(
                 long nativeOfflinePageBridge,
-                OfflinePageBridge caller,
                 List<OfflinePageItem> offlinePages,
-                final Callback<List<OfflinePageItem>> callback);
+                Callback<List<OfflinePageItem>> callback);
 
-        void willCloseTab(
-                long nativeOfflinePageBridge, OfflinePageBridge caller, WebContents webContents);
+        void willCloseTab(long nativeOfflinePageBridge, WebContents webContents);
 
         void getPageByOfflineId(
-                long nativeOfflinePageBridge,
-                OfflinePageBridge caller,
-                long offlineId,
-                Callback<OfflinePageItem> callback);
+                long nativeOfflinePageBridge, long offlineId, Callback<OfflinePageItem> callback);
 
         void getPagesByClientId(
                 long nativeOfflinePageBridge,
-                OfflinePageBridge caller,
                 List<OfflinePageItem> result,
                 String[] namespaces,
                 String[] ids,
@@ -779,122 +731,92 @@ public class OfflinePageBridge {
 
         void getPagesByRequestOrigin(
                 long nativeOfflinePageBridge,
-                OfflinePageBridge caller,
                 List<OfflinePageItem> result,
                 @JniType("std::string") String requestOrigin,
                 Callback<List<OfflinePageItem>> callback);
 
         void getPagesByNamespace(
                 long nativeOfflinePageBridge,
-                OfflinePageBridge caller,
                 List<OfflinePageItem> result,
                 @JniType("std::string") String nameSpace,
                 Callback<List<OfflinePageItem>> callback);
 
         void deletePagesByClientId(
                 long nativeOfflinePageBridge,
-                OfflinePageBridge caller,
                 String[] namespaces,
                 String[] ids,
                 Callback<Integer> callback);
 
         void deletePagesByClientIdAndOrigin(
                 long nativeOfflinePageBridge,
-                OfflinePageBridge caller,
                 String[] namespaces,
                 String[] ids,
                 @JniType("std::string") String origin,
                 Callback<Integer> callback);
 
         void deletePagesByOfflineId(
-                long nativeOfflinePageBridge,
-                OfflinePageBridge caller,
-                long[] offlineIds,
-                Callback<Integer> callback);
+                long nativeOfflinePageBridge, long[] offlineIds, Callback<Integer> callback);
 
         void publishInternalPageByOfflineId(
-                long nativeOfflinePageBridge,
-                OfflinePageBridge caller,
-                long offlineId,
-                Callback<String> publishedCallback);
+                long nativeOfflinePageBridge, long offlineId, Callback<String> publishedCallback);
 
         void publishInternalPageByGuid(
                 long nativeOfflinePageBridge,
-                OfflinePageBridge caller,
                 @JniType("std::string") String guid,
                 Callback<String> publishedCallback);
 
         void selectPageForOnlineUrl(
                 long nativeOfflinePageBridge,
-                OfflinePageBridge caller,
                 GURL onlineUrl,
                 int tabId,
                 Callback<OfflinePageItem> callback);
 
         void savePage(
                 long nativeOfflinePageBridge,
-                OfflinePageBridge caller,
                 SavePageCallback callback,
                 WebContents webContents,
                 @JniType("std::string") String clientNamespace,
                 @JniType("std::string") String clientId,
                 @JniType("std::string") String origin);
 
-        @Nullable
-        String getOfflinePageHeaderForReload(
-                long nativeOfflinePageBridge, OfflinePageBridge caller, WebContents webContents);
+        @Nullable String getOfflinePageHeaderForReload(
+                long nativeOfflinePageBridge, WebContents webContents);
 
         boolean isShowingOfflinePreview(
-                long nativeOfflinePageBridge, OfflinePageBridge caller, WebContents webContents);
+                long nativeOfflinePageBridge, @Nullable WebContents webContents);
 
         boolean isShowingDownloadButtonInErrorPage(
-                long nativeOfflinePageBridge, OfflinePageBridge caller, WebContents webContents);
+                long nativeOfflinePageBridge, @Nullable WebContents webContents);
 
         void scheduleDownload(
                 long nativeOfflinePageBridge,
-                OfflinePageBridge caller,
-                WebContents webContents,
+                @Nullable WebContents webContents,
                 @JniType("std::string") String nameSpace,
                 @JniType("std::string") String url,
                 int uiAction,
                 @JniType("std::string") String origin);
 
-        boolean isOfflinePage(
-                long nativeOfflinePageBridge, OfflinePageBridge caller, WebContents webContents);
+        boolean isOfflinePage(long nativeOfflinePageBridge, WebContents webContents);
 
         boolean isInPrivateDirectory(
-                long nativeOfflinePageBridge,
-                OfflinePageBridge caller,
-                @JniType("std::string") String filePath);
+                long nativeOfflinePageBridge, @JniType("std::string") String filePath);
 
         boolean isTemporaryNamespace(
-                long nativeOfflinePageBridge,
-                OfflinePageBridge caller,
-                @JniType("std::string") String nameSpace);
+                long nativeOfflinePageBridge, @JniType("std::string") String nameSpace);
 
-        OfflinePageItem getOfflinePage(
-                long nativeOfflinePageBridge, OfflinePageBridge caller, WebContents webContents);
+        OfflinePageItem getOfflinePage(long nativeOfflinePageBridge, WebContents webContents);
 
         void getLoadUrlParamsByOfflineId(
                 long nativeOfflinePageBridge,
-                OfflinePageBridge caller,
                 long offlineId,
                 int location,
                 Callback<LoadUrlParams> callback);
 
-        boolean isShowingTrustedOfflinePage(
-                long nativeOfflinePageBridge, OfflinePageBridge caller, WebContents webContents);
+        boolean isShowingTrustedOfflinePage(long nativeOfflinePageBridge, WebContents webContents);
 
         void getLoadUrlParamsForOpeningMhtmlFileOrContent(
                 long nativeOfflinePageBridge,
-                OfflinePageBridge caller,
                 @JniType("std::string") String url,
                 Callback<LoadUrlParams> callback);
-
-        void acquireFileAccessPermission(
-                long nativeOfflinePageBridge,
-                OfflinePageBridge caller,
-                WebContents webContents,
-                Callback<Boolean> callback);
     }
 }

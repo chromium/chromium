@@ -2,15 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// gtest.h has to be included first.
-// See http://code.google.com/p/googletest/issues/detail?id=371
-#include "testing/gtest/include/gtest/gtest.h"
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
+#include <drm.h>
+#include <fcntl.h>
+#include <gbm.h>
+#include <string.h>
+#include <xf86drm.h>
 
 #include "base/bits.h"
 #include "base/containers/contains.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/memory_mapped_file.h"
+#include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_suite.h"
@@ -20,14 +29,9 @@
 #include "media/gpu/v4l2/v4l2_device.h"
 #include "media/gpu/v4l2/v4l2_stateful_video_decoder.h"
 #include "media/gpu/v4l2/v4l2_utils.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libdrm/src/include/drm/drm_fourcc.h"
 #include "ui/gfx/linux/gbm_defines.h"
-
-#include <drm.h>
-#include <fcntl.h>
-#include <gbm.h>
-#include <string.h>
-#include <xf86drm.h>
 
 namespace media {
 
@@ -164,10 +168,10 @@ void TestStatefulDecoderAllocations(uint32_t codec_fourcc,
   // of 32. Round device value to nearest multiple of 64 and compare
   // stride values.
   const int bo_num_planes = gbm_bo_get_plane_count(bo);
-  std::vector<int32_t> strides =
+  std::vector<size_t> strides =
       VideoFrame::ComputeStrides(PIXEL_FORMAT_NV12, coded_size);
   for (int i = 0; i < bo_num_planes; ++i) {
-    uint32_t s = base::bits::AlignUpDeprecatedDoNotUse(strides[i], 64);
+    size_t s = base::bits::AlignUp(strides[i], static_cast<size_t>(64));
     EXPECT_EQ(s, gbm_bo_get_stride_for_plane(bo, i));
   }
 
@@ -188,7 +192,7 @@ TEST_P(V4L2MinigbmTest, AllocateAndCompareWithMinigbm) {
   const auto video_codec_profile = std::get<0>(GetParam());
   const gfx::Size resolution = std::get<1>(GetParam());
 
-  scoped_refptr<V4L2Device> device(new V4L2Device());
+  auto device = base::MakeRefCounted<V4L2Device>();
 
   const auto fourcc_stateful =
       VideoCodecProfileToV4L2PixFmt(video_codec_profile, /*slice_based=*/false);

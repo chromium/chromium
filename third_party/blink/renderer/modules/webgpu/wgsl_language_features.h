@@ -9,7 +9,6 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/iterable.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_wgsl_language_features.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_wgsl_feature_name.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_cpp.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -22,16 +21,16 @@ class WGSLLanguageFeatures : public ScriptWrappable,
 
  public:
   explicit WGSLLanguageFeatures(
-      const std::vector<wgpu::WGSLFeatureName>& features);
+      const std::vector<wgpu::WGSLLanguageFeatureName>& features);
 
-  bool has(const String& feature) const;
+  const HashSet<String>& FeatureNameSet() const { return features_; }
+
+  // wgsl_language_features.idl {{{
   bool hasForBinding(ScriptState* script_state,
                      const String& feature,
                      ExceptionState& exception_state) const;
-
   unsigned size() const { return features_.size(); }
-
-  const HashSet<String>& FeatureNameSet() const { return features_; }
+  // }}} End of WebIDL binding implementation.
 
  private:
   HashSet<String> features_;
@@ -41,9 +40,7 @@ class WGSLLanguageFeatures : public ScriptWrappable,
    public:
     explicit IterationSource(const HashSet<String>& features);
 
-    bool FetchNextItem(ScriptState* script_state,
-                       String& value,
-                       ExceptionState& exception_state) override;
+    bool FetchNextItem(ScriptState* script_state, String& value) override;
 
    private:
     HashSet<String> features_;
@@ -53,8 +50,7 @@ class WGSLLanguageFeatures : public ScriptWrappable,
   // Starts iteration over the Setlike.
   // Needed for ValueSyncIterable to work properly.
   WGSLLanguageFeatures::IterationSource* CreateIterationSource(
-      ScriptState* script_state,
-      ExceptionState& exception_state) override {
+      ScriptState* script_state) override {
     return MakeGarbageCollected<WGSLLanguageFeatures::IterationSource>(
         features_);
   }

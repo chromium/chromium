@@ -13,6 +13,8 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
+
+#include <cerrno>
 #include <cstring>
 
 #include "base/check.h"
@@ -149,9 +151,9 @@ int sys_sigprocmask(int how, const sigset_t* set, std::nullptr_t oldset) {
   // In some toolchain (in particular Android and PNaCl toolchain),
   // sigset_t is 32 bits, but the Linux ABI uses more.
   LinuxSigSet linux_value;
-  std::memset(&linux_value, 0, sizeof(LinuxSigSet));
-  std::memcpy(&linux_value, set, std::min(sizeof(sigset_t),
-                                          sizeof(LinuxSigSet)));
+  UNSAFE_TODO(std::memset(&linux_value, 0, sizeof(LinuxSigSet)));
+  UNSAFE_TODO(std::memcpy(&linux_value, set,
+                          std::min(sizeof(sigset_t), sizeof(LinuxSigSet))));
 
   return syscall(__NR_rt_sigprocmask, how, &linux_value, nullptr,
                  sizeof(linux_value));
@@ -208,6 +210,18 @@ int landlock_create_ruleset(const struct landlock_ruleset_attr* const attr,
                             const size_t size,
                             const uint32_t flags) {
   return syscall(__NR_landlock_create_ruleset, attr, size, flags);
+}
+
+int landlock_add_rule(const int ruleset_fd,
+                      const int rule_type,
+                      const void* const rule_attr,
+                      const uint32_t flags) {
+  return syscall(__NR_landlock_add_rule, ruleset_fd, rule_type, rule_attr,
+                 flags);
+}
+
+int landlock_restrict_self(const int ruleset_fd, const uint32_t flags) {
+  return syscall(__NR_landlock_restrict_self, ruleset_fd, flags);
 }
 
 }  // namespace sandbox

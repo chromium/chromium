@@ -9,6 +9,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/trace_event/trace_event.h"
+#include "base/values.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_states.h"
@@ -16,6 +18,7 @@
 #include "net/base/net_export.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
+#include "net/socket/stream_socket_close_reason.h"
 
 namespace net {
 
@@ -53,6 +56,7 @@ class NET_EXPORT_PRIVATE StreamAttempt {
   // `params` must outlive `this`.
   StreamAttempt(const StreamAttemptParams* params,
                 IPEndPoint ip_endpoint,
+                perfetto::Track track,
                 NetLogSourceType net_log_source_type,
                 NetLogEventType net_log_attempt_event_type,
                 const NetLogWithSource* net_log = nullptr);
@@ -69,6 +73,8 @@ class NET_EXPORT_PRIVATE StreamAttempt {
 
   // Returns the load state of this attempt.
   virtual LoadState GetLoadState() const = 0;
+
+  virtual base::Value::Dict GetInfoAsValue() const = 0;
 
   // If the attempt failed with ERR_SSL_CLIENT_AUTH_CERT_NEEDED, returns the
   // SSLCertRequestInfo received. Otherwise, returns nullptr.
@@ -87,6 +93,8 @@ class NET_EXPORT_PRIVATE StreamAttempt {
   const LoadTimingInfo::ConnectTiming& connect_timing() const {
     return connect_timing_;
   }
+
+  void SetCancelReason(StreamSocketCloseReason cancel_reason);
 
  protected:
   virtual int StartInternal() = 0;
@@ -107,11 +115,14 @@ class NET_EXPORT_PRIVATE StreamAttempt {
     return connect_timing_;
   }
 
+  perfetto::Track track() const { return track_; }
+
  private:
   void LogCompletion(int rv);
 
   const raw_ptr<const StreamAttemptParams> params_;
   const IPEndPoint ip_endpoint_;
+  perfetto::Track track_;
 
   NetLogWithSource net_log_;
   NetLogEventType net_log_attempt_event_type_;
@@ -122,6 +133,8 @@ class NET_EXPORT_PRIVATE StreamAttempt {
   std::unique_ptr<StreamSocket> stream_socket_;
 
   LoadTimingInfo::ConnectTiming connect_timing_;
+
+  std::optional<StreamSocketCloseReason> cancel_reason_;
 };
 
 }  // namespace net

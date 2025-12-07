@@ -2,4 +2,4 @@
 replace-with = 'vendored-sources'
 
 [source.vendored-sources]
-directory = '../../../../RUST_SRC_ROOT/vendor'
+directory = '../../../../RUST_SRC_ROOT/library/vendor'

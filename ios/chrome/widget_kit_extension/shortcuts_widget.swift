@@ -27,6 +27,11 @@ struct ConfigureShortcutsWidgetEntry: TimelineEntry {
   let isExpired: Bool
   // Expiration date of the widget if it hasn't expired.
   let expirationDate: Date?
+  // Account avatar (to be used when multiprofile flag is enabled).
+  let avatar: Image?
+  let gaiaID: String?
+  let email: String?
+  let deleted: Bool
 }
 
 // Advises WidgetKit when to update a widget’s display.
@@ -38,82 +43,8 @@ struct ConfigureShortcutsWidgetEntryProvider: TimelineProvider {
   // Provides a timeline entry representing a placeholder version of the widget.
   func placeholder(in context: TimelineProviderContext) -> Entry {
     return Entry(
-      date: Date(), mostVisitedSites: [:], isPreview: true, isExpired: false, expirationDate: nil)
-  }
-
-  // Return an Entry with the most visited sites
-  func loadMostVisitedSitesEntry(isPreview: Bool) -> Entry {
-
-    // A constant of an empty entry
-    let emptyEntry = Entry(
-      date: Date(),
-      mostVisitedSites: [:],
-      isPreview: isPreview,
-      isExpired: false,
-      expirationDate: nil
-    )
-    // A constant of an expired entry
-    let expiredEntry = Entry(
-      date: Date(),
-      mostVisitedSites: [:],
-      isPreview: isPreview,
-      isExpired: true,
-      expirationDate: nil
-    )
-    // Returns an empty entry if the Shortcuts Widget is in the Widgets Gallery
-    if isPreview {
-      return emptyEntry
-    }
-
-    guard let sharedDefaults: UserDefaults = AppGroupHelper.groupUserDefaults(),
-      let lastModificationDate = sharedDefaults.object(forKey: "SuggestedItemsLastModificationDate")
-        as? Date
-    else {
-      return emptyEntry
-    }
-
-    let extensionsFlags =
-      sharedDefaults.object(forKey: "Extension.FieldTrial") as? [String: Any] ?? [:]
-    let fiveMinutestoRefreshTestFlag =
-      extensionsFlags["WidgetKitRefreshFiveMinutes"] as? [String: Any] ?? [:]
-    // A constant to know the status of WidgetKitRefreshFiveMinutes Test Flag
-    let fiveMinutestoRefreshTestValue =
-      fiveMinutestoRefreshTestFlag["FieldTrialValue"] as? Bool ?? false
-
-    // A constant to get the number of seconds of the last modification date of the installed widget
-    let numberOfSecondsSinceLastModification = Date.now.timeIntervalSince(lastModificationDate)
-    // A constant to get the number of seconds to refresh the widget after it has been closed
-    let numberOfSecondsFromLastModificationToExpiration =
-      fiveMinutestoRefreshTestValue ? Constants.secondsInFiveMinutes : Constants.secondsInFourWeeks
-
-    let expirationDate = lastModificationDate.advanced(
-      by: numberOfSecondsFromLastModificationToExpiration)
-
-    // Return an Expired entry in the case of passing the limit of refreshing seconds
-    if numberOfSecondsFromLastModificationToExpiration < numberOfSecondsSinceLastModification {
-      return expiredEntry
-    }
-
-    guard let data = sharedDefaults.object(forKey: "SuggestedItems") as? Data,
-      let unarchiver = try? NSKeyedUnarchiver(forReadingFrom: data)
-    else { return emptyEntry }
-
-    unarchiver.requiresSecureCoding = false
-
-    guard
-      let mostVisitedSites = unarchiver.decodeObject(forKey: NSKeyedArchiveRootObjectKey)
-        as? [NSURL: NTPTile]
-    else {
-      return emptyEntry
-    }
-
-    return Entry(
-      date: Date(),
-      mostVisitedSites: mostVisitedSites,
-      isPreview: isPreview,
-      isExpired: false,
-      expirationDate: expirationDate
-    )
+      date: Date(), mostVisitedSites: [:], isPreview: true, isExpired: false, expirationDate: nil,
+      avatar: nil, gaiaID: nil, email: nil, deleted: false)
   }
 
   // Provides a timeline entry that represents the current time and state of a widget.
@@ -166,6 +97,203 @@ struct ShortcutsWidget: Widget {
   }
 }
 
+#if IOS_ENABLE_WIDGETS_FOR_MIM
+  // Provides the configuration and content of a widget to display on the Home screen.
+  struct ShortcutsWidgetConfigurable: Widget {
+    // Changing 'kind' or deleting this widget will cause all installed instances of this widget to
+    // stop updating and show the placeholder state.
+    let kind: String = "ShortcutsWidget"
+    let deviceModel = UIDevice.current.model
+    var body: some WidgetConfiguration {
+      AppIntentConfiguration(
+        kind: kind,
+        intent: SelectAccountIntent.self,
+        provider: ConfigurableShortcutsWidgetEntryProvider()
+      ) { entry in
+        ShortcutsWidgetEntryView(entry: entry)
+      }
+      .configurationDisplayName(
+        Text("IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_DISPLAY_NAME")
+      )
+      .description(
+        deviceModel == "iPhone"
+          ? Text("IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_DESCRIPTION_IPHONE")
+          : Text("IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_DESCRIPTION_IPAD")
+      )
+      .supportedFamilies([.systemMedium])
+      .crDisfavoredLocations()
+      .crContentMarginsDisabled()
+      .crContainerBackgroundRemovable(false)
+    }
+  }
+
+  // Advises WidgetKit when to update a widget’s display.
+  struct ConfigurableShortcutsWidgetEntryProvider: AppIntentTimelineProvider {
+
+    // A type that specifies the entry of the configured timeline entry of the widget.
+    typealias Entry = ConfigureShortcutsWidgetEntry
+
+    // Provides a timeline entry representing a placeholder version of the widget.
+    func placeholder(in context: TimelineProviderContext) -> Entry {
+      return Entry(
+        date: Date(), mostVisitedSites: [:], isPreview: true, isExpired: false, expirationDate: nil,
+        avatar: nil, gaiaID: nil, email: nil, deleted: false)
+    }
+
+    // Provides a timeline entry that represents the current time and state of a widget.
+    func snapshot(for configuration: SelectAccountIntent, in context: Context) async -> Entry {
+
+      let avatar: Image? = configuration.avatar()
+      let gaiaID: String? = configuration.gaia()
+      let email: String? = configuration.email()
+      let deleted: Bool = configuration.deleted()
+
+      let entry = loadMostVisitedSitesEntry(
+        isPreview: context.isPreview, avatar: avatar, gaia: gaiaID, email: email, deleted: deleted)
+      return entry
+    }
+
+    // Provides an array of timeline entries for the current time.
+    func timeline(for configuration: SelectAccountIntent, in context: Context) async -> Timeline<
+      Entry
+    > {
+      let avatar: Image? = configuration.avatar()
+      let gaiaID: String? = configuration.gaia()
+      let email: String? = configuration.email()
+      let deleted: Bool = configuration.deleted()
+
+      let entry = loadMostVisitedSitesEntry(
+        isPreview: context.isPreview, avatar: avatar, gaia: gaiaID, email: email, deleted: deleted)
+      let entries = [entry]
+      let timeline = Timeline(
+        entries: entries, policy: entry.expirationDate.map { .after($0) } ?? .never)
+      return timeline
+    }
+  }
+#endif
+
+// Return ConfigureShortcutsWidgetEntry with the most visited sites
+func loadMostVisitedSitesEntry(
+  isPreview: Bool, avatar: Image? = nil, gaia: String? = nil, email: String? = nil,
+  deleted: Bool = false
+)
+  -> ConfigureShortcutsWidgetEntry
+{
+  // A type that specifies the entry of the configured timeline entry of the widget.
+  typealias Entry = ConfigureShortcutsWidgetEntry
+
+  // A constant of an empty entry.
+  let emptyEntry = Entry(
+    date: Date(),
+    mostVisitedSites: [:],
+    isPreview: isPreview,
+    isExpired: false,
+    expirationDate: nil,
+    avatar: avatar,
+    gaiaID: gaia,
+    email: email,
+    deleted: deleted
+  )
+  // A constant of an expired entry.
+  let expiredEntry = Entry(
+    date: Date(),
+    mostVisitedSites: [:],
+    isPreview: isPreview,
+    isExpired: true,
+    expirationDate: nil,
+    avatar: avatar,
+    gaiaID: gaia,
+    email: email,
+    deleted: deleted
+  )
+  // Returns an empty entry if the Shortcuts Widget is in the Widgets Gallery.
+  if isPreview {
+    return emptyEntry
+  }
+
+  #if IOS_ENABLE_WIDGETS_FOR_MIM
+    guard let sharedDefaults: UserDefaults = AppGroupHelper.groupUserDefaults(),
+      let lastModificationDates = sharedDefaults.object(
+        forKey: "SuggestedItemsLastModificationDateForMIM")
+        as? [String: Date]
+    else { return emptyEntry }
+    var date: Date?
+    for (key, value) in lastModificationDates {
+      if gaia == key {
+        date = value
+      }
+    }
+    guard let lastModificationDate = date
+    else { return emptyEntry }
+  #else
+    guard let sharedDefaults: UserDefaults = AppGroupHelper.groupUserDefaults(),
+      let lastModificationDate = sharedDefaults.object(forKey: "SuggestedItemsLastModificationDate")
+        as? Date
+    else { return emptyEntry }
+  #endif
+
+  let extensionsFlags =
+    sharedDefaults.object(forKey: "Extension.FieldTrial") as? [String: Any] ?? [:]
+  let fiveMinutestoRefreshTestFlag =
+    extensionsFlags["WidgetKitRefreshFiveMinutes"] as? [String: Any] ?? [:]
+  // A constant to know the status of WidgetKitRefreshFiveMinutes Test Flag.
+  let fiveMinutestoRefreshTestValue =
+    fiveMinutestoRefreshTestFlag["FieldTrialValue"] as? Bool ?? false
+
+  // A constant to get the number of seconds of the last modification date of the installed widget.
+  let numberOfSecondsSinceLastModification = Date.now.timeIntervalSince(lastModificationDate)
+
+  // A constant to get the number of seconds to refresh the widget after it has been closed.
+  let numberOfSecondsFromLastModificationToExpiration =
+    fiveMinutestoRefreshTestValue ? Constants.secondsInFiveMinutes : Constants.secondsInFourWeeks
+
+  let expirationDate = lastModificationDate.advanced(
+    by: numberOfSecondsFromLastModificationToExpiration)
+
+  // Return an Expired entry in the case of passing the limit of refreshing seconds.
+  if numberOfSecondsFromLastModificationToExpiration < numberOfSecondsSinceLastModification {
+    return expiredEntry
+  }
+
+  #if IOS_ENABLE_WIDGETS_FOR_MIM
+    guard let data = sharedDefaults.object(forKey: "SuggestedItemsForMIM") as? [String: Data]
+    else { return emptyEntry }
+    var unarchiverForAccount: NSKeyedUnarchiver?
+    for (key, value) in data {
+      if gaia == key {
+        unarchiverForAccount = try? NSKeyedUnarchiver(forReadingFrom: value)
+      }
+    }
+    guard let unarchiver = unarchiverForAccount
+    else { return emptyEntry }
+  #else
+    guard let data = sharedDefaults.object(forKey: "SuggestedItems") as? Data,
+      let unarchiver = try? NSKeyedUnarchiver(forReadingFrom: data)
+    else { return emptyEntry }
+  #endif
+
+  unarchiver.requiresSecureCoding = false
+
+  guard
+    let mostVisitedSites = unarchiver.decodeObject(forKey: NSKeyedArchiveRootObjectKey)
+      as? [NSURL: NTPTile]
+  else {
+    return emptyEntry
+  }
+
+  return Entry(
+    date: Date(),
+    mostVisitedSites: mostVisitedSites,
+    isPreview: isPreview,
+    isExpired: false,
+    expirationDate: expirationDate,
+    avatar: avatar,
+    gaiaID: gaia,
+    email: email,
+    deleted: deleted
+  )
+}
+
 // Presents the shortcuts widget with SwiftUI views.
 struct ShortcutsWidgetEntryView: View {
 
@@ -202,10 +330,17 @@ struct ShortcutsWidgetEntryView: View {
 
   // Create a chromewidgetkit:// url to open the given URL.
   private func convertURL(url: URL) -> URL {
-    let query = URLQueryItem(name: "url", value: url.absoluteString)
+    let query_url = URLQueryItem(name: "url", value: url.absoluteString)
     var urlcomps = URLComponents(
-      url: WidgetConstants.ShortcutsWidget.open, resolvingAgainstBaseURL: false)!
-    urlcomps.queryItems = [query]
+      url: WidgetConstants.ShortcutsWidget.open,
+      resolvingAgainstBaseURL: false)!
+    if entry.gaiaID == nil {
+      urlcomps.queryItems = [query_url]
+    } else {
+      // Add the gaia_id parameter only if available.
+      let query_gaia = URLQueryItem(name: "gaia_id", value: entry.gaiaID)
+      urlcomps.queryItems = [query_url, query_gaia]
+    }
     return urlcomps.url!
   }
 
@@ -218,26 +353,34 @@ struct ShortcutsWidgetEntryView: View {
     let spacing: CGFloat = 12
     let padding: CGFloat = 8
 
-    Link(destination: WidgetConstants.ShortcutsWidget.searchUrl) {
-      ZStack {
-        RoundedRectangle(cornerRadius: cornerRadius)
-          .frame(height: height)
-          .foregroundColor(Colors.widgetSearchBarColor)
-        HStack(spacing: spacing) {
-          Image("widget_chrome_logo")
-            .clipShape(Circle())
-            .padding(.leading, padding)
-            .unredacted()
-          Text(Strings.searchA11yLabel)
-            .font(.subheadline)
-            .foregroundColor(Colors.widgetTextColor)
-          Spacer()
-        }
+    ZStack {
+      RoundedRectangle(cornerRadius: cornerRadius)
+        .frame(height: height)
+        .foregroundColor(Colors.widgetSearchBarColor)
+        // This is needed so that the voice over will see the widget as a button and not as
+        // an image.
+        .accessibilityAddTraits(.isButton)
+        .accessibilityLabel(Strings.searchA11yLabel)
+      HStack(spacing: spacing) {
+        Image("widget_chrome_logo")
+          .clipShape(Circle())
+          .padding(.leading, padding)
+          .unredacted()
+          .accessibilityHidden(true)
+        Text(Strings.searchA11yLabel)
+          .font(.subheadline)
+          .foregroundColor(Colors.widgetTextColor)
+          .accessibilityHidden(true)
+        Spacer()
+        #if IOS_ENABLE_WIDGETS_FOR_MIM
+          AvatarForShortcuts(entry: entry)
+        #endif
       }
-      .frame(minWidth: 0, maxWidth: .infinity)
-      .padding([.leading, .trailing], Dimensions.stackFramePadding)
     }
-    .accessibilityLabel(Strings.searchA11yLabel)
+    .frame(minWidth: 0, maxWidth: .infinity)
+    .padding([.leading, .trailing], Dimensions.stackFramePadding)
+    .widgetURL(
+      destinationURL(url: WidgetConstants.ShortcutsWidget.searchUrl, gaia: entry.gaiaID))
   }
 
   // Shows the widget with 4 shortcuts placeholder in the gallery view to respect user's privacy.
@@ -308,45 +451,50 @@ struct ShortcutsWidgetEntryView: View {
   }
 
   var body: some View {
-    VStack(spacing: 0) {
-      searchBar.frame(height: Dimensions.searchAreaHeight)
-      ZStack {
-        Rectangle()
-          .foregroundColor(Colors.widgetMostVisitedSitesRow)
-          .frame(minWidth: 0, maxWidth: .infinity)
-          .accessibilityLabel(Strings.widgetDisplayName)
-        HStack {
-          let ntpTiles = Array(entry.mostVisitedSites.values).sorted()
+    // The account to display was deleted (entry.deleted can only be true if
+    // IOS_ENABLE_WIDGETS_FOR_MIM is true).
+    if entry.deleted && !entry.isPreview {
+      MediumWidgetDeletedAccountView()
+    } else {
+      VStack(spacing: 0) {
+        searchBar.frame(height: Dimensions.searchAreaHeight)
+        ZStack {
+          Rectangle()
+            .foregroundColor(Colors.widgetMostVisitedSitesRow)
+            .frame(minWidth: 0, maxWidth: .infinity)
+            .accessibilityLabel(Strings.widgetDisplayName)
+          HStack {
+            let ntpTiles = Array(entry.mostVisitedSites.values).sorted()
 
-          if entry.isPreview {
-            websitesPlaceholder
-          } else if entry.isExpired {
-            expiredMostVisitedSitesView
-          } else {
-            switch ntpTiles.count {
-            case 0:
-              zeroVisitedSitesView
-            case 1:
-              oneVisitedSitesView(ntpTile: ntpTiles[0])
-            default:
-              multipleVisitedSitesView(ntpTiles: ntpTiles)
+            if entry.isPreview {
+              websitesPlaceholder
+            } else if entry.isExpired {
+              expiredMostVisitedSitesView
+            } else {
+              switch ntpTiles.count {
+              case 0:
+                zeroVisitedSitesView
+              case 1:
+                oneVisitedSitesView(ntpTile: ntpTiles[0])
+              default:
+                multipleVisitedSitesView(ntpTiles: ntpTiles)
+              }
             }
+            Spacer()
           }
-          Spacer()
+          .frame(minWidth: 0, maxWidth: .infinity)
         }
-        .frame(minWidth: 0, maxWidth: .infinity)
+        .frame(maxHeight: .infinity)
       }
-      .frame(maxHeight: .infinity)
+      .crContainerBackground(
+        Colors.widgetBackgroundColor.unredacted()
+      )
     }
-    .crContainerBackground(
-      Colors.widgetBackgroundColor.unredacted()
-    )
-
   }
 }
 
 // Adds the comparable conformance to NTPTile
-// to sort the NTPTiles
+// to sort the NTPTiles.
 extension NTPTile: Comparable {
   public static func < (lhs: NTPTile, rhs: NTPTile) -> Bool {
     return lhs.position < rhs.position
@@ -471,5 +619,31 @@ struct WebsiteLabel: View {
     Text(verbatim: self.websiteTitle)
       .font(.system(size: fontSize))
       .opacity(0.59)
+  }
+}
+
+struct AvatarForShortcuts: View {
+  var entry: ConfigureShortcutsWidgetEntry
+  var body: some View {
+    if entry.isPreview {
+      Circle()
+        .foregroundColor(Color("widget_text_color"))
+        .opacity(0.2)
+        .frame(width: 35, height: 35)
+        .padding(.trailing, 8)
+    } else if let avatar = entry.avatar,
+      let email = entry.email
+    {
+      avatar
+        .resizable()
+        .clipShape(Circle())
+        .accessibilityLabel(
+          String(localized: "IDS_IOS_WIDGET_KIT_EXTENSION_AVATAR_A11Y_LABEL") + email
+        )
+        .unredacted()
+        .scaledToFill()
+        .frame(width: 35, height: 35)
+        .padding(.trailing, 8)
+    }
   }
 }

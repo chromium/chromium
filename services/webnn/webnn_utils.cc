@@ -4,10 +4,10 @@
 
 #include "services/webnn/webnn_utils.h"
 
+#include <algorithm>
 #include <set>
 
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "services/webnn/public/cpp/webnn_errors.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
@@ -23,7 +23,7 @@ std::string OpKindToString(mojom::Conv2d::Kind kind) {
     case mojom::Conv2d::Kind::kTransposed:
       return ops::kConvTranspose2d;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::string OpKindToString(mojom::Pool2d::Kind kind) {
@@ -42,7 +42,7 @@ std::string OpKindToString(mojom::Pool2d::Kind kind) {
 bool ValidateAxes(base::span<const uint32_t> axes) {
   size_t rank = axes.size();
 
-  if (base::ranges::any_of(axes, [rank](uint32_t axis) {
+  if (std::ranges::any_of(axes, [rank](uint32_t axis) {
         return base::checked_cast<size_t>(axis) >= rank;
       })) {
     // All axes should be within range [0, N - 1].
@@ -76,6 +76,10 @@ std::string OpTagToString(mojom::Operation::Tag tag) {
       return ops::kConcat;
     case mojom::Operation::Tag::kConv2d:
       return ops::kConv2d;
+    case mojom::Operation::Tag::kCumulativeSum:
+      return ops::kCumulativeSum;
+    case mojom::Operation::Tag::kDequantizeLinear:
+      return ops::kDequantizeLinear;
     case mojom::Operation::Tag::kElementWiseBinary:
       return "element-wise binary";
     case mojom::Operation::Tag::kElu:
@@ -86,6 +90,10 @@ std::string OpTagToString(mojom::Operation::Tag tag) {
       return ops::kExpand;
     case mojom::Operation::Tag::kGather:
       return ops::kGather;
+    case mojom::Operation::Tag::kGatherElements:
+      return ops::kGatherElements;
+    case mojom::Operation::Tag::kGatherNd:
+      return ops::kGatherNd;
     case mojom::Operation::Tag::kGelu:
       return ops::kGelu;
     case mojom::Operation::Tag::kGemm:
@@ -118,6 +126,8 @@ std::string OpTagToString(mojom::Operation::Tag tag) {
       return "pool2d";
     case mojom::Operation::Tag::kPrelu:
       return ops::kPrelu;
+    case mojom::Operation::Tag::kQuantizeLinear:
+      return ops::kQuantizeLinear;
     case mojom::Operation::Tag::kReduce:
       return "reduce";
     case mojom::Operation::Tag::kRelu:
@@ -126,6 +136,12 @@ std::string OpTagToString(mojom::Operation::Tag tag) {
       return ops::kResample2d;
     case mojom::Operation::Tag::kReshape:
       return ops::kReshape;
+    case mojom::Operation::Tag::kReverse:
+      return ops::kReverse;
+    case mojom::Operation::Tag::kScatterElements:
+      return ops::kScatterElements;
+    case mojom::Operation::Tag::kScatterNd:
+      return ops::kScatterND;
     case mojom::Operation::Tag::kSigmoid:
       return ops::kSigmoid;
     case mojom::Operation::Tag::kSlice:
@@ -140,6 +156,8 @@ std::string OpTagToString(mojom::Operation::Tag tag) {
       return ops::kSplit;
     case mojom::Operation::Tag::kTanh:
       return ops::kTanh;
+    case mojom::Operation::Tag::kTile:
+      return ops::kTile;
     case mojom::Operation::Tag::kTranspose:
       return ops::kTranspose;
     case mojom::Operation::Tag::kTriangular:
@@ -147,7 +165,6 @@ std::string OpTagToString(mojom::Operation::Tag tag) {
     case mojom::Operation::Tag::kWhere:
       return ops::kWhere;
   }
-  NOTREACHED_NORETURN();
 }
 
 std::string OpKindToString(mojom::ArgMinMax::Kind kind) {
@@ -157,7 +174,6 @@ std::string OpKindToString(mojom::ArgMinMax::Kind kind) {
     case mojom::ArgMinMax::Kind::kMax:
       return ops::kArgMax;
   }
-  NOTREACHED_NORETURN();
 }
 
 std::string OpKindToString(mojom::ElementWiseBinary::Kind kind) {
@@ -186,6 +202,14 @@ std::string OpKindToString(mojom::ElementWiseBinary::Kind kind) {
       return ops::kLesser;
     case mojom::ElementWiseBinary::Kind::kLesserOrEqual:
       return ops::kLesserOrEqual;
+    case mojom::ElementWiseBinary::Kind::kNotEqual:
+      return ops::kNotEqual;
+    case mojom::ElementWiseBinary::Kind::kLogicalAnd:
+      return ops::kLogicalAnd;
+    case mojom::ElementWiseBinary::Kind::kLogicalOr:
+      return ops::kLogicalOr;
+    case mojom::ElementWiseBinary::Kind::kLogicalXor:
+      return ops::kLogicalXor;
   }
 }
 
@@ -205,10 +229,18 @@ std::string OpKindToString(mojom::ElementWiseUnary::Kind kind) {
       return ops::kLog;
     case mojom::ElementWiseUnary::Kind::kNeg:
       return ops::kNeg;
+    case mojom::ElementWiseUnary::Kind::kRoundEven:
+      return ops::kRoundEven;
+    case mojom::ElementWiseUnary::Kind::kSign:
+      return ops::kSign;
     case mojom::ElementWiseUnary::Kind::kSin:
       return ops::kSin;
     case mojom::ElementWiseUnary::Kind::kTan:
       return ops::kTan;
+    case mojom::ElementWiseUnary::Kind::kIsNaN:
+      return ops::kIsNaN;
+    case mojom::ElementWiseUnary::Kind::kIsInfinite:
+      return ops::kIsInfinite;
     case mojom::ElementWiseUnary::Kind::kLogicalNot:
       return ops::kLogicalNot;
     case mojom::ElementWiseUnary::Kind::kIdentity:
@@ -312,11 +344,48 @@ std::vector<uint32_t> PermuteArray(base::span<const uint32_t> array,
 }
 
 bool IsLogicalElementWiseBinary(mojom::ElementWiseBinary::Kind kind) {
-  return kind == mojom::ElementWiseBinary::Kind::kEqual ||
-         kind == mojom::ElementWiseBinary::Kind::kGreater ||
-         kind == mojom::ElementWiseBinary::Kind::kGreaterOrEqual ||
-         kind == mojom::ElementWiseBinary::Kind::kLesser ||
-         kind == mojom::ElementWiseBinary::Kind::kLesserOrEqual;
+  switch (kind) {
+    case mojom::ElementWiseBinary::Kind::kAdd:
+    case mojom::ElementWiseBinary::Kind::kSub:
+    case mojom::ElementWiseBinary::Kind::kMul:
+    case mojom::ElementWiseBinary::Kind::kDiv:
+    case mojom::ElementWiseBinary::Kind::kMax:
+    case mojom::ElementWiseBinary::Kind::kMin:
+    case mojom::ElementWiseBinary::Kind::kPow:
+      return false;
+    case mojom::ElementWiseBinary::Kind::kEqual:
+    case mojom::ElementWiseBinary::Kind::kGreater:
+    case mojom::ElementWiseBinary::Kind::kGreaterOrEqual:
+    case mojom::ElementWiseBinary::Kind::kLesser:
+    case mojom::ElementWiseBinary::Kind::kLesserOrEqual:
+    case mojom::ElementWiseBinary::Kind::kNotEqual:
+    case mojom::ElementWiseBinary::Kind::kLogicalAnd:
+    case mojom::ElementWiseBinary::Kind::kLogicalOr:
+    case mojom::ElementWiseBinary::Kind::kLogicalXor:
+      return true;
+  }
+}
+
+bool IsLogicalElementWiseUnary(mojom::ElementWiseUnary::Kind kind) {
+  switch (kind) {
+    case mojom::ElementWiseUnary::Kind::kIsNaN:
+    case mojom::ElementWiseUnary::Kind::kIsInfinite:
+    case mojom::ElementWiseUnary::Kind::kLogicalNot:
+      return true;
+    default:
+      return false;
+  }
+}
+
+std::vector<uint32_t> CalculateStrides(base::span<const uint32_t> dimensions) {
+  size_t rank = dimensions.size();
+  std::vector<uint32_t> strides(rank);
+  base::CheckedNumeric<uint32_t> stride = 1;
+  for (size_t i = rank; i-- > 0;) {
+    strides[i] = stride.ValueOrDie();
+    stride *= dimensions[i];
+  }
+  return strides;
 }
 
 }  // namespace webnn

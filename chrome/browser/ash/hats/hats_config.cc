@@ -232,16 +232,6 @@ const HatsConfig kHatsPeripheralsSurvey = {
     prefs::kHatsPeripheralsCycleEndTs,  // cycle_end_timestamp_pref_name
 };
 
-// Privacy Hub post launch experience survey -- shown 40 seconds after the user
-// leaves the Privacy controls page after staying there for 5 seconds.
-const HatsConfig kPrivacyHubPostLaunchSurvey = {
-    ::features::kHappinessTrackingPrivacyHubPostLaunch,  // feature
-    base::Days(1),                                       // new_device_threshold
-    prefs::kHatsPrivacyHubPostLaunchIsSelected,  // is_selected_pref_name
-    prefs::
-        kHatsPrivacyHubPostLaunchCycleEndTs,  // cycle_end_timestamp_pref_name
-};
-
 // OS Settings Survey -- shown [5-30] seconds after a user removes focus from
 // Settings or closes the Settings app, if user has used Search, it will add it
 // as a Product Specific Data (PSD).

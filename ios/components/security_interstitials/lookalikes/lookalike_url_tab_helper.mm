@@ -13,6 +13,7 @@
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_error.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_tab_allow_list.h"
 #import "ios/net/protocol_handler_util.h"
+#import "ios/web/public/browser_state.h"
 #import "net/base/apple/url_conversions.h"
 
 namespace {
@@ -63,7 +64,7 @@ void LookalikeUrlTabHelper::ShouldAllowResponse(
   // If the URL is in the allowlist, don't show any warning.
   LookalikeUrlTabAllowList* allow_list =
       LookalikeUrlTabAllowList::FromWebState(web_state());
-  if (allow_list->IsDomainAllowed(response_url.host())) {
+  if (allow_list->IsDomainAllowed(response_url.GetHost())) {
     std::move(callback).Run(CreateAllowDecision());
     return;
   }
@@ -76,6 +77,11 @@ void LookalikeUrlTabHelper::ShouldAllowResponse(
     return;
   }
 
+  if (url_formatter::IsTopDomain(response_url)) {
+    std::move(callback).Run(CreateAllowDecision());
+    return;
+  }
+
   // TODO(crbug.com/40705072): If this is a reload and if the current
   // URL is the last URL of the stored redirect chain, the interstitial
   // was probably reloaded. Stop the reload and navigate back to the
@@ -84,8 +90,7 @@ void LookalikeUrlTabHelper::ShouldAllowResponse(
   const lookalikes::DomainInfo navigated_domain =
       lookalikes::GetDomainInfo(response_url);
   // Empty domain_and_registry happens on private domains.
-  if (navigated_domain.domain_and_registry.empty() ||
-      IsTopDomain(navigated_domain)) {
+  if (navigated_domain.domain_and_registry.empty()) {
     std::move(callback).Run(CreateAllowDecision());
     return;
   }
@@ -112,7 +117,8 @@ void LookalikeUrlTabHelper::ShouldAllowResponse(
             proto, response_url.GetWithEmptyPath(),
             response_url.GetWithEmptyPath())) {
       match_type = lookalikes::LookalikeUrlMatchType::kFailedSpoofChecks;
-      RecordUMAFromMatchType(match_type);
+      RecordUMAFromMatchType(match_type,
+                             web_state()->GetBrowserState()->IsOffTheRecord());
       LookalikeUrlContainer* lookalike_container =
           LookalikeUrlContainer::FromWebState(web_state());
       lookalike_container->SetLookalikeUrlInfo(/*suggested_url=*/GURL(),
@@ -126,7 +132,8 @@ void LookalikeUrlTabHelper::ShouldAllowResponse(
   }
   DCHECK(!matched_domain.empty());
 
-  RecordUMAFromMatchType(match_type);
+  RecordUMAFromMatchType(match_type,
+                         web_state()->GetBrowserState()->IsOffTheRecord());
 
   const std::string suggested_domain =
       lookalikes::GetETLDPlusOne(matched_domain);
@@ -166,5 +173,3 @@ void LookalikeUrlTabHelper::ShouldAllowResponse(
                                            match_type);
   std::move(callback).Run(CreateLookalikeErrorDecision());
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(LookalikeUrlTabHelper)

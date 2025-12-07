@@ -1,12 +1,12 @@
 {
   "name": "A browser action with no icon that sends a test message",
   "version": "1.0",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "background": {
-    "scripts": ["background.js"]
+    "service_worker": "background.js"
   },
   "permissions": ["activeTab"],
-  "browser_action": {
+  "action": {
     "default_title": "Send message",
     "default_icon": "icon.png"
   },
@@ -21,7 +21,17 @@
       },
       "description": "Toggle feature foo"
     },
-    "_execute_browser_action": {
+    "toggle-feature-2": {
+      "suggested_key": {
+        "windows": "Ctrl+Shift+X",
+        "mac": "MacCtrl+Shift+X",
+        "linux": "Ctrl+Shift+X",
+        "chromeos": "Ctrl+Shift+X",
+        "default": "Ctrl+Shift+X"
+      },
+      "description": "Toggle feature bar"
+    },
+    "_execute_action": {
       "suggested_key": {
         "mac": "MacCtrl+Shift+F",
         "default": "Ctrl+Shift+F"

@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <variant>
 
 #include "base/barrier_callback.h"
 #include "base/functional/bind.h"
@@ -18,7 +19,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -35,9 +35,6 @@
 #include "components/password_manager/core/browser/password_store/password_store_util.h"
 #include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
 #include "components/password_manager/core/common/password_manager_features.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/prefs/pref_service.h"
-#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync/model/proxy_data_type_controller_delegate.h"
 
 namespace password_manager {
@@ -52,7 +49,7 @@ void InvokeCallbacksForSuspectedChanges(
     PasswordChangesOrError changes_or_error) {
   DCHECK(notifying_callback);
   bool success =
-      !absl::holds_alternative<PasswordStoreBackendError>(changes_or_error);
+      !std::holds_alternative<PasswordStoreBackendError>(changes_or_error);
 
   std::move(notifying_callback)
       .Run(GetPasswordChangesOrNulloptOnFailure(std::move(changes_or_error)));
@@ -67,16 +64,14 @@ PasswordStore::PasswordStore(std::unique_ptr<PasswordStoreBackend> backend)
     : backend_(std::move(backend)), construction_time_(base::Time::Now()) {}
 
 void PasswordStore::Init(
-    PrefService* prefs,
     std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper) {
   main_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
   DCHECK(main_task_runner_);
-  prefs_ = prefs;
   affiliated_match_helper_ = std::move(affiliated_match_helper);
 
   DCHECK(backend_);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-      "passwords", "PasswordStore::InitOnBackgroundSequence", this);
+  TRACE_EVENT_BEGIN("passwords", "PasswordStore::InitOnBackgroundSequence",
+                    perfetto::Track::FromPointer(this));
   backend_->InitBackend(
       affiliated_match_helper_.get(),
       base::BindRepeating(&PasswordStore::NotifyLoginsChangedOnMainSequence,
@@ -122,7 +117,6 @@ void PasswordStore::AddLogins(const std::vector<PasswordForm>& forms,
     CHECK(!form.blocked_by_user ||
           (form.username_value.empty() && form.password_value.empty()));
     backend_->AddLoginAsync(form, barrier_callback);
-    backend_->RecordAddLoginAsyncCalledFromTheStore();
   }
 }
 
@@ -158,7 +152,6 @@ void PasswordStore::UpdateLogins(const std::vector<PasswordForm>& forms,
     CHECK(!form.blocked_by_user ||
           (form.username_value.empty() && form.password_value.empty()));
     backend_->UpdateLoginAsync(form, barrier_callback);
-    backend_->RecordUpdateLoginAsyncCalledFromTheStore();
   }
 }
 
@@ -206,7 +199,6 @@ void PasswordStore::UpdateLoginWithPrimaryKey(
   backend_->RemoveLoginAsync(FROM_HERE, old_primary_key, barrier_callback);
   backend_->AddLoginAsync(new_form_with_correct_password_issues,
                           barrier_callback);
-  backend_->RecordAddLoginAsyncCalledFromTheStore();
 }
 
 void PasswordStore::RemoveLogin(const base::Location& location,
@@ -231,47 +223,16 @@ void PasswordStore::RemoveLogin(const base::Location& location,
                              this, LoginsChangedTrigger::Deletion)));
 }
 
-void PasswordStore::RemoveLoginsByURLAndTime(
-    const base::Location& location,
-    const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-    base::Time delete_begin,
-    base::Time delete_end,
-    base::OnceClosure completion,
-    base::OnceCallback<void(bool)> sync_completion) {
-  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  if (!backend_) {
-    std::move(sync_completion).Run(false);
-    return;  // Once the shutdown started, ignore new requests.
-  }
-
-  if (post_init_callback_) {
-    post_init_callback_ =
-        std::move(post_init_callback_)
-            .Then(base::BindOnce(&PasswordStore::RemoveLoginsByURLAndTime, this,
-                                 location, url_filter, delete_begin, delete_end,
-                                 std::move(completion),
-                                 std::move(sync_completion)));
-    return;
-  }
-
-  backend_->RemoveLoginsByURLAndTimeAsync(
-      location, url_filter, delete_begin, delete_end,
-      std::move(sync_completion),
-      base::BindOnce(&GetPasswordChangesOrNulloptOnFailure)
-          .Then(
-              base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence,
-                             this, LoginsChangedTrigger::BatchDeletion))
-          .Then(std::move(completion)));
-}
-
 void PasswordStore::RemoveLoginsCreatedBetween(
     const base::Location& location,
     base::Time delete_begin,
     base::Time delete_end,
-    base::OnceCallback<void(bool)> completion) {
+    base::OnceCallback<void(bool)> completion,
+    base::OnceCallback<void(bool)> sync_completion) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   if (!backend_) {
     std::move(completion).Run(false);
+    std::move(sync_completion).Run(false);
     return;  // Once the shutdown started, ignore new requests.
   }
 
@@ -280,7 +241,8 @@ void PasswordStore::RemoveLoginsCreatedBetween(
         std::move(post_init_callback_)
             .Then(base::BindOnce(&PasswordStore::RemoveLoginsCreatedBetween,
                                  this, location, delete_begin, delete_end,
-                                 std::move(completion)));
+                                 std::move(completion),
+                                 std::move(sync_completion)));
     return;
   }
 
@@ -288,7 +250,7 @@ void PasswordStore::RemoveLoginsCreatedBetween(
       base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence, this,
                      LoginsChangedTrigger::BatchDeletion);
   backend_->RemoveLoginsCreatedBetweenAsync(
-      location, delete_begin, delete_end,
+      location, delete_begin, delete_end, std::move(sync_completion),
       base::BindOnce(&InvokeCallbacksForSuspectedChanges, std::move(callback),
                      std::move(completion)));
 }
@@ -348,9 +310,6 @@ void PasswordStore::GetLogins(const PasswordFormDigest& form,
                                                    this, form, consumer));
     return;
   }
-
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("passwords", "PasswordStore::GetLogins",
-                                    consumer.get());
 
   backend_->GetGroupedMatchingLoginsAsync(
       form, base::BindOnce(
@@ -464,10 +423,6 @@ void PasswordStore::ShutdownOnUIThread() {
 
   // The AffiliationService must be destroyed from the main sequence.
   affiliated_match_helper_.reset();
-
-  // PrefService is destroyed together with BrowserContext, and cannot be used
-  // anymore.
-  prefs_ = nullptr;
 }
 
 std::unique_ptr<syncer::DataTypeControllerDelegate>
@@ -504,8 +459,9 @@ void PasswordStore::OnInitCompleted(bool success) {
     std::move(post_init_callback_).Run();
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0(
-      "passwords", "PasswordStore::InitOnBackgroundSequence", this);
+  TRACE_EVENT_END("passwords",
+                  /* PasswordStore::InitOnBackgroundSequence */ perfetto::
+                      Track::FromPointer(this));
 }
 
 void PasswordStore::NotifyLoginsChangedOnMainSequence(
@@ -525,8 +481,8 @@ void PasswordStore::NotifyLoginsChangedOnMainSequence(
   base::UmaHistogramEnumeration(
       "PasswordManager.PasswordStore.OnLoginsRetained", logins_changed_trigger);
   if (!changes.has_value()) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-        "passwords", "LoginsRetrievedForOnLoginsRetained", this);
+    TRACE_EVENT_BEGIN("passwords", "LoginsRetrievedForOnLoginsRetained",
+                      perfetto::Track::FromPointer(this));
     // If the changes aren't provided, the store propagates the latest logins.
     backend_->GetAllLoginsAsync(base::BindOnce(
         &PasswordStore::NotifyLoginsRetainedOnMainSequence, this));
@@ -558,13 +514,13 @@ void PasswordStore::NotifyLoginsRetainedOnMainSequence(
   }
 
   // Clients don't expect errors yet, so just wait for the next notification.
-  if (absl::holds_alternative<PasswordStoreBackendError>(result)) {
+  if (std::holds_alternative<PasswordStoreBackendError>(result)) {
     return;
   }
 
   std::vector<PasswordForm> retained_logins;
-  retained_logins.reserve(absl::get<LoginsResult>(result).size());
-  for (auto& login : absl::get<LoginsResult>(result)) {
+  retained_logins.reserve(std::get<LoginsResult>(result).size());
+  for (auto& login : std::get<LoginsResult>(result)) {
     retained_logins.push_back(std::move(login));
   }
 
@@ -573,8 +529,10 @@ void PasswordStore::NotifyLoginsRetainedOnMainSequence(
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  TRACE_EVENT_NESTABLE_ASYNC_END0("passwords",
-                                  "LoginsRetrievedForOnLoginsRetained", this);
+  TRACE_EVENT_END(
+      "passwords",
+      /* LoginsRetrievedForOnLoginsRetained */ perfetto::Track::FromPointer(
+          this));
 #endif
 }
 

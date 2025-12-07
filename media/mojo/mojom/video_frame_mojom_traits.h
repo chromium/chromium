@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/memory/scoped_refptr.h"
+#include "build/build_config.h"
 #include "gpu/ipc/common/mailbox_holder_mojom_traits.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info_mojom_traits.h"
 #include "media/base/ipc/media_param_traits_macros.h"
@@ -20,15 +21,20 @@
 
 namespace mojo {
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 template <>
-struct EnumTraits<media::mojom::SharedImageFormatType,
-                  media::SharedImageFormatType> {
-  static media::mojom::SharedImageFormatType ToMojom(
-      media::SharedImageFormatType type);
+struct StructTraits<media::mojom::ColorPlaneLayoutDataView,
+                    media::ColorPlaneLayout> {
+  static uint64_t stride(const media::ColorPlaneLayout& r) { return r.stride; }
 
-  static bool FromMojom(media::mojom::SharedImageFormatType input,
-                        media::SharedImageFormatType* out);
+  static uint64_t offset(const media::ColorPlaneLayout& r) { return r.offset; }
+
+  static uint64_t size(const media::ColorPlaneLayout& r) { return r.size; }
+
+  static bool Read(media::mojom::ColorPlaneLayoutDataView data,
+                   media::ColorPlaneLayout* out);
 };
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 template <>
 struct StructTraits<media::mojom::VideoFrameDataView,
@@ -78,15 +84,12 @@ struct StructTraits<media::mojom::VideoFrameDataView,
     return input->hdr_metadata();
   }
 
-  static media::SharedImageFormatType shared_image_format_type(
-      const scoped_refptr<media::VideoFrame>& input) {
-    return input->shared_image_format_type();
-  }
-
+#if BUILDFLAG(IS_ANDROID)
   static const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info(
       const scoped_refptr<media::VideoFrame>& input) {
     return input->ycbcr_info();
   }
+#endif
 
   static media::mojom::VideoFrameDataPtr data(
       const scoped_refptr<media::VideoFrame>& input);

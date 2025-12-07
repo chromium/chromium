@@ -4,16 +4,19 @@
 
 #include "chrome/browser/extensions/window_controller_list.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/extensions/api/tabs/windows_util.h"
-#include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/window_controller_list_observer.h"
 #include "chrome/common/extensions/api/windows.h"
 #include "components/sessions/core/session_id.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/base/base_window.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -25,11 +28,9 @@ WindowControllerList* WindowControllerList::GetInstance() {
   return base::Singleton<WindowControllerList>::get();
 }
 
-WindowControllerList::WindowControllerList() {
-}
+WindowControllerList::WindowControllerList() = default;
 
-WindowControllerList::~WindowControllerList() {
-}
+WindowControllerList::~WindowControllerList() = default;
 
 void WindowControllerList::AddExtensionWindow(WindowController* window) {
   windows_.push_back(window);
@@ -38,7 +39,7 @@ void WindowControllerList::AddExtensionWindow(WindowController* window) {
 }
 
 void WindowControllerList::RemoveExtensionWindow(WindowController* window) {
-  auto iter = base::ranges::find(windows_, window);
+  auto iter = std::ranges::find(windows_, window);
   if (iter != windows_.end()) {
     windows_.erase(iter);
     for (auto& observer : observers_)
@@ -50,6 +51,15 @@ void WindowControllerList::NotifyWindowBoundsChanged(WindowController* window) {
   if (base::Contains(windows_, window)) {
     for (auto& observer : observers_)
       observer.OnWindowBoundsChanged(window);
+  }
+}
+
+void WindowControllerList::NotifyWindowFocusChanged(WindowController* window,
+                                                    bool has_focus) {
+  if (base::Contains(windows_, window)) {
+    for (auto& observer : observers_) {
+      observer.OnWindowFocusChanged(window, has_focus);
+    }
   }
 }
 
@@ -66,7 +76,7 @@ WindowController* WindowControllerList::FindWindowForFunctionByIdWithFilter(
     const ExtensionFunction* function,
     int id,
     WindowController::TypeFilter filter) const {
-  for (auto iter = windows().begin(); iter != windows().end(); ++iter) {
+  for (auto iter = windows_.begin(); iter != windows_.end(); ++iter) {
     if ((*iter)->GetWindowId() == id) {
       if (windows_util::CanOperateOnWindow(function, *iter, filter))
         return *iter;
@@ -94,7 +104,7 @@ WindowController* WindowControllerList::CurrentWindowForFunctionWithFilter(
   WindowController* last_window = nullptr;
   WindowController* parent_window = nullptr;
 
-  for (const auto& controller : windows()) {
+  for (const auto& controller : windows_) {
     if (!windows_util::CanOperateOnWindow(function, controller, filter)) {
       continue;
     }
@@ -104,9 +114,13 @@ WindowController* WindowControllerList::CurrentWindowForFunctionWithFilter(
       return controller;
     }
 
+#if !BUILDFLAG(IS_ANDROID)
+    // TODO(crbug.com/371432155): Support on Android.
+    // windows_util::CalledFromChildWindow() checks native widgets for parents.
     if (windows_util::CalledFromChildWindow(function, controller)) {
       parent_window = controller;
     }
+#endif
 
     last_window = controller;
   }

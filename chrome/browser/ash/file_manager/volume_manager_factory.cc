@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_system_provider/service_factory.h"
 #include "chrome/browser/ash/policy/skyvault/local_files_migration_manager.h"

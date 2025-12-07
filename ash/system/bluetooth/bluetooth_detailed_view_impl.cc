@@ -9,6 +9,7 @@
 
 #include "ash/ash_element_identifiers.h"
 #include "ash/bubble/bubble_utils.h"
+#include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -68,6 +69,13 @@ BluetoothDetailedViewImpl::BluetoothDetailedViewImpl(
   CreateScrollableList();
   CreateTopContainer();
   CreateMainContainer();
+  if (chromeos::features::IsBluetoothWifiQSPodRefreshEnabled()) {
+    CreateZeroStateView(std::make_unique<ZeroStateView>(
+        /*image_id=*/IDR_TRAY_BLUETOOTH_UNAVAILABLE_STATE_IMAGE,
+        /*title_id=*/IDS_ASH_STATUS_TRAY_BLUETOOTH_UNAVAILABLE_STATE_TITLE,
+        /*subtitle_id=*/
+        IDS_ASH_STATUS_TRAY_BLUETOOTH_UNAVAILABLE_STATE_SUBTITLE));
+  }
   UpdateBluetoothEnabledState(BluetoothSystemState::kDisabled);
   device::RecordUiSurfaceDisplayed(
       device::BluetoothUiSurface::kBluetoothQuickSettings);
@@ -81,6 +89,15 @@ views::View* BluetoothDetailedViewImpl::GetAsView() {
 
 void BluetoothDetailedViewImpl::UpdateBluetoothEnabledState(
     const BluetoothSystemState system_state) {
+  if (chromeos::features::IsBluetoothWifiQSPodRefreshEnabled() &&
+      system_state == BluetoothSystemState::kUnavailable) {
+    SetZeroStateViewVisibility(true);
+    return;
+  }
+  if (chromeos::features::IsBluetoothWifiQSPodRefreshEnabled()) {
+    SetZeroStateViewVisibility(false);
+  }
+
   bool is_enabled_or_enabling = IsBluetoothEnabledOrEnabling(system_state);
 
   // Use square corners on the bottom edge when Bluetooth is enabled.
@@ -205,7 +222,7 @@ void BluetoothDetailedViewImpl::CreateTopContainer() {
   auto icon = std::make_unique<views::ImageView>();
   toggle_icon_ = icon.get();
   toggle_row_->AddViewAndLabel(std::move(icon), u"");
-  toggle_row_->text_label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  toggle_row_->text_label()->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
   TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton1,
                                         *toggle_row_->text_label());
 
@@ -252,7 +269,7 @@ void BluetoothDetailedViewImpl::CreateMainContainer() {
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BLUETOOTH_PAIR_NEW_DEVICE));
 
   views::Label* label = pair_new_device_view_->text_label();
-  label->SetEnabledColorId(cros_tokens::kCrosSysPrimary);
+  label->SetEnabledColor(cros_tokens::kCrosSysPrimary);
   ash::TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton2,
                                              *label);
 

@@ -13,7 +13,7 @@ namespace unexportable_keys {
 
 RefCountedUnexportableSigningKey::RefCountedUnexportableSigningKey(
     std::unique_ptr<crypto::UnexportableSigningKey> key,
-    const UnexportableKeyId& key_id)
+    UnexportableKeyId key_id)
     : key_(std::move(key)), id_(key_id) {
   DCHECK(key_);
 }

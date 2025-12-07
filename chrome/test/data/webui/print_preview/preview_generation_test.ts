@@ -3,12 +3,10 @@
 // found in the LICENSE file.
 
 import type {NativeInitialSettings, PreviewTicket, PrintPreviewAppElement, PrintPreviewDestinationSettingsElement, Range, Settings} from 'chrome://print/print_preview.js';
-import {ColorMode, CustomMarginsOrientation, Destination, DestinationOrigin, DestinationState, Margins, MarginsType, NativeLayerImpl, PluginProxyImpl, ScalingType} from 'chrome://print/print_preview.js';
+import {ColorMode, CustomMarginsOrientation, Destination, DestinationOrigin, Margins, MarginsType, NativeLayerImpl, PluginProxyImpl, ScalingType} from 'chrome://print/print_preview.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-
-// <if expr="is_chromeos">
-import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
-// </if>
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {NativeLayerStub} from './native_layer_stub.js';
 import {getCddTemplate, getDefaultInitialSettings} from './print_preview_test_utils.js';
@@ -33,9 +31,6 @@ suite('PreviewGenerationTest', function() {
   setup(function() {
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.setInstance(nativeLayer);
-    // <if expr="is_chromeos">
-    setNativeLayerCrosInstance();
-    // </if>
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
@@ -157,7 +152,7 @@ suite('PreviewGenerationTest', function() {
    */
   test('CustomMargins', function() {
     return initialize()
-        .then(function(args) {
+        .then(async function(args) {
           const originalTicket: PreviewTicket = JSON.parse(args.printTicket);
           assertEquals(MarginsType.DEFAULT, originalTicket.marginsType);
           // Custom margins should not be set in the ticket.
@@ -166,10 +161,13 @@ suite('PreviewGenerationTest', function() {
 
           // This should do nothing.
           page.setSetting('margins', MarginsType.CUSTOM);
+          await microtasksFinished();
           // Sets only 1 side, not valid.
           page.setSetting('customMargins', {marginTop: 25});
+          await microtasksFinished();
           // 2 sides, still not valid.
           page.setSetting('customMargins', {marginTop: 25, marginRight: 40});
+          await microtasksFinished();
           // This should trigger a preview.
           nativeLayer.resetResolver('getPreview');
           page.setSetting('customMargins', {
@@ -180,7 +178,7 @@ suite('PreviewGenerationTest', function() {
           });
           return nativeLayer.whenCalled('getPreview');
         })
-        .then(function(args) {
+        .then(async function(args) {
           const ticket: PreviewTicket = JSON.parse(args.printTicket);
           assertEquals(MarginsType.CUSTOM, ticket.marginsType);
           assertEquals(25, ticket.marginsCustom!.marginTop);
@@ -191,7 +189,9 @@ suite('PreviewGenerationTest', function() {
           page.setSetting('margins', MarginsType.DEFAULT);
           // Set setting to something invalid and then set margins to CUSTOM.
           page.setSetting('customMargins', {marginTop: 25, marginRight: 40});
+          await microtasksFinished();
           page.setSetting('margins', MarginsType.CUSTOM);
+          await microtasksFinished();
           nativeLayer.resetResolver('getPreview');
           page.setSetting('customMargins', {
             marginTop: 25,
@@ -219,47 +219,42 @@ suite('PreviewGenerationTest', function() {
    * Validate changing the pages per sheet updates the preview, and resets
    * margins to MarginsType.DEFAULT.
    */
-  test(
-      'ChangeMarginsByPagesPerSheet', function() {
-        return initialize()
-            .then(function(args) {
-              const originalTicket: PreviewTicket =
-                  JSON.parse(args.printTicket);
-              assertEquals(0, originalTicket.requestID);
-              assertEquals(MarginsType.DEFAULT, originalTicket['marginsType']);
-              assertEquals(
-                  MarginsType.DEFAULT, page.getSettingValue('margins'));
-              assertEquals(1, page.getSettingValue('pagesPerSheet'));
-              assertEquals(1, originalTicket['pagesPerSheet']);
-              nativeLayer.resetResolver('getPreview');
-              page.setSetting('margins', MarginsType.MINIMUM);
-              return nativeLayer.whenCalled('getPreview');
-            })
-            .then(function(args) {
-              assertEquals(
-                  MarginsType.MINIMUM, page.getSettingValue('margins'));
-              const ticket: PreviewTicket = JSON.parse(args.printTicket);
-              assertEquals(MarginsType.MINIMUM, ticket['marginsType']);
-              nativeLayer.resetResolver('getPreview');
-              assertEquals(1, ticket.requestID);
-              page.setSetting('pagesPerSheet', 4);
-              return nativeLayer.whenCalled('getPreview');
-            })
-            .then(function(args) {
-              assertEquals(
-                  MarginsType.DEFAULT, page.getSettingValue('margins'));
-              assertEquals(4, page.getSettingValue('pagesPerSheet'));
-              const ticket: PreviewTicket = JSON.parse(args.printTicket);
-              assertEquals(MarginsType.DEFAULT, ticket['marginsType']);
-              assertEquals(4, ticket['pagesPerSheet']);
-              assertEquals(2, ticket.requestID);
-            });
-      });
+  test('ChangeMarginsByPagesPerSheet', function() {
+    return initialize()
+        .then(function(args) {
+          const originalTicket: PreviewTicket = JSON.parse(args.printTicket);
+          assertEquals(0, originalTicket.requestID);
+          assertEquals(MarginsType.DEFAULT, originalTicket['marginsType']);
+          assertEquals(MarginsType.DEFAULT, page.getSettingValue('margins'));
+          assertEquals(1, page.getSettingValue('pagesPerSheet'));
+          assertEquals(1, originalTicket['pagesPerSheet']);
+          nativeLayer.resetResolver('getPreview');
+          page.setSetting('margins', MarginsType.MINIMUM);
+          return nativeLayer.whenCalled('getPreview');
+        })
+        .then(function(args) {
+          assertEquals(MarginsType.MINIMUM, page.getSettingValue('margins'));
+          const ticket: PreviewTicket = JSON.parse(args.printTicket);
+          assertEquals(MarginsType.MINIMUM, ticket['marginsType']);
+          nativeLayer.resetResolver('getPreview');
+          assertEquals(1, ticket.requestID);
+          page.setSetting('pagesPerSheet', 4);
+          return nativeLayer.whenCalled('getPreview');
+        })
+        .then(function(args) {
+          assertEquals(MarginsType.DEFAULT, page.getSettingValue('margins'));
+          assertEquals(4, page.getSettingValue('pagesPerSheet'));
+          const ticket: PreviewTicket = JSON.parse(args.printTicket);
+          assertEquals(MarginsType.DEFAULT, ticket['marginsType']);
+          assertEquals(4, ticket['pagesPerSheet']);
+          assertEquals(2, ticket.requestID);
+        });
+  });
 
   /** Validate changing the paper size updates the preview. */
   test('MediaSize', function() {
     const mediaSizeCapability =
-        getCddTemplate('FooDevice').capabilities!.printer!.media_size!;
+        getCddTemplate('FooDevice').capabilities!.printer.media_size!;
     const letterOption = mediaSizeCapability.option[0]!;
     const squareOption = mediaSizeCapability.option[1]!;
     return initialize()
@@ -416,6 +411,7 @@ suite('PreviewGenerationTest', function() {
   test('ScalingPdf', function() {
     // Set PDF document so setting is available.
     initialSettings.previewModifiable = false;
+    loadTimeData.overrideValues({alignPdfDefaultPrintSettingsWithHTML: false});
     return initialize()
         .then(function(args) {
           validateScalingChange({
@@ -547,6 +543,55 @@ suite('PreviewGenerationTest', function() {
   });
 
   /**
+   * Validate changing the scalingTypePdf setting updates the preview with
+   * alignPdfDefaultPrintSettingsWithHTML on.
+   */
+  test('ScalingPdfAlignPdfDefaultPrintSettingsWithHTML', function() {
+    // Set PDF document so setting is available.
+    initialSettings.previewModifiable = false;
+    loadTimeData.overrideValues({alignPdfDefaultPrintSettingsWithHTML: true});
+    return initialize()
+        .then(function(args) {
+          validateScalingChange({
+            printTicket: args.printTicket,
+            scalingTypeKey: 'scalingTypePdf',
+            expectedTicketId: 0,
+            expectedTicketScaleFactor: 100,
+            expectedScalingValue: '100',
+            expectedScalingType: ScalingType.DEFAULT,
+          });
+          nativeLayer.resetResolver('getPreview');
+          // DEFAULT -> CUSTOM
+          page.setSetting('scalingTypePdf', ScalingType.CUSTOM);
+          return nativeLayer.whenCalled('getPreview');
+        })
+        .then(function(args) {
+          validateScalingChange({
+            printTicket: args.printTicket,
+            scalingTypeKey: 'scalingTypePdf',
+            expectedTicketId: 1,
+            expectedTicketScaleFactor: 100,
+            expectedScalingValue: '100',
+            expectedScalingType: ScalingType.CUSTOM,
+          });
+          nativeLayer.resetResolver('getPreview');
+          // CUSTOM -> DEFAULT
+          page.setSetting('scalingTypePdf', ScalingType.DEFAULT);
+          return nativeLayer.whenCalled('getPreview');
+        })
+        .then(function(args) {
+          validateScalingChange({
+            printTicket: args.printTicket,
+            scalingTypeKey: 'scalingTypePdf',
+            expectedTicketId: 2,
+            expectedTicketScaleFactor: 100,
+            expectedScalingValue: '100',
+            expectedScalingType: ScalingType.DEFAULT,
+          });
+        });
+  });
+
+  /**
    * Validate changing the rasterize setting updates the preview.  Setting is
    * always available on Linux and CrOS.  Availability on Windows and macOS
    * depends upon policy (see policy_test.js).
@@ -568,15 +613,15 @@ suite('PreviewGenerationTest', function() {
         .then(function(args) {
           const originalTicket: PreviewTicket = JSON.parse(args.printTicket);
           destinationSettings =
-              page.shadowRoot!.querySelector('print-preview-sidebar')!
-                  .shadowRoot!.querySelector(
-                      'print-preview-destination-settings')!;
-          assertEquals('FooDevice', destinationSettings.destination!.id);
+              page.shadowRoot.querySelector('print-preview-sidebar')!.shadowRoot
+                  .querySelector('print-preview-destination-settings')!;
+          assertTrue(!!destinationSettings.destination);
+          assertEquals('FooDevice', destinationSettings.destination.id);
           assertEquals('FooDevice', originalTicket.deviceName);
           const barDestination =
               new Destination('BarDevice', DestinationOrigin.LOCAL, 'BarName');
           const capabilities = getCddTemplate(barDestination.id).capabilities!;
-          capabilities.printer!.media_size = {
+          capabilities.printer.media_size = {
             option: [
               {
                 name: 'ISO_A4',
@@ -588,12 +633,12 @@ suite('PreviewGenerationTest', function() {
           };
           barDestination.capabilities = capabilities;
           nativeLayer.resetResolver('getPreview');
-          destinationSettings.destinationState = DestinationState.SET;
-          destinationSettings.set('destination', barDestination);
-          destinationSettings.destinationState = DestinationState.UPDATED;
+          destinationSettings.getDestinationStoreForTest().selectDestination(
+              barDestination);
           return nativeLayer.whenCalled('getPreview');
         })
         .then(function(args) {
+          assertTrue(!!destinationSettings.destination);
           assertEquals('BarDevice', destinationSettings.destination.id);
           const ticket: PreviewTicket = JSON.parse(args.printTicket);
           assertEquals('BarDevice', ticket.deviceName);
@@ -604,79 +649,79 @@ suite('PreviewGenerationTest', function() {
    * Validate that if the document layout has 0 default margins, the
    * header/footer setting is set to false.
    */
-  test(
-      'ZeroDefaultMarginsClearsHeaderFooter', async () => {
-        /**
-         * @param ticket The parsed print ticket
-         * @param expectedId The expected ticket request ID
-         * @param expectedMargins The expected ticket margins type
-         * @param expectedHeaderFooter The expected ticket
-         *     header/footer value
-         */
-        function assertMarginsFooter(
-            ticket: PreviewTicket, expectedId: number,
-            expectedMargins: MarginsType, expectedHeaderFooter: boolean) {
-          assertEquals(expectedId, ticket.requestID);
-          assertEquals(expectedMargins, ticket.marginsType);
-          assertEquals(expectedHeaderFooter, ticket.headerFooterEnabled);
-        }
+  test('ZeroDefaultMarginsClearsHeaderFooter', async () => {
+    /**
+     * @param ticket The parsed print ticket
+     * @param expectedId The expected ticket request ID
+     * @param expectedMargins The expected ticket margins type
+     * @param expectedHeaderFooter The expected ticket
+     *     header/footer value
+     */
+    function assertMarginsFooter(
+        ticket: PreviewTicket, expectedId: number, expectedMargins: MarginsType,
+        expectedHeaderFooter: boolean) {
+      assertEquals(expectedId, ticket.requestID);
+      assertEquals(expectedMargins, ticket.marginsType);
+      assertEquals(expectedHeaderFooter, ticket.headerFooterEnabled);
+    }
 
-        nativeLayer.setPageLayoutInfo({
-          marginTop: 0,
-          marginLeft: 0,
-          marginBottom: 0,
-          marginRight: 0,
-          contentWidth: 612,
-          contentHeight: 792,
-          printableAreaX: 0,
-          printableAreaY: 0,
-          printableAreaWidth: 612,
-          printableAreaHeight: 792,
-        });
+    nativeLayer.setPageLayoutInfo({
+      marginTop: 0,
+      marginLeft: 0,
+      marginBottom: 0,
+      marginRight: 0,
+      contentWidth: 612,
+      contentHeight: 792,
+      printableAreaX: 0,
+      printableAreaY: 0,
+      printableAreaWidth: 612,
+      printableAreaHeight: 792,
+    });
 
-        let previewArgs = await initialize();
-        let ticket: PreviewTicket = JSON.parse(previewArgs.printTicket);
+    let previewArgs = await initialize();
+    let ticket: PreviewTicket = JSON.parse(previewArgs.printTicket);
 
-        // The ticket recorded here is the original, which requests default
-        // margins with headers and footers (Print Preview defaults).
-        assertMarginsFooter(ticket, 0, MarginsType.DEFAULT, true);
+    // The ticket recorded here is the original, which requests default
+    // margins with headers and footers (Print Preview defaults).
+    assertMarginsFooter(ticket, 0, MarginsType.DEFAULT, true);
 
-        // After getting the new layout, a second request should have been
-        // sent.
-        assertEquals(2, nativeLayer.getCallCount('getPreview'));
-        assertEquals(MarginsType.DEFAULT, page.getSettingValue('margins'));
-        assertFalse(page.getSettingValue('headerFooter'));
+    // After getting the new layout, a second request should have been
+    // sent. Need to wait for a cycle since the 2nd request is issued
+    // asynchronously in app.ts.
+    await microtasksFinished();
+    assertEquals(2, nativeLayer.getCallCount('getPreview'));
+    assertEquals(MarginsType.DEFAULT, page.getSettingValue('margins'));
+    assertFalse(page.getSettingValue('headerFooter'));
 
-        // Check the last ticket sent by the preview area. It should not
-        // have the same settings as the original (headers and footers
-        // should have been turned off).
-        const previewArea =
-            page.shadowRoot!.querySelector('print-preview-preview-area')!;
-        assertMarginsFooter(
-            previewArea.getLastTicketForTest()!, 1, MarginsType.DEFAULT, false);
-        nativeLayer.resetResolver('getPreview');
-        page.setSetting('margins', MarginsType.MINIMUM);
-        previewArgs = await nativeLayer.whenCalled('getPreview');
+    // Check the last ticket sent by the preview area. It should not
+    // have the same settings as the original (headers and footers
+    // should have been turned off).
+    const previewArea =
+        page.shadowRoot.querySelector('print-preview-preview-area')!;
+    assertMarginsFooter(
+        previewArea.getLastTicketForTest()!, 1, MarginsType.DEFAULT, false);
+    nativeLayer.resetResolver('getPreview');
+    page.setSetting('margins', MarginsType.MINIMUM);
+    previewArgs = await nativeLayer.whenCalled('getPreview');
 
-        // Setting minimum margins allows space for the headers and footers,
-        // so they should be enabled again.
-        ticket = JSON.parse(previewArgs.printTicket);
-        assertMarginsFooter(ticket, 2, MarginsType.MINIMUM, true);
-        assertEquals(
-            MarginsType.MINIMUM,
-            page.getSettingValue('margins') as MarginsType);
-        assertTrue(page.getSettingValue('headerFooter') as boolean);
-        nativeLayer.resetResolver('getPreview');
-        page.setSetting('margins', MarginsType.DEFAULT);
-        previewArgs = await nativeLayer.whenCalled('getPreview');
+    // Setting minimum margins allows space for the headers and footers,
+    // so they should be enabled again.
+    ticket = JSON.parse(previewArgs.printTicket);
+    assertMarginsFooter(ticket, 2, MarginsType.MINIMUM, true);
+    assertEquals(
+        MarginsType.MINIMUM, page.getSettingValue('margins') as MarginsType);
+    assertTrue(page.getSettingValue('headerFooter') as boolean);
+    nativeLayer.resetResolver('getPreview');
+    page.setSetting('margins', MarginsType.DEFAULT);
+    previewArgs = await nativeLayer.whenCalled('getPreview');
 
-        // With default margins, there is no space for headers/footers, so
-        // they are removed.
-        ticket = JSON.parse(previewArgs.printTicket);
-        assertMarginsFooter(ticket, 3, MarginsType.DEFAULT, false);
-        assertEquals(MarginsType.DEFAULT, page.getSettingValue('margins'));
-        assertEquals(false, page.getSettingValue('headerFooter'));
-      });
+    // With default margins, there is no space for headers/footers, so
+    // they are removed.
+    ticket = JSON.parse(previewArgs.printTicket);
+    assertMarginsFooter(ticket, 3, MarginsType.DEFAULT, false);
+    assertEquals(MarginsType.DEFAULT, page.getSettingValue('margins'));
+    assertEquals(false, page.getSettingValue('headerFooter'));
+  });
 
   /**
    * Validate that the page size calculation handles floating numbers correctly.
@@ -701,9 +746,11 @@ suite('PreviewGenerationTest', function() {
     assertEquals(792, page.$.documentInfo.pageSize.height);
 
     const o = CustomMarginsOrientation;
-    assertEquals(28, page.$.documentInfo.margins.get(o.TOP));
-    assertEquals(28, page.$.documentInfo.margins.get(o.RIGHT));
-    assertEquals(28, page.$.documentInfo.margins.get(o.BOTTOM));
-    assertEquals(28, page.$.documentInfo.margins.get(o.LEFT));
+    const margins = page.$.documentInfo.margins;
+    assertTrue(!!margins);
+    assertEquals(28, margins.get(o.TOP));
+    assertEquals(28, margins.get(o.RIGHT));
+    assertEquals(28, margins.get(o.BOTTOM));
+    assertEquals(28, margins.get(o.LEFT));
   });
 });

@@ -1,9 +1,3 @@
-
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -19,17 +13,16 @@
 #include "base/system/sys_info.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/policy/schema_registry_service.h"
 #include "chrome/browser/policy/value_provider/chrome_policies_value_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/policy/policy_ui_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/grit/policy_resources.h"
 #include "components/grit/policy_resources_map.h"
 #include "components/policy/core/common/features.h"
@@ -42,13 +35,13 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/version_info/version_info.h"
-#include "components/version_ui/version_handler_helper.h"
+#include "components/webui/version/version_handler_helper.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_message_handler.h"
-#include "content/public/common/user_agent.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/webui/webui_util.h"
 
 // LINT.IfChange
 
@@ -63,8 +56,9 @@ std::string GetOsInfo() {
   return base::StringPrintf(
       kOSVersionAndBuildFormat,
       (base::SysInfo::OperatingSystemVersion()).c_str(),
-      (content::GetAndroidOSInfo(content::IncludeAndroidBuildNumber::Include,
-                                 content::IncludeAndroidModel::Include))
+      (embedder_support::GetAndroidOSInfo(
+           embedder_support::IncludeAndroidBuildNumber::Include,
+           embedder_support::IncludeAndroidModel::Include))
           .c_str());
 #else
   return base::StringPrintf("%s %s",
@@ -92,69 +86,75 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
   PolicyUIHandler::AddCommonLocalizedStringsToSource(source);
 
   static constexpr webui::LocalizedString kStrings[] = {
-    // Localized strings (alphabetical order).
-    {"copyPoliciesJSON", IDS_COPY_POLICIES_JSON},
-    {"exportPoliciesJSON", IDS_EXPORT_POLICIES_JSON},
-    {"filterPlaceholder", IDS_POLICY_FILTER_PLACEHOLDER},
-    {"hideExpandedStatus", IDS_POLICY_HIDE_EXPANDED_STATUS},
-    {"isAffiliatedYes", IDS_POLICY_IS_AFFILIATED_YES},
-    {"isAffiliatedNo", IDS_POLICY_IS_AFFILIATED_NO},
-    {"labelAssetId", IDS_POLICY_LABEL_ASSET_ID},
-    {"labelClientId", IDS_POLICY_LABEL_CLIENT_ID},
-    {"labelDirectoryApiId", IDS_POLICY_LABEL_DIRECTORY_API_ID},
-    {"labelError", IDS_POLICY_LABEL_ERROR},
-    {"labelWarning", IDS_POLICY_HEADER_WARNING},
-    {"labelGaiaId", IDS_POLICY_LABEL_GAIA_ID},
-    {"labelIsAffiliated", IDS_POLICY_LABEL_IS_AFFILIATED},
-    {"labelLastCloudReportSentTimestamp",
-     IDS_POLICY_LABEL_LAST_CLOUD_REPORT_SENT_TIMESTAMP},
-    {"labelLocation", IDS_POLICY_LABEL_LOCATION},
-    {"labelMachineEnrollmentDomain",
-     IDS_POLICY_LABEL_MACHINE_ENROLLMENT_DOMAIN},
-    {"labelMachineEnrollmentMachineName",
-     IDS_POLICY_LABEL_MACHINE_ENROLLMENT_MACHINE_NAME},
-    {"labelMachineEnrollmentToken", IDS_POLICY_LABEL_MACHINE_ENROLLMENT_TOKEN},
-    {"labelMachineEntrollmentDeviceId",
-     IDS_POLICY_LABEL_MACHINE_ENROLLMENT_DEVICE_ID},
-    {"labelIsOffHoursActive", IDS_POLICY_LABEL_IS_OFFHOURS_ACTIVE},
-    {"labelPoliciesPush", IDS_POLICY_LABEL_PUSH_POLICIES},
-    {"labelPrecedence", IDS_POLICY_LABEL_PRECEDENCE},
-    {"labelProfileId", IDS_POLICY_LABEL_PROFILE_ID},
-    {"labelRefreshInterval", IDS_POLICY_LABEL_REFRESH_INTERVAL},
-    {"labelStatus", IDS_POLICY_LABEL_STATUS},
-    {"labelTimeSinceLastFetchAttempt",
-     IDS_POLICY_LABEL_TIME_SINCE_LAST_FETCH_ATTEMPT},
-    {"labelTimeSinceLastRefresh", IDS_POLICY_LABEL_TIME_SINCE_LAST_REFRESH},
-    {"labelUsername", IDS_POLICY_LABEL_USERNAME},
-    {"labelManagedBy", IDS_POLICY_LABEL_MANAGED_BY},
-    {"labelVersion", IDS_POLICY_LABEL_VERSION},
-    {"moreActions", IDS_POLICY_MORE_ACTIONS},
-    {"noPoliciesSet", IDS_POLICY_NO_POLICIES_SET},
-    {"offHoursActive", IDS_POLICY_OFFHOURS_ACTIVE},
-    {"offHoursNotActive", IDS_POLICY_OFFHOURS_NOT_ACTIVE},
-    {"policyCopyValue", IDS_POLICY_COPY_VALUE},
-    {"policiesPushOff", IDS_POLICY_PUSH_POLICIES_OFF},
-    {"policiesPushOn", IDS_POLICY_PUSH_POLICIES_ON},
-    {"policyLearnMore", IDS_POLICY_LEARN_MORE},
-    {"reloadPolicies", IDS_POLICY_RELOAD_POLICIES},
-    {"showExpandedStatus", IDS_POLICY_SHOW_EXPANDED_STATUS},
-    {"showLess", IDS_POLICY_SHOW_LESS},
-    {"showMore", IDS_POLICY_SHOW_MORE},
-    {"showUnset", IDS_POLICY_SHOW_UNSET},
-    {"signinProfile", IDS_POLICY_SIGNIN_PROFILE},
-    {"status", IDS_POLICY_STATUS},
-    {"statusErrorManagedNoPolicy", IDS_POLICY_STATUS_ERROR_MANAGED_NO_POLICY},
-    {"statusFlexOrgNoPolicy", IDS_POLICY_STATUS_FLEX_ORG_NO_POLICY},
-    {"statusDevice", IDS_POLICY_STATUS_DEVICE},
-    {"statusMachine", IDS_POLICY_STATUS_MACHINE},
+      // Localized strings (alphabetical order).
+      {"copyPoliciesJSON", IDS_COPY_POLICIES_JSON},
+      {"exportPoliciesJSON", IDS_EXPORT_POLICIES_JSON},
+      {"filterPlaceholder", IDS_POLICY_FILTER_PLACEHOLDER},
+      {"hideExpandedStatus", IDS_POLICY_HIDE_EXPANDED_STATUS},
+      {"isAffiliatedYes", IDS_POLICY_IS_AFFILIATED_YES},
+      {"isAffiliatedNo", IDS_POLICY_IS_AFFILIATED_NO},
+      {"labelAssetId", IDS_POLICY_LABEL_ASSET_ID},
+      {"labelClientId", IDS_POLICY_LABEL_CLIENT_ID},
+      {"labelDirectoryApiId", IDS_POLICY_LABEL_DIRECTORY_API_ID},
+      {"labelError", IDS_POLICY_LABEL_ERROR},
+      {"labelWarning", IDS_POLICY_HEADER_WARNING},
+      {"labelGaiaId", IDS_POLICY_LABEL_GAIA_ID},
+      {"labelIsAffiliated", IDS_POLICY_LABEL_IS_AFFILIATED},
+      {"labelLastCloudReportSentTimestamp",
+       IDS_POLICY_LABEL_LAST_CLOUD_REPORT_SENT_TIMESTAMP},
+      {"labelLocation", IDS_POLICY_LABEL_LOCATION},
+      {"labelMachineEnrollmentDomain",
+       IDS_POLICY_LABEL_MACHINE_ENROLLMENT_DOMAIN},
+      {"labelMachineEnrollmentMachineName",
+       IDS_POLICY_LABEL_MACHINE_ENROLLMENT_MACHINE_NAME},
+      {"labelMachineEnrollmentToken",
+       IDS_POLICY_LABEL_MACHINE_ENROLLMENT_TOKEN},
+      {"labelMachineEntrollmentDeviceId",
+       IDS_POLICY_LABEL_MACHINE_ENROLLMENT_DEVICE_ID},
+      {"labelIsOffHoursActive", IDS_POLICY_LABEL_IS_OFFHOURS_ACTIVE},
+      {"labelPoliciesPush", IDS_POLICY_LABEL_PUSH_POLICIES},
+      {"labelPrecedence", IDS_POLICY_LABEL_PRECEDENCE},
+      {"labelProfileId", IDS_POLICY_LABEL_PROFILE_ID},
+      {"labelRefreshInterval", IDS_POLICY_LABEL_REFRESH_INTERVAL},
+      {"labelStatus", IDS_POLICY_LABEL_STATUS},
+      {"labelTimeSinceLastFetchAttempt",
+       IDS_POLICY_LABEL_TIME_SINCE_LAST_FETCH_ATTEMPT},
+      {"labelTimeSinceLastRefresh", IDS_POLICY_LABEL_TIME_SINCE_LAST_REFRESH},
+      {"labelUsername", IDS_POLICY_LABEL_USERNAME},
+      {"labelManagedBy", IDS_POLICY_LABEL_MANAGED_BY},
+      {"labelVersion", IDS_POLICY_LABEL_VERSION},
+      {"moreActions", IDS_POLICY_MORE_ACTIONS},
+      {"noPoliciesSet", IDS_POLICY_NO_POLICIES_SET},
+      {"offHoursActive", IDS_POLICY_OFFHOURS_ACTIVE},
+      {"offHoursNotActive", IDS_POLICY_OFFHOURS_NOT_ACTIVE},
+      {"policyCopyValue", IDS_POLICY_COPY_VALUE},
+      {"policiesPushOff", IDS_POLICY_PUSH_POLICIES_OFF},
+      {"policiesPushOn", IDS_POLICY_PUSH_POLICIES_ON},
+      {"policyLearnMore", IDS_POLICY_LEARN_MORE},
+      {"reloadPolicies", IDS_POLICY_RELOAD_POLICIES},
+      {"showExpandedStatus", IDS_POLICY_SHOW_EXPANDED_STATUS},
+      {"showLess", IDS_POLICY_SHOW_LESS},
+      {"showMore", IDS_POLICY_SHOW_MORE},
+      {"showUnset", IDS_POLICY_SHOW_UNSET},
+      {"signinProfile", IDS_POLICY_SIGNIN_PROFILE},
+      {"status", IDS_POLICY_STATUS},
+      {"statusErrorManagedNoPolicy", IDS_POLICY_STATUS_ERROR_MANAGED_NO_POLICY},
+      {"statusFlexOrgNoPolicy", IDS_POLICY_STATUS_FLEX_ORG_NO_POLICY},
+      {"statusDevice", IDS_POLICY_STATUS_DEVICE},
+      {"statusMachine", IDS_POLICY_STATUS_MACHINE},
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    {"statusUpdater", IDS_POLICY_STATUS_UPDATER},
+      {"statusUpdater", IDS_POLICY_STATUS_UPDATER},
 #endif
-    {"statusUser", IDS_POLICY_STATUS_USER},
+      {"statusUser", IDS_POLICY_STATUS_USER},
 #if !BUILDFLAG(IS_CHROMEOS)
-    {"uploadReport", IDS_UPLOAD_REPORT},
+      {"uploadReport", IDS_UPLOAD_REPORT},
 #endif  // !BUILDFLAG(IS_CHROMEOS)
-    {"viewLogs", IDS_VIEW_POLICY_LOGS},
+      {"viewLogs", IDS_VIEW_POLICY_LOGS},
+#if !BUILDFLAG(IS_ANDROID)
+      {"promotionBannerTitle", IDS_POLICY_BANNER_PROMOTION_TITLE},
+      {"promotionBannerDesc", IDS_POLICY_BANNER_PROMOTION_DESC},
+      {"promotionBannerBtn", IDS_POLICY_BANNER_PROMOTION_BTN},
+#endif
   };
   source->AddLocalizedStrings(kStrings);
 
@@ -171,10 +171,8 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
   };
   source->AddLocalizedStrings(kPolicyLogsStrings);
 
-  std::string variations_json_value;
-  base::JSONWriter::Write(GetVersionInfo(), &variations_json_value);
-
-  source->AddString("versionInfo", variations_json_value);
+  source->AddString("versionInfo",
+                    base::WriteJson(GetVersionInfo()).value_or(""));
 
   source->AddResourcePath("logs/", IDR_POLICY_LOGS_POLICY_LOGS_HTML);
   source->AddResourcePath("logs", IDR_POLICY_LOGS_POLICY_LOGS_HTML);
@@ -237,9 +235,7 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
 
   source->AddString("acceptedPaths",
                     allow_policy_test_page ? "/|/test|/logs" : "/|/logs");
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kPolicyResources, kPolicyResourcesSize),
-      IDR_POLICY_POLICY_HTML);
+  webui::SetupWebUIDataSource(source, kPolicyResources, IDR_POLICY_POLICY_HTML);
 
   webui::EnableTrustedTypesCSP(source);
 }
@@ -257,6 +253,8 @@ PolicyUI::~PolicyUI() = default;
 void PolicyUI::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(policy::policy_prefs::kPolicyTestPageEnabled,
                                 true);
+  registry->RegisterBooleanPref(
+      policy::policy_prefs::kHasDismissedPolicyPagePromotionBanner, false);
 }
 
 // static

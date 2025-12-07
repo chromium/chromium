@@ -24,8 +24,6 @@ See [here](https://support.google.com/chrome/a?p=remote-log) for more details.
 | [UI Hierarchy](#ui-hierarchy)                                                       | Fetches UI component hierarchy for ChromeOS.                                                                                                        |
 | [Crash IDs](#crash-ids)                                                             | Extracts the most recent crash IDs (if any) and exports them into crash_report_ids and all_crash_report_ids files.                                  |
 | [Chrome System Information](#chrome-system-information)                             | Fetches internal Chrome logs.                                                                                                                       |
-| [Lacros](#lacros)                                                                   | Gets Lacros system information log data if Lacros is running.                                                                                       |
-| [Lacros System Information](#lacros-system-information)                             | Gets the crosapi version that supports the Lacros remote data source if Lacros is running.                                                          |
 | [Intel WiFi NICs Debug Dump](#intel-wifi-nics-debug-dump)                           | Fetches debug dump information from Intel Wi-Fi NICs that will be produced when those NICs have issues such as firmware crashes for ChromeOS.       |
 | [ChromeOS Network Routes](#chromeos-network-routes)                                 | Gathers network routing tables for ipv4 and ipv6                                                                                                    |
 | [Additional ChromeOS Platform Logs](#additional-chromeos-platform-logs)             | Gathers log data from various scripts/programs. Creates and exports data into these files: alsa controls, cras, audio_diagnostics, env, disk_usage. |
@@ -131,7 +129,7 @@ Source code on [CrashIdsSource](https://source.chromium.org/chromium/chromium/sr
         -   List in format: `extension_id` : `extension_name` : `extension_version`
     -   Power API logs
         -   The extension levels from chrome.power API
-    -   Chrome version (incl. Lacros version if enabled)
+    -   Chrome version
     -   Enrollment status
     -   OS version for ChromeOS
     -   CPU arc for Windows and Mac
@@ -143,7 +141,6 @@ Source code on [CrashIdsSource](https://source.chromium.org/chromium/chromium/sr
     -   Onboarding time:
         -   Time when a new user has finished onboarding.
     -   Account type
-    -   Lacros status (enabled/disabled)
     -   Demo mode config
     -   Failed knowledge factor events
     -   Recorded auth events
@@ -159,28 +156,6 @@ Source code on [CrashIdsSource](https://source.chromium.org/chromium/chromium/sr
     -   Last update state
 
 Source code on [ChromeInternalLogSource](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/feedback/system_logs/log_sources/chrome_internal_log_source.h).
-
-
-### Lacros
-
-Lacros logs on the device:
-
--   lacros.log
--   lacros.previous
-
-Source code on [LacrosLogFilesLogSource](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/feedback/system_logs/log_sources/lacros_log_files_log_source.h).
-
-
-### Lacros System Information
-
--   Gets information for Lacros browser through CrosAPI calls. It contains entries such as:
-    -   Contents of `Chrome System Information` for Lacros
-    -   Crash IDs for Lacros browser
-    -   Device events
-    -   Memory Details
-    -   Ozone Wayland State Dump
-
-Source code on [CrosapiSystemLogSource](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ash/system_logs/crosapi_system_log_source.h).
 
 
 ### Intel WiFi NICs Debug Dump

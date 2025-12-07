@@ -10,7 +10,7 @@ import type {VolumeManager} from '../../../background/js/volume_manager.js';
 import {crInjectTypeAndInit} from '../../../common/js/cr_ui.js';
 import {queryDecoratedElement, queryRequiredElement} from '../../../common/js/dom_utils.js';
 import type {FilesAppEntry} from '../../../common/js/files_app_entry_types.js';
-import {isDlpEnabled, isNewDirectoryTreeEnabled} from '../../../common/js/flags.js';
+import {isDlpEnabled} from '../../../common/js/flags.js';
 import {str, strf} from '../../../common/js/translations.js';
 import {AllowedPaths} from '../../../common/js/volume_manager_types.js';
 import {BreadcrumbContainer} from '../../../containers/breadcrumb_container.js';
@@ -38,7 +38,6 @@ import {contextMenuHandler} from './context_menu_handler.js';
 import {DefaultTaskDialog} from './default_task_dialog.js';
 import {DialogFooter} from './dialog_footer.js';
 import {BaseDialog} from './dialogs.js';
-import type {DirectoryTree} from './directory_tree.js';
 import type {FileGrid} from './file_grid.js';
 import type {FileTable} from './file_table.js';
 import {FilesAlertDialog} from './files_alert_dialog.js';
@@ -211,7 +210,7 @@ export class FileManagerUI {
   /**
    * Directory tree.
    */
-  directoryTree: DirectoryTree|XfTree|null = null;
+  directoryTree: XfTree|null = null;
 
   /**
    * Progress center panel.
@@ -571,46 +570,16 @@ export class FileManagerUI {
   /**
    * TODO(hirono): Merge the method into initAdditionalUI.
    */
-  initDirectoryTree(directoryTree: DirectoryTree|DirectoryTreeContainer) {
-    if (isNewDirectoryTreeEnabled()) {
-      this.directoryTreeContainer = directoryTree as DirectoryTreeContainer;
-      this.directoryTree = this.directoryTreeContainer.tree as XfTree;
+  initDirectoryTree(directoryTree: DirectoryTreeContainer) {
+    this.directoryTreeContainer = directoryTree;
+    this.directoryTree = this.directoryTreeContainer.tree;
 
-      this.directoryTreeContainer.contextMenuForRootItems =
-          queryDecoratedElement('#roots-context-menu', Menu);
-      this.directoryTreeContainer.contextMenuForSubitems =
-          queryDecoratedElement('#directory-tree-context-menu', Menu);
-      this.directoryTreeContainer.contextMenuForDisabledItems =
-          queryDecoratedElement('#disabled-context-menu', Menu);
-    } else {
-      this.directoryTree = directoryTree as DirectoryTree;
-
-      // Set up the context menu for the volume/shortcut items in directory
-      // tree.
-      this.directoryTree.contextMenuForRootItems =
-          queryDecoratedElement('#roots-context-menu', Menu);
-      this.directoryTree.contextMenuForSubitems =
-          queryDecoratedElement('#directory-tree-context-menu', Menu);
-      this.directoryTree.disabledContextMenu =
-          queryDecoratedElement('#disabled-context-menu', Menu);
-
-      // The context menu event that is created via keyboard navigation is
-      // dispatched to the `directoryTree` however the tree items actually have
-      // the context menu handlers. To ensure they receive the event, recompute
-      // their location and re-dispatch the "contextmenu" event to the item that
-      // is selected.
-      this.directoryTree.addEventListener('contextmenu', e => {
-        const selectedItem = this.directoryTree?.selectedItem?.rowElement;
-        if (!selectedItem) {
-          return;
-        }
-        const domRect = selectedItem.getBoundingClientRect();
-        const x = domRect.x + (domRect.width / 2);
-        const y = domRect.y + (domRect.height / 2);
-        this.directoryTree!.selectedItem.dispatchEvent(
-            new PointerEvent(e.type, {...e, clientX: x, clientY: y}));
-      });
-    }
+    this.directoryTreeContainer.contextMenuForRootItems =
+        queryDecoratedElement('#roots-context-menu', Menu);
+    this.directoryTreeContainer.contextMenuForSubitems =
+        queryDecoratedElement('#directory-tree-context-menu', Menu);
+    this.directoryTreeContainer.contextMenuForDisabledItems =
+        queryDecoratedElement('#disabled-context-menu', Menu);
   }
 
   /**
@@ -649,9 +618,6 @@ export class FileManagerUI {
     // May not be available during initialization.
     if (this.listContainer.currentListType !== ListType.UNINITIALIZED) {
       this.listContainer.currentView.relayout();
-    }
-    if (!isNewDirectoryTreeEnabled() && this.directoryTree) {
-      (this.directoryTree as DirectoryTree).relayout();
     }
   }
 

@@ -11,8 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/threading/thread_restrictions.h"
-#include "build/chromeos_buildflags.h"
-#include "components/nacl/common/buildflags.h"
+#include "build/build_config.h"
 #include "crypto/crypto_export.h"
 
 namespace base {
@@ -39,7 +38,7 @@ CRYPTO_EXPORT void EnsureNSSInit();
 // A sample version string is "3.12.3".
 bool CheckNSSVersion(const char* version);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_MINIMAL_TOOLCHAIN)
+#if BUILDFLAG(IS_CHROMEOS)
 
 // Returns true once the TPM is owned and PKCS#11 initialized with the
 // user and security officer PINs, and Chaps has been successfully loaded into
@@ -62,19 +61,7 @@ CRYPTO_EXPORT void InitializeTPMTokenAndSystemSlot(
 // that no TPM system slot will be available.
 CRYPTO_EXPORT void FinishInitializingTPMTokenAndSystemSlot();
 
-// TODO(crbug.com/1163303) Remove when the bug is fixed.
-// Can be used to collect additional information when public slot fails to open.
-// Mainly checks the access permissions on the files and tries to read them.
-// Crashes Chrome because it will crash anyway when it tries to instantiate
-// NSSCertDatabase with a nullptr public slot, crashing early can provide better
-// logs/stacktraces for diagnosing.
-// Takes `nss_path` where NSS is supposed to be (or created). Will attempt
-// creating the path if it doesn't exist (to check that it can be done).
-// Theoretically the path should already exist because it's created when Chrome
-// tries to open the public slot.
-CRYPTO_EXPORT void DiagnosePublicSlotAndCrash(const base::FilePath& nss_path);
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_MINIMAL_TOOLCHAIN)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Convert a NSS PRTime value into a base::Time object.
 // We use a int64_t instead of PRTime here to avoid depending on NSPR headers.

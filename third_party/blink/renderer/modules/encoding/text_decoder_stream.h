@@ -35,7 +35,7 @@ class TextDecoderStream final : public ScriptWrappable {
                                    ExceptionState&);
 
   TextDecoderStream(ScriptState*,
-                    const WTF::TextEncoding&,
+                    const TextEncoding&,
                     const TextDecoderOptions*,
                     ExceptionState&);
 
@@ -57,7 +57,7 @@ class TextDecoderStream final : public ScriptWrappable {
   class Transformer;
 
   const Member<TransformStream> transform_;
-  const WTF::TextEncoding encoding_;
+  const TextEncoding encoding_;
   const bool fatal_;
   const bool ignore_bom_;
 };

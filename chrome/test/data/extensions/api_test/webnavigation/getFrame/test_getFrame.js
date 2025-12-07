@@ -29,7 +29,7 @@ ready.then(async function() {
   let tab = await promise(chrome.tabs.create, {"url": "about:blank"});
 
   chrome.test.runTests([
-    function testGetFrame() {
+    async function testGetFrame() {
       var done = chrome.test.listenForever(chrome.webNavigation.onCommitted,
         function (details) {
           if (details.tabId != tab.id || details.url != URL)
@@ -81,7 +81,7 @@ ready.then(async function() {
       });
     },
 
-    function testGetFrameDocumentId() {
+    async function testGetFrameDocumentId() {
       chrome.webNavigation.getFrame({tabId: tab.id, documentId: documentId},
         function (details) {
           chrome.test.assertEq({
@@ -96,7 +96,7 @@ ready.then(async function() {
       });
     },
 
-    function testGetFrameDocumentIdAndFrameId() {
+    async function testGetFrameDocumentIdAndFrameId() {
       chrome.webNavigation.getFrame({tabId: tab.id, frameId: 0,
                                      processId: processId,
                                      documentId: documentId},
@@ -134,7 +134,7 @@ ready.then(async function() {
       });
     },
 
-    function testGetAllFrames() {
+    async function testGetAllFrames() {
       chrome.webNavigation.getAllFrames({tabId: tab.id}, function (details) {
           chrome.test.assertEq(
               [{errorOccurred: false,

@@ -55,7 +55,7 @@ template <typename T>
 class StoreUpdateResult {
  public:
   explicit StoreUpdateResult(StoreState state) : store_state(state) {}
-  ~StoreUpdateResult() {}
+  ~StoreUpdateResult() = default;
 
   // Move-only to avoid accidental copies.
   StoreUpdateResult(const StoreUpdateResult& other) = delete;

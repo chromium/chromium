@@ -19,6 +19,7 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
 
+#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_info.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/style/reference_clip_path_operation.h"
@@ -78,7 +79,18 @@ SVGLayoutResult LayoutSVGResourceContainer::UpdateSVGLayout(
   // we wouldn't need to override LayoutSVGHiddenContainer::UpdateSVGLayout().
   DCHECK(NeedsLayout());
   ClearInvalidationMask();
-  return LayoutSVGHiddenContainer::UpdateSVGLayout(layout_info);
+
+  const SVGLayoutResult result =
+      LayoutSVGHiddenContainer::UpdateSVGLayout(layout_info);
+
+  // Another object may reference this resource (e.g. a <rect> referencing a
+  // clip-path), ensure that these clients have paint-invalidation issued if we
+  // re-layout due to a viewport dependence.
+  if (layout_info.viewport_changed && result.has_viewport_dependence) {
+    RemoveAllClientsFromCache();
+  }
+
+  return result;
 }
 
 gfx::RectF LayoutSVGResourceContainer::ResolveRectangle(
@@ -184,9 +196,11 @@ void LayoutSVGResourceContainer::WillBeDestroyed() {
 
 void LayoutSVGResourceContainer::StyleDidChange(
     StyleDifference diff,
-    const ComputedStyle* old_style) {
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutSVGHiddenContainer::StyleDidChange(diff, old_style);
+  LayoutSVGHiddenContainer::StyleDidChange(diff, old_style,
+                                           style_change_context);
   if (old_style)
     return;
   // The resource has been attached.
@@ -327,18 +341,6 @@ void LayoutSVGResourceContainer::InvalidateCache() {
   }
 }
 
-static inline void RemoveFromCacheAndInvalidateDependencies(
-    LayoutObject& object,
-    bool needs_layout) {
-  if (!RuntimeEnabledFeatures::SvgTransformOptimizationEnabled()) {
-    if (object.IsSVG()) {
-      SVGResourceInvalidator(object).InvalidateEffects();
-    }
-  }
-
-  LayoutSVGResourceContainer::InvalidateDependentElements(object, needs_layout);
-}
-
 void LayoutSVGResourceContainer::InvalidateDependentElements(
     LayoutObject& object,
     bool needs_layout) {
@@ -357,7 +359,7 @@ void LayoutSVGResourceContainer::InvalidateAncestorChainResources(
     bool needs_layout) {
   LayoutObject* current = object.Parent();
   while (current) {
-    RemoveFromCacheAndInvalidateDependencies(*current, needs_layout);
+    InvalidateDependentElements(*current, needs_layout);
 
     if (current->IsSVGResourceContainer()) {
       // This will process the rest of the ancestors.
@@ -379,7 +381,7 @@ void LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(
         layout_invalidation_reason::kSvgResourceInvalidated);
   }
 
-  RemoveFromCacheAndInvalidateDependencies(object, needs_layout);
+  InvalidateDependentElements(object, needs_layout);
   InvalidateAncestorChainResources(object, needs_layout);
 }
 

@@ -64,9 +64,16 @@ void celt_fir_sse4_1(const opus_val16 *x,
    {
       opus_val32 sums[4] = {0};
       __m128i vecSum, vecX;
-
-      xcorr_kernel(rnum, x+i-ord, sums, ord, arch);
-
+#if defined(OPUS_CHECK_ASM)
+      {
+         opus_val32 sums_c[4] = {0};
+         xcorr_kernel_c(rnum, x+i-ord, sums_c, ord);
+#endif
+         xcorr_kernel(rnum, x+i-ord, sums, ord, arch);
+#if defined(OPUS_CHECK_ASM)
+         celt_assert(memcmp(sums, sums_c, sizeof(sums)) == 0);
+      }
+#endif
       vecSum = _mm_loadu_si128((__m128i *)sums);
       vecSum = _mm_add_epi32(vecSum, vecNoA);
       vecSum = _mm_srai_epi32(vecSum, SIG_SHIFT);

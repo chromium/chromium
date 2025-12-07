@@ -33,7 +33,7 @@ const char kHtmlFile[] = "/context_menu.html";
 
 // Tests context menu appears on a regular link.
 // TODO(crbug.com/40896396): Test is flaky. Re-enable the test.
-- (void)DISABLED_testContextMenu {
+- (void)testContextMenu {
   const char linkID[] = "normal-link";
   NSString* const linkText = @"normal-link-text";
   const GURL pageURL = self.testServer->GetURL(kHtmlFile);
@@ -62,7 +62,7 @@ const char kHtmlFile[] = "/context_menu.html";
 // Tests context menu on element that has WebkitTouchCallout set to none from an
 // ancestor and overridden.
 // TODO(crbug.com/40896396): Test is flaky. Re-enable the test.
-- (void)DISABLED_testContextMenuWebkitTouchCalloutOverride {
+- (void)testContextMenuWebkitTouchCalloutOverride {
   const char linkID[] = "no-webkit-link";
   NSString* const linkText = @"no-webkit-link-text";
   const GURL pageURL = self.testServer->GetURL(kHtmlFile);

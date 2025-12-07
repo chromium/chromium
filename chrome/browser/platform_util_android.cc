@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/platform_util.h"
+
 #include <jni.h>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/notreached.h"
-#include "chrome/browser/platform_util.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/notimplemented.h"
+#include "chrome/browser/platform_util_internal.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "url/gurl.h"
@@ -18,11 +22,27 @@
 using base::android::ScopedJavaLocalRef;
 
 namespace platform_util {
+namespace internal {
+namespace {
+bool g_shell_operations_allowed = true;
+}  // namespace
+
+}  // namespace internal
 
 // TODO: crbug/115682 to track implementation of the following methods.
 
 void ShowItemInFolder(Profile* profile, const base::FilePath& full_path) {
-  NOTIMPLEMENTED();
+  // Skip opening the folder in some browser tests.
+  if (!internal::g_shell_operations_allowed) {
+    return;
+  }
+  JNIEnv* env = base::android::AttachCurrentThread();
+  std::optional<base::FilePath> contentUri =
+      base::ResolveToContentUri(full_path);
+  if (!contentUri) {
+    return;
+  }
+  Java_PlatformUtil_showItemInFolder(env, contentUri->value());
 }
 
 void OpenItem(Profile* profile,
@@ -64,3 +84,5 @@ bool IsVisible(gfx::NativeView view) {
 }
 
 } // namespace platform_util
+
+DEFINE_JNI(PlatformUtil)

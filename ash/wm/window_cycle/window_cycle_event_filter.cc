@@ -60,8 +60,7 @@ bool IsExitKey(ui::KeyEvent* event) {
 }  // namespace
 
 WindowCycleEventFilter::WindowCycleEventFilter()
-    : initial_mouse_location_(
-          display::Screen::GetScreen()->GetCursorScreenPoint()) {
+    : initial_mouse_location_(display::Screen::Get()->GetCursorScreenPoint()) {
   Shell::Get()->AddPreTargetHandler(this);
   // Handling release of "Alt" must come before other pretarget handlers
   // (specifically, the partial screenshot handler). See crbug.com/651939
@@ -379,8 +378,7 @@ WindowCycleEventFilter::GetKeyboardNavDirection(ui::KeyEvent* event) const {
     case ui::VKEY_RIGHT:
       return WindowCycleController::KeyboardNavDirection::kRight;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return WindowCycleController::KeyboardNavDirection::kInvalid;
+      NOTREACHED();
   }
 }
 

@@ -15,6 +15,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_class_properties.h"
 
 namespace autofill {
@@ -26,11 +27,10 @@ PopupTitleView::PopupTitleView(std::u16string_view title) {
               gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
                                   DISTANCE_CONTENT_LIST_VERTICAL_MULTI),
                               PopupBaseView::ArrowHorizontalMargin()));
-  SetBackground(
-      views::CreateThemedSolidBackground(ui::kColorDropdownBackground));
+  SetBackground(views::CreateSolidBackground(ui::kColorDropdownBackground));
   AddChildView(views::Builder<views::Label>()
                    .SetText(base::ToUpperASCII(title))
-                   .SetEnabledColorId(ui::kColorLabelForegroundSecondary)
+                   .SetEnabledColor(ui::kColorLabelForegroundSecondary)
                    .SetTextStyle(views::style::STYLE_CAPTION_BOLD)
                    .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
                    .Build());

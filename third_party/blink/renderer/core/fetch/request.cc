@@ -13,8 +13,8 @@
 #include "services/network/public/mojom/ip_address_space.mojom-blink.h"
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
@@ -22,9 +22,16 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_abort_signal.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_blob.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_form_data.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_ip_address_space.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_private_token.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_request_cache.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_request_destination.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_request_duplex.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_request_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_request_mode.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_request_redirect.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_retry_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_request_usvstring.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_url_search_params.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
@@ -38,6 +45,7 @@
 #include "third_party/blink/renderer/core/fetch/trust_token_to_mojom.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
+#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
 #include "third_party/blink/renderer/core/loader/threadable_loader.h"
@@ -59,12 +67,79 @@
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
 namespace {
 
 using network::mojom::blink::TrustTokenOperationType;
+
+V8RequestDestination::Enum DestinationToV8Enum(
+    network::mojom::RequestDestination destination) {
+  switch (destination) {
+    case network::mojom::RequestDestination::kEmpty:
+      return V8RequestDestination::Enum::k;
+    case network::mojom::RequestDestination::kAudio:
+      return V8RequestDestination::Enum::kAudio;
+    case network::mojom::RequestDestination::kAudioWorklet:
+      return V8RequestDestination::Enum::kAudioworklet;
+    case network::mojom::RequestDestination::kDocument:
+      return V8RequestDestination::Enum::kDocument;
+    case network::mojom::RequestDestination::kEmbed:
+      return V8RequestDestination::Enum::kEmbed;
+    case network::mojom::RequestDestination::kFont:
+      return V8RequestDestination::Enum::kFont;
+    case network::mojom::RequestDestination::kFrame:
+      return V8RequestDestination::Enum::kFrame;
+    case network::mojom::RequestDestination::kIframe:
+      return V8RequestDestination::Enum::kIFrame;
+    case network::mojom::RequestDestination::kImage:
+      return V8RequestDestination::Enum::kImage;
+    case network::mojom::RequestDestination::kManifest:
+      return V8RequestDestination::Enum::kManifest;
+    case network::mojom::RequestDestination::kObject:
+      return V8RequestDestination::Enum::kObject;
+    case network::mojom::RequestDestination::kPaintWorklet:
+      return V8RequestDestination::Enum::kPaintworklet;
+    case network::mojom::RequestDestination::kReport:
+      return V8RequestDestination::Enum::kReport;
+    case network::mojom::RequestDestination::kScript:
+      return V8RequestDestination::Enum::kScript;
+    case network::mojom::RequestDestination::kSharedWorker:
+      return V8RequestDestination::Enum::kSharedworker;
+    case network::mojom::RequestDestination::kStyle:
+      return V8RequestDestination::Enum::kStyle;
+    case network::mojom::RequestDestination::kTrack:
+      return V8RequestDestination::Enum::kTrack;
+    case network::mojom::RequestDestination::kVideo:
+      return V8RequestDestination::Enum::kVideo;
+    case network::mojom::RequestDestination::kWorker:
+      return V8RequestDestination::Enum::kWorker;
+    case network::mojom::RequestDestination::kXslt:
+      return V8RequestDestination::Enum::kXslt;
+    case network::mojom::RequestDestination::kFencedframe:
+      return V8RequestDestination::Enum::kFencedframe;
+    case network::mojom::RequestDestination::kDictionary:
+      return V8RequestDestination::Enum::kDictionary;
+    case network::mojom::RequestDestination::kSpeculationRules:
+      return V8RequestDestination::Enum::kSpeculationrules;
+    case network::mojom::RequestDestination::kJson:
+      return V8RequestDestination::Enum::kJson;
+    case network::mojom::RequestDestination::kServiceWorker:
+      return V8RequestDestination::Enum::kServiceworker;
+    case network::mojom::RequestDestination::kWebBundle:
+      return V8RequestDestination::Enum::kWebbundle;
+    case network::mojom::RequestDestination::kSharedStorageWorklet:
+      return V8RequestDestination::Enum::kSharedstorageworklet;
+    // Requests with these destinations must be fetched from the browser
+    // process.
+    case network::mojom::RequestDestination::kWebIdentity:
+    case network::mojom::RequestDestination::kEmailVerification:
+      NOTREACHED();
+  }
+  NOTREACHED();
+}
 
 }  // namespace
 
@@ -114,6 +189,10 @@ FetchRequestData* CreateCopyOfFetchRequestDataForFetch(
   request->SetAttributionReportingSupport(original->AttributionSupport());
   request->SetServiceWorkerRaceNetworkRequestToken(
       original->ServiceWorkerRaceNetworkRequestToken());
+  if (RuntimeEnabledFeatures::FetchRetryEnabled(context) &&
+      original->HasRetryOptions()) {
+    request->SetRetryOptions(original->RetryOptions().value());
+  }
 
   // When a new request is created from another the destination is always reset
   // to be `kEmpty`.  In order to facilitate some later checks when a service
@@ -137,7 +216,8 @@ static bool AreAnyMembersPresent(const RequestInit* init) {
          init->hasKeepalive() || init->hasBrowsingTopics() ||
          init->hasAdAuctionHeaders() || init->hasSharedStorageWritable() ||
          init->hasPriority() || init->hasSignal() || init->hasDuplex() ||
-         init->hasPrivateToken() || init->hasAttributionReporting();
+         init->hasPrivateToken() || init->hasAttributionReporting() ||
+         init->hasRetryOptions();
 }
 
 static BodyStreamBuffer* ExtractBody(ScriptState* script_state,
@@ -199,10 +279,7 @@ static BodyStreamBuffer* ExtractBody(ScriptState* script_state,
         nullptr /* AbortSignal */, /*cached_metadata_handler=*/nullptr);
   } else if (FormData* form = V8FormData::ToWrappable(isolate, body)) {
     scoped_refptr<EncodedFormData> form_data = form->EncodeMultiPartFormData();
-    // Here we handle formData->boundary() as a C-style string. See
-    // FormDataEncoder::generateUniqueBoundaryString.
-    content_type = AtomicString("multipart/form-data; boundary=") +
-                   form_data->Boundary().data();
+    content_type = form_data->FormatContentTypeWithBoundary();
     body_byte_length = form_data->SizeInBytes();
     return_buffer = BodyStreamBuffer::Create(
         script_state,
@@ -321,16 +398,16 @@ Request* Request::CreateRequestWithRequestOrString(
     KURL parsed_url = KURL(base_url, input_string);
     // "If |parsedURL| is failure, throw a TypeError."
     if (!parsed_url.IsValid()) {
-      exception_state.ThrowTypeError("Failed to parse URL from " +
-                                     input_string);
+      exception_state.ThrowTypeError(
+          StrCat({"Failed to parse URL from ", input_string}));
       return nullptr;
     }
     //   "If |parsedURL| includes credentials, throw a TypeError."
     if (!parsed_url.User().empty() || !parsed_url.Pass().empty()) {
       exception_state.ThrowTypeError(
-          "Request cannot be constructed from a URL that includes "
-          "credentials: " +
-          input_string);
+          StrCat({"Request cannot be constructed from a URL that includes "
+                  "credentials: ",
+                  input_string}));
       return nullptr;
     }
     // "Set |request|'s url to |parsedURL| and replace |request|'s url list
@@ -372,7 +449,7 @@ Request* Request::CreateRequestWithRequestOrString(
     request->SetIsHistoryNavigation(false);
 
     // "Set |request|’s referrer to "client"."
-    request->SetReferrerString(AtomicString(Referrer::ClientReferrerString()));
+    request->SetReferrerString(Referrer::ClientReferrerString());
 
     // "Set |request|’s referrer policy to the empty string."
     request->SetReferrerPolicy(network::mojom::ReferrerPolicy::kDefault);
@@ -393,8 +470,8 @@ Request* Request::CreateRequestWithRequestOrString(
       KURL parsed_referrer(base_url, init->referrer());
       if (!parsed_referrer.IsValid()) {
         // "If |parsedReferrer| is failure, throw a TypeError."
-        exception_state.ThrowTypeError("Referrer '" + init->referrer() +
-                                       "' is not a valid URL.");
+        exception_state.ThrowTypeError(
+            StrCat({"Referrer '", init->referrer(), "' is not a valid URL."}));
         return nullptr;
       }
       if ((parsed_referrer.ProtocolIsAbout() &&
@@ -413,8 +490,7 @@ Request* Request::CreateRequestWithRequestOrString(
         //
         //     parsedReferrer’s origin is not same origin with origin"
         //
-        request->SetReferrerString(
-            AtomicString(Referrer::ClientReferrerString()));
+        request->SetReferrerString(Referrer::ClientReferrerString());
       } else {
         // "Set |request|'s referrer to |parsedReferrer|."
         request->SetReferrerString(AtomicString(parsed_referrer.GetString()));
@@ -428,14 +504,42 @@ Request* Request::CreateRequestWithRequestOrString(
     // In case referrerPolicy = "", the SecurityPolicy method below will not
     // actually set referrer_policy, so we'll default to
     // network::mojom::ReferrerPolicy::kDefault.
-    network::mojom::ReferrerPolicy referrer_policy;
-    if (!SecurityPolicy::ReferrerPolicyFromString(
-            init->referrerPolicy(), kDoNotSupportReferrerPolicyLegacyKeywords,
-            &referrer_policy)) {
-      DCHECK_EQ(init->referrerPolicy(), g_empty_string);
-      referrer_policy = network::mojom::ReferrerPolicy::kDefault;
+    network::mojom::ReferrerPolicy referrer_policy =
+        network::mojom::ReferrerPolicy::kDefault;
+    switch (init->referrerPolicy().AsEnum()) {
+      case V8ReferrerPolicy::Enum::k:
+        referrer_policy = network::mojom::ReferrerPolicy::kDefault;
+        break;
+      case V8ReferrerPolicy::Enum::kNoReferrer:
+        referrer_policy = network::mojom::ReferrerPolicy::kNever;
+        break;
+      case V8ReferrerPolicy::Enum::kNoReferrerWhenDowngrade:
+        referrer_policy =
+            network::mojom::ReferrerPolicy::kNoReferrerWhenDowngrade;
+        break;
+      case V8ReferrerPolicy::Enum::kSameOrigin:
+        referrer_policy = network::mojom::ReferrerPolicy::kSameOrigin;
+        break;
+      case V8ReferrerPolicy::Enum::kOrigin:
+        referrer_policy = network::mojom::ReferrerPolicy::kOrigin;
+        break;
+      case V8ReferrerPolicy::Enum::kStrictOrigin:
+        referrer_policy = network::mojom::ReferrerPolicy::kStrictOrigin;
+        break;
+      case V8ReferrerPolicy::Enum::kOriginWhenCrossOrigin:
+        referrer_policy =
+            network::mojom::ReferrerPolicy::kOriginWhenCrossOrigin;
+        break;
+      case V8ReferrerPolicy::Enum::kStrictOriginWhenCrossOrigin:
+        referrer_policy =
+            network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin;
+        break;
+      case V8ReferrerPolicy::Enum::kUnsafeUrl:
+        referrer_policy = network::mojom::ReferrerPolicy::kAlways;
+        break;
+      default:
+        NOTREACHED();
     }
-
     request->SetReferrerPolicy(referrer_policy);
   }
 
@@ -465,9 +569,9 @@ Request* Request::CreateRequestWithRequestOrString(
   // https://wicg.github.io/priority-hints/#fetch-integration
   if (init->hasPriority()) {
     UseCounter::Count(execution_context, WebFeature::kPriorityHints);
-    if (init->priority() == "low") {
+    if (init->priority() == V8FetchPriority::Enum::kLow) {
       request->SetFetchPriorityHint(mojom::blink::FetchPriorityHint::kLow);
-    } else if (init->priority() == "high") {
+    } else if (init->priority() == V8FetchPriority::Enum::kHigh) {
       request->SetFetchPriorityHint(mojom::blink::FetchPriorityHint::kHigh);
     }
   }
@@ -477,7 +581,8 @@ Request* Request::CreateRequestWithRequestOrString(
   // "If |credentials| is non-null, set |request|'s credentials mode to
   // |credentials|."
   if (init->hasCredentials()) {
-    request->SetCredentials(ParseCredentialsMode(init->credentials()).value());
+    request->SetCredentials(
+        V8RequestCredentialsToCredentialsMode(init->credentials().AsEnum()));
   } else if (!input_request) {
     request->SetCredentials(network::mojom::CredentialsMode::kSameOrigin);
   }
@@ -486,14 +591,28 @@ Request* Request::CreateRequestWithRequestOrString(
   // - "Let |targetAddressSpace| be |init|'s targetAddressSpace member if it is
   // present, and |unknown| otherwise."
   if (init->hasTargetAddressSpace()) {
-    if (init->targetAddressSpace() == "local") {
-      request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kLocal);
-    } else if (init->targetAddressSpace() == "private") {
-      request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kPrivate);
-    } else if (init->targetAddressSpace() == "public") {
-      request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kPublic);
-    } else if (init->targetAddressSpace() == "unknown") {
-      request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kUnknown);
+    // 'private' is kept as an alias to 'local'; the previous PNA spec had
+    // 'private' for what LNA considers to be 'local'.
+    switch (init->targetAddressSpace().AsEnum()) {
+      case V8IPAddressSpace::Enum::kLoopback:
+        request->SetTargetAddressSpace(
+            network::mojom::IPAddressSpace::kLoopback);
+        break;
+      case V8IPAddressSpace::Enum::kLocal:
+        request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kLocal);
+        break;
+      case V8IPAddressSpace::Enum::kPrivate:
+        UseCounter::Count(execution_context,
+                          WebFeature::kLocalNetworkAccessPrivateAliasUse);
+        request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kLocal);
+        break;
+      case V8IPAddressSpace::Enum::kPublic:
+        request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kPublic);
+        break;
+      case V8IPAddressSpace::Enum::kUnknown:
+        request->SetTargetAddressSpace(
+            network::mojom::IPAddressSpace::kUnknown);
+        break;
     }
   } else {
     request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kUnknown);
@@ -501,19 +620,25 @@ Request* Request::CreateRequestWithRequestOrString(
 
   // "If |init|'s cache member is present, set |request|'s cache mode to it."
   if (init->hasCache()) {
-    auto&& cache = init->cache();
-    if (cache == "default") {
-      request->SetCacheMode(mojom::blink::FetchCacheMode::kDefault);
-    } else if (cache == "no-store") {
-      request->SetCacheMode(mojom::blink::FetchCacheMode::kNoStore);
-    } else if (cache == "reload") {
-      request->SetCacheMode(mojom::blink::FetchCacheMode::kBypassCache);
-    } else if (cache == "no-cache") {
-      request->SetCacheMode(mojom::blink::FetchCacheMode::kValidateCache);
-    } else if (cache == "force-cache") {
-      request->SetCacheMode(mojom::blink::FetchCacheMode::kForceCache);
-    } else if (cache == "only-if-cached") {
-      request->SetCacheMode(mojom::blink::FetchCacheMode::kOnlyIfCached);
+    switch (init->cache().AsEnum()) {
+      case V8RequestCache::Enum::kDefault:
+        request->SetCacheMode(mojom::blink::FetchCacheMode::kDefault);
+        break;
+      case V8RequestCache::Enum::kNoStore:
+        request->SetCacheMode(mojom::blink::FetchCacheMode::kNoStore);
+        break;
+      case V8RequestCache::Enum::kReload:
+        request->SetCacheMode(mojom::blink::FetchCacheMode::kBypassCache);
+        break;
+      case V8RequestCache::Enum::kNoCache:
+        request->SetCacheMode(mojom::blink::FetchCacheMode::kValidateCache);
+        break;
+      case V8RequestCache::Enum::kForceCache:
+        request->SetCacheMode(mojom::blink::FetchCacheMode::kForceCache);
+        break;
+      case V8RequestCache::Enum::kOnlyIfCached:
+        request->SetCacheMode(mojom::blink::FetchCacheMode::kOnlyIfCached);
+        break;
     }
   }
 
@@ -529,12 +654,16 @@ Request* Request::CreateRequestWithRequestOrString(
   // "If |init|'s redirect member is present, set |request|'s redirect mode
   // to it."
   if (init->hasRedirect()) {
-    if (init->redirect() == "follow") {
-      request->SetRedirect(network::mojom::RedirectMode::kFollow);
-    } else if (init->redirect() == "error") {
-      request->SetRedirect(network::mojom::RedirectMode::kError);
-    } else if (init->redirect() == "manual") {
-      request->SetRedirect(network::mojom::RedirectMode::kManual);
+    switch (init->redirect().AsEnum()) {
+      case V8RequestRedirect::Enum::kFollow:
+        request->SetRedirect(network::mojom::RedirectMode::kFollow);
+        break;
+      case V8RequestRedirect::Enum::kError:
+        request->SetRedirect(network::mojom::RedirectMode::kError);
+        break;
+      case V8RequestRedirect::Enum::kManual:
+        request->SetRedirect(network::mojom::RedirectMode::kManual);
+        break;
     }
   }
 
@@ -545,6 +674,29 @@ Request* Request::CreateRequestWithRequestOrString(
 
   if (init->hasKeepalive())
     request->SetKeepalive(init->keepalive());
+
+  if (RuntimeEnabledFeatures::FetchRetryEnabled(execution_context) &&
+      init->hasRetryOptions()) {
+    UseCounter::Count(execution_context, WebFeature::kFetchRetry);
+    network::FetchRetryOptions options;
+    RetryOptions* retry_options = init->retryOptions();
+    options.max_attempts = retry_options->maxAttempts();
+    if (retry_options->hasInitialDelay()) {
+      options.initial_delay =
+          base::Milliseconds(retry_options->initialDelay().value());
+    }
+    if (retry_options->hasBackoffFactor()) {
+      options.backoff_factor = retry_options->backoffFactor();
+    }
+    if (retry_options->hasMaxAge()) {
+      options.max_age = base::Milliseconds(retry_options->maxAge());
+    }
+    options.retry_after_unload = retry_options->retryAfterUnload();
+    options.retry_non_idempotent = retry_options->retryNonIdempotent();
+    options.retry_only_if_server_unreached =
+        retry_options->retryOnlyIfServerUnreached();
+    request->SetRetryOptions(options);
+  }
 
   if (init->hasBrowsingTopics()) {
     if (!execution_context->IsSecureContext()) {
@@ -559,6 +711,8 @@ Request* Request::CreateRequestWithRequestOrString(
     if (init->browsingTopics()) {
       UseCounter::Count(execution_context,
                         mojom::blink::WebFeature::kTopicsAPIFetch);
+      Deprecation::CountDeprecation(execution_context,
+                                    mojom::blink::WebFeature::kTopicsAPIAll);
     }
   }
 
@@ -592,28 +746,30 @@ Request* Request::CreateRequestWithRequestOrString(
       UseCounter::Count(
           execution_context,
           mojom::blink::WebFeature::kSharedStorageAPI_Fetch_Attribute);
+      Deprecation::CountDeprecation(
+          execution_context, mojom::blink::WebFeature::kSharedStorageAPIAll);
     }
   }
 
   // "If |init|'s method member is present, let |method| be it and run these
   // substeps:"
   if (init->hasMethod()) {
+    const String& method = init->method();
     // "If |method| is not a method or method is a forbidden method, throw
     // a TypeError."
-    if (!IsValidHTTPToken(init->method())) {
-      exception_state.ThrowTypeError("'" + init->method() +
-                                     "' is not a valid HTTP method.");
+    if (!IsValidHTTPToken(method)) {
+      exception_state.ThrowTypeError(
+          StrCat({"'", method, "' is not a valid HTTP method."}));
       return nullptr;
     }
-    if (FetchUtils::IsForbiddenMethod(init->method())) {
-      exception_state.ThrowTypeError("'" + init->method() +
-                                     "' HTTP method is unsupported.");
+    if (FetchUtils::IsForbiddenMethod(method)) {
+      exception_state.ThrowTypeError(
+          StrCat({"'", method, "' HTTP method is unsupported."}));
       return nullptr;
     }
     // "Normalize |method|."
     // "Set |request|'s method to |method|."
-    request->SetMethod(
-        FetchUtils::NormalizeMethod(AtomicString(init->method())));
+    request->SetMethod(FetchUtils::NormalizeMethod(AtomicString(method)));
   }
 
   // "If |init|'s signal member is present, then set |signal| to it."
@@ -678,8 +834,9 @@ Request* Request::CreateRequestWithRequestOrString(
     // "If |r|'s request's method is not a CORS-safelisted method, throw a
     // TypeError."
     if (!cors::IsCorsSafelistedMethod(r->GetRequest()->Method())) {
-      exception_state.ThrowTypeError("'" + r->GetRequest()->Method() +
-                                     "' is unsupported in no-cors mode.");
+      exception_state.ThrowTypeError(
+          StrCat({"'", r->GetRequest()->Method(),
+                  "' is unsupported in no-cors mode."}));
       return nullptr;
     }
     // "Set |r|'s Headers object's guard to "request-no-cors"."
@@ -845,8 +1002,7 @@ Request* Request::Create(ScriptState* script_state,
                     exception_state);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 Request* Request::Create(ScriptState* script_state,
@@ -895,16 +1051,17 @@ Request* Request::Create(
   return MakeGarbageCollected<Request>(script_state, data, signal);
 }
 
-std::optional<network::mojom::CredentialsMode> Request::ParseCredentialsMode(
-    const String& credentials_mode) {
-  if (credentials_mode == "omit")
-    return network::mojom::CredentialsMode::kOmit;
-  if (credentials_mode == "same-origin")
-    return network::mojom::CredentialsMode::kSameOrigin;
-  if (credentials_mode == "include")
-    return network::mojom::CredentialsMode::kInclude;
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
+network::mojom::CredentialsMode Request::V8RequestCredentialsToCredentialsMode(
+    V8RequestCredentials::Enum credentials_mode) {
+  switch (credentials_mode) {
+    case V8RequestCredentials::Enum::kOmit:
+      return network::mojom::CredentialsMode::kOmit;
+    case V8RequestCredentials::Enum::kSameOrigin:
+      return network::mojom::CredentialsMode::kSameOrigin;
+    case V8RequestCredentials::Enum::kInclude:
+      return network::mojom::CredentialsMode::kInclude;
+  }
+  NOTREACHED();
 }
 
 Request::Request(ScriptState* script_state,
@@ -924,6 +1081,21 @@ Request::Request(ScriptState* script_state,
               Headers::Create(request->HeaderList()),
               signal) {
   headers_->SetGuard(Headers::kRequestGuard);
+
+  // This is currently only meant to allow certain contexts to bypass request
+  // forbidden header setting in the renderer. For example in Chromium:
+  // extension
+  // (https://www.chromium.org/developers/design-documents/extensions/) script
+  // contexts are an example of a context depending on their configuration.
+  if (base::FeatureList::IsEnabled(
+          features::kBypassRequestForbiddenHeadersCheck)) {
+    bool bypass_forbidden_fetch_request_headers =
+        SecurityPolicy::IsOriginAccessToURLAllowed(
+            ExecutionContext::From(script_state)->GetSecurityOrigin(),
+            request_->Url());
+    headers_->SetBypassRequestForbiddenHeaderCheck(
+        bypass_forbidden_fetch_request_headers);
+  }
 }
 
 String Request::method() const {
@@ -935,9 +1107,9 @@ const KURL& Request::url() const {
   return request_->Url();
 }
 
-String Request::destination() const {
+V8RequestDestination Request::destination() const {
   // "The destination attribute’s getter must return request’s destination."
-  return network::RequestDestinationToString(request_->Destination());
+  return V8RequestDestination(DestinationToV8Enum(request_->Destination()));
 }
 
 String Request::referrer() const {
@@ -949,103 +1121,124 @@ String Request::referrer() const {
   return request_->ReferrerString();
 }
 
-String Request::getReferrerPolicy() const {
-  return SecurityPolicy::ReferrerPolicyAsString(request_->GetReferrerPolicy());
+V8ReferrerPolicy Request::getReferrerPolicy() const {
+  switch (request_->GetReferrerPolicy()) {
+    case network::mojom::ReferrerPolicy::kAlways:
+      return V8ReferrerPolicy(V8ReferrerPolicy::Enum::kUnsafeUrl);
+    case network::mojom::ReferrerPolicy::kDefault:
+      return V8ReferrerPolicy(V8ReferrerPolicy::Enum::k);
+    case network::mojom::ReferrerPolicy::kNoReferrerWhenDowngrade:
+      return V8ReferrerPolicy(V8ReferrerPolicy::Enum::kNoReferrerWhenDowngrade);
+    case network::mojom::ReferrerPolicy::kNever:
+      return V8ReferrerPolicy(V8ReferrerPolicy::Enum::kNoReferrer);
+    case network::mojom::ReferrerPolicy::kOrigin:
+      return V8ReferrerPolicy(V8ReferrerPolicy::Enum::kOrigin);
+    case network::mojom::ReferrerPolicy::kOriginWhenCrossOrigin:
+      return V8ReferrerPolicy(V8ReferrerPolicy::Enum::kOriginWhenCrossOrigin);
+    case network::mojom::ReferrerPolicy::kSameOrigin:
+      return V8ReferrerPolicy(V8ReferrerPolicy::Enum::kSameOrigin);
+    case network::mojom::ReferrerPolicy::kStrictOrigin:
+      return V8ReferrerPolicy(V8ReferrerPolicy::Enum::kStrictOrigin);
+    case network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin:
+      return V8ReferrerPolicy(
+          V8ReferrerPolicy::Enum::kStrictOriginWhenCrossOrigin);
+  }
+  NOTREACHED();
 }
 
-String Request::mode() const {
+V8RequestMode Request::mode() const {
   // "The mode attribute's getter must return the value corresponding to the
   // first matching statement, switching on request's mode:"
   switch (request_->Mode()) {
     case network::mojom::RequestMode::kSameOrigin:
-      return "same-origin";
+      return V8RequestMode(V8RequestMode::Enum::kSameOrigin);
     case network::mojom::RequestMode::kNoCors:
-      return "no-cors";
+      return V8RequestMode(V8RequestMode::Enum::kNoCors);
     case network::mojom::RequestMode::kCors:
     case network::mojom::RequestMode::kCorsWithForcedPreflight:
-      return "cors";
+      return V8RequestMode(V8RequestMode::Enum::kCors);
     case network::mojom::RequestMode::kNavigate:
-      return "navigate";
+      return V8RequestMode(V8RequestMode::Enum::kNavigate);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
-String Request::credentials() const {
+V8RequestCredentials Request::credentials() const {
   // "The credentials attribute's getter must return the value corresponding
   // to the first matching statement, switching on request's credentials
   // mode:"
   switch (request_->Credentials()) {
     case network::mojom::CredentialsMode::kOmit:
     case network::mojom::CredentialsMode::kOmitBug_775438_Workaround:
-      return "omit";
+      return V8RequestCredentials(V8RequestCredentials::Enum::kOmit);
     case network::mojom::CredentialsMode::kSameOrigin:
-      return "same-origin";
+      return V8RequestCredentials(V8RequestCredentials::Enum::kSameOrigin);
     case network::mojom::CredentialsMode::kInclude:
-      return "include";
+      return V8RequestCredentials(V8RequestCredentials::Enum::kInclude);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
-String Request::cache() const {
+V8RequestCache Request::cache() const {
   // "The cache attribute's getter must return request's cache mode."
   switch (request_->CacheMode()) {
     case mojom::blink::FetchCacheMode::kDefault:
-      return "default";
+      return V8RequestCache(V8RequestCache::Enum::kDefault);
     case mojom::blink::FetchCacheMode::kNoStore:
-      return "no-store";
+      return V8RequestCache(V8RequestCache::Enum::kNoStore);
     case mojom::blink::FetchCacheMode::kBypassCache:
-      return "reload";
+      return V8RequestCache(V8RequestCache::Enum::kReload);
     case mojom::blink::FetchCacheMode::kValidateCache:
-      return "no-cache";
+      return V8RequestCache(V8RequestCache::Enum::kNoCache);
     case mojom::blink::FetchCacheMode::kForceCache:
-      return "force-cache";
+      return V8RequestCache(V8RequestCache::Enum::kForceCache);
     case mojom::blink::FetchCacheMode::kOnlyIfCached:
-      return "only-if-cached";
+      return V8RequestCache(V8RequestCache::Enum::kOnlyIfCached);
     case mojom::blink::FetchCacheMode::kUnspecifiedOnlyIfCachedStrict:
     case mojom::blink::FetchCacheMode::kUnspecifiedForceCacheMiss:
-      NOTREACHED_IN_MIGRATION();
+      // Should not happen.
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
-String Request::redirect() const {
+V8RequestRedirect Request::redirect() const {
   // "The redirect attribute's getter must return request's redirect mode."
   switch (request_->Redirect()) {
     case network::mojom::RedirectMode::kFollow:
-      return "follow";
+      return V8RequestRedirect(V8RequestRedirect::Enum::kFollow);
     case network::mojom::RedirectMode::kError:
-      return "error";
+      return V8RequestRedirect(V8RequestRedirect::Enum::kError);
     case network::mojom::RedirectMode::kManual:
-      return "manual";
+      return V8RequestRedirect(V8RequestRedirect::Enum::kManual);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 String Request::integrity() const {
   return request_->Integrity();
 }
 
+V8RequestDuplex Request::duplex() const {
+  return V8RequestDuplex(V8RequestDuplex::Enum::kHalf);
+}
+
 bool Request::keepalive() const {
   return request_->Keepalive();
 }
-String Request::targetAddressSpace() const {
+
+V8IPAddressSpace Request::targetAddressSpace() const {
   switch (request_->TargetAddressSpace()) {
+    case network::mojom::IPAddressSpace::kLoopback:
+      return V8IPAddressSpace(V8IPAddressSpace::Enum::kLoopback);
     case network::mojom::IPAddressSpace::kLocal:
-      return "local";
-    case network::mojom::IPAddressSpace::kPrivate:
-      return "private";
+      return V8IPAddressSpace(V8IPAddressSpace::Enum::kLocal);
     case network::mojom::IPAddressSpace::kPublic:
-      return "public";
+      return V8IPAddressSpace(V8IPAddressSpace::Enum::kPublic);
     case network::mojom::IPAddressSpace::kUnknown:
-      return "unknown";
+      return V8IPAddressSpace(V8IPAddressSpace::Enum::kUnknown);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "unknown";
+  NOTREACHED();
 }
 
 bool Request::isHistoryNavigation() const {
@@ -1071,6 +1264,32 @@ Request* Request::clone(ScriptState* script_state,
   auto* signal = MakeGarbageCollected<AbortSignal>(script_state, signals);
 
   return MakeGarbageCollected<Request>(script_state, request, headers, signal);
+}
+
+RetryOptions* Request::getRetryOptions() const {
+  if (!request_->HasRetryOptions()) {
+    return nullptr;
+  }
+
+  const network::FetchRetryOptions& network_options =
+      request_->RetryOptions().value();
+  RetryOptions* options = RetryOptions::Create();
+  options->setMaxAttempts(network_options.max_attempts);
+  if (network_options.initial_delay.has_value()) {
+    options->setInitialDelay(
+        network_options.initial_delay.value().InMilliseconds());
+  }
+  if (network_options.backoff_factor.has_value()) {
+    options->setBackoffFactor(network_options.backoff_factor.value());
+  }
+  if (network_options.max_age.has_value()) {
+    options->setMaxAge(network_options.max_age->InMilliseconds());
+  }
+  options->setRetryAfterUnload(network_options.retry_after_unload);
+  options->setRetryNonIdempotent(network_options.retry_non_idempotent);
+  options->setRetryOnlyIfServerUnreached(
+      network_options.retry_only_if_server_unreached);
+  return options;
 }
 
 FetchRequestData* Request::PassRequestData(ScriptState* script_state,
@@ -1109,7 +1328,7 @@ mojom::blink::FetchAPIRequestPtr Request::CreateFetchAPIRequest() const {
     HTTPHeaderMap::AddResult result = headers.Add(key, value);
     if (!result.is_new_entry) {
       result.stored_value->value =
-          result.stored_value->value + ", " + String(value);
+          AtomicString(StrCat({result.stored_value->value, ", ", value}));
     }
   }
   for (const auto& pair : headers)
@@ -1135,24 +1354,6 @@ String Request::ContentType() const {
   String result;
   request_->HeaderList()->Get(http_names::kContentType, result);
   return result;
-}
-
-mojom::blink::RequestContextType Request::GetRequestContextType() const {
-  if (!request_) {
-    return mojom::blink::RequestContextType::UNSPECIFIED;
-  }
-  return mojom::blink::RequestContextType::FETCH;
-}
-
-network::mojom::RequestDestination Request::GetRequestDestination() const {
-  if (!request_) {
-    return network::mojom::RequestDestination::kEmpty;
-  }
-  return request_->Destination();
-}
-
-network::mojom::RequestMode Request::GetRequestMode() const {
-  return request_->Mode();
 }
 
 void Request::Trace(Visitor* visitor) const {

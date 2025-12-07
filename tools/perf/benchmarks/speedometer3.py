@@ -18,16 +18,14 @@ from telemetry.web_perf import timeline_based_measurement
 
 from page_sets import speedometer3_pages
 
-_PERF_TEST_DIR = os.path.join(path_util.GetChromiumSrcDir(), 'third_party',
-                              'speedometer')
-_ARCHIVE_DATA_FILE = 'data/crossbench_android_speedometer_3.0.json'
-_CLOUD_STORAGE_BUCKET = story.PARTNER_BUCKET
+_SPEEDOMETER_DIR = os.path.join(path_util.GetChromiumSrcDir(), 'third_party',
+                                'speedometer')
 
 
 class _Speedometer3(press._PressBenchmark):  # pylint: disable=protected-access
-  """Abstract base Speedometer3 Benchmark class.
+  """Abstract base Speedometer 3.x Benchmark class.
 
-  Runs all the speedometer 2 suites by default. Add --suite=<regex> to filter
+  Runs all the speedometer 3 suites by default. Add --suite=<regex> to filter
   out suites, and only run suites whose names are matched by the regular
   expression provided.
   """
@@ -39,13 +37,6 @@ class _Speedometer3(press._PressBenchmark):  # pylint: disable=protected-access
   enable_details = False
   iteration_count = None
   take_memory_measurement = False
-
-  def __init__(self,
-               archive_data_file=_ARCHIVE_DATA_FILE,
-               cloud_storage_bucket=_CLOUD_STORAGE_BUCKET):
-    super(_Speedometer3, self).__init__()
-    self.archive_data_file = archive_data_file
-    self.cloud_storage_bucket = cloud_storage_bucket
 
   @classmethod
   def GetStoryClass(cls):
@@ -79,11 +70,10 @@ class _Speedometer3(press._PressBenchmark):  # pylint: disable=protected-access
     if self.take_memory_measurement:
       cat_filter.AddDisabledByDefault('disabled-by-default-memory-infra')
 
-    # "blink.console" is used for marking ranges in
-    # cache_temperature.MarkTelemetryInternal.
+    # Used for marking ranges in cache_temperature.MarkTelemetryInternal.
     cat_filter.AddIncludedCategory('blink.console')
 
-    # "toplevel" category is used to capture TaskQueueManager events.
+    # Used to capture TaskQueueManager events.
     cat_filter.AddIncludedCategory('toplevel')
 
     if self.extra_chrome_categories:
@@ -148,12 +138,13 @@ class _Speedometer3(press._PressBenchmark):  # pylint: disable=protected-access
 
 @benchmark.Info(emails=['cbruni@chromium.org', 'vahl@chromium.org'],
                 component='Blink>JavaScript',
-                documentation_url='https://browserbench.org/Speedometer3.0')
+                documentation_url='https://github.com/WebKit/Speedometer')
 class Speedometer30(_Speedometer3):
-  """Speedometer3.0 benchmark.
+  """Speedometer 3.0 benchmark.
   Explicitly named version."""
 
-  _SOURCE_DIR = os.path.join(_PERF_TEST_DIR, 'v3.0')
+  SCHEDULED = False
+  _SOURCE_DIR = os.path.join(_SPEEDOMETER_DIR, 'v3.0')
 
   @classmethod
   def GetStoryClass(cls):
@@ -161,14 +152,35 @@ class Speedometer30(_Speedometer3):
 
   @classmethod
   def Name(cls):
-    return 'UNSCHEDULED_speedometer3.0'
+    return 'speedometer3.0'
 
 
 @benchmark.Info(emails=['cbruni@chromium.org', 'vahl@chromium.org'],
                 component='Blink>JavaScript',
                 documentation_url='https://github.com/WebKit/Speedometer')
-class Speedometer3(Speedometer30):
-  """The latest version of the Speedometer3 benchmark."""
+class Speedometer31(_Speedometer3):
+  """Speedometer 3.1 benchmark.
+  Explicitly named version."""
+
+  SCHEDULED = False
+  _SOURCE_DIR = os.path.join(_SPEEDOMETER_DIR, 'v3.1')
+
+  @classmethod
+  def GetStoryClass(cls):
+    return speedometer3_pages.Speedometer31Story
+
+  @classmethod
+  def Name(cls):
+    return 'speedometer3.1'
+
+
+@benchmark.Info(emails=['cbruni@chromium.org', 'vahl@chromium.org'],
+                component='Blink>JavaScript',
+                documentation_url='https://github.com/WebKit/Speedometer')
+class Speedometer3(Speedometer31):
+  """The latest version of the Speedometer 3.x benchmark."""
+  SCHEDULED = True
+
   @classmethod
   def GetStoryClass(cls):
     return speedometer3_pages.Speedometer3Story
@@ -181,8 +193,8 @@ class Speedometer3(Speedometer30):
 @benchmark.Info(emails=['cbruni@chromium.org', 'vahl@chromium.org'],
                 component='Blink>JavaScript',
                 documentation_url='https://github.com/WebKit/Speedometer')
-class V8Speedometer3Future(Speedometer3):
-  """The latest Speedometer3 benchmark with the V8 flag --future.
+class Speedometer3Future(Speedometer3):
+  """The latest Speedometer 3.x benchmark with the V8 flag --future.
 
   Shows the performance of upcoming V8 VM features.
   """
@@ -198,7 +210,7 @@ class V8Speedometer3Future(Speedometer3):
                 component='Blink>JavaScript>GarbageCollection',
                 documentation_url='https://github.com/WebKit/Speedometer')
 class Speedometer3MinorMS(Speedometer3):
-  """The latest Speedometer3 benchmark without the MinorMS flag.
+  """The latest Speedometer 3.x benchmark without the MinorMS flag.
 
   Shows the performance of Scavenger young generation GC in V8.
   """
@@ -210,11 +222,11 @@ class Speedometer3MinorMS(Speedometer3):
     options.AppendExtraBrowserArgs('--js-flags=--minor-ms')
 
 
-@benchmark.Info(emails=['agarwaltushar@google.com', 'wnwen@google.com'],
+@benchmark.Info(emails=['rasikan@google.com', 'wnwen@google.com'],
                 component='Blink>JavaScript',
-                documentation_url='https://browserbench.org/Speedometer3.0')
+                documentation_url='https://github.com/WebKit/Speedometer')
 class Speedometer3Predictable(Speedometer3):
-  """The latest Speedometer3 benchmark with V8's `predictable` mode.
+  """The latest Speedometer 3.x benchmark with V8's `predictable` mode.
 
   This should (hopefully) help reduce variance in the score.
   """
@@ -225,3 +237,21 @@ class Speedometer3Predictable(Speedometer3):
 
   def SetExtraBrowserOptions(self, options):
     options.AppendExtraBrowserArgs('--js-flags=--predictable')
+
+
+@benchmark.Info(emails=['cbruni@chromium.org', 'vahl@chromium.org'],
+                component='Blink>JavaScript',
+                documentation_url='https://github.com/WebKit/Speedometer')
+class Speedometer3NoFieldTrials(Speedometer3):
+  """The latest Speedometer 3.x benchmark without field-trials.
+  """
+
+  SCHEDULED = False
+
+  @classmethod
+  def Name(cls):
+    return 'speedometer3-no-field-trials'
+
+  def SetExtraBrowserOptions(self, options):
+    options.AppendExtraBrowserArgs('--disable-field-trial-config')
+    options.RemoveExtraBrowserArg('--enable-field-trial-config')

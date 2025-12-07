@@ -9,8 +9,9 @@
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/defaults.h"
+#include "chrome/browser/ui/global_error/global_error.h"
+#include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -22,21 +23,6 @@
 #if BUILDFLAG(IS_WIN)
 #include "chrome/install_static/install_modes.h"
 #include "chrome/install_static/test/scoped_install_details.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
-#include "base/command_line.h"
-#include "base/test/scoped_command_line.h"
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chromeos/ash/components/standalone_browser/migrator_util.h"
-#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
-#include "components/prefs/testing_pref_service.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/user_manager.h"
 #endif
 
 namespace {
@@ -78,6 +64,29 @@ base::Time FakeUpgradeDetector::GetAnnoyanceLevelDeadline(
   return base::Time();
 }
 
+// A minimal menu-bearing GlobalError with configurable severity.
+class FakeMenuGlobalError : public GlobalError {
+ public:
+  explicit FakeMenuGlobalError(Severity severity) : severity_(severity) {}
+  FakeMenuGlobalError(const FakeMenuGlobalError&) = delete;
+  FakeMenuGlobalError& operator=(const FakeMenuGlobalError&) = delete;
+  ~FakeMenuGlobalError() override = default;
+
+  // GlobalError:
+  Severity GetSeverity() override { return severity_; }
+  bool HasMenuItem() override { return true; }
+  int MenuItemCommandID() override { return 1; }
+  std::u16string MenuItemLabel() override { return u"fake"; }
+  void ExecuteMenuItem(Browser* /*browser*/) override {}
+  bool HasShownBubbleView() override { return false; }
+  bool HasBubbleView() override { return false; }
+  void ShowBubbleView(Browser* browser) override {}
+  GlobalErrorBubbleViewBase* GetBubbleView() override { return nullptr; }
+
+ private:
+  Severity severity_;
+};
+
 }  // namespace
 
 bool operator==(const AppMenuIconController::TypeAndSeverity& a,
@@ -91,37 +100,17 @@ bool operator==(const AppMenuIconController::TypeAndSeverity& a,
 // builds, there does not appear to be an easy way to run the test as if it were
 // a different channel.
 class AppMenuIconControllerTest : public ::testing::TestWithParam<int> {
- protected:
-  AppMenuIconControllerTest()
-#if BUILDFLAG(IS_WIN)
-      : install_details_(false, GetParam())
-#endif
-  {
-  }
-
+ public:
   AppMenuIconControllerTest(const AppMenuIconControllerTest&) = delete;
   AppMenuIconControllerTest& operator=(const AppMenuIconControllerTest&) =
       delete;
 
-  void SetUp() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<user_manager::FakeUserManager>(&local_state_));
-    auto* user_manager = static_cast<user_manager::FakeUserManager*>(
-        user_manager::UserManager::Get());
-    const auto account_id = AccountId::FromUserEmail("test@test");
-    auto* user = user_manager->AddUser(account_id);
-    user_manager->UserLoggedIn(account_id, user->username_hash(),
-                               /*browser_restart=*/false,
-                               /*is_child=*/false);
-    crosapi::browser_util::RegisterLocalStatePrefs(local_state_.registry());
-    ash::standalone_browser::migrator_util::RegisterLocalStatePrefs(
-        local_state_.registry());
-#endif
-  }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  void TearDown() override { user_manager_.reset(); }
+ protected:
+  AppMenuIconControllerTest()
+#if BUILDFLAG(IS_WIN)
+      : install_details_(false, GetParam()){}
+#else
+      = default;
 #endif
 
   UpgradeDetector* upgrade_detector() { return &upgrade_detector_; }
@@ -152,10 +141,6 @@ class AppMenuIconControllerTest : public ::testing::TestWithParam<int> {
 #if BUILDFLAG(IS_WIN)
   install_static::ScopedInstallDetails install_details_;
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_;
-  TestingPrefServiceSimple local_state_;
-#endif
 
   FakeUpgradeDetector upgrade_detector_;
   content::BrowserTaskEnvironment task_environment_;
@@ -165,15 +150,6 @@ class AppMenuIconControllerTest : public ::testing::TestWithParam<int> {
 // Tests that the controller's delegate is notified with the proper icon type
 // and severity when an upgrade is detected.
 TEST_P(AppMenuIconControllerTest, UpgradeNotification) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Forcibly enable Lacros Profile migration, so that IDC_LACROS_DATA_MIGRATION
-  // becomes visible. Note that profile migration is only enabled if Lacros is
-  // the only browser.
-  base::test::ScopedCommandLine scoped_command_line;
-  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
-      ash::switches::kEnableLacrosForTesting);
-#endif
-
   ::testing::StrictMock<MockAppMenuIconControllerDelegate> mock_delegate;
 
   AppMenuIconController controller(upgrade_detector(), profile(),
@@ -182,11 +158,11 @@ TEST_P(AppMenuIconControllerTest, UpgradeNotification) {
   ::testing::InSequence sequence;
 
   if (!browser_defaults::kShowUpgradeMenuItem) {
-    // In ChromeOS, upgrade menu is used for triggering Lacros data migration.
+    // ChromeOS doesn't change the icon.
     EXPECT_CALL(mock_delegate,
                 UpdateTypeAndSeverity(AppMenuIconController::TypeAndSeverity{
-                    AppMenuIconController::IconType::UPGRADE_NOTIFICATION,
-                    AppMenuIconController::Severity::LOW}))
+                    AppMenuIconController::IconType::kNone,
+                    AppMenuIconController::Severity::kNone}))
         .Times(6);
   } else {
     if (IsUnstableChannel()) {
@@ -194,8 +170,8 @@ TEST_P(AppMenuIconControllerTest, UpgradeNotification) {
       // out at a low level for every annoyance level.
       EXPECT_CALL(mock_delegate,
                   UpdateTypeAndSeverity(AppMenuIconController::TypeAndSeverity{
-                      AppMenuIconController::IconType::UPGRADE_NOTIFICATION,
-                      AppMenuIconController::Severity::LOW}))
+                      AppMenuIconController::IconType::kUpgradeNotification,
+                      AppMenuIconController::Severity::kLow}))
           .Times(5);
     } else {
       // For stable and beta channels, the "none" type and severity should be
@@ -204,26 +180,26 @@ TEST_P(AppMenuIconControllerTest, UpgradeNotification) {
       // the "grace" and "high" annoyance levels).
       EXPECT_CALL(mock_delegate,
                   UpdateTypeAndSeverity(AppMenuIconController::TypeAndSeverity{
-                      AppMenuIconController::IconType::NONE,
-                      AppMenuIconController::Severity::NONE}));
+                      AppMenuIconController::IconType::kNone,
+                      AppMenuIconController::Severity::kNone}));
       EXPECT_CALL(mock_delegate,
                   UpdateTypeAndSeverity(AppMenuIconController::TypeAndSeverity{
-                      AppMenuIconController::IconType::UPGRADE_NOTIFICATION,
-                      AppMenuIconController::Severity::LOW}));
+                      AppMenuIconController::IconType::kUpgradeNotification,
+                      AppMenuIconController::Severity::kLow}));
       EXPECT_CALL(mock_delegate,
                   UpdateTypeAndSeverity(AppMenuIconController::TypeAndSeverity{
-                      AppMenuIconController::IconType::UPGRADE_NOTIFICATION,
-                      AppMenuIconController::Severity::MEDIUM}));
+                      AppMenuIconController::IconType::kUpgradeNotification,
+                      AppMenuIconController::Severity::kMedium}));
       EXPECT_CALL(mock_delegate,
                   UpdateTypeAndSeverity(AppMenuIconController::TypeAndSeverity{
-                      AppMenuIconController::IconType::UPGRADE_NOTIFICATION,
-                      AppMenuIconController::Severity::HIGH}))
+                      AppMenuIconController::IconType::kUpgradeNotification,
+                      AppMenuIconController::Severity::kHigh}))
           .Times(2);
     }
     EXPECT_CALL(mock_delegate,
                 UpdateTypeAndSeverity(AppMenuIconController::TypeAndSeverity{
-                    AppMenuIconController::IconType::NONE,
-                    AppMenuIconController::Severity::NONE}));
+                    AppMenuIconController::IconType::kNone,
+                    AppMenuIconController::Severity::kNone}));
   }
 
   BroadcastLevel(UpgradeDetector::UPGRADE_ANNOYANCE_VERY_LOW);
@@ -244,31 +220,41 @@ INSTANTIATE_TEST_SUITE_P(All, AppMenuIconControllerTest, ::testing::Values(0));
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS)
-class AppMenuControllerDefaultPromptTest : public BrowserWithTestWindowTest {
- public:
-  AppMenuControllerDefaultPromptTest()
-      : BrowserWithTestWindowTest(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+TEST_P(AppMenuIconControllerTest, GlobalErrorLowSeverityShowsActionRequired) {
+  ::testing::NiceMock<MockAppMenuIconControllerDelegate> mock_delegate;
+  AppMenuIconController controller(upgrade_detector(), profile(),
+                                   &mock_delegate);
 
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kDefaultBrowserPromptRefresh,
-        {{features::kShowDefaultBrowserAppMenuChip.name, "true"}});
-    BrowserWithTestWindowTest::SetUp();
-  }
+  auto* error_service = GlobalErrorServiceFactory::GetForProfile(profile());
+  FakeMenuGlobalError low(GlobalError::SEVERITY_LOW);
+  error_service->AddUnownedGlobalError(&low);
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+  auto state = controller.GetTypeAndSeverity();
+  EXPECT_EQ(state.type, AppMenuIconController::IconType::kGlobalError);
+  EXPECT_EQ(state.severity, AppMenuIconController::Severity::kLow);
 
-TEST_F(AppMenuControllerDefaultPromptTest, SetsDefaultPromptTypeAndSeverity) {
-  ::testing::StrictMock<MockAppMenuIconControllerDelegate> mock_delegate;
-  AppMenuIconController controller(profile(), &mock_delegate);
-
-  EXPECT_CALL(mock_delegate,
-              UpdateTypeAndSeverity(AppMenuIconController::TypeAndSeverity{
-                  AppMenuIconController::IconType::DEFAULT_BROWSER_PROMPT,
-                  AppMenuIconController::Severity::LOW}));
-  DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
+  error_service->RemoveGlobalError(&low);
 }
-#endif
+
+TEST_P(AppMenuIconControllerTest, GlobalErrorMediumOrHighShowsError) {
+  ::testing::NiceMock<MockAppMenuIconControllerDelegate> mock_delegate;
+  AppMenuIconController controller(upgrade_detector(), profile(),
+                                   &mock_delegate);
+
+  auto* error_service = GlobalErrorServiceFactory::GetForProfile(profile());
+
+  FakeMenuGlobalError medium(GlobalError::SEVERITY_MEDIUM);
+  error_service->AddUnownedGlobalError(&medium);
+  auto state = controller.GetTypeAndSeverity();
+  EXPECT_EQ(state.type, AppMenuIconController::IconType::kGlobalError);
+  EXPECT_EQ(state.severity, AppMenuIconController::Severity::kMedium);
+  error_service->RemoveGlobalError(&medium);
+
+  FakeMenuGlobalError high(GlobalError::SEVERITY_HIGH);
+  error_service->AddUnownedGlobalError(&high);
+  state = controller.GetTypeAndSeverity();
+  EXPECT_EQ(state.type, AppMenuIconController::IconType::kGlobalError);
+  EXPECT_EQ(state.severity, AppMenuIconController::Severity::kHigh);
+  error_service->RemoveGlobalError(&high);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)

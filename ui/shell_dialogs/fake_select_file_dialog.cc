@@ -94,6 +94,10 @@ void FakeSelectFileDialog::CallMultiFilesSelected(
   listener_->MultiFilesSelected(FilePathListToSelectedFileInfoList(files));
 }
 
+void FakeSelectFileDialog::CallFileSelectionCanceled() {
+  listener_->FileSelectionCanceled();
+}
+
 void FakeSelectFileDialog::ListenerDestroyed() {
   listener_ = nullptr;
 }

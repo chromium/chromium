@@ -12,7 +12,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/video_capture_controller.h"
@@ -26,6 +25,7 @@
 #include "media/base/media_switches.h"
 #include "media/capture/video_capture_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
@@ -35,7 +35,6 @@ using testing::_;
 using testing::AtLeast;
 using testing::Bool;
 using testing::Combine;
-using testing::Invoke;
 using testing::InvokeWithoutArgs;
 using testing::Values;
 
@@ -55,9 +54,9 @@ class MockVideoCaptureControllerEventHandler
                void(const VideoCaptureControllerID&, int buffer_id));
   MOCK_METHOD1(OnCaptureConfigurationChanged,
                void(const VideoCaptureControllerID&));
-  MOCK_METHOD2(OnNewSubCaptureTargetVersion,
+  MOCK_METHOD2(OnNewCaptureVersion,
                void(const VideoCaptureControllerID&,
-                    uint32_t sub_capture_target_version));
+                    media::CaptureVersion capture_version));
   MOCK_METHOD2(OnBufferReady,
                void(const VideoCaptureControllerID& id,
                     const ReadyBuffer& fullsized_buffer));
@@ -218,12 +217,11 @@ class VideoCaptureBrowserTest
         params_.resolution_to_use, kFrameRateToRequest,
         params_.GetPixelFormatToUse());
     video_capture_manager_->ConnectClient(
-        session_id_, capture_params, stub_client_id_,
-        &mock_controller_event_handler_,
+        session_id_, capture_params, stub_client_id_, render_frame_host_id_,
+        &mock_controller_event_handler_, std::nullopt,
         base::BindOnce(
             &VideoCaptureBrowserTest::OnConnectClientToControllerAnswer,
-            base::Unretained(this), std::move(continuation)),
-        /*browser_context=*/nullptr);
+            base::Unretained(this), std::move(continuation)));
   }
 
   void OnConnectClientToControllerAnswer(
@@ -247,6 +245,7 @@ class VideoCaptureBrowserTest
   MockMediaStreamProviderListener mock_stream_provider_listener_;
   MockVideoCaptureControllerEventHandler mock_controller_event_handler_;
   base::WeakPtr<VideoCaptureController> controller_;
+  GlobalRenderFrameHostId render_frame_host_id_ = GlobalRenderFrameHostId(1, 1);
 };
 
 IN_PROC_BROWSER_TEST_P(VideoCaptureBrowserTest, StartAndImmediatelyStop) {
@@ -297,7 +296,7 @@ IN_PROC_BROWSER_TEST_P(VideoCaptureBrowserTest,
                      std::move(quit_run_loop_on_current_thread_cb), true);
 
   bool must_wait_for_gpu_decode_to_start = false;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (params_.exercise_accelerated_jpeg_decoding) {
     // Since the GPU jpeg decoder is created asynchronously while decoding
     // in software is ongoing, we have to keep pushing frames until a message
@@ -310,11 +309,11 @@ IN_PROC_BROWSER_TEST_P(VideoCaptureBrowserTest,
           must_wait_for_gpu_decode_to_start = false;
         }));
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   EXPECT_CALL(mock_controller_event_handler_, DoOnNewBuffer(_, _, _))
       .Times(AtLeast(1));
   EXPECT_CALL(mock_controller_event_handler_, OnBufferReady(_, _))
-      .WillRepeatedly(Invoke(
+      .WillRepeatedly(
           [this, &received_frame_infos, &must_wait_for_gpu_decode_to_start,
            &finish_test_cb](const VideoCaptureControllerID& id,
                             const ReadyBuffer& buffer) {
@@ -335,7 +334,7 @@ IN_PROC_BROWSER_TEST_P(VideoCaptureBrowserTest,
                 (received_frame_infos.size() == kMaxFramesToReceive)) {
               std::move(finish_test_cb).Run();
             }
-          }));
+          });
 
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,

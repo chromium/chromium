@@ -5,12 +5,13 @@
 #ifndef BASE_METRICS_HISTOGRAM_MACROS_H_
 #define BASE_METRICS_HISTOGRAM_MACROS_H_
 
+#include <array>
+
 #include "base/check_op.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros_internal.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/time/time.h"
-
 
 // Macros for efficient use of histograms.
 //
@@ -76,6 +77,7 @@
 // example). For scoped enums, this is awkward since it requires casting the
 // enum to an arithmetic type and adding one. Instead, prefer the two argument
 // version of the macro which automatically deduces the boundary from kMaxValue.
+// LINT.IfChange
 #define UMA_HISTOGRAM_ENUMERATION(name, ...)                            \
   INTERNAL_UMA_HISTOGRAM_ENUMERATION_GET_MACRO(                         \
       __VA_ARGS__, INTERNAL_UMA_HISTOGRAM_ENUMERATION_SPECIFY_BOUNDARY, \
@@ -102,10 +104,11 @@
 
 // Sample usage:
 //   UMA_HISTOGRAM_BOOLEAN("Histogram.Boolean", bool);
-#define UMA_HISTOGRAM_BOOLEAN(name, sample)                                    \
-    STATIC_HISTOGRAM_POINTER_BLOCK(name, AddBoolean(sample),                   \
-        base::BooleanHistogram::FactoryGet(name,                               \
-            base::HistogramBase::kUmaTargetedHistogramFlag))
+#define UMA_HISTOGRAM_BOOLEAN(name, sample) \
+  STATIC_HISTOGRAM_POINTER_BLOCK(           \
+      name, AddBoolean(sample),             \
+      base::BooleanHistogram::FactoryGet(   \
+          name, base::HistogramBase::kUmaTargetedHistogramFlag))
 
 //------------------------------------------------------------------------------
 // Linear histograms.
@@ -180,23 +183,23 @@
 // Sample usage:
 //   UMA_HISTOGRAM_COUNTS_1M("My.Histogram", sample);
 
-#define UMA_HISTOGRAM_COUNTS_100(name, sample) UMA_HISTOGRAM_CUSTOM_COUNTS(    \
-    name, sample, 1, 100, 50)
+#define UMA_HISTOGRAM_COUNTS_100(name, sample) \
+  UMA_HISTOGRAM_CUSTOM_COUNTS(name, sample, 1, 100, 50)
 
-#define UMA_HISTOGRAM_COUNTS_1000(name, sample) UMA_HISTOGRAM_CUSTOM_COUNTS(   \
-    name, sample, 1, 1000, 50)
+#define UMA_HISTOGRAM_COUNTS_1000(name, sample) \
+  UMA_HISTOGRAM_CUSTOM_COUNTS(name, sample, 1, 1000, 50)
 
-#define UMA_HISTOGRAM_COUNTS_10000(name, sample) UMA_HISTOGRAM_CUSTOM_COUNTS(  \
-    name, sample, 1, 10000, 50)
+#define UMA_HISTOGRAM_COUNTS_10000(name, sample) \
+  UMA_HISTOGRAM_CUSTOM_COUNTS(name, sample, 1, 10000, 50)
 
-#define UMA_HISTOGRAM_COUNTS_100000(name, sample) UMA_HISTOGRAM_CUSTOM_COUNTS( \
-    name, sample, 1, 100000, 50)
+#define UMA_HISTOGRAM_COUNTS_100000(name, sample) \
+  UMA_HISTOGRAM_CUSTOM_COUNTS(name, sample, 1, 100000, 50)
 
-#define UMA_HISTOGRAM_COUNTS_1M(name, sample) UMA_HISTOGRAM_CUSTOM_COUNTS(     \
-    name, sample, 1, 1000000, 50)
+#define UMA_HISTOGRAM_COUNTS_1M(name, sample) \
+  UMA_HISTOGRAM_CUSTOM_COUNTS(name, sample, 1, 1000000, 50)
 
-#define UMA_HISTOGRAM_COUNTS_10M(name, sample) UMA_HISTOGRAM_CUSTOM_COUNTS(    \
-    name, sample, 1, 10000000, 50)
+#define UMA_HISTOGRAM_COUNTS_10M(name, sample) \
+  UMA_HISTOGRAM_CUSTOM_COUNTS(name, sample, 1, 10000000, 50)
 
 // This macro allows the min, max, and number of buckets to be customized. Any
 // samples whose values are outside of [min, exclusive_max-1] are put in the
@@ -229,18 +232,9 @@
   UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(1), \
                              base::Seconds(10), 50)
 
-// TODO(crbug.com/353712922): rename and reintroduce this function/macro
-// Warning: There is another UMA logging function with a very similar name
-// which buckets data differently than this one.
-// https://source.chromium.org/chromium/chromium/src/+/main:base/metrics/histogram_functions.h?q=UmaHistogramMediumTimes
-// If you modify your logging to use that other function, you will be making a
-// meaningful semantic change to your data, and should change your histogram's
-// name, as per the guidelines at
-// https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/README.md#revising-histograms.
-// Medium timings - up to 3 minutes. Note this starts at 10ms (no good reason,
-// but not worth changing).
-#define UMA_HISTOGRAM_MEDIUM_TIMES(name, sample)                   \
-  UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(10), \
+// Medium timings - up to 3 minutes.
+#define UMA_HISTOGRAM_MEDIUM_TIMES(name, sample)                  \
+  UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(1), \
                              base::Minutes(3), 50)
 
 // Long timings - up to an hour.
@@ -320,6 +314,14 @@ enum class ScopedHistogramTiming {
   INTERNAL_SCOPED_UMA_HISTOGRAM_TIMER_EXPANDER( \
       name, ScopedHistogramTiming::kMicrosecondTimes, __COUNTER__)
 
+// Similar scoped histogram timer, but only records the time if the condition
+// is satisfied. The `should_sample` field takes a boolean and is intended to be
+// used with base::MetricsSubSampler or base::ShouldRecordSubsampledMetric().
+#define SCOPED_UMA_HISTOGRAM_TIMER_MICROS_SUBSAMPLED(name, should_sample) \
+  INTERNAL_SCOPED_UMA_HISTOGRAM_TIMER_SUBSAMPLED_EXPANDER(                \
+      name, should_sample, ScopedHistogramTiming::kMicrosecondTimes,      \
+      __COUNTER__)
+
 //------------------------------------------------------------------------------
 // Memory histograms.
 
@@ -331,20 +333,20 @@ enum class ScopedHistogramTiming {
 // Sample usage:
 //   UMA_HISTOGRAM_MEMORY_KB("My.Memory.Histogram", memory_in_kb);
 
-// Used to measure common KB-granularity memory stats. Range is up to 500000KB -
-// approximately 500M.
-#define UMA_HISTOGRAM_MEMORY_KB(name, sample)                                  \
-    UMA_HISTOGRAM_CUSTOM_COUNTS(name, sample, 1000, 500000, 50)
+// Used to measure common KB-granularity memory stats. Sample is in KB. Range is
+// from 1000KB (see crbug.com/40526504) to 500M. For measuring sizes less than
+// 1000K, use `UmaHistogramCounts`.
+#define UMA_HISTOGRAM_MEMORY_KB(name, sample) \
+  UMA_HISTOGRAM_CUSTOM_COUNTS(name, sample, 1000, 500000, 50)
 
-// Used to measure common MB-granularity memory stats. Range is up to 4000MiB -
-// approximately 4GiB.
+// Used to measure common MB-granularity memory stats. Sample is in MB. Range is
+// 1MB to ~4G.
 #define UMA_HISTOGRAM_MEMORY_MEDIUM_MB(name, sample) \
   UMA_HISTOGRAM_CUSTOM_COUNTS(name, sample, 1, 4000, 100)
 
-// Used to measure common MB-granularity memory stats. Range is up to ~64G.
-#define UMA_HISTOGRAM_MEMORY_LARGE_MB(name, sample)                            \
-    UMA_HISTOGRAM_CUSTOM_COUNTS(name, sample, 1, 64000, 100)
-
+// Used to measure common MB-granularity memory stats. Range is 1MB to ~64G.
+#define UMA_HISTOGRAM_MEMORY_LARGE_MB(name, sample) \
+  UMA_HISTOGRAM_CUSTOM_COUNTS(name, sample, 1, 64000, 100)
 
 //------------------------------------------------------------------------------
 // Stability-specific histograms.
@@ -362,14 +364,14 @@ enum class ScopedHistogramTiming {
       base::BooleanHistogram::FactoryGet(             \
           name, base::HistogramBase::kUmaStabilityHistogramFlag))
 
-#define UMA_STABILITY_HISTOGRAM_COUNTS_100(name, sample)                       \
-    UMA_STABILITY_HISTOGRAM_CUSTOM_COUNTS(name, sample, 1, 100, 50)
+#define UMA_STABILITY_HISTOGRAM_COUNTS_100(name, sample) \
+  UMA_STABILITY_HISTOGRAM_CUSTOM_COUNTS(name, sample, 1, 100, 50)
 
-#define UMA_STABILITY_HISTOGRAM_CUSTOM_COUNTS(name, sample, min, max,          \
-                                              bucket_count)                    \
-    INTERNAL_HISTOGRAM_CUSTOM_COUNTS_WITH_FLAG(                                \
-        name, sample, min, max, bucket_count,                                  \
-        base::HistogramBase::kUmaStabilityHistogramFlag)
+#define UMA_STABILITY_HISTOGRAM_CUSTOM_COUNTS(name, sample, min, max, \
+                                              bucket_count)           \
+  INTERNAL_HISTOGRAM_CUSTOM_COUNTS_WITH_FLAG(                         \
+      name, sample, min, max, bucket_count,                           \
+      base::HistogramBase::kUmaStabilityHistogramFlag)
 
 #define UMA_STABILITY_HISTOGRAM_ENUMERATION(name, ...)                  \
   INTERNAL_UMA_HISTOGRAM_ENUMERATION_GET_MACRO(                         \
@@ -432,7 +434,8 @@ enum class ScopedHistogramTiming {
     constant_histogram_name, index, constant_maximum,                       \
     histogram_add_method_invocation, histogram_factory_get_invocation)      \
   do {                                                                      \
-    static std::atomic_uintptr_t atomic_histograms[constant_maximum];       \
+    static std::array<std::atomic_uintptr_t, constant_maximum>              \
+        atomic_histograms;                                                  \
     DCHECK_LE(0, index);                                                    \
     DCHECK_LT(index, constant_maximum);                                     \
     HISTOGRAM_POINTER_USE(                                                  \
@@ -445,12 +448,12 @@ enum class ScopedHistogramTiming {
 
 // Legacy name for UMA_HISTOGRAM_COUNTS_1M. Suggest using explicit naming
 // and not using this macro going forward.
-#define UMA_HISTOGRAM_COUNTS(name, sample) UMA_HISTOGRAM_CUSTOM_COUNTS(        \
-    name, sample, 1, 1000000, 50)
+#define UMA_HISTOGRAM_COUNTS(name, sample) \
+  UMA_HISTOGRAM_CUSTOM_COUNTS(name, sample, 1, 1000000, 50)
 
 // MB-granularity memory metric. This has a short max (1G).
-#define UMA_HISTOGRAM_MEMORY_MB(name, sample)                                  \
-    UMA_HISTOGRAM_CUSTOM_COUNTS(name, sample, 1, 1000, 50)
+#define UMA_HISTOGRAM_MEMORY_MB(name, sample) \
+  UMA_HISTOGRAM_CUSTOM_COUNTS(name, sample, 1, 1000, 50)
 
 // For an enum with customized range. In general, sparse histograms should be
 // used instead.
@@ -459,10 +462,12 @@ enum class ScopedHistogramTiming {
 // requirement of |custom_ranges|. You can use the helper function
 // CustomHistogram::ArrayToCustomEnumRanges to transform a C-style array of
 // valid sample values to a std::vector<int>.
-#define UMA_HISTOGRAM_CUSTOM_ENUMERATION(name, sample, custom_ranges)          \
-    STATIC_HISTOGRAM_POINTER_BLOCK(name, Add(sample),                          \
-        base::CustomHistogram::FactoryGet(name, custom_ranges,                 \
-            base::HistogramBase::kUmaTargetedHistogramFlag))
+#define UMA_HISTOGRAM_CUSTOM_ENUMERATION(name, sample, custom_ranges) \
+  STATIC_HISTOGRAM_POINTER_BLOCK(                                     \
+      name, Add(sample),                                              \
+      base::CustomHistogram::FactoryGet(                              \
+          name, custom_ranges,                                        \
+          base::HistogramBase::kUmaTargetedHistogramFlag))
 
 // Helper to split `histogram_name` based on whether the reported sample was
 // sampled at a different (lower) priority than normal. Typically used for
@@ -499,4 +504,17 @@ enum class ScopedHistogramTiming {
     histogram_macro(histogram_name, __VA_ARGS__);                              \
   }
 
+// Warning: This macro has been deprecated in order to be consistent with
+// this function:
+// https://source.chromium.org/chromium/chromium/src/+/main:base/metrics/histogram_functions.h?q=UmaHistogramMediumTimes
+// If you modify your logging to use the new macro or function, you will be
+// making a meaningful semantic change to your data, and should change your
+// histogram's name, as per the guidelines at
+// https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/README.md#revising-histograms.
+// Medium timings - up to 3 minutes. Note this starts at 10ms.
+#define DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(name, sample)        \
+  UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(10), \
+                             base::Minutes(3), 50)
+
+// LINT.ThenChange(//base/metrics/histogram_functions.h)
 #endif  // BASE_METRICS_HISTOGRAM_MACROS_H_

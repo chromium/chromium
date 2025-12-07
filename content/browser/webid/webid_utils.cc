@@ -4,19 +4,20 @@
 
 #include "content/browser/webid/webid_utils.h"
 
-#include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
-#include "content/browser/webid/fedcm_metrics.h"
-#include "content/browser/webid/federated_auth_request_page_data.h"
 #include "content/browser/webid/flags.h"
+#include "content/browser/webid/metrics.h"
+#include "content/browser/webid/request_page_data.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/federated_identity_api_permission_context_delegate.h"
-#include "content/public/browser/federated_identity_permission_context_delegate.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/runtime_feature_state/runtime_feature_state_document_data.h"
+#include "content/public/browser/webid/federated_identity_api_permission_context_delegate.h"
+#include "content/public/browser/webid/federated_identity_permission_context_delegate.h"
 #include "content/public/common/web_identity.h"
 #include "net/base/net_errors.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -27,7 +28,7 @@
 #include "url/origin.h"
 
 using blink::mojom::FederatedAuthRequestResult;
-using content::FedCmDisconnectStatus;
+using DisconnectStatus = content::webid::DisconnectStatus;
 
 namespace content::webid {
 
@@ -40,10 +41,8 @@ constexpr net::registry_controlled_domains::PrivateRegistryFilter
 bool IsSameSiteWithAncestors(const url::Origin& origin,
                              RenderFrameHost* render_frame_host) {
   while (render_frame_host) {
-    // Many cases are same-origin, so check that first to speed up the cases
-    // where the check passes, as IsSameSite() is slower.
-    if (!origin.IsSameOriginWith(render_frame_host->GetLastCommittedOrigin()) &&
-        !IsSameSite(origin, render_frame_host->GetLastCommittedOrigin())) {
+    if (!net::SchemefulSite::IsSameSite(
+            origin, render_frame_host->GetLastCommittedOrigin())) {
       return false;
     }
     render_frame_host = render_frame_host->GetParent();
@@ -52,19 +51,19 @@ bool IsSameSiteWithAncestors(const url::Origin& origin,
 }
 
 void SetIdpSigninStatus(content::BrowserContext* context,
-                        int frame_tree_node_id,
+                        FrameTreeNodeId frame_tree_node_id,
                         const url::Origin& origin,
                         blink::mojom::IdpSigninStatus status) {
   FrameTreeNode* frame_tree_node = nullptr;
   // frame_tree_node_id may be invalid if we are loading the first frame
   // of the tab.
-  if (frame_tree_node_id != FrameTreeNode::kFrameTreeNodeInvalidId) {
+  if (frame_tree_node_id) {
     frame_tree_node = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
-    // If the id was not kFrameTreeNodeInvalidId, but the lookup failed, we
-    // ignore the load because we cannot do same-origin checks.
+    // If the id was valid, but the lookup failed, we ignore the load because we
+    // cannot do same-origin checks.
     if (!frame_tree_node) {
       RecordSetLoginStatusIgnoredReason(
-          FedCmSetLoginStatusIgnoredReason::kFrameTreeLookupFailed);
+          SetLoginStatusIgnoredReason::kFrameTreeLookupFailed);
       return;
     }
   }
@@ -72,13 +71,13 @@ void SetIdpSigninStatus(content::BrowserContext* context,
   if (frame_tree_node) {
     if (frame_tree_node->IsInFencedFrameTree()) {
       RecordSetLoginStatusIgnoredReason(
-          FedCmSetLoginStatusIgnoredReason::kInFencedFrame);
+          SetLoginStatusIgnoredReason::kInFencedFrame);
       return;
     }
 
     if (!IsSameSiteWithAncestors(origin, frame_tree_node->parent())) {
       RecordSetLoginStatusIgnoredReason(
-          FedCmSetLoginStatusIgnoredReason::kCrossOrigin);
+          SetLoginStatusIgnoredReason::kCrossOrigin);
       return;
     }
   }
@@ -89,7 +88,7 @@ void SetIdpSigninStatus(content::BrowserContext* context,
     return;
   }
   delegate->SetIdpSigninStatus(
-      origin, status == blink::mojom::IdpSigninStatus::kSignedIn);
+      origin, status == blink::mojom::IdpSigninStatus::kSignedIn, std::nullopt);
 }
 
 std::optional<std::string> ComputeConsoleMessageForHttpResponseCode(
@@ -119,10 +118,6 @@ bool IsEndpointSameOrigin(const GURL& identity_provider_config_url,
       .IsSameOriginWith(endpoint_url);
 }
 
-bool IsSameSite(const url::Origin& origin1, const url::Origin& origin2) {
-  return net::SchemefulSite(origin1) == net::SchemefulSite(origin2);
-}
-
 bool ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
     RenderFrameHost& host,
     const GURL& identity_provider_config_url,
@@ -137,7 +132,7 @@ bool ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
 void UpdateIdpSigninStatusForAccountsEndpointResponse(
     RenderFrameHost& host,
     const GURL& identity_provider_config_url,
-    IdpNetworkRequestManager::FetchStatus fetch_status,
+    FetchStatus fetch_status,
     bool does_idp_have_failing_signin_status,
     FederatedIdentityPermissionContextDelegate* permission_delegate) {
   url::Origin idp_origin = url::Origin::Create(identity_provider_config_url);
@@ -145,11 +140,10 @@ void UpdateIdpSigninStatusForAccountsEndpointResponse(
   // Record metrics on effect of IDP sign-in status API.
   const std::optional<bool> idp_signin_status =
       permission_delegate->GetIdpSigninStatus(idp_origin);
-  FedCmMetrics::RecordIdpSigninMatchStatus(idp_signin_status,
-                                           fetch_status.parse_status);
+  Metrics::RecordIdpSigninMatchStatus(idp_signin_status,
+                                      fetch_status.parse_status);
 
-  if (fetch_status.parse_status ==
-      IdpNetworkRequestManager::ParseStatus::kSuccess) {
+  if (fetch_status.parse_status == ParseStatus::kSuccess) {
     // `does_idp_have_failing_signin_status` fails the request prior to fetching
     // the accounts endpoint for FedCmIdpSigninStatusMode::ENABLED mode but not
     // FedCmIdpSigninStatusMode::METRICS_ONLY mode. Do not set the IdP sign-in
@@ -157,12 +151,12 @@ void UpdateIdpSigninStatusForAccountsEndpointResponse(
     // FedCmIdpSigninStatusMode::METRICS_ONLY mode in order to better emulate
     // FedCmIdpSigninStatusMode::ENABLED behavior.
     if (!does_idp_have_failing_signin_status) {
-      permission_delegate->SetIdpSigninStatus(idp_origin, true);
+      permission_delegate->SetIdpSigninStatus(idp_origin, true, std::nullopt);
     }
   } else {
     RecordIdpSignOutNetError(fetch_status.response_code);
     // Ensures that we only fetch accounts unconditionally once.
-    permission_delegate->SetIdpSigninStatus(idp_origin, false);
+    permission_delegate->SetIdpSigninStatus(idp_origin, false, std::nullopt);
   }
 }
 
@@ -177,7 +171,10 @@ std::string GetConsoleErrorMessageFromResult(
       return "The IdP is not potentially trustworthy (are you using HTTP?)";
     }
     case FederatedAuthRequestResult::kDisabledInSettings: {
-      return "FedCM was disabled in browser Site Settings.";
+      return "FedCM was disabled either temporarily based on previous user "
+             "action or permanently via site settings. Try manage third-party "
+             "sign-in via the icon to the left of the URL bar or via site "
+             "settings.";
     }
     case FederatedAuthRequestResult::kDisabledInFlags: {
       return "FedCM was disabled in flags.";
@@ -297,10 +294,10 @@ std::string GetConsoleErrorMessageFromResult(
              "#fedcm-without-third-party-cookies flag.";
     }
     case FederatedAuthRequestResult::kMissingTransientUserActivation: {
-      return "FedCM button mode requires transient user activation.";
+      return "FedCM active mode requires transient user activation.";
     }
-    case FederatedAuthRequestResult::kReplacedByButtonMode: {
-      return "The request is replaced by a new one with button mode.";
+    case FederatedAuthRequestResult::kReplacedByActiveMode: {
+      return "The request is replaced by a new one with active mode.";
     }
     case FederatedAuthRequestResult::kNotSignedInWithIdp: {
       return "Not signed in with the identity provider.";
@@ -314,91 +311,96 @@ std::string GetConsoleErrorMessageFromResult(
     case FederatedAuthRequestResult::kTypeNotMatching: {
       return "The requested IdP type did not match the registered IdP.";
     }
+    case FederatedAuthRequestResult::kUiDismissedNoEmbargo: {
+      return "Prompt dismissed. API exponential cool down not "
+             "triggered.";
+    }
     case FederatedAuthRequestResult::kError: {
       return "Error retrieving a token.";
+    }
+    case FederatedAuthRequestResult::kCorsError: {
+      return "Server did not send the correct CORS headers.";
+    }
+    case FederatedAuthRequestResult::kSuppressedBySegmentationPlatform: {
+      return "UI is suppressed because historical data shows that the user "
+             "is less likely to login via FedCM passive mode on this website. "
+             "For testing purposes, disable the #fedcm-segmentation-platform "
+             "flag.";
     }
     case FederatedAuthRequestResult::kSuccess: {
       // Should not be called with success, as we should not add a console
       // message for success.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }
   }
 }
 
 std::string GetDisconnectConsoleErrorMessage(
-    FedCmDisconnectStatus disconnect_status_for_metrics) {
+    DisconnectStatus disconnect_status_for_metrics) {
   switch (disconnect_status_for_metrics) {
-    case FedCmDisconnectStatus::kSuccess: {
-      NOTREACHED_IN_MIGRATION();
-      return "";
+    case DisconnectStatus::kSuccess: {
+      NOTREACHED();
     }
-    case FedCmDisconnectStatus::kTooManyRequests: {
+    case DisconnectStatus::kTooManyRequests: {
       return "There is a pending disconnect() call.";
     }
-    case FedCmDisconnectStatus::kUnhandledRequest: {
+    case DisconnectStatus::kUnhandledRequest: {
       return "The disconnect request did not finish by the time the page was "
              "closed.";
     }
-    case FedCmDisconnectStatus::kNoAccountToDisconnect: {
+    case DisconnectStatus::kNoAccountToDisconnect: {
       return "There is no account to disconnect.";
     }
-    case FedCmDisconnectStatus::kDisconnectUrlIsCrossOrigin: {
+    case DisconnectStatus::kDisconnectUrlIsCrossOrigin: {
       return "The disconnect URL is cross origin";
     }
-    case FedCmDisconnectStatus::kDisconnectFailedOnServer: {
+    case DisconnectStatus::kDisconnectFailedOnServer: {
       return "The disconnect request failed on the server";
     }
-    case FedCmDisconnectStatus::kConfigHttpNotFound: {
+    case DisconnectStatus::kConfigHttpNotFound: {
       return "The config file cannot be found.";
     }
-    case FedCmDisconnectStatus::kConfigNoResponse: {
+    case DisconnectStatus::kConfigNoResponse: {
       return "The config file returned an error response code.";
     }
-    case FedCmDisconnectStatus::kConfigInvalidResponse: {
+    case DisconnectStatus::kConfigInvalidResponse: {
       return "The config file returned some invalid response.";
     }
-    case FedCmDisconnectStatus::kDisabledInSettings: {
+    case DisconnectStatus::kDisabledInSettings: {
       return "FedCM is disabled by user settings.";
     }
-    case FedCmDisconnectStatus::kDisabledInFlags: {
+    case DisconnectStatus::kDisabledInFlags: {
       return "The disconnect API is disabled by a flag.";
     }
-    case FedCmDisconnectStatus::kWellKnownHttpNotFound: {
+    case DisconnectStatus::kWellKnownHttpNotFound: {
       return "The well known file cannot be found.";
     }
-    case FedCmDisconnectStatus::kWellKnownNoResponse: {
+    case DisconnectStatus::kWellKnownNoResponse: {
       return "The well-known file returned an error response code.";
     }
-    case FedCmDisconnectStatus::kWellKnownInvalidResponse: {
+    case DisconnectStatus::kWellKnownInvalidResponse: {
       return "The well-known filed returned some invalid response.";
     }
-    case FedCmDisconnectStatus::kWellKnownListEmpty: {
+    case DisconnectStatus::kWellKnownListEmpty: {
       return "The well-known file returned an empty list.";
     }
-    case FedCmDisconnectStatus::kConfigNotInWellKnown: {
+    case DisconnectStatus::kConfigNotInWellKnown: {
       return "The config file is not in the well-known file.";
     }
-    case FedCmDisconnectStatus::kWellKnownTooBig: {
+    case DisconnectStatus::kWellKnownTooBig: {
       return "Provider's FedCM well-known file contains too many config URLs.";
     }
-    case FedCmDisconnectStatus::kWellKnownInvalidContentType: {
+    case DisconnectStatus::kWellKnownInvalidContentType: {
       return "Provider's well-known content type must be a JSON content type.";
     }
-    case FedCmDisconnectStatus::kConfigInvalidContentType: {
+    case DisconnectStatus::kConfigInvalidContentType: {
       return "Provider's FedCM config file content type must be a JSON content "
              "type.";
     }
-    case FedCmDisconnectStatus::kIdpNotPotentiallyTrustworthy: {
+    case DisconnectStatus::kIdpNotPotentiallyTrustworthy: {
       return "The provider's config file URL is not potentially trustworthy.";
     }
   }
-}
-
-FedCmIdpSigninStatusMode GetIdpSigninStatusMode(RenderFrameHost& host,
-                                                const url::Origin& idp_origin) {
-  // TODO(crbug.com/40283354): Remove this function in favor of
-  // GetFedCmIdpSigninStatusFlag.
-  return GetFedCmIdpSigninStatusFlag();
 }
 
 std::string FormatUrlForDisplay(const GURL& url) {
@@ -409,11 +411,11 @@ std::string FormatUrlForDisplay(const GURL& url) {
   // relying party can be domain-wide because it relies on cookies.
   std::string formatted_url_str =
       net::IsLocalhost(url)
-          ? url.host()
+          ? url.GetHost()
           : net::registry_controlled_domains::GetDomainAndRegistry(
                 url, kDefaultPrivateRegistryFilter);
   return base::UTF16ToUTF8(url_formatter::FormatUrlForSecurityDisplay(
-      GURL(url.scheme() + "://" + formatted_url_str),
+      GURL(url.GetScheme() + "://" + formatted_url_str),
       url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
 }
 
@@ -439,36 +441,45 @@ bool HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(
       requester_origin, embedder_origin, url::Origin::Create(provider_url));
 }
 
-bool IsFedCmAuthzEnabled(RenderFrameHost& host, const url::Origin& idp_origin) {
-  RuntimeFeatureStateDocumentData* rfs_document_data =
-      RuntimeFeatureStateDocumentData::GetForCurrentDocument(&host);
-  // If field trials or an explicit user selection disables authz, we should
-  // respect that.
-  std::optional<bool> is_overridden = IsFedCmAuthzOverridden();
-  if (is_overridden) {
-    return *is_overridden;
+RequestPageData* GetPageData(Page& page) {
+  return RequestPageData::GetOrCreateForPage(page);
+}
+
+webid::RequesterFrameType ComputeRequesterFrameType(
+    const RenderFrameHost& rfh,
+    const url::Origin& requester,
+    const url::Origin& embedder) {
+  // Since FedCM methods are not supported in FencedFrames, we can know whether
+  // this is a main frame by calling GetParent().
+  if (!rfh.GetParent()) {
+    return RequesterFrameType::kMainFrame;
   }
-
-  // Should not be null as this gets initialized when the host gets created.
-  DCHECK(rfs_document_data);
-  std::vector<url::Origin> third_party_origins = {idp_origin};
-  // This includes origin trials.
-  bool runtime_enabled =
-      rfs_document_data->runtime_feature_state_read_context()
-          .IsFedCmAuthzEnabled() ||
-      rfs_document_data->runtime_feature_state_read_context()
-          .IsFedCmAuthzEnabledForThirdParty(third_party_origins);
-
-  bool flag_enabled = IsFedCmAuthzFlagEnabled();
-  return runtime_enabled || flag_enabled;
+  return net::SchemefulSite::IsSameSite(requester, embedder)
+             ? RequesterFrameType::kSameSiteIframe
+             : RequesterFrameType::kCrossSiteIframe;
 }
 
-FederatedAuthRequestPageData* GetPageData(Page& page) {
-  return FederatedAuthRequestPageData::GetOrCreateForPage(page);
+void MaybeAddResponseCodeToConsole(RenderFrameHost& render_frame_host,
+                                   const char* fetch_description,
+                                   int response_code) {
+  std::optional<std::string> console_message =
+      webid::ComputeConsoleMessageForHttpResponseCode(fetch_description,
+                                                      response_code);
+  if (console_message) {
+    render_frame_host.AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kError, *console_message);
+  }
 }
 
-int GetNewSessionID() {
-  return base::RandInt(1, 1 << 30);
+bool DidNavigationHandleHaveActivation(NavigationHandle* handle) {
+  return handle->GetNavigationInitiatorActivationAndAdStatus() !=
+         blink::mojom::NavigationInitiatorActivationAndAdStatus::
+             kDidNotStartWithTransientActivation;
+}
+
+perfetto::NamedTrack CreatePerfettoTrackForFedCM(void* class_pointer) {
+  return perfetto::NamedTrack::ThreadScoped(
+      "FedCM", reinterpret_cast<uintptr_t>(class_pointer));
 }
 
 }  // namespace content::webid

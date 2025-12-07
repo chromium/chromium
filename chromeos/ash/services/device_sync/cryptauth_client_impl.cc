@@ -68,9 +68,6 @@ const char kBatchGetFeatureStatusesPath[] = "/v1:batchGetFeatureStatuses";
 const char kBatchSetFeatureStatusesPath[] = "/v1:batchSetFeatureStatuses";
 const char kGetDevicesActivityStatusPath[] = "/v1:getDevicesActivityStatus";
 
-const char kCryptAuthOAuth2Scope[] =
-    "https://www.googleapis.com/auth/cryptauth";
-
 // Creates the full CryptAuth v1 URL for endpoint to the API with
 // |request_path|.
 GURL CreateV1RequestUrl(const std::string& request_path) {
@@ -650,9 +647,8 @@ void CryptAuthClientImpl::MakeApiCall(
     ErrorCallback error_callback,
     const net::PartialNetworkTrafficAnnotationTag& partial_traffic_annotation) {
   if (has_call_started_) {
-    PA_LOG(ERROR) << "CryptAuthClientImpl::MakeApiCall(): Tried to make an API "
-                  << "call, but the client had already been used.";
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED() << "CryptAuthClientImpl::MakeApiCall(): Tried to make an API "
+                 << "call, but the client had already been used.";
     return;
   }
   has_call_started_ = true;
@@ -663,12 +659,9 @@ void CryptAuthClientImpl::MakeApiCall(
   request_url_ = request_url;
   error_callback_ = std::move(error_callback);
 
-  OAuth2AccessTokenManager::ScopeSet scopes;
-  scopes.insert(kCryptAuthOAuth2Scope);
-
   access_token_fetcher_ =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-          "cryptauth_client", identity_manager_, scopes,
+          signin::OAuthConsumerId::kCryptAuthClient, identity_manager_,
           base::BindOnce(
               &CryptAuthClientImpl::OnAccessTokenFetched<ResponseProto>,
               weak_ptr_factory_.GetWeakPtr(), request_type, serialized_request,

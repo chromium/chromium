@@ -39,7 +39,8 @@ ComputedEffectTiming* WorkletAnimationEffect::getComputedTiming() const {
     }
     calculated_ = specified_timing_.CalculateTimings(
         local_time, /*is_idle*/ false, normalized_timing_,
-        Timing::AnimationDirection::kForwards, false, playback_rate);
+        Timing::AnimationDirection::kForwards, false, playback_rate,
+        /* paused_for_trigger= */ false);
   }
 
   return specified_timing_.getComputedTiming(calculated_, normalized_timing_,

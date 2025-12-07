@@ -17,6 +17,7 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 
 namespace base {
@@ -64,7 +65,7 @@ class SESSIONS_EXPORT LiveTabContext {
       const tab_groups::TabGroupId& group,
       const tab_groups::TabGroupVisualData& visual_data) = 0;
   virtual const gfx::Rect GetRestoredBounds() const = 0;
-  virtual ui::WindowShowState GetRestoredState() const = 0;
+  virtual ui::mojom::WindowShowState GetRestoredState() const = 0;
   virtual std::string GetWorkspace() const = 0;
 
   // Note: |tab.platform_data| may be null (e.g., if restoring from last session
@@ -74,9 +75,13 @@ class SESSIONS_EXPORT LiveTabContext {
   // has been created by TabRestoreService.
   // |original_session_type| indicates the type of session entry the tab
   // belongs to.
+  // |is_restoring_group_or_window| when true indicates if the tab we
+  // are restoring is part of a window or group which is trying to restore all
+  // of its tabs.
   virtual LiveTab* AddRestoredTab(const tab_restore::Tab& tab,
                                   int tab_index,
                                   bool select,
+                                  bool is_restoring_group_or_window,
                                   tab_restore::Type original_session_type) = 0;
 
   // Note: |tab.platform_data| may be null (e.g., if restoring from last session
@@ -86,7 +91,7 @@ class SESSIONS_EXPORT LiveTabContext {
   virtual void CloseTab() = 0;
 
  protected:
-  virtual ~LiveTabContext() {}
+  virtual ~LiveTabContext() = default;
 };
 
 }  // namespace sessions

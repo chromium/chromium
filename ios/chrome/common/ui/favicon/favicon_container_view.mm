@@ -4,6 +4,8 @@
 
 #import "ios/chrome/common/ui/favicon/favicon_container_view.h"
 
+#import <UIKit/UIKit.h>
+
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -13,8 +15,6 @@ namespace {
 const CGFloat kFaviconWidth = 16;
 // Corner radius of the favicon ImageView.
 const CGFloat kFaviconCornerRadius = 7.0;
-// Width of the favicon border ImageView.
-const CGFloat kFaviconBorderWidth = 1.5;
 // The width and height of the favicon container view.
 const CGFloat kFaviconContainerWidth = 30;
 }  // namespace
@@ -24,20 +24,16 @@ const CGFloat kFaviconContainerWidth = 30;
 // Store custom background color.
 @property(nonatomic, strong) UIColor* customBackgroundColor;
 
-// Store custom border color.
-@property(nonatomic, strong) UIColor* customBorderColor;
-
 @end
 
 @implementation FaviconContainerView
 
 - (instancetype)init {
-  self = [super init];
+  self = [super initWithFrame:CGRectZero];
   if (self) {
     [self.traitCollection performAsCurrentTraitCollection:^{
       [self resetColor];
     }];
-    self.layer.borderWidth = kFaviconBorderWidth;
     self.layer.cornerRadius = kFaviconCornerRadius;
     self.layer.masksToBounds = YES;
 
@@ -58,6 +54,19 @@ const CGFloat kFaviconContainerWidth = 30;
       [self.heightAnchor constraintEqualToConstant:kFaviconContainerWidth],
       [self.widthAnchor constraintEqualToAnchor:self.heightAnchor],
     ]];
+
+    NSArray<UITrait>* traits = @[
+      UITraitUserInterfaceIdiom.class, UITraitUserInterfaceStyle.class,
+      UITraitDisplayGamut.class, UITraitAccessibilityContrast.class,
+      UITraitUserInterfaceLevel.class
+    ];
+
+    __weak __typeof(self) weakSelf = self;
+    UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                     UITraitCollection* previousCollection) {
+      [weakSelf updateColorOnTraitChange:previousCollection];
+    };
+    [self registerForTraitChanges:traits withHandler:handler];
   }
   return self;
 }
@@ -71,36 +80,25 @@ const CGFloat kFaviconContainerWidth = 30;
   }
 }
 
-- (void)setFaviconBorderColor:(UIColor*)color {
-  self.customBorderColor = color;
-  if (color) {
-    self.layer.borderColor = color.CGColor;
-  } else {
-    [self resetColor];
-  }
-}
-
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if ([self.traitCollection
-          hasDifferentColorAppearanceComparedToTraitCollection:
-              previousTraitCollection]) {
-    [self resetColor];
-  }
-}
-
 - (void)resetColor {
   if (self.customBackgroundColor) {
     self.backgroundColor = self.customBackgroundColor;
   } else {
     self.backgroundColor =
         self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark
-            ? [UIColor colorNamed:kSeparatorColor]
-            : UIColor.clearColor;
+            ? [UIColor colorNamed:kPrimaryBackgroundColor]
+            : [UIColor colorNamed:kSecondaryBackgroundColor];
   }
-  self.layer.borderColor = self.customBorderColor
-                               ? self.customBorderColor.CGColor
-                               : [UIColor colorNamed:kSeparatorColor].CGColor;
+}
+
+#pragma mark - Private
+
+- (void)updateColorOnTraitChange:(UITraitCollection*)previousTraitCollection {
+  if ([self.traitCollection
+          hasDifferentColorAppearanceComparedToTraitCollection:
+              previousTraitCollection]) {
+    [self resetColor];
+  }
 }
 
 @end

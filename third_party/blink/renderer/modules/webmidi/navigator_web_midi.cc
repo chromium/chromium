@@ -30,7 +30,7 @@
 
 #include "third_party/blink/renderer/modules/webmidi/navigator_web_midi.h"
 
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_midi_options.h"
@@ -53,25 +53,17 @@ const char kFeaturePolicyErrorMessage[] =
     "Midi has been disabled in this document by permissions policy.";
 const char kFeaturePolicyConsoleWarning[] =
     "Midi access has been blocked because of a permissions policy applied to "
-    "the current document. See https://goo.gl/EuHzyv for more details.";
+    "the current document. See https://crbug.com/414348233 for more details.";
 
 }  // namespace
 
-NavigatorWebMIDI::NavigatorWebMIDI(Navigator& navigator)
-    : Supplement<Navigator>(navigator) {}
-
-void NavigatorWebMIDI::Trace(Visitor* visitor) const {
-  Supplement<Navigator>::Trace(visitor);
-}
-
-const char NavigatorWebMIDI::kSupplementName[] = "NavigatorWebMIDI";
+void NavigatorWebMIDI::Trace(Visitor* visitor) const {}
 
 NavigatorWebMIDI& NavigatorWebMIDI::From(Navigator& navigator) {
-  NavigatorWebMIDI* supplement =
-      Supplement<Navigator>::From<NavigatorWebMIDI>(navigator);
+  NavigatorWebMIDI* supplement = navigator.GetNavigatorWebMIDI();
   if (!supplement) {
-    supplement = MakeGarbageCollected<NavigatorWebMIDI>(navigator);
-    ProvideTo(navigator, supplement);
+    supplement = MakeGarbageCollected<NavigatorWebMIDI>();
+    navigator.SetNavigatorWebMIDI(supplement);
   }
   return *supplement;
 }
@@ -117,7 +109,7 @@ ScriptPromise<MIDIAccess> NavigatorWebMIDI::requestMIDIAccess(
       WebFeature::kRequestMIDIAccessIframe_ObscuredByFootprinting);
 
   if (!window->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kMidiFeature,
+          network::mojom::PermissionsPolicyFeature::kMidiFeature,
           ReportOptions::kReportOnFailure, kFeaturePolicyConsoleWarning)) {
     UseCounter::Count(window, WebFeature::kMidiDisabledByFeaturePolicy);
     exception_state.ThrowSecurityError(kFeaturePolicyErrorMessage);

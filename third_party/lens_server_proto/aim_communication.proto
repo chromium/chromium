@@ -1,0 +1,65 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto3';
+
+option optimize_for = LITE_RUNTIME;
+
+package lens;
+
+import "aim_query.proto";
+
+// Feature Capabilities shared between AIM and Client. Both sides need to
+// support a feature for it to WAI. Sent in the handshake request/response so
+// both ends of communication are aware of what features to support.
+enum FeatureCapability {
+  // Default value. The only supported feature is sending a query from the
+  // client to AIM.
+  DEFAULT = 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Client -> AIM messages
+////////////////////////////////////////////////////////////////////////////////
+
+// Message clients send to AIM to initiate a handshake. Sent continuously on
+// page load until AIM acknowledges with a HandshakeResponse.
+message HandshakePing {
+  // The list of features supports by this client.
+  repeated FeatureCapability capabilities = 1;
+}
+
+// Message from client to AIM to submit a query.
+message SubmitQuery {
+  // The set of data that's required to generate a response from the LLM.
+  // Queries can be unimodal (text only or image only) or multimodal (e.g. text
+  // + image).
+  QueryPayload payload = 1;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  AIM -> Client messages
+////////////////////////////////////////////////////////////////////////////////
+
+// Message AIM sends to clients to confirm a handshake, at which point the
+// client can send messages to AIM knowing they will be delivered.
+message HandshakeResponse {
+  // The list of features supported by this AIM instance.
+  repeated FeatureCapability capabilities = 1;
+}
+
+// The message for clients to send messages to AIM.
+message ClientToAimMessage {
+  oneof event_message {
+    HandshakePing handshake_ping = 1;
+    SubmitQuery submit_query = 2;
+  }
+}
+
+// The message for AIM to send messages to native clients.
+message AimToClientMessage {
+  oneof event_message {
+    HandshakeResponse handshake_response = 1;
+  }
+}

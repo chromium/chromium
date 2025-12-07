@@ -24,11 +24,9 @@ download::DownloadItem::DownloadState ToContentDownloadState(
       return download::DownloadItem::INTERRUPTED;
     case DownloadState::INVALID:
     case DownloadState::BUG_140687:
-      NOTREACHED_IN_MIGRATION();
-      return download::DownloadItem::MAX_DOWNLOAD_STATE;
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return download::DownloadItem::MAX_DOWNLOAD_STATE;
+  NOTREACHED();
 }
 
 DownloadState ToHistoryDownloadState(
@@ -43,11 +41,9 @@ DownloadState ToHistoryDownloadState(
     case download::DownloadItem::INTERRUPTED:
       return DownloadState::INTERRUPTED;
     case download::DownloadItem::MAX_DOWNLOAD_STATE:
-      NOTREACHED_IN_MIGRATION();
-      return DownloadState::INVALID;
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return DownloadState::INVALID;
+  NOTREACHED();
 }
 
 download::DownloadDangerType ToContentDownloadDangerType(
@@ -105,9 +101,10 @@ download::DownloadDangerType ToContentDownloadDangerType(
       return download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING;
     case DownloadDangerType::BLOCKED_SCAN_FAILED:
       return download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED;
+    case DownloadDangerType::FORCED_SAVE_TO_GDRIVE:
+      return download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE;
     case DownloadDangerType::INVALID:
-      NOTREACHED_IN_MIGRATION();
-      return download::DOWNLOAD_DANGER_TYPE_MAX;
+      NOTREACHED();
   }
 }
 
@@ -142,6 +139,8 @@ DownloadDangerType ToHistoryDownloadDangerType(
       return DownloadDangerType::BLOCKED_TOO_LARGE;
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING:
       return DownloadDangerType::SENSITIVE_CONTENT_WARNING;
+    case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
+      return DownloadDangerType::FORCED_SAVE_TO_GDRIVE;
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
       return DownloadDangerType::SENSITIVE_CONTENT_BLOCK;
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE:
@@ -161,8 +160,7 @@ DownloadDangerType ToHistoryDownloadDangerType(
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
       return DownloadDangerType::BLOCKED_SCAN_FAILED;
     case download::DOWNLOAD_DANGER_TYPE_MAX:
-      NOTREACHED_IN_MIGRATION();
-      return DownloadDangerType::INVALID;
+      NOTREACHED();
   }
 }
 

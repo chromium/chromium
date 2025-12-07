@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/hats/hats_notification_controller.h"
+
 #include <optional>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
@@ -23,15 +23,14 @@
 #include "chrome/browser/ash/hats/hats_dialog.h"
 #include "chrome/browser/ash/hats/hats_finch_helper.h"
 #include "chrome/browser/ash/login/startup_utils.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -43,6 +42,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -87,8 +87,7 @@ const std::string KeyEnumToString(DeviceInfoKey key) {
     case DeviceInfoKey::LOCALE:
       return "locale";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
   }
 }
 
@@ -173,8 +172,8 @@ HatsNotificationController::HatsNotificationController(
     Profile* profile,
     const HatsConfig& hats_config,
     const base::flat_map<std::string, std::string>& product_specific_data,
-    const std::u16string title,
-    const std::u16string body)
+    std::u16string title,
+    std::u16string body)
     : profile_(profile),
       hats_config_(hats_config),
       product_specific_data_(product_specific_data),
@@ -244,7 +243,7 @@ void HatsNotificationController::Initialize(bool is_new_device) {
     // Create an immediate update for the current default network.
     const NetworkState* default_network = handler->DefaultNetwork();
     NetworkState::PortalState portal_state =
-        default_network ? default_network->GetPortalState()
+        default_network ? default_network->portal_state()
                         : NetworkState::PortalState::kUnknown;
     PortalStateChanged(default_network, portal_state);
   }
@@ -273,9 +272,8 @@ bool HatsNotificationController::ShouldShowSurveyToProfile(
   if (profile->IsChild())
     return false;
 
-  const bool is_enterprise_enrolled = g_browser_process->platform_part()
-                                          ->browser_policy_connector_ash()
-                                          ->IsDeviceEnterpriseManaged();
+  const bool is_enterprise_enrolled =
+      ash::InstallAttributes::Get()->IsEnterpriseManaged();
 
   HatsFinchHelper hats_finch_helper(profile, hats_config);
 
@@ -356,9 +354,9 @@ void HatsNotificationController::Click(
 
   // Remove the notification.
   NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
-  notification_.reset(nullptr);
-  NotificationDisplayService::GetForProfile(profile_)->Close(
-      NotificationHandler::Type::TRANSIENT, kNotificationId);
+  message_center::MessageCenter::Get()->RemoveNotification(notification_id_,
+                                                           false /* by_user */);
+  notification_id_.clear();
 }
 
 void HatsNotificationController::ShowDialog(const std::string& site_context) {
@@ -379,7 +377,9 @@ void HatsNotificationController::Close(bool by_user) {
   if (by_user) {
     UpdateLastInteractionTime();
     NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
-    notification_.reset(nullptr);
+    message_center::MessageCenter::Get()->RemoveNotification(notification_id_,
+                                                             by_user);
+    notification_id_.clear();
     state_ = HatsState::kNotificationDismissed;
   }
 }
@@ -394,29 +394,34 @@ void HatsNotificationController::PortalStateChanged(
           << (default_network ? default_network->path() : "")
           << ", portal_state=" << portal_state;
   if (portal_state == NetworkState::PortalState::kOnline) {
-    // Create and display the notification for the user.
-    if (!notification_) {
-      notification_ = CreateSystemNotificationPtr(
-          message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId, title_,
+    // Create and display the notification for the user if it doesn't exist.
+    if (notification_id_.empty()) {
+      notification_id_ = kNotificationId;
+      message_center::NotifierId notifier_id(
+          message_center::NotifierType::SYSTEM_COMPONENT, kNotifierHats,
+          NotificationCatalogName::kHats);
+      // Set the profile_id for the NotifierId.
+      // This string should match what InactiveUserNotificationBlocker
+      // expects.
+      notifier_id.profile_id = profile_->GetProfileUserName();
+
+      auto notification = ash::CreateSystemNotificationPtr(
+          message_center::NOTIFICATION_TYPE_SIMPLE, notification_id_, title_,
           body_,
           l10n_util::GetStringUTF16(IDS_MESSAGE_CENTER_NOTIFIER_HATS_NAME),
-          GURL(kNotificationOriginUrl),
-          message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT, kNotifierHats,
-              NotificationCatalogName::kHats),
+          GURL(kNotificationOriginUrl), notifier_id,
           message_center::RichNotificationData(), this, kNotificationGoogleIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
+      message_center::MessageCenter::Get()->AddNotification(
+          std::move(notification));
     }
 
-    NotificationDisplayService::GetForProfile(profile_)->Display(
-        NotificationHandler::Type::TRANSIENT, *notification_,
-        /*metadata=*/nullptr);
-
     state_ = HatsState::kNotificationDisplayed;
-  } else if (notification_) {
+  } else if (!notification_id_.empty()) {
     // Hide the notification if device loses its connection to the internet.
-    NotificationDisplayService::GetForProfile(profile_)->Close(
-        NotificationHandler::Type::TRANSIENT, kNotificationId);
+    message_center::MessageCenter::Get()->RemoveNotification(notification_id_,
+                                                             /*by_user=*/false);
+    notification_id_.clear();
   }
 }
 

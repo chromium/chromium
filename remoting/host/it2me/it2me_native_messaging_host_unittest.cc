@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -17,7 +18,9 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
@@ -25,17 +28,19 @@
 #include "components/policy/core/common/fake_async_policy_loader.h"
 #include "components/policy/policy_constants.h"
 #include "remoting/base/auto_thread_task_runner.h"
+#include "remoting/base/oauth_token_getter.h"
+#include "remoting/host/chromeos/chromeos_enterprise_params.h"
 #include "remoting/host/chromoting_host_context.h"
 #include "remoting/host/it2me/it2me_constants.h"
 #include "remoting/host/it2me/it2me_helpers.h"
 #include "remoting/host/native_messaging/log_message_handler.h"
+#include "remoting/host/native_messaging/native_messaging_constants.h"
 #include "remoting/host/native_messaging/native_messaging_pipe.h"
 #include "remoting/host/native_messaging/pipe_messaging_channel.h"
 #include "remoting/host/policy_watcher.h"
 #include "remoting/host/setup/test_util.h"
 #include "remoting/protocol/errors.h"
 #include "remoting/protocol/ice_config.h"
-#include "remoting/signaling/log_to_server.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -45,10 +50,12 @@ using protocol::ErrorCode;
 
 namespace {
 
-const char kTestAccessCode[] = "888888";
+constexpr char kTestAccessCode[] = "888888";
 constexpr base::TimeDelta kTestAccessCodeLifetime = base::Seconds(666);
-const char kTestClientUsername[] = "some_user@gmail.com";
-const char kTestStunServer[] = "test_relay_server.com";
+constexpr char kTestClientUsername[] = "some_user@gmail.com";
+constexpr char kTestStunServer[] = "test_relay_server.com";
+constexpr char kTestSignalingAccessToken[] = "signaling_token";
+constexpr char kTestApiAccessToken[] = "api_token";
 
 void VerifyId(const base::Value::Dict& response, int expected_value) {
   std::optional<int> value = response.FindInt(kMessageId);
@@ -82,7 +89,8 @@ base::Value::Dict CreateConnectMessage(int id) {
   connect_message.Set(kMessageId, id);
   connect_message.Set(kMessageType, kConnectMessage);
   connect_message.Set(kUserName, kTestClientUsername);
-  connect_message.Set(kAuthServiceWithToken, "oauth2:sometoken");
+  connect_message.Set(kSignalingAccessToken, kTestSignalingAccessToken);
+  connect_message.Set(kApiAccessToken, kTestApiAccessToken);
   connect_message.Set(
       kIceConfig,
       base::test::ParseJsonDict("{ \"iceServers\": [ { \"urls\": [ \"stun:" +
@@ -96,6 +104,18 @@ base::Value::Dict CreateDisconnectMessage(int id) {
   disconnect_message.Set(kMessageId, id);
   disconnect_message.Set(kMessageType, kDisconnectMessage);
   return disconnect_message;
+}
+
+std::string GetOAuthAccessToken(OAuthTokenGetter& token_getter) {
+  base::RunLoop run_loop;
+  std::string access_token;
+  token_getter.CallWithToken(base::BindLambdaForTesting(
+      [&](OAuthTokenGetter::Status status, const OAuthTokenInfo& token_info) {
+        access_token = token_info.access_token();
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  return access_token;
 }
 
 }  // namespace
@@ -117,6 +137,12 @@ class MockIt2MeHost : public It2MeHost {
                const protocol::IceConfig& ice_config) override;
   void Disconnect() override;
 
+  OAuthTokenGetter* signaling_token_getter() {
+    return signaling_token_getter_.get();
+  }
+
+  OAuthTokenGetter* api_token_getter() { return api_token_getter_.get(); }
+
  private:
   ~MockIt2MeHost() override = default;
 
@@ -124,6 +150,9 @@ class MockIt2MeHost : public It2MeHost {
       CreateDeferredConnectContext create_connection_context);
 
   void RunSetState(It2MeHostState state);
+
+  std::unique_ptr<OAuthTokenGetter> signaling_token_getter_;
+  std::unique_ptr<OAuthTokenGetter> api_token_getter_;
 };
 
 void MockIt2MeHost::Connect(
@@ -142,6 +171,8 @@ void MockIt2MeHost::Connect(
 
   host_context_ = std::move(context);
   observer_ = std::move(observer);
+  local_session_policies_provider_ =
+      std::make_unique<LocalSessionPoliciesProvider>();
 
   host_context()->network_task_runner()->PostTask(
       FROM_HERE,
@@ -176,9 +207,11 @@ void MockIt2MeHost::Disconnect() {
     return;
   }
 
-  log_to_server_.reset();
   register_request_.reset();
   signal_strategy_.reset();
+  session_policies_finalized_ = false;
+  last_reported_nat_traversal_enabled_.reset();
+  last_reported_relay_connections_allowed_.reset();
 
   RunSetState(It2MeHostState::kDisconnected);
 }
@@ -187,9 +220,10 @@ void MockIt2MeHost::CreateConnectionContextOnNetworkThread(
     CreateDeferredConnectContext create_connection_context) {
   DCHECK(host_context()->network_task_runner()->BelongsToCurrentThread());
   auto context = std::move(create_connection_context).Run(host_context());
-  log_to_server_ = std::move(context->log_to_server);
   register_request_ = std::move(context->register_request);
   signal_strategy_ = std::move(context->signal_strategy);
+  signaling_token_getter_ = std::move(context->signaling_token_getter);
+  api_token_getter_ = std::move(context->api_token_getter);
 }
 
 void MockIt2MeHost::RunSetState(It2MeHostState state) {
@@ -248,6 +282,8 @@ class It2MeNativeMessagingHostTest : public testing::Test {
                       bool expect_error_response);
   void TestConnect();
 
+  MockIt2MeHost* mock_it2me_host() { return factory_raw_ptr_->host.get(); }
+
   const std::optional<ChromeOsEnterpriseParams>
   get_chrome_os_enterprise_params() {
     return factory_raw_ptr_->host->chrome_os_enterprise_params_;
@@ -304,7 +340,7 @@ void It2MeNativeMessagingHostTest::SetUp() {
       base::BindOnce(&It2MeNativeMessagingHostTest::ExitTest,
                      base::Unretained(this)));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   test_url_loader_factory_ = new network::TestSharedURLLoaderFactory();
 #endif
 
@@ -362,46 +398,44 @@ std::optional<base::Value::Dict>
 It2MeNativeMessagingHostTest::ReadMessageFromOutputPipe() {
   while (true) {
     uint32_t length;
-    int read_result = output_read_file_.ReadAtCurrentPos(
-        reinterpret_cast<char*>(&length), sizeof(length));
+    int read_result = UNSAFE_TODO(output_read_file_.ReadAtCurrentPos(
+        reinterpret_cast<char*>(&length), sizeof(length)));
     if (read_result != sizeof(length)) {
       // The output pipe has been closed, return an empty message.
       return std::nullopt;
     }
 
     std::string message_json(length, '\0');
-    read_result =
-        output_read_file_.ReadAtCurrentPos(std::data(message_json), length);
+    read_result = UNSAFE_TODO(
+        output_read_file_.ReadAtCurrentPos(std::data(message_json), length));
     if (read_result != static_cast<int>(length)) {
       LOG(ERROR) << "Message size (" << read_result
                  << ") doesn't match the header (" << length << ").";
       return std::nullopt;
     }
 
-    std::optional<base::Value> message = base::JSONReader::Read(message_json);
-    if (!message || !message->is_dict()) {
+    std::optional<base::Value::Dict> message = base::JSONReader::ReadDict(
+        message_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+    if (!message) {
       LOG(ERROR) << "Malformed message:" << message_json;
       return std::nullopt;
     }
 
-    base::Value::Dict result = std::move(*message).TakeDict();
     // If this is a debug message log, ignore it, otherwise return it.
-    const std::string* type = result.FindString(kMessageType);
+    const std::string* type = message->FindString(kMessageType);
     if (!type || *type != LogMessageHandler::kDebugMessageTypeName) {
-      return result;
+      return std::move(*message);
     }
   }
 }
 
 void It2MeNativeMessagingHostTest::WriteMessageToInputPipe(
     const base::Value::Dict& message) {
-  std::string message_json;
-  base::JSONWriter::Write(message, &message_json);
+  std::string message_json = base::WriteJson(message).value_or("");
 
-  uint32_t length = message_json.length();
-  input_write_file_.WriteAtCurrentPos(reinterpret_cast<char*>(&length),
-                                      sizeof(length));
-  input_write_file_.WriteAtCurrentPos(message_json.data(), length);
+  uint32_t length = base::checked_cast<uint32_t>(message_json.length());
+  input_write_file_.WriteAtCurrentPos(base::byte_span_from_ref(length));
+  input_write_file_.WriteAtCurrentPos(base::as_byte_span(message_json));
 }
 
 void It2MeNativeMessagingHostTest::VerifyHelloResponse(int request_id) {
@@ -661,54 +695,37 @@ TEST_F(It2MeNativeMessagingHostTest, ConnectMultiple) {
 }
 
 TEST_F(It2MeNativeMessagingHostTest,
-       ConnectRespectsSuppressUserDialogsParameterOnChromeOsOnly) {
+       ConnectRespectsEnterpriseOptionsParameterOnChromeOsOnly) {
   int next_id = 1;
   base::Value::Dict connect_message = CreateConnectMessage(next_id);
   connect_message.Set(kIsEnterpriseAdminUser, true);
-  connect_message.Set(kSuppressUserDialogs, true);
+  ChromeOsEnterpriseParams params;
+  params.suppress_user_dialogs = true;
+  params.suppress_notifications = true;
+  params.terminate_upon_input = true;
+  params.curtain_local_user_session = true;
+  params.allow_remote_input = false;
+  params.allow_clipboard_sync = false;
+  params.connection_auto_accept_timeout = base::Hours(8);
+  params.request_origin = ChromeOsEnterpriseRequestOrigin::kEnterpriseAdmin;
+  params.audio_playback = ChromeOsEnterpriseAudioPlayback::kLocalOnly;
+  connect_message.Merge(params.ToDict());
   WriteMessageToInputPipe(connect_message);
   VerifyConnectResponses(next_id);
-#if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
+#if BUILDFLAG(IS_CHROMEOS) || !defined(NDEBUG)
   ASSERT_TRUE(get_chrome_os_enterprise_params().has_value());
   ASSERT_TRUE(get_chrome_os_enterprise_params()->suppress_user_dialogs);
-#else
-  ASSERT_FALSE(get_chrome_os_enterprise_params().has_value());
-#endif
-  ++next_id;
-  WriteMessageToInputPipe(CreateDisconnectMessage(next_id));
-  VerifyDisconnectResponses(next_id);
-}
-
-TEST_F(It2MeNativeMessagingHostTest,
-       ConnectRespectsSuppressNotificationsParameterOnChromeOsOnly) {
-  int next_id = 1;
-  base::Value::Dict connect_message = CreateConnectMessage(next_id);
-  connect_message.Set(kIsEnterpriseAdminUser, true);
-  connect_message.Set(kSuppressNotifications, true);
-  WriteMessageToInputPipe(connect_message);
-  VerifyConnectResponses(next_id);
-#if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
-  ASSERT_TRUE(get_chrome_os_enterprise_params().has_value());
   ASSERT_TRUE(get_chrome_os_enterprise_params()->suppress_notifications);
-#else
-  ASSERT_FALSE(get_chrome_os_enterprise_params().has_value());
-#endif
-  ++next_id;
-  WriteMessageToInputPipe(CreateDisconnectMessage(next_id));
-  VerifyDisconnectResponses(next_id);
-}
-
-TEST_F(It2MeNativeMessagingHostTest,
-       ConnectRespectsTerminateUponInputParameterOnChromeOsOnly) {
-  int next_id = 1;
-  base::Value::Dict connect_message = CreateConnectMessage(next_id);
-  connect_message.Set(kIsEnterpriseAdminUser, true);
-  connect_message.Set(kTerminateUponInput, true);
-  WriteMessageToInputPipe(connect_message);
-  VerifyConnectResponses(next_id);
-#if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
-  ASSERT_TRUE(get_chrome_os_enterprise_params().has_value());
   ASSERT_TRUE(get_chrome_os_enterprise_params()->terminate_upon_input);
+  ASSERT_TRUE(get_chrome_os_enterprise_params()->curtain_local_user_session);
+  ASSERT_FALSE(get_chrome_os_enterprise_params()->allow_remote_input);
+  ASSERT_FALSE(get_chrome_os_enterprise_params()->allow_clipboard_sync);
+  ASSERT_EQ(get_chrome_os_enterprise_params()->connection_auto_accept_timeout,
+            base::Hours(8));
+  ASSERT_EQ(get_chrome_os_enterprise_params()->request_origin,
+            ChromeOsEnterpriseRequestOrigin::kEnterpriseAdmin);
+  ASSERT_EQ(get_chrome_os_enterprise_params()->audio_playback,
+            ChromeOsEnterpriseAudioPlayback::kLocalOnly);
 #else
   ASSERT_FALSE(get_chrome_os_enterprise_params().has_value());
 #endif
@@ -724,29 +741,10 @@ TEST_F(It2MeNativeMessagingHostTest,
   connect_message.Set(kIsEnterpriseAdminUser, true);
   WriteMessageToInputPipe(connect_message);
   VerifyConnectResponses(next_id);
-#if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
+#if BUILDFLAG(IS_CHROMEOS) || !defined(NDEBUG)
   EXPECT_TRUE(factory_raw_ptr_->host->is_enterprise_session());
 #else
   EXPECT_FALSE(factory_raw_ptr_->host->is_enterprise_session());
-#endif
-  ++next_id;
-  WriteMessageToInputPipe(CreateDisconnectMessage(next_id));
-  VerifyDisconnectResponses(next_id);
-}
-
-TEST_F(It2MeNativeMessagingHostTest,
-       ConnectRespectsCurtainLocalUserSessionParameterOnChromeOsOnly) {
-  int next_id = 1;
-  base::Value::Dict connect_message = CreateConnectMessage(next_id);
-  connect_message.Set(kIsEnterpriseAdminUser, true);
-  connect_message.Set(kCurtainLocalUserSession, true);
-  WriteMessageToInputPipe(connect_message);
-  VerifyConnectResponses(next_id);
-#if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
-  ASSERT_TRUE(get_chrome_os_enterprise_params().has_value());
-  ASSERT_TRUE(get_chrome_os_enterprise_params()->curtain_local_user_session);
-#else
-  ASSERT_FALSE(get_chrome_os_enterprise_params().has_value());
 #endif
   ++next_id;
   WriteMessageToInputPipe(CreateDisconnectMessage(next_id));
@@ -783,6 +781,51 @@ TEST_F(It2MeNativeMessagingHostTest, BadPoliciesAfterConnect) {
   VerifyConnectResponses(1);
   SetPolicies(std::move(bad_policy));
   VerifyPolicyErrorResponse();
+}
+
+TEST_F(It2MeNativeMessagingHostTest, PlumbsAccessTokensFromConnectMessage) {
+  WriteMessageToInputPipe(CreateConnectMessage(1));
+  VerifyConnectResponses(1);
+
+  ASSERT_EQ(GetOAuthAccessToken(*mock_it2me_host()->signaling_token_getter()),
+            kTestSignalingAccessToken);
+  ASSERT_EQ(GetOAuthAccessToken(*mock_it2me_host()->api_token_getter()),
+            kTestApiAccessToken);
+}
+
+TEST_F(It2MeNativeMessagingHostTest,
+       PlumbsLegacyAccessTokenFromConnectMessage) {
+  base::Value::Dict connect_message = CreateConnectMessage(1);
+  connect_message.Remove(kSignalingAccessToken);
+  connect_message.Remove(kApiAccessToken);
+  connect_message.Set(kAccessToken, "legacy_access_token");
+  WriteMessageToInputPipe(connect_message);
+  VerifyConnectResponses(1);
+
+  ASSERT_EQ(GetOAuthAccessToken(*mock_it2me_host()->signaling_token_getter()),
+            "legacy_access_token");
+  ASSERT_EQ(GetOAuthAccessToken(*mock_it2me_host()->api_token_getter()),
+            "legacy_access_token");
+}
+
+TEST_F(It2MeNativeMessagingHostTest,
+       PlumbsAccessTokensFromUpdateAccessTokensMessage) {
+  WriteMessageToInputPipe(CreateConnectMessage(1));
+  VerifyConnectResponses(1);
+
+  base::Value::Dict update_access_tokens_message;
+  update_access_tokens_message.Set(kMessageType, kUpdateAccessTokensMessage);
+  update_access_tokens_message.Set(kSignalingAccessToken,
+                                   "new_signaling_token");
+  update_access_tokens_message.Set(kApiAccessToken, "new_api_access_token");
+  WriteMessageToInputPipe(update_access_tokens_message);
+
+  std::optional<base::Value::Dict> response = ReadMessageFromOutputPipe();
+  ASSERT_TRUE(response);
+  ASSERT_EQ(GetOAuthAccessToken(*mock_it2me_host()->signaling_token_getter()),
+            "new_signaling_token");
+  ASSERT_EQ(GetOAuthAccessToken(*mock_it2me_host()->api_token_getter()),
+            "new_api_access_token");
 }
 
 }  // namespace remoting

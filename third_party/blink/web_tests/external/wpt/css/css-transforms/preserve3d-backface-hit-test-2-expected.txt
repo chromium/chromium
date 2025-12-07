@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Hit test back face hidden preserve3d, hittesting
+  assert_equals: point (150, 150) is inside element target expected Element node <div id="target" class="yellow100"></div> but got Element node <div class="hideback rotatetofront" style="background: bl...
+Harness: the test ran to completion.
+

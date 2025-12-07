@@ -20,11 +20,10 @@ struct ShareTarget;
 namespace web_app {
 
 struct SharedField {
+  friend bool operator==(const SharedField&, const SharedField&) = default;
+
   std::string name;
   std::string value;
-
-  bool operator==(const SharedField& other) const;
-  bool operator!=(const SharedField& other) const { return !(*this == other); }
 };
 
 std::vector<SharedField> ExtractSharedFields(

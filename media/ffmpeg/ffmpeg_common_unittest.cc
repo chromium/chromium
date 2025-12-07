@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/ffmpeg/ffmpeg_common.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <cstring>
 
 #include "base/files/memory_mapped_file.h"
@@ -62,9 +58,8 @@ void TestConfigConvertExtraData(
   EXPECT_TRUE(converter_fn.Run(stream, decoder_config));
   EXPECT_EQ(static_cast<size_t>(codec_parameters->extradata_size),
             decoder_config->extra_data().size());
-  EXPECT_EQ(
-      0, memcmp(codec_parameters->extradata, &decoder_config->extra_data()[0],
-                decoder_config->extra_data().size()));
+  EXPECT_EQ(AVCodecParametersExtraDataToSpan(codec_parameters),
+            base::span(decoder_config->extra_data()));
 
   // Possible combination: extra_data = nullptr && size != 0, but the converter
   // function considers this valid and having no extra_data, due to behavior of
@@ -89,13 +84,12 @@ void VerifyProfileTest(const char* file_name,
   // Open a file to get a real AVStreams from FFmpeg.
   base::MemoryMappedFile file;
   ASSERT_TRUE(file.Initialize(GetTestDataFilePath(file_name)));
-  InMemoryUrlProtocol protocol(file.data(), file.length(), false);
+  InMemoryUrlProtocol protocol(file.bytes(), false);
   FFmpegGlue glue(&protocol);
   ASSERT_TRUE(glue.OpenContext());
   AVFormatContext* format_context = glue.format_context();
 
-  for (size_t i = 0; i < format_context->nb_streams; ++i) {
-    AVStream* stream = format_context->streams[i];
+  for (auto* stream : AVFormatContextToSpan(format_context)) {
     AVCodecParameters* codec_parameters = stream->codecpar;
     AVMediaType codec_type = codec_parameters->codec_type;
 
@@ -114,7 +108,7 @@ TEST_F(FFmpegCommonTest, AVStreamToDecoderConfig) {
   // Open a file to get a real AVStreams from FFmpeg.
   base::MemoryMappedFile file;
   ASSERT_TRUE(file.Initialize(GetTestDataFilePath("bear-320x240.webm")));
-  InMemoryUrlProtocol protocol(file.data(), file.length(), false);
+  InMemoryUrlProtocol protocol(file.bytes(), false);
   FFmpegGlue glue(&protocol);
   ASSERT_TRUE(glue.OpenContext());
   AVFormatContext* format_context = glue.format_context();
@@ -123,10 +117,11 @@ TEST_F(FFmpegCommonTest, AVStreamToDecoderConfig) {
   // for extradata and extradata_size.
   bool found_audio = false;
   bool found_video = false;
-  for (size_t i = 0;
-       i < format_context->nb_streams && (!found_audio || !found_video);
-       ++i) {
-    AVStream* stream = format_context->streams[i];
+  for (AVStream* stream : AVFormatContextToSpan(format_context)) {
+    if (found_audio && found_video) {
+      break;
+    }
+
     AVCodecParameters* codec_parameters = stream->codecpar;
     AVMediaType codec_type = codec_parameters->codec_type;
 
@@ -160,7 +155,7 @@ TEST_F(FFmpegCommonTest, AVStreamToAudioDecoderConfig_OpusAmbisonics_4ch) {
   base::MemoryMappedFile file;
   ASSERT_TRUE(file.Initialize(
       GetTestDataFilePath("bear-opus-end-trimming-4ch-channelmapping2.webm")));
-  InMemoryUrlProtocol protocol(file.data(), file.length(), false);
+  InMemoryUrlProtocol protocol(file.bytes(), false);
   FFmpegGlue glue(&protocol);
   ASSERT_TRUE(glue.OpenContext());
 
@@ -183,7 +178,7 @@ TEST_F(FFmpegCommonTest, AVStreamToAudioDecoderConfig_OpusAmbisonics_11ch) {
   base::MemoryMappedFile file;
   ASSERT_TRUE(file.Initialize(
       GetTestDataFilePath("bear-opus-end-trimming-11ch-channelmapping2.webm")));
-  InMemoryUrlProtocol protocol(file.data(), file.length(), false);
+  InMemoryUrlProtocol protocol(file.bytes(), false);
   FFmpegGlue glue(&protocol);
   ASSERT_TRUE(glue.OpenContext());
 
@@ -205,7 +200,7 @@ TEST_F(FFmpegCommonTest, AVStreamToAudioDecoderConfig_OpusAmbisonics_11ch) {
 TEST_F(FFmpegCommonTest, AVStreamToAudioDecoderConfig_9ch_wav) {
   base::MemoryMappedFile file;
   ASSERT_TRUE(file.Initialize(GetTestDataFilePath("9ch.wav")));
-  InMemoryUrlProtocol protocol(file.data(), file.length(), false);
+  InMemoryUrlProtocol protocol(file.bytes(), false);
   FFmpegGlue glue(&protocol);
   ASSERT_TRUE(glue.OpenContext());
 
@@ -225,9 +220,11 @@ TEST_F(FFmpegCommonTest, AVStreamToAudioDecoderConfig_9ch_wav) {
 }
 
 TEST_F(FFmpegCommonTest, TimeBaseConversions) {
-  const int64_t test_data[][5] = {
-      {1, 2, 1, 500000, 1}, {1, 3, 1, 333333, 1}, {1, 3, 2, 666667, 2},
-  };
+  const auto test_data = std::to_array<std::array<const int64_t, 5>>({
+      {1, 2, 1, 500000, 1},
+      {1, 3, 1, 333333, 1},
+      {1, 3, 2, 666667, 2},
+  });
 
   for (size_t i = 0; i < std::size(test_data); ++i) {
     SCOPED_TRACE(i);
@@ -351,7 +348,7 @@ TEST_F(FFmpegCommonTest, VerifyHDRMetadataAndColorSpaceInfo) {
   // Open a file to get a real AVStreams from FFmpeg.
   base::MemoryMappedFile file;
   ASSERT_TRUE(file.Initialize(GetTestDataFilePath("colour.webm")));
-  InMemoryUrlProtocol protocol(file.data(), file.length(), false);
+  InMemoryUrlProtocol protocol(file.bytes(), false);
   FFmpegGlue glue(&protocol);
   ASSERT_TRUE(glue.OpenContext());
   AVFormatContext* format_context = glue.format_context();

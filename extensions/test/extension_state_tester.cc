@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 #include "extensions/test/extension_state_tester.h"
-#include "base/memory/raw_ref.h"
 
+#include "base/memory/raw_ref.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -20,6 +21,17 @@ constexpr char kDisabledSet[] = "disabled";
 constexpr char kTerminatedSet[] = "terminated";
 constexpr char kBlocklistedSet[] = "blocklisted";
 
+std::string SetToString(const DisableReasonSet& reasons) {
+  std::string result;
+  for (int reason : reasons) {
+    if (!result.empty()) {
+      result += ", ";
+    }
+    result += base::NumberToString(reason);
+  }
+  return result;
+}
+
 }  // namespace
 
 ExtensionStateTester::ExtensionStateTester(
@@ -31,11 +43,12 @@ ExtensionStateTester::~ExtensionStateTester() = default;
 
 bool ExtensionStateTester::ExpectEnabled(const ExtensionId& extension_id) {
   bool success = ExpectOnlyInSet(extension_id, kEnabledSet);
-  int disable_reasons = prefs_->GetDisableReasons(extension_id);
-  if (disable_reasons != 0) {
+  DisableReasonSet disable_reasons = prefs_->GetDisableReasons(extension_id);
+  if (!disable_reasons.empty()) {
     success = false;
     ADD_FAILURE() << "Extension '" << extension_id
-                  << "' had unexpected disable reasons: " << disable_reasons;
+                  << "' had unexpected disable reasons: "
+                  << SetToString(disable_reasons);
   }
 
   return success;
@@ -45,23 +58,24 @@ bool ExtensionStateTester::ExpectDisabledWithSingleReason(
     const ExtensionId& extension_id,
     disable_reason::DisableReason expected_reason) {
   bool success = ExpectOnlyInSet(extension_id, kDisabledSet);
-  int disable_reasons = prefs_->GetDisableReasons(extension_id);
+  DisableReasonSet disable_reasons = prefs_->GetDisableReasons(extension_id);
 
   // NOTE(devlin): We could make this more helpful in error logging by having
   // a mapping of string -> disable reasons, and comparing the vector.
-  if (disable_reasons == 0) {
+  if (disable_reasons.empty()) {
     success = false;
     ADD_FAILURE() << "Extension should have disable reason " << expected_reason
                   << ", but has no disable reasons.";
-  } else if ((disable_reasons & expected_reason) == 0) {
+  } else if (!disable_reasons.contains(expected_reason)) {
     success = false;
     ADD_FAILURE() << "Extension should have disable reason " << expected_reason
-                  << ", but instead has disable reasons " << disable_reasons;
-  } else if (disable_reasons != expected_reason) {
+                  << ", but instead has disable reasons "
+                  << SetToString(disable_reasons);
+  } else if (disable_reasons.size() > 1) {
     success = false;
     ADD_FAILURE() << "Extension has additional unexpected disable reasons. "
                   << "Expected only " << expected_reason << ", but found "
-                  << disable_reasons;
+                  << SetToString(disable_reasons);
   }
   // Else, disable reasons are as expected.
 
@@ -70,19 +84,20 @@ bool ExtensionStateTester::ExpectDisabledWithSingleReason(
 
 bool ExtensionStateTester::ExpectDisabledWithReasons(
     const ExtensionId& extension_id,
-    int expected_reasons) {
+    const DisableReasonSet& expected_reasons) {
   bool success = ExpectOnlyInSet(extension_id, kDisabledSet);
-  int disable_reasons = prefs_->GetDisableReasons(extension_id);
+  DisableReasonSet disable_reasons = prefs_->GetDisableReasons(extension_id);
 
-  if (disable_reasons == 0) {
+  if (disable_reasons.empty()) {
     success = false;
     ADD_FAILURE() << "Extension should have disable reasons "
-                  << expected_reasons << ", but has no disable reasons.";
+                  << SetToString(expected_reasons)
+                  << ", but has no disable reasons.";
   } else if (disable_reasons != expected_reasons) {
     success = false;
     ADD_FAILURE() << "Extension has different disable reasons than expected. "
-                  << "Expected " << expected_reasons << ", but found "
-                  << disable_reasons;
+                  << "Expected " << SetToString(expected_reasons)
+                  << ", but found " << SetToString(disable_reasons);
   }
   // Else, disable reasons are as expected.
 

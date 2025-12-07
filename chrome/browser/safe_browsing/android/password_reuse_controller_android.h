@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "url/gurl.h"
 
@@ -35,6 +36,7 @@ class PasswordReuseControllerAndroid
  public:
   PasswordReuseControllerAndroid(content::WebContents* web_contents,
                                  ChromePasswordProtectionService* service,
+                                 PrefService* pref_service,
                                  ReusedPasswordAccountType password_type,
                                  OnWarningDone done_callback);
 
@@ -85,9 +87,10 @@ class PasswordReuseControllerAndroid
  private:
   std::unique_ptr<PasswordReuseDialogViewAndroid> dialog_view_;
   raw_ptr<ChromePasswordProtectionService> service_;
+  raw_ptr<PrefService> pref_service_ = nullptr;
   const GURL url_;
   ReusedPasswordAccountType password_type_;
-  raw_ptr<ui::WindowAndroid> window_android_;
+  raw_ptr<ui::WindowAndroid> window_android_ = nullptr;
   OnWarningDone done_callback_;
 
   // Records the start time when modal warning is constructed.

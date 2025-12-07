@@ -5,12 +5,24 @@
 #include "services/on_device_model/public/cpp/model_assets.h"
 
 #include <cstdint>
-#include <string_view>
+#include <optional>
+#include <utility>
+#include <variant>
 
+#include "base/check.h"
 #include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback_helpers.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "mojo/public/cpp/bindings/default_construct_tag.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/task/thread_pool.h"
+#endif
 
 namespace on_device_model {
 namespace {
@@ -22,10 +34,13 @@ namespace {
 #if BUILDFLAG(IS_FUCHSIA)
 constexpr uint32_t kWeightsFlags =
     base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_WRITE;
+constexpr uint32_t kCacheFlags = kWeightsFlags;
 #else
 constexpr uint32_t kWeightsFlags =
     base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_ASYNC |
     base::File::FLAG_WIN_SEQUENTIAL_SCAN;
+constexpr uint32_t kCacheFlags = base::File::FLAG_OPEN_ALWAYS |
+                                 base::File::FLAG_READ | base::File::FLAG_WRITE;
 #endif
 
 // Attempts to make sure `file` will be read from disk quickly when needed.
@@ -53,29 +68,117 @@ ModelAssetPaths::ModelAssetPaths() = default;
 ModelAssetPaths::ModelAssetPaths(const ModelAssetPaths&) = default;
 ModelAssetPaths::~ModelAssetPaths() = default;
 
-ModelAssets::ModelAssets() = default;
+ModelFile::ModelFile(base::File file) : file_(std::move(file)) {}
+
+ModelFile::ModelFile(base::FilePath path) : file_(std::move(path)) {}
+
+ModelFile::ModelFile(mojo::DefaultConstruct::Tag) {}
+
+ModelFile::ModelFile(const ModelFile& other) {
+  if (other.IsFile()) {
+    file_ = other.file().Duplicate();
+  } else {
+    file_ = other.path();
+  }
+}
+
+ModelFile& ModelFile::operator=(const ModelFile& other) {
+  if (other.IsFile()) {
+    file_ = other.file().Duplicate();
+  } else {
+    file_ = other.path();
+  }
+  return *this;
+}
+
+ModelFile::ModelFile(ModelFile&&) = default;
+ModelFile& ModelFile::operator=(ModelFile&&) = default;
+ModelFile::~ModelFile() {
+  if (IsFile() && file().IsValid()) {
+    base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
+                               base::DoNothingWithBoundArgs(std::move(file())));
+  }
+}
+
+base::File& ModelFile::file() {
+  CHECK(std::holds_alternative<base::File>(file_));
+  return std::get<base::File>(file_);
+}
+
+const base::File& ModelFile::file() const {
+  CHECK(std::holds_alternative<base::File>(file_));
+  return std::get<base::File>(file_);
+}
+
+const base::FilePath& ModelFile::path() const {
+  CHECK(std::holds_alternative<base::FilePath>(file_));
+  return std::get<base::FilePath>(file_);
+}
+
+bool ModelFile::IsFile() const {
+  return std::holds_alternative<base::File>(file_);
+}
+
+// static
+ModelAssets ModelAssets::FromFile(base::File file) {
+  return ModelAssets(ModelFile(std::move(file)));
+}
+
+// static
+ModelAssets ModelAssets::FromPath(base::FilePath path) {
+  return ModelAssets(ModelFile(std::move(path)));
+}
+
+ModelAssets::ModelAssets(ModelFile weights) : weights(std::move(weights)) {}
+
+ModelAssets::ModelAssets(mojo::DefaultConstruct::Tag tag) : weights(tag) {}
+
+ModelAssets::ModelAssets(const ModelAssets& other)
+    : weights(other.weights),
+      sp_model_path(other.sp_model_path),
+      cache(other.cache.Duplicate()),
+      encoder_cache(other.encoder_cache.Duplicate()),
+      adapter_cache(other.adapter_cache.Duplicate()) {}
+
+ModelAssets& ModelAssets::operator=(const ModelAssets& other) {
+  weights = other.weights;
+  sp_model_path = other.sp_model_path;
+  cache = other.cache.Duplicate();
+  encoder_cache = other.encoder_cache.Duplicate();
+  adapter_cache = other.adapter_cache.Duplicate();
+  return *this;
+}
+
 ModelAssets::ModelAssets(ModelAssets&&) = default;
 ModelAssets& ModelAssets::operator=(ModelAssets&&) = default;
 ModelAssets::~ModelAssets() = default;
 
 ModelAssets LoadModelAssets(const ModelAssetPaths& paths) {
-  PrefetchFile(paths.weights);
-
-  ModelAssets assets;
-
-  if (paths.HasSafetyFiles()) {
-    assets.ts_data = base::File(paths.ts_data,
-                                base::File::FLAG_OPEN | base::File::FLAG_READ);
-    assets.ts_sp_model = base::File(
-        paths.ts_sp_model, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  TRACE_EVENT("optimization_guide", "LoadModelAssets");
+  if (!paths.weights.empty()) {
+    PrefetchFile(paths.weights);
   }
 
-  if (!paths.language_detection_model.empty()) {
-    assets.language_detection_model =
-        base::File(paths.language_detection_model,
-                   base::File::FLAG_OPEN | base::File::FLAG_READ);
+  auto assets =
+      paths.weights.empty()
+          ? ModelAssets::FromPath(std::move(paths.weights))
+          : ModelAssets::FromFile(base::File(paths.weights, kWeightsFlags));
+
+  if (!paths.cache.empty()) {
+    PrefetchFile(paths.cache);
+    assets.cache = base::File(paths.cache, kCacheFlags);
   }
-  assets.weights = base::File(paths.weights, kWeightsFlags);
+
+  if (!paths.encoder_cache.empty()) {
+    PrefetchFile(paths.encoder_cache);
+    assets.encoder_cache = base::File(paths.encoder_cache, kCacheFlags);
+  }
+
+  if (!paths.adapter_cache.empty()) {
+    PrefetchFile(paths.adapter_cache);
+    assets.adapter_cache = base::File(paths.adapter_cache, kCacheFlags);
+  }
+
   return assets;
 }
 
@@ -85,15 +188,27 @@ AdaptationAssetPaths::AdaptationAssetPaths(const AdaptationAssetPaths&) =
 AdaptationAssetPaths::~AdaptationAssetPaths() = default;
 
 AdaptationAssets::AdaptationAssets() = default;
+
+AdaptationAssets::AdaptationAssets(const AdaptationAssets& other)
+    : weights(other.weights.Duplicate()), weights_path(other.weights_path) {}
+
+AdaptationAssets& AdaptationAssets::operator=(const AdaptationAssets& other) {
+  weights = other.weights.Duplicate();
+  weights_path = other.weights_path;
+  return *this;
+}
+
 AdaptationAssets::AdaptationAssets(AdaptationAssets&&) = default;
 AdaptationAssets& AdaptationAssets::operator=(AdaptationAssets&&) = default;
 AdaptationAssets::~AdaptationAssets() = default;
 
 AdaptationAssets LoadAdaptationAssets(const AdaptationAssetPaths& paths) {
-  PrefetchFile(paths.weights);
-
+  TRACE_EVENT("optimization_guide", "LoadAdaptationAssets");
   AdaptationAssets assets;
-  assets.weights = base::File(paths.weights, kWeightsFlags);
+  if (!paths.weights.empty()) {
+    PrefetchFile(paths.weights);
+    assets.weights = base::File(paths.weights, kWeightsFlags);
+  }
   return assets;
 }
 

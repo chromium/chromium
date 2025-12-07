@@ -14,6 +14,7 @@
 #include "content/browser/interest_group/interest_group_permissions_cache.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/schemeful_site.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -84,9 +85,11 @@ class InterestGroupPermissionsCheckerTestBase {
   const url::Origin kGroupOrigin =
       url::Origin::Create(GURL("https://group.test"));
 
+  const net::SchemefulSite kFrameSite = net::SchemefulSite(kFrameOrigin);
+
   // NetworkIsolationKey used in most tests.
   const net::NetworkIsolationKey kNetworkIsolationKey =
-      net::NetworkIsolationKey(kFrameOrigin, kFrameOrigin);
+      net::NetworkIsolationKey(kFrameSite, kFrameSite);
 
   // .well-known URL when using `kFrameOrigin` and `kGroupOrigin`.
   const GURL validation_url_ = GURL(
@@ -313,12 +316,14 @@ TEST_F(InterestGroupPermissionsCheckerTest,
 TEST_P(InterestGroupPermissionsCheckerParamaterizedTest, DifferentFrameOrigin) {
   // The only way two permissions checks from different frame origins can share
   // a NetworkIsolationKey is if they are same-site. So use an origin that's
-  // same-site to kFrameOrigin, and DCHECK that they have the same
+  // same-site to kFrameOrigin, and check that they have the same
   // NetworkIsolationKey.
   const url::Origin kOtherFrameOrigin =
       url::Origin::Create(GURL("https://other.frame.test"));
-  DCHECK(net::NetworkIsolationKey(kOtherFrameOrigin, kOtherFrameOrigin) ==
-         kNetworkIsolationKey);
+  const net::SchemefulSite kOtherFrameSite =
+      net::SchemefulSite(GURL("https://other.frame.test"));
+  ASSERT_EQ(net::NetworkIsolationKey(kOtherFrameSite, kOtherFrameSite),
+            kNetworkIsolationKey);
   const GURL kOtherValidationUrl(
       "https://group.test/.well-known/interest-group/permissions/"
       "?origin=https%3A%2F%2Fother.frame.test");
@@ -405,7 +410,7 @@ TEST_P(InterestGroupPermissionsCheckerParamaterizedTest, DifferentOwner) {
 TEST_P(InterestGroupPermissionsCheckerParamaterizedTest,
        DifferentNetworkIsolationKey) {
   const net::NetworkIsolationKey kOtherNetworkIsolationKey(
-      url::Origin::Create(GURL("https://top-frame.test")), kFrameOrigin);
+      net::SchemefulSite(GURL("https://top-frame.test")), kFrameSite);
 
   interest_group_permissions_checker_.CheckPermissions(
       GetOperation(), kFrameOrigin, kGroupOrigin, kNetworkIsolationKey,
@@ -521,7 +526,7 @@ TEST_P(InterestGroupPermissionsCheckerParamaterizedTest, NonDefaultPorts) {
 
   interest_group_permissions_checker_.CheckPermissions(
       GetOperation(), kFrameOrigin, kGroupOrigin,
-      net::NetworkIsolationKey(kFrameOrigin, kFrameOrigin), url_loader_factory_,
+      net::NetworkIsolationKey(kFrameSite, kFrameSite), url_loader_factory_,
       bool_callback_.callback());
   EXPECT_FALSE(bool_callback_.GetResult());
   EXPECT_EQ(1u, url_loader_factory_.total_requests());

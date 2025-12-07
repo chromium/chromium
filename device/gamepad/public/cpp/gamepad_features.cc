@@ -14,47 +14,29 @@
 
 namespace features {
 
-// Enables gamepadbuttondown, gamepadbuttonup, gamepadbuttonchange,
-// gamepadaxismove non-standard gamepad events.
-BASE_FEATURE(kEnableGamepadButtonAxisEvents,
-             "EnableGamepadButtonAxisEvents",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables the Windows.Gaming.Input data fetcher.
+//
+// Note: This feature is used by the "never expire" flag
+// chrome://flags/#enable-windows-gaming-input-data-fetcher and should not be
+// removed. See crbug.com/40287784.
 BASE_FEATURE(kEnableWindowsGamingInputDataFetcher,
-             "EnableWindowsGamingInputDataFetcher",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kRestrictGamepadAccess,
-             "RestrictGamepadAccess",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables gamepad multitouch
-BASE_FEATURE(kEnableGamepadMultitouch,
-             "EnableGamepadMultitouch",
+BASE_FEATURE(kEnableGamepadMultitouch, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables gamepad simulation in GamepadService.
+BASE_FEATURE(kEnableSimulatedGamepadDataFetcher,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID)
-// Enables gamepad vibration on Android 12+.
-BASE_FEATURE(kEnableAndroidGamepadVibration,
-             "EnableAndroidGamepadVibration",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
+// Enables gamepad raw input change events.
+BASE_FEATURE(kGamepadRawInputChangeEvent, base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool AreGamepadButtonAxisEventsEnabled() {
-  // Check if button and axis events are enabled by a field trial.
-  if (base::FeatureList::IsEnabled(kEnableGamepadButtonAxisEvents))
-    return true;
-
-  // Check if button and axis events are enabled by a command-line flag.
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line &&
-      command_line->HasSwitch(switches::kEnableGamepadButtonAxisEvents)) {
-    return true;
-  }
-
-  return false;
-}
+#if BUILDFLAG(IS_WIN)
+// Ignores PlayStation 5 gamepads (DualSense, DualSense Edge) in
+// WgiDataFetcherWin to avoid double enumeration.
+BASE_FEATURE(kIgnorePS5GamepadsInWgi, base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN)
 
 bool IsGamepadMultitouchEnabled() {
   if (base::FeatureList::IsEnabled(kEnableGamepadMultitouch)) {

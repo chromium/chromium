@@ -59,13 +59,14 @@
 #   }
 # }
 
-import json
 from datetime import datetime
 import io
-import os.path
-import sys
+import json
 import optparse
+import os.path
 import re
+import sys
+
 _script_path = os.path.realpath(__file__)
 
 sys.path.insert(0, os.path.normpath(_script_path + "/../../json_comment_eater"))
@@ -74,10 +75,15 @@ try:
 finally:
   sys.path.pop(0)
 
+from aggregation import AggregationKind
+from aggregation import GenerateCCAggregation
+from aggregation import GenerateHHAggregation
+from aggregation import GetAggregationDetails
 import class_generator
 import element_generator
 import java_element_generator
 import struct_generator
+
 
 HEAD = u"""// Copyright %d The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
@@ -86,9 +92,10 @@ HEAD = u"""// Copyright %d The Chromium Authors
 // GENERATED FROM THE SCHEMA DEFINITION AND DESCRIPTION IN
 //   %s
 //   %s
-// DO NOT EDIT.
+// using json_to_struct.py. DO NOT EDIT.
 
 """
+
 
 def _GenerateHeaderGuard(h_filename):
   """Generates the string used in #ifndef guarding the header file.
@@ -121,6 +128,10 @@ def _GenerateH(basepath, fileroot, head, namespace, schema, description):
     f.write(u'#define %s\n' % header_guard)
     f.write(u'\n')
 
+    aggregation = GetAggregationDetails(description)
+
+    if aggregation.kind == AggregationKind.ARRAY:
+      f.write("#include <array>\n")
     f.write(u'#include <cstddef>\n')
     f.write(u'\n')
 
@@ -129,7 +140,11 @@ def _GenerateH(basepath, fileroot, head, namespace, schema, description):
         f.write(u'#include <%s>\n' % header)
       f.write(u'\n')
 
-    for header in schema.get(u'headers', []):
+    headers = schema.get(u'headers', [])
+    if aggregation.kind == AggregationKind.MAP:
+      headers.append("base/containers/fixed_flat_map.h")
+
+    for header in sorted(set(headers)):
       f.write(u'#include "%s"\n' % header)
     f.write(u'\n')
 
@@ -143,18 +158,16 @@ def _GenerateH(basepath, fileroot, head, namespace, schema, description):
 
     for var_name, value in description.get('int_variables', {}).items():
       f.write(u'extern const int %s;\n' % var_name)
-    f.write(u'\n')
 
-    for element_name, element in description['elements'].items():
-      f.write(u'extern const %s %s;\n' % (schema['type_name'], element_name))
-
-    if 'generate_array' in description:
+    # Generate forward declarations of all elements.
+    if aggregation.export_items:
       f.write(u'\n')
-      f.write(
-          u'extern const %s* const %s[];\n' %
-          (schema['type_name'], description['generate_array']['array_name']))
-      f.write(u'extern const size_t %s;\n' %
-              (description['generate_array']['array_name'] + u'Length'))
+      for element_name, element in description['elements'].items():
+        f.write(u'extern const %s %s;\n' % (schema['type_name'], element_name))
+
+    aggregated = GenerateHHAggregation(schema['type_name'], aggregation)
+    if aggregated:
+      f.write(aggregated)
 
     if namespace:
       f.write(u'\n')
@@ -183,27 +196,28 @@ def _GenerateCC(basepath, fileroot, head, namespace, schema, description):
                encoding='utf-8') as f:
     f.write(head)
 
-    f.write(u'#include "%s"\n' % (fileroot + u'.h'))
-    f.write(u'\n')
+    f.write('#include "%s"\n' % (fileroot + u'.h'))
+    f.write('\n')
 
     if namespace:
-      f.write(u'namespace %s {\n' % namespace)
-      f.write(u'\n')
+      f.write('namespace %s {\n' % namespace)
+      f.write('\n')
+
+    aggregation = GetAggregationDetails(description)
+
+    if not aggregation.export_items:
+      f.write('namespace {\n')
+      f.write('\n')
 
     f.write(element_generator.GenerateElements(schema['type_name'],
         schema['schema'], description))
 
-    if 'generate_array' in description:
-      f.write(u'\n')
-      f.write(
-          u'const %s* const %s[] = {\n' %
-          (schema['type_name'], description['generate_array']['array_name']))
-      for element_name, _ in description['elements'].items():
-        f.write(u'\t&%s,\n' % element_name)
-      f.write(u'};\n')
-      f.write(u'const size_t %s = %d;\n' %
-              (description['generate_array']['array_name'] + u'Length',
-               len(description['elements'])))
+    if not aggregation.export_items:
+      f.write('\n}  // anonymous namespace \n\n')
+
+    aggregated = GenerateCCAggregation(schema['type_name'], aggregation)
+    if aggregated:
+      f.write(aggregated)
 
     if namespace:
       f.write(u'\n')

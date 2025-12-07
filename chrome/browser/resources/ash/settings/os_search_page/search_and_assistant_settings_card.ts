@@ -9,22 +9,30 @@
  */
 
 import 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
+import './magic_boost_review_terms_banner.js';
 import '../os_settings_page/settings_card.js';
 import '../settings_shared.css.js';
 import './search_engine.js';
+// <if expr="_google_chrome" >
+import 'chrome://resources/ash/common/internal/ash_internal_icons.html.js';
+
+// </if>
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {isAssistantAllowed, isMagicBoostFeatureEnabled, isMahiEnabled, isQuickAnswersSupported, isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
+import {isLobsterSettingsToggleVisible, isMagicBoostFeatureEnabled, isMagicBoostNoticeBannerVisible, isQuickAnswersSupported, isScannerSettingsToggleVisible} from '../common/load_time_booleans.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
-import {PrefsState} from '../common/types.js';
+import type {PrefsState} from '../common/types.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, Router, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {Router, routes} from '../router.js';
 
 import {getTemplate} from './search_and_assistant_settings_card.html.js';
+
+const ENTERPRISE_POLICY_DISALLOWED = 2;
 
 const SearchAndAssistantSettingsCardElementBase =
     DeepLinkingMixin(RouteOriginMixin(I18nMixin(PolymerElement)));
@@ -60,92 +68,95 @@ export class SearchAndAssistantSettingsCardElement extends
         },
       },
 
-      isMahiEnabled_: {
+      isMagicBoostNoticeBannerVisible_: {
         type: Boolean,
         value: () => {
-          return isMahiEnabled();
+          return isMagicBoostNoticeBannerVisible();
         },
       },
 
-      /** Can be disallowed due to flag, policy, locale, etc. */
-      isAssistantAllowed_: {
+      isLobsterSettingsToggleVisible_: {
         type: Boolean,
         value: () => {
-          return isAssistantAllowed();
+          return isLobsterSettingsToggleVisible();
         },
       },
 
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kPreferredSearchEngine,
-          Setting.kMagicBoostOnOff,
-          Setting.kMahiOnOff,
-          Setting.kShowOrca,
-        ]),
-      },
-
-      isRevampWayfindingEnabled_: {
+      isScannerSettingsToggleVisible_: {
         type: Boolean,
-        value() {
-          return isRevampWayfindingEnabled();
-        },
         readOnly: true,
+        value: () => {
+          return isScannerSettingsToggleVisible();
+        },
       },
 
-      rowIcons_: {
-        type: Object,
-        value() {
-          if (isRevampWayfindingEnabled()) {
-            return {
-              searchEngine: 'os-settings:explore',
-              assistant: 'os-settings:assistant',
-              contentRecommendations: 'os-settings:content-recommend',
-              mahi: 'os-settings:mahi',
-              magicBoost: 'os-settings:magic-boost',
-              helpMeRead: 'os-settings:help-me-read',
-              helpMeWrite: 'os-settings:help-me-write',
-            };
-          }
+      isLobsterAllowedByEnterprisePolicy_: {
+        type: Boolean,
+        computed: 'isEnterprisePolicyAllowed_(' +
+            'prefs.settings.lobster.enterprise_settings.value)',
+      },
 
-          return {
-            searchEngine: '',
-            assistant: '',
-            contentRecommendations: '',
-            mahi: '',
-            magicBoost: '',
-            helpMeRead: '',
-            helpMeWrite: '',
-          };
-        },
+      isScannerAllowedByEnterprisePolicy_: {
+        type: Boolean,
+        computed: 'isEnterprisePolicyAllowed_(' +
+            'prefs.ash.scanner.enterprise_policy_allowed.value)',
+      },
+
+      isHmrAllowedByEnterprisePolicy_: {
+        type: Boolean,
+        computed: 'isEnterprisePolicyAllowed_(' +
+            'prefs.settings.managed.help_me_read.value)',
+      },
+
+      isHmwAllowedByEnterprisePolicy_: {
+        type: Boolean,
+        computed: 'isEnterprisePolicyAllowed_(' +
+            'prefs.settings.managed.help_me_write.value)',
+      },
+
+      enterprisePolicyToggleUncheckedValues_: {
+        type: Array,
+        readOnly: true,
+        value: () => [ENTERPRISE_POLICY_DISALLOWED],
       },
     };
   }
 
   prefs: PrefsState;
-  private isAssistantAllowed_: boolean;
-  private readonly isRevampWayfindingEnabled_: boolean;
-  private rowIcons_: Record<string, string>;
-  private isQuickAnswersSupported_: boolean;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kPreferredSearchEngine,
+    Setting.kMagicBoostOnOff,
+    Setting.kMahiOnOff,
+    Setting.kShowOrca,
+    Setting.kLobsterOnOff,
+    Setting.kSunfishOnOff,
+    Setting.kScannerOnOff,
+  ]);
+
+  private readonly enterprisePolicyToggleUncheckedValues_: number[];
+  private isHmrAllowedByEnterprisePolicy_: boolean;
+  private isHmwAllowedByEnterprisePolicy_: boolean;
+  private isLobsterAllowedByEnterprisePolicy_: boolean;
+  private readonly isLobsterSettingsToggleVisible_: boolean;
+  private readonly isMagicBoostNoticeBannerVisible_: boolean;
   private isMagicBoostFeatureEnabled_: boolean;
-  private isMahiEnabled_: boolean;
+  private isQuickAnswersSupported_: boolean;
+  private isScannerAllowedByEnterprisePolicy_: boolean;
+  private readonly isScannerSettingsToggleVisible_: boolean;
 
   constructor() {
     super();
 
     /** RouteOriginMixin overrde */
-    this.route = this.isRevampWayfindingEnabled_ ? routes.SYSTEM_PREFERENCES :
-                                                   routes.OS_SEARCH;
+    this.route = routes.SYSTEM_PREFERENCES;
   }
 
   override ready(): void {
     super.ready();
 
     this.addFocusConfig(routes.SEARCH_SUBPAGE, '#searchRow');
-    this.addFocusConfig(routes.GOOGLE_ASSISTANT, '#assistantRow');
   }
 
   override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
@@ -164,16 +175,8 @@ export class SearchAndAssistantSettingsCardElement extends
     Router.getInstance().navigateTo(routes.SEARCH_SUBPAGE);
   }
 
-  private onGoogleAssistantClick_(): void {
-    assert(this.isAssistantAllowed_);
-    Router.getInstance().navigateTo(routes.GOOGLE_ASSISTANT);
-  }
-
-  private getAssistantEnabledDisabledLabel_(isAssistantEnabled: boolean):
-      string {
-    return this.i18n(
-        isAssistantEnabled ? 'searchGoogleAssistantEnabled' :
-                             'searchGoogleAssistantDisabled');
+  private isEnterprisePolicyAllowed_(value: number): boolean {
+    return value !== ENTERPRISE_POLICY_DISALLOWED;
   }
 }
 

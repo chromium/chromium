@@ -34,16 +34,14 @@
 #include <unicode/udisplaycontext.h>
 #include <unicode/uloc.h>
 
+#include <algorithm>
 #include <iterator>
 #include <limits>
 #include <memory>
 
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
-#include "third_party/blink/renderer/platform/wtf/date_math.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
-#include "ui/base/ui_base_features.h"
 
 namespace blink {
 
@@ -76,9 +74,9 @@ String LocaleICU::DecimalSymbol(UNumberFormatSymbol symbol) {
   if (U_FAILURE(status) && status != U_BUFFER_OVERFLOW_ERROR)
     return String();
   StringBuffer<UChar> buffer(buffer_length);
+  auto span = buffer.Span();
   status = U_ZERO_ERROR;
-  unum_getSymbol(number_format_, symbol, buffer.Characters(), buffer_length,
-                 &status);
+  unum_getSymbol(number_format_, symbol, span.data(), span.size(), &status);
   if (U_FAILURE(status))
     return String();
   return String::Adopt(buffer);
@@ -92,9 +90,9 @@ String LocaleICU::DecimalTextAttribute(UNumberFormatTextAttribute tag) {
   if (U_FAILURE(status) && status != U_BUFFER_OVERFLOW_ERROR)
     return String();
   StringBuffer<UChar> buffer(buffer_length);
+  auto span = buffer.Span();
   status = U_ZERO_ERROR;
-  unum_getTextAttribute(number_format_, tag, buffer.Characters(), buffer_length,
-                        &status);
+  unum_getTextAttribute(number_format_, tag, span.data(), span.size(), &status);
   DCHECK(U_SUCCESS(status));
   if (U_FAILURE(status))
     return String();
@@ -173,8 +171,9 @@ static String GetDateFormatPattern(const UDateFormat* date_format) {
   if (status != U_BUFFER_OVERFLOW_ERROR || !length)
     return g_empty_string;
   StringBuffer<UChar> buffer(length);
+  auto span = buffer.Span();
   status = U_ZERO_ERROR;
-  udat_toPattern(date_format, true, buffer.Characters(), length, &status);
+  udat_toPattern(date_format, true, span.data(), span.size(), &status);
   if (U_FAILURE(status))
     return g_empty_string;
   return String::Adopt(buffer);
@@ -211,13 +210,14 @@ Vector<String> LocaleICU::CreateLabelVector(const UDateFormat* date_format,
       return {};
     }
     StringBuffer<UChar> buffer(length);
+    auto span = buffer.Span();
     status = U_ZERO_ERROR;
     if (is_stand_alone_month) {
-      udat_format(date_format, kEpoch + i * kMonth, buffer.Characters(), length,
+      udat_format(date_format, kEpoch + i * kMonth, span.data(), span.size(),
                   nullptr, &status);
     } else {
-      udat_getSymbols(date_format, type, start_index + i, buffer.Characters(),
-                      length, &status);
+      udat_getSymbols(date_format, type, start_index + i, span.data(),
+                      span.size(), &status);
     }
     if (U_FAILURE(status)) {
       return {};
@@ -235,8 +235,7 @@ const Vector<String>& LocaleICU::MonthLabels() {
     }
     if (month_labels_.empty()) {
       month_labels_.reserve(std::size(kFallbackMonthNames));
-      base::ranges::copy(kFallbackMonthNames,
-                         std::back_inserter(month_labels_));
+      std::ranges::copy(kFallbackMonthNames, std::back_inserter(month_labels_));
     }
   }
   return month_labels_;
@@ -250,8 +249,8 @@ const Vector<String>& LocaleICU::WeekDayShortLabels() {
     }
     if (week_day_short_labels_.empty()) {
       week_day_short_labels_.reserve(std::size(kFallbackWeekdayShortNames));
-      base::ranges::copy(kFallbackWeekdayShortNames,
-                         std::back_inserter(week_day_short_labels_));
+      std::ranges::copy(kFallbackWeekdayShortNames,
+                        std::back_inserter(week_day_short_labels_));
     }
   }
   return week_day_short_labels_;
@@ -332,10 +331,11 @@ static String GetFormatForSkeleton(const char* locale, const String& skeleton) {
                             skeleton_characters.size(), nullptr, 0, &status);
   if (status == U_BUFFER_OVERFLOW_ERROR && length) {
     StringBuffer<UChar> buffer(length);
+    auto span = buffer.Span();
     status = U_ZERO_ERROR;
     udatpg_getBestPattern(pattern_generator, skeleton_characters.data(),
-                          skeleton_characters.size(), buffer.Characters(),
-                          length, &status);
+                          skeleton_characters.size(), span.data(), span.size(),
+                          &status);
     if (U_SUCCESS(status))
       format = String::Adopt(buffer);
   }
@@ -387,8 +387,8 @@ const Vector<String>& LocaleICU::ShortMonthLabels() {
     }
     if (short_month_labels_.empty()) {
       short_month_labels_.reserve(std::size(kFallbackMonthShortNames));
-      base::ranges::copy(kFallbackMonthShortNames,
-                         std::back_inserter(short_month_labels_));
+      std::ranges::copy(kFallbackMonthShortNames,
+                        std::back_inserter(short_month_labels_));
     }
   }
   return short_month_labels_;

@@ -31,36 +31,35 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_ui.ThumbnailProvider.MultiThumbnailMetadata;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 
 /** Tests for the thumbnail view in Grid Tab Switcher. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    "force-fieldtrials=Study/Group"
-})
-@Restriction({
-    UiRestriction.RESTRICTION_TYPE_PHONE,
-    Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE
-})
+@CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
+@Restriction({DeviceFormFactor.PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 public class TabSwitcherThumbnailTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
-    private TabListMediator.ThumbnailFetcher mNullThumbnailProvider =
-            new TabListMediator.ThumbnailFetcher(
-                    (tabId, thumbnailSize, callback, isSelected) -> callback.onResult(null),
-                    Tab.INVALID_TAB_ID);
+    private final ThumbnailFetcher mNullThumbnailFetcher =
+            new ThumbnailFetcher(
+                    (tabId, thumbnailSize, isSelected, callback) -> callback.onResult(null),
+                    MultiThumbnailMetadata.createMetadataWithoutUrls(
+                            Tab.INVALID_TAB_ID, false, false, null));
+    private RegularNewTabPageStation mNtp;
 
     @Before
     public void setUp() {
-        mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
-        TabGridViewBinder.setThumbnailFeatureForTesting(mNullThumbnailProvider);
+        mNtp = mActivityTestRule.startOnNtp();
+        TabGridViewBinder.setThumbnailFetcherForTesting(mNullThumbnailFetcher);
     }
 
     @Test
@@ -69,7 +68,8 @@ public class TabSwitcherThumbnailTest {
         // With this flag bitmap aspect ratios are not applied. Check that the resultant image views
         // still display at the right size.
         int tabCounts = 11;
-        TabUiTestHelper.prepareTabsWithThumbnail(mActivityTestRule, tabCounts, 0, "about:blank");
+        TabUiTestHelper.prepareTabsWithThumbnail(
+                mActivityTestRule.getActivityTestRule(), tabCounts, 0, "about:blank");
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
         verifyAllThumbnailHeightWithAspectRatio(tabCounts, 0.85f);
 
@@ -83,7 +83,8 @@ public class TabSwitcherThumbnailTest {
     @MediumTest
     public void testThumbnailAspectRatio_point85() {
         int tabCounts = 11;
-        TabUiTestHelper.prepareTabsWithThumbnail(mActivityTestRule, tabCounts, 0, "about:blank");
+        TabUiTestHelper.prepareTabsWithThumbnail(
+                mActivityTestRule.getActivityTestRule(), tabCounts, 0, "about:blank");
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
         verifyAllThumbnailHeightWithAspectRatio(tabCounts, 0.85f);
     }
@@ -92,7 +93,8 @@ public class TabSwitcherThumbnailTest {
     @MediumTest
     public void testThumbnail_withSoftCleanup() {
         int tabCounts = 11;
-        TabUiTestHelper.prepareTabsWithThumbnail(mActivityTestRule, tabCounts, 0, "about:blank");
+        TabUiTestHelper.prepareTabsWithThumbnail(
+                mActivityTestRule.getActivityTestRule(), tabCounts, 0, "about:blank");
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
         verifyAllThumbnailHeightWithAspectRatio(tabCounts, .85f);
 
@@ -128,8 +130,8 @@ public class TabSwitcherThumbnailTest {
             return new ThumbnailAspectRatioAssertion(ratio, position);
         }
 
-        private int mPosition;
-        private float mExpectedRatio;
+        private final int mPosition;
+        private final float mExpectedRatio;
 
         ThumbnailAspectRatioAssertion(float ratio, int position) {
             mExpectedRatio = ratio;
@@ -146,7 +148,7 @@ public class TabSwitcherThumbnailTest {
             if (viewHolder != null) {
                 ViewLookupCachingFrameLayout tabView =
                         (ViewLookupCachingFrameLayout) viewHolder.itemView;
-                ImageView thumbnail = (ImageView) tabView.fastFindViewById(R.id.tab_thumbnail);
+                ImageView thumbnail = tabView.fastFindViewById(R.id.tab_thumbnail);
                 float thumbnailRatio = thumbnail.getWidth() * 1.f / thumbnail.getHeight();
                 assertEquals(mExpectedRatio, thumbnailRatio, 0.01);
             }
@@ -158,7 +160,7 @@ public class TabSwitcherThumbnailTest {
             return new ThumbnailHeightAssertion(position);
         }
 
-        private int mPosition;
+        private final int mPosition;
 
         ThumbnailHeightAssertion(int position) {
             mPosition = position;
@@ -174,7 +176,7 @@ public class TabSwitcherThumbnailTest {
             if (viewHolder != null) {
                 ViewLookupCachingFrameLayout tabView =
                         (ViewLookupCachingFrameLayout) viewHolder.itemView;
-                ImageView thumbnail = (ImageView) tabView.fastFindViewById(R.id.tab_thumbnail);
+                ImageView thumbnail = tabView.fastFindViewById(R.id.tab_thumbnail);
                 assertNotEquals("Thumbnail's height should not be zero", 0, thumbnail.getHeight());
             }
         }

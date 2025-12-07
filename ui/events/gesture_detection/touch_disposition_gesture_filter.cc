@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/trace_event/typed_macros.h"
@@ -125,8 +124,7 @@ DispositionHandlingInfo GetDispositionHandlingInfo(EventType type) {
     default:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return Info(RT_NONE);
+  NOTREACHED();
 }
 
 int GetGestureTypeIndex(EventType type) {
@@ -318,6 +316,20 @@ void TouchDispositionGestureFilter::FilterAndSendPacket(
     CancelTapIfNecessary(packet);
   }
   int gesture_end_index = -1;
+
+  //  If we are in a scroll, there are no gestures, send an empty gesture scroll
+  //  update.
+  if (base::FeatureList::IsEnabled(features::kSendEmptyGestureScrollUpdate) &&
+      needs_scroll_ending_event_ &&
+      packet.gesture_source() == GestureEventDataPacket::TOUCH_MOVE &&
+      packet.gesture_count() == 0) {
+    TRACE_EVENT("input", "EmptyGestureScrollUpdate");
+    SendGesture(CreateGesture(EventType::kGestureScrollUpdate,
+                              packet.unique_touch_event_id(),
+                              packet.tool_type(), packet),
+                packet);
+  }
+
   for (size_t i = 0; i < packet.gesture_count(); ++i) {
     const GestureEventData& gesture = packet.gesture(i);
     DCHECK_GE(gesture.details.type(), EventType::kGestureTypeStart);

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/display/screen.h"
 
 #import <AppKit/AppKit.h>
@@ -21,21 +16,28 @@
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "base/check_deref.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
+#include "base/notimplemented.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "ui/display/display.h"
 #include "ui/display/display_change_notifier.h"
+#include "ui/display/mac/screen_mac_headless.h"
 #include "ui/display/util/display_util.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/icc_profile.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
+#include "ui/gfx/native_ui_types.h"
+#include "ui/gfx/switches.h"
 
 extern "C" {
 Boolean CGDisplayUsesForceToGray(void);
@@ -69,7 +71,7 @@ NSScreen* GetMatchingScreen(const gfx::Rect& match_rect) {
 }
 
 const std::vector<Display> DisplaysFromDisplaysMac(
-    const std::vector<DisplayMac> displays_mac) {
+    const std::vector<DisplayMac>& displays_mac) {
   std::vector<Display> displays;
 
   for (auto const& display_mac : displays_mac) {
@@ -86,13 +88,13 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
   CGDirectDisplayID display_id =
       [screen.deviceDescription[@"NSScreenNumber"] unsignedIntValue];
 
-  Display display(display_id, gfx::Rect(NSRectToCGRect(frame)));
+  Display display(display_id, gfx::Rect(frame));
   NSRect visible_frame = screen.visibleFrame;
   NSScreen* primary = NSScreen.screens.firstObject;
 
   // Convert work area's coordinate systems.
   if ([screen isEqual:primary]) {
-    gfx::Rect work_area = gfx::Rect(NSRectToCGRect(visible_frame));
+    gfx::Rect work_area(visible_frame);
     work_area.set_y(frame.size.height - visible_frame.origin.y -
                     visible_frame.size.height);
     display.set_work_area(work_area);
@@ -144,8 +146,8 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
       }
     }
   }
-  gfx::DisplayColorSpaces display_color_spaces(icc_profile.GetColorSpace(),
-                                               gfx::BufferFormat::BGRA_8888);
+  gfx::DisplayColorSpaces display_color_spaces(
+      icc_profile.GetColorSpace(), viz::SinglePlaneFormat::kBGRA_8888);
   if (HasForceDisplayColorProfile()) {
     if (Display::HasEnsureForcedColorProfile()) {
       if (display_color_spaces != display.GetColorSpaces()) {
@@ -158,9 +160,10 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
     if (enable_hdr) {
       bool needs_alpha_values[] = {true, false};
       for (const auto& needs_alpha : needs_alpha_values) {
-        display_color_spaces.SetOutputColorSpaceAndBufferFormat(
+        display_color_spaces.SetOutputColorSpaceAndFormat(
             gfx::ContentColorUsage::kHDR, needs_alpha,
-            gfx::ColorSpace::CreateExtendedSRGB(), gfx::BufferFormat::RGBA_F16);
+            gfx::ColorSpace::CreateExtendedSRGB(),
+            viz::SinglePlaneFormat::kRGBA_F16);
       }
       display_color_spaces.SetHDRMaxLuminanceRelative(hdr_max_lum_relative);
     }
@@ -179,21 +182,7 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
   display.set_is_monochrome(CGDisplayUsesForceToGray());
 
   // Query the display's refresh rate.
-  {
-    CVDisplayLinkRef display_link = nullptr;
-    if (CVDisplayLinkCreateWithCGDisplay(display_id, &display_link) ==
-        kCVReturnSuccess) {
-      DCHECK(display_link);
-      CVTime cv_time =
-          CVDisplayLinkGetNominalOutputVideoRefreshPeriod(display_link);
-      if (!(cv_time.flags & kCVTimeIsIndefinite)) {
-        double refresh_rate = (static_cast<double>(cv_time.timeScale) /
-                               static_cast<double>(cv_time.timeValue));
-        display.set_display_frequency(refresh_rate);
-      }
-      CVDisplayLinkRelease(display_link);
-    }
-  }
+  display.set_display_frequency(screen.maximumFramesPerSecond);
 
   // CGDisplayRotation returns a double. Display::SetRotationAsDegree will
   // handle the unexpected situations were the angle is not a multiple of 90.
@@ -225,9 +214,9 @@ std::vector<DisplayMac> BuildDisplaysFromQuartz() {
   // It would be ridiculous to have this many displays connected, but
   // CGDirectDisplayID is just an integer, so supporting up to this many
   // doesn't hurt.
-  CGDirectDisplayID online_displays[1024];
+  std::array<CGDirectDisplayID, 1024> online_displays;
   CGDisplayCount online_display_count = 0;
-  if (CGGetOnlineDisplayList(std::size(online_displays), online_displays,
+  if (CGGetOnlineDisplayList(online_displays.size(), online_displays.data(),
                              &online_display_count) != kCGErrorSuccess) {
     return std::vector<DisplayMac>(1, BuildPrimaryDisplay());
   }
@@ -242,9 +231,9 @@ std::vector<DisplayMac> BuildDisplaysFromQuartz() {
   }
 
   std::vector<DisplayMac> displays_mac;
-  for (CGDisplayCount online_display_index = 0;
-       online_display_index < online_display_count; ++online_display_index) {
-    CGDirectDisplayID online_display = online_displays[online_display_index];
+
+  auto online_span = base::span(online_displays).first(online_display_count);
+  for (CGDirectDisplayID online_display : online_span) {
     if (CGDisplayMirrorsDisplay(online_display) == kCGNullDirectDisplay) {
       // If this display doesn't mirror any other, include it in the list.
       // The primary display in a mirrored set will be counted, but those that
@@ -334,10 +323,11 @@ class ScreenMac : public Screen {
       const std::set<gfx::NativeWindow>& ignore) override {
     const NSPoint ns_point = gfx::ScreenPointToNSPoint(point);
 
-    // Note: [NSApp orderedWindows] doesn't include NSPanels.
+    // Note: NSApp.orderedWindows doesn't include NSPanels.
     for (NSWindow* window in NSApp.orderedWindows) {
-      if (ignore.count(window))
+      if (ignore.count(gfx::NativeWindow(window))) {
         continue;
+      }
 
       if (!window.onActiveSpace) {
         continue;
@@ -350,11 +340,11 @@ class ScreenMac : public Screen {
       }
 
       if (NSPointInRect(ns_point, window.frame)) {
-        return window;
+        return gfx::NativeWindow(window);
       }
     }
 
-    return nil;
+    return gfx::NativeWindow();
   }
 
   int GetNumDisplays() const override { return displays_mac_.size(); }
@@ -386,9 +376,10 @@ class ScreenMac : public Screen {
   Display GetDisplayNearestView(gfx::NativeView native_view) const override {
     NSView* view = native_view.GetNativeNSView();
     NSWindow* window = view.window;
-    if (!window)
+    if (!window) {
       return GetPrimaryDisplay();
-    return GetDisplayNearestWindow(window);
+    }
+    return GetDisplayNearestWindow(gfx::NativeWindow(window));
   }
 
   Display GetDisplayNearestPoint(const gfx::Point& point) const override {
@@ -397,7 +388,7 @@ class ScreenMac : public Screen {
       return GetPrimaryDisplay();
     }
 
-    NSPoint ns_point = NSPointFromCGPoint(point.ToCGPoint());
+    NSPoint ns_point = point.ToCGPoint();
     NSScreen* primary = screens[0];
     ns_point.y = NSMaxY(primary.frame) - ns_point.y;
     for (NSScreen* screen in screens) {
@@ -527,6 +518,11 @@ class ScreenMac : public Screen {
       }
     }
 
+    if (NSScreen.screens.firstObject != primary_ns_screen_) {
+      primary_ns_screen_ = NSScreen.screens.firstObject;
+      change_notifier_.NotifyPrimaryDisplayChanged();
+    }
+
     // If nothing changed, do no notifications.
     if (all_displays_equal) {
       return;
@@ -571,6 +567,8 @@ class ScreenMac : public Screen {
 
   std::vector<Display> displays_;
 
+  NSScreen* __weak primary_ns_screen_ = nil;
+
   // The observers notified by NSScreenColorSpaceDidChangeNotification and
   // NSApplicationDidChangeScreenParametersNotification.
   id __strong screen_color_change_observer_;
@@ -592,10 +590,17 @@ class ScreenMac : public Screen {
 // static
 gfx::NativeWindow Screen::GetWindowForView(gfx::NativeView native_view) {
   NSView* view = native_view.GetNativeNSView();
-  return view.window;
+  return gfx::NativeWindow(view.window);
 }
 
 Screen* CreateNativeScreen() {
+  const base::CommandLine& command_line =
+      CHECK_DEREF(base::CommandLine::ForCurrentProcess());
+
+  if (command_line.HasSwitch(switches::kHeadless)) {
+    return new ScreenMacHeadless;
+  }
+
   return new ScreenMac;
 }
 

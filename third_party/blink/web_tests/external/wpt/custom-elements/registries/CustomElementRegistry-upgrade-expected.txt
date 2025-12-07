@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] upgrade is a function on both global and scoped CustomElementRegistry
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] upgrade is a no-op when called on a shadow root with no association
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] upgrade should upgrade a candidate element when called on a shadow root with an association
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] upgrade should not upgrade a candidate element not associated with a registry
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+Harness: the test ran to completion.
+

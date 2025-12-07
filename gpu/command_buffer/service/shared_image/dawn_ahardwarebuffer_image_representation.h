@@ -9,7 +9,6 @@
 #include <dawn/webgpu.h>
 
 #include "base/android/scoped_hardware_buffer_handle.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/service/shared_image/android_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
@@ -23,6 +22,7 @@ class DawnAHardwareBufferImageRepresentation : public DawnImageRepresentation {
       AndroidImageBacking* backing,
       MemoryTypeTracker* tracker,
       wgpu::Device device,
+      wgpu::BackendType backend_type,
       wgpu::TextureFormat format,
       std::vector<wgpu::TextureFormat> view_formats,
       AHardwareBuffer* buffer);
@@ -40,6 +40,7 @@ class DawnAHardwareBufferImageRepresentation : public DawnImageRepresentation {
   base::android::ScopedHardwareBufferHandle handle_;
   wgpu::Texture texture_;
   wgpu::Device device_;
+  wgpu::BackendType backend_type_;
   wgpu::TextureFormat format_;
   std::vector<wgpu::TextureFormat> view_formats_;
   // There is a SharedTextureMemory per representation with how this works

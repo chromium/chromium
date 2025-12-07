@@ -13,7 +13,6 @@ ADDRESS_HOME_CITY | ecomms_town | Town / City: |  | ecomms_company_name_1
 ADDRESS_HOME_STATE | ecomms_county | County: |  | ecomms_company_name_1
 ADDRESS_HOME_ZIP | ecomms_postcode | Postcode: |  | ecomms_company_name_1
 ADDRESS_HOME_COUNTRY | ecomms_country | Country: | 224 | ecomms_company_name_1
-UNKNOWN_TYPE | delivery_address | specify a different delivery address | 1 | ecomms_company_name_1
 UNKNOWN_TYPE | del_title | Title: |  | -default
 NAME_FIRST | del_first_name | First Name: |  | -default
 NAME_LAST | del_last_name | Last Name: |  | -default
@@ -24,4 +23,4 @@ ADDRESS_HOME_LINE2 | del_address2 | Address2: |  | -default
 ADDRESS_HOME_CITY | del_town | Town / City: |  | -default
 ADDRESS_HOME_STATE | del_county | County: |  | -default
 ADDRESS_HOME_ZIP | del_postcode | Postcode: |  | -default
-ADDRESS_HOME_COUNTRY | ecomms_del_country | Country: | 224 | -default
+ADDRESS_HOME_COUNTRY | ecomms_del_country | Country: | 224 | ecomms_company_name_1

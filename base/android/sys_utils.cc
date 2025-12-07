@@ -2,36 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/android/sys_utils.h"
+#include <jni.h>
 
-#include <memory>
-
-#include "base/android/build_info.h"
+#include "base/android/jni_android.h"
 #include "base/process/process_metrics.h"
-#include "base/system/sys_info.h"
-#include "base/trace_event/base_tracing.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "base/sys_utils_jni/SysUtils_jni.h"
+#include "base/trace_event/trace_event.h"
 
 namespace base {
 namespace android {
-
-bool SysUtils::IsLowEndDeviceFromJni() {
-  JNIEnv* env = AttachCurrentThread();
-  return Java_SysUtils_isLowEndDevice(env);
-}
-
-bool SysUtils::IsCurrentlyLowMemory() {
-  JNIEnv* env = AttachCurrentThread();
-  return Java_SysUtils_isCurrentlyLowMemory(env);
-}
-
-// static
-int SysUtils::AmountOfPhysicalMemoryKB() {
-  JNIEnv* env = AttachCurrentThread();
-  return Java_SysUtils_amountOfPhysicalMemoryKB(env);
-}
 
 // Logs the number of minor / major page faults to tracing (and also the time to
 // collect) the metrics. Does nothing if tracing is not enabled.
@@ -40,8 +19,9 @@ static void JNI_SysUtils_LogPageFaultCountToTracing(JNIEnv* env) {
   // expensive (reading and parsing a file).
   bool enabled;
   TRACE_EVENT_CATEGORY_GROUP_ENABLED("startup", &enabled);
-  if (!enabled)
+  if (!enabled) {
     return;
+  }
   TRACE_EVENT_BEGIN2("memory", "CollectPageFaultCount", "minor", 0, "major", 0);
   std::unique_ptr<base::ProcessMetrics> process_metrics(
       base::ProcessMetrics::CreateProcessMetrics(
@@ -52,6 +32,13 @@ static void JNI_SysUtils_LogPageFaultCountToTracing(JNIEnv* env) {
                    "major", counts.major);
 }
 
+int GetCachedLowMemoryDeviceThresholdMb() {
+  JNIEnv* env = AttachCurrentThread();
+  return static_cast<int>(Java_SysUtils_getLowMemoryDeviceThresholdMb(env));
+}
+
 }  // namespace android
 
 }  // namespace base
+
+DEFINE_JNI(SysUtils)

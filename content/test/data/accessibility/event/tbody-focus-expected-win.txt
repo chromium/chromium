@@ -1,1 +1,0 @@
-EVENT_OBJECT_FOCUS on <tbody#tbody> role=ROLE_SYSTEM_GROUPING name="tbody" FOCUSED,FOCUSABLE

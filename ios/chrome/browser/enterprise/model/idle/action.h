@@ -16,7 +16,7 @@
 #import "build/build_config.h"
 #import "components/enterprise/idle/action_type.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace enterprise_idle {
 
@@ -36,8 +36,7 @@ class Action {
 
   // Runs this action on `browser_state`, which may be asynchronous. When it's
   // done, runs `continuation` with the result.
-  virtual void Run(ChromeBrowserState* browser_state,
-                   Continuation continuation) = 0;
+  virtual void Run(ProfileIOS* profile, Continuation continuation) = 0;
 
   int priority() const { return priority_; }
 

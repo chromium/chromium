@@ -1,0 +1,16 @@
+[document web]
+++[panel] details-for=[push button]
+++++[entry] selectable-text
+++[push button] name='Button' details=[panel] details-from:interest-for details-roles:popover has-interest-for:true
+++[push button] name='Button'
+++[panel]
+++++[entry] selectable-text
+++[panel] label-for=[push button]
+++++[static] name='Plain #3'
+++[push button] name='Plain #3' labelled-by=[panel]
+++[panel] description-for=[push button]
+++++[static] name='Plain #4'
+++[push button] name='Button' description='Plain #4' described-by=[panel] description-from:tooltip
+++[section] label-for=[push button]
+++++[static] name='Plain #5'
+++[push button] name='Plain #5' labelled-by=[section]

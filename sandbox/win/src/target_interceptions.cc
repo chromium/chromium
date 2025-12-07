@@ -6,6 +6,7 @@
 
 #include <ntstatus.h>
 
+#include "base/compiler_specific.h"
 #include "base/win/static_constants.h"
 #include "sandbox/win/src/interception_agent.h"
 #include "sandbox/win/src/sandbox_factory.h"
@@ -54,9 +55,9 @@ TargetNtMapViewOfSection(NtMapViewOfSectionFunction orig_MapViewOfSection,
       // find what looks like a valid export directory for a PE module but the
       // pointer to the module name will be pointing to invalid memory.
       __try {
-        if (ansi_module_name &&
-            (GetNtExports()->_strnicmp(ansi_module_name, KERNEL32_DLL_NAME,
-                                       sizeof(KERNEL32_DLL_NAME)) == 0)) {
+        if (ansi_module_name && (UNSAFE_TODO(GetNtExports()->_strnicmp)(
+                                     ansi_module_name, KERNEL32_DLL_NAME,
+                                     sizeof(KERNEL32_DLL_NAME)) == 0)) {
           s_state = kAfterKernel32;
         }
       } __except (EXCEPTION_EXECUTE_HANDLER) {

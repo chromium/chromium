@@ -147,7 +147,7 @@ class ContentHashFetcherTest : public ExtensionsTest {
     base::FilePath destination = temp_dir_.GetPath();
     EXPECT_TRUE(zip::Unzip(extension_zip, destination));
 
-    std::string error;
+    std::u16string error;
     static constexpr char kTestExtensionId[] =
         "jmllhlobpjcnnomjlipadejplhmheiif";
     scoped_refptr<Extension> extension = file_util::LoadExtension(

@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.payments;
 
+import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
+
 import androidx.annotation.Nullable;
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -19,13 +21,21 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.payments.AndroidPaymentAppFinder;
 import org.chromium.components.payments.AppCreationFailureReason;
 import org.chromium.components.payments.CSPChecker;
+import org.chromium.components.payments.DialogController;
+import org.chromium.components.payments.MockPackageManagerDelegate;
+import org.chromium.components.payments.MockPackageManagerDelegate.PackageInfoState;
 import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentAppFactoryDelegate;
 import org.chromium.components.payments.PaymentAppFactoryInterface;
@@ -33,10 +43,10 @@ import org.chromium.components.payments.PaymentAppFactoryParams;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.PaymentManifestDownloader;
 import org.chromium.components.payments.PaymentManifestParser;
-import org.chromium.components.payments.PaymentManifestWebDataService;
+import org.chromium.components.payments.WebPaymentsWebDataService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
 import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.payments.mojom.PaymentMethodData;
@@ -62,7 +72,8 @@ import java.util.Set;
 public class AndroidPaymentAppFinderTest
         implements PaymentAppFactoryDelegate, PaymentAppFactoryParams {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     /** Simulates a package manager in memory. */
     private final MockPackageManagerDelegate mPackageManager = new MockPackageManagerDelegate();
@@ -75,7 +86,9 @@ public class AndroidPaymentAppFinderTest
          * @param url The URL of the test server.
          */
         /* package */ void setTestServerUrl(GURL url) {
-            assert mTestServerUrl == null : "Test server URL should be set only once";
+            assertWithMessage("Test server URL should be set only once")
+                    .that(mTestServerUrl)
+                    .isNull();
             mTestServerUrl = url;
         }
 
@@ -101,16 +114,14 @@ public class AndroidPaymentAppFinderTest
             GURL changedUrl =
                     new GURL(url.getSpec().replaceAll("https://", mTestServerUrl.getSpec()));
             if (!changedUrl.isValid()) {
-                assert false;
-                return null;
+                throw new AssertionError();
             }
             return changedUrl;
         }
     }
 
     private final TestServerDownloader mDownloader = new TestServerDownloader();
-
-    private EmbeddedTestServer mServer;
+    private WebPageStation mStartingPage;
     private List<PaymentApp> mPaymentApps;
     private boolean mAllPaymentAppsCreated;
     private Map<String, PaymentMethodData> mMethodData;
@@ -142,6 +153,15 @@ public class AndroidPaymentAppFinderTest
 
     // PaymentAppFactoryDelegate implementation.
     @Override
+    public boolean prefsCanMakePayment() {
+        WebContents webContents = getWebContents();
+        return webContents != null
+                && UserPrefs.get(Profile.fromWebContents(webContents))
+                        .getBoolean(Pref.CAN_MAKE_PAYMENT_ENABLED);
+    }
+
+    // PaymentAppFactoryDelegate implementation.
+    @Override
     public void onDoneCreatingPaymentApps(PaymentAppFactoryInterface unusedFactory) {
         mAllPaymentAppsCreated = true;
     }
@@ -156,9 +176,15 @@ public class AndroidPaymentAppFinderTest
                     GURL urlBeforeRedirects,
                     boolean didFollowRedirect,
                     Callback<Boolean> resultCallback) {
-                resultCallback.onResult(/* allow= */ true);
+                resultCallback.onResult(/* result= */ true);
             }
         };
+    }
+
+    // PaymentAppFactoryDelegate implementation.
+    @Override
+    public DialogController getDialogController() {
+        return null;
     }
 
     // PaymentAppFactoryParams implementation.
@@ -176,7 +202,7 @@ public class AndroidPaymentAppFinderTest
     // PaymentAppFactoryParams implementation.
     @Override
     public Map<String, PaymentDetailsModifier> getUnmodifiableModifiers() {
-        return Collections.unmodifiableMap(new HashMap<String, PaymentDetailsModifier>());
+        return Collections.unmodifiableMap(new HashMap<>());
     }
 
     // PaymentAppFactoryParams implementation.
@@ -233,12 +259,13 @@ public class AndroidPaymentAppFinderTest
 
     @Before
     public void setUp() throws Throwable {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mStartingPage = mActivityTestRule.startOnBlankPage();
         mPackageManager.reset();
-        mServer =
-                EmbeddedTestServer.createAndStartServer(
-                        ApplicationProvider.getApplicationContext());
-        mDownloader.setTestServerUrl(new GURL(mServer.getURL("/components/test/data/payments/")));
+        mDownloader.setTestServerUrl(
+                new GURL(
+                        mActivityTestRule
+                                .getTestServer()
+                                .getURL("/components/test/data/payments/")));
         mPaymentApps = new ArrayList<>();
         mAllPaymentAppsCreated = false;
         mPaymentOptions = new PaymentOptions();
@@ -377,7 +404,30 @@ public class AndroidPaymentAppFinderTest
      */
     @Test
     @Feature({"Payments"})
+    @EnableFeatures({PaymentFeatureList.UPDATE_PAYMENT_DETAILS_INTENT_FILTER_IN_PAYMENT_APP})
     public void testOneUrlMethodNameApp() throws Throwable {
+        Set<String> methods = new HashSet<>();
+        methods.add("https://bobpay.test/webpay");
+        mPackageManager.installPaymentApp(
+                "BobPay",
+                "com.bobpay",
+                "https://bobpay.test/webpay",
+                /* signature= */ "01020304050607080900");
+
+        findApps(methods);
+
+        Assert.assertEquals("1 app should match the query", 1, mPaymentApps.size());
+        Assert.assertEquals("com.bobpay", mPaymentApps.get(0).getIdentifier());
+    }
+
+    /**
+     * Same as `testOneUrlMethodNameApp()`, but the UPDATE_PAYMENT_DETAILS intent lookup is
+     * disabled.
+     */
+    @Test
+    @Feature({"Payments"})
+    @DisableFeatures({PaymentFeatureList.UPDATE_PAYMENT_DETAILS_INTENT_FILTER_IN_PAYMENT_APP})
+    public void testOneUrlMethodNameAppWithoutUpdatePaymentDetailsIntentLookup() throws Throwable {
         Set<String> methods = new HashSet<>();
         methods.add("https://bobpay.test/webpay");
         mPackageManager.installPaymentApp(
@@ -438,21 +488,83 @@ public class AndroidPaymentAppFinderTest
         Set<String> methods = new HashSet<>();
         methods.add("https://bobpay.test/webpay");
         mPackageManager.installPaymentApp(
-                "BobPay", "com.bobpay", "https://bobpay.test/webpay", null /* no package info*/);
+                "BobPay",
+                "com.bobpay",
+                "https://bobpay.test/webpay",
+                /* signature= */ null,
+                PackageInfoState.NO_PACKAGE_INFO);
 
         findApps(methods);
 
         Assert.assertTrue("No apps should match the query", mPaymentApps.isEmpty());
     }
 
-    /** Unsigned payment app should be filtered out. */
+    /** A payment app with null signature list should be filtered out. */
     @Test
     @Feature({"Payments"})
-    public void testOneAppWithoutSignatures() throws Throwable {
+    public void testOneAppWithNullSignatureList() throws Throwable {
         Set<String> methods = new HashSet<>();
         methods.add("https://bobpay.test/webpay");
         mPackageManager.installPaymentApp(
-                "BobPay", "com.bobpay", "https://bobpay.test/webpay", "" /* no signatures */);
+                "BobPay",
+                "com.bobpay",
+                "https://bobpay.test/webpay",
+                /* signature= */ null,
+                PackageInfoState.NULL_SIGNATURE_LIST);
+
+        findApps(methods);
+
+        Assert.assertTrue("No apps should match the query", mPaymentApps.isEmpty());
+    }
+
+    /** A payment app with an empty signature list should be filtered out. */
+    @Test
+    @Feature({"Payments"})
+    public void testOneAppWithEmptySignatureList() throws Throwable {
+        Set<String> methods = new HashSet<>();
+        methods.add("https://bobpay.test/webpay");
+        mPackageManager.installPaymentApp(
+                "BobPay",
+                "com.bobpay",
+                "https://bobpay.test/webpay",
+                /* signature= */ null,
+                PackageInfoState.EMPTY_SIGNATURE_LIST);
+
+        findApps(methods);
+
+        Assert.assertTrue("No apps should match the query", mPaymentApps.isEmpty());
+    }
+
+    /** A payment app with one null signature should be filtered out. */
+    @Test
+    @Feature({"Payments"})
+    public void testOneAppWithOneNullSignature() throws Throwable {
+        Set<String> methods = new HashSet<>();
+        methods.add("https://bobpay.test/webpay");
+        mPackageManager.installPaymentApp(
+                "BobPay",
+                "com.bobpay",
+                "https://bobpay.test/webpay",
+                /* signature= */ null,
+                PackageInfoState.ONE_NULL_SIGNATURE);
+
+        findApps(methods);
+
+        Assert.assertTrue("No apps should match the query", mPaymentApps.isEmpty());
+    }
+
+    /** A payment app with one empty signature should be filtered out. */
+    @Test
+    @Feature({"Payments"})
+    public void testOneAppWithOneEmptySignature() throws Throwable {
+        Set<String> methods = new HashSet<>();
+        methods.add("https://bobpay.test/webpay");
+        mPackageManager.installPaymentApp(
+                "BobPay",
+                "com.bobpay",
+                "https://bobpay.test/webpay",
+                /* signature= */ null,
+                PackageInfoState.ONE_EMPTY_SIGNATURE);
 
         findApps(methods);
 
@@ -694,6 +806,68 @@ public class AndroidPaymentAppFinderTest
 
         Assert.assertEquals("1 app should match the query again", 1, mPaymentApps.size());
         Assert.assertEquals("com.davepay.dev", mPaymentApps.get(0).getIdentifier());
+    }
+
+    /**
+     * Test a valid installation of QuincyPay with 55555555551111111111 signature and
+     * https://quincypay.test/webpay payment method, which supports a couple of different signatures
+     * (with the same package name) through two "related_applications" in the same web app manifest.
+     * Repeated app look ups should be successful.
+     */
+    @Test
+    @Feature({"Payments"})
+    public void testValidQuincyPay1() throws Throwable {
+        Set<String> methods = new HashSet<>();
+        methods.add("https://quincypay.test/webpay");
+        mPackageManager.installPaymentApp(
+                "QuincyPay",
+                "com.quincypay.app",
+                "https://quincypay.test/webpay",
+                /* signature= */ "55555555551111111111");
+
+        findApps(methods);
+
+        Assert.assertEquals("1 app should match the query", 1, mPaymentApps.size());
+        Assert.assertEquals("com.quincypay.app", mPaymentApps.get(0).getIdentifier());
+
+        mPaymentApps.clear();
+        mAllPaymentAppsCreated = false;
+
+        findApps(methods);
+
+        Assert.assertEquals("1 app should match the query again", 1, mPaymentApps.size());
+        Assert.assertEquals("com.quincypay.app", mPaymentApps.get(0).getIdentifier());
+    }
+
+    /**
+     * Test a valid installation of QuincyPay with 55555555552222222222 signature and
+     * https://quincypay.test/webpay payment method, which supports a couple of different signatures
+     * (with the same package name) through two "related_applications" in the same web app manifest.
+     * Repeated app look ups should be successful.
+     */
+    @Test
+    @Feature({"Payments"})
+    public void testValidQuincyPay2() throws Throwable {
+        Set<String> methods = new HashSet<>();
+        methods.add("https://quincypay.test/webpay");
+        mPackageManager.installPaymentApp(
+                "QuincyPay",
+                "com.quincypay.app",
+                "https://quincypay.test/webpay",
+                /* signature= */ "55555555552222222222");
+
+        findApps(methods);
+
+        Assert.assertEquals("1 app should match the query", 1, mPaymentApps.size());
+        Assert.assertEquals("com.quincypay.app", mPaymentApps.get(0).getIdentifier());
+
+        mPaymentApps.clear();
+        mAllPaymentAppsCreated = false;
+
+        findApps(methods);
+
+        Assert.assertEquals("1 app should match the query again", 1, mPaymentApps.size());
+        Assert.assertEquals("com.quincypay.app", mPaymentApps.get(0).getIdentifier());
     }
 
     /**
@@ -1594,7 +1768,8 @@ public class AndroidPaymentAppFinderTest
                 "com.bobpay",
                 "https://bobpay.test/webpay",
                 supportedDelegations,
-                /* signature= */ "01020304050607080900");
+                /* signature= */ "01020304050607080900",
+                PackageInfoState.ONE_VALID_SIGNATURE);
 
         findApps(methods);
 
@@ -1620,7 +1795,8 @@ public class AndroidPaymentAppFinderTest
                 "com.bobpay",
                 "https://bobpay.test/webpay",
                 invalidDelegations,
-                /* signature= */ "01020304050607080900");
+                /* signature= */ "01020304050607080900",
+                PackageInfoState.ONE_VALID_SIGNATURE);
 
         findApps(methods);
 
@@ -1667,16 +1843,16 @@ public class AndroidPaymentAppFinderTest
                 () -> {
                     AndroidPaymentAppFinder finder =
                             new AndroidPaymentAppFinder(
-                                    new PaymentManifestWebDataService(getWebContents()),
+                                    new WebPaymentsWebDataService(getWebContents()),
                                     mDownloader,
                                     new PaymentManifestParser(),
                                     mPackageManager,
-                                    /* delegate= */ this,
+                                    /* factoryDelegate= */ this,
                                     /* factory= */ null);
-                    finder.bypassIsReadyToPayServiceInTest();
+                    AndroidPaymentAppFinder.bypassIsReadyToPayServiceInTest();
                     if (appStorePackageName != null) {
-                        assert appStorePaymentMethod != null;
-                        assert appStorePaymentMethod.isValid();
+                        assertThat(appStorePaymentMethod).isNotNull();
+                        assertThat(appStorePaymentMethod.isValid()).isTrue();
                         finder.addAppStoreForTest(appStorePackageName, appStorePaymentMethod);
                     }
                     finder.findAndroidPaymentApps();

@@ -27,6 +27,7 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -113,7 +114,7 @@ void NotificationCenterView::AddChildViews(
   scroller_->layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{
       static_cast<float>(kMessageCenterScrollViewCornerRadius)});
 
-  AddChildView(scroller_.get());
+  AddChildViewRaw(scroller_.get());
 
   // Make sure the scroll view takes up the entirety of available height in the
   // notification center view. We're relying on a max height constraint
@@ -126,7 +127,7 @@ void NotificationCenterView::AddChildViews(
       scroller_->AddContentsScrolledCallback(base::BindRepeating(
           &NotificationCenterView::OnContentsScrolled, base::Unretained(this)));
 
-  AddChildView(notification_bar_.get());
+  AddChildViewRaw(notification_bar_.get());
 }
 
 bool NotificationCenterView::UpdateNotificationBar() {

@@ -13,7 +13,6 @@
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/run_loop.h"
@@ -22,7 +21,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
+#include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
 #include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
 #include "chrome/browser/performance_manager/test_support/page_discarding_utils.h"
 #include "chrome/browser/performance_manager/user_tuning/profile_discard_opt_out_list_helper.h"
@@ -32,13 +31,13 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/performance_manager/public/features.h"
+#include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/resource_attribution/page_context.h"
 #include "components/performance_manager/public/resource_attribution/query_results.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
-#include "components/performance_manager/test_support/run_in_graph.h"
 #include "components/performance_manager/test_support/test_harness_helper.h"
 #include "components/system_cpu/cpu_sample.h"
 #include "content/public/browser/web_contents.h"
@@ -52,15 +51,13 @@ namespace {
 
 // Number of times to see a health status consecutively for the health status to
 // change
-const int kNumHealthStatusForChange =
-    performance_manager::features::kCPUTimeOverThreshold.Get() /
-    performance_manager::features::kCPUSampleFrequency.Get();
+const int kNumHealthStatusForChange = CpuHealthTracker::kCPUTimeOverThreshold /
+                                      CpuHealthTracker::kCPUSampleFrequency;
 
 const CpuHealthTracker::CpuPercent kUnhealthySystemCpuUsagePercentage{
-    performance_manager::features::kCPUUnhealthyPercentageThreshold.Get() + 1};
+    CpuHealthTracker::kCPUUnhealthyPercentageThreshold + 1};
 const CpuHealthTracker::CpuPercent kDegradedSystemCpuUsagePercentage{
-    performance_manager::features::kCPUDegradedHealthPercentageThreshold.Get() +
-    1};
+    CpuHealthTracker::kCPUDegradedHealthPercentageThreshold + 1};
 
 class StatusWaiter : public PerformanceDetectionManager::StatusObserver {
  public:
@@ -123,20 +120,20 @@ class ActionabilityWaiter
 class CpuHealthTrackerTestHelper {
  public:
   void SetUpGraphObjects() {
-    performance_manager::RunInGraph([](Graph* graph) {
-      ASSERT_TRUE(!CpuHealthTracker::NothingRegistered(graph));
-      // Stop the timer to prevent the cpu probe from recording real CPU
-      // data which makes the health status non-deterministic when we
-      // fast forward time.
-      CpuHealthTracker* health_tracker = CpuHealthTracker::GetFromGraph(graph);
-      health_tracker->cpu_probe_timer_.Stop();
+    Graph* graph = PerformanceManager::GetGraph();
+    ASSERT_TRUE(!CpuHealthTracker::NothingRegistered(graph));
+    // Stop the timer to prevent the cpu probe from recording real CPU
+    // data which makes the health status non-deterministic when we
+    // fast forward time.
+    CpuHealthTracker* health_tracker = CpuHealthTracker::GetFromGraph(graph);
+    health_tracker->cpu_probe_timer_.Stop();
 
-      auto page_discarding_helper =
-          std::make_unique<policies::PageDiscardingHelper>();
-      page_discarding_helper->SetMockDiscarderForTesting(
-          std::make_unique<testing::MockPageDiscarder>());
-      graph->PassToGraph(std::move(page_discarding_helper));
-    });
+    graph->PassToGraph(std::make_unique<policies::DiscardEligibilityPolicy>());
+    auto page_discarding_helper =
+        std::make_unique<policies::PageDiscardingHelper>();
+    page_discarding_helper->SetMockDiscarderForTesting(
+        std::make_unique<testing::MockPageDiscarder>());
+    graph->PassToGraph(std::move(page_discarding_helper));
   }
 
   resource_attribution::CPUTimeResult CreateFakeCpuResult(
@@ -152,18 +149,11 @@ class CpuHealthTrackerTestHelper {
   void ProcessQueryResultMap(
       CpuHealthTracker::CpuPercent system_cpu_usage_percentage,
       resource_attribution::QueryResultMap results) {
-    performance_manager::PerformanceManager::CallOnGraph(
-        FROM_HERE,
-        base::BindOnce(
-            [](CpuHealthTracker::CpuPercent system_cpu_usage_percentage,
-               resource_attribution::QueryResultMap results, Graph* graph) {
-              CpuHealthTracker* const health_tracker =
-                  CpuHealthTracker::GetFromGraph(graph);
-              CHECK(health_tracker);
-              health_tracker->ProcessQueryResultMap(system_cpu_usage_percentage,
-                                                    results);
-            },
-            system_cpu_usage_percentage, results));
+    Graph* graph = PerformanceManager::GetGraph();
+    CpuHealthTracker* const health_tracker =
+        CpuHealthTracker::GetFromGraph(graph);
+    CHECK(health_tracker);
+    health_tracker->ProcessQueryResultMap(system_cpu_usage_percentage, results);
   }
 };
 
@@ -179,16 +169,12 @@ class CpuHealthTrackerTest : public ChromeRenderViewHostTestHarness,
     pm_harness_.SetUp();
     SetContents(CreateTestWebContents());
 
-    performance_manager::RunInGraph(
-        [status_change_cb = base::BindPostTask(
-             content::GetUIThreadTaskRunner({}),
-             status_change_future_.GetRepeatingCallback())](Graph* graph) {
-          std::unique_ptr<CpuHealthTracker> cpu_health_tracker =
-              std::make_unique<CpuHealthTracker>(std::move(status_change_cb),
-                                                 base::DoNothing());
+    std::unique_ptr<CpuHealthTracker> cpu_health_tracker =
+        std::make_unique<CpuHealthTracker>(
+            status_change_future_.GetRepeatingCallback(), base::DoNothing());
 
-          graph->PassToGraph(std::move(cpu_health_tracker));
-        });
+    Graph* graph = PerformanceManager::GetGraph();
+    graph->PassToGraph(std::move(cpu_health_tracker));
     SetUpGraphObjects();
   }
 
@@ -328,14 +314,13 @@ TEST_F(CpuHealthTrackerTest, HealthyCpuUsageFromProbe) {
 
   EXPECT_EQ(CpuHealthTracker::HealthLevel::kDegraded, GetFutureHealthLevel());
 
-  performance_manager::RunInGraph([](Graph* graph) {
-    CpuHealthTracker* const health_tracker =
-        CpuHealthTracker::GetFromGraph(graph);
-    CHECK(health_tracker);
-    for (int i = 0; i < kNumHealthStatusForChange; i++) {
-      health_tracker->ProcessCpuProbeResult(system_cpu::CpuSample{0});
-    }
-  });
+  Graph* graph = PerformanceManager::GetGraph();
+  CpuHealthTracker* const health_tracker =
+      CpuHealthTracker::GetFromGraph(graph);
+  CHECK(health_tracker);
+  for (int i = 0; i < kNumHealthStatusForChange; i++) {
+    health_tracker->ProcessCpuProbeResult(system_cpu::CpuSample{0});
+  }
 
   EXPECT_EQ(CpuHealthTracker::HealthLevel::kHealthy, GetFutureHealthLevel());
 }
@@ -354,13 +339,12 @@ class CpuHealthTrackerBrowserTest : public BrowserWithTestWindowTest,
     pm_harness_.SetUp();
     manager_.reset(new PerformanceDetectionManager());
     SetUpGraphObjects();
-    performance_manager::RunInGraph(
-        [context_id = browser()->profile()->UniqueId()](Graph* graph) {
-          policies::PageDiscardingHelper* const discard_helper =
-              policies::PageDiscardingHelper::GetFromGraph(graph);
-          CHECK(discard_helper);
-          discard_helper->SetNoDiscardPatternsForProfile(context_id, {});
-        });
+    Graph* graph = PerformanceManager::GetGraph();
+    policies::DiscardEligibilityPolicy* const eligibility_policy =
+        policies::DiscardEligibilityPolicy::GetFromGraph(graph);
+    CHECK(eligibility_policy);
+    eligibility_policy->SetNoDiscardPatternsForProfile(
+        browser()->profile()->UniqueId(), {});
 
     helper_ = std::make_unique<ProfileDiscardOptOutListHelper>();
     helper_->OnProfileAdded(browser()->profile());
@@ -484,31 +468,20 @@ TEST_F(CpuHealthTrackerBrowserTest, PagesMeetMinimumCpuUsage) {
     page_contexts_cpu.insert(
         {page_context,
          CpuHealthTracker::CpuPercent(
-             performance_manager::features::kMinimumActionableTabCPUPercentage
-                 .Get() -
-             1)});
+             CpuHealthTracker::kMinimumActionableTabCPUPercentage - 1)});
   }
 
-  PerformanceManager::CallOnGraph(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::flat_map<resource_attribution::PageContext,
-                            CpuHealthTracker::CpuPercent> page_contexts_cpu,
-             Graph* graph) {
-            CpuHealthTracker::GetFromGraph(graph)->GetFilteredActionableTabs(
-                page_contexts_cpu,
-                CpuHealthTracker::CpuPercent(
-                    performance_manager::features::
-                        kCPUDegradedHealthPercentageThreshold.Get()),
-                base::BindOnce(
-                    [](CpuHealthTracker::ActionableTabsResult result) {
-                      // The actionable tab list should be empty because each
-                      // page's CPU usage is below the minimum needed to  be
-                      // considered as actionable.
-                      EXPECT_TRUE(result.empty());
-                    }));
-          },
-          std::move(page_contexts_cpu)));
+  Graph* graph = PerformanceManager::GetGraph();
+  CpuHealthTracker::GetFromGraph(graph)->GetFilteredActionableTabs(
+      page_contexts_cpu,
+      CpuHealthTracker::CpuPercent(
+          CpuHealthTracker::kCPUDegradedHealthPercentageThreshold),
+      base::BindOnce([](CpuHealthTracker::ActionableTabsResult result) {
+        // The actionable tab list should be empty because each
+        // page's CPU usage is below the minimum needed to  be
+        // considered as actionable.
+        EXPECT_TRUE(result.empty());
+      }));
 }
 
 // The PerformanceDetectionManager should properly notify observers
@@ -606,7 +579,7 @@ TEST_F(CpuHealthTrackerBrowserTest, NotifyWhenNoTabsAreActionable) {
   task_environment()->FastForwardBy(base::Seconds(60));
   result_map[first_page_context] = {
       .cpu_time_result = CreateFakeCpuResult(base::Seconds(
-          features::kMinimumActionableTabCPUPercentage.Get() - 1))};
+          CpuHealthTracker::kMinimumActionableTabCPUPercentage - 1))};
 
   // Verify that there is no actionable tabs because the first tab's CPU usage
   // is below the minimum needed to be considered as actionable
@@ -628,7 +601,7 @@ TEST_F(CpuHealthTrackerBrowserTest, NeedMultipleTabsToBeActionable) {
   task_environment()->FastForwardBy(base::Seconds(60));
   resource_attribution::QueryResultMap result_map;
   const int cpu_time =
-      features::kMinimumActionableTabCPUPercentage.Get() / 100.0 * 60;
+      CpuHealthTracker::kMinimumActionableTabCPUPercentage / 100.0 * 60;
   result_map[first_page_context] = {
       .cpu_time_result = CreateFakeCpuResult(
           base::Seconds((cpu_time + 1) * base::SysInfo::NumberOfProcessors()))};
@@ -641,8 +614,8 @@ TEST_F(CpuHealthTrackerBrowserTest, NeedMultipleTabsToBeActionable) {
       {PerformanceDetectionManager::ResourceType::kCpu}, &observer);
   ProcessQueryResultMap(
       CpuHealthTracker::CpuPercent(
-          features::kCPUUnhealthyPercentageThreshold.Get() +
-          (2 * features::kMinimumActionableTabCPUPercentage.Get())),
+          CpuHealthTracker::kCPUUnhealthyPercentageThreshold +
+          (2 * CpuHealthTracker::kMinimumActionableTabCPUPercentage)),
       result_map);
   observer.Wait();
 
@@ -697,17 +670,15 @@ TEST_F(CpuHealthTrackerBrowserTest, ActionableTabsIgnoreIncognitoTabs) {
   Profile* const default_profile = profile();
   Profile* const incognito_profile =
       default_profile->GetPrimaryOTRProfile(true);
-  auto browser_window = CreateBrowserWindow();
-  auto incognito_browser = CreateBrowser(
-      incognito_profile, Browser::TYPE_NORMAL, false, browser_window.get());
+  auto incognito_browser =
+      CreateBrowser(incognito_profile, Browser::TYPE_NORMAL, false);
   AddTab(incognito_browser.get(), GURL("http://a.com"));
 
   // This is usually called when the profile is created. Fake it here since it
   // doesn't happen in tests.
-  RunInGraph([&](Graph* graph) {
-    policies::PageDiscardingHelper::GetFromGraph(graph)
-        ->SetNoDiscardPatternsForProfile(incognito_profile->UniqueId(), {});
-  });
+  Graph* graph = PerformanceManager::GetGraph();
+  policies::DiscardEligibilityPolicy::GetFromGraph(graph)
+      ->SetNoDiscardPatternsForProfile(incognito_profile->UniqueId(), {});
 
   resource_attribution::PageContext default_page_context =
       AddBackgroundTab("http://b.com", browser());

@@ -4,36 +4,49 @@
 
 #import "ios/chrome/browser/policy/model/configuration_policy_handler_list_factory.h"
 
+#import <array>
+
 #import "base/check.h"
 #import "base/functional/bind.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "components/bookmarks/managed/managed_bookmarks_policy_handler.h"
+#import "components/collaboration/public/pref_names.h"
 #import "components/commerce/core/pref_names.h"
 #import "components/component_updater/pref_names.h"
 #import "components/content_settings/core/common/pref_names.h"
+#import "components/contextual_search/pref_names.h"
+#import "components/enterprise/browser/data_region/data_region_policy_handler.h"
+#import "components/enterprise/browser/reporting/cloud_profile_reporting_policy_handler.h"
 #import "components/enterprise/browser/reporting/cloud_reporting_frequency_policy_handler.h"
 #import "components/enterprise/browser/reporting/cloud_reporting_policy_handler.h"
 #import "components/enterprise/browser/reporting/common_pref_names.h"
+#import "components/enterprise/connectors/core/connectors_prefs.h"
+#import "components/enterprise/connectors/core/enterprise_connectors_policy_handler.h"
+#import "components/enterprise/data_controls/core/browser/data_controls_policy_handler.h"
+#import "components/enterprise/data_controls/core/browser/prefs.h"
 #import "components/enterprise/idle/idle_timeout_policy_handler.h"
 #import "components/history/core/common/pref_names.h"
 #import "components/lens/lens_overlay_permission_utils.h"
 #import "components/metrics/metrics_pref_names.h"
-#import "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#import "components/omnibox/browser/omnibox_prefs.h"
+#import "components/optimization_guide/core/feature_registry/feature_registration.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/policy/core/browser/boolean_disabling_policy_handler.h"
 #import "components/policy/core/browser/configuration_policy_handler.h"
 #import "components/policy/core/browser/configuration_policy_handler_list.h"
 #import "components/policy/core/browser/configuration_policy_handler_parameters.h"
-#import "components/policy/core/browser/url_blocklist_policy_handler.h"
+#import "components/policy/core/browser/gen_ai_default_settings_policy_handler.h"
+#import "components/policy/core/browser/url_list/url_blocklist_policy_handler.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/policy/policy_constants.h"
 #import "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#import "components/search_engines/default_search_policy_handler.h"
+#import "components/search_engines/enterprise/default_search_policy_handler.h"
 #import "components/security_interstitials/core/https_only_mode_policy_handler.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync/service/sync_policy_handler.h"
+#import "components/themes/theme_color_policy_handler.h"
 #import "components/translate/core/browser/translate_pref_names.h"
 #import "components/unified_consent/pref_names.h"
 #import "components/variations/pref_names.h"
@@ -51,7 +64,7 @@ namespace {
 // List of policy types to preference names. This is used for simple policies
 // that directly map to a single preference.
 // clang-format off
-const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
+constexpr auto kSimplePolicyMap = std::to_array<PolicyToPreferenceMapEntry>({
   { policy::key::kAllowChromeDataInBackups,
     prefs::kAllowChromeDataInBackups,
     base::Value::Type::BOOLEAN },
@@ -75,6 +88,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::BOOLEAN },
   { policy::key::kPasswordManagerEnabled,
     password_manager::prefs::kCredentialsEnableService,
+    base::Value::Type::BOOLEAN },
+  { policy::key::kPasswordManagerPasskeysEnabled,
+    password_manager::prefs::kCredentialsEnablePasskeys,
     base::Value::Type::BOOLEAN },
   { policy::key::kPasswordSharingEnabled,
     password_manager::prefs::kPasswordSharingEnabled,
@@ -139,9 +155,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { policy::key::kContextMenuPhotoSharingSettings,
     prefs::kIosSaveToPhotosContextMenuPolicySettings,
     base::Value::Type::INTEGER },
-  { policy::key::kParcelTrackingEnabled,
-    prefs::kIosParcelTrackingPolicyEnabled,
-    base::Value::Type::BOOLEAN },
   { policy::key::kInsecureFormsWarningsEnabled,
     prefs::kInsecureFormWarningsEnabled,
     base::Value::Type::BOOLEAN },
@@ -149,9 +162,39 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kIosSaveToDriveDownloadManagerPolicySettings,
     base::Value::Type::INTEGER },
   { policy::key::kTabCompareSettings,
-    optimization_guide::model_execution::prefs::kTabCompareSettingsEnterprisePolicyAllowed,
+    optimization_guide::prefs::kProductSpecificationsEnterprisePolicyAllowed,
     base::Value::Type::INTEGER},
-};
+  { policy::key::kDownloadRestrictions,
+    policy::policy_prefs::kDownloadRestrictions,
+    base::Value::Type::INTEGER },
+  { policy::key::kFilePickerChooseFromDriveSettings,
+    prefs::kIosChooseFromDriveFilePickerPolicySettings,
+    base::Value::Type::INTEGER },
+  { policy::key::kProfileSeparationDataMigrationSettings,
+    prefs::kProfileSeparationDataMigrationSettings,
+    base::Value::Type::INTEGER },
+  { policy::key::kProvisionalNotificationsAllowed,
+    prefs::kProvisionalNotificationsAllowedByPolicy,
+    base::Value::Type::BOOLEAN },
+  { policy::key::kAIModeSettings,
+    omnibox::kAIModeSettings,
+    base::Value::Type::INTEGER },
+  { policy::key::kGeminiSettings,
+    prefs::kGeminiEnabledByPolicy,
+    base::Value::Type::INTEGER },
+  { policy::key::kNTPCustomBackgroundEnabled,
+    prefs::kNTPCustomBackgroundEnabledByPolicy,
+    base::Value::Type::BOOLEAN },
+  { policy::key::kIncognitoModeBlocklist,
+    policy::policy_prefs::kIncognitoModeBlocklist,
+    base::Value::Type::LIST },
+  { policy::key::kIncognitoModeAllowlist,
+    policy::policy_prefs::kIncognitoModeAllowlist,
+    base::Value::Type::LIST },
+  { policy::key::kSearchContentSharingSettings,
+    contextual_search::kSearchContentSharingSettings,
+    base::Value::Type::INTEGER },
+});
 // clang-format on
 
 void PopulatePolicyHandlerParameters(
@@ -168,10 +211,9 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
           base::BindRepeating(&policy::GetChromePolicyDetails),
           are_future_policies_allowed_by_default);
 
-  for (size_t i = 0; i < std::size(kSimplePolicyMap); ++i) {
+  for (const PolicyToPreferenceMapEntry& entry : kSimplePolicyMap) {
     handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
-        kSimplePolicyMap[i].policy_name, kSimplePolicyMap[i].preference_path,
-        kSimplePolicyMap[i].value_type));
+        entry.policy_name, entry.preference_path, entry.value_type));
   }
 
   handlers->AddHandler(std::make_unique<policy::BooleanDisablingPolicyHandler>(
@@ -196,6 +238,9 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
   handlers->AddHandler(
       std::make_unique<
           enterprise_reporting::CloudReportingFrequencyPolicyHandler>());
+  handlers->AddHandler(
+      std::make_unique<
+          enterprise_reporting::CloudProfileReportingPolicyHandler>());
   handlers->AddHandler(
       std::make_unique<policy::NewTabPageLocationPolicyHandler>());
   handlers->AddHandler(std::make_unique<policy::URLBlocklistPolicyHandler>(
@@ -223,5 +268,58 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
           chrome_schema));
   handlers->AddHandler(
       std::make_unique<enterprise_idle::IdleTimeoutPolicyHandler>());
+
+  std::vector<policy::GenAiDefaultSettingsPolicyHandler::GenAiPolicyDetails>
+      gen_ai_default_policies;
+  gen_ai_default_policies.emplace_back(
+      policy::key::kLensOverlaySettings, lens::prefs::kLensOverlaySettings,
+      policy::GenAiDefaultSettingsPolicyHandler::PolicyValueToPrefMap(
+          {{0, 0}, {1, 0}, {2, 1}}));
+  gen_ai_default_policies.emplace_back(
+      policy::key::kAIModeSettings, omnibox::kAIModeSettings,
+      policy::GenAiDefaultSettingsPolicyHandler::PolicyValueToPrefMap(
+          {{0, 0}, {1, 0}, {2, 1}}));
+  // Default value for SearchContentSharingSettings is 0 if
+  // GenAiDefaultSettings value is 0 or 1, or 1 if the latter is 2.
+  gen_ai_default_policies.emplace_back(
+      policy::key::kSearchContentSharingSettings,
+      contextual_search::kSearchContentSharingSettings,
+      policy::GenAiDefaultSettingsPolicyHandler::PolicyValueToPrefMap(
+          {{0, 0}, {1, 0}, {2, 1}}));
+  handlers->AddHandler(
+      std::make_unique<policy::GenAiDefaultSettingsPolicyHandler>(
+          std::move(gen_ai_default_policies)));
+
+  handlers->AddHandler(std::make_unique<policy::CloudUserOnlyPolicyHandler>(
+      std::make_unique<SimplePolicyHandler>(
+          policy::key::kTabGroupSharingSettings,
+          collaboration::prefs::kSharedTabGroupsManagedAccountSetting,
+          base::Value::Type::INTEGER)));
+
+  handlers->AddHandler(std::make_unique<ThemeColorPolicyHandler>());
+
+  handlers->AddHandler(
+      std::make_unique<
+          enterprise_connectors::EnterpriseConnectorsPolicyHandler>(
+          policy::key::kEnterpriseRealTimeUrlCheckMode,
+          enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
+          enterprise_connectors::kEnterpriseRealTimeUrlCheckScope,
+          chrome_schema));
+
+  handlers->AddHandler(
+      std::make_unique<
+          enterprise_connectors::EnterpriseConnectorsPolicyHandler>(
+          policy::key::kOnSecurityEventEnterpriseConnector,
+          enterprise_connectors::kOnSecurityEventPref,
+          enterprise_connectors::kOnSecurityEventScopePref, chrome_schema));
+
+  handlers->AddHandler(std::make_unique<policy::DataRegionPolicyHandler>(
+      policy::key::kChromeDataRegionSetting, prefs::kChromeDataRegionSetting));
+
+  handlers->AddHandler(
+      std::make_unique<data_controls::DataControlsPolicyHandler>(
+          policy::key::kDataControlsRules,
+          data_controls::kDataControlsRulesPref, chrome_schema));
+
   return handlers;
 }

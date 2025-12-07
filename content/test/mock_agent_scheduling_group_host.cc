@@ -16,13 +16,6 @@ MockAgentSchedulingGroupHost::MockAgentSchedulingGroupHost(
     RenderProcessHost& process)
     : AgentSchedulingGroupHost(process) {}
 
-bool MockAgentSchedulingGroupHost::Send(IPC::Message* message) {
-  // Save the message in the sink.
-  sink_.OnMessageReceived(*message);
-  delete message;
-  return true;
-}
-
 MockAgentSchedulingGroupHostFactory::MockAgentSchedulingGroupHostFactory() =
     default;
 

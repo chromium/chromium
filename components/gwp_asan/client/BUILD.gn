@@ -22,11 +22,15 @@ source_set("features") {
     ":export",
     "//base",
   ]
-  configs += [ ":gwp_asan_implementation" ]
+  configs += [
+    ":gwp_asan_implementation",
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
 
   if (is_android) {
     sources += [ "feature_map.cc" ]
-    deps += [ "android:gwp_asan_headers" ]
+    deps += [ "android:gwp_asan_jni" ]
   }
 }
 
@@ -59,6 +63,8 @@ component("client") {
     sources += [
       "extreme_lightweight_detector_malloc_shims.cc",
       "extreme_lightweight_detector_malloc_shims.h",
+      "extreme_lightweight_detector_quarantine.cc",
+      "extreme_lightweight_detector_quarantine.h",
       "lightweight_detector/malloc_shims.cc",
       "lightweight_detector/malloc_shims.h",
       "lightweight_detector/random_eviction_quarantine.cc",
@@ -77,6 +83,11 @@ component("client") {
     ]
   }
 
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
+
   deps = [
     ":export",
     ":features",
@@ -89,7 +100,7 @@ component("client") {
 
   configs += [ ":gwp_asan_implementation" ]
 
-  if (is_android) {
+  if (is_android || is_ios) {
     deps += [ "//components/crash/core/app" ]
   }
 }
@@ -103,16 +114,17 @@ source_set("unit_tests") {
     "sampling_helpers_unittest.cc",
   ]
 
-  if (use_allocator_shim) {
+  if (use_allocator_shim && !is_ios) {
     sources += [
       "extreme_lightweight_detector_malloc_shims_unittest.cc",
+      "extreme_lightweight_detector_quarantine_unittest.cc",
       "lightweight_detector/malloc_shims_unittest.cc",
       "lightweight_detector/random_eviction_quarantine_unittest.cc",
       "sampling_malloc_shims_unittest.cc",
     ]
   }
 
-  if (use_partition_alloc) {
+  if (use_partition_alloc && !is_ios) {
     sources += [
       "lightweight_detector/partitionalloc_shims_unittest.cc",
       "sampling_partitionalloc_shims_unittest.cc",
@@ -122,6 +134,7 @@ source_set("unit_tests") {
   deps = [
     ":client",
     "//base/allocator:buildflags",
+    "//base/allocator/partition_allocator/src/partition_alloc:test_support",
     "//base/test:test_support",
     "//components/crash/core/common:crash_key",
     "//components/gwp_asan/common",

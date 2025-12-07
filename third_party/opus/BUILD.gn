@@ -10,10 +10,7 @@ use_opus_arm_optimization =
     current_cpu == "arm" ||
     (current_cpu == "arm64" && (is_fuchsia || is_ios || is_win))
 
-# NaCl, unlike Chrome, doesn't target SSE2 minimum, so skip optimizations for
-# the sake of simplicity.
-use_opus_x86_optimization =
-    !is_nacl && (current_cpu == "x86" || current_cpu == "x64")
+use_opus_x86_optimization = current_cpu == "x86" || current_cpu == "x64"
 
 # If OPUS Run Time CPU Detections (RTCD) shall be used.
 # Based on the conditions in celt/arm/armcpu.c:
@@ -350,6 +347,7 @@ static_library("opus") {
     "src/silk/typedef.h",
     "src/src/analysis.c",
     "src/src/analysis.h",
+    "src/src/extensions.c",
     "src/src/mapping_matrix.c",
     "src/src/mapping_matrix.h",
     "src/src/mlp.c",

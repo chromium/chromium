@@ -7,7 +7,7 @@
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "net/base/net_errors.h"
-#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/loading_params.h"
 #include "services/network/shared_dictionary/shared_dictionary_writer.h"
 
 namespace network {
@@ -15,8 +15,8 @@ namespace network {
 // static
 
 uint32_t SharedDictionaryDataPipeWriter::GetDataPipeBufferSize() {
-  return network::features::GetDataPipeDefaultAllocationSize(
-      features::DataPipeAllocationSize::kLargerSizeIfPossible);
+  return GetDataPipeDefaultAllocationSize(
+      DataPipeAllocationSize::kLargerSizeIfPossible);
 }
 
 // static
@@ -103,11 +103,9 @@ void SharedDictionaryDataPipeWriter::ContinueReadWrite(
       return;
     case MOJO_RESULT_SHOULD_WAIT:
       // `consumer_handle_` must be readable or closed here.
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   size_t actually_written_bytes = 0;
@@ -126,11 +124,9 @@ void SharedDictionaryDataPipeWriter::ContinueReadWrite(
       FinishDataPipeOperation(/*success=*/false);
       return;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
-  std::string_view chars = base::as_string_view(buffer);
-  writer_->Append(chars.data(), chars.size());
+  writer_->Append(buffer);
   consumer_handle_->EndReadData(buffer.size());
   consumer_watcher_.ArmOrNotify();
 }

@@ -17,8 +17,7 @@ namespace {
 void SetWindowBoundsInScreen(aura::Window* window,
                              const gfx::Rect& bounds_in_screen) {
   window->SetBoundsInScreen(
-      bounds_in_screen,
-      display::Screen::GetScreen()->GetDisplayNearestView(window));
+      bounds_in_screen, display::Screen::Get()->GetDisplayNearestView(window));
 }
 
 // Moves the window to ensure caret not in rect.
@@ -32,12 +31,9 @@ void MoveWindowToEnsureCaretNotInRect(aura::Window* window,
   }
 
   // Calculate vertical window shift.
-  const int top_y =
-      std::max(rect_in_screen.y() - original_window_bounds.height(),
-               display::Screen::GetScreen()
-                   ->GetDisplayNearestView(window)
-                   .work_area()
-                   .y());
+  const int top_y = std::max(
+      rect_in_screen.y() - original_window_bounds.height(),
+      display::Screen::Get()->GetDisplayNearestView(window).work_area().y());
 
   // No need to move the window up.
   if (top_y >= original_window_bounds.y())
@@ -54,9 +50,7 @@ void MoveWindowToEnsureCaretNotInRect(aura::Window* window,
 
 }  // namespace
 
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Rect,
-                                   kVirtualKeyboardRestoreBoundsKey,
-                                   nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Rect, kVirtualKeyboardRestoreBoundsKey)
 
 void RestoreWindowBoundsOnClientFocusLost(aura::Window* window) {
   // Get restore bounds of the window

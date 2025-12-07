@@ -2,23 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/safe_browsing/tailored_security_desktop_dialog_manager.h"
+
 #include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/browser/ui/views/safe_browsing/tailored_security_desktop_dialog_manager.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_outcome.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_switches.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -80,13 +81,15 @@ class TailoredSecurityDesktopDialogManagerTest
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     // Reduce flakes by ensuring that animation is disabled.
-    ui::ScopedAnimationDurationScaleMode disable_animation(
-        ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode disable_animation(
+        gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
     const std::string& actual_name = name.substr(0, name.find("/"));
     if (actual_name == "enabledDialog") {
-      dialog_manager_->ShowEnabledDialogForBrowser(browser());
+      dialog_manager_->ShowEnabledDialogForBrowser(browser(),
+                                                   base::DoNothing());
     } else if (actual_name == "disabledDialog") {
-      dialog_manager_->ShowDisabledDialogForBrowser(browser());
+      dialog_manager_->ShowDisabledDialogForBrowser(browser(),
+                                                    base::DoNothing());
     } else {
       FAIL() << "No dialog case defined for this string: " << name;
     }
@@ -102,7 +105,7 @@ class TailoredSecurityDesktopDialogManagerTest
     views::NamedWidgetShownWaiter waiter(
         views::test::AnyWidgetTestPasskey{},
         safe_browsing::kTailoredSecurityNoticeDialog);
-    dialog_manager_->ShowEnabledDialogForBrowser(browser);
+    dialog_manager_->ShowEnabledDialogForBrowser(browser, base::DoNothing());
 
     return waiter.WaitIfNeededAndGet();
   }
@@ -111,7 +114,7 @@ class TailoredSecurityDesktopDialogManagerTest
     views::NamedWidgetShownWaiter waiter(
         views::test::AnyWidgetTestPasskey{},
         safe_browsing::kTailoredSecurityNoticeDialog);
-    dialog_manager_->ShowDisabledDialogForBrowser(browser);
+    dialog_manager_->ShowDisabledDialogForBrowser(browser, base::DoNothing());
 
     return waiter.WaitIfNeededAndGet();
   }

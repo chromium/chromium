@@ -1,0 +1,14 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_android)
+
+source_set("app_icon_loader") {
+  public = [
+    "app_icon_loader.h",
+    "app_icon_loader_delegate.h",
+  ]
+  sources = [ "app_icon_loader.cc" ]
+  public_deps = [ "//base" ]
+}

@@ -5,19 +5,21 @@
 #ifndef GPU_IPC_COMMON_GPU_FEATURE_INFO_MOJOM_TRAITS_H_
 #define GPU_IPC_COMMON_GPU_FEATURE_INFO_MOJOM_TRAITS_H_
 
+#include <array>
+
 #include "base/notreached.h"
 #include "gpu/config/gpu_blocklist.h"
 #include "gpu/config/gpu_driver_bug_list.h"
 #include "gpu/config/gpu_feature_info.h"
-#include "gpu/gpu_export.h"
 #include "gpu/ipc/common/gpu_feature_info.mojom.h"
+#include "gpu/ipc/common/gpu_ipc_common_export.h"
 #include "ui/gfx/mojom/buffer_types_mojom_traits.h"
 
 namespace mojo {
 
 template <>
-struct GPU_EXPORT
-    EnumTraits<gpu::mojom::GpuFeatureStatus, gpu::GpuFeatureStatus> {
+struct GPU_IPC_COMMON_EXPORT EnumTraits<gpu::mojom::GpuFeatureStatus,
+                                        gpu::GpuFeatureStatus> {
   static gpu::mojom::GpuFeatureStatus ToMojom(gpu::GpuFeatureStatus status) {
     switch (status) {
       case gpu::kGpuFeatureStatusEnabled:
@@ -33,8 +35,7 @@ struct GPU_EXPORT
       case gpu::kGpuFeatureStatusMax:
         return gpu::mojom::GpuFeatureStatus::Max;
     }
-    NOTREACHED_IN_MIGRATION();
-    return gpu::mojom::GpuFeatureStatus::Max;
+    NOTREACHED();
   }
 
   static bool FromMojom(gpu::mojom::GpuFeatureStatus input,
@@ -64,8 +65,8 @@ struct GPU_EXPORT
 };
 
 template <>
-struct GPU_EXPORT
-    StructTraits<gpu::mojom::GpuFeatureInfoDataView, gpu::GpuFeatureInfo> {
+struct GPU_IPC_COMMON_EXPORT StructTraits<gpu::mojom::GpuFeatureInfoDataView,
+                                          gpu::GpuFeatureInfo> {
   static bool Read(gpu::mojom::GpuFeatureInfoDataView data,
                    gpu::GpuFeatureInfo* out);
 

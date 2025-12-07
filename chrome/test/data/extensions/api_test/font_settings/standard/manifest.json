@@ -1,10 +1,10 @@
 {
   "name": "Font Settings API Test Extension",
   "version": "0.1",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "description": "end-to-end browser test for chrome.experimental.fontSettings API",
   "background": {
-    "scripts": ["test.js"]
+    "service_worker": "test.js"
   },
   "permissions": ["fontSettings"]
 }

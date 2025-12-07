@@ -49,7 +49,6 @@ _NAMED_TYPE_INFO = {
     'is_complete': True,
     'valid': [
       'GL_COMMANDS_ISSUED_CHROMIUM',
-      'GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM',
       'GL_COMMANDS_COMPLETED_CHROMIUM',
     ],
   },
@@ -96,9 +95,9 @@ _NAMED_TYPE_INFO = {
     'type': 'GLenum',
     'is_complete': True,
     'valid': [
-      'GL_GUILTY_CONTEXT_RESET_ARB',
-      'GL_INNOCENT_CONTEXT_RESET_ARB',
-      'GL_UNKNOWN_CONTEXT_RESET_ARB',
+      'GL_GUILTY_CONTEXT_RESET',
+      'GL_INNOCENT_CONTEXT_RESET',
+      'GL_UNKNOWN_CONTEXT_RESET',
     ],
   },
   'gfx::BufferUsage': {
@@ -204,22 +203,6 @@ _FUNCTION_INFO = {
     'result': ['uint32_t'],
     'trace_level': 2,
   },
-  'ConvertYUVAMailboxesToRGBINTERNAL': {
-    'decoder_func': 'DoConvertYUVAMailboxesToRGBINTERNAL',
-    'internal': True,
-    'type': 'PUT',
-    'count': 144, #GL_MAILBOX_SIZE_CHROMIUM x5 + 16 floats
-    'unit_test': False,
-    'trace_level': 2,
-  },
-  'ConvertRGBAToYUVAMailboxesINTERNAL': {
-    'decoder_func': 'DoConvertRGBAToYUVAMailboxesINTERNAL',
-    'internal': True,
-    'type': 'PUT',
-    'count': 80, #GL_MAILBOX_SIZE_CHROMIUM x5
-    'unit_test': False,
-    'trace_level': 2,
-  },
   'Finish': {
     'impl_func': False,
     'client_test': False,
@@ -273,21 +256,9 @@ _FUNCTION_INFO = {
     'gl_test_func': 'glEndnQuery',
     'client_test': False,
   },
-  'QueryCounterEXT' : {
-    'type': 'Custom',
-    'impl_func': False,
-    'cmd_args': 'GLidQuery id, GLenumQueryTarget target, '
-                'void* sync_data, GLuint submit_count',
-    'data_transfer_methods': ['shm'],
-    'gl_test_func': 'glQueryCounter',
-  },
   'GetQueryObjectuivEXT': {
     'type': 'NoCommand',
     'gl_test_func': 'glGetQueryObjectuiv',
-  },
-  'GetQueryObjectui64vEXT': {
-    'type': 'NoCommand',
-    'gl_test_func': 'glGetQueryObjectui64v',
   },
   'OrderingBarrierCHROMIUM': {
     'type': 'NoCommand',
@@ -327,6 +298,7 @@ _FUNCTION_INFO = {
   },
   'RasterCHROMIUM': {
     'decoder_func': 'DoRasterCHROMIUM',
+    'type': 'Custom',
     'internal': True,
     'impl_func': True,
     'cmd_args': 'GLuint raster_shm_id, GLuint raster_shm_offset,'
@@ -360,6 +332,12 @@ _FUNCTION_INFO = {
     'unit_test': False,
   },
   'DeletePaintCachePathsINTERNAL': {
+    'type': 'DELn',
+    'internal': True,
+    'unit_test': False,
+    'data_transfer_methods': ['immediate', 'shm'],
+  },
+  'DeletePaintCacheEffectsINTERNAL': {
     'type': 'DELn',
     'internal': True,
     'unit_test': False,

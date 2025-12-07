@@ -17,7 +17,9 @@
 #include "ui/base/ime/ash/component_extension_ime_manager.h"
 #include "ui/base/ime/ash/component_extension_ime_manager_delegate.h"
 
-class Profile;
+namespace content {
+class BrowserContext;
+}
 
 namespace ash {
 namespace input_method {
@@ -37,7 +39,7 @@ class ComponentExtensionIMEManagerDelegateImpl
 
   // ComponentExtensionIMEManagerDelegate overrides:
   std::vector<ComponentExtensionIME> ListIME() override;
-  void Load(Profile* profile,
+  void Load(content::BrowserContext* context,
             const std::string& extension_id,
             const std::string& manifest,
             const base::FilePath& file_path) override;

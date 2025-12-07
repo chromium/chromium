@@ -6,6 +6,8 @@
 #define NET_COOKIES_COOKIE_CONSTANTS_H_
 
 #include <string>
+#include <string_view>
+#include <utility>
 
 #include "base/time/time.h"
 #include "net/base/net_export.h"
@@ -18,6 +20,13 @@ namespace net {
 NET_EXPORT extern const base::TimeDelta kLaxAllowUnsafeMaxAge;
 // The short version of the above time threshold, to be used for tests.
 NET_EXPORT extern const base::TimeDelta kShortLaxAllowUnsafeMaxAge;
+
+// We collect multiple histograms when getting and setting cookies. The cost
+// of reporting adds up, contributing to latency of operations. But we don't
+// need the absolute numbers, we just need to see trends, so we can down
+// sample. Cookies are written and obtained a lot, so we can use a very low
+// probability.
+static constexpr double kHistogramSampleProbability = 0.001;
 
 enum CookiePriority {
   COOKIE_PRIORITY_LOW     = 0,
@@ -117,6 +126,19 @@ enum class CookieAccessSemantics {
   // Has been checked and the cookie should be subject to legacy access rules.
   LEGACY,
 };
+
+// When the scope is LEGACY, Origin-Bound Cookies behavior is disabled.
+// LINT.IfChange(CookieScopeSemantics)
+enum class CookieScopeSemantics {
+  // Has not been checked yet or there is no way to check.
+  UNKNOWN = -1,
+  // Has been checked and the cookie should *not* be subject to legacy scope
+  // rules
+  NONLEGACY = 0,
+  // Has been checked and the cookie should be subject to legacy scope rules
+  LEGACY = 1,
+};
+// LINT.ThenChange(/services/network/public/mojom/cookie_manager.mojom:CookieScopeSemanticsMojom)
 
 // What scheme was used in the setting of a cookie.
 // Do not renumber.
@@ -309,12 +331,10 @@ NET_EXPORT std::string CookieSameSiteToString(CookieSameSite same_site);
 
 // Converts the Set-Cookie header SameSite token |same_site| to a
 // CookieSameSite. Defaults to CookieSameSite::UNSPECIFIED for empty or
-// unrecognized strings. Returns an appropriate value of CookieSameSiteString in
-// |samesite_string| to indicate what type of string was parsed as the SameSite
-// attribute value, if a pointer is provided.
-NET_EXPORT CookieSameSite
-StringToCookieSameSite(const std::string& same_site,
-                       CookieSameSiteString* samesite_string = nullptr);
+// unrecognized strings. Returns an appropriate value of CookieSameSiteString to
+// indicate what type of string was parsed as the SameSite attribute value.
+NET_EXPORT std::pair<CookieSameSite, CookieSameSiteString>
+StringToCookieSameSite(std::string_view same_site);
 
 NET_EXPORT void RecordCookieSameSiteAttributeValueHistogram(
     CookieSameSiteString value);
@@ -377,6 +397,8 @@ enum CookiePrefix {
   COOKIE_PREFIX_NONE = 0,
   COOKIE_PREFIX_SECURE,
   COOKIE_PREFIX_HOST,
+  COOKIE_PREFIX_HTTP,
+  COOKIE_PREFIX_HOSTHTTP,
   COOKIE_PREFIX_LAST
 };
 

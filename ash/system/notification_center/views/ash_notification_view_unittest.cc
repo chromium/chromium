@@ -35,21 +35,23 @@
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/buildflag.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/data_transfer_policy/mock_data_transfer_policy_controller.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/events/test/test_event.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_impl.h"
 #include "ui/message_center/message_center_observer.h"
@@ -66,6 +68,7 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_utils.h"
 
@@ -355,7 +358,7 @@ class AshNotificationViewTestBase : public AshTestBase,
 
     // Force frames and wait for all throughput trackers to be gone to allow
     // animation throughput data to be passed from cc to ui.
-    while (compositor->has_throughput_trackers_for_testing()) {
+    while (compositor->has_compositor_metrics_trackers_for_testing()) {
       compositor->ScheduleFullRedraw();
       std::ignore = ui::WaitForNextFrameToBePresented(compositor,
                                                       base::Milliseconds(500));
@@ -861,8 +864,8 @@ TEST_F(AshNotificationViewTest, AppIconAndExpandButtonAlignment) {
 
 TEST_F(AshNotificationViewTest, ExpandCollapseAnimationsRecordSmoothness) {
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::FAST_DURATION);
 
   message_center::MessageCenter::Get()->RemoveAllNotifications(
       /*by_user=*/true, message_center::MessageCenter::RemoveType::ALL);
@@ -919,11 +922,10 @@ TEST_F(AshNotificationViewTest, ExpandCollapseAnimationsRecordSmoothness) {
       "Ash.NotificationView.ActionsRow.FadeIn.AnimationSmoothness");
 }
 
-// TODO(crbug.com/41495194): Re-enable this test
 TEST_F(AshNotificationViewTest, ImageExpandCollapseAnimationsRecordSmoothness) {
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::FAST_DURATION);
 
   message_center::MessageCenter::Get()->RemoveAllNotifications(
       /*by_user=*/true, message_center::MessageCenter::RemoveType::ALL);
@@ -989,8 +991,8 @@ TEST_F(AshNotificationViewTest, GroupExpandCollapseAnimationsRecordSmoothness) {
   base::HistogramTester histograms;
 
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::FAST_DURATION);
 
   message_center::MessageCenter::Get()->RemoveAllNotifications(
       /*by_user=*/true, message_center::MessageCenter::RemoveType::ALL);
@@ -1058,8 +1060,8 @@ TEST_F(AshNotificationViewTest, SingleToGroupAnimationsRecordSmoothness) {
   base::HistogramTester histograms;
 
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::FAST_DURATION);
 
   message_center::MessageCenter::Get()->RemoveAllNotifications(
       /*by_user=*/true, message_center::MessageCenter::RemoveType::ALL);
@@ -1092,8 +1094,8 @@ TEST_F(AshNotificationViewTest, InlineReplyAnimationsRecordSmoothness) {
   base::HistogramTester histograms;
 
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::FAST_DURATION);
 
   message_center::MessageCenter::Get()->RemoveAllNotifications(
       /*by_user=*/true, message_center::MessageCenter::RemoveType::ALL);
@@ -1134,8 +1136,8 @@ TEST_F(AshNotificationViewTest, InlineSettingsAnimationsRecordSmoothness) {
   base::HistogramTester histograms;
 
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::FAST_DURATION);
 
   message_center::MessageCenter::Get()->RemoveAllNotifications(
       /*by_user=*/true, message_center::MessageCenter::RemoveType::ALL);
@@ -1201,8 +1203,8 @@ TEST_F(AshNotificationViewTest,
   EXPECT_TRUE(notification_view->IsExpanded());
 
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::FAST_DURATION);
 
   auto* child_view = GetFirstGroupedChildNotificationView(notification_view);
   notification_view->RemoveGroupNotification(child_view->notification_id());
@@ -1312,8 +1314,8 @@ TEST_F(AshNotificationViewTest, DuplicateGroupChildRemovalWithAnimation) {
   EXPECT_TRUE(notification_view->IsExpanded());
 
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::FAST_DURATION);
 
   // Ensure a duplicate call to RemoveGroupNotification does not cause a crash.
   auto* child_view = GetFirstGroupedChildNotificationView(notification_view);
@@ -1374,6 +1376,19 @@ TEST_F(AshNotificationViewTest, LeftContentAndTitleRowHeightMatches) {
 
   EXPECT_EQ(GetLeftContent(notification_view())->height(),
             GetTitleRow(notification_view())->height());
+}
+
+TEST_F(AshNotificationViewTest, ProgressBarDoesNotOverpaint) {
+  std::unique_ptr<Notification> notification = CreateTestNotification(
+      /*has_image=*/false, /*show_snooze_button=*/false, /*has_message=*/true,
+      message_center::NOTIFICATION_TYPE_PROGRESS);
+  notification_view()->UpdateWithNotification(*notification);
+
+  EXPECT_EQ(notification_view()
+                ->progress_bar_view_for_testing()
+                ->CalculatePreferredSize(views::SizeBounds())
+                .height(),
+            4);
 }
 
 // AshNotificationLimitTest ----------------------------------------------------
@@ -1663,9 +1678,6 @@ class AshNotificationViewDragTestBase : public AshNotificationViewTestBase {
  public:
   // AshNotificationViewTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kNotificationImageDrag, true}});
-
     AshNotificationViewTestBase::SetUp();
     notification_test_api_ = std::make_unique<NotificationCenterTestApi>();
 

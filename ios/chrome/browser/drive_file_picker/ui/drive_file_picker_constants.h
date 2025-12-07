@@ -9,6 +9,50 @@
 
 // Accessibility identifier of the Drive file picker.
 extern NSString* const kDriveFilePickerAccessibilityIdentifier;
+// Accessibility identifier of the confirm button.
+extern NSString* const kDriveFilePickerConfirmButtonIdentifier;
+// Accessibility identifier of the search bar.
+extern NSString* const kDriveFilePickerSearchBarIdentifier;
+// Accessibility identifier of the filter button.
+extern NSString* const kDriveFilePickerFilterButtonIdentifier;
+// Accessibility identifier of the sort button.
+extern NSString* const kDriveFilePickerSortButtonIdentifier;
+// Accessibility identifier of the identity button.
+extern NSString* const kDriveFilePickerIdentityIdentifier;
+// Accessibility identifier of the root title view.
+extern NSString* const kDriveFilePickerRootTitleAccessibilityIdentifier;
+
+extern NSString* const kDriveFilePickerMyDriveItemIdentifier;
+extern NSString* const kDriveFilePickerSharedDrivesItemIdentifier;
+extern NSString* const kDriveFilePickerStarredItemIdentifier;
+extern NSString* const kDriveFilePickerRecentItemIdentifier;
+extern NSString* const kDriveFilePickerSharedWithMeItemIdentifier;
+
+// The different first level options the user can select.
+enum class DriveFilePickerFirstLevel {
+  kMyDrive,
+  kSharedDrive,
+  kSharedWithMe,
+  kStarred,
+  kRecent,
+  kSearch
+};
+
+// Different types of collection which can be displayed in the file picker.
+enum class DriveFilePickerCollectionType {
+  // Main collection with "My Drive", "Shared Drives", "Computers", etc.
+  kRoot,
+  // Folder collection i.e. items are files and folders contained in a folder.
+  kFolder,
+  // Collection where items are shared drives.
+  kSharedDrives,
+  // Collection of all starred items.
+  kStarred,
+  // Collection of all items sorted by recency.
+  kRecent,
+  // Collection of all items shared with the user.
+  kSharedWithMe,
+};
 
 // Enum values for the drive download status.
 enum class DriveFileDownloadStatus {
@@ -17,6 +61,14 @@ enum class DriveFileDownloadStatus {
   kSuccess,
   kInterrupted,
   kFailed,
+};
+
+// Enum values for the background of the file picker.
+enum class DriveFilePickerBackground {
+  kNoBackground,
+  kLoadingIndicator,
+  kEmptyFolder,
+  kNoMatchingResults,
 };
 
 #endif  // IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_UI_DRIVE_FILE_PICKER_CONSTANTS_H_

@@ -4,12 +4,13 @@
 
 #include "third_party/blink/renderer/modules/accessibility/testing/accessibility_selection_test.h"
 
+#include <algorithm>
 #include <iterator>
 #include <string_view>
 
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
+#include "base/strings/string_view_util.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/renderer/core/dom/character_data.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
@@ -19,6 +20,7 @@
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_object-inl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_position.h"
@@ -198,52 +200,58 @@ class AXSelectionDeserializer final {
  public:
   explicit AXSelectionDeserializer(AXObjectCacheImpl& cache)
       : ax_object_cache_(&cache),
-        anchors_(MakeGarbageCollected<VectorOfPairs<Node, int>>()),
-        foci_(MakeGarbageCollected<VectorOfPairs<Node, int>>()) {}
+        anchors_(MakeGarbageCollected<Holder>()),
+        foci_(MakeGarbageCollected<Holder>()) {}
   ~AXSelectionDeserializer() = default;
+
+  const AXObjectCacheImpl& GetAXObjectCache() const {
+    return *ax_object_cache_;
+  }
 
   // Creates an accessibility tree rooted at the given HTML element from the
   // provided HTML snippet and returns |AXSelection| objects that can select the
   // parts of the tree indicated by the selection markers in the snippet.
   const Vector<AXSelection> Deserialize(const std::string_view& html_snippet,
                                         HTMLElement& element) {
-    element.setInnerHTML(String::FromUTF8(html_snippet));
+    element.SetInnerHTMLWithoutTrustedTypes(String::FromUTF8(html_snippet));
     element.GetDocument().View()->UpdateAllLifecyclePhasesForTest();
     AXObject* root = ax_object_cache_->Get(&element);
     if (!root || root->IsDetached())
       return {};
 
     FindSelectionMarkers(*root);
-    DCHECK((foci_->size() == 1 && anchors_->size() == 0) ||
-           anchors_->size() == foci_->size())
+    DCHECK((foci()->size() == 1 && anchors()->size() == 0) ||
+           anchors()->size() == foci()->size())
         << "There should be an equal number of '^'s and '|'s in the HTML that "
            "is being deserialized, or if caret placement is required, only a "
            "single '|'.";
-    if (foci_->empty())
+    if (foci()->empty()) {
       return {};
+    }
 
     Vector<AXSelection> ax_selections;
-    if (anchors_->empty()) {
+    if (anchors()->empty()) {
       // Handle the case when there is just a single '|' marker representing the
       // position of the caret.
-      DCHECK(foci_->at(0).first);
-      const Position caret(foci_->at(0).first, foci_->at(0).second);
-      const auto ax_caret = AXPosition::FromPosition(caret);
-      AXSelection::Builder builder;
+      DCHECK(foci()->at(0).first);
+      const Position caret(foci()->at(0).first, foci()->at(0).second);
+      const auto ax_caret = AXPosition::FromPosition(caret, GetAXObjectCache());
+      AXSelection::Builder builder(GetAXObjectCache());
       ax_selections.push_back(
           builder.SetAnchor(ax_caret).SetFocus(ax_caret).Build());
       return ax_selections;
     }
 
-    for (wtf_size_t i = 0; i < foci_->size(); ++i) {
-      DCHECK(anchors_->at(i).first);
-      const Position base(*anchors_->at(i).first, anchors_->at(i).second);
-      const auto ax_base = AXPosition::FromPosition(base);
+    for (wtf_size_t i = 0; i < foci()->size(); ++i) {
+      DCHECK(anchors()->at(i).first);
+      const Position base(*anchors()->at(i).first, anchors()->at(i).second);
+      const auto ax_base = AXPosition::FromPosition(base, GetAXObjectCache());
 
-      DCHECK(foci_->at(i).first);
-      const Position extent(*foci_->at(i).first, foci_->at(i).second);
-      const auto ax_extent = AXPosition::FromPosition(extent);
-      AXSelection::Builder builder;
+      DCHECK(foci()->at(i).first);
+      const Position extent(*foci()->at(i).first, foci()->at(i).second);
+      const auto ax_extent =
+          AXPosition::FromPosition(extent, GetAXObjectCache());
+      AXSelection::Builder builder(GetAXObjectCache());
       ax_selections.push_back(
           builder.SetAnchor(ax_base).SetFocus(ax_extent).Build());
     }
@@ -294,10 +302,10 @@ class AXSelectionDeserializer final {
       int index_in_parent = static_cast<int>(node->NodeIndex());
 
       for (size_t i = 0; i < base_offsets.size(); ++i)
-        anchors_->emplace_back(parent, index_in_parent);
+        anchors()->emplace_back(parent, index_in_parent);
 
       for (size_t i = 0; i < extent_offsets.size(); ++i)
-        foci_->emplace_back(parent, index_in_parent);
+        foci()->emplace_back(parent, index_in_parent);
 
       return;
     }
@@ -307,9 +315,9 @@ class AXSelectionDeserializer final {
     //
 
     for (int base_offset : base_offsets)
-      anchors_->emplace_back(node, base_offset);
+      anchors()->emplace_back(node, base_offset);
     for (int extent_offset : extent_offsets)
-      foci_->emplace_back(node, extent_offset);
+      foci()->emplace_back(node, extent_offset);
   }
 
   void HandleObject(const AXObject& object) {
@@ -335,11 +343,16 @@ class AXSelectionDeserializer final {
 
   Persistent<AXObjectCacheImpl> const ax_object_cache_;
 
-  // Pairs of anchor nodes + anchor offsets.
-  Persistent<VectorOfPairs<Node, int>> anchors_;
+  using Holder = DisallowNewWrapper<VectorOfPairs<Node, int>>;
 
+  VectorOfPairs<Node, int>* anchors() const { return &anchors_->Value(); }
+
+  VectorOfPairs<Node, int>* foci() const { return &foci_->Value(); }
+
+  // Pairs of anchor nodes + anchor offsets.
+  Persistent<Holder> anchors_;
   // Pairs of focus nodes + focus offsets.
-  Persistent<VectorOfPairs<Node, int>> foci_;
+  Persistent<Holder> foci_;
 };
 
 }  // namespace
@@ -358,7 +371,8 @@ void AccessibilitySelectionTest::SetUp() {
 std::string AccessibilitySelectionTest::GetCurrentSelectionText() const {
   const SelectionInDOMTree selection =
       GetFrame().Selection().GetSelectionInDOMTree();
-  const auto ax_selection = AXSelection::FromSelection(selection);
+  const auto ax_selection =
+      AXSelection::FromSelection(selection, GetAXObjectCache());
   return GetSelectionText(ax_selection);
 }
 
@@ -380,12 +394,12 @@ AXSelection AccessibilitySelectionTest::SetSelectionText(
     const std::string& selection_text) const {
   HTMLElement* body = GetDocument().body();
   if (!body)
-    return AXSelection::Builder().Build();
+    return AXSelection::Builder(GetAXObjectCache()).Build();
   const Vector<AXSelection> ax_selections =
       AXSelectionDeserializer(GetAXObjectCache())
           .Deserialize(selection_text, *body);
   if (ax_selections.empty())
-    return AXSelection::Builder().Build();
+    return AXSelection::Builder(GetAXObjectCache()).Build();
   return ax_selections.front();
 }
 
@@ -396,7 +410,7 @@ AXSelection AccessibilitySelectionTest::SetSelectionText(
       AXSelectionDeserializer(GetAXObjectCache())
           .Deserialize(selection_text, element);
   if (ax_selections.empty())
-    return AXSelection::Builder().Build();
+    return AXSelection::Builder(GetAXObjectCache()).Build();
   return ax_selections.front();
 }
 

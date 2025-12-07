@@ -59,10 +59,15 @@ void FileSystemAccessLocalPathWatcher::Initialize(
       base::BindRepeating(&FileSystemAccessLocalPathWatcher::OnFilePathChanged,
                           weak_factory_.GetWeakPtr());
 
+  FilePathWatcher::UsageChangeCallback on_usage_change_callback =
+      base::BindRepeating(&FileSystemAccessLocalPathWatcher::OnUsageChange,
+                          weak_factory_.GetWeakPtr());
+
   FilePathWatcher::WatchOptions watch_options{
       .type = scope().IsRecursive() ? FilePathWatcher::Type::kRecursive
                                     : FilePathWatcher::Type::kNonRecursive,
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_MAC)
       // Note: `report_modified_path` is also present on Android
       // and Fuchsia. Update this switch if support for watching
       // the local file system is added on those platforms.
@@ -70,24 +75,45 @@ void FileSystemAccessLocalPathWatcher::Initialize(
       // TODO(crbug.com/40260973): Report the affected
       // path on more platforms.
       .report_modified_path = true,
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_MAC)
   };
 
+  watch_path_ = scope().root_url().path();
+  // For file observations, we watch the parent directory so we can report file
+  // deletes when the parent directory is deleted. This also helps prevent the
+  // crswap move to its target file showing up as an appeared event.
+  // Additionally, the watcher manager needs to know this info to be able to
+  // convert that event to a modify.
+  if (scope().GetWatchType() == FileSystemAccessWatchScope::WatchType::kFile) {
+    watch_path_ = watch_path_.DirName();
+  }
   watcher_.AsyncCall(&FilePathWatcher::WatchWithChangeInfo)
       .WithArgs(
-          scope().root_url().path(), std::move(watch_options),
-          base::BindPostTaskToCurrentDefault(std::move(on_change_callback)))
+          watch_path_, std::move(watch_options),
+          base::BindPostTaskToCurrentDefault(std::move(on_change_callback)),
+          base::BindPostTaskToCurrentDefault(
+              std::move(on_usage_change_callback)))
       .Then(base::BindOnce(
-          [](base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
+          [](base::WeakPtr<FileSystemAccessLocalPathWatcher> self,
+             base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
                  callback,
-             bool result) {
-            std::move(callback).Run(
-                result ? file_system_access_error::Ok()
-                       : file_system_access_error::FromStatus(
-                             blink::mojom::FileSystemAccessStatus::
-                                 kOperationFailed));
+             std::optional<size_t> current_usage) {
+            if (!current_usage.has_value()) {
+              std::move(callback).Run(file_system_access_error::FromStatus(
+                  blink::mojom::FileSystemAccessStatus::kOperationFailed));
+              return;
+            }
+
+            self->current_usage_ = current_usage.value();
+            std::move(callback).Run(file_system_access_error::Ok());
           },
-          std::move(on_source_initialized)));
+          weak_factory_.GetWeakPtr(), std::move(on_source_initialized)));
+}
+
+size_t FileSystemAccessLocalPathWatcher::current_usage() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return current_usage_;
 }
 
 void FileSystemAccessLocalPathWatcher::OnFilePathChanged(
@@ -96,7 +122,42 @@ void FileSystemAccessLocalPathWatcher::OnFilePathChanged(
     bool error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // Notify if any error occurs without further processing.
+  if (error) {
+    NotifyOfChange(base::FilePath(), error, change_info);
+    return;
+  }
+
   const base::FilePath& root_path = scope().root_url().path();
+  // File observations result in the parent directory being watched.
+  if (scope().GetWatchType() == FileSystemAccessWatchScope::WatchType::kFile &&
+      changed_path != root_path) {
+    // This logic is a backup for when we don't get a delete event for the
+    // `root_path`. When the parent is deleted, so is the file. We updated the
+    // `change_info.modified_path` to the file's path and the
+    // `change_info.file_path_type` to `kFile`. After reporting the file
+    // deletion, we report an error because the parent directory has been
+    // deleted. Eg. On macOS, we only receive a single deleted event, at the
+    // parent directory level.
+    if (changed_path == watch_path_ &&
+        change_info.change_type == FilePathWatcher::ChangeType::kDeleted) {
+      FilePathWatcher::ChangeInfo file_change_info = {
+          FilePathWatcher::FilePathType::kFile,
+          FilePathWatcher::ChangeType::kDeleted, root_path};
+      NotifyOfChange(base::FilePath(), error, file_change_info);
+    } else if (change_info.moved_from_path == root_path) {
+      // If the file is renamed, we report a kDeleted event for the `root_path`.
+      // If we were directly watching the file, this would be handled in the
+      // FilePathWatcher which would convert the event to a kDeleted since
+      // renaming a watched file is a move out of scope.
+      FilePathWatcher::ChangeInfo file_change_info = {
+          FilePathWatcher::FilePathType::kFile,
+          FilePathWatcher::ChangeType::kDeleted, root_path};
+      NotifyOfChange(base::FilePath(), error, file_change_info);
+    }
+
+    return;
+  }
 
   base::FilePath relative_path;
   if (root_path.empty()) {
@@ -109,6 +170,19 @@ void FileSystemAccessLocalPathWatcher::OnFilePathChanged(
   }
 
   NotifyOfChange(relative_path, error, change_info);
+}
+
+void FileSystemAccessLocalPathWatcher::OnUsageChange(size_t old_usage,
+                                                     size_t new_usage) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  CHECK_EQ(current_usage_, old_usage);
+  if (new_usage == current_usage_) {
+    return;
+  }
+
+  current_usage_ = new_usage;
+  NotifyOfUsageChange(old_usage, new_usage);
 }
 
 }  // namespace content

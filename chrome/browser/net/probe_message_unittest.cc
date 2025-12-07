@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include <stdint.h>
 #include <string.h>
@@ -18,9 +14,9 @@ namespace chrome_browser_net {
 
 class ProbeMessageTest : public ::testing::Test {
  protected:
-  ProbeMessageTest() {}
+  ProbeMessageTest() = default;
 
-  ~ProbeMessageTest() override {}
+  ~ProbeMessageTest() override = default;
 };
 
 TEST_F(ProbeMessageTest, TestGenerateProbeRequest) {
@@ -46,7 +42,7 @@ TEST_F(ProbeMessageTest, TestGenerateProbeRequest) {
   EXPECT_EQ(probe_packet.probe_size_bytes(), probe_size);
   EXPECT_EQ(probe_packet.pacing_interval_micros(), pacing_interval_micros);
   EXPECT_EQ(probe_packet.number_probe_packets(), number_probe_packets);
-  EXPECT_GE(probe_packet.ByteSize(), static_cast<int>(probe_size));
+  EXPECT_GE(probe_packet.ByteSizeLong(), probe_size);
 }
 
 TEST_F(ProbeMessageTest, TestSetPacketHeader) {

@@ -8,8 +8,10 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/input/render_widget_host_input_event_router.h"
+#include "components/input/switches.h"
 #include "components/viz/common/features.h"
 #include "content/browser/renderer_host/input/touch_selection_controller_client_aura.h"
 #include "content/browser/renderer_host/overscroll_controller.h"
@@ -18,7 +20,6 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/renderer_host/text_input_manager.h"
-#include "content/common/content_switches_internal.h"
 #include "content/common/features.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -114,7 +115,7 @@ RenderWidgetHostViewEventHandler::RenderWidgetHostViewEventHandler(
     RenderWidgetHostImpl* host,
     RenderWidgetHostViewBase* host_view,
     Delegate* delegate)
-    : pinch_zoom_enabled_(content::IsPinchToZoomEnabled()),
+    : pinch_zoom_enabled_(input::switches::IsPinchToZoomEnabled()),
       host_(host),
       host_view_(host_view),
       delegate_(delegate),
@@ -304,7 +305,7 @@ void RenderWidgetHostViewEventHandler::HandleMouseWheelEvent(
         should_route_event);
 
     mouse_wheel_phase_handler_.AddPhaseIfNeededAndScheduleEndEvent(
-        mouse_wheel_event, should_route_event);
+        mouse_wheel_event, should_route_event, /*is_fling_capable=*/false);
     if (should_route_event) {
       host_->delegate()->GetInputEventRouter()->RouteMouseWheelEvent(
           host_view_, &mouse_wheel_event, *event->latency());
@@ -400,6 +401,21 @@ void RenderWidgetHostViewEventHandler::OnMouseEvent(ui::MouseEvent* event) {
 void RenderWidgetHostViewEventHandler::OnScrollEvent(ui::ScrollEvent* event) {
   TRACE_EVENT0("input", "RenderWidgetHostViewBase::OnScrollEvent");
   const bool should_route_event = ShouldRouteEvents();
+
+  // MouseWheelPhaseHandler needs to know if the device supports fling gensture.
+  // Such device always generates FlingCancel first, so that it can interrupt
+  // and stop potentially ongoing fling scroll. (e.g. TouchPad does support
+  // while TrackPoint does not) Please see AddPhaseIfNeededAndScheduleEndEvent
+  // for more details.
+  bool is_fling_capable_device = false;
+  if (event->IsFlingScrollEvent()) {
+    fling_capable_device_ids_.emplace(event->source_device_id());
+    is_fling_capable_device = true;
+  } else {
+    is_fling_capable_device =
+        fling_capable_device_ids_.contains(event->source_device_id());
+  }
+
   if (event->type() == ui::EventType::kScroll) {
 #if !BUILDFLAG(IS_WIN)
     // TODO(ananta)
@@ -410,7 +426,7 @@ void RenderWidgetHostViewEventHandler::OnScrollEvent(ui::ScrollEvent* event) {
     blink::WebMouseWheelEvent mouse_wheel_event =
         ui::MakeWebMouseWheelEvent(*event);
     mouse_wheel_phase_handler_.AddPhaseIfNeededAndScheduleEndEvent(
-        mouse_wheel_event, should_route_event);
+        mouse_wheel_event, should_route_event, is_fling_capable_device);
 
     std::optional<blink::WebGestureEvent> maybe_synthetic_fling_cancel;
     if (mouse_wheel_event.phase == blink::WebMouseWheelEvent::kPhaseBegan) {

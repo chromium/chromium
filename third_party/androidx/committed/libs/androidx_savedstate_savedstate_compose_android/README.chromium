@@ -1,0 +1,20 @@
+Name: Saved State Compose
+Short Name: savedstate-compose-android
+URL: https://androidx.dev/snapshots/builds/14500233/artifacts/repository/androidx/savedstate/savedstate-compose-android/1.5.0-SNAPSHOT/savedstate-compose-android-1.5.0-20251126.133552-1.aar
+Version: 1.5.0-SNAPSHOT
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+Compose integration with Saved State
+
+See also: https://developer.android.com/jetpack/androidx/releases/savedstate#1.5.0-SNAPSHOT
+
+
+Local Modifications:
+No modifications.

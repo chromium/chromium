@@ -26,4 +26,3 @@ include_rules = [
   "+third_party/junit",
   "+third_party/mockito",
 ]
-

@@ -30,6 +30,11 @@ struct StructTraits<viz::mojom::CopyOutputRequestDataView,
     return request->result_destination();
   }
 
+  static base::TimeDelta send_result_delay(
+      const std::unique_ptr<viz::CopyOutputRequest>& request) {
+    return request->send_result_delay();
+  }
+
   static const gfx::Vector2d& scale_from(
       const std::unique_ptr<viz::CopyOutputRequest>& request) {
     return request->scale_from();
@@ -53,6 +58,11 @@ struct StructTraits<viz::mojom::CopyOutputRequestDataView,
   static const std::optional<gfx::Rect>& result_selection(
       const std::unique_ptr<viz::CopyOutputRequest>& request) {
     return request->result_selection_;
+  }
+
+  static const std::optional<viz::BlitRequest>& blit_request(
+      const std::unique_ptr<viz::CopyOutputRequest>& request) {
+    return request->blit_request_;
   }
 
   static mojo::PendingRemote<viz::mojom::CopyOutputResultSender> result_sender(

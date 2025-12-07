@@ -18,6 +18,8 @@ source_set("views") {
     "overlay_agent_views.h",
     "page_agent_views.cc",
     "page_agent_views.h",
+    "server_holder.cc",
+    "server_holder.h",
     "ui_element_with_metadata.cc",
     "ui_element_with_metadata.h",
     "view_element.cc",
@@ -29,6 +31,7 @@ source_set("views") {
   deps = [
     "//components/ui_devtools",
     "//skia",
+    "//ui/base/interaction",
     "//ui/views",
   ]
 
@@ -43,7 +46,7 @@ source_set("views") {
     ]
     deps += [
       "//ui/aura",
-      "//ui/wm:wm",
+      "//ui/wm",
     ]
   }
   if (is_mac) {
@@ -73,6 +76,7 @@ source_set("unit_tests") {
     "//components/ui_devtools:test_support",
     "//skia",
     "//testing/gtest",
+    "//ui/base/interaction",
     "//ui/events:test_support",
     "//ui/views",
     "//ui/views:test_support",
@@ -83,9 +87,13 @@ source_set("unit_tests") {
     deps += [
       "//ui/aura",
       "//ui/aura:test_support",
-      "//ui/wm:wm",
+      "//ui/wm",
     ]
   }
 
   configs += [ "//build/config:precompiled_headers" ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

@@ -11,20 +11,23 @@ import './hotspot_summary_item.js';
 import './network_summary_item.js';
 
 import {getHotspotConfig} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.js';
-import {CrosHotspotConfigInterface, CrosHotspotConfigObserverReceiver, HotspotAllowStatus, HotspotInfo} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.mojom-webui.js';
+import type {CrosHotspotConfigInterface, HotspotInfo} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.mojom-webui.js';
+import {CrosHotspotConfigObserverReceiver, HotspotAllowStatus} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.mojom-webui.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
-import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
+import type {NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
+import {NetworkListenerBehavior} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {CrosNetworkConfigInterface, FilterType, GlobalPolicy, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {CrosNetworkConfigInterface, DeviceStateProperties, GlobalPolicy, NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {FilterType, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {DeviceStateType, NetworkType, OncSource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
-import {Constructor} from '../common/types.js';
+import type {Constructor} from '../common/types.js';
 
 import {getTemplate} from './network_summary.html.js';
-import {NetworkSummaryItemElement} from './network_summary_item.js';
+import type {NetworkSummaryItemElement} from './network_summary_item.js';
 
 const NetworkSummaryElementBase =
     mixinBehaviors([NetworkListenerBehavior], PolymerElement) as
@@ -119,7 +122,7 @@ export class NetworkSummaryElement extends NetworkSummaryElementBase {
 
   defaultNetwork: OncMojo.NetworkStateProperties|null;
   hotspotInfo: HotspotInfo|undefined;
-  deviceStates: Record<NetworkType, OncMojo.DeviceStateProperties>;
+  deviceStates: Partial<Record<NetworkType, OncMojo.DeviceStateProperties>>;
   private activeNetworkIds_: Set<string>|null;
   private activeNetworkStates_: OncMojo.NetworkStateProperties[];
   private crosHotspotConfig_: CrosHotspotConfigInterface;
@@ -128,7 +131,7 @@ export class NetworkSummaryElement extends NetworkSummaryElementBase {
   private isInstantHotspotRebrandEnabled_: boolean;
   private networkConfig_: CrosNetworkConfigInterface;
   private networkStateLists_:
-      Record<NetworkType, OncMojo.NetworkStateProperties[]>;
+      Partial<Record<NetworkType, OncMojo.NetworkStateProperties[]>>;
 
   constructor() {
     super();
@@ -247,9 +250,10 @@ export class NetworkSummaryElement extends NetworkSummaryElementBase {
    * Called after network states are received from getNetworks.
    */
   private updateNetworkStates_(
-      networkStates: OncMojo.NetworkStateProperties[],
-      deviceStateList: OncMojo.DeviceStateProperties[]): void {
-    const newDeviceStates: Record<string, OncMojo.DeviceStateProperties> = {};
+      networkStates: NetworkStateProperties[],
+      deviceStateList: DeviceStateProperties[]): void {
+    const newDeviceStates:
+        Partial<Record<NetworkType, DeviceStateProperties>> = {};
     for (const device of deviceStateList) {
       newDeviceStates[device.type] = device;
     }

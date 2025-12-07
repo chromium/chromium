@@ -14,8 +14,8 @@ class Window;
 }
 
 namespace ash {
-
 class BirchChipButton;
+class SavedDeskSaveDeskButtonContainer;
 
 class OverviewGridTestApi {
  public:
@@ -33,10 +33,18 @@ class OverviewGridTestApi {
   const views::Widget* birch_bar_widget() const {
     return overview_grid_->birch_bar_widget_.get();
   }
-  const BirchBarView* birch_bar_view() const {
-    return overview_grid_->birch_bar_view_;
-  }
   BirchBarView* birch_bar_view() { return overview_grid_->birch_bar_view_; }
+
+  int num_incognito_windows() const {
+    return overview_grid_->num_incognito_windows_;
+  }
+  int num_unsupported_windows() const {
+    return overview_grid_->num_unsupported_windows_;
+  }
+
+  // Returns the save button container if available, otherwise null.
+  SavedDeskSaveDeskButtonContainer* GetSaveDeskButtonContainer();
+  const SavedDeskSaveDeskButtonContainer* GetSaveDeskButtonContainer() const;
 
   const std::vector<raw_ptr<BirchChipButtonBase>>& GetBirchChips() const;
 

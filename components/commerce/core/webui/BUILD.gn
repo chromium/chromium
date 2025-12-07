@@ -4,6 +4,8 @@
 
 source_set("webui") {
   sources = [
+    "product_specifications_handler.cc",
+    "product_specifications_handler.h",
     "shopping_service_handler.cc",
     "shopping_service_handler.h",
     "webui_utils.cc",
@@ -18,19 +20,21 @@ source_set("webui") {
     "//components/bookmarks/browser",
     "//components/commerce/core:commerce_constants",
     "//components/commerce/core:feature_list",
+    "//components/commerce/core:feature_utils",
     "//components/commerce/core:metrics",
     "//components/commerce/core:pref_names",
+    "//components/commerce/core:proto",
     "//components/commerce/core:shopping_service",
     "//components/commerce/core:utils",
     "//components/feature_engagement/public",
-    "//components/optimization_guide/core:core",
-    "//components/payments/core",
+    "//components/history/core/browser",
+    "//components/optimization_guide/core",
+    "//components/payments/core:currency_formatter",
     "//components/power_bookmarks/core",
     "//components/prefs",
     "//components/url_formatter",
     "//mojo/public/cpp/bindings",
     "//services/metrics/public/cpp:metrics_cpp",
-    "//ui/webui/resources/cr_components/commerce:mojo_bindings",
     "//url",
   ]
 }
@@ -38,7 +42,10 @@ source_set("webui") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "shopping_service_handler_unittest.cc" ]
+  sources = [
+    "product_specifications_handler_unittest.cc",
+    "shopping_service_handler_unittest.cc",
+  ]
 
   deps = [
     ":webui",
@@ -52,13 +59,17 @@ source_set("unit_tests") {
     "//components/commerce/core:feature_list",
     "//components/commerce/core:shopping_service_test_support",
     "//components/commerce/core:utils",
+    "//components/commerce/core/mojom:mojo_bindings",
     "//components/feature_engagement/test:test_support",
     "//components/optimization_guide/core:test_support",
     "//components/ukm:test_support",
     "//mojo/public/cpp/bindings",
     "//services/metrics/public/cpp:ukm_builders",
     "//testing/gtest",
-    "//ui/webui/resources/cr_components/commerce:mojo_bindings",
-    "//url:url",
+    "//url",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

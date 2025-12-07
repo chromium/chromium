@@ -6,6 +6,8 @@
 
 #include <string.h>
 
+#include "content/public/browser/web_contents.h"
+
 namespace web_modal {
 
 void WebContentsModalDialogManagerDelegate::SetWebContentsBlocked(
@@ -13,7 +15,8 @@ void WebContentsModalDialogManagerDelegate::SetWebContentsBlocked(
 }
 
 WebContentsModalDialogHost*
-    WebContentsModalDialogManagerDelegate::GetWebContentsModalDialogHost() {
+WebContentsModalDialogManagerDelegate::GetWebContentsModalDialogHost(
+    content::WebContents* web_contents) {
   return nullptr;
 }
 

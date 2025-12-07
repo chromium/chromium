@@ -22,7 +22,7 @@ suite('FullDataResetTest', function() {
     passwordManager.data.deleteAllPasswordManagerData = true;
   });
 
-  test('confirmation dialog is closed by default', async function() {
+  test('confirmation dialog is closed by default', function() {
     const dataReset = document.createElement('full-data-reset');
     document.body.appendChild(dataReset);
     flush();
@@ -44,7 +44,7 @@ suite('FullDataResetTest', function() {
 
   test(
       'confirmation dialog is closed by clicking the cancel button',
-      async function() {
+      function() {
         const dataReset = document.createElement('full-data-reset');
         document.body.appendChild(dataReset);
         flush();
@@ -86,8 +86,7 @@ suite('FullDataResetTest', function() {
       });
 
   test(
-      'confirmation dialog has correct state for local users',
-      async function() {
+      'confirmation dialog has correct state for local users', function() {
         const dataReset = document.createElement('full-data-reset');
         dataReset.isSyncingPasswords = false;
         document.body.appendChild(dataReset);
@@ -103,8 +102,7 @@ suite('FullDataResetTest', function() {
       });
 
   test(
-      'confirmation dialog has correct state for syncing users',
-      async function() {
+      'confirmation dialog has correct state for syncing users', function() {
         const dataReset = document.createElement('full-data-reset');
         dataReset.isSyncingPasswords = true;
         document.body.appendChild(dataReset);

@@ -25,6 +25,7 @@ extern crate handshake;
 extern crate hex;
 extern crate processor;
 
+use base64::Engine;
 use cbor::{cbor, Value};
 use crypto::P256Scalar;
 use processor::{ClientState, StateUpdate};
@@ -200,7 +201,7 @@ fn write_msg(conn: &TcpStream, msg: &[u8]) -> bool {
 /// connection. See https://datatracker.ietf.org/doc/html/rfc6455#section-1.3
 fn calculate_websocket_accept(key: &[u8]) -> String {
     let digest = crypto::sha1_two_part(key, b"258EAFA5-E914-47DA-95CA-C5AB0DC85B11");
-    base64::encode(digest)
+    base64::engine::general_purpose::STANDARD.encode(digest)
 }
 
 struct EnclaveServer {
@@ -301,19 +302,25 @@ impl EnclaveServer {
         let client_state = std::fs::read(CONFIDENTIAL_PATH)
             .and_then(|confidential| {
                 std::fs::read(TRANSPARENT_PATH).map(|transparent| {
-                    ClientState::Explicit(processor::StateData { transparent, confidential })
+                    ClientState::Explicit(processor::StateData {
+                        transparent,
+                        confidential,
+                    })
                 })
             })
             .unwrap_or(ClientState::Initial);
 
+        let mut metrics = processor::MetricsUpdate::default();
         let cbor_response = match processor::process_client_msg(
             client_state,
+            &mut metrics,
             processor::ExternalContext {
                 // This timestamp is fixed so that any XML files submitted by tests will be
                 // considered unexpired.
                 current_time_epoch_millis: 1707344402000,
                 client_device_identifier: Vec::new(),
                 is_reauthenticated: has_reauthentication_header,
+                device_authorization_keys: Vec::new(),
             },
             &handshake_response.handshake_hash,
             commands,
@@ -337,6 +344,8 @@ impl EnclaveServer {
 
                 let err = match err {
                     processor::Error::UnknownClient => Value::Int(0),
+                    processor::Error::UnknownKey => Value::Int(1),
+                    processor::Error::SignatureVerificationFailed => Value::Int(2),
                     processor::Error::Str(s) => Value::String(String::from(s)),
                     _ => Value::String(format!("{:?}", err)),
                 };
@@ -344,7 +353,10 @@ impl EnclaveServer {
             }
         };
 
-        let cmd_response = handshake_response.crypter.encrypt(&cbor_response.to_bytes()).unwrap();
+        let cmd_response = handshake_response
+            .crypter
+            .encrypt(&cbor_response.to_bytes())
+            .unwrap();
         write_msg(&conn, &cmd_response);
     }
 }
@@ -355,7 +367,9 @@ fn main() {
     // 046b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c2964fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5
     let mut identity_private_key_bytes = [0u8; 32];
     identity_private_key_bytes[31] = 1;
-    let mut service = EnclaveServer { identity_private_key_bytes };
+    let mut service = EnclaveServer {
+        identity_private_key_bytes,
+    };
 
     let scalar: P256Scalar = (&identity_private_key_bytes).try_into().unwrap();
     eprintln!("Public key is {}", hex::encode(scalar.compute_public_key()));

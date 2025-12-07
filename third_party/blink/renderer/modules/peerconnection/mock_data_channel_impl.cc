@@ -4,14 +4,13 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/mock_data_channel_impl.h"
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 
 namespace blink {
 
 MockDataChannel::MockDataChannel(const std::string& label,
                                  const webrtc::DataChannelInit* config)
     : label_(label),
-      reliable_(config->reliable),
       state_(webrtc::DataChannelInterface::kConnecting),
       config_(*config),
       observer_(nullptr) {}
@@ -28,10 +27,6 @@ void MockDataChannel::UnregisterObserver() {
 
 std::string MockDataChannel::label() const {
   return label_;
-}
-
-bool MockDataChannel::reliable() const {
-  return reliable_;
 }
 
 bool MockDataChannel::ordered() const {

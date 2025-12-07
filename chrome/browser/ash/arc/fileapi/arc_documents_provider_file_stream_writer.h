@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/completion_once_callback.h"
 #include "storage/browser/file_system/file_stream_writer.h"
@@ -23,7 +23,6 @@ namespace arc {
 
 // FileStreamWriter implementation for ARC documents provider file system.
 // It actually delegates operations to ArcContentFileSystemFileStreamWriter.
-// TODO(crbug.com/678886): Write unit tests.
 class ArcDocumentsProviderFileStreamWriter : public storage::FileStreamWriter {
  public:
   ArcDocumentsProviderFileStreamWriter(const storage::FileSystemURL& url,

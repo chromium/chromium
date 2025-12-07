@@ -19,7 +19,7 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "components/cbor/values.h"
-#include "device/fido/fido_constants.h"
+#include "device/fido/public/fido_constants.h"
 
 namespace device {
 namespace pin {
@@ -69,7 +69,7 @@ enum class Permissions : uint8_t {
 
 // Some commands that validate PinUvAuthTokens include this padding to ensure a
 // PinUvAuthParam cannot be reused across different commands.
-constexpr std::array<uint8_t, 32> kPinUvAuthTokenSafetyPadding = {
+inline constexpr std::array<uint8_t, 32> kPinUvAuthTokenSafetyPadding = {
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
@@ -93,10 +93,10 @@ PINEntryError ValidatePIN(
 // will accept. Since the PIN is UTF-8 encoded, this could be a single code
 // point. However, the platform is supposed to additionally enforce a 4
 // *character* minimum
-constexpr size_t kMinBytes = 4;
+inline constexpr size_t kMinBytes = 4;
 // kMaxBytes is the maximum number of bytes of PIN data that a CTAP2 device will
 // accept.
-constexpr size_t kMaxBytes = 63;
+inline constexpr size_t kMaxBytes = 63;
 
 // EncodeCOSEPublicKey converts an X9.62 public key to a COSE structure.
 COMPONENT_EXPORT(DEVICE_FIDO)
@@ -177,7 +177,7 @@ class SetRequest {
  private:
   const PINUVAuthProtocol protocol_;
   const KeyAgreementResponse peer_key_;
-  uint8_t pin_[kMaxBytes + 1];
+  std::array<uint8_t, kMaxBytes + 1> pin_ = {};
 };
 
 struct EmptyResponse {
@@ -201,8 +201,8 @@ class ChangeRequest {
  private:
   const PINUVAuthProtocol protocol_;
   const KeyAgreementResponse peer_key_;
-  uint8_t old_pin_hash_[16];
-  uint8_t new_pin_[kMaxBytes + 1];
+  std::array<uint8_t, 16> old_pin_hash_;
+  std::array<uint8_t, kMaxBytes + 1> new_pin_;
 };
 
 // ResetRequest resets an authenticator, which should invalidate all
@@ -248,7 +248,7 @@ class PinTokenRequest : public TokenRequest {
   AsCTAPRequestValuePair(const PinTokenRequest&);
 
  protected:
-  uint8_t pin_hash_[16];
+  std::array<uint8_t, 16> pin_hash_;
 };
 
 class PinTokenWithPermissionsRequest : public PinTokenRequest {

@@ -19,15 +19,8 @@ class PolicyErrorMapTestResourceBundle : public ::testing::TestWithParam<bool> {
  public:
   PolicyErrorMapTestResourceBundle() : has_resource_bundle_(GetParam()) {
     if (!has_resource_bundle_) {
-      original_resource_bundle_ =
-          ui::ResourceBundle::SwapSharedInstanceForTesting(nullptr);
-    }
-  }
-
-  void TearDown() override {
-    if (!has_resource_bundle_) {
-      ui::ResourceBundle::SwapSharedInstanceForTesting(
-          original_resource_bundle_);
+      resource_bundle_swapper_ = std::make_unique<
+          ui::ResourceBundle::SharedInstanceSwapperForTesting>();
     }
   }
 
@@ -35,7 +28,8 @@ class PolicyErrorMapTestResourceBundle : public ::testing::TestWithParam<bool> {
 
  private:
   bool has_resource_bundle_;
-  raw_ptr<ui::ResourceBundle> original_resource_bundle_;
+  std::unique_ptr<ui::ResourceBundle::SharedInstanceSwapperForTesting>
+      resource_bundle_swapper_;
 };
 
 TEST_P(PolicyErrorMapTestResourceBundle, CheckForErrorsWithoutFatalErrors) {
@@ -78,9 +72,24 @@ TEST(PolicyErrorMapTest, GetErrorMessages) {
   PolicyErrorMap errors;
   ASSERT_TRUE(errors.IsReady());
   errors.AddError(kPolicyWithError, IDS_POLICY_BLOCKED);
+  errors.AddError(kPolicyWithError, IDS_POLICY_LABEL_IGNORED, /*error_path=*/{},
+                  PolicyMap::MessageType::kError);
+  errors.AddError(kPolicyWithError, IDS_POLICY_LABEL_DEPRECATED,
+                  /*error_path=*/{}, PolicyMap::MessageType::kWarning);
+  errors.AddError(kPolicyWithError, IDS_POLICY_LABEL_SUPERSEDED_VALUE,
+                  /*error_path=*/{}, PolicyMap::MessageType::kInfo);
 
   EXPECT_EQ(errors.GetErrorMessages(kPolicyWithError),
-            u"This policy is blocked, its value will be ignored.");
+            u"This policy is blocked, its value will be ignored.\nIgnored");
+  EXPECT_EQ(
+      errors.GetErrorMessages(kPolicyWithError, PolicyMap::MessageType::kError),
+      u"This policy is blocked, its value will be ignored.\nIgnored");
+  EXPECT_EQ(errors.GetErrorMessages(kPolicyWithError,
+                                    PolicyMap::MessageType::kWarning),
+            u"Deprecated");
+  EXPECT_EQ(
+      errors.GetErrorMessages(kPolicyWithError, PolicyMap::MessageType::kInfo),
+      u"Value (superseded)");
 }
 
 TEST(PolicyErrorMapTest, GetErrorMessagesWithReplacement) {

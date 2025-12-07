@@ -8,11 +8,9 @@
 #include <map>
 #include <memory>
 
-#include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "content/common/frame.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "url/gurl.h"
 
 namespace content {
 

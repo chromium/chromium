@@ -12,7 +12,7 @@ namespace net {
 NetworkConnection::NetworkConnection() {
   NetworkChangeNotifier::AddIPAddressObserver(this);
   NetworkChangeNotifier::AddConnectionTypeObserver(this);
-  OnIPAddressChanged();
+  OnIPAddressChanged(NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL);
 }
 
 NetworkConnection::~NetworkConnection() {
@@ -20,7 +20,8 @@ NetworkConnection::~NetworkConnection() {
   NetworkChangeNotifier::RemoveIPAddressObserver(this);
 }
 
-void NetworkConnection::OnIPAddressChanged() {
+void NetworkConnection::OnIPAddressChanged(
+    NetworkChangeNotifier::IPAddressChangeType change_type) {
   OnConnectionTypeChanged(NetworkChangeNotifier::GetConnectionType());
 }
 

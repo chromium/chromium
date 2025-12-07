@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
@@ -155,7 +156,7 @@ void ChromeOSSystemProfileProvider::UpdateMultiProfileUserCount(
 
 void ChromeOSSystemProfileProvider::WriteDemoModeDimensionMetrics(
     metrics::SystemProfileProto* system_profile_proto) {
-  if (!ash::DemoSession::IsDeviceInDemoMode()) {
+  if (!ash::demo_mode::IsDeviceInDemoMode()) {
     return;
   }
   metrics::SystemProfileProto::DemoModeDimensions* demo_mode_dimensions =

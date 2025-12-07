@@ -1,0 +1,5 @@
+specific_include_rules = {
+  "mappable_buffer_test_template.h": [
+    "+components/viz/test/test_gpu_service_holder.h",
+  ]
+}

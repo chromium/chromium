@@ -7,6 +7,7 @@ package org.chromium.components.browser_ui.widget.dragreorder;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -14,12 +15,18 @@ import android.widget.TextView;
 import androidx.annotation.IntDef;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter.DragBinder;
@@ -27,13 +34,12 @@ import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecy
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.MVCListAdapter.ViewBuilder;
-import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -41,10 +47,16 @@ import java.lang.annotation.RetentionPolicy;
 /** Tests to ensure/validate {@link DragReorderableRecyclerViewAdapter} behavior. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-public class DragReorderableRecyclerViewAdapterTest extends BlankUiTestActivityTestCase {
+public class DragReorderableRecyclerViewAdapterTest {
     static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
     static final WritableIntPropertyKey TYPE = new WritableIntPropertyKey();
     static final PropertyKey[] ALL_KEYS = {TITLE, TYPE};
+
+    @ClassRule
+    public static final BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
 
     @IntDef({Type.NORMAL, Type.DRAGGABLE, Type.PASSIVELY_DRAGGABLE})
     @Retention(RetentionPolicy.SOURCE)
@@ -58,13 +70,16 @@ public class DragReorderableRecyclerViewAdapterTest extends BlankUiTestActivityT
     private DragReorderableRecyclerViewAdapter mAdapter;
     private RecyclerView mRecyclerView;
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
 
+    @Before
+    public void setUp() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mRecyclerView = new RecyclerView(getActivity());
+                    mRecyclerView = new RecyclerView(sActivity);
                     RecyclerView.LayoutParams params =
                             new RecyclerView.LayoutParams(
                                     RecyclerView.LayoutParams.MATCH_PARENT,
@@ -76,14 +91,15 @@ public class DragReorderableRecyclerViewAdapterTest extends BlankUiTestActivityT
                                     LinearLayoutManager.VERTICAL,
                                     false));
                     mRecyclerView.setAdapter(createAdapter());
-                    getActivity().setContentView(mRecyclerView);
+                    sActivity.setContentView(mRecyclerView);
 
                     mAdapter.enableDrag();
                 });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
-    @Override
-    public void tearDownTest() {
+    @After
+    public void tearDown() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModelList.clear();
@@ -92,7 +108,7 @@ public class DragReorderableRecyclerViewAdapterTest extends BlankUiTestActivityT
 
     private DragReorderableRecyclerViewAdapter createAdapter() {
         mModelList = new ModelList();
-        mAdapter = new DragReorderableRecyclerViewAdapter(getActivity(), mModelList);
+        mAdapter = new DragReorderableRecyclerViewAdapter(sActivity, mModelList);
 
         ViewBuilder<View> viewBuilder = (parent) -> createListItemView();
         ViewBinder<PropertyModel, View, PropertyKey> viewBinder =
@@ -133,7 +149,7 @@ public class DragReorderableRecyclerViewAdapterTest extends BlankUiTestActivityT
     }
 
     private View createListItemView() {
-        TextView tv = new TextView(getActivity());
+        TextView tv = new TextView(sActivity);
         tv.setLayoutParams(
                 new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -149,7 +165,7 @@ public class DragReorderableRecyclerViewAdapterTest extends BlankUiTestActivityT
     }
 
     private ListItem buildListItem(String title, @Type int type) {
-        return new ModelListAdapter.ListItem(type, createPropertyModel(title, type));
+        return new ListItem(type, createPropertyModel(title, type));
     }
 
     @Test
@@ -160,6 +176,8 @@ public class DragReorderableRecyclerViewAdapterTest extends BlankUiTestActivityT
                     mModelList.add(buildListItem("normal_1", Type.NORMAL));
                     mModelList.add(buildListItem("draggable_1", Type.DRAGGABLE));
                 });
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -179,6 +197,8 @@ public class DragReorderableRecyclerViewAdapterTest extends BlankUiTestActivityT
                     mModelList.add(buildListItem("draggable_1", Type.DRAGGABLE));
                     mModelList.add(buildListItem("draggable_2", Type.DRAGGABLE));
                 });
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -200,6 +220,8 @@ public class DragReorderableRecyclerViewAdapterTest extends BlankUiTestActivityT
                             buildListItem("passively_draggable_1", Type.PASSIVELY_DRAGGABLE));
                     mModelList.add(buildListItem("draggable_2", Type.DRAGGABLE));
                 });
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

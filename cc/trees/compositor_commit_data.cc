@@ -29,4 +29,7 @@ CompositorCommitData::ScrollUpdateInfo&
 CompositorCommitData::ScrollUpdateInfo::operator=(
     const ScrollUpdateInfo& other) = default;
 
+CompositorCommitData::ScrollEndInfo::ScrollEndInfo() = default;
+CompositorCommitData::ScrollEndInfo::~ScrollEndInfo() = default;
+
 }  // namespace cc

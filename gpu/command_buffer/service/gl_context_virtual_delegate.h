@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/memory/weak_ptr.h"
 #include "gpu/gpu_gles2_export.h"
 
 namespace gpu {

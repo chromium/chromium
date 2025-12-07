@@ -21,9 +21,7 @@ UserRemoteCommandsFactory::BuildJobForType(
     case enterprise_management::RemoteCommand_Type_BROWSER_CLEAR_BROWSING_DATA:
       return std::make_unique<ClearBrowsingDataJob>(profile_);
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Received an unsupported remote command type: " << type;
-      return nullptr;
+      NOTREACHED() << "Received an unsupported remote command type: " << type;
   }
 }
 }  // namespace enterprise_commands

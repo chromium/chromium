@@ -78,7 +78,8 @@ class NetworkStateNotifier : public NetworkConnectionObserver,
   };
 
   // NetworkConnectionObserver
-  void ConnectToNetworkRequested(const std::string& service_path) override;
+  ConnectToNetworkRequestVerdict ConnectToNetworkRequested(
+      const std::string& service_path) override;
   void ConnectSucceeded(const std::string& service_path) override;
   void ConnectFailed(const std::string& service_path,
                      const std::string& error_name) override;

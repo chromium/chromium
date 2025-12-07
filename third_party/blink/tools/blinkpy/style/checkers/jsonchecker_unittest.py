@@ -21,7 +21,6 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """Unit test for jsonchecker.py."""
 
-import six
 import unittest
 
 from blinkpy.style.checkers import jsonchecker
@@ -89,11 +88,7 @@ class JSONCheckerTest(unittest.TestCase):
 
     def test_conflict_marker(self):
 
-        # In python 3, this error line number is 1
         expected_line = 1
-        if six.PY2:
-            expected_line = 0
-
         self.assert_error(expected_line, 'json/syntax', '<<<<<<< HEAD\n{\n}\n')
 
     def test_single_quote(self):

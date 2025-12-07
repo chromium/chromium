@@ -5,6 +5,7 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_CLONE_TRAITS_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_CLONE_TRAITS_H_
 
+#include <concepts>
 #include <optional>
 #include <type_traits>
 #include <utility>
@@ -33,8 +34,14 @@ struct CloneTraits {
   static T Clone(const T& input) {
     if constexpr (HasCloneMethod<T>::value) {
       return input.Clone();
-    } else {
+    } else if constexpr (std::copyable<T>) {
       return input;
+    } else {
+      static_assert(
+          false,
+          "T is not copyable and has no Clone() method, so the default "
+          "mojo::CloneTraits cannot be used; please make sure to include the "
+          "header that defines the mojo::CloneTraits<T> specialization");
     }
   }
 };

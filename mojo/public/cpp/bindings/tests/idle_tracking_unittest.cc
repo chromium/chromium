@@ -70,9 +70,8 @@ TEST_P(IdleTrackingTest, ControlMessagesDontExpectAck) {
   TestServiceImpl impl(remote.BindNewPipeAndPassReceiver());
 
   base::RunLoop loop;
-  remote.set_idle_handler(base::TimeDelta(), base::BindRepeating([] {
-                            NOTREACHED_IN_MIGRATION();
-                          }));
+  remote.set_idle_handler(base::TimeDelta(),
+                          base::BindRepeating([] { NOTREACHED(); }));
   remote.FlushAsyncForTesting(loop.QuitClosure());
   EXPECT_EQ(0u, remote.GetNumUnackedMessagesForTesting());
   loop.Run();
@@ -106,9 +105,8 @@ TEST_P(IdleTrackingTest, PendingRepliesPreventIdling) {
   TestServiceImpl impl(remote.BindNewPipeAndPassReceiver());
 
   impl.HoldNextPingPong();
-  remote.set_idle_handler(base::TimeDelta(), base::BindRepeating([] {
-                            NOTREACHED_IN_MIGRATION();
-                          }));
+  remote.set_idle_handler(base::TimeDelta(),
+                          base::BindRepeating([] { NOTREACHED(); }));
 
   bool idle = false;
   bool replied = false;
@@ -164,9 +162,8 @@ TEST_P(IdleTrackingTest, OtherBoundReceiversPreventIdling) {
   // First see that we can bind another receiver and that the Remote does not
   // invoke its idle handler even though its number of unacked messages goes to
   // zero.
-  remote.set_idle_handler(base::TimeDelta(), base::BindRepeating([] {
-                            NOTREACHED_IN_MIGRATION();
-                          }));
+  remote.set_idle_handler(base::TimeDelta(),
+                          base::BindRepeating([] { NOTREACHED(); }));
   Remote<mojom::KeepAlive> keepalive;
   remote->BindKeepAlive(keepalive.BindNewPipeAndPassReceiver());
   EXPECT_EQ(1u, remote.GetNumUnackedMessagesForTesting());
@@ -217,9 +214,8 @@ TEST_P(IdleTrackingTest, SubInterfacesCanIdleSeparately) {
   // First see that we can bind another receiver and that the Remote does not
   // invoke its idle handler even though its number of unacked messages goes to
   // zero.
-  remote.set_idle_handler(base::TimeDelta(), base::BindRepeating([] {
-                            NOTREACHED_IN_MIGRATION();
-                          }));
+  remote.set_idle_handler(base::TimeDelta(),
+                          base::BindRepeating([] { NOTREACHED(); }));
   Remote<mojom::KeepAlive> keepalive;
   remote->BindKeepAlive(keepalive.BindNewPipeAndPassReceiver());
   EXPECT_EQ(1u, remote.GetNumUnackedMessagesForTesting());

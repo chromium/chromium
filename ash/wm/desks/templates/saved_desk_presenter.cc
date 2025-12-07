@@ -4,6 +4,7 @@
 
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "ash/constants/notifier_catalogs.h"
@@ -30,8 +31,9 @@
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/scoped_multi_source_observation.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -151,7 +153,7 @@ class WindowCloseObserver : public aura::WindowObserver {
 
     // If any of the observed windows belong to an ARC app, we need to handle
     // things a bit differently.
-    has_arc_app_ = base::ranges::any_of(windows, &IsArcWindow);
+    has_arc_app_ = std::ranges::any_of(windows, &IsArcWindow);
 
     // Observe the windows that we are going to close. Since `windows` here are
     // all non-all-desks windows or non-transient windows, we can observe all
@@ -330,16 +332,30 @@ SavedDeskPresenter::~SavedDeskPresenter() = default;
 
 size_t SavedDeskPresenter::GetEntryCount(DeskTemplateType type) const {
   auto* model = GetDeskModel();
-  return type == DeskTemplateType::kTemplate
-             ? model->GetDeskTemplateEntryCount()
-             : model->GetSaveAndRecallDeskEntryCount();
+  switch (type) {
+    case DeskTemplateType::kTemplate:
+      return model->GetDeskTemplateEntryCount();
+    case DeskTemplateType::kSaveAndRecall:
+      return model->GetSaveAndRecallDeskEntryCount();
+    case DeskTemplateType::kCoral:
+      return model->GetCoralEntryCount();
+    default:
+      NOTREACHED();
+  }
 }
 
 size_t SavedDeskPresenter::GetMaxEntryCount(DeskTemplateType type) const {
   auto* model = GetDeskModel();
-  return type == DeskTemplateType::kTemplate
-             ? model->GetMaxDeskTemplateEntryCount()
-             : model->GetMaxSaveAndRecallDeskEntryCount();
+  switch (type) {
+    case DeskTemplateType::kTemplate:
+      return model->GetMaxDeskTemplateEntryCount();
+    case DeskTemplateType::kSaveAndRecall:
+      return model->GetMaxSaveAndRecallDeskEntryCount();
+    case DeskTemplateType::kCoral:
+      return model->GetMaxCoralEntryCount();
+    default:
+      NOTREACHED();
+  }
 }
 
 ash::DeskTemplate* SavedDeskPresenter::FindOtherEntryWithName(
@@ -358,7 +374,7 @@ void SavedDeskPresenter::UpdateUIForSavedDeskLibrary() {
   // The library and the library button is always hidden if we enter tablet
   // mode. If not in tablet mode, the library button is visible if there are
   // saved desks in the model, *or* we are already showing the library.
-  const bool in_tablet_mode = display::Screen::GetScreen()->InTabletMode();
+  const bool in_tablet_mode = display::Screen::Get()->InTabletMode();
 
   for (auto& overview_grid : overview_session_->grid_list()) {
     const bool is_showing_library = overview_grid->IsShowingSavedDeskLibrary();
@@ -411,15 +427,15 @@ void SavedDeskPresenter::LaunchSavedDesk(
     return;
   }
 
-  // Copy fields we need from `desk_template` since we're about to move it.
+  // Copy fields we need from `saved_desk` since we're about to move it.
   const auto saved_desk_type = saved_desk->type();
   Desk* new_desk = desks_controller->CreateNewDeskForSavedDesk(
       saved_desk_type, saved_desk->template_name());
 
-  // Set the lacros profile ID for the newly created desk. This is effectively a
-  // no-op if `lacros_profile_id` returns zero.
-  new_desk->SetLacrosProfileId(saved_desk->lacros_profile_id(),
-                               /*source=*/std::nullopt);
+  if (saved_desk->type() == DeskTemplateType::kCoral) {
+    new_desk->set_tab_app_entities(
+        mojo::Clone(saved_desk->coral_tab_app_entities()));
+  }
 
   LaunchSavedDeskIntoNewDesk(std::move(saved_desk), root_window, new_desk);
 
@@ -437,7 +453,7 @@ void SavedDeskPresenter::MaybeSaveActiveDeskAsSavedDesk(
       base::BindOnce(&SavedDeskPresenter::SaveOrUpdateSavedDesk,
                      weak_ptr_factory_.GetWeakPtr(),
                      /*is_update=*/false, root_window_to_show),
-      template_type, root_window_to_show);
+      template_type, root_window_to_show, /*coral_app_id_allowlist=*/{});
 }
 
 void SavedDeskPresenter::SaveOrUpdateSavedDesk(

@@ -56,6 +56,7 @@ class InitializationState {
   };
 
   InitializationState() : state_(kStateUninitialized) {}
+  explicit InitializationState(State state) : state_(state) {}
 
   InitializationState(const InitializationState&) = delete;
   InitializationState& operator=(const InitializationState&) = delete;

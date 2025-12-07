@@ -17,7 +17,10 @@
 #include "base/threading/thread.h"
 #include "components/cronet/cronet_context.h"
 #include "components/prefs/json_pref_store.h"
+#include "net/base/completion_once_callback.h"
 #include "net/base/network_handle.h"
+#include "net/http/http_request_headers.h"
+#include "net/http/http_response_headers.h"
 #include "net/nqe/effective_connection_type.h"
 #include "net/nqe/effective_connection_type_observer.h"
 #include "net/nqe/network_quality_estimator.h"
@@ -48,12 +51,11 @@ class CronetContextAdapter : public CronetContext::Callback {
   // Called on init Java thread to initialize URLRequestContext.
   void InitRequestContextOnInitThread(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcaller);
+      const base::android::JavaRef<jobject>& jcaller);
 
   // Releases all resources for the request context and deletes the object.
   // Blocks until network thread is destroyed after running all pending tasks.
-  void Destroy(JNIEnv* env,
-               const base::android::JavaParamRef<jobject>& jcaller);
+  void Destroy(JNIEnv* env);
 
   // Posts a task that might depend on the context being initialized
   // to the network thread.
@@ -71,26 +73,21 @@ class CronetContextAdapter : public CronetContext::Callback {
   // Starts NetLog logging to file. This can be called on any thread.
   // Return false if |jfile_name| cannot be opened.
   bool StartNetLogToFile(JNIEnv* env,
-                         const base::android::JavaParamRef<jobject>& jcaller,
-                         const base::android::JavaParamRef<jstring>& jfile_name,
+                         const base::android::JavaRef<jstring>& jfile_name,
                          jboolean jlog_all);
 
   // Starts NetLog logging to disk with a bounded amount of disk space. This
   // can be called on any thread.
   void StartNetLogToDisk(JNIEnv* env,
-                         const base::android::JavaParamRef<jobject>& jcaller,
-                         const base::android::JavaParamRef<jstring>& jdir_name,
+                         const base::android::JavaRef<jstring>& jdir_name,
                          jboolean jlog_all,
                          jint jmax_size);
 
   // Stops NetLog logging to file. This can be called on any thread. This will
   // flush any remaining writes to disk.
-  void StopNetLog(JNIEnv* env,
-                  const base::android::JavaParamRef<jobject>& jcaller);
+  void StopNetLog(JNIEnv* env);
 
-  void FlushWritePropertiesForTesting(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcaller);
+  void FlushWritePropertiesForTesting(JNIEnv* env);
 
   // Default net::LOAD flags used to create requests.
   int default_load_flags() const;
@@ -105,7 +102,6 @@ class CronetContextAdapter : public CronetContext::Callback {
   // called only after the network quality estimator has been enabled.
   void ConfigureNetworkQualityEstimatorForTesting(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcaller,
       jboolean use_local_host_requests,
       jboolean use_smaller_responses,
       jboolean disable_offline_check);
@@ -114,14 +110,8 @@ class CronetContextAdapter : public CronetContext::Callback {
 
   // Request that RTT and/or throughput observations should or should not be
   // provided by the network quality estimator.
-  void ProvideRTTObservations(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcaller,
-      bool should);
-  void ProvideThroughputObservations(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcaller,
-      bool should);
+  void ProvideRTTObservations(JNIEnv* env, bool should);
+  void ProvideThroughputObservations(JNIEnv* env, bool should);
 
   CronetContext* cronet_url_request_context() const { return context_; }
 
@@ -142,6 +132,12 @@ class CronetContextAdapter : public CronetContext::Callback {
       int32_t timestamp_ms,
       net::NetworkQualityObservationSource source) override;
   void OnStopNetLogCompleted() override;
+  void OnBeforeTunnelRequest(
+      int chain_id,
+      net::ProxyDelegate::OnBeforeTunnelRequestCallback callback) override;
+  void OnTunnelHeadersReceived(int chain_id,
+                               const net::HttpResponseHeaders& response_headers,
+                               net::CompletionOnceCallback callback) override;
 
  private:
   friend class TestUtil;

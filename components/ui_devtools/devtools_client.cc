@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/notimplemented.h"
 #include "components/ui_devtools/devtools_server.h"
 #include "third_party/inspector_protocol/crdtp/dispatch.h"
 #include "third_party/inspector_protocol/crdtp/json.h"
@@ -21,7 +22,7 @@ UiDevToolsClient::UiDevToolsClient(const std::string& name,
   DCHECK(server_);
 }
 
-UiDevToolsClient::~UiDevToolsClient() {}
+UiDevToolsClient::~UiDevToolsClient() = default;
 
 void UiDevToolsClient::AddAgent(std::unique_ptr<UiDevToolsAgent> agent) {
   agent->Init(&dispatcher_);

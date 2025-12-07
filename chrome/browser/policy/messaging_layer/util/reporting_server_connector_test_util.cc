@@ -14,6 +14,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/singleton.h"
+#include "build/build_config.h"
 #include "chrome/browser/policy/device_management_service_configuration.h"
 #include "chrome/browser/policy/messaging_layer/upload/encrypted_reporting_client.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
@@ -38,7 +39,7 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #endif
@@ -77,7 +78,7 @@ ReportingServerConnector::TestEnvironment::TestEnvironment()
           store_.get(),
           base::SingleThreadTaskRunner::GetCurrentDefault(),
           network::TestNetworkConnectionTracker::CreateGetter())) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   fake_statistics_provider_ =
       std::make_unique<ash::system::ScopedFakeStatisticsProvider>();
   fake_statistics_provider_->SetMachineStatistic(ash::system::kSerialNumberKey,
@@ -86,7 +87,8 @@ ReportingServerConnector::TestEnvironment::TestEnvironment()
   device_management_service_ =
       std::make_unique<policy::DeviceManagementService>(
           std::make_unique<policy::DeviceManagementServiceConfiguration>(
-              "", "", kServerUrl));
+              /*dm_server_url=*/"", /*realtime_reporting_server_url=*/"",
+              /*encrypted_reporting_server_url=*/kServerUrl));
   device_management_service_->ScheduleInitialization(0);
   TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
       url_loader_factory_.GetSafeWeakWrapper());
@@ -125,7 +127,8 @@ base::Value::Dict ReportingServerConnector::TestEnvironment::request_body(
       base::JSONReader::Read(request.request_body->elements()
                                  ->at(0)
                                  .As<network::DataElementBytes>()
-                                 .AsStringPiece());
+                                 .AsStringPiece(),
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   CHECK(body);
   CHECK(body->is_dict());
   return body->GetDict().Clone();
@@ -143,9 +146,9 @@ void ReportingServerConnector::TestEnvironment::
                                      StatusOr<base::Value::Dict> response) {
   const std::string& pending_request_url =
       (*url_loader_factory()->pending_requests())[0].request.url.spec();
-  std::string response_string = "";
+  std::string response_string;
   if (response.has_value()) {
-    base::JSONWriter::Write(response.value(), &response_string);
+    response_string = base::WriteJson(response.value()).value_or("");
   }
   url_loader_factory()->SimulateResponseForPendingRequest(pending_request_url,
                                                           response_string);

@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/timer/timer.h"
@@ -48,8 +48,6 @@ class DCOMPTexture : public gl::DCOMPSurfaceProxy,
   HANDLE GetSurfaceHandle() override;
   void SetParentWindow(HWND parent) override;
   void SetRect(const gfx::Rect& window_relative_rect) override;
-  void SetProtectedVideoType(
-      gfx::ProtectedVideoType protected_video_type) override;
 
  private:
   DCOMPTexture(GpuChannel* channel,
@@ -85,8 +83,6 @@ class DCOMPTexture : public gl::DCOMPSurfaceProxy,
 
   base::win::ScopedHandle surface_handle_;
   HWND last_parent_ = nullptr;
-  gfx::ProtectedVideoType protected_video_type_ =
-      gfx::ProtectedVideoType::kClear;
 
   bool shared_image_mailbox_created_ = false;
   raw_ptr<GpuChannel> channel_ = nullptr;

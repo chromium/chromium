@@ -1,0 +1,9 @@
+<Root> [box: 0,0 800x600]
+  <Container> [box: 0,0 800x10]
+    <Container> [box: 0,0 800x10]
+      <Container> [box: 0,0 800x10]
+        <Container> [box: 0,0 800x10]
+          <Text> "Expandable" [box: 10,0 101x10]
+        <Container> [box: 0,0 0x0]
+          <Text> "     Contents.   " [outerBox: 0,10 90x10] [visibleBox: 0,0 0x0]
+

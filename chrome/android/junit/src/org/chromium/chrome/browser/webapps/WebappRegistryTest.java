@@ -16,7 +16,6 @@ import android.graphics.Color;
 import android.text.TextUtils;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
@@ -29,7 +28,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.task.test.BackgroundShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
@@ -73,11 +71,9 @@ public class WebappRegistryTest {
     private SharedPreferences mSharedPreferences;
     private boolean mCallbackCalled;
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
     private static class FetchStorageCallback
             implements WebappRegistry.FetchWebappDataStorageCallback {
-        BrowserServicesIntentDataProvider mIntentDataProvider;
+        final BrowserServicesIntentDataProvider mIntentDataProvider;
         boolean mCallbackCalled;
 
         FetchStorageCallback(BrowserServicesIntentDataProvider intentDataProvider) {
@@ -122,7 +118,7 @@ public class WebappRegistryTest {
 
         mCallbackCalled = false;
 
-        mJniMocker.mock(WebApkSyncServiceJni.TEST_HOOKS, new TestWebApkSyncServiceJni());
+        WebApkSyncServiceJni.setInstanceForTesting(new TestWebApkSyncServiceJni());
     }
 
     private void registerWebapp(BrowserServicesIntentDataProvider intentDataProvider)
@@ -764,6 +760,7 @@ public class WebappRegistryTest {
     public void testHasWebApkForOrigin() throws Exception {
         final String startUrl = START_URL + "/test_page.html";
         final String testOrigin = START_URL;
+        final String testPackageName = "org.chromium.webapk";
 
         assertFalse(WebappRegistry.getInstance().hasAtLeastOneWebApkForOrigin(testOrigin));
 
@@ -772,8 +769,13 @@ public class WebappRegistryTest {
         assertFalse(WebappRegistry.getInstance().hasAtLeastOneWebApkForOrigin(testOrigin));
 
         BrowserServicesIntentDataProvider webApkIntentDataProvider =
-                new WebApkIntentDataProviderBuilder("org.chromium.webapk", startUrl).build();
+                new WebApkIntentDataProviderBuilder(testPackageName, startUrl).build();
         registerWebapp(webApkIntentDataProvider);
+        // Still fails because the WebAPK is "no longer installed" according to PackageManager.
+        assertFalse(WebappRegistry.getInstance().hasAtLeastOneWebApkForOrigin(testOrigin));
+
+        Shadows.shadowOf(RuntimeEnvironment.application.getPackageManager())
+                .addPackage(testPackageName);
         assertTrue(WebappRegistry.getInstance().hasAtLeastOneWebApkForOrigin(testOrigin));
     }
 
@@ -794,8 +796,8 @@ public class WebappRegistryTest {
         WebappDataStorage storage =
                 WebappRegistry.getInstance().getWebappDataStorageForManifestId(testManifestId);
         assertNotNull(storage);
-        assertEquals(storage.getWebApkManifestId(), testManifestId);
-        assertEquals(storage.getWebApkPackageName(), testPackageName);
+        assertEquals(testManifestId, storage.getWebApkManifestId());
+        assertEquals(testPackageName, storage.getWebApkPackageName());
 
         final String anotherManifestId = START_URL + "/test_page.html";
         assertNull(
@@ -817,8 +819,8 @@ public class WebappRegistryTest {
         registerWebapp(intentDataProvider);
 
         assertEquals(
-                WebappRegistry.getInstance().findWebApkWithManifestId(testManifestId),
-                testPackageName);
+                testPackageName,
+                WebappRegistry.getInstance().findWebApkWithManifestId(testManifestId));
 
         final String anotherManifestId = START_URL + "/test_page.html";
         assertNull(
@@ -862,7 +864,7 @@ public class WebappRegistryTest {
 
         WebappRegistry webApkRegistry = WebappRegistry.getInstance();
         Map<String, BrowserServicesIntentDataProvider> expectedIntentDataProviders =
-                new HashMap<String, BrowserServicesIntentDataProvider>();
+                new HashMap<>();
 
         BrowserServicesIntentDataProvider intentDataProvider1 =
                 new WebApkIntentDataProviderBuilder(testPackageName1, testStartUrl1)
@@ -922,7 +924,7 @@ public class WebappRegistryTest {
                 webApkRegistry.getWebApkSpecificsImpl(setWebappInfoForTesting);
         assertEquals(2, webApkSpecificsList.size());
 
-        Set<String> visitedScopes = new HashSet<String>();
+        Set<String> visitedScopes = new HashSet<>();
         for (WebApkSpecifics webApkSpecifics : webApkSpecificsList) {
             BrowserServicesIntentDataProvider intentDataProvider =
                     expectedIntentDataProviders.get(webApkSpecifics.getScope());

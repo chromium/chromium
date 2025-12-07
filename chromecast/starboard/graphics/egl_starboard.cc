@@ -4,6 +4,7 @@
 
 #include "chromecast/starboard/graphics/egl_starboard.h"
 
+#include <EGL/eglext.h>  // for EGL_CONTEXT_OPENGL_NO_ERROR_KHR
 #include <dlfcn.h>
 #include <starboard/egl.h>
 #include <starboard/gles.h>
@@ -11,10 +12,11 @@
 
 #include <cstdlib>
 #include <string>
+#include <vector>
+
+#include "base/compiler_specific.h"  // for UNSAFE_BUFFERS
 
 extern "C" {
-
-constexpr char kSupportedExtensions[] = "EGL_EXT_client_extensions";
 
 EGLBoolean Sb_eglChooseConfig(EGLDisplay dpy,
                               const EGLint* attrib_list,
@@ -35,8 +37,38 @@ EGLContext Sb_eglCreateContext(EGLDisplay dpy,
                                EGLConfig config,
                                EGLContext share_context,
                                const EGLint* attrib_list) {
+  // Some starboard implementations do not support
+  // EGL_CONTEXT_OPENGL_NO_ERROR_KHR; context creation will fail on those
+  // platforms if that attribute is specified. So we manually remove that
+  // attribute.
+  //
+  // Per EGL documentation, `attrib_list` contains key value pairs, and is
+  // terminated by EGL_NONE (k1, v1, k2, v2, ... kn, vn, EGL_NONE).
+  // `attrib_list` may be null.
+  std::vector<EGLint> filtered_attributes;
+  for (const EGLint* attribute_key = attrib_list; attribute_key != nullptr;
+       // SAFETY: Required by the EGL API.
+       UNSAFE_BUFFERS(attribute_key += 2)) {
+    if (*attribute_key == EGL_CONTEXT_OPENGL_NO_ERROR_KHR) {
+      continue;
+    }
+    // EGL_NONE is used to terminate the array.
+    if (*attribute_key == EGL_NONE) {
+      filtered_attributes.push_back(EGL_NONE);
+      break;
+    }
+
+    // SAFETY: Required by the EGL API.
+    const EGLint* const attribute_value = UNSAFE_BUFFERS(attribute_key + 1);
+    if (attribute_value == nullptr) {
+      // Not valid; stop parsing the attributes.
+      break;
+    }
+    filtered_attributes.push_back(*attribute_key);
+    filtered_attributes.push_back(*attribute_value);
+  }
   return SbGetEglInterface()->eglCreateContext(dpy, config, share_context,
-                                               attrib_list);
+                                               filtered_attributes.data());
 }
 
 EGLSurface Sb_eglCreatePbufferSurface(EGLDisplay dpy,
@@ -134,16 +166,6 @@ EGLBoolean Sb_eglQueryContext(EGLDisplay dpy,
 }
 
 const char* Sb_eglQueryString(EGLDisplay dpy, EGLint name) {
-  if (dpy == EGL_NO_DISPLAY && name == EGL_EXTENSIONS) {
-    // Report that we do not support any additional client extensions. See
-    // https://registry.khronos.org/EGL/sdk/docs/man/html/eglQueryString.xhtml
-    // for more details about the eglQueryString API.
-    //
-    // If any ANGLE platforms were returned here, chromium would attempt to use
-    // an ANGLE ozone implementation rather than the EGL implementation
-    // supported by cast.
-    return kSupportedExtensions;
-  }
   return SbGetEglInterface()->eglQueryString(dpy, name);
 }
 

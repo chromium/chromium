@@ -11,9 +11,10 @@ from typing import List
 
 from blinkpy.common import path_finder
 from blinkpy.common.memoized import memoized
+from blinkpy.web_tests.port.base import Port
 
 _log = logging.getLogger(__name__)
-IOS_VERSION = '17.0'
+IOS_VERSION = '18.0'
 IOS_DEVICE = 'iPhone 14 Pro'
 
 
@@ -63,7 +64,7 @@ class Product:
     name = ''
     aliases = []
 
-    def __init__(self, port, options):
+    def __init__(self, port: Port, options):
         self._port = port
         self._host = port.host
         self._options = options
@@ -79,7 +80,16 @@ class Product:
         options.processes = self.processes
         # pylint: disable=assignment-from-none
         options.browser_version = self.get_version()
-        options.webdriver_binary = self.webdriver_binary
+        if self._options.stable:
+            options.channel = 'stable'
+            # Don't use a local trunk build of `chromedriver`, whose major
+            # version might be ahead of stable. Instead, download a compatible
+            # `chromedriver` version from Chrome for Testing.
+            options.install_webdriver = True
+            options.yes = True
+        else:
+            options.webdriver_binary = (self._options.webdriver_binary
+                                        or self.webdriver_binary)
         options.webdriver_args.extend(self.additional_webdriver_args())
 
     @functools.cached_property
@@ -119,11 +129,32 @@ class DesktopProduct(Product):
 
     def additional_binary_args(self) -> List[str]:
         # Base args applicable to all embedders.
-        return [
-            '--enable-blink-test-features',
+        args = [
             # Expose the non-standard `window.gc()` for `wpt_internal/` tests.
             '--js-flags=--expose-gc',
+            # Disable overlay scrollbar fadeout for consistent screenshots.
+            '--disable-features=ScrollbarAnimations',
         ]
+        fs = self._host.filesystem
+        if (self._options.wrapper
+                and fs.basename(self._options.wrapper[0]) == 'rr'):
+            debug_args = [
+                '--no-sandbox',
+                '--disable-hang-monitor',
+            ]
+            args.extend(debug_args)
+            _log.info(f'Running {self.name!r} with {" ".join(debug_args)!r} '
+                      'because of debugging option `--wrapper=rr`')
+        if self._options.wrapper and self._host.platform.is_win():
+            # The adapter will generate a batch file wrapping the browser
+            # command. Because `cmd.exe` doesn't have an equivalent of Unix's
+            # `exec`, there will be a real process in between chromedriver and
+            # the browser process. Because the batch file doesn't know how to
+            # relay the file handles it receives to the browser, the default
+            # `--remote-debugging-pipe` won't work. Use any free network port
+            # instead for chromedriver-browser traffic.
+            args.append('--remote-debugging-port=0')
+        return args
 
 
 class Chrome(DesktopProduct):
@@ -134,21 +165,38 @@ class HeadlessShell(DesktopProduct):
     name = 'headless_shell'
 
     def additional_binary_args(self):
-        # TODO(crbug.com/40887057): Support `--enable-leak-detection` and plumb
-        # the flag here.
-        return [
+        rv = [
             *super().additional_binary_args(),
             "--canvas-2d-layers",
             '--enable-bfcache',
             '--enable-field-trial-config',
+            '--force-reporting-destination-attested',
             # `headless_shell` doesn't send the `Accept-Language` header by
             # default, so set an arbitrary one that some tests expect.
             '--accept-lang=en-US,en',
         ]
+        if self._port.operating_system() != 'linux':
+            rv.append('--disable-site-isolation-trials')
+        return rv
 
 
 class ChromeiOS(Product):
     name = 'chrome_ios'
+
+    def get_version(self):
+        # TODO(crbug.com/374199289): The build directory must be plumbed to
+        # `run_cwt_chromedriver_wrapper.py --build-dir` to find the version in
+        # an `Info.plist` file, but the directory isn't known to the `wpt run`
+        # code [0] because "build directory" is a Chromium-specific concept.
+        # For now, explicitly find the version in this Chromium-side wrapper,
+        # which overrides [0].
+        #
+        # [0]: https://github.com/web-platform-tests/wpt/blob/b6027ab/tools/wpt/browser.py#L1558
+        return self._host.executive.run_command([
+            self.webdriver_binary,
+            f'--build-dir={self._port.build_path()}',
+            '--version',
+        ]).strip()
 
     @property
     def processes(self) -> int:
@@ -163,10 +211,12 @@ class ChromeiOS(Product):
     def additional_webdriver_args(self):
         # Set up xcode log output dir.
         output_dir = self._host.filesystem.join(
-            self._port.artifacts_directory(), "xcode-output")
+            self._port.artifacts_directory(), 'xcode-output')
         return [
-            '--out-dir=' + output_dir, '--os=' + IOS_VERSION,
-            '--device=' + IOS_DEVICE
+            f'--out-dir={output_dir}',
+            f'--os={IOS_VERSION}',
+            f'--device={IOS_DEVICE}',
+            f'--build-dir={self._port.build_path()}',
         ]
 
 
@@ -191,6 +241,40 @@ class ChromeAndroidBase(Product):
             device.Uninstall(path)
 
     @contextlib.contextmanager
+    def _install_chrome_stable(self, device):
+        install_script = self._port._path_finder.path_from_chromium_base(
+            'clank', 'bin', 'install_chrome.py')
+        self._host.executive.run_command([
+            install_script,
+            '--serial',
+            device.serial,
+            '--channel',
+            'stable',
+            '--adb',
+            self.adb_binary,
+            '--package',
+            'TrichromeChromeGoogle6432',
+        ])
+        try:
+            yield
+        finally:
+            # Do nothing as install_chrome.py does not uninstall.
+            pass
+
+    @contextlib.contextmanager
+    def _install_incremental_apk(self, device):
+        """Helper context manager for ensuring a device uninstalls incremental
+        APK."""
+        install_script = self._port.build_path('bin/chrome_public_apk')
+        self._host.executive.run_command(
+            [install_script, 'install', '--device', device])
+        try:
+            yield
+        finally:
+            self._host.executive.run_command(
+                [install_script, 'uninstall', '--device', device])
+
+    @contextlib.contextmanager
     def get_devices(self):
         instances = []
         try:
@@ -207,8 +291,7 @@ class ChromeAndroidBase(Product):
 
                 SyncParallelizer(instances).Start(  # pylint: disable=undefined-variable;
                     writable_system=True,
-                    window=self._options.emulator_window,
-                    require_fast_start=True)
+                    window=self._options.emulator_window)
 
             #TODO(weizhong): when choose device, make sure abi matches with target
             yield device_utils.DeviceUtils.HealthyDevices()  # pylint: disable=undefined-variable;
@@ -270,6 +353,8 @@ class ChromeAndroidBase(Product):
         See Also:
             https://github.com/web-platform-tests/wpt/blob/merge_pr_33203/tools/wpt/browser.py#L867-L924
         """
+        if self._options.stable:
+            return 'com.android.chrome'
         if self.browser_apk:
             # pylint: disable=undefined-variable;
             with contextlib.suppress(apk_helper.ApkHelperError):
@@ -309,8 +394,14 @@ class ChromeAndroidBase(Product):
         with contextlib.ExitStack() as exit_stack:
             for apk in self._options.additional_apk:
                 exit_stack.enter_context(self._install_apk(device, apk))
-            exit_stack.enter_context(
-                self._install_apk(device, self.browser_apk))
+            if self._options.stable:
+                install_context_manager = self._install_chrome_stable(device)
+            elif self._port._build_is_incremental_install():
+                install_context_manager = self._install_incremental_apk(device)
+            else:
+                install_context_manager = self._install_apk(
+                    device, self.browser_apk)
+            exit_stack.enter_context(cm=install_context_manager)
             _log.info('Provisioned device (serial: %s)', device.serial)
             yield
 
@@ -365,4 +456,7 @@ class ChromeAndroid(ChromeAndroidBase):
 
     @property
     def default_browser_apk(self):
+        if self._port._build_is_incremental_install():
+            return self._port.build_path('apks',
+                                         'ChromePublic_incremental.apk')
         return self._port.build_path('apks', 'ChromePublic.apk')

@@ -9,9 +9,9 @@ are used to communicate between ash and chrome services.
 method calls sent from ash to chrome & handles messages from chrome to ash.
 Forwards some of the calls to the `Delegate`.
 
-- `//chrome/browser/ash/login/ui/`:
+- `//chrome/browser/ui/ash/login/`:
   - This folder contains implementations of login and OOBE UIs.
-  - [`LoginDisplayHostMojo`](/chrome/browser/ash/login/ui/
+  - [`LoginDisplayHostMojo`](/chrome/browser/ui/ash/login/
 login_display_host_mojo.h) - a `LoginDisplayHost` instance that implements
 `LoginScreenClient` and sends requests to the views-based sign in. Handles calls
 like `HandleAuthenticateUserWith...()`. Owned by

@@ -10,7 +10,6 @@
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_context.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/common/client_hints/enabled_client_hints.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "url/origin.h"
@@ -46,11 +45,6 @@ class CONTENT_EXPORT ClientHintsControllerDelegate {
   // frame requests).
   virtual bool IsJavaScriptAllowed(const GURL& url,
                                    RenderFrameHost* parent_rfh) = 0;
-
-  // Returns true iff cookies are blocked for the URL/RFH or third-party cookies
-  // are disabled in the user agent.
-  virtual bool AreThirdPartyCookiesBlocked(const GURL& url,
-                                           RenderFrameHost* rfh) = 0;
 
   virtual blink::UserAgentMetadata GetUserAgentMetadata() = 0;
 

@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {MAX_SPEAKER_COLORS} from '../components/styles/speaker_label.js';
+
+import {SAMPLE_RATE, SAMPLES_PER_SLICE} from './audio_constants.js';
 import {DataDir} from './data_dir.js';
 import {computed, ReadonlySignal, signal} from './reactive/signal.js';
 import {Transcription, transcriptionSchema} from './soda/soda.js';
@@ -10,11 +13,11 @@ import {
   ExportSettings,
   ExportTranscriptionFormat,
 } from './state/settings.js';
-import {assertExhaustive, assertExists} from './utils/assert.js';
+import {assert, assertExhaustive, assertExists} from './utils/assert.js';
 import {AsyncJobQueue} from './utils/async_job_queue.js';
 import {Infer, z} from './utils/schema.js';
 import {ulid} from './utils/ulid.js';
-import {downloadFile} from './utils/utils.js';
+import {asyncLazyInit, downloadFile} from './utils/utils.js';
 
 /**
  * The base recording metadata.
@@ -35,7 +38,60 @@ const baseRecordingMetadataSchema = z.object({
 
 type BaseRecordingMetadata = Infer<typeof baseRecordingMetadataSchema>;
 
-const MAX_POWER_AVERAGES = 512;
+// Note that a recalculation should be triggered if this value is changed, by
+// changing the version value in the versionedTimelineSegmentsSchema.
+// TODO(pihsun): Test threshold and see what the normal background noise level
+// is.
+const NO_AUDIO_POWER_THRESHOLD = 10;
+
+/**
+ * The type of a segment in the timeline.
+ *
+ * The values are set to numbers to save space when written on disk, and the
+ * values are explicitly written out since it's written to disk and need to be
+ * backward compatible.
+ */
+export enum TimelineSegmentKind {
+  // No audio (power < NO_AUDIO_POWER_THRESHOLD)
+  NO_AUDIO = 0,
+
+  // Some audio but it's not speech or transcription is not enabled.
+  AUDIO = 1,
+
+  // Audio is speech (defined by the transcription timestamp), but speaker
+  // label is not enabled.
+  SPEECH = 2,
+
+  // Audio is speech with the "first" to "fifth" speaker label. Note that this
+  // is only used for the color which cycles after the fifth speaker, so the
+  // sixth speaker will be labeled as `SPEECH_SPEAKER_COLOR_1` here.
+  SPEECH_SPEAKER_COLOR_1 = 3,
+  SPEECH_SPEAKER_COLOR_2 = 4,
+  SPEECH_SPEAKER_COLOR_3 = 5,
+  SPEECH_SPEAKER_COLOR_4 = 6,
+  SPEECH_SPEAKER_COLOR_5 = 7,
+}
+
+// Note that to avoid floating point calculation error, all "time length" /
+// "time offset" of the timeline segment calculations are done in number of
+// samples instead of seconds.
+const timelineSegmentSchema = z.tuple([
+  // The length of the segment in number of samples.
+  z.number(),
+  // The type of the segment.
+  z.nativeEnum(TimelineSegmentKind),
+]);
+
+type TimelineSegment = Infer<typeof timelineSegmentSchema>;
+
+const TIMELINE_SEGMENT_VERSION = 1;
+
+const vesionedTimelineSegmentsSchema = z.object({
+  version: z.literal(TIMELINE_SEGMENT_VERSION),
+  segments: z.array(timelineSegmentSchema),
+});
+
+type VersionedTimelineSegments = Infer<typeof vesionedTimelineSegmentsSchema>;
 
 /**
  * The recording metadata that are derived from other data.
@@ -43,14 +99,28 @@ const MAX_POWER_AVERAGES = 512;
  * These are used in recording list.
  */
 const derivedRecordingMetadataSchema = z.object({
-  // Average of the powers used by the recording list. This contains at most
-  // `MAX_POWER_AVERAGES` samples.
-  powerAverages: z.array(z.number()),
+  // Total number of speakers in the recording. `null` if the transcription
+  // isn't enabled in the recording. `undefined` or missing field when it's not
+  // computed yet.
+  numSpeakers: z.optional(z.nullable(z.number())),
+
+  // Length in number of samples, and type of each segment of the recording.
+  // Used by the recording list.
+  timelineSegments: z.catch(
+    z.optional(vesionedTimelineSegmentsSchema),
+    undefined,
+  ),
 
   // Description of the recording used by the recording list. This contains a
   // truncated version of the transcription with maximum length
   // `MAX_DESCRIPTION_LENGTH`.
   description: z.string(),
+
+  // There was a field named `powerAverages` here with type number[]. If we
+  // ever want to add a field with a same name back, we need to ensure the
+  // schema is not compatible.
+  // TODO(pihsun): Have some kind of "deprecated" field marker in schema, that
+  // just decode everything into undefined.
 });
 
 const recordingMetadataSchema = z.intersection([
@@ -66,6 +136,11 @@ const audioPowerSchema = z.object({
   // audio samples.
   // TODO(pihsun): Compression. Use a UInt8Array and CompressionStream?
   powers: z.array(z.number()),
+  // The number of audio samples contained in one data point.
+  // The value can be calculated by SAMPLE_RATE / power bars per second.
+  // Since original power bars per second is SAMPLE_RATE / SAMPLES_PER_SLICE, we
+  // set the default value to SAMPLES_PER_SLICE.
+  samplesPerDataPoint: z.withDefault(z.number(), SAMPLES_PER_SLICE),
 });
 
 type AudioPower = Infer<typeof audioPowerSchema>;
@@ -94,21 +169,235 @@ function audioName(id: string) {
   return `${id}.webm`;
 }
 
-function calculatePowerAverages(powers: number[]): number[] {
-  if (powers.length <= MAX_POWER_AVERAGES) {
-    return powers;
-  }
-  const averages: number[] = [];
-  for (let i = 0; i < MAX_POWER_AVERAGES; i++) {
-    const start = Math.floor((i * powers.length) / MAX_POWER_AVERAGES);
-    const end = Math.floor(((i + 1) * powers.length) / MAX_POWER_AVERAGES);
-    let sum = 0;
-    for (let j = start; j < end; j++) {
-      sum += assertExists(powers[j]);
+function calculatePowerSegments(powers: number[], samplesPerDataPoint: number):
+  TimelineSegment[] {
+  const segments: TimelineSegment[] = [];
+  for (const power of powers) {
+    const label = power < NO_AUDIO_POWER_THRESHOLD ?
+      TimelineSegmentKind.NO_AUDIO :
+      TimelineSegmentKind.AUDIO;
+    if (segments.length === 0 || assertExists(segments.at(-1))[1] !== label) {
+      segments.push([samplesPerDataPoint, label]);
+    } else {
+      assertExists(segments.at(-1))[0] += samplesPerDataPoint;
     }
-    averages.push(sum / (end - start));
   }
-  return averages;
+  return segments;
+}
+
+function speakerLabelToTimelineSegmentKind(
+  speakerLabels: string[],
+  speakerLabel: string|null,
+): TimelineSegmentKind {
+  if (speakerLabel === null) {
+    return TimelineSegmentKind.SPEECH;
+  }
+  const speakerLabelIdx = speakerLabels.indexOf(speakerLabel);
+  assert(speakerLabelIdx !== -1);
+  return assertExists(
+    [
+      TimelineSegmentKind.SPEECH_SPEAKER_COLOR_1,
+      TimelineSegmentKind.SPEECH_SPEAKER_COLOR_2,
+      TimelineSegmentKind.SPEECH_SPEAKER_COLOR_3,
+      TimelineSegmentKind.SPEECH_SPEAKER_COLOR_4,
+      TimelineSegmentKind.SPEECH_SPEAKER_COLOR_5,
+    ][speakerLabelIdx % MAX_SPEAKER_COLORS],
+  );
+}
+
+interface OverlayTimelineSegment {
+  /**
+   * Start time in number of samples.
+   */
+  start: number;
+  /**
+   * End time in number of samples.
+   */
+  end: number;
+  /**
+   * Type of the segment.
+   */
+  kind: TimelineSegmentKind;
+}
+
+function calculateSpeechSegments(
+  transcription: Transcription|null,
+): OverlayTimelineSegment[] {
+  if (transcription === null) {
+    return [];
+  }
+  const speakerLabels = transcription.getSpeakerLabels();
+  let currentSampleOffset = 0;
+  const segments: OverlayTimelineSegment[] = [];
+  for (const paragraph of transcription.getParagraphs()) {
+    const firstPart = assertExists(paragraph[0]);
+    const lastPart = assertExists(paragraph.at(-1));
+
+    const startMs = firstPart.timeRange?.startMs ?? null;
+    const endMs = lastPart.timeRange?.endMs ?? null;
+    if (startMs === null || endMs === null) {
+      // TODO(pihsun): Check if there's any possibility that the timestamp is
+      // missing. Asserting that timestamp exists at type level, and assert
+      // that the ranges are incrasing would simplify many code.
+      continue;
+    }
+    // The timestamps should be increasing.
+    const start = Math.round((startMs / 1000) * SAMPLE_RATE);
+    const end = Math.round((endMs / 1000) * SAMPLE_RATE);
+    assert(currentSampleOffset <= start && start <= end);
+    if (end > start) {
+      segments.push({
+        start,
+        end,
+        kind: speakerLabelToTimelineSegmentKind(
+          speakerLabels,
+          firstPart.speakerLabel,
+        ),
+      });
+    }
+    currentSampleOffset = end;
+  }
+  return segments;
+}
+
+/**
+ * Overlays the `segments` onto `baseSegments`, splitting the segments if
+ * necessary.
+ *
+ * The total length of the returned segment will be the same as `baseSegments`.
+ */
+function overlaySegments(
+  baseSegments: TimelineSegment[],
+  overlaySegments: OverlayTimelineSegment[],
+): TimelineSegment[] {
+  let overlayIdx = 0;
+  const ret: TimelineSegment[] = [];
+  let time = 0;
+
+  function forwardTime(end: number, kind: TimelineSegmentKind) {
+    assert(end >= time);
+    const length = end - time;
+    if (length > 0) {
+      ret.push([length, kind]);
+    }
+    time = end;
+  }
+
+  for (const [baseLength, baseKind] of baseSegments) {
+    const baseEnd = time + baseLength;
+    while (overlayIdx < overlaySegments.length) {
+      const {start, end, kind} = assertExists(overlaySegments[overlayIdx]);
+      if (start >= baseEnd) {
+        // Next overlay after current segment.
+        break;
+      }
+      if (start >= time) {
+        forwardTime(start, baseKind);
+      }
+      if (end >= baseEnd) {
+        // TODO(pihsun): This split the overlay segment into multiple based on
+        // the boundary of the baseSegments. We don't necessary need to do this
+        // but the code is easier to write with this, and the resulting number
+        // of segments is still the same order of magnitude.
+        forwardTime(baseEnd, kind);
+        break;
+      }
+      forwardTime(end, kind);
+      overlayIdx++;
+    }
+    forwardTime(baseEnd, baseKind);
+  }
+  return ret;
+}
+
+// Note that this is not an exact upper limit of the number of segments
+// returned from `simplifySegments`, and The current heuristic result in at
+// most `2 * SIMPLIFY_SEGMENT_RESOLUTION - 1` segments.
+const SIMPLIFY_SEGMENT_RESOLUTION = 512;
+
+/**
+ * Simplifies the segments by merging the shorter segments, so the total number
+ * of segments are at most constant regardless of the recording length.
+ *
+ * The herustic to achieve this is:
+ * * Define `threshold` to be `max(total length / SIMPLIFY_SEGMENT_RESOLUTION, 1
+ *   second)`.
+ * * Segments longer than the `threshold` are preserved as is.
+ * * Consecutive segments shorter than `threshold` are merge together,
+ *   until it's longer than the `threshold`. The new kind will be the most
+ *   frequent kind in the range.
+ *
+ * Note that this doesn't guarantee that all returned segments are longer than
+ * `threshold`, as there might be some segments shorter than `threshold` left
+ * between longer segments.
+ */
+function simplifySegments(segments: TimelineSegment[]): TimelineSegment[] {
+  const totalLength =
+    segments.map(([length]) => length).reduce((a, b) => a + b, 0);
+  const threshold = Math.max(
+    totalLength / SIMPLIFY_SEGMENT_RESOLUTION,
+    SAMPLE_RATE,
+  );
+
+  const ret: TimelineSegment[] = [];
+  let currentGroup: TimelineSegment[] = [];
+  let currentGroupLength = 0;
+
+  function endCurrentGroup() {
+    if (currentGroup.length === 0) {
+      return;
+    }
+    const kindLengths = new Map<TimelineSegmentKind, number>();
+    for (const [length, kind] of currentGroup) {
+      kindLengths.set(kind, (kindLengths.get(kind) ?? 0) + length);
+    }
+    let kind: TimelineSegmentKind|null = null;
+    let maxLength = 0;
+    for (const [k, length] of kindLengths.entries()) {
+      if (length >= maxLength) {
+        maxLength = length;
+        kind = k;
+      }
+    }
+    ret.push([currentGroupLength, assertExists(kind)]);
+    currentGroup = [];
+    currentGroupLength = 0;
+  }
+
+  function push(segment: TimelineSegment) {
+    currentGroup.push(segment);
+    currentGroupLength += segment[0];
+  }
+
+  for (const segment of segments) {
+    const [length] = segment;
+    if (length >= threshold) {
+      endCurrentGroup();
+    }
+    push(segment);
+    if (currentGroupLength >= threshold) {
+      endCurrentGroup();
+    }
+  }
+  endCurrentGroup();
+  return ret;
+}
+
+function calculateTimelineSegments(
+  powers: number[],
+  samplesPerDataPoint: number,
+  transcription: Transcription|null,
+): VersionedTimelineSegments {
+  const powerSegments = calculatePowerSegments(powers, samplesPerDataPoint);
+  const speechSegments = calculateSpeechSegments(transcription);
+
+  const segments = simplifySegments(
+    overlaySegments(powerSegments, speechSegments),
+  );
+  return {
+    version: TIMELINE_SEGMENT_VERSION,
+    segments,
+  };
 }
 
 /**
@@ -173,12 +462,17 @@ export class RecordingDataManager {
 
     const filenames = await dataDir.list();
     const metadataMap = Object.fromEntries(
-      await Promise.all(
+      (await Promise.all(
         filenames.filter((x) => x.endsWith('.meta.json')).map(async (x) => {
-          const meta = await getMetadataFromFilename(x);
-          return [meta.id, meta] as const;
+          try {
+            const meta = await getMetadataFromFilename(x);
+            return [meta.id, meta] as const;
+          } catch (e) {
+            console.error(`Failed to parse metadata file.`, e);
+            return null;
+          }
         }),
-      ),
+      )).filter((x): x is [string, RecordingMetadata] => x !== null),
     );
     return new RecordingDataManager(dataDir, metadataMap);
   }
@@ -188,6 +482,42 @@ export class RecordingDataManager {
     metadata: RecordingMetadataMap,
   ) {
     this.cachedMetadataMap.value = metadata;
+
+    for (const [id, meta] of Object.entries(metadata)) {
+      this.fillDerivedMetadata(id, meta).catch((e) => {
+        console.error(`error while filling derived data for ${id}`, e);
+      });
+    }
+  }
+
+  private async fillDerivedMetadata(id: string, meta: RecordingMetadata) {
+    const getTranscription = asyncLazyInit(() => this.getTranscription(id));
+    const getPowers = asyncLazyInit(() => this.getAudioPower(id));
+    let changed = false;
+
+    if (meta.numSpeakers === undefined) {
+      changed = true;
+      const transcription = await getTranscription();
+      meta = {
+        ...meta,
+        numSpeakers: transcription?.getSpeakerLabels().length ?? null,
+      };
+    }
+
+    if (meta.timelineSegments === undefined) {
+      changed = true;
+      const transcription = await getTranscription();
+      const {powers, samplesPerDataPoint} = await getPowers();
+      meta = {
+        ...meta,
+        timelineSegments:
+          calculateTimelineSegments(powers, samplesPerDataPoint, transcription),
+      };
+    }
+
+    if (changed) {
+      this.setMetadata(id, meta);
+    }
   }
 
   private getWriteQueueFor(id: string) {
@@ -204,18 +534,27 @@ export class RecordingDataManager {
    * @return The created recording id.
    */
   async createRecording(
-    {transcription, powers, ...meta}: RecordingCreateParams,
+    {transcription, powers, samplesPerDataPoint, ...meta}:
+      RecordingCreateParams,
     audio: Blob,
   ): Promise<string> {
     const id = ulid();
+    const numSpeakers = transcription?.getSpeakerLabels().length ?? null;
     const description = transcription?.toShortDescription() ?? '';
-    const powerAverages = calculatePowerAverages(powers);
-    const fullMeta = {id, description, powerAverages, ...meta};
+    const timelineSegments =
+      calculateTimelineSegments(powers, samplesPerDataPoint, transcription);
+    const fullMeta = {
+      id,
+      description,
+      timelineSegments,
+      numSpeakers,
+      ...meta,
+    };
     this.setMetadata(id, fullMeta);
     await Promise.all([
       this.dataDir.write(
         audioPowerName(id),
-        audioPowerSchema.stringifyJson({powers}),
+        audioPowerSchema.stringifyJson({powers, samplesPerDataPoint}),
       ),
       this.dataDir.write(
         transcriptionName(id),
@@ -340,7 +679,7 @@ export class RecordingDataManager {
 
     switch (format) {
       case ExportTranscriptionFormat.TXT: {
-        const text = transcription.toPlainText();
+        const text = transcription.toExportText();
         const blob = new Blob([text], {type: 'text/plain'});
         const filename = getDefaultFileNameWithoutExtension(metadata) + '.txt';
         downloadFile(filename, blob);

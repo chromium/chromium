@@ -23,7 +23,7 @@ CleanupTaskFactory::CleanupTaskFactory(
   DCHECK(event_logger);
 }
 
-CleanupTaskFactory::~CleanupTaskFactory() {}
+CleanupTaskFactory::~CleanupTaskFactory() = default;
 
 std::unique_ptr<CleanupTask> CleanupTaskFactory::CreateCleanupTask(
     RequestQueueStore* store) {

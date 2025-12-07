@@ -10,9 +10,12 @@
 
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/containers/queue.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -74,10 +77,7 @@ class TestDemuxerStream : public media::DemuxerStream {
     SatisfyRead();
   }
   media::AudioDecoderConfig audio_decoder_config() override { return config_; }
-  media::VideoDecoderConfig video_decoder_config() override {
-    NOTREACHED_IN_MIGRATION();
-    return media::VideoDecoderConfig();
-  }
+  media::VideoDecoderConfig video_decoder_config() override { NOTREACHED(); }
   Type type() const override { return AUDIO; }
   media::StreamLiveness liveness() const override {
     return media::StreamLiveness::kRecorded;
@@ -314,8 +314,8 @@ class TestAudioConsumer
   fidl::Binding<fuchsia::media::audio::VolumeControl> volume_control_binding_;
   std::unique_ptr<TestStreamSink> stream_sink_;
 
-  base::RunLoop* wait_stream_sink_created_loop_ = nullptr;
-  base::RunLoop* wait_started_loop_ = nullptr;
+  raw_ptr<base::RunLoop> wait_stream_sink_created_loop_ = nullptr;
+  raw_ptr<base::RunLoop> wait_started_loop_ = nullptr;
 
   bool create_stream_sink_called_ = false;
 
@@ -532,7 +532,7 @@ class WebEngineAudioRendererTestBase : public testing::Test {
   TestRendererClient client_;
 
   std::unique_ptr<media::AudioRenderer> audio_renderer_;
-  media::TimeSource* time_source_;
+  raw_ptr<media::TimeSource> time_source_;
   base::TimeDelta demuxer_stream_pos_;
 };
 
@@ -577,8 +577,7 @@ void WebEngineAudioRendererTestBase::ProduceDemuxerPacket(
     base::TimeDelta duration) {
   // Create a dummy packet that contains just 1 byte.
   const size_t kBufferSize = 1;
-  scoped_refptr<media::DecoderBuffer> buffer =
-      new media::DecoderBuffer(kBufferSize);
+  auto buffer = base::MakeRefCounted<media::DecoderBuffer>(kBufferSize);
   buffer->set_timestamp(demuxer_stream_pos_);
   buffer->set_duration(duration);
   demuxer_stream_pos_ += duration;
@@ -709,12 +708,11 @@ void WebEngineAudioRendererTestBase::TestPcmStream(
   const size_t kNumSamples = 10;
   const size_t kChannels = 2;
   size_t input_buffer_size = kNumSamples * kChannels * bytes_per_sample_input;
-  scoped_refptr<media::DecoderBuffer> buffer =
-      new media::DecoderBuffer(input_buffer_size);
+  auto buffer = base::MakeRefCounted<media::DecoderBuffer>(input_buffer_size);
   buffer->set_timestamp(demuxer_stream_pos_);
   buffer->set_duration(kPacketDuration);
   for (size_t i = 0; i < input_buffer_size; ++i) {
-    buffer->writable_data()[i] = i;
+    UNSAFE_TODO(buffer->writable_data()[i]) = i;
   }
   demuxer_stream_->QueueReadResult(TestDemuxerStream::ReadResult(buffer));
 

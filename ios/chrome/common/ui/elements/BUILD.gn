@@ -48,8 +48,18 @@ source_set("form_input_accessory") {
     "//base",
     "//base:i18n",
     "//ios/chrome/common/ui/colors",
-    "//ios/chrome/common/ui/elements/resources",
     "//ios/chrome/common/ui/util",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("branded_navigation_item_title_view") {
+  sources = [
+    "branded_navigation_item_title_view.h",
+    "branded_navigation_item_title_view.mm",
+  ]
+
+  frameworks = [ "UIKit.framework" ]
+
+  deps = [ "//ios/chrome/common/ui/colors" ]
 }

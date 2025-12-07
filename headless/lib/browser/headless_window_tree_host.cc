@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/containers/flat_set.h"
+#include "base/notimplemented.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "headless/lib/browser/headless_focus_client.h"
 #include "headless/lib/browser/headless_window_parenting_client.h"
@@ -57,13 +58,27 @@ gfx::Rect HeadlessWindowTreeHost::GetBoundsInPixels() const {
 }
 
 void HeadlessWindowTreeHost::SetBoundsInPixels(const gfx::Rect& bounds) {
-  bool origin_changed = bounds_.origin() != bounds.origin();
-  bool size_changed = bounds_.size() != bounds.size();
-  bounds_ = bounds;
-  if (origin_changed)
-    OnHostMovedInPixels();
-  if (size_changed)
+  window()->SetBounds(bounds);
+
+  if (bounds_ != bounds) {
+    bool origin_changed = bounds_.origin() != bounds.origin();
+
+    bounds_ = bounds;
+
+    if (origin_changed) {
+      auto weak_ptr = GetWeakPtr();
+      OnHostMovedInPixels();
+      // Reporting the move may destroy |this|.
+      if (!weak_ptr) {
+        return;
+      }
+    }
+
+    // Report host size even if it is not changing to ensure the compositor
+    // layers are updated. Optimizing this away causes Page.captureScreenshot()
+    // to hang indefinitely. See https://crbug.com/40571433.
     OnHostResizedInPixels(bounds.size());
+  }
 }
 
 void HeadlessWindowTreeHost::ShowImpl() {}
@@ -71,7 +86,7 @@ void HeadlessWindowTreeHost::ShowImpl() {}
 void HeadlessWindowTreeHost::HideImpl() {}
 
 gfx::Point HeadlessWindowTreeHost::GetLocationOnScreenInPixels() const {
-  return gfx::Point();
+  return bounds_.origin();
 }
 
 void HeadlessWindowTreeHost::SetCapture() {}
@@ -101,13 +116,5 @@ void HeadlessWindowTreeHost::MoveCursorToScreenLocationInPixels(
     const gfx::Point& location) {}
 
 void HeadlessWindowTreeHost::OnCursorVisibilityChangedNative(bool show) {}
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-std::string HeadlessWindowTreeHost::GetUniqueId() const {
-  // Headless does not have a unique ID
-  NOTIMPLEMENTED_LOG_ONCE();
-  return std::string();
-}
-#endif
 
 }  // namespace headless

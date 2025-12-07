@@ -6,14 +6,15 @@
 #define CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_BINARY_UPLOAD_SERVICE_H_
 
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/id_type.h"
 #include "base/types/optional_ref.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "services/network/public/cpp/resource_request.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -27,50 +28,10 @@ class BinaryUploadService : public KeyedService {
   // The maximum size of data that can be uploaded via this service.
   constexpr static size_t kMaxUploadSizeBytes = 50 * 1024 * 1024;  // 50 MB
 
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class Result {
-    // Unknown result.
-    UNKNOWN = 0,
-
-    // The request succeeded.
-    SUCCESS = 1,
-
-    // The upload failed, for an unspecified reason.
-    UPLOAD_FAILURE = 2,
-
-    // The upload succeeded, but a response was not received before timing out.
-    TIMEOUT = 3,
-
-    // The file was too large to upload.
-    FILE_TOO_LARGE = 4,
-
-    // The BinaryUploadService failed to get an InstanceID token.
-    FAILED_TO_GET_TOKEN = 5,
-
-    // The user is unauthorized to make the request.
-    UNAUTHORIZED = 6,
-
-    // Some or all parts of the file are encrypted.
-    FILE_ENCRYPTED = 7,
-
-    // Deprecated: The file's type is not supported and the file was not
-    // uploaded.
-    // DLP_SCAN_UNSUPPORTED_FILE_TYPE = 8,
-
-    // The server returned a 429 HTTP status indicating too many requests are
-    // being sent.
-    TOO_MANY_REQUESTS = 9,
-
-    kMaxValue = TOO_MANY_REQUESTS,
-  };
-
-  static std::string ResultToString(Result result);
-
   // Callbacks used to pass along the results of scanning. The response protos
   // will only be populated if the result is SUCCESS. Will run on UI thread.
   using ContentAnalysisCallback =
-      base::OnceCallback<void(Result,
+      base::OnceCallback<void(enterprise_connectors::ScanRequestUploadResult,
                               enterprise_connectors::ContentAnalysisResponse)>;
 
   // A class to encapsulate the a request for upload. This class will provide
@@ -128,12 +89,17 @@ class BinaryUploadService : public KeyedService {
 
       // The page's content. Only populated for page requests.
       base::ReadOnlySharedMemoryRegion page;
+
+      // Whether the file has been obfuscated. Only populated for file requests.
+      bool is_obfuscated = false;
     };
 
     // Aynchronously returns the data required to make a MultipartUploadRequest.
     // `result` is set to SUCCESS if getting the request data succeeded or
     // some value describing the error.
-    using DataCallback = base::OnceCallback<void(Result, Data)>;
+    using DataCallback =
+        base::OnceCallback<void(enterprise_connectors::ScanRequestUploadResult,
+                                Data)>;
     virtual void GetRequestData(DataCallback callback) = 0;
 
     // Returns the URL to send the request to.
@@ -159,13 +125,12 @@ class BinaryUploadService : public KeyedService {
     // Methods for modifying the ContentAnalysisRequest.
     void set_analysis_connector(
         enterprise_connectors::AnalysisConnector connector);
-    void set_url(const std::string& url);
+    void set_url(const GURL& url);
     void set_source(const std::string& source);
     void set_destination(const std::string& destination);
     void set_csd(ClientDownloadRequest csd);
     void add_tag(const std::string& tag);
     void set_email(const std::string& email);
-    void set_fcm_token(const std::string& token);
     void set_device_token(const std::string& token);
     void set_filename(const std::string& filename);
     void set_digest(const std::string& digest);
@@ -180,11 +145,24 @@ class BinaryUploadService : public KeyedService {
     void set_printer_type(
         enterprise_connectors::ContentMetaData::PrintMetadata::PrinterType
             printer_type);
+    void set_clipboard_source_type(
+        enterprise_connectors::ContentMetaData::CopiedTextSource::
+            CopiedTextSourceType source_type);
+    void set_clipboard_source_url(const std::string& url);
     void set_password(const std::string& password);
     void set_reason(
         enterprise_connectors::ContentAnalysisRequest::Reason reason);
     void set_require_metadata_verdict(bool require_metadata_verdict);
+    void set_is_content_encrypted(bool is_content_encrypted);
+    void set_is_content_too_large(bool is_content_too_large);
     void set_blocking(bool blocking);
+    void add_local_ips(const std::string& ip_address);
+    void set_referrer_chain(const google::protobuf::RepeatedPtrField<
+                            safe_browsing::ReferrerChainEntry> referrer_chain);
+    void set_content_area_account_email(const std::string& email);
+    void set_source_content_area_account_email(const std::string& email);
+    void set_frame_url_chain(
+        const google::protobuf::RepeatedPtrField<std::string> frame_url_chain);
 
     std::string SetRandomRequestToken();
 
@@ -192,7 +170,6 @@ class BinaryUploadService : public KeyedService {
     enterprise_connectors::AnalysisConnector analysis_connector();
     const std::string& device_token() const;
     const std::string& request_token() const;
-    const std::string& fcm_notification_token() const;
     const std::string& filename() const;
     const std::string& digest() const;
     const std::string& content_type() const;
@@ -204,24 +181,28 @@ class BinaryUploadService : public KeyedService {
     base::optional_ref<const std::string> password() const;
     enterprise_connectors::ContentAnalysisRequest::Reason reason() const;
     bool blocking() const;
+    bool is_content_encrypted() const;
+    bool is_content_too_large() const;
 
     // Called when beginning to try upload.
     void StartRequest();
 
     // Finish the request, with the given `result` and `response` from the
     // server.
-    void FinishRequest(Result result,
+    void FinishRequest(enterprise_connectors::ScanRequestUploadResult result,
                        enterprise_connectors::ContentAnalysisResponse response);
 
     // Calls SerializeToString on the appropriate proto request.
     void SerializeToString(std::string* destination) const;
 
-    // Method used to identify authentication requests. This is used for
-    // optimizations such as omitting FCM code paths for auth requests.
+    // Method used to identify authentication requests.
     virtual bool IsAuthRequest() const;
 
     const std::string& access_token() const;
     void set_access_token(const std::string& access_token);
+
+    void set_image_paste(bool image_paste);
+    bool image_paste() const;
 
    private:
     Id id_;
@@ -239,6 +220,10 @@ class BinaryUploadService : public KeyedService {
 
     // Access token to be attached in the request headers.
     std::string access_token_;
+
+    bool image_paste_ = false;
+
+    bool is_content_too_large_ = false;
   };
 
   // A class to encapsulate the a request acknowledgement. This class will

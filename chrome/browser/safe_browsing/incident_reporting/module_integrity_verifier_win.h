@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include "base/containers/span.h"
+
 namespace base {
 namespace win {
 class PEImage;
@@ -19,13 +21,12 @@ namespace safe_browsing {
 class ClientIncidentReport_EnvironmentData_Process_ModuleState;
 
 // Helper to grab the addresses and size of the code section of a PEImage.
-// Returns two addresses: one for the dll loaded as a library, the other for the
-// dll loaded as data.
-bool GetCodeAddrsAndSize(const base::win::PEImage& mem_peimage,
-                         const base::win::PEImageAsData& disk_peimage,
-                         uint8_t** mem_code_addr,
-                         uint8_t** disk_code_addr,
-                         uint32_t* code_size);
+// Returns two spans: one containing the code section of the dll loaded as a
+// library, the other for the dll loaded as data.
+bool GetCodeSpans(const base::win::PEImage& mem_peimage,
+                  base::span<const uint8_t> disk_peimage,
+                  base::span<const uint8_t>& mem_code_data,
+                  base::span<const uint8_t>& disk_code_data);
 
 // Examines the code section of the given module in memory and on disk, looking
 // for unexpected differences and populating |module_state| in the process.

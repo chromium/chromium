@@ -41,8 +41,9 @@ TEST(HashTest, DeprecatedHashFromString) {
   // Extremely long string.
   // Also tests strings with high bit set, and null byte.
   std::vector<char> long_string_buffer;
-  for (int i = 0; i < 4096; ++i)
+  for (int i = 0; i < 4096; ++i) {
     long_string_buffer.push_back((i % 256) - 128);
+  }
   str.assign(&long_string_buffer.front(), long_string_buffer.size());
   EXPECT_EQ(2797962408u, Hash(str));
 

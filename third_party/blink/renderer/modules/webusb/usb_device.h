@@ -30,6 +30,7 @@ class USBInTransferResult;
 class USBIsochronousInTransferResult;
 class USBIsochronousOutTransferResult;
 class USBOutTransferResult;
+class V8USBDirection;
 
 class USBDevice : public ScriptWrappable,
                   public ExecutionContextLifecycleObserver {
@@ -99,20 +100,21 @@ class USBDevice : public ScriptWrappable,
   ScriptPromise<USBOutTransferResult> controlTransferOut(
       ScriptState*,
       const USBControlTransferParameters* setup,
-      const DOMArrayPiece& optional_data,
+      base::span<const uint8_t> data,
       ExceptionState&);
   ScriptPromise<IDLUndefined> clearHalt(ScriptState*,
-                                        String direction,
+                                        const V8USBDirection& direction,
                                         uint8_t endpoint_number,
                                         ExceptionState&);
   ScriptPromise<USBInTransferResult> transferIn(ScriptState*,
                                                 uint8_t endpoint_number,
                                                 unsigned length,
                                                 ExceptionState&);
-  ScriptPromise<USBOutTransferResult> transferOut(ScriptState*,
-                                                  uint8_t endpoint_number,
-                                                  const DOMArrayPiece& data,
-                                                  ExceptionState&);
+  ScriptPromise<USBOutTransferResult> transferOut(
+      ScriptState*,
+      uint8_t endpoint_number,
+      base::span<const uint8_t> data,
+      ExceptionState&);
   ScriptPromise<USBIsochronousInTransferResult> isochronousTransferIn(
       ScriptState*,
       uint8_t endpoint_number,
@@ -121,7 +123,7 @@ class USBDevice : public ScriptWrappable,
   ScriptPromise<USBIsochronousOutTransferResult> isochronousTransferOut(
       ScriptState*,
       uint8_t endpoint_number,
-      const DOMArrayPiece& data,
+      base::span<const uint8_t> data,
       Vector<unsigned> packet_lengths,
       ExceptionState&);
   ScriptPromise<IDLUndefined> reset(ScriptState*, ExceptionState&);
@@ -208,9 +210,9 @@ class USBDevice : public ScriptWrappable,
 
   // These vectors have one entry for each interface in the currently selected
   // configured. Use the index returned by FindInterfaceIndex().
-  WTF::Vector<bool> claimed_interfaces_;
-  WTF::Vector<bool> interface_state_change_in_progress_;
-  WTF::Vector<wtf_size_t> selected_alternate_indices_;
+  Vector<bool> claimed_interfaces_;
+  Vector<bool> interface_state_change_in_progress_;
+  Vector<wtf_size_t> selected_alternate_indices_;
 
   // These bit sets have one entry for each endpoint. Index using the endpoint
   // number (lower 4 bits of the endpoint address).

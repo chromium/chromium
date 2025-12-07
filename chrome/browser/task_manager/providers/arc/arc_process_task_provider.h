@@ -12,10 +12,10 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
-#include "chrome/browser/ash/arc/process/arc_process.h"
-#include "chrome/browser/ash/arc/process/arc_process_service.h"
 #include "chrome/browser/task_manager/providers/arc/arc_process_task.h"
 #include "chrome/browser/task_manager/providers/task_provider.h"
+#include "chromeos/ash/experiences/arc/process/arc_process.h"
+#include "chromeos/ash/experiences/arc/process/arc_process_service.h"
 
 namespace task_manager {
 

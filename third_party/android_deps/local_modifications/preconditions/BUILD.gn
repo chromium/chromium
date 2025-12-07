@@ -19,20 +19,14 @@ java_group("preconditions_stub_java") {
 }
 
 android_library("androidx_stub_preconditions_java") {
-  sources = [
-    "java/androidx/core/util/Preconditions.java",
-  ]
+  sources = [ "java/androidx/core/util/Preconditions.java" ]
 }
 
 android_library("gms_stub_preconditions_java") {
-  sources = [
-    "java/com/google/android/gms/common/internal/Preconditions.java",
-  ]
+  sources = [ "java/com/google/android/gms/common/internal/Preconditions.java" ]
 }
 
 java_library("guava_stub_preconditions_java") {
-  sources = [
-    "java/com/google/common/base/Preconditions.java",
-  ]
+  sources = [ "java/com/google/common/base/Preconditions.java" ]
   supports_android = true
 }

@@ -54,6 +54,7 @@ class BranchIntegrationTest(unittest.TestCase):
             "project_title": "Chromium MXX",
             "ref": "refs/branch-heads/YYYY",
             "chrome_project": "chrome-mXX",
+            "dawn_ref": "refs/heads/chromium/YYYY",
             "is_main": false,
             "platforms": {
                 "android": {
@@ -106,6 +107,7 @@ class BranchIntegrationTest(unittest.TestCase):
             "project_title": "Chromium MXX",
             "ref": "refs/branch-heads/YYYY",
             "chrome_project": "chrome",
+            "dawn_ref": "refs/heads/chromium/YYYY",
             "is_main": false,
             "platforms": {
                 "android": {

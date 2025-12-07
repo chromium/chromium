@@ -45,15 +45,15 @@ constexpr double kMaximumAllowedDelayTime = 180.0;
 
 DelayNode::DelayNode(BaseAudioContext& context, double max_delay_time)
     : AudioNode(context),
-      delay_time_(
-          AudioParam::Create(context,
-                             Uuid(),
-                             AudioParamHandler::kParamTypeDelayDelayTime,
-                             kDefaultDelayTimeValue,
-                             AudioParamHandler::AutomationRate::kAudio,
-                             AudioParamHandler::AutomationRateMode::kVariable,
-                             kMinDelayTimeValue,
-                             max_delay_time)) {
+      delay_time_(AudioParam::Create(
+          context,
+          Uuid(),
+          AudioParamHandler::AudioParamType::kParamTypeDelayDelayTime,
+          kDefaultDelayTimeValue,
+          AudioParamHandler::AutomationRate::kAudio,
+          AudioParamHandler::AutomationRateMode::kVariable,
+          kMinDelayTimeValue,
+          max_delay_time)) {
   SetHandler(DelayHandler::Create(*this, context.sampleRate(),
                                   delay_time_->Handler(), max_delay_time));
 }

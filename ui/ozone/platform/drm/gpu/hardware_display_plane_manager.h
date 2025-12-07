@@ -182,9 +182,11 @@ class HardwareDisplayPlaneManager {
   // Assign hardware planes from the |planes_| list to |overlay_list| entries,
   // recording the plane IDs in the |plane_list|. Only planes compatible with
   // |crtc_id| will be used. |overlay_list| must be sorted bottom-to-top.
-  virtual bool AssignOverlayPlanes(HardwareDisplayPlaneList* plane_list,
-                                   const DrmOverlayPlaneList& overlay_list,
-                                   uint32_t crtc_id);
+  virtual bool AssignOverlayPlanes(
+      HardwareDisplayPlaneList* plane_list,
+      const DrmOverlayPlaneList& overlay_list,
+      uint32_t crtc_id,
+      std::optional<gfx::Point> crtc_offset = std::nullopt);
 
   // Commit the plane states in |plane_list|.
   // If |page_flip_request| is null, this tests the plane configuration without
@@ -282,6 +284,7 @@ class HardwareDisplayPlaneManager {
                             HardwareDisplayPlane* hw_plane,
                             const DrmOverlayPlane& overlay,
                             uint32_t crtc_id,
+                            std::optional<gfx::Point> crtc_offset,
                             const gfx::Rect& src_rect) = 0;
 
   virtual std::unique_ptr<HardwareDisplayPlane> CreatePlane(uint32_t plane_id);

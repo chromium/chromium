@@ -10,12 +10,18 @@ if (window.testRunner) {
 ad_frame = createAdFrame();
 ad_frame.width = 100;
 ad_frame.height = 200;
-// Finish the test once the ad frame is loaded.
+
 ad_frame.onload = function () {
   // Resize the frame to verify that the highlight is also resized.
   ad_frame.width = 300;
-  if (window.testRunner)
-    testRunner.notifyDone();
+
+  // Finish the test after the ad highlight is drawn.
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() {
+      if (window.testRunner)
+        testRunner.notifyDone();
+    });
+  });
 }
 ad_frame.src = "about:blank";
 

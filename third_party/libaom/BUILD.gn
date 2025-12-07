@@ -12,12 +12,6 @@ import("//third_party/libaom/libaom_test_srcs.gni")
 import("//third_party/libaom/options.gni")
 import("//third_party/nasm/nasm_assemble.gni")
 
-buildflag_header("libaom_buildflags") {
-  header = "libaom_buildflags.h"
-
-  flags = [ "ENABLE_LIBAOM=$enable_libaom" ]
-}
-
 # Sets the architecture name for building libaom.
 if (current_cpu == "x86") {
   cpu_arch_full = "ia32"
@@ -37,7 +31,7 @@ if (current_cpu == "x86") {
   } else {
     cpu_arch_full = "arm"
   }
-} else if (current_cpu == "arm64") {
+} else if (current_cpu == "arm64" || current_cpu == "arm64e") {
   cpu_arch_full = "arm64-cpu-detect"
 } else if (current_cpu == "riscv64") {
   cpu_arch_full = "generic"
@@ -47,17 +41,13 @@ if (current_cpu == "x86") {
   cpu_arch_full = current_cpu
 }
 
-if (is_nacl) {
-  platform_include_dir = "source/config/linux/generic"
-} else {
-  if (is_posix || is_fuchsia) {
-    # Should cover linux, fuchsia, mac, and ios.
-    os_category = "linux"
-  } else {  # This should only match windows.
-    os_category = current_os
-  }
-  platform_include_dir = "source/config/$os_category/$cpu_arch_full"
+if (is_posix || is_fuchsia) {
+  # Should cover linux, fuchsia, mac, and ios.
+  os_category = "linux"
+} else {  # This should only match windows.
+  os_category = current_os
 }
+platform_include_dir = "source/config/$os_category/$cpu_arch_full"
 
 libaom_include_dirs = [
   "source/config",
@@ -97,6 +87,11 @@ if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
     }
     defines = [ "CHROMIUM" ]
     include_dirs = libaom_include_dirs
+    inputs = [
+      "$platform_include_dir/config/aom_config.asm",
+      "source/libaom/aom_ports/x86_abi_support.asm",
+      "source/libaom/third_party/x86inc/x86inc.asm",
+    ]
   }
 
   # The following targets are deliberately source_set rather than
@@ -147,7 +142,6 @@ if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
       cflags = [ "-mssse3" ]
     }
     sources = aom_av1_common_intrin_ssse3
-    sources += aom_av1_encoder_intrin_ssse3
     sources += aom_dsp_common_intrin_ssse3
     sources += aom_dsp_encoder_intrin_ssse3
     if (current_cpu == "x86") {
@@ -214,8 +208,8 @@ if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
   }
 }
 
-if (current_cpu == "arm64" || cpu_arch_full == "arm-neon" ||
-    cpu_arch_full == "arm-neon-cpu-detect") {
+if (current_cpu == "arm64" || current_cpu == "arm64e" ||
+    cpu_arch_full == "arm-neon" || cpu_arch_full == "arm-neon-cpu-detect") {
   source_set("libaom_intrinsics_neon") {
     check_includes = false
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -234,7 +228,7 @@ if (current_cpu == "arm64" || cpu_arch_full == "arm-neon" ||
   }
 }
 
-if (current_cpu == "arm64") {
+if (current_cpu == "arm64" || current_cpu == "arm64e") {
   source_set("libaom_intrinsics_arm_crc32") {
     check_includes = false
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -272,6 +266,36 @@ if (current_cpu == "arm64") {
     }
     sources = aom_av1_common_intrin_neon_i8mm
     sources += aom_dsp_common_intrin_neon_i8mm
+  }
+
+  # There are known problems with LLVM-based compilers targeting Windows for
+  # SVE code generation. Since there are no client Windows devices that
+  # support SVE(2) at this time, disable SVE(2) on AArch64 Windows targets.
+  if (!is_win) {
+    source_set("libaom_intrinsics_sve") {
+      check_includes = false
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ ":libaom_config" ]
+      configs -= [ "//build/config/compiler:default_init_stack_vars" ]
+      if (!is_win || is_clang) {
+        cflags = [ "-march=armv8.2-a+dotprod+i8mm+sve" ]
+      }
+      sources = aom_av1_encoder_intrin_sve
+      sources += aom_dsp_encoder_intrin_sve
+    }
+
+    source_set("libaom_intrinsics_sve2") {
+      check_includes = false
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ ":libaom_config" ]
+      configs -= [ "//build/config/compiler:default_init_stack_vars" ]
+      if (!is_win || is_clang) {
+        cflags = [ "-march=armv9-a+i8mm+sve2" ]
+      }
+      sources = aom_av1_common_intrin_sve2
+    }
   }
 }
 
@@ -321,11 +345,11 @@ static_library("libaom") {
       ":libaom_nasm",
     ]
   }
-  if (current_cpu == "arm64" || cpu_arch_full == "arm-neon" ||
-      cpu_arch_full == "arm-neon-cpu-detect") {
+  if (current_cpu == "arm64" || current_cpu == "arm64e" ||
+      cpu_arch_full == "arm-neon" || cpu_arch_full == "arm-neon-cpu-detect") {
     deps += [ ":libaom_intrinsics_neon" ]
   }
-  if (current_cpu == "arm64") {
+  if (current_cpu == "arm64" || current_cpu == "arm64e") {
     # This is needed by all arm boards due to aom_arm_cpu_caps()
     sources += [ "source/libaom/aom_ports/aarch64_cpudetect.c" ]
     deps += [
@@ -333,6 +357,12 @@ static_library("libaom") {
       ":libaom_intrinsics_neon_dotprod",
       ":libaom_intrinsics_neon_i8mm",
     ]
+    if (!is_win) {
+      deps += [
+        ":libaom_intrinsics_sve",
+        ":libaom_intrinsics_sve2",
+      ]
+    }
   }
   if (current_cpu == "arm") {
     # This is needed by all arm boards due to aom_arm_cpu_caps()
@@ -342,7 +372,6 @@ static_library("libaom") {
     deps += [ "//third_party/cpu_features:ndk_compat" ]
   }
   public_configs = [ ":libaom_public_config" ]
-  public_deps = [ ":libaom_buildflags" ]
 }
 
 static_library("libaomrc") {
@@ -371,6 +400,8 @@ test("av1_encoder_fuzz_test") {
     "AV1EncodeFuzzTest.AV1EncodeArbitraryCallSequenceSucceeds",
   ]
 
+  fuzztest_additional_args = [ "--stack_limit_kb=256" ]
+
   deps = [
     ":libaom",
     "//third_party/fuzztest:fuzztest_gtest_main",
@@ -394,6 +425,7 @@ test("test_libaom") {
   deps = [
     ":libaom",
     "//testing/gtest",
+    "//third_party/libyuv",
   ]
 
   defines = [ "CHROMIUM" ]

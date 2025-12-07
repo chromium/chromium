@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_PASS_AS_SPAN_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_PASS_AS_SPAN_H_
+
+#include <type_traits>
 
 #include "base/containers/span.h"
 #include "base/memory/stack_allocated.h"
@@ -30,7 +27,7 @@ class CORE_EXPORT ByteSpanWithInlineStorage {
   ByteSpanWithInlineStorage& operator=(const ByteSpanWithInlineStorage& r);
 
   void Assign(base::span<const uint8_t> span) { span_ = span; }
-
+  void Assign(v8::MemorySpan<const uint8_t> span) { span_ = span; }
   // This class allows implicit conversion to span, because it's an internal
   // class tightly coupled to the bindings generator that knows how to use it.
   // Note rvalue conversion is explicitly disabled.
@@ -39,9 +36,7 @@ class CORE_EXPORT ByteSpanWithInlineStorage {
   operator base::span<const uint8_t>() const&& = delete;
   const base::span<const uint8_t> as_span() const { return span_; }
 
-  base::span<uint8_t, kInlineStorageSize> GetInlineStorage() {
-    return inline_storage_;
-  }
+  v8::MemorySpan<uint8_t> GetInlineStorage() { return inline_storage_; }
 
  private:
   base::span<const uint8_t> span_;
@@ -49,15 +44,11 @@ class CORE_EXPORT ByteSpanWithInlineStorage {
 };
 
 template <typename T>
-base::span<const uint8_t> GetArrayData(v8::Local<T> array) {
-  return base::make_span(reinterpret_cast<const uint8_t*>(array->Data()),
-                         array->ByteLength());
+v8::MemorySpan<const uint8_t> GetArrayData(v8::Local<T> array) {
+  // v8 should ensure the Data() size and ByteLength() of the array are equal.
+  return v8::MemorySpan<const uint8_t>(
+      static_cast<const uint8_t*>(array->Data()), array->ByteLength());
 }
-
-CORE_EXPORT base::span<const uint8_t> GetViewData(
-    v8::Local<v8::ArrayBufferView> view,
-    base::span<uint8_t, ByteSpanWithInlineStorage::kInlineStorageSize>
-        inline_storage);
 
 template <typename T>
 class SpanWithInlineStorage {
@@ -71,13 +62,14 @@ class SpanWithInlineStorage {
   operator base::span<const T>() const&& = delete;
   const base::span<const T> as_span() const {
     const base::span<const uint8_t> bytes = bytes_.as_span();
-    return base::make_span(reinterpret_cast<const T*>(bytes.data()),
-                           bytes.size() / sizeof(T));
+    // SAFETY: `bytes.size() / sizeof(T)` * sizeof(T) is less than or equal to
+    // `bytes.data()` size, so it's safe.
+    return UNSAFE_BUFFERS(base::span(reinterpret_cast<const T*>(bytes.data()),
+                                     bytes.size() / sizeof(T)));
   }
 
   void Assign(base::span<const uint8_t> span) { bytes_.Assign(span); }
-  base::span<uint8_t, ByteSpanWithInlineStorage::kInlineStorageSize>
-  GetInlineStorage() {
+  v8::MemorySpan<uint8_t> GetInlineStorage() {
     return bytes_.GetInlineStorage();
   }
 
@@ -100,12 +92,17 @@ class SpanOrVector {
   void Assign(base::span<const uint8_t> span) { span_.Assign(span); }
   void Assign(Vector<T> vec) {
     vector_ = std::move(vec);
-    span_.Assign(
-        base::make_span(reinterpret_cast<const uint8_t*>(vector_.data()),
-                        vector_.size() * sizeof(T)));
+    base::span<const uint8_t> byte_span;
+    if constexpr (std::has_unique_object_representations_v<T>) {
+      byte_span = base::as_byte_span(vector_);
+    } else {
+      // The bytes here are used for storage, but always cast back to a T to
+      // supply publicly, so this doesn't allow any additional unsafety.
+      byte_span = base::as_byte_span(base::allow_nonunique_obj, vector_);
+    }
+    span_.Assign(byte_span);
   }
-  base::span<uint8_t, ByteSpanWithInlineStorage::kInlineStorageSize>
-  GetInlineStorage() {
+  v8::MemorySpan<uint8_t> GetInlineStorage() {
     return span_.GetInlineStorage();
   }
 
@@ -127,18 +124,20 @@ struct TypedArrayElementTraits {};
   }
 
 DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(int8_t, IsInt8Array, IDLByte);
-// Note Uint8 array is special case due to need to account for
-// Uint8 clamped array, so not declared here.
+// Note Uint8Array and Uint8ClampedArray are special cases because they map to
+// the same type, as do Uint16Array and Float16Array, so they are not declared
+// here.
 DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(int16_t, IsInt16Array, IDLShort);
-DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(uint16_t, IsUint16Array, IDLUnsignedShort);
 DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(int32_t, IsInt32Array, IDLLong);
 DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(uint32_t, IsUint32Array, IDLUnsignedLong);
 DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(int64_t, IsBigInt64Array, IDLLongLong);
 DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(uint64_t,
                                   IsBigUint64Array,
                                   IDLUnsignedLongLong);
-DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(float, IsFloat32Array, IDLFloat);
-DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(double, IsFloat64Array, IDLDouble);
+DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(float, IsFloat32Array, IDLUnrestrictedFloat);
+DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(double,
+                                  IsFloat64Array,
+                                  IDLUnrestrictedDouble);
 
 template <>
 struct TypedArrayElementTraits<uint8_t> {
@@ -146,6 +145,14 @@ struct TypedArrayElementTraits<uint8_t> {
     return value->IsUint8Array() || value->IsUint8ClampedArray();
   }
   using IDLType = IDLOctet;
+};
+
+template <>
+struct TypedArrayElementTraits<uint16_t> {
+  static bool IsViewOfType(v8::Local<v8::Value> value) {
+    return value->IsFloat16Array() || value->IsUint16Array();
+  }
+  using IDLType = IDLUnsignedShort;
 };
 
 }  // namespace bindings::internal

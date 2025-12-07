@@ -33,7 +33,7 @@ RadioButton::RadioButton(int button_width,
                        image_label_spacing),
       icon_direction_(icon_direction),
       icon_type_(icon_type) {
-  GetViewAccessibility().SetProperties(ax::mojom::Role::kRadioButton);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kRadioButton);
 }
 
 RadioButton::~RadioButton() = default;

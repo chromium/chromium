@@ -29,7 +29,7 @@ class MockFormFieldDataAndroidBridge : public FormFieldDataAndroidBridge {
               (const FormFieldDataAndroid::FieldTypes&),
               (override));
   MOCK_METHOD(void, UpdateValue, (std::u16string_view), (override));
-  MOCK_METHOD(void, UpdateVisible, (bool), (override));
+  MOCK_METHOD(void, UpdateFocusable, (bool), (override));
 };
 
 }  // namespace autofill

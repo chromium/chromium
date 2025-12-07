@@ -6,9 +6,13 @@
 
 #include <algorithm>
 
+#include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/media_switches.h"
+#include "services/audio/ml_model_manager.h"
 
 namespace audio {
 
@@ -18,10 +22,15 @@ AudioProcessorHandler::AudioProcessorHandler(
     const media::AudioParameters& output_format,
     LogCallback log_callback,
     DeliverProcessedAudioCallback deliver_processed_audio_callback,
+    ReferenceStreamErrorCallback reference_stream_error_callback,
     mojo::PendingReceiver<media::mojom::AudioProcessorControls>
         controls_receiver,
-    media::AecdumpRecordingManager* aecdump_recording_manager)
-    : audio_processor_(media::AudioProcessor::Create(
+    media::AecdumpRecordingManager* aecdump_recording_manager,
+    raw_ptr<MlModelManager> ml_model_manager)
+    : residual_echo_estimation_model_handle_(
+          ml_model_manager ? ml_model_manager->GetResidualEchoEstimationModel()
+                           : nullptr),
+      audio_processor_(media::AudioProcessor::Create(
           // Unretained is safe because this class owns audio_processor_, so it
           // will be destroyed first.
           base::BindRepeating(&AudioProcessorHandler::DeliverProcessedAudio,
@@ -29,14 +38,30 @@ AudioProcessorHandler::AudioProcessorHandler(
           std::move(log_callback),
           settings,
           input_format,
-          output_format)),
+          output_format,
+          residual_echo_estimation_model_handle_
+              ? residual_echo_estimation_model_handle_->Get()
+              : nullptr)),
       deliver_processed_audio_callback_(
           std::move(deliver_processed_audio_callback)),
+      reference_stream_error_callback_(
+          std::move(reference_stream_error_callback)),
       receiver_(this, std::move(controls_receiver)),
       aecdump_recording_manager_(aecdump_recording_manager) {
-  DCHECK(settings.NeedAudioModification());
+  DCHECK(settings.NeedWebrtcAudioProcessing());
   if (aecdump_recording_manager_) {
     aecdump_recording_manager->RegisterAecdumpSource(this);
+  }
+  if (media::IsAudioProcessMlModelUsageEnabled() &&
+      settings.echo_cancellation) {
+    // Only log model availability when model management is enabled and echo
+    // cancellation is requested, in order to avoid diluting the metric.
+    // We log it here, in the audio service, because lower layers are also
+    // used from render processes where this feature is not available.
+    bool is_model_available = residual_echo_estimation_model_handle_ != nullptr;
+    base::UmaHistogramBoolean(
+        "Media.Audio.Capture.NeuralResidualEchoEstimationModelAvailable",
+        is_model_available);
   }
 }
 
@@ -53,14 +78,12 @@ void AudioProcessorHandler::ProcessCapturedAudio(
     const media::AudioBus& audio_source,
     base::TimeTicks audio_capture_time,
     double volume,
-    bool key_pressed,
     const media::AudioGlitchInfo& audio_glitch_info) {
   glitch_info_accumulator_.Add(audio_glitch_info);
   const int num_preferred_channels =
       num_preferred_channels_.load(std::memory_order_acquire);
   audio_processor_->ProcessCapturedAudio(audio_source, audio_capture_time,
-                                         num_preferred_channels, volume,
-                                         key_pressed);
+                                         num_preferred_channels, volume);
 }
 
 void AudioProcessorHandler::OnPlayoutData(const media::AudioBus& audio_bus,
@@ -69,6 +92,11 @@ void AudioProcessorHandler::OnPlayoutData(const media::AudioBus& audio_bus,
   TRACE_EVENT2("audio", "AudioProcessorHandler::OnPlayoutData", " this ",
                static_cast<void*>(this), "delay", delay.InMillisecondsF());
   audio_processor_->OnPlayoutData(audio_bus, sample_rate, delay);
+}
+
+void AudioProcessorHandler::OnReferenceStreamError() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+  reference_stream_error_callback_.Run();
 }
 
 void AudioProcessorHandler::GetStats(GetStatsCallback callback) {

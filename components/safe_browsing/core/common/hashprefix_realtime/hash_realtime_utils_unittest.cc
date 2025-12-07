@@ -182,29 +182,35 @@ TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
 #else
       hash_realtime_utils::HashRealTimeSelection::kHashRealTimeService;
 #endif
+  hash_realtime_utils::HashRealTimeSelection enabled_background_selection =
+#if BUILDFLAG(IS_ANDROID)
+      hash_realtime_utils::HashRealTimeSelection::
+          kDatabaseManagerBackgroundOnly;
+#else
+      hash_realtime_utils::HashRealTimeSelection::
+          kHashRealTimeServiceBackgroundOnly;
+#endif
   struct TestCase {
     SafeBrowsingState safe_browsing_state =
         SafeBrowsingState::STANDARD_PROTECTION;
     bool is_off_the_record = false;
     bool is_feature_on = true;
+    bool is_background_hprt_lookup_feature_on = true;
     bool has_google_chrome_branding = true;
     std::optional<std::string> latest_country = std::nullopt;
     std::optional<bool> lookups_allowed_by_policy = std::nullopt;
     hash_realtime_utils::HashRealTimeSelection expected_selection;
+    bool are_background_lookups_allowed = false;
     bool expected_log_usage_histograms = true;
     bool expected_ineligible_for_session_or_location_log = false;
     bool expected_off_the_record_log = false;
-    bool expected_not_standard_protection_log = false;
+    bool expected_ineligible_for_safe_browsing_state_log = false;
     bool expected_not_allowed_by_policy_log = false;
     bool expected_no_google_chrome_branding_log = false;
     bool expected_feature_off_log = false;
     bool expected_ineligible_for_location_log = false;
   } test_cases[] = {
       {.expected_selection = enabled_selection},
-      // Lookups disabled for ESB.
-      {.safe_browsing_state = SafeBrowsingState::ENHANCED_PROTECTION,
-       .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone,
-       .expected_not_standard_protection_log = true},
       // Lookups disabled due to being off the record.
       {.is_off_the_record = true,
        .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone,
@@ -236,6 +242,36 @@ TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
       {.lookups_allowed_by_policy = false,
        .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone,
        .expected_not_allowed_by_policy_log = true},
+      // Background HPRT lookups disabled even when the feature is on and the
+      // are_background_lookups_allowed parameter is true for SSB users.
+      {.safe_browsing_state = SafeBrowsingState::STANDARD_PROTECTION,
+       .is_background_hprt_lookup_feature_on = true,
+       .expected_selection = enabled_selection,
+       .are_background_lookups_allowed = true},
+      // The next 3 test cases test ESB lookups.
+      // Background HPRT lookups enabled when the feature flag,
+      // kHashPrefixRealTimeLookupsSamplePing, is on and background lookups
+      // are allowed.
+      {.safe_browsing_state = SafeBrowsingState::ENHANCED_PROTECTION,
+       .is_background_hprt_lookup_feature_on = true,
+       .expected_selection = enabled_background_selection,
+       .are_background_lookups_allowed = true},
+      // Background HPRT lookups disabled and normal lookup is also disabled
+      // when the feature flag, kHashPrefixRealTimeLookupsSamplePing, is on
+      // but background lookups are not allowed.
+      {.safe_browsing_state = SafeBrowsingState::ENHANCED_PROTECTION,
+       .is_background_hprt_lookup_feature_on = true,
+       .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone,
+       .are_background_lookups_allowed = false,
+       .expected_ineligible_for_safe_browsing_state_log = true},
+      // Background HPRT lookups disabled and normal lookup is also disabled
+      // when the feature flag, kHashPrefixRealTimeLookupsSamplePing, is off
+      // but background lookups are allowed.
+      {.safe_browsing_state = SafeBrowsingState::ENHANCED_PROTECTION,
+       .is_background_hprt_lookup_feature_on = false,
+       .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone,
+       .are_background_lookups_allowed = true,
+       .expected_ineligible_for_safe_browsing_state_log = true},
   };
 
   auto check_usage_histograms = [](const base::HistogramTester&
@@ -250,8 +286,8 @@ TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
         /*sample=*/test_case.expected_off_the_record_log,
         /*expected_bucket_count=*/1);
     histogram_tester.ExpectUniqueSample(
-        /*name=*/"SafeBrowsing.HPRT.Ineligible.NotStandardProtection",
-        /*sample=*/test_case.expected_not_standard_protection_log,
+        /*name=*/"SafeBrowsing.HPRT.Ineligible.IneligibleForSafeBrowsingState",
+        /*sample=*/test_case.expected_ineligible_for_safe_browsing_state_log,
         /*expected_bucket_count=*/1);
     histogram_tester.ExpectUniqueSample(
         /*name=*/"SafeBrowsing.HPRT.Ineligible.NotAllowedByPolicy",
@@ -279,7 +315,7 @@ TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
         /*name=*/"SafeBrowsing.HPRT.Ineligible.OffTheRecord",
         /*expected_count=*/0);
     histogram_tester.ExpectTotalCount(
-        /*name=*/"SafeBrowsing.HPRT.Ineligible.NotStandardProtection",
+        /*name=*/"SafeBrowsing.HPRT.Ineligible.IneligibleForSafeBrowsingState",
         /*expected_count=*/0);
     histogram_tester.ExpectTotalCount(
         /*name=*/"SafeBrowsing.HPRT.Ineligible.NotAllowedByPolicy",
@@ -300,11 +336,21 @@ TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
     base::test::ScopedFeatureList scoped_feature_list;
     TestingPrefServiceSimple prefs;
     base::HistogramTester histogram_tester;
+
+    std::vector<base::test::FeatureRef> enabled_features = {};
+    std::vector<base::test::FeatureRef> disabled_features = {};
     if (test_case.is_feature_on) {
-      scoped_feature_list.InitAndEnableFeature(kHashPrefixRealTimeLookups);
+      enabled_features.push_back(kHashPrefixRealTimeLookups);
     } else {
-      scoped_feature_list.InitAndDisableFeature(kHashPrefixRealTimeLookups);
+      disabled_features.push_back(kHashPrefixRealTimeLookups);
     }
+    if (test_case.is_background_hprt_lookup_feature_on) {
+      enabled_features.push_back(kHashPrefixRealTimeLookupsSamplePing);
+    } else {
+      disabled_features.push_back(kHashPrefixRealTimeLookupsSamplePing);
+    }
+    scoped_feature_list.InitWithFeatures(enabled_features, disabled_features);
+
     if (!test_case.has_google_chrome_branding) {
       apply_branding.StopApplyingBranding();
     }
@@ -315,15 +361,19 @@ TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
                        test_case.lookups_allowed_by_policy.value());
     }
     // Confirm result is correct and no histograms are logged.
-    EXPECT_EQ(
-        hash_realtime_utils::DetermineHashRealTimeSelection(
-            test_case.is_off_the_record, &prefs, test_case.latest_country),
-        test_case.expected_selection);
+    EXPECT_EQ(hash_realtime_utils::DetermineHashRealTimeSelection(
+                  test_case.is_off_the_record, &prefs, test_case.latest_country,
+                  /*log_usage_histograms=*/false,
+                  /*are_background_lookups_allowed=*/
+                  test_case.are_background_lookups_allowed),
+              test_case.expected_selection);
     check_no_usage_histograms(histogram_tester);
     // Confirm result is still correct and relevant histograms are logged.
     EXPECT_EQ(hash_realtime_utils::DetermineHashRealTimeSelection(
                   test_case.is_off_the_record, &prefs, test_case.latest_country,
-                  /*log_usage_histograms=*/true),
+                  /*log_usage_histograms=*/true,
+                  /*are_background_lookups_allowed=*/
+                  test_case.are_background_lookups_allowed),
               test_case.expected_selection);
     if (test_case.expected_log_usage_histograms) {
       check_usage_histograms(histogram_tester, test_case);

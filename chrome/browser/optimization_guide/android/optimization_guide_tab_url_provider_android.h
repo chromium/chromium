@@ -9,7 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "components/optimization_guide/core/tab_url_provider.h"
+#include "components/optimization_guide/core/hints/tab_url_provider.h"
 
 class Profile;
 

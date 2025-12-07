@@ -10,7 +10,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party.mojom.h"
+#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -26,6 +29,21 @@ class GURL;
 class MostVisitedHandler;
 class NewTabPageThirdPartyHandler;
 class Profile;
+class NewTabPageThirdPartyUI;
+
+class NewTabPageThirdPartyUIConfig
+    : public content::DefaultWebUIConfig<NewTabPageThirdPartyUI> {
+ public:
+  NewTabPageThirdPartyUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUINewTabPageThirdPartyHost) {}
+
+  // content::WebUIConfig:
+  std::unique_ptr<content::WebUIController> CreateWebUIController(
+      content::WebUI* web_ui,
+      const GURL& url) override;
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+};
 
 class NewTabPageThirdPartyUI
     : public ui::MojoWebUIController,

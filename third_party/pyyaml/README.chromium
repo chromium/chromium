@@ -3,6 +3,7 @@ Short Name: pyyaml
 URL: https://github.com/yaml/pyyaml
 Version: 6.0
 Revision: 8cdff2c80573b8be8e8ad28929264a913a63aa33
+Update Mechanism: Manual
 CPEPrefix: unknown
 Security Critical: no
 Shipped: no

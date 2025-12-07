@@ -9,6 +9,7 @@
 #include "net/cert/x509_certificate.h"
 #include "net/log/net_log_values.h"
 #include "net/quic/address_utils.h"
+#include "net/third_party/quiche/src/quiche/quic/core/crypto/crypto_protocol.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_socket_address_coder.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 
@@ -271,8 +272,7 @@ base::Value::Dict NetLogQuicOnConnectionClosedParams(
   return base::Value::Dict()
       .Set("quic_error", static_cast<int>(error))
       .Set("details", error_details)
-      .Set("from_peer",
-           source == quic::ConnectionCloseSource::FROM_PEER ? true : false);
+      .Set("from_peer", source == quic::ConnectionCloseSource::FROM_PEER);
 }
 
 base::Value::Dict NetLogQuicCertificateVerifiedParams(
@@ -455,10 +455,10 @@ void QuicEventLogger::OnFrameAddedToPacket(const quic::QuicFrame& frame) {
             return NetLogQuicStopSendingFrameParams(frame.stop_sending_frame);
           });
       break;
-    case quic::MESSAGE_FRAME:
+    case quic::DATAGRAM_FRAME:
       net_log_.AddEventWithIntParams(
           NetLogEventType::QUIC_SESSION_MESSAGE_FRAME_SENT, "message_length",
-          frame.message_frame->message_length);
+          frame.datagram_frame->datagram_length);
       break;
     case quic::CRYPTO_FRAME:
       net_log_.AddEvent(NetLogEventType::QUIC_SESSION_CRYPTO_FRAME_SENT, [&] {
@@ -692,10 +692,10 @@ void QuicEventLogger::OnRetireConnectionIdFrame(
       [&] { return NetLogQuicRetireConnectionIdFrameParams(&frame); });
 }
 
-void QuicEventLogger::OnMessageFrame(const quic::QuicMessageFrame& frame) {
+void QuicEventLogger::OnDatagramFrame(const quic::QuicDatagramFrame& frame) {
   net_log_.AddEventWithIntParams(
       NetLogEventType::QUIC_SESSION_MESSAGE_FRAME_RECEIVED, "message_length",
-      frame.message_length);
+      frame.datagram_length);
 }
 
 void QuicEventLogger::OnHandshakeDoneFrame(

@@ -1,0 +1,210 @@
+seed_for_input_data: 883947058
+actions {
+  device: 1
+  create_graph {
+    graph_info {
+      new {
+        id: 1
+        m_operands: {
+          values: {
+            value: {
+              new: {
+                id: 1
+                m_kind: 0
+                m_name: "input"
+                m_descriptor: {
+                  new: {
+                    id: 1
+                    m_data_type:0
+                    m_shape: {
+                      values: {
+                        value: 1
+                      }
+                    }
+                    m_pending_permutation: {}
+                  }
+                }
+              }
+            }
+          }
+          values: {
+            value: {
+              new: {
+                id: 2
+                m_kind: 2
+                m_name: "output"
+                m_descriptor: {
+                  new: {
+                    id: 2
+                    m_data_type:0
+                    m_shape: {
+                      values: {
+                        value: 1
+                      }
+                    }
+                    m_pending_permutation: {}
+                  }
+                }
+              }
+            }
+          }
+        }
+        m_input_operands: {
+          values: {
+            value:  {
+              new {
+                id: 0
+                m_id: 0
+              }
+            }
+          }
+        }
+        m_output_operands: {
+          values: {
+            value: {
+              new {
+                id: 1
+                m_id: 1
+              }
+            }
+          }
+        }
+        m_operations: {
+          values: {
+            value: {
+              new: {
+                id: 1
+                m_gelu: {
+                  new: {
+                    id: 1
+                    m_input_operand_id: {
+                      new {
+                        id: 0
+                        m_id: 0
+                      }
+                    }
+                    m_output_operand_id: {
+                      new {
+                        id: 1
+                        m_id: 1
+                      }
+                    }
+                    m_label: "test"
+                  }
+                }
+              }
+            }
+          }
+        }
+        m_constant_operand_ids_to_handles: {}
+        m_id_to_constant_tensor_operand_map: {}
+      }
+    }
+  }
+}
+actions {
+  device: 2
+  create_graph {
+    graph_info {
+      new {
+        id: 1
+        m_operands: {
+          values: {
+            value: {
+              new: {
+                id: 1
+                m_kind: 1
+                m_descriptor: {
+                  new: {
+                    id: 1
+                    m_data_type:0
+                    m_shape: {
+                      values: {
+                        value: 2
+                      }
+                      values: {
+                        value: 2
+                      }
+                    }
+                    m_pending_permutation: {
+                      values: {
+                        value: 1
+                      }
+                      values: {
+                        value: 0
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          values: {
+            value: {
+              new: {
+                id: 2
+                m_kind: 2
+                m_name: "output"
+                m_descriptor: {
+                  new: {
+                    id: 2
+                    m_data_type:0
+                    m_shape: {
+                      values: {
+                        value: 2
+                      }
+                      values: {
+                        value: 2
+                      }
+                    }
+                    m_pending_permutation: {}
+                  }
+                }
+              }
+            }
+          }
+        }
+        m_input_operands: {}
+        m_output_operands: {
+          values: {
+            value: {
+              new {
+                id: 1
+                m_id: 1
+              }
+            }
+          }
+        }
+        m_operations: {
+          values: {
+            value: {
+              new: {
+                id: 1
+                m_gelu: {
+                  new: {
+                    id: 1
+                    m_input_operand_id: {
+                      new {
+                        id: 0
+                        m_id: 0
+                      }
+                    }
+                    m_output_operand_id: {
+                      new {
+                        id: 1
+                        m_id: 1
+                      }
+                    }
+                    m_label: "gelu"
+                  }
+                }
+              }
+            }
+          }
+        }
+        m_constant_operand_ids_to_handles: {}
+        m_id_to_constant_tensor_operand_map: {}
+      }
+    }
+  }
+}

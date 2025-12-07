@@ -4,12 +4,14 @@
 
 #include "components/browsing_topics/browsing_topics_page_load_data_tracker.h"
 
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/browsing_topics/util.h"
 #include "components/history/content/browser/history_context_helper.h"
 #include "components/history/core/browser/history_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_topics_site_data_manager.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -18,8 +20,8 @@
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 namespace browsing_topics {
 
@@ -48,18 +50,20 @@ BrowsingTopicsPageLoadDataTracker::BrowsingTopicsPageLoadDataTracker(
     content::Page& page)
     : BrowsingTopicsPageLoadDataTracker(
           page,
-          /*redirect_count=*/0,
-          /*redirect_with_topics_invoked_count=*/0) {}
+          /*redirect_hosts_with_topics_invoked=*/{},
+          /*source_id_before_redirects=*/
+          page.GetMainDocument().GetPageUkmSourceId()) {}
 
 BrowsingTopicsPageLoadDataTracker::BrowsingTopicsPageLoadDataTracker(
     content::Page& page,
-    int redirect_count,
-    int redirect_with_topics_invoked_count)
+    std::set<HashedHost> redirect_hosts_with_topics_invoked,
+    ukm::SourceId source_id_before_redirects)
     : content::PageUserData<BrowsingTopicsPageLoadDataTracker>(page),
       hashed_main_frame_host_(HashMainFrameHostForStorage(
           page.GetMainDocument().GetLastCommittedOrigin().host())),
-      redirect_count_(redirect_count),
-      redirect_with_topics_invoked_count_(redirect_with_topics_invoked_count) {
+      redirect_hosts_with_topics_invoked_(
+          std::move(redirect_hosts_with_topics_invoked)),
+      source_id_before_redirects_(source_id_before_redirects) {
   source_id_ = page.GetMainDocument().GetPageUkmSourceId();
 
   // TODO(yaoxia): consider dropping the permissions policy checks. We require
@@ -70,9 +74,9 @@ BrowsingTopicsPageLoadDataTracker::BrowsingTopicsPageLoadDataTracker(
        base::FeatureList::IsEnabled(
            blink::features::kBrowsingTopicsBypassIPIsPubliclyRoutableCheck)) &&
       page.GetMainDocument().IsFeatureEnabled(
-          blink::mojom::PermissionsPolicyFeature::kBrowsingTopics) &&
+          network::mojom::PermissionsPolicyFeature::kBrowsingTopics) &&
       page.GetMainDocument().IsFeatureEnabled(
-          blink::mojom::PermissionsPolicyFeature::
+          network::mojom::PermissionsPolicyFeature::
               kBrowsingTopicsBackwardCompatible) &&
       page.GetMainDocument().IsLastCrossDocumentNavigationStartedByUser()) {
     eligible_to_observe_ = true;
@@ -87,17 +91,26 @@ void BrowsingTopicsPageLoadDataTracker::OnBrowsingTopicsApiUsed(
   CHECK(page().IsPrimary());
 
   if (!topics_invoked_) {
-    // We want an accurate measure up to 4 redirects, which corresponds to 5
-    // page loads. Numbers beyond that will be grouped to the overflow bucket
-    // `kExclusiveMaxBucket`.
-    int kExclusiveMaxBucket = 5;
-    base::UmaHistogramExactLinear(
-        "BrowsingTopics.PageLoad.OnTopicsFirstInvoked.RedirectCount",
-        redirect_count_, kExclusiveMaxBucket);
-    base::UmaHistogramExactLinear(
-        "BrowsingTopics.PageLoad.OnTopicsFirstInvoked."
-        "RedirectWithTopicsInvokedCount",
-        redirect_with_topics_invoked_count_, kExclusiveMaxBucket);
+    if (redirect_hosts_with_topics_invoked_.size() < 5) {
+      bool host_inserted =
+          redirect_hosts_with_topics_invoked_.insert(hashed_main_frame_host_)
+              .second;
+
+      if (host_inserted) {
+        // If this is the first Topics call on the page, and this site wasn't
+        // part of a previous redirect chain that invoked Topics, record the
+        // number of distinct sites in the current redirect chain (including
+        // this page) that have called Topics, capped at 5. This ensures each
+        // count (from 1 to the maximum count) is emitted exactly once per
+        // redirect chain.
+        int kExclusiveMaxBucket = 6;
+        base::UmaHistogramExactLinear(
+            "BrowsingTopics.RedirectChain.OnTopicsFirstInvokedForSite."
+            "TopicsCallingSitesCount",
+            redirect_hosts_with_topics_invoked_.size(), kExclusiveMaxBucket);
+      }
+    }
+
     topics_invoked_ = true;
   }
 

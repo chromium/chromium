@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -77,7 +78,8 @@ class SupportToolHandler {
   SupportToolHandler();
   SupportToolHandler(std::string case_id,
                      std::string email_address,
-                     std::string issue_description);
+                     std::string issue_description,
+                     std::optional<std::string> upload_id);
   ~SupportToolHandler();
 
   // Returns the support case ID.

@@ -5,30 +5,23 @@
 #ifndef IOS_CHROME_BROWSER_AUTOFILL_MODEL_AUTOCOMPLETE_HISTORY_MANAGER_FACTORY_H_
 #define IOS_CHROME_BROWSER_AUTOFILL_MODEL_AUTOCOMPLETE_HISTORY_MANAGER_FACTORY_H_
 
-#include <memory>
+#import <memory>
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "base/no_destructor.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
-class ChromeBrowserState;
+class ProfileIOS;
 
 namespace autofill {
 
 class AutocompleteHistoryManager;
 
 // Singleton that owns all AutocompleteHistoryManagers and associates them with
-// ChromeBrowserState.
-class AutocompleteHistoryManagerFactory
-    : public BrowserStateKeyedServiceFactory {
+// profiles.
+class AutocompleteHistoryManagerFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  static AutocompleteHistoryManager* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  static AutocompleteHistoryManager* GetForProfile(ProfileIOS* profile);
   static AutocompleteHistoryManagerFactory* GetInstance();
-
-  AutocompleteHistoryManagerFactory(const AutocompleteHistoryManagerFactory&) =
-      delete;
-  AutocompleteHistoryManagerFactory& operator=(
-      const AutocompleteHistoryManagerFactory&) = delete;
 
  private:
   friend class base::NoDestructor<AutocompleteHistoryManagerFactory>;
@@ -36,11 +29,9 @@ class AutocompleteHistoryManagerFactory
   AutocompleteHistoryManagerFactory();
   ~AutocompleteHistoryManagerFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
-  web::BrowserState* GetBrowserStateToUse(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 }  // namespace autofill

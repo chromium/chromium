@@ -12,6 +12,8 @@ import android.widget.TextView;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.ui.base.ViewUtils;
 
@@ -22,12 +24,13 @@ import org.chromium.ui.base.ViewUtils;
  * below 48dp in height which is currently the case for this summary where we add a clickable
  * action. The surface of the clickable action needs to be revisited after discussing with the UX.
  */
+@NullMarked
 public class IncognitoReauthSettingSwitchPreference extends ChromeSwitchPreference {
-    /** A boolean to indicate whether the preference should be interactable or not.*/
+    /** A boolean to indicate whether the preference should be interactable or not. */
     private boolean mPreferenceInteractable;
 
-    /** The action to perform when the summary is clicked.*/
-    private Runnable mLinkClickDelegate;
+    /** The action to perform when the summary is clicked. */
+    private @MonotonicNonNull Runnable mLinkClickDelegate;
 
     public IncognitoReauthSettingSwitchPreference(Context context) {
         super(context);

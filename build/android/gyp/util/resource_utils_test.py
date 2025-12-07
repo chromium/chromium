@@ -4,7 +4,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import collections
 import os
 import sys
 import unittest
@@ -104,7 +103,7 @@ _TEST_R_TXT_STRING_RESOURCE_NAMES = sorted([
 
 def _CreateTestFile(tmp_dir, file_name, file_data):
   file_path = os.path.join(tmp_dir, file_name)
-  with open(file_path, 'wt') as f:
+  with open(file_path, 'wt', encoding='utf-8') as f:
     f.write(file_data)
   return file_path
 
@@ -240,25 +239,25 @@ class ResourceUtilsTest(unittest.TestCase):
   def test_GenerateAndroidResourceStringsXml(self):
     # Fist, an empty strings map, with no namespaces
     result = resource_utils.GenerateAndroidResourceStringsXml({})
-    self.assertEqual(result.decode('utf8'), _TEST_XML_OUTPUT_EMPTY)
+    self.assertEqual(result, _TEST_XML_OUTPUT_EMPTY)
 
     result = resource_utils.GenerateAndroidResourceStringsXml(
         _TEST_RESOURCES_MAP_1, _TEST_NAMESPACES_1)
-    self.assertEqual(result.decode('utf8'), _TEST_XML_INPUT_1)
+    self.assertEqual(result, _TEST_XML_INPUT_1)
 
   @staticmethod
   def _CreateTestResourceFile(output_dir, locale, string_map, namespaces):
     values_dir = os.path.join(output_dir, 'values-' + locale)
     build_utils.MakeDirectory(values_dir)
     file_path = os.path.join(values_dir, 'strings.xml')
-    with open(file_path, 'wb') as f:
-      file_data = resource_utils.GenerateAndroidResourceStringsXml(
-          string_map, namespaces)
+    file_data = resource_utils.GenerateAndroidResourceStringsXml(
+        string_map, namespaces)
+    with open(file_path, 'w', encoding='utf-8') as f:
       f.write(file_data)
     return file_path
 
   def _CheckTestResourceFile(self, file_path, expected_data):
-    with open(file_path) as f:
+    with open(file_path, encoding='utf-8') as f:
       file_data = f.read()
     self.assertEqual(file_data, expected_data)
 

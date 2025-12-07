@@ -19,7 +19,7 @@
     flex: 1;
     flex-grow: 3;
   }
-  
+
   .label-text {
     flex-grow: 3;
     word-break: break-all;
@@ -91,9 +91,9 @@
 <template is="dom-if" if="[[allPorts_.length]]" restamp>
   <template is="dom-repeat" items="[[allContainers_]]"
       as="containerInfo" index-as="cidx" mutable-data>
-    <template is="dom-if" 
+    <template is="dom-if"
         if="[[hasContainerPorts_(allPorts_, containerInfo.id)]]" restamp>
-      <h2 id="portForwardingListContainerId" 
+      <h2 id="portForwardingListContainerId"
           hidden="[[!showContainerId_(allPorts_, containerInfo.id)]]"
           class="settings-box first">
           [[containerLabel_(containerInfo.id)]]
@@ -141,11 +141,11 @@
                   data-container-id="[[item.container_id]]"
                   on-change="onPortActivationChange_"
                   aria-label="$i18n{crostiniPortForwardingToggleAriaLabel}"
-                  aria-describedby$="crostiniPort[[cidx]]-[[index]] 
+                  aria-describedby$="crostiniPort[[cidx]]-[[index]]
                       crostiniPortLabel[[cidx]]-[[index]]"
                   disabled="[[!containerInfo.ipv4]]">
               </cr-toggle>
-              <cr-icon-button 
+              <cr-icon-button
                   id="removeSinglePortButton[[cidx]]-[[index]]"
                   class="icon-clear"
                   title="$i18n{moreActions}"
@@ -155,7 +155,7 @@
                   data-container-id="[[item.container_id]]"
                   aria-label=
                       "$i18n{crostiniPortForwardingShowMoreActionsAriaLabel}"
-                  aria-describedby$="crostiniPort[[cidx]]-[[index]] 
+                  aria-describedby$="crostiniPort[[cidx]]-[[index]]
                       crostiniPortLabel[[cidx]]-[[index]]">
               </cr-icon-button>
             </div>

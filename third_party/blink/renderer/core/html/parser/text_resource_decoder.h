@@ -42,7 +42,7 @@ class HTMLMetaCharsetParser;
 // See comments in text_resource_decoder_options.h.
 //
 // To construct a string from known-UTF-8 data without BOM, please use
-// WTF::String::FromUTF8 instead.
+// blink::String::FromUTF8 instead.
 // TODO(crbug.com/1373623): Move this to blink/renderer/platform and remove
 // BodyTextDecoder.
 class CORE_EXPORT TextResourceDecoder : public BodyTextDecoder {
@@ -65,35 +65,42 @@ class CORE_EXPORT TextResourceDecoder : public BodyTextDecoder {
   TextResourceDecoder& operator=(const TextResourceDecoder&) = delete;
   ~TextResourceDecoder() override;
 
-  void SetEncoding(const WTF::TextEncoding&, EncodingSource);
-  const WTF::TextEncoding& Encoding() const { return encoding_; }
+  void SetEncoding(const TextEncoding&, EncodingSource);
+  const TextEncoding& Encoding() const { return encoding_; }
   bool EncodingWasDetectedHeuristically() const {
     return source_ == kAutoDetectedEncoding ||
            source_ == kEncodingFromContentSniffing;
   }
 
-  String Decode(const char* data, size_t length) override;
+  String Decode(base::span<const char> data,
+                String* auto_detected_charset) override;
+  String Decode(base::span<const char> data) { return Decode(data, nullptr); }
+  String Decode(base::span<const uint8_t> data,
+                String* auto_detected_charset = nullptr) {
+    return Decode(base::as_chars(data), auto_detected_charset);
+  }
   String Flush() override;
   WebEncodingData GetEncodingData() const override;
 
   bool SawError() const { return saw_error_; }
-  wtf_size_t CheckForBOM(const char*, wtf_size_t);
+  wtf_size_t CheckForBOM(base::span<const char>);
 
  private:
-  static const WTF::TextEncoding& DefaultEncoding(
+  static const TextEncoding& DefaultEncoding(
       TextResourceDecoderOptions::ContentType,
-      const WTF::TextEncoding& default_encoding);
+      const TextEncoding& default_encoding);
 
-  void AddToBuffer(const char* data, wtf_size_t data_length);
-  void AddToBufferIfEmpty(const char* data, wtf_size_t data_length);
-  bool CheckForCSSCharset(const char*, wtf_size_t);
-  bool CheckForXMLCharset(const char*, wtf_size_t);
-  void CheckForMetaCharset(const char*, wtf_size_t);
-  void AutoDetectEncodingIfAllowed(const char* data, wtf_size_t len);
+  void AddToBuffer(base::span<const char> data);
+  void AddToBufferIfEmpty(base::span<const char> data);
+  bool CheckForCSSCharset(base::span<const char>);
+  bool CheckForXMLCharset(base::span<const char>);
+  void CheckForMetaCharset(base::span<const char>);
+  void AutoDetectEncodingIfAllowed(base::span<const char> data,
+                                   String* auto_detected_charset = nullptr);
 
   const TextResourceDecoderOptions options_;
 
-  WTF::TextEncoding encoding_;
+  TextEncoding encoding_;
   std::unique_ptr<TextCodec> codec_;
   EncodingSource source_;
   Vector<char> buffer_;

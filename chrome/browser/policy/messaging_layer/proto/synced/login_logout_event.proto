@@ -60,4 +60,6 @@ message LoginLogoutRecord {
   }
 
   optional LoginLogoutSessionType session_type = 6;
+
+  optional .reporting.SessionUnaffiliatedUser unaffiliated_user = 7;
 }

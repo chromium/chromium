@@ -12,14 +12,12 @@
 
 namespace sharesheet {
 
-ExampleAction::ExampleAction() {
-  name_ = "example";
-}
+ExampleAction::ExampleAction() = default;
 
 ExampleAction::~ExampleAction() = default;
 
 ShareActionType ExampleAction::GetActionType() const {
-  return ShareActionType::kExample;
+  return type_;
 }
 
 const std::u16string ExampleAction::GetActionName() {

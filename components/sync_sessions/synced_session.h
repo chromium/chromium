@@ -86,15 +86,18 @@ struct SyncedSession {
   ~SyncedSession();
 
   void SetSessionTag(const std::string& session_tag);
-
   const std::string& GetSessionTag() const;
 
   void SetSessionName(const std::string& session_name);
-
   const std::string& GetSessionName() const;
 
-  void SetModifiedTime(const base::Time& modified_time);
+  // The timestamp when this session was started, i.e. when the user signed in
+  // or turned on the sessions data type. Only populated for sessions started in
+  // M130 or later.
+  void SetStartTime(base::Time start_time);
+  std::optional<base::Time> GetStartTime() const;
 
+  void SetModifiedTime(const base::Time& modified_time);
   const base::Time& GetModifiedTime() const;
 
   // Map of windows that make up this session.
@@ -116,6 +119,11 @@ struct SyncedSession {
 
   // User-visible name
   std::string session_name_;
+
+  // The timestamp when this session was started, i.e. when the user signed in
+  // or turned on the sessions data type. Only populated for sessions started in
+  // M130 or later.
+  std::optional<base::Time> start_time_;
 
   // Last time this session was modified remotely. This is the max of the header
   // and all children tab mtimes.

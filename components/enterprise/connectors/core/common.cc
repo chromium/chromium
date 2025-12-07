@@ -4,20 +4,79 @@
 
 #include "components/enterprise/connectors/core/common.h"
 
+#include <algorithm>
+
+#include "base/containers/map_util.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "ui/gfx/range/range.h"
 
 #if BUILDFLAG(USE_BLINK)
-#include "components/download/public/common/download_item.h"
+#include "components/download/public/common/download_item.h"  // nogncheck
 #endif  // BUILDFLAG(USE_BLINK)
 
 namespace enterprise_connectors {
 
 namespace {
+
+inline constexpr auto kUmaEnumToStringMap =
+    base::MakeFixedFlatMap<EnterpriseReportingEventType, std::string_view>({
+        {EnterpriseReportingEventType::kPasswordReuseEvent,
+         kPasswordReuseUmaMetricName},
+        {EnterpriseReportingEventType::kPasswordChangedEvent,
+         kPasswordChangedUmaMetricName},
+        {EnterpriseReportingEventType::kDangerousDownloadEvent,
+         kDangerousDownloadUmaMetricName},
+        {EnterpriseReportingEventType::kInterstitialEvent,
+         kInterstitialUmaMetricName},
+        {EnterpriseReportingEventType::kSensitiveDataEvent,
+         kSensitiveDataUmaMetricName},
+        {EnterpriseReportingEventType::kUnscannedFileEvent,
+         kUnscannedFileUmaMetricName},
+        {EnterpriseReportingEventType::kLoginEvent, kLoginUmaMetricName},
+        {EnterpriseReportingEventType::kPasswordBreachEvent,
+         kPasswordBreachUmaMetricName},
+        {EnterpriseReportingEventType::kUrlFilteringInterstitialEvent,
+         kUrlFilteringInterstitialUmaMetricName},
+        {EnterpriseReportingEventType::kExtensionInstallEvent,
+         kExtensionInstallUmaMetricName},
+        {EnterpriseReportingEventType::kBrowserCrashEvent,
+         kBrowserCrashUmaMetricName},
+        {EnterpriseReportingEventType::kExtensionTelemetryEvent,
+         kExtensionTelemetryUmaMetricName},
+    });
+
+inline constexpr auto kEventCaseToUmaEnumMap =
+    base::MakeFixedFlatMap<EventCase, EnterpriseReportingEventType>({
+        {EventCase::kPasswordReuseEvent,
+         EnterpriseReportingEventType::kPasswordReuseEvent},
+        {EventCase::kPasswordChangedEvent,
+         EnterpriseReportingEventType::kPasswordChangedEvent},
+        {EventCase::kDangerousDownloadEvent,
+         EnterpriseReportingEventType::kDangerousDownloadEvent},
+        {EventCase::kInterstitialEvent,
+         EnterpriseReportingEventType::kInterstitialEvent},
+        {EventCase::kSensitiveDataEvent,
+         EnterpriseReportingEventType::kSensitiveDataEvent},
+        {EventCase::kUnscannedFileEvent,
+         EnterpriseReportingEventType::kUnscannedFileEvent},
+        {EventCase::kLoginEvent, EnterpriseReportingEventType::kLoginEvent},
+        {EventCase::kPasswordBreachEvent,
+         EnterpriseReportingEventType::kPasswordBreachEvent},
+        {EventCase::kUrlFilteringInterstitialEvent,
+         EnterpriseReportingEventType::kUrlFilteringInterstitialEvent},
+        {EventCase::kBrowserExtensionInstallEvent,
+         EnterpriseReportingEventType::kExtensionInstallEvent},
+        {EventCase::kBrowserCrashEvent,
+         EnterpriseReportingEventType::kBrowserCrashEvent},
+        {EventCase::kExtensionTelemetryEvent,
+         EnterpriseReportingEventType::kExtensionTelemetryEvent},
+    });
 
 ContentAnalysisAcknowledgement::FinalAction RuleActionToAckAction(
     TriggeredRule::Action action) {
@@ -28,6 +87,7 @@ ContentAnalysisAcknowledgement::FinalAction RuleActionToAckAction(
       return ContentAnalysisAcknowledgement::REPORT_ONLY;
     case TriggeredRule::WARN:
       return ContentAnalysisAcknowledgement::WARN;
+    case TriggeredRule::FORCE_SAVE_TO_CLOUD:
     case TriggeredRule::BLOCK:
       return ContentAnalysisAcknowledgement::BLOCK;
   }
@@ -36,16 +96,15 @@ ContentAnalysisAcknowledgement::FinalAction RuleActionToAckAction(
 }  // namespace
 
 ReportingSettings::ReportingSettings() = default;
-ReportingSettings::ReportingSettings(GURL url,
-                                     const std::string& dm_token,
+ReportingSettings::ReportingSettings(const std::string& dm_token,
                                      bool per_profile)
-    : reporting_url(url), dm_token(dm_token), per_profile(per_profile) {}
+    : dm_token(dm_token), per_profile(per_profile) {}
 ReportingSettings::ReportingSettings(ReportingSettings&&) = default;
 ReportingSettings::ReportingSettings(const ReportingSettings&) = default;
 ReportingSettings& ReportingSettings::operator=(ReportingSettings&&) = default;
 ReportingSettings::~ReportingSettings() = default;
 
-const char* ConnectorPref(AnalysisConnector connector) {
+const char* AnalysisConnectorPref(AnalysisConnector connector) {
   switch (connector) {
     case AnalysisConnector::BULK_DATA_ENTRY:
       return kOnBulkDataEntryPref;
@@ -60,19 +119,11 @@ const char* ConnectorPref(AnalysisConnector connector) {
       return kOnFileTransferPref;
 #endif
     case AnalysisConnector::ANALYSIS_CONNECTOR_UNSPECIFIED:
-      NOTREACHED_IN_MIGRATION() << "Using unspecified analysis connector";
-      return "";
+      NOTREACHED() << "Using unspecified analysis connector";
   }
 }
 
-const char* ConnectorPref(ReportingConnector connector) {
-  switch (connector) {
-    case ReportingConnector::SECURITY_EVENT:
-      return kOnSecurityEventPref;
-  }
-}
-
-const char* ConnectorScopePref(AnalysisConnector connector) {
+const char* AnalysisConnectorScopePref(AnalysisConnector connector) {
   switch (connector) {
     case AnalysisConnector::BULK_DATA_ENTRY:
       return kOnBulkDataEntryScopePref;
@@ -87,15 +138,7 @@ const char* ConnectorScopePref(AnalysisConnector connector) {
       return kOnFileTransferScopePref;
 #endif
     case AnalysisConnector::ANALYSIS_CONNECTOR_UNSPECIFIED:
-      NOTREACHED_IN_MIGRATION() << "Using unspecified analysis connector";
-      return "";
-  }
-}
-
-const char* ConnectorScopePref(ReportingConnector connector) {
-  switch (connector) {
-    case ReportingConnector::SECURITY_EVENT:
-      return kOnSecurityEventScopePref;
+      NOTREACHED() << "Using unspecified analysis connector";
   }
 }
 
@@ -132,6 +175,10 @@ TriggeredRule::Action GetHighestPrecedenceAction(
   if (action_1 == TriggeredRule::BLOCK || action_2 == TriggeredRule::BLOCK) {
     return TriggeredRule::BLOCK;
   }
+  if (action_1 == TriggeredRule::FORCE_SAVE_TO_CLOUD ||
+      action_2 == TriggeredRule::FORCE_SAVE_TO_CLOUD) {
+    return TriggeredRule::FORCE_SAVE_TO_CLOUD;
+  }
   if (action_1 == TriggeredRule::WARN || action_2 == TriggeredRule::WARN) {
     return TriggeredRule::WARN;
   }
@@ -143,8 +190,7 @@ TriggeredRule::Action GetHighestPrecedenceAction(
       action_2 == TriggeredRule::ACTION_UNSPECIFIED) {
     return TriggeredRule::ACTION_UNSPECIFIED;
   }
-  NOTREACHED_IN_MIGRATION();
-  return TriggeredRule::ACTION_UNSPECIFIED;
+  NOTREACHED();
 }
 
 ContentAnalysisAcknowledgement::FinalAction GetHighestPrecedenceAction(
@@ -174,8 +220,7 @@ ContentAnalysisAcknowledgement::FinalAction GetHighestPrecedenceAction(
       action_2 == ContentAnalysisAcknowledgement::ACTION_UNSPECIFIED) {
     return ContentAnalysisAcknowledgement::ACTION_UNSPECIFIED;
   }
-  NOTREACHED_IN_MIGRATION();
-  return ContentAnalysisAcknowledgement::ACTION_UNSPECIFIED;
+  NOTREACHED();
 }
 
 FileMetadata::FileMetadata(const std::string& filename,
@@ -311,9 +356,111 @@ GetDownloadsCustomRuleMessage(const download::DownloadItem* download_item,
 #endif  // BUILDFLAG(USE_BLINK)
 
 bool ContainsMalwareVerdict(const ContentAnalysisResponse& response) {
-  return base::ranges::any_of(response.results(), [](const auto& result) {
+  return std::ranges::any_of(response.results(), [](const auto& result) {
     return result.tag() == kMalwareTag && !result.triggered_rules().empty();
   });
+}
+
+GURL GetRegionalizedEndpoint(base::span<const char* const> region_urls,
+                             DataRegion data_region) {
+  switch (data_region) {
+    case DataRegion::NO_PREFERENCE:
+      return GURL(region_urls[0]);
+    case DataRegion::UNITED_STATES:
+      return GURL(region_urls[1]);
+    case DataRegion::EUROPE:
+      return GURL(region_urls[2]);
+  }
+}
+
+DataRegion ChromeDataRegionSettingToEnum(int chrome_data_region_setting) {
+  switch (chrome_data_region_setting) {
+    case 0:
+      return DataRegion::NO_PREFERENCE;
+    case 1:
+      return DataRegion::UNITED_STATES;
+    case 2:
+      return DataRegion::EUROPE;
+  }
+  NOTREACHED();
+}
+
+EnterpriseReportingEventType GetUmaEnumFromEventName(
+    std::string_view eventName) {
+  auto it = kEventNameToUmaEnumMap.find(eventName);
+  return it != kEventNameToUmaEnumMap.end()
+             ? it->second
+             : EnterpriseReportingEventType::kUnknownEvent;
+}
+
+
+EnterpriseReportingEventType GetUmaEnumFromEventCase(EventCase eventCase) {
+  auto it = kEventCaseToUmaEnumMap.find(eventCase);
+  return it != kEventCaseToUmaEnumMap.end()
+             ? it->second
+             : EnterpriseReportingEventType::kUnknownEvent;
+}
+
+std::string EventResultToString(EventResult result) {
+  switch (result) {
+    case EventResult::UNKNOWN:
+      return "EVENT_RESULT_UNKNOWN";
+    case EventResult::ALLOWED:
+      return "EVENT_RESULT_ALLOWED";
+    case EventResult::WARNED:
+      return "EVENT_RESULT_WARNED";
+    case EventResult::BLOCKED:
+      return "EVENT_RESULT_BLOCKED";
+    case EventResult::BYPASSED:
+      return "EVENT_RESULT_BYPASSED";
+    case EventResult::FORCED_SAVE_TO_CLOUD:
+      return "EVENT_RESULT_FORCED_SAVE_TO_CLOUD";
+  }
+  NOTREACHED();
+}
+
+std::string GetProfileEmail(signin::IdentityManager* identity_manager) {
+  // If the profile is not signed in, GetPrimaryAccountInfo() returns an
+  // empty account info.
+  return identity_manager
+             ? identity_manager
+                   ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+                   .email
+             : std::string();
+}
+
+std::string GetSuccessfulUploadDurationUmaMetricName(
+    EnterpriseReportingEventType event_type) {
+  auto* metric_name = base::FindOrNull(kUmaEnumToStringMap, event_type);
+  return metric_name
+             ? base::StrCat({*metric_name, "UploadSuccess.Duration"})
+             : base::StrCat({kUnknownUmaMetricName, "UploadSuccess.Duration"});
+}
+
+std::string GetFailedUploadDurationUmaMetricName(
+    EnterpriseReportingEventType event_type) {
+  auto* metric_name = base::FindOrNull(kUmaEnumToStringMap, event_type);
+  return metric_name
+             ? base::StrCat({*metric_name, "UploadFailure.Duration"})
+             : base::StrCat({kUnknownUmaMetricName, "UploadFailure.Duration"});
+}
+
+std::string DeepScanAccessPointToString(DeepScanAccessPoint access_point) {
+  switch (access_point) {
+    case DeepScanAccessPoint::DOWNLOAD:
+      return "Download";
+    case DeepScanAccessPoint::UPLOAD:
+      return "Upload";
+    case DeepScanAccessPoint::DRAG_AND_DROP:
+      return "DragAndDrop";
+    case DeepScanAccessPoint::PASTE:
+      return "Paste";
+    case DeepScanAccessPoint::PRINT:
+      return "Print";
+    case DeepScanAccessPoint::FILE_TRANSFER:
+      return "FileTransfer";
+  }
+  NOTREACHED();
 }
 
 }  // namespace enterprise_connectors

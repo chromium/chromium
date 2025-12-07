@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("notifications") {
   sources = [
@@ -25,8 +25,6 @@ static_library("notifications") {
     "kiosk_external_update_notification.h",
     "low_disk_notification.cc",
     "low_disk_notification.h",
-    "multi_capture_notifications.cc",
-    "multi_capture_notifications.h",
     "request_system_proxy_credentials_view.cc",
     "request_system_proxy_credentials_view.h",
     "screen_capture_notification_ui_ash.cc",
@@ -48,7 +46,6 @@ static_library("notifications") {
     "//ash/webui/settings/public/constants:mojom",
     "//base",
     "//chrome/app/vector_icons",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/handlers",
     "//chrome/browser/profiles:profile",
@@ -59,6 +56,7 @@ static_library("notifications") {
     "//chromeos/ash/components/dbus/gnubby",
     "//chromeos/ash/components/dbus/system_proxy:system_proxy_proto",
     "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/demo_mode",
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/settings",
     "//chromeos/dbus/power",
@@ -96,7 +94,6 @@ source_set("unit_tests") {
     "low_disk_notification_unittest.cc",
     "mock_adb_sideloading_policy_change_notification.cc",
     "mock_adb_sideloading_policy_change_notification.h",
-    "multi_capture_notifications_unittest.cc",
     "request_system_proxy_credentials_view_unittest.cc",
     "update_required_notification_unittest.cc",
   ]
@@ -108,14 +105,17 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
-    "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/crosapi",
+    "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/policy/handlers",
     "//chrome/browser/ash/policy/handlers:test_support",
-    "//chrome/browser/ash/policy/multi_screen_capture",
     "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/prefs",
     "//chrome/browser/ui",
     "//chrome/test:test_support",
+    "//chrome/test:test_support_unit",
+    "//chromeos/ash/components/dbus/debug_daemon",
+    "//chromeos/ash/components/dbus/gnubby",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/install_attributes:test_support",
     "//chromeos/ash/components/network:test_support",

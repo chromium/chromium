@@ -770,7 +770,7 @@ bool ChineseScriptClassifier::IsInitialized() const {
   return hans_set_ && hant_set_;
 }
 
-ChineseScriptClassifier::~ChineseScriptClassifier() {}
+ChineseScriptClassifier::~ChineseScriptClassifier() = default;
 
 std::string ChineseScriptClassifier::Classify(const std::string& input) const {
   // If there was a problem with initialization, return the empty string.

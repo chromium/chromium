@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "third_party/blink/renderer/bindings/core/v8/callback_promise_adapter.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_registration.h"
@@ -31,8 +30,8 @@ ScriptPromise<IDLUndefined> NavigationPreloadManager::setHeaderValue(
     ExceptionState& exception_state) {
   if (!IsValidHTTPHeaderValue(value)) {
     exception_state.ThrowTypeError(
-        "The string provided to setHeaderValue ('" + value +
-        "') is not a valid HTTP header field value.");
+        StrCat({"The string provided to setHeaderValue ('", value,
+                "') is not a valid HTTP header field value."}));
     return EmptyPromise();
   }
 

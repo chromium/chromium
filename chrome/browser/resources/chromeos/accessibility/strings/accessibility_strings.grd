@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <grit base_dir="." current_release="1" latest_public_release="0"
-      output_all_resource_defines="false" enc_check="möl" source_lang_id="en">
+      enc_check="möl" source_lang_id="en">
   <outputs>
     <output filename="_locales/af/messages.json.gz" type="chrome_messages_json_gzip" lang="af"/>
     <output filename="_locales/am/messages.json.gz" type="chrome_messages_json_gzip" lang="am"/>
@@ -39,6 +39,7 @@
     <output filename="_locales/lt/messages.json.gz" type="chrome_messages_json_gzip" lang="lt"/>
     <output filename="_locales/lv/messages.json.gz" type="chrome_messages_json_gzip" lang="lv"/>
     <output filename="_locales/ml/messages.json.gz" type="chrome_messages_json_gzip" lang="ml"/>
+    <output filename="_locales/mn/messages.json.gz" type="chrome_messages_json_gzip" lang="mn"/>
     <output filename="_locales/mr/messages.json.gz" type="chrome_messages_json_gzip" lang="mr"/>
     <output filename="_locales/ms/messages.json.gz" type="chrome_messages_json_gzip" lang="ms"/>
     <output filename="_locales/nl/messages.json.gz" type="chrome_messages_json_gzip" lang="nl"/>
@@ -152,6 +153,7 @@
       <part file="chromevox_strings.grdp" />
       <part file="dictation_strings.grdp" />
       <part file="enhanced_network_tts_strings.grdp" />
+      <part file="facegaze_strings.grdp" />
       <part file="select_to_speak_strings.grdp" />
       <part file="switch_access_strings.grdp" />
     </messages>

@@ -11,6 +11,7 @@
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/functional/callback.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 
 namespace ash {
 namespace test {
@@ -67,9 +68,10 @@ void AppListTestViewDelegate::OpenSearchResult(
       case ash::AppListLaunchedFrom::kLaunchedFromContinueTask:
       case ash::AppListLaunchedFrom::kLaunchedFromQuickAppAccess:
       case ash::AppListLaunchedFrom::kLaunchedFromDiscoveryChip:
+      case ash::AppListLaunchedFrom::kLaunchedFromSearchBoxIcon:
         return;
       case ash::AppListLaunchedFrom::DEPRECATED_kLaunchedFromSuggestionChip:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 }
@@ -124,7 +126,7 @@ void AppListTestViewDelegate::GetContextMenuModel(
 
 void AppListTestViewDelegate::ShowWallpaperContextMenu(
     const gfx::Point& onscreen_location,
-    ui::MenuSourceType source_type) {
+    ui::mojom::MenuSourceType source_type) {
   ++show_wallpaper_context_menu_count_;
 }
 
@@ -151,18 +153,9 @@ bool AppListTestViewDelegate::IsCategoryEnabled(
   return true;
 }
 
-ash::AssistantViewDelegate*
-AppListTestViewDelegate::GetAssistantViewDelegate() {
-  return nullptr;
-}
-
 void AppListTestViewDelegate::OnSearchResultVisibilityChanged(
     const std::string& id,
     bool visibility) {}
-
-bool AppListTestViewDelegate::IsAssistantAllowedAndEnabled() const {
-  return false;
-}
 
 void AppListTestViewDelegate::OnStateTransitionAnimationCompleted(
     AppListViewState state,

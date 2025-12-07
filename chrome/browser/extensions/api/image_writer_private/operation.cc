@@ -8,8 +8,10 @@
 #include <utility>
 
 #include "base/containers/heap_array.h"
-#include "base/files/file_util.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -26,9 +28,11 @@
 namespace extensions {
 namespace image_writer {
 
-namespace {
+crypto::obsolete::Md5 MakeMd5HasherForImageWriter() {
+  return crypto::obsolete::Md5();
+}
 
-const int kMD5BufferSize = 1024;
+namespace {
 
 // Returns true if the file at |image_path| is an archived image.
 bool IsArchive(const base::FilePath& image_path) {
@@ -47,7 +51,7 @@ void ExtractArchive(ExtractionProperties properties) {
   } else if (XzExtractor::IsXzFile(properties.image_path)) {
     XzExtractor::Extract(std::move(properties));
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -106,7 +110,7 @@ void Operation::PostTask(base::OnceClosure task) {
 
 void Operation::Start() {
   DCHECK(IsRunningInCorrectSequence());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (download_folder_.empty() ||
       !temp_dir_->CreateUniqueTempDirUnderPath(download_folder_)) {
 #else
@@ -225,7 +229,7 @@ void Operation::CompleteAndContinue(base::OnceClosure continuation) {
   PostTask(std::move(continuation));
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 void Operation::StartUtilityClient() {
   DCHECK(IsRunningInCorrectSequence());
   if (!image_writer_client_.get()) {
@@ -255,16 +259,11 @@ void Operation::WriteImageProgress(int64_t total_bytes, int64_t curr_bytes) {
 
 void Operation::GetMD5SumOfFile(
     const base::FilePath& file_path,
-    int64_t file_size,
-    int progress_offset,
-    int progress_scale,
     base::OnceCallback<void(const std::string&)> callback) {
   DCHECK(IsRunningInCorrectSequence());
   if (IsCancelled()) {
     return;
   }
-
-  base::MD5Init(&md5_context_);
 
   base::File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!file.IsValid()) {
@@ -272,16 +271,15 @@ void Operation::GetMD5SumOfFile(
     return;
   }
 
-  if (file_size <= 0) {
-    file_size = file.GetLength();
-    if (file_size < 0) {
-      Error(error::kImageOpenError);
-      return;
-    }
+  int64_t file_size = file.GetLength();
+  if (file_size < 0) {
+    Error(error::kImageOpenError);
+    return;
   }
 
-  PostTask(base::BindOnce(&Operation::MD5Chunk, this, std::move(file), 0,
-                          file_size, progress_offset, progress_scale,
+  PostTask(base::BindOnce(&Operation::MD5Chunk, this, std::move(file),
+                          MakeMd5HasherForImageWriter(), 0,
+                          base::checked_cast<size_t>(file_size),
                           std::move(callback)));
 }
 
@@ -291,10 +289,9 @@ bool Operation::IsRunningInCorrectSequence() const {
 
 void Operation::MD5Chunk(
     base::File file,
-    int64_t bytes_processed,
-    int64_t bytes_total,
-    int progress_offset,
-    int progress_scale,
+    crypto::obsolete::Md5 md5,
+    size_t bytes_processed,
+    size_t bytes_total,
     base::OnceCallback<void(const std::string&)> callback) {
   DCHECK(IsRunningInCorrectSequence());
   if (IsCancelled())
@@ -302,29 +299,26 @@ void Operation::MD5Chunk(
 
   CHECK_LE(bytes_processed, bytes_total);
 
-  auto buffer = base::HeapArray<char>::Uninit(kMD5BufferSize);
-  int read_size = std::min(bytes_total - bytes_processed,
-                           static_cast<int64_t>(kMD5BufferSize));
+  std::array<uint8_t, 1024> buffer;
+  size_t read_size = std::min(bytes_total - bytes_processed, buffer.size());
 
   if (read_size == 0) {
     // Nothing to read, we are done.
-    base::MD5Digest digest;
-    base::MD5Final(&digest, &md5_context_);
-    std::move(callback).Run(base::MD5DigestToBase16(digest));
+    std::move(callback).Run(base::HexEncodeLower(md5.Finish()));
   } else {
-    int len = file.Read(bytes_processed, buffer.data(), read_size);
+    int64_t offset = base::checked_cast<int64_t>(bytes_processed);
+    auto target = base::span(buffer).first(read_size);
 
-    if (len == read_size) {
+    if (file.ReadAndCheck(offset, target)) {
       // Process data.
-      base::MD5Update(&md5_context_, std::string_view(buffer.data(), len));
-      int percent_curr =
-          ((bytes_processed + len) * progress_scale) / bytes_total +
-          progress_offset;
+      md5.Update(target);
+      bytes_processed += read_size;
+      int percent_curr = (bytes_processed * kProgressComplete) / bytes_total;
       SetProgress(percent_curr);
 
-      PostTask(base::BindOnce(
-          &Operation::MD5Chunk, this, std::move(file), bytes_processed + len,
-          bytes_total, progress_offset, progress_scale, std::move(callback)));
+      PostTask(base::BindOnce(&Operation::MD5Chunk, this, std::move(file),
+                              std::move(md5), bytes_processed, bytes_total,
+                              std::move(callback)));
       // Skip closing the file.
       return;
     } else {

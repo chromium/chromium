@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.home.list.ListItem;
 import org.chromium.chrome.browser.download.home.list.ListItem.SectionHeaderListItem;
 import org.chromium.chrome.browser.download.home.list.ListItem.SectionHeaderType;
@@ -18,6 +20,7 @@ import org.chromium.components.browser_ui.util.date.StringUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** A {@link ViewHolder} specifically meant to display a section header. */
+@NullMarked
 public class SectionTitleViewHolder extends ListItemViewHolder {
     private final TextView mTitle;
 
@@ -41,13 +44,13 @@ public class SectionTitleViewHolder extends ListItemViewHolder {
         mTitle.setText(getSectionTitle(sectionItem, itemView.getContext()));
     }
 
-    private static CharSequence getSectionTitle(
+    private static @Nullable CharSequence getSectionTitle(
             SectionHeaderListItem sectionItem, Context context) {
         switch (sectionItem.type) {
             case SectionHeaderType.DATE:
                 return StringUtils.dateToHeaderString(sectionItem.date);
             case SectionHeaderType.JUST_NOW:
-                return context.getResources().getString(R.string.download_manager_just_now);
+                return context.getString(R.string.download_manager_just_now);
         }
         assert false : "Unknown section header type.";
         return null;

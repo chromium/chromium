@@ -78,8 +78,7 @@ TEST_F(WebFramesManagerTest, SingleWebFrame) {
   ASSERT_TRUE(main_web_frame);
   EXPECT_TRUE(main_web_frame->IsMainFrame());
   EXPECT_FALSE(main_web_frame->GetFrameId().empty());
-  EXPECT_EQ(url.DeprecatedGetOriginAsURL(),
-            main_web_frame->GetSecurityOrigin());
+  EXPECT_TRUE(main_web_frame->GetSecurityOrigin().IsSameOriginWith(url));
 }
 
 // Tests that the WebFramesManager correctly adds a unique WebFrame after a
@@ -107,8 +106,8 @@ TEST_F(WebFramesManagerTest, SingleWebFrameBack) {
   WebFrame* pony_main_web_frame = frames_manager->GetMainWebFrame();
   ASSERT_TRUE(pony_main_web_frame);
   EXPECT_TRUE(pony_main_web_frame->IsMainFrame());
-  EXPECT_EQ(pony_url.DeprecatedGetOriginAsURL(),
-            pony_main_web_frame->GetSecurityOrigin());
+  EXPECT_TRUE(
+      pony_main_web_frame->GetSecurityOrigin().IsSameOriginWith(pony_url));
 
   std::string pony_frame_id = pony_main_web_frame->GetFrameId();
   EXPECT_FALSE(pony_frame_id.empty());
@@ -153,8 +152,8 @@ TEST_F(WebFramesManagerTest, SingleWebFrameLinkNavigationBackForward) {
   WebFrame* pony_main_web_frame = frames_manager->GetMainWebFrame();
   ASSERT_TRUE(pony_main_web_frame);
   EXPECT_TRUE(pony_main_web_frame->IsMainFrame());
-  EXPECT_EQ(pony_url.DeprecatedGetOriginAsURL(),
-            pony_main_web_frame->GetSecurityOrigin());
+  EXPECT_TRUE(
+      pony_main_web_frame->GetSecurityOrigin().IsSameOriginWith(pony_url));
 
   std::string pony_frame_id = pony_main_web_frame->GetFrameId();
   EXPECT_FALSE(pony_frame_id.empty());

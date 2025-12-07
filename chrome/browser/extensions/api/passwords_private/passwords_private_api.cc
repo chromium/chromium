@@ -22,6 +22,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/sync/service/sync_service.h"
 #include "components/user_prefs/user_prefs.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_function_registry.h"
 
@@ -403,29 +404,40 @@ ResponseAction PasswordsPrivateRequestExportProgressStatusFunction::Run() {
           GetDelegate(browser_context())->GetExportProgressStatus())));
 }
 
-// PasswordsPrivateIsOptedInForAccountStorageFunction
-ResponseAction PasswordsPrivateIsOptedInForAccountStorageFunction::Run() {
+// PasswordsPrivateIsAccountStorageEnabledFunction
+ResponseAction PasswordsPrivateIsAccountStorageEnabledFunction::Run() {
   if (!GetDelegate(browser_context())) {
     return RespondNow(Error(kNoDelegateError));
   }
 
-  return RespondNow(WithArguments(
-      GetDelegate(browser_context())->IsOptedInForAccountStorage()));
+  return RespondNow(
+      WithArguments(GetDelegate(browser_context())->IsAccountStorageEnabled()));
 }
 
-// PasswordsPrivateOptInForAccountStorageFunction
-ResponseAction PasswordsPrivateOptInForAccountStorageFunction::Run() {
+// PasswordsPrivateSetAccountStorageEnabledFunction
+ResponseAction PasswordsPrivateSetAccountStorageEnabledFunction::Run() {
   if (!GetDelegate(browser_context())) {
     return RespondNow(Error(kNoDelegateError));
   }
 
   auto parameters =
-      api::passwords_private::OptInForAccountStorage::Params::Create(args());
+      api::passwords_private::SetAccountStorageEnabled::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   GetDelegate(browser_context())
-      ->SetAccountStorageOptIn(parameters->opt_in, GetSenderWebContents());
+      ->SetAccountStorageEnabled(parameters->enabled, GetSenderWebContents());
   return RespondNow(NoArguments());
+}
+
+// PasswordsPrivateShouldShowAccountStorageSettingToggleFunction
+ResponseAction
+PasswordsPrivateShouldShowAccountStorageSettingToggleFunction::Run() {
+  if (!GetDelegate(browser_context())) {
+    return RespondNow(Error(kNoDelegateError));
+  }
+
+  return RespondNow(WithArguments(
+      GetDelegate(browser_context())->ShouldShowAccountStorageSettingToggle()));
 }
 
 // PasswordsPrivateGetInsecureCredentialsFunction:
@@ -539,17 +551,6 @@ ResponseAction PasswordsPrivateGetPasswordCheckStatusFunction::Run() {
   return RespondNow(ArgumentList(
       api::passwords_private::GetPasswordCheckStatus::Results::Create(
           GetDelegate(browser_context())->GetPasswordCheckStatus())));
-}
-
-// PasswordsPrivateIsAccountStoreDefaultFunction
-ResponseAction PasswordsPrivateIsAccountStoreDefaultFunction::Run() {
-  if (!GetDelegate(browser_context())) {
-    return RespondNow(Error(kNoDelegateError));
-  }
-
-  return RespondNow(
-      WithArguments(GetDelegate(browser_context())
-                        ->IsAccountStoreDefault(GetSenderWebContents())));
 }
 
 // PasswordsPrivateGetUrlCollectionFunction:

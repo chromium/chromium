@@ -21,12 +21,6 @@ class UI_DEVTOOLS_EXPORT PageAgent
 
   ~PageAgent() override;
 
-  // Called on Ctrl+R (windows, linux) or Meta+R (mac) from frontend, but used
-  // in UI Devtools to toggle the bounds debug rectangles for views. If called
-  // using Ctrl+Shift+R (windows, linux) or Meta+Shift+R (mac), |bypass_cache|
-  // will be true and will toggle bubble lock.
-  protocol::Response reload(protocol::Maybe<bool> bypass_cache) override;
-
  protected:
   const raw_ptr<DOMAgent, DanglingUntriaged> dom_agent_;
 };

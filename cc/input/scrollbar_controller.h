@@ -161,7 +161,8 @@ class CC_EXPORT ScrollbarController {
       const gfx::PointF position_in_widget) const;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(LayerTreeHostImplTest, ThumbDragAfterJumpClick);
+  FRIEND_TEST_ALL_PREFIXES(LayerTreeHostImplTest,
+                           ThumbDragAfterJumpClickOrThumbClick);
   FRIEND_TEST_ALL_PREFIXES(LayerTreeHostImplTest,
                            AbortAnimatedScrollBeforeStartingAutoscroll);
   FRIEND_TEST_ALL_PREFIXES(LayerTreeHostImplTest, AutoscrollOnDeletedScrollbar);
@@ -304,9 +305,6 @@ class CC_EXPORT ScrollbarController {
   float GetScrollerToScrollbarRatio() const;
 
   float GetViewportLength() const;
-
-  // Returns the pixel distance for a percent-based scroll of the scrollbar
-  float GetScrollDistanceForPercentBasedScroll() const;
 
   // Returns the page scale factor (i.e. pinch zoom factor). This is relevant
   // for root viewport scrollbar scrolling.

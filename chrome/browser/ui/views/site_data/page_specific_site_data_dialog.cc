@@ -6,9 +6,12 @@
 
 #include <memory>
 #include <string>
+#include <variant>
+#include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
-#include "base/functional/overloaded.h"
+#include "base/functional/bind.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -20,9 +23,17 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/collected_cookies_infobar_delegate.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog_controller.h"
+#include "chrome/browser/ui/views/site_data/related_app_row_view.h"
 #include "chrome/browser/ui/views/site_data/site_data_row_view.h"
+#include "chrome/browser/ui/web_applications/web_app_ui_utils.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_manager_observer.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/browsing_data/content/browsing_data_model.h"
@@ -38,11 +49,13 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/cookie_util.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
@@ -69,7 +82,7 @@ int GetContentSettingRowOrder(ContentSetting setting) {
     case CONTENT_SETTING_BLOCK:
       return 2;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -158,8 +171,9 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
     // away anyway, we can just omit showing an infobar, which prevents any
     // attempt to access a null infobars::ContentInfoBarManager. Same applies to
     // removing the webcontents' user data.
-    if (!web_contents_ || web_contents_->IsBeingDestroyed())
+    if (!web_contents_ || web_contents_->IsBeingDestroyed()) {
       return;
+    }
 
     if (status_changed_) {
       CollectedCookiesInfoBarDelegate::Create(
@@ -215,8 +229,9 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
     }
 
     std::vector<PageSpecificSiteDataDialogSite> sites;
-    for (auto site : sites_map)
+    for (const auto& site : sites_map) {
       sites.push_back(site.second);
+    }
 
     std::sort(sites.begin(), sites.end(), [](const auto& o1, const auto& o2) {
       int o1_order = GetContentSettingRowOrder(o1.setting);
@@ -230,6 +245,35 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
     });
 
     return sites;
+  }
+
+  std::vector<webapps::AppId> GetInstalledRelatedApps() {
+    // There will be no installed related apps in off the record mode, because
+    // apps are not installable there.
+    if (web_contents_->GetBrowserContext()->IsOffTheRecord()) {
+      return {};
+    }
+
+    // If the provider isn't ready, there will also be no apps installed.
+    web_app::WebAppProvider* provider = web_app::WebAppProvider::GetForWebApps(
+        Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
+    if (!provider) {
+      return {};
+    }
+
+    const GURL last_committed_url(
+        web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL());
+    // We don't need to lock the registrar, as we're only reading the list of
+    // apps from it. See RelatedAppRowView::RelatedAppRowView() for more info.
+    base::flat_map<webapps::AppId, std::string> all_controlling_apps_map =
+        provider->registrar_unsafe().GetAllAppsControllingUrl(
+            last_committed_url);
+    std::vector<webapps::AppId> all_controlling_apps_list;
+    all_controlling_apps_list.reserve(all_controlling_apps_map.size());
+    for (const auto& [app_id, _] : all_controlling_apps_map) {
+      all_controlling_apps_list.push_back(app_id);
+    }
+    return all_controlling_apps_list;
   }
 
   FaviconCache* favicon_cache() { return favicon_cache_.get(); }
@@ -277,8 +321,13 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
     chrome::ShowSettingsSubPage(browser, chrome::kOnDeviceSiteDataSubpage);
   }
 
- private:
+  void OnRelatedApplicationLinkToAppSettings(const webapps::AppId& app_id) {
+    web_app::OpenAppSettingsForInstalledRelatedApp(
+        app_id,
+        Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
+  }
 
+ private:
   bool CanCreateContentException(GURL url) const { return !url.SchemeIsFile(); }
 
   PageSpecificSiteDataDialogSite CreateSiteFromEntryView(
@@ -289,14 +338,14 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
     // url::Origin, so here we convert host name to origin with some assumptions
     // (which might not be true). We should either convert to work only with
     // host names or BDM should return origins.
-    url::Origin entry_origin = absl::visit(
-        base::Overloaded{[&](const std::string& host) {
-                           GURL current_url = web_contents_->GetVisibleURL();
-                           GURL site_url = net::cookie_util::CookieOriginToURL(
-                               host, current_url.SchemeIsCryptographic());
-                           return url::Origin::Create(site_url);
-                         },
-                         [](const url::Origin& origin) { return origin; }},
+    url::Origin entry_origin = std::visit(
+        absl::Overload{[&](const std::string& host) {
+                         GURL current_url = web_contents_->GetVisibleURL();
+                         GURL site_url = net::cookie_util::CookieOriginToURL(
+                             host, current_url.SchemeIsCryptographic());
+                         return url::Origin::Create(site_url);
+                       },
+                       [](const url::Origin& origin) { return origin; }},
         *entry.data_owner);
     return CreateSite(entry_origin, from_allowed_model,
                       IsBrowsingDataEntryViewFullyPartitioned(entry) &&
@@ -347,13 +396,6 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
     bool has_site_level_exception =
         info.primary_pattern != ContentSettingsPattern::Wildcard() ||
         info.secondary_pattern != ContentSettingsPattern::Wildcard();
-
-    if (base::FeatureList::IsEnabled(
-            privacy_sandbox::kTrackingProtectionContentSettingFor3pcb)) {
-      has_site_level_exception |=
-          tracking_protection_settings_->GetTrackingProtectionSetting(
-              current_url) == CONTENT_SETTING_ALLOW;
-    }
 
     // Partitioned access is displayed when all of these conditions are met:
     return
@@ -465,7 +507,7 @@ class PageSpecificSiteDataSectionView : public views::BoxLayoutView {
     // If none of the children (except the empty state label) are visible, show
     // a label to explain the empty state.
     bool none_children_visible =
-        base::ranges::none_of(children(), [=, this](views::View* v) {
+        std::ranges::none_of(children(), [=, this](views::View* v) {
           return v != empty_state_label_ && v->GetVisible();
         });
     empty_state_label_->SetVisible(none_children_visible);
@@ -473,6 +515,29 @@ class PageSpecificSiteDataSectionView : public views::BoxLayoutView {
 
   raw_ptr<views::Label> empty_state_label_ = nullptr;
 };
+
+std::unique_ptr<views::BoxLayoutView> CreateRelatedAppsView(
+    Profile* profile,
+    std::vector<webapps::AppId> all_controlling_apps,
+    PageSpecificSiteDataDialogModelDelegate* delegate) {
+  auto box_view = std::make_unique<views::BoxLayoutView>();
+  box_view->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  box_view->SetCrossAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kStretch);
+
+  for (const webapps::AppId& app_id : all_controlling_apps) {
+    box_view->AddChildView(std::make_unique<RelatedAppRowView>(
+        profile, app_id,
+        // It is safe to use base::Unretained for the delegate here because both
+        // the RelatedAppRowView and the delegate are owned by the dialog and
+        // will be destroyed when the dialog is destroyed.
+        base::BindRepeating(&PageSpecificSiteDataDialogModelDelegate::
+                                OnRelatedApplicationLinkToAppSettings,
+                            base::Unretained(delegate))));
+  }
+
+  return box_view;
+}
 
 }  // namespace
 
@@ -497,6 +562,11 @@ PageSpecificSiteDataDialogTestApi::GetAllSites() {
   return delegate_->GetAllSites();
 }
 
+std::vector<webapps::AppId>
+PageSpecificSiteDataDialogTestApi::GetInstalledRelatedApps() {
+  return delegate_->GetInstalledRelatedApps();
+}
+
 void PageSpecificSiteDataDialogTestApi::DeleteStoredObjects(
     const url::Origin& origin) {
   delegate_->DeleteStoredObjects(origin);
@@ -508,6 +578,7 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(kPageSpecificSiteDataDialogRow);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kPageSpecificSiteDataDialogFirstPartySection);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kPageSpecificSiteDataDialogThirdPartySection);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kPageSpecificSiteDataDialogEmptyStateLabel);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kPageSpecificSiteDataDialogRelatedAppsSection);
 
 // static
 views::Widget* ShowPageSpecificSiteDataDialog(
@@ -551,8 +622,9 @@ views::Widget* ShowPageSpecificSiteDataDialog(
                   url::Origin::Create(web_contents->GetVisibleURL()));
   for (const auto& section : sections) {
     // If section doesn't have any sites, don't show the section.
-    if (section.sites.size() == 0u)
+    if (section.sites.size() == 0u) {
       continue;
+    }
 
     has_any_sections = true;
     builder.AddParagraph(
@@ -562,6 +634,30 @@ views::Widget* ShowPageSpecificSiteDataDialog(
         CreateCustomField(std::make_unique<PageSpecificSiteDataSectionView>(
             profile, section.sites, delegate)),
         section.identifier);
+  }
+
+  // Decide whether to show any apps installed from a related site origin.
+  if (base::FeatureList::IsEnabled(
+          features::kPageSpecificDataDialogRelatedInstalledAppsSection)) {
+    std::vector<webapps::AppId> all_controlling_apps_list =
+        delegate->GetInstalledRelatedApps();
+
+    if (!all_controlling_apps_list.empty()) {
+      has_any_sections = true;
+
+      builder.AddParagraph(
+          ui::DialogModelLabel(
+              l10n_util::GetStringUTF16(
+                  IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_RELATED_APPS_SUBTITLE))
+              .set_is_secondary(),
+          l10n_util::GetStringUTF16(
+              IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_RELATED_APPS_TITLE));
+
+      builder.AddCustomField(
+          CreateCustomField(CreateRelatedAppsView(
+              profile, std::move(all_controlling_apps_list), delegate)),
+          kPageSpecificSiteDataDialogRelatedAppsSection);
+    }
   }
 
   // If there were no sections shown, show a label that explains an empty state.

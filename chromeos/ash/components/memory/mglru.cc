@@ -38,7 +38,7 @@ void OnMGLRUSetEnable(bool success) {
 
 }  // namespace
 
-BASE_FEATURE(kMGLRUEnable, "MGLRUEnable", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMGLRUEnable, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kMGLRUEnableValue = {&kMGLRUEnable,
                                                    "MGLRUEnableValue", 0};

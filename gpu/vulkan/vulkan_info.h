@@ -1,0 +1,63 @@
+// Copyright 2019 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef GPU_VULKAN_VULKAN_INFO_H_
+#define GPU_VULKAN_VULKAN_INFO_H_
+
+#include <vulkan/vulkan_core.h>
+
+#include <string_view>
+#include <vector>
+
+#include "base/component_export.h"
+#include "ui/gfx/extension_set.h"
+
+namespace gpu {
+
+class COMPONENT_EXPORT(VULKAN) VulkanPhysicalDeviceInfo {
+ public:
+  VulkanPhysicalDeviceInfo();
+  VulkanPhysicalDeviceInfo(const VulkanPhysicalDeviceInfo& other);
+  ~VulkanPhysicalDeviceInfo();
+  VulkanPhysicalDeviceInfo& operator=(const VulkanPhysicalDeviceInfo& other);
+
+  // This is a local variable in GPU process, it will not be sent via IPC.
+  VkPhysicalDevice device = VK_NULL_HANDLE;
+
+  VkPhysicalDeviceProperties properties = {};
+  VkPhysicalDeviceDriverProperties driver_properties = {};
+  uint64_t drm_device_id = 0;
+
+  std::vector<VkExtensionProperties> extensions;
+
+  VkPhysicalDeviceFeatures features = {};
+  // Extended physical device features:
+  bool feature_sampler_ycbcr_conversion = false;
+  bool feature_protected_memory = false;
+
+  std::vector<VkQueueFamilyProperties> queue_families;
+};
+
+class COMPONENT_EXPORT(VULKAN) VulkanInfo {
+ public:
+  VulkanInfo();
+  VulkanInfo(const VulkanInfo& other);
+  ~VulkanInfo();
+  VulkanInfo& operator=(const VulkanInfo& other);
+
+  void SetEnabledInstanceExtensions(const std::vector<const char*>& extensions);
+  void SetEnabledInstanceExtensions(
+      const std::vector<std::string_view>& extensions);
+
+  uint32_t api_version = VK_MAKE_VERSION(1, 0, 0);
+  uint32_t used_api_version = VK_MAKE_VERSION(1, 0, 0);
+  std::vector<VkExtensionProperties> instance_extensions;
+  std::vector<const char*> enabled_instance_extensions;
+  std::vector<VkLayerProperties> instance_layers;
+  std::vector<VulkanPhysicalDeviceInfo> physical_devices;
+};
+
+}  // namespace gpu
+
+#endif  // GPU_VULKAN_VULKAN_INFO_H_

@@ -28,8 +28,10 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <variant>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -62,6 +64,7 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 #include "v8/include/v8.h"
 
@@ -74,7 +77,7 @@ namespace {
 // result from new data arriving for this image.
 constexpr auto kFlushDelay = base::Seconds(1);
 
-wtf_size_t FindTransparentPlaceholderIndex(KURL image_url) {
+wtf_size_t FindTransparentPlaceholderIndex(const KURL& image_url) {
   CHECK(IsMainThread());
   DEFINE_THREAD_SAFE_STATIC_LOCAL(
       Vector<String>, known_transparent_urls,
@@ -91,22 +94,20 @@ scoped_refptr<SharedBuffer> GetDataForTransparentPlaceholderImageIndex(
   CHECK(IsMainThread());
   DEFINE_THREAD_SAFE_STATIC_LOCAL(
       Vector<scoped_refptr<SharedBuffer>>, known_transparent_encoded_gifs,
-      ({SharedBuffer::Create(
+      ({SharedBuffer::Create(base::span_from_cstring(
             "\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x00\x00\xff\xff\xff"
             "\xff\xff\xff\x21\xf9\x04\x01\x0a\x00\x01\x00\x2c\x00\x00\x00\x00"
-            "\x01\x00\x01\x00\x00\x02\x02\x4c\x01\x00\x3b",
-            static_cast<size_t>(43)),
-        SharedBuffer::Create(
+            "\x01\x00\x01\x00\x00\x02\x02\x4c\x01\x00\x3b")),
+        SharedBuffer::Create(base::span_from_cstring(
             "\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\xff\x00\xc0\xc0\xc0"
             "\x00\x00\x00\x21\xf9\x04\x01\x00\x00\x00\x00\x2c\x00\x00\x00\x00"
-            "\x01\x00\x01\x00\x00\x02\x02\x44\x01\x00\x3b",
-            static_cast<size_t>(43))}));
+            "\x01\x00\x01\x00\x00\x02\x02\x44\x01\x00\x3b"))}));
   return known_transparent_encoded_gifs[index];
 }
 
 void MarkKnownTransparentPlaceholderResourceRequestIfNeeded(
     ResourceRequest& resource_request) {
-  KURL url = resource_request.Url();
+  const KURL& url = resource_request.Url();
   if (url.ProtocolIsData()) {
     wtf_size_t index = FindTransparentPlaceholderIndex(url);
     if (index != kNotFound) {
@@ -137,10 +138,9 @@ ImageResource* CreateResourceForTransparentPlaceholderImage(
   response.SetHttpStatusText(AtomicString("OK"));
   response.SetCurrentRequestUrl(request.Url());
   response.SetExpectedContentLength(data->size());
-  response.SetTextEncodingName(WebString::FromUTF8(""));
-  response.SetMimeType(WebString::FromUTF8("image/gif"));
-  response.AddHttpHeaderField(WebString::FromUTF8("Content-Type"),
-                              WebString::FromUTF8("image/gif"));
+  response.SetTextEncodingName(g_empty_atom);
+  response.SetMimeType(AtomicString("image/gif"));
+  response.AddHttpHeaderField(http_names::kContentType, response.MimeType());
 
   // The below code is the same as in
   // `ResourceFetcher::CreateResourceForStaticData()`.
@@ -210,9 +210,6 @@ class ImageResource::ImageResourceInfoImpl final
     return resource_->IsAccessAllowed(
         does_current_frame_has_single_security_origin);
   }
-  bool HasCacheControlNoStoreHeader() const override {
-    return resource_->HasCacheControlNoStoreHeader();
-  }
   std::optional<ResourceError> GetResourceError() const override {
     if (resource_->LoadFailedOrCanceled())
       return resource_->GetResourceError();
@@ -228,10 +225,9 @@ class ImageResource::ImageResourceInfoImpl final
   }
   void EmulateLoadStartedForInspector(
       ResourceFetcher* fetcher,
-      const KURL& url,
       const AtomicString& initiator_name) override {
     fetcher->EmulateLoadStartedForInspector(
-        resource_.Get(), url, mojom::blink::RequestContextType::IMAGE,
+        resource_.Get(), mojom::blink::RequestContextType::IMAGE,
         network::mojom::RequestDestination::kImage, initiator_name);
   }
 
@@ -272,24 +268,17 @@ class ImageResource::ImageResourceFactory : public NonTextResourceFactory {
   STACK_ALLOCATED();
 
  public:
-  explicit ImageResourceFactory(bool transparent_image_optimization_enabled)
-      : NonTextResourceFactory(ResourceType::kImage),
-        transparent_image_optimization_enabled_(
-            transparent_image_optimization_enabled) {}
+  ImageResourceFactory() : NonTextResourceFactory(ResourceType::kImage) {}
 
   Resource* Create(const ResourceRequest& request,
                    const ResourceLoaderOptions& options) const override {
-    if (transparent_image_optimization_enabled_ &&
-        (request.GetKnownTransparentPlaceholderImageIndex() != kNotFound)) {
+    if (request.GetKnownTransparentPlaceholderImageIndex() != kNotFound) {
       return CreateResourceForTransparentPlaceholderImage(request, options);
     }
 
     return MakeGarbageCollected<ImageResource>(
         request, options, ImageResourceContent::CreateNotStarted());
   }
-
- private:
-  const bool transparent_image_optimization_enabled_;
 };
 
 ImageResource* ImageResource::Fetch(FetchParameters& params,
@@ -311,11 +300,8 @@ ImageResource* ImageResource::Fetch(FetchParameters& params,
         network::mojom::CSPDisposition::DO_NOT_CHECK);
   }
 
-  auto* resource = To<ImageResource>(fetcher->RequestResource(
-      params,
-      ImageResourceFactory(
-          fetcher->IsSimplifyLoadingTransparentPlaceholderImageEnabled()),
-      nullptr));
+  auto* resource = To<ImageResource>(
+      fetcher->RequestResource(params, ImageResourceFactory(), nullptr));
 
   // If the fetch originated from user agent CSS we should mark it as a user
   // agent resource.
@@ -356,8 +342,7 @@ ImageResource* ImageResource::CreateForTest(const KURL& url) {
   request.SetPriority(WebURLRequest::Priority::kLow);
   MarkKnownTransparentPlaceholderResourceRequestIfNeeded(request);
 
-  ImageResourceFactory factory(base::FeatureList::IsEnabled(
-      features::kSimplifyLoadingTransparentPlaceholderImage));
+  ImageResourceFactory factory;
   return To<ImageResource>(
       factory.Create(request, ResourceLoaderOptions(/* world=*/nullptr)));
 }
@@ -378,6 +363,8 @@ ImageResource::ImageResource(const ResourceRequest& resource_request,
 ImageResource::~ImageResource() {
   RESOURCE_LOADING_DVLOG(1) << "~ImageResource " << this;
 
+  external_memory_accounter_.Clear(v8::Isolate::GetCurrent());
+
   if (is_referenced_from_ua_stylesheet_)
     InstanceCounters::DecrementCounter(InstanceCounters::kUACSSResourceCounter);
 }
@@ -385,7 +372,7 @@ ImageResource::~ImageResource() {
 void ImageResource::OnMemoryDump(WebMemoryDumpLevelOfDetail level_of_detail,
                                  WebProcessMemoryDump* memory_dump) const {
   Resource::OnMemoryDump(level_of_detail, memory_dump);
-  const String name = GetMemoryDumpName() + "/image_content";
+  const String name = StrCat({GetMemoryDumpName(), "/image_content"});
   auto* dump = memory_dump->CreateMemoryAllocatorDump(name);
   if (content_->HasImage() && content_->GetImage()->HasData())
     dump->AddScalar("size", "bytes", content_->GetImage()->DataSize());
@@ -414,10 +401,15 @@ void ImageResource::DestroyDecodedDataForFailedRevalidation() {
   // revalidation response.
   UpdateImage(nullptr, ImageResourceContent::kClearAndUpdateImage, false);
   SetDecodedSize(0);
+  external_memory_accounter_.Clear(v8::Isolate::GetCurrent());
 }
 
 void ImageResource::DestroyDecodedDataIfPossible() {
   GetContent()->DestroyDecodedData();
+}
+
+ResourceStatus ImageResource::GetContentStatus() const {
+  return GetContent()->GetContentStatus();
 }
 
 void ImageResource::AllClientsAndObserversRemoved() {
@@ -442,18 +434,14 @@ scoped_refptr<const SharedBuffer> ImageResource::ResourceBuffer() const {
 }
 
 void ImageResource::AppendData(
-    absl::variant<SegmentedBuffer, base::span<const char>> data) {
+    std::variant<SegmentedBuffer, base::span<const char>> data) {
   // We don't have a BackgroundResponseProcessor for ImageResources. So this
   // method must be called with a `span<const char>` data.
-  CHECK(absl::holds_alternative<base::span<const char>>(data));
-  base::span<const char> span = absl::get<base::span<const char>>(data);
-  v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(span.size());
-  if (span.size() > 0) {
-    GetContent()->SetAllocatedExternalMemory();
-  }
+  CHECK(std::holds_alternative<base::span<const char>>(data));
+  base::span<const char> span = std::get<base::span<const char>>(data);
+  external_memory_accounter_.Increase(v8::Isolate::GetCurrent(), span.size());
   if (multipart_parser_) {
-    multipart_parser_->AppendData(span.data(),
-                                  base::checked_cast<wtf_size_t>(span.size()));
+    multipart_parser_->AppendData(span);
   } else {
     Resource::AppendData(span);
 
@@ -487,8 +475,8 @@ void ImageResource::AppendData(
           std::max(base::TimeDelta(), last_flush_time_ - now + kFlushDelay);
       task_runner->PostDelayedTask(
           FROM_HERE,
-          WTF::BindOnce(&ImageResource::FlushImageIfNeeded,
-                        WrapWeakPersistent(this)),
+          blink::BindOnce(&ImageResource::FlushImageIfNeeded,
+                          WrapWeakPersistent(this)),
           flush_delay);
       is_pending_flushing_ = true;
     }
@@ -510,6 +498,7 @@ void ImageResource::DecodeError(bool all_data_received) {
 
   ClearData();
   SetEncodedSize(0);
+  external_memory_accounter_.Clear(v8::Isolate::GetCurrent());
   if (!ErrorOccurred())
     SetStatus(ResourceStatus::kDecodeError);
 
@@ -571,6 +560,7 @@ void ImageResource::FinishAsError(const ResourceError& error,
   // TODO(hiroshige): Move setEncodedSize() call to Resource::error() if it
   // is really needed, or remove it otherwise.
   SetEncodedSize(0);
+  external_memory_accounter_.Clear(v8::Isolate::GetCurrent());
   is_during_finish_as_error_ = true;
   Resource::FinishAsError(error, task_runner);
   is_during_finish_as_error_ = false;
@@ -596,6 +586,29 @@ void ImageResource::ResponseReceived(const ResourceResponse& response) {
   // (e.g. a 304) with a partial set of updated headers that were folded into
   // the cached response.
   Resource::ResponseReceived(response);
+}
+
+void ImageResource::UpdateResourceInfoFromObservers() {
+  GetContent()->UpdateResourceInfoFromObservers();
+}
+
+std::pair<std::optional<ResourcePriority>, std::optional<ResourcePriority>>
+ImageResource::PriorityFromObservers() const {
+  return GetContent()->PriorityFromObservers();
+}
+
+// static
+bool ImageResource::IsAboveSpeculativeDecodeSizeThreshold(
+    const gfx::Size& size) {
+  return size.GetCheckedArea().ValueOrDefault(0) >=
+         ImageResource::kSpeculativeDecodeMinImageSize;
+}
+
+bool ImageResource::IsAboveSpeculativeDecodeSizeThreshold() const {
+  // Images with too few pixels will not be speculatively decoded.
+  CHECK(GetContent()->GetImage());
+  return IsAboveSpeculativeDecodeSizeThreshold(
+      GetContent()->GetImage()->Size());
 }
 
 void ImageResource::OnePartInMultipartReceived(
@@ -630,13 +643,9 @@ void ImageResource::OnePartInMultipartReceived(
   }
 }
 
-void ImageResource::MultipartDataReceived(const char* bytes, size_t size) {
+void ImageResource::MultipartDataReceived(base::span<const uint8_t> bytes) {
   DCHECK(multipart_parser_);
-  Resource::AppendData(
-      // SAFETY: The caller must ensure `bytes` points to `size` elements.
-      // TODO(crbug.com/40284755): Make this method take a span to capture the
-      // invariant.
-      UNSAFE_BUFFERS(base::span(bytes, size)));
+  Resource::AppendData(base::as_chars(bytes));
 }
 
 bool ImageResource::IsAccessAllowed(
@@ -655,11 +664,6 @@ ImageResourceContent* ImageResource::GetContent() {
 
 const ImageResourceContent* ImageResource::GetContent() const {
   return content_.Get();
-}
-
-std::pair<ResourcePriority, ResourcePriority>
-ImageResource::PriorityFromObservers() {
-  return GetContent()->PriorityFromObservers();
 }
 
 void ImageResource::UpdateImage(

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Resetting the canvas state resets the origin-clean flag
+  Failed to execute 'toDataURL' on 'HTMLCanvasElement': Tainted canvases may not be exported.
+Harness: the test ran to completion.
+

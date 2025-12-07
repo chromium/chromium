@@ -160,9 +160,6 @@ const char kSettingPinValue[] = "pinValue";
 // Policies affecting printing destination.
 const char kSettingPolicies[] = "policies";
 
-// Whether the source page content is from ARC or not.
-const char kSettingPreviewIsFromArc[] = "previewIsFromArc";
-
 // Whether the source page content is modifiable. True for web content.
 // i.e. Anything from Blink. False for everything else. e.g. PDF/Flash.
 const char kSettingPreviewModifiable[] = "previewModifiable";
@@ -247,6 +244,9 @@ const char kSettingIppClientPatches[] = "ipp-client-patches";
 const char kSettingIppClientStringVersion[] = "ipp-client-string-version";
 const char kSettingIppClientType[] = "ipp-client-type";
 const char kSettingIppClientVersion[] = "ipp-client-version";
+
+// Whether the source page content is from ARC or not.
+const char kSettingPreviewIsFromArc[] = "previewIsFromArc";
 
 // True if the user selects to print to a different printer than the original
 // destination shown when Print Preview opens.

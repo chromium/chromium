@@ -52,7 +52,7 @@ BatterySampler::~BatterySampler() = default;
 std::unique_ptr<BatterySampler> BatterySampler::Create() {
   // Retrieve the IOPMPowerSource service.
   base::mac::ScopedIOObject<io_service_t> power_source(
-      IOServiceGetMatchingService(kIOMasterPortDefault,
+      IOServiceGetMatchingService(kIOMainPortDefault,
                                   IOServiceMatching("IOPMPowerSource")));
   if (!power_source) {
     return nullptr;

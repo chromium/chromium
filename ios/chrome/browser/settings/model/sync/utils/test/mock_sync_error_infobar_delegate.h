@@ -6,24 +6,28 @@
 #define IOS_CHROME_BROWSER_SETTINGS_MODEL_SYNC_UTILS_TEST_MOCK_SYNC_ERROR_INFOBAR_DELEGATE_H_
 
 #import <UIKit/UIKit.h>
+
 #import <string>
 
 #import "ios/chrome/browser/settings/model/sync/utils/sync_error_infobar_delegate.h"
+#import "ios/chrome/browser/settings/model/sync/utils/sync_util.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "ui/base/models/image_model.h"
 
-class ChromeBrowserState;
+class ProfileIOS;
 @protocol SyncPresenter;
 
 // Mock version of SyncErrorInfoBarDelegate.
 class MockSyncErrorInfoBarDelegate : public SyncErrorInfoBarDelegate {
  public:
-  MockSyncErrorInfoBarDelegate(ChromeBrowserState* browser_state,
-                               id<SyncPresenter> presenter,
-                               std::u16string title_text = u"",
-                               std::u16string message_text = u"",
-                               std::u16string button_label_text = u"",
-                               bool use_icon_background_tint = true);
+  MockSyncErrorInfoBarDelegate(
+      ProfileIOS* profile,
+      id<SyncPresenter> presenter,
+      std::u16string title_text = u"",
+      std::u16string message_text = u"",
+      std::u16string button_label_text = u"",
+      bool use_icon_background_tint = true,
+      SyncErrorInfoBarTrigger trigger = SyncErrorInfoBarTrigger::kNewTabOpened);
 
   ~MockSyncErrorInfoBarDelegate() override;
 

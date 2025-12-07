@@ -8,11 +8,16 @@
 #include <memory>
 
 #include "base/auto_reset.h"
+#include "base/functional/callback_forward.h"
 #include "build/build_config.h"
 #include "components/security_state/core/security_state.h"
 #include "components/webapps/common/web_app_id.h"
 
 class GURL;
+
+namespace blink::mojom {
+class Manifest;
+}
 
 namespace content {
 class BrowserContext;
@@ -68,14 +73,18 @@ class WebappsClient {
   virtual AppBannerManager* GetAppBannerManager(
       content::WebContents* web_contents) = 0;
 
+  using WebAppInstallationConflictCallback = base::OnceCallback<void(bool)>;
   // Returns if any current installations conflict with a new web app with the
-  // given start_url and manifest_id. See the implementing class for more
-  // details on their behavior. Returning true here signifies that an app is
-  // already installed here.
-  virtual bool DoesNewWebAppConflictWithExistingInstallation(
-      content::BrowserContext* browsing_context,
+  // given start_url and manifest_id using callback. See the implementing class
+  // for more details on their behavior. Returning true here signifies that an
+  // app is already installed here.
+  // Note: The callback is executed synchonously within the function call on
+  // desktop.
+  virtual void DoesNewWebAppConflictWithExistingInstallation(
+      content::BrowserContext* browser_context,
       const GURL& start_url,
-      const ManifestId& manifest_id) const = 0;
+      const ManifestId& manifest_id,
+      WebAppInstallationConflictCallback callback) const = 0;
 
   // Returns if the web contents this manager is on is inside of an app context.
   virtual bool IsInAppBrowsingContext(
@@ -95,6 +104,14 @@ class WebappsClient {
   virtual bool IsAppFullyInstalledForSiteUrl(
       content::BrowserContext* browsing_context,
       const GURL& site_url) const = 0;
+  virtual bool IsUrlControlledBySeenManifest(
+      content::BrowserContext* browsing_context,
+      const GURL& site_url) const = 0;
+
+  // Called when a manifest is seen by the AppBannerManager. This manifest
+  // must be non-empty. Note that this may be the 'default' manifest.
+  virtual void OnManifestSeen(content::BrowserContext* browsing_context,
+                              const blink::mojom::Manifest& manifest) const = 0;
 
   // The user has ignored the installation dialog and it went away due to
   // another interaction (e.g. the tab was changed, page navigated, etc).
@@ -137,6 +154,12 @@ class WebappsClient {
   virtual void InstallShortcut(content::WebContents* web_contents,
                                const AddToHomescreenParams& params) = 0;
 #endif
+
+  // Returns the id of the app that controls the last committed url of the given
+  // `web_contents`.
+  // Note: On Android this always returns `std::nullopt`.
+  virtual std::optional<webapps::AppId> GetAppIdForWebContents(
+      content::WebContents* web_contents) = 0;
 
  protected:
   segmentation_platform::SegmentationPlatformService*

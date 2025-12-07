@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import {assertNotReached} from 'chrome://resources/ash/common/assert.js';
-import {MultiDeviceSetupInterface} from 'chrome://resources/mojo/chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-webui.js';
+
+/** @typedef {*} MultiDeviceSetupInterface */
 
 /**
  * @implements {MultiDeviceSetupInterface}
@@ -23,25 +24,21 @@ export class FakeMojoService {
     this.shouldSetHostSucceed = true;
   }
 
-  /** @override */
   setAccountStatusChangeDelegate(delegate) {
     // Unimplemented; never called from setup flow.
     assertNotReached();
   }
 
-  /** @override */
   addHostStatusObserver(observer) {
     // Unimplemented; never called from setup flow.
     assertNotReached();
   }
 
-  /** @override */
   addFeatureStateObserver(observer) {
     // Unimplemented; never called from setup flow.
     assertNotReached();
   }
 
-  /** @override */
   getEligibleHostDevices() {
     const deviceNames = ['Pixel', 'Pixel XL', 'Nexus 5', 'Nexus 6P'];
     const devices = [];
@@ -54,7 +51,6 @@ export class FakeMojoService {
     });
   }
 
-  /** @override */
   getEligibleActiveHostDevices() {
     const deviceNames = ['Pixel', 'Pixel XL', 'Nexus 5', 'Nexus 6P'];
     const devices = [];
@@ -69,7 +65,6 @@ export class FakeMojoService {
     });
   }
 
-  /** @override */
   setHostDevice(hostInstanceIdOrLegacyDeviceId) {
     if (this.shouldSetHostSucceed) {
       console.info(
@@ -84,54 +79,46 @@ export class FakeMojoService {
     });
   }
 
-  /** @override */
   removeHostDevice() {
     // Unimplemented; never called from setup flow.
     assertNotReached();
   }
 
-  /** @override */
   getHostStatus() {
     return new Promise((resolve, reject) => {
       reject('Unimplemented; never called from setup flow.');
     });
   }
 
-  /** @override */
   setFeatureEnabledState() {
     return new Promise((resolve, reject) => {
       reject('Unimplemented; never called from setup flow.');
     });
   }
 
-  /** @override */
   getFeatureStates() {
     return new Promise((resolve, reject) => {
       reject('Unimplemented; never called from setup flow.');
     });
   }
 
-  /** @override */
   retrySetHostNow() {
     return new Promise((resolve, reject) => {
       reject('Unimplemented; never called from setup flow.');
     });
   }
 
-  /** @override */
   triggerEventForDebugging(type) {
     return new Promise((resolve, reject) => {
       reject('Unimplemented; never called from setup flow.');
     });
   }
 
-  /** @override */
   setQuickStartPhoneInstanceID(qsPhoneInstanceId) {
     // Unimplemented; never called from setup flow.
     assertNotReached();
   }
 
-  /** @override */
   getQuickStartPhoneInstanceID() {
     return new Promise(function(resolve, reject) {
       resolve({qsPhoneInstanceId: undefined});

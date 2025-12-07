@@ -6,7 +6,7 @@
  * @fileoverview Intercept window.print calls.
  */
 
-import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js'
+import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 // Overwrites window.print function to invoke chrome command.
 window.print = function() {

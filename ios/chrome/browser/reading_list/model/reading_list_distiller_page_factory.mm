@@ -6,16 +6,14 @@
 
 #import "ios/chrome/browser/reading_list/model/favicon_web_state_dispatcher_impl.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_distiller_page.h"
-#import "ios/web/public/browser_state.h"
 
 namespace reading_list {
 
 ReadingListDistillerPageFactory::ReadingListDistillerPageFactory(
-    web::BrowserState* browser_state)
-    : browser_state_(browser_state) {
+    ProfileIOS* profile)
+    : profile_(profile) {
   web_state_dispatcher_ =
-      std::make_unique<reading_list::FaviconWebStateDispatcherImpl>(
-          browser_state_, -1);
+      std::make_unique<reading_list::FaviconWebStateDispatcherImpl>(profile_);
 }
 
 ReadingListDistillerPageFactory::~ReadingListDistillerPageFactory() {}
@@ -25,7 +23,7 @@ ReadingListDistillerPageFactory::CreateReadingListDistillerPage(
     const GURL& url,
     ReadingListDistillerPageDelegate* delegate) const {
   return std::make_unique<ReadingListDistillerPage>(
-      url, browser_state_, web_state_dispatcher_.get(), delegate);
+      url, profile_, web_state_dispatcher_.get(), delegate);
 }
 
 void ReadingListDistillerPageFactory::ReleaseAllRetainedWebState() {

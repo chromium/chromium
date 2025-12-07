@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_UI_WEBUI_NEARBY_INTERNALS_QUICK_PAIR_QUICK_PAIR_HANDLER_H_
 
 #include <memory>
+
 #include "ash/quick_pair/common/log_buffer.h"
 #include "ash/quick_pair/common/logging.h"
-#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"

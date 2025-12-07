@@ -7,7 +7,8 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 
 import {createCustomEvent} from '../utils/event_utils.js';
 import {getPrintPreviewPageHandler} from '../utils/mojo_data_providers.js';
-import {type Destination, PrinterStatusReason, type PrintPreviewPageHandlerCompositeInterface, PrintTicket, SessionContext} from '../utils/print_preview_cros_app_types.js';
+import type {PrintTicket, SessionContext} from '../utils/print_preview_cros_app_types.js';
+import {type Destination, PrinterStatusReason, type PrintPreviewPageHandlerCompositeInterface} from '../utils/print_preview_cros_app_types.js';
 import {isValidDestination} from '../utils/validation_utils.js';
 
 import {DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, DestinationManager} from './destination_manager.js';
@@ -128,7 +129,7 @@ export class PrintTicketManager extends EventTarget {
 
     // TODO(b/323421684): Handle result from page handler and update UI if error
     // occurred.
-    this.printPreviewPageHandler!.print(this.printTicket).finally(() => {
+    this.printPreviewPageHandler.print(this.printTicket).finally(() => {
       this.printRequestInProgress = false;
       this.dispatchEvent(createCustomEvent(PRINT_REQUEST_FINISHED_EVENT));
     });
@@ -137,7 +138,7 @@ export class PrintTicketManager extends EventTarget {
   // Does cleanup for print request.
   cancelPrintRequest(): void {
     assert(this.printPreviewPageHandler);
-    this.printPreviewPageHandler!.cancel();
+    this.printPreviewPageHandler.cancel();
   }
 
   // Returns current print ticket.
@@ -168,7 +169,7 @@ export class PrintTicketManager extends EventTarget {
       return;
     }
 
-    if (this.printTicket!.destinationId === '') {
+    if (this.printTicket.destinationId === '') {
       this.updateDestinationFields(activeDest.id, /*manuallySelected=*/ false);
     }
 
@@ -211,7 +212,7 @@ export class PrintTicketManager extends EventTarget {
     this.printTicket.printerType = source.printerType;
     this.printTicket.printerStatusReason =
         source.printerStatusReason || PrinterStatusReason.UNKNOWN_REASON;
-    this.printTicket!.printerManuallySelected = manuallySelected;
+    this.printTicket.printerManuallySelected = manuallySelected;
   }
 }
 

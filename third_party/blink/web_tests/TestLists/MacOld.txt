@@ -55,8 +55,6 @@ fast/forms/validation-bubble-appearance-rtl-ui.html
 fast/forms/validation-bubble-appearance-wrap.html
 fast/ruby/ruby-position-modern-japanese-fonts.html
 fast/scroll-snap/snaps-after-scrollbar-scrolling-track.html
-fast/scrolling/percentage-mousewheel-scroll-on-iframe.html
-http/tests/devtools/service-workers/sw-navigate-useragent.js
 http/tests/inspector-protocol/network/disabled-cache-navigation.js
 http/tests/navigation/location-change-repeated-from-blank.html
 inspector-protocol/layout-fonts/lang-fallback.js
@@ -74,10 +72,6 @@ virtual/gpu-rasterization/images/color-profile-animate-rotate.html
 virtual/gpu-rasterization/images/color-profile-svg-fill-text.html
 virtual/gpu-rasterization/images/yuv-decode-eligible/jpeg-missing-eoi.html
 virtual/gpu-rasterization/images/yuv-decode-eligible/webp-no-color-profile-lossy.html
-virtual/keepalive-in-browser-migration/external/wpt/fetch/api/basic/scheme-blob.sub.any.html
-virtual/keepalive-in-browser-migration/external/wpt/fetch/api/basic/scheme-blob.sub.any.worker.html
-virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/window-open.https.sub.html
-virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-2d-drawImage.html
 virtual/produce-compile-hints/external/wpt/fetch/api/basic/scheme-blob.sub.any.html
 virtual/produce-compile-hints/external/wpt/fetch/api/basic/scheme-blob.sub.any.worker.html
 virtual/scalefactor200/fast/hidpi/static/validation-bubble-appearance-hidpi.html
@@ -102,7 +96,6 @@ virtual/text-antialias/selection/shaping-selection-rect.html
 virtual/text-antialias/shaping/shaping-script-order.html
 virtual/text-antialias/small-caps-aat.html
 virtual/text-antialias/vertical-rl-rtl-linebreak.html
-virtual/threaded-prefer-compositing/external/wpt/scroll-animations/scroll-timelines/layout-changes-on-percentage-based-timeline.html
 virtual/threaded/external/wpt/css/css-backgrounds/border-image-image-type-004.htm
 virtual/threaded/external/wpt/css/css-backgrounds/border-image-image-type-005.htm
 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/new-content-captures-clip-path.htm

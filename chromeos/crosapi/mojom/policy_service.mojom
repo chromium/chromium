@@ -6,7 +6,7 @@ module crosapi.mojom;
 
 // This interface is implemented by Ash-Chrome.
 // It includes the policy services that are needed by Lacros.
-[Stable, Uuid="ad6096f7-8e28-4166-bff4-2ee4e1d7a80f"]
+[Uuid="ad6096f7-8e28-4166-bff4-2ee4e1d7a80f"]
 interface PolicyService {
   // Forces Ash to reload policy. The new policy should then be passed to Lacros
   // automatically through invalidation flows.

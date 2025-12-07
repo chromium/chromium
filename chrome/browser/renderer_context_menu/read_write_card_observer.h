@@ -56,10 +56,7 @@ class ReadWriteCardObserver : public RenderViewContextMenuObserver {
   // The interface to add a context-menu item and update it.
   raw_ptr<RenderViewContextMenuProxy, DanglingUntriaged> proxy_;
 
-  // Dangling on lacros_chrome_browsertests during:
-  // AutofillContextMenuManagerFeedbackUILacrosBrowserTest
-  // .CloseTabWhileUIIsOpenShouldNotCrash
-  const raw_ptr<Profile, DanglingUntriaged> profile_;
+  const raw_ptr<Profile> profile_;
 
   gfx::Rect bounds_in_screen_;
 

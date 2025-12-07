@@ -50,6 +50,11 @@ class TestPermissionsClient : public PermissionsClient {
   void SetHasDevicePermission(bool has_device_permission);
   void SetCanRequestDevicePermission(bool can_request_device_permission);
 
+#if BUILDFLAG(IS_ANDROID)
+  // Gets the name of the embedder.
+  const std::u16string GetClientApplicationName() const override;
+#endif
+
  private:
   TestPermissionsClient(const TestPermissionsClient&) = delete;
   TestPermissionsClient& operator=(const TestPermissionsClient&) = delete;

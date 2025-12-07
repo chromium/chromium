@@ -27,9 +27,6 @@ bool is_match_for_preconnect(const url::SchemeHostPort& preconnected_origin,
 }
 }  // anonymous namespace
 
-const char kPreloadingAnchorElementPreloaderPreloadingTriggered[] =
-    "Preloading.AnchorElementPreloader.PreloadingTriggered";
-
 content::PreloadingFailureReason ToFailureReason(
     AnchorPreloadingFailureReason reason) {
   return static_cast<content::PreloadingFailureReason>(reason);
@@ -75,7 +72,6 @@ void AnchorElementPreloader::MaybePreconnect(const GURL& target) {
   content::PreloadingAttempt* attempt = preloading_data->AddPreloadingAttempt(
       chrome_preloading_predictor::kPointerDownOnAnchor,
       content::PreloadingType::kPreconnect, match_callback,
-      /*planned_max_preloading_type=*/std::nullopt,
       triggered_primary_page_source_id);
 
   if (content::PreloadingEligibility eligibility =
@@ -97,16 +93,9 @@ void AnchorElementPreloader::MaybePreconnect(const GURL& target) {
   }
 
   attempt->SetEligibility(content::PreloadingEligibility::kEligible);
-  RecordUmaPreloadedTriggered(AnchorElementPreloaderType::kPreconnect);
 
-  // In addition to the globally-controlled preloading config, check for the
-  // feature-specific holdback. We disable the feature if the user is in either
-  // of those holdbacks.
-  if (base::GetFieldTrialParamByFeatureAsBool(
-          blink::features::kAnchorElementInteraction, "preconnect_holdback",
-          false)) {
-    attempt->SetHoldbackStatus(content::PreloadingHoldbackStatus::kHoldback);
-  }
+  // There is no feature-specific holdback, but the attempt could be held back
+  // due to other holdbacks.
   if (attempt->ShouldHoldback()) {
     return;
   }
@@ -118,16 +107,7 @@ void AnchorElementPreloader::MaybePreconnect(const GURL& target) {
         content::PreloadingTriggeringOutcome::kDuplicate);
     return;
   }
-  int max_preloading_attempts = base::GetFieldTrialParamByFeatureAsInt(
-      blink::features::kAnchorElementInteraction, "max_preloading_attempts",
-      -1);
-  if (max_preloading_attempts >= 0 &&
-      preconnected_targets_.size() >=
-          static_cast<size_t>(max_preloading_attempts)) {
-    attempt->SetFailureReason(
-        ToFailureReason(AnchorPreloadingFailureReason::kLimitExceeded));
-    return;
-  }
+
   preconnected_targets_.insert(scheme_host_port);
   attempt->SetTriggeringOutcome(
       content::PreloadingTriggeringOutcome::kTriggeredButOutcomeUnknown);
@@ -137,10 +117,4 @@ void AnchorElementPreloader::MaybePreconnect(const GURL& target) {
       net::NetworkAnonymizationKey::CreateSameSite(schemeful_site);
   loading_predictor->PreconnectURLIfAllowed(target, /*allow_credentials=*/true,
                                             network_anonymization_key);
-}
-
-void AnchorElementPreloader::RecordUmaPreloadedTriggered(
-    AnchorElementPreloaderType preload) {
-  base::UmaHistogramEnumeration(
-      kPreloadingAnchorElementPreloaderPreloadingTriggered, preload);
 }

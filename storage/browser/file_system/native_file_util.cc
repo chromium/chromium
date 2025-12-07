@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/time/time.h"
@@ -30,40 +31,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace storage {
-
 namespace {
-
-// Sets permissions on directory at |dir_path| based on the target platform.
-// Returns true on success, or false otherwise.
-//
-// TODO(benchan): Find a better place outside webkit to host this function.
-bool SetPlatformSpecificDirectoryPermissions(const base::FilePath& dir_path) {
-#if BUILDFLAG(IS_CHROMEOS)
-  // System daemons on ChromeOS may run as a user different than the Chrome
-  // process but need to access files under the directories created here.
-  // Because of that, grant the execute permission on the created directory
-  // to group and other users. Also chronos-access group should have read
-  // access to the directory.
-  if (HANDLE_EINTR(chmod(dir_path.value().c_str(),
-                         S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH)) != 0) {
-    return false;
-  }
-  struct group grp, *result = nullptr;
-  std::vector<char> buffer(16384);
-  // HANDLE_EINTR is not suitable for use with getgrnam_r, as it returns the
-  // error rather than setting errno.
-  while (getgrnam_r("chronos-access", &grp, buffer.data(), buffer.size(),
-                    &result) == EINTR) {
-  }
-  // Ignoring as the group might not exist in tests.
-  if (result &&
-      HANDLE_EINTR(chown(dir_path.value().c_str(), -1, grp.gr_gid)) != 0) {
-    return false;
-  }
-#endif
-  // Keep the directory permissions unchanged on non-Chrome OS platforms.
-  return true;
-}
 
 // Copies a file |from| to |to|, and ensure the written content is synced to
 // the disk. This is essentially base::CopyFile followed by fsync().
@@ -83,17 +51,22 @@ bool CopyFileAndSync(const base::FilePath& from, const base::FilePath& to) {
   std::vector<char> buffer(kBufferSize);
 
   for (;;) {
-    int bytes_read = infile.ReadAtCurrentPos(&buffer[0], kBufferSize);
-    if (bytes_read < 0)
+    std::optional<size_t> bytes_read =
+        infile.ReadAtCurrentPos(base::as_writable_byte_span(buffer));
+    if (!bytes_read.has_value()) {
       return false;
-    if (bytes_read == 0)
+    }
+    if (bytes_read.value() == 0) {
       break;
-    for (int bytes_written = 0; bytes_written < bytes_read;) {
-      int bytes_written_partial = outfile.WriteAtCurrentPos(
-          &buffer[bytes_written], bytes_read - bytes_written);
-      if (bytes_written_partial < 0)
+    }
+    auto span_to_write = base::as_byte_span(buffer).first(bytes_read.value());
+    while (!span_to_write.empty()) {
+      std::optional<size_t> bytes_written_partial =
+          outfile.WriteAtCurrentPos(span_to_write);
+      if (!bytes_written_partial.has_value()) {
         return false;
-      bytes_written += bytes_written_partial;
+      }
+      span_to_write = span_to_write.subspan(bytes_written_partial.value());
     }
   }
 
@@ -114,6 +87,7 @@ class NativeFileEnumerator : public FileSystemFileUtil::AbstractFileEnumerator {
   ~NativeFileEnumerator() override = default;
 
   base::FilePath Next() override;
+  base::FilePath GetName() override;
   int64_t Size() override;
   base::Time LastModifiedTime() override;
   bool IsDirectory() override;
@@ -128,6 +102,10 @@ base::FilePath NativeFileEnumerator::Next() {
   if (!rv.empty())
     file_util_info_ = file_enum_.GetInfo();
   return rv;
+}
+
+base::FilePath NativeFileEnumerator::GetName() {
+  return file_util_info_.GetName();
 }
 
 int64_t NativeFileEnumerator::Size() {
@@ -173,35 +151,37 @@ base::File NativeFileUtil::CreateOrOpen(const base::FilePath& path,
 
 base::File::Error NativeFileUtil::EnsureFileExists(const base::FilePath& path,
                                                    bool* created) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (!base::DirectoryExists(path.DirName())) {
+    // If its parent does not exist, should return NOT_FOUND error.
+    return base::File::FILE_ERROR_NOT_FOUND;
+  }
+#endif
+
+  // If |path| is a directory, return an error.
+  if (base::DirectoryExists(path)) {
+    return base::File::FILE_ERROR_NOT_A_FILE;
+  }
+
 #if BUILDFLAG(IS_ANDROID)
   if (path.IsContentUri()) {
-    if (ContentUriExists(path)) {
+    if (base::PathExists(path)) {
       if (created) {
         *created = false;
       }
       return base::File::FILE_OK;
     }
-    base::File file = OpenContentUri(
-        path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-    if (file.IsValid()) {
-      if (created) {
-        *created = true;
-      }
-      return base::File::FILE_OK;
-    }
+    base::FilePath result =
+        base::ContentUriGetDocumentFromQuery(path, /*create=*/true);
     if (created) {
-      *created = false;
+      *created = !result.empty();
     }
-    return base::File::FILE_ERROR_NOT_FOUND;
+    if (result.empty()) {
+      return base::File::FILE_ERROR_FAILED;
+    }
+    return base::File::FILE_OK;
   }
 #endif
-  if (!base::DirectoryExists(path.DirName()))
-    // If its parent does not exist, should return NOT_FOUND error.
-    return base::File::FILE_ERROR_NOT_FOUND;
-
-  // If |path| is a directory, return an error.
-  if (base::DirectoryExists(path))
-    return base::File::FILE_ERROR_NOT_A_FILE;
 
   // Tries to create the |path| exclusively.  This should fail
   // with base::File::FILE_ERROR_EXISTS if the path already exists.
@@ -226,29 +206,38 @@ base::File::Error NativeFileUtil::EnsureFileExists(const base::FilePath& path,
 base::File::Error NativeFileUtil::CreateDirectory(const base::FilePath& path,
                                                   bool exclusive,
                                                   bool recursive) {
+#if !BUILDFLAG(IS_ANDROID)
   // If parent dir of file doesn't exist.
-  if (!recursive && !base::PathExists(path.DirName()))
+  if (!recursive && !base::PathExists(path.DirName())) {
     return base::File::FILE_ERROR_NOT_FOUND;
+  }
+#endif
 
   bool path_exists = base::PathExists(path);
-  if (exclusive && path_exists)
+  if (exclusive && path_exists) {
     return base::File::FILE_ERROR_EXISTS;
-
-  // If file exists at the path.
-  if (path_exists && !base::DirectoryExists(path))
-    return base::File::FILE_ERROR_NOT_A_DIRECTORY;
-
-  if (!base::CreateDirectory(path))
-    return base::File::FILE_ERROR_FAILED;
-
-  if (!SetPlatformSpecificDirectoryPermissions(path)) {
-    // Since some file systems don't support permission setting, we do not treat
-    // an error from the function as the failure of copying. Just log it.
-    LOG(WARNING) << "Setting directory permission failed: "
-                 << path.AsUTF8Unsafe();
   }
 
-  return base::File::FILE_OK;
+  if (base::DirectoryExists(path)) {
+    return base::File::FILE_OK;
+  }
+
+  // If file exists at the path.
+  if (path_exists) {
+    return base::File::FILE_ERROR_NOT_A_DIRECTORY;
+  }
+
+#if BUILDFLAG(IS_ANDROID)
+  if (path.IsContentUri()) {
+    const base::FilePath result =
+        base::ContentUriGetDocumentFromQuery(path, /*create=*/true);
+    return result.empty() ? base::File::FILE_ERROR_FAILED : base::File::FILE_OK;
+  }
+#endif
+
+  base::File::Error error;
+  return base::CreateDirectoryAndGetError(path, &error) ? base::File::FILE_OK
+                                                        : error;
 }
 
 base::File::Error NativeFileUtil::GetFileInfo(const base::FilePath& path,
@@ -284,8 +273,8 @@ base::File::Error NativeFileUtil::Truncate(const base::FilePath& path,
     if (length != 0) {
       return base::File::FILE_ERROR_FAILED;
     }
-    base::File file = OpenContentUri(
-        path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+    base::File file(path,
+                    base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
     return file.error_details();
   }
 #endif

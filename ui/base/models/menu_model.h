@@ -15,7 +15,7 @@
 #include "ui/base/models/menu_model_delegate.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/color/color_id.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace gfx {
 class FontList;
@@ -28,8 +28,7 @@ class ButtonMenuItemModel;
 class ImageModel;
 
 // An interface implemented by an object that provides the content of a menu.
-class COMPONENT_EXPORT(UI_BASE) MenuModel
-    : public base::SupportsWeakPtr<MenuModel> {
+class COMPONENT_EXPORT(UI_BASE) MenuModel {
  public:
   // The type of item.
   enum ItemType {
@@ -53,6 +52,9 @@ class COMPONENT_EXPORT(UI_BASE) MenuModel
   MenuModel();
 
   virtual ~MenuModel();
+
+  // This must be implemented by the most concrete class.
+  virtual base::WeakPtr<MenuModel> AsWeakPtr() = 0;
 
   // Returns the number of items in the menu.
   virtual size_t GetItemCount() const = 0;
@@ -102,6 +104,10 @@ class COMPONENT_EXPORT(UI_BASE) MenuModel
   // there is a shortcut accelerator for the item, false otherwise.
   virtual bool GetAcceleratorAt(size_t index,
                                 ui::Accelerator* accelerator) const = 0;
+
+  // Returns whether an accelerator should be shown next to menu item
+  // disregarding of the platform.
+  virtual bool GetForceShowAcceleratorForItemAt(size_t index) const;
 
   // Returns the checked state of the item at the specified index.
   virtual bool IsItemCheckedAt(size_t index) const = 0;

@@ -5,6 +5,7 @@
 #include "cc/raster/raster_source.h"
 
 #include <stddef.h>
+
 #include <algorithm>
 
 #include "base/metrics/histogram_macros.h"
@@ -123,12 +124,12 @@ void RasterSource::PlaybackToCanvas(
 void RasterSource::PlaybackDisplayListToCanvas(
     SkCanvas* raster_canvas,
     const PlaybackSettings& settings) const {
-  // TODO(enne): Temporary CHECK debugging for http://crbug.com/823835
-  CHECK(display_list_.get());
+  CHECK(display_list_);
   int repeat_count = std::max(1, slow_down_raster_scale_factor_for_debug_);
   PlaybackParams params(settings.image_provider, SkM44());
   params.raster_inducing_scroll_offsets =
       settings.raster_inducing_scroll_offsets;
+  params.destination_hdr_headroom = settings.hdr_headroom;
   for (int i = 0; i < repeat_count; ++i) {
     display_list_->Raster(raster_canvas, params);
   }
@@ -138,7 +139,7 @@ bool RasterSource::PerformSolidColorAnalysis(gfx::Rect layer_rect,
                                              SkColor4f* color,
                                              int max_ops_to_analyze) const {
   TRACE_EVENT0("cc", "RasterSource::PerformSolidColorAnalysis");
-
+  CHECK(display_list_);
   layer_rect.Intersect(gfx::Rect(size_));
   layer_rect = gfx::ScaleToRoundedRect(layer_rect, recording_scale_factor_);
   return display_list_->GetColorIfSolidInRect(layer_rect, color,
@@ -169,7 +170,8 @@ bool RasterSource::HasRecordings() const {
 
 void RasterSource::AsValueInto(base::trace_event::TracedValue* array) const {
   if (display_list_.get())
-    viz::TracedValue::AppendIDRef(display_list_.get(), array);
+    viz::TracedValue::AppendIDRef(viz::TracedValue::Id(display_list_.get()),
+                                  array);
 }
 
 void RasterSource::DidBeginTracing() {

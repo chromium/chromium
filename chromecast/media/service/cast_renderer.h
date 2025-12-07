@@ -81,14 +81,6 @@ class CastRenderer final : public ::media::Renderer,
   void OnVideoGeometryChange(const gfx::RectF& rect_f,
                              gfx::OverlayTransform transform) override;
 
-  // TODO(guohuideng): For now we use a global callback to gain access to
-  // VideoPlaneController so CastRenderer can set the video geometry. We
-  // should separate the SetGeometry from VideoPlaneController and get rid
-  // of this callback. see b/79266094.
-  using OverlayCompositedCallback =
-      base::RepeatingCallback<void(const gfx::RectF&, gfx::OverlayTransform)>;
-  static void SetOverlayCompositedCallback(const OverlayCompositedCallback& cb);
-
  private:
   enum Stream { STREAM_AUDIO, STREAM_VIDEO };
   void OnSubscribeToVideoGeometryChange(::media::MediaResource* media_resource,
@@ -133,12 +125,6 @@ class CastRenderer final : public ::media::Renderer,
   ::media::PipelineStatusCallback init_cb_;
   mojo::Receiver<mojom::VideoGeometryChangeClient>
       video_geometry_change_client_receiver_{this};
-
-  static OverlayCompositedCallback& GetOverlayCompositedCallback() {
-    static base::NoDestructor<OverlayCompositedCallback>
-        g_overlay_composited_callback;
-    return *g_overlay_composited_callback;
-  }
 
   std::optional<float> pending_volume_;
 

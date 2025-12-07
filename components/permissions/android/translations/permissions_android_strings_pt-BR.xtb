@@ -11,6 +11,7 @@
 <translation id="2987449669841041897">Este site não pode pedir permissões</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Receber ajuda<ph name="END_LINK" /></translation>
 <translation id="3773755127849930740"><ph name="BEGIN_LINK" />Ativar o Bluetooth<ph name="END_LINK" /> para permitir o pareamento</translation>
+<translation id="3878792656892132392">O app <ph name="APP_NAME" /> precisa de permissão para rastrear suas mãos.</translation>
 <translation id="4915549754973153784"><ph name="BEGIN_LINK" />Receber ajuda<ph name="END_LINK" /> ao procurar dispositivos…</translation>
 <translation id="4925793601605263825">O <ph name="APP_NAME" /> precisa de permissão para acessar o microfone neste site</translation>
 <translation id="5230560987958996918">Solicitação de <ph name="SITE" /> para procurar dispositivos Bluetooth próximos. Os seguintes dispositivos foram encontrados:</translation>

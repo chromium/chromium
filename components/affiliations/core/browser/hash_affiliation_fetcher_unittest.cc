@@ -7,17 +7,22 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions_win.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "components/affiliations/core/browser/affiliation_api.pb.h"
+#include "components/affiliations/core/browser/affiliation_fetcher_interface.h"
 #include "components/affiliations/core/browser/affiliation_service_impl.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
-#include "components/affiliations/core/browser/affiliation_api.pb.h"
-#include "components/affiliations/core/browser/mock_affiliation_fetcher_delegate.h"
 #include "components/variations/scoped_variations_ids_provider.h"
+#include "crypto/hash.h"
 #include "crypto/sha2.h"
+#include "net/base/net_errors.h"
+#include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -46,10 +51,9 @@ constexpr char k2ExampleURL[] = "https://2.example.com";
 constexpr uint64_t k2ExampleHash16LenPrefix = 9324421553493901312ULL;
 
 uint64_t ComputeHashPrefix(const FacetURI& uri) {
-  uint8_t hash[2];
-  crypto::SHA256HashString(uri.canonical_spec(), hash, 2);
-  uint64_t result = ((uint64_t)hash[0] << (7 * 8));
-  result |= ((uint64_t)hash[1] << (6 * 8));
+  auto hash = crypto::hash::Sha256(base::as_byte_span(uri.canonical_spec()));
+  uint64_t result = (static_cast<uint64_t>(hash[0]) << (7 * 8));
+  result |= (static_cast<uint64_t>(hash[1]) << (6 * 8));
 
   return result;
 }
@@ -104,7 +108,7 @@ class HashAffiliationFetcherTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_ =
@@ -128,6 +132,9 @@ void HashAffiliationFetcherTest::VerifyRequestPayload(
       "application/x-protobuf",
       intercepted_headers_.GetHeader(net::HttpRequestHeaders::kContentType)
           .value_or(std::string()));
+  EXPECT_EQ("CgIIAQ==",
+            intercepted_headers_.GetHeader("x-goog-ext-174067345-bin")
+                .value_or(std::string()));
   EXPECT_THAT(actual_hash_prefixes,
               testing::UnorderedElementsAreArray(expected_hash_prefixes));
   EXPECT_EQ(request.mask().change_password_info(),
@@ -135,25 +142,25 @@ void HashAffiliationFetcherTest::VerifyRequestPayload(
 }
 
 TEST_F(HashAffiliationFetcherTest, BuildQueryURL) {
-  MockAffiliationFetcherDelegate mock_delegate;
-  HashAffiliationFetcher fetcher(test_shared_loader_factory(), &mock_delegate);
+  HashAffiliationFetcher fetcher(test_shared_loader_factory());
 
   GURL query_url = fetcher.BuildQueryURL();
 
-  EXPECT_EQ("https", query_url.scheme());
-  EXPECT_EQ("www.googleapis.com", query_url.host());
-  EXPECT_EQ("/affiliation/v1/affiliation:lookupByHashPrefix", query_url.path());
+  EXPECT_EQ("https", query_url.GetScheme());
+  EXPECT_EQ("www.googleapis.com", query_url.GetHost());
+  EXPECT_EQ("/affiliation/v1/affiliation:lookupByHashPrefix",
+            query_url.GetPath());
 }
 
 TEST_F(HashAffiliationFetcherTest, GetRequestedFacetURIs) {
-  MockAffiliationFetcherDelegate mock_delegate;
-  HashAffiliationFetcher fetcher(test_shared_loader_factory(), &mock_delegate);
+  HashAffiliationFetcher fetcher(test_shared_loader_factory());
 
   std::vector<FacetURI> requested_uris;
   requested_uris.push_back(FacetURI::FromCanonicalSpec(k1ExampleURL));
   requested_uris.push_back(FacetURI::FromCanonicalSpec(k2ExampleURL));
 
-  fetcher.StartRequest(requested_uris, kChangePasswordUrlRequestInfo);
+  fetcher.StartRequest(requested_uris, kChangePasswordUrlRequestInfo,
+                       base::DoNothing());
   WaitForResponse();
 
   EXPECT_THAT(fetcher.GetRequestedFacetURIs(),
@@ -162,14 +169,14 @@ TEST_F(HashAffiliationFetcherTest, GetRequestedFacetURIs) {
 
 TEST_F(HashAffiliationFetcherTest,
        VerifyPayloadForMultipleHashesRequestWith16LengthPrefix) {
-  MockAffiliationFetcherDelegate mock_delegate;
-  HashAffiliationFetcher fetcher(test_shared_loader_factory(), &mock_delegate);
+  HashAffiliationFetcher fetcher(test_shared_loader_factory());
 
   std::vector<FacetURI> requested_uris;
   requested_uris.push_back(FacetURI::FromCanonicalSpec(k1ExampleURL));
   requested_uris.push_back(FacetURI::FromCanonicalSpec(k2ExampleURL));
 
-  fetcher.StartRequest(requested_uris, kChangePasswordUrlRequestInfo);
+  fetcher.StartRequest(requested_uris, kChangePasswordUrlRequestInfo,
+                       base::DoNothing());
   WaitForResponse();
 
   std::vector<uint64_t> hash_prefixes;
@@ -201,27 +208,25 @@ TEST_F(HashAffiliationFetcherTest, BasicRequestAndResponse) {
       FacetURI::FromCanonicalSpec(kNotExampleAndroidFacetURI));
 
   SetupSuccessfulResponse(test_response.SerializeAsString());
-  testing::StrictMock<MockAffiliationFetcherDelegate> mock_delegate;
-  HashAffiliationFetcher fetcher(test_shared_loader_factory(), &mock_delegate);
+  HashAffiliationFetcher fetcher(test_shared_loader_factory());
 
-  std::unique_ptr<AffiliationFetcherDelegate::Result> result;
-  EXPECT_CALL(mock_delegate, OnFetchSucceeded(&fetcher, testing::_))
-      .WillOnce(MoveArg<1>(&result));
-  fetcher.StartRequest(requested_uris, request_info);
+  base::test::TestFuture<AffiliationFetcherInterface::FetchResult>
+      result_callback;
+  fetcher.StartRequest(requested_uris, request_info,
+                       result_callback.GetCallback());
   WaitForResponse();
+  auto result = result_callback.Take().data.value();
 
   ASSERT_NO_FATAL_FAILURE(
       VerifyRequestPayload(ComputeHashes(requested_uris), request_info));
-  ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(&mock_delegate));
-
-  ASSERT_EQ(2u, result->affiliations.size());
-  EXPECT_THAT(result->affiliations[0],
+  ASSERT_EQ(2u, result.affiliations.size());
+  EXPECT_THAT(result.affiliations[0],
               testing::UnorderedElementsAre(
                   Facet{FacetURI::FromCanonicalSpec(kExampleWebFacet1URI)},
                   Facet{FacetURI::FromCanonicalSpec(kExampleWebFacet2URI)},
                   Facet{FacetURI::FromCanonicalSpec(kExampleAndroidFacetURI)}));
   EXPECT_THAT(
-      result->affiliations[1],
+      result.affiliations[1],
       testing::UnorderedElementsAre(
           Facet{FacetURI::FromCanonicalSpec(kNotExampleWebFacetURI)},
           Facet{FacetURI::FromCanonicalSpec(kNotExampleAndroidFacetURI)}));
@@ -244,20 +249,18 @@ TEST_F(HashAffiliationFetcherTest, AndroidBrandingInfoIsReturnedIfPresent) {
   requested_uris.push_back(FacetURI::FromCanonicalSpec(kExampleWebFacet1URI));
 
   SetupSuccessfulResponse(test_response.SerializeAsString());
-  testing::StrictMock<MockAffiliationFetcherDelegate> mock_delegate;
-  HashAffiliationFetcher fetcher(test_shared_loader_factory(), &mock_delegate);
-  std::unique_ptr<AffiliationFetcherDelegate::Result> result;
-  EXPECT_CALL(mock_delegate, OnFetchSucceeded(&fetcher, testing::_))
-      .WillOnce(MoveArg<1>(&result));
-  fetcher.StartRequest(requested_uris, request_info);
+  HashAffiliationFetcher fetcher(test_shared_loader_factory());
+  base::test::TestFuture<AffiliationFetcherInterface::FetchResult>
+      result_callback;
+  fetcher.StartRequest(requested_uris, request_info,
+                       result_callback.GetCallback());
   WaitForResponse();
+  auto result = result_callback.Take().data.value();
 
   ASSERT_NO_FATAL_FAILURE(
       VerifyRequestPayload(ComputeHashes(requested_uris), request_info));
-  ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(&mock_delegate));
-
-  ASSERT_EQ(1u, result->affiliations.size());
-  EXPECT_THAT(result->affiliations[0],
+  ASSERT_EQ(1u, result.affiliations.size());
+  EXPECT_THAT(result.affiliations[0],
               testing::UnorderedElementsAre(
                   Facet{FacetURI::FromCanonicalSpec(kExampleWebFacet1URI)},
                   Facet{FacetURI::FromCanonicalSpec(kExampleWebFacet2URI)},
@@ -286,21 +289,20 @@ TEST_F(HashAffiliationFetcherTest, ChangePasswordInfoIsReturnedIfPresent) {
       FacetURI::FromCanonicalSpec(kExampleWebFacet1URI)};
 
   SetupSuccessfulResponse(test_response.SerializeAsString());
-  testing::StrictMock<MockAffiliationFetcherDelegate> mock_delegate;
-  HashAffiliationFetcher fetcher(test_shared_loader_factory(), &mock_delegate);
-  std::unique_ptr<AffiliationFetcherDelegate::Result> result;
-  EXPECT_CALL(mock_delegate, OnFetchSucceeded(&fetcher, testing::_))
-      .WillOnce(MoveArg<1>(&result));
-  fetcher.StartRequest(requested_uris, kChangePasswordUrlRequestInfo);
+  HashAffiliationFetcher fetcher(test_shared_loader_factory());
+  base::test::TestFuture<AffiliationFetcherInterface::FetchResult>
+      result_callback;
+
+  fetcher.StartRequest(requested_uris, kChangePasswordUrlRequestInfo,
+                       result_callback.GetCallback());
   WaitForResponse();
+  auto result = result_callback.Take().data.value();
 
   ASSERT_NO_FATAL_FAILURE(VerifyRequestPayload(ComputeHashes(requested_uris),
                                                kChangePasswordUrlRequestInfo));
-  ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(&mock_delegate));
-
-  ASSERT_EQ(1u, result->groupings.size());
+  ASSERT_EQ(1u, result.groupings.size());
   EXPECT_THAT(
-      result->groupings[0].facets,
+      result.groupings[0].facets,
       testing::UnorderedElementsAre(
           Facet(FacetURI::FromCanonicalSpec(kExampleWebFacet1URI),
                 FacetBrandingInfo(), GURL(kExampleWebFacet1ChangePasswordURI)),
@@ -321,22 +323,24 @@ TEST_F(HashAffiliationFetcherTest, MissingEquivalenceClassesAreCreated) {
   requested_uris.push_back(FacetURI::FromCanonicalSpec(kExampleWebFacet1URI));
 
   SetupSuccessfulResponse(empty_test_response.SerializeAsString());
-  testing::StrictMock<MockAffiliationFetcherDelegate> mock_delegate;
-  HashAffiliationFetcher fetcher(test_shared_loader_factory(), &mock_delegate);
-  std::unique_ptr<AffiliationFetcherDelegate::Result> result;
-  EXPECT_CALL(mock_delegate, OnFetchSucceeded(&fetcher, testing::_))
-      .WillOnce(MoveArg<1>(&result));
-  fetcher.StartRequest(requested_uris, request_info);
+  HashAffiliationFetcher fetcher(test_shared_loader_factory());
+  base::test::TestFuture<AffiliationFetcherInterface::FetchResult>
+      result_callback;
+
+  fetcher.StartRequest(requested_uris, request_info,
+                       result_callback.GetCallback());
   WaitForResponse();
+  auto result = result_callback.Take().data.value();
 
   ASSERT_NO_FATAL_FAILURE(
       VerifyRequestPayload(ComputeHashes(requested_uris), request_info));
-  ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(&mock_delegate));
 
-  ASSERT_EQ(1u, result->affiliations.size());
-  EXPECT_THAT(result->affiliations[0],
-              testing::UnorderedElementsAre(
-                  Facet{FacetURI::FromCanonicalSpec(kExampleWebFacet1URI)}));
+  Facet expected_result(FacetURI::FromCanonicalSpec(kExampleWebFacet1URI));
+  expected_result.is_facet_synthesized = true;
+
+  ASSERT_EQ(1u, result.affiliations.size());
+  EXPECT_THAT(result.affiliations[0],
+              testing::UnorderedElementsAre(expected_result));
 }
 
 TEST_F(HashAffiliationFetcherTest, DuplicateEquivalenceClassesAreIgnored) {
@@ -354,18 +358,15 @@ TEST_F(HashAffiliationFetcherTest, DuplicateEquivalenceClassesAreIgnored) {
   requested_uris.push_back(FacetURI::FromCanonicalSpec(kExampleWebFacet1URI));
 
   SetupSuccessfulResponse(test_response.SerializeAsString());
-  testing::StrictMock<MockAffiliationFetcherDelegate> mock_delegate;
-  HashAffiliationFetcher fetcher(test_shared_loader_factory(), &mock_delegate);
-  std::unique_ptr<AffiliationFetcherDelegate::Result> result;
-  EXPECT_CALL(mock_delegate, OnFetchSucceeded(&fetcher, testing::_))
-      .WillOnce(MoveArg<1>(&result));
-  fetcher.StartRequest(requested_uris, {});
+  HashAffiliationFetcher fetcher(test_shared_loader_factory());
+  base::test::TestFuture<AffiliationFetcherInterface::FetchResult>
+      result_callback;
+  fetcher.StartRequest(requested_uris, {}, result_callback.GetCallback());
   WaitForResponse();
+  auto result = result_callback.Take().data.value();
 
-  ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(&mock_delegate));
-
-  ASSERT_EQ(1u, result->affiliations.size());
-  EXPECT_THAT(result->affiliations[0],
+  ASSERT_EQ(1u, result.affiliations.size());
+  EXPECT_THAT(result.affiliations[0],
               testing::UnorderedElementsAre(
                   Facet{FacetURI::FromCanonicalSpec(kExampleWebFacet1URI)},
                   Facet{FacetURI::FromCanonicalSpec(kExampleWebFacet2URI)},
@@ -386,18 +387,15 @@ TEST_F(HashAffiliationFetcherTest, NonRequestedEquivalenceClassesAreIgnored) {
   requested_uris.push_back(FacetURI::FromCanonicalSpec(kExampleWebFacet2URI));
 
   SetupSuccessfulResponse(test_response.SerializeAsString());
-  testing::StrictMock<MockAffiliationFetcherDelegate> mock_delegate;
-  HashAffiliationFetcher fetcher(test_shared_loader_factory(), &mock_delegate);
-  std::unique_ptr<AffiliationFetcherDelegate::Result> result;
-  EXPECT_CALL(mock_delegate, OnFetchSucceeded(&fetcher, testing::_))
-      .WillOnce(MoveArg<1>(&result));
-  fetcher.StartRequest(requested_uris, {});
+  HashAffiliationFetcher fetcher(test_shared_loader_factory());
+  base::test::TestFuture<AffiliationFetcherInterface::FetchResult>
+      result_callback;
+  fetcher.StartRequest(requested_uris, {}, result_callback.GetCallback());
   WaitForResponse();
+  auto result = result_callback.Take().data.value();
 
-  ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(&mock_delegate));
-
-  ASSERT_EQ(1u, result->affiliations.size());
-  EXPECT_THAT(result->affiliations[0],
+  ASSERT_EQ(1u, result.affiliations.size());
+  EXPECT_THAT(result.affiliations[0],
               testing::UnorderedElementsAre(
                   Facet{FacetURI::FromCanonicalSpec(kExampleWebFacet2URI)},
                   Facet{FacetURI::FromCanonicalSpec(kExampleAndroidFacetURI)}));
@@ -414,18 +412,15 @@ TEST_F(HashAffiliationFetcherTest, EmptyEquivalenceClassesAreIgnored) {
   requested_uris.push_back(FacetURI::FromCanonicalSpec(kExampleWebFacet1URI));
 
   SetupSuccessfulResponse(test_response.SerializeAsString());
-  testing::StrictMock<MockAffiliationFetcherDelegate> mock_delegate;
-  HashAffiliationFetcher fetcher(test_shared_loader_factory(), &mock_delegate);
-  std::unique_ptr<AffiliationFetcherDelegate::Result> result;
-  EXPECT_CALL(mock_delegate, OnFetchSucceeded(&fetcher, testing::_))
-      .WillOnce(MoveArg<1>(&result));
-  fetcher.StartRequest(requested_uris, {});
+  HashAffiliationFetcher fetcher(test_shared_loader_factory());
+  base::test::TestFuture<AffiliationFetcherInterface::FetchResult>
+      result_callback;
+  fetcher.StartRequest(requested_uris, {}, result_callback.GetCallback());
   WaitForResponse();
+  auto result = result_callback.Take().data.value();
 
-  ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(&mock_delegate));
-
-  ASSERT_EQ(1u, result->affiliations.size());
-  EXPECT_THAT(result->affiliations[0],
+  ASSERT_EQ(1u, result.affiliations.size());
+  EXPECT_THAT(result.affiliations[0],
               testing::UnorderedElementsAre(
                   Facet{FacetURI::FromCanonicalSpec(kExampleWebFacet1URI)}));
 }
@@ -447,18 +442,15 @@ TEST_F(HashAffiliationFetcherTest, UnrecognizedFacetURIsAreIgnored) {
   requested_uris.push_back(FacetURI::FromCanonicalSpec(kExampleWebFacet1URI));
 
   SetupSuccessfulResponse(test_response.SerializeAsString());
-  testing::StrictMock<MockAffiliationFetcherDelegate> mock_delegate;
-  HashAffiliationFetcher fetcher(test_shared_loader_factory(), &mock_delegate);
-  std::unique_ptr<AffiliationFetcherDelegate::Result> result;
-  EXPECT_CALL(mock_delegate, OnFetchSucceeded(&fetcher, testing::_))
-      .WillOnce(MoveArg<1>(&result));
-  fetcher.StartRequest(requested_uris, {});
+  HashAffiliationFetcher fetcher(test_shared_loader_factory());
+  base::test::TestFuture<AffiliationFetcherInterface::FetchResult>
+      result_callback;
+  fetcher.StartRequest(requested_uris, {}, result_callback.GetCallback());
   WaitForResponse();
+  auto result = result_callback.Take().data.value();
 
-  ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(&mock_delegate));
-
-  ASSERT_EQ(1u, result->affiliations.size());
-  EXPECT_THAT(result->affiliations[0],
+  ASSERT_EQ(1u, result.affiliations.size());
+  EXPECT_THAT(result.affiliations[0],
               testing::UnorderedElementsAre(
                   Facet{FacetURI::FromCanonicalSpec(kExampleWebFacet1URI)},
                   Facet{FacetURI::FromCanonicalSpec(kExampleWebFacet2URI)},
@@ -472,11 +464,16 @@ TEST_F(HashAffiliationFetcherTest, FailureBecauseResponseIsNotAProtobuf) {
   uris.push_back(FacetURI::FromCanonicalSpec(kExampleWebFacet1URI));
 
   SetupSuccessfulResponse(kMalformedResponse);
-  testing::StrictMock<MockAffiliationFetcherDelegate> mock_delegate;
-  HashAffiliationFetcher fetcher(test_shared_loader_factory(), &mock_delegate);
-  EXPECT_CALL(mock_delegate, OnMalformedResponse(&fetcher));
-  fetcher.StartRequest(uris, {});
+  HashAffiliationFetcher fetcher(test_shared_loader_factory());
+  base::test::TestFuture<AffiliationFetcherInterface::FetchResult>
+      result_callback;
+  fetcher.StartRequest(uris, {}, result_callback.GetCallback());
   WaitForResponse();
+  auto result = result_callback.Take();
+
+  EXPECT_EQ(net::HTTP_OK, result.http_status_code);
+  EXPECT_EQ(net::OK, result.network_status);
+  EXPECT_FALSE(result.data.has_value());
 }
 
 // Partially overlapping equivalence classes violate the invariant that
@@ -495,11 +492,16 @@ TEST_F(HashAffiliationFetcherTest,
   uris.push_back(FacetURI::FromCanonicalSpec(kExampleWebFacet1URI));
 
   SetupSuccessfulResponse(test_response.SerializeAsString());
-  testing::StrictMock<MockAffiliationFetcherDelegate> mock_delegate;
-  HashAffiliationFetcher fetcher(test_shared_loader_factory(), &mock_delegate);
-  EXPECT_CALL(mock_delegate, OnMalformedResponse(&fetcher));
-  fetcher.StartRequest(uris, {});
+  HashAffiliationFetcher fetcher(test_shared_loader_factory());
+  base::test::TestFuture<AffiliationFetcherInterface::FetchResult>
+      result_callback;
+  fetcher.StartRequest(uris, {}, result_callback.GetCallback());
   WaitForResponse();
+  auto result = result_callback.Take();
+
+  EXPECT_EQ(net::HTTP_OK, result.http_status_code);
+  EXPECT_EQ(net::OK, result.network_status);
+  EXPECT_FALSE(result.data.has_value());
 }
 
 TEST_F(HashAffiliationFetcherTest, FailOnServerError) {
@@ -507,11 +509,15 @@ TEST_F(HashAffiliationFetcherTest, FailOnServerError) {
   uris.push_back(FacetURI::FromCanonicalSpec(kExampleWebFacet1URI));
 
   SetupServerErrorResponse();
-  testing::StrictMock<MockAffiliationFetcherDelegate> mock_delegate;
-  HashAffiliationFetcher fetcher(test_shared_loader_factory(), &mock_delegate);
-  EXPECT_CALL(mock_delegate, OnFetchFailed(&fetcher));
-  fetcher.StartRequest(uris, {});
+  HashAffiliationFetcher fetcher(test_shared_loader_factory());
+  base::test::TestFuture<AffiliationFetcherInterface::FetchResult>
+      result_callback;
+  fetcher.StartRequest(uris, {}, result_callback.GetCallback());
   WaitForResponse();
+  auto result = result_callback.Take();
+
+  EXPECT_EQ(net::HTTP_INTERNAL_SERVER_ERROR, result.http_status_code);
+  EXPECT_EQ(net::ERR_HTTP_RESPONSE_CODE_FAILURE, result.network_status);
 }
 
 TEST_F(HashAffiliationFetcherTest, FailOnNetworkError) {
@@ -519,11 +525,15 @@ TEST_F(HashAffiliationFetcherTest, FailOnNetworkError) {
   uris.push_back(FacetURI::FromCanonicalSpec(kExampleWebFacet1URI));
 
   SetupNetworkErrorResponse();
-  testing::StrictMock<MockAffiliationFetcherDelegate> mock_delegate;
-  HashAffiliationFetcher fetcher(test_shared_loader_factory(), &mock_delegate);
-  EXPECT_CALL(mock_delegate, OnFetchFailed(&fetcher));
-  fetcher.StartRequest(uris, {});
+  HashAffiliationFetcher fetcher(test_shared_loader_factory());
+  base::test::TestFuture<AffiliationFetcherInterface::FetchResult>
+      result_callback;
+  fetcher.StartRequest(uris, {}, result_callback.GetCallback());
   WaitForResponse();
+  auto result = result_callback.Take();
+
+  EXPECT_EQ(net::ERR_NETWORK_CHANGED, result.network_status);
+  EXPECT_FALSE(result.http_status_code.has_value());
 }
 
 TEST_F(HashAffiliationFetcherTest, MetricsWhenSuccess) {
@@ -533,14 +543,13 @@ TEST_F(HashAffiliationFetcherTest, MetricsWhenSuccess) {
 
   SetupSuccessfulResponse(
       affiliation_pb::LookupAffiliationResponse().SerializeAsString());
-  testing::StrictMock<MockAffiliationFetcherDelegate> mock_delegate;
-  HashAffiliationFetcher fetcher(test_shared_loader_factory(), &mock_delegate);
-  std::unique_ptr<AffiliationFetcherDelegate::Result> result;
-  EXPECT_CALL(mock_delegate, OnFetchSucceeded(&fetcher, testing::_))
-      .WillOnce(MoveArg<1>(&result));
-  fetcher.StartRequest(requested_uris, {});
+  HashAffiliationFetcher fetcher(test_shared_loader_factory());
+  base::test::TestFuture<AffiliationFetcherInterface::FetchResult>
+      result_callback;
+  fetcher.StartRequest(requested_uris, {}, result_callback.GetCallback());
   WaitForResponse();
 
+  EXPECT_TRUE(result_callback.IsReady());
   histogram_tester.ExpectTotalCount(
       "PasswordManager.AffiliationFetcher.FetchTime.Success", 1);
   histogram_tester.ExpectTotalCount(
@@ -559,13 +568,13 @@ TEST_F(HashAffiliationFetcherTest, MetricsWhenFailed) {
   uris.push_back(FacetURI::FromCanonicalSpec(kExampleWebFacet1URI));
 
   SetupSuccessfulResponse(kMalformedResponse);
-  testing::StrictMock<MockAffiliationFetcherDelegate> mock_delegate;
-  HashAffiliationFetcher fetcher(test_shared_loader_factory(), &mock_delegate);
-  std::unique_ptr<AffiliationFetcherDelegate::Result> result;
-  EXPECT_CALL(mock_delegate, OnMalformedResponse(&fetcher));
-  fetcher.StartRequest(uris, {});
+  HashAffiliationFetcher fetcher(test_shared_loader_factory());
+  base::test::TestFuture<AffiliationFetcherInterface::FetchResult>
+      result_callback;
+  fetcher.StartRequest(uris, {}, result_callback.GetCallback());
   WaitForResponse();
 
+  EXPECT_TRUE(result_callback.IsReady());
   histogram_tester.ExpectTotalCount(
       "PasswordManager.AffiliationFetcher.FetchTime.Success", 0);
   histogram_tester.ExpectTotalCount(
@@ -599,23 +608,22 @@ TEST_F(HashAffiliationFetcherTest, GroupBrandingInfoIsReturnedIfPresent) {
       FacetURI::FromCanonicalSpec(kExampleAndroidFacetURI)};
 
   SetupSuccessfulResponse(test_response.SerializeAsString());
-  testing::StrictMock<MockAffiliationFetcherDelegate> mock_delegate;
-  HashAffiliationFetcher fetcher(test_shared_loader_factory(), &mock_delegate);
-  std::unique_ptr<AffiliationFetcherDelegate::Result> result;
-  EXPECT_CALL(mock_delegate, OnFetchSucceeded(&fetcher, testing::_))
-      .WillOnce(MoveArg<1>(&result));
-  fetcher.StartRequest(requested_uris, request_info);
+  HashAffiliationFetcher fetcher(test_shared_loader_factory());
+  base::test::TestFuture<AffiliationFetcherInterface::FetchResult>
+      result_callback;
+  fetcher.StartRequest(requested_uris, request_info,
+                       result_callback.GetCallback());
   WaitForResponse();
+  auto result = result_callback.Take().data.value();
 
   ASSERT_NO_FATAL_FAILURE(
       VerifyRequestPayload(ComputeHashes(requested_uris), request_info));
-  ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(&mock_delegate));
 
-  ASSERT_EQ(2u, result->groupings.size());
-  EXPECT_THAT(result->groupings[0].branding_info,
+  ASSERT_EQ(2u, result.groupings.size());
+  EXPECT_THAT(result.groupings[0].branding_info,
               testing::Eq(FacetBrandingInfo{kExampleAndroidPlayName,
                                             GURL(kExampleAndroidIconURL)}));
-  EXPECT_THAT(result->groupings[1].branding_info,
+  EXPECT_THAT(result.groupings[1].branding_info,
               testing::Eq(FacetBrandingInfo()));
 }
 

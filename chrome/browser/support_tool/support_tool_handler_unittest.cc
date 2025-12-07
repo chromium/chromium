@@ -25,16 +25,17 @@
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/support_tool/data_collector.h"
 #include "components/feedback/redaction_tool/pii_types.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/google/zip_reader.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using testing::IsSupersetOf;
 using testing::Pair;
@@ -131,12 +132,12 @@ class SupportToolHandlerTest : public ::testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Set serial number for testing.
     fake_statistics_provider_.SetMachineStatistic("serial_number", "000000");
     ash::system::StatisticsProvider::SetTestProvider(
         &fake_statistics_provider_);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   void TearDown() override {
@@ -180,9 +181,9 @@ class SupportToolHandlerTest : public ::testing::Test {
  private:
   // The temporary directory that we'll store the output files.
   base::ScopedTempDir temp_dir_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::system::FakeStatisticsProvider fake_statistics_provider_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   base::test::TaskEnvironment task_environment;
 };
 

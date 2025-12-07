@@ -9,11 +9,12 @@
 
 #include <string>
 
+#include "base/component_export.h"
 #include "base/files/file_path.h"
 
 namespace storage_monitor {
 
-class StorageInfo {
+class COMPONENT_EXPORT(STORAGE_MONITOR) StorageInfo {
  public:
   enum Type {
     // A removable mass storage device with a DCIM directory.

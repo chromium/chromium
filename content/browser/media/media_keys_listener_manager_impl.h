@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/containers/flat_map.h"
+#include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
@@ -17,6 +18,10 @@
 #include "content/public/browser/media_keys_listener_manager.h"
 #include "ui/base/accelerators/media_keys_listener.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#define USE_INSTANCED_SYSTEM_MEDIA_CONTROLS_FOR_WEB_APPS 1
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 namespace system_media_controls {
 class SystemMediaControls;
@@ -27,10 +32,10 @@ namespace content {
 class ActiveMediaSessionController;
 class SystemMediaControlsNotifier;
 
-#if BUILDFLAG(IS_WIN)
+#if USE_INSTANCED_SYSTEM_MEDIA_CONTROLS_FOR_WEB_APPS
 class WebAppSystemMediaControlsManager;
 enum class WebAppSystemMediaControlsEvent;
-#endif
+#endif  // USE_INSTANCED_SYSTEM_MEDIA_CONTROLS_FOR_WEB_APPS
 
 class MediaKeysListenerManagerImplTestObserver {
  public:
@@ -95,6 +100,17 @@ class MediaKeysListenerManagerImpl
       std::unique_ptr<ui::MediaKeysListener> media_keys_listener) {
     media_keys_listener_ = std::move(media_keys_listener);
   }
+#if BUILDFLAG(IS_MAC)
+  WebAppSystemMediaControlsManager*
+  web_app_system_media_controls_manager_for_testing() {
+    return web_app_system_media_controls_manager_.get();
+  }
+  void SetOnSystemMediaControlsBridgeCreatedCallbackForTesting(
+      base::RepeatingCallback<void()> callback) {
+    on_system_media_controls_bridge_created_callback_for_testing_ =
+        std::move(callback);
+  }
+#endif  // BUILDFLAG(IS_MAC)
 
  private:
   // ListeningData tracks which delegates are listening to a particular key. We
@@ -160,7 +176,7 @@ class MediaKeysListenerManagerImpl
   // Returns true if |delegate| is an ActiveMediaSessionController for a dPWA.
   bool IsDelegateForWebAppSession(ui::MediaKeysListener::Delegate* delegate);
 
-#if BUILDFLAG(IS_WIN)
+#if USE_INSTANCED_SYSTEM_MEDIA_CONTROLS_FOR_WEB_APPS
   // Given a SystemMediaControls |sender| and an |event|, if the |sender|
   // is a web app, will fire WebApp.Media.SystemMediaControls histogram with
   // the associated |event|. If the |sender| is the browser, this function
@@ -168,7 +184,7 @@ class MediaKeysListenerManagerImpl
   void MaybeSendWebAppControlsEvent(
       WebAppSystemMediaControlsEvent event,
       system_media_controls::SystemMediaControls* sender);
-#endif
+#endif  // USE_INSTANCED_SYSTEM_MEDIA_CONTROLS_FOR_WEB_APPS
 
   // Gets the ActiveMediaSessionController associated with |smc_sender|
   ActiveMediaSessionController* GetControllerForSystemMediaControls(
@@ -187,12 +203,12 @@ class MediaKeysListenerManagerImpl
   std::unique_ptr<SystemMediaControlsNotifier>
       browser_system_media_controls_notifier_;
 
-#if BUILDFLAG(IS_WIN)
+#if USE_INSTANCED_SYSTEM_MEDIA_CONTROLS_FOR_WEB_APPS
   // Owning reference to web apps' connections to the system media controls.
   // See WebAppSystemMediaControlsManager for this classes' responsibilities.
   std::unique_ptr<WebAppSystemMediaControlsManager>
       web_app_system_media_controls_manager_;
-#endif
+#endif  // USE_INSTANCED_SYSTEM_MEDIA_CONTROLS_FOR_WEB_APPS
 
   // False if media key handling has been explicitly disabled by a call to
   // |DisableInternalMediaKeyHandling()|.
@@ -210,6 +226,10 @@ class MediaKeysListenerManagerImpl
       MediaKeysListenerManagerImplTestObserver* observer) {
     test_observer_ = observer;
   }
+#if BUILDFLAG(IS_MAC)
+  base::RepeatingCallback<void()>
+      on_system_media_controls_bridge_created_callback_for_testing_;
+#endif  // BUILDFLAG(IS_MAC)
 
   friend class WebAppSystemMediaControlsBrowserTest;
 };

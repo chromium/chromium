@@ -10,10 +10,10 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/uuid.h"
-#import "components/saved_tab_groups/mock_tab_group_sync_service.h"
-#import "components/saved_tab_groups/saved_tab_group.h"
-#import "components/saved_tab_groups/saved_tab_group_tab.h"
-#import "components/saved_tab_groups/types.h"
+#import "components/saved_tab_groups/public/saved_tab_group.h"
+#import "components/saved_tab_groups/public/saved_tab_group_tab.h"
+#import "components/saved_tab_groups/public/types.h"
+#import "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
 #import "components/tab_groups/tab_group_color.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
@@ -23,11 +23,14 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/web_state_list_builder_from_description.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/test/fakes/fake_navigation_context.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
@@ -38,6 +41,7 @@
 #import "third_party/ocmock/gtest_support.h"
 
 using testing::_;
+using testing::Eq;
 
 using ::testing::AllOf;
 using ::testing::Property;
@@ -49,8 +53,7 @@ namespace {
 
 const char kTestURL[] = "https://chromium.org";
 
-std::unique_ptr<KeyedService> CreateMockSyncService(
-    web::BrowserState* context) {
+std::unique_ptr<KeyedService> CreateMockSyncService(ProfileIOS* profile) {
   return std::make_unique<MockTabGroupSyncService>();
 }
 
@@ -70,42 +73,48 @@ SavedTabGroup TestSavedGroup() {
   return saved_group;
 }
 
+MATCHER_P(TabTitleEq, title, "") {
+  return arg.title() == title;
+}
+
+MATCHER_P(TabURLEq, url, "") {
+  return arg.url() == url;
+}
+
 }  // namespace
 
 class TabGroupLocalUpdateObserverTest : public PlatformTest {
  public:
   TabGroupLocalUpdateObserverTest() {
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(TabGroupSyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
     builder.AddTestingFactory(
         SessionRestorationServiceFactory::GetInstance(),
         TestSessionRestorationService::GetTestingFactory());
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
 
     mock_service_ = static_cast<MockTabGroupSyncService*>(
-        TabGroupSyncServiceFactory::GetForBrowserState(browser_state_.get()));
+        TabGroupSyncServiceFactory::GetForProfile(profile_.get()));
 
     browser_ = std::make_unique<TestBrowser>(
-        browser_state_.get(), nil,
-        std::make_unique<FakeWebStateListDelegate>());
-    browser_same_browser_state_ = std::make_unique<TestBrowser>(
-        browser_state_.get(), nil,
-        std::make_unique<FakeWebStateListDelegate>());
+        profile_.get(), nil, std::make_unique<FakeWebStateListDelegate>());
+    browser_same_profile_ = std::make_unique<TestBrowser>(
+        profile_.get(), nil, std::make_unique<FakeWebStateListDelegate>());
 
-    other_browser_state_ = TestChromeBrowserState::Builder().Build();
+    other_profile_ = TestProfileIOS::Builder().Build();
     other_browser_ = std::make_unique<TestBrowser>(
-        other_browser_state_.get(), nil,
+        other_profile_.get(), nil,
         std::make_unique<FakeWebStateListDelegate>());
 
-    browser_list_ =
-        BrowserListFactory::GetForBrowserState(browser_state_.get());
+    browser_list_ = BrowserListFactory::GetForProfile(profile_.get());
     local_observer_ = std::make_unique<TabGroupLocalUpdateObserver>(
-        browser_list_.get(), mock_service_);
+        browser_list_.get(), mock_service_,
+        SessionRestorationServiceFactory::GetForProfile(profile_.get()));
     browser_list_->AddBrowser(browser_.get());
 
     BrowserList* other_browser_list =
-        BrowserListFactory::GetForBrowserState(other_browser_state_.get());
+        BrowserListFactory::GetForProfile(other_profile_.get());
     other_browser_list->AddBrowser(other_browser_.get());
   }
 
@@ -143,112 +152,41 @@ class TabGroupLocalUpdateObserverTest : public PlatformTest {
     return saved_tabs;
   }
 
+  void SetUpNavigationContext(web::FakeWebState* web_state) {
+    navigation_item_ = web::NavigationItem::Create();
+    navigation_item_->SetTransitionType(ui::PAGE_TRANSITION_TYPED);
+
+    auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
+    navigation_manager->SetLastCommittedItem(navigation_item_.get());
+
+    web_state->SetNavigationManager(std::move(navigation_manager));
+    web_state->SetBrowserState(profile_.get());
+
+    navigation_context_ = std::make_unique<web::FakeNavigationContext>();
+    navigation_context_->SetWebState(web_state);
+
+    navigation_context_->SetUrl(GURL(kTestURL));
+    navigation_context_->SetHasCommitted(true);
+    navigation_context_->SetPageTransition(ui::PAGE_TRANSITION_LINK);
+    navigation_context_->SetHasUserGesture(true);
+    navigation_context_->SetIsRendererInitiated(false);
+    navigation_context_->SetIsPost(false);
+  }
+
  protected:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
-  std::unique_ptr<TestBrowser> browser_same_browser_state_;
-  std::unique_ptr<TestChromeBrowserState> other_browser_state_;
+  std::unique_ptr<TestBrowser> browser_same_profile_;
+  std::unique_ptr<TestProfileIOS> other_profile_;
   std::unique_ptr<TestBrowser> other_browser_;
   raw_ptr<BrowserList> browser_list_;
   std::unique_ptr<TabGroupLocalUpdateObserver> local_observer_;
   raw_ptr<MockTabGroupSyncService> mock_service_;
   const std::u16string kNewTitle = u"title to update";
+  std::unique_ptr<web::NavigationItem> navigation_item_;
+  std::unique_ptr<web::FakeNavigationContext> navigation_context_;
 };
-
-// Tests that the service is correctly updated when the title of a tab that was
-// added after creating the service is updated.
-TEST_F(TabGroupLocalUpdateObserverTest, TitleUpdateExistingTab) {
-  WebStateList* web_state_list = browser_->GetWebStateList();
-
-  web::FakeWebState* web_state = InsertWebState(web_state_list);
-  web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
-
-  TabGroupId tab_group_id = TabGroupId::GenerateNew();
-  web_state_list->CreateGroup({0}, {}, tab_group_id);
-
-  EXPECT_CALL(*mock_service_, UpdateTab(tab_group_id, web_state_id.identifier(),
-                                        kNewTitle, _, _))
-      .Times(1);
-  web_state->SetTitle(kNewTitle);
-}
-
-// Tests that the service is correctly updated when the title of a tab that was
-// existing when creating the service is updated.
-TEST_F(TabGroupLocalUpdateObserverTest, TitleUpdateNewTab) {
-  WebStateList* web_state_list = browser_->GetWebStateList();
-
-  web::FakeWebState* web_state = InsertWebState(web_state_list);
-  web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
-
-  TabGroupId tab_group_id = TabGroupId::GenerateNew();
-  web_state_list->CreateGroup({0}, {}, tab_group_id);
-
-  EXPECT_CALL(*mock_service_, UpdateTab(tab_group_id, web_state_id.identifier(),
-                                        kNewTitle, _, _));
-  web_state->SetTitle(kNewTitle);
-}
-
-// Tests that the service is does not update the title when sync is paused.
-TEST_F(TabGroupLocalUpdateObserverTest, TitleUpdateNewTabSyncPaused) {
-  local_observer_->SetSyncUpdatePaused(true);
-
-  WebStateList* web_state_list = browser_->GetWebStateList();
-
-  web::FakeWebState* web_state = InsertWebState(web_state_list);
-  web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
-
-  TabGroupId tab_group_id = TabGroupId::GenerateNew();
-  web_state_list->CreateGroup({0}, {}, tab_group_id);
-
-  EXPECT_CALL(*mock_service_, UpdateTab(tab_group_id, web_state_id.identifier(),
-                                        kNewTitle, _, _))
-      .Times(0);
-  web_state->SetTitle(kNewTitle);
-}
-
-// Tests that the service is correctly updated when the title of a tab that is
-// in a WebStateList that was added after the service creation is updated.
-TEST_F(TabGroupLocalUpdateObserverTest, TitleUpdateNewWebStateList) {
-  WebStateList* web_state_list = browser_same_browser_state_->GetWebStateList();
-
-  web::FakeWebState* web_state = InsertWebState(web_state_list);
-  web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
-
-  TabGroupId tab_group_id = TabGroupId::GenerateNew();
-  web_state_list->CreateGroup({0}, {}, tab_group_id);
-
-  // Add the Browser after the tab is inserted.
-  BrowserListFactory::GetForBrowserState(browser_state_.get())
-      ->AddBrowser(browser_same_browser_state_.get());
-
-  EXPECT_CALL(*mock_service_, UpdateTab(tab_group_id, web_state_id.identifier(),
-                                        kNewTitle, _, _));
-  web_state->SetTitle(kNewTitle);
-}
-
-// Tests that the service is correctly updated when the title of a tab that
-// inserted in a WebStateList that was added after the service creation is
-// updated.
-TEST_F(TabGroupLocalUpdateObserverTest, TitleUpdateNewWebStateListInsert) {
-  // Add the browser before inserting the tab.
-  BrowserListFactory::GetForBrowserState(browser_state_.get())
-      ->AddBrowser(browser_same_browser_state_.get());
-
-  WebStateList* web_state_list = browser_same_browser_state_->GetWebStateList();
-
-  std::unique_ptr<web::FakeWebState> unique_web_state = CreateWebState();
-  web::WebStateID web_state_id = unique_web_state->GetUniqueIdentifier();
-  web::FakeWebState* web_state = unique_web_state.get();
-  web_state_list->InsertWebState(std::move(unique_web_state));
-
-  TabGroupId tab_group_id = TabGroupId::GenerateNew();
-  web_state_list->CreateGroup({0}, {}, tab_group_id);
-
-  EXPECT_CALL(*mock_service_, UpdateTab(tab_group_id, web_state_id.identifier(),
-                                        kNewTitle, _, _));
-  web_state->SetTitle(kNewTitle);
-}
 
 // Tests that the service is correctly updated when the navigation of a tab is
 // updated.
@@ -260,10 +198,13 @@ TEST_F(TabGroupLocalUpdateObserverTest, NavigationUpdate) {
   TabGroupId tab_group_id = TabGroupId::GenerateNew();
   web_state_list->CreateGroup({0}, {}, tab_group_id);
 
-  EXPECT_CALL(*mock_service_, UpdateTab(tab_group_id, web_state_id.identifier(),
-                                        _, GURL(kTestURL), _));
+  EXPECT_CALL(*mock_service_,
+              NavigateTab(tab_group_id, web_state_id.identifier(),
+                          Eq(GURL(kTestURL)), Eq(kNewTitle)));
   web_state->SetCurrentURL(GURL(kTestURL));
-  web_state->OnNavigationFinished(nullptr);
+  web_state->SetTitle(kNewTitle);
+  SetUpNavigationContext(web_state);
+  web_state->OnNavigationFinished(navigation_context_.get());
 }
 
 // Tests that the service is not updated when the new active tab is not in the
@@ -277,7 +218,7 @@ TEST_F(TabGroupLocalUpdateObserverTest, ActivateRegularTab) {
   web_state_list->CreateGroup({0}, {}, tab_group_id);
   web_state_list->ActivateWebStateAt(0);
 
-  EXPECT_CALL(*mock_service_, UpdateTab(_, _, _, _, _)).Times(0);
+  EXPECT_CALL(*mock_service_, NavigateTab(_, _, _, _)).Times(0);
   EXPECT_CALL(*mock_service_, AddTab(_, _, _, _, _)).Times(0);
   EXPECT_CALL(*mock_service_, RemoveTab(_, _)).Times(0);
   EXPECT_CALL(*mock_service_, MoveTab(_, _, _)).Times(0);
@@ -298,11 +239,12 @@ TEST_F(TabGroupLocalUpdateObserverTest, NavigationUpdateSyncPaused) {
   web_state_list->CreateGroup({0}, {}, tab_group_id);
 
   EXPECT_CALL(*mock_service_,
-              UpdateTab(tab_group_id, web_state_id.identifier(), _,
-                        GURL(kTestURL), std::make_optional(0ul)))
+              NavigateTab(tab_group_id, web_state_id.identifier(),
+                          Eq(GURL(kTestURL)), _))
       .Times(0);
   web_state->SetCurrentURL(GURL(kTestURL));
-  web_state->OnNavigationFinished(nullptr);
+  SetUpNavigationContext(web_state);
+  web_state->OnNavigationFinished(navigation_context_.get());
 }
 
 // Tests that the service is correctly updated when a tab is added to a newly
@@ -448,7 +390,8 @@ TEST_F(TabGroupLocalUpdateObserverTest, RemoveFromGroup) {
 
   EXPECT_CALL(*mock_service_,
               RemoveTab(tab_group_id, web_state_id.identifier()));
-  web_state_list->CloseWebStateAt(/*index*/ 0, WebStateList::CLOSE_NO_FLAGS);
+  web_state_list->CloseWebStateAt(/*index*/ 0,
+                                  WebStateList::ClosingReason::kDefault);
 }
 
 // Tests that the service is not updated when sync is pausded and a tab is
@@ -469,12 +412,13 @@ TEST_F(TabGroupLocalUpdateObserverTest, RemoveFromGroupSyncPaused) {
   EXPECT_CALL(*mock_service_,
               RemoveTab(tab_group_id, web_state_id.identifier()))
       .Times(0);
-  web_state_list->CloseWebStateAt(/*index*/ 0, WebStateList::CLOSE_NO_FLAGS);
+  web_state_list->CloseWebStateAt(/*index*/ 0,
+                                  WebStateList::ClosingReason::kDefault);
 }
 
 // Tests that the service is correctly updated when a raw tab group is created.
 TEST_F(TabGroupLocalUpdateObserverTest, CreateRawSyncedGroup) {
-  WebStateList* web_state_list = browser_same_browser_state_->GetWebStateList();
+  WebStateList* web_state_list = browser_same_profile_->GetWebStateList();
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a b c* d e f"));
 
@@ -487,8 +431,8 @@ TEST_F(TabGroupLocalUpdateObserverTest, CreateRawSyncedGroup) {
       u"", TabGroup::DefaultColorForNewTabGroup(web_state_list), saved_tabs,
       std::nullopt, saved_tab_group_id, tab_group_id);
 
-  BrowserListFactory::GetForBrowserState(browser_state_.get())
-      ->AddBrowser(browser_same_browser_state_.get());
+  BrowserListFactory::GetForProfile(profile_.get())
+      ->AddBrowser(browser_same_profile_.get());
 
   EXPECT_CALL(*mock_service_, GetGroup(tab_group_id));
   EXPECT_CALL(*mock_service_, AddGroup(SyncTabGroupPrediction(saved_group)));
@@ -497,7 +441,7 @@ TEST_F(TabGroupLocalUpdateObserverTest, CreateRawSyncedGroup) {
 
 // Tests that the service is correctly updated when a tab group is created.
 TEST_F(TabGroupLocalUpdateObserverTest, CreateNamedSyncedGroup) {
-  WebStateList* web_state_list = browser_same_browser_state_->GetWebStateList();
+  WebStateList* web_state_list = browser_same_profile_->GetWebStateList();
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription("| [0 a b] c* d e f"));
 
@@ -510,8 +454,8 @@ TEST_F(TabGroupLocalUpdateObserverTest, CreateNamedSyncedGroup) {
                             saved_tabs, std::nullopt, saved_tab_group_id,
                             tab_group_id);
 
-  BrowserListFactory::GetForBrowserState(browser_state_.get())
-      ->AddBrowser(browser_same_browser_state_.get());
+  BrowserListFactory::GetForProfile(profile_.get())
+      ->AddBrowser(browser_same_profile_.get());
 
   EXPECT_CALL(*mock_service_, GetGroup(tab_group_id));
   EXPECT_CALL(*mock_service_, AddGroup(SyncTabGroupPrediction(saved_group)));
@@ -524,7 +468,7 @@ TEST_F(TabGroupLocalUpdateObserverTest, CreateNamedSyncedGroup) {
 TEST_F(TabGroupLocalUpdateObserverTest, CreateSyncedGroupSyncPaused) {
   local_observer_->SetSyncUpdatePaused(true);
 
-  WebStateList* web_state_list = browser_same_browser_state_->GetWebStateList();
+  WebStateList* web_state_list = browser_same_profile_->GetWebStateList();
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a b c* d e f"));
 
@@ -537,8 +481,8 @@ TEST_F(TabGroupLocalUpdateObserverTest, CreateSyncedGroupSyncPaused) {
       u"", TabGroup::DefaultColorForNewTabGroup(web_state_list), saved_tabs,
       std::nullopt, saved_tab_group_id, tab_group_id);
 
-  BrowserListFactory::GetForBrowserState(browser_state_.get())
-      ->AddBrowser(browser_same_browser_state_.get());
+  BrowserListFactory::GetForProfile(profile_.get())
+      ->AddBrowser(browser_same_profile_.get());
 
   EXPECT_CALL(*mock_service_, GetGroup(tab_group_id));
   EXPECT_CALL(*mock_service_, AddGroup(SyncTabGroupPrediction(saved_group)))
@@ -686,7 +630,7 @@ TEST_F(TabGroupLocalUpdateObserverTest, DeleteGroup) {
   EXPECT_CALL(*mock_service_, GetGroup(tab_group_id))
       .WillRepeatedly(Return(TestSavedGroup()));
 
-  EXPECT_CALL(*mock_service_, RemoveLocalTabGroupMapping(tab_group_id))
+  EXPECT_CALL(*mock_service_, RemoveLocalTabGroupMapping(tab_group_id, _))
       .Times(0);
   EXPECT_CALL(*mock_service_, RemoveGroup(tab_group_id));
   web_state_list->DeleteGroup(group);
@@ -708,7 +652,7 @@ TEST_F(TabGroupLocalUpdateObserverTest, CloseGroupLocally) {
 
   EXPECT_CALL(*mock_service_, GetGroup(tab_group_id))
       .WillRepeatedly([&saved_group] { return saved_group; });
-  EXPECT_CALL(*mock_service_, RemoveLocalTabGroupMapping(tab_group_id))
+  EXPECT_CALL(*mock_service_, RemoveLocalTabGroupMapping(tab_group_id, _))
       .WillOnce([&saved_group] { saved_group = std::nullopt; });
   EXPECT_CALL(*mock_service_, RemoveGroup(tab_group_id)).Times(0);
   EXPECT_CALL(*mock_service_, RemoveTab(tab_group_id, _)).Times(0);
@@ -718,7 +662,8 @@ TEST_F(TabGroupLocalUpdateObserverTest, CloseGroupLocally) {
   EXPECT_EQ(2, web_state_list->count());
 
   web_state_list->MoveWebStateAt(0, 1);
-  web_state_list->CloseWebStateAt(/*index*/ 0, WebStateList::CLOSE_NO_FLAGS);
+  web_state_list->CloseWebStateAt(/*index*/ 0,
+                                  WebStateList::ClosingReason::kDefault);
   EXPECT_EQ(1, web_state_list->count());
 }
 
@@ -738,10 +683,36 @@ TEST_F(TabGroupLocalUpdateObserverTest, DeleteGroupAfterRemovingLastTtab) {
 
   EXPECT_CALL(*mock_service_,
               RemoveTab(tab_group_id, web_state_id.identifier()));
-  EXPECT_CALL(*mock_service_, RemoveLocalTabGroupMapping(tab_group_id))
+  EXPECT_CALL(*mock_service_, RemoveLocalTabGroupMapping(tab_group_id, _))
       .Times(0);
   EXPECT_CALL(*mock_service_, RemoveGroup(tab_group_id));
-  web_state_list->CloseWebStateAt(/*index*/ 0, WebStateList::CLOSE_NO_FLAGS);
+  web_state_list->CloseWebStateAt(/*index*/ 0,
+                                  WebStateList::ClosingReason::kDefault);
+}
+
+// Tests that the service is correctly called when the active tab is updated.
+TEST_F(TabGroupLocalUpdateObserverTest, UpdateActiveTab) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| [0 a b] c* d e f"));
+
+  // Focus a tab in a group.
+  const TabGroup* group = builder.GetTabGroupForIdentifier('0');
+  web::WebState* web_state_a = builder.GetWebStateForIdentifier('a');
+  web::WebState* web_state_e = builder.GetWebStateForIdentifier('e');
+
+  EXPECT_CALL(
+      *mock_service_,
+      OnTabSelected(Eq(group->tab_group_id()),
+                    Eq(web_state_a->GetUniqueIdentifier().identifier()), _));
+  web_state_list->ActivateWebStateAt(0);
+
+  // Focus a tab not in any group.
+  EXPECT_CALL(
+      *mock_service_,
+      OnTabSelected(Eq(std::nullopt),
+                    Eq(web_state_e->GetUniqueIdentifier().identifier()), _));
+  web_state_list->ActivateWebStateAt(4);
 }
 
 }  // namespace tab_groups

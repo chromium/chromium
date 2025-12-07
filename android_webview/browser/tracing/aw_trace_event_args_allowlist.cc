@@ -4,7 +4,9 @@
 
 #include "android_webview/browser/tracing/aw_trace_event_args_allowlist.h"
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_tokenizer.h"
@@ -40,9 +42,10 @@ namespace android_webview {
 // with chrome/common/trace_event_args_allowlist.cc, see crbug.com/805045.
 bool IsTraceArgumentNameAllowlisted(const char* const* granular_filter,
                                     const char* arg_name) {
-  for (int i = 0; granular_filter[i] != nullptr; ++i) {
-    if (base::MatchPattern(arg_name, granular_filter[i]))
+  for (int i = 0; UNSAFE_TODO(granular_filter[i]) != nullptr; ++i) {
+    if (base::MatchPattern(arg_name, UNSAFE_TODO(granular_filter[i]))) {
       return true;
+    }
   }
 
   return false;
@@ -54,12 +57,14 @@ bool IsTraceEventArgsAllowlisted(
     base::trace_event::ArgumentNameFilterPredicate* arg_name_filter) {
   DCHECK(arg_name_filter);
   base::CStringTokenizer category_group_tokens(
-      category_group_name, category_group_name + strlen(category_group_name),
-      ",");
+      category_group_name,
+      UNSAFE_TODO(category_group_name + strlen(category_group_name)), ",");
   while (category_group_tokens.GetNext()) {
     const std::string& category_group_token = category_group_tokens.token();
-    for (int i = 0; kEventArgsAllowlist[i].category_name != nullptr; ++i) {
-      const AllowlistEntry& allowlist_entry = kEventArgsAllowlist[i];
+    for (int i = 0;
+         UNSAFE_TODO(kEventArgsAllowlist[i]).category_name != nullptr; ++i) {
+      const AllowlistEntry& allowlist_entry =
+          UNSAFE_TODO(kEventArgsAllowlist[i]);
       DCHECK(allowlist_entry.event_name);
 
       if (base::MatchPattern(category_group_token,

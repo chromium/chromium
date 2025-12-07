@@ -118,7 +118,7 @@ class CloudOpenMetricsTest : public testing::Test {
 
   void TearDown() override {
     base::debug::SetDumpWithoutCrashingFunction(nullptr);
-    base::debug::ClearMapsForTesting();
+    base::debug::ResetDumpWithoutCrashingThrottlingForTesting();
   }
 
   static int number_of_dump_calls_;
@@ -1005,6 +1005,33 @@ TEST_F(
                                 MetricState::kCorrectlyLogged, 1);
 
   ASSERT_EQ(1, CloudOpenMetricsTest::number_of_dump_calls());
+}
+
+// Tests that the TransferRequired companion metric is set correctly when
+// TaskResult is logged as kCannotGetSourceType.
+TEST_F(CloudOpenMetricsTest,
+       MetricsConsistentWhenTaskResultIsCannotGetSourceType) {
+  {
+    CloudOpenMetrics cloud_open_metrics(CloudProvider::kOneDrive,
+                                        /*file_count=*/1);
+    cloud_open_metrics.LogTaskResult(OfficeTaskResult::kCannotGetSourceType);
+  }
+  histogram_.ExpectUniqueSample(kOneDriveTransferRequiredMetricStateMetric,
+                                MetricState::kCorrectlyNotLogged, 1);
+}
+
+// Tests that the TransferRequired companion metric is set correctly when
+// TaskResult is logged as kCannotGetSourceType but TransferRequired is logged.
+TEST_F(CloudOpenMetricsTest,
+       MetricsInconsistentWhenTaskResultIsCannotGetSourceType) {
+  {
+    CloudOpenMetrics cloud_open_metrics(CloudProvider::kOneDrive,
+                                        /*file_count=*/1);
+    cloud_open_metrics.LogTaskResult(OfficeTaskResult::kCannotGetSourceType);
+    cloud_open_metrics.LogTransferRequired(OfficeFilesTransferRequired::kCopy);
+  }
+  histogram_.ExpectUniqueSample(kOneDriveTransferRequiredMetricStateMetric,
+                                MetricState::kIncorrectlyLogged, 1);
 }
 
 }  // namespace ash::cloud_upload

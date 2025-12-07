@@ -43,7 +43,7 @@ public class WebViewTracingActivity extends Activity {
 
     private static class TracingLogger extends FileOutputStream {
         private long mByteCount;
-        private Activity mActivity;
+        private final Activity mActivity;
 
         public TracingLogger(String fileName, Activity activity) throws FileNotFoundException {
             super(fileName);

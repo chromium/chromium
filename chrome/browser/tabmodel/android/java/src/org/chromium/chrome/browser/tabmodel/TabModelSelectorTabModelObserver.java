@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 
@@ -12,21 +14,20 @@ import java.util.List;
 /**
  * Observer for all {@link TabModel}s owned by a {@link TabModelSelector}.
  *
- * <p>
- * This can safely be constructed before native libraries have been initialized as this will
+ * <p>This can safely be constructed before native libraries have been initialized as this will
  * register to observe the underlying TabModels as they are created lazily.
  */
+@NullMarked
 public class TabModelSelectorTabModelObserver implements TabModelObserver {
     private final TabModelSelector mTabModelSelector;
 
-    private TabModelSelectorObserver mSelectorObserver;
+    private @Nullable TabModelSelectorObserver mSelectorObserver;
 
     /**
-     * Constructs an observer that should be notified of changes for all tab models owned
-     * by a specified {@link TabModelSelector}.
+     * Constructs an observer that should be notified of changes for all tab models owned by a
+     * specified {@link TabModelSelector}.
      *
-     * <p>
-     * {@link #destroy()} must be called to unregister this observer.
+     * <p>{@link #destroy()} must be called to unregister this observer.
      *
      * @param selector The selector that owns the Tab Models that should notify this observer.
      */
@@ -40,7 +41,8 @@ public class TabModelSelectorTabModelObserver implements TabModelObserver {
                         @Override
                         public void onNewTabCreated(Tab tab, @TabCreationState int creationState) {
                             throw new IllegalStateException(
-                                    "onChange should have happened and unregistered this listener.");
+                                    "onChange should have happened and unregistered this"
+                                            + " listener.");
                         }
 
                         @Override

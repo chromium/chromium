@@ -2,9 +2,9 @@ include_rules = [
     # TODO(crbug.com/923394): Remove these dependencies once std types are
     # migrated to WTF types in mediastream.
     "+base/strings/utf_string_conversions.h",
-    "+base/strings/string_number_conversions.h",
     "+base/strings/stringprintf.h",
     "+base/containers/flat_map.h",
+    "+base/memory/singleton.h",
 
     # TODO(crbug.com/923394): Remove these dependencies once per-frame
     # task runners are used in all cases.
@@ -13,12 +13,15 @@ include_rules = [
 
     # web_media_player_ms{_compositor}.cc includes.
     "+base/containers/circular_deque.h",
+    "+base/task/common/task_annotator.h",
     "+base/values.h",
     "+cc/layers/surface_layer.h",
     "+cc/layers/video_frame_provider_client_impl.h",
     "+cc/layers/video_frame_provider.h",
     "+cc/layers/video_layer.h",
     "+cc/paint/skia_paint_canvas.h",
+    "+gpu/command_buffer/client/client_shared_image.h",
+    "+gpu/command_buffer/client/test_shared_image_interface.h",
     "+media/media_buildflags.h",
     "+media/filters/video_renderer_algorithm.h",
     "+media/renderers/paint_canvas_video_renderer.h",
@@ -60,7 +63,6 @@ specific_include_rules = {
         "+base/numerics/ranges.h",
         "+base/run_loop.h",
         "+cc/layers/layer.h",
-        "+media/video/fake_gpu_memory_buffer.h",
         "+media/video/mock_gpu_memory_buffer_video_frame_pool.h",
         "+media/video/mock_gpu_video_accelerator_factories.h",
 

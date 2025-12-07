@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.dom_distiller.ReaderModeBottomSheetView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingHorizontal="16dp"
+    android:background="@drawable/reader_mode_bottom_sheet_background">
+
+    <ImageView
+        android:id="@+id/drag_handle"
+        android:layout_width="32dp"
+        android:layout_height="4dp"
+        android:layout_marginTop="8dp"
+        android:layout_gravity="center_horizontal"
+        android:importantForAccessibility="no"
+        app:srcCompat="@drawable/drag_handlebar" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/reader_mode_bottom_sheet_title"
+        android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+        android:drawableStart="@drawable/ic_mobile_friendly_24dp"
+        app:drawableTint="@macro/default_icon_color"
+        android:drawablePadding="16dp"
+        android:paddingVertical="16dp"
+        android:gravity="center_vertical"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <FrameLayout
+            android:id="@+id/controls_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp" />
+    </ScrollView>
+
+</org.chromium.chrome.browser.dom_distiller.ReaderModeBottomSheetView>

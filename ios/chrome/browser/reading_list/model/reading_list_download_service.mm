@@ -20,6 +20,7 @@
 #import "components/reading_list/core/offline_url_utils.h"
 #import "components/reading_list/core/reading_list_entry.h"
 #import "components/reading_list/core/reading_list_model.h"
+#import "ios/chrome/browser/dom_distiller/model/distiller_service.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_distiller_page_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "net/base/network_change_notifier.h"
@@ -66,23 +67,22 @@ void CleanUpFiles(base::FilePath root,
 
 ReadingListDownloadService::ReadingListDownloadService(
     ReadingListModel* reading_list_model,
-    PrefService* prefs,
     base::FilePath chrome_profile_path,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    std::unique_ptr<dom_distiller::DistillerFactory> distiller_factory,
+    DistillerService* distiller_service,
     std::unique_ptr<reading_list::ReadingListDistillerPageFactory>
         distiller_page_factory)
     : reading_list_model_(reading_list_model),
       chrome_profile_path_(chrome_profile_path),
       had_connection_(!net::NetworkChangeNotifier::IsOffline()),
       distiller_page_factory_(std::move(distiller_page_factory)),
-      distiller_factory_(std::move(distiller_factory)),
+      distiller_service_(distiller_service),
       weak_ptr_factory_(this) {
   DCHECK(reading_list_model);
 
   url_downloader_ = std::make_unique<URLDownloader>(
-      distiller_factory_.get(), distiller_page_factory_.get(), prefs,
-      chrome_profile_path, url_loader_factory,
+      distiller_service_, distiller_page_factory_.get(), chrome_profile_path,
+      url_loader_factory,
       base::BindRepeating(&ReadingListDownloadService::OnDownloadEnd,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&ReadingListDownloadService::OnDeleteEnd,
@@ -128,7 +128,7 @@ void ReadingListDownloadService::ReadingListDidAddEntry(
   ProcessNewEntry(url);
 }
 
-void ReadingListDownloadService::ReadingListDidMoveEntry(
+void ReadingListDownloadService::ReadingListDidUpdateEntry(
     const ReadingListModel* model,
     const GURL& url) {
   DCHECK_EQ(reading_list_model_, model);
@@ -191,6 +191,7 @@ void ReadingListDownloadService::ScheduleDownloadEntry(const GURL& url) {
       reading_list_model_->GetEntryByURL(url);
   if (!entry ||
       entry->DistilledState() == ReadingListEntry::DISTILLATION_ERROR ||
+      entry->DistilledState() == ReadingListEntry::PROCESSING ||
       entry->DistilledState() == ReadingListEntry::PROCESSED ||
       entry->IsRead()) {
     return;
@@ -209,6 +210,7 @@ void ReadingListDownloadService::DownloadEntry(const GURL& url) {
       reading_list_model_->GetEntryByURL(url);
   if (!entry ||
       entry->DistilledState() == ReadingListEntry::DISTILLATION_ERROR ||
+      entry->DistilledState() == ReadingListEntry::PROCESSING ||
       entry->DistilledState() == ReadingListEntry::PROCESSED ||
       entry->IsRead()) {
     return;

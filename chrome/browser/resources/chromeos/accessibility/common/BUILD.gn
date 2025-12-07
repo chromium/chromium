@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/features.gni")
 import(
     "//chrome/browser/resources/chromeos/accessibility/tools/run_jsbundler.gni")
 import("//chrome/common/features.gni")
@@ -11,7 +10,7 @@ import("//chrome/test/base/ash/js2gtest.gni")
 import("//testing/test.gni")
 import("//tools/typescript/ts_library.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 accessibility_common_out_dir =
     "$root_out_dir/resources/chromeos/accessibility/common"
@@ -31,6 +30,18 @@ js_sources = [
   "gdocs_script.js",
   "testing/accessibility_test_base.js",
   "testing/test_node_generator.js",
+]
+
+earcons = [
+  "earcons/chromevox_loaded.ogg",
+  "earcons/chromevox_loading.ogg",
+  "earcons/control.wav",
+  "earcons/invalid_keypress.ogg",
+  "earcons/selection.ogg",
+  "earcons/selection_reverse.ogg",
+  "earcons/skim.wav",
+  "earcons/small_room_2.wav",
+  "earcons/static.wav",
 ]
 
 # Add typescript files to compile here.
@@ -65,8 +76,11 @@ ts_modules = [
   "cursors/recovery_strategy.ts",
   "event_generator.ts",
   "event_handler.ts",
+  "features.ts",
   "flags.ts",
-  "instance_checker.ts",
+  "mv2/instance_checker.ts",
+  "mv3/instance_checker.ts",
+  "keep_alive.ts",
   "key_code.ts",
   "local_storage.ts",
   "node_navigation_utils.ts",
@@ -136,8 +150,8 @@ run_jsbundler("copied_files") {
   mode = "copy"
   dest_dir = accessibility_common_out_dir
   deps = [ ":ts_build" ]
-  sources =
-      js_sources + filter_include(get_target_outputs(":ts_build"), [ "*.js" ])
+  sources = earcons + js_sources +
+            filter_include(get_target_outputs(":ts_build"), [ "*.js" ])
 
   rewrite_rules = [
     rebase_path(tsc_out_dir, root_build_dir) + ":",
@@ -167,6 +181,7 @@ source_set("browser_tests") {
 
 js2gtest("accessibility_tests") {
   test_type = "extension"
+
   sources = [
     "array_util_test.js",
     "automation_predicate_test.js",
@@ -174,6 +189,7 @@ js2gtest("accessibility_tests") {
     "cursors/cursors_test.js",
     "cursors/recovery_strategy_test.js",
     "event_generator_test.js",
+    "keep_alive_test.js",
     "local_storage_test.js",
     "paragraph_utils_overflow_test.js",
     "rect_util_test.js",
@@ -203,15 +219,14 @@ js2gtest("accessibility_tests") {
     "testing/snippets.js",
   ]
 
-  if (is_chromeos_ash) {
-    # The test base classes generate C++ code with these deps.
-    deps = [
-      "//ash",
-      "//base",
-      "//chrome/browser/ash",
-      "//chrome/browser/ash/crosapi",
-      "//chrome/common",
-    ]
-  }
+  # The test base classes generate C++ code with these deps.
+  deps = [
+    "//ash",
+    "//base",
+    "//chrome/browser/ash/accessibility",
+    "//chrome/browser/ash/system_web_apps",
+    "//chrome/common",
+  ]
+
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 }

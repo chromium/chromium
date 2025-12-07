@@ -15,8 +15,7 @@
 
 using extensions::mojom::APIPermissionID;
 
-namespace extensions {
-namespace api_permissions {
+namespace extensions::api_permissions {
 
 namespace {
 
@@ -64,6 +63,10 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
     {APIPermissionID::kDeclarativeNetRequestWithHostAccess,
      "declarativeNetRequestWithHostAccess"},
     {APIPermissionID::kDeclarativeWebRequest, "declarativeWebRequest"},
+    {APIPermissionID::kDevtools, "devtools",
+     APIPermissionInfo::kFlagImpliesFullURLAccess |
+         APIPermissionInfo::kFlagCannotBeOptional |
+         APIPermissionInfo::kFlagInternal},
     {APIPermissionID::kDiagnostics, "diagnostics",
      APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kDns, "dns"},
@@ -97,7 +100,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kIdle, "idle",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
-    {APIPermissionID::kLockScreen, "lockScreen"},
     {APIPermissionID::kLockWindowFullscreenPrivate,
      "lockWindowFullscreenPrivate", APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kLogin, "login"},
@@ -131,7 +133,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagRequiresManagementUIWarning},
     {APIPermissionID::kSerial, "serial",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
-    {APIPermissionID::kSharedStoragePrivate, "sharedStoragePrivate"},
     {APIPermissionID::kSocket, "socket",
      APIPermissionInfo::kFlagCannotBeOptional |
          APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning,
@@ -180,7 +181,7 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
 }  // namespace
 
 base::span<const APIPermissionInfo::InitInfo> GetPermissionInfos() {
-  return base::make_span(permissions_to_register);
+  return base::span(permissions_to_register);
 }
 
 base::span<const Alias> GetPermissionAliases() {
@@ -192,8 +193,8 @@ base::span<const Alias> GetPermissionAliases() {
       Alias("overrideEscFullscreen", "app.window.fullscreen.overrideEsc"),
       Alias("unlimited_storage", "unlimitedStorage")};
 
-  return base::make_span(aliases);
+  return base::span(aliases);
 }
 
-}  // namespace api_permissions
-}  // namespace extensions
+} // namespace extensions::api_permissions
+

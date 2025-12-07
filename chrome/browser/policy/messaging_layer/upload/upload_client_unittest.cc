@@ -12,11 +12,11 @@
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector_test_util.h"
 #include "chrome/browser/policy/messaging_layer/util/test_request_payload.h"
@@ -29,18 +29,21 @@
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "google_apis/gaia/core_account_id.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace reporting {
 namespace {
 
+using base::test::EqualsProto;
 using ::policy::MockCloudPolicyClient;
 using ::testing::_;
 using ::testing::AllOf;
@@ -48,7 +51,6 @@ using ::testing::ContainerEq;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Gt;
-using ::testing::Invoke;
 using ::testing::InvokeArgument;
 using ::testing::IsEmpty;
 using ::testing::MockFunction;
@@ -57,15 +59,6 @@ using ::testing::Property;
 using testing::SizeIs;
 using ::testing::StrictMock;
 using ::testing::WithArgs;
-
-MATCHER_P(EqualsProto,
-          message,
-          "Match a proto Message equal to the matcher's argument.") {
-  std::string expected_serialized, actual_serialized;
-  message.SerializeToString(&expected_serialized);
-  arg.SerializeToString(&actual_serialized);
-  return expected_serialized == actual_serialized;
-}
 
 class UploadClientTest : public ::testing::TestWithParam<
                              ::testing::tuple</*need_encryption_key*/ bool,
@@ -78,28 +71,26 @@ class UploadClientTest : public ::testing::TestWithParam<
     memory_resource_ =
         base::MakeRefCounted<ResourceManager>(4u * 1024LLu * 1024LLu);  // 4 MiB
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Set up fake primary profile.
     auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
     profile_ = std::make_unique<TestingProfile>(
         base::FilePath(FILE_PATH_LITERAL("/home/chronos/u-0123456789abcdef")));
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
-        profile_->GetProfileUserName(), "12345"));
-    const user_manager::User* user =
-        fake_user_manager->AddPublicAccountUser(account_id);
-    fake_user_manager->UserLoggedIn(account_id, user->username_hash(),
-                                    /*browser_restart=*/false,
-                                    /*is_child=*/false);
+        profile_->GetProfileUserName(), GaiaId("12345")));
+    fake_user_manager->AddPublicAccountUser(account_id);
+    fake_user_manager->UserLoggedIn(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
     user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(fake_user_manager));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   void TearDown() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     user_manager_.reset();
     profile_.reset();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     EXPECT_THAT(memory_resource_->GetUsed(), Eq(0uL));
   }
 
@@ -109,10 +100,10 @@ class UploadClientTest : public ::testing::TestWithParam<
 
   content::BrowserTaskEnvironment task_environment_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   scoped_refptr<ResourceManager> memory_resource_;
 };
 

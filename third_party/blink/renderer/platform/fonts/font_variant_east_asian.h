@@ -6,10 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_VARIANT_EAST_ASIAN_H_
 
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-
-namespace WTF {
-class String;
-}  // namespace WTF
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
@@ -27,7 +24,7 @@ class FontVariantEastAsian {
     kTraditional
     // Ensure |BitFields| has enough bits when adding values.
   };
-  static WTF::String ToString(EastAsianForm);
+  static String ToString(EastAsianForm);
 
   enum EastAsianWidth {
     kNormalWidth,
@@ -35,7 +32,7 @@ class FontVariantEastAsian {
     kProportionalWidth
     // Ensure |BitFields| has enough bits when adding values.
   };
-  static WTF::String ToString(EastAsianWidth);
+  static String ToString(EastAsianWidth);
 
   FontVariantEastAsian() : fields_as_unsigned_(0) {}
 
@@ -61,7 +58,7 @@ class FontVariantEastAsian {
     return fields_as_unsigned_ == other.fields_as_unsigned_;
   }
 
-  WTF::String ToString() const;
+  String ToString() const;
 
  private:
   FontVariantEastAsian(unsigned init_value) : fields_as_unsigned_(init_value) {}

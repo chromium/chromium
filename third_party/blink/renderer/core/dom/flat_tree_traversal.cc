@@ -151,7 +151,7 @@ ContainerNode* FlatTreeTraversal::TraverseParent(const Node& node) {
   // This code is called extensively, so it minimizes repetitive work (such
   // as avoiding multiple calls to parentElement()).
 
-  // TODO(hayato): Stop this hack for a pseudo element because a pseudo element
+  // TODO(hayato): Stop this hack for a pseudo-element because a pseudo-element
   // is not a child of its parentOrShadowHostNode() in a flat tree.
   if (node.IsPseudoElement())
     return node.ParentOrShadowHostNode();

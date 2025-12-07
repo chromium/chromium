@@ -15,7 +15,6 @@ static_library("custom_handlers") {
   ]
 
   deps = [
-    "//build:chromeos_buildflags",
     "//components/keyed_service/content",
     "//components/keyed_service/core",
     "//components/pref_registry",
@@ -29,7 +28,7 @@ static_library("custom_handlers") {
     "//third_party/blink/public/common:headers",
   ]
 
-  if (!is_android) {
+  if (!is_android && !is_ios) {
     sources += [
       "register_protocol_handler_permission_request.cc",
       "register_protocol_handler_permission_request.h",

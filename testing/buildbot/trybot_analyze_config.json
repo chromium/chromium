@@ -9,12 +9,12 @@
       ".*isolate",
       ".vpython",
       "build/check_gn_headers.py",
-      "build/check_gn_headers_whitelist.txt",
+      "build/check_gn_headers_allowlist.txt",
+      "build/config/siso/.*",
       "build/get_landmines.py",
       "build/gn_helpers.py",
       "build/mac_toolchain.py",
-      "build/toolchain/apple/.*py",
-      "build/toolchain/get_concurrent_links.py",
+      "build/toolchain/.*py",
       "build/util/lib/common/unittest_util.py",
       "build/vs_toolchain.py",
       "DEPS",
@@ -38,7 +38,7 @@
   },
   "chromium": {
     "exclusions": [
-      "build/config/siso/.*",
+      ".*/README.chromium",
       "buildtools/checkdeps/.*",
       "chrome/android/profiles/newest.txt",
       "chrome/browser/resources/.*(css|html|js)",
@@ -49,7 +49,6 @@
       "components/test/data/.*",
       "components/version_ui/resources/.*(css|html|js)",
       "content/test/data/.*",
-      "content/test/gpu/.*",
       "extensions/test/data/.*",
       "media/test/data/.*",
       "mojo/tools/.*",
@@ -59,8 +58,9 @@
       "third_party/angle/DEPS",
       "third_party/closure_compiler/.*(css|html|js)",
       "third_party/dawn/DEPS",
+      "third_party/dawn/generator/.*",
+      "third_party/dawn/src/dawn/.*json",
       "third_party/hunspell_dictionaries/.*",
-      "third_party/jstemplate/.*(css|html|js)",
       "third_party/openscreen/src/DEPS",
       "third_party/polymer/v1_0/components-chromium/.*(css|html|js)",
       "third_party/vulkan-deps/DEPS",
@@ -76,6 +76,15 @@
       "tools/traffic_annotation/scripts/.*",
       "tools/ubsan/.*",
       "ui/webui/resources/.*(css|html|js)"
+    ],
+    "ignores": [
+      "tools/perf/cbb_ref_info/.*"
+    ]
+  },
+  "dawn_chromium_presubmit": {
+    "exclusions": [
+      "third_party/dawn/webgpu-cts/compat-expectations.txt",
+      "third_party/dawn/webgpu-cts/expectations.txt"
     ]
   },
   "fuchsia": {
@@ -85,7 +94,9 @@
   },
   "ios": {
     "exclusions": [
-      "ios/build/bots/.*"
+      "ios/build/bots/.*",
+      "tools/clang/dsymutil/bin/dsymutil.arm64.sha1",
+      "tools/clang/dsymutil/bin/dsymutil.x64.sha1"
     ]
   },
   "linux": {
@@ -95,9 +106,18 @@
       "testing/xvfb.py"
     ]
   },
+  "mac": {
+    "exclusions": [
+      "tools/clang/dsymutil/bin/dsymutil.arm64.sha1",
+      "tools/clang/dsymutil/bin/dsymutil.x64.sha1"
+    ]
+  },
   "win": {
     "exclusions": [
-      "build/toolchain/win/rc/win/rc.exe.sha1"
+      "build/toolchain/win/rc/win/rc.exe.sha1",
+      "build/toolchain/win/rc/rc.py",
+      "build/toolchain/win/midl.py",
+      "build/toolchain/win/ml.py"
     ]
   }
 }

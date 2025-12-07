@@ -672,6 +672,11 @@ def Localize(source, locales, options):
     for define in options.define:
       context.update(dict([define.split('=', 1)]));
 
+  if options.define_list:
+    for define_list in options.define_list:
+      kv = define_list.split('=', 1)
+      context.update(dict([[kv[0], kv[1].split(',')]]))
+
   # Read NAME=VALUE variables from file.
   if options.variables:
     for file_name in options.variables:
@@ -752,6 +757,10 @@ def DoMain(argv):
   parser.add_option(
       '-d', '--define', dest='define', action='append', type='string',
       help='define a variable (NAME=VALUE).')
+  parser.add_option(
+      '--define_list', dest='define_list', action='append', type='string',
+      help='define a list variable, with list items separated by commas '
+           '(NAME=VALUE1,VALUE2,...).')
   parser.add_option(
       '--encoding', dest='encoding', type='string', default='utf-8',
       help="set the encoding of <output>. 'utf-8' is the default.")

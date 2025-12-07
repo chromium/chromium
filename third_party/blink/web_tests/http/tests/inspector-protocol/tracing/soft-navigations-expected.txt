@@ -1,0 +1,104 @@
+Tests trace events for soft navigations.
+
+PerformanceObserver supports "soft-navigation": true
+Recording started
+
+Waited for LCP element with id=click-target
+
+Got soft navigation performance entry: http://127.0.0.1:8000/greeting
+Got soft LCP element: Hello, world.
+
+Stopping tracing and analyzing events.
+Tracing complete
+-> LCP candidate event
+   ts: 1
+   frame: id_0
+   performanceTimelineNavigationId: id_1
+-> SoftNavigation event
+   interactionTimestamp: 2
+   ts: 3
+   firstContentfulPaint: 3
+   frame: id_0
+   performanceTimelineNavigationId: id_2
+   initialURL: http://127.0.0.1:8000/greeting
+   mostRecentURL: http://127.0.0.1:8000/greeting
+-> LCP candidate for soft navigation event
+   ts: 3
+   frame: id_0
+   performanceTimelineNavigationId: id_2
+
+SoftNavigation event shape:
+Object: {
+	args: {
+		context: {
+			domModifications: number
+			firstContentfulPaint: number
+			initialURL: string
+			interactionTimestamp: number
+			mostRecentURL: string
+			paintedArea: number
+			performanceTimelineNavigationId: number
+			softNavContextId: number
+		}
+		frame: string
+	}
+	cat: string
+	id2: {
+		local: string
+	}
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+
+LCP candidate event shape:
+Object: {
+	args: {
+		data: {
+			candidateIndex: number
+			isMainFrame: boolean
+			isOutermostMainFrame: boolean
+			navigationId: string
+			nodeId: number
+			nodeName: string
+			performanceTimelineNavigationId: number
+			size: number
+			type: string
+		}
+		frame: string
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+
+LCP candidate for soft navigation event shape:
+Object: {
+	args: {
+		data: {
+			candidateIndex: number
+			isMainFrame: boolean
+			isOutermostMainFrame: boolean
+			nodeId: number
+			nodeName: string
+			performanceTimelineNavigationId: number
+			size: number
+			type: string
+		}
+		frame: string
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+

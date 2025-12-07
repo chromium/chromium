@@ -63,7 +63,7 @@ void AudioThreadImpl::Stop() {
 
 bool AudioThreadImpl::IsHung() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return hang_monitor_ ? hang_monitor_->IsAudioThreadHung() : false;
+  return hang_monitor_ && hang_monitor_->IsAudioThreadHung();
 }
 
 base::SingleThreadTaskRunner* AudioThreadImpl::GetTaskRunner() {

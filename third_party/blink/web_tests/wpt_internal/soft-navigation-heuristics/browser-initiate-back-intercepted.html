@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/soft-navigation-heuristics/resources/soft-navigation-test-helper.js"></script>
+
+<button id="navigateForward">Navigate!</button>
+<button id="navigateBack">Go Back!</button>
+
+<div id=content></div>
+
+<script>
+  navigateForward.onclick = () => {
+    history.pushState({}, "", "/forward/");
+  };
+
+  navigateBack.onclick = () => {
+    if (testRunner) {
+      testRunner.goToOffset(-1);
+    }
+  };
+
+  window.onload = () => {
+    // Start with a more easily identifiable pathname.
+    history.pushState({}, "", "/home/");
+    // Start the test by (soft) navigating forward.
+    if (test_driver) {
+      test_driver.click(navigateForward);
+    }
+  }
+
+  window.navigation.addEventListener('navigate', e => {
+    const url = new URL(e.destination.url);
+    e.intercept({
+      async handler() {
+        if (url.pathname == '/home/') {
+          await scheduler.yield();
+          content.innerHTML = "<div>Home Page</div>";
+        } else if (url.pathname == '/forward/') {
+          await scheduler.yield();
+          content.innerHTML = "<div>Other Page</div>";
+        }
+      }
+    });
+  });
+
+  promise_test(async t => {
+    const helper = new SoftNavigationTestHelper(t);
+
+    // Wait for the first soft navigation, which is initiated when the
+    // `navigateForward` is clicked during the load event.
+    let softNavPromise =
+        SoftNavigationTestHelper.getPerformanceEntries('soft-navigation');
+    let entries = await helper.withTimeoutMessage(
+        softNavPromise, 'Soft navigation entry never arrived.', 3000);
+    assert_equals(entries.length, 1, 'Expected exactly one soft navigation.');
+    assert_true(
+        entries[0].name.endsWith('/forward/'),
+        'Expected URL to end with /forward/ but got ' + entries[0].name);
+
+    // Now click back. This simulates a browser-initiated back navigation.
+    softNavPromise =
+        SoftNavigationTestHelper.getPerformanceEntries('soft-navigation');
+    if (test_driver) {
+      test_driver.click(navigateBack);
+    }
+    entries = await helper.withTimeoutMessage(
+        softNavPromise, 'Soft navigation entry never arrived.', 3000);
+    assert_equals(entries.length, 1, 'Expected exactly one soft navigation.');
+    assert_true(
+        entries[0].name.endsWith('/home/'),
+        'Expected URL to end with /home/ but got ' + entries[0].name);
+  }, 'Test Soft Navigation Detection handles intercepted browser initiated back navigations');
+</script>

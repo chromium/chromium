@@ -1,0 +1,16 @@
+Name: firebase-annotations
+Short Name: firebase-annotations
+URL: https://dl.google.com/dl/android/maven2/com/google/firebase/firebase-annotations/17.0.0/firebase-annotations-17.0.0.jar
+Version: 17.0.0
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+Common annotations for Firebase SKDs.
+
+Local Modifications:
+No modifications.

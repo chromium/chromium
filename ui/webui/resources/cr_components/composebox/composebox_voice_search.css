@@ -1,0 +1,86 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_icons_lit.css.js
+ * #scheme=relative
+ * #include=cr-icons-lit
+ * #css_wrapper_metadata_end */
+:host {
+  --color-composebox-voice-search-font: rgba(71, 71, 71, 1);
+  /* Set these variables since cr-icons take their margin
+  from these; else negative default. */
+  --cr-icon-button-margin-end: 0;
+  --cr-icon-button-margin-start: 0;
+}
+
+#container {
+  align-items: flex-start;
+  border-radius: var(--expanded-border-radius);
+  box-sizing: border-box;
+  /* Transparent so background from animated-glow shows. */
+  background-color: transparent;
+  display: flex;
+  inset: 0;
+  padding: 7px 0;
+  position: absolute;
+  z-index: 4;
+}
+
+#input::-webkit-scrollbar {
+  display: none;
+}
+
+#input {
+  background-color: transparent;
+  border: none;
+  flex: 1;
+  height: 100%;
+  /* Overflow scroll blur top/bottom. */
+  mask-image: linear-gradient(to bottom,
+      transparent 0px,
+      black 7px,
+      black calc(100% - 7px),
+      transparent 100%
+  );
+  outline: none;
+  overflow-y: auto;
+  resize: none;
+  width: 100%;
+}
+
+#input,
+#error-container {
+  box-sizing: border-box;
+  color: var(--color-composebox-voice-search-font);
+  flex-grow: 1;
+  font-family: inherit;
+  font-size: 18px;
+  line-height: 24px;
+  /* 11px + container padding = 18 px. Parent can set var if needed. */
+  padding: var(--composebox-voice-search-top-padding, 11px)
+      40px 0px 20px;
+  width: 100%;
+}
+
+#error-container a {
+  color: var(--color-composebox-link);
+  text-decoration: underline;
+}
+
+#closeButton {
+  --cr-icon-button-fill-color:
+      var(--color-composebox-cancel-button-light);
+  --cr-icon-button-icon-size: 20px;
+  --cr-icon-button-size: 36px;
+  inset-inline-end: 12px;
+  margin-inline-start: 16px;
+  position: absolute;
+  top: var(--composebox-cancel-button-top, 12px);
+  /* Uses the same transitions as the submit button from
+   * parent so they are in sync.
+   */
+  transition: var(--submit-enabled-transition, 255ms);
+}

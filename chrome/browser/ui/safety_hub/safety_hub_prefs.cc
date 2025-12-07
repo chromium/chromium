@@ -12,10 +12,26 @@ void RegisterSafetyHubProfilePrefs(PrefRegistrySimple* registry) {
 #if !BUILDFLAG(IS_ANDROID)
   registry->RegisterDictionaryPref(
       safety_hub_prefs::kBackgroundPasswordCheckTimeAndInterval);
-#else  // BUILDFLAG(IS_ANDROID)
+#else   // BUILDFLAG(IS_ANDROID)
   // TODO(sideyilmaz): Move kBreachedCredentialsCount to safety_hub_prefs.h
   registry->RegisterIntegerPref(prefs::kBreachedCredentialsCount, -1);
-#endif
+
+  registry->RegisterIntegerPref(safety_hub_prefs::kWeakCredentialsCount, -1);
+  registry->RegisterIntegerPref(safety_hub_prefs::kReusedCredentialsCount, -1);
+  registry->RegisterIntegerPref(
+      safety_hub_prefs::kLocalBreachedCredentialsCount, -1);
+  registry->RegisterIntegerPref(safety_hub_prefs::kLocalWeakCredentialsCount,
+                                -1);
+  registry->RegisterIntegerPref(safety_hub_prefs::kLocalReusedCredentialsCount,
+                                -1);
+  registry->RegisterInt64Pref(
+      safety_hub_prefs::kLastTimeInMsAccountPasswordCheckCompleted, 0);
+  registry->RegisterInt64Pref(
+      safety_hub_prefs::kLastTimeInMsLocalPasswordCheckCompleted, 0);
+#endif  // !BUILDFLAG(IS_ANDROID)
+  registry->RegisterInt64Pref(
+      safety_hub_prefs::kLastTimeInMsAbusiveNotificationBlocklistCheckCompleted,
+      0);
   registry->RegisterDictionaryPref(
       safety_hub_prefs::kMenuNotificationsPrefsKey);
   registry->RegisterBooleanPref(

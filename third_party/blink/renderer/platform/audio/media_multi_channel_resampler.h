@@ -22,15 +22,14 @@ class AudioBus;
 
 // This is a simple wrapper around the MultiChannelResampler provided by the
 // media layer.
-class PLATFORM_EXPORT MediaMultiChannelResampler {
+class PLATFORM_EXPORT MediaMultiChannelResampler final {
   USING_FAST_MALLOC(MediaMultiChannelResampler);
 
   // Callback type for providing more data into the resampler.  Expects AudioBus
   // to be completely filled with data upon return; zero padded if not enough
   // frames are available to satisfy the request.  |frame_delay| is the number
   // of output frames already processed and can be used to estimate delay.
-  typedef WTF::CrossThreadRepeatingFunction<void(int frame_delay,
-                                                 blink::AudioBus*)>
+  typedef CrossThreadRepeatingFunction<void(int frame_delay, blink::AudioBus*)>
       ReadCB;
 
  public:

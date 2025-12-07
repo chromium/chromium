@@ -19,10 +19,6 @@ interface Channel {
   // before any calls to Receive() below.
   SetPeerPid(int32 pid);
 
-  // Transmits a classical Chrome IPC message.
-  [UnlimitedSize]
-  Receive(Message message);
-
   // Requests a Channel-associated interface.
   GetAssociatedInterface(
       mojo_base.mojom.GenericPendingAssociatedReceiver receiver);
@@ -31,4 +27,3 @@ interface Channel {
 // A strictly nominal interface used to identify Channel bootstrap requests.
 // This is only used in `AgentSchedulingGroup` initialization.
 interface ChannelBootstrap {};
-

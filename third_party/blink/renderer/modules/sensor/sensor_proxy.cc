@@ -66,7 +66,7 @@ const device::SensorReading& SensorProxy::GetReading(bool remapped) const {
   if (remapped) {
     if (remapped_reading_.timestamp() != reading_.timestamp()) {
       remapped_reading_ = reading_;
-      LocalFrame& frame = *provider_->GetSupplementable()->GetFrame();
+      LocalFrame& frame = *provider_->GetLocalDOMWindow()->GetFrame();
       SensorReadingRemapper::RemapToScreenCoords(
           type_, frame.GetChromeClient().GetScreenInfo(frame).orientation_angle,
           &remapped_reading_);
@@ -104,7 +104,7 @@ bool SensorProxy::ShouldSuspendUpdates() const {
   }
 
   LocalFrame* focused_frame = focus_controller.FocusedFrame();
-  LocalFrame* this_frame = provider_->GetSupplementable()->GetFrame();
+  LocalFrame* this_frame = provider_->GetLocalDOMWindow()->GetFrame();
 
   if (!focused_frame || !this_frame)
     return true;

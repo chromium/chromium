@@ -1,16 +1,74 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <p>This tests for a hang when outdenting a list item within a sublist twice.</p>
-<div contenteditable="true">
-<ol>
-    <li>one</li>
-    <li id="insert">two<ol><li id="outdent">three</li><li>four</li></ol></li>
-</ol>
-</div>
-
 <script>
-if (window.testRunner)
-    testRunner.dumpAsText();
-outdent = document.getElementById("outdent");
-window.getSelection().collapse(outdent, 0);
-document.execCommand("Outdent");
-document.execCommand("Outdent");
+
+// Outdenting the item with "three" should cause it to become a sibling of the
+// item with "two". The item with "four" should then become a child of the item
+// with "three".
+selection_test(
+    [
+      '<div contenteditable="true">',
+        '<ol>',
+          '<li>one</li>',
+          '<li id="insert">two',
+            '<ol>',
+              '<li id="outdent">|three</li>',
+              '<li>four</li>',
+            '</ol>',
+          '</li>',
+        '</ol>',
+      '</div>',
+    ],
+    'Outdent',
+    [
+      '<div contenteditable="true">',
+        '<ol>',
+          '<li>one</li>',
+          '<li id="insert">two</li>',
+          '<li id="outdent">|three',
+          '<ol>',
+            '<li>four</li>',
+          '</ol>',
+        '</li>',
+        '</ol>',
+      '</div>',
+    ],
+    'Outdent nested item three');
+
+selection_test(
+    [
+      '<div contenteditable="true">',
+        '<ol>',
+          '<li>one</li>',
+          '<li id="insert">two</li>',
+          '<li>|three',
+            '<ol>',
+              '<li>four</li>',
+            '</ol>',
+          '</li>',
+        '</ol>',
+      '</div>',
+    ],
+    'Outdent',
+    [
+      '<div contenteditable="true">',
+        '<ol>',
+          '<li>one</li>',
+          '<li id="insert">two</li>',
+        '</ol>',
+        '|three',
+        '<ol>',
+          '<li>',
+            '<ol>',
+              '<li>four</li>',
+            '</ol>',
+          '</li>',
+        '</ol>',
+      '</div>',
+    ],
+    'Outdent unnested item three');
+
 </script>

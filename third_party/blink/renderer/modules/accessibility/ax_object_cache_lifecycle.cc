@@ -45,7 +45,7 @@ bool AXObjectCacheLifecycle::CanRewindTo(LifecycleState next_state) const {
   case AXObjectCacheLifecycle::StateName: \
     return #StateName
 
-static WTF::String StateAsDebugString(
+static String StateAsDebugString(
     const AXObjectCacheLifecycle::LifecycleState& state) {
   switch (state) {
     DEBUG_STRING_CASE(kUninitialized);
@@ -60,7 +60,7 @@ static WTF::String StateAsDebugString(
   NOTREACHED();
 }
 
-WTF::String AXObjectCacheLifecycle::ToString() const {
+String AXObjectCacheLifecycle::ToString() const {
   return StateAsDebugString(state_);
 }
 

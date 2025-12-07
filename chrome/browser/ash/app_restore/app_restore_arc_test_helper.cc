@@ -4,11 +4,6 @@
 
 #include "chrome/browser/ash/app_restore/app_restore_arc_test_helper.h"
 
-#include "ash/components/arc/mojom/app.mojom.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
-#include "ash/components/arc/test/arc_util_test_support.h"
-#include "ash/components/arc/test/fake_app_instance.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
@@ -16,6 +11,11 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
+#include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
+#include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
 
 namespace mojo {
 

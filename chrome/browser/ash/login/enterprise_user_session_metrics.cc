@@ -10,9 +10,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -36,29 +36,6 @@ int GetMinutesToReport(base::TimeDelta duration,
 void RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kLastSessionType, 0);
   registry->RegisterInt64Pref(prefs::kLastSessionLength, 0);
-}
-
-void RecordSignInEvent(SignInEventType sign_in_event_type) {
-  DCHECK(ash::InstallAttributes::Get()->IsEnterpriseManaged());
-
-  UMA_HISTOGRAM_ENUMERATION(
-      "Enterprise.UserSession.Logins", static_cast<int>(sign_in_event_type),
-      static_cast<int>(SignInEventType::SIGN_IN_EVENT_COUNT));
-}
-
-void RecordSignInEvent(const UserContext& user_context, bool is_auto_login) {
-  DCHECK(ash::InstallAttributes::Get()->IsEnterpriseManaged());
-
-  const user_manager::UserType session_type = user_context.GetUserType();
-  if (session_type == user_manager::UserType::kRegular) {
-    RecordSignInEvent(SignInEventType::REGULAR_USER);
-  } else if (session_type == user_manager::UserType::kPublicAccount) {
-    RecordSignInEvent(is_auto_login ? SignInEventType::AUTOMATIC_PUBLIC_SESSION
-                                    : SignInEventType::MANUAL_PUBLIC_SESSION);
-  }
-
-  // Kiosk sign-ins are handled separately in AppLaunchController and other
-  // session types are ignored for now.
 }
 
 void StoreSessionLength(user_manager::UserType session_type,
@@ -108,8 +85,7 @@ void RecordStoredSessionLength() {
   } else {
     // NOTREACHED() since session length for other session types should not
     // be recorded.
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   // Report session duration for the first 24 hours, split into 144 buckets
@@ -118,7 +94,7 @@ void RecordStoredSessionLength() {
   base::UmaHistogramSparse(
       metric_name, GetMinutesToReport(session_length, 10, base::Hours(24)));
 
-  if (DemoSession::IsDeviceInDemoMode()) {
+  if (ash::demo_mode::IsDeviceInDemoMode()) {
     // Demo mode sessions will have shorter durations. Report session length
     // rounded down to the nearest minute, up to two hours.
     base::UmaHistogramSparse(

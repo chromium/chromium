@@ -7,19 +7,19 @@
 #import "base/memory/ref_counted.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
-#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
-#import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/fallback_view_controller.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_injection_handler.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/public/provider/chrome/browser/keyboard/keyboard_api.h"
 #import "ui/base/device_form_factor.h"
 
-@interface FallbackCoordinator ()<UIPopoverPresentationControllerDelegate>
+@interface FallbackCoordinator () <UIPopoverPresentationControllerDelegate>
 
 @end
 
@@ -40,8 +40,15 @@
   // On iPad, dismiss the popover before the settings are presented.
   if ((ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) &&
       self.viewController.presentingViewController) {
-    [self.viewController dismissViewControllerAnimated:true
-                                            completion:completion];
+    // On tablets, fallback coordinators are coordinators of subviews of the
+    // expanded manual fill view, so they can't dismiss the entire popup,
+    // otherwise changing the type of autofill data between passwords, addresses
+    // or credit cards would dismiss the entire popup. In this case, only the
+    // completion block is executed. The popup will be dismissed when the
+    // expanded manual fill coordinator stops.
+    if (completion) {
+      completion();
+    }
     return YES;
   } else {
     if (completion) {
@@ -57,7 +64,7 @@
 - (void)presentFromButton:(UIButton*)button {
   self.viewController.modalPresentationStyle = UIModalPresentationPopover;
 
-  // `topFrontWindow` is used in order to present above the keyboard. This way
+  // `topFrontWindow` is used in order to present above the keyboard. This way,
   // the popover will be dismissed on keyboard interaction and it won't be
   // covered when the keyboard is near the top of the screen.
   UIWindow* topFrontWindow = ios::provider::GetKeyboardWindow();

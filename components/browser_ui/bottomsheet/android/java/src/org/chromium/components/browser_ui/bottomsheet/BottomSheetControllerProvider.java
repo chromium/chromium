@@ -6,20 +6,22 @@ package org.chromium.components.browser_ui.bottomsheet;
 
 import org.jni_zero.CalledByNative;
 
-import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataKey;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
  * This class manages the details associated with binding a {@link BottomSheetController} to user
  * data on a {@link WindowAndroid}.
  */
+@NullMarked
 public class BottomSheetControllerProvider {
     /** An interface that allows a controller to be associated with an unowned data host. */
-    interface Unowned extends BottomSheetController, UnownedUserData {}
+    interface Unowned extends BottomSheetController {}
 
     /** The key used to bind the controller to the unowned data host. */
-    private static final UnownedUserDataKey<Unowned> KEY = new UnownedUserDataKey<>(Unowned.class);
+    private static final UnownedUserDataKey<Unowned> KEY = new UnownedUserDataKey<>();
 
     /**
      * Get the shared {@link BottomSheetController} from the provided {@link WindowAndroid}.
@@ -28,7 +30,7 @@ public class BottomSheetControllerProvider {
      * @return A shared instance of a {@link BottomSheetController}.
      */
     @CalledByNative
-    public static BottomSheetController from(WindowAndroid windowAndroid) {
+    public static @Nullable BottomSheetController from(WindowAndroid windowAndroid) {
         return KEY.retrieveDataFromHost(windowAndroid.getUnownedUserDataHost());
     }
 

@@ -16,20 +16,24 @@ import androidx.browser.customtabs.CustomTabsIntent;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 
 /** Displays a webapp in a nearly UI-less Chrome (InfoBars still appear). */
+@NullMarked
 public class WebappActivity extends BaseCustomTabActivity {
     public static final String WEBAPP_SCHEME = "webapp";
 
-    private static BrowserServicesIntentDataProvider sIntentDataProviderForTesting;
+    private static @Nullable BrowserServicesIntentDataProvider sIntentDataProviderForTesting;
 
     @Override
-    protected BrowserServicesIntentDataProvider buildIntentDataProvider(
+    protected @Nullable BrowserServicesIntentDataProvider buildIntentDataProvider(
             Intent intent, @CustomTabsIntent.ColorScheme int colorScheme) {
         if (intent == null) return null;
 
@@ -66,13 +70,14 @@ public class WebappActivity extends BaseCustomTabActivity {
     }
 
     @Override
-    public boolean onMenuOrKeyboardAction(int id, boolean fromMenu) {
+    public boolean onMenuOrKeyboardAction(
+            int id, boolean fromMenu, @Nullable MotionEventInfo triggeringMotion) {
         // Disable creating bookmark.
         if (id == R.id.bookmark_this_page_id) {
             return true;
         }
         if (id == R.id.open_in_browser_id) {
-            mNavigationController.openCurrentUrlInBrowser();
+            getCustomTabActivityNavigationController().openCurrentUrlInBrowser();
             if (fromMenu) {
                 RecordUserAction.record("WebappMenuOpenInChrome");
             } else {
@@ -80,11 +85,11 @@ public class WebappActivity extends BaseCustomTabActivity {
             }
             return true;
         }
-        return super.onMenuOrKeyboardAction(id, fromMenu);
+        return super.onMenuOrKeyboardAction(id, fromMenu, triggeringMotion);
     }
 
     @Override
-    protected Drawable getBackgroundDrawable() {
+    protected @Nullable Drawable getBackgroundDrawable() {
         return null;
     }
 
@@ -92,8 +97,8 @@ public class WebappActivity extends BaseCustomTabActivity {
     protected LaunchCauseMetrics createLaunchCauseMetrics() {
         return new WebappLaunchCauseMetrics(
                 this,
-                mWebappActivityCoordinator == null
+                getWebappActivityCoordinator() == null
                         ? null
-                        : mWebappActivityCoordinator.getWebappInfo());
+                        : getWebappActivityCoordinator().getWebappInfo());
     }
 }

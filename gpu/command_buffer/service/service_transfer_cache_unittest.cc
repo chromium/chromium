@@ -33,8 +33,7 @@ TEST(ServiceTransferCacheTest, EnforcesOnPurgeMemory) {
       ServiceTransferCache::EntryKey(kDecoderId, kEntryType, ++entry_id),
       CreateEntry(entry_size));
   EXPECT_EQ(cache.cache_size_for_testing(), entry_size);
-  cache.PurgeMemory(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  cache.PurgeMemory(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   EXPECT_EQ(cache.cache_size_for_testing(), 0u);
 
   cache.SetCacheSizeLimitForTesting(entry_size * number_of_entry);
@@ -53,8 +52,7 @@ TEST(ServiceTransferCacheTest, EnforcesOnPurgeMemory) {
       CreateEntry(entry_size));
   EXPECT_EQ(cache.cache_size_for_testing(), entry_size * 4);
 
-  cache.PurgeMemory(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+  cache.PurgeMemory(base::MEMORY_PRESSURE_LEVEL_MODERATE);
   // Only 1/4 of cache limits remains.
   EXPECT_EQ(cache.cache_size_for_testing(), entry_size);
 }

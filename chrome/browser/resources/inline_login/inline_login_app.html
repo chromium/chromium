@@ -1,4 +1,4 @@
-<style>
+ <style include="cr-spinner-style">
   :host {
     --dialog-top-border-size: 35px;
     display: flex;
@@ -27,21 +27,14 @@
     overflow: hidden;
   }
 
-  paper-spinner-lite {
-    --spinner-size: 24px;
-    display: none;
-    height: var(--spinner-size);
-    width: var(--spinner-size);
-  }
-
-  paper-spinner-lite[active] {
-    display: inline-block;
+  .spinner {
+    --cr-spinner-size: 24px;
   }
 </style>
 
-<paper-spinner-lite id="spinner"
-    active="[[isSpinnerActive_(loading_, verifyingAccount_)]]">
-</paper-spinner-lite>
+<div id="spinner" class="spinner"
+    hidden="[[!isSpinnerActive_(loading_, verifyingAccount_)]]">
+</div>
 <webview id="signinFrame" name="signin-frame" class="signin-frame"
   hidden$="[[isSpinnerActive_(loading_, verifyingAccount_)]]"
   allowscaling>

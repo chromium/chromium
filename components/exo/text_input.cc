@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "components/exo/seat.h"
 #include "components/exo/shell_surface_util.h"

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 
 // Single instance mock ADB server for use in browser tests. Runs on IO thread.
@@ -30,7 +29,7 @@ class MockAndroidConnection {
     virtual void SendSuccess(const std::string& message) {}
     virtual void SendRaw(const std::string& data) {}
     virtual void Close() {}
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
   };
 
   MockAndroidConnection(Delegate* delegate,

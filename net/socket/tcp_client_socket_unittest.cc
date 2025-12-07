@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // This file contains some tests for TCPClientSocket.
-// transport_client_socket_unittest.cc contans some other tests that
+// transport_client_socket_unittest.cc contains some other tests that
 // are common for TCP and other types of sockets.
 
 #include "net/socket/tcp_client_socket.h"
@@ -16,6 +16,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/power_monitor_test.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -24,6 +25,7 @@
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
+#include "net/base/port_util.h"
 #include "net/base/test_completion_callback.h"
 #include "net/log/net_log_source.h"
 #include "net/nqe/network_quality_estimator_test_util.h"
@@ -55,12 +57,25 @@ namespace net {
 
 namespace {
 
-class TCPClientSocketTest : public testing::Test {
+class TCPClientSocketTest
+    : public testing::Test,
+      // The param indicates whether the
+      // "TcpSocketIoCompletionPortWin" feature is enabled.
+      public testing::WithParamInterface<bool> {
  public:
   TCPClientSocketTest()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {
+#if BUILDFLAG(IS_WIN)
+    scoped_feature_list_.InitWithFeatureState(
+        features::kTcpSocketIoCompletionPortWin, GetParam());
+#else
+    CHECK(!GetParam());
+#endif  // BUILDFLAG(IS_WIN)
+  }
 
-  ~TCPClientSocketTest() override { base::PowerMonitor::ShutdownForTesting(); }
+  ~TCPClientSocketTest() override {
+    base::PowerMonitor::GetInstance()->ShutdownForTesting();
+  }
 
   void Suspend() { power_monitor_source_.Suspend(); }
   void Resume() { power_monitor_source_.Resume(); }
@@ -107,13 +122,14 @@ class TCPClientSocketTest : public testing::Test {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedPowerMonitorTestSource power_monitor_source_;
 };
 
 // Try binding a socket to loopback interface and verify that we can
 // still connect to a server on the same interface.
-TEST_F(TCPClientSocketTest, BindLoopbackToLoopback) {
+TEST_P(TCPClientSocketTest, BindLoopbackToLoopback) {
   IPAddress lo_address = IPAddress::IPv4Localhost();
 
   TCPServerSocket server(nullptr, NetLogSource());
@@ -152,7 +168,7 @@ TEST_F(TCPClientSocketTest, BindLoopbackToLoopback) {
 
 // Try to bind socket to the loopback interface and connect to an
 // external address, verify that connection fails.
-TEST_F(TCPClientSocketTest, BindLoopbackToExternal) {
+TEST_P(TCPClientSocketTest, BindLoopbackToExternal) {
   IPAddress external_ip(72, 14, 213, 105);
   TCPClientSocket socket(AddressList::CreateFromIPAddress(external_ip, 80),
                          nullptr, nullptr, nullptr, NetLogSource());
@@ -169,7 +185,7 @@ TEST_F(TCPClientSocketTest, BindLoopbackToExternal) {
 
 // Bind a socket to the IPv4 loopback interface and try to connect to
 // the IPv6 loopback interface, verify that connection fails.
-TEST_F(TCPClientSocketTest, BindLoopbackToIPv6) {
+TEST_P(TCPClientSocketTest, BindLoopbackToIPv6) {
   TCPServerSocket server(nullptr, NetLogSource());
   int listen_result =
       server.Listen(IPEndPoint(IPAddress::IPv6Localhost(), 0), 1,
@@ -193,7 +209,7 @@ TEST_F(TCPClientSocketTest, BindLoopbackToIPv6) {
   EXPECT_THAT(connect_callback.GetResult(result), Not(IsOk()));
 }
 
-TEST_F(TCPClientSocketTest, WasEverUsed) {
+TEST_P(TCPClientSocketTest, WasEverUsed) {
   IPAddress lo_address = IPAddress::IPv4Localhost();
   TCPServerSocket server(nullptr, NetLogSource());
   ASSERT_THAT(
@@ -227,8 +243,10 @@ TEST_F(TCPClientSocketTest, WasEverUsed) {
   const char kRequest[] = "GET / HTTP/1.0";
   auto write_buffer = base::MakeRefCounted<StringIOBuffer>(kRequest);
   TestCompletionCallback write_callback;
-  socket.Write(write_buffer.get(), write_buffer->size(),
-               write_callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS);
+  result =
+      socket.Write(write_buffer.get(), write_buffer->size(),
+                   write_callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS);
+  write_callback.GetResult(result);
   EXPECT_TRUE(socket.WasEverUsed());
   socket.Disconnect();
   EXPECT_FALSE(socket.IsConnected());
@@ -243,7 +261,7 @@ TEST_F(TCPClientSocketTest, WasEverUsed) {
 }
 
 // Tests that DNS aliases can be stored in a socket for reuse.
-TEST_F(TCPClientSocketTest, DnsAliasesPersistForReuse) {
+TEST_P(TCPClientSocketTest, DnsAliasesPersistForReuse) {
   IPAddress lo_address = IPAddress::IPv4Localhost();
   TCPServerSocket server(nullptr, NetLogSource());
   ASSERT_THAT(
@@ -286,8 +304,10 @@ TEST_F(TCPClientSocketTest, DnsAliasesPersistForReuse) {
   const char kRequest[] = "GET / HTTP/1.0";
   auto write_buffer = base::MakeRefCounted<StringIOBuffer>(kRequest);
   TestCompletionCallback write_callback;
-  socket.Write(write_buffer.get(), write_buffer->size(),
-               write_callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS);
+  result =
+      socket.Write(write_buffer.get(), write_buffer->size(),
+                   write_callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS);
+  write_callback.GetResult(result);
   EXPECT_TRUE(socket.WasEverUsed());
   socket.Disconnect();
   EXPECT_FALSE(socket.IsConnected());
@@ -300,6 +320,33 @@ TEST_F(TCPClientSocketTest, DnsAliasesPersistForReuse) {
   EXPECT_FALSE(socket.WasEverUsed());
   EXPECT_THAT(socket.GetDnsAliases(),
               testing::ElementsAre("alias1", "alias2", "host"));
+}
+
+TEST_P(TCPClientSocketTest, BlockRestrictedAddress) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  IPAddress lo_address = IPAddress::IPv4Localhost();
+  TCPServerSocket server(nullptr, NetLogSource());
+  ASSERT_THAT(
+      server.Listen(IPEndPoint(lo_address, 0), 1, /*ipv6_only=*/std::nullopt),
+      IsOk());
+  IPEndPoint server_address;
+  ASSERT_THAT(server.GetLocalAddress(&server_address), IsOk());
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kRestrictAbusePortsOnLocalhost,
+      {{"localhost_restrict_ports",
+        base::NumberToString(server_address.port())}});
+  ReloadLocalhostRestrictedPortsForTesting();
+  TCPClientSocket socket(AddressList(server_address), nullptr, nullptr, nullptr,
+                         NetLogSource());
+
+  TestCompletionCallback connect_callback;
+  int connect_result = socket.Connect(connect_callback.callback());
+  EXPECT_THAT(connect_callback.GetResult(connect_result),
+              IsError(ERR_UNSAFE_PORT));
+  histogram_tester.ExpectTotalCount("Net.RestrictedLocalhostPorts", 1);
+  histogram_tester.ExpectBucketCount("Net.RestrictedLocalhostPorts",
+                                     server_address.port(), 1);
 }
 
 class TestSocketPerformanceWatcher : public SocketPerformanceWatcher {
@@ -333,7 +380,7 @@ class TestSocketPerformanceWatcher : public SocketPerformanceWatcher {
 #endif
 // Tests if the socket performance watcher is notified if the same socket is
 // used for a different connection.
-TEST_F(TCPClientSocketTest, MAYBE_TestSocketPerformanceWatcher) {
+TEST_P(TCPClientSocketTest, MAYBE_TestSocketPerformanceWatcher) {
   const size_t kNumIPs = 2;
   IPAddressList ip_list;
   for (size_t i = 0; i < kNumIPs; ++i)
@@ -361,7 +408,7 @@ TEST_F(TCPClientSocketTest, MAYBE_TestSocketPerformanceWatcher) {
 // On Android, where socket tagging is supported, verify that
 // TCPClientSocket::Tag works as expected.
 #if BUILDFLAG(IS_ANDROID)
-TEST_F(TCPClientSocketTest, Tag) {
+TEST_P(TCPClientSocketTest, Tag) {
   if (!CanGetTaggedBytes()) {
     DVLOG(0) << "Skipping test - GetTaggedBytes unsupported.";
     return;
@@ -392,32 +439,30 @@ TEST_F(TCPClientSocketTest, Tag) {
   old_traffic = GetTaggedBytes(tag_val2);
   SocketTag tag2(getuid(), tag_val2);
   s.ApplySocketTag(tag2);
-  const char kRequest1[] = "GET / HTTP/1.0";
+  const std::string kRequest1 = "GET / HTTP/1.0";
   auto write_buffer1 = base::MakeRefCounted<StringIOBuffer>(kRequest1);
   TestCompletionCallback write_callback1;
-  EXPECT_EQ(s.Write(write_buffer1.get(), strlen(kRequest1),
+  EXPECT_EQ(s.Write(write_buffer1.get(), write_buffer1->size(),
                     write_callback1.callback(), TRAFFIC_ANNOTATION_FOR_TESTS),
-            static_cast<int>(strlen(kRequest1)));
+            static_cast<int>(kRequest1.size()));
   EXPECT_GT(GetTaggedBytes(tag_val2), old_traffic);
 
   // Verify socket can be retagged with a new value and the current process's
   // UID.
   old_traffic = GetTaggedBytes(tag_val1);
   s.ApplySocketTag(tag1);
-  const char kRequest2[] = "\n\n";
-  scoped_refptr<IOBufferWithSize> write_buffer2 =
-      base::MakeRefCounted<IOBufferWithSize>(strlen(kRequest2));
-  memmove(write_buffer2->data(), kRequest2, strlen(kRequest2));
+  const std::string kRequest2 = "\n\n";
+  auto write_buffer2 = base::MakeRefCounted<StringIOBuffer>(kRequest2);
   TestCompletionCallback write_callback2;
-  EXPECT_EQ(s.Write(write_buffer2.get(), strlen(kRequest2),
+  EXPECT_EQ(s.Write(write_buffer2.get(), write_buffer2->size(),
                     write_callback2.callback(), TRAFFIC_ANNOTATION_FOR_TESTS),
-            static_cast<int>(strlen(kRequest2)));
+            static_cast<int>(kRequest2.size()));
   EXPECT_GT(GetTaggedBytes(tag_val1), old_traffic);
 
   s.Disconnect();
 }
 
-TEST_F(TCPClientSocketTest, TagAfterConnect) {
+TEST_P(TCPClientSocketTest, TagAfterConnect) {
   if (!CanGetTaggedBytes()) {
     DVLOG(0) << "Skipping test - GetTaggedBytes unsupported.";
     return;
@@ -501,7 +546,7 @@ class NeverConnectingTCPClientSocket : public TCPClientSocket {
 
 // Entering suspend mode shouldn't affect sockets that haven't connected yet, or
 // listening server sockets.
-TEST_F(TCPClientSocketTest, SuspendBeforeConnect) {
+TEST_P(TCPClientSocketTest, SuspendBeforeConnect) {
   IPAddress lo_address = IPAddress::IPv4Localhost();
 
   TCPServerSocket server(nullptr, NetLogSource());
@@ -541,7 +586,7 @@ TEST_F(TCPClientSocketTest, SuspendBeforeConnect) {
   EXPECT_TRUE(accepted_socket->IsConnected());
 }
 
-TEST_F(TCPClientSocketTest, SuspendDuringConnect) {
+TEST_P(TCPClientSocketTest, SuspendDuringConnect) {
   IPAddress lo_address = IPAddress::IPv4Localhost();
 
   TCPServerSocket server(nullptr, NetLogSource());
@@ -568,7 +613,7 @@ TEST_F(TCPClientSocketTest, SuspendDuringConnect) {
               IsError(ERR_NETWORK_IO_SUSPENDED));
 }
 
-TEST_F(TCPClientSocketTest, SuspendDuringConnectMultipleAddresses) {
+TEST_P(TCPClientSocketTest, SuspendDuringConnectMultipleAddresses) {
   IPAddress lo_address = IPAddress::IPv4Localhost();
 
   TCPServerSocket server(nullptr, NetLogSource());
@@ -600,7 +645,7 @@ TEST_F(TCPClientSocketTest, SuspendDuringConnectMultipleAddresses) {
               IsError(ERR_NETWORK_IO_SUSPENDED));
 }
 
-TEST_F(TCPClientSocketTest, SuspendWhileIdle) {
+TEST_P(TCPClientSocketTest, SuspendWhileIdle) {
   std::unique_ptr<StreamSocket> accepted_socket;
   std::unique_ptr<TCPClientSocket> client_socket;
   std::unique_ptr<ServerSocket> server_socket;
@@ -642,7 +687,7 @@ TEST_F(TCPClientSocketTest, SuspendWhileIdle) {
   EXPECT_THAT(connect_callback.GetResult(connect_result), IsOk());
 }
 
-TEST_F(TCPClientSocketTest, SuspendDuringRead) {
+TEST_P(TCPClientSocketTest, SuspendDuringRead) {
   std::unique_ptr<StreamSocket> accepted_socket;
   std::unique_ptr<TCPClientSocket> client_socket;
   CreateConnectedSockets(&accepted_socket, &client_socket);
@@ -669,15 +714,15 @@ TEST_F(TCPClientSocketTest, SuspendDuringRead) {
               IsError(ERR_NETWORK_IO_SUSPENDED));
 }
 
-TEST_F(TCPClientSocketTest, SuspendDuringWrite) {
+TEST_P(TCPClientSocketTest, SuspendDuringWrite) {
   std::unique_ptr<StreamSocket> accepted_socket;
   std::unique_ptr<TCPClientSocket> client_socket;
   CreateConnectedSockets(&accepted_socket, &client_socket);
 
   // Write to the socket until a write doesn't complete synchronously.
   const int kBufferSize = 4096;
-  auto write_buffer = base::MakeRefCounted<IOBufferWithSize>(kBufferSize);
-  memset(write_buffer->data(), '1', kBufferSize);
+  auto write_buffer = base::MakeRefCounted<VectorIOBuffer>(
+      std::vector<uint8_t>(kBufferSize, '1'));
   TestCompletionCallback callback;
   while (true) {
     int rv =
@@ -702,7 +747,7 @@ TEST_F(TCPClientSocketTest, SuspendDuringWrite) {
               IsError(ERR_NETWORK_IO_SUSPENDED));
 }
 
-TEST_F(TCPClientSocketTest, SuspendDuringReadAndWrite) {
+TEST_P(TCPClientSocketTest, SuspendDuringReadAndWrite) {
   enum class ReadCallbackAction {
     kNone,
     kDestroySocket,
@@ -759,8 +804,8 @@ TEST_F(TCPClientSocketTest, SuspendDuringReadAndWrite) {
 
     // Write to the socket until a write doesn't complete synchronously.
     const int kBufferSize = 4096;
-    auto write_buffer = base::MakeRefCounted<IOBufferWithSize>(kBufferSize);
-    memset(write_buffer->data(), '1', kBufferSize);
+    auto write_buffer = base::MakeRefCounted<VectorIOBuffer>(
+        std::vector<uint8_t>(kBufferSize, '1'));
     TestCompletionCallback write_callback;
     while (true) {
       int rv = client_socket->Write(write_buffer.get(), kBufferSize,
@@ -810,6 +855,21 @@ TEST_F(TCPClientSocketTest, SuspendDuringReadAndWrite) {
 }
 
 #endif  // defined(TCP_CLIENT_SOCKET_OBSERVES_SUSPEND)
+
+INSTANTIATE_TEST_SUITE_P(Any,
+                         TCPClientSocketTest,
+                         ::testing::Values(false
+#if BUILDFLAG(IS_WIN)
+                                           ,
+                                           true
+#endif
+                                           ),
+                         [](::testing::TestParamInfo<bool> info) {
+                           if (info.param) {
+                             return "TcpSocketIoCompletionPortWin";
+                           }
+                           return "Base";
+                         });
 
 // Scoped helper to override the TCP connect attempt policy.
 class OverrideTcpConnectAttemptTimeout {

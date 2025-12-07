@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+[FAIL] SVGPathSegment interface exists
+  assert_not_equals: got disallowed value undefined
+[FAIL] Test path.getPathData() straight lines
+  path.getPathData is not a function
+[FAIL] Test path.getPathData() arc
+  path.getPathData is not a function
+[FAIL] Test path.getPathData() cubic
+  path.getPathData is not a function
+[FAIL] Test path.getPathData({normalize: true}) straight lines
+  path.getPathData is not a function
+[FAIL] Test path.getPathData({normalize: true}) cubic
+  path.getPathData is not a function
+[FAIL] Test path.getPathData({normalize: true}) quadratic
+  path.getPathData is not a function
+[FAIL] Test path.getPathData({normalize: true}) elliptical arc
+  path.getPathData is not a function
+[FAIL] Test path.setPathData()lines
+  path.getPathData is not a function
+[FAIL] Test path.setPathData()empty
+  path.getPathData is not a function
+Harness: the test ran to completion.
+

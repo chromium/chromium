@@ -88,9 +88,7 @@ MediaItemUIView::MediaItemUIView(
 #if BUILDFLAG(IS_CHROMEOS)
   // The updated UI requires media color theme to be set while the toolbar
   // media button does not provide it.
-  use_updated_ui_ =
-      base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI) &&
-      media_color_theme.has_value();
+  use_updated_ui_ = media_color_theme.has_value();
 #endif
 
   // Pressing callback for the updated quick settings media view will be handled
@@ -108,7 +106,6 @@ MediaItemUIView::MediaItemUIView(
                                     /*activate_original_media=*/true));
   }
 
-  std::unique_ptr<media_message_center::MediaNotificationView> view;
   if (use_updated_ui_) {
     CHECK(media_color_theme.has_value());
     if (footer_view) {
@@ -160,21 +157,22 @@ MediaItemUIView::MediaItemUIView(
         dismiss_button_container_->AddChildView(std::move(dismiss_button));
     UpdateDismissButtonIcon();
 
-    view = std::make_unique<media_message_center::MediaNotificationViewImpl>(
-        this, std::move(item), std::move(dismiss_button_placeholder),
-        std::u16string(), kWidth, /*should_show_icon=*/false,
-        notification_theme);
+    view_ = AddChildView(
+        std::make_unique<media_message_center::MediaNotificationViewImpl>(
+            this, std::move(item), std::move(dismiss_button_placeholder),
+            std::u16string(), kWidth, /*should_show_icon=*/false,
+            notification_theme));
     UpdateFooterView(std::move(footer_view));
-
-    view_ = AddChildView(std::move(view));
     UpdateDeviceSelector(std::move(device_selector_view));
     ForceExpandedState();
   }
 }
 
 MediaItemUIView::~MediaItemUIView() {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnMediaItemUIDestroyed(id_);
+  }
+  observers_.Clear();
 }
 
 void MediaItemUIView::AddedToWidget() {

@@ -1,0 +1,16 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "tab_group_favicons_grid.h",
+    "tab_group_favicons_grid.mm",
+  ]
+
+  deps = [
+    "//ios/chrome/browser/saved_tab_groups/favicon/ui/resources",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+  ]
+}

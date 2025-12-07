@@ -11,7 +11,7 @@
 namespace feed {
 
 AccountInfo::AccountInfo() = default;
-AccountInfo::AccountInfo(const std::string& gaia, const std::string& email)
+AccountInfo::AccountInfo(const GaiaId& gaia, const std::string& email)
     : gaia(gaia), email(email) {}
 AccountInfo::AccountInfo(CoreAccountInfo account_info)
     : gaia(std::move(account_info.gaia)),
@@ -19,9 +19,6 @@ AccountInfo::AccountInfo(CoreAccountInfo account_info)
 bool AccountInfo::IsEmpty() const {
   DCHECK_EQ(gaia.empty(), email.empty());
   return gaia.empty();
-}
-bool AccountInfo::operator==(const AccountInfo& rhs) const {
-  return tie(gaia, email) == tie(rhs.gaia, rhs.email);
 }
 
 std::ostream& operator<<(std::ostream& os, const AccountInfo& o) {

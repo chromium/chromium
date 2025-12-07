@@ -1,0 +1,39 @@
+' Copyright 2025 The Chromium Authors
+' Use of this source code is governed by a BSD-style license that can be
+' found in the LICENSE file.
+
+/'
+ ' This sequence diagram is used in the README of this directory.
+ ' Generated diagrams are by default located in
+ ' `out/components/autofill/core/browser/integrators/README_seq_create/*`.
+ '
+ ' This diagram describes the creation of a new delegate the underlying feature
+ ' is initialized. The integrator interface prevents a dependendency on the
+ ' `BrowserAutofillManager`.
+ '/
+@startuml
+Title: Creation of the PasswordManagerDelegate
+
+participant BrowserAutofillManager as bam
+participant ChromeAutofillClient as afc
+participant ChromePasswordManagerClient as pmc
+participant ContentPasswordManagerDriver as cpmd
+participant PasswordAutofillManager as pam
+
+
+bam -> afc:  GetPasswordDelegate(field)
+afc -> pmc:  GetPasswordDelegate(field)
+pmc -> pmc: rfh = FindDriverForFrame(field.frame_token)
+pmc -> cpmd: GetForRenderFrameHost(rfh)
+cpmd --> pam: <constructor> if first access
+cpmd --> pmc: <driver>
+pmc -> cpmd: GetPasswordDelegate
+cpmd --> pam: &this.autofill_password_manager
+
+pam --> cpmd: <PasswordAutofillManager is PasswordDelegate>
+cpmd --> pmc: <PasswordAutofillManager is PasswordDelegate>
+pmc --> afc:  <PasswordAutofillManager is PasswordDelegate>
+afc --> bam:  <PasswordAutofillManager is PasswordDelegate>
+
+bam -> pam: e.g. PasswordDelegate::ShowSuggestions()
+@enduml

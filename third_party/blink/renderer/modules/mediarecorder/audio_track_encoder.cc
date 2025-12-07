@@ -6,7 +6,10 @@
 
 namespace blink {
 
-AudioTrackEncoder::AudioTrackEncoder(OnEncodedAudioCB on_encoded_audio_cb)
-    : paused_(false), on_encoded_audio_cb_(std::move(on_encoded_audio_cb)) {}
+AudioTrackEncoder::AudioTrackEncoder(
+    OnEncodedAudioCB on_encoded_audio_cb,
+    OnEncodedAudioErrorCB on_encoded_audio_error_cb)
+    : on_encoded_audio_cb_(std::move(on_encoded_audio_cb)),
+      on_encoded_audio_error_cb_(std::move(on_encoded_audio_error_cb)) {}
 
 }  // namespace blink

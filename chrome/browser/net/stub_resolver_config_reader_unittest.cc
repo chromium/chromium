@@ -6,14 +6,18 @@
 
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "chrome/browser/net/default_dns_over_https_config_source.h"
+#include "chrome/browser/net/dns_over_https_config_source.h"
 #include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
+#include "net/base/features.h"
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -24,13 +28,8 @@ namespace {
 constexpr char kDohConfigString[] =
     "https://doh1.test https://doh2.test/query{?dns}";
 
-#if BUILDFLAG(IS_CHROMEOS)
-const std::string kDnsOverHttpsTemplatesPrefName =
-    prefs::kDnsOverHttpsEffectiveTemplatesChromeOS;
-#else
 const std::string kDnsOverHttpsTemplatesPrefName =
     prefs::kDnsOverHttpsTemplates;
-#endif
 
 // Override the reader to mock out the ShouldDisableDohFor...() methods.
 class MockedStubResolverConfigReader : public StubResolverConfigReader {
@@ -65,9 +64,11 @@ class StubResolverConfigReaderTest : public testing::Test {
  public:
   StubResolverConfigReaderTest() {
     StubResolverConfigReader::RegisterPrefs(local_state_.registry());
+    DefaultDnsOverHttpsConfigSource::RegisterPrefs(local_state_.registry());
   }
 
  protected:
+  base::HistogramTester histogram_tester_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingPrefServiceSimple local_state_;
@@ -126,6 +127,81 @@ TEST_F(StubResolverConfigReaderTest, DohEnabled_Secure) {
   EXPECT_EQ(expected_doh_config_, secure_dns_config.doh_servers());
 
   EXPECT_TRUE(config_reader_->parental_controls_checked());
+}
+
+TEST_F(StubResolverConfigReaderTest,
+       Doh_Automatic_WithFallbackEnabled_SetByUser) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kAddAutomaticWithDohFallbackMode);
+  local_state_.SetBoolean(prefs::kBuiltInDnsClientEnabled, true);
+  local_state_.SetString(prefs::kDnsOverHttpsMode,
+                         SecureDnsConfig::kModeAutomatic);
+  local_state_.SetBoolean(prefs::kDnsOverHttpsAutomaticModeFallbackToDoh, true);
+
+  config_reader_->UpdateNetworkService(/*record_metrics=*/true);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Net.DNS.DnsConfig.SecureDnsMode",
+      StubResolverConfigReader::SecureDnsModeDetailsForHistogram::
+          kAutomaticWithDohFallbackByUser,
+      1);
+}
+
+TEST_F(StubResolverConfigReaderTest,
+       Doh_Automatic_WithFallbackEnabled_SetByEnterprisePolicy) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kAddAutomaticWithDohFallbackMode);
+  local_state_.SetBoolean(prefs::kBuiltInDnsClientEnabled, true);
+  local_state_.SetManagedPref(
+      prefs::kDnsOverHttpsMode,
+      std::make_unique<base::Value>(SecureDnsConfig::kModeAutomatic));
+  local_state_.SetManagedPref(prefs::kDnsOverHttpsAutomaticModeFallbackToDoh,
+                              std::make_unique<base::Value>(true));
+
+  config_reader_->UpdateNetworkService(/*record_metrics=*/true);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Net.DNS.DnsConfig.SecureDnsMode",
+      StubResolverConfigReader::SecureDnsModeDetailsForHistogram::
+          kAutomaticWithDohFallbackByEnterprisePolicy,
+      1);
+}
+
+TEST_F(StubResolverConfigReaderTest,
+       Doh_Automatic_DisabledFeature_FallbackConfigUnset) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      net::features::kAddAutomaticWithDohFallbackMode);
+  local_state_.SetBoolean(prefs::kBuiltInDnsClientEnabled, true);
+  local_state_.SetString(prefs::kDnsOverHttpsMode,
+                         SecureDnsConfig::kModeAutomatic);
+  local_state_.SetBoolean(prefs::kDnsOverHttpsAutomaticModeFallbackToDoh, true);
+
+  SecureDnsConfig secure_dns_config = config_reader_->GetSecureDnsConfiguration(
+      /*force_check_parental_controls_for_automatic_mode=*/false);
+
+  EXPECT_EQ(net::SecureDnsMode::kAutomatic, secure_dns_config.mode());
+  EXPECT_THAT(secure_dns_config.fallback_doh_nameservers(), testing::IsEmpty());
+}
+
+TEST_F(StubResolverConfigReaderTest,
+       Doh_Automatic_DisabledPref_FallbackConfigUnset) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kAddAutomaticWithDohFallbackMode);
+  local_state_.SetBoolean(prefs::kBuiltInDnsClientEnabled, true);
+  local_state_.SetString(prefs::kDnsOverHttpsMode,
+                         SecureDnsConfig::kModeAutomatic);
+  local_state_.SetBoolean(prefs::kDnsOverHttpsAutomaticModeFallbackToDoh,
+                          false);
+
+  SecureDnsConfig secure_dns_config = config_reader_->GetSecureDnsConfiguration(
+      /* force_check_parental_controls_for_automatic_mode=*/false);
+
+  EXPECT_EQ(net::SecureDnsMode::kAutomatic, secure_dns_config.mode());
+  EXPECT_THAT(secure_dns_config.fallback_doh_nameservers(), testing::IsEmpty());
 }
 
 TEST_F(StubResolverConfigReaderTest, DisabledForManaged) {
@@ -247,13 +323,8 @@ TEST_F(StubResolverConfigReaderTest, DeferredParentalControlsCheck_Managed) {
   local_state_.SetManagedPref(
       prefs::kDnsOverHttpsMode,
       std::make_unique<base::Value>(SecureDnsConfig::kModeAutomatic));
-#if BUILDFLAG(IS_CHROMEOS)
-  local_state_.SetString(prefs::kDnsOverHttpsEffectiveTemplatesChromeOS,
-                         kDohConfigString);
-#else
   local_state_.SetManagedPref(prefs::kDnsOverHttpsTemplates,
                               std::make_unique<base::Value>(kDohConfigString));
-#endif
   SecureDnsConfig secure_dns_config = config_reader_->GetSecureDnsConfiguration(
       false /* force_check_parental_controls_for_automatic_mode */);
 
@@ -277,6 +348,90 @@ TEST_F(StubResolverConfigReaderTest, DeferredParentalControlsCheck_Managed) {
   // prefs have precedence.
   EXPECT_TRUE(config_reader_->GetInsecureStubResolverEnabled());
   EXPECT_EQ(net::SecureDnsMode::kAutomatic, secure_dns_config.mode());
+  EXPECT_EQ(expected_doh_config_, secure_dns_config.doh_servers());
+}
+
+const char kMockDohTemplateForAlternativeSource[] = "https://mock-doh.com";
+
+class MockDnsOverHttpsSource : public DnsOverHttpsConfigSource {
+ public:
+  MockDnsOverHttpsSource() : templates_(kMockDohTemplateForAlternativeSource) {}
+  MockDnsOverHttpsSource(const MockDnsOverHttpsSource&) = delete;
+  MockDnsOverHttpsSource& operator=(const MockDnsOverHttpsSource&) = delete;
+  ~MockDnsOverHttpsSource() override = default;
+
+  std::string GetDnsOverHttpsMode() const override {
+    return SecureDnsConfig::kModeAutomatic;
+  }
+
+  std::string GetDnsOverHttpsTemplates() const override { return templates_; }
+
+  bool AutomaticModeFallbackToDohEnabled() const override { return false; }
+
+  void SetDnsOverHttpsTemplates(const std::string& templates) {
+    templates_ = templates;
+    if (on_change_callback_) {
+      on_change_callback_.Run();
+    }
+  }
+
+  bool IsConfigManaged() const override { return true; }
+
+  void SetDohChangeCallback(base::RepeatingClosure callback) override {
+    on_change_callback_ = callback;
+  }
+
+ private:
+  std::string templates_;
+  base::RepeatingClosure on_change_callback_;
+};
+
+TEST_F(StubResolverConfigReaderTest, DohWithOverrideConfigSource) {
+  local_state_.SetBoolean(prefs::kBuiltInDnsClientEnabled, true);
+  local_state_.SetString(prefs::kDnsOverHttpsMode,
+                         SecureDnsConfig::kModeSecure);
+  local_state_.SetString(kDnsOverHttpsTemplatesPrefName, kDohConfigString);
+
+  SecureDnsConfig secure_dns_config = config_reader_->GetSecureDnsConfiguration(
+      /*force_check_parental_controls_for_automatic_mode=*/false);
+
+  // Expect that `config_reader_` gets the DoH config from the default DoH
+  // config source (which monitors local_state prefs).
+  EXPECT_EQ(net::SecureDnsMode::kSecure, secure_dns_config.mode());
+  EXPECT_EQ(expected_doh_config_, secure_dns_config.doh_servers());
+
+  std::unique_ptr<MockDnsOverHttpsSource> mock_doh_source =
+      std::make_unique<MockDnsOverHttpsSource>();
+  MockDnsOverHttpsSource* mock_doh_source_ptr = mock_doh_source.get();
+  config_reader_->SetOverrideDnsOverHttpsConfigSource(
+      std::move(mock_doh_source));
+  secure_dns_config = config_reader_->GetSecureDnsConfiguration(
+      /*force_check_parental_controls_for_automatic_mode=*/false);
+
+  // Expect that `config_reader_` gets the DoH config from the override DoH
+  // config source.
+  EXPECT_EQ(net::SecureDnsMode::kAutomatic, secure_dns_config.mode());
+  EXPECT_EQ(*net::DnsOverHttpsConfig::FromString(
+                kMockDohTemplateForAlternativeSource),
+            secure_dns_config.doh_servers());
+
+  const char kMockDohTemplate2[] = "https://mock-doh2.com";
+  mock_doh_source_ptr->SetDnsOverHttpsTemplates(kMockDohTemplate2);
+
+  // Expect that `config_reader_` gets updates from the override DoH config
+  // source.
+  secure_dns_config = config_reader_->GetSecureDnsConfiguration(
+      false /* force_check_parental_controls_for_automatic_mode */);
+  EXPECT_EQ(*net::DnsOverHttpsConfig::FromString(kMockDohTemplate2),
+            secure_dns_config.doh_servers());
+
+  config_reader_->SetOverrideDnsOverHttpsConfigSource(nullptr);
+  secure_dns_config = config_reader_->GetSecureDnsConfiguration(
+      false /* force_check_parental_controls_for_automatic_mode */);
+
+  // Expect that configuring a null override DoH config source will reset to
+  // the default behaviour.
+  EXPECT_EQ(net::SecureDnsMode::kSecure, secure_dns_config.mode());
   EXPECT_EQ(expected_doh_config_, secure_dns_config.doh_servers());
 }
 

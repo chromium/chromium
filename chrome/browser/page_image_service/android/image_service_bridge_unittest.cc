@@ -42,8 +42,7 @@ class ImageServiceBridgeTest : public testing::Test {
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
-    profile_ = profile_manager_->CreateTestingProfile("ImageServiceBridgeTest",
-                                                      /*testing_factories=*/{});
+    profile_ = profile_manager_->CreateTestingProfile("ImageServiceBridgeTest");
     identity_test_environment_ =
         std::make_unique<signin::IdentityTestEnvironment>();
 
@@ -121,4 +120,17 @@ TEST_F(ImageServiceBridgeTest, TestGetImageUrlWithInvalidURL) {
   image_service_bridge()->FetchImageUrlForImpl(
       /*is_account_data=*/false, page_image_service::mojom::ClientId::Bookmarks,
       GURL(""), mock_callback.Get());
+}
+
+TEST_F(ImageServiceBridgeTest, TestHasConsentToFetchImages) {
+  identity_test_environment()->SetPrimaryAccount("test@gmail.com",
+                                                 signin::ConsentLevel::kSync);
+  ASSERT_TRUE(image_service_bridge()->HasConsentToFetchImagesImpl(false));
+  ASSERT_TRUE(image_service_bridge()->HasConsentToFetchImagesImpl(true));
+
+  identity_test_environment()->ClearPrimaryAccount();
+  identity_test_environment()->SetPrimaryAccount("testnosync@gmail.com",
+                                                 signin::ConsentLevel::kSignin);
+  ASSERT_FALSE(image_service_bridge()->HasConsentToFetchImagesImpl(false));
+  ASSERT_TRUE(image_service_bridge()->HasConsentToFetchImagesImpl(true));
 }

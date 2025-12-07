@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 
 #include <memory>
 #include <string_view>
 
+#include "ash/shell.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -19,19 +16,20 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/input_method/assistive_window_controller.h"
-#include "chrome/browser/ash/input_method/ui/input_method_menu_item.h"
-#include "chrome/browser/ash/input_method/ui/input_method_menu_manager.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/input_method/input_method_menu_item.h"
+#include "chrome/browser/ui/ash/input_method/input_method_menu_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/test/base/interactive_test_utils.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_delegate.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_private_api.h"
+#include "extensions/browser/extension_host.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -137,8 +135,7 @@ class InputMethodEngineBrowserTest
         return LoadExtensionAsComponent(
             test_data_dir_.AppendASCII(extension_name));
     }
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   raw_ptr<const extensions::Extension, DanglingUntriaged> extension_;
@@ -286,10 +283,9 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, BasicScenarioTest) {
 
 // Test is flaky. https://crbug.com/1462135.
 IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, DISABLED_APIArgumentTest) {
-  // TODO(crbug.com/41455212): Makes real end to end test without mocking the
-  // input context handler. The test should mock the TextInputClient instance
-  // hooked up with `InputMethodAsh`, or even using the real `TextInputClient`
-  // if possible.
+  // Makes real end to end test without mocking the input context handler.
+  // Ideally the test should mock the TextInputClient instance hooked up with
+  // `InputMethodAsh`, or even using the real `TextInputClient` if possible.
   LoadTestInputMethod();
 
   InputMethodManager::Get()->GetActiveIMEState()->ChangeInputMethod(
@@ -309,7 +305,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, DISABLED_APIArgumentTest) {
       extensions::ProcessManager::Get(profile())->GetBackgroundHostForExtension(
           extension_->id());
   ASSERT_TRUE(host);
-  GURL test_url = ui_test_utils::GetTestUrl(
+  GURL test_url = chrome_test_utils::GetTestUrl(
       base::FilePath("extensions/api_test/input_method/typing/"),
       base::FilePath("test_page.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
@@ -476,17 +472,20 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, DISABLED_APIArgumentTest) {
   };
 
   for (size_t i = 0; i < std::size(kMediaKeyCases); ++i) {
-    SCOPED_TRACE(std::string("KeyDown, ") + kMediaKeyCases[i].code);
+    UNSAFE_TODO(
+        SCOPED_TRACE(std::string("KeyDown, ") + kMediaKeyCases[i].code));
     KeyEventDoneCallback callback(ui::ime::KeyEventHandledState::kNotHandled);
     const std::string expected_value = base::StringPrintf(
         "onKeyEvent::true:keydown:%s:%s:false:false:false:false:false",
-        kMediaKeyCases[i].key, kMediaKeyCases[i].code);
+        UNSAFE_TODO(kMediaKeyCases[i]).key,
+        UNSAFE_TODO(kMediaKeyCases[i]).code);
     ExtensionTestMessageListener keyevent_listener(expected_value);
 
-    ui::KeyEvent key_event(
-        ui::EventType::kKeyPressed, kMediaKeyCases[i].keycode,
-        ui::KeycodeConverter::CodeStringToDomCode(kMediaKeyCases[i].code),
-        ui::EF_NONE);
+    ui::KeyEvent key_event(ui::EventType::kKeyPressed,
+                           UNSAFE_TODO(kMediaKeyCases[i]).keycode,
+                           ui::KeycodeConverter::CodeStringToDomCode(
+                               UNSAFE_TODO(kMediaKeyCases[i]).code),
+                           ui::EF_NONE);
     TextInputMethod::KeyEventDoneCallback keyevent_callback =
         base::BindOnce(&KeyEventDoneCallback::Run, base::Unretained(&callback));
     engine_handler->ProcessKeyEvent(key_event, std::move(keyevent_callback));
@@ -1485,8 +1484,8 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, MojoInteractionTest) {
     ExtensionTestMessageListener keydown_listener(
         "onKeyEvent::true:keydown:a:KeyA:false:false:false:false:false");
 
-    EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_A, false,
-                                                false, false, false));
+    ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
+    generator.PressKey(ui::VKEY_A, 0);
 
     ASSERT_TRUE(keydown_listener.WaitUntilSatisfied());
     EXPECT_TRUE(keydown_listener.was_satisfied());

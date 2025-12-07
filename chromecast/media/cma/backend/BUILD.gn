@@ -8,8 +8,7 @@ import("//chromecast/chromecast.gni")
 import("//media/media_options.gni")
 
 declare_args() {
-  system_owns_volume =
-      use_alsa && !enable_assistant && chromecast_branding != "google"
+  system_owns_volume = use_alsa && !enable_assistant
 }
 
 cast_source_set("backend") {
@@ -27,7 +26,7 @@ cast_source_set("backend") {
   deps = [
     "//base",
     "//chromecast:chromecast_buildflags",
-    "//chromecast/base/metrics:metrics",
+    "//chromecast/base/metrics",
     "//chromecast/media:libcast_media",
     "//chromecast/media/cma/base",
     "//chromecast/media/cma/decoder",
@@ -109,7 +108,7 @@ cast_source_set("audio_codec_support") {
   deps = [
     "//base",
     "//chromecast/public",
-    "//chromecast/public/media:media",
+    "//chromecast/public/media",
   ]
 }
 
@@ -178,7 +177,6 @@ cast_source_set("for_mixer_audio") {
     "//chromecast/public",
     "//chromecast/public/media",
     "//media",
-    "//media:shared_memory_support",
   ]
 
   if (mixer_in_cast_shell) {

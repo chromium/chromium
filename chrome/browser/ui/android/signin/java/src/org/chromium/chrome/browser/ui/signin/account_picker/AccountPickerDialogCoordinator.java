@@ -12,9 +12,10 @@ import androidx.annotation.MainThread;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerCoordinator.Listener;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -23,6 +24,7 @@ import org.chromium.ui.modaldialog.ModalDialogProperties.Controller;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Coordinator to show the modal account picker dialog. */
+@NullMarked
 public class AccountPickerDialogCoordinator {
     private final RecyclerView mAccountPickerView;
     private final AccountPickerCoordinator mCoordinator;
@@ -32,26 +34,20 @@ public class AccountPickerDialogCoordinator {
     /** Constructs the coordinator and shows the account picker dialog. */
     @MainThread
     public AccountPickerDialogCoordinator(
-            Context context, Listener listener, ModalDialogManager modalDialogManager) {
+            Context context,
+            Listener listener,
+            ModalDialogManager modalDialogManager,
+            IdentityManager identityManager) {
         mDialogManager = modalDialogManager;
         mAccountPickerView = inflateAccountPickerView(context);
 
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-            mCoordinator =
-                    new AccountPickerCoordinator(
-                            mAccountPickerView,
-                            listener,
-                            R.layout.account_picker_dialog_row,
-                            R.layout.account_picker_dialog_new_account_row);
-        } else {
-            mCoordinator =
-                    new AccountPickerCoordinator(
-                            mAccountPickerView,
-                            listener,
-                            R.layout.account_picker_row,
-                            R.layout.account_picker_new_account_row);
-        }
+        mCoordinator =
+                new AccountPickerCoordinator(
+                        mAccountPickerView,
+                        listener,
+                        identityManager,
+                        R.layout.account_picker_dialog_row,
+                        R.layout.account_picker_dialog_new_account_row);
         mModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(

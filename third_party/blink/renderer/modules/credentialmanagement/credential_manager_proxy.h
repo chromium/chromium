@@ -7,7 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom-blink.h"
-#include "third_party/blink/public/mojom/payments/payment_credential.mojom-blink.h"
+#include "third_party/blink/public/mojom/payments/secure_payment_confirmation_service.mojom-blink.h"
 #include "third_party/blink/public/mojom/sms/webotp_service.mojom-blink.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-blink.h"
 #include "third_party/blink/public/mojom/webid/digital_identity_request.mojom-blink.h"
@@ -17,7 +17,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
@@ -36,10 +35,8 @@ class ScriptState;
 // method was called.
 class MODULES_EXPORT CredentialManagerProxy
     : public GarbageCollected<CredentialManagerProxy>,
-      public Supplement<LocalDOMWindow> {
+      public GarbageCollectedMixin {
  public:
-  static const char kSupplementName[];
-
   explicit CredentialManagerProxy(LocalDOMWindow&);
   virtual ~CredentialManagerProxy();
 
@@ -49,7 +46,8 @@ class MODULES_EXPORT CredentialManagerProxy
 
   mojom::blink::WebOTPService* WebOTPService();
 
-  payments::mojom::blink::PaymentCredential* PaymentCredential();
+  payments::mojom::blink::SecurePaymentConfirmationService*
+  SecurePaymentConfirmationService();
 
   mojom::blink::FederatedAuthRequest* FederatedAuthRequest();
 
@@ -71,10 +69,12 @@ class MODULES_EXPORT CredentialManagerProxy
   void OnFederatedAuthRequestConnectionError();
   void OnDigitalIdentityRequestConnectionError();
 
+  Member<LocalDOMWindow> local_dom_window_;
   HeapMojoRemote<mojom::blink::Authenticator> authenticator_;
   HeapMojoRemote<mojom::blink::CredentialManager> credential_manager_;
   HeapMojoRemote<mojom::blink::WebOTPService> webotp_service_;
-  HeapMojoRemote<payments::mojom::blink::PaymentCredential> payment_credential_;
+  HeapMojoRemote<payments::mojom::blink::SecurePaymentConfirmationService>
+      spc_service_;
   HeapMojoRemote<mojom::blink::FederatedAuthRequest> federated_auth_request_;
   HeapMojoRemote<mojom::blink::DigitalIdentityRequest>
       digital_identity_request_;

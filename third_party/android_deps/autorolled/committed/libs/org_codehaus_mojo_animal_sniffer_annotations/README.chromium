@@ -1,0 +1,16 @@
+Name: Animal Sniffer Annotations
+Short Name: animal-sniffer-annotations
+URL: https://repo.maven.apache.org/maven2/org/codehaus/mojo/animal-sniffer-annotations/1.26/animal-sniffer-annotations-1.26.jar
+Version: 1.26
+Update Mechanism: Autoroll
+License: MIT
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+Animal Sniffer Annotations allow marking methods which Animal Sniffer should ignore signature violations of.
+
+Local Modifications:
+No modifications.

@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.lens;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 @IntDef({
     LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM,
     LensEntryPoint.CONTEXT_MENU_SHOP_MENU_ITEM,
@@ -14,8 +16,10 @@ import androidx.annotation.IntDef;
     LensEntryPoint.NEW_TAB_PAGE,
     LensEntryPoint.TASKS_SURFACE,
     LensEntryPoint.QUICK_ACTION_SEARCH_WIDGET,
-    LensEntryPoint.GOOGLE_BOTTOM_BAR
+    LensEntryPoint.GOOGLE_BOTTOM_BAR,
+    LensEntryPoint.TIPS_NOTIFICATIONS
 })
+@NullMarked
 public @interface LensEntryPoint {
     int CONTEXT_MENU_SEARCH_MENU_ITEM = 0;
     int CONTEXT_MENU_SHOP_MENU_ITEM = 1;
@@ -25,4 +29,5 @@ public @interface LensEntryPoint {
     int TASKS_SURFACE = 5;
     int QUICK_ACTION_SEARCH_WIDGET = 6;
     int GOOGLE_BOTTOM_BAR = 7;
+    int TIPS_NOTIFICATIONS = 8;
 }

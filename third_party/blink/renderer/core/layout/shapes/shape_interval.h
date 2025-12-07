@@ -52,7 +52,7 @@ class ShapeInterval {
   T X1() const { return IsUndefined() ? 0 : x1_; }
   T X2() const { return IsUndefined() ? 0 : x2_; }
   T Width() const { return IsUndefined() ? 0 : x2_ - x1_; }
-  bool IsEmpty() const { return IsUndefined() ? true : x1_ == x2_; }
+  bool IsEmpty() const { return IsUndefined() || x1_ == x2_; }
 
   void Set(T x1, T x2) {
     DCHECK_GE(x2, x1);
@@ -74,9 +74,6 @@ class ShapeInterval {
 
   bool operator==(const ShapeInterval<T>& other) const {
     return X1() == other.X1() && X2() == other.X2();
-  }
-  bool operator!=(const ShapeInterval<T>& other) const {
-    return !operator==(other);
   }
 
   void Unite(const ShapeInterval<T>& interval) {

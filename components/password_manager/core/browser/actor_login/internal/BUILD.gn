@@ -1,0 +1,65 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# The code can theoretically be used on mobile too, it's just currently
+# not needed. Remove the asserts if using it on mobile and remember
+# to also modify components/BUILD.gn to start building the tests.
+assert(!is_android && !is_ios)
+
+source_set("delegate") {
+  sources = [
+    "actor_login_credential_filler.cc",
+    "actor_login_credential_filler.h",
+    "actor_login_delegate.h",
+    "actor_login_form_finder.cc",
+    "actor_login_form_finder.h",
+    "actor_login_get_credentials_helper.cc",
+    "actor_login_get_credentials_helper.h",
+    "actor_login_metrics.cc",
+    "actor_login_metrics.h",
+  ]
+
+  visibility = [
+    ":unit_tests",
+    "//chrome/browser/password_manager/actor_login:*",
+    "//chrome/browser/password_manager/actor_login/internal:*",
+    "//components/password_manager/core/browser/actor_login/test:*",
+  ]
+
+  deps = [
+    "//base",
+    "//components/device_reauth",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser:password_form",
+    "//components/password_manager/core/browser/actor_login:common",
+    "//components/password_manager/core/browser/features:password_features",
+    "//components/strings:components_strings",
+    "//components/url_formatter",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "actor_login_credential_filler_unittest.cc",
+    "actor_login_get_credentials_helper_unittest.cc",
+  ]
+
+  deps = [
+    ":delegate",
+    "//components/device_reauth",
+    "//components/optimization_guide/proto:optimization_guide_proto_gen",
+    "//components/password_manager/core/browser:test_support",
+    "//components/password_manager/core/browser/actor_login:common",
+    "//components/password_manager/core/browser/actor_login/test:test_support",
+    "//components/password_manager/core/browser/features:password_features",
+    "//components/proto_extras:proto_matchers",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}

@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.payments.handler.toolbar;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -20,7 +23,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.payments.handler.toolbar.PaymentHandlerToolbarMediator.PaymentHandlerToolbarMediatorDelegate;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.content_public.browser.NavigationHandle;
-import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** A test for PaymentHandlerToolbarMediator. */
@@ -28,7 +31,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class PaymentHandlerToolbarMediatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Mock private WebContents mMockWebContents;
+    @Mock private MockWebContents mMockWebContents;
     @Mock private PaymentHandlerToolbarMediatorDelegate mMockDelegate;
 
     private PropertyModel mModel;
@@ -46,7 +49,7 @@ public class PaymentHandlerToolbarMediatorTest {
         Mockito.doReturn(ConnectionSecurityLevel.NONE).when(mMockDelegate).getSecurityLevel();
         Mockito.doReturn(123)
                 .when(mMockDelegate)
-                .getSecurityIconResource(ConnectionSecurityLevel.NONE);
+                .getSecurityIconResource(eq(ConnectionSecurityLevel.NONE), any());
         Mockito.doReturn("this is content description.")
                 .when(mMockDelegate)
                 .getSecurityIconContentDescription(ConnectionSecurityLevel.NONE);
@@ -62,10 +65,12 @@ public class PaymentHandlerToolbarMediatorTest {
     @Test
     @Feature({"Payments"})
     public void testDidStartNavigation() {
-        Mockito.doReturn(123).when(mMockDelegate).getSecurityIconResource(Mockito.anyInt());
+        Mockito.doReturn(123)
+                .when(mMockDelegate)
+                .getSecurityIconResource(eq(ConnectionSecurityLevel.NONE), any());
         Mockito.doReturn("this is content description.")
                 .when(mMockDelegate)
-                .getSecurityIconContentDescription(Mockito.anyInt());
+                .getSecurityIconContentDescription(ConnectionSecurityLevel.NONE);
 
         NavigationHandle navigation = Mockito.mock(NavigationHandle.class);
         Mockito.when(navigation.isSameDocument()).thenReturn(false);

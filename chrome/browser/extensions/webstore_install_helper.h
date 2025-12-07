@@ -13,9 +13,12 @@
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_delegate.h"
+#include "extensions/buildflags/buildflags.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class BitmapFetcher;
 
@@ -44,7 +47,7 @@ class WebstoreInstallHelper : public base::RefCounted<WebstoreInstallHelper>,
                                         const SkBitmap& icon,
                                         base::Value::Dict parsed_manifest) = 0;
 
-    // Called to indicate a parse failure. The |result_code| parameter should
+    // Called to indicate a parse failure. The `result_code` parameter should
     // indicate whether the problem was with the manifest or icon.
     virtual void OnWebstoreParseFailure(
         const std::string& id,
@@ -52,10 +55,10 @@ class WebstoreInstallHelper : public base::RefCounted<WebstoreInstallHelper>,
         const std::string& error_message) = 0;
 
    protected:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
   };
 
-  // It is legal for |icon_url| to be empty.
+  // It is legal for `icon_url` to be empty.
   WebstoreInstallHelper(Delegate* delegate,
                         const std::string& id,
                         const std::string& manifest,
@@ -84,7 +87,7 @@ class WebstoreInstallHelper : public base::RefCounted<WebstoreInstallHelper>,
   // The manifest to parse.
   std::string manifest_;
 
-  // If |icon_url_| is non-empty, it needs to be fetched and decoded into an
+  // If `icon_url_` is non-empty, it needs to be fetched and decoded into an
   // SkBitmap.
   GURL icon_url_;
   std::unique_ptr<BitmapFetcher> icon_fetcher_;

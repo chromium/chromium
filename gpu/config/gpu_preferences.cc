@@ -8,9 +8,10 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
-#include "components/miracle_parameter/common/public/miracle_parameter.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
 #include "gpu/ipc/common/gpu_preferences.mojom.h"
 
@@ -34,37 +35,28 @@ size_t GetCustomGpuCacheSizeBytesIfExists(std::string_view switch_string) {
 }
 #endif
 
-BASE_FEATURE(kDefaultGpuDiskCacheSize,
-             "DefaultGpuDiskCacheSize",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-MIRACLE_PARAMETER_FOR_INT(GetGpuDefaultMaxProgramCacheMemoryBytes,
-                          kDefaultGpuDiskCacheSize,
-                          "GpuDefaultMaxProgramCacheMemoryBytes",
-                          kDefaultMaxProgramCacheMemoryBytes)
-
-#if BUILDFLAG(IS_ANDROID)
-MIRACLE_PARAMETER_FOR_INT(GetGpuLowEndMaxProgramCacheMemoryBytes,
-                          kDefaultGpuDiskCacheSize,
-                          "GpuLowEndMaxProgramCacheMemoryBytes",
-                          kLowEndMaxProgramCacheMemoryBytes)
-#endif
-
 }  // namespace
 
 size_t GetDefaultGpuDiskCacheSize() {
+  size_t cache_size = 0;
 #if !BUILDFLAG(IS_ANDROID)
   size_t custom_cache_size =
       GetCustomGpuCacheSizeBytesIfExists(switches::kGpuDiskCacheSizeKB);
-  if (custom_cache_size)
-    return custom_cache_size;
-  return GetGpuDefaultMaxProgramCacheMemoryBytes();
+  if (custom_cache_size) {
+    cache_size = custom_cache_size;
+  } else {
+    cache_size = kDefaultMaxProgramCacheMemoryBytes;
+  }
 #else   // !BUILDFLAG(IS_ANDROID)
-  if (!base::SysInfo::IsLowEndDevice())
-    return GetGpuDefaultMaxProgramCacheMemoryBytes();
-  else
-    return GetGpuLowEndMaxProgramCacheMemoryBytes();
+  cache_size = base::SysInfo::IsLowEndDevice()
+                   ? kLowEndMaxProgramCacheMemoryBytes
+                   : kDefaultMaxProgramCacheMemoryBytes;
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  if (base::FeatureList::IsEnabled(::features::kAggressiveShaderCacheLimits)) {
+    cache_size *= 2;
+  }
+  return cache_size;
 }
 
 std::string GrContextTypeToString(GrContextType type) {
@@ -80,7 +72,31 @@ std::string GrContextTypeToString(GrContextType type) {
     case GrContextType::kGraphiteMetal:
       return "GraphiteMetal";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED() << "GrContextType=" << static_cast<int>(type);
+}
+
+std::string SkiaBackendTypeToString(SkiaBackendType type) {
+  switch (type) {
+    case SkiaBackendType::kUnknown:
+      return "Unknown";
+    case SkiaBackendType::kNone:
+      return "None";
+    case SkiaBackendType::kGaneshGL:
+      return "GaneshGL";
+    case SkiaBackendType::kGaneshVulkan:
+      return "GaneshVulkan";
+    case SkiaBackendType::kGraphiteDawnVulkan:
+      return "GraphiteDawnVulkan";
+    case SkiaBackendType::kGraphiteDawnMetal:
+      return "GraphiteDawnMetal";
+    case SkiaBackendType::kGraphiteDawnD3D11:
+      return "GraphiteDawnD3D11";
+    case SkiaBackendType::kGraphiteDawnD3D12:
+      return "GraphiteDawnD3D12";
+    case SkiaBackendType::kGraphiteMetal:
+      return "GraphiteMetal";
+  }
+  NOTREACHED() << "SkiaBackendType=" << static_cast<int>(type);
 }
 
 GpuPreferences::GpuPreferences() = default;

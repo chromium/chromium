@@ -13,10 +13,13 @@ import android.os.IBinder;
 
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.concurrent.Executor;
 
 /** Implementation of ChildServiceConnection that does connect to a service. */
+@NullMarked
 /* package */ class ChildServiceConnectionImpl
         implements ChildServiceConnection, ServiceConnection {
     private static final String TAG = "ChildServiceConn";
@@ -26,8 +29,8 @@ import java.util.concurrent.Executor;
     private final int mBindFlags;
     private final Handler mHandler;
     private final Executor mExecutor;
-    private ChildServiceConnectionDelegate mDelegate;
-    private final String mInstanceName;
+    private @Nullable ChildServiceConnectionDelegate mDelegate;
+    private final @Nullable String mInstanceName;
     private boolean mBound;
 
     /* package */ ChildServiceConnectionImpl(
@@ -37,7 +40,7 @@ import java.util.concurrent.Executor;
             Handler handler,
             Executor executor,
             ChildServiceConnectionDelegate delegate,
-            String instanceName) {
+            @Nullable String instanceName) {
         mContext = context;
         mBindIntent = bindIntent;
         mBindFlags = bindFlags;
@@ -67,10 +70,13 @@ import java.util.concurrent.Executor;
     }
 
     @Override
-    public void unbindServiceConnection() {
+    public void unbindServiceConnection(@Nullable Runnable onStateChangeCallback) {
         if (mBound) {
-            mContext.unbindService(this);
             mBound = false;
+            if (onStateChangeCallback != null) {
+                onStateChangeCallback.run();
+            }
+            BindService.doUnbindService(mContext, this);
         }
     }
 
@@ -80,7 +86,7 @@ import java.util.concurrent.Executor;
     }
 
     @Override
-    public void updateGroupImportance(int group, int importanceInGroup) {
+    public boolean updateGroupImportance(int group, int importanceInGroup) {
         // ChildProcessConnection checks there is a real connection to the service before calling
         // this, and this `isBound` check should in theory be unnecessary. However this is still
         // tripped on some devices where another service connection bound successfully but this
@@ -88,26 +94,30 @@ import java.util.concurrent.Executor;
         // behavior and is not handled. However, avoid crashing in `updateServiceGroup` by doing
         // this check here.
         if (!isBound()) {
-            return;
+            return false;
         }
         if (BindService.supportVariableConnections()) {
             try {
-                mContext.updateServiceGroup(this, group, importanceInGroup);
+                BindService.doUpdateServiceGroup(mContext, this, group, importanceInGroup);
+                return true;
             } catch (IllegalArgumentException e) {
                 // There is an unavoidable race here binding might be removed for example due to a
                 // crash, which has not been processed on the launcher thread.
                 // Ignore these. See crbug.com/1026626 and crbug.com/1026626 for context.
-                return;
             }
-            BindService.doBindService(
-                    mContext, mBindIntent, this, mBindFlags, mHandler, mExecutor, mInstanceName);
         }
+        return false;
     }
 
     @Override
     public void retire() {
         mDelegate = null;
-        unbindServiceConnection();
+        unbindServiceConnection(null);
+    }
+
+    @Override
+    public void rebindService(int bindFlags) {
+        BindService.doRebindService(mContext, this, bindFlags);
     }
 
     @Override

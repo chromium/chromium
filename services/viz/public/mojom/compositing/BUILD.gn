@@ -1,0 +1,31 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+import("//build/config/ui.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("shared_image_format") {
+  generate_java = true
+  sources = [ "shared_image_format.mojom" ]
+  enabled_features = []
+  if (use_ozone) {
+    enabled_features += [ "use_ozone" ]
+  }
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "viz.mojom.SharedImageFormat"
+          cpp = "::viz::SharedImageFormat"
+        },
+      ]
+      traits_headers = [ "//services/viz/public/cpp/compositing/shared_image_format_mojom_traits.h" ]
+      traits_sources = [ "//services/viz/public/cpp/compositing/shared_image_format_mojom_traits.cc" ]
+      traits_public_deps =
+          [ "//components/viz/common/resources:shared_image_format" ]
+    },
+  ]
+
+  public_deps =
+      [ "//services/viz/public/mojom/compositing/internal:singleplanar_format" ]
+}

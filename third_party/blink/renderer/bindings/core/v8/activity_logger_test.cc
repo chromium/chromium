@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/memory/ptr_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_cache.h"
@@ -48,24 +43,22 @@ class TestActivityLogger : public V8DOMActivityLogger {
 
   void LogMethod(ScriptState* script_state,
                  const String& api_name,
-                 int argc,
-                 const v8::Local<v8::Value>* argv) override {
+                 base::span<const v8::Local<v8::Value>> args) override {
     String activity_string = api_name;
-    for (int i = 0; i < argc; i++) {
-      activity_string = activity_string + " | " +
-                        ToCoreStringWithUndefinedOrNullCheck(
-                            script_state->GetIsolate(), argv[i]);
+    for (const auto& arg : args) {
+      activity_string =
+          activity_string + " | " +
+          ToCoreStringWithUndefinedOrNullCheck(script_state->GetIsolate(), arg);
     }
     logged_activities_.push_back(activity_string);
   }
 
   void LogEvent(ExecutionContext* execution_context,
                 const String& event_name,
-                int argc,
-                const String* argv) override {
+                base::span<const String> args) override {
     String activity_string = event_name;
-    for (int i = 0; i < argc; i++) {
-      activity_string = activity_string + " | " + argv[i];
+    for (const auto& arg : args) {
+      activity_string = activity_string + " | " + arg;
     }
     logged_activities_.push_back(activity_string);
   }

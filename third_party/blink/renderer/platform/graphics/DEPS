@@ -8,6 +8,7 @@ include_rules = [
     # Dependencies.
     "+base/memory/post_delayed_memory_reduction_task.h",
     "+base/atomic_sequence_num.h",
+    "+base/task/common/task_annotator.h",
     "+base/task/task_traits.h",
     "+base/threading/sequenced_task_runner_handle.h",
     "+cc",
@@ -18,13 +19,11 @@ include_rules = [
     "+gpu/command_buffer/client/client_shared_image.h",
     "+gpu/command_buffer/client/context_support.h",
     "+gpu/command_buffer/client/gles2_interface.h",
-    "+gpu/command_buffer/client/gpu_memory_buffer_manager.h",
     "+gpu/command_buffer/client/raster_interface.h",
     "+gpu/command_buffer/client/shared_image_interface.h",
-    "+gpu/command_buffer/client/test_gpu_memory_buffer_manager.h",
     "+gpu/command_buffer/client/webgpu_interface.h",
+    "+gpu/command_buffer/client/test_shared_image_interface.h",
     "+gpu/command_buffer/common/gles2_cmd_copy_texture_chromium_utils.h",
-    "+gpu/command_buffer/common/gpu_memory_buffer_support.h",
     "+gpu/command_buffer/common/capabilities.h",
     "+gpu/command_buffer/common/mailbox.h",
     "+gpu/command_buffer/common/mailbox_holder.h",
@@ -102,5 +101,8 @@ specific_include_rules = {
   ],
   "video_frame_image_util_test.cc": [
     "+media/renderers/shared_image_video_frame_test_utils.h",
+  ],
+  "web_graphics_context_3d_video_frame_pool.h": [
+    "+base/cancelable_callback.h",
   ],
 }

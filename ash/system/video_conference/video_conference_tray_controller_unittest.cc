@@ -4,6 +4,8 @@
 
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 
+#include <string_view>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -66,7 +68,7 @@ bool IsNudgeShown(const std::string& id) {
   return Shell::Get()->anchored_nudge_manager()->IsNudgeShown(id);
 }
 
-const std::u16string& GetNudgeText(const std::string& id) {
+std::u16string_view GetNudgeText(const std::string& id) {
   return Shell::Get()->anchored_nudge_manager()->GetNudgeBodyTextForTest(id);
 }
 

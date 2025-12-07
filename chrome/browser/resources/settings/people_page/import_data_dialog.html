@@ -1,11 +1,11 @@
-    <style include="settings-shared md-select">
+    <style include="settings-shared md-select cr-spinner-style">
       .description {
         align-items: center;
         display: flex;
         margin-top: 16px;
       }
 
-      paper-spinner-lite {
+      .spinner {
         margin: 0 8px;
       }
 
@@ -28,8 +28,7 @@
       <div slot="body">
         <div hidden$="[[!hasImportStatus_(
             importStatusEnum_.SUCCEEDED, importStatus_)]]">
-          <iron-icon id="successIcon" icon="settings:check-circle">
-          </iron-icon>
+          <cr-icon id="successIcon" icon="cr:check-circle"></cr-icon>
           <div hidden$="[[!prefs.import_dialog_bookmarks.value]]">
             <div class="description">$i18n{importSuccess}</div>
             <settings-toggle-button
@@ -89,12 +88,9 @@
         </div>
       </div>
       <div slot="button-container">
-        <paper-spinner-lite
-            active="[[hasImportStatus_(
-                importStatusEnum_.IN_PROGRESS, importStatus_)]]"
-            hidden="[[hasImportStatus_(
-                importStatusEnum_.SUCCEEDED, importStatus_)]]">
-        </paper-spinner-lite>
+        <div class="spinner" hidden$="[[!hasImportStatus_(
+            importStatusEnum_.IN_PROGRESS, importStatus_)]]">
+        </div>
         <cr-button id="cancel" class="cancel-button"
             hidden="[[hasImportStatus_(
                 importStatusEnum_.SUCCEEDED, importStatus_)]]"

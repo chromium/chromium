@@ -57,7 +57,7 @@ void SpawnDaemon(int exit_status) {
   if (fork()) {
     // In parent process.
     sleep(10);  // Wait for the child process to finish setsid().
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   // In child process.

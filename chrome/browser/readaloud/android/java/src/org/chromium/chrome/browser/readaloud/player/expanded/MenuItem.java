@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.readaloud.player.expanded;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.TouchDelegate;
 import android.view.View;
 import android.view.View.AccessibilityDelegate;
 import android.view.accessibility.AccessibilityEvent;
@@ -18,7 +20,6 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.SwitchCompat;
 
@@ -28,12 +29,16 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.readaloud.player.R;
+import org.chromium.chrome.browser.readaloud.player.TouchDelegateUtil;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** MenuItem is a view that can be used for all Read Aloud player menu item variants. */
+@NullMarked
 public class MenuItem extends FrameLayout {
     private static final String TAG = "ReadAloudMenuItem";
 
@@ -61,8 +66,9 @@ public class MenuItem extends FrameLayout {
     private final ObservableSupplier<LinearLayout> mLayoutSupplier;
     private final ImageView mPlayButton;
     private final ProgressBar mPlayButtonSpinner;
-    private Callback<Boolean> mToggleHandler;
     private final String mLabel;
+    private @Nullable Callback<Boolean> mToggleHandler;
+    private @Nullable TouchDelegate mTouchDelegate;
 
     /**
      * @param context Context.
@@ -93,7 +99,7 @@ public class MenuItem extends FrameLayout {
                 });
         mLayout = layout;
         mLayoutSupplier = new ObservableSupplierImpl(mLayout);
-        new OneShotCallback<LinearLayout>(mLayoutSupplier, this::onLayoutInflated);
+        new OneShotCallback<>(mLayoutSupplier, this::onLayoutInflated);
         if (iconId != 0) {
             ImageView icon = layout.findViewById(R.id.icon);
             icon.setImageResource(iconId);
@@ -148,12 +154,10 @@ public class MenuItem extends FrameLayout {
 
         mPlayButton = (ImageView) findViewById(R.id.play_button);
         mPlayButton.setContentDescription(
-                context.getResources().getString(R.string.readaloud_play) + " " + mLabel);
+                context.getString(R.string.readaloud_play) + " " + mLabel);
         mPlayButtonSpinner = (ProgressBar) findViewById(R.id.spinner);
         mPlayButtonSpinner.setContentDescription(
-                context.getResources().getString(R.string.readaloud_playback_loading)
-                        + " "
-                        + mLabel);
+                context.getString(R.string.readaloud_playback_loading) + " " + mLabel);
     }
 
     private void onLayoutInflated(LinearLayout layout) {
@@ -190,6 +194,19 @@ public class MenuItem extends FrameLayout {
                         }
                     }
                 });
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        if (mTouchDelegate == null) {
+            mTouchDelegate = TouchDelegateUtil.createTouchDelegate(this, mPlayButton);
+        }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        return mTouchDelegate != null && mTouchDelegate.onTouchEvent(event);
     }
 
     void setToggleHandler(Callback<Boolean> handler) {
@@ -231,13 +248,13 @@ public class MenuItem extends FrameLayout {
     void setPlayButtonStopped() {
         mPlayButton.setImageResource(R.drawable.mini_play_button);
         mPlayButton.setContentDescription(
-                getContext().getResources().getString(R.string.readaloud_play) + " " + mLabel);
+                getContext().getString(R.string.readaloud_play) + " " + mLabel);
     }
 
     void setPlayButtonPlaying() {
         mPlayButton.setImageResource(R.drawable.mini_pause_button);
         mPlayButton.setContentDescription(
-                getContext().getResources().getString(R.string.readaloud_pause) + " " + mLabel);
+                getContext().getString(R.string.readaloud_pause) + " " + mLabel);
     }
 
     void setSecondLine(String text) {

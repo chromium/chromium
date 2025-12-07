@@ -79,6 +79,10 @@ class CONTENT_EXPORT SyntheticGestureController {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  void SetRendererInitializedForTesting(bool renderer_known_to_be_initialized) {
+    renderer_known_to_be_initialized_ = renderer_known_to_be_initialized;
+  }
+
  private:
   friend class SyntheticGestureControllerTestBase;
 

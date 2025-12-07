@@ -1,0 +1,55 @@
+<!doctype html>
+<title>Clipboard event targets non-editable focused elements when no visible selection is present</title>
+<link rel="help" href="https://www.w3.org/TR/clipboard-apis/#fire-a-clipboard-event">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<textarea id="textcontrol">HEY</textarea>
+<table>
+  <tr>
+    <td tabindex="0" id="table_cell">Table cell</td>
+  </tr>
+</table>
+
+<script>
+// We use testRunner.execCommand() to test user-triggered (not scripted) clipboard events.
+testClipboardEvent = function(eventName, selectedElement, nonEditable) {
+  let selectionHitCount = 0;
+  let nonEditableElementHitCount = 0;
+  let documentHitCount = 0;
+  let lastTarget;
+  nonEditablLog = function(e) {
+    nonEditableElementHitCount++;
+    lastTarget = e.target;
+  }
+  selectionLog = function(e) {
+    selectionHitCount++;
+    lastTarget = e.target;
+  }
+  documentLog = function(e) {
+    documentHitCount++;
+    lastTarget = e.target;
+  }
+  selectedElement.addEventListener(eventName, selectionLog);
+  nonEditable.addEventListener(eventName, nonEditablLog);
+  document.addEventListener(eventName, documentLog);
+
+  selectedElement.focus();
+  testRunner.execCommand(eventName);
+  assert_equals(selectionHitCount, 1, `The <textarea> should receive one ${eventName}-event.`)
+  assert_equals(nonEditableElementHitCount, 0, `On the non-editable element, there should be no ${eventName}-event.`)
+  assert_equals(documentHitCount, 1, `The document should receive one bubbled ${eventName}-event.`)
+  assert_equals(lastTarget, selectedElement, `The <textarea> should be the ${eventName}-event's target.`)
+
+  table_cell.focus();
+  testRunner.execCommand(eventName);
+  assert_equals(selectionHitCount, 1, `The carret is hidden in the <textarea> so the <textarea> should not receive an ${eventName}-event.`)
+  assert_equals(nonEditableElementHitCount, 1, `The non-editable element which is now focused should receive one ${eventName}-event.`)
+  assert_equals(documentHitCount, 2, `The document should receive one bubbled ${eventName}-event.`)
+  assert_equals(lastTarget, table_cell, `The non-editable table cell should be the ${eventName}-event's target.`)
+}
+
+test(() => testClipboardEvent('copy', textcontrol, table_cell),  'Hidden carrets in textcontrols are not targeted by copy-events.');
+test(() => testClipboardEvent('paste', textcontrol, table_cell), 'Hidden carrets in textcontrols are not targeted by paste-events.');
+test(() => testClipboardEvent('cut', textcontrol, table_cell),   'Hidden carrets in textcontrols are not targeted by cut-events.');
+</script>

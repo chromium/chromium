@@ -17,7 +17,6 @@
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
 class Profile;
 
@@ -69,6 +68,7 @@ class InstallFromInfoCommand
   raw_ref<Profile> profile_;
 
   const webapps::AppId app_id_;
+  const bool diy_app_;
 
   std::unique_ptr<AppLock> lock_;
 

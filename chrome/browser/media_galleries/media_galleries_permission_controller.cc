@@ -8,7 +8,6 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/not_fatal_until.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
@@ -26,8 +25,8 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/text/bytes_formatting.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
 using extensions::APIPermission;
@@ -300,7 +299,7 @@ void MediaGalleriesPermissionController::FileSelected(
     // just sets the gallery to permitted.
     GalleryDialogId gallery_id = GetDialogId(gallery.pref_id);
     auto iter = known_galleries_.find(gallery_id);
-    CHECK(iter != known_galleries_.end(), base::NotFatalUntil::M130);
+    CHECK(iter != known_galleries_.end());
     iter->second.selected = true;
     forgotten_galleries_.erase(gallery_id);
     dialog_->UpdateGalleries();
@@ -503,8 +502,7 @@ MediaGalleriesPermissionController::DialogIdMap::DialogIdMap()
   forward_mapping_.push_back(kInvalidMediaGalleryPrefId);
 }
 
-MediaGalleriesPermissionController::DialogIdMap::~DialogIdMap() {
-}
+MediaGalleriesPermissionController::DialogIdMap::~DialogIdMap() = default;
 
 GalleryDialogId
 MediaGalleriesPermissionController::DialogIdMap::GetDialogId(
@@ -531,4 +529,4 @@ MediaGalleriesPermissionController::DialogIdMap::GetPrefId(
 
 // MediaGalleries dialog -------------------------------------------------------
 
-MediaGalleriesDialog::~MediaGalleriesDialog() {}
+MediaGalleriesDialog::~MediaGalleriesDialog() = default;

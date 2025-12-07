@@ -21,7 +21,6 @@
 #include "services/audio/public/cpp/fake_stream_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 using ::testing::InSequence;
 using ::testing::Mock;
@@ -69,7 +68,7 @@ class MockRendererAudioInputStreamFactoryClient
       mojo::PendingRemote<media::mojom::AudioInputStream> input_stream,
       mojo::PendingReceiver<media::mojom::AudioInputStreamClient>
           client_receiver,
-      media::mojom::ReadOnlyAudioDataPipePtr data_pipe,
+      media::mojom::ReadWriteAudioDataPipePtr data_pipe,
       bool initially_muted,
       const std::optional<base::UnguessableToken>& stream_id) override {
     EXPECT_TRUE(stream_id.has_value());
@@ -111,7 +110,6 @@ class MockStreamFactory final : public audio::FakeStreamFactory {
     const media::AudioParameters params;
     uint32_t shared_memory_count;
     bool enable_agc;
-    base::ReadOnlySharedMemoryRegion key_press_count_buffer;
     media::mojom::AudioProcessingConfigPtr processing_config;
     CreateInputStreamCallback created_callback;
   };
@@ -132,9 +130,9 @@ class MockStreamFactory final : public audio::FakeStreamFactory {
       mojo::PendingRemote<media::mojom::AudioLog> log,
       const std::string& device_id,
       const media::AudioParameters& params,
+      const base::UnguessableToken& group_id,
       uint32_t shared_memory_count,
       bool enable_agc,
-      base::ReadOnlySharedMemoryRegion key_press_count_buffer,
       media::mojom::AudioProcessingConfigPtr processing_config,
       CreateInputStreamCallback created_callback) override {
     // No way to cleanly exit the test here in case of failure, so use CHECK.
@@ -148,8 +146,6 @@ class MockStreamFactory final : public audio::FakeStreamFactory {
     stream_request_data_->log.Bind(std::move(log));
     stream_request_data_->shared_memory_count = shared_memory_count;
     stream_request_data_->enable_agc = enable_agc;
-    stream_request_data_->key_press_count_buffer =
-        std::move(key_press_count_buffer);
     stream_request_data_->processing_config = std::move(processing_config);
     stream_request_data_->created_callback = std::move(created_callback);
   }
@@ -164,8 +160,8 @@ struct TestEnvironment {
             kRenderFrameId,
             kDeviceId,
             TestParams(),
+            base::UnguessableToken::Create(),
             kShMemCount,
-            nullptr /*user_input_monitor*/,
             kEnableAgc,
             media::mojom::AudioProcessingConfig::New(
                 remote_controls_.BindNewPipeAndPassReceiver(),
@@ -203,10 +199,11 @@ TEST(AudioInputStreamBrokerTest, StoresProcessAndFrameId) {
   MockDeleterCallback deleter;
   StrictMock<MockRendererAudioInputStreamFactoryClient> renderer_factory_client;
 
-  AudioInputStreamBroker broker(
-      kRenderProcessId, kRenderFrameId, kDeviceId, TestParams(), kShMemCount,
-      nullptr /*user_input_monitor*/, kEnableAgc, nullptr /*processing_config*/,
-      deleter.Get(), renderer_factory_client.MakeRemote());
+  AudioInputStreamBroker broker(kRenderProcessId, kRenderFrameId, kDeviceId,
+                                TestParams(), base::UnguessableToken::Create(),
+                                kShMemCount, kEnableAgc,
+                                nullptr /*processing_config*/, deleter.Get(),
+                                renderer_factory_client.MakeRemote());
 
   EXPECT_EQ(kRenderProcessId, broker.render_process_id());
   EXPECT_EQ(kRenderFrameId, broker.render_frame_id());
@@ -228,8 +225,7 @@ TEST(AudioInputStreamBrokerTest, StreamCreationSuccess_Propagates) {
   base::SyncSocket socket1, socket2;
   base::SyncSocket::CreatePair(&socket1, &socket2);
   std::move(stream_request_data.created_callback)
-      .Run({std::in_place,
-            base::ReadOnlySharedMemoryRegion::Create(shmem_size).region,
+      .Run({std::in_place, base::UnsafeSharedMemoryRegion::Create(shmem_size),
             mojo::PlatformHandle(socket1.Take())},
            kInitiallyMuted, base::UnguessableToken::Create());
 

@@ -7,6 +7,10 @@ specific_include_rules = {
   ],
   "content_security_policy.h": [
     "+services/network/public/cpp/content_security_policy/content_security_policy.h",
+    "+services/network/public/cpp/integrity_metadata.h",
+  ],
+  "conversion_util_test.cc": [
+    "+services/network/public/cpp/integrity_metadata.h",
   ],
   "csp_source_test\.cc": [
     "+url/url_features.h",

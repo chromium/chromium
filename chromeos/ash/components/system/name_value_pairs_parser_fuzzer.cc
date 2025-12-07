@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chromeos/ash/components/system/name_value_pairs_parser.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
-#include "chromeos/ash/components/system/name_value_pairs_parser.h"
+#include "base/compiler_specific.h"
 
 namespace ash::system {
 
@@ -14,7 +16,7 @@ namespace ash::system {
 class NameValuePairsParserFuzzer {
  public:
   void testOneInput(const uint8_t* data, size_t size) {
-    const std::string input = std::string(data, data + size);
+    const std::string input = std::string(data, UNSAFE_TODO(data + size));
 
     name_value_map_.clear();
 
@@ -43,7 +45,7 @@ class NameValuePairsParserFuzzer {
     // Test with the input as a value on the same line (i.e., without any
     // newline in it).
     std::string value = input;
-    value.erase(std::remove(value.begin(), value.end(), '\n'), value.end());
+    std::erase(value, '\n');
     testInputAsVpdDumpValueForKey(value);
     // TODO(crbug.com/40197992): Check that the value for "key" is |value|.
   }

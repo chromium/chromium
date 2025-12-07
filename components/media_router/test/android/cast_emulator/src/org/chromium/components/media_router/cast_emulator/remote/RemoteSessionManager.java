@@ -40,7 +40,7 @@ public class RemoteSessionManager implements DummyPlayer.Callback {
         return sInstance;
     }
 
-    private String mName;
+    private final String mName;
     private int mSessionId;
     private int mItemId;
     private boolean mPaused;
@@ -52,7 +52,7 @@ public class RemoteSessionManager implements DummyPlayer.Callback {
     private static RemoteSessionManager sInstance;
 
     private LocalSessionManager mLocalSessionManager;
-    private Context mContext;
+    private final Context mContext;
 
     private RemoteSessionManager(String name, Context context) {
         mName = name;
@@ -65,7 +65,6 @@ public class RemoteSessionManager implements DummyPlayer.Callback {
      * @param uri the URI of the video
      * @param mime the mime type
      * @param receiver the pending intent to use to send state changes
-     * @param contentPosition
      * @return the new media item
      */
     public MediaItem add(Uri uri, String mime, PendingIntent receiver, long contentPosition) {

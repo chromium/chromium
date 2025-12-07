@@ -60,10 +60,9 @@ class FakeAudioRendererSink : public AudioRendererSink {
 
   State state() const { return state_; }
 
- protected:
+ private:
   ~FakeAudioRendererSink() override;
 
- private:
   void ChangeState(State new_state);
 
   State state_;

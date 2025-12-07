@@ -5,38 +5,46 @@
 #include "chrome/browser/webid/federated_identity_auto_reauthn_permission_context.h"
 
 #include "base/metrics/histogram_macros.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/password_manager/password_manager_settings_service_factory.h"
-#include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/actor/actor_keyed_service_factory.h"
+#endif  //! BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/profiles/profile.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/password_manager/core/browser/password_manager_setting.h"
+#include "components/password_manager/core/browser/password_manager_settings_service.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
+#include "content/public/browser/web_contents.h"
 #include "url/origin.h"
 
 FederatedIdentityAutoReauthnPermissionContext::
     FederatedIdentityAutoReauthnPermissionContext(
-        content::BrowserContext* browser_context)
-    : host_content_settings_map_(
-          HostContentSettingsMapFactory::GetForProfile(browser_context)),
-      permission_autoblocker_(
-          PermissionDecisionAutoBlockerFactory::GetForProfile(
-              Profile::FromBrowserContext(browser_context))),
-      browser_context_(browser_context) {}
+        HostContentSettingsMap* host_content_settings_map,
+        permissions::PermissionDecisionAutoBlocker* permission_autoblocker)
+    : host_content_settings_map_(host_content_settings_map),
+      permission_autoblocker_(permission_autoblocker) {}
 
 FederatedIdentityAutoReauthnPermissionContext::
     ~FederatedIdentityAutoReauthnPermissionContext() = default;
 
+void FederatedIdentityAutoReauthnPermissionContext::
+    OnPasswordManagerSettingsServiceInitialized(
+        password_manager::PasswordManagerSettingsService* settings_service) {
+  password_manager_settings_service_ = settings_service;
+}
+
+void FederatedIdentityAutoReauthnPermissionContext::Shutdown() {
+  password_manager_settings_service_ = nullptr;
+}
+
 bool FederatedIdentityAutoReauthnPermissionContext::
     IsAutoReauthnSettingEnabled() {
-  return host_content_settings_map_->GetDefaultContentSetting(
+  return password_manager_settings_service_ &&
+         password_manager_settings_service_->IsSettingEnabled(
+             password_manager::PasswordManagerSetting::kAutoSignIn) &&
+         host_content_settings_map_->GetDefaultContentSetting(
              ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION,
-             /*provider_id=*/nullptr) !=
-             ContentSetting::CONTENT_SETTING_BLOCK &&
-         PasswordManagerSettingsServiceFactory::GetForProfile(
-             Profile::FromBrowserContext(browser_context_))
-             ->IsSettingEnabled(
-                 password_manager::PasswordManagerSetting::kAutoSignIn);
+             /*provider_id=*/nullptr) != ContentSetting::CONTENT_SETTING_BLOCK;
 }
 
 bool FederatedIdentityAutoReauthnPermissionContext::IsAutoReauthnEmbargoed(
@@ -44,6 +52,24 @@ bool FederatedIdentityAutoReauthnPermissionContext::IsAutoReauthnEmbargoed(
   return permission_autoblocker_->IsEmbargoed(
       relying_party_embedder.GetURL(),
       ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION);
+}
+
+bool FederatedIdentityAutoReauthnPermissionContext::
+    IsAutoReauthnDisabledByEmbedder(content::WebContents* web_contents) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (!web_contents) {
+    return false;
+  }
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  const auto* tab_interface =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  auto* actor_service = actor::ActorKeyedService::Get(profile);
+  return tab_interface && actor_service &&
+         actor_service->IsActiveOnTab(*tab_interface);
+#else   // BUILDFLAG(IS_ANDROID)
+  return false;
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 base::Time

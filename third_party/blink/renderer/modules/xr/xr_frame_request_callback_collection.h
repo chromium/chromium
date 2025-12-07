@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/rand_util.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -42,14 +43,14 @@ class XRFrameRequestCallbackCollection final
   }
 
   void Trace(Visitor*) const;
-  const char* NameInHeapSnapshot() const override {
+  const char* GetHumanReadableName() const override {
     return "XRFrameRequestCallbackCollection";
   }
 
  private:
   bool IsValidCallbackId(int id) {
     using Traits = HashTraits<CallbackId>;
-    return !WTF::IsHashTraitsEmptyOrDeletedValue<Traits, CallbackId>(id);
+    return !IsHashTraitsEmptyOrDeletedValue<Traits, CallbackId>(id);
   }
 
   using CallbackFrameRequestMap =
@@ -66,6 +67,14 @@ class XRFrameRequestCallbackCollection final
   CallbackAsyncTaskMap current_callback_async_tasks_;
 
   CallbackId next_callback_id_ = 0;
+
+  // Trace IDs need to be unique for any outstanding frames. While we can only
+  // have one immersive session at a time, that is not the case for inline
+  // sessions. Since this class is created per-session, we cannot simply
+  // use `next_callback_id_`. Instead we generate a random number over
+  // a sufficiently large space to provide an offset so that outstanding frames
+  // should for all pracitcal purposes never overlap.
+  const uint64_t trace_id_base_ = base::RandUint64();
 
   Member<ExecutionContext> context_;
 };

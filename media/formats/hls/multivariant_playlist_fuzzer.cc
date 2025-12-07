@@ -7,12 +7,12 @@
 #include <cstddef>
 #include <cstdint>
 #include <string_view>
+#include <variant>
 
 #include "base/at_exit.h"
 #include "base/check.h"
 #include "base/i18n/icu_util.h"
 #include "media/formats/hls/playlist.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
 struct IcuEnvironment {

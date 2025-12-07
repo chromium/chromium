@@ -5,6 +5,8 @@
 #ifndef CONTENT_PUBLIC_COMMON_ISOLATED_WORLD_IDS_H_
 #define CONTENT_PUBLIC_COMMON_ISOLATED_WORLD_IDS_H_
 
+#include <cstdint>
+
 namespace content {
 
 // Please keep this enum in sync with IsolatedWordIds.java

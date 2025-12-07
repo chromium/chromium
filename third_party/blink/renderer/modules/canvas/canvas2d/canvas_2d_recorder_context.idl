@@ -1,0 +1,99 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+enum CanvasFillRule { "nonzero", "evenodd" };
+enum ImageSmoothingQuality {"low", "medium", "high"};
+
+dictionary BeginLayerOptions {
+  CanvasFilterInput? filter = null;
+};
+
+interface mixin Canvas2DRecorderContext {
+    // state
+    [NoAllocDirectCall] void save(); // push state on state stack
+    [NoAllocDirectCall, RaisesException] void restore(); // pop state stack if top state was pushed by save, and restore state
+    [MeasureAs=Canvas2DLayers, RuntimeEnabled=Canvas2dLayers, CallWith=ScriptState] void beginLayer(); // push state on state stack and creates bitmap for subsequent draw ops
+    [MeasureAs=Canvas2DLayers, RuntimeEnabled=Canvas2dLayersWithOptions, CallWith=ScriptState, RaisesException] void beginLayer(BeginLayerOptions options); // push state on state stack and creates bitmap for subsequent draw ops
+    [NoAllocDirectCall, RuntimeEnabled=Canvas2dLayers, RaisesException] void endLayer(); // pop state stack if top state was pushed by beginLayer, restore state and draw the bitmap
+    // Clear the canvas and reset the path
+    void reset();
+
+    // transformations (default transform is the identity matrix)
+    [NoAllocDirectCall] void scale(unrestricted double x, unrestricted double y);
+    [NoAllocDirectCall] void rotate(unrestricted double angle);
+    [NoAllocDirectCall] void translate(unrestricted double x, unrestricted double y);
+    [NoAllocDirectCall] void transform(unrestricted double a, unrestricted double b, unrestricted double c, unrestricted double d, unrestricted double e, unrestricted double f);
+    DOMMatrix getTransform();
+    [NoAllocDirectCall] void setTransform(unrestricted double a, unrestricted double b, unrestricted double c, unrestricted double d, unrestricted double e, unrestricted double f);
+    [RaisesException] void setTransform(optional DOMMatrixInit transform = {});
+    [NoAllocDirectCall] void resetTransform();
+
+    // compositing
+    [NoAllocDirectCall=Setter] attribute unrestricted double globalAlpha; // (default 1.0)
+    attribute DOMString globalCompositeOperation; // (default source-over)
+    [MeasureAs=Canvas2DFilter, SetterCallWith=ScriptState] attribute (DOMString or CanvasFilter)? filter; // (default 'none')
+    [RuntimeEnabled=CanvasGlobalHDRHeadroom] attribute unrestricted double globalHDRHeadroom; // (default 0.0)
+
+    // image smoothing
+    [NoAllocDirectCall=Setter] attribute boolean imageSmoothingEnabled; // (default True)
+    [MeasureAs=Canvas2DImageSmoothingQuality2] attribute ImageSmoothingQuality imageSmoothingQuality; // (default "low")
+
+    // colors and styles (see also the CanvasDrawingStyles interface)
+    [SetterCallWith=Isolate, RaisesException=Setter, GetterCallWith=ScriptState] attribute any strokeStyle; // (default black)
+    [SetterCallWith=Isolate, RaisesException=Setter, GetterCallWith=ScriptState] attribute any fillStyle; // (default black)
+    CanvasGradient createLinearGradient(double x0, double y0, double x1, double y1);
+    [RaisesException] CanvasGradient createRadialGradient(double x0, double y0, double r0, double x1, double y1, double r1);
+    [RaisesException] CanvasPattern? createPattern(CanvasImageSource image, [LegacyNullToEmptyString] DOMString repetitionType);
+    CanvasGradient createConicGradient(double startAngle, double cx, double cy);
+
+    // shadows
+    [NoAllocDirectCall=Setter] attribute unrestricted double shadowOffsetX;
+    [NoAllocDirectCall=Setter] attribute unrestricted double shadowOffsetY;
+    [NoAllocDirectCall=Setter] attribute unrestricted double shadowBlur;
+    attribute DOMString shadowColor;
+
+    // rects
+    [NoAllocDirectCall] void clearRect(unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
+    [NoAllocDirectCall] void fillRect(unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
+    [NoAllocDirectCall] void strokeRect(unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
+
+    // path API (see also CanvasPath)
+    [NoAllocDirectCall] void beginPath();
+    void fill(optional CanvasFillRule winding);
+    void fill(Path2D path, optional CanvasFillRule winding);
+    [NoAllocDirectCall] void stroke();
+    void stroke(Path2D path);
+
+    void clip(optional CanvasFillRule winding);
+    void clip(Path2D path, optional CanvasFillRule winding);
+    [MeasureAs=Canvas2DIsPointInPath] boolean isPointInPath(unrestricted double x, unrestricted double y, optional CanvasFillRule winding);
+    [MeasureAs=Canvas2DIsPointInPath] boolean isPointInPath(Path2D path, unrestricted double x, unrestricted double y, optional CanvasFillRule winding);
+    [MeasureAs=Canvas2DIsPointInStroke] boolean isPointInStroke(unrestricted double x, unrestricted double y);
+    [MeasureAs=Canvas2DIsPointInStroke] boolean isPointInStroke(Path2D path, unrestricted double x, unrestricted double y);
+
+    // drawing images
+    [RaisesException] void drawImage(CanvasImageSource image, unrestricted double x, unrestricted double y);
+    [RaisesException] void drawImage(CanvasImageSource image, unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
+    [RaisesException] void drawImage(CanvasImageSource image, unrestricted double sx, unrestricted double sy, unrestricted double sw, unrestricted double sh, unrestricted double dx, unrestricted double dy, unrestricted double dw, unrestricted double dh);
+
+    // triangle mesh API
+    [MeasureAs=Canvas2DMesh, RuntimeEnabled=Canvas2dMesh, RaisesException] Mesh2DVertexBuffer createMesh2DVertexBuffer(Float32Array buffer);
+    [MeasureAs=Canvas2DMesh, RuntimeEnabled=Canvas2dMesh, RaisesException] Mesh2DUVBuffer createMesh2DUVBuffer(Float32Array buffer);
+    [MeasureAs=Canvas2DMesh, RuntimeEnabled=Canvas2dMesh, RaisesException] Mesh2DIndexBuffer createMesh2DIndexBuffer(Uint16Array buffer);
+    [MeasureAs=Canvas2DMesh, RuntimeEnabled=Canvas2dMesh, RaisesException] void drawMesh(Mesh2DVertexBuffer vertex_buffer,
+                                                                                                      Mesh2DUVBuffer uv_buffer,
+                                                                                                      Mesh2DIndexBuffer index_buffer,
+                                                                                                      CanvasImageSource image);
+    // FIXME: factor out to CanvasDrawingStyles
+    // line caps/joins
+    [NoAllocDirectCall=Setter] attribute unrestricted double lineWidth; // (default 1)
+    attribute DOMString lineCap; // "butt", "round", "square" (default "butt")
+    attribute DOMString lineJoin; // "round", "bevel", "miter" (default "miter")
+    [NoAllocDirectCall=Setter] attribute unrestricted double miterLimit; // (default 10)
+
+    // dashed lines
+    void setLineDash(sequence<unrestricted double> dash);
+    sequence<unrestricted double> getLineDash();
+    [NoAllocDirectCall=Setter] attribute unrestricted double lineDashOffset;
+};

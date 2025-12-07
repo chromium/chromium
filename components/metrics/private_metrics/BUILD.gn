@@ -1,0 +1,142 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+import("//tools/metrics/private_metrics/gen_private_metrics_builders.gni")
+
+component("private_metrics_features") {
+  sources = [ "private_metrics_features.cc" ]
+  public = [ "private_metrics_features.h" ]
+  defines = [ "IS_PRIVATE_METRICS_FEATURES_IMPL" ]
+  deps = [ "//base" ]
+}
+
+component("dwa_recorder") {
+  sources = [
+    "//components/metrics/dwa/dwa_recorder.cc",
+    "//components/metrics/dwa/dwa_recorder.h",
+  ]
+  defines = [ "IS_DWA_RECORDER_IMPL" ]
+  public_deps = [
+    "//components/metrics/dwa/mojom",
+    "//third_party/metrics_proto",
+  ]
+  deps = [
+    ":private_metrics_features",
+    "//base",
+  ]
+}
+
+component("private_metrics_recorders") {
+  sources = [
+    "dkm_recorder.cc",
+    "dkm_recorder.h",
+  ]
+  defines = [ "IS_PRIVATE_METRICS_RECORDERS_IMPL" ]
+  public_deps = [
+    "//components/metrics/private_metrics/mojom",
+    "//third_party/metrics_proto",
+  ]
+  deps = [
+    ":private_metrics_features",
+    "//base",
+  ]
+}
+
+# TODO(crbug.com/433729993): Build dwa static library under private_metrics static library.
+static_library("private_metrics") {
+  sources = [
+    "//components/metrics/dwa/dwa_entry_builder.cc",
+    "//components/metrics/dwa/dwa_entry_builder.h",
+    "//components/metrics/dwa/dwa_entry_builder_base.cc",
+    "//components/metrics/dwa/dwa_entry_builder_base.h",
+    "//components/metrics/dwa/dwa_pref_names.cc",
+    "//components/metrics/dwa/dwa_pref_names.h",
+    "//components/metrics/dwa/dwa_recorder_factory_impl.cc",
+    "//components/metrics/dwa/dwa_recorder_factory_impl.h",
+    "//components/metrics/dwa/dwa_recorder_interface.cc",
+    "//components/metrics/dwa/dwa_recorder_interface.h",
+    "//components/metrics/dwa/dwa_rotation_scheduler.cc",
+    "//components/metrics/dwa/dwa_rotation_scheduler.h",
+    "//components/metrics/dwa/dwa_service.cc",
+    "//components/metrics/dwa/dwa_service.h",
+    "data_upload_config_downloader.cc",
+    "data_upload_config_downloader.h",
+    "dkm_entry_builder.cc",
+    "dkm_entry_builder.h",
+    "dkm_entry_builder_base.cc",
+    "dkm_entry_builder_base.h",
+    "private_metrics_pref_names.h",
+    "private_metrics_reporting_service.cc",
+    "private_metrics_reporting_service.h",
+    "private_metrics_unsent_log_store_metrics.cc",
+    "private_metrics_unsent_log_store_metrics.h",
+    "puma_histogram_encoder.cc",
+    "puma_histogram_encoder.h",
+    "puma_service.cc",
+    "puma_service.h",
+  ]
+  public_deps = [
+    ":dwa_recorder",
+    ":private_metrics_recorders",
+    "//components/metrics/dwa/mojom",
+    "//components/metrics/private_metrics/mojom",
+    "//components/regional_capabilities:country_access_reason",
+    "//components/regional_capabilities:country_id",
+    "//third_party/federated_compute:confidential_compute_proto",
+    "//third_party/metrics_proto",
+  ]
+  defines = [ "IS_DWA_IMPL" ]
+  deps = [
+    ":private_metrics_features",
+    "//base",
+    "//build:buildflag_header_h",
+    "//components/metrics",
+    "//components/metrics:library_support",
+    "//components/metrics:metrics_pref_names",
+    "//components/prefs",
+    "//components/version_info",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/network/public/cpp",
+    "//third_party/federated_compute:confidential_compute",
+    "//third_party/oak:oak_proto",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "//components/metrics/dwa/dwa_entry_builder_unittest.cc",
+    "//components/metrics/dwa/dwa_recorder_unittest.cc",
+    "//components/metrics/dwa/dwa_service_unittest.cc",
+    "//components/metrics/private_metrics/puma_histogram_encoder_unittest.cc",
+    "//components/metrics/private_metrics/puma_service_unittest.cc",
+    "data_upload_config_downloader_unittest.cc",
+    "dkm_entry_builder_unittest.cc",
+  ]
+  deps = [
+    ":private_metrics",
+    ":private_metrics_features",
+    "//base",
+    "//base/test:test_support",
+    "//components/country_codes",
+    "//components/metrics",
+    "//components/metrics:test_support",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/federated_compute:confidential_compute",
+    "//third_party/federated_compute:confidential_compute_proto",
+    "//third_party/metrics_proto",
+    "//third_party/oak:oak_proto",
+  ]
+}
+
+private_metrics_builders("dkm_builders") {
+  type = "dkm"
+}

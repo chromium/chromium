@@ -5,16 +5,15 @@
 #ifndef CHROME_BROWSER_UI_ANDROID_AUTOFILL_OTP_VERIFICATION_DIALOG_VIEW_ANDROID_H_
 #define CHROME_BROWSER_UI_ANDROID_AUTOFILL_OTP_VERIFICATION_DIALOG_VIEW_ANDROID_H_
 
-#include "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_view.h"
-
 #include <jni.h>
 #include <stddef.h>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_view.h"
 #include "ui/android/window_android.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace autofill {
 
@@ -43,7 +42,7 @@ class OtpVerificationDialogViewAndroid : public CardUnmaskOtpInputDialogView {
   // Called by the Java code when the error dialog is dismissed.
   void OnDialogDismissed(JNIEnv* env);
   // Called by the Java code when the user submits an OTP.
-  void OnConfirm(JNIEnv* env, const JavaParamRef<jstring>& otp);
+  void OnConfirm(JNIEnv* env, const JavaRef<jstring>& otp);
   // Called by the Java code when the user requests for a new OTP.
   void OnNewOtpRequested(JNIEnv* env);
 

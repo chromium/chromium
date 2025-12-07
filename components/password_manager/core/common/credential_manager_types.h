@@ -44,7 +44,8 @@ enum class CredentialMediationRequirement {
   kOptional,
   kSilent,
   kRequired,
-  kMaxValue = kRequired
+  kConditional,
+  kMaxValue = kConditional
 };
 
 std::string CredentialTypeToString(CredentialType value);

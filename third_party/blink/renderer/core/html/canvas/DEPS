@@ -1,3 +1,11 @@
+include_rules = [
+"+base/memory/memory_pressure_listener.h",
+"+cc/layers/texture_layer.h",
+"+cc/layers/texture_layer_client.h",
+"+components/viz/common/resources/shared_image_format.h",
+"+components/viz/common/resources/shared_image_format_utils.h",
+]
+
 specific_include_rules = {
     "predefined_color_space.h": [
         "+ui/gfx/hdr_metadata.h",

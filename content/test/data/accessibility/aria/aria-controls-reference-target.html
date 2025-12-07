@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <ul role="menubar" style="list-style-type: none">
+      <li role="menuitem" aria-controls="filemenu">File</span>
+      <li role="menuitem">Edit</span>
+    </ul>
+    <x-filemenu id="filemenu">
+      <template shadowrootmode="open" shadowrootreferencetarget="target">
+        <ul id="target" role="menu" aria-label="File" style="list-style-type: none">
+          <li role="menuitem">New</span>
+          <li role="menuitem">Open</span>
+        </ul>
+      </template>
+    </x-filemenu>
+  </body>
+</html>

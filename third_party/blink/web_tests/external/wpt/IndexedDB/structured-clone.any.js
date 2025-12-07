@@ -8,6 +8,7 @@
 // META: variant=?61-80
 // META: variant=?81-100
 // META: variant=?101-last
+'use strict';
 
 // Tests Indexed DB coverage of HTML's Safe "passing of structured data"
 // https://html.spec.whatwg.org/multipage/structured-data.html
@@ -40,13 +41,15 @@ function cloneTest(value, verifyFunc) {
         indexedDB.deleteDatabase(db.name);
       }
     });
-    const tx = db.transaction('store', 'readwrite', {durability: 'relaxed'});
-    const txWaiter = promiseForTransaction(t, tx);
+    const tx = db.transaction('store', 'readwrite');
     const store = tx.objectStore('store');
     await promiseForRequest(t, store.put(value, 'key'));
     const result = await promiseForRequest(t, store.get('key'));
+    // Because the async verifyFunc may await async values that are independent
+    // of the transaction lifetime (ex: blob.text()), we must only await it
+    // after adding listeners to the transaction.
+    await promiseForTransaction(t, tx);
     await verifyFunc(value, result);
-    await txWaiter;
   }, describe(value));
 }
 
@@ -71,7 +74,7 @@ function cloneFailureTest(value) {
         indexedDB.deleteDatabase(db.name);
       }
     });
-    const tx = db.transaction('store', 'readwrite', {durability: 'relaxed'});
+    const tx = db.transaction('store', 'readwrite');
     const store = tx.objectStore('store');
     assert_throws_dom('DataCloneError', () => store.put(value, 'key'));
   }, 'Not serializable: ' + describe(value));

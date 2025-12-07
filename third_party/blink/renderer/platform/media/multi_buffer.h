@@ -10,24 +10,23 @@
 
 #include <functional>
 #include <limits>
-#include <map>
 #include <memory>
 #include <set>
-#include <unordered_map>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/lru_cache.h"
-#include "base/functional/callback.h"
 #include "base/hash/hash.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "media/base/data_buffer.h"
-#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/media/interval_map.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/hash_traits.h"
+#include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
 namespace blink {
 
@@ -135,7 +134,7 @@ class PLATFORM_EXPORT MultiBuffer {
   // MultiBuffers use a global shared LRU to free memory.
   // This effectively means that recently used multibuffers can
   // borrow memory from less recently used ones.
-  class PLATFORM_EXPORT GlobalLRU : public RefCounted<GlobalLRU> {
+  class PLATFORM_EXPORT GlobalLRU : public ThreadSafeRefCounted<GlobalLRU> {
    public:
     typedef MultiBufferGlobalBlockId GlobalBlockId;
     explicit GlobalLRU(scoped_refptr<base::SingleThreadTaskRunner> task_runner);
@@ -176,7 +175,7 @@ class PLATFORM_EXPORT MultiBuffer {
     int64_t Size() const;
 
    private:
-    friend class RefCounted<GlobalLRU>;
+    friend class ThreadSafeRefCounted<GlobalLRU>;
     ~GlobalLRU();
 
     // Schedule background pruning, if needed.
@@ -210,8 +209,11 @@ class PLATFORM_EXPORT MultiBuffer {
   // Identifies a block in the cache.
   // Block numbers can be calculated from byte positions as:
   // block_num = byte_pos >> block_size_shift
-  typedef MultiBufferBlockId BlockId;
-  typedef std::unordered_map<BlockId, scoped_refptr<media::DataBuffer>> DataMap;
+  using BlockId = MultiBufferBlockId;
+  using DataMap = HashMap<BlockId,
+                          scoped_refptr<media::DataBuffer>,
+                          // Block ids cannot be negative.
+                          IntHashTraits<BlockId, -1, -2>>;
 
   // Registers a reader at the given position.
   // If the cache does not already contain |pos|, it will activate
@@ -353,7 +355,7 @@ class PLATFORM_EXPORT MultiBuffer {
   bool is_client_audio_element_ = false;
 
   // Stores the actual data.
-  DataMap data_ ALLOW_DISCOURAGED_TYPE("TODO(crbug.com/40760651)");
+  DataMap data_;
 
   // protects data_
   // Note that because data_ is only modified on the a single thread,
@@ -364,13 +366,12 @@ class PLATFORM_EXPORT MultiBuffer {
   base::Lock data_lock_;
 
   // Keeps track of readers waiting for data.
-  std::map<MultiBufferBlockId, std::set<raw_ptr<Reader, SetExperimental>>>
-      readers_ ALLOW_DISCOURAGED_TYPE("HashMap lacks key sorting");
+  base::flat_map<MultiBufferBlockId, std::set<raw_ptr<Reader, SetExperimental>>>
+      readers_;
 
   // Keeps track of writers by their position.
   // The writers are owned by this class.
-  std::map<BlockId, std::unique_ptr<DataProvider>> writer_index_
-      ALLOW_DISCOURAGED_TYPE("HashMap lacks key sorting");
+  base::flat_map<BlockId, std::unique_ptr<DataProvider>> writer_index_;
 
   // Gloabally shared LRU, decides which block to free next.
   scoped_refptr<GlobalLRU> lru_;

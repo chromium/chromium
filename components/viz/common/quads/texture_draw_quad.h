@@ -2,18 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef COMPONENTS_VIZ_COMMON_QUADS_TEXTURE_DRAW_QUAD_H_
 #define COMPONENTS_VIZ_COMMON_QUADS_TEXTURE_DRAW_QUAD_H_
 
 #include <array>
 #include <optional>
 
-#include "base/containers/span.h"
+#include "base/values.h"
+#include "cc/paint/paint_flags.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/viz_common_export.h"
@@ -21,14 +17,21 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/video_types.h"
 
+namespace mojo {
+template <typename DataViewType, typename T>
+struct StructTraits;
+}
+
 namespace viz {
+namespace mojom {
+class TextureQuadStateDataView;
+}
 
 // The priority for a quads to require being promoted to overlay.
 enum class OverlayPriority { kLow, kRegular, kRequired };
 
 class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
  public:
-  static const size_t kResourceIdIndex = 0;
   static constexpr Material kMaterial = Material::kTextureContent;
 
   TextureDrawQuad();
@@ -41,36 +44,65 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
               const gfx::Rect& visible_rect,
               bool needs_blending,
               ResourceId resource_id,
-              bool premultiplied,
               const gfx::PointF& top_left,
               const gfx::PointF& bottom_right,
               SkColor4f background,
-              bool flipped,
               bool nearest,
               bool secure_output,
-              gfx::ProtectedVideoType video_type);
+              gfx::ProtectedVideoType video_type,
+              bool is_tex_coords_normalized = true);
 
   void SetAll(const SharedQuadState* shared_quad_state,
               const gfx::Rect& rect,
               const gfx::Rect& visible_rect,
               bool needs_blending,
               ResourceId resource_id,
-              gfx::Size resource_size_in_pixels,
-              bool premultiplied,
               const gfx::PointF& top_left,
               const gfx::PointF& bottom_right,
               SkColor4f background,
-              bool flipped,
               bool nearest,
               bool secure_output,
-              gfx::ProtectedVideoType video_type);
+              gfx::ProtectedVideoType video_type,
+              bool is_tex_coords_normalized = true);
 
-  gfx::PointF uv_top_left;
-  gfx::PointF uv_bottom_right;
+  // Returns the texture coordinates in the range [0, 1].
+  gfx::RectF GetNormalizedTexCoords(const gfx::Size& resource_size) const {
+    if (is_normalized_coords) {
+      return tex_coord_rect_;
+    }
+
+    if (resource_size.IsEmpty()) {
+      return gfx::RectF();
+    }
+
+    return gfx::ScaleRect(tex_coord_rect_, 1.0f / resource_size.width(),
+                          1.0f / resource_size.height());
+  }
+
+  // Returns the texture coordinates in the range [0, resource_size].
+  gfx::RectF GetUnnormalizedTexCoords(const gfx::Size& resource_size) const {
+    if (is_normalized_coords) {
+      return gfx::ScaleRect(tex_coord_rect_,
+                            static_cast<float>(resource_size.width()),
+                            static_cast<float>(resource_size.height()));
+    }
+    return tex_coord_rect_;
+  }
+
+  // Sets the texture coordinates in the range [0, 1].
+  void SetNormalizedTexCoordsForTesting(const gfx::RectF& normalized_rect,
+                                        const gfx::Size& resource_size) {
+    // TODO(crbug.com/451876192): This parameter is unused because the internal
+    // storage is currently normalized. It is included to establish the API
+    // for the future CL where we will need to scale the input `normalized_rect`
+    // by `resource_size` to store it as unnormalized coordinates.
+    tex_coord_rect_ = normalized_rect;
+    is_normalized_coords = true;
+  }
+
   SkColor4f background_color = SkColors::kTransparent;
-  bool y_flipped : 1;
+  cc::PaintFlags::DynamicRangeLimitMixture dynamic_range_limit;
   bool nearest_neighbor : 1;
-  bool premultiplied_alpha : 1;
 
   // True if the quad must only be GPU composited if shown on secure outputs.
   bool secure_output_only : 1;
@@ -78,10 +110,6 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
   // True if this quad contains a video frame from VideoResourceUpdater instead
   // of canvas or webgl content.
   bool is_video_frame : 1;
-
-  // True if this quad is a stream video texture. This mostly affects overlay
-  // creation (e.g. color space, protection type).
-  bool is_stream_video : 1;
 
   // If true we will treat the alpha in the texture as 1. This works like rgbx
   // and not like blend mode 'kSrc' which would copy the alpha.
@@ -120,7 +148,7 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
     bool is_horizontally_positioned = true;
 
     // Radii of display's rounded corners masks in pixels.
-    uint8_t radii[kMaxRoundedDisplayMasksCount] = {0, 0};
+    std::array<uint8_t, kMaxRoundedDisplayMasksCount> radii = {0, 0};
   };
 
   // Encodes the radii(in pixels) and position of rounded-display mask textures
@@ -138,22 +166,6 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
   // 15).
   RoundedDisplayMasksInfo rounded_display_masks_info;
 
-  struct OverlayResources {
-    OverlayResources();
-
-    gfx::Size size_in_pixels;
-  };
-  OverlayResources overlay_resources;
-
-  ResourceId resource_id() const { return resources.ids[kResourceIdIndex]; }
-  // TODO(crbug/354862211): Consider removing post LaCros sunset.
-  const gfx::Size& resource_size_in_pixels() const {
-    return overlay_resources.size_in_pixels;
-  }
-  void set_resource_size_in_pixels(const gfx::Size& size_in_pixels) {
-    overlay_resources.size_in_pixels = size_in_pixels;
-  }
-
   void set_force_rgbx(bool force_rgbx_value = true) {
     force_rgbx = force_rgbx_value;
   }
@@ -161,6 +173,18 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
   static const TextureDrawQuad* MaterialCast(const DrawQuad*);
 
  private:
+  // TODO(crbug.com/451876192): Remove friend classes after the refactor
+  // to make TextureDrawQuad use unnormalized coordinates is complete
+  friend struct mojo::StructTraits<mojom::TextureQuadStateDataView, DrawQuad>;
+  friend void TextureDrawQuadToDict(const TextureDrawQuad* draw_quad,
+                                    base::Value::Dict* dict);
+
+  gfx::RectF tex_coord_rect_;
+
+  // Indicates whether the texture coordinates are normalized (in [0, 1] range)
+  // or unnormalized (in [0, resource_size] range).
+  bool is_normalized_coords = true;
+
   void ExtendValue(base::trace_event::TracedValue* value) const override;
 };
 

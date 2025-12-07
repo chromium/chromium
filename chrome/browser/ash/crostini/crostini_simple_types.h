@@ -30,6 +30,7 @@ namespace crostini {
 // scripts in
 // https://plx.corp.google.com/home2/home/collections/c16e3c1474497b821
 // and CrostiniResultString in crostini_simple_types.cc.
+// LINT.IfChange
 enum class CrostiniResult {
   SUCCESS = 0,
   // DBUS_ERROR = 1,
@@ -112,10 +113,21 @@ enum class CrostiniResult {
   SIGNAL_NOT_CONNECTED = 77,
   INSTALL_TERMINA_CANCELLED = 78,
   START_TIMED_OUT = 79,
-  kMaxValue = START_TIMED_OUT,
+  DISK_IMAGE_NO_RESPONSE = 80,
+  DISK_IMAGE_IN_PROGRESS = 81,
+  DISK_IMAGE_FAILED = 82,
+  DISK_IMAGE_FAILED_NO_SPACE = 83,
+  DISK_IMAGE_CANCELLED = 84,
+  START_BAGUETTE_VM_TIMED_OUT = 85,
+  UNINSTALL_BAGUETTE_FAILED = 86,
+  INSTALL_BAGUETTE_CANCELLED = 87,
+  DOWNLOAD_BAGUETTE_FAILED = 88,
+  DISK_IMAGE_BAD_IMAGE = 89,
+  kMaxValue = DISK_IMAGE_BAD_IMAGE,
   // When adding a new value, check you've followed the steps in the comment at
   // the top of this enum.
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/crostini/enums.xml,crostini_simple_types.cc)
 
 // Returns the string name of the CrostiniResult.
 const char* CrostiniResultString(const CrostiniResult res);
@@ -148,6 +160,11 @@ enum class UninstallPackageProgressStatus {
   UNINSTALLING,  // In progress
 };
 
+enum class DiskImageProgressStatus {
+  IN_PROGRESS,
+  FAILURE_SPACE,
+};
+
 enum class ImportContainerProgressStatus {
   UPLOAD,
   UNPACK,
@@ -172,6 +189,9 @@ enum class ContainerVersion {
 struct VmInfo {
   VmState state;
   vm_tools::concierge::VmInfo info;
+  // Record if a container started signal has been received in current run of
+  // a vm. VMs without a container can also emit such as signal, e.g. Baguette.
+  bool container_started;
 };
 
 struct StreamingExportStatus {

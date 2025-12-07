@@ -14,11 +14,13 @@
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
 #include "chrome/browser/ash/login/startup_utils.h"
+#include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
+#include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
@@ -36,6 +38,7 @@
 #include "components/user_manager/user_manager.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
@@ -61,8 +64,8 @@ class BrowserLoginTest : public LoginManagerTest {
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserLoginTest, PRE_BrowserActive) {
-  RegisterUser(
-      AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId));
+  RegisterUser(AccountId::FromUserEmailGaiaId(test::kTestEmail,
+                                              GaiaId(test::kTestGaiaId)));
   EXPECT_EQ(session_manager::SessionState::OOBE,
             session_manager::SessionManager::Get()->session_state());
   StartupUtils::MarkOobeCompleted();
@@ -72,8 +75,8 @@ IN_PROC_BROWSER_TEST_F(BrowserLoginTest, BrowserActive) {
   base::HistogramTester histograms;
   EXPECT_EQ(session_manager::SessionState::LOGIN_PRIMARY,
             session_manager::SessionManager::Get()->session_state());
-  LoginUser(
-      AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId));
+  LoginUser(AccountId::FromUserEmailGaiaId(test::kTestEmail,
+                                           GaiaId(test::kTestGaiaId)));
   EXPECT_EQ(session_manager::SessionState::ACTIVE,
             session_manager::SessionManager::Get()->session_state());
   histograms.ExpectTotalCount("OOBE.BootToSignInCompleted", 1);
@@ -95,8 +98,8 @@ IN_PROC_BROWSER_TEST_F(BrowserLoginTest, BrowserActive) {
 
 IN_PROC_BROWSER_TEST_F(BrowserLoginTest,
                        PRE_VirtualKeyboardFeaturesEnabledByDefault) {
-  RegisterUser(
-      AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId));
+  RegisterUser(AccountId::FromUserEmailGaiaId(test::kTestEmail,
+                                              GaiaId(test::kTestGaiaId)));
   EXPECT_EQ(session_manager::SessionState::OOBE,
             session_manager::SessionManager::Get()->session_state());
   StartupUtils::MarkOobeCompleted();
@@ -107,8 +110,8 @@ IN_PROC_BROWSER_TEST_F(BrowserLoginTest,
   base::HistogramTester histograms;
   EXPECT_EQ(session_manager::SessionState::LOGIN_PRIMARY,
             session_manager::SessionManager::Get()->session_state());
-  LoginUser(
-      AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId));
+  LoginUser(AccountId::FromUserEmailGaiaId(test::kTestEmail,
+                                           GaiaId(test::kTestGaiaId)));
   EXPECT_TRUE(
       user_manager::UserManager::Get()->IsLoggedInAsUserWithGaiaAccount());
 
@@ -131,15 +134,23 @@ class OnboardingTest : public LoginManagerTest {
     LoginManagerTest::SetUpInProcessBrowserTestFixture();
   }
 
+  void SetUpOnMainThread() override {
+    LoginManagerTest::SetUpOnMainThread();
+    cryptohome_mixin_.ApplyAuthConfigIfUserExists(
+        regular_user_, test::UserAuthConfig::Create(test::kDefaultAuthSetup));
+  }
+
  protected:
   DeviceStateMixin device_state_{
       &mixin_host_,
       DeviceStateMixin::State::OOBE_COMPLETED_PERMANENTLY_UNOWNED};
   FakeGaiaMixin gaia_mixin_{&mixin_host_};
+  CryptohomeMixin cryptohome_mixin_{&mixin_host_};
   LoginManagerMixin login_mixin_{&mixin_host_, LoginManagerMixin::UserList(),
                                  &gaia_mixin_};
   AccountId regular_user_{
-      AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId)};
+      AccountId::FromUserEmailGaiaId(test::kTestEmail,
+                                     GaiaId(test::kTestGaiaId))};
 
   EmbeddedPolicyTestServerMixin policy_server_mixin_{&mixin_host_};
 

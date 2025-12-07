@@ -4,20 +4,31 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.Callback;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.components.tabs.TabStripCollection;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 /** Singleton class intended to stub out Tab model before it has been created. */
-public class EmptyTabModel implements IncognitoTabModel {
+@VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+@NullMarked
+public class EmptyTabModel implements IncognitoTabModelInternal {
     private boolean mIsIncognito;
 
     /**
@@ -47,9 +58,12 @@ public class EmptyTabModel implements IncognitoTabModel {
     }
 
     @Override
-    public Profile getProfile() {
+    public @Nullable Profile getProfile() {
         return null;
     }
+
+    @Override
+    public void associateWithBrowserWindow(long nativeAndroidBrowserWindow) {}
 
     @Override
     public boolean isIncognito() {
@@ -67,12 +81,17 @@ public class EmptyTabModel implements IncognitoTabModel {
     }
 
     @Override
+    public TabRemover getTabRemover() {
+        return new EmptyTabRemover();
+    }
+
+    @Override
     public boolean closeTabs(TabClosureParams tabClosureParams) {
         return false;
     }
 
     @Override
-    public Tab getNextTabIfClosed(int id, boolean uponExit) {
+    public @Nullable Tab getNextTabIfClosed(int id, boolean uponExit) {
         return null;
     }
 
@@ -83,7 +102,7 @@ public class EmptyTabModel implements IncognitoTabModel {
     }
 
     @Override
-    public Tab getTabAt(int position) {
+    public @Nullable Tab getTabAt(int position) {
         return null;
     }
 
@@ -93,8 +112,29 @@ public class EmptyTabModel implements IncognitoTabModel {
     }
 
     @Override
-    public int indexOf(Tab tab) {
+    public int indexOf(@Nullable Tab tab) {
         return INVALID_TAB_INDEX;
+    }
+
+    @Override
+    public Iterator<Tab> iterator() {
+        return new Iterator<>() {
+            @Override
+            public boolean hasNext() {
+                return false;
+            }
+
+            @Override
+            public @Nullable Tab next() {
+                return null;
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException(
+                        "Removal is not supported from this iterator");
+            }
+        };
     }
 
     @Override
@@ -103,9 +143,9 @@ public class EmptyTabModel implements IncognitoTabModel {
     }
 
     @Override
-    public @NonNull ObservableSupplier<Tab> getCurrentTabSupplier() {
+    public NullableObservableSupplier<Tab> getCurrentTabSupplier() {
         assert false : "This should be unreachable in production, it may be mocked for testing.";
-        return new ObservableSupplierImpl<>();
+        return ObservableSuppliers.alwaysNull();
     }
 
     @Override
@@ -118,6 +158,15 @@ public class EmptyTabModel implements IncognitoTabModel {
 
     @Override
     public void moveTab(int id, int newIndex) {}
+
+    @Override
+    public void pinTab(
+            int tabId,
+            boolean showUngroupDialog,
+            @Nullable TabModelActionListener tabModelActionListener) {}
+
+    @Override
+    public void unpinTab(int tabId) {}
 
     @Override
     public void destroy() {}
@@ -142,17 +191,20 @@ public class EmptyTabModel implements IncognitoTabModel {
     public void cancelTabClosure(int tabId) {}
 
     @Override
-    public void notifyAllTabsClosureUndone() {}
-
-    @Override
     public boolean supportsPendingClosures() {
         return false;
     }
 
     @Override
-    public @NonNull ObservableSupplier<Integer> getTabCountSupplier() {
+    public NonNullObservableSupplier<Integer> getTabCountSupplier() {
         assert false : "This should be unreachable in production, it may be mocked for testing.";
-        return new ObservableSupplierImpl<>();
+        return assumeNonNull(null);
+    }
+
+    @Override
+    public TabCreator getTabCreator() {
+        assert false : "This should be unreachable in production, it may be mocked for testing.";
+        return assumeNonNull(null);
     }
 
     @Override
@@ -168,25 +220,72 @@ public class EmptyTabModel implements IncognitoTabModel {
     public void removeObserver(TabModelObserver observer) {}
 
     @Override
-    public void setActive(boolean active) {}
-
-    @Override
-    public int getTabCountNavigatedInTimeWindow(long beginTimeMs, long endTimeMs) {
-        return 0;
-    }
-
-    @Override
-    public void closeTabsNavigatedInTimeWindow(long beginTimeMs, long endTimeMs) {}
-
-    @Override
     public void removeTab(Tab tab) {}
 
     @Override
     public void openMostRecentlyClosedEntry() {}
 
     @Override
+    public void addDelegateModelObserver(Callback<TabModelInternal> callback) {}
+
+    @Override
     public void addIncognitoObserver(IncognitoTabModelObserver observer) {}
 
     @Override
     public void removeIncognitoObserver(IncognitoTabModelObserver observer) {}
+
+    @Override
+    public void setActive(boolean active) {}
+
+    @Override
+    public void broadcastSessionRestoreComplete() {}
+
+    @Override
+    public void setTabsMultiSelected(Set<Integer> tabIds, boolean isSelected) {}
+
+    @Override
+    public void clearMultiSelection(boolean notifyObservers) {}
+
+    @Override
+    public boolean isTabMultiSelected(int tabId) {
+        return false;
+    }
+
+    @Override
+    public int getMultiSelectedTabsCount() {
+        return 0;
+    }
+
+    @Override
+    public int findFirstNonPinnedTabIndex() {
+        return 0;
+    }
+
+    @Override
+    public int getPinnedTabsCount() {
+        return 0;
+    }
+
+    @Override
+    public @Nullable Integer getNativeSessionIdForTesting() {
+        return null;
+    }
+
+    @Override
+    public void setMuteSetting(List<Tab> tabs, boolean mute) {}
+
+    @Override
+    public boolean isMuted(Tab tab) {
+        return false;
+    }
+
+    @Override
+    public @Nullable TabStripCollection getTabStripCollection() {
+        return null;
+    }
+
+    @Override
+    public @Nullable Tab duplicateTab(Tab tab) {
+        return null;
+    }
 }

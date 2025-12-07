@@ -92,7 +92,7 @@ void ClearAllButFrameAncestors(network::mojom::URLResponseHead* response_head) {
 PluginResponseInterceptorURLLoaderThrottle::
     PluginResponseInterceptorURLLoaderThrottle(
         network::mojom::RequestDestination request_destination,
-        int frame_tree_node_id)
+        content::FrameTreeNodeId frame_tree_node_id)
     : request_destination_(request_destination),
       frame_tree_node_id_(frame_tree_node_id) {}
 
@@ -204,6 +204,10 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
         base::MakeRefCounted<net::HttpResponseHeaders>(
             response_head->headers->raw_headers());
   }
+
+  // `client_side_content_decoding_types` must be cleared to prevent the
+  // renderer from mistakenly decoding the `payload`.
+  response_head->client_side_content_decoding_types.clear();
 
   auto transferrable_loader = blink::mojom::TransferrableURLLoader::New();
   transferrable_loader->url = GURL(

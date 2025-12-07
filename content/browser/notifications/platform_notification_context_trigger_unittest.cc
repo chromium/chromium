@@ -10,14 +10,12 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "content/browser/notifications/notification_trigger_constants.h"
 #include "content/browser/notifications/platform_notification_context_impl.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/public/browser/notification_database_data.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/mock_platform_notification_service.h"
@@ -46,7 +44,6 @@ class PlatformNotificationContextTriggerTest : public ::testing::Test {
   }
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kNotificationTriggers);
     platform_notification_context_ =
         base::MakeRefCounted<PlatformNotificationContextImpl>(
             base::FilePath(), &browser_context_, nullptr);
@@ -121,7 +118,6 @@ class PlatformNotificationContextTriggerTest : public ::testing::Test {
   BrowserTaskEnvironment task_environment_;  // Must be first member
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   TestBrowserContext browser_context_;
   scoped_refptr<PlatformNotificationContextImpl> platform_notification_context_;
 

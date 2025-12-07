@@ -9,7 +9,7 @@
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace WTF {
+namespace blink {
 namespace {
 
 constexpr int kTestValue = 42;
@@ -49,4 +49,4 @@ TEST_F(SequenceBoundTest, CanInstantiate) {
   EXPECT_EQ(test_value, kTestValue);
 }
 
-}  // namespace WTF
+}  // namespace blink

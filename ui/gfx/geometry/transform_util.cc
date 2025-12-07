@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "ui/gfx/geometry/transform_util.h"
 
@@ -25,9 +21,9 @@ namespace gfx {
 namespace {
 
 template <int n>
-void Combine(double* out,
-             const double* a,
-             const double* b,
+void Combine(std::array<double, n>& out,
+             const std::array<double, n> a,
+             const std::array<double, n> b,
              double scale_a,
              double scale_b) {
   for (int i = 0; i < n; ++i)

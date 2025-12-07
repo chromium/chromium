@@ -9,58 +9,24 @@
 #include <optional>
 
 #include "ash/public/cpp/window_properties.h"
-#include "base/functional/callback.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "components/exo/wm_helper.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/aura/window.h"
 #include "url/gurl.h"
 
 namespace ash {
 namespace input_method {
-namespace {
 
-std::optional<GURL> GetAshChromeUrl() {
-  Browser* browser = chrome::FindLastActive();
-  // Ash chrome will return true for browser->window()->IsActive() if the
-  // user is currently typing in an ash browser tab. IsActive() will return
-  // false if the user is currently typing a lacros browser tab.
-  if (browser && browser->window() && browser->window()->IsActive() &&
-      browser->tab_strip_model() &&
-      browser->tab_strip_model()->GetActiveWebContents()) {
-    return browser->tab_strip_model()
-        ->GetActiveWebContents()
-        ->GetLastCommittedURL();
+std::optional<GURL> GetFocusedTabUrl() {
+  ash::BrowserDelegate* browser =
+      ash::BrowserController::GetInstance()->GetLastUsedBrowser();
+  if (browser && browser->GetActiveWebContents()) {
+    return browser->GetActiveWebContents()->GetLastCommittedURL();
   }
 
   return std::nullopt;
-}
-
-void GetLacrosChromeUrl(GetFocusedTabUrlCallback callback) {
-  crosapi::BrowserManager* browser_manager = crosapi::BrowserManager::Get();
-  // browser_manager will exist whenever there is a lacros browser running.
-  // GetActiveTabUrlSupported() will only return true if the current lacros
-  // browser is being used by the user.
-  if (browser_manager && browser_manager->IsRunning() &&
-      browser_manager->GetActiveTabUrlSupported()) {
-    browser_manager->GetActiveTabUrl(std::move(callback));
-    return;
-  }
-
-  std::move(callback).Run(std::nullopt);
-}
-
-}  // namespace
-
-void GetFocusedTabUrl(GetFocusedTabUrlCallback callback) {
-  std::optional<GURL> ash_url = GetAshChromeUrl();
-  if (ash_url.has_value()) {
-    std::move(callback).Run(ash_url);
-    return;
-  }
-
-  GetLacrosChromeUrl(std::move(callback));
 }
 
 WindowProperties GetFocusedWindowProperties() {
@@ -86,5 +52,6 @@ WindowProperties GetFocusedWindowProperties() {
   }
   return properties;
 }
+
 }  // namespace input_method
 }  // namespace ash

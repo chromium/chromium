@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/login/ui/local_authentication_request_controller_impl.h"
-
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
+#include "ash/login/ui/local_authentication_request_controller_impl.h"
 #include "ash/login/ui/local_authentication_request_view.h"
 #include "ash/login/ui/local_authentication_request_widget.h"
 #include "ash/login/ui/login_button.h"
@@ -18,8 +18,10 @@
 #include "ash/shell.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
+#include "ash/test/pixel/ash_pixel_test_helper.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/dbus/cryptohome/account_identifier_operators.h"
 #include "chromeos/ash/components/dbus/cryptohome/key.pb.h"
@@ -32,6 +34,7 @@
 #include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/button/label_button.h"
@@ -44,10 +47,13 @@ namespace {
 
 using ::cryptohome::KeyLabel;
 
-const char kTestAccount[] = "user@test.com";
-const char kExpectedPassword[] = "qwerty";
+constexpr char kTestAccount[] = "user@test.com";
+constexpr GaiaId::Literal kFakeGaia("fake_gaia");
+constexpr char kExpectedPassword[] = "qwerty";
 
-class LocalAuthenticationRequestControllerImplPixelTest : public AshTestBase {
+class LocalAuthenticationRequestControllerImplPixelTest
+    : public AshTestBase,
+      public testing::WithParamInterface</*enable_system_blur=*/bool> {
  public:
   LocalAuthenticationRequestControllerImplPixelTest(
       const LocalAuthenticationRequestControllerImplPixelTest&) = delete;
@@ -55,12 +61,17 @@ class LocalAuthenticationRequestControllerImplPixelTest : public AshTestBase {
       const LocalAuthenticationRequestControllerImplPixelTest&) = delete;
 
  protected:
-  LocalAuthenticationRequestControllerImplPixelTest() = default;
+  LocalAuthenticationRequestControllerImplPixelTest() {
+    scoped_features_.InitAndDisableFeature(
+        features::kLocalAuthenticationWithPin);
+  }
   ~LocalAuthenticationRequestControllerImplPixelTest() override = default;
 
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
-    return pixel_test::InitParams();
+    pixel_test::InitParams init_params;
+    init_params.system_blur_enabled = GetParam();
+    return init_params;
   }
 
   void SetUp() override {
@@ -78,11 +89,14 @@ class LocalAuthenticationRequestControllerImplPixelTest : public AshTestBase {
     UserDataAuthClient::InitializeFake();
     SystemSaltGetter::Initialize();
 
-    test_account_id_ = AccountId::FromUserEmail(kTestAccount);
+    test_account_id_ = AccountId::FromUserEmailGaiaId(kTestAccount, kFakeGaia);
 
     SetExpectedCredentialsWithDbusClient(test_account_id_, kExpectedPassword);
-    auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
-    fake_user_manager->AddUser(test_account_id_);
+
+    auto fake_user_manager =
+        std::make_unique<user_manager::FakeUserManager>(local_state());
+    fake_user_manager->AddGaiaUser(test_account_id_,
+                                   user_manager::UserType::kRegular);
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(fake_user_manager));
   }
@@ -188,6 +202,8 @@ class LocalAuthenticationRequestControllerImplPixelTest : public AshTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
+  base::test::ScopedFeatureList scoped_features_;
+
   // Number of times the view was dismissed with close button.
   int close_action_ = 0;
 
@@ -204,9 +220,14 @@ class LocalAuthenticationRequestControllerImplPixelTest : public AshTestBase {
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    LocalAuthenticationRequestControllerImplPixelTest,
+    testing::Bool());
+
 // Tests local authentication dialog showing/hiding and focus behavior for
 // password field
-TEST_F(LocalAuthenticationRequestControllerImplPixelTest, FailedValidation) {
+TEST_P(LocalAuthenticationRequestControllerImplPixelTest, FailedValidation) {
   EXPECT_FALSE(LocalAuthenticationRequestWidget::Get());
 
   StartLocalAuthenticationRequest();
@@ -224,16 +245,20 @@ TEST_F(LocalAuthenticationRequestControllerImplPixelTest, FailedValidation) {
 
   // Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "Ready", /*revision_number=*/2, view));
+      GenerateScreenshotName("Ready"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 5 : 0,
+      view));
 
   SimulateValidation(false);
   // Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "Fail", /*revision_number=*/2, view));
+      GenerateScreenshotName("Fail"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 5 : 0,
+      view));
 }
 
 // Tests local authentication dialog theme change
-TEST_F(LocalAuthenticationRequestControllerImplPixelTest, ThemeChange) {
+TEST_P(LocalAuthenticationRequestControllerImplPixelTest, ThemeChange) {
   EXPECT_FALSE(LocalAuthenticationRequestWidget::Get());
 
   StartLocalAuthenticationRequest();
@@ -251,7 +276,9 @@ TEST_F(LocalAuthenticationRequestControllerImplPixelTest, ThemeChange) {
   DarkLightModeControllerImpl::Get()->SetDarkModeEnabledForTest(false);
   // Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "Light", /*revision_number=*/1, view));
+      GenerateScreenshotName("Light"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 4 : 0,
+      view));
 }
 
 }  // namespace

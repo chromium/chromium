@@ -8,6 +8,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/threading/thread_restrictions.h"
 #include "chromeos/ash/services/nearby/public/cpp/fake_firewall_hole.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/net_errors.h"

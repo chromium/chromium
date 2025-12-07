@@ -14,7 +14,7 @@
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/device/public/mojom/pressure_manager.mojom-forward.h"
-#include "services/device/public/mojom/pressure_update.mojom-shared.h"
+#include "services/device/public/mojom/pressure_update.mojom.h"
 
 namespace device {
 
@@ -32,10 +32,11 @@ class ProbesManager {
 
   // Adds |client| to the list of mojom::PressureClient remotes for the given
   // |source| type and starts the probe if necessary.
-  void RegisterClientRemote(mojo::Remote<mojom::PressureClient> client,
-                            mojom::PressureSource source);
+  void RegisterClientRemote(
+      mojo::PendingAssociatedRemote<mojom::PressureClient> associated_client,
+      mojom::PressureSource source);
 
-  base::TimeDelta sampling_interval() const;
+  base::TimeDelta sampling_interval_for_testing() const;
 
  protected:
   CpuProbeManager* cpu_probe_manager() const;
@@ -43,7 +44,7 @@ class ProbesManager {
   void set_cpu_probe_manager(
       std::unique_ptr<CpuProbeManager> cpu_probe_manager);
 
-  const base::RepeatingCallback<void(mojom::PressureState)>&
+  const base::RepeatingCallback<void(mojom::PressureDataPtr)>&
   cpu_probe_sampling_callback() const;
 
  private:
@@ -51,7 +52,7 @@ class ProbesManager {
   FRIEND_TEST_ALL_PREFIXES(PressureManagerImplTest, AddClientNoProbe);
 
   // Called periodically by probe for each PressureSource.
-  void UpdateClients(mojom::PressureSource source, mojom::PressureState state);
+  void UpdateClients(mojom::PressureSource source, mojom::PressureDataPtr);
 
   // Stop corresponding probe once there is no client.
   void OnClientRemoteDisconnected(mojom::PressureSource source,
@@ -61,15 +62,16 @@ class ProbesManager {
 
   const base::TimeDelta sampling_interval_;
 
-  const base::RepeatingCallback<void(mojom::PressureState)>
+  const base::RepeatingCallback<void(mojom::PressureDataPtr)>
       cpu_probe_sampling_callback_;
 
   // Probe for retrieving the compute pressure state for CPU.
   std::unique_ptr<CpuProbeManager> cpu_probe_manager_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  std::map<mojom::PressureSource, mojo::RemoteSet<mojom::PressureClient>>
-      clients_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::map<mojom::PressureSource,
+           mojo::AssociatedRemoteSet<mojom::PressureClient>>
+      associated_clients_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace device

@@ -1,3 +1,5 @@
+# Tokens used by the fuzzers.
+
 # symbols
 " "
 "\""
@@ -256,6 +258,7 @@
 "right"
 "center"
 "justify"
+"match-parent"
 "-webkit-left"
 "-webkit-right"
 "-webkit-center"
@@ -744,8 +747,6 @@
 "path"
 "ray"
 "sides"
-"calc"
-"-webkit-calc"
 "x"
 "y"
 "mandatory"
@@ -940,6 +941,13 @@
 "accentcolor"
 "accentcolortext"
 "-internal-auto-base-select"
+"-internal-partial-interest-content"
+
+# Math functions (TODO: We're missing a lot of them)
+"calc"
+"-webkit-calc"
+"sibling-index"
+"sibling-count"
 
 # display-state
 # normal
@@ -956,7 +964,6 @@
 "@page"
 "@font-face"
 "@keyframes"
-"@viewport"
 
 # HTML elements
 "display"
@@ -1437,7 +1444,7 @@
 "z-index"
 "zoom"
 
-# pseudo elements and classes
+# pseudo-elements and classes
 ":hover"
 ":visited"
 ":before"

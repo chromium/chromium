@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/system_web_apps/apps/calculator_app/calculator_app_utils.h"
 
+#include "ash/constants/web_app_id_constants.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "extensions/common/constants.h"
 
 namespace ash {
@@ -17,7 +17,7 @@ std::string GetInstalledCalculatorAppId(Profile* profile) {
                                        extension_misc::kCalculatorAppId)) {
     return extension_misc::kCalculatorAppId;
   }
-  return web_app::kCalculatorAppId;
+  return ash::kCalculatorAppId;
 }
 
 }  // namespace calculator_app

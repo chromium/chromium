@@ -33,7 +33,6 @@ static const char kContentHintStringVideoDetail[] = "detail";
 static const char kContentHintStringVideoText[] = "text";
 
 class AudioSourceProvider;
-class DOMException;
 class ImageCapture;
 class MediaConstraints;
 class MediaTrackCapabilities;
@@ -41,12 +40,15 @@ class MediaTrackConstraints;
 class MediaStream;
 class MediaTrackSettings;
 class ScriptState;
+class SpeechRecognitionMediaStreamAudioSink;
+class V8MediaStreamTrackState;
 class V8UnionMediaStreamTrackAudioStatsOrMediaStreamTrackVideoStats;
 
 String ContentHintToString(
     const WebMediaStreamTrack::ContentHintType& content_hint);
 
-String ReadyStateToString(const MediaStreamSource::ReadyState& ready_state);
+V8MediaStreamTrackState ReadyStateToV8TrackState(
+    const MediaStreamSource::ReadyState& ready_state);
 
 class MODULES_EXPORT MediaStreamTrack
     : public EventTarget,
@@ -98,7 +100,7 @@ class MODULES_EXPORT MediaStreamTrack
   virtual void setEnabled(bool) = 0;
   virtual bool muted() const = 0;
   virtual String ContentHint() const = 0;
-  virtual String readyState() const = 0;
+  virtual V8MediaStreamTrackState readyState() const = 0;
   virtual void SetContentHint(const String&) = 0;
   virtual void stopTrack(ExecutionContext*) = 0;
   virtual MediaStreamTrack* clone(ExecutionContext*) = 0;
@@ -130,6 +132,7 @@ class MODULES_EXPORT MediaStreamTrack
 
   virtual void RegisterMediaStream(MediaStream*) = 0;
   virtual void UnregisterMediaStream(MediaStream*) = 0;
+  virtual void RegisterSink(SpeechRecognitionMediaStreamAudioSink* sink) = 0;
 
   // EventTarget
   const AtomicString& InterfaceName() const override = 0;
@@ -139,43 +142,6 @@ class MODULES_EXPORT MediaStreamTrack
 
   // ScriptWrappable
   bool HasPendingActivity() const override = 0;
-
-#if !BUILDFLAG(IS_ANDROID)
-  // When called on a "live" video track associated with tab-capture,
-  // asks to deliver a wheel event on the captured tab's viewport.
-  // This is subject to a permission policy on the capturing origin.
-  //
-  // `relative_x` is a value from [0, 1). It denotes the relative position
-  // in the coordinate space of the captured surface, which is unknown to the
-  // capturer. A value of 0 denotes the leftmost pixel; increasing values denote
-  // values further to the right. The sender of the message scales from its own
-  // coordinate space down to the relative values, and the receiver scales back
-  // up to its own coordinates.
-  //
-  // `relative_y` is defined analogously to `relative_x`.
-  //
-  // `wheel_delta_x` and `wheel_delta_y` represent the scroll deltas.
-  //
-  // `callback` is used to report the result. If set to `nullptr`, success
-  // is reported. Otherwise, the indicated exception described the issue
-  // encountered.
-  virtual void SendWheel(double relative_x,
-                         double relative_y,
-                         int wheel_delta_x,
-                         int wheel_delta_y,
-                         base::OnceCallback<void(DOMException*)> callback) = 0;
-
-  // When called on a "live" video track associated with tab-capture, asks to
-  // set the zoom level on the captured tab's viewport.  This is subject to a
-  // permission policy on the capturing origin.
-  //
-  // `callback` is used to report the result. If set to `nullptr`, success
-  // is reported. Otherwise, the indicated exception described the issue
-  // encountered.
-  virtual void SetZoomLevel(
-      int zoom_level,
-      base::OnceCallback<void(DOMException*)> callback) = 0;
-#endif
 
   virtual std::unique_ptr<AudioSourceProvider> CreateWebAudioSource(
       int context_sample_rate,

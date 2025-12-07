@@ -11,3 +11,5 @@ static jint JNI_CronetUrlRequestTest_GetConnectionMigrationDisableLoadFlag(
     JNIEnv* env) {
   return net::LOAD_DISABLE_CONNECTION_MIGRATION_TO_CELLULAR;
 }
+
+DEFINE_JNI(CronetUrlRequestTest)

@@ -5,13 +5,14 @@
 #ifndef NET_SPDY_SPDY_WRITE_QUEUE_H_
 #define NET_SPDY_SPDY_WRITE_QUEUE_H_
 
+#include <array>
 #include <memory>
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
+#include "net/third_party/quiche/src/quiche/http2/core/spdy_protocol.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace net {
@@ -112,7 +113,7 @@ class NET_EXPORT_PRIVATE SpdyWriteQueue {
   int num_queued_capped_frames_ = 0;
 
   // The actual write queue, binned by priority.
-  base::circular_deque<PendingWrite> queue_[NUM_PRIORITIES];
+  std::array<base::circular_deque<PendingWrite>, NUM_PRIORITIES> queue_;
 };
 
 }  // namespace net

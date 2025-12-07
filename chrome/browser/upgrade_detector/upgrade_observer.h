@@ -40,7 +40,7 @@ class UpgradeObserver {
   virtual void OnRelaunchOverriddenToRequired(bool overridden) {}
 
  protected:
-  virtual ~UpgradeObserver() {}
+  virtual ~UpgradeObserver() = default;
 };
 
 #endif  // CHROME_BROWSER_UPGRADE_DETECTOR_UPGRADE_OBSERVER_H_

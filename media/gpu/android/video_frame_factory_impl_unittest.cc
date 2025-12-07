@@ -78,8 +78,8 @@ class VideoFrameFactoryImplTest : public testing::Test {
         features::NeedThreadSafeAndroidMedia()
             ? base::MakeRefCounted<gpu::RefCountedLockForTest>()
             : nullptr);
-    auto texture_owner = base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>(
-        0, nullptr, nullptr, true);
+    auto texture_owner =
+        base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>();
     auto codec_buffer_wait_coordinator =
         base::MakeRefCounted<CodecBufferWaitCoordinator>(
             std::move(texture_owner),
@@ -132,7 +132,14 @@ class VideoFrameFactoryImplTest : public testing::Test {
   SharedImageVideoProvider::ImageRecord MakeImageRecord(
       bool* release_cb_called_flag = nullptr) {
     SharedImageVideoProvider::ImageRecord record;
-    record.shared_image = gpu::Mailbox::Generate();
+    gpu::SharedImageMetadata metadata;
+    metadata.format = viz::SinglePlaneFormat::kRGBA_8888;
+    metadata.size = video_frame_params_.coded_size;
+    metadata.color_space = video_frame_params_.color_space;
+    metadata.surface_origin = kTopLeft_GrSurfaceOrigin;
+    metadata.alpha_type = kOpaque_SkAlphaType;
+    metadata.usage = gpu::SharedImageUsageSet();
+    record.shared_image = gpu::ClientSharedImage::CreateForTesting(metadata);
     if (release_cb_called_flag)
       *release_cb_called_flag = false;
     record.release_cb = base::BindOnce(
@@ -194,8 +201,7 @@ TEST_F(VideoFrameFactoryImplTest,
   // Also provide a non-null TextureOwner to it.
   scoped_refptr<CodecSurfaceBundle> surface_bundle =
       base::MakeRefCounted<CodecSurfaceBundle>(
-          base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>(0, nullptr,
-                                                                nullptr, true),
+          base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>(),
           features::NeedThreadSafeAndroidMedia()
               ? base::MakeRefCounted<gpu::RefCountedLockForTest>()
               : nullptr);

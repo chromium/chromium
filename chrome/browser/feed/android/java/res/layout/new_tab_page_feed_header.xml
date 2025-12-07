@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layoutDirection="locale"
+    android:paddingTop="@dimen/feed_header_top_padding"
+    android:paddingHorizontal="@dimen/ntp_header_lateral_paddings_v2">
+    <!-- Note: Setting textDirection to "locale" makes sure that a non-translated English word in
+         the title text view is aligned based on the device locale and not the text content.
+    -->
+    <TextView
+        android:id="@+id/header_title"
+        android:focusable="true"
+        android:accessibilityHeading="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.HeaderTitle"
+        android:textDirection="locale" />
+</LinearLayout>

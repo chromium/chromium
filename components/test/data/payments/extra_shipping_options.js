@@ -11,7 +11,7 @@
  */
 function buyWithMethods(methodData) {
   try {
-    var details = {
+    const details = {
       total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}},
       shippingOptions: [{
         id: 'freeShippingOption',
@@ -20,8 +20,7 @@ function buyWithMethods(methodData) {
         selected: true,
       }],
     };
-    var request =
-        new PaymentRequest(methodData, details);
+    const request = new PaymentRequest(methodData, details);
     request.show()
         .then(function(resp) {
           resp.complete('success')

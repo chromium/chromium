@@ -24,7 +24,7 @@ namespace data_decoder {
 
 namespace {
 
-int64_t kPadding = 64;
+constexpr int64_t kPadding = 64;
 
 void ResizeImage(SkBitmap* decoded_image,
                  bool shrink_to_fit,
@@ -81,9 +81,8 @@ void ImageDecoderImpl::DecodeImage(mojo_base::BigBuffer encoded_data,
   if (codec == mojom::ImageCodec::kPng) {
     // Our PNG decoding is using libpng.
     if (encoded_data.size()) {
-      SkBitmap decoded_png;
-      if (gfx::PNGCodec::Decode(encoded_data.data(), encoded_data.size(),
-                                &decoded_png)) {
+      SkBitmap decoded_png = gfx::PNGCodec::Decode(encoded_data);
+      if (!decoded_png.isNull()) {
         decoded_image = decoded_png;
       }
     }
@@ -91,8 +90,7 @@ void ImageDecoderImpl::DecodeImage(mojo_base::BigBuffer encoded_data,
 #endif  // BUILDFLAG(IS_CHROMEOS)
   if (codec == mojom::ImageCodec::kDefault) {
     decoded_image = blink::WebImage::FromData(
-        blink::WebData(reinterpret_cast<const char*>(encoded_data.data()),
-                       encoded_data.size()),
+        blink::WebData(base::as_byte_span(encoded_data)),
         desired_image_frame_size);
   }
 
@@ -112,8 +110,8 @@ void ImageDecoderImpl::DecodeAnimation(mojo_base::BigBuffer encoded_data,
     return;
   }
 
-  auto frames = blink::WebImage::AnimationFromData(blink::WebData(
-      reinterpret_cast<const char*>(encoded_data.data()), encoded_data.size()));
+  auto frames = blink::WebImage::AnimationFromData(
+      blink::WebData(base::as_byte_span(encoded_data)));
   if (frames.size() == 0) {
     std::move(callback).Run({});
     return;

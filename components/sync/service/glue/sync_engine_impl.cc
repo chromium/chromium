@@ -10,7 +10,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -59,7 +58,7 @@ enum class SyncTransportDataStartupState {
 
 std::string GenerateCacheGUID() {
   // Generate a GUID with 128 bits of randomness.
-  const int kGuidBytes = 128 / 8;
+  constexpr int kGuidBytes = 128 / 8;
   return base::Base64Encode(base::RandBytesAsVector(kGuidBytes));
 }
 
@@ -87,11 +86,9 @@ SyncTransportDataStartupState ValidateSyncTransportData(
   // one (otherwise the data may be corrupt). Note that, for local sync, the
   // authenticated account is always empty.
   if (prefs.GetCurrentSyncingGaiaId() != core_account_info.gaia) {
-    // Note that if kSyncAccountKeyedTransportPrefs is enabled, an empty
-    // last-syncing-GaiaID is fine and expected if the user signed out and back
-    // in again.
-    if (!prefs.GetCurrentSyncingGaiaId().empty() ||
-        !base::FeatureList::IsEnabled(kSyncAccountKeyedTransportPrefs)) {
+    // Note that an empty last-syncing-GaiaID is fine and expected if the user
+    // signed out and back in again.
+    if (!prefs.GetCurrentSyncingGaiaId().empty()) {
       DLOG(WARNING) << "Found mismatching gaia ID in sync preferences";
       return SyncTransportDataStartupState::kGaiaIdMismatch;
     }
@@ -139,7 +136,6 @@ void SyncEngineImpl::Initialize(InitParams params) {
     // everything away and start from scratch with a new cache GUID, which also
     // cascades into datatypes throwing away their dangling sync metadata due to
     // cache GUID mismatches.
-    prefs_->ClearAllLegacy();
     prefs_->ClearForCurrentAccount();
 
     prefs_->SetCacheGuid(GenerateCacheGUID());
@@ -149,9 +145,8 @@ void SyncEngineImpl::Initialize(InitParams params) {
   cached_cache_guid_ = prefs_->GetCacheGuid();
   cached_birthday_ = prefs_->GetBirthday();
 
-  // Clear host here to avoid holding a dangling pointer in case the task
-  // outlives the SyncEngineHost. It is safe to clear host here since
-  // SyncEngineBackend doesn't actually need it.
+  // `params.host` is not needed on the backend thread, so we null it out here
+  // to avoid accidentally using it on the wrong thread.
   params.host = nullptr;
   sync_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SyncEngineBackend::DoInitialize, backend_,
@@ -281,7 +276,7 @@ void SyncEngineImpl::StopSyncingForShutdown() {
 }
 
 void SyncEngineImpl::Shutdown(ShutdownReason reason) {
-  // StopSyncingForShutdown() (which nulls out |host_|) should be
+  // StopSyncingForShutdown() (which nulls out `host_`) should be
   // called first.
   DCHECK(!host_);
 
@@ -304,12 +299,11 @@ void SyncEngineImpl::Shutdown(ShutdownReason reason) {
       FROM_HERE,
       base::BindOnce(&SyncEngineBackend::DoShutdown, backend_, reason));
 
-  // Ensure that |backend_| destroyed inside Sync sequence, not inside current
+  // Ensure that `backend_` destroyed inside Sync sequence, not inside current
   // one.
   sync_task_runner_->ReleaseSoon(FROM_HERE, std::move(backend_));
 
   if (reason == ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA) {
-    prefs_->ClearAllLegacy();
     prefs_->ClearCurrentSyncingGaiaId();
   }
 }
@@ -317,9 +311,6 @@ void SyncEngineImpl::Shutdown(ShutdownReason reason) {
 void SyncEngineImpl::ConfigureDataTypes(ConfigureParams params) {
   DCHECK(Difference(params.to_download, ProtocolTypes()).empty());
 
-  sync_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&SyncEngineBackend::DoPurgeDisabledTypes,
-                                backend_, params.to_purge));
   sync_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SyncEngineBackend::DoConfigureSyncer, backend_,
                                 std::move(params)));
@@ -351,19 +342,10 @@ void SyncEngineImpl::HasUnsyncedItemsForTest(
       std::move(cb));
 }
 
-void SyncEngineImpl::GetTypesWithUnsyncedData(
-    base::OnceCallback<void(DataTypeSet)> cb) const {
-  DCHECK(IsInitialized());
-  sync_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&SyncEngineBackend::GetTypesWithUnsyncedData, backend_),
-      std::move(cb));
-}
-
 void SyncEngineImpl::GetThrottledDataTypesForTest(
     base::OnceCallback<void(DataTypeSet)> cb) const {
   DCHECK(IsInitialized());
-  // Instead of reading directly from |cached_status_.throttled_types|, issue
+  // Instead of reading directly from `cached_status_.throttled_types`, issue
   // a round trip to the backend sequence, in case there is an ongoing cycle
   // that could update the throttled types.
   sync_task_runner_->PostTaskAndReply(
@@ -523,7 +505,7 @@ void SyncEngineImpl::HandleSyncStatusChanged(const SyncStatus& status) {
   if (has_new_invalidated_data_types) {
     // Notify about any new data types having pending invalidations. When there
     // are less such data types, this basically means that sync cycle has been
-    // finished, and |host_| will be notified via OnSyncCycleCompleted(), so
+    // finished, and `host_` will be notified via OnSyncCycleCompleted(), so
     // there is no point in duplicating it.
     host_->OnNewInvalidatedDataTypes();
   }
@@ -551,6 +533,15 @@ bool SyncEngineImpl::IsNextPollTimeInThePast() const {
 
   base::Time now = base::Time::Now();
   return now >= last_poll_time + poll_interval;
+}
+
+void SyncEngineImpl::ClearNigoriDataForMigration() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(backend_);
+  sync_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SyncEngineBackend::DoClearNigoriDataForMigration,
+                     backend_));
 }
 
 void SyncEngineImpl::GetNigoriNodeForDebugging(AllNodesCallback callback) {

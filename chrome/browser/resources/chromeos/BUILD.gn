@@ -7,8 +7,7 @@ import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 
-assert(is_chromeos_ash,
-       "Only ChromeOS Ash resources in //c/b/resources//chromeos.")
+assert(is_chromeos, "Only ChromeOS resources in //c/b/resources/chromeos.")
 
 group("resources") {
   public_deps = [
@@ -17,18 +16,19 @@ group("resources") {
     "accessibility:build",
     "add_supervision:resources",
     "app_install:resources",
-    "arc_account_picker:resources",
-    "assistant_optin:resources",
-    "audio:resources",
     "bluetooth_pairing_dialog:resources",
     "borealis_installer:resources",
     "cloud_upload:resources",
+    "crostini_installer:resources",
+    "crostini_upgrader:resources",
     "desk_api:resources",
     "edu_coexistence:resources",
     "emoji_picker:resources",
     "enterprise_reporting:resources",
+    "floating_workspace:resources",
     "gaia_action_buttons:resources",
     "healthd_internals:resources",
+    "input_method:resources",
     "internet_config_dialog:resources",
     "internet_detail_dialog:resources",
     "kerberos:resources",
@@ -38,17 +38,18 @@ group("resources") {
     "mako:resources",
     "manage_mirrorsync:resources",
     "multidevice_internals:resources",
+    "nearby_internals:resources",
+    "nearby_share:resources",
     "network_ui:resources",
     "notification_tester:resources",
     "parent_access:resources",
     "password_change:resources",
     "remote_maintenance_curtain:resources",
-    "seal:resources",
     "sensor_info:resources",
     "set_time_dialog:resources",
     "skyvault:resources",
     "supervision:resources",
-    "vc_tray_tester:resources",
+    "vm:resources",
   ]
 }
 
@@ -87,18 +88,11 @@ group("closure_compile") {
     ":closure_compile_local",
     "account_manager:closure_compile",
     "account_manager/components:closure_compile",
-    "arc_account_picker:closure_compile",
-    "assistant_optin:closure_compile",
-    "crostini_installer:closure_compile",
-    "crostini_upgrader:closure_compile",
     "emulator:closure_compile",
-    "gaia_action_buttons:closure_compile",
     "multidevice_internals:closure_compile",
-    "multidevice_setup:closure_compile",
     "password_change:closure_compile",
     "smb_shares:closure_compile",
     "sys_internals:closure_compile",
-    "vm:closure_compile",
   ]
 }
 

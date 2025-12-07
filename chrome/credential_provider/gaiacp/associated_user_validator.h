@@ -10,12 +10,12 @@
 #include <map>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "base/win/scoped_handle.h"
-
 #include "chrome/credential_provider/gaiacp/gaia_credential_provider_i.h"
 
 namespace credential_provider {

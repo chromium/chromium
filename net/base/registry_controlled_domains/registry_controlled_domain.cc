@@ -51,9 +51,14 @@
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/synchronization/lock.h"
 #include "net/base/lookup_string_in_fixed_set.h"
 #include "net/base/net_module.h"
 #include "net/base/url_util.h"
@@ -78,6 +83,83 @@ struct MappedHostComponent {
 
   size_t canonical_begin;
   size_t canonical_end;
+
+  // True if this component could be canonicalized.
+  bool is_canonical;
+};
+
+// A thread-safe cache of the last `kMaxCacheSize` registry lookups. Implemented
+// with a circular array but could just as easily be a base::LRUCache if you
+// want LRU, with the additional overhead of the doubly-linked list pointers and
+// seemingly negligible hit rate win. See crbug.com/383728878 for more
+// information.
+class RegistryLookupCache {
+ public:
+  constexpr static uint8_t kMaxCacheSize = 5;
+  RegistryLookupCache() = default;
+  ~RegistryLookupCache() = default;
+  RegistryLookupCache(const RegistryLookupCache&) = delete;
+  RegistryLookupCache& operator=(const RegistryLookupCache&) = delete;
+
+  // The returned string_view is a reference to the incoming `host` and
+  // therefore has the same lifetime.
+  std::optional<std::string_view> Get(std::string_view host,
+                                      PrivateRegistryFilter private_filter) {
+    std::optional<std::string_view> result;
+
+    {
+      base::AutoLock scoped_lock(lock_);
+      for (const CachedRegistryLookup& cached_result : cache_) {
+        if (cached_result.host == host &&
+            cached_result.private_filter == private_filter) {
+          result = host.substr(cached_result.offset);
+          break;
+        }
+      }
+    }
+
+    // This method is called frequently, so we only record a small fraction of
+    // the results to avoid excessive overhead.
+    if (base::ShouldRecordSubsampledMetric(0.00001)) {
+      UMA_HISTOGRAM_BOOLEAN(
+          "Net.RegistryControlledDomains.GetDomainAndRegistry.CacheHit.Sampled",
+          result.has_value());
+    }
+    return result;
+  }
+
+  // Stores the input and output of a registry lookup. Rather than make a copy
+  // of the output string, it stores the offset into the host string.
+  void Set(std::string_view host,
+           PrivateRegistryFilter private_filter,
+           size_t offset) {
+    base::AutoLock scoped_lock(lock_);
+    DCHECK_GT(kMaxCacheSize, write_index_);
+    cache_[write_index_] = CachedRegistryLookup(host, private_filter, offset);
+    write_index_ = (write_index_ + 1) % kMaxCacheSize;
+  }
+
+ private:
+  // Stores the input parameters and the output offset of a registry lookup.
+  struct CachedRegistryLookup {
+   public:
+    CachedRegistryLookup() = default;
+    CachedRegistryLookup(std::string_view host,
+                         PrivateRegistryFilter private_filter,
+                         size_t offset)
+        : host(host),
+          private_filter(private_filter),
+          offset(base::checked_cast<uint32_t>(offset)) {}
+    ~CachedRegistryLookup() = default;
+
+    std::string host;
+    PrivateRegistryFilter private_filter;
+    uint32_t offset;
+  };
+
+  base::Lock lock_;
+  std::array<CachedRegistryLookup, kMaxCacheSize> cache_ GUARDED_BY(lock_) = {};
+  uint8_t write_index_ GUARDED_BY(lock_) = 0u;
 };
 
 // Used as the output of functions that calculate the registry length in a
@@ -153,8 +235,7 @@ RegistryLengthOutput GetRegistryLengthInTrimmedHost(
       // such as *.foo.invalid, also have their parent, foo.invalid, as an entry
       // on the PSL, which is why it returns the length of foo.invalid. This
       // isn't entirely correct.
-      NOTREACHED_IN_MIGRATION() << "Invalid exception rule";
-      return {length, false};
+      NOTREACHED() << "Invalid exception rule";
     }
     return {host.length() - first_dot - 1, false};
   }
@@ -173,8 +254,9 @@ RegistryLengthOutput GetRegistryLengthImpl(
     std::string_view host,
     UnknownRegistryFilter unknown_filter,
     PrivateRegistryFilter private_filter) {
-  if (host.empty())
+  if (host.empty()) {
     return {std::string::npos, false};
+  }
 
   // Skip leading dots.
   const size_t host_check_begin = host.find_first_not_of('.');
@@ -185,8 +267,9 @@ RegistryLengthOutput GetRegistryLengthImpl(
   // A single trailing dot isn't relevant in this determination, but does need
   // to be included in the final returned length.
   size_t host_check_end = host.size();
-  if (host.back() == '.')
+  if (host.back() == '.') {
     --host_check_end;
+  }
 
   RegistryLengthOutput output = GetRegistryLengthInTrimmedHost(
       host.substr(host_check_begin, host_check_end - host_check_begin),
@@ -201,10 +284,25 @@ RegistryLengthOutput GetRegistryLengthImpl(
   return output;
 }
 
+// DO NOT change the interface of this function without also updating the
+// RegistryLookupCache.
 std::string_view GetDomainAndRegistryImpl(
     std::string_view host,
     PrivateRegistryFilter private_filter) {
   CHECK(!host.empty());
+
+  // Because this function is called frequently, and is quite expensive, we
+  // 'memoize' previous instantiations of this function by using a cache. Since
+  // this method can be called on dozens of sequences and threads, we make it
+  // thread-safe.
+  static base::NoDestructor<RegistryLookupCache> cache;
+
+  // Check for the origin in the cache.
+  std::optional<std::string_view> cached_result =
+      cache->Get(host, private_filter);
+  if (cached_result.has_value()) {
+    return *cached_result;
+  }
 
   // Find the length of the registry for this host.
   const RegistryLengthOutput registry_length_output =
@@ -224,9 +322,15 @@ std::string_view GetDomainAndRegistryImpl(
   // no dot.
   const size_t dot = host.rfind(
       '.', host.length() - registry_length_output.registry_length - 2);
-  if (dot == std::string::npos)
+  if (dot == std::string::npos) {
+    cache->Set(host, private_filter, 0u);
     return host;
-  return host.substr(dot + 1);
+  }
+
+  std::string_view result = host.substr(dot + 1);
+  cache->Set(host, private_filter, dot + 1);
+
+  return result;
 }
 
 // Same as GetDomainAndRegistry, but returns the domain and registry as a
@@ -237,8 +341,9 @@ std::string_view GetDomainAndRegistryImpl(
 std::string_view GetDomainAndRegistryAsStringPiece(
     std::string_view host,
     PrivateRegistryFilter filter) {
-  if (host.empty() || url::HostIsIPAddress(host))
+  if (host.empty() || url::HostIsIPAddress(host)) {
     return std::string_view();
+  }
   return GetDomainAndRegistryImpl(host, filter);
 }
 
@@ -268,48 +373,66 @@ size_t DoPermissiveGetHostRegistryLength(T host,
 
     // Advance to next "." or end.
     current = host.find('.', begin);
-    if (current == std::string::npos)
+    if (current == std::string::npos) {
       current = host.length();
+    }
 
     MappedHostComponent mapping;
     mapping.original_begin = begin;
     mapping.original_end = current;
     mapping.canonical_begin = canon_output.length();
+    mapping.is_canonical = true;
 
     // Try to append the canonicalized version of this component.
-    int current_len = static_cast<int>(current - begin);
-    if (!url::CanonicalizeHostSubstring(
-            host.data(), url::Component(static_cast<int>(begin), current_len),
-            &canon_output)) {
+    T host_view = host.substr(begin, current - begin);
+    if (!url::CanonicalizeHostSubstring(host_view, &canon_output)) {
       // Failed to canonicalize this component; append as-is.
-      AppendInvalidString(host.substr(begin, current_len), &canon_output);
+      AppendInvalidString(host_view, &canon_output);
+      mapping.is_canonical = false;
     }
 
     mapping.canonical_end = canon_output.length();
     components.push_back(mapping);
 
-    if (current < host.length())
+    if (current < host.length()) {
       canon_output.push_back('.');
+    }
   }
   canon_output.Complete();
 
   size_t canonical_rcd_len =
       GetRegistryLengthImpl(canonical_host, unknown_filter, private_filter)
           .registry_length;
-  if (canonical_rcd_len == 0 || canonical_rcd_len == std::string::npos)
+  if (canonical_rcd_len == 0 || canonical_rcd_len == std::string::npos) {
     return canonical_rcd_len;  // Error or no registry controlled domain.
+  }
 
   // Find which host component the result started in.
   size_t canonical_rcd_begin = canonical_host.length() - canonical_rcd_len;
+
   for (const auto& mapping : components) {
     // In the common case, GetRegistryLengthImpl will identify the beginning
     // of a component and we can just return where that component was in the
     // original string.
-    if (canonical_rcd_begin == mapping.canonical_begin)
+    if (canonical_rcd_begin == mapping.canonical_begin) {
       return host.length() - mapping.original_begin;
+    }
 
-    if (canonical_rcd_begin >= mapping.canonical_end)
+    if (canonical_rcd_begin >= mapping.canonical_end) {
       continue;
+    }
+
+    // Skip brute-force search if the component cannot be canonicalized.
+    // In practice, we should only get here if mapping is the last item in
+    // components. If the mapping cannot be canonicalized, RCD can only
+    // fall into the middle of it if the mapping is the last in components,
+    // such as "%EF%2E%FF%FE.er". In contrast, a hostname like
+    // "%EF%2E%FF%FE.test.er" will hit one of the two canonical_rcd_begin checks
+    // above because its RCD is "test.er" and the RCD doesn't fall in the middle
+    // of a component.
+    if (!mapping.is_canonical) {
+      continue;
+    }
 
     // The registry controlled domain begin was identified as being in the
     // middle of this dot-separated domain component in the non-canonical
@@ -335,34 +458,37 @@ size_t DoPermissiveGetHostRegistryLength(T host,
       url::StdStringCanonOutput try_output(&try_string);
 
       if (!url::CanonicalizeHostSubstring(
-              host.data(),
-              url::Component(
-                  current_try,
-                  static_cast<int>(mapping.original_end) - current_try),
-              &try_output))
+              host.substr(current_try, mapping.original_end - current_try),
+              &try_output)) {
         continue;  // Invalid substring, skip.
+      }
 
       try_output.Complete();
-      if (try_string == canonical_rcd)
+      if (try_string == canonical_rcd) {
         return host.length() - current_try;
+      }
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return canonical_rcd_len;
+  // We may get here if the host has components that can't be canonicalized.
+  // This should only happen in fuzzing and tests, as invalid hostnames will get
+  // blocked much earlier in the stack.
+  return 0;
 }
 
 bool SameDomainOrHost(std::string_view host1,
                       std::string_view host2,
                       PrivateRegistryFilter filter) {
   // Quickly reject cases where either host is empty.
-  if (host1.empty() || host2.empty())
+  if (host1.empty() || host2.empty()) {
     return false;
+  }
 
   // Check for exact host matches, which is faster than looking up the domain
   // and registry.
-  if (host1 == host2)
+  if (host1 == host2) {
     return true;
+  }
 
   // Check for a domain and registry match.
   std::string_view domain1 = GetDomainAndRegistryAsStringPiece(host1, filter);
@@ -374,8 +500,7 @@ bool SameDomainOrHost(std::string_view host1,
 
 std::string GetDomainAndRegistry(const GURL& gurl,
                                  PrivateRegistryFilter filter) {
-  return std::string(
-      GetDomainAndRegistryAsStringPiece(gurl.host_piece(), filter));
+  return std::string(GetDomainAndRegistryAsStringPiece(gurl.host(), filter));
 }
 
 std::string GetDomainAndRegistry(const url::Origin& origin,
@@ -387,16 +512,22 @@ std::string GetDomainAndRegistry(std::string_view host,
                                  PrivateRegistryFilter filter) {
   url::CanonHostInfo host_info;
   const std::string canon_host(CanonicalizeHost(host, &host_info));
-  if (canon_host.empty() || host_info.IsIPAddress())
+  if (canon_host.empty() || host_info.IsIPAddress()) {
     return std::string();
+  }
   return std::string(GetDomainAndRegistryImpl(canon_host, filter));
 }
 
-bool SameDomainOrHost(
-    const GURL& gurl1,
-    const GURL& gurl2,
+std::string_view GetDomainAndRegistryAsStringPiece(
+    const url::Origin& origin,
     PrivateRegistryFilter filter) {
-  return SameDomainOrHost(gurl1.host_piece(), gurl2.host_piece(), filter);
+  return GetDomainAndRegistryAsStringPiece(origin.host(), filter);
+}
+
+bool SameDomainOrHost(const GURL& gurl1,
+                      const GURL& gurl2,
+                      PrivateRegistryFilter filter) {
+  return SameDomainOrHost(gurl1.host(), gurl2.host(), filter);
 }
 
 bool SameDomainOrHost(const url::Origin& origin1,
@@ -415,15 +546,13 @@ bool SameDomainOrHost(const url::Origin& origin1,
 bool SameDomainOrHost(const GURL& gurl,
                       const url::Origin& origin,
                       PrivateRegistryFilter filter) {
-  return SameDomainOrHost(gurl.host_piece(), origin.host(), filter);
+  return SameDomainOrHost(gurl.host(), origin.host(), filter);
 }
 
-size_t GetRegistryLength(
-    const GURL& gurl,
-    UnknownRegistryFilter unknown_filter,
-    PrivateRegistryFilter private_filter) {
-  return GetRegistryLengthImpl(gurl.host_piece(), unknown_filter,
-                               private_filter)
+size_t GetRegistryLength(const GURL& gurl,
+                         UnknownRegistryFilter unknown_filter,
+                         PrivateRegistryFilter private_filter) {
+  return GetRegistryLengthImpl(gurl.host(), unknown_filter, private_filter)
       .registry_length;
 }
 
@@ -451,8 +580,7 @@ bool HostHasRegistryControlledDomain(std::string_view host,
               .registry_length;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
   return (rcd_length != 0) && (rcd_length != std::string::npos);
 }

@@ -30,6 +30,7 @@
 #include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/privacy_mode.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/schemeful_site.h"
@@ -104,6 +105,19 @@ using std::string;
 
 namespace net::test {
 
+void TestConnectionChangeObserver::OnSessionClosed() {
+  session_closed_++;
+}
+
+void TestConnectionChangeObserver::OnConnectionFailed() {
+  connection_failed_++;
+}
+
+void TestConnectionChangeObserver::OnNetworkEvent(NetworkChangeEvent event) {
+  network_event_++;
+  last_network_event_ = event;
+}
+
 QuicSessionPoolTestBase::RequestBuilder::RequestBuilder(
     QuicSessionPoolTestBase* test,
     QuicSessionPool* pool)
@@ -115,7 +129,7 @@ QuicSessionPoolTestBase::RequestBuilder::RequestBuilder(
       request(pool) {}
 QuicSessionPoolTestBase::RequestBuilder::RequestBuilder(
     QuicSessionPoolTestBase* test)
-    : RequestBuilder(test, test->factory_.get()) {}
+    : RequestBuilder(test, test->pool_.get()) {}
 QuicSessionPoolTestBase::RequestBuilder::~RequestBuilder() = default;
 
 int QuicSessionPoolTestBase::RequestBuilder::CallRequest() {
@@ -125,6 +139,8 @@ int QuicSessionPoolTestBase::RequestBuilder::CallRequest() {
       privacy_mode, priority, socket_tag, network_anonymization_key,
       secure_dns_policy, require_dns_https_alpn, cert_verify_flags, url,
       net_log, &net_error_details,
+      MultiplexedSessionCreationInitiator::kUnknown,
+      connection_management_config,
       std::move(failed_on_default_network_callback), std::move(callback));
 }
 QuicSessionPoolTestBase::QuicSessionPoolTestBase(
@@ -173,8 +189,8 @@ QuicSessionPoolTestBase::QuicSessionPoolTestBase(
 
 QuicSessionPoolTestBase::~QuicSessionPoolTestBase() = default;
 void QuicSessionPoolTestBase::Initialize() {
-  DCHECK(!factory_);
-  factory_ = std::make_unique<QuicSessionPool>(
+  DCHECK(!pool_);
+  pool_ = std::make_unique<QuicSessionPool>(
       net_log_.net_log(), host_resolver_.get(), &ssl_config_service_,
       socket_factory_.get(), http_server_properties_.get(),
       cert_verifier_.get(), &transport_security_state_, proxy_delegate_.get(),
@@ -212,47 +228,53 @@ std::unique_ptr<HttpStream> QuicSessionPoolTestBase::CreateStream(
 
 bool QuicSessionPoolTestBase::HasActiveSession(
     const url::SchemeHostPort& scheme_host_port,
+    PrivacyMode privacy_mode,
     const NetworkAnonymizationKey& network_anonymization_key,
     const ProxyChain& proxy_chain,
     SessionUsage session_usage,
-    bool require_dns_https_alpn) {
-  quic::QuicServerId server_id(scheme_host_port.host(), scheme_host_port.port(),
-                               false);
+    bool require_dns_https_alpn,
+    bool disable_cert_verification_network_fetches) {
+  quic::QuicServerId server_id(scheme_host_port.host(),
+                               scheme_host_port.port());
   return QuicSessionPoolPeer::HasActiveSession(
-      factory_.get(), server_id, network_anonymization_key, proxy_chain,
-      session_usage, require_dns_https_alpn);
+      pool_.get(), server_id, privacy_mode, network_anonymization_key,
+      proxy_chain, session_usage, require_dns_https_alpn,
+      disable_cert_verification_network_fetches);
 }
 
 bool QuicSessionPoolTestBase::HasActiveJob(
     const url::SchemeHostPort& scheme_host_port,
     const PrivacyMode privacy_mode,
     bool require_dns_https_alpn) {
-  quic::QuicServerId server_id(scheme_host_port.host(), scheme_host_port.port(),
-                               privacy_mode == PRIVACY_MODE_ENABLED);
-  return QuicSessionPoolPeer::HasActiveJob(factory_.get(), server_id,
+  quic::QuicServerId server_id(scheme_host_port.host(),
+                               scheme_host_port.port());
+  return QuicSessionPoolPeer::HasActiveJob(pool_.get(), server_id, privacy_mode,
                                            require_dns_https_alpn);
 }
 
 // Get the pending, not activated session, if there is only one session alive.
 QuicChromiumClientSession* QuicSessionPoolTestBase::GetPendingSession(
     const url::SchemeHostPort& scheme_host_port) {
-  quic::QuicServerId server_id(scheme_host_port.host(), scheme_host_port.port(),
-                               false);
-  return QuicSessionPoolPeer::GetPendingSession(factory_.get(), server_id,
-                                                scheme_host_port);
+  quic::QuicServerId server_id(scheme_host_port.host(),
+                               scheme_host_port.port());
+  return QuicSessionPoolPeer::GetPendingSession(
+      pool_.get(), server_id, PRIVACY_MODE_DISABLED, scheme_host_port);
 }
 
 QuicChromiumClientSession* QuicSessionPoolTestBase::GetActiveSession(
     const url::SchemeHostPort& scheme_host_port,
+    PrivacyMode privacy_mode,
     const NetworkAnonymizationKey& network_anonymization_key,
     const ProxyChain& proxy_chain,
     SessionUsage session_usage,
-    bool require_dns_https_alpn) {
-  quic::QuicServerId server_id(scheme_host_port.host(), scheme_host_port.port(),
-                               false);
+    bool require_dns_https_alpn,
+    bool disable_cert_verification_network_fetches) {
+  quic::QuicServerId server_id(scheme_host_port.host(),
+                               scheme_host_port.port());
   return QuicSessionPoolPeer::GetActiveSession(
-      factory_.get(), server_id, network_anonymization_key, proxy_chain,
-      session_usage, require_dns_https_alpn);
+      pool_.get(), server_id, privacy_mode, network_anonymization_key,
+      proxy_chain, session_usage, require_dns_https_alpn,
+      disable_cert_verification_network_fetches);
 }
 
 int QuicSessionPoolTestBase::GetSourcePortForNewSessionAndGoAway(
@@ -295,7 +317,7 @@ int QuicSessionPoolTestBase::GetSourcePortForNewSessionInner(
     session->connection()->OnGoAwayFrame(goaway);
   }
 
-  factory_->OnSessionClosed(session);
+  pool_->OnSessionClosed(session);
   EXPECT_FALSE(HasActiveSession(destination));
   socket_data.ExpectAllReadDataConsumed();
   socket_data.ExpectAllWriteDataConsumed();
@@ -307,6 +329,17 @@ QuicSessionPoolTestBase::DefaultProofVerifyDetails() {
   // Load a certificate that is valid for *.example.org
   scoped_refptr<X509Certificate> test_cert(
       ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem"));
+  EXPECT_TRUE(test_cert.get());
+  ProofVerifyDetailsChromium verify_details;
+  verify_details.cert_verify_result.verified_cert = test_cert;
+  verify_details.cert_verify_result.is_issued_by_known_root = true;
+  return verify_details;
+}
+
+ProofVerifyDetailsChromium QuicSessionPoolTestBase::GoogleProofVerifyDetails() {
+  // Load a certificate that is valid for *.google.com
+  scoped_refptr<X509Certificate> test_cert(
+      ImportCertFromFile(GetTestCertsDirectory(), "google_wildcard.pem"));
   EXPECT_TRUE(test_cert.get());
   ProofVerifyDetailsChromium verify_details;
   verify_details.cert_verify_result.verified_cert = test_cert;
@@ -464,10 +497,10 @@ QuicSessionPoolTestBase::ConstructAckPacket(
     test::QuicTestPacketMaker& packet_maker,
     uint64_t packet_number,
     uint64_t packet_num_received,
-    uint64_t smallest_received,
-    uint64_t largest_received) {
+    uint64_t largest_received,
+    uint64_t smallest_received) {
   return packet_maker.Packet(packet_number)
-      .AddAckFrame(packet_num_received, smallest_received, largest_received)
+      .AddAckFrame(packet_num_received, largest_received, smallest_received)
       .Build();
 }
 

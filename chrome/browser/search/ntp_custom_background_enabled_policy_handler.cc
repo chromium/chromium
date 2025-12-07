@@ -5,6 +5,7 @@
 #include "chrome/browser/search/ntp_custom_background_enabled_policy_handler.h"
 
 #include "base/values.h"
+#include "chrome/browser/themes/theme_syncable_service.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
@@ -16,7 +17,7 @@ NtpCustomBackgroundEnabledPolicyHandler::
                                 base::Value::Type::BOOLEAN) {}
 
 NtpCustomBackgroundEnabledPolicyHandler::
-    ~NtpCustomBackgroundEnabledPolicyHandler() {}
+    ~NtpCustomBackgroundEnabledPolicyHandler() = default;
 
 void NtpCustomBackgroundEnabledPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& policies,

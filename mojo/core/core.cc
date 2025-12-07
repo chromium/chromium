@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/core/core.h"
 
 #include <string.h>
@@ -15,6 +10,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -1066,9 +1062,11 @@ MojoResult Core::WrapPlatformSharedMemoryRegion(
   PlatformHandle handles[2];
   bool handles_ok = true;
   for (size_t i = 0; i < num_platform_handles; ++i) {
-    handles[i] = PlatformHandle::FromMojoPlatformHandle(&platform_handles[i]);
-    if (!handles[i].is_valid())
+    UNSAFE_TODO(handles[i]) = PlatformHandle::FromMojoPlatformHandle(
+        UNSAFE_TODO(&platform_handles[i]));
+    if (!UNSAFE_TODO(handles[i]).is_valid()) {
       handles_ok = false;
+    }
   }
   if (!handles_ok)
     return MOJO_RESULT_INVALID_ARGUMENT;
@@ -1183,9 +1181,11 @@ MojoResult Core::UnwrapPlatformSharedMemoryRegion(
     if (available_handle_storage_slots < 2)
       return MOJO_RESULT_INVALID_ARGUMENT;
     PlatformHandle::ToMojoPlatformHandle(std::move(read_only_handle),
-                                         &platform_handles[1]);
-    if (platform_handles[1].type == MOJO_PLATFORM_HANDLE_TYPE_INVALID)
+                                         UNSAFE_TODO(&platform_handles[1]));
+    if (UNSAFE_TODO(platform_handles[1]).type ==
+        MOJO_PLATFORM_HANDLE_TYPE_INVALID) {
       return MOJO_RESULT_INVALID_ARGUMENT;
+    }
     *num_platform_handles = 2;
   }
 #endif

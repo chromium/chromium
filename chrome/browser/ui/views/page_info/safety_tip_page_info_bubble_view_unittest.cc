@@ -43,7 +43,7 @@ class ScopedWebContentsTestHelper {
 
 class SafetyTipPageInfoBubbleViewTest : public testing::Test {
  public:
-  SafetyTipPageInfoBubbleViewTest() {}
+  SafetyTipPageInfoBubbleViewTest() = default;
 
   SafetyTipPageInfoBubbleViewTest(const SafetyTipPageInfoBubbleViewTest&) =
       delete;
@@ -61,8 +61,7 @@ class SafetyTipPageInfoBubbleViewTest : public testing::Test {
     content::WebContents* web_contents = web_contents_helper_.web_contents();
     content_settings::PageSpecificContentSettings::CreateForWebContents(
         web_contents,
-        std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
-            web_contents));
+        std::make_unique<PageSpecificContentSettingsDelegate>(web_contents));
 
     bubble_ = CreateSafetyTipBubbleForTesting(
         parent_window_->GetNativeView(), web_contents,

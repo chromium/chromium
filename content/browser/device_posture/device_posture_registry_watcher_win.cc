@@ -8,6 +8,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/json/json_reader.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 
@@ -109,8 +110,8 @@ void DevicePostureRegistryWatcherWin::ComputeFoldableState(
     return;
   }
 
-  std::optional<base::Value::Dict> dict =
-      base::JSONReader::ReadDict(base::WideToUTF8(posture_data));
+  std::optional<base::Value::Dict> dict = base::JSONReader::ReadDict(
+      base::WideToUTF8(posture_data), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!dict) {
     DVLOG(1) << "Could not read the foldable status.";
     return;

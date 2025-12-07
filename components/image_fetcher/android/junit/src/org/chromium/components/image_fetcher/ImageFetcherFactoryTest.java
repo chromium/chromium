@@ -10,11 +10,12 @@ import static org.junit.Assert.assertNotNull;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.DiscardableReferencePool;
@@ -25,14 +26,10 @@ import org.chromium.components.embedder_support.simple_factory_key.SimpleFactory
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ImageFetcherFactoryTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock ImageFetcherBridge mImageFetcherBridge;
     @Mock DiscardableReferencePool mReferencePool;
     @Mock SimpleFactoryKeyHandle mSimpleFactoryKeyHandle;
-
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Test
     @SmallTest

@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/platform/wtf/stack_util.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_icu.h"
 
-namespace WTF {
+namespace blink {
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN)
 base::PlatformThreadId CurrentThread() {
@@ -39,7 +39,7 @@ void SetIsBeforeThreadCreatedForTest() {
 ThreadSpecific<Threading>* Threading::static_data_;
 
 Threading::Threading()
-    : cached_converter_icu_(new ICUConverterWrapper),
+    : cached_converter_icu_(new IcuConverterWrapper),
       thread_id_(CurrentThread()) {}
 
 Threading::~Threading() = default;
@@ -64,4 +64,4 @@ size_t Threading::ThreadStackSize() {
 }
 #endif
 
-}  // namespace WTF
+}  // namespace blink

@@ -13,8 +13,7 @@ PrintPreviewContextMenuObserver::PrintPreviewContextMenuObserver(
     content::WebContents* contents) : contents_(contents) {
 }
 
-PrintPreviewContextMenuObserver::~PrintPreviewContextMenuObserver() {
-}
+PrintPreviewContextMenuObserver::~PrintPreviewContextMenuObserver() = default;
 
 bool PrintPreviewContextMenuObserver::IsPrintPreviewDialog() {
   auto* controller = printing::PrintPreviewDialogController::GetInstance();
@@ -44,7 +43,6 @@ bool PrintPreviewContextMenuObserver::IsCommandIdEnabled(int command_id) {
       return false;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return true;
+      NOTREACHED();
   }
 }

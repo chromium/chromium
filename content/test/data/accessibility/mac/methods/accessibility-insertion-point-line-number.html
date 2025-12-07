@@ -1,0 +1,16 @@
+<!--
+@SCRIPT:
+  input.accessibilityInsertionPointLineNumber
+-->
+<!DOCTYPE html>
+<textarea id="input">
+line 1
+line 2
+line 3
+line 4
+</textarea>
+<script>
+  var input = document.querySelector("textarea");
+  input.focus();
+  input.setSelectionRange(8, 8);
+</script>

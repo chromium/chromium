@@ -11,10 +11,11 @@
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_test_api.h"
-#include "ui/native_theme/test_native_theme.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_ripple.h"
 #include "ui/views/animation/test/ink_drop_impl_test_api.h"
@@ -198,8 +199,9 @@ TEST_F(InkDropImplTest, LayersRemovedFromHostAfterHighlight) {
 TEST_F(InkDropImplTest, LayersRemovedFromHostAfterInkDrop) {
   // TODO(bruthig): Re-enable! For some reason these tests fail on some win
   // trunk builds. See crbug.com/731811.
-  if (!gfx::Animation::ShouldRenderRichAnimation())
+  if (!gfx::Animation::ShouldRenderRichAnimation()) {
     return;
+  }
 
   EXPECT_FALSE(AreLayersAddedToHost());
 
@@ -262,8 +264,8 @@ TEST_F(InkDropImplTest, SuccessfulAnimationEndedDuringDestruction) {
   {
     // Start another ripple animation with zero duration that would be queued
     // until the previous one is finished/aborted.
-    ui::ScopedAnimationDurationScaleMode duration_mode(
-        ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode duration_mode(
+        gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
     ink_drop()->AnimateToState(InkDropState::ACTION_TRIGGERED);
   }
   // Abort the first animation, so that the queued animation is started (and
@@ -290,14 +292,14 @@ TEST_F(InkDropImplTest, RippleAndHighlightRecreatedOnSizeChange) {
 // Make sure the InkDropRipple and InkDropHighlight get recreated when the host
 // theme changes.
 TEST_F(InkDropImplTest, RippleAndHighlightRecreatedOnHostThemeChange) {
+  ui::MockOsSettingsProvider os_settings_provider;
   test_api().SetShouldHighlight(true);
   ink_drop()->AnimateToState(InkDropState::ACTIVATED);
   EXPECT_EQ(1, ink_drop_host()->num_ink_drop_ripples_created());
   EXPECT_EQ(1, ink_drop_host()->num_ink_drop_highlights_created());
 
-  ui::TestNativeTheme native_theme;
-  native_theme.SetDarkMode(true);
-  widget()->SetNativeThemeForTest(&native_theme);
+  os_settings_provider.SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
   EXPECT_EQ(2, ink_drop_host()->num_ink_drop_ripples_created());
   EXPECT_EQ(2, ink_drop_host()->num_ink_drop_highlights_created());
   DestroyWidget();
@@ -508,8 +510,9 @@ TEST_P(InkDropImplHideAutoHighlightTest,
 TEST_P(InkDropImplHideAutoHighlightTest, DeactivatedAnimatesWhenNotFocused) {
   // TODO(bruthig): Re-enable! For some reason these tests fail on some win
   // trunk builds. See crbug.com/731811.
-  if (!gfx::Animation::ShouldRenderRichAnimation())
+  if (!gfx::Animation::ShouldRenderRichAnimation()) {
     return;
+  }
 
   test_api().SetShouldHighlight(false);
 

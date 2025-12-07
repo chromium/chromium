@@ -43,6 +43,8 @@ TEST(WebSandboxFlagsTest, All) {
        {~WebSandboxFlags::kTopNavigationByUserActivation, ""}},
       {"allow-top-navigation-to-custom-protocols",
        {~WebSandboxFlags::kTopNavigationToCustomProtocols, ""}},
+      {"allow-same-site-none-cookies",
+       {~WebSandboxFlags::kAllowSameSiteNoneCookies, ""}},
 
       // Two tokens:
       {"allow-downloads allow-forms",

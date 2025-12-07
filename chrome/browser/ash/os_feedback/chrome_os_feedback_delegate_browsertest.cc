@@ -22,7 +22,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -39,7 +39,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/webui/ash/os_feedback_dialog.h"
+#include "chrome/browser/ui/webui/ash/os_feedback_dialog/os_feedback_dialog.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/feedback/content/content_tracing_manager.h"
@@ -121,7 +121,6 @@ class FakeFeedbackPrivateDelegate : public FeedbackPrivateDelegate {
       extensions::FetchExtraLogsCallback callback) const override;
   extensions::api::feedback_private::LandingPageType GetLandingPageType(
       const feedback::FeedbackData& feedback_data) const override;
-  void GetLacrosHistograms(GetHistogramsCallback callback) override;
   std::string GetSignedInUserEmail(
       content::BrowserContext* context) const override;
   void NotifyFeedbackDelayed() const override;
@@ -175,11 +174,6 @@ FakeFeedbackPrivateDelegate::GetLandingPageType(
   return extensions::api::feedback_private::LandingPageType::kNoLandingPage;
 }
 
-void FakeFeedbackPrivateDelegate::GetLacrosHistograms(
-    GetHistogramsCallback callback) {
-  std::move(callback).Run(std::string());
-}
-
 std::string FakeFeedbackPrivateDelegate::GetSignedInUserEmail(
     content::BrowserContext* context) const {
   return std::string();
@@ -201,7 +195,7 @@ FakeFeedbackPrivateDelegate::GetFeedbackUploaderForContext(
 
 class ChromeOsFeedbackDelegateTest : public InProcessBrowserTest {
  public:
-  ChromeOsFeedbackDelegateTest() {}
+  ChromeOsFeedbackDelegateTest() = default;
 
   ~ChromeOsFeedbackDelegateTest() override = default;
 
@@ -322,7 +316,7 @@ class ChromeOsFeedbackDelegateTest : public InProcessBrowserTest {
 
   scoped_refptr<base::RefCountedMemory> CreateFakePngData() {
     const unsigned char kData[] = {12, 11, 99};
-    return base::MakeRefCounted<base::RefCountedBytes>(kData, std::size(kData));
+    return base::MakeRefCounted<base::RefCountedBytes>(kData);
   }
 
   // Find the url of the active tab of the browser if any.
@@ -450,8 +444,6 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, GetPerformanceTraceId) {
 // - category_tag is set to "BluetoothReportWithLogs".
 // - User is logged in with internal google account.
 // - Performance trace id is present.
-// - from_assistant flag is set true.
-// - Assistant debug info is allowed.
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
                        FeedbackDataPopulatedIncludeSysLogsAndScreenshot) {
   ReportPtr report = Report::New();
@@ -465,8 +457,6 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   report->include_system_logs_and_histograms = true;
   report->feedback_context->is_internal_account = true;
   report->feedback_context->trace_id = kPerformanceTraceId;
-  report->feedback_context->from_assistant = true;
-  report->feedback_context->assistant_debug_info_allowed = true;
   const FeedbackParams expected_params{/*is_internal_email=*/true,
                                        /*load_system_info=*/true,
                                        /*send_tab_titles=*/true,
@@ -497,8 +487,6 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   // Verify category_tag is marked as BluetoothReportWithLogs in the report.
   EXPECT_EQ(kFeedbackBluetoothCategoryTag, feedback_data->category_tag());
   EXPECT_EQ(kPerformanceTraceId, feedback_data->trace_id());
-  EXPECT_TRUE(feedback_data->from_assistant());
-  EXPECT_TRUE(feedback_data->assistant_debug_info_allowed());
 }
 
 // Test that feedback params and data are populated with correct data before
@@ -511,8 +499,6 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
 // - category_tag is set to a fake value.
 // - User is logged in with internal google account.
 // - Performance trace id is present.
-// - from_assistant flag is set true.
-// - Assistant debug info is allowed.
 IN_PROC_BROWSER_TEST_F(
     ChromeOsFeedbackDelegateTest,
     FeedbackDataPopulatedIncludeSysLogsAndScreenshotAndFakeCategoryTag) {
@@ -527,8 +513,6 @@ IN_PROC_BROWSER_TEST_F(
   report->include_system_logs_and_histograms = true;
   report->feedback_context->is_internal_account = true;
   report->feedback_context->trace_id = kPerformanceTraceId;
-  report->feedback_context->from_assistant = true;
-  report->feedback_context->assistant_debug_info_allowed = true;
   const FeedbackParams expected_params{/*is_internal_email=*/true,
                                        /*load_system_info=*/true,
                                        /*send_tab_titles=*/true,
@@ -559,8 +543,6 @@ IN_PROC_BROWSER_TEST_F(
   // Verify category_tag is marked as a fake category tag in the report.
   EXPECT_EQ(kFakeCategoryTag, feedback_data->category_tag());
   EXPECT_EQ(kPerformanceTraceId, feedback_data->trace_id());
-  EXPECT_TRUE(feedback_data->from_assistant());
-  EXPECT_TRUE(feedback_data->assistant_debug_info_allowed());
 }
 
 // Test that feedback params and data are populated with correct data before
@@ -573,8 +555,6 @@ IN_PROC_BROWSER_TEST_F(
 // - category_tag is set to "linkCrossDeviceDogfoodFeedbackWithBluetoothLogs".
 // - User is logged in with internal google account.
 // - Performance trace id is present.
-// - from_assistant flag is set true.
-// - Assistant debug info is allowed.
 IN_PROC_BROWSER_TEST_F(
     ChromeOsFeedbackDelegateTest,
     FeedbackDataPopulatedIncludeSysLogsAndScreenshotAndCrossDeviceAndBluetoothCategoryTag) {
@@ -590,8 +570,6 @@ IN_PROC_BROWSER_TEST_F(
   report->include_system_logs_and_histograms = true;
   report->feedback_context->is_internal_account = true;
   report->feedback_context->trace_id = kPerformanceTraceId;
-  report->feedback_context->from_assistant = true;
-  report->feedback_context->assistant_debug_info_allowed = true;
   const FeedbackParams expected_params{/*is_internal_email=*/true,
                                        /*load_system_info=*/true,
                                        /*send_tab_titles=*/true,
@@ -624,8 +602,6 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(kFeedbackCrossDeviceAndBluetoothCategoryTag,
             feedback_data->category_tag());
   EXPECT_EQ(kPerformanceTraceId, feedback_data->trace_id());
-  EXPECT_TRUE(feedback_data->from_assistant());
-  EXPECT_TRUE(feedback_data->assistant_debug_info_allowed());
 }
 
 // Test that feedback params and data are populated with correct data before
@@ -639,8 +615,6 @@ IN_PROC_BROWSER_TEST_F(
 // "linkCrossDeviceDogfoodFeedbackWithoutBluetoothLogs".
 // - User is logged in with internal google account.
 // - Performance trace id is present.
-// - from_assistant flag is set true.
-// - Assistant debug info is allowed.
 IN_PROC_BROWSER_TEST_F(
     ChromeOsFeedbackDelegateTest,
     FeedbackDataPopulatedIncludeSysLogsAndScreenshotAndCrossDeviceCategoryTag) {
@@ -655,8 +629,6 @@ IN_PROC_BROWSER_TEST_F(
   report->include_system_logs_and_histograms = true;
   report->feedback_context->is_internal_account = true;
   report->feedback_context->trace_id = kPerformanceTraceId;
-  report->feedback_context->from_assistant = true;
-  report->feedback_context->assistant_debug_info_allowed = true;
   const FeedbackParams expected_params{/*is_internal_email=*/true,
                                        /*load_system_info=*/true,
                                        /*send_tab_titles=*/true,
@@ -688,8 +660,6 @@ IN_PROC_BROWSER_TEST_F(
   // "linkCrossDeviceDogfoodFeedbackWithoutBluetoothLogs" in the report.
   EXPECT_EQ(kFeedbackCrossDeviceCategoryTag, feedback_data->category_tag());
   EXPECT_EQ(kPerformanceTraceId, feedback_data->trace_id());
-  EXPECT_TRUE(feedback_data->from_assistant());
-  EXPECT_TRUE(feedback_data->assistant_debug_info_allowed());
 }
 
 // Test that feedback params and data are populated with correct data before
@@ -702,8 +672,6 @@ IN_PROC_BROWSER_TEST_F(
 // - category_tag is set to a fake value.
 // - User is logged in with internal google account.
 // - Performance trace id is present.
-// - from_assistant flag is set false.
-// - Assistant debug info is not allowed.
 // - from_autofill flag is set true.
 // - Non-empty autofill_metadata provided.
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
@@ -720,10 +688,8 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   report->include_autofill_metadata = true;
   report->feedback_context->is_internal_account = true;
   report->feedback_context->trace_id = kPerformanceTraceId;
-  report->feedback_context->from_assistant = false;
   report->feedback_context->from_autofill = true;
   report->feedback_context->autofill_metadata = kFakeAutofillMetadata;
-  report->feedback_context->assistant_debug_info_allowed = false;
   const FeedbackParams expected_params{/*is_internal_email=*/true,
                                        /*load_system_info=*/false,
                                        /*send_tab_titles=*/false,
@@ -754,8 +720,6 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   // Verify category_tag is marked as a fake category tag in the report.
   EXPECT_EQ(kFakeCategoryTag, feedback_data->category_tag());
   EXPECT_EQ(kPerformanceTraceId, feedback_data->trace_id());
-  EXPECT_FALSE(feedback_data->from_assistant());
-  EXPECT_FALSE(feedback_data->assistant_debug_info_allowed());
 }
 
 // Test that feedback params and data are populated with correct data before
@@ -768,8 +732,6 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
 // - Empty string Extra Diagnostics provided.
 // - User is not logged in with an internal google account.
 // - Performance trace id is absent (set to zero).
-// - from_assistant flag is set false.
-// - Assistant debug info is not allowed.
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
                        FeedbackDataPopulatedNotIncludeSysLogsOrScreenshot) {
   ReportPtr report = Report::New();
@@ -784,8 +746,6 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   report->feedback_context->is_internal_account = false;
   report->include_system_logs_and_histograms = false;
   report->feedback_context->trace_id = 0;
-  report->feedback_context->from_assistant = false;
-  report->feedback_context->assistant_debug_info_allowed = false;
   const FeedbackParams expected_params{/*is_internal_email=*/false,
                                        /*load_system_info=*/false,
                                        /*send_tab_titles=*/false,
@@ -815,8 +775,6 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   // Verify category_tag is not marked as BluetoothReportWithLogs.
   EXPECT_NE(kFeedbackBluetoothCategoryTag, feedback_data->category_tag());
   EXPECT_EQ(0, feedback_data->trace_id());
-  EXPECT_FALSE(feedback_data->from_assistant());
-  EXPECT_FALSE(feedback_data->assistant_debug_info_allowed());
 }
 
 // Test GetScreenshot returns correct data when there is a screenshot.
@@ -858,10 +816,9 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   ash::SystemWebAppManager::GetForTest(browser()->profile())
       ->InstallSystemAppsForTesting();
 
-  ui_test_utils::BrowserChangeObserver browser_opened(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   feedback_delegate.OpenDiagnosticsApp();
-  browser_opened.Wait();
+  browser_created_observer.Wait();
 
   Browser* app_browser = ash::FindSystemWebAppBrowser(
       browser()->profile(), ash::SystemWebAppType::DIAGNOSTICS);
@@ -877,8 +834,8 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   LaunchFeedbackDialog();
   gfx::NativeWindow feedback_window = OsFeedbackDialog::FindDialogWindow();
 
-  std::set<raw_ptr<views::Widget, SetExperimental>> owned_widgets_pre_dialog;
-  views::Widget::GetAllOwnedWidgets(feedback_window, &owned_widgets_pre_dialog);
+  views::Widget::Widgets owned_widgets_pre_dialog =
+      views::Widget::GetAllOwnedWidgets(feedback_window);
 
   EXPECT_EQ(owned_widgets_pre_dialog.size(), 0u);
 
@@ -888,9 +845,8 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
 
   feedback_delegate.OpenDiagnosticsApp();
 
-  std::set<raw_ptr<views::Widget, SetExperimental>> owned_widgets_post_dialog;
-  views::Widget::GetAllOwnedWidgets(feedback_window,
-                                    &owned_widgets_post_dialog);
+  views::Widget::Widgets owned_widgets_post_dialog =
+      views::Widget::GetAllOwnedWidgets(feedback_window);
 
   EXPECT_EQ(owned_widgets_post_dialog.size(), 1u);
 }
@@ -902,10 +858,9 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, OpenExploreApp) {
   ash::SystemWebAppManager::GetForTest(browser()->profile())
       ->InstallSystemAppsForTesting();
 
-  ui_test_utils::BrowserChangeObserver browser_opened(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   feedback_delegate.OpenExploreApp();
-  browser_opened.Wait();
+  browser_created_observer.Wait();
 
   Browser* app_browser = ash::FindSystemWebAppBrowser(
       browser()->profile(), ash::SystemWebAppType::HELP);
@@ -922,8 +877,8 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, OpenMetricsDialog) {
   gfx::NativeWindow feedback_window =
       feedback_browser->window()->GetNativeWindow();
 
-  std::set<raw_ptr<views::Widget, SetExperimental>> owned_widgets_pre_dialog;
-  views::Widget::GetAllOwnedWidgets(feedback_window, &owned_widgets_pre_dialog);
+  views::Widget::Widgets owned_widgets_pre_dialog =
+      views::Widget::GetAllOwnedWidgets(feedback_window);
 
   EXPECT_EQ(owned_widgets_pre_dialog.size(), 0u);
 
@@ -933,9 +888,8 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, OpenMetricsDialog) {
 
   feedback_delegate.OpenMetricsDialog();
 
-  std::set<raw_ptr<views::Widget, SetExperimental>> owned_widgets_post_dialog;
-  views::Widget::GetAllOwnedWidgets(feedback_window,
-                                    &owned_widgets_post_dialog);
+  views::Widget::Widgets owned_widgets_post_dialog =
+      views::Widget::GetAllOwnedWidgets(feedback_window);
 
   EXPECT_EQ(owned_widgets_post_dialog.size(), 1u);
 }
@@ -949,8 +903,8 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   gfx::NativeWindow feedback_window =
       feedback_browser->window()->GetNativeWindow();
 
-  std::set<raw_ptr<views::Widget, SetExperimental>> owned_widgets_pre_dialog;
-  views::Widget::GetAllOwnedWidgets(feedback_window, &owned_widgets_pre_dialog);
+  views::Widget::Widgets owned_widgets_pre_dialog =
+      views::Widget::GetAllOwnedWidgets(feedback_window);
 
   EXPECT_EQ(owned_widgets_pre_dialog.size(), 0u);
 
@@ -960,9 +914,8 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
 
   feedback_delegate.OpenSystemInfoDialog();
 
-  std::set<raw_ptr<views::Widget, SetExperimental>> owned_widgets_post_dialog;
-  views::Widget::GetAllOwnedWidgets(feedback_window,
-                                    &owned_widgets_post_dialog);
+  views::Widget::Widgets owned_widgets_post_dialog =
+      views::Widget::GetAllOwnedWidgets(feedback_window);
 
   EXPECT_EQ(owned_widgets_post_dialog.size(), 1u);
 }
@@ -975,8 +928,8 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
 
   gfx::NativeWindow feedback_window = OsFeedbackDialog::FindDialogWindow();
 
-  std::set<raw_ptr<views::Widget, SetExperimental>> owned_widgets_pre_dialog;
-  views::Widget::GetAllOwnedWidgets(feedback_window, &owned_widgets_pre_dialog);
+  views::Widget::Widgets owned_widgets_pre_dialog =
+      views::Widget::GetAllOwnedWidgets(feedback_window);
 
   EXPECT_EQ(owned_widgets_pre_dialog.size(), 0u);
 
@@ -986,9 +939,8 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
 
   feedback_delegate.OpenSystemInfoDialog();
 
-  std::set<raw_ptr<views::Widget, SetExperimental>> owned_widgets_post_dialog;
-  views::Widget::GetAllOwnedWidgets(feedback_window,
-                                    &owned_widgets_post_dialog);
+  views::Widget::Widgets owned_widgets_post_dialog =
+      views::Widget::GetAllOwnedWidgets(feedback_window);
 
   EXPECT_EQ(owned_widgets_post_dialog.size(), 1u);
 }

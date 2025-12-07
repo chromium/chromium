@@ -26,7 +26,7 @@
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace {
 // Limit the size of the initial indexing. This will not limit the size of the
@@ -85,26 +85,25 @@ class SpotlightBookmarkModelBridge;
   // Number of times the indexing was interrupted by model updates.
   NSInteger _reindexInterruptionCount;
 
-  // PrefService per a browser state.
-  PrefService* _prefService;
+  // PrefService per a profile.
+  raw_ptr<PrefService> _prefService;
 }
 
-+ (BookmarksSpotlightManager*)bookmarksSpotlightManagerWithBrowserState:
-    (ChromeBrowserState*)browserState {
++ (BookmarksSpotlightManager*)bookmarksSpotlightManagerWithProfile:
+    (ProfileIOS*)profile {
   favicon::LargeIconService* largeIconService =
-      IOSChromeLargeIconServiceFactory::GetForBrowserState(browserState);
+      IOSChromeLargeIconServiceFactory::GetForProfile(profile);
 
   return [[BookmarksSpotlightManager alloc]
       initWithLargeIconService:largeIconService
-                 bookmarkModel:ios::BookmarkModelFactory::GetForBrowserState(
-                                   browserState)
+                 bookmarkModel:ios::BookmarkModelFactory::GetForProfile(profile)
             spotlightInterface:[SpotlightInterface defaultInterface]
          searchableItemFactory:
              [[SearchableItemFactory alloc]
                  initWithLargeIconService:largeIconService
                                    domain:spotlight::DOMAIN_BOOKMARKS
                     useTitleInIdentifiers:YES]
-                   prefService:browserState->GetPrefs()];
+                   prefService:profile->GetPrefs()];
 }
 
 - (instancetype)
@@ -175,8 +174,9 @@ class SpotlightBookmarkModelBridge;
     [self removeURLNodeFromIndex:node];
     return;
   }
-  for (const auto& child : node->children())
+  for (const auto& child : node->children()) {
     [self removeNodeFromIndex:child.get()];
+  }
 }
 
 // Helper to remove URL nodes at the leaves of the bookmark index.
@@ -239,6 +239,9 @@ class SpotlightBookmarkModelBridge;
   if (self.isShuttingDown) {
     return;
   }
+  if (!title) {
+    title = @"";
+  }
 
   std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
       nodesMatchingURL = [self nodesByURL:URL];
@@ -254,7 +257,7 @@ class SpotlightBookmarkModelBridge;
   // lists of tags into one, that will be used to search for the spotlight item.
   for (const bookmarks::BookmarkNode* node : nodesMatchingURL) {
     NSString* nodeTitle = base::SysUTF16ToNSString(node->GetTitle());
-    if ([nodeTitle isEqualToString:title] == NO) {
+    if (!nodeTitle || ![nodeTitle isEqualToString:title]) {
       continue;
     }
     // there still a bookmark node that matches the  given URL and title, so we
@@ -434,7 +437,7 @@ class SpotlightBookmarkModelBridge;
 
 - (std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>)
     nodesByURL:(const GURL&)url {
-  if (!_bookmarkModel) {
+  if (self.isShuttingDown || !_bookmarkModel) {
     return {};
   }
 

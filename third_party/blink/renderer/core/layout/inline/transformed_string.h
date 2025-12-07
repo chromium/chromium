@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
+#include "third_party/blink/renderer/platform/wtf/text/text_offset_map.h"
 
 namespace blink {
 
@@ -22,19 +23,16 @@ class TransformedString {
   STACK_ALLOCATED();
 
  public:
-  using Length = const unsigned;
-
   explicit TransformedString(StringView view) : view_(view) {}
-  TransformedString(StringView view, base::span<Length> map)
+  TransformedString(StringView view,
+                    base::span<const TextOffsetMap::Length> map)
       : view_(view), length_map_(map) {}
-  static CORE_EXPORT Vector<unsigned> CreateLengthMap(
-      unsigned dom_length,
-      unsigned transformed_length,
-      const TextOffsetMap& offset_map);
 
   const StringView& View() const { return view_; }
   bool HasLengthMap() const { return !length_map_.empty(); }
-  const base::span<Length>& LengthMap() const { return length_map_; }
+  const base::span<const TextOffsetMap::Length>& LengthMap() const {
+    return length_map_;
+  }
 
   TransformedString Substring(unsigned start, unsigned length) const;
   TransformedString Substring(unsigned start) const {
@@ -44,7 +42,7 @@ class TransformedString {
  private:
   const StringView view_;
 
-  const base::span<Length> length_map_;
+  const base::span<const TextOffsetMap::Length> length_map_;
 };
 
 }  // namespace blink

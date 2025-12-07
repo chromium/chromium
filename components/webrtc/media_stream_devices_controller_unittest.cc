@@ -4,10 +4,13 @@
 
 #include "components/webrtc/media_stream_devices_controller.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "components/webrtc/media_stream_devices_util.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/permission_descriptor_util.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test_utils.h"
@@ -103,8 +106,8 @@ class MockPermissionController : public content::MockPermissionController {
       RequestPermissionsFromCurrentDocument,
       (content::RenderFrameHost * render_frame_host,
        content::PermissionRequestDescription request_description,
-       base::OnceCallback<
-           void(const std::vector<blink::mojom::PermissionStatus>&)> callback));
+       base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
+           callback));
 };
 
 std::vector<std::string> GetIds(const blink::MediaStreamDevices& devices,
@@ -152,7 +155,8 @@ class MediaStreamDevicesControllerTest : public testing::Test {
     auto* mock_permission_controller = static_cast<MockPermissionController*>(
         browser_context_.GetPermissionController());
     ON_CALL(*mock_permission_controller, GetPermissionResultForCurrentDocument)
-        .WillByDefault([](blink::PermissionType permission,
+        .WillByDefault([](const blink::mojom::PermissionDescriptorPtr&
+                              permission_descriptor,
                           content::RenderFrameHost* render_frame_host) {
           return content::PermissionResult{
               content::PermissionStatus::GRANTED,
@@ -160,13 +164,20 @@ class MediaStreamDevicesControllerTest : public testing::Test {
           };
         });
 
-    std::vector<blink::PermissionType> expected_permissions;
+    std::vector<blink::mojom::PermissionDescriptorPtr> expected_permissions;
     if (request_audio) {
-      expected_permissions.push_back(blink::PermissionType::AUDIO_CAPTURE);
+      expected_permissions.push_back(
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(
+                  blink::PermissionType::AUDIO_CAPTURE));
     }
     if (request_video) {
-      expected_permissions.push_back(blink::PermissionType::VIDEO_CAPTURE);
+      expected_permissions.push_back(
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(
+                  blink::PermissionType::VIDEO_CAPTURE));
     }
+
     content::PermissionRequestDescription expected_description{
         std::move(expected_permissions), false};
     expected_description.requested_audio_capture_device_ids =
@@ -180,9 +191,14 @@ class MediaStreamDevicesControllerTest : public testing::Test {
         .WillOnce(
             [](auto*, auto,
                base::OnceCallback<void(
-                   const std::vector<content::PermissionStatus>&)> callback) {
-              std::move(callback).Run({content::PermissionStatus::GRANTED,
-                                       content::PermissionStatus::GRANTED});
+                   const std::vector<content::PermissionResult>&)> callback) {
+              std::move(callback).Run(
+                  {content::PermissionResult(
+                       content::PermissionStatus::GRANTED,
+                       content::PermissionStatusSource::UNSPECIFIED),
+                   content::PermissionResult(
+                       content::PermissionStatus::GRANTED,
+                       content::PermissionStatusSource::UNSPECIFIED)});
             });
 
     base::test::TestFuture<blink::mojom::MediaStreamRequestResult,

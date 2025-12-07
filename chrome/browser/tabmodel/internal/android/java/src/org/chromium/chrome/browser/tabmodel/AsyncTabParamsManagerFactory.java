@@ -4,11 +4,12 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Factory for creating {@link AsyncTabParamsManager}. */
+@NullMarked
 public class AsyncTabParamsManagerFactory {
-    /**
-     * @return New instance of {@link AsyncTabParamsManagerImpl}.
-     */
+    /** Returns a new instance of {@link AsyncTabParamsManagerImpl}. */
     public static AsyncTabParamsManager createAsyncTabParamsManager() {
         return new AsyncTabParamsManagerImpl();
     }

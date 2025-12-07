@@ -104,8 +104,9 @@ CaptureHeaderHandlerAndReturnScript(
     base::OnceClosure done_callback,
     const net::test_server::HttpRequest& request) {
   GURL request_url = request.GetURL();
-  if (request_url.path() != path)
+  if (request_url.GetPath() != path) {
     return nullptr;
+  }
 
   *header_map = request.headers;
   std::move(done_callback).Run();

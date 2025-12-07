@@ -11,21 +11,21 @@ import 'chrome://resources/ash/common/personalization/wallpaper.css.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
 
-import {WallpaperGridItemSelectedEvent} from 'chrome://resources/ash/common/personalization/wallpaper_grid_item_element.js';
+import type {WallpaperGridItemSelectedEvent} from 'chrome://resources/ash/common/personalization/wallpaper_grid_item_element.js';
 import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
-import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import {IronScrollThresholdElement} from 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
+import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import type {IronScrollThresholdElement} from 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CurrentWallpaper, GooglePhotosPhoto, WallpaperProviderInterface, WallpaperType} from '../../personalization_app.mojom-webui.js';
+import type {CurrentWallpaper, GooglePhotosPhoto, WallpaperProviderInterface} from '../../personalization_app.mojom-webui.js';
+import {WallpaperType} from '../../personalization_app.mojom-webui.js';
 import {dismissErrorAction, setErrorAction} from '../personalization_actions.js';
-import {PersonalizationStateError} from '../personalization_state.js';
+import type {PersonalizationStateError} from '../personalization_state.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {getNumberOfGridItemsPerRow} from '../utils.js';
 
-import {DisplayableImage} from './constants.js';
+import type {DisplayableImage} from './constants.js';
 import {recordWallpaperGooglePhotosSourceUMA, WallpaperGooglePhotosSource} from './google_photos_metrics_logger.js';
 import {getTemplate} from './google_photos_photos_element.html.js';
 import {getLoadingPlaceholders, isGooglePhotosPhoto, isImageAMatchForKey, isImageEqualToSelected} from './utils.js';
@@ -43,7 +43,7 @@ function getPlaceholders(): GooglePhotosPhotosRow[] {
     return {
       id: PLACEHOLDER_ID,
       name: '',
-      date: {data: []},
+      date: '',
       url: {url: ''},
       dedupKey: null,
       location: null,
@@ -474,7 +474,7 @@ export class GooglePhotosPhotosElement extends WithPersonalizationStore {
     const sections: GooglePhotosPhotosSection[] = [];
 
     photos.forEach((photo, i) => {
-      const date = mojoString16ToString(photo.date);
+      const date = photo.date;
 
       // Find/create the appropriate |section| in which to insert |photo|.
       let section = sections[sections.length - 1];
@@ -546,6 +546,22 @@ export class GooglePhotosPhotosElement extends WithPersonalizationStore {
     return undefined;
   }
 
+  private getPhotoDescriptionId_(photo: GooglePhotosPhotoWithIndex|null): string
+      |undefined {
+    if (!photo) {
+      return undefined;
+    }
+    const id = photo.id === PLACEHOLDER_ID ? `${photo.index}` : photo.id;
+    return `photo-${id}-description`;
+  }
+
+  private getPhotoDate_(photo: GooglePhotosPhoto|null): string|undefined {
+    if (!photo || photo.id === PLACEHOLDER_ID) {
+      return undefined;
+    }
+    return photo.date;
+  }
+
   /** Returns the aria posinset index for the photo at index |i|. */
   private getPhotoAriaIndex_(i: number): number {
     return i + 1;
@@ -574,9 +590,9 @@ export class GooglePhotosPhotosElement extends WithPersonalizationStore {
     // NOTE: Old clients may not support |dedupKey| when setting Google Photos
     // wallpaper, so use |id| in such cases for backwards compatibility.
     if (isGooglePhotosPhoto(pendingSelected) &&
-        ((pendingSelected!.dedupKey &&
-          isImageAMatchForKey(photo, pendingSelected!.dedupKey)) ||
-         isImageAMatchForKey(photo, pendingSelected!.id))) {
+        ((pendingSelected.dedupKey &&
+          isImageAMatchForKey(photo, pendingSelected.dedupKey)) ||
+         isImageAMatchForKey(photo, pendingSelected.id))) {
       return true;
     }
     if (!pendingSelected && !!currentSelected &&

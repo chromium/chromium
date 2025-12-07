@@ -7,6 +7,7 @@
 #include "base/test/gtest_util.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
+#include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -55,6 +56,47 @@ TEST(RuleMetaDataTest, ComputeMetadata_Invalid) {
   EXPECT_EQ(base::Seconds(0), RuleMetaData::ComputeLifetime(
                                   /*lifetime=*/base::Seconds(10),
                                   /*expiration=*/base::Time()));
+}
+
+TEST(RuleMetaDataTest, DefaultConstructor) {
+  RuleMetaData metadata;
+  EXPECT_EQ(metadata.last_modified(), base::Time());
+  EXPECT_EQ(metadata.last_used(), base::Time());
+  EXPECT_EQ(metadata.last_visited(), base::Time());
+  EXPECT_EQ(metadata.expiration(), base::Time());
+  EXPECT_EQ(metadata.session_model(), mojom::SessionModel::DURABLE);
+  EXPECT_EQ(metadata.lifetime(), base::TimeDelta());
+  EXPECT_FALSE(metadata.decided_by_related_website_sets());
+  EXPECT_TRUE(metadata.rule_options().is_none());
+}
+
+TEST(RuleMetaDataTest, SetFromConstraints) {
+  {
+    ContentSettingConstraints constraints(
+        base::Time::FromSecondsSinceUnixEpoch(12345));
+    constraints.set_session_model(mojom::SessionModel::USER_SESSION);
+    constraints.set_lifetime(base::Days(10));
+    constraints.set_decided_by_related_website_sets(true);
+    constraints.set_options(base::Value(true));
+
+    RuleMetaData metadata;
+    metadata.SetFromConstraints(constraints);
+
+    EXPECT_EQ(metadata.session_model(), mojom::SessionModel::USER_SESSION);
+    EXPECT_EQ(metadata.expiration(),
+              base::Time::FromSecondsSinceUnixEpoch(12345) + base::Days(10));
+    EXPECT_EQ(metadata.lifetime(), base::Days(10));
+    EXPECT_EQ(metadata.decided_by_related_website_sets(), true);
+    EXPECT_EQ(metadata.rule_options(), base::Value(true));
+  }
+}
+
+TEST(RuleMetaDataTest, SetExpirationAndLifetime) {
+  const base::Time now = base::Time::Now();
+  RuleMetaData metadata;
+  metadata.SetExpirationAndLifetime(now + base::Days(1), base::Days(2));
+  EXPECT_EQ(metadata.expiration(), now + base::Days(1));
+  EXPECT_EQ(metadata.lifetime(), base::Days(2));
 }
 
 }  // namespace content_settings

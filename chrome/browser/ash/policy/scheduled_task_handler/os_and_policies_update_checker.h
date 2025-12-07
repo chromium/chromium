@@ -24,18 +24,18 @@ namespace update_checker_internal {
 
 // The maximum iterations allowed to check for and download an update if the
 // operation fails. Used with |os_and_policies_update_checker_|.
-constexpr int kMaxOsAndPoliciesUpdateCheckerRetryIterations = 2;
+inline constexpr int kMaxOsAndPoliciesUpdateCheckerRetryIterations = 2;
 
 // Interval at which |os_and_policies_update_checker_| retries checking for and
 // downloading updates.
-constexpr base::TimeDelta kOsAndPoliciesUpdateCheckerRetryTime =
+inline constexpr base::TimeDelta kOsAndPoliciesUpdateCheckerRetryTime =
     base::Minutes(10);
 
 // Time for which |OsAndPoliciesUpdateChecker| will wait for a valid network
 // before querying the update server for updates. After this time it will return
 // a failure. During testing it was noted that on average 1 minute seemed to be
 // the delay after which a network would be detected by Chrome.
-constexpr base::TimeDelta kWaitForNetworkTimeout = base::Minutes(5);
+inline constexpr base::TimeDelta kWaitForNetworkTimeout = base::Minutes(5);
 
 }  // namespace update_checker_internal
 

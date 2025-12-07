@@ -4,6 +4,8 @@
 
 #include "ash/display/resolution_notification_controller.h"
 
+#include <string_view>
+
 #include "ash/display/display_change_dialog.h"
 #include "ash/display/display_util.h"
 #include "ash/screen_util.h"
@@ -26,9 +28,7 @@
 
 namespace ash {
 
-class ResolutionNotificationControllerTest
-    : public AshTestBase,
-      public ::testing::WithParamInterface<bool> {
+class ResolutionNotificationControllerTest : public AshTestBase {
  public:
   ResolutionNotificationControllerTest() : accept_count_(0) {}
 
@@ -48,15 +48,10 @@ class ResolutionNotificationControllerTest
     const std::u16string countdown = ui::TimeFormat::Simple(
         ui::TimeFormat::FORMAT_DURATION, ui::TimeFormat::LENGTH_LONG,
         base::Seconds(timeout_count));
-    if (::display::features::IsListAllDisplayModesEnabled()) {
-      return l10n_util::GetStringFUTF16(
-          IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_CHANGED_NEW, display_name,
-          base::UTF8ToUTF16(new_resolution.ToString()),
-          ConvertRefreshRateToString16(new_refresh_rate), countdown);
-    }
     return l10n_util::GetStringFUTF16(
-        IDS_ASH_RESOLUTION_CHANGE_DIALOG_CHANGED, display_name,
-        base::UTF8ToUTF16(new_resolution.ToString()), countdown);
+        IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_CHANGED_NEW, display_name,
+        base::UTF8ToUTF16(new_resolution.ToString()),
+        ConvertRefreshRateToString16(new_refresh_rate), countdown);
   }
 
   std::u16string ExpectedFallbackNotificationMessage(
@@ -71,33 +66,16 @@ class ResolutionNotificationControllerTest
     const std::u16string countdown = ui::TimeFormat::Simple(
         ui::TimeFormat::FORMAT_DURATION, ui::TimeFormat::LENGTH_LONG,
         base::Seconds(timeout_count));
-    if (::display::features::IsListAllDisplayModesEnabled()) {
-      return l10n_util::GetStringFUTF16(
-          IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_FALLBACK_NEW,
-          {display_name, base::UTF8ToUTF16(fallback_resolution.ToString()),
-           ConvertRefreshRateToString16(fallback_refresh_rate),
-           base::UTF8ToUTF16(specified_resolution.ToString()),
-           ConvertRefreshRateToString16(specified_refresh_rate), countdown},
-          /*offsets=*/nullptr);
-    }
     return l10n_util::GetStringFUTF16(
-        IDS_ASH_RESOLUTION_CHANGE_DIALOG_FALLBACK, display_name,
-        base::UTF8ToUTF16(specified_resolution.ToString()),
-        base::UTF8ToUTF16(fallback_resolution.ToString()), countdown);
+        IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_FALLBACK_NEW,
+        {display_name, base::UTF8ToUTF16(fallback_resolution.ToString()),
+         ConvertRefreshRateToString16(fallback_refresh_rate),
+         base::UTF8ToUTF16(specified_resolution.ToString()),
+         ConvertRefreshRateToString16(specified_refresh_rate), countdown},
+        /*offsets=*/nullptr);
   }
 
  protected:
-  void SetUp() override {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          display::features::kListAllDisplayModes);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          display::features::kListAllDisplayModes);
-    }
-    AshTestBase::SetUp();
-  }
-
   void SetDisplayResolutionAndNotifyWithResolution(
       const display::Display& display,
       const gfx::Size& new_resolution,
@@ -155,7 +133,7 @@ class ResolutionNotificationControllerTest
         new_is_native, source);
   }
 
-  static std::u16string GetNotificationMessage() {
+  static std::u16string_view GetNotificationMessage() {
     return controller()->dialog_for_testing()->label_->GetText();
   }
 
@@ -199,7 +177,7 @@ class ResolutionNotificationControllerTest
 };
 
 // Basic behaviors and verifies it doesn't cause crashes.
-TEST_P(ResolutionNotificationControllerTest, Basic) {
+TEST_F(ResolutionNotificationControllerTest, Basic) {
   UpdateDisplay("400x300#400x300%57|300x200%58,300x250#300x250%60|300x200%59");
   display::test::DisplayManagerTestApi display_manager_test(display_manager());
   int64_t id2 = display_manager_test.GetSecondaryDisplay().id();
@@ -231,7 +209,7 @@ TEST_P(ResolutionNotificationControllerTest, Basic) {
 }
 
 // Check that notification is not shown when changes are forced by policy.
-TEST_P(ResolutionNotificationControllerTest, ForcedByPolicy) {
+TEST_F(ResolutionNotificationControllerTest, ForcedByPolicy) {
   UpdateDisplay("400x300#400x300%57|300x200%58,300x250#300x250%59|300x200%60");
   display::test::DisplayManagerTestApi display_manager_test(display_manager());
   int64_t id2 = display_manager_test.GetSecondaryDisplay().id();
@@ -250,7 +228,7 @@ TEST_P(ResolutionNotificationControllerTest, ForcedByPolicy) {
   EXPECT_EQ(60.0, mode.refresh_rate());
 }
 
-TEST_P(ResolutionNotificationControllerTest, ClickMeansAccept) {
+TEST_F(ResolutionNotificationControllerTest, ClickMeansAccept) {
   UpdateDisplay("400x300#400x300%57|300x200%58,300x250#300x250%59|300x200%60");
   display::test::DisplayManagerTestApi display_manager_test(display_manager());
   int64_t id2 = display_manager_test.GetSecondaryDisplay().id();
@@ -276,10 +254,9 @@ TEST_P(ResolutionNotificationControllerTest, ClickMeansAccept) {
   EXPECT_EQ(60.0, mode.refresh_rate());
 }
 
-TEST_P(ResolutionNotificationControllerTest, AcceptButton) {
+TEST_F(ResolutionNotificationControllerTest, AcceptButton) {
   UpdateDisplay("400x300#400x300%59|300x200%60");
-  const display::Display& display =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+  const display::Display& display = display::Screen::Get()->GetPrimaryDisplay();
   SetDisplayResolutionAndNotify(display, gfx::Size(300, 200), 60,
                                 /*old_is_native=*/true,
                                 /*new_is_native=*/false);
@@ -317,7 +294,7 @@ TEST_P(ResolutionNotificationControllerTest, AcceptButton) {
   EXPECT_EQ(60.0f, mode.refresh_rate());
 }
 
-TEST_P(ResolutionNotificationControllerTest, Close) {
+TEST_F(ResolutionNotificationControllerTest, Close) {
   UpdateDisplay("200x100,250x150#250x150%59|300x200%60");
   display::test::DisplayManagerTestApi display_manager_test(display_manager());
   int64_t id2 = display_manager_test.GetSecondaryDisplay().id();
@@ -342,10 +319,9 @@ TEST_P(ResolutionNotificationControllerTest, Close) {
   EXPECT_EQ(1, accept_count());
 }
 
-TEST_P(ResolutionNotificationControllerTest, Timeout) {
+TEST_F(ResolutionNotificationControllerTest, Timeout) {
   UpdateDisplay("400x300#400x300%60|300x200%60");
-  const display::Display& display =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+  const display::Display& display = display::Screen::Get()->GetPrimaryDisplay();
   SetDisplayResolutionAndNotify(display, gfx::Size(300, 200), 60,
                                 /*old_is_native=*/true,
                                 /*new_is_native=*/false);
@@ -365,7 +341,7 @@ TEST_P(ResolutionNotificationControllerTest, Timeout) {
   EXPECT_EQ(60.0f, mode.refresh_rate());
 }
 
-TEST_P(ResolutionNotificationControllerTest, DisplayDisconnected) {
+TEST_F(ResolutionNotificationControllerTest, DisplayDisconnected) {
   UpdateDisplay(
       "400x300#400x300%56|300x200%57,"
       "300x200#300x250%58|300x200%60|200x100%60");
@@ -388,7 +364,7 @@ TEST_P(ResolutionNotificationControllerTest, DisplayDisconnected) {
 }
 
 // See http://crbug.com/869401 for details.
-TEST_P(ResolutionNotificationControllerTest, MultipleResolutionChange) {
+TEST_F(ResolutionNotificationControllerTest, MultipleResolutionChange) {
   UpdateDisplay(
       "400x300#400x300%56|300x200%57,"
       "350x250#350x250%58|300x200%59");
@@ -425,7 +401,7 @@ TEST_P(ResolutionNotificationControllerTest, MultipleResolutionChange) {
   EXPECT_EQ(58.0f, mode.refresh_rate());
 }
 
-TEST_P(ResolutionNotificationControllerTest, Fallback) {
+TEST_F(ResolutionNotificationControllerTest, Fallback) {
   UpdateDisplay(
       "400x300#400x300%56|300x200%57,"
       "350x250#350x250%60|220x210%60|300x200%60");
@@ -459,35 +435,38 @@ TEST_P(ResolutionNotificationControllerTest, Fallback) {
   EXPECT_EQ(60.0f, mode.refresh_rate());
 }
 
-TEST_P(ResolutionNotificationControllerTest, NoTimeoutInKioskMode) {
+namespace {
+class NoSessionResolutionNotificationControllerTest
+    : public ResolutionNotificationControllerTest {
+ public:
+  NoSessionResolutionNotificationControllerTest() { set_start_session(false); }
+  NoSessionResolutionNotificationControllerTest(
+      const NoSessionResolutionNotificationControllerTest&) = delete;
+  NoSessionResolutionNotificationControllerTest& operator=(
+      const NoSessionResolutionNotificationControllerTest&) = delete;
+  ~NoSessionResolutionNotificationControllerTest() override = default;
+};
+
+}  // namespace
+
+TEST_F(NoSessionResolutionNotificationControllerTest, NoTimeoutInKioskMode) {
   // Login in as kiosk app.
-  UserSession session;
-  session.session_id = 1u;
-  session.user_info.type = user_manager::UserType::kKioskApp;
-  session.user_info.account_id = AccountId::FromUserEmail("user1@test.com");
-  session.user_info.display_name = "User 1";
-  session.user_info.display_email = "user1@test.com";
-  Shell::Get()->session_controller()->UpdateUserSession(std::move(session));
+  SimulateKioskMode(user_manager::UserType::kKioskChromeApp);
+
   EXPECT_EQ(LoginStatus::KIOSK_APP,
             Shell::Get()->session_controller()->login_status());
 
   UpdateDisplay("400x300#400x300%59|300x200%60");
-  const display::Display& display =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+  const display::Display& display = display::Screen::Get()->GetPrimaryDisplay();
   SetDisplayResolutionAndNotify(display, gfx::Size(300, 200), 60,
                                 /*old_is_native=*/true,
                                 /*new_is_native=*/false);
 }
 
-TEST_P(ResolutionNotificationControllerTest, NoDialogInKioskMode) {
+TEST_F(NoSessionResolutionNotificationControllerTest, NoDialogInKioskMode) {
   // Login in as kiosk app.
-  UserSession session;
-  session.session_id = 1u;
-  session.user_info.type = user_manager::UserType::kKioskApp;
-  session.user_info.account_id = AccountId::FromUserEmail("user1@test.com");
-  session.user_info.display_name = "User 1";
-  session.user_info.display_email = "user1@test.com";
-  Shell::Get()->session_controller()->UpdateUserSession(std::move(session));
+  SimulateKioskMode(user_manager::UserType::kKioskChromeApp);
+
   EXPECT_EQ(LoginStatus::KIOSK_APP,
             Shell::Get()->session_controller()->login_status());
 
@@ -507,11 +486,5 @@ TEST_P(ResolutionNotificationControllerTest, NoDialogInKioskMode) {
   EXPECT_EQ(gfx::Size(300, 200), mode.size());
   EXPECT_EQ(60.0f, mode.refresh_rate());
 }
-
-// Parametrizes all tests to run with display::features::kListAllDisplayModes
-// enabled and disabled.
-INSTANTIATE_TEST_SUITE_P(All,
-                         ResolutionNotificationControllerTest,
-                         ::testing::Bool());
 
 }  // namespace ash

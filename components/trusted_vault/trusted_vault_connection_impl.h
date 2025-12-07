@@ -53,7 +53,8 @@ class TrustedVaultConnectionImpl : public TrustedVaultConnection {
       const CoreAccountInfo& account_info,
       const MemberKeysSource& member_keys_source,
       const SecureBoxPublicKey& authentication_factor_public_key,
-      AuthenticationFactorType authentication_factor_type,
+      AuthenticationFactorTypeAndRegistrationParams
+          authentication_factor_type_and_registration_params,
       RegisterAuthenticationFactorCallback callback) override;
 
   std::unique_ptr<Request> RegisterLocalDeviceWithoutKeys(
@@ -74,14 +75,23 @@ class TrustedVaultConnectionImpl : public TrustedVaultConnection {
   std::unique_ptr<TrustedVaultConnection::Request>
   DownloadAuthenticationFactorsRegistrationState(
       const CoreAccountInfo& account_info,
-      DownloadAuthenticationFactorsRegistrationStateCallback callback) override;
+      DownloadAuthenticationFactorsRegistrationStateCallback callback,
+      base::RepeatingClosure keep_alive_callback) override;
+
+  std::unique_ptr<Request> DownloadAuthenticationFactorsRegistrationState(
+      const CoreAccountInfo& account_info,
+      std::set<trusted_vault_pb::SecurityDomainMember_MemberType>
+          recovery_factor_filter,
+      DownloadAuthenticationFactorsRegistrationStateCallback callback,
+      base::RepeatingClosure keep_alive_callback) override;
 
  private:
   std::unique_ptr<Request> SendJoinSecurityDomainsRequest(
       const CoreAccountInfo& account_info,
       const MemberKeysSource& member_keys_source,
       const SecureBoxPublicKey& authentication_factor_public_key,
-      AuthenticationFactorType authentication_factor_type,
+      AuthenticationFactorTypeAndRegistrationParams
+          authentication_factor_type_and_registration_params,
       JoinSecurityDomainsCallback callback);
 
   const SecurityDomainId security_domain_;

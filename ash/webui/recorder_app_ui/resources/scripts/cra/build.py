@@ -41,8 +41,13 @@ def _get_tsc_paths(build_dir: pathlib.Path) -> dict[str, list[str]]:
     mwc_dir = root_dir / "third_party/material_web_components"
     lit_d_ts = mwc_dir / "lit_exports.d.ts"
     mwc_components_dir = mwc_dir / "components-chromium/node_modules/@material"
+    typescript_definition_dir = root_dir / "tools/typescript/definitions"
 
     cros_components_dir = resources_dir / "cros_components/to_be_rewritten"
+
+    metrics_dir = (
+        build_dir /
+        "gen/ash/webui/common/resources/preprocessed/metrics")
 
     return {
         "//resources/*": [str(resources_dir / "*")],
@@ -52,6 +57,8 @@ def _get_tsc_paths(build_dir: pathlib.Path) -> dict[str, list[str]]:
         "chrome://resources/cros_components/*":
         [str(cros_components_dir / "*")],
         "/images/*": [str(images_dir / "*")],
+        "chrome://resources/ash/common/metrics/*": [str(metrics_dir / "*")],
+        "/strings.m.js": [str(typescript_definition_dir / "strings.d.ts")],
     }
 
 
@@ -89,12 +96,18 @@ def _get_tsc_references(build_dir: pathlib.Path) -> list[dict[str, str]]:
         build_dir /
         "gen/third_party/cros-components/tsconfig_cros_components_ts.json")
 
+    ash_common_tsconfig = (
+        build_dir /
+        "gen/ash/webui/common/resources/tsconfig_build_ts.json")
+
     return [{
         "path": str(mwc_gen_dir / "tsconfig_library.json")
     }, {
         "path": str(mwc_gen_dir / "tsconfig_bundle_lit_ts.json")
     }, {
         "path": str(cros_components_tsconfig)
+    }, {
+        "path": str(ash_common_tsconfig)
     }]
 
 
@@ -109,7 +122,10 @@ def generate_tsconfig(build_dir: pathlib.Path):
 
     _make_mojom_symlink(build_dir)
 
-    tsconfig["files"] = [str(p) for p in cra_root.glob("**/*.ts")]
+    tsconfig["files"] = [
+        str(p) for p in cra_root.glob("**/*.ts")
+        if not str(p).endswith("_test.ts")
+    ]
     tsconfig["compilerOptions"]["rootDir"] = str(cra_root)
     tsconfig["compilerOptions"]["noEmit"] = True
     tsconfig["compilerOptions"]["paths"] = _get_tsc_paths(build_dir)

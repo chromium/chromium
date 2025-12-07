@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_MEDIA_SESSION_MOCK_MEDIA_SESSION_PLAYER_OBSERVER_H_
 
 #include <stddef.h>
+
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -13,6 +14,7 @@
 #include "content/browser/media/session/media_session_player_observer.h"
 #include "content/public/browser/global_routing_id.h"
 #include "media/audio/audio_device_description.h"
+#include "media/base/picture_in_picture_events_info.h"
 #include "services/media_session/public/cpp/media_position.h"
 
 namespace content {
@@ -53,12 +55,16 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   std::string GetAudioOutputSinkId(int player_id) const override;
   bool SupportsAudioOutputDeviceSwitching(int player_id) const override;
   media::MediaContentType GetMediaContentType() const override;
+  void OnAutoPictureInPictureInfoChanged(
+      int player_id,
+      const media::PictureInPictureEventsInfo::AutoPipInfo&
+          auto_picture_in_picture_info) override;
 
   void SetMediaContentType(media::MediaContentType media_content_type);
 
   // Simulate that a new player started.
   // Returns the player_id.
-  int StartNewPlayer();
+  int StartNewPlayer(bool is_playing = true);
 
   // Returns whether |player_id| is playing.
   bool IsPlaying(size_t player_id);
@@ -79,6 +85,10 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   void SetHasSufficientlyVisibleVideo(size_t player_id,
                                       bool has_sufficiently_visible_video);
 
+  // Simulate picture in picture availability for |player_id|.
+  void SetIsPictureInPictureAvailable(size_t player_id,
+                                      bool is_picture_in_picture_available);
+
   int received_suspend_calls() const;
   int received_resume_calls() const;
   int received_seek_forward_calls() const;
@@ -88,6 +98,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   int received_exit_picture_in_picture_calls() const;
   int received_set_audio_sink_id_calls() const;
   int received_request_visibility_calls() const;
+  int received_auto_picture_in_picture_info_changed_calls() const;
 
  private:
   // Internal representation of the players to keep track of their statuses.
@@ -106,6 +117,9 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
         media::AudioDeviceDescription::kDefaultDeviceId;
     bool supports_device_switching_ = true;
     bool has_sufficiently_visible_video_ = false;
+    media::PictureInPictureEventsInfo::AutoPipInfo
+        auto_picture_in_picture_info_;
+    bool is_picture_in_picture_available_ = false;
   };
 
   // Basic representation of the players. The position in the vector is the
@@ -123,6 +137,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   int received_exit_picture_in_picture_calls_ = 0;
   int received_set_audio_sink_id_calls_ = 0;
   int received_request_visibility_calls_ = 0;
+  int received_auto_picture_in_picture_info_changed_calls_ = 0;
 
   media::MediaContentType media_content_type_;
 };

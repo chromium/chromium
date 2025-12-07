@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.download.home.filter;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.offline_items_collection.OfflineItem;
 
 import java.util.Collection;
@@ -12,6 +13,7 @@ import java.util.Collection;
  * A filtered source of {@link OfflineItem}s.  This class supports querying a collection of
  * {@link OfflineItem}s as well as registration of observers to be notified of changes.
  */
+@NullMarked
 public interface OfflineItemFilterSource {
     /**
      * @return The current collection of {@link OfflineItem}s as understood by this source.  Note

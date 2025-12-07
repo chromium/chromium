@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_native_library.h"
 #include "base/types/pass_key.h"
@@ -15,63 +16,45 @@
 
 namespace ml {
 
-// A ChromeMLHolder object encapsulates a reference to the ChromeML shared
-// library, exposing the library's API functions to callers and ensuring that
-// the library remains loaded and usable throughout the object's lifetime.
-class ChromeMLHolder {
+class ChromeMLHolder;
+
+class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) ChromeML {
  public:
-  ChromeMLHolder(base::PassKey<ChromeMLHolder>,
-                 base::ScopedNativeLibrary library,
-                 const ChromeMLAPI* api);
-  ~ChromeMLHolder();
-
-  ChromeMLHolder(const ChromeMLHolder& other) = delete;
-  ChromeMLHolder& operator=(const ChromeMLHolder& other) = delete;
-
-  ChromeMLHolder(ChromeMLHolder&& other) = default;
-  ChromeMLHolder& operator=(ChromeMLHolder&& other) = default;
-
-  // Creates an instance of ChromeMLHolder. May return nullopt if the underlying
-  // library could not be loaded.
-  static std::optional<ChromeMLHolder> Create(
-      const std::optional<std::string>& library_name = std::nullopt);
-
-  // Exposes the raw ChromeMLAPI functions defined by the library.
-  const ChromeMLAPI& api() const { return *api_; }
-
- private:
-  base::ScopedNativeLibrary library_;
-  raw_ptr<const ChromeMLAPI> api_;
-};
-
-class ChromeML {
- public:
-  // Use Get() to acquire a global instance.
-  ChromeML(base::PassKey<ChromeML>, ChromeMLHolder holder);
   ~ChromeML();
+  ChromeML(const ChromeML& other) = delete;
+  ChromeML& operator=(const ChromeML& other) = delete;
+  ChromeML(ChromeML&& other) = delete;
+  ChromeML& operator=(ChromeML&& other) = delete;
 
   // Gets a lazily initialized global instance of ChromeML. May return null
   // if the underlying library could not be loaded.
   static ChromeML* Get(
       const std::optional<std::string>& library_name = std::nullopt);
 
+  // Creates a new instance of ChromeML. May return null if the underlying
+  // library could not be loaded.
+  static std::unique_ptr<ChromeML> CreateForTesting(
+      const std::optional<std::string>& library_name = std::nullopt);
+
+  // Creates a new instance of ChromeML using the provided ChromeMLAPI.
+  static std::unique_ptr<ChromeML> CreateForTesting(const ChromeMLAPI* api);
+
   // Exposes the raw ChromeMLAPI functions defined by the library.
-  const ChromeMLAPI& api() const { return holder_.api(); }
-
-  // Whether or not the GPU is blocklisted.
-  bool IsGpuBlocked() const;
-
-  void SetAllowGpuForTesting(bool allow_gpu) {
-    allow_gpu_for_testing_ = allow_gpu;
-  }
+  const ChromeMLAPI& api() const { return *api_; }
 
  private:
+  explicit ChromeML(std::unique_ptr<ChromeMLHolder> holder);
+  explicit ChromeML(const ChromeMLAPI* api);
+
   static std::unique_ptr<ChromeML> Create(
       const std::optional<std::string>& library_name);
 
-  ChromeMLHolder holder_;
-  bool allow_gpu_for_testing_ = false;
+  std::unique_ptr<ChromeMLHolder> holder_;
+  raw_ptr<const ChromeMLAPI> api_;
 };
+
+COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)
+const ChromeMLConstraintFns* GetConstraintFns();
 
 }  // namespace ml
 

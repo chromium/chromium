@@ -154,7 +154,13 @@ class LayerTreeHostPictureTestResizeViewportWithGpuRaster
       viz::TestContextProvider* context_provider,
       viz::TestContextProvider* worker_provider) override {
     context_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
+    context_provider->GetWritableGpuFeatureInfo()
+        .status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
+        gpu::kGpuFeatureStatusEnabled;
     worker_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
+    worker_provider->GetWritableGpuFeatureInfo()
+        .status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
+        gpu::kGpuFeatureStatusEnabled;
   }
 
   void SetupTree() override {
@@ -192,7 +198,7 @@ class LayerTreeHostPictureTestResizeViewportWithGpuRaster
     }
   }
 
-  void DidCommit() override {
+  void DidCommitAndDrawFrame() override {
     switch (layer_tree_host()->SourceFrameNumber()) {
       case 1:
         // Change the picture layer's size along with the viewport, so it will
@@ -260,7 +266,8 @@ class LayerTreeHostPictureTestChangeLiveTilesRectWithRecycleTree
         transform.Translate(0.f, -100000.f + 100.f);
         impl->active_tree()->SetTransformMutated(picture_impl->element_id(),
                                                  transform);
-        impl->SetNeedsRedraw(RedrawReason::kUntracked);
+        impl->SetNeedsRedraw(/*animation_only=*/false,
+                             /*skip_if_inside_draw=*/false);
         break;
       }
       case 2: {
@@ -272,7 +279,8 @@ class LayerTreeHostPictureTestChangeLiveTilesRectWithRecycleTree
         // Make the top of the layer visible again.
         impl->active_tree()->SetTransformMutated(picture_impl->element_id(),
                                                  gfx::Transform());
-        impl->SetNeedsRedraw(RedrawReason::kUntracked);
+        impl->SetNeedsRedraw(/*animation_only=*/false,
+                             /*skip_if_inside_draw=*/false);
         break;
       }
       case 3: {
@@ -554,7 +562,8 @@ class LayerTreeHostPictureTestRSLLMembershipWithScale
       // The ready to draw can race with a draw in which everything is
       // actually ready.  Therefore, just issue one more extra draw
       // here to force notify->draw ordering.
-      impl->SetNeedsRedraw(RedrawReason::kUntracked);
+      impl->SetNeedsRedraw(/*animation_only=*/false,
+                           /*skip_if_inside_draw=*/false);
     }
   }
 

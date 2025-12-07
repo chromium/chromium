@@ -4,13 +4,11 @@
 
 package org.chromium.chrome.browser.multiwindow;
 
+import static org.chromium.base.test.util.Batch.PER_CLASS;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.moveActivityToFront;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.waitForSecondChromeTabbedActivity;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.waitForTabs;
 
-import android.os.Build.VERSION_CODES;
-
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -22,58 +20,60 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
-import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.ui.test.util.UiDisableIf;
-import org.chromium.ui.test.util.UiRestriction;
 
 /** Integration testing for Android's N+ MultiWindow. */
+@Batch(PER_CLASS)
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class MultiWindowIntegrationTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private EmbeddedTestServer mTestServer;
+    private WebPageStation mPage;
 
     @Before
     public void setUp() throws InterruptedException {
-        mTestServer =
-                EmbeddedTestServer.createAndStartServer(
-                        ApplicationProvider.getApplicationContext());
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mTestServer = mActivityTestRule.getTestServer();
+        mPage = mActivityTestRule.startOnBlankPage();
     }
 
     @Test
     @MediumTest
     @Feature("MultiWindow")
-    @DisabledTest(message = "Flaky on test-n-phone https://crbug/1197125")
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING)
     public void testIncognitoNtpHandledCorrectly() {
+        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+            return;
+        }
         try {
             ThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
 
             mActivityTestRule.newIncognitoTabFromMenu();
-            Assert.assertTrue(mActivityTestRule.getActivity().getActivityTab().isIncognito());
-            final int incognitoTabId = mActivityTestRule.getActivity().getActivityTab().getId();
+            Assert.assertTrue(mActivityTestRule.getActivityTab().isIncognito());
+            final int incognitoTabId = mActivityTestRule.getActivityTab().getId();
 
             MenuUtils.invokeCustomMenuActionSync(
                     InstrumentationRegistry.getInstrumentation(),
@@ -104,14 +104,15 @@ public class MultiWindowIntegrationTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/338976206
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.S_V2) // https://crbug.com/1297370
     @Feature("MultiWindow")
     @CommandLineFlags.Add({
         ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING,
         ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE
     })
     public void testMoveTabTwice() {
+        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+            return;
+        }
         // Load 'google' in separate tab.
         int googleTabId =
                 mActivityTestRule
@@ -148,14 +149,15 @@ public class MultiWindowIntegrationTest {
     @Test
     @MediumTest
     @Feature("MultiWindow")
-    @DisabledTest(message = "Flaky on test-n-phone https://crbug/1197125")
     @CommandLineFlags.Add({
         ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING,
         ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE
     })
-    // TODO(crbug.com/40822813): Enable this test for tablet once the tab switcher is supported.
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @DisabledTest(message = "crbug.com/432308780")
     public void testMovingLastTabKeepsActivityAlive() {
+        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+            return;
+        }
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         int blankTab = cta.getActivityTabProvider().get().getId();
 

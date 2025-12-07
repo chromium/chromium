@@ -37,20 +37,45 @@ struct MEDIA_EXPORT AudioDeviceDescription {
   // will mute system audio during capturing.
   static const char kLoopbackWithMuteDeviceId[];
 
+  // Temporary loopback ID that is used by Cast on macOS to make the launches of
+  // CatapAudioInputStream for getDisplayMedia() and Cast independent. Similar
+  // to |kLoopbackInputDeviceId|, with only difference that this ID will mute
+  // system audio during capturing.
+  // TODO(https://crbug.com/425902990): Remove `kLoopbackWithMuteDeviceIdCast`
+  // once CatapAudioInputStream is launched for both Cast and getDisplayMedia().
+  static const char kLoopbackWithMuteDeviceIdCast[];
+
   // Similar to |kLoopbackInputDeviceId|, but without audio from Chrome.
-  // Only supported on ChromeOS.
+  // Only supported on Windows, Mac and ChromeOS.
   static const char kLoopbackWithoutChromeId[];
+
+  // Similar to |kLoopbackInputDeviceId|, but instead of capturing audio being
+  // played on the default playback device, audio from *all* audio devices will
+  // be captured.
+  static const char kLoopbackAllDevicesId[];
+
+  // Prefix of the device id for application loopback devices. The full device
+  // id is formatted as "applicationLoopback:<application id>"
+  static const char kApplicationLoopbackDeviceId[];
 
   // TODO(b/338470954): Rename to IsVirtualDefaultDevice(...)
   // Returns true if |device_id| represents the virtual default device.
-  static bool IsDefaultDevice(const std::string& device_id);
+  static bool IsDefaultDevice(std::string_view device_id);
 
   // TODO(b/338470954): Rename to IsVirtualCommunicationsDevice(...)
   // Returns true if |device_id| represents the virtual communications device.
-  static bool IsCommunicationsDevice(const std::string& device_id);
+  static bool IsCommunicationsDevice(std::string_view device_id);
 
   // Returns true if |device_id| represents a loopback audio capture device.
-  static bool IsLoopbackDevice(const std::string& device_id);
+  // Note that this will not work if |device_id| is hashed, which may be the
+  // case in the renderer.
+  static bool IsLoopbackDevice(std::string_view device_id);
+
+  // Returns true if |device_id| represents an application loopback audio
+  // capture device.
+  // Note that this will not work if |device_id| is hashed, which is the case in
+  // the Renderer.
+  static bool IsApplicationLoopbackDevice(std::string_view device_id);
 
   // If |device_id| is not empty, |session_id| should be ignored and the output
   // device should be selected basing on |device_id|.
@@ -59,7 +84,7 @@ struct MEDIA_EXPORT AudioDeviceDescription {
   // be used.
   static bool UseSessionIdToSelectDevice(
       const base::UnguessableToken& session_id,
-      const std::string& device_id);
+      std::string_view device_id);
 
   // The functions dealing with localization are not reliable in the audio
   // service, and should be avoided there.
@@ -68,7 +93,7 @@ struct MEDIA_EXPORT AudioDeviceDescription {
 
   // Returns a localized version of name of the generic "default" device that
   // includes the given |real_device_name|.
-  static std::string GetDefaultDeviceName(const std::string& real_device_name);
+  static std::string GetDefaultDeviceName(std::string_view real_device_name);
 
   // Returns the localized name of the generic default communications device.
   // This device is not supported on all platforms.
@@ -77,7 +102,7 @@ struct MEDIA_EXPORT AudioDeviceDescription {
   // Returns a localized version of name of the generic communications device
   // that includes the given |real_device_name|.
   static std::string GetCommunicationsDeviceName(
-      const std::string& real_device_name);
+      std::string_view real_device_name);
 
   // This prepends localized "Default" or "Communications" strings to
   // default and communications device names in |device_descriptions|, and

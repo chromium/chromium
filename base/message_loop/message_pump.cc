@@ -5,12 +5,15 @@
 #include "base/message_loop/message_pump.h"
 
 #include "base/check.h"
+#include "base/message_loop/io_watcher.h"
 #include "base/message_loop/message_pump_default.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/message_loop/message_pump_for_ui.h"
 #include "base/notreached.h"
+#include "base/task/current_thread.h"
 #include "base/task/task_features.h"
 #include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_APPLE)
@@ -36,11 +39,104 @@ constexpr uint64_t PackAlignWakeUpsAndLeeway(bool align_wake_ups,
 // because the value is queried from multiple threads.
 std::atomic<uint64_t> g_align_wake_ups_and_leeway =
     PackAlignWakeUpsAndLeeway(false, kDefaultLeeway);
-#if BUILDFLAG(IS_WIN)
-bool g_explicit_high_resolution_timer_win = true;
-#endif  // BUILDFLAG(IS_WIN)
 
 MessagePump::MessagePumpFactory* message_pump_for_ui_factory_ = nullptr;
+
+#if BUILDFLAG(IS_POSIX)
+class MessagePumpForIOFdWatchImpl : public IOWatcher::FdWatch,
+                                    public MessagePumpForIO::FdWatcher {
+ public:
+  MessagePumpForIOFdWatchImpl(IOWatcher::FdWatcher* fd_watcher,
+                              const Location& location)
+      : fd_watcher_(fd_watcher), controller_(location) {}
+
+  ~MessagePumpForIOFdWatchImpl() override {
+    controller_.StopWatchingFileDescriptor();
+  }
+
+  MessagePumpForIO::FdWatchController& controller() { return controller_; }
+
+ private:
+  // MessagePumpForIO::FdWatcher:
+  void OnFileCanReadWithoutBlocking(int fd) override {
+    fd_watcher_->OnFdReadable(fd);
+  }
+
+  void OnFileCanWriteWithoutBlocking(int fd) override {
+    fd_watcher_->OnFdWritable(fd);
+  }
+
+  const raw_ptr<IOWatcher::FdWatcher> fd_watcher_;
+  MessagePumpForIO::FdWatchController controller_;
+};
+#endif
+
+class IOWatcherForCurrentIOThread : public IOWatcher {
+ public:
+  IOWatcherForCurrentIOThread() : thread_(CurrentIOThread::Get()) {}
+
+  // IOWatcher:
+#if BUILDFLAG(IS_WIN)
+  bool RegisterIOHandlerImpl(HANDLE file,
+                             MessagePumpForIO::IOHandler* handler) override {
+    return thread_.RegisterIOHandler(file, handler);
+  }
+
+  bool RegisterJobObjectImpl(HANDLE job,
+                             MessagePumpForIO::IOHandler* handler) override {
+    return thread_.RegisterJobObject(job, handler);
+  }
+#elif BUILDFLAG(IS_POSIX)
+  std::unique_ptr<FdWatch> WatchFileDescriptorImpl(
+      int fd,
+      FdWatchDuration duration,
+      FdWatchMode mode,
+      FdWatcher& fd_watcher,
+      const Location& location) override {
+    MessagePumpForIO::Mode io_mode;
+    switch (mode) {
+      case FdWatchMode::kRead:
+        io_mode = MessagePumpForIO::WATCH_READ;
+        break;
+      case FdWatchMode::kWrite:
+        io_mode = MessagePumpForIO::WATCH_WRITE;
+        break;
+      case FdWatchMode::kReadWrite:
+        io_mode = MessagePumpForIO::WATCH_READ_WRITE;
+        break;
+    }
+    const bool is_persistent = duration == FdWatchDuration::kPersistent;
+    auto watch =
+        std::make_unique<MessagePumpForIOFdWatchImpl>(&fd_watcher, location);
+    if (!thread_.WatchFileDescriptor(fd, is_persistent, io_mode,
+                                     &watch->controller(), watch.get())) {
+      return nullptr;
+    }
+    return watch;
+  }
+#endif
+#if BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_IOS) && !BUILDFLAG(CRONET_BUILD) && !BUILDFLAG(IS_IOS_TVOS))
+  bool WatchMachReceivePortImpl(
+      mach_port_t port,
+      MessagePumpForIO::MachPortWatchController* controller,
+      MessagePumpForIO::MachPortWatcher* delegate) override {
+    return thread_.WatchMachReceivePort(port, controller, delegate);
+  }
+#elif BUILDFLAG(IS_FUCHSIA)
+  bool WatchZxHandleImpl(zx_handle_t handle,
+                         bool persistent,
+                         zx_signals_t signals,
+                         MessagePumpForIO::ZxHandleWatchController* controller,
+                         MessagePumpForIO::ZxHandleWatcher* delegate) override {
+    return thread_.WatchZxHandle(handle, persistent, signals, controller,
+                                 delegate);
+  }
+#endif  // BUILDFLAG(IS_FUCHSIA)
+
+ private:
+  CurrentIOThread thread_;
+};
 
 }  // namespace
 
@@ -68,15 +164,14 @@ bool MessagePump::IsMessagePumpForUIFactoryOveridden() {
 std::unique_ptr<MessagePump> MessagePump::Create(MessagePumpType type) {
   switch (type) {
     case MessagePumpType::UI:
-      if (message_pump_for_ui_factory_)
+      if (message_pump_for_ui_factory_) {
         return message_pump_for_ui_factory_();
+      }
 #if BUILDFLAG(IS_APPLE)
       return message_pump_apple::Create();
-#elif BUILDFLAG(IS_NACL) || BUILDFLAG(IS_AIX)
-      // Currently NaCl and AIX don't have a UI MessagePump.
-      // TODO(abarth): Figure out if we need this.
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+#elif BUILDFLAG(IS_AIX)
+      // Currently AIX doesn't have a UI MessagePump.
+      NOTREACHED();
 #elif BUILDFLAG(IS_ANDROID)
       {
         auto message_pump = std::make_unique<MessagePumpAndroid>();
@@ -101,8 +196,7 @@ std::unique_ptr<MessagePump> MessagePump::Create(MessagePumpType type) {
 #endif
 
     case MessagePumpType::CUSTOM:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
 
     case MessagePumpType::DEFAULT:
 #if BUILDFLAG(IS_IOS)
@@ -118,8 +212,6 @@ std::unique_ptr<MessagePump> MessagePump::Create(MessagePumpType type) {
 void MessagePump::InitializeFeatures() {
   ResetAlignWakeUpsState();
 #if BUILDFLAG(IS_WIN)
-  g_explicit_high_resolution_timer_win =
-      FeatureList::IsEnabled(kExplicitHighResolutionTimerWin);
   MessagePumpWin::InitializeFeatures();
 #elif BUILDFLAG(IS_ANDROID)
   MessagePumpAndroid::InitializeFeatures();
@@ -165,21 +257,42 @@ TimeDelta MessagePump::GetLeewayForCurrentThread() {
 TimeTicks MessagePump::AdjustDelayedRunTime(TimeTicks earliest_time,
                                             TimeTicks run_time,
                                             TimeTicks latest_time) {
-  // Windows relies on the low resolution timer rather than manual wake up
-  // alignment when the leeway is less than the OS default timer resolution.
+  const TimeDelta leeway = GetLeewayForCurrentThread();
+
 #if BUILDFLAG(IS_WIN)
-  if (g_explicit_high_resolution_timer_win &&
-      GetLeewayForCurrentThread() <=
-          Milliseconds(Time::kMinLowResolutionThresholdMs)) {
-    return earliest_time;
+  // On Windows, we can rely on the low-res clock if we want the wakeup within
+  // kMinLowResolutionThresholdMs (16ms).
+  if (GetAlignWakeUpsEnabled() &&
+      leeway > Milliseconds(Time::kMinLowResolutionThresholdMs)) {
+    TimeTicks aligned_run_time =
+        earliest_time.SnappedToNextTick(TimeTicks(), leeway);
+    return std::min(aligned_run_time, latest_time);
   }
-#endif  // BUILDFLAG(IS_WIN)
+  // We need to return `earliest_time` to honor the above dependency on the
+  // low-res clock. Note: If this wakeup has a DelayPolicy::kPrecise, then
+  // `earliest_time == run_time` and we're thus fine returning `earliest_time`
+  // even though `run_time` is semantically what we want...
+  return earliest_time;
+#else
   if (GetAlignWakeUpsEnabled()) {
-    TimeTicks aligned_run_time = earliest_time.SnappedToNextTick(
-        TimeTicks(), GetLeewayForCurrentThread());
+    TimeTicks aligned_run_time =
+        earliest_time.SnappedToNextTick(TimeTicks(), leeway);
     return std::min(aligned_run_time, latest_time);
   }
   return run_time;
+#endif  // BUILDFLAG(IS_WIN)
+}
+
+IOWatcher* MessagePump::GetIOWatcher() {
+  // By default only "IO thread" message pumps support async IO.
+  //
+  // TODO(crbug.com/379190028): This is done for convenience given the
+  // preexistence of CurrentIOThread, but we should eventually remove this in
+  // favor of each IO MessagePump implementation defining their own override.
+  if (!io_watcher_ && CurrentIOThread::IsSet()) {
+    io_watcher_ = std::make_unique<IOWatcherForCurrentIOThread>();
+  }
+  return io_watcher_.get();
 }
 
 }  // namespace base

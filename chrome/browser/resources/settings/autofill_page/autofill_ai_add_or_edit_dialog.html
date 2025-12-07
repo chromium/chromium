@@ -1,0 +1,196 @@
+<style include="cr-shared-style settings-shared md-select">
+  :host {
+    white-space: nowrap;
+  }
+
+  .cr-form-field-label {
+    color: var(--cr-input-label-color);
+    font-size: 11px;
+    line-height: 16px;
+  }
+
+  #country-select {
+    --md-select-width: var(--cr-input-width, 100%);
+    margin-bottom: var(--cr-form-field-bottom-spacing);
+  }
+
+  .md-select + .md-select {
+    margin-inline-start: 8px;
+  }
+
+  .date-field {
+    margin-bottom: var(--cr-form-field-bottom-spacing);
+  }
+
+  #month-select,
+  #day-select {
+    --md-select-width: 70px;
+  }
+
+  #year-select {
+    --md-select-width: 100px;
+  }
+
+  #dialog::part(body-container) {
+    max-height: 550px;
+  }
+
+  @media all and (max-height: 714px) {
+    #dialog::part(body-container) {
+      max-height: 270px;
+    }
+  }
+
+  #date-validation-error {
+    margin-top: 8px;
+  }
+
+  #validation-error,
+  #date-validation-error,
+  #invalid-date-select-label {
+    color: var(--cr-fallback-color-error);
+  }
+</style>
+<cr-dialog id="dialog" close-text="$i18n{close}">
+  <div slot="title">[[dialogTitle]]</div>
+  <div slot="body">
+    <template is="dom-repeat" items="[[completeAttributeInstanceList_]]"
+        as="attributeInstanceItem">
+
+      <template is="dom-if" if="[[isDataType_(attributeInstanceItem,
+          attributeTypeDataTypeEnum_.COUNTRY)]]">
+        <label id="country-select-label" class="cr-form-field-label">
+          [[attributeInstanceItem.type.typeNameAsString]]
+        </label>
+        <select id="country-select" class="md-select"
+            aria-label="[[attributeInstanceItem.type.typeNameAsString]]"
+            on-change="onCountrySelectChange_">
+          <option value="">$i18n{autofillDropdownNoOptionSelected}</option>
+          <template is="dom-repeat" items="[[countryList_]]" as="countryItem">
+            <option value="[[getCountryCode_(countryItem)]]"
+                disabled="[[isCountrySeparator_(countryItem)]]"
+                selected="[[isCountrySelected_(
+                    attributeInstanceItem, countryItem)]]">
+              [[getCountryName_(countryItem)]]
+            </option>
+          </template>
+        </select>
+      </template>
+
+      <!-- TODO(crbug.com/406006293): Revisit the design of date pickers. -->
+      <template is="dom-if" if="[[isDataType_(attributeInstanceItem,
+          attributeTypeDataTypeEnum_.DATE)]]">
+        <div class="date-field">
+
+          <label id="date-select-label"
+              class="cr-form-field-label"
+              hidden="[[isDateInvalid_(attributeInstanceItem,
+                  userClickedSaveButton_, attributeInstanceItem.*)]]">
+            [[attributeInstanceItem.type.typeNameAsString]]
+          </label>
+          <label id="invalid-date-select-label"
+              class="cr-form-field-label"
+              hidden="[[!isDateInvalid_(attributeInstanceItem,
+                  userClickedSaveButton_, attributeInstanceItem.*)]]">
+            [[attributeInstanceItem.type.typeNameAsString]]
+          </label>
+
+          <select id="month-select" class="md-select"
+              aria-label="[[i18n('autofillAiAccessibilityLabelMonthDropdown',
+                  attributeInstanceItem.type.typeNameAsString)]]"
+              on-change="onMonthSelectChange_">
+            <option value="">
+              $i18n{autofillAiMonthDropdownNoOptionSelected}
+            </option>
+            <template is="dom-repeat" items="[[months_]]" as="month">
+              <option value="[[month]]"
+                  selected="[[isMonthSelected_(attributeInstanceItem, month)]]">
+                [[getMonthName_(month)]]
+              </option>
+            </template>
+          </select>
+
+          <select id="day-select" class="md-select"
+              aria-label="[[i18n('autofillAiAccessibilityLabelDayDropdown',
+                  attributeInstanceItem.type.typeNameAsString)]]"
+              on-change="onDaySelectChange_">
+            <option value="">
+              $i18n{autofillAiDayDropdownNoOptionSelected}
+            </option>
+            <template is="dom-repeat" items="[[days_]]" as="day">
+              <option value="[[day]]"
+                  selected="[[isDaySelected_(attributeInstanceItem, day)]]">
+                [[day]]
+              </option>
+            </template>
+          </select>
+
+          <select id="year-select" class="md-select"
+              aria-label="[[i18n('autofillAiAccessibilityLabelYearDropdown',
+                  attributeInstanceItem.type.typeNameAsString)]]"
+              on-change="onYearSelectChange_">
+            <option value="">
+              $i18n{autofillAiYearDropdownNoOptionSelected}
+            </option>
+            <!-- isExistingYearOutOfBounds_ and getExistingYear_ purposefully
+                 don't have attributeInstanceItem.* as an argument. If the user
+                 selects another year, the return value of these functions
+                 should not change. -->
+            <template is="dom-if" if="[[isExistingYearOutOfBounds_(
+                attributeInstanceItem, years_)]]">
+              <option value="[[getExistingYear_(attributeInstanceItem)]]"
+                  selected="true">
+                [[getExistingYear_(attributeInstanceItem)]]
+              </option>
+            </template>
+            <!-- TODO(crbug.com/403312087): Use an <hr> element instead. Resolve
+                 this TODO only when an <hr> element is also used for the
+                 country selector, for consistency. -->
+            <!-- This separator follows the same pattern as the one for
+                 the country selector. -->
+            <option value="SEPARATOR" disabled>
+              ------
+            </option>
+            <template is="dom-repeat" items="[[years_]]" as="year">
+              <option value="[[year]]"
+                  selected="[[isYearSelected_(attributeInstanceItem, year)]]">
+                [[year]]
+              </option>
+            </template>
+          </select>
+
+          <div id="date-validation-error" class="cr-form-field-label"
+              hidden="[[!isDateInvalid_(attributeInstanceItem,
+                  userClickedSaveButton_, attributeInstanceItem.*)]]">
+            $i18n{autofillAiAddOrEditDialogDateValidationError}
+          </div>
+        </div>
+      </template>
+
+      <template is="dom-if" if="[[isDataType_(attributeInstanceItem,
+          attributeTypeDataTypeEnum_.STRING)]]">
+        <cr-input id="attribute-instance-field" type="text"
+            label="[[attributeInstanceItem.type.typeNameAsString]]"
+            value="{{attributeInstanceItem.value}}"
+            spellcheck="false" maxlength="1000"
+            on-input="onAttributeInstanceFieldInput_">
+        </cr-input>
+      </template>
+
+    </template>
+
+    <div id="validation-error" class="cr-form-field-label"
+        hidden="[[!allFieldsAreEmpty_]]">
+      $i18n{autofillAiAddOrEditDialogValidationError}
+    </div>
+  </div>
+  <div slot="button-container">
+    <cr-button class="cancel-button" on-click="onCancelClick_">
+      $i18n{cancel}
+    </cr-button>
+    <cr-button class="action-button" disabled="[[!canSave_]]"
+        on-click="onConfirmClick_">
+      $i18n{save}
+    </cr-button>
+  </div>
+</cr-dialog>

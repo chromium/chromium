@@ -11,6 +11,7 @@
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/shell.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_skia_rep.h"

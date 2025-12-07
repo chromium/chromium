@@ -15,7 +15,7 @@
 namespace bookmarks {
 class BookmarkModel;
 class BookmarkNode;
-}
+}  // namespace bookmarks
 
 // Model for the combobox showing the list of folders to choose from. The
 // list always contains the Bookmarks Bar, Other Bookmarks and the parent
@@ -37,7 +37,11 @@ class RecentlyUsedFoldersComboModel : public ui::ComboboxModel,
   size_t GetItemCount() const override;
   std::u16string GetItemAt(size_t index) const override;
   bool IsItemSeparatorAt(size_t index) const override;
+  bool IsItemTitleAt(size_t index) const override;
   std::optional<size_t> GetDefaultIndex() const override;
+  std::optional<ui::ColorId> GetDropdownForegroundColorIdAt(
+      size_t index) const override;
+  ui::ComboboxModel::ItemCheckmarkConfig GetCheckmarkConfig() const override;
 
   // Overridden from bookmarks::BookmarkModelObserver:
   void BookmarkModelLoaded(bool ids_reassigned) override;
@@ -73,9 +77,6 @@ class RecentlyUsedFoldersComboModel : public ui::ComboboxModel,
  private:
   // Returns the node at the specified |index|.
   const bookmarks::BookmarkNode* GetNodeAt(size_t index);
-
-  // Removes |node| from |items_|. Does nothing if |node| is not in |items_|.
-  void RemoveNode(const bookmarks::BookmarkNode* node);
 
   struct Item;
   std::vector<Item> items_;

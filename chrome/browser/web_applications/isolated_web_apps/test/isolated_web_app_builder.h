@@ -5,26 +5,36 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_TEST_ISOLATED_WEB_APP_BUILDER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_TEST_ISOLATED_WEB_APP_BUILDER_H_
 
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
+#include <variant>
 #include <vector>
 
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_file.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/traits_bag.h"
 #include "base/types/expected.h"
-#include "base/version.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
-#include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
+#include "components/web_package/test_support/signed_web_bundles/key_pair.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
+#include "components/webapps/isolated_web_apps/types/source.h"
 #include "net/http/http_status_code.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/common/safe_url_pattern.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom-data-view.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-forward.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "ui/gfx/geometry/size.h"
 
 class Profile;
@@ -46,6 +56,10 @@ class Origin;
 }  // namespace url
 
 namespace web_app {
+
+class BundledIsolatedWebApp;
+class ScopedBundledIsolatedWebApp;
+class ScopedProxyIsolatedWebApp;
 
 // A builder for a subset of the Web Manifest spec.
 class ManifestBuilder {
@@ -71,6 +85,8 @@ class ManifestBuilder {
   // Mime type to vector of file extensions.
   using FileHandlerAccept = std::map<std::string, std::vector<std::string>>;
 
+  using ClientMode = blink::Manifest::LaunchHandler::ClientMode;
+
   // Creates the following default manifest:
   // {
   //   name: "Test App",
@@ -90,14 +106,24 @@ class ManifestBuilder {
   ManifestBuilder& SetName(std::string_view name);
   ManifestBuilder& SetVersion(std::string_view version);
   ManifestBuilder& SetStartUrl(std::string_view start_url);
+  ManifestBuilder& SetUpdateManifestUrl(const GURL& update_manifest_url);
+  ManifestBuilder& SetDisplayMode(blink::mojom::DisplayMode display_mode);
+  ManifestBuilder& SetLaunchHandlerClientMode(
+      ClientMode launch_handler_client_mode);
+
+  // Sets the display mode fallback chain. If overridden display modes are
+  // blocked, it falls back to the mode set through SetDisplayMode; see:
+  // https://github.com/WICG/display-override/blob/main/explainer.md#part-1-display_override
+  ManifestBuilder& SetDisplayModeOverride(
+      std::vector<blink::mojom::DisplayMode> display_mode_override);
   ManifestBuilder& AddIcon(std::string_view resource_path,
                            gfx::Size size,
                            std::string_view content_type);
 
   ManifestBuilder& AddPermissionsPolicyWildcard(
-      blink::mojom::PermissionsPolicyFeature feature);
+      network::mojom::PermissionsPolicyFeature feature);
   ManifestBuilder& AddPermissionsPolicy(
-      blink::mojom::PermissionsPolicyFeature feature,
+      network::mojom::PermissionsPolicyFeature feature,
       bool self,
       std::vector<url::Origin> origins);
 
@@ -106,10 +132,12 @@ class ManifestBuilder {
   ManifestBuilder& AddFileHandler(std::string_view action,
                                   const FileHandlerAccept& accept);
 
-  // TODO: Other manifest fields like share_target as needed by tests.
+  ManifestBuilder& AddBorderlessUrlPattern(blink::SafeUrlPattern pattern);
+
   const std::string& start_url() const;
+  const std::optional<GURL>& update_manifest_url() const;
   const std::vector<IconMetadata>& icons() const;
-  base::Version version() const;
+  const IwaVersion& version() const;
 
   std::string ToJson() const;
   blink::mojom::ManifestPtr ToBlinkManifest(
@@ -117,90 +145,19 @@ class ManifestBuilder {
 
  private:
   std::string name_;
-  std::string version_;
+  IwaVersion version_;
   std::string start_url_;
+  std::optional<GURL> update_manifest_url_;
+  blink::mojom::DisplayMode display_mode_ =
+      blink::mojom::DisplayMode::kStandalone;
+  std::vector<blink::mojom::DisplayMode> display_mode_override_;
+  std::optional<ClientMode> launch_handler_client_mode_;
   std::vector<IconMetadata> icons_;
-  std::map<blink::mojom::PermissionsPolicyFeature, PermissionsPolicy>
+  std::map<network::mojom::PermissionsPolicyFeature, PermissionsPolicy>
       permissions_policy_;
   std::vector<std::pair<std::string, std::string>> protocol_handlers_;
   std::map<std::string, FileHandlerAccept> file_handlers_;
-};
-
-class BundledIsolatedWebApp {
- public:
-  BundledIsolatedWebApp(const web_package::SignedWebBundleId& web_bundle_id,
-                        const std::vector<uint8_t> serialized_bundle,
-                        const base::FilePath path,
-                        ManifestBuilder manifest_builder);
-
-  virtual ~BundledIsolatedWebApp();
-
-  const base::FilePath& path() const { return path_; }
-
-  const web_package::SignedWebBundleId& web_bundle_id() const {
-    return web_bundle_id_;
-  }
-
-  base::Version version() const { return manifest_builder_.version(); }
-
-  std::string GetBundleData() const;
-
-  // Saves this app's signing key in Chrome's list of trusted keys, which will
-  // allow the app to be installed with dev mode disabled.
-  void TrustSigningKey();
-
-  void FakeInstallPageState(Profile* profile);
-
-  IsolatedWebAppUrlInfo InstallChecked(Profile* profile);
-
-  base::expected<IsolatedWebAppUrlInfo, std::string> Install(Profile* profile);
-
- private:
-  web_package::SignedWebBundleId web_bundle_id_;
-  base::FilePath path_;
-  ManifestBuilder manifest_builder_;
-};
-
-class ScopedBundledIsolatedWebApp : public BundledIsolatedWebApp {
- public:
-  static std::unique_ptr<ScopedBundledIsolatedWebApp> Create(
-      const web_package::SignedWebBundleId& web_bundle_id,
-      const std::vector<uint8_t> serialized_bundle,
-      ManifestBuilder manifest_builder);
-
-  ~ScopedBundledIsolatedWebApp() override;
-
- private:
-  ScopedBundledIsolatedWebApp(
-      const web_package::SignedWebBundleId& web_bundle_id,
-      const std::vector<uint8_t> serialized_bundle,
-      base::ScopedTempFile bundle_file,
-      ManifestBuilder manifest_builder);
-
-  base::ScopedTempFile bundle_file_;
-};
-
-class ScopedProxyIsolatedWebApp {
- public:
-  explicit ScopedProxyIsolatedWebApp(
-      std::unique_ptr<net::EmbeddedTestServer> proxy_server,
-      std::optional<ManifestBuilder> manifest_builder = std::nullopt);
-
-  ~ScopedProxyIsolatedWebApp();
-
-  net::EmbeddedTestServer& proxy_server() { return *proxy_server_; }
-
-  IsolatedWebAppUrlInfo InstallChecked(Profile* profile);
-
-  base::expected<IsolatedWebAppUrlInfo, std::string> Install(Profile* profile);
-
-  base::expected<IsolatedWebAppUrlInfo, std::string> Install(
-      Profile* profile,
-      const web_package::SignedWebBundleId& web_bundle_id);
-
- private:
-  std::unique_ptr<net::EmbeddedTestServer> proxy_server_;
-  std::optional<ManifestBuilder> manifest_builder_;
+  std::vector<blink::SafeUrlPattern> borderless_url_patterns_;
 };
 
 // A builder for Isolated Web Apps that supports adding resources from disk
@@ -221,11 +178,12 @@ class IsolatedWebAppBuilder {
   using Headers = std::vector<Header>;
 
   // Initializes the builder with the specified manifest and some common
-  // resources such as a default text/html file at '/'.
+  // resources such as a default text/html file at '/'. The provided manifest
+  // cannot be overridden.
   //
   // The following resources will be present in the app:
   //   * /
-  //   * /manifest.webmanifest
+  //   * /.well-known/manifest.webmanifest
   //   * /icon.png
   explicit IsolatedWebAppBuilder(const ManifestBuilder& manifest_builder);
   IsolatedWebAppBuilder(const IsolatedWebAppBuilder&);
@@ -271,19 +229,33 @@ class IsolatedWebAppBuilder {
                                          const base::FilePath& file_path,
                                          const Headers& headers = {});
 
+  // Adds file specified by a path relative to //chrome/test/data to the app.
+  IsolatedWebAppBuilder& AddFileFromDisk(
+      std::string_view resource_path,
+      std::string_view chrome_test_data_relative_path,
+      const Headers& headers = {});
+
   // Recursively adds the contents of the `folder_path` directory on disk to the
   // app, using `resource_path` as the base path within the app.
   //
   // .mock-http-headers sibling files are supported as described in
   // `AddFileFromDisk`.
+  //
+  // Files added from this method will replace any previously added files with
+  // the same path, except for /.well-known/manifest.webmanifest, which will
+  // always be set through ManifestBuilder.
   IsolatedWebAppBuilder& AddFolderFromDisk(std::string_view resource_path,
                                            const base::FilePath& folder_path);
 
   // Recursively adds the contents of a folder specified by a path relative to
   // //chrome/test/data to the app.
+  //
+  // Files added from this method will replace any previously added files with
+  // the same path, except for /.well-known/manifest.webmanifest, which will
+  // always be set through ManifestBuilder.
   IsolatedWebAppBuilder& AddFolderFromDisk(
       std::string_view resource_path,
-      const std::string& chrome_test_data_relative_path);
+      std::string_view chrome_test_data_relative_path);
 
   IsolatedWebAppBuilder& RemoveResource(std::string_view resource_path);
 
@@ -298,12 +270,12 @@ class IsolatedWebAppBuilder {
 
   // Creates and signs a .swbn file on disk containing the app's contents.
   [[nodiscard]] std::unique_ptr<ScopedBundledIsolatedWebApp> BuildBundle(
-      const web_package::WebBundleSigner::KeyPair& key_pair);
+      const web_package::test::KeyPair& key_pair);
 
   // Creates and signs a .swbn file on disk containing the app's contents.
   [[nodiscard]] std::unique_ptr<ScopedBundledIsolatedWebApp> BuildBundle(
       const web_package::SignedWebBundleId& web_bundle_id,
-      const std::vector<web_package::WebBundleSigner::KeyPair>& key_pairs);
+      const web_package::test::KeyPairs& key_pairs);
 
   // Creates and signs a .swbn file on disk containing the app's contents. The
   // location of the bundle must be provided in `bundle_path`. A random signing
@@ -315,17 +287,17 @@ class IsolatedWebAppBuilder {
   // location of the bundle must be provided in `bundle_path`.
   std::unique_ptr<BundledIsolatedWebApp> BuildBundle(
       const base::FilePath& bundle_path,
-      const web_package::WebBundleSigner::KeyPair& key_pair);
+      const web_package::test::KeyPair& key_pair);
 
   // Creates and signs a .swbn file on disk containing the app's contents. The
   // location of the bundle must be provided in `bundle_path`.
   std::unique_ptr<BundledIsolatedWebApp> BuildBundle(
       const base::FilePath& bundle_path,
       const web_package::SignedWebBundleId& web_bundle_id,
-      const std::vector<web_package::WebBundleSigner::KeyPair>& key_pairs);
+      const web_package::test::KeyPairs& key_pairs);
 
  private:
-  using ResourceBody = absl::variant<base::FilePath, std::string>;
+  using ResourceBody = std::variant<base::FilePath, std::string>;
 
   class Resource {
    public:
@@ -353,13 +325,242 @@ class IsolatedWebAppBuilder {
 
   std::vector<uint8_t> BuildInMemoryBundle(
       const web_package::SignedWebBundleId& web_bundle_id,
-      const std::vector<web_package::WebBundleSigner::KeyPair>& key_pairs);
+      const web_package::test::KeyPairs& key_pairs);
 
   void Validate();
 
   ManifestBuilder manifest_builder_;
   // Maps relative path to resource body.
   std::map<std::string, Resource> resources_;
+};
+
+class BundledIsolatedWebApp {
+ public:
+#define WITH_TRAITS(TraitNames)                   \
+  template <typename... TraitNames>               \
+    requires base::trait_helpers::AreValidTraits< \
+        BundledIsolatedWebApp::ValidTraits, TraitNames...>
+  struct DoNotFakeInstallPage {};
+  struct DoNotTrustKey {};
+  struct ValidTraits {
+    explicit ValidTraits(DoNotFakeInstallPage);
+    explicit ValidTraits(DoNotTrustKey);
+  };
+
+  BundledIsolatedWebApp(const web_package::SignedWebBundleId& web_bundle_id,
+                        const std::vector<uint8_t> serialized_bundle,
+                        const base::FilePath path,
+                        ManifestBuilder manifest_builder);
+
+  virtual ~BundledIsolatedWebApp();
+
+  const base::FilePath& path() const { return path_; }
+
+  const web_package::SignedWebBundleId& web_bundle_id() const {
+    return web_bundle_id_;
+  }
+
+  const IwaVersion& version() const { return manifest_builder_.version(); }
+
+  std::string GetBundleData() const;
+
+  // Saves this app's signing key in Chrome's list of trusted keys, which will
+  // allow the app to be installed with dev mode disabled.
+  void TrustSigningKey();
+
+  // Configures FakeWebContentsManager with a fake installation page matching
+  // the data from this bundle. This is necessary for unit tests that can't
+  // load the auto-generated install page in a real renderer process.
+  web_app::FakeWebContentsManager::FakePageState& FakeInstallPageState(
+      Profile* profile);
+
+  // Installs the IWA contained in this bundle with the IWA_GRAPHICAL_INSTALLER
+  // install source.
+  //
+  // The bundle's signing key will be marked as trusted prior to installation
+  // unless the `DoNotTrustKey` trait is provided.
+  // A fake installation page will be configured if `FakeWebAppProvider` is
+  // being used unless the `DoNotFakeInstallPage` trait is provided.
+  //
+  // Callers should generally wrap this function in ASSERT_OK_AND_ASSIGN when
+  // possible:
+  //     ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
+  //          iwa->Install(profile()));
+  WITH_TRAITS(InstallationTraits)
+  base::expected<IsolatedWebAppUrlInfo, std::string> Install(
+      Profile* profile,
+      InstallationTraits&&... traits);
+
+  // Like `Install`, but CHECKs that the installation was successful.
+  // Prefer using `Install` whenever possible for better error messages.
+  WITH_TRAITS(InstallationTraits)
+  IsolatedWebAppUrlInfo InstallChecked(Profile* profile,
+                                       InstallationTraits&&... traits);
+
+  // Installs the IWA contained in this bundle with the install source
+  // returned by `install_source_provider`:
+  //     ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
+  //          iwa->InstallWithSource(profile(),
+  //              &IsolatedWebAppInstallSource::FromExternalPolicy));
+  WITH_TRAITS(InstallationTraits)
+  base::expected<IsolatedWebAppUrlInfo, std::string> InstallWithSource(
+      Profile* profile,
+      base::FunctionRef<IsolatedWebAppInstallSource(
+          IwaSourceProdModeWithFileOp)> install_source_provider,
+      IwaSourceBundleProdFileOp file_op = IwaSourceBundleProdFileOp::kCopy,
+      InstallationTraits&&... traits);
+
+  WITH_TRAITS(InstallationTraits)
+  base::expected<IsolatedWebAppUrlInfo, std::string> InstallWithSource(
+      Profile* profile,
+      base::FunctionRef<IsolatedWebAppInstallSource(IwaSourceDevModeWithFileOp)>
+          install_source_provider,
+      IwaSourceBundleDevFileOp file_op = IwaSourceBundleDevFileOp::kCopy,
+      InstallationTraits&&... traits);
+
+  WITH_TRAITS(InstallationTraits)
+  base::expected<IsolatedWebAppUrlInfo, std::string> InstallWithSource(
+      Profile* profile,
+      base::FunctionRef<IsolatedWebAppInstallSource(
+          IwaSourceBundleWithModeAndFileOp)> install_source_provider,
+      IwaSourceBundleModeAndFileOp file_op =
+          IwaSourceBundleModeAndFileOp::kProdModeCopy,
+      InstallationTraits&&... traits);
+
+ private:
+  WITH_TRAITS(InstallationTraits)
+  base::expected<IsolatedWebAppUrlInfo, std::string> InstallWithSource(
+      Profile* profile,
+      IsolatedWebAppInstallSource source,
+      InstallationTraits&&... traits) {
+    return InstallWithSource(
+        profile, source,
+        /*fake_install_page=*/
+        !base::trait_helpers::HasTrait<DoNotFakeInstallPage,
+                                       InstallationTraits...>(),
+        /*trust_key=*/
+        !base::trait_helpers::HasTrait<DoNotTrustKey, InstallationTraits...>());
+  }
+
+  base::expected<IsolatedWebAppUrlInfo, std::string> InstallWithSource(
+      Profile* profile,
+      IsolatedWebAppInstallSource source,
+      bool fake_install_page,
+      bool trust_key);
+
+  web_package::SignedWebBundleId web_bundle_id_;
+  base::FilePath path_;
+  ManifestBuilder manifest_builder_;
+};
+
+WITH_TRAITS(InstallationTraits)
+base::expected<IsolatedWebAppUrlInfo, std::string>
+BundledIsolatedWebApp::Install(Profile* profile,
+                               InstallationTraits&&... traits) {
+  return InstallWithSource(profile,
+                           &IsolatedWebAppInstallSource::FromGraphicalInstaller,
+                           IwaSourceBundleModeAndFileOp::kProdModeCopy,
+                           std::forward<InstallationTraits>(traits)...);
+}
+
+WITH_TRAITS(InstallationTraits)
+IsolatedWebAppUrlInfo BundledIsolatedWebApp::InstallChecked(
+    Profile* profile,
+    InstallationTraits&&... traits) {
+  auto result = Install(profile, std::forward<InstallationTraits>(traits)...);
+  CHECK(result.has_value()) << result.error();
+  return *result;
+}
+
+WITH_TRAITS(InstallationTraits)
+base::expected<IsolatedWebAppUrlInfo, std::string>
+BundledIsolatedWebApp::InstallWithSource(
+    Profile* profile,
+    base::FunctionRef<IsolatedWebAppInstallSource(IwaSourceProdModeWithFileOp)>
+        install_source_provider,
+    IwaSourceBundleProdFileOp file_op,
+    InstallationTraits&&... traits) {
+  return InstallWithSource(
+      profile,
+      install_source_provider(IwaSourceProdModeWithFileOp(
+          IwaSourceBundleProdModeWithFileOp(path(), file_op))),
+      std::forward<InstallationTraits>(traits)...);
+}
+
+WITH_TRAITS(InstallationTraits)
+base::expected<IsolatedWebAppUrlInfo, std::string>
+BundledIsolatedWebApp::InstallWithSource(
+    Profile* profile,
+    base::FunctionRef<IsolatedWebAppInstallSource(IwaSourceDevModeWithFileOp)>
+        install_source_provider,
+    IwaSourceBundleDevFileOp file_op,
+    InstallationTraits&&... traits) {
+  return InstallWithSource(
+      profile,
+      install_source_provider(IwaSourceDevModeWithFileOp(
+          IwaSourceBundleDevModeWithFileOp(path(), file_op))),
+      std::forward<InstallationTraits>(traits)...);
+}
+
+WITH_TRAITS(InstallationTraits)
+base::expected<IsolatedWebAppUrlInfo, std::string>
+BundledIsolatedWebApp::InstallWithSource(
+    Profile* profile,
+    base::FunctionRef<IsolatedWebAppInstallSource(
+        IwaSourceBundleWithModeAndFileOp)> install_source_provider,
+    IwaSourceBundleModeAndFileOp file_op,
+    InstallationTraits&&... traits) {
+  return InstallWithSource(
+      profile,
+      install_source_provider(
+          IwaSourceBundleWithModeAndFileOp(path(), file_op)),
+      std::forward<InstallationTraits>(traits)...);
+}
+#undef WITH_TRAITS
+
+class ScopedBundledIsolatedWebApp : public BundledIsolatedWebApp {
+ public:
+  static std::unique_ptr<ScopedBundledIsolatedWebApp> Create(
+      const web_package::SignedWebBundleId& web_bundle_id,
+      const std::vector<uint8_t> serialized_bundle,
+      ManifestBuilder manifest_builder);
+
+  ~ScopedBundledIsolatedWebApp() override;
+
+ private:
+  ScopedBundledIsolatedWebApp(
+      const web_package::SignedWebBundleId& web_bundle_id,
+      const std::vector<uint8_t> serialized_bundle,
+      base::ScopedTempFile bundle_file,
+      ManifestBuilder manifest_builder);
+
+  base::ScopedTempFile bundle_file_;
+};
+
+class ScopedProxyIsolatedWebApp {
+ public:
+  ScopedProxyIsolatedWebApp(
+      std::unique_ptr<net::EmbeddedTestServer> proxy_server,
+      const ManifestBuilder& manifest_builder);
+
+  ~ScopedProxyIsolatedWebApp();
+
+  net::EmbeddedTestServer& proxy_server() { return *proxy_server_; }
+
+  IsolatedWebAppUrlInfo InstallChecked(Profile* profile);
+
+  base::expected<IsolatedWebAppUrlInfo, std::string> Install(Profile* profile);
+  base::expected<IsolatedWebAppUrlInfo, std::string> Install(
+      Profile* profile,
+      const web_package::SignedWebBundleId& web_bundle_id);
+
+  web_app::FakeWebContentsManager::FakePageState& FakeInstallPageState(
+      Profile* profile,
+      const web_package::SignedWebBundleId& web_bundle_id);
+
+ private:
+  std::unique_ptr<net::EmbeddedTestServer> proxy_server_;
+  ManifestBuilder manifest_builder_;
 };
 
 }  // namespace web_app

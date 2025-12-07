@@ -33,6 +33,7 @@ SearchResultBaseView::SearchResultBaseView() {
   // ChromeVox. see details in crbug.com/924776.
   GetViewAccessibility().SetRole(ax::mojom::Role::kListBoxOption);
   UpdateAccessibleName();
+  UpdateAccessibleDefaultAction();
 }
 
 SearchResultBaseView::~SearchResultBaseView() {
@@ -47,6 +48,11 @@ bool SearchResultBaseView::SkipDefaultKeyEventProcessing(
   // Ensure accelerators take priority in the app list. This ensures, e.g., that
   // Ctrl+Space will switch input methods rather than activate the button.
   return false;
+}
+
+void SearchResultBaseView::SetVisible(bool visible) {
+  views::Button::SetVisible(visible);
+  UpdateAccessibleDefaultAction();
 }
 
 void SearchResultBaseView::SetSelected(bool selected,
@@ -123,9 +129,6 @@ std::u16string SearchResultBaseView::ComputeAccessibleName() const {
              AppListSearchResultType::kInstalledApp) {
     accessible_name = l10n_util::GetStringFUTF16(
         IDS_APP_ACCESSIBILITY_INSTALLED_APP_ANNOUNCEMENT, title);
-  } else if (result()->result_type() == AppListSearchResultType::kInternalApp) {
-    accessible_name = l10n_util::GetStringFUTF16(
-        IDS_APP_ACCESSIBILITY_INTERNAL_APP_ANNOUNCEMENT, title);
   } else if (!result()->details().empty()) {
     accessible_name = base::JoinString({title, result()->details()}, u", ");
   } else {
@@ -140,14 +143,6 @@ std::u16string SearchResultBaseView::ComputeAccessibleName() const {
   return accessible_name;
 }
 
-void SearchResultBaseView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  if (!GetVisible()) {
-    return;
-  }
-
-  node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kClick);
-}
-
 void SearchResultBaseView::UpdateAccessibleName() {
   // It is possible for the view to be visible but lack a result. When this
   // happens, `ComputeAccessibleName()` will return an empty string. Because
@@ -160,6 +155,11 @@ void SearchResultBaseView::UpdateAccessibleName() {
   } else {
     GetViewAccessibility().SetName(name);
   }
+}
+
+void SearchResultBaseView::OnEnabledChanged() {
+  views::Button::OnEnabledChanged();
+  UpdateAccessibleDefaultAction();
 }
 
 void SearchResultBaseView::ClearResult() {
@@ -179,6 +179,15 @@ void SearchResultBaseView::SelectInitialResultAction(bool reverse_tab_order) {
 void SearchResultBaseView::ClearSelectedResultAction() {
   if (actions_view_) {
     actions_view_->ClearSelectedAction();
+  }
+}
+
+void SearchResultBaseView::UpdateAccessibleDefaultAction() {
+  if (GetVisible()) {
+    GetViewAccessibility().SetDefaultActionVerb(
+        ax::mojom::DefaultActionVerb::kClick);
+  } else {
+    GetViewAccessibility().RemoveDefaultActionVerb();
   }
 }
 

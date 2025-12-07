@@ -7,6 +7,8 @@
 #include "base/notreached.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
+#include "components/performance_manager/scenario_api/performance_scenarios.h"
+#include "content/public/common/content_features.h"
 
 namespace content::internal {
 
@@ -29,8 +31,7 @@ ProtoPriority ToProtoPriority(BrowserTaskPriority priority) {
     case BrowserTaskPriority::kBestEffortPriority:
       return ProtoPriority::BEST_EFFORT_PRIORITY;
     case BrowserTaskPriority::kPriorityCount:
-      NOTREACHED_IN_MIGRATION();
-      return ProtoPriority::UNKNOWN;
+      NOTREACHED();
   }
 }
 
@@ -51,6 +52,17 @@ CreateBrowserTaskPrioritySettings() {
       BrowserTaskPriority::kDefaultPriority);
   settings.SetProtoPriorityConverter(&TaskPriorityToProto);
   return settings;
+}
+
+bool ShouldBoostThreadsPriority() {
+  DCHECK(base::FeatureList::IsEnabled(
+      features::kBoostThreadsPriorityDuringInputScenario));
+  performance_scenarios::ScenarioPattern no_input{
+      .input = {performance_scenarios::InputScenario::kNoInput},
+  };
+
+  return !performance_scenarios::CurrentScenariosMatch(
+      performance_scenarios::ScenarioScope::kGlobal, no_input);
 }
 
 }  // namespace content::internal

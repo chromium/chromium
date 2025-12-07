@@ -1,0 +1,7 @@
+This is a wdspec test.
+[FAIL] test_capability_default_value[setWindowRect-True]
+  assert False == True
+[FAIL] test_capability_user_agent
+  AssertionError: assert 'userAgent' in {'acceptInsecureCerts': False, 'browserName': 'chrome', 'browserVersion': '135.0.7041.0', 'chrome': {'chromedriverVersion': '135.0.7041.0 (0000000000000000000000000000000000000000-0000000000000000000000000000000000000000)'}, ...}
+Harness: the test ran to completion.
+

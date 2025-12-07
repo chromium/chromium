@@ -5,8 +5,8 @@
 #ifndef UI_ACCELERATED_WIDGET_MAC_WINDOW_RESIZE_HELPER_MAC_H_
 #define UI_ACCELERATED_WIDGET_MAC_WINDOW_RESIZE_HELPER_MAC_H_
 
-#include "base/lazy_instance.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/accelerated_widget_mac/accelerated_widget_mac_export.h"
 
@@ -68,7 +68,7 @@ class ACCELERATED_WIDGET_MAC_EXPORT WindowResizeHelperMac {
   bool WaitForSingleTaskToRun(const base::TimeDelta& max_delay);
 
  private:
-  friend struct base::LazyInstanceTraitsBase<WindowResizeHelperMac>;
+  friend base::NoDestructor<WindowResizeHelperMac>;
   WindowResizeHelperMac();
   ~WindowResizeHelperMac();
 

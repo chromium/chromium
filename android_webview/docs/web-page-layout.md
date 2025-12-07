@@ -49,7 +49,7 @@ case, some of the settings may or may not affect the result.
 ![Web page layout decision diagram](images/web_page_layout_decisions.png)
 
 <!-- diagram source:
-https://docs.google.com/drawings/d/1AQDT_DBgu0Ceq_84jGdhLTELMUpmF4h292EWFHTMnkc/edit
+http://shortn/_XCjQkmBEmg
 -->
 
 *** aside

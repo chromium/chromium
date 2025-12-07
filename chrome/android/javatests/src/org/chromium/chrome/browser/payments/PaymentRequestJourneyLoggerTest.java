@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -93,7 +94,7 @@ public class PaymentRequestJourneyLoggerTest {
                         .build();
 
         // Cancel the payment request.
-        mPaymentRequestTestRule.triggerUIAndWait(
+        mPaymentRequestTestRule.triggerUiAndWait(
                 "buyWithUrlMethods", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.close_button, mPaymentRequestTestRule.getDismissed());
@@ -109,19 +110,20 @@ public class PaymentRequestJourneyLoggerTest {
     @Test
     @MediumTest
     @Feature({"Payments"})
+    @DisabledTest(message = "Flaky test, see crbug.com/441329899")
     public void testTwoTimes() throws TimeoutException {
         // Add a second payment app.
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://kylepay.test/webpay", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
 
         // Complete a Payment Request with payment apps.
-        mPaymentRequestTestRule.triggerUIAndWait(
+        mPaymentRequestTestRule.triggerUiAndWait(
                 "buyWithUrlMethods", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getDismissed());
 
         // Complete a second Payment Request with payment apps.
-        mPaymentRequestTestRule.triggerUIAndWait(
+        mPaymentRequestTestRule.triggerUiAndWait(
                 "buyWithUrlMethods", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getDismissed());

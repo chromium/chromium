@@ -267,12 +267,14 @@ TEST_F(BoundSessionCookieObserverTest,
                                        base::DoNothing());
   // Replacing an existing cookie is actually a two-phase delete + set
   // operation, so `listener` gets an extra notification.
-  EXPECT_THAT(future.Get(),
-              testing::UnorderedElementsAre(
-                  testing::Field("cause", &net::CookieChangeInfo::cause,
-                                 net::CookieChangeCause::OVERWRITE),
-                  testing::Field("cause", &net::CookieChangeInfo::cause,
-                                 net::CookieChangeCause::INSERTED)));
+  EXPECT_THAT(
+      future.Get(),
+      testing::UnorderedElementsAre(
+          testing::Field("cause", &net::CookieChangeInfo::cause,
+                         net::CookieChangeCause::OVERWRITE),
+          testing::Field(
+              "cause", &net::CookieChangeInfo::cause,
+              net::CookieChangeCause::INSERTED_NO_VALUE_CHANGE_OVERWRITE)));
 
   EXPECT_EQ(update_expiration_date_call_count_, 1u);
   EXPECT_EQ(cookie_expiration_date_, new_expiry_date);

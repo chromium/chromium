@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "reference_drivers/single_process_reference_driver_base.h"
-
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -13,8 +11,10 @@
 #include "ipcz/ipcz.h"
 #include "reference_drivers/object.h"
 #include "reference_drivers/random.h"
+#include "reference_drivers/single_process_reference_driver_base.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "util/ref_counted.h"
+#include "util/unsafe_buffers.h"
 
 namespace ipcz::reference_drivers {
 
@@ -25,7 +25,7 @@ class InProcessMemory : public ObjectImpl<InProcessMemory, Object::kMemory> {
  public:
   explicit InProcessMemory(size_t size)
       : size_(size), data_(new uint8_t[size]) {
-    memset(&data_[0], 0, size_);
+    IPCZ_UNSAFE_TODO(memset(&data_[0], 0, size_));
   }
 
   size_t size() const { return size_; }

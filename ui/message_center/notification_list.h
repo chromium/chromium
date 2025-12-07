@@ -87,7 +87,7 @@ class MESSAGE_CENTER_EXPORT NotificationList {
 
   int size() const { return notifications_.size(); }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Returns the notification IDs prioritized for removal as follows:
   // 1. Lower priority notifications are removed before higher priority ones.
   // 2. For notifications with equal priority, older ones are removed first.
@@ -96,7 +96,7 @@ class MESSAGE_CENTER_EXPORT NotificationList {
   // 1. This function is used only if the notification limit feature is enabled.
   // 2. The returned array's size could be less than `count`.
   std::vector<std::string> GetTopKRemovableNotificationIds(size_t count) const;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Makes a message "read". Collects the set of ids whose state have changed
   // and set to |udpated_ids|. NULL if updated ids don't matter.

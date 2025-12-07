@@ -86,6 +86,7 @@ class AuctionV8DevToolsSession : public blink::mojom::DevToolsSession,
   void DispatchProtocolCommand(int32_t call_id,
                                const std::string& method,
                                base::span<const uint8_t> message) override;
+  void UnpauseAndTerminate() override;
 
   // V8Inspector::Channel implementation:
   void sendResponse(

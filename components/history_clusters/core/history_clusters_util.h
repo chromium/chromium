@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "components/history/core/browser/history_types.h"
 #include "url/gurl.h"
 

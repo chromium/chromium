@@ -4,23 +4,31 @@
 
 #include "content/browser/attribution_reporting/sql_utils.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <iterator>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
+#include "base/types/optional_ref.h"
 #include "components/attribution_reporting/aggregatable_filtering_id_max_bytes.h"
+#include "components/attribution_reporting/aggregatable_named_budget_defs.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/attribution_scopes_data.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/filters.h"
@@ -30,8 +38,10 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_config.h"
 #include "components/attribution_reporting/trigger_data_matching.mojom.h"
+#include "content/browser/attribution_reporting/aggregatable_named_budget_pair.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_reporting.pb.h"
+#include "content/browser/attribution_reporting/stored_source.h"
 #include "sql/statement.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "url/gurl.h"
@@ -41,11 +51,11 @@ namespace content {
 
 namespace {
 
+using ::attribution_reporting::AggregatableNamedBudgetDefs;
 using ::attribution_reporting::AggregatableTriggerConfig;
 using ::attribution_reporting::EventReportWindows;
 using ::attribution_reporting::SuitableOrigin;
-using ::attribution_reporting::TriggerSpec;
-using ::attribution_reporting::TriggerSpecs;
+using ::attribution_reporting::TriggerDataSet;
 using ::attribution_reporting::mojom::SourceRegistrationTimeConfig;
 using ::attribution_reporting::mojom::SourceType;
 using ::attribution_reporting::mojom::TriggerDataMatching;
@@ -82,19 +92,18 @@ void SerializeCommonAggregatableData(
       trigger_config.aggregatable_filtering_id_max_bytes().value());
 }
 
-std::optional<AttributionReport::CommonAggregatableData>
-DeserializeCommonAggregatableData(
-    const proto::AttributionCommonAggregatableMetadata& msg) {
+std::optional<AttributionReport::AggregatableData> DeserializeAggregatableData(
+    const proto::AttributionCommonAggregatableMetadata& msg,
+    base::Time source_time,
+    base::optional_ref<const SuitableOrigin> source_origin) {
   if (!msg.has_source_registration_time_config()) {
     return std::nullopt;
   }
 
-  std::optional<attribution_reporting::SuitableOrigin>
-      aggregation_coordinator_origin;
+  std::optional<SuitableOrigin> aggregation_coordinator_origin;
   if (msg.has_coordinator_origin()) {
     aggregation_coordinator_origin =
-        attribution_reporting::SuitableOrigin::Deserialize(
-            msg.coordinator_origin());
+        SuitableOrigin::Deserialize(msg.coordinator_origin());
     if (!aggregation_coordinator_origin.has_value()) {
       return std::nullopt;
     }
@@ -135,14 +144,15 @@ DeserializeCommonAggregatableData(
     return std::nullopt;
   }
 
-  return AttributionReport::CommonAggregatableData(
+  return AttributionReport::AggregatableData(
       std::move(aggregation_coordinator_origin),
-      *std::move(aggregatable_trigger_config));
+      *std::move(aggregatable_trigger_config), source_time,
+      /*contributions=*/{}, source_origin.CopyAsOptional());
 }
 
 }  // namespace
 
-url::Origin DeserializeOrigin(const std::string& origin) {
+url::Origin DeserializeOrigin(std::string_view origin) {
   return url::Origin::Create(GURL(origin));
 }
 
@@ -156,6 +166,8 @@ std::optional<SourceType> DeserializeSourceType(int val) {
       return std::nullopt;
   }
 }
+
+namespace {
 
 void SetReadOnlySourceData(
     const EventReportWindows* event_report_windows,
@@ -173,37 +185,36 @@ void SetReadOnlySourceData(
   }
 }
 
+}  // namespace
+
 std::string SerializeReadOnlySourceData(
-    const attribution_reporting::TriggerSpecs& trigger_specs,
+    const TriggerDataSet& trigger_data,
+    const EventReportWindows& event_report_windows,
+    attribution_reporting::MaxEventLevelReports max_event_level_reports,
     double randomized_response_rate,
     TriggerDataMatching trigger_data_matching,
-    bool debug_cookie_set,
+    bool cookie_based_debug_allowed,
     absl::uint128 aggregatable_debug_key_piece) {
-  DCHECK_GE(randomized_response_rate, 0);
-  DCHECK_LE(randomized_response_rate, 1);
+  CHECK_GE(randomized_response_rate, 0);
+  CHECK_LE(randomized_response_rate, 1);
 
   proto::AttributionReadOnlySourceData msg;
 
   if (
       // Calling `mutable_trigger_data()` forces creation of the field, even
-      // when `trigger_specs.empty()` below, so that the presence check in
-      // `DeserializeTriggerSpecs()` doesn't mistakenly use the defaults
+      // when `trigger_data.trigger_data().empty()` below, so that the presence check in
+      // `DeserializeTriggerDataSet()` doesn't mistakenly use the defaults
       // corresponding to the field being absent, as opposed to its inner list
       // being empty.
       auto* mutable_trigger_data = msg.mutable_trigger_data();
-      const TriggerSpec* trigger_spec = trigger_specs.SingleSharedSpec()) {
-    SetReadOnlySourceData(&trigger_spec->event_report_windows(),
-                          trigger_specs.max_event_level_reports(), msg);
+      !trigger_data.trigger_data().empty()) {
+    SetReadOnlySourceData(&event_report_windows, max_event_level_reports, msg);
 
-    for (auto [trigger_data, _] : trigger_specs.trigger_data_indices()) {
-      mutable_trigger_data->add_trigger_data(trigger_data);
-    }
+    mutable_trigger_data->mutable_trigger_data()->Add(
+        trigger_data.trigger_data().begin(), trigger_data.trigger_data().end());
   } else {
-    // TODO(crbug.com/40287976): Support multiple specs.
-    DCHECK(trigger_specs.empty());
-
     SetReadOnlySourceData(/*event_report_windows=*/nullptr,
-                          trigger_specs.max_event_level_reports(), msg);
+                          max_event_level_reports, msg);
   }
 
   msg.set_randomized_response_rate(randomized_response_rate);
@@ -219,7 +230,7 @@ std::string SerializeReadOnlySourceData(
       break;
   }
 
-  msg.set_debug_cookie_set(debug_cookie_set);
+  msg.set_cookie_based_debug_allowed(cookie_based_debug_allowed);
 
   proto::AttributionAggregationKey* key_msg =
       msg.mutable_aggregatable_debug_key_piece();
@@ -387,7 +398,7 @@ std::string SerializeAggregatableReportMetadata(
   return msg.SerializeAsString();
 }
 
-std::optional<AttributionReport::AggregatableAttributionData>
+std::optional<AttributionReport::AggregatableData>
 DeserializeAggregatableReportMetadata(base::span<const uint8_t> blob,
                                       const StoredSource& source) {
   proto::AttributionAggregatableMetadata msg;
@@ -396,9 +407,10 @@ DeserializeAggregatableReportMetadata(base::span<const uint8_t> blob,
     return std::nullopt;
   }
 
-  std::optional<AttributionReport::CommonAggregatableData> common_data =
-      DeserializeCommonAggregatableData(msg.common_data());
-  if (!common_data.has_value()) {
+  std::optional<AttributionReport::AggregatableData> data =
+      DeserializeAggregatableData(msg.common_data(), source.source_time(),
+                                  source.common_info().source_origin());
+  if (!data.has_value()) {
     return std::nullopt;
   }
 
@@ -415,7 +427,7 @@ DeserializeAggregatableReportMetadata(base::span<const uint8_t> blob,
     }
     std::optional<uint64_t> filtering_id;
     if (contribution_msg.has_filtering_id()) {
-      if (!common_data->aggregatable_trigger_config
+      if (!data->aggregatable_trigger_config()
                .aggregatable_filtering_id_max_bytes()
                .CanEncompass(contribution_msg.filtering_id())) {
         return std::nullopt;
@@ -428,8 +440,8 @@ DeserializeAggregatableReportMetadata(base::span<const uint8_t> blob,
         base::checked_cast<int32_t>(contribution_msg.value()), filtering_id);
   }
 
-  return AttributionReport::AggregatableAttributionData(
-      *std::move(common_data), std::move(contributions), source);
+  data->SetContributions(std::move(contributions));
+  return data;
 }
 
 std::string SerializeNullAggregatableReportMetadata(
@@ -448,7 +460,7 @@ std::string SerializeNullAggregatableReportMetadata(
   return msg.SerializeAsString();
 }
 
-std::optional<AttributionReport::NullAggregatableData>
+std::optional<AttributionReport::AggregatableData>
 DeserializeNullAggregatableReportMetadata(base::span<const uint8_t> blob) {
   proto::AttributionNullAggregatableMetadata msg;
   if (!msg.ParseFromArray(blob.data(), blob.size()) ||
@@ -456,57 +468,131 @@ DeserializeNullAggregatableReportMetadata(base::span<const uint8_t> blob) {
     return std::nullopt;
   }
 
-  std::optional<AttributionReport::CommonAggregatableData> common_data =
-      DeserializeCommonAggregatableData(msg.common_data());
-  if (!common_data.has_value()) {
-    return std::nullopt;
-  }
+  base::Time fake_source_time = base::Time::FromDeltaSinceWindowsEpoch(
+      base::Microseconds(msg.fake_source_time()));
 
-  return AttributionReport::NullAggregatableData(
-      *std::move(common_data),
-      /*fake_source_time=*/
-      base::Time::FromDeltaSinceWindowsEpoch(
-          base::Microseconds(msg.fake_source_time())));
+  return DeserializeAggregatableData(msg.common_data(), fake_source_time,
+                                     /*source_origin=*/std::nullopt);
 }
 
-std::optional<TriggerSpecs> DeserializeTriggerSpecs(
+std::optional<TriggerDataSet> DeserializeTriggerDataSet(
     const proto::AttributionReadOnlySourceData& msg,
-    SourceType source_type,
-    attribution_reporting::MaxEventLevelReports max_event_level_reports) {
+    SourceType source_type) {
+  if (!msg.has_trigger_data()) {
+    return TriggerDataSet(source_type);
+  }
+
+  return TriggerDataSet::Create(
+      TriggerDataSet::TriggerData(msg.trigger_data().trigger_data().begin(),
+                                  msg.trigger_data().trigger_data().end()));
+}
+
+std::optional<EventReportWindows> DeserializeEventReportWindows(
+    const proto::AttributionReadOnlySourceData& msg) {
+  // The event report window fields aren't written when trigger_data is empty,
+  // as event-level attribution cannot succeed in that case. We return an
+  // irrelevant default value here.
   if (msg.has_trigger_data() && msg.trigger_data().trigger_data().empty()) {
-    return TriggerSpecs();
+    return EventReportWindows();
   }
 
-  std::vector<base::TimeDelta> end_times;
-  end_times.reserve(msg.event_level_report_window_end_times_size());
+  std::vector<base::TimeDelta> end_times =
+      base::ToVector(msg.event_level_report_window_end_times(),
+                     [](int64_t time) { return base::Microseconds(time); });
 
-  for (int64_t time : msg.event_level_report_window_end_times()) {
-    end_times.push_back(base::Microseconds(time));
-  }
-
-  auto event_report_windows = EventReportWindows::Create(
+  return EventReportWindows::Create(
       base::Microseconds(msg.event_level_report_window_start_time()),
       std::move(end_times));
-  if (!event_report_windows.has_value()) {
+}
+
+std::string SerializeAttributionScopesData(
+    const attribution_reporting::AttributionScopesData& scopes_data) {
+  proto::AttributionScopesData msg;
+  const auto& scopes = scopes_data.attribution_scopes_set().scopes();
+
+  msg.mutable_scopes()->Add(scopes.begin(), scopes.end());
+  msg.set_scope_limit(scopes_data.attribution_scope_limit());
+  msg.set_max_event_states(scopes_data.max_event_states());
+
+  return msg.SerializeAsString();
+}
+
+base::expected<std::optional<attribution_reporting::AttributionScopesData>,
+               std::monostate>
+DeserializeAttributionScopesData(sql::Statement& stmt, int col) {
+  proto::AttributionScopesData msg;
+  if (stmt.GetColumnType(col) == sql::ColumnType::kNull) {
     return std::nullopt;
   }
 
-  if (!msg.has_trigger_data()) {
-    return TriggerSpecs(source_type, *std::move(event_report_windows),
-                        max_event_level_reports);
+  if (base::span<const uint8_t> blob = stmt.ColumnBlob(col);
+      !msg.ParseFromArray(blob.data(), blob.size())) {
+    return base::unexpected(std::monostate());
   }
 
-  std::vector<TriggerSpec> specs;
-  specs.emplace_back(*std::move(event_report_windows));
+  base::flat_set<std::string> scopes(
+      std::make_move_iterator(msg.scopes().begin()),
+      std::make_move_iterator(msg.scopes().end()));
+  auto scopes_data = attribution_reporting::AttributionScopesData::Create(
+      attribution_reporting::AttributionScopesSet(std::move(scopes)),
+      msg.scope_limit(), msg.max_event_states());
+  if (!scopes_data.has_value()) {
+    // DB entry is corrupted.
+    return base::unexpected(std::monostate());
+  }
+  return scopes_data;
+}
 
-  return TriggerSpecs::Create(
-      base::MakeFlatMap<uint32_t, uint8_t>(msg.trigger_data().trigger_data(),
-                                           /*comp=*/{},
-                                           [](uint32_t trigger_data) {
-                                             return std::make_pair(trigger_data,
-                                                                   uint8_t{0});
-                                           }),
-      std::move(specs), max_event_level_reports);
+void DeduplicateSourceIds(std::vector<StoredSource::Id>& ids) {
+  ids = base::flat_set<StoredSource::Id>(std::move(ids)).extract();
+}
+
+std::string SerializeAggregatableNamedBudgets(
+    const StoredSource::AggregatableNamedBudgets& budgets) {
+  proto::AggregatableNamedBudgets msg;
+
+  for (const auto& [name, budget] : budgets) {
+    proto::AggregatableNamedBudgetPair budget_pair;
+    budget_pair.set_original_budget(budget.original_budget());
+    budget_pair.set_remaining_budget(budget.remaining_budget());
+    (*msg.mutable_budgets())[name] = std::move(budget_pair);
+  }
+  return msg.SerializeAsString();
+}
+
+std::optional<StoredSource::AggregatableNamedBudgets>
+DeserializeAggregatableNamedBudgets(sql::Statement& stmt, int col) {
+  if (stmt.GetColumnType(col) == sql::ColumnType::kNull) {
+    return StoredSource::AggregatableNamedBudgets();
+  }
+
+  proto::AggregatableNamedBudgets msg;
+  if (base::span<const uint8_t> blob = stmt.ColumnBlob(col);
+      !msg.ParseFromArray(blob.data(), blob.size()) ||
+      static_cast<size_t>(msg.budgets_size()) >
+          attribution_reporting::kMaxAggregatableNamedBudgetsPerSource) {
+    return std::nullopt;
+  }
+
+  StoredSource::AggregatableNamedBudgets::container_type budgets;
+  budgets.reserve(msg.budgets_size());
+
+  for (const auto& [name, budget] : msg.budgets()) {
+    if (name.length() >
+        attribution_reporting::kMaxLengthPerAggregatableNamedBudgetName) {
+      return std::nullopt;
+    }
+
+    auto budget_pair = AggregatableNamedBudgetPair::Create(
+        budget.original_budget(), budget.remaining_budget());
+    if (!budget_pair.has_value()) {
+      return std::nullopt;
+    }
+
+    budgets.emplace_back(name, *budget_pair);
+  }
+
+  return budgets;
 }
 
 }  // namespace content

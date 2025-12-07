@@ -16,7 +16,7 @@ generate_ui_string_overrider("chrome_ui_string_overrider_factory") {
     "//chrome/app:generated_resources",
     "//components/strings:components_branded_strings",
     "//components/strings:components_strings",
-    "//components/variations:variations",
+    "//components/variations",
   ]
   namespace = "chrome_variations"
   header_filename = "ui_string_overrider_factory.h"

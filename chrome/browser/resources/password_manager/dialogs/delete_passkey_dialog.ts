@@ -41,7 +41,7 @@ export class DeletePasskeyDialogElement extends DeletePasskeyDialogElementBase {
     };
   }
 
-  passkey: chrome.passwordsPrivate.PasswordUiEntry;
+  declare passkey: chrome.passwordsPrivate.PasswordUiEntry;
 
   override ready() {
     super.ready();

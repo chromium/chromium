@@ -4,7 +4,7 @@
 
 // Custom binding for the enterprise.platformKeys API.
 
-// The platformKeys API consists of two major parts:
+// The enterprise.platformKeys API consists of two major parts:
 //   - the certificate management and
 //   - the key generation and crypto operations.
 // The former is implemented without custom binding as static functions.
@@ -14,16 +14,17 @@
 // wrapper.
 // The Token object holds the token id and the SubtleCrypto member.
 
-var Token = require('enterprise.platformKeys.Token').Token;
-var internalAPI = getInternalApi('enterprise.platformKeysInternal');
+const Token = require('enterprise.platformKeys.Token').Token;
+const internalAPI = getInternalApi('enterprise.platformKeysInternal');
 
 apiBridge.registerCustomHook(function(api) {
-  var apiFunctions = api.apiFunctions;
+  const apiFunctions = api.apiFunctions;
 
-  var ret = apiFunctions.setHandleRequest('getTokens', function(callback) {
+  apiFunctions.setHandleRequest('getTokens', function(callback) {
     internalAPI.getTokens(function(tokenIds) {
-      callback($Array.map(tokenIds,
-                          function(tokenId) { return new Token(tokenId); }));
+      callback($Array.map(tokenIds, function(tokenId) {
+        return new Token(tokenId);
+      }));
     });
   });
 });

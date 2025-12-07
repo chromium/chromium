@@ -1,0 +1,36 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package google.internal.remoting.cloud.v1alpha;
+
+import "field_mask.proto";
+import "remote_access_host.proto";
+
+// Updates the last seen timestamp for a remote access host.
+message SendHeartbeatRequest {
+  // The UUID of the remote access host to update in the Directory.
+  string directory_id = 1;
+
+  // An instance identity token includes project and instance information which
+  // is used to associate a request with a specific Compute Engine Instance.
+  // This allows us to read the instanceMetadata for a specific VM instance and
+  // to reject future requests for a given host if they are made from a
+  // different instance.
+  // More information about the contents of the token can be found at:
+  // https://cloud.google.com/compute/docs/instances/verifying-instance-identity
+  optional string instance_identity_token = 2;
+}
+
+// Updates a remote access host in the Directory.
+message UpdateRemoteAccessHostRequest {
+  // `remote_access_host.directory_id` indicates which host entry to update.
+  RemoteAccessHost remote_access_host = 1;
+
+  // The list of fields to update.
+  FieldMask update_mask = 2;
+}

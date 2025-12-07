@@ -7,7 +7,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {getTemplate} from './files_tooltip.html.js';
 
 export interface FilesTooltip {
-  $: {label: HTMLDivElement, link: HTMLAnchorElement};
+  $: {label: HTMLElement, link: HTMLAnchorElement};
   showTimeout: number;
   hideTimeout: number;
 }

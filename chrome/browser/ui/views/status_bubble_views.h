@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/status_bubble.h"
 #include "ui/gfx/geometry/rect.h"
@@ -20,11 +21,11 @@ class SequencedTaskRunner;
 namespace gfx {
 class Animation;
 class Point;
-}
+}  // namespace gfx
 namespace views {
 class View;
 class Widget;
-}
+}  // namespace views
 
 // StatusBubble displays a bubble of text that fades in, hovers over the
 // browser chrome and fades away when not needed. It is primarily designed
@@ -71,7 +72,6 @@ class StatusBubbleViews : public StatusBubble {
   void SetURL(const GURL& url) override;
   void Hide() override;
   void MouseMoved(bool left_content) override;
-  void UpdateDownloadShelfVisibility(bool visible) override;
 
  protected:
   views::Widget* popup() { return popup_.get(); }
@@ -156,9 +156,6 @@ class StatusBubbleViews : public StatusBubble {
   // Manages the expansion of a status bubble to fit a long URL.
   std::unique_ptr<StatusViewExpander> expand_view_;
 
-  // If the download shelf is visible, do not obscure it.
-  bool download_shelf_is_visible_ = false;
-
   // If the bubble has already been expanded, and encounters a new URL,
   // change size immediately, with no hover.
   bool is_expanded_ = false;
@@ -166,7 +163,11 @@ class StatusBubbleViews : public StatusBubble {
   // Used for posting tasks. This is typically
   // base::SingleThreadTaskRunner::GetCurrentDefault(), but may be set to
   // something else for tests.
-  raw_ptr<base::SequencedTaskRunner> task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  // Used for posting best-effort tasks. This is typically a sequence from the
+  // ThreadPool, but may be set to something else for tests.
+  scoped_refptr<base::SequencedTaskRunner> best_effort_task_runner_;
 
   // Times expansion of status bubble when URL is too long for standard width.
   base::WeakPtrFactory<StatusBubbleViews> expand_timer_factory_{this};

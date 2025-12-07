@@ -20,11 +20,6 @@ class PersonalDataManager;
 @protocol CardListDelegate;
 @class ReauthenticationModule;
 
-namespace manual_fill {
-extern NSString* const kManagePaymentMethodsAccessibilityIdentifier;
-extern NSString* const kAddPaymentMethodAccessibilityIdentifier;
-}  // namespace manual_fill
-
 // Object in charge of getting the cards relevant for the manual fill
 // cards UI.
 @interface ManualFillCardMediator
@@ -51,8 +46,10 @@ extern NSString* const kAddPaymentMethodAccessibilityIdentifier;
 // Unavailable. Use `initWithCards:`.
 - (instancetype)init NS_UNAVAILABLE;
 
-// Finds the original autofill::CreditCard from given `GUID`.
-- (const autofill::CreditCard*)findCreditCardfromGUID:(NSString*)GUID;
+// Finds the original autofill::CreditCard from given `GUID`. Returns an
+// optional in case `GUID` can't be mapped to a card.
+- (std::optional<const autofill::CreditCard>)findCreditCardfromGUID:
+    (NSString*)GUID;
 
 // Disconnects the mediator.
 - (void)disconnect;

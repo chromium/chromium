@@ -4,9 +4,11 @@
 
 package org.chromium.mojo.bindings;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.mojo.system.Core;
 
 /** Base class for all mojo unions. */
+@NullMarked
 public abstract class Union {
     /** They type of object that has been set. */
     protected int mTag;

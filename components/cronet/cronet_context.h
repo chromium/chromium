@@ -14,19 +14,24 @@
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
 #include "components/prefs/json_pref_store.h"
+#include "net/base/completion_once_callback.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_handle.h"
+#include "net/base/proxy_delegate.h"
+#include "net/http/http_request_headers.h"
+#include "net/http/http_response_headers.h"
 #include "net/nqe/effective_connection_type.h"
 #include "net/nqe/effective_connection_type_observer.h"
 #include "net/nqe/network_quality_estimator.h"
 #include "net/nqe/network_quality_observation_source.h"
 #include "net/nqe/rtt_throughput_estimates_observer.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_tag.h"
 
 class PrefService;
 
@@ -92,6 +97,39 @@ class CronetContext {
     // Callback for StopNetLog() that signals that it is safe to access
     // the NetLog files.
     virtual void OnStopNetLogCompleted() = 0;
+
+    // Called before sending a tunnel establishment request. This is used to
+    // forward //net's ProxyDelegate::OnBeforeTunnelRequest to, the embedder
+    // provided, org.chromium.net.Proxy.Callback#onBeforeTunnelRequest.
+    // If the tunnel establishment request should be allowed to continue, pass
+    // an net::HttpRequestHeaders object to `callback`. These will be sent only
+    // to the proxy, as part of the tunnel establishment request. If it should
+    // be canceled, pass a net::Error (other than OK and ERR_IO_PENDING). When
+    // canceled, we will attempt to connect via the next proxy in the list (see
+    // org.chromium.net.ProxyOptions for more info).
+    //
+    // WARNING: `callback` must never be called inline, it must instead be
+    // posted back onto the network thread.
+    virtual void OnBeforeTunnelRequest(
+        int chain_id,
+        net::ProxyDelegate::OnBeforeTunnelRequestCallback callback) = 0;
+
+    // Called after receiving a response to the tunnel establishment request.
+    // This is used to forward //net's ProxyDelegate::OnTunnelHeadersReceived
+    // to, the embedder provided,
+    // org.chromium.net.Proxy.Callback#onTunnelHeadersReceived.
+    // To allow the tunnel connection to proxy requests, pass `net::OK` to
+    // `callback`.  Instead, to cancel the tunnel connection, pass it a
+    // net::Error other than OK and ERR_IO_PENDING.
+    // When canceled, we will attempt to connect via the next proxy in the list
+    // (see org.chromium.net.ProxyOptions for more info).
+    //
+    // WARNING: `callback` must never be called inline, it must instead be
+    // posted back onto the network thread.
+    virtual void OnTunnelHeadersReceived(
+        int chain_id,
+        const net::HttpResponseHeaders& response_headers,
+        net::CompletionOnceCallback callback) = 0;
   };
 
   // Constructs CronetContext using |context_config|. The |callback|
@@ -278,6 +316,17 @@ class CronetContext {
     // signals that it is safe to access the NetLog files.
     void StopNetLogCompleted();
 
+    // See CronetContext::Callback::OnBeforeTunnelRequest.
+    void OnBeforeTunnelRequest(
+        int chain_id,
+        net::ProxyDelegate::OnBeforeTunnelRequestCallback callback);
+
+    // See CronetContext::Callback::OnTunnelHeadersReceived.
+    void OnTunnelHeadersReceived(
+        int chain_id,
+        const net::HttpResponseHeaders& response_headers,
+        net::CompletionOnceCallback callback);
+
     // Initializes Network Quality Estimator (NQE) prefs manager on network
     // thread.
     void InitializeNQEPrefs() const;
@@ -308,6 +357,10 @@ class CronetContext {
     // network thread.
     std::unique_ptr<net::URLRequestContext> BuildDefaultURLRequestContext(
         std::unique_ptr<net::ProxyConfigService> proxy_config_service);
+
+    raw_ptr<net::URLRequestContext> getDefaultContext() const {
+      return default_context_;
+    }
 
     std::unique_ptr<net::FileNetLogObserver> net_log_file_observer_;
 

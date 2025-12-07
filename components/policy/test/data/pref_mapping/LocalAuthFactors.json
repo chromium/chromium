@@ -1,0 +1,73 @@
+[
+  {
+    "os": [
+      "chromeos"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "ash.local_auth_factors.enabled_factors": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "policies": {
+          "LocalAuthFactors": [
+            "PIN"
+          ]
+        },
+        "prefs": {
+          "ash.local_auth_factors.enabled_factors": {
+            "value": [
+              "PIN"
+            ]
+          }
+        }
+      },
+      {
+        "policies": {
+          "LocalAuthFactors": [
+            "ALL"
+          ]
+        },
+        "prefs": {
+          "ash.local_auth_factors.enabled_factors": {
+            "value": [
+              "ALL"
+            ]
+          }
+        }
+      },
+      {
+        "policies": {
+          "LocalAuthFactors": [
+            "PIN", "LOCAL_PASSWORD"
+          ]
+        },
+        "prefs": {
+          "ash.local_auth_factors.enabled_factors": {
+            "value": [
+            "PIN", "LOCAL_PASSWORD"
+            ]
+          }
+        }
+      },
+      {
+        "policies": {
+          "LocalAuthFactors": [
+            "LOCAL_PASSWORD"
+          ]
+        },
+        "prefs": {
+          "ash.local_auth_factors.enabled_factors": {
+            "value": [
+            "LOCAL_PASSWORD"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

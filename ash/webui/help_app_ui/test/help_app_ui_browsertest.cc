@@ -9,7 +9,6 @@
 #include "ash/webui/help_app_ui/url_constants.h"
 #include "ash/webui/web_applications/test/sandboxed_web_ui_test_base.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/path_service.h"
 #include "content/public/test/browser_test.h"

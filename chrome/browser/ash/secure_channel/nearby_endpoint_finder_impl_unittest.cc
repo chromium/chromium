@@ -26,7 +26,6 @@ using ::nearby::connections::mojom::DiscoveredEndpointInfoPtr;
 using ::nearby::connections::mojom::EndpointDiscoveryListener;
 using ::nearby::connections::mojom::Status;
 using ::testing::_;
-using ::testing::Invoke;
 
 const std::vector<uint8_t> GetEid() {
   return std::vector<uint8_t>{0, 1};
@@ -53,14 +52,14 @@ class NearbyEndpointFinderImplTest : public testing::Test {
   void FindEndpoint() {
     base::RunLoop run_loop;
     EXPECT_CALL(mock_nearby_connections_, StartDiscovery(_, _, _, _))
-        .WillOnce(Invoke(
-            [&](const std::string& service_id, DiscoveryOptionsPtr options,
-                mojo::PendingRemote<EndpointDiscoveryListener> listener,
-                NearbyConnectionsMojom::StartDiscoveryCallback callback) {
-              start_discovery_callback_ = std::move(callback);
-              endpoint_discovery_listener_.Bind(std::move(listener));
-              run_loop.Quit();
-            }));
+        .WillOnce([&](const std::string& service_id,
+                      DiscoveryOptionsPtr options,
+                      mojo::PendingRemote<EndpointDiscoveryListener> listener,
+                      NearbyConnectionsMojom::StartDiscoveryCallback callback) {
+          start_discovery_callback_ = std::move(callback);
+          endpoint_discovery_listener_.Bind(std::move(listener));
+          run_loop.Quit();
+        });
 
     finder_->FindEndpoint(
         GetBluetoothAddress(), GetEid(),
@@ -85,17 +84,17 @@ class NearbyEndpointFinderImplTest : public testing::Test {
 
     EXPECT_CALL(mock_nearby_connections_,
                 InjectBluetoothEndpoint(_, _, _, _, _))
-        .WillOnce(Invoke(
-            [&](const std::string& service_id, const std::string& endpoint_id,
-                const std::vector<uint8_t>& endpoint_info,
-                const std::vector<uint8_t>& remote_bluetooth_mac_address,
-                NearbyConnectionsMojom::InjectBluetoothEndpointCallback
-                    callback) {
-              endpoint_id_ = endpoint_id;
-              endpoint_info_ = endpoint_info;
-              inject_endpoint_callback_ = std::move(callback);
-              run_loop.Quit();
-            }));
+        .WillOnce([&](const std::string& service_id,
+                      const std::string& endpoint_id,
+                      const std::vector<uint8_t>& endpoint_info,
+                      const std::vector<uint8_t>& remote_bluetooth_mac_address,
+                      NearbyConnectionsMojom::InjectBluetoothEndpointCallback
+                          callback) {
+          endpoint_id_ = endpoint_id;
+          endpoint_info_ = endpoint_info;
+          inject_endpoint_callback_ = std::move(callback);
+          run_loop.Quit();
+        });
 
     std::move(start_discovery_callback_).Run(Status::kSuccess);
     run_loop.Run();
@@ -117,12 +116,11 @@ class NearbyEndpointFinderImplTest : public testing::Test {
   void InvokeOnEndpointFound() {
     base::RunLoop run_loop;
     EXPECT_CALL(mock_nearby_connections_, StopDiscovery(_, _))
-        .WillOnce(
-            Invoke([&](const std::string& service_id,
-                       NearbyConnectionsMojom::StopDiscoveryCallback callback) {
-              stop_discovery_callback_ = std::move(callback);
-              run_loop.Quit();
-            }));
+        .WillOnce([&](const std::string& service_id,
+                      NearbyConnectionsMojom::StopDiscoveryCallback callback) {
+          stop_discovery_callback_ = std::move(callback);
+          run_loop.Quit();
+        });
 
     endpoint_discovery_listener_->OnEndpointFound(
         endpoint_id_,
@@ -147,12 +145,11 @@ class NearbyEndpointFinderImplTest : public testing::Test {
 
     base::RunLoop run_loop;
     EXPECT_CALL(mock_nearby_connections_, StopDiscovery(_, _))
-        .WillOnce(
-            Invoke([&](const std::string& service_id,
-                       NearbyConnectionsMojom::StopDiscoveryCallback callback) {
-              std::move(callback).Run(Status::kSuccess);
-              run_loop.Quit();
-            }));
+        .WillOnce([&](const std::string& service_id,
+                      NearbyConnectionsMojom::StopDiscoveryCallback callback) {
+          std::move(callback).Run(Status::kSuccess);
+          run_loop.Quit();
+        });
 
     finder_.reset();
     run_loop.Run();

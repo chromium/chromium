@@ -25,10 +25,16 @@ const SHA256HashValue kFakeFingerprint = {
     {0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa,
      0xbb, 0xcc, 0xdd, 0xee, 0xff, 0x00, 0x11, 0x22, 0x33, 0x44, 0x55,
      0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff}};
-const SHA256HashValue kStarfieldFingerprint = {
-    {0x14, 0x65, 0xfa, 0x20, 0x53, 0x97, 0xb8, 0x76, 0xfa, 0xa6, 0xf0,
-     0xa9, 0x95, 0x8e, 0x55, 0x90, 0xe4, 0x0f, 0xcc, 0x7f, 0xaa, 0x4f,
-     0xb7, 0xc2, 0xc8, 0x67, 0x75, 0x21, 0xfb, 0x5f, 0xb6, 0x58}};
+// This root must be in the Chrome Root Store. This must be kept in sync with
+// the test in google3, and with the contents of the Chrome Root Store.
+//
+// Failure to update this test first before removing the below root from the
+// Chrome Root Store wil break the sync of the Chrome Root Store between google3
+// and the chromium repository.
+const SHA256HashValue kAmazonFingerprint = {
+    {0x1b, 0xa5, 0xb2, 0xaa, 0x8c, 0x65, 0x40, 0x1a, 0x82, 0x96, 0x01,
+     0x18, 0xf8, 0x0b, 0xec, 0x4f, 0x62, 0x30, 0x4d, 0x83, 0xce, 0xc4,
+     0x71, 0x3a, 0x19, 0xc3, 0x9c, 0x01, 0x1e, 0xa4, 0x6d, 0xb4}};
 
 TEST(EVRootCAMetadataTest, Basic) {
   EVRootCAMetadata* ev_metadata(EVRootCAMetadata::GetInstance());
@@ -40,7 +46,7 @@ TEST(EVRootCAMetadataTest, Basic) {
   EXPECT_FALSE(ev_metadata->IsEVPolicyOID(bssl::der::Input(kFakePolicy)));
 
   // The policy is correct for the right root.
-  EXPECT_TRUE(ev_metadata->HasEVPolicyOID(kStarfieldFingerprint,
+  EXPECT_TRUE(ev_metadata->HasEVPolicyOID(kAmazonFingerprint,
                                           bssl::der::Input(kCabEvPolicy)));
 
   // The policy does not match if the root does not match.
@@ -49,12 +55,12 @@ TEST(EVRootCAMetadataTest, Basic) {
 
   // The expected root only has the expected policies; it should fail to match
   // the root against unknown policies.
-  EXPECT_FALSE(ev_metadata->HasEVPolicyOID(kStarfieldFingerprint,
+  EXPECT_FALSE(ev_metadata->HasEVPolicyOID(kAmazonFingerprint,
                                            bssl::der::Input(kFakePolicy)));
 
   // Test a completely bogus OID.
   const uint8_t bad_oid[] = {0};
-  EXPECT_FALSE(ev_metadata->HasEVPolicyOID(kStarfieldFingerprint,
+  EXPECT_FALSE(ev_metadata->HasEVPolicyOID(kAmazonFingerprint,
                                            bssl::der::Input(bad_oid)));
 }
 

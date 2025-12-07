@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_EXAMPLES_INK_DROP_EXAMPLE_H_
 #define UI_VIEWS_EXAMPLES_INK_DROP_EXAMPLE_H_
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_state.h"

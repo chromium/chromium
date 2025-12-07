@@ -18,11 +18,7 @@
 #endif  // defined(WEB_DIALOGS_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(WEB_DIALOGS_IMPLEMENTATION)
 #define WEB_DIALOGS_EXPORT __attribute__((visibility("default")))
-#else
-#define WEB_DIALOGS_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

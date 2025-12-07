@@ -14,9 +14,9 @@
 #include "base/json/json_writer.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
@@ -30,7 +30,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #endif
 
@@ -115,9 +115,7 @@ class ResponseValueBuilder {
   }
 
   static std::string CreateResponseString(const base::Value::Dict& response) {
-    std::string response_string;
-    base::JSONWriter::Write(response, &response_string);
-    return response_string;
+    return base::WriteJson(response).value_or("");
   }
 
   static std::string GetUploadFailureFailedUploadSequencingIdPath() {
@@ -176,7 +174,7 @@ class ResponseValueBuilder {
 class EncryptedReportingJobConfigurationTest : public testing::Test {
  public:
   EncryptedReportingJobConfigurationTest()
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       : fake_serial_number_(&fake_statistics_provider_)
 #endif
   {
@@ -297,8 +295,8 @@ class EncryptedReportingJobConfigurationTest : public testing::Test {
   }
 
   base::Value* GetPayload(EncryptedReportingJobConfiguration* configuration) {
-    std::optional<base::Value> payload_result =
-        base::JSONReader::Read(configuration->GetPayload());
+    std::optional<base::Value> payload_result = base::JSONReader::Read(
+        configuration->GetPayload(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
     EXPECT_TRUE(payload_result.has_value());
     payload_ = std::move(payload_result.value());
@@ -310,7 +308,7 @@ class EncryptedReportingJobConfigurationTest : public testing::Test {
 
   policy::MockCloudPolicyClient client_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   class ScopedFakeSerialNumber {
    public:
@@ -782,8 +780,8 @@ TEST_F(EncryptedReportingJobConfigurationTest, PayloadTopLevelFields) {
       client_.dm_token(), client_.client_id(), base::DoNothing(),
       base::DoNothing());
 
-  std::optional<base::Value> payload =
-      base::JSONReader::Read(configuration.GetPayload());
+  std::optional<base::Value> payload = base::JSONReader::Read(
+      configuration.GetPayload(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   ASSERT_TRUE(payload);
   ASSERT_TRUE(payload->is_dict());

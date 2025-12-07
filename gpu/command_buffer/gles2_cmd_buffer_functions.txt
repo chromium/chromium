@@ -291,7 +291,6 @@ GL_APICALL void         GL_APIENTRY glMemoryBarrierEXT (GLbitfield barriers);
 GL_APICALL void         GL_APIENTRY glMemoryBarrierByRegion (GLbitfield barriers);
 
 // Non-GL commands.
-GL_APICALL void         GL_APIENTRY glSwapBuffers (GLuint64 swap_id, GLbitfieldSwapBuffersFlags flags = 0);
 GL_APICALL GLuint       GL_APIENTRY glGetMaxValueInBufferCHROMIUM (GLidBuffer buffer_id, GLsizei count, GLenumGetMaxIndexType type, GLuint offset);
 GL_APICALL GLboolean    GL_APIENTRY glEnableFeatureCHROMIUM (const char* feature);
 GL_APICALL void*        GL_APIENTRY glMapBufferCHROMIUM (GLuint target, GLenum access);
@@ -303,7 +302,6 @@ GL_APICALL GLboolean    GL_APIENTRY glUnmapBuffer (GLenumBufferTarget target);
 GL_APICALL void         GL_APIENTRY glFlushMappedBufferRange (GLenumBufferTarget target, GLintptrNotNegative offset, GLsizeiptr size);
 GL_APICALL void*        GL_APIENTRY glMapTexSubImage2DCHROMIUM (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, GLenum access);
 GL_APICALL void         GL_APIENTRY glUnmapTexSubImage2DCHROMIUM (const void* mem);
-GL_APICALL void         GL_APIENTRY glResizeCHROMIUM (GLuint width, GLuint height, GLfloat scale_factor, GLcolorSpace color_space, GLboolean alpha);
 GL_APICALL const GLchar* GL_APIENTRY glGetRequestableExtensionsCHROMIUM (void);
 GL_APICALL void         GL_APIENTRY glRequestExtensionCHROMIUM (const char* extension);
 GL_APICALL void         GL_APIENTRY glGetProgramInfoCHROMIUM (GLidProgram program, GLsizeiNotNegative bufsize, GLsizei* size, void* info);
@@ -343,11 +341,6 @@ GL_APICALL void         GL_APIENTRY glBindFragDataLocationIndexedEXT (GLidProgra
 GL_APICALL void         GL_APIENTRY glBindFragDataLocationEXT (GLidProgram program, GLuint colorNumber, const char* name);
 GL_APICALL GLint        GL_APIENTRY glGetFragDataIndexEXT (GLidProgram program, const char* name);
 
-// Extension CHROMIUM_discardable_textures
-GL_APICALL void         GL_APIENTRY glInitializeDiscardableTextureCHROMIUM (GLuint texture_id);
-GL_APICALL void         GL_APIENTRY glUnlockDiscardableTextureCHROMIUM (GLuint texture_id);
-GL_APICALL bool         GL_APIENTRY glLockDiscardableTextureCHROMIUM (GLuint texture_id);
-
 // Extension EXT_window_rectangles
 GL_APICALL void         GL_APIENTRY glWindowRectanglesEXT (GLenumWindowRectanglesMode mode, GLsizeiNotNegative count, const GLint* box);
 
@@ -374,11 +367,8 @@ GL_APICALL GLuint       GL_APIENTRY glCreateAndTexStorage2DSharedImageCHROMIUM (
 GL_APICALL void         GL_APIENTRY glCreateAndTexStorage2DSharedImageINTERNAL (GLuint texture, const GLbyte* mailbox);
 GL_APICALL void         GL_APIENTRY glBeginSharedImageAccessDirectCHROMIUM (GLuint texture, GLenumSharedImageAccessMode mode);
 GL_APICALL void         GL_APIENTRY glEndSharedImageAccessDirectCHROMIUM (GLuint texture);
-GL_APICALL void         GL_APIENTRY glConvertRGBAToYUVAMailboxesINTERNAL (GLenum planes_yuv_color_space, GLenum plane_config, GLenum subsampling, const GLbyte* mailboxes);
-GL_APICALL void         GL_APIENTRY glConvertYUVAMailboxesToRGBINTERNAL (GLint src_x, GLint src_y, GLsizei width, GLsizei height, GLenum planes_yuv_color_space, GLenum plane_config, GLenum subsampling, const GLbyte* mailboxes);
-GL_APICALL void         GL_APIENTRY glConvertYUVAMailboxesToTextureINTERNAL (GLuint texture, GLenum target, GLuint internal_format, GLenum type, GLint src_x, GLint src_y, GLsizei width, GLsizei height, GLboolean flip_y, GLenum planes_yuv_color_space, GLenum plane_config, GLenum subsampling, const GLbyte* mailboxes);
-GL_APICALL void         GL_APIENTRY glCopySharedImageINTERNAL (GLint xoffset, GLint yoffset, GLint x, GLint y, GLsizei width, GLsizei height, GLboolean unpack_flip_y, const GLbyte* mailboxes);
-GL_APICALL void         GL_APIENTRY glCopySharedImageToTextureINTERNAL (GLuint texture, GLenum target, GLuint internal_format, GLenum type, GLint src_x, GLint src_y, GLsizei width, GLsizei height, GLboolean flip_y, const GLbyte* src_mailbox);
+GL_APICALL void         GL_APIENTRY glCopySharedImageINTERNAL (GLint xoffset, GLint yoffset, GLint x, GLint y, GLsizei width, GLsizei height, const GLbyte* mailboxes);
+GL_APICALL void         GL_APIENTRY glCopySharedImageToTextureINTERNAL (GLuint texture, GLenum target, GLuint internal_format, GLenum type, GLint src_x, GLint src_y, GLsizei width, GLsizei height, GLboolean is_dst_origin_top_left, const GLbyte* src_mailbox);
 GL_APICALL GLboolean    GL_APIENTRY glReadbackARGBImagePixelsINTERNAL (const GLbyte* mailbox, const void* dst_color_space, GLuint dst_color_space_size, GLuint dst_size, GLuint dst_width, GLuint dst_height, GLuint dst_color_type, GLuint dst_alpha_type, GLuint dst_row_bytes, GLint src_x, GLint src_y, GLint plane_index, void* pixels);
 GL_APICALL void         GL_APIENTRY glWritePixelsYUVINTERNAL (const GLbyte* mailbox, GLuint src_size_plane1, GLuint src_size_plane2, GLuint src_size_plane3, GLuint src_size_plane4, GLuint src_width, GLuint src_height, GLuint src_plane_config, GLuint src_subsampling, GLuint src_datatype, GLuint src_row_bytes_plane1, GLuint src_row_bytes_plane2, GLuint src_row_bytes_plane3, GLuint src_row_bytes_plane4, const void* src_pixels_plane1, const void* src_pixels_plane2, const void* src_pixels_plane3, const void* src_pixels_plane4);
 

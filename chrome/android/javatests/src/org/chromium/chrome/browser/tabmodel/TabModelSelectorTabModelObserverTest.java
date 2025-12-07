@@ -4,10 +4,11 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static org.junit.Assert.assertTrue;
+
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -20,7 +21,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserverTestRule.TabModelSelectorTestTabModel;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.util.List;
@@ -66,13 +66,13 @@ public class TabModelSelectorTabModelObserverTest {
     @SmallTest
     public void testUninitializedSelector() throws TimeoutException {
         mSelector =
-                new TabModelSelectorBase(null, TabGroupModelFilter::new, false) {
+                new TabModelSelectorBase(null, false) {
                     @Override
                     public void requestToShowTab(Tab tab, int type) {}
 
                     @Override
-                    public boolean isSessionRestoreInProgress() {
-                        return false;
+                    public boolean isTabModelRestored() {
+                        return true;
                     }
 
                     @Override
@@ -92,7 +92,10 @@ public class TabModelSelectorTabModelObserverTest {
                         registrationCompleteCallback.notifyCalled();
                     }
                 };
-        mSelector.initialize(sTestRule.getNormalTabModel(), sTestRule.getIncognitoTabModel());
+        mSelector.initialize(
+                TabModelHolderFactory.createTabModelHolderForTesting(sTestRule.getNormalTabModel()),
+                TabModelHolderFactory.createIncognitoTabModelHolderForTesting(
+                        sTestRule.getIncognitoTabModel()));
         registrationCompleteCallback.waitForCallback(0);
         assertAllModelsHaveObserver(mSelector, observer);
     }
@@ -101,8 +104,8 @@ public class TabModelSelectorTabModelObserverTest {
             TabModelSelector selector, TabModelObserver observer) {
         List<TabModel> models = selector.getModels();
         for (int i = 0; i < models.size(); i++) {
-            Assert.assertTrue(models.get(i) instanceof TabModelSelectorTestTabModel);
-            Assert.assertTrue(
+            assertTrue(models.get(i) instanceof TabModelSelectorTestTabModel);
+            assertTrue(
                     ((TabModelSelectorTestTabModel) models.get(i))
                             .getObservers()
                             .contains(observer));

@@ -5,26 +5,35 @@
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 
 #include <optional>
+#include <string_view>
+#include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/containers/enum_set.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/syslog_logging.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "chromeos/ash/components/growth/campaigns_constants.h"
+#include "chromeos/ash/components/growth/campaigns_logger.h"
 #include "chromeos/ash/components/growth/campaigns_matcher.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
+#include "chromeos/ash/components/growth/campaigns_utils.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/tribool.h"
+#include "components/user_manager/user_manager.h"
 
 namespace growth {
 
@@ -32,11 +41,12 @@ namespace {
 
 CampaignsManager* g_instance = nullptr;
 
+static constexpr auto kAllSlotsSet =
+    base::EnumSet<Slot, Slot::kMinValue, Slot::kMaxValue>::All();
+
 inline constexpr char kCampaignFileName[] = "campaigns.json";
 
 inline constexpr char kEventKey[] = "event_to_be_cleared";
-inline constexpr char kEventTemplate[] =
-    "name:%s;comparator:any;window:3650;storage:3650";
 
 inline constexpr char kOobeCompleteFlagFilePath[] =
     "/home/chronos/.oobe_completed";
@@ -49,17 +59,20 @@ inline constexpr char kGrowthStudyName[] = "CrOSGrowthStudy";
 // will be unique for different groups.
 inline constexpr char kGrowthGroupName[] = "CampaignId";
 
+inline constexpr char kPayloadPath[] = "payload";
+
 std::optional<base::Value::Dict> ParseCampaignsFile(
     const std::string& campaigns_data) {
-  std::optional<base::Value> value(base::JSONReader::Read(campaigns_data));
-  if (!value || !value->is_dict()) {
-    LOG(ERROR) << "Failed to parse campaigns file.";
-    VLOG(2) << "Malformed campaigns file: " << campaigns_data;
+  std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
+      campaigns_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  if (!value) {
+    CAMPAIGNS_LOG(ERROR) << "Failed to parse campaigns file.";
+    CAMPAIGNS_LOG(VLOG) << "Malformed campaigns file: " << campaigns_data;
     RecordCampaignsManagerError(CampaignsManagerError::kCampaignsParsingFail);
     return std::nullopt;
   }
 
-  return std::move(value->GetDict());
+  return value;
 }
 
 std::optional<base::Value::Dict> ReadCampaignsFile(
@@ -70,7 +83,7 @@ std::optional<base::Value::Dict> ReadCampaignsFile(
   if (!base::ReadFileToString(
           campaigns_component_path.Append(kCampaignFileName),
           &campaigns_data)) {
-    LOG(ERROR) << "Failed to read campaigns file from disk.";
+    CAMPAIGNS_LOG(ERROR) << "Failed to read campaigns file from disk.";
     RecordCampaignsManagerError(CampaignsManagerError::kCampaignsFileLoadFail);
     RecordCampaignsComponentReadDuration(base::TimeTicks::Now() -
                                          campaigns_load_start_time);
@@ -92,12 +105,13 @@ void LogCampaignInSystemLog(const Campaign* campaign, Slot slot) {
   std::optional<int> id = growth::GetCampaignId(campaign);
   if (!id) {
     // TODO(b/308684443): Add error metrics in a follow up CL.
-    LOG(ERROR) << "Growth campaign id not found";
+    CAMPAIGNS_LOG(ERROR) << "Growth campaign id not found";
     return;
   }
 
-  SYSLOG(INFO) << "Growth Campaign " << *id
-               << " is selected for slot: " << base::NumberToString(int(slot));
+  CAMPAIGNS_LOG(SYSLOG) << "Growth Campaign " << *id
+                        << " is selected for slot: "
+                        << base::NumberToString(int(slot));
 }
 
 // Gets the Oobe timestamp on a sequence that allows file-access.
@@ -108,14 +122,18 @@ base::Time GetOobeTimestampBackground() {
     return file_info.creation_time;
   }
 
-  return base::Time::Min();
+  // If the Oobe complete file is not found and there's no owner, assume that
+  // the user campaigns is matching during Oobe flow and return the current time
+  // as a close indicator of register time.
+  const AccountId& owner_account_id =
+      user_manager::UserManager::Get()->GetOwnerAccountId();
+  return owner_account_id.is_valid() ? base::Time::Min() : base::Time::Now();
 }
 
 }  // namespace
 
 // static
 CampaignsManager* CampaignsManager::Get() {
-  DCHECK(g_instance);
   return g_instance;
 }
 
@@ -140,6 +158,13 @@ CampaignsManager::~CampaignsManager() {
 
 void CampaignsManager::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
+
+  if (campaigns_loaded_) {
+    // Do not notify the observer immediately in case blocking.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&CampaignsManager::NotifyCampaignsLoaded,
+                                  weak_factory_.GetWeakPtr()));
+  }
 }
 
 void CampaignsManager::RemoveObserver(Observer* observer) {
@@ -153,8 +178,14 @@ void CampaignsManager::SetPrefs(PrefService* prefs) {
 
 void CampaignsManager::LoadCampaigns(base::OnceClosure load_callback,
                                      bool in_oobe) {
+  CAMPAIGNS_LOG(DEBUG) << "Start loading campaigns. `in_oobe`: "
+                       << ToString(in_oobe);
+
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(ash::switches::kGrowthCampaigns)) {
+    CAMPAIGNS_LOG(DEBUG)
+        << "Switch `kGrowthCampaigns` is set. Loading campaigns from "
+           "encoded campaigns string.";
     const auto& value =
         command_line->GetSwitchValueASCII(ash::switches::kGrowthCampaigns);
     std::string decoded_str;
@@ -163,7 +194,7 @@ void CampaignsManager::LoadCampaigns(base::OnceClosure load_callback,
                         ParseCampaignsFile(decoded_str));
       return;
     } else {
-      LOG(ERROR) << "Failed decode base64 encoded campaigns string.";
+      CAMPAIGNS_LOG(ERROR) << "Failed decode base64 encoded campaigns string.";
     }
   }
 
@@ -176,17 +207,26 @@ void CampaignsManager::LoadCampaigns(base::OnceClosure load_callback,
 const Campaign* CampaignsManager::GetCampaignBySlot(Slot slot) const {
   CHECK(campaigns_loaded_)
       << "Getting campaign before campaigns finish loading";
+
+  RecordGetCampaignBySlotAttempt(slot);
+
   const auto match_start = base::TimeTicks::Now();
   auto* match_result = matcher_.GetCampaignBySlot(slot);
-  if (match_result) {
-    RecordGetCampaignBySlot(slot);
+  RecordCampaignMatchDuration(base::TimeTicks::Now() - match_start);
+  if (!match_result) {
+    CAMPAIGNS_LOG(DEBUG) << "No campaign is selected for slot "
+                         << static_cast<int>(slot);
+    return nullptr;
   }
 
-  RecordCampaignMatchDuration(base::TimeTicks::Now() - match_start);
+  int campaign_id = growth::GetCampaignId(match_result).value();
+  CAMPAIGNS_LOG(DEBUG) << "Campaign: " << campaign_id
+                       << " is selected for slot " << static_cast<int>(slot);
+
+  RecordGetCampaignBySlot(slot, campaign_id);
   LogCampaignInSystemLog(match_result, slot);
-
   RegisterTrialForCampaign(match_result);
-
+  MaybeRecordImpressionForControl(match_result);
   return match_result;
 }
 
@@ -202,12 +242,11 @@ const std::string& CampaignsManager::GetOpenedAppId() const {
   return matcher_.opened_app_id();
 }
 
-void CampaignsManager::SetOpenedApp(const std::string& app_id) {
-  matcher_.SetOpenedApp(app_id);
-
+void CampaignsManager::SetOpenedApp(std::string app_id) {
   if (!app_id.empty()) {
-    RecordEventForTargeting(CampaignEvent::kAppOpened, app_id);
+    RecordEvent(GetEventName(CampaignEvent::kAppOpened, app_id));
   }
+  matcher_.SetOpenedApp(std::move(app_id));
 }
 
 const Trigger& CampaignsManager::GetTrigger() const {
@@ -228,7 +267,7 @@ void CampaignsManager::PerformAction(int campaign_id,
   // In rare case when the caller fails to check action, log
   // an error metric if the action is not defined.
   if (!action) {
-    LOG(ERROR) << "Missing action when performing action.";
+    CAMPAIGNS_LOG(ERROR) << "Missing action when performing action.";
     RecordCampaignsManagerError(
         CampaignsManagerError::kMissingActionPerformerAction);
     return;
@@ -237,7 +276,7 @@ void CampaignsManager::PerformAction(int campaign_id,
   auto* params = action->GetParams();
   auto action_type = action->GetActionType();
   if (!action_type || !params) {
-    LOG(ERROR) << "Invalid action when performing action.";
+    CAMPAIGNS_LOG(ERROR) << "Invalid action when performing action.";
     RecordCampaignsManagerError(CampaignsManagerError::kInvalidAction);
     return;
   }
@@ -264,32 +303,113 @@ void CampaignsManager::PerformAction(int campaign_id,
               return;
             }
 
-            LOG(ERROR) << "Error running action. Action type: "
-                       << int(action_type) << ". Error code:"
-                       << static_cast<int>(reason.value_or(
-                              growth::ActionResultReason::kUnknown));
+            CAMPAIGNS_LOG(ERROR)
+                << "Error running action. Action type: " << int(action_type)
+                << ". Error code:"
+                << static_cast<int>(
+                       reason.value_or(growth::ActionResultReason::kUnknown));
             RecordCampaignsManagerError(
                 CampaignsManagerError::kPerformActionFailed);
           },
           action_type));
 }
 
-void CampaignsManager::ClearEvent(CampaignEvent event, const std::string& id) {
+void CampaignsManager::ClearEvent(CampaignEvent event, std::string_view id) {
   ClearEvent(GetEventName(event, id));
 }
 
-void CampaignsManager::ClearEvent(const std::string& event) {
+void CampaignsManager::ClearEvent(std::string_view event) {
   std::map<std::string, std::string> conditions_params;
   // Event can be put in any key starting with `event_`.
   // Please see `components/feature_engagement/README.md#featureconfig`.
-  conditions_params[kEventKey] =
-      base::StringPrintf(kEventTemplate, event.c_str());
+  conditions_params[kEventKey] = base::StrCat(
+      {"name:", event, ";comparator:any;window:3650;storage:3650"});
   client_->ClearConfig(conditions_params);
 }
 
-void CampaignsManager::RecordEventForTargeting(CampaignEvent event,
-                                               const std::string& id) {
-  RecordEvent(GetEventName(event, id));
+void CampaignsManager::ClearAllEvents() {
+  if (!ash::features::IsGrowthInternalsEnabled()) {
+    return;
+  }
+
+  for (const auto slot : kAllSlotsSet) {
+    const auto* targeted_campaigns = GetCampaignsBySlot(&campaigns_, slot);
+    if (!targeted_campaigns) {
+      continue;
+    }
+
+    for (auto& campaign_value : *targeted_campaigns) {
+      const auto* campaign = campaign_value.GetIfDict();
+      if (!campaign) {
+        continue;
+      }
+
+      const auto campaign_id = GetCampaignId(campaign);
+      if (!campaign_id) {
+        continue;
+      }
+
+      const auto* targetings = GetTargetings(campaign);
+      if (!targetings || targetings->empty()) {
+        continue;
+      }
+
+      for (const auto& targeting : *targetings) {
+        const auto* target = targeting.GetIfDict();
+        if (!target) {
+          continue;
+        }
+
+        const auto events_targeting =
+            RuntimeTargeting(target).GetEventsTargeting();
+        if (!events_targeting) {
+          continue;
+        }
+
+        ClearEventsByTargeting(*events_targeting, campaign_id.value(),
+                               GetCampaignGroupId(campaign));
+      }
+    }
+  }
+}
+
+void CampaignsManager::RecordEvent(const std::string& event,
+                                   bool trigger_campaigns) {
+  const bool should_trigger_campaigns =
+      trigger_campaigns &&
+      ash::features::IsGrowthCampaignsTriggerByRecordEventEnabled();
+
+  if (!campaigns_loaded_) {
+    // Event is recorded before campaigns are loaded and feature engagement
+    // tracker is initialized, defer recording and trigger to
+    // `OnCampaignsComponentLoaded()` where campaigns are loaded and feature
+    // engagement is ready.
+    if (should_trigger_campaigns) {
+      queued_events_record_and_trigger_.insert(event);
+    } else {
+      queued_events_record_only_.insert(event);
+    }
+
+    RecordCampaignsManagerError(
+        CampaignsManagerError::kRecordEventBeforeCampaignsLoaded);
+    return;
+  }
+
+  client_->RecordEvent(event, should_trigger_campaigns);
+}
+
+void CampaignsManager::RecordQueuedEventsAndMaybeTrigger() {
+  CHECK(campaigns_loaded_);
+
+  for (const auto& event : queued_events_record_only_) {
+    RecordEvent(event, /*trigger_campaigns=*/false);
+  }
+  queued_events_record_only_.clear();
+
+  for (const auto& event : queued_events_record_and_trigger_) {
+    RecordEvent(event, /*trigger_campaigns=*/true);
+  }
+  queued_events_record_and_trigger_.clear();
 }
 
 void CampaignsManager::OnCampaignsComponentLoaded(
@@ -299,16 +419,18 @@ void CampaignsManager::OnCampaignsComponentLoaded(
   RecordCampaignsComponentDownloadDuration(
       base::TimeTicks::Now() - campaigns_download_start_time_, in_oobe);
   if (!path.has_value()) {
-    LOG(ERROR) << "Failed to load campaign component.";
+    CAMPAIGNS_LOG(ERROR) << "Failed to load campaign component.";
     RecordCampaignsManagerError(
         CampaignsManagerError::kCampaignsComponentLoadFail);
     OnCampaignsLoaded(std::move(load_callback), /*campaigns=*/std::nullopt);
     return;
   }
 
-  if (!oobe_complete_time_for_test_.is_null()) {
+  CAMPAIGNS_LOG(DEBUG) << "Getting device registered time.";
+  if (const auto registered_time = GetRegisteredTimeForTesting()) {
+    CAMPAIGNS_LOG(DEBUG) << "Registered time for test is set.";
     OnOobeTimestampLoaded(std::move(load_callback), path,
-                          oobe_complete_time_for_test_);
+                          registered_time.value());
     return;
   }
 
@@ -328,14 +450,16 @@ void CampaignsManager::OnCampaignsLoaded(
     // Update campaigns store.
     campaigns_ = std::move(campaigns_dict.value());
   } else {
-    LOG(ERROR) << "No campaign is loaded.";
+    CAMPAIGNS_LOG(ERROR) << "No campaign is loaded.";
   }
 
   // Load campaigns into `CampaignMatcher` for selecting campaigns.
+  CAMPAIGNS_LOG(DEBUG) << "Filter and set campaigns.";
   matcher_.FilterAndSetCampaigns(&campaigns_);
 
   campaigns_loaded_ = true;
 
+  RecordQueuedEventsAndMaybeTrigger();
   std::move(load_callback).Run();
   NotifyCampaignsLoaded();
 }
@@ -344,8 +468,11 @@ void CampaignsManager::OnOobeTimestampLoaded(
     base::OnceClosure load_callback,
     const std::optional<const base::FilePath>& path,
     base::Time oobe_time) {
+  CAMPAIGNS_LOG(DEBUG) << "Device registered time is: "
+                       << oobe_time.InSecondsFSinceUnixEpoch();
   matcher_.SetOobeCompleteTime(oobe_time);
 
+  CAMPAIGNS_LOG(DEBUG) << "Initializing feature_engagement::Tracker.";
   if (tracker_initialized_for_test_) {
     OnTrackerInitialized(std::move(load_callback), path,
                          /*init_success=*/true);
@@ -362,12 +489,13 @@ void CampaignsManager::OnTrackerInitialized(
     const std::optional<const base::FilePath>& path,
     bool init_success) {
   if (!init_success) {
-    // Only log error, but will continue loading compaigns.
-    LOG(ERROR) << "Failed to initialize feature_engagement::Tracker.";
+    // Only log error, but will continue loading campaigns.
+    CAMPAIGNS_LOG(ERROR) << "Failed to initialize feature_engagement::Tracker.";
     RecordCampaignsManagerError(
         CampaignsManagerError::kTrackerInitializationFail);
   }
 
+  CAMPAIGNS_LOG(DEBUG) << "Initialized feature_engagement::Tracker.";
   // Read the campaigns file from component mounted path.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()}, base::BindOnce(&ReadCampaignsFile, *path),
@@ -379,6 +507,14 @@ void CampaignsManager::NotifyCampaignsLoaded() {
   for (auto& observer : observers_) {
     observer.OnCampaignsLoadCompleted();
   }
+}
+
+void CampaignsManager::SetMantaCapabilityForTesting(signin::Tribool value) {
+  matcher_.SetMantaCapabilityForTesting(value);  // IN-TEST
+}
+
+void CampaignsManager::SetBoardForTesting(std::optional<std::string> board) {
+  matcher_.SetBoardForTesting(board);  // IN-TEST
 }
 
 void CampaignsManager::SetOobeCompleteTimeForTesting(base::Time time) {
@@ -394,6 +530,55 @@ const Campaigns* CampaignsManager::GetCampaignsBySlotForTesting(
   return GetCampaignsBySlot(&campaigns_, slot);
 }
 
+std::optional<base::Time> CampaignsManager::GetRegisteredTimeForTesting() {
+  if (!oobe_complete_time_for_test_.is_null()) {
+    return oobe_complete_time_for_test_;
+  }
+
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(
+          ash::switches::kGrowthCampaignsRegisteredTimeSecondsSinceUnixEpoch)) {
+    CAMPAIGNS_LOG(DEBUG)
+        << "Switch `kGrothCampaignsRegisteredTimeSecondsSinceUnixEpoch` is "
+           "set.";
+    const auto& value = command_line->GetSwitchValueASCII(
+        ash::switches::kGrowthCampaignsRegisteredTimeSecondsSinceUnixEpoch);
+
+    double seconds_since_epoch;
+    CHECK(base::StringToDouble(value, &seconds_since_epoch));
+    return base::Time::FromSecondsSinceUnixEpoch(seconds_since_epoch);
+  }
+
+  return std::nullopt;
+}
+
+void CampaignsManager::MaybeRecordImpressionForControl(
+    const Campaign* campaign) const {
+  if (!campaign) {
+    return;
+  }
+
+  const auto* payload = campaign->FindDict(kPayloadPath);
+  if (payload->empty()) {
+    // Record impression for campaign that has empty payload which is usually
+    // counterfactual control campaign.
+    // This is needed to avoid imbalance between experiment group and
+    // counterfactual control group that caused by impression cap.
+    std::optional<int> campaign_id = growth::GetCampaignId(campaign);
+    if (!campaign_id) {
+      // TODO(crbug.com/308684443): Add error metrics in a second CL.
+      CAMPAIGNS_LOG(ERROR) << "Growth campaign id not found";
+      return;
+    }
+
+    CAMPAIGNS_LOG(DEBUG) << "Record impression events for counterfactual "
+                         << "campaign: " << campaign_id.value();
+
+    client_->RecordImpressionEvents(campaign_id.value(),
+                                    GetCampaignGroupId(campaign));
+  }
+}
+
 void CampaignsManager::RegisterTrialForCampaign(
     const Campaign* campaign) const {
   if (!campaign) {
@@ -403,7 +588,7 @@ void CampaignsManager::RegisterTrialForCampaign(
   std::optional<int> campaign_id = growth::GetCampaignId(campaign);
   if (!campaign_id) {
     // TODO(b/308684443): Add error metrics in a second CL.
-    LOG(ERROR) << "Growth campaign id not found";
+    CAMPAIGNS_LOG(ERROR) << "Growth campaign id not found";
     return;
   }
 
@@ -419,9 +604,9 @@ void CampaignsManager::RegisterTrialForCampaign(
 
   client_->RegisterSyntheticFieldTrial(trial_name, group_name);
 
-  std::optional<bool> register_with_app_id =
+  std::optional<bool> register_with_trigger_event =
       ShouldRegisterTrialWithTriggerEventName(campaign);
-  if (!register_with_app_id.value_or(false)) {
+  if (!register_with_trigger_event.value_or(false)) {
     return;
   }
 
@@ -433,12 +618,72 @@ void CampaignsManager::RegisterTrialForCampaign(
     return;
   }
 
-  group_name += GetTrigger().event;
+  // The first event name is used to register the synthetic field trail.
+  // TODO: b/367838684 - Currently, this is only used for the G1 campaigns,
+  // where it triggers at app open and has only one event. Extend this to
+  // support multiple events.
+  CHECK(!GetTrigger().events.empty());
+  group_name += GetTrigger().events[0];
   client_->RegisterSyntheticFieldTrial(trial_name, group_name);
 }
 
-void CampaignsManager::RecordEvent(const std::string& event) {
-  client_->RecordEvent(event);
+void CampaignsManager::ClearEventsByTargeting(
+    const EventsTargeting& events_targeting,
+    int campaign_id,
+    std::optional<int> group_id) {
+  if (!ash::features::IsGrowthInternalsEnabled()) {
+    return;
+  }
+
+  std::map<std::string, std::string> conditions_params =
+      CreateBasicConditionParams();
+
+  // Clear group impression and dismissal events.
+  if (group_id) {
+    // The cap value can be any number. The string here will be parsed as an
+    // EventConfig and only the name of the EventConfig is used to clear the
+    // database.
+    conditions_params[kEventKey] = CreateConditionParamForCap(
+        "Group", group_id.value(), "Impression",
+        events_targeting.GetGroupImpressionCap().value_or(1));
+    client_->ClearConfig(conditions_params);
+
+    conditions_params[kEventKey] = CreateConditionParamForCap(
+        "Group", group_id.value(), "Dismissed",
+        events_targeting.GetGroupDismissalCap().value_or(1));
+    client_->ClearConfig(conditions_params);
+  }
+
+  // Clear campaign impression and dismissal events.
+  conditions_params[kEventKey] =
+      CreateConditionParamForCap("Campaign", campaign_id, "Impression",
+                                 events_targeting.GetImpressionCap());
+  client_->ClearConfig(conditions_params);
+
+  conditions_params[kEventKey] = CreateConditionParamForCap(
+      "Campaign", campaign_id, "Dismissed", events_targeting.GetDismissalCap());
+  client_->ClearConfig(conditions_params);
+
+  // Clear events used by the campaign targeting.
+  const base::Value::List* conditions = events_targeting.GetEventsConditions();
+  if (!conditions) {
+    return;
+  }
+
+  for (const auto& condition : *conditions) {
+    if (!condition.is_list()) {
+      continue;
+    }
+
+    for (const auto& param : condition.GetList()) {
+      if (!param.is_string()) {
+        continue;
+      }
+
+      conditions_params[kEventKey] = param.GetString();
+      client_->ClearConfig(conditions_params);
+    }
+  }
 }
 
 }  // namespace growth

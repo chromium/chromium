@@ -69,14 +69,10 @@ class PLATFORM_EXPORT BlinkSchemefulSite {
     return site_as_origin_->IsSameOriginWith(rhs.site_as_origin_.get());
   }
 
-  bool operator!=(const BlinkSchemefulSite& rhs) const {
-    return !operator==(rhs);
-  }
-
   bool IsOpaque() const { return site_as_origin_->IsOpaque(); }
 
  private:
-  friend struct WTF::HashTraits<BlinkSchemefulSite>;
+  friend struct HashTraits<BlinkSchemefulSite>;
 
   // IPC serialization code needs to access internal origin.
   friend struct mojo::StructTraits<network::mojom::SchemefulSiteDataView,
@@ -114,15 +110,11 @@ class PLATFORM_EXPORT BlinkSchemefulSite {
   scoped_refptr<const SecurityOrigin> site_as_origin_;
 };
 
-}  // namespace blink
-
-namespace WTF {
-
 template <>
-struct HashTraits<blink::BlinkSchemefulSite>
-    : OneFieldHashTraits<blink::BlinkSchemefulSite,
-                         &blink::BlinkSchemefulSite::site_as_origin_> {};
+struct HashTraits<BlinkSchemefulSite>
+    : OneFieldHashTraits<BlinkSchemefulSite,
+                         &BlinkSchemefulSite::site_as_origin_> {};
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_NETWORK_BLINK_SCHEMEFUL_SITE_H_

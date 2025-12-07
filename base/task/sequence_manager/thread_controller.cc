@@ -8,36 +8,49 @@
 #include <string_view>
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 
-namespace base {
-namespace sequence_manager {
-namespace internal {
+namespace base::sequence_manager::internal {
 
 namespace {
-// Enable sample metadata recording in this class, if it's currently disabled.
-// Note that even if `kThreadControllerSetsProfilerMetadata` is disabled, sample
-// metadata may still be recorded.
-BASE_FEATURE(kThreadControllerSetsProfilerMetadata,
-             "ThreadControllerSetsProfilerMetadata",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Thread safe copy to be updated once feature list is available. This
-// defaults to true to make sure that no metadata is lost on clients that
-// need to record. This leads to some overeporting before feature list
-// initialization on other clients but that's still way better than the current
-// situation which is reporting all the time.
-std::atomic<bool> g_thread_controller_sets_profiler_metadata{true};
+// TODO(crbug.com/458682617): Remove this. It is an artifact of a feature which
+// had the unintentional side-effect of adding a memory barrier at the end of
+// each "ThreadController active". Hiding some TSAN failures which need fixing
+// before we can lift this. It is disabled when FeatureList gets initialized (as
+// the feature was), but FeatureList isn't initialized in all test suites...
+std::atomic<bool> g_fortuitous_memory_barrier_on_sleep{
+#if defined(THREAD_SANITIZER)
+    true};
+#else
+    false};
+#endif
+
+void PerformFortuitousMemoryBarrierIfNecessary() {
+  if (g_fortuitous_memory_barrier_on_sleep.load(std::memory_order_relaxed)) {
+    static constinit std::atomic_uint shared_int{0};
+    // This is the minimum requirement (side-effect from the previous
+    // AutoLock) to reproduce crbug.com/458682617 (and mask TSAN failures).
+    // Toggling this to std::memory_order_relaxed exposes the TSAN failures.
+    // Note: We use `fetch_add` because a `store` isn't allowed to have
+    // `acquire` semantics and we need acquire-release semantics to force any
+    // kind of synchronization. We use an atomic variable instead of a full
+    // `std::atomic_thread_fence` as this only aligns threads which pass
+    // through this code path (as AutoLock would) instead of aligning with
+    // other threads and their own unrelated memory barriers.
+    shared_int.fetch_add(1, std::memory_order_acq_rel);
+  }
+}
 
 // ThreadController interval metrics are mostly of interest for intervals that
 // are not trivially short. Under a certain threshold it's unlikely that
@@ -78,18 +91,10 @@ ThreadController::RunLevelTracker::~RunLevelTracker() {
 }
 
 // static
-void ThreadController::InitializeFeatures(
-    features::EmitThreadControllerProfilerMetadata emit_profiler_metadata) {
-  g_thread_controller_sets_profiler_metadata.store(
-      emit_profiler_metadata ==
-              features::EmitThreadControllerProfilerMetadata::kForce ||
-          base::FeatureList::IsEnabled(kThreadControllerSetsProfilerMetadata),
-      std::memory_order_relaxed);
-}
-
-bool ThreadController::RunLevelTracker::RunLevel::ShouldRecordSampleMetadata() {
-  return g_thread_controller_sets_profiler_metadata.load(
-      std::memory_order_relaxed);
+void ThreadController::InitializeFeatures() {
+  // Disable fortuitous barriers whenever FeatureList is initialized to minimize
+  // the surface where this is applied.
+  g_fortuitous_memory_barrier_on_sleep.store(false, std::memory_order_relaxed);
 }
 
 std::string_view ThreadController::RunLevelTracker::RunLevel::GetThreadName() {
@@ -120,8 +125,9 @@ void ThreadController::EnableMessagePumpTimeKeeperMetrics(
     const char* thread_name,
     bool wall_time_based_metrics_enabled_for_testing) {
   // MessagePump runs too fast, a low-res clock would result in noisy metrics.
-  if (!base::TimeTicks::IsHighResolution())
+  if (!base::TimeTicks::IsHighResolution()) {
     return;
+  }
 
   run_level_tracker_.EnableTimeKeeperMetrics(
       thread_name, wall_time_based_metrics_enabled_for_testing);
@@ -147,21 +153,8 @@ void ThreadController::RunLevelTracker::TimeKeeper::EnableRecording(
       Phase::kLastPhase, Phase::kLastPhase + 1,
       base::HistogramBase::kUmaTargetedHistogramFlag);
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
-  perfetto_track_.emplace(
-      reinterpret_cast<uint64_t>(this),
-      // TODO(crbug.com/42050015): Replace with ThreadTrack::Current() after SDK
-      // migration.
-      // In the non-SDK version, ThreadTrack::Current() returns a different
-      // track id on some platforms (for example Mac OS), which results in
-      // async tracks not being associated with their thread.
-      perfetto::ThreadTrack::ForThread(base::PlatformThread::CurrentId()));
-  // TODO(crbug.com/42050015): Use Perfetto library to name this Track.
-  // auto desc = perfetto_track_->Serialize();
-  // desc.set_name(JoinString({"MessagePumpPhases", thread_name}, " "));
-  // perfetto::internal::TrackEventDataSource::SetTrackDescriptor(
-  //     *perfetto_track_, desc);
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
+  perfetto_track_.emplace("MessagePumpPhases", 0,
+                          perfetto::ThreadTrack::Current());
 }
 
 void ThreadController::RunLevelTracker::OnRunLoopStarted(State initial_state,
@@ -172,8 +165,9 @@ void ThreadController::RunLevelTracker::OnRunLoopStarted(State initial_state,
   run_levels_.emplace(initial_state, is_nested, time_keeper_, lazy_now);
 
   // In unit tests, RunLoop::Run() acts as the initial wake-up.
-  if (!is_nested && initial_state != kIdle)
+  if (!is_nested && initial_state != kIdle) {
     time_keeper_.RecordWakeUp(lazy_now);
+  }
 }
 
 void ThreadController::RunLevelTracker::OnRunLoopEnded() {
@@ -199,8 +193,9 @@ void ThreadController::RunLevelTracker::OnWorkStarted(LazyNow& lazy_now) {
   // (like we would inside an application task which is at least guaranteed to
   // itself notify us when it ends). Some ThreadControllerWithMessagePumpTest
   // also drive ThreadController outside a RunLoop and hit this.
-  if (run_levels_.empty())
+  if (run_levels_.empty()) {
     return;
+  }
 
   // Already running a work item? => #work-in-work-implies-nested
   if (run_levels_.top().state() == kRunningWorkItem) {
@@ -225,8 +220,9 @@ void ThreadController::RunLevelTracker::OnApplicationTaskSelected(
   // As-in OnWorkStarted. Early native loops can result in
   // ThreadController::DoWork because the lack of a top-level RunLoop means
   // `task_execution_allowed` wasn't consumed.
-  if (run_levels_.empty())
+  if (run_levels_.empty()) {
     return;
+  }
 
   // OnWorkStarted() is expected to precede OnApplicationTaskSelected().
   DCHECK_EQ(run_levels_.top().state(), kRunningWorkItem);
@@ -237,8 +233,9 @@ void ThreadController::RunLevelTracker::OnApplicationTaskSelected(
 void ThreadController::RunLevelTracker::OnWorkEnded(LazyNow& lazy_now,
                                                     int run_level_depth) {
   DCHECK_CALLED_ON_VALID_THREAD(outer_->associated_thread_->thread_checker);
-  if (run_levels_.empty())
+  if (run_levels_.empty()) {
     return;
+  }
 
   // #done-work-at-lower-runlevel-implies-done-nested
   if (run_level_depth != static_cast<int>(num_run_levels())) {
@@ -257,8 +254,9 @@ void ThreadController::RunLevelTracker::OnWorkEnded(LazyNow& lazy_now,
 
 void ThreadController::RunLevelTracker::OnIdle(LazyNow& lazy_now) {
   DCHECK_CALLED_ON_VALID_THREAD(outer_->associated_thread_->thread_checker);
-  if (run_levels_.empty())
+  if (run_levels_.empty()) {
     return;
+  }
 
   DCHECK_NE(run_levels_.top().state(), kRunningWorkItem);
   time_keeper_.RecordEndOfPhase(kIdleWork, lazy_now);
@@ -291,10 +289,7 @@ ThreadController::RunLevelTracker::RunLevel::RunLevel(State initial_state,
                                                       bool is_nested,
                                                       TimeKeeper& time_keeper,
                                                       LazyNow& lazy_now)
-    : is_nested_(is_nested),
-      time_keeper_(time_keeper),
-      thread_controller_sample_metadata_("ThreadController active",
-                                         base::SampleMetadataScope::kThread) {
+    : is_nested_(is_nested), time_keeper_(time_keeper) {
   if (is_nested_) {
     // Stop the current kWorkItem phase now, it will resume after the kNested
     // phase ends.
@@ -313,14 +308,10 @@ ThreadController::RunLevelTracker::RunLevel::~RunLevel() {
       // applied on the final pop().
       time_keeper_->RecordEndOfPhase(kNested, *exit_lazy_now_);
 
-      if (ShouldRecordSampleMetadata()) {
-        // Intentionally ordered after UpdateState(kIdle), reinstantiates
-        // thread_controller_sample_metadata_ when yielding back to a parent
-        // RunLevel (which is active by definition as it is currently running
-        // this one).
-        thread_controller_sample_metadata_.Set(
-            static_cast<int64_t>(++thread_controller_active_id_));
-      }
+      // TODO(crbug.com/458682617): Remove this.
+      // This one is surprisingly necessary as a single racy test fails without
+      // (GamepadServiceSimulationTest.SurfaceIdNotFound).
+      PerformFortuitousMemoryBarrierIfNecessary();
     }
   }
 }
@@ -478,8 +469,9 @@ void ThreadController::RunLevelTracker::RunLevel::UpdateState(
   const bool is_active = new_state != kIdle;
 
   state_ = new_state;
-  if (was_active == is_active)
+  if (was_active == is_active) {
     return;
+  }
 
   // Change of state.
   if (is_active) {
@@ -492,16 +484,9 @@ void ThreadController::RunLevelTracker::RunLevel::UpdateState(
                         time_keeper_->MaybeEmitIncomingWakeupFlow(ctx);
                       });
 
-    if (ShouldRecordSampleMetadata()) {
-      // Overriding the annotation from the previous RunLevel is intentional.
-      // Only the top RunLevel is ever updated, which holds the relevant state.
-      thread_controller_sample_metadata_.Set(
-          static_cast<int64_t>(++thread_controller_active_id_));
-    }
+    PerformFortuitousMemoryBarrierIfNecessary();
   } else {
-    if (ShouldRecordSampleMetadata()) {
-      thread_controller_sample_metadata_.Remove();
-    }
+    PerformFortuitousMemoryBarrierIfNecessary();
 
     LogOnIdleMetrics(lazy_now);
 
@@ -509,10 +494,11 @@ void ThreadController::RunLevelTracker::RunLevel::UpdateState(
   }
 
   if (trace_observer_for_testing_) {
-    if (is_active)
+    if (is_active) {
       trace_observer_for_testing_->OnThreadControllerActiveBegin();
-    else
+    } else {
       trace_observer_for_testing_->OnThreadControllerActiveEnd();
+    }
   }
 }
 
@@ -522,8 +508,9 @@ ThreadController::RunLevelTracker::TimeKeeper::TimeKeeper(
 
 void ThreadController::RunLevelTracker::TimeKeeper::RecordWakeUp(
     LazyNow& lazy_now) {
-  if (!ShouldRecordNow(ShouldRecordReqs::kOnWakeUp))
+  if (!ShouldRecordNow(ShouldRecordReqs::kOnWakeUp)) {
     return;
+  }
 
   // Phase::kScheduled will be accounted against `last_wakeup_` in
   // OnTaskSelected, if there's an application task in this work cycle.
@@ -531,7 +518,6 @@ void ThreadController::RunLevelTracker::TimeKeeper::RecordWakeUp(
   // Account the next phase starting from now.
   last_phase_end_ = last_wakeup_;
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
   // Emit the END of the kScheduled phase right away, this avoids incorrect
   // ordering when kScheduled is later emitted and its END matches the BEGIN of
   // an already emitted phase (tracing's sort is stable and would keep the late
@@ -541,14 +527,14 @@ void ThreadController::RunLevelTracker::TimeKeeper::RecordWakeUp(
   // a kScheduled phase, this unmatched END will be ignored.
   TRACE_EVENT_END(TRACE_DISABLED_BY_DEFAULT("base"), *perfetto_track_,
                   last_wakeup_);
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 }
 
 void ThreadController::RunLevelTracker::TimeKeeper::OnApplicationTaskSelected(
     TimeTicks queue_time,
     LazyNow& lazy_now) {
-  if (!ShouldRecordNow())
+  if (!ShouldRecordNow()) {
     return;
+  }
 
   if (!last_wakeup_.is_null()) {
     // `queue_time` can be null on threads that did not
@@ -563,12 +549,10 @@ void ThreadController::RunLevelTracker::TimeKeeper::OnApplicationTaskSelected(
         queue_time = last_sleep_;
       }
       RecordTimeInPhase(kScheduled, queue_time, last_wakeup_);
-#if BUILDFLAG(ENABLE_BASE_TRACING)
       // Match the END event which was already emitted by RecordWakeUp().
       TRACE_EVENT_BEGIN(TRACE_DISABLED_BY_DEFAULT("base"),
                         perfetto::StaticString(PhaseToEventName(kScheduled)),
                         *perfetto_track_, queue_time);
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
     }
     last_wakeup_ = TimeTicks();
   }
@@ -600,46 +584,26 @@ void ThreadController::RunLevelTracker::TimeKeeper::RecordEndOfPhase(
   const TimeTicks phase_end = lazy_now.Now();
   RecordTimeInPhase(phase, last_phase_end_, phase_end);
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
-  // Ugly hack to name our `perfetto_track_`.
-  bool is_tracing_enabled = false;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED(TRACE_DISABLED_BY_DEFAULT("base"),
-                                     &is_tracing_enabled);
-  if (is_tracing_enabled) {
-    if (!was_tracing_enabled_) {
-      // The first event name on the track hackily names the track...
-      // TODO(crbug.com/42050015): Use the Perfetto library to properly name
-      // this Track in EnableRecording above.
-      TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("base"),
-                          "MessagePumpPhases", *perfetto_track_,
-                          last_phase_end_ - Seconds(1));
-    }
-
-    const char* event_name = PhaseToEventName(phase);
-    TRACE_EVENT_BEGIN(TRACE_DISABLED_BY_DEFAULT("base"),
-                      perfetto::StaticString(event_name), *perfetto_track_,
-                      last_phase_end_);
-    TRACE_EVENT_END(TRACE_DISABLED_BY_DEFAULT("base"), *perfetto_track_,
-                    phase_end);
-  }
-  was_tracing_enabled_ = is_tracing_enabled;
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
+  const char* event_name = PhaseToEventName(phase);
+  TRACE_EVENT_BEGIN(TRACE_DISABLED_BY_DEFAULT("base"),
+                    perfetto::StaticString(event_name), *perfetto_track_,
+                    last_phase_end_);
+  TRACE_EVENT_END(TRACE_DISABLED_BY_DEFAULT("base"), *perfetto_track_,
+                  phase_end);
 
   last_phase_end_ = phase_end;
 }
 
 void ThreadController::RunLevelTracker::TimeKeeper::MaybeEmitIncomingWakeupFlow(
     perfetto::EventContext& ctx) {
-#if BUILDFLAG(ENABLE_BASE_TRACING)
   static const uint8_t* flow_enabled =
       TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED("wakeup.flow");
   if (!*flow_enabled) {
     return;
   }
 
-  perfetto::Flow::ProcessScoped(reinterpret_cast<uint64_t>(&(outer_.get())))(
-      ctx);
-#endif
+  perfetto::TerminatingFlow::ProcessScoped(
+      reinterpret_cast<uint64_t>(&(outer_.get())))(ctx);
 }
 
 bool ThreadController::RunLevelTracker::TimeKeeper::ShouldRecordNow(
@@ -681,8 +645,9 @@ void ThreadController::RunLevelTracker::TimeKeeper::RecordTimeInPhase(
 
   const auto delta = phase_end - phase_begin;
   DCHECK(!delta.is_negative()) << delta;
-  if (delta >= kSkippedDelta)
+  if (delta >= kSkippedDelta) {
     return;
+  }
 
   deltas_[phase] += delta;
   if (deltas_[phase] >= kReportInterval) {
@@ -691,11 +656,13 @@ void ThreadController::RunLevelTracker::TimeKeeper::RecordTimeInPhase(
     deltas_[phase] -= Milliseconds(count);
   }
 
-  if (phase == kIdleWork)
+  if (phase == kIdleWork) {
     last_sleep_ = phase_end;
+  }
 
-  if (outer_->trace_observer_for_testing_)
+  if (outer_->trace_observer_for_testing_) {
     outer_->trace_observer_for_testing_->OnPhaseRecorded(phase);
+  }
 }
 
 // static
@@ -719,11 +686,8 @@ const char* ThreadController::RunLevelTracker::TimeKeeper::PhaseToEventName(
     case kWorkItemSuspendedOnNested:
       // kWorkItemSuspendedOnNested should be transformed into kNativeWork or
       // kApplicationTask before this point.
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
-}  // namespace internal
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager::internal

@@ -4,13 +4,16 @@
 
 package org.chromium.components.minidump_uploader.util;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Interface for crash reporting permissions. */
+@NullMarked
 public interface CrashReportingPermissionManager {
     /**
      * Checks whether this client is in-sample for crash reporting. See {@link
      * org.chromium.chrome.browser.metrics.UmaUtils#isClientInSampleForCrashes} for details.
      *
-     * @returns boolean Whether client is in-sample for crash reporting.
+     * @return boolean Whether client is in-sample for crash reporting.
      */
     boolean isClientInSampleForCrashes();
 

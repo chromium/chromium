@@ -25,7 +25,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_CONTAINER_NODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_CONTAINER_NODE_H_
 
-#include "base/functional/function_ref.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
@@ -33,6 +32,7 @@
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
 #include "third_party/blink/renderer/core/html/collection_type.h"
+#include "third_party/blink/renderer/platform/heap/heap_traits.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -41,11 +41,12 @@ namespace blink {
 class Element;
 class ExceptionState;
 class GetHTMLOptions;
-class GetInnerHTMLOptions;
 class HTMLCollection;
 class RadioNodeList;
+class ScriptState;
 class StyleRecalcContext;
 class WhitespaceAttacher;
+class WritableStream;
 
 using StaticElementList = StaticNodeTypeList<Element>;
 
@@ -73,11 +74,6 @@ enum class DynamicRestyleFlags {
       kChildrenAffectedByIndirectAdjacentRules |
       kChildrenAffectedByForwardPositionalRules |
       kChildrenAffectedByBackwardPositionalRules
-};
-
-enum SubtreeModificationAction {
-  kDispatchSubtreeModifiedEvent,
-  kOmitSubtreeModifiedEvent
 };
 
 // This constant controls how much buffer is initially allocated
@@ -121,25 +117,29 @@ class CORE_EXPORT ContainerNode : public Node {
     return HasOneChild() && first_child_->IsTextNode();
   }
 
-  // Returns true if all children are text nodes and at least one of them is not
-  // empty. Ignores comments.
-  bool HasOnlyText() const;
-
   Element* QuerySelector(const AtomicString& selectors, ExceptionState&);
   Element* QuerySelector(const AtomicString& selectors);
   StaticElementList* QuerySelectorAll(const AtomicString& selectors,
                                       ExceptionState&);
   StaticElementList* QuerySelectorAll(const AtomicString& selectors);
 
+  void InsertBefore(const VectorOf<Node>& new_children,
+                    Node* ref_child,
+                    ExceptionState&);
   Node* InsertBefore(Node* new_child, Node* ref_child, ExceptionState&);
   Node* InsertBefore(Node* new_child, Node* ref_child);
+  void ReplaceChild(const VectorOf<Node>& new_children,
+                    Node* old_child,
+                    ExceptionState&);
   Node* ReplaceChild(Node* new_child, Node* old_child, ExceptionState&);
   Node* ReplaceChild(Node* new_child, Node* old_child);
   Node* RemoveChild(Node* child, ExceptionState&);
   Node* RemoveChild(Node* child);
+  void AppendChildren(const VectorOf<Node>& new_children, ExceptionState&);
   Node* AppendChild(Node* new_child, ExceptionState&);
   Node* AppendChild(Node* new_child);
-  bool EnsurePreInsertionValidity(const Node& new_child,
+  bool EnsurePreInsertionValidity(const Node* new_child,
+                                  const VectorOf<Node>* new_children,
                                   const Node* next,
                                   const Node* old_child,
                                   ExceptionState&) const;
@@ -153,16 +153,17 @@ class CORE_EXPORT ContainerNode : public Node {
   RadioNodeList* GetRadioNodeList(const AtomicString&,
                                   bool only_match_img_elements = false);
 
-  // Returns the contents of the first descendant that is either (1) an element
-  // containing only text or (2) a readonly text input, whose text contains the
-  // given substring, if the validity checker returns true for it. Ignores ASCII
-  // case in the substring search.
-  String FindTextInElementWith(
-      const AtomicString& substring,
-      base::FunctionRef<bool(const String&)> validity_checker) const;
+  // Returns all Text nodes where `regex` would match for the text inside of
+  // the node, case-insensitive. This function does not normalize adjacent Text
+  // nodes and search them together. It only matches within individual Text
+  // nodes. It is therefore possible that some text is displayed to the user as
+  // a single run of text, but will not match the regex, because the nodes
+  // aren't normalized. This function searches within both the DOM and Shadow
+  // DOM.
+  StaticNodeList* FindAllTextNodesMatchingRegex(const String& regex) const;
 
   // These methods are only used during parsing.
-  // They don't send DOM mutation events or accept DocumentFragments.
+  // They don't accept DocumentFragments.
   void ParserAppendChild(Node*);
 
   // Called when the parser adds a child to a DocumentFragment as the result
@@ -171,15 +172,22 @@ class CORE_EXPORT ContainerNode : public Node {
   // Called when the parser has finished building a DocumentFragment. This is
   // not called if the parser fails parsing (if parsing fails, the
   // DocumentFragment is orphaned and will eventually be gc'd).
-  void ParserFinishedBuildingDocumentFragment();
+  //
+  // ShouldNotifyInsertedNodes controls whether to skip notifications that are
+  // redone if the contents of the DocumentFragment are moved to a new parent.
+  enum class ShouldNotifyInsertedNodes { kNotify, kSkip };
+  void ParserFinishedBuildingDocumentFragment(ShouldNotifyInsertedNodes);
   void ParserRemoveChild(Node&);
   void ParserInsertBefore(Node* new_child, Node& ref_child);
+  void ParserRemoveAllChildren();
+  void ParserReplaceChild(Node& new_child, Node& old_child);
   void ParserTakeAllChildrenFrom(ContainerNode&);
 
-  void RemoveChildren(
-      SubtreeModificationAction = kDispatchSubtreeModifiedEvent);
+  void RemoveChildren();
 
-  void CloneChildNodesFrom(const ContainerNode&, NodeCloningData&);
+  void CloneChildNodesFrom(const ContainerNode&,
+                           NodeCloningData&,
+                           CustomElementRegistry*);
 
   using Node::DetachLayoutTree;
   void AttachLayoutTree(AttachContext&) override;
@@ -318,7 +326,8 @@ class CORE_EXPORT ContainerNode : public Node {
                                    Node* node_before_change,
                                    Node* node_after_change);
   void RecalcDescendantStyles(const StyleRecalcChange,
-                              const StyleRecalcContext&);
+                              const StyleRecalcContext&,
+                              Element& host_or_element);
   void RebuildChildrenLayoutTrees(WhitespaceAttacher&);
   void RebuildLayoutTreeForChild(Node* child, WhitespaceAttacher&);
 
@@ -456,13 +465,24 @@ class CORE_EXPORT ContainerNode : public Node {
     return EnsureCachedCollection<HTMLCollection>(kPopoverInvokers);
   }
 
+  HTMLCollection* CommandInvokers() {
+    DCHECK(IsTreeScope());
+    return EnsureCachedCollection<HTMLCollection>(kCommandInvokers);
+  }
+
   void ReplaceChildren(const VectorOf<Node>& nodes,
                        ExceptionState& exception_state);
 
-  // Common implementation of getHTML and getInnerHTML. These are exposed (via
-  // IDL) on Element and ShadowRoot only.
-  String getInnerHTML(const GetInnerHTMLOptions* options) const;
+  // IDL implementation of getHTML. This is exposed on Element and ShadowRoot
+  // only.
   String getHTML(const GetHTMLOptions*, ExceptionState&) const;
+
+  WritableStream* streamAppendHTMLUnsafe(ScriptState*, ExceptionState&);
+  WritableStream* patchSelf(ScriptState*, ExceptionState&);
+  WritableStream* patchAfter(ScriptState*, Node* a, ExceptionState&);
+  WritableStream* patchBefore(ScriptState*, Node* b, ExceptionState&);
+  WritableStream* patchBetween(ScriptState*, Node* a, Node* b, ExceptionState&);
+  WritableStream* patchAll(ScriptState*);
 
   // DocumentOrElementEventHandlers:
   // These event listeners are only actually web-exposed on interfaces that
@@ -484,12 +504,8 @@ class CORE_EXPORT ContainerNode : public Node {
                                            Element* attribute_owner_element,
                                            const ChildrenChange*);
 
-  void SetFirstChild(Node* child) {
-    first_child_ = child;
-  }
-  void SetLastChild(Node* child) {
-    last_child_ = child;
-  }
+  void SetFirstChild(Node* child) { first_child_ = child; }
+  void SetLastChild(Node* child) { last_child_ = child; }
 
   // Utility functions for NodeListsNodeData API.
   template <typename Collection>
@@ -502,6 +518,8 @@ class CORE_EXPORT ContainerNode : public Node {
                                      const AtomicString& local_name);
   template <typename Collection>
   Collection* CachedCollection(CollectionType);
+  template <typename Collection>
+  const Collection* CachedCollection(CollectionType) const;
 
  private:
   bool IsContainerNode() const =
@@ -513,7 +531,8 @@ class CORE_EXPORT ContainerNode : public Node {
   // it was inserted.
   void NotifyNodeAtEndOfBuildingFragmentTree(Node& node,
                                              const ChildrenChange& change,
-                                             bool may_contain_shadow_roots);
+                                             bool may_contain_shadow_roots,
+                                             ShouldNotifyInsertedNodes);
 
   NodeListsNodeData& EnsureNodeLists();
   void RemoveBetween(Node* previous_child, Node* next_child, Node& old_child);
@@ -566,10 +585,6 @@ class CORE_EXPORT ContainerNode : public Node {
   inline bool CheckParserAcceptChild(const Node& new_child) const;
   inline bool IsHostIncludingInclusiveAncestorOfThis(const Node&,
                                                      ExceptionState&) const;
-  inline bool IsChildTypeAllowed(const Node& child) const;
-
-  void CheckSoftNavigationHeuristicsTracking(const Document& document,
-                                             Node& inserted_node);
 
   Member<Node> first_child_;
   Member<Node> last_child_;

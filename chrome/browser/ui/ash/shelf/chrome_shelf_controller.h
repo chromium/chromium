@@ -21,10 +21,9 @@
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
-#include "chrome/browser/ui/app_icon_loader_delegate.h"
-#include "chrome/browser/ui/ash/shelf/settings_window_observer.h"
 #include "chrome/browser/ui/ash/shelf/shelf_app_updater.h"
 #include "components/account_id/account_id.h"
+#include "components/app_icon_loader/app_icon_loader_delegate.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sync_preferences/pref_service_syncable_observer.h"
 
@@ -45,6 +44,7 @@ class PromiseAppUpdate;
 }
 
 namespace ash {
+class BrowserDelegate;
 class ShelfModel;
 FORWARD_DECLARE_TEST(SpokenFeedbackTest, ShelfIconFocusForward);
 FORWARD_DECLARE_TEST(SpokenFeedbackTest, SpeakingTextUnderMouseForShelfItem);
@@ -65,8 +65,6 @@ class BaseWindow;
 namespace sync_preferences {
 class PrefServiceSyncable;
 }
-
-class BrowserAppShelfController;
 
 // ChromeShelfController helps manage Ash's shelf for Chrome prefs and apps.
 // It helps synchronize shelf state with profile preferences and app content.
@@ -209,11 +207,11 @@ class ChromeShelfController
 
   // Updates the browser shortcut item state.
   // This may create or delete the item, specifically if the browser icon
-  // is not pinned. Practically, when Lacros is the primary browser.
+  // is not pinned.
   void UpdateBrowserItemState();
 
   // Sets the shelf id for the browser window if the browser is represented.
-  void SetShelfIDForBrowserWindowContents(Browser* browser,
+  void SetShelfIDForBrowserWindowContents(ash::BrowserDelegate* browser,
                                           content::WebContents* web_contents);
 
   // Called when the user profile is fully loaded and ready to switch to.
@@ -442,11 +440,6 @@ class ChromeShelfController
   // Used to get app info for tabs.
   std::unique_ptr<ShelfControllerHelper> shelf_controller_helper_;
 
-  // TODO(crbug.com/40573204): Remove this once SystemWebApps are enabled by
-  // default.
-  // An observer that manages the shelf title and icon for settings windows.
-  std::unique_ptr<SettingsWindowObserver> settings_window_observer_;
-
   // Used to load the images for app items.
   std::map<Profile*, std::vector<std::unique_ptr<AppIconLoader>>>
       app_icon_loaders_;
@@ -476,9 +469,6 @@ class ChromeShelfController
 
   // Responsible for bridging between the shelf and sync/prefs.
   std::unique_ptr<ChromeShelfPrefs> shelf_prefs_;
-
-  // Manages shelf item for browser-based apps and Lacros.
-  std::unique_ptr<BrowserAppShelfController> browser_app_shelf_controller_;
 
   // The list of running & un-pinned applications for different users on hidden
   // desktops.

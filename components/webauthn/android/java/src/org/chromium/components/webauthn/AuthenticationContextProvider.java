@@ -6,18 +6,27 @@ package org.chromium.components.webauthn;
 
 import android.content.Context;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 
+@NullMarked
 public interface AuthenticationContextProvider {
-    Context getContext();
+    @Nullable Context getContext();
 
-    @Nullable
-    RenderFrameHost getRenderFrameHost();
+    @Nullable RenderFrameHost getRenderFrameHost();
 
     FidoIntentSender getIntentSender();
 
-    WebContents getWebContents();
+    @Nullable WebContents getWebContents();
+
+    /**
+     * Returns the request callback for the current WebAuthn operation.
+     *
+     * <p>This is used to access the request callback for the current WebAuthn operation. It is not
+     * meant to be cached since the Authenticator interface can be reset and hence the callback will
+     * be invalid.
+     */
+    @Nullable WebauthnRequestCallback getRequestCallback();
 }

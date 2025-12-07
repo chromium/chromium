@@ -12,6 +12,7 @@
 // Must be before <uiautomation.h>
 #include <objbase.h>
 
+#include <cstdint>
 #include <string>
 #include <vector>
 

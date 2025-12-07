@@ -30,13 +30,15 @@
 
 // https://w3c.github.io/ServiceWorker/#serviceworkercontainer-interface
 [
-    Exposed=Window,
+    // TODO(https://crbug.com/422940475): This should be exposed to
+    // Window,Worker once we support SharedWorkers.
+    Exposed(Window StableBlinkFeatures,DedicatedWorker ServiceWorkerInDedicatedWorker),
     SecureContext
 ] interface ServiceWorkerContainer : EventTarget {
     readonly attribute ServiceWorker? controller;
     [CallWith=ScriptState, RaisesException] readonly attribute Promise<ServiceWorkerRegistration> ready;
 
-    [CallWith=ScriptState, ImplementedAs=registerServiceWorker] Promise<ServiceWorkerRegistration> register(ScriptURLString url, optional RegistrationOptions options = {});
+    [CallWith=ScriptState, ImplementedAs=registerServiceWorker, RaisesException] Promise<ServiceWorkerRegistration> register((USVString or TrustedScriptURL) url, optional RegistrationOptions options = {});
     [CallWith=ScriptState] Promise<ServiceWorkerRegistration> getRegistration(optional USVString documentURL = "");
     [CallWith=ScriptState] Promise<sequence<ServiceWorkerRegistration>> getRegistrations();
 

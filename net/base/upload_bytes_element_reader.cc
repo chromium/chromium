@@ -2,29 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/base/upload_bytes_element_reader.h"
 
 #include "base/check_op.h"
+#include "base/numerics/safe_conversions.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 
 namespace net {
 
-UploadBytesElementReader::UploadBytesElementReader(const char* bytes,
-                                                   uint64_t length)
-    : bytes_(bytes), length_(length) {}
+UploadBytesElementReader::UploadBytesElementReader(
+    base::span<const uint8_t> bytes)
+    : bytes_(bytes) {}
 
 UploadBytesElementReader::~UploadBytesElementReader() = default;
-
-const UploadBytesElementReader*
-UploadBytesElementReader::AsBytesReader() const {
-  return this;
-}
 
 int UploadBytesElementReader::Init(CompletionOnceCallback callback) {
   offset_ = 0;
@@ -32,11 +23,11 @@ int UploadBytesElementReader::Init(CompletionOnceCallback callback) {
 }
 
 uint64_t UploadBytesElementReader::GetContentLength() const {
-  return length_;
+  return bytes_.size();
 }
 
 uint64_t UploadBytesElementReader::BytesRemaining() const {
-  return length_ - offset_;
+  return bytes_.size() - offset_;
 }
 
 bool UploadBytesElementReader::IsInMemory() const {
@@ -46,24 +37,20 @@ bool UploadBytesElementReader::IsInMemory() const {
 int UploadBytesElementReader::Read(IOBuffer* buf,
                                    int buf_length,
                                    CompletionOnceCallback callback) {
-  DCHECK_LT(0, buf_length);
+  base::span<const uint8_t> bytes_to_read =
+      bytes_.subspan(offset_, std::min(static_cast<size_t>(BytesRemaining()),
+                                       base::checked_cast<size_t>(buf_length)));
+  if (!bytes_to_read.empty()) {
+    buf->span().copy_prefix_from(bytes_to_read);
+  }
 
-  const int num_bytes_to_read = static_cast<int>(
-      std::min(BytesRemaining(), static_cast<uint64_t>(buf_length)));
-
-  // Check if we have anything to copy first, because we are getting
-  // the address of an element in |bytes_| and that will throw an
-  // exception if |bytes_| is an empty vector.
-  if (num_bytes_to_read > 0)
-    memcpy(buf->data(), bytes_ + offset_, num_bytes_to_read);
-
-  offset_ += num_bytes_to_read;
-  return num_bytes_to_read;
+  offset_ += bytes_to_read.size();
+  return bytes_to_read.size();
 }
 
 UploadOwnedBytesElementReader::UploadOwnedBytesElementReader(
     std::vector<char>* data)
-    : UploadBytesElementReader(data->data(), data->size()) {
+    : UploadBytesElementReader(base::as_byte_span(*data)) {
   data_.swap(*data);
 }
 

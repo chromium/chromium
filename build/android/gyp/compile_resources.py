@@ -14,7 +14,6 @@ This will crunch images with aapt2.
 
 import argparse
 import collections
-import contextlib
 import filecmp
 import hashlib
 import logging
@@ -64,7 +63,6 @@ def _ParseArgs(args):
                           'against. Can be specified multiple times.')
   input_opts.add_argument(
       '--dependencies-res-zips',
-      default=[],
       help='Resources zip archives from dependents. Required to '
       'resolve @type/foo references into dependent libraries.')
   input_opts.add_argument(
@@ -156,6 +154,7 @@ def _ParseArgs(args):
       'when --resource-exclusion-regex is set.')
   input_opts.add_argument(
       '--dependencies-res-zip-overlays',
+      action='append',
       help='GN list with subset of --dependencies-res-zips to use overlay '
       'semantics for.')
   input_opts.add_argument(
@@ -605,7 +604,7 @@ def _CompileDeps(aapt2_path, dep_subdirs, dep_subdir_overlay_set, temp_dir,
                                aapt2_path=aapt2_path,
                                partials_dir=partials_dir))
 
-  partials_cmd = list()
+  partials_cmd = []
   for i, partial in enumerate(partials):
     dep_subdir = job_params[i][1]
     if dep_subdir in dep_subdir_overlay_set:
@@ -614,8 +613,8 @@ def _CompileDeps(aapt2_path, dep_subdirs, dep_subdir_overlay_set, temp_dir,
   return partials_cmd
 
 
-def _CreateResourceInfoFile(path_info, info_path, dependencies_res_zips):
-  for zip_file in dependencies_res_zips:
+def _CreateResourceInfoFile(path_info, info_path, all_res_zips):
+  for zip_file in all_res_zips:
     zip_info_file_path = zip_file + '.info'
     if os.path.exists(zip_info_file_path):
       path_info.MergeInfoFile(zip_info_file_path)
@@ -661,7 +660,7 @@ def _RemoveUnwantedLocalizedStrings(dep_subdirs, options):
 
   # Remove any file that belongs to a locale not covered by
   # either A or B.
-  removable_locales = (all_locales - wanted_locales - shared_resources_locales)
+  removable_locales = all_locales - wanted_locales - shared_resources_locales
   for locale in removable_locales:
     for path in locale_to_files_map[locale]:
       os.remove(path)
@@ -706,13 +705,16 @@ def _PackageApk(options, build):
     The manifest package name for the APK.
   """
   logging.debug('Extracting resource .zips')
+  all_res_zips = (options.dependencies_res_zips +
+                  options.dependencies_res_zip_overlays)
+  overlay_zips = set(options.dependencies_res_zip_overlays)
   dep_subdirs = []
   dep_subdir_overlay_set = set()
-  for dependency_res_zip in options.dependencies_res_zips:
+  for dependency_res_zip in all_res_zips:
     extracted_dep_subdirs = resource_utils.ExtractDeps([dependency_res_zip],
                                                        build.deps_dir)
     dep_subdirs += extracted_dep_subdirs
-    if dependency_res_zip in options.dependencies_res_zip_overlays:
+    if dependency_res_zip in overlay_zips:
       dep_subdir_overlay_set.update(extracted_dep_subdirs)
 
   logging.debug('Applying locale transformations')
@@ -748,6 +750,7 @@ def _PackageApk(options, build):
       'link',
       '--auto-add-overlay',
       '--no-version-vectors',
+      '--no-xml-namespaces',
       '--output-text-symbols',
       build.r_txt_path,
   ]
@@ -764,9 +767,6 @@ def _PackageApk(options, build):
   #       can be used with recent versions of aapt2.
   if options.shared_resources:
     link_command.append('--shared-lib')
-
-  if int(options.min_sdk_version) > 21:
-    link_command.append('--no-xml-namespaces')
 
   if options.package_id:
     link_command += [
@@ -807,8 +807,7 @@ def _PackageApk(options, build):
   # Create .res.info file in parallel.
   if options.info_path:
     logging.debug('Creating .res.info file')
-    _CreateResourceInfoFile(path_info, build.info_path,
-                            options.dependencies_res_zips)
+    _CreateResourceInfoFile(path_info, build.info_path, all_res_zips)
 
   exit_code = link_proc.wait()
   assert exit_code == 0, f'aapt2 link cmd failed with {exit_code=}'
@@ -828,7 +827,7 @@ def _PackageApk(options, build):
     # Make sure the R class associated with the manifest package does not have
     # its onResourcesLoaded method obfuscated or removed, so that the framework
     # can call it in the case where the APK is being loaded as a library.
-    with open(build.proguard_path, 'a') as proguard_file:
+    with open(build.proguard_path, 'a', encoding='utf-8') as proguard_file:
       keep_rule = '''
                   -keep,allowoptimization class {package}.R {{
                     public static void onResourcesLoaded(int);
@@ -841,19 +840,6 @@ def _PackageApk(options, build):
       options.aapt2_path, 'convert', '--output-format', 'proto', '-o',
       build.proto_path, build.arsc_path
   ])
-
-  # Workaround for b/147674078. This is only needed for WebLayer and does not
-  # affect WebView usage, since WebView does not used dynamic attributes.
-  if options.shared_resources:
-    logging.debug('Hardcoding dynamic attributes')
-    protoresources.HardcodeSharedLibraryDynamicAttributes(
-        build.proto_path, options.is_bundle_module,
-        options.shared_resources_allowlist)
-
-    build_utils.CheckOutput([
-        options.aapt2_path, 'convert', '--output-format', 'binary', '-o',
-        build.arsc_path, build.proto_path
-    ])
 
   # Sanity check that the created resources have the expected package ID.
   logging.debug('Performing sanity check')
@@ -877,7 +863,7 @@ def _CreateStableIdsFile(in_path, out_path, package_name, package_id):
   name references to match the package that resources are being generated for.
   """
   if in_path:
-    data = pathlib.Path(in_path).read_text()
+    data = pathlib.Path(in_path).read_text(encoding='utf-8')
   else:
     # Force IDs to use 0x01 for the type byte in order to ensure they are
     # different from IDs generated by other apps. https://crbug.com/1293336
@@ -886,7 +872,7 @@ def _CreateStableIdsFile(in_path, out_path, package_name, package_id):
   data = re.sub(r'^.*?:', package_name + ':', data, flags=re.MULTILINE)
   # Replace "0x7f" with correct package id.
   data = re.sub(r'0x..', '0x%02x' % package_id, data)
-  pathlib.Path(out_path).write_text(data)
+  pathlib.Path(out_path).write_text(data, encoding='utf-8')
 
 
 def _WriteOutputs(options, build):
@@ -909,7 +895,7 @@ def _WriteOutputs(options, build):
 def _CreateNormalizedManifestForVerification(options):
   with build_utils.TempDir() as tempdir:
     fixed_manifest, _, _ = _FixManifest(options, tempdir)
-    with open(fixed_manifest) as f:
+    with open(fixed_manifest, encoding='utf-8') as f:
       return manifest_utils.NormalizeManifest(
           f.read(), options.verification_version_code_offset,
           options.verification_library_version_offset)
@@ -955,11 +941,6 @@ def main(args):
       rjava_build_options.ExportSomeResources(
           options.shared_resources_allowlist)
       rjava_build_options.GenerateOnResourcesLoaded()
-      if options.shared_resources:
-        # The final resources will only be used in WebLayer, so hardcode the
-        # package ID to be what WebLayer expects.
-        rjava_build_options.SetFinalPackageId(
-            protoresources.SHARED_LIBRARY_HARDCODED_ID)
     elif options.shared_resources or options.app_as_shared_lib:
       rjava_build_options.ExportAllResources()
       rjava_build_options.GenerateOnResourcesLoaded()

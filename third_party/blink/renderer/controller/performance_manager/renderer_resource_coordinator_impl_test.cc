@@ -75,10 +75,6 @@ class MockProcessCoordinationUnit : public ProcessCoordinationUnit {
               (const blink::LocalFrameToken& parent_frame_token,
                const blink::RemoteFrameToken& remote_frame_token),
               (override));
-  MOCK_METHOD(void,
-              FireBackgroundTracingTrigger,
-              (const String& trigger_name),
-              (override));
 
   void VerifyExpectations() {
     // Ensure that any pending Mojo messages are processed.
@@ -89,6 +85,11 @@ class MockProcessCoordinationUnit : public ProcessCoordinationUnit {
  private:
   mojo::Receiver<ProcessCoordinationUnit> receiver_;
 };
+
+using StrictMockProcessCoordinationUnit =
+    ::testing::StrictMock<MockProcessCoordinationUnit>;
+using NiceMockProcessCoordinationUnit =
+    ::testing::NiceMock<MockProcessCoordinationUnit>;
 
 MATCHER_P(MatchV8ContextDescription,
           execution_context_token,
@@ -117,6 +118,8 @@ class RendererResourceCoordinatorImplTest : public ::testing::Test {
     RendererResourceCoordinator::Set(nullptr);
   }
 
+  // Creates a MockProcessCoordinationUnit and binds it to a
+  // RendererResourceCoordinatorImpl.
   template <typename MockType>
   void InitializeMockProcessCoordinationUnit() {
     DCHECK(!mock_process_coordination_unit_);
@@ -140,8 +143,7 @@ class RendererResourceCoordinatorImplTest : public ::testing::Test {
 };
 
 TEST_F(RendererResourceCoordinatorImplTest, IframeNotifications) {
-  InitializeMockProcessCoordinationUnit<
-      ::testing::StrictMock<MockProcessCoordinationUnit>>();
+  InitializeMockProcessCoordinationUnit<StrictMockProcessCoordinationUnit>();
 
   frame_test_helpers::WebViewHelper helper;
   helper.InitializeAndLoad("about:blank");
@@ -149,7 +151,7 @@ TEST_F(RendererResourceCoordinatorImplTest, IframeNotifications) {
   // The <iframe> tag will have a fixed id attribute and no src attribute.
   auto iframe_attribution_matcher =
       Pointee(AllOf(Field(&IframeAttributionData::id, "iframe-id"),
-                    Field(&IframeAttributionData::src, WTF::String())));
+                    Field(&IframeAttributionData::src, String())));
 
   // Create an empty frame. This will send a notification as the main frame's
   // context is created.
@@ -158,10 +160,11 @@ TEST_F(RendererResourceCoordinatorImplTest, IframeNotifications) {
       *mock_process_coordination_unit_,
       OnV8ContextCreated(
           MatchV8ContextDescription(main_frame->GetLocalFrameToken()), _));
+  // This load must include some non-empty script to force context creation.
   frame_test_helpers::LoadHTMLString(
       main_frame,
       "<!DOCTYPE html>"
-      "<iframe id='iframe-id'></iframe>",
+      "<iframe id='iframe-id'></iframe><script>0;</script>",
       url_test_helpers::ToKURL("https://example.com/subframe.html"));
   mock_process_coordination_unit_->VerifyExpectations();
 
@@ -253,8 +256,7 @@ TEST_F(RendererResourceCoordinatorImplTest, IframeNotifications) {
 
 TEST_F(RendererResourceCoordinatorImplTest, NonIframeNotifications) {
   // Don't care about mocked methods except for OnRemoteIframeAttached.
-  InitializeMockProcessCoordinationUnit<
-      ::testing::NiceMock<MockProcessCoordinationUnit>>();
+  InitializeMockProcessCoordinationUnit<NiceMockProcessCoordinationUnit>();
 
   frame_test_helpers::WebViewHelper helper;
   helper.InitializeAndLoad("about:blank");

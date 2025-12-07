@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef MEDIA_GPU_V4L2_TEST_VP8_DECODER_H_
 #define MEDIA_GPU_V4L2_TEST_VP8_DECODER_H_
 
 #include <linux/v4l2-controls.h>
 
+#include <array>
 #include <set>
 
 #include "base/files/memory_mapped_file.h"

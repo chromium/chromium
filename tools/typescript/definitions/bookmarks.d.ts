@@ -14,6 +14,13 @@ declare global {
         MANAGED = 'managed',
       }
 
+      export enum FolderType {
+        BOOKMARKS_BAR = 'bookmarks-bar',
+        OTHER = 'other',
+        MOBILE = 'mobile',
+        MANAGED = 'managed',
+      }
+
       export interface BookmarkTreeNode {
         id: string;
         parentId?: string;
@@ -25,6 +32,8 @@ declare global {
         dateGroupModified?: number;
         unmodifiable?: BookmarkTreeNodeUnmodifiable;
         children?: BookmarkTreeNode[];
+        folderType?: FolderType;
+        syncing?: boolean;  // TODO: make mandatory
       }
 
       export interface CreateDetails {

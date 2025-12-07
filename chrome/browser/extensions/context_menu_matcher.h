@@ -15,7 +15,10 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/menu_manager.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "extensions/buildflags/buildflags.h"
+#include "ui/menus/simple_menu_model.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class ExtensionContextMenuBrowserTest;
 
@@ -39,7 +42,7 @@ class ContextMenuMatcher {
   // Returns true if the given id is one generated for extension context menu.
   static bool IsExtensionsCustomCommandId(int id);
 
-  // The |filter| will be called on possibly matching menu items, and its
+  // The `filter` will be called on possibly matching menu items, and its
   // result is used to determine which items to actually append to the menu.
   ContextMenuMatcher(content::BrowserContext* context,
                      ui::SimpleMenuModel::Delegate* delegate,
@@ -52,8 +55,8 @@ class ContextMenuMatcher {
   ~ContextMenuMatcher();
 
   // This is a helper function to append items for one particular extension.
-  // The |index| parameter is used for assigning id's, and is incremented for
-  // each item actually added. |is_action_menu| is used for browser and page
+  // The `index` parameter is used for assigning id's, and is incremented for
+  // each item actually added. `is_action_menu` is used for browser and page
   // action context menus, in which menu items are not placed in submenus
   // and the extension's icon is not shown.
   void AppendExtensionItems(

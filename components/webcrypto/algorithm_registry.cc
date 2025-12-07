@@ -69,6 +69,9 @@ class AlgorithmRegistry {
         return ed25519_.get();
       case blink::kWebCryptoAlgorithmIdX25519:
         return x25519_.get();
+      // TODO(crbug.com/450627018): implement chacha20poly1305
+      // TODO(crbug.com/450848555): implement ML-DSA 44/65/87
+      // TODO(crbug.com/450627019): implement ML-KEM 768/1024
       default:
         return nullptr;
     }

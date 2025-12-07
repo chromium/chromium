@@ -1,0 +1,168 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// DO NOT MODIFY: This file is automatically synced and modifications will be
+// overwritten. Edit in Google3 instead.
+
+syntax = "proto3";
+
+package chrome.cros.reporting.proto;
+
+import "components/enterprise/common/proto/google3_protos.proto";
+import "components/enterprise/common/proto/synced/browser_events.proto";
+import "components/enterprise/common/proto/synced/extension_install_events.proto";
+import "components/enterprise/common/proto/synced/policy_validation_report.proto";
+import "components/reporting/proto/synced/record.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+// Describes one event from a user or device.
+message Event {
+  // Optional. If unset during a `UploadEventsRequest`, the server will assign
+  // a UUID.
+  string event_id = 1;
+
+  // Required. Timestamp generated on the device when this event occurred.
+  google3_protos.Timestamp time = 2;
+
+  // Optional. Remote IP address e.g. where the content was served from if the
+  // content caused Chrome to send an event.
+  string remote_ip = 3;
+
+  // Optional. IP address of the user.
+  string local_ip = 4;
+
+  // Optional. IP addresses of the user.
+  repeated string local_ips = 5;
+
+  // Required. Details about the actual event.
+  oneof event {
+    // SafeBrowsing indicated that user reused their Google account password
+    SafeBrowsingPasswordReuseEvent password_reuse_event = 100;
+
+    // SafeBrowsing indicated that user changed their policy-specified password
+    SafeBrowsingPasswordChangedEvent password_changed_event = 101;
+
+    // User downloaded a resource deemed dangerous by SafeBrowsing
+    SafeBrowsingDangerousDownloadEvent dangerous_download_event = 102;
+
+    // User bypassed SafeBrowsing interstitial warning the website ahead seems
+    // suspicious (e.g. phishing)
+    SafeBrowsingInterstitialEvent interstitial_event = 103;
+
+    // Client policy validation report
+    PolicyValidationReportEvent policy_validation_report_event = 105;
+
+    // User triggered a DLP (Data Loss Prevention) sensitive data event
+    DlpSensitiveDataEvent sensitive_data_event = 106;
+
+    // User downloaded/uploaded a large file that could not be scanned (e.g.
+    // for malware or DLP)
+    UnscannedFileEvent unscanned_file_event = 107;
+
+    // Policy based extension installed on a device.
+    ExtensionAppInstallEvent extension_app_install_event = 108;
+
+    // Temporary Record representation for Chrome Encrypted Reporting Pipeline.
+    .reporting.Record reporting_record_event = 109;
+
+    // User downloaded/uploaded a large file that could not be scanned (e.g.
+    // for malware or DLP)
+    ContentTransferEvent content_transfer_event = 110;
+
+    // User logged in to a website.
+    LoginEvent login_event = 111;
+
+    // User logged in to a website.
+    PasswordBreachEvent password_breach_event = 112;
+
+    // An extension was installed on the browser.
+    BrowserExtensionInstallEvent browser_extension_install_event = 113;
+
+    // A crash ocuurs
+    BrowserCrashEvent browser_crash_event = 114;
+
+    // User triggered an URL filtering event
+    UrlFilteringInterstitialEvent url_filtering_interstitial_event = 115;
+
+    // An extension was used.
+    ExtensionTelemetryEvent extension_telemetry_event = 116;
+
+    // A URL was visited.
+    UrlNavigationEvent url_navigation_event = 117;
+
+    // Suspicious URL was visited.
+    SuspiciousURLEvent suspicious_url_event = 118;
+
+    // A type for prototyping events that forwards a string payload from chrome.
+    bytes prototype_raw_event = 119 [deprecated = true];
+
+    // A telomere event.
+    TelomereEvent telomere_event = 120;
+
+    // Next ID: 121
+  }
+}
+
+// Describes the managed device sending the event or status.
+message Device {
+  // Device Management Token for authenticating this upload request.
+  // Required if Profile.dm_token is absent.
+  string dm_token = 1;
+
+  // At least one of Device.client_id or Profile.client_id is Required.
+  // Client UUID identifying the current device associated with `dm_token`.
+  string client_id = 2;
+
+  // Optional. Chrome OS version e.g. "10.0.16299.904"
+  string os_version = 3;
+
+  // Optional. Chrome OS platform e.g. "Windows" or "Mac OS X"
+  string os_platform = 4;
+
+  // On Chrome OS, this will be set with the Enterprise machine ID, and on other
+  // platforms, it will be the machine name.
+  string name = 5;
+
+  // Optional. The device's fully qualified domain name.
+  string device_fqdn = 6;
+
+  // Optional. The name of the network (SSID) the device is connected to.
+  string network_name = 7;
+}
+
+// Describes the managed or unmanaged Chrome browser.
+message Browser {
+  // Optional. UUID identifying the browser instance.
+  string browser_id = 1;
+
+  // Optional.
+  string user_agent = 2;
+
+  // Optional. Chrome browser version.
+  string chrome_version = 3;
+
+  // Optional. The username of the current logged in OS user.
+  string machine_user = 4;
+}
+
+// Describes the profile on the Chrome browser or user.
+message Profile {
+  // Device Management Token for authenticating this upload request.
+  // Required if Device.dm_token is absent.
+  string dm_token = 1;
+
+  // Optional. Email of the logged-in user.
+  string gaia_email = 2;
+
+  // Optional. Filesystem path of the Chrome profile directory.
+  string profile_path = 3;
+
+  // Optional. The user-created name of the Chrome profile.
+  string profile_name = 4;
+
+  // At least one of Device.client_id or Profile.client_id is Required.
+  // Client UUID identifying the current user session associated with `dm_token`
+  string client_id = 5;
+}

@@ -7,11 +7,10 @@
 
 #include <set>
 
-#include "base/functional/callback.h"
+#include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
-
 #include "ui/accelerated_widget_mac/accelerated_widget_mac_export.h"
 
 namespace ui {

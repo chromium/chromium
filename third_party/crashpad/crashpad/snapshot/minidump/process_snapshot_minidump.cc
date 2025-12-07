@@ -135,8 +135,7 @@ crashpad::ProcessID ProcessSnapshotMinidump::ProcessID() const {
 
 crashpad::ProcessID ProcessSnapshotMinidump::ParentProcessID() const {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
-  NOTREACHED_IN_MIGRATION();  // https://crashpad.chromium.org/bug/10
-  return 0;
+  NOTREACHED();  // https://crashpad.chromium.org/bug/10
 }
 
 void ProcessSnapshotMinidump::SnapshotTime(timeval* snapshot_time) const {
@@ -208,8 +207,7 @@ std::vector<const ModuleSnapshot*> ProcessSnapshotMinidump::Modules() const {
 std::vector<UnloadedModuleSnapshot> ProcessSnapshotMinidump::UnloadedModules()
     const {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
-  NOTREACHED_IN_MIGRATION();  // https://crashpad.chromium.org/bug/10
-  return unloaded_modules_;
+  NOTREACHED();  // https://crashpad.chromium.org/bug/10
 }
 
 const ExceptionSnapshot* ProcessSnapshotMinidump::Exception() const {
@@ -229,8 +227,7 @@ std::vector<const MemoryMapRegionSnapshot*> ProcessSnapshotMinidump::MemoryMap()
 
 std::vector<HandleSnapshot> ProcessSnapshotMinidump::Handles() const {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
-  NOTREACHED_IN_MIGRATION();  // https://crashpad.chromium.org/bug/10
-  return std::vector<HandleSnapshot>();
+  NOTREACHED();  // https://crashpad.chromium.org/bug/10
 }
 
 std::vector<const MemorySnapshot*> ProcessSnapshotMinidump::ExtraMemory()

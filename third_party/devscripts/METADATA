@@ -1,0 +1,7 @@
+third_party {
+  security {
+    # Not applicable. This directory only contains a single script from
+    # devsripts.
+    mitigated_security_patch: "CVE-2018-13043"
+  }
+}

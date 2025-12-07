@@ -11,16 +11,14 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/common/url_constants.h"
@@ -59,44 +57,22 @@ void ShowSyncSetup(Profile* profile) {
     return;
   }
 
-  if (crosapi::browser_util::IsLacrosEnabled()) {
-    chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-        profile, chromeos::settings::mojom::kSyncSetupSubpagePath);
-  } else {
-    // TODO(crbug.com/40210838): remove this once it's not possible to use ash
-    // as a primary browser.
-    chrome::ShowSettingsSubPageForProfile(profile, chrome::kSyncSetupSubPage);
-  }
+  chrome::ShowSettingsSubPageForProfile(profile, chrome::kSyncSetupSubPage);
 }
 
 void TriggerSyncKeyRetrieval(Profile* profile) {
-  if (!crosapi::browser_util::IsAshWebBrowserEnabled() &&
-      base::FeatureList::IsEnabled(
-          trusted_vault::kChromeOSTrustedVaultUseWebUIDialog)) {
-    OpenDialogForSyncKeyRetrieval(
-        profile, syncer::TrustedVaultUserActionTriggerForUMA::kNotification);
-  } else {
-    // TODO(crbug.com/40264837): clean up once not reachable.
-    chrome::ScopedTabbedBrowserDisplayer displayer(profile);
-    OpenTabForSyncKeyRetrieval(
-        displayer.browser(),
-        syncer::TrustedVaultUserActionTriggerForUMA::kNotification);
-  }
+  chrome::ScopedTabbedBrowserDisplayer displayer(profile);
+  OpenTabForSyncKeyRetrieval(
+      displayer.browser(),
+      trusted_vault::TrustedVaultUserActionTriggerForUMA::kNotification);
 }
 
 void TriggerSyncRecoverabilityDegradedFix(Profile* profile) {
-  if (!crosapi::browser_util::IsAshWebBrowserEnabled() &&
-      base::FeatureList::IsEnabled(
-          trusted_vault::kChromeOSTrustedVaultUseWebUIDialog)) {
-    OpenDialogForSyncKeyRecoverabilityDegraded(
-        profile, syncer::TrustedVaultUserActionTriggerForUMA::kNotification);
-  } else {
-    // TODO(crbug.com/40264837): clean up once not reachable.
-    chrome::ScopedTabbedBrowserDisplayer displayer(profile);
-    OpenTabForSyncKeyRecoverabilityDegraded(
-        displayer.browser(),
-        syncer::TrustedVaultUserActionTriggerForUMA::kNotification);
-  }
+  // TODO(crbug.com/40264837): clean up once not reachable.
+  chrome::ScopedTabbedBrowserDisplayer displayer(profile);
+  OpenTabForSyncKeyRecoverabilityDegraded(
+      displayer.browser(),
+      trusted_vault::TrustedVaultUserActionTriggerForUMA::kNotification);
 }
 
 BubbleViewParameters GetBubbleViewParameters(
@@ -181,7 +157,8 @@ void SyncErrorNotifier::OnStateChanged(syncer::SyncService* service) {
     return;
   }
 
-  auto* display_service = NotificationDisplayService::GetForProfile(profile_);
+  auto* display_service =
+      NotificationDisplayServiceFactory::GetForProfile(profile_);
   if (!should_display_notification) {
     notification_displayed_ = false;
     display_service->Close(NotificationHandler::Type::TRANSIENT,
@@ -219,6 +196,11 @@ void SyncErrorNotifier::OnStateChanged(syncer::SyncService* service) {
   display_service->Display(NotificationHandler::Type::TRANSIENT, notification,
                            /*metadata=*/nullptr);
   notification_displayed_ = true;
+}
+
+void SyncErrorNotifier::OnSyncShutdown(syncer::SyncService*) {
+  // Unreachable, since this service is Shutdown() before the SyncService.
+  NOTREACHED();
 }
 
 }  // namespace ash

@@ -73,7 +73,6 @@ void OnIconDownloaded(GetIconCallback callback, const gfx::Image& icon) {
 AlmanacFetcher::AlmanacFetcher(Profile* profile,
                                std::unique_ptr<AlmanacIconCache> icon_cache)
     : profile_(profile),
-      device_info_manager_(std::make_unique<DeviceInfoManager>(profile)),
       icon_cache_(std::move(icon_cache)) {
   // The whole feature would not work unless the build includes the Google
   // Chrome API key or this is a test environment as the server call would fail.
@@ -140,19 +139,13 @@ void AlmanacFetcher::SetSkipApiKeyCheckForTesting(bool skip_api_key_check) {
 
 void AlmanacFetcher::DownloadApps() {
   if ((base::Time::Now() - GetLastAppsUpdateTime()).InHours() >= 24) {
-    device_info_manager_->GetDeviceInfo(base::BindOnce(
-        &AlmanacFetcher::OnGetDeviceInfo, weak_factory_.GetWeakPtr()));
+    launcher_app_almanac_endpoint::GetApps(
+        profile_, base::BindOnce(&AlmanacFetcher::OnServerResponse,
+                                 weak_factory_.GetWeakPtr()));
   } else {
     proto_file_manager_->ReadProtoFromFile(base::BindOnce(
         &AlmanacFetcher::OnAppsUpdate, weak_factory_.GetWeakPtr()));
   }
-}
-
-void AlmanacFetcher::OnGetDeviceInfo(DeviceInfo device_info) {
-  launcher_app_almanac_endpoint::GetApps(
-      device_info, *profile_->GetURLLoaderFactory(),
-      base::BindOnce(&AlmanacFetcher::OnServerResponse,
-                     weak_factory_.GetWeakPtr()));
 }
 
 void AlmanacFetcher::OnServerResponse(

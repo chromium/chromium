@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab_ui;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -18,44 +20,49 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.Icon;
 import android.graphics.drawable.VectorDrawable;
 import android.net.Uri;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.widget.ImageView;
-import androidx.annotation.Nullable;
+
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
 
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.components.tab_groups.TabGroupColorId;
+
 /**
- * A specialized {@link ImageView} that clips a thumbnail to a card shape with varied corner
- * radii. Overlays a background drawable. The height is varied based on the width and the
- * aspect ratio of the image.
+ * A specialized {@link ImageView} that clips a thumbnail to a card shape with varied corner radii.
+ * Overlays a background drawable. The height is varied based on the width and the aspect ratio of
+ * the image.
  *
- * Alternatively, this could be implemented using
- * * ShapeableImageView - however, this is inconsistent for hardware/software based draws.
- * * RoundedCornerImageView - however, this doesn't handle non-Bitmap Drawables well.
+ * <p>Alternatively, this could be implemented using * ShapeableImageView - however, this is
+ * inconsistent for hardware/software based draws. * RoundedCornerImageView - however, this doesn't
+ * handle non-Bitmap Drawables well.
  */
+@NullMarked
 public class TabThumbnailView extends ImageView {
-    private static final boolean SUPPORTS_ANTI_ALIAS_CLIP =
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.P;
-
     /** Placeholder drawable constants. */
-    private static final float SIZE_PERCENTAGE = 0.42f;
+    private static final float WIDTH_PERCENTAGE = 0.80f;
 
-    private static Integer sVerticalOffsetPx;
+    private static final float HEIGHT_PERCENTAGE = 0.45f;
+
+    private static @MonotonicNonNull Integer sVerticalOffsetPx;
 
     /** To prevent {@link TabThumbnailView#updateImage()} from running during inflation. */
-    private boolean mInitialized;
+    private final boolean mInitialized;
 
     /**
-     * Placeholder icon drawable to use if there is no thumbnail. This is drawn on-top of the
-     * {@link mBackgroundDrawable} which defines the shape of the thumbnail. There are two
-     * separate layers because the background scales with the thumbnail size whereas the icon
-     * will be the SIZE_PERCENTAGE of the minimum side length of the thumbnail size centered
-     * and adjusted upwards.
+     * Placeholder icon drawable to use if there is no thumbnail. This is drawn on-top of the {@link
+     * mBackgroundDrawable} which defines the shape of the thumbnail. There are two separate layers
+     * because the background scales with the thumbnail size whereas the icon will be the
+     * SIZE_PERCENTAGE of the minimum side length of the thumbnail size centered and adjusted
+     * upwards.
      */
-    private VectorDrawable mIconDrawable;
+    private @Nullable VectorDrawable mIconDrawable;
 
-    private Matrix mIconMatrix;
+    private final Matrix mIconMatrix;
     private int mIconColor;
 
     /**
@@ -69,15 +76,14 @@ public class TabThumbnailView extends ImageView {
     private final Path mPath;
     private final RectF mRectF;
 
-    // Realistically this will be set once and never again.
-    private float[] mRadii;
+    private @MonotonicNonNull float[] mRadii;
 
     public TabThumbnailView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public TabThumbnailView(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
+    public TabThumbnailView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
 
         if (sVerticalOffsetPx == null) {
             sVerticalOffsetPx =
@@ -127,7 +133,7 @@ public class TabThumbnailView extends ImageView {
     }
 
     @Override
-    public void setImageIcon(Icon icon) {
+    public void setImageIcon(@Nullable Icon icon) {
         super.setImageIcon(icon);
         updateImage();
     }
@@ -145,7 +151,7 @@ public class TabThumbnailView extends ImageView {
     }
 
     @Override
-    public void setImageURI(Uri uri) {
+    public void setImageURI(@Nullable Uri uri) {
         super.setImageURI(uri);
         updateImage();
     }
@@ -157,16 +163,12 @@ public class TabThumbnailView extends ImageView {
             return;
         }
         mPath.reset();
+        assumeNonNull(mRadii);
         mPath.addRoundRect(mRectF, mRadii, Path.Direction.CW);
         canvas.save();
         canvas.clipPath(mPath);
         super.onDraw(canvas);
         canvas.restore();
-        // clipPath did not anti-alias or have a method to do so until Android P. For earlier
-        // versions draw a very thin stroke of the background color to anti-alias the edges.
-        if (!SUPPORTS_ANTI_ALIAS_CLIP) {
-            canvas.drawPath(mPath, mPaint);
-        }
     }
 
     private void updateImage() {
@@ -190,7 +192,7 @@ public class TabThumbnailView extends ImageView {
             mIconDrawable =
                     (VectorDrawable)
                             AppCompatResources.getDrawable(
-                                    getContext(), R.drawable.ic_tab_placeholder);
+                                    getContext(), R.drawable.empty_thumbnail_background);
         }
         setColorFilter(mIconColor, PorterDuff.Mode.SRC_IN);
         // External callers either change this or use MATRIX there is no need to reset this.
@@ -215,18 +217,19 @@ public class TabThumbnailView extends ImageView {
 
     /**
      * Set the thumbnail placeholder based on whether it is used for an incognito / selected tab.
+     *
      * @param isIncognito Whether the thumbnail is on an incognito tab.
      * @param isSelected Whether the thumbnail is on a selected tab.
      */
-    public void updateThumbnailPlaceholder(boolean isIncognito, boolean isSelected) {
+    public void updateThumbnailPlaceholder(
+            boolean isIncognito, boolean isSelected, @Nullable @TabGroupColorId Integer colorId) {
         // Step 1: Background color.
         mBackgroundDrawable.setColor(
-                TabUiThemeUtils.getMiniThumbnailPlaceholderColor(
-                        getContext(), isIncognito, isSelected));
-        final int oldColor = mPaint.getColor();
+                TabCardThemeUtil.getMiniThumbnailPlaceholderColor(
+                        getContext(), isIncognito, isSelected, colorId));
         final int newColor =
-                TabUiThemeUtils.getCardViewBackgroundColor(
-                        getContext(), isIncognito, isSelected);
+                TabCardThemeUtil.getCardViewBackgroundColor(
+                        getContext(), isIncognito, isSelected, colorId);
         mPaint.setColor(newColor);
 
         // Step 2: Placeholder icon.
@@ -236,20 +239,17 @@ public class TabThumbnailView extends ImageView {
         if (mIconDrawable != null) {
             setColorFilter(mIconColor, PorterDuff.Mode.SRC_IN);
         }
-
-        // Step 3: Invalidate for versions earlier than Android P.
-        if (!SUPPORTS_ANTI_ALIAS_CLIP && !isPlaceholder() && oldColor != newColor) {
-            invalidate();
-        }
     }
 
     /**
      * Sets the rounded corner radii.
+     *
      * @param cornerRadiusTopStart top start corner radius.
      * @param cornerRadiusTopEnd top end corner radius.
      * @param cornerRadiusBottomStart bottom start corner radius.
      * @param cornerRadiusBottomEnd bottom end corner radius.
      */
+    @EnsuresNonNull("mRadii")
     void setRoundedCorners(
             int cornerRadiusTopStart,
             int cornerRadiusTopEnd,
@@ -292,25 +292,29 @@ public class TabThumbnailView extends ImageView {
             final int width = getMeasuredWidth();
             final int height = getMeasuredHeight();
 
-            // Vector graphic is square so width or height doesn't matter.
-            final int vectorEdgeLength = mIconDrawable.getIntrinsicWidth();
+            final int vectorEdgeHeight = mIconDrawable.getIntrinsicHeight();
+            final int vectorEdgeWidth = mIconDrawable.getIntrinsicWidth();
 
-            // Shortest edge of thumbnail region * SIZE_PERCENTAGE.
-            final int edgeLength = Math.round(SIZE_PERCENTAGE * Math.min(width, height));
-            final float scale = (float) edgeLength / (float) vectorEdgeLength;
+            final float effectiveWidth = WIDTH_PERCENTAGE * width;
+            final float effectiveHeight = HEIGHT_PERCENTAGE * height;
+
+            final float scaleX = effectiveWidth / vectorEdgeWidth;
+            final float scaleY = effectiveHeight / vectorEdgeHeight;
+
             mIconMatrix.reset();
-            mIconMatrix.postScale(scale, scale);
+            mIconMatrix.postScale(scaleX, scaleY);
 
             // Center and offset vertically by sVerticalOffsetPx to account for optical illusion of
             // centering.
+            assumeNonNull(sVerticalOffsetPx);
             mIconMatrix.postTranslate(
-                    (float) (width - edgeLength) / 2f,
-                    (float) (height - edgeLength) / 2f - sVerticalOffsetPx);
+                    (width - effectiveWidth) / 2f,
+                    (height - effectiveHeight) / 2f - sVerticalOffsetPx);
             setImageMatrix(mIconMatrix);
         }
     }
 
-    public VectorDrawable getIconDrawableForTesting() {
+    public @Nullable VectorDrawable getIconDrawableForTesting() {
         return mIconDrawable;
     }
 }

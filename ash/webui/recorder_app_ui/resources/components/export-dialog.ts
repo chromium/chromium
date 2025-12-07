@@ -2,25 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cros_components/dropdown/dropdown_option.js';
 import './cra/cra-button.js';
 import './cra/cra-dialog.js';
-import './cra/cra-dropdown.js';
-import './expandable-card.js';
+import './export-dialog-section.js';
 
 import {
   createRef,
   css,
   CSSResultGroup,
   html,
-  map,
-  nothing,
   PropertyDeclarations,
   ref,
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {i18n} from '../core/i18n.js';
-import {useRecordingDataManager} from '../core/lit/context.js';
+import {
+  usePlatformHandler,
+  useRecordingDataManager,
+} from '../core/lit/context.js';
 import {
   ReactiveLitElement,
   ScopedAsyncComputed,
@@ -31,15 +30,10 @@ import {
   ExportTranscriptionFormat,
   settings,
 } from '../core/state/settings.js';
-import {
-  assertEnumVariant,
-  assertInstanceof,
-  assertString,
-} from '../core/utils/assert.js';
+import {assertEnumVariant} from '../core/utils/assert.js';
 import {AsyncJobQueue} from '../core/utils/async_job_queue.js';
 
 import {CraDialog} from './cra/cra-dialog.js';
-import {CraDropdown} from './cra/cra-dropdown.js';
 
 interface DropdownOption<T extends string> {
   headline: string;
@@ -59,21 +53,13 @@ export class ExportDialog extends ReactiveLitElement {
         display: flex;
         flex-flow: column;
         gap: 16px;
+        padding-bottom: 12px;
         padding-top: 24px;
       }
 
       & > [slot="actions"] {
-        padding-top: 24px;
+        padding-top: 12px;
       }
-    }
-
-    .header {
-      color: var(--cros-sys-on_surface);
-      font: var(--cros-headline-1-font);
-    }
-
-    cros-dropdown-option cra-icon {
-      color: var(--cros-sys-primary);
     }
   `;
 
@@ -91,6 +77,8 @@ export class ExportDialog extends ReactiveLitElement {
     () => settings.value.exportSettings,
   );
 
+  private readonly platformHandler = usePlatformHandler();
+
   private readonly recordingDataManager = useRecordingDataManager();
 
   private readonly transcription = new ScopedAsyncComputed(this, async () => {
@@ -100,6 +88,15 @@ export class ExportDialog extends ReactiveLitElement {
     return this.recordingDataManager.getTranscription(
       this.recordingIdSignal.value,
     );
+  });
+
+  private readonly recordingSize = new ScopedAsyncComputed(this, async () => {
+    const id = this.recordingIdSignal.value;
+    if (id === null) {
+      return null;
+    }
+    const file = await this.recordingDataManager.getAudioFile(id);
+    return file.size;
   });
 
   private readonly transcriptionAvailable = computed(
@@ -131,126 +128,97 @@ export class ExportDialog extends ReactiveLitElement {
     if (!this.saveEnabled || recordingId === null) {
       return;
     }
+
     // TODO(pihsun): Loading state for export recording.
     // TODO(pihsun): Handle failure.
     this.exportQueue.push(async () => {
+      this.platformHandler.perfLogger.start({
+        kind: 'export',
+        recordingSize: this.recordingSize.value ?? 0,
+      });
+
       await this.recordingDataManager.exportRecording(
         recordingId,
         exportSettings,
       );
+
+      this.platformHandler.perfLogger.finish('export');
       this.hide();
     });
-  }
-
-  private toggleExportAudio() {
-    settings.mutate((s) => {
-      s.exportSettings.audio = !s.exportSettings.audio;
+    this.platformHandler.eventsSender.sendExportEvent({
+      exportSettings,
+      transcriptionAvailable: this.transcriptionAvailable.value,
     });
   }
 
-  private toggleExportTranscription() {
+  private onExportAudioChange(ev: CustomEvent<boolean>) {
     settings.mutate((s) => {
-      s.exportSettings.transcription = !s.exportSettings.transcription;
+      s.exportSettings.audio = ev.detail;
     });
   }
 
-  private onAudioFormatChange(ev: Event) {
+  private onExportTranscriptionChange(ev: CustomEvent<boolean>) {
+    settings.mutate((s) => {
+      s.exportSettings.transcription = ev.detail;
+    });
+  }
+
+  private onAudioFormatChange(ev: CustomEvent<string>) {
     settings.mutate((s) => {
       s.exportSettings.audioFormat = assertEnumVariant(
         ExportAudioFormat,
-        assertInstanceof(ev.target, CraDropdown).value,
+        ev.detail,
       );
     });
   }
 
-  private onTranscriptionFormatChange(ev: Event) {
+  private onTranscriptionFormatChange(ev: CustomEvent<string>) {
     settings.mutate((s) => {
       s.exportSettings.transcriptionFormat = assertEnumVariant(
         ExportTranscriptionFormat,
-        assertInstanceof(ev.target, CraDropdown).value,
+        ev.detail,
       );
-    });
-  }
-
-  private renderDropdownOptions<T extends string>(
-    options: Array<DropdownOption<T>>,
-    selected: T,
-  ): RenderResult {
-    return map(options, ({headline, value}) => {
-      const icon = value === selected ?
-        html`<cra-icon name="checked" slot="end"></cra-icon>` :
-        nothing;
-      // lit-analyzer somehow doesn't think "T extends string" is assignable to
-      // "string", so we have to add `assertString`...
-      return html`
-        <cros-dropdown-option
-          .headline=${headline}
-          .value=${assertString(value)}
-        >
-          ${icon}
-        </cros-dropdown-option>
-      `;
     });
   }
 
   override render(): RenderResult {
-    // TODO(pihsun): Investigate why the cros-dropdown can't be closed by
-    // clicking on the select again...
     // TODO: b/344784478 - Show estimate file size.
-    const audioOptions = this.renderDropdownOptions(
-      [
-        {
-          headline: i18n.exportDialogAudioFormatWebmOption,
-          value: ExportAudioFormat.WEBM_ORIGINAL,
-        },
-      ],
-      this.exportSettings.value.audioFormat,
-    );
-
-    const transcriptionOptions = this.renderDropdownOptions(
-      [
+    const audioFormats: Array<DropdownOption<ExportAudioFormat>> = [
+      {
+        headline: i18n.exportDialogAudioFormatWebmOption,
+        value: ExportAudioFormat.WEBM_ORIGINAL,
+      },
+    ];
+    const transcriptionFormats:
+      Array<DropdownOption<ExportTranscriptionFormat>> = [
         {
           headline: i18n.exportDialogTranscriptionFormatTxtOption,
           value: ExportTranscriptionFormat.TXT,
         },
-      ],
-      this.exportSettings.value.transcriptionFormat,
-    );
+      ];
 
     return html`<cra-dialog ${ref(this.dialog)}>
       <div slot="headline">${i18n.exportDialogHeader}</div>
       <div slot="content">
-        <expandable-card
-          ?expanded=${this.exportSettings.value.audio}
-          @toggle-expand=${this.toggleExportAudio}
+        <export-dialog-section
+          .checked=${this.exportSettings.value.audio}
+          .options=${audioFormats}
+          .value=${this.exportSettings.value.audioFormat}
+          @check-changed=${this.onExportAudioChange}
+          @value-changed=${this.onAudioFormatChange}
         >
-          <span slot="header" class="header">
-            ${i18n.exportDialogAudioHeader}
-          </span>
-          <cra-dropdown
-            .value=${this.exportSettings.value.audioFormat}
-            slot="content"
-            @change=${this.onAudioFormatChange}
-          >
-            ${audioOptions}
-          </cra-dropdown>
-        </expandable-card>
-        <expandable-card
-          ?expanded=${this.exportSettings.value.transcription}
-          @toggle-expand=${this.toggleExportTranscription}
-          ?disabled=${!this.transcriptionAvailable.value}
+          <span slot="header">${i18n.exportDialogAudioHeader}</span>
+        </export-dialog-section>
+        <export-dialog-section
+          .checked=${this.exportSettings.value.transcription}
+          .disabled=${!this.transcriptionAvailable.value}
+          .options=${transcriptionFormats}
+          .value=${this.exportSettings.value.transcriptionFormat}
+          @check-changed=${this.onExportTranscriptionChange}
+          @value-changed=${this.onTranscriptionFormatChange}
         >
-          <span slot="header" class="header">
-            ${i18n.exportDialogTranscriptionHeader}
-          </span>
-          <cra-dropdown
-            slot="content"
-            .value=${this.exportSettings.value.transcriptionFormat}
-            @change=${this.onTranscriptionFormatChange}
-          >
-            ${transcriptionOptions}
-          </cra-dropdown>
-        </expandable-card>
+          <span slot="header">${i18n.exportDialogTranscriptionHeader}</span>
+        </export-dialog-section>
       </div>
       <div slot="actions">
         <cra-button

@@ -18,11 +18,9 @@
 
 #include "base/component_export.h"
 #include "base/containers/lru_cache.h"
-#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
-#include "base/functional/callback_helpers.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/scoped_refptr.h"
@@ -51,7 +49,8 @@ class ShareableFileReference;
 // * Maintaining an LRU of memory items to choose candidates to page to disk
 //   (NotifyMemoryItemsUsed).
 // This class can only be interacted with on the IO thread.
-class COMPONENT_EXPORT(STORAGE_BROWSER) BlobMemoryController {
+class COMPONENT_EXPORT(STORAGE_BROWSER) BlobMemoryController
+    : public base::MemoryPressureListener {
  public:
   enum class Strategy {
     // We don't have enough memory for this blob.
@@ -122,7 +121,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobMemoryController {
   BlobMemoryController(const BlobMemoryController&) = delete;
   BlobMemoryController& operator=(const BlobMemoryController&) = delete;
 
-  ~BlobMemoryController();
+  ~BlobMemoryController() override;
 
   // Disables file paging. This cancels all pending file creations and paging
   // operations. Reason is recorded in UMA.
@@ -186,7 +185,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobMemoryController {
   void GrowFileAllocation(ShareableFileReference* file_reference,
                           uint64_t delta);
 
-  using DiskSpaceFuncPtr = int64_t (*)(const base::FilePath&);
+  using DiskSpaceFuncPtr = std::optional<int64_t> (*)(const base::FilePath&);
 
   void set_testing_disk_space(DiskSpaceFuncPtr disk_space_function) {
     disk_space_function_ = disk_space_function;
@@ -242,8 +241,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobMemoryController {
       uint64_t min_page_file_size);
 
   // Schedule paging until our memory usage is below our memory limit.
-  void MaybeScheduleEvictionUntilSystemHealthy(
-      base::MemoryPressureListener::MemoryPressureLevel level);
+  void MaybeScheduleEvictionUntilSystemHealthy(base::MemoryPressureLevel level);
 
   // Called when we've completed evicting a list of items to disk. This is where
   // we swap the bytes items for file items, and update our bookkeeping.
@@ -254,7 +252,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobMemoryController {
       std::pair<FileCreationInfo, int64_t /* avail_disk */> result);
 
   void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+      base::MemoryPressureLevel memory_pressure_level) override;
 
   void GrantMemoryAllocations(
       std::vector<scoped_refptr<ShareableBlobDataItem>>* items,
@@ -318,7 +316,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobMemoryController {
   // item to the recent_item_cache_ above.
   std::unordered_set<uint64_t> items_paging_to_file_;
 
-  base::MemoryPressureListener memory_pressure_listener_;
+  base::AsyncMemoryPressureListenerRegistration
+      memory_pressure_listener_registration_;
 
   base::WeakPtrFactory<BlobMemoryController> weak_factory_{this};
 };

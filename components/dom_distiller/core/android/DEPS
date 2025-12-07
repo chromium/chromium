@@ -1,3 +1,4 @@
 include_rules = [
   "+components/dom_distiller",
+  "+components/embedder_support/android"
 ]

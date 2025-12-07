@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -20,7 +21,8 @@
 #include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/views_export.h"
 
 #if defined(USE_AURA)
@@ -38,7 +40,6 @@ namespace views {
 class AXAuraObjCache;
 class AXVirtualViewWrapper;
 class View;
-class ViewAccessibility;
 class ViewAXPlatformNodeDelegate;
 
 namespace test {
@@ -53,7 +54,8 @@ class AXVirtualViewTest;
 // information about these lightweight Ui objects to accessibility. An
 // AXVirtualView is owned by its parent, which could either be a
 // ViewAccessibility or an AXVirtualView.
-class VIEWS_EXPORT AXVirtualView : public ui::AXPlatformNodeDelegate {
+class VIEWS_EXPORT AXVirtualView : public ViewAccessibility,
+                                   public ui::AXPlatformNodeDelegate {
  public:
   using AXVirtualViews = std::vector<std::unique_ptr<AXVirtualView>>;
 
@@ -103,7 +105,7 @@ class VIEWS_EXPORT AXVirtualView : public ui::AXPlatformNodeDelegate {
   }
   AXVirtualView* virtual_parent_view() { return virtual_parent_view_; }
 
-  ui::AXPlatformNode* ax_platform_node() { return ax_platform_node_; }
+  ui::AXPlatformNode* ax_platform_node() { return ax_platform_node_.get(); }
 
   // Returns true if |view| is contained within the hierarchy of this
   // AXVirtualView, even as an indirect descendant. Will return true if |view|
@@ -119,18 +121,14 @@ class VIEWS_EXPORT AXVirtualView : public ui::AXPlatformNodeDelegate {
   //
 
   const char* GetViewClassName() const;
-  gfx::NativeViewAccessible GetNativeObject() const;
-  void NotifyAccessibilityEvent(ax::mojom::Event event_type);
-  // Allows clients to modify the AXNodeData for this virtual view. This should
-  // be used for attributes that are relatively stable and do not change
-  // dynamically.
-  ui::AXNodeData& GetCustomData();
-  // Allows clients to modify the AXNodeData for this virtual view dynamically
-  // via a callback. This should be used for attributes that change often and
-  // would be queried every time a client accesses this view's AXNodeData.
-  void SetPopulateDataCallback(
-      base::RepeatingCallback<void(ui::AXNodeData*)> callback);
-  void UnsetPopulateDataCallback();
+  gfx::NativeViewAccessible GetNativeObject() const override;
+
+  Widget* GetWidget() const override;
+  // TODO(crbug.com/40672441): Rename to GetParent once ViewsAX is completed and
+  // AXVirtualView no longer needs to extend AXPlatformNodeDelegate.
+  ViewAccessibility* GetViewAccessibilityParent() const override;
+
+  std::string GetDebugString() const override;
 
   // ui::AXPlatformNodeDelegate. Note that
   // - Some of these functions have Mac-specific implementations in
@@ -145,10 +143,11 @@ class VIEWS_EXPORT AXVirtualView : public ui::AXPlatformNodeDelegate {
   gfx::NativeViewAccessible GetNSWindow() override;
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
   gfx::NativeViewAccessible GetParent() const override;
+  using AXPlatformNodeDelegate::GetBoundsRect;
   gfx::Rect GetBoundsRect(
       const ui::AXCoordinateSystem coordinate_system,
       const ui::AXClippingBehavior clipping_behavior,
-      ui::AXOffscreenResult* offscreen_result = nullptr) const override;
+      ui::AXOffscreenResult* offscreen_result) const override;
   gfx::NativeViewAccessible HitTestSync(
       int screen_physical_pixel_x,
       int screen_physical_pixel_y) const override;
@@ -178,7 +177,7 @@ class VIEWS_EXPORT AXVirtualView : public ui::AXPlatformNodeDelegate {
   // virtual view. Returns true on success, but note that the success/failure is
   // not propagated to the client that requested the action, since the
   // request is sometimes asynchronous. The right way to send a response is
-  // via NotifyAccessibilityEvent().
+  // via NotifyAccessibilityEventDeprecated().
   virtual bool HandleAccessibleAction(const ui::AXActionData& action_data);
 
   // Prune/Unprune all descendant virtual views from the tree. As of right now,
@@ -192,6 +191,33 @@ class VIEWS_EXPORT AXVirtualView : public ui::AXPlatformNodeDelegate {
   // and marked as ignored.
   void PruneVirtualSubtree();
   void UnpruneVirtualSubtree();
+
+  // Warning: This method will overwrite the focusable state. In most
+  // cases, we compute the focusable state automatically in
+  // `UpdateFocusableState`, however, AXVirtualViews are not Views, so we need
+  // to provide a way to set their focusable state manually, similar to
+  // the `FocusBehavior` in Views.
+  void ForceSetIsFocusable(bool focusable);
+  void ResetIsFocusable();
+
+  // This is also called by `ViewAccessibility::OnViewHasNewAncestor`, to update
+  // the relevant attributes on its AXVirtualView subtree.
+  void OnViewHasNewAncestor(bool ancestor_focusable);
+
+  void OnViewHasNewAncestor(const AXVirtualView* new_ancestor);
+
+  // `ViewAccessibility` overrides.
+  void NotifyEvent(ax::mojom::Event event_type,
+                   bool send_native_event) override;
+  void NotifyDataChanged() override;
+  void UpdateFocusableState() override;
+  void UpdateInvisibleState() override;
+  void UpdateReadyToNotifyEvents() override;
+  void UpdateIgnoredState() override;
+  void SetIsEnabled(bool enabled) override;
+  void SetShowContextMenu(bool show_context_menu) override;
+
+  bool parent_view_is_drawn() const { return parent_view_is_drawn_; }
 
  protected:
   // Forwards a request from assistive technology to perform an action on this
@@ -220,9 +246,16 @@ class VIEWS_EXPORT AXVirtualView : public ui::AXPlatformNodeDelegate {
     parent_view_ = view_accessibility;
   }
 
-  // We own this, but it is reference-counted on some platforms so we can't use
-  // a unique_ptr. It is destroyed in the destructor.
-  raw_ptr<ui::AXPlatformNode> ax_platform_node_;
+  // AXVirtualViews should be marked as disabled if their
+  // owner View is disabled.
+  void SetIsEnabledRecursive(bool enabled);
+
+  void SetShowContextMenuRecursive(bool show_context_menu);
+
+  void UpdateParentViewIsDrawnRecursive(const views::View* initial_view,
+                                        bool parent_view_is_drawn);
+
+  ui::AXPlatformNode::Pointer ax_platform_node_;
 
   // Weak. Owns us if not nullptr.
   // Either |parent_view_| or |virtual_parent_view_| should be set but not both.
@@ -239,13 +272,9 @@ class VIEWS_EXPORT AXVirtualView : public ui::AXPlatformNodeDelegate {
   // this object, if any.
   raw_ptr<AXAuraObjCache> ax_aura_obj_cache_ = nullptr;
 
-  const ui::AXUniqueId unique_id_{ui::AXUniqueId::Create()};
-  ui::AXNodeData custom_data_;
-  base::RepeatingCallback<void(ui::AXNodeData*)> populate_data_callback_;
+  std::optional<bool> should_be_focusable_ = std::nullopt;
 
-  // If set to true, this virtual view will be hidden from accessibility by
-  // 'pruning' it from the tree, by marking it as ignored in `GetData()`.
-  bool pruned_ = false;
+  bool parent_view_is_drawn_ = true;
 
   friend class ViewAccessibility;
 };

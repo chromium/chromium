@@ -12,34 +12,41 @@
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/webid/digital_identity_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_all_accepted_credentials_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_unknown_credential_options.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
+class AllAcceptedCredentialsOptions;
 class AuthenticationExtensionsClientInputs;
 class AuthenticationExtensionsClientOutputs;
-class AuthenticationExtensionsSupplementalPubKeysInputs;
-class AuthenticationExtensionsSupplementalPubKeysOutputs;
 class AuthenticationExtensionsPRFInputs;
 class AuthenticationExtensionsPRFValues;
+class AuthenticationExtensionsPaymentOutputs;
+class AuthenticationExtensionsSupplementalPubKeysInputs;
+class AuthenticationExtensionsSupplementalPubKeysOutputs;
 class AuthenticatorSelectionCriteria;
 class CableAuthenticationData;
 class Credential;
-class DigitalCredentialProvider;
+class CurrentUserDetailsOptions;
 class IdentityCredentialDisconnectOptions;
+class IdentityProviderAccount;
 class IdentityProviderConfig;
 class IdentityProviderRequestOptions;
+class LoginStatusOptions;
 class IdentityUserInfo;
 class PublicKeyCredentialCreationOptions;
 class PublicKeyCredentialDescriptor;
 class PublicKeyCredentialParameters;
-class PublicKeyCredentialReportOptions;
 class PublicKeyCredentialRequestOptions;
 class PublicKeyCredentialRpEntity;
 class PublicKeyCredentialUserEntity;
 class RemoteDesktopClientOverride;
 class UserVerificationRequirement;
+class LoginStatusOptions;
 class V8IdentityCredentialRequestOptionsContext;
 class V8IdentityCredentialRequestOptionsMode;
 class V8UnionArrayBufferOrArrayBufferView;
@@ -80,67 +87,90 @@ struct TypeConverter<blink::AuthenticationExtensionsSupplementalPubKeysOutputs*,
       const blink::mojom::blink::SupplementalPubKeysResponsePtr&);
 };
 
+template <>
+struct TypeConverter<
+    blink::AuthenticationExtensionsPaymentOutputs*,
+    blink::mojom::blink::AuthenticationExtensionsPaymentResponsePtr> {
+  static blink::AuthenticationExtensionsPaymentOutputs* Convert(
+      const blink::mojom::blink::AuthenticationExtensionsPaymentResponsePtr&);
+};
+
 // blink::mojom::blink::Authenticator ---------------------------------------
 template <>
-struct TypeConverter<Vector<uint8_t>,
+struct TypeConverter<blink::Vector<uint8_t>,
                      blink::V8UnionArrayBufferOrArrayBufferView*> {
-  static Vector<uint8_t> Convert(
+  static blink::Vector<uint8_t> Convert(
       const blink::V8UnionArrayBufferOrArrayBufferView*);
 };
 
 template <>
-struct TypeConverter<blink::mojom::blink::PublicKeyCredentialType, String> {
-  static blink::mojom::blink::PublicKeyCredentialType Convert(const String&);
+struct TypeConverter<
+    std::optional<blink::mojom::blink::PublicKeyCredentialType>,
+    blink::String> {
+  static std::optional<blink::mojom::blink::PublicKeyCredentialType> Convert(
+      const blink::String&);
+};
+
+template <>
+struct TypeConverter<
+    blink::Vector<blink::mojom::blink::PublicKeyCredentialParametersPtr>,
+    blink::HeapVector<blink::Member<blink::PublicKeyCredentialParameters>>> {
+  static blink::Vector<blink::mojom::blink::PublicKeyCredentialParametersPtr>
+  Convert(const blink::HeapVector<
+          blink::Member<blink::PublicKeyCredentialParameters>>&
+              input_pub_key_cred_params);
 };
 
 template <>
 struct TypeConverter<std::optional<blink::mojom::blink::AuthenticatorTransport>,
-                     String> {
+                     blink::String> {
   static std::optional<blink::mojom::blink::AuthenticatorTransport> Convert(
-      const String&);
+      const blink::String&);
 };
 
 template <>
-struct TypeConverter<String, blink::mojom::blink::AuthenticatorTransport> {
-  static String Convert(const blink::mojom::blink::AuthenticatorTransport&);
+struct TypeConverter<blink::String,
+                     blink::mojom::blink::AuthenticatorTransport> {
+  static blink::String Convert(
+      const blink::mojom::blink::AuthenticatorTransport&);
 };
 
 template <>
 struct TypeConverter<std::optional<blink::mojom::blink::ResidentKeyRequirement>,
-                     String> {
+                     blink::String> {
   static std::optional<blink::mojom::blink::ResidentKeyRequirement> Convert(
-      const String&);
+      const blink::String&);
 };
 
 template <>
 struct TypeConverter<
     std::optional<blink::mojom::blink::UserVerificationRequirement>,
-    String> {
+    blink::String> {
   static std::optional<blink::mojom::blink::UserVerificationRequirement>
-  Convert(const String&);
+  Convert(const blink::String&);
 };
 
 template <>
 struct TypeConverter<
     std::optional<blink::mojom::blink::AttestationConveyancePreference>,
-    String> {
+    blink::String> {
   static std::optional<blink::mojom::blink::AttestationConveyancePreference>
-  Convert(const String&);
+  Convert(const blink::String&);
 };
 
 template <>
 struct TypeConverter<
     std::optional<blink::mojom::blink::AuthenticatorAttachment>,
-    std::optional<String>> {
+    std::optional<blink::String>> {
   static std::optional<blink::mojom::blink::AuthenticatorAttachment> Convert(
-      const std::optional<String>&);
+      const std::optional<blink::String>&);
 };
 
 template <>
 struct TypeConverter<blink::mojom::blink::LargeBlobSupport,
-                     std::optional<String>> {
+                     std::optional<blink::String>> {
   static blink::mojom::blink::LargeBlobSupport Convert(
-      const std::optional<String>&);
+      const std::optional<blink::String>&);
 };
 
 template <>
@@ -179,8 +209,9 @@ struct TypeConverter<blink::mojom::blink::PublicKeyCredentialParametersPtr,
 };
 
 template <>
-struct TypeConverter<blink::mojom::blink::PublicKeyCredentialCreationOptionsPtr,
-                     blink::PublicKeyCredentialCreationOptions> {
+struct MODULES_EXPORT
+    TypeConverter<blink::mojom::blink::PublicKeyCredentialCreationOptionsPtr,
+                  blink::PublicKeyCredentialCreationOptions> {
   static blink::mojom::blink::PublicKeyCredentialCreationOptionsPtr Convert(
       const blink::PublicKeyCredentialCreationOptions&);
 };
@@ -231,13 +262,6 @@ struct MODULES_EXPORT
 };
 
 template <>
-struct TypeConverter<blink::mojom::blink::DigitalCredentialProviderPtr,
-                     blink::DigitalCredentialProvider> {
-  static blink::mojom::blink::DigitalCredentialProviderPtr Convert(
-      const blink::DigitalCredentialProvider&);
-};
-
-template <>
 struct MODULES_EXPORT
     TypeConverter<blink::mojom::blink::RpContext,
                   blink::V8IdentityCredentialRequestOptionsContext> {
@@ -276,9 +300,9 @@ struct TypeConverter<blink::mojom::blink::PRFValuesPtr,
 };
 
 template <>
-struct TypeConverter<Vector<blink::mojom::blink::PRFValuesPtr>,
+struct TypeConverter<blink::Vector<blink::mojom::blink::PRFValuesPtr>,
                      blink::AuthenticationExtensionsPRFInputs> {
-  static Vector<StructPtr<blink::mojom::blink::PRFValues>> Convert(
+  static blink::Vector<StructPtr<blink::mojom::blink::PRFValues>> Convert(
       const blink::AuthenticationExtensionsPRFInputs&);
 };
 
@@ -291,16 +315,48 @@ struct TypeConverter<
 };
 
 template <>
-struct TypeConverter<Vector<blink::mojom::blink::Hint>, Vector<String>> {
-  static Vector<blink::mojom::blink::Hint> Convert(const Vector<String>&);
+struct TypeConverter<blink::Vector<blink::mojom::blink::Hint>,
+                     blink::Vector<blink::String>> {
+  static blink::Vector<blink::mojom::blink::Hint> Convert(
+      const blink::Vector<blink::String>&);
 };
 
 template <>
 struct MODULES_EXPORT
     TypeConverter<blink::mojom::blink::PublicKeyCredentialReportOptionsPtr,
-                  blink::PublicKeyCredentialReportOptions> {
+                  blink::UnknownCredentialOptions> {
   static blink::mojom::blink::PublicKeyCredentialReportOptionsPtr Convert(
-      const blink::PublicKeyCredentialReportOptions&);
+      const blink::UnknownCredentialOptions&);
+};
+
+template <>
+struct MODULES_EXPORT
+    TypeConverter<blink::mojom::blink::PublicKeyCredentialReportOptionsPtr,
+                  blink::AllAcceptedCredentialsOptions> {
+  static blink::mojom::blink::PublicKeyCredentialReportOptionsPtr Convert(
+      const blink::AllAcceptedCredentialsOptions&);
+};
+
+template <>
+struct MODULES_EXPORT
+    TypeConverter<blink::mojom::blink::PublicKeyCredentialReportOptionsPtr,
+                  blink::CurrentUserDetailsOptions> {
+  static blink::mojom::blink::PublicKeyCredentialReportOptionsPtr Convert(
+      const blink::CurrentUserDetailsOptions&);
+};
+
+template <>
+struct MODULES_EXPORT TypeConverter<blink::mojom::blink::LoginStatusAccountPtr,
+                                    blink::IdentityProviderAccount> {
+  static blink::mojom::blink::LoginStatusAccountPtr Convert(
+      const blink::IdentityProviderAccount&);
+};
+
+template <>
+struct MODULES_EXPORT TypeConverter<blink::mojom::blink::LoginStatusOptionsPtr,
+                                    blink::LoginStatusOptions> {
+  static blink::mojom::blink::LoginStatusOptionsPtr Convert(
+      const blink::LoginStatusOptions&);
 };
 
 }  // namespace mojo

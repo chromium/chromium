@@ -18,11 +18,12 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "ui/color/color_id.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/notification_view_controller.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -389,14 +390,13 @@ TEST_F(NotificationGroupingControllerTest, ParentNotificationMetadata) {
   auto* message_center = MessageCenter::Get();
   std::string id0, id1, id2;
   const GURL url(u"http://test-url.com/");
-  const auto icon = gfx::VectorIcon();
   const auto small_image = gfx::Image();
   const std::u16string display_source0 = u"test_display_source0";
 
   auto notification = MakeNotification(id0, url);
   notification->set_accent_color_id(ui::kColorAshSystemUIMenuIcon);
   notification->set_accent_color(SK_ColorRED);
-  notification->set_parent_vector_small_image(icon);
+  notification->set_parent_vector_small_image(gfx::VectorIcon::EmptyIcon());
   notification->SetSmallImage(small_image);
   notification->set_display_source(display_source0);
   message_center->AddNotification(std::move(notification));
@@ -413,7 +413,8 @@ TEST_F(NotificationGroupingControllerTest, ParentNotificationMetadata) {
   EXPECT_EQ(ui::kColorAshSystemUIMenuIcon,
             parent_notification->accent_color_id());
   EXPECT_EQ(SK_ColorRED, parent_notification->accent_color());
-  EXPECT_EQ(&icon, &parent_notification->vector_small_image());
+  EXPECT_EQ(&gfx::VectorIcon::EmptyIcon(),
+            &parent_notification->vector_small_image());
   EXPECT_EQ(small_image, parent_notification->small_image());
   EXPECT_EQ(display_source0, parent_notification->display_source());
 }
@@ -523,8 +524,8 @@ TEST_F(NotificationGroupingControllerTest,
   const GURL url(u"http://test-url.com/");
 
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   id0 = AddNotificationWithOriginUrl(url);
   id1 = AddNotificationWithOriginUrl(url);
@@ -540,8 +541,8 @@ TEST_F(NotificationGroupingControllerTest,
 TEST_F(NotificationGroupingControllerTest,
        ParentNotificationRemovedDuringAnimation) {
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   auto* message_center = MessageCenter::Get();
   std::string id0, id1;

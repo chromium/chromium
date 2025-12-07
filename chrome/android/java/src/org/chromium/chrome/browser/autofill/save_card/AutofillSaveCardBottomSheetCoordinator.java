@@ -10,6 +10,7 @@ import android.view.View;
 
 import androidx.browser.customtabs.CustomTabsIntent;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.autofill.payments.AutofillSaveCardUiInfo;
@@ -24,6 +25,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * <p>This component shows a bottom sheet to let the user choose to save a payment card (either
  * locally or uploaded).
  */
+@NullMarked
 public class AutofillSaveCardBottomSheetCoordinator {
     /** Native callbacks from the save card bottom sheet. */
     public interface NativeDelegate {
@@ -43,13 +45,14 @@ public class AutofillSaveCardBottomSheetCoordinator {
     private final Context mContext;
     private final AutofillSaveCardBottomSheetView mView;
     private final AutofillSaveCardBottomSheetMediator mMediator;
-    private PropertyModel mModel;
+    private final PropertyModel mModel;
 
     /**
      * Creates the coordinator.
      *
      * @param context The context for this component.
      * @param uiInfo An object providing initial values for the bottom sheet model.
+     * @param skipLoadingForFixFlow When true, loading is skipped due to the fix flow.
      * @param bottomSheetController The bottom sheet controller where this bottom sheet will be
      *     shown.
      * @param layoutStateProvider The LayoutStateProvider used to detect when the bottom sheet needs
@@ -61,6 +64,7 @@ public class AutofillSaveCardBottomSheetCoordinator {
     public AutofillSaveCardBottomSheetCoordinator(
             Context context,
             AutofillSaveCardUiInfo uiInfo,
+            boolean skipLoadingForFixFlow,
             BottomSheetController bottomSheetController,
             LayoutStateProvider layoutStateProvider,
             TabModel tabModel,
@@ -77,6 +81,9 @@ public class AutofillSaveCardBottomSheetCoordinator {
                         .with(
                                 AutofillSaveCardBottomSheetProperties.LOGO_ICON,
                                 uiInfo.isForUpload() ? uiInfo.getLogoIcon() : 0)
+                        .with(
+                                AutofillSaveCardBottomSheetProperties.LOGO_ICON_DESCRIPTION,
+                                uiInfo.getLogoIconDescription())
                         .with(
                                 AutofillSaveCardBottomSheetProperties.CARD_DESCRIPTION,
                                 uiInfo.getCardDescription())
@@ -116,7 +123,8 @@ public class AutofillSaveCardBottomSheetCoordinator {
                         bottomSheetController,
                         mModel,
                         delegate,
-                        uiInfo.isForUpload());
+                        uiInfo.isForUpload(),
+                        skipLoadingForFixFlow);
 
         mView.mAcceptButton.setOnClickListener(
                 (View button) -> {

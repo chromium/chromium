@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "components/discardable_memory/client/client_discardable_shared_memory_manager.h"
 #include "components/viz/common/buildflags.h"
+#include "components/viz/service/gl/gpu_log_message_manager.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
 #include "components/viz/service/main/viz_compositor_thread_runner_impl.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -92,13 +93,19 @@ class VizMainImpl : public mojom::VizMain {
     // We use a |PowerMonitorSource| here instead of a boolean flag so that
     // tests can use mocks and fakes for testing.
     mutable std::unique_ptr<base::PowerMonitorSource> power_monitor_source;
-    raw_ptr<gpu::SyncPointManager> sync_point_manager = nullptr;
-    raw_ptr<gpu::SharedImageManager> shared_image_manager = nullptr;
-    raw_ptr<gpu::Scheduler> scheduler = nullptr;
     raw_ptr<base::WaitableEvent> shutdown_event = nullptr;
     scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner;
     std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder;
+#if BUILDFLAG(IS_ANDROID)
+    // GpuServiceImpl normally creates the below objects internally. However,
+    // on Android WebView it is created by the embedder.
+    raw_ptr<gpu::SyncPointManager> sync_point_manager = nullptr;
+    raw_ptr<gpu::SharedImageManager> shared_image_manager = nullptr;
+    raw_ptr<gpu::Scheduler> scheduler = nullptr;
     raw_ptr<VizCompositorThreadRunner> viz_compositor_thread_runner = nullptr;
+    raw_ptr<const gpu::SharedContextState::GrContextOptionsProvider>
+        gr_context_options_provider = nullptr;
+#endif
   };
 
   VizMainImpl(Delegate* delegate,
@@ -117,10 +124,12 @@ class VizMainImpl : public mojom::VizMain {
   void CreateGpuService(
       mojo::PendingReceiver<mojom::GpuService> pending_receiver,
       mojo::PendingRemote<mojom::GpuHost> pending_gpu_host,
+      mojo::PendingRemote<mojom::GpuLogging> pending_gpu_loggging,
       mojo::PendingRemote<
           discardable_memory::mojom::DiscardableSharedMemoryManager>
           discardable_memory_manager,
-      base::UnsafeSharedMemoryRegion use_shader_cache_shm_region) override;
+      base::UnsafeSharedMemoryRegion use_shader_cache_shm_region,
+      mojom::GpuServiceCreationParamsPtr params) override;
   void SetRenderParams(
       gfx::FontRenderParams::SubpixelRendering subpixel_rendering,
       float text_contrast,
@@ -132,6 +141,7 @@ class VizMainImpl : public mojom::VizMain {
 #endif
 #if BUILDFLAG(IS_ANDROID)
   void SetHostProcessId(int32_t pid) override;
+  void NotifyWorkloadIncrease() override;
 #endif
   void CreateFrameSinkManager(mojom::FrameSinkManagerParamsPtr params) override;
 #if BUILDFLAG(USE_VIZ_DEBUGGER)
@@ -157,6 +167,7 @@ class VizMainImpl : public mojom::VizMain {
 
  private:
   void CreateFrameSinkManagerInternal(mojom::FrameSinkManagerParamsPtr params);
+  void RequestBeginFrameForGpuService(bool toggle);
 
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner() const {
     return io_thread_ ? io_thread_->task_runner()

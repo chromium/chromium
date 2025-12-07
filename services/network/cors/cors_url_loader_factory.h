@@ -12,10 +12,10 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ptr.h"
-#include "base/not_fatal_until.h"
+#include "base/rand_util.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/network_context.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
@@ -61,7 +61,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
       NetworkContext* context,
       mojom::URLLoaderFactoryParamsPtr params,
       scoped_refptr<ResourceSchedulerClient> resource_scheduler_client,
-      mojo::PendingReceiver<mojom::URLLoaderFactory> receiver,
       const OriginAccessList* origin_access_list,
       PrefetchMatchingURLLoaderFactory* owner);
 
@@ -81,6 +80,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
                             mojo::PendingRemote<mojom::URLLoaderClient> client,
                             const net::MutableNetworkTrafficAnnotationTag&
                                 traffic_annotation) override;
+  void CreateLoaderAndStart(mojo::PendingReceiver<mojom::URLLoader> receiver,
+                            int32_t request_id,
+                            uint32_t options,
+                            ResourceRequest& resource_request,
+                            mojo::PendingRemote<mojom::URLLoaderClient> client,
+                            const net::MutableNetworkTrafficAnnotationTag&
+                                traffic_annotation) override;
   void Clone(mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) override;
 
   // Methods for use by network::URLLoaderFactory.
@@ -88,19 +94,31 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   void OnCorsURLLoaderCreated(std::unique_ptr<CorsURLLoader> loader);
   void DestroyURLLoader(URLLoader* loader);
 
-  // Clears the bindings for this factory, but does not touch any in-progress
-  // URLLoaders. Calling this may delete this factory and remove it from the
-  // network context.
-  void ClearBindings();
+  // If there are no active loaders and the `owner_` has no remaining external
+  // references (Mojo bindings), requests the owner to destroy this factory
+  // instance.
+  void DeleteIfNeeded();
+
+  // Exposed for use by PrefetchMatchingURLLoaderFactory.
+  int32_t process_id() const { return process_id_; }
+  const std::optional<url::Origin>& request_initiator_origin_lock() const {
+    return request_initiator_origin_lock_;
+  }
 
   mojom::CrossOriginEmbedderPolicyReporter* coep_reporter() {
     return coep_reporter_ ? coep_reporter_.get() : nullptr;
+  }
+
+  mojom::DocumentIsolationPolicyReporter* dip_reporter() {
+    return dip_reporter_ ? dip_reporter_.get() : nullptr;
   }
 
   std::set<std::unique_ptr<URLLoader>, base::UniquePtrComparator>&
   url_loaders() {
     return url_loaders_;
   }
+
+  const net::IsolationInfo& isolation_info() const { return isolation_info_; }
 
   mojom::SharedDictionaryAccessObserver* GetSharedDictionaryAccessObserver()
       const;
@@ -126,19 +144,22 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
       const base::UnguessableToken& nonce,
       const std::set<GURL>& exemptions);
 
+  // Returns whether CORS preflight request flowing through this
+  // URLLoaderFactory should represent an error or not.
+  bool IsCorsPreflighLoadOptionAllowed() const;
+
  private:
   class FactoryOverride;
 
   void DestroyCorsURLLoader(CorsURLLoader* loader);
 
-  void DeleteIfNeeded();
-
   bool IsValidRequest(const ResourceRequest& request, uint32_t options);
 
-  bool GetAllowAnyCorsExemptHeaderForBrowser() const;
-
   mojo::PendingRemote<mojom::DevToolsObserver> GetDevToolsObserver(
-      const ResourceRequest& resource_request) const;
+      ResourceRequest& resource_request) const;
+
+  // Returns whether this factory is used in the multi-network CCT workflow.
+  bool IsMultiNetworkCCTWorkFlow() const;
 
   template <class T>
   void OnLoaderCreated(
@@ -154,13 +175,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
       std::set<std::unique_ptr<T>, base::UniquePtrComparator>& loaders) {
     context_->LoaderDestroyed(process_id_);
     auto it = loaders.find(loader);
-    CHECK(it != loaders.end(), base::NotFatalUntil::M130);
+    CHECK(it != loaders.end());
     loaders.erase(it);
 
     DeleteIfNeeded();
   }
-
-  mojo::ReceiverSet<mojom::URLLoaderFactory> receivers_;
 
   // The NetworkContext owns `this`. Initialized in the construct and must be
   // non-null.
@@ -181,12 +200,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   const std::string debug_tag_;
   const CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
   mojo::Remote<mojom::CrossOriginEmbedderPolicyReporter> coep_reporter_;
+  mojo::Remote<mojom::DocumentIsolationPolicyReporter> dip_reporter_;
   const mojom::ClientSecurityStatePtr client_security_state_;
   mojo::Remote<mojom::URLLoaderNetworkServiceObserver>
       url_loader_network_service_observer_;
   mojo::Remote<mojom::SharedDictionaryAccessObserver>
       shared_dictionary_observer_;
   const bool require_cross_site_request_for_cookies_;
+  const net::CookieSettingOverrides factory_cookie_setting_overrides_;
+  const net::CookieSettingOverrides devtools_cookie_setting_overrides_;
+  const bool is_main_frame_origin_recently_accessed_;
 
   // Relative order of `network_loader_factory_` and `loaders_` matters -
   // URLLoaderFactory needs to live longer than URLLoaders created using the
@@ -209,6 +232,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   const raw_ptr<PrefetchMatchingURLLoaderFactory> owner_;
 
   static bool allow_external_preflights_for_testing_;
+
+  base::MetricsSubSampler metrics_subsampler_;
+
+  std::optional<base::UnguessableToken> network_restrictions_id_;
 };
 
 }  // namespace cors

@@ -17,8 +17,8 @@ namespace base {
 
 class Foo {
  public:
-  Foo() {}
-  ~Foo() {}
+  Foo() = default;
+  ~Foo() = default;
 };
 
 class FooListener {
@@ -43,7 +43,7 @@ void WontCompile() {
   RepeatingCallbackList<void(std::unique_ptr<Foo>)> c1;
   CallbackListSubscription sub =
       c1.Add(BindRepeating(&FooListener::GotAScopedFoo, Unretained(&f)));
-  c1.Notify(std::unique_ptr<Foo>(new Foo()));  // expected-error@*:* {{call to implicitly-deleted copy constructor of 'std::unique_ptr<base::Foo>'}}
+  c1.Notify(std::make_unique<Foo>());  // expected-error@*:* {{call to implicitly-deleted copy constructor of 'std::unique_ptr<base::Foo>'}}
 }
 
 }  // namespace base

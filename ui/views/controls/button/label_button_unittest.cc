@@ -30,6 +30,7 @@
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/text_utils.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
@@ -76,20 +77,12 @@ END_METADATA
 
 class LabelButtonTest : public test::WidgetTest {
  public:
-  LabelButtonTest() = default;
-
-  LabelButtonTest(const LabelButtonTest&) = delete;
-  LabelButtonTest& operator=(const LabelButtonTest&) = delete;
-
   // testing::Test:
   void SetUp() override {
     WidgetTest::SetUp();
     // Make a Widget to host the button. This ensures appropriate borders are
     // used (which could be derived from the Widget's NativeTheme).
     test_widget_ = CreateTopLevelPlatformWidget();
-
-    // The test code below is not prepared to handle dark mode.
-    test_widget_->GetNativeTheme()->set_use_dark_colors(false);
 
     // Ensure the Widget is active, since LabelButton appearance in inactive
     // Windows is platform-dependent.
@@ -127,13 +120,11 @@ class LabelButtonTest : public test::WidgetTest {
     WidgetTest::TearDown();
   }
 
-  void UseDarkColors() {
-    ui::NativeTheme* native_theme = test_widget_->GetNativeTheme();
-    native_theme->set_use_dark_colors(true);
-    native_theme->NotifyOnNativeThemeUpdated();
+ protected:
+  ui::MockOsSettingsProvider& os_settings_provider() {
+    return os_settings_provider_;
   }
 
- protected:
   TestLabelButton* button() {
     return static_cast<TestLabelButton*>(
         test_widget_->GetContentsView()->GetViewByID(1));
@@ -144,6 +135,7 @@ class LabelButtonTest : public test::WidgetTest {
   SkColor styled_highlight_text_color_ = 0;
 
  private:
+  ui::MockOsSettingsProvider os_settings_provider_;
   raw_ptr<Widget> test_widget_ = nullptr;
 };
 
@@ -231,10 +223,11 @@ TEST_F(LabelButtonTest, LabelPreferredSizeWithMaxWidth) {
   for (bool is_multiline : {false, true}) {
     button()->SetMultiLine(is_multiline);
     for (bool set_image : {false, true}) {
-      if (set_image)
+      if (set_image) {
         button()->SetImageModel(Button::STATE_NORMAL,
                                 ui::ImageModel::FromImageSkia(
                                     gfx::test::CreateImageSkia(/*size=*/16)));
+      }
 
       bool preferred_size_is_sometimes_narrower_than_max = false;
       bool preferred_height_shrinks_as_max_width_grows = false;
@@ -249,17 +242,20 @@ TEST_F(LabelButtonTest, LabelPreferredSizeWithMaxWidth) {
           const gfx::Size preferred_size = button()->GetPreferredSize({});
           EXPECT_LE(preferred_size.width(), width_case);
 
-          if (preferred_size.width() < width_case)
+          if (preferred_size.width() < width_case) {
             preferred_size_is_sometimes_narrower_than_max = true;
+          }
 
-          if (preferred_size.height() < old_preferred_size.height())
+          if (preferred_size.height() < old_preferred_size.height()) {
             preferred_height_shrinks_as_max_width_grows = true;
+          }
         }
       }
 
       EXPECT_TRUE(preferred_size_is_sometimes_narrower_than_max);
-      if (is_multiline)
+      if (is_multiline) {
         EXPECT_TRUE(preferred_height_shrinks_as_max_width_grows);
+      }
     }
   }
 }
@@ -376,7 +372,7 @@ TEST_F(LabelButtonTest, AccessibleState) {
   EXPECT_EQ(label_text, accessible_node_data.GetString16Attribute(
                             ax::mojom::StringAttribute::kName));
   EXPECT_EQ(label_text, button()->GetText());
-  EXPECT_EQ(tooltip_text, button()->GetTooltipText(gfx::Point()));
+  EXPECT_EQ(tooltip_text, button()->GetRenderedTooltipText(gfx::Point()));
 }
 
 // Test ViewAccessibility::GetAccessibleNodeData() for default buttons.
@@ -646,7 +642,7 @@ TEST_F(LabelButtonTest, TextSizeFromContext) {
 
   TestLabelButton* alternate_button =
       new TestLabelButton(text, kAlternateContext);
-  button()->parent()->AddChildView(alternate_button);
+  button()->parent()->AddChildViewRaw(alternate_button);
   EXPECT_EQ(alternate_delta,
             alternate_button->label()->font_list().GetFontSize() -
                 gfx::FontList().GetFontSize());
@@ -722,8 +718,6 @@ TEST_F(LabelButtonTest, HighlightedButtonStyle) {
 // Ensure the label resets the enabled color after LabelButton::OnThemeChanged()
 // is invoked.
 TEST_F(LabelButtonTest, OnThemeChanged) {
-  ASSERT_NE(button()->GetNativeTheme()->GetPlatformHighContrastColorScheme(),
-            ui::NativeTheme::PlatformHighContrastColorScheme::kDark);
   ASSERT_NE(button()->label()->GetBackgroundColor(), SK_ColorBLACK);
   EXPECT_EQ(themed_normal_text_color_, button()->label()->GetEnabledColor());
 
@@ -750,7 +744,8 @@ TEST_F(LabelButtonTest, SetEnabledTextColorsResetsToThemeColors) {
 
   // Toggle dark mode. This should not replace the enabled text color as it's
   // been manually overridden above.
-  UseDarkColors();
+  os_settings_provider().SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
   EXPECT_EQ(kReplacementColor, button()->label()->GetEnabledColor());
 
   // Removing the enabled text color restore colors from the new theme, not
@@ -763,16 +758,18 @@ TEST_F(LabelButtonTest, SetEnabledTextColorIds) {
   ASSERT_NE(ui::kColorLabelForeground, ui::kColorAccent);
 
   // Initially the test should have the normal colors.
-  EXPECT_EQ(button()->label()->GetEnabledColorId(), ui::kColorLabelForeground);
+  EXPECT_EQ(button()->label()->GetRequestedEnabledColor(),
+            ui::kColorLabelForeground);
 
   // Setting the enabled text colors should replace the label's enabled color.
-  button()->SetEnabledTextColorIds(ui::kColorAccent);
-  EXPECT_EQ(button()->label()->GetEnabledColorId(), ui::kColorAccent);
+  button()->SetEnabledTextColors(ui::kColorAccent);
+  EXPECT_EQ(button()->label()->GetRequestedEnabledColor(), ui::kColorAccent);
 
   // Toggle dark mode. This should not replace the enabled text color as it's
   // been manually overridden above.
-  UseDarkColors();
-  EXPECT_EQ(button()->label()->GetEnabledColorId(), ui::kColorAccent);
+  os_settings_provider().SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
+  EXPECT_EQ(button()->label()->GetRequestedEnabledColor(), ui::kColorAccent);
   EXPECT_EQ(button()->label()->GetEnabledColor(),
             button()->GetColorProvider()->GetColor(ui::kColorAccent));
 }
@@ -867,9 +864,8 @@ class InkDropLabelButtonTest : public ViewsTestBase {
     // Create a widget so that the Button can query the hover state
     // correctly.
     widget_ = std::make_unique<Widget>();
-    Widget::InitParams params =
-        CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-                     Widget::InitParams::TYPE_POPUP);
+    Widget::InitParams params = CreateParams(
+        Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
     params.bounds = gfx::Rect(0, 0, 20, 20);
     widget_->Init(std::move(params));
     widget_->Show();
@@ -939,11 +935,6 @@ class LabelButtonVisualStateTest : public test::WidgetTest {
     dummy_widget_ = CreateTopLevelPlatformWidget();
 
     MakeButtonAsContent(test_widget_)->SetID(1);
-
-    style_of_inactive_widget_ =
-        PlatformStyle::kInactiveWidgetControlsAppearDisabled
-            ? Button::STATE_DISABLED
-            : Button::STATE_NORMAL;
   }
 
   void TearDown() override {
@@ -955,9 +946,8 @@ class LabelButtonVisualStateTest : public test::WidgetTest {
  protected:
   std::unique_ptr<Widget> CreateActivatableChildWidget(Widget* parent) {
     auto child = std::make_unique<Widget>();
-    Widget::InitParams params =
-        CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-                     Widget::InitParams::TYPE_POPUP);
+    Widget::InitParams params = CreateParams(
+        Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
     params.parent = parent->GetNativeView();
     params.activatable = Widget::InitParams::Activatable::kYes;
     child->Init(std::move(params));
@@ -977,7 +967,10 @@ class LabelButtonVisualStateTest : public test::WidgetTest {
 
   raw_ptr<Widget> test_widget_ = nullptr;
   raw_ptr<Widget> dummy_widget_ = nullptr;
-  Button::ButtonState style_of_inactive_widget_;
+  static constexpr Button::ButtonState style_of_inactive_widget_ =
+      PlatformStyle::kInactiveWidgetControlsAppearDisabled
+          ? Button::STATE_DISABLED
+          : Button::STATE_NORMAL;
 };
 
 TEST_F(LabelButtonVisualStateTest, IndependentWidget) {

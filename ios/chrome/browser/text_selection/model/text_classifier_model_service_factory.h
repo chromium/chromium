@@ -5,27 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_TEXT_SELECTION_MODEL_TEXT_CLASSIFIER_MODEL_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_TEXT_SELECTION_MODEL_TEXT_CLASSIFIER_MODEL_SERVICE_FACTORY_H_
 
-#include <memory>
+#import <memory>
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "base/no_destructor.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
-class ChromeBrowserState;
 class TextClassifierModelService;
 
 // Singleton that owns all TextClassifierModelService(s) and associates them
-// with ChromeBrowserState.
-class TextClassifierModelServiceFactory
-    : public BrowserStateKeyedServiceFactory {
+// with ProfileIOS.
+class TextClassifierModelServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  static TextClassifierModelService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  static TextClassifierModelService* GetForProfile(ProfileIOS* profile);
   static TextClassifierModelServiceFactory* GetInstance();
-
-  TextClassifierModelServiceFactory(const TextClassifierModelServiceFactory&) =
-      delete;
-  TextClassifierModelServiceFactory& operator=(
-      const TextClassifierModelServiceFactory&) = delete;
 
  private:
   friend class base::NoDestructor<TextClassifierModelServiceFactory>;
@@ -33,13 +25,9 @@ class TextClassifierModelServiceFactory
   TextClassifierModelServiceFactory();
   ~TextClassifierModelServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation:
+  // ProfileKeyedServiceFactoryIOS implementation:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
-  web::BrowserState* GetBrowserStateToUse(
-      web::BrowserState* context) const override;
-  bool ServiceIsCreatedWithBrowserState() const override;
-  bool ServiceIsNULLWhileTesting() const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_TEXT_SELECTION_MODEL_TEXT_CLASSIFIER_MODEL_SERVICE_FACTORY_H_

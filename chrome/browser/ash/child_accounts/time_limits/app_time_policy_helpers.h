@@ -16,8 +16,7 @@ namespace base {
 class TimeDelta;
 }  // namespace base
 
-namespace ash {
-namespace app_time {
+namespace ash::app_time {
 
 class AppId;
 class AppLimit;
@@ -84,7 +83,6 @@ std::optional<bool> ActivityReportingEnabledFromDict(
 std::map<AppId, AppLimit> AppLimitsFromDict(const base::Value::Dict& dict);
 
 }  // namespace policy
-}  // namespace app_time
-}  // namespace ash
+}  // namespace ash::app_time
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_APP_TIME_POLICY_HELPERS_H_

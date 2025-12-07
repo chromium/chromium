@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/test/browser_ui_test_base.h"
-
 #include "testing/gtest/include/gtest/gtest.h"
 
 using BrowserUiTest = BrowserUiTestBase;

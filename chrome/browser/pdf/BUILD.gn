@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
 
@@ -14,29 +13,37 @@ source_set("pdf") {
     "chrome_pdf_stream_delegate.h",
     "pdf_extension_util.cc",
     "pdf_extension_util.h",
+    "pdf_help_bubble_handler_factory.cc",
+    "pdf_help_bubble_handler_factory.h",
     "pdf_viewer_stream_manager.cc",
     "pdf_viewer_stream_manager.h",
   ]
-  deps = [
+  public_deps = [
     "//base",
+    "//components/pdf/browser",
+    "//content/public/browser",
+    "//extensions/common/api",
+    "//mojo/public/cpp/bindings",
+    "//pdf:buildflags",
+    "//ui/base/interaction",
+    "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
+  ]
+  deps = [
     "//build:chromeos_buildflags",
     "//chrome/browser:browser_process",
     "//chrome/browser:resources",
     "//chrome/browser/pdf:pdf_pref_names",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/pdf:resources",
+    "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/common",
-    "//components/pdf/browser",
     "//components/pdf/browser:interceptors",
     "//components/pdf/common:util",
     "//components/prefs",
+    "//components/user_education/webui",
     "//components/zoom",
-    "//content/public/browser",
     "//extensions/browser",
     "//extensions/common:common_constants",
-    "//extensions/common/api",
-    "//mojo/public/cpp/bindings",
-    "//pdf:buildflags",
     "//pdf:features",
     "//printing/buildflags",
     "//third_party/blink/public/common:headers",
@@ -44,6 +51,10 @@ source_set("pdf") {
     "//ui/gfx:color_utils",
     "//url",
   ]
+
+  if (is_chromeos) {
+    deps += [ "//chromeos/ash/components/browser_context_helper" ]
+  }
 
   if (enable_print_preview) {
     deps += [ "//chrome/common" ]
@@ -57,7 +68,7 @@ source_set("pdf_pref_names") {
   ]
 }
 
-if (is_chromeos_ash) {
+if (is_chromeos) {
   source_set("pdf_service") {
     sources = [
       "pdf_service.cc",
@@ -85,6 +96,7 @@ source_set("pdf_extension_test_utils") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/tabs:tab_strip",
     "//components/pdf/common:util",
     "//content/public/browser",
     "//content/test:test_support",

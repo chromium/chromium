@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -25,6 +26,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * This class is to call the methods from the view classes and to paint them based on the current
  * properties.
  */
+@NullMarked
 public class ColorPickerViewBinder {
     public static void bind(
             PropertyModel model, ColorPickerDialogView dialogView, PropertyKey propertyKey) {
@@ -64,6 +66,8 @@ public class ColorPickerViewBinder {
                             model.get(ColorPickerSuggestionProperties.ONCLICK)
                                     .onResult(model.get(ColorPickerSuggestionProperties.INDEX)));
         } else {
+            suggestionView.setContentDescription(model.get(ColorPickerSuggestionProperties.LABEL));
+            suggestionView.setSelected(model.get(ColorPickerSuggestionProperties.IS_SELECTED));
             suggestionView.setAccessibilityDelegate(
                     new View.AccessibilityDelegate() {
                         @Override
@@ -77,9 +81,6 @@ public class ColorPickerViewBinder {
                                             1,
                                             1,
                                             false));
-                            info.setSelected(
-                                    model.get(ColorPickerSuggestionProperties.IS_SELECTED));
-                            info.setText(model.get(ColorPickerSuggestionProperties.LABEL));
                         }
                     });
         }

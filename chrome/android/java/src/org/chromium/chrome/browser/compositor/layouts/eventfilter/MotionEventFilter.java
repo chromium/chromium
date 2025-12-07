@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.compositor.layouts.eventfilter;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.os.Handler;
 import android.view.GestureDetector;
@@ -11,12 +13,16 @@ import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 
 import org.chromium.base.MathUtils;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.layouts.EventFilter;
 
 /**
  * Filters events that would trigger gestures like scroll and fling and other motion events like
  * hover.
  */
+@NullMarked
 public class MotionEventFilter extends EventFilter {
     private final int mLongPressTimeoutMs;
     private final GestureDetector mDetector;
@@ -27,14 +33,15 @@ public class MotionEventFilter extends EventFilter {
     private boolean mInLongPress;
     private boolean mSeenFirstScrollEvent;
     private int mButtons;
-    private LongPressRunnable mLongPressRunnable = new LongPressRunnable();
-    private Handler mLongPressHandler = new Handler();
+    private final LongPressRunnable mLongPressRunnable = new LongPressRunnable();
+    private final Handler mLongPressHandler = new Handler();
 
     /** A runnable to send a delayed long press. */
     private class LongPressRunnable implements Runnable {
         private MotionEvent mInitialEvent;
         private boolean mIsPending;
 
+        @Initializer
         public void init(MotionEvent e) {
             if (mInitialEvent != null) {
                 mInitialEvent.recycle();
@@ -60,16 +67,6 @@ public class MotionEventFilter extends EventFilter {
         public MotionEvent getInitialEvent() {
             return mInitialEvent;
         }
-    }
-
-    /** Creates a {@link MotionEventFilter} with offset touch events. */
-    public MotionEventFilter(Context context, MotionEventHandler handler) {
-        this(context, handler, true);
-    }
-
-    /** Creates a {@link MotionEventFilter} with default long press behavior. */
-    public MotionEventFilter(Context context, MotionEventHandler handler, boolean autoOffset) {
-        this(context, handler, autoOffset, true);
     }
 
     /**
@@ -99,7 +96,12 @@ public class MotionEventFilter extends EventFilter {
 
                     @Override
                     public boolean onScroll(
-                            MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+                            @Nullable MotionEvent e1,
+                            @Nullable MotionEvent e2,
+                            float distanceX,
+                            float distanceY) {
+                        assumeNonNull(e1);
+                        assumeNonNull(e2);
                         if (!mSeenFirstScrollEvent) {
                             // Remove touch slop region from the first scroll event to avoid a jump.
                             mSeenFirstScrollEvent = true;
@@ -143,15 +145,19 @@ public class MotionEventFilter extends EventFilter {
                             mHandler.click(
                                     e.getX() * pxToDp,
                                     e.getY() * pxToDp,
-                                    e.getToolType(0) == MotionEvent.TOOL_TYPE_MOUSE,
-                                    mButtons);
+                                    mButtons,
+                                    e.getMetaState());
                         }
                         return true;
                     }
 
                     @Override
                     public boolean onFling(
-                            MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                            @Nullable MotionEvent e1,
+                            @Nullable MotionEvent e2,
+                            float velocityX,
+                            float velocityY) {
+                        assumeNonNull(e1);
                         if (mSingleInput) {
                             float pxToDp = mPxToDp;
                             mHandler.fling(
@@ -169,11 +175,7 @@ public class MotionEventFilter extends EventFilter {
                         mInLongPress = false;
                         mSeenFirstScrollEvent = false;
                         if (mSingleInput) {
-                            mHandler.onDown(
-                                    e.getX() * mPxToDp,
-                                    e.getY() * mPxToDp,
-                                    e.getToolType(0) == MotionEvent.TOOL_TYPE_MOUSE,
-                                    mButtons);
+                            mHandler.onDown(e.getX() * mPxToDp, e.getY() * mPxToDp, mButtons);
                         }
                         return true;
                     }

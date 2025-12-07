@@ -17,9 +17,11 @@ import android.view.accessibility.AccessibilityEvent;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.autofill.bottom_sheet_utils.DetailScreenScrollListener;
 import org.chromium.chrome.browser.ui.fast_checkout.R;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
@@ -28,9 +30,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /**
- * Coordinator for the detail screens (Autofill profile selection, credit card selection)
- * of the Fast Checkout bottom sheet.
+ * Coordinator for the detail screens (Autofill profile selection, credit card selection) of the
+ * Fast Checkout bottom sheet.
  */
+@NullMarked
 public class DetailScreenCoordinator {
     private final PropertyModel mModel;
     private final RecyclerView mRecyclerView;
@@ -57,10 +60,12 @@ public class DetailScreenCoordinator {
                     // would be not as expected. This event is emitted after the bottom sheet's
                     // focus-taking actions.
                     if (mModel.get(CURRENT_SCREEN) != HOME_SCREEN) {
+                        BottomSheetContent content =
+                                mBottomSheetController.getCurrentSheetContent();
+                        if (content == null) return;
+
                         View toolbarA11yOverlay =
-                                mBottomSheetController
-                                        .getCurrentSheetContent()
-                                        .getContentView()
+                                content.getContentView()
                                         .findViewById(R.id.fast_checkout_toolbar_a11y_overlay_view);
                         if (ChromeAccessibilityUtil.get().isAccessibilityEnabled()) {
                             // Request "accessibility-focus" for TalkBack.

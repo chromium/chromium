@@ -36,7 +36,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length_functions.h"
-#include "third_party/blink/renderer/platform/graphics/stroke_data.h"
+#include "third_party/blink/renderer/platform/geometry/stroke_data.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -87,8 +87,9 @@ gfx::RectF SVGLayoutSupport::LocalVisualRect(const LayoutObject& object) {
 
   // Return early for any cases where we don't actually paint
   if (object.StyleRef().Visibility() != EVisibility::kVisible &&
-      !object.EnclosingLayer()->HasVisibleContent())
+      !object.EnclosingLayer()->HasVisibleContent()) {
     return gfx::RectF();
+  }
 
   gfx::RectF visual_rect = object.VisualRectInLocalSVGCoordinates();
   if (int outset = OutlinePainter::OutlineOutsetExtent(
@@ -284,12 +285,15 @@ gfx::RectF SVGLayoutSupport::ComputeVisualRectForText(
 }
 
 DashArray SVGLayoutSupport::ResolveSVGDashArray(
-    const SVGDashArray& svg_dash_array,
+    const SVGDashArray* svg_dash_array,
     const ComputedStyle& style,
     const SVGViewportResolver& viewport_resolver) {
   DashArray dash_array;
-  for (const Length& dash_length : svg_dash_array.data) {
-    dash_array.push_back(ValueForLength(dash_length, viewport_resolver, style));
+  if (svg_dash_array) {
+    for (const Length& dash_length : *svg_dash_array) {
+      dash_array.push_back(
+          ValueForLength(dash_length, viewport_resolver, style));
+    }
   }
   return dash_array;
 }
@@ -309,7 +313,7 @@ void SVGLayoutSupport::ApplyStrokeStyleToStrokeData(StrokeData& stroke_data,
   stroke_data.SetMiterLimit(style.StrokeMiterLimit());
 
   DashArray dash_array =
-      ResolveSVGDashArray(*style.StrokeDashArray(), style, viewport_resolver);
+      ResolveSVGDashArray(style.StrokeDashArray(), style, viewport_resolver);
   float dash_offset =
       ValueForLength(style.StrokeDashOffset(), viewport_resolver, style);
   // Apply scaling from 'pathLength'.

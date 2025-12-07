@@ -2,20 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/parsers/h264_parser.h"
 
+#include <algorithm>
+#include <array>
 #include <cstring>
+#include <iterator>
 #include <limits>
 #include <memory>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/containers/span_reader.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
+#include "base/types/to_address.h"
 #include "media/base/subsample_entry.h"
 #include "media/parsers/bit_reader_macros.h"
 #include "ui/gfx/geometry/rect.h"
@@ -67,13 +70,12 @@ void H264SPS::GetLevelConfigFromProfileLevel(VideoCodecProfile profile,
   }
 }
 
-H264SPS::H264SPS() {
-  memset(this, 0, sizeof(*this));
-}
-
+H264SPS::H264SPS() = default;
+H264SPS::H264SPS(const H264SPS&) = default;
 H264SPS& H264SPS::operator=(const H264SPS&) = default;
-
 H264SPS::H264SPS(H264SPS&&) noexcept = default;
+H264SPS& H264SPS::operator=(H264SPS&&) noexcept = default;
+bool H264SPS::operator==(const H264SPS&) const = default;
 
 // Based on T-REC-H.264 7.4.2.1.1, "Sequence parameter set data semantics",
 // available from http://www.itu.int/rec/T-REC-H.264.
@@ -209,22 +211,18 @@ bool H264SPS::CheckIndicatedLevelWithinTarget(uint8_t target_level) const {
   return level <= target_level;
 }
 
-H264PPS::H264PPS() {
-  memset(this, 0, sizeof(*this));
-}
-
+H264PPS::H264PPS() = default;
+H264PPS::H264PPS(const H264PPS&) = default;
+H264PPS& H264PPS::operator=(const H264PPS&) = default;
 H264PPS::H264PPS(H264PPS&&) noexcept = default;
+H264PPS& H264PPS::operator=(H264PPS&&) noexcept = default;
+bool H264PPS::operator==(const H264PPS&) const = default;
 
-H264SliceHeader::H264SliceHeader() {
-  memset(this, 0, sizeof(*this));
-}
-
-H264SliceHeader::H264SliceHeader(const H264SliceHeader& t) = default;
-H264SliceHeader& H264SliceHeader::operator=(const H264SliceHeader& t) = default;
-
-H264SEIMessage::H264SEIMessage() {
-  memset(this, 0, sizeof(*this));
-}
+H264SliceHeader::H264SliceHeader() = default;
+H264SliceHeader::H264SliceHeader(const H264SliceHeader&) = default;
+H264SliceHeader& H264SliceHeader::operator=(const H264SliceHeader&) = default;
+H264SliceHeader::H264SliceHeader(H264SliceHeader&&) = default;
+H264SliceHeader& H264SliceHeader::operator=(H264SliceHeader&&) = default;
 
 gfx::HdrMetadataCta861_3 H264SEIContentLightLevelInfo::ToGfx() const {
   return gfx::HdrMetadataCta861_3(max_content_light_level,
@@ -254,10 +252,44 @@ H264SEI::~H264SEI() = default;
 
 // ISO 14496 part 10
 // VUI parameters: Table E-1 "Meaning of sample aspect ratio indicator"
-static const int kTableSarWidth[] = {0,  1,  12, 10, 16,  40, 24, 20, 32,
-                                     80, 18, 15, 64, 160, 4,  3,  2};
-static const int kTableSarHeight[] = {0,  1,  11, 11, 11, 33, 11, 11, 11,
-                                      33, 11, 11, 33, 99, 3,  2,  1};
+const auto kTableSarWidth = std::to_array<int>({
+    0,
+    1,
+    12,
+    10,
+    16,
+    40,
+    24,
+    20,
+    32,
+    80,
+    18,
+    15,
+    64,
+    160,
+    4,
+    3,
+    2,
+});
+const auto kTableSarHeight = std::to_array<int>({
+    0,
+    1,
+    11,
+    11,
+    11,
+    33,
+    11,
+    11,
+    11,
+    33,
+    11,
+    11,
+    33,
+    99,
+    3,
+    2,
+    1,
+});
 static_assert(std::size(kTableSarWidth) == std::size(kTableSarHeight),
               "sar tables must have the same size");
 
@@ -268,36 +300,37 @@ H264Parser::H264Parser() {
 H264Parser::~H264Parser() = default;
 
 void H264Parser::Reset() {
-  stream_ = nullptr;
-  bytes_left_ = 0;
+  stream_ = {};
   encrypted_ranges_.clear();
   previous_nalu_range_.clear();
 }
 
 void H264Parser::SetStream(const uint8_t* stream, off_t stream_size) {
+  SetStream(
+      UNSAFE_TODO(base::span(stream, base::checked_cast<size_t>(stream_size))));
+}
+
+void H264Parser::SetStream(base::span<const uint8_t> stream) {
   std::vector<SubsampleEntry> subsamples;
-  SetEncryptedStream(stream, stream_size, subsamples);
+  SetEncryptedStream(stream, subsamples);
 }
 
 void H264Parser::SetEncryptedStream(
-    const uint8_t* stream,
-    off_t stream_size,
+    base::span<const uint8_t> stream,
     const std::vector<SubsampleEntry>& subsamples) {
-  DCHECK(stream);
-  DCHECK_GT(stream_size, 0);
+  DCHECK_GT(stream.size(), 0u);
 
   stream_ = stream;
-  bytes_left_ = stream_size;
   previous_nalu_range_.clear();
 
   encrypted_ranges_.clear();
-  const uint8_t* start = stream;
-  const uint8_t* stream_end = stream_ + base::checked_cast<size_t>(bytes_left_);
+  const uint8_t* start = stream.data();
+  const uint8_t* stream_end = UNSAFE_TODO(stream_.data() + stream_.size());
   for (size_t i = 0; i < subsamples.size() && start < stream_end; ++i) {
-    start += subsamples[i].clear_bytes;
+    UNSAFE_TODO(start += subsamples[i].clear_bytes);
 
     const uint8_t* end =
-        std::min(start + subsamples[i].cypher_bytes, stream_end);
+        std::min(UNSAFE_TODO(start + subsamples[i].cypher_bytes), stream_end);
     encrypted_ranges_.Add(start, end);
     start = end;
   }
@@ -323,80 +356,56 @@ const H264SPS* H264Parser::GetSPS(int sps_id) const {
   return it->second.get();
 }
 
-static inline bool IsStartCode(const uint8_t* data) {
-  return data[0] == 0x00 && data[1] == 0x00 && data[2] == 0x01;
-}
-
 // static
-bool H264Parser::FindStartCode(const uint8_t* data,
-                               off_t data_size,
-                               off_t* offset,
-                               off_t* start_code_size) {
-  DCHECK_GE(data_size, 0);
-  off_t bytes_left = data_size;
-
-  while (bytes_left >= 3) {
+bool H264Parser::FindStartCode(base::span<const uint8_t> data,
+                               size_t* offset,
+                               size_t* start_code_size) {
+  for (size_t i = 2; i < data.size(); ++i) {
     // The start code is "\0\0\1", ones are more unusual than zeroes, so let's
     // search for it first.
-    const uint8_t* tmp =
-        reinterpret_cast<const uint8_t*>(memchr(data + 2, 1, bytes_left - 2));
-    if (!tmp) {
-      data += bytes_left - 2;
-      bytes_left = 2;
+    const uint8_t* start_code = reinterpret_cast<const uint8_t*>(UNSAFE_TODO(
+        memchr(base::to_address(data.begin() + i), 1, data.size() - i)));
+    if (!start_code) {
       break;
     }
-    tmp -= 2;
-    bytes_left -= tmp - data;
-    data = tmp;
+    i = start_code - data.data();
+    size_t offset_temp = i - 2;
+    auto [first, remain] = data.split_at(offset_temp);
 
-    if (IsStartCode(data)) {
+    if (remain[0] == 0 && remain[1] == 0) {
       // Found three-byte start code, set pointer at its beginning.
-      *offset = data_size - bytes_left;
+      *offset = offset_temp;
       *start_code_size = 3;
 
       // If there is a zero byte before this start code,
       // then it's actually a four-byte start code, so backtrack one byte.
-      if (*offset > 0 && *(data - 1) == 0x00) {
+      if (*offset > 0 && first.back() == 0x00) {
         --(*offset);
         ++(*start_code_size);
       }
 
       return true;
     }
-
-    ++data;
-    --bytes_left;
   }
 
-  // End of data: offset is pointing to the first byte that was not considered
-  // as a possible start of a start code.
-  // Note: there is no security issue when receiving a negative |data_size|
-  // since in this case, |bytes_left| is equal to |data_size| and thus
-  // |*offset| is equal to 0 (valid offset).
-  *offset = data_size - bytes_left;
+  *offset = data.size();
   *start_code_size = 0;
   return false;
 }
 
-bool H264Parser::LocateNALU(off_t* nalu_size, off_t* start_code_size) {
+bool H264Parser::LocateNALU(size_t* nalu_size, size_t* start_code_size) {
   // Find the start code of next NALU.
-  off_t nalu_start_off = 0;
-  off_t annexb_start_code_size = 0;
-
-  if (!FindStartCodeInClearRanges(stream_, bytes_left_, encrypted_ranges_,
-                                  &nalu_start_off, &annexb_start_code_size)) {
+  size_t nalu_start_off = 0;
+  size_t annexb_start_code_size = 0;
+  if (!FindStartCodeInClearRanges(stream_, encrypted_ranges_, &nalu_start_off,
+                                  &annexb_start_code_size)) {
     DVLOG(4) << "Could not find start code, end of stream?";
     return false;
   }
 
   // Move the stream to the beginning of the NALU (pointing at the start code).
-  stream_ += base::checked_cast<size_t>(nalu_start_off);
-  bytes_left_ -= nalu_start_off;
-
-  const uint8_t* nalu_data =
-      stream_ + base::checked_cast<size_t>(annexb_start_code_size);
-  off_t max_nalu_data_size = bytes_left_ - annexb_start_code_size;
-  if (max_nalu_data_size <= 0) {
+  stream_ = stream_.subspan(nalu_start_off);
+  if (stream_.size() <= annexb_start_code_size) {
     DVLOG(3) << "End of stream";
     return false;
   }
@@ -407,12 +416,12 @@ bool H264Parser::LocateNALU(off_t* nalu_size, off_t* start_code_size) {
   // if next start code is not found, it is still a valid NALU since there
   // are some bytes left after the first start code: all the remaining bytes
   // belong to the current NALU.
-  off_t next_start_code_size = 0;
-  off_t nalu_size_without_start_code = 0;
+  size_t next_start_code_size = 0;
+  size_t nalu_size_without_start_code = 0;
   if (!FindStartCodeInClearRanges(
-          nalu_data, max_nalu_data_size, encrypted_ranges_,
+          stream_.subspan(annexb_start_code_size), encrypted_ranges_,
           &nalu_size_without_start_code, &next_start_code_size)) {
-    nalu_size_without_start_code = max_nalu_data_size;
+    nalu_size_without_start_code = stream_.size() - annexb_start_code_size;
   }
   *nalu_size = nalu_size_without_start_code + annexb_start_code_size;
   *start_code_size = annexb_start_code_size;
@@ -421,40 +430,54 @@ bool H264Parser::LocateNALU(off_t* nalu_size, off_t* start_code_size) {
 
 // static
 bool H264Parser::FindStartCodeInClearRanges(
-    const uint8_t* data,
-    off_t data_size,
+    base::span<const uint8_t> data,
     const Ranges<const uint8_t*>& encrypted_ranges,
-    off_t* offset,
-    off_t* start_code_size) {
-  if (encrypted_ranges.size() == 0)
-    return FindStartCode(data, data_size, offset, start_code_size);
+    size_t* offset,
+    size_t* start_code_size) {
+  if (encrypted_ranges.size() == 0) {
+    return FindStartCode(data, offset, start_code_size);
+  }
 
-  DCHECK_GE(data_size, 0);
-  const uint8_t* start = data;
+  size_t offset_temp = 0;
   do {
-    off_t bytes_left = data_size - (start - data);
-
-    if (!FindStartCode(start, bytes_left, offset, start_code_size))
+    if (!FindStartCode(data.subspan(offset_temp), offset, start_code_size)) {
       return false;
+    }
 
     // Construct a Ranges object that represents the region occupied
     // by the start code and the 1 byte needed to read the NAL unit type.
-    const uint8_t* start_code = start + *offset;
-    const uint8_t* start_code_end = start_code + *start_code_size;
+    auto start_code = data.subspan(offset_temp + *offset, *start_code_size);
     Ranges<const uint8_t*> start_code_range;
-    start_code_range.Add(start_code, start_code_end + 1);
+    start_code_range.Add(start_code.data(),
+                         UNSAFE_TODO(base::to_address(start_code.end()) + 1));
 
     if (encrypted_ranges.IntersectionWith(start_code_range).size() > 0) {
       // The start code is inside an encrypted section so we need to scan
       // for another start code.
       *start_code_size = 0;
-      start += std::min(*offset + 1, bytes_left);
+      offset_temp += std::min(*offset + 1, data.size());
     }
   } while (*start_code_size == 0);
 
   // Update |*offset| to include the data we skipped over.
-  *offset += start - data;
+  *offset += offset_temp;
   return true;
+}
+
+bool H264Parser::FindStartCodeInClearRanges(
+    const uint8_t* data,
+    off_t data_size,
+    const Ranges<const uint8_t*>& ranges,
+    off_t* start_code_offset,
+    off_t* start_code_size) {
+  size_t offset = 0;
+  size_t size = 0;
+  bool result = FindStartCodeInClearRanges(
+      UNSAFE_TODO(base::span(data, base::checked_cast<size_t>(data_size))),
+      ranges, &offset, &size);
+  *start_code_offset = offset;
+  *start_code_size = size;
+  return result;
 }
 
 // static
@@ -491,7 +514,7 @@ bool H264Parser::ParseNALUs(const uint8_t* stream,
                             std::vector<H264NALU>* nalus) {
   DCHECK(nalus);
   H264Parser parser;
-  parser.SetStream(stream, stream_size);
+  parser.SetStream(UNSAFE_TODO(base::span(stream, stream_size)));
 
   while (true) {
     H264NALU nalu;
@@ -508,24 +531,22 @@ bool H264Parser::ParseNALUs(const uint8_t* stream,
 }
 
 H264Parser::Result H264Parser::AdvanceToNextNALU(H264NALU* nalu) {
-  off_t start_code_size;
-  off_t nalu_size_with_start_code;
+  size_t start_code_size;
+  size_t nalu_size_with_start_code;
   if (!LocateNALU(&nalu_size_with_start_code, &start_code_size)) {
     DVLOG(4) << "Could not find next NALU, bytes left in stream: "
-             << bytes_left_;
-    stream_ = nullptr;
-    bytes_left_ = 0;
+             << stream_.size();
+    stream_ = {};
     return kEOStream;
   }
 
-  nalu->data = stream_ + base::checked_cast<size_t>(start_code_size);
-  nalu->size = nalu_size_with_start_code - start_code_size;
+  nalu->data = stream_.subspan(start_code_size,
+                               nalu_size_with_start_code - start_code_size);
   DVLOG(4) << "NALU found: size=" << nalu_size_with_start_code;
 
   // Initialize bit reader at the start of found NALU.
-  if (!br_.Initialize(nalu->data, nalu->size)) {
-    stream_ = nullptr;
-    bytes_left_ = 0;
+  if (!br_.Initialize(nalu->data)) {
+    stream_ = {};
     return kEOStream;
   }
 
@@ -533,8 +554,7 @@ H264Parser::Result H264Parser::AdvanceToNextNALU(H264NALU* nalu) {
   // is called, we will effectively be skipping it;
   // other parsing functions will use the position saved
   // in bit reader for parsing, so we don't have to remember it here.
-  stream_ += base::checked_cast<size_t>(nalu_size_with_start_code);
-  bytes_left_ -= nalu_size_with_start_code;
+  stream_ = stream_.subspan(nalu_size_with_start_code);
 
   // Read NALU header, skip the forbidden_zero_bit, but check for it.
   int data;
@@ -545,146 +565,142 @@ H264Parser::Result H264Parser::AdvanceToNextNALU(H264NALU* nalu) {
   READ_BITS_OR_RETURN(5, &nalu->nal_unit_type);
 
   DVLOG(4) << "NALU type: " << static_cast<int>(nalu->nal_unit_type)
-           << " at: " << reinterpret_cast<const void*>(nalu->data.get())
-           << " size: " << nalu->size
+           << " at: " << reinterpret_cast<const void*>(nalu->data.data())
+           << " size: " << nalu->data.size()
            << " ref: " << static_cast<int>(nalu->nal_ref_idc);
 
   previous_nalu_range_.clear();
-  previous_nalu_range_.Add(nalu->data.get(),
-                           nalu->data + base::checked_cast<size_t>(nalu->size));
+  previous_nalu_range_.Add(nalu->data.data(),
+                           base::to_address(nalu->data.end()));
   return kOk;
 }
 
 // Default scaling lists (per spec).
-static const uint8_t kDefault4x4Intra[kH264ScalingList4x4Length] = {
-    6, 13, 13, 20, 20, 20, 28, 28, 28, 28, 32, 32, 32, 37, 37, 42,
-};
+static const std::array<uint8_t, kH264ScalingList4x4Length> kDefault4x4Intra = {
+    {6, 13, 13, 20, 20, 20, 28, 28, 28, 28, 32, 32, 32, 37, 37, 42}};
 
-static const uint8_t kDefault4x4Inter[kH264ScalingList4x4Length] = {
-    10, 14, 14, 20, 20, 20, 24, 24, 24, 24, 27, 27, 27, 30, 30, 34,
-};
+static const std::array<uint8_t, kH264ScalingList4x4Length> kDefault4x4Inter = {
+    {10, 14, 14, 20, 20, 20, 24, 24, 24, 24, 27, 27, 27, 30, 30, 34}};
 
-static const uint8_t kDefault8x8Intra[kH264ScalingList8x8Length] = {
-    6,  10, 10, 13, 11, 13, 16, 16, 16, 16, 18, 18, 18, 18, 18, 23,
-    23, 23, 23, 23, 23, 25, 25, 25, 25, 25, 25, 25, 27, 27, 27, 27,
-    27, 27, 27, 27, 29, 29, 29, 29, 29, 29, 29, 31, 31, 31, 31, 31,
-    31, 33, 33, 33, 33, 33, 36, 36, 36, 36, 38, 38, 38, 40, 40, 42,
-};
+static const std::array<uint8_t, kH264ScalingList8x8Length> kDefault8x8Intra = {
+    {
+        6,  10, 10, 13, 11, 13, 16, 16, 16, 16, 18, 18, 18, 18, 18, 23,
+        23, 23, 23, 23, 23, 25, 25, 25, 25, 25, 25, 25, 27, 27, 27, 27,
+        27, 27, 27, 27, 29, 29, 29, 29, 29, 29, 29, 31, 31, 31, 31, 31,
+        31, 33, 33, 33, 33, 33, 36, 36, 36, 36, 38, 38, 38, 40, 40, 42,
+    }};
 
-static const uint8_t kDefault8x8Inter[kH264ScalingList8x8Length] = {
-    9,  13, 13, 15, 13, 15, 17, 17, 17, 17, 19, 19, 19, 19, 19, 21,
-    21, 21, 21, 21, 21, 22, 22, 22, 22, 22, 22, 22, 24, 24, 24, 24,
-    24, 24, 24, 24, 25, 25, 25, 25, 25, 25, 25, 27, 27, 27, 27, 27,
-    27, 28, 28, 28, 28, 28, 30, 30, 30, 30, 32, 32, 32, 33, 33, 35,
-};
+static const std::array<uint8_t, kH264ScalingList8x8Length> kDefault8x8Inter = {
+    {
+        9,  13, 13, 15, 13, 15, 17, 17, 17, 17, 19, 19, 19, 19, 19, 21,
+        21, 21, 21, 21, 21, 22, 22, 22, 22, 22, 22, 22, 24, 24, 24, 24,
+        24, 24, 24, 24, 25, 25, 25, 25, 25, 25, 25, 27, 27, 27, 27, 27,
+        27, 28, 28, 28, 28, 28, 30, 30, 30, 30, 32, 32, 32, 33, 33, 35,
+    }};
 
 static inline void DefaultScalingList4x4(
     int i,
-    uint8_t scaling_list4x4[][kH264ScalingList4x4Length]) {
+    std::array<std::array<uint8_t, kH264ScalingList4x4Length>, 6>&
+        scaling_list4x4) {
   DCHECK_LT(i, 6);
 
   if (i < 3)
-    memcpy(scaling_list4x4[i], kDefault4x4Intra, sizeof(kDefault4x4Intra));
+    scaling_list4x4[i] = kDefault4x4Intra;
   else if (i < 6)
-    memcpy(scaling_list4x4[i], kDefault4x4Inter, sizeof(kDefault4x4Inter));
+    scaling_list4x4[i] = kDefault4x4Inter;
 }
 
 static inline void DefaultScalingList8x8(
     int i,
-    uint8_t scaling_list8x8[][kH264ScalingList8x8Length]) {
+    std::array<std::array<uint8_t, kH264ScalingList8x8Length>, 6>&
+        scaling_list8x8) {
   DCHECK_LT(i, 6);
 
   if (i % 2 == 0)
-    memcpy(scaling_list8x8[i], kDefault8x8Intra, sizeof(kDefault8x8Intra));
+    scaling_list8x8[i] = kDefault8x8Intra;
   else
-    memcpy(scaling_list8x8[i], kDefault8x8Inter, sizeof(kDefault8x8Inter));
+    scaling_list8x8[i] = kDefault8x8Inter;
 }
 
 static void FallbackScalingList4x4(
     int i,
-    const uint8_t default_scaling_list_intra[],
-    const uint8_t default_scaling_list_inter[],
-    uint8_t scaling_list4x4[][kH264ScalingList4x4Length]) {
-  static const int kScalingList4x4ByteSize =
-      sizeof(scaling_list4x4[0][0]) * kH264ScalingList4x4Length;
-
+    const std::array<uint8_t, kH264ScalingList4x4Length>&
+        default_scaling_list_intra,
+    const std::array<uint8_t, kH264ScalingList4x4Length>&
+        default_scaling_list_inter,
+    std::array<std::array<uint8_t, kH264ScalingList4x4Length>, 6>&
+        scaling_list4x4) {
   switch (i) {
     case 0:
-      memcpy(scaling_list4x4[i], default_scaling_list_intra,
-             kScalingList4x4ByteSize);
+      scaling_list4x4[i] = default_scaling_list_intra;
       break;
 
     case 1:
-      memcpy(scaling_list4x4[i], scaling_list4x4[0], kScalingList4x4ByteSize);
+      scaling_list4x4[i] = scaling_list4x4[0];
       break;
 
     case 2:
-      memcpy(scaling_list4x4[i], scaling_list4x4[1], kScalingList4x4ByteSize);
+      scaling_list4x4[i] = scaling_list4x4[1];
       break;
 
     case 3:
-      memcpy(scaling_list4x4[i], default_scaling_list_inter,
-             kScalingList4x4ByteSize);
+      scaling_list4x4[i] = default_scaling_list_inter;
       break;
 
     case 4:
-      memcpy(scaling_list4x4[i], scaling_list4x4[3], kScalingList4x4ByteSize);
+      scaling_list4x4[i] = scaling_list4x4[3];
       break;
 
     case 5:
-      memcpy(scaling_list4x4[i], scaling_list4x4[4], kScalingList4x4ByteSize);
+      scaling_list4x4[i] = scaling_list4x4[4];
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
 static void FallbackScalingList8x8(
     int i,
-    const uint8_t default_scaling_list_intra[],
-    const uint8_t default_scaling_list_inter[],
-    uint8_t scaling_list8x8[][kH264ScalingList8x8Length]) {
-  static const int kScalingList8x8ByteSize =
-      sizeof(scaling_list8x8[0][0]) * kH264ScalingList8x8Length;
-
+    const std::array<uint8_t, kH264ScalingList8x8Length>&
+        default_scaling_list_intra,
+    const std::array<uint8_t, kH264ScalingList8x8Length>&
+        default_scaling_list_inter,
+    std::array<std::array<uint8_t, kH264ScalingList8x8Length>, 6>&
+        scaling_list8x8) {
   switch (i) {
     case 0:
-      memcpy(scaling_list8x8[i], default_scaling_list_intra,
-             kScalingList8x8ByteSize);
+      scaling_list8x8[i] = default_scaling_list_intra;
       break;
 
     case 1:
-      memcpy(scaling_list8x8[i], default_scaling_list_inter,
-             kScalingList8x8ByteSize);
+      scaling_list8x8[i] = default_scaling_list_inter;
       break;
 
     case 2:
-      memcpy(scaling_list8x8[i], scaling_list8x8[0], kScalingList8x8ByteSize);
+      scaling_list8x8[i] = scaling_list8x8[0];
       break;
 
     case 3:
-      memcpy(scaling_list8x8[i], scaling_list8x8[1], kScalingList8x8ByteSize);
+      scaling_list8x8[i] = scaling_list8x8[1];
       break;
 
     case 4:
-      memcpy(scaling_list8x8[i], scaling_list8x8[2], kScalingList8x8ByteSize);
+      scaling_list8x8[i] = scaling_list8x8[2];
       break;
 
     case 5:
-      memcpy(scaling_list8x8[i], scaling_list8x8[3], kScalingList8x8ByteSize);
+      scaling_list8x8[i] = scaling_list8x8[3];
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
-H264Parser::Result H264Parser::ParseScalingList(int size,
-                                                uint8_t* scaling_list,
-                                                bool* use_default) {
+H264Parser::Result H264Parser::ParseScalingList(
+    base::span<uint8_t> scaling_list,
+    bool* use_default) {
   // See chapter 7.3.2.1.1.1.
   int last_scale = 8;
   int next_scale = 8;
@@ -692,7 +708,7 @@ H264Parser::Result H264Parser::ParseScalingList(int size,
 
   *use_default = false;
 
-  for (int j = 0; j < size; ++j) {
+  for (size_t j = 0; j < scaling_list.size(); ++j) {
     if (next_scale != 0) {
       READ_SE_OR_RETURN(&delta_scale);
       IN_RANGE_OR_RETURN(delta_scale, -128, 127);
@@ -722,8 +738,7 @@ H264Parser::Result H264Parser::ParseSPSScalingLists(H264SPS* sps) {
     READ_BOOL_OR_RETURN(&seq_scaling_list_present_flag);
 
     if (seq_scaling_list_present_flag) {
-      res = ParseScalingList(std::size(sps->scaling_list4x4[i]),
-                             sps->scaling_list4x4[i], &use_default);
+      res = ParseScalingList(sps->scaling_list4x4[i], &use_default);
       if (res != kOk)
         return res;
 
@@ -741,8 +756,7 @@ H264Parser::Result H264Parser::ParseSPSScalingLists(H264SPS* sps) {
     READ_BOOL_OR_RETURN(&seq_scaling_list_present_flag);
 
     if (seq_scaling_list_present_flag) {
-      res = ParseScalingList(std::size(sps->scaling_list8x8[i]),
-                             sps->scaling_list8x8[i], &use_default);
+      res = ParseScalingList(sps->scaling_list8x8[i], &use_default);
       if (res != kOk)
         return res;
 
@@ -769,8 +783,7 @@ H264Parser::Result H264Parser::ParsePPSScalingLists(const H264SPS& sps,
     READ_BOOL_OR_RETURN(&pic_scaling_list_present_flag);
 
     if (pic_scaling_list_present_flag) {
-      res = ParseScalingList(std::size(pps->scaling_list4x4[i]),
-                             pps->scaling_list4x4[i], &use_default);
+      res = ParseScalingList(pps->scaling_list4x4[i], &use_default);
       if (res != kOk)
         return res;
 
@@ -795,8 +808,7 @@ H264Parser::Result H264Parser::ParsePPSScalingLists(const H264SPS& sps,
       READ_BOOL_OR_RETURN(&pic_scaling_list_present_flag);
 
       if (pic_scaling_list_present_flag) {
-        res = ParseScalingList(std::size(pps->scaling_list8x8[i]),
-                               pps->scaling_list8x8[i], &use_default);
+        res = ParseScalingList(pps->scaling_list8x8[i], &use_default);
         if (res != kOk)
           return res;
 
@@ -927,10 +939,12 @@ H264Parser::Result H264Parser::ParseVUIParameters(H264SPS* sps) {
 }
 
 static void FillDefaultSeqScalingLists(H264SPS* sps) {
-  static_assert(sizeof(sps->scaling_list4x4[0][0]) == sizeof(uint8_t));
-  memset(sps->scaling_list4x4, 16, sizeof(sps->scaling_list4x4));
-  static_assert(sizeof(sps->scaling_list8x8[0][0]) == sizeof(uint8_t));
-  memset(sps->scaling_list8x8, 16, sizeof(sps->scaling_list8x8));
+  for (auto& arr : sps->scaling_list4x4) {
+    arr.fill(16);
+  }
+  for (auto& arr : sps->scaling_list8x8) {
+    arr.fill(16);
+  }
 }
 
 H264Parser::Result H264Parser::ParseSPS(int* sps_id) {
@@ -1113,8 +1127,8 @@ H264Parser::Result H264Parser::ParsePPS(int* pps_id) {
     Ranges<const uint8_t*> pps_range;
     // Only check that the next byte is unencrypted, not the rest of the NALU.
     const uint8_t* next_byte =
-        previous_nalu_range_.end(0) - br_.NumBitsLeft() / 8;
-    pps_range.Add(next_byte, next_byte + 1);
+        UNSAFE_TODO(previous_nalu_range_.end(0) - br_.NumBitsLeft() / 8);
+    pps_range.Add(next_byte, UNSAFE_TODO(next_byte + 1));
     pps_remainder_unencrypted =
         (encrypted_ranges_.IntersectionWith(pps_range).size() == 0);
   }
@@ -1167,7 +1181,7 @@ H264Parser::Result H264Parser::ParseRefPicListModification(
     return kInvalidStream;
 
   for (int i = 0; i < 32; ++i) {
-    pic_num_mod = &ref_list_mods[i];
+    pic_num_mod = &UNSAFE_TODO(ref_list_mods[i]);
     READ_UE_OR_RETURN(&pic_num_mod->modification_of_pic_nums_idc);
     TRUE_OR_RETURN(pic_num_mod->modification_of_pic_nums_idc < 4);
 
@@ -1209,7 +1223,7 @@ H264Parser::Result H264Parser::ParseRefPicListModifications(
     READ_BOOL_OR_RETURN(&shdr->ref_pic_list_modification_flag_l0);
     if (shdr->ref_pic_list_modification_flag_l0) {
       res = ParseRefPicListModification(shdr->num_ref_idx_l0_active_minus1,
-                                        shdr->ref_list_l0_modifications);
+                                        shdr->ref_list_l0_modifications.data());
       if (res != kOk)
         return res;
     }
@@ -1219,7 +1233,7 @@ H264Parser::Result H264Parser::ParseRefPicListModifications(
     READ_BOOL_OR_RETURN(&shdr->ref_pic_list_modification_flag_l1);
     if (shdr->ref_pic_list_modification_flag_l1) {
       res = ParseRefPicListModification(shdr->num_ref_idx_l1_active_minus1,
-                                        shdr->ref_list_l1_modifications);
+                                        shdr->ref_list_l1_modifications.data());
       if (res != kOk)
         return res;
     }
@@ -1359,8 +1373,8 @@ H264Parser::Result H264Parser::ParseSliceHeader(const H264NALU& nalu,
 
   shdr->idr_pic_flag = (nalu.nal_unit_type == 5);
   shdr->nal_ref_idc = nalu.nal_ref_idc;
-  shdr->nalu_data = nalu.data.get();
-  shdr->nalu_size = nalu.size;
+  shdr->nalu_data = nalu.data.data();
+  shdr->nalu_size = nalu.data.size();
 
   READ_UE_OR_RETURN(&shdr->first_mb_in_slice);
   READ_UE_OR_RETURN(&shdr->slice_type);
@@ -1513,75 +1527,81 @@ H264Parser::Result H264Parser::ParseSEI(H264SEI* sei) {
   // the parsed SEI messages, so we have to set a limit here.
   constexpr int kMaxParsedSEIMessages = 64;
   do {
+    int type = 0;
+    READ_BITS_OR_RETURN(8, &byte);
+    while (byte == 0xff) {
+      type += 255;
+      READ_BITS_OR_RETURN(8, &byte);
+    }
+    type += byte;
+
+    int payload_size = 0;
+    READ_BITS_OR_RETURN(8, &byte);
+    while (byte == 0xff) {
+      payload_size += 255;
+      READ_BITS_OR_RETURN(8, &byte);
+    }
+    payload_size += byte;
+    int num_bits_remain = payload_size * 8;
+
+    DVLOG(4) << "Found SEI message type: " << type
+             << " payload size: " << payload_size;
+
+    enum Type {
+      kSEIRecoveryPoint = 6,
+      kSEIMasteringDisplayInfo = 137,
+      kSEIContentLightLevelInfo = 144,
+    };
+
     H264SEIMessage sei_msg;
-    sei_msg.type = 0;
-    READ_BITS_OR_RETURN(8, &byte);
-    while (byte == 0xff) {
-      sei_msg.type += 255;
-      READ_BITS_OR_RETURN(8, &byte);
-    }
-    sei_msg.type += byte;
-
-    sei_msg.payload_size = 0;
-    READ_BITS_OR_RETURN(8, &byte);
-    while (byte == 0xff) {
-      sei_msg.payload_size += 255;
-      READ_BITS_OR_RETURN(8, &byte);
-    }
-    sei_msg.payload_size += byte;
-    int num_bits_remain = sei_msg.payload_size * 8;
-
-    DVLOG(4) << "Found SEI message type: " << sei_msg.type
-             << " payload size: " << sei_msg.payload_size;
-
-    switch (sei_msg.type) {
-      case H264SEIMessage::kSEIRecoveryPoint:
+    switch (type) {
+      case kSEIRecoveryPoint: {
+        auto recovery_point = sei_msg.emplace<H264SEIRecoveryPoint>();
         READ_UE_AND_MINUS_BITS_READ_OR_RETURN(
-            &sei_msg.recovery_point.recovery_frame_cnt, &num_bits_remain);
+            &recovery_point.recovery_frame_cnt, &num_bits_remain);
         READ_BOOL_AND_MINUS_BITS_READ_OR_RETURN(
-            &sei_msg.recovery_point.exact_match_flag, &num_bits_remain);
+            &recovery_point.exact_match_flag, &num_bits_remain);
         READ_BOOL_AND_MINUS_BITS_READ_OR_RETURN(
-            &sei_msg.recovery_point.broken_link_flag, &num_bits_remain);
+            &recovery_point.broken_link_flag, &num_bits_remain);
         READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(
-            2, &sei_msg.recovery_point.changing_slice_group_idc,
-            &num_bits_remain);
+            2, &recovery_point.changing_slice_group_idc, &num_bits_remain);
         break;
-      case H264SEIMessage::kSEIContentLightLevelInfo:
+      }
+      case kSEIContentLightLevelInfo: {
+        auto& info = sei_msg.emplace<H264SEIContentLightLevelInfo>();
         READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(
-            16, &sei_msg.content_light_level_info.max_content_light_level,
-            &num_bits_remain);
+            16, &info.max_content_light_level, &num_bits_remain);
         READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(
-            16,
-            &sei_msg.content_light_level_info.max_picture_average_light_level,
-            &num_bits_remain);
+            16, &info.max_picture_average_light_level, &num_bits_remain);
         break;
-      case H264SEIMessage::kSEIMasteringDisplayInfo:
-        for (auto& primary : sei_msg.mastering_display_info.display_primaries) {
+      }
+      case kSEIMasteringDisplayInfo: {
+        auto& info = sei_msg.emplace<H264SEIMasteringDisplayInfo>();
+        for (auto& primary : info.display_primaries) {
           for (auto& component : primary) {
             READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(16, &component,
                                                     &num_bits_remain);
           }
         }
-        READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(
-            16, &sei_msg.mastering_display_info.white_points[0],
-            &num_bits_remain);
-        READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(
-            16, &sei_msg.mastering_display_info.white_points[1],
-            &num_bits_remain);
+        READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(16, &info.white_points[0],
+                                                &num_bits_remain);
+        READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(16, &info.white_points[1],
+                                                &num_bits_remain);
         uint32_t luminace_high_31bits, luminance_low_1bit;
         READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(31, &luminace_high_31bits,
                                                 &num_bits_remain);
         READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(1, &luminance_low_1bit,
                                                 &num_bits_remain);
-        sei_msg.mastering_display_info.max_luminance =
+        info.max_luminance =
             (luminace_high_31bits << 1) + (luminance_low_1bit & 0x1);
         READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(31, &luminace_high_31bits,
                                                 &num_bits_remain);
         READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(1, &luminance_low_1bit,
                                                 &num_bits_remain);
-        sei_msg.mastering_display_info.min_luminance =
+        info.min_luminance =
             (luminace_high_31bits << 1) + (luminance_low_1bit & 0x1);
         break;
+      }
       default:
         DVLOG(4) << "Unsupported SEI message";
         break;
@@ -1591,8 +1611,9 @@ H264Parser::Result H264Parser::ParseSEI(H264SEI* sei) {
     if (num_bits_remain > 0)
       SKIP_BITS_OR_RETURN(num_bits_remain);
     // Only add parsed SEI messages.
-    if (num_bits_remain < sei_msg.payload_size * 8)
+    if (num_bits_remain < payload_size * 8) {
       sei->msgs.push_back(sei_msg);
+    }
     // In case the loop endless.
     if (++num_parsed_sei_msg > kMaxParsedSEIMessages)
       return kInvalidStream;

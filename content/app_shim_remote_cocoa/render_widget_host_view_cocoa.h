@@ -13,8 +13,8 @@
 
 #include "base/containers/flat_set.h"
 #include "content/browser/renderer_host/input/mouse_wheel_rails_filter_mac.h"
+#include "content/common/content_export.h"
 #include "content/common/render_widget_host_ns_view.mojom.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-shared.h"
 #import "ui/base/cocoa/command_dispatcher.h"
 #import "ui/base/cocoa/tool_tip_base_view.h"
@@ -49,6 +49,7 @@ struct DidOverscrollParams;
 // but that means that the view needs to own the delegate and will dispose of it
 // when it's removed from the view system.
 // TODO(ccameron): Hide this interface behind RenderWidgetHostNSViewBridge.
+CONTENT_EXPORT
 @interface RenderWidgetHostViewCocoa
     : ToolTipBaseView <CommandDispatcherTarget,
                        RenderWidgetHostNSViewHostOwner,
@@ -62,22 +63,10 @@ struct DidOverscrollParams;
 
 @property(nonatomic, strong) NSSpellChecker* spellCheckerForTesting;
 
-// Common code path for handling begin gesture events. This helper method is
-// called via different codepaths based on OS version and SDK:
-// - On 10.11 and later, when linking with the 10.11 SDK, it is called from
-//   |magnifyWithEvent:| when the given event's phase is NSEventPhaseBegin.
-// - On 10.10 and earlier, or when linking with an earlier SDK, it is called
-//   by |beginGestureWithEvent:| when a gesture begins.
-- (void)handleBeginGestureWithEvent:(NSEvent*)event
-            isSyntheticallyInjected:(BOOL)isSyntheticallyInjected;
-
-// Common code path for handling end gesture events. This helper method is
-// called via different codepaths based on OS version and SDK:
-// - On 10.11 and later, when linking with the 10.11 SDK, it is called from
-//   |magnifyWithEvent:| when the given event's phase is NSEventPhaseEnded.
-// - On 10.10 and earlier, or when linking with an earlier SDK, it is called
-//   by |endGestureWithEvent:| when a gesture ends.
-- (void)handleEndGestureWithEvent:(NSEvent*)event;
+// Inject a magnify event. Identical to the processing that happens with the
+// -magnifyWithEvent: message, but if `injected` is set to YES, then the pinch
+// threshold is bypassed.
+- (void)magnifyWithEvent:(NSEvent*)event isSyntheticallyInjected:(BOOL)injected;
 
 - (void)setCanBeKeyView:(BOOL)can;
 - (void)setCloseOnDeactivate:(BOOL)b;

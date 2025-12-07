@@ -71,7 +71,11 @@ chromium-metrics-reviews@google.com.
   <int value="19" label="JNI environment error"/>
   <int value="20" label="JNI thread attach error"/>
   <int value="21" label="Wakelock error"/>
+  <int value="22" label="Unexpected state"/>
+  <int value="23" label="Socket error"/>
 </enum>
+
+<!-- LINT.IfChange(BluetoothConnectToServiceError) -->
 
 <enum name="BluetoothConnectToServiceError">
   <int value="0" label="Unknown"/>
@@ -79,6 +83,8 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Invalid UUID"/>
   <int value="3" label="Socket is not listening"/>
 </enum>
+
+<!-- LINT.ThenChange(//ash/quick_pair/common/fast_pair/fast_pair_metrics.cc:BluetoothConnectToServiceError) -->
 
 <enum name="BluetoothDeviceConnectErrorCode">
   <int value="0" label="Authorization Cancelled"/>
@@ -100,6 +106,8 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="JNI environment error"/>
   <int value="17" label="JNI thread attach error"/>
   <int value="18" label="Wakelock error"/>
+  <int value="19" label="Unexpected state"/>
+  <int value="20" label="Socket error"/>
 </enum>
 
 <enum name="BluetoothDeviceConnectToServiceFailureReason">
@@ -139,34 +147,6 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Mouse"/>
   <int value="12" label="Tablet"/>
   <int value="13" label="Keyboard Mouse Combo"/>
-</enum>
-
-<enum name="BluetoothDiscoveryOutcomes">
-  <int value="0" label="Success"/>
-  <int value="1"
-      label="Unknown error; used when we could add code to get more detail"/>
-  <int value="2" label="Function not implemented on this platform"/>
-  <int value="3" label="Adapter not present"/>
-  <int value="4" label="Adapter removed since call chain started"/>
-  <int value="5" label="Discovery session not active"/>
-  <int value="6"
-      label="Attempted to remove a discovery session with another pending
-             request"/>
-  <int value="7"
-      label="Active BluetoothDiscoverySession wasn't found in
-             BluetoothAdapter"/>
-  <int value="8" label="Failed without a more specific reason"/>
-  <int value="9" label="(BlueZ) DBus failed to find the adapter"/>
-  <int value="10" label="(BlueZ) DBus didn't return an error code"/>
-  <int value="11" label="(BlueZ) org.bluez.Error.InProgress"/>
-  <int value="12" label="(BlueZ) org.bluez.Error.NotReady"/>
-  <int value="13"
-      label="(BlueZ) org.bluez.Error.Failed inside SetDiscoveryFilter, maybe
-             indicating an unsupported transport"/>
-  <int value="14"
-      label="(BlueZ) org.bluez.Error.NotSupported inside SetDiscoverFilter,
-             indicating a kernel that does not support Start Service
-             Discovery."/>
 </enum>
 
 <enum name="BluetoothGattServiceGattErrorCode">
@@ -218,6 +198,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Success"/>
 </enum>
 
+<!-- LINT.IfChange(FastPairAccountKeyFailure) -->
+
 <enum name="FastPairAccountKeyFailure">
   <int value="0" label="Failed to find the Account Key GATT characteristic"/>
   <int value="1"
@@ -234,6 +216,10 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="GATT Error: Not Paired"/>
   <int value="10" label="GATT Error: Not Supported"/>
 </enum>
+
+<!-- LINT.ThenChange(//ash/quick_pair/common/account_key_failure.h:FastPairAccountKeyFailure) -->
+
+<!-- LINT.IfChange(FastPairEngagementFlowEvent) -->
 
 <enum name="FastPairEngagementFlowEvent">
   <int value="1" label="Discovery UI Shown"/>
@@ -258,6 +244,10 @@ chromium-metrics-reviews@google.com.
   <int value="1221" label="Pairing Succeeded: Already Paired"/>
 </enum>
 
+<!-- LINT.ThenChange(//ash/quick_pair/common/fast_pair/fast_pair_metrics.h:FastPairEngagementFlowEvent) -->
+
+<!-- LINT.IfChange(FastPairHandshakeFailureReason) -->
+
 <enum name="FastPairHandshakeFailureReason">
   <int value="0" label="Failed to initialize GATT connection"/>
   <int value="1" label="Failed to create FastPairDataEncryptor"/>
@@ -270,18 +260,30 @@ chromium-metrics-reviews@google.com.
       label="Incorrect Key-based Pairing Characteristic response type"/>
 </enum>
 
+<!-- LINT.ThenChange(//ash/quick_pair/common/fast_pair/fast_pair_metrics.h:FastPairHandshakeFailureReason) -->
+
+<!-- LINT.IfChange(FastPairHandshakeSteps) -->
+
 <enum name="FastPairHandshakeSteps">
   <int value="0" label="Handshake started"/>
   <int value="1" label="GATT initialized successfully"/>
   <int value="2"
-      label="Recieved response bytes from Key-based pairing characteristic"/>
+      label="Received response bytes from Key-based pairing characteristic"/>
   <int value="3" label="Handshake completed successfully"/>
 </enum>
+
+<!-- LINT.ThenChange(//ash/quick_pair/common/fast_pair/fast_pair_metrics.h:FastPairHandshakeSteps) -->
+
+<!-- LINT.IfChange(FastPairPairingMethod) -->
 
 <enum name="FastPairPairingMethod">
   <int value="0" label="Fast Pair Pairing"/>
   <int value="1" label="System UI Pairing"/>
 </enum>
+
+<!-- LINT.ThenChange(//ash/quick_pair/common/fast_pair/fast_pair_metrics.h:FastPairPairingMethod) -->
+
+<!-- LINT.IfChange(FastPairRetroactiveEngagementFlowEvent) -->
 
 <enum name="FastPairRetroactiveEngagementFlowEvent">
   <int value="1" label="Associate Account UI Shown"/>
@@ -300,6 +302,8 @@ chromium-metrics-reviews@google.com.
       label="Associate Account Dismissed By Timeout After Learn More Pressed"/>
 </enum>
 
+<!-- LINT.ThenChange(//ash/quick_pair/common/fast_pair/fast_pair_metrics.h:FastPairRetroactiveEngagementFlowEvent) -->
+
 <enum name="FastPairSavedDevicesUiEvent">
   <int value="0" label="Settings - saved device list subpage shown"/>
   <int value="1" label="Settings - user has devices saved to their account"/>
@@ -308,10 +312,14 @@ chromium-metrics-reviews@google.com.
       label="Settings - remove confirmed on remove saved device dialog"/>
 </enum>
 
+<!-- LINT.IfChange(FastPairVersion) -->
+
 <enum name="FastPairVersion">
   <int value="0" label="v1"/>
   <int value="1" label="v2"/>
 </enum>
+
+<!-- LINT.ThenChange(//ash/quick_pair/common/fast_pair/fast_pair_metrics.h:FastPairVersion) -->
 
 <enum name="ForgetResult">
   <int value="0" label="Failure"/>
@@ -1456,6 +1464,8 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="JNI environment error"/>
   <int value="19" label="JNI thread attach error"/>
   <int value="20" label="Wakelock error"/>
+  <int value="21" label="Unexpected state"/>
+  <int value="22" label="Socket error"/>
 </enum>
 
 <enum name="WebBluetoothGATTOperationOutcome">

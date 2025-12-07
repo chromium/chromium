@@ -32,6 +32,13 @@ struct COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiOutline {
   bool operator==(const MahiOutline&) const;
 };
 
+enum class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiGetContentResponseStatus {
+  // Error types can be fleshed out during implementation.
+  kSuccess = 0,
+  kContentExtractionError = 1,
+  kUnknownError = 2,
+};
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // List os possible response statuses for a Mahi request.
@@ -64,11 +71,26 @@ class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiManager {
   virtual gfx::ImageSkia GetContentIcon() = 0;
   virtual GURL GetContentUrl() = 0;
 
+  // Gets the source selected text. Should only be called when the existing
+  // panel is an elucidation result.
+  virtual std::u16string GetSelectedText() = 0;
+
+  // Returns the text content on the corresponding surface.
+  using MahiContentCallback =
+      base::OnceCallback<void(std::u16string, MahiGetContentResponseStatus)>;
+  virtual void GetContent(MahiContentCallback callback) = 0;
+
   // Returns the quick summary of the current active content on the
   // corresponding surface.
   using MahiSummaryCallback =
       base::OnceCallback<void(std::u16string, MahiResponseStatus)>;
   virtual void GetSummary(MahiSummaryCallback callback) = 0;
+
+  // Returns the elucidated / simplified text of the current selected text on
+  // the corresponding surface.
+  using MahiElucidationCallback =
+      base::OnceCallback<void(std::u16string, MahiResponseStatus)>;
+  virtual void GetElucidation(MahiElucidationCallback callback) = 0;
 
   // Returns the outlines of the current active content on the corresponding
   // surface.
@@ -79,15 +101,35 @@ class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiManager {
   // Goes to the content that is associated with `outline_id`.
   virtual void GoToOutlineContent(int outline_id) = 0;
 
-  // Answers the provided `question`. `current_panel_content` is a boolean to
-  // determine if the question is regarding the current content displayed on
-  // the panel.
+  // Answers the provided `question` with a once callback.
+  // `current_panel_content` is a boolean to determine if the question is
+  // regarding the current content displayed on the panel.
   using MahiAnswerQuestionCallback =
       base::OnceCallback<void(std::optional<std::u16string>,
                               MahiResponseStatus)>;
   virtual void AnswerQuestion(const std::u16string& question,
                               bool current_panel_content,
                               MahiAnswerQuestionCallback callback) = 0;
+
+  // Answers the provided `question` with a repeating callback.
+  // `current_panel_content` is a boolean to determine if the question is
+  // regarding the current content displayed on the panel.
+  using MahiAnswerQuestionCallbackRepeating =
+      base::RepeatingCallback<void(std::optional<std::u16string>,
+                                   MahiResponseStatus)>;
+  virtual void AnswerQuestionRepeating(
+      const std::u16string& question,
+      bool current_panel_content,
+      MahiAnswerQuestionCallbackRepeating callback) = 0;
+
+  // If this function is set to true, then multiple answers can be returned
+  // consecutively from the server after one question is asked. If this is set
+  // to false, then only one answer back from the server is allowed. If this
+  // value is set to true then the MahiAnswerQuestionCallbackRepeating callback
+  // function will be used within the AnswerQuestionRepeating function. Else,
+  // the MahiAnswerQuestionCallback callback will be used within the
+  // AnswerQuestion function.
+  virtual bool AllowRepeatingAnswers() = 0;
 
   // Gets suggested question for the content currently displayed in the panel.
   using MahiGetSuggestedQuestionCallback =

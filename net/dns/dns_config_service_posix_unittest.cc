@@ -15,7 +15,6 @@
 #include <optional>
 
 #include "base/cancelable_callback.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/sys_byteorder.h"

@@ -4,6 +4,8 @@
 
 #include <stddef.h>
 
+#include <sstream>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/test/icu_test_util.h"
@@ -72,3 +74,5 @@ static void JNI_GURLJavaTestHelper_TestGURLEquivalence(JNIEnv* env) {
 }
 
 }  // namespace url
+
+DEFINE_JNI(GURLJavaTestHelper)

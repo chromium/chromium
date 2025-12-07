@@ -25,6 +25,9 @@
 #include "extensions/browser/extension_error.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace content {
 class BrowserContext;
@@ -49,7 +52,7 @@ class ErrorConsole : public KeyedService,
     // Sent when a new error is reported to the error console.
     virtual void OnErrorAdded(const ExtensionError* error);
 
-    // Sent when errors are removed from the error console. |extension_ids| is
+    // Sent when errors are removed from the error console. `extension_ids` is
     // the set of ids that were affected.
     // Note: This is not sent when an extension is uninstalled, or when a
     // profile is destroyed.
@@ -67,23 +70,23 @@ class ErrorConsole : public KeyedService,
 
   ~ErrorConsole() override;
 
-  // Convenience method to return the ErrorConsole for a given |context|.
+  // Convenience method to return the ErrorConsole for a given `context`.
   static ErrorConsole* Get(content::BrowserContext* context);
 
-  // Set whether or not errors of the specified |type| are stored for the
-  // extension with the given |extension_id|. This will be stored in the
+  // Set whether or not errors of the specified `type` are stored for the
+  // extension with the given `extension_id`. This will be stored in the
   // preferences.
   void SetReportingForExtension(const std::string& extension_id,
                                 ExtensionError::Type type,
                                 bool enabled);
 
   // Set whether or not errors of all types are stored for the extension with
-  // the given |extension_id|.
+  // the given `extension_id`.
   void SetReportingAllForExtension(const std::string& extension_id,
                                            bool enabled);
 
   // Returns true if reporting for either manifest or runtime errors is enabled
-  // for the extension with the given |extension_id|.
+  // for the extension with the given `extension_id`.
   bool IsReportingEnabledForExtension(const std::string& extension_id) const;
 
   // Restore default reporting to the given extension.
@@ -92,11 +95,11 @@ class ErrorConsole : public KeyedService,
   // Report an extension error, and add it to the list.
   void ReportError(std::unique_ptr<ExtensionError> error);
 
-  // Removes errors from the map according to the given |filter|.
+  // Removes errors from the map according to the given `filter`.
   void RemoveErrors(const ErrorMap::Filter& filter);
 
   // Get a collection of weak pointers to all errors relating to the extension
-  // with the given |extension_id|.
+  // with the given `extension_id`.
   const ErrorList& GetErrorsForExtension(const std::string& extension_id) const;
 
   // Add or remove observers of the ErrorConsole to be notified of any errors

@@ -40,8 +40,6 @@
 namespace blink {
 
 class StyleResolverStats {
-  USING_FAST_MALLOC(StyleResolverStats);
-
  public:
   StyleResolverStats() { Reset(); }
 
@@ -50,7 +48,6 @@ class StyleResolverStats {
 
   unsigned matched_property_apply;
   unsigned matched_property_cache_hit;
-  unsigned matched_property_cache_inherited_hit;
   unsigned matched_property_cache_added;
   unsigned rules_fast_rejected;
   unsigned rules_rejected;

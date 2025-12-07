@@ -52,10 +52,21 @@ static WebFeature AlgorithmIdToFeature(WebCryptoAlgorithmId id) {
       return WebFeature::kCryptoAlgorithmEd25519;
     case kWebCryptoAlgorithmIdX25519:
       return WebFeature::kCryptoAlgorithmX25519;
+    case kWebCryptoAlgorithmIdChaCha20Poly1305:
+      return WebFeature::kCryptoAlgorithmChaCha20Poly1305;
+    case kWebCryptoAlgorithmIdMlDsa44:
+      return WebFeature::kCryptoAlgorithmMlDsa44;
+    case kWebCryptoAlgorithmIdMlDsa65:
+      return WebFeature::kCryptoAlgorithmMlDsa65;
+    case kWebCryptoAlgorithmIdMlDsa87:
+      return WebFeature::kCryptoAlgorithmMlDsa87;
+    case kWebCryptoAlgorithmIdMlKem768:
+      return WebFeature::kCryptoAlgorithmMlKem768;
+    case kWebCryptoAlgorithmIdMlKem1024:
+      return WebFeature::kCryptoAlgorithmMlKem1024;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return static_cast<WebFeature>(0);
+  NOTREACHED();
 }
 
 static void HistogramAlgorithmId(ExecutionContext* context,
@@ -96,7 +107,7 @@ void HistogramAlgorithm(ExecutionContext* context,
     case kWebCryptoAlgorithmParamsTypeEcdhKeyDeriveParams:
     case kWebCryptoAlgorithmParamsTypeNone:
     case kWebCryptoAlgorithmParamsTypeAesCbcParams:
-    case kWebCryptoAlgorithmParamsTypeAesGcmParams:
+    case kWebCryptoAlgorithmParamsTypeAeadParams:
     case kWebCryptoAlgorithmParamsTypeAesKeyGenParams:
     case kWebCryptoAlgorithmParamsTypeRsaOaepParams:
     case kWebCryptoAlgorithmParamsTypeAesCtrParams:
@@ -140,7 +151,7 @@ void HistogramAlgorithmAndKey(ExecutionContext* context,
 }
 
 void HistogramDeriveBitsTruncation(ExecutionContext* context,
-                                   unsigned int length_bits,
+                                   std::optional<unsigned int> length_bits,
                                    WebCryptoWarningType status) {
   if (length_bits == 0) {
     UseCounter::Count(context, WebFeature::kSubtleCryptoDeriveBitsZeroLength);

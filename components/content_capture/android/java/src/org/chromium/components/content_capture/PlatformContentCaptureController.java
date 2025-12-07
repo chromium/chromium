@@ -4,20 +4,32 @@
 
 package org.chromium.components.content_capture;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.LocusId;
 import android.os.Build;
+import android.os.ParcelFileDescriptor;
+import android.os.ParcelFileDescriptor.AutoCloseOutputStream;
 import android.view.contentcapture.ContentCaptureCondition;
 import android.view.contentcapture.ContentCaptureManager;
 import android.view.contentcapture.DataRemovalRequest;
+import android.view.contentcapture.DataShareRequest;
+import android.view.contentcapture.DataShareWriteAdapter;
 
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.AndroidInfo;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.task.AsyncTask;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.components.content_capture.ContentCaptureMetadataProto.ContentCaptureMetadata;
 
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -28,22 +40,28 @@ import java.util.regex.Pattern;
  * the methods to check if the given urls shall be captured and delete the ContentCapture history.
  */
 @RequiresApi(Build.VERSION_CODES.Q)
+@NullMarked
 public class PlatformContentCaptureController {
     private static final String TAG = "ContentCapture";
     private static final String AIAI_PACKAGE_NAME = "com.google.android.as";
+    private static final String MIME_TYPE = "application/protobuf";
 
-    private static PlatformContentCaptureController sContentCaptureController;
+    private static @Nullable PlatformContentCaptureController sContentCaptureController;
 
     private boolean mShouldStartCapture;
     private boolean mIsAiai;
-    private UrlAllowlist mAllowlist;
-    private ContentCaptureManager mContentCaptureManager;
+    private @Nullable UrlAllowlist mAllowlist;
+    private final ContentCaptureManager mContentCaptureManager;
 
-    public static void init(Context context) {
-        sContentCaptureController = new PlatformContentCaptureController(context);
+    public static PlatformContentCaptureController lazyInit() {
+        if (sContentCaptureController == null) {
+            sContentCaptureController =
+                new PlatformContentCaptureController(ContextUtils.getApplicationContext());
+        }
+        return sContentCaptureController;
     }
 
-    public static PlatformContentCaptureController getInstance() {
+    public static @Nullable PlatformContentCaptureController getInstance() {
         return sContentCaptureController;
     }
 
@@ -78,9 +96,11 @@ public class PlatformContentCaptureController {
         if (!mIsAiai) {
             log(
                     "Package doesn't match, current one is "
-                            + mContentCaptureManager.getServiceComponentName().getPackageName());
+                            + assumeNonNull(mContentCaptureManager.getServiceComponentName())
+                                    .getPackageName());
             // Disable the ContentCapture if there is no testing flag.
-            if (!BuildInfo.isDebugAndroid() && !ContentCaptureFeatures.isDumpForTestingEnabled()) {
+            if (!AndroidInfo.isDebugAndroid()
+                    && !ContentCaptureFeatures.isDumpForTestingEnabled()) {
                 return;
             }
         }
@@ -105,10 +125,10 @@ public class PlatformContentCaptureController {
         ArrayList<Pattern> allowedRe = null;
         for (ContentCaptureCondition c : conditions) {
             if ((c.getFlags() & ContentCaptureCondition.FLAG_IS_REGEX) != 0) {
-                if (allowedRe == null) allowedRe = new ArrayList<Pattern>();
+                if (allowedRe == null) allowedRe = new ArrayList<>();
                 allowedRe.add(Pattern.compile(c.getLocusId().getId()));
             } else {
-                if (allowedUrls == null) allowedUrls = new HashSet<String>();
+                if (allowedUrls == null) allowedUrls = new HashSet<>();
                 allowedUrls.add(c.getLocusId().getId());
             }
         }
@@ -138,7 +158,39 @@ public class PlatformContentCaptureController {
         mContentCaptureManager.removeData(builder.build());
     }
 
-    /** @return  @return if any of the given allows to be captured. */
+    @RequiresApi(Build.VERSION_CODES.R)
+    public void shareData(String url, ContentCaptureMetadata metadata) {
+        if (mContentCaptureManager == null) return;
+
+        mContentCaptureManager.shareData(
+                new DataShareRequest(new LocusId(url), MIME_TYPE),
+                AsyncTask.SERIAL_EXECUTOR,
+                new DataShareWriteAdapter() {
+                    @Override
+                    public void onWrite(ParcelFileDescriptor destination) {
+                        try (OutputStream outputStream = new AutoCloseOutputStream(destination)) {
+                            metadata.writeTo(outputStream);
+                            log("Successfully sent data share");
+                        } catch (Exception e) {
+                            log("Error writing metadata to data share stream: " + e);
+                        }
+                    }
+
+                    @Override
+                    public void onRejected() {
+                        log("Data share rejected by Content Capture service.");
+                    }
+
+                    @Override
+                    public void onError(int errorCode) {
+                        log("Data share failed with error code " + errorCode);
+                    }
+                });
+    }
+
+    /**
+     * @return if any of the given allows to be captured.
+     */
     public boolean shouldCapture(String[] urls) {
         if (mAllowlist == null) return true;
         return mAllowlist.isAllowed(urls);

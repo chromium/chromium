@@ -13,8 +13,6 @@ namespace cc {
 
 std::string TileResolutionToString(TileResolution resolution) {
   switch (resolution) {
-  case LOW_RESOLUTION:
-    return "LOW_RESOLUTION";
   case HIGH_RESOLUTION:
     return "HIGH_RESOLUTION";
   case NON_IDEAL_RESOLUTION:

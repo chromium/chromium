@@ -11,7 +11,6 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,11 +26,12 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.TimeoutException;
 
@@ -40,14 +40,11 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class MediaCaptureOverlayControllerTest {
-    @ClassRule
-    public static final ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public final BlankCTATabInitialStateRule mInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public final AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
+    private WebPageStation mPage;
     private ChromeTabbedActivity mActivity;
 
     private MediaCaptureOverlayController mController;
@@ -55,7 +52,8 @@ public class MediaCaptureOverlayControllerTest {
 
     @Before
     public void setUp() throws Exception {
-        mActivity = sActivityTestRule.getActivity();
+        mPage = mActivityTestRule.startOnBlankPage();
+        mActivity = mPage.getActivity();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mController = MediaCaptureOverlayController.from(mActivity.getWindowAndroid());
@@ -67,7 +65,7 @@ public class MediaCaptureOverlayControllerTest {
     public Tab openNewTab() {
         // Launch a new tab in the foreground.
         ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(), mActivity);
-        return mActivity.getActivityTab();
+        return mActivityTestRule.getActivityTab();
     }
 
     public void waitForOverlayVisibility(boolean visible) {
@@ -82,9 +80,9 @@ public class MediaCaptureOverlayControllerTest {
 
     @Test
     @SmallTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testSimpleCapture() {
-        Tab tab = mActivity.getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
 
         // Before capture starts the overlay should not be visible.
         waitForOverlayVisibility(false);
@@ -100,9 +98,9 @@ public class MediaCaptureOverlayControllerTest {
 
     @Test
     @SmallTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testShowHideWithOverview() throws TimeoutException {
-        Tab tab = mActivity.getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
 
         // Start capturing the tab and assert that the overlay is visible.
         ThreadUtils.runOnUiThreadBlocking(() -> mController.startCapture(tab));
@@ -120,9 +118,9 @@ public class MediaCaptureOverlayControllerTest {
 
     @Test
     @SmallTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testCloseTabStopsOverlay() {
-        Tab tab = mActivity.getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
 
         // Start capturing the tab and assert that the overlay is visible.
         ThreadUtils.runOnUiThreadBlocking(() -> mController.startCapture(tab));
@@ -135,9 +133,9 @@ public class MediaCaptureOverlayControllerTest {
 
     @Test
     @SmallTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testSwitchToNonCapturedTab() throws TimeoutException {
-        Tab firstTab = mActivity.getActivityTab();
+        Tab firstTab = mActivityTestRule.getActivityTab();
 
         // Start capturing the tab and assert that the overlay is visible.
         ThreadUtils.runOnUiThreadBlocking(() -> mController.startCapture(firstTab));
@@ -150,9 +148,9 @@ public class MediaCaptureOverlayControllerTest {
 
     @Test
     @SmallTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testStopOtherCapturedTab() throws TimeoutException {
-        Tab firstTab = mActivity.getActivityTab();
+        Tab firstTab = mActivityTestRule.getActivityTab();
 
         // Start capturing the tab and assert that the overlay is visible.
         ThreadUtils.runOnUiThreadBlocking(() -> mController.startCapture(firstTab));

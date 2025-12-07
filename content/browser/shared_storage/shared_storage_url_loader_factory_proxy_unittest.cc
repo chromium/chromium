@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -21,6 +22,7 @@
 #include "net/cookies/site_for_cookies.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -64,6 +66,11 @@ class SharedStorageURLLoaderFactoryProxyTest
         data_origin_(IsContextOriginDataOrigin()
                          ? url::Origin::Create(GURL(kContextUrl))
                          : url::Origin::Create(script_url_)) {
+    // TODO(crbug.com/382291442): Remove feature enablement once launched.
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(
+        network::features::kPopulatePermissionsPolicyOnRequest);
+
     CreateUrlLoaderFactoryProxy();
   }
 
@@ -96,7 +103,9 @@ class SharedStorageURLLoaderFactoryProxyTest
             remote_url_loader_factory_.BindNewPipeAndPassReceiver(),
             frame_origin_, data_origin_, script_url_,
             network::mojom::CredentialsMode::kSameOrigin,
-            net::SiteForCookies::FromOrigin(frame_origin_));
+            net::SiteForCookies::FromOrigin(frame_origin_),
+            *network::PermissionsPolicy::CreateFromParsedPolicy(
+                {}, {}, url::Origin::Create(script_url_)));
   }
 
   // Attempts to make a request for `request`.

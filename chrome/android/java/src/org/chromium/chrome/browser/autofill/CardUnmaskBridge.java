@@ -12,6 +12,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.CardUnmaskPrompt.CardUnmaskPromptDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.base.WindowAndroid;
@@ -20,13 +22,14 @@ import org.chromium.url.GURL;
 
 /** JNI call glue for CardUnmaskPrompt C++ and Java objects. */
 @JNINamespace("autofill")
+@NullMarked
 public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
     private final long mNativeCardUnmaskPromptViewAndroid;
-    private final CardUnmaskPrompt mCardUnmaskPrompt;
+    private final @Nullable CardUnmaskPrompt mCardUnmaskPrompt;
 
     private CardUnmaskBridge(
             long nativeCardUnmaskPromptViewAndroid,
-            PersonalDataManager personalDataManager,
+            AutofillImageFetcher imageFetcher,
             String title,
             String instructions,
             int cardIconId,
@@ -37,7 +40,6 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
             String confirmButtonLabel,
             int cvcIconId,
             String cvcImageAnnouncement,
-            int googlePayIconId,
             boolean isVirtualCard,
             boolean shouldRequestExpirationDate,
             boolean shouldOfferWebauthn,
@@ -56,7 +58,7 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
                     new CardUnmaskPrompt(
                             activity,
                             this,
-                            personalDataManager,
+                            imageFetcher,
                             title,
                             instructions,
                             cardIconId,
@@ -67,7 +69,6 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
                             confirmButtonLabel,
                             cvcIconId,
                             cvcImageAnnouncement,
-                            googlePayIconId,
                             isVirtualCard,
                             shouldRequestExpirationDate,
                             shouldOfferWebauthn,
@@ -92,7 +93,7 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
             String confirmButtonLabel,
             int cvcIconId,
             String cvcImageAnnouncement,
-            int googlePayIconId,
+            int unused_googlePayIconId,
             boolean isVirtualCard,
             boolean shouldRequestExpirationDate,
             boolean shouldOfferWebauthn,
@@ -101,7 +102,7 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
             WindowAndroid windowAndroid) {
         return new CardUnmaskBridge(
                 nativeUnmaskPrompt,
-                PersonalDataManagerFactory.getForProfile(profile),
+                AutofillImageFetcherFactory.getForProfile(profile),
                 title,
                 instructions,
                 cardIconId,
@@ -112,7 +113,6 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
                 confirmButtonLabel,
                 cvcIconId,
                 cvcImageAnnouncement,
-                googlePayIconId,
                 isVirtualCard,
                 shouldRequestExpirationDate,
                 shouldOfferWebauthn,
@@ -123,15 +123,13 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
 
     @Override
     public void dismissed() {
-        CardUnmaskBridgeJni.get()
-                .promptDismissed(mNativeCardUnmaskPromptViewAndroid, CardUnmaskBridge.this);
+        CardUnmaskBridgeJni.get().promptDismissed(mNativeCardUnmaskPromptViewAndroid);
     }
 
     @Override
     public boolean checkUserInputValidity(String userResponse) {
         return CardUnmaskBridgeJni.get()
-                .checkUserInputValidity(
-                        mNativeCardUnmaskPromptViewAndroid, CardUnmaskBridge.this, userResponse);
+                .checkUserInputValidity(mNativeCardUnmaskPromptViewAndroid, userResponse);
     }
 
     @Override
@@ -144,7 +142,6 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
         CardUnmaskBridgeJni.get()
                 .onUserInput(
                         mNativeCardUnmaskPromptViewAndroid,
-                        CardUnmaskBridge.this,
                         cvc,
                         month,
                         year,
@@ -154,14 +151,12 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
 
     @Override
     public void onNewCardLinkClicked() {
-        CardUnmaskBridgeJni.get()
-                .onNewCardLinkClicked(mNativeCardUnmaskPromptViewAndroid, CardUnmaskBridge.this);
+        CardUnmaskBridgeJni.get().onNewCardLinkClicked(mNativeCardUnmaskPromptViewAndroid);
     }
 
     @Override
     public int getExpectedCvcLength() {
-        return CardUnmaskBridgeJni.get()
-                .getExpectedCvcLength(mNativeCardUnmaskPromptViewAndroid, CardUnmaskBridge.this);
+        return CardUnmaskBridgeJni.get().getExpectedCvcLength(mNativeCardUnmaskPromptViewAndroid);
     }
 
     /** Shows a prompt for unmasking a Wallet credit card. */
@@ -215,24 +210,22 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
 
     @NativeMethods
     interface Natives {
-        void promptDismissed(long nativeCardUnmaskPromptViewAndroid, CardUnmaskBridge caller);
+        void promptDismissed(long nativeCardUnmaskPromptViewAndroid);
 
         boolean checkUserInputValidity(
                 long nativeCardUnmaskPromptViewAndroid,
-                CardUnmaskBridge caller,
                 @JniType("std::u16string") String userResponse);
 
         void onUserInput(
                 long nativeCardUnmaskPromptViewAndroid,
-                CardUnmaskBridge caller,
                 @JniType("std::u16string") String cvc,
                 @JniType("std::u16string") String month,
                 @JniType("std::u16string") String year,
                 boolean enableFidoAuth,
                 boolean wasCheckboxVisible);
 
-        void onNewCardLinkClicked(long nativeCardUnmaskPromptViewAndroid, CardUnmaskBridge caller);
+        void onNewCardLinkClicked(long nativeCardUnmaskPromptViewAndroid);
 
-        int getExpectedCvcLength(long nativeCardUnmaskPromptViewAndroid, CardUnmaskBridge caller);
+        int getExpectedCvcLength(long nativeCardUnmaskPromptViewAndroid);
     }
 }

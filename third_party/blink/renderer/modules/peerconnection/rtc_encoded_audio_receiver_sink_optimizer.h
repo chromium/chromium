@@ -19,7 +19,7 @@ class MODULES_EXPORT RtcEncodedAudioReceiverSinkOptimizer
     : public WritableStreamTransferringOptimizer {
  public:
   using UnderlyingSinkSetter =
-      WTF::CrossThreadOnceFunction<void(RTCEncodedAudioUnderlyingSink*)>;
+      CrossThreadOnceFunction<void(RTCEncodedAudioUnderlyingSink*)>;
   RtcEncodedAudioReceiverSinkOptimizer(
       UnderlyingSinkSetter,
       scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>

@@ -5,16 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_NOTIFICATIONS_GNUBBY_NOTIFICATION_H_
 #define CHROME_BROWSER_ASH_NOTIFICATIONS_GNUBBY_NOTIFICATION_H_
 
-#include "ash/public/cpp/message_center/oobe_notification_constants.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/notifications/notification_display_service.h"
-#include "chrome/browser/notifications/system_notification_helper.h"
 #include "chromeos/ash/components/dbus/gnubby/gnubby_client.h"
-
-namespace message_center {
-class Notification;
-}  // namespace message_center
 
 namespace ash {
 // GnubbyNotification manages the notification informing the user of gnubby
@@ -36,14 +29,12 @@ class GnubbyNotification : public GnubbyClient::Observer {
   // Dismisses graphic after timeout
   void PromptUserAuth() override;
 
-  void CreateNotification();
   void ShowNotification();
   void DismissNotification();
 
  private:
-  std::unique_ptr<message_center::Notification> notification_prompt_;
   std::unique_ptr<base::OneShotTimer> update_dismiss_notification_timer_;
-  bool notificationActive = false;
+  bool notification_active_ = false;
 
   base::WeakPtrFactory<GnubbyNotification> weak_ptr_factory_{this};
 };

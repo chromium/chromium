@@ -69,6 +69,8 @@ class PersonalizationAppAmbientProviderImpl
   void HandleTimeOfDayBannerDismissed() override;
   void IsGeolocationEnabledForSystemServices(
       IsGeolocationEnabledForSystemServicesCallback callback) override;
+  void IsGeolocationUserModifiable(
+      IsGeolocationUserModifiableCallback callback) override;
   void EnableGeolocationForSystemServices() override;
 
   // Notify WebUI the latest values.
@@ -86,6 +88,7 @@ class PersonalizationAppAmbientProviderImpl
   bool IsAmbientModeEnabled();
 
   bool IsGeolocationEnabledForSystemServices();
+  bool IsGeolocationUserModifiable();
 
   // Notify webUI the current state of system geolocation permission.
   void NotifyGeolocationPermissionChanged();
@@ -113,6 +116,10 @@ class PersonalizationAppAmbientProviderImpl
 
   void FetchPreviewImages();
   void OnPreviewsFetched(const std::vector<GURL>& preview_urls);
+
+  // Notify webUI the current state of ambient theme preview images.
+  void NotifyAmbientThemePreviewImagesChanged();
+  void OnMachineStatisticsReady();
 
   ash::PersonalAlbum* FindPersonalAlbumById(const std::string& album_id);
 
@@ -177,6 +184,8 @@ class PersonalizationAppAmbientProviderImpl
       read_weak_factory_{this};
   base::WeakPtrFactory<PersonalizationAppAmbientProviderImpl>
       previews_weak_factory_{this};
+  base::WeakPtrFactory<PersonalizationAppAmbientProviderImpl>
+      ambient_theme_previews_weak_factory_{this};
 };
 
 }  // namespace ash::personalization_app

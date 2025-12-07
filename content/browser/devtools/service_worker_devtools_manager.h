@@ -18,6 +18,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-forward.h"
+#include "services/network/public/mojom/document_isolation_policy.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom.h"
 #include "url/gurl.h"
@@ -36,14 +37,11 @@ class ServiceWorkerContextWrapper;
 // Manages ServiceWorkerDevToolsAgentHost's. This class lives on UI thread.
 class ServiceWorkerDevToolsManager {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     virtual void WorkerCreated(ServiceWorkerDevToolsAgentHost* host,
-                               bool* should_pause_on_start) {}
-    virtual void WorkerDestroyed(ServiceWorkerDevToolsAgentHost* host) {}
-
-   protected:
-    virtual ~Observer() {}
+                               bool* should_pause_on_start) = 0;
+    virtual void WorkerDestroyed(ServiceWorkerDevToolsAgentHost* host) = 0;
   };
 
   // Returns the ServiceWorkerDevToolsManager singleton.
@@ -96,6 +94,8 @@ class ServiceWorkerDevToolsManager {
       network::mojom::ClientSecurityStatePtr client_security_state,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,
+      mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+          dip_reporter,
       base::UnguessableToken* devtools_worker_token,
       bool* pause_on_start);
   void WorkerReadyForInspection(
@@ -155,7 +155,7 @@ class ServiceWorkerDevToolsManager {
       const ServiceWorkerContextWrapper* context_wrapper,
       int64_t version_id);
 
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer> observer_list_;
   bool debug_service_worker_on_start_;
 
   // We retain agent hosts as long as the service worker is alive.

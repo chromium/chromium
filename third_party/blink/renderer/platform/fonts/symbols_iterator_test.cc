@@ -7,6 +7,8 @@
 #include <string>
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/fonts/font_variant_emoji.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -27,6 +29,8 @@ struct FallbackExpectedRun {
       : limit(the_limit), font_fallback_priority(the_font_fallback_priority) {}
 };
 
+const bool FontVariantEmojiFlagValues[] = {true, false};
+
 class SymbolsIteratorTest : public testing::Test {
  protected:
   void CheckRuns(const Vector<FallbackTestRun>& runs) {
@@ -38,7 +42,7 @@ class SymbolsIteratorTest : public testing::Test {
       expect.push_back(
           FallbackExpectedRun(text.length(), run.font_fallback_priority));
     }
-    SymbolsIterator symbols_iterator(text.Characters16(), text.length());
+    SymbolsIterator symbols_iterator(text.Span16());
     VerifyRuns(&symbols_iterator, expect);
   }
 
@@ -58,9 +62,18 @@ class SymbolsIteratorTest : public testing::Test {
   }
 };
 
-TEST_F(SymbolsIteratorTest, Empty) {
+class SymbolsIteratorWithFontVariantEmojiParamTest
+    : public SymbolsIteratorTest,
+      public testing::WithParamInterface<bool> {
+};
+
+INSTANTIATE_TEST_SUITE_P(SymbolsIteratorTest,
+                         SymbolsIteratorWithFontVariantEmojiParamTest,
+                         testing::ValuesIn(FontVariantEmojiFlagValues));
+
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, Empty) {
   String empty(g_empty_string16_bit);
-  SymbolsIterator symbols_iterator(empty.Characters16(), empty.length());
+  SymbolsIterator symbols_iterator(empty.Span16());
   unsigned limit = 0;
   FontFallbackPriority symbols_font = FontFallbackPriority::kInvalid;
   DCHECK(!symbols_iterator.Consume(&limit, &symbols_font));
@@ -68,83 +81,147 @@ TEST_F(SymbolsIteratorTest, Empty) {
   ASSERT_EQ(symbols_font, FontFallbackPriority::kInvalid);
 }
 
-TEST_F(SymbolsIteratorTest, Space) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, Space) {
   CheckRuns({{" ", FontFallbackPriority::kText}});
 }
 
-TEST_F(SymbolsIteratorTest, Latin) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, Latin) {
   CheckRuns({{"Aa", FontFallbackPriority::kText}});
 }
 
-TEST_F(SymbolsIteratorTest, BMPEmoji) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, BMPEmoji) {
   CheckRuns({{"⌚⌛⌚⌛⌚⌛⌚⌛", FontFallbackPriority::kEmojiEmoji}});
 }
 
-TEST_F(SymbolsIteratorTest, LatinColorEmojiTextEmoji) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, LatinColorEmojiTextEmoji) {
   CheckRuns({{"a", FontFallbackPriority::kText},
              {"⌚", FontFallbackPriority::kEmojiEmoji},
              {"☎", FontFallbackPriority::kText}});
 }
 
-TEST_F(SymbolsIteratorTest, IgnoreVSInMath) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, IgnoreVSInMath) {
   CheckRuns({{"⊆⊇⊈\U0000FE0E⊙⊚⊚", FontFallbackPriority::kText}});
 }
 
-TEST_F(SymbolsIteratorTest, IgnoreVS15InText) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, IgnoreVS15InText) {
   CheckRuns({{"abcdef\U0000FE0Eghji", FontFallbackPriority::kText}});
 }
 
-TEST_F(SymbolsIteratorTest, IgnoreVS16InText) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, IgnoreVS16InText) {
   CheckRuns({{"abcdef\U0000FE0Fghji", FontFallbackPriority::kText}});
 }
 
-TEST_F(SymbolsIteratorTest, AllHexValuesText) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, AllHexValuesText) {
   // Helps with detecting incorrect emoji pattern definitions which are
   // missing a \U000... prefix for example.
   CheckRuns({{"abcdef0123456789ABCDEF", FontFallbackPriority::kText}});
 }
 
-TEST_F(SymbolsIteratorTest, NumbersAndHashNormalAndEmoji) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest,
+       NumbersAndHashNormalAndEmoji) {
   CheckRuns({{"0123456789#*", FontFallbackPriority::kText},
              {"0\uFE0F⃣1\uFE0F⃣2\uFE0F⃣3\uFE0F⃣4\uFE0F⃣5\uFE0F⃣6\uFE0F⃣7\uFE0F⃣8\uFE0F⃣9"
               "\uFE0F⃣*\uFE0F⃣",
-              FontFallbackPriority::kEmojiEmoji},
+              FontFallbackPriority::kEmojiEmojiWithVS},
              {"0123456789#*", FontFallbackPriority::kText}});
 }
 
-TEST_F(SymbolsIteratorTest, VS16onDigits) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, VS16onDigits) {
   CheckRuns({{"#", FontFallbackPriority::kText},
-             {"#\uFE0F\u20E3", FontFallbackPriority::kEmojiEmoji},
+             {"#\uFE0F\u20E3", FontFallbackPriority::kEmojiEmojiWithVS},
+             {"#", FontFallbackPriority::kText}});
+}
+
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, VS15onDigits) {
+  CheckRuns({{"#", FontFallbackPriority::kText},
+             {"#\uFE0E\u20E3", FontFallbackPriority::kEmojiTextWithVS},
              {"#", FontFallbackPriority::kText}});
 }
 
 TEST_F(SymbolsIteratorTest, EmojiVS15AndVS16) {
-  CheckRuns({{"\U0001F642", FontFallbackPriority::kEmojiEmoji},
-             {"\U0001F642\U0000FE0E", FontFallbackPriority::kText},
-             {"\U0001F642\U0000FE0F", FontFallbackPriority::kEmojiEmoji}});
+  CheckRuns(
+      {{"\U0001F642", FontFallbackPriority::kEmojiEmoji},
+       {"\U0001F642\U0000FE0E", FontFallbackPriority::kEmojiTextWithVS},
+       {"\U0001F642\U0000FE0F", FontFallbackPriority::kEmojiEmojiWithVS}});
+}
+
+TEST_F(SymbolsIteratorTest, EmojiVSSplitStartsWithText) {
+  CheckRuns({{"abc", FontFallbackPriority::kText},
+             {"\U00002614", FontFallbackPriority::kEmojiEmoji},
+             {"\U00002603", FontFallbackPriority::kText},
+             {"\U00002614\U0000FE0E", FontFallbackPriority::kEmojiTextWithVS}});
+}
+
+TEST_F(SymbolsIteratorTest, EmojiVSSplitStartsWithEmoji) {
+  CheckRuns(
+      {{"\U00002614\U0000FE0E", FontFallbackPriority::kEmojiTextWithVS},
+       {"abc", FontFallbackPriority::kText},
+       {"\U00002614\U0000FE0E", FontFallbackPriority::kEmojiTextWithVS},
+       {"\U00002614", FontFallbackPriority::kEmojiEmoji},
+       {"\U00002614\U0000FE0F", FontFallbackPriority::kEmojiEmojiWithVS}});
+}
+
+TEST_F(SymbolsIteratorTest, EmojiVSSplitWithExcessiveVS) {
+  CheckRuns({{"\U00002603", FontFallbackPriority::kText},
+             {"\U00002603\U0000FE0E", FontFallbackPriority::kEmojiTextWithVS},
+             {"\U00002614\U0000FE0F", FontFallbackPriority::kEmojiEmojiWithVS},
+             {"\U00002614", FontFallbackPriority::kEmojiEmoji}});
+}
+
+TEST_F(SymbolsIteratorTest, EmojiAndTextVSSplit) {
+  CheckRuns({{"\U00002603", FontFallbackPriority::kText},
+             {"\U00002603\U0000FE0F", FontFallbackPriority::kEmojiEmojiWithVS},
+             {"\U00002614\U0000FE0E", FontFallbackPriority::kEmojiTextWithVS},
+             {"\U00002614", FontFallbackPriority::kEmojiEmoji}});
+}
+
+TEST_F(SymbolsIteratorTest, EmojiTextVSSplit) {
+  CheckRuns({{"\U00002614\U0000FE0F", FontFallbackPriority::kEmojiEmojiWithVS},
+             {"a\U00002603bc", FontFallbackPriority::kText},
+             {"\U00002603\U0000FE0E\U00002614\U0000FE0E",
+              FontFallbackPriority::kEmojiTextWithVS}});
+}
+
+TEST_F(SymbolsIteratorTest, ZWJWithVS) {
+  // Variation selector 16 after ZWJ sequences is excessive, hence it should not
+  // affect segmentation.
+  // ZWJ sequences from the test below:
+  // 26D3 FE0F 200D 1F4A5; RGI_Emoji_ZWJ_Sequence; broken chain (⛓️‍💥)
+  // 1F469 200D 2764 FE0F 200D 1F48B 200D 1F468; RGI_Emoji_ZWJ_Sequence; kiss:
+  // woman, man (👩‍❤️‍💋‍👨)
+  // https://www.unicode.org/Public/emoji/15.1/emoji-zwj-sequences.txt
+  CheckRuns({{"abc", FontFallbackPriority::kText},
+             {"\U000026D3\U0000FE0F\U0000200D\U0001F4A5\U0000FE0F"
+              "\U0001F469\U0000200D\U00002764\U0000FE0F\U0000200D\U0001F48B"
+              "\U0000200D\U0001F468"
+              "\U000026D3\U0000FE0F\U0000200D\U0001F4A5",
+              FontFallbackPriority::kEmojiEmoji},
+             {"\U0000FE0E", FontFallbackPriority::kText}});
 }
 
 TEST_F(SymbolsIteratorTest, MultipleMisplacedVS) {
   CheckRuns({
       {"\U0000FE0E\U0000FE0F", FontFallbackPriority::kText},
-      {"\U0001F642\U0000FE0F", FontFallbackPriority::kEmojiEmoji},
-      {"\U0001F642\U0000FE0E", FontFallbackPriority::kText},
-      {"\U0001F642\U0000FE0F", FontFallbackPriority::kEmojiEmoji},
+      {"\U0001F642\U0000FE0F", FontFallbackPriority::kEmojiEmojiWithVS},
+      {"\U0001F642\U0000FE0E", FontFallbackPriority::kEmojiTextWithVS},
+      {"\U0001F642\U0000FE0F", FontFallbackPriority::kEmojiEmojiWithVS},
       {"\U0000FE0E\U0000FE0F", FontFallbackPriority::kText},
-      {"\U0001F642\U0000FE0F", FontFallbackPriority::kEmojiEmoji},
-      {"\U0001F642\U0000FE0E\U0000FE0E\U0000FE0F", FontFallbackPriority::kText},
+      {"\U0001F642\U0000FE0F", FontFallbackPriority::kEmojiEmojiWithVS},
+      {"\U0001F642\U0000FE0E", FontFallbackPriority::kEmojiTextWithVS},
+      {"\U0000FE0E\U0000FE0F", FontFallbackPriority::kText},
   });
 }
 
-TEST_F(SymbolsIteratorTest, SingleFlag) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, SingleFlag) {
   CheckRuns({{"🇺", FontFallbackPriority::kText}});
 }
 
-TEST_F(SymbolsIteratorTest, CombiningCircle) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, CombiningCircle) {
   CheckRuns({{"◌́◌̀◌̈◌̂◌̄◌̊", FontFallbackPriority::kText}});
 }
 
-TEST_F(SymbolsIteratorTest, CombiningEnclosingCircleBackslash) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest,
+       CombiningEnclosingCircleBackslash) {
   CheckRuns({{"A⃠B⃠C⃠", FontFallbackPriority::kText},
              {"🚷🚯🚱🔞📵🚭🚫🎙⃠📸⃠🔫⃠",
               FontFallbackPriority::kEmojiEmoji},
@@ -153,20 +230,20 @@ TEST_F(SymbolsIteratorTest, CombiningEnclosingCircleBackslash) {
 
 // TODO: Perhaps check for invalid country indicator combinations?
 
-TEST_F(SymbolsIteratorTest, FlagsVsNonFlags) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, FlagsVsNonFlags) {
   CheckRuns({{"🇺🇸", FontFallbackPriority::kEmojiEmoji},  // "US"
              {"🇸abc", FontFallbackPriority::kText},
              {"🇺🇸", FontFallbackPriority::kEmojiEmoji},
              {"a🇿", FontFallbackPriority::kText}});
 }
 
-TEST_F(SymbolsIteratorTest, EmojiVS15) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, EmojiVS15) {
   // A VS15 after the anchor must trigger text display.
-  CheckRuns({{"⚓\U0000FE0E", FontFallbackPriority::kText},
+  CheckRuns({{"⚓\U0000FE0E", FontFallbackPriority::kEmojiTextWithVS},
              {"⛵", FontFallbackPriority::kEmojiEmoji}});
 }
 
-TEST_F(SymbolsIteratorTest, EmojiZWSSequences) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, EmojiZWSSequences) {
   CheckRuns(
       {{"👩‍👩‍👧‍👦👩‍❤️‍💋‍👨",
         FontFallbackPriority::kEmojiEmoji},
@@ -175,7 +252,7 @@ TEST_F(SymbolsIteratorTest, EmojiZWSSequences) {
        {"\U0000200Defgh", FontFallbackPriority::kText}});
 }
 
-TEST_F(SymbolsIteratorTest, AllEmojiZWSSequences) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, AllEmojiZWSSequences) {
   // clang-format gets confused by Emojis, http://llvm.org/PR30530
   // clang-format off
   CheckRuns(
@@ -194,44 +271,47 @@ TEST_F(SymbolsIteratorTest, AllEmojiZWSSequences) {
   // clang-format on
 }
 
-TEST_F(SymbolsIteratorTest, ModifierPlusGender) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, ModifierPlusGender) {
   CheckRuns({{"⛹🏻‍♂", FontFallbackPriority::kEmojiEmoji}});
 }
 
-TEST_F(SymbolsIteratorTest, TextMemberZwjSequence) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, TextMemberZwjSequence) {
   CheckRuns({{"👨‍⚕️", FontFallbackPriority::kEmojiEmoji}});
 }
 
-TEST_F(SymbolsIteratorTest, FacepalmCartwheelShrugModifierFemale) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest,
+       FacepalmCartwheelShrugModifierFemale) {
   CheckRuns({{"🤦‍♀🤸‍♀🤷‍♀🤷🏾‍♀",
               FontFallbackPriority::kEmojiEmoji}});
 }
 
-TEST_F(SymbolsIteratorTest, AesculapiusMaleFemalEmoji) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest,
+       AesculapiusMaleFemalEmoji) {
   // Emoji Data 4 has upgraded those three characters to Emoji.
   CheckRuns({{"a⚕♀♂", FontFallbackPriority::kText}});
 }
 
-TEST_F(SymbolsIteratorTest, EyeSpeechBubble) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, EyeSpeechBubble) {
   CheckRuns({{"👁‍🗨", FontFallbackPriority::kEmojiEmoji}});
 }
 
-TEST_F(SymbolsIteratorTest, Modifier) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, Modifier) {
   CheckRuns({{"👶🏿", FontFallbackPriority::kEmojiEmoji}});
 }
 
-TEST_F(SymbolsIteratorTest, DingbatsMiscSymbolsModifier) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest,
+       DingbatsMiscSymbolsModifier) {
   CheckRuns({{"⛹🏻✍🏻✊🏼", FontFallbackPriority::kEmojiEmoji}});
 }
 
-TEST_F(SymbolsIteratorTest, ExtraZWJPrefix) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, ExtraZWJPrefix) {
   CheckRuns({{"\U0000200D", FontFallbackPriority::kText},
              {"\U0001F469\U0000200D\U00002764\U0000FE0F\U0000200D\U0001F48B"
               "\U0000200D\U0001F468",
               FontFallbackPriority::kEmojiEmoji}});
 }
 
-TEST_F(SymbolsIteratorTest, StrayZWJAndVS) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, StrayZWJAndVS) {
   CheckRuns({{"\U0000200D\U0000FE0E\U0000FE0E\U0000FE0E\U0000200D\U0000200D",
               FontFallbackPriority::kText},
              {"\U0001F469\U0000200D\U00002764\U0000FE0F\U0000200D\U0001F48B"
@@ -241,16 +321,16 @@ TEST_F(SymbolsIteratorTest, StrayZWJAndVS) {
               FontFallbackPriority::kText}});
 }
 
-TEST_F(SymbolsIteratorTest, Arrows) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, Arrows) {
   CheckRuns({{"x→←x←↑↓→", FontFallbackPriority::kText}});
 }
 
-TEST_F(SymbolsIteratorTest, JudgePilot) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, JudgePilot) {
   CheckRuns({{"👨‍⚖️👩‍⚖️👨🏼‍⚖️👩🏼‍⚖️",
               FontFallbackPriority::kEmojiEmoji}});
 }
 
-TEST_F(SymbolsIteratorTest, EmojiPunctuationText) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, EmojiPunctuationText) {
   CheckRuns({{"⁉⁉⁉⁈⁈⁈", FontFallbackPriority::kText}});
 }
 
@@ -260,7 +340,8 @@ TEST_F(SymbolsIteratorTest, EmojiPunctuationText) {
 // emoji type text and sequences get split up in the middle so that shaping
 // cannot form the right glyph from the emoji font. Running this as one run in
 // one test ensures that the new emoji form an unbroken emoji-type sequence.
-TEST_F(SymbolsIteratorTest, Emoji5AdditionsExceptFlags) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest,
+       Emoji5AdditionsExceptFlags) {
   CheckRuns(
       {{"\U0001F9D4\U0001F3FB\U0001F9D4\U0001F3FC\U0001F9D4\U0001F3FD"
         "\U0001F9D4\U0001F3FE\U0001F9D4\U0001F3FF\U0001F931\U0001F931"
@@ -372,7 +453,7 @@ TEST_F(SymbolsIteratorTest, Emoji5AdditionsExceptFlags) {
         FontFallbackPriority::kEmojiEmoji}});
 }
 
-TEST_F(SymbolsIteratorTest, EmojiSubdivisionFlags) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, EmojiSubdivisionFlags) {
   CheckRuns({{"\U0001F3F4\U000E0067\U000E0062\U000E0077\U000E006C\U000E0073"
               "\U000E007F\U0001F3F4\U000E0067\U000E0062\U000E0073\U000E0063"
               "\U000E0074\U000E007F\U0001F3F4",
@@ -381,10 +462,10 @@ TEST_F(SymbolsIteratorTest, EmojiSubdivisionFlags) {
              {"\U000E0067\U000E0062", FontFallbackPriority::kText}});
 }
 
-// Extracted from http://unicode.org/emoji/charts/emoji-released.html for Emoji
-// v11, removed U+265F Chess Pawn and U+267E as they do not have default emoji
+// Extracted from https://unicode.org/emoji/charts-11.0/emoji-released.html,
+// removed U+265F Chess Pawn and U+267E as they do not have default emoji
 // presentation.
-TEST_F(SymbolsIteratorTest, Emoji11Additions) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, Emoji11Additions) {
   CheckRuns(
       {{"\U0001F970\U0001F975\U0001F976\U0001F973\U0001F974\U0001F97A"
         "\U0001F468\U0000200D\U0001F9B0\U0001F468\U0001F3FB\U0000200D"
@@ -455,6 +536,30 @@ TEST_F(SymbolsIteratorTest, Emoji11Additions) {
         "\U0001F9EB\U0001F9EC\U0001F9F4\U0001F9F7\U0001F9F9\U0001F9FA"
         "\U0001F9FB\U0001F9FC\U0001F9FD\U0001F9EF\U0001F3F4\U0000200D"
         "\U00002620\U0000FE0F",
+        FontFallbackPriority::kEmojiEmoji}});
+}
+
+// Extracted from https://unicode.org/emoji/charts-17.0/emoji-released.html
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, Emoji17Additions) {
+  CheckRuns(
+      {{"\U0001FAEA\U0001FAEF\U0001FAC8\U0001F9D1\U0000200D\U0001FA70"
+        "\U0001F46F\U0001F93C\U0001FACD\U0001F6D8\U0001FA8A\U0001FA8E",
+        FontFallbackPriority::kEmojiEmoji}});
+}
+
+// https://emojipedia.org/men-with-bunny-ears-light-skin-tone-dark-skin-tone
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, Emoji17BunnyEars) {
+  CheckRuns(
+      {{"\U0001F468\U0001F3FB\U0000200D\U0001F430\U0000200D\U0001F468"
+        "\U0001F3FF",
+        FontFallbackPriority::kEmojiEmoji}});
+}
+
+// https://emojipedia.org/women-wrestling-dark-skin-tone-light-skin-tone
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, Emoji17Wrestling) {
+  CheckRuns(
+      {{"\U0001F469\U0001F3FF\U0000200D\U0001FAEF\U0000200D\U0001F469"
+        "\U0001F3FB",
         FontFallbackPriority::kEmojiEmoji}});
 }
 

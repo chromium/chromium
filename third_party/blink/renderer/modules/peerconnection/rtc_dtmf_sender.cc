@@ -27,6 +27,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
@@ -38,12 +39,23 @@
 
 namespace blink {
 
-static const int kMinToneDurationMs = 40;
-static const int kDefaultToneDurationMs = 100;
-static const int kMaxToneDurationMs = 6000;
-static const int kMinInterToneGapMs = 30;
-static const int kMaxInterToneGapMs = 6000;
-static const int kDefaultInterToneGapMs = 70;
+namespace {
+
+constexpr int kMinToneDurationMs = 40;
+constexpr int kDefaultToneDurationMs = 100;
+constexpr int kMaxToneDurationMs = 6000;
+constexpr int kMinInterToneGapMs = 30;
+constexpr int kMaxInterToneGapMs = 6000;
+constexpr int kDefaultInterToneGapMs = 70;
+
+bool IsValidDTMFCharacters(const String& tones) {
+  return std::ranges::all_of(tones.Ascii(), [](const char c) {
+    static constexpr std::string_view kDTMFCharacters("0123456789abcdABCD#*,");
+    return kDTMFCharacters.find(c) != std::string_view::npos;
+  });
+}
+
+}  // namespace
 
 RTCDTMFSender* RTCDTMFSender::Create(
     ExecutionContext* context,
@@ -102,8 +114,7 @@ void RTCDTMFSender::insertDTMF(const String& tones,
     return;
   }
   // Spec: Throw on illegal characters
-  if (strspn(tones.Ascii().c_str(), "0123456789abcdABCD#*,") !=
-      tones.length()) {
+  if (!IsValidDTMFCharacters(tones)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidCharacterError,
         "Illegal characters in InsertDTMF tone argument");
@@ -127,8 +138,8 @@ void RTCDTMFSender::insertDTMF(const String& tones,
     playout_task_is_scheduled_ = true;
     GetExecutionContext()
         ->GetTaskRunner(TaskType::kNetworking)
-        ->PostTask(FROM_HERE, WTF::BindOnce(&RTCDTMFSender::PlayoutTask,
-                                            WrapPersistent(this)));
+        ->PostTask(FROM_HERE,
+                   BindOnce(&RTCDTMFSender::PlayoutTask, WrapPersistent(this)));
   }
 }
 
@@ -163,7 +174,7 @@ void RTCDTMFSender::DidPlayTone(const String& tone) {
         ->GetTaskRunner(TaskType::kNetworking)
         ->PostDelayedTask(
             FROM_HERE,
-            WTF::BindOnce(&RTCDTMFSender::PlayoutTask, WrapPersistent(this)),
+            BindOnce(&RTCDTMFSender::PlayoutTask, WrapPersistent(this)),
             base::Milliseconds(inter_tone_gap_));
   }
 }

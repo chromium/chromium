@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "components/devtools/simple_devtools_protocol_client/simple_devtools_protocol_client.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test_base.h"
 #include "headless/public/headless_browser.h"
 #include "headless/public/headless_web_contents.h"
@@ -19,16 +20,18 @@ namespace headless {
 // should override the RunDevTooledTest() method, which is called asynchronously
 // when the DevToolsClient is ready.
 class HeadlessDevTooledBrowserTest : public HeadlessBrowserTest,
-                                     public HeadlessWebContents::Observer {
+                                     public content::WebContentsObserver {
  public:
   HeadlessDevTooledBrowserTest();
   ~HeadlessDevTooledBrowserTest() override;
 
  protected:
-  // HeadlessWebContentsObserver implementation:
-  void DevToolsTargetReady() override;
-  void RenderProcessExited(base::TerminationStatus status,
-                           int exit_code) override;
+  // content::WebContentsObserver implementation:
+  void RenderViewReady() override;
+
+  // content::WebContentsObserver implementation.
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
 
   // Implemented by tests and used to send request(s) to DevTools. Subclasses
   // need to ensure that FinishAsynchronousTest() is called after response(s)
@@ -38,6 +41,7 @@ class HeadlessDevTooledBrowserTest : public HeadlessBrowserTest,
   // These are called just before and right after calling RunAsynchronousTest()
   virtual void PreRunAsynchronousTest() {}
   virtual void PostRunAsynchronousTest() {}
+  virtual void DevToolsTargetReady() {}
 
   // Whether to enable BeginFrameControl when creating |web_contents_|.
   virtual bool GetEnableBeginFrameControl();
@@ -52,9 +56,9 @@ class HeadlessDevTooledBrowserTest : public HeadlessBrowserTest,
 
   void RunTest();
 
-  raw_ptr<HeadlessBrowserContext, AcrossTasksDanglingUntriaged>
-      browser_context_;
-  raw_ptr<HeadlessWebContents, AcrossTasksDanglingUntriaged> web_contents_;
+  raw_ptr<HeadlessBrowserContext> browser_context_;
+  raw_ptr<HeadlessWebContents> web_contents_;
+  bool had_render_view_ready_ = false;
   simple_devtools_protocol_client::SimpleDevToolsProtocolClient
       devtools_client_;
   simple_devtools_protocol_client::SimpleDevToolsProtocolClient

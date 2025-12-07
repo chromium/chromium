@@ -18,8 +18,10 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -46,8 +48,7 @@ std::string TextDumpEventToString(mojom::TextDumpEvent event) {
     case mojom::TextDumpEvent::kFinishedLoad:
       return "FinishedLoad";
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 // PageTextChunkConsumer reads in chunks of page text and passes it all to
@@ -322,14 +323,6 @@ PageTextObserver::PageTextObserver(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<PageTextObserver>(*web_contents) {}
 PageTextObserver::~PageTextObserver() = default;
-
-PageTextObserver* PageTextObserver::GetOrCreateForWebContents(
-    content::WebContents* web_contents) {
-  // CreateForWebContents doesn't do anything if it has already been created
-  // for |web_contents| already.
-  PageTextObserver::CreateForWebContents(web_contents);
-  return PageTextObserver::FromWebContents(web_contents);
-}
 
 void PageTextObserver::DidFinishNavigation(content::NavigationHandle* handle) {
   // Only main frames are supported for right now.

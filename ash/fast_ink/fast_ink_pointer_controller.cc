@@ -95,7 +95,7 @@ bool FastInkPointerController::ShouldProcessEvent(ui::LocatedEvent* event) {
 }
 
 bool FastInkPointerController::IsEnabledForMouseEvent() const {
-  return !has_seen_stylus_;
+  return !has_seen_stylus_ && !pointer_view_created_by_touch_.value_or(false);
 }
 
 bool FastInkPointerController::IsPointerInExcludedWindows(
@@ -121,6 +121,7 @@ bool FastInkPointerController::MaybeCreatePointerView(
   if (can_start_new_gesture) {
     DestroyPointerView();
     CreatePointerView(presentation_delay_, root_window);
+    pointer_view_created_by_touch_ = event->IsTouchEvent();
   } else {
     views::View* pointer_view = GetPointerView();
     if (!pointer_view)
@@ -196,6 +197,10 @@ void FastInkPointerController::OnHasSeenStylusPrefChanged() {
   auto* local_state = pref_change_registrar_local_->prefs();
   has_seen_stylus_ =
       local_state && local_state->GetBoolean(prefs::kHasSeenStylus);
+}
+
+void FastInkPointerController::DestroyPointerView() {
+  pointer_view_created_by_touch_.reset();
 }
 
 }  // namespace ash

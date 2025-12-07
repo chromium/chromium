@@ -10,6 +10,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/capture_mode/audio_capturer.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "ui/views/view_tracker.h"

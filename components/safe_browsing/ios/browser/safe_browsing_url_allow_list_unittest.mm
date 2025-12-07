@@ -34,8 +34,8 @@ class MockAllowListObserver : public SafeBrowsingUrlAllowList::Observer {
 // Mocked WebStateObserver for use in tests.
 class MockWebStateObserver : public web::WebStateObserver {
  public:
-  MockWebStateObserver() {}
-  ~MockWebStateObserver() override {}
+  MockWebStateObserver() = default;
+  ~MockWebStateObserver() override = default;
 
   MOCK_METHOD1(DidChangeVisibleSecurityState, void(web::WebState*));
 };

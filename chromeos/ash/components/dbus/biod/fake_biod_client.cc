@@ -59,7 +59,7 @@ FakeBiodClient::FakeRecord ParseFakeRecordDict(
     } else if (key == "label") {
       res.label = value.GetString();
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
   return res;
@@ -392,7 +392,8 @@ void FakeBiodClient::LoadRecords() {
                << fake_biod_db_filepath_;
     return;
   }
-  std::optional<base::Value> records_json = base::JSONReader::Read(content);
+  std::optional<base::Value> records_json =
+      base::JSONReader::Read(content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!records_json.has_value()) {
     LOG(ERROR) << "FakeBiod parse failed.";
     return;

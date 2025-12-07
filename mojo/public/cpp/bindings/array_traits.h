@@ -76,7 +76,7 @@ namespace mojo {
 //
 template <typename T>
 struct ArrayTraits {
-  static_assert(internal::AlwaysFalse<T>::value,
+  static_assert(false,
                 "Cannot find the mojo::ArrayTraits specialization. Did you "
                 "forget to include the corresponding header file?");
 };

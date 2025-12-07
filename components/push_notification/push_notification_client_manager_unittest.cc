@@ -30,7 +30,7 @@ class FakePushNotificationClient
     last_received_message_ = message_data.at(kNotificationPayloadKey);
   }
 
-  const std::string& GetMostRecentMessageRecieved() {
+  const std::string& GetMostRecentMessageReceived() {
     return last_received_message_;
   }
 
@@ -105,7 +105,7 @@ TEST_F(PushNotificationClientManagerTest, PassPushNotificationMessageToClient) {
   push_notification_client_manager_->NotifyPushNotificationClientOfMessage(
       std::move(test_incoming_message));
   EXPECT_EQ(kTestMessage,
-            fake_push_notification_client->GetMostRecentMessageRecieved());
+            fake_push_notification_client->GetMostRecentMessageReceived());
   ;
 }
 
@@ -130,7 +130,7 @@ TEST_F(PushNotificationClientManagerTest,
       1u,
       push_notification_client_manager_->GetPushNotificationClients().size());
   EXPECT_EQ(kTestMessage,
-            fake_push_notification_client->GetMostRecentMessageRecieved());
+            fake_push_notification_client->GetMostRecentMessageReceived());
 }
 
 }  // namespace push_notification

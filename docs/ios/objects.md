@@ -9,39 +9,44 @@ no account to sync them to).
 
 The corresponding object on desktop is BrowserProcess.
 
-# ChromeBrowserState
+# ProfileIOS
 
-ChromeBrowserState objects correspond to a user browsing session. There is
-one for the off-the-record session, and one per user created in the UI (at
-the time this document is written, there is only one user on iOS so at most
-there are two ChromeBrowserStates).
+ProfileIOS objects correspond to a user browsing session. Each
+regular ProfileIOS also owns an incognito ProfileIOS. There can
+be more than one regular ProfileIOS loaded at the same time.
 
-The ChromeBrowserState objects are owned by the ChromeBrowserStateManager
-that can be accessed via the ApplicationContext. It is possible to access
-the off-the-record ChromeBrowserState from a non-incognito instance.
+When #separate-profiles-for-managed-accounts, each managed account
+uses a distinct ProfileIOS to separate the data between them and
+from the ProfileIOS used for the personal account. Then it is
+possible to open window with different accounts, and thus to have
+multiple regular ProfileIOS loaded.
 
-Each ChromeBrowserState, including the off-the-record ChromeBrowserState,
+The ProfileIOS objects are owned by the ProfileManagerIOS that can be
+accessed via the ApplicationContext. It is possible to access the off-the-record
+ProfileIOS from a non-incognito instance.
+
+Each ProfileIOS, including the off-the-record ProfileIOS,
 have a directory used to store some state (current session, settings, ...).
 The settings may be synchronised if the user has logged in and has enabled
 the synchronisation (thus they are non-local).
 
-The off-the-record ChromeBrowserState needs to record some state because the
+The off-the-record ProfileIOS needs to record some state because the
 application can be killed at any time when the application is in the background
 and the state needs to be persisted as this termination should be transparent to
 the user. The state is deleted when the last off-the-record tab is closed
-and the off-the-record ChromeBrowserState is deleted.
+and the off-the-record ProfileIOS is deleted.
 
-The ChromeBrowserStates support attaching base::SupportsUserData::Data
-objects to tie some objects to the ChromeBrowserState lifetime. Check the
+The ProfileIOSs support attaching base::SupportsUserData::Data
+objects to tie some objects to the ProfileIOS lifetime. Check the
 documentation of base::SupportsUserData for more information.
 
 A special case of base::SupportsUserData::Data is the KeyedService. They
-are managed by the BrowserStateKeyedServiceFactory infrastructure. This
+are managed by the ProfileKeyedServiceFactoryIOS infrastructure. This
 infrastructure allows to declare dependencies between services and ensure
 that they are created and destroyed in an order compatible with those
 dependencies.
 
-It should never be required to extend ChromeBrowserState. Instead consider
+It should never be required to extend ProfileIOS. Instead consider
 adding a preference to the settings, a base::SupportsUserData::Data if the
 change is just to add some data or a KeyedService if behaviour needs to be
 added.
@@ -51,7 +56,7 @@ The corresponding object on desktop is Profile.
 # BrowserList
 
 BrowserList is a container owning Browser instances. It is owned by the
-ChromeBrowserState and each ChromeBrowserState has one associated
+ProfileIOS and each ProfileIOS has one associated
 BrowserList.
 
 The BrowserList owns the WebStateListDelegate that is passed to all the
@@ -59,13 +64,14 @@ created Browsers (and then forwarded to their WebStateList).
 
 The corresponding object on desktop is BrowserList but the API is
 different. On desktop, it is a singleton and it points to all the
-Browsers instances whereas on iOS there is one per ChromeBrowserState.
+Browsers instances whereas on iOS there is one per ProfileIOS.
 
 # Browser
 
-Browser is the model for a window containing multiple tabs. Currently
-on iOS there is only one window per ChromeBrowserState, thus there is
-a single Browser per BrowserList.
+Browser is the model for a container of tabs for use by the UI.
+Each window can have multiple Browser associated (regular tabs,
+incognito tabs, inactive tabs). Additionally, iPads supports an
+arbitrary number of windows active at the same time.
 
 The Browser owns a WebStateList and thus indirectly owns all the tabs
 (aka WebState and their associated tab helpers). The Browser also owns

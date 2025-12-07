@@ -71,7 +71,7 @@ std::vector<double> CalculateDerivedFeatures(bool isOGArticle,
                                              const std::string& innerHTML) {
   // In the training pipeline, the strings are explicitly encoded in utf-8 (as
   // they are here).
-  const std::string& path = url.path();
+  const std::string& path = url.GetPath();
   int innerTextWords = GetWordCount(innerText);
   int textContentWords = GetWordCount(textContent);
   int innerHTMLWords = GetWordCount(innerHTML);
@@ -152,26 +152,21 @@ std::vector<double> CalculateDerivedFeaturesFromJSON(
     return std::vector<double>();
   }
 
-  std::optional<base::Value> json =
-      base::JSONReader::Read(stringified_json->GetString());
-  if (!json) {
+  std::optional<base::Value::Dict> dict = base::JSONReader::ReadDict(
+      stringified_json->GetString(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  if (!dict) {
     return std::vector<double>();
   }
 
-  if (!json->is_dict()) {
-    return std::vector<double>();
-  }
+  std::optional<double> numElements = dict->FindDouble("numElements");
+  std::optional<double> numAnchors = dict->FindDouble("numAnchors");
+  std::optional<double> numForms = dict->FindDouble("numForms");
+  std::optional<bool> isOGArticle = dict->FindBool("opengraph");
 
-  auto& dict = json->GetDict();
-  std::optional<double> numElements = dict.FindDouble("numElements");
-  std::optional<double> numAnchors = dict.FindDouble("numAnchors");
-  std::optional<double> numForms = dict.FindDouble("numForms");
-  std::optional<bool> isOGArticle = dict.FindBool("opengraph");
-
-  std::string* url = dict.FindString("url");
-  std::string* innerText = dict.FindString("innerText");
-  std::string* textContent = dict.FindString("textContent");
-  std::string* innerHTML = dict.FindString("innerHTML");
+  std::string* url = dict->FindString("url");
+  std::string* innerText = dict->FindString("innerText");
+  std::string* textContent = dict->FindString("textContent");
+  std::string* innerHTML = dict->FindString("innerHTML");
   if (!(isOGArticle.has_value() && url && numElements && numAnchors &&
         numForms && innerText && textContent && innerHTML)) {
     return std::vector<double>();
@@ -195,7 +190,7 @@ std::vector<double> CalculateDerivedFeatures(bool openGraph,
                                              double mozScore,
                                              double mozScoreAllSqrt,
                                              double mozScoreAllLinear) {
-  const std::string& path = url.path();
+  const std::string& path = url.GetPath();
   std::vector<double> features;
   // 'opengraph', opengraph,
   features.push_back(openGraph);

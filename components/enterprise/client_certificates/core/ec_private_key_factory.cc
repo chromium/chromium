@@ -4,17 +4,21 @@
 
 #include "components/enterprise/client_certificates/core/ec_private_key_factory.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "components/enterprise/client_certificates/core/constants.h"
 #include "components/enterprise/client_certificates/core/ec_private_key.h"
 #include "components/enterprise/client_certificates/core/private_key.h"
-#include "crypto/ec_private_key.h"
+#include "components/enterprise/client_certificates/core/private_key_types.h"
+#include "crypto/keypair.h"
 #include "net/ssl/ssl_private_key.h"
 
 namespace client_certificates {
@@ -22,22 +26,18 @@ namespace client_certificates {
 namespace {
 
 scoped_refptr<ECPrivateKey> CreateKey() {
-  auto key = crypto::ECPrivateKey::Create();
-  if (!key) {
-    return nullptr;
-  }
-
-  return base::MakeRefCounted<ECPrivateKey>(std::move(key));
+  return base::MakeRefCounted<ECPrivateKey>(
+      crypto::keypair::PrivateKey::GenerateEcP256());
 }
 
 scoped_refptr<ECPrivateKey> LoadKeyFromWrapped(
     const std::vector<uint8_t>& wrapped_key) {
-  auto key = crypto::ECPrivateKey::CreateFromPrivateKeyInfo(wrapped_key);
-  if (!key) {
+  auto key = crypto::keypair::PrivateKey::FromPrivateKeyInfo(wrapped_key);
+  if (!key || !key->IsEc()) {
     return nullptr;
   }
 
-  return base::MakeRefCounted<ECPrivateKey>(std::move(key));
+  return base::MakeRefCounted<ECPrivateKey>(std::move(*key));
 }
 
 }  // namespace
@@ -65,6 +65,28 @@ void ECPrivateKeyFactory::LoadPrivateKey(
       base::BindOnce(
           LoadKeyFromWrapped,
           std::vector<uint8_t>(wrapped_key_str.begin(), wrapped_key_str.end())),
+      std::move(callback));
+}
+
+void ECPrivateKeyFactory::LoadPrivateKeyFromDict(
+    const base::Value::Dict& serialized_private_key,
+    PrivateKeyCallback callback) {
+  std::optional<int> source = serialized_private_key.FindInt(kKeySource);
+  CHECK(ToPrivateKeySource(*source) == PrivateKeySource::kSoftwareKey);
+
+  auto* encoded_wrapped_private_key = serialized_private_key.FindString(kKey);
+  std::string decoded_wrapped_private_key;
+  if (!base::Base64Decode(*encoded_wrapped_private_key,
+                          &decoded_wrapped_private_key)) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(LoadKeyFromWrapped,
+                     std::vector<uint8_t>(decoded_wrapped_private_key.begin(),
+                                          decoded_wrapped_private_key.end())),
       std::move(callback));
 }
 

@@ -11,7 +11,6 @@
 
 // Provides an interface for embedders to access the WebState's web view in a
 // limited and controlled manner.
-// TODO(crbug.com/41211285): rename protocol to CRWContentViewProxy.
 @protocol CRWWebViewProxy <NSObject>
 
 // The web view's bounding rectangle (relative to its parent).
@@ -19,6 +18,9 @@
 
 // The web view's frame rectangle.
 @property(readonly, assign) CGRect frame;
+
+// Web view's obscured insets.
+@property(nonatomic, assign) UIEdgeInsets obscuredInsets;
 
 // Adds an offset to the scrollable content's frame.
 @property(nonatomic, assign) CGPoint contentOffset;
@@ -40,6 +42,9 @@
 // back-forward list navigations.
 @property(nonatomic) BOOL allowsBackForwardNavigationGestures;
 
+// Whether or not long pressing a link in the web view renders a link preview.
+@property(nonatomic) BOOL allowsLinkPreview;
+
 // Returns the webview's gesture recognizers.
 @property(nonatomic, readonly) NSArray* gestureRecognizers;
 
@@ -51,6 +56,9 @@
 // property.
 @property(nonatomic, assign) BOOL shouldUseViewContentInset;
 
+// YES if the keyboard is currently visible for use in the web view.
+@property(nonatomic, readonly, getter=isKeyboardVisible) BOOL keyboardVisible;
+
 // Register the given insets for the given caller.
 - (void)registerInsets:(UIEdgeInsets)insets forCaller:(id)caller;
 
@@ -60,15 +68,8 @@
 // Wrapper around the addSubview method of the webview.
 - (void)addSubview:(UIView*)view;
 
-// YES if the keyboard is currently visible for use in the web view.
-@property(nonatomic, readonly, getter=isKeyboardVisible) BOOL keyboardVisible;
-
 // Wrapper around the becomeFirstResponder method of the webview.
 - (BOOL)becomeFirstResponder;
-
-// Notifies the web view controller that the surface size has changed due to
-// multiwindow action or orientation change.
-- (void)surfaceSizeChanged;
 
 @end
 

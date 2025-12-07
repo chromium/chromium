@@ -9,7 +9,6 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
-#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
 

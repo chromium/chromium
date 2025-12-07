@@ -26,7 +26,7 @@ class WorkletDevToolsAgentHost final : public WorkerOrWorkletDevToolsAgentHost {
   std::string GetType() override;
 
   // DevToolsAgentHostImpl overrides
-  bool AttachSession(DevToolsSession* session, bool acquire_wake_lock) override;
+  bool AttachSession(DevToolsSession* session) override;
 };
 
 }  // namespace content

@@ -1,5 +1,5 @@
 // META: title=test WebNN API triangular operation
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -23,11 +23,8 @@
 //     MLOperand input, optional MLTriangularOptions options = {});
 
 
-const getTriangularPrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {float32: 0, float16: 0};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
+const getTriangularPrecisionTolerance = () => {
+  return {metricType: 'ULP', value: 0};
 };
 
 const triangularTests = [
@@ -46,7 +43,7 @@ const triangularTests = [
             20.88446617126465,  71.37139892578125,   -84.96932220458984,
             -88.97057342529297, 77.58269500732422,   91.03327178955078
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -82,7 +79,7 @@ const triangularTests = [
             77.58269500732422,
             91.03327178955078
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       }
     }
@@ -102,7 +99,7 @@ const triangularTests = [
             20.88446617126465,  71.37139892578125,   -84.96932220458984,
             -88.97057342529297, 77.58269500732422,   91.03327178955078
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -138,7 +135,7 @@ const triangularTests = [
             77.58269500732422,
             91.03327178955078
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -158,7 +155,7 @@ const triangularTests = [
             20.88446617126465,  71.37139892578125,   -84.96932220458984,
             -88.97057342529297, 77.58269500732422,   91.03327178955078
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -182,7 +179,7 @@ const triangularTests = [
             -84.96932220458984,  0,
             77.58269500732422,   91.03327178955078
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -202,7 +199,7 @@ const triangularTests = [
             20.88446617126465,  71.37139892578125,   -84.96932220458984,
             -88.97057342529297, 77.58269500732422,   91.03327178955078
           ],
-          'descriptor': {'dimensions': [2, 1, 4, 1, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 1, 4, 1, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -222,7 +219,7 @@ const triangularTests = [
             20.88446617126465,  71.37139892578125,   -84.96932220458984,
             -88.97057342529297, 77.58269500732422,   91.03327178955078
           ],
-          'descriptor': {'dimensions': [2, 1, 4, 1, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 1, 4, 1, 3], dataType: 'float32'}
         }
       }
     }
@@ -242,7 +239,7 @@ const triangularTests = [
             20.88446617126465,  71.37139892578125,   -84.96932220458984,
             -88.97057342529297, 77.58269500732422,   91.03327178955078
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -267,7 +264,7 @@ const triangularTests = [
             -84.96932220458984,  0,
             77.58269500732422,   91.03327178955078
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -287,7 +284,7 @@ const triangularTests = [
             20.88446617126465,  71.37139892578125,   -84.96932220458984,
             -88.97057342529297, 77.58269500732422,   91.03327178955078
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -324,7 +321,7 @@ const triangularTests = [
             77.58269500732422,
             0
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -344,7 +341,7 @@ const triangularTests = [
             20.88446617126465,  71.37139892578125,   -84.96932220458984,
             -88.97057342529297, 77.58269500732422,   91.03327178955078
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -369,7 +366,7 @@ const triangularTests = [
             -84.96932220458984,  0,
             77.58269500732422,   91.03327178955078
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -389,7 +386,7 @@ const triangularTests = [
             20.88446617126465,  71.37139892578125,   -84.96932220458984,
             -88.97057342529297, 77.58269500732422,   91.03327178955078
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -426,7 +423,7 @@ const triangularTests = [
             0,
             91.03327178955078
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -446,7 +443,7 @@ const triangularTests = [
             20.88446617126465,  71.37139892578125,   -84.96932220458984,
             -88.97057342529297, 77.58269500732422,   91.03327178955078
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -467,7 +464,7 @@ const triangularTests = [
             20.88446617126465,  71.37139892578125,   -84.96932220458984,
             -88.97057342529297, 77.58269500732422,   91.03327178955078
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -487,7 +484,7 @@ const triangularTests = [
             20.88446617126465,  71.37139892578125,   -84.96932220458984,
             -88.97057342529297, 77.58269500732422,   91.03327178955078
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -502,7 +499,7 @@ const triangularTests = [
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -522,7 +519,7 @@ const triangularTests = [
             20.88446617126465,  71.37139892578125,   -84.96932220458984,
             -88.97057342529297, 77.58269500732422,   91.03327178955078
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -543,7 +540,7 @@ const triangularTests = [
             20.88446617126465,  71.37139892578125,   -84.96932220458984,
             -88.97057342529297, 77.58269500732422,   91.03327178955078
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -564,7 +561,7 @@ const triangularTests = [
             20.88446617126465,  71.37139892578125,   -84.96932220458984,
             -88.97057342529297, 77.58269500732422,   91.03327178955078
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -603,7 +600,7 @@ const triangularTests = [
             0,
             91.03327178955078
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -624,7 +621,7 @@ const triangularTests = [
             20.88446617126465,  71.37139892578125,   -84.96932220458984,
             -88.97057342529297, 77.58269500732422,   91.03327178955078
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -647,7 +644,7 @@ const triangularTests = [
             20.88446617126465,  71.37139892578125,   0,
             -88.97057342529297, 77.58269500732422,   91.03327178955078
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -668,7 +665,7 @@ const triangularTests = [
             20.88446617126465,  71.37139892578125,   -84.96932220458984,
             -88.97057342529297, 77.58269500732422,   91.03327178955078
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -687,7 +684,7 @@ const triangularTests = [
             0, 0, 0, 67.48285675048828,  0, 0,
             0, 0, 0, -88.97057342529297, 0, 0
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -708,7 +705,7 @@ const triangularTests = [
             20.88446617126465,  71.37139892578125,   -84.96932220458984,
             -88.97057342529297, 77.58269500732422,   91.03327178955078
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -731,7 +728,7 @@ const triangularTests = [
             20.88446617126465,  71.37139892578125,   -84.96932220458984,
             -88.97057342529297, 77.58269500732422,   91.03327178955078
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -752,7 +749,7 @@ const triangularTests = [
             20.88446617126465,  71.37139892578125,   -84.96932220458984,
             -88.97057342529297, 77.58269500732422,   91.03327178955078
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -769,18 +766,546 @@ const triangularTests = [
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
+        }
+      }
+    }
+  },
+
+  // float16 tests
+  {
+    'name': 'triangular float16 2D tensor default options',
+    'graph': {
+      'inputs': {
+        'triangularInput': {
+          'data': [
+            84.9375,   -86.1875,  50.375,     -98.5, -94.5,   -21.421875,
+            24.671875, -50.34375, -37.03125,  97.25, 73.375,  -75.125,
+            41.65625,  58.875,    -29.921875, 67.5,  42.125,  -70.25,
+            20.890625, 71.375,    -85,        -89,   77.5625, 91.0625
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'triangular',
+        'arguments': [{'input': 'triangularInput'}],
+        'outputs': 'triangularOutput'
+      }],
+      'expectedOutputs': {
+        'triangularOutput': {
+          'data': [
+            84.9375, -86.1875,  50.375,     -98.5, -94.5,   -21.421875,
+            0,       -50.34375, -37.03125,  97.25, 73.375,  -75.125,
+            0,       0,         -29.921875, 67.5,  42.125,  -70.25,
+            0,       0,         0,          -89,   77.5625, 91.0625
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'triangular float16 3D tensor default options',
+    'graph': {
+      'inputs': {
+        'triangularInput': {
+          'data': [
+            84.9375,   -86.1875,  50.375,     -98.5, -94.5,   -21.421875,
+            24.671875, -50.34375, -37.03125,  97.25, 73.375,  -75.125,
+            41.65625,  58.875,    -29.921875, 67.5,  42.125,  -70.25,
+            20.890625, 71.375,    -85,        -89,   77.5625, 91.0625
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'triangular',
+        'arguments': [{'input': 'triangularInput'}],
+        'outputs': 'triangularOutput'
+      }],
+      'expectedOutputs': {
+        'triangularOutput': {
+          'data': [
+            84.9375,   -86.1875,  50.375,     -98.5, 0,       -21.421875,
+            24.671875, -50.34375, 0,          0,     73.375,  -75.125,
+            41.65625,  58.875,    -29.921875, 67.5,  0,       -70.25,
+            20.890625, 71.375,    0,          0,     77.5625, 91.0625
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'triangular float16 4D tensor default options',
+    'graph': {
+      'inputs': {
+        'triangularInput': {
+          'data': [
+            84.9375,   -86.1875,  50.375,     -98.5, -94.5,   -21.421875,
+            24.671875, -50.34375, -37.03125,  97.25, 73.375,  -75.125,
+            41.65625,  58.875,    -29.921875, 67.5,  42.125,  -70.25,
+            20.890625, 71.375,    -85,        -89,   77.5625, 91.0625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'triangular',
+        'arguments': [{'input': 'triangularInput'}],
+        'outputs': 'triangularOutput'
+      }],
+      'expectedOutputs': {
+        'triangularOutput': {
+          'data': [
+            84.9375,   -86.1875,  50.375,     0, -94.5,   -21.421875,
+            24.671875, -50.34375, -37.03125,  0, 73.375,  -75.125,
+            41.65625,  58.875,    -29.921875, 0, 42.125,  -70.25,
+            20.890625, 71.375,    -85,        0, 77.5625, 91.0625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'triangular float16 5D tensor default options',
+    'graph': {
+      'inputs': {
+        'triangularInput': {
+          'data': [
+            84.9375,   -86.1875,  50.375,     -98.5, -94.5,   -21.421875,
+            24.671875, -50.34375, -37.03125,  97.25, 73.375,  -75.125,
+            41.65625,  58.875,    -29.921875, 67.5,  42.125,  -70.25,
+            20.890625, 71.375,    -85,        -89,   77.5625, 91.0625
+          ],
+          'descriptor': {shape: [2, 1, 4, 1, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'triangular',
+        'arguments': [{'input': 'triangularInput'}],
+        'outputs': 'triangularOutput'
+      }],
+      'expectedOutputs': {
+        'triangularOutput': {
+          'data': [
+            84.9375,   -86.1875,  50.375,     -98.5, -94.5,   -21.421875,
+            24.671875, -50.34375, -37.03125,  97.25, 73.375,  -75.125,
+            41.65625,  58.875,    -29.921875, 67.5,  42.125,  -70.25,
+            20.890625, 71.375,    -85,        -89,   77.5625, 91.0625
+          ],
+          'descriptor': {shape: [2, 1, 4, 1, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'triangular float16 4D tensor explict options.upper=true',
+    'graph': {
+      'inputs': {
+        'triangularInput': {
+          'data': [
+            84.9375,   -86.1875,  50.375,     -98.5, -94.5,   -21.421875,
+            24.671875, -50.34375, -37.03125,  97.25, 73.375,  -75.125,
+            41.65625,  58.875,    -29.921875, 67.5,  42.125,  -70.25,
+            20.890625, 71.375,    -85,        -89,   77.5625, 91.0625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'triangular',
+        'arguments':
+            [{'input': 'triangularInput'}, {'options': {'upper': true}}],
+        'outputs': 'triangularOutput'
+      }],
+      'expectedOutputs': {
+        'triangularOutput': {
+          'data': [
+            84.9375,   -86.1875,  50.375,     0, -94.5,   -21.421875,
+            24.671875, -50.34375, -37.03125,  0, 73.375,  -75.125,
+            41.65625,  58.875,    -29.921875, 0, 42.125,  -70.25,
+            20.890625, 71.375,    -85,        0, 77.5625, 91.0625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'triangular float16 4D tensor options.upper=false',
+    'graph': {
+      'inputs': {
+        'triangularInput': {
+          'data': [
+            84.9375,   -86.1875,  50.375,     -98.5, -94.5,   -21.421875,
+            24.671875, -50.34375, -37.03125,  97.25, 73.375,  -75.125,
+            41.65625,  58.875,    -29.921875, 67.5,  42.125,  -70.25,
+            20.890625, 71.375,    -85,        -89,   77.5625, 91.0625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'triangular',
+        'arguments':
+            [{'input': 'triangularInput'}, {'options': {'upper': false}}],
+        'outputs': 'triangularOutput'
+      }],
+      'expectedOutputs': {
+        'triangularOutput': {
+          'data': [
+            84.9375, 0,     0,         -98.5, -94.5,    0,   24.671875, 0,
+            0,       97.25, 73.375,    0,     41.65625, 0,   0,         67.5,
+            42.125,  0,     20.890625, 0,     0,        -89, 77.5625,   0
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'triangular float16 4D tensor explict options.diagonal=0',
+    'graph': {
+      'inputs': {
+        'triangularInput': {
+          'data': [
+            84.9375,   -86.1875,  50.375,     -98.5, -94.5,   -21.421875,
+            24.671875, -50.34375, -37.03125,  97.25, 73.375,  -75.125,
+            41.65625,  58.875,    -29.921875, 67.5,  42.125,  -70.25,
+            20.890625, 71.375,    -85,        -89,   77.5625, 91.0625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'triangular',
+        'arguments':
+            [{'input': 'triangularInput'}, {'options': {'diagonal': 0}}],
+        'outputs': 'triangularOutput'
+      }],
+      'expectedOutputs': {
+        'triangularOutput': {
+          'data': [
+            84.9375,   -86.1875,  50.375,     0, -94.5,   -21.421875,
+            24.671875, -50.34375, -37.03125,  0, 73.375,  -75.125,
+            41.65625,  58.875,    -29.921875, 0, 42.125,  -70.25,
+            20.890625, 71.375,    -85,        0, 77.5625, 91.0625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'triangular float16 4D tensor options.diagonal=1',
+    'graph': {
+      'inputs': {
+        'triangularInput': {
+          'data': [
+            84.9375,   -86.1875,  50.375,     -98.5, -94.5,   -21.421875,
+            24.671875, -50.34375, -37.03125,  97.25, 73.375,  -75.125,
+            41.65625,  58.875,    -29.921875, 67.5,  42.125,  -70.25,
+            20.890625, 71.375,    -85,        -89,   77.5625, 91.0625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'triangular',
+        'arguments':
+            [{'input': 'triangularInput'}, {'options': {'diagonal': 1}}],
+        'outputs': 'triangularOutput'
+      }],
+      'expectedOutputs': {
+        'triangularOutput': {
+          'data': [
+            0, -86.1875,  50.375,     0, 0, -21.421875,
+            0, -50.34375, -37.03125,  0, 0, -75.125,
+            0, 58.875,    -29.921875, 0, 0, -70.25,
+            0, 71.375,    -85,        0, 0, 91.0625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'triangular float16 4D tensor options.diagonal=-1',
+    'graph': {
+      'inputs': {
+        'triangularInput': {
+          'data': [
+            84.9375,   -86.1875,  50.375,     -98.5, -94.5,   -21.421875,
+            24.671875, -50.34375, -37.03125,  97.25, 73.375,  -75.125,
+            41.65625,  58.875,    -29.921875, 67.5,  42.125,  -70.25,
+            20.890625, 71.375,    -85,        -89,   77.5625, 91.0625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'triangular',
+        'arguments':
+            [{'input': 'triangularInput'}, {'options': {'diagonal': -1}}],
+        'outputs': 'triangularOutput'
+      }],
+      'expectedOutputs': {
+        'triangularOutput': {
+          'data': [
+            84.9375,   -86.1875,  50.375,     -98.5, -94.5,   -21.421875,
+            24.671875, -50.34375, -37.03125,  97.25, 73.375,  -75.125,
+            41.65625,  58.875,    -29.921875, 67.5,  42.125,  -70.25,
+            20.890625, 71.375,    -85,        -89,   77.5625, 91.0625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'triangular float16 4D tensor fully zero options.diagonal=3',
+    'graph': {
+      'inputs': {
+        'triangularInput': {
+          'data': [
+            84.9375,   -86.1875,  50.375,     -98.5, -94.5,   -21.421875,
+            24.671875, -50.34375, -37.03125,  97.25, 73.375,  -75.125,
+            41.65625,  58.875,    -29.921875, 67.5,  42.125,  -70.25,
+            20.890625, 71.375,    -85,        -89,   77.5625, 91.0625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'triangular',
+        'arguments':
+            [{'input': 'triangularInput'}, {'options': {'diagonal': 3}}],
+        'outputs': 'triangularOutput'
+      }],
+      'expectedOutputs': {
+        'triangularOutput': {
+          'data': [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'triangular float16 4D tensor fully copied options.diagonal=-2',
+    'graph': {
+      'inputs': {
+        'triangularInput': {
+          'data': [
+            84.9375,   -86.1875,  50.375,     -98.5, -94.5,   -21.421875,
+            24.671875, -50.34375, -37.03125,  97.25, 73.375,  -75.125,
+            41.65625,  58.875,    -29.921875, 67.5,  42.125,  -70.25,
+            20.890625, 71.375,    -85,        -89,   77.5625, 91.0625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'triangular',
+        'arguments':
+            [{'input': 'triangularInput'}, {'options': {'diagonal': -2}}],
+        'outputs': 'triangularOutput'
+      }],
+      'expectedOutputs': {
+        'triangularOutput': {
+          'data': [
+            84.9375,   -86.1875,  50.375,     -98.5, -94.5,   -21.421875,
+            24.671875, -50.34375, -37.03125,  97.25, 73.375,  -75.125,
+            41.65625,  58.875,    -29.921875, 67.5,  42.125,  -70.25,
+            20.890625, 71.375,    -85,        -89,   77.5625, 91.0625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'triangular float16 4D tensor options.upper=true options.diagonal=1',
+    'graph': {
+      'inputs': {
+        'triangularInput': {
+          'data': [
+            84.9375,   -86.1875,  50.375,     -98.5, -94.5,   -21.421875,
+            24.671875, -50.34375, -37.03125,  97.25, 73.375,  -75.125,
+            41.65625,  58.875,    -29.921875, 67.5,  42.125,  -70.25,
+            20.890625, 71.375,    -85,        -89,   77.5625, 91.0625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'triangular',
+        'arguments': [
+          {'input': 'triangularInput'},
+          {'options': {'upper': true, 'diagonal': 1}}
+        ],
+        'outputs': 'triangularOutput'
+      }],
+      'expectedOutputs': {
+        'triangularOutput': {
+          'data': [
+            0, -86.1875,  50.375,     0, 0, -21.421875,
+            0, -50.34375, -37.03125,  0, 0, -75.125,
+            0, 58.875,    -29.921875, 0, 0, -70.25,
+            0, 71.375,    -85,        0, 0, 91.0625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'triangular float16 4D tensor options.upper=false options.diagonal=1',
+    'graph': {
+      'inputs': {
+        'triangularInput': {
+          'data': [
+            84.9375,   -86.1875,  50.375,     -98.5, -94.5,   -21.421875,
+            24.671875, -50.34375, -37.03125,  97.25, 73.375,  -75.125,
+            41.65625,  58.875,    -29.921875, 67.5,  42.125,  -70.25,
+            20.890625, 71.375,    -85,        -89,   77.5625, 91.0625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'triangular',
+        'arguments': [
+          {'input': 'triangularInput'},
+          {'options': {'upper': false, 'diagonal': 1}}
+        ],
+        'outputs': 'triangularOutput'
+      }],
+      'expectedOutputs': {
+        'triangularOutput': {
+          'data': [
+            84.9375,   -86.1875,  0, -98.5, -94.5,   -21.421875,
+            24.671875, -50.34375, 0, 97.25, 73.375,  -75.125,
+            41.65625,  58.875,    0, 67.5,  42.125,  -70.25,
+            20.890625, 71.375,    0, -89,   77.5625, 91.0625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'triangular float16 4D tensor options.upper=false options.diagonal=-1',
+    'graph': {
+      'inputs': {
+        'triangularInput': {
+          'data': [
+            84.9375,   -86.1875,  50.375,     -98.5, -94.5,   -21.421875,
+            24.671875, -50.34375, -37.03125,  97.25, 73.375,  -75.125,
+            41.65625,  58.875,    -29.921875, 67.5,  42.125,  -70.25,
+            20.890625, 71.375,    -85,        -89,   77.5625, 91.0625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'triangular',
+        'arguments': [
+          {'input': 'triangularInput'},
+          {'options': {'upper': false, 'diagonal': -1}}
+        ],
+        'outputs': 'triangularOutput'
+      }],
+      'expectedOutputs': {
+        'triangularOutput': {
+          'data': [
+            0, 0, 0, -98.5, 0, 0, 0, 0, 0, 97.25, 0, 0,
+            0, 0, 0, 67.5,  0, 0, 0, 0, 0, -89,   0, 0
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'triangular float16 4D tensor fully copied options.upper=false options.diagonal=3',
+    'graph': {
+      'inputs': {
+        'triangularInput': {
+          'data': [
+            84.9375,   -86.1875,  50.375,     -98.5, -94.5,   -21.421875,
+            24.671875, -50.34375, -37.03125,  97.25, 73.375,  -75.125,
+            41.65625,  58.875,    -29.921875, 67.5,  42.125,  -70.25,
+            20.890625, 71.375,    -85,        -89,   77.5625, 91.0625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'triangular',
+        'arguments': [
+          {'input': 'triangularInput'},
+          {'options': {'upper': false, 'diagonal': 3}}
+        ],
+        'outputs': 'triangularOutput'
+      }],
+      'expectedOutputs': {
+        'triangularOutput': {
+          'data': [
+            84.9375,   -86.1875,  50.375,     -98.5, -94.5,   -21.421875,
+            24.671875, -50.34375, -37.03125,  97.25, 73.375,  -75.125,
+            41.65625,  58.875,    -29.921875, 67.5,  42.125,  -70.25,
+            20.890625, 71.375,    -85,        -89,   77.5625, 91.0625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'triangular float16 4D tensor fully zero options.upper=false options.diagonal=-2',
+    'graph': {
+      'inputs': {
+        'triangularInput': {
+          'data': [
+            84.9375,   -86.1875,  50.375,     -98.5, -94.5,   -21.421875,
+            24.671875, -50.34375, -37.03125,  97.25, 73.375,  -75.125,
+            41.65625,  58.875,    -29.921875, 67.5,  42.125,  -70.25,
+            20.890625, 71.375,    -85,        -89,   77.5625, 91.0625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'triangular',
+        'arguments': [
+          {'input': 'triangularInput'},
+          {'options': {'upper': false, 'diagonal': -2}}
+        ],
+        'outputs': 'triangularOutput'
+      }],
+      'expectedOutputs': {
+        'triangularOutput': {
+          'data': [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
         }
       }
     }
   }
 ];
 
-if (navigator.ml) {
-  triangularTests.forEach((test) => {
-    webnn_conformance_test(
-        buildGraphAndCompute, getTriangularPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(
+    triangularTests, buildAndExecuteGraph, getTriangularPrecisionTolerance);

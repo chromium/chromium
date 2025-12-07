@@ -1,0 +1,44 @@
+{{header}}
+{{object 1 0}} <<
+  /Type /Catalog
+  /Pages 2 0 R
+  /AcroForm <<
+    /DR <<
+      /F1 5 0 R
+    >>
+    /Fields [4 0 R]
+  >>
+>>
+endobj
+{{object 2 0}} <<
+  /Type /Pages
+  /Count 1
+  /Kids [3 0 R]
+>>
+endobj
+{{object 3 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Annots [4 0 R]
+  /MediaBox [0 0 200 200]
+>>
+endobj
+{{object 4 0}} <<
+  /Type /Annot
+  /Subtype /Widget
+  /FT /Tx
+  /DA (0 0 0 rg /F1 12 Tf)
+  /Rect [0 0 200 200]
+  /T (Text Box)
+>>
+endobj
+{{object 5 0}} <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Helvetica
+>>
+endobj
+{{xref}}
+{{trailer}}
+{{startxref}}
+%%EOF

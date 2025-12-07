@@ -73,8 +73,9 @@ found in the LICENSE file.
                 <LinearLayout
                     android:id="@+id/price_info_box"
                     android:background="@drawable/price_change_module_price_drop_background"
-                    android:layout_height="wrap_content"
+                    android:layout_height="@dimen/price_change_indicator_card_height"
                     android:layout_width="wrap_content"
+                    android:gravity="center_vertical"
                     android:orientation="horizontal">
                     <TextView
                         android:id="@+id/current_price"

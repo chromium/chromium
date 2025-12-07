@@ -1,0 +1,92 @@
+<!--
+@WAIT-FOR:Ready
+@EVENTS-TREE-DUMP
+@AURALINUX-DENY:CHILDREN-CHANGED*
+@AURALINUX-DENY:PARENT-CHANGED*
+@UIA-WIN-DENY:*StructureChanged*
+@WIN-DENY:EVENT_OBJECT_LOCATIONCHANGE*
+@WIN-DENY:EVENT_OBJECT_REORDER*
+@WIN-DENY:EVENT_OBJECT_HIDE*
+@WIN-DENY:EVENT_OBJECT_SHOW*
+-->
+<!doctype html>
+<html>
+<head>
+    <title>Material Web Select Events</title>
+    <script type="module">
+        import { injectImportMap, loadAndWaitForReady, setupEventTestRunner, waitForStable } from "../material-design/resources/utils.js";
+        injectImportMap();
+
+        const components = [
+            "md-filled-select",
+            "md-select-option"
+        ];
+
+        setupEventTestRunner();
+        window.waitForStable = waitForStable;
+        loadAndWaitForReady(components, () => {
+            const statusDiv = document.getElementById("status");
+            const select = document.createElement("md-filled-select");
+            select.id = "test-select";
+            select.label = "Test Select";
+            select.quick = true;
+            select.setAttribute("aria-label", "Test Select");
+            select.value = "option1";
+
+            const option1 = document.createElement("md-select-option");
+            option1.value = "option1";
+            option1.textContent = "Option 1";
+            select.appendChild(option1);
+
+            const option2 = document.createElement("md-select-option");
+            option2.value = "option2";
+            option2.textContent = "Option 2";
+            select.appendChild(option2);
+
+            const option3 = document.createElement("md-select-option");
+            option3.value = "option3";
+            option3.textContent = "Option 3";
+            select.appendChild(option3);
+
+            statusDiv.appendChild(select);
+
+            // Ensure select starts with correct value
+            select.updateComplete.then(() => {
+                select.value = "option1";
+                return select.updateComplete;
+            }).then(() => {
+                statusDiv.setAttribute("aria-label", "Ready");
+            });
+        });
+    </script>
+</head>
+<body>
+    <div id="status" aria-label="Loading">
+    </div>
+</body>
+<script>
+    window.go_passes = [
+        async () => {
+            const select = document.getElementById("test-select");
+            if (select) {
+                select.value = "option2";
+                await waitForStable(select);
+            }
+        },
+        async () => {
+            const select = document.getElementById("test-select");
+            if (select) {
+                select.value = "option3";
+                await waitForStable(select);
+            }
+        },
+        async () => {
+            const select = document.getElementById("test-select");
+            if (select) {
+                select.value = "option1";
+                await waitForStable(select);
+            }
+        }
+    ];
+</script>
+</html>

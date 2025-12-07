@@ -16,6 +16,7 @@ import org.json.JSONObject;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,6 +28,7 @@ import java.util.Set;
  * This class is responsible for managing lazy subscriptions. It provides API to change and query
  * whether a subscription is lazy, and toto persist and retrieve persisted messages.
  */
+@NullMarked
 public class LazySubscriptionsManager {
     private static final String TAG = "LazySubscriptions";
     private static final String FCM_LAZY_SUBSCRIPTIONS = "fcm_lazy_subscriptions";
@@ -66,11 +68,9 @@ public class LazySubscriptionsManager {
     }
 
     /**
-     * Adds/Removes the |subscriptionId| to indicate whether there are any
-     * persisted messages to read for this |subscriptionId|. This information
-     * could be read using hasPersistedMessagesForSubscription().
-     * @param subscriptionId
-     * @param hasPersistedMessages
+     * Adds/Removes the |subscriptionId| to indicate whether there are any persisted messages to
+     * read for this |subscriptionId|. This information could be read using
+     * hasPersistedMessagesForSubscription().
      */
     public static void storeHasPersistedMessagesForSubscription(
             final String subscriptionId, boolean hasPersistedMessages) {
@@ -103,11 +103,11 @@ public class LazySubscriptionsManager {
     }
 
     /**
-     * Whether some messages are persisted for |subscriptionIdPrefix| and should be
-     * replayed next time Chrome is running. It should be cheaper to call than
-     * actually reading the stored messages. Call this method to decide whether
-     * there is a need to read any persisted messages for that subscription.
-     * @param subscriptionIdPrefix
+     * Whether some messages are persisted for |subscriptionIdPrefix| and should be replayed next
+     * time Chrome is running. It should be cheaper to call than actually reading the stored
+     * messages. Call this method to decide whether there is a need to read any persisted messages
+     * for that subscription.
+     *
      * @return whether some messages are persisted for that subscription.
      */
     public static Set<String> getSubscriptionIdsWithPersistedMessages(
@@ -117,7 +117,7 @@ public class LazySubscriptionsManager {
                 new HashSet<>(
                         sharedPrefs.getStringSet(
                                 SUBSCRIPTIONS_WITH_PERSISTED_MESSAGES_KEY, Collections.emptySet()));
-        Set<String> subscriptionsWithPersistedMessagesWithPrefix = new HashSet<String>();
+        Set<String> subscriptionsWithPersistedMessagesWithPrefix = new HashSet<>();
         for (String subscriptionWithPersistedMessages : subscriptionsWithPersistedMessages) {
             if (subscriptionWithPersistedMessages.startsWith(subscriptionIdPrefix)) {
                 subscriptionsWithPersistedMessagesWithPrefix.add(subscriptionWithPersistedMessages);
@@ -129,8 +129,7 @@ public class LazySubscriptionsManager {
     /**
      * Given an appId and a senderId, this methods builds a unique identifier for a subscription.
      * Currently implementation concatenates both senderId and appId.
-     * @param appId
-     * @param senderId
+     *
      * @return The unique identifier for the subscription.
      */
     public static String buildSubscriptionUniqueId(final String appId, final String senderId) {
@@ -286,10 +285,7 @@ public class LazySubscriptionsManager {
         return new GCMMessage[0];
     }
 
-    /**
-     * Deletes all persisted messages for the given subscription id.
-     * @param subscriptionId
-     */
+    /** Deletes all persisted messages for the given subscription id. */
     public static void deletePersistedMessagesForSubscriptionId(String subscriptionId) {
         Context context = ContextUtils.getApplicationContext();
         SharedPreferences sharedPrefs =

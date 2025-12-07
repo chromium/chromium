@@ -7,8 +7,8 @@
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/page_info/about_this_site_tab_helper.h"
+#include "chrome/browser/page_info/merchant_trust_service_factory.h"
 #include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/page_info/merchant_trust_side_panel.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -23,6 +24,8 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/page_info/core/about_this_site_service.h"
 #include "components/page_info/core/features.h"
+#include "components/page_info/core/merchant_trust_service.h"
+#include "components/page_info/core/pref_names.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permissions_client.h"
@@ -30,6 +33,7 @@
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
@@ -40,7 +44,7 @@
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/window_controller_list.h"
+#include "chrome/browser/extensions/window_controller_list.h"  // nogncheck
 #include "chrome/browser/page_info/about_this_site_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/page_info/about_this_site_side_panel.h"
@@ -63,10 +67,11 @@ ChromePageInfoUiDelegate::ChromePageInfoUiDelegate(
 
 bool ChromePageInfoUiDelegate::ShouldShowAllow(ContentSettingsType type) {
   switch (type) {
-    // Notifications and idle detection do not support CONTENT_SETTING_ALLOW in
-    // incognito.
+    // Notifications, idle detection, and web app installation do not support
+    // CONTENT_SETTING_ALLOW in incognito.
     case ContentSettingsType::NOTIFICATIONS:
     case ContentSettingsType::IDLE_DETECTION:
+    case ContentSettingsType::WEB_APP_INSTALLATION:
       return !GetProfile()->IsOffTheRecord();
     // Media only supports CONTENT_SETTING_ALLOW for secure origins.
     case ContentSettingsType::MEDIASTREAM_MIC:
@@ -90,10 +95,11 @@ bool ChromePageInfoUiDelegate::ShouldShowAllow(ContentSettingsType type) {
 std::u16string ChromePageInfoUiDelegate::GetAutomaticallyBlockedReason(
     ContentSettingsType type) {
   switch (type) {
-    // Notifications and idle detection do not support CONTENT_SETTING_ALLOW in
-    // incognito.
+    // Notifications, idle detection, and web app installation do not support
+    // CONTENT_SETTING_ALLOW in incognito.
     case ContentSettingsType::NOTIFICATIONS:
-    case ContentSettingsType::IDLE_DETECTION: {
+    case ContentSettingsType::IDLE_DETECTION:
+    case ContentSettingsType::WEB_APP_INSTALLATION: {
       if (GetProfile()->IsOffTheRecord()) {
         return l10n_util::GetStringUTF16(
             GetProfile()->IsGuestSession()
@@ -153,8 +159,9 @@ bool ChromePageInfoUiDelegate::ShouldShowAsk(ContentSettingsType type) {
 #if !BUILDFLAG(IS_ANDROID)
 bool ChromePageInfoUiDelegate::ShouldShowSiteSettings(int* link_text_id,
                                                       int* tooltip_text_id) {
-  if (GetProfile()->IsGuestSession())
+  if (GetProfile()->IsGuestSession()) {
     return false;
+  }
 
   if (web_app::GetLabelIdsForAppManagementLinkInPageInfo(
           web_contents_, link_text_id, tooltip_text_id)) {
@@ -169,18 +176,12 @@ bool ChromePageInfoUiDelegate::ShouldShowSiteSettings(int* link_text_id,
 
 // TODO(crbug.com/40776829): Reconcile with LastTabStandingTracker.
 bool ChromePageInfoUiDelegate::IsMultipleTabsOpen() {
-  const extensions::WindowControllerList::ControllerList& windows =
-      extensions::WindowControllerList::GetInstance()->windows();
   int count = 0;
   auto site_origin = site_url_.DeprecatedGetOriginAsURL();
-  for (extensions::WindowController* window : windows) {
-    const Browser* const browser = window->GetBrowser();
-    if (!browser)
-      continue;
-    const TabStripModel* const tabs = browser->tab_strip_model();
-    DCHECK(tabs);
-    for (int i = 0; i < tabs->count(); ++i) {
-      content::WebContents* const web_contents = tabs->GetWebContentsAt(i);
+  for (extensions::WindowController* window :
+       *extensions::WindowControllerList::GetInstance()) {
+    for (int i = 0; i < window->GetTabCount(); ++i) {
+      content::WebContents* const web_contents = window->GetWebContentsAt(i);
       if (web_contents->GetLastCommittedURL().DeprecatedGetOriginAsURL() ==
           site_origin) {
         count++;
@@ -224,8 +225,7 @@ bool ChromePageInfoUiDelegate::ShouldShowSettingsLinkForPermission(
       // ), however as we don't have any testcase for this branch, the changes
       // were refused by the test coverage bot.
       // TODO(b/345431801): Add a testcase to cover this case.
-      if (base::FeatureList::IsEnabled(
-              features::kAppShimNotificationAttribution)) {
+      if (web_app::UseNotificationAttributionForWebAppShims()) {
         // If this notification permission is associated with a locally
         // installed web app, the corresponding app shim needs to have system
         // level notification permission for notifications to work. If system
@@ -277,6 +277,27 @@ bool ChromePageInfoUiDelegate::ShouldShowSettingsLinkForPermission(
         return true;
       }
       return false;
+#if BUILDFLAG(IS_CHROMEOS)
+    case ContentSettingsType::GEOLOCATION:
+      if (base::FeatureList::IsEnabled(
+              content_settings::features::
+                  kCrosSystemLevelPermissionBlockedWarnings) &&
+          system_permission_settings::IsDenied(type)) {
+        *text_id = IDS_PAGE_INFO_LOCATION_SYSTEM_SETTINGS_DESCRIPTION;
+        *link_id = IDS_PAGE_INFO_SETTINGS_OF_A_SYSTEM_LINK;
+        return true;
+      }
+      return false;
+#endif
+    case ContentSettingsType::CLIPBOARD_READ_WRITE:
+      if (base::FeatureList::IsEnabled(
+              content_settings::features::kLeftHandSideActivityIndicators) &&
+          system_permission_settings::IsDenied(type)) {
+        *text_id = IDS_PAGE_INFO_CLIPBOARD_SYSTEM_SETTINGS_DESCRIPTION;
+        *link_id = IDS_PAGE_INFO_SETTINGS_OF_A_SYSTEM_LINK;
+        return true;
+      }
+      return false;
     default:
       return false;
   }
@@ -296,12 +317,9 @@ content::PermissionResult ChromePageInfoUiDelegate::GetPermissionResult(
   return GetProfile()
       ->GetPermissionController()
       ->GetPermissionResultForOriginWithoutContext(
-          permission, url::Origin::Create(site_url_));
-}
-
-bool ChromePageInfoUiDelegate::IsTrackingProtection3pcdEnabled() {
-  return TrackingProtectionSettingsFactory::GetForProfile(GetProfile())
-      ->IsTrackingProtection3pcdEnabled();
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(permission),
+          url::Origin::Create(site_url_));
 }
 
 std::optional<content::PermissionResult>
@@ -309,6 +327,45 @@ ChromePageInfoUiDelegate::GetEmbargoResult(ContentSettingsType type) {
   return permissions::PermissionsClient::Get()
       ->GetPermissionDecisionAutoBlocker(GetProfile())
       ->GetEmbargoResult(site_url_, type);
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+void ChromePageInfoUiDelegate::OpenMerchantTrustSidePanel(const GURL& url) {
+  DCHECK(page_info::IsMerchantTrustFeatureEnabled());
+  ShowMerchantTrustSidePanel(web_contents_, url);
+}
+#endif
+
+void ChromePageInfoUiDelegate::GetMerchantTrustInfo(
+    page_info::MerchantDataCallback callback) {
+  if (auto* service =
+          MerchantTrustServiceFactory::GetForProfile(GetProfile())) {
+    service->GetMerchantTrustInfo(web_contents_->GetVisibleURL(),
+                                  std::move(callback));
+  }
+}
+
+void ChromePageInfoUiDelegate::RecordPageInfoWithMerchantTrustOpenTime() {
+  GetProfile()->GetPrefs()->SetTime(prefs::kMerchantTrustPageInfoLastOpenTime,
+                                    clock_->Now());
+}
+
+void ChromePageInfoUiDelegate::RecordMerchantTrustButtonShown() {
+  if (auto* service =
+          MerchantTrustServiceFactory::GetForProfile(GetProfile())) {
+    service->RecordMerchantTrustInteraction(
+        web_contents_->GetVisibleURL(),
+        page_info::MerchantTrustInteraction::kPageInfoRowShown);
+  }
+}
+
+void ChromePageInfoUiDelegate::RecordMerchantTrustSidePanelOpened() {
+  if (auto* service =
+          MerchantTrustServiceFactory::GetForProfile(GetProfile())) {
+    service->RecordMerchantTrustInteraction(
+        web_contents_->GetVisibleURL(),
+        page_info::MerchantTrustInteraction::kSidePanelOpened);
+  }
 }
 
 Profile* ChromePageInfoUiDelegate::GetProfile() const {

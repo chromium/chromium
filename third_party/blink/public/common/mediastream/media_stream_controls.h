@@ -57,7 +57,10 @@ struct BLINK_COMMON_EXPORT StreamControls {
   bool hotword_enabled = false;
   bool disable_local_echo = false;
   bool suppress_local_audio_playback = false;
+  bool restrict_own_audio = false;
   bool exclude_system_audio = false;
+  mojom::WindowAudioPreference window_audio_preference =
+      mojom::WindowAudioPreference::kExclude;
   bool exclude_self_browser_surface = false;
   bool request_pan_tilt_zoom_permission = false;
   bool request_all_screens = false;

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head/>
+<body>
+<script src="../resources/runner.js"></script>
+<div id="container"></div>
+<script>
+var isDone = false;
+var startTime;
+
+var container = document.getElementById('container');
+
+function runTest() {
+  if (startTime) {
+    PerfTestRunner.measureValueAsync(PerfTestRunner.now() - startTime);
+    PerfTestRunner.addRunTestEndMarker();
+  }
+  if (!isDone) {
+    PerfTestRunner.addRunTestStartMarker();
+    startTime = PerfTestRunner.now();
+
+    // Populate `container` with many divs with content.
+    generateAllContent();
+
+    // Pause a bit and then clear the container.
+    setTimeout(() => { container.innerHTML = ""; }, 1500);
+
+    // Re-run the same test.
+    // Wait to allow the asynchronous accessibility code that's
+    // covered by traceEventsToMeasure to have a chance to run.
+    setTimeout(runTest, 2500);
+  }
+}
+
+function generateAllContent() {
+  const root = container.appendChild(document.createElement('div'));
+  root.id = 'root';
+
+  for (let i = 0; i < 12664;) {
+    root.appendChild(generateDivWithText(i++));
+    root.appendChild(generateDivWithLinks(i++));
+  }
+}
+
+function generateDivWithText(number) {
+  const node = document.createElement("div");
+  node.setAttribute("number", number.toString());
+  node.innerText = "With Text";
+  return node;
+}
+
+function generateDivWithLinks(number) {
+  const node = document.createElement("div");
+  node.setAttribute("number", number.toString());
+  node.innerText = "With Links";
+  const link1 = document.createElement("a");
+  link1.innerText = "Link 1";
+  node.appendChild(link1);
+  const link2 = document.createElement("a");
+  link2.innerText = "Link 2";
+  node.appendChild(link2);
+  return node;
+}
+
+PerfTestRunner.startMeasureValuesAsync({
+  description:
+    'Test accessibility performance when many nodes are added to/removed from a page.',
+  unit: 'ms',
+  done: function () {
+    isDone = true;
+  },
+  run: function() {
+    runTest();
+  },
+  iterationCount: 6,
+  tracingCategories: 'accessibility',
+  traceEventsToMeasure: [
+    'BrowserAccessibilityManager::OnAccessibilityEvents',
+    'FinalizingTreeLifecycleStage',
+    'ProcessDeferredUpdatesLifecycleStage',
+    'RenderAccessibilityImpl::SendPendingAccessibilityEvents',
+    'RenderFrameHostImpl::HandleAXEvents',
+    'SerializeLifecycleStage',
+    'TotalAccessibilityCleanLayoutLifecycleStages'
+  ]
+});
+</script>
+</body>
+</html>

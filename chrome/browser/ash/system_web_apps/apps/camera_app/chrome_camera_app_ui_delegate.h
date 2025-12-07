@@ -20,7 +20,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
-#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 #include "chrome/services/pdf/public/mojom/pdf_progressive_searchifier.mojom.h"
 #include "chrome/services/pdf/public/mojom/pdf_service.mojom.h"
 #include "chrome/services/pdf/public/mojom/pdf_thumbnailer.mojom.h"
@@ -44,10 +44,6 @@ enum class MediaStreamType;
 }  // namespace mojom
 }  // namespace blink
 
-namespace ui {
-enum ModalType;
-}  // namespace ui
-
 /**
  * Implementation of the CameraAppUIDelegate interface. Provides the camera app
  * code in ash/ with functions that only exist in chrome/.
@@ -60,6 +56,7 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
     CameraAppDialog& operator=(const CameraAppDialog&) = delete;
 
     static void ShowIntent(const std::string& queries,
+                           bool launch_in_dialog,
                            gfx::NativeWindow parent);
 
     // SystemWebDialogDelegate
@@ -199,7 +196,6 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
   ~ChromeCameraAppUIDelegate() override;
 
   // ash::CameraAppUIDelegate
-  void SetLaunchDirectory() override;
   void PopulateLoadTimeData(content::WebUIDataSource* source) override;
   bool IsMetricsAndCrashReportingEnabled() override;
   void OpenFileInGallery(const std::string& name) override;

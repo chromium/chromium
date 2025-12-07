@@ -119,27 +119,6 @@ class SupervisedUserExtensionsMetricsRecorder
     kMaxValue = kFailedToEnable
   };
 
-  // These enum values represent the supervised user flows that grant
-  // automatic parent approval to an extension.
-  // These values are logged to UMA. Entries should not be renumbered and
-  // numeric values should never be reused.
-  //
-  // LINT.IfChange(ImplicitExtensionApprovalEntryPoint)
-  enum class ImplicitExtensionApprovalEntryPoint : int {
-    // Recorded when an extension is granted it,
-    // when the Family Link "Extensions" toggle if flipped to On.
-    kOnExtensionsSwitchFlippedToEnabled = 0,
-    // Recorded when an extension is granted parent approval at the
-    // time of its installation, when the "Extensions" toggle set to On.
-    OnExtensionInstallationWithExtensionsSwitchEnabled = 1,
-    // Add future entries above this comment, in sync with
-    // "SupervisedUserAutomaticParentApprovalGrantEntryPoint" in
-    // src/tools/metrics/histograms/metadata/families/enums.xml.
-    // Update kMaxValue to the last value.
-    kMaxValue = OnExtensionInstallationWithExtensionsSwitchEnabled
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:SupervisedUserImplicitParentApprovalGrantEntryPoint)
-
   // UMA metrics for adding to or removing from the set of approved extension
   // ids in the kSupervisedUserApprovedExtensions synced pref.
   // They should be kept in sync with entries on
@@ -168,10 +147,6 @@ class SupervisedUserExtensionsMetricsRecorder
   static const char kDisabledActionName[];
   static const char kFailedToEnableActionName[];
 
-  // UMA metrics for tracking approval entry points.
-  static const char kImplicitParentApprovalGrantEntryPointHistogramName[];
-  static const char kExtensionParentApprovalEntryPointHistogramName[];
-
   SupervisedUserExtensionsMetricsRecorder();
   ~SupervisedUserExtensionsMetricsRecorder() override = default;
   SupervisedUserExtensionsMetricsRecorder(
@@ -194,17 +169,6 @@ class SupervisedUserExtensionsMetricsRecorder
   // Record UMA metrics related to the Parent Permission Dialog.
   void RecordParentPermissionDialogUmaMetrics(
       ParentPermissionDialogState state);
-
-  // Record UMA metrics related to the entry point that grants implicit parent
-  // approval to an extension.
-  static void RecordImplicitParentApprovalGrantEntryPointEntryPointUmaMetrics(
-      ImplicitExtensionApprovalEntryPoint extension_approval_entry_point);
-
-  // Record UMA metrics related to the entry point leading to the display of the
-  // Parent Approval Dialog.
-  static void RecordExtensionParentApprovalDialogEntryPointUmaMetrics(
-      SupervisedUserExtensionParentApprovalEntryPoint
-          extension_approval_entry_point);
 
   // Records when the supervised user enables or disables an approved extension.
   static void RecordEnablementUmaMetrics(EnablementState state);

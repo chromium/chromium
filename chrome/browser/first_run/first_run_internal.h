@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_FIRST_RUN_FIRST_RUN_INTERNAL_H_
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace base {
 class FilePath;
@@ -21,6 +20,25 @@ namespace first_run {
 struct MasterPrefs;
 
 namespace internal {
+
+// UMA enum for tracking import bookmarks from Initial Preferences on First
+// Run results.
+// These values are persisted to logs. Entries should not be
+// renumbered and numeric values should never be reused.
+//
+// LINT.IfChange(FirstRunImportBookmarksResult)
+enum class FirstRunImportBookmarksResult {
+  // Bookmarks imported successfully.
+  kSuccess = 0,
+
+  // Import failed due to missing/malformed data.
+  kInvalidDict = 1,
+
+  // Import failed due to profile not supporting BookmarkModel.
+  kInvalidProfile = 2,
+  kMaxValue = kInvalidProfile,
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:FirstRunImportBookmarksResult)
 
 enum FirstRunState {
   FIRST_RUN_UNKNOWN,  // The state is not tested or set yet.

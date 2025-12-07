@@ -20,7 +20,6 @@ import android.graphics.Rect;
 import android.view.View;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -31,7 +30,6 @@ import org.robolectric.annotation.Implements;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.ui.resources.Resource;
 import org.chromium.ui.resources.ResourceFactory;
 import org.chromium.ui.resources.ResourceFactoryJni;
@@ -65,8 +63,6 @@ public class ViewResourceAdapterTest {
 
     private int mViewWidth;
     private int mViewHeight;
-
-    @Rule public JniMocker mJniMocker = new JniMocker();
     @Mock private ResourceFactory.Natives mResourceFactoryJni;
     @Mock private View mView;
 
@@ -75,7 +71,7 @@ public class ViewResourceAdapterTest {
     @Before
     public void setup() {
         initMocks(this);
-        mJniMocker.mock(ResourceFactoryJni.TEST_HOOKS, mResourceFactoryJni);
+        ResourceFactoryJni.setInstanceForTesting(mResourceFactoryJni);
 
         mViewWidth = 200;
         mViewHeight = 100;

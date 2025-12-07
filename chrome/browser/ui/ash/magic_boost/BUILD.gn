@@ -1,0 +1,74 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/browser/buildflags.gni")
+
+assert(is_chromeos)
+
+source_set("magic_boost") {
+  sources = [
+    "magic_boost_card_controller.cc",
+    "magic_boost_card_controller.h",
+    "magic_boost_metrics.cc",
+    "magic_boost_metrics.h",
+    "magic_boost_opt_in_card.cc",
+    "magic_boost_opt_in_card.h",
+  ]
+
+  deps = [
+    ":magic_boost_constants",
+    "//base",
+    "//chrome/browser/ash/magic_boost",
+    "//chrome/browser/resources:component_extension_resources",
+    "//chrome/browser/ui/ash/editor_menu:utils",
+    "//chrome/browser/ui/ash/read_write_cards",
+    "//chromeos/components/magic_boost/public/cpp",
+    "//chromeos/components/mahi/public/cpp",
+    "//chromeos/crosapi/mojom",
+    "//chromeos/strings:strings_grit",
+    "//chromeos/ui/vector_icons",
+    "//components/application_locale_storage",
+    "//ui/color",
+    "//ui/display",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+
+  if (is_chrome_branded) {
+    deps += [ "//chromeos/ash/resources/internal/strings" ]
+  }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "test/mock_magic_boost_controller_crosapi.cc",
+    "test/mock_magic_boost_controller_crosapi.h",
+  ]
+
+  deps = [
+    ":magic_boost",
+    "//base",
+    "//chromeos/crosapi/mojom",
+    "//testing/gmock",
+  ]
+}
+
+source_set("magic_boost_constants") {
+  sources = [ "magic_boost_constants.h" ]
+
+  deps = [
+    "//build:branding_buildflags",
+    "//chromeos/strings:strings_grit",
+  ]
+
+  if (is_chrome_branded) {
+    deps += [ "//chrome/app/theme/google_chrome/chromeos/strings" ]
+  }
+}

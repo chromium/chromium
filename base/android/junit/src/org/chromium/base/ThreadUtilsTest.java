@@ -10,6 +10,7 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Assume;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
@@ -17,6 +18,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ThreadUtils.ThreadChecker;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.BuildConfig;
 
@@ -24,6 +26,11 @@ import org.chromium.build.BuildConfig;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ThreadUtilsTest {
+    @Before
+    public void setUp() {
+        BaseRobolectricTestRule.uninstallPausedExecutorService();
+    }
+
     @Test
     @SmallTest
     public void testThreadChecker_uiThread() {
@@ -39,7 +46,9 @@ public class ThreadUtilsTest {
                                         TaskTraits.USER_BLOCKING, checker::assertOnValidThread));
         Assert.assertThat(
                 e.getCause().getMessage(),
-                startsWith("UI-only class called from background thread"));
+                startsWith(
+                        "Class was initialized on the UI thread, but current operation was"
+                            + " performed on a background thread:"));
     }
 
     @Test
@@ -56,6 +65,9 @@ public class ThreadUtilsTest {
         AssertionError e =
                 Assert.assertThrows(AssertionError.class, checkerHolder[0]::assertOnValidThread);
         Assert.assertThat(
-                e.getMessage(), startsWith("Background-only class called from UI thread"));
+                e.getMessage(),
+                startsWith(
+                        "Class was initialized on a background thread, but current operation was"
+                            + " performed on the UI thread (expected:"));
     }
 }

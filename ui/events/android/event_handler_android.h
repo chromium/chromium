@@ -39,6 +39,10 @@ class EVENTS_EXPORT EventHandlerAndroid {
       std::optional<base::TimeDelta> deadline_override);
   virtual void OnBrowserControlsHeightChanged();
   virtual void OnControlsResizeViewChanged();
+  virtual void OnWindowPositionChanged();
+  // OnPointerLockRelease is only called on the view requesting pointer lock,
+  // not the entire view tree
+  virtual void OnPointerLockRelease();
 
   virtual bool OnGenericMotionEvent(const MotionEventAndroid& event);
   virtual bool OnKeyUp(const KeyEventAndroid& event);
@@ -46,6 +50,7 @@ class EVENTS_EXPORT EventHandlerAndroid {
   virtual bool ScrollBy(float delta_x, float delta_y);
   virtual bool ScrollTo(float x, float y);
   virtual void NotifyVirtualKeyboardOverlayRect(const gfx::Rect& keyboard_rect);
+  virtual void ShowInterestInElement(int);
 };
 
 }  // namespace ui

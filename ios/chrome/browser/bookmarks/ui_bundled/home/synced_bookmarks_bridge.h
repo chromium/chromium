@@ -11,7 +11,7 @@
 #import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 
-class ChromeBrowserState;
+class ProfileIOS;
 
 namespace signin {
 class IdentityManager;
@@ -24,7 +24,7 @@ namespace sync_bookmarks {
 class SyncedBookmarksObserverBridge : public SyncObserverBridge {
  public:
   SyncedBookmarksObserverBridge(id<SyncObserverModelBridge> delegate,
-                                ChromeBrowserState* browserState);
+                                ProfileIOS* profile);
 
   SyncedBookmarksObserverBridge(const SyncedBookmarksObserverBridge&) = delete;
   SyncedBookmarksObserverBridge& operator=(
@@ -36,7 +36,7 @@ class SyncedBookmarksObserverBridge : public SyncObserverBridge {
 
  private:
   raw_ptr<signin::IdentityManager> identity_manager_;
-  base::WeakPtr<ChromeBrowserState> browser_state_;
+  base::WeakPtr<ProfileIOS> profile_;
 };
 
 }  // namespace sync_bookmarks

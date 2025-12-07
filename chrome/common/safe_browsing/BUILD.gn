@@ -4,15 +4,10 @@
 
 import("//chrome/common/features.gni")
 import("//components/safe_browsing/buildflags.gni")
-import("//third_party/protobuf/proto_library.gni")
 
 assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
 
-proto_library("proto") {
-  sources = [ "crx_info.proto" ]
-}
-
-if (safe_browsing_mode == 1) {
+if (safe_browsing_mode != 0) {
   source_set("archive_analyzer_results") {
     sources = [
       "archive_analyzer_results.cc",
@@ -106,14 +101,18 @@ source_set("safe_browsing") {
   deps = []
 
   if (safe_browsing_mode != 0) {
-    deps += [ "//components/safe_browsing/content/common:file_type_policies" ]
+    deps += [
+      ":archive_analyzer_results",
+      ":binary_feature_extractor",
+      ":download_type_util",
+      "//components/safe_browsing/content/common:file_type_policies",
+    ]
   }
 
   if (safe_browsing_mode == 1) {
     sources = [
       "ipc_protobuf_message_macros.h",
       "ipc_protobuf_message_null_macros.h",
-      "protobuf_message_log_macros.h",
       "protobuf_message_read_macros.h",
       "protobuf_message_write_macros.h",
     ]
@@ -121,9 +120,6 @@ source_set("safe_browsing") {
     configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
     deps += [
-      ":archive_analyzer_results",
-      ":binary_feature_extractor",
-      ":download_type_util",
       "//base",
       "//base:i18n",
       "//components/safe_browsing/content/common:file_type_policies",
@@ -136,9 +132,9 @@ source_set("safe_browsing") {
     }
 
     public_deps = [
-      ":proto",
       "//base:i18n",
       "//chrome/common:mojo_bindings",
+      "//components/safe_browsing/core/common/proto:crx_info_proto",
       "//components/safe_browsing/core/common/proto:csd_proto",
       "//crypto",
       "//ipc",

@@ -62,7 +62,7 @@ class URLLoaderThrottle::ThrottleRequestAdapter : public ChromeRequestAdapter {
 
 class URLLoaderThrottle::ThrottleResponseAdapter : public ResponseAdapter {
  public:
-  ThrottleResponseAdapter(URLLoaderThrottle* throttle,
+  ThrottleResponseAdapter(URLLoaderThrottle& throttle,
                           net::HttpResponseHeaders* headers)
       : throttle_(throttle), headers_(headers) {}
 
@@ -95,7 +95,9 @@ class URLLoaderThrottle::ThrottleResponseAdapter : public ResponseAdapter {
   }
 
   void RemoveHeader(const std::string& name) override {
-    headers_->RemoveHeader(name);
+    if (headers_) {
+      headers_->RemoveHeader(name);
+    }
   }
 
   base::SupportsUserData::Data* GetUserData(const void* key) const override {
@@ -109,8 +111,8 @@ class URLLoaderThrottle::ThrottleResponseAdapter : public ResponseAdapter {
   }
 
  private:
-  const raw_ptr<URLLoaderThrottle> throttle_;
-  raw_ptr<net::HttpResponseHeaders> headers_;
+  const raw_ref<URLLoaderThrottle> throttle_;
+  const raw_ptr<net::HttpResponseHeaders> headers_;
 };
 
 // static
@@ -179,7 +181,7 @@ void URLLoaderThrottle::WillRedirectRequest(
 
   // Modifications to |response_head.headers| will be passed to the
   // URLLoaderClient even though |response_head| is const.
-  ThrottleResponseAdapter response_adapter(this, response_head.headers.get());
+  ThrottleResponseAdapter response_adapter(*this, response_head.headers.get());
   delegate_->ProcessResponse(&response_adapter, redirect_info->new_url);
 
   request_url_ = redirect_info->new_url;
@@ -190,7 +192,7 @@ void URLLoaderThrottle::WillProcessResponse(
     const GURL& response_url,
     network::mojom::URLResponseHead* response_head,
     bool* defer) {
-  ThrottleResponseAdapter adapter(this, response_head->headers.get());
+  ThrottleResponseAdapter adapter(*this, response_head->headers.get());
   delegate_->ProcessResponse(&adapter, GURL() /* redirect_url */);
 }
 

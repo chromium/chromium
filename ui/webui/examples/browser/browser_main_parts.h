@@ -8,8 +8,12 @@
 #include <string>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_main_parts.h"
+#include "content/public/common/content_features.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "ui/display/screen.h"
@@ -64,6 +68,9 @@ class BrowserMainParts : public content::BrowserMainParts {
                                             const std::u16string& title);
 
   void QuitMessageLoop();
+
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAttachUnownedInnerWebContents};
 
   base::ScopedTempDir temp_dir_;
 #if BUILDFLAG(IS_MAC)

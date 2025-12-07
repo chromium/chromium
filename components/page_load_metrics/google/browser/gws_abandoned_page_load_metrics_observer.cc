@@ -11,8 +11,8 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
-#include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
+#include "components/page_load_metrics/google/browser/google_url_util.h"
 #include "content/public/browser/navigation_handle.h"
 
 namespace internal {
@@ -23,10 +23,11 @@ const char kSuffixWasNonSRP[] = ".WasNonSRP";
 
 const char kGwsAFTStartMarkName[] = "SearchAFTStart";
 const char kGwsAFTEndMarkName[] = "trigger:SearchAFTEnd";
-const char kGwsHeaderChunkStartMarkName[] = "SearchHeadStart";
-const char kGwsHeaderChunkEndMarkName[] = "SearchHeadEnd";
+const char kGwsHeadChunkStartMarkName[] = "SearchHeadStart";
+const char kGwsHeadChunkEndMarkName[] = "SearchHeadEnd";
 const char kGwsBodyChunkStartMarkName[] = "SearchBodyStart";
 const char kGwsBodyChunkEndMarkName[] = "SearchBodyEnd";
+const char kGwsSGLMarkName[] = "SearchSGL";
 
 }  // namespace internal
 
@@ -44,6 +45,11 @@ const char* GWSAbandonedPageLoadMetricsObserver::GetObserverName() const {
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 GWSAbandonedPageLoadMetricsObserver::OnNavigationEvent(
     content::NavigationHandle* navigation_handle) {
+  auto parent_result =
+      AbandonedPageLoadMetricsObserver::OnNavigationEvent(navigation_handle);
+  if (parent_result != CONTINUE_OBSERVING) {
+    return parent_result;
+  }
   if (page_load_metrics::IsGoogleSearchResultUrl(navigation_handle->GetURL())) {
     involved_srp_url_ = true;
   } else {
@@ -69,9 +75,9 @@ GWSAbandonedPageLoadMetricsObserver::GetCustomUserTimingMarkNames() const {
       mark_names({
           {internal::kGwsAFTStartMarkName, NavigationMilestone::kAFTStart},
           {internal::kGwsAFTEndMarkName, NavigationMilestone::kAFTEnd},
-          {internal::kGwsHeaderChunkStartMarkName,
+          {internal::kGwsHeadChunkStartMarkName,
            NavigationMilestone::kHeaderChunkStart},
-          {internal::kGwsHeaderChunkEndMarkName,
+          {internal::kGwsHeadChunkEndMarkName,
            NavigationMilestone::kHeaderChunkEnd},
           {internal::kGwsBodyChunkStartMarkName,
            NavigationMilestone::kBodyChunkStart},
@@ -91,6 +97,17 @@ bool GWSAbandonedPageLoadMetricsObserver::IsAllowedToLogUKM() const {
   return involved_srp_url_;
 }
 
+bool GWSAbandonedPageLoadMetricsObserver::DidLogAllLoadingMilestones() const {
+  // We've logged all loading milestones if the map contains all the loading
+  // milestones. Since the keys are unique in the map, we only need to check if
+  // we have amount of entries is the same as the amount of loading milestones.
+  return loading_milestones().size() ==
+         (static_cast<int>(NavigationMilestone::kLastGwsEssentialLoadingEvent) -
+          static_cast<int>(
+              NavigationMilestone::kFirstGwsEssentialLoadingEvent) +
+          1);
+}
+
 std::string GWSAbandonedPageLoadMetricsObserver::GetHistogramPrefix() const {
   // Use the GWS-specific histograms.
   return internal::kGWSAbandonedPageLoadMetricsHistogramPrefix;
@@ -98,11 +115,19 @@ std::string GWSAbandonedPageLoadMetricsObserver::GetHistogramPrefix() const {
 
 std::vector<std::string>
 GWSAbandonedPageLoadMetricsObserver::GetAdditionalSuffixes() const {
+  auto base_suffixes =
+      AbandonedPageLoadMetricsObserver::GetAdditionalSuffixes();
+
+  std::string request_source_suffix =
+      did_request_non_srp_ ? internal::kSuffixWasNonSRP : "";
+  std::vector<std::string> suffixes_with_request_source;
   // Add suffix that indicates the navigation prevviously requested a non-SRP
   // URL (instead of immediately targeting a SRP URL) to all histograms, if
   // necessary.
-  std::string suffix = did_request_non_srp_ ? internal::kSuffixWasNonSRP : "";
-  return {suffix};
+  for (auto base_suffix : base_suffixes) {
+    suffixes_with_request_source.push_back(base_suffix + request_source_suffix);
+  }
+  return suffixes_with_request_source;
 }
 
 void GWSAbandonedPageLoadMetricsObserver::AddSRPMetricsToUKMIfNeeded(

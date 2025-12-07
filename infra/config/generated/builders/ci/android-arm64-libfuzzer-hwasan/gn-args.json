@@ -1,0 +1,20 @@
+{
+  "gn_args": {
+    "android_static_analysis": "off",
+    "dcheck_always_on": false,
+    "enable_r8_tracerefs": true,
+    "ffmpeg_branding": "ChromeOS",
+    "is_component_build": true,
+    "is_debug": false,
+    "is_hwasan": true,
+    "optimize_for_fuzzing": true,
+    "pdf_enable_xfa": true,
+    "proprietary_codecs": true,
+    "target_cpu": "arm64",
+    "target_os": "android",
+    "use_libfuzzer": true,
+    "use_reclient": false,
+    "use_remoteexec": true,
+    "use_siso": true
+  }
+}

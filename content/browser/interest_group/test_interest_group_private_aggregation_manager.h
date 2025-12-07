@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_INTEREST_GROUP_TEST_INTEREST_GROUP_PRIVATE_AGGREGATION_MANAGER_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include <map>
 #include <optional>
@@ -15,7 +16,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
-#include "content/browser/private_aggregation/private_aggregation_budget_key.h"
+#include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom-forward.h"
@@ -28,7 +29,7 @@
 namespace content {
 
 // An implementation of PrivateAggregationManager used for interest group tests
-// that tracks PrivateAggregationBudgetKey::Api::kProtectedAudience reports.
+// that tracks PrivateAggregationCallerApi::kProtectedAudience reports.
 class TestInterestGroupPrivateAggregationManager
     : public PrivateAggregationManager,
       public blink::mojom::PrivateAggregationHost {
@@ -43,11 +44,12 @@ class TestInterestGroupPrivateAggregationManager
   bool BindNewReceiver(
       url::Origin worklet_origin,
       url::Origin top_frame_origin,
-      PrivateAggregationBudgetKey::Api api_for_budgeting,
+      PrivateAggregationCallerApi caller_api,
       std::optional<std::string> context_id,
       std::optional<base::TimeDelta> timeout,
       std::optional<url::Origin> aggregation_coordinator_origin,
       size_t filtering_id_max_bytes,
+      std::optional<size_t> max_contributions,
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
           pending_receiver) override;
   void ClearBudgetData(base::Time delete_begin,
@@ -59,6 +61,10 @@ class TestInterestGroupPrivateAggregationManager
 
   // blink::mojom::PrivateAggregationHost implementation:
   void ContributeToHistogram(
+      std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
+          contribution_ptrs) override;
+  void ContributeToHistogramOnEvent(
+      blink::mojom::PrivateAggregationErrorEvent error_event,
       std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
           contribution_ptrs) override;
   void EnableDebugMode(blink::mojom::DebugKeyPtr debug_key) override;
@@ -78,7 +84,7 @@ class TestInterestGroupPrivateAggregationManager
   // SendHistogramReport() receives asynchronously calls over the Mojo pipe
   // returned by BindNewReceiver().
   std::map<url::Origin,
-           InterestGroupAuctionReporter::PrivateAggregationRequests>
+           InterestGroupAuctionReporter::FinalizedPrivateAggregationRequests>
   TakePrivateAggregationRequests();
 
   std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
@@ -94,11 +100,12 @@ class TestInterestGroupPrivateAggregationManager
 
   const url::Origin expected_top_frame_origin_;
 
-  // Contributions received through `ContributeToHistogram()`.
-  std::map<
-      mojo::ReceiverId,
-      std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>>
-      private_aggregation_contributions_;
+  // Contributions received through `ContributeToHistogram()` or
+  // `ContributeToHistogramOnEvent()`. However, note that the debug_mode_details
+  // still needs to be filled in for each request.
+  std::map<mojo::ReceiverId,
+           InterestGroupAuctionReporter::FinalizedPrivateAggregationRequests>
+      private_aggregation_requests_;
 
   // Debug details set through `EnableDebugMode()`.
   std::map<mojo::ReceiverId, blink::mojom::DebugModeDetailsPtr>

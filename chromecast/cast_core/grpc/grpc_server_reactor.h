@@ -18,6 +18,12 @@
 namespace cast {
 namespace utils {
 
+// Returns a standard error for failed reads.
+const grpc::Status& GetStandardReadsFailedError();
+
+// Returns a standard error for failed writes.
+const grpc::Status& GetStandardWritesFailedError();
+
 // A base class for gRPC server reactors.
 template <typename TRequest, typename TResponse>
 class GrpcServerReactor : public grpc::ServerGenericBidiReactor {
@@ -93,12 +99,10 @@ class GrpcServerReactor : public grpc::ServerGenericBidiReactor {
 
   // Implements grpc::ServerGenericBidiReactor APIs.
   void OnReadDone(bool ok) override {
-    static const grpc::Status kReadsFailedError(grpc::StatusCode::ABORTED,
-                                                "Reads failed");
     DVLOG(1) << "Reads done: " << name() << ", ok=" << ok;
     if (!ok) {
       DVLOG(1) << "Reads failed: " << name();
-      OnRequestDone(kReadsFailedError);
+      OnRequestDone(GetStandardReadsFailedError());
       return;
     }
 
@@ -108,13 +112,11 @@ class GrpcServerReactor : public grpc::ServerGenericBidiReactor {
   }
 
   void OnWriteDone(bool ok) override {
-    static const grpc::Status kWritesFailedError(grpc::StatusCode::ABORTED,
-                                                 "Writes failed");
     DVLOG(1) << "Writes done: " << name() << ", ok=" << ok;
     response_byte_buffer_.reset();
     if (!ok) {
       DVLOG(1) << "Writes failed: " << name();
-      OnResponseDone(kWritesFailedError);
+      OnResponseDone(GetStandardWritesFailedError());
       return;
     }
 

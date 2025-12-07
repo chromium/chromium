@@ -26,7 +26,6 @@
 
 #include "third_party/blink/renderer/core/editing/commands/apply_block_element_command.h"
 
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/commands/editing_commands_utilities.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
@@ -216,7 +215,8 @@ void ApplyBlockElementCommand::FormatSelection(
     // `relocatable_end_of_next_paragraph` should be also updated along with
     // it.
     if (end_of_next_of_paragraph_to_move.IsNotNull() &&
-        end_of_next_of_paragraph_to_move.IsValidFor(GetDocument())) {
+        end_of_next_of_paragraph_to_move.IsValidFor(GetDocument()) &&
+        relocatable_end_of_next_paragraph->GetPosition().IsNotNull()) {
       DCHECK(RuntimeEnabledFeatures::
                  AdjustEndOfNextParagraphIfMovedParagraphIsUpdatedEnabled());
       relocatable_end_of_next_paragraph->SetPosition(
@@ -269,9 +269,11 @@ static bool IsNewLineAtPosition(const Position& position) {
 static const ComputedStyle* ComputedStyleOfEnclosingTextNode(
     const Position& position) {
   if (!position.IsOffsetInAnchor() || !position.ComputeContainerNode() ||
-      !position.ComputeContainerNode()->IsTextNode())
+      !position.ComputeContainerNode()->IsTextNode()) {
     return nullptr;
-  return position.ComputeContainerNode()->GetComputedStyle();
+  }
+  return GetComputedStyleForElementOrLayoutObject(
+      *position.ComputeContainerNode());
 }
 
 void ApplyBlockElementCommand::RangeForParagraphSplittingTextNodesIfNeeded(
@@ -335,17 +337,6 @@ void ApplyBlockElementCommand::RangeForParagraphSplittingTextNodesIfNeeded(
     if (end_style->ShouldPreserveBreaks() && start == end &&
         end.OffsetInContainerNode() <
             static_cast<int>(To<Text>(end.ComputeContainerNode())->length())) {
-      if (!RuntimeEnabledFeatures::
-              NoIncreasingEndOffsetOnSplittingTextNodesEnabled()) {
-        int end_offset = end.OffsetInContainerNode();
-        // TODO(yosin) We should use |PositionMoveType::CodePoint| for
-        // |previousPositionOf()|.
-        if (!IsNewLineAtPosition(
-                PreviousPositionOf(end, PositionMoveType::kCodeUnit)) &&
-            IsNewLineAtPosition(end)) {
-          end = Position(end.ComputeContainerNode(), end_offset + 1);
-        }
-      }
       if (is_end_and_end_of_last_paragraph_on_same_node &&
           end.OffsetInContainerNode() >=
               end_of_last_paragraph.OffsetInContainerNode())

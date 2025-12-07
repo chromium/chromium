@@ -5,6 +5,7 @@
 #ifndef UI_EVENTS_BACK_GESTURE_EVENT_H_
 #define UI_EVENTS_BACK_GESTURE_EVENT_H_
 
+#include "base/time/time.h"
 #include "ui/events/events_export.h"
 #include "ui/gfx/geometry/point_f.h"
 
@@ -20,19 +21,20 @@ enum class BackGestureEventSwipeEdge { LEFT, RIGHT };
 // navigation.
 class EVENTS_EXPORT BackGestureEvent {
  public:
-  BackGestureEvent(const gfx::PointF& location, float progress);
+  explicit BackGestureEvent(float progress);
+  BackGestureEvent(float progress, base::TimeTicks time);
 
   BackGestureEvent(const BackGestureEvent&) = default;
   BackGestureEvent& operator=(const BackGestureEvent&) = default;
 
   ~BackGestureEvent() = default;
 
-  const gfx::PointF& location() const { return location_; }
   float progress() const { return progress_; }
+  base::TimeTicks time() const { return time_; }
 
  private:
-  gfx::PointF location_;
   float progress_;
+  base::TimeTicks time_;
 };
 
 }  // namespace ui

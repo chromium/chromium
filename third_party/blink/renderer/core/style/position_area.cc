@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/style/position_area.h"
 
 #include "base/check_op.h"
@@ -29,15 +24,15 @@ inline PhysicalAxes PhysicalAxisFromRegion(
     case PositionAreaRegion::kBottom:
     case PositionAreaRegion::kYStart:
     case PositionAreaRegion::kYEnd:
-    case PositionAreaRegion::kYSelfStart:
-    case PositionAreaRegion::kYSelfEnd:
+    case PositionAreaRegion::kSelfYStart:
+    case PositionAreaRegion::kSelfYEnd:
       return kPhysicalAxesVertical;
     case PositionAreaRegion::kLeft:
     case PositionAreaRegion::kRight:
     case PositionAreaRegion::kXStart:
     case PositionAreaRegion::kXEnd:
-    case PositionAreaRegion::kXSelfStart:
-    case PositionAreaRegion::kXSelfEnd:
+    case PositionAreaRegion::kSelfXStart:
+    case PositionAreaRegion::kSelfXEnd:
       return kPhysicalAxesHorizontal;
     case PositionAreaRegion::kInlineStart:
     case PositionAreaRegion::kInlineEnd:
@@ -92,14 +87,13 @@ PositionAreaRegion ToPhysicalRegion(
   switch (region) {
     case PositionAreaRegion::kNone:
     case PositionAreaRegion::kAll:
-      NOTREACHED_IN_MIGRATION()
-          << "Should be handled directly in PositionArea::ToPhysical";
-      [[fallthrough]];
+      NOTREACHED() << "Should be handled directly in PositionArea::ToPhysical";
     case PositionAreaRegion::kCenter:
     case PositionAreaRegion::kTop:
     case PositionAreaRegion::kBottom:
     case PositionAreaRegion::kLeft:
     case PositionAreaRegion::kRight:
+    case PositionAreaRegion::kAny:
       return region;
     case PositionAreaRegion::kStart:
     case PositionAreaRegion::kInlineStart:
@@ -116,14 +110,14 @@ PositionAreaRegion ToPhysicalRegion(
     case PositionAreaRegion::kSelfStart:
     case PositionAreaRegion::kSelfInlineStart:
     case PositionAreaRegion::kSelfBlockStart:
-      axis_region = is_horizontal ? PositionAreaRegion::kXSelfStart
-                                  : PositionAreaRegion::kYSelfStart;
+      axis_region = is_horizontal ? PositionAreaRegion::kSelfXStart
+                                  : PositionAreaRegion::kSelfYStart;
       break;
     case PositionAreaRegion::kSelfEnd:
     case PositionAreaRegion::kSelfInlineEnd:
     case PositionAreaRegion::kSelfBlockEnd:
-      axis_region = is_horizontal ? PositionAreaRegion::kXSelfEnd
-                                  : PositionAreaRegion::kYSelfEnd;
+      axis_region = is_horizontal ? PositionAreaRegion::kSelfXEnd
+                                  : PositionAreaRegion::kSelfYEnd;
       break;
     default:
       break;
@@ -134,9 +128,9 @@ PositionAreaRegion ToPhysicalRegion(
          container_writing_direction.IsFlippedX()) ||
         (axis_region == PositionAreaRegion::kXEnd &&
          !container_writing_direction.IsFlippedX()) ||
-        (axis_region == PositionAreaRegion::kXSelfStart &&
+        (axis_region == PositionAreaRegion::kSelfXStart &&
          self_writing_direction.IsFlippedX()) ||
-        (axis_region == PositionAreaRegion::kXSelfEnd &&
+        (axis_region == PositionAreaRegion::kSelfXEnd &&
          !self_writing_direction.IsFlippedX())) {
       return PositionAreaRegion::kRight;
     }
@@ -147,16 +141,28 @@ PositionAreaRegion ToPhysicalRegion(
        container_writing_direction.IsFlippedY()) ||
       (axis_region == PositionAreaRegion::kYEnd &&
        !container_writing_direction.IsFlippedY()) ||
-      (axis_region == PositionAreaRegion::kYSelfStart &&
+      (axis_region == PositionAreaRegion::kSelfYStart &&
        self_writing_direction.IsFlippedY()) ||
-      (axis_region == PositionAreaRegion::kYSelfEnd &&
+      (axis_region == PositionAreaRegion::kSelfYEnd &&
        !self_writing_direction.IsFlippedY())) {
     return PositionAreaRegion::kBottom;
   }
   return PositionAreaRegion::kTop;
 }
 
+bool IsAmbiguousSelfAreaRegion(PositionAreaRegion region) {
+  return region == PositionAreaRegion::kSelfStart ||
+         region == PositionAreaRegion::kSelfEnd;
+}
+
 }  // namespace
+
+bool PositionArea::IsAmbiguousSelfReferenceBox() const {
+  return IsAmbiguousSelfAreaRegion(FirstStart()) ||
+         IsAmbiguousSelfAreaRegion(FirstEnd()) ||
+         IsAmbiguousSelfAreaRegion(SecondStart()) ||
+         IsAmbiguousSelfAreaRegion(SecondEnd());
+}
 
 PositionArea PositionArea::ToPhysical(
     const WritingDirectionMode& container_writing_direction,
@@ -176,10 +182,12 @@ PositionArea PositionArea::ToPhysical(
         << "Both regions representing the same axis should not happen";
     // If neither span includes a physical keyword, the first refers to the
     // block axis of the containing block, and the second to the inline axis.
-    first_axis = ToPhysicalAxes(kLogicalAxesBlock,
-                                container_writing_direction.GetWritingMode());
-    second_axis = ToPhysicalAxes(kLogicalAxesInline,
-                                 container_writing_direction.GetWritingMode());
+    WritingMode writing_mode =
+        IsAmbiguousSelfReferenceBox()
+            ? self_writing_direction.GetWritingMode()
+            : container_writing_direction.GetWritingMode();
+    first_axis = ToPhysicalAxes(kLogicalAxesBlock, writing_mode);
+    second_axis = ToPhysicalAxes(kLogicalAxesInline, writing_mode);
   } else {
     if (first_axis == kPhysicalAxesNone) {
       first_axis = second_axis ^ kPhysicalAxesBoth;
@@ -190,9 +198,9 @@ PositionArea PositionArea::ToPhysical(
   DCHECK_EQ(first_axis ^ second_axis, kPhysicalAxesBoth)
       << "Both axes should be defined and orthogonal";
 
-  PositionAreaRegion regions[4] = {PositionAreaRegion::kTop, PositionAreaRegion::kBottom,
-                                PositionAreaRegion::kLeft,
-                                PositionAreaRegion::kRight};
+  auto regions = std::to_array<PositionAreaRegion>(
+      {PositionAreaRegion::kTop, PositionAreaRegion::kBottom,
+       PositionAreaRegion::kLeft, PositionAreaRegion::kRight});
 
   // Adjust the index to always make the first span the vertical one in the
   // resulting PositionArea, regardless of the original ordering.
@@ -225,83 +233,32 @@ PositionArea PositionArea::ToPhysical(
   return PositionArea(regions[0], regions[1], regions[2], regions[3]);
 }
 
-std::optional<AnchorQuery> PositionArea::UsedTop() const {
-  switch (FirstStart()) {
-    case PositionAreaRegion::kTop:
-      return std::nullopt;
-    case PositionAreaRegion::kCenter:
-      return AnchorTop();
-    case PositionAreaRegion::kBottom:
-      return AnchorBottom();
-    default:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
-    case PositionAreaRegion::kNone:
-      return std::nullopt;
-  }
-}
+std::pair<StyleSelfAlignmentData, StyleSelfAlignmentData>
+PositionArea::AlignJustifySelfFromPhysical(
+    WritingDirectionMode container_writing_direction,
+    bool is_containing_block_scrollable) const {
+  const OverflowAlignment overflow =
+      is_containing_block_scrollable &&
+              !RuntimeEnabledFeatures::CSSAnchorUpdateEnabled()
+          ? OverflowAlignment::kUnsafe
+          : OverflowAlignment::kDefault;
 
-std::optional<AnchorQuery> PositionArea::UsedBottom() const {
-  switch (FirstEnd()) {
-    case PositionAreaRegion::kTop:
-      return AnchorTop();
-    case PositionAreaRegion::kCenter:
-      return AnchorBottom();
-    case PositionAreaRegion::kBottom:
-      return std::nullopt;
-    default:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
-    case PositionAreaRegion::kNone:
-      return std::nullopt;
-  }
-}
+  StyleSelfAlignmentData align(ItemPosition::kStart, overflow);
+  StyleSelfAlignmentData align_reverse(ItemPosition::kEnd, overflow);
+  StyleSelfAlignmentData justify(ItemPosition::kStart, overflow);
+  StyleSelfAlignmentData justify_reverse(ItemPosition::kEnd, overflow);
 
-std::optional<AnchorQuery> PositionArea::UsedLeft() const {
-  switch (SecondStart()) {
-    case PositionAreaRegion::kLeft:
-      return std::nullopt;
-    case PositionAreaRegion::kCenter:
-      return AnchorLeft();
-    case PositionAreaRegion::kRight:
-      return AnchorRight();
-    default:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
-    case PositionAreaRegion::kNone:
-      return std::nullopt;
-  }
-}
+  CHECK(!ContainsAny()) << "The 'any' keyword can only be used for "
+                           "anchored(fallback) container queries";
 
-std::optional<AnchorQuery> PositionArea::UsedRight() const {
-  switch (SecondEnd()) {
-    case PositionAreaRegion::kLeft:
-      return AnchorLeft();
-    case PositionAreaRegion::kCenter:
-      return AnchorRight();
-    case PositionAreaRegion::kRight:
-      return std::nullopt;
-    default:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
-    case PositionAreaRegion::kNone:
-      return std::nullopt;
-  }
-}
-
-std::pair<ItemPosition, ItemPosition> PositionArea::AlignJustifySelfFromPhysical(
-    WritingDirectionMode container_writing_direction) const {
-  ItemPosition align = ItemPosition::kStart;
-  ItemPosition align_reverse = ItemPosition::kEnd;
-  ItemPosition justify = ItemPosition::kStart;
-  ItemPosition justify_reverse = ItemPosition::kEnd;
-
-  if ((FirstStart() == PositionAreaRegion::kTop &&
-       FirstEnd() == PositionAreaRegion::kBottom) ||
-      (FirstStart() == PositionAreaRegion::kCenter &&
-       FirstEnd() == PositionAreaRegion::kCenter)) {
-    // 'center' or 'all' should align with anchor center.
-    align = align_reverse = ItemPosition::kAnchorCenter;
+  if (FirstStart() == PositionAreaRegion::kTop &&
+      FirstEnd() == PositionAreaRegion::kBottom) {
+    // 'all' should align with anchor center.
+    align = align_reverse = {ItemPosition::kAnchorCenter, overflow};
+  } else if (FirstStart() == PositionAreaRegion::kCenter &&
+             FirstEnd() == PositionAreaRegion::kCenter) {
+    // 'center' should align with center.
+    align = align_reverse = {ItemPosition::kCenter, overflow};
   } else {
     // 'top' and 'top center' aligns with end, 'bottom' and 'center bottom' with
     // start.
@@ -309,12 +266,15 @@ std::pair<ItemPosition, ItemPosition> PositionArea::AlignJustifySelfFromPhysical
       std::swap(align, align_reverse);
     }
   }
-  if ((SecondStart() == PositionAreaRegion::kLeft &&
-       SecondEnd() == PositionAreaRegion::kRight) ||
-      (SecondStart() == PositionAreaRegion::kCenter &&
-       SecondEnd() == PositionAreaRegion::kCenter)) {
-    // 'center' or 'all' should align with anchor center.
-    justify = justify_reverse = ItemPosition::kAnchorCenter;
+
+  if (SecondStart() == PositionAreaRegion::kLeft &&
+      SecondEnd() == PositionAreaRegion::kRight) {
+    // 'all' should align with anchor center.
+    justify = justify_reverse = {ItemPosition::kAnchorCenter, overflow};
+  } else if (SecondStart() == PositionAreaRegion::kCenter &&
+             SecondEnd() == PositionAreaRegion::kCenter) {
+    // 'center' should align with center.
+    justify = justify_reverse = {ItemPosition::kCenter, overflow};
   } else {
     // 'left' and 'left center' aligns with end, 'right' and 'center right' with
     // start.
@@ -323,10 +283,26 @@ std::pair<ItemPosition, ItemPosition> PositionArea::AlignJustifySelfFromPhysical
     }
   }
 
+  if (!RuntimeEnabledFeatures::CSSAnchorUpdateEnabled()) {
+    if ((FirstStart() == PositionAreaRegion::kTop &&
+         FirstEnd() == PositionAreaRegion::kTop) ||
+        (FirstStart() == PositionAreaRegion::kBottom &&
+         FirstEnd() == PositionAreaRegion::kBottom)) {
+      align.SetOverflow(OverflowAlignment::kUnsafe);
+      align_reverse.SetOverflow(OverflowAlignment::kUnsafe);
+    }
+    if ((SecondStart() == PositionAreaRegion::kLeft &&
+         SecondEnd() == PositionAreaRegion::kLeft) ||
+        (SecondStart() == PositionAreaRegion::kRight &&
+         SecondEnd() == PositionAreaRegion::kRight)) {
+      justify.SetOverflow(OverflowAlignment::kUnsafe);
+      justify_reverse.SetOverflow(OverflowAlignment::kUnsafe);
+    }
+  }
+
   PhysicalToLogical converter(container_writing_direction, align,
                               justify_reverse, align_reverse, justify);
-  return std::make_pair<ItemPosition, ItemPosition>(converter.BlockStart(),
-                                                    converter.InlineStart());
+  return {converter.BlockStart(), converter.InlineStart()};
 }
 
 AnchorQuery PositionArea::AnchorTop() {

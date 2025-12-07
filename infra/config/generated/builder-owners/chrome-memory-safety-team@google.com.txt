@@ -1,1 +1,2 @@
 ci/linux-codeql-generator
+ci/linux-codeql-query-runner

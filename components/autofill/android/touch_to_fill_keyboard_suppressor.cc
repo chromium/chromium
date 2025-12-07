@@ -23,7 +23,9 @@ TouchToFillKeyboardSuppressor::TouchToFillKeyboardSuppressor(
       timeout_(timeout) {
   // The keyboard suppressor behaves properly only if no AutofillDrivers (and no
   // AutofillManagers) have been created yet.
-  CHECK_EQ(autofill_client->GetAutofillDriverFactory().num_drivers(), 0u);
+  CHECK_EQ(
+      autofill_client->GetAutofillDriverFactory().GetExistingDrivers().size(),
+      0u);
   driver_factory_observation_.Observe(
       &autofill_client->GetAutofillDriverFactory());
 }
@@ -60,26 +62,6 @@ void TouchToFillKeyboardSuppressor::OnContentAutofillDriverCreated(
         weak_ptr_factory_.GetWeakPtr()));
   }
   autofill_manager_observations_.AddObservation(&driver.GetAutofillManager());
-}
-
-void TouchToFillKeyboardSuppressor::OnContentAutofillDriverStateChanged(
-    ContentAutofillDriverFactory& factory,
-    ContentAutofillDriver& driver,
-    AutofillDriver::LifecycleState old_state,
-    AutofillDriver::LifecycleState new_state) {
-  switch (new_state) {
-    case AutofillDriver::LifecycleState::kInactive:
-    case AutofillDriver::LifecycleState::kActive:
-    case AutofillDriver::LifecycleState::kPendingReset:
-      break;
-    case AutofillDriver::LifecycleState::kPendingDeletion:
-      if (suppressed_manager_.get() == &driver.GetAutofillManager()) {
-        Unsuppress();
-      }
-      autofill_manager_observations_.RemoveObservation(
-          &driver.GetAutofillManager());
-      break;
-  }
 }
 
 void TouchToFillKeyboardSuppressor::OnAutofillManagerStateChanged(

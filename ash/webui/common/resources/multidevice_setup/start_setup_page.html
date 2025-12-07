@@ -109,10 +109,9 @@
     icon-name="google-g">
   <span slot="message">
     <div id="animation-container">
-      <cros-lottie-renderer id="multideviceSetupAnimation"
-          asset-url="[[getAnimationUrl_()]]"
-          dynamic="true" aria-hidden="true">
-      </cros-lottie-renderer>
+      <pausable-lottie id="multideviceSetupAnimation"
+        animation-url="[[getAnimationUrl_()]]">
+      </pausable-lottie>
     </div>
   </span>
   <div id="additional-content-container" slot="additional-content"

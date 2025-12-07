@@ -4,15 +4,21 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.tab_group_sync.ClosingSource;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -20,12 +26,14 @@ import java.util.Set;
  * been initialized. Primarily reconciles remote group updates / deletions with the local model and
  * local group additions to remote. Also initializes tab ID mappings for the session.
  */
+@NullMarked
 public class StartupHelper {
     private static final String TAG = "TG.StartupHelper";
     private final TabGroupModelFilter mTabGroupModelFilter;
     private final TabGroupSyncService mTabGroupSyncService;
     private final LocalTabGroupMutationHelper mLocalTabGroupMutationHelper;
     private final RemoteTabGroupMutationHelper mRemoteTabGroupMutationHelper;
+    private final PrefService mPrefService;
 
     /**
      * Constructor.
@@ -34,16 +42,19 @@ public class StartupHelper {
      * @param tabGroupSyncService The sync back end.
      * @param localTabGroupMutationHelper Helper to mutate local tab groups based on remote state.
      * @param remoteTabGroupMutationHelper Helper to mutate remote tab groups based on local state.
+     * @param prefService Pref service for checking tab group sync migration status in past.
      */
     public StartupHelper(
             TabGroupModelFilter tabGroupModelFilter,
             TabGroupSyncService tabGroupSyncService,
             LocalTabGroupMutationHelper localTabGroupMutationHelper,
-            RemoteTabGroupMutationHelper remoteTabGroupMutationHelper) {
+            RemoteTabGroupMutationHelper remoteTabGroupMutationHelper,
+            PrefService prefService) {
         mTabGroupModelFilter = tabGroupModelFilter;
         mTabGroupSyncService = tabGroupSyncService;
         mLocalTabGroupMutationHelper = localTabGroupMutationHelper;
         mRemoteTabGroupMutationHelper = remoteTabGroupMutationHelper;
+        mPrefService = prefService;
     }
 
     /**
@@ -66,11 +77,10 @@ public class StartupHelper {
         // First close the groups that were deleted remotely when the activity was not running.
         closeDeletedGroupsFromTabModel();
 
-        // Add local groups that are not in sync. This can happen if:
-        // 1. The group was created before tab group sync feature was enabled. More prevalent
-        // if we are restoring a window created long back in history.
-        // 2. A crash happened after group creation so that we couldn't write it to sync.
-        createRemoteTabGroupForNewGroups();
+        // Handle any local tab groups that don't exist in sync. They will be either closed or added
+        // back to sync depending on whether this is the first time the sync feature is being
+        // enabled.
+        handleUnsavedLocalTabGroups();
 
         // Force update the local groups to be exactly same as sync. This accounts for any missing
         // updates from sync when the current window wasn't alive.
@@ -83,26 +93,48 @@ public class StartupHelper {
 
     private void closeDeletedGroupsFromTabModel() {
         LogUtils.log(TAG, "closeDeletedGroupsFromTabModel");
+        int tabGroupsClosed = 0;
         for (LocalTabGroupId tabGroupId : mTabGroupSyncService.getDeletedGroupIds()) {
             if (!TabGroupSyncUtils.isInCurrentWindow(mTabGroupModelFilter, tabGroupId)) continue;
 
             mLocalTabGroupMutationHelper.closeTabGroup(
                     tabGroupId, ClosingSource.CLEANED_UP_ON_STARTUP);
+            tabGroupsClosed++;
         }
+        RecordHistogram.recordCount1000Histogram(
+                "TabGroups.CloseTabGroupsDeletedRemotely", tabGroupsClosed);
     }
 
     /**
-     * If there are new groups that have never gotten a chance to get synced, this method will
-     * create their sync counterparts.
+     * If there are unsaved local groups that don't have a corresponding sync entry, resolve them
+     * now.
      */
-    private void createRemoteTabGroupForNewGroups() {
-        LogUtils.log(TAG, "createRemoteTabGroupForNewGroups");
-        for (LocalTabGroupId tabGroupId : getLocalTabGroupIds()) {
-            // Skip if the group is already added to sync.
-            SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(tabGroupId);
-            if (savedTabGroup != null) continue;
+    private void handleUnsavedLocalTabGroups() {
+        LogUtils.log(TAG, "handleUnsavedLocalTabGroups");
 
-            mRemoteTabGroupMutationHelper.createRemoteTabGroup(tabGroupId);
+        // Find the local tab groups that don't have a corresponding saved tab group.
+        List<LocalTabGroupId> tabGroupsNotKnownToSync = new ArrayList<>();
+        for (LocalTabGroupId tabGroupId : getLocalTabGroupIds()) {
+            SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(tabGroupId);
+            if (savedTabGroup == null) {
+                tabGroupsNotKnownToSync.add(tabGroupId);
+            }
+        }
+
+        boolean didSyncTabGroupsInLastSession =
+                mPrefService.getBoolean(Pref.DID_SYNC_TAB_GROUPS_IN_LAST_SESSION);
+        mPrefService.setBoolean(Pref.DID_SYNC_TAB_GROUPS_IN_LAST_SESSION, true);
+        for (LocalTabGroupId tabGroupId : tabGroupsNotKnownToSync) {
+            if (didSyncTabGroupsInLastSession) {
+                // This is an unexpected local tab group as all the groups should have been saved to
+                // sync DB already. Close it.
+                mLocalTabGroupMutationHelper.closeTabGroup(
+                        tabGroupId, ClosingSource.CLEANED_UP_ON_STARTUP);
+            } else {
+                // This is the first time feature launch for tab group sync. Add the group to sync
+                // DB.
+                mRemoteTabGroupMutationHelper.createRemoteTabGroup(tabGroupId);
+            }
         }
     }
 
@@ -110,7 +142,8 @@ public class StartupHelper {
         LogUtils.log(TAG, "reconcileGroupsToSync");
         for (LocalTabGroupId tabGroupId : getLocalTabGroupIds()) {
             SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(tabGroupId);
-            assert savedTabGroup != null;
+            // At this point every tab group should be already in sync unless they are too old.
+            if (savedTabGroup == null) continue;
             mLocalTabGroupMutationHelper.reconcileGroupOnStartup(savedTabGroup);
         }
     }
@@ -128,10 +161,10 @@ public class StartupHelper {
 
     private Set<LocalTabGroupId> getLocalTabGroupIds() {
         Set<LocalTabGroupId> localTabGroups = new HashSet<>();
-        for (int i = 0; i < getTabModel().getCount(); i++) {
-            Tab tab = getTabModel().getTabAt(i);
-            if (tab.getTabGroupId() == null) continue;
-            localTabGroups.add(TabGroupSyncUtils.getLocalTabGroupId(tab));
+        for (Tab tab : getTabModel()) {
+            LocalTabGroupId localTabGroupId = TabGroupSyncUtils.getLocalTabGroupId(tab);
+            if (localTabGroupId == null) continue;
+            localTabGroups.add(localTabGroupId);
         }
         return localTabGroups;
     }

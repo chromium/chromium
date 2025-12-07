@@ -10,25 +10,29 @@ import android.os.Process;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.base.task.Location;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.concurrent.Callable;
-import java.util.concurrent.FutureTask;
 
 /** Helper methods to deal with threading related tasks. */
+@NullMarked
 public class ThreadUtils {
 
     private static final Object sLock = new Object();
 
     private static volatile boolean sWillOverride;
 
-    private static volatile Handler sUiThreadHandler;
+    private static volatile @Nullable Handler sUiThreadHandler;
 
-    private static Throwable sUiThreadInitializer;
+    private static @Nullable Throwable sUiThreadInitializer;
     private static boolean sThreadAssertsDisabledForTesting;
-    private static Thread sInstrumentationThreadForTesting;
+    private static @Nullable Thread sInstrumentationThreadForTesting;
 
     /**
      * A helper object to ensure that interactions with a particular object only happens on a
@@ -48,7 +52,8 @@ public class ThreadUtils {
      */
     // TODO(b/274802355): Add @CheckDiscard once R8 can remove this.
     public static class ThreadChecker {
-        private Thread mThread;
+        private @Nullable Thread mThread;
+        private @Nullable Throwable mOriginThrowable;
 
         public ThreadChecker() {
             resetThreadId();
@@ -57,6 +62,7 @@ public class ThreadUtils {
         public void resetThreadId() {
             if (BuildConfig.ENABLE_ASSERTS) {
                 mThread = Thread.currentThread();
+                mOriginThrowable = new Throwable("vvv Originally created here vvv");
             }
         }
 
@@ -84,19 +90,26 @@ public class ThreadUtils {
                     return;
                 }
                 Thread uiThread = getUiThreadLooper().getThread();
+                String msg;
                 if (curThread == uiThread) {
-                    assert false
-                            : "Background-only class called from UI thread (expected: "
+                    msg =
+                            "Class was initialized on a background thread, but current operation"
+                                    + " was performed on the UI thread (expected: "
                                     + mThread
                                     + ")";
                 } else if (mThread == uiThread) {
-                    assert false : "UI-only class called from background thread: " + curThread;
+                    msg =
+                            "Class was initialized on the UI thread, but current operation was"
+                                    + " performed on a background thread: "
+                                    + curThread;
+                } else {
+                    msg =
+                            "Method called from wrong background thread. Expected: "
+                                    + mThread
+                                    + " Actual: "
+                                    + curThread;
                 }
-                assert false
-                        : "Method called from wrong background thread. Expected: "
-                                + mThread
-                                + " Actual: "
-                                + curThread;
+                throw new AssertionError(msg, mOriginThrowable);
             }
         }
     }
@@ -108,6 +121,7 @@ public class ThreadUtils {
         }
     }
 
+    @SuppressWarnings("StaticAssignmentOfThrowable")
     public static void clearUiThreadForTesting() {
         sWillOverride = false;
         PostTask.resetUiThreadForTesting(); // IN-TEST
@@ -115,6 +129,7 @@ public class ThreadUtils {
         sUiThreadInitializer = null;
     }
 
+    @SuppressWarnings("StaticAssignmentOfThrowable")
     public static void setUiThread(Looper looper) {
         assert looper != null;
         synchronized (sLock) {
@@ -159,6 +174,7 @@ public class ThreadUtils {
             throw new RuntimeException("Did not yet override the UI thread");
         }
         setUiThread(Looper.getMainLooper());
+        assert sUiThreadHandler != null;
         return sUiThreadHandler;
     }
 
@@ -172,7 +188,17 @@ public class ThreadUtils {
      * @param r The Runnable to run.
      */
     public static void runOnUiThreadBlocking(Runnable r) {
-        PostTask.runSynchronously(TaskTraits.UI_DEFAULT, r);
+        runOnUiThreadBlocking(r, null);
+    }
+
+    /**
+     * Do not call this method directly unless forwarding a location object. Use {@link
+     * #runOnUiThreadBlocking(Runnable)} instead.
+     *
+     * <p>Overload of {@link #runOnUiThreadBlocking(Runnable)} for the Java location rewriter.
+     */
+    public static void runOnUiThreadBlocking(Runnable r, @Nullable Location location) {
+        PostTask.runSynchronously(TaskTraits.UI_DEFAULT, r, location);
     }
 
     /**
@@ -185,20 +211,20 @@ public class ThreadUtils {
      * @param c The Callable to run
      * @return The result of the callable
      */
-    public static <T> T runOnUiThreadBlocking(Callable<T> c) {
-        return PostTask.runSynchronously(TaskTraits.UI_DEFAULT, c);
+    @NullUnmarked // https://github.com/uber/NullAway/issues/1075
+    public static <T extends @Nullable Object> T runOnUiThreadBlocking(Callable<T> c) {
+        return runOnUiThreadBlocking(c, null);
     }
 
     /**
-     * Run the supplied FutureTask on the main thread. The method will block only if the current
-     * thread is the main thread.
+     * Do not call this method directly unless forwarding a location object. Use {@link
+     * #runOnUiThreadBlocking(Callable)} instead.
      *
-     * @param task The FutureTask to run
-     * @return The queried task (to aid inline construction)
+     * <p>Overload of {@link #runOnUiThreadBlocking(Callable)} for the Java location rewriter.
      */
-    public static <T> FutureTask<T> runOnUiThread(FutureTask<T> task) {
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, task);
-        return task;
+    public static <T extends @Nullable Object> T runOnUiThreadBlocking(
+            Callable<T> c, @Nullable Location location) {
+        return PostTask.runSynchronously(TaskTraits.UI_DEFAULT, c, location);
     }
 
     /**
@@ -208,19 +234,17 @@ public class ThreadUtils {
      * @param r The Runnable to run
      */
     public static void runOnUiThread(Runnable r) {
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, r);
+        runOnUiThread(r, null);
     }
 
     /**
-     * Post the supplied FutureTask to run on the main thread. The method will not block, even if
-     * called on the UI thread.
+     * Do not call this method directly unless forwarding a location object. Use {@link
+     * #runOnUiThread(Runnable)} instead.
      *
-     * @param task The FutureTask to run
-     * @return The queried task (to aid inline construction)
+     * <p>Overload of {@link #runOnUiThread(Runnable)} for the Java location rewriter.
      */
-    public static <T> FutureTask<T> postOnUiThread(FutureTask<T> task) {
-        PostTask.postTask(TaskTraits.UI_DEFAULT, task);
-        return task;
+    public static void runOnUiThread(Runnable r, @Nullable Location location) {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, r, location);
     }
 
     /**
@@ -230,7 +254,17 @@ public class ThreadUtils {
      * @param r The Runnable to run
      */
     public static void postOnUiThread(Runnable r) {
-        PostTask.postTask(TaskTraits.UI_DEFAULT, r);
+        postOnUiThread(r, null);
+    }
+
+    /**
+     * Do not call this method directly unless forwarding a location object. Use {@link
+     * #postOnUiThread(Runnable)} instead.
+     *
+     * <p>Overload of {@link #postOnUiThread(Runnable)} for the Java location rewriter.
+     */
+    public static void postOnUiThread(Runnable r, @Nullable Location location) {
+        PostTask.postTask(TaskTraits.UI_DEFAULT, r, location);
     }
 
     /**
@@ -241,7 +275,18 @@ public class ThreadUtils {
      * @param delayMillis The delay in milliseconds until the Runnable will be run
      */
     public static void postOnUiThreadDelayed(Runnable r, long delayMillis) {
-        PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, r, delayMillis);
+        postOnUiThreadDelayed(r, delayMillis, null);
+    }
+
+    /**
+     * Do not call this method directly unless forwarding a location object. Use {@link
+     * #postOnUiThreadDelayed(Runnable, long)} instead.
+     *
+     * <p>Overload of {@link #postOnUiThreadDelayed(Runnable, long)} for the Java location rewriter.
+     */
+    public static void postOnUiThreadDelayed(
+            Runnable r, long delayMillis, @Nullable Location location) {
+        PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, r, delayMillis, location);
     }
 
     /**
@@ -282,10 +327,26 @@ public class ThreadUtils {
     /**
      * Disables thread asserts.
      *
-     * Can be used by tests where code that normally runs multi-threaded is going to run
+     * <p>Can be used by tests where code that normally runs multi-threaded is going to run
+     * single-threaded for the test (otherwise asserts that are valid in production would fail in
+     * those tests). Avoid to use this in ui tests, especially under the batch unit tests
+     * environment, because any ThreadChecker instances created on the wrong thread will likely fail
+     * on subsequent tests when run on their correct threads. Prefer to use `runOnUiThread()` or
+     * `PostTask.runSynchronously()`.
+     */
+    public static void hasSubtleSideEffectsSetThreadAssertsDisabledForTesting(boolean disabled) {
+        sThreadAssertsDisabledForTesting = disabled;
+        ResettersForTesting.register(() -> sThreadAssertsDisabledForTesting = false);
+    }
+
+    /**
+     * Disables thread asserts.
+     *
+     * <p>Can be used by tests where code that normally runs multi-threaded is going to run
      * single-threaded for the test (otherwise asserts that are valid in production would fail in
      * those tests).
      */
+    @Deprecated
     public static void setThreadAssertsDisabledForTesting(boolean disabled) {
         sThreadAssertsDisabledForTesting = disabled;
         ResettersForTesting.register(() -> sThreadAssertsDisabledForTesting = false);

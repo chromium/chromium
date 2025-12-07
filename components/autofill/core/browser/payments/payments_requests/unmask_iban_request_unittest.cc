@@ -6,23 +6,19 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
+#include "base/strings/string_number_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::payments {
-
 namespace {
 
-constexpr int kBillableServiceNumber = 12345678;
 constexpr int64_t kBillingCustomerNumber = 111222333;
 constexpr int64_t kInstrumentId = 1122334455;
-
-}  // namespace
 
 class UnmaskIbanRequestTest : public testing::Test {
  public:
   void SetUp() override {
-    PaymentsNetworkInterface::UnmaskIbanRequestDetails request_details;
-    request_details.billable_service_number = kBillableServiceNumber;
+    UnmaskIbanRequestDetails request_details;
     request_details.billing_customer_number = kBillingCustomerNumber;
     request_details.instrument_id = kInstrumentId;
     request_ = std::make_unique<UnmaskIbanRequest>(
@@ -46,13 +42,13 @@ class UnmaskIbanRequestTest : public testing::Test {
 
 TEST_F(UnmaskIbanRequestTest, GetRequestContent) {
   EXPECT_EQ(GetRequest()->GetRequestUrlPath(),
-            "payments/apis-secure/ibanservice/"
+            "payments/apis-secure/chromepaymentsservice/"
             "getpaymentinstrument?s7e_suffix=chromewallet");
   ASSERT_FALSE(GetRequest()->GetRequestContent().empty());
   EXPECT_NE(GetRequest()->GetRequestContent().find("billable_service"),
             std::string::npos);
-  EXPECT_NE(GetRequest()->GetRequestContent().find(
-                base::NumberToString(kBillableServiceNumber)),
+  EXPECT_NE(GetRequest()->GetRequestContent().find(base::NumberToString(
+                kUnmaskPaymentMethodBillableServiceNumber)),
             std::string::npos);
   EXPECT_NE(GetRequest()->GetRequestContent().find("customer_context"),
             std::string::npos);
@@ -91,4 +87,5 @@ TEST_F(UnmaskIbanRequestTest, ParseResponse_MissingValue) {
   EXPECT_FALSE(IsResponseComplete());
 }
 
+}  // namespace
 }  // namespace autofill::payments

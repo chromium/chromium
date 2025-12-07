@@ -16,14 +16,14 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
 #include "components/leveldb_proto/internal/proto_database_impl.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/leveldb_proto/public/shared_proto_database_client_list.h"
 
-namespace leveldb_proto {
-namespace test {
+namespace leveldb_proto::test {
 
 template <typename P, typename T = P>
 class FakeDB : public ProtoDatabaseImpl<P, T> {
@@ -148,37 +148,23 @@ class FakeDB : public ProtoDatabaseImpl<P, T> {
 
 namespace {
 
-template <typename P,
-          typename T,
-          std::enable_if_t<std::is_base_of<google::protobuf::MessageLite,
-                                           T>::value>* = nullptr>
+template <typename P, typename T>
 void DataToProtoWrap(T* data, P* proto) {
-  proto->Swap(data);
+  if constexpr (std::is_base_of_v<google::protobuf::MessageLite, T>) {
+    proto->Swap(data);
+  } else {
+    DataToProto(data, proto);
+  }
 }
 
-template <typename P,
-          typename T,
-          std::enable_if_t<!std::is_base_of<google::protobuf::MessageLite,
-                                            T>::value>* = nullptr>
-void DataToProtoWrap(T* data, P* proto) {
-  DataToProto(data, proto);
-}
-
-template <typename P,
-          typename T,
-          std::enable_if_t<std::is_base_of<google::protobuf::MessageLite,
-                                           T>::value>* = nullptr>
+template <typename P, typename T>
 void ProtoToDataWrap(const P& proto, T* data) {
-  *data = proto;
-}
-
-template <typename P,
-          typename T,
-          std::enable_if_t<!std::is_base_of<google::protobuf::MessageLite,
-                                            T>::value>* = nullptr>
-void ProtoToDataWrap(const P& proto, T* data) {
-  P copy = proto;
-  ProtoToData(&copy, data);
+  if constexpr (std::is_base_of_v<google::protobuf::MessageLite, T>) {
+    *data = proto;
+  } else {
+    P copy = proto;
+    ProtoToData(&copy, data);
+  }
 }
 
 }  // namespace
@@ -467,7 +453,7 @@ void FakeDB<P, T>::InvokingInvalidCallback(const std::string& callback_name) {
   if (destroy_callback_)
     present_callbacks += " DestroyCallback";
 
-  CHECK(false) << "Test tried to invoke FakeDB " << callback_name
+  NOTREACHED() << "Test tried to invoke FakeDB " << callback_name
                << ", but this callback is not present. Did you mean to invoke "
                   "one of the present callbacks: ("
                << present_callbacks << ")?";
@@ -515,7 +501,6 @@ base::FilePath FakeDB<P, T>::DirectoryForTestDB() {
   return base::FilePath(FILE_PATH_LITERAL("/fake/path"));
 }
 
-}  // namespace test
-}  // namespace leveldb_proto
+}  // namespace leveldb_proto::test
 
 #endif  // COMPONENTS_LEVELDB_PROTO_TESTING_FAKE_DB_H_

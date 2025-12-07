@@ -16,11 +16,12 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/dlp/dlp_window_observer.h"
+#include "chrome/browser/ash/policy/dlp/window_util.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
-#include "chrome/browser/ui/ash/screenshot_area.h"
+#include "chromeos/ash/experiences/screenshot_area/screenshot_area.h"
 #include "components/exo/window_properties.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/media_stream_request.h"
@@ -28,7 +29,6 @@
 #include "ui/aura/window_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
 #include "ui/wm/public/activation_client.h"
-#include "url/gurl.h"
 
 namespace aura {
 class Window;
@@ -87,6 +87,7 @@ class DlpContentManagerAsh : public DlpContentManager,
   // based on the currently visible content. Depending on the result, calls
   // |callback| and passes an indicator whether to proceed or not.
   void CheckCaptureModeInitRestriction(
+      bool shutting_down,
       ash::OnCaptureModeDlpRestrictionChecked callback);
 
   // DlpContentManager overrides:
@@ -183,6 +184,7 @@ class DlpContentManagerAsh : public DlpContentManager,
   // calls |callback| with an indicator whether to proceed or not.
   void CheckScreenCaptureRestriction(
       ConfidentialContentsInfo info,
+      bool shutting_down,
       ash::OnCaptureModeDlpRestrictionChecked callback);
 
   // Map of window observers for the current confidential WebContents.

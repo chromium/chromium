@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/input_device_settings/pref_handlers/mouse_pref_handler_impl.h"
-
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
@@ -12,10 +10,12 @@
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "ash/system/input_device_settings/input_device_tracker.h"
+#include "ash/system/input_device_settings/pref_handlers/mouse_pref_handler_impl.h"
 #include "ash/system/input_device_settings/settings_updated_metrics_info.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -105,8 +105,7 @@ class MousePrefHandlerTest : public AshTestBase {
 
   // testing::Test:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({features::kPeripheralCustomization,
-                                           features::kInputDeviceSettingsSplit},
+    scoped_feature_list_.InitWithFeatures({features::kPeripheralCustomization},
                                           {});
     AshTestBase::SetUp();
     InitializePrefService();
@@ -534,25 +533,6 @@ TEST_F(MousePrefHandlerTest, UpdateLoginScreenMouseSettings) {
   EXPECT_TRUE(HasInternalLoginScreenSettingsDict(account_id_1));
 }
 
-TEST_F(MousePrefHandlerTest, LoginScreenPrefsNotPersistedWhenFlagIsDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kInputDeviceSettingsSplit);
-  mojom::Mouse mouse1;
-  mouse1.device_key = kMouseKey1;
-  mouse1.is_external = false;
-  mouse1.customization_restriction =
-      mojom::CustomizationRestriction::kAllowCustomizations;
-  mojom::Mouse mouse2;
-  mouse2.device_key = kMouseKey2;
-  mouse2.is_external = true;
-  mouse2.customization_restriction =
-      mojom::CustomizationRestriction::kAllowCustomizations;
-  CallInitializeLoginScreenMouseSettings(account_id_1, mouse1);
-  CallInitializeLoginScreenMouseSettings(account_id_1, mouse2);
-  EXPECT_FALSE(HasInternalLoginScreenSettingsDict(account_id_1));
-  EXPECT_FALSE(HasExternalLoginScreenSettingsDict(account_id_1));
-}
-
 TEST_F(MousePrefHandlerTest,
        LoginScreenButtonRemappingListNotPersistedWhenFlagIsDisabled) {
   base::test::ScopedFeatureList feature_list;
@@ -636,7 +616,6 @@ TEST_F(MousePrefHandlerTest, LastUpdated) {
   auto* updated_time_stamp1 =
       updated_settings_dict->Find(prefs::kLastUpdatedKey);
   ASSERT_NE(nullptr, updated_time_stamp1);
-  ASSERT_NE(time_stamp1, updated_time_stamp1);
 
   std::vector<mojom::ButtonRemappingPtr> button_remappings;
   button_remappings.push_back(button_remapping2.Clone());
@@ -654,7 +633,6 @@ TEST_F(MousePrefHandlerTest, LastUpdated) {
       pref_service_->GetDict(prefs::kMouseButtonRemappingsDictPref)
           .FindByDottedPath(button_remapping_time_stamp_path);
   ASSERT_NE(nullptr, updated_button_remapping_time_stamp);
-  ASSERT_NE(button_remapping_time_stamp, updated_button_remapping_time_stamp);
 }
 
 TEST_F(MousePrefHandlerTest, UpdateSettings) {
@@ -738,57 +716,6 @@ TEST_F(MousePrefHandlerTest, NewMouseDefaultSettings) {
 
   settings_dict = devices_dict.FindDict(kMouseKey2);
   ASSERT_NE(nullptr, settings_dict);
-  CheckMouseSettingsAndDictAreEqual(kMouseSettingsDefault, *settings_dict);
-}
-
-TEST_F(MousePrefHandlerTest, MouseObserveredInTransitionPeriod) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kInputDeviceSettingsSplit);
-  mojom::Mouse mouse;
-  mouse.device_key = kMouseKey1;
-  Shell::Get()->input_device_tracker()->OnMouseConnected(mouse);
-  // Initialize mouse settings for the device and check that the Test
-  // prefs were used as defaults.
-  mojom::MouseSettingsPtr settings =
-      CallInitializeMouseSettings(mouse.device_key);
-  ASSERT_EQ(settings->swap_right, kTestSwapRight);
-  ASSERT_EQ(settings->sensitivity, kTestSensitivity);
-  ASSERT_EQ(settings->reverse_scrolling, kTestReverseScrolling);
-  ASSERT_EQ(settings->acceleration_enabled, kTestAccelerationEnabled);
-  ASSERT_EQ(settings->scroll_sensitivity, kTestScrollSensitivity);
-  ASSERT_EQ(settings->scroll_acceleration, kTestScrollAcceleration);
-}
-
-TEST_F(MousePrefHandlerTest, TransitionPeriodSettingsPersistedWhenUserChosen) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kInputDeviceSettingsSplit);
-  mojom::Mouse mouse;
-  mouse.device_key = kMouseKey1;
-  Shell::Get()->input_device_tracker()->OnMouseConnected(mouse);
-
-  pref_service_->SetUserPref(prefs::kPrimaryMouseButtonRight,
-                             base::Value(kDefaultSwapRight));
-  pref_service_->SetUserPref(prefs::kMouseSensitivity,
-                             base::Value(kDefaultSensitivity));
-  pref_service_->SetUserPref(prefs::kMouseReverseScroll,
-                             base::Value(kDefaultReverseScrolling));
-  pref_service_->SetUserPref(prefs::kMouseAcceleration,
-                             base::Value(kDefaultAccelerationEnabled));
-  pref_service_->SetUserPref(prefs::kMouseScrollSensitivity,
-                             base::Value(kDefaultScrollSensitivity));
-  pref_service_->SetUserPref(prefs::kMouseScrollAcceleration,
-                             base::Value(kDefaultScrollAccelerationEnabled));
-  mojom::MouseSettingsPtr settings =
-      CallInitializeMouseSettings(mouse.device_key);
-  EXPECT_EQ(kMouseSettingsDefault, *settings);
-
-  const auto* settings_dict = GetSettingsDict(kMouseKey1);
-  EXPECT_TRUE(settings_dict->contains(prefs::kMouseSettingSwapRight));
-  EXPECT_TRUE(settings_dict->contains(prefs::kMouseSettingSensitivity));
-  EXPECT_TRUE(settings_dict->contains(prefs::kMouseSettingReverseScrolling));
-  EXPECT_TRUE(settings_dict->contains(prefs::kMouseSettingAccelerationEnabled));
-  EXPECT_TRUE(settings_dict->contains(prefs::kMouseSettingScrollSensitivity));
-  EXPECT_TRUE(settings_dict->contains(prefs::kMouseSettingScrollAcceleration));
   CheckMouseSettingsAndDictAreEqual(kMouseSettingsDefault, *settings_dict);
 }
 

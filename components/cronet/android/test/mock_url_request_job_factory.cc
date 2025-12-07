@@ -19,7 +19,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/cronet/android/cronet_test_apk_jni/MockUrlRequestJobFactory_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace cronet {
@@ -80,7 +80,7 @@ class UrlInterceptorJobFactoryHandle {
 // URLRequestFilter in libcronet_tests.so with the URLRequestContext in
 // libcronet.so by installing a URLRequestInterceptingJobFactory
 // that calls into libcronet_tests.so's URLRequestFilter.
-jlong JNI_MockUrlRequestJobFactory_AddUrlInterceptors(
+static jlong JNI_MockUrlRequestJobFactory_AddUrlInterceptors(
     JNIEnv* env,
     jlong jcontext_adapter) {
   net::URLRequestMockDataJob::AddUrlHandler();
@@ -92,50 +92,52 @@ jlong JNI_MockUrlRequestJobFactory_AddUrlInterceptors(
 }
 
 // Put back the old URLRequestJobFactory into the URLRequestContext.
-void JNI_MockUrlRequestJobFactory_RemoveUrlInterceptorJobFactory(
+static void JNI_MockUrlRequestJobFactory_RemoveUrlInterceptorJobFactory(
     JNIEnv* env,
     jlong jinterceptor_handle) {
   reinterpret_cast<UrlInterceptorJobFactoryHandle*>(jinterceptor_handle)
       ->ShutDown();
 }
 
-ScopedJavaLocalRef<jstring> JNI_MockUrlRequestJobFactory_GetMockUrlWithFailure(
-    JNIEnv* jenv,
-    jint jphase,
-    jint jnet_error) {
+static ScopedJavaLocalRef<jstring>
+JNI_MockUrlRequestJobFactory_GetMockUrlWithFailure(JNIEnv* jenv,
+                                                   jint jphase,
+                                                   jint jnet_error) {
   GURL url(net::URLRequestFailedJob::GetMockHttpUrlWithFailurePhase(
       static_cast<net::URLRequestFailedJob::FailurePhase>(jphase),
       static_cast<int>(jnet_error)));
   return base::android::ConvertUTF8ToJavaString(jenv, url.spec());
 }
 
-ScopedJavaLocalRef<jstring> JNI_MockUrlRequestJobFactory_GetMockUrlForData(
-    JNIEnv* jenv,
-    const JavaParamRef<jstring>& jdata,
-    jint jdata_repeat_count) {
+static ScopedJavaLocalRef<jstring>
+JNI_MockUrlRequestJobFactory_GetMockUrlForData(JNIEnv* jenv,
+                                               const JavaRef<jstring>& jdata,
+                                               jint jdata_repeat_count) {
   std::string data(base::android::ConvertJavaStringToUTF8(jenv, jdata));
   GURL url(net::URLRequestMockDataJob::GetMockHttpUrl(data,
                                                       jdata_repeat_count));
   return base::android::ConvertUTF8ToJavaString(jenv, url.spec());
 }
 
-ScopedJavaLocalRef<jstring>
+static ScopedJavaLocalRef<jstring>
 JNI_MockUrlRequestJobFactory_GetMockUrlForSSLCertificateError(JNIEnv* jenv) {
   GURL url(net::SSLCertificateErrorJob::GetMockUrl());
   return base::android::ConvertUTF8ToJavaString(jenv, url.spec());
 }
 
-ScopedJavaLocalRef<jstring>
+static ScopedJavaLocalRef<jstring>
 JNI_MockUrlRequestJobFactory_GetMockUrlForClientCertificateRequest(
     JNIEnv* jenv) {
   GURL url(net::URLRequestMockDataJob::GetMockUrlForClientCertificateRequest());
   return base::android::ConvertUTF8ToJavaString(jenv, url.spec());
 }
 
-ScopedJavaLocalRef<jstring>
+static ScopedJavaLocalRef<jstring>
 JNI_MockUrlRequestJobFactory_GetMockUrlForHangingRead(JNIEnv* jenv) {
   GURL url(net::URLRequestHangingReadJob::GetMockHttpUrl());
   return base::android::ConvertUTF8ToJavaString(jenv, url.spec());
 }
 
 }  // namespace cronet
+
+DEFINE_JNI(MockUrlRequestJobFactory)

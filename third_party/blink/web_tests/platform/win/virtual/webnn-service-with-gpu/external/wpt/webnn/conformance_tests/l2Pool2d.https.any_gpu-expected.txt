@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] l2Pool2d float32 4D tensor options.dilations
+  assert_less_than_equal: assert_array_approx_equals_ulp: test l2Pool2d float32 actual 194.45481872558594 should be close enough to expected 189.47933959960938 by ULP distance: expected a number less than or equal to 11n but got 326073n
+Harness: the test ran to completion.
+

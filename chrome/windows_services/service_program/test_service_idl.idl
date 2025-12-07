@@ -1,0 +1,45 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+[
+  object,
+  oleautomation,
+  uuid(C8760DFF-5BE9-45E0-86E5-80B9C9F27DF7),
+  helpstring("ITestService Interface"),
+  pointer_default(unique)
+]
+interface ITestService : IUnknown
+{
+  // Returns a handle to test service's process.
+  HRESULT GetProcessHandle([out] unsigned long* handle);
+
+  // Returns `VARIANT_TRUE` if the service is run with `--unattended-test`.
+  HRESULT IsRunningUnattended([out] VARIANT_BOOL* is_running_unattended);
+
+  // Returns the path to the crashpad database.
+  HRESULT GetCrashpadDatabasePath([out] BSTR* database_path);
+
+  // Induces a crash synchronously.
+  HRESULT InduceCrash();
+
+  // Induces a crash on a background thread asynchronously.
+  HRESULT InduceCrashSoon();
+};
+
+[
+  uuid(7A912129-1F7D-4125-8298-35CF17C83EC1),
+  version(1.0),
+  helpstring("TestService 1.0 Type Library")
+]
+library TestServiceLib {
+  importlib("stdole2.tlb");
+
+  interface ITestService;
+
+  [ uuid(4428C238-EBE7-4B6C-8DAB-A1A76886A991) ]
+  coclass TestService { interface ITestService; }
+};

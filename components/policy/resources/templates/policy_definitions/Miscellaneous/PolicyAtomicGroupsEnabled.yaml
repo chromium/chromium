@@ -5,6 +5,7 @@ desc: |-
         Setting the policy to Disabled means no policy is ignored because of its source. Policies are ignored only if there's a conflict, and the policy doesn't have the highest priority.
 
         If this policy is set from a cloud source, it can't target a specific user.
+default: false
 example_value: true
 features:
   dynamic_refresh: true

@@ -53,8 +53,8 @@ struct DoctypeData {
 
   bool has_public_identifier_;
   bool has_system_identifier_;
-  WTF::Vector<UChar> public_identifier_;
-  WTF::Vector<UChar> system_identifier_;
+  Vector<UChar> public_identifier_;
+  Vector<UChar> system_identifier_;
   bool force_quirks_;
 };
 
@@ -73,7 +73,7 @@ struct DOMPartData {
   DOMPartData(const DOMPartData&) = delete;
   DOMPartData& operator=(const DOMPartData&) = delete;
 
-  WTF::Vector<String> metadata_;
+  Vector<String> metadata_;
   DOMPartTokenType type_;
 };
 
@@ -116,7 +116,6 @@ class HTMLToken {
     AtomicString GetValue() const { return value_.AsAtomicString(); }
 
     const UCharLiteralBuffer<32>& NameBuffer() const { return name_; }
-    const UCharLiteralBuffer<32>& ValueBuffer() const { return value_; }
 
     String NameAttemptStaticStringCreation() const {
       return AttemptStaticStringCreation(name_);
@@ -191,8 +190,6 @@ class HTMLToken {
     return data_;
   }
 
-  ALWAYS_INLINE bool IsAll8BitData() const { return data_.Is8Bit(); }
-
   const DataVector& GetName() const {
     DCHECK(type_ == kStartTag || type_ == kEndTag || type_ == DOCTYPE);
     return data_;
@@ -229,13 +226,13 @@ class HTMLToken {
   }
 
   // FIXME: Distinguish between a missing public identifer and an empty one.
-  const WTF::Vector<UChar>& PublicIdentifier() const {
+  const Vector<UChar>& PublicIdentifier() const {
     DCHECK_EQ(type_, DOCTYPE);
     return doctype_data_->public_identifier_;
   }
 
   // FIXME: Distinguish between a missing system identifer and an empty one.
-  const WTF::Vector<UChar>& SystemIdentifier() const {
+  const Vector<UChar>& SystemIdentifier() const {
     DCHECK_EQ(type_, DOCTYPE);
     return doctype_data_->system_identifier_;
   }

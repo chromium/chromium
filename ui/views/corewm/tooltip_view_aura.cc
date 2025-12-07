@@ -13,6 +13,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/text_elider.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/painter.h"
@@ -31,12 +32,14 @@ TooltipViewAura::TooltipViewAura()
   render_text_->SetWordWrapBehavior(gfx::WRAP_LONG_WORDS);
   render_text_->SetMultiline(true);
 
-  SetBackground(
-      views::CreateThemedSolidBackground(ui::kColorTooltipBackground));
+  SetBackground(views::CreateSolidBackground(ui::kColorTooltipBackground));
   SetBorder(views::CreatePaddedBorder(
-      views::CreateThemedSolidBorder(kTooltipBorderThickness,
-                                     ui::kColorTooltipForeground),
+      views::CreateSolidBorder(kTooltipBorderThickness,
+                               ui::kColorTooltipForeground),
       kBorderInset - gfx::Insets(kTooltipBorderThickness)));
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kTooltip);
+  UpdateAccessibleName();
 
   ResetDisplayRect();
 }
@@ -51,6 +54,7 @@ void TooltipViewAura::SetText(const std::u16string& text) {
   std::u16string new_text(text);
   base::ReplaceChars(new_text, u"\t", u"        ", &new_text);
   render_text_->SetText(std::move(new_text));
+  UpdateAccessibleName();
   SchedulePaint();
 }
 
@@ -100,19 +104,28 @@ void TooltipViewAura::OnThemeChanged() {
   views::View::OnThemeChanged();
   // Force the text color to be readable when |background_color| is not
   // opaque.
+  const SkColor background_color =
+      background()->color().ResolveToSkColor(GetColorProvider());
   render_text_->set_subpixel_rendering_suppressed(
-      SkColorGetA(background()->get_color()) != SK_AlphaOPAQUE);
+      SkColorGetA(background_color) != SK_AlphaOPAQUE);
   render_text_->SetColor(
       GetColorProvider()->GetColor(ui::kColorTooltipForeground));
 }
 
-void TooltipViewAura::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kTooltip;
-  node_data->SetNameChecked(render_text_->GetDisplayText());
+void TooltipViewAura::UpdateAccessibleName() {
+  if (render_text_->GetDisplayText().empty()) {
+    GetViewAccessibility().SetName(
+        std::u16string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+    return;
+  }
+
+  GetViewAccessibility().SetName(
+      std::u16string(render_text_->GetDisplayText()));
 }
 
 void TooltipViewAura::ResetDisplayRect() {
   render_text_->SetDisplayRect(gfx::Rect(0, 0, max_width_, 100000));
+  UpdateAccessibleName();
 }
 
 BEGIN_METADATA(TooltipViewAura)

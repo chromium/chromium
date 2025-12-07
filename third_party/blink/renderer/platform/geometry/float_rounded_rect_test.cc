@@ -33,133 +33,10 @@
 #include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/quad_f.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 
 namespace blink {
-
-#define TEST_INTERCEPTS(roundedRect, yCoordinate, expectedMinXIntercept, \
-                        expectedMaxXIntercept)                           \
-  {                                                                      \
-    float min_x_intercept;                                               \
-    float max_x_intercept;                                               \
-    EXPECT_TRUE(roundedRect.XInterceptsAtY(yCoordinate, min_x_intercept, \
-                                           max_x_intercept));            \
-    EXPECT_FLOAT_EQ(expectedMinXIntercept, min_x_intercept);             \
-    EXPECT_FLOAT_EQ(expectedMaxXIntercept, max_x_intercept);             \
-  }
-
-TEST(FloatRoundedRectTest, zeroRadii) {
-  FloatRoundedRect r = FloatRoundedRect(1, 2, 3, 4);
-
-  EXPECT_EQ(gfx::RectF(1, 2, 3, 4), r.Rect());
-  EXPECT_EQ(gfx::SizeF(), r.GetRadii().TopLeft());
-  EXPECT_EQ(gfx::SizeF(), r.GetRadii().TopRight());
-  EXPECT_EQ(gfx::SizeF(), r.GetRadii().BottomLeft());
-  EXPECT_EQ(gfx::SizeF(), r.GetRadii().BottomRight());
-  EXPECT_TRUE(r.GetRadii().IsZero());
-  EXPECT_FALSE(r.IsRounded());
-  EXPECT_FALSE(r.IsEmpty());
-
-  EXPECT_EQ(gfx::RectF(1, 2, 0, 0), r.TopLeftCorner());
-  EXPECT_EQ(gfx::RectF(4, 2, 0, 0), r.TopRightCorner());
-  EXPECT_EQ(gfx::RectF(4, 6, 0, 0), r.BottomRightCorner());
-  EXPECT_EQ(gfx::RectF(1, 6, 0, 0), r.BottomLeftCorner());
-
-  TEST_INTERCEPTS(r, 2, r.Rect().x(), r.Rect().right());
-  TEST_INTERCEPTS(r, 4, r.Rect().x(), r.Rect().right());
-  TEST_INTERCEPTS(r, 6, r.Rect().x(), r.Rect().right());
-
-  float min_x_intercept;
-  float max_x_intercept;
-
-  EXPECT_FALSE(r.XInterceptsAtY(1, min_x_intercept, max_x_intercept));
-  EXPECT_FALSE(r.XInterceptsAtY(7, min_x_intercept, max_x_intercept));
-
-  // The FloatRoundedRect::Outset() and Inset() don't change zero radii.
-  r.Outset(20);
-  EXPECT_TRUE(r.GetRadii().IsZero());
-  r.Inset(10);
-  EXPECT_TRUE(r.GetRadii().IsZero());
-}
-
-TEST(FloatRoundedRectTest, circle) {
-  gfx::SizeF corner_radii(50, 50);
-  FloatRoundedRect r(gfx::RectF(0, 0, 100, 100), corner_radii, corner_radii,
-                     corner_radii, corner_radii);
-
-  EXPECT_EQ(gfx::RectF(0, 0, 100, 100), r.Rect());
-  EXPECT_EQ(corner_radii, r.GetRadii().TopLeft());
-  EXPECT_EQ(corner_radii, r.GetRadii().TopRight());
-  EXPECT_EQ(corner_radii, r.GetRadii().BottomLeft());
-  EXPECT_EQ(corner_radii, r.GetRadii().BottomRight());
-  EXPECT_FALSE(r.GetRadii().IsZero());
-  EXPECT_TRUE(r.IsRounded());
-  EXPECT_FALSE(r.IsEmpty());
-
-  EXPECT_EQ(gfx::RectF(0, 0, 50, 50), r.TopLeftCorner());
-  EXPECT_EQ(gfx::RectF(50, 0, 50, 50), r.TopRightCorner());
-  EXPECT_EQ(gfx::RectF(0, 50, 50, 50), r.BottomLeftCorner());
-  EXPECT_EQ(gfx::RectF(50, 50, 50, 50), r.BottomRightCorner());
-
-  TEST_INTERCEPTS(r, 0, 50, 50);
-  TEST_INTERCEPTS(r, 25, 6.69873, 93.3013);
-  TEST_INTERCEPTS(r, 50, 0, 100);
-  TEST_INTERCEPTS(r, 75, 6.69873, 93.3013);
-  TEST_INTERCEPTS(r, 100, 50, 50);
-
-  float min_x_intercept;
-  float max_x_intercept;
-
-  EXPECT_FALSE(r.XInterceptsAtY(-1, min_x_intercept, max_x_intercept));
-  EXPECT_FALSE(r.XInterceptsAtY(101, min_x_intercept, max_x_intercept));
-}
-
-/*
- * FloatRoundedRect geometry for this test. Corner radii are in parens, x and y
- * intercepts for the elliptical corners are noted. The rectangle itself is at
- * 0,0 with width and height 100.
- *
- *         (10, 15)  x=10      x=90 (10, 20)
- *                (--+---------+--)
- *           y=15 +--|         |-+ y=20
- *                |               |
- *                |               |
- *           y=85 + -|         |- + y=70
- *                (--+---------+--)
- *       (25, 15)  x=25      x=80  (20, 30)
- */
-TEST(FloatRoundedRectTest, ellipticalCorners) {
-  FloatRoundedRect::Radii corner_radii;
-  corner_radii.SetTopLeft(gfx::SizeF(10, 15));
-  corner_radii.SetTopRight(gfx::SizeF(10, 20));
-  corner_radii.SetBottomLeft(gfx::SizeF(25, 15));
-  corner_radii.SetBottomRight(gfx::SizeF(20, 30));
-
-  FloatRoundedRect r(gfx::RectF(0, 0, 100, 100), corner_radii);
-
-  EXPECT_EQ(r.GetRadii(),
-            FloatRoundedRect::Radii(gfx::SizeF(10, 15), gfx::SizeF(10, 20),
-                                    gfx::SizeF(25, 15), gfx::SizeF(20, 30)));
-  EXPECT_EQ(r, FloatRoundedRect(gfx::RectF(0, 0, 100, 100), corner_radii));
-
-  EXPECT_EQ(gfx::RectF(0, 0, 10, 15), r.TopLeftCorner());
-  EXPECT_EQ(gfx::RectF(90, 0, 10, 20), r.TopRightCorner());
-  EXPECT_EQ(gfx::RectF(0, 85, 25, 15), r.BottomLeftCorner());
-  EXPECT_EQ(gfx::RectF(80, 70, 20, 30), r.BottomRightCorner());
-
-  TEST_INTERCEPTS(r, 5, 2.5464401, 96.61438);
-  TEST_INTERCEPTS(r, 15, 0, 99.682457);
-  TEST_INTERCEPTS(r, 20, 0, 100);
-  TEST_INTERCEPTS(r, 50, 0, 100);
-  TEST_INTERCEPTS(r, 70, 0, 100);
-  TEST_INTERCEPTS(r, 85, 0, 97.320511);
-  TEST_INTERCEPTS(r, 95, 6.3661003, 91.05542);
-
-  float min_x_intercept;
-  float max_x_intercept;
-
-  EXPECT_FALSE(r.XInterceptsAtY(-1, min_x_intercept, max_x_intercept));
-  EXPECT_FALSE(r.XInterceptsAtY(101, min_x_intercept, max_x_intercept));
-}
 
 TEST(FloatRoundedRectTest, IntersectsQuadIsInclusive) {
   FloatRoundedRect::Radii corner_radii(5);
@@ -309,14 +186,28 @@ TEST(FloatRoundedRectTest, InsetWithPartialZeroRadii) {
       r);
 }
 
-TEST(FloatRoundedRectTest, OutsetForMarginOrShadow) {
+TEST(FloatRoundedRectTest, OutsetWithCornerCorrection) {
   FloatRoundedRect r(gfx::RectF(0, 0, 200, 200), gfx::SizeF(4, 8),
                      gfx::SizeF(12, 16), gfx::SizeF(0, 32), gfx::SizeF(64, 0));
-  r.OutsetForMarginOrShadow(32);
-  EXPECT_EQ(FloatRoundedRect(
-                gfx::RectF(-32, -32, 264, 264), gfx::SizeF(14.5625f, 26.5f),
-                gfx::SizeF(36.1875f, 44), gfx::SizeF(0, 64), gfx::SizeF(96, 0)),
-            r);
+  r.OutsetWithCornerCorrection(32);
+  EXPECT_RECTF_EQ(r.Rect(), gfx::RectF(-32, -32, 264, 264));
+  EXPECT_SIZEF_NEAR(r.GetRadii().TopLeft(), gfx::SizeF(14.5639, 26.5009f),
+                    0.01f);
+  EXPECT_SIZEF_NEAR(r.GetRadii().TopRight(), gfx::SizeF(36.201f, 44.0069f),
+                    0.01f);
+  EXPECT_SIZEF_NEAR(r.GetRadii().BottomLeft(), gfx::SizeF(0, 64), 0.01f);
+  EXPECT_SIZEF_NEAR(r.GetRadii().BottomRight(), gfx::SizeF(96, 0), 0.01f);
+}
+
+TEST(FloatRoundedRectTest, OutsetWithCornerCorrectionNonUniform) {
+  FloatRoundedRect r(gfx::RectF(0, 0, 200, 100), gfx::SizeF(50, 8),
+                     gfx::SizeF(12, 56), gfx::SizeF(0, 32), gfx::SizeF(64, 0));
+  r.OutsetWithCornerCorrection(32);
+  EXPECT_RECTF_EQ(r.Rect(), gfx::RectF(-32, -32, 264, 164));
+  EXPECT_SIZEF_NEAR(r.GetRadii().TopLeft(), gfx::SizeF(82, 26.5553), 0.01f);
+  EXPECT_SIZEF_NEAR(r.GetRadii().TopRight(), gfx::SizeF(36.201f, 88), 0.01f);
+  EXPECT_SIZEF_NEAR(r.GetRadii().BottomLeft(), gfx::SizeF(0, 64), 0.01f);
+  EXPECT_SIZEF_NEAR(r.GetRadii().BottomRight(), gfx::SizeF(96, 0), 0.01f);
 }
 
 TEST(FloatRoundedRectTest, InsetToBeNonRenderable) {

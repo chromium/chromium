@@ -2,35 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
 
+#include <algorithm>
 #include <sstream>
 #include <string>
 #include <utility>
 
-#include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
 
 namespace blink {
 
 namespace {
-std::string string_to_hex(const std::string& input) {
-  static const char* const lut = "0123456789ABCDEF";
-  size_t len = input.length();
-
-  std::string output;
-  output.reserve(2 * len);
-  for (size_t i = 0; i < len; ++i) {
-    const unsigned char c = input[i];
-    output.push_back(lut[c >> 4]);
-    output.push_back(lut[c & 0xF]);
-  }
-  return output;
-}
 
 // Very rough estimate of minimum key size overhead.
 const size_t kOverheadSize = 16;
@@ -54,13 +37,11 @@ int Compare(const T& a, const T& b) {
 
 }  // namespace
 
-IndexedDBKey::IndexedDBKey()
-    : type_(mojom::IDBKeyType::None), size_estimate_(kOverheadSize) {}
+IndexedDBKey::IndexedDBKey() : IndexedDBKey(mojom::IDBKeyType::None) {}
 
 IndexedDBKey::IndexedDBKey(mojom::IDBKeyType type)
     : type_(type), size_estimate_(kOverheadSize) {
-  DCHECK(type == mojom::IDBKeyType::None ||
-         type == mojom::IDBKeyType::Invalid || type == mojom::IDBKeyType::Min);
+  DCHECK(!IsValid());
 }
 
 IndexedDBKey::IndexedDBKey(double number, mojom::IDBKeyType type)
@@ -87,15 +68,14 @@ IndexedDBKey::IndexedDBKey(std::u16string string)
       size_estimate_(kOverheadSize +
                      (string_.length() * sizeof(std::u16string::value_type))) {}
 
-IndexedDBKey::IndexedDBKey(const IndexedDBKey& other) = default;
 IndexedDBKey::IndexedDBKey(IndexedDBKey&& other) = default;
+IndexedDBKey& IndexedDBKey::operator=(IndexedDBKey&& other) = default;
 IndexedDBKey::~IndexedDBKey() = default;
-IndexedDBKey& IndexedDBKey::operator=(const IndexedDBKey& other) = default;
 
 bool IndexedDBKey::IsValid() const {
   switch (type_) {
     case mojom::IDBKeyType::Array:
-      return base::ranges::all_of(array_, &IndexedDBKey::IsValid);
+      return std::ranges::all_of(array_, &IndexedDBKey::IsValid);
     case mojom::IDBKeyType::Binary:
     case mojom::IDBKeyType::String:
     case mojom::IDBKeyType::Date:
@@ -127,25 +107,38 @@ bool IndexedDBKey::HasHoles() const {
   return false;
 }
 
+IndexedDBKey IndexedDBKey::Clone() const {
+  IndexedDBKey clone;
+  clone.type_ = type_;
+  for (size_t i = 0; i < array_.size(); ++i) {
+    clone.array_.emplace_back(array_[i].Clone());
+  }
+  clone.binary_ = binary_;
+  clone.string_ = string_;
+  clone.number_ = number_;
+  clone.size_estimate_ = size_estimate_;
+  return clone;
+}
+
 IndexedDBKey IndexedDBKey::FillHoles(const IndexedDBKey& primary_key) const {
   if (type_ != mojom::IDBKeyType::Array)
-    return IndexedDBKey(*this);
+    return Clone();
 
   std::vector<IndexedDBKey> subkeys;
   subkeys.reserve(array_.size());
-  for (const auto& subkey : array_) {
+  for (const IndexedDBKey& subkey : array_) {
     if (subkey.type() == mojom::IDBKeyType::None) {
-      subkeys.push_back(primary_key);
+      subkeys.emplace_back(primary_key.Clone());
     } else {
       // "Holes" can only exist at the top level of an array key, as (1) they
       // are produced by an index's array keypath when a member matches the
       // store's keypath, and (2) array keypaths are flat (no
       // arrays-of-arrays).
       DCHECK(!subkey.HasHoles());
-      subkeys.push_back(subkey);
+      subkeys.emplace_back(subkey.Clone());
     }
   }
-  return IndexedDBKey(subkeys);
+  return IndexedDBKey(std::move(subkeys));
 }
 
 std::string IndexedDBKey::DebugString() const {
@@ -163,7 +156,7 @@ std::string IndexedDBKey::DebugString() const {
       break;
     }
     case mojom::IDBKeyType::Binary:
-      result << "binary: 0x" << string_to_hex(binary_);
+      result << "binary: 0x" << base::HexEncode(binary_);
       break;
     case mojom::IDBKeyType::String:
       result << "string: " << string_;
@@ -215,8 +208,7 @@ int IndexedDBKey::CompareTo(const IndexedDBKey& other) const {
     case mojom::IDBKeyType::None:
     case mojom::IDBKeyType::Min:
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 

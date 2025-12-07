@@ -29,8 +29,8 @@ function drawSRGBImageOnLinearRGBCanvas(source)
   canvas.width = 20;
   canvas.height = 20;
   var ctx = canvas.getContext('2d',
-      {colorSpace: 'srgb', pixelFormat:'float16'});
-  var imageSetting = {colorSpace: 'srgb', storageFormat:'float32'}
+      {colorSpace: 'srgb', colorType:'float16'});
+  var imageSetting = {colorSpace: 'srgb', pixelFormat:'rgba-float16'}
   ctx.drawImage(source, 0, 0);
   var tests = [{x: 5, y: 5, color: e_sRGB_TransparentRed},
                {x: 15, y: 5, color: e_sRGB_TransparentGreen},

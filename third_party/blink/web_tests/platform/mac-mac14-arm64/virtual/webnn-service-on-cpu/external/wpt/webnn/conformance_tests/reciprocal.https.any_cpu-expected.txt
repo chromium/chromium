@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] [required] reciprocal float16 1D tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reciprocal float16 actual 0.216796875 should be close enough to expected 0.2164306640625 by ULP distance: expected a number less than or equal to 2 but got 3
+[FAIL] [required] reciprocal float16 2D tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reciprocal float16 actual 0.216796875 should be close enough to expected 0.2164306640625 by ULP distance: expected a number less than or equal to 2 but got 3
+[FAIL] [required] reciprocal float16 3D tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reciprocal float16 actual 0.216796875 should be close enough to expected 0.2164306640625 by ULP distance: expected a number less than or equal to 2 but got 3
+[FAIL] [required] reciprocal float16 4D tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reciprocal float16 actual 0.216796875 should be close enough to expected 0.2164306640625 by ULP distance: expected a number less than or equal to 2 but got 3
+[FAIL] [required] reciprocal float16 5D tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reciprocal float16 actual 0.216796875 should be close enough to expected 0.2164306640625 by ULP distance: expected a number less than or equal to 2 but got 3
+Harness: the test ran to completion.
+

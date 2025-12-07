@@ -1,0 +1,49 @@
+<!doctype html>
+<!--
+Tests the visibility of WebXR Input Sources when the visibility is toggled to
+visible blurred.
+-->
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="../resources/webxr_e2e.css">
+  </head>
+  <body>
+    <canvas id="webgl-canvas"></canvas>
+    <script src="../../../../../../third_party/blink/web_tests/resources/testharness.js"></script>
+    <script src="../resources/webxr_e2e.js"></script>
+    <script src="../resources/webxr_boilerplate.js"></script>
+    <script>
+      let session;
+      let controller;
+
+      onSessionStartedCallback = (s) => {
+        session = s;
+      };
+
+      function checkInputSourceCount(expectedCount) {
+        return session.inputSources.length === expectedCount;
+      }
+
+      function checkVisibilityState(expectedState) {
+        return session.visibilityState === expectedState;
+      }
+
+      function validateInputSourceVisible() {
+        assert_not_equals(session.inputSources.length, 0);
+        controller = session.inputSources[0];
+        return true;
+      }
+
+      function validateNullInputPoses() {
+        // We need to wait for a frame to do this.
+        session.requestAnimationFrame((t, frame) => {
+          let refSpace = sessionInfos[getSessionType(session)].currentRefSpace;
+          assert_not_equals(controller, null, "Controller should not be null");
+          assert_not_equals(controller.gripSpace, null, "gripSpace should not be null");
+          assert_not_equals(controller.targetRaySpace, null, "targetRaySpace should not be null");
+
+          assert_equals(frame.getPose(controller.gripSpace, refSpace), null, "Pose of the grip space must be null");
+          assert_equals(frame.getPose(controller.targetRaySpace, refSpace), null, "Pose of the target ray space must be null");
+        });
+      }
+    </script>

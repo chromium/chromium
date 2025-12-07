@@ -12,8 +12,6 @@ import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 
 import com.google.android.material.elevation.ElevationOverlayProvider;
@@ -21,33 +19,35 @@ import com.google.android.material.elevation.ElevationOverlayProvider;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.util.AttrUtils;
 
 import java.io.IOException;
 
 /**
- * A subclass of GradientDrawable that allows us to both control shape with an attribute, as well
- * as the surface color based on elevation. If no elevation is specified a default of 0 will be
- * used. This will result in the same color as Surface-0. If this is desired, .it is likely easier
- * to use ?attr/colorSurface.
+ * A subclass of GradientDrawable that allows us to both control shape with an attribute, as well as
+ * the surface color based on elevation. If no elevation is specified a default of 0 will be used.
+ * This will result in the same color as Surface-0. If this is desired, .it is likely easier to use
+ * ?attr/colorSurface.
  *
- * Example
- * <org.chromium.components.browser_ui.widget.SurfaceColorDrawable
- *     xmlns:android="http://schemas.android.com/apk/res/android"
- *     xmlns:app="http://schemas.android.com/apk/res-auto"
- *     android:shape="oval"
- *     app:surfaceElevation="@dimen/default_elevation_1"/>
+ * <p>Example <org.chromium.components.browser_ui.widget.SurfaceColorDrawable
+ * xmlns:android="http://schemas.android.com/apk/res/android"
+ * xmlns:app="http://schemas.android.com/apk/res-auto" android:shape="oval"
+ * app:surfaceElevation="@dimen/default_elevation_1"/>
+ *
+ * @deprecated Elevation based surface color is deprecated. Use tonal color roles instead. See
+ *     crbug.com/348667900.
  */
+@Deprecated
+@NullMarked
 public class SurfaceColorDrawable extends GradientDrawable {
     private @Px float mElevation;
     private float mDensity;
 
     @Override
     public void inflate(
-            @NonNull Resources resources,
-            @NonNull XmlPullParser parser,
-            @NonNull AttributeSet attrs,
-            @Nullable Theme theme)
+            Resources resources, XmlPullParser parser, AttributeSet attrs, @Nullable Theme theme)
             throws XmlPullParserException, IOException {
         // All attributes must be read before we call super#inflate, which will advance the parser
         // which seems to change what attrs is pointing at.
@@ -75,7 +75,7 @@ public class SurfaceColorDrawable extends GradientDrawable {
     }
 
     @Override
-    public ConstantState getConstantState() {
+    public @Nullable ConstantState getConstantState() {
         // Must hide GradientDrawable's ConstantState, otherwise usage will cause GradientDrawable
         // objects to be created, instead of this class. Returning null means that these drawables
         // will not be able to be shared.
@@ -83,7 +83,7 @@ public class SurfaceColorDrawable extends GradientDrawable {
     }
 
     @Override
-    public Callback getCallback() {
+    public @Nullable Callback getCallback() {
         // LayerDrawable attempts to do ownership checks by ensuring this callback is null.
         // Unfortunately it more or less makes it incompatible for classes that return null for
         // constant state, otherwise warning stack traces are logged. Even when returning null here,
@@ -92,7 +92,7 @@ public class SurfaceColorDrawable extends GradientDrawable {
     }
 
     @Override
-    public void applyTheme(@NonNull Theme theme) {
+    public void applyTheme(Theme theme) {
         super.applyTheme(theme);
         onNonNullTheme(theme);
     }
@@ -103,7 +103,7 @@ public class SurfaceColorDrawable extends GradientDrawable {
      * supported after API 24.
      */
     @SuppressLint("NewApi")
-    private void onNonNullTheme(@NonNull Theme theme) {
+    private void onNonNullTheme(Theme theme) {
         boolean elevationOverlayEnabled =
                 AttrUtils.resolveBoolean(theme, R.attr.elevationOverlayEnabled);
         final @ColorInt int elevationOverlayColor =

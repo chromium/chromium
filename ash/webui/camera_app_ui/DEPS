@@ -2,7 +2,6 @@ include_rules = [
   "+chromeos/ash/components/dbus/session_manager",
   "+chromeos/ash/components/mojo_service_manager",
   "+chromeos/utils/pdf_conversion.h",
-  "+components/arc/intent_helper",
   "+components/content_settings/core/common",
   "+components/device_event_log",
   "+components/keyed_service/content",
@@ -12,4 +11,8 @@ include_rules = [
   "+components/onc",
   "+services/video_capture/public/mojom/video_capture_service.mojom.h",
   "+third_party/blink/public/common/storage_key",
+
+  # TODO(crbug.com/386148857): Temporarily refer chromeos/ash/experiences
+  # from here for arc directory migration. Fix this later.
+  "+chromeos/ash/experiences/arc/intent_helper",
 ]

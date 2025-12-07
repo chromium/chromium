@@ -8,7 +8,8 @@
 
 namespace blink {
 
-EXTDepthClamp::EXTDepthClamp(WebGLRenderingContextBase* context)
+EXTDepthClamp::EXTDepthClamp(WebGLRenderingContextBase* context,
+                             ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled("GL_EXT_depth_clamp");
 }

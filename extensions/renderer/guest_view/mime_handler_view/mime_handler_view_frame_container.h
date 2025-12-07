@@ -10,8 +10,6 @@
 #include "extensions/renderer/guest_view/mime_handler_view/post_message_support.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/web/web_element.h"
-
-#include "ipc/ipc_message.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -31,7 +29,7 @@ class MimeHandlerViewContainerManager;
 //  #document <1-- arbitrary origin -->
 //
 //    <embed>
-//      #document <!-- origin = |resource_url| -->
+//      #document <!-- origin = `resource_url` -->
 //      <iframe>
 //        #document <!-- MimeHandlerView extension -->
 //           <embed type="application/x-google-chrome=pdf></embed>
@@ -81,12 +79,12 @@ class MimeHandlerViewFrameContainer : public PostMessageSupport::Delegate {
   // values.
   bool AreFramesValid();
 
-  // Controls the lifetime of |this| (always alive).
+  // Controls the lifetime of `this` (always alive).
   const raw_ptr<MimeHandlerViewContainerManager> container_manager_;
   blink::WebElement plugin_element_;
   const GURL resource_url_;
   const std::string mime_type_;
-  // The |element_instance_id| of the MimeHandlerViewGuest associated with this
+  // The `element_instance_id` of the MimeHandlerViewGuest associated with this
   // frame container. This is updated in DidLoad().
   int32_t element_instance_id_ = guest_view::kInstanceIDNone;
   // The FrameToken of the content frame (frame or proxy) and guest frame
@@ -95,7 +93,7 @@ class MimeHandlerViewFrameContainer : public PostMessageSupport::Delegate {
   blink::FrameToken content_frame_token_;
   blink::FrameToken guest_frame_token_;
   bool frame_tokens_set_ = false;
-  // Determines whether the embedder can access |original_url_|. Used for UMA.
+  // Determines whether the embedder can access `original_url_`. Used for UMA.
   bool is_resource_accessible_to_embedder_;
 };
 

@@ -8,10 +8,7 @@
     display: flex;
     justify-content: space-between;
     align-items: stretch;
-  }
-
-  .entry-input {
-    margin-inline-end: 5px;
+    gap: 16px
   }
 
   .category-div {
@@ -21,45 +18,57 @@
   }
 
   .category-label {
-    /* TODO(b/340393256): Use a var(..) from cros */
-    font-size: 11px;
-    line-height: 16px;
+    font: var(--cros-annotation-2-font);
+    /* To match cr-input */
+    font-weight: 500;
   }
 
   .delete-icon {
-    /* TODO(b/340393256): Make this a calculated value */ 
-    margin-top: 26px;
+    --cr-icon-button-size: 32px;
+    --cr-icon-button-icon-size: 20px;
+    align-self: center;
   }
 </style>
 
-<!-- TODO(b/340393256): Localize all strings -->
 <div class="cr-row continuation entry-row">
   <cr-input value="[[entry.key]]"
-     label="Reading"
+     label="$i18n{japaneseDictionaryReading}"
      type="text"
-     class="entry-input"
+     aria-description="[[i18nEntryDescription_()]]"
      on-change="saveReading_"></cr-input>
   <cr-input value="[[entry.value]]"
-     label="Word"
-     type="text" class="entry-input"
+     label="$i18n{japaneseDictionaryWord}"
+     type="text"
+     aria-description="[[i18nEntryDescription_()]]"
      on-change="saveWord_"></cr-input>
   <div class="category-div" >
-    <div class="cr-form-field-label category-label">Category</div>
-    <!-- TODO(b/340393256): Make these options match actual POS values -->
-    <select class="md-select" class="entry-input">
-      <option>ENTRY ROW ELEM POS Type 1</option>
-      <option>POS Type 2</option>
-      <option>POS Type 3</option>
-      <option selected>POS Type 4</option>
+    <label id="categoryLabel" class="cr-form-field-label category-label">
+      $i18n{japaneseDictionaryCategory}
+    </label>
+    <!--
+      These Japanese terms are not translated on purpose since they are technical linguistic terms
+      The option values needs to corresponds to the int value of the mojo enum JpPosType.
+    -->
+    <select id="posDropdownMenu" class="md-select" on-change="onOptionChanged_"
+       aria-labelledby="categoryLabel"
+       aria-description="[[i18nEntryDescription_()]]">
+       <template is="dom-repeat" items="[[posTypeOptions_]]">
+         <option value="[[item.value]]"
+            selected="[[isSelectedOption_(item.value)]]">
+           [[item.label]]
+         </option>
+       </template>
     </select>
   </div>
   <cr-input value="[[entry.comment]]"
-     label="Comment"
-     type="text" class="entry-input"
+     label="$i18n{japaneseDictionaryComment}"
+     type="text"
+     aria-description="[[i18nEntryDescription_()]]"
      on-change="saveComment_"></cr-input>
-  <cr-icon-button class="delete-icon"
+  <cr-icon-button class="delete-icon no-overlap"
      iron-icon="cr:close"
      on-click="deleteEntry_"
-     title="DeleteEntry"></cr-icon-button>
+     aria-description="[[i18nEntryDescription_()]]"
+     title="$i18n{japaneseDictionaryDeleteEntry}"></cr-icon-button>
 </div>
 

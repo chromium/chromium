@@ -4,14 +4,19 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
@@ -20,7 +25,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -38,22 +43,30 @@ import androidx.core.widget.ImageViewCompat;
 import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.hub.RoundedCornerAnimatorUtil;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
+import org.chromium.components.browser_ui.widget.scrim.ScrimView;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.ButtonCompat;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 /** Parent for TabGridDialog component. */
+@NullMarked
 public class TabGridDialogView extends FrameLayout {
     private static final int DIALOG_ANIMATION_DURATION = 400;
     private static final int DIALOG_UNGROUP_ALPHA_ANIMATION_DURATION = 200;
@@ -62,7 +75,7 @@ public class TabGridDialogView extends FrameLayout {
     private static final int Y_TRANSLATE_DURATION_MS = 300;
     private static final int SCRIM_FADE_DURATION_MS = 350;
 
-    private static Callback<RectF> sSourceRectCallbackForTesting;
+    private static @Nullable Callback<RectF> sSourceRectCallbackForTesting;
 
     @IntDef({UngroupBarStatus.SHOW, UngroupBarStatus.HIDE, UngroupBarStatus.HOVERED})
     @Retention(RetentionPolicy.SOURCE)
@@ -81,25 +94,27 @@ public class TabGridDialogView extends FrameLayout {
 
     private final Context mContext;
     private final float mTabGridCardPadding;
+    private final Map<View, Integer> mAccessibilityImportanceMap = new HashMap<>();
     private FrameLayout mAnimationClip;
     private FrameLayout mToolbarContainer;
     private FrameLayout mRecyclerViewContainer;
-    private View mBackgroundFrame;
+    private RoundedCornerImageView mBackgroundFrame;
     private View mAnimationCardView;
-    private View mItemView;
+    private @Nullable View mItemView;
     private View mUngroupBar;
-    private ViewGroup mSnackBarContainer;
-    private ViewGroup mParent;
-    private ImageView mHairline;
     private TextView mUngroupBarTextView;
+    private ButtonCompat mSendFeedbackButton;
+    private ViewGroup mSnackBarContainer;
+    private @Nullable ViewGroup mParent;
+    private ImageView mHairline;
     private RelativeLayout mDialogContainerView;
-    private PropertyModel mScrimPropertyModel;
-    private ScrimCoordinator mScrimCoordinator;
+    private @Nullable PropertyModel mScrimPropertyModel;
+    private @Nullable ScrimManager mScrimManager;
     private FrameLayout.LayoutParams mContainerParams;
-    private ViewTreeObserver.OnGlobalLayoutListener mParentGlobalLayoutListener;
-    private VisibilityListener mVisibilityListener;
-    private Animator mCurrentDialogAnimator;
-    private Animator mCurrentUngroupBarAnimator;
+    private @Nullable OnGlobalLayoutListener mParentGlobalLayoutListener;
+    private @Nullable VisibilityListener mVisibilityListener;
+    private @Nullable Animator mCurrentDialogAnimator;
+    private @Nullable Animator mCurrentUngroupBarAnimator;
     private AnimatorSet mBasicFadeInAnimation;
     private AnimatorSet mBasicFadeOutAnimation;
     private ObjectAnimator mYTranslateAnimation;
@@ -109,19 +124,18 @@ public class TabGridDialogView extends FrameLayout {
     private AnimatorSet mHideDialogAnimation;
     private AnimatorListenerAdapter mShowDialogAnimationListener;
     private AnimatorListenerAdapter mHideDialogAnimationListener;
-    private Map<View, Integer> mAccessibilityImportanceMap = new HashMap<>();
     private int mSideMargin;
     private int mTopMargin;
-    private int mOrientation;
+    private int mBottomMargin;
+    private int mAppHeaderHeight;
     private int mParentHeight;
     private int mParentWidth;
     private int mBackgroundDrawableColor;
     private @UngroupBarStatus int mUngroupBarStatus = UngroupBarStatus.HIDE;
     private int mUngroupBarBackgroundColor;
     private int mUngroupBarHoveredBackgroundColor;
-    @ColorInt private int mUngroupBarTextColor;
-    @ColorInt private int mUngroupBarHoveredTextColor;
-    private Integer mBindingToken;
+    private @ColorInt int mUngroupBarTextColor;
+    private @ColorInt int mUngroupBarHoveredTextColor;
 
     public TabGridDialogView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -140,6 +154,11 @@ public class TabGridDialogView extends FrameLayout {
         mUngroupBarHoveredBackgroundColor =
                 TabUiThemeProvider.getTabGridDialogUngroupBarHoveredBackgroundColor(
                         mContext, false);
+        setVisibility(GONE);
+    }
+
+    private int getOrientation() {
+        return mContext.getResources().getConfiguration().orientation;
     }
 
     void forceAnimationToFinish() {
@@ -171,23 +190,23 @@ public class TabGridDialogView extends FrameLayout {
         mParentWidth = mParent.getWidth();
         mParentGlobalLayoutListener =
                 () -> {
+                    assumeNonNull(mParent);
                     // Skip updating the parent view size caused by keyboard showing.
-                    if (!KeyboardVisibilityDelegate.getInstance()
-                            .isKeyboardShowing(mContext, this)) {
+                    if (!KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(this)) {
                         mParentWidth = mParent.getWidth();
                         mParentHeight = mParent.getHeight();
-                        updateDialogWithOrientation(mOrientation);
+                        updateDialogWithOrientation(getOrientation());
                     }
                 };
         mParent.getViewTreeObserver().addOnGlobalLayoutListener(mParentGlobalLayoutListener);
-        updateDialogWithOrientation(mOrientation);
-        setVisibility(GONE);
+        updateDialogWithOrientation(getOrientation());
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         if (mParent != null) {
+            assumeNonNull(mParentGlobalLayoutListener);
             mParent.getViewTreeObserver().removeOnGlobalLayoutListener(mParentGlobalLayoutListener);
         }
     }
@@ -209,6 +228,7 @@ public class TabGridDialogView extends FrameLayout {
         mRecyclerViewContainer = findViewById(R.id.tab_grid_dialog_recycler_view_container);
         mUngroupBar = findViewById(R.id.dialog_ungroup_bar);
         mUngroupBarTextView = mUngroupBar.findViewById(R.id.dialog_ungroup_bar_text);
+        mSendFeedbackButton = findViewById(R.id.send_feedback_button);
         mAnimationClip = findViewById(R.id.dialog_animation_clip);
         mBackgroundFrame = findViewById(R.id.dialog_frame);
         mBackgroundFrame.setLayoutParams(mContainerParams);
@@ -275,19 +295,23 @@ public class TabGridDialogView extends FrameLayout {
                         // logic to ScrimView so that it can be shared by all components using
                         // ScrimView.
                         clearBackgroundViewAccessibilityImportance();
+                        mSendFeedbackButton.setAlpha(1f);
                     }
                 };
         mHideDialogAnimationListener =
                 new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationStart(Animator animator) {
+                        mSendFeedbackButton.setAlpha(0f);
+                    }
+
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         setVisibility(View.GONE);
                         mCurrentDialogAnimator = null;
                         mDialogContainerView.clearFocus();
                         restoreBackgroundViewAccessibilityImportance();
-                        if (mVisibilityListener != null) {
-                            mVisibilityListener.finishedHidingDialogView();
-                        }
+                        notifyVisibilityListenerOnHide();
                     }
                 };
 
@@ -340,13 +364,20 @@ public class TabGridDialogView extends FrameLayout {
     }
 
     private void clearBackgroundViewAccessibilityImportance() {
-        assert mAccessibilityImportanceMap.size() == 0;
-
+        assert mAccessibilityImportanceMap.isEmpty();
         ViewGroup parent = (ViewGroup) getParent();
-        for (int i = 0; i < parent.getChildCount(); i++) {
-            View view = parent.getChildAt(i);
-            if (view == TabGridDialogView.this) {
-                continue;
+        ViewGroup grandparent = parent == null ? null : (ViewGroup) parent.getParent();
+        // Fix for crbug.com/424865865, this can happen if the animation is forced to finish before
+        // it is attached to the view hierarchy after which the view is dismissed anyways.
+        if (parent == null || grandparent == null) return;
+
+        for (int i = 0; i < grandparent.getChildCount(); i++) {
+            View view = grandparent.getChildAt(i);
+            if (view == parent) {
+                // Views earlier than us in the child list draw below us. We occlude them, and we
+                // need to turn off their accessibility focus. Views that come after us, like bottom
+                // sheet, may occlude us, and we should not turn off their accessibility focus.
+                break;
             }
             mAccessibilityImportanceMap.put(view, view.getImportantForAccessibility());
             view.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
@@ -355,21 +386,41 @@ public class TabGridDialogView extends FrameLayout {
 
     private void restoreBackgroundViewAccessibilityImportance() {
         ViewGroup parent = (ViewGroup) getParent();
-        for (int i = 0; i < parent.getChildCount(); i++) {
-            View view = parent.getChildAt(i);
-            if (view == TabGridDialogView.this) {
-                continue;
+        ViewGroup grandparent = parent == null ? null : (ViewGroup) parent.getParent();
+        // Fix for crbug.com/424749240, this can happen if the animation is forced to finish before
+        // it is attached to the view hierarchy after which the view is dismissed anyways.
+        if (parent == null || grandparent == null) {
+            for (View view : mAccessibilityImportanceMap.keySet()) {
+                view.setImportantForAccessibility(mAccessibilityImportanceMap.get(view));
             }
-            assert mAccessibilityImportanceMap.containsKey(view);
-            Integer importance = mAccessibilityImportanceMap.get(view);
-            view.setImportantForAccessibility(
-                    importance == null ? IMPORTANT_FOR_ACCESSIBILITY_AUTO : importance);
+        } else {
+            for (int i = 0; i < grandparent.getChildCount(); i++) {
+                View view = grandparent.getChildAt(i);
+                if (view == parent) break;
+
+                setImportance(view, mAccessibilityImportanceMap.get(view));
+            }
         }
         mAccessibilityImportanceMap.clear();
     }
 
+    private static void setImportance(View view, @Nullable Integer importance) {
+        view.setImportantForAccessibility(
+                importance == null ? IMPORTANT_FOR_ACCESSIBILITY_AUTO : importance);
+    }
+
     void setVisibilityListener(VisibilityListener visibilityListener) {
+        // Treat the old visibility listener as if it is hiding as it no longer controls the View so
+        // it is effectively hidden.
+        notifyVisibilityListenerOnHide();
+
         mVisibilityListener = visibilityListener;
+    }
+
+    private void notifyVisibilityListenerOnHide() {
+        if (mVisibilityListener != null) {
+            mVisibilityListener.finishedHidingDialogView();
+        }
     }
 
     void setupDialogAnimation(View sourceView) {
@@ -400,14 +451,14 @@ public class TabGridDialogView extends FrameLayout {
         mItemView.getGlobalVisibleRect(rect);
         // Offset for status bar (top) and nav bar when landscape (left).
         Rect dialogParentRect = new Rect();
-        mParent.getGlobalVisibleRect(dialogParentRect);
+        assumeNonNull(mParent).getGlobalVisibleRect(dialogParentRect);
         rect.offset(-dialogParentRect.left, -dialogParentRect.top);
         // Setup a stand-in animation card that looks the same as the original tab grid card for
         // animation.
         updateAnimationCardView(mItemView);
 
         // Calculate dialog size.
-        int dialogHeight = mParentHeight - 2 * mTopMargin;
+        int dialogHeight = mParentHeight - mTopMargin - mBottomMargin;
         int dialogWidth = mParentWidth - 2 * mSideMargin;
 
         // Calculate a clip mask to avoid any source view that is not fully visible from drawing
@@ -586,6 +637,21 @@ public class TabGridDialogView extends FrameLayout {
                 .with(frameZoomOutScaleYAnimator)
                 .with(frameZoomOutScaleXAnimator);
 
+        int endRadius =
+                mContext.getResources().getDimensionPixelSize(R.dimen.tab_grid_dialog_bg_radius);
+        int[] endRadii = new int[4];
+        int[] startRadii = new int[4];
+
+        Arrays.fill(endRadii, endRadius);
+        Arrays.fill(startRadii, (int) (endRadius * cardScale));
+
+        // While background frame is zooming out, the corners scale down along with the animation.
+        final ValueAnimator frameZoomOutCornerAnimator =
+                RoundedCornerAnimatorUtil.createRoundedCornerAnimator(
+                        mBackgroundFrame, startRadii, endRadii);
+        frameZoomOutCornerAnimator.setDuration(DIALOG_ANIMATION_DURATION);
+        frameZoomOutCornerAnimator.setInterpolator(Interpolators.EMPHASIZED);
+
         // After the dialog showing animation starts, the original card in grid tab switcher fades
         // out.
         final ObjectAnimator tabFadeOutAnimator =
@@ -632,6 +698,7 @@ public class TabGridDialogView extends FrameLayout {
                 .play(cardZoomOutAnimatorSet)
                 .with(cardZoomOutAlphaAnimator)
                 .with(frameZoomOutAnimatorSet)
+                .with(frameZoomOutCornerAnimator)
                 .with(dialogZoomOutAnimatorSet)
                 .with(dialogZoomOutAlphaAnimator)
                 .with(tabFadeOutAnimator);
@@ -727,8 +794,7 @@ public class TabGridDialogView extends FrameLayout {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         // At the end of the hiding animation, reset the alpha of animation related
-                        // views to
-                        // 0.
+                        // views to 0.
                         mBackgroundFrame.setAlpha(0f);
                         mAnimationCardView.setAlpha(0f);
                     }
@@ -766,6 +832,13 @@ public class TabGridDialogView extends FrameLayout {
                     }
                 });
 
+        // While background frame is zooming in, the corners scale up along with the animation.
+        final ValueAnimator frameZoomInCornerAnimator =
+                RoundedCornerAnimatorUtil.createRoundedCornerAnimator(
+                        mBackgroundFrame, endRadii, startRadii);
+        frameZoomOutCornerAnimator.setDuration(DIALOG_ANIMATION_DURATION);
+        frameZoomOutCornerAnimator.setInterpolator(Interpolators.EMPHASIZED);
+
         // At the end of the dialog hiding animation, the original tab grid card fades in.
         final ObjectAnimator tabFadeInAnimator =
                 ObjectAnimator.ofFloat(mItemView, View.ALPHA, 0f, 1f);
@@ -778,6 +851,7 @@ public class TabGridDialogView extends FrameLayout {
                 .play(dialogZoomInAnimatorSet)
                 .with(dialogZoomInAlphaAnimator)
                 .with(frameZoomInAnimatorSet)
+                .with(frameZoomInCornerAnimator)
                 .with(cardZoomInAnimatorSet)
                 .with(cardZoomInAlphaAnimator)
                 .with(tabFadeInAnimator);
@@ -789,15 +863,36 @@ public class TabGridDialogView extends FrameLayout {
         Resources res = mContext.getResources();
         int minMargin = res.getDimensionPixelSize(R.dimen.tab_grid_dialog_min_margin);
         int maxMargin = res.getDimensionPixelSize(R.dimen.tab_grid_dialog_max_margin);
+        int sideMargin;
+        int topMargin;
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            mSideMargin = minMargin;
-            mTopMargin = clampMargin(Math.round(mParentHeight * 0.1f), minMargin, maxMargin);
+            sideMargin = minMargin;
+            topMargin =
+                    clampMargin(
+                            Math.round(mParentHeight * 0.1f) + mAppHeaderHeight,
+                            minMargin,
+                            maxMargin);
         } else {
-            mSideMargin = clampMargin(Math.round(mParentWidth * 0.1f), minMargin, maxMargin);
-            mTopMargin = minMargin;
+            sideMargin = clampMargin(Math.round(mParentWidth * 0.1f), minMargin, maxMargin);
+            topMargin = clampMargin(minMargin + mAppHeaderHeight, minMargin, maxMargin);
         }
-        mContainerParams.setMargins(mSideMargin, mTopMargin, mSideMargin, mTopMargin);
-        mOrientation = orientation;
+        int bottomMargin;
+        if (mSendFeedbackButton.getVisibility() == View.VISIBLE) {
+            int minBottomMarginWithFab =
+                    res.getDimensionPixelSize(R.dimen.tab_grid_dialog_min_bottom_margin_with_fab);
+            bottomMargin = Math.max(topMargin, minBottomMarginWithFab);
+        } else {
+            bottomMargin = topMargin;
+        }
+
+        if (mSideMargin != sideMargin || mTopMargin != topMargin || mBottomMargin != bottomMargin) {
+            mSideMargin = sideMargin;
+            mTopMargin = topMargin;
+            mBottomMargin = bottomMargin;
+            mContainerParams.setMargins(mSideMargin, mTopMargin, mSideMargin, mBottomMargin);
+            // Set params to force requestLayout() to reflect margin immediately.
+            mDialogContainerView.setLayoutParams(mContainerParams);
+        }
     }
 
     private int clampMargin(int sizeAdjustedValue, int lowerBound, int upperBound) {
@@ -807,7 +902,12 @@ public class TabGridDialogView extends FrameLayout {
         return MathUtils.clamp(sizeAdjustedValue, lowerBound, upperBound);
     }
 
-    private void updateAnimationCardView(View view) {
+    void setAppHeaderHeight(int height) {
+        mAppHeaderHeight = height;
+        updateDialogWithOrientation(getOrientation());
+    }
+
+    private void updateAnimationCardView(@Nullable View view) {
         View animationCard = mAnimationCardView;
         TextView cardTitle = animationCard.findViewById(R.id.tab_title);
         ImageView cardFavicon = animationCard.findViewById(R.id.tab_favicon);
@@ -838,14 +938,33 @@ public class TabGridDialogView extends FrameLayout {
 
         // Sometimes we get clip artifacting when sharing a drawable, unclear why, so make a copy.
         Drawable backgroundCopy =
-                view.findViewById(R.id.card_view).getBackground().getConstantState().newDrawable();
+                assumeNonNull(view.findViewById(R.id.card_view).getBackground().getConstantState())
+                        .newDrawable();
         animationCard.findViewById(R.id.card_view).setBackground(backgroundCopy);
 
         Drawable faviconDrawable = ((ImageView) view.findViewById(R.id.tab_favicon)).getDrawable();
-        cardFavicon.setImageDrawable(faviconDrawable);
         if (faviconDrawable != null) {
-            int padding = (int) TabUiThemeProvider.getTabCardTopFaviconPadding(mContext);
-            cardFavicon.setPadding(padding, padding, padding, padding);
+            cardFavicon.setImageDrawable(faviconDrawable);
+        } else {
+            // In the event the we are unable to draw anything below, draw nothing.
+            cardFavicon.setImageDrawable(null);
+
+            // Draw the tab group color dot to the bitmap and put it in the favicon container as it
+            // isn't possible to clone the whole view.
+            FrameLayout containerView = view.findViewById(R.id.tab_group_color_view_container);
+            int childCount = containerView.getChildCount();
+            if (childCount != 0) {
+                assert childCount == 1;
+                View v = containerView.getChildAt(0);
+                int width = v.getWidth();
+                int height = v.getHeight();
+                if (width != 0 && height != 0) {
+                    Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+                    Canvas canvas = new Canvas(bitmap);
+                    v.draw(canvas);
+                    cardFavicon.setImageBitmap(bitmap);
+                }
+            }
         }
 
         cardTitle.setText(viewTitle.getText());
@@ -873,19 +992,30 @@ public class TabGridDialogView extends FrameLayout {
      * @param scrimClickRunnable The {@link Runnable} that runs when scrim view is clicked.
      */
     void setScrimClickRunnable(Runnable scrimClickRunnable) {
+        assumeNonNull(mScrimManager);
+        boolean isVisible = getVisibility() == View.VISIBLE;
+        if (mScrimPropertyModel != null && isVisible) {
+            mScrimManager.hideScrim(mScrimPropertyModel, /* animate= */ true);
+        }
+        // Use the grandparent as the custom parent. This view is hosted in a container and its
+        // parent is where we want the scrim.
+        ViewGroup parent = (ViewGroup) getParent();
+        ViewGroup customParent = parent == null ? null : (ViewGroup) parent.getParent();
         mScrimPropertyModel =
                 new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
                         .with(ScrimProperties.ANCHOR_VIEW, mDialogContainerView)
-                        .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, false)
+                        .with(ScrimProperties.CUSTOM_PARENT, customParent)
                         .with(ScrimProperties.AFFECTS_STATUS_BAR, true)
-                        .with(ScrimProperties.TOP_MARGIN, 0)
                         .with(ScrimProperties.CLICK_DELEGATE, scrimClickRunnable)
                         .with(ScrimProperties.AFFECTS_NAVIGATION_BAR, true)
                         .build();
+        if (isVisible) {
+            mScrimManager.showScrim(mScrimPropertyModel);
+        }
     }
 
-    void setupScrimCoordinator(ScrimCoordinator scrimCoordinator) {
-        mScrimCoordinator = scrimCoordinator;
+    void setupScrimManager(ScrimManager scrimManager) {
+        mScrimManager = scrimManager;
     }
 
     /**
@@ -903,38 +1033,38 @@ public class TabGridDialogView extends FrameLayout {
         recyclerView.setVisibility(View.VISIBLE);
     }
 
-    void refreshScrim() {
-        assert mScrimCoordinator != null && mScrimPropertyModel != null;
-        mScrimCoordinator.showScrim(mScrimPropertyModel);
-    }
-
     /** Show {@link PopupWindow} for dialog with animation. */
     void showDialog() {
+        if (getVisibility() == VISIBLE) return;
+
         if (mCurrentDialogAnimator != null && mCurrentDialogAnimator != mShowDialogAnimation) {
             mCurrentDialogAnimator.end();
         }
         mCurrentDialogAnimator = mShowDialogAnimation;
-        assert mScrimCoordinator != null && mScrimPropertyModel != null;
-        mScrimCoordinator.showScrim(mScrimPropertyModel);
+
+        assert mScrimManager != null && mScrimPropertyModel != null;
+        mScrimManager.showScrim(mScrimPropertyModel);
+
         setVisibility(View.VISIBLE);
         mShowDialogAnimation.start();
     }
 
     /** Hide {@link PopupWindow} for dialog with animation. */
     void hideDialog() {
-        // Skip the hideDialog call caused by initializing the dialog visibility as false.
         if (getVisibility() != VISIBLE) return;
 
-        assert mScrimCoordinator != null && mScrimPropertyModel != null;
         if (mCurrentDialogAnimator != null && mCurrentDialogAnimator != mHideDialogAnimation) {
             mCurrentDialogAnimator.end();
         }
         mCurrentDialogAnimator = mHideDialogAnimation;
-        if (mScrimCoordinator.isShowingScrim()) {
+
+        assert mScrimManager != null && mScrimPropertyModel != null;
+        if (mScrimManager.isShowingScrim()) {
             if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
-                mScrimCoordinator.hideScrim(true, SCRIM_FADE_DURATION_MS);
+                mScrimManager.hideScrim(
+                        mScrimPropertyModel, /* animate= */ true, SCRIM_FADE_DURATION_MS);
             } else {
-                mScrimCoordinator.hideScrim(true);
+                mScrimManager.hideScrim(mScrimPropertyModel, /* animate= */ true);
             }
         }
         mHideDialogAnimation.start();
@@ -992,7 +1122,7 @@ public class TabGridDialogView extends FrameLayout {
     void updateDialogContainerBackgroundColor(int backgroundColor) {
         mBackgroundDrawableColor = backgroundColor;
         DrawableCompat.setTint(mDialogContainerView.getBackground(), backgroundColor);
-        DrawableCompat.setTint(mBackgroundFrame.getBackground(), backgroundColor);
+        mBackgroundFrame.setRoundedFillColor(backgroundColor);
     }
 
     void updateHairlineColor(@ColorInt int hairlineColor) {
@@ -1000,20 +1130,7 @@ public class TabGridDialogView extends FrameLayout {
     }
 
     void setHairlineVisibility(boolean visible) {
-        mHairline.setVisibility(visible ? View.VISIBLE : View.GONE);
-    }
-
-    /**
-     * Updates the background color for the animation card.
-     *
-     * @param colorInt The new color to use.
-     */
-    void updateAnimationBackgroundColor(@ColorInt int colorInt) {
-        assert TabUiFeatureUtilities.shouldUseListMode();
-        updateAnimationCardView(null);
-        Drawable animationBackground =
-                mAnimationCardView.findViewById(R.id.card_view).getBackground();
-        DrawableCompat.setTint(animationBackground, colorInt);
+        mHairline.setVisibility(visible ? VISIBLE : GONE);
     }
 
     /**
@@ -1054,20 +1171,30 @@ public class TabGridDialogView extends FrameLayout {
         return mSnackBarContainer;
     }
 
-    void setBindingToken(Integer bindingToken) {
-        assert mBindingToken == null || bindingToken == null;
-        mBindingToken = bindingToken;
+    /**
+     * Update the visibility of the send feedback button, its alpha may still be overridden during
+     * animations.
+     */
+    void setSendFeedbackVisible(boolean visible) {
+        mSendFeedbackButton.setVisibility(visible ? VISIBLE : GONE);
+        updateDialogWithOrientation(getOrientation());
     }
 
-    Integer getBindingToken() {
-        return mBindingToken;
+    /** Sets an {@link Runnable} to be invoked when the feedback button is clicked. */
+    void setSendFeedbackRunnable(@Nullable Runnable r) {
+        mSendFeedbackButton.setOnClickListener(
+                unused -> {
+                    if (r == null) return;
+
+                    r.run();
+                });
     }
 
-    Animator getCurrentDialogAnimatorForTesting() {
+    @Nullable Animator getCurrentDialogAnimatorForTesting() {
         return mCurrentDialogAnimator;
     }
 
-    Animator getCurrentUngroupBarAnimatorForTesting() {
+    @Nullable Animator getCurrentUngroupBarAnimatorForTesting() {
         return mCurrentUngroupBarAnimator;
     }
 
@@ -1104,11 +1231,15 @@ public class TabGridDialogView extends FrameLayout {
         ResettersForTesting.register(() -> sSourceRectCallbackForTesting = null);
     }
 
-    ScrimCoordinator getScrimCoordinatorForTesting() {
-        return mScrimCoordinator;
+    @Nullable ScrimView getScrimViewForTesting() {
+        return assumeNonNull(mScrimManager).getViewForTesting(mScrimPropertyModel);
     }
 
-    VisibilityListener getVisibilityListenerForTesting() {
+    @Nullable VisibilityListener getVisibilityListenerForTesting() {
         return mVisibilityListener;
+    }
+
+    int getAppHeaderHeightForTesting() {
+        return mAppHeaderHeight;
     }
 }

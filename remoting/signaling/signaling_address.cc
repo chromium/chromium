@@ -57,7 +57,7 @@ SignalingAddress::SignalingAddress(const std::string& address) {
       DCHECK(!id_.empty()) << "Missing signaling ID.";
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

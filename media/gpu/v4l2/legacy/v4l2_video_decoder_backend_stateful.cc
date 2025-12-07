@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/v4l2/legacy/v4l2_video_decoder_backend_stateful.h"
 
 #include <cstddef>
@@ -35,7 +40,7 @@ namespace {
 bool IsVp9KSVCStream(VideoCodecProfile profile,
                      const DecoderBuffer& decoder_buffer) {
   return VideoCodecProfileToVideoCodec(profile) == VideoCodec::kVP9 &&
-         decoder_buffer.has_side_data() &&
+         decoder_buffer.side_data() &&
          !decoder_buffer.side_data()->spatial_layers.empty();
 }
 
@@ -227,12 +232,12 @@ void V4L2StatefulVideoDecoderBackend::DoDecodeWork() {
   DCHECK(current_decode_request_.has_value());
   DCHECK(current_input_buffer_.has_value());
 
-  const DecoderBuffer* current_buffer = current_decode_request_->buffer.get();
-  DCHECK_LT(current_decode_request_->bytes_used, current_buffer->size());
-  const uint8_t* const data =
-      current_buffer->data() + current_decode_request_->bytes_used;
-  const size_t data_size =
-      current_buffer->size() - current_decode_request_->bytes_used;
+  DCHECK_LT(current_decode_request_->bytes_used,
+            current_decode_request_->buffer.get()->size());
+  auto current_buffer_span = base::span(*current_decode_request_->buffer.get())
+                                 .subspan(current_decode_request_->bytes_used);
+  const uint8_t* const data = current_buffer_span.data();
+  const size_t data_size = current_buffer_span.size();
   size_t bytes_to_copy = 0;
 
   if (!frame_splitter_->AdvanceFrameFragment(data, data_size, &bytes_to_copy)) {
@@ -347,8 +352,7 @@ void V4L2StatefulVideoDecoderBackend::EnqueueOutputBuffers() {
         if (!frame) {
           return;
         }
-        buffer =
-            output_queue_->GetFreeBufferForFrame(frame->GetSharedMemoryId());
+        buffer = output_queue_->GetFreeBufferForFrame(frame->tracking_token());
         if (!buffer) {
           no_buffer = true;
           break;
@@ -359,7 +363,7 @@ void V4L2StatefulVideoDecoderBackend::EnqueueOutputBuffers() {
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     // Running out of V4L2 buffers is not an error, so just exit the loop
@@ -476,7 +480,7 @@ void V4L2StatefulVideoDecoderBackend::OnOutputBufferDequeued(
         frame = buffer->GetFrameResource();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     const base::TimeDelta timestamp = base::TimeDelta::FromTimeSpec(timespec);
@@ -755,12 +759,9 @@ bool V4L2StatefulVideoDecoderBackend::IsSupportedProfile(
   DCHECK(device_);
   if (supported_profiles_.empty()) {
     const std::vector<uint32_t> kSupportedInputFourccs = {
-      V4L2_PIX_FMT_H264,
-#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-      V4L2_PIX_FMT_HEVC,
-#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-      V4L2_PIX_FMT_VP8,
-      V4L2_PIX_FMT_VP9,
+        V4L2_PIX_FMT_H264,
+        V4L2_PIX_FMT_VP8,
+        V4L2_PIX_FMT_VP9,
     };
     auto device = base::MakeRefCounted<V4L2Device>();
     VideoDecodeAccelerator::SupportedProfiles profiles =

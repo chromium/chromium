@@ -9,7 +9,9 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -32,6 +34,9 @@ class TestInterceptablePrefFilter final : public InterceptablePrefFilter {
         .Run(std::move(pref_store_contents), prefs_altered);
   }
 
+  void SetPrefService(PrefService* pref_service) override {}
+  void OnEncryptorReceived(os_crypt_async::Encryptor encryptor) override {}
+
   base::WeakPtr<InterceptablePrefFilter> AsWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -52,6 +57,7 @@ void DeleteFilter(std::unique_ptr<TestInterceptablePrefFilter>* filter,
 }
 
 TEST(InterceptablePrefFilterTest, CallbackDeletes) {
+  base::test::TaskEnvironment task_environment;
   auto filter = std::make_unique<TestInterceptablePrefFilter>();
   filter->InterceptNextFilterOnLoad(base::BindOnce(&NoOpIntercept));
   filter->FilterOnLoad(base::BindOnce(&DeleteFilter, &filter),

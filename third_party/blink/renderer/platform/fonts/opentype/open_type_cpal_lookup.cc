@@ -69,9 +69,10 @@ Vector<Color> OpenTypeCpalLookup::RetrieveColorRecords(
   }
   Vector<Color> color_records(num_colors);
   for (unsigned i = 0; i < num_colors; i++) {
-    color_records[i] =
-        Color(hb_color_get_red(colors[i]), hb_color_get_green(colors[i]),
-              hb_color_get_blue(colors[i]), hb_color_get_alpha(colors[i]));
+    color_records[i] = Color(hb_color_get_red(UNSAFE_TODO(colors[i])),
+                             hb_color_get_green(UNSAFE_TODO(colors[i])),
+                             hb_color_get_blue(UNSAFE_TODO(colors[i])),
+                             hb_color_get_alpha(UNSAFE_TODO(colors[i])));
   }
   return color_records;
 }

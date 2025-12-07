@@ -10,7 +10,7 @@
 
   readonly attribute NavigationType navigationType;
   readonly attribute NavigationDestination destination;
-  [ImplementedAs=canIntercept] readonly attribute boolean canTransition;
+  [ImplementedAs=canIntercept, RuntimeEnabled=NavigateEventCanTransition] readonly attribute boolean canTransition;
   readonly attribute boolean canIntercept;
   readonly attribute boolean userInitiated;
   readonly attribute boolean hashChange;
@@ -22,6 +22,5 @@
   [RuntimeEnabled=NavigateEventSourceElement] readonly attribute Element? sourceElement;
 
   [RaisesException] void intercept(optional NavigationInterceptOptions options = {});
-  [RaisesException, RuntimeEnabled=NavigateEventCommitBehavior] void commit();
   [RaisesException] void scroll();
 };

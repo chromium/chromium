@@ -5,5 +5,5 @@
 import("//build/config/android/rules.gni")
 
 java_prebuilt("error_prone_javac_java") {
-  jar_path = "cipd/error_prone_core.jar"
+  jar_path = "cipd/javac.jar"
 }

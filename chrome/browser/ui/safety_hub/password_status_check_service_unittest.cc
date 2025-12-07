@@ -9,12 +9,14 @@
 
 #include "base/json/values_util.h"
 #include "base/location.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_result.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_prefs.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/branded_strings.h"
@@ -25,6 +27,7 @@
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/safety_check/features.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
@@ -108,6 +111,13 @@ class PasswordStatusCheckServiceBaseTest : public testing::Test {
 
   void UpdateInsecureCredentials() {
     service()->UpdateInsecureCredentialCountAsync();
+    RunUntilIdle();
+  }
+
+  void AdvanceClockForWeakAndReusedChecks() {
+    // Weak and reuse passwords are not detected while adding password. Travel
+    // in time one day to let weak and reuse checks run.
+    task_environment()->AdvanceClock(base::Days(1));
     RunUntilIdle();
   }
 
@@ -304,8 +314,8 @@ TEST_P(PasswordStatusCheckServiceParameterizedIssueTest,
     profile_store().AddLogin(reused_form_1);
     profile_store().AddLogin(reused_form_2);
   }
-  RunUntilIdle();
 
+  AdvanceClockForWeakAndReusedChecks();
   // Service is able to pick up on the new password issues automatically.
   EXPECT_EQ(service()->weak_credential_count(), include_weak() ? 1UL : 0UL);
   EXPECT_EQ(service()->compromised_credential_count(),
@@ -317,8 +327,8 @@ TEST_P(PasswordStatusCheckServiceParameterizedIssueTest,
   profile_store().RemoveLogin(FROM_HERE, leaked_form);
   profile_store().RemoveLogin(FROM_HERE, reused_form_1);
   profile_store().RemoveLogin(FROM_HERE, reused_form_2);
-  RunUntilIdle();
 
+  AdvanceClockForWeakAndReusedChecks();
   EXPECT_EQ(service()->weak_credential_count(), 0UL);
   EXPECT_EQ(service()->compromised_credential_count(), 0UL);
   EXPECT_EQ(service()->reused_credential_count(), 0UL);
@@ -328,18 +338,18 @@ TEST_P(PasswordStatusCheckServiceParameterizedIssueTest,
 TEST_P(PasswordStatusCheckServiceParameterizedStoreTest,
        DetectChangingWeakPassword) {
   password_store().AddLogin(MakeForm(kUsername1, kWeakPassword, kOrigin1));
-  RunUntilIdle();
+  AdvanceClockForWeakAndReusedChecks();
   EXPECT_EQ(service()->weak_credential_count(), 1UL);
 
   // When changing the password for this credential from the weak password to a
   // stronger password, it is no longer counted as weak.
   password_store().UpdateLogin(MakeForm(kUsername1, kPassword, kOrigin1));
-  RunUntilIdle();
+  AdvanceClockForWeakAndReusedChecks();
   EXPECT_EQ(service()->weak_credential_count(), 0UL);
 
   // When the strong password changes to a weak one is is counted as such.
   password_store().UpdateLogin(MakeForm(kUsername1, kWeakPassword, kOrigin1));
-  RunUntilIdle();
+  AdvanceClockForWeakAndReusedChecks();
   EXPECT_EQ(service()->weak_credential_count(), 1UL);
 }
 
@@ -366,17 +376,17 @@ TEST_P(PasswordStatusCheckServiceParameterizedStoreTest,
   // Two credentials share the same password. The service counts them as reused.
   password_store().AddLogin(MakeForm(kUsername3, kPassword, kOrigin1));
   password_store().AddLogin(MakeForm(kUsername4, kPassword, kOrigin2));
-  RunUntilIdle();
+  AdvanceClockForWeakAndReusedChecks();
   EXPECT_EQ(service()->reused_credential_count(), 2UL);
 
   // After changing one the reused passwords, there are now 0.
   password_store().UpdateLogin(MakeForm(kUsername3, kPassword2, kOrigin1));
-  RunUntilIdle();
+  AdvanceClockForWeakAndReusedChecks();
   EXPECT_EQ(service()->reused_credential_count(), 0UL);
 
   // Changing a password to be the same as an existing one should be picked up.
   password_store().UpdateLogin(MakeForm(kUsername4, kPassword2, kOrigin2));
-  RunUntilIdle();
+  AdvanceClockForWeakAndReusedChecks();
   EXPECT_EQ(service()->reused_credential_count(), 2UL);
 }
 
@@ -412,7 +422,8 @@ TEST_F(PasswordStatusCheckServiceBaseTest,
   RunUntilIdle();
 }
 
-TEST_F(PasswordStatusCheckServiceBaseTest, PasswordCheck_FindCompromised) {
+TEST_F(PasswordStatusCheckServiceBaseTest,
+       DISABLED_PasswordCheck_FindCompromised) {
   identity_test_env().MakePrimaryAccountAvailable(
       kTestEmail, signin::ConsentLevel::kSignin);
 
@@ -441,7 +452,7 @@ TEST_F(PasswordStatusCheckServiceBaseTest, PasswordCheck_FindCompromised) {
   EXPECT_EQ(service()->compromised_credential_count(), 1UL);
 }
 
-TEST_F(PasswordStatusCheckServiceBaseTest, PasswordCheck_Error) {
+TEST_F(PasswordStatusCheckServiceBaseTest, DISABLED_PasswordCheck_Error) {
   identity_test_env().MakePrimaryAccountAvailable(
       kTestEmail, signin::ConsentLevel::kSignin);
   profile_store().AddLogin(MakeForm(kUsername1, kPassword, kOrigin1));
@@ -453,6 +464,7 @@ TEST_F(PasswordStatusCheckServiceBaseTest, PasswordCheck_Error) {
 
   task_environment()->AdvanceClock(
       service()->GetScheduledPasswordCheckInterval());
+  RunUntilIdle();
 
   EXPECT_CALL(observer, OnStateChanged(BulkLeakCheckService::State::kRunning));
   EXPECT_CALL(observer,
@@ -472,7 +484,7 @@ TEST_F(PasswordStatusCheckServiceBaseTest, PrefInitialized) {
       safety_hub_prefs::kBackgroundPasswordCheckTimeAndInterval));
 
   EXPECT_EQ(service()->GetScheduledPasswordCheckInterval(),
-            features::kBackgroundPasswordCheckInterval.Get());
+            safety_check::features::kBackgroundPasswordCheckInterval.Get());
 
   EXPECT_GE(service()->GetScheduledPasswordCheckTime(), base::Time::Now());
   EXPECT_LT(service()->GetScheduledPasswordCheckTime(),
@@ -484,9 +496,10 @@ TEST_F(PasswordStatusCheckServiceBaseTest, PrefInitialized) {
 TEST_F(PasswordStatusCheckServiceBaseTest, CheckTimeUpdatedOnIntervalChange) {
   base::test::ScopedFeatureList feature_list;
   base::FieldTrialParams params_before;
-  params_before[features::kBackgroundPasswordCheckInterval.name] = "10d";
-  feature_list.InitAndEnableFeatureWithParameters(features::kSafetyHub,
-                                                  params_before);
+  params_before[safety_check::features::kBackgroundPasswordCheckInterval.name] =
+      "10d";
+  feature_list.InitAndEnableFeatureWithParameters(
+      safety_check::features::kSafetyHub, params_before);
 
   service()->StartRepeatedUpdates();
 
@@ -495,10 +508,11 @@ TEST_F(PasswordStatusCheckServiceBaseTest, CheckTimeUpdatedOnIntervalChange) {
   base::Time check_time_before = service()->GetScheduledPasswordCheckTime();
 
   base::FieldTrialParams params_after;
-  params_after[features::kBackgroundPasswordCheckInterval.name] = "20d";
+  params_after[safety_check::features::kBackgroundPasswordCheckInterval.name] =
+      "20d";
   feature_list.Reset();
-  feature_list.InitAndEnableFeatureWithParameters(features::kSafetyHub,
-                                                  params_after);
+  feature_list.InitAndEnableFeatureWithParameters(
+      safety_check::features::kSafetyHub, params_after);
 
   service()->StartRepeatedUpdates();
 
@@ -555,7 +569,7 @@ TEST_F(PasswordStatusCheckServiceBaseTest,
   // If the scheduled check time is in the past, it should run within the
   // overdue interval.
   task_environment()->AdvanceClock(
-      features::kPasswordCheckOverdueInterval.Get());
+      safety_check::features::kPasswordCheckOverdueInterval.Get());
   RunUntilIdle();
 
   // After password check is completed, the next one should be scheduled.
@@ -581,7 +595,7 @@ TEST_F(PasswordStatusCheckServiceBaseTest,
   // If the scheduled check time is in the past, it should run within the
   // overdue interval.
   task_environment()->AdvanceClock(
-      features::kPasswordCheckOverdueInterval.Get());
+      safety_check::features::kPasswordCheckOverdueInterval.Get());
   RunUntilIdle();
 
   // After password check is completed, the next one should be scheduled.
@@ -609,16 +623,91 @@ TEST_F(PasswordStatusCheckServiceBaseTest, ScheduledCheckRunsRepeatedly) {
   }
 }
 
+TEST_F(PasswordStatusCheckServiceBaseTest, WeakAndReusesCheckRunningDaily) {
+  // Check that there is no weak or reused passwords.
+  ASSERT_EQ(0UL, service()->weak_credential_count());
+  ASSERT_EQ(0UL, service()->reused_credential_count());
+
+  // Add a weak password.
+  profile_store().AddLogin(WeakForm());
+
+  // Weak passwords should not be flagged yet, as the weak check did not run.
+  ASSERT_EQ(0UL, service()->weak_credential_count());
+  ASSERT_EQ(0UL, service()->reused_credential_count());
+
+  AdvanceClockForWeakAndReusedChecks();
+  // Weak password should be detected.
+  ASSERT_EQ(1UL, service()->weak_credential_count());
+  ASSERT_EQ(0UL, service()->reused_credential_count());
+
+  // Add two reused passwords.
+  profile_store().AddLogin(ReusedForm1());
+  profile_store().AddLogin(ReusedForm2());
+
+  AdvanceClockForWeakAndReusedChecks();
+  // Reused passwords should be detected.
+  ASSERT_EQ(1UL, service()->weak_credential_count());
+  ASSERT_EQ(2UL, service()->reused_credential_count());
+}
+
+TEST_F(PasswordStatusCheckServiceBaseTest, IgnoredCompromisedPasswords) {
+  // Check that there is no compromised passwords.
+  ASSERT_EQ(0UL, service()->compromised_credential_count());
+
+  // Check a compromised password is detected.
+  profile_store().AddLogin(MakeForm(kUsername1, kPassword, kOrigin1, true));
+  AdvanceClockForWeakAndReusedChecks();
+  ASSERT_EQ(1UL, service()->compromised_credential_count());
+
+  // Check leaked but muted password is not detected.
+  PasswordForm leaked_muted_form = MakeForm(kUsername1, kPassword, kOrigin2);
+  leaked_muted_form.password_issues.insert_or_assign(
+      password_manager::InsecureType::kLeaked,
+      password_manager::InsecurityMetadata(
+          base::Time::Now(), password_manager::IsMuted(true),
+          password_manager::TriggerBackendNotification(false)));
+  profile_store().AddLogin(leaked_muted_form);
+  AdvanceClockForWeakAndReusedChecks();
+  ASSERT_EQ(1UL, service()->compromised_credential_count());
+
+  // Check phished but muted password is not detected.
+  PasswordForm phished_muted_form = MakeForm(kUsername2, kPassword, kOrigin2);
+  phished_muted_form.password_issues.insert_or_assign(
+      password_manager::InsecureType::kPhished,
+      password_manager::InsecurityMetadata(
+          base::Time::Now(), password_manager::IsMuted(true),
+          password_manager::TriggerBackendNotification(false)));
+  profile_store().AddLogin(phished_muted_form);
+  AdvanceClockForWeakAndReusedChecks();
+  ASSERT_EQ(1UL, service()->compromised_credential_count());
+}
+
+TEST_F(PasswordStatusCheckServiceBaseTest, IgnoredSavedPasswords) {
+  // Check that there is no weak or reused passwords.
+  ASSERT_EQ(0UL, service()->weak_credential_count());
+
+  // Add a weak password.
+  profile_store().AddLogin(MakeForm(kUsername1, kWeakPassword, kOrigin1));
+  AdvanceClockForWeakAndReusedChecks();
+  ASSERT_EQ(1UL, service()->weak_credential_count());
+
+  // Add a federated weak password, this should be ignored.
+  PasswordForm federated_from = MakeForm(kUsername2, kWeakPassword, kOrigin1);
+  federated_from.federation_origin =
+      url::SchemeHostPort(GURL("https://idp.com"));
+  federated_from.password_value.clear();
+  federated_from.signon_realm = "federation://example.com/accounts.com";
+  federated_from.match_type = PasswordForm::MatchType::kExact;
+  profile_store().AddLogin(federated_from);
+  AdvanceClockForWeakAndReusedChecks();
+  ASSERT_EQ(1UL, service()->weak_credential_count());
+}
+
 TEST_P(PasswordStatusCheckServiceParameterizedCardTest, PasswordCardState) {
   // Setup test based on parameters.
   profile().GetPrefs()->SetBoolean(
       password_manager::prefs::kCredentialsEnableService,
       password_saving_allowed());
-  if (check_ran_previously()) {
-    profile().GetPrefs()->SetDouble(
-        password_manager::prefs::kLastTimePasswordCheckCompleted,
-        base::Time::Now().InSecondsFSinceUnixEpoch());
-  }
   if (include_safe_password()) {
     profile_store().AddLogin(MakeForm(kUsername1, kPassword, kOrigin1));
   }
@@ -632,7 +721,12 @@ TEST_P(PasswordStatusCheckServiceParameterizedCardTest, PasswordCardState) {
     profile_store().AddLogin(ReusedForm1());
     profile_store().AddLogin(ReusedForm2());
   }
-  RunUntilIdle();
+  AdvanceClockForWeakAndReusedChecks();
+  if (check_ran_previously()) {
+    profile().GetPrefs()->SetDouble(
+        password_manager::prefs::kLastTimePasswordCheckCompleted,
+        base::Time::Now().InSecondsFSinceUnixEpoch());
+  }
 
   size_t weak_count = service()->weak_credential_count();
   size_t compromised_count = service()->compromised_credential_count();
@@ -679,9 +773,22 @@ TEST_P(PasswordStatusCheckServiceParameterizedCardTest, PasswordCardState) {
     EXPECT_EQ(header, l10n_util::GetPluralStringFUTF16(
                           IDS_PASSWORD_MANAGER_UI_COMPROMISED_PASSWORDS_COUNT,
                           compromised_count));
+
+    // Check the subheader string (singular version).
     EXPECT_EQ(subheader,
-              l10n_util::GetStringUTF16(
-                  IDS_PASSWORD_MANAGER_UI_HAS_COMPROMISED_PASSWORDS));
+              l10n_util::GetPluralStringFUTF16(
+                  IDS_PASSWORD_MANAGER_UI_HAS_COMPROMISED_PASSWORDS, 1));
+    // Check the subheader string (plural version) by adding one more
+    // compromised password.
+    profile_store().AddLogin(MakeForm(kUsername3, kPassword, kOrigin2, true));
+    RunUntilIdle();
+    card = service()->GetPasswordCardData(signed_in());
+    subheader =
+        base::UTF8ToUTF16(*card.FindString(safety_hub::kCardSubheaderKey));
+    EXPECT_EQ(subheader,
+              l10n_util::GetPluralStringFUTF16(
+                  IDS_PASSWORD_MANAGER_UI_HAS_COMPROMISED_PASSWORDS, 2));
+
     EXPECT_EQ(state, static_cast<int>(SafetyHubCardState::kWarning));
     return;
   }
@@ -764,7 +871,7 @@ TEST_P(PasswordStatusCheckServiceParameterizedCardTest, PasswordCardState) {
     return;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 TEST_F(PasswordStatusCheckServiceBaseTest, PasswordCardCheckTime) {
@@ -805,7 +912,7 @@ TEST_F(PasswordStatusCheckServiceBaseTest, PasswordCardCheckTime) {
 
 TEST_P(PasswordStatusCheckServiceParameterizedStoreTest,
        ResultWhenChangingLeakedPassword) {
-  std::optional<std::unique_ptr<SafetyHubService::Result>> opt_old_result =
+  std::optional<std::unique_ptr<SafetyHubResult>> opt_old_result =
       service()->GetCachedResult();
   EXPECT_TRUE(opt_old_result.has_value());
   PasswordStatusCheckResult* old_result =
@@ -816,7 +923,7 @@ TEST_P(PasswordStatusCheckServiceParameterizedStoreTest,
   password_store().AddLogin(MakeForm(kUsername2, kPassword, kOrigin1, true));
   RunUntilIdle();
 
-  std::optional<std::unique_ptr<SafetyHubService::Result>> opt_new_result =
+  std::optional<std::unique_ptr<SafetyHubResult>> opt_new_result =
       service()->GetCachedResult();
   EXPECT_TRUE(opt_new_result.has_value());
   PasswordStatusCheckResult* new_result =
@@ -834,7 +941,7 @@ TEST_P(PasswordStatusCheckServiceParameterizedSchedulingTest,
   // Make the probabality of all other days 0, except the current week day.
   // Current week day should be selected to run the checks.
   feature_list.InitAndEnableFeatureWithParameters(
-      features::kSafetyHub,
+      safety_check::features::kSafetyHub,
       {
           {"password-check-sun-weight", GetWeightForDay(0)},
           {"password-check-mon-weight", GetWeightForDay(1)},

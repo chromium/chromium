@@ -33,6 +33,8 @@ class InstanceIDProfileService : public KeyedService {
       std::unique_ptr<InstanceIDDriver> instance_id_driver);
 
  private:
+  void Shutdown() override;
+
   // Private constructor used for tests only.
   explicit InstanceIDProfileService(
       std::unique_ptr<InstanceIDDriver> instance_id_driver);

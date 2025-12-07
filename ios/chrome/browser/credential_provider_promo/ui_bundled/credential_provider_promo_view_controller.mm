@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_view_controller.h"
 
 #import "base/values.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -15,6 +17,11 @@
 namespace {
 constexpr CGFloat kCustomSpacingAtTopIfNoNavigationBar = 24;
 constexpr CGFloat kCustomSpacingAfterImageWithoutAnimation = 0;
+// The image resource used in this promo has lots of blank space around it,
+// and a subtle drop shadow. Setting the spacing after the image to a negative
+// value reduces the extra padding allowing all the content to fit on the
+// screen.
+constexpr CGFloat kCustomSpacingAfterImageWithAnimation = -8;
 constexpr CGFloat kPreferredCornerRadius = 20;
 NSString* const kDarkModeAnimationSuffix = @"_darkmode";
 NSString* const kPasswordOptionsKeypath = @"text_password_options";
@@ -55,22 +62,11 @@ NSString* const kCredentialProviderPromoAccessibilityId =
   }
   [self configureAlertScreen];
   [self layoutAlertScreen];
-}
 
-// Called when the device is rotated or dark mode is enabled/disabled. (Un)Hide
-// the animations accordingly.
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  BOOL darkModeEnabled =
-      (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
-  BOOL hidden = ![self shouldShowAnimation];
-
-  self.animationViewWrapper.animationView.hidden = hidden || darkModeEnabled;
-  self.animationViewWrapperDarkMode.animationView.hidden =
-      hidden || !darkModeEnabled;
-
-  [self updateAnimationsPlaying];
-  [self updateAlertScreenTopAnchorConstraint];
+  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+      @[ UITraitVerticalSizeClass.class, UITraitUserInterfaceStyle.class ]);
+  [self registerForTraitChanges:traits
+                     withAction:@selector(updateUIOnTraitChange)];
 }
 
 #pragma mark - CredentialProviderPromoConsumer
@@ -82,13 +78,18 @@ NSString* const kCredentialProviderPromoAccessibilityId =
      tertiaryActionString:(NSString*)tertiaryActionString
                     image:(UIImage*)image {
   DCHECK(!self.alertScreen);
+
+  ButtonStackConfiguration* configuration =
+      [[ButtonStackConfiguration alloc] init];
+  configuration.primaryActionString = primaryActionString;
+  configuration.secondaryActionString = secondaryActionString;
+  configuration.tertiaryActionString = tertiaryActionString;
+
   ConfirmationAlertViewController* alertScreen =
-      [[ConfirmationAlertViewController alloc] init];
+      [[ConfirmationAlertViewController alloc]
+          initWithConfiguration:configuration];
   alertScreen.titleString = titleString;
   alertScreen.subtitleString = subtitleString;
-  alertScreen.primaryActionString = primaryActionString;
-  alertScreen.secondaryActionString = secondaryActionString;
-  alertScreen.tertiaryActionString = tertiaryActionString;
   alertScreen.image = image;
   alertScreen.actionHandler = self.actionHandler;
   self.alertScreen = alertScreen;
@@ -103,13 +104,8 @@ NSString* const kCredentialProviderPromoAccessibilityId =
                           stringByAppendingString:kDarkModeAnimationSuffix]];
 
   NSString* passwordSettingsTitle;
-  if (@available(iOS 16, *)) {
-    passwordSettingsTitle = l10n_util::GetNSString(
-        IDS_IOS_CREDENTIAL_PROVIDER_PROMO_OS_PASSWORDS_SETTINGS_TITLE_IOS16);
-  } else {
-    passwordSettingsTitle = l10n_util::GetNSString(
-        IDS_IOS_CREDENTIAL_PROVIDER_PROMO_OS_PASSWORDS_SETTINGS_TITLE_BELOW_IOS16);
-  }
+  passwordSettingsTitle = l10n_util::GetNSString(
+      IDS_IOS_CREDENTIAL_PROVIDER_PROMO_OS_PASSWORDS_SETTINGS_TITLE_IOS16);
   // Set the text localization.
   NSDictionary* textProvider =
       @{kPasswordOptionsKeypath : passwordSettingsTitle};
@@ -124,7 +120,7 @@ NSString* const kCredentialProviderPromoAccessibilityId =
   LottieAnimationConfiguration* config =
       [[LottieAnimationConfiguration alloc] init];
   config.animationName = animationAssetName;
-  config.loopAnimationCount = 1000;
+  config.shouldLoop = YES;
   return ios::provider::GenerateLottieAnimation(config);
 }
 
@@ -132,17 +128,17 @@ NSString* const kCredentialProviderPromoAccessibilityId =
 - (void)configureAlertScreen {
   DCHECK(self.alertScreen);
   self.alertScreen.imageHasFixedSize = YES;
-  self.alertScreen.showDismissBarButton = NO;
   self.alertScreen.titleTextStyle = UIFontTextStyleTitle2;
   self.alertScreen.topAlignedLayout = YES;
 
-  if (self.shouldShowAnimation) {
-    self.alertScreen.customSpacingBeforeImageIfNoNavigationBar =
+  if (!self.shouldShowAnimation || !self.alertScreen.image) {
+    self.alertScreen.customSpacingBeforeImage =
         kCustomSpacingAtTopIfNoNavigationBar;
-  } else {
-    self.alertScreen.customSpacingAfterImage =
-        kCustomSpacingAfterImageWithoutAnimation;
   }
+
+  self.alertScreen.customSpacingAfterImage =
+      self.shouldShowAnimation ? kCustomSpacingAfterImageWithAnimation
+                               : kCustomSpacingAfterImageWithoutAnimation;
 
   [self addChildViewController:self.alertScreen];
   [self.view addSubview:self.alertScreen.view];
@@ -196,8 +192,8 @@ NSString* const kCredentialProviderPromoAccessibilityId =
       self.alertScreen.sheetPresentationController;
   presentationController.prefersEdgeAttachedInCompactHeight = YES;
   presentationController.detents = @[
-    UISheetPresentationControllerDetent.mediumDetent,
-    UISheetPresentationControllerDetent.largeDetent
+    self.alertScreen.preferredHeightDetent,
+    [UISheetPresentationControllerDetent largeDetent]
   ];
   presentationController.preferredCornerRadius = kPreferredCornerRadius;
 }
@@ -256,6 +252,21 @@ NSString* const kCredentialProviderPromoAccessibilityId =
   self.animationViewWrapperDarkMode.animationView.hidden
       ? [self.animationViewWrapperDarkMode stop]
       : [self.animationViewWrapperDarkMode play];
+}
+
+// Called when the device is rotated or dark mode is enabled/disabled. (Un)Hide
+// the animations accordingly.
+- (void)updateUIOnTraitChange {
+  BOOL darkModeEnabled =
+      (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
+  BOOL hidden = ![self shouldShowAnimation];
+
+  self.animationViewWrapper.animationView.hidden = hidden || darkModeEnabled;
+  self.animationViewWrapperDarkMode.animationView.hidden =
+      hidden || !darkModeEnabled;
+
+  [self updateAnimationsPlaying];
+  [self updateAlertScreenTopAnchorConstraint];
 }
 
 @end

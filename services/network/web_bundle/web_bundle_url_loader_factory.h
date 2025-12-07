@@ -16,7 +16,6 @@
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/orb/orb_api.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/web_bundle_handle.mojom.h"
 
@@ -45,8 +44,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory {
       mojo::Remote<mojom::WebBundleHandle> web_bundle_handle,
       std::unique_ptr<WebBundleMemoryQuotaConsumer>
           web_bundle_memory_quota_consumer,
-      mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
-      std::optional<std::string> devtools_request_id,
       const CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       mojom::CrossOriginEmbedderPolicyReporter* coep_reporter);
   ~WebBundleURLLoaderFactory();
@@ -115,8 +112,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory {
   const std::optional<::url::Origin> request_initiator_origin_lock_;
   std::unique_ptr<WebBundleMemoryQuotaConsumer>
       web_bundle_memory_quota_consumer_;
-  mojo::Remote<mojom::DevToolsObserver> devtools_observer_;
-  std::optional<std::string> devtools_request_id_;
+
   const CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
   raw_ptr<mojom::CrossOriginEmbedderPolicyReporter, FlakyDanglingUntriaged>
       coep_reporter_;

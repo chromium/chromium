@@ -14,7 +14,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/mei_preload_component_installer.h"
 #include "chrome/browser/media/media_engagement_contents_observer.h"
@@ -30,8 +29,8 @@
 #include "chrome/browser/sessions/session_restore_test_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -57,10 +56,10 @@
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/session_service_test_helper.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -355,7 +354,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest, RecordEngagement) {
 }
 
 // Flaky tests on CrOS: http://crbug.com/1020131.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_RecordEngagement_AudioOnly DISABLED_RecordEngagement_AudioOnly
 #else
 #define MAYBE_RecordEngagement_AudioOnly RecordEngagement_AudioOnly
@@ -377,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
 }
 
 // Flaky tests on CrOS: http://crbug.com/1019671.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_DoNotRecordEngagement_NotTime_AudioOnly \
   DISABLED_DoNotRecordEngagement_NotTime_AudioOnly
 #else
@@ -401,7 +400,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
 }
 
 // Flaky tests on CrOS: http://crbug.com/1019671.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_DoNotRecordEngagement_TabMuted_AudioOnly \
   DISABLED_DoNotRecordEngagement_TabMuted_AudioOnly
 #else
@@ -446,7 +445,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
 }
 
 // Flaky tests on CrOS: http://crbug.com/1019671.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_DoNotRecordEngagement_PlaybackStopped_AudioOnly \
   DISABLED_DoNotRecordEngagement_PlaybackStopped_AudioOnly
 #else
@@ -473,7 +472,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
 }
 
 // Flaky tests on CrOS: http://crbug.com/1019671.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_RecordEngagement_NotVisible_AudioOnly \
   DISABLED_RecordEngagement_NotVisible_AudioOnly
 #else
@@ -565,7 +564,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
 }
 
 // Flaky tests on CrOS: http://crbug.com/1019671.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_DoNotRecordEngagement_SilentAudioTrack_AudioOnly \
   DISABLED_DoNotRecordEngagement_SilentAudioTrack_AudioOnly
 #else
@@ -620,7 +619,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
 }
 
 // Flaky tests on CrOS: http://crbug.com/1019671.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_MultipleElements DISABLED_MultipleElements
 #else
 #define MAYBE_MultipleElements MultipleElements
@@ -842,15 +841,15 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementPreThirdPartyCookieDeprecationBrowserTest,
 class MediaEngagementSessionRestoreBrowserTest
     : public MediaEngagementBrowserTest {
  public:
-  Browser* QuitBrowserAndRestore() {
-    Profile* profile = browser()->profile();
+  BrowserWindowInterface* QuitBrowserAndRestore() {
+    Profile* const profile = browser()->profile();
 
     SessionStartupPref::SetStartupPref(
         profile, SessionStartupPref(SessionStartupPref::LAST));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     SessionServiceTestHelper helper(profile);
     helper.SetForceBrowserNotAliveWithNoWindows(true);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     std::unique_ptr<ScopedKeepAlive> keep_alive(new ScopedKeepAlive(
         KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED));
@@ -861,13 +860,13 @@ class MediaEngagementSessionRestoreBrowserTest
 
     chrome::NewEmptyWindow(profile);
     SessionRestoreTestHelper().Wait();
-    return BrowserList::GetInstance()->GetLastActive();
+    return GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   }
 
-  void WaitForTabsToLoad(Browser* browser) {
-    for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
-      content::WebContents* web_contents =
-          browser->tab_strip_model()->GetWebContentsAt(i);
+  void WaitForTabsToLoad(TabStripModel* tab_strip_model) {
+    for (int i = 0; i < tab_strip_model->count(); ++i) {
+      content::WebContents* const web_contents =
+          tab_strip_model->GetWebContentsAt(i);
       web_contents->GetController().LoadIfNecessary();
       ASSERT_TRUE(content::WaitForLoadStop(web_contents));
     }
@@ -880,12 +879,13 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementSessionRestoreBrowserTest,
 
   LoadTestPage(url);
 
-  Browser* new_browser = QuitBrowserAndRestore();
-  ASSERT_NO_FATAL_FAILURE(WaitForTabsToLoad(new_browser));
+  BrowserWindowInterface* const browser = QuitBrowserAndRestore();
+  TabStripModel* const tab_strip_model = browser->GetTabStripModel();
+  ASSERT_NO_FATAL_FAILURE(WaitForTabsToLoad(tab_strip_model));
 
-  new_browser->tab_strip_model()->CloseAllTabs();
+  tab_strip_model->CloseAllTabs();
 
-  ExpectScores(MediaEngagementService::Get(new_browser->profile()), url, 1, 0);
+  ExpectScores(MediaEngagementService::Get(browser->GetProfile()), url, 1, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(MediaEngagementSessionRestoreBrowserTest,
@@ -895,21 +895,21 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementSessionRestoreBrowserTest,
   LoadTestPageAndWaitForPlayAndAudible(url, false);
   AdvanceMeaningfulPlaybackTime();
 
-  Browser* new_browser = QuitBrowserAndRestore();
+  BrowserWindowInterface* const browser = QuitBrowserAndRestore();
+  TabStripModel* const tab_strip_model = browser->GetTabStripModel();
 
   MediaEngagementService* new_service =
-      MediaEngagementService::Get(new_browser->profile());
+      MediaEngagementService::Get(browser->GetProfile());
   InjectTimerTaskRunnerToService(new_service);
 
-  ASSERT_NO_FATAL_FAILURE(WaitForTabsToLoad(new_browser));
+  ASSERT_NO_FATAL_FAILURE(WaitForTabsToLoad(tab_strip_model));
 
-  WasRecentlyAudibleWatcher watcher(
-      new_browser->tab_strip_model()->GetActiveWebContents());
+  WasRecentlyAudibleWatcher watcher(tab_strip_model->GetActiveWebContents());
   watcher.WaitForWasRecentlyAudible();
 
   AdvanceMeaningfulPlaybackTime();
 
-  new_browser->tab_strip_model()->CloseAllTabs();
+  tab_strip_model->CloseAllTabs();
 
   ExpectScores(new_service, url, 2, 2);
 }
@@ -1042,7 +1042,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // Loads a page in a prerendered page.
   GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
-  const int host_id = prerender_helper().AddPrerender(prerender_url);
+  const content::FrameTreeNodeId host_id =
+      prerender_helper().AddPrerender(prerender_url);
   content::RenderFrameHost* prerender_rfh =
       prerender_helper().GetPrerenderedMainFrameHost(host_id);
   MockAutoplayConfigurationClient prerendered_client;
@@ -1091,8 +1092,16 @@ class MediaEngagementContentsObserverFencedFrameBrowserTest
   std::unique_ptr<content::test::FencedFrameTestHelper> fenced_frame_helper_;
 };
 
+// TODO(crbug.com/349253812): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_SendEngagementLevelToRenderFrameOnFencedFrame \
+  DISABLED_SendEngagementLevelToRenderFrameOnFencedFrame
+#else
+#define MAYBE_SendEngagementLevelToRenderFrameOnFencedFrame \
+  SendEngagementLevelToRenderFrameOnFencedFrame
+#endif
 IN_PROC_BROWSER_TEST_F(MediaEngagementContentsObserverFencedFrameBrowserTest,
-                       SendEngagementLevelToRenderFrameOnFencedFrame) {
+                       MAYBE_SendEngagementLevelToRenderFrameOnFencedFrame) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   const GURL& initial_url =

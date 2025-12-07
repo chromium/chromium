@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_APPLY_CONSTRAINTS_PROCESSOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_APPLY_CONSTRAINTS_PROCESSOR_H_
 
-#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -24,11 +23,6 @@
 namespace blink {
 class MediaStreamAudioSource;
 class MediaStreamVideoTrack;
-
-// If this feature is enabled, a call to applyConstraints() on a video content
-// source will make the source restart with the new format.
-MODULES_EXPORT BASE_DECLARE_FEATURE(
-    kApplyConstraintsRestartsVideoContentSources);
 
 // ApplyConstraintsProcessor is responsible for processing applyConstraints()
 // requests. Only one applyConstraints() request can be processed at a time.

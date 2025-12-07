@@ -11,6 +11,7 @@ import static org.chromium.chrome.browser.touch_to_fill.password_generation.Touc
 
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -26,6 +27,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.IntegrationTest;
 import org.chromium.base.test.util.Matchers;
@@ -39,20 +41,22 @@ import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.messages.MessagesTestHelper;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
-import org.chromium.ui.widget.ChromeImageButton;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
@@ -71,7 +75,11 @@ public class PasswordGenerationIntegrationTest {
      */
     public static final int KEYBOARD_ACCESSORY_BAR_ITEM_COUNT = 3;
 
-    @Rule public SyncTestRule mSyncTestRule = new SyncTestRule();
+    private final SyncTestRule mSyncTestRule = new SyncTestRule();
+
+    @Rule
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.wrapTestRule(mSyncTestRule);
 
     private static final String PASSWORD_NODE_ID = "password_field";
     private static final String PASSWORD_NODE_ID_MANUAL = "password_field_manual";
@@ -93,27 +101,27 @@ public class PasswordGenerationIntegrationTest {
 
     @Before
     public void setUp() throws InterruptedException {
-        PasswordManagerTestHelper.setAccountForPasswordStore(SigninTestRule.TEST_ACCOUNT_EMAIL);
-
-        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        CoreAccountInfo account = mSyncTestRule.setUpAccountAndSignInForTesting();
+        PasswordManagerTestHelper.setAccountForPasswordStore(account.getEmail());
         ManualFillingTestHelper.disableServerPredictions();
 
         runOnUiThreadBlocking(
                 () -> {
-                    mPasswordStoreBridge = new PasswordStoreBridge(mSyncTestRule.getProfile(false));
+                    mPasswordStoreBridge =
+                            new PasswordStoreBridge(mActivityTestRule.getProfile(false));
                     mBottomSheetController =
                             BottomSheetControllerProvider.from(
-                                    mSyncTestRule.getActivity().getWindowAndroid());
+                                    mActivityTestRule.getActivity().getWindowAndroid());
                 });
 
         mTestServer =
                 EmbeddedTestServer.createAndStartHTTPSServer(
                         InstrumentationRegistry.getInstrumentation().getContext(),
                         ServerCertificate.CERT_OK);
-        mSyncTestRule.loadUrl(mTestServer.getURL(FORM_URL));
-        mHelper = new ManualFillingTestHelper(mSyncTestRule);
+        mActivityTestRule.loadUrl(mTestServer.getURL(FORM_URL));
+        mHelper = new ManualFillingTestHelper(mActivityTestRule);
         mHelper.updateWebContentsDependentState();
-        mActivity = mSyncTestRule.getActivity();
+        mActivity = mActivityTestRule.getActivity();
     }
 
     @After
@@ -121,9 +129,13 @@ public class PasswordGenerationIntegrationTest {
         mHelper.clear();
     }
 
+    // TODO(crbug.com/386734610): enable for autos.
     @Test
     @IntegrationTest
-    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30)
+    @Restriction({
+        GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30,
+        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO
+    })
     public void testAutomaticGenerationCancel() throws InterruptedException, TimeoutException {
         waitForGenerationLabel();
         focusField(PASSWORD_NODE_ID);
@@ -145,9 +157,14 @@ public class PasswordGenerationIntegrationTest {
                 });
     }
 
+    // TODO(crbug.com/386734610): enable for autos.
     @Test
     @IntegrationTest
-    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30)
+    @Restriction({
+        GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30,
+        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO
+    })
+    @DisabledTest(message = "flaky, see crbug.com/401272905")
     public void testManualGenerationCancel() throws InterruptedException, TimeoutException {
         waitForGenerationLabel();
         focusField(PASSWORD_NODE_ID_MANUAL);
@@ -167,9 +184,13 @@ public class PasswordGenerationIntegrationTest {
                 });
     }
 
+    // TODO(crbug.com/386734610): enable for autos.
     @Test
     @IntegrationTest
-    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30)
+    @Restriction({
+        GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30,
+        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO
+    })
     public void testAutomaticGenerationUsePassword() throws InterruptedException, TimeoutException {
         waitForGenerationLabel();
         focusField(PASSWORD_NODE_ID);
@@ -185,7 +206,7 @@ public class PasswordGenerationIntegrationTest {
         assertPasswordText(PASSWORD_NODE_ID, generatedPassword);
         clickNode(SUBMIT_NODE_ID);
         ChromeTabUtils.waitForTabPageLoaded(
-                mSyncTestRule.getActivity().getActivityTab(), mTestServer.getURL(DONE_URL));
+                mActivityTestRule.getActivityTab(), mTestServer.getURL(DONE_URL));
         waitForMessageShown();
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -197,9 +218,14 @@ public class PasswordGenerationIntegrationTest {
                 });
     }
 
+    // TODO(crbug.com/386734610): enable for autos.
     @Test
     @IntegrationTest
-    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30)
+    @Restriction({
+        GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30,
+        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO
+    })
+    @DisabledTest(message = "Flakey/Failing, see crbug.com/358643071")
     public void testManualGenerationUsePassword() throws InterruptedException, TimeoutException {
         waitForGenerationLabel();
         focusField(PASSWORD_NODE_ID_MANUAL);
@@ -213,7 +239,7 @@ public class PasswordGenerationIntegrationTest {
         assertPasswordText(PASSWORD_NODE_ID_MANUAL, generatedPassword);
         clickNode(SUBMIT_NODE_ID_MANUAL);
         ChromeTabUtils.waitForTabPageLoaded(
-                mSyncTestRule.getActivity().getActivityTab(), mTestServer.getURL(DONE_URL));
+                mActivityTestRule.getActivityTab(), mTestServer.getURL(DONE_URL));
         waitForMessageShown();
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -231,7 +257,8 @@ public class PasswordGenerationIntegrationTest {
                     return mActivity.findViewById(R.id.passwords_sheet) != null;
                 });
         ArrayList<View> selectedViews = new ArrayList();
-        (mActivity.findViewById(R.id.passwords_sheet))
+        mActivity
+                .findViewById(R.id.passwords_sheet)
                 .findViewsWithText(
                         selectedViews,
                         mActivity.getString(R.string.password_generation_accessory_button),
@@ -258,8 +285,8 @@ public class PasswordGenerationIntegrationTest {
                     return keyboardAccessoryView.getButtons().size()
                             == KEYBOARD_ACCESSORY_BAR_ITEM_COUNT;
                 });
-        ArrayList<ChromeImageButton> buttons = keyboardAccessoryView.getButtons();
-        ChromeImageButton keyButton = buttons.get(0);
+        ArrayList<ImageButton> buttons = keyboardAccessoryView.getButtons();
+        ImageButton keyButton = buttons.get(0);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         runOnUiThreadBlocking(
                 () -> {
@@ -313,13 +340,13 @@ public class PasswordGenerationIntegrationTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertFalse(
-                            InfoBarContainer.from(mSyncTestRule.getActivity().getActivityTab())
+                            InfoBarContainer.from(mActivityTestRule.getActivityTab())
                                     .hasInfoBars());
                 });
     }
 
     private void waitForMessageShown() {
-        WindowAndroid window = mSyncTestRule.getActivity().getWindowAndroid();
+        WindowAndroid window = mActivityTestRule.getActivity().getWindowAndroid();
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(

@@ -2,11 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/md_select.css.js';
-import './print_preview_shared.css.js';
-
 import {assertNotReached} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {CapabilityWithReset, SelectOption} from '../data/cdd.js';
 import type {Settings} from '../data/model.js';
@@ -14,10 +11,11 @@ import {getStringForCurrentLocale} from '../print_preview_utils.js';
 
 import {SelectMixin} from './select_mixin.js';
 import {SettingsMixin} from './settings_mixin.js';
-import {getTemplate} from './settings_select.html.js';
+import {getCss} from './settings_select.css.js';
+import {getHtml} from './settings_select.html.js';
 
 const PrintPreviewSettingsSelectElementBase =
-    SettingsMixin(SelectMixin(PolymerElement));
+    SettingsMixin(SelectMixin(CrLitElement));
 
 export class PrintPreviewSettingsSelectElement extends
     PrintPreviewSettingsSelectElementBase {
@@ -25,32 +23,33 @@ export class PrintPreviewSettingsSelectElement extends
     return 'print-preview-settings-select';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      ariaLabel: String,
-
-      capability: Object,
-
-      settingName: String,
-
-      disabled: Boolean,
+      ariaLabel: {type: String},
+      capability: {type: Object},
+      settingName: {type: String},
+      disabled: {type: Boolean},
     };
   }
 
-  override ariaLabel: string;
-  capability: CapabilityWithReset&{option: SelectOption[]};
-  settingName: keyof Settings;
-  disabled: boolean;
+  override accessor ariaLabel: string = '';
+  accessor capability: CapabilityWithReset&{option: SelectOption[]}|null = null;
+  accessor settingName: keyof Settings = 'dpi';
+  accessor disabled: boolean = false;
 
   /**
    * @param option Option to check.
    * @return Whether the option is selected.
    */
-  private isSelected_(option: SelectOption): boolean {
+  protected isSelected_(option: SelectOption): boolean {
     return this.getValue_(option) === this.selectedValue ||
         (!!option.is_default && this.selectedValue === '');
   }
@@ -63,7 +62,7 @@ export class PrintPreviewSettingsSelectElement extends
    * @param option Option to get the value for.
    * @return Value for the option.
    */
-  private getValue_(option: SelectOption): string {
+  protected getValue_(option: SelectOption): string {
     return JSON.stringify(option);
   }
 
@@ -71,7 +70,7 @@ export class PrintPreviewSettingsSelectElement extends
    * @param option Option to get the display name for.
    * @return Display name for the option.
    */
-  private getDisplayName_(option: SelectOption): string {
+  protected getDisplayName_(option: SelectOption): string {
     let displayName = option.custom_display_name;
     if (!displayName && option.custom_display_name_localized) {
       displayName =
@@ -92,6 +91,8 @@ export class PrintPreviewSettingsSelectElement extends
     }
   }
 }
+
+export type SettingsSelectElement = PrintPreviewSettingsSelectElement;
 
 declare global {
   interface HTMLElementTagNameMap {

@@ -36,12 +36,6 @@ struct TestOutputMetrics {
   // ZxdgOutput metrics
   gfx::Size xdg_logical_size = gfx::Size(800, 600);
   gfx::Point xdg_logical_origin;
-
-  // AuraOutput metrics
-  int64_t aura_display_id;
-  gfx::Insets aura_logical_insets;
-  float aura_device_scale_factor = 1;
-  wl_output_transform aura_logical_transform = WL_OUTPUT_TRANSFORM_NORMAL;
 };
 
 }  // namespace wl

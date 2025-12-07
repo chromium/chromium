@@ -35,6 +35,8 @@ component("certificate_transparency") {
     "//components/url_formatter",
     "//components/url_matcher",
     "//net",
+    "//services/network/public/mojom",
+    "//third_party/boringssl",
     "//url",
   ]
 }
@@ -48,10 +50,12 @@ source_set("unit_tests") {
   ]
   deps = [
     ":certificate_transparency",
+    "//base:build_time",
     "//base/test:test_support",
     "//components/base32",
     "//components/certificate_transparency/data:ct_log_list",
     "//components/prefs:test_support",
+    "//crypto:test_support",
     "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",

@@ -32,10 +32,8 @@ VirtualCardEnrollIconView::VirtualCardEnrollIconView(
                          icon_label_bubble_delegate,
                          delegate,
                          "VirtualCardEnroll") {
-  GetViewAccessibility().SetProperties(
-      /*role*/ std::nullopt,
-      l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_FALLBACK_ICON_TOOLTIP));
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_FALLBACK_ICON_TOOLTIP));
 }
 
 VirtualCardEnrollIconView::~VirtualCardEnrollIconView() = default;

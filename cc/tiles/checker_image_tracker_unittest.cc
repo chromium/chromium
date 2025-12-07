@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "cc/paint/paint_image_builder.h"
@@ -36,7 +37,8 @@ class TestImageController : public ImageController {
   // the ImageController is over-ridden here.
   TestImageController()
       : ImageController(base::SingleThreadTaskRunner::GetCurrentDefault().get(),
-                        base::SingleThreadTaskRunner::GetCurrentDefault()) {
+                        base::SingleThreadTaskRunner::GetCurrentDefault(),
+                        base::DoNothing()) {
     SetMaxImageCacheLimitBytesForTesting(kMaxImageCacheSizeBytes);
   }
 
@@ -55,9 +57,9 @@ class TestImageController : public ImageController {
     locked_images_.erase(id);
   }
 
-  ImageDecodeRequestId QueueImageDecode(
-      const DrawImage& image,
-      ImageDecodedCallback callback) override {
+  ImageDecodeRequestId QueueImageDecode(const DrawImage& image,
+                                        ImageDecodedCallback callback,
+                                        bool speculative) override {
     ImageDecodeRequestId request_id = next_image_request_id_++;
 
     decoded_images_.push_back(image);

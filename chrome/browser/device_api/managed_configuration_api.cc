@@ -6,11 +6,13 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
@@ -87,11 +89,12 @@ class ManagedConfigurationAPI::ManagedConfigurationDownloader {
       const ManagedConfigurationDownloader&) = delete;
 
   void Fetch(const std::string& data_url,
-             base::OnceCallback<void(std::unique_ptr<std::string>)> callback) {
+             base::OnceCallback<void(std::optional<std::string>)> callback) {
     // URLLoaders should be created at UI thread.
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     auto resource_request = std::make_unique<network::ResourceRequest>();
     resource_request->url = GURL(data_url);
+    resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
     simple_loader_ = network::SimpleURLLoader::Create(
         std::move(resource_request), kTrafficAnnotation);
@@ -289,7 +292,7 @@ void ManagedConfigurationAPI::UpdateStoredDataForOrigin(
 
 void ManagedConfigurationAPI::DecodeData(const url::Origin& origin,
                                          const std::string& url_hash,
-                                         std::unique_ptr<std::string> data) {
+                                         std::optional<std::string> data) {
   downloaders_[origin].reset();
   if (!data) {
     return;

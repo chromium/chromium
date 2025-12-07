@@ -59,11 +59,11 @@ message ServiceWorkerRegistrationData {
     STRICT_ORIGIN = 8;
   }
 
-  // https://wicg.github.io/private-network-access/#framework
+  // https://wicg.github.io/local-network-access/
   enum IPAddressSpace {
     UNKNOWN = 0;
-    LOCAL = 1;
-    PRIVATE = 2;
+    LOOPBACK = 1;
+    LOCAL = 2;
     PUBLIC = 3;
   }
 
@@ -169,6 +169,7 @@ message ServiceWorkerRegistrationData {
             kSpeculationRulesDestination = 25;
             kJsonDestination = 26;
             kSharedStorageWorkletDestination = 27;
+            kEmailVerificationDestination = 28;
           }
           optional Destination destination = 3;
         }
@@ -207,16 +208,24 @@ message ServiceWorkerRegistrationData {
       }
       message Source {
         message NetworkSource {}
-        message RaceSource {}
+        message RaceNetworkAndFetchEventSource {
+          reserved 1;         // Deprecated
+          reserved "target";  // Deprecated
+        }
         message FetchEventSource {}
         message CacheSource {
           optional string cache_name = 1;
         }
+        message RaceNetworkAndCacheSource {
+          required CacheSource cache_source = 1;
+        }
         oneof source {
           NetworkSource network_source = 1;
-          RaceSource race_source = 2;
+          RaceNetworkAndFetchEventSource race_network_and_fetch_event_source =
+              2;
           FetchEventSource fetch_event_source = 3;
           CacheSource cache_source = 4;
+          RaceNetworkAndCacheSource race_network_and_cache_source = 5;
         }
       }
       repeated Condition condition = 1;

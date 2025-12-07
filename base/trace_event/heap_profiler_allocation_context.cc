@@ -2,61 +2,43 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/trace_event/heap_profiler_allocation_context.h"
 
 #include <algorithm>
+#include <array>
 #include <cstring>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/hash/hash.h"
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
-bool operator < (const StackFrame& lhs, const StackFrame& rhs) {
+bool operator<(const StackFrame& lhs, const StackFrame& rhs) {
   return lhs.value < rhs.value;
 }
 
-bool operator == (const StackFrame& lhs, const StackFrame& rhs) {
+bool operator==(const StackFrame& lhs, const StackFrame& rhs) {
   return lhs.value == rhs.value;
-}
-
-bool operator != (const StackFrame& lhs, const StackFrame& rhs) {
-  return !(lhs.value == rhs.value);
 }
 
 Backtrace::Backtrace() = default;
 
 bool operator==(const Backtrace& lhs, const Backtrace& rhs) {
-  if (lhs.frame_count != rhs.frame_count) return false;
-  return std::equal(lhs.frames, lhs.frames + lhs.frame_count, rhs.frames);
+  if (lhs.frame_count != rhs.frame_count) {
+    return false;
+  }
+  return std::equal(lhs.frames, UNSAFE_TODO(lhs.frames + lhs.frame_count),
+                    rhs.frames);
 }
 
-bool operator!=(const Backtrace& lhs, const Backtrace& rhs) {
-  return !(lhs == rhs);
-}
-
-AllocationContext::AllocationContext(): type_name(nullptr) {}
+AllocationContext::AllocationContext() : type_name(nullptr) {}
 
 AllocationContext::AllocationContext(const Backtrace& backtrace,
                                      const char* type_name)
-  : backtrace(backtrace), type_name(type_name) {}
+    : backtrace(backtrace), type_name(type_name) {}
 
-bool operator==(const AllocationContext& lhs, const AllocationContext& rhs) {
-  return (lhs.backtrace == rhs.backtrace) && (lhs.type_name == rhs.type_name);
-}
-
-bool operator!=(const AllocationContext& lhs, const AllocationContext& rhs) {
-  return !(lhs == rhs);
-}
-
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event
 
 namespace std {
 
@@ -69,12 +51,12 @@ size_t hash<StackFrame>::operator()(const StackFrame& frame) const {
 }
 
 size_t hash<Backtrace>::operator()(const Backtrace& backtrace) const {
-  const void* values[Backtrace::kMaxFrameCount];
+  std::array<const void*, Backtrace::kMaxFrameCount> values;
   for (size_t i = 0; i != backtrace.frame_count; ++i) {
-    values[i] = backtrace.frames[i].value;
+    values[i] = UNSAFE_TODO(backtrace.frames[i]).value;
   }
-  auto values_span = base::make_span(values).first(backtrace.frame_count);
-  return base::PersistentHash(base::as_bytes(values_span));
+  return base::PersistentHash(
+      base::as_bytes(base::span(values).first(backtrace.frame_count)));
 }
 
 size_t hash<AllocationContext>::operator()(const AllocationContext& ctx) const {

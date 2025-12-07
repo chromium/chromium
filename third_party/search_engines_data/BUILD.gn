@@ -1,0 +1,69 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/json_to_struct/json_to_struct.gni")
+
+json_to_struct("prepopulated_engines") {
+  visibility = [
+    ":*",
+    "//components/regional_capabilities:*",
+    "//components/search_engines:*",
+  ]
+
+  source = "resources/definitions/prepopulated_engines.json"
+  schema_file = "prepopulated_engines_schema.json"
+  namespace = "TemplateURLPrepopulateData"
+  deps = [ "//base" ]
+}
+
+json_to_struct("regional_settings") {
+  visibility = [
+    "//components/regional_capabilities:*",
+    "//components/search_engines:test_support",
+  ]
+
+  source = "resources/definitions/regional_settings.json"
+  schema_file = "regional_settings_schema.json"
+  namespace = "TemplateURLPrepopulateData"
+  deps = [
+    ":prepopulated_engines",
+    "//base",
+  ]
+}
+
+if (enable_builtin_search_provider_assets) {
+  group("resources") {
+    public_deps = [ ":search_engines_scaled_resources" ]
+
+    if (!is_android) {
+      public_deps += [ ":search_engine_descriptions_strings" ]
+    }
+  }
+
+  grit("search_engines_scaled_resources") {
+    source = "resources_internal/search_engines_scaled_resources.grd"
+    outputs = [
+      "search_engines_scaled_resources.h",
+      "search_engines_scaled_resources_map.cc",
+      "search_engines_scaled_resources_map.h",
+      "search_engines_resources_100_percent.pak",
+      "search_engines_resources_200_percent.pak",
+      "search_engines_resources_300_percent.pak",
+    ]
+    output_dir = target_gen_dir
+  }
+
+  if (!is_android) {
+    grit_strings("search_engine_descriptions_strings") {
+      source = "resources_internal/search_engine_descriptions_strings.grd"
+      outputs = [
+        "search_engine_descriptions_strings.h",
+        "search_engine_descriptions_strings_map.cc",
+        "search_engine_descriptions_strings_map.h",
+      ]
+    }
+  }
+}

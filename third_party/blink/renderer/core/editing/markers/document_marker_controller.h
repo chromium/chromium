@@ -34,7 +34,6 @@
 #include "base/dcheck_is_on.h"
 #include "base/functional/function_ref.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/dom/synchronous_mutation_observer.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
 #include "third_party/blink/renderer/core/editing/markers/composition_marker.h"
@@ -49,22 +48,24 @@
 
 namespace blink {
 
+class Document;
 class DocumentMarkerList;
 class Highlight;
 class SuggestionMarkerProperties;
 
 class CORE_EXPORT DocumentMarkerController final
-    : public GarbageCollected<DocumentMarkerController>,
-      public SynchronousMutationObserver {
+    : public GarbageCollected<DocumentMarkerController> {
  public:
   explicit DocumentMarkerController(Document&);
   DocumentMarkerController(const DocumentMarkerController&) = delete;
   DocumentMarkerController& operator=(const DocumentMarkerController&) = delete;
 
   void AddSpellingMarker(const EphemeralRange&,
-                         const String& description = g_empty_string);
+                         const String& description = g_empty_string,
+                         bool should_hide_suggestion_menu = false);
   void AddGrammarMarker(const EphemeralRange&,
-                        const String& description = g_empty_string);
+                        const String& description = g_empty_string,
+                        bool should_hide_suggestion_menu = false);
   void AddTextMatchMarker(const EphemeralRange&, TextMatchMarker::MatchStatus);
   void AddCompositionMarker(const EphemeralRange&,
                             Color underline_color,
@@ -84,6 +85,7 @@ class CORE_EXPORT DocumentMarkerController final
   void AddCustomHighlightMarker(const EphemeralRange&,
                                 const String& highlight_name,
                                 const Member<Highlight> highlight);
+  void AddGlicMarker(const EphemeralRange&);
 
   void MoveMarkers(const Text& src_node, int length, const Text& dst_node);
 
@@ -102,8 +104,6 @@ class CORE_EXPORT DocumentMarkerController final
       const SuggestionMarker::SuggestionType& type);
   // Removes suggestion marker with |RemoveOnFinishComposing::kRemove|.
   void RemoveSuggestionMarkerInRangeOnFinish(const EphemeralRangeInFlatTree&);
-  void RepaintMarkers(
-      DocumentMarker::MarkerTypes = DocumentMarker::MarkerTypes::All());
   // Returns true if markers within a range are found.
   bool SetTextMatchMarkersActive(const EphemeralRange&, bool);
   // Returns true if markers within a range defined by a text node,
@@ -196,21 +196,26 @@ class CORE_EXPORT DocumentMarkerController final
   void InvalidateRectsForAllTextMatchMarkers();
   void InvalidateRectsForTextMatchMarkersInNode(const Text&);
 
-  void Trace(Visitor*) const override;
+  void Trace(Visitor*) const;
 
 #if DCHECK_IS_ON()
   void ShowMarkers() const;
 #endif
 
-  // SynchronousMutationObserver
-  // For performance, observer is only registered when
-  // |possibly_existing_marker_types_| is non-zero.
   void DidUpdateCharacterData(CharacterData*,
                               unsigned offset,
                               unsigned old_length,
-                              unsigned new_length) final;
+                              unsigned new_length);
+
+  void StartGlicMarkerAnimationIfNeeded();
+
+  void ContinueGlicMarkerAnimation(base::TimeTicks tick);
 
  private:
+  // TODO(https://crbug.com/41406914): Remove once we migrate to
+  // scroll-promises.
+  friend class AnnotationAgentImplTest;
+
   void AddMarkerInternal(
       const EphemeralRange&,
       base::FunctionRef<DocumentMarker*(int, int)> create_marker_from_offsets,
@@ -221,7 +226,7 @@ class CORE_EXPORT DocumentMarkerController final
   // We have a hash map per marker type, mapping from nodes to a list of markers
   // for that node.
   using MarkerList = Member<DocumentMarkerList>;
-  using MarkerMap = HeapHashMap<WeakMember<const Text>, MarkerList>;
+  using MarkerMap = GCedHeapHashMap<WeakMember<const Text>, MarkerList>;
   using MarkerMaps = HeapVector<Member<MarkerMap>>;
 
   bool PossiblyHasMarkers(DocumentMarker::MarkerTypes) const;
@@ -242,13 +247,34 @@ class CORE_EXPORT DocumentMarkerController final
                                          const Text* key) const;
 
   // Called when a node is removed from a marker map.
-  // When clear_document_allowed is true this class will be removed from the
-  // mutation observer list when the marker set is empty. For efficiency
-  // it should generally be true, but it must be false when called
-  // from a method that implements SynchronousMutationObserver interfaces
-  // (currently only DidUpdateCharacterData);
-  void DidRemoveNodeFromMap(DocumentMarker::MarkerType,
-                            bool clear_document_allowed = true);
+  void DidRemoveNodeFromMap(DocumentMarker::MarkerType);
+
+  // Returns a boolean indicating if the last frame is reached.
+  bool UpdateGlicMarkerOpacity(base::TimeDelta duration);
+
+  void InvalidatePaintForGlicMarkers();
+
+  // TODO(https://crbug.com/41406914): The state can be removed when we migrate
+  // to the scroll-promises. With scroll-promises we are guaranteed to call
+  // `StartGlicAnimation()` only once and only for the targeted programmatic
+  // scroll.
+  //
+  // Glic animations are highlight animations for `GlicMarker`s. Each
+  // `GlicMarker`s are always removed before they are added to guarantee they
+  // are only animated once.
+  enum class GlicAnimationState {
+    // The default state.
+    kNotStarted = 0,
+    // The animation is running.
+    kRunning,
+    // Finished. Note we don't allow the animation to restart in this case. We
+    // rely on the markers to be removed first, which resets the state back to
+    // `kNotStarted`.
+    kFinished,
+  };
+  GlicAnimationState glic_animation_state_ = GlicAnimationState::kNotStarted;
+
+  std::optional<base::TimeTicks> glic_marker_animation_start_;
 
   MarkerMaps markers_;
 

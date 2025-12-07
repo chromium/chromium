@@ -8,9 +8,11 @@
 #include <string_view>
 #include <tuple>
 
+#include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/expected.h"
+#include "net/base/features.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/features.h"
@@ -21,7 +23,7 @@
 namespace network {
 namespace {
 
-mojom::ParsedHeadersPtr ParseHeaders(const std::string_view headers) {
+mojom::ParsedHeadersPtr ParseHeaders(std::string_view headers) {
   std::string raw_headers = net::HttpUtil::AssembleRawHeaders(headers);
   auto parsed = base::MakeRefCounted<net::HttpResponseHeaders>(raw_headers);
   return network::PopulateParsedHeaders(parsed.get(), GURL("https://a.com"));
@@ -75,6 +77,10 @@ TEST(NoVarySearchPrefetchTest, ParsingNVSReturnsNotDictionary) {
 }
 
 TEST(NoVarySearchPrefetchTest, ParsingNVSReturnsUnknownDictionaryKey) {
+  if (base::FeatureList::IsEnabled(
+          net::features::kNoVarySearchIgnoreUnrecognizedKeys)) {
+    GTEST_SKIP() << "unrecognized keys are now ignored";
+  }
   const std::string_view& headers =
       "HTTP/1.1 200 OK\r\n"
       "Set-Cookie: a\r\n"
@@ -355,6 +361,34 @@ TEST(ParsedHeadersTest, CookieIndices) {
   EXPECT_THAT(
       parsed_headers->cookie_indices,
       ::testing::Optional(::testing::ElementsAre("logged_in", "user_lang")));
+}
+
+TEST(ParsedHeadersTest, IntegrityPolicy) {
+  base::test::ScopedFeatureList enable{features::kIntegrityPolicyScript};
+  const std::string_view headers =
+      "HTTP/1.1 200 OK\r\n"
+      "Integrity-Policy: blocked-destinations=(script)\r\n"
+      "Integrity-Policy-Report-Only: blocked-destinations=(script)\r\n\r\n";
+  const auto parsed_headers = ParseHeaders(headers);
+
+  ASSERT_TRUE(parsed_headers);
+  EXPECT_EQ(parsed_headers->integrity_policy.blocked_destinations.size(), 1u);
+  EXPECT_EQ(
+      parsed_headers->integrity_policy_report_only.blocked_destinations.size(),
+      1u);
+}
+
+TEST(ParsedHeadersTest, ConnectionAllowlist) {
+  base::test::ScopedFeatureList enable{features::kConnectionAllowlists};
+  const std::string_view headers =
+      "HTTP/1.1 200 OK\r\n"
+      "Connection-Allowlist: (\"https://site.example/\")\r\n"
+      "Connection-Allowlist-Report-Only: (\"https://site.example/\")\r\n";
+  const auto parsed_headers = ParseHeaders(headers);
+
+  ASSERT_TRUE(parsed_headers);
+  EXPECT_TRUE(parsed_headers->connection_allowlists.enforced.has_value());
+  EXPECT_TRUE(parsed_headers->connection_allowlists.report_only.has_value());
 }
 
 }  // namespace

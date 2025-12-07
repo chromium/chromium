@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ui/views/storage/storage_pressure_bubble_view.h"
 
+#include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -18,6 +20,7 @@
 #include "content/public/common/content_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace {
@@ -40,40 +43,39 @@ void RecordBubbleHistogramValue(StoragePressureBubbleHistogramValue value) {
 
 }  // namespace
 
-namespace chrome {
-
 // static
 void ShowStoragePressureBubble(const url::Origin& origin) {
   StoragePressureBubbleView::ShowBubble(origin);
 }
 
-}  // namespace chrome
-
 void StoragePressureBubbleView::ShowBubble(const url::Origin& origin) {
-  Browser* browser = BrowserList::GetInstance()->GetLastActive();
-  if (!browser)
+  BrowserWindowInterface* const bwi =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  if (!bwi) {
     return;
+  }
 
-  StoragePressureBubbleView* bubble = new StoragePressureBubbleView(
-      BrowserView::GetBrowserViewForBrowser(browser)
-          ->toolbar_button_provider()
-          ->GetAppMenuButton(),
-      browser, origin);
+  StoragePressureBubbleView* bubble =
+      new StoragePressureBubbleView(BrowserView::GetBrowserViewForBrowser(bwi)
+                                        ->toolbar_button_provider()
+                                        ->GetAppMenuButton(),
+                                    bwi, origin);
   views::BubbleDialogDelegateView::CreateBubble(bubble)->Show();
 
   RecordBubbleHistogramValue(StoragePressureBubbleHistogramValue::kShown);
 }
 
-StoragePressureBubbleView::StoragePressureBubbleView(views::View* anchor_view,
-                                                     Browser* browser,
-                                                     const url::Origin& origin)
+StoragePressureBubbleView::StoragePressureBubbleView(
+    views::View* anchor_view,
+    BrowserWindowInterface* bwi,
+    const url::Origin& origin)
     : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::TOP_RIGHT),
-      browser_(browser),
+      bwi_(bwi),
       origin_(origin),
       ignored_(true) {
-  SetButtons(ui::DIALOG_BUTTON_OK);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
   SetTitle(IDS_SETTINGS_STORAGE_PRESSURE_BUBBLE_VIEW_TITLE);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(
                      IDS_SETTINGS_STORAGE_PRESSURE_BUBBLE_VIEW_BUTTON_LABEL));
   SetAcceptCallback(base::BindOnce(&StoragePressureBubbleView::OnDialogAccepted,
@@ -82,20 +84,29 @@ StoragePressureBubbleView::StoragePressureBubbleView(views::View* anchor_view,
 }
 
 StoragePressureBubbleView::~StoragePressureBubbleView() {
+  CHECK(!in_accept_);
   if (ignored_) {
     RecordBubbleHistogramValue(StoragePressureBubbleHistogramValue::kIgnored);
   }
 }
 
 void StoragePressureBubbleView::OnDialogAccepted() {
+  base::AutoReset reset_in_accept(&in_accept_, true);
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
+
   ignored_ = false;
   RecordBubbleHistogramValue(
       StoragePressureBubbleHistogramValue::kOpenedAllSites);
   // TODO(ellyjones): What is this doing here? The widget's about to close
   // anyway?
   GetWidget()->Close();
+
+  CHECK(weak_this);
+  CHECK(bwi_);
+  CHECK(bwi_->GetProfile());
+
   const GURL all_sites_gurl(kAllSitesContentSettingsUrl);
-  NavigateParams params(browser_, all_sites_gurl,
+  NavigateParams params(bwi_->GetBrowserForMigrationOnly(), all_sites_gurl,
                         ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&params);

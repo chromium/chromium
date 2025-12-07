@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_TEST_FAKE_CONTENT_ANALYSIS_SDK_MANAGER_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_TEST_FAKE_CONTENT_ANALYSIS_SDK_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_sdk_manager.h"
 #include "chrome/browser/enterprise/connectors/test/fake_content_analysis_sdk_client.h"
 #include "third_party/content_analysis_sdk/src/browser/include/content_analysis/sdk/analysis_client.h"
@@ -57,7 +58,7 @@ class FakeContentAnalysisSdkManager final : public ContentAnalysisSdkManager {
       };
 
   std::map<content_analysis::sdk::Client::Config,
-           FakeContentAnalysisSdkClient*,
+           raw_ptr<FakeContentAnalysisSdkClient, CtnExperimental>,
            decltype(CompareConfig)>
       fake_clients_{CompareConfig};
 };

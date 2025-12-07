@@ -15,8 +15,8 @@ import {
   nothing,
   PropertyDeclarations,
   PropertyValues,
-  ref,
   Ref,
+  ref,
   repeat,
 } from 'chrome://resources/mwc/lit/index.js';
 
@@ -71,7 +71,6 @@ export class TranscriptionView extends ReactiveLitElement {
 
       #transcript {
         display: grid;
-        gap: 12px;
         grid-template-columns:
           minmax(calc(12px + 40px + 10px), max-content)
           1fr;
@@ -86,17 +85,18 @@ export class TranscriptionView extends ReactiveLitElement {
 
       .timestamp {
         /*
-       * Note that this need to be 0px instead of 0, since it's used in calc().
-       */
+         * Note that this need to be 0px instead of 0, since it's used in
+         * calc().
+         */
         --md-focus-ring-outward-offset: 0px;
         --md-focus-ring-shape: 4px;
 
-        font: var(--cros-body-2-font);
+        font: var(--cros-body-1-font);
 
         /*
-       * Note that compared to the spec, 2px of left/right margin is moved to
-       * padding so it's included in the hover / focus ring.
-       */
+         * Note that compared to the spec, 2px of left/right margin is moved to
+         * padding so it's included in the hover / focus ring.
+         */
         margin: 12px 8px 12px 10px;
         outline: none;
         padding: 0 2px;
@@ -109,22 +109,27 @@ export class TranscriptionView extends ReactiveLitElement {
       }
 
       .paragraph {
-        font: var(--cros-body-2-font);
+        font: var(--cros-body-1-font);
         padding: 12px;
       }
 
       .highlight-word {
-        text-decoration: underline;
+        text-decoration: underline 1.5px;
+        text-underline-offset: 3px;
       }
 
       .speaker-label {
         color: var(--speaker-label-shapes-color);
-        font: var(--cros-button-2-font);
+        font: var(--cros-button-1-font);
         margin: 0 0 4px;
 
         .speaker-single & {
           display: none;
         }
+      }
+
+      .speaker-pending {
+        --speaker-label-shapes-color: var(--cros-sys-on_surface_variant);
       }
 
       .sentence {
@@ -136,17 +141,19 @@ export class TranscriptionView extends ReactiveLitElement {
         margin: 0 -2px;
 
         /*
-       * Note that while the font size is 13px, the background height without
-       * padding would be 16px. Make it full line height (20px) by adding a 2px
-       * vertical padding. (horizontal padding happens to also be 2px).
-       */
+         * Note that while the font size is 13px, the background height without
+         * padding would be 16px. Make it full line height (20px) by adding a
+         * 2px vertical padding. (horizontal padding happens to also be 2px).
+         */
         padding: 2px;
 
         .seekable & {
           cursor: pointer;
 
-          &:hover {
+          &:hover,
+          &:focus-visible {
             background: var(--cros-sys-highlight_shape);
+            outline: none;
           }
         }
 
@@ -189,6 +196,11 @@ export class TranscriptionView extends ReactiveLitElement {
   lastAutoScrollTime: number|null = null;
 
   containerRef: Ref<HTMLElement> = createRef();
+
+  // True if there's no highlight word or autoscroll anchor before current
+  // rendered word. This is a "local" state reset for each render, and shouldn't
+  // be used outside of render.
+  private needAutoscrollAnchor = true;
 
   // TODO(pihsun): Move all the autoscroll logic to a separate file /
   // ReactiveController.
@@ -276,25 +288,25 @@ export class TranscriptionView extends ReactiveLitElement {
     const container = assertExists(this.containerRef.value);
     let targetScrollTop: number;
     if (this.seekable) {
-      // TODO(pihsun): We might need "fake" highlight blocks between speech so
-      // it'll scroll to the part between speech?
-      const highlightedElement =
-        this.shadowRoot?.querySelector('.highlight-word') ?? null;
-      if (highlightedElement === null) {
-        return;
+      const autoscrollAnchor =
+        this.shadowRoot?.querySelector('.autoscroll-anchor') ?? null;
+      if (autoscrollAnchor === null) {
+        // Scroll to bottom if there's no speech afterwards.
+        targetScrollTop = container.scrollHeight - container.offsetHeight;
+      } else {
+        // TODO(pihsun): Have a typed helper function for querySelector /
+        // querySelectorAll with assertion for types.
+        assert(autoscrollAnchor instanceof HTMLElement);
+        // We calculate the target scrollTop by ourselves instead of relying on
+        // Element.scrollIntoView, so we can know the targetScrollTop for
+        // autoscroll calculation.
+        targetScrollTop = clamp(
+          autoscrollAnchor.offsetTop + autoscrollAnchor.offsetHeight / 2 -
+            container.clientHeight / 2,
+          0,
+          container.scrollHeight - container.offsetHeight,
+        );
       }
-      // TODO(pihsun): Have a typed helper function for querySelector /
-      // querySelectorAll with assertion for types.
-      assert(highlightedElement instanceof HTMLElement);
-      // We calculate the target scrollTop by ourselves instead of relying on
-      // Element.scrollIntoView, so we can know the targetScrollTop for
-      // autoscroll calculation.
-      targetScrollTop = clamp(
-        highlightedElement.offsetTop + highlightedElement.offsetHeight / 2 -
-          container.clientHeight / 2,
-        0,
-        container.scrollHeight - container.offsetHeight,
-      );
     } else {
       // Auto scroll to bottom.
       targetScrollTop = container.scrollHeight - container.offsetHeight;
@@ -314,6 +326,10 @@ export class TranscriptionView extends ReactiveLitElement {
       sentence,
       (_v, i) => i,
       (part, i) => {
+        // For the first word, the leadingSpace is already added at the
+        // sentence level. Otherwise we follows the leadingSpace for the part
+        // and treat missing field as having a space.
+        const leadingSpace = i === 0 ? false : part.leadingSpace ?? true;
         const highlightWord = (() => {
           if (this.currentTime === null || part.timeRange === null) {
             return false;
@@ -323,16 +339,26 @@ export class TranscriptionView extends ReactiveLitElement {
             this.currentTime < part.timeRange.endMs / 1000
           );
         })();
-        // For the first word, the leadingSpace is already added at the
-        // sentence level. Otherwise we follows the leadingSpace for the part
-        // and treat missing field as having a space.
-        const leadingSpace = i === 0 ? false : part?.leadingSpace ?? true;
-        if (!highlightWord) {
-          return `${leadingSpace ? ' ' : ''}${part.text}`;
+        if (highlightWord) {
+          this.needAutoscrollAnchor = false;
+          return html`${leadingSpace ? ' ' : ''}
+            <span class="highlight-word autoscroll-anchor">${part.text}</span>`;
         }
-        return html`${leadingSpace ? ' ' : ''}<span class="highlight-word"
-            >${part.text}</span
-          >`;
+        const autoscrollAnchor = (() => {
+          if (!this.needAutoscrollAnchor || this.currentTime === null ||
+              part.timeRange === null) {
+            return false;
+          }
+          // If there's no highlight, set autoscroll anchor to the first word
+          // after the current time.
+          return this.currentTime < part.timeRange.startMs / 1000;
+        })();
+        if (autoscrollAnchor) {
+          this.needAutoscrollAnchor = false;
+          return html`${leadingSpace ? ' ' : ''}
+            <span class="autoscroll-anchor">${part.text}</span>`;
+        }
+        return `${leadingSpace ? ' ' : ''}${part.text}`;
       },
     );
   }
@@ -340,41 +366,69 @@ export class TranscriptionView extends ReactiveLitElement {
   private renderSpeakerLabel(
     speakerLabels: string[],
     speakerLabel: string|null,
+    partial: boolean,
   ) {
     if (speakerLabel === null) {
       return nothing;
     }
-    const speakerLabelIdx = speakerLabels.indexOf(speakerLabel);
-    assert(speakerLabelIdx !== -1);
-    return html`<div
-      class="speaker-label ${getSpeakerLabelClass(speakerLabelIdx)}"
-    >
-      ${i18n.transcriptionSpeakerLabelLabel(speakerLabel)}
+
+    let speakerLabelClass: string;
+    let speakerLabelLabel: string;
+
+    if (partial) {
+      speakerLabelClass = 'speaker-pending';
+      speakerLabelLabel = i18n.transcriptionSpeakerLabelPendingLabel;
+    } else {
+      const speakerLabelIdx = speakerLabels.indexOf(speakerLabel);
+      assert(speakerLabelIdx !== -1);
+      speakerLabelClass = getSpeakerLabelClass(speakerLabelIdx);
+      speakerLabelLabel = i18n.transcriptionSpeakerLabelLabel(speakerLabel);
+    }
+
+    return html`<div class="speaker-label ${speakerLabelClass}">
+      ${speakerLabelLabel}
     </div>`;
   }
 
-  private renderParagraph(speakerLabels: string[], parts: TextPart[]) {
+  private renderParagraphContent(parts: TextPart[]) {
+    if (!this.seekable) {
+      // Don't render each sentence/word as separate DOM node when there's no
+      // need for seeking, so there would be fewer DOM nodes.
+      return parts
+        .map((part, i) => {
+          const leadingSpace = part.leadingSpace ?? i > 0;
+          return `${leadingSpace ? ' ' : ''}${part.text}`;
+        })
+        .join('');
+    }
     // TODO: b/341014241 - Better heuristic for cutting sentences.
     const sentences = sliceWhen(parts, ({text}) => {
       return text.endsWith('.') || text.endsWith('?') || text.endsWith('!');
     });
-    const {speakerLabel} = assertExists(parts[0]);
+    return repeat(
+      sentences,
+      (_v, i) => i,
+      (sentence, i) => {
+        // Use the leadingSpace field for the first word. If the
+        // leadingSpace field is missing, add space after the first
+        // sentence.
+        const leadingSpace = sentence[0]?.leadingSpace ?? i > 0;
+        return html`${leadingSpace ? ' ' : ''}<span
+            class="sentence"
+            data-start-ms=${ifDefined(sentence[0]?.timeRange?.startMs)}
+            tabindex=${this.seekable ? 0 : -1}
+            role="button"
+            >${this.renderSentence(sentence)}</span
+          >`;
+      },
+    );
+  }
+
+  private renderParagraph(speakerLabels: string[], parts: TextPart[]) {
+    const {speakerLabel, partial} = assertExists(parts[0]);
     return [
-      this.renderSpeakerLabel(speakerLabels, speakerLabel),
-      repeat(
-        sentences,
-        (_v, i) => i,
-        (sentence, i) => {
-          // Use the leadingSpace field for the first word. If the leadingSpace
-          // field is missing, add space after the first sentence.
-          const leadingSpace = sentence[0]?.leadingSpace ?? i > 0;
-          return html`${leadingSpace ? ' ' : ''}<span
-              class="sentence"
-              data-start-ms=${ifDefined(sentence[0]?.timeRange?.startMs)}
-              >${this.renderSentence(sentence)}</span
-            >`;
-        },
-      ),
+      this.renderSpeakerLabel(speakerLabels, speakerLabel, partial ?? false),
+      this.renderParagraphContent(parts),
     ];
   }
 
@@ -409,6 +463,8 @@ export class TranscriptionView extends ReactiveLitElement {
     const speakerLabels = this.transcription.getSpeakerLabels();
     const paragraphs = this.transcription.getParagraphs();
 
+    this.needAutoscrollAnchor = true;
+
     const content = repeat(
       paragraphs,
       (_parts, i) => i,
@@ -418,6 +474,15 @@ export class TranscriptionView extends ReactiveLitElement {
           startTimeRange === null ? '?' : formatDuration({
             milliseconds: startTimeRange.startMs,
           });
+        const startTimeDisplayLabel = startTimeRange === null ?
+          '?' :
+          formatDuration(
+            {
+              milliseconds: startTimeRange.startMs,
+            },
+            /* digits= */ 0,
+            /* fullDigitalFormat= */ true,
+          );
         // TODO(pihsun): Check if there's any case that timestamp will be
         // missing.
         // TODO(pihsun): Handle keyboard event / a11y on the timestamp.
@@ -428,11 +493,13 @@ export class TranscriptionView extends ReactiveLitElement {
           <div class="row">
             <span
               class="timestamp"
-              tabindex="0"
+              tabindex=${this.seekable ? 0 : -1}
               data-start-ms=${ifDefined(startTimeRange?.startMs)}
+              role="button"
+              aria-label=${startTimeDisplayLabel}
             >
               ${startTimeDisplay}
-              <md-focus-ring></md-focus-ring>
+              ${this.seekable ? html`<md-focus-ring></md-focus-ring>` : nothing}
             </span>
             <div class="paragraph">
               ${this.renderParagraph(speakerLabels, parts)}

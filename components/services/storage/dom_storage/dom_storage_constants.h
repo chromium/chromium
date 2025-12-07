@@ -19,6 +19,9 @@ extern const size_t kPerStorageAreaQuota;
 // wasn't exceeded.
 extern const size_t kPerStorageAreaOverQuotaAllowance;
 
+// Local storage uses a single global session for all of its storage keys.
+inline constexpr const char kLocalStorageSessionId[] = "_";
+
 }  // namespace storage
 
 #endif  // COMPONENTS_SERVICES_STORAGE_DOM_STORAGE_DOM_STORAGE_CONSTANTS_H_

@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+Found 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] @container rule should be valid: @container (width: 100px), (height: 100px) {} {}
+  assert_equals: expected 1 but got 0
+[FAIL] @container rule should be valid: @container (width),(height)  , (inline-size > 20px) {} {}
+  assert_equals: expected 1 but got 0
+[FAIL] @container rule should be valid: @container (width), name (height) {} {}
+  assert_equals: expected 1 but got 0
+[FAIL] @container rule should be valid: @container --foo {} {}
+  assert_equals: expected 1 but got 0
+[FAIL] @container rule should be valid: @container container {} {}
+  assert_equals: expected 1 but got 0
+[FAIL] @container rule should be valid: @container container, container2 {} {}
+  assert_equals: expected 1 but got 0
+Harness: the test ran to completion.
+

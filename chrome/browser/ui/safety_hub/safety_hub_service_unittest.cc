@@ -8,27 +8,23 @@
 #include <string>
 #include <utility>
 
-#include "base/json/values_util.h"
-#include "base/observer_list_types.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "chrome/test/base/testing_profile.h"
-#include "testing/gmock/include/gmock/gmock.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_result.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 constexpr base::TimeDelta kUpdateIntervalForTest = base::Days(7);
 
-class MockSafetyHubResult : public SafetyHubService::Result {
+class MockSafetyHubResult : public SafetyHubResult {
  public:
   explicit MockSafetyHubResult(base::Time timestamp = base::Time::Now())
-      : SafetyHubService::Result(timestamp) {}
+      : SafetyHubResult(timestamp) {}
   ~MockSafetyHubResult() override = default;
 
-  std::unique_ptr<SafetyHubService::Result> Clone() const override {
+  std::unique_ptr<SafetyHubResult> Clone() const override {
     return std::make_unique<MockSafetyHubResult>(*this);
   }
 
@@ -75,8 +71,7 @@ class MockSafetyHubService : public SafetyHubService {
   int GetNumUIUpdates() const { return num_updates_ui_; }
 
   // Set the latest result to a specific value - 42 in this case.
-  std::unique_ptr<SafetyHubService::Result> InitializeLatestResultImpl()
-      override {
+  std::unique_ptr<SafetyHubResult> InitializeLatestResultImpl() override {
     auto init_result = std::make_unique<MockSafetyHubResult>();
     init_result->SetVal(42);
     return init_result;
@@ -89,20 +84,21 @@ class MockSafetyHubService : public SafetyHubService {
     return kUpdateIntervalForTest;
   }
 
-  base::OnceCallback<std::unique_ptr<Result>()> GetBackgroundTask() override {
+  base::OnceCallback<std::unique_ptr<SafetyHubResult>()> GetBackgroundTask()
+      override {
     auto init_result = std::make_unique<MockSafetyHubResult>();
     return base::BindOnce(&UpdateOnBackgroundThread, std::move(init_result));
   }
 
-  static std::unique_ptr<Result> UpdateOnBackgroundThread(
-      std::unique_ptr<Result> result) {
+  static std::unique_ptr<SafetyHubResult> UpdateOnBackgroundThread(
+      std::unique_ptr<SafetyHubResult> result) {
     auto background_result = std::make_unique<MockSafetyHubResult>();
     background_result->IncreaseVal();
     return background_result;
   }
 
-  std::unique_ptr<SafetyHubService::Result> UpdateOnUIThread(
-      std::unique_ptr<Result> result) override {
+  std::unique_ptr<SafetyHubResult> UpdateOnUIThread(
+      std::unique_ptr<SafetyHubResult> result) override {
     num_updates_background_ +=
         static_cast<MockSafetyHubResult*>(result.get())->GetVal();
     ++num_updates_ui_;
@@ -122,7 +118,7 @@ class MockSafetyHubService : public SafetyHubService {
 
 class MockObserver : public SafetyHubService::Observer {
  public:
-  void OnResultAvailable(const SafetyHubService::Result* result) override {
+  void OnResultAvailable(const SafetyHubResult* result) override {
     ++num_calls_;
     if (callback_) {
       callback_.Run();
@@ -221,19 +217,10 @@ TEST_F(SafetyHubServiceTest, UpdateOnBackgroundThread) {
 TEST_F(SafetyHubServiceTest, GetCachedResult) {
   // The mock service initializes the latest result on construction, so its
   // value should be those that we'd expect.
-  std::optional<std::unique_ptr<SafetyHubService::Result>> opt_result =
+  std::optional<std::unique_ptr<SafetyHubResult>> opt_result =
       service()->GetCachedResult();
   EXPECT_TRUE(opt_result.has_value());
   MockSafetyHubResult* result =
       static_cast<MockSafetyHubResult*>(opt_result.value().get());
   EXPECT_EQ(result->GetVal(), 42);
-}
-
-TEST_F(SafetyHubServiceTest, ResultBaseToDict) {
-  base::Time time = base::Time::Now() - base::Days(5);
-  auto result = std::make_unique<MockSafetyHubResult>(time);
-  EXPECT_EQ(result->timestamp(), time);
-  // The timestamp saved in the dict should be the Value of time.
-  base::Value::Dict dict = result->ToDictValue();
-  EXPECT_EQ(*dict.Find(kSafetyHubTimestampResultKey), base::TimeToValue(time));
 }

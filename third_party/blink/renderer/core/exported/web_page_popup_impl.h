@@ -108,6 +108,7 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
 
   // WebPagePopup implementation.
   WebDocument GetDocument() override;
+  Handle GetHandle() const override;
 
   // PagePopup implementation.
   void PostMessageToPopup(const String& message) override;
@@ -134,10 +135,15 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
       const display::ScreenInfos& screen_infos,
       PagePopupClient*);
 
+  void ExecuteEditCommand(const String& command, const String& value);
+
+  // The element which created this popup.
+  Element& OwnerElement();
+
  private:
   // WidgetBaseClient overrides:
   void OnCommitRequested() override;
-  void BeginMainFrame(base::TimeTicks last_frame_time) override;
+  void BeginMainFrame(const viz::BeginFrameArgs& args) override;
   void SetSuppressFrameRequestsWorkaroundFor704763Only(bool) final;
   WebInputEventResult DispatchBufferedTouchEvents() override;
   void WillHandleGestureEvent(const WebGestureEvent& event,
@@ -150,7 +156,7 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
       bool event_processed) override;
   bool SupportsBufferedTouchEvents() override { return true; }
   void FocusChanged(mojom::blink::FocusState focus_state) override;
-  void ScheduleAnimation() override;
+  void ScheduleAnimation(bool urgent) override;
   void UpdateVisualProperties(
       const VisualProperties& visual_properties) override;
   gfx::Rect ViewportVisibleRect() override;
@@ -174,7 +180,7 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   WebInputEventResult HandleInputEvent(const WebCoalescedInputEvent&) override;
   void SetFocus(bool) override;
   bool HasFocus() override;
-  WebHitTestResult HitTestResultAt(const gfx::PointF&) override { return {}; }
+  WebHitTestResult HitTestResultAt(const gfx::PointF&) override;
   void InitializeCompositing(const display::ScreenInfos& screen_infos,
                              const cc::LayerTreeSettings* settings) override;
   void SetCursor(const ui::Cursor& cursor) override;
@@ -182,11 +188,13 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   void SetHandlingInputEvent(bool handling) override;
   void ProcessInputEventSynchronouslyForTesting(
       const WebCoalescedInputEvent&) override;
+  void DispatchNonBlockingEventForTesting(
+      std::unique_ptr<WebCoalescedInputEvent> event) override;
   void UpdateTextInputState() override;
   void UpdateSelectionBounds() override;
   void ShowVirtualKeyboard() override;
   void FlushInputProcessedCallback() override;
-  void CancelCompositionForPepper() override;
+  void CancelComposition() override;
   void ApplyVisualProperties(
       const VisualProperties& visual_properties) override;
   const display::ScreenInfo& GetScreenInfo() override;
@@ -197,7 +205,7 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   gfx::Rect ViewRect() override;
   void SetScreenRects(const gfx::Rect& widget_screen_rect,
                       const gfx::Rect& window_screen_rect) override;
-  gfx::Size VisibleViewportSizeInDIPs() override;
+  gfx::Size VisibleViewportSize() override;
   bool IsHidden() const override;
 
   // WidgetEventHandler functions
@@ -297,6 +305,8 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   // Only used for Scroll Unification.
   // Will be set in GestureScrollBegin
   WeakPersistent<Node> scrollable_node_;
+
+  Handle handle_;
 
   friend class WebPagePopup;
   friend class PagePopupChromeClient;

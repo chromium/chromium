@@ -25,7 +25,8 @@ namespace remoting {
 class UrlLoaderNetworkServiceObserver
     : public network::mojom::URLLoaderNetworkServiceObserver {
  public:
-  UrlLoaderNetworkServiceObserver();
+  explicit UrlLoaderNetworkServiceObserver(
+      std::unique_ptr<net::ClientCertStore> client_cert_store);
   ~UrlLoaderNetworkServiceObserver() override;
 
   UrlLoaderNetworkServiceObserver(const UrlLoaderNetworkServiceObserver&) =
@@ -56,12 +57,8 @@ class UrlLoaderNetworkServiceObserver
       const scoped_refptr<net::HttpResponseHeaders>& head_headers,
       mojo::PendingRemote<network::mojom::AuthChallengeResponder>
           auth_challenge_responder) override;
-  void OnPrivateNetworkAccessPermissionRequired(
-      const GURL& url,
-      const net::IPAddress& ip_address,
-      const std::optional<std::string>& private_network_device_id,
-      const std::optional<std::string>& private_network_device_name,
-      OnPrivateNetworkAccessPermissionRequiredCallback callback) override;
+  void OnLocalNetworkAccessPermissionRequired(
+      OnLocalNetworkAccessPermissionRequiredCallback callback) override;
   void OnClearSiteData(
       const GURL& url,
       const std::string& header_value,
@@ -76,18 +73,28 @@ class UrlLoaderNetworkServiceObserver
                        int64_t sent_bytes) override;
   void OnSharedStorageHeaderReceived(
       const url::Origin& request_origin,
-      std::vector<network::mojom::SharedStorageOperationPtr> operations,
+      std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
+          methods_with_options,
+      const std::optional<std::string>& with_lock,
       OnSharedStorageHeaderReceivedCallback callback) override;
+  void OnAdAuctionEventRecordHeaderReceived(
+      network::AdAuctionEventRecord event_record,
+      const std::optional<url::Origin>& top_frame_origin) override;
   void Clone(
       mojo::PendingReceiver<network::mojom::URLLoaderNetworkServiceObserver>
           listener) override;
   void OnWebSocketConnectedToPrivateNetwork(
+      const GURL& request_url,
       network::mojom::IPAddressSpace ip_address_space) override;
+  void OnUrlLoaderConnectedToPrivateNetwork(
+      const GURL& request_url,
+      network::mojom::IPAddressSpace response_address_space,
+      network::mojom::IPAddressSpace client_address_space,
+      network::mojom::IPAddressSpace target_address_space) override;
 
   void OnCertificatesSelected(
       mojo::PendingRemote<network::mojom::ClientCertificateResponder>
           client_cert_responder,
-      std::unique_ptr<net::ClientCertStore> cert_store,
       const scoped_refptr<net::SSLCertRequestInfo>& cert_info,
       net::ClientCertIdentityList selected_certs);
 
@@ -100,6 +107,7 @@ class UrlLoaderNetworkServiceObserver
   SEQUENCE_CHECKER(sequence_checker_);
 
   mojo::ReceiverSet<network::mojom::URLLoaderNetworkServiceObserver> receivers_;
+  std::unique_ptr<net::ClientCertStore> client_cert_store_;
   base::WeakPtrFactory<UrlLoaderNetworkServiceObserver> weak_factory_{this};
 };
 

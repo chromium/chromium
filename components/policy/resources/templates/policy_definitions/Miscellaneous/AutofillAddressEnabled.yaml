@@ -3,6 +3,7 @@ desc: |-
   Setting the policy to True or leaving it unset gives users control of Autofill for addresses in the UI.
 
         Setting the policy to False means Autofill never suggests or fills address information, nor does it save additional address information that users submit while browsing the web.
+default: true
 example_value: false
 features:
   can_be_recommended: true

@@ -48,6 +48,8 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="SchedQoSProc"/>
   <int value="12" label="Storage"/>
   <int value="13" label="CgroupEINVAL"/>
+  <int value="14" label="NoContext"/>
+  <int value="15" label="NoSender"/>
 </enum>
 
 </enums>

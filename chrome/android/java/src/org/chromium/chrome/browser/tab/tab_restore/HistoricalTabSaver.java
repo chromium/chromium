@@ -4,14 +4,34 @@
 
 package org.chromium.chrome.browser.tab.tab_restore;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Interface for creating entries in TabRestoreService. */
+@NullMarked
 public interface HistoricalTabSaver {
+    /** Destroys the instance. */
+    void destroy();
+
+    /**
+     * Adds a secondary {@link TabModel} supplier to check if a deleted tab should be added to
+     * recent tabs.
+     */
+    void addSecondaryTabModelSupplier(Supplier<TabModel> tabModelSupplier);
+
+    /**
+     * Removes a secondary {@link TabModel} supplier to check if a deleted tab should be added to
+     * recent tabs.
+     */
+    void removeSecondaryTabModelSupplier(Supplier<TabModel> tabModelSupplier);
+
     /**
      * Creates a Tab entry in TabRestoreService.
+     *
      * @param tab The {@link Tab} to create an entry for.
      */
     void createHistoricalTab(Tab tab);

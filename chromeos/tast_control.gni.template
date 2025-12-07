@@ -1,0 +1,29 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/sanitizers/sanitizers.gni")
+
+#~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=
+# BEFORE ADDING A TEST HERE: If this is a consistent failure in Chrome on
+# ChromeOS CI builders, you should try to find and revert CLs causing new
+# regressions. Do not simply disable newly failing tests in tast_control.gni
+# as the Chrome uprev will still fail.
+#
+# Chromimum sheriffs should not disable NEW regressions here. Changes to
+# this file require the current CrOS gardener's approval. See go/chrome-sheriff-tast.
+#~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=
+
+# Specify tests to disable at src/chromeos/tast_control_disabled_tests.txt
+tast_disabled_tests_from_chrome_all = [
+  TAST_CONTROL_DISABLED_TESTS
+]
+
+# Entries only for the public builders (chromeos-XXX-rel)
+if (!is_chrome_branded) {
+  # Specify tests to disable at
+  # src/chromeos/tast_control_disabled_tests_public_builders.txt
+  tast_disabled_tests_from_chrome_all += [
+    TAST_CONTROL_DISABLED_TESTS_PUBLIC_BUILDERS
+  ]
+}

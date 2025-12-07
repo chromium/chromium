@@ -4,6 +4,7 @@
 
 #include "remoting/signaling/ftl_registration_manager.h"
 
+#include <array>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -11,10 +12,10 @@
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "remoting/base/http_status.h"
 #include "remoting/base/protobuf_http_client.h"
 #include "remoting/base/protobuf_http_request.h"
 #include "remoting/base/protobuf_http_request_config.h"
-#include "remoting/base/protobuf_http_status.h"
 #include "remoting/proto/ftl/v1/ftl_messages.pb.h"
 #include "remoting/signaling/ftl_device_id_provider.h"
 #include "remoting/signaling/ftl_services_context.h"
@@ -24,18 +25,16 @@ namespace remoting {
 
 namespace {
 
-constexpr remoting::ftl::ChromotingCapability::Feature
-    kChromotingCapabilities[] = {
-        remoting::ftl::ChromotingCapability_Feature_SERIALIZED_XMPP_SIGNALING};
-constexpr size_t kChromotingCapabilityCount =
-    sizeof(kChromotingCapabilities) /
-    sizeof(ftl::ChromotingCapability::Feature);
+constexpr auto kChromotingCapabilities =
+    std::to_array<remoting::ftl::ChromotingCapability::Feature>({
+        remoting::ftl::ChromotingCapability_Feature_SERIALIZED_XMPP_SIGNALING,
+    });
 
-constexpr remoting::ftl::FtlCapability::Feature kFtlCapabilities[] = {
-    remoting::ftl::FtlCapability_Feature_RECEIVE_CALLS_FROM_GAIA,
-    remoting::ftl::FtlCapability_Feature_GAIA_REACHABLE};
-constexpr size_t kFtlCapabilityCount =
-    sizeof(kFtlCapabilities) / sizeof(ftl::FtlCapability::Feature);
+constexpr auto kFtlCapabilities =
+    std::to_array<remoting::ftl::FtlCapability::Feature>({
+        remoting::ftl::FtlCapability_Feature_RECEIVE_CALLS_FROM_GAIA,
+        remoting::ftl::FtlCapability_Feature_GAIA_REACHABLE,
+    });
 
 constexpr base::TimeDelta kRefreshBufferTime = base::Hours(1);
 
@@ -176,12 +175,12 @@ void FtlRegistrationManager::DoSignInGaia(DoneCallback on_done) {
   *request.mutable_register_data()->mutable_device_id() =
       device_id_provider_->GetDeviceId();
 
-  for (size_t i = 0; i < kChromotingCapabilityCount; i++) {
-    request.mutable_register_data()->add_caps(kChromotingCapabilities[i]);
+  for (const auto& capability : kChromotingCapabilities) {
+    request.mutable_register_data()->add_caps(capability);
   }
 
-  for (size_t i = 0; i < kFtlCapabilityCount; i++) {
-    request.mutable_register_data()->add_caps(kFtlCapabilities[i]);
+  for (const auto& capability : kFtlCapabilities) {
+    request.mutable_register_data()->add_caps(capability);
   }
 
   registration_client_->SignInGaia(
@@ -191,7 +190,7 @@ void FtlRegistrationManager::DoSignInGaia(DoneCallback on_done) {
 
 void FtlRegistrationManager::OnSignInGaiaResponse(
     DoneCallback on_done,
-    const ProtobufHttpStatus& status,
+    const HttpStatus& status,
     std::unique_ptr<ftl::SignInGaiaResponse> response) {
   registration_id_.clear();
 
@@ -207,8 +206,8 @@ void FtlRegistrationManager::OnSignInGaiaResponse(
   sign_in_backoff_.Reset();
   registration_id_ = response->registration_id();
   if (registration_id_.empty()) {
-    std::move(on_done).Run(ProtobufHttpStatus(ProtobufHttpStatus::Code::UNKNOWN,
-                                              "registration_id is empty."));
+    std::move(on_done).Run(
+        HttpStatus(HttpStatus::Code::UNKNOWN, "registration_id is empty."));
     return;
   }
 

@@ -27,10 +27,10 @@ class CommandQueue;
 
 // Adapters represent physical devices and are responsible for device discovery.
 // An `Adapter` instance creates and maintains corresponding `IDXGIAdapter` or
-// `IDXCoreAdapter`, `ID3D12Device`, `IDMLDevice` and `webnn::dml::CommandQueue`
-// for a physical adapter. A single `Adapter` instance is shared and
-// reference-counted by all `GraphImplDml` of the same adapter. The
-// `Adapter` instance is created upon the first `GraphImplDml` call
+// `IDXCoreAdapter`, `ID3D12Device`, `IDMLDevice1` and
+// `webnn::dml::CommandQueue` for a physical adapter. A single `Adapter`
+// instance is shared and reference-counted by all `GraphImplDml` of the same
+// adapter. The `Adapter` instance is created upon the first `GraphImplDml` call
 // `Adapter::GetGpuInstance()` or `Adapter::GetNpuInstance()` and is released
 // when the last `GraphImplDml` is destroyed.
 class COMPONENT_EXPORT(WEBNN_SERVICE) Adapter final
@@ -72,7 +72,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) Adapter final
 
   ID3D12Device* d3d12_device() const { return d3d12_device_.Get(); }
 
-  IDMLDevice* dml_device() const { return dml_device_.Get(); }
+  IDMLDevice1* dml_device() const { return dml_device_.Get(); }
 
   CommandQueue* command_queue() const { return command_queue_.get(); }
 
@@ -113,7 +113,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) Adapter final
   friend class base::RefCountedThreadSafe<Adapter>;
   Adapter(Microsoft::WRL::ComPtr<IUnknown> dxgi_or_dxcore_adapter,
           Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device,
-          Microsoft::WRL::ComPtr<IDMLDevice> dml_device,
+          Microsoft::WRL::ComPtr<IDMLDevice1> dml_device,
           scoped_refptr<CommandQueue> command_queue,
           scoped_refptr<CommandQueue> init_command_queue_for_npu,
           DML_FEATURE_LEVEL max_supported_dml_feature_level,
@@ -135,7 +135,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) Adapter final
   Microsoft::WRL::ComPtr<IUnknown> dxgi_or_dxcore_adapter_;
 
   Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device_;
-  Microsoft::WRL::ComPtr<IDMLDevice> dml_device_;
+  Microsoft::WRL::ComPtr<IDMLDevice1> dml_device_;
   scoped_refptr<CommandQueue> command_queue_;
   // It's dedicated to initialize graph on background thread for the NPU
   // adapter, it's nullptr for the GPU adapter.

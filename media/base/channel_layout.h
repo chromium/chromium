@@ -5,12 +5,14 @@
 #ifndef MEDIA_BASE_CHANNEL_LAYOUT_H_
 #define MEDIA_BASE_CHANNEL_LAYOUT_H_
 
-#include "media/base/media_shmem_export.h"
+#include "media/base/media_export.h"
 
 namespace media {
 
 // Enumerates the various representations of the ordering of audio channels.
 // Logged to UMA, so never reuse a value, always add new/greater ones!
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.media
+// GENERATED_JAVA_PREFIX_TO_STRIP: CHANNEL_
 enum ChannelLayout {
   CHANNEL_LAYOUT_NONE = 0,
   CHANNEL_LAYOUT_UNSUPPORTED = 1,
@@ -154,7 +156,7 @@ constexpr int kMaxConcurrentChannels = 8;
 // Returns the expected channel position in an interleaved stream.  Values of -1
 // mean the channel at that index is not used for that layout.  Values range
 // from 0 to ChannelLayoutToChannelCount(layout) - 1.
-MEDIA_SHMEM_EXPORT int ChannelOrder(ChannelLayout layout, Channels channel);
+MEDIA_EXPORT int ChannelOrder(ChannelLayout layout, Channels channel);
 
 // Returns the number of channels in a given ChannelLayout or 0 if the
 // channel layout can't be mapped to a valid value. Currently, 0
@@ -162,14 +164,14 @@ MEDIA_SHMEM_EXPORT int ChannelOrder(ChannelLayout layout, Channels channel);
 // CHANNEL_LAYOUT_DISCRETE, and CHANNEL_LAYOUT_BITSTREAM. For these cases,
 // additional steps must be taken to manually figure out the corresponding
 // number of channels.
-MEDIA_SHMEM_EXPORT int ChannelLayoutToChannelCount(ChannelLayout layout);
+MEDIA_EXPORT int ChannelLayoutToChannelCount(ChannelLayout layout);
 
 // Given the number of channels, return the best layout,
 // or return CHANNEL_LAYOUT_UNSUPPORTED if there is no good match.
-MEDIA_SHMEM_EXPORT ChannelLayout GuessChannelLayout(int channels);
+MEDIA_EXPORT ChannelLayout GuessChannelLayout(int channels);
 
 // Returns a string representation of the channel layout.
-MEDIA_SHMEM_EXPORT const char* ChannelLayoutToString(ChannelLayout layout);
+MEDIA_EXPORT const char* ChannelLayoutToString(ChannelLayout layout);
 
 }  // namespace media
 

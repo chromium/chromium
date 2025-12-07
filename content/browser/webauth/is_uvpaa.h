@@ -7,7 +7,6 @@
 
 #include "base/functional/callback.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -28,7 +27,6 @@ CONTENT_EXPORT void IsUVPlatformAuthenticatorAvailable(
     IsUVPlatformAuthenticatorAvailableCallback);
 #elif BUILDFLAG(IS_WIN)
 CONTENT_EXPORT void IsUVPlatformAuthenticatorAvailable(
-    bool is_off_the_record,
     IsUVPlatformAuthenticatorAvailableCallback);
 #elif BUILDFLAG(IS_CHROMEOS)
 CONTENT_EXPORT void IsUVPlatformAuthenticatorAvailable(

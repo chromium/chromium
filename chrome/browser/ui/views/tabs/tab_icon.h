@@ -75,7 +75,7 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
   void SetCanPaintToLayer(bool can_paint_to_layer);
 
   // The loading animation only steps when this function is called. The
-  // |elapsed_time| parameter is expected to be the same among all tabs in a tab
+  // `elapsed_time` parameter is expected to be the same among all tabs in a tab
   // strip in order to keep the throbbers in sync.
   void StepLoadingAnimation(const base::TimeDelta& elapsed_time);
 
@@ -85,7 +85,7 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
   void EnlargeDiscardIndicatorRadius(int radius);
   void SetShouldShowDiscardIndicator(bool enabled);
 
- private:
+ protected:
   class CrashAnimation;
   friend CrashAnimation;
   friend class TabTest;
@@ -93,13 +93,14 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
+  views::PaintInfo::ScaleType GetPaintScaleType() const override;
   void OnThemeChanged() override;
 
   // views::AnimationDelegateViews:
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
 
-  // Paints the attention indicator and |favicon_| at the given location.
+  // Paints the attention indicator and `favicon_` at the given location.
   void PaintAttentionIndicatorAndIcon(gfx::Canvas* canvas,
                                       const gfx::ImageSkia& icon,
                                       const gfx::Rect& bounds);
@@ -161,9 +162,6 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
 
   // The point in time when the tab icon was first painted in the loading state.
   base::TimeTicks loading_animation_start_time_;
-
-  // Paint state for the loading animation after the most recent waiting paint.
-  gfx::ThrobberWaitingState waiting_state_;
 
   // When the favicon_ has theming applied to it, the themed version will be
   // cached here. If this isNull(), then there is no theming and favicon_

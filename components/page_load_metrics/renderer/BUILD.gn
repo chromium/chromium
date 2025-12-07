@@ -4,6 +4,8 @@
 
 source_set("renderer") {
   sources = [
+    "features.cc",
+    "features.h",
     "metrics_render_frame_observer.cc",
     "metrics_render_frame_observer.h",
     "page_resource_data_use.cc",
@@ -13,7 +15,6 @@ source_set("renderer") {
     "page_timing_metrics_sender.cc",
     "page_timing_metrics_sender.h",
     "page_timing_sender.h",
-    "soft_navigation_metrics_type_converter.h",
   ]
   deps = [
     "//base",

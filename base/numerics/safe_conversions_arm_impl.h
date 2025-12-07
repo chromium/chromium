@@ -8,45 +8,46 @@
 // IWYU pragma: private, include "base/numerics/safe_conversions.h"
 
 #include <stdint.h>
+
+#include <algorithm>
+#include <concepts>
 #include <type_traits>
 
 #include "base/numerics/safe_conversions_impl.h"
 
 namespace base {
-namespace internal {
+namespace numerics_internal {
 
 // Fast saturation to a destination type.
 template <typename Dst, typename Src>
 struct SaturateFastAsmOp {
   static constexpr bool is_supported =
-      kEnableAsmCode && std::is_signed_v<Src> && std::is_integral_v<Dst> &&
-      std::is_integral_v<Src> &&
-      IntegerBitsPlusSign<Src>::value <= IntegerBitsPlusSign<int32_t>::value &&
-      IntegerBitsPlusSign<Dst>::value <= IntegerBitsPlusSign<int32_t>::value &&
-      !IsTypeInRangeForNumericType<Dst, Src>::value;
+      kEnableAsmCode && std::signed_integral<Src> && std::integral<Dst> &&
+      kIntegerBitsPlusSign<Src> <= kIntegerBitsPlusSign<int32_t> &&
+      kIntegerBitsPlusSign<Dst> <= kIntegerBitsPlusSign<int32_t> &&
+      !kIsTypeInRangeForNumericType<Dst, Src>;
 
   __attribute__((always_inline)) static Dst Do(Src value) {
     int32_t src = value;
-    typename std::conditional<std::is_signed_v<Dst>, int32_t, uint32_t>::type
-        result;
-    if (std::is_signed_v<Dst>) {
+    if constexpr (std::is_signed_v<Dst>) {
+      int32_t result;
       asm("ssat %[dst], %[shift], %[src]"
           : [dst] "=r"(result)
-          : [src] "r"(src), [shift] "n"(IntegerBitsPlusSign<Dst>::value <= 32
-                                            ? IntegerBitsPlusSign<Dst>::value
-                                            : 32));
+          : [src] "r"(src), [shift] "n"(
+                                std::min(kIntegerBitsPlusSign<Dst>, 32)));
+      return static_cast<Dst>(result);
     } else {
+      uint32_t result;
       asm("usat %[dst], %[shift], %[src]"
           : [dst] "=r"(result)
-          : [src] "r"(src), [shift] "n"(IntegerBitsPlusSign<Dst>::value < 32
-                                            ? IntegerBitsPlusSign<Dst>::value
-                                            : 31));
+          : [src] "r"(src), [shift] "n"(
+                                std::min(kIntegerBitsPlusSign<Dst>, 31)));
+      return static_cast<Dst>(result);
     }
-    return static_cast<Dst>(result);
   }
 };
 
-}  // namespace internal
+}  // namespace numerics_internal
 }  // namespace base
 
 #endif  // BASE_NUMERICS_SAFE_CONVERSIONS_ARM_IMPL_H_

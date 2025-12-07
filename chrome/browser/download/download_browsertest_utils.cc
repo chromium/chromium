@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/download/download_browsertest_utils.h"
 
+#include <optional>
+
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
@@ -289,12 +288,16 @@ bool DownloadTestBase::CheckDownloadFullPaths(
     return false;
   }
 
-  int64_t origin_file_size = 0;
-  EXPECT_TRUE(base::GetFileSize(origin_file, &origin_file_size));
+  std::optional<int64_t> origin_file_size = base::GetFileSize(origin_file);
+  if (!origin_file_size.has_value()) {
+    ADD_FAILURE() << "origin_file_size does not have a value";
+    return false;
+  }
+
   std::string original_file_contents;
   EXPECT_TRUE(base::ReadFileToString(origin_file, &original_file_contents));
-  EXPECT_TRUE(
-      VerifyFile(downloaded_file, original_file_contents, origin_file_size));
+  EXPECT_TRUE(VerifyFile(downloaded_file, original_file_contents,
+                         origin_file_size.value()));
 
   // Delete the downloaded copy of the file.
   bool downloaded_file_deleted = base::DieFileDie(downloaded_file, false);
@@ -365,7 +368,7 @@ bool DownloadTestBase::RunSizeTest(Browser* browser,
 
   // TODO(ahendrickson) -- |expected_title_in_progress| and
   // |expected_title_finished| need to be checked.
-  base::FilePath filename = base::FilePath::FromUTF8Unsafe(url.path());
+  base::FilePath filename = base::FilePath::FromUTF8Unsafe(url.GetPath());
   std::u16string expected_title_in_progress(
       base::ASCIIToUTF16(partial_indication) + filename.LossyDisplayName());
   std::u16string expected_title_finished(base::ASCIIToUTF16(total_indication) +
@@ -444,6 +447,10 @@ bool DownloadTestBase::DidShowFileChooser() {
   return file_activity_observer_->TestAndResetDidShowFileChooser();
 }
 
+void DownloadTestBase::SetAllowOpenDownload(bool allow) {
+  file_activity_observer_->SetAllowOpenDownload(allow);
+}
+
 bool DownloadTestBase::VerifyFile(const base::FilePath& path,
                                   const std::string& value,
                                   const int64_t file_size) {
@@ -468,7 +475,8 @@ bool DownloadTestBase::VerifyFile(const base::FilePath& path,
 
   // Check the contents.
   EXPECT_EQ(value, file_contents);
-  if (memcmp(file_contents.c_str(), value.c_str(), expected_size) != 0) {
+  if (UNSAFE_TODO(
+          memcmp(file_contents.c_str(), value.c_str(), expected_size)) != 0) {
     return false;
   }
 
@@ -609,11 +617,11 @@ void DownloadTestBase::DownloadFilesCheckErrorsLoopBody(
   }
 }
 
-void DownloadTestBase::DownloadFilesCheckErrors(size_t count,
-                                                DownloadInfo* download_info) {
+void DownloadTestBase::DownloadFilesCheckErrors(
+    base::span<DownloadInfo> download_info) {
   DownloadFilesCheckErrorsSetup();
 
-  for (size_t i = 0; i < count; ++i) {
+  for (size_t i = 0; i < download_info.size(); ++i) {
     DownloadFilesCheckErrorsLoopBody(download_info[i], i);
   }
 }
@@ -640,8 +648,7 @@ void DownloadTestBase::DownloadInsertFilesErrorCheckErrorsLoopBody(
 }
 
 void DownloadTestBase::DownloadInsertFilesErrorCheckErrors(
-    size_t count,
-    FileErrorInjectInfo* info) {
+    base::span<FileErrorInjectInfo> info) {
   DownloadFilesCheckErrorsSetup();
 
   // Set up file failures.
@@ -649,7 +656,7 @@ void DownloadTestBase::DownloadInsertFilesErrorCheckErrors(
       content::TestFileErrorInjector::Create(
           DownloadManagerForBrowser(browser())));
 
-  for (size_t i = 0; i < count; ++i) {
+  for (size_t i = 0; i < info.size(); ++i) {
     DownloadInsertFilesErrorCheckErrorsLoopBody(injector, info[i], i);
   }
 }
@@ -657,8 +664,7 @@ void DownloadTestBase::DownloadInsertFilesErrorCheckErrors(
 // Attempts to download a file to a read-only folder, based on information
 // in |download_info|.
 void DownloadTestBase::DownloadFilesToReadonlyFolder(
-    size_t count,
-    DownloadInfo* download_info) {
+    base::span<DownloadInfo> download_info) {
   DownloadFilesCheckErrorsSetup();
 
   // Make the test folder unwritable.
@@ -669,7 +675,7 @@ void DownloadTestBase::DownloadFilesToReadonlyFolder(
   base::FilePermissionRestorer permission_restorer(destination_folder);
   EXPECT_TRUE(base::MakeFileUnwritable(destination_folder));
 
-  for (size_t i = 0; i < count; ++i) {
+  for (size_t i = 0; i < download_info.size(); ++i) {
     DownloadFilesCheckErrorsLoopBody(download_info[i], i);
   }
 }

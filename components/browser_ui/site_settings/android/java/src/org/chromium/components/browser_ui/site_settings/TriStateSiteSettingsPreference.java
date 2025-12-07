@@ -11,18 +11,25 @@ import android.widget.RadioGroup;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 
 /** A 3-state Allowed/Ask/Blocked radio group Preference used for SiteSettings. */
+@NullMarked
 public class TriStateSiteSettingsPreference extends Preference
         implements RadioGroup.OnCheckedChangeListener {
-    private @ContentSettingValues int mSetting = ContentSettingValues.DEFAULT;
-    private int[] mDescriptionIds;
+    private @ContentSetting int mSetting = ContentSetting.DEFAULT;
+    private int @Nullable [] mDescriptionIds;
+    private int @Nullable [] mIconIds;
     private RadioButtonWithDescription mAllowed;
     private RadioButtonWithDescription mAsk;
     private RadioButtonWithDescription mBlocked;
     private RadioGroup mRadioGroup;
+    private boolean mIsPermissionSiteSettingsRadioButtonFeatureEnabled;
+    private int mIconMarginEnd;
 
     public TriStateSiteSettingsPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -38,34 +45,46 @@ public class TriStateSiteSettingsPreference extends Preference
     }
 
     /**
-     * @param setting        The initial setting for this Preference
-     * @param descriptionIds An array of 3 resource IDs for descriptions for
-     *                       Allowed, Ask and Blocked states, in that order.
+     * @param setting The initial setting for this Preference
+     * @param descriptionIds An array of 3 resource IDs for descriptions for Allowed, Ask and
+     *     Blocked states, in that order.
      */
-    public void initialize(@ContentSettingValues int setting, int[] descriptionIds) {
+    public void initialize(
+            @ContentSetting int setting,
+            int @Nullable [] descriptionIds,
+            int @Nullable [] iconIds,
+            boolean isPermissionSiteSettingsRadioButtonFeatureEnabled,
+            int iconMarginEnd) {
         mSetting = setting;
         mDescriptionIds = descriptionIds;
+        mIconIds = iconIds;
+        mIsPermissionSiteSettingsRadioButtonFeatureEnabled =
+                isPermissionSiteSettingsRadioButtonFeatureEnabled;
+        mIconMarginEnd = iconMarginEnd;
     }
 
-    /** @return The current checked setting. */
-    public @ContentSettingValues int getCheckedSetting() {
+    /**
+     * @return The current checked setting.
+     */
+    public @ContentSetting int getCheckedSetting() {
         return mSetting;
     }
 
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
         if (mAllowed.isChecked()) {
-            mSetting = ContentSettingValues.ALLOW;
+            mSetting = ContentSetting.ALLOW;
         } else if (mAsk.isChecked()) {
-            mSetting = ContentSettingValues.ASK;
+            mSetting = ContentSetting.ASK;
         } else if (mBlocked.isChecked()) {
-            mSetting = ContentSettingValues.BLOCK;
+            mSetting = ContentSetting.BLOCK;
         }
 
         callChangeListener(mSetting);
     }
 
     @Override
+    @Initializer
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
 
@@ -76,22 +95,45 @@ public class TriStateSiteSettingsPreference extends Preference
         mRadioGroup.setOnCheckedChangeListener(this);
 
         if (mDescriptionIds != null) {
-            mAllowed.setDescriptionText(getContext().getText(mDescriptionIds[0]));
-            mAsk.setDescriptionText(getContext().getText(mDescriptionIds[1]));
-            mBlocked.setDescriptionText(getContext().getText(mDescriptionIds[2]));
+            if (mIsPermissionSiteSettingsRadioButtonFeatureEnabled) {
+                mAllowed.setPrimaryText(getContext().getText(mDescriptionIds[0]));
+                mAsk.setPrimaryText(getContext().getText(mDescriptionIds[1]));
+                mBlocked.setPrimaryText(getContext().getText(mDescriptionIds[2]));
+            } else {
+                mAllowed.setDescriptionText(getContext().getText(mDescriptionIds[0]));
+                mAsk.setDescriptionText(getContext().getText(mDescriptionIds[1]));
+                mBlocked.setDescriptionText(getContext().getText(mDescriptionIds[2]));
+            }
+        }
+
+        if (mIconIds != null) {
+            if (mIconIds[0] != 0) {
+                mAllowed.setIcon(mIconIds[0]);
+                mAllowed.setIconMarginEnd(mIconMarginEnd);
+            }
+            if (mIconIds[1] != 0) {
+                mAsk.setIcon(mIconIds[1]);
+                mAsk.setIconMarginEnd(mIconMarginEnd);
+            }
+            if (mIconIds[2] != 0) {
+                mBlocked.setIcon(mIconIds[2]);
+                mBlocked.setIconMarginEnd(mIconMarginEnd);
+            }
         }
 
         RadioButtonWithDescription radioButton = findRadioButton(mSetting);
         if (radioButton != null) radioButton.setChecked(true);
     }
 
-    /** @param setting The setting to find RadioButton for. */
-    private RadioButtonWithDescription findRadioButton(@ContentSettingValues int setting) {
-        if (setting == ContentSettingValues.ALLOW) {
+    /**
+     * @param setting The setting to find RadioButton for.
+     */
+    private @Nullable RadioButtonWithDescription findRadioButton(@ContentSetting int setting) {
+        if (setting == ContentSetting.ALLOW) {
             return mAllowed;
-        } else if (setting == ContentSettingValues.ASK) {
+        } else if (setting == ContentSetting.ASK) {
             return mAsk;
-        } else if (setting == ContentSettingValues.BLOCK) {
+        } else if (setting == ContentSetting.BLOCK) {
             return mBlocked;
         } else {
             return null;

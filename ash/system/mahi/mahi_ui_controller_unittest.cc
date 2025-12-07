@@ -4,12 +4,14 @@
 
 #include "ash/system/mahi/mahi_ui_controller.h"
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/session/session_controller_impl.h"
+#include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/system/mahi/mahi_constants.h"
 #include "ash/system/mahi/mahi_panel_view.h"
@@ -18,7 +20,7 @@
 #include "ash/system/mahi/test/mock_mahi_manager.h"
 #include "ash/system/mahi/test/mock_mahi_ui_controller_delegate.h"
 #include "ash/test/ash_test_base.h"
-#include "base/functional/callback_forward.h"
+#include "base/task/current_thread.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -54,15 +56,6 @@ class MockView : public views::View {
   MOCK_METHOD(void, VisibilityChanged, (views::View*, bool), (override));
 };
 
-// Utilities -------------------------------------------------------------------
-
-void ChangeLockState(bool locked) {
-  SessionInfo info;
-  info.state = locked ? session_manager::SessionState::LOCKED
-                      : session_manager::SessionState::ACTIVE;
-  Shell::Get()->session_controller()->SetSessionInfo(info);
-}
-
 }  // namespace
 
 class MahiUiControllerTest : public AshTestBase {
@@ -84,8 +77,12 @@ class MahiUiControllerTest : public AshTestBase {
  private:
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(chromeos::features::kMahi);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{chromeos::features::kMahi,
+                              chromeos::features::kFeatureManagementMahi},
+        /*disabled_features=*/{});
 
+    ON_CALL(mock_mahi_manager_, IsEnabled).WillByDefault(Return(true));
     ON_CALL(delegate_, GetView).WillByDefault(Return(&delegate_view_));
     AshTestBase::SetUp();
     scoped_setter_ = std::make_unique<chromeos::ScopedMahiManagerSetter>(
@@ -153,7 +150,7 @@ TEST_F(MahiUiControllerTest, NavigateToSummaryOutlinesSection) {
   // visible after navigation.
   ON_CALL(delegate(), GetViewVisibility)
       .WillByDefault([](VisibilityState state) {
-        return state == VisibilityState::kSummaryAndOutlines;
+        return state == VisibilityState::kSummaryAndOutlinesAndElucidation;
       });
 
   EXPECT_CALL(delegate_view(),
@@ -188,6 +185,18 @@ TEST_F(MahiUiControllerTest, NotifyRefreshAvailabilityChanged) {
   Mock::VerifyAndClearExpectations(&delegate());
 }
 
+// Checks `MahiUiController::Delegate` when the panel bounds change.
+TEST_F(MahiUiControllerTest, NotifyPanelBoundsChanged) {
+  const gfx::Rect expected_bounds = gfx::Rect(80, 80);
+  EXPECT_CALL(delegate(),
+              OnUpdated(AllOf(
+                  Property(&MahiUiUpdate::type,
+                           Eq(MahiUiUpdateType::kPanelBoundsChanged)),
+                  Property(&MahiUiUpdate::GetPanelBounds, expected_bounds))));
+  ui_controller().NotifyPanelBoundsChanged(expected_bounds);
+  Mock::VerifyAndClearExpectations(&delegate());
+}
+
 // Checks `MahiUiController::Delegate` when the contents get refreshed.
 TEST_F(MahiUiControllerTest, RefreshContents) {
   InSequence s;
@@ -204,6 +213,51 @@ TEST_F(MahiUiControllerTest, RefreshContents) {
   Mock::VerifyAndClearExpectations(&delegate());
 }
 
+// Checks `MahiUiController::Delegate` when the contents get refreshed and the
+// panel is for elucidation purpose.
+TEST_F(MahiUiControllerTest, RefreshContentsForElucidation) {
+  // Calls `OpenMahiPanel` to set `elucidation_in_use_` to true.
+  // This creates a panel widget and implicitly triggers `RefreshContents`
+  // and `PanelBoundsChanged` calls, hence the first sequence.
+  // Because `kMahiPanelResizable` is enabled by default, there are two
+  // `PanelBoundsChanged` calls.
+  {
+    InSequence s;
+    EXPECT_CALL(
+        delegate(),
+        OnUpdated(Property(
+            &MahiUiUpdate::type,
+            Eq(MahiUiUpdateType::kSummaryAndOutlinesSectionNavigated))));
+    EXPECT_CALL(delegate(), OnUpdated(Property(
+                                &MahiUiUpdate::type,
+                                Eq(MahiUiUpdateType::kElucidationRequested))));
+    EXPECT_CALL(delegate(),
+                OnUpdated(Property(&MahiUiUpdate::type,
+                                   Eq(MahiUiUpdateType::kPanelBoundsChanged))))
+        .Times(2);
+  }
+
+  ui_controller().OpenMahiPanel(GetPrimaryDisplay().id(), gfx::Rect(),
+                                /*elucidation_in_use=*/true);
+  Mock::VerifyAndClearExpectations(&delegate());
+
+  // Manually calls `RefreshContents` with `elucidation_in_use_` = true, it
+  // causes the sequence again.
+  {
+    InSequence s;
+    EXPECT_CALL(
+        delegate(),
+        OnUpdated(Property(
+            &MahiUiUpdate::type,
+            Eq(MahiUiUpdateType::kSummaryAndOutlinesSectionNavigated))));
+    EXPECT_CALL(delegate(), OnUpdated(Property(
+                                &MahiUiUpdate::type,
+                                Eq(MahiUiUpdateType::kElucidationRequested))));
+  }
+  ui_controller().RefreshContents();
+  Mock::VerifyAndClearExpectations(&delegate());
+}
+
 // Checks `MahiUiController::Delegate` when retrying summary and outlines.
 TEST_F(MahiUiControllerTest, RetrySummaryAndOutlines) {
   EXPECT_CALL(
@@ -211,7 +265,7 @@ TEST_F(MahiUiControllerTest, RetrySummaryAndOutlines) {
       OnUpdated(Property(&MahiUiUpdate::type,
                          Eq(MahiUiUpdateType::kSummaryAndOutlinesReloaded))));
 
-  ui_controller().Retry(VisibilityState::kSummaryAndOutlines);
+  ui_controller().Retry(VisibilityState::kSummaryAndOutlinesAndElucidation);
   Mock::VerifyAndClearExpectations(&delegate());
 }
 
@@ -495,7 +549,9 @@ class MahiUiControllerWithSessionTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
-    scoped_feature_list_.InitAndEnableFeature(chromeos::features::kMahi);
+    scoped_feature_list_.InitWithFeatures(
+        {chromeos::features::kMahi, chromeos::features::kFeatureManagementMahi},
+        {});
     ui_controller_ = std::make_unique<NiceMock<MahiUiController>>();
     delegate_ = std::make_unique<NiceMock<MockMahiUiControllerDelegate>>(
         ui_controller_.get());
@@ -507,10 +563,10 @@ class MahiUiControllerWithSessionTest : public AshTestBase {
   }
 
   void TearDown() override {
+    AshTestBase::TearDown();
     delegate_.reset();
     ui_controller_.reset();
     scoped_setter_.reset();
-    AshTestBase::TearDown();
   }
 
   NiceMock<MockView> delegate_view_;
@@ -530,21 +586,22 @@ TEST_F(MahiUiControllerWithSessionTest, TimesPanelOpenedPerSessionMetric) {
   // Test that locking the screen will record the amount of times the panel
   // was opened while the session was active.
   for (int i = 0; i < kTimesPanelWillOpen; i++) {
-    ui_controller()->OpenMahiPanel(GetPrimaryDisplay().id(), gfx::Rect());
+    ui_controller()->OpenMahiPanel(GetPrimaryDisplay().id(), gfx::Rect(),
+                                   /*elucidation_in_use=*/false);
     // Immediately close the widget to avoid a dangling pointer.
     ui_controller()->mahi_panel_widget()->CloseNow();
   }
   histogram_tester.ExpectBucketCount(
       mahi_constants::kTimesMahiPanelOpenedPerSessionHistogramName,
       /*sample=*/kTimesPanelWillOpen, /*expected_count=*/0);
-  ChangeLockState(/*locked=*/true);
+  GetSessionControllerClient()->LockScreen();
   histogram_tester.ExpectBucketCount(
       mahi_constants::kTimesMahiPanelOpenedPerSessionHistogramName,
       /*sample=*/kTimesPanelWillOpen, /*expected_count=*/1);
 
   // Test that the metric does not get recorded if the panel was never opened.
-  ChangeLockState(/*locked=*/false);
-  ChangeLockState(/*locked=*/true);
+  GetSessionControllerClient()->UnlockScreen();
+  GetSessionControllerClient()->LockScreen();
   histogram_tester.ExpectBucketCount(
       mahi_constants::kTimesMahiPanelOpenedPerSessionHistogramName,
       /*sample=*/0, /*expected_count=*/0);
@@ -572,7 +629,8 @@ TEST_F(MahiUiControllerWithSessionTest,
     Shell::Get()->session_controller()->SetSessionInfo(info);
 
     // Open and close the mahi panel. The metric should not be recorded yet.
-    ui_controller()->OpenMahiPanel(GetPrimaryDisplay().id(), gfx::Rect());
+    ui_controller()->OpenMahiPanel(GetPrimaryDisplay().id(), gfx::Rect(),
+                                   /*elucidation_in_use=*/false);
     // Immediately close the widget to avoid a dangling pointer.
     ui_controller()->mahi_panel_widget()->CloseNow();
     histogram_tester.ExpectBucketCount(
@@ -586,6 +644,68 @@ TEST_F(MahiUiControllerWithSessionTest,
         mahi_constants::kTimesMahiPanelOpenedPerSessionHistogramName,
         /*sample=*/1, /*expected_count=*/i + 1);
   }
+}
+
+TEST_F(MahiUiControllerWithSessionTest, PanelCloseOnSessionStateChanged) {
+  std::vector<session_manager::SessionState> non_active_session_states = {
+      session_manager::SessionState::UNKNOWN,
+      session_manager::SessionState::OOBE,
+      session_manager::SessionState::LOGIN_PRIMARY,
+      session_manager::SessionState::LOGGED_IN_NOT_ACTIVE,
+      session_manager::SessionState::LOCKED,
+      session_manager::SessionState::LOGIN_SECONDARY,
+      session_manager::SessionState::RMA};
+
+  SessionInfo info;
+  for (size_t i = 0; i < non_active_session_states.size(); i++) {
+    info.state = session_manager::SessionState::ACTIVE;
+    Shell::Get()->session_controller()->SetSessionInfo(info);
+
+    ui_controller()->OpenMahiPanel(GetPrimaryDisplay().id(), gfx::Rect(),
+                                   /*elucidation_in_use=*/false);
+    EXPECT_TRUE(ui_controller()->IsMahiPanelOpen());
+
+    // Set the session to a non-active state, the panel should be closed.
+    auto state = non_active_session_states[i];
+    info.state = state;
+    Shell::Get()->session_controller()->SetSessionInfo(info);
+    base::test::RunUntil([&state] {
+      return Shell::Get()->session_controller()->GetSessionState() == state;
+    });
+    EXPECT_FALSE(ui_controller()->IsMahiPanelOpen());
+  }
+}
+
+class MahiUiControllerWithNoSessionTest
+    : public MahiUiControllerWithSessionTest {
+ public:
+  MahiUiControllerWithNoSessionTest() { set_start_session(false); }
+
+  MahiUiControllerWithNoSessionTest(const MahiUiControllerWithNoSessionTest&) =
+      delete;
+  MahiUiControllerWithNoSessionTest& operator=(
+      const MahiUiControllerWithNoSessionTest&) = delete;
+
+  ~MahiUiControllerWithNoSessionTest() override = default;
+};
+
+TEST_F(MahiUiControllerWithNoSessionTest, PanelCloseOnActiveUserChanged) {
+  // Set up two users, user1 is the active user.
+  AccountId account_id1 = AccountId::FromUserEmail("user1@test.com");
+  SimulateUserLogin(account_id1);
+  AccountId account_id2 = AccountId::FromUserEmail("user2@test.com");
+  SimulateUserLogin(account_id2);
+  SwitchActiveUser(account_id1);
+  ASSERT_TRUE(Shell::Get()->session_controller()->IsUserPrimary());
+
+  ui_controller()->OpenMahiPanel(GetPrimaryDisplay().id(), gfx::Rect(),
+                                 /*elucidation_in_use=*/false);
+  EXPECT_TRUE(ui_controller()->IsMahiPanelOpen());
+
+  // Make user2 the active user, the panel should be closed.
+  SwitchActiveUser(account_id2);
+  ASSERT_FALSE(Shell::Get()->session_controller()->IsUserPrimary());
+  EXPECT_FALSE(ui_controller()->IsMahiPanelOpen());
 }
 
 }  // namespace ash

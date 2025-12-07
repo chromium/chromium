@@ -10,7 +10,6 @@
 #include "content/browser/date_time_chooser/date_time_chooser.h"
 #include "content/common/content_export.h"
 #include "ui/base/ime/text_input_type.h"
-#include "ui/gfx/native_widget_types.h"
 
 namespace content {
 
@@ -24,12 +23,10 @@ class CONTENT_EXPORT DateTimeChooserAndroid : public DateTimeChooser {
   DateTimeChooserAndroid& operator=(const DateTimeChooserAndroid&) = delete;
 
   // Replaces the current value.
-  void ReplaceDateTime(JNIEnv* env,
-                       const base::android::JavaRef<jobject>&,
-                       jdouble value);
+  void ReplaceDateTime(JNIEnv* env, jdouble value);
 
   // Closes the dialog without propagating any changes.
-  void CancelDialog(JNIEnv* env, const base::android::JavaRef<jobject>&);
+  void CancelDialog(JNIEnv* env);
 
  protected:
   // DateTimeChooser:

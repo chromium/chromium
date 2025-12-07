@@ -10,11 +10,20 @@
 // Commands related to Quick Delete.
 @protocol QuickDeleteCommands
 
-// Shows Quick Delete.
-- (void)showQuickDelete;
+// Shows Quick Delete and indicates if the radial wipe animation can be
+// performed. The animation should only be performed if Quick Delete is opened
+// on top of a tab or the tab grid.
+- (void)showQuickDeleteAndCanPerformRadialWipeAnimation:
+    (BOOL)canPerformRadialWipeAnimation;
 
 // Stops Quick Delete.
 - (void)stopQuickDelete;
+
+// Dismisses the Quick Delete UI along with any other UIs that triggered it. In
+// practice, it dismisses everything on top of the BrowserViewController. On
+// dismissal completion, runs `completion` followed by actually stopping Quick
+// Delete and any others UIs, such as History or Privacy Settings.
+- (void)stopQuickDeleteForAnimationWithCompletion:(ProceduralBlock)completion;
 
 @end
 

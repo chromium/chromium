@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include "base/compiler_specific.h"
 #include "base/strings/string_util.h"
 
 namespace convert_dict {
@@ -29,7 +30,7 @@ void TrimLine(std::string* line) {
 }
 
 std::string ReadLine(FILE* file) {
-  const char* line = fgets(line_buffer, kLineBufferLen - 1, file);
+  const char* line = UNSAFE_TODO(fgets(line_buffer, kLineBufferLen - 1, file));
   if (!line)
     return std::string();
 

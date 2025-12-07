@@ -9,20 +9,21 @@ import android.os.Build;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
-import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.Lifetime;
-import org.chromium.android_webview.metrics.TrackExitReasonsOfInterest;
+import org.chromium.android_webview.metrics.TrackExitReasons;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
 
 /**
- * This class is intended to notify observers of the existence native instances of
- * aw_contents. It receives a callback when native aw_contents are created or
- * destroyed. Observers are notified when the first instance is created or the
- * last instance is destroyed. This tracks all WebViews across all profiles.
+ * This class is intended to notify observers of the existence native instances of aw_contents. It
+ * receives a callback when native aw_contents are created or destroyed. Observers are notified when
+ * the first instance is created or the last instance is destroyed. This tracks all WebViews across
+ * all profiles.
  */
 @JNINamespace("android_webview")
 @Lifetime.Singleton
+@NullMarked
 public class AwContentsLifecycleNotifier {
     // Initializing here means that the class will not initialize the LazyHolder members
     // until #getInstance is called since LazyHolder is a separate class.
@@ -41,10 +42,10 @@ public class AwContentsLifecycleNotifier {
     }
 
     /** Observer interface to be implemented by deriving webview lifecycle observers. */
-    public static interface Observer {
-        public void onFirstWebViewCreated();
+    public interface Observer {
+        void onFirstWebViewCreated();
 
-        public void onLastWebViewDestroyed();
+        void onLastWebViewDestroyed();
     }
 
     private boolean mHasWebViewInstances;
@@ -99,17 +100,15 @@ public class AwContentsLifecycleNotifier {
         ThreadUtils.assertOnUiThread();
         mAppState = appState;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
-                && AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_EXIT_REASON_METRIC)) {
-            TrackExitReasonsOfInterest.writeLastWebViewState();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            TrackExitReasons.updateAppState();
         }
     }
 
     @CalledByNative
     public static void initialize() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
-                && AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_EXIT_REASON_METRIC)) {
-            TrackExitReasonsOfInterest.init(AwContentsLifecycleNotifier.getInstance()::getAppState);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            TrackExitReasons.finishTrackingStartup(getInstance()::getAppState);
         }
     }
 }

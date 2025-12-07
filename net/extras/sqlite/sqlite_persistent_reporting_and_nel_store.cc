@@ -13,7 +13,6 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
@@ -78,9 +77,10 @@ base::TaskPriority GetReportingAndNelStoreBackgroundSequencePriority() {
 // Attempts to convert a string returned by NetworkAnonymizationKeyToString() to
 // a NetworkAnonymizationKey. Returns false on failure.
 [[nodiscard]] bool NetworkAnonymizationKeyFromString(
-    const std::string& string,
+    std::string_view string,
     NetworkAnonymizationKey* out_network_anonymization_key) {
-  std::optional<base::Value> value = base::JSONReader::Read(string);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value)
     return false;
 
@@ -716,8 +716,8 @@ SQLitePersistentReportingAndNelStore::Backend::DoMigrateDatabaseSchema() {
       return std::nullopt;
 
     // Migrate NEL policies table.
-    if (!db()->Execute("DROP TABLE IF EXISTS nel_policies_old; "
-                       "ALTER TABLE nel_policies RENAME TO nel_policies_old")) {
+    if (!db()->Execute("DROP TABLE IF EXISTS nel_policies_old") ||
+        !db()->Execute("ALTER TABLE nel_policies RENAME TO nel_policies_old")) {
       return std::nullopt;
     }
     if (!CreateV2NelPoliciesSchema(db()))
@@ -743,8 +743,8 @@ SQLitePersistentReportingAndNelStore::Backend::DoMigrateDatabaseSchema() {
       return std::nullopt;
 
     // Migrate Reporting endpoints table.
-    if (!db()->Execute("DROP TABLE IF EXISTS reporting_endpoints_old; "
-                       "ALTER TABLE reporting_endpoints RENAME TO "
+    if (!db()->Execute("DROP TABLE IF EXISTS reporting_endpoints_old") ||
+        !db()->Execute("ALTER TABLE reporting_endpoints RENAME TO "
                        "reporting_endpoints_old")) {
       return std::nullopt;
     }
@@ -765,8 +765,8 @@ SQLitePersistentReportingAndNelStore::Backend::DoMigrateDatabaseSchema() {
       return std::nullopt;
 
     // Migrate Reporting endpoint groups table.
-    if (!db()->Execute("DROP TABLE IF EXISTS reporting_endpoint_groups_old; "
-                       "ALTER TABLE reporting_endpoint_groups RENAME TO "
+    if (!db()->Execute("DROP TABLE IF EXISTS reporting_endpoint_groups_old") ||
+        !db()->Execute("ALTER TABLE reporting_endpoint_groups RENAME TO "
                        "reporting_endpoint_groups_old")) {
       return std::nullopt;
     }
@@ -944,8 +944,7 @@ bool SQLitePersistentReportingAndNelStore::Backend::CommitNelPolicyOperation(
       // There are no UPDATE_DETAILS operations for NEL policies.
       // TODO(chlily): Maybe add the ability to update details as opposed to
       // removing and re-adding every time; it might be slightly more efficient.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   return true;
@@ -1039,8 +1038,7 @@ bool SQLitePersistentReportingAndNelStore::Backend::
     default:
       // There are no UPDATE_ACCESS_TIME operations for Reporting endpoints
       // because their access times are not tracked.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   return true;
@@ -1259,7 +1257,7 @@ void SQLitePersistentReportingAndNelStore::Backend::OnOperationBatched(
     if (!background_task_runner()->PostDelayedTask(
             FROM_HERE, base::BindOnce(&Backend::Commit, this),
             base::Milliseconds(kCommitIntervalMs))) {
-      NOTREACHED_IN_MIGRATION() << "background_task_runner_ is not running.";
+      NOTREACHED() << "background_task_runner_ is not running.";
     }
   } else if (num_pending >= kCommitAfterBatchSize) {
     // We've reached a big enough batch, fire off a commit now.
@@ -1303,9 +1301,10 @@ void SQLitePersistentReportingAndNelStore::Backend::
     // Attempt to reconstitute a NEL policy from the fields stored in the
     // database.
     NetworkAnonymizationKey network_anonymization_key;
-    if (!NetworkAnonymizationKeyFromString(smt.ColumnString(0),
-                                           &network_anonymization_key))
+    if (!NetworkAnonymizationKeyFromString(smt.ColumnStringView(0),
+                                           &network_anonymization_key)) {
       continue;
+    }
     NetworkErrorLoggingService::NelPolicy policy;
     policy.key = NetworkErrorLoggingService::NelPolicyKey(
         network_anonymization_key,
@@ -1313,8 +1312,10 @@ void SQLitePersistentReportingAndNelStore::Backend::
             /* origin_scheme = */ smt.ColumnString(1),
             /* origin_host = */ smt.ColumnString(2),
             /* origin_port = */ smt.ColumnInt(3)));
-    if (!policy.received_ip_address.AssignFromIPLiteral(smt.ColumnString(4)))
+    if (!policy.received_ip_address.AssignFromIPLiteral(
+            smt.ColumnStringView(4))) {
       policy.received_ip_address = IPAddress();
+    }
     policy.report_to = smt.ColumnString(5);
     policy.expires = base::Time::FromDeltaSinceWindowsEpoch(
         base::Microseconds(smt.ColumnInt64(6)));
@@ -1390,9 +1391,11 @@ void SQLitePersistentReportingAndNelStore::Backend::
     // Attempt to reconstitute a ReportingEndpoint from the fields stored in the
     // database.
     NetworkAnonymizationKey network_anonymization_key;
-    if (!NetworkAnonymizationKeyFromString(endpoints_statement.ColumnString(0),
-                                           &network_anonymization_key))
+    if (!NetworkAnonymizationKeyFromString(
+            endpoints_statement.ColumnStringView(0),
+            &network_anonymization_key)) {
       continue;
+    }
     // The target_type is set to kDeveloper because this function is used for
     // V0 reporting, which only includes web developer entities.
     ReportingEndpointGroupKey group_key(
@@ -1405,7 +1408,7 @@ void SQLitePersistentReportingAndNelStore::Backend::
         /* group_name = */ endpoints_statement.ColumnString(4),
         ReportingTargetType::kDeveloper);
     ReportingEndpoint::EndpointInfo endpoint_info;
-    endpoint_info.url = GURL(endpoints_statement.ColumnString(5));
+    endpoint_info.url = GURL(endpoints_statement.ColumnStringView(5));
     endpoint_info.priority = endpoints_statement.ColumnInt(6);
     endpoint_info.weight = endpoints_statement.ColumnInt(7);
 
@@ -1418,9 +1421,10 @@ void SQLitePersistentReportingAndNelStore::Backend::
     // stored in the database.
     NetworkAnonymizationKey network_anonymization_key;
     if (!NetworkAnonymizationKeyFromString(
-            endpoint_groups_statement.ColumnString(0),
-            &network_anonymization_key))
+            endpoint_groups_statement.ColumnStringView(0),
+            &network_anonymization_key)) {
       continue;
+    }
     // The target_type is set to kDeveloper because this function is used for
     // V0 reporting, which only includes web developer entities.
     ReportingEndpointGroupKey group_key(

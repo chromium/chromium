@@ -35,13 +35,17 @@ found in the LICENSE file.
     <macro name="bottom_system_nav_divider_color">@macro/divider_line_bg_color</macro>
     <color name="bottom_system_nav_divider_color_light">@color/divider_line_bg_color_light</color>
 
+    <!-- Settings containment colors -->
+    <macro name="preference_category_text_color_contained">?attr/colorOnSurfaceVariant</macro>
+    <macro name="preference_category_text_color_standard">?attr/colorPrimary</macro>
+
     <!-- This is the color that will appear on the system recents UI. It is a neutral background
          color that adapts to dark/light modes but not a dynamic color. -->
     <color name="default_task_description_color">@color/default_bg_color_baseline</color>
 
     <!-- Progress Bar colors -->
-    <macro name="progress_bar_foreground">@macro/default_control_color_active</macro>
-    <color name="progress_bar_secondary">@color/modern_grey_600</color>
+    <macro name="progress_bar_background">?attr/colorSecondaryContainer</macro>
+    <color name="progress_bar_secondary">@color/baseline_neutral_40</color>
 
     <!-- Chip Colors -->
     <macro name="default_chip_assistive_text_color_secondary" tools:ignore="UnusedResources">@macro/default_text_color_secondary</macro>
@@ -51,7 +55,11 @@ found in the LICENSE file.
     <color name="empty_state_icon_bg_background_color">@color/material_primary_95</color>
     <color name="empty_state_icon_bg_foreground_color">@color/material_primary_90</color>
     <color name="empty_state_icon_color">@color/material_primary_40</color>
-    <color name="empty_state_icon_tabswitcher_bg_color">@color/material_primary_95</color>
-    <color name="empty_state_tab_border_color">@color/material_primary_60</color>
-    <color name="empty_state_tab_group_border_color">@color/material_primary_40</color>
+    <color name="empty_state_asset_bg_color">@color/material_primary_90</color>
+    <color name="empty_state_asset_bg_color_tab_group">@color/material_primary_80</color>
+    <color name="empty_state_asset_bg_color_tab_container">@color/material_primary_95</color>
+    <color name="empty_state_asset_bg_color_tab_outline">@color/material_primary_40</color>
+    <color name="empty_state_asset_bg_color_empty_tab_fill">@color/material_secondary_70</color>
+    <color name="empty_state_asset_outline_color_primary">@color/material_primary_60</color>
+    <color name="empty_state_asset_outline_color_secondary">@color/material_secondary_60</color>
 </resources>

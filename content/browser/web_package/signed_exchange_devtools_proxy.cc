@@ -21,7 +21,7 @@ namespace content {
 SignedExchangeDevToolsProxy::SignedExchangeDevToolsProxy(
     const GURL& outer_request_url,
     network::mojom::URLResponseHeadPtr outer_response,
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     std::optional<const base::UnguessableToken> devtools_navigation_token,
     bool report_raw_headers)
     : outer_request_url_(outer_request_url),
@@ -41,12 +41,19 @@ void SignedExchangeDevToolsProxy::ReportError(
     std::optional<SignedExchangeError::FieldIndexPair> error_field) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   errors_.push_back(SignedExchangeError(message, std::move(error_field)));
-  WebContents* web_contents =
-      WebContents::FromFrameTreeNodeId(frame_tree_node_id_);
-  if (!web_contents)
+
+  FrameTreeNode* frame_tree_node =
+      FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
+  if (!frame_tree_node) {
     return;
-  web_contents->GetPrimaryMainFrame()->AddMessageToConsole(
-      blink::mojom::ConsoleMessageLevel::kError, message);
+  }
+
+  RenderFrameHost* rfh = frame_tree_node->current_frame_host();
+  if (!rfh) {
+    return;
+  }
+
+  rfh->AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kError, message);
 }
 
 void SignedExchangeDevToolsProxy::CertificateRequestSent(

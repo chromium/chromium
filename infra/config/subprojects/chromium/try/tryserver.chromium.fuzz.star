@@ -3,20 +3,25 @@
 # found in the LICENSE file.
 """Definitions of builders in the tryserver.chromium.fuzz builder group."""
 
-load("//lib/builders.star", "os", "siso")
-load("//lib/consoles.star", "consoles")
-load("//lib/try.star", "try_")
+load("@chromium-luci//builders.star", "cpu", "os")
+load("@chromium-luci//consoles.star", "consoles")
+load("@chromium-luci//gn_args.star", "gn_args")
+load("@chromium-luci//try.star", "try_")
+load("//lib/siso.star", "siso")
+load("//lib/try_constants.star", "try_constants")
 
 try_.defaults.set(
-    executable = try_.DEFAULT_EXECUTABLE,
+    executable = try_constants.DEFAULT_EXECUTABLE,
     builder_group = "tryserver.chromium.fuzz",
-    pool = try_.DEFAULT_POOL,
+    pool = try_constants.DEFAULT_POOL,
     builderless = True,
     cores = 8,
     os = os.LINUX_DEFAULT,
-    execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
-    service_account = try_.DEFAULT_SERVICE_ACCOUNT,
-    siso_enabled = True,
+    execution_timeout = try_constants.DEFAULT_EXECUTION_TIMEOUT,
+    experiments = {
+        "chromium_tests.resultdb_module": 100,
+    },
+    service_account = try_constants.DEFAULT_SERVICE_ACCOUNT,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
 )
@@ -25,110 +30,196 @@ consoles.list_view(
     name = "tryserver.chromium.fuzz",
 )
 
-try_.builder(
+def _builder(mirror_of = None, **kwargs):
+    try_.builder(
+        mirrors = [mirror_of],
+        gn_args = mirror_of,
+        **kwargs
+    )
+
+def _mirror_builder(name = None, **kwargs):
+    """Defines a builder that mirrors the CI builder of the same name."""
+    _builder(
+        name = name,
+        mirror_of = "ci/" + name,
+        contact_team_email = "chrome-fuzzing-core@google.com",
+        **kwargs
+    )
+
+_builder(
     name = "linux-asan-dbg",
-    mirrors = ["ci/ASAN Debug"],
-    gn_args = "ci/ASAN Debug",
+    mirror_of = "ci/ASAN Debug",
 )
 
-try_.builder(
+_builder(
     name = "linux-asan-rel",
-    mirrors = ["ci/ASAN Release"],
-    gn_args = "ci/ASAN Release",
+    mirror_of = "ci/ASAN Release",
 )
 
-try_.builder(
+_builder(
     name = "linux-asan-media-rel",
-    mirrors = ["ci/ASAN Release Media"],
-    gn_args = "ci/ASAN Release Media",
+    mirror_of = "ci/ASAN Release Media",
 )
 
-try_.builder(
+_builder(
     name = "linux-asan-v8-arm-dbg",
-    mirrors = ["ci/ASan Debug (32-bit x86 with V8-ARM)"],
-    gn_args = "ci/ASan Debug (32-bit x86 with V8-ARM)",
+    mirror_of = "ci/ASan Debug (32-bit x86 with V8-ARM)",
 )
 
-try_.builder(
+_builder(
     name = "linux-asan-v8-arm-rel",
-    mirrors = ["ci/ASan Release (32-bit x86 with V8-ARM)"],
-    gn_args = "ci/ASan Release (32-bit x86 with V8-ARM)",
+    mirror_of = "ci/ASan Release (32-bit x86 with V8-ARM)",
 )
 
-try_.builder(
+_builder(
     name = "linux-asan-media-v8-arm-rel",
-    mirrors = ["ci/ASan Release Media (32-bit x86 with V8-ARM)"],
-    gn_args = "ci/ASan Release Media (32-bit x86 with V8-ARM)",
+    mirror_of = "ci/ASan Release Media (32-bit x86 with V8-ARM)",
 )
 
-try_.builder(
+_builder(
+    name = "linux-asan-v8-sandbox-testing",
+    contact_team_email = "v8-infra@google.com",
+    mirror_of = "ci/ASAN Release V8 Sandbox Testing",
+)
+
+_builder(
     name = "linux-chromeos-asan-rel",
-    mirrors = ["ci/ChromiumOS ASAN Release"],
-    gn_args = "ci/ChromiumOS ASAN Release",
+    mirror_of = "ci/ChromiumOS ASAN Release",
 )
 
-try_.builder(
+_builder(
     name = "linux-msan-chained-origins-rel",
-    mirrors = ["ci/MSAN Release (chained origins)"],
-    gn_args = "ci/MSAN Release (chained origins)",
+    mirror_of = "ci/MSAN Release (chained origins)",
 )
 
-try_.builder(
+_builder(
     name = "linux-msan-no-origins-rel",
-    mirrors = ["ci/MSAN Release (no origins)"],
-    gn_args = "ci/MSAN Release (no origins)",
+    mirror_of = "ci/MSAN Release (no origins)",
 )
 
-try_.builder(
+_builder(
     name = "linux-tsan-dbg",
-    mirrors = ["ci/TSAN Debug"],
-    gn_args = "ci/TSAN Debug",
+    mirror_of = "ci/TSAN Debug",
 )
 
-try_.builder(
+_builder(
     name = "linux-tsan-rel",
-    mirrors = ["ci/TSAN Release"],
-    gn_args = "ci/TSAN Release",
+    mirror_of = "ci/TSAN Release",
 )
 
-try_.builder(
+_builder(
     name = "linux-ubsan-rel",
-    mirrors = ["ci/UBSan Release"],
-    gn_args = "ci/UBSan Release",
+    mirror_of = "ci/UBSan Release",
 )
 
-try_.builder(
+_builder(
     name = "linux-ubsan-vptr-rel",
-    mirrors = ["ci/UBSan vptr Release"],
-    gn_args = "ci/UBSan vptr Release",
+    mirror_of = "ci/UBSan vptr Release",
 )
 
-try_.builder(
+_mirror_builder(name = "android-desktop-x64-libfuzzer-asan", executable = "recipe:chromium/fuzz")
+
+_mirror_builder(name = "android-arm64-libfuzzer-hwasan", executable = "recipe:chromium/fuzz")
+
+_builder(
     name = "mac-asan-rel",
-    mirrors = ["ci/Mac ASAN Release"],
-    gn_args = "ci/Mac ASAN Release",
     cores = None,
     os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
+    mirror_of = "ci/Mac ASAN Release",
 )
 
-try_.builder(
+_builder(
+    name = "mac-arm64-asan-rel",
+    cores = None,
+    os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
+    mirror_of = "ci/Mac ARM64 ASAN Release",
+)
+
+_builder(
     name = "mac-asan-media-rel",
-    mirrors = ["ci/Mac ASAN Release Media"],
-    gn_args = "ci/Mac ASAN Release Media",
     cores = None,
     os = os.MAC_DEFAULT,
+    mirror_of = "ci/Mac ASAN Release Media",
 )
 
-try_.builder(
+_builder(
     name = "win-asan-rel",
-    mirrors = ["ci/Win ASan Release"],
-    gn_args = "ci/Win ASan Release",
     os = os.WINDOWS_DEFAULT,
+    mirror_of = "ci/Win ASan Release",
+)
+
+_builder(
+    name = "win-asan-media-rel",
+    os = os.WINDOWS_DEFAULT,
+    mirror_of = "ci/Win ASan Release Media",
 )
 
 try_.builder(
-    name = "win-asan-media-rel",
-    mirrors = ["ci/Win ASan Release Media"],
-    gn_args = "ci/Win ASan Release Media",
+    name = "linux-centipede-high-end-asan-dcheck",
+    mirrors = ["ci/Centipede High End Upload Linux ASan DCheck"],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Centipede High End Upload Linux ASan DCheck",
+            "no_symbols",
+            "skip_generate_fuzzer_owners",
+        ],
+    ),
+    contact_team_email = "chrome-fuzzing-core@google.com",
+)
+
+try_.builder(
+    name = "linux-libfuzzer-high-end-asan-rel",
+    mirrors = ["ci/Libfuzzer High End Upload Linux ASan"],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Libfuzzer High End Upload Linux ASan",
+            "no_symbols",
+            "skip_generate_fuzzer_owners",
+        ],
+    ),
+    contact_team_email = "chrome-fuzzing-core@google.com",
+)
+
+try_.builder(
+    name = "linux-libfuzzer-high-end-asan-dbg",
+    mirrors = ["ci/Libfuzzer High End Upload Linux ASan Debug"],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Libfuzzer High End Upload Linux ASan Debug",
+            "no_symbols",
+            "skip_generate_fuzzer_owners",
+        ],
+    ),
+    contact_team_email = "chrome-fuzzing-core@google.com",
+)
+
+# Libfuzzer test bots.
+
+_mirror_builder(name = "chromeos-x64-libfuzzer-asan-rel-tests")
+
+_mirror_builder(name = "linux-x64-libfuzzer-asan-dbg-tests")
+
+_mirror_builder(name = "linux-x64-libfuzzer-asan-rel-tests")
+
+_mirror_builder(name = "linux-x64-libfuzzer-msan-rel-tests")
+
+_mirror_builder(name = "linux-x64-libfuzzer-ubsan-rel-tests")
+
+_mirror_builder(name = "linux-x86-libfuzzer-asan-rel-tests")
+
+_mirror_builder(
+    name = "mac-arm64-libfuzzer-asan-rel-tests",
+    cores = None,
+    os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
+)
+
+_mirror_builder(
+    name = "win-x64-libfuzzer-asan-rel-tests",
     os = os.WINDOWS_DEFAULT,
 )
+
+_mirror_builder(name = "linux-x64-centipede-asan-rel-tests")

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/webaudio/audio_handler.h"
 
+#include <inttypes.h>
+
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_input.h"
@@ -26,7 +28,7 @@ AudioHandler::AudioHandler(NodeType node_type,
       context_(node.context()),
       deferred_task_handler_(&context_->GetDeferredTaskHandler()) {
   SetNodeType(node_type);
-  SetInternalChannelCountMode(kMax);
+  SetInternalChannelCountMode(V8ChannelCountMode::Enum::kMax);
   SetInternalChannelInterpretation(AudioBus::kSpeakers);
 
 #if DEBUG_AUDIONODE_REFERENCES
@@ -37,30 +39,31 @@ AudioHandler::AudioHandler(NodeType node_type,
 #endif
   InstanceCounters::IncrementCounter(InstanceCounters::kAudioHandlerCounter);
 
-  SendLogMessage(
-      String::Format("%s({sample_rate=%0.f})", __func__, sample_rate));
+  SendLogMessage(__func__, String::Format("({sample_rate=%0.f})", sample_rate));
 #if DEBUG_AUDIONODE_REFERENCES
   fprintf(
       stderr,
       "[%16p]: %16p: %2d: AudioHandler::AudioHandler() %d [%d] total: %u\n",
       Context(), this, GetNodeType(), connection_ref_count_,
-      node_count_[GetNodeType()],
+      UNSAFE_TODO(node_count_[static_cast<int>(GetNodeType())]),
       InstanceCounters::CounterValue(InstanceCounters::kAudioHandlerCounter));
 #endif
   node.context()->WarnIfContextClosed(this);
+  uma_reporter_ = std::make_unique<AudioHandlerUmaReporter>(
+      std::string(NodeTypeName().Utf8()), sample_rate);
 }
 
 AudioHandler::~AudioHandler() {
   DCHECK(IsMainThread());
   InstanceCounters::DecrementCounter(InstanceCounters::kAudioHandlerCounter);
 #if DEBUG_AUDIONODE_REFERENCES
-  --node_count_[GetNodeType()];
+  UNSAFE_TODO(--node_count_[static_cast<int>(GetNodeType())]);
   fprintf(
       stderr,
       "[%16p]: %16p: %2d: AudioHandler::~AudioHandler() %d [%d] remaining: "
       "%u\n",
       Context(), this, GetNodeType(), connection_ref_count_,
-      node_count_[GetNodeType()],
+      UNSAFE_TODO(node_count_[static_cast<int>(GetNodeType())]),
       InstanceCounters::CounterValue(InstanceCounters::kAudioHandlerCounter));
 #endif
 }
@@ -99,69 +102,69 @@ BaseAudioContext* AudioHandler::Context() const {
 
 String AudioHandler::NodeTypeName() const {
   switch (node_type_) {
-    case kNodeTypeDestination:
+    case NodeType::kNodeTypeDestination:
       return "AudioDestinationNode";
-    case kNodeTypeOscillator:
+    case NodeType::kNodeTypeOscillator:
       return "OscillatorNode";
-    case kNodeTypeAudioBufferSource:
+    case NodeType::kNodeTypeAudioBufferSource:
       return "AudioBufferSourceNode";
-    case kNodeTypeMediaElementAudioSource:
+    case NodeType::kNodeTypeMediaElementAudioSource:
       return "MediaElementAudioSourceNode";
-    case kNodeTypeMediaStreamAudioDestination:
+    case NodeType::kNodeTypeMediaStreamAudioDestination:
       return "MediaStreamAudioDestinationNode";
-    case kNodeTypeMediaStreamAudioSource:
+    case NodeType::kNodeTypeMediaStreamAudioSource:
       return "MediaStreamAudioSourceNode";
-    case kNodeTypeScriptProcessor:
+    case NodeType::kNodeTypeScriptProcessor:
       return "ScriptProcessorNode";
-    case kNodeTypeBiquadFilter:
+    case NodeType::kNodeTypeBiquadFilter:
       return "BiquadFilterNode";
-    case kNodeTypePanner:
+    case NodeType::kNodeTypePanner:
       return "PannerNode";
-    case kNodeTypeStereoPanner:
+    case NodeType::kNodeTypeStereoPanner:
       return "StereoPannerNode";
-    case kNodeTypeConvolver:
+    case NodeType::kNodeTypeConvolver:
       return "ConvolverNode";
-    case kNodeTypeDelay:
+    case NodeType::kNodeTypeDelay:
       return "DelayNode";
-    case kNodeTypeGain:
+    case NodeType::kNodeTypeGain:
       return "GainNode";
-    case kNodeTypeChannelSplitter:
+    case NodeType::kNodeTypeChannelSplitter:
       return "ChannelSplitterNode";
-    case kNodeTypeChannelMerger:
+    case NodeType::kNodeTypeChannelMerger:
       return "ChannelMergerNode";
-    case kNodeTypeAnalyser:
+    case NodeType::kNodeTypeAnalyser:
       return "AnalyserNode";
-    case kNodeTypeDynamicsCompressor:
+    case NodeType::kNodeTypeDynamicsCompressor:
       return "DynamicsCompressorNode";
-    case kNodeTypeWaveShaper:
+    case NodeType::kNodeTypeWaveShaper:
       return "WaveShaperNode";
-    case kNodeTypeIIRFilter:
+    case NodeType::kNodeTypeIIRFilter:
       return "IIRFilterNode";
-    case kNodeTypeConstantSource:
+    case NodeType::kNodeTypeConstantSource:
       return "ConstantSourceNode";
-    case kNodeTypeAudioWorklet:
+    case NodeType::kNodeTypeAudioWorklet:
       return "AudioWorkletNode";
-    case kNodeTypeUnknown:
-    case kNodeTypeEnd:
+    case NodeType::kNodeTypeUnknown:
+    case NodeType::kNodeTypeEnd:
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "UnknownNode";
+      NOTREACHED();
   }
 }
 
 void AudioHandler::SetNodeType(NodeType type) {
   // Don't allow the node type to be changed to a different node type, after
   // it's already been set.  And the new type can't be unknown or end.
-  DCHECK_EQ(node_type_, kNodeTypeUnknown);
-  DCHECK_NE(type, kNodeTypeUnknown);
-  DCHECK_NE(type, kNodeTypeEnd);
+  DCHECK_EQ(node_type_, NodeType::kNodeTypeUnknown);
+  DCHECK_NE(type, NodeType::kNodeTypeUnknown);
+  DCHECK_NE(type, NodeType::kNodeTypeEnd);
 
   node_type_ = type;
 
 #if DEBUG_AUDIONODE_REFERENCES
-  ++node_count_[type];
+  UNSAFE_TODO(++node_count_[static_cast<int>(type)]);
   fprintf(stderr, "[%16p]: %16p: %2d: AudioHandler::AudioHandler [%3d]\n",
-          Context(), this, GetNodeType(), node_count_[GetNodeType()]);
+          Context(), this, GetNodeType(),
+          UNSAFE_TODO(node_count_[static_cast<int>(GetNodeType())]));
 #endif
 }
 
@@ -189,11 +192,11 @@ const AudioNodeOutput& AudioHandler::Output(unsigned i) const {
   return *outputs_[i];
 }
 
-unsigned AudioHandler::ChannelCount() {
+unsigned AudioHandler::ChannelCount() const {
   return channel_count_;
 }
 
-void AudioHandler::SetInternalChannelCountMode(ChannelCountMode mode) {
+void AudioHandler::SetInternalChannelCountMode(V8ChannelCountMode::Enum mode) {
   channel_count_mode_ = mode;
   new_channel_count_mode_ = mode;
 }
@@ -213,7 +216,7 @@ void AudioHandler::SetChannelCount(unsigned channel_count,
       channel_count <= BaseAudioContext::MaxNumberOfChannels()) {
     if (channel_count_ != channel_count) {
       channel_count_ = channel_count;
-      if (channel_count_mode_ != kMax) {
+      if (channel_count_mode_ != V8ChannelCountMode::Enum::kMax) {
         UpdateChannelsForInputs();
       }
     }
@@ -228,71 +231,51 @@ void AudioHandler::SetChannelCount(unsigned channel_count,
   }
 }
 
-String AudioHandler::GetChannelCountMode() {
+V8ChannelCountMode::Enum AudioHandler::GetChannelCountMode() const {
   // Because we delay the actual setting of the mode to the pre or post
   // rendering phase, we want to return the value that was set, not the actual
   // current mode.
-  switch (new_channel_count_mode_) {
-    case kMax:
-      return "max";
-    case kClampedMax:
-      return "clamped-max";
-    case kExplicit:
-      return "explicit";
-  }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  return new_channel_count_mode_;
 }
 
-void AudioHandler::SetChannelCountMode(const String& mode,
+void AudioHandler::SetChannelCountMode(V8ChannelCountMode::Enum mode,
                                        ExceptionState& exception_state) {
   DCHECK(IsMainThread());
   DeferredTaskHandler::GraphAutoLocker locker(Context());
 
-  ChannelCountMode old_mode = channel_count_mode_;
-
-  if (mode == "max") {
-    new_channel_count_mode_ = kMax;
-  } else if (mode == "clamped-max") {
-    new_channel_count_mode_ = kClampedMax;
-  } else if (mode == "explicit") {
-    new_channel_count_mode_ = kExplicit;
-  } else {
-    NOTREACHED_IN_MIGRATION();
-  }
-
-  if (new_channel_count_mode_ != old_mode) {
+  new_channel_count_mode_ = mode;
+  if (new_channel_count_mode_ != channel_count_mode_) {
     Context()->GetDeferredTaskHandler().AddChangedChannelCountMode(this);
   }
 }
 
-String AudioHandler::ChannelInterpretation() {
+V8ChannelInterpretation::Enum AudioHandler::ChannelInterpretation() const {
   // Because we delay the actual setting of the interpretation to the pre or
   // post rendering phase, we want to return the value that was set, not the
   // actual current interpretation.
   switch (new_channel_interpretation_) {
     case AudioBus::kSpeakers:
-      return "speakers";
+      return V8ChannelInterpretation::Enum::kSpeakers;
     case AudioBus::kDiscrete:
-      return "discrete";
+      return V8ChannelInterpretation::Enum::kDiscrete;
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
-void AudioHandler::SetChannelInterpretation(const String& interpretation,
-                                            ExceptionState& exception_state) {
+void AudioHandler::SetChannelInterpretation(
+    V8ChannelInterpretation::Enum interpretation,
+    ExceptionState& exception_state) {
   DCHECK(IsMainThread());
   DeferredTaskHandler::GraphAutoLocker locker(Context());
 
   AudioBus::ChannelInterpretation old_mode = channel_interpretation_;
 
-  if (interpretation == "speakers") {
+  if (interpretation == V8ChannelInterpretation::Enum::kSpeakers) {
     new_channel_interpretation_ = AudioBus::kSpeakers;
-  } else if (interpretation == "discrete") {
+  } else if (interpretation == V8ChannelInterpretation::Enum::kDiscrete) {
     new_channel_interpretation_ = AudioBus::kDiscrete;
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   if (new_channel_interpretation_ != old_mode) {
@@ -344,7 +327,11 @@ void AudioHandler::ProcessIfNecessary(uint32_t frames_to_process) {
       // the downstream nodes.  (For example, a Gain node with a gain of 0 will
       // want to silence its output.)
       UnsilenceOutputs();
+      base::TimeTicks process_start_time = base::TimeTicks::Now();
       Process(frames_to_process);
+      base::TimeDelta process_duration =
+          base::TimeTicks::Now() - process_start_time;
+      uma_reporter_->AddProcessDuration(process_duration, frames_to_process);
     }
 
     if (!silent_inputs) {
@@ -357,8 +344,9 @@ void AudioHandler::ProcessIfNecessary(uint32_t frames_to_process) {
     }
 
     if (!is_processing_) {
-      SendLogMessage(String::Format("%s => (processing is alive [frames=%u])",
-                                    __func__, frames_to_process));
+      SendLogMessage(__func__,
+                     String::Format("=> (processing is alive [frames=%u])",
+                                    frames_to_process));
       is_processing_ = true;
     }
   }
@@ -387,7 +375,7 @@ void AudioHandler::PullInputs(uint32_t frames_to_process) {
   }
 }
 
-bool AudioHandler::InputsAreSilent() {
+bool AudioHandler::InputsAreSilent() const {
   for (auto& input : inputs_) {
     if (!input->Bus()->IsSilent()) {
       return false;
@@ -493,7 +481,8 @@ void AudioHandler::MakeConnection() {
       stderr,
       "[%16p]: %16p: %2d: AudioHandler::MakeConnection   %3d [%3d] @%.15g\n",
       Context(), this, GetNodeType(), connection_ref_count_,
-      node_count_[GetNodeType()], Context()->currentTime());
+      UNSAFE_TODO(node_count_[static_cast<int>(GetNodeType())]),
+      Context()->currentTime());
 #endif
 
   // See the disabling code in disableOutputsIfNecessary(). This handles
@@ -511,7 +500,8 @@ void AudioHandler::BreakConnectionWithLock() {
           "[%16p]: %16p: %2d: AudioHandler::BreakConnectionWitLock %3d [%3d] "
           "@%.15g\n",
           Context(), this, GetNodeType(), connection_ref_count_,
-          node_count_[GetNodeType()], Context()->currentTime());
+          UNSAFE_TODO(node_count_[static_cast<int>(GetNodeType())]),
+          Context()->currentTime());
 #endif
 
   if (!connection_ref_count_) {
@@ -522,7 +512,7 @@ void AudioHandler::BreakConnectionWithLock() {
 #if DEBUG_AUDIONODE_REFERENCES
 
 bool AudioHandler::is_node_count_initialized_ = false;
-int AudioHandler::node_count_[kNodeTypeEnd];
+int AudioHandler::node_count_[static_cast<int>(NodeType::kNodeTypeEnd)];
 
 void AudioHandler::PrintNodeCounts() {
   fprintf(stderr, "\n\n");
@@ -530,8 +520,9 @@ void AudioHandler::PrintNodeCounts() {
   fprintf(stderr, "AudioNode: reference counts\n");
   fprintf(stderr, "===========================\n");
 
-  for (unsigned i = 0; i < kNodeTypeEnd; ++i)
-    fprintf(stderr, "%2d: %d\n", i, node_count_[i]);
+  for (unsigned i = 0; i < static_cast<unsigned>(NodeType::kNodeTypeEnd); ++i) {
+    fprintf(stderr, "%2d: %d\n", i, UNSAFE_TODO(node_count_[i]));
+  }
 
   fprintf(stderr, "===========================\n\n\n");
 }
@@ -540,9 +531,9 @@ void AudioHandler::PrintNodeCounts() {
 
 #if DEBUG_AUDIONODE_REFERENCES > 1
 void AudioHandler::TailProcessingDebug(const char* note, bool flag) {
-  fprintf(stderr, "[%16p]: %16p: %2d: %s %d @%.15g flag=%d", Context(), this,
-          GetNodeType(), note, connection_ref_count_, Context()->currentTime(),
-          flag);
+  UNSAFE_TODO(fprintf(stderr, "[%16p]: %16p: %2d: %s %d @%.15g flag=%d",
+                      Context(), this, GetNodeType(), note,
+                      connection_ref_count_, Context()->currentTime(), flag));
 
   // If we're on the audio thread, we can print out the tail and
   // latency times (because these methods can only be called from the
@@ -573,19 +564,11 @@ void AudioHandler::UpdateChannelInterpretation() {
   channel_interpretation_ = new_channel_interpretation_;
 }
 
-unsigned AudioHandler::NumberOfOutputChannels() const {
-  // This should only be called for ScriptProcessorNodes which are the only
-  // nodes where you can have an output with 0 channels.  All other nodes have
-  // have at least one output channel, so there's no reason other nodes should
-  // ever call this function.
-  DCHECK(0) << "numberOfOutputChannels() not valid for node type "
-            << GetNodeType();
-  return 1;
-}
-
-void AudioHandler::SendLogMessage(const String& message) {
-  WebRtcLogMessage(String::Format("[WA]AH::%s [type=%s, this=0x%" PRIXPTR "]",
-                                  message.Utf8().c_str(),
+void AudioHandler::SendLogMessage(const char* const function_name,
+                                  const String& message) {
+  WebRtcLogMessage(String::Format("[WA]AH::%s %s [type=%s, this=0x%" PRIXPTR
+                                  "]",
+                                  function_name, message.Utf8().c_str(),
                                   NodeTypeName().Utf8().c_str(),
                                   reinterpret_cast<uintptr_t>(this))
                        .Utf8());

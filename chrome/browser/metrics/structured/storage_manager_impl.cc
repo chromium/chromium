@@ -4,14 +4,15 @@
 
 #include "chrome/browser/metrics/structured/storage_manager_impl.h"
 
+#include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
 #include "chrome/browser/metrics/structured/arena_event_buffer.h"
-#include "chrome/browser/metrics/structured/event_logging_features.h"
 #include "components/metrics/structured/histogram_util.h"
+#include "components/metrics/structured/structured_metrics_features.h"
 
 namespace metrics::structured {
 namespace {
@@ -24,6 +25,14 @@ constexpr char kArenaProtoDefaultPath[] =
 
 constexpr char kFlushedEventsDefaultDir[] =
     "/var/lib/metrics/structured/chromium/storage/flushed";
+
+// Path of the partition used to store flushed events.
+constexpr char kRootPartitionPath[] = "/var/lib/metrics/structured/";
+
+// These minimum values are just guesses on what would be decent for low end
+// devices.
+constexpr int64_t kMinBufferSize = 10 * 1024;  // 10 kb
+constexpr int64_t kMinDiskSize = 50 * 1024;    // 50 kb
 }  // namespace
 
 StorageManagerImpl::StorageManagerImpl(const StorageManagerConfig& config)
@@ -114,6 +123,23 @@ void StorageManagerImpl::AddBatchEvents(
   for (const auto& event : events) {
     AddEvent(event);
   }
+}
+
+// static
+StorageManagerConfig StorageManagerImpl::GetStorageManagerConfig() {
+  int64_t free_disk_space =
+      base::SysInfo::AmountOfFreeDiskSpace(base::FilePath(kRootPartitionPath))
+          .value_or(0);
+
+  free_disk_space = GetMaxDiskSizeRatio() * free_disk_space;
+
+  int64_t buffer_max_size = base::SysInfo::AmountOfPhysicalMemory().InBytes() *
+                            GetMaxBufferSizeRatio();
+
+  return StorageManagerConfig{
+      .buffer_max_bytes = std::max(buffer_max_size, kMinBufferSize),
+      .disk_max_bytes = std::max(free_disk_space, kMinDiskSize),
+  };
 }
 
 void StorageManagerImpl::FlushAndAddEvent(StructuredEventProto&& event) {

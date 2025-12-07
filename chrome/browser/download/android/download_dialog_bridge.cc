@@ -32,8 +32,7 @@ DownloadDialogResult::~DownloadDialogResult() = default;
 DownloadDialogBridge::DownloadDialogBridge() : is_dialog_showing_(false) {
   JNIEnv* env = base::android::AttachCurrentThread();
   java_obj_.Reset(env, Java_DownloadDialogBridge_create(
-                           env, reinterpret_cast<intptr_t>(this))
-                           .obj());
+                           env, reinterpret_cast<intptr_t>(this)));
   DCHECK(!java_obj_.is_null());
 }
 
@@ -57,13 +56,9 @@ void DownloadDialogBridge::ShowDialog(
 
   dialog_callback_ = std::move(dialog_callback);
 
-  // This shouldn't happen, but if it does, cancel download.
+  // This shouldn't happen.
   if (dialog_type == DownloadLocationDialogType::NO_DIALOG) {
-    NOTREACHED_IN_MIGRATION();
-    DownloadDialogResult dialog_result;
-    dialog_result.location_result = DownloadLocationDialogResult::USER_CANCELED;
-    CompleteSelection(std::move(dialog_result));
-    return;
+    NOTREACHED();
   }
 
   // If dialog is showing, run the callback to continue without confirmation.
@@ -82,28 +77,26 @@ void DownloadDialogBridge::ShowDialog(
   Java_DownloadDialogBridge_showDialog(
       env, java_obj_, native_window->GetJavaObject(),
       static_cast<long>(total_bytes), static_cast<int>(connection_type),
-      static_cast<int>(dialog_type),
-      base::android::ConvertUTF8ToJavaString(env,
-                                             suggested_path.AsUTF8Unsafe()),
+      static_cast<int>(dialog_type), suggested_path.AsUTF8Unsafe(),
       profile->GetJavaObject());
 }
 
 void DownloadDialogBridge::OnComplete(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
-    const base::android::JavaParamRef<jstring>& returned_path) {
+    std::string& returned_path,
+    bool did_user_confirm) {
   DownloadDialogResult dialog_result;
-  dialog_result.location_result = DownloadLocationDialogResult::USER_CONFIRMED;
-  dialog_result.file_path = base::FilePath(
-      base::android::ConvertJavaStringToUTF8(env, returned_path));
+  dialog_result.location_result =
+      did_user_confirm
+          ? DownloadLocationDialogResult::USER_CONFIRMED
+          : DownloadLocationDialogResult::CONFIRMED_WITHOUT_USER_INPUT;
+  dialog_result.file_path = base::FilePath(returned_path);
 
   CompleteSelection(std::move(dialog_result));
   is_dialog_showing_ = false;
 }
 
-void DownloadDialogBridge::OnCanceled(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+void DownloadDialogBridge::OnCanceled(JNIEnv* env) {
   if (dialog_callback_) {
     DownloadDialogResult dialog_result;
     dialog_result.location_result = DownloadLocationDialogResult::USER_CANCELED;
@@ -123,14 +116,16 @@ void DownloadDialogBridge::CompleteSelection(DownloadDialogResult result) {
 }
 
 // static
-void JNI_DownloadDialogBridge_SetDownloadAndSaveFileDefaultDirectory(
+static void JNI_DownloadDialogBridge_SetDownloadAndSaveFileDefaultDirectory(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jpref_service,
-    const base::android::JavaParamRef<jstring>& directory) {
+    const base::android::JavaRef<jobject>& jpref_service,
+    std::string& directory) {
   PrefService* pref_service =
       PrefServiceAndroid::FromPrefServiceAndroid(jpref_service);
 
-  base::FilePath path(base::android::ConvertJavaStringToUTF8(env, directory));
+  base::FilePath path(directory);
   pref_service->SetFilePath(prefs::kDownloadDefaultDirectory, path);
   pref_service->SetFilePath(prefs::kSaveFileDefaultDirectory, path);
 }
+
+DEFINE_JNI(DownloadDialogBridge)

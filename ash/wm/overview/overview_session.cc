@@ -4,6 +4,7 @@
 
 #include "ash/wm/overview/overview_session.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller.h"
@@ -29,6 +30,8 @@
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/birch/birch_bar_controller.h"
+#include "ash/wm/overview/birch/birch_bar_util.h"
+#include "ash/wm/overview/birch/tab_app_selection_host.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_delegate.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -50,11 +53,11 @@
 #include "ash/wm/window_util.h"
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/utils/haptics_util.h"
@@ -65,6 +68,7 @@
 #include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/events/event.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -104,7 +108,7 @@ aura::Window* GetWindowForSelection(
     }
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // A self-deleting window state observer that runs the given callback when its
@@ -155,7 +159,6 @@ class AsyncWindowStateChangeObserver : public WindowStateObserver,
 
 OverviewSession::OverviewSession(OverviewDelegate* delegate)
     : delegate_(delegate),
-      overview_start_time_(base::Time::Now()),
       chromevox_enabled_(Shell::Get()
                              ->accessibility_controller()
                              ->spoken_feedback()
@@ -210,10 +213,21 @@ void OverviewSession::Init(
   }
 
   // Create this before the birch bar widget.
-  if (features::IsForestFeatureEnabled()) {
-    birch_bar_controller_ = std::make_unique<BirchBarController>(
-        /*is_informed_restore=*/enter_exit_overview_type_ ==
-        OverviewEnterExitType::kInformedRestore);
+  birch_bar_controller_ = std::make_unique<BirchBarController>(
+      /*is_informed_restore=*/enter_exit_overview_type_ ==
+      OverviewEnterExitType::kInformedRestore);
+  if (enter_exit_overview_type_ == OverviewEnterExitType::kInformedRestore) {
+    PostLoginMetricsRecorder* post_login_metrics_recorder =
+        Shell::Get()
+            ->login_unlock_throughput_recorder()
+            ->post_login_metrics_recorder();
+    if (birch_bar_controller_->GetShowBirchSuggestions()) {
+      post_login_metrics_recorder->set_post_login_ui_status(
+          PostLoginMetricsRecorder::PostLoginUIStatus::kShownWithBirchBar);
+    } else {
+      post_login_metrics_recorder->set_post_login_ui_status(
+          PostLoginMetricsRecorder::PostLoginUIStatus::kShownWithoutBirchBar);
+    }
   }
 
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
@@ -264,12 +278,6 @@ void OverviewSession::Init(
                                    OverviewTransition::kEnter);
   }
 
-  // TODO(http://b/326091611): In the case of dragging a window from the shelf
-  // with one window total, this will create the no windows widget. Then, we
-  // will be notified the drag has started and a drop target will be added,
-  // hiding the no windows widget. This all happens before the frame is
-  // presented so it looks ok from the users perspective, but we should avoid
-  // creating it in the first place.
   const bool is_continuous_enter =
       enter_exit_overview_type_ ==
       OverviewEnterExitType::kContinuousAnimationEnterOnScrollUpdate;
@@ -369,6 +377,8 @@ void OverviewSession::Shutdown() {
   // windows in response to work area changes from window activation.
   display_observer_.reset();
 
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
   // Stop observing split view state changes before restoring window focus.
   // Otherwise the activation of the window triggers OnSplitViewStateChanged()
   // that will call into this function again.
@@ -408,8 +418,6 @@ void OverviewSession::Shutdown() {
   if (!was_saved_desk_library_showing) {
     UMA_HISTOGRAM_COUNTS_100("Ash.Overview.OverviewClosedItems",
                              num_start_windows_ - remaining_items);
-    UMA_HISTOGRAM_MEDIUM_TIMES("Ash.Overview.TimeInOverview",
-                               base::Time::Now() - overview_start_time_);
   }
 
   // Explicitly clear the `selected_item_` to avoid dangling raw_ptr detection.
@@ -471,7 +479,7 @@ void OverviewSession::SelectWindow(OverviewItemBase* item) {
           TaskSwitchSource::OVERVIEW_MODE);
     }
 
-    if (const auto it = base::ranges::find(window_list, window);
+    if (const auto it = std::ranges::find(window_list, window);
         it != window_list.end()) {
       // Record 1-based index so that selecting a top MRU window will record 1.
       UMA_HISTOGRAM_COUNTS_100("Ash.Overview.SelectionDepth",
@@ -947,7 +955,7 @@ void OverviewSession::OnWindowActivating(
   // logic to end overview when app list (i.e., home launcher) is open in tablet
   // mode, so do not handle it here.
   if (gained_active == Shell::Get()->app_list_controller()->GetWindow() &&
-      !display::Screen::GetScreen()->InTabletMode()) {
+      !display::Screen::Get()->InTabletMode()) {
     RestoreWindowActivation(false);
     EndOverview(OverviewEndAction::kAppListActivatedInClamshell);
     return;
@@ -1093,7 +1101,7 @@ void OverviewSession::OnFocusedItemClosed(OverviewItem* item) {
 }
 
 void OverviewSession::OnRootWindowClosing(aura::Window* root) {
-  auto iter = base::ranges::find_if(
+  auto iter = std::ranges::find_if(
       grid_list_, [root](const std::unique_ptr<OverviewGrid>& grid) {
         return grid->root_window() == root;
       });
@@ -1181,8 +1189,7 @@ void OverviewSession::ShowSavedDeskLibrary(
   // occlusion computations. These should not cause use to exit overview.
   base::AutoReset<bool> ignore(&ignore_activations_, true);
 
-  if (display::Screen::GetScreen()->InTabletMode() ||
-      IsShowingSavedDeskLibrary()) {
+  if (display::Screen::Get()->InTabletMode() || IsShowingSavedDeskLibrary()) {
     return;
   }
 
@@ -1287,6 +1294,10 @@ void OverviewSession::UpdateFrameThrottling() {
       windows_to_throttle);
 }
 
+base::WeakPtr<OverviewSession> OverviewSession::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void OverviewSession::OnDeskActivationChanged(const Desk* activated,
                                               const Desk* deactivated) {
   observing_desk_ = activated;
@@ -1310,8 +1321,10 @@ void OverviewSession::OnDisplayAdded(const display::Display& display) {
 void OverviewSession::OnDisplayMetricsChanged(const display::Display& display,
                                               uint32_t metrics) {
   // End the current drag if the display changes.
-  if (window_drag_controller_ && window_drag_controller_->item())
+  if (window_drag_controller_ && window_drag_controller_->item()) {
     ResetDraggedWindowGesture();
+  }
+
   auto* overview_grid =
       GetGridWithRootWindow(Shell::GetRootWindowForDisplayId(display.id()));
   overview_grid->OnDisplayMetricsChanged(metrics);
@@ -1385,7 +1398,7 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
   // we let the app list to handle the key event.
   // TODO(crbug.com/40622922): Explore better ways to handle this splitview +
   // overview + applist case.
-  if (!display::Screen::GetScreen()->InTabletMode() &&
+  if (!display::Screen::Get()->InTabletMode() &&
       Shell::Get()->app_list_controller()->IsVisible()) {
     return;
   }
@@ -1393,6 +1406,12 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
   // If a desk templates dialog is visible it should receive the key events.
   if (saved_desk_dialog_controller_ &&
       saved_desk_dialog_controller_->dialog_widget()) {
+    return;
+  }
+
+  if (TabAppSelectionHost* coral_selector =
+          birch_bar_util::GetVisibleTabAppSelectionHost()) {
+    coral_selector->ProcessKeyEvent(event);
     return;
   }
 
@@ -1555,9 +1574,7 @@ void OverviewSession::OnSplitViewStateChanged(
 
   // Entering or exiting splitview is unexpected behavior in an informed restore
   // overview session.
-  if (features::IsForestFeatureEnabled()) {
-    CHECK(!Shell::Get()->informed_restore_controller()->contents_data());
-  }
+  CHECK(!Shell::Get()->informed_restore_controller()->contents_data());
 
   UpdateNoWindowsWidgetOnEachGrid(/*animate=*/false,
                                   /*is_continuous_enter=*/false);
@@ -1598,6 +1615,11 @@ void OverviewSession::OnSnapGroupRemoving(SnapGroup* snap_group,
 
   for (aura::Window* window : {window1, window2}) {
     CHECK(window);
+    if (GetOverviewItemForWindow(window)) {
+      base::debug::DumpWithoutCrashing();
+      continue;
+    }
+
     overview_grid->AddItemInMruOrder(window, /*reposition=*/false,
                                      /*animate=*/true, /*restack=*/true,
                                      /*use_spawn_animation=*/true);
@@ -1605,6 +1627,11 @@ void OverviewSession::OnSnapGroupRemoving(SnapGroup* snap_group,
 }
 
 void OverviewSession::OnDisplayTabletStateChanged(display::TabletState state) {
+  if (window_drag_controller_ && window_drag_controller_->item()) {
+    // End the current drag on tablet state changes.
+    ResetDraggedWindowGesture();
+  }
+
   if (display::IsTabletStateChanging(state)) {
     // Do nothing if the tablet state is still in the process of transition.
     return;
@@ -1635,7 +1662,7 @@ void OverviewSession::Move(bool reverse) {
 }
 
 bool OverviewSession::ProcessForScrolling(const ui::KeyEvent& event) {
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     return false;
   }
 

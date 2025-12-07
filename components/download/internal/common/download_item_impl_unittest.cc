@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/download/public/common/download_item_impl.h"
 
 #include <stdint.h>
@@ -17,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/queue.h"
 #include "base/files/file_util.h"
@@ -51,7 +47,6 @@
 using ::testing::_;
 using ::testing::ByMove;
 using ::testing::DoAll;
-using ::testing::Invoke;
 using ::testing::InvokeWithoutArgs;
 using ::testing::NiceMock;
 using ::testing::Property;
@@ -72,8 +67,8 @@ namespace download {
 namespace {
 
 template <typename T>
-base::HistogramBase::Sample ToHistogramSample(T t) {
-  return static_cast<base::HistogramBase::Sample>(t);
+base::HistogramBase::Sample32 ToHistogramSample(T t) {
+  return static_cast<base::HistogramBase::Sample32>(t);
 }
 
 class MockDelegate : public DownloadItemImplDelegate {
@@ -216,15 +211,15 @@ ACTION_P3(ScheduleCallbackWithParams, param1, param2, task_runner) {
                         base::BindOnce(std::move(arg0), param1, param2));
 }
 
-const char kTestData1[] = {'M', 'a', 'r', 'y', ' ', 'h', 'a', 'd',
-                           ' ', 'a', ' ', 'l', 'i', 't', 't', 'l',
-                           'e', ' ', 'l', 'a', 'm', 'b', '.'};
+static constexpr auto kTestData1 = std::to_array<uint8_t>(
+    {'M', 'a', 'r', 'y', ' ', 'h', 'a', 'd', ' ', 'a', ' ', 'l',
+     'i', 't', 't', 'l', 'e', ' ', 'l', 'a', 'm', 'b', '.'});
 
 // SHA256 hash of TestData1
-const uint8_t kHashOfTestData1[] = {
-    0xd2, 0xfc, 0x16, 0xa1, 0xf5, 0x1a, 0x65, 0x3a, 0xa0, 0x19, 0x64,
-    0xef, 0x9c, 0x92, 0x33, 0x36, 0xe1, 0x06, 0x53, 0xfe, 0xc1, 0x95,
-    0xf4, 0x93, 0x45, 0x8b, 0x3b, 0x21, 0x89, 0x0e, 0x1b, 0x97};
+static constexpr auto kHashOfTestData1 = std::to_array<uint8_t>(
+    {0xd2, 0xfc, 0x16, 0xa1, 0xf5, 0x1a, 0x65, 0x3a, 0xa0, 0x19, 0x64,
+     0xef, 0x9c, 0x92, 0x33, 0x36, 0xe1, 0x06, 0x53, 0xfe, 0xc1, 0x95,
+     0xf4, 0x93, 0x45, 0x8b, 0x3b, 0x21, 0x89, 0x0e, 0x1b, 0x97});
 
 class DownloadItemTest : public testing::Test {
  public:
@@ -238,6 +233,8 @@ class DownloadItemTest : public testing::Test {
     create_info_->save_info->prompt_for_save_location = false;
     create_info_->url_chain.push_back(GURL("http://example.com/download"));
     create_info_->etag = "SomethingToSatisfyResumption";
+    create_info_->request_initiator =
+        url::Origin::Create(GURL("http://example.com"));
   }
 
   DownloadItemImpl* CreateDownloadItemWithCreateInfo(
@@ -352,8 +349,8 @@ class DownloadItemTest : public testing::Test {
         .WillOnce(Return(true));
     base::FilePath final_path(kDummyTargetPath);
     auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
-    EXPECT_CALL(*download_file, RenameAndAnnotate(_, _, _, _, _, _))
-        .WillOnce(WithArg<5>([&task_runner, &final_path](
+    EXPECT_CALL(*download_file, RenameAndAnnotate(_, _, _, _, _, _, _))
+        .WillOnce(WithArg<6>([&task_runner, &final_path](
                                  DownloadFile::RenameCompletionCallback cb) {
           task_runner->PostTask(
               FROM_HERE,
@@ -536,7 +533,7 @@ TEST_F(DownloadItemTest, NotificationAfterOnContentCheckCompleted) {
 
   EXPECT_CALL(*mock_delegate(), ShouldCompleteDownload_(_, _))
       .WillOnce(Return(true));
-  EXPECT_CALL(*download_file, RenameAndAnnotate(_, _, _, _, _, _));
+  EXPECT_CALL(*download_file, RenameAndAnnotate(_, _, _, _, _, _, _));
   unsafeurl_item->ValidateDangerousDownload();
   EXPECT_TRUE(unsafeurl_observer.CheckAndResetDownloadUpdated());
   CleanupItem(unsafeurl_item, download_file, DownloadItem::IN_PROGRESS);
@@ -554,7 +551,7 @@ TEST_F(DownloadItemTest, NotificationAfterOnContentCheckCompleted) {
 
   EXPECT_CALL(*mock_delegate(), ShouldCompleteDownload_(_, _))
       .WillOnce(Return(true));
-  EXPECT_CALL(*download_file, RenameAndAnnotate(_, _, _, _, _, _));
+  EXPECT_CALL(*download_file, RenameAndAnnotate(_, _, _, _, _, _, _));
   unsafefile_item->ValidateDangerousDownload();
   EXPECT_TRUE(unsafefile_observer.CheckAndResetDownloadUpdated());
   CleanupItem(unsafefile_item, download_file, DownloadItem::IN_PROGRESS);
@@ -791,8 +788,8 @@ TEST_F(DownloadItemTest, UnresumableInterrupt) {
   auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
   EXPECT_CALL(
       *download_file,
-      RenameAndAnnotate(base::FilePath(kDummyTargetPath), _, _, _, _, _))
-      .WillOnce(WithArg<5>([&task_runner](
+      RenameAndAnnotate(base::FilePath(kDummyTargetPath), _, _, _, _, _, _))
+      .WillOnce(WithArg<6>([&task_runner](
                                DownloadFile::RenameCompletionCallback cb) {
         task_runner->PostTask(
             FROM_HERE, base::BindOnce(std::move(cb),
@@ -1296,8 +1293,8 @@ TEST_F(DownloadItemTest, CallbackAfterRename) {
 
   EXPECT_CALL(*mock_delegate(), ShouldCompleteDownload_(item, _))
       .WillOnce(Return(true));
-  EXPECT_CALL(*download_file, RenameAndAnnotate(final_path, _, _, _, _, _))
-      .WillOnce(WithArg<5>([&task_runner, &final_path](
+  EXPECT_CALL(*download_file, RenameAndAnnotate(final_path, _, _, _, _, _, _))
+      .WillOnce(WithArg<6>([&task_runner, &final_path](
                                DownloadFile::RenameCompletionCallback cb) {
         task_runner->PostTask(
             FROM_HERE,
@@ -1635,7 +1632,7 @@ TEST_F(DownloadItemTest, DestinationError_NoRestartRequired) {
 
   std::unique_ptr<crypto::SecureHash> hash(
       crypto::SecureHash::Create(crypto::SecureHash::SHA256));
-  hash->Update(kTestData1, sizeof(kTestData1));
+  hash->Update(kTestData1);
 
   EXPECT_CALL(*download_file, Detach());
   as_observer->DestinationError(DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED, 1,
@@ -1644,9 +1641,8 @@ TEST_F(DownloadItemTest, DestinationError_NoRestartRequired) {
   EXPECT_TRUE(observer.CheckAndResetDownloadUpdated());
   EXPECT_EQ(DownloadItem::INTERRUPTED, item->GetState());
   EXPECT_EQ(DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED, item->GetLastReason());
-  EXPECT_EQ(
-      std::string(std::begin(kHashOfTestData1), std::end(kHashOfTestData1)),
-      item->GetHash());
+  EXPECT_EQ(std::string(base::as_string_view(kHashOfTestData1)),
+            item->GetHash());
   histogram_tester.ExpectBucketCount(
       "Download.InterruptedReason",
       ToHistogramSample<DownloadInterruptReason>(
@@ -1669,7 +1665,7 @@ TEST_F(DownloadItemTest, DestinationError_RestartRequired) {
 
   std::unique_ptr<crypto::SecureHash> hash(
       crypto::SecureHash::Create(crypto::SecureHash::SHA256));
-  hash->Update(kTestData1, sizeof(kTestData1));
+  hash->Update(kTestData1);
 
   EXPECT_CALL(*download_file, Cancel());
   as_observer->DestinationError(DOWNLOAD_INTERRUPT_REASON_FILE_FAILED, 1,
@@ -1709,7 +1705,7 @@ TEST_F(DownloadItemTest, DestinationCompleted) {
 
   std::unique_ptr<crypto::SecureHash> hash(
       crypto::SecureHash::Create(crypto::SecureHash::SHA256));
-  hash->Update(kTestData1, sizeof(kTestData1));
+  hash->Update(kTestData1);
 
   EXPECT_CALL(*mock_delegate(), ShouldCompleteDownload_(_, _));
   as_observer->DestinationCompleted(10, std::move(hash));
@@ -1742,9 +1738,9 @@ TEST_F(DownloadItemTest, EnabledActionsForNormalDownload) {
 
   // Complete
   auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
-  EXPECT_CALL(*download_file, RenameAndAnnotate(_, _, _, _, _, _))
+  EXPECT_CALL(*download_file, RenameAndAnnotate(_, _, _, _, _, _, _))
       .WillOnce(
-          WithArg<5>([&task_runner](DownloadFile::RenameCompletionCallback cb) {
+          WithArg<6>([&task_runner](DownloadFile::RenameCompletionCallback cb) {
             task_runner->PostTask(
                 FROM_HERE,
                 base::BindOnce(std::move(cb), DOWNLOAD_INTERRUPT_REASON_NONE,
@@ -1784,9 +1780,9 @@ TEST_F(DownloadItemTest, EnabledActionsForTemporaryDownload) {
   EXPECT_CALL(*mock_delegate(), ShouldCompleteDownload_(item, _))
       .WillOnce(Return(true));
   auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
-  EXPECT_CALL(*download_file, RenameAndAnnotate(_, _, _, _, _, _))
+  EXPECT_CALL(*download_file, RenameAndAnnotate(_, _, _, _, _, _, _))
       .WillOnce(
-          WithArg<5>([&task_runner](DownloadFile::RenameCompletionCallback cb) {
+          WithArg<6>([&task_runner](DownloadFile::RenameCompletionCallback cb) {
             task_runner->PostTask(
                 FROM_HERE,
                 base::BindOnce(std::move(cb), DOWNLOAD_INTERRUPT_REASON_NONE,
@@ -1857,9 +1853,9 @@ TEST_F(DownloadItemTest, CompleteDelegate_ReturnTrue) {
   auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
   EXPECT_CALL(
       *download_file,
-      RenameAndAnnotate(base::FilePath(kDummyTargetPath), _, _, _, _, _))
+      RenameAndAnnotate(base::FilePath(kDummyTargetPath), _, _, _, _, _, _))
       .WillOnce(
-          WithArg<5>([&task_runner](DownloadFile::RenameCompletionCallback cb) {
+          WithArg<6>([&task_runner](DownloadFile::RenameCompletionCallback cb) {
             task_runner->PostTask(
                 FROM_HERE,
                 base::BindOnce(std::move(cb), DOWNLOAD_INTERRUPT_REASON_NONE,
@@ -1900,9 +1896,9 @@ TEST_F(DownloadItemTest, CompleteDelegate_BlockOnce) {
   auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
   EXPECT_CALL(
       *download_file,
-      RenameAndAnnotate(base::FilePath(kDummyTargetPath), _, _, _, _, _))
+      RenameAndAnnotate(base::FilePath(kDummyTargetPath), _, _, _, _, _, _))
       .WillOnce(
-          WithArg<5>([&task_runner](DownloadFile::RenameCompletionCallback cb) {
+          WithArg<6>([&task_runner](DownloadFile::RenameCompletionCallback cb) {
             task_runner->PostTask(
                 FROM_HERE,
                 base::BindOnce(std::move(cb), DOWNLOAD_INTERRUPT_REASON_NONE,
@@ -1946,9 +1942,9 @@ TEST_F(DownloadItemTest, CompleteDelegate_SetDanger) {
   auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
   EXPECT_CALL(
       *download_file,
-      RenameAndAnnotate(base::FilePath(kDummyTargetPath), _, _, _, _, _))
+      RenameAndAnnotate(base::FilePath(kDummyTargetPath), _, _, _, _, _, _))
       .WillOnce(
-          WithArg<5>([&task_runner](DownloadFile::RenameCompletionCallback cb) {
+          WithArg<6>([&task_runner](DownloadFile::RenameCompletionCallback cb) {
             task_runner->PostTask(
                 FROM_HERE,
                 base::BindOnce(std::move(cb), DOWNLOAD_INTERRUPT_REASON_NONE,
@@ -1999,9 +1995,9 @@ TEST_F(DownloadItemTest, CompleteDelegate_BlockTwice) {
   auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
   EXPECT_CALL(
       *download_file,
-      RenameAndAnnotate(base::FilePath(kDummyTargetPath), _, _, _, _, _))
+      RenameAndAnnotate(base::FilePath(kDummyTargetPath), _, _, _, _, _, _))
       .WillOnce(
-          WithArg<5>([&task_runner](DownloadFile::RenameCompletionCallback cb) {
+          WithArg<6>([&task_runner](DownloadFile::RenameCompletionCallback cb) {
             task_runner->PostTask(
                 FROM_HERE,
                 base::BindOnce(std::move(cb), DOWNLOAD_INTERRUPT_REASON_NONE,
@@ -2016,29 +2012,7 @@ TEST_F(DownloadItemTest, CompleteDelegate_BlockTwice) {
   EXPECT_EQ(DownloadItem::COMPLETE, item->GetState());
 }
 
-TEST_F(DownloadItemTest, StealDangerousDownloadAndDiscard) {
-  DownloadItemImpl* item = CreateDownloadItem();
-  MockDownloadFile* download_file =
-      DoIntermediateRename(item, DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE);
-  ASSERT_TRUE(item->IsDangerous());
-  base::FilePath full_path(FILE_PATH_LITERAL("foo.txt"));
-  base::FilePath returned_path;
-
-  EXPECT_CALL(*download_file, FullPath()).WillOnce(ReturnRefOfCopy(full_path));
-  EXPECT_CALL(*download_file, Detach());
-  EXPECT_CALL(*mock_delegate(), DownloadRemoved(_));
-  base::WeakPtrFactory<DownloadItemTest> weak_ptr_factory(this);
-  item->OnAllDataSaved(0, std::unique_ptr<crypto::SecureHash>());
-  item->StealDangerousDownload(
-      true,  // delete_file_after_feedback
-      base::BindOnce(&DownloadItemTest::OnDownloadFileAcquired,
-                 weak_ptr_factory.GetWeakPtr(),
-                 base::Unretained(&returned_path)));
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(full_path, returned_path);
-}
-
-TEST_F(DownloadItemTest, StealDangerousDownloadAndKeep) {
+TEST_F(DownloadItemTest, CopyDownload) {
   DownloadItemImpl* item = CreateDownloadItem();
   MockDownloadFile* download_file =
       DoIntermediateRename(item, DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE);
@@ -2048,61 +2022,12 @@ TEST_F(DownloadItemTest, StealDangerousDownloadAndKeep) {
   EXPECT_CALL(*download_file, FullPath()).WillOnce(ReturnRefOfCopy(full_path));
   base::WeakPtrFactory<DownloadItemTest> weak_ptr_factory(this);
   item->OnAllDataSaved(0, std::unique_ptr<crypto::SecureHash>());
-  item->StealDangerousDownload(
-      false,  // delete_file_after_feedback
-      base::BindOnce(&DownloadItemTest::OnDownloadFileAcquired,
-                 weak_ptr_factory.GetWeakPtr(),
-                 base::Unretained(&returned_path)));
+  item->CopyDownload(base::BindOnce(&DownloadItemTest::OnDownloadFileAcquired,
+                                    weak_ptr_factory.GetWeakPtr(),
+                                    base::Unretained(&returned_path)));
   task_environment_.RunUntilIdle();
   EXPECT_NE(full_path, returned_path);
   CleanupItem(item, download_file, DownloadItem::IN_PROGRESS);
-}
-
-TEST_F(DownloadItemTest, StealInterruptedContinuableDangerousDownload) {
-  base::FilePath returned_path;
-  DownloadItemImpl* item = CreateDownloadItem();
-  MockDownloadFile* download_file =
-      DoIntermediateRename(item, DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE);
-  base::FilePath full_path = item->GetFullPath();
-  EXPECT_FALSE(full_path.empty());
-  EXPECT_CALL(*download_file, FullPath()).WillOnce(ReturnRefOfCopy(full_path));
-  EXPECT_CALL(*download_file, Detach());
-  item->DestinationObserverAsWeakPtr()->DestinationError(
-      DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED, 1,
-      std::unique_ptr<crypto::SecureHash>());
-  ASSERT_TRUE(item->IsDangerous());
-
-  EXPECT_CALL(*mock_delegate(), DownloadRemoved(_));
-  base::WeakPtrFactory<DownloadItemTest> weak_ptr_factory(this);
-  item->OnAllDataSaved(0, std::unique_ptr<crypto::SecureHash>());
-  item->StealDangerousDownload(
-      true, base::BindOnce(&DownloadItemTest::OnDownloadFileAcquired,
-                       weak_ptr_factory.GetWeakPtr(),
-                       base::Unretained(&returned_path)));
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(full_path, returned_path);
-}
-
-TEST_F(DownloadItemTest, StealInterruptedNonContinuableDangerousDownload) {
-  base::FilePath returned_path;
-  DownloadItemImpl* item = CreateDownloadItem();
-  MockDownloadFile* download_file =
-      DoIntermediateRename(item, DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE);
-  EXPECT_CALL(*download_file, Cancel());
-  item->DestinationObserverAsWeakPtr()->DestinationError(
-      DOWNLOAD_INTERRUPT_REASON_FILE_FAILED, 1,
-      std::unique_ptr<crypto::SecureHash>());
-  ASSERT_TRUE(item->IsDangerous());
-
-  EXPECT_CALL(*mock_delegate(), DownloadRemoved(_));
-  base::WeakPtrFactory<DownloadItemTest> weak_ptr_factory(this);
-  item->OnAllDataSaved(0, std::unique_ptr<crypto::SecureHash>());
-  item->StealDangerousDownload(
-      true, base::BindOnce(&DownloadItemTest::OnDownloadFileAcquired,
-                       weak_ptr_factory.GetWeakPtr(),
-                       base::Unretained(&returned_path)));
-  task_environment_.RunUntilIdle();
-  EXPECT_TRUE(returned_path.empty());
 }
 
 // Tests that for an incognito download, the target file is annotated with an
@@ -2115,9 +2040,9 @@ TEST_F(DownloadItemTest, AnnotationWithEmptyURLInIncognito) {
   // Target file should be annotated with the source URL.
   auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
   EXPECT_CALL(*download_file,
-              RenameAndAnnotate(_, _, create_info()->url(), _, _, _))
+              RenameAndAnnotate(_, _, create_info()->url(), _, _, _, _))
       .WillOnce(
-          WithArg<5>([&task_runner](DownloadFile::RenameCompletionCallback cb) {
+          WithArg<6>([&task_runner](DownloadFile::RenameCompletionCallback cb) {
             task_runner->PostTask(
                 FROM_HERE,
                 base::BindOnce(std::move(cb), DOWNLOAD_INTERRUPT_REASON_NONE,
@@ -2137,9 +2062,9 @@ TEST_F(DownloadItemTest, AnnotationWithEmptyURLInIncognito) {
   download_file =
       DoIntermediateRename(item, DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS);
   // Target file should be annotated with an empty URL.
-  EXPECT_CALL(*download_file, RenameAndAnnotate(_, _, GURL(), _, _, _))
+  EXPECT_CALL(*download_file, RenameAndAnnotate(_, _, GURL(), _, _, _, _))
       .WillOnce(
-          WithArg<5>([&task_runner](DownloadFile::RenameCompletionCallback cb) {
+          WithArg<6>([&task_runner](DownloadFile::RenameCompletionCallback cb) {
             task_runner->PostTask(
                 FROM_HERE,
                 base::BindOnce(std::move(cb), DOWNLOAD_INTERRUPT_REASON_NONE,
@@ -2149,6 +2074,31 @@ TEST_F(DownloadItemTest, AnnotationWithEmptyURLInIncognito) {
   EXPECT_CALL(*mock_delegate(), ShouldCompleteDownload_(item, _))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_delegate(), IsOffTheRecord()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*download_file, FullPath())
+      .WillOnce(ReturnRefOfCopy(base::FilePath()));
+  EXPECT_CALL(*download_file, Detach());
+  item->DestinationObserverAsWeakPtr()->DestinationCompleted(
+      0, std::unique_ptr<crypto::SecureHash>());
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(DownloadItemTest, AnnotationWithRequestInitiator) {
+  DownloadItemImpl* item = CreateDownloadItem();
+  MockDownloadFile* download_file =
+      DoIntermediateRename(item, DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS);
+  auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
+  EXPECT_CALL(
+      *download_file,
+      RenameAndAnnotate(_, _, _, _, create_info()->request_initiator, _, _))
+      .WillOnce(
+          WithArg<6>([&task_runner](DownloadFile::RenameCompletionCallback cb) {
+            task_runner->PostTask(
+                FROM_HERE,
+                base::BindOnce(std::move(cb), DOWNLOAD_INTERRUPT_REASON_NONE,
+                               base::FilePath(kDummyTargetPath)));
+          }));
+  EXPECT_CALL(*mock_delegate(), ShouldCompleteDownload_(item, _))
+      .WillOnce(Return(true));
   EXPECT_CALL(*download_file, FullPath())
       .WillOnce(ReturnRefOfCopy(base::FilePath()));
   EXPECT_CALL(*download_file, Detach());
@@ -2281,7 +2231,7 @@ std::vector<EventList> DistributeObservationsIntoEvents(
     int event_count) {
   std::vector<EventList> all_event_lists;
   for (auto partition = begin;; ++partition) {
-    ObservationList first_group_of_observations(begin, partition);
+    ObservationList UNSAFE_TODO(first_group_of_observations(begin, partition));
     if (event_count > 1) {
       std::vector<EventList> list_of_subsequent_events =
           DistributeObservationsIntoEvents(partition, end, event_count - 1);

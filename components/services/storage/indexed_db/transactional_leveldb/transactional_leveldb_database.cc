@@ -41,7 +41,7 @@
 
 using leveldb_env::DBTracker;
 
-namespace content {
+namespace content::indexed_db {
 
 namespace {
 
@@ -326,4 +326,4 @@ void TransactionalLevelDBDatabase::OnIteratorDestroyed(
   iterator_lru_.Erase(lru_iterator);
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

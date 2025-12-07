@@ -44,8 +44,8 @@ class APIEventHandler {
   // Sets the response validator to be used in verifying event arguments.
   void SetResponseValidator(std::unique_ptr<APIResponseValidator> validator);
 
-  // Returns a new v8::Object for an event with the given |event_name|. If
-  // |notify_on_change| is true, notifies whenever listeners state is changed.
+  // Returns a new v8::Object for an event with the given `event_name`. If
+  // `notify_on_change` is true, notifies whenever listeners state is changed.
   // TODO(devlin): Maybe worth creating a Params struct to hold the event
   // information?
   v8::Local<v8::Object> CreateEventInstance(const std::string& event_name,
@@ -62,13 +62,18 @@ class APIEventHandler {
   v8::Local<v8::Object> CreateAnonymousEventInstance(
       v8::Local<v8::Context> context);
 
-  // Invalidates the given |event|.
+  // Invalidates the given `event`.
   void InvalidateCustomEvent(v8::Local<v8::Context> context,
                              v8::Local<v8::Object> event);
 
-  // Notifies all listeners of the event with the given |event_name| in the
-  // specified |context|, sending the included |arguments|.
-  // Warning: This runs arbitrary JS code, so the |context| may be invalidated
+  // Notifies all listeners of the event with the given `event_name` in the
+  // specified `context`, sending the included `arguments`.
+  // `on_dispatched_callback` allows the caller to specify a `v8::Function` to
+  // be called with the results of the listener event dispatch.
+  // `listener_error_callback` is an optional callback that is invoked
+  // immediately when a listener throws an exception. The exception is passed as
+  // the single argument to the callback.
+  // Warning: This runs arbitrary JS code, so the `context` may be invalidated
   // after this!
   void FireEventInContext(const std::string& event_name,
                           v8::Local<v8::Context> context,
@@ -78,10 +83,11 @@ class APIEventHandler {
                           v8::Local<v8::Context> context,
                           v8::LocalVector<v8::Value>* arguments,
                           mojom::EventFilteringInfoPtr filter,
-                          JSRunner::ResultCallback callback);
+                          v8::Local<v8::Function> on_dispatched_callback,
+                          v8::Local<v8::Function> listener_error_callback);
 
-  // Registers a |function| to serve as an "argument massager" for the given
-  // |event_name|, mutating the original arguments.
+  // Registers a `function` to serve as an "argument massager" for the given
+  // `event_name`, mutating the original arguments.
   // The function is called with two arguments: the array of original arguments
   // being dispatched to the event, and the function to dispatch the event to
   // listeners.
@@ -89,21 +95,16 @@ class APIEventHandler {
                                 const std::string& event_name,
                                 v8::Local<v8::Function> function);
 
-  // Returns true if there is a listener for the given |event_name| in the
-  // given |context|.
+  // Returns true if there is a listener for the given `event_name` in the
+  // given `context`.
   bool HasListenerForEvent(const std::string& event_name,
                            v8::Local<v8::Context> context);
 
-  // Invalidates listeners for the given |context|. It's a shame we have to
+  // Invalidates listeners for the given `context`. It's a shame we have to
   // have this separately (as opposed to hooking into e.g. a PerContextData
   // destructor), but we need to do this before the context is fully removed
   // (because the associated extension ScriptContext needs to be valid).
   void InvalidateContext(v8::Local<v8::Context> context);
-
-  // Returns the number of event listeners for a given |event_name| and
-  // |context|.
-  size_t GetNumEventListenersForTesting(const std::string& event_name,
-                                        v8::Local<v8::Context> context);
 
  private:
   APIEventListeners::ListenersUpdated listeners_changed_;

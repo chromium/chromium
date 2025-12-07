@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "net/base/net_export.h"
 #include "net/base/network_handle.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "net/base/address_map_linux.h"
@@ -122,6 +123,13 @@ class NET_EXPORT NetworkChangeNotifier {
     CONNECTION_COST_LAST
   };
 
+  enum IPAddressChangeType {
+    IP_ADDRESS_CHANGE_NONE = 0,
+    IP_ADDRESS_CHANGE_NORMAL,
+    IP_ADDRESS_CHANGE_IPV6_TEMPADDR,
+    IP_ADDRESS_CHANGE_LAST = IP_ADDRESS_CHANGE_IPV6_TEMPADDR
+  };
+
   // DEPRECATED. Please use NetworkChangeObserver instead. crbug.com/754695.
   class NET_EXPORT IPAddressObserver {
    public:
@@ -130,7 +138,7 @@ class NET_EXPORT NetworkChangeNotifier {
 
     // Will be called when the IP address of the primary interface changes.
     // This includes when the primary interface itself changes.
-    virtual void OnIPAddressChanged() = 0;
+    virtual void OnIPAddressChanged(IPAddressChangeType change_type) = 0;
 
    protected:
     IPAddressObserver();
@@ -332,19 +340,10 @@ class NET_EXPORT NetworkChangeNotifier {
         observer_list_;
   };
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/40232923): Remove this section and align the behavior
-  // with other platforms or confirm that Lacros needs to be separated.
-  static constexpr ConnectionType kDefaultInitialConnectionType =
-      CONNECTION_UNKNOWN;
-  static constexpr ConnectionSubtype kDefaultInitialConnectionSubtype =
-      SUBTYPE_UNKNOWN;
-#else
   static constexpr ConnectionType kDefaultInitialConnectionType =
       CONNECTION_NONE;
   static constexpr ConnectionSubtype kDefaultInitialConnectionSubtype =
       SUBTYPE_NONE;
-#endif
 
   NetworkChangeNotifier(const NetworkChangeNotifier&) = delete;
   NetworkChangeNotifier& operator=(const NetworkChangeNotifier&) = delete;
@@ -545,7 +544,8 @@ class NET_EXPORT NetworkChangeNotifier {
   static void TriggerNonSystemDnsChange();
 
   // Allows unit tests to trigger notifications.
-  static void NotifyObserversOfIPAddressChangeForTests();
+  static void NotifyObserversOfIPAddressChangeForTests(
+      IPAddressChangeType = IP_ADDRESS_CHANGE_NORMAL);
   static void NotifyObserversOfConnectionTypeChangeForTests(
       ConnectionType type);
   static void NotifyObserversOfDNSChangeForTests();
@@ -568,6 +568,10 @@ class NET_EXPORT NetworkChangeNotifier {
 
   // Returns a string equivalent to |type|.
   static base::cstring_view ConnectionTypeToString(ConnectionType type);
+
+  // Returns a string equivalent to |type|.
+  static base::cstring_view IPAddressChangeTypeToString(
+      IPAddressChangeType type);
 
   // Allows a second NetworkChangeNotifier to be created for unit testing, so
   // the test suite can create a MockNetworkChangeNotifier, but platform
@@ -662,7 +666,8 @@ class NET_EXPORT NetworkChangeNotifier {
   // Broadcasts a notification to all registered observers.  Note that this
   // happens asynchronously, even for observers on the current thread, even in
   // tests.
-  static void NotifyObserversOfIPAddressChange();
+  static void NotifyObserversOfIPAddressChange(
+      IPAddressChangeType change_type = IP_ADDRESS_CHANGE_NORMAL);
   static void NotifyObserversOfConnectionTypeChange();
   static void NotifyObserversOfDNSChange();
   static void NotifyObserversOfNetworkChange(ConnectionType type);
@@ -705,7 +710,7 @@ class NET_EXPORT NetworkChangeNotifier {
 
   static ObserverList& GetObserverList();
 
-  void NotifyObserversOfIPAddressChangeImpl();
+  void NotifyObserversOfIPAddressChangeImpl(IPAddressChangeType change_type);
   void NotifyObserversOfConnectionTypeChangeImpl(ConnectionType type);
   void NotifyObserversOfDNSChangeImpl();
   void NotifyObserversOfNetworkChangeImpl(ConnectionType type);
@@ -716,6 +721,8 @@ class NET_EXPORT NetworkChangeNotifier {
       handles::NetworkHandle network);
   void NotifyObserversOfConnectionCostChangeImpl(ConnectionCost cost);
   void NotifyObserversOfDefaultNetworkActiveImpl();
+
+  const perfetto::NamedTrack track_;
 
   raw_ptr<SystemDnsConfigChangeNotifier> system_dns_config_notifier_;
   std::unique_ptr<SystemDnsConfigObserver> system_dns_config_observer_;

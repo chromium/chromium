@@ -56,8 +56,7 @@ class HeaderView : public views::Label {
     SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_MIDDLE);
     SetAutoColorReadabilityEnabled(false);
     SetSubpixelRenderingEnabled(false);
-    SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary));
+    SetEnabledColor(cros_tokens::kTextColorPrimary);
 
     TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton1,
                                           *this);
@@ -113,7 +112,7 @@ void CameraRollView::CameraRollItemsView::AddCameraRollItem(
     views::View* camera_roll_item) {
   size_t view_size = camera_roll_items_.view_size();
   camera_roll_items_.Add(camera_roll_item, view_size);
-  AddChildView(camera_roll_item);
+  AddChildViewRaw(camera_roll_item);
 }
 
 void CameraRollView::CameraRollItemsView::Reset() {

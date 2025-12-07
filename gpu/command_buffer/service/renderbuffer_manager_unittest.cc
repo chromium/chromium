@@ -29,7 +29,8 @@ class RenderbufferManagerTestBase : public GpuServiceTest {
   static const GLint kMaxSamples = 4;
 
  protected:
-  void SetUpBase(MemoryTracker* memory_tracker, bool depth24_supported) {
+  void SetUpBase(scoped_refptr<MemoryTracker> memory_tracker,
+                 bool depth24_supported) {
     GpuServiceTest::SetUp();
     feature_info_ = new FeatureInfo();
     TestHelper::SetupFeatureInfoInitExpectationsWithGLVersion(
@@ -37,7 +38,7 @@ class RenderbufferManagerTestBase : public GpuServiceTest {
         "OpenGL ES 3.0", feature_info_->context_type());
     feature_info_->InitializeForTesting();
     manager_ = std::make_unique<RenderbufferManager>(
-        memory_tracker, kMaxSize, kMaxSamples, feature_info_.get());
+        std::move(memory_tracker), kMaxSize, kMaxSamples, feature_info_.get());
   }
 
   void TearDown() override {
@@ -63,14 +64,16 @@ class RenderbufferManagerMemoryTrackerTest
  protected:
   void SetUp() override {
     bool depth24_supported = false;
-    SetUpBase(&mock_memory_tracker_, depth24_supported);
+    mock_memory_tracker_ =
+        base::MakeRefCounted<StrictMock<MockMemoryTracker>>();
+    SetUpBase(mock_memory_tracker_, depth24_supported);
   }
 
-  StrictMock<MockMemoryTracker> mock_memory_tracker_;
+  scoped_refptr<StrictMock<MockMemoryTracker>> mock_memory_tracker_;
 };
 
 #define EXPECT_MEMORY_ALLOCATION_CHANGE(old_size, new_size)                \
-  EXPECT_CALL(mock_memory_tracker_,                                        \
+  EXPECT_CALL(*mock_memory_tracker_,                                       \
               TrackMemoryAllocatedChange(static_cast<uint64_t>(new_size) - \
                                          static_cast<uint64_t>(old_size))) \
       .Times(1)                                                            \

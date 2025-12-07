@@ -22,7 +22,6 @@
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 
@@ -47,10 +46,11 @@ void Accumulate(RGBATuple& base, const RGBATuple& addend) {
 RGBATuple ToRGBATuple(const StyleColor& color,
                       Color fallback_color,
                       mojom::blink::ColorScheme color_scheme) {
-  const Color resolved = color.Resolve(fallback_color, color_scheme);
-  RGBATuple tuple;
-  resolved.GetRGBA(tuple.red, tuple.green, tuple.blue, tuple.alpha);
-  return tuple;
+  Color resolved = color.Resolve(fallback_color, color_scheme);
+  // We're interpolating in sRGB for legacy reasons.
+  resolved.ConvertToColorSpace(Color::ColorSpace::kSRGB);
+  return {resolved.Param0(), resolved.Param1(), resolved.Param2(),
+          resolved.Alpha()};
 }
 
 StyleColor ToStyleColor(const RGBATuple& tuple) {
@@ -75,13 +75,6 @@ mojom::blink::ColorScheme ColorSchemeForSVGElement(
 
 }  // namespace
 
-SVGColorProperty::SVGColorProperty(const String& color_string)
-    : style_color_(StyleColor::CurrentColor()) {
-  Color color;
-  if (CSSParser::ParseColor(color, color_string.StripWhiteSpace()))
-    style_color_ = StyleColor(color);
-}
-
 String SVGColorProperty::ValueAsString() const {
   return style_color_.IsCurrentColor()
              ? "currentColor"
@@ -89,10 +82,19 @@ String SVGColorProperty::ValueAsString() const {
                    style_color_.GetColor());
 }
 
-SVGPropertyBase* SVGColorProperty::CloneForAnimation(const String&) const {
-  // SVGAnimatedColor is deprecated. So No SVG DOM animation.
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+SVGParsingError SVGColorProperty::SetValueAsString(const String& value) {
+  Color parsed_color;
+  const String trimmed_value = value.StripWhiteSpace();
+  if (CSSParser::ParseColor(parsed_color, trimmed_value,
+                            /*strict=*/false)) {
+    style_color_ = StyleColor(parsed_color);
+    return SVGParseStatus::kNoError;
+  }
+  if (EqualIgnoringASCIICase(trimmed_value, "currentColor")) {
+    style_color_ = StyleColor::CurrentColor();
+    return SVGParseStatus::kNoError;
+  }
+  return SVGParseStatus::kParsingFailed;
 }
 
 void SVGColorProperty::Add(const SVGPropertyBase* other,

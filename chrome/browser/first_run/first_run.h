@@ -11,8 +11,10 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/installer/util/initial_preferences.h"
+#include "extensions/buildflags/buildflags.h"
 
 class GURL;
 class Profile;
@@ -63,6 +65,11 @@ struct MasterPrefs {
   std::vector<GURL> bookmarks;
   std::string import_bookmarks_path;
   std::string suppress_default_browser_prompt_for_version;
+  base::Value::Dict import_bookmarks_dict;
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  std::string initial_extensions_provider_name;
+  base::Value::List initial_extensions;
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 #if BUILDFLAG(IS_MAC)
   bool confirm_to_quit;
 #endif
@@ -82,8 +89,7 @@ bool IsFirstRunSuppressed(const base::CommandLine& command_line);
 #endif
 
 // Creates the first run sentinel if needed. This should only be called after
-// the process singleton has been grabbed by the current process
-// (http://crbug.com/264694).
+// the process singleton has been grabbed by the current process.
 void CreateSentinelIfNeeded();
 
 // Returns the first run sentinel creation time. This only requires I/O

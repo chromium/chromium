@@ -19,14 +19,18 @@ import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
+@NullMarked
 public class MemConsumer extends Activity {
     public static final String NOTIFICATION_ACTION = MemConsumer.class.toString() + ".NOTIFICATION";
 
-    private ResidentService mResidentService;
+    private @Nullable ResidentService mResidentService;
     private int mMemory;
     private NumberPicker mMemoryPicker;
 
-    private ServiceConnection mServiceConnection =
+    private final ServiceConnection mServiceConnection =
             new ServiceConnection() {
                 @Override
                 public void onServiceConnected(ComponentName name, IBinder binder) {
@@ -41,7 +45,7 @@ public class MemConsumer extends Activity {
             };
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mMemoryPicker = new NumberPicker(this);
         mMemoryPicker.setGravity(Gravity.CENTER);

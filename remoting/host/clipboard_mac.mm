@@ -10,22 +10,17 @@
 #include <memory>
 #include <utility>
 
+#include "base/callback_list.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/mac/pasteboard_changed_observation.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/timer/timer.h"
 #include "remoting/base/constants.h"
 #include "remoting/base/util.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/protocol/clipboard_stub.h"
-
-namespace {
-
-// Clipboard polling interval in milliseconds.
-const int64_t kClipboardPollingIntervalMs = 500;
-
-}  // namespace
 
 namespace remoting {
 
@@ -43,10 +38,10 @@ class ClipboardMac : public Clipboard {
   void InjectClipboardEvent(const protocol::ClipboardEvent& event) override;
 
  private:
-  void CheckClipboardForChanges();
+  void ClipboardChanged();
 
   std::unique_ptr<protocol::ClipboardStub> client_clipboard_;
-  std::unique_ptr<base::RepeatingTimer> clipboard_polling_timer_;
+  base::CallbackListSubscription clipboard_change_subscription_;
   NSInteger current_change_count_ = 0;
 };
 
@@ -57,17 +52,13 @@ ClipboardMac::~ClipboardMac() = default;
 void ClipboardMac::Start(
     std::unique_ptr<protocol::ClipboardStub> client_clipboard) {
   client_clipboard_ = std::move(client_clipboard);
-
-  // Synchronize local change-count with the pasteboard's. The change-count is
-  // used to detect clipboard changes.
   current_change_count_ = NSPasteboard.generalPasteboard.changeCount;
 
-  // macOS doesn't provide a clipboard-changed notification. The only way to
-  // detect clipboard changes is by polling.
-  clipboard_polling_timer_ = std::make_unique<base::RepeatingTimer>();
-  clipboard_polling_timer_->Start(
-      FROM_HERE, base::Milliseconds(kClipboardPollingIntervalMs), this,
-      &ClipboardMac::CheckClipboardForChanges);
+  // Unretained is safe because the subscription's lifetime is scoped to the
+  // lifetime of this object.
+  clipboard_change_subscription_ =
+      base::RegisterPasteboardChangedCallback(base::BindRepeating(
+          &ClipboardMac::ClipboardChanged, base::Unretained(this)));
 }
 
 void ClipboardMac::InjectClipboardEvent(const protocol::ClipboardEvent& event) {
@@ -87,21 +78,20 @@ void ClipboardMac::InjectClipboardEvent(const protocol::ClipboardEvent& event) {
   [pasteboard writeObjects:@[ text ]];
 
   // Update local change-count to prevent this change from being picked up by
-  // CheckClipboardForChanges.
+  // ClipboardChanged().
   current_change_count_ = NSPasteboard.generalPasteboard.changeCount;
 }
 
-void ClipboardMac::CheckClipboardForChanges() {
+void ClipboardMac::ClipboardChanged() {
   NSPasteboard* pasteboard = NSPasteboard.generalPasteboard;
   NSInteger change_count = pasteboard.changeCount;
   if (change_count == current_change_count_) {
     return;
   }
-  current_change_count_ = change_count;
 
   NSArray* objects = [pasteboard readObjectsForClasses:@[ [NSString class] ]
                                                options:nil];
-  if (![objects count]) {
+  if (!objects.count) {
     return;
   }
 

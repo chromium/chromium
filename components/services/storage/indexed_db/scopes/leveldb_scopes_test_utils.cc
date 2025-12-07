@@ -17,7 +17,7 @@
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 #include "third_party/leveldatabase/src/include/leveldb/filter_policy.h"
 
-namespace content {
+namespace content::indexed_db {
 namespace {
 
 constexpr size_t kWriteBufferSize = 4 * 1024 * 1024;
@@ -277,4 +277,4 @@ leveldb::Status LevelDBScopesTestBase::CreateAndSaveLevelDBState() {
   return status;
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

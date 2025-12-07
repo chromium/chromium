@@ -12,7 +12,7 @@ build_webui("build") {
     "webrtc_logs.html",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "media_data_table.ts",
     "media_engagement.ts",
     "webrtc_logs.ts",

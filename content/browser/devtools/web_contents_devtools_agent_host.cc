@@ -5,7 +5,9 @@
 #include "content/browser/devtools/web_contents_devtools_agent_host.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/unguessable_token.h"
+#include "content/browser/devtools/devtools_manager.h"
 #include "content/browser/devtools/protocol/io_handler.h"
 #include "content/browser/devtools/protocol/target_auto_attacher.h"
 #include "content/browser/devtools/protocol/target_handler.h"
@@ -13,20 +15,21 @@
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/common/content_features.h"
 
 namespace content {
 
 namespace {
 using WebContentsDevToolsMap =
     std::map<WebContents*, WebContentsDevToolsAgentHost*>;
-base::LazyInstance<WebContentsDevToolsMap>::Leaky g_agent_host_instances =
-    LAZY_INSTANCE_INITIALIZER;
+WebContentsDevToolsMap& GetAgentHostInstances() {
+  static base::NoDestructor<WebContentsDevToolsMap> agent_host_instances;
+  return *agent_host_instances;
+}
 
 WebContentsDevToolsAgentHost* FindAgentHost(WebContents* wc) {
-  if (!g_agent_host_instances.IsCreated())
-    return nullptr;
-  auto it = g_agent_host_instances.Get().find(wc);
-  return it == g_agent_host_instances.Get().end() ? nullptr : it->second;
+  auto it = GetAgentHostInstances().find(wc);
+  return it == GetAgentHostInstances().end() ? nullptr : it->second;
 }
 
 }  // namespace
@@ -72,21 +75,26 @@ class WebContentsDevToolsAgentHost::AutoAttacher
 
  private:
   void UpdateAutoAttach(base::OnceClosure callback) override {
-    UpdateAssociatedPages();
+    if (web_contents_ && !web_contents_->IsBeingDestroyed()) {
+      UpdateAssociatedPages();
+    }
     protocol::TargetAutoAttacher::UpdateAutoAttach(std::move(callback));
   }
 
   base::flat_set<scoped_refptr<DevToolsAgentHost>> UpdateAssociatedPages() {
     base::flat_set<scoped_refptr<DevToolsAgentHost>> hosts;
     if (auto_attach() && web_contents_) {
+      CHECK(!web_contents_->IsBeingDestroyed());
       auto* rfh = static_cast<RenderFrameHostImpl*>(
           web_contents_->GetPrimaryMainFrame());
       web_contents_->ForEachRenderFrameHost(
           [&hosts](RenderFrameHost* rfh) { AddFrame(hosts, rfh); });
-      // In case primary main frame has been filtered out but some criteria
+      // In case the primary main frame has been filtered out by some criteria
       // in AddFrame(), ensure it's added.
-      hosts.insert(
-          RenderFrameDevToolsAgentHost::GetOrCreateFor(rfh->frame_tree_node()));
+      if (!base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+        hosts.insert(RenderFrameDevToolsAgentHost::GetOrCreateFor(
+            rfh->frame_tree_node()));
+      }
     }
     DispatchSetAttachedTargetsOfType(hosts, DevToolsAgentHost::kTypePage);
     return hosts;
@@ -99,8 +107,9 @@ class WebContentsDevToolsAgentHost::AutoAttacher
     if (rfhi->IsInBackForwardCache())
       return;
     FrameTreeNode* ftn = rfhi->frame_tree_node();
-    // We're interested only in main frames, with the expcetion of fenced frames
-    // that are reported as regular subframes via FrameAutoAttacher.
+    // We're interested only in main frames, with the exception of fenced frames
+    // and (MPArch-based) guests that are reported as regular subframes via
+    // FrameAutoAttacher.
     if (!ftn->IsMainFrame())
       return;
     if (ftn->IsFencedFrameRoot())
@@ -140,7 +149,13 @@ bool WebContentsDevToolsAgentHost::IsDebuggerAttached(
 // static
 void WebContentsDevToolsAgentHost::AddAllAgentHosts(
     DevToolsAgentHost::List* result) {
+  auto* delegate = DevToolsManager::GetInstance()->delegate();
   for (WebContentsImpl* wc : WebContentsImpl::GetAllWebContents()) {
+    if (delegate && !delegate->ShouldReportAsTabTarget(wc).value_or(true)) {
+      // Skip the target if delegate explicitly indicates that it should not be
+      // reported as Tab.
+      continue;
+    }
     result->push_back(GetOrCreateFor(wc));
   }
 }
@@ -158,13 +173,13 @@ void WebContentsDevToolsAgentHost::InnerAttach(WebContents* wc) {
   // a different host created.
   // TODO(caseq): find a better solution. See also a similar comment in
   // RenderFrameDevToolsAgentHost::SetFrameTreeNode();
-  auto prev_entry = g_agent_host_instances.Get().find(wc);
-  if (prev_entry != g_agent_host_instances.Get().end()) {
+  auto prev_entry = GetAgentHostInstances().find(wc);
+  if (prev_entry != GetAgentHostInstances().end()) {
     CHECK_NE(prev_entry->second, this);
     prev_entry->second->InnerDetach();
   }
   const bool inserted =
-      g_agent_host_instances.Get().insert(std::make_pair(wc, this)).second;
+      GetAgentHostInstances().insert(std::make_pair(wc, this)).second;
   CHECK(inserted);
   auto_attacher_->SetWebContents(wc);
   Observe(wc);
@@ -176,7 +191,7 @@ void WebContentsDevToolsAgentHost::InnerAttach(WebContents* wc) {
 void WebContentsDevToolsAgentHost::InnerDetach() {
   DCHECK_EQ(this, FindAgentHost(web_contents()));
   auto_attacher_->SetWebContents(nullptr);
-  g_agent_host_instances.Get().erase(web_contents());
+  GetAgentHostInstances().erase(web_contents());
   Observe(nullptr);
   // We may or may not be destruced here, depending on embedders
   // potentially retaining references.
@@ -303,15 +318,13 @@ base::TimeTicks WebContentsDevToolsAgentHost::GetLastActivityTime() {
 std::optional<network::CrossOriginEmbedderPolicy>
 WebContentsDevToolsAgentHost::cross_origin_embedder_policy(
     const std::string& id) {
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
+  NOTREACHED();
 }
 
 std::optional<network::CrossOriginOpenerPolicy>
 WebContentsDevToolsAgentHost::cross_origin_opener_policy(
     const std::string& id) {
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
+  NOTREACHED();
 }
 
 DevToolsAgentHostImpl* WebContentsDevToolsAgentHost::GetPrimaryFrameAgent() {
@@ -332,6 +345,9 @@ WebContentsDevToolsAgentHost::GetOrCreatePrimaryFrameAgent() {
 }
 
 void WebContentsDevToolsAgentHost::WebContentsDestroyed() {
+  // Detach auto-attacher early so it doesn't do anything weird on a
+  // half-destroyed WC while sessions are being detached below.
+  auto_attacher_->SetWebContents(nullptr);
   auto retain_this = ForceDetachAllSessionsImpl();
   InnerDetach();
 }
@@ -355,7 +371,8 @@ void WebContentsDevToolsAgentHost::ReadyToCommitNavigation(
   }
 }
 
-void WebContentsDevToolsAgentHost::FrameDeleted(int frame_tree_node_id) {
+void WebContentsDevToolsAgentHost::FrameDeleted(
+    FrameTreeNodeId frame_tree_node_id) {
   for (auto* tracing : protocol::TracingHandler::ForAgentHost(this)) {
     tracing->FrameDeleted(frame_tree_node_id);
   }
@@ -366,16 +383,15 @@ DevToolsSession::Mode WebContentsDevToolsAgentHost::GetSessionMode() {
   return DevToolsSession::Mode::kSupportsTabTarget;
 }
 
-bool WebContentsDevToolsAgentHost::AttachSession(DevToolsSession* session,
-                                                 bool acquire_wake_lock) {
+bool WebContentsDevToolsAgentHost::AttachSession(DevToolsSession* session) {
   if (web_contents() && !RenderFrameDevToolsAgentHost::ShouldAllowSession(
                             web_contents()->GetPrimaryMainFrame(), session)) {
     return false;
   }
   session->SetBrowserOnly(true);
-  const bool may_attach_to_brower = session->GetClient()->IsTrusted();
+  const bool may_attach_to_browser = session->GetClient()->IsTrusted();
   session->CreateAndAddHandler<protocol::TargetHandler>(
-      may_attach_to_brower
+      may_attach_to_browser
           ? protocol::TargetHandler::AccessMode::kRegular
           : protocol::TargetHandler::AccessMode::kAutoAttachOnly,
       GetId(), auto_attacher_.get(), session);

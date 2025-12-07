@@ -238,6 +238,9 @@ class ASH_EXPORT SessionControllerImpl : public SessionController {
   bool IsScreenLocked() const override;
   std::optional<int> GetExistingUsersCount() const override;
   void NotifyFirstSessionReady() override;
+  void NotifyUserToBeRemoved(const AccountId& account_id) override;
+
+  bool is_chrome_terminating() const { return is_chrome_terminating_; }
 
   // Test helpers.
   void ClearUserSessionsForTest();
@@ -250,6 +253,8 @@ class ASH_EXPORT SessionControllerImpl : public SessionController {
   // `RemoveScopedScreenLockBlocker()` in its dtor.
   class ScopedScreenLockBlockerImpl;
 
+  // Marks the session as Kiosk mode.
+  void SetIsRunningInAppMode();
   // Marks the session as a demo session for Demo Mode.
   void SetIsDemoSession();
   void SetSessionState(session_manager::SessionState state);
@@ -352,6 +357,8 @@ class ASH_EXPORT SessionControllerImpl : public SessionController {
   int scoped_screen_lock_blocker_count_ = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  bool is_chrome_terminating_ = false;
 
   base::WeakPtrFactory<SessionControllerImpl> weak_ptr_factory_{this};
 };

@@ -2,22 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/device/geolocation/location_provider_manager.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -49,6 +46,8 @@ class MockLocationObserver {
   }
 
   const mojom::GeopositionResult* last_result() { return last_result_.get(); }
+
+  void ResetLastResult() { last_result_.reset(); }
 
  private:
   mojom::GeopositionResultPtr last_result_;
@@ -105,14 +104,11 @@ class TestingLocationProviderManager : public LocationProviderManager {
   std::unique_ptr<LocationProvider> NewNetworkLocationProvider(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& api_key) override {
-    auto provider = std::make_unique<FakeLocationProvider>();
-    network_location_provider_ = provider->GetWeakPtr();
-    return provider;
+    return std::make_unique<FakeLocationProvider>();
   }
 
   std::unique_ptr<LocationProvider> NewSystemLocationProvider() override {
-    system_location_provider_ = new FakeLocationProvider;
-    return base::WrapUnique(system_location_provider_.get());
+    return std::make_unique<FakeLocationProvider>();
   }
 
   mojom::GeolocationDiagnostics::ProviderState state() {
@@ -120,9 +116,6 @@ class TestingLocationProviderManager : public LocationProviderManager {
     FillDiagnostics(diagnostics);
     return diagnostics.provider_state;
   }
-
-  base::WeakPtr<FakeLocationProvider> network_location_provider_;
-  raw_ptr<FakeLocationProvider> system_location_provider_ = nullptr;
 };
 
 class GeolocationLocationProviderManagerTest : public testing::Test {
@@ -169,11 +162,13 @@ class GeolocationLocationProviderManagerTest : public testing::Test {
   }
 
   FakeLocationProvider* network_location_provider() {
-    return location_provider_manager_->network_location_provider_.get();
+    return static_cast<FakeLocationProvider*>(
+        location_provider_manager_->network_location_provider_.get());
   }
 
-  FakeLocationProvider* system_location_provider() {
-    return location_provider_manager_->system_location_provider_;
+  FakeLocationProvider* platform_location_provider() {
+    return static_cast<FakeLocationProvider*>(
+        location_provider_manager_->platform_location_provider_.get());
   }
 
   // Configure the `kLocationProviderManager` feature for testing with a
@@ -181,9 +176,7 @@ class GeolocationLocationProviderManagerTest : public testing::Test {
   // (as defined in the FeatureParam options) are used, simplifying test setup
   // and avoiding invalid configurations.
   bool SetExperimentMode(mojom::LocationProviderManagerMode mode) {
-    auto options =
-        base::make_span(features::kLocationProviderManagerParam.options,
-                        features::kLocationProviderManagerParam.option_count);
+    auto options = features::kLocationProviderManagerParam.options;
     auto it = std::ranges::find(
         options, mode,
         &base::FeatureParam<
@@ -232,23 +225,25 @@ TEST_F(GeolocationLocationProviderManagerTest, OnPermissionGranted) {
   // Can't check the provider has been notified without going through the
   // motions to create the provider (see next test).
   EXPECT_FALSE(network_location_provider());
-  EXPECT_FALSE(system_location_provider());
+  EXPECT_FALSE(platform_location_provider());
 }
 
 #if !BUILDFLAG(IS_ANDROID)
 // Tests basic operation (valid position and error position update) for network
 // location provider.
 TEST_F(GeolocationLocationProviderManagerTest, NetworkOnly) {
+  ASSERT_TRUE(
+      SetExperimentMode(mojom::LocationProviderManagerMode::kNetworkOnly));
   InitializeLocationProviderManager(base::BindRepeating(&NullLocationProvider),
                                     url_loader_factory_);
   ASSERT_TRUE(location_provider_manager_);
 
   EXPECT_FALSE(network_location_provider());
-  EXPECT_FALSE(system_location_provider());
+  EXPECT_FALSE(platform_location_provider());
   location_provider_manager_->StartProvider(false);
 
   ASSERT_TRUE(network_location_provider());
-  EXPECT_FALSE(system_location_provider());
+  EXPECT_FALSE(platform_location_provider());
   EXPECT_EQ(mojom::GeolocationDiagnostics::ProviderState::kLowAccuracy,
             network_location_provider()->state());
   EXPECT_FALSE(observer_->last_result());
@@ -290,37 +285,37 @@ TEST_F(GeolocationLocationProviderManagerTest, PlatformOnly) {
   ASSERT_TRUE(location_provider_manager_);
 
   EXPECT_FALSE(network_location_provider());
-  EXPECT_FALSE(system_location_provider());
+  EXPECT_FALSE(platform_location_provider());
   location_provider_manager_->StartProvider(false);
 
   EXPECT_FALSE(network_location_provider());
-  ASSERT_TRUE(system_location_provider());
+  ASSERT_TRUE(platform_location_provider());
   EXPECT_EQ(mojom::GeolocationDiagnostics::ProviderState::kLowAccuracy,
-            system_location_provider()->state());
+            platform_location_provider()->state());
   EXPECT_FALSE(observer_->last_result());
 
-  SetReferencePosition(system_location_provider());
+  SetReferencePosition(platform_location_provider());
 
   ASSERT_TRUE(observer_->last_result());
   if (observer_->last_result()->is_position()) {
-    ASSERT_TRUE(system_location_provider()->GetPosition());
+    ASSERT_TRUE(platform_location_provider()->GetPosition());
     EXPECT_EQ(
-        system_location_provider()->GetPosition()->get_position()->latitude,
+        platform_location_provider()->GetPosition()->get_position()->latitude,
         observer_->last_result()->get_position()->latitude);
   }
 
-  EXPECT_FALSE(system_location_provider()->is_permission_granted());
+  EXPECT_FALSE(platform_location_provider()->is_permission_granted());
   EXPECT_FALSE(location_provider_manager_->HasPermissionBeenGrantedForTest());
   location_provider_manager_->OnPermissionGranted();
   EXPECT_TRUE(location_provider_manager_->HasPermissionBeenGrantedForTest());
-  EXPECT_TRUE(system_location_provider()->is_permission_granted());
+  EXPECT_TRUE(platform_location_provider()->is_permission_granted());
 
   // In `kPlatformOnly` mode, an error position is reported directly.
-  SetErrorPosition(system_location_provider(),
+  SetErrorPosition(platform_location_provider(),
                    mojom::GeopositionErrorCode::kPositionUnavailable);
-  EXPECT_TRUE(system_location_provider()->GetPosition()->is_error());
+  EXPECT_TRUE(platform_location_provider()->GetPosition()->is_error());
   EXPECT_TRUE(observer_->last_result()->is_error());
-  EXPECT_EQ(system_location_provider()->GetPosition()->get_error(),
+  EXPECT_EQ(platform_location_provider()->GetPosition()->get_error(),
             observer_->last_result()->get_error());
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
@@ -339,11 +334,11 @@ TEST_F(GeolocationLocationProviderManagerTest, CustomSystemProviderOnly) {
   ASSERT_TRUE(location_provider_manager_);
 
   EXPECT_FALSE(network_location_provider());
-  EXPECT_FALSE(system_location_provider());
+  EXPECT_FALSE(platform_location_provider());
   location_provider_manager_->StartProvider(false);
 
   EXPECT_FALSE(network_location_provider());
-  EXPECT_FALSE(system_location_provider());
+  EXPECT_FALSE(platform_location_provider());
   EXPECT_EQ(mojom::GeolocationDiagnostics::ProviderState::kLowAccuracy,
             fake_location_provider->state());
   EXPECT_FALSE(observer_->last_result());
@@ -365,14 +360,16 @@ TEST_F(GeolocationLocationProviderManagerTest, CustomSystemProviderOnly) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-// Tests flipping from Low to High accuracy mode as requested by a location
-// observer.
+// When in kNetworkOnly mode, test flipping from Low to High accuracy mode as
+// requested by a location observer.
 TEST_F(GeolocationLocationProviderManagerTest, SetObserverOptions) {
+  ASSERT_TRUE(
+      SetExperimentMode(mojom::LocationProviderManagerMode::kNetworkOnly));
   InitializeLocationProviderManager(base::BindRepeating(&NullLocationProvider),
                                     url_loader_factory_);
   location_provider_manager_->StartProvider(false);
   ASSERT_TRUE(network_location_provider());
-  EXPECT_FALSE(system_location_provider());
+  EXPECT_FALSE(platform_location_provider());
   EXPECT_EQ(mojom::GeolocationDiagnostics::ProviderState::kLowAccuracy,
             network_location_provider()->state());
   SetReferencePosition(network_location_provider());
@@ -384,10 +381,10 @@ TEST_F(GeolocationLocationProviderManagerTest, SetObserverOptions) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-// TODO(crbug.com/346842084): kHybridPlatform mode currently behaves the
-// same as kPlatformOnly. fallback mechanism will not be added until platform
-// provider is fully evaluated.
+#if BUILDFLAG(IS_MAC)
+// For `kHybridPlatform` mode, the fallback mechanism should only be initiated
+// by `kWifiDisabled` error code. When any other error code reported from
+// platform location provider, the error should be reported directly.
 TEST_F(GeolocationLocationProviderManagerTest, HybridPlatformFallback) {
   ASSERT_TRUE(
       SetExperimentMode(mojom::LocationProviderManagerMode::kHybridPlatform));
@@ -396,37 +393,85 @@ TEST_F(GeolocationLocationProviderManagerTest, HybridPlatformFallback) {
   ASSERT_TRUE(location_provider_manager_);
 
   EXPECT_FALSE(network_location_provider());
-  EXPECT_FALSE(system_location_provider());
+  EXPECT_FALSE(platform_location_provider());
   location_provider_manager_->StartProvider(false);
 
   EXPECT_FALSE(network_location_provider());
-  ASSERT_TRUE(system_location_provider());
+  ASSERT_TRUE(platform_location_provider());
   EXPECT_EQ(mojom::GeolocationDiagnostics::ProviderState::kLowAccuracy,
-            system_location_provider()->state());
+            platform_location_provider()->state());
   EXPECT_FALSE(observer_->last_result());
 
-  SetReferencePosition(system_location_provider());
-
-  ASSERT_TRUE(observer_->last_result());
-  if (observer_->last_result()->is_position()) {
-    ASSERT_TRUE(system_location_provider()->GetPosition());
-    EXPECT_EQ(
-        system_location_provider()->GetPosition()->get_position()->latitude,
-        observer_->last_result()->get_position()->latitude);
-  }
-
-  SetErrorPosition(system_location_provider(),
+  // Simulate a `kPositionUnavailable` error which will NOT initiate fallback
+  // mode.
+  SetErrorPosition(platform_location_provider(),
                    mojom::GeopositionErrorCode::kPositionUnavailable);
-  EXPECT_TRUE(system_location_provider()->GetPosition()->is_error());
-  EXPECT_TRUE(observer_->last_result()->is_error());
-  EXPECT_EQ(system_location_provider()->GetPosition()->get_error(),
-            observer_->last_result()->get_error());
-
-  // Ensure that network location provider is not created since fallback
-  // mechanism isn't implemented yet.
+  EXPECT_EQ(mojom::LocationProviderManagerMode::kHybridPlatform,
+            location_provider_manager_->provider_manager_mode_);
+  ASSERT_TRUE(observer_->last_result()->is_error());
+  EXPECT_TRUE(platform_location_provider());
   EXPECT_FALSE(network_location_provider());
+  EXPECT_EQ(mojom::GeolocationDiagnostics::ProviderState::kLowAccuracy,
+            platform_location_provider()->state());
+  observer_->ResetLastResult();
+
+  // Simulate a `kWifiDisabled` error which will initiate fallback mode.
+  SetErrorPosition(platform_location_provider(),
+                   mojom::GeopositionErrorCode::kWifiDisabled);
+
+  EXPECT_EQ(mojom::LocationProviderManagerMode::kHybridFallbackNetwork,
+            location_provider_manager_->provider_manager_mode_);
+  ASSERT_FALSE(observer_->last_result());
+  EXPECT_FALSE(platform_location_provider());
+  EXPECT_TRUE(network_location_provider());
+  EXPECT_EQ(mojom::GeolocationDiagnostics::ProviderState::kLowAccuracy,
+            network_location_provider()->state());
+
+  // Stop provider and ensure that provider manager mode is reset.
+  location_provider_manager_->StopProvider();
+  EXPECT_EQ(mojom::LocationProviderManagerMode::kHybridPlatform,
+            location_provider_manager_->provider_manager_mode_);
 }
 
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+// For `kHybridPlatform2` mode, the fallback mechanism should be initiated by
+// any error code report from platform location provider. This test simulates a
+// `kPositionUnavailable` error code reported from platform location provider to
+// initiate the fallback mechanism.
+TEST_F(GeolocationLocationProviderManagerTest, HybridPlatformFallback2) {
+  ASSERT_TRUE(
+      SetExperimentMode(mojom::LocationProviderManagerMode::kHybridPlatform2));
+  InitializeLocationProviderManager(base::BindRepeating(&NullLocationProvider),
+                                    url_loader_factory_);
+  ASSERT_TRUE(location_provider_manager_);
+
+  EXPECT_FALSE(network_location_provider());
+  EXPECT_FALSE(platform_location_provider());
+  location_provider_manager_->StartProvider(false);
+
+  EXPECT_FALSE(network_location_provider());
+  ASSERT_TRUE(platform_location_provider());
+  EXPECT_EQ(mojom::GeolocationDiagnostics::ProviderState::kLowAccuracy,
+            platform_location_provider()->state());
+  EXPECT_FALSE(observer_->last_result());
+
+  // Simulate a `kPositionUnavailable` error which will initiate fallback mode.
+  SetErrorPosition(platform_location_provider(),
+                   mojom::GeopositionErrorCode::kPositionUnavailable);
+
+  EXPECT_EQ(mojom::LocationProviderManagerMode::kHybridFallbackNetwork,
+            location_provider_manager_->provider_manager_mode_);
+  ASSERT_FALSE(observer_->last_result());
+  EXPECT_FALSE(platform_location_provider());
+  EXPECT_TRUE(network_location_provider());
+  EXPECT_EQ(mojom::GeolocationDiagnostics::ProviderState::kLowAccuracy,
+            network_location_provider()->state());
+
+  // Stop provider and ensure that provider manager mode is reset.
+  location_provider_manager_->StopProvider();
+  EXPECT_EQ(mojom::LocationProviderManagerMode::kHybridPlatform2,
+            location_provider_manager_->provider_manager_mode_);
+}
+
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace device

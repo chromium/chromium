@@ -20,7 +20,6 @@
 #include "media/gpu/chromeos/shaders/shaders.h"
 #include "media/gpu/macros.h"
 #include "ui/gfx/color_space.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace media {
 
@@ -893,7 +892,7 @@ std::unique_ptr<VulkanOverlayAdaptor> VulkanOverlayAdaptor::Create(
 
   VkFormat out_format =
       (format == kMT2T
-#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION) && \
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION) && \
     defined(ARCH_CPU_ARM_FAMILY)
        && base::FeatureList::IsEnabled(media::kEnableArmHwdrm10bitOverlays)
 #endif
@@ -1012,11 +1011,17 @@ std::unique_ptr<VulkanOverlayAdaptor> VulkanOverlayAdaptor::Create(
       VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
       is_protected ? VK_IMAGE_CREATE_PROTECTED_BIT : 0,
       VK_IMAGE_TILING_OPTIMAL);
+  if (!pivot_image) {
+    return nullptr;
+  }
   auto pivot_texture = VulkanTextureImage::Create(
       *pivot_image, {out_format}, {pivot_image->size()},
       {VK_IMAGE_ASPECT_COLOR_BIT},
       /*is_framebuffer=*/true, convert_render_pass->Get(),
       vulkan_device_queue->GetVulkanDevice());
+  if (!pivot_texture) {
+    return nullptr;
+  }
 
   return base::WrapUnique(new VulkanOverlayAdaptor(
       std::move(vulkan_implementation), std::move(vulkan_device_queue),
@@ -1042,6 +1047,15 @@ void VulkanOverlayAdaptor::Process(gpu::VulkanImage& in_image,
   CHECK(in_image.format() == VK_FORMAT_G8_B8R8_2PLANE_420_UNORM);
   CHECK(out_image.format() == VK_FORMAT_B8G8R8A8_UNORM ||
         out_image.format() == VK_FORMAT_A2R10G10B10_UNORM_PACK32);
+  // This is plausible enough under normal circumstances so we don't want to
+  // crash with CHECK, but greater than 4K overlays are currently unsupported.
+  if (static_cast<int>(display_rect.width()) > out_image.size().width() ||
+      static_cast<int>(display_rect.height()) > out_image.size().height()) {
+    LOG(ERROR) << "Unsupported protected content overlay size: "
+               << display_rect.ToString();
+    return;
+  }
+
   constexpr size_t kMM21TileWidth = 16;
   constexpr size_t kMM21TileHeight = 32;
   const gfx::Size input_coded_size(
@@ -1050,19 +1064,17 @@ void VulkanOverlayAdaptor::Process(gpu::VulkanImage& in_image,
       base::bits::AlignUp(static_cast<size_t>(input_visible_size.height()),
                           kMM21TileHeight));
 
-  const gfx::Size output_resolution(
-      static_cast<int>(display_rect.width() / crop_rect.width()),
-      static_cast<int>(display_rect.height() / crop_rect.height()));
-
   // TODO(b/251458823): Investigate whether it's more efficient to change the
   // vertex coordinates or the UV coordinates. The latter may optimize for
   // contiguous writes over contiguous reads, which takes better advantage of
   // the write combiner.
-  float x_start = -1.0f - 2.0f * crop_rect.x();
-  float x_end = 1.0f - 2.0f * crop_rect.x();
-  float y_start = -1.0f - 2.0f * crop_rect.y();
-  float y_end = 1.0f - 2.0f * crop_rect.y();
-  float vertex_push_constants[14] = {0};
+  float x_start = -1.0f - 2.0f * crop_rect.x() / crop_rect.width();
+  float x_end = (2.0f / crop_rect.width() - 1.0f) -
+                2.0f * crop_rect.x() / crop_rect.width();
+  float y_start = -1.0f - 2.0f * crop_rect.y() / crop_rect.height();
+  float y_end = (2.0f / crop_rect.height() - 1.0f) -
+                2.0f * crop_rect.y() / crop_rect.height();
+  float vertex_push_constants[14] = {};
   switch (transform) {
     case gfx::OVERLAY_TRANSFORM_NONE:
       vertex_push_constants[0] = x_end;
@@ -1132,7 +1144,9 @@ void VulkanOverlayAdaptor::Process(gpu::VulkanImage& in_image,
                               static_cast<float>(pivot_image_->size().height());
 
   auto out_texture = VulkanTextureImage::Create(
-      out_image, {out_image.format()}, {output_resolution},
+      out_image, {out_image.format()},
+      {gfx::Size(static_cast<int>(display_rect.width()),
+                 static_cast<int>(display_rect.height()))},
       {VK_IMAGE_ASPECT_COLOR_BIT},
       /*is_framebuffer=*/true, transform_render_pass_->Get(),
       vulkan_device_queue_->GetVulkanDevice());
@@ -1257,21 +1271,19 @@ void VulkanOverlayAdaptor::Process(gpu::VulkanImage& in_image,
     pivot_texture_->TransitionImageLayout(
         command_buf.get(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-    viewport.width = static_cast<float>(output_resolution.width());
-    viewport.height = static_cast<float>(output_resolution.height());
+    viewport.width = display_rect.width();
+    viewport.height = display_rect.height();
     vkCmdSetViewport(record.handle(), 0, 1, &viewport);
 
-    scissor.extent.width =
-        static_cast<uint32_t>(output_resolution.width() * crop_rect.width());
-    scissor.extent.height =
-        static_cast<uint32_t>(output_resolution.height() * crop_rect.height());
+    scissor.extent.width = static_cast<uint32_t>(display_rect.width());
+    scissor.extent.height = static_cast<uint32_t>(display_rect.height());
     vkCmdSetScissor(record.handle(), 0, 1, &scissor);
 
     render_pass_info.renderPass = transform_render_pass_->Get();
     render_pass_info.framebuffer = out_texture->GetFramebuffers()[0];
     render_pass_info.renderArea.extent = {
-        base::checked_cast<uint32_t>(output_resolution.width()),
-        base::checked_cast<uint32_t>(output_resolution.height())};
+        base::checked_cast<uint32_t>(display_rect.width()),
+        base::checked_cast<uint32_t>(display_rect.height())};
     vkCmdBeginRenderPass(record.handle(), &render_pass_info,
                          VK_SUBPASS_CONTENTS_INLINE);
 

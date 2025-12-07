@@ -1,1 +1,1 @@
-mixins: "//chrome/browser/ui/user_education/COMMON_METADATA"
+mixins: "//components/user_education/COMMON_METADATA"

@@ -14,6 +14,8 @@
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -33,21 +35,27 @@ namespace {
 // TODO(crbug.com/40915391): Create an iterator abstraction that could be reused
 // in other places we need to iterate across tabs for both Android and desktop.
 std::vector<std::vector<content::WebContents*>> GetAllWebContents() {
-  std::vector<std::vector<content::WebContents*>> all_web_contents = {};
+  std::vector<std::vector<content::WebContents*>> all_web_contents;
 #if BUILDFLAG(IS_ANDROID)
   for (const TabModel* model : TabModelList::models()) {
-    std::vector<content::WebContents*> web_contents_for_tab_strip = {};
+    std::vector<content::WebContents*> web_contents_for_tab_strip;
     for (int i = 0; i < model->GetTabCount(); ++i) {
-#else   // BUILDFLAG(IS_ANDROID)
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    std::vector<content::WebContents*> web_contents_for_tab_strip = {};
-    TabStripModel* model = browser->tab_strip_model();
-    for (int i = 0; i < model->count(); ++i) {
-#endif  // BUILDFLAG(IS_ANDROID)
       web_contents_for_tab_strip.push_back(model->GetWebContentsAt(i));
     }
     all_web_contents.push_back(web_contents_for_tab_strip);
   }
+#else   // BUILDFLAG(IS_ANDROID)
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&all_web_contents](BrowserWindowInterface* browser) {
+        std::vector<content::WebContents*> web_contents_for_tab_strip;
+        const TabStripModel* const model = browser->GetTabStripModel();
+        for (int i = 0; i < model->count(); ++i) {
+          web_contents_for_tab_strip.push_back(model->GetWebContentsAt(i));
+        }
+        all_web_contents.push_back(web_contents_for_tab_strip);
+        return true;
+      });
+#endif  // BUILDFLAG(IS_ANDROID)
   return all_web_contents;
 }
 
@@ -75,10 +83,8 @@ TabStripPageLoadMetricsObserver::OnStart(
     return CONTINUE_OBSERVING;
   }
   base::TimeTicks now = base::TimeTicks::Now();
-  std::vector<std::vector<content::WebContents*>> all_web_contents =
-      GetAllWebContents();
-  for (std::vector<content::WebContents*> tab_strip_web_contents :
-       all_web_contents) {
+
+  for (const auto& tab_strip_web_contents : GetAllWebContents()) {
     for (content::WebContents* web_contents : tab_strip_web_contents) {
       if (web_contents) {
         base::TimeTicks last_active = web_contents->GetLastActiveTimeTicks();
@@ -113,10 +119,7 @@ TabStripPageLoadMetricsObserver::OnFencedFramesStart(
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 TabStripPageLoadMetricsObserver::OnShown() {
-  std::vector<std::vector<content::WebContents*>> all_web_contents =
-      GetAllWebContents();
-  for (std::vector<content::WebContents*> tab_strip_web_contents :
-       all_web_contents) {
+  for (const auto& tab_strip_web_contents : GetAllWebContents()) {
     const int count = tab_strip_web_contents.size();
     for (int i = 0; i < count; i++) {
       if (tab_strip_web_contents.at(i) == web_contents_.get()) {

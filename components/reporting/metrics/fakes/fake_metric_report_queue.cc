@@ -45,7 +45,7 @@ FakeMetricReportQueue::FakeMetricReportQueue(
 void FakeMetricReportQueue::Enqueue(MetricData metric_data,
                                     ReportQueue::EnqueueCallback callback) {
   reported_data_.AddValue(std::move(metric_data));
-  std::move(callback).Run(Status());
+  std::move(callback).Run(Status::StatusOK());
 }
 
 FakeMetricReportQueue::~FakeMetricReportQueue() = default;

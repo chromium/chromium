@@ -13,6 +13,7 @@ import org.jni_zero.CalledByNative;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -26,13 +27,15 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
+import org.chromium.components.sync.SyncService;
+import org.chromium.components.trusted_vault.TrustedVaultUserActionTriggerForUMA;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.concurrent.TimeUnit;
 
 /** The bridge provides a way to interact with the Android sign in flow. */
+@NullMarked
 public class PasswordManagerErrorMessageHelperBridge {
     @VisibleForTesting
     static final long MINIMAL_INTERVAL_BETWEEN_PROMPTS_MS =
@@ -53,7 +56,7 @@ public class PasswordManagerErrorMessageHelperBridge {
      * @return whether the UI can be shown given the conditions above.
      */
     @CalledByNative
-    static boolean shouldShowSignInErrorUI(Profile profile) {
+    static boolean shouldShowSignInErrorUi(Profile profile) {
         final IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);
         if (identityManager == null) return false;
@@ -74,24 +77,6 @@ public class PasswordManagerErrorMessageHelperBridge {
                 && (currentTime - lastShownSyncErrorTimestamp) > MINIMAL_INTERVAL_TO_SYNC_ERROR_MS;
     }
 
-    /**
-     * Checks whether the right amount of time has passed since the last error UI messages were
-     * shown.
-     *
-     * <p>The error UI should be shown at least {@link #MINIMAL_INTERVAL_BETWEEN_PROMPTS_MS} from
-     * the previous one.
-     *
-     * @return whether the UI can be shown given the conditions above.
-     */
-    @CalledByNative
-    static boolean shouldShowUpdateGMSCoreErrorUI(Profile profile) {
-        PrefService prefService = UserPrefs.get(profile);
-        long lastShownTimestamp =
-                Long.valueOf(prefService.getString(Pref.UPM_ERROR_UI_SHOWN_TIMESTAMP));
-        long currentTime = TimeUtils.currentTimeMillis();
-        return currentTime - lastShownTimestamp > MINIMAL_INTERVAL_BETWEEN_PROMPTS_MS;
-    }
-
     /** Saves the timestamp in ms since UNIX epoch at which the error UI was shown. */
     @CalledByNative
     static void saveErrorUiShownTimestamp(Profile profile) {
@@ -106,14 +91,16 @@ public class PasswordManagerErrorMessageHelperBridge {
      */
     @CalledByNative
     static void startUpdateAccountCredentialsFlow(WindowAndroid windowAndroid, Profile profile) {
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(profile);
+        assert identityManager != null : "Regular profile should have an IdentityManager";
         final CoreAccountInfo primaryAccountInfo =
-                IdentityServicesProvider.get()
-                        .getIdentityManager(profile)
-                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+                identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         // If the account has been removed before calling this method, there are no credentials to
         // update.
         if (primaryAccountInfo == null) return;
         final Activity activity = windowAndroid.getActivity().get();
+        assert activity != null : "Activity should not be null";
         AccountManagerFacadeProvider.getInstance()
                 .updateCredentials(
                         CoreAccountInfo.getAndroidAccountFrom(primaryAccountInfo),
@@ -125,35 +112,30 @@ public class PasswordManagerErrorMessageHelperBridge {
     }
 
     /**
-     * Starts the Android process to retrieve encryption keys in Chrome. This method will only work for users that have been previously syncing in Chrome.
+     * Starts the Android process to retrieve encryption keys in Chrome. This method will only work
+     * for users that have been previously syncing in Chrome.
      */
     @CalledByNative
-    static void startTrustedVaultKeyRetrievalFlow(WindowAndroid windowAndroid, Profile profile) {
-        final CoreAccountInfo primaryAccountInfo =
-                SyncServiceFactory.getForProfile(profile).getAccountInfo();
+    static void startTrustedVaultKeyRetrievalFlow(
+            WindowAndroid windowAndroid,
+            Profile profile,
+            @TrustedVaultUserActionTriggerForUMA int trustedVaultUserActionTriggerForUMA) {
+        SyncService syncService = SyncServiceFactory.getForProfile(profile);
+        assert syncService != null;
+        final CoreAccountInfo primaryAccountInfo = syncService.getAccountInfo();
         // If the account has been removed before calling this method, there is nothing to do.
         if (primaryAccountInfo == null) return;
         final Activity activity = windowAndroid.getActivity().get();
+        assert activity != null;
 
         TrustedVaultClient.get()
                 .createKeyRetrievalIntent(primaryAccountInfo)
                 .then(
                         (intent) -> {
-                            var action =
-                                    TrustedVaultUserActionTriggerForUMA
-                                            .PASSWORD_MANAGER_ERROR_MESSAGE;
                             var proxyIntent =
                                     SyncTrustedVaultProxyActivity.createKeyRetrievalProxyIntent(
-                                            intent, action);
+                                            intent, trustedVaultUserActionTriggerForUMA);
                             IntentUtils.safeStartActivity(activity, proxyIntent);
                         });
-    }
-
-    /** Starts the Google Play services page where the user can choose to update GMSCore. */
-    @CalledByNative
-    static void launchGmsUpdate(WindowAndroid windowAndroid) {
-        assert windowAndroid.getActivity().get() != null;
-        Activity activity = windowAndroid.getActivity().get();
-        PasswordManagerHelper.launchGmsUpdate(activity);
     }
 }

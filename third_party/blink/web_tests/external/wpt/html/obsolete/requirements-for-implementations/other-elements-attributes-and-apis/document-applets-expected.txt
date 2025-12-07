@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] document.applets should return an empty collection.
+  assert_equals: The collection should be empty. expected 0 but got 6
+Harness: the test ran to completion.
+

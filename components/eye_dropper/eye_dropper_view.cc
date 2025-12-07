@@ -6,8 +6,10 @@
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "components/color/color_id.h"
 #include "components/eye_dropper/features.h"
@@ -16,19 +18,22 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/aura/window_tree_host.h"
 #endif
 
@@ -58,12 +63,12 @@ EyeDropperView::ViewPositionHandler::ViewPositionHandler(EyeDropperView* owner)
 }
 
 EyeDropperView::ViewPositionHandler::~ViewPositionHandler() {
-  timer_.AbandonAndStop();
+  timer_.Stop();
 }
 
 void EyeDropperView::ViewPositionHandler::UpdateViewPosition() {
   owner_->OnCursorPositionUpdate(
-      display::Screen::GetScreen()->GetCursorScreenPoint());
+      display::Screen::Get()->GetCursorScreenPoint());
 }
 
 class EyeDropperView::ScreenCapturer
@@ -94,7 +99,7 @@ class EyeDropperView::ScreenCapturer
 
 EyeDropperView::ScreenCapturer::ScreenCapturer(EyeDropperView* owner)
     : owner_(owner) {
-  static bool allow_wgc_screen_capture =
+  static bool allow_wgc_screen_capturer =
 #if BUILDFLAG(IS_WIN)
       // Allow WGC screen capture if Windows version is greater or equal
       // than 10.0.20348.0, as the following API, which controls if a border is
@@ -104,13 +109,21 @@ EyeDropperView::ScreenCapturer::ScreenCapturer(EyeDropperView* owner)
       base::win::GetVersion() >= base::win::Version::SERVER_2022 &&
 #endif  // BUILDFLAG(IS_WIN)
       base::FeatureList::IsEnabled(features::kAllowEyeDropperWGCScreenCapture);
+  auto options = content::desktop_capture::CreateDesktopCaptureOptions();
+
+#if defined(RTC_ENABLE_WIN_WGC)
+  if (allow_wgc_screen_capturer) {
+    options.set_allow_wgc_screen_capturer(true);
+  }
+#endif  // defined(RTC_ENABLE_WIN_WGC)
+
   // TODO(iopopesc): Update the captured frame after a period of time to match
   // latest content on screen.
-  capturer_ =
-      content::desktop_capture::CreateScreenCapturer(allow_wgc_screen_capture);
+  capturer_ = content::desktop_capture::CreateScreenCapturer(
+      options, /*for_snapshot=*/true);
   if (capturer_) {
     capturer_->Start(this);
-    if (allow_wgc_screen_capture) {
+    if (allow_wgc_screen_capturer) {
       capturer_->SelectSource(webrtc::kFullDesktopScreenId);
     }
   }
@@ -136,9 +149,11 @@ void EyeDropperView::ScreenCapturer::OnCaptureResult(
     return;
   }
 
+  // TODO(crbug.com/352187279): Support other pixel formats.
+  CHECK_EQ(frame->pixel_format(), webrtc::FOURCC_ARGB);
   frame_.allocN32Pixels(frame->size().width(), frame->size().height(), true);
-  memcpy(frame_.getAddr32(0, 0), frame->data(),
-         frame->size().height() * frame->stride());
+  UNSAFE_TODO(memcpy(frame_.getAddr32(0, 0), frame->data(),
+                     frame->size().height() * frame->stride()));
   frame_.setImmutable();
 
   // The captured frame is in full desktop coordinates. E.g. the top left
@@ -146,15 +161,14 @@ void EyeDropperView::ScreenCapturer::OnCaptureResult(
   // origins.
   original_offset_x_ = 0;
   original_offset_y_ = 0;
-  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
+  for (const auto& display : display::Screen::Get()->GetAllDisplays()) {
 #if BUILDFLAG(IS_WIN)
     // The window parameter is intentionally passed as nullptr on Windows
     // because a non-null window parameter causes errors when restoring windows
     // to saved positions in variable-DPI situations. See
     // https://crbug.com/1224715 for details.
-    gfx::Rect scaled_bounds =
-        display::Screen::GetScreen()->DIPToScreenRectInWindow(
-            /*window=*/nullptr, display.bounds());
+    gfx::Rect scaled_bounds = display::Screen::Get()->DIPToScreenRectInWindow(
+        /*window=*/nullptr, display.bounds());
 #else
     gfx::Rect scaled_bounds = gfx::ScaleToEnclosingRect(
         display.bounds(), display.device_scale_factor());
@@ -195,12 +209,10 @@ EyeDropperView::EyeDropperView(gfx::NativeView parent,
     : listener_(listener),
       view_position_handler_(std::make_unique<ViewPositionHandler>(this)),
       screen_capturer_(std::make_unique<ScreenCapturer>(this)) {
-  SetModalType(ui::MODAL_TYPE_WINDOW);
-  // This is owned as a unique_ptr<EyeDropper> elsewhere.
-  SetOwnedByWidget(false);
+  SetModalType(ui::mojom::ModalType::kWindow);
   // TODO(pbos): Remove this, perhaps by separating the contents view from the
   // EyeDropper/WidgetDelegate.
-  set_owned_by_client();
+  set_owned_by_client(OwnedByClientPassKey());
   SetPreferredSize(GetSize());
 #if BUILDFLAG(IS_LINUX)
   // Use TYPE_MENU for Linux to ensure that the eye dropper view is displayed
@@ -231,9 +243,9 @@ EyeDropperView::EyeDropperView(gfx::NativeView parent,
       std::make_unique<PreEventDispatchHandler>(this, event_handler);
   widget->Show();
   CaptureInput();
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   gfx::Point initial_position = screen->GetCursorScreenPoint();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (screen->InTabletMode()) {
     initial_position =
         screen->GetDisplayForNewWindows().work_area().CenterPoint();
@@ -245,7 +257,7 @@ EyeDropperView::EyeDropperView(gfx::NativeView parent,
   // the UI.
   ignore_selection_time_ = base::TimeTicks::Now() + base::Milliseconds(500);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Add an observation so the capture can be updated as the eye dropper window
   // moves between displays.
   window_observation_.Observe(GetWidget()->GetNativeWindow());
@@ -280,10 +292,8 @@ void EyeDropperView::OnPaint(gfx::Canvas* view_canvas) {
   if (views::Widget::IsWindowCompositingSupported()) {
     // Clip circle for magnified projection only when the widget
     // supports translucency.
-    SkPath clip_path;
-    clip_path.addOval(SkRect::MakeXYWH(padding.width(), padding.height(),
-                                       diameter, diameter));
-    clip_path.close();
+    const SkPath clip_path = SkPath::Oval(SkRect::MakeXYWH(
+        padding.width(), padding.height(), diameter, diameter));
     view_canvas->ClipPath(clip_path, true);
   }
 
@@ -292,7 +302,7 @@ void EyeDropperView::OnPaint(gfx::Canvas* view_canvas) {
   const SkBitmap frame = screen_capturer_->GetBitmap();
   gfx::Point center_position_px;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS only captures a single display at a time, and we need to convert
   // the cursor position to display (root window) local pixel coordinates.
   aura::Window* window = GetWidget()->GetNativeWindow();
@@ -304,7 +314,7 @@ void EyeDropperView::OnPaint(gfx::Canvas* view_canvas) {
   // The captured frame is not scaled so we need to use widget's bounds in
   // pixels to have the magnified region match cursor position.
   center_position_px =
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->DIPToScreenRectInWindow(GetWidget()->GetNativeWindow(),
                                     GetWidget()->GetWindowBoundsInScreen())
           .CenterPoint();
@@ -383,10 +393,10 @@ void EyeDropperView::OnWidgetMove() {
   SchedulePaint();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void EyeDropperView::OnWindowAddedToRootWindow(aura::Window* window) {
   display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+      display::Screen::Get()->GetDisplayNearestWindow(window);
   CaptureScreen(display.id());
 }
 

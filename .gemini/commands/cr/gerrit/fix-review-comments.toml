@@ -1,0 +1,30 @@
+description="Fetches unresolved comments for the active branch and tries to fix them."
+prompt = """
+Your goal is to address code review comments.
+
+## Step 1: Fetch Comments
+
+Run: `git cl comments --unresolved -j -`
+
+* If there are no comments, do not go onto the next step.
+* You are interested only in "comments" array.
+* Tell the user how many comments you found.
+
+## Step 2: Familiarize yourself with the change
+
+Run: `git diff --merge-base origin/main HEAD`
+
+## Step 3: Make Changes
+
+Go through the comment entries one by one. For each comment:
+
+* Determine if you are confident in how to address it
+  * If so, make the change.
+  * If not, do not make a change and make note of the comment's content.
+
+## Step 4: Finish Up
+
+1. Tell the user how many changes you made.
+2. Print out the content of all comments you did not address.
+3. All done!
+"""

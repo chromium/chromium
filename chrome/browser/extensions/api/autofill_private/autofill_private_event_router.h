@@ -7,8 +7,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager_observer.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"
@@ -25,6 +26,7 @@ namespace extensions {
 class AutofillPrivateEventRouter : public KeyedService,
                                    public EventRouter::Observer,
                                    public autofill::PersonalDataManagerObserver,
+                                   public autofill::EntityDataManager::Observer,
                                    public syncer::SyncServiceObserver {
  public:
   // Uses AutofillPrivateEventRouterFactory instead.
@@ -46,8 +48,12 @@ class AutofillPrivateEventRouter : public KeyedService,
   // PersonalDataManagerObserver implementation.
   void OnPersonalDataChanged() override;
 
+  // autofill::EntityDataManager::Observer implementation.
+  void OnEntityInstancesChanged() override;
+
   // SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService*) override;
+  void OnSyncShutdown(syncer::SyncService*) override;
 
  private:
   // Triggers an event on the router with current user's data.
@@ -62,6 +68,11 @@ class AutofillPrivateEventRouter : public KeyedService,
   base::ScopedObservation<autofill::PersonalDataManager,
                           autofill::PersonalDataManagerObserver>
       pdm_observer_{this};
+
+  base::ScopedObservation<autofill::EntityDataManager,
+                          autofill::EntityDataManager::Observer>
+      entity_data_manager_observer_{this};
+
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_observer_{this};
 };

@@ -11,6 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "chromecast/device/bluetooth/bluetooth_util.h"
 #include "chromecast/device/bluetooth/le/remote_characteristic.h"
 #include "chromecast/device/bluetooth/le/remote_service.h"
@@ -125,8 +126,7 @@ bool BluetoothDeviceCast::IsGattConnected() const {
 }
 
 bool BluetoothDeviceCast::IsConnectable() const {
-  NOTREACHED_IN_MIGRATION() << "This is only called on ChromeOS";
-  return true;
+  NOTREACHED() << "This is only called on ChromeOS";
 }
 
 bool BluetoothDeviceCast::IsConnecting() const {
@@ -188,24 +188,24 @@ void BluetoothDeviceCast::Pair(PairingDelegate* pairing_delegate,
 }
 
 void BluetoothDeviceCast::SetPinCode(const std::string& pincode) {
-  NOTREACHED_IN_MIGRATION() << "Pairing not supported.";
+  NOTREACHED() << "Pairing not supported.";
 }
 
 void BluetoothDeviceCast::SetPasskey(uint32_t passkey) {
-  NOTREACHED_IN_MIGRATION() << "Pairing not supported.";
+  NOTREACHED() << "Pairing not supported.";
 }
 
 void BluetoothDeviceCast::ConfirmPairing() {
-  NOTREACHED_IN_MIGRATION() << "Pairing not supported.";
+  NOTREACHED() << "Pairing not supported.";
 }
 
 // Rejects a pairing or connection request from a remote device.
 void BluetoothDeviceCast::RejectPairing() {
-  NOTREACHED_IN_MIGRATION() << "Pairing not supported.";
+  NOTREACHED() << "Pairing not supported.";
 }
 
 void BluetoothDeviceCast::CancelPairing() {
-  NOTREACHED_IN_MIGRATION() << "Pairing not supported.";
+  NOTREACHED() << "Pairing not supported.";
 }
 
 void BluetoothDeviceCast::Disconnect(base::OnceClosure callback,

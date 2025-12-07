@@ -21,10 +21,6 @@ class FakeTaskTiming : public TaskQueue::TaskTiming {
  public:
   FakeTaskTiming();
   FakeTaskTiming(TimeTicks start, TimeTicks end);
-  FakeTaskTiming(TimeTicks start,
-                 TimeTicks end,
-                 ThreadTicks thread_start,
-                 ThreadTicks thread_end);
 };
 
 }  // namespace sequence_manager

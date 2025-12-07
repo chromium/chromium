@@ -5,11 +5,12 @@
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
 import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+import type {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
 import {fakeDeviceRequest, fakeFirmwareUpdates, fakeInstallationProgress, fakeInstallationProgressFailure, fakeInstallationProgressWithRequest, fakeInstallationProgressWithRequestAndFailure} from './fake_data.js';
-import {DeviceRequest, DeviceRequestObserverRemote, FirmwareUpdate, InstallationProgress, UpdateProgressObserverRemote, UpdateProviderInterface, UpdateState} from './firmware_update.mojom-webui.js';
-import {FakeInstallControllerInterface, FakeUpdateProviderInterface} from './firmware_update_types.js';
+import type {DeviceRequest, DeviceRequestObserverRemote, FirmwareUpdate, InstallationProgress, UpdateProgressObserverRemote, UpdateProviderInterface} from './firmware_update.mojom-webui.js';
+import {UpdateState} from './firmware_update.mojom-webui.js';
+import type {FakeInstallControllerInterface, FakeUpdateProviderInterface} from './firmware_update_types.js';
 import {getUpdateProvider, setUseFakeProviders} from './mojo_interface_provider.js';
 
 // Method names.

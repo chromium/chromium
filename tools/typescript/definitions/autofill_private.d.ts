@@ -33,6 +33,9 @@ declare global {
         NAME_MIDDLE_INITIAL,
         NAME_FULL,
         NAME_SUFFIX,
+        ALTERNATIVE_FULL_NAME,
+        ALTERNATIVE_GIVEN_NAME,
+        ALTERNATIVE_FAMILY_NAME,
         EMAIL_ADDRESS,
         PHONE_HOME_NUMBER,
         PHONE_HOME_CITY_CODE,
@@ -56,7 +59,6 @@ declare global {
         CREDIT_CARD_TYPE,
         CREDIT_CARD_VERIFICATION_CODE,
         COMPANY_NAME,
-        FIELD_WITH_DEFAULT_VALUE,
         MERCHANT_EMAIL_SIGNUP,
         MERCHANT_PROMO_CODE,
         PASSWORD,
@@ -86,6 +88,8 @@ declare global {
         ADDRESS_HOME_HOUSE_NUMBER,
         ADDRESS_HOME_SUBPREMISE,
         ADDRESS_HOME_OTHER_SUBUNIT,
+        NAME_LAST_PREFIX,
+        NAME_LAST_CORE,
         NAME_LAST_FIRST,
         NAME_LAST_CONJUNCTION,
         NAME_LAST_SECOND,
@@ -116,17 +120,63 @@ declare global {
         ADDRESS_HOME_APT_TYPE,
         ADDRESS_HOME_HOUSE_NUMBER_AND_APT,
         SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES,
+        PASSPORT_NAME_TAG,
+        PASSPORT_NUMBER,
+        PASSPORT_ISSUING_COUNTRY,
+        PASSPORT_EXPIRATION_DATE,
+        PASSPORT_ISSUE_DATE,
+        LOYALTY_MEMBERSHIP_PROGRAM,
+        LOYALTY_MEMBERSHIP_PROVIDER,
+        LOYALTY_MEMBERSHIP_ID,
+        VEHICLE_OWNER_TAG,
+        VEHICLE_LICENSE_PLATE,
+        VEHICLE_VIN,
+        VEHICLE_MAKE,
+        VEHICLE_MODEL,
+        DRIVERS_LICENSE_NAME_TAG,
+        DRIVERS_LICENSE_REGION,
+        DRIVERS_LICENSE_NUMBER,
+        DRIVERS_LICENSE_EXPIRATION_DATE,
+        DRIVERS_LICENSE_ISSUE_DATE,
+        VEHICLE_YEAR,
+        VEHICLE_PLATE_STATE,
+        EMAIL_OR_LOYALTY_MEMBERSHIP_ID,
+        NATIONAL_ID_CARD_NUMBER,
+        NATIONAL_ID_CARD_EXPIRATION_DATE,
+        NATIONAL_ID_CARD_ISSUE_DATE,
+        NATIONAL_ID_CARD_ISSUING_COUNTRY,
+        REDRESS_NUMBER,
+        KNOWN_TRAVELER_NUMBER,
+        KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE,
+        ADDRESS_HOME_ZIP_PREFIX,
+        ADDRESS_HOME_ZIP_SUFFIX,
+        FLIGHT_RESERVATION_FLIGHT_NUMBER,
+        FLIGHT_RESERVATION_TICKET_NUMBER,
+        FLIGHT_RESERVATION_CONFIRMATION_CODE,
+        FLIGHT_RESERVATION_PASSENGER_NAME,
+        FLIGHT_RESERVATION_DEPARTURE_AIRPORT,
+        FLIGHT_RESERVATION_ARRIVAL_AIRPORT,
+        FLIGHT_RESERVATION_DEPARTURE_DATE,
       }
 
-      export enum AddressSource {
+      export enum AddressRecordType {
         LOCAL_OR_SYNCABLE = 'LOCAL_OR_SYNCABLE',
         ACCOUNT = 'ACCOUNT',
+        ACCOUNT_HOME = 'ACCOUNT_HOME',
+        ACCOUNT_WORK = 'ACCOUNT_WORK',
+        ACCOUNT_NAME_EMAIL = "ACCOUNT_NAME_EMAIL"
+      }
+
+      export enum AttributeTypeDataType {
+        COUNTRY = 'COUNTRY',
+        DATE = 'DATE',
+        STRING = 'STRING',
       }
 
       export interface AutofillMetadata {
         summaryLabel: string;
         summarySublabel?: string;
-        source?: AddressSource;
+        recordType?: AddressRecordType;
         isLocal?: boolean;
         isMigratable?: boolean;
         isVirtualCardEnrollmentEligible?: boolean;
@@ -186,46 +236,108 @@ declare global {
 
       export interface IbanEntry {
         guid?: string;
+        instrumentId?: string;
         value?: string;
         nickname?: string;
         metadata?: AutofillMetadata;
       }
 
-      export interface ValidatePhoneParams {
-        phoneNumbers: string[];
-        indexOfNewNumber: number;
-        countryCode: string;
+      export interface AttributeType {
+        typeName: number;
+        typeNameAsString: string;
+        dataType: AttributeTypeDataType;
+      }
+
+      export interface EntityType {
+        typeName: number;
+        typeNameAsString: string;
+        addEntityTypeString: string;
+        editEntityTypeString: string;
+        deleteEntityTypeString: string;
+        supportsWalletStorage: boolean;
+      }
+
+      export interface DateValue {
+        year: string;
+        month: string;
+        day: string;
+      }
+
+      export interface AttributeInstance {
+        type: AttributeType;
+        value: string|DateValue;
+      }
+
+      export interface EntityInstance {
+        type: EntityType;
+        attributeInstances: AttributeInstance[];
+        guid: string;
+        nickname: string;
+      }
+
+      export interface EntityInstanceWithLabels {
+        guid: string;
+        type: EntityType;
+        entityInstanceLabel: string;
+        entityInstanceSubLabel: string;
+        storedInWallet: boolean;
+      }
+
+      export interface PayOverTimeIssuerEntry {
+        issuerId?: string;
+        instrumentId?: string;
+        displayName?: string;
+        imageSrc?: string;
+        imageSrcDark?: string;
       }
 
       export function getAccountInfo(): Promise<AccountInfo|undefined>;
       export function saveAddress(address: AddressEntry): void;
-      export function getCountryList(forAccountAddressProfile: boolean):
+      export function removeAddress(guid: string): void;
+      export function getCountryList(forAccountStorage: boolean):
           Promise<CountryEntry[]>;
       export function getAddressComponents(
           countryCode: string): Promise<AddressComponents>;
       export function getAddressList(): Promise<AddressEntry[]>;
       export function saveCreditCard(card: CreditCardEntry): void;
       export function saveIban(iban: IbanEntry): void;
-      export function removeEntry(guid: string): void;
-      export function validatePhoneNumbers(
-          params: ValidatePhoneParams): Promise<string[]>;
+      export function removePaymentsEntity(guid: string): void;
       export function getCreditCardList(): Promise<CreditCardEntry[]>;
       export function getIbanList(): Promise<IbanEntry[]>;
       export function isValidIban(ibanValue: string): Promise<boolean>;
-      export function migrateCreditCards(): void;
       export function logServerCardLinkClicked(): void;
       export function logServerIbanLinkClicked(): void;
       export function addVirtualCard(cardId: string): void;
       export function removeVirtualCard(cardId: string): void;
+      export function getPayOverTimeIssuerList():
+          Promise<PayOverTimeIssuerEntry[]>;
       export function authenticateUserAndFlipMandatoryAuthToggle(): void;
       export function getLocalCard(guid: string): Promise<CreditCardEntry|null>;
       export function checkIfDeviceAuthAvailable(): Promise<boolean>;
       export function bulkDeleteAllCvcs(): void;
       export function setAutofillSyncToggleEnabled(enabled: boolean): void;
-
+      export function addOrUpdateEntityInstance(entityInstance: EntityInstance):
+          void;
+      export function removeEntityInstance(guid: string): void;
+      export function loadEntityInstances():
+          Promise<EntityInstanceWithLabels[]>;
+      export function getEntityInstanceByGuid(guid: string):
+          Promise<EntityInstance>;
+      export function getWritableEntityTypes(): Promise<EntityType[]>;
+      export function getAllAttributeTypesForEntityTypeName(
+          entityTypeName: number): Promise<AttributeType[]>;
+      export function getAutofillAiOptInStatus(): Promise<boolean>;
+      export function setAutofillAiOptInStatus(optedIn: boolean):
+          Promise<boolean>;
+      export function getWalletablePassDetectionOptInStatus(): Promise<boolean>;
+      export function setWalletablePassDetectionOptInStatus(optedIn: boolean):
+          Promise<boolean>;
       export const onPersonalDataChanged: ChromeEvent<
           (addresses: AddressEntry[], creditCards: CreditCardEntry[],
-           ibans: IbanEntry[], accountInfo?: AccountInfo) => void>;
+           ibans: IbanEntry[], payOverTimeIssuers: PayOverTimeIssuerEntry[],
+           accountInfo?: AccountInfo) => void>;
+      export const onEntityInstancesChanged: ChromeEvent<
+          (entityInstancesWithLabels: EntityInstanceWithLabels[]) => void>;
     }
   }
 }

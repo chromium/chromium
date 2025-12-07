@@ -4,7 +4,15 @@
 
 package org.chromium.components.browser_ui.modaldialog;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
+import static androidx.test.espresso.matcher.ViewMatchers.hasChildCount;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
+import static org.hamcrest.Matchers.allOf;
 
 import android.app.Activity;
 import android.content.res.Resources;
@@ -243,5 +251,21 @@ public class ModalDialogTestUtils {
                     PropertyModelChangeProcessor.create(model, view, new ModalDialogViewBinder());
                     return model;
                 });
+    }
+
+    /**
+     * Asserts the number of message paragraphs shown in a {@link ModalDialogView}.
+     *
+     * @param expectedCount The expected number of child views in the message paragraph container.
+     */
+    public static void assertMessageParagraphCount(int expectedCount) {
+        onView(isAssignableFrom(ModalDialogView.class))
+                .inRoot(isDialog())
+                .check(
+                        matches(
+                                hasDescendant(
+                                        allOf(
+                                                withId(R.id.message_paragraphs_container),
+                                                hasChildCount(expectedCount)))));
     }
 }

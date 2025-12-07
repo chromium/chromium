@@ -43,6 +43,8 @@ function checkScroll() {
   let results = {
     scrollPosition: position,
     href: window.location.href,
+    performanceNavigationEntries: performance.getEntriesByType("navigation").map(e => e.name),
+    performanceResourcesEntries: performance.getEntriesByType("resource").map(e => e.name),
     target: target ? target.id : 'undefined'
   };
 
@@ -60,8 +62,8 @@ window.onload = function() {
 </script>
 <style>
   .scroll-section {
-    /* 1000px margin on top and bottom so only one section can be in view. */
-    margin: 1000px 0px;
+    /* 100vh margin on top and bottom so only one section can be in view. */
+    margin: 100vh 0px;
   }
   #hidden {
     visibility: hidden;

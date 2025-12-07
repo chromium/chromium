@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/linux/syscall_broker/broker_simple_message.h"
 
 #include <linux/kcmp.h>
 #include <unistd.h>
 
+#include <algorithm>
+#include <array>
+
+#include "base/check.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -84,9 +85,9 @@ class BrokerSimpleMessageTestHelper {
 
   static void SendMsg(int write_fd, BrokerSimpleMessage* message, int fd);
 
-  static void RecvMsg(BrokerChannel::EndPoint* ipc_reader,
-                      ExpectedResultValue** expected_values,
-                      int expected_values_length);
+  static void RecvMsg(
+      BrokerChannel::EndPoint* ipc_reader,
+      base::span<ExpectedResultValue*> expected_values);
 
   static void RecvMsgAndReply(BrokerChannel::EndPoint* ipc_reader,
                               ExpectedResultValue** expected_values,
@@ -124,7 +125,7 @@ bool ExpectedResultDataValue::NextMessagePieceMatches(
   if (next_length != length_)
     return false;
 
-  return strncmp(data_, next_data, length_) == 0;
+  return UNSAFE_TODO(strncmp(data_, next_data, length_)) == 0;
 }
 
 size_t ExpectedResultDataValue::Size() {
@@ -156,7 +157,7 @@ bool BrokerSimpleMessageTestHelper::MessageContentMatches(
     const uint8_t* content,
     size_t length) {
   return length == message.length_ &&
-         memcmp(message.message_, content, length) == 0;
+         UNSAFE_TODO(memcmp(message.message_, content, length)) == 0;
 }
 
 // static
@@ -169,8 +170,7 @@ void BrokerSimpleMessageTestHelper::SendMsg(int write_fd,
 // static
 void BrokerSimpleMessageTestHelper::RecvMsg(
     BrokerChannel::EndPoint* ipc_reader,
-    ExpectedResultValue** expected_values,
-    int expected_values_length) {
+    base::span<ExpectedResultValue*> expected_values) {
   base::ScopedFD return_fd;
   BrokerSimpleMessage message;
   ssize_t len = message.RecvMsgWithFlags(ipc_reader->get(), 0, &return_fd);
@@ -178,8 +178,7 @@ void BrokerSimpleMessageTestHelper::RecvMsg(
   EXPECT_LE(0, len) << "RecvMsgWithFlags response invalid";
 
   size_t expected_message_size = 0;
-  for (int i = 0; i < expected_values_length; i++) {
-    ExpectedResultValue* expected_result = expected_values[i];
+  for (ExpectedResultValue* expected_result : expected_values) {
     EXPECT_TRUE(expected_result->NextMessagePieceMatches(&message));
     expected_message_size += expected_result->Size();
   }
@@ -229,7 +228,7 @@ void BrokerSimpleMessageTestHelper::RecvMsgAndReply(
 
   size_t expected_message_size = 0;
   for (int i = 0; i < expected_values_length; i++) {
-    ExpectedResultValue* expected_result = expected_values[i];
+    ExpectedResultValue* expected_result = UNSAFE_TODO(expected_values[i]);
     EXPECT_TRUE(expected_result->NextMessagePieceMatches(&message));
     expected_message_size += expected_result->Size();
   }
@@ -244,15 +243,15 @@ void BrokerSimpleMessageTestHelper::RecvMsgAndReply(
 // static
 uint8_t* BrokerSimpleMessageTestHelper::WriteDataType(uint8_t* dst) {
   BrokerSimpleMessage::EntryType type = BrokerSimpleMessage::EntryType::DATA;
-  memcpy(dst, &type, sizeof(BrokerSimpleMessage::EntryType));
-  return dst + sizeof(BrokerSimpleMessage::EntryType);
+  UNSAFE_TODO(memcpy(dst, &type, sizeof(BrokerSimpleMessage::EntryType)));
+  return UNSAFE_TODO(dst + sizeof(BrokerSimpleMessage::EntryType));
 }
 
 // static
 uint8_t* BrokerSimpleMessageTestHelper::WriteIntType(uint8_t* dst) {
   BrokerSimpleMessage::EntryType type = BrokerSimpleMessage::EntryType::INT;
-  memcpy(dst, &type, sizeof(BrokerSimpleMessage::EntryType));
-  return dst + sizeof(BrokerSimpleMessage::EntryType);
+  UNSAFE_TODO(memcpy(dst, &type, sizeof(BrokerSimpleMessage::EntryType)));
+  return UNSAFE_TODO(dst + sizeof(BrokerSimpleMessage::EntryType));
 }
 
 TEST(BrokerSimpleMessage, AddData) {
@@ -271,10 +270,10 @@ TEST(BrokerSimpleMessage, AddData) {
 
     next = BrokerSimpleMessageTestHelper::WriteDataType(message_content);
     len = strlen(data1);
-    memcpy(next, &len, sizeof(len));
-    next = next + sizeof(len);
-    memcpy(next, data1, strlen(data1));
-    next = next + strlen(data1);
+    UNSAFE_TODO(memcpy(next, &len, sizeof(len)));
+    next = UNSAFE_TODO(next + sizeof(len));
+    UNSAFE_TODO(memcpy(next, data1, strlen(data1)));
+    next = UNSAFE_TODO(next + strlen(data1));
 
     EXPECT_TRUE(BrokerSimpleMessageTestHelper::MessageContentMatches(
         message, message_content, next - message_content));
@@ -286,8 +285,8 @@ TEST(BrokerSimpleMessage, AddData) {
     message.AddIntToMessage(int1);
 
     next = BrokerSimpleMessageTestHelper::WriteIntType(message_content);
-    memcpy(next, &int1, sizeof(int));
-    next = next + sizeof(int);
+    UNSAFE_TODO(memcpy(next, &int1, sizeof(int)));
+    next = UNSAFE_TODO(next + sizeof(int));
 
     EXPECT_TRUE(BrokerSimpleMessageTestHelper::MessageContentMatches(
         message, message_content, next - message_content));
@@ -302,15 +301,15 @@ TEST(BrokerSimpleMessage, AddData) {
     // string
     next = BrokerSimpleMessageTestHelper::WriteDataType(message_content);
     len = strlen(data1);
-    memcpy(next, &len, sizeof(len));
-    next = next + sizeof(len);
-    memcpy(next, data1, strlen(data1));
-    next = next + strlen(data1);
+    UNSAFE_TODO(memcpy(next, &len, sizeof(len)));
+    next = UNSAFE_TODO(next + sizeof(len));
+    UNSAFE_TODO(memcpy(next, data1, strlen(data1)));
+    next = UNSAFE_TODO(next + strlen(data1));
 
     // int
     next = BrokerSimpleMessageTestHelper::WriteIntType(next);
-    memcpy(next, &int1, sizeof(int));
-    next = next + sizeof(int);
+    UNSAFE_TODO(memcpy(next, &int1, sizeof(int)));
+    next = UNSAFE_TODO(next + sizeof(int));
 
     EXPECT_TRUE(BrokerSimpleMessageTestHelper::MessageContentMatches(
         message, message_content, next - message_content));
@@ -324,16 +323,16 @@ TEST(BrokerSimpleMessage, AddData) {
 
     // int
     next = BrokerSimpleMessageTestHelper::WriteIntType(message_content);
-    memcpy(next, &int1, sizeof(int));
-    next = next + sizeof(int);
+    UNSAFE_TODO(memcpy(next, &int1, sizeof(int)));
+    next = UNSAFE_TODO(next + sizeof(int));
 
     // string
     next = BrokerSimpleMessageTestHelper::WriteDataType(next);
     len = strlen(data1);
-    memcpy(next, &len, sizeof(len));
-    next = next + sizeof(len);
-    memcpy(next, data1, strlen(data1));
-    next = next + strlen(data1);
+    UNSAFE_TODO(memcpy(next, &len, sizeof(len)));
+    next = UNSAFE_TODO(next + sizeof(len));
+    UNSAFE_TODO(memcpy(next, data1, strlen(data1)));
+    next = UNSAFE_TODO(next + strlen(data1));
 
     EXPECT_TRUE(BrokerSimpleMessageTestHelper::MessageContentMatches(
         message, message_content, next - message_content));
@@ -350,28 +349,28 @@ TEST(BrokerSimpleMessage, AddData) {
     // string
     next = BrokerSimpleMessageTestHelper::WriteDataType(message_content);
     len = strlen(data1);
-    memcpy(next, &len, sizeof(len));
-    next = next + sizeof(len);
-    memcpy(next, data1, strlen(data1));
-    next = next + strlen(data1);
+    UNSAFE_TODO(memcpy(next, &len, sizeof(len)));
+    next = UNSAFE_TODO(next + sizeof(len));
+    UNSAFE_TODO(memcpy(next, data1, strlen(data1)));
+    next = UNSAFE_TODO(next + strlen(data1));
 
     // int
     next = BrokerSimpleMessageTestHelper::WriteIntType(next);
-    memcpy(next, &int1, sizeof(int));
-    next = next + sizeof(int);
+    UNSAFE_TODO(memcpy(next, &int1, sizeof(int)));
+    next = UNSAFE_TODO(next + sizeof(int));
 
     // string
     next = BrokerSimpleMessageTestHelper::WriteDataType(next);
     len = strlen(data2);
-    memcpy(next, &len, sizeof(len));
-    next = next + sizeof(len);
-    memcpy(next, data2, strlen(data2));
-    next = next + strlen(data2);
+    UNSAFE_TODO(memcpy(next, &len, sizeof(len)));
+    next = UNSAFE_TODO(next + sizeof(len));
+    UNSAFE_TODO(memcpy(next, data2, strlen(data2)));
+    next = UNSAFE_TODO(next + strlen(data2));
 
     // int
     next = BrokerSimpleMessageTestHelper::WriteIntType(next);
-    memcpy(next, &int2, sizeof(int));
-    next = next + sizeof(int);
+    UNSAFE_TODO(memcpy(next, &int2, sizeof(int)));
+    next = UNSAFE_TODO(next + sizeof(int));
 
     EXPECT_TRUE(BrokerSimpleMessageTestHelper::MessageContentMatches(
         message, message_content, next - message_content));
@@ -381,10 +380,10 @@ TEST(BrokerSimpleMessage, AddData) {
   {
     BrokerSimpleMessage message;
 
-    char foo[8192];
-    memset(foo, 'x', sizeof(foo));
+    std::array<char, 8192> foo;
+    std::fill(foo.begin(), foo.end(), 'x');
 
-    EXPECT_FALSE(message.AddDataToMessage(foo, sizeof(foo)));
+    EXPECT_FALSE(message.AddDataToMessage(foo.data(), sizeof(foo)));
   }
 }
 
@@ -414,7 +413,7 @@ TEST(BrokerSimpleMessage, SendAndRecvMsg) {
 
     PostWaitableEventToThread(&message_thread, &wait_event);
 
-    BrokerSimpleMessageTestHelper::RecvMsg(&ipc_reader, nullptr, 0);
+    BrokerSimpleMessageTestHelper::RecvMsg(&ipc_reader, {});
 
     wait_event.Wait();
   }
@@ -437,8 +436,7 @@ TEST(BrokerSimpleMessage, SendAndRecvMsg) {
     ExpectedResultDataValue data1_value(data1, strlen(data1) + 1);
     ExpectedResultValue* expected_results[] = {&data1_value};
 
-    BrokerSimpleMessageTestHelper::RecvMsg(&ipc_reader, expected_results,
-                                           std::size(expected_results));
+    BrokerSimpleMessageTestHelper::RecvMsg(&ipc_reader, expected_results);
 
     wait_event.Wait();
   }
@@ -461,8 +459,7 @@ TEST(BrokerSimpleMessage, SendAndRecvMsg) {
     ExpectedResultIntValue int1_value(int1);
     ExpectedResultValue* expected_results[] = {&int1_value};
 
-    BrokerSimpleMessageTestHelper::RecvMsg(&ipc_reader, expected_results,
-                                           std::size(expected_results));
+    BrokerSimpleMessageTestHelper::RecvMsg(&ipc_reader, expected_results);
 
     wait_event.Wait();
   }
@@ -489,8 +486,7 @@ TEST(BrokerSimpleMessage, SendAndRecvMsg) {
     ExpectedResultIntValue int1_value(int1);
     ExpectedResultValue* expected_results[] = {&data1_value, &int1_value};
 
-    BrokerSimpleMessageTestHelper::RecvMsg(&ipc_reader, expected_results,
-                                           std::size(expected_results));
+    BrokerSimpleMessageTestHelper::RecvMsg(&ipc_reader, expected_results);
 
     wait_event.Wait();
   }
@@ -522,8 +518,7 @@ TEST(BrokerSimpleMessage, SendAndRecvMsg) {
     ExpectedResultValue* expected_results[] = {&int1_value, &data1_value,
                                                &data2_value, &int2_value};
 
-    BrokerSimpleMessageTestHelper::RecvMsg(&ipc_reader, expected_results,
-                                           std::size(expected_results));
+    BrokerSimpleMessageTestHelper::RecvMsg(&ipc_reader, expected_results);
 
     wait_event.Wait();
   }
@@ -758,7 +753,7 @@ void ReceiveStdoutDupFd(BrokerChannel::EndPoint* ipc_reader) {
 void ReceiveTwoDupFds(BrokerChannel::EndPoint* ipc_reader) {
   // Receive two fds from |ipc_reader|.
   BrokerSimpleMessage msg;
-  base::ScopedFD recv_fds[2];
+  std::array<base::ScopedFD, 2> recv_fds;
   ssize_t len =
       msg.RecvMsgWithFlagsMultipleFds(ipc_reader->get(), 0, {recv_fds});
   ASSERT_GE(len, 0) << "Error on RecvMsgWithFlags, errno = " << errno;
@@ -770,7 +765,7 @@ void ReceiveTwoDupFds(BrokerChannel::EndPoint* ipc_reader) {
 void ReceiveThreeFdsSendTwoBack(BrokerChannel::EndPoint* ipc_reader) {
   // Receive two fds from |ipc_reader|.
   BrokerSimpleMessage msg;
-  base::ScopedFD recv_fds[3];
+  std::array<base::ScopedFD, 3> recv_fds;
   ssize_t len =
       msg.RecvMsgWithFlagsMultipleFds(ipc_reader->get(), 0, {recv_fds});
   ASSERT_GE(len, 0) << "Error on RecvMsgWithFlags, errno = " << errno;
@@ -782,7 +777,7 @@ void ReceiveThreeFdsSendTwoBack(BrokerChannel::EndPoint* ipc_reader) {
   }
 
   BrokerSimpleMessage resp;
-  int send_fds[2];
+  std::array<int, 2> send_fds;
   send_fds[0] = recv_fds[1].get();
   send_fds[1] = recv_fds[2].get();
   resp.AddIntToMessage(0);  // Dummy int to send message
@@ -846,7 +841,7 @@ TEST_F(BrokerSimpleMessageFdTest, PassTwoFds) {
 
   BrokerSimpleMessage msg;
   msg.AddIntToMessage(0);  // Must add a dummy value to send the message.
-  int send_fds[2];
+  std::array<int, 2> send_fds;
   send_fds[0] = STDOUT_FILENO;
   send_fds[1] = STDIN_FILENO;
   ASSERT_TRUE(msg.SendMsgMultipleFds(ipc_writer.get(), {send_fds}));
@@ -869,10 +864,10 @@ TEST_F(BrokerSimpleMessageFdTest, SynchronousPassTwoFds) {
 
   BrokerSimpleMessage msg, reply;
   msg.AddIntToMessage(0);  // Must add a dummy value to send the message.
-  int send_fds[2];
+  std::array<int, 2> send_fds;
   send_fds[0] = STDOUT_FILENO;
   send_fds[1] = STDIN_FILENO;
-  base::ScopedFD result_fds[2];
+  std::array<base::ScopedFD, 2> result_fds;
   msg.SendRecvMsgWithFlagsMultipleFds(ipc_writer.get(), 0, {send_fds},
                                       {result_fds}, &reply);
 

@@ -150,14 +150,23 @@ public class WebContentsUtils {
                 };
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    webContents.addObserver(observer);
+                    observer.observe(webContents);
                     WebContentsUtilsJni.get().crashTab(webContents);
                 });
         callbackHelper.waitForOnly();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    webContents.removeObserver(observer);
+                    observer.observe(null);
                 });
+    }
+
+    /**
+     * Simulate the end of paint-holding on primary main frame of `webContents`.
+     *
+     * <p>See the corresponding method in content/public/test/browser_test_utils.h.
+     */
+    public static void simulateEndOfPaintHolding(final WebContents webContents) {
+        WebContentsUtilsJni.get().simulateEndOfPaintHolding(webContents);
     }
 
     @CalledByNative
@@ -200,5 +209,7 @@ public class WebContentsUtils {
         void crashTab(WebContents webContents);
 
         void notifyCopyableViewInWebContents(WebContents webContents, Runnable doneCallback);
+
+        void simulateEndOfPaintHolding(WebContents webContents);
     }
 }

@@ -1,5 +1,7 @@
 per-file OWNERS=file://tools/metrics/histograms/metadata/METRIC_REVIEWER_OWNERS
 
+per-file enums.xml=*
+
 # Prefer sending CLs to the owners listed below.
 # Use chromium-metrics-reviews@google.com as a backup.
 iclelland@chromium.org
@@ -9,3 +11,7 @@ mlippautz@chromium.org
 toyoshim@chromium.org
 # For Blink Sms related changes.
 yigu@chromium.org
+# For Blink loading related changes
+gjc@google.com
+# For Blink Digital Credentials related changes
+mamir@chromium.org

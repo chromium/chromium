@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 
@@ -23,7 +24,8 @@ PerformanceElementTiming* PerformanceElementTiming::Create(
     int naturalHeight,
     const AtomicString& id,
     Element* element,
-    DOMWindow* source) {
+    DOMWindow* source,
+    uint32_t navigation_id) {
   // It is possible to 'paint' images which have naturalWidth or naturalHeight
   // equal to 0.
   DCHECK_GE(naturalWidth, 0);
@@ -32,7 +34,8 @@ PerformanceElementTiming* PerformanceElementTiming::Create(
   double start_time = render_time != 0.0 ? render_time : load_time;
   return MakeGarbageCollected<PerformanceElementTiming>(
       name, start_time, url, intersection_rect, render_time, load_time,
-      identifier, naturalWidth, naturalHeight, id, element, source);
+      identifier, naturalWidth, naturalHeight, id, element, source,
+      navigation_id);
 }
 
 PerformanceElementTiming::PerformanceElementTiming(
@@ -47,8 +50,9 @@ PerformanceElementTiming::PerformanceElementTiming(
     int naturalHeight,
     const AtomicString& id,
     Element* element,
-    DOMWindow* source)
-    : PerformanceEntry(name, start_time, start_time, source),
+    DOMWindow* source,
+    uint32_t navigation_id)
+    : PerformanceEntry(/*duration=*/0.0, name, start_time, source, navigation_id),
       element_(element),
       intersection_rect_(DOMRectReadOnly::FromRectF(intersection_rect)),
       render_time_(render_time),
@@ -87,6 +91,8 @@ std::unique_ptr<TracedValue> PerformanceElementTiming::ToTracedValue() const {
   traced_value->SetInteger("naturalHeight", naturalHeight_);
   traced_value->SetString("elementId", id_);
   traced_value->SetString("url", url_);
+  traced_value->SetInteger(
+      "nodeId", element_ ? element_->GetDomNodeId() : kInvalidDOMNodeId);
   return traced_value;
 }
 

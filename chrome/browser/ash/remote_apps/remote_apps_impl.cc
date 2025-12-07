@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ash/remote_apps/remote_apps_impl.h"
 
+#include <algorithm>
 #include <optional>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_manager.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_manager_factory.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_types.h"
@@ -137,7 +137,7 @@ void RemoteAppsImpl::DeleteApp(const std::string& app_id,
     case RemoteAppsError::kFailedToPinAnApp:
     case RemoteAppsError::kPinningMultipleAppsNotSupported:
       // Errors specific to other methods.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -164,7 +164,7 @@ void RemoteAppsImpl::SetPinnedApps(const std::vector<std::string>& app_ids,
     case RemoteAppsError::kFolderIdDoesNotExist:
     case RemoteAppsError::kNotReady:
       // Errors specific to other methods.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -208,13 +208,13 @@ void RemoteAppsImpl::OnAppAdded(AddAppCallback callback,
     case RemoteAppsError::kFailedToPinAnApp:
     case RemoteAppsError::kPinningMultipleAppsNotSupported:
       // Errors specific to other methods.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
 void RemoteAppsImpl::DisconnectHandler(mojo::RemoteSetElementId id) {
-  const auto& it = base::ranges::find(source_id_to_remote_id_map_, id,
-                                      &SourceToRemoteIds::value_type::second);
+  const auto& it = std::ranges::find(source_id_to_remote_id_map_, id,
+                                     &SourceToRemoteIds::value_type::second);
 
   if (it == source_id_to_remote_id_map_.end())
     return;

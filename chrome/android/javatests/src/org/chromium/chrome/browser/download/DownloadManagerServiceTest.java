@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.download;
 import android.content.Context;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.util.Log;
 import android.util.Pair;
 
 import androidx.annotation.IntDef;
@@ -19,6 +18,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -78,8 +78,7 @@ public class DownloadManagerServiceTest {
         }
 
         // Use MethodID for Integer values.
-        private final Queue<Pair<Integer, Object>> mExpectedCalls =
-                new ConcurrentLinkedQueue<Pair<Integer, Object>>();
+        private final Queue<Pair<Integer, Object>> mExpectedCalls = new ConcurrentLinkedQueue<>();
 
         public MockDownloadNotifier() {
             expect(MethodID.CLEAR_PENDING_DOWNLOADS, null);
@@ -112,7 +111,7 @@ public class DownloadManagerServiceTest {
         }
 
         static Pair<Integer, Object> getMethodSignature(@MethodID int methodId, Object param) {
-            return new Pair<Integer, Object>(methodId, param);
+            return new Pair<>(methodId, param);
         }
 
         void assertCorrectExpectedCall(@MethodID int methodId, Object param, boolean matchParams) {
@@ -183,7 +182,7 @@ public class DownloadManagerServiceTest {
         private final HashSet<Object> mMatches;
 
         OneTimeMatchSet(Object... params) {
-            mMatches = new HashSet<Object>();
+            mMatches = new HashSet<>();
             Collections.addAll(mMatches, params);
         }
 
@@ -331,41 +330,6 @@ public class DownloadManagerServiceTest {
         Thread.sleep(DELAY_BETWEEN_CALLS);
         mService.onDownloadUpdated(update3);
         Thread.sleep(DELAY_BETWEEN_CALLS);
-        notifier.waitTillExpectedCallsComplete();
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"Download"})
-    public void testDownloadFailedIsCalled() {
-        MockDownloadNotifier notifier = new MockDownloadNotifier();
-        createDownloadManagerService(notifier, UPDATE_DELAY_FOR_TEST);
-        ThreadUtils.runOnUiThreadBlocking(
-                (Runnable) () -> DownloadManagerService.setDownloadManagerService(mService));
-        // Check that if an interrupted download cannot be resumed, it will trigger a download
-        // failure.
-        DownloadInfo failure =
-                DownloadInfo.Builder.fromDownloadInfo(getDownloadInfo())
-                        .setIsResumable(false)
-                        .build();
-        notifier.expect(MethodID.DOWNLOAD_FAILED, failure);
-        mService.onDownloadInterrupted(failure, false);
-        notifier.waitTillExpectedCallsComplete();
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"Download"})
-    public void testDownloadPausedIsCalled() {
-        MockDownloadNotifier notifier = new MockDownloadNotifier();
-        createDownloadManagerService(notifier, UPDATE_DELAY_FOR_TEST);
-        DownloadManagerService.disableNetworkListenerForTest();
-        DownloadInfo interrupted =
-                DownloadInfo.Builder.fromDownloadInfo(getDownloadInfo())
-                        .setIsResumable(true)
-                        .build();
-        notifier.expect(MethodID.DOWNLOAD_INTERRUPTED, interrupted);
-        mService.onDownloadInterrupted(interrupted, true);
         notifier.waitTillExpectedCallsComplete();
     }
 

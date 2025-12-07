@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -55,48 +56,6 @@ INSTANTIATE_TEST_SUITE_P(
                     AtSignPrefixCase{"abc", "abc", false},
                     AtSignPrefixCase{"ab", "", false},
                     AtSignPrefixCase{"ab@cd.b", "ab", true}));
-
-// Tests for GetTextSelectionStart().
-struct GetTextSelectionStartCase {
-  const char* const field_suggestion;
-  const char* const field_contents;
-  const bool case_sensitive;
-  const size_t expected_start;
-};
-
-class GetTextSelectionStartTest
-    : public testing::TestWithParam<GetTextSelectionStartCase> {};
-
-TEST_P(GetTextSelectionStartTest, GetTextSelectionStart) {
-  auto test_case = GetParam();
-  SCOPED_TRACE(testing::Message()
-               << "suggestion = " << test_case.field_suggestion
-               << ", contents = " << test_case.field_contents
-               << ", case_sensitive = " << test_case.case_sensitive);
-  EXPECT_EQ(
-      test_case.expected_start,
-      GetTextSelectionStart(base::ASCIIToUTF16(test_case.field_suggestion),
-                            base::ASCIIToUTF16(test_case.field_contents),
-                            test_case.case_sensitive));
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    AutofillUtilTest,
-    GetTextSelectionStartTest,
-    testing::Values(
-        GetTextSelectionStartCase{"ab@cd.b", "a", false, 1},
-        GetTextSelectionStartCase{"ab@cd.b", "A", true, std::u16string::npos},
-        GetTextSelectionStartCase{"ab@cd.b", "Ab", false, 2},
-        GetTextSelectionStartCase{"ab@cd.b", "Ab", true, std::u16string::npos},
-        GetTextSelectionStartCase{"ab@cd.b", "cd", false, 5},
-        GetTextSelectionStartCase{"ab@cd.b", "ab@c", false, 4},
-        GetTextSelectionStartCase{"ab@cd.b", "cd.b", false, 7},
-        GetTextSelectionStartCase{"ab@cd.b", "b@cd", false,
-                                  std::u16string::npos},
-        GetTextSelectionStartCase{"ab@cd.b", "b", false, 7},
-        GetTextSelectionStartCase{"ba.a.ab", "a.a", false, 6},
-        GetTextSelectionStartCase{"texample@example.com", "example", false,
-                                  16}));
 
 // Tests for LowercaseAndTokenizeAttributeString
 struct LowercaseAndTokenizeAttributeStringCase {
@@ -145,6 +104,50 @@ INSTANTIATE_TEST_SUITE_P(
 TEST(StripAuthAndParamsTest, StripsAll) {
   GURL url = GURL("https://login:password@example.com/login/?param=value#ref");
   EXPECT_EQ(GURL("https://example.com/login/"), StripAuthAndParams(url));
+}
+
+TEST(SanitizeCreditCardFieldValueTest, SanitizeCreditCardFieldValue) {
+  EXPECT_EQ(u"1231231111", SanitizeCreditCardFieldValue(u" 123-123-1111 "));
+}
+
+class AutofillUtilSelectTest : public testing::Test {
+ public:
+  AutofillUtilSelectTest() = default;
+
+ private:
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
+};
+
+TEST_F(AutofillUtilSelectTest, FindShortestSubstringMatchInSelect) {
+  FormFieldData field = test::CreateTestSelectField({"États-Unis", "Canada"});
+
+  // Case 1: Exact match
+  EXPECT_EQ(
+      1, FindShortestSubstringMatchInSelect(u"Canada", false, field.options()));
+
+  // Case 2: Case-insensitive
+  EXPECT_EQ(
+      1, FindShortestSubstringMatchInSelect(u"CANADA", false, field.options()));
+
+  // Case 3: Proper substring
+  EXPECT_EQ(
+      0, FindShortestSubstringMatchInSelect(u"États", false, field.options()));
+
+  // Case 4: Accent-insensitive
+  EXPECT_EQ(0, FindShortestSubstringMatchInSelect(u"Etats-Unis", false,
+                                                  field.options()));
+
+  // Case 5: Whitespace-insensitive
+  EXPECT_EQ(1, FindShortestSubstringMatchInSelect(u"Ca na da", true,
+                                                  field.options()));
+
+  // Case 6: No match (whitespace-sensitive)
+  EXPECT_EQ(std::nullopt, FindShortestSubstringMatchInSelect(u"Ca Na Da", false,
+                                                             field.options()));
+
+  // Case 7: No match (not present)
+  EXPECT_EQ(std::nullopt, FindShortestSubstringMatchInSelect(u"Canadia", true,
+                                                             field.options()));
 }
 
 }  // namespace autofill

@@ -6,6 +6,7 @@
 #define IOS_WEB_VIEW_TEST_WEB_VIEW_INTTEST_BASE_H_
 
 #import <Foundation/Foundation.h>
+
 #include <memory>
 #include <string>
 
@@ -57,7 +58,7 @@ class WebViewInttestBase : public PlatformTest {
   // Call ASSERT_TRUE(test_server_->Start()) before accessing the returned URL.
   GURL GetUrlForPageWithHtml(const std::string& html);
 
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
 
   // CWVWebView created with default configuration and frame equal to screen

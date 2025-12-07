@@ -37,6 +37,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthFactorEditor {
 
   base::WeakPtr<AuthFactorEditor> AsWeakPtr();
 
+  // Locks account recovery until the device reboots. On success, no user on the
+  // device will be able to access the local account without using their old
+  // password. After the device reboots, users can use their updated password to
+  // gain access to their local account. This can be used to temporary block
+  // account recovery for a remote access session to the device.
+  void LockCryptohomeRecoveryUntilReboot(NoContextOperationCallback callback);
+
   // Retrieves information about all configured and possible AuthFactors,
   // and stores it in `context`.
   // Should only be used with AuthFactors feature enabled.
@@ -168,6 +175,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthFactorEditor {
                              const cryptohome::KeyLabel& new_label,
                              AuthOperationCallback callback);
 
+  // Removes the user's password factor . A password must already be
+  // configured prior to calling this. The caller needs to be careful in calling
+  // this since this may delete the last knowledge factor.
+  void RemovePasswordFactor(std::unique_ptr<UserContext> context,
+                            const cryptohome::KeyLabel& label,
+                            AuthOperationCallback callback);
+
   // Updates the user's PIN factor's metadata. The PIN must already
   // be configured prior to calling this. On success, as this will modify the
   // auth factor configurations of the user, the context auth factor
@@ -233,6 +247,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthFactorEditor {
                                  const cryptohome::KeyLabel& new_label,
                                  AuthOperationCallback callback,
                                  const std::string& system_salt);
+
+  void OnCryptohomeRecoveryLockedUntilReboot(
+      NoContextOperationCallback callback,
+      std::optional<user_data_auth::LockFactorUntilRebootReply> reply);
 
   const raw_ptr<UserDataAuthClient, DanglingUntriaged> client_;
   base::WeakPtrFactory<AuthFactorEditor> weak_factory_{this};

@@ -8,12 +8,12 @@
 #include <string>
 #include <vector>
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/account.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "google_apis/gaia/gaia_id.h"
 
 class PrefRegistrySimple;
 class Profile;
@@ -60,7 +60,7 @@ class EduCoexistenceConsentInvalidationController {
   void TermsOfServicePrefChanged();
 
   void InvalidateEduAccounts(
-      const std::vector<std::string>& account_emails_to_invalidate,
+      const std::vector<GaiaId>& account_emails_to_invalidate,
       const std::vector<::account_manager::Account>& accounts);
 
   const raw_ptr<Profile> profile_;

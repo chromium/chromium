@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/341324165): Fix and remove.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/containers/buffer_iterator.h"
 
 #include <string.h>
@@ -15,6 +10,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,7 +19,7 @@ namespace {
 
 struct TestStruct {
   uint32_t one;
-  uint8_t two;
+  uint8_t two, three, four, five;
 };
 
 bool operator==(const TestStruct& lhs, const TestStruct& rhs) {
@@ -31,17 +27,14 @@ bool operator==(const TestStruct& lhs, const TestStruct& rhs) {
 }
 
 TestStruct CreateTestStruct() {
-  TestStruct expected;
-  expected.one = 0xabcdef12;
-  expected.two = 0x34;
-  return expected;
+  return {0xabcdef12, 0x34, 0x56, 0x78, 0x90};
 }
 
 TEST(BufferIteratorTest, Object) {
   TestStruct expected = CreateTestStruct();
 
   char buffer[sizeof(TestStruct)];
-  memcpy(buffer, &expected, sizeof(buffer));
+  UNSAFE_TODO(memcpy(buffer, &expected, sizeof(buffer)));
 
   {
     // Read the object.
@@ -67,9 +60,7 @@ TEST(BufferIteratorTest, MutableObject) {
 
   {
     // Write the object.
-    TestStruct* actual = iterator.MutableObject<TestStruct>();
-    actual->one = expected.one;
-    actual->two = expected.two;
+    *iterator.MutableObject<TestStruct>() = expected;
   }
 
   // Rewind the iterator.
@@ -82,9 +73,9 @@ TEST(BufferIteratorTest, MutableObject) {
   }
 }
 
-TEST(BufferIteratorTest, ObjectSizeOverflow) {
+TEST(BufferIteratorTest, ObjectDoesNotFit) {
   char buffer[64];
-  BufferIterator<char> iterator(buffer, std::numeric_limits<size_t>::max());
+  BufferIterator<char> iterator(buffer);
 
   auto* pointer = iterator.Object<uint64_t>();
   EXPECT_TRUE(pointer);
@@ -105,7 +96,7 @@ TEST(BufferIteratorTest, Span) {
     BufferIterator<char> iterator(buffer);
     span<TestStruct> span = iterator.MutableSpan<TestStruct>(3);
     for (auto& ts : span) {
-      memcpy(&ts, &expected, sizeof(expected));
+      UNSAFE_TODO(memcpy(&ts, &expected, sizeof(expected)));
     }
   }
   {
@@ -143,7 +134,7 @@ TEST(BufferIteratorTest, FixedSpan) {
     static_assert(std::same_as<std::optional<base::span<TestStruct, 3u>>,
                                decltype(span)>);
     for (auto& ts : *span) {
-      memcpy(&ts, &expected, sizeof(expected));
+      UNSAFE_TODO(memcpy(&ts, &expected, sizeof(expected)));
     }
   }
   {
@@ -221,8 +212,7 @@ TEST(BufferIteratorTest, CopyObject) {
   for (int i = 0; i < kNumCopies; i++) {
     as_writable_bytes(span(buffer))
         .subspan(i * sizeof(TestStruct))
-        .first<sizeof(TestStruct)>()
-        .copy_from(byte_span_from_ref(expected));
+        .copy_prefix_from(byte_span_from_ref(expected));
   }
 
   BufferIterator<char> iterator(buffer);
@@ -244,8 +234,9 @@ TEST(BufferIteratorTest, SeekWithSizeConfines) {
   EXPECT_TRUE(iterator.Span<char>(4).empty());
 
   std::string result;
-  while (const char* c = iterator.Object<char>())
+  while (const char* c = iterator.Object<char>()) {
     result += *c;
+  }
   EXPECT_EQ(result, "cat");
 }
 

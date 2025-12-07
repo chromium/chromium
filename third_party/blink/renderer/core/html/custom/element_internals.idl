@@ -13,7 +13,9 @@ interface ElementInternals {
   // Attributes and operations for form-associated custom elements.
   [RaisesException] void setFormValue(ControlValue? value, optional ControlValue? state);
 
-  [RaisesException] readonly attribute HTMLFormElement? form;
+  // Until ReferenceTarget is enabled, this will only ever return HTMLFormElement.
+  // https://github.com/whatwg/html/pull/10995
+  [RaisesException, ImplementedAs=formForBinding] readonly attribute HTMLElement? form;
 
   [RaisesException] void setValidity(ValidityStateFlags flags, optional DOMString message, optional HTMLElement anchor);
   [RaisesException] readonly attribute boolean willValidate;
@@ -28,6 +30,8 @@ interface ElementInternals {
   // https://wicg.github.io/custom-state-pseudo-class/#dom-elementinternals-states
   [MeasureAs=ElementInternalsStates]
   readonly attribute CustomStateSet states;
+
+  [RuntimeEnabled=ElementInternalsDotType] attribute DOMString type;
 
   // Access to shadowRoot from custom elements. See crbug.com/1042130 and
   // https://github.com/w3c/webcomponents/issues/871#issuecomment-672082936

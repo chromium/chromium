@@ -1,5 +1,5 @@
 // META: title=test WebNN API softmax operation
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -12,19 +12,6 @@
 // Compute the softmax values of the N-D input tensor along the given axis.
 //
 // MLOperand softmax(MLOperand input, unsigned long axis);
-
-
-const getSoftmaxPrecisionTolerance = (graphResources) => {
-  const args = graphResources.operators[0].arguments;
-  const inputShape = graphResources.inputs[args[0][Object.keys(args[0])[0]]]
-                         .descriptor.dimensions;
-  const axis = args.length === 2 ? args[1][Object.keys(args[1])[0]] : 1;
-  const tolerance = inputShape[axis] * 3 + 3;
-  const toleranceValueDict = {float32: tolerance, float16: tolerance};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
 
 const softmaxTests = [
   {
@@ -42,13 +29,13 @@ const softmaxTests = [
             1.6371468305587769, 0.27626121044158936, 5.02822732925415,
             3.8983259201049805, 2.8967113494873047,  6.88947057723999
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'},
+          'descriptor': {shape: [4, 6], dataType: 'float32'},
           'constant': true
         }
       },
       'operators': [{
         'name': 'softmax',
-        'arguments': [{'input': 'softmaxInput'}],
+        'arguments': [{'input': 'softmaxInput'}, {'axis': 1}],
         'outputs': 'softmaxOutput'
       }],
       'expectedOutputs': {
@@ -67,7 +54,7 @@ const softmaxTests = [
             0.12633030116558075,    0.040812913328409195,
             0.014990009367465973,   0.8125221133232117
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       }
     }
@@ -87,12 +74,12 @@ const softmaxTests = [
             1.6371468305587769, 0.27626121044158936, 5.02822732925415,
             3.8983259201049805, 2.8967113494873047,  6.88947057723999
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       },
       'operators': [{
         'name': 'softmax',
-        'arguments': [{'input': 'softmaxInput'}],
+        'arguments': [{'input': 'softmaxInput'}, {'axis': 1}],
         'outputs': 'softmaxOutput'
       }],
       'expectedOutputs': {
@@ -111,7 +98,7 @@ const softmaxTests = [
             0.12633030116558075,    0.040812913328409195,
             0.014990009367465973,   0.8125221133232117
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       }
     }
@@ -131,12 +118,12 @@ const softmaxTests = [
             -1.8421411514282227, -4.994808197021484,  -9.527292251586914,
             -4.985682964324951,  -8.421041488647461,  -6.235629558563232
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       },
       'operators': [{
         'name': 'softmax',
-        'arguments': [{'input': 'softmaxInput'}],
+        'arguments': [{'input': 'softmaxInput'}, {'axis': 1}],
         'outputs': 'softmaxOutput'
       }],
       'expectedOutputs': {
@@ -151,7 +138,7 @@ const softmaxTests = [
             0.9090295433998108,   0.0388500951230526,    0.00041779119055718184,
             0.039206232875585556, 0.0012629841221496463, 0.011233373545110226
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       }
     }
@@ -167,7 +154,7 @@ const softmaxTests = [
             0.5397239923477173, -0.9535139799118042, -0.5920282602310181,
             -0.17344485223293304, 0.14395014941692352, -0.37920907139778137
           ],
-          'descriptor': {'dimensions': [1, 3, 4], 'dataType': 'float32'},
+          'descriptor': {shape: [1, 3, 4], dataType: 'float32'},
           'constant': true
         }
       },
@@ -184,7 +171,7 @@ const softmaxTests = [
             0.5390242338180542, 0.16964708268642426, 0.142439603805542,
             0.22368484735488892, 0.36284899711608887, 0.3012755215167999
           ],
-          'descriptor': {'dimensions': [1, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -200,7 +187,7 @@ const softmaxTests = [
             0.5397239923477173, -0.9535139799118042, -0.5920282602310181,
             -0.17344485223293304, 0.14395014941692352, -0.37920907139778137
           ],
-          'descriptor': {'dimensions': [3, 4, 1, 1], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 4, 1, 1], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -216,18 +203,166 @@ const softmaxTests = [
             0.33747196197509766, 0.07581108063459396, 0.17110128700733185,
             0.26004093885421753, 0.3571779429912567, 0.2116798311471939
           ],
-          'descriptor': {'dimensions': [3, 4, 1, 1], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 4, 1, 1], dataType: 'float32'}
+        }
+      }
+    }
+  },
+
+  // float16 tests
+  {
+    'name': 'softmax float16 2D constant tensor all positive',
+    'graph': {
+      'inputs': {
+        'softmaxInput': {
+          'data': [
+            7.90234375,     6.359375,   4.83203125,   9.578125,
+            0.210693359375, 4.5546875,  7.1484375,    8.328125,
+            1.5361328125,   6.6328125,  1.4541015625, 0.21337890625,
+            5.2578125,      8.1953125,  8.1640625,    2.875,
+            8.953125,       6.11328125, 1.63671875,   0.2763671875,
+            5.02734375,     3.8984375,  2.896484375,  6.890625
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'softmax',
+        'arguments': [{'input': 'softmaxInput'}, {'axis': 1}],
+        'outputs': 'softmaxOutput'
+      }],
+      'expectedOutputs': {
+        'softmaxOutput': {
+          'data': [
+            0.150634765625,         0.032196044921875,
+            0.006988525390625,      0.8046875,
+            0.00006878376007080078, 0.005298614501953125,
+            0.205810546875,         0.66943359375,
+            0.0007519721984863281,  0.1229248046875,
+            0.0006923675537109375,  0.0002002716064453125,
+            0.01236724853515625,    0.2333984375,
+            0.2261962890625,        0.0011415481567382812,
+            0.497802734375,         0.0290985107421875,
+            0.00424957275390625,    0.0010900497436523438,
+            0.1260986328125,        0.040771484375,
+            0.01497650146484375,    0.81298828125
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'softmax float16 2D tensor all positive',
+    'graph': {
+      'inputs': {
+        'softmaxInput': {
+          'data': [
+            7.90234375,     6.359375,   4.83203125,   9.578125,
+            0.210693359375, 4.5546875,  7.1484375,    8.328125,
+            1.5361328125,   6.6328125,  1.4541015625, 0.21337890625,
+            5.2578125,      8.1953125,  8.1640625,    2.875,
+            8.953125,       6.11328125, 1.63671875,   0.2763671875,
+            5.02734375,     3.8984375,  2.896484375,  6.890625
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'softmax',
+        'arguments': [{'input': 'softmaxInput'}, {'axis': 1}],
+        'outputs': 'softmaxOutput'
+      }],
+      'expectedOutputs': {
+        'softmaxOutput': {
+          'data': [
+            0.150634765625,         0.032196044921875,
+            0.006988525390625,      0.8046875,
+            0.00006878376007080078, 0.005298614501953125,
+            0.205810546875,         0.66943359375,
+            0.0007519721984863281,  0.1229248046875,
+            0.0006923675537109375,  0.0002002716064453125,
+            0.01236724853515625,    0.2333984375,
+            0.2261962890625,        0.0011415481567382812,
+            0.497802734375,         0.0290985107421875,
+            0.00424957275390625,    0.0010900497436523438,
+            0.1260986328125,        0.040771484375,
+            0.01497650146484375,    0.81298828125
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'softmax float16 2D tensor all negative',
+    'graph': {
+      'inputs': {
+        'softmaxInput': {
+          'data': [
+            -3.3125,     -3.33984375, -3.41015625,  -6.6953125,   -7.89453125,
+            -3.30859375, -3.23046875, -4.31640625,  -9.3125,      -3.923828125,
+            -3.78125,    -6.03515625, -3.919921875, -2.22265625,  -9.328125,
+            -1.48828125, -6.3046875,  -5.53125,     -1.841796875, -4.99609375,
+            -9.5234375,  -4.984375,   -8.421875,    -6.234375
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'softmax',
+        'arguments': [{'input': 'softmaxInput'}, {'axis': 1}],
+        'outputs': 'softmaxOutput'
+      }],
+      'expectedOutputs': {
+        'softmaxOutput': {
+          'data': [
+            0.254638671875,      0.2476806640625,       0.2308349609375,
+            0.00864410400390625, 0.002605438232421875,  0.255615234375,
+            0.40380859375,       0.1363525390625,       0.0009222030639648438,
+            0.2017822265625,     0.2327880859375,       0.024444580078125,
+            0.055145263671875,   0.301025390625,        0.00024700164794921875,
+            0.62744140625,       0.0050811767578125,    0.01100921630859375,
+            0.9091796875,        0.038787841796875,     0.00041937828063964844,
+            0.03924560546875,    0.0012617111206054688, 0.0112457275390625
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'softmax float16 4D tensor',
+    'graph': {
+      'inputs': {
+        'softmaxInput': {
+          'data': [
+            0.43017578125, 0.54736328125, -1.1640625, 0.1839599609375,
+            0.583984375, 0.173583984375, 0.53955078125, -0.95361328125,
+            -0.591796875, -0.1734619140625, 0.1439208984375, -0.379150390625
+          ],
+          'descriptor': {shape: [3, 4, 1, 1], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'softmax',
+        'arguments': [{'input': 'softmaxInput'}, {'axis': 1}],
+        'outputs': 'softmaxOutput'
+      }],
+      'expectedOutputs': {
+        'softmaxOutput': {
+          'data': [
+            0.321533203125, 0.361572265625, 0.0653076171875, 0.25146484375,
+            0.352783203125, 0.2340087890625, 0.33740234375, 0.0758056640625,
+            0.171142578125, 0.260009765625, 0.357177734375, 0.211669921875
+          ],
+          'descriptor': {shape: [3, 4, 1, 1], dataType: 'float16'}
         }
       }
     }
   }
 ];
 
-if (navigator.ml) {
-  softmaxTests.forEach((test) => {
-    webnn_conformance_test(
-        buildGraphAndCompute, getSoftmaxPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(
+    softmaxTests, buildAndExecuteGraph, getPrecisionTolerance);

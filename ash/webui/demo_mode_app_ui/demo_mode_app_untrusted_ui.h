@@ -11,7 +11,6 @@
 #include "base/files/file_path.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/untrusted_web_ui_controller.h"
 
@@ -52,8 +51,6 @@ class DemoModeAppUntrustedUI
       const base::FilePath& component_path,
       const std::string& resource_path,
       content::WebUIDataSource::GotDataCallback callback);
-
-  DemoModeAppDelegate& delegate() { return *delegate_; }
 
  private:
   // mojom::DemoModePageHandlerFactory

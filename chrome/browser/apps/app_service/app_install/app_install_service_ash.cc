@@ -4,14 +4,15 @@
 
 #include "chrome/browser/apps/app_service/app_install/app_install_service_ash.h"
 
+#include <algorithm>
+#include <variant>
+
 #include "ash/constants/ash_features.h"
-#include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/apps/app_service/app_install/app_install.pb.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_discovery_metrics.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_types.h"
@@ -31,8 +32,7 @@
 #include "components/user_manager/user_manager.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace apps {
 
@@ -88,7 +88,6 @@ AppInstallServiceAsh::InstallAppCallbackForTesting() {
 
 AppInstallServiceAsh::AppInstallServiceAsh(Profile& profile)
     : profile_(profile),
-      device_info_manager_(&*profile_),
       arc_app_installer_(&*profile_),
       web_app_installer_(&*profile_) {}
 
@@ -142,10 +141,9 @@ void AppInstallServiceAsh::InstallApp(
     case PackageType::kWeb:
     case PackageType::kWebsite: {
       // Observe for `anchor_window` being destroyed during async work.
-      std::unique_ptr<views::NativeWindowTracker> anchor_window_tracker;
+      std::unique_ptr<ui::NativeWindowTracker> anchor_window_tracker;
       if (anchor_window) {
-        anchor_window_tracker =
-            views::NativeWindowTracker::Create(*anchor_window);
+        anchor_window_tracker = ui::NativeWindowTracker::Create(*anchor_window);
       }
 
       FetchAppInstallData(
@@ -156,33 +154,10 @@ void AppInstallServiceAsh::InstallApp(
                          std::move(result_callback)));
       return;
     }
-    case PackageType::kBorealis: {
-      if (!base::FeatureList::IsEnabled(
-              ash::features::kAppInstallServiceUriBorealis)) {
-        std::move(result_callback)
-            .Run(AppInstallResult::kAppProviderNotAvailable);
-        return;
-      }
-
-      // Parse the Steam Game ID from the PackageId.
-      uint64_t steam_game_id;
-      if (!base::StringToUint64(package_id.identifier(), &steam_game_id)) {
-        std::move(result_callback).Run(AppInstallResult::kAppDataCorrupted);
-        return;
-      }
-
-      borealis::UserRequestedSteamGameInstall(&*profile_, steam_game_id);
-
-      // We've now launched the Borealis installer or the Steam Store
-      // website. We don't yet know whether that flow will result in a
-      // successfully installed game.
-      std::move(result_callback).Run(AppInstallResult::kUnknown);
-      return;
-    }
+    case PackageType::kBorealis:
     case PackageType::kChromeApp:
     case PackageType::kSystem:
     case PackageType::kUnknown:
-      // TODO(b/303350800): Generalize to work with all app types.
       std::move(result_callback).Run(AppInstallResult::kAppTypeNotSupported);
       return;
   }
@@ -231,19 +206,8 @@ bool AppInstallServiceAsh::CanUserInstall() const {
 void AppInstallServiceAsh::FetchAppInstallData(
     PackageId package_id,
     app_install_almanac_endpoint::GetAppInstallInfoCallback data_callback) {
-  device_info_manager_.GetDeviceInfo(
-      base::BindOnce(&AppInstallServiceAsh::FetchAppInstallDataWithDeviceInfo,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(package_id),
-                     std::move(data_callback)));
-}
-
-void AppInstallServiceAsh::FetchAppInstallDataWithDeviceInfo(
-    PackageId package_id,
-    app_install_almanac_endpoint::GetAppInstallInfoCallback data_callback,
-    DeviceInfo device_info) {
-  app_install_almanac_endpoint::GetAppInstallInfo(
-      package_id, std::move(device_info), *profile_->GetURLLoaderFactory(),
-      std::move(data_callback));
+  app_install_almanac_endpoint::GetAppInstallInfo(&profile_.get(), package_id,
+                                                  std::move(data_callback));
 }
 
 void AppInstallServiceAsh::PerformInstallHeadless(
@@ -267,7 +231,7 @@ void AppInstallServiceAsh::ShowDialogAndInstall(
     AppInstallSurface surface,
     PackageId expected_package_id,
     std::optional<gfx::NativeWindow> anchor_window,
-    std::unique_ptr<views::NativeWindowTracker> anchor_window_tracker,
+    std::unique_ptr<ui::NativeWindowTracker> anchor_window_tracker,
     base::OnceCallback<void(AppInstallResult)> callback,
     base::expected<AppInstallData, QueryError> data) {
   gfx::NativeWindow parent =
@@ -314,9 +278,9 @@ void AppInstallServiceAsh::ShowDialogAndInstall(
   }
 
   // The install dialog is only used for web apps currently.
-  CHECK(absl::holds_alternative<WebAppInstallData>(data->app_type_data));
+  CHECK(std::holds_alternative<WebAppInstallData>(data->app_type_data));
   const WebAppInstallData& web_app_data =
-      absl::get<WebAppInstallData>(data->app_type_data);
+      std::get<WebAppInstallData>(data->app_type_data);
 
   if (expected_package_id.package_type() == PackageType::kWebsite) {
     // kWebsite packages will end up installed as a regular kWeb app. Pass a
@@ -395,10 +359,10 @@ void AppInstallServiceAsh::PerformInstall(
     AppInstallSurface surface,
     AppInstallData data,
     base::OnceCallback<void(bool)> install_callback) {
-  if (absl::holds_alternative<AndroidAppInstallData>(data.app_type_data)) {
+  if (std::holds_alternative<AndroidAppInstallData>(data.app_type_data)) {
     arc_app_installer_.InstallApp(surface, std::move(data),
                                   std::move(install_callback));
-  } else if (absl::holds_alternative<WebAppInstallData>(data.app_type_data)) {
+  } else if (std::holds_alternative<WebAppInstallData>(data.app_type_data)) {
     web_app_installer_.InstallApp(surface, std::move(data),
                                   std::move(install_callback));
   } else {
@@ -410,19 +374,8 @@ void AppInstallServiceAsh::PerformInstall(
 void AppInstallServiceAsh::FetchAppInstallUrl(
     std::string serialized_package_id,
     base::OnceCallback<void(base::expected<GURL, QueryError>)> callback) {
-  device_info_manager_.GetDeviceInfo(
-      base::BindOnce(&AppInstallServiceAsh::FetchAppInstallUrlWithDeviceInfo,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(serialized_package_id), std::move(callback)));
-}
-
-void AppInstallServiceAsh::FetchAppInstallUrlWithDeviceInfo(
-    std::string serialized_package_id,
-    base::OnceCallback<void(base::expected<GURL, QueryError>)> callback,
-    DeviceInfo device_info) {
   app_install_almanac_endpoint::GetAppInstallUrl(
-      serialized_package_id, std::move(device_info),
-      *profile_->GetURLLoaderFactory(), std::move(callback));
+      &profile_.get(), serialized_package_id, std::move(callback));
 }
 
 void AppInstallServiceAsh::MaybeLaunchAppInstallUrl(

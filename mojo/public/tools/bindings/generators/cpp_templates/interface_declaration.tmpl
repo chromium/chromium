@@ -17,7 +17,8 @@ class {{export_attribute|append_space_if_nonempty}}{{interface.name}}
  public:
   using IPCStableHashFunction = uint32_t(*)();
 
-  static const char Name_[];
+  {#- Name includes namespace to prevent collision. #}
+  static constexpr const char* Name_ = "{{module_namespace}}.{{interface.name}}";
   static IPCStableHashFunction MessageToMethodInfo_(mojo::Message& message);
   static const char* MessageToMethodName_(mojo::Message& message);
 {%-  if interface.runtime_feature %}
@@ -28,6 +29,9 @@ class {{export_attribute|append_space_if_nonempty}}{{interface.name}}
   static constexpr base::Token Uuid_{ {{interface.uuid[0]}}ULL,
                                       {{interface.uuid[1]}}ULL };
 {%-  endif %}
+{%- if interface.direct_receiver %}
+  static constexpr bool kSupportsDirectReceiver = true;
+{%- endif %}
 {%- if interface.service_sandbox %}
 {%- set sandbox_enum = "%s"|format(interface.service_sandbox.GetSpec()|replace(".","::")) %}
   static constexpr auto kServiceSandbox = {{ sandbox_enum }};
@@ -99,9 +103,33 @@ class {{export_attribute|append_space_if_nonempty}}{{interface.name}}
   virtual bool {{method.name}}({{interface_macros.declare_sync_method_params("", method)}});
 {%-     endif %}
 
+{%-     if method.result_response != None %}
+  using {{method.name}}Callback = {{interface_macros.declare_result_callback(method)}};
+  using {{method.name}}Result = {{interface_macros.result_response_to_expected(method.result_response)}};
+{%-     else %}
   using {{method.name}}Callback = {{interface_macros.declare_callback(method, for_blink)}};
-{%-   endif %}
+{%-     endif %}
+  using {{method.name}}MojoCallback = {{interface_macros.declare_callback(method, for_blink)}};
+{%   endif -%}
   {{ kythe_annotation("%s.%s"|format(interface_prefix, method.name)) }}
   virtual void {{method.name}}({{interface_macros.declare_request_params("", method)}}) = 0;
+{%-   if method|has_non_const_ref_param %}
+  // Default implementation for non-const ref params. This method can be
+  // implemented as a performance optimization for non-const ref types.
+  virtual void {{method.name}}({{interface_macros.declare_request_params("", method, allow_non_const_ref=True)}}) {
+    {{method.name}}(
+{%-     for param in method.parameters -%}
+{%-       if param.kind|is_non_const_ref_kind -%}
+            const_cast<{{param.kind|cpp_wrapper_param_type}}>({{param.name}})
+{%-       else -%}
+            std::move({{param.name}})
+{%-       endif %}{%- if not loop.last -%}, {% endif -%}
+{%-     endfor -%}
+{%-     if method.response_parameters != None -%}
+{%-       if method.parameters %}, {% endif -%}
+          std::move(callback)
+{%-     endif -%});
+  }
+{%-   endif %}
 {%- endfor %}
 };

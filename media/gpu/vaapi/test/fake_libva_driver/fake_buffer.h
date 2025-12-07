@@ -5,9 +5,9 @@
 #ifndef MEDIA_GPU_VAAPI_TEST_FAKE_LIBVA_DRIVER_FAKE_BUFFER_H_
 #define MEDIA_GPU_VAAPI_TEST_FAKE_LIBVA_DRIVER_FAKE_BUFFER_H_
 
-#include <memory>
-
 #include <va/va.h>
+
+#include "base/containers/heap_array.h"
 
 namespace media::internal {
 
@@ -36,15 +36,13 @@ class FakeBuffer {
   IdType GetID() const;
   VAContextID GetContextID() const;
   VABufferType GetType() const;
-  size_t GetDataSize() const;
-  void* GetData() const;
+  base::span<uint8_t> GetData() const;
 
  private:
   const IdType id_;
   const VAContextID context_;
   const VABufferType type_;
-  const size_t data_size_;
-  const std::unique_ptr<uint8_t[]> data_;
+  const base::HeapArray<uint8_t> data_;
 };
 
 }  // namespace media::internal

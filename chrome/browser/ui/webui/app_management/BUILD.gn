@@ -1,0 +1,101 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+source_set("app_management") {
+  sources = [
+    "app_management_page_handler_base.cc",
+    "app_management_page_handler_base.h",
+    "app_management_page_handler_factory.cc",
+    "app_management_page_handler_factory.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/web_applications",
+    "//components/services/app_service",
+    "//mojo/public/cpp/bindings",
+    "//ui/gfx",
+    "//ui/webui/resources/cr_components/app_management:mojo_bindings",
+  ]
+
+  deps = [
+    "//base:i18n",
+    "//chrome/app:branded_strings",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:resources",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/profiles:profile",
+    "//components/app_constants",
+    "//components/prefs",
+    "//content/public/browser",
+    "//extensions/common:common_constants",
+    "//third_party/blink/public/common:headers",
+    "//ui/base",
+    "//ui/events:event_constants",
+    "//url",
+  ]
+
+  if (is_chromeos) {
+    sources += [
+      "app_management_page_handler_chromeos.cc",
+      "app_management_page_handler_chromeos.h",
+      "app_management_shelf_delegate_chromeos.cc",
+      "app_management_shelf_delegate_chromeos.h",
+    ]
+    deps += [
+      "//chrome/browser:browser_process",
+      "//chrome/browser/ash/app_list/arc",
+      "//chrome/browser/ash/apps",
+      "//chrome/browser/ui/ash/shelf",
+      "//chromeos/ash/experiences/arc:arc_app_constants",
+    ]
+  } else {
+    sources += [
+      "web_app_settings_page_handler.cc",
+      "web_app_settings_page_handler.h",
+    ]
+    deps += [
+      "//chrome/browser/web_applications:features",
+      "//chrome/browser/web_applications/app_service",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "app_management_page_handler_unittest.cc" ]
+
+  deps = [
+    ":app_management",
+    "//base/test:test_support",
+    "//chrome/browser/apps/link_capturing:test_support",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:features",
+    "//chrome/browser/web_applications:web_app_test",
+    "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//services/data_decoder/public/cpp:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public/common:headers",
+    "//ui/gfx",
+    "//ui/webui/resources/cr_components/app_management:mojo_bindings",
+  ]
+
+  if (is_chromeos) {
+    deps += [
+      "//chrome/browser/apps/app_service",
+      "//chrome/browser/apps/app_service:test_support",
+      "//chrome/browser/ash/app_list/arc",
+      "//chrome/browser/ash/app_list/arc:test_support",
+      "//chrome/browser/ash/apps",
+      "//chromeos/ash/experiences/arc:arc_app_constants",
+      "//chromeos/ash/experiences/arc:arc_features",
+      "//chromeos/ash/experiences/arc:arc_test_support",
+    ]
+  }
+}

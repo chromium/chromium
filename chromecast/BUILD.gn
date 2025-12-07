@@ -4,19 +4,16 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/cronet/config.gni")
-import("//build/config/features.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
 import("//chromecast/build/tests/cast_test.gni")
 import("//chromecast/chromecast.gni")
 import("//chromecast/resource_sizes/chromecast_resource_sizes.gni")
 import("//media/media_options.gni")
+import("//third_party/ffmpeg/ffmpeg_options.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 import("//tools/grit/repack.gni")
 import("//v8/gni/v8.gni")
-
-if (chromecast_branding != "public") {
-  import("//chromecast/internal/chromecast_internal.gni")
-}
 
 if (is_android) {
   import("//build/config/android/rules.gni")
@@ -36,13 +33,7 @@ group("all") {
   data_deps = []
   deps = [ "//chromecast/build:archive" ]
   if (is_android) {
-    if (chromecast_branding == "public") {
-      deps += [ ":cast_shell_apk" ]
-    } else {
-      foreach(device_type, android_device_types) {
-        deps += [ ":cast_browser_${device_type}_bundle_module" ]
-      }
-    }
+    deps += [ ":cast_browser_apk" ]
   } else if (!is_fuchsia) {
     data_deps += [
       ":cast_browser",
@@ -51,9 +42,6 @@ group("all") {
   }
   if (is_linux) {
     deps += [ "//chromecast/tracing" ]
-  }
-  if (chromecast_branding != "public") {
-    deps += [ "//chromecast/internal:all" ]
   }
   if (enable_external_mojo_services) {
     deps += [ "//chromecast/external_mojo/external_service_support:standalone_mojo_broker" ]
@@ -95,7 +83,6 @@ cast_test_group("cast_tests") {
     "//base:base_unittests",
     "//cc:cc_unittests",
     "//chromecast/base:cast_base_unittests",
-    "//chromecast/base/component:cast_component_unittests",
     "//chromecast/common:cast_common_unittests",
     "//chromecast/crypto:cast_crypto_unittests",
     "//chromecast/device/bluetooth:cast_bluetooth_unittests",
@@ -459,10 +446,6 @@ cast_test_group_list("cast_test_lists") {
   ]
 
   test_groups = [ ":cast_tests" ]
-
-  if (chromecast_branding != "public") {
-    test_groups += internal_cast_test_groups
-  }
 }
 
 if (is_android) {
@@ -485,9 +468,6 @@ if (is_android) {
     runtime_deps_path = "$root_out_dir/junit/runtime_deps.json"
     run_list_path = "$root_out_dir/junit/run_junit_test_list.txt"
     test_groups = [ ":cast_junit_tests" ]
-    if (chromecast_branding != "public") {
-      test_groups += [ "//chromecast/internal:internal_cast_junit_tests" ]
-    }
   }
 }
 
@@ -516,14 +496,7 @@ if (!is_fuchsia) {
   }
 
   group("cast_shell_lib") {
-    if (chromecast_branding != "public") {
-      deps = [
-        ":cast_shell_lib_base",
-        "//chromecast/internal/shell",
-      ]
-    } else {
-      deps = [ ":cast_shell_lib_simple" ]
-    }
+    deps = [ ":cast_shell_lib_simple" ]
   }
 
   group("cast_shell_lib_base") {
@@ -539,13 +512,7 @@ if (!is_fuchsia) {
   }
 
   group("cast_shell_lib_simple") {
-    deps = [
-      ":cast_shell_lib_base",
-      "//chromecast/browser:prefs_simple",
-      "//chromecast/browser:simple_client",
-      "//chromecast/browser:simple_main_parts",
-      "//chromecast/renderer:simple_client",
-    ]
+    deps = [ "//chromecast/cast_core:core_runtime_lib_simple" ]
   }
 
   cast_executable("cast_shell") {
@@ -576,6 +543,7 @@ if (!is_fuchsia) {
     sources = [
       "$root_gen_dir/chromecast/app/shell_resources.pak",
       "$root_gen_dir/components/cast/named_message_port_connector/named_message_port_connector_resources.pak",
+      "$root_gen_dir/components/metrics/metrics_server_urls.pak",
       "$root_gen_dir/content/content_resources.pak",
       "$root_gen_dir/content/gpu_resources.pak",
       "$root_gen_dir/mojo/public/js/mojo_bindings_resources.pak",
@@ -583,11 +551,12 @@ if (!is_fuchsia) {
       "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
       "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
       "$root_gen_dir/third_party/blink/public/strings/blink_strings_en-US.pak",
+      "$root_gen_dir/ui/resources/ui_lottie_resources.pak",
       "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
-      "$root_gen_dir/ui/resources/webui_resources.pak",
       "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
       "$root_gen_dir/ui/strings/ax_strings_en-US.pak",
       "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
+      "$root_gen_dir/ui/webui/resources/webui_resources.pak",
     ]
 
     output = "$root_out_dir/assets/cast_shell.pak"
@@ -595,6 +564,7 @@ if (!is_fuchsia) {
     deps = [
       "//chromecast/app:resources",
       "//components/cast/named_message_port_connector:resources",
+      "//components/metrics:server_urls_grd",
       "//content:content_resources",
       "//content/browser/resources/gpu:resources",
       "//mojo/public/js:resources",
@@ -604,6 +574,7 @@ if (!is_fuchsia) {
       "//third_party/blink/public/strings",
       "//ui/resources",
       "//ui/strings",
+      "//ui/webui/resources",
     ]
   }
 
@@ -613,19 +584,14 @@ if (!is_fuchsia) {
   # should not be depended on directly; depend on ":chromecast_locales_pak"
   # instead.
   foreach(locale, cast_locales) {
-    repack("_cast_repack_${locale}") {
-      visibility = [ ":chromecast_locales_pak" ]
-      output = "$root_out_dir/chromecast_locales/${locale}.pak"
-      mark_as_data = true
-      sources =
-          [ "$root_gen_dir/chromecast/app/chromecast_settings_${locale}.pak" ]
-      deps = [ "//chromecast/app:chromecast_settings" ]
-
-      if (chromecast_branding != "public") {
-        sources += [
-          "$root_gen_dir/chromecast/internal/castui/app_strings_${locale}.pak",
-        ]
-        deps += [ "//chromecast/internal/castui:cast_ui_app_strings" ]
+    foreach(_gender_suffix, gender_suffixes) {
+      repack("_cast_repack_${locale}${_gender_suffix}") {
+        visibility = [ ":chromecast_locales_pak" ]
+        output =
+            "$root_out_dir/chromecast_locales/${locale}${_gender_suffix}.pak"
+        mark_as_data = true
+        sources = [ "$root_gen_dir/chromecast/app/chromecast_settings_${locale}${_gender_suffix}.pak" ]
+        deps = [ "//chromecast/app:chromecast_settings" ]
       }
     }
   }
@@ -634,7 +600,9 @@ if (!is_fuchsia) {
   group("chromecast_locales_pak") {
     public_deps = []
     foreach(locale, cast_locales) {
-      public_deps += [ ":_cast_repack_${locale}" ]
+      foreach(_gender_suffix, gender_suffixes) {
+        public_deps += [ ":_cast_repack_${locale}${_gender_suffix}" ]
+      }
     }
   }
 }  # !is_fuchsia
@@ -647,7 +615,6 @@ buildflag_header("chromecast_buildflags") {
     "DISABLE_SECURE_FLAC_OPUS_DECODING=$disable_secure_flac_and_opus_decoding",
     "ENABLE_ASSISTANT=$enable_assistant",
     "ENABLE_EXTERNAL_MOJO_SERVICES=$enable_external_mojo_services",
-    "ENABLE_PLAYREADY=$enable_playready",
     "ENABLE_VIDEO_CAPTURE_SERVICE=$enable_video_capture_service",
     "IS_CAST_AUDIO_ONLY=$is_cast_audio_only",
     "IS_CAST_DESKTOP_BUILD=$is_cast_desktop_build",
@@ -658,11 +625,11 @@ buildflag_header("chromecast_buildflags") {
 }
 
 if (is_android) {
-  android_assets("cast_shell_apk_assets") {
+  android_assets("cast_browser_apk_assets") {
     sources = [ "$root_out_dir/assets/cast_shell.pak" ]
 
     deps = [
-      ":cast_shell_apk_locale_assets",
+      ":cast_browser_apk_locale_assets",
       ":cast_shell_pak",
       "//gin:v8_snapshot_assets",
       "//third_party/icu:icu_assets",
@@ -670,13 +637,18 @@ if (is_android) {
     disable_compression = true
   }
 
-  android_assets("cast_shell_apk_locale_assets") {
+  android_assets("cast_browser_apk_locale_assets") {
     renaming_sources = []
     renaming_destinations = []
 
     foreach(locale, cast_locales) {
-      renaming_sources += [ "$root_out_dir/chromecast_locales/${locale}.pak" ]
-      renaming_destinations += [ "stored-locales/${locale}.pak" ]
+      foreach(_gender_suffix, gender_suffixes) {
+        renaming_sources += [
+          "$root_out_dir/chromecast_locales/${locale}${_gender_suffix}.pak",
+        ]
+        renaming_destinations +=
+            [ "stored-locales/${locale}${_gender_suffix}.pak" ]
+      }
     }
 
     deps = [ ":chromecast_locales_pak" ]
@@ -685,27 +657,26 @@ if (is_android) {
     disable_compression = true
   }
 
-  android_apk("cast_shell_apk") {
+  android_apk("cast_browser_apk") {
     enable_lint = true
     lint_baseline_file = "android/lint-baseline.xml"
     lint_suppressions_file = "android/lint-suppressions.xml"
 
-    apk_name = "CastShell"
+    apk_name = "CastBrowser"
     android_manifest = "$root_gen_dir/cast_shell_manifest/AndroidManifest.xml"
     android_manifest_dep = "//chromecast/browser/android:cast_shell_manifest"
 
     min_sdk_version = 24
     target_sdk_version = 33
 
-    shared_libraries = [ "//chromecast/android:libcast_shell_android" ]
-    srcjar_deps =
-        [ "//chromecast/android:libcast_shell_android__jni_registration" ]
+    shared_libraries = [ "//chromecast/android:libcast_browser_android" ]
+    srcjar_deps = [ ":cast_browser_jni_registration" ]
 
     deps = [
-      ":cast_shell_apk_assets",
+      ":cast_browser_apk_assets",
       "//base:base_java",
       "//build/android:build_java",
-      "//chromecast/android:libcast_shell_android",
+      "//chromecast/android:libcast_browser_android",
       "//chromecast/browser/android:cast_shell_java",
       "//components/crash/core/app:chrome_crashpad_handler_named_as_so",
       "//third_party/jni_zero:jni_zero_java",
@@ -718,52 +689,76 @@ if (is_android) {
     product_config_java_packages = [ "org.chromium.chromecast.shell" ]
   }
 
-  if (chromecast_branding != "public") {
-    foreach(device_type, android_device_types) {
-      android_app_bundle_module("cast_browser_${device_type}_bundle_module") {
-        is_base_module = false
-        base_module_target = "//chromecast/internal/service/main/android:cast_service_${device_type}_bundle_module"
+  generate_jni_registration("cast_browser_jni_registration") {
+    java_targets = [ "//chromecast:cast_browser_apk" ]
 
-        android_manifest = "$root_gen_dir/cast_browser_${device_type}_manifest.AndroidManifest.xml"
-        android_manifest_dep =
-            "//chromecast/browser/android:cast_browser_${device_type}_manifest"
+    # This flags allows '*ForTest* JNI APIs to be included in the GEN_JNI
+    # registration, thus allowing dependency checker to pass.
+    include_testonly = true
+  }
 
-        min_sdk_version = 24
-        target_sdk_version = 33
+  # Must use java_library target, so that all the symbols from the generated
+  # srcjars are packaged into it and not removed. For example, GEN_JNI.class
+  # is explicitly added to excluded patterns in android_library rule.
+  java_library("cast_browser_generated_java") {
+    supports_android = true
+    requires_android = true
 
-        module_name = "cast_browser"
+    srcjar_deps = [
+      ":cast_browser_apk__build_config_srcjar",
+      ":cast_browser_apk__compile_resources",
+      ":cast_browser_apk__native_libraries",
+      ":cast_browser_apk_org.chromium.chromecast.shell__product_config_srcjar",
+      ":cast_browser_jni_registration",
+    ]
+  }
 
-        # |package_id| is required because the default one conflicts with the base
-        # modules' ID (0x7f).
-        package_id = 125
+  dist_aar("cast_browser_dist_aar") {
+    android_manifest = "$root_gen_dir/cast_shell_manifest/AndroidManifest.xml"
 
-        shared_libraries = [ "//chromecast/android:libcast_browser_android" ]
-        srcjar_deps =
-            [ "//chromecast/android:libcast_browser_android__jni_registration" ]
-        deps = [
-          "//base:base_java",
-          "//build/android:build_java",
-          "//chromecast/browser/android:cast_browser_java",
-          "//components/crash/core/app:chrome_crashpad_handler_named_as_so",
-          "//components/viz/service:service_java",
-          "//third_party/crashpad/crashpad/handler:crashpad_handler_trampoline",
-          "//third_party/jni_zero:jni_zero_java",
-        ]
+    native_libraries = [
+      "$root_build_dir/libcast_browser_android.so",
+      "$root_out_dir/libchrome_crashpad_handler.so",
+    ]
 
-        loadable_modules = [
-          "$root_out_dir/libchrome_crashpad_handler.so",
-          "$root_out_dir/libcrashpad_handler_trampoline.so",
-        ]
+    deps = [
+      ":cast_browser_apk_assets",
+      ":cast_browser_generated_java",
+      "//base:base_java",
+      "//build/android:build_java",
+      "//chromecast/android:libcast_browser_android",
+      "//chromecast/browser/android:cast_shell_java",
+      "//chromecast/browser/android:cast_shell_manifest",
+      "//components/crash/core/app:chrome_crashpad_handler_named_as_so",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
 
-        # TODO(b/228506503): remove the exclusion rule after cast_service and
-        # cast_browser depend on different resource targets.
-        resource_exclusion_regex = "cast_web_contents_activity.xml"
-
-        # TODO(b/222780347): Enable when compile errors are resolved on release
-        # builds.
-        proguard_enabled = false
-        generate_native_libraries_java = true
-      }
+    if (is_component_ffmpeg) {
+      native_libraries += [ "$root_build_dir/libffmpeg.so" ]
+      deps += [ "//third_party/ffmpeg" ]
     }
+
+    output = "$root_build_dir/apks/cast_browser.aar"
+
+    jar_excluded_patterns = [
+      "META-INF/*",
+      "android/*",
+      "androidx/*",
+      "com/google/android/gms/*",
+      "com/google/androidxr/*",
+      "com/google/ar/*",
+      "com/google/firebase/*",
+      "com/google/protobuf/*",
+      "com/google/vr/*",
+      "java/*",
+      "kotlin/*",
+      "kotlinx/*",
+    ]
+
+    resource_excluded_patterns = [
+      "*/third_party/android_deps/*",
+      "*/third_party/androidx/*",
+      "*/third_party/java_src/*",
+    ]
   }
 }

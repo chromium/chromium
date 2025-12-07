@@ -4,21 +4,22 @@
 
 package org.chromium.chrome.browser.tab_ui;
 
-import androidx.annotation.Nullable;
-
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Interface for the Tab Switcher. */
+@NullMarked
 public interface TabSwitcher {
 
     /** Called when native initialization is completed. */
     void initWithNative();
 
     /** Returns a {@link Supplier} that provides dialog visibility. */
-    Supplier<Boolean> getTabGridDialogVisibilitySupplier();
+    @Nullable Supplier<Boolean> getTabGridDialogVisibilitySupplier();
 
     /**
      * Returns a {@link TabSwitcherCustomViewManager} that allows to pass custom views to {@link
@@ -46,17 +47,10 @@ public interface TabSwitcher {
     void showQuickDeleteAnimation(Runnable onAnimationEnd, List<Tab> tabs);
 
     /**
-     * Show the Close All Tabs animation on the tab list.
+     * Requests to show a dialog for a tab group.
      *
-     * @param onAnimationEnd Runnable that is invoked when the animation is completed.
+     * @param tabId The id of any tab in the group.
+     * @return Whether the request to show was able to be handled.
      */
-    void showCloseAllTabsAnimation(Runnable onAnimationEnd);
-
-    /**
-     * Open the invitation modal on top of the tab switcher view when an invitation intent is
-     * intercepted.
-     *
-     * @param invitationId The id of the invitation.
-     */
-    void openInvitationModal(String invitationId);
+    boolean requestOpenTabGroupDialog(int tabId);
 }

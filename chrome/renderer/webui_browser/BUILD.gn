@@ -1,0 +1,38 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("webui_browser") {
+  sources = [
+    "webui_browser_renderer_extension.cc",
+    "webui_browser_renderer_extension.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/common",
+    "//components/guest_contents/renderer",
+    "//content/public/renderer",
+    "//gin",
+    "//third_party/blink/public:blink_headers",
+    "//url",
+    "//v8",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "webui_browser_renderer_extension_browsertest.cc" ]
+  deps = [
+    ":webui_browser",
+    "//base/test:test_support",
+    "//chrome/common",
+    "//chrome/common:chrome_features",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

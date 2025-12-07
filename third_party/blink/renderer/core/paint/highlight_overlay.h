@@ -30,6 +30,8 @@ class CORE_EXPORT HighlightOverlay {
     kGrammar,
     kSpelling,
     kTargetText,
+    kSearchText,
+    kSearchTextActiveMatch,
     kSelection,
   };
 
@@ -56,7 +58,6 @@ class CORE_EXPORT HighlightOverlay {
     int8_t ComparePaintOrder(const HighlightLayer&,
                              const HighlightRegistry*) const;
     bool operator==(const HighlightLayer&) const;
-    bool operator!=(const HighlightLayer&) const;
 
     HighlightLayerType type;
     Member<const ComputedStyle> style;
@@ -78,7 +79,6 @@ class CORE_EXPORT HighlightOverlay {
     String ToString() const;
 
     bool operator==(const HighlightRange&) const;
-    bool operator!=(const HighlightRange&) const;
 
     unsigned from;
     unsigned to;
@@ -112,7 +112,6 @@ class CORE_EXPORT HighlightOverlay {
                   const HeapVector<HighlightLayer>& layers,
                   const HighlightRegistry*) const;
     bool operator==(const HighlightEdge&) const;
-    bool operator!=(const HighlightEdge&) const;
 
     HighlightRange range;
     uint16_t layer_index;
@@ -138,7 +137,6 @@ class CORE_EXPORT HighlightOverlay {
     String ToString() const;
 
     bool operator==(const HighlightDecoration&) const;
-    bool operator!=(const HighlightDecoration&) const;
 
     HighlightLayerType type;
     uint16_t layer_index;
@@ -153,7 +151,6 @@ class CORE_EXPORT HighlightOverlay {
     String ToString() const;
 
     bool operator==(const HighlightBackground&) const;
-    bool operator!=(const HighlightBackground&) const;
 
     HighlightLayerType type;
     uint16_t layer_index;
@@ -167,7 +164,6 @@ class CORE_EXPORT HighlightOverlay {
     String ToString() const;
 
     bool operator==(const HighlightTextShadow&) const;
-    bool operator!=(const HighlightTextShadow&) const;
 
     HighlightLayerType type;
     uint16_t layer_index;
@@ -204,7 +200,6 @@ class CORE_EXPORT HighlightOverlay {
     String ToString() const;
 
     bool operator==(const HighlightPart&) const;
-    bool operator!=(const HighlightPart&) const;
 
     HighlightLayerType type;
     uint16_t layer_index;
@@ -228,12 +223,14 @@ class CORE_EXPORT HighlightOverlay {
       const DocumentMarkerVector& custom,
       const DocumentMarkerVector& grammar,
       const DocumentMarkerVector& spelling,
-      const DocumentMarkerVector& target);
+      const DocumentMarkerVector& target,
+      const DocumentMarkerVector& search);
 
   // Given details of a fragment and how it is highlighted, returns the start
   // and end transitions (edges) of the layers, in offset and layer order.
   static Vector<HighlightEdge> ComputeEdges(
       const Node*,
+      const LayoutObject*,
       bool is_generated_text_fragment,
       std::optional<TextOffsetRange> dom_offsets,
       const HeapVector<HighlightLayer>& layers,
@@ -241,7 +238,8 @@ class CORE_EXPORT HighlightOverlay {
       const DocumentMarkerVector& custom,
       const DocumentMarkerVector& grammar,
       const DocumentMarkerVector& spelling,
-      const DocumentMarkerVector& target);
+      const DocumentMarkerVector& target,
+      const DocumentMarkerVector& search);
 
   // Given highlight |layers| and |edges|, returns the ranges of text that can
   // be painted in the same layer with the same decorations, clamping the result

@@ -1,0 +1,9 @@
+This tests that document.navigator.modelContextTesting works correctly.
+Calling navigator.modelContextTesting.listTools()...
+SUCCESS: listTools() returned 1 tool(s).
+SUCCESS: Found 'echo' tool in the list.
+SUCCESS: 'echo' tool description is correct.
+SUCCESS: 'echo' tool inputSchema is correct.
+
+All tests passed.
+

@@ -13,29 +13,34 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.List;
 
 /** Java interface to the C++ ProfileManager. */
+@NullMarked
 public class ProfileManager {
-    private static Profile sLastUsedProfileForTesting;
+    private static @Nullable Profile sLastUsedProfileForTesting;
 
-    private static ObserverList<Observer> sObservers;
+    private static @Nullable ObserverList<Observer> sObservers;
     private static boolean sInitialized;
 
     /** Observer for Profile creation. */
-    public static interface Observer {
+    public interface Observer {
         /**
          * Called whenever a profile is created.
+         *
          * @param profile The profile that has just been created.
          */
-        public void onProfileAdded(Profile profile);
+        void onProfileAdded(Profile profile);
 
         /**
          * Called whenever a profile is destroyed.
+         *
          * @param profile The profile that has just been created.
          */
-        public void onProfileDestroyed(Profile profile);
+        void onProfileDestroyed(Profile profile);
     }
 
     /** Add an observer to be notified when profiles get created. */
@@ -64,7 +69,7 @@ public class ProfileManager {
     }
 
     @CalledByNative
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static void onProfileAdded(Profile profile) {
         // If a profile has been added, we know the ProfileManager has been initialized.
         sInitialized = true;
@@ -105,6 +110,10 @@ public class ProfileManager {
         return ProfileManagerJni.get().getLoadedProfiles();
     }
 
+    public static void onProfileActivated(Profile profile) {
+        ProfileManagerJni.get().onProfileActivated(profile);
+    }
+
     /**
      * Destroys the Profile. Destruction is delayed until all associated renderers have been killed,
      * so the profile might not be destroyed upon returning from this call.
@@ -127,9 +136,11 @@ public class ProfileManager {
 
     @NativeMethods
     public interface Natives {
-        Object getLastUsedRegularProfile();
+        Profile getLastUsedRegularProfile();
 
-        void destroyWhenAppropriate(@JniType("Profile*") Profile caller);
+        void onProfileActivated(@JniType("Profile*") Profile profile);
+
+        void destroyWhenAppropriate(@JniType("Profile*") Profile profile);
 
         @JniType("std::vector<Profile*>")
         List<Profile> getLoadedProfiles();

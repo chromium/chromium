@@ -107,8 +107,8 @@ void SpellChecker::CheckEligibilityAndUpdateLanguages(
 
   // Add application language.
   std::set<std::string> languages;
-  languages.insert(
-      l10n_util::GetLanguage(QuickAnswersState::Get()->application_locale()));
+  languages.insert(std::string(
+      l10n_util::GetLanguage(QuickAnswersState::Get()->application_locale())));
 
   // Add preferred languages if supported.
   auto preferred_languages_list =
@@ -117,7 +117,7 @@ void SpellChecker::CheckEligibilityAndUpdateLanguages(
   for (const std::string& locale : preferred_languages_list) {
     auto language = l10n_util::GetLanguage(locale);
     if (QuickAnswersState::Get()->IsSupportedLanguage(language))
-      languages.insert(language);
+      languages.insert(std::string(language));
   }
 
   spellcheck_languages_.clear();

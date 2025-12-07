@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.password_manager;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.ImageView;
@@ -11,8 +13,8 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.ui.widget.ChromeImageButton;
 
@@ -20,6 +22,7 @@ import org.chromium.ui.widget.ChromeImageButton;
  * The dialog content view for illustration dialogs used by the password manager (e.g. leak
  * warning).
  */
+@NullMarked
 public class PasswordManagerDialogView extends ScrollView {
     private @Nullable ChromeImageButton mHelpButtonView;
     private @Nullable ChromeImageButton mInlineHelpButtonView;
@@ -43,6 +46,7 @@ public class PasswordManagerDialogView extends ScrollView {
 
     void addHelpButton(Runnable callback) {
         if (mHelpButtonView == null) return;
+        assumeNonNull(mInlineHelpButtonView);
         mHelpButtonView.setOnClickListener(view -> callback.run());
         mInlineHelpButtonView.setOnClickListener(view -> callback.run());
         mHelpButtonView.setVisibility(VISIBLE);
@@ -63,6 +67,7 @@ public class PasswordManagerDialogView extends ScrollView {
     public void updateHelpIcon(boolean usesInlineIcon) {
         // There is no help button to update.
         if (mHelpButtonView == null) return;
+        assumeNonNull(mInlineHelpButtonView);
 
         // The inline help icon is displayed on the same line as the title and requires a different
         // margin.

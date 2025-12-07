@@ -2,20 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 
+#include <array>
+#include <utility>
+
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/metrics/metrics_hashes.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/execution/processing/query_processor.h"
+#include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/internal/post_processor/post_processing_test_utils.h"
 #include "components/segmentation_platform/public/proto/aggregation.pb.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
+#include "components/segmentation_platform/public/types/processed_value.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,16 +25,14 @@ namespace segmentation_platform {
 namespace {
 
 void AddDiscreteMapping(proto::SegmentationModelMetadata* metadata,
-                        float mappings[][2],
-                        int num_pairs,
+                        base::span<const std::pair<float, float>> mappings,
                         const std::string& discrete_mapping_key) {
   auto* discrete_mappings_map = metadata->mutable_discrete_mappings();
   auto& discrete_mappings = (*discrete_mappings_map)[discrete_mapping_key];
-  for (int i = 0; i < num_pairs; i++) {
-    auto* pair = mappings[i];
+  for (const auto& pair : mappings) {
     auto* entry = discrete_mappings.add_entries();
-    entry->set_min_result(pair[0]);
-    entry->set_rank(pair[1]);
+    entry->set_min_result(pair.first);
+    entry->set_rank(pair.second);
   }
 }
 
@@ -746,8 +746,12 @@ TEST_F(MetadataUtilsTest, SignalKindToSignalType) {
 TEST_F(MetadataUtilsTest, CheckDiscreteMapping) {
   proto::SegmentationModelMetadata metadata;
   std::string segmentation_key = "some_key";
-  float mapping[][2] = {{0.2, 1}, {0.5, 3}, {0.7, 4}};
-  AddDiscreteMapping(&metadata, mapping, 3, segmentation_key);
+  const std::array<std::pair<float, float>, 3> mapping = {{
+      {0.2f, 1.0f},
+      {0.5f, 3.0f},
+      {0.7f, 4.0f},
+  }};
+  AddDiscreteMapping(&metadata, mapping, segmentation_key);
 
   ASSERT_EQ(0, metadata_utils::ConvertToDiscreteScore(segmentation_key, 0.1,
                                                       metadata));
@@ -764,8 +768,12 @@ TEST_F(MetadataUtilsTest, CheckDiscreteMapping) {
 TEST_F(MetadataUtilsTest, CheckDiscreteMappingInNonAscendingOrder) {
   proto::SegmentationModelMetadata metadata;
   std::string segmentation_key = "some_key";
-  float mapping[][2] = {{0.2, 1}, {0.7, 4}, {0.5, 3}};
-  AddDiscreteMapping(&metadata, mapping, 3, segmentation_key);
+  const std::array<std::pair<float, float>, 3> mapping = {{
+      {0.2f, 1.0f},
+      {0.7f, 4.0f},
+      {0.5f, 3.0f},
+  }};
+  AddDiscreteMapping(&metadata, mapping, segmentation_key);
 
   ASSERT_EQ(0, metadata_utils::ConvertToDiscreteScore(segmentation_key, 0.1,
                                                       metadata));
@@ -792,11 +800,19 @@ TEST_F(MetadataUtilsTest, CheckMissingDiscreteMapping) {
 
 TEST_F(MetadataUtilsTest, CheckDefaultDiscreteMapping) {
   std::string segmentation_key = "some_key";
-  float mapping_specific[][2] = {{0.2, 1}, {0.5, 3}, {0.7, 4}};
-  float mapping_default[][2] = {{0.2, 5}, {0.5, 6}, {0.7, 7}};
+  const std::array<std::pair<float, float>, 3> mapping_specific = {{
+      {0.2f, 1.0f},
+      {0.5f, 3.0f},
+      {0.7f, 4.0f},
+  }};
+  const std::array<std::pair<float, float>, 3> mapping_default = {{
+      {0.2f, 5.0f},
+      {0.5f, 6.0f},
+      {0.7f, 7.0f},
+  }};
   proto::SegmentationModelMetadata metadata;
-  AddDiscreteMapping(&metadata, mapping_specific, 3, segmentation_key);
-  AddDiscreteMapping(&metadata, mapping_default, 3, "my-default");
+  AddDiscreteMapping(&metadata, mapping_specific, segmentation_key);
+  AddDiscreteMapping(&metadata, mapping_default, "my-default");
 
   // No valid mapping should be found since there is no default mapping, returns
   // the score.
@@ -816,9 +832,12 @@ TEST_F(MetadataUtilsTest, CheckDefaultDiscreteMapping) {
 
 TEST_F(MetadataUtilsTest, CheckMissingDefaultDiscreteMapping) {
   proto::SegmentationModelMetadata metadata;
-  std::string segmentation_key = "some_key";
-  float mapping_default[][2] = {{0.2, 5}, {0.5, 6}, {0.7, 7}};
-  AddDiscreteMapping(&metadata, mapping_default, 3, "my-default");
+  const std::array<std::pair<float, float>, 3> mapping_default = {{
+      {0.2f, 5.0f},
+      {0.5f, 6.0f},
+      {0.7f, 7.0f},
+  }};
+  AddDiscreteMapping(&metadata, mapping_default, "my-default");
   metadata.set_default_discrete_mapping("not-my-default");
 
   // Should not find 'not-my-default' mapping, since it is registered as
@@ -918,6 +937,41 @@ TEST_F(MetadataUtilsTest, GetAllUmaFeaturesWithUMAOutput) {
       model_metadata, /*include_outputs=*/true);
   EXPECT_EQ(1u, expected.size());
   EXPECT_EQ("output", expected[0].name());
+}
+
+TEST_F(MetadataUtilsTest, GetInputKeysForMetadata) {
+  constexpr char kSqlQuery[] = "some sql query with three bind value ? ? ?";
+  std::array<MetadataWriter::CustomInput::Arg, 1> kBindValueArg1{
+      std::make_pair("name", "sql_input_1")};
+  std::array<MetadataWriter::CustomInput::Arg, 1> kBindValueArg2{
+      std::make_pair("name", "sql_input_2")};
+  MetadataWriter::BindValue custom_input1{
+      proto::SqlFeature::BindValue::DOUBLE,
+      {.tensor_length = 1,
+       .fill_policy = proto::CustomInput::FILL_FROM_INPUT_CONTEXT,
+       .arg = kBindValueArg1.data(),
+       .arg_size = kBindValueArg1.size()}};
+  MetadataWriter::BindValue custom_input2{
+      proto::SqlFeature::BindValue::BOOL,
+      {.tensor_length = 2,
+       .fill_policy = proto::CustomInput::FILL_FROM_INPUT_CONTEXT,
+       .arg = kBindValueArg2.data(),
+       .arg_size = kBindValueArg2.size()}};
+
+  proto::SegmentationModelMetadata metadata;
+  MetadataWriter writer(&metadata);
+  MetadataWriter::SqlFeature feature{.sql = kSqlQuery};
+  writer.AddSqlFeature(feature, {custom_input1, custom_input2});
+
+  writer.AddFromInputContext("input_id", "custom_input1");
+  writer.AddFromInputContext("input_id", "custom_input2");
+
+  std::set<std::string> all_inputs =
+      metadata_utils::GetInputKeysForMetadata(metadata);
+
+  EXPECT_THAT(all_inputs,
+              testing::UnorderedElementsAre("sql_input_1", "sql_input_2",
+                                            "custom_input1", "custom_input2"));
 }
 
 TEST_F(MetadataUtilsTest, ConfigUsesLegacyOutput) {

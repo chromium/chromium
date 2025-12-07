@@ -1,0 +1,46 @@
+# These tests cannot work on Wayland because the platform does not allow clients
+# to position top level windows, activate them, and set focus.
+-All/HostedOrWebAppTest.CtrlClickLink/HostedApp
+-All/HostedOrWebAppTest.CtrlClickLink/WebApp
+-All/PopupBrowserTest.MoveClampedToCurrentDisplay/0
+-All/PopupBrowserTest.MoveClampedToCurrentDisplay/1
+-AutomationManagerAuraBrowserTest.EventFromAction
+-AutomationManagerAuraBrowserTest.TransientFocusChangesAreSuppressed
+-BrowserViewTest.F6CyclesThroughCaptionBubbleToo
+-BrowserViewTest.GetAccessibleTabModalDialogTitle
+-ChromeSitePerProcessTest.PopupWindowFocus
+-ExternalProtocolDialogBrowserTest.TestFocus
+-JavaScriptTabModalDialogViewViewsBrowserTest.AlertDialogAccessibleNameDescriptionAndRole
+-JavaScriptTabModalDialogViewViewsBrowserTest.AlertDialogCloseButtonAccessibilityIgnored
+-PreservedWindowPlacement.Test
+-ProfileHelperTest.OpenNewWindowForProfile
+
+# Screen capture on Wayland is tricky.
+-All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideo/1
+-All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideo/5
+-All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideoAndAudio/1
+-All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideoAndAudio/5
+-WebRtcDesktopCaptureBrowserTest.RunsScreenshareFromOneTabToAnother
+
+# Fail on the bot, pass locally.
+-BackForwardCachePageLoadMetricsObserverBrowserTest.CumulativeLayoutShiftAfterBackForwardCacheRestore
+-DesktopCaptureApiTest.ChooseDesktopMedia
+-IconLoaderBrowserTest.LoadGroup
+# crbug.com/1473417
+-All/OfferNotificationBubbleViewPixelBrowserTest.InvokeUi_show_notification_bubble/FreeListingOffer_default
+-All/OfferNotificationBubbleViewPixelBrowserTest.InvokeUi_show_notification_bubble/FreeListingOffer_on_navigation
+# crbug.com/348626870
+-All/PdfOcrIntegrationTest.*
+
+# TODO(crbug.com/40131756): fix these tests.
+
+# Failed:
+-BrowserViewTest.GetAccessibleTabModalDialogTree
+-OmniboxPopupViewViewsTest.ClickOmnibox
+-OmniboxPopupViewViewsTest.PopupMatchesLocationBarBackground
+-PageInfoBubbleViewBrowserTest.FocusDoesNotReturnToContentsOnReloadPrompt
+-PageInfoBubbleViewBrowserTest.FocusReturnsToContentOnClose
+-PrintBrowserTest.PDFPluginNotKeyboardFocusable
+
+# Fail on try bot due to DCHECKs being enabled there
+-PermissionElementBrowserTest.TabSwitchingClosesPrompt

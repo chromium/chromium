@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/extensions/webview/media_integrity/media_integrity_token_provider.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/webview/webview_media_integrity.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/extensions_webview/v8/v8_media_integrity_error_name.h"
@@ -14,7 +15,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace {
@@ -32,14 +32,20 @@ MediaIntegrityTokenProvider::MediaIntegrityTokenProvider(
   provider_remote_.Bind(std::move(provider_pending_remote),
                         context->GetTaskRunner(TaskType::kInternalDefault));
   provider_remote_.set_disconnect_handler(
-      WTF::BindOnce(&MediaIntegrityTokenProvider::OnProviderConnectionError,
-                    WrapWeakPersistent(this)));
+      blink::BindOnce(&MediaIntegrityTokenProvider::OnProviderConnectionError,
+                      WrapWeakPersistent(this)));
 }
 
 void MediaIntegrityTokenProvider::OnProviderConnectionError() {
   provider_remote_.reset();
   for (auto& resolver : token_resolvers_) {
+    ScriptState* script_state = resolver->GetScriptState();
+    if (!script_state->ContextIsValid()) {
+      continue;
+    }
+    ScriptState::Scope scope(script_state);
     resolver->Reject(MediaIntegrityError::CreateForName(
+        script_state->GetIsolate(),
         V8MediaIntegrityErrorName::Enum::kTokenProviderInvalid));
   }
   token_resolvers_.clear();
@@ -54,6 +60,8 @@ ScriptPromise<IDLString> MediaIntegrityTokenProvider::requestToken(
                                       kInvalidContext);
     return EmptyPromise();
   }
+  ScriptState::Scope scope(script_state);
+
   ScriptPromiseResolver<IDLString>* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(
           script_state, exception_state.GetContext());
@@ -62,6 +70,7 @@ ScriptPromise<IDLString> MediaIntegrityTokenProvider::requestToken(
   if (!provider_remote_.is_bound()) {
     // We cannot reconnect ourselves. The caller must request a new provider.
     resolver->Reject(MediaIntegrityError::CreateForName(
+        script_state->GetIsolate(),
         V8MediaIntegrityErrorName::Enum::kTokenProviderInvalid));
     return promise;
   }
@@ -69,9 +78,9 @@ ScriptPromise<IDLString> MediaIntegrityTokenProvider::requestToken(
   token_resolvers_.insert(resolver);
   provider_remote_->RequestToken(
       opt_content_binding,
-      WTF::BindOnce(&MediaIntegrityTokenProvider::OnRequestTokenResponse,
-                    WrapPersistent(this), WrapPersistent(script_state),
-                    WrapPersistent(resolver)));
+      blink::BindOnce(&MediaIntegrityTokenProvider::OnRequestTokenResponse,
+                      WrapPersistent(this), WrapPersistent(script_state),
+                      WrapPersistent(resolver)));
   return promise;
 }
 
@@ -86,13 +95,15 @@ void MediaIntegrityTokenProvider::OnRequestTokenResponse(
         DOMExceptionCode::kInvalidStateError, kInvalidContext));
     return;
   }
+  ScriptState::Scope scope(script_state);
 
   if (response->is_token()) {
     resolver->Resolve(response->get_token());
   } else {
     const mojom::blink::WebViewMediaIntegrityErrorCode error_code =
         response->get_error_code();
-    resolver->Reject(MediaIntegrityError::CreateFromMojomEnum(error_code));
+    resolver->Reject(MediaIntegrityError::CreateFromMojomEnum(
+        script_state->GetIsolate(), error_code));
   }
 }
 

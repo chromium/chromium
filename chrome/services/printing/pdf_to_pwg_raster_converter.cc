@@ -62,7 +62,7 @@ base::ReadOnlySharedMemoryRegion RenderPdfPagesToPwgRaster(
       page_number = total_page_count - 1 - page_number;
 
     if (!chrome_pdf::RenderPDFPageToBitmap(pdf_data, page_number,
-                                           image.pixel_data(), image.size(),
+                                           image.pixels().data(), image.size(),
                                            settings.dpi, options)) {
       return invalid_pwg_region;
     }
@@ -76,8 +76,7 @@ base::ReadOnlySharedMemoryRegion RenderPdfPagesToPwgRaster(
 
     switch (bitmap_settings.duplex_mode) {
       case mojom::DuplexMode::kUnknownDuplexMode:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       case mojom::DuplexMode::kSimplex:
         // Already defaults to false/false.
         break;
@@ -126,7 +125,7 @@ base::ReadOnlySharedMemoryRegion RenderPdfPagesToPwgRaster(
     return invalid_pwg_region;
 
   *page_count = total_page_count;
-  memcpy(region_mapping.mapping.memory(), pwg_data.data(), pwg_data.size());
+  region_mapping.mapping.GetMemoryAsSpan<char>().copy_prefix_from(pwg_data);
   return std::move(region_mapping.region);
 }
 
@@ -134,7 +133,7 @@ base::ReadOnlySharedMemoryRegion RenderPdfPagesToPwgRaster(
 
 PdfToPwgRasterConverter::PdfToPwgRasterConverter() = default;
 
-PdfToPwgRasterConverter::~PdfToPwgRasterConverter() {}
+PdfToPwgRasterConverter::~PdfToPwgRasterConverter() = default;
 
 void PdfToPwgRasterConverter::Convert(
     base::ReadOnlySharedMemoryRegion pdf_region,

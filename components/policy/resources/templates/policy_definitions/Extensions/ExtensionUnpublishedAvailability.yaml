@@ -19,6 +19,8 @@ desc: |-
 supported_on:
 - chrome.*:115-
 - chrome_os:115-
+future_on:
+- android
 features:
   dynamic_refresh: true
   per_profile: true

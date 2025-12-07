@@ -9,7 +9,7 @@ _factory_sources = [ "java/src/org/chromium/chrome/browser/keyboard_accessory/Ma
 
 android_library_factory("public_java") {
   # These deps will be inherited by the resulting android_library target.
-  deps = [ "//chrome/android/features/keyboard_accessory/public:public_java" ]
+  deps = [ "//chrome/browser/keyboard_accessory/android/java" ]
 
   # This internal file will be replaced by a generated file so the resulting
   # android_library target does not actually depend on this internal file.
@@ -17,7 +17,9 @@ android_library_factory("public_java") {
 }
 
 android_library("internal_java") {
-  deps =
-      [ "//chrome/android/features/keyboard_accessory/internal:internal_java" ]
+  deps = [
+    "//chrome/android/features/keyboard_accessory/internal:internal_java",
+    "//chrome/browser/keyboard_accessory/android/java",
+  ]
   sources = _factory_sources
 }

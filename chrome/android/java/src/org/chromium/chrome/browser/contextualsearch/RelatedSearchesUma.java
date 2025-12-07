@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.contextualsearch;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -14,6 +15,7 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Centralizes UMA data collection for Related Searches. All calls must be made from the UI thread.
  */
+@NullMarked
 public class RelatedSearchesUma {
     // Constants for user permissions histogram.
     @IntDef({
@@ -46,17 +48,18 @@ public class RelatedSearchesUma {
         int NO_SCROLL_CLICKED = 1;
         int SCROLLED_NO_CLICK = 2;
         int SCROLLED_CLICKED = 3;
-        int NUM_ENTRIES = 4;
     }
 
     /**
      * Logs a histogram indicating which privacy permissions are available that Related Searches
      * cares about. This ignores any language constraint.
+     *
      * <p>This can be called multiple times for each user from any part of the code that's freqently
      * executed.
+     *
      * @param canSendUrl Whether this user has allowed sending page URL info to Google.
      * @param canSendContent Whether the user can send page content to Google (has accepted the
-     *        Contextual Search opt-in).
+     *     Contextual Search opt-in).
      */
     static void logRelatedSearchesPermissionsForAllUsers(
             boolean canSendUrl, boolean canSendContent) {

@@ -12,6 +12,8 @@ import android.view.contentcapture.ContentCaptureSession;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * The class to wrap ContentCapture platform APIs, catches the exception from platform, and
@@ -19,8 +21,9 @@ import org.chromium.base.ResettersForTesting;
  * the crash.
  */
 @RequiresApi(Build.VERSION_CODES.Q)
+@NullMarked
 public abstract class PlatformAPIWrapper {
-    private static PlatformAPIWrapper sImpl;
+    private static @Nullable PlatformAPIWrapper sImpl;
 
     public static PlatformAPIWrapper getInstance() {
         if (sImpl == null) {
@@ -30,7 +33,7 @@ public abstract class PlatformAPIWrapper {
     }
 
     public abstract ContentCaptureSession createContentCaptureSession(
-            ContentCaptureSession parent, String url, String favicon);
+            ContentCaptureSession parent, String url, @Nullable String favicon);
 
     public abstract void destroyContentCaptureSession(ContentCaptureSession session);
 
@@ -52,7 +55,10 @@ public abstract class PlatformAPIWrapper {
     public abstract void notifyViewTextChanged(
             ContentCaptureSession session, AutofillId autofillId, String newContent);
 
-    public abstract void notifyFaviconUpdated(ContentCaptureSession session, String favicon);
+    public abstract void notifyFaviconUpdated(
+            ContentCaptureSession session, @Nullable String favicon);
+
+    public abstract void flush(ContentCaptureSession session);
 
     public static void setPlatformAPIWrapperImplForTesting(PlatformAPIWrapper impl) {
         var oldValue = sImpl;

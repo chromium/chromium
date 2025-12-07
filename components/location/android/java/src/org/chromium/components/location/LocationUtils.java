@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Process;
 import android.os.UserManager;
 import android.provider.Settings;
@@ -18,6 +17,8 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -25,11 +26,12 @@ import org.chromium.ui.base.WindowAndroid;
  *
  * This class should be used only on the UI thread.
  */
+@NullMarked
 public class LocationUtils {
     // Used to construct sInstance if that's null.
-    private static Factory sFactory;
+    private static @Nullable Factory sFactory;
 
-    private static LocationUtils sInstance;
+    private static @Nullable LocationUtils sInstance;
 
     protected LocationUtils() {}
 
@@ -73,7 +75,6 @@ public class LocationUtils {
      * Returns whether location services are enabled system-wide, i.e. whether any application is
      * able to access location.
      */
-    @SuppressWarnings("deprecation")
     public boolean isSystemLocationSettingEnabled() {
         Context context = ContextUtils.getApplicationContext();
 
@@ -82,17 +83,9 @@ public class LocationUtils {
             return false;
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            LocationManager locationManager =
-                    (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-            return locationManager != null && locationManager.isLocationEnabled();
-        }
-
-        return Settings.Secure.getInt(
-                        context.getContentResolver(),
-                        Settings.Secure.LOCATION_MODE,
-                        Settings.Secure.LOCATION_MODE_OFF)
-                != Settings.Secure.LOCATION_MODE_OFF;
+        LocationManager locationManager =
+                (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        return locationManager != null && locationManager.isLocationEnabled();
     }
 
     /**
@@ -136,7 +129,7 @@ public class LocationUtils {
      * LocationUtils.getInstance().
      */
     public interface Factory {
-        public LocationUtils create();
+        LocationUtils create();
     }
 
     /**

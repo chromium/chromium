@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<script src="../../../resources/js-test.js"></script>
+<script>
+    if (window.testRunner) {
+        testRunner.dumpAsText();
+    }
+
+    addEventListener("load", function() {
+        shouldBeTrue('document.getElementById("foo").clientWidth==150');
+    }, false);
+</script>
+<div>This test passes if the image below is not empty. It ensures that a candidate without scale modifier get a default one</div>
+<img id="foo" src="" srcset="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAAA8CAIAAAAL5NQ9AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH2woaBQc4oLEFpAAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAACMSURBVHja7dNBEYAgFEVRPhHMYgAzUIsmVnFvB/fsoQb+ObfBmzMvxneW1D1vzz2wFiEUQiFEKIRCKIQIhVAIhRChEAqhECIUQiEUQoRCKIRCiFAIhVAIEep3xTWTLzzu5oVCKIRCiFAIhVAIEQqhEAohQiEUQiFEKIRCKIQIhVAIhRChEAqhECLUZi3VEwcBMGr1NgAAAABJRU5ErkJggg==">

@@ -50,8 +50,8 @@ class MockPrivacySandboxServiceTestInterface
   MOCK_METHOD(base::Time, TopicsConsentLastUpdateTime, (), (override, const));
   MOCK_METHOD(std::string, TopicsConsentLastUpdateText, (), (override, const));
   MOCK_METHOD(void, ForceChromeBuildForTests, (bool), (override, const));
-  MOCK_METHOD(int, GetRequiredPromptType, (), (override, const));
-  MOCK_METHOD(void, PromptActionOccurred, (int), (override, const));
+  MOCK_METHOD(int, GetRequiredPromptType, (int), (override, const));
+  MOCK_METHOD(void, PromptActionOccurred, (int, int), (override, const));
 };
 
 }  // namespace
@@ -301,10 +301,9 @@ TEST_P(PrivacySandboxTestUtilContentSettingTest,
   ApplyTestState(StateKey::kSiteDataUserDefault, state);
 
   // The state should have ended up in the user provider we gave to the util.
-  auto user_rule_iterator = user_provider()->GetRuleIterator(
-      ContentSettingsType::COOKIES,
-      /*incognito=*/false,
-      content_settings::PartitionKey::GetDefaultForTesting());
+  auto user_rule_iterator =
+      user_provider()->GetRuleIterator(ContentSettingsType::COOKIES,
+                                       /*off_the_record=*/false);
 
   EXPECT_TRUE(user_rule_iterator->HasNext());
   auto rule = user_rule_iterator->Next();
@@ -314,10 +313,9 @@ TEST_P(PrivacySandboxTestUtilContentSettingTest,
 
   // Nothing should have ended up in the managed provider, which will present
   // as a null iterator.
-  auto managed_rule_iterator = managed_provider()->GetRuleIterator(
-      ContentSettingsType::COOKIES,
-      /*incognito=*/false,
-      content_settings::PartitionKey::GetDefaultForTesting());
+  auto managed_rule_iterator =
+      managed_provider()->GetRuleIterator(ContentSettingsType::COOKIES,
+                                          /*off_the_record=*/false);
   EXPECT_EQ(managed_rule_iterator, nullptr);
 }
 
@@ -334,10 +332,9 @@ TEST_F(PrivacySandboxBaseTestUtilTest, VerifySiteDataUserExceptionStateKey) {
                  SiteDataExceptions{{kException, CONTENT_SETTING_BLOCK}});
 
   // The state should have ended up in the user provider we gave to the util.
-  auto user_rule_iterator = user_provider()->GetRuleIterator(
-      ContentSettingsType::COOKIES,
-      /*incognito=*/false,
-      content_settings::PartitionKey::GetDefaultForTesting());
+  auto user_rule_iterator =
+      user_provider()->GetRuleIterator(ContentSettingsType::COOKIES,
+                                       /*off_the_record=*/false);
 
   EXPECT_TRUE(user_rule_iterator->HasNext());
   auto rule = user_rule_iterator->Next();
@@ -347,10 +344,9 @@ TEST_F(PrivacySandboxBaseTestUtilTest, VerifySiteDataUserExceptionStateKey) {
 
   // Nothing should have ended up in the managed provider, which will present
   // as a null iterator.
-  auto managed_rule_iterator = managed_provider()->GetRuleIterator(
-      ContentSettingsType::COOKIES,
-      /*incognito=*/false,
-      content_settings::PartitionKey::GetDefaultForTesting());
+  auto managed_rule_iterator =
+      managed_provider()->GetRuleIterator(ContentSettingsType::COOKIES,
+                                          /*off_the_record=*/false);
   EXPECT_EQ(managed_rule_iterator, nullptr);
 }
 
@@ -364,7 +360,7 @@ TEST_F(PrivacySandboxBaseTestUtilTest, VerifyPromptActionOccurredInputKey) {
   constexpr int kArbitraryValue = 7;
   testing::Mock::VerifyAndClearExpectations(mock_privacy_sandbox_service());
   EXPECT_CALL(*mock_privacy_sandbox_service(),
-              PromptActionOccurred(kArbitraryValue));
+              PromptActionOccurred(kArbitraryValue, /*kDesktop*/ 0));
   ProvideInput(InputKey::kPromptAction, kArbitraryValue);
 }
 

@@ -15,6 +15,7 @@
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/no_destructor.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
@@ -27,16 +28,27 @@ struct AtkAttributeSetDeleter {
   }
 };
 
+// Internal replication of the Atk.Live enum
+// https://docs.gtk.org/atk/enum.Live.html
+// TODO(https://crbug.com/404172321): We replicated this due to build issues
+// likely due to the newness of this enum in the Atk library. Remove this in
+// favor of the Atk library enum when Atk headers are updated internally.
+enum AriaNotificationAtkLive {
+  kNone,
+  kPolite,
+  kAssertive,
+};
+
 using AtkAttributes = std::unique_ptr<AtkAttributeSet, AtkAttributeSetDeleter>;
 
 // Some ATK interfaces require returning a (const gchar*), use
 // this macro to make it safe to return a pointer to a temporary
 // string.
-#define ATK_AURALINUX_RETURN_STRING(str_expr) \
-  {                                           \
-    static std::string result;                \
-    result = (str_expr);                      \
-    return result.c_str();                    \
+#define ATK_AURALINUX_RETURN_STRING(str_expr)      \
+  {                                                \
+    static base::NoDestructor<std::string> result; \
+    *result = (str_expr);                          \
+    return result->c_str();                        \
   }
 
 namespace ui {
@@ -50,31 +62,6 @@ struct FindInPageResultInfo {
     return (node == other.node) && (start_offset == other.start_offset) &&
            (end_offset == other.end_offset);
   }
-};
-
-// AtkTableCell was introduced in ATK 2.12. Ubuntu Trusty has ATK 2.10.
-// Compile-time checks are in place for ATK versions that are older than 2.12.
-// However, we also need runtime checks in case the version we are building
-// against is newer than the runtime version. To prevent a runtime error, we
-// check that we have a version of ATK that supports AtkTableCell. If we do,
-// we dynamically load the symbol; if we don't, the interface is absent from
-// the accessible object and its methods will not be exposed or callable.
-// The definitions below ensure we have no missing symbols. Note that in
-// environments where we have ATK > 2.12, the definitions of AtkTableCell and
-// AtkTableCellIface below are overridden by the runtime version.
-// TODO(accessibility) Remove AtkTableCellInterface when 2.12 is the minimum
-// supported version.
-struct COMPONENT_EXPORT(AX_PLATFORM) AtkTableCellInterface {
-  typedef struct _AtkTableCell AtkTableCell;
-  static GType GetType();
-  static GPtrArray* GetColumnHeaderCells(AtkTableCell* cell);
-  static GPtrArray* GetRowHeaderCells(AtkTableCell* cell);
-  static bool GetRowColumnSpan(AtkTableCell* cell,
-                               gint* row,
-                               gint* column,
-                               gint* row_span,
-                               gint* col_span);
-  static bool Exists();
 };
 
 // This class with an enum is used to generate a bitmask which tracks the ATK
@@ -101,9 +88,8 @@ class ImplementedAtkInterfaces {
 
   void Add(Value other) { value_ |= static_cast<int>(other); }
 
-  bool operator!=(const ImplementedAtkInterfaces& other) {
-    return value_ != other.value_;
-  }
+  friend bool operator==(const ImplementedAtkInterfaces&,
+                         const ImplementedAtkInterfaces&) = default;
 
   int value() const { return value_; }
 
@@ -115,7 +101,6 @@ class ImplementedAtkInterfaces {
 class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeAuraLinux
     : public AXPlatformNodeBase {
  public:
-  ~AXPlatformNodeAuraLinux() override;
   AXPlatformNodeAuraLinux(const AXPlatformNodeAuraLinux&) = delete;
   AXPlatformNodeAuraLinux& operator=(const AXPlatformNodeAuraLinux&) = delete;
 
@@ -130,10 +115,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeAuraLinux
 
   // Do asynchronous static initialization.
   static void StaticInitialize();
-
-  // Enables AXMode calling AXPlatformNode::NotifyAddAXModeFlags. It's used
-  // when ATK APIs are called.
-  static void EnableAXMode();
 
   // EnsureAtkObjectIsValid will destroy and recreate |atk_object_| if the
   // interface mask is different. This partially relies on looking at the tree's
@@ -217,6 +198,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeAuraLinux
   void OnSortDirectionChanged();
   void OnInvalidStatusChanged();
   void OnAriaCurrentChanged();
+  void OnAriaNotificationPosted(
+      const std::string& announcement,
+      ax::mojom::AriaNotificationPriority priority_property);
   void OnDocumentTitleChanged();
   void OnSubtreeCreated();
   void OnSubtreeWillBeDeleted();
@@ -293,13 +277,16 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeAuraLinux
   // nullopt.
   std::optional<std::pair<int, int>> GetEmbeddedObjectIndices();
 
+  AXPlatformNodeAuraLinux* GetFromNodeID(int32_t node_id);
+
   std::string accessible_name_;
 
  protected:
   AXPlatformNodeAuraLinux();
+  ~AXPlatformNodeAuraLinux() override;
 
   // AXPlatformNode overrides.
-  void Init(AXPlatformNodeDelegate* delegate) override;
+  void Init(AXPlatformNodeDelegate& delegate) override;
 
   // Offsets for the AtkText API are calculated in UTF-16 code point offsets,
   // but the ATK APIs want all offsets to be in "characters," which we
@@ -432,8 +419,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeAuraLinux
 
   bool window_activate_event_postponed_ = false;
 
-  friend AXPlatformNode* AXPlatformNode::Create(
-      AXPlatformNodeDelegate* delegate);
+  friend AXPlatformNode::Pointer AXPlatformNode::Create(
+      AXPlatformNodeDelegate& delegate);
 };
 
 }  // namespace ui

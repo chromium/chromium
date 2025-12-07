@@ -7,10 +7,10 @@
 
 #include <optional>
 #include <string_view>
+#include <variant>
 
 #include "base/types/expected.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace policy {
 
@@ -26,17 +26,16 @@ enum class AutoEnrollmentResult {
   kDisabled,
   // Check completed successfully, enrollment is suggested but not enforced.
   kSuggestedEnrollment,
+  // Check completed successfully. The device was found to be owned already (TPM
+  // is locked). We should neither enroll nor touch the block_devmode settings.
+  // This state can be reached by restarting OOBE right after enrollment (before
+  // OOBE is marked as finished), see crbug.com/445121415, for instance.
+  kDeviceAlreadyOwned,
 };
 
 // Represents a state determination error due to a timeout.
 struct AutoEnrollmentSafeguardTimeoutError {
   constexpr bool operator==(const AutoEnrollmentSafeguardTimeoutError&) const =
-      default;
-};
-
-// Represents a state determination error during clock sync.
-struct AutoEnrollmentSystemClockSyncError {
-  constexpr bool operator==(const AutoEnrollmentSystemClockSyncError&) const =
       default;
 };
 
@@ -77,13 +76,12 @@ struct AutoEnrollmentStateRetrievalResponseError {
 };
 
 using AutoEnrollmentError =
-    absl::variant<AutoEnrollmentSafeguardTimeoutError,
-                  AutoEnrollmentSystemClockSyncError,
-                  AutoEnrollmentStateKeysRetrievalError,
-                  AutoEnrollmentDMServerError,
-                  AutoEnrollmentStateAvailabilityResponseError,
-                  AutoEnrollmentPsmError,
-                  AutoEnrollmentStateRetrievalResponseError>;
+    std::variant<AutoEnrollmentSafeguardTimeoutError,
+                 AutoEnrollmentStateKeysRetrievalError,
+                 AutoEnrollmentDMServerError,
+                 AutoEnrollmentStateAvailabilityResponseError,
+                 AutoEnrollmentPsmError,
+                 AutoEnrollmentStateRetrievalResponseError>;
 
 // Indicates the current state of the auto-enrollment check.
 using AutoEnrollmentState =

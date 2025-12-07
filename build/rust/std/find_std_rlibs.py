@@ -51,6 +51,7 @@ def main():
   if args.target:
     rustc_args.extend(["--target", args.target])
   rustlib_dir = subprocess.check_output(rustc_args).rstrip().decode()
+  rustlib_dir = os.path.relpath(rustlib_dir)
 
   # Copy the rlibs to a predictable location. Whilst we're doing so,
   # also write a .d file so that ninja knows it doesn't need to do this

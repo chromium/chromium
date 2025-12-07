@@ -1,7 +1,9 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 module content.mojom.sandbox;
+
 import "mojo/public/mojom/base/file_path.mojom";
 
 // Startup data smuggled by the sandbox to utility_main.cc to set things up
@@ -11,4 +13,11 @@ struct UtilityConfig {
   // `preload_libraries` are absolute paths to libraries to be loaded prior to
   // lockdown - see ServiceProcessHost::Options::WithPreloadedLibraries().
   array<mojo_base.mojom.FilePath> preload_libraries;
+
+  // Contains a HANDLE value that has been inherited to the utility process.
+  // This is signalled during early bootstrap of the process to indicate
+  // successfully reaching UtilityMain.
+  // This cannot be a platform<handle> because this structure is manually
+  // marshalled to the utility process by the sandbox.
+  uint32 bootstrap_event_handle;
 };

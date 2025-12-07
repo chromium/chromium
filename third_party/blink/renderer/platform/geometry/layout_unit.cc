@@ -5,7 +5,8 @@
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 
 #include <ostream>
-#include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
+
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -25,16 +26,16 @@ String FromLayoutUnit(FixedPoint<fractional_bits, Storage> value) {
 template <unsigned fractional_bits, typename Storage>
 String FixedPoint<fractional_bits, Storage>::ToString() const {
   if (value_ == Max().RawValue()) {
-    return "Max(" + FromLayoutUnit(*this) + ")";
+    return StrCat({"Max(", FromLayoutUnit(*this), ")"});
   }
   if (value_ == Min().RawValue()) {
-    return "Min(" + FromLayoutUnit(*this) + ")";
+    return StrCat({"Min(", FromLayoutUnit(*this), ")"});
   }
   if (value_ == NearlyMax().RawValue()) {
-    return "NearlyMax(" + FromLayoutUnit(*this) + ")";
+    return StrCat({"NearlyMax(", FromLayoutUnit(*this), ")"});
   }
   if (value_ == NearlyMin().RawValue()) {
-    return "NearlyMin(" + FromLayoutUnit(*this) + ")";
+    return StrCat({"NearlyMin(", FromLayoutUnit(*this), ")"});
   }
   return FromLayoutUnit(*this);
 }
@@ -45,19 +46,11 @@ std::ostream& operator<<(std::ostream& stream,
   return stream << value.ToString().Utf8();
 }
 
-template <unsigned fractional_bits, typename Storage>
-WTF::TextStream& operator<<(WTF::TextStream& ts,
-                            const FixedPoint<fractional_bits, Storage>& unit) {
-  return ts << WTF::TextStream::FormatNumberRespectingIntegers(unit.ToDouble());
-}
-
 // Explicit instantiations.
-#define INSTANTIATE(fractional_bits, Storage)                      \
-  template class FixedPoint<fractional_bits, Storage>;             \
-  template std::ostream& operator<<(                               \
-      std::ostream&, const FixedPoint<fractional_bits, Storage>&); \
-  template WTF::TextStream& operator<<(                            \
-      WTF::TextStream&, const FixedPoint<fractional_bits, Storage>&)
+#define INSTANTIATE(fractional_bits, Storage)          \
+  template class FixedPoint<fractional_bits, Storage>; \
+  template std::ostream& operator<<(                   \
+      std::ostream&, const FixedPoint<fractional_bits, Storage>&)
 
 INSTANTIATE(6, int32_t);
 INSTANTIATE(16, int32_t);

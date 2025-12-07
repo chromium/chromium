@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -23,6 +24,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/clipboard/clipboard_url_info.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/dragdrop/os_exchange_data_provider_win.h"
 #include "url/gurl.h"
@@ -198,7 +200,7 @@ TEST_F(OSExchangeDataWinTest, StringDataWritingViaCOM) {
   HGLOBAL glob = GlobalAlloc(GPTR, sizeof(wchar_t) * (input.size() + 1));
   base::win::ScopedHGlobal<wchar_t*> global_lock(glob);
   wchar_t* buffer_handle = global_lock.data();
-  wcscpy_s(buffer_handle, input.size() + 1, input.c_str());
+  UNSAFE_TODO(wcscpy_s(buffer_handle, input.size() + 1, input.c_str()));
   medium.hGlobal = glob;
   medium.pUnkForRelease = NULL;
   EXPECT_EQ(S_OK, com_data->SetData(&format_etc, &medium, TRUE));
@@ -207,11 +209,12 @@ TEST_F(OSExchangeDataWinTest, StringDataWritingViaCOM) {
   // APIs.
   OSExchangeData data2(data.provider().Clone());
   EXPECT_TRUE(data2.HasURL(FilenameToURLPolicy::CONVERT_FILENAMES));
-  std::optional<OSExchangeData::UrlInfo> url_info =
-      data2.GetURLAndTitle(FilenameToURLPolicy::CONVERT_FILENAMES);
-  ASSERT_TRUE(url_info.has_value());
+  std::vector<ui::ClipboardUrlInfo> url_infos =
+      data2.GetURLsAndTitles(FilenameToURLPolicy::CONVERT_FILENAMES);
+  ASSERT_FALSE(url_infos.empty());
+  const ui::ClipboardUrlInfo& url_info = url_infos.front();
   GURL reference_url(base::AsStringPiece16(input));
-  EXPECT_EQ(reference_url, url_info->url);
+  EXPECT_EQ(reference_url, url_info.url);
 }
 
 // Verifies SetData invoked twice with the same data clobbers existing data.
@@ -233,7 +236,7 @@ TEST_F(OSExchangeDataWinTest, RemoveData) {
     HGLOBAL glob = GlobalAlloc(GPTR, sizeof(wchar_t) * (input.size() + 1));
     base::win::ScopedHGlobal<wchar_t*> global_lock(glob);
     wchar_t* buffer_handle = global_lock.data();
-    wcscpy_s(buffer_handle, input.size() + 1, input.c_str());
+    UNSAFE_TODO(wcscpy_s(buffer_handle, input.size() + 1, input.c_str()));
     medium.hGlobal = glob;
     medium.pUnkForRelease = NULL;
     EXPECT_EQ(S_OK, com_data->SetData(&format_etc, &medium, TRUE));
@@ -243,7 +246,7 @@ TEST_F(OSExchangeDataWinTest, RemoveData) {
     HGLOBAL glob = GlobalAlloc(GPTR, sizeof(wchar_t) * (input2.size() + 1));
     base::win::ScopedHGlobal<wchar_t*> global_lock(glob);
     wchar_t* buffer_handle = global_lock.data();
-    wcscpy_s(buffer_handle, input2.size() + 1, input2.c_str());
+    UNSAFE_TODO(wcscpy_s(buffer_handle, input2.size() + 1, input2.c_str()));
     medium.hGlobal = glob;
     medium.pUnkForRelease = NULL;
     EXPECT_EQ(S_OK, com_data->SetData(&format_etc, &medium, TRUE));
@@ -254,10 +257,10 @@ TEST_F(OSExchangeDataWinTest, RemoveData) {
   // APIs.
   OSExchangeData data2(data.provider().Clone());
   EXPECT_TRUE(data2.HasURL(FilenameToURLPolicy::CONVERT_FILENAMES));
-  std::optional<OSExchangeData::UrlInfo> url_info =
-      data2.GetURLAndTitle(FilenameToURLPolicy::CONVERT_FILENAMES);
-  ASSERT_TRUE(url_info.has_value());
-  EXPECT_EQ(GURL(base::AsStringPiece16(input2)), url_info->url);
+  std::vector<ui::ClipboardUrlInfo> url_infos =
+      data2.GetURLsAndTitles(FilenameToURLPolicy::CONVERT_FILENAMES);
+  ASSERT_FALSE(url_infos.empty());
+  EXPECT_EQ(GURL(base::AsStringPiece16(input2)), url_infos.front().url);
 }
 
 TEST_F(OSExchangeDataWinTest, URLDataAccessViaCOM) {
@@ -971,10 +974,10 @@ TEST_F(OSExchangeDataWinTest, ProvideURLForPlainTextURL) {
 
   OSExchangeData data2(data.provider().Clone());
   ASSERT_TRUE(data2.HasURL(FilenameToURLPolicy::CONVERT_FILENAMES));
-  std::optional<OSExchangeData::UrlInfo> url_info =
-      data2.GetURLAndTitle(FilenameToURLPolicy::CONVERT_FILENAMES);
-  ASSERT_TRUE(url_info.has_value());
-  EXPECT_EQ(GURL("http://google.com"), url_info->url);
+  std::vector<ui::ClipboardUrlInfo> url_infos =
+      data2.GetURLsAndTitles(FilenameToURLPolicy::CONVERT_FILENAMES);
+  ASSERT_FALSE(url_infos.empty());
+  EXPECT_EQ(GURL("http://google.com"), url_infos.front().url);
 }
 
 class MockDownloadFileProvider : public DownloadFileProvider {

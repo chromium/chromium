@@ -25,20 +25,16 @@ class TestInstaller : public CrxInstaller {
  public:
   TestInstaller();
 
-  void OnUpdateError(int error) override;
-
   void Install(const base::FilePath& unpack_path,
                const std::string& public_key,
                std::unique_ptr<InstallParams> install_params,
                ProgressCallback progress_callback,
                Callback callback) override;
 
-  bool GetInstalledFile(const std::string& file,
-                        base::FilePath* installed_file) override;
+  std::optional<base::FilePath> GetInstalledFile(
+      const std::string& file) override;
 
   bool Uninstall() override;
-
-  int error() const { return error_; }
 
   int install_count() const { return install_count_; }
 
@@ -60,7 +56,6 @@ class TestInstaller : public CrxInstaller {
                        ProgressCallback progress_callback,
                        const Result& result);
 
-  int error_;
   int install_count_;
 
  private:
@@ -85,8 +80,8 @@ class ReadOnlyTestInstaller : public TestInstaller {
  public:
   explicit ReadOnlyTestInstaller(const base::FilePath& installed_path);
 
-  bool GetInstalledFile(const std::string& file,
-                        base::FilePath* installed_file) override;
+  std::optional<base::FilePath> GetInstalledFile(
+      const std::string& file) override;
 
  private:
   ~ReadOnlyTestInstaller() override;
@@ -106,8 +101,8 @@ class VersionedTestInstaller : public TestInstaller {
                ProgressCallback progress_callback,
                Callback callback) override;
 
-  bool GetInstalledFile(const std::string& file,
-                        base::FilePath* installed_file) override;
+  std::optional<base::FilePath> GetInstalledFile(
+      const std::string& file) override;
 
  private:
   ~VersionedTestInstaller() override;

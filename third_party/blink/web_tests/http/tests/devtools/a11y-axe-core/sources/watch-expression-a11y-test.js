@@ -25,7 +25,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
   await TestRunner.addSnifferPromise(Sources.WatchExpressionsSidebarPane.WatchExpression.prototype, 'createWatchExpression');
 
   const watchExpressionElement = watchExpression.treeElement().listItemElement;
-  TestRunner.addResult(`Watch expression text content: ${watchExpressionElement.deepTextContent()}`);
+  TestRunner.addResult(`Watch expression text content: ${watchExpressionElement.deepTextContent().trim()}`);
   TestRunner.addResult('Running the axe-core linter on the watch expression.');
   await AxeCoreTestRunner.runValidation(watchExpressionElement);
   TestRunner.completeTest();

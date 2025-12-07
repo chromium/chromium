@@ -36,15 +36,11 @@ class ContentBrowserClientMixinsImpl : public ContentBrowserClientMixins {
   void AddApplicationStateObserver(ApplicationStateObserver* observer) override;
   void RemoveApplicationStateObserver(
       ApplicationStateObserver* observer) override;
-  void AddStreamingResolutionObserver(
-      StreamingResolutionObserver* observer) override;
-  void RemoveStreamingResolutionObserver(
-      StreamingResolutionObserver* observer) override;
   void OnWebContentsCreated(content::WebContents* web_contents) override;
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
   CreateURLLoaderThrottles(
       const base::RepeatingCallback<content::WebContents*()>& wc_getter,
-      int frame_tree_node_id,
+      content::FrameTreeNodeId frame_tree_node_id,
       CorsExemptHeaderCallback is_cors_exempt_header_cb) override;
   ApplicationClient& GetApplicationClient() override;
 

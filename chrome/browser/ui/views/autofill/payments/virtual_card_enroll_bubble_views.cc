@@ -7,32 +7,50 @@
 #include <memory>
 
 #include "chrome/browser/ui/browser_dialogs.h"
-#include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
+#include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "chrome/grit/browser_resources.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/metrics/payments/virtual_card_enrollment_metrics.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/payments_service_url.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
+#include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
 #include "components/autofill/core/browser/ui/payments/virtual_card_enroll_bubble_controller.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/bubble/tooltip_icon.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/typography.h"
 #include "url/gurl.h"
 
 namespace autofill {
+
+std::unique_ptr<views::Label> GetBadgeView() {
+  return views::Builder<views::Label>()
+      .SetText(
+          l10n_util::GetStringUTF16(IDS_AUTOFILL_VIRTUAL_CARD_ENTRY_PREFIX))
+      .SetTextStyle(views::style::TextStyle::STYLE_BODY_5)
+      .SetBorder(views::CreateRoundedRectBorder(
+          /*thickness=*/0, /*corner_radius=*/100, gfx::Insets::VH(2, 8),
+          ui::kColorSysNeutralContainer))
+      .SetBackground(views::CreateRoundedRectBackground(
+          ui::kColorSysNeutralContainer, 100))
+      .Build();
+}
 
 VirtualCardEnrollBubbleViews::VirtualCardEnrollBubbleViews(
     views::View* anchor_view,
@@ -41,9 +59,9 @@ VirtualCardEnrollBubbleViews::VirtualCardEnrollBubbleViews(
     : AutofillLocationBarBubble(anchor_view, web_contents),
       controller_(controller) {
   DCHECK(controller);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  controller->GetUiModel().accept_action_text());
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  controller->GetUiModel().cancel_action_text());
   SetCancelCallback(base::BindOnce(
       &VirtualCardEnrollBubbleViews::OnDialogDeclined, base::Unretained(this)));
@@ -64,7 +82,7 @@ void VirtualCardEnrollBubbleViews::Hide() {
   CloseBubble();
   if (controller_) {
     controller_->OnBubbleClosed(
-        GetPaymentsBubbleClosedReasonFromWidget(GetWidget()));
+        GetPaymentsUiClosedReasonFromWidget(GetWidget()));
   }
   controller_ = nullptr;
 }
@@ -72,19 +90,17 @@ void VirtualCardEnrollBubbleViews::Hide() {
 bool VirtualCardEnrollBubbleViews::OnDialogAccepted() {
   bool did_switch_to_loading_state = false;
   if (controller_) {
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableVcnEnrollLoadingAndConfirmation)) {
-      SwitchToLoadingState();
-      did_switch_to_loading_state = true;
-    }
+    SwitchToLoadingState();
+    did_switch_to_loading_state = true;
     controller_->OnAcceptButton(did_switch_to_loading_state);
   }
   return !did_switch_to_loading_state;
 }
 
 void VirtualCardEnrollBubbleViews::OnDialogDeclined() {
-  if (controller_)
+  if (controller_) {
     controller_->OnDeclineButton();
+  }
 }
 
 void VirtualCardEnrollBubbleViews::AddedToWidget() {
@@ -95,17 +111,16 @@ void VirtualCardEnrollBubbleViews::AddedToWidget() {
                                          .set_bottom(0));
 
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
-  auto image_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
-      *bundle.GetImageSkiaNamed(IDR_AUTOFILL_VIRTUAL_CARD_ENROLL_DIALOG),
-      *bundle.GetImageSkiaNamed(IDR_AUTOFILL_VIRTUAL_CARD_ENROLL_DIALOG_DARK),
-      base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
-                          base::Unretained(this)));
-
-  header_view->AddChildView(std::move(image_view));
+  auto image =
+      std::make_unique<views::ImageView>(bundle.GetThemedLottieImageNamed(
+          IDR_AUTOFILL_VIRTUAL_CARD_ENROLL_DIALOG_LOTTIE));
+  image->GetViewAccessibility().SetIsInvisible(true);
+  header_view->AddChildView(std::move(image));
 
   GetBubbleFrameView()->SetHeaderView(std::move(header_view));
-  GetBubbleFrameView()->SetTitleView(CreateTitleView(
-      GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
+  GetBubbleFrameView()->SetTitleView(
+      std::make_unique<TitleWithIconAfterLabelView>(
+          GetWindowTitle(), TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
 }
 
 std::u16string VirtualCardEnrollBubbleViews::GetWindowTitle() const {
@@ -116,7 +131,7 @@ std::u16string VirtualCardEnrollBubbleViews::GetWindowTitle() const {
 void VirtualCardEnrollBubbleViews::WindowClosing() {
   if (controller_) {
     controller_->OnBubbleClosed(
-        GetPaymentsBubbleClosedReasonFromWidget(GetWidget()));
+        GetPaymentsUiClosedReasonFromWidget(GetWidget()));
     controller_ = nullptr;
   }
 }
@@ -185,34 +200,59 @@ void VirtualCardEnrollBubbleViews::Init() {
       views::BoxLayout::Orientation::kVertical);
   card_identifier_view->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
-  auto* card_name_4digits_view = card_identifier_view->AddChildView(
-      std::make_unique<views::BoxLayoutView>());
-  card_name_4digits_view->SetOrientation(
-      views::BoxLayout::Orientation::kHorizontal);
-  card_name_4digits_view->SetBetweenChildSpacing(
-      provider->GetDistanceMetric(DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
-  auto* card_name_label =
-      card_name_4digits_view->AddChildView(std::make_unique<views::Label>(
-          card.CardNameForAutofillDisplay(),
-          views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY));
-  card_name_label->SetHorizontalAlignment(
-      gfx::HorizontalAlignment::ALIGN_TO_HEAD);
-  card_name_4digits_view->SetFlexForView(card_name_label, /*flex=*/1);
-  card_name_4digits_view->AddChildView(std::make_unique<views::Label>(
-      card.ObfuscatedNumberWithVisibleLastFourDigits(),
-      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY));
-  card_identifier_view->AddChildView(std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_VIRTUAL_CARD_ENTRY_PREFIX),
-      ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
-      views::style::STYLE_SECONDARY));
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableNewFopDisplayDesktop)) {
+    std::optional<std::u16string> card_identifier =
+        card.CardIdentifierForAutofillDisplay();
+    // Add the card identifier/nickname as the primary label, if it exists.
+    if (card_identifier.has_value()) {
+      card_identifier_view->AddChildView(std::make_unique<views::Label>(
+          *card_identifier, views::style::CONTEXT_DIALOG_BODY_TEXT,
+          views::style::STYLE_PRIMARY));
+    }
+    views::style::TextStyle stype = card_identifier.has_value()
+                                        ? views::style::STYLE_SECONDARY
+                                        : views::style::STYLE_PRIMARY;
+    // Add the network and last 4 digits: on a second line if a card identifier
+    // exists, or as the primary label (and on the first line) otherwise.
+    auto* network_and_4digits_view = card_identifier_view->AddChildView(
+        std::make_unique<views::BoxLayoutView>());
+    network_and_4digits_view->SetOrientation(
+        views::BoxLayout::Orientation::kHorizontal);
+    network_and_4digits_view->SetBetweenChildSpacing(
+        provider->GetDistanceMetric(DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
+    network_and_4digits_view->AddChildView(std::make_unique<views::Label>(
+        card.NetworkAndLastFourDigits(
+            /*obfuscation_length=*/2),
+        views::style::CONTEXT_DIALOG_BODY_TEXT, stype));
+    network_and_4digits_view->AddChildView(GetBadgeView());
+  } else {
+    auto* card_name_4digits_view = card_identifier_view->AddChildView(
+        std::make_unique<views::BoxLayoutView>());
+    card_name_4digits_view->SetOrientation(
+        views::BoxLayout::Orientation::kHorizontal);
+    card_name_4digits_view->SetBetweenChildSpacing(
+        provider->GetDistanceMetric(DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
+    auto* card_name_label = card_name_4digits_view->AddChildView(
+        std::make_unique<views::Label>(card.CardNameForAutofillDisplay(),
+                                       views::style::CONTEXT_DIALOG_BODY_TEXT,
+                                       views::style::STYLE_PRIMARY));
+    card_name_label->SetHorizontalAlignment(
+        gfx::HorizontalAlignment::ALIGN_TO_HEAD);
+    card_name_4digits_view->SetFlexForView(card_name_label, /*flex=*/1);
+    card_name_4digits_view->AddChildView(std::make_unique<views::Label>(
+        card.ObfuscatedNumberWithVisibleLastFourDigits(),
+        views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY));
+    card_identifier_view->AddChildView(std::make_unique<views::Label>(
+        l10n_util::GetStringUTF16(IDS_AUTOFILL_VIRTUAL_CARD_ENTRY_PREFIX),
+        ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
+        views::style::STYLE_SECONDARY));
+  }
 
   AddChildView(CreateLegalMessageView())
       ->SetID(DialogViewId::LEGAL_MESSAGE_VIEW);
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableVcnEnrollLoadingAndConfirmation)) {
-    loading_progress_row_ = AddChildView(CreateLoadingProgressRow());
-  }
+  loading_progress_row_ = AddChildView(CreateLoadingProgressRow());
 }
 
 std::unique_ptr<views::View>
@@ -225,20 +265,20 @@ VirtualCardEnrollBubbleViews::CreateLegalMessageView() {
 
   const LegalMessageLines google_legal_message =
       controller_->GetUiModel().enrollment_fields().google_legal_message;
-  const LegalMessageLines issuser_legal_message =
+  const LegalMessageLines issuer_legal_message =
       controller_->GetUiModel().enrollment_fields().issuer_legal_message;
 
   DCHECK(!google_legal_message.empty());
-  legal_message_view->AddChildView(std::make_unique<LegalMessageView>(
+  legal_message_view->AddChildView(::autofill::CreateLegalMessageView(
       google_legal_message, /*user_email=*/std::u16string(),
       /*user_avatar=*/ui::ImageModel(),
       base::BindRepeating(
           &VirtualCardEnrollBubbleViews::GoogleLegalMessageClicked,
           base::Unretained(this))));
 
-  if (!issuser_legal_message.empty()) {
-    legal_message_view->AddChildView(std::make_unique<LegalMessageView>(
-        issuser_legal_message, /*user_email=*/std::u16string(),
+  if (!issuer_legal_message.empty()) {
+    legal_message_view->AddChildView(::autofill::CreateLegalMessageView(
+        issuer_legal_message, /*user_email=*/std::u16string(),
         /*user_avatar=*/ui::ImageModel(),
         base::BindRepeating(
             &VirtualCardEnrollBubbleViews::IssuerLegalMessageClicked,
@@ -274,7 +314,7 @@ void VirtualCardEnrollBubbleViews::SwitchToLoadingState() {
   if (loading_progress_row_ == nullptr) {
     return;
   }
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
   loading_throbber_->Start();
   loading_progress_row_->SetVisible(true);

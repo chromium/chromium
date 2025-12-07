@@ -77,7 +77,7 @@ void SetCwdForBrowserProcess() {
     return;
 
   base::SetCurrentDirectory(
-      base::FilePath(base::FilePath::StringPieceType(&buffer[0], length))
+      base::FilePath(base::FilePath::StringViewType(&buffer[0], length))
           .DirName());
 }
 
@@ -106,10 +106,10 @@ bool AttemptFastNotify(const base::CommandLine& command_line) {
     return false;
   policy::path_parser::CheckUserDataDirPolicy(&user_data_dir);
 
-  HWND chrome = chrome::FindRunningChromeWindow(user_data_dir);
+  HWND chrome = FindRunningChromeWindow(user_data_dir);
   if (!chrome)
     return false;
-  return chrome::AttemptToNotifyRunningChrome(chrome) == chrome::NOTIFY_SUCCESS;
+  return AttemptToNotifyRunningChrome(chrome) == NotifyChromeResult::kSuccess;
 }
 
 // Returns true if the child process |command_line| contains a /prefetch:#
@@ -246,7 +246,7 @@ int main() {
   install_static::InitializeFromPrimaryModule();
   SignalInitializeCrashReporting();
   if (IsBrowserProcess())
-    chrome::DisableDelayLoadFailureHooksForMainExecutable();
+    DisableDelayLoadFailureHooksForMainExecutable();
 #if defined(ARCH_CPU_32_BITS)
   // Intentionally crash if converting to a fiber failed.
   CHECK_EQ(fiber_status, FiberStatus::kSuccess);
@@ -354,8 +354,7 @@ int main() {
 
   // Process shutdown is hard and some process types have been crashing during
   // shutdown. TerminateCurrentProcessImmediately is safer and faster.
-  if (process_type == switches::kUtilityProcess ||
-      process_type == switches::kPpapiPluginProcess) {
+  if (process_type == switches::kUtilityProcess) {
     base::Process::TerminateCurrentProcessImmediately(rc);
   }
   return rc;

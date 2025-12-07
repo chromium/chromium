@@ -1,0 +1,58 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+#errorScrim {
+  align-items: center;
+  background-color: var(--color-composebox-error-scrim-background);
+  border-radius: inherit;
+  color: var(--color-composebox-error-scrim-foreground);
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  font-weight: 500;
+  gap: 18px;
+  justify-content: center;
+  height: 100%;
+  position: absolute;
+  width: 100%;
+  z-index: 101;
+}
+
+:host([compact-mode]) #errorScrim {
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+#errorScrim > p {
+  margin: 0;
+}
+
+:host([compact-mode]) #errorScrim > p {
+  margin: 24px;
+}
+
+#dismissErrorButton {
+  --cr-button-background-color:
+      var(--color-composebox-error-scrim-button-background);
+  --cr-button-border-color:
+      var(--color-composebox-error-scrim-foreground);
+  --cr-button-text-color:
+      var(--color-composebox-error-scrim-button-text);
+  --cr-icon-button-hover-background-color:
+      var(--color-composebox-error-scrim-button-background-hover);
+  border: none;
+  font-size: 13px;
+  gap: 4px;
+  height: 36px;
+  width: 79px;
+}
+
+:host([compact-mode]) #dismissErrorButton {
+  margin-right: 10px;
+}

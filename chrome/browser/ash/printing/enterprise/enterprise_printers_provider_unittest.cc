@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/printing/enterprise/enterprise_printers_provider.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -11,7 +12,6 @@
 
 #include "base/containers/to_vector.h"
 #include "base/memory/weak_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"

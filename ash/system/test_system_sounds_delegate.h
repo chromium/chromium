@@ -6,9 +6,10 @@
 #define ASH_SYSTEM_TEST_SYSTEM_SOUNDS_DELEGATE_H_
 
 #include <vector>
+
 #include "ash/ash_export.h"
-#include "ash/public/cpp/system_sounds_delegate.h"
 #include "chromeos/ash/components/audio/sounds.h"
+#include "chromeos/ash/components/audio/system_sounds_delegate.h"
 
 namespace ash {
 

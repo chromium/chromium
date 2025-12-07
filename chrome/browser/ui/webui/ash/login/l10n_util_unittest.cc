@@ -6,15 +6,21 @@
 
 #include <stddef.h>
 
+#include <set>
+#include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/compiler_specific.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/input_method/input_method_configuration.h"
+#include "chrome/browser/ui/webui/ash/login/fjord_oobe_util.h"
 #include "chrome/browser/ui/webui/ash/login/l10n_util_test_util.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/component_extension_ime_manager.h"
@@ -97,7 +103,9 @@ TEST_F(L10nUtilTest, GetUILanguageList) {
   SetInputMethods1();
 
   // This requires initialized StatisticsProvider (see L10nUtilTest()).
-  auto list(GetUILanguageList(nullptr, std::string(), &input_manager_));
+  auto list(GetUILanguageList(
+      TestingBrowserProcess::GetGlobal()->GetApplicationLocale(), nullptr,
+      std::string(), &input_manager_));
 
   VerifyOnlyUILanguages(list);
 }
@@ -110,23 +118,19 @@ TEST_F(L10nUtilTest, FindMostRelevantLocale) {
 
   std::vector<std::string> most_relevant_language_codes;
   EXPECT_EQ("en-US", FindMostRelevantLocale(most_relevant_language_codes,
-                                            available_locales,
-                                            "en-US"));
+                                            available_locales, "en-US"));
 
   most_relevant_language_codes.push_back("xx");
   EXPECT_EQ("en-US", FindMostRelevantLocale(most_relevant_language_codes,
-                                            available_locales,
-                                            "en-US"));
+                                            available_locales, "en-US"));
 
   most_relevant_language_codes.push_back("fr");
   EXPECT_EQ("fr", FindMostRelevantLocale(most_relevant_language_codes,
-                                         available_locales,
-                                         "en-US"));
+                                         available_locales, "en-US"));
 
   most_relevant_language_codes.push_back("de");
   EXPECT_EQ("fr", FindMostRelevantLocale(most_relevant_language_codes,
-                                         available_locales,
-                                         "en-US"));
+                                         available_locales, "en-US"));
 }
 
 void InitStartupCustomizationDocumentForTesting(const std::string& manifest) {
@@ -155,7 +159,9 @@ TEST_F(L10nUtilTest, GetUILanguageListMulti) {
   SetInputMethods2();
 
   // This requires initialized StatisticsProvider (see L10nUtilTest()).
-  auto list(GetUILanguageList(nullptr, std::string(), &input_manager_));
+  auto list(GetUILanguageList(
+      TestingBrowserProcess::GetGlobal()->GetApplicationLocale(), nullptr,
+      std::string(), &input_manager_));
 
   VerifyOnlyUILanguages(list);
 
@@ -176,8 +182,9 @@ TEST_F(L10nUtilTest, GetUILanguageListWithMostRelevant) {
   most_relevant_language_codes.push_back("nonexistent");
 
   // This requires initialized StatisticsProvider (see L10nUtilTest()).
-  auto list(GetUILanguageList(&most_relevant_language_codes, std::string(),
-                              &input_manager_));
+  auto list(GetUILanguageList(
+      TestingBrowserProcess::GetGlobal()->GetApplicationLocale(),
+      &most_relevant_language_codes, std::string(), &input_manager_));
 
   VerifyOnlyUILanguages(list);
 
@@ -186,6 +193,40 @@ TEST_F(L10nUtilTest, GetUILanguageListWithMostRelevant) {
   VerifyLanguageCode(list, 0, "it");
   VerifyLanguageCode(list, 1, "de");
   VerifyLanguageCode(list, 2, kMostRelevantLanguagesDivider);
+}
+
+class L10nUtilTestWithFjordOobe : public L10nUtilTest {
+ public:
+  void SetUp() override {
+    L10nUtilTest::SetUp();
+    scoped_feature_list_.InitAndEnableFeature(features::kFjordOobeForceEnabled);
+  }
+
+  void VerifyAllowlistedLanguages(const base::Value::List& list) {
+    const std::set<std::string> allowlisted_languages =
+        fjord_util::GetAllowlistedLanguagesForTesting();
+    ASSERT_EQ(allowlisted_languages.size(), list.size());
+
+    for (const base::Value& language : list) {
+      const base::Value::Dict& value = language.GetDict();
+      const std::string* language_code = value.FindString("code");
+      ASSERT_TRUE(allowlisted_languages.contains(*language_code));
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(L10nUtilTestWithFjordOobe, TestLanguagesFiltered) {
+  SetInputMethods1();
+
+  // This requires initialized StatisticsProvider (see L10nUtilTest()).
+  auto list(GetUILanguageList(
+      TestingBrowserProcess::GetGlobal()->GetApplicationLocale(), nullptr,
+      std::string(), &input_manager_));
+
+  VerifyAllowlistedLanguages(list);
 }
 
 }  // namespace ash

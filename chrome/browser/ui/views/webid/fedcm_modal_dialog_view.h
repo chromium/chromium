@@ -5,10 +5,17 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEBID_FEDCM_MODAL_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_WEBID_FEDCM_MODAL_DIALOG_VIEW_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/webid/identity_dialog_controller.h"
+#include "chrome/browser/ui/webid/identity_ui_utils.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/webid/identity_request_dialog_controller.h"
+
+namespace webid {
 
 // A dialog allowing the user to complete a flow (e.g. signing in to an identity
 // provider) prompted by FedCM.
@@ -23,26 +30,45 @@ class FedCmModalDialogView : public content::WebContentsObserver {
 
   // This enum describes the outcome of attempting to open the pop-up window and
   // is used for histograms. Do not remove or modify existing values, but you
-  // may add new values at the end. This enum should be kept in sync with
-  // FedCmShowPopupWindowResult in tools/metrics/histograms/enums.xml.
-  enum class ShowPopupWindowResult {
-    kSuccess,
-    kFailedByInvalidUrl,
-    kFailedForOtherReasons,
+  // may add new values at the end.
+  // LINT.IfChange(ShowPopupWindowResult)
 
+  enum class ShowPopupWindowResult {
+    kSuccess = 0,
+    kFailedByInvalidUrl = 1,
+    kFailedForOtherReasons = 2,
     kMaxValue = kFailedForOtherReasons
   };
 
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmShowPopupWindowResult)
+
   // This enum describes the reason for closing the pop-up window and is used
   // for histograms. Do not remove or modify existing values, but you may add
-  // new values at the end. This enum should be kept in sync with
-  // FedCmClosePopupWindowReason in tools/metrics/histograms/enums.xml.
-  enum class ClosePopupWindowReason {
-    kIdpInitiatedClose,
-    kPopupWindowDestroyed,
+  // new values at the end.
+  // LINT.IfChange(ClosePopupWindowReason)
 
+  enum class ClosePopupWindowReason {
+    kIdpInitiatedClose = 0,
+    kPopupWindowDestroyed = 1,
     kMaxValue = kPopupWindowDestroyed
   };
+
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmClosePopupWindowReason)
+
+  // This enum describes the reason for closing the pop-up window and is used
+  // for histograms. Do not remove or modify existing values, but you may add
+  // new values at the end.
+  // LINT.IfChange(PopupInteraction)
+
+  enum class PopupInteraction {
+    kLosesFocusAndIdpInitiatedClose = 0,
+    kLosesFocusAndPopupWindowDestroyed = 1,
+    kNeverLosesFocusAndIdpInitiatedClose = 2,
+    kNeverLosesFocusAndPopupWindowDestroyed = 3,
+    kMaxValue = kNeverLosesFocusAndPopupWindowDestroyed
+  };
+
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmPopupInteraction)
 
   explicit FedCmModalDialogView(content::WebContents* web_contents,
                                 FedCmModalDialogView::Observer* observer);
@@ -53,12 +79,27 @@ class FedCmModalDialogView : public content::WebContentsObserver {
   // Shows a modal dialog of |url|. The |url| is commonly but not limited to a
   // URL which allows the user to sign in with an identity provider. Virtual for
   // testing purposes.
-  virtual content::WebContents* ShowPopupWindow(const GURL& url);
+  // This class is used in two different ways in the FedCM UI (reflected by
+  // different URLs). At the moment, the only relevant difference between these
+  // two different use cases is whether the user closing the popup cancels out
+  // of the fedcm flow. This is reflected by the `user_close_cancels_flow`
+  // property.
+  virtual content::WebContents* ShowPopupWindow(const GURL& url,
+                                                bool user_close_cancels_flow);
   virtual void ClosePopupWindow();
   virtual void ResizeAndFocusPopupWindow();
+  virtual void SetCustomYPosition(int y);
+  virtual void SetActiveModeSheetType(webid::SheetType sheet_type);
+  virtual bool UserCloseCancelsFlow();
 
   // content::WebContentsObserver
   void WebContentsDestroyed() override;
+  void OnWebContentsLostFocus(
+      content::RenderWidgetHost* render_widget_host) override;
+
+  // This method prevents re-entrancy into the observer. This is used right
+  // before the observer destroys this instance.
+  void ResetObserver();
 
  protected:
   Observer* GetObserverForTesting();
@@ -68,7 +109,34 @@ class FedCmModalDialogView : public content::WebContentsObserver {
   raw_ptr<content::WebContents> popup_window_{nullptr};
   raw_ptr<Observer> observer_{nullptr};
 
+  // If set, this will be the y-coordinate position of the pop-up window.
+  // Otherwise, the pop-up window is centred vertically and horizontally. Used
+  // to position the pop-up window directly over the active mode modal dialog.
+  std::optional<int> custom_y_position_;
+
+  // Whether one of Blink.FedCm.Button.LoadingStatePopupInteraction or
+  // Blink.FedCm.Button.UseOtherAccountPopupInteraction has been recorded. This
+  // bool prevents double counting because user closing the pop-up causes both
+  // `ClosePopupWindow` and `WebContentsDestroyed` to be called.
+  bool popup_interaction_metric_recorded_{false};
+
+  // The sheet type of the active mode dialog which opened this pop-up.
+  // `std::nullopt` for non-active mode cases.
+  std::optional<webid::SheetType> active_mode_sheet_type_;
+
+  // Number of times the user lost focus of the pop-up. i.e. number of times
+  // `OnWebContentsLostFocus` is called. This is an int because when the user
+  // closes the pop-up, the web contents loses focus before it gets destroyed so
+  // there is one lost focus event that is not from the user losing focus while
+  // the pop-up is open.
+  int num_lost_focus_{0};
+
+  // Whether the user closing the popup should cancel the entire fedcm flow.
+  bool user_close_cancels_flow_ = false;
+
   base::WeakPtrFactory<FedCmModalDialogView> weak_ptr_factory_{this};
 };
+
+}  // namespace webid
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBID_FEDCM_MODAL_DIALOG_VIEW_H_

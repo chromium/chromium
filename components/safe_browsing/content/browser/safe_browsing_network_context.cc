@@ -7,9 +7,9 @@
 #include <memory>
 #include <utility>
 
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/trace_event/trace_event.h"
+#include "components/safe_browsing/core/browser/utils/url_loader_factory_params.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_context_client_base.h"
@@ -92,21 +92,16 @@ class SafeBrowsingNetworkContext::SharedURLLoaderFactory
 
   // network::SharedURLLoaderFactory implementation:
   std::unique_ptr<network::PendingSharedURLLoaderFactory> Clone() override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   network::mojom::URLLoaderFactory* GetURLLoaderFactory() {
     DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
     if (!url_loader_factory_ || !url_loader_factory_.is_connected()) {
       url_loader_factory_.reset();
-      network::mojom::URLLoaderFactoryParamsPtr params =
-          network::mojom::URLLoaderFactoryParams::New();
-      params->process_id = network::mojom::kBrowserProcessId;
-      params->is_orb_enabled = false;
-      params->is_trusted = true;
       GetNetworkContext()->CreateURLLoaderFactory(
-          url_loader_factory_.BindNewPipeAndPassReceiver(), std::move(params));
+          url_loader_factory_.BindNewPipeAndPassReceiver(),
+          GetUrlLoaderFactoryParams());
     }
     return url_loader_factory_.get();
   }

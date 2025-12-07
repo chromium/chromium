@@ -8,7 +8,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 
 // ScopedBlockPopupsPref modifies the block popups preference for the original
-// browser state and resets the preference to its original value when this
+// profile and resets the preference to its original value when this
 // object goes out of scope.
 class ScopedBlockPopupsPref {
  public:

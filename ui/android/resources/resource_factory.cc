@@ -8,15 +8,15 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/android/ui_android_jni_headers/ResourceFactory_jni.h"
 
-using jni_zero::JavaParamRef;
+using jni_zero::JavaRef;
 
 namespace ui {
 
-jlong JNI_ResourceFactory_CreateBitmapResource(JNIEnv* env) {
+static jlong JNI_ResourceFactory_CreateBitmapResource(JNIEnv* env) {
   return reinterpret_cast<intptr_t>(new Resource());
 }
 
-jlong JNI_ResourceFactory_CreateNinePatchBitmapResource(
+static jlong JNI_ResourceFactory_CreateNinePatchBitmapResource(
     JNIEnv* env,
     jint padding_left,
     jint padding_top,
@@ -35,3 +35,5 @@ jlong JNI_ResourceFactory_CreateNinePatchBitmapResource(
 }
 
 }  // namespace ui
+
+DEFINE_JNI(ResourceFactory)

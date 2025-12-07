@@ -6,25 +6,25 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "base/profiler/process_type.h"
 #include "base/threading/platform_thread.h"
 #include "chrome/common/profiler/process_type.h"
-#include "chrome/common/profiler/thread_profiler.h"
 #include "components/metrics/call_stacks/call_stack_profile_builder.h"
 #include "components/metrics/call_stacks/call_stack_profile_metrics_provider.h"
+#include "components/sampling_profiler/process_type.h"
+#include "components/sampling_profiler/thread_profiler.h"
 #include "content/public/common/content_switches.h"
 
 namespace {
 
 // Returns the profiler appropriate for the current process.
-std::unique_ptr<ThreadProfiler> CreateThreadProfiler(
-    const base::ProfilerProcessType process) {
+std::unique_ptr<sampling_profiler::ThreadProfiler> CreateThreadProfiler(
+    const sampling_profiler::ProfilerProcessType process) {
   // TODO(wittman): Do this for other process types too.
-  if (process == base::ProfilerProcessType::kBrowser) {
+  if (process == sampling_profiler::ProfilerProcessType::kBrowser) {
     metrics::CallStackProfileBuilder::SetBrowserProcessReceiverCallback(
         base::BindRepeating(
             &metrics::CallStackProfileMetricsProvider::ReceiveProfile));
-    return ThreadProfiler::CreateAndStartOnMainThread();
+    return sampling_profiler::ThreadProfiler::CreateAndStartOnMainThread();
   }
 
   // No other processes are currently supported.
@@ -34,7 +34,7 @@ std::unique_ptr<ThreadProfiler> CreateThreadProfiler(
 }  // namespace
 
 MainThreadStackSamplingProfiler::MainThreadStackSamplingProfiler() {
-  const base::ProfilerProcessType process =
+  const sampling_profiler::ProfilerProcessType process =
       GetProfilerProcessType(*base::CommandLine::ForCurrentProcess());
   sampling_profiler_ = CreateThreadProfiler(process);
 }

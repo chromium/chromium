@@ -44,7 +44,7 @@
 #    }
 #
 #    The verification logic is built as part of clang; full documentation is at
-#    https://clang.llvm.org/doxygen/classclang_1_1VerifyDiagnosticConsumer.html.
+#    https://clang.llvm.org/docs/InternalsManual.html#specifying-diagnostics.
 #
 # Also see:
 #   http://dev.chromium.org/developers/testing/no-compile-tests
@@ -55,7 +55,7 @@ if (is_win) {
 }
 
 declare_args() {
-  enable_nocompile_tests = is_clang && !is_nacl
+  enable_nocompile_tests = is_clang
 }
 
 if (enable_nocompile_tests) {
@@ -76,9 +76,11 @@ if (enable_nocompile_tests) {
         configs += invoker.configs
       }
 
-      # Disable the checks that the Chrome style plugin normally enforces to
-      # reduce the amount of boilerplate needed in nocompile tests.
-      configs -= [ "//build/config/clang:find_bad_constructs" ]
+      configs -= [
+        # Disable the checks that the Chrome style plugin normally enforces to
+        # reduce the amount of boilerplate needed in nocompile tests.
+        "//build/config/clang:find_bad_constructs",
+      ]
 
       if (is_win) {
         result_path =
@@ -178,7 +180,10 @@ if (enable_nocompile_tests) {
           error("Unsupported target_cpu, add it to win_toolchain_data.gni")
         }
         args += win_toolchain_data.include_flags_imsvc_list
-        args += [ "/showIncludes:user" ]
+        args += [
+          "/showIncludes:user",
+          "/TP",
+        ]
       }
 
       # Note: for all platforms, the depfile only lists user includes, and not

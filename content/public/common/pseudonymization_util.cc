@@ -4,12 +4,11 @@
 
 #include "content/public/common/pseudonymization_util.h"
 
-#include <string.h>
-
 #include <string_view>
 
-#include "base/hash/sha1.h"
+#include "base/numerics/byte_conversions.h"
 #include "content/common/pseudonymization_salt.h"
+#include "crypto/hash.h"
 
 namespace content {
 
@@ -21,35 +20,24 @@ uint32_t PseudonymizationUtil::PseudonymizeStringForTesting(
 
 // static
 uint32_t PseudonymizationUtil::PseudonymizeString(std::string_view string) {
-  // Include `string` in the SHA1 hash.
-  base::SHA1Context sha1_context;
-  base::SHA1Init(sha1_context);
-  base::SHA1Update(string, sha1_context);
+  crypto::hash::Hasher hash(crypto::hash::kSha256);
+  hash.Update(string);
 
   // When `string` comes from a small set of possible strings (or when it is
   // possible to compare a hash with results of hashing the 100 most common
   // input strings), then its hash can be deanonymized.  To protect against this
-  // threat, we include a random `salt` in the SHA1 hash (the salt is never
+  // threat, we include a random `salt` in the SHA-256 hash (the salt is never
   // retained or sent anywhere).
   uint32_t salt = GetPseudonymizationSalt();
-  base::SHA1Update(
-      std::string_view(reinterpret_cast<const char*>(&salt), sizeof(salt)),
-      sha1_context);
+  hash.Update(base::byte_span_from_ref(salt));
 
-  // Compute the SHA1 hash.
-  base::SHA1Digest sha1_hash_bytes;
-  base::SHA1Final(sha1_context, sha1_hash_bytes);
+  std::array<uint8_t, crypto::hash::kSha256Size> result;
+  hash.Finish(result);
 
-  // Taking just the first 4 bytes is okay, because SHA1 should uniformly
-  // distribute all possible results over all of the `sha1_hash_bytes`.
-  uint32_t hash;
-  static_assert(
-      sizeof(hash) <
-          sizeof(base::SHA1Digest::value_type) * sha1_hash_bytes.size(),
-      "Is `memcpy` safely within the bounds of `hash` and `sha1_hash_bytes`?");
-  memcpy(&hash, sha1_hash_bytes.data(), sizeof(hash));
-
-  return hash;
+  // Taking just the first 4 bytes is okay, because the entropy of the input
+  // string is uniformly distributed across the entire hash.
+  return base::U32FromNativeEndian(
+      base::span(result).first<sizeof(uint32_t)>());
 }
 
 }  // namespace content

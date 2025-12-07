@@ -4,7 +4,6 @@
 #include "third_party/blink/renderer/modules/peerconnection/mock_rtc_peer_connection_handler_client.h"
 
 #include "base/check_op.h"
-#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_receiver_platform.h"
 
 using testing::_;
@@ -34,7 +33,7 @@ void MockRTCPeerConnectionHandlerClient::didModifyReceiversWorker(
   // This fake implication is very limited. It is only used as a sanity check
   // if a stream was added or removed.
   if (!receivers_added->empty()) {
-    WebVector<String> stream_ids = (*receivers_added)[0]->StreamIds();
+    Vector<String> stream_ids = (*receivers_added)[0]->StreamIds();
     DCHECK_EQ(1u, stream_ids.size());
     remote_stream_id_ = stream_ids[0];
   } else if (receivers_removed->empty()) {

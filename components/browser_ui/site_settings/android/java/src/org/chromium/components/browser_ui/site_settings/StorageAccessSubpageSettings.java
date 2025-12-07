@@ -4,11 +4,19 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.os.Bundle;
 
 import androidx.preference.PreferenceScreen;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -19,8 +27,10 @@ import java.util.List;
  * Shows a list of Storage Access permissions grouped by their origin and of the same type, that is,
  * if they are allowed or blocked. This fragment is opened on top of {@link SingleCategorySettings}.
  */
+@NullMarked
 public class StorageAccessSubpageSettings extends BaseSiteSettingsFragment
-        implements CustomDividerFragment,
+        implements EmbeddableSettingsPage,
+                CustomDividerFragment,
                 StorageAccessWebsitePreference.OnStorageAccessWebsiteReset {
     public static final String SUBTITLE_KEY = "subtitle";
 
@@ -30,24 +40,25 @@ public class StorageAccessSubpageSettings extends BaseSiteSettingsFragment
     private Website mSite;
     private Boolean mIsAllowed;
     private TextMessagePreference mSubtitle;
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
     public boolean hasDivider() {
         return false;
     }
 
+    @Initializer
     @Override
-    public void onCreatePreferences(Bundle bundle, String s) {
+    public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         resetList();
 
         Object extraSite = getArguments().getSerializable(EXTRA_STORAGE_ACCESS_STATE);
         assert extraSite != null;
         mSite = (Website) extraSite;
-        getActivity().setTitle(mSite.getTitleForPreferenceRow());
+        mPageTitle.set(mSite.getTitleForPreferenceRow());
 
         mIsAllowed = getArguments().getBoolean(StorageAccessSubpageSettings.EXTRA_ALLOWED);
         mSubtitle = (TextMessagePreference) findPreference(SUBTITLE_KEY);
-
         mSubtitle.setTitle(
                 getContext()
                         .getString(
@@ -57,6 +68,11 @@ public class StorageAccessSubpageSettings extends BaseSiteSettingsFragment
                                 mSite.getTitleForPreferenceRow()));
 
         updateEmbeddedSites();
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     private void resetList() {
@@ -72,8 +88,9 @@ public class StorageAccessSubpageSettings extends BaseSiteSettingsFragment
 
         List<ContentSettingException> exceptions =
                 mSite.getEmbeddedContentSettings(ContentSettingsType.STORAGE_ACCESS);
-        for (ContentSettingException exception : exceptions) {
+        for (ContentSettingException exception : assumeNonNull(exceptions)) {
             WebsiteAddress permissionOrigin = WebsiteAddress.create(exception.getPrimaryPattern());
+            assumeNonNull(permissionOrigin);
             WebsiteAddress permissionEmbedder =
                     WebsiteAddress.create(exception.getSecondaryPattern());
             Website site = new Website(permissionOrigin, permissionEmbedder);
@@ -91,17 +108,25 @@ public class StorageAccessSubpageSettings extends BaseSiteSettingsFragment
 
         List<ContentSettingException> exceptions =
                 mSite.getEmbeddedContentSettings(ContentSettingsType.STORAGE_ACCESS);
+        assumeNonNull(exceptions);
         ContentSettingException exception =
-                preference
-                        .site()
-                        .getEmbeddedContentSettings(ContentSettingsType.STORAGE_ACCESS)
+                assumeNonNull(
+                                preference
+                                        .site()
+                                        .getEmbeddedContentSettings(
+                                                ContentSettingsType.STORAGE_ACCESS))
                         .get(0);
         exceptions.remove(exception);
 
         if (exceptions.isEmpty()) {
             // Return to parent fragment if there are no embedded exceptions.
-            getActivity().finish();
+            assumeNonNull(getSettingsNavigation()).finishCurrentSettings(this);
             return;
         }
+    }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
     }
 }

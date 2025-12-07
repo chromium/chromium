@@ -82,7 +82,7 @@ public class DialogOverlayCoreTest {
 
     /** The default fake surface holder doesn't let us provide a surface. */
     public static class MyFakeSurfaceHolder extends ShadowSurfaceView.FakeSurfaceHolder {
-        private Surface mSurface;
+        private final Surface mSurface;
 
         // @param surface The Surface that we'll provide via getSurface.
         public MyFakeSurfaceHolder(Surface surface) {
@@ -141,7 +141,7 @@ public class DialogOverlayCoreTest {
     }
 
     /** Host impl that counts calls to it. */
-    class HostMock implements DialogOverlayCore.Host {
+    static class HostMock implements DialogOverlayCore.Host {
         private Surface mSurface;
         private int mDestroyedCount;
 
@@ -304,7 +304,7 @@ public class DialogOverlayCoreTest {
         mAsPanel = true;
         createOverlay();
         mCore.onWindowToken(mWindowToken);
-        assertEquals(layoutParams().type, WindowManager.LayoutParams.TYPE_APPLICATION_PANEL);
+        assertEquals(WindowManager.LayoutParams.TYPE_APPLICATION_PANEL, layoutParams().type);
     }
 
     @Test

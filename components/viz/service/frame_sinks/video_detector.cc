@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/service/frame_sinks/video_detector.h"
 
+#include <array>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -43,7 +39,7 @@ class VideoDetector::ClientInfo {
   // Called when a Surface belonging to this client is drawn. Returns true if we
   // determine that video is playing in this client.
   bool ReportDrawnAndCheckForVideo(Surface* surface, base::TimeTicks now) {
-    uint64_t frame_index = surface->GetActiveFrameIndex();
+    uint32_t frame_index = surface->GetActiveFrameIndex();
 
     // If |frame_index| hasn't increased, then no new frame was submitted since
     // the last draw.
@@ -103,7 +99,7 @@ class VideoDetector::ClientInfo {
  private:
   // Circular buffer containing update times of the last (up to
   // |kMinFramesPerSecond|) video-sized updates to this client.
-  base::TimeTicks update_times_[kMinFramesPerSecond];
+  std::array<base::TimeTicks, kMinFramesPerSecond> update_times_;
 
   // Time at which the current sequence of updates that looks like video
   // started. Empty if video isn't currently playing.
@@ -118,7 +114,7 @@ class VideoDetector::ClientInfo {
   // Frame index of the last drawn Surface. We use this number to determine
   // whether a new frame was submitted since the last time the Surface was
   // drawn.
-  uint64_t last_drawn_frame_index_ = 0;
+  uint32_t last_drawn_frame_index_ = 0;
 };
 
 VideoDetector::VideoDetector(

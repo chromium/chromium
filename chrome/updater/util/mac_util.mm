@@ -5,8 +5,12 @@
 #import "chrome/updater/util/mac_util.h"
 
 #import <CoreFoundation/CoreFoundation.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include <optional>
+#include <string>
+#include <vector>
 
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
@@ -35,9 +39,6 @@
 namespace updater {
 namespace {
 
-constexpr base::FilePath::CharType kZipExePath[] =
-    FILE_PATH_LITERAL("/usr/bin/unzip");
-
 constexpr base::FilePath::CharType kGkToolPath[] =
     FILE_PATH_LITERAL("/usr/bin/gktool");
 
@@ -46,24 +47,6 @@ base::FilePath ExecutableFolderPath() {
              base::StrCat({PRODUCT_FULLNAME_STRING, kExecutableSuffix, ".app"}))
       .Append(FILE_PATH_LITERAL("Contents"))
       .Append(FILE_PATH_LITERAL("MacOS"));
-}
-
-// Recursively remove quarantine attributes on the path. Emits a log message
-// if it fails.
-bool RemoveQuarantineAttributes(const base::FilePath& updater_bundle_path) {
-  bool success = base::mac::RemoveQuarantineAttribute(updater_bundle_path);
-  base::FileEnumerator file_enumerator(
-      base::FilePath(updater_bundle_path), true,
-      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES |
-          base::FileEnumerator::SHOW_SYM_LINKS);
-  for (base::FilePath name = file_enumerator.Next(); !name.empty();
-       name = file_enumerator.Next()) {
-    success = base::mac::RemoveQuarantineAttribute(name) && success;
-  }
-
-  VLOG_IF(0, !success) << "Failed to remove quarantine attributes from "
-                       << updater_bundle_path;
-  return success;
 }
 
 // On supported versions of macOS, scan the specified bundle with Gatekeeper
@@ -98,6 +81,19 @@ int PrewarmGatekeeperIfSupported(const base::FilePath& bundle_path) {
 }
 
 }  // namespace
+
+bool RemoveQuarantineAttributes(const base::FilePath& path) {
+  bool success = base::mac::RemoveQuarantineAttribute(path);
+  base::FileEnumerator file_enumerator(
+      base::FilePath(path), true,
+      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES |
+          base::FileEnumerator::SHOW_SYM_LINKS);
+  for (base::FilePath name = file_enumerator.Next(); !name.empty();
+       name = file_enumerator.Next()) {
+    success = base::mac::RemoveQuarantineAttribute(name) && success;
+  }
+  return success;
+}
 
 std::string GetDomain(UpdaterScope scope) {
   switch (scope) {
@@ -145,6 +141,29 @@ std::optional<base::FilePath> GetApplicationSupportDirectory(
   return std::nullopt;
 }
 
+std::vector<base::FilePath> GetApplicationSupportDirectoriesForScope(
+    UpdaterScope scope) {
+  std::vector<base::FilePath> app_support_dirs;
+  std::optional<base::FilePath> application_support_dir =
+      GetApplicationSupportDirectory(scope);
+  if (application_support_dir) {
+    app_support_dirs.push_back(*application_support_dir);
+  }
+  if (IsSystemInstall(scope)) {
+    base::FilePath user_dir;
+    if (!base::apple::GetLocalDirectory(NSUserDirectory, &user_dir)) {
+      return {};
+    }
+    base::FileEnumerator(user_dir, /*recursive=*/false,
+                         base::FileEnumerator::FileType::DIRECTORIES)
+        .ForEach([&app_support_dirs](const base::FilePath& name) {
+          app_support_dirs.push_back(
+              name.Append("Library").Append("Application Support"));
+        });
+  }
+  return app_support_dirs;
+}
+
 std::optional<base::FilePath> GetKSAdminPath(UpdaterScope scope) {
   const std::optional<base::FilePath> keystone_folder_path =
       GetKeystoneFolderPath(scope);
@@ -186,31 +205,6 @@ bool RemoveWakeJobFromLaunchd(UpdaterScope scope) {
   return base::DeleteFile(*path);
 }
 
-bool UnzipWithExe(const base::FilePath& src_path,
-                  const base::FilePath& dest_path) {
-  base::FilePath file_path(kZipExePath);
-  base::CommandLine command(file_path);
-  command.AppendArg(src_path.value());
-  command.AppendArg("-d");
-  command.AppendArg(dest_path.value());
-
-  std::string output;
-  int exit_code = 0;
-  if (!base::GetAppOutputWithExitCode(command, &output, &exit_code)) {
-    VLOG(0) << "Something went wrong while running the unzipping with "
-            << kZipExePath;
-    return false;
-  }
-
-  // Unzip utility having 0 is success and 1 is a warning.
-  if (exit_code > 1) {
-    VLOG(0) << "Output from unzipping: " << output;
-    VLOG(0) << "Exit code: " << exit_code;
-  }
-
-  return exit_code <= 1;
-}
-
 std::optional<base::FilePath> GetExecutableFolderPathForVersion(
     UpdaterScope scope,
     const base::Version& version) {
@@ -245,34 +239,33 @@ std::optional<base::FilePath> GetKeystoneFolderPath(UpdaterScope scope) {
       .Append(FILE_PATH_LITERAL(KEYSTONE_NAME));
 }
 
-bool ConfirmFilePermissions(const base::FilePath& root_path,
-                            int kPermissionsMask) {
-  base::FileEnumerator file_enumerator(
-      root_path, false,
-      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES |
-          base::FileEnumerator::SHOW_SYM_LINKS);
-
-  for (base::FilePath path = file_enumerator.Next(); !path.empty();
-       path = file_enumerator.Next()) {
-    if (!SetPosixFilePermissions(path, kPermissionsMask)) {
-      VLOG(0) << "Couldn't set file permissions for for: " << path.value();
-      return false;
-    }
-
-    base::File::Info file_info;
-    if (!base::GetFileInfo(path, &file_info)) {
-      VLOG(0) << "Couldn't get file info for: " << path.value();
-      return false;
-    }
-
-    // If file path is real directory and not a link, recurse into it.
-    if (file_info.is_directory && !base::IsLink(path)) {
-      if (!ConfirmFilePermissions(path, kPermissionsMask)) {
+bool SetFilePermissionsRecursive(const base::FilePath& path) {
+  static constexpr mode_t executable_mode =
+      S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
+  static constexpr mode_t normal_mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
+  struct stat stat_buf;
+  if (lstat(path.value().c_str(), &stat_buf) != 0) {
+    VPLOG(2) << "Couldn't stat: " << path.value();
+    return false;
+  }
+  if (lchmod(path.value().c_str(),
+             (stat_buf.st_mode & (S_IXUSR | S_IXGRP | S_IXOTH) ||
+              S_ISDIR(stat_buf.st_mode))
+                 ? executable_mode
+                 : normal_mode) != 0) {
+    VPLOG(2) << "Couldn't set file permissions for: " << path.value();
+    return S_ISLNK(stat_buf.st_mode);  // Tolerate failures on symbolic links.
+  }
+  if (S_ISDIR(stat_buf.st_mode)) {
+    base::FileEnumerator file_enumerator(path, false,
+                                         base::FileEnumerator::NAMES_ONLY);
+    for (base::FilePath child_path = file_enumerator.Next();
+         !child_path.empty(); child_path = file_enumerator.Next()) {
+      if (!SetFilePermissionsRecursive(child_path)) {
         return false;
       }
     }
   }
-
   return true;
 }
 
@@ -280,18 +273,9 @@ std::optional<base::FilePath> GetInstallDirectory(UpdaterScope scope) {
   std::optional<base::FilePath> path = GetLibraryFolderPath(scope);
   return path ? std::optional<base::FilePath>(
                     path->Append("Application Support")
-                        .Append(GetUpdaterFolderName()))
+                        .Append(COMPANY_SHORTNAME_STRING)
+                        .Append(PRODUCT_FULLNAME_STRING))
               : std::nullopt;
-}
-
-std::optional<base::FilePath> GetCacheBaseDirectory(UpdaterScope scope) {
-  base::FilePath caches_path;
-  if (!base::apple::GetLocalDirectory(NSCachesDirectory, &caches_path)) {
-    VLOG(1) << "Could not get Caches path";
-    return std::nullopt;
-  }
-  return std::optional<base::FilePath>(
-      caches_path.AppendASCII(MAC_BUNDLE_IDENTIFIER_STRING));
 }
 
 std::optional<base::FilePath> GetUpdateServiceLauncherPath(UpdaterScope scope) {
@@ -326,7 +310,7 @@ std::optional<base::FilePath> GetWakeTaskPlistPath(UpdaterScope scope) {
     }
     return base::apple::NSStringToFilePath(library_paths[0])
         .Append(IsSystemInstall(scope) ? "LaunchDaemons" : "LaunchAgents")
-        .AppendASCII(base::StrCat({GetWakeLaunchdName(scope), ".plist"}));
+        .Append(base::StrCat({GetWakeLaunchdName(scope), ".plist"}));
   }
 }
 
@@ -368,6 +352,22 @@ bool MigrateLegacyUpdaters(
         register_callback) {
   return MigrateKeystoneApps(GetKeystoneFolderPath(scope).value(),
                              register_callback);
+}
+
+std::optional<base::FilePath> GetBundledEnterpriseCompanionExecutablePath(
+    UpdaterScope scope) {
+  std::optional<base::FilePath> path = GetUpdaterAppBundlePath(scope);
+  if (!path) {
+    return std::nullopt;
+  }
+  return path->Append(FILE_PATH_LITERAL("Contents"))
+      .Append(FILE_PATH_LITERAL("Helpers"))
+      .Append(base::StrCat({BROWSER_NAME_STRING, "EnterpriseCompanion",
+                            kExecutableSuffix, ".app"}))
+      .Append(FILE_PATH_LITERAL("Contents"))
+      .Append(FILE_PATH_LITERAL("MacOS"))
+      .Append(base::StrCat(
+          {BROWSER_NAME_STRING, "EnterpriseCompanion", kExecutableSuffix}));
 }
 
 }  // namespace updater

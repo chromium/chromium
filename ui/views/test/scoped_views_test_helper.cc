@@ -22,10 +22,10 @@ namespace views {
 
 ScopedViewsTestHelper::ScopedViewsTestHelper(
     std::unique_ptr<TestViewsDelegate> test_views_delegate,
-    std::optional<ViewsDelegate::NativeWidgetFactory> factory)
-    : test_views_delegate_(test_views_delegate
-                               ? std::move(test_views_delegate)
-                               : test_helper_->GetFallbackTestViewsDelegate()) {
+    std::optional<ViewsDelegate::NativeWidgetFactory> factory) {
+  test_views_delegate_ = test_views_delegate
+                             ? std::move(test_views_delegate)
+                             : test_helper_->GetFallbackTestViewsDelegate();
   test_helper_->SetUpTestViewsDelegate(test_views_delegate_.get(),
                                        std::move(factory));
   test_helper_->SetUp();
@@ -37,6 +37,8 @@ ScopedViewsTestHelper::ScopedViewsTestHelper(
 
 ScopedViewsTestHelper::~ScopedViewsTestHelper() {
   ui::Clipboard::DestroyClipboardForCurrentThread();
+
+  test_helper_->TearDownTestViewsDelegate(test_views_delegate_.get());
 }
 
 gfx::NativeWindow ScopedViewsTestHelper::GetContext() {

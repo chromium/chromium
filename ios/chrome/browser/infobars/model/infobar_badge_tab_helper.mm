@@ -4,8 +4,9 @@
 
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper.h"
 
+#import <algorithm>
+
 #import "base/containers/contains.h"
-#import "base/ranges/algorithm.h"
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper_delegate.h"
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper_observer.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
@@ -18,8 +19,6 @@ InfobarType GetInfobarType(infobars::InfoBar* infobar) {
 }  // namespace
 
 #pragma mark - InfobarBadgeTabHelper
-
-WEB_STATE_USER_DATA_KEY_IMPL(InfobarBadgeTabHelper)
 
 InfobarBadgeTabHelper::InfobarBadgeTabHelper(web::WebState* web_state)
     : infobar_accept_observer_(this),
@@ -120,9 +119,10 @@ void InfobarBadgeTabHelper::RegisterInfobar(infobars::InfoBar* infobar) {
 void InfobarBadgeTabHelper::UnregisterInfobar(infobars::InfoBar* infobar) {
   // Handling the case where an infobar is removed during prerendering.
   if (!delegate_) {
-    auto pos = base::ranges::find(infobars_added_when_prerendering_, infobar);
-    if (pos != infobars_added_when_prerendering_.end())
+    auto pos = std::ranges::find(infobars_added_when_prerendering_, infobar);
+    if (pos != infobars_added_when_prerendering_.end()) {
       infobars_added_when_prerendering_.erase(pos);
+    }
     return;
   }
   // All other cases.
@@ -217,6 +217,10 @@ InfobarBadgeTabHelper::InfobarManagerObserver::~InfobarManagerObserver() =
 void InfobarBadgeTabHelper::InfobarManagerObserver::OnInfoBarAdded(
     infobars::InfoBar* infobar) {
   tab_helper_->RegisterInfobar(infobar);
+  // Ensure that any changes to the acceptance state prior to registering the
+  // infobar are captured.
+  tab_helper_->OnInfobarAcceptanceStateChanged(
+      GetInfobarType(infobar), static_cast<InfoBarIOS*>(infobar)->accepted());
   tab_helper_->UpdateBadgesShown();
 }
 
@@ -254,7 +258,7 @@ void InfobarBadgeTabHelper::InfobarManagerObserver::OnInfoBarReplaced(
   OnInfoBarAdded(new_infobar);
 }
 
-void InfobarBadgeTabHelper::InfobarManagerObserver::OnManagerShuttingDown(
+void InfobarBadgeTabHelper::InfobarManagerObserver::OnManagerWillBeDestroyed(
     infobars::InfoBarManager* manager) {
   DCHECK(scoped_observation_.IsObservingSource(manager));
   scoped_observation_.Reset();

@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] HTMLMenuItemElement must not be not present
+  assert_false: the HTMLMenuItemElement interface must not exist expected false got true
+[FAIL] :enabled must not match menuitems
+  assert_array_equals: lengths differ, expected array [] length 0, got object "[object NodeList]" length 3
+[FAIL] :disabled must not match menuitems
+  assert_array_equals: lengths differ, expected array [] length 0, got object "[object NodeList]" length 1
+Harness: the test ran to completion.
+

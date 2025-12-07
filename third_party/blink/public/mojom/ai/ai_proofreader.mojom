@@ -1,0 +1,39 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/ai/ai_common.mojom";
+import "third_party/blink/public/mojom/ai/model_streaming_responder.mojom";
+
+// The enumerations and struct follows the explainer in
+// https://github.com/explainers-by-googlers/proofreader-api/blob/main/README.md
+
+// This is used when creating a new AIProofreader.
+struct AIProofreaderCreateOptions {
+  bool include_correction_types;
+  bool include_correction_explanations;
+
+  // Creation fails if a model is not available for specified languages.
+  AILanguageCode correction_explanation_language;
+  array<AILanguageCode> expected_input_languages;
+};
+
+// A proofreader to proofread a given text
+interface AIProofreader {
+  // Proofreads the given input.
+  Proofread(string input,
+            pending_remote<ModelStreamingResponder> pending_responder);
+
+  // Get a short string label for the type of correction made, given the
+  // specific correction instruction, the error annotated in the original
+  // input, and the correction annotated in the complete corrected input, e.g.:
+  // input = "`can` you profread fir me",
+  // corrected_input = "`Can` you proofread for me?",
+  // correction_instruction = "Correcting `can` to `Can`".
+  GetCorrectionType(string input,
+                    string corrected_input,
+                    string correction_instruction,
+                    pending_remote<ModelStreamingResponder> pending_responder);
+};

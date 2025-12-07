@@ -1,0 +1,36 @@
+Tests that geolocation can be overridden.
+
+Get original geolocation data
+Geolocation data: {
+    code : 3
+    message : Timeout expired
+}
+
+Set required geolocation override fields
+Geolocation data: {
+    accuracy : 1.23
+    altitude : null
+    altitudeAccuracy : null
+    heading : null
+    latitude : 56.83
+    longitude : 60.63
+    speed : null
+}
+
+Set full geolocation override
+Geolocation data: {
+    accuracy : 2.34
+    altitude : 122
+    altitudeAccuracy : 2.34
+    heading : 42
+    latitude : 52.52
+    longitude : 13.41
+    speed : 32
+}
+
+Set empty geolocation override
+Geolocation data: {
+    code : 2
+    message : 
+}
+

@@ -6,14 +6,19 @@
 
 #include "base/check_op.h"
 #include "base/strings/utf_string_conversions.h"
+#include "pdf/buildflags.h"
 #include "pdf/document_layout.h"
+#include "pdf/pdfium/pdfium_draw_selection_test_base.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_test_base.h"
 #include "pdf/test/test_client.h"
+#include "pdf/text_search.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using testing::_;
 using testing::InSequence;
+using testing::NiceMock;
+using testing::Return;
 
 namespace chrome_pdf {
 
@@ -30,31 +35,17 @@ class FindTextTestClient : public TestClient {
   // PDFiumEngineClient:
   MOCK_METHOD(void, NotifyNumberOfFindResultsChanged, (int, bool), (override));
   MOCK_METHOD(void, NotifySelectedFindResultChanged, (int, bool), (override));
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  MOCK_METHOD(bool, IsInAnnotationMode, (), (const override));
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
-  std::vector<SearchStringResult> SearchString(const char16_t* string,
-                                               const char16_t* term,
+  std::vector<SearchStringResult> SearchString(const std::u16string& needle,
+                                               const std::u16string& haystack,
                                                bool case_sensitive) override {
-    EXPECT_EQ(case_sensitive, expected_case_sensitive_);
-    std::u16string haystack = std::u16string(string);
-    std::u16string needle = std::u16string(term);
-    EXPECT_FALSE(haystack.empty());
     EXPECT_FALSE(needle.empty());
-
-    std::vector<SearchStringResult> results;
-
-    size_t pos = 0;
-    while (true) {
-      pos = haystack.find(needle, pos);
-      if (pos == std::u16string::npos)
-        break;
-
-      SearchStringResult result;
-      result.length = needle.size();
-      result.start_index = pos;
-      results.push_back(result);
-      pos += needle.size();
-    }
-    return results;
+    EXPECT_FALSE(haystack.empty());
+    EXPECT_EQ(case_sensitive, expected_case_sensitive_);
+    return TextSearch(/*needle=*/needle, /*haystack=*/haystack, case_sensitive);
   }
 
  private:
@@ -175,7 +166,7 @@ TEST_P(FindTextTest, FindVisibleCroppedTextRepeatedly) {
 }
 
 TEST_P(FindTextTest, SelectFindResult) {
-  FindTextTestClient client(/*expected_case_sensitive=*/true);
+  NiceMock<FindTextTestClient> client(/*expected_case_sensitive=*/true);
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -240,6 +231,76 @@ TEST_P(FindTextTest, SelectFindResultAndSwitchToTwoUpView) {
   ASSERT_TRUE(engine->SelectFindResult(/*forward=*/true));
 }
 
+using FindTextDrawSelectionTest = PDFiumDrawSelectionTestBase;
+
+TEST_P(FindTextDrawSelectionTest, DrawFindResult) {
+  NiceMock<FindTextTestClient> client(/*expected_case_sensitive=*/false);
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Update the plugin size so that all the text is visible.
+  engine->PluginSizeUpdated({500, 500});
+
+  constexpr int kPageIndex = 0;
+  DrawAndExpectBlank(*engine, kPageIndex,
+                     /*expected_visible_page_size=*/gfx::Size(266, 266));
+
+  engine->StartFind(u"o", /*case_sensitive=*/false);
+  EXPECT_TRUE(engine->SelectFindResult(/*forward=*/true));
+
+  EXPECT_THAT(engine->GetSelectedText(), testing::IsEmpty());
+  DrawSelectionAndCompareWithPlatformExpectations(
+      *engine, kPageIndex, "hello_world_draw_find_result_0.png");
+
+  EXPECT_TRUE(engine->SelectFindResult(/*forward=*/true));
+
+  EXPECT_THAT(engine->GetSelectedText(), testing::IsEmpty());
+  DrawSelectionAndCompareWithPlatformExpectations(
+      *engine, kPageIndex, "hello_world_draw_find_result_1.png");
+
+  SetSelection(*engine, /*start_page_index=*/kPageIndex, /*start_char_index=*/1,
+               /*end_page_index=*/kPageIndex, /*end_char_index=*/2);
+
+  EXPECT_EQ("e", engine->GetSelectedText());
+  DrawSelectionAndCompareWithPlatformExpectations(
+      *engine, kPageIndex, "hello_world_draw_find_result_2.png");
+}
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+TEST_P(FindTextDrawSelectionTest, DrawFindResultInAnnotationMode) {
+  NiceMock<FindTextTestClient> client(/*expected_case_sensitive=*/false);
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  EXPECT_CALL(client, IsInAnnotationMode()).WillRepeatedly(Return(true));
+
+  // Update the plugin size so that all the text is visible.
+  engine->PluginSizeUpdated({500, 500});
+
+  constexpr int kPageIndex = 0;
+  DrawAndExpectBlank(*engine, kPageIndex,
+                     /*expected_visible_page_size=*/gfx::Size(266, 266));
+
+  engine->StartFind(u"o", /*case_sensitive=*/false);
+  EXPECT_TRUE(engine->SelectFindResult(/*forward=*/true));
+
+  EXPECT_THAT(engine->GetSelectedText(), testing::IsEmpty());
+  DrawSelectionAndCompareWithPlatformExpectations(
+      *engine, kPageIndex, "hello_world_draw_find_result_0.png");
+
+  // Set selected text. It should not be highlighted while in annotation mode.
+  SetSelection(*engine, /*start_page_index=*/kPageIndex, /*start_char_index=*/1,
+               /*end_page_index=*/kPageIndex, /*end_char_index=*/2);
+
+  EXPECT_EQ("e", engine->GetSelectedText());
+  DrawSelectionAndCompareWithPlatformExpectations(
+      *engine, kPageIndex, "hello_world_draw_find_result_0.png");
+}
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
+
 INSTANTIATE_TEST_SUITE_P(All, FindTextTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All, FindTextDrawSelectionTest, testing::Bool());
 
 }  // namespace chrome_pdf

@@ -48,8 +48,8 @@ class InterfaceProperties final {
   bool HasAddresses() const { return !properties_.addresses().empty(); }
   InterfaceId id() const { return properties_.id(); }
   bool online() const { return properties_.online(); }
-  const fuchsia::net::interfaces::DeviceClass& device_class() const {
-    return properties_.device_class();
+  const fuchsia::net::interfaces::PortClass& device_class() const {
+    return properties_.port_class();
   }
 
  private:
@@ -61,7 +61,7 @@ class InterfaceProperties final {
 // Returns the //net ConnectionType for the supplied netstack interface
 // description. Returns CONNECTION_NONE for loopback interfaces.
 NetworkChangeNotifier::ConnectionType ConvertConnectionType(
-    const fuchsia::net::interfaces::DeviceClass& device_class);
+    const fuchsia::net::interfaces::PortClass& device_class);
 
 // Validates that |properties| contains all the required fields, returning
 // |true| if so.

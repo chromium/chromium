@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/webcrypto/algorithms/ec.h"
 
 #include <stddef.h>
@@ -14,6 +9,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "components/webcrypto/algorithms/asymmetric_key_util.h"
 #include "components/webcrypto/algorithms/util.h"
@@ -21,6 +17,7 @@
 #include "components/webcrypto/generate_key_result.h"
 #include "components/webcrypto/jwk.h"
 #include "components/webcrypto/status.h"
+#include "crypto/evp.h"
 #include "crypto/openssl_util.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm_params.h"
 #include "third_party/blink/public/platform/web_crypto_key_algorithm.h"
@@ -574,7 +571,7 @@ Status EcAlgorithm::ExportKeyRaw(const blink::WebCryptoKey& key,
       !CBB_finish(cbb.get(), &raw, &raw_len)) {
     return Status::OperationError();
   }
-  buffer->assign(raw, raw + raw_len);
+  buffer->assign(raw, UNSAFE_TODO(raw + raw_len));
   OPENSSL_free(raw);
 
   return Status::Success();
@@ -584,14 +581,16 @@ Status EcAlgorithm::ExportKeyPkcs8(const blink::WebCryptoKey& key,
                                    std::vector<uint8_t>* buffer) const {
   if (key.GetType() != blink::kWebCryptoKeyTypePrivate)
     return Status::ErrorUnexpectedKeyType();
-  return ExportPKeyPkcs8(GetEVP_PKEY(key), buffer);
+  *buffer = crypto::evp::PrivateKeyToBytes(GetEVP_PKEY(key));
+  return Status::Success();
 }
 
 Status EcAlgorithm::ExportKeySpki(const blink::WebCryptoKey& key,
                                   std::vector<uint8_t>* buffer) const {
   if (key.GetType() != blink::kWebCryptoKeyTypePublic)
     return Status::ErrorUnexpectedKeyType();
-  return ExportPKeySpki(GetEVP_PKEY(key), buffer);
+  *buffer = crypto::evp::PublicKeyToBytes(GetEVP_PKEY(key));
+  return Status::Success();
 }
 
 // The format for JWK EC keys is given by:

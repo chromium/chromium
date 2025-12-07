@@ -22,6 +22,7 @@
 #include "mojo/public/cpp/system/string_data_source.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
+#include "pdf/pdf_features.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -65,7 +66,7 @@ embed {
 </style>
 <div id="sizer"></div>
 <embed type="application/x-google-chrome-pdf" src="$1" original-url="$2"
-    background-color="$4" javascript="$5"$6$7>
+    background-color="$4" javascript="$5"$6$7$8>
 <script type="module">
 $3
 </script>
@@ -83,7 +84,8 @@ $3
        base::NumberToString(stream_info.background_color),
        stream_info.allow_javascript ? "allow" : "block",
        stream_info.full_frame ? " full-frame" : "",
-       stream_info.use_skia ? " use-skia" : ""},
+       stream_info.use_skia ? " use-skia" : "",
+       stream_info.allow_xfa_forms ? " allow-xfa-forms" : ""},
       /*offsets=*/nullptr);
 }
 
@@ -92,7 +94,9 @@ $3
 PluginResponseWriter::PluginResponseWriter(
     const PdfStreamDelegate::StreamInfo& stream_info,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client)
-    : body_(GenerateResponse(stream_info)), client_(std::move(client)) {}
+    : body_(GenerateResponse(stream_info)),
+      client_(std::move(client)),
+      coep_header_(stream_info.coep_header) {}
 
 PluginResponseWriter::~PluginResponseWriter() = default;
 
@@ -100,6 +104,14 @@ void PluginResponseWriter::Start(base::OnceClosure done_callback) {
   auto response = network::mojom::URLResponseHead::New();
   response->headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+  // Allow the PDF plugin to be embedded in cross-origin sites if the original
+  // PDF has a COEP: require-corp or COEP: credentialless header.
+  if (chrome_pdf::features::IsOopifPdfEnabled() &&
+      (coep_header_ == "require-corp" || coep_header_ == "credentialless")) {
+    response->headers->AddHeader("Cross-Origin-Embedder-Policy", coep_header_);
+    response->headers->AddHeader("Cross-Origin-Resource-Policy",
+                                 "cross-origin");
+  }
   response->mime_type = "text/html";
 
   mojo::ScopedDataPipeProducerHandle producer;

@@ -6,11 +6,13 @@
 #define UI_VIEWS_CONTROLS_TREE_TREE_VIEW_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/tree_node_model.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/prefix_delegate.h"
@@ -22,7 +24,6 @@
 namespace ui {
 
 struct AXActionData;
-struct AXNodeData;
 
 }  // namespace ui
 
@@ -168,6 +169,8 @@ class VIEWS_EXPORT TreeView : public View,
     return drawing_provider_.get();
   }
 
+  void SetInitialAccessibilityAttributes();
+
   // View overrides:
   void Layout(PassKey) override;
   gfx::Size CalculatePreferredSize(
@@ -176,8 +179,7 @@ class VIEWS_EXPORT TreeView : public View,
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void ShowContextMenu(const gfx::Point& p,
-                       ui::MenuSourceType source_type) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+                       ui::mojom::MenuSourceType source_type) override;
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
 
   // TreeModelObserver overrides:
@@ -260,8 +262,9 @@ class VIEWS_EXPORT TreeView : public View,
     AXVirtualView* accessibility_view() const { return accessibility_view_; }
 
     // Whether the node is expanded.
-    void set_is_expanded(bool expanded) { is_expanded_ = expanded; }
+    void set_is_expanded(bool expanded);
     bool is_expanded() const { return is_expanded_; }
+    void SetAccessibleIsExpanded(bool expanded);
 
     // Whether children have been loaded.
     void set_loaded_children(bool value) { loaded_children_ = value; }
@@ -273,6 +276,8 @@ class VIEWS_EXPORT TreeView : public View,
 
     // Returns the total number of descendants (including this node).
     size_t NumExpandedNodes() const;
+
+    void UpdateAccessibleName();
 
     // Returns the max width of all descendants (including this node). |indent|
     // is how many pixels each child is indented and |depth| is the depth of
@@ -324,6 +329,10 @@ class VIEWS_EXPORT TreeView : public View,
   // Loads the children of the specified node.
   void LoadChildren(InternalNode* node);
 
+  void UpdateAccessiblePositionalProperties(InternalNode* node);
+  void UpdateAccessiblePositionalPropertiesForNodeAndChildren(
+      InternalNode* node);
+
   // Configures an InternalNode from a node from the model. This is used
   // when a node changes as well as when loading.
   void ConfigureInternalNode(ui::TreeModelNode* model_node, InternalNode* node);
@@ -342,10 +351,7 @@ class VIEWS_EXPORT TreeView : public View,
   std::unique_ptr<AXVirtualView> CreateAndSetAccessibilityView(
       InternalNode* node);
 
-  // Populates the accessibility data for a tree item. This is data that can
-  // dynamically change, such as whether a tree item is expanded, and if it's
-  // visible.
-  void PopulateAccessibilityData(InternalNode* node, ui::AXNodeData* data);
+  void SetAccessibleSelectionForNode(InternalNode* node, bool selected);
 
   // Invoked when the set of drawn nodes changes.
   void DrawnNodesChanged();

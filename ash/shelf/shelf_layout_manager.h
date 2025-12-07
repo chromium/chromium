@@ -273,6 +273,7 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
   // ShellObserver:
   void OnUserWorkAreaInsetsChanged(aura::Window* root_window) override;
   void OnPinnedStateChanged(aura::Window* pinned_window) override;
+  void OnRootWindowWillShutdown(aura::Window* root_window) override;
   void OnShellDestroying() override;
 
   // SplitViewObserver:
@@ -306,7 +307,8 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
 
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
-  void OnLoginStatusChanged(LoginStatus loing_status) override;
+  void OnAppModeSessionStarted() override;
+  void OnLoginStatusChanged(LoginStatus login_status) override;
 
   // WallpaperControllerObserver:
   void OnWallpaperBlurChanged() override;

@@ -6,7 +6,6 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/test/run_until.h"
-#include "chrome/browser/ash/http_auth_dialog.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -14,10 +13,12 @@
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/common/chrome_switches.h"
+#include "chromeos/ash/components/http_auth_dialog/http_auth_dialog.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
-#include "net/test/spawned_test_server/spawned_test_server.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/register_basic_auth_handler.h"
 
 namespace ash {
 
@@ -25,9 +26,7 @@ namespace ash {
 // iframe (false) GAIA sign in.
 class ProxyAuthOnUserBoardScreenTest : public LoginManagerTest {
  public:
-  ProxyAuthOnUserBoardScreenTest()
-      : proxy_server_(net::SpawnedTestServer::TYPE_BASIC_AUTH_PROXY,
-                      base::FilePath()) {
+  ProxyAuthOnUserBoardScreenTest() {
     login_manager_mixin_.AppendRegularUsers(1);
   }
 
@@ -36,9 +35,13 @@ class ProxyAuthOnUserBoardScreenTest : public LoginManagerTest {
   ProxyAuthOnUserBoardScreenTest& operator=(
       const ProxyAuthOnUserBoardScreenTest&) = delete;
 
-  ~ProxyAuthOnUserBoardScreenTest() override {}
+  ~ProxyAuthOnUserBoardScreenTest() override = default;
 
   void SetUp() override {
+    // No need to configure the "proxy" test server to proxy anything. This test
+    // only requires the configured "proxy" return proxy auth challenges.
+    net::test_server::RegisterProxyBasicAuthHandler(proxy_server_, "user",
+                                                    "pass");
     ASSERT_TRUE(proxy_server_.Start());
     LoginManagerTest::SetUp();
   }
@@ -50,7 +53,8 @@ class ProxyAuthOnUserBoardScreenTest : public LoginManagerTest {
   }
 
  private:
-  net::SpawnedTestServer proxy_server_;
+  net::test_server::EmbeddedTestServer proxy_server_{
+      net::test_server::EmbeddedTestServer::Type::TYPE_HTTP};
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
 };
 

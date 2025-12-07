@@ -108,7 +108,7 @@ def main(argv: Sequence[str]) -> None:
     bytecode = parse_glslang_output(compiler_output)
     output += generate_shader_literal(target, bytecode)
   output += '}  // namespace\n\n'
-  output += '#endif'
+  output += '#endif  // MEDIA_GPU_CHROMEOS_SHADERS_SHADERS_H_'
 
   print(output)
 

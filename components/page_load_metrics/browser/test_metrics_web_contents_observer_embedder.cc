@@ -202,7 +202,8 @@ bool TestMetricsWebContentsObserverEmbedder::IsNewTabPageUrl(const GURL& url) {
 }
 
 void TestMetricsWebContentsObserverEmbedder::RegisterObservers(
-    PageLoadTracker* tracker) {
+    PageLoadTracker* tracker,
+    content::NavigationHandle* navigation_handle) {
   tracker->AddObserver(std::make_unique<TimingLoggingPageLoadMetricsObserver>(
       &updated_timings_, &updated_subframe_timings_, &complete_timings_,
       &updated_cpu_timings_, &updated_custom_user_timings_, &loaded_resources_,
@@ -220,6 +221,10 @@ TestMetricsWebContentsObserverEmbedder::CreateTimer() {
   return std::move(timer);
 }
 
+bool TestMetricsWebContentsObserverEmbedder::HasWebUIConfig(const GURL& url) {
+  return false;
+}
+
 bool TestMetricsWebContentsObserverEmbedder::IsNoStatePrefetch(
     content::WebContents* web_contents) {
   return false;
@@ -229,19 +234,17 @@ bool TestMetricsWebContentsObserverEmbedder::IsExtensionUrl(const GURL& url) {
   return false;
 }
 
-bool TestMetricsWebContentsObserverEmbedder::IsSidePanel(
-    content::WebContents* web_contents) {
+bool TestMetricsWebContentsObserverEmbedder::IsNonTabWebUI(const GURL& url) {
   return false;
 }
 
-bool TestMetricsWebContentsObserverEmbedder::IsNonTabWebUI() {
-  return false;
+bool TestMetricsWebContentsObserverEmbedder::IsInternalWebUI(const GURL& url) {
+  return true;
 }
 
-PageLoadMetricsMemoryTracker*
-TestMetricsWebContentsObserverEmbedder::GetMemoryTrackerForBrowserContext(
-    content::BrowserContext* browser_context) {
-  return nullptr;
+bool TestMetricsWebContentsObserverEmbedder::ShouldObserveScheme(
+    std::string_view scheme) {
+  return false;
 }
 
 }  // namespace page_load_metrics

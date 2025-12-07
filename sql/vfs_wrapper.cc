@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/debug/leak_annotations.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
@@ -27,6 +28,10 @@
 
 namespace sql {
 namespace {
+
+#if !BUILDFLAG(IS_FUCHSIA)
+int Unlock(sqlite3_file* sqlite_file, int file_lock);
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 // https://www.sqlite.org/vfs.html - documents the overall VFS system.
 //
@@ -51,12 +56,18 @@ sqlite3_file* GetWrappedFile(sqlite3_file* wrapper_file) {
 }
 
 int Close(sqlite3_file* sqlite_file) {
-#if BUILDFLAG(IS_FUCHSIA)
-  // Other platforms automatically unlock when the file descriptor is closed,
-  // but the fuchsia virtual implementation doesn't have that so it needs an
-  // explicit unlock on close.
+  // On Windows, the file lock is taken with a call to LockFileEx using the
+  // flags 'LOCKFILE_FAIL_IMMEDIATELY'. The documentation states the fhe lock
+  // will be released but it is also stating that it will "eventually" released
+  // and it's better that the application release it on exit.
+  //
+  // see:
+  // https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-lockfileex
+  //
+  // A side effect of not releasing the lock is that the next startup may get
+  // a database open error (kBusy). This will cause the next launch to not use
+  // the database.
   Unlock(sqlite_file, SQLITE_LOCK_NONE);
-#endif
 
   VfsFile* file = AsVfsFile(sqlite_file);
   int r = file->wrapped_file->pMethods->xClose(file->wrapped_file);
@@ -65,7 +76,7 @@ int Close(sqlite3_file* sqlite_file) {
   // Memory will be freed with sqlite3_free(), so the destructor needs to be
   // called explicitly.
   file->~VfsFile();
-  memset(file, '\0', sizeof(*file));
+  UNSAFE_TODO(memset(file, '\0', sizeof(*file)));
   return r;
 }
 
@@ -375,7 +386,7 @@ void EnsureVfsWrapper() {
       [](sqlite3_vfs* v) {
         sqlite3_free(v);
       });
-  memset(wrapper_vfs.get(), '\0', sizeof(sqlite3_vfs));
+  UNSAFE_TODO(memset(wrapper_vfs.get(), '\0', sizeof(sqlite3_vfs)));
 
   // VFS implementations should always work with a SQLite that only knows about
   // earlier versions.

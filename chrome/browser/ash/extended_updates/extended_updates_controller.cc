@@ -13,7 +13,6 @@
 #include "ash/system/model/update_model.h"
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"

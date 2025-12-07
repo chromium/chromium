@@ -2,12 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/containers/contains.h"
+#include "base/strings/string_util.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/openxr/test/openxr_negotiate.h"
 #include "device/vr/openxr/test/openxr_test_helper.h"
@@ -100,10 +96,14 @@ XrResult xrBeginSession(XrSession session,
         second_begin_info->next != nullptr, XR_ERROR_VALIDATION_FAILURE,
         "XrSecondaryViewConfigurationSessionBeginInfoMSFT next is not nullptr");
 
-    for (uint32_t i = 0; i < second_begin_info->viewConfigurationCount; i++) {
-      view_configs.push_back(
-          second_begin_info->enabledViewConfigurationTypes[i]);
-    }
+    // SAFETY: Test-only implementation of a C-Style API that thus has to
+    // provide arrays as a pointer and a size. The sole callers are our own
+    // product/test code.
+    auto enabled_secondary_view_configs = UNSAFE_BUFFERS(
+        base::span(second_begin_info->enabledViewConfigurationTypes,
+                   second_begin_info->viewConfigurationCount));
+    std::ranges::copy(enabled_secondary_view_configs,
+                      std::back_inserter(view_configs));
   }
 
   RETURN_IF_XR_FAILED(g_test_helper.BeginSession(view_configs));
@@ -173,14 +173,33 @@ XrResult xrCreateInstance(const XrInstanceCreateInfo* create_info,
 
   RETURN_IF(create_info == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrInstanceCreateInfo is nullptr");
-  RETURN_IF(create_info->applicationInfo.apiVersion != XR_CURRENT_API_VERSION,
+  RETURN_IF(create_info->applicationInfo.apiVersion != XR_API_VERSION_1_0,
             XR_ERROR_API_VERSION_UNSUPPORTED, "apiVersion unsupported");
 
   RETURN_IF(create_info->type != XR_TYPE_INSTANCE_CREATE_INFO,
             XR_ERROR_VALIDATION_FAILURE, "XrInstanceCreateInfo type invalid");
 
+#if BUILDFLAG(IS_WIN)
   RETURN_IF(create_info->next != nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrInstanceCreateInfo next is not nullptr");
+#elif BUILDFLAG(IS_ANDROID)
+  RETURN_IF(create_info->next == nullptr, XR_ERROR_VALIDATION_FAILURE,
+            "XrInstanceCreateInfo next is nullptr");
+  const XrInstanceCreateInfoAndroidKHR* android_create_info =
+      reinterpret_cast<const XrInstanceCreateInfoAndroidKHR*>(
+          create_info->next);
+  RETURN_IF(
+      android_create_info->type != XR_TYPE_INSTANCE_CREATE_INFO_ANDROID_KHR,
+      XR_ERROR_VALIDATION_FAILURE,
+      "XrInstanceCreateInfoAndroidKHR type invalid");
+  RETURN_IF(android_create_info->applicationVM == nullptr,
+            XR_ERROR_VALIDATION_FAILURE,
+            "XrInstanceCreateInfoAndroidKHR applicationVM is nullptr");
+  // For testing purposes, assume applicationActivity is provided.
+  RETURN_IF(android_create_info->applicationActivity == nullptr,
+            XR_ERROR_VALIDATION_FAILURE,
+            "XrInstanceCreateInfoAndroidKHR applicationActivity is nullptr");
+#endif
 
   RETURN_IF(create_info->createFlags != 0, XR_ERROR_VALIDATION_FAILURE,
             "XrInstanceCreateInfo createFlags is not 0");
@@ -191,19 +210,19 @@ XrResult xrCreateInstance(const XrInstanceCreateInfo* create_info,
       XR_ERROR_VALIDATION_FAILURE,
       "XrInstanceCreateInfo ApiLayer is not supported by this version of test");
 
-  for (uint32_t i = 0; i < create_info->enabledExtensionCount; i++) {
-    bool valid_extension = false;
-    for (size_t j = 0; j < OpenXrTestHelper::kNumExtensionsSupported; j++) {
-      if (strcmp(create_info->enabledExtensionNames[i],
-                 OpenXrTestHelper::kExtensions[j]) == 0) {
-        valid_extension = true;
-        break;
-      }
-    }
+  // SAFETY: Test-only implementation of a C-Style API that thus has to provide
+  // arrays as a pointer and a size. The sole callers are our own product/test
+  // code.
+  auto enabled_extensions = UNSAFE_BUFFERS(base::span(
+      create_info->enabledExtensionNames, create_info->enabledExtensionCount));
+  auto supported_extensions = OpenXrTestHelper::GetSupportedExtensions();
+  bool all_valid = std::ranges::all_of(
+      enabled_extensions, [&supported_extensions](std::string_view name) {
+        return base::Contains(supported_extensions, name);
+      });
 
-    RETURN_IF_FALSE(valid_extension, XR_ERROR_VALIDATION_FAILURE,
-                    "enabledExtensionNames contains invalid extensions");
-  }
+  RETURN_IF_FALSE(all_valid, XR_ERROR_VALIDATION_FAILURE,
+                  "enabledExtensionNames contains invalid extensions");
 
   RETURN_IF(instance == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrInstance is nullptr");
@@ -253,7 +272,7 @@ XrResult xrCreateSession(XrInstance instance,
   RETURN_IF(create_info->createFlags != 0, XR_ERROR_VALIDATION_FAILURE,
             "XrSessionCreateInfo createFlags is not 0");
   RETURN_IF_XR_FAILED(g_test_helper.ValidateSystemId(create_info->systemId));
-
+#if BUILDFLAG(IS_WIN)
   const XrGraphicsBindingD3D11KHR* binding =
       static_cast<const XrGraphicsBindingD3D11KHR*>(create_info->next);
   RETURN_IF(binding->type != XR_TYPE_GRAPHICS_BINDING_D3D11_KHR,
@@ -265,6 +284,19 @@ XrResult xrCreateSession(XrInstance instance,
             "D3D11Device is nullptr");
 
   g_test_helper.SetD3DDevice(binding->device);
+#elif BUILDFLAG(IS_ANDROID)
+  const XrGraphicsBindingOpenGLESAndroidKHR* binding =
+      static_cast<const XrGraphicsBindingOpenGLESAndroidKHR*>(
+          create_info->next);
+  RETURN_IF(binding == nullptr, XR_ERROR_VALIDATION_FAILURE,
+            "XrGraphicsBindingOpenGLESAndroidKHR is nullptr");
+  RETURN_IF(binding->type != XR_TYPE_GRAPHICS_BINDING_OPENGL_ES_ANDROID_KHR,
+            XR_ERROR_VALIDATION_FAILURE,
+            "XrGraphicsBindingOpenGLESAndroidKHR type invalid");
+  RETURN_IF(binding->next != nullptr, XR_ERROR_VALIDATION_FAILURE,
+            "XrGraphicsBindingOpenGLESAndroidKHR next is not nullptr");
+  g_test_helper.SetOpenGLESInfo(binding->display, binding->context);
+#endif
   RETURN_IF(session == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrSession is nullptr");
   RETURN_IF_XR_FAILED(g_test_helper.CreateSession(session));
@@ -289,9 +321,15 @@ XrResult xrCreateSwapchain(XrSession session,
             XR_ERROR_VALIDATION_FAILURE,
             "XrSwapchainCreateInfo usageFlags is not "
             "XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT");
+#if BUILDFLAG(IS_WIN)
   RETURN_IF(create_info->format != DXGI_FORMAT_R8G8B8A8_UNORM_SRGB,
             XR_ERROR_SWAPCHAIN_FORMAT_UNSUPPORTED,
             "XrSwapchainCreateInfo format unsupported");
+#elif BUILDFLAG(IS_ANDROID)
+  RETURN_IF(create_info->format != OpenXrTestHelper::kSwapchainFormat,
+            XR_ERROR_SWAPCHAIN_FORMAT_UNSUPPORTED,
+            "XrSwapchainCreateInfo format unsupported");
+#endif
   RETURN_IF(create_info->sampleCount != OpenXrTestHelper::kSwapCount,
             XR_ERROR_VALIDATION_FAILURE,
             "XrSwapchainCreateInfo sampleCount invalid");
@@ -368,10 +406,14 @@ XrResult xrEndFrame(XrSession session, const XrFrameEndInfo* frame_end_info) {
   RETURN_IF(frame_end_info->layers == nullptr, XR_ERROR_LAYER_INVALID,
             "XrFrameEndInfo has nullptr layers");
 
-  for (uint32_t i = 0; i < frame_end_info->layerCount; i++) {
+  // SAFETY: Test-only implementation of a C-Style API that thus has to provide
+  // arrays as a pointer and a size. The sole callers are our own product/test
+  // code.
+  auto layers = UNSAFE_BUFFERS(
+      base::span(frame_end_info->layers, frame_end_info->layerCount));
+  for (const auto* layer : layers) {
     const XrCompositionLayerProjection* primary_layer_ptr =
-        reinterpret_cast<const XrCompositionLayerProjection*>(
-            frame_end_info->layers[i]);
+        reinterpret_cast<const XrCompositionLayerProjection*>(layer);
     RETURN_IF_XR_FAILED(g_test_helper.ValidateXrCompositionLayerProjection(
         g_test_helper.PrimaryViewConfig(), *primary_layer_ptr));
   }
@@ -391,10 +433,13 @@ XrResult xrEndFrame(XrSession session, const XrFrameEndInfo* frame_end_info) {
         second_end_info->next != nullptr, XR_ERROR_VALIDATION_FAILURE,
         "XrSecondaryViewConfigurationFrameEndInfoMSFT next is not nullptr");
 
-    for (uint32_t i = 0; i < second_end_info->viewConfigurationCount; i++) {
-      XrSecondaryViewConfigurationLayerInfoMSFT layer_info =
-          second_end_info->viewConfigurationLayersInfo[i];
-
+    // SAFETY: Test-only implementation of a C-Style API that thus has to
+    // provide arrays as a pointer and a size. The sole callers are our own
+    // product/test code.
+    auto secondary_view_layer_infos =
+        UNSAFE_BUFFERS(base::span(second_end_info->viewConfigurationLayersInfo,
+                                  second_end_info->viewConfigurationCount));
+    for (const auto& layer_info : secondary_view_layer_infos) {
       RETURN_IF(layer_info.type !=
                     XR_TYPE_SECONDARY_VIEW_CONFIGURATION_LAYER_INFO_MSFT,
                 XR_ERROR_VALIDATION_FAILURE,
@@ -420,10 +465,14 @@ XrResult xrEndFrame(XrSession session, const XrFrameEndInfo* frame_end_info) {
       RETURN_IF(layer_info.layers == nullptr, XR_ERROR_LAYER_INVALID,
                 "XrSecondaryViewConfigurationLayerInfoMSFT has nullptr layers");
 
-      for (uint32_t j = 0; j < layer_info.layerCount; j++) {
+      // SAFETY: Test-only implementation of a C-Style API that thus has to
+      // provide arrays as a pointer and a size. The sole callers are our own
+      // product/test code.
+      auto secondary_layers =
+          UNSAFE_BUFFERS(base::span(layer_info.layers, layer_info.layerCount));
+      for (const auto* layer : secondary_layers) {
         const XrCompositionLayerProjection* secondary_layer_ptr =
-            reinterpret_cast<const XrCompositionLayerProjection*>(
-                layer_info.layers[j]);
+            reinterpret_cast<const XrCompositionLayerProjection*>(layer);
         RETURN_IF_XR_FAILED(g_test_helper.ValidateXrCompositionLayerProjection(
             layer_info.viewConfigurationType, *secondary_layer_ptr));
       }
@@ -484,33 +533,38 @@ XrResult xrEnumerateInstanceExtensionProperties(
     XrExtensionProperties* properties) {
   DVLOG(2) << __FUNCTION__;
 
-  RETURN_IF(
-      property_capacity_input < OpenXrTestHelper::kNumExtensionsSupported &&
-          property_capacity_input != 0,
-      XR_ERROR_SIZE_INSUFFICIENT, "XrExtensionProperties array is too small");
+  auto supported_extensions = OpenXrTestHelper::GetSupportedExtensions();
+
+  RETURN_IF(property_capacity_input < supported_extensions.size() &&
+                property_capacity_input != 0,
+            XR_ERROR_SIZE_INSUFFICIENT,
+            "XrExtensionProperties array is too small");
 
   RETURN_IF(property_count_output == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "property_count_output is nullptr");
-  *property_count_output = OpenXrTestHelper::kNumExtensionsSupported;
+  *property_count_output = supported_extensions.size();
   if (property_capacity_input == 0) {
     return XR_SUCCESS;
   }
 
-  RETURN_IF(
-      property_capacity_input != OpenXrTestHelper::kNumExtensionsSupported,
-      XR_ERROR_VALIDATION_FAILURE,
-      "property_capacity_input is neither 0 or kNumExtensionsSupported");
+  RETURN_IF(property_capacity_input != supported_extensions.size(),
+            XR_ERROR_VALIDATION_FAILURE,
+            "property_capacity_input is neither 0 or kNumExtensionsSupported");
   RETURN_IF(properties == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrExtensionProperties is nullptr");
-  for (uint32_t i = 0; i < OpenXrTestHelper::kNumExtensionsSupported; i++) {
-    size_t dest_size = std::size(properties[i].extensionName);
+  // SAFETY: Test-only implementation of a C-Style API that thus has to provide
+  // arrays as a pointer and a size. The sole callers are our own product/test
+  // code.
+  auto properties_span =
+      UNSAFE_BUFFERS(base::span(properties, property_capacity_input));
+  for (uint32_t i = 0; i < supported_extensions.size(); i++) {
+    size_t dest_size = std::size(properties_span[i].extensionName);
     DCHECK(dest_size > 0);
-    properties[i].type = XR_TYPE_EXTENSION_PROPERTIES;
-    size_t copy_length =
-        base::strlcpy(properties[i].extensionName,
-                      OpenXrTestHelper::kExtensions[i], dest_size);
+    properties_span[i].type = XR_TYPE_EXTENSION_PROPERTIES;
+    size_t copy_length = base::strlcpy(properties_span[i].extensionName,
+                                       supported_extensions[i]);
     DCHECK(copy_length < dest_size);
-    properties[i].extensionVersion = 1;
+    properties_span[i].extensionVersion = 1;
   }
 
   return XR_SUCCESS;
@@ -542,9 +596,12 @@ XrResult xrEnumerateViewConfigurations(
             XR_ERROR_SIZE_INSUFFICIENT,
             "view_configuration_type_capacity_input size is insufficient");
 
-  for (uint32_t i = 0; i < view_configs.size(); i++) {
-    view_configuration_types[i] = view_configs[i];
-  }
+  // SAFETY: Test-only implementation of a C-Style API that thus has to provide
+  // arrays as a pointer and a size. The sole callers are our own product/test
+  // code.
+  auto view_configuration_types_span = UNSAFE_BUFFERS(base::span(
+      view_configuration_types, view_configuration_type_capacity_input));
+  view_configuration_types_span.copy_from_nonoverlapping(view_configs);
 
   return XR_SUCCESS;
 }
@@ -575,8 +632,12 @@ XrResult xrEnumerateViewConfigurationViews(
             XR_ERROR_SIZE_INSUFFICIENT, "view_capacity_input is insufficient");
   RETURN_IF(views == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrViewConfigurationView is nullptr");
+  // SAFETY: Test-only implementation of a C-Style API that thus has to provide
+  // arrays as a pointer and a size. The sole callers are our own product/test
+  // code.
+  auto views_span = UNSAFE_BUFFERS(base::span(views, view_capacity_input));
   for (uint32_t i = 0; i < view_properties.size(); i++) {
-    views[i] = view_properties[i].GetPropertiesForTest();
+    views_span[i] = view_properties[i].GetPropertiesForTest();
   }
 
   return XR_SUCCESS;
@@ -604,8 +665,13 @@ XrResult xrEnumerateSwapchainFormats(XrSession session,
             "format_capacity_input is less than required size");
   RETURN_IF(formats == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "Formats Array is nullptr");
+#if BUILDFLAG(IS_WIN)
   // This is what is hardcoded in `OpenXrGraphicsBindingD3D11`.
   formats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+#elif BUILDFLAG(IS_ANDROID)
+  // This is what is hardcoded in `OpenXrGraphicsBindingOpenGLES`.
+  formats[0] = OpenXrTestHelper::kSwapchainFormat;
+#endif
 
   return XR_SUCCESS;
 }
@@ -634,13 +700,19 @@ XrResult xrEnumerateSwapchainImages(XrSwapchain swapchain,
             "image_capacity_input is neither 0 or kMinSwapchainBuffering");
   RETURN_IF(images == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrSwapchainImageBaseHeader is nullptr");
+#if BUILDFLAG(IS_WIN)
   const std::vector<Microsoft::WRL::ComPtr<ID3D11Texture2D>>& textures =
       g_test_helper.GetSwapchainTextures();
   DCHECK_EQ(textures.size(), image_capacity_input);
 
+  // SAFETY: Test-only implementation of a C-Style API that thus has to provide
+  // arrays as a pointer and a size. The sole callers are our own product/test
+  // code.
+  auto images_span = UNSAFE_BUFFERS(
+      base::span(reinterpret_cast<XrSwapchainImageD3D11KHR*>(images),
+                 image_capacity_input));
   for (uint32_t i = 0; i < image_capacity_input; i++) {
-    XrSwapchainImageD3D11KHR& image =
-        reinterpret_cast<XrSwapchainImageD3D11KHR*>(images)[i];
+    XrSwapchainImageD3D11KHR& image = images_span[i];
 
     RETURN_IF(image.type != XR_TYPE_SWAPCHAIN_IMAGE_D3D11_KHR,
               XR_ERROR_VALIDATION_FAILURE,
@@ -650,6 +722,29 @@ XrResult xrEnumerateSwapchainImages(XrSwapchain swapchain,
 
     image.texture = textures[i].Get();
   }
+#elif BUILDFLAG(IS_ANDROID)
+  const std::vector<uint32_t>& texture_ids =
+      g_test_helper.GetSwapchainTextureIDs();
+  DCHECK_EQ(texture_ids.size(), image_capacity_input);
+
+  // SAFETY: Test-only implementation of a C-Style API that thus has to provide
+  // arrays as a pointer and a size. The sole callers are our own product/test
+  // code.
+  auto images_span = UNSAFE_BUFFERS(
+      base::span(reinterpret_cast<XrSwapchainImageOpenGLESKHR*>(images),
+                 image_capacity_input));
+  for (uint32_t i = 0; i < image_capacity_input; i++) {
+    XrSwapchainImageOpenGLESKHR& image = images_span[i];
+
+    RETURN_IF(image.type != XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_ES_KHR,
+              XR_ERROR_VALIDATION_FAILURE,
+              "XrSwapchainImageOpenGLESKHR type invalid");
+    RETURN_IF(image.next != nullptr, XR_ERROR_VALIDATION_FAILURE,
+              "XrSwapchainImageOpenGLESKHR next is not nullptr");
+
+    image.image = texture_ids[i];
+  }
+#endif
 
   return XR_SUCCESS;
 }
@@ -808,6 +903,20 @@ XrResult xrGetCurrentInteractionProfile(
   return XR_SUCCESS;
 }
 
+#if BUILDFLAG(IS_ANDROID)
+XrResult xrGetOpenGLESGraphicsRequirementsKHR(
+    XrInstance instance,
+    XrSystemId system_id,
+    XrGraphicsRequirementsOpenGLESKHR* graphics_requirements) {
+  DVLOG(2) << __FUNCTION__;
+  RETURN_IF_XR_FAILED(g_test_helper.ValidateInstance(instance));
+  RETURN_IF_XR_FAILED(g_test_helper.ValidateSystemId(system_id));
+  RETURN_IF(graphics_requirements == nullptr, XR_ERROR_VALIDATION_FAILURE,
+            "graphicsRequirements object must not be nullptr");
+  return XR_SUCCESS;
+}
+#endif
+
 XrResult xrGetReferenceSpaceBoundsRect(
     XrSession session,
     XrReferenceSpaceType refernece_space_type,
@@ -836,17 +945,36 @@ XrResult xrGetViewConfigurationProperties(
       view_configuration_type != XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO,
       XR_ERROR_VALIDATION_FAILURE, "viewConfigurationType must be stereo");
   RETURN_IF(
-      configuration_properties->type == XR_TYPE_VIEW_CONFIGURATION_PROPERTIES,
+      configuration_properties->type != XR_TYPE_VIEW_CONFIGURATION_PROPERTIES,
       XR_ERROR_VALIDATION_FAILURE,
       "XrViewConfigurationProperties.type must be "
       "XR_TYPE_VIEW_CONFIGURATION_PROPERTIES");
-  RETURN_IF(configuration_properties->next == nullptr,
+  RETURN_IF(configuration_properties->next != nullptr,
             XR_ERROR_VALIDATION_FAILURE,
             "XrViewConfigurationProperties.next must be nullptr");
   configuration_properties->viewConfigurationType =
       XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
   configuration_properties->fovMutable = XR_TRUE;
   return XR_SUCCESS;
+}
+
+XrResult xrGetVisibilityMaskKHR(XrSession session,
+                                XrViewConfigurationType viewConfigurationType,
+                                uint32_t viewIndex,
+                                XrVisibilityMaskTypeKHR visibilityMaskType,
+                                XrVisibilityMaskKHR* visibilityMask) {
+  DVLOG(2) << __FUNCTION__;
+  RETURN_IF_XR_FAILED(g_test_helper.ValidateSession(session));
+  RETURN_IF_XR_FAILED(
+      g_test_helper.ValidateViewConfigType(viewConfigurationType));
+  RETURN_IF(visibilityMask == nullptr, XR_ERROR_VALIDATION_FAILURE,
+            "XrVisibilityMaskKHR is nullptr");
+  RETURN_IF(visibilityMask->type != XR_TYPE_VISIBILITY_MASK_KHR,
+            XR_ERROR_VALIDATION_FAILURE,
+            "xrGetVisibilityMaskKHR visibilityMask type invalid");
+
+  return g_test_helper.GetVisibilityMask(viewConfigurationType, viewIndex,
+                                         visibilityMaskType, visibilityMask);
 }
 
 XrResult xrGetSystem(XrInstance instance,
@@ -880,8 +1008,6 @@ XrResult xrGetSystemProperties(XrInstance instance,
             "XrSystemProperties is nullptr");
   RETURN_IF(system_properties->type != XR_TYPE_SYSTEM_PROPERTIES,
             XR_ERROR_VALIDATION_FAILURE, "XrSystemProperties type invalid");
-  RETURN_IF(system_properties->next != nullptr, XR_ERROR_VALIDATION_FAILURE,
-            "XrSystemProperties next is not nullptr");
 
   *system_properties = g_test_helper.GetSystemProperties();
   system_properties->systemId = system_id;
@@ -898,6 +1024,8 @@ XrResult xrLocateHandJointsEXT(XrHandTrackerEXT hand_tracker,
             "XrHandJointsLocateInfoEXT is nullptr");
   RETURN_IF(locations == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrHandJointLocationsEXT is nullptr");
+  RETURN_IF_XR_FAILED(g_test_helper.ValidateSpace(locate_info->baseSpace));
+  g_test_helper.LocateJoints(hand_tracker, locate_info, locations);
   // No tests actually use hand joint data, so we leave them unpopulated at this
   // time.
   return XR_SUCCESS;
@@ -916,10 +1044,7 @@ XrResult xrLocateSpace(XrSpace space,
             "XrSpaceLocation is nullptr");
   g_test_helper.LocateSpace(space, &(location->pose));
 
-  location->locationFlags = XR_SPACE_LOCATION_ORIENTATION_VALID_BIT |
-                            XR_SPACE_LOCATION_POSITION_VALID_BIT |
-                            XR_SPACE_LOCATION_ORIENTATION_TRACKED_BIT |
-                            XR_SPACE_LOCATION_POSITION_TRACKED_BIT;
+  location->locationFlags = OpenXrTestHelper::kValidTrackedPoseFlags;
 
   return XR_SUCCESS;
 }
@@ -1020,11 +1145,15 @@ XrResult xrSuggestInteractionProfileBindings(
             XR_ERROR_ACTIONSETS_ALREADY_ATTACHED,
             "xrSuggestInteractionProfileBindings called after "
             "xrAttachSessionActionSets");
-  for (uint32_t i = 0; i < suggested_bindings->countSuggestedBindings; i++) {
-    XrActionSuggestedBinding suggestedBinding =
-        suggested_bindings->suggestedBindings[i];
+  // SAFETY: Test-only implementation of a C-Style API that thus has to provide
+  // arrays as a pointer and a size. The sole callers are our own product/test
+  // code.
+  auto suggested_bindings_span =
+      UNSAFE_BUFFERS(base::span(suggested_bindings->suggestedBindings,
+                                suggested_bindings->countSuggestedBindings));
+  for (XrActionSuggestedBinding suggested_binding : suggested_bindings_span) {
     RETURN_IF_XR_FAILED(g_test_helper.BindActionAndPath(
-        suggested_bindings->interactionProfile, suggestedBinding));
+        suggested_bindings->interactionProfile, suggested_binding));
   }
 
   return XR_SUCCESS;
@@ -1083,13 +1212,16 @@ XrResult xrSyncActions(XrSession session, const XrActionsSyncInfo* sync_info) {
   RETURN_IF(sync_info->activeActionSets == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrActionsSyncInfo activeActionSets is nullptr");
 
-  for (uint32_t i = 0; i < sync_info->countActiveActionSets; i++) {
+  // SAFETY: Test-only implementation of a C-Style API that thus has to provide
+  // arrays as a pointer and a size. The sole callers are our own product/test
+  // code.
+  auto active_action_sets = UNSAFE_BUFFERS(base::span(
+      sync_info->activeActionSets, sync_info->countActiveActionSets));
+  for (XrActiveActionSet action_set : active_action_sets) {
     RETURN_IF(
-        sync_info->activeActionSets[i].subactionPath != XR_NULL_PATH,
-        XR_ERROR_VALIDATION_FAILURE,
+        action_set.subactionPath != XR_NULL_PATH, XR_ERROR_VALIDATION_FAILURE,
         "xrSyncActionData does not support use of subactionPath for test yet");
-    RETURN_IF_XR_FAILED(
-        g_test_helper.SyncActionData(sync_info->activeActionSets[i].actionSet));
+    RETURN_IF_XR_FAILED(g_test_helper.SyncActionData(action_set.actionSet));
   }
 
   return XR_SUCCESS;
@@ -1159,7 +1291,7 @@ XrResult xrWaitSwapchainImage(XrSwapchain swapchain,
 // Please add new OpenXR APIs below in alphabetical order.
 #define TRY_LOAD_METHOD(method_name)                                 \
   do {                                                               \
-    if (strcmp(name, #method_name) == 0) {                           \
+    if (name_view == std::string_view(#method_name)) {               \
       *function = reinterpret_cast<PFN_xrVoidFunction>(method_name); \
       return XR_SUCCESS;                                             \
     }                                                                \
@@ -1168,6 +1300,7 @@ XrResult xrWaitSwapchainImage(XrSwapchain swapchain,
 XrResult XRAPI_PTR xrGetInstanceProcAddr(XrInstance instance,
                                          const char* name,
                                          PFN_xrVoidFunction* function) {
+  std::string_view name_view(name);
   TRY_LOAD_METHOD(xrAcquireSwapchainImage);
   TRY_LOAD_METHOD(xrAttachSessionActionSets);
   TRY_LOAD_METHOD(xrBeginFrame);
@@ -1202,8 +1335,12 @@ XrResult XRAPI_PTR xrGetInstanceProcAddr(XrInstance instance,
   TRY_LOAD_METHOD(xrGetActionStateVector2f);
   TRY_LOAD_METHOD(xrGetActionStatePose);
   TRY_LOAD_METHOD(xrGetCurrentInteractionProfile);
+#if BUILDFLAG(IS_ANDROID)
+  TRY_LOAD_METHOD(xrGetOpenGLESGraphicsRequirementsKHR);
+#endif
   TRY_LOAD_METHOD(xrGetReferenceSpaceBoundsRect);
   TRY_LOAD_METHOD(xrGetViewConfigurationProperties);
+  TRY_LOAD_METHOD(xrGetVisibilityMaskKHR);
   TRY_LOAD_METHOD(xrGetSystem);
   TRY_LOAD_METHOD(xrGetSystemProperties);
   TRY_LOAD_METHOD(xrLocateHandJointsEXT);

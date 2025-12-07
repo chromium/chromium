@@ -28,8 +28,6 @@ class CrostiniUpgrader : public KeyedService,
                          public chromeos::PowerManagerClient::Observer,
                          public CrostiniUpgraderUIDelegate {
  public:
-  static CrostiniUpgrader* GetForProfile(Profile* profile);
-
   explicit CrostiniUpgrader(Profile* profile);
   CrostiniUpgrader(const CrostiniUpgrader&) = delete;
   CrostiniUpgrader& operator=(const CrostiniUpgrader&) = delete;
@@ -64,8 +62,6 @@ class CrostiniUpgrader : public KeyedService,
 
   // Return true if internal state allows starting upgrade.
   bool CanUpgrade();
-
-  static void EnsureFactoryBuilt();
 
  private:
   void CreateNewLogFile();

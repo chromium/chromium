@@ -29,12 +29,14 @@ class PowerMonitorTestImpl : public base::PowerStateObserver,
   void QueryNextState(QueryNextStateCallback callback) override;
 
   // base::PowerStateObserver:
-  void OnPowerStateChange(bool on_battery_power) override;
+  void OnBatteryPowerStatusChange(base::PowerStateObserver::BatteryPowerStatus
+                                      battery_power_status) override;
 
   void ReportState();
 
   QueryNextStateCallback callback_;
-  bool on_battery_power_ = false;
+  PowerStateObserver::BatteryPowerStatus battery_power_status_ =
+      PowerStateObserver::BatteryPowerStatus::kUnknown;
   bool need_to_report_ = false;
 };
 

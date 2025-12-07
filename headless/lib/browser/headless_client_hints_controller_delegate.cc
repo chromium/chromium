@@ -63,13 +63,6 @@ bool HeadlessClientHintsControllerDelegate::IsJavaScriptAllowed(
   return true;
 }
 
-// TODO(crbug.com/40257952): Currently always returns false.
-bool HeadlessClientHintsControllerDelegate::AreThirdPartyCookiesBlocked(
-    const GURL& url,
-    content::RenderFrameHost* rfh) {
-  return false;
-}
-
 blink::UserAgentMetadata
 HeadlessClientHintsControllerDelegate::GetUserAgentMetadata() {
   return HeadlessBrowser::GetUserAgentMetadata();

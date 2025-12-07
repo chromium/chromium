@@ -200,6 +200,11 @@ GL_FUNCTIONS = [
                'GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, '
                'GLbitfield mask, GLenum filter', },
 { 'return_type': 'void',
+  'versions': [{'name': 'glBlobCacheCallbacksANGLE',
+                'extensions': ['GL_ANGLE_blob_cache']}],
+  'arguments':
+      'GLSETBLOBPROCANGLE set, GLGETBLOBPROCANGLE get, const void* userData', },
+{ 'return_type': 'void',
   'names': ['glBufferData'],
   'arguments':
       'GLenum target, GLsizeiptr size, const void* data, GLenum usage', },
@@ -1764,23 +1769,7 @@ GL_FUNCTIONS = [
 { 'return_type': 'void',
   'names': ['glShaderSource'],
   'arguments': 'GLuint shader, GLsizei count, const char* const* str, '
-               'const GLint* length',
-  'logging_code': """
-  GL_SERVICE_LOG_CODE_BLOCK({
-    for (GLsizei ii = 0; ii < count; ++ii) {
-      if (str[ii]) {
-        if (length && length[ii] >= 0) {
-          std::string source(str[ii], length[ii]);
-          GL_SERVICE_LOG("  " << ii << ": ---\\n" << source << "\\n---");
-        } else {
-          GL_SERVICE_LOG("  " << ii << ": ---\\n" << str[ii] << "\\n---");
-        }
-      } else {
-        GL_SERVICE_LOG("  " << ii << ": NULL");
-      }
-    }
-  });
-""", },
+               'const GLint* length', },
 { 'return_type': 'void',
   'names': ['glSignalSemaphoreEXT'],
  'arguments': 'GLuint semaphore, GLuint numBufferBarriers, '
@@ -2423,6 +2412,11 @@ EGL_FUNCTIONS = [
                  'client_extensions': ['EGL_KHR_debug'], }],
   'arguments': 'EGLDisplay display, EGLenum objectType, EGLObjectKHR object, '
     'EGLLabelKHR label', },
+{ 'return_type': 'void',
+    'versions': [{'name': 'eglLockVulkanQueueANGLE',
+                  'extensions':
+                      ['EGL_ANGLE_device_vulkan']}],
+  'arguments': 'EGLDisplay dpy', },
 { 'return_type': 'EGLBoolean',
   'names': ['eglMakeCurrent'],
   'arguments':
@@ -2431,6 +2425,11 @@ EGL_FUNCTIONS = [
   'names': ['eglPostSubBufferNV'],
   'arguments': 'EGLDisplay dpy, EGLSurface surface, '
     'EGLint x, EGLint y, EGLint width, EGLint height', },
+{ 'return_type': 'EGLBoolean',
+  'versions': [{'name': 'eglPresentationTimeANDROID',
+                'extensions': ['EGL_ANDROID_presentation_time']}],
+  'arguments': 'EGLDisplay dpy, EGLSurface surface, EGLnsecsANDROID time',
+},
 { 'return_type': 'EGLenum',
   'names': ['eglQueryAPI'],
   'arguments': 'void', },
@@ -2589,6 +2588,11 @@ EGL_FUNCTIONS = [
 { 'return_type': 'EGLBoolean',
   'names': ['eglTerminate'],
   'arguments': 'EGLDisplay dpy', },
+{ 'return_type': 'void',
+    'versions': [{'name': 'eglUnlockVulkanQueueANGLE',
+                  'extensions':
+                      ['EGL_ANGLE_device_vulkan']}],
+  'arguments': 'EGLDisplay dpy', },
 { 'return_type': 'EGLBoolean',
   'names': ['eglWaitClient'],
   'arguments': 'void', },
@@ -2624,7 +2628,9 @@ EGL_CLIENT_EXTENSIONS_EXTRA = [
   'EGL_ANGLE_platform_angle_null',
   'EGL_ANGLE_platform_angle_opengl',
   'EGL_ANGLE_platform_angle_vulkan',
+  'EGL_EXT_platform_base',
   'EGL_EXT_platform_device',
+  'EGL_KHR_platform_gbm',
   'EGL_MESA_platform_surfaceless',
 ]
 
@@ -2637,6 +2643,7 @@ EGL_EXTENSIONS_EXTRA = [
   'EGL_ANGLE_context_virtualization',
   'EGL_ANGLE_create_context_backwards_compatible',
   'EGL_ANGLE_create_context_client_arrays',
+  'EGL_ANGLE_create_context_passthrough_shaders',
   'EGL_ANGLE_create_context_webgl_compatibility',
   'EGL_ANGLE_global_fence_sync',
   'EGL_ANGLE_iosurface_client_buffer',
@@ -2844,10 +2851,12 @@ struct GL_EXPORT DisplayExtensionsEGL {
   # Write macros to invoke function pointers. Always use the GL name for the
   # macro.
   file.write('\n')
+  file.write('#if BINDINGS_%s_PROTOTYPES\n' % set_name.upper())
   for func in functions:
     file.write('#define %s ::gl::g_current_%s_context->%sFn\n' %
         (func['known_as'], set_name.lower(), func['known_as']))
 
+  file.write('#endif // BINDINGS_%s_PROTOTYPES\n' % set_name.upper())
   file.write('\n')
   file.write('#endif  // UI_GL_GL_BINDINGS_AUTOGEN_%s_H_\n' %
       set_name.upper())
@@ -2935,7 +2944,7 @@ def GenerateStubHeader(file, functions):
       file.write(';\n');
 
   file.write('\n')
-  file.write('#endif  //  UI_GL_GL_STUB_AUTOGEN_GL_H_')
+  file.write('#endif  // UI_GL_GL_STUB_AUTOGEN_GL_H_')
 
 def GenerateStubSource(file, functions):
   """Generates gl_stub_autogen_gl.cc"""
@@ -2967,7 +2976,8 @@ def GenerateSource(file, functions, set_name, used_extensions,
   """Generates gl_bindings_autogen_x.cc"""
 
   set_header_name = "ui/gl/gl_" + set_name.lower() + "_api_implementation.h"
-  include_list = [ 'base/trace_event/trace_event.h',
+  include_list = [ 'base/containers/span.h',
+                   'base/trace_event/trace_event.h',
                    'ui/gl/gl_enums.h',
                    'ui/gl/gl_bindings.h',
                    'ui/gl/gl_context.h',
@@ -2982,11 +2992,6 @@ def GenerateSource(file, functions, set_name, used_extensions,
   file.write(LICENSE_AND_HEADER +
 """
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <string>
 
 %s
@@ -2996,7 +3001,7 @@ namespace gl {
 
   file.write('\n')
   if set_name != 'gl':
-    file.write('Driver%s g_driver_%s;  // Exists in .bss\n' % (
+    file.write('Driver%s g_driver_%s = {};\n' % (
         set_name.upper(), set_name.lower()))
   file.write('\n')
 
@@ -3019,21 +3024,20 @@ namespace gl {
   # and to initialize bindings where choice of the function depends on the
   # extension string or the GL version to point to stub functions.
   file.write('\n')
-  file.write('void Driver%s::InitializeStaticBindings() {\n' %
-             set_name.upper())
-  file.write('  // Ensure struct has been zero-initialized.\n')
-  file.write('  char* this_bytes = reinterpret_cast<char*>(this);\n')
-  file.write('  DCHECK(this_bytes[0] == 0);\n');
-  file.write('  DCHECK('
-             'memcmp(this_bytes, this_bytes + 1, sizeof(*this) - 1) == 0);\n');
-  file.write('\n')
+  file.write("""\
+void Driver%s::InitializeStaticBindings(GLGetProcAddressProc get_proc_address) {
+""" % set_name.upper())
+
+  file.write('  TRACE_EVENT("gpu,startup", '
+             '"Driver%s::InitializeStaticBindings");'
+             '\n' % (set_name.upper()))
 
   def BindingsAreAllStatic(api_set_name):
     return api_set_name == 'egl'
 
   def WriteFuncBinding(file, known_as, version_name):
     file.write(
-        '  fn.%sFn = reinterpret_cast<%sProc>(GetGLProcAddress("%s"));\n' %
+        '  fn.%sFn = reinterpret_cast<%sProc>(get_proc_address("%s"));\n' %
         (known_as, known_as, version_name))
 
   for func in functions:
@@ -3110,12 +3114,14 @@ namespace gl {
 
   if set_name == 'gl':
     file.write("""\
-void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
+void DriverGL::InitializeDynamicBindings(GLGetProcAddressProc get_proc_address,
+                                         const GLVersionInfo* ver,
                                          const gfx::ExtensionSet& extensions) {
 """)
   elif set_name == 'egl':
     file.write("""\
 void ClientExtensionsEGL::InitializeClientExtensionSettings() {
+  TRACE_EVENT("gpu,startup", "DriverEGL::InitializeClientExtensionSettings");
   std::string client_extensions(GetClientExtensions());
   [[maybe_unused]] gfx::ExtensionSet extensions(
       gfx::MakeExtensionSet(client_extensions));
@@ -3156,6 +3162,7 @@ void Driver%s::InitializeExtensionBindings() {
 }
 
 void DisplayExtensionsEGL::InitializeExtensionSettings(EGLDisplay display) {
+  TRACE_EVENT("gpu,startup", "DriverEGL::InitializeExtensionSettings");
   std::string platform_extensions(GetPlatformExtensions(display));
   [[maybe_unused]] gfx::ExtensionSet extensions(
       gfx::MakeExtensionSet(platform_extensions));
@@ -3174,7 +3181,7 @@ void DisplayExtensionsEGL::InitializeExtensionSettings(EGLDisplay display) {
   # Write function to clear all function pointers.
   file.write('\n')
   file.write("""void Driver%s::ClearBindings() {
-  memset(this, 0, sizeof(*this));
+  *this = {};
 }
 """ % set_name.upper())
 
@@ -3253,6 +3260,12 @@ void DisplayExtensionsEGL::InitializeExtensionSettings(EGLDisplay display) {
         r'EGLDEBUGPROCKHR ([a-zA-Z0-9_]+)',
         r'EGLDEBUGPROCKHR_\1', log_argument_names)
     log_argument_names = re.sub(
+        r'GLSETBLOBPROCANGLE ([a-zA-Z0-9_]+)',
+        r'GLSETBLOBPROCANGLE_\1', log_argument_names)
+    log_argument_names = re.sub(
+        r'GLGETBLOBPROCANGLE ([a-zA-Z0-9_]+)',
+        r'GLGETBLOBPROCANGLE_\1', log_argument_names)
+    log_argument_names = re.sub(
         r'(?<!E)GLenum ([a-zA-Z0-9_]+)', r'GLenum_\1', log_argument_names)
     # Strip remaining types.
     log_argument_names = re.sub(
@@ -3279,6 +3292,12 @@ void DisplayExtensionsEGL::InitializeExtensionSettings(EGLDisplay display) {
         r'reinterpret_cast<void*>(\1)', log_argument_names)
     log_argument_names = re.sub(
         r'EGLDEBUGPROCKHR_([a-zA-Z0-9_]+)',
+        r'reinterpret_cast<void*>(\1)', log_argument_names)
+    log_argument_names = re.sub(
+        r'GLSETBLOBPROCANGLE_([a-zA-Z0-9_]+)',
+        r'reinterpret_cast<void*>(\1)', log_argument_names)
+    log_argument_names = re.sub(
+        r'GLGETBLOBPROCANGLE_([a-zA-Z0-9_]+)',
         r'reinterpret_cast<void*>(\1)', log_argument_names)
     log_argument_names = re.sub(
         r'GLenum_([a-zA-Z0-9_]+)', r'GLEnums::GetStringEnum(\1)',
@@ -3330,8 +3349,7 @@ void DisplayExtensionsEGL::InitializeExtensionSettings(EGLDisplay display) {
     file.write('void NoContextHelper(const char* method_name) {\n')
     no_context_error = ('<< "Trying to call " << method_name << " without '
                         'current GL context"')
-    file.write('  NOTREACHED_IN_MIGRATION() %s;\n' % no_context_error)
-    file.write('  LOG(ERROR) %s;\n' % no_context_error)
+    file.write('  NOTREACHED() %s;\n' % no_context_error)
     file.write('}\n')
     file.write('}  // namespace\n')
     for func in functions:
@@ -3453,7 +3471,7 @@ namespace gl {
   # GLProcAddress().
   file.write('\n')
   file.write('static void Mock%sInvalidFunction() {\n' % set_name.capitalize())
-  file.write('  NOTREACHED_IN_MIGRATION();\n')
+  file.write('  NOTREACHED();\n')
   file.write('}\n')
 
   # Write a function to lookup a mock GL function based on its name.
@@ -3505,20 +3523,23 @@ def GenerateEnumUtils(out_file, input_filenames):
 #ifndef UI_GL_GL_ENUMS_IMPLEMENTATION_AUTOGEN_H_
 #define UI_GL_GL_ENUMS_IMPLEMENTATION_AUTOGEN_H_
 
+namespace {
+
+struct EnumToString {
+  uint32_t value;
+  std::string_view name;
+};
+
+static constexpr EnumToString kEnumToStringTable[] = {
 """)
-  out_file.write("static const GLEnums::EnumToString "
-                 "enum_to_string_table[] = {\n")
   for value in sorted(dict):
     out_file.write('  { %s, "%s", },\n' % (value, dict[value]))
   out_file.write("""};
 
-const GLEnums::EnumToString* const GLEnums::enum_to_string_table_ =
-  enum_to_string_table;
-const size_t GLEnums::enum_to_string_table_len_ =
-  sizeof(enum_to_string_table) / sizeof(enum_to_string_table[0]);
+}  // namespace
 
+#endif  // UI_GL_GL_ENUMS_IMPLEMENTATION_AUTOGEN_H_
 """)
-  out_file.write('#endif  //  UI_GL_GL_ENUMS_IMPLEMENTATION_AUTOGEN_H_')
 
 
 def ParseFunctionsFromHeader(header_file, extensions, versions):

@@ -75,32 +75,72 @@ _spec_to_java_type = {
     mojom.UINT8.spec: 'byte',
 }
 
+_spec_to_java_type_with_nullable = dict(_spec_to_java_type)
+_spec_to_java_type_with_nullable.update({
+    mojom.NULLABLE_BOOL.spec:
+    '@Nullable Boolean',
+    mojom.NULLABLE_DCPIPE.spec:
+    'org.chromium.mojo.system.DataPipe.@Nullable ConsumerHandle',
+    mojom.NULLABLE_DOUBLE.spec:
+    '@Nullable Double',
+    mojom.NULLABLE_DPPIPE.spec:
+    'org.chromium.mojo.system.DataPipe.@Nullable ProducerHandle',
+    mojom.NULLABLE_FLOAT.spec:
+    '@Nullable Float',
+    mojom.NULLABLE_HANDLE.spec:
+    'org.chromium.mojo.system.@Nullable UntypedHandle',
+    mojom.NULLABLE_INT16.spec:
+    '@Nullable Short',
+    mojom.NULLABLE_INT32.spec:
+    '@Nullable Integer',
+    mojom.NULLABLE_INT64.spec:
+    '@Nullable Long',
+    mojom.NULLABLE_INT8.spec:
+    '@Nullable Byte',
+    mojom.NULLABLE_MSGPIPE.spec:
+    'org.chromium.mojo.system.@Nullable MessagePipeHandle',
+    mojom.NULLABLE_PLATFORMHANDLE.spec:
+    'org.chromium.mojo.system.@Nullable UntypedHandle',
+    mojom.NULLABLE_SHAREDBUFFER.spec:
+    'org.chromium.mojo.system.@Nullable SharedBufferHandle',
+    mojom.NULLABLE_STRING.spec:
+    '@Nullable String',
+    mojom.NULLABLE_UINT16.spec:
+    '@Nullable Short',
+    mojom.NULLABLE_UINT32.spec:
+    '@Nullable Integer',
+    mojom.NULLABLE_UINT64.spec:
+    '@Nullable Long',
+    mojom.NULLABLE_UINT8.spec:
+    '@Nullable Byte',
+})
+
 _spec_to_decode_method = {
-  mojom.BOOL.spec:                  'readBoolean',
-  mojom.DCPIPE.spec:                'readConsumerHandle',
-  mojom.DOUBLE.spec:                'readDouble',
-  mojom.DPPIPE.spec:                'readProducerHandle',
-  mojom.FLOAT.spec:                 'readFloat',
-  mojom.HANDLE.spec:                'readUntypedHandle',
-  mojom.INT16.spec:                 'readShort',
-  mojom.INT32.spec:                 'readInt',
-  mojom.INT64.spec:                 'readLong',
-  mojom.INT8.spec:                  'readByte',
-  mojom.MSGPIPE.spec:               'readMessagePipeHandle',
-  mojom.PLATFORMHANDLE.spec:        'readUntypedHandle',
-  mojom.NULLABLE_DCPIPE.spec:       'readConsumerHandle',
-  mojom.NULLABLE_DPPIPE.spec:       'readProducerHandle',
-  mojom.NULLABLE_HANDLE.spec:       'readUntypedHandle',
-  mojom.NULLABLE_MSGPIPE.spec:      'readMessagePipeHandle',
-  mojom.NULLABLE_PLATFORMHANDLE.spec: 'readUntypedHandle',
-  mojom.NULLABLE_SHAREDBUFFER.spec: 'readSharedBufferHandle',
-  mojom.NULLABLE_STRING.spec:       'readString',
-  mojom.SHAREDBUFFER.spec:          'readSharedBufferHandle',
-  mojom.STRING.spec:                'readString',
-  mojom.UINT16.spec:                'readShort',
-  mojom.UINT32.spec:                'readInt',
-  mojom.UINT64.spec:                'readLong',
-  mojom.UINT8.spec:                 'readByte',
+    mojom.BOOL.spec: 'readBoolean',
+    mojom.DCPIPE.spec: 'readConsumerHandle',
+    mojom.DOUBLE.spec: 'readDouble',
+    mojom.DPPIPE.spec: 'readProducerHandle',
+    mojom.FLOAT.spec: 'readFloat',
+    mojom.HANDLE.spec: 'readUntypedHandle',
+    mojom.INT16.spec: 'readShort',
+    mojom.INT32.spec: 'readInt',
+    mojom.INT64.spec: 'readLong',
+    mojom.INT8.spec: 'readByte',
+    mojom.MSGPIPE.spec: 'readMessagePipeHandle',
+    mojom.PLATFORMHANDLE.spec: 'readUntypedHandle',
+    mojom.NULLABLE_DCPIPE.spec: 'readConsumerHandle',
+    mojom.NULLABLE_DPPIPE.spec: 'readProducerHandle',
+    mojom.NULLABLE_HANDLE.spec: 'readUntypedHandle',
+    mojom.NULLABLE_MSGPIPE.spec: 'readMessagePipeHandle',
+    mojom.NULLABLE_PLATFORMHANDLE.spec: 'readUntypedHandle',
+    mojom.NULLABLE_SHAREDBUFFER.spec: 'readSharedBufferHandle',
+    mojom.NULLABLE_STRING.spec: 'readString',
+    mojom.SHAREDBUFFER.spec: 'readSharedBufferHandle',
+    mojom.STRING.spec: 'readString',
+    mojom.UINT16.spec: 'readShort',
+    mojom.UINT32.spec: 'readInt',
+    mojom.UINT64.spec: 'readLong',
+    mojom.UINT8.spec: 'readByte',
 }
 
 _java_primitive_to_boxed_type = {
@@ -249,7 +289,25 @@ def GetPackage(module):
     return 'org.chromium.' + module.namespace
   return 'org.chromium'
 
-def GetNameForKind(context, kind):
+
+def ComputeInterfaceImports(module):
+  imports = []
+
+  def has_result_response(module):
+    for interface in module.interfaces:
+      for method in interface.methods:
+        if method.result_response != None:
+          return True
+    return False
+
+  if has_result_response(module):
+    imports += ['org.chromium.mojo.bindings.Result']
+
+  return imports
+
+
+def GetNameForKind(context, kind, with_nullable=False):
+
   def _GetNameHierachy(kind):
     hierachy = []
     if kind.parent_kind:
@@ -262,6 +320,11 @@ def GetNameForKind(context, kind):
   if GetPackage(module) != GetPackage(kind.module):
     elements += [GetPackage(kind.module)]
   elements += _GetNameHierachy(kind)
+
+  if with_nullable and kind.is_nullable:
+    if len(elements) == 1:
+      return f'@Nullable {elements[0]}'
+    return '.'.join(elements[:-1]) + '.@Nullable ' + elements[-1]
   return '.'.join(elements)
 
 
@@ -269,23 +332,32 @@ def GetNameForKind(context, kind):
 def GetJavaClassForEnum(context, kind):
   return GetNameForKind(context, kind)
 
-def GetBoxedJavaType(context, kind, with_generics=True):
+
+def GetBoxedJavaType(context, kind, with_generics=True, with_nullable=False):
   unboxed_type = GetJavaType(context, kind, False, with_generics)
   if unboxed_type in _java_primitive_to_boxed_type:
-    return _java_primitive_to_boxed_type[unboxed_type]
+    ret = _java_primitive_to_boxed_type[unboxed_type]
+    if with_nullable and kind.is_nullable:
+      return f'@Nullable {ret}'
+    return ret
+  if with_nullable:
+    return GetJavaType(context, kind, False, with_generics, True)
   return unboxed_type
 
 
 @jinja2.pass_context
-def GetJavaType(context, kind, boxed=False, with_generics=True):
+def GetJavaType(context,
+                kind,
+                boxed=False,
+                with_generics=True,
+                with_nullable=False):
   if boxed:
-    return GetBoxedJavaType(context, kind)
-  if (mojom.IsStructKind(kind) or
-      mojom.IsInterfaceKind(kind) or
-      mojom.IsUnionKind(kind)):
-    return GetNameForKind(context, kind)
+    return GetBoxedJavaType(context, kind, with_nullable=with_nullable)
+  if (mojom.IsStructKind(kind) or mojom.IsInterfaceKind(kind)
+      or mojom.IsUnionKind(kind)):
+    return GetNameForKind(context, kind, with_nullable=with_nullable)
   if mojom.IsPendingRemoteKind(kind):
-    return GetNameForKind(context, kind.kind)
+    return GetNameForKind(context, kind.kind, with_nullable=with_nullable)
   if mojom.IsPendingReceiverKind(kind):
     return ('org.chromium.mojo.bindings.InterfaceRequest<%s>' %
             GetNameForKind(context, kind.kind))
@@ -294,18 +366,29 @@ def GetJavaType(context, kind, boxed=False, with_generics=True):
   if mojom.IsPendingAssociatedReceiverKind(kind):
     return 'org.chromium.mojo.bindings.AssociatedInterfaceRequestNotSupported'
   if mojom.IsMapKind(kind):
+    add_nullable = with_nullable and kind.is_nullable
+    map_part = 'java.util.@Nullable Map' if add_nullable else 'java.util.Map'
     if with_generics:
-      return 'java.util.Map<%s, %s>' % (
-          GetBoxedJavaType(context, kind.key_kind),
-          GetBoxedJavaType(context, kind.value_kind))
-    else:
-      return 'java.util.Map'
+      return '%s<%s, %s>' % (
+          map_part,
+          GetBoxedJavaType(context, kind.key_kind, with_nullable=with_nullable),
+          GetBoxedJavaType(
+              context, kind.value_kind, with_nullable=with_nullable))
+    return map_part
   if mojom.IsArrayKind(kind):
-    return '%s[]' % GetJavaType(context, kind.kind, boxed, with_generics)
+    element_type = GetJavaType(context, kind.kind, boxed, with_generics,
+                               with_nullable)
+    if with_nullable and kind.is_nullable:
+      return f'{element_type} @Nullable []'
+    return f'{element_type}[]'
   if mojom.IsEnumKind(kind):
     if kind.is_nullable:
+      if with_nullable:
+        return '@Nullable Integer'
       return 'Integer'
     return 'int'
+  if with_nullable:
+    return _spec_to_java_type_with_nullable[kind.spec]
   return _spec_to_java_type[kind.spec]
 
 
@@ -351,16 +434,19 @@ def ExpressionToText(context, token, kind_spec=''):
 
   if isinstance(token, mojom.NamedValue):
     return _TranslateNamedValue(token)
-  if kind_spec.startswith('i') or kind_spec.startswith('u'):
+  if kind_spec.startswith('i') or kind_spec.startswith(
+      'u') or kind_spec.startswith('?i') or kind_spec.startswith('?u'):
     number = ast.literal_eval(token.lstrip('+ '))
     if not isinstance(number, int):
-      raise ValueError('got unexpected type %r for int literal %r' % (
-          type(number), token))
+      raise ValueError('got unexpected type %r for int literal %r' %
+                       (type(number), token))
     # If the literal is too large to fit a signed long, convert it to the
     # equivalent signed long.
     if number >= 2 ** 63:
       number -= 2 ** 64
-    if number < 2 ** 31 and number >= -2 ** 31:
+    # Always use a long literal for 64-bit values to allow implicit conversion
+    # to the nullable type.
+    if number < 2**31 and number >= -2**31 and not kind_spec.endswith('64'):
       return '%d' % number
     return '%dL' % number
   if isinstance(token, mojom.BuiltinValue):
@@ -447,7 +533,8 @@ def EnumCoversContinuousRange(kind):
 class Generator(generator.Generator):
   def _GetJinjaExports(self):
     return {
-      'package': GetPackage(self.module),
+        'interface_imports': ComputeInterfaceImports(self.module),
+        'package': GetPackage(self.module),
     }
 
   @staticmethod
@@ -571,16 +658,17 @@ class Generator(generator.Generator):
     # srcjar in the output directory.
     basename = "%s.srcjar" % self.module.path
     zip_filename = os.path.join(self.output_dir, basename)
-    with TempDir() as temp_java_root:
-      self.output_dir = os.path.join(temp_java_root, package_path)
-      self._DoGenerateFiles();
-      with action_helpers.atomic_output(zip_filename) as f:
-        zip_helpers.zip_directory(f, temp_java_root)
 
     if args.java_output_directory:
       # If requested, generate the java files directly into indicated directory.
       self.output_dir = os.path.join(args.java_output_directory, package_path)
       self._DoGenerateFiles();
+    else:
+      with TempDir() as temp_java_root:
+        self.output_dir = os.path.join(temp_java_root, package_path)
+        self._DoGenerateFiles()
+        with action_helpers.atomic_output(zip_filename) as f:
+          zip_helpers.zip_directory(f, temp_java_root)
 
   def GetJinjaParameters(self):
     return {

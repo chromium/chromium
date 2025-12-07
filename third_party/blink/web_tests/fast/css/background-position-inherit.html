@@ -23,10 +23,10 @@
     result.innerText += "\n";
 
     var targetBackgroundPosition2 = getComputedStyle(document.getElementById("target2")).backgroundPosition,cssText;
-    result.innerText += targetBackgroundPosition2 == "right 25% bottom 75%" ? "PASS" : "FAIL: The inherited value was " + targetBackgroundPosition;
+    result.innerText += targetBackgroundPosition2 == "75% 25%" ? "PASS" : "FAIL: The inherited value was " + targetBackgroundPosition2;
     result.innerText += "\n";
 
     var targetBackgroundPosition3 = getComputedStyle(document.getElementById("target3")).backgroundPosition,cssText;
-    result.innerText += targetBackgroundPosition3 == "right 25% bottom 75%" ? "PASS" : "FAIL: The inherited value was " + targetBackgroundPosition;
+    result.innerText += targetBackgroundPosition3 == "75% 25%" ? "PASS" : "FAIL: The inherited value was " + targetBackgroundPosition3;
 
 </script>

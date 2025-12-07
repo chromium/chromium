@@ -4,20 +4,21 @@
 
 package org.chromium.components.language;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /** Interface to get language profile data for device. */
+@NullMarked
 public interface LanguageProfileDelegate {
-    /** @return True if ULP is currently supported. */
-    public boolean isULPSupported();
-
     /**
      * @param accountName Account to get profile or null if the default profile should be returned.
      * @param timeoutInSeconds Seconds to wait before timing out on call to device.
      * @return A list of language tags ordered by preference for |accountName|
      */
-    public List<String> getLanguagePreferences(String accountName, int timeoutInSeconds)
+    List<String> getLanguagePreferences(@Nullable String accountName, int timeoutInSeconds)
             throws ExecutionException, InterruptedException, TimeoutException;
 }

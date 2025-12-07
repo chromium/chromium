@@ -5,10 +5,15 @@
 #include "ash/capture_mode/capture_mode_session.h"
 
 #include <memory>
+#include <string>
+#include <tuple>
 #include <utility>
+#include <vector>
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/magnifier/magnifier_glass.h"
+#include "ash/capture_mode/action_button_container_view.h"
+#include "ash/capture_mode/action_button_view.h"
 #include "ash/capture_mode/capture_label_view.h"
 #include "ash/capture_mode/capture_mode_behavior.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
@@ -21,32 +26,56 @@
 #include "ash/capture_mode/capture_mode_type_view.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
+#include "ash/capture_mode/capture_region_overlay_controller.h"
 #include "ash/capture_mode/capture_window_observer.h"
+#include "ash/capture_mode/disclaimer_view.h"
 #include "ash/capture_mode/folder_selection_dialog_controller.h"
 #include "ash/capture_mode/normal_capture_bar_view.h"
 #include "ash/capture_mode/recording_type_menu_view.h"
+#include "ash/capture_mode/search_results_panel.h"
 #include "ash/capture_mode/user_nudge_controller.h"
+#include "ash/constants/ash_pref_names.h"
+#include "ash/constants/url_constants.h"
 #include "ash/display/mouse_cursor_event_filter.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
+#include "ash/public/cpp/capture_mode/capture_mode_api.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
+#include "ash/scanner/scanner_controller.h"
+#include "ash/scanner/scanner_disclaimer.h"
+#include "ash/scanner/scanner_metrics.h"
 #include "ash/shell.h"
+#include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/color_util.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/pill_button.h"
 #include "ash/style/tab_slider_button.h"
 #include "ash/utility/cursor_setter.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_dimmer.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "cc/paint/paint_flags.h"
+#include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/env.h"
@@ -56,6 +85,7 @@
 #include "ui/aura/window_tracker.h"
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
@@ -65,6 +95,7 @@
 #include "ui/display/screen.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/types/event_type.h"
+#include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
@@ -76,7 +107,9 @@
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/cursor_util.h"
 
@@ -133,9 +166,15 @@ constexpr int kFocusRingSpacingDp = 2;
 // When updating the capture region, request a repaint on the region and inset
 // such that the border, affordance circles and affordance circle shadows are
 // all repainted as well.
-constexpr int kDamageInsetDp = capture_mode::kCaptureRegionBorderStrokePx +
-                               kAffordanceCircleRadiusDp +
-                               kRegionAffordanceCircleShadow2Blur;
+constexpr int kDamageOutsetDp = capture_mode::kCaptureRegionBorderStrokePx +
+                                kAffordanceCircleRadiusDp +
+                                kRegionAffordanceCircleShadow2Blur;
+
+// The damage outset from the edge of the capture region to repaint when there
+// is a glow animation.
+constexpr int kDamageWithGlowOutsetDp =
+    capture_mode::kRegionGlowMaxOutsetDp +
+    2 * static_cast<int>(capture_mode::kRegionGlowAnimationMaxBlurDp);
 
 // The minimum padding on each side of the capture region. If the capture button
 // cannot be placed in the center of the capture region and maintain this
@@ -170,16 +209,61 @@ constexpr base::TimeDelta kCaptureLabelRegionPhaseChangeDelay =
 // widget will scale up from 80% -> 100%.
 constexpr float kLabelScaleDownOnPhaseChange = 0.8;
 
-// Animation parameters for capture UI (capture bar, capture label) overlapping
-// the user capture region or camera preview. The default animation duration for
-// opacity changes to the capture UI.
-constexpr base::TimeDelta kCaptureUIOpacityChangeDuration =
-    base::Milliseconds(100);
-
 // If the user is using keyboard only and they are on the selecting region
 // phase, they can create default region which is centered and sized to this
 // value times the root window's width and height.
 constexpr float kRegionDefaultRatio = 0.24f;
+
+// The radius of the painted capture region when in sunfish mode.
+constexpr int kSunfishModeCaptureRegionRadiusDp = 16;
+
+// The width of the border around the capture region when selecting or adjusting
+// a region in sunfish mode.
+constexpr int kSunfishModeCaptureRegionBorderWidthDp = 6;
+
+// The radius of the focus ring drawn around the whole capture region in sunfish
+// mode.
+constexpr int kSunfishRegionFocusRingRadiusDp = 18;
+
+// The radius of the focus ring drawn around a corner handle of the capture
+// region in sunfish mode.
+constexpr int kSunfishRegionCornerFocusRingRadiusDp = 16;
+
+// The offset between a corner of a sunfish capture region and the center of the
+// the corresponding corner handle. This is used to move the focus ring and hit
+// test rect slightly inwards towards the capture region, to center it around
+// the rounded corner.
+constexpr int kSunfishRegionRoundedCornerOffsetDp =
+    kSunfishModeCaptureRegionRadiusDp / 2;
+
+// The damage outset from the edge of the capture region to repaint when
+// updating the capture region in sunfish mode. The value here is just a
+// heuristic but should be enough to cover all relevant UI around the capture
+// region.
+constexpr int kSunfishRegionDamageOutsetDp =
+    kSunfishModeCaptureRegionBorderWidthDp +
+    kSunfishRegionCornerFocusRingRadiusDp;
+
+// The animation duration for fading in Scanner action buttons.
+constexpr base::TimeDelta kScannerActionButtonFadeInDuration =
+    base::Milliseconds(100);
+
+// The delay before sending out an image search request after a capture region
+// is adjusted using keyboard events. This is to prevent too many requests if
+// the user needs to repeatedly adjust the capture region. Note that this delay
+// does not apply to region adjustments that end in a mouse release event.
+constexpr base::TimeDelta kImageSearchRequestStartDelay = base::Seconds(1);
+
+// The preferred alignment of a widget positioned near the capture region.
+enum class CaptureRegionWidgetAlignment {
+  // At the center of the capture region.
+  kCenter,
+  // Right-aligned with the capture region (i.e. the right edges of the widget
+  // and capture region align). We prefer to right-align the widget below the
+  // capture region if possible, otherwise will try to right-align above the
+  // capture region.
+  kRight,
+};
 
 // Mouse cursor warping is disabled when the capture source is a custom region.
 // Sets the mouse warp status to |enable| and return the original value.
@@ -235,7 +319,7 @@ views::Widget::InitParams CreateWidgetParams(aura::Window* parent,
 // capturing video.
 ui::Cursor GetCursorForFullscreenOrWindowCapture(bool capture_image) {
   const display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
+      display::Screen::Get()->GetDisplayNearestWindow(
           capture_mode_util::GetPreferredRootWindow());
   const float device_scale_factor = display.device_scale_factor();
   const gfx::ImageSkia* icon =
@@ -286,18 +370,6 @@ int GetArrowKeyPressChange(int event_flags) {
   if ((event_flags & ui::EF_CONTROL_DOWN) != 0)
     return capture_mode::kCtrlArrowKeyboardRegionChangeDp;
   return capture_mode::kArrowKeyboardRegionChangeDp;
-}
-
-// Returns the `message_id` for the chromevox alert when capture session starts.
-int GetMessageIdForInitialCaptureSource(CaptureModeSource source) {
-  switch (source) {
-    case CaptureModeSource::kFullscreen:
-      return IDS_ASH_SCREEN_CAPTURE_SOURCE_FULLSCREEN;
-    case CaptureModeSource::kRegion:
-      return IDS_ASH_SCREEN_CAPTURE_SOURCE_PARTIAL;
-    default:
-      return IDS_ASH_SCREEN_CAPTURE_SOURCE_WINDOW;
-  }
 }
 
 void UpdateFloatingPanelBoundsIfNeeded() {
@@ -358,28 +430,56 @@ bool IsWidgetOverlappedWithCameraPreview(views::Widget* widget) {
              widget->GetWindowBoundsInScreen());
 }
 
+int GetHitTestRadiusForFineTunePosition(bool is_touch,
+                                        FineTunePosition position,
+                                        CaptureModeBehavior* active_behavior) {
+  if (is_touch) {
+    return kAffordanceCircleTouchHitRadiusDp;
+  }
+
+  if (active_behavior->ShouldPaintSunfishCaptureRegion() &&
+      capture_mode_util::IsCornerFineTunePosition(position)) {
+    return kSunfishRegionCornerFocusRingRadiusDp;
+  }
+
+  return kAffordanceCircleRadiusDp;
+}
+
 gfx::Rect GetHitTestRectAroundPoint(gfx::Point point, int hit_radius) {
   return gfx::Rect(point.x() - hit_radius, point.y() - hit_radius,
                    hit_radius * 2, hit_radius * 2);
 }
 
 gfx::Rect GetHitTestRectForFineTunePosition(
-    int hit_radius,
     const gfx::Rect& capture_region_in_screen,
-    FineTunePosition position) {
+    FineTunePosition position,
+    bool is_touch,
+    CaptureModeBehavior* active_behavior) {
+  const int hit_radius =
+      GetHitTestRadiusForFineTunePosition(is_touch, position, active_behavior);
+
+  // In sunfish mode, the capture region is painted with rounded corners. Inset
+  // the capture region if needed so that the hit test rect is centered around
+  // the corner drag handle.
+  gfx::Rect corner_adjusted_capture_region = capture_region_in_screen;
+  if (active_behavior->ShouldPaintSunfishCaptureRegion() &&
+      capture_mode_util::IsCornerFineTunePosition(position)) {
+    corner_adjusted_capture_region.Inset(kSunfishRegionRoundedCornerOffsetDp);
+  }
+
   switch (position) {
     case FineTunePosition::kTopLeftVertex:
-      return GetHitTestRectAroundPoint(capture_region_in_screen.origin(),
+      return GetHitTestRectAroundPoint(corner_adjusted_capture_region.origin(),
                                        hit_radius);
     case FineTunePosition::kTopRightVertex:
-      return GetHitTestRectAroundPoint(capture_region_in_screen.top_right(),
-                                       hit_radius);
+      return GetHitTestRectAroundPoint(
+          corner_adjusted_capture_region.top_right(), hit_radius);
     case FineTunePosition::kBottomRightVertex:
-      return GetHitTestRectAroundPoint(capture_region_in_screen.bottom_right(),
-                                       hit_radius);
+      return GetHitTestRectAroundPoint(
+          corner_adjusted_capture_region.bottom_right(), hit_radius);
     case FineTunePosition::kBottomLeftVertex:
-      return GetHitTestRectAroundPoint(capture_region_in_screen.bottom_left(),
-                                       hit_radius);
+      return GetHitTestRectAroundPoint(
+          corner_adjusted_capture_region.bottom_left(), hit_radius);
     case FineTunePosition::kTopEdge:
     case FineTunePosition::kBottomEdge: {
       const gfx::Size horizontal_size(
@@ -403,8 +503,120 @@ gfx::Rect GetHitTestRectForFineTunePosition(
       return gfx::Rect(gfx::Point(vertical_x, vertical_y), vertical_size);
     }
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
+}
+
+// Calculates the bounds for a widget of `preferred_size` so that it appears
+// along one of the edges of `capture_bounds`, or slightly above
+// `capture_bar_bounds` if there is not a good edge.
+// If non-empty, `other_container_root_bounds` specifies the root bounds of
+// another container which should be avoided to prevent overlap.
+gfx::Rect CalculateRegionEdgeBounds(
+    const gfx::Size& preferred_size,
+    const gfx::Rect& capture_bar_root_bounds,
+    const gfx::Rect& capture_region_root_bounds,
+    const gfx::Rect& other_container_root_bounds,
+    aura::Window* root,
+    CaptureRegionWidgetAlignment preferred_alignment) {
+  // The capture button may be placed along the edge of a capture region if it
+  // cannot be placed in the middle. This enum represents the possible edges.
+  enum class Direction { kBottom, kTop, kLeft, kRight };
+  // Start off with the bounds at the preferred horizontal position but centered
+  // vertically. We will shift the bounds to slightly outside `capture_bounds`
+  // for each direction if needed.
+  gfx::Rect initial_bounds(preferred_size);
+  // `directions` specifies the edges of the capture region in the order that we
+  // will try positioning the widget.
+  std::vector<Direction> directions;
+  switch (preferred_alignment) {
+    case CaptureRegionWidgetAlignment::kCenter:
+      initial_bounds.set_x(capture_region_root_bounds.CenterPoint().x() -
+                           preferred_size.width() / 2);
+      // Prefer falling back to above the capture region rather than below the
+      // capture region, to allow widgets with right alignment to keep their
+      // default bottom right position if possible.
+      directions = {Direction::kTop, Direction::kBottom, Direction::kLeft,
+                    Direction::kRight};
+      break;
+    case CaptureRegionWidgetAlignment::kRight:
+      initial_bounds.set_x(capture_region_root_bounds.right() -
+                           preferred_size.width());
+      // Prefer right alignment below the capture region if possible.
+      directions = {Direction::kBottom, Direction::kTop, Direction::kLeft,
+                    Direction::kRight};
+      break;
+  }
+  initial_bounds.set_y(capture_region_root_bounds.CenterPoint().y() -
+                       preferred_size.height() / 2);
+  const int spacing = CaptureModeSession::kCaptureButtonDistanceFromRegionDp;
+
+  // Try the directions in the preferred order. We will early out if one of
+  // them is viable.
+  gfx::Rect widget_bounds;
+  for (Direction direction : directions) {
+    widget_bounds = initial_bounds;
+
+    switch (direction) {
+      case Direction::kBottom:
+        widget_bounds.set_y(capture_region_root_bounds.bottom() + spacing);
+        break;
+      case Direction::kTop:
+        widget_bounds.set_y(capture_region_root_bounds.y() - spacing -
+                            preferred_size.height());
+        break;
+      case Direction::kLeft:
+        widget_bounds.set_x(capture_region_root_bounds.x() - spacing -
+                            preferred_size.width());
+        break;
+      case Direction::kRight:
+        widget_bounds.set_x(capture_region_root_bounds.right() + spacing);
+        break;
+    }
+
+    // If `widget_bounds` does not overlap with `capture_bar_root_bounds` or
+    // `other_container_root_bounds` and is fully contained in root,
+    // we're good.
+    bool intersects_action_buttons =
+        !other_container_root_bounds.IsEmpty() &&
+        widget_bounds.Intersects(other_container_root_bounds);
+    if (!widget_bounds.Intersects(capture_bar_root_bounds) &&
+        !intersects_action_buttons && root->bounds().Contains(widget_bounds)) {
+      return widget_bounds;
+    }
+  }
+
+  // Reaching here, we have not found a good edge to place the widget at. The
+  // last attempt is to place it slightly above the capture bar.
+  widget_bounds.set_size(preferred_size);
+  widget_bounds.set_x(capture_bar_root_bounds.CenterPoint().x() -
+                      preferred_size.width() / 2);
+  widget_bounds.set_y(capture_bar_root_bounds.y() -
+                      CaptureModeSession::kCaptureButtonDistanceFromRegionDp -
+                      preferred_size.height());
+
+  // TODO: crbug.com/383198941 - Align the action buttons and capture button
+  // above the capture bar if they both would like to be placed there.
+  // If both the action buttons and the capture button want to be above the
+  // capture bar, move the capture button even higher.
+  if (!other_container_root_bounds.IsEmpty() &&
+      widget_bounds.Intersects(other_container_root_bounds)) {
+    widget_bounds.set_y(widget_bounds.y() -
+                        CaptureModeSession::kCaptureButtonDistanceFromRegionDp -
+                        preferred_size.height());
+  }
+
+  return widget_bounds;
+}
+
+// Hides `widget` immediately, without animation.
+void HideWidgetImmediately(views::Widget* widget) {
+  // Disable animations before hiding the widget, to avoid a fade out animation.
+  // Animations remain disabled until the widget is shown again, see
+  // `ShowAllWidgets()`.
+  widget->GetNativeWindow()->SetProperty(aura::client::kAnimationsDisabledKey,
+                                         true);
+  widget->Hide();
 }
 
 }  // namespace
@@ -546,7 +758,6 @@ void CaptureModeSession::SetSettingsMenuShown(bool shown, bool by_key_event) {
 
     auto* parent = GetParentContainer(current_root_);
     capture_mode_settings_widget_ = std::make_unique<views::Widget>();
-    MaybeDismissUserNudgeForever();
     capture_toast_controller_.DismissCurrentToastIfAny();
 
     capture_mode_settings_widget_->Init(CreateWidgetParams(
@@ -570,8 +781,12 @@ void CaptureModeSession::SetSettingsMenuShown(bool shown, bool by_key_event) {
         capture_label_widget_->Hide();
       }
     }
+    std::u16string capture_mode_settings_a11y_title =
+        l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_SETTINGS_A11Y_TITLE);
     capture_mode_settings_widget_->GetNativeWindow()->SetTitle(
-        l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_SETTINGS_A11Y_TITLE));
+        capture_mode_settings_a11y_title);
+    capture_mode_settings_widget_->widget_delegate()->SetAccessibleTitle(
+        capture_mode_settings_a11y_title);
     capture_mode_settings_widget_->Show();
   }
 }
@@ -612,7 +827,7 @@ void CaptureModeSession::UpdateCursor(const gfx::Point& location_in_screen,
   }
 
   // Hide mouse cursor in tablet mode except for the dev tablet mode.
-  if (display::Screen::GetScreen()->InTabletMode() &&
+  if (display::Screen::Get()->InTabletMode() &&
       !Shell::Get()->tablet_mode_controller()->IsInDevTabletMode()) {
     cursor_setter_->HideCursor();
     return;
@@ -633,12 +848,27 @@ void CaptureModeSession::UpdateCursor(const gfx::Point& location_in_screen,
 
   // If the current mouse event is on capture label button, and capture label
   // button can handle the event, show the hand mouse cursor.
-  DCHECK(capture_label_view_);
-  const bool is_event_on_capture_button =
-      capture_label_widget_->GetWindowBoundsInScreen().Contains(
-          location_in_screen) &&
-      capture_label_view_->ShouldHandleEvent();
-  if (is_event_on_capture_button) {
+  if (capture_label_view_) {
+    const bool is_event_on_capture_button =
+        capture_label_widget_->GetWindowBoundsInScreen().Contains(
+            location_in_screen) &&
+        capture_label_view_->ShouldHandleEvent();
+    if (is_event_on_capture_button) {
+      cursor_setter_->UpdateCursor(root_window, ui::mojom::CursorType::kHand);
+      return;
+    }
+  }
+
+  // TODO: crbug.com/375696216 - Further refine this so the area between buttons
+  // does not show the hand cursor.
+  // If the current mouse event is on an action button, show the hand mouse
+  // cursor.
+  const bool is_event_on_action_button =
+      action_container_widget_ &&
+      action_container_widget_->GetLayer()->GetTargetOpacity() &&
+      action_container_widget_->GetWindowBoundsInScreen().Contains(
+          location_in_screen);
+  if (is_event_on_action_button) {
     cursor_setter_->UpdateCursor(root_window, ui::mojom::CursorType::kHand);
     return;
   }
@@ -701,7 +931,7 @@ void CaptureModeSession::UpdateCursor(const gfx::Point& location_in_screen,
 void CaptureModeSession::HighlightWindowForTab(aura::Window* window) {
   DCHECK(window);
   DCHECK_EQ(CaptureModeSource::kWindow, controller_->source());
-  MaybeChangeRoot(window->GetRootWindow());
+  MaybeChangeRoot(window->GetRootWindow(), /*root_window_will_shutdown=*/false);
   capture_window_observer_->SetSelectedWindow(window, /*a11y_alert_again=*/true,
                                               /*bar_anchored_to_window=*/false);
 }
@@ -729,8 +959,7 @@ void CaptureModeSession::MaybeUpdateCaptureUisOpacity(
   // TODO(conniekxu): Handle this for tablet mode which doesn't have a cursor
   // screen point.
   if (!cursor_screen_location) {
-    cursor_screen_location =
-        display::Screen::GetScreen()->GetCursorScreenPoint();
+    cursor_screen_location = display::Screen::Get()->GetCursorScreenPoint();
   }
 
   base::flat_map<views::Widget*, /*opacity=*/float> widget_opacity_map;
@@ -748,6 +977,8 @@ void CaptureModeSession::MaybeUpdateCaptureUisOpacity(
   gfx::Rect capture_region = controller_->user_capture_region();
   wm::ConvertRectToScreen(current_root_, &capture_region);
 
+  // TODO: crbug.com/376311324 - Refactor this logic, as the `for` loop is
+  // getting messy with all the `if` statements.
   for (auto& pair : widget_opacity_map) {
     views::Widget* widget = pair.first;
     float& opacity = pair.second;
@@ -810,18 +1041,9 @@ void CaptureModeSession::MaybeUpdateCaptureUisOpacity(
   }
 
   for (const auto& pair : widget_opacity_map) {
-    ui::Layer* layer = pair.first->GetLayer();
+    views::Widget* widget = pair.first;
     const float& opacity = pair.second;
-    if (layer->GetTargetOpacity() == opacity) {
-      continue;
-    }
-
-    views::AnimationBuilder()
-        .SetPreemptionStrategy(
-            ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-        .Once()
-        .SetDuration(kCaptureUIOpacityChangeDuration)
-        .SetOpacity(layer, opacity, gfx::Tween::FAST_OUT_SLOW_IN);
+    capture_mode_util::AnimateToOpacity(widget, opacity);
   }
 }
 
@@ -873,7 +1095,8 @@ void CaptureModeSession::OnCaptureSourceChanged(CaptureModeSource new_source) {
   UpdateDimensionsLabelWidget(/*is_resizing=*/false);
   layer()->SchedulePaint(layer()->bounds());
   UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
-  UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
+  UpdateActionContainerWidget();
+  UpdateCursor(display::Screen::Get()->GetCursorScreenPoint(),
                /*is_touch=*/false);
 
   if (focus_cycler_->RegionGroupFocused()) {
@@ -883,16 +1106,19 @@ void CaptureModeSession::OnCaptureSourceChanged(CaptureModeSource new_source) {
   A11yAlertCaptureSource(/*trigger_now=*/true);
 
   MaybeReparentCameraPreviewWidget();
+  InvalidateImageSearch();
 }
 
 void CaptureModeSession::OnCaptureTypeChanged(CaptureModeType new_type) {
   capture_mode_bar_view_->OnCaptureTypeChanged(new_type);
   MaybeUpdateSelfieCamInSessionVisibility();
   UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
-  UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
+  UpdateActionContainerWidget();
+  UpdateCursor(display::Screen::Get()->GetCursorScreenPoint(),
                /*is_touch=*/false);
 
   A11yAlertCaptureType();
+  InvalidateImageSearch();
 }
 
 void CaptureModeSession::OnRecordingTypeChanged() {
@@ -968,7 +1194,7 @@ void CaptureModeSession::StartCountDown(
   capture_label_view_->StartCountDown(std::move(countdown_finished_callback));
   UpdateCaptureLabelWidgetBounds(CaptureLabelAnimation::kCountdownStart);
 
-  UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
+  UpdateCursor(display::Screen::Get()->GetCursorScreenPoint(),
                /*is_touch=*/false);
 
   // Fade out the capture bar, capture settings, recording type menu, and the
@@ -1114,11 +1340,7 @@ void CaptureModeSession::OnCameraPreviewBoundsOrVisibilityChanged(
       kShellWindowId_UnparentedContainer;
   if (capture_surface_became_too_small && !is_drag_in_progress_ &&
       !is_parented_to_unparented_container) {
-    // Since the user nudge toast has lower priority, if the toast for the
-    // camera preview needs to be shown, user nudge toast should be dismissed
-    // forever when applicable.
-    MaybeDismissUserNudgeForever();
-
+    user_nudge_controller_.reset();
     capture_toast_controller_.ShowCaptureToast(
         CaptureToastType::kCameraPreview);
   } else {
@@ -1136,14 +1358,15 @@ void CaptureModeSession::OnCameraPreviewDestroyed() {
       CaptureToastType::kCameraPreview);
 }
 
-void CaptureModeSession::MaybeDismissUserNudgeForever() {
+void CaptureModeSession::MaybeDismissSunfishRegionNudgeForever() {
   if (user_nudge_controller_) {
     user_nudge_controller_->set_should_dismiss_nudge_forever(true);
   }
   user_nudge_controller_.reset();
 }
 
-void CaptureModeSession::MaybeChangeRoot(aura::Window* new_root) {
+void CaptureModeSession::MaybeChangeRoot(aura::Window* new_root,
+                                         bool root_window_will_shutdown) {
   DCHECK(new_root->IsRootWindow());
 
   if (new_root == current_root_) {
@@ -1161,14 +1384,16 @@ void CaptureModeSession::MaybeChangeRoot(aura::Window* new_root) {
   Observe(ColorUtil::GetColorProviderSourceForWindow(current_root_));
   // Update the bounds of the widgets after setting the new root. For region
   // capture, the capture bar will move at a later time, when the mouse is
-  // released.
-  if (controller_->source() != CaptureModeSource::kRegion) {
+  // released. If the root change is because of a display removal, the mouse
+  // will not be released at a later point.
+  if (root_window_will_shutdown ||
+      controller_->source() != CaptureModeSource::kRegion) {
     RefreshBarWidgetBounds();
   }
 
   // Because we use custom cursors for region and full screen capture, we need
   // to update the cursor in case the display DSF changes.
-  UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
+  UpdateCursor(display::Screen::Get()->GetCursorScreenPoint(),
                /*is_touch=*/false);
 
   // The following call to UpdateCaptureRegion will update the capture label
@@ -1180,7 +1405,8 @@ void CaptureModeSession::MaybeChangeRoot(aura::Window* new_root) {
 
   // Start with a new region when we switch displays.
   is_selecting_region_ = true;
-  UpdateCaptureRegion(gfx::Rect(), /*is_resizing=*/false, /*by_user=*/false);
+  UpdateCaptureRegion(gfx::Rect(), /*is_resizing=*/false, /*by_user=*/false,
+                      root_window_will_shutdown);
 
   UpdateRootWindowDimmers();
   MaybeReparentCameraPreviewWidget();
@@ -1210,6 +1436,326 @@ std::set<aura::Window*> CaptureModeSession::GetWindowsToIgnoreFromWidgets() {
   return ignore_windows;
 }
 
+void CaptureModeSession::OnPerformCaptureForSearchStarting(
+    PerformCaptureType capture_type) {
+  // When performing capture after pressing the smart actions button, only hide
+  // widgets that intersect the selected region. Other widgets are kept visible
+  // so that we can preserve animations if possible.
+  //
+  // Ideally, we would also do this for other capture types. However for other
+  // capture types (particularly text detection), capture UI widget bounds may
+  // not have been set by the time capture is performed. So, we hide all widgets
+  // to avoid widgets appearing in cases where bounds are set mid-capture.
+  gfx::Rect capture_region_in_screen = controller_->user_capture_region();
+  wm::ConvertRectToScreen(current_root_, &capture_region_in_screen);
+  for (views::Widget* widget : GetAvailableWidgets()) {
+    if (capture_type != PerformCaptureType::kScanner ||
+        widget->GetWindowBoundsInScreen().Intersects(
+            capture_region_in_screen)) {
+      HideWidgetImmediately(widget);
+    }
+  }
+
+  is_capturing_for_search_ = true;
+  // Repaint the layer to hide the capture region border and affordance circles.
+  RepaintRegion();
+}
+
+void CaptureModeSession::OnPerformCaptureForSearchEnded(
+    PerformCaptureType capture_type) {
+  is_capturing_for_search_ = false;
+  // Repaint the layer to reveal the capture region border and affordance
+  // circles.
+  RepaintRegion();
+
+  if (!active_behavior_->ShouldReShowUisAtPerformingCapture(capture_type)) {
+    return;
+  }
+  ShowAllWidgets();
+
+  if (active_behavior_->ShouldShowGlowWhileProcessingCaptureType(
+          capture_type)) {
+    CHECK(capture_region_overlay_controller_);
+    capture_region_overlay_controller_->StartGlowAnimation(
+        /*animation_delegate=*/this);
+    // TODO(crbug.com/400798746): If Scanner is not enabled, the glow animation
+    // should continue until OCR has completed. For now, just immediately pause
+    // the animation in order to avoid the animation continuing indefinitely.
+    ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+    if (!scanner_controller || !scanner_controller->CanStartSession()) {
+      capture_region_overlay_controller_->PauseGlowAnimation();
+    }
+  }
+}
+
+base::WeakPtr<BaseCaptureModeSession>
+CaptureModeSession::GetImageSearchToken() {
+  return is_shutting_down_ ? nullptr : weak_token_factory_.GetWeakPtr();
+}
+
+ActionButtonView* CaptureModeSession::AddActionButton(
+    views::Button::PressedCallback callback,
+    std::u16string text,
+    const gfx::VectorIcon* icon,
+    ActionButtonRank rank,
+    ActionButtonViewID id) {
+  // This function is called asynchronously, and the conditions may have changed
+  // since the action widget was updated.
+  UpdateActionContainerWidget();
+
+  // Another process may try to add an action button before the container is
+  // created, or while it is invalid. In these cases, we don't want to do
+  // anything.
+  if (!action_container_widget_) {
+    return nullptr;
+  }
+
+  // If the user is shown an action button, they have successfully selected a
+  // region and invoked a backend response, so there is no need to show the
+  // nudge anymore.
+  MaybeDismissSunfishRegionNudgeForever();
+
+  CHECK(action_container_view_);
+  ActionButtonView* action_button = action_container_view_->AddActionButton(
+      std::move(callback), text, icon, rank, id);
+  CHECK(action_button);
+
+  UpdateActionContainerWidget();
+
+  return action_button;
+}
+
+void CaptureModeSession::AddSmartActionsButton() {
+  // This should only be called from the default behavior.
+  // This method is only called from `DefaultBehavior::OnRegionSelected…` and
+  // `CaptureModeController::OnTextDetectionComplete`, which should only be
+  // called by the default behavior, and early returns if the session changes
+  // via `image_search_token`.
+  CHECK_EQ(active_behavior_->behavior_type(), BehaviorType::kDefault);
+
+  if (!ScannerController::CanShowUiForShell()) {
+    RecordScannerFeatureUserState(
+        ScannerFeatureUserState::
+            kSmartActionsButtonNotShownDueToCanShowUiFalse);
+    return;
+  }
+
+  if (controller_->IsNetworkConnectionOffline()) {
+    RecordScannerFeatureUserState(
+        ScannerFeatureUserState::kSmartActionsButtonNotShownDueToOffline);
+    return;
+  }
+
+  RecordScannerFeatureUserState(
+      ScannerFeatureUserState::kScreenCaptureModeScannerButtonShown);
+  AddActionButton(
+      base::BindRepeating(&CaptureModeSession::OnSmartActionsButtonPressed,
+                          weak_ptr_factory_.GetWeakPtr()),
+      l10n_util::GetStringUTF16(IDS_ASH_SCANNER_SMART_ACTIONS_BUTTON_LABEL),
+      /*icon=*/nullptr,
+      ActionButtonRank{ActionButtonType::kScanner, /*weight=*/0},
+      ActionButtonViewID::kSmartActionsButton);
+}
+
+void CaptureModeSession::MaybeShowScannerDisclaimer(
+    ScannerEntryPoint entry_point,
+    base::RepeatingClosure accept_callback,
+    base::RepeatingClosure decline_callback) {
+  bool is_reminder;
+  switch (GetScannerDisclaimerType(
+      *capture_mode_util::GetActiveUserPrefService(), entry_point)) {
+    case ScannerDisclaimerType::kNone:
+      if (accept_callback) {
+        std::move(accept_callback).Run();
+      }
+      return;
+
+    case ScannerDisclaimerType::kReminder:
+      is_reminder = true;
+      break;
+
+    case ScannerDisclaimerType::kFull:
+      is_reminder = false;
+      break;
+  }
+
+  disclaimer_ = DisclaimerView::CreateWidget(
+      capture_mode_util::GetPreferredRootWindow(), is_reminder,
+      base::BindRepeating(&CaptureModeSession::OnDisclaimerAccepted,
+                          weak_ptr_factory_.GetWeakPtr(), entry_point,
+                          std::move(accept_callback)),
+      base::BindRepeating(&CaptureModeSession::OnDisclaimerDeclined,
+                          weak_ptr_factory_.GetWeakPtr(),
+                          std::move(decline_callback)),
+      base::BindRepeating(&CaptureModeSession::OnDisclaimerLinkPressed,
+                          weak_ptr_factory_.GetWeakPtr(),
+                          chrome::kGooglePrivacyPolicyUrl),
+      base::BindRepeating(&CaptureModeSession::OnDisclaimerLinkPressed,
+                          weak_ptr_factory_.GetWeakPtr(),
+                          chrome::kScannerLearnMoreUrl));
+  disclaimer_->Show();
+  focus_cycler_->OnDisclaimerWidgetOpened(disclaimer_.get());
+}
+
+void CaptureModeSession::OnScannerActionsFetched(
+    ScannerSession::FetchActionsResponse actions_response) {
+  CHECK(capture_region_overlay_controller_);
+  capture_region_overlay_controller_->PauseGlowAnimation();
+
+  // Create the action container widget if needed.
+  UpdateActionContainerWidget();
+  if (!action_container_widget_) {
+    return;
+  }
+
+  if (!actions_response.has_value()) {
+    if (actions_response.error().can_try_again) {
+      action_container_view_->ShowErrorView(
+          actions_response.error().error_message,
+          base::BindRepeating(&CaptureModeSession::OnScannerTryAgainPressed,
+                              weak_ptr_factory_.GetWeakPtr()));
+    } else {
+      action_container_view_->ShowErrorView(
+          actions_response.error().error_message);
+    }
+    UpdateActionContainerWidget();
+    return;
+  }
+
+  // This is inefficient, as we repeatedly sort, insert and recalculate the
+  // bounds for buttons one-by-one. However, this is ok since there can only be
+  // a small number of action buttons.
+  int size = static_cast<int>(actions_response->size());
+  for (int i = 0; i < size; ++i) {
+    ScannerActionViewModel& action = actions_response.value()[i];
+    std::u16string text = action.GetText();
+    const gfx::VectorIcon& icon = action.GetIcon();
+    base::RepeatingClosure pressed_callback =
+        base::BindRepeating(&CaptureModeSession::OnScannerActionButtonPressed,
+                            weak_ptr_factory_.GetWeakPtr(), std::move(action));
+
+    if (ActionButtonView* action_button =
+            AddActionButton(std::move(pressed_callback), std::move(text), &icon,
+                            ActionButtonRank{ActionButtonType::kScanner, i},
+                            ActionButtonViewID::kScannerButton)) {
+      action_button->PerformFadeInAnimation(kScannerActionButtonFadeInDuration);
+    }
+  }
+
+  focus_cycler_->OnScannerActionsFetched();
+}
+
+void CaptureModeSession::ShowActionContainerError(
+    const std::u16string& error_message) {
+  if (!action_container_widget_) {
+    return;
+  }
+  CHECK(action_container_view_);
+  action_container_view_->ShowErrorView(error_message);
+  UpdateActionContainerWidget();
+}
+
+void CaptureModeSession::OnDisclaimerDeclined(base::RepeatingClosure callback) {
+  RecordScannerFeatureUserState(
+      ScannerFeatureUserState::kConsentDisclaimerRejected);
+  capture_mode_util::GetActiveUserPrefService()->SetBoolean(
+      prefs::kScannerEnabled, false);
+
+  disclaimer_.reset();
+
+  if (active_behavior_->ShouldAnnounceCaptureModeUIOnDisclaimerDismissed()) {
+    capture_mode_util::TriggerAccessibilityAlert(
+        active_behavior_->GetCaptureModeOpenAnnouncement());
+    // Create the capture label widget and announce it if needed.
+    UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
+  }
+
+  focus_cycler_->OnDisclaimerWidgetClosed();
+  if (callback) {
+    std::move(callback).Run();
+  }
+}
+
+void CaptureModeSession::OnDisclaimerAccepted(ScannerEntryPoint entry_point,
+                                              base::RepeatingClosure callback) {
+  RecordScannerFeatureUserState(
+      ScannerFeatureUserState::kConsentDisclaimerAccepted);
+  SetScannerDisclaimerAcked(*capture_mode_util::GetActiveUserPrefService(),
+                            entry_point);
+
+  disclaimer_.reset();
+
+  if (active_behavior_->ShouldAnnounceCaptureModeUIOnDisclaimerDismissed()) {
+    capture_mode_util::TriggerAccessibilityAlert(
+        active_behavior_->GetCaptureModeOpenAnnouncement());
+    // Create the capture label widget and announce it if needed.
+    UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
+  }
+
+  focus_cycler_->OnDisclaimerWidgetClosed();
+  if (callback) {
+    std::move(callback).Run();
+  }
+}
+
+void CaptureModeSession::OnDisclaimerLinkPressed(const char* url) {
+  NewWindowDelegate::GetInstance()->OpenUrl(
+      GURL(url), NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      NewWindowDelegate::Disposition::kNewForegroundTab);
+
+  // End the session. `this` is destroyed here.
+  controller_->Stop();
+}
+
+  void CaptureModeSession::OnSmartActionsButtonPressed() {
+    MaybeShowScannerDisclaimer(
+        ScannerEntryPoint::kSmartActionsButton,
+        /*accept_callback=*/
+        base::BindRepeating(
+            &CaptureModeSession::OnSmartActionsButtonDisclaimerCheckSuccess,
+            weak_ptr_factory_.GetWeakPtr()),
+        /*decline_callback=*/
+        base::BindRepeating(
+            &CaptureModeSession::OnSmartActionsButtonDisclaimerDeclined,
+            weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CaptureModeSession::OnSmartActionsButtonDisclaimerCheckSuccess() {
+  if (controller_->IsNetworkConnectionOffline()) {
+    ShowActionContainerError(l10n_util::GetStringUTF16(
+        IDS_ASH_SCREEN_CAPTURE_ACTION_ATTEMPTED_OFFLINE_ERROR));
+    return;
+  }
+
+  CHECK(action_container_view_);
+  action_container_view_->StartSmartActionsButtonTransition();
+
+  // Fetch Scanner actions.
+  auto* scanner_controller = Shell::Get()->scanner_controller();
+  CHECK(scanner_controller);
+  scanner_controller->StartNewSession();
+  controller_->PerformCapture(PerformCaptureType::kScanner);
+}
+
+void CaptureModeSession::OnSmartActionsButtonDisclaimerDeclined() {
+  action_container_view_->RemoveSmartActionsButton();
+}
+
+void CaptureModeSession::OnScannerActionButtonPressed(
+    const ScannerActionViewModel& scanner_action) {
+  Shell::Get()->scanner_controller()->ExecuteAction(scanner_action);
+  controller_->CloseSearchResultsPanel();
+  // End the session. `this` is destroyed here.
+  controller_->Stop();
+}
+
+void CaptureModeSession::OnScannerTryAgainPressed() {
+  CHECK(action_container_view_);
+  action_container_view_->HideErrorView();
+  UpdateActionContainerWidget();
+  controller_->PerformCapture(PerformCaptureType::kScanner);
+}
+
 void CaptureModeSession::OnPaintLayer(const ui::PaintContext& context) {
   // If the drag of camera preview is in progress, we will hide other capture
   // UIs (capture bar, capture label), but we should still paint the layer to
@@ -1227,6 +1773,8 @@ void CaptureModeSession::OnPaintLayer(const ui::PaintContext& context) {
           capture_mode::kDimmingShieldColor));
 
   PaintCaptureRegion(recorder.canvas());
+
+  MaybePaintCaptureRegionOverlay(*recorder.canvas());
 }
 
 void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
@@ -1245,7 +1793,24 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
     return;
   }
 
+  // If the consent disclaimer is visible, let it handle key events.
+  if (disclaimer_) {
+    return;
+  }
+
   if (event->type() != ui::EventType::kKeyPressed) {
+    return;
+  }
+
+  // If the search results panel is visible, and the panel is actually focused,
+  // we will let the search results panel handle key events (i.e., pressing
+  // Enter/Return to make a multimodal search) until it calls `TakeFocus` to
+  // return focus back to the focus cycler. As an exception, pressing ESC can
+  // still be used to exit the session.
+  ui::KeyboardCode key_code = event->key_code();
+  if (controller_->IsSearchResultsPanelVisible() &&
+      controller_->GetSearchResultsPanel()->HasFocus() &&
+      key_code != ui::VKEY_ESCAPE) {
     return;
   }
 
@@ -1270,7 +1835,6 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
 
   auto* capture_source_view = capture_mode_bar_view_->GetCaptureSourceView();
   const bool is_in_count_down = IsInCountDownAnimation();
-  ui::KeyboardCode key_code = event->key_code();
   switch (key_code) {
     case ui::VKEY_ESCAPE: {
       event->StopPropagation();
@@ -1308,7 +1872,8 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
           return;
         }
 
-        DoPerformCapture();  // `this` can be deleted after this.
+        active_behavior_
+            ->OnEnterKeyPressed();  // `this` can be deleted after this.
       }
       return;
     }
@@ -1408,7 +1973,7 @@ void CaptureModeSession::OnDisplayTabletStateChanged(
   }
 
   UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
-  UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
+  UpdateCursor(display::Screen::Get()->GetCursorScreenPoint(),
                /*is_touch=*/false);
 }
 
@@ -1423,7 +1988,7 @@ void CaptureModeSession::OnDisplayMetricsChanged(
 
   EndSelection();
 
-  UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
+  UpdateCursor(display::Screen::Get()->GetCursorScreenPoint(),
                /*is_touch=*/false);
 
   // Ensure the region still fits the root window after display changes.
@@ -1501,6 +2066,13 @@ void CaptureModeSession::OnColorProviderChanged() {
   }
 }
 
+void CaptureModeSession::AnimationProgressed(const gfx::Animation* animation) {
+  if (capture_region_overlay_controller_ &&
+      active_behavior_->CanPaintRegionOverlay()) {
+    RefreshGlowRegion();
+  }
+}
+
 void CaptureModeSession::A11yAlertCaptureType() {
   capture_mode_util::TriggerAccessibilityAlert(
       CaptureModeController::Get()->type() == CaptureModeType::kImage
@@ -1523,27 +2095,22 @@ std::vector<views::Widget*> CaptureModeSession::GetAvailableWidgets() {
     result.push_back(dimensions_label_widget_.get());
   if (auto* toast = capture_toast_controller_.capture_toast_widget())
     result.push_back(toast);
+  if (action_container_widget_) {
+    result.push_back(action_container_widget_.get());
+  }
+  if (disclaimer_) {
+    result.push_back(disclaimer_.get());
+  }
+
   return result;
 }
 
 void CaptureModeSession::HideAllUis() {
   is_all_uis_visible_ = false;
   cursor_setter_.reset();
-
-  for (auto* widget : GetAvailableWidgets()) {
-    // The order here matters. We need to disable the animation before we hide
-    // to avoid any hide animation here, or until the widgets are shown (also
-    // without animation) when ShowAllUis() is called.
-    widget->GetNativeWindow()->SetProperty(aura::client::kAnimationsDisabledKey,
-                                           true);
-
-    // The layer's opacity could be less than 1.f if the widget was hidden
-    // before we disabled the animations above. We need to reset the opacity
-    // back to 1.f as we will hide the widget without animation.
-    widget->GetLayer()->SetOpacity(1.f);
-    widget->Hide();
+  for (views::Widget* widget : GetAvailableWidgets()) {
+    HideWidgetImmediately(widget);
   }
-
   // Refresh painting the layer, since we don't paint anything while a DLP
   // dialog might be shown.
   layer()->SchedulePaint(layer()->bounds());
@@ -1552,20 +2119,25 @@ void CaptureModeSession::HideAllUis() {
 void CaptureModeSession::ShowAllUis() {
   is_all_uis_visible_ = true;
   cursor_setter_ = std::make_unique<CursorSetter>();
+  ShowAllWidgets();
+  layer()->SchedulePaint(layer()->bounds());
+}
 
+
+void CaptureModeSession::ShowAllWidgets() {
   for (auto* widget : GetAvailableWidgets()) {
-    // The order here matters. See HideAllUis() above.
-    // At this point the animation is still disabled, so we show the window now
-    // before we re-enable the animations. This is to avoid having those widgets
-    // show up in the captured images or videos in case this is used right
-    // before ending the session to perform the capture.
-    if (CanShowWidget(widget))
+    // At this point the animation is still disabled, see
+    // `HideWidgetImmediately()`. Show the window now before we re-enable
+    // animations. This is to avoid having those widgets show up in the captured
+    // images or videos in case this is used right before ending the session to
+    // perform the capture.
+    if (CanShowWidget(widget) && !widget->IsVisible()) {
+      widget->GetLayer()->SetOpacity(1.0f);
       widget->Show();
+    }
     widget->GetNativeWindow()->SetProperty(aura::client::kAnimationsDisabledKey,
                                            false);
   }
-
-  layer()->SchedulePaint(layer()->bounds());
 }
 
 bool CaptureModeSession::CanShowWidget(views::Widget* widget) const {
@@ -1583,24 +2155,34 @@ bool CaptureModeSession::CanShowWidget(views::Widget* widget) const {
                capture_label_widget_->GetWindowBoundsInScreen()));
 }
 
-void CaptureModeSession::MaybeCreateUserNudge() {
+void CaptureModeSession::MaybeCreateSunfishRegionNudge() {
   user_nudge_controller_.reset();
 
   if (!active_behavior_->ShouldShowUserNudge()) {
     return;
   }
 
-  if (!controller_->CanShowUserNudge()) {
+  if (!controller_->CanShowSunfishRegionNudge()) {
     return;
   }
 
-  user_nudge_controller_ = std::make_unique<UserNudgeController>(
-      this, capture_mode_bar_view_->settings_button());
+  auto* region_button =
+      capture_mode_bar_view_->GetCaptureSourceView()->region_toggle_button();
+  CHECK(region_button);
+  user_nudge_controller_ =
+      std::make_unique<UserNudgeController>(this, region_button);
   user_nudge_controller_->SetVisible(true);
 }
 
 void CaptureModeSession::DoPerformCapture() {
   controller_->PerformCapture();  // `this` can be deleted after this.
+}
+
+void CaptureModeSession::OnSearchButtonPressed() {
+  RecordSearchButtonPressed();
+  // See if we can move this to `PerformImageSearch()`.
+  controller_->PerformCapture(
+      PerformCaptureType::kSearch);  // `this` can be deleted after this.
 }
 
 void CaptureModeSession::OnRecordingTypeDropDownButtonPressed(
@@ -1632,6 +2214,9 @@ void CaptureModeSession::RefreshStackingOrder() {
     widget_in_order.emplace_back(toast);
   if (capture_label_widget_)
     widget_in_order.emplace_back(capture_label_widget_.get());
+  if (action_container_widget_) {
+    widget_in_order.emplace_back(action_container_widget_.get());
+  }
   if (capture_mode_bar_widget_)
     widget_in_order.emplace_back(capture_mode_bar_widget_.get());
   if (recording_type_menu_widget_)
@@ -1653,6 +2238,11 @@ void CaptureModeSession::RefreshStackingOrder() {
 }
 
 void CaptureModeSession::PaintCaptureRegion(gfx::Canvas* canvas) {
+  if (active_behavior_->ShouldPaintSunfishCaptureRegion()) {
+    PaintSunfishCaptureRegion(canvas);
+    return;
+  }
+
   gfx::Rect region;
   bool adjustable_region = false;
 
@@ -1687,8 +2277,23 @@ void CaptureModeSession::PaintCaptureRegion(gfx::Canvas* canvas) {
     return;
   }
 
+  if (capture_region_overlay_controller_ &&
+      active_behavior_->CanPaintRegionOverlay()) {
+    // Draw a glow effect around the capture region if needed. Note that this
+    // needs to be drawn before the transparent region and region border are
+    // drawn, since the glow should not cover those parts of the UI.
+    capture_region_overlay_controller_->PaintCurrentGlowState(*canvas, region,
+                                                              color_provider);
+  }
+
   region.Inset(-capture_mode::kCaptureRegionBorderStrokePx);
   canvas->FillRect(region, SK_ColorTRANSPARENT, SkBlendMode::kClear);
+
+  // If a screenshot is being taken for search, do not paint the region border
+  // and affordance circles to avoid including them in the screenshot.
+  if (is_capturing_for_search_) {
+    return;
+  }
 
   // Draw the region border.
   cc::PaintFlags border_flags;
@@ -1762,6 +2367,180 @@ void CaptureModeSession::PaintCaptureRegion(gfx::Canvas* canvas) {
   maybe_draw_focus_ring(focused_fine_tune_position);
 }
 
+void CaptureModeSession::PaintSunfishCaptureRegion(gfx::Canvas* canvas) {
+  gfx::Rect region = controller_->user_capture_region();
+  if (region.IsEmpty()) {
+    return;
+  }
+
+  gfx::ScopedCanvas scoped_canvas(canvas);
+  const float dsf = canvas->UndoDeviceScaleFactor();
+  region = gfx::ScaleToEnclosingRect(region, dsf);
+
+  const auto* color_provider = GetColorProviderSource()->GetColorProvider();
+
+  if (capture_region_overlay_controller_ &&
+      active_behavior_->CanPaintRegionOverlay()) {
+    // Draw a glow effect around the capture region if needed. Note that this
+    // needs to be drawn before the region mask and region border are drawn,
+    // since the glow should not cover those parts of the UI.
+    capture_region_overlay_controller_->PaintCurrentGlowState(*canvas, region,
+                                                              color_provider);
+  }
+
+  // Clear the area over the capture region.
+  cc::PaintFlags region_mask_flags;
+  region_mask_flags.setStyle(cc::PaintFlags::kFill_Style);
+  region_mask_flags.setAntiAlias(true);
+  region_mask_flags.setBlendMode(SkBlendMode::kClear);
+  canvas->DrawRoundRect(region, kSunfishModeCaptureRegionRadiusDp,
+                        region_mask_flags);
+
+  // Draw the region border if the user is currently selecting a capture region
+  // and not taking a screenshot. Note that this doesn't include fine tune
+  // phases where the user adjusts the capture region.
+  if (is_selecting_region_ && !is_capturing_for_search_) {
+    cc::PaintFlags border_flags;
+    border_flags.setShader(gfx::CreateGradientShader(
+        region.origin(), region.top_right(),
+        color_provider->GetColor(cros_tokens::kCrosSysMuted),
+        color_provider->GetColor(cros_tokens::kCrosSysComplement)));
+    border_flags.setStyle(cc::PaintFlags::kStroke_Style);
+    border_flags.setStrokeWidth(kSunfishModeCaptureRegionBorderWidthDp);
+    border_flags.setAntiAlias(true);
+    border_flags.setLooper(gfx::CreateShadowDrawLooper({kRegionOutlineShadow}));
+    canvas->DrawRoundRect(region, kSunfishModeCaptureRegionRadiusDp,
+                          border_flags);
+  }
+
+  // If the user is currently selecting or adjusting the capture region or
+  // taking a screenshot, there is no need to paint drag handles so we can early
+  // return.
+  if (is_selecting_region_ || fine_tune_position_ != FineTunePosition::kNone ||
+      is_capturing_for_search_) {
+    return;
+  }
+
+  // Draw circular drag handles at the center of each edge of the capture
+  // region.
+  cc::PaintFlags circle_flags;
+  circle_flags.setColor(capture_mode::kRegionBorderColor);
+  circle_flags.setStyle(cc::PaintFlags::kFill_Style);
+  circle_flags.setAntiAlias(true);
+  circle_flags.setLooper(gfx::CreateShadowDrawLooper(
+      {kRegionAffordanceCircleShadow1, kRegionAffordanceCircleShadow2}));
+  auto draw_circle = [&canvas, &circle_flags,
+                      &dsf](const gfx::Point& location) {
+    canvas->DrawCircle(location, dsf * kAffordanceCircleRadiusDp, circle_flags);
+  };
+
+  draw_circle(region.top_center());
+  draw_circle(region.right_center());
+  draw_circle(region.bottom_center());
+  draw_circle(region.left_center());
+
+  // Draw drag handles at each corner of the capture region. Each handle is a
+  // quarter arc with rounded ends.
+  cc::PaintFlags corner_arc_flags;
+  corner_arc_flags.setColor(capture_mode::kRegionBorderColor);
+  corner_arc_flags.setStyle(cc::PaintFlags::kStroke_Style);
+  corner_arc_flags.setAntiAlias(true);
+  corner_arc_flags.setLooper(gfx::CreateShadowDrawLooper(
+      {kRegionAffordanceCircleShadow1, kRegionAffordanceCircleShadow2}));
+  corner_arc_flags.setStrokeWidth(kSunfishModeCaptureRegionBorderWidthDp);
+  // Make the ends of each arc rounded.
+  corner_arc_flags.setStrokeCap(cc::PaintFlags::Cap::kRound_Cap);
+  const float arc_diameter = dsf * 2 * kSunfishModeCaptureRegionRadiusDp;
+  // Draws a 90 degree arc from the circle with diameter `arc_diameter`,
+  // leftmost coordinate `circle_left`, and topmost coordinate `circle_top`.
+  // `start_angle` indicates the starting angle of the arc in degrees, measured
+  // clockwise from the positive x-axis. The arc is drawn clockwise from the
+  // specified `start_angle`.
+  auto draw_corner_arc = [&canvas, &corner_arc_flags, &arc_diameter](
+                             int circle_left, int circle_top,
+                             SkScalar start_angle) {
+    const SkPath corner_arc =
+        SkPathBuilder()
+            .arcTo(/*oval=*/SkRect::MakeXYWH(circle_left, circle_top,
+                                             arc_diameter, arc_diameter),
+                   /*startAngle=*/start_angle,
+                   /*sweepAngle=*/90, /*forceMoveTo=*/false)
+            .detach();
+    canvas->DrawPath(corner_arc, corner_arc_flags);
+  };
+
+  // Top left handle.
+  draw_corner_arc(/*circle_left=*/region.x(), /*circle_top=*/region.y(),
+                  /*start_angle=*/180);
+  // Top right handle.
+  draw_corner_arc(/*circle_left=*/region.right() - arc_diameter,
+                  /*circle_top=*/region.y(),
+                  /*start_angle=*/270);
+  // Bottom right handle.
+  draw_corner_arc(
+      /*circle_left=*/region.right() - arc_diameter,
+      /*circle_top=*/region.bottom() - arc_diameter,
+      /*start_angle=*/0);
+  // Bottom left handle.
+  draw_corner_arc(/*circle_left=*/region.x(),
+                  /*circle_top=*/region.bottom() - arc_diameter,
+                  /*start_angle=*/90);
+
+  // Draw a focus ring if the region or one of the drag handles circles
+  // currently has focus.
+  cc::PaintFlags focus_ring_flags;
+  focus_ring_flags.setAntiAlias(true);
+  focus_ring_flags.setColor(color_provider->GetColor(ui::kColorAshFocusRing));
+  focus_ring_flags.setStyle(cc::PaintFlags::kStroke_Style);
+  focus_ring_flags.setStrokeWidth(kFocusRingStrokeWidthDp);
+  const FineTunePosition focused_fine_tune_position =
+      focus_cycler_->GetFocusedFineTunePosition();
+  switch (focused_fine_tune_position) {
+    case FineTunePosition::kNone:
+      break;
+    case FineTunePosition::kCenter: {
+      gfx::RectF focus_rect(region);
+      focus_rect.Outset(kFocusRingSpacingDp + kFocusRingStrokeWidthDp / 2);
+      canvas->DrawRoundRect(focus_rect, kSunfishRegionFocusRingRadiusDp,
+                            focus_ring_flags);
+      break;
+    }
+    case FineTunePosition::kTopLeftVertex:
+    case FineTunePosition::kTopRightVertex:
+    case FineTunePosition::kBottomRightVertex:
+    case FineTunePosition::kBottomLeftVertex: {
+      const float radius = dsf * (kSunfishRegionCornerFocusRingRadiusDp +
+                                  kFocusRingStrokeWidthDp / 2);
+      region.Inset(kSunfishRegionRoundedCornerOffsetDp);
+      canvas->DrawCircle(capture_mode_util::GetLocationForFineTunePosition(
+                             region, focused_fine_tune_position),
+                         radius, focus_ring_flags);
+      break;
+    }
+    case FineTunePosition::kTopEdge:
+    case FineTunePosition::kRightEdge:
+    case FineTunePosition::kBottomEdge:
+    case FineTunePosition::kLeftEdge: {
+      const float radius =
+          dsf * (kAffordanceCircleRadiusDp + kFocusRingSpacingDp +
+                 kFocusRingStrokeWidthDp / 2);
+      canvas->DrawCircle(capture_mode_util::GetLocationForFineTunePosition(
+                             region, focused_fine_tune_position),
+                         radius, focus_ring_flags);
+      break;
+    }
+  }
+}
+
+void CaptureModeSession::MaybePaintCaptureRegionOverlay(
+    gfx::Canvas& canvas) const {
+  if (capture_region_overlay_controller_ &&
+      active_behavior_->CanPaintRegionOverlay()) {
+    capture_region_overlay_controller_->PaintCaptureRegionOverlay(
+        canvas, /*region_bounds_in_canvas=*/controller_->user_capture_region());
+  }
+}
+
 void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
                                         bool is_touch) {
   if (folder_selection_dialog_controller_) {
@@ -1775,6 +2554,16 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
   // prevent other event handlers from handling this event.
   if (IsInCountDownAnimation()) {
     event->StopPropagation();
+    return;
+  }
+
+  // If disclaimer dialog is visible, block all actions.
+  if (disclaimer_) {
+    // TODO(b/367882127): See if we can never create a cursor_setter_ instead of
+    // having to reset it.
+    if (cursor_setter_) {
+      cursor_setter_->ResetCursor();
+    }
     return;
   }
 
@@ -1828,8 +2617,10 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
   const bool can_change_root =
       !is_bar_anchored_to_window && (!is_capture_region || is_press_event);
 
-  if (can_change_root)
-    MaybeChangeRoot(capture_mode_util::GetPreferredRootWindow(screen_location));
+  if (can_change_root) {
+    MaybeChangeRoot(capture_mode_util::GetPreferredRootWindow(screen_location),
+                    /*root_window_will_shutdown=*/false);
+  }
 
   // The root may have switched while pressing the mouse down. Move the capture
   // bar to the current display if that is the case and make sure it is stacked
@@ -1847,8 +2638,25 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
 
   MaybeUpdateCaptureUisOpacity(screen_location);
 
+  // Allow all events located on the results panel (if present) to go through.
+  // See `CaptureModeController::IsEventOnSearchResultsPanel()`.
+  // This must be done after `MaybeUpdateCaptureUisOpacity()` which will hide
+  // the panel if a drag is in progress and before running
+  // `deferred_cursor_updater` to allow the panel to update the cursor type.
+  if (controller_->IsEventOnSearchResultsPanel(*event, screen_location)) {
+    if (cursor_setter_) {
+      cursor_setter_->ResetCursor();
+    }
+    // If the event is a mouse or touch down, we assume the user wants to
+    // interact with the panel and stop the session now.
+    if (is_press_event && (event->flags() & ui::EF_RIGHT_MOUSE_BUTTON)) {
+      controller_->Stop();  // Deletes `this`.
+    }
+    return;
+  }
+
   // Update the value of `should_pass_located_event_to_camera_preview_` here
-  // before calling `UpdateCursor` which uses it.
+  // before calling `UpdateCursor` which uses
   should_pass_located_event_to_camera_preview_ =
       ShouldPassEventToCameraPreview(event);
 
@@ -1871,6 +2679,12 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
   if (ShouldCaptureLabelHandleEvent(event_target))
     return;
 
+  // Let the action buttons handle their events if any.
+  if (capture_mode_util::IsEventTargetedOnWidget(
+          *event, action_container_widget_.get())) {
+    return;
+  }
+
   // Let the recording type menu handle its events if any.
   if (capture_mode_util::IsEventTargetedOnWidget(
           *event, recording_type_menu_widget_.get())) {
@@ -1887,12 +2701,10 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
   // press event, we will use it to dismiss the settings menu, unless it's on
   // the settings button (since in this case, the settings button handler will
   // take care of dismissing the menu).
-  const bool is_event_on_settings_button =
-      capture_mode_bar_view_->settings_button()->GetBoundsInScreen().Contains(
-          screen_location);
-  const bool should_close_settings = is_press_event &&
-                                     !is_event_on_settings_button &&
-                                     capture_mode_settings_widget_;
+  const bool should_close_settings =
+      is_press_event &&
+      !capture_mode_bar_view_->IsEventOnSettingsButton(screen_location) &&
+      capture_mode_settings_widget_;
   if (should_close_settings) {
     // All future located events up to and including a released events will be
     // consumed and ignored (i.e. won't be used to update the capture region,
@@ -2012,11 +2824,9 @@ FineTunePosition CaptureModeSession::GetFineTunePosition(
       FineTunePosition::kBottomEdge,        FineTunePosition::kLeftEdge,
       FineTunePosition::kTopEdge,           FineTunePosition::kRightEdge};
 
-  const int hit_radius =
-      is_touch ? kAffordanceCircleTouchHitRadiusDp : kAffordanceCircleRadiusDp;
   for (FineTunePosition position : drag_positions) {
-    if (GetHitTestRectForFineTunePosition(hit_radius, capture_region_in_screen,
-                                          position)
+    if (GetHitTestRectForFineTunePosition(capture_region_in_screen, position,
+                                          is_touch, active_behavior_)
             .Contains(location_in_screen)) {
       return position;
     }
@@ -2045,6 +2855,8 @@ void CaptureModeSession::OnLocatedEventPressed(
   wm::ConvertPointToScreen(current_root_, &screen_location);
   MaybeUpdateCaptureUisOpacity(screen_location);
 
+  InvalidateImageSearch();
+
   // Run `MaybeUpdateCameraPreviewBounds` at the exit of this function's
   // scope since the camera preview should be hidden if user is dragging to
   // update the capture region. The reason we want to run it at the exit of this
@@ -2064,11 +2876,16 @@ void CaptureModeSession::OnLocatedEventPressed(
 
   fine_tune_position_ = GetFineTunePosition(screen_location, is_touch);
 
+  // The capture region will be changing, so remove any existing action buttons,
+  // if any, as they will no longer be applicable.
+  ClearActionContainer();
+
   if (fine_tune_position_ == FineTunePosition::kNone) {
     // If the point is outside the capture region and not on the capture bar or
     // settings menu, restart to the select phase.
     is_selecting_region_ = true;
-    UpdateCaptureRegion(gfx::Rect(), /*is_resizing=*/true, /*by_user=*/true);
+    UpdateCaptureRegion(gfx::Rect(), /*is_resizing=*/true, /*by_user=*/true,
+                        /*root_window_will_shutdown=*/false);
     num_capture_region_adjusted_ = 0;
     return;
   }
@@ -2094,6 +2911,7 @@ void CaptureModeSession::OnLocatedEventDragged(
     const gfx::Point& location_in_root) {
   const gfx::Point previous_location_in_root = previous_location_in_root_;
   previous_location_in_root_ = location_in_root;
+  controller_->OnLocatedEventDragged();
 
   // For the select phase, the select region is the rectangle formed by the
   // press location and the current location.
@@ -2101,7 +2919,8 @@ void CaptureModeSession::OnLocatedEventDragged(
     UpdateCaptureRegion(
         GetRectEnclosingPoints({initial_location_in_root_, location_in_root},
                                current_root_),
-        /*is_resizing=*/true, /*by_user=*/true);
+        /*is_resizing=*/true, /*by_user=*/true,
+        /*root_window_will_shutdown=*/false);
     return;
   }
 
@@ -2116,7 +2935,7 @@ void CaptureModeSession::OnLocatedEventDragged(
     new_capture_region.Offset(location_in_root - previous_location_in_root);
     new_capture_region.AdjustToFit(current_root_->bounds());
     UpdateCaptureRegion(new_capture_region, /*is_resizing=*/false,
-                        /*by_user=*/true);
+                        /*by_user=*/true, /*root_window_will_shutdown=*/false);
     return;
   }
 
@@ -2141,7 +2960,8 @@ void CaptureModeSession::OnLocatedEventDragged(
   }
   points.push_back(resizing_point);
   UpdateCaptureRegion(GetRectEnclosingPoints(points, current_root_),
-                      /*is_resizing=*/true, /*by_user=*/true);
+                      /*is_resizing=*/true, /*by_user=*/true,
+                      /*root_window_will_shutdown=*/false);
   MaybeShowMagnifierGlassAtPoint(location_in_root);
 }
 
@@ -2173,13 +2993,20 @@ void CaptureModeSession::OnLocatedEventReleased(
     }
   };
 
+  if (ShowDefaultActionButtonsOrPerformSearch()) {
+    return;
+  }
+
   if (!is_selecting_region_) {
     return;
   }
 
   // After first release event, we advance to the next phase.
   is_selecting_region_ = false;
+
   UpdateCaptureLabelWidget(CaptureLabelAnimation::kRegionPhaseChange);
+  // Refresh the action container bounds after the capture label is updated.
+  UpdateActionContainerWidget();
 
   A11yAlertCaptureSource(/*trigger_now=*/true);
 }
@@ -2187,22 +3014,59 @@ void CaptureModeSession::OnLocatedEventReleased(
 void CaptureModeSession::UpdateCaptureRegion(
     const gfx::Rect& new_capture_region,
     bool is_resizing,
-    bool by_user) {
+    bool by_user,
+    bool root_window_will_shutdown) {
   const gfx::Rect old_capture_region = controller_->user_capture_region();
   if (old_capture_region == new_capture_region)
     return;
 
   // Calculate the region that has been damaged and repaint the layer. Add some
-  // extra padding to make sure the border and affordance circles are also
-  // repainted.
+  // extra padding to make sure the border and affordance circles are repainted
+  // and the glow animation is removed if needed.
   gfx::Rect damage_region = old_capture_region;
   damage_region.Union(new_capture_region);
-  damage_region.Inset(gfx::Insets(-kDamageInsetDp));
+  if (capture_region_overlay_controller_ &&
+      capture_region_overlay_controller_->HasGlowAnimation()) {
+    capture_region_overlay_controller_->RemoveGlowAnimation();
+    // `kDamageWithGlowOutsetDp` is greater than `kDamageOutsetDp` so it is
+    // enough to also cover the border and affordance circles.
+    damage_region.Outset(kDamageWithGlowOutsetDp);
+  } else {
+    damage_region.Outset(active_behavior_->ShouldPaintSunfishCaptureRegion()
+                             ? kSunfishRegionDamageOutsetDp
+                             : kDamageOutsetDp);
+  }
   layer()->SchedulePaint(damage_region);
 
   controller_->SetUserCaptureRegion(new_capture_region, by_user);
+  InvalidateImageSearch();
+  ClearActionContainer();
   UpdateDimensionsLabelWidget(is_resizing);
   UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
+  if (!root_window_will_shutdown) {
+    // This updates the virtual views used for a11y on the affordance circles.
+    // Those virtual views will be destroyed soon if `root_window_will_shutdown`
+    // is true.
+    focus_cycler_->OnFineTunePositionUpdated(/*notify_selection_event=*/false);
+  }
+
+  // Start a timer to request default actions or perform search after a delay.
+  // This is to prevent too many requests if the user needs to repeatedly adjust
+  // the capture region. Note that this delay does not apply to region
+  // adjustments that end in a mouse release event, since those follow a
+  // separate codepath in `OnLocatedEventReleased`.
+  image_search_request_timer_.Start(
+      FROM_HERE, kImageSearchRequestStartDelay,
+      base::BindOnce(
+          [](base::WeakPtr<CaptureModeSession> capture_mode_session) {
+            if (capture_mode_session) {
+              // The following may end the session and delete
+              // `capture_mode_session`, but we can ignore the result here.
+              std::ignore = capture_mode_session
+                                ->ShowDefaultActionButtonsOrPerformSearch();
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CaptureModeSession::UpdateDimensionsLabelWidget(bool is_resizing) {
@@ -2219,10 +3083,14 @@ void CaptureModeSession::UpdateDimensionsLabelWidget(bool is_resizing) {
     dimensions_label_widget_ = std::make_unique<views::Widget>();
     dimensions_label_widget_->Init(
         CreateWidgetParams(parent, gfx::Rect(), "CaptureModeDimensionsLabel"));
+    // Disable the default hide animation so that the dimensions label is
+    // hidden immediately when destroyed.
+    dimensions_label_widget_->SetVisibilityAnimationTransition(
+        views::Widget::VisibilityTransition::ANIMATE_SHOW);
 
     auto size_label = std::make_unique<views::Label>();
-    size_label->SetEnabledColorId(kColorAshTextColorPrimary);
-    size_label->SetBackground(views::CreateThemedRoundedRectBackground(
+    size_label->SetEnabledColor(kColorAshTextColorPrimary);
+    size_label->SetBackground(views::CreateRoundedRectBackground(
         kColorAshShieldAndBase80, kSizeLabelBorderRadius));
     size_label->SetAutoColorReadabilityEnabled(false);
     dimensions_label_widget_->SetContentsView(std::move(size_label));
@@ -2443,10 +3311,19 @@ gfx::Rect CaptureModeSession::CalculateCaptureLabelWidgetBounds() {
   const gfx::Size preferred_size = capture_label_view_->GetPreferredSize();
   const gfx::Rect capture_bar_bounds =
       capture_mode_bar_widget_->GetNativeWindow()->bounds();
+  // Ignore the action container widget bounds when it is not visible.
+  // Otherwise, the capture label widget can move around unexpectedly in order
+  // to avoid an invisible widget while the user is adjusting the capture
+  // region.
+  const gfx::Rect action_container_widget_bounds =
+      action_container_widget_ && action_container_widget_->IsVisible()
+          ? action_container_widget_->GetNativeWindow()->bounds()
+          : gfx::Rect();
 
   // Calculates the bounds for when the capture label is not placed in the
   // middle of the screen.
-  auto calculate_bounds = [&preferred_size, &capture_bar_bounds](
+  auto calculate_bounds = [&preferred_size, &capture_bar_bounds,
+                           &action_container_widget_bounds](
                               const gfx::Rect& capture_bounds,
                               aura::Window* root) {
     // The capture_bounds must be at least the size of |preferred_size| plus
@@ -2464,67 +3341,10 @@ gfx::Rect CaptureModeSession::CalculateCaptureLabelWidgetBounds() {
         return label_bounds;
     }
 
-    // The capture button may be placed along the edge of a capture region if it
-    // cannot be placed in the middle. This enum represents the possible edges.
-    enum class Direction { kBottom, kTop, kLeft, kRight };
-
-    // Try placing the label slightly outside |capture_bounds|. The label will
-    // be |kCaptureButtonDistanceFromRegionDp| away from |capture_bounds| along
-    // one of the edges. The order we will try is bottom, top, left then right.
-    const std::vector<Direction> directions = {
-        Direction::kBottom, Direction::kTop, Direction::kLeft,
-        Direction::kRight};
-
-    // For each direction, start off with the label in the center of
-    // |capture_bounds| (matching centerpoints). We will shift the label to
-    // slighty outside |capture_bounds| for each direction.
-    gfx::Rect centered_label_bounds(preferred_size);
-    centered_label_bounds.set_x(capture_bounds.CenterPoint().x() -
-                                preferred_size.width() / 2);
-    centered_label_bounds.set_y(capture_bounds.CenterPoint().y() -
-                                preferred_size.height() / 2);
-    const int spacing = kCaptureButtonDistanceFromRegionDp;
-
-    // Try the directions in the preferred order. We will early out if one of
-    // them is viable.
-    for (Direction direction : directions) {
-      label_bounds = centered_label_bounds;
-
-      switch (direction) {
-        case Direction::kBottom:
-          label_bounds.set_y(capture_bounds.bottom() + spacing);
-          break;
-        case Direction::kTop:
-          label_bounds.set_y(capture_bounds.y() - spacing -
-                             preferred_size.height());
-          break;
-        case Direction::kLeft:
-          label_bounds.set_x(capture_bounds.x() - spacing -
-                             preferred_size.width());
-          break;
-        case Direction::kRight:
-          label_bounds.set_x(capture_bounds.right() + spacing);
-          break;
-      }
-
-      // If |label_bounds| does not overlap with |capture_bar_bounds| and is
-      // fully contained in root, we're good.
-      if (!label_bounds.Intersects(capture_bar_bounds) &&
-          root->bounds().Contains(label_bounds)) {
-        return label_bounds;
-      }
-    }
-
-    // Reaching here, we have not found a good edge to place the label at. The
-    // last attempt is to place it slightly above the capture bar.
-    label_bounds.set_size(preferred_size);
-    label_bounds.set_x(capture_bar_bounds.CenterPoint().x() -
-                       preferred_size.width() / 2);
-    label_bounds.set_y(capture_bar_bounds.y() -
-                       kCaptureButtonDistanceFromRegionDp -
-                       preferred_size.height());
-
-    return label_bounds;
+    return CalculateRegionEdgeBounds(preferred_size, capture_bar_bounds,
+                                     capture_bounds,
+                                     action_container_widget_bounds, root,
+                                     CaptureRegionWidgetAlignment::kCenter);
   };
 
   gfx::Rect bounds(current_root_->bounds());
@@ -2597,6 +3417,11 @@ bool CaptureModeSession::IsUsingCustomCursor(CaptureModeType type) const {
 }
 
 void CaptureModeSession::ClampCaptureRegionToRootWindowSize() {
+  // Invalidate any ongoing image search before the new capture region is
+  // applied, so that loading animations can be removed by scheduling a repaint
+  // around the old capture bounds if needed.
+  InvalidateImageSearch();
+
   gfx::Rect new_capture_region = controller_->user_capture_region();
   new_capture_region.AdjustToFit(current_root_->bounds());
   controller_->SetUserCaptureRegion(new_capture_region, /*by_user=*/false);
@@ -2611,13 +3436,17 @@ void CaptureModeSession::EndSelection(
   Shell::Get()->UpdateCursorCompositingEnabled();
 
   MaybeUpdateCaptureUisOpacity(cursor_screen_location);
+  UpdateActionContainerWidget();
   UpdateDimensionsLabelWidget(/*is_resizing=*/false);
   CloseMagnifierGlass();
+  InvalidateImageSearch();
 }
 
 void CaptureModeSession::RepaintRegion() {
   gfx::Rect damage_region = controller_->user_capture_region();
-  damage_region.Inset(gfx::Insets(-kDamageInsetDp));
+  damage_region.Outset(active_behavior_->ShouldPaintSunfishCaptureRegion()
+                           ? kSunfishRegionDamageOutsetDp
+                           : kDamageOutsetDp);
   layer()->SchedulePaint(damage_region);
 }
 
@@ -2630,7 +3459,9 @@ void CaptureModeSession::SelectDefaultRegion() {
   default_capture_region.ClampToCenteredSize(gfx::ScaleToCeiledSize(
       default_capture_region.size(), kRegionDefaultRatio));
   UpdateCaptureRegion(default_capture_region, /*is_resizing=*/false,
-                      /*by_user=*/true);
+                      /*by_user=*/true, /*root_window_will_shutdown=*/false);
+  capture_mode_util::TriggerAccessibilityAlert(
+      IDS_ASH_SCREEN_CAPTURE_ALERT_DEFAULT_REGION_SELECTED);
 }
 
 void CaptureModeSession::UpdateRegionForArrowKeys(ui::KeyboardCode key_code,
@@ -2658,7 +3489,7 @@ void CaptureModeSession::UpdateRegionForArrowKeys(ui::KeyboardCode key_code,
       }
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   const bool horizontal =
@@ -2712,7 +3543,7 @@ void CaptureModeSession::UpdateRegionForArrowKeys(ui::KeyboardCode key_code,
   }
 
   UpdateCaptureRegion(new_capture_region, /*is_resizing=*/false,
-                      /*by_user=*/true);
+                      /*by_user=*/true, /*root_window_will_shutdown=*/false);
 }
 
 void CaptureModeSession::MaybeReparentCameraPreviewWidget() {
@@ -2736,7 +3567,6 @@ void CaptureModeSession::SetRecordingTypeMenuShown(bool shown,
   }
 
   if (!recording_type_menu_widget_) {
-    DCHECK(features::IsGifRecordingEnabled());
     DCHECK(capture_label_widget_);
     DCHECK(capture_label_widget_->IsVisible());
 
@@ -2745,7 +3575,6 @@ void CaptureModeSession::SetRecordingTypeMenuShown(bool shown,
 
     auto* parent = GetParentContainer(current_root_);
     recording_type_menu_widget_ = std::make_unique<views::Widget>();
-    MaybeDismissUserNudgeForever();
     capture_toast_controller_.DismissCurrentToastIfAny();
 
     recording_type_menu_widget_->Init(
@@ -2811,6 +3640,178 @@ bool CaptureModeSession::IsPointOverSelectedWindow(
           selected_window);
 }
 
+// TODO(http://b/363069895): Upload strings for translation.
+void CaptureModeSession::UpdateActionContainerWidget() {
+  if (!ShouldShowActionContainerWidget()) {
+    if (action_container_widget_ && action_container_widget_->IsVisible()) {
+      // It is inefficient to destroy and recreate the widget if a drag is in
+      // progress.
+      action_container_view_->ClearContainer();
+      action_container_widget_->Hide();
+    }
+    return;
+  }
+
+  if (!action_container_widget_) {
+    action_container_widget_ = std::make_unique<views::Widget>();
+    auto* parent = GetParentContainer(current_root_);
+    action_container_widget_->Init(
+        CreateWidgetParams(parent, gfx::Rect(), "ActionButtonsContainer"));
+    action_container_widget_->widget_delegate()->SetTitle(
+        active_behavior_->GetActionButtonContainerTitle());
+
+    action_container_view_ = action_container_widget_->SetContentsView(
+        std::make_unique<ActionButtonContainerView>());
+  }
+
+  if (action_container_view_->GetPreferredSize().IsEmpty()) {
+    action_container_widget_->Hide();
+    return;
+  }
+
+  action_container_widget_->Show();
+
+  const gfx::Rect bounds = CalculateActionContainerWidgetBounds();
+  if (bounds != action_container_widget_->GetWindowBoundsInScreen()) {
+    action_container_widget_->SetBounds(bounds);
+  }
+}
+
+gfx::Rect CaptureModeSession::CalculateActionContainerWidgetBounds() const {
+  DCHECK(action_container_widget_);
+
+  const gfx::Size preferred_size = action_container_view_->GetPreferredSize();
+  const gfx::Rect capture_bar_bounds =
+      capture_mode_bar_widget_->GetNativeWindow()->bounds();
+  // If the capture label exists, take its bounds into consideration regardless
+  // of whether it is currently visible or not. Otherwise there may be overlap
+  // if the action container and capture label both appear at the same time.
+  const gfx::Rect capture_label_widget_bounds =
+      capture_label_widget_ ? capture_label_widget_->GetNativeWindow()->bounds()
+                            : gfx::Rect();
+  const gfx::Rect capture_region = controller_->user_capture_region();
+  gfx::Rect bounds = CalculateRegionEdgeBounds(
+      preferred_size, capture_bar_bounds, capture_region,
+      capture_label_widget_bounds, current_root_,
+      CaptureRegionWidgetAlignment::kRight);
+
+  // User capture bounds are in root window coordinates so convert them here.
+  wm::ConvertRectToScreen(current_root_, &bounds);
+  return bounds;
+}
+
+void CaptureModeSession::ClearActionContainer() {
+  if (action_container_widget_) {
+    CHECK(action_container_view_);
+    action_container_view_->ClearContainer();
+    UpdateActionContainerWidget();
+  }
+}
+
+[[nodiscard]] bool
+CaptureModeSession::ShowDefaultActionButtonsOrPerformSearch() {
+  // Cancel previous search requests if needed.
+  InvalidateImageSearch();
+
+  // Early exit if we can't show the action container, i.e. a drag is in
+  // progress or capture region is empty. This will be checked again if an
+  // asynchronous function invokes `AddActionButton()`.
+  if (!ShouldShowActionContainerWidgetWithoutFeatureChecks()) {
+    return false;
+  }
+
+  // Separate out the feature checks so metrics can be captured.
+  if (!CanShowSunfishOrScannerUi()) {
+    if (active_behavior_->behavior_type() == BehaviorType::kDefault) {
+      RecordScannerFeatureUserState(
+          ScannerFeatureUserState::
+              kSmartActionsButtonNotShownDueToFeatureChecks);
+    }
+    return false;
+  }
+
+  // `CanShowSunfishOrScannerUi()` checks if *either* Scanner or Sunfish is
+  // enabled. Check again if Sunfish specifically is enabled to show the Search
+  // button.
+  // TODO: crbug.com/397521940 - Replace this with a more precise Sunfish check.
+  if (active_behavior_->ShouldShowDefaultActionButtonsInActionContainer() &&
+      CanShowSunfishUi()) {
+    if (controller_->IsNetworkConnectionOffline()) {
+      ShowActionContainerError(l10n_util::GetStringUTF16(
+          IDS_ASH_SCREEN_CAPTURE_MORE_ACTIONS_UNAVAILABLE_OFFLINE_ERROR));
+    } else {
+      RecordSearchButtonShown();
+      capture_mode_util::AddActionButton(
+          base::BindRepeating(&CaptureModeSession::OnSearchButtonPressed,
+                              weak_ptr_factory_.GetWeakPtr()),
+          l10n_util::GetStringUTF16(
+              IDS_ASH_SCREEN_CAPTURE_SUNFISH_SEARCH_BUTTON_TITLE),
+          &kLensIcon,
+          ActionButtonRank(ActionButtonType::kSunfish, /*weight=*/1),
+          ActionButtonViewID::kSearchButton);
+    }
+  }
+  // TODO: crbug.com/375261308 - Prevent image search when the region stays the
+  // same or is within a throttling QPS after a release event.
+  // Notify the behavior that the region was selected or adjusted, in case it
+  // needs to do specific handling. Note `this` may be destroyed by
+  // `OnRegionSelectedOrAdjusted()`.
+  auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
+  // `this` may be deleted after the following line.
+  active_behavior_->OnRegionSelectedOrAdjustedWhenActionContainerShowing();
+
+  return !weak_ptr;
+}
+
+bool CaptureModeSession::ShouldShowActionContainerWidgetWithoutFeatureChecks()
+    const {
+  // If drag for capture region is in progress, action buttons should be
+  // hidden.
+  if (is_drag_in_progress_) {
+    return false;
+  }
+
+  // If our capture source is not `kRegion`, or the region is empty, hide
+  // the action buttons.
+  if (controller_->type() != CaptureModeType::kImage ||
+      controller_->source() != CaptureModeSource::kRegion ||
+      controller_->user_capture_region().IsEmpty()) {
+    return false;
+  }
+
+  if (!active_behavior_->CanShowActionButtons()) {
+    return false;
+  }
+
+  return true;
+}
+
+bool CaptureModeSession::ShouldShowActionContainerWidget() const {
+  return ShouldShowActionContainerWidgetWithoutFeatureChecks() &&
+         CanShowSunfishOrScannerUi();
+}
+
+void CaptureModeSession::MaybeRemoveGlowAnimation() {
+  if (capture_region_overlay_controller_ &&
+      capture_region_overlay_controller_->HasGlowAnimation()) {
+    capture_region_overlay_controller_->RemoveGlowAnimation();
+    // Schedule repaint to remove glow.
+    RefreshGlowRegion();
+  }
+}
+
+void CaptureModeSession::RefreshGlowRegion() {
+  gfx::Rect glow_bounds(controller_->user_capture_region());
+  glow_bounds.Outset(kDamageWithGlowOutsetDp);
+  layer()->SchedulePaint(glow_bounds);
+}
+
+void CaptureModeSession::InvalidateImageSearch() {
+  weak_token_factory_.InvalidateWeakPtrs();
+  image_search_request_timer_.Stop();
+  MaybeRemoveGlowAnimation();
+}
+
 void CaptureModeSession::InitInternal() {
   layer()->set_delegate(this);
   auto* parent = GetParentContainer(current_root_);
@@ -2823,14 +3824,10 @@ void CaptureModeSession::InitInternal() {
   // Trigger this before creating `capture_mode_bar_widget_` as we want to read
   // out this message before reading out the first view of
   // `capture_mode_bar_widget_`.
-  capture_mode_util::TriggerAccessibilityAlert(l10n_util::GetStringFUTF8(
-      IDS_ASH_SCREEN_CAPTURE_ALERT_OPEN,
-      l10n_util::GetStringUTF16(
-          GetMessageIdForInitialCaptureSource(controller_->source())),
-      l10n_util::GetStringUTF16(
-          controller_->type() == CaptureModeType::kImage
-              ? IDS_ASH_SCREEN_CAPTURE_TYPE_SCREENSHOT
-              : IDS_ASH_SCREEN_CAPTURE_TYPE_SCREEN_RECORDING)));
+  if (!active_behavior_->NeedsDisclaimerOnInit()) {
+    capture_mode_util::TriggerAccessibilityAlert(
+        active_behavior_->GetCaptureModeOpenAnnouncement());
+  }
 
   // A context menu may have input capture when entering a session. Remove
   // capture from it, otherwise subsequent mouse events will cause it to close,
@@ -2862,8 +3859,12 @@ void CaptureModeSession::InitInternal() {
                          "CaptureModeBarWidget"));
   capture_mode_bar_view_ = capture_mode_bar_widget_->SetContentsView(
       active_behavior_->CreateCaptureModeBarView());
+  std::u16string capture_mode_bar_a11y_title =
+      active_behavior_->GetCaptureModeBarTitle();
   capture_mode_bar_widget_->GetNativeWindow()->SetTitle(
-      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_A11Y_TITLE));
+      capture_mode_bar_a11y_title);
+  capture_mode_bar_widget_->widget_delegate()->SetAccessibleTitle(
+      capture_mode_bar_a11y_title);
   capture_mode_bar_widget_->Show();
 
   // Advance focus once if spoken feedback is on so that the capture bar takes
@@ -2872,9 +3873,19 @@ void CaptureModeSession::InitInternal() {
     focus_cycler_->AdvanceFocus(/*reverse=*/false);
   }
 
-  UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
+  UpdateActionContainerWidget();
+  if (ShowDefaultActionButtonsOrPerformSearch()) {
+    return;
+  }
+  // Update the capture label widget after the action buttons, as the action
+  // buttons get priority around the edges of the capture region.
+  if (!active_behavior_->NeedsDisclaimerOnInit()) {
+    // Don't create the capture label yet if a disclaimer needs to be shown, to
+    // avoid the label being announced while the disclaimer is still visible.
+    UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
+  }
 
-  UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
+  UpdateCursor(display::Screen::Get()->GetCursorScreenPoint(),
                /*is_touch=*/false);
 
   if (controller_->source() == CaptureModeSource::kWindow) {
@@ -2902,11 +3913,18 @@ void CaptureModeSession::InitInternal() {
   // the initialization of the capture session, the type change is not triggered
   // by the user.
   capture_mode_bar_view_->OnCaptureTypeChanged(controller_->type());
-  MaybeCreateUserNudge();
+  MaybeCreateSunfishRegionNudge();
+
+  if (active_behavior_->ShouldRegionOverlayBeAllowed()) {
+    capture_region_overlay_controller_ =
+        std::make_unique<CaptureRegionOverlayController>();
+  }
 }
 
 void CaptureModeSession::ShutdownInternal() {
   aura::Env::GetInstance()->RemovePreTargetHandler(this);
+  capture_region_overlay_controller_.reset();
+  InvalidateImageSearch();
   display_observer_.reset();
   user_nudge_controller_.reset();
   capture_window_observer_.reset();
@@ -2926,23 +3944,42 @@ void CaptureModeSession::ShutdownInternal() {
     SetMouseWarpEnabled(*old_mouse_warp_status_);
   }
 
+  // Clear all the contents view of all the widgets to avoid UAF.
+  capture_mode_bar_view_ = nullptr;
+  capture_mode_settings_view_ = nullptr;
+  capture_label_view_ = nullptr;
+  recording_type_menu_view_ = nullptr;
+  action_container_view_ = nullptr;
+
   // Close all widgets immediately to avoid having them show up in the captured
   // screenshots or video.
   for (auto* widget : GetAvailableWidgets()) {
     widget->CloseNow();
   }
 
-  // Clear all the contents view of all the widgets to avoid UAF.
-  capture_mode_bar_view_ = nullptr;
-  capture_mode_settings_view_ = nullptr;
-  capture_label_view_ = nullptr;
-  recording_type_menu_view_ = nullptr;
-
   if (a11y_alert_on_session_exit_) {
     capture_mode_util::TriggerAccessibilityAlert(
         IDS_ASH_SCREEN_CAPTURE_ALERT_CLOSE);
   }
   UpdateFloatingPanelBoundsIfNeeded();
+}
+
+void CaptureModeSession::OnSearchResultsPanelCreated(
+    views::Widget* panel_widget) {
+  focus_cycler_->OnSearchResultsPanelCreated(panel_widget);
+}
+
+bool CaptureModeSession::TakeFocusForSearchResultsPanel(bool reverse) {
+  focus_cycler_->AdvanceFocusAfterSearchResultsPanel(reverse);
+  return true;
+}
+
+void CaptureModeSession::ClearPseudoFocus() {
+  focus_cycler_->ClearFocus();
+}
+
+void CaptureModeSession::SetA11yOverrideWindowToSearchResultsPanel() {
+  focus_cycler_->SetA11yOverrideWindowToSearchResultsPanel();
 }
 
 }  // namespace ash

@@ -20,9 +20,11 @@ namespace blink {
 
 class LayoutObject;
 class LocalFrameView;
+class Node;
 class PhysicalBoxFragment;
 class PhysicalFragment;
 struct PhysicalFragmentLink;
+class SoftNavigationPaintAttributionTracker;
 
 // This class walks the whole layout tree, beginning from the root
 // LocalFrameView, across frame boundaries. Helper classes are called for each
@@ -37,20 +39,6 @@ class CORE_EXPORT PrePaintTreeWalk final {
 
   static bool ObjectRequiresPrePaint(const LayoutObject&);
   static bool ObjectRequiresTreeBuilderContext(const LayoutObject&);
-
-  // Keeps information about the parent fragment that we need to search inside
-  // to find out-of-flow positioned descendants, and also which fragmentainer
-  // we're inside (which will serve as a fragment ID in FragmentData).
-  struct ContainingFragment {
-    STACK_ALLOCATED();
-
-   public:
-    bool IsInFragmentationContext() const;
-
-    const PhysicalBoxFragment* fragment = nullptr;
-    wtf_size_t fragmentainer_idx = WTF::kNotFound;
-    int fragmentation_nesting_level = 0;
-  };
 
   // This provides a default base copy constructor for PrePaintTreeWalkContext.
   // It contains all fields except for tree_builder_context which needs special
@@ -71,6 +59,13 @@ class CORE_EXPORT PrePaintTreeWalk final {
       fixed_positioned_container = {};
     }
 
+    void ResetSoftNavigationContext() {
+      soft_navigation_context_changed = false;
+      soft_navigation_context_container_root = nullptr;
+      soft_navigation_text_aggregation_node = nullptr;
+      soft_navigation_paint_attribution_tracker = nullptr;
+    }
+
     PaintInvalidatorContext paint_invalidator_context;
 
     // Whether there is a blocking touch event handler on any ancestor.
@@ -87,14 +82,33 @@ class CORE_EXPORT PrePaintTreeWalk final {
     // subtree may need to update.
     bool blocking_wheel_event_handler_changed = false;
 
+    // When the `SoftNavigationContext` of a node changes on an ancestor, the
+    // entire subtree may need to update.
+    bool soft_navigation_context_changed = false;
+
+    // The nearest ancestor `Node` associated with a `SoftNavigationContext`, if
+    // any. `SoftNavigationContext` is set for roots appended to the DOM, and
+    // this context gets propagated to descendants through this node.
+    Node* soft_navigation_context_container_root = nullptr;
+
+    // Paint tracking aggregates text into the nearest non-anonymous, non-inline
+    // ancestor node.
+    Node* soft_navigation_text_aggregation_node = nullptr;
+
+    // The `SoftNavigationPaintAttributionTracker` associated with the current
+    // document being walked. This will be null for iframes or if the
+    // experimental feature is disabled.
+    SoftNavigationPaintAttributionTracker*
+        soft_navigation_paint_attribution_tracker = nullptr;
+
     // True if we're visiting the parent for the first time, i.e. when we're in
     // the first fragmentainer where the parent occurs (or if we're not
     // fragmented at all).
     bool is_parent_first_for_node = true;
 
-    ContainingFragment current_container;
-    ContainingFragment absolute_positioned_container;
-    ContainingFragment fixed_positioned_container;
+    const PhysicalBoxFragment* current_container;
+    const PhysicalBoxFragment* absolute_positioned_container;
+    const PhysicalBoxFragment* fixed_positioned_container;
   };
 
   struct PrePaintTreeWalkContext : public PrePaintTreeWalkContextBase {
@@ -212,12 +226,10 @@ class CORE_EXPORT PrePaintTreeWalk final {
                                             const PrePaintTreeWalkContext&);
   void WalkPageContainer(const PhysicalFragmentLink& page_container_link,
                          const LayoutObject& parent_object,
-                         const PrePaintTreeWalkContext& parent_context,
-                         wtf_size_t fragmentainer_idx);
+                         const PrePaintTreeWalkContext& parent_context);
   void WalkFragmentainer(const LayoutObject& parent_object,
                          const PhysicalFragmentLink& child_link,
-                         const PrePaintTreeWalkContext& parent_context,
-                         wtf_size_t fragmentainer_idx);
+                         const PrePaintTreeWalkContext& parent_context);
 
   void WalkLayoutObjectChildren(const LayoutObject&,
                                 const PhysicalBoxFragment*,
@@ -246,6 +258,9 @@ class CORE_EXPORT PrePaintTreeWalk final {
                                        PrePaintTreeWalkContext&);
   void InvalidatePaintForHitTesting(const LayoutObject&,
                                     PrePaintTreeWalkContext&);
+
+  void UpdateSoftNavigationContext(const LayoutObject&,
+                                   PrePaintTreeWalkContext&);
 
   PaintInvalidator paint_invalidator_;
 

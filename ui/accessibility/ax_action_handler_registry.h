@@ -9,6 +9,7 @@
 #include <map>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "ui/accessibility/ax_action_handler.h"
 #include "ui/accessibility/ax_base_export.h"
@@ -30,7 +31,7 @@ class AXActionHandlerObserver : public base::CheckedObserver {
   // routing is asynchronous and we do not know which observers intend to
   // respond to which actions -- so we forward all actions to all observers.
   // Only the observer that owns the unique |tree_id| will perform the action.
-  virtual void PerformAction(const ui::AXActionData& action_data) {}
+  virtual void PerformAction(const AXActionData& action_data) {}
 
   // Informs the observer that a tree has been removed.
   virtual void TreeRemoved(AXTreeID tree_id) {}
@@ -51,7 +52,7 @@ class AX_BASE_EXPORT AXActionHandlerRegistry final {
   // Get the single instance of this class.
   static AXActionHandlerRegistry* GetInstance();
 
-  virtual ~AXActionHandlerRegistry();
+  ~AXActionHandlerRegistry();
   AXActionHandlerRegistry(const AXActionHandlerRegistry&) = delete;
   AXActionHandlerRegistry& operator=(const AXActionHandlerRegistry&) = delete;
 
@@ -80,7 +81,7 @@ class AX_BASE_EXPORT AXActionHandlerRegistry final {
   void RemoveObserver(AXActionHandlerObserver* observer);
 
   // Calls PerformAction on all observers.
-  void PerformAction(const ui::AXActionData& action_data);
+  void PerformAction(const AXActionData& action_data);
 
  private:
   friend base::NoDestructor<AXActionHandlerRegistry>;
@@ -102,7 +103,8 @@ class AX_BASE_EXPORT AXActionHandlerRegistry final {
   std::map<FrameID, AXTreeID> frame_to_ax_tree_id_map_;
 
   // Maps an id to its handler.
-  std::map<AXTreeID, AXActionHandlerBase*> id_to_action_handler_;
+  std::map<AXTreeID, raw_ptr<AXActionHandlerBase, CtnExperimental>>
+      id_to_action_handler_;
 
   // Tracks all observers.
   base::ObserverList<AXActionHandlerObserver> observers_;

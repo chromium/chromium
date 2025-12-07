@@ -18,7 +18,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -134,8 +133,8 @@ TEST_F(WorkletAnimationTest, AnimationEventLocalTimeUpdate) {
   // One event is generated as a result of update state.
   EXPECT_TRUE(animation_events->needs_time_updated_events());
   worklet_animation_->TakeTimeUpdatedEvent(animation_events);
-  EXPECT_EQ(1u, animation_events->events_.size());
-  AnimationEvent event = animation_events->events_[0];
+  EXPECT_EQ(1u, animation_events->events().size());
+  AnimationEvent event = animation_events->events()[0];
   EXPECT_EQ(AnimationEvent::Type::kTimeUpdated, event.type);
   EXPECT_EQ(worklet_animation_->id(), event.uid.animation_id);
   EXPECT_EQ(local_time, event.local_time);
@@ -164,8 +163,8 @@ TEST_F(WorkletAnimationTest, AnimationEventLocalTimeUpdate) {
   worklet_animation_->UpdateState(true, animation_events);
   EXPECT_TRUE(animation_events->needs_time_updated_events());
   worklet_animation_->TakeTimeUpdatedEvent(animation_events);
-  EXPECT_EQ(1u, animation_events->events_.size());
-  EXPECT_EQ(local_time, animation_events->events_[0].local_time);
+  EXPECT_EQ(1u, animation_events->events().size());
+  EXPECT_EQ(local_time, animation_events->events()[0].local_time);
 }
 
 TEST_F(WorkletAnimationTest, CurrentTimeCorrectlyUsesScrollTimeline) {
@@ -502,7 +501,7 @@ TEST_F(WorkletAnimationTest, SkipLockedAnimations) {
   auto scroll_timeline = base::WrapRefCounted(new MockScrollTimeline());
   EXPECT_CALL(*scroll_timeline, IsActive(_, _)).WillRepeatedly(Return(true));
   EXPECT_CALL(*scroll_timeline, CurrentTime(_, _))
-      .WillRepeatedly(Invoke(FakeIncreasingScrollTimelineTime));
+      .WillRepeatedly(FakeIncreasingScrollTimelineTime);
   scoped_refptr<WorkletAnimation> worklet_animation = WorkletAnimation::Create(
       worklet_animation_id_, "test_name", 1, nullptr, nullptr);
   host_->AddAnimationTimeline(scroll_timeline);

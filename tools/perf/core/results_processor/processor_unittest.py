@@ -25,7 +25,7 @@ class ResultsProcessorUnitTests(unittest.TestCase):
     test_result = testing.TestResult(
         'benchmark/story',
         output_artifacts={
-            'trace.html': testing.Artifact('/trace.html', 'gs://trace.html'),
+            'trace.pb': testing.Artifact('/trace.pb', 'gs://trace.pb'),
         },
         start_time=start_iso,
         tags=['story_tag:test'],
@@ -55,14 +55,14 @@ class ResultsProcessorUnitTests(unittest.TestCase):
     self.assertEqual(hist.diagnostics['storysetRepeats'],
                      generic_set.GenericSet([3]))
     self.assertEqual(hist.diagnostics['traceUrls'],
-                     generic_set.GenericSet(['gs://trace.html']))
+                     generic_set.GenericSet(['gs://trace.pb']))
 
   def testUploadArtifacts(self):
     test_result = testing.TestResult(
         'benchmark/story',
         output_artifacts={
             'logs': testing.Artifact('/log.log'),
-            'trace.html': testing.Artifact('/trace.html'),
+            'trace.pb': testing.Artifact('/trace.pb'),
             'screenshot': testing.Artifact('/screenshot.png'),
         },
     )
@@ -75,8 +75,8 @@ class ResultsProcessorUnitTests(unittest.TestCase):
           [
               mock.call('bucket', 'run1/benchmark/story/retry_0/logs',
                         '/log.log'),
-              mock.call('bucket', 'run1/benchmark/story/retry_0/trace.html',
-                        '/trace.html'),
+              mock.call('bucket', 'run1/benchmark/story/retry_0/trace.pb',
+                        '/trace.pb'),
               mock.call('bucket', 'run1/benchmark/story/retry_0/screenshot',
                         '/screenshot.png'),
           ],
@@ -161,19 +161,19 @@ class ResultsProcessorUnitTests(unittest.TestCase):
     test_result = testing.TestResult(
         'benchmark/story',
         output_artifacts={
-            'trace.html': testing.Artifact('trace.html', 'gs://trace.html')
+            'trace.pb': testing.Artifact('trace.pb', 'gs://trace.pb')
         },
     )
     url = processor.GetTraceUrl(test_result)
-    self.assertEqual(url, 'gs://trace.html')
+    self.assertEqual(url, 'gs://trace.pb')
 
   def testGetTraceUrlLocal(self):
     test_result = testing.TestResult(
         'benchmark/story',
-        output_artifacts={'trace.html': testing.Artifact('trace.html')},
+        output_artifacts={'trace.pb': testing.Artifact('trace.pb')},
     )
     url = processor.GetTraceUrl(test_result)
-    self.assertEqual(url, 'file://trace.html')
+    self.assertEqual(url, 'file://trace.pb')
 
   def testGetTraceUrlEmpty(self):
     test_result = testing.TestResult('benchmark/story')

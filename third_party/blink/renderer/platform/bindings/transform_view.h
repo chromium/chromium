@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_TRANSFORM_VIEW_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_TRANSFORM_VIEW_H_
 
+#include <stddef.h>
+
 #include <concepts>
 #include <iterator>
+#include <utility>
+
+#include "base/compiler_specific.h"
 
 namespace blink::bindings {
 
@@ -58,14 +58,13 @@ class TransformedView {
     bool operator==(const TransformingIterator& r) const {
       return it_ == r.it_;
     }
-    bool operator!=(const TransformingIterator& r) const {
-      return it_ != r.it_;
-    }
     TransformingIterator& operator++() {
-      ++it_;
+      UNSAFE_TODO(++it_);
       return *this;
     }
-    TransformingIterator operator++(int) { return TransformingIterator(it_++); }
+    TransformingIterator operator++(int) {
+      return UNSAFE_TODO(TransformingIterator(it_++));
+    }
 
     value_type operator*() const { return Transform()(*it_); }
 

@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_previously_denied_view.h"
 
 #include "base/memory/weak_ptr.h"
-
 #include "chrome/browser/ui/url_identity.h"
 #include "components/permissions/features.h"
 #include "components/strings/grit/components_strings.h"
@@ -32,7 +31,19 @@ EmbeddedPermissionPromptPreviouslyDeniedView::GetAccessibleWindowTitle() const {
 
 std::u16string EmbeddedPermissionPromptPreviouslyDeniedView::GetWindowTitle()
     const {
-  return l10n_util::GetStringUTF16(IDS_EMBEDDED_PROMPT_PREVIOUSLY_NOT_ALLOWED);
+  const auto& requests = delegate()->Requests();
+  CHECK_GT(requests.size(), 0U);
+
+  std::u16string permission_name;
+  if (requests.size() == 2) {
+    permission_name = l10n_util::GetStringUTF16(
+        IDS_CAMERA_AND_MICROPHONE_PERMISSION_NAME_FRAGMENT);
+  } else {
+    permission_name = requests[0]->GetPermissionNameTextFragment();
+  }
+
+  return l10n_util::GetStringFUTF16(IDS_EMBEDDED_PROMPT_PREVIOUSLY_NOT_ALLOWED,
+                                    permission_name);
 }
 
 void EmbeddedPermissionPromptPreviouslyDeniedView::RunButtonCallback(
@@ -70,9 +81,9 @@ EmbeddedPermissionPromptPreviouslyDeniedView::GetButtonsConfiguration() const {
       l10n_util::GetStringUTF16(IDS_EMBEDDED_PROMPT_CONTINUE_NOT_ALLOWING),
       ButtonType::kContinueNotAllowing, ui::ButtonStyle::kTonal);
 
-    buttons.emplace_back(
-        l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_THIS_TIME),
-        ButtonType::kAllowThisTime, ui::ButtonStyle::kTonal, kAllowThisTimeId);
+  buttons.emplace_back(
+      l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_THIS_TIME),
+      ButtonType::kAllowThisTime, ui::ButtonStyle::kTonal, kAllowThisTimeId);
 
   return buttons;
 }

@@ -22,6 +22,8 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.messages.MessageScopeChange.ChangeType;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.Page;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.url.GURL;
@@ -68,7 +70,7 @@ public class ScopeChangeControllerTest {
                 ChangeType.INACTIVE,
                 captor.getValue().changeType);
 
-        observer.wasShown();
+        observer.onVisibilityChanged(Visibility.VISIBLE);
         expectedOnScopeChangeCalls++;
 
         verify(
@@ -81,7 +83,7 @@ public class ScopeChangeControllerTest {
                 ChangeType.ACTIVE,
                 captor.getValue().changeType);
 
-        observer.wasHidden();
+        observer.onVisibilityChanged(Visibility.HIDDEN);
         expectedOnScopeChangeCalls++;
         verify(
                         delegate,
@@ -135,6 +137,31 @@ public class ScopeChangeControllerTest {
                 "Scope type should be destroy when navigated to another page",
                 ChangeType.DESTROY,
                 captor.getValue().changeType);
+    }
+
+    @Test
+    @SmallTest
+    public void testScopeChange_WindowChanged() {
+        ScopeChangeController.Delegate delegate =
+                Mockito.mock(ScopeChangeController.Delegate.class);
+        ScopeChangeController controller = new ScopeChangeController(delegate);
+
+        MockWebContents webContents = mock(MockWebContents.class);
+
+        int expectedOnScopeChangeCalls = 0;
+        ScopeKey key = new ScopeKey(MessageScopeType.NAVIGATION, webContents);
+        controller.firstMessageEnqueued(key);
+
+        final ArgumentCaptor<WebContentsObserver> runnableCaptor =
+                ArgumentCaptor.forClass(WebContentsObserver.class);
+        verify(webContents).addObserver(runnableCaptor.capture());
+
+        WebContentsObserver observer = runnableCaptor.getValue();
+
+        // Default visibility of web contents is invisible.
+        expectedOnScopeChangeCalls++;
+        ArgumentCaptor<MessageScopeChange> captor =
+                ArgumentCaptor.forClass(MessageScopeChange.class);
 
         observer.onTopLevelNativeWindowChanged(null);
         expectedOnScopeChangeCalls++;
@@ -223,7 +250,7 @@ public class ScopeChangeControllerTest {
                 ChangeType.INACTIVE,
                 captor.getValue().changeType);
 
-        observer.wasShown();
+        observer.onVisibilityChanged(Visibility.VISIBLE);
         expectedOnScopeChangeCalls++;
 
         verify(
@@ -236,7 +263,7 @@ public class ScopeChangeControllerTest {
                 ChangeType.ACTIVE,
                 captor.getValue().changeType);
 
-        observer.wasHidden();
+        observer.onVisibilityChanged(Visibility.HIDDEN);
         expectedOnScopeChangeCalls++;
         verify(
                         delegate,
@@ -300,20 +327,6 @@ public class ScopeChangeControllerTest {
                 "Scope type should be destroy when navigated to another domain",
                 ChangeType.DESTROY,
                 captor.getValue().changeType);
-
-        observer.onTopLevelNativeWindowChanged(null);
-        expectedOnScopeChangeCalls++;
-        verify(
-                        delegate,
-                        times(expectedOnScopeChangeCalls)
-                                .description(
-                                        "Delegate should be called when top level native window"
-                                                + " changes"))
-                .onScopeChange(captor.capture());
-        Assert.assertEquals(
-                "Scope type should be destroy when top level native window changes",
-                ChangeType.DESTROY,
-                captor.getValue().changeType);
     }
 
     private NavigationHandle createNavigationHandle(
@@ -329,23 +342,23 @@ public class ScopeChangeControllerTest {
                         /* isInPrimaryMainFrame= */ true,
                         isSameDocument,
                         /* isRendererInitiated= */ true,
-                        /* pageTransition= */ 0,
+                        /* transition= */ 0,
                         /* hasUserGesture= */ false,
                         isReload);
         handle.didFinish(
                 url,
                 /* isErrorPage= */ false,
                 didCommit,
-                /* isFragmentNavigation= */ false,
+                /* isPrimaryMainFrameFragmentNavigation= */ false,
                 /* isDownload= */ false,
                 /* isValidSearchFormUrl= */ false,
                 /* transition */ 0,
                 /* errorCode= */ 0,
-                /* httpStatusCode= */ 0,
+                /* httpStatuscode= */ 0,
                 /* isExternalProtocol= */ false,
                 /* isPdf= */ false,
                 /* mimeType= */ "",
-                /* shouldUpdateHistory= */ false);
+                Page.createForTesting());
         return handle;
     }
 }

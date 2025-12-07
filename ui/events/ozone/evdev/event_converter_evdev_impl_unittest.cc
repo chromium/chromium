@@ -11,6 +11,8 @@
 
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
+#include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -23,8 +25,17 @@
 #include "ui/events/ozone/evdev/event_factory_evdev.h"
 #include "ui/events/ozone/evdev/keyboard_evdev.h"
 #include "ui/events/ozone/evdev/testing/fake_cursor_delegate_evdev.h"
+#include "ui/events/ozone/features.h"
 #include "ui/events/ozone/layout/stub/stub_keyboard_layout_engine.h"
 #include "ui/events/test/scoped_event_test_tick_clock.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "base/test/metrics/histogram_tester.h"
+#include "ui/events/ozone/evdev/microphone_mute_key_metrics.h"
+#endif
+
+using testing::_;
+using testing::DoubleNear;
 
 namespace ui {
 
@@ -146,6 +157,10 @@ member class=ui::InputDevice id=1
  version=0100
 )";
 
+#if BUILDFLAG(IS_CHROMEOS)
+const double kThreshold = 0.2f;
+#endif
+
 // Test fixture.
 class EventConverterEvdevImplTest : public testing::Test {
  public:
@@ -168,6 +183,11 @@ class EventConverterEvdevImplTest : public testing::Test {
     cursor_ = std::make_unique<ui::FakeCursorDelegateEvdev>();
 
     keyboard_layout_engine_ = std::make_unique<ui::StubKeyboardLayoutEngine>();
+    // Inject custom table for phone mic mute related tests.
+    keyboard_layout_engine_->SetCustomLookupTableForTesting({
+        {ui::DomCode::MICROPHONE_MUTE_TOGGLE, ui::DomKey::MICROPHONE_TOGGLE,
+         ui::DomKey::MICROPHONE_TOGGLE, ui::VKEY_MICROPHONE_MUTE_TOGGLE},
+    });
     device_manager_ = ui::CreateDeviceManagerForTest();
     event_factory_ = ui::CreateEventFactoryEvdevForTest(
         cursor_.get(), device_manager_.get(), keyboard_layout_engine_.get(),
@@ -219,7 +239,7 @@ class EventConverterEvdevImplTest : public testing::Test {
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
-  std::unique_ptr<ui::KeyboardLayoutEngine> keyboard_layout_engine_;
+  std::unique_ptr<ui::StubKeyboardLayoutEngine> keyboard_layout_engine_;
   std::unique_ptr<ui::FakeCursorDelegateEvdev> cursor_;
   std::unique_ptr<ui::DeviceManager> device_manager_;
   std::unique_ptr<ui::EventFactoryEvdev> event_factory_;
@@ -293,8 +313,33 @@ class DeferDeviceSetUpEventConverterEvdevImplTest
       const DeferDeviceSetUpEventConverterEvdevImplTest&) = delete;
 
   // Overridden from EventConverterEvdevImplTest:
-  void SetUp() override {}
+  void SetUp() override {
+    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+  }
+
+ protected:
+  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
+#if BUILDFLAG(IS_CHROMEOS)
+  base::HistogramTester histogram_tester_;
+#endif
 };
+
+TEST_F(EventConverterEvdevImplTest, BlockTelephonyMicMuteKeyByDefault) {
+  ui::MockEventConverterEvdevImpl* dev = device();
+
+  struct input_event mock_kernel_queue[] = {
+      {{0, 0}, EV_MSC, MSC_SCAN, 0xb002f},
+      {{0, 0}, EV_KEY, KEY_MICMUTE, 1},
+      {{0, 0}, EV_SYN, SYN_REPORT, 0},
+
+      {{0, 0}, EV_MSC, MSC_SCAN, 0xb002f},
+      {{0, 0}, EV_KEY, KEY_MICMUTE, 0},
+      {{0, 0}, EV_SYN, SYN_REPORT, 0},
+  };
+
+  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
+  EXPECT_EQ(0u, size());
+}
 
 TEST_F(EventConverterEvdevImplTest, KeyPress) {
   ui::MockEventConverterEvdevImpl* dev = device();
@@ -897,6 +942,65 @@ TEST_F(EventConverterEvdevImplTest, ShouldSwapMouseButtonsFromUserPreference) {
   EXPECT_EQ(true, event->IsLeftMouseButton());
 }
 
+TEST_F(DeferDeviceSetUpEventConverterEvdevImplTest,
+       DisableBlockTelephonyDevicePhoneMute) {
+  // By default Block Phone Mic Mute is enabled. We disable it and validate that
+  // events are processed.
+  scoped_feature_list_->InitAndDisableFeature(
+      ui::kBlockTelephonyDevicePhoneMute);
+  SetUpDevice(ui::EventDeviceInfo());
+  ui::MockEventConverterEvdevImpl* dev = device();
+
+  struct input_event mock_kernel_queue[] = {
+      {{0, 0}, EV_MSC, MSC_SCAN, 0x0b002f},
+      {{0, 0}, EV_KEY, KEY_MICMUTE, 1},
+      {{0, 0}, EV_SYN, SYN_REPORT, 0},
+
+      {{0, 0}, EV_MSC, MSC_SCAN, 0x0b002f},
+      {{0, 0}, EV_KEY, KEY_MICMUTE, 0},
+      {{0, 0}, EV_SYN, SYN_REPORT, 0},
+  };
+
+  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
+  EXPECT_EQ(2u, size());
+
+  ui::KeyEvent* event;
+
+  event = dispatched_event(0);
+  EXPECT_EQ(ui::EventType::kKeyPressed, event->type());
+  EXPECT_EQ(ui::VKEY_MICROPHONE_MUTE_TOGGLE, event->key_code());
+  EXPECT_EQ(0xb002fu, event->scan_code());
+  EXPECT_EQ(0, event->flags());
+
+  event = dispatched_event(1);
+  EXPECT_EQ(ui::EventType::kKeyReleased, event->type());
+  EXPECT_EQ(ui::VKEY_MICROPHONE_MUTE_TOGGLE, event->key_code());
+  EXPECT_EQ(0xb002fu, event->scan_code());
+  EXPECT_EQ(0, event->flags());
+}
+
+TEST_F(DeferDeviceSetUpEventConverterEvdevImplTest,
+       EnableBlockTelephonyDevicePhoneMute) {
+  // We enable the flag it and validate that events are not processed.
+  scoped_feature_list_->InitAndEnableFeature(
+      ui::kBlockTelephonyDevicePhoneMute);
+  SetUpDevice(ui::EventDeviceInfo());
+  ui::MockEventConverterEvdevImpl* dev = device();
+
+  struct input_event mock_kernel_queue[] = {
+      {{0, 0}, EV_MSC, MSC_SCAN, 0x0b002f},
+      {{0, 0}, EV_KEY, KEY_MICMUTE, 1},
+      {{0, 0}, EV_SYN, SYN_REPORT, 0},
+
+      {{0, 0}, EV_MSC, MSC_SCAN, 0x0b002f},
+      {{0, 0}, EV_KEY, KEY_MICMUTE, 0},
+      {{0, 0}, EV_SYN, SYN_REPORT, 0},
+  };
+
+  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
+  EXPECT_EQ(0u, size());
+}
+
 TEST_F(DeferDeviceSetUpEventConverterEvdevImplTest, KeyboardHasKeys) {
   ui::EventDeviceInfo devinfo;
   CapabilitiesToDeviceInfo(ui::kLogitechKeyboardK120, &devinfo);
@@ -910,6 +1014,107 @@ TEST_F(DeferDeviceSetUpEventConverterEvdevImplTest, KeyboardHasKeys) {
   // BTN_A shouldn't be supported.
   EXPECT_FALSE(ui::EvdevBitUint64IsSet(key_bits.data(), 305));
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(DeferDeviceSetUpEventConverterEvdevImplTest,
+       ShouldInvokeValidInputCallbackForInternalKeyboard) {
+  // Setup device to be jinlon internal keyboard.
+  ui::EventDeviceInfo devinfo;
+  CapabilitiesToDeviceInfo(ui::kJinlonKeyboard, &devinfo);
+  SetUpDevice(devinfo);
+
+  ui::MockEventConverterEvdevImpl* dev = device();
+  base::MockCallback<ui::EventConverterEvdev::ReceivedValidInputCallback>
+      keyboard_used;
+  EXPECT_CALL(keyboard_used, Run(_, DoubleNear(620.170, kThreshold)));
+
+  static_cast<ui::EventConverterEvdev*>(dev)->SetReceivedValidInputCallback(
+      keyboard_used.Get());
+
+  struct input_event mock_kernel_queue[] = {
+      {{620, 170000}, EV_MSC, MSC_SCAN, 0x70004},
+      {{620, 170000}, EV_KEY, KEY_A, 1},
+      {{620, 170000}, EV_SYN, SYN_REPORT, 0},
+
+      {{620, 170010}, EV_MSC, MSC_SCAN, 0x70004},
+      {{620, 170010}, EV_KEY, KEY_A, 0},
+      {{620, 170010}, EV_SYN, SYN_REPORT, 0},
+  };
+  SetTestNowSeconds(621);
+
+  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
+  ASSERT_EQ(2u, size());
+}
+
+TEST_F(DeferDeviceSetUpEventConverterEvdevImplTest,
+       MicrophoneMuteTogglingPhoneMuteScanCode) {
+  SetUpDevice(ui::EventDeviceInfo());
+  ui::MockEventConverterEvdevImpl* dev = device();
+
+  // Telephony device phone mute scan code.
+  struct input_event mock_kernel_queue[] = {
+      {{0, 0}, EV_MSC, MSC_SCAN, 0x0b002f},
+      {{0, 0}, EV_KEY, KEY_MICMUTE, 1},
+      {{0, 0}, EV_SYN, SYN_REPORT, 0},
+
+      {{0, 0}, EV_MSC, MSC_SCAN, 0x0b002f},
+      {{0, 0}, EV_KEY, KEY_MICMUTE, 0},
+      {{0, 0}, EV_SYN, SYN_REPORT, 0},
+  };
+
+  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
+  histogram_tester_.ExpectUniqueSample(
+      ui::kMicrophoneMuteToggleDevicesHistogramName,
+      ui::MicrophoneMuteToggleDevices::kPhoneMuteOtherNotKeyboard, 1);
+}
+
+TEST_F(DeferDeviceSetUpEventConverterEvdevImplTest,
+       MicrophoneMuteTogglingSystemMuteScanCode) {
+  SetUpDevice(ui::EventDeviceInfo());
+  ui::MockEventConverterEvdevImpl* dev = device();
+
+  // System microphone mute scan code.
+  struct input_event mock_kernel_queue[] = {
+      {{0, 0}, EV_MSC, MSC_SCAN, 0x0100a9},
+      {{0, 0}, EV_KEY, KEY_MICMUTE, 1},
+      {{0, 0}, EV_SYN, SYN_REPORT, 0},
+
+      {{0, 0}, EV_MSC, MSC_SCAN, 0x0100a9},
+      {{0, 0}, EV_KEY, KEY_MICMUTE, 0},
+      {{0, 0}, EV_SYN, SYN_REPORT, 0},
+  };
+
+  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
+  histogram_tester_.ExpectUniqueSample(
+      ui::kMicrophoneMuteToggleDevicesHistogramName,
+      ui::MicrophoneMuteToggleDevices::kSystemMicrophoneMuteOtherNotKeyboard,
+      1);
+}
+
+TEST_F(DeferDeviceSetUpEventConverterEvdevImplTest,
+       MicrophoneMuteTogglingStartOrStopMicCaptureScanCode) {
+  SetUpDevice(ui::EventDeviceInfo());
+  ui::MockEventConverterEvdevImpl* dev = device();
+
+  // Start or stop microphone capture scan code.
+  struct input_event mock_kernel_queue[] = {
+      {{0, 0}, EV_MSC, MSC_SCAN, 0x0c00d5},
+      {{0, 0}, EV_KEY, KEY_MICMUTE, 1},
+      {{0, 0}, EV_SYN, SYN_REPORT, 0},
+
+      {{0, 0}, EV_MSC, MSC_SCAN, 0x0c00d5},
+      {{0, 0}, EV_KEY, KEY_MICMUTE, 0},
+      {{0, 0}, EV_SYN, SYN_REPORT, 0},
+  };
+
+  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
+  histogram_tester_.ExpectUniqueSample(
+      ui::kMicrophoneMuteToggleDevicesHistogramName,
+      ui::MicrophoneMuteToggleDevices::
+          kStartOrStopMicrophoneCaptureOtherNotKeyboard,
+      1);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Verify log conversions for EventDeviceInfoImpl, base EventDeviceInfo,
 // and InputDevice member.
@@ -1027,8 +1232,8 @@ TEST_F(EventConverterEvdevImplLogTest, ChangeKeyboardType) {
     ui::EvdevSetBit(key_bits.data(), key);
   }
 
-  devinfo.SetEventTypes(ev_bits.data(), ev_bits.size());
-  devinfo.SetKeyEvents(key_bits.data(), key_bits.size());
+  devinfo.SetEventTypes(ev_bits);
+  devinfo.SetKeyEvents(key_bits);
 
   std::string log = LogSubst(kDefaultDeviceLogDescription, "keyboard_type",
                              "ui::KeyboardType::VALID_KEYBOARD");
@@ -1043,8 +1248,8 @@ TEST_F(EventConverterEvdevImplLogTest, ChangeCapslockLED) {
   ui::EvdevSetBit(ev_bits.data(), EV_LED);
   ui::EvdevSetBit(led_bits.data(), LED_CAPSL);
 
-  devinfo.SetEventTypes(ev_bits.data(), ev_bits.size());
-  devinfo.SetLedEvents(led_bits.data(), led_bits.size());
+  devinfo.SetEventTypes(ev_bits);
+  devinfo.SetLedEvents(led_bits);
 
   std::string log =
       LogSubst(kDefaultDeviceLogDescription, "has_caps_lock_led", "1");

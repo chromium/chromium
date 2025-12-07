@@ -13,6 +13,7 @@
 #include <set>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/callback.h"
@@ -21,7 +22,7 @@
 #include "base/memory/free_deleter.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -63,7 +64,7 @@ class VisitedLinkWriter : public VisitedLinkCommon {
   // event as a constructor argument and dispatches events using it.
   class Listener {
    public:
-    virtual ~Listener() {}
+    virtual ~Listener() = default;
 
     // Called when link coloring database has been created or replaced. The
     // argument is a memory region containing the new table.
@@ -140,7 +141,7 @@ class VisitedLinkWriter : public VisitedLinkCommon {
     virtual bool HasNextURL() const = 0;
 
    protected:
-    virtual ~URLIterator() {}
+    virtual ~URLIterator() = default;
   };
 
   // Deletes the specified URLs from |rows| from the table.
@@ -403,7 +404,7 @@ class VisitedLinkWriter : public VisitedLinkCommon {
   // Returns a pointer to the start of the hash table, given the mapping
   // containing the hash table.
   static Fingerprint* GetHashTableFromMapping(
-      const base::WritableSharedMemoryMapping& hash_table_mapping);
+      base::WritableSharedMemoryMapping& hash_table_mapping);
 
   // Reference to the browser context that this object belongs to
   // (it knows the path to where the data is stored)
@@ -521,8 +522,9 @@ class VisitedLinkWriter : public VisitedLinkCommon {
 inline void VisitedLinkWriter::DebugValidate() {
   int32_t used_count = 0;
   for (int32_t i = 0; i < table_length_; i++) {
-    if (hash_table_[i])
+    if (UNSAFE_TODO(hash_table_[i])) {
       used_count++;
+    }
   }
   DCHECK_EQ(used_count, used_items_);
 }

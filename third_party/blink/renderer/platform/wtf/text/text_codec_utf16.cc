@@ -23,23 +23,21 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_utf16.h"
 
 #include <unicode/utf16.h>
+
 #include <memory>
 
+#include "base/numerics/byte_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
-namespace WTF {
+namespace blink {
 
-void TextCodecUTF16::RegisterEncodingNames(EncodingNameRegistrar registrar) {
+void TextCodecUtf16::RegisterEncodingNames(EncodingNameRegistrar registrar) {
   registrar("UTF-16LE", "UTF-16LE");
   registrar("UTF-16BE", "UTF-16BE");
 
@@ -53,25 +51,22 @@ void TextCodecUTF16::RegisterEncodingNames(EncodingNameRegistrar registrar) {
   registrar("unicodeFFFE", "UTF-16BE");
 }
 
-static std::unique_ptr<TextCodec> NewStreamingTextDecoderUTF16LE(
-    const TextEncoding&,
-    const void*) {
-  return std::make_unique<TextCodecUTF16>(true);
+static std::unique_ptr<TextCodec> NewStreamingTextDecoderUtf16le(
+    const TextEncoding&) {
+  return std::make_unique<TextCodecUtf16>(true);
 }
 
-static std::unique_ptr<TextCodec> NewStreamingTextDecoderUTF16BE(
-    const TextEncoding&,
-    const void*) {
-  return std::make_unique<TextCodecUTF16>(false);
+static std::unique_ptr<TextCodec> NewStreamingTextDecoderUtf16be(
+    const TextEncoding&) {
+  return std::make_unique<TextCodecUtf16>(false);
 }
 
-void TextCodecUTF16::RegisterCodecs(TextCodecRegistrar registrar) {
-  registrar("UTF-16LE", NewStreamingTextDecoderUTF16LE, nullptr);
-  registrar("UTF-16BE", NewStreamingTextDecoderUTF16BE, nullptr);
+void TextCodecUtf16::RegisterCodecs(TextCodecRegistrar registrar) {
+  registrar("UTF-16LE", NewStreamingTextDecoderUtf16le);
+  registrar("UTF-16BE", NewStreamingTextDecoderUtf16be);
 }
 
-String TextCodecUTF16::Decode(const char* bytes,
-                              wtf_size_t length,
+String TextCodecUtf16::Decode(base::span<const uint8_t> bytes,
                               FlushBehavior flush,
                               bool,
                               bool& saw_error) {
@@ -79,52 +74,37 @@ String TextCodecUTF16::Decode(const char* bytes,
   const bool really_flush = flush != FlushBehavior::kDoNotFlush &&
                             flush != FlushBehavior::kFetchEOF;
 
-  if (!length) {
+  if (bytes.empty()) {
     if (really_flush && (have_lead_byte_ || have_lead_surrogate_)) {
       have_lead_byte_ = have_lead_surrogate_ = false;
       saw_error = true;
-      return String(&kReplacementCharacter, 1u);
+      return String(base::span_from_ref(uchar::kReplacementCharacter));
     }
     return String();
   }
 
-  const unsigned char* p = reinterpret_cast<const unsigned char*>(bytes);
-  const wtf_size_t num_bytes = length + have_lead_byte_;
+  const wtf_size_t num_bytes = bytes.size() + have_lead_byte_;
   const bool will_have_extra_byte = num_bytes & 1;
-  const wtf_size_t num_chars_in = num_bytes / 2;
+  wtf_size_t num_chars_in = num_bytes / 2;
   const wtf_size_t max_chars_out =
       num_chars_in + (have_lead_surrogate_ ? 1 : 0) +
       (really_flush && will_have_extra_byte ? 1 : 0);
 
+  auto in_span = bytes;
   StringBuffer<UChar> buffer(max_chars_out);
-  UChar* q = buffer.Characters();
+  auto out_span = buffer.Span();
+  wtf_size_t out_span_cursor = 0;
 
-  for (wtf_size_t i = 0; i < num_chars_in; ++i) {
-    UChar c;
-    if (have_lead_byte_) {
-      c = little_endian_ ? (lead_byte_ | (p[0] << 8))
-                         : ((lead_byte_ << 8) | p[0]);
-      have_lead_byte_ = false;
-      ++p;
-    } else {
-      c = little_endian_ ? (p[0] | (p[1] << 8)) : ((p[0] << 8) | p[1]);
-      p += 2;
-    }
-
-    // TODO(jsbell): If necessary for performance, m_haveLeadByte handling
-    // can be pulled out and this loop split into distinct cases for
-    // big/little endian. The logic from here to the end of the loop is
-    // constant with respect to m_haveLeadByte and m_littleEndian.
-
+  auto decode = [&](UChar c) {
     if (have_lead_surrogate_ && U_IS_TRAIL(c)) {
-      *q++ = lead_surrogate_;
+      out_span[out_span_cursor++] = lead_surrogate_;
       have_lead_surrogate_ = false;
-      *q++ = c;
+      out_span[out_span_cursor++] = c;
     } else {
       if (have_lead_surrogate_) {
         have_lead_surrogate_ = false;
         saw_error = true;
-        *q++ = kReplacementCharacter;
+        out_span[out_span_cursor++] = uchar::kReplacementCharacter;
       }
 
       if (U_IS_LEAD(c)) {
@@ -132,32 +112,51 @@ String TextCodecUTF16::Decode(const char* bytes,
         lead_surrogate_ = c;
       } else if (U_IS_TRAIL(c)) {
         saw_error = true;
-        *q++ = kReplacementCharacter;
+        out_span[out_span_cursor++] = uchar::kReplacementCharacter;
       } else {
-        *q++ = c;
+        out_span[out_span_cursor++] = c;
       }
     }
+  };
+
+  if (have_lead_byte_) {
+    UChar c = lead_byte_ | (in_span.take_first_elem() << 8);
+
+    if (!little_endian_) {
+      c = base::ByteSwap(c);
+    }
+
+    have_lead_byte_ = false;
+    decode(c);
+    num_chars_in--;
+  }
+
+  for (wtf_size_t i = 0; i < num_chars_in; ++i) {
+    UChar c = base::U16FromLittleEndian(in_span.take_first<2ul>());
+    if (!little_endian_) {
+      c = base::ByteSwap(c);
+    }
+    decode(c);
   }
 
   DCHECK(!have_lead_byte_);
   if (will_have_extra_byte) {
     have_lead_byte_ = true;
-    lead_byte_ = p[0];
+    lead_byte_ = in_span[0];
   }
 
   if (really_flush && (have_lead_byte_ || have_lead_surrogate_)) {
     have_lead_byte_ = have_lead_surrogate_ = false;
     saw_error = true;
-    *q++ = kReplacementCharacter;
+    out_span[out_span_cursor++] = uchar::kReplacementCharacter;
   }
 
-  buffer.Shrink(static_cast<wtf_size_t>(q - buffer.Characters()));
+  buffer.Shrink(static_cast<wtf_size_t>(out_span_cursor));
 
   return String::Adopt(buffer);
 }
 
-std::string TextCodecUTF16::Encode(const UChar* characters,
-                                   wtf_size_t length,
+std::string TextCodecUtf16::Encode(base::span<const UChar> characters,
                                    UnencodableHandling) {
   // We need to be sure we can double the length without overflowing.
   // Since the passed-in length is the length of an actual existing
@@ -165,18 +164,18 @@ std::string TextCodecUTF16::Encode(const UChar* characters,
   // the buffer doesn't occupy the entire address space, we can
   // assert here that doubling the length does not overflow wtf_size_t
   // and there's no need for a runtime check.
-  DCHECK_LE(length, std::numeric_limits<wtf_size_t>::max() / 2);
+  DCHECK_LE(characters.size(), std::numeric_limits<wtf_size_t>::max() / 2);
 
-  std::string result(length * 2, '\0');
+  std::string result(characters.size() * 2, '\0');
 
   if (little_endian_) {
-    for (wtf_size_t i = 0; i < length; ++i) {
+    for (size_t i = 0; i < characters.size(); ++i) {
       UChar c = characters[i];
       result[i * 2] = static_cast<char>(c);
       result[i * 2 + 1] = c >> 8;
     }
   } else {
-    for (wtf_size_t i = 0; i < length; ++i) {
+    for (size_t i = 0; i < characters.size(); ++i) {
       UChar c = characters[i];
       result[i * 2] = c >> 8;
       result[i * 2 + 1] = static_cast<char>(c);
@@ -186,21 +185,20 @@ std::string TextCodecUTF16::Encode(const UChar* characters,
   return result;
 }
 
-std::string TextCodecUTF16::Encode(const LChar* characters,
-                                   wtf_size_t length,
+std::string TextCodecUtf16::Encode(base::span<const LChar> characters,
                                    UnencodableHandling) {
   // In the LChar case, we do actually need to perform this check in release. :)
-  CHECK_LE(length, std::numeric_limits<wtf_size_t>::max() / 2);
+  CHECK_LE(characters.size(), std::numeric_limits<wtf_size_t>::max() / 2);
 
-  std::string result(length * 2, '\0');
+  std::string result(characters.size() * 2, '\0');
 
   if (little_endian_) {
-    for (wtf_size_t i = 0; i < length; ++i) {
+    for (size_t i = 0; i < characters.size(); ++i) {
       result[i * 2] = characters[i];
       result[i * 2 + 1] = 0;
     }
   } else {
-    for (wtf_size_t i = 0; i < length; ++i) {
+    for (size_t i = 0; i < characters.size(); ++i) {
       result[i * 2] = 0;
       result[i * 2 + 1] = characters[i];
     }
@@ -209,4 +207,4 @@ std::string TextCodecUTF16::Encode(const LChar* characters,
   return result;
 }
 
-}  // namespace WTF
+}  // namespace blink

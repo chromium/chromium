@@ -30,7 +30,7 @@ from blinkpy.common.net.git_cl import (
 from blinkpy.common.net.network_transaction import NetworkTimeout
 from blinkpy.common.path_finder import PathFinder
 from blinkpy.common.system.log_utils import configure_logging
-from blinkpy.w3c.buganizer import BuganizerClient, BuganizerIssue
+from blinkpy.w3c.buganizer import BuganizerIssue
 from blinkpy.w3c.chromium_commit import ChromiumCommit
 from blinkpy.w3c.chromium_exportable_commits import exportable_commits_over_last_n_commits
 from blinkpy.w3c.common import (
@@ -48,7 +48,7 @@ from blinkpy.w3c.wpt_expectations_updater import WPTExpectationsUpdater
 from blinkpy.w3c.wpt_github import WPTGitHub
 from blinkpy.w3c.wpt_manifest import WPTManifest, BASE_MANIFEST_NAME
 from blinkpy.web_tests.models import typ_types
-from blinkpy.web_tests.models.test_expectations import TestExpectations
+from blinkpy.web_tests.models.test_expectations import ParseError, TestExpectations
 from blinkpy.web_tests.port.base import Port
 
 # Settings for how often to check try job results and how long to wait.
@@ -69,7 +69,7 @@ class TestImporter:
                  host,
                  github=None,
                  wpt_manifests=None,
-                 buganizer_client: Optional[BuganizerClient] = None):
+                 builders: list[str] | None = None):
         self.host = host
         self.github = github
 
@@ -86,7 +86,7 @@ class TestImporter:
         self.wpt_git = None
         self.verbose = False
         self.wpt_manifests = wpt_manifests
-        self._buganizer_client = buganizer_client or BuganizerClient()
+        self._builders = builders or WPTExpectationsUpdater.DEFAULT_BUILDERS
         self._cleanup = contextlib.ExitStack()
 
     def __enter__(self):
@@ -148,11 +148,12 @@ class TestImporter:
 
         # File bugs for the previous imported CL. This is done at the start so
         # that manually revived CLs still receive bugs.
-        gerrit_api = GerritAPI.from_credentials(self.host, credentials)
-        notifier = ImportNotifier(self.host, self.project_git, local_wpt,
-                                  gerrit_api, self._buganizer_client)
-        self.file_and_record_bugs(notifier,
-                                  auto_file_bugs=options.auto_file_bugs)
+        if options.auto_update or options.auto_upload:
+            gerrit_api = GerritAPI.from_credentials(self.host, credentials)
+            notifier = ImportNotifier(self.host, self.project_git, local_wpt,
+                                      gerrit_api)
+            self.file_and_record_bugs(notifier,
+                                      auto_file_bugs=options.auto_file_bugs)
 
         if options.revision is not None:
             _log.info('Checking out %s', options.revision)
@@ -162,15 +163,17 @@ class TestImporter:
         _log.info('Importing wpt@%s to Chromium %s', new_wpt_revision,
                   chromium_revision)
 
-        if options.ignore_exportable_commits:
+        if options.ignored_commit_ids == {'*'}:
             commits = []
         else:
-            commits = self.apply_exportable_commits_locally(local_wpt)
+            commits = self.apply_exportable_commits_locally(
+                local_wpt, options.ignored_commit_ids)
             if commits is None:
                 _log.error('Could not apply some exportable commits cleanly.')
                 _log.error('Aborting import to prevent clobbering commits.')
                 return 1
-        last_wpt_revision, _ = notifier.latest_wpt_import()
+        last_wpt_revision, _ = ImportNotifier.latest_wpt_import(
+            self.project_git)
         wpt_range = CommitRange(last_wpt_revision, new_wpt_revision)
         commit_message = self.commit_message(chromium_revision,
                                              wpt_range,
@@ -201,7 +204,12 @@ class TestImporter:
             return 0
         testlist_path = self.finder.path_from_web_tests(
             "TestLists", "android.filter")
-        _log.info('Updating testlist based on file changes.')
+        _log.info('Updating android.filter based on file changes.')
+        self.update_testlist_with_idlharness_changes(testlist_path)
+
+        testlist_path = self.finder.path_from_web_tests(
+            "TestLists", "webview.filter")
+        _log.info('Updating webview.filter based on file changes.')
         self.update_testlist_with_idlharness_changes(testlist_path)
 
         self._commit_changes(commit_message)
@@ -266,29 +274,33 @@ class TestImporter:
         try_results = cl_status.try_job_results
 
         if try_results and self.git_cl.some_failed(try_results):
-            self.fetch_new_expectations_and_baselines()
-            # Skip slow and timeout tests so that presubmit check passes
-            port = self.host.port_factory.get()
-            if self.expectations_updater.skip_slow_timeout_tests(port):
-                path = port.path_to_generic_test_expectations_file()
-                self.project_git.add_list([path])
+            try:
+                self.fetch_new_expectations_and_baselines()
+                # Skip slow and timeout tests so that presubmit check passes
+                port = self.host.port_factory.get()
+                if self.expectations_updater.skip_slow_timeout_tests(port):
+                    path = port.path_to_generic_test_expectations_file()
+                    self.project_git.add_list([path])
 
-            self._generate_manifest()
-            message = 'Update test expectations and baselines.'
-            if self.project_git.has_working_directory_changes():
-                self._commit_changes(message)
-            # Even if we didn't commit anything here, we may still upload
-            # `TestExpectations`, which are committed earlier (before
-            # rebaselining).
-            self._upload_patchset(message)
+                self._generate_manifest()
+            except ParseError as e:
+                raise
+            finally:
+                message = 'Update test expectations and baselines.'
+                if self.project_git.has_working_directory_changes():
+                    self._commit_changes(message)
+                # Even if we didn't commit anything here, we may still upload
+                # `TestExpectations`, which are committed earlier (before
+                # rebaselining).
+                self._upload_patchset(message)
+
         return True
 
     def _trigger_try_jobs(self):
-        builders = self.host.builders.builders_for_rebaselining()
         _log.info('Triggering try jobs for updating expectations:')
-        for builder in sorted(builders):
+        for builder in sorted(self._builders):
             _log.info(f'  {builder}')
-        self.git_cl.trigger_try_jobs(builders)
+        self.git_cl.trigger_try_jobs(self._builders)
 
     def run_commit_queue_for_cl(self):
         """Triggers CQ and either commits or aborts; returns True on success."""
@@ -364,8 +376,13 @@ class TestImporter:
             help='log extra details that may be helpful when debugging')
         parser.add_argument(
             '--ignore-exportable-commits',
-            action='store_true',
-            help='do not check for exportable commits that would be clobbered')
+            dest='ignored_commit_ids',
+            nargs='?',
+            const='*',
+            type=lambda value: set(value.split(',')) if value else None,
+            help=('Comma-separated list of in-flight exportable commit hashes '
+                  'to exempt from the clobber check. If no value is provided, '
+                  'exempt all commits.'))
         parser.add_argument('-r', '--revision', help='target wpt revision')
         parser.add_argument(
             '--auto-upload',
@@ -397,7 +414,11 @@ class TestImporter:
             _log.warning('Checkout has local commits before import.')
         return True
 
-    def apply_exportable_commits_locally(self, local_wpt):
+    def apply_exportable_commits_locally(
+        self,
+        local_wpt: LocalWPT,
+        ignored_commit_ids: set[str] | None = None,
+    ) -> list[ChromiumCommit] | None:
         """Applies exportable Chromium changes to the local WPT repo.
 
         The purpose of this is to avoid clobbering changes that were made in
@@ -407,14 +428,22 @@ class TestImporter:
         previous Chromium change.
 
         Args:
-            A LocalWPT instance for our local copy of WPT.
+            local_wpt: Our local copy of WPT.
+            ignored_commit_ids: A list of Chromium commit IDs to skip applying
+                on `local_wpt`. IDs can be either the full SHA hash, or
+                shortened to 10 characters.
 
         Returns:
             A list of commits applied (could be empty), or None if any
             of the patches could not be applied cleanly.
         """
+        ignored_commit_ids = ignored_commit_ids or set()
         commits = self.exportable_but_not_exported_commits(local_wpt)
+        commits_applied = []
         for commit in commits:
+            if {commit.short_sha, commit.sha} & ignored_commit_ids:
+                _log.warning('Skipping %s for application', commit.short_sha)
+                continue
             _log.info('Applying exportable commit locally:')
             _log.info(commit.url())
             _log.info('Subject: %s', commit.subject().strip())
@@ -432,7 +461,8 @@ class TestImporter:
                 return None
             self.wpt_git.commit_locally_with_message(
                 'Applying patch %s' % commit.sha)
-        return commits
+            commits_applied.append(commit)
+        return commits_applied
 
     def exportable_but_not_exported_commits(self, local_wpt):
         """Returns a list of commits that would be clobbered by importer.
@@ -487,11 +517,12 @@ class TestImporter:
         self.project_git.commit_locally_with_message(commit_message)
 
     def _has_wpt_changes(self):
+        port = self.host.port_factory.get()
         changed_files = self.project_git.changed_files()
         test_roots = [
             self.fs.relpath(self.finder.path_from_web_tests(subdir),
                             self.finder.chromium_base())
-            for subdir in Port.WPT_DIRS
+            for subdir in port.wpt_dirs()
         ]
         for changed_file in changed_files:
             if any(changed_file.startswith(root) for root in test_roots):
@@ -638,9 +669,13 @@ class TestImporter:
 
         # If this starts blocking the importer unnecessarily, revert
         # https://chromium-review.googlesource.com/c/chromium/src/+/2451504
-        # Try linux-blink-rel to make sure no breakage in webdriver tests
-        for builder in ['linux-blink-rel']:
-            description += f'Cq-Include-Trybots: luci.chromium.try:{builder}\n'
+        # Try `*-blink-rel` to make sure no breakage in webdriver tests or for
+        # any OS versions not covered in CQ.
+        for builder in self.host.builders.all_try_builder_names():
+            if self.host.builders.main_for_builder(
+                    builder) == 'tryserver.blink':
+                description += (
+                    f'Cq-Include-Trybots: luci.chromium.try:{builder}\n')
 
         return description
 
@@ -736,14 +771,16 @@ class TestImporter:
             ])
             # Get back on an issue-less branch for the `Import wpt@...` CL.
             self.project_git.new_branch('import-wpt')
-            self._cleanup.callback(self._notify_if_cl_blocked, referenced_bugs,
-                                   fixup_cl_issue, self.host.time())
+            self._cleanup.callback(self._notify_if_cl_blocked, notifier,
+                                   referenced_bugs, fixup_cl_issue,
+                                   self.host.time())
 
         diff_from_tracking = self.project_git.changed_files(
             CommitRange('@{u}', 'HEAD'))
         assert not diff_from_tracking, diff_from_tracking
 
-    def _notify_if_cl_blocked(self, referenced_bugs: Set[int], issue: int,
+    def _notify_if_cl_blocked(self, notifier: ImportNotifier,
+                              referenced_bugs: Set[int], issue: int,
                               start: float):
         assert referenced_bugs
         # If both CL types were created, it's likely this timeout has already
@@ -765,7 +802,7 @@ class TestImporter:
             'resubmitting. You may need to rebase that CL on tip-of-tree and '
             'resolve any resulting merge conflicts.')
         for issue_id in referenced_bugs:
-            self._buganizer_client.NewComment(issue_id, comment)
+            notifier.buganizer_client.NewComment(issue_id, comment)
         self._ensure_cl_closed(issue)
 
     def _update_bugs_in_expectations(

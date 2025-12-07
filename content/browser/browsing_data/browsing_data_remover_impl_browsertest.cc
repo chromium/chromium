@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-#include "content/public/browser/browsing_data_remover.h"
-
 #include <memory>
 
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -19,6 +17,11 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/back_forward_cache_test_util.h"
 #include "content/browser/browsing_data/shared_storage_clear_site_data_tester.h"
+#include "content/browser/preloading/prefetch/prefetch_document_manager.h"
+#include "content/browser/preloading/prefetch/prefetch_features.h"
+#include "content/browser/preloading/prefetch/prefetch_status.h"
+#include "content/browser/preloading/prerender/prerender_final_status.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
@@ -32,6 +35,9 @@
 #include "content/public/test/browsing_data_remover_test_util.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/navigation_simulator.h"
+#include "content/public/test/prefetch_test_util.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/simple_url_loader_test_helper.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
@@ -61,6 +67,8 @@ namespace {
 const char kHstsPath[] = "/hsts";
 const char kHttpAuthPath[] = "/http_auth";
 const char kHstsResponseBody[] = "HSTS set";
+// Use a.test because 127.0.0.1/localhost cannot use HSTS.
+const char kHstsHostname[] = "a.test";
 
 std::unique_ptr<net::test_server::HttpResponse> HandleHstsRequest(
     const net::test_server::HttpRequest& request) {
@@ -106,9 +114,8 @@ class BrowsingDataRemoverImplBrowserTest
  public:
   BrowsingDataRemoverImplBrowserTest()
       : ssl_server_(net::test_server::EmbeddedTestServer::TYPE_HTTPS) {
-    // Use localhost instead of 127.0.0.1, as HSTS isn't allowed on IPs.
-    ssl_server_.SetSSLConfig(
-        net::test_server::EmbeddedTestServer::CERT_COMMON_NAME_IS_DOMAIN);
+    // HSTS tests must run on non-localhost, while other tests use localhost.
+    ssl_server_.SetCertHostnames({kHstsHostname, "localhost"});
     ssl_server_.AddDefaultHandlers(GetTestDataFilePath());
     ssl_server_.RegisterRequestHandler(base::BindRepeating(&HandleHstsRequest));
     ssl_server_.RegisterRequestHandler(
@@ -119,6 +126,7 @@ class BrowsingDataRemoverImplBrowserTest
   void SetUpOnMainThread() override {
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
     histogram_tester_ = std::make_unique<base::HistogramTester>();
+    host_resolver()->AddRule(kHstsHostname, "127.0.0.1");
   }
 
   void RemoveAndWait(uint64_t remove_mask) {
@@ -150,14 +158,14 @@ class BrowsingDataRemoverImplBrowserTest
   void IssueRequestThatSetsHsts() {
     std::unique_ptr<network::ResourceRequest> request =
         std::make_unique<network::ResourceRequest>();
-    request->url = ssl_server_.GetURL("localhost", kHstsPath);
+    request->url = ssl_server_.GetURL(kHstsHostname, kHstsPath);
 
     SimpleURLLoaderTestHelper loader_helper;
     std::unique_ptr<network::SimpleURLLoader> loader =
         network::SimpleURLLoader::Create(std::move(request),
                                          TRAFFIC_ANNOTATION_FOR_TESTS);
     loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-        url_loader_factory(), loader_helper.GetCallbackDeprecated());
+        url_loader_factory(), loader_helper.GetCallback());
     loader_helper.WaitForCallback();
     ASSERT_TRUE(loader_helper.response_body());
     EXPECT_EQ(kHstsResponseBody, *loader_helper.response_body());
@@ -165,26 +173,36 @@ class BrowsingDataRemoverImplBrowserTest
     EXPECT_TRUE(IsHstsSet());
   }
 
-  // Returns true if HSTS is set on localhost.  Does this by issuing an HTTP
-  // request to the embedded test server, and expecting it to be redirected from
-  // HTTP to HTTPS if HSTS is enabled.  If the request succeeds, it was sent
-  // over HTTPS, so HSTS is enabled. If it fails, the request was send using
-  // HTTP instead, so HSTS is not enabled for the domain.
+  // Returns true if HSTS is set on localhost.  Does this by issuing a main
+  // frame HTTP request to the embedded test server, and expecting it to be
+  // redirected from HTTP to HTTPS if HSTS is enabled.  If the request succeeds,
+  // it was sent over HTTPS, so HSTS is enabled. If it fails, the request was
+  // send using HTTP instead, so HSTS is not enabled for the domain.
+  //
+  // That the request be main frame is necessary when
+  // kHstsTopLevelNavigationsOnly is enabled.
   bool IsHstsSet() {
-    GURL url = ssl_server_.GetURL("localhost", "/echo");
+    GURL url = ssl_server_.GetURL(kHstsHostname, "/echo");
     GURL::Replacements replacements;
     replacements.SetSchemeStr("http");
     url = url.ReplaceComponents(replacements);
+    url::Origin origin = url::Origin::Create(url);
     std::unique_ptr<network::ResourceRequest> request =
         std::make_unique<network::ResourceRequest>();
     request->url = url;
+    request->site_for_cookies = net::SiteForCookies::FromOrigin(origin);
+    request->update_first_party_url_on_redirect = true;
+    request->trusted_params.emplace();
+    request->trusted_params->isolation_info = net::IsolationInfo::Create(
+        net::IsolationInfo::RequestType::kMainFrame, origin, origin,
+        net::SiteForCookies::FromOrigin(origin));
 
     std::unique_ptr<network::SimpleURLLoader> loader =
         network::SimpleURLLoader::Create(std::move(request),
                                          TRAFFIC_ANNOTATION_FOR_TESTS);
     SimpleURLLoaderTestHelper loader_helper;
     loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-        url_loader_factory(), loader_helper.GetCallbackDeprecated());
+        url_loader_factory(), loader_helper.GetCallback());
     loader_helper.WaitForCallback();
 
     // On success, HSTS was enabled for the domain.
@@ -221,9 +239,8 @@ class BrowsingDataRemoverImplBrowserTest
     bool login_requested = false;
     ShellContentBrowserClient::Get()->set_login_request_callback(
         base::BindLambdaForTesting(
-            [&](bool is_primary_main_frame /* unused */) {
-              login_requested = true;
-            }));
+            [&](bool is_primary_main_frame_navigation /* unused */,
+                bool is_navigation /* unused */) { login_requested = true; }));
 
     GURL url = ssl_server_.GetURL(kHttpAuthPath);
     bool navigation_suceeded = NavigateToURL(shell(), url);
@@ -390,7 +407,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplBrowserTest,
   // matches the BFCached document's origin.
   filter = BrowsingDataFilterBuilder::Create(
       BrowsingDataFilterBuilder::Mode::kDelete);
-  filter->AddRegisterableDomain("localhost");
+  filter->AddRegisterableDomain(ssl_server().base_url().GetHost());
   RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_CACHE,
                           std::move(filter));
 
@@ -440,7 +457,7 @@ IN_PROC_BROWSER_TEST_F(
   // matches the BFCached document's origin.
   auto filter = BrowsingDataFilterBuilder::Create(
       BrowsingDataFilterBuilder::Mode::kDelete);
-  filter->AddRegisterableDomain("localhost");
+  filter->AddRegisterableDomain(ssl_server().base_url().GetHost());
   RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_COOKIES,
                           std::move(filter));
 
@@ -467,7 +484,7 @@ IN_PROC_BROWSER_TEST_F(
   // matches the BFCached document's origin.
   auto filter = BrowsingDataFilterBuilder::Create(
       BrowsingDataFilterBuilder::Mode::kDelete);
-  filter->AddRegisterableDomain("localhost");
+  filter->AddRegisterableDomain(ssl_server().base_url().GetHost());
   RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_COOKIES,
                           std::move(filter));
 
@@ -696,19 +713,6 @@ IN_PROC_BROWSER_TEST_F(CookiesBrowsingDataRemoverImplBrowserTest,
 }
 
 namespace {
-// Provide BrowsingDataRemoverImplTrustTokenTest the Trust Tokens
-// feature as a mixin so that it gets set before the superclass initializes
-// the test's NetworkContext, as the NetworkContext's initialization must
-// occur with the feature enabled.
-class WithTrustTokensEnabled {
- public:
-  WithTrustTokensEnabled() {
-    feature_list_.InitAndEnableFeature(network::features::kPrivateStateTokens);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
 
 // Tests Trust Tokens clearing by calling
 // TrustTokenQueryAnswerer::HasTrustTokens with a TrustTokenQueryAnswerer
@@ -781,7 +785,7 @@ class TrustTokensTester {
     // provided to HasTrustTokens(origin, _) calls in AddOrigin:
     // - If data has not been cleared,
     //     HasTrustToken(origin, https://probe.example)
-    //   is expected to fail with kResourceLimited because |origin| is at
+    //   is expected to fail with kSiteIssuerLimit because |origin| is at
     //   its number-of-associated-issuers limit, so the answerer will refuse
     //   to answer a query for an origin it has not yet seen.
     // - If data has been cleared, the answerer should be able to fulfill the
@@ -790,11 +794,11 @@ class TrustTokensTester {
         url::Origin::Create(GURL("https://probe.example")),
         base::BindLambdaForTesting(
             [&](network::mojom::HasTrustTokensResultPtr result) {
-              // HasTrustTokens will error out with kResourceLimited exactly
+              // HasTrustTokens will error out with kSiteIssuerLimit exactly
               // when the top-frame origin |origin| was previously added by
               // AddOrigin.
               if (result->status ==
-                  network::mojom::TrustTokenOperationStatus::kResourceLimited) {
+                  network::mojom::TrustTokenOperationStatus::kSiteIssuerLimit) {
                 has_origin = true;
               }
 
@@ -812,9 +816,8 @@ class TrustTokensTester {
 
 }  // namespace
 
-class BrowsingDataRemoverImplTrustTokenTest
-    : public WithTrustTokensEnabled,
-      public BrowsingDataRemoverImplBrowserTest {};
+using BrowsingDataRemoverImplTrustTokenTest =
+    BrowsingDataRemoverImplBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplTrustTokenTest, Remove) {
   TrustTokensTester tester(network_context());
@@ -890,7 +893,7 @@ class BrowsingDataRemoverImplSharedStorageBrowserTest
     : public BrowsingDataRemoverImplBrowserTest {
  public:
   BrowsingDataRemoverImplSharedStorageBrowserTest() {
-    feature_list_.InitAndEnableFeature(blink::features::kSharedStorageAPI);
+    feature_list_.InitAndEnableFeature(network::features::kSharedStorageAPI);
   }
 
   StoragePartition* storage_partition() {
@@ -1001,4 +1004,202 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplSharedStorageBrowserTest,
   EXPECT_EQ(15 * kNumBytesPerEntry, tester.GetSharedStorageTotalBytes());
 }
 
+class BrowsingDataRemoverImplPrerenderingBrowserTest
+    : public BrowsingDataRemoverImplBrowserTest {
+ public:
+  BrowsingDataRemoverImplPrerenderingBrowserTest() {
+    prerender_helper_ =
+        std::make_unique<test::PrerenderTestHelper>(base::BindRepeating(
+            &BrowsingDataRemoverImplPrerenderingBrowserTest::web_contents,
+            base::Unretained(this)));
+  }
+  ~BrowsingDataRemoverImplPrerenderingBrowserTest() override = default;
+
+ protected:
+  test::PrerenderTestHelper& prerender_helper() { return *prerender_helper_; }
+
+  WebContents* web_contents() { return shell()->web_contents(); }
+
+  std::unique_ptr<test::PrerenderTestHelper> prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplPrerenderingBrowserTest,
+                       ClearCacheCancelsPrerendering) {
+  GURL initial_url = ssl_server().GetURL("/title1.html");
+  GURL prerendering_url = ssl_server().GetURL("/empty.html");
+
+  // 1) Navigate to the initial url.
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // 2) Add and wait for prerendering of the prerendering url to complete.
+  FrameTreeNodeId host_id = prerender_helper().AddPrerender(prerendering_url);
+  content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+
+  // 3) Remove the browsing data with DATA_TYPE_CACHE.
+  auto filter = BrowsingDataFilterBuilder::Create(
+      BrowsingDataFilterBuilder::Mode::kDelete);
+  filter->AddRegisterableDomain(ssl_server().base_url().GetHost());
+  RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_CACHE,
+                          std::move(filter));
+  host_observer.WaitForDestroyed();
+
+  // 4) Verify that prerendering was canceled due to removing browsing data.
+  histogram_tester().ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+      PrerenderFinalStatus::kBrowsingDataRemoved, 1);
+}
+
+class BrowsingDataRemoverImplPrefetchBrowserTest
+    : public BrowsingDataRemoverImplBrowserTest {
+ public:
+  void StartPrefetch(const GURL& url, Shell* shell) {
+    auto* prefetch_document_manager =
+        PrefetchDocumentManager::GetOrCreateForCurrentDocument(
+            shell->web_contents()->GetPrimaryMainFrame());
+    auto candidate = blink::mojom::SpeculationCandidate::New();
+    candidate->url = url;
+    candidate->action = blink::mojom::SpeculationAction::kPrefetch;
+    candidate->eagerness = blink::mojom::SpeculationEagerness::kImmediate;
+    candidate->referrer = Referrer::SanitizeForRequest(
+        url, blink::mojom::Referrer(
+                 shell->web_contents()->GetURL(),
+                 network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin));
+    std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+    candidates.push_back(std::move(candidate));
+    prefetch_document_manager->ProcessCandidates(candidates);
+  }
+
+  ~BrowsingDataRemoverImplPrefetchBrowserTest() override = default;
+};
+
+IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplPrefetchBrowserTest,
+                       ClearCacheCancelsPrefetch) {
+  GURL initial_url = ssl_server().GetURL("/empty.html");
+  GURL prefetch_url = ssl_server().GetURL("/title1.html");
+
+  // 1) Navigate to the initial url.
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  test::TestPrefetchWatcher test_prefetch_watcher;
+
+  // 2) Start prefetching the prefetch_url.
+  StartPrefetch(prefetch_url, shell());
+
+  // 3) Wait for the prefetch_url to finish prefetching.
+  test_prefetch_watcher.WaitUntilPrefetchResponseCompleted(
+      static_cast<RenderFrameHostImpl*>(
+          shell()->web_contents()->GetPrimaryMainFrame())
+          ->GetDocumentToken(),
+      prefetch_url);
+
+  // 4) Remove the browsing data with DATA_TYPE_CACHE.
+  auto filter = BrowsingDataFilterBuilder::Create(
+      BrowsingDataFilterBuilder::Mode::kDelete);
+  filter->AddRegisterableDomain(ssl_server().base_url().GetHost());
+  RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_CACHE,
+                          std::move(filter));
+
+  // 5) Verify that the prefetch failed due to removing browsing data.
+  histogram_tester().ExpectUniqueSample(
+      "Preloading.Prefetch.PrefetchStatus",
+      PrefetchStatus::kPrefetchEvictedAfterBrowsingDataRemoved, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplPrefetchBrowserTest,
+                       ClearCacheCancelsPrefetchMultipleOrigins) {
+  // Test prefetch cancellation for two different origins.
+  // As part of the Clear Browsing Data trigger, prefetches that have
+  // referral origins in the BrowsingDataFilterBuilder should be canceled.
+  GURL referral_url1 = ssl_server().GetURL("/empty.html");
+  GURL prefetch_url1 = ssl_server().GetURL("/title1.html");
+
+  GURL referral_url2 = ssl_server().GetURL("a.test", "/title1.html");
+  GURL prefetch_url2 = ssl_server().GetURL("a.test", "/empty.html");
+
+  // 1) Navigate to the referral url for origin 1.
+  ASSERT_TRUE(NavigateToURL(shell(), referral_url1));
+
+  // 2) Open a new tab and navigate to the referral url for origin 2.
+  Shell* new_shell =
+      Shell::CreateNewWindow(shell()->web_contents()->GetBrowserContext(),
+                             GURL(url::kAboutBlankURL), nullptr, gfx::Size());
+
+  ASSERT_TRUE(NavigateToURL(new_shell, referral_url2));
+
+  test::TestPrefetchWatcher test_prefetch_watcher;
+
+  // 3) Start prefetching the first url and wait for it to finish prefetching.
+  StartPrefetch(prefetch_url1, shell());
+
+  test_prefetch_watcher.WaitUntilPrefetchResponseCompleted(
+      static_cast<RenderFrameHostImpl*>(
+          shell()->web_contents()->GetPrimaryMainFrame())
+          ->GetDocumentToken(),
+      prefetch_url1);
+
+  // 4) Start prefetching the second url and wait for it to finish prefetching.
+  StartPrefetch(prefetch_url2, new_shell);
+
+  test_prefetch_watcher.WaitUntilPrefetchResponseCompleted(
+      static_cast<RenderFrameHostImpl*>(
+          new_shell->web_contents()->GetPrimaryMainFrame())
+          ->GetDocumentToken(),
+      prefetch_url2);
+
+  // 5) Remove the browsing data with DATA_TYPE_CACHE.
+  // Mode::kPreserve + no origins/domains = delete everything.
+  auto filter = BrowsingDataFilterBuilder::Create(
+      BrowsingDataFilterBuilder::Mode::kPreserve);
+  RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_CACHE,
+                          std::move(filter));
+
+  // 6) Verify that both prefetches failed due to removing browsing data.
+  histogram_tester().ExpectUniqueSample(
+      "Preloading.Prefetch.PrefetchStatus",
+      PrefetchStatus::kPrefetchEvictedAfterBrowsingDataRemoved, 2);
+}
+
+class BrowsingDataRemoverImplPrefetchHoldbackBrowserTest
+    : public BrowsingDataRemoverImplPrefetchBrowserTest {
+ public:
+  BrowsingDataRemoverImplPrefetchHoldbackBrowserTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kPreloadingConfig, {{"preloading_config", R"(
+            [{
+              "preloading_type": "Prefetch",
+              "preloading_predictor": "SpeculationRules",
+              "holdback": true,
+              "sampling_likelihood": 1
+            }])"}});
+  }
+
+  ~BrowsingDataRemoverImplPrefetchHoldbackBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplPrefetchHoldbackBrowserTest,
+                       ClearCacheCancelsHeldbackPrefetch) {
+  GURL initial_url = ssl_server().GetURL("/empty.html");
+  GURL prefetch_url = ssl_server().GetURL("/title1.html");
+
+  // 1) Navigate to the initial url.
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // 2) Start prefetching the prefetch_url.
+  StartPrefetch(prefetch_url, shell());
+
+  // 3) Remove the browsing data with DATA_TYPE_CACHE.
+  auto filter = BrowsingDataFilterBuilder::Create(
+      BrowsingDataFilterBuilder::Mode::kDelete);
+  filter->AddRegisterableDomain(ssl_server().base_url().GetHost());
+  RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_CACHE,
+                          std::move(filter));
+
+  // 4) Verify that the prefetch failed due to removing browsing data.
+  histogram_tester().ExpectUniqueSample(
+      "Preloading.Prefetch.PrefetchStatus",
+      PrefetchStatus::kPrefetchEvictedAfterBrowsingDataRemoved, 1);
+}
 }  // namespace content

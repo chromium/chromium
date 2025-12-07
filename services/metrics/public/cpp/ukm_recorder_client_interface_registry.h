@@ -6,7 +6,6 @@
 #define SERVICES_METRICS_PUBLIC_CPP_UKM_RECORDER_CLIENT_INTERFACE_REGISTRY_H_
 
 #include "base/memory/weak_ptr.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/metrics/public/cpp/metrics_export.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"

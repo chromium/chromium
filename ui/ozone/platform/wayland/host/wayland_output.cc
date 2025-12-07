@@ -4,8 +4,6 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 
-#include <aura-shell-client-protocol.h>
-#include <chrome-color-management-client-protocol.h>
 #include <xdg-output-unstable-v1-client-protocol.h>
 
 #include "base/logging.h"
@@ -15,8 +13,8 @@
 #include "ui/ozone/platform/wayland/host/dump_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
-#include "ui/ozone/platform/wayland/host/wayland_zcr_color_management_output.h"
-#include "ui/ozone/platform/wayland/host/wayland_zcr_color_manager.h"
+#include "ui/ozone/platform/wayland/host/wayland_wp_color_management_output.h"
+#include "ui/ozone/platform/wayland/host/wayland_wp_color_manager.h"
 #include "ui/ozone/platform/wayland/host/xdg_output.h"
 
 namespace ui {
@@ -130,12 +128,14 @@ void WaylandOutput::InitializeXdgOutput(
       zxdg_output_manager_v1_get_xdg_output(xdg_output_manager, output_.get()));
 }
 
-void WaylandOutput::InitializeColorManagementOutput(
-    WaylandZcrColorManager* zcr_color_manager) {
-  DCHECK(!color_management_output_);
-  color_management_output_ = std::make_unique<WaylandZcrColorManagementOutput>(
-      this,
-      zcr_color_manager->CreateColorManagementOutput(output_.get()).release());
+void WaylandOutput::InitializeWpColorManagementOutput(
+    WaylandWpColorManager* wp_color_manager) {
+  DCHECK(!wp_color_management_output_);
+  wp_color_management_output_ =
+      std::make_unique<WaylandWpColorManagementOutput>(
+          wp_color_manager->CreateColorManagementOutput(output_.get())
+              .release(),
+          this, connection_);
 }
 
 void WaylandOutput::Initialize(Delegate* delegate) {
@@ -152,12 +152,6 @@ void WaylandOutput::Initialize(Delegate* delegate) {
   wl_output_add_listener(output_.get(), &kOutputListener, this);
 }
 
-float WaylandOutput::GetUIScaleFactor() const {
-  return display::Display::HasForceDeviceScaleFactor()
-             ? display::Display::GetForcedDeviceScaleFactor()
-             : scale_factor();
-}
-
 const Metrics& WaylandOutput::GetMetrics() const {
   return metrics_;
 }
@@ -171,16 +165,6 @@ float WaylandOutput::scale_factor() const {
 }
 
 bool WaylandOutput::IsReady() const {
-  // zaura_output_manager is guaranteed to have received all relevant output
-  // metrics before the first wl_output.done event. zaura_output_manager is
-  // responsible for updating `metrics_` in an atomic and consistent way as soon
-  // as it receives all its necessary output metrics events.
-  if (connection_->IsUsingZAuraOutputManager()) {
-    // WaylandOutput should be considered ready after the first atomic update to
-    // `metrics_`.
-    return metrics_.output_id == output_id_;
-  }
-
   return is_ready_;
 }
 
@@ -259,10 +243,7 @@ void WaylandOutput::OnMode(void* data,
 // static
 void WaylandOutput::OnDone(void* data, wl_output* output) {
   auto* self = static_cast<WaylandOutput*>(data);
-
-  // zaura_output_manager takes responsibility of keeping `metrics_` up to date
-  // and triggering delegate notifications.
-  if (!self || self->connection_->IsUsingZAuraOutputManager()) {
+  if (!self) {
     return;
   }
 

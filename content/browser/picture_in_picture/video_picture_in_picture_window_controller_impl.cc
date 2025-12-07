@@ -30,17 +30,6 @@ PictureInPictureWindowController::GetOrCreateVideoPictureInPictureController(
       web_contents);
 }
 
-// static
-VideoPictureInPictureWindowControllerImpl*
-VideoPictureInPictureWindowControllerImpl::GetOrCreateForWebContents(
-    WebContents* web_contents) {
-  DCHECK(web_contents);
-
-  // This is a no-op if the controller already exists.
-  CreateForWebContents(web_contents);
-  return FromWebContents(web_contents);
-}
-
 VideoPictureInPictureWindowControllerImpl::
     ~VideoPictureInPictureWindowControllerImpl() = default;
 
@@ -48,7 +37,13 @@ VideoPictureInPictureWindowControllerImpl::
     VideoPictureInPictureWindowControllerImpl(WebContents* web_contents)
     : WebContentsUserData<VideoPictureInPictureWindowControllerImpl>(
           *web_contents),
-      WebContentsObserver(web_contents) {}
+      WebContentsObserver(web_contents) {
+  MediaSessionImpl* media_session =
+      MediaSessionImpl::FromWebContents(web_contents);
+  if (media_session) {
+    media_session->UpdateVideoPictureInPictureWindowController(this);
+  }
+}
 
 void VideoPictureInPictureWindowControllerImpl::Show() {
   DCHECK(window_);
@@ -97,6 +92,8 @@ void VideoPictureInPictureWindowControllerImpl::Show() {
       media_session_action_next_slide_handled_);
   window_->SetPreviousSlideButtonVisibility(
       media_session_action_previous_slide_handled_);
+  window_->SetFaviconImages(favicon_images_);
+  window_->SetSourceTitle(source_title_);
   window_->ShowInactive();
   GetWebContentsImpl()->SetHasPictureInPictureVideo(true);
 }
@@ -192,13 +189,27 @@ void VideoPictureInPictureWindowControllerImpl::UpdatePlaybackState() {
     return;
 
   auto playback_state = VideoOverlayWindow::PlaybackState::kPaused;
+  const std::optional<media_session::MediaPosition>& effective_media_position =
+      GetEffectiveMediaPosition();
   if (IsPlayerActive()) {
     playback_state = VideoOverlayWindow::PlaybackState::kPlaying;
-  } else if (media_position_ && media_position_->end_of_media()) {
+  } else if (effective_media_position.has_value() &&
+             effective_media_position->end_of_media()) {
     playback_state = VideoOverlayWindow::PlaybackState::kEndOfVideo;
   }
 
   window_->SetPlaybackState(playback_state);
+}
+
+void VideoPictureInPictureWindowControllerImpl::UpdateMediaPosition() {
+  const std::optional<media_session::MediaPosition>& effective_position =
+      GetEffectiveMediaPosition();
+  if (window_ && effective_position.has_value()) {
+    window_->SetMediaPosition(*effective_position);
+    window_received_media_position_ = true;
+  } else {
+    window_received_media_position_ = false;
+  }
 }
 
 bool VideoPictureInPictureWindowControllerImpl::TogglePlayPause() {
@@ -208,17 +219,30 @@ bool VideoPictureInPictureWindowControllerImpl::TogglePlayPause() {
   DCHECK(active_session_);
 
   if (IsPlayerActive()) {
-    if (media_session_action_pause_handled_) {
-      MediaSessionImpl::Get(web_contents())
-          ->Suspend(MediaSession::SuspendType::kUI);
-      return true /* still playing */;
-    }
-
-    active_session_->GetMediaPlayerRemote()->RequestPause(
-        /*triggered_by_user=*/false);
-    return false /* paused */;
+    return PauseInternal();
   }
+  return PlayInternal();
+}
 
+void VideoPictureInPictureWindowControllerImpl::Play() {
+  // This comes from the window, rather than the renderer, so we must actually
+  // have a window at this point.
+  DCHECK(window_);
+  DCHECK(active_session_);
+
+  PlayInternal();
+}
+
+void VideoPictureInPictureWindowControllerImpl::Pause() {
+  // This comes from the window, rather than the renderer, so we must actually
+  // have a window at this point.
+  DCHECK(window_);
+  DCHECK(active_session_);
+
+  PauseInternal();
+}
+
+bool VideoPictureInPictureWindowControllerImpl::PlayInternal() {
   if (media_session_action_play_handled_) {
     MediaSessionImpl::Get(web_contents())
         ->Resume(MediaSession::SuspendType::kUI);
@@ -227,6 +251,26 @@ bool VideoPictureInPictureWindowControllerImpl::TogglePlayPause() {
 
   active_session_->GetMediaPlayerRemote()->RequestPlay();
   return true /* playing */;
+}
+
+bool VideoPictureInPictureWindowControllerImpl::PauseInternal() {
+  if (media_session_action_pause_handled_) {
+    MediaSessionImpl::Get(web_contents())
+        ->Suspend(MediaSession::SuspendType::kUI);
+    return true /* still playing */;
+  }
+
+  active_session_->GetMediaPlayerRemote()->RequestPause(
+      /*triggered_by_user=*/false);
+  return false /* paused */;
+}
+
+const std::optional<media_session::MediaPosition>&
+VideoPictureInPictureWindowControllerImpl::GetEffectiveMediaPosition() const {
+  if (media_session_media_position_.has_value()) {
+    return media_session_media_position_;
+  }
+  return pip_session_media_position_;
 }
 
 PictureInPictureResult VideoPictureInPictureWindowControllerImpl::StartSession(
@@ -247,8 +291,10 @@ PictureInPictureResult VideoPictureInPictureWindowControllerImpl::StartSession(
   if (result != PictureInPictureResult::kSuccess)
     return result;
 
-  if (active_session_)
+  if (active_session_) {
     active_session_->Disconnect();
+    pip_session_media_position_ = std::nullopt;
+  }
 
   source_bounds_ = source_bounds;
 
@@ -288,12 +334,24 @@ void VideoPictureInPictureWindowControllerImpl::OnServiceDeleted(
 
   active_session_->Shutdown();
   active_session_ = nullptr;
+  pip_session_media_position_ = std::nullopt;
 }
 
 void VideoPictureInPictureWindowControllerImpl::SetShowPlayPauseButton(
     bool show_play_pause_button) {
   always_show_play_pause_button_ = show_play_pause_button;
   UpdatePlayPauseButtonVisibility();
+}
+
+void VideoPictureInPictureWindowControllerImpl::SetMediaPosition(
+    const media_session::MediaPosition& media_position) {
+  if (media_position == pip_session_media_position_ &&
+      window_received_media_position_) {
+    return;
+  }
+  pip_session_media_position_ = media_position;
+  UpdatePlaybackState();
+  UpdateMediaPosition();
 }
 
 void VideoPictureInPictureWindowControllerImpl::SkipAd() {
@@ -338,6 +396,16 @@ void VideoPictureInPictureWindowControllerImpl::ToggleCamera() {
 void VideoPictureInPictureWindowControllerImpl::HangUp() {
   if (media_session_action_hang_up_handled_)
     MediaSession::Get(web_contents())->HangUp();
+}
+
+void VideoPictureInPictureWindowControllerImpl::SeekTo(base::TimeDelta time) {
+  // Default to the Media Session handler if it's available.
+  if (media_session_action_seek_to_handled_) {
+    MediaSession::Get(web_contents())->SeekTo(time);
+    return;
+  }
+  // Otherwise, directly seek the video player.
+  active_session_->GetMediaPlayerRemote()->RequestSeekTo(time);
 }
 
 void VideoPictureInPictureWindowControllerImpl::MediaSessionInfoChanged(
@@ -395,11 +463,15 @@ void VideoPictureInPictureWindowControllerImpl::MediaSessionActionsChanged(
   media_session_action_next_slide_handled_ =
       actions.find(media_session::mojom::MediaSessionAction::kNextSlide) !=
       actions.end();
+  media_session_action_seek_to_handled_ =
+      actions.find(media_session::mojom::MediaSessionAction::kSeekTo) !=
+      actions.end();
 
   if (!window_)
     return;
 
   UpdatePlayPauseButtonVisibility();
+  UpdateHidePictureInPictureButtonVisibility();
   window_->SetSkipAdButtonVisibility(media_session_action_skip_ad_handled_);
   window_->SetNextTrackButtonVisibility(
       media_session_action_next_track_handled_);
@@ -418,8 +490,51 @@ void VideoPictureInPictureWindowControllerImpl::MediaSessionActionsChanged(
 
 void VideoPictureInPictureWindowControllerImpl::MediaSessionPositionChanged(
     const std::optional<media_session::MediaPosition>& media_position) {
-  media_position_ = media_position;
+  // If we've already sent this position to |window|, then no need to update
+  // again.
+  if (media_position == media_session_media_position_ &&
+      window_received_media_position_) {
+    return;
+  }
+
+  media_session_media_position_ = media_position;
   UpdatePlaybackState();
+  UpdateMediaPosition();
+}
+
+void VideoPictureInPictureWindowControllerImpl::MediaSessionImagesChanged(
+    const base::flat_map<media_session::mojom::MediaSessionImageType,
+                         std::vector<media_session::MediaImage>>& images) {
+  auto it =
+      images.find(media_session::mojom::MediaSessionImageType::kSourceIcon);
+  if (it == images.end()) {
+    if (favicon_images_.empty()) {
+      return;
+    }
+    favicon_images_.clear();
+  } else {
+    if (it->second == favicon_images_) {
+      return;
+    }
+    favicon_images_ = it->second;
+  }
+
+  if (window_) {
+    window_->SetFaviconImages(favicon_images_);
+  }
+}
+
+void VideoPictureInPictureWindowControllerImpl::MediaSessionMetadataChanged(
+    const std::optional<media_session::MediaMetadata>& metadata) {
+  if (metadata) {
+    source_title_ = metadata->source_title;
+  } else {
+    source_title_.clear();
+  }
+
+  if (window_) {
+    window_->SetSourceTitle(source_title_);
+  }
 }
 
 gfx::Size VideoPictureInPictureWindowControllerImpl::GetSize() {
@@ -468,6 +583,7 @@ void VideoPictureInPictureWindowControllerImpl::OnLeavingPictureInPicture(
 
   active_session_->Shutdown();
   active_session_ = nullptr;
+  pip_session_media_position_ = std::nullopt;
 }
 
 void VideoPictureInPictureWindowControllerImpl::CloseInternal(
@@ -490,6 +606,17 @@ const gfx::Rect& VideoPictureInPictureWindowControllerImpl::GetSourceBounds()
   return source_bounds_;
 }
 
+void VideoPictureInPictureWindowControllerImpl::GetMediaImage(
+    const media_session::MediaImage& image,
+    int minimum_size_px,
+    int desired_size_px,
+    MediaSession::GetMediaImageBitmapCallback callback) {
+  MediaSessionImpl* media_session = MediaSessionImpl::Get(web_contents());
+  CHECK(media_session);
+  media_session->GetMediaImageBitmap(image, minimum_size_px, desired_size_px,
+                                     std::move(callback));
+}
+
 std::optional<gfx::Rect>
 VideoPictureInPictureWindowControllerImpl::GetWindowBounds() {
   if (!window_)
@@ -502,9 +629,25 @@ void VideoPictureInPictureWindowControllerImpl::
   if (!window_)
     return;
 
-  window_->SetPlayPauseButtonVisibility((media_session_action_pause_handled_ &&
-                                         media_session_action_play_handled_) ||
-                                        always_show_play_pause_button_);
+  window_->SetPlayPauseButtonVisibility(ShouldShowPlayPauseButton());
+}
+
+bool VideoPictureInPictureWindowControllerImpl::ShouldShowPlayPauseButton() {
+  return (media_session_action_pause_handled_ &&
+          media_session_action_play_handled_) ||
+         always_show_play_pause_button_;
+}
+
+void VideoPictureInPictureWindowControllerImpl::
+    UpdateHidePictureInPictureButtonVisibility() {
+  if (!window_) {
+    return;
+  }
+
+  // The button's visibility is tied to the play/pause button. The final
+  // decision to show the button is delegated to the platform-specific window
+  // implementation.
+  window_->SetHidePictureInPictureButtonVisibility(ShouldShowPlayPauseButton());
 }
 
 void VideoPictureInPictureWindowControllerImpl::

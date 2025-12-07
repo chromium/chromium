@@ -19,16 +19,9 @@ TEST(StreamParserFactoryTest, HlsProbeParserTest) {
             nullptr);
 
   // These are feature gated!
-  EXPECT_EQ(StreamParserFactory::CreateRelaxedParser(
+  EXPECT_NE(StreamParserFactory::CreateRelaxedParser(
                 RelaxedParserSupportedType::kMP4),
             nullptr);
-
-  {
-    base::test::ScopedFeatureList enable_mp4{kBuiltInHlsMP4};
-    EXPECT_NE(StreamParserFactory::CreateRelaxedParser(
-                  RelaxedParserSupportedType::kMP4),
-              nullptr);
-  }
 }
 
 }  // namespace media

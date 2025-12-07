@@ -25,7 +25,6 @@ The second cell, which used to contain '5', is replaced with the 'world!' text, 
 |       <td>
 |         class="start"
 |         "<#selection-caret>world!"
-|         <br>
 |       <td>
 | "
 "

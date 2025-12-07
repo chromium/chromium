@@ -13,7 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 
 namespace {
@@ -41,9 +41,11 @@ namespace crx_file::id_util {
 const size_t kIdSize = 16;
 
 std::string GenerateId(std::string_view input) {
-  uint8_t hash[kIdSize];
-  crypto::SHA256HashString(input, hash, sizeof(hash));
-  return GenerateIdFromHash(hash);
+  return GenerateId(base::as_byte_span(input));
+}
+
+std::string GenerateId(base::span<const uint8_t> input) {
+  return GenerateIdFromHash(crypto::hash::Sha256(input));
 }
 
 std::string GenerateIdFromHash(base::span<const uint8_t> hash) {
@@ -60,10 +62,7 @@ std::string GenerateIdFromHex(const std::string& input) {
 
 std::string GenerateIdForPath(const base::FilePath& path) {
   base::FilePath new_path = MaybeNormalizePath(path);
-  const std::string_view path_bytes(
-      reinterpret_cast<const char*>(new_path.value().data()),
-      new_path.value().size() * sizeof(base::FilePath::CharType));
-  return GenerateId(path_bytes);
+  return GenerateId(base::as_byte_span(new_path.value()));
 }
 
 std::string HashedIdInHex(const std::string& id) {

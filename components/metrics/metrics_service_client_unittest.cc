@@ -16,12 +16,12 @@ namespace {
 
 class MetricsServiceClientTest : public testing::Test {
  public:
-  MetricsServiceClientTest() {}
+  MetricsServiceClientTest() = default;
 
   MetricsServiceClientTest(const MetricsServiceClientTest&) = delete;
   MetricsServiceClientTest& operator=(const MetricsServiceClientTest&) = delete;
 
-  ~MetricsServiceClientTest() override {}
+  ~MetricsServiceClientTest() override = default;
 };
 
 }  // namespace

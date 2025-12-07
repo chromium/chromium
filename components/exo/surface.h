@@ -7,6 +7,7 @@
 
 #include <list>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -28,7 +29,7 @@
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/transform.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 class SkPath;
 
@@ -57,6 +58,9 @@ namespace exo {
 // Occluded surfaces can be detected and not emitted as a quad in the
 // corresponding compositor frame.
 BASE_DECLARE_FEATURE(kExoPerSurfaceOcclusion);
+// TODO(crbug.com/369003507): Remove this feature flag once we found the root
+// cause of crash on specific hatch platform.
+BASE_DECLARE_FEATURE(kDisableNonYUVOverlaysFromExo);
 
 class Buffer;
 class SecurityDelegate;
@@ -296,13 +300,6 @@ class Surface final : public ui::PropertyHandler {
   // Returns whether the surface has a committed acquire fence.
   bool HasAcquireFence() const;
 
-  // Request a callback when the buffer attached at the next commit is
-  // no longer used by that commit.
-  void SetPerCommitBufferReleaseCallback(
-      Buffer::PerCommitExplicitReleaseCallback callback);
-  // Whether the surface has an uncommitted per-commit buffer release callback.
-  bool HasPendingPerCommitBufferReleaseCallback() const;
-
   // Surface state (damage regions, attached buffers, etc.) is double-buffered.
   // A Commit() call atomically applies all pending state, replacing the
   // current state. Commit() is not guaranteed to be synchronous. See
@@ -460,7 +457,7 @@ class Surface final : public ui::PropertyHandler {
   void ThrottleFrameRate(bool on);
 
   // Informs tooltip is shown.
-  void OnTooltipShown(const std::u16string& text, const gfx::Rect& bounds);
+  void OnTooltipShown(std::u16string_view text, const gfx::Rect& bounds);
 
   // Informs tooltip is hidden.
   void OnTooltipHidden();
@@ -510,7 +507,6 @@ class Surface final : public ui::PropertyHandler {
     ~State();
 
     bool operator==(const State& other) const;
-    bool operator!=(const State& other) const { return !(*this == other); }
 
     cc::Region opaque_region;
     std::optional<cc::Region> input_region;
@@ -595,12 +591,6 @@ class Surface final : public ui::PropertyHandler {
     // The acquire gpu fence to associate with the surface buffer.
     // Not persisted between commits.
     std::unique_ptr<gfx::GpuFence> acquire_fence;
-    // Callback to notify about the per-commit buffer release. The wayland
-    // Exo backend uses this callback to implement the immediate_release
-    // event of the explicit sync protocol.
-    // Not persisted between commits.
-    Buffer::PerCommitExplicitReleaseCallback
-        per_commit_explicit_release_callback_;
     // The hint for overlay prioritization
     // Persisted between commits.
     OverlayPriority overlay_priority_hint = OverlayPriority::REGULAR;
@@ -758,7 +748,7 @@ class Surface final : public ui::PropertyHandler {
   SubSurfaceEntryList render_layers_;
 
   // The last resource that was sent to a surface.
-  viz::TransferableResource current_resource_;
+  std::optional<viz::TransferableResource> current_resource_;
 
   // Whether the last resource that was sent to a surface has an alpha channel.
   bool current_resource_has_alpha_ = false;

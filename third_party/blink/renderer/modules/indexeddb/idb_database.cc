@@ -32,6 +32,7 @@
 
 #include "base/atomic_sequence_num.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
@@ -40,6 +41,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/quota_exceeded_error.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/indexed_db_names.h"
@@ -55,9 +57,11 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -100,17 +104,25 @@ IDBDatabase::IDBDatabase(
     ExecutionContext* context,
     mojo::PendingAssociatedReceiver<mojom::blink::IDBDatabaseCallbacks>
         callbacks_receiver,
-    mojo::PendingRemote<mojom::blink::ObservedFeature> connection_lifetime,
-    mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase> pending_database)
+    mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase> pending_database,
+    int connection_priority)
     : ActiveScriptWrappable<IDBDatabase>({}),
-      ExecutionContextLifecycleObserver(context),
+      ExecutionContextLifecycleStateObserver(context),
       database_remote_(context),
-      connection_lifetime_(std::move(connection_lifetime)),
+      scheduling_priority_(connection_priority),
       callbacks_receiver_(this, context) {
   database_remote_.Bind(std::move(pending_database),
                         context->GetTaskRunner(TaskType::kDatabaseAccess));
   callbacks_receiver_.Bind(std::move(callbacks_receiver),
                            context->GetTaskRunner(TaskType::kDatabaseAccess));
+
+  // Invokes the callback immediately.
+  scheduler_observer_ = context->GetScheduler()->AddLifecycleObserver(
+      FrameOrWorkerScheduler::ObserverType::kWorkerScheduler,
+      BindRepeating(&IDBDatabase::OnSchedulerLifecycleStateChanged,
+                    WrapWeakPersistent(this)));
+
+  UpdateStateIfNeeded();
 }
 
 void IDBDatabase::Trace(Visitor* visitor) const {
@@ -139,9 +151,30 @@ void IDBDatabase::SetDatabaseMetadata(const IDBDatabaseMetadata& metadata) {
 }
 
 void IDBDatabase::TransactionCreated(IDBTransaction* transaction) {
+  TRACE_EVENT0("IndexedDB", "IDBDatabase::TransactionCreated");
   DCHECK(transaction);
   DCHECK(!transactions_.Contains(transaction->Id()));
   transactions_.insert(transaction->Id(), transaction);
+
+  // Log a histogram when the number of active transactions becomes unusually
+  // large, to help diagnose crbug.com/381086791.
+  //
+  // We plan to:
+  // - Set a trace recording *start* trigger when the 10001th transaction is
+  //   created.
+  // - Set a trace recording *stop* trigger when the 11000th transaction is
+  //   created. This will give us a timeline of events that occur between the
+  //   10001th and 11000th transactions are created.
+  //
+  // TODO(crbug.com/381086791): Remove this diagnostic code once the issue is
+  // understood and resolved.
+  constexpr size_t kHighTransactionCount = 10000;
+  if (transactions_.size() > kHighTransactionCount) {
+    base::UmaHistogramCounts100000(
+        "IndexedDB.NumTransactionsInIDBDatabaseOnTransactionCreated."
+        "10kTransactions",
+        transactions_.size());
+  }
 
   if (transaction->IsVersionChange()) {
     DCHECK(!version_change_transaction_);
@@ -201,11 +234,17 @@ void IDBDatabase::VersionChange(int64_t old_version, int64_t new_version) {
 
 void IDBDatabase::Abort(int64_t transaction_id,
                         mojom::blink::IDBException code,
-                        const WTF::String& message) {
+                        const String& message) {
   DCHECK(transactions_.Contains(transaction_id));
-  transactions_.at(transaction_id)
-      ->OnAbort(MakeGarbageCollected<DOMException>(
-          static_cast<DOMExceptionCode>(code), message));
+  DOMException* dom_exception;
+  if (code == mojom::blink::IDBException::kQuotaError &&
+      RuntimeEnabledFeatures::QuotaExceededErrorUpdateEnabled()) {
+    dom_exception = MakeGarbageCollected<QuotaExceededError>(message);
+  } else {
+    dom_exception = MakeGarbageCollected<DOMException>(
+        static_cast<DOMExceptionCode>(code), message);
+  }
+  transactions_.at(transaction_id)->OnAbort(dom_exception);
 }
 
 void IDBDatabase::Complete(int64_t transaction_id) {
@@ -277,9 +316,18 @@ IDBObjectStore* IDBDatabase::createObjectStore(
   version_change_transaction_->CreateObjectStore(object_store_id, name,
                                                  key_path, auto_increment);
 
-  scoped_refptr<IDBObjectStoreMetadata> store_metadata = base::AdoptRef(
-      new IDBObjectStoreMetadata(name, object_store_id, key_path,
-                                 auto_increment, IDBDatabase::kMinimumIndexId));
+  scoped_refptr<IDBObjectStoreMetadata> store_metadata =
+      base::AdoptRef(new IDBObjectStoreMetadata(name, object_store_id, key_path,
+                                                auto_increment));
+  // The LevelDB backing store needs the minimum index ID to be a specific value
+  // (indexed_db_leveldb_coding.cc:kMinimumIndexId). To maintain consistency
+  // between the metadata copies in blink and content, set the same value here.
+  //
+  // Note that the SQLite backing store does not have this requirement and does
+  // not persist `max_index_id` to disk, so indexes added to object stores after
+  // the database has been closed and reopened can have smaller IDs.
+  // TODO(crbug.com/40253999): Don't set this when the SQLite flag is enabled.
+  store_metadata->max_index_id = 30;
   auto* object_store = MakeGarbageCollected<IDBObjectStore>(
       store_metadata, version_change_transaction_.Get());
   version_change_transaction_->ObjectStoreCreated(name, object_store);
@@ -292,7 +340,7 @@ IDBObjectStore* IDBDatabase::createObjectStore(
 IDBTransaction* IDBDatabase::transaction(
     ScriptState* script_state,
     const V8UnionStringOrStringSequence* store_names,
-    const String& mode_string,
+    const V8IDBTransactionMode& v8_mode,
     const IDBTransactionOptions* options,
     ExceptionState& exception_state) {
   TRACE_EVENT0("IndexedDB", "IDBDatabase::transaction");
@@ -347,21 +395,23 @@ IDBTransaction* IDBDatabase::transaction(
     object_store_ids.push_back(object_store_id);
   }
 
-  mojom::IDBTransactionMode mode = IDBTransaction::StringToMode(mode_string);
-  if (mode != mojom::IDBTransactionMode::ReadOnly &&
-      mode != mojom::IDBTransactionMode::ReadWrite) {
+  mojom::blink::IDBTransactionMode mode =
+      IDBTransaction::EnumToMode(v8_mode.AsEnum());
+  if (mode != mojom::blink::IDBTransactionMode::ReadOnly &&
+      mode != mojom::blink::IDBTransactionMode::ReadWrite) {
     exception_state.ThrowTypeError(
-        "The mode provided ('" + mode_string +
-        "') is not one of 'readonly' or 'readwrite'.");
+        StrCat({"The mode provided ('", v8_mode.AsStringView(),
+                "') is not one of 'readonly' or 'readwrite'."}));
     return nullptr;
   }
 
   mojom::blink::IDBTransactionDurability durability =
       mojom::blink::IDBTransactionDurability::Default;
   DCHECK(options);
-  if (options->durability() == indexed_db_names::kRelaxed) {
+  if (options->durability() == V8IDBTransactionDurability::Enum::kRelaxed) {
     durability = mojom::blink::IDBTransactionDurability::Relaxed;
-  } else if (options->durability() == indexed_db_names::kStrict) {
+  } else if (options->durability() ==
+             V8IDBTransactionDurability::Enum::kStrict) {
     durability = mojom::blink::IDBTransactionDurability::Strict;
   }
 
@@ -421,7 +471,6 @@ void IDBDatabase::close() {
     return;
   }
 
-  connection_lifetime_.reset();
   close_pending_ = true;
 
   if (transactions_.empty()) {
@@ -534,11 +583,23 @@ void IDBDatabase::ContextDestroyed() {
   if (database_remote_.is_bound()) {
     database_remote_.reset();
   }
-  connection_lifetime_.reset();
 }
 
 void IDBDatabase::ContextEnteredBackForwardCache() {
-  if (database_remote_.is_bound()) {
+  if (!database_remote_.is_bound()) {
+    return;
+  }
+
+  DidBecomeInactive();
+}
+
+void IDBDatabase::ContextLifecycleStateChanged(
+    mojom::blink::FrameLifecycleState state) {
+  if (!database_remote_.is_bound()) {
+    return;
+  }
+
+  if (state == mojom::blink::FrameLifecycleState::kFrozen) {
     DidBecomeInactive();
   }
 }
@@ -593,33 +654,19 @@ void IDBDatabase::GetAll(int64_t transaction_id,
                          int64_t object_store_id,
                          int64_t index_id,
                          const IDBKeyRange* key_range,
-                         int64_t max_count,
-                         bool key_only,
+                         mojom::blink::IDBGetAllResultType result_type,
+                         uint32_t max_count,
+                         mojom::blink::IDBCursorDirection direction,
                          IDBRequest* request) {
   IDBCursor::ResetCursorPrefetchCaches(transaction_id, nullptr);
 
   mojom::blink::IDBKeyRangePtr key_range_ptr =
       mojom::blink::IDBKeyRange::From(key_range);
-  database_remote_->GetAll(
-      transaction_id, object_store_id, index_id, std::move(key_range_ptr),
-      key_only, max_count,
-      WTF::BindOnce(&IDBRequest::OnGetAll, WrapWeakPersistent(request),
-                    key_only));
-}
-
-void IDBDatabase::SetIndexKeys(int64_t transaction_id,
-                               int64_t object_store_id,
-                               std::unique_ptr<IDBKey> primary_key,
-                               Vector<IDBIndexKeys> index_keys) {
-  database_remote_->SetIndexKeys(transaction_id, object_store_id,
-                                 std::move(primary_key), std::move(index_keys));
-}
-
-void IDBDatabase::SetIndexesReady(int64_t transaction_id,
-                                  int64_t object_store_id,
-                                  const Vector<int64_t>& index_ids) {
-  database_remote_->SetIndexesReady(transaction_id, object_store_id,
-                                    std::move(index_ids));
+  database_remote_->GetAll(transaction_id, object_store_id, index_id,
+                           std::move(key_range_ptr), result_type, max_count,
+                           direction,
+                           BindOnce(&IDBRequest::OnGetAll,
+                                    WrapWeakPersistent(request), result_type));
 }
 
 void IDBDatabase::OpenCursor(int64_t object_store_id,
@@ -636,7 +683,7 @@ void IDBDatabase::OpenCursor(int64_t object_store_id,
   database_remote_->OpenCursor(
       request->transaction()->Id(), object_store_id, index_id,
       std::move(key_range_ptr), direction, key_only, task_type,
-      WTF::BindOnce(&IDBRequest::OnOpenCursor, WrapWeakPersistent(request)));
+      BindOnce(&IDBRequest::OnOpenCursor, WrapWeakPersistent(request)));
 }
 
 void IDBDatabase::Count(int64_t transaction_id,
@@ -701,8 +748,10 @@ void IDBDatabase::CreateIndex(int64_t transaction_id,
                               const IDBKeyPath& key_path,
                               bool unique,
                               bool multi_entry) {
-  database_remote_->CreateIndex(transaction_id, object_store_id, index_id, name,
-                                key_path, unique, multi_entry);
+  database_remote_->CreateIndex(
+      transaction_id, object_store_id,
+      base::MakeRefCounted<IDBIndexMetadata>(name, index_id, key_path, unique,
+                                             multi_entry));
 }
 
 void IDBDatabase::DeleteIndex(int64_t transaction_id,
@@ -724,6 +773,35 @@ void IDBDatabase::Abort(int64_t transaction_id) {
   if (database_remote_.is_bound()) {
     database_remote_->Abort(transaction_id);
   }
+}
+
+void IDBDatabase::OnSchedulerLifecycleStateChanged(
+    scheduler::SchedulingLifecycleState lifecycle_state) {
+  int new_priority = GetSchedulingPriority(lifecycle_state);
+  if (new_priority == scheduling_priority_) {
+    return;
+  }
+  scheduling_priority_ = new_priority;
+  if (database_remote_) {
+    database_remote_->UpdatePriority(scheduling_priority_);
+  }
+}
+
+// static
+int IDBDatabase::GetSchedulingPriority(
+    scheduler::SchedulingLifecycleState lifecycle_state) {
+  switch (lifecycle_state) {
+    case scheduler::SchedulingLifecycleState::kNotThrottled:
+      return 0;
+    case scheduler::SchedulingLifecycleState::kHidden:
+      return 1;
+    case scheduler::SchedulingLifecycleState::kThrottled:
+      return 2;
+    case scheduler::SchedulingLifecycleState::kStopped:
+      return 3;
+  }
+
+  return 0;
 }
 
 }  // namespace blink

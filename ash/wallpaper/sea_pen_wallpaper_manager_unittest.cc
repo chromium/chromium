@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "ash/constants/ash_pref_names.h"
@@ -16,12 +17,14 @@
 #include "ash/wallpaper/wallpaper_utils/sea_pen_metadata_utils.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_file_utils.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
+#include "base/containers/span.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -29,6 +32,7 @@
 #include "base/time/time_override.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/testing_pref_service.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -43,7 +47,8 @@ namespace {
 const std::string kUser1 = "user1@test.com";
 constexpr std::string_view kExpectedMigrationFileContents =
     "migration_file_contents";
-const AccountId kAccountId1 = AccountId::FromUserEmailGaiaId(kUser1, kUser1);
+const AccountId kAccountId1 =
+    AccountId::FromUserEmailGaiaId(kUser1, GaiaId::Literal("gaia_id1"));
 constexpr SkColor kDefaultImageColor = SkColorSetARGB(255, 31, 63, 127);
 
 SkBitmap CreateBitmap(SkColor color = kDefaultImageColor) {
@@ -52,9 +57,12 @@ SkBitmap CreateBitmap(SkColor color = kDefaultImageColor) {
 
 std::string CreateJpgBytes(SkColor color = kDefaultImageColor) {
   SkBitmap bitmap = CreateBitmap(color);
-  std::vector<unsigned char> data;
-  gfx::JPEGCodec::Encode(bitmap, /*quality=*/100, &data);
-  return std::string(data.begin(), data.end());
+  std::optional<std::vector<uint8_t>> data =
+      gfx::JPEGCodec::Encode(bitmap, /*quality=*/100);
+  if (!data) {
+    return std::string();
+  }
+  return std::string(base::as_string_view(data.value()));
 }
 
 base::subtle::ScopedTimeClockOverrides CreateScopedTimeNowOverride() {
@@ -300,7 +308,8 @@ TEST_F(SeaPenWallpaperManagerTest, GetImageIdsMultipleAccounts) {
   }
 
   const std::string kUser2 = "user2@test.com";
-  const AccountId kAccountId2 = AccountId::FromUserEmailGaiaId(kUser2, kUser2);
+  const AccountId kAccountId2 =
+      AccountId::FromUserEmailGaiaId(kUser2, GaiaId("gaia_id2"));
   ASSERT_NE(kAccountId1.GetAccountIdKey(), kAccountId2.GetAccountIdKey());
 
   {
@@ -491,7 +500,7 @@ TEST_F(SeaPenWallpaperManagerTest, GetImageAndMetadataOtherAccount) {
   {
     // Try to retrieve the image with another account.
     const AccountId other_account_id = AccountId::FromUserEmailGaiaId(
-        "other_user@test.com", "other_user@test.com");
+        "other_user@test.com", GaiaId("other_user_gaia_id"));
 
     base::test::TestFuture<const gfx::ImageSkia&,
                            personalization_app::mojom::RecentSeaPenImageInfoPtr>
@@ -586,7 +595,7 @@ TEST_F(SeaPenWallpaperManagerTest, DeleteImageRemovesFromDisk) {
 TEST_F(SeaPenWallpaperManagerTest, DeleteImageForOtherUserFails) {
   constexpr uint32_t image_id = 999u;
   const AccountId other_account_id = AccountId::FromUserEmailGaiaId(
-      "other_user@test.com", "other_user@test.com");
+      "other_user@test.com", GaiaId("other_user_gaia_id"));
 
   // Save a test image with the same id for both users.
   for (const auto& account_id : {kAccountId1, other_account_id}) {
@@ -629,72 +638,6 @@ TEST_F(SeaPenWallpaperManagerTest, DeleteImageForOtherUserFails) {
   // Image still exists for other account id.
   ASSERT_TRUE(
       base::PathExists(GetFilePathForImageId(other_account_id, image_id)));
-}
-
-TEST_F(SeaPenWallpaperManagerTest, MigrateMovesFiles) {
-  SetUpMigrationSourceDir(kAccountId1);
-  ASSERT_TRUE(base::PathExists(GetMigrationSourceDir(kAccountId1)));
-
-  base::test::TestFuture<bool> migrate_sea_pen_files_if_necessary_future;
-  sea_pen_wallpaper_manager()->Migrate(
-      kAccountId1, GetMigrationSourceDir(kAccountId1),
-      migrate_sea_pen_files_if_necessary_future.GetCallback());
-  EXPECT_TRUE(migrate_sea_pen_files_if_necessary_future.Get());
-
-  std::string migrated_file_contents;
-  EXPECT_TRUE(
-      base::ReadFileToString(sea_pen_wallpaper_manager_session_delegate()
-                                 ->GetStorageDirectory(kAccountId1)
-                                 .Append("12345.jpg"),
-                             &migrated_file_contents));
-  EXPECT_EQ(kExpectedMigrationFileContents, migrated_file_contents);
-
-  EXPECT_FALSE(base::PathExists(GetMigrationSourceDir(kAccountId1)));
-
-  base::test::TestFuture<const std::vector<uint32_t>&> get_image_ids_future;
-  sea_pen_wallpaper_manager()->GetImageIds(kAccountId1,
-                                           get_image_ids_future.GetCallback());
-
-  EXPECT_EQ(std::vector<uint32_t>{12345}, get_image_ids_future.Get());
-}
-
-TEST_F(SeaPenWallpaperManagerTest, MigrateWritesPrefs) {
-  EXPECT_EQ(
-      SeaPenWallpaperManager::MigrationStatus::kNotStarted,
-      static_cast<SeaPenWallpaperManager::MigrationStatus>(
-          sea_pen_wallpaper_manager_session_delegate()
-              ->GetPrefService(kAccountId1)
-              ->GetInteger(::ash::prefs::kWallpaperSeaPenMigrationStatus)));
-
-  base::ScopedTempDir source_dir;
-  ASSERT_TRUE(source_dir.CreateUniqueTempDir());
-
-  const base::FilePath source_subdir =
-      source_dir.GetPath().Append(kAccountId1.GetAccountIdKey());
-  ASSERT_TRUE(base::CreateDirectory(source_subdir));
-
-  base::test::TestFuture<bool> migrate_sea_pen_files_if_necessary_future;
-
-  sea_pen_wallpaper_manager()->Migrate(
-      kAccountId1, source_subdir,
-      migrate_sea_pen_files_if_necessary_future.GetCallback());
-
-  EXPECT_EQ(
-      SeaPenWallpaperManager::MigrationStatus::kCrashed,
-      static_cast<SeaPenWallpaperManager::MigrationStatus>(
-          sea_pen_wallpaper_manager_session_delegate()
-              ->GetPrefService(kAccountId1)
-              ->GetInteger(::ash::prefs::kWallpaperSeaPenMigrationStatus)))
-      << "kCrashed should have been written as migration started";
-
-  EXPECT_TRUE(migrate_sea_pen_files_if_necessary_future.Get());
-
-  EXPECT_EQ(
-      SeaPenWallpaperManager::MigrationStatus::kSuccess,
-      static_cast<SeaPenWallpaperManager::MigrationStatus>(
-          sea_pen_wallpaper_manager_session_delegate()
-              ->GetPrefService(kAccountId1)
-              ->GetInteger(::ash::prefs::kWallpaperSeaPenMigrationStatus)));
 }
 
 }  // namespace

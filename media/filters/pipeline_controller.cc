@@ -298,7 +298,7 @@ void PipelineController::Dispatch() {
     if (pending_audio_track_change_) {
       pending_audio_track_change_ = false;
       pipeline_->OnEnabledAudioTracksChanged(
-          pending_audio_track_change_ids_,
+          std::move(pending_audio_track_change_id_),
           base::BindOnce(&PipelineController::OnTrackChangeComplete,
                          weak_factory_.GetWeakPtr()));
       return;
@@ -307,7 +307,7 @@ void PipelineController::Dispatch() {
     if (pending_video_track_change_) {
       pending_video_track_change_ = false;
       pipeline_->OnSelectedVideoTrackChanged(
-          pending_video_track_change_id_,
+          std::move(pending_video_track_change_id_),
           base::BindOnce(&PipelineController::OnTrackChangeComplete,
                          weak_factory_.GetWeakPtr()));
       return;
@@ -399,9 +399,10 @@ void PipelineController::SetPreservesPitch(bool preserves_pitch) {
   pipeline_->SetPreservesPitch(preserves_pitch);
 }
 
-void PipelineController::SetWasPlayedWithUserActivation(
-    bool was_played_with_user_activation) {
-  pipeline_->SetWasPlayedWithUserActivation(was_played_with_user_activation);
+void PipelineController::SetWasPlayedWithUserActivationAndHighMediaEngagement(
+    bool was_played_with_user_activation_and_high_media_engagement) {
+  pipeline_->SetWasPlayedWithUserActivationAndHighMediaEngagement(
+      was_played_with_user_activation_and_high_media_engagement);
 }
 
 base::TimeDelta PipelineController::GetMediaTime() const {
@@ -430,11 +431,11 @@ void PipelineController::SetCdm(CdmContext* cdm_context,
 }
 
 void PipelineController::OnEnabledAudioTracksChanged(
-    const std::vector<MediaTrack::Id>& enabled_track_ids) {
+    std::optional<MediaTrack::Id> enabled_track_id) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   pending_audio_track_change_ = true;
-  pending_audio_track_change_ids_ = enabled_track_ids;
+  pending_audio_track_change_id_ = std::move(enabled_track_id);
 
   Dispatch();
 }
@@ -444,7 +445,7 @@ void PipelineController::OnSelectedVideoTrackChanged(
   DCHECK(thread_checker_.CalledOnValidThread());
 
   pending_video_track_change_ = true;
-  pending_video_track_change_id_ = selected_track_id;
+  pending_video_track_change_id_ = std::move(selected_track_id);
 
   Dispatch();
 }
@@ -457,6 +458,10 @@ void PipelineController::OnExternalVideoFrameRequest() {
 void PipelineController::FireOnTrackChangeCompleteForTesting(State set_to) {
   previous_track_change_state_ = set_to;
   OnTrackChangeComplete();
+}
+
+void PipelineController::SetRenderMutedAudio(bool render_muted_audio) {
+  pipeline_->SetRenderMutedAudio(render_muted_audio);
 }
 
 void PipelineController::OnTrackChangeComplete() {

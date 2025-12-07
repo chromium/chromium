@@ -6,25 +6,42 @@ package org.chromium.chrome.browser.tinker_tank;
 
 import android.app.Activity;
 
-import org.chromium.base.supplier.Supplier;
+import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 import java.util.List;
+import java.util.function.Supplier;
 
-/**
- * The correct version of {@link TinkerTankDelegateImpl} will be determined at compile time via
- * build rules.
- */
+/** Interface for working with TinkerTank. */
+@NullMarked
 public interface TinkerTankDelegate {
-    public void maybeShowBottomSheet(
+    private static @Nullable TinkerTankDelegate maybeCreate() {
+        return ServiceLoaderUtil.maybeCreate(TinkerTankDelegate.class);
+    }
+
+    static TinkerTankDelegate create() {
+        TinkerTankDelegate ret = maybeCreate();
+        assert ret != null;
+        return ret;
+    }
+
+    static boolean isEnabled() {
+        return maybeCreate() != null
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.TINKER_TANK_BOTTOM_SHEET);
+    }
+
+    default void maybeShowBottomSheet(
             Activity activity,
             Profile profile,
             BottomSheetController bottomSheetController,
-            Supplier<TabModelSelector> tabModelSelectorSupplier);
+            Supplier<TabModelSelector> tabModelSelectorSupplier) {}
 
-    public void maybeShowForSelectedTabs(
+    void maybeShowForSelectedTabs(
             Activity activity, BottomSheetController bottomSheetController, List<Tab> tabs);
 }

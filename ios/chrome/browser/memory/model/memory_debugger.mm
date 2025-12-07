@@ -6,8 +6,10 @@
 
 #import <stdint.h>
 
+#import <algorithm>
 #import <memory>
 
+#import "base/containers/heap_array.h"
 #import "ios/chrome/browser/memory/model/memory_metrics.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/device_util.h"
@@ -41,7 +43,7 @@ const CGFloat kPadding = 10;
   UITextField* _continuousMemoryWarningField;
 
   // A place to store the artificial memory bloat.
-  std::unique_ptr<uint8_t> _bloat;
+  base::HeapArray<uint8_t> _bloat;
 
   // Distance the view was pushed up to accommodate the keyboard.
   CGFloat _keyboardOffset;
@@ -341,8 +343,10 @@ const CGFloat kPadding = 10;
 // Flashes the debugger to indicate memory warning.
 - (void)lowMemoryWarningReceived:(NSNotification*)notification {
   UIColor* originalColor = self.backgroundColor;
-  self.backgroundColor =
-      [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.9];
+  self.backgroundColor = [UIColor colorWithRed:1.0
+                                         green:0.0
+                                          blue:0.0
+                                         alpha:0.9];
   [UIView animateWithDuration:1.0
                         delay:0.0
                       options:UIViewAnimationOptionAllowUserInteraction
@@ -356,8 +360,9 @@ const CGFloat kPadding = 10;
 
 - (void)didMoveToSuperview {
   UIView* superview = [self superview];
-  if (superview)
+  if (superview) {
     [self setCenter:[superview center]];
+  }
 }
 
 #pragma mark Keyboard notification callbacks
@@ -427,9 +432,9 @@ const CGFloat kPadding = 10;
   }
   const CGFloat kBloatSizeBytes = ceil(bloatSizeMB * kNumBytesInMB);
   const uint64_t kNumberOfBytes = static_cast<uint64_t>(kBloatSizeBytes);
-  _bloat.reset(kNumberOfBytes ? new uint8_t[kNumberOfBytes] : nullptr);
-  if (_bloat) {
-    memset(_bloat.get(), -1, kNumberOfBytes);  // Occupy memory.
+  _bloat = base::HeapArray<uint8_t>::Uninit(kNumberOfBytes);
+  if (!_bloat.empty()) {
+    std::ranges::fill(_bloat, uint8_t{0xff});
   } else {
     if (kNumberOfBytes) {
       [self alert:@"Could not allocate memory."];
@@ -452,7 +457,8 @@ const CGFloat kPadding = 10;
     refreshTimerValue = 0.5;
     NSString* errorMessage = [NSString
         stringWithFormat:@"Invalid value \"%@\" for refresh interval.\n"
-                         @"Must be a positive number.\n" @"Resetting to %.1f",
+                         @"Must be a positive number.\n"
+                         @"Resetting to %.1f",
                          [_refreshField text], refreshTimerValue];
     [self alert:errorMessage];
     [_refreshField

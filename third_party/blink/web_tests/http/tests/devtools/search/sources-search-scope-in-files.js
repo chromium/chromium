@@ -6,11 +6,13 @@ import {TestRunner} from 'test_runner';
 import {BindingsTestRunner} from 'bindings_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as Common from 'devtools/core/common/common.js';
 import * as Workspace from 'devtools/models/workspace/workspace.js';
 import * as SourcesModule from 'devtools/panels/sources/sources.js';
 import * as Persistence from 'devtools/models/persistence/persistence.js';
 
 (async function() {
+  Common.Settings.Settings.instance().moduleSetting('persistence-network-overrides-enabled').set(true);
   TestRunner.addResult(`Tests that ScriptSearchScope performs search across all sources correctly.\n`);
   await TestRunner.showPanel('sources');
 

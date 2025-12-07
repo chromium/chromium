@@ -17,10 +17,9 @@
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/service/display/display_client.h"
-#include "components/viz/service/display/frame_rate_decider.h"
+#include "components/viz/service/display/frame_interval_decider.h"
 #include "components/viz/service/display/overdraw_tracker.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
-#include "components/viz/service/frame_sinks/eviction_handler.h"
 #include "components/viz/service/viz_service_export.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -32,6 +31,10 @@
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/gfx/ca_layer_params.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "ui/gfx/android/surface_control_frame_rate.h"
+#endif
 
 namespace viz {
 
@@ -66,8 +69,7 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
 
   ~RootCompositorFrameSinkImpl() override;
 
-  // Returns true iff it is okay to evict the root surface immediately.
-  bool WillEvictSurface(const SurfaceId& surface_id);
+  void DidEvictSurface(const SurfaceId& surface_id);
 
   const SurfaceId& CurrentSurfaceId() const;
 
@@ -88,13 +90,18 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
                                  base::TimeDelta interval) override;
   void ForceImmediateDrawAndSwapIfPossible() override;
 #if BUILDFLAG(IS_ANDROID)
-  void SetVSyncPaused(bool paused) override;
   void UpdateRefreshRate(float refresh_rate) override;
-  void SetSupportedRefreshRates(
-      const std::vector<float>& supported_refresh_rates) override;
+  void SetAdaptiveRefreshRateInfo(
+      bool has_support,
+      float suggested_high,
+      float device_scale_factor) override;
   void PreserveChildSurfaceControls() override;
   void SetSwapCompletionCallbackEnabled(bool enable) override;
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+  void SetSupportedRefreshRates(
+      const std::vector<float>& supported_refresh_rates) override;
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
   void AddVSyncParameterObserver(
       mojo::PendingRemote<mojom::VSyncParameterObserver> observer) override;
   void SetDelegatedInkPointRenderer(
@@ -102,34 +109,23 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
       override;
   void SetStandaloneBeginFrameObserver(
       mojo::PendingRemote<mojom::BeginFrameObserver> observer) override;
-  void SetMaxVrrInterval(
-      std::optional<base::TimeDelta> max_vrr_interval) override;
+  void SetMaxVSyncAndVrr(std::optional<base::TimeDelta> max_vsync_interval,
+                         display::VariableRefreshRateState vrr_state) override;
 
   // mojom::CompositorFrameSink:
+  void SetParams(mojom::CompositorFrameSinkParamsPtr params) override;
   void SetNeedsBeginFrame(bool needs_begin_frame) override;
-  void SetWantsAnimateOnlyBeginFrames() override;
-  void SetWantsBeginFrameAcks() override;
-  void SetAutoNeedsBeginFrame() override;
   void SubmitCompositorFrame(
       const LocalSurfaceId& local_surface_id,
       CompositorFrame frame,
       std::optional<HitTestRegionList> hit_test_region_list,
       uint64_t submit_time) override;
   void DidNotProduceFrame(const BeginFrameAck& begin_frame_ack) override;
-  void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
-                               const SharedBitmapId& id) override;
-  void DidDeleteSharedBitmap(const SharedBitmapId& id) override;
-  void SubmitCompositorFrameSync(
-      const LocalSurfaceId& local_surface_id,
-      CompositorFrame frame,
-      std::optional<HitTestRegionList> hit_test_region_list,
-      uint64_t submit_time,
-      SubmitCompositorFrameSyncCallback callback) override;
-  void InitializeCompositorFrameSinkType(
-      mojom::CompositorFrameSinkType type) override;
-  void BindLayerContext(mojom::PendingLayerContextPtr context) override;
+  void NotifyNewLocalSurfaceIdExpectedWhilePaused() override;
+  void BindLayerContext(mojom::PendingLayerContextPtr context,
+                        mojom::LayerContextSettingsPtr settings) override;
 #if BUILDFLAG(IS_ANDROID)
-  void SetThreadIds(const std::vector<int32_t>& thread_ids) override;
+  void SetThreads(const std::vector<Thread>& threads) override;
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -160,6 +156,11 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
       std::unique_ptr<Display> display,
       bool hw_support_for_multiple_refresh_rates);
 
+  void UpdateFrameIntervalDeciderSettings();
+  void FrameIntervalDeciderResultCallback(
+      FrameIntervalDecider::Result result,
+      FrameIntervalMatcherType matcher_type);
+
   // DisplayClient:
   void DisplayOutputSurfaceLost() override;
   void DisplayWillDrawAndSwap(bool will_draw_and_swap,
@@ -170,16 +171,13 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
   void DisplayDidCompleteSwapWithSize(const gfx::Size& pixel_size) override;
   void DisplayAddChildWindowToBrowser(gpu::SurfaceHandle child_window) override;
   void SetWideColorEnabled(bool enabled) override;
-  void SetPreferredFrameInterval(base::TimeDelta interval) override;
-  base::TimeDelta GetPreferredFrameIntervalForFrameSinkId(
-      const FrameSinkId& id,
-      mojom::CompositorFrameSinkType* type) override;
+
+  void SetPreferredFrameInterval(base::TimeDelta interval);
 
   void UpdateVSyncParameters();
   BeginFrameSource* begin_frame_source();
 
-  base::flat_set<base::TimeDelta> GetSupportedFrameIntervals(
-      base::TimeDelta interval);
+  base::flat_set<base::TimeDelta> GetSupportedFrameIntervals();
 
   mojo::Remote<mojom::CompositorFrameSinkClient> compositor_frame_sink_client_;
   mojo::AssociatedReceiver<mojom::CompositorFrameSink>
@@ -193,6 +191,16 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
   // Must be destroyed before |compositor_frame_sink_client_|. This must never
   // change for the lifetime of RootCompositorFrameSinkImpl.
   const std::unique_ptr<CompositorFrameSinkSupport> support_;
+
+  // FrameIntervalDecider related members.
+  // True indicates FrameIntervalDecider uses FixedIntervalSettings.
+  bool interval_decider_use_fixed_intervals_ = true;
+  // The current display frame interval that FrameIntervalDecider decided on.
+  base::TimeDelta decided_display_interval_;
+#if BUILDFLAG(IS_ANDROID)
+  gfx::SurfaceControlFrameRateCompatibility decided_display_frame_rate_compat_ =
+      gfx::SurfaceControlFrameRateCompatibility::kFixedSource;
+#endif
 
   // RootCompositorFrameSinkImpl holds a Display and a BeginFrameSource if it
   // was created with a non-null gpu::SurfaceHandle. The source can either be a
@@ -212,11 +220,7 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
   bool use_preferred_interval_ = false;
   base::TimeTicks display_frame_timebase_;
   base::TimeDelta display_frame_interval_ = BeginFrameArgs::DefaultInterval();
-  base::TimeDelta preferred_frame_interval_ =
-      FrameRateDecider::UnspecifiedFrameInterval();
-
-  // See comments on `EvictionHandler`.
-  EvictionHandler eviction_handler_;
+  base::TimeDelta preferred_frame_interval_;
 
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_X11)
   gfx::Size last_swap_pixel_size_;
@@ -233,11 +237,20 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
 #if BUILDFLAG(IS_ANDROID)
   // Let client control whether it wants `DidCompleteSwapWithSize`.
   bool enable_swap_completion_callback_ = false;
+
+  bool supports_adaptive_refresh_rate_ = false;
+  base::TimeDelta suggested_frame_interval_high_;
+  float device_scale_factor_ = 1.0f;
 #endif
 
   // Map which retains the exact supported refresh rates, keyed by their
   // interval conversion value which may be subject to precision loss.
   base::flat_map<base::TimeDelta, float> exact_supported_refresh_rates_;
+  // The maximum interval that the display supports. Used for VRR (variable
+  // refresh rate) or continuous range framerate selection in
+  // `FrameIntervalDecider`. Absent if the display does not support those
+  // features.
+  std::optional<base::TimeDelta> max_vsync_interval_ = std::nullopt;
 };
 
 }  // namespace viz

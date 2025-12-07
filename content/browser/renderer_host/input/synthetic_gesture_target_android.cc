@@ -20,7 +20,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/android/content_jni_headers/SyntheticGestureTarget_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using blink::WebGestureEvent;
 using blink::WebInputEvent;
@@ -115,7 +115,7 @@ void SyntheticGestureTargetAndroid::DispatchWebTouchEventToPlatform(
       action = MOTION_EVENT_ACTION_END;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   const unsigned num_touches = web_touch.touches_length;
   int touch_index = -1;
@@ -180,7 +180,8 @@ void SyntheticGestureTargetAndroid::GetVSyncParameters(
 
 void SyntheticGestureTargetAndroid::OnBeginFrame(
     base::TimeTicks frame_begin_time,
-    base::TimeDelta frame_interval) {
+    base::TimeDelta frame_interval,
+    std::optional<base::TimeTicks> first_coalesced_frame_begin_time) {
   vsync_timebase_ = frame_begin_time;
   vsync_interval_ = frame_interval;
 }
@@ -212,3 +213,5 @@ RenderWidgetHostViewAndroid* SyntheticGestureTargetAndroid::GetView() const {
 }
 
 }  // namespace content
+
+DEFINE_JNI(SyntheticGestureTarget)

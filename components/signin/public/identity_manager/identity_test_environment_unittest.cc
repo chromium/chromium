@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/test/task_environment.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/test_identity_manager_observer.h"
@@ -42,14 +43,13 @@ TEST_F(IdentityTestEnvironmentTest,
       "primary@example.com", signin::ConsentLevel::kSignin);
   AccessTokenFetcher::TokenCallback callback = base::BindOnce(
       [](GoogleServiceAuthError error, AccessTokenInfo access_token_info) {});
-  std::set<std::string> scopes{GaiaConstants::kGoogleUserInfoEmail};
 
   std::unique_ptr<AccessTokenFetcher> fetcher =
       identity_test_environment->identity_manager()
           ->CreateAccessTokenFetcherForAccount(
               identity_test_environment->identity_manager()
                   ->GetPrimaryAccountId(ConsentLevel::kSignin),
-              "dummy_consumer", scopes, std::move(callback),
+              OAuthConsumerId::kSync, std::move(callback),
               AccessTokenFetcher::Mode::kImmediate);
 
   // Deleting the IdentityTestEnvironment should cancel any pending
@@ -144,7 +144,8 @@ TEST_F(IdentityTestEnvironmentTest, TriggerListAccount) {
                       .set_cookie = true});
   ASSERT_EQ(identity_test_environment->identity_manager()
                 ->GetAccountsInCookieJar()
-                .signed_in_accounts.size(),
+                .GetPotentiallyInvalidSignedInAccounts()
+                .size(),
             1u);
 
   {
@@ -156,7 +157,8 @@ TEST_F(IdentityTestEnvironmentTest, TriggerListAccount) {
 
     const AccountsInCookieJarInfo& observed_cookie_jar =
         observer.AccountsInfoFromAccountsInCookieUpdatedCallback();
-    auto signed_in_accounts = observed_cookie_jar.signed_in_accounts;
+    auto signed_in_accounts =
+        observed_cookie_jar.GetPotentiallyInvalidSignedInAccounts();
     ASSERT_EQ(signed_in_accounts.size(), 1u);
     EXPECT_EQ(signed_in_accounts[0].email, kPrimaryEmail);
   }
@@ -175,7 +177,8 @@ TEST_F(IdentityTestEnvironmentTest, TriggerListAccount) {
 
     const AccountsInCookieJarInfo& observed_cookie_jar =
         observer.AccountsInfoFromAccountsInCookieUpdatedCallback();
-    auto signed_in_accounts = observed_cookie_jar.signed_in_accounts;
+    auto signed_in_accounts =
+        observed_cookie_jar.GetPotentiallyInvalidSignedInAccounts();
     ASSERT_EQ(signed_in_accounts.size(), 2u);
     EXPECT_EQ(signed_in_accounts[0].email, kPrimaryEmail);
     EXPECT_EQ(signed_in_accounts[1].email, secondary_email);

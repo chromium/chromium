@@ -100,9 +100,7 @@ void HidItemStateTable::SetItemValue(HidReportDescriptorItem::Tag tag,
         global.report_count = value;
         break;
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Unexpected global item in HID report descriptor";
-        break;
+        NOTREACHED() << "Unexpected global item in HID report descriptor";
     }
   } else {
     switch (tag) {
@@ -140,9 +138,7 @@ void HidItemStateTable::SetItemValue(HidReportDescriptorItem::Tag tag,
         local.delimiter = value;
         break;
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Unexpected local item in HID report descriptor";
-        break;
+        NOTREACHED() << "Unexpected local item in HID report descriptor";
     }
   }
 }

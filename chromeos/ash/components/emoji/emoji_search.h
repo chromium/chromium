@@ -17,7 +17,7 @@ namespace emoji {
 
 // Simple struct for storing a search weighting for a particular emoji.
 struct EmojiSearchEntry {
-  double weighting;
+  float weighting;
   std::string emoji_string;
 
   friend void PrintTo(const EmojiSearchEntry& entry, std::ostream* os) {
@@ -38,7 +38,7 @@ struct EmojiSearchResult {
 };
 
 using EmojiEntryMap =
-    std::map<std::string, std::vector<EmojiSearchEntry>, std::less<>>;
+    std::map<std::u16string, std::vector<EmojiSearchEntry>, std::less<>>;
 
 enum class EmojiLanguageCode {
   kDa,  // Danish
@@ -56,6 +56,7 @@ struct EmojiLanguageResourceIds {
   int emoji_start_resource_id;
   int emoji_remaining_resource_id;
   int symbols_resource_id;
+  int emoji_internal_resource_id;
 };
 
 struct EmojiLanguageData {
@@ -78,9 +79,16 @@ class EmojiSearch {
   EmojiSearch(const EmojiSearch&) = delete;
   EmojiSearch& operator=(const EmojiSearch&) = delete;
 
+  // If multiple `language_codes` are provided, this aggregates the search
+  // results from multiple languages by prioritising languages earlier in the
+  // `language_codes` span first, then prioritising emoji `weighting`. Because
+  // of this, `weighting` is NOT guaranteed to be in non-increasing order.
   [[nodiscard]] EmojiSearchResult SearchEmoji(
-      std::string_view query,
-      base::span<const std::string> language_codes);
+      std::u16string_view query,
+      base::span<const std::string> language_codes,
+      std::optional<size_t> max_emojis = std::nullopt,
+      std::optional<size_t> max_symbols = std::nullopt,
+      std::optional<size_t> max_emoticons = std::nullopt);
 
   void LoadEmojiLanguages(base::span<const std::string> language_codes);
 

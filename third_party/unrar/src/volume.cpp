@@ -59,6 +59,15 @@ bool MergeArchive(Archive &Arc,ComprDataIO *DataIO,bool ShowFileName,wchar Comma
     FailedOpen=true;
 #endif
 
+#ifdef _UNIX
+  // open() function in Unix can open a directory. But if directory has a name
+  // of next volume, it would result in read error and Retry/Quit prompt.
+  // So we skip directories in advance here. This check isn't needed
+  // in Windows, where opening directories fails here.
+  if (FileExist(NextName) && IsDir(GetFileAttr(NextName)))
+    FailedOpen=true;
+#endif
+
   uint OpenMode = Cmd->OpenShared ? FMF_OPENSHARED : 0;
 
   if (!FailedOpen)
@@ -119,6 +128,7 @@ bool MergeArchive(Archive &Arc,ComprDataIO *DataIO,bool ShowFileName,wchar Comma
   
   if (FailedOpen)
   {
+    ErrHandler.SetErrorCode(RARX_OPEN);
     uiMsg(UIERROR_MISSINGVOL,NextName);
     Arc.Open(Arc.FileName,OpenMode);
     Arc.Seek(PosBeforeClose,SEEK_SET);
@@ -142,7 +152,7 @@ bool MergeArchive(Archive &Arc,ComprDataIO *DataIO,bool ShowFileName,wchar Comma
     // replacing an encrypted header volume to unencrypted and adding
     // unexpected files by third party to encrypted extraction.
     uiMsg(UIERROR_BADARCHIVE,Arc.FileName);
-    ErrHandler.Exit(RARX_FATAL);
+    ErrHandler.Exit(RARX_BADARC);
   }
 
   if (SplitHeader)

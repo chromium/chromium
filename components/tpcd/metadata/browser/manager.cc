@@ -30,7 +30,6 @@
 #include "components/tpcd/metadata/browser/parser.h"
 #include "components/tpcd/metadata/browser/prefs.h"
 #include "components/tpcd/metadata/common/proto/metadata.pb.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace tpcd::metadata {
 

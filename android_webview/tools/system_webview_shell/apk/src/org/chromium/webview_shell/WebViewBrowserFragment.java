@@ -18,6 +18,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Browser;
+import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -46,9 +47,13 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.ActivityResultRegistry;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.OptIn;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
+import androidx.webkit.WebSettingsCompat;
 import androidx.webkit.WebViewClientCompat;
+import androidx.webkit.WebViewCompat;
+import androidx.webkit.WebViewFeature;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
@@ -82,9 +87,6 @@ public class WebViewBrowserFragment extends Fragment {
     private static final String RESOURCE_GEO = "RESOURCE_GEO";
     // Our imaginary WebKit permission to request when loading a file:// URL.
     private static final String RESOURCE_FILE_URL = "RESOURCE_FILE_URL";
-    // Our imaginary WebKit permissions to request when loading a file:// URL on T+.
-    private static final String RESOURCE_IMAGES_URL = "RESOURCE_IMAGES_URL";
-    private static final String RESOURCE_VIDEO_URL = "RESOURCE_VIDEO_URL";
     // WebKit permissions with no corresponding Android permission can always be granted.
     private static final String NO_ANDROID_PERMISSION = "NO_ANDROID_PERMISSION";
 
@@ -101,10 +103,6 @@ public class WebViewBrowserFragment extends Fragment {
         sPermissions = new HashMap<>();
         sPermissions.put(RESOURCE_GEO, Manifest.permission.ACCESS_FINE_LOCATION);
         sPermissions.put(RESOURCE_FILE_URL, Manifest.permission.READ_EXTERNAL_STORAGE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            sPermissions.put(RESOURCE_IMAGES_URL, Manifest.permission.READ_MEDIA_IMAGES);
-            sPermissions.put(RESOURCE_VIDEO_URL, Manifest.permission.READ_MEDIA_VIDEO);
-        }
         sPermissions.put(
                 PermissionRequest.RESOURCE_AUDIO_CAPTURE, Manifest.permission.RECORD_AUDIO);
         sPermissions.put(PermissionRequest.RESOURCE_MIDI_SYSEX, NO_ANDROID_PERMISSION);
@@ -121,7 +119,8 @@ public class WebViewBrowserFragment extends Fragment {
 
     // Each time we make a request, store it here with an int key. onRequestPermissionsResult will
     // look up the request in order to grant the approprate permissions.
-    private SparseArray<PermissionRequest> mPendingRequests = new SparseArray<PermissionRequest>();
+    private final SparseArray<PermissionRequest> mPendingRequests =
+            new SparseArray<PermissionRequest>();
     private int mNextRequestKey;
 
     // Permit any number of slashes, since chromium seems to canonicalize bad values.
@@ -147,8 +146,8 @@ public class WebViewBrowserFragment extends Fragment {
     // Work around our wonky API by wrapping a geo permission prompt inside a regular
     // PermissionRequest.
     private static class GeoPermissionRequest extends PermissionRequest {
-        private String mOrigin;
-        private GeolocationPermissions.Callback mCallback;
+        private final String mOrigin;
+        private final GeolocationPermissions.Callback mCallback;
 
         public GeoPermissionRequest(String origin, GeolocationPermissions.Callback callback) {
             mOrigin = origin;
@@ -181,7 +180,7 @@ public class WebViewBrowserFragment extends Fragment {
     // For simplicity, also treat the read access needed for file:// URLs as a regular
     // PermissionRequest.
     private class FilePermissionRequest extends PermissionRequest {
-        private String mOrigin;
+        private final String mOrigin;
 
         public FilePermissionRequest(String origin) {
             mOrigin = origin;
@@ -213,8 +212,8 @@ public class WebViewBrowserFragment extends Fragment {
     }
 
     /** Background Async Task to download file */
-    class DownloadFileFromURL extends AsyncTask<String> {
-        private String mFileUrl;
+    static class DownloadFileFromURL extends AsyncTask<String> {
+        private final String mFileUrl;
         private String mNameOfFile;
         private static final String DEFAULT_FILE_NAME = "default-filename";
         private static final int BUFFER_SIZE = 8 * 1024; // 8 KB
@@ -362,30 +361,40 @@ public class WebViewBrowserFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        ViewGroup viewGroup = (ViewGroup) (mWebView.getParent());
+        ViewGroup viewGroup = (ViewGroup) mWebView.getParent();
         viewGroup.removeView(mWebView);
         mWebView.destroy();
         mWebView = null;
     }
 
     @Override
+    @OptIn(markerClass = WebViewCompat.ExperimentalSaveState.class)
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
-        // Deliberately don't catch TransactionTooLargeException here.
-        mWebView.saveState(savedInstanceState);
 
-        // TODO(timav): Remove this hack after http://crbug.com/626202 is fixed.
-        // Drop the saved state of it is too long since Android N and above
-        // can't handle large states without a crash.
-        byte[] webViewState = savedInstanceState.getByteArray(SAVE_RESTORE_STATE_KEY);
-        if (webViewState != null && webViewState.length > MAX_STATE_LENGTH) {
-            savedInstanceState.remove(SAVE_RESTORE_STATE_KEY);
-            String message =
-                    String.format(
-                            Locale.US,
-                            "Can't save state: %dkb is too long",
-                            webViewState.length / 1024);
-            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.SAVE_STATE)) {
+            WebViewCompat.saveState(
+                    mWebView,
+                    savedInstanceState,
+                    MAX_STATE_LENGTH,
+                    /* includeForwardState= */ true);
+        } else {
+            // Deliberately don't catch TransactionTooLargeException here.
+            mWebView.saveState(savedInstanceState);
+
+            // TODO(timav): Remove this hack after http://crbug.com/626202 is fixed.
+            // Drop the saved state of it is too long since Android N and above
+            // can't handle large states without a crash.
+            byte[] webViewState = savedInstanceState.getByteArray(SAVE_RESTORE_STATE_KEY);
+            if (webViewState != null && webViewState.length > MAX_STATE_LENGTH) {
+                savedInstanceState.remove(SAVE_RESTORE_STATE_KEY);
+                String message =
+                        String.format(
+                                Locale.US,
+                                "Can't save state: %dkb is too long",
+                                webViewState.length / 1024);
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -649,6 +658,14 @@ public class WebViewBrowserFragment extends Fragment {
         hideKeyboard(mUrlBar);
     }
 
+    @Nullable
+    public String getUrlFromUrlBar() {
+        String url = mUrlBar.getText().toString();
+
+        if (TextUtils.isEmpty(url)) return null;
+        return url;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -680,6 +697,10 @@ public class WebViewBrowserFragment extends Fragment {
         settings.setUseWideViewPort(true);
         settings.setLoadWithOverviewMode(true);
         settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.TEXT_AUTOSIZING);
+
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.PAYMENT_REQUEST)) {
+            WebSettingsCompat.setPaymentRequestEnabled(settings, true);
+        }
     }
 
     private void loadUrl(String url) {

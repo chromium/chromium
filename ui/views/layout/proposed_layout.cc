@@ -4,11 +4,11 @@
 
 #include "ui/views/layout/proposed_layout.h"
 
+#include <algorithm>
 #include <map>
 #include <sstream>
 #include <string>
 
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/views/view.h"
@@ -48,7 +48,7 @@ ChildLayout* ProposedLayout::GetLayoutFor(const View* child_view) {
 }
 
 const ChildLayout* ProposedLayout::GetLayoutFor(const View* child_view) const {
-  const auto found = base::ranges::find_if(
+  const auto found = std::ranges::find_if(
       child_layouts, [child_view](const auto& child_layout) {
         return child_view == child_layout.child_view;
       });
@@ -79,10 +79,11 @@ std::string ProposedLayout::ToString() const {
   oss << "{" << host_size.ToString() << " {";
   bool first = true;
   for (const auto& child_layout : child_layouts) {
-    if (first)
+    if (first) {
       first = false;
-    else
+    } else {
       oss << ", ";
+    }
     oss << child_layout.ToString();
   }
   oss << "}}";
@@ -92,8 +93,9 @@ std::string ProposedLayout::ToString() const {
 ProposedLayout ProposedLayoutBetween(double value,
                                      const ProposedLayout& start,
                                      const ProposedLayout& target) {
-  if (value >= 1.0)
+  if (value >= 1.0) {
     return target;
+  }
 
   ProposedLayout layout;
 
@@ -104,8 +106,9 @@ ProposedLayout ProposedLayoutBetween(double value,
   // The views may not be listed in the same order and some views might be
   // omitted from either the |start| or |target| layout.
   std::map<const views::View*, size_t> start_view_to_index;
-  for (size_t i = 0; i < start.child_layouts.size(); ++i)
+  for (size_t i = 0; i < start.child_layouts.size(); ++i) {
     start_view_to_index.emplace(start.child_layouts[i].child_view, i);
+  }
   for (const ChildLayout& target_child : target.child_layouts) {
     // Try to match the view from the target with the view from the start.
     const auto start_match = start_view_to_index.find(target_child.child_view);

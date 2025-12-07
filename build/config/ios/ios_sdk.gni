@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/ios/config.gni")
+import("//build/config/apple/mobile_config.gni")
 import("//build/config/ios/ios_sdk_overrides.gni")
 import("//build/toolchain/rbe.gni")
 import("//build/toolchain/siso.gni")
@@ -24,48 +24,19 @@ declare_args() {
   ios_toolchains_path = ""
   xcode_version = ""
   xcode_version_int = 0
+  xcode_version_verbatim = ""
   xcode_build = ""
   machine_os_build = ""
 
   # Set DEVELOPER_DIR while running sdk_info.py.
   ios_sdk_developer_dir = ""
 
-  # Control whether codesiging is enabled (ignored for simulator builds).
-  ios_enable_code_signing = true
-
-  # Explicitly select the identity to use for codesigning. If defined, must
-  # be set to a non-empty string that will be passed to codesigning. Can be
-  # left unspecified if ios_code_signing_identity_description is used instead.
-  ios_code_signing_identity = ""
-
-  # Pattern used to select the identity to use for codesigning. If defined,
-  # must be a substring of the description of exactly one of the identities by
-  # `security find-identity -v -p codesigning`.
-  ios_code_signing_identity_description = "Apple Development"
-
-  # Prefix for CFBundleIdentifier property of iOS bundles (correspond to the
-  # "Organization Identifier" in Xcode). Code signing will fail if no mobile
-  # provisioning for the selected code signing identify support that prefix.
-  ios_app_bundle_id_prefix = "org.chromium.ost"
-
-  # Paths to the mobileprovision files for the chosen code signing
-  # identity description and app bundle id prefix.
-  ios_mobileprovision_files = []
-
   # Set to true if building an app extension.
   ios_is_app_extension = false
-}
 
-# If codesigning is enabled, use must configure either a codesigning identity
-# or a filter to automatically select the codesigning identity.
-if (target_environment == "device" && ios_enable_code_signing) {
-  assert(ios_code_signing_identity == "" ||
-             ios_code_signing_identity_description == "",
-         "You should either specify the precise identity to use with " +
-             "ios_code_signing_identity or let the code select an identity " +
-             "automatically (via find_signing_identity.py which use the " +
-             "variable ios_code_signing_identity_description to set the " +
-             "pattern to match the identity to use).")
+  # Set to `target_platform` to generate Xcode project with the
+  # corresponding platform SDK.
+  target_xcode_platform = target_platform
 }
 
 # Building XCTests requires copying XCTRunner.app which is part of the iOS
@@ -97,17 +68,31 @@ ios_use_xcode_symlinks =
 
 if (ios_sdk_path == "") {
   # Compute default target.
-  if (target_environment == "simulator") {
-    ios_sdk_name = "iphonesimulator"
-    ios_sdk_platform = "iPhoneSimulator"
-  } else if (target_environment == "device") {
-    ios_sdk_name = "iphoneos"
-    ios_sdk_platform = "iPhoneOS"
-  } else if (target_environment == "catalyst") {
-    ios_sdk_name = "macosx"
-    ios_sdk_platform = "MacOSX"
+  if (target_platform == "iphoneos") {
+    if (target_environment == "simulator") {
+      ios_sdk_name = "iphonesimulator"
+      ios_sdk_platform = "iPhoneSimulator"
+    } else if (target_environment == "device") {
+      ios_sdk_name = "iphoneos"
+      ios_sdk_platform = "iPhoneOS"
+    } else if (target_environment == "catalyst") {
+      ios_sdk_name = "macosx"
+      ios_sdk_platform = "MacOSX"
+    } else {
+      assert(false, "unsupported target_environment=$target_environment")
+    }
+  } else if (target_platform == "tvos") {
+    if (target_environment == "simulator") {
+      ios_sdk_name = "appletvsimulator"
+      ios_sdk_platform = "AppleTVSimulator"
+    } else if (target_environment == "device") {
+      ios_sdk_name = "appletvos"
+      ios_sdk_platform = "AppleTVOS"
+    } else {
+      assert(false, "unsupported target_environment=$target_environment")
+    }
   } else {
-    assert(false, "unsupported environment: $target_environment")
+    assert(false, "unsupported target_platform=$target_platform")
   }
 
   ios_sdk_info_args = [
@@ -140,6 +125,7 @@ if (ios_sdk_path == "") {
   ios_toolchains_path = _ios_sdk_result.toolchains_path
   xcode_version = _ios_sdk_result.xcode_version
   xcode_version_int = _ios_sdk_result.xcode_version_int
+  xcode_version_verbatim = _ios_sdk_result.xcode_version_verbatim
   xcode_build = _ios_sdk_result.xcode_build
   machine_os_build = _ios_sdk_result.machine_os_build
   if (target_environment == "simulator") {
@@ -150,36 +136,6 @@ if (ios_sdk_path == "") {
     ios_platform_build = ios_sdk_build
   }
 }
-
-if (target_environment == "device" && ios_enable_code_signing) {
-  # Automatically select a codesigning identity if no identity is configured.
-  # This only applies to device build as simulator builds are not signed.
-  if (ios_code_signing_identity == "") {
-    find_signing_identity_args = []
-    if (ios_code_signing_identity_description != "") {
-      find_signing_identity_args = [
-        "--matching-pattern",
-        ios_code_signing_identity_description,
-      ]
-    }
-    ios_code_signing_identity = exec_script("find_signing_identity.py",
-                                            find_signing_identity_args,
-                                            "trim string")
-  }
-}
-
-# As entitlements are tied to a specific bundle identifier, all the
-# test application on iOS share the same identifier. This simplify
-# adding new test application (since there is no need to investigate
-# which entitlements they need, nor to wait for the mobile provision
-# with those entitlements to be generated by Apple and then deployed
-# to the infrastructure, ...). The drawback is that since only one
-# test application can be installed at a time on a device/simulator
-# (as the bundle identifier uniquely identify an application for iOS).
-#
-# This variable corresponds to the test bundle identifier.
-shared_bundle_id_for_test_apps =
-    "$ios_app_bundle_id_prefix.chrome.unittests.dev"
 
 _sdk_root = rebase_path(ios_sdk_path, root_build_dir)
 ios_sdk_logs = [ "ios_sdk_path=${_sdk_root}" ]

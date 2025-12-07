@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/cdm/library_cdm/clear_key_cdm/ffmpeg_cdm_audio_decoder.h"
 
 #include <stddef.h>
@@ -14,6 +9,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -51,9 +47,7 @@ AVCodecID CdmAudioCodecToCodecID(cdm::AudioCodec audio_codec) {
       return AV_CODEC_ID_AAC;
     case cdm::kUnknownAudioCodec:
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unsupported cdm::AudioCodec: " << audio_codec;
-      return AV_CODEC_ID_NONE;
+      NOTREACHED() << "Unsupported cdm::AudioCodec: " << audio_codec;
   }
 }
 
@@ -87,11 +81,12 @@ void CdmAudioDecoderConfigToAVCodecContext(
     codec_context->extradata_size = config.extra_data_size;
     codec_context->extradata = reinterpret_cast<uint8_t*>(
         av_malloc(config.extra_data_size + AV_INPUT_BUFFER_PADDING_SIZE));
-    memcpy(codec_context->extradata, config.extra_data, config.extra_data_size);
-    memset(codec_context->extradata + config.extra_data_size, '\0',
-           AV_INPUT_BUFFER_PADDING_SIZE);
+    UNSAFE_TODO(memcpy(codec_context->extradata, config.extra_data,
+                       config.extra_data_size));
+    UNSAFE_TODO(memset(codec_context->extradata + config.extra_data_size, '\0',
+                       AV_INPUT_BUFFER_PADDING_SIZE));
   } else {
-    codec_context->extradata = NULL;
+    codec_context->extradata = nullptr;
     codec_context->extradata_size = 0;
   }
 }
@@ -125,22 +120,21 @@ void CopySamples(cdm::AudioFormat cdm_format,
     case cdm::kAudioFormatS16:
     case cdm::kAudioFormatS32:
     case cdm::kAudioFormatF32:
-      memcpy(output_buffer, av_frame.data[0], decoded_audio_size);
+      UNSAFE_TODO(memcpy(output_buffer, av_frame.data[0], decoded_audio_size));
       break;
     case cdm::kAudioFormatPlanarS16:
     case cdm::kAudioFormatPlanarF32: {
       const int decoded_size_per_channel =
           decoded_audio_size / av_frame.ch_layout.nb_channels;
       for (int i = 0; i < av_frame.ch_layout.nb_channels; ++i) {
-        memcpy(output_buffer, av_frame.extended_data[i],
-               decoded_size_per_channel);
-        output_buffer += decoded_size_per_channel;
+        UNSAFE_TODO(memcpy(output_buffer, av_frame.extended_data[i],
+                           decoded_size_per_channel));
+        UNSAFE_TODO(output_buffer += decoded_size_per_channel);
       }
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION() << "Unsupported CDM Audio Format!";
-      memset(output_buffer, 0, decoded_audio_size);
+      NOTREACHED() << "Unsupported CDM Audio Format!";
   }
 }
 
@@ -167,7 +161,7 @@ bool FFmpegCdmAudioDecoder::Initialize(
   }
 
   // Initialize AVCodecContext structure.
-  codec_context_.reset(avcodec_alloc_context3(NULL));
+  codec_context_.reset(avcodec_alloc_context3(nullptr));
   CdmAudioDecoderConfigToAVCodecContext(config, codec_context_.get());
 
   // MP3 decodes to S16P which we don't support, tell it to use S16 instead.
@@ -175,7 +169,7 @@ bool FFmpegCdmAudioDecoder::Initialize(
     codec_context_->request_sample_fmt = AV_SAMPLE_FMT_S16;
 
   const AVCodec* codec = avcodec_find_decoder(codec_context_->codec_id);
-  if (!codec || avcodec_open2(codec_context_.get(), codec, NULL) < 0) {
+  if (!codec || avcodec_open2(codec_context_.get(), codec, nullptr) < 0) {
     DLOG(ERROR) << "Could not initialize audio decoder: "
                 << codec_context_->codec_id;
     return false;
@@ -254,8 +248,7 @@ cdm::Status FFmpegCdmAudioDecoder::DecodeBuffer(
     case FFmpegDecodingLoop::DecodeStatus::kSendPacketFailed:
       return cdm::kDecodeError;
     case FFmpegDecodingLoop::DecodeStatus::kFrameProcessingFailed:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
     case FFmpegDecodingLoop::DecodeStatus::kDecodeFrameFailed:
       DLOG(WARNING) << " failed to decode an audio buffer: "
                     << timestamp.InMicroseconds();
@@ -265,7 +258,7 @@ cdm::Status FFmpegCdmAudioDecoder::DecodeBuffer(
   }
 
   if (!output_timestamp_helper_->base_timestamp() && !is_end_of_stream) {
-    DCHECK(timestamp != kNoTimestamp);
+    CHECK(timestamp != kNoTimestamp);
     output_timestamp_helper_->SetBaseTimestamp(timestamp);
   }
 
@@ -289,9 +282,9 @@ cdm::Status FFmpegCdmAudioDecoder::DecodeBuffer(
   uint8_t* output_buffer = decoded_frames->FrameBuffer()->Data();
   SerializeInt64(output_timestamp_helper_->GetTimestamp().InMicroseconds(),
                  output_buffer);
-  output_buffer += sizeof(int64_t);
+  UNSAFE_TODO(output_buffer += sizeof(int64_t));
   SerializeInt64(total_size, output_buffer);
-  output_buffer += sizeof(int64_t);
+  UNSAFE_TODO(output_buffer += sizeof(int64_t));
   output_timestamp_helper_->AddFrames(total_size / bytes_per_frame_);
 
   for (auto& frame : audio_frames) {
@@ -318,7 +311,7 @@ cdm::Status FFmpegCdmAudioDecoder::DecodeBuffer(
         << "Decoder didn't output full frames";
 
     CopySamples(cdm_format, decoded_audio_size, *frame, output_buffer);
-    output_buffer += decoded_audio_size;
+    UNSAFE_TODO(output_buffer += decoded_audio_size);
   }
 
   return cdm::kSuccess;
@@ -348,7 +341,7 @@ void FFmpegCdmAudioDecoder::ReleaseFFmpegResources() {
 }
 
 void FFmpegCdmAudioDecoder::SerializeInt64(int64_t value, uint8_t* dest) {
-  memcpy(dest, &value, sizeof(value));
+  UNSAFE_TODO(memcpy(dest, &value, sizeof(value)));
 }
 
 }  // namespace media

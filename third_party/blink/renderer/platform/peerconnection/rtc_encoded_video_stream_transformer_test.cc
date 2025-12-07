@@ -81,7 +81,7 @@ class RTCEncodedVideoStreamTransformerTest
             blink::scheduler::GetSingleThreadTaskRunnerForTesting()),
         webrtc_task_runner_(base::ThreadPool::CreateSingleThreadTaskRunner({})),
         webrtc_callback_(
-            new rtc::RefCountedObject<MockWebRtcTransformedFrameCallback>()),
+            new webrtc::RefCountedObject<MockWebRtcTransformedFrameCallback>()),
         metronome_(GetParam() ? new NiceMock<MockMetronome>() : nullptr),
         encoded_video_stream_transformer_(main_task_runner_,
                                           absl::WrapUnique(metronome_.get())) {}
@@ -119,7 +119,7 @@ class RTCEncodedVideoStreamTransformerTest
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> webrtc_task_runner_;
-  rtc::scoped_refptr<MockWebRtcTransformedFrameCallback> webrtc_callback_;
+  webrtc::scoped_refptr<MockWebRtcTransformedFrameCallback> webrtc_callback_;
   MockTransformerCallbackHolder mock_transformer_callback_holder_;
   raw_ptr<MockMetronome> metronome_;
   RTCEncodedVideoStreamTransformer encoded_video_stream_transformer_;
@@ -133,9 +133,9 @@ TEST_P(RTCEncodedVideoStreamTransformerTest,
        TransformerForwardsFrameToTransformerCallback) {
   EXPECT_FALSE(encoded_video_stream_transformer_.HasTransformerCallback());
   encoded_video_stream_transformer_.SetTransformerCallback(
-      WTF::CrossThreadBindRepeating(
+      CrossThreadBindRepeating(
           &MockTransformerCallbackHolder::OnEncodedFrame,
-          WTF::CrossThreadUnretained(&mock_transformer_callback_holder_)));
+          CrossThreadUnretained(&mock_transformer_callback_holder_)));
   EXPECT_TRUE(encoded_video_stream_transformer_.HasTransformerCallback());
 
   EXPECT_CALL(mock_transformer_callback_holder_, OnEncodedFrame);
@@ -178,8 +178,8 @@ TEST_P(RTCEncodedVideoStreamTransformerTest,
   EXPECT_CALL(*webrtc_callback_, StartShortCircuiting);
   encoded_video_stream_transformer_.StartShortCircuiting();
 
-  rtc::scoped_refptr<MockWebRtcTransformedFrameCallback> webrtc_callback_2(
-      new rtc::RefCountedObject<MockWebRtcTransformedFrameCallback>());
+  webrtc::scoped_refptr<MockWebRtcTransformedFrameCallback> webrtc_callback_2(
+      new webrtc::RefCountedObject<MockWebRtcTransformedFrameCallback>());
   EXPECT_CALL(*webrtc_callback_2, StartShortCircuiting);
   encoded_video_stream_transformer_.RegisterTransformedFrameSinkCallback(
       webrtc_callback_2, kSSRC + 1);
@@ -190,9 +190,9 @@ TEST_P(RTCEncodedVideoStreamTransformerTest, WaitsForMetronomeTick) {
     return;
   }
   encoded_video_stream_transformer_.SetTransformerCallback(
-      WTF::CrossThreadBindRepeating(
+      CrossThreadBindRepeating(
           &MockTransformerCallbackHolder::OnEncodedFrame,
-          WTF::CrossThreadUnretained(&mock_transformer_callback_holder_)));
+          CrossThreadUnretained(&mock_transformer_callback_holder_)));
   ASSERT_TRUE(encoded_video_stream_transformer_.HasTransformerCallback());
 
   // There should be no transform call initially.
@@ -283,9 +283,9 @@ TEST_P(RTCEncodedVideoStreamTransformerTest,
   EXPECT_CALL(mock_transformer_callback_holder_, OnEncodedFrame)
       .Times(transform_count);
   encoded_video_stream_transformer_.SetTransformerCallback(
-      WTF::CrossThreadBindRepeating(
+      CrossThreadBindRepeating(
           &MockTransformerCallbackHolder::OnEncodedFrame,
-          WTF::CrossThreadUnretained(&mock_transformer_callback_holder_)));
+          CrossThreadUnretained(&mock_transformer_callback_holder_)));
 }
 
 }  // namespace blink

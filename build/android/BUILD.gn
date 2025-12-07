@@ -23,12 +23,10 @@ if (enable_java_templates) {
     create_cache = true
   }
 
-  generate_build_config_srcjar("build_config_gen") {
-    use_final_fields = false
+  generate_build_config_srcjar("placeholder_build_config_srcjar") {
   }
 
-  generate_build_config_srcjar("build_config_for_testing_gen") {
-    use_final_fields = false
+  generate_build_config_srcjar("build_config_for_robolectric_srcjar") {
     testonly = true
   }
 
@@ -38,20 +36,40 @@ if (enable_java_templates) {
 
   java_library("build_java") {
     supports_android = true
+
+    # Caused odd errors: https://crbug.com/404877460
+    jacoco_never_instrument = true
+
+    # Required to prevent circular dependency from //tools/android/errorprone_plugin.
+    enable_errorprone = false
+
     srcjar_deps = [
-      ":build_config_gen",
       ":native_libraries_gen",
+      ":placeholder_build_config_srcjar",
     ]
     sources = [
+      "java/src/org/chromium/build/NullUtil.java",
       "java/src/org/chromium/build/annotations/AlwaysInline.java",
-      "java/src/org/chromium/build/annotations/AssumeNonNull.java",
       "java/src/org/chromium/build/annotations/CheckDiscard.java",
+      "java/src/org/chromium/build/annotations/Contract.java",
       "java/src/org/chromium/build/annotations/DoNotClassMerge.java",
       "java/src/org/chromium/build/annotations/DoNotInline.java",
       "java/src/org/chromium/build/annotations/DoNotStripLogs.java",
+      "java/src/org/chromium/build/annotations/EnsuresNonNull.java",
+      "java/src/org/chromium/build/annotations/EnsuresNonNullIf.java",
       "java/src/org/chromium/build/annotations/IdentifierNameString.java",
+      "java/src/org/chromium/build/annotations/Initializer.java",
       "java/src/org/chromium/build/annotations/MockedInTests.java",
+      "java/src/org/chromium/build/annotations/MonotonicNonNull.java",
+      "java/src/org/chromium/build/annotations/NonNull.java",
+      "java/src/org/chromium/build/annotations/NullMarked.java",
+      "java/src/org/chromium/build/annotations/NullUnmarked.java",
+      "java/src/org/chromium/build/annotations/Nullable.java",
+      "java/src/org/chromium/build/annotations/OptimizeAsNonNull.java",
+      "java/src/org/chromium/build/annotations/RequiresNonNull.java",
+      "java/src/org/chromium/build/annotations/ServiceImpl.java",
       "java/src/org/chromium/build/annotations/UsedByReflection.java",
+      "java/src/org/chromium/build/annotations/UsedReflectively.java",
     ]
 
     jar_excluded_patterns = [ "*/build/BuildConfig.class" ]
@@ -93,7 +111,7 @@ if (enable_java_templates) {
   }
 }
 
-if (defined(sanitizer_arch)) {
+if (enable_wrap_sh) {
   action("generate_wrap_sh") {
     script = "generate_wrap_sh.py"
     outputs = [ "$target_gen_dir/$target_name/wrap.sh" ]
@@ -102,6 +120,17 @@ if (defined(sanitizer_arch)) {
       "--output",
       rebase_path(outputs[0], root_build_dir),
     ]
+    if (is_asan) {
+      args += [ "--asan" ]
+    } else if (is_hwasan) {
+      args += [ "--hwasan" ]
+    }
+    if (android_custom_env != "") {
+      args += [
+        "--env",
+        android_custom_env,
+      ]
+    }
   }
 }
 
@@ -136,13 +165,11 @@ python_library("devil_chromium_py") {
 group("apk_installer_data") {
   # Other //build users let devil library fetch these from Google Storage.
   if (build_with_chromium) {
-    if (is_component_build) {
-      data_deps = [
-        "//build/android/pylib/device/commands",
-        "//tools/android/md5sum",
-      ]
+    if (!is_component_build) {
+      data_deps = [ "//tools/android/devil_util" ]
     }
-    data = [ "//third_party/android_build_tools/bundletool/bundletool.jar" ]
+    data =
+        [ "//third_party/android_build_tools/bundletool/cipd/bundletool.jar" ]
   }
 }
 

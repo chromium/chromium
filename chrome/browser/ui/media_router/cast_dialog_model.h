@@ -33,6 +33,11 @@ class CastDialogModel {
   }
   const std::vector<UIMediaSink>& media_sinks() const { return media_sinks_; }
 
+  void set_is_permission_rejected(bool is_permission_rejected) {
+    is_permission_rejected_ = is_permission_rejected;
+  }
+  bool is_permission_rejected() const { return is_permission_rejected_; }
+
  private:
   // The header to use at the top of the dialog.
   // This reflects the current activity associated with the tab.
@@ -40,6 +45,9 @@ class CastDialogModel {
 
   // Sink data in the order they should be shown in the dialog.
   std::vector<UIMediaSink> media_sinks_;
+
+  // Whether the dialog should show a local discovery permission rejected error.
+  bool is_permission_rejected_ = false;
 };
 
 }  // namespace media_router

@@ -8,18 +8,24 @@ import android.content.Context;
 import android.view.View;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.share.qrcode.QrCodeDialogTab;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Creates and represents the QrCode share panel UI. */
+@NullMarked
 public class QrCodeShareCoordinator implements QrCodeDialogTab {
     private final QrCodeShareView mShareView;
     private final QrCodeShareMediator mMediator;
 
     public QrCodeShareCoordinator(
-            Context context, Runnable closeDialog, String url, WindowAndroid windowAndroid) {
+            Context context,
+            Runnable closeDialog,
+            String url,
+            @Nullable WindowAndroid windowAndroid) {
         PropertyModel shareViewModel = new PropertyModel(QrCodeShareViewProperties.ALL_KEYS);
         mMediator =
                 new QrCodeShareMediator(context, shareViewModel, closeDialog, url, windowAndroid);

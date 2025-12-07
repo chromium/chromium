@@ -22,7 +22,7 @@ class MandatoryReauthOptInViewAndroid final : public AutofillBubbleBase {
       MandatoryReauthBubbleController* controller);
 
   MandatoryReauthOptInViewAndroid();
-  ~MandatoryReauthOptInViewAndroid();
+  ~MandatoryReauthOptInViewAndroid() override;
   MandatoryReauthOptInViewAndroid(const MandatoryReauthOptInViewAndroid&) =
       delete;
   MandatoryReauthOptInViewAndroid& operator=(
@@ -30,6 +30,7 @@ class MandatoryReauthOptInViewAndroid final : public AutofillBubbleBase {
 
   // AutofillBubbleBase:
   void Hide() override;
+  bool IsMouseHovered() const override;
 
  private:
   bool Show(content::WebContents* web_contents,

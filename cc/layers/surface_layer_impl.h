@@ -60,6 +60,13 @@ class CC_EXPORT SurfaceLayerImpl : public LayerImpl {
   void SetIsReflection(bool is_reflection);
   bool is_reflection() const { return is_reflection_; }
 
+  bool will_draw_needs_reset() const { return will_draw_needs_reset_; }
+
+  void SetOverrideChildPaintFlags(bool override_child_paint_flags);
+  bool override_child_paint_flags() const {
+    return override_child_paint_flags_;
+  }
+
   void ResetStateForUpdateSubmissionStateCallback();
 
   // LayerImpl overrides.
@@ -69,7 +76,8 @@ class CC_EXPORT SurfaceLayerImpl : public LayerImpl {
   void PushPropertiesTo(LayerImpl* layer) override;
   bool WillDraw(DrawMode draw_mode,
                 viz::ClientResourceProvider* resource_provider) override;
-  void AppendQuads(viz::CompositorRenderPass* render_pass,
+  void AppendQuads(const AppendQuadsContext& context,
+                   viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override;
   bool is_surface_layer() const override;
   gfx::Rect GetEnclosingVisibleRectInTargetSpace() const override;
@@ -95,6 +103,7 @@ class CC_EXPORT SurfaceLayerImpl : public LayerImpl {
   // SurfaceLayer, so that it can be propagated to the active SurfaceLayerImpl
   // and used to update `will_draw_` on that layer accordingly.
   bool will_draw_needs_reset_ = false;
+  bool override_child_paint_flags_ = false;
 };
 
 }  // namespace cc

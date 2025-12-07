@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Point;
@@ -12,18 +14,18 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.IntentUtils;
-import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeInactivityTracker;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils;
 import org.chromium.chrome.browser.ntp.NewTabPage;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -32,8 +34,11 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
+import org.chromium.components.cached_flags.IntCachedFeatureParam;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -46,6 +51,7 @@ import java.util.Locale;
  * This is a utility class for managing features related to returning to Chrome after haven't used
  * Chrome for a while.
  */
+@NullMarked
 public final class ReturnToChromeUtil {
     /**
      * The reasons of failing to show the home surface UI on a NTP.
@@ -78,16 +84,6 @@ public final class ReturnToChromeUtil {
     public static final String FAIL_TO_SHOW_HOME_SURFACE_UI_UMA =
             "NewTabPage.FailToShowHomeSurfaceUI";
 
-    // Start return time experiment:
-    // This parameter isn't just used on tablets anymore.
-    public static final String HOME_SURFACE_RETURN_TIME_SECONDS_PARAM =
-            "start_surface_return_time_on_tablet_seconds";
-    public static final IntCachedFieldTrialParameter HOME_SURFACE_RETURN_TIME_SECONDS =
-            ChromeFeatureList.newIntCachedFieldTrialParameter(
-                    ChromeFeatureList.START_SURFACE_RETURN_TIME,
-                    HOME_SURFACE_RETURN_TIME_SECONDS_PARAM,
-                    28800); // 8 hours
-
     private ReturnToChromeUtil() {}
 
     /**
@@ -101,7 +97,8 @@ public final class ReturnToChromeUtil {
      * @return true if past threshold, false if not past threshold or experiment cannot be loaded.
      */
     public static boolean shouldShowTabSwitcher(final long lastTimeMillis) {
-        long tabSwitcherAfterMillis = getReturnTime(HOME_SURFACE_RETURN_TIME_SECONDS);
+        long tabSwitcherAfterMillis =
+                getReturnTime(ChromeFeatureList.sStartSurfaceReturnTimeTabletSecs);
 
         if (lastTimeMillis == -1) {
             // No last background timestamp set, use control behavior unless "immediate" was set.
@@ -121,7 +118,7 @@ public final class ReturnToChromeUtil {
      *
      * @param returnTime The return time parameter based on form factor, either phones or tablets.
      */
-    private static long getReturnTime(IntCachedFieldTrialParameter returnTime) {
+    private static long getReturnTime(IntCachedFeatureParam returnTime) {
         return returnTime.getValue() * DateUtils.SECOND_IN_MILLIS;
     }
 
@@ -162,18 +159,25 @@ public final class ReturnToChromeUtil {
      * @param lastActiveTab The object of the last active Tab. It is non-null after TabModel is
      *     initialized, e.g., in warm startup.
      */
-    public static Tab createNewTabAndShowHomeSurfaceUi(
-            @NonNull TabCreator tabCreator,
-            @NonNull HomeSurfaceTracker homeSurfaceTracker,
+    public static @Nullable Tab createNewTabAndShowHomeSurfaceUi(
+            TabCreator tabCreator,
+            HomeSurfaceTracker homeSurfaceTracker,
             @Nullable TabModelSelector tabModelSelector,
             @Nullable String lastActiveTabUrl,
             @Nullable Tab lastActiveTab) {
         assert lastActiveTab != null || lastActiveTabUrl != null;
 
+        Profile profile =
+                tabModelSelector == null ? null : tabModelSelector.getCurrentModel().getProfile();
+        UrlConstantResolver urlConstantResolver = UrlConstantResolverFactory.getForProfile(profile);
+
         // Creates a new Tab if doesn't find an existing to reuse.
         Tab ntpTab =
                 tabCreator.createNewTab(
-                        new LoadUrlParams(UrlConstants.NTP_URL), TabLaunchType.FROM_STARTUP, null);
+                        new LoadUrlParams(urlConstantResolver.getNtpUrl()),
+                        TabLaunchType.FROM_STARTUP,
+                        null);
+        assumeNonNull(ntpTab);
         boolean isNtpUrl = UrlUtilities.isNtpUrl(ntpTab.getUrl());
         assert isNtpUrl : "The URL of the newly created NTP doesn't match NTP URL!";
         if (!isNtpUrl) {
@@ -188,6 +192,7 @@ public final class ReturnToChromeUtil {
             // find the Tab instance with the given last active Tab's URL. The last active Tab is
             // always the first one to be restored.
             assert lastActiveTabUrl != null;
+            assumeNonNull(tabModelSelector);
             TabModelObserver observer =
                     new TabModelObserver() {
                         @Override
@@ -263,6 +268,7 @@ public final class ReturnToChromeUtil {
             if (indexOfFirstNtp != TabModel.INVALID_TAB_INDEX) {
                 Tab ntpTab = currentTabModel.getTabAt(indexOfFirstNtp);
                 assert indexOfFirstNtp != index;
+                assumeNonNull(ntpTab);
                 boolean isNtpUrl = UrlUtilities.isNtpUrl(ntpTab.getUrl());
                 assert isNtpUrl
                         : "The URL of the first NTP found onResume doesn't match a NTP URL!";

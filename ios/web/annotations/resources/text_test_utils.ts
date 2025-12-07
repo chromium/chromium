@@ -6,12 +6,12 @@
  * @fileoverview Javascript test harness.
  */
 
-import {TaskTimer} from '//ios/web/annotations/resources/text_tasks.js';
+import type {TaskTimer} from '//ios/web/annotations/resources/text_tasks.js';
 
 // TODO(crbug.com/40936184): move to general ts utilities.
 
 // Fake time TaskTimer.
-class FakeTaskTimer implements TaskTimer {
+export class FakeTaskTimer implements TaskTimer {
   // Fake clock.
   nowMs = 0;
 
@@ -98,7 +98,7 @@ interface TestResult {
 // }
 //
 // new TestFoo().run();
-class TestSuite {
+export class TestSuite {
   private results: TestResult[] = [];
 
   // Called once when starting suite in `run`.
@@ -119,7 +119,7 @@ class TestSuite {
         this.results.push({
           name: phase,
           result: 'FAILED',
-          error: '' + error + '\n' + (error as Error).stack
+          error: '' + error + '\n' + (error as Error).stack,
         });
       }
     };
@@ -159,40 +159,30 @@ class TestSuite {
 }
 
 // Throws exception if `a` !== `b`.
-function expectEq(a: any, b: any, info = ''): void {
+export function expectEq(a: any, b: any, info = ''): void {
   if (a !== b) {
     throw new Error(info + `"${a}" !== "${b}"`);
   }
 }
 
 // Throws exception if `a` === `b`.
-function expectNeq(a: any, b: any, info = ''): void {
+export function expectNeq(a: any, b: any, info = ''): void {
   if (a === b) {
     throw new Error(info + `"${a}" === "${b}"`);
   }
 }
 
 // Throws exception with `info`.
-function fail(info = ''): void {
+export function fail(info = ''): void {
   throw new Error(info);
 }
 
 // Loads given `html` into page body.
-function load(html: string): void {
+export function load(html: string): void {
   document.body.innerHTML = html;
 }
 
 // Loads given `html` into page head.
-function loadHead(html: string): void {
+export function loadHead(html: string): void {
   document.head.innerHTML = html;
-}
-
-export {
-  FakeTaskTimer,
-  TestSuite,
-  expectEq,
-  expectNeq,
-  fail,
-  load,
-  loadHead,
 }

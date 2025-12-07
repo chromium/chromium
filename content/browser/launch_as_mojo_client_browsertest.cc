@@ -13,7 +13,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/variations/field_trial_config/field_trial_util.h"
 #include "components/variations/variations_switches.h"
 #include "content/public/common/content_switches.h"
@@ -30,7 +29,7 @@
 #include "ui/ozone/public/ozone_switches.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(MEMORY_SANITIZER)
+#if BUILDFLAG(IS_CHROMEOS) || defined(MEMORY_SANITIZER)
 #include "ui/gl/gl_switches.h"
 #endif
 
@@ -41,7 +40,6 @@ namespace {
 const char kShellExecutableName[] = "content_shell.exe";
 #else
 const char kShellExecutableName[] = "content_shell";
-const char kMojoCoreLibraryName[] = "libmojo_core.so";
 #endif
 
 base::FilePath GetCurrentDirectory() {
@@ -77,11 +75,12 @@ class LaunchAsMojoClientBrowserTest : public ContentBrowserTest {
     command_line.CopySwitchesFrom(cmdline, kSwitchesToCopy);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     command_line.AppendSwitchASCII(switches::kUseGL,
                                    gl::kGLImplementationANGLEName);
     command_line.AppendSwitchASCII(switches::kUseANGLE,
                                    gl::kANGLEImplementationSwiftShaderName);
+    command_line.AppendSwitch(switches::kEnableUnsafeSwiftShader);
 #endif
 
 #if defined(MEMORY_SANITIZER)
@@ -136,12 +135,6 @@ class LaunchAsMojoClientBrowserTest : public ContentBrowserTest {
     return controller;
   }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  base::FilePath GetMojoCoreLibraryPath() {
-    return GetFilePathNextToCurrentExecutable(kMojoCoreLibraryName);
-  }
-#endif
-
  private:
   base::FilePath GetFilePathNextToCurrentExecutable(
       const std::string& filename) {
@@ -164,10 +157,6 @@ class LaunchAsMojoClientBrowserTest : public ContentBrowserTest {
   mojo::Remote<mojom::ShellController> shell_controller_;
 };
 
-// TODO(http://crbug.com/323984075): This test invokes content_shell in a way
-// that is not supported on Lacros (without crosapi data). Figure out what to
-// do about that.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(LaunchAsMojoClientBrowserTest, LaunchAndBindInterface) {
   // Verifies that we can launch an instance of Content Shell with a Mojo
   // invitation on the command line and reach the new browser process's exposed
@@ -193,45 +182,6 @@ IN_PROC_BROWSER_TEST_F(LaunchAsMojoClientBrowserTest, LaunchAndBindInterface) {
 
   shell_controller->ShutDown();
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-// TODO(crbug.com/40057593): This test implementation fundamentally conflicts
-// with a fix for the linked bug because it causes a browser process to behave
-// partially as a broker and partially as a non-broker. This can be re-enabled
-// when we migrate away from the current Mojo implementation. It's OK to disable
-// for now because no production code relies on this feature.
-IN_PROC_BROWSER_TEST_F(LaunchAsMojoClientBrowserTest,
-                       DISABLED_WithMojoCoreLibrary) {
-  // Instructs a newly launched Content Shell browser to initialize Mojo Core
-  // dynamically from a shared library, rather than using the version linked
-  // into the Content Shell binary.
-  //
-  // This exercises end-to-end JS in order to cover real IPC behavior between
-  // the browser and a renderer.
-
-  base::CommandLine command_line = MakeShellCommandLine();
-  command_line.AppendSwitchPath(switches::kMojoCoreLibraryPath,
-                                GetMojoCoreLibraryPath());
-  mojo::Remote<mojom::ShellController> shell_controller =
-      LaunchContentShell(command_line);
-
-  // Indisputable proof that we're evaluating JavaScript.
-  const std::string kExpressionToEvaluate = "'ba'+ +'a'+'as'";
-  const base::Value kExpectedValue("baNaNas");
-
-  base::RunLoop loop;
-  shell_controller->ExecuteJavaScript(
-      base::ASCIIToUTF16(kExpressionToEvaluate),
-      base::BindLambdaForTesting([&](base::Value value) {
-        EXPECT_EQ(kExpectedValue, value);
-        loop.Quit();
-      }));
-  loop.Run();
-
-  shell_controller->ShutDown();
-}
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 }  // namespace content

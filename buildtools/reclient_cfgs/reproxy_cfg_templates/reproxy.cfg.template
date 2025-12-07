@@ -20,7 +20,7 @@ cas_concurrency=200
 
 # Always compress artifacts
 compression_threshold=0
-use_batches=false
+use_batches=true
 
 # Metric metadata
 metrics_namespace=$rbe_project

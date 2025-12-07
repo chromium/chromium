@@ -7,7 +7,10 @@ import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 import type {AngleFeature, BrowserBridge, ClientInfo, FeatureStatus, Problem} from './browser_bridge.js';
 import {getTemplate} from './info_view.html.js';
+
+// <if expr="enable_vulkan">
 import {VulkanInfo} from './vulkan_info.js';
+// </if>
 
 /**
  * Given a blob and a filename, prompts user to
@@ -35,16 +38,6 @@ function getProblemTextAndUrl(problem: Problem) {
     text = text.substring(0, pos);
   }
   return {text, url};
-}
-
-function formatANGLEBug(bug: string) {
-  if (bug.includes('crbug.com/')) {
-    return bug.match(/\d+/)!.toString();
-  } else if (bug.includes('anglebug.com/')) {
-    return `anglebug:${bug.match(/\d+/)}`;
-  } else {
-    return bug;
-  }
 }
 
 /**
@@ -128,7 +121,7 @@ interface Attributes {
  */
 function createElem(
     tag: string, attrs: Attributes|string = {}, children: HTMLElement[] = []) {
-  const elem = document.createElement(tag) as HTMLElement;
+  const elem = document.createElement(tag);
   if (typeof attrs === 'string') {
     elem.textContent = attrs;
   } else {
@@ -316,7 +309,6 @@ const kSections = {
   angleFeatures: ['ANGLE Features', 'ul'],
   dawnInfo: ['Dawn Info', 'ul'],
   compositorInfo: ['Compositor Information', 'div'],
-  gpuMemoryBufferInfo: ['GpuMemoryBuffers Status', 'div'],
   displayInfo: ['Display(s) Information', 'div'],
   videoAccelerationInfo: ['Video Acceleration Information', 'div'],
   vulkanInfo: ['Vulkan Information', 'div'],
@@ -392,13 +384,13 @@ export class InfoViewElement extends CustomElement {
   }
 
   getSelectionText(all: boolean) {
-    const dynamicStyle = this.getRequiredElement('#dynamic-style')!;
+    const dynamicStyle = this.getRequiredElement('#dynamic-style');
     dynamicStyle.textContent = `
       #content { white-space: pre !important; }
       .copy { display: initial; }
       .hide-on-copy { display: none; }
     `;
-    const contentDiv = this.getRequiredElement('#content')!;
+    const contentDiv = this.getRequiredElement('#content');
 
     // document.getSelection doesn't work through shadowDom
     // and shadowRoot getSelection is non-standard chromium
@@ -474,11 +466,11 @@ export class InfoViewElement extends CustomElement {
     // Add a copy handler to massage the text for plain text.
     document.addEventListener('copy', (event) => {
       const text = this.getSelectionText(false);
-      event!.clipboardData!.setData('text/plain', text);
+      event.clipboardData!.setData('text/plain', text);
       event.preventDefault();
     });
 
-    const contentDiv = this.getRequiredElement('#content')!;
+    const contentDiv = this.getRequiredElement('#content');
     this.sections = Object.fromEntries(Object.entries(kSections).map(
                         ([propName, [title, tag]]) => {
                           const div = createHeading('h3', '=', title);
@@ -573,7 +565,6 @@ export class InfoViewElement extends CustomElement {
 
       this.setTable_(sections.basicInfo, gpuInfo.basicInfo);
       this.setTable_(sections.compositorInfo, gpuInfo.compositorInfo);
-      this.setTable_(sections.gpuMemoryBufferInfo, gpuInfo.gpuMemoryBufferInfo);
       this.setTable_(sections.displayInfo, gpuInfo.displayInfo);
       this.setTable_(
           sections.videoAccelerationInfo, gpuInfo.videoAcceleratorsInfo);
@@ -592,6 +583,7 @@ export class InfoViewElement extends CustomElement {
 
       this.updateSectionTable_(sections.diagnostics, gpuInfo.diagnostics);
 
+      // <if expr="enable_vulkan">
       this.setTable_(
           sections.vulkanInfo,
           gpuInfo.vulkanInfo ? [{
@@ -600,7 +592,7 @@ export class InfoViewElement extends CustomElement {
             'id': 'vulkan-info-value',
           }] :
                                []);
-
+      // </if>
       this.setTable_(sections.devicePerfInfo, gpuInfo.devicePerfInfo);
     } else {
       sections.basicInfo.list.textContent = '... loading ...';
@@ -673,7 +665,6 @@ export class InfoViewElement extends CustomElement {
       'protected_video_decode': 'Hardware Protected Video Decode',
       'surface_control': 'Surface Control',
       'vpx_decode': 'VPx Video Decode',
-      'webgl2': 'WebGL2',
       'canvas_oop_rasterization': 'Canvas out-of-process rasterization',
       'raw_draw': 'Raw Draw',
       'video_encode': 'Video Encode',
@@ -682,6 +673,7 @@ export class InfoViewElement extends CustomElement {
       'webgpu': 'WebGPU',
       'skia_graphite': 'Skia Graphite',
       'webnn': 'WebNN',
+      'trees_in_viz': 'TreesInViz',
     };
 
     const statusMap: Record<string, {label: string, class: string}> = {
@@ -832,15 +824,6 @@ export class InfoViewElement extends CustomElement {
               [createElem('span', ` (${angleFeature.category})`),
     ]),
 
-      // If there's a bug link, try to parse the crbug/anglebug number
-      ...addIf(
-          !!angleFeature.bug,
-          () =>
-              [createElem('span', ' '),
-               ...createLinkPair(
-                   formatANGLEBug(angleFeature.bug), angleFeature.bug),
-    ]),
-
       // Follow with a colon, and the status (colored)
       createElem('span', ': '),
       createElem(
@@ -848,23 +831,6 @@ export class InfoViewElement extends CustomElement {
           angleFeature.status === 'enabled' ?
               {className: 'feature-green', textContent: 'Enabled'} :
               {className: 'feature-red', textContent: 'Disabled'}),
-
-      ...addIf(
-          !!angleFeature.condition,
-          () =>
-              [createHidden('\n    condition'),
-               createElem('span', {
-                 className: 'feature-gray',
-                 textContent: `: ${angleFeature.condition}`,
-               }),
-    ]),
-
-      ...addIf(
-          !!angleFeature.description,
-          () =>
-              [createElem('br'),
-               createElem('i', wordWrap(angleFeature.description!)),
-    ]),
 
       // for copy spacing
       createElem('span', '\n\n'),

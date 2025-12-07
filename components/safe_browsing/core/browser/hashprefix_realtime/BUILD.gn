@@ -13,7 +13,7 @@ static_library("hash_realtime_service") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
-    "//base:base",
+    "//base",
     "//components/keyed_service/core",
     "//components/prefs",
     "//components/safe_browsing/core/browser:verdict_cache_manager",
@@ -23,9 +23,9 @@ static_library("hash_realtime_service") {
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
     "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
-    "//google_apis:google_apis",
+    "//google_apis",
     "//services/network/public/cpp",
-    "//url:url",
+    "//url",
   ]
 }
 
@@ -38,7 +38,7 @@ static_library("hash_realtime_cache") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
-    "//base:base",
+    "//base",
     "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
     "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
   ]
@@ -64,7 +64,7 @@ source_set("unit_tests") {
     "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
     "//components/sync_preferences:test_support",
     "//components/variations",
-    "//google_apis:google_apis",
+    "//google_apis",
     "//services/network:test_support",
     "//testing/gtest",
   ]

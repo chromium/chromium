@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
+#include "content/public/browser/reduce_accept_language_utils.h"
 
-#include "content/browser/reduce_accept_language/reduce_accept_language_utils.h"
+#include <array>
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -105,8 +102,8 @@ class MockOriginTrialsDelegate
 
   void ClearPersistedTokens() override { persisted_trials_.clear(); }
 
-  void AddPersistedTrialForTest(const std::string_view url,
-                                const std::string_view trial_name) {
+  void AddPersistedTrialForTest(std::string_view url,
+                                std::string_view trial_name) {
     url::Origin key = url::Origin::Create(GURL(url));
     persisted_trials_[key].emplace(trial_name);
   }
@@ -183,25 +180,30 @@ TEST_F(AcceptLanguageUtilsTests, AcceptLanguageMatchContentLanguage) {
       {"de-de", "de-Latn-DE", false},
   };
 
-  for (size_t i = 0; i < std::size(tests); ++i) {
+  for (const auto& test : tests) {
     bool actual_return =
         ReduceAcceptLanguageUtils::DoesAcceptLanguageMatchContentLanguage(
-            tests[i].accept_language, tests[i].content_language);
-    EXPECT_EQ(tests[i].expected_return, actual_return)
-        << "Test case " << i << ": expected return " << tests[i].expected_return
-        << " but got " << actual_return << ".";
+            test.accept_language, test.content_language);
+    EXPECT_EQ(test.expected_return, actual_return)
+        << "Test case: {" << test.accept_language << ", "
+        << test.content_language << "}: expected return "
+        << test.expected_return << " but got " << actual_return << ".";
   }
 }
 
 TEST_F(AcceptLanguageUtilsTests, OriginCanReduceAcceptLanguage) {
-  const struct {
+  struct TestCase {
     std::string origin;
     bool expected_return;
-  } tests[] = {{"http://example.com", true},
-               {"https://example.com", true},
-               {"ws://example.com", false},
-               {"http://example.com/1.jpg", true},
-               {"https://example.com/1.jpg", true}};
+  };
+
+  const auto tests = std::to_array<TestCase>({
+      {"http://example.com", true},
+      {"https://example.com", true},
+      {"ws://example.com", false},
+      {"http://example.com/1.jpg", true},
+      {"https://example.com/1.jpg", true},
+  });
 
   for (size_t i = 0; i < std::size(tests); ++i) {
     bool actual_return =
@@ -214,11 +216,13 @@ TEST_F(AcceptLanguageUtilsTests, OriginCanReduceAcceptLanguage) {
 }
 
 TEST_F(AcceptLanguageUtilsTests, FirstMatchPreferredLang) {
-  const struct {
+  struct TestCase {
     std::vector<std::string> preferred_languages;
     std::vector<std::string> available_languages;
     std::optional<std::string> expected_match_language;
-  } tests[] = {
+  };
+
+  const auto tests = std::to_array<TestCase>({
       {{}, {"en"}, std::nullopt},
       {{}, {"*"}, std::nullopt},
       {{"en"}, {}, std::nullopt},
@@ -228,7 +232,7 @@ TEST_F(AcceptLanguageUtilsTests, FirstMatchPreferredLang) {
       {{"en-us"}, {"en"}, std::nullopt},
       {{"en-us"}, {"en-US"}, "en-us"},
       {{"en-us", "ja", "en"}, {"ja", "en-us"}, "en-us"},
-  };
+  });
 
   for (size_t i = 0; i < std::size(tests); ++i) {
     std::optional<std::string> actual_matched_language =
@@ -249,10 +253,14 @@ TEST_F(AcceptLanguageUtilsTests, FirstMatchPreferredLang) {
 
 TEST_F(AcceptLanguageUtilsTests, AddNavigationRequestAcceptLanguageHeaders) {
   base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {}, {network::features::kReduceAcceptLanguage,
+           network::features::kReduceAcceptLanguageHTTP});
 
   MockReduceAcceptLanguageControllerDelegate delegate =
       MockReduceAcceptLanguageControllerDelegate("en,zh");
-  ReduceAcceptLanguageUtils reduce_language_utils(delegate);
+  ReduceAcceptLanguageUtils reduce_language_utils =
+      ReduceAcceptLanguageUtils::CreateForTesting(delegate);
 
   GURL url = GURL("https://example.com");
   contents()->NavigateAndCommit(url);
@@ -270,8 +278,8 @@ TEST_F(AcceptLanguageUtilsTests, AddNavigationRequestAcceptLanguageHeaders) {
 
   // Test add navigation header with reduce accept language feature turns on.
   scoped_feature_list.Reset();
-  scoped_feature_list.InitWithFeatures(
-      {network::features::kReduceAcceptLanguage}, {});
+  scoped_feature_list.InitAndEnableFeature(
+      network::features::kReduceAcceptLanguage);
   {
     // Verify root frame node has the accept language header.
     net::HttpRequestHeaders headers;
@@ -345,7 +353,8 @@ TEST_F(AcceptLanguageUtilsTests, ParseAndPersistAcceptLanguageForNavigation) {
     // Verify parse return correct values.
     MockReduceAcceptLanguageControllerDelegate delegate =
         MockReduceAcceptLanguageControllerDelegate("en,zh");
-    ReduceAcceptLanguageUtils reduce_language_utils(delegate);
+    ReduceAcceptLanguageUtils reduce_language_utils =
+        ReduceAcceptLanguageUtils::CreateForTesting(delegate);
     net::HttpRequestHeaders headers;
     auto parsed_headers = network::mojom::ParsedHeaders::New();
 
@@ -451,29 +460,31 @@ TEST_F(AcceptLanguageUtilsTests, ParseAndPersistAcceptLanguageForNavigation) {
         {"", "zh", "ja", "ja, en", false, std::nullopt, std::nullopt},
     };
 
-    for (size_t i = 0; i < std::size(tests); ++i) {
+    size_t i = 0;
+    for (const auto& test : tests) {
       MockReduceAcceptLanguageControllerDelegate delegate =
           MockReduceAcceptLanguageControllerDelegate(
-              tests[i].user_accept_languages);
-      ReduceAcceptLanguageUtils reduce_language_utils(delegate);
+              test.user_accept_languages);
+      ReduceAcceptLanguageUtils reduce_language_utils =
+          ReduceAcceptLanguageUtils::CreateForTesting(delegate);
       // Verify whether needs to resend request
       bool actual_resend_request =
           ParseAndPersist(url, reduce_language_utils,
-                          /*accept_language=*/tests[i].accept_language,
-                          /*content_language=*/tests[i].content_language,
-                          /*avail_language=*/tests[i].avail_language);
-      EXPECT_EQ(tests[i].expected_resend_request, actual_resend_request)
+                          /*accept_language=*/test.accept_language,
+                          /*content_language=*/test.content_language,
+                          /*avail_language=*/test.avail_language);
+      EXPECT_EQ(test.expected_resend_request, actual_resend_request)
           << "Test case " << i << ": expected resend request "
-          << tests[i].expected_resend_request << " but got "
+          << test.expected_resend_request << " but got "
           << actual_resend_request << ".";
       // Verify persist language
 
       std::optional<std::string> actual_persisted_language =
           delegate.GetReducedLanguage(url::Origin::Create(url));
-      EXPECT_EQ(tests[i].expected_persisted_language, actual_persisted_language)
+      EXPECT_EQ(test.expected_persisted_language, actual_persisted_language)
           << "Test case " << i << ": expected persisted language "
-          << (tests[i].expected_persisted_language
-                  ? tests[i].expected_persisted_language.value()
+          << (test.expected_persisted_language
+                  ? test.expected_persisted_language.value()
                   : "nullopt")
           << " but got "
           << (actual_persisted_language ? actual_persisted_language.value()
@@ -484,10 +495,10 @@ TEST_F(AcceptLanguageUtilsTests, ParseAndPersistAcceptLanguageForNavigation) {
       std::optional<std::string> actual_commit_language =
           reduce_language_utils.LookupReducedAcceptLanguage(
               url::Origin::Create(url), root);
-      EXPECT_EQ(tests[i].expected_commit_language, actual_commit_language)
+      EXPECT_EQ(test.expected_commit_language, actual_commit_language)
           << "Test case " << i << ": expected commit language "
-          << (tests[i].expected_commit_language
-                  ? tests[i].expected_commit_language.value()
+          << (test.expected_commit_language
+                  ? test.expected_commit_language.value()
                   : "nullopt")
           << " but got "
           << (actual_commit_language ? actual_commit_language.value()
@@ -498,16 +509,17 @@ TEST_F(AcceptLanguageUtilsTests, ParseAndPersistAcceptLanguageForNavigation) {
       std::optional<std::string> actual_child_commit_language =
           reduce_language_utils.LookupReducedAcceptLanguage(
               url::Origin::Create(url), child0);
-      EXPECT_EQ(tests[i].expected_commit_language, actual_child_commit_language)
+      EXPECT_EQ(test.expected_commit_language, actual_child_commit_language)
           << "Test case " << i << ": expected child frame commit language "
-          << (tests[i].expected_commit_language
-                  ? tests[i].expected_commit_language.value()
+          << (test.expected_commit_language
+                  ? test.expected_commit_language.value()
                   : "nullopt")
           << " but got "
           << (actual_child_commit_language
                   ? actual_child_commit_language.value()
                   : "nullopt")
           << ".";
+      i++;
     }
   }
 }
@@ -524,7 +536,8 @@ TEST_F(AcceptLanguageUtilsTests, VerifyClearAcceptLanguage) {
 
   MockReduceAcceptLanguageControllerDelegate delegate =
       MockReduceAcceptLanguageControllerDelegate("zh,ja,en-US");
-  ReduceAcceptLanguageUtils reduce_language_utils(delegate);
+  ReduceAcceptLanguageUtils reduce_language_utils =
+      ReduceAcceptLanguageUtils::CreateForTesting(delegate);
 
   ParseAndPersist(url, reduce_language_utils,
                   /*accept_language=*/"zh",
@@ -585,6 +598,8 @@ TEST_F(AcceptLanguageUtilsTests, ThrottleProcessResponse) {
 
   MockReduceAcceptLanguageControllerDelegate delegate =
       MockReduceAcceptLanguageControllerDelegate("en,zh");
+  ReduceAcceptLanguageUtils reduce_language_utils =
+      ReduceAcceptLanguageUtils::CreateForTesting(delegate);
 
   GURL request_url = GURL(kFirstPartyUrl);
   contents()->NavigateAndCommit(request_url);
@@ -593,7 +608,8 @@ TEST_F(AcceptLanguageUtilsTests, ThrottleProcessResponse) {
 
   MockOriginTrialsDelegate origin_trials_delegate;
   ReduceAcceptLanguageThrottle throttle = ReduceAcceptLanguageThrottle(
-      delegate, &origin_trials_delegate, root->frame_tree_node_id());
+      std::move(reduce_language_utils), &origin_trials_delegate,
+      root->frame_tree_node_id());
 
   // User's first prefer language.
   std::string language = delegate.GetUserAcceptLanguages()[0];
@@ -667,6 +683,38 @@ TEST_F(AcceptLanguageUtilsTests, ThrottleProcessResponse) {
   }
 }
 
+TEST_F(AcceptLanguageUtilsTests, GetLanguageWithDefaultLimits) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      network::features::kReduceAcceptLanguageCount);
+
+  EXPECT_EQ("en-US,ja,en-CA,fr-CA,zh-CN,en-GB,es,ru,pt,it",
+            ReduceAcceptLanguageUtils::GetLanguagesWithMaxCount(
+                "en-US,ja,en-CA,fr-CA,zh-CN,en-GB,es,ru,pt,it,ko"));
+}
+
+TEST_F(AcceptLanguageUtilsTests, GetLanguageWithCustomLimits) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      network::features::kReduceAcceptLanguageCount,
+      {{network::features::kMaxAcceptLanguage.name, "5"}});
+
+  EXPECT_EQ("en-US,ja,en-CA,fr-CA,zh-CN",
+            ReduceAcceptLanguageUtils::GetLanguagesWithMaxCount(
+                "en-US,ja,en-CA,fr-CA,zh-CN,en-GB,es,ru,pt,it,ko"));
+}
+
+TEST_F(AcceptLanguageUtilsTests, GetLanguageWithInvalidLimits) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      network::features::kReduceAcceptLanguageCount,
+      {{network::features::kMaxAcceptLanguage.name, "0"}});
+
+  EXPECT_EQ("en-US,ja,en-CA,fr-CA,zh-CN,en-GB,es,ru,pt,it,ko",
+            ReduceAcceptLanguageUtils::GetLanguagesWithMaxCount(
+                "en-US,ja,en-CA,fr-CA,zh-CN,en-GB,es,ru,pt,it,ko"));
+}
+
 class CreateAcceptLanguageUtilsTest : public ::testing::Test {
  public:
   CreateAcceptLanguageUtilsTest() = default;
@@ -695,7 +743,8 @@ TEST_F(CreateAcceptLanguageUtilsTest, CreateUtils) {
 
   scoped_feature_list.Reset();
   scoped_feature_list.InitWithFeatures(
-      {}, {network::features::kReduceAcceptLanguage});
+      {}, {network::features::kReduceAcceptLanguage,
+           network::features::kReduceAcceptLanguageHTTP});
   // Feature reset should expect no instance returns
   EXPECT_EQ(ReduceAcceptLanguageUtils::Create(browser_context()), std::nullopt);
 }

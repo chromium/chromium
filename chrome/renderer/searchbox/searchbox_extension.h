@@ -14,9 +14,9 @@ namespace blink {
 class WebLocalFrame;
 }
 
-constexpr SkColor kNTPLightLogoColor = SkColorSetRGB(238, 238, 238);
-constexpr SkColor kNTPLightIconColor = gfx::kGoogleGrey100;
-constexpr SkColor kNTPDarkIconColor = gfx::kGoogleGrey900;
+inline constexpr SkColor kNTPLightLogoColor = SkColorSetRGB(238, 238, 238);
+inline constexpr SkColor kNTPLightIconColor = gfx::kGoogleGrey100;
+inline constexpr SkColor kNTPDarkIconColor = gfx::kGoogleGrey900;
 
 // Javascript bindings for the chrome.embeddedSearch APIs. See
 // https://www.chromium.org/embeddedsearch.

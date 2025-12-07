@@ -16,6 +16,7 @@
 #include "cc/paint/render_surface_filters.h"
 #include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
@@ -30,8 +31,6 @@
 
 namespace ash {
 
-namespace {
-
 // A view that controls the child view's layer so that the layer always has the
 // same size as the display's original, un-scaled size in DIP. The layer is then
 // transformed to fit to the virtual screen size when laid-out. This is to avoid
@@ -42,7 +41,7 @@ class WallpaperWidgetDelegate : public views::WidgetDelegateView {
   explicit WallpaperWidgetDelegate(views::View* view) {
     SetCanMaximize(true);
     SetCanFullscreen(true);
-    AddChildView(view);
+    AddChildViewRaw(view);
     view->SetPaintToLayer();
   }
 
@@ -56,7 +55,7 @@ class WallpaperWidgetDelegate : public views::WidgetDelegateView {
     // wallpaper view such as an overview mode shield.
     window->parent()->StackChildAtBottom(window);
     display::Display display =
-        display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+        display::Screen::Get()->GetDisplayNearestWindow(window);
 
     for (views::View* child : children()) {
       child->SetBounds(0, 0, display.size().width(), display.size().height());
@@ -68,8 +67,6 @@ class WallpaperWidgetDelegate : public views::WidgetDelegateView {
     }
   }
 };
-
-}  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 // WallpaperView, public:
@@ -91,14 +88,22 @@ void WallpaperView::SetLockShieldEnabled(bool enabled) {
 
   if (enabled) {
     DCHECK(!shield_view_);
+    // TODO(crbug.com/374034250): Remove the shield layer once the bug is fixed and
+    // the compositor can fallback to solid color background for missing tiles.
     shield_view_ = new views::View();
     parent()->AddChildViewAt(shield_view_.get(), 0);
     shield_view_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
     shield_view_->layer()->SetColor(SK_ColorBLACK);
     shield_view_->layer()->SetName("WallpaperViewShield");
     shield_view_->SetBoundsRect(parent()->GetLocalBounds());
+    // Mark the layer transparent to make sure that the compositor will draw the
+    // solid color even if the texture for the wallpaper is missing.  This will
+    // increase the overdraw, but the impact on the performance should be
+    // minimum.
+    layer()->SetFillsBoundsOpaquely(false);
   } else {
     DCHECK(shield_view_);
+    layer()->SetFillsBoundsOpaquely(true);
     parent()->RemoveChildViewT(shield_view_.get());
     shield_view_ = nullptr;
   }
@@ -124,9 +129,10 @@ void WallpaperView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   }
 }
 
-void WallpaperView::ShowContextMenuForViewImpl(views::View* source,
-                                               const gfx::Point& point,
-                                               ui::MenuSourceType source_type) {
+void WallpaperView::ShowContextMenuForViewImpl(
+    views::View* source,
+    const gfx::Point& point,
+    ui::mojom::MenuSourceType source_type) {
   Shell::Get()->ShowContextMenu(point, source_type);
 }
 
@@ -210,7 +216,7 @@ std::unique_ptr<views::Widget> CreateWallpaperWidget(
     aura::Window* root_window,
     float blur_sigma,
     bool locked,
-    WallpaperView** out_wallpaper_view) {
+    raw_ptr<WallpaperView>* out_wallpaper_view) {
   int container_id = locked ? kShellWindowId_LockScreenWallpaperContainer
                             : kShellWindowId_WallpaperContainer;
   auto* controller = Shell::Get()->wallpaper_controller();

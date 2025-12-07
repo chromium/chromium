@@ -1,0 +1,4 @@
+include_rules = [
+  "+ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h",
+  "+ios/chrome/browser/settings",
+]

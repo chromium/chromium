@@ -38,7 +38,7 @@ class TouchToFillForPaymentMethodsTest
         .WillByDefault(testing::Return(true));
     MockFastCheckoutClient* fast_checkout_client =
         static_cast<MockFastCheckoutClient*>(
-            autofill_client_->GetFastCheckoutClient());
+            autofill_client().GetFastCheckoutClient());
     ON_CALL(*fast_checkout_client, IsNotShownYet)
         .WillByDefault(testing::Return(true));
     autofill_manager().set_touch_to_fill_delegate(
@@ -71,8 +71,7 @@ class TouchToFillForPaymentMethodsTest
               "CVC", "CVC", "", FormControlType::kInputText));
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
     }
     return fields_to_return;
@@ -103,7 +102,7 @@ class TouchToFillForPaymentMethodsTest
 
   MockPaymentsAutofillClient& payments_autofill_client() {
     return *static_cast<MockPaymentsAutofillClient*>(
-        autofill_client_->GetPaymentsAutofillClient());
+        autofill_client().GetPaymentsAutofillClient());
   }
 };
 
@@ -136,13 +135,14 @@ TEST_P(TouchToFillForPaymentMethodsTest,
   touch_to_fill_delegate().CreditCardSuggestionSelected(
       /*unique_id=*/kTestLocalCardId,
       /*is_virtual=*/false);
-  touch_to_fill_delegate().OnDismissed(/*dismissed_by_user=*/false);
+  touch_to_fill_delegate().OnDismissed(/*dismissed_by_user=*/false,
+                                       /*should_reshow=*/false);
   // Simulate that fields were autofilled.
   SetFieldsAutofilledValues(form, test_case.fields_have_autofilled_values,
                             test_case.field_types);
   // Simulate user made change to autofilled field.
   if (!test_case.is_all_accepted) {
-    SimulateUserChangedTextField(form, form.fields()[0]);
+    SimulateUserChangedField(form, form.fields()[0]);
   }
 
   SubmitForm(form);

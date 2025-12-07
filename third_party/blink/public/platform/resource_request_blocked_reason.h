@@ -14,6 +14,7 @@ enum class ResourceRequestBlockedReason {
   kMixedContent,
   kOrigin,
   kInspector,
+  kIntegrity,
   kSubresourceFilter,
   kContentType,
   kCoepFrameResourceNeedsCoepHeader,
@@ -24,8 +25,8 @@ enum class ResourceRequestBlockedReason {
   kCorpNotSameOriginAfterDefaultedToSameOriginByCoepAndDip,
   kCorpNotSameSite,
   kConversionRequest,
-  kSupervisedUserUrlBlocked,
-  kMax = kSupervisedUserUrlBlocked,
+  kSRIMessageSignatureMismatch,
+  kMax = kConversionRequest,
 };
 
 }  // namespace blink

@@ -10,6 +10,9 @@
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/extensions_browser_client.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
 namespace extensions {
 
@@ -18,8 +21,13 @@ BrowserFrameContextData::CloneFrameContextData() const {
   return std::make_unique<BrowserFrameContextData>(frame_);
 }
 
-bool BrowserFrameContextData::HasIsolatedContextCapability() const {
-  return frame_ && content::HasIsolatedContextCapability(frame_);
+bool BrowserFrameContextData::HasControlledFrameCapability() const {
+  return frame_ &&
+         frame_->IsFeatureEnabled(
+             network::mojom::PermissionsPolicyFeature::kControlledFrame) &&
+         content::HasIsolatedContextCapability(frame_) &&
+         ExtensionsBrowserClient::Get()->HasControlledFrameCapability(
+             frame_->GetBrowserContext(), GetUrl());
 }
 
 std::unique_ptr<FrameContextData>
@@ -70,13 +78,11 @@ url::Origin BrowserFrameContextData::GetOrigin() const {
 // BrowserFrameContextData::CanAccess is unable to replicate all of the
 // WebSecurityOrigin::CanAccess checks, so these methods should not be called.
 bool BrowserFrameContextData::CanAccess(const url::Origin& target) const {
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 bool BrowserFrameContextData::CanAccess(const FrameContextData& target) const {
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 uintptr_t BrowserFrameContextData::GetId() const {

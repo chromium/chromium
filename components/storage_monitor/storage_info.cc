@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include "base/byte_count.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -22,10 +23,10 @@ const char kFixedMassStoragePrefix[] = "path:";
 const char kMtpPtpPrefix[] = "mtp:";
 const char kMacImageCapturePrefix[] = "ic:";
 
-std::u16string GetDisplayNameForDevice(uint64_t storage_size_in_bytes,
+std::u16string GetDisplayNameForDevice(base::ByteCount storage_size_in_bytes,
                                        const std::u16string& name) {
   DCHECK(!name.empty());
-  return (storage_size_in_bytes == 0)
+  return (storage_size_in_bytes.is_zero())
              ? name
              : ui::FormatBytes(storage_size_in_bytes) + u" " + name;
 }
@@ -86,8 +87,7 @@ std::string StorageInfo::MakeDeviceId(Type type, const std::string& unique_id) {
     case MAC_IMAGE_CAPTURE:
       return std::string(kMacImageCapturePrefix) + unique_id;
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 // static
@@ -175,7 +175,7 @@ std::u16string StorageInfo::GetDisplayNameWithOverride(
     name = u"Unlabeled device";
 
   if (with_size)
-    name = GetDisplayNameForDevice(total_size_in_bytes_, name);
+    name = GetDisplayNameForDevice(base::ByteCount(total_size_in_bytes_), name);
   return name;
 }
 

@@ -7,6 +7,7 @@ module quarantine.mojom;
 import "mojo/public/mojom/base/file_path.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 import "url/mojom/url.mojom";
+import "url/mojom/origin.mojom";
 
 enum QuarantineFileResult {
   OK,             // Success.
@@ -29,9 +30,15 @@ enum QuarantineFileResult {
 [ServiceSandbox=sandbox.mojom.Sandbox.kNoSandbox]
 interface Quarantine {
 
+  // Quarantine a file that was downloaded from the internet. This method
+  // will apply platform-dependent annotations to the file to indicate that
+  // it came from the internet, and what URL(s) led to the file. For more
+  // details, see the documentation in
+  // //components/services/quarantine/quarantine.h.
  QuarantineFile(mojo_base.mojom.FilePath full_path,
                 url.mojom.Url source_url,
                 url.mojom.Url referrer_url,
+                url.mojom.Origin? request_initiator,
                 string client_guid)
      => (QuarantineFileResult result);
 };

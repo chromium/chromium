@@ -35,7 +35,7 @@ class TrapEventDispatcher;
 // Before a Router can participate in any actual routing, it must have an
 // outward link to another Router (see SetOutwardLink()). To establish a locally
 // connected pair of Routers, pass both to LocalRouterLink::Create() and pass
-// each returned link to the coresponding router:
+// each returned link to the corresponding router:
 //
 //     Router::Pair routers = {MakeRefCounted<Router>(),
 //                             MakeRefCounted<Router>()};
@@ -150,7 +150,7 @@ class Router : public APIObjectImpl<Router, APIObject::kPortal> {
   // similar to route closure, except no effort can realistically be made to
   // deliver the complete sequence of parcels transmitted from that end of the
   // route. `link_type` specifies the type of link which is propagating the
-  // notification to this rouer.
+  // notification to this router.
   bool AcceptRouteDisconnectedFrom(LinkType link_type);
 
   // Attempts to install a new trap on this Router, to invoke `handler` as soon
@@ -164,13 +164,15 @@ class Router : public APIObjectImpl<Router, APIObject::kPortal> {
 
   // Attempts to merge this Router's route with the route terminated by `other`.
   // Both `other` and this Router must be terminal routers on their own separate
-  // routes, and neither Router must have transmitted or retreived any parcels
+  // routes, and neither Router must have transmitted or retrieved any parcels
   // via Put or Get APIs.
   IpczResult MergeRoute(const Ref<Router>& other);
 
-  // Deserializes a new Router from `descriptor` received over `from_node_link`.
+  // Deserializes a new Router from `descriptor` received over `from_node_link`
+  // on `receiving_sublink`.
   static Ref<Router> Deserialize(const RouterDescriptor& descriptor,
-                                 NodeLink& from_node_link);
+                                 NodeLink& from_node_link,
+                                 SublinkId receiving_sublink);
 
   // Serializes a description of a new Router which will be used to extend this
   // Router's route across `to_node_link` by introducing a new Router on the
@@ -295,13 +297,11 @@ class Router : public APIObjectImpl<Router, APIObject::kPortal> {
   // The specified FlushBehavior determines whether the Flush() operation will
   // unconditionally attempt to initiate bypass of this Router or its outward
   // peer after performing all other flushing operations. By default, bypass
-  // progress is only attempted if the flush iteslf resulted in an unstable
+  // progress is only attempted if the flush itself resulted in an unstable
   // central link becoming potentially stable. But various operations which
   // invoke Flush() may also elicit state changes that can unblock a bypass
-  // operation. These operatoins may specify kForceProxyBypassAttempt in such
+  // operation. These operations may specify kForceProxyBypassAttempt in such
   // cases.
-  //
-  // `source` indicates why the flush is occurring.
   enum FlushBehavior { kDefault, kForceProxyBypassAttempt };
   void Flush(FlushBehavior behavior = kDefault);
 
@@ -456,8 +456,8 @@ class Router : public APIObjectImpl<Router, APIObject::kPortal> {
   // The set of pending get transactions in progress on this router.
   std::unique_ptr<PendingTransactionSet> pending_gets_ ABSL_GUARDED_BY(mutex_);
 
-  // The set of pending get transactions in progress on this router.
-  std::unique_ptr<PendingTransactionSet> pending_puts_;
+  // The set of pending put transactions in progress on this router.
+  std::unique_ptr<PendingTransactionSet> pending_puts_ ABSL_GUARDED_BY(mutex_);
 };
 
 }  // namespace ipcz

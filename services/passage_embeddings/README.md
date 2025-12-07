@@ -1,1 +1,1 @@
-The passage embeddinggs service provides functionality to generate text embeddings with a TFLite model.
+The passage embeddings service provides functionality to generate text embeddings with a TFLite model.

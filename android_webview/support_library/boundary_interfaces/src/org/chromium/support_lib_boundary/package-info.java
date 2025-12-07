@@ -2,5 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @hide */
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 package org.chromium.support_lib_boundary;
+
+import androidx.annotation.RestrictTo;

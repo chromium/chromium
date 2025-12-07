@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = 'proto2';
+syntax = 'proto3';
 
 option optimize_for = LITE_RUNTIME;
 
@@ -15,5 +15,5 @@ import "lens_overlay_knowledge_query.proto";
 
 // This is proto2's version of MessageSet.
 message MessageSet {
-  optional Query message_set_extension = 41401449;
+  Query message_set_extension = 41401449;
 }

@@ -20,7 +20,6 @@
 #include "cc/paint/filter_operations.h"
 #include "cc/trees/mutator_host_client.h"
 #include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
-#include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/transform_operations.h"
 
 namespace cc {
@@ -207,7 +206,7 @@ void ElementAnimations::OnFloatAnimated(const float& value,
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -230,7 +229,7 @@ void ElementAnimations::OnFilterAnimated(const FilterOperations& filters,
         OnFilterAnimated(ElementListType::PENDING, filters, keyframe_model);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -404,8 +403,7 @@ void ElementAnimations::AttachToCurve(gfx::AnimationCurve* c) {
           this);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

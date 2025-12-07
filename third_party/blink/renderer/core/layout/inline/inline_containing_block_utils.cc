@@ -84,10 +84,19 @@ void GatherInlineContainerFragmentsFromItems(
       // block geometry.
       containing_lineboxes.first = linebox;
       containing_lineboxes.second = linebox;
+
+      // An abspos is hidden in line-clamp iff its containing block is hidden.
+      // For inline CBs, this means iff all of its fragments are hidden.
+      // If the first line box of an inline CB is hidden after the clamp point,
+      // all of its following line boxes will be hidden, and so will all of the
+      // CB's fragments.
+      bool should_hide_abspos = linebox->IsHiddenForPaint();
+
       containing_block_geometry =
           InlineContainingBlockUtils::InlineContainingBlockGeometry{
               fragment_rect, fragment_rect,
-              containing_block_geometry->relative_offset};
+              containing_block_geometry->relative_offset,
+              /*is_hidden_for_paint*/ should_hide_abspos};
     }
 
     if (containing_lineboxes.second == linebox) {
@@ -138,8 +147,9 @@ void InlineContainingBlockUtils::ComputeInlineContainerGeometry(
   //    text </span> text.
   // </div>
   for (const auto& child : container_builder->Children()) {
-    if (!child.fragment->IsAnonymousBlock())
+    if (!child.fragment->IsAnonymousBlockFlow()) {
       continue;
+    }
 
     const auto& child_fragment = To<PhysicalBoxFragment>(*child.fragment);
     const auto* items = child_fragment.Items();
@@ -196,8 +206,9 @@ void InlineContainingBlockUtils::ComputeInlineContainerGeometryForFragmentainer(
       //    text </span> text.
       // </div>
       for (const auto& child : physical_fragment.Children()) {
-        if (!child.fragment->IsAnonymousBlock())
+        if (!child.fragment->IsAnonymousBlockFlow()) {
           continue;
+        }
 
         const auto& child_fragment = To<PhysicalBoxFragment>(*child.fragment);
         if (!child_fragment.HasItems())

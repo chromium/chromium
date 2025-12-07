@@ -1,0 +1,68 @@
+<!-- Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file. -->
+<style>
+    :host {
+        display: block;
+        height: 100%;
+    }
+
+    #container {
+        display: flex;
+        flex-basis: content;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    #logsContainer {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        height: 100%;
+    }
+
+    #logsLabel {
+        margin-bottom: 0px;
+    }
+
+    #logs {
+        height: 100%;
+        overflow-y: auto;
+    }
+
+    #clearAllEventsButton {
+        width: fit-content;
+    }
+
+    #filterById {
+        --cr-form-field-label-font-size: 1rem;
+        --cr-input-color: black;
+        --cr-input-focus-color: black;
+        width: 160px;
+    }
+
+    #filterById.input {
+        background-color: gray;
+    }
+
+    #refreshButton {
+        margin-bottom: 16px;
+        width: fit-content;
+    }
+</style>
+<div id="container">
+    <h2>Growth Framework Internals</h2>
+    <button id="clearAllEventsButton" on-click="onClickClearAllEventsButton_">Clear all events</button>
+    <div id="logsContainer">
+        <h4 id="logsLabel">Logs:</h4>
+        <button id="refreshButton" on-click="onClickRefreshButton_">Load/Refresh</button>
+        <cr-input id="filterById" type="number" min="0" max="500" label="Filter by Campaign id" value="{{campaignId_}}"
+            on-change="onFilterByIdChange_">
+        </cr-input>
+        <div id="logs">
+            <template is="dom-repeat" items="[[filteredLogs_]]" as="log">
+                <p>[[log]]</p>
+            </template>
+        </div>
+    </div>
+</div>

@@ -8,12 +8,12 @@
 [
     Exposed=(Window, DedicatedWorker)
 ] interface RTCEncodedAudioFrame {
-    [Measure, RaisesException]
+    [Measure, CallWith=ExecutionContext, RaisesException]
     constructor (RTCEncodedAudioFrame originalFrame, optional RTCEncodedAudioFrameOptions options = {});
-    readonly attribute unsigned long timestamp;  // RTP timestamp.
-    attribute ArrayBuffer data;
-    RTCEncodedAudioFrameMetadata getMetadata();
-    stringifier;
-  [RuntimeEnabled=RTCEncodedFrameSetMetadata, Measure, RaisesException]
-  void setMetadata(RTCEncodedAudioFrameMetadata metadata);
+    [Measure] readonly attribute unsigned long timestamp;  // RTP timestamp.
+    [CallWith=ExecutionContext] attribute ArrayBuffer data;
+    [CallWith=ExecutionContext] RTCEncodedAudioFrameMetadata getMetadata();
+    [CallWith=ExecutionContext] stringifier;
+    [RuntimeEnabled=RTCEncodedFrameSetMetadata, CallWith=ExecutionContext, Measure, RaisesException]
+    void setMetadata(RTCEncodedAudioFrameMetadata metadata);
 };

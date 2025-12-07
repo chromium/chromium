@@ -34,8 +34,7 @@ class NavigationHandleUserData
 
  private:
   NavigationHandleUserData(content::NavigationHandle& navigation,
-                           InitiatorLocation navigation_type)
-      : navigation_type_(navigation_type) {}
+                           InitiatorLocation navigation_type);
 
   // `navigation_type` is used to store where this navigation is initiated from.
   // This information is used to identify the source of the navigation, and this

@@ -19,6 +19,7 @@
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Katalanisch</translation>
 <translation id="1168100932582989117">Google-Nameserver</translation>
+<translation id="1170788066030116158">Aufnahmedatum</translation>
 <translation id="1172970565351728681">Noch ungefähr <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Umbenennen</translation>
 <translation id="1173916544412572294">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, Smartphone-Akku bei <ph name="BATTERY_STATUS" /> %, Details</translation>
@@ -34,6 +35,7 @@
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Direkte Internetverbindung</translation>
 <translation id="1272293450992660632">Die PIN-Werte stimmen nicht überein.</translation>
+<translation id="1279040297980392566">Warten, bis der Scan abgeschlossen ist, später noch einmal versuchen</translation>
 <translation id="1280820357415527819">Nach Mobilfunknetzen wird gesucht</translation>
 <translation id="1293556467332435079">Dateien</translation>
 <translation id="1297922636971898492">Google Drive ist momentan nicht verfügbar. Das Hochladen deiner Dateien wird automatisch fortgesetzt, sobald Google Drive wieder verfügbar ist.</translation>
@@ -46,7 +48,7 @@
 <translation id="1363028406613469049">Verfolgen</translation>
 <translation id="1378727793141957596">Willkommen bei Google Drive!</translation>
 <translation id="1379911846207762492">Du kannst Dateien offline verfügbar machen, wenn du keine Internetverbindung hast.</translation>
-<translation id="1383876407941801731">Durchsuchen</translation>
+<translation id="1383876407941801731">Suchen</translation>
 <translation id="1388045380422025115">Alle Typen</translation>
 <translation id="1395262318152388157">Schieberegler für die Suche</translation>
 <translation id="1399511500114202393">Kein Nutzerzertifikat</translation>
@@ -72,6 +74,7 @@
 <translation id="1577977504532381335">Administratorrichtlinie ansehen</translation>
 <translation id="158849752021629804">Heimnetzwerk erforderlich</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1601786938618212857">ZIP-Datei erstellen</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="162175252992296058">Portugiesisch mit internationaler US-amerikanischer Tastatur</translation>
 <translation id="1629521517399325891">Das Nutzerzertifikat ist nicht für die Netzwerkauthentifizierung verfügbar.</translation>
@@ -105,6 +108,7 @@
 <translation id="1810764548349082891">Keine Vorschau verfügbar</translation>
 <translation id="1812302367230252929">Amharisch (Transliteration)</translation>
 <translation id="1813278315230285598">Dienste</translation>
+<translation id="181434555916624618">Ergebnisse mit Personen werden vorerst nicht angezeigt. Versuche es mit einem anderen Prompt.</translation>
 <translation id="1829129547161959350">Pinguin</translation>
 <translation id="183183971458492120">Informationen werden geladen…</translation>
 <translation id="1832073788765803750">Katakana mit halber Breite</translation>
@@ -135,7 +139,6 @@
 <translation id="2084809735218147718">Person, die in Zeichensprache „danke“ sagt</translation>
 <translation id="2088690981887365033">VPN-Netzwerk</translation>
 <translation id="209653272837065803">Es ist nicht genügend Speicherplatz vorhanden, um die Dateisynchronisierung fortzusetzen</translation>
-<translation id="2111134541987263231">Aktiviere die Option <ph name="BEGIN_BOLD" />Im Inkognitomodus zulassen<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> Elemente werden gelöscht und können nicht wiederhergestellt werden.</translation>
 <translation id="2122305276694332719">Wenn automatisch eine Verbindung zu einem verborgenen Netzwerk hergestellt wird, können andere dein Gerät sowie einige Netzwerkeinstellungen sehen. Dies wird nicht empfohlen.</translation>
 <translation id="2125607626296734455">Khmer</translation>
@@ -166,7 +169,6 @@
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305020378527873881">"<ph name="VOLUME_NAME" />" wurde ausgeworfen.</translation>
 <translation id="2307462900900812319">Netzwerk konfigurieren</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{Es konnte keine Erweiterung mit der ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> gefunden werden. Wende dich an deinen Administrator.}other{Es konnten keine Erweiterungen mit den IDs <ph name="BEGIN_LIST" /><ph name="END_LIST" /> gefunden werden. Wende dich an deinen Administrator.}}</translation>
 <translation id="2325650632570794183">Dieser Dateityp wird nicht unterstützt. Finde im Chrome Web Store eine App, mit der du diesen Dateityp öffnen kannst.</translation>
 <translation id="2326539130272988168">Bulgarisch</translation>
 <translation id="233822363739146957">Es ist nicht genügend Speicherplatz vorhanden, um alle deine Dateien zu synchronisieren</translation>
@@ -238,7 +240,6 @@
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estnisch</translation>
 <translation id="2938685643439809023">Mongolisch</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{Erweiterung kann nicht gefunden werden}other{Erweiterungen können nicht gefunden werden}}</translation>
 <translation id="2943503720238418293">Verwende einen kürzeren Namen</translation>
 <translation id="2949781154072577687">"<ph name="DRIVE_NAME" />" wird formatiert...</translation>
 <translation id="2951236788251446349">Qualle</translation>
@@ -295,7 +296,6 @@
 <translation id="3356580349448036450">Fertig</translation>
 <translation id="3358452157379365236">Gitarre</translation>
 <translation id="3368922792935385530">Verbunden</translation>
-<translation id="3372635229069101468">Klicke auf <ph name="BEGIN_BOLD" />Details<ph name="END_BOLD" /></translation>
 <translation id="3382143449143186018">Nepalesisch mit InScript-Tastatur</translation>
 <translation id="338691029516748599">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, von deinem Administrator verwaltet, Verbinden</translation>
 <translation id="3408072735282270043">Aktivieren, <ph name="NETWORK_NAME" /></translation>
@@ -354,7 +354,6 @@
 <translation id="3811494700605067549">1 Datei ausgewählt</translation>
 <translation id="3817579325494460411">Keine Angabe</translation>
 <translation id="3819448694985509187">Falsche PIN. Du hast noch 1 Versuch.</translation>
-<translation id="3822559385185038546">Dieser Proxy wird von deinem Administrator erzwungen</translation>
 <translation id="3830674330436234648">Keine Wiedergabe verfügbar</translation>
 <translation id="383652340667548381">Serbisch</translation>
 <translation id="3839045880592694915">Dein Mobilfunkanbieter erlaubt keine Verbindung über dein Modem. Wenn du weitere Informationen benötigst, kontaktiere deinen Mobilfunkanbieter.</translation>
@@ -385,7 +384,6 @@
 <translation id="4124935795427217608">Einhorn</translation>
 <translation id="4131235941541910880">Verschiebe nicht benötigte Elemente in den Papierkorb</translation>
 <translation id="4134804435730168042">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Nach Geräteeinrichtung aktivieren</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{Aktiviere die folgende Erweiterung im Inkognitomodus:}other{Aktiviere die folgenden Erweiterungen im Inkognitomodus:}}</translation>
 <translation id="4153015322587141338">Klicke mit der rechten Maustaste auf eine Datei und wähle „<ph name="PIN_COMMAND" />“ aus, um schnell auf die Datei in der Ablage zugreifen zu können.</translation>
 <translation id="4157569377477607576">Gemäß der Administratorrichtlinie wird Folgendes nicht empfohlen:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> verschoben.</translation>
@@ -393,7 +391,6 @@
 <translation id="4179621117429069925">Element im Papierkorb</translation>
 <translation id="4186579485882418952">Offline-Modus aktivieren</translation>
 <translation id="4193154014135846272">Google-Dokument</translation>
-<translation id="4197674956721858839">Auswahl zippen</translation>
 <translation id="4202378258276439759">Spanisch (Lateinamerika)</translation>
 <translation id="4202977638116331303">Georgisch</translation>
 <translation id="421017592316736757">Du musst online sein, um auf diese Datei zugreifen zu können.</translation>
@@ -416,11 +413,12 @@
 <translation id="434941167647142660">Ursprünglicher Speicherort</translation>
 <translation id="4363958938297989186">Russisch mit phonetischer Tastatur</translation>
 <translation id="4364327530094270451">Melone</translation>
-<translation id="4378551569595875038">Verbindung...</translation>
+<translation id="4378551569595875038">Verbinden...</translation>
 <translation id="4380245540200674032">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, von deinem Administrator verwaltet, Details</translation>
 <translation id="4387004326333427325">Remote-Ablehnung des Authentifizierungszertifikats</translation>
 <translation id="4394214039309501350">Externer Link</translation>
 <translation id="4394980935660306080">Früher in dieser Woche</translation>
+<translation id="4397435965699247285">OneDrive ist offline nicht verfügbar</translation>
 <translation id="4398096759193130964">Stelle die Elemente wieder her oder ziehe sie in einen neuen Ordner außerhalb des Papierkorbs</translation>
 <translation id="4401287888955153199">Alles extrahieren</translation>
 <translation id="4410695710508688828">Fehler beim Extrahieren. <ph name="ERROR_MESSAGE" /></translation>
@@ -483,9 +481,7 @@
 <translation id="4801956050125744859">Beide behalten</translation>
 <translation id="4804827417948292437">Avocado</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> Elemente werden wiederhergestellt…</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{Für die Verwendung des Inkognitomodus ist in deiner Organisation eine Erweiterung erforderlich}other{Für die Verwendung des Inkognitomodus sind in deiner Organisation einige Erweiterungen erforderlich}}</translation>
 <translation id="4826849268470072925">Tamil (ITRANS)</translation>
-<translation id="482932175346970750">Gib <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> in deinen Browser ein</translation>
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4850886885716139402">Anzeigen</translation>
 <translation id="485316830061041779">Deutsch</translation>
@@ -558,7 +554,6 @@
     deine Dateien mit anderen an einem zentralen Ort.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Wiederhergestellte Dateien von Google Drive</translation>
 <translation id="5278111733643988471">Wenn du dieses Element wiederherstellen möchtest, ziehe es in einen neuen Ordner außerhalb des Papierkorbs. Der ursprüngliche Ordner „<ph name="PARENT_FOLDER_NAME" />“ für dieses Element wurde gelöscht.</translation>
-<translation id="5283101102242354279">So aktivierst du eine Erweiterung im Inkognitomodus:</translation>
 <translation id="5288441970121584418">Hamburger</translation>
 <translation id="5293615890992542006">Die Administratorrichtlinie blockiert das Verschieben dieser Datei</translation>
 <translation id="5305688511332277257">Keine installiert</translation>
@@ -601,6 +596,7 @@
 <translation id="5596627076506792578">Weitere Optionen</translation>
 <translation id="5602622065581044566">Bulgarisch mit phonetischer Tastatur</translation>
 <translation id="5605830556594064952">USA – Dvorak</translation>
+<translation id="560739212255190568">Dein Administrator hat Proxy-Überschreibungsregeln festgelegt und erzwingt außerdem den folgenden Proxy</translation>
 <translation id="5618330573454123917">Diese Datei wurde für Computer mit Macintosh-Software entwickelt. Sie ist nicht mit deinem Chrome OS-Gerät kompatibel. <ph name="BEGIN_LINK_HELP" />Weitere Informationen zum Öffnen von Dateien unter Chrome OS<ph name="END_LINK_HELP" /></translation>
 <translation id="5625294776298156701">Tamil mit Tamil99-Tastatur</translation>
 <translation id="5633226425545095130">Wenn du dieses Element verschiebst, wird es für alle Personen freigegeben, die den freigegebenen Ordner „<ph name="DESTINATION_NAME" />“ sehen können.</translation>
@@ -770,7 +766,7 @@
 <translation id="69548399407432279">Letztes Jahr</translation>
 <translation id="6960565108681981554">Nicht aktiviert. Wende dich bitte an deinen Mobilfunkanbieter.</translation>
 <translation id="696203921837389374">Synchronisierung über mobile Daten aktivieren</translation>
-<translation id="6965382102122355670">Ok</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6965648386495488594">Port</translation>
 <translation id="6970230597523682626">Bulgarisch</translation>
 <translation id="6973630695168034713">Ordner</translation>
@@ -792,7 +788,7 @@
 <translation id="7075931588889865715">Thai mit TIS 820-2531-Tastatur</translation>
 <translation id="708278670402572152">Zum Scannen Verbindung trennen</translation>
 <translation id="7086590977277044826">Tamil mit InScript-Tastatur</translation>
-<translation id="7088615885725309056">Älter</translation>
+<translation id="7088615885725309056">Ältere</translation>
 <translation id="7103992300314999525">Mazedonisch</translation>
 <translation id="7104338189998813914">Beim Zugriff auf dein OneDrive-Konto ist ein Problem aufgetreten</translation>
 <translation id="7106346894903675391">Mehr Speicherplatz erwerben...</translation>
@@ -812,7 +808,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Details</translation>
 <translation id="7246947237293279874">FTP-Proxy</translation>
 <translation id="7248671827512403053">App</translation>
-<translation id="7252604552361840748">Suche nach der Erweiterung oben</translation>
 <translation id="7256405249507348194">Unbekannter Fehler: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Verfügbare Dienste</translation>
 <translation id="7291818353625820805">Du möchtest, dass die Tasteneingabe wiederholt wird? Deaktiviere die Akzentzeichen in den Tastatureinstellungen.</translation>
@@ -1001,6 +996,7 @@
 <translation id="8540608333167683902">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, Details</translation>
 <translation id="8545476925160229291">Englisch (USA)</translation>
 <translation id="854655314928502177">URL für Web-Proxy Autodiscovery</translation>
+<translation id="8547747809824590510">Dein Administrator hat Proxy-Überschreibungsregeln festgelegt</translation>
 <translation id="8549186985808798022">Italienisch</translation>
 <translation id="8551494947769799688">Lettisch</translation>
 <translation id="8560515948038859357">Kantonesisch</translation>
@@ -1061,6 +1057,7 @@
 <translation id="9038620279323455325">Die Datei mit dem Namen "<ph name="FILE_NAME" />" existiert bereits. Wähle einen anderen Namen aus.</translation>
 <translation id="9046895021617826162">Verbindungsaufbau fehlgeschlagen</translation>
 <translation id="9065512565307033593">Ohne diese Bestätigung wird der Netzwerkzugriff deaktiviert.</translation>
+<translation id="9079844694307518094">Dein Administrator erzwingt den folgenden Proxy</translation>
 <translation id="908378762078012445">Russisch mit phonetischer Tastatur (AATSEEL)</translation>
 <translation id="9086302186042011942">Synchronisierung läuft...</translation>
 <translation id="9099674669267916096">Seitenzahl</translation>
@@ -1084,6 +1081,7 @@
 <translation id="9213073329713032541">Die Installation wurde gestartet.</translation>
 <translation id="9219103736887031265">Bilder</translation>
 <translation id="9219908252191632183">Mondlandschaft</translation>
+<translation id="931652069802536959">Das Netzwerk wird durch eine Richtlinie blockiert</translation>
 <translation id="938470336146445890">Installiere ein Nutzerzertifikat.</translation>
 <translation id="939736085109172342">Neuer Ordner</translation>
 <translation id="943972244133411984">Geändert von</translation>

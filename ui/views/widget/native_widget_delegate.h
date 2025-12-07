@@ -5,8 +5,9 @@
 #ifndef UI_VIEWS_WIDGET_NATIVE_WIDGET_DELEGATE_H_
 #define UI_VIEWS_WIDGET_NATIVE_WIDGET_DELEGATE_H_
 
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/events/event_constants.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/views_export.h"
 
 class SkPath;
@@ -63,8 +64,13 @@ class VIEWS_EXPORT NativeWidgetDelegate {
   virtual void OnNativeFocus() = 0;
   virtual void OnNativeBlur() = 0;
 
-  // Called when the window is shown/hidden.
+  // Called when the window is shown/hidden. A visible widget might be
+  // physically invisible on screen, for example, if it is shown on an hidden
+  // virtual desktop.
   virtual void OnNativeWidgetVisibilityChanged(bool visible) = 0;
+
+  // Called when the window's visibility on screen changes.
+  virtual void OnNativeWidgetVisibilityOnScreenChanged(bool visible) = 0;
 
   // Called when the native widget is created.
   virtual void OnNativeWidgetCreated() = 0;
@@ -92,6 +98,10 @@ class VIEWS_EXPORT NativeWidgetDelegate {
   // This may happen at the same time as OnNativeWidgetWindowShowStateChanged,
   // e.g. maximize.
   virtual void OnNativeWidgetSizeChanged(const gfx::Size& new_size) = 0;
+
+  // Called when the user begins/ends to resizing the window.
+  virtual void OnNativeWidgetUserResizeStarted() = 0;
+  virtual void OnNativeWidgetUserResizeEnded() = 0;
 
   // Called when NativeWidget changed workspaces or its visible on all
   // workspaces state changes.
@@ -148,7 +158,7 @@ class VIEWS_EXPORT NativeWidgetDelegate {
   // later.  Returns true if the initial focus has been set or the window should
   // not set the initial focus, or false if the caller should set the initial
   // focus (if any).
-  virtual bool SetInitialFocus(ui::WindowShowState show_state) = 0;
+  virtual bool SetInitialFocus(ui::mojom::WindowShowState show_state) = 0;
 
   // Returns true if event handling should descend into |child|. |root_layer| is
   // the layer associated with the root Window and |child_layer| the layer

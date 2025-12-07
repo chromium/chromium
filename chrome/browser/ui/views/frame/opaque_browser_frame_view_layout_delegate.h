@@ -8,16 +8,15 @@
 #include <string>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
 #include "ui/base/ui_base_types.h"
 #endif
 
 namespace gfx {
 class Size;
 class Rect;
-}
+}  // namespace gfx
 
 // Delegate interface to control layout decisions without having to depend on
 // Browser{,Frame,View}.
@@ -80,10 +79,6 @@ class OpaqueBrowserFrameViewLayoutDelegate {
   // rather than having extra vertical space above the tabs. This also removes
   // the thick frame border and rounded corners.
   virtual bool IsFrameCondensed() const = 0;
-
-  // Returns whether the shapes of background tabs are visible against the frame
-  // for either active or inactive windows.
-  virtual bool EverHasVisibleBackgroundTabShapes() const = 0;
 
   // Indicates the type of the frame buttons.
   virtual FrameButtonStyle GetFrameButtonStyle() const;

@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash, "File Manager is ash-chrome only")
+assert(is_chromeos, "File Manager is ChromeOS only")
 
 static_library("constants") {
   sources = [ "url_constants.h" ]
@@ -40,7 +38,7 @@ static_library("file_manager_ui") {
   deps = [
     ":file_manager_untrusted_ui",
     "//ash",
-    "//ash/constants:constants",
+    "//ash/constants",
     "//ash/webui/common:trusted_types_util",
     "//ash/webui/file_manager/mojom",
     "//ash/webui/file_manager/resources:file_manager_swa_resources",
@@ -52,7 +50,7 @@ static_library("file_manager_ui") {
     "//ui/file_manager:file_manager_gen_resources",
     "//ui/file_manager:resources",
     "//ui/web_dialogs",
-    "//ui/webui:webui",
+    "//ui/webui",
     "//ui/webui/resources/cr_components/color_change_listener:mojom",
   ]
 

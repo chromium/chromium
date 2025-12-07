@@ -32,6 +32,7 @@
 
 #include <tuple>
 
+#include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -75,7 +76,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -121,9 +121,8 @@ void LocalWindowProxy::DisposeContext(Lifecycle next_status,
     v8::Local<v8::Object> global = context->Global();
     if (!global_proxy_.IsEmpty()) {
       CHECK(global_proxy_ == global);
-      CHECK_EQ(ToScriptWrappable<DOMWindow>(GetIsolate(), global),
-               ToScriptWrappable<DOMWindow>(
-                   GetIsolate(), global->GetPrototype().As<v8::Object>()));
+      CHECK(V8DOMWrapper::CheckNativeInfoForGlobal(
+          GetIsolate(), global, V8Window::GetWrapperTypeInfo()));
     }
     auto* window = GetFrame()->DomWindow();
     V8DOMWrapper::ClearNativeInfo(GetIsolate(), global,
@@ -304,7 +303,7 @@ void LocalWindowProxy::SetupWindowPrototypeChain() {
                "IsMainFrame", GetFrame()->IsMainFrame(), "IsOutermostMainFrame",
                GetFrame()->IsOutermostMainFrame());
 
-  // Associate the window wrapper object and its prototype chain with the
+  // Associate the global proxy and its prototype chain with the
   // corresponding native DOMWindow object.
   DOMWindow* window = GetFrame()->DomWindow();
   const WrapperTypeInfo* wrapper_type_info = window->GetWrapperTypeInfo();
@@ -313,38 +312,35 @@ void LocalWindowProxy::SetupWindowPrototypeChain() {
   // The global proxy object.  Note this is not the global object.
   v8::Local<v8::Object> global_proxy = context->Global();
   CHECK(global_proxy_ == global_proxy);
-  // Use the global proxy as window wrapper object.
-  V8DOMWrapper::SetNativeInfo(GetIsolate(), global_proxy, window);
+  // Set a link from both JSGlobalProxy and its hidden prototype
+  // (JSGlobalObject) to the native DOMWindow object.
+  V8DOMWrapper::SetNativeInfoForGlobal(GetIsolate(), global_proxy, window);
   CHECK(global_proxy_ == window->AssociateWithWrapper(GetIsolate(), world_,
                                                       wrapper_type_info,
                                                       global_proxy));
 
-  // The global object, aka window wrapper object.
-  v8::Local<v8::Object> window_wrapper =
-      global_proxy->GetPrototype().As<v8::Object>();
-  V8DOMWrapper::SetNativeInfo(GetIsolate(), window_wrapper, window);
-
-  // The prototype object of Window interface.
+  // The prototype object of Window interface (aka Window.prototype).
   v8::Local<v8::Object> window_prototype =
-      window_wrapper->GetPrototype().As<v8::Object>();
+      global_proxy->GetPrototypeV2().As<v8::Object>();
   CHECK(!window_prototype.IsEmpty());
 
-  // The named properties object of Window interface.
+  // The named properties object of Window interface (aka WindowProperties)
+  // also needs a link to DOMWindow object.
   v8::Local<v8::Object> window_properties =
-      window_prototype->GetPrototype().As<v8::Object>();
+      window_prototype->GetPrototypeV2().As<v8::Object>();
   CHECK(!window_properties.IsEmpty());
   V8DOMWrapper::SetNativeInfo(GetIsolate(), window_properties, window);
 
   // [CachedAccessor=kWindowProxy]
   V8PrivateProperty::GetCachedAccessor(
       GetIsolate(), V8PrivateProperty::CachedAccessor::kWindowProxy)
-      .Set(window_wrapper, global_proxy);
+      .Set(global_proxy, global_proxy);
 
   if (GetFrame()->GetPage()->GetChromeClient().IsPopup()) {
     // TODO(yukishiino): Remove installPagePopupController and implement
     // PagePopupController in another way.
     V8PagePopupControllerBinding::InstallPagePopupController(context,
-                                                             window_wrapper);
+                                                             global_proxy);
   }
 }
 
@@ -427,7 +423,7 @@ void LocalWindowProxy::SetSecurityToken(const SecurityOrigin* origin) {
       context->UseDefaultSecurityToken();
       return;
     }
-    token = frame_security_token + token;
+    token = StrCat({frame_security_token, token});
   }
 
   // NOTE: V8 does identity comparison in fast path, must use a symbol
@@ -510,15 +506,15 @@ void Getter(v8::Local<v8::Name> property,
   v8::Isolate* isolate = info.GetIsolate();
   AtomicString name = ToCoreAtomicString(isolate, property.As<v8::String>());
   HTMLDocument* html_document =
-      V8HTMLDocument::ToWrappableUnsafe(isolate, info.Holder());
+      V8HTMLDocument::ToWrappableUnsafe(isolate, info.HolderV2());
   DCHECK(html_document);
   v8::Local<v8::Value> namedPropertyValue =
-      GetNamedProperty(html_document, name, info.Holder(), isolate);
+      GetNamedProperty(html_document, name, info.HolderV2(), isolate);
   bool hasNamedProperty = !namedPropertyValue.IsEmpty();
 
   v8::Local<v8::Value> prototypeChainValue;
   bool hasPropertyInPrototypeChain =
-      info.Holder()
+      info.HolderV2()
           ->GetRealNamedPropertyInPrototypeChain(isolate->GetCurrentContext(),
                                                  property.As<v8::String>())
           .ToLocal(&prototypeChainValue);
@@ -609,6 +605,13 @@ void LocalWindowProxy::UpdateSecurityOrigin(const SecurityOrigin* origin) {
 void LocalWindowProxy::SetAbortScriptExecution(
     v8::Context::AbortScriptExecutionCallback callback) {
   InitializeIfNeeded();
+  // Aborting script execution may cause some undesired side effects, so
+  // leave some breadcrumbs in case things go wrong.
+  // See https://crbug.com/427166012 for additional context.
+  static auto* const abort_script_execution = AllocateCrashKeyString(
+      "abort_script_execution", base::debug::CrashKeySize::Size32);
+  SetCrashKeyString(abort_script_execution, callback ? "true" : "false");
+
   script_state_->GetContext()->SetAbortScriptExecution(callback);
 }
 

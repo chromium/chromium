@@ -16,8 +16,6 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -25,11 +23,15 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
+#include "components/password_manager/core/browser/manage_passwords_referrer.h"
+#include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -37,10 +39,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
-#include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
@@ -51,7 +50,6 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/user_education/show_promo_in_page.h"
-#include "chrome/browser/ui/webui/password_manager/password_manager_ui.h"
 #endif
 
 namespace {
@@ -196,62 +194,13 @@ bool IsSyncingAutosignSetting(Profile* profile) {
       SyncServiceFactory::GetForProfile(profile);
   return (
       sync_service &&
-      sync_service->GetActiveDataTypes().Has(syncer::PRIORITY_PREFERENCES));
-}
-
-GURL GetGooglePasswordManagerURL(ManagePasswordsReferrer referrer) {
-  GURL url(chrome::kGooglePasswordManagerURL);
-  url = net::AppendQueryParameter(url, "utm_source", "chrome");
-#if BUILDFLAG(IS_ANDROID)
-  url = net::AppendQueryParameter(url, "utm_medium", "android");
-#else
-  url = net::AppendQueryParameter(url, "utm_medium", "desktop");
-#endif
-  std::string campaign = [referrer] {
-    switch (referrer) {
-      case ManagePasswordsReferrer::kChromeSettings:
-        return "chrome_settings";
-      case ManagePasswordsReferrer::kManagePasswordsBubble:
-        return "manage_passwords_bubble";
-      case ManagePasswordsReferrer::kPasswordContextMenu:
-        return "password_context_menu";
-      case ManagePasswordsReferrer::kPasswordDropdown:
-        return "password_dropdown";
-      case ManagePasswordsReferrer::kPasswordGenerationConfirmation:
-        return "password_generation_confirmation";
-      case ManagePasswordsReferrer::kProfileChooser:
-        return "profile_chooser";
-      case ManagePasswordsReferrer::kSafeStateBubble:
-        return "safe_state";
-      case ManagePasswordsReferrer::kSaveUpdateBubble:
-        return "save_update_password_bubble";
-      case ManagePasswordsReferrer::kPasswordGenerationPrompt:
-        return "password_generation_prompt_in_autofill_dropdown";
-      case ManagePasswordsReferrer::kPasswordsGoogleWebsite:
-        return "passwords_google";
-      case ManagePasswordsReferrer::kAddUsernameBubble:
-        return "add_username_bubble";
-      case ManagePasswordsReferrer::kDefaultStoreChangedBubble:
-        return "default_store_changed_bubble";
-      case ManagePasswordsReferrer::kPasswordsAccessorySheet:
-      case ManagePasswordsReferrer::kTouchToFill:
-      case ManagePasswordsReferrer::kPasswordBreachDialog:
-      case ManagePasswordsReferrer::kSafetyCheck:
-      case ManagePasswordsReferrer::kBiometricAuthenticationBeforeFillingDialog:
-      case ManagePasswordsReferrer::kChromeMenuItem:
-      case ManagePasswordsReferrer::kSharedPasswordsNotificationBubble:
-      case ManagePasswordsReferrer::kSearchPasswordsWidget:
-      case ManagePasswordsReferrer::kOmniboxPedalSuggestion:
-      case ManagePasswordsReferrer::kManagePasswordDetailsBubble:
-      case ManagePasswordsReferrer::kPasskeySavedConfirmationBubble:
-      case ManagePasswordsReferrer::kPasskeyDeletedConfirmationBubble:
-        NOTREACHED_NORETURN();
-    }
-
-    NOTREACHED_NORETURN();
-  }();
-
-  return net::AppendQueryParameter(url, "utm_campaign", campaign);
+      sync_service->GetActiveDataTypes().Has(syncer::PRIORITY_PREFERENCES) &&
+      // With `kSyncSupportAlwaysSyncingPriorityPreferences` feature enabled,
+      // PRIORITY_PREFERENCES will always be active (decoupled from sync user
+      // toggle). Thus, the preferences user toggle should be checked
+      // separately.
+      sync_service->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kPreferences));
 }
 
 std::string GetGooglePasswordManagerSubPageURLStr() {
@@ -263,6 +212,9 @@ std::string GetGooglePasswordManagerSubPageURLStr() {
 #if !BUILDFLAG(IS_ANDROID)
 void NavigateToManagePasswordsPage(Browser* browser,
                                    ManagePasswordsReferrer referrer) {
+  if (!browser) {
+    return;
+  }
   base::UmaHistogramEnumeration("PasswordManager.ManagePasswordsReferrer",
                                 referrer);
   chrome::ShowPasswordManager(browser);
@@ -271,28 +223,14 @@ void NavigateToManagePasswordsPage(Browser* browser,
 void NavigateToPasswordDetailsPage(Browser* browser,
                                    const std::string& password_domain_name,
                                    ManagePasswordsReferrer referrer) {
+  if (!browser) {
+    return;
+  }
   base::UmaHistogramEnumeration("PasswordManager.ManagePasswordsReferrer",
                                 referrer);
   chrome::ShowPasswordDetailsPage(browser, password_domain_name);
 }
 
-void NavigateToManagePasswordsSettingsAccountStoreToggle(Browser* browser) {
-  ShowPromoInPage::Params params;
-  params.target_url = GURL(chrome::kChromeUIPasswordManagerSettingsURL);
-  params.bubble_anchor_id = PasswordManagerUI::kAccountStoreToggleElementId;
-  params.bubble_arrow = user_education::HelpBubbleArrow::kTopRight;
-  params.bubble_text = l10n_util::GetStringUTF16(
-      IDS_PASSWORD_MANAGER_IPH_ACCOUNT_STORAGE_TOGGLE);
-
-  ShowPromoInPage::Start(browser, std::move(params));
-}
-
-void NavigateToPasswordCheckupPage(Profile* profile) {
-  NavigateParams params(profile, password_manager::GetPasswordCheckupURL(),
-                        ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  Navigate(&params);
-}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 mojo::Remote<network::mojom::URLLoaderFactory> GetURLLoaderForMainFrame(
@@ -310,4 +248,28 @@ const gfx::VectorIcon& GooglePasswordManagerVectorIcon() {
 #else
   return kKeyIcon;
 #endif
+}
+
+std::optional<AccountInfo> GetAccountInfoForPasswordMessages(
+    syncer::SyncService* sync_service,
+    signin::IdentityManager* identity_manager) {
+  if (!password_manager::sync_util::HasChosenToSyncPasswords(sync_service)) {
+    return std::nullopt;
+  }
+  CoreAccountId account_id =
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  return identity_manager->FindExtendedAccountInfoByAccountId(account_id);
+}
+
+std::string GetDisplayableAccountName(
+    syncer::SyncService* sync_service,
+    signin::IdentityManager* identity_manager) {
+  std::optional<AccountInfo> account_info =
+      GetAccountInfoForPasswordMessages(sync_service, identity_manager);
+  if (!account_info.has_value()) {
+    return "";
+  }
+  return account_info->CanHaveEmailAddressDisplayed()
+             ? account_info.value().email
+             : account_info.value().full_name;
 }

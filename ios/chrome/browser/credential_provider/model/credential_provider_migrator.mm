@@ -4,11 +4,16 @@
 
 #import "ios/chrome/browser/credential_provider/model/credential_provider_migrator.h"
 
+#import "base/metrics/histogram_functions.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #import "components/webauthn/core/browser/passkey_model.h"
+#import "components/webauthn/core/browser/passkey_model_utils.h"
 #import "ios/chrome/browser/credential_provider/model/archivable_credential+password_form.h"
+#import "ios/chrome/browser/credential_provider/model/features.h"
 #import "ios/chrome/common/credential_provider/archivable_credential+passkey.h"
 #import "ios/chrome/common/credential_provider/user_defaults_credential_store.h"
 
@@ -21,9 +26,12 @@ typedef enum : NSInteger {
   CredentialProviderMigratorErrorAlreadyRunning,
 } CredentialProviderMigratorErrors;
 
+// Name of the passkey migration related histogram.
+static constexpr char kPasskeysIOSMigration[] = "Passkeys.IOSMigration";
+
 @interface CredentialProviderMigrator () {
   // Passkey store.
-  raw_ptr<webauthn::PasskeyModel> _passkeyStore;
+  raw_ptr<webauthn::PasskeyModel, DanglingUntriaged> _passkeyStore;
 }
 
 // Key used to retrieve the temporal storage.
@@ -68,22 +76,86 @@ typedef enum : NSInteger {
     completion(NO, error);
     return;
   }
+
   self.temporalStore = [[UserDefaultsCredentialStore alloc]
       initWithUserDefaults:self.userDefaults
                        key:self.key];
   NSArray<id<Credential>>* credentials = self.temporalStore.credentials.copy;
+
+  bool importPasskeys = _passkeyStore && _passkeyStore->IsReady();
+  base::flat_set<std::string> syncIds;
+  if (importPasskeys) {
+    syncIds = _passkeyStore->GetAllSyncIds();
+  }
+
   for (id<Credential> credential in credentials) {
     if (credential.isPasskey) {
-      // TODO(crbug.com/330355124): this can happen too early (before
-      // PasskeySyncBridge::store_ is created in _passkeyStore) if it happens
-      // at startup, so add a mechanism to re-trigger the migration later.
-      if (!_passkeyStore || !_passkeyStore->IsReady()) {
+      // If this happens too early (before the passkey store is ready), the
+      // migration will be re-triggered later for that passkey store by
+      // CredentialProviderMigratorAppAgent.
+      if (!importPasskeys) {
         continue;
       }
 
-      sync_pb::WebauthnCredentialSpecifics passkey =
-          PasskeyFromCredential(credential);
-      _passkeyStore->CreatePasskey(passkey);
+      std::string syncId(static_cast<const char*>(credential.syncId.bytes),
+                         credential.syncId.length);
+      if (syncIds.contains(syncId)) {
+        // If the passkey already exists, only update its last used time, and
+        // only do so if it's newer and the credential is still active.
+        std::string rpId = base::SysNSStringToUTF8(credential.rpId);
+        std::string credentialId(
+            static_cast<const char*>(credential.credentialId.bytes),
+            credential.credentialId.length);
+        std::optional<sync_pb::WebauthnCredentialSpecifics>
+            credential_specifics =
+                _passkeyStore->GetPasskeyByCredentialId(rpId, credentialId);
+        if (!credential_specifics.has_value()) {
+          continue;
+        }
+
+        if (base::FeatureList::IsEnabled(kCredentialProviderSignalAPI) &&
+            credential_specifics->hidden() != credential.hidden) {
+          // TODO(crbug.com/432260316): Log metrics.
+          // TODO(crbug.com/432260316): Add PasskeyChangeQuotaTracker.
+          if (credential.hidden) {
+            _passkeyStore->HidePasskey(
+                credentialId, base::Time::FromMillisecondsSinceUnixEpoch(
+                                  credential.hiddenTime));
+          } else {
+            _passkeyStore->UnhidePasskey(credentialId);
+          }
+        }
+
+        std::string username = base::SysNSStringToUTF8(credential.username);
+        if (base::FeatureList::IsEnabled(kCredentialProviderSignalAPI) &&
+            credential_specifics->user_name() != username) {
+          _passkeyStore->UpdatePasskey(
+              credentialId,
+              {.user_name = username,
+               .user_display_name = credential_specifics->user_display_name()},
+              /*updated_by_user=*/false);
+        }
+
+        if (credential_specifics->last_used_time_windows_epoch_micros() <
+            credential.lastUsedTime) {
+          _passkeyStore->UpdatePasskeyTimestamp(
+              credentialId, base::Time::FromDeltaSinceWindowsEpoch(
+                                base::Microseconds(credential.lastUsedTime)));
+          base::UmaHistogramEnumeration(
+              kPasskeysIOSMigration, PasskeysMigrationStatus::kPasskeyUpdated);
+        }
+      } else {
+        sync_pb::WebauthnCredentialSpecifics passkey =
+            PasskeyFromCredential(credential);
+        if (webauthn::passkey_model_utils::IsGpmPasskeyValid(passkey)) {
+          _passkeyStore->CreatePasskey(passkey);
+          base::UmaHistogramEnumeration(
+              kPasskeysIOSMigration, PasskeysMigrationStatus::kPasskeyCreated);
+        } else {
+          base::UmaHistogramEnumeration(
+              kPasskeysIOSMigration, PasskeysMigrationStatus::kInvalidPasskey);
+        }
+      }
     } else {
       password_manager::PasswordForm form =
           PasswordFormFromCredential(credential);

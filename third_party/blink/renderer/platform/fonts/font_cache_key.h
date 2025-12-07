@@ -78,7 +78,7 @@ struct FontCacheKey {
         font_variant_alternates_(font_variant_alternates),
         is_unique_match_(is_unique_match) {}
 
-  FontCacheKey(WTF::HashTableDeletedValueType)
+  FontCacheKey(HashTableDeletedValueType)
       : font_size_(std::numeric_limits<unsigned>::max()),
         device_scale_factor_(std::numeric_limits<float>::max()) {}
 
@@ -91,20 +91,19 @@ struct FontCacheKey {
     // Convert from float with 3 digit precision before hashing.
     unsigned device_scale_factor_hash = device_scale_factor_ * 1000;
     unsigned hash_codes[10] = {
-      creation_params_.GetHash(),
-      font_size_,
-      options_,
-      device_scale_factor_hash,
-      size_adjust_ ? size_adjust_.GetHash() : 0,
+        creation_params_.GetHash(),
+        font_size_,
+        options_,
+        device_scale_factor_hash,
+        size_adjust_ ? size_adjust_.GetHash() : 0,
 #if BUILDFLAG(IS_ANDROID)
-      (locale_.empty() ? 0 : WTF::GetHash(locale_)) ^
+        (locale_.empty() ? 0 : blink::GetHash(locale_)) ^
 #endif  // BUILDFLAG(IS_ANDROID)
-          (variation_settings_ ? variation_settings_->GetHash() : 0),
-      palette_ ? palette_->GetHash() : 0,
-      font_variant_alternates_ ? font_variant_alternates_->GetHash() : 0,
-      is_unique_match_
-    };
-    return StringHasher::HashMemory<sizeof(hash_codes)>(hash_codes);
+            (variation_settings_ ? variation_settings_->GetHash() : 0),
+        palette_ ? palette_->GetHash() : 0,
+        font_variant_alternates_ ? font_variant_alternates_->GetHash() : 0,
+        is_unique_match_};
+    return StringHasher::HashMemory(base::as_byte_span(hash_codes));
   }
 
   bool operator==(const FontCacheKey& other) const {
@@ -127,8 +126,6 @@ struct FontCacheKey {
                                   other.font_variant_alternates_) &&
            is_unique_match_ == other.is_unique_match_;
   }
-
-  bool operator!=(const FontCacheKey& other) const { return !(*this == other); }
 
   static constexpr unsigned PrecisionMultiplier() {
     return kFontSizePrecisionMultiplier;
@@ -159,12 +156,8 @@ struct FontCacheKey {
   bool is_unique_match_ = false;
 };
 
-}  // namespace blink
-
-namespace WTF {
 template <>
-struct HashTraits<blink::FontCacheKey>
-    : WTF::SimpleClassHashTraits<blink::FontCacheKey> {
+struct HashTraits<FontCacheKey> : SimpleClassHashTraits<blink::FontCacheKey> {
   // std::string's empty state need not be zero in all implementations,
   // and it is held within FontFaceCreationParams.
   static const bool kEmptyValueIsZero = false;
@@ -174,9 +167,9 @@ struct HashTraits<blink::FontCacheKey>
 // which contains poisoned metadata for detecting buffer overflows in short
 // strings. Copying this string as part of `KeyValuePairExtractor` will thus
 // trigger ASAN warnings.
-static_assert(!HashTraits<blink::FontCacheKey>::kCanTraceConcurrently);
+static_assert(!HashTraits<FontCacheKey>::kCanTraceConcurrently);
 
-}  // namespace WTF
+}  // namespace blink
 
 template <>
 struct std::hash<blink::FontCacheKey> {

@@ -17,8 +17,10 @@ class Profile;
 // This coordinates Tab changes with Contextual Search.
 class ContextualSearchTabHelper {
  public:
-  ContextualSearchTabHelper(JNIEnv* env, jobject obj, Profile* profile);
-  void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  ContextualSearchTabHelper(JNIEnv* env,
+                            const jni_zero::JavaRef<jobject>& obj,
+                            Profile* profile);
+  void Destroy(JNIEnv* env);
 
   ContextualSearchTabHelper(const ContextualSearchTabHelper&) = delete;
   ContextualSearchTabHelper& operator=(const ContextualSearchTabHelper&) =
@@ -29,8 +31,7 @@ class ContextualSearchTabHelper {
   // The |device_scale_factor| is the ratio of pixels to dips.
   void InstallUnhandledTapNotifierIfNeeded(
       JNIEnv* env,
-      jobject obj,
-      const base::android::JavaParamRef<jobject>& j_base_web_contents,
+      const base::android::JavaRef<jobject>& j_base_web_contents,
       jfloat device_scale_factor);
 
  private:

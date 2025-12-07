@@ -4,9 +4,10 @@
 
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/dbus/kerberos/fake_kerberos_client.h"
 #include "chromeos/ash/components/dbus/kerberos/kerberos_client.h"
@@ -55,6 +56,14 @@ void FakeUpstartClient::StartJob(const std::string& job,
       start_job_cb_ ? start_job_cb_.Run(job, upstart_env).success : true;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result));
+}
+
+void FakeUpstartClient::StartJobWithTimeout(
+    const std::string& job,
+    const std::vector<std::string>& upstart_env,
+    chromeos::VoidDBusMethodCallback callback,
+    int timeout_ms) {
+  StartJob(job, upstart_env, std::move(callback));
 }
 
 void FakeUpstartClient::StartJobWithErrorDetails(
@@ -127,7 +136,7 @@ void FakeUpstartClient::StartRecordingUpstartOperations() {
 std::vector<FakeUpstartClient::UpstartOperation>
 FakeUpstartClient::GetRecordedUpstartOperationsForJob(const std::string& name) {
   std::vector<FakeUpstartClient::UpstartOperation> filtered_ops;
-  base::ranges::copy_if(
+  std::ranges::copy_if(
       upstart_operations_, std::back_inserter(filtered_ops),
       [&name](const UpstartOperation& op) { return op.name == name; });
   return filtered_ops;

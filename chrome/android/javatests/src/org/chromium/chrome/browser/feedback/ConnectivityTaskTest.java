@@ -48,7 +48,7 @@ public class ConnectivityTaskTest {
     public void testNormalCaseShouldWork() {
         final ConnectivityTask task =
                 ThreadUtils.runOnUiThreadBlocking(
-                        new Callable<ConnectivityTask>() {
+                        new Callable<>() {
                             @Override
                             public ConnectivityTask call() {
                                 // Intentionally make HTTPS-connection fail which should result in
@@ -178,7 +178,7 @@ public class ConnectivityTaskTest {
     public void testTwoTimeoutsShouldFillInTheRest() {
         final ConnectivityTask task =
                 ThreadUtils.runOnUiThreadBlocking(
-                        new Callable<ConnectivityTask>() {
+                        new Callable<>() {
                             @Override
                             public ConnectivityTask call() {
                                 // Intentionally make HTTPS connections slow which should result in
@@ -234,7 +234,7 @@ public class ConnectivityTaskTest {
     private static FeedbackData getResult(final ConnectivityTask task) {
         final FeedbackData result =
                 ThreadUtils.runOnUiThreadBlocking(
-                        new Callable<FeedbackData>() {
+                        new Callable<>() {
                             @Override
                             public FeedbackData call() {
                                 return task.get();

@@ -73,11 +73,12 @@ IN_PROC_BROWSER_TEST_F(LiveTranslateControllerTest,
   EXPECT_TRUE(GetLiveCaptionEnabled());
   EXPECT_TRUE(GetLiveTranslateEnabled());
 
-  // Turning off Live Caption should automatically turn off Live Translate.
+  // Turning off Live Caption should not modify live translate.
   SetLiveCaptionEnabled(false);
   EXPECT_FALSE(GetLiveCaptionEnabled());
-  EXPECT_FALSE(GetLiveTranslateEnabled());
+  EXPECT_TRUE(GetLiveTranslateEnabled());
 
+  SetLiveTranslateEnabled(false);
   // Turning on Live Translate should automatically turn on Live Caption.
   SetLiveTranslateEnabled(true);
   EXPECT_TRUE(GetLiveCaptionEnabled());

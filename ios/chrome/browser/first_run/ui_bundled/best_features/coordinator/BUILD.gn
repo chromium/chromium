@@ -1,0 +1,39 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "best_features_screen_coordinator.h",
+    "best_features_screen_coordinator.mm",
+    "best_features_screen_detail_coordinator.h",
+    "best_features_screen_detail_coordinator.mm",
+    "best_features_screen_mediator.h",
+    "best_features_screen_mediator.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/commerce/core:shopping_service",
+    "//components/password_manager/core/browser",
+    "//components/segmentation_platform/public",
+    "//ios/chrome/browser/commerce/model:shopping_service",
+    "//ios/chrome/browser/first_run/model",
+    "//ios/chrome/browser/first_run/public:best_features_item",
+    "//ios/chrome/browser/first_run/ui_bundled:features",
+    "//ios/chrome/browser/first_run/ui_bundled:screen_delegate",
+    "//ios/chrome/browser/first_run/ui_bundled/best_features/ui",
+    "//ios/chrome/browser/instructions_bottom_sheet/ui",
+    "//ios/chrome/browser/segmentation_platform/model",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/welcome_back/model:features",
+    "//ios/chrome/browser/welcome_back/ui",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/promo_style",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

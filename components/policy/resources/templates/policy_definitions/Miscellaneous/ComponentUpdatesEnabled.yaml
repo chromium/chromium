@@ -4,6 +4,7 @@ desc: |-
 
         If set to disabled, updates to components are disabled. However, some components are exempt from this policy: updates to any component that does not contain executable code and is critical for the security of the browser will not be disabled.
         Examples of such components include the certificate revocation lists and subresource filters.
+default: true
 example_value: true
 features:
   dynamic_refresh: false

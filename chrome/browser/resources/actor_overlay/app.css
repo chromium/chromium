@@ -1,0 +1,86 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+:host(.background-visible) {
+  background: linear-gradient(77deg, rgba(49, 134, 255, 0.25) 6.99%, rgba(52, 107, 241, 0.25) 45.46%, rgba(79, 160, 255, 0.25) 88.2%);
+  cursor: not-allowed;
+}
+
+
+@keyframes pulse-opacity {
+  0% {
+    opacity: 0.6;
+    animation-timing-function: cubic-bezier(0.33, 0.00, 0.67, 1.00);
+  }
+
+  33.33% {
+    opacity: 0;
+    animation-timing-function: linear;
+  }
+
+  66.66% {
+    opacity: 0;
+    animation-timing-function: cubic-bezier(0.33, 0.00, 0.67, 1.00);
+  }
+
+  100% {
+    opacity: 0.6;
+  }
+}
+
+#border-stroke {
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  background: #3186FF;
+  mask-image:
+    linear-gradient(white, white),
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6px' ry='6px' fill='white'/></svg>");
+  mask-composite: subtract;
+  mask-size:
+    100% 100%,
+    calc(100% - 6px) calc(100% - 6px);
+  mask-position:
+    0 0,
+    center;
+  mask-repeat: no-repeat, no-repeat;
+  z-index: 15;
+  pointer-events: none;
+}
+
+#border-glow {
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  box-shadow:
+    inset 0 0 35px 12px #3186FF;
+  animation: pulse-opacity 6000ms infinite;
+  pointer-events: none;
+  z-index: 10;
+}
+
+#magicCursor {
+  opacity: 0;
+  position: fixed;
+  width: 40px;
+  height: 40px;
+  background-image: url('magic_cursor.svg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  z-index: 9999;
+  transition: transform 0.1s linear, box-shadow 0.2s ease-out;
+  transform-origin: 50% 100%;
+}

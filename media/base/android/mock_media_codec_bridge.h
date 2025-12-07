@@ -40,23 +40,20 @@ class MockMediaCodecBridge : public MediaCodecBridge,
                MediaCodecResult(int* stride,
                                 int* slice_height,
                                 gfx::Size* encoded_size));
-  MOCK_METHOD4(QueueInputBuffer,
+  MOCK_METHOD3(QueueInputBuffer,
                MediaCodecResult(int index,
-                                const uint8_t* data,
+                                base::span<const uint8_t> data,
+                                base::TimeDelta presentation_time));
+  MOCK_METHOD3(QueueFilledInputBuffer,
+               MediaCodecResult(int index,
                                 size_t data_size,
                                 base::TimeDelta presentation_time));
-  MOCK_METHOD9(
-      QueueSecureInputBuffer,
-      MediaCodecResult(int index,
-                       const uint8_t* data,
-                       size_t data_size,
-                       const std::string& key_id,
-                       const std::string& iv,
-                       const std::vector<SubsampleEntry>& subsamples,
-                       EncryptionScheme encryption_scheme,
-                       std::optional<EncryptionPattern> encryption_pattern,
-                       base::TimeDelta presentation_time));
-  MOCK_METHOD1(QueueEOS, void(int input_buffer_index));
+  MOCK_METHOD4(QueueSecureInputBuffer,
+               MediaCodecResult(int index,
+                                base::span<const uint8_t> data,
+                                base::TimeDelta presentation_time,
+                                const DecryptConfig& decrypt_config));
+  MOCK_METHOD1(QueueEOS, MediaCodecResult(int input_buffer_index));
   MOCK_METHOD2(DequeueInputBuffer,
                MediaCodecResult(base::TimeDelta timeout, int* index));
   MOCK_METHOD7(DequeueOutputBuffer,
@@ -68,21 +65,19 @@ class MockMediaCodecBridge : public MediaCodecBridge,
                                 bool* end_of_stream,
                                 bool* key_frame));
   MOCK_METHOD2(ReleaseOutputBuffer, void(int index, bool render));
-  MOCK_METHOD3(GetInputBuffer,
-               MediaCodecResult(int input_buffer_index,
-                                uint8_t** data,
-                                size_t* capacity));
-  MOCK_METHOD4(
-      CopyFromOutputBuffer,
-      MediaCodecResult(int index, size_t offset, void* dst, size_t num));
-  MOCK_METHOD0(GetName, std::string());
+  MOCK_METHOD1(GetInputBuffer, base::span<uint8_t>(int input_buffer_index));
+  MOCK_METHOD3(CopyFromOutputBuffer,
+               MediaCodecResult(int index,
+                                size_t offset,
+                                base::span<uint8_t> dst));
+  std::string GetName() override;
+  bool IsSoftwareCodec() override;
   MOCK_METHOD1(SetSurface,
                bool(const base::android::JavaRef<jobject>& surface));
   MOCK_METHOD2(SetVideoBitrate, void(int bps, int frame_rate));
   MOCK_METHOD0(RequestKeyFrameSoon, void());
   MOCK_METHOD0(IsAdaptivePlaybackSupported, bool());
-  MOCK_METHOD2(OnBuffersAvailable,
-               void(JNIEnv*, const base::android::JavaParamRef<jobject>&));
+  MOCK_METHOD1(OnBuffersAvailable, void(JNIEnv*));
   MOCK_METHOD0(GetMaxInputSize, size_t());
   CodecType GetCodecType() const override;
 
@@ -91,12 +86,16 @@ class MockMediaCodecBridge : public MediaCodecBridge,
 
   static std::unique_ptr<MediaCodecBridge> CreateVideoDecoder(
       const VideoCodecConfig& config);
+  static std::unique_ptr<MockMediaCodecBridge> CreateMockVideoDecoder(
+      const VideoCodecConfig& config);
 
  private:
   // Is the codec in the drained state?
   bool is_drained_ = true;
 
   CodecType codec_type_ = CodecType::kAny;
+  std::string name_;
+  bool is_software_codec_;
 };
 
 }  // namespace media

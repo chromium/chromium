@@ -8,8 +8,7 @@
 #include "chromeos/ash/components/phonehub/feature_status.h"
 #include "chromeos/ash/components/phonehub/feature_status_provider.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 UserActionRecorderImpl::UserActionRecorderImpl(
     FeatureStatusProvider* feature_status_provider)
@@ -57,5 +56,4 @@ void UserActionRecorderImpl::HandleUserAction(UserAction action) {
   base::UmaHistogramEnumeration("PhoneHub.CompletedUserAction", action);
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

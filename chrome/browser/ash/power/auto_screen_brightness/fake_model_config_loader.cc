@@ -8,7 +8,7 @@ namespace ash {
 namespace power {
 namespace auto_screen_brightness {
 
-FakeModelConfigLoader::FakeModelConfigLoader() {}
+FakeModelConfigLoader::FakeModelConfigLoader() = default;
 
 FakeModelConfigLoader::~FakeModelConfigLoader() = default;
 

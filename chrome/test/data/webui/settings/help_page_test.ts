@@ -4,31 +4,27 @@
 
 /** @fileoverview Suite of tests for the Settings help page. */
 
-// clang-format off
 import 'chrome://settings/settings.js';
 
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {getPage, getSection} from './settings_page_test_util.js';
-// clang-format on
-
-// Register mocha tests.
 suite('SettingsHelpPage', function() {
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     // The ChromeContentBrowserClient will rewrite chrome://help to
     // chrome://settings/help.
     window.history.pushState('', 'Test', 'chrome://settings/help');
-    const settingsUi = document.createElement('settings-ui');
-    document.body.appendChild(settingsUi);
-
-    // Wait for the dom-if.
-    return waitBeforeNextRender(settingsUi);
   });
 
   test('about section', async () => {
-    const page = await getPage('about');
-    assertTrue(!!getSection(page, 'about'));
+    const settingsUi = document.createElement('settings-ui');
+    document.body.appendChild(settingsUi);
+    const settingsMain = settingsUi.shadowRoot!.querySelector('settings-main');
+    assertTrue(!!settingsMain);
+    await flushTasks();
+    const aboutPage =
+        settingsMain.shadowRoot!.querySelector('settings-about-page');
+    assertTrue(!!aboutPage);
   });
 });

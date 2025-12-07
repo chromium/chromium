@@ -12,6 +12,7 @@
 
 #include "base/gtest_prod_util.h"
 #import "base/memory/raw_ptr.h"
+#import "components/infobars/core/infobar_manager.h"
 #include "components/translate/core/browser/translate_client.h"
 #include "components/translate/core/browser/translate_step.h"
 #include "components/translate/core/common/translate_errors.h"
@@ -57,7 +58,6 @@ class ChromeIOSTranslateClient
   PrefService* GetPrefs() override;
   std::unique_ptr<translate::TranslatePrefs> GetTranslatePrefs() override;
   language::AcceptLanguagesService* GetAcceptLanguagesService() override;
-  int GetInfobarIconID() const override;
   std::unique_ptr<infobars::InfoBar> CreateInfoBar(
       std::unique_ptr<translate::TranslateInfoBarDelegate> delegate)
       const override;
@@ -77,7 +77,8 @@ class ChromeIOSTranslateClient
   FRIEND_TEST_ALL_PREFIXES(ChromeIOSTranslateClientTest,
                            PageTranslationCorrectlyUpdatesMetrics);
 
-  explicit ChromeIOSTranslateClient(web::WebState* web_state);
+  ChromeIOSTranslateClient(web::WebState* web_state,
+                           infobars::InfoBarManager* infobar_manager);
 
   // web::WebStateObserver implementation.
   void DidStartNavigation(web::WebState* web_state,
@@ -97,13 +98,12 @@ class ChromeIOSTranslateClient
   // WebStateDestroyed has been called.
   raw_ptr<web::WebState> web_state_ = nullptr;
 
+  raw_ptr<infobars::InfoBarManager, DanglingUntriaged> infobar_manager_;
   translate::IOSTranslateDriver translate_driver_;
   std::unique_ptr<translate::TranslateManager> translate_manager_;
 
   // Metrics recorder for page load events.
   std::unique_ptr<translate::TranslateMetricsLogger> translate_metrics_logger_;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_TRANSLATE_MODEL_CHROME_IOS_TRANSLATE_CLIENT_H_

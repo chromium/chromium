@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SAFE_BROWSING_PASSWORD_REUSE_MODAL_WARNING_DIALOG_H_
 #define CHROME_BROWSER_UI_VIEWS_SAFE_BROWSING_PASSWORD_REUSE_MODAL_WARNING_DIALOG_H_
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
@@ -47,6 +46,7 @@ class PasswordReuseModalWarningDialog
       views::Label* message_body_label);
 
   // views::DialogDelegateView:
+  gfx::Size GetMinimumSize() const override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   std::u16string GetWindowTitle() const override;

@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
+#include "ui/strings/grit/ax_strings.h"
 
 namespace blink {
 
@@ -103,7 +104,7 @@ void MediaControlPictureInPictureButtonElement::UpdateAriaString(
           : GetLocale().QueryString(
                 IDS_AX_MEDIA_ENTER_PICTURE_IN_PICTURE_BUTTON);
 
-  setAttribute(html_names::kAriaLabelAttr, WTF::AtomicString(aria_string));
+  setAttribute(html_names::kAriaLabelAttr, AtomicString(aria_string));
   UpdateAriaLabel(aria_string);
 }
 

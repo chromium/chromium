@@ -1,0 +1,79 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ntp_promo.mojom;
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// Records the decision made by the NTP on whether to show NTP promos.
+//
+// LINT.IfChange(show_ntp_promos_result_enum)
+enum ShowNtpPromosResult {
+  kShown = 0,
+  kNotShownNoPromos = 1,
+  kNotShownDueToPolicy = 2,
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:show_ntp_promos_result_enum)
+
+// These are the promo IDs shown on initial load of the NTP, in show order.
+// Subsequent changes / updates to displayed promos should NOT be reported,
+// so as to avoid over-counting metrics.
+struct PromosShown {
+  array<string> eligible;
+  array<string> completed;
+};
+
+// Browser-side handler for requests from WebUI page.
+interface NtpPromoHandler {
+  // Requests a set of promos be sent from the browser. The response is sent
+  // asynchronously through a call to `SetPromos()`.
+  RequestPromos();
+
+  // Notifies the handler that `eligible_shown` and `completed_shown` promos
+  // have been shown. Only called once, after the initial set of promos are
+  // shown, and not after subsequent updates.
+  //
+  // The promos are ordered in each list from top/first to bottom/last.
+  OnPromosShown(array<string> eligible_shown, array<string> completed_shown);
+
+  // Called when the user clicks an action button for `promo_id`.
+  OnPromoClicked(string promo_id);
+
+  // Specifies that the setup list should be snoozed.
+  SnoozeSetupList();
+
+  // Specifies that the setup list should be unsnoozed. (This is a recovery
+  // state after snoozing.)
+  UnsnoozeSetupList();
+
+  // Specifies that the setup list should be permanently disabled.
+  DisableSetupList();
+
+  // Specifies that the setup list should be un-disabled. (This is a recovery
+  // state after disabling.)
+  UndisableSetupList();
+};
+
+struct Promo {
+  string id;
+  string icon_name;
+  string body_text;
+  string button_text;
+};
+
+// WebUI-side handler for requests from the browser.
+interface NtpPromoClient {
+  // Called by backend to supply a requested set of promos to the Web UI.
+  SetPromos(
+      array<Promo> eligible,
+      array<Promo> completed);
+};
+
+// Used by the WebUI to bootstrap bidirectional communication.
+interface NtpPromoHandlerFactory {
+  // The WebUI component calls this method when the page is first initialized.
+  CreateNtpPromoHandler(pending_remote<NtpPromoClient> client,
+                        pending_receiver<NtpPromoHandler> handler);
+};

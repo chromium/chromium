@@ -8,7 +8,6 @@ source_set("certificates") {
   sources = [
     "common.cc",
     "common.h",
-    "constants.cc",
     "constants.h",
     "nearby_share_certificate_manager.cc",
     "nearby_share_certificate_manager.h",
@@ -41,7 +40,7 @@ source_set("certificates") {
     "//chromeos/ash/components/nearby/common/proto",
     "//chromeos/ash/components/nearby/common/scheduling",
     "//chromeos/ash/services/nearby/public/mojom",
-    "//components/cross_device/logging:logging",
+    "//components/cross_device/logging",
     "//components/leveldb_proto",
     "//components/prefs",
     "//crypto",
@@ -95,7 +94,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/nearby_sharing/client:test_support",
     "//chrome/browser/nearby_sharing/common",
-    "//chrome/browser/nearby_sharing/common:test_support",
     "//chrome/browser/nearby_sharing/contacts:test_support",
     "//chrome/browser/nearby_sharing/local_device_data:test_support",
     "//chromeos/ash/components/nearby/common/client",
@@ -110,4 +108,8 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/nearby:rpc_resources_proto",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

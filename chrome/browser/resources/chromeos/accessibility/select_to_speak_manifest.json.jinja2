@@ -6,13 +6,13 @@
   "manifest_version": 3,
   "minimum_chrome_version": "93",
   "background": {
-    "service_worker": "select_to_speak/select_to_speak_main.js",
+    "service_worker": "select_to_speak/mv3/select_to_speak_main.rollup.js",
     "type": "module"
   },
 {% else %}
   "manifest_version": 2,
   "background": {
-    "page": "select_to_speak/background.html"
+    "page": "select_to_speak/mv2/background.html"
   },
 {% endif %}
   "name": "__MSG_SELECT_TO_SPEAK_NAME__",
@@ -23,6 +23,10 @@
 {% endif %}
   "permissions": [
     "accessibilityPrivate",
+{% if is_manifest_v3 == '1' %}
+    "offscreen",
+    "scripting",
+{% endif %}
     "commandLinePrivate",
     "metricsPrivate",
     "settingsPrivate",
@@ -36,10 +40,16 @@
     "clipboardWrite",
     "contextMenus"
   ],
+{% if is_manifest_v3 == '1' %}
+  "host_permissions": [
+      "https://docs.google.com/*",
+      "https://docs.sandbox.google.com/*"
+   ],
+{% endif %}
   "icons": {
-      "128": "select_to_speak/sts-icon-128.png",
-      "16": "select_to_speak/sts-icon-16.png",
-      "48": "select_to_speak/sts-icon-48.png"
+      "128": "select_to_speak/mv3/sts-icon-128.png",
+      "16": "select_to_speak/mv3/sts-icon-16.png",
+      "48": "select_to_speak/mv3/sts-icon-48.png"
   },
   "automation": {
     "desktop": true
@@ -48,11 +58,18 @@
   "content_scripts": [
     {
       "matches": [ "https://docs.google.com/document*",
-                   "https://docs.sandbox.google.com/document*" ],
+                   "https://docs.sandbox.google.com/document*"],
       "all_frames": true,
+{% if is_manifest_v3 == '1' %}
+      "js": [
+        "select_to_speak/mv3/gdocs_script.js"
+      ],
+      "world": "MAIN",
+{% else %}
       "js": [
         "common/gdocs_script.js"
       ],
+{% endif %}
       "run_at": "document_start"
     }
   ]

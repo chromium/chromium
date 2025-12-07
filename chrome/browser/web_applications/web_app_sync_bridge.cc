@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/flat_tree.h"
@@ -24,11 +25,10 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/to_string.h"
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
@@ -38,10 +38,13 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_database.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/common/chrome_features.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/report_unrecoverable_error.h"
@@ -55,6 +58,7 @@
 #include "components/sync/model/string_ordinal.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/web_app_specifics.equal.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
@@ -64,6 +68,10 @@
 
 namespace web_app {
 namespace {
+
+bool g_disable_resume_sync_install_and_missing_os_integration_for_testing =
+    false;
+
 // Returns the manifest id from the sync entity. Does not validate whether the
 // manifest_id is valid.
 base::expected<webapps::ManifestId, StorageKeyParseResult>
@@ -121,9 +129,7 @@ ValidateManifestIdFromParsableSyncEntity(
 
 }  // namespace
 
-BASE_FEATURE(kDeleteBadWebAppSyncEntitites,
-             "DeleteBadWebAppSyncEntitites",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDeleteBadWebAppSyncEntitites, base::FEATURE_DISABLED_BY_DEFAULT);
 
 std::unique_ptr<syncer::EntityData> CreateSyncEntityData(const WebApp& app) {
   // The Sync System doesn't allow empty entity_data name.
@@ -184,8 +190,17 @@ void ApplySyncDataToApp(const sync_pb::WebAppSpecifics& sync_proto,
     auto udm = ResolvePlatformSpecificUserDisplayMode(modified_sync_proto);
     SetPlatformSpecificUserDisplayMode(udm, &modified_sync_proto);
   }
-
   app->SetSyncProto(std::move(modified_sync_proto));
+  CHECK(HasCurrentPlatformUserDisplayMode(app->sync_proto()));
+}
+
+// static
+base::AutoReset<bool>
+WebAppSyncBridge::DisableResumeSyncInstallAndMissingOsIntegrationForTesting() {
+  CHECK_IS_TEST();
+  return base::AutoReset<bool>(
+      &g_disable_resume_sync_install_and_missing_os_integration_for_testing,
+      true);
 }
 
 WebAppSyncBridge::WebAppSyncBridge(WebAppRegistrarMutable* registrar)
@@ -206,19 +221,14 @@ WebAppSyncBridge::WebAppSyncBridge(
 
 WebAppSyncBridge::~WebAppSyncBridge() = default;
 
-void WebAppSyncBridge::SetSubsystems(
-    AbstractWebAppDatabaseFactory* database_factory,
-    WebAppCommandManager* command_manager,
-    WebAppCommandScheduler* command_scheduler,
-    WebAppInstallManager* install_manager) {
-  DCHECK(database_factory);
+void WebAppSyncBridge::SetProvider(base::PassKey<WebAppProvider> pass_key,
+                                   WebAppProvider& provider) {
   database_ = std::make_unique<WebAppDatabase>(
-      database_factory,
+      &(provider.database_factory()),
       base::BindRepeating(&WebAppSyncBridge::ReportErrorToChangeProcessor,
                           base::Unretained(this)));
-  command_manager_ = command_manager;
-  command_scheduler_ = command_scheduler;
-  install_manager_ = install_manager;
+  provider_ = &provider;
+  database_->SetProvider(pass_key, *provider_);
 }
 
 [[nodiscard]] ScopedRegistryUpdate WebAppSyncBridge::BeginUpdate(
@@ -353,14 +363,14 @@ void WebAppSyncBridge::SetAppManifestUpdateTime(const webapps::AppId& app_id,
 
 void WebAppSyncBridge::SetUserPageOrdinal(const webapps::AppId& app_id,
                                           syncer::StringOrdinal page_ordinal) {
-  CHECK(page_ordinal.IsValid(), base::NotFatalUntil::M126);
+  CHECK(page_ordinal.IsValid());
   ScopedRegistryUpdate update = BeginUpdate();
   WebApp* web_app = update->UpdateApp(app_id);
   // Due to the extensions sync system setting ordinals on sync, this can get
   // called before the app is installed in the web apps system. Until apps are
   // no longer double-installed on both systems, ignore this case.
   // https://crbug.com/1101781
-  if (!registrar_->IsInstalled(app_id)) {
+  if (!registrar_->IsInRegistrar(app_id)) {
     return;
   }
   if (web_app) {
@@ -373,13 +383,13 @@ void WebAppSyncBridge::SetUserPageOrdinal(const webapps::AppId& app_id,
 void WebAppSyncBridge::SetUserLaunchOrdinal(
     const webapps::AppId& app_id,
     syncer::StringOrdinal launch_ordinal) {
-  CHECK(launch_ordinal.IsValid(), base::NotFatalUntil::M126);
+  CHECK(launch_ordinal.IsValid());
   ScopedRegistryUpdate update = BeginUpdate();
   // Due to the extensions sync system setting ordinals on sync, this can get
   // called before the app is installed in the web apps system. Until apps are
   // no longer double-installed on both systems, ignore this case.
   // https://crbug.com/1101781
-  if (!registrar_->IsInstalled(app_id)) {
+  if (!registrar_->IsInRegistrar(app_id)) {
     return;
   }
   WebApp* web_app = update->UpdateApp(app_id);
@@ -395,7 +405,10 @@ void WebAppSyncBridge::SetUserLaunchOrdinal(
 void WebAppSyncBridge::SetAlwaysShowToolbarInFullscreen(
     const webapps::AppId& app_id,
     bool show) {
-  if (!registrar_->IsInstalled(app_id)) {
+  if (!registrar_->IsInstallState(
+          app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+                   proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                   proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
     return;
   }
   {
@@ -490,11 +503,6 @@ void WebAppSyncBridge::UpdateRegistrar(
   for (std::unique_ptr<WebApp>& web_app : update_data->apps_to_create) {
     webapps::AppId app_id = web_app->app_id();
     DCHECK(!registrar_->GetAppById(app_id));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // We do not install non-system web apps in Ash when Lacros web apps are
-    // enabled.
-    DCHECK(web_app->IsSystemApp() || !IsWebAppsCrosapiEnabled());
-#endif
     registrar_->registry().emplace(std::move(app_id), std::move(web_app));
   }
 
@@ -508,7 +516,7 @@ void WebAppSyncBridge::UpdateRegistrar(
   }
   for (const webapps::AppId& app_id : update_data->apps_to_delete) {
     auto it = registrar_->registry().find(app_id);
-    CHECK(it != registrar_->registry().end(), base::NotFatalUntil::M130);
+    CHECK(it != registrar_->registry().end());
     registrar_->registry().erase(it);
   }
 }
@@ -527,7 +535,7 @@ void WebAppSyncBridge::UpdateSync(
 
   for (const std::unique_ptr<WebApp>& new_app : update_data.apps_to_create) {
     if (new_app->IsSynced()) {
-      CHECK(new_app->manifest_id().is_valid(), base::NotFatalUntil::M125);
+      CHECK(new_app->manifest_id().is_valid());
       change_processor()->Put(new_app->app_id(), CreateSyncEntityData(*new_app),
                               metadata_change_list);
     }
@@ -543,9 +551,16 @@ void WebAppSyncBridge::UpdateSync(
     // the app if IsSynced flag stays true. Exclude the app from the sync "view"
     // if IsSynced flag becomes false.
     if (new_state->IsSynced()) {
-      CHECK(new_state->manifest_id().is_valid(), base::NotFatalUntil::M125);
-      change_processor()->Put(app_id, CreateSyncEntityData(*new_state),
-                              metadata_change_list);
+      CHECK(new_state->manifest_id().is_valid());
+      // Only call 'Put' if it wasn't synced, or if the sync data has changed.
+      // TODO(https://crbug.com/409867622): We can remove this optimization
+      // after tests are updated to use a Fake version instead of the Mock
+      // version of the processor.
+      if (!current_state->IsSynced() ||
+          (current_state->sync_proto() != new_state->sync_proto())) {
+        change_processor()->Put(app_id, CreateSyncEntityData(*new_state),
+                                metadata_change_list);
+      }
     } else if (current_state->IsSynced()) {
       change_processor()->Delete(app_id, syncer::DeletionOrigin::Unspecified(),
                                  metadata_change_list);
@@ -574,10 +589,7 @@ void WebAppSyncBridge::OnDatabaseOpened(
 
   registrar_->InitRegistry(std::move(registry));
 
-  // Do database migrations to ensure apps are valid before notifying anything
-  // else that the sync bridge is ready.
-  EnsureAppsHaveUserDisplayModeForCurrentPlatform();
-  EnsurePartiallyInstalledAppsHaveCorrectStatus();
+  // Database migrations happen inside WebAppDatabase::MigrateDatabase.
 
   std::move(initialized_callback).Run();
 
@@ -589,38 +601,7 @@ void WebAppSyncBridge::OnDatabaseOpened(
   }
 
   MaybeUninstallAppsPendingUninstall();
-  MaybeInstallAppsFromSyncAndPendingInstallation();
-}
-
-void WebAppSyncBridge::EnsureAppsHaveUserDisplayModeForCurrentPlatform() {
-  web_app::ScopedRegistryUpdate update = BeginUpdate();
-  for (const WebApp& app : registrar().GetAppsIncludingStubs()) {
-    if (!HasCurrentPlatformUserDisplayMode(app.sync_proto())) {
-      // On CrOS, populate the UDM-CrOS value by copying from the default value
-      // (falling back to Standalone). On non-CrOS, populate the UDM-Default
-      // value with Standalone.
-      sync_pb::WebAppSpecifics_UserDisplayMode udm =
-          ResolvePlatformSpecificUserDisplayMode(app.sync_proto());
-      update->UpdateApp(app.app_id())
-          ->SetUserDisplayMode(ToMojomUserDisplayMode(udm));
-    }
-  }
-}
-
-void WebAppSyncBridge::EnsurePartiallyInstalledAppsHaveCorrectStatus() {
-  web_app::ScopedRegistryUpdate update = BeginUpdate();
-  for (const WebApp& app : registrar().GetApps()) {
-    if (app.install_state() !=
-        proto::InstallState::INSTALLED_WITH_OS_INTEGRATION) {
-      continue;
-    }
-    if (app.current_os_integration_states().has_shortcut()) {
-      continue;
-    }
-    update->UpdateApp(app.app_id())
-        ->SetInstallState(
-            proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION);
-  }
+  MaybeInstallAppsFromSyncAndPendingInstallOrSyncOsIntegration();
 }
 
 void WebAppSyncBridge::OnDataWritten(CommitCallback callback, bool success) {
@@ -668,7 +649,7 @@ ManifestIdParseResult WebAppSyncBridge::PrepareLocalUpdateFromSyncChange(
   // app_id is storage key.
   const webapps::AppId& app_id = change.storage_key();
 
-  const WebApp* existing_web_app = registrar_->GetAppByIdMutable(app_id);
+  const WebApp* existing_web_app = registrar_->GetAppById(app_id);
 
   // Handle deletion first.
   if (change.type() == syncer::EntityChange::ACTION_DELETE) {
@@ -678,12 +659,18 @@ ManifestIdParseResult WebAppSyncBridge::PrepareLocalUpdateFromSyncChange(
     }
     auto app_copy = std::make_unique<WebApp>(*existing_web_app);
     app_copy->RemoveSource(WebAppManagement::kSync);
+    // Currently removing an app from sync will uninstall the app on all
+    // profiles that are synced to it; we could consider not removing the
+    // kUserInstalled source in this case.
+    app_copy->RemoveSource(WebAppManagement::kUserInstalled);
     if (!app_copy->HasAnySources()) {
       // Uninstallation from the local database is a two-phase commit. Setting
       // this flag to true signals that uninstallation should occur, and then
       // when all asynchronous uninstallation tasks are complete then the entity
       // is deleted from the database.
       app_copy->SetIsUninstalling(true);
+    } else {
+      provider_->install_manager().NotifyWebAppSourceRemoved(app_id);
     }
     update_local_data->apps_to_update.push_back(std::move(app_copy));
     return ManifestIdParseResult::kSuccess;
@@ -764,9 +751,10 @@ void WebAppSyncBridge::ApplyIncrementalSyncChangesToRegistrar(
     registrar_->NotifyWebAppsWillBeUpdatedFromSync(new_apps_state);
   }
 
-  std::vector<WebApp*> apps_to_install;
-  for (const auto& web_app : update_local_data->apps_to_create)
-    apps_to_install.push_back(web_app.get());
+  for (const auto& web_app : update_local_data->apps_to_create) {
+    // Commands cannot start synchronously, so this is safe.
+    provider_->scheduler().InstallFromSync(*web_app, base::DoNothing());
+  }
 
   UpdateRegistrar(std::move(update_local_data));
 
@@ -787,25 +775,12 @@ void WebAppSyncBridge::ApplyIncrementalSyncChangesToRegistrar(
     auto callback =
         base::BindRepeating(&WebAppSyncBridge::OnWebAppUninstallComplete,
                             weak_ptr_factory_.GetWeakPtr());
-    if (uninstall_from_sync_before_registry_update_callback_for_testing_) {
-      uninstall_from_sync_before_registry_update_callback_for_testing_.Run(
-          apps_to_delete, callback);
-    } else {
-      for (const webapps::AppId& app_id : apps_to_delete) {
-        command_scheduler_->RemoveAllManagementTypesAndUninstall(
-            base::PassKey<WebAppSyncBridge>(), app_id,
-            webapps::WebappUninstallSource::kSync,
-            base::BindOnce(callback, app_id));
-      }
+    for (const webapps::AppId& app_id : apps_to_delete) {
+      provider_->scheduler().RemoveAllManagementTypesAndUninstall(
+          base::PassKey<WebAppSyncBridge>(), app_id,
+          webapps::WebappUninstallSource::kSync,
+          base::BindOnce(callback, app_id));
     }
-  }
-
-  // Do a full follow up install for all remote entities that don’t exist
-  // locally.
-  if (!apps_to_install.empty()) {
-    // TODO(dmurph): Just call the InstallFromSync command.
-    // https://crbug.com/1328968
-    InstallWebAppsAfterSync(std::move(apps_to_install), base::DoNothing());
   }
 }
 
@@ -880,6 +855,34 @@ std::optional<syncer::ModelError> WebAppSyncBridge::ApplyIncrementalSyncChanges(
   return std::nullopt;
 }
 
+void WebAppSyncBridge::ApplyDisableSyncChanges(
+    std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
+  auto update_local_data = std::make_unique<RegistryUpdateData>();
+
+  for (const WebApp& web_app : registrar_->GetAppsIncludingStubs()) {
+    if (web_app.GetSources().Has(WebAppManagement::kSync)) {
+      auto app_copy = std::make_unique<WebApp>(web_app);
+      app_copy->RemoveSource(WebAppManagement::kSync);
+      if (!app_copy->HasAnySources()) {
+        // Uninstallation from the local database is a two-phase commit. Setting
+        // this flag to true signals that uninstallation should occur, and then
+        // when all asynchronous uninstallation tasks are complete then the
+        // entity is deleted from the database.
+        app_copy->SetIsUninstalling(true);
+      }
+      update_local_data->apps_to_update.push_back(std::move(app_copy));
+    }
+  }
+
+  database_->Write(
+      *update_local_data, std::move(delete_metadata_change_list),
+      base::BindOnce(&WebAppSyncBridge::OnDataWritten,
+                     weak_ptr_factory_.GetWeakPtr(), base::DoNothing()));
+
+  ApplyIncrementalSyncChangesToRegistrar(std::move(update_local_data),
+                                         /*apps_display_mode_changed=*/{});
+}
+
 std::unique_ptr<syncer::DataBatch> WebAppSyncBridge::GetDataForCommit(
     StorageKeyList storage_keys) {
   auto data_batch = std::make_unique<syncer::MutableDataBatch>();
@@ -905,18 +908,18 @@ std::unique_ptr<syncer::DataBatch> WebAppSyncBridge::GetAllDataForDebugging() {
 }
 
 std::string WebAppSyncBridge::GetClientTag(
-    const syncer::EntityData& entity_data) {
-  CHECK(entity_data.specifics.has_web_app(), base::NotFatalUntil::M125);
+    const syncer::EntityData& entity_data) const {
+  CHECK(entity_data.specifics.has_web_app());
   base::expected<webapps::ManifestId, StorageKeyParseResult> manifest_id =
       ParseManifestIdFromSyncEntity(entity_data.specifics.web_app());
   // This is guaranteed to be true, as the contract for this function is that
   // IsEntityDataValid must be true.
-  CHECK(manifest_id.has_value(), base::NotFatalUntil::M125);
+  CHECK(manifest_id.has_value());
   return GenerateAppIdFromManifestId(manifest_id.value());
 }
 
 std::string WebAppSyncBridge::GetStorageKey(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   return GetClientTag(entity_data);
 }
 
@@ -943,20 +946,8 @@ bool WebAppSyncBridge::IsEntityDataValid(
   return false;
 }
 
-void WebAppSyncBridge::SetRetryIncompleteUninstallsCallbackForTesting(
-    RetryIncompleteUninstallsCallback callback) {
-  retry_incomplete_uninstalls_callback_for_testing_ = std::move(callback);
-}
-
-void WebAppSyncBridge::SetInstallWebAppsAfterSyncCallbackForTesting(
-    InstallWebAppsAfterSyncCallback callback) {
-  install_web_apps_after_sync_callback_for_testing_ = std::move(callback);
-}
-
-void WebAppSyncBridge::SetUninstallFromSyncCallbackForTesting(
-    UninstallFromSyncCallback callback) {
-  uninstall_from_sync_before_registry_update_callback_for_testing_ =
-      std::move(callback);
+const PersistableLog* WebAppSyncBridge::database_log() const {
+  return database_->log();
 }
 
 void WebAppSyncBridge::SetAppNotLocallyInstalledForTesting(
@@ -984,15 +975,11 @@ void WebAppSyncBridge::MaybeUninstallAppsPendingUninstall() {
 
   // Retrying incomplete uninstalls
   if (!apps_uninstalling.empty()) {
-    if (retry_incomplete_uninstalls_callback_for_testing_) {
-      retry_incomplete_uninstalls_callback_for_testing_.Run(apps_uninstalling);
-      return;
-    }
     auto callback =
         base::BindRepeating(&WebAppSyncBridge::OnWebAppUninstallComplete,
                             weak_ptr_factory_.GetWeakPtr());
     for (const auto& app_id : apps_uninstalling) {
-      command_scheduler_->RemoveAllManagementTypesAndUninstall(
+      provider_->scheduler().RemoveAllManagementTypesAndUninstall(
           base::PassKey<WebAppSyncBridge>(), app_id,
           webapps::WebappUninstallSource::kSync,
           base::BindOnce(callback, app_id));
@@ -1000,34 +987,29 @@ void WebAppSyncBridge::MaybeUninstallAppsPendingUninstall() {
   }
 }
 
-void WebAppSyncBridge::MaybeInstallAppsFromSyncAndPendingInstallation() {
-  std::vector<WebApp*> apps_in_sync_install;
-
-  for (WebApp& app : registrar_->GetAppsIncludingStubs()) {
-    if (app.is_from_sync_and_pending_installation())
-      apps_in_sync_install.push_back(&app);
-  }
-
-  if (!apps_in_sync_install.empty()) {
-    if (install_web_apps_after_sync_callback_for_testing_) {
-      install_web_apps_after_sync_callback_for_testing_.Run(
-          std::move(apps_in_sync_install), base::DoNothing());
-      return;
-    }
-    InstallWebAppsAfterSync(std::move(apps_in_sync_install), base::DoNothing());
-  }
-}
-
-void WebAppSyncBridge::InstallWebAppsAfterSync(
-    std::vector<WebApp*> web_apps,
-    RepeatingInstallCallback callback) {
-  if (install_web_apps_after_sync_callback_for_testing_) {
-    install_web_apps_after_sync_callback_for_testing_.Run(std::move(web_apps),
-                                                          callback);
+void WebAppSyncBridge::
+    MaybeInstallAppsFromSyncAndPendingInstallOrSyncOsIntegration() {
+  if (g_disable_resume_sync_install_and_missing_os_integration_for_testing) {
     return;
   }
-  for (WebApp* web_app : web_apps) {
-    command_scheduler_->InstallFromSync(*web_app, base::DoNothing());
+  for (WebApp& app : registrar_->GetAppsIncludingStubs()) {
+    if (app.is_from_sync_and_pending_installation()) {
+      provider_->scheduler().InstallFromSync(app, base::DoNothing());
+    } else if (app.install_state() ==
+                   proto::InstallState::INSTALLED_WITH_OS_INTEGRATION &&
+               !app.current_os_integration_states().has_shortcut()) {
+      // Web app installs save the app data to the database before synchronizing
+      // the OS integration. Only after the OS integration is complete do we
+      // save the current_os_integration_states. Since the system can shut down
+      // in between these two steps, we need to synchronize the OS integration
+      // for all apps that are installed with OS integration but don't have
+      // shortcut fields set to complete this operation.
+      provider_->scheduler().SynchronizeOsIntegration(
+          app.app_id(), base::BindOnce([]() {
+            base::UmaHistogramBoolean(
+                "WebApp.Install.CompletedOsIntegrationOnStartup", true);
+          }));
+    }
   }
 }
 

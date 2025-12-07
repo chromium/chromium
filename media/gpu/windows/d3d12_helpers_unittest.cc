@@ -9,6 +9,8 @@
 
 #include "media/gpu/windows/d3d12_helpers.h"
 
+#include <dxva.h>
+
 #include <numeric>
 #include <vector>
 
@@ -20,7 +22,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::Return;
 
@@ -31,7 +32,7 @@ class D3D12Helpers : public ::testing::Test {
   void SetUp() override {
     device_ = MakeComPtr<NiceMock<D3D12DeviceMock>>();
     ON_CALL(*device_.Get(), OpenSharedHandle(_, _, _))
-        .WillByDefault(Invoke([this](HANDLE handle, REFIID riid, void** ppv) {
+        .WillByDefault([this](HANDLE handle, REFIID riid, void** ppv) {
           Microsoft::WRL::ComPtr<D3D12ResourceMock> d3d12_resource =
               MakeComPtr<NiceMock<D3D12ResourceMock>>();
           ON_CALL(*d3d12_resource.Get(), GetDesc())
@@ -46,7 +47,7 @@ class D3D12Helpers : public ::testing::Test {
               }));
           *ppv = d3d12_resource.Detach();
           return S_OK;
-        }));
+        });
   }
 
   ComD3D12Resource CreateD3D12Resource() {
@@ -128,15 +129,16 @@ TEST_F(D3D12Helpers, GetD3D12VideoDecodeGUID) {
   EXPECT_EQ(GetD3D12VideoDecodeGUID(HEVCPROFILE_MAIN_STILL_PICTURE, 8,
                                     VideoChromaSampling::k420),
             D3D12_VIDEO_DECODE_PROFILE_HEVC_MAIN);
+  // D3D12 does not support private device GUID.
   EXPECT_EQ(
       GetD3D12VideoDecodeGUID(HEVCPROFILE_REXT, 8, VideoChromaSampling::k422),
-      DXVA_ModeHEVC_VLD_Main422_10_Intel);
+      DXVA_ModeHEVC_VLD_Main10_422);
   EXPECT_EQ(
       GetD3D12VideoDecodeGUID(HEVCPROFILE_REXT, 10, VideoChromaSampling::k444),
-      DXVA_ModeHEVC_VLD_Main444_10_Intel);
+      DXVA_ModeHEVC_VLD_Main10_444);
   EXPECT_EQ(
       GetD3D12VideoDecodeGUID(HEVCPROFILE_REXT, 12, VideoChromaSampling::k420),
-      DXVA_ModeHEVC_VLD_Main12_Intel);
+      DXVA_ModeHEVC_VLD_Main12);
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 }
 

@@ -16,13 +16,13 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
-import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.version_info.VersionInfo;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.crypto.CipherFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
@@ -54,22 +54,22 @@ import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 
 /** Saves and restores {@link TabState} to and from files. */
+@NullMarked
 public class TabStateFileManager {
     // Different variants will be experimented with and each variant will have
     // a different prefix.
     private static final String FLATBUFFER_PREFIX = "flatbufferv1_";
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public static final String SAVED_TAB_STATE_FILE_PREFIX = "tab";
+    @VisibleForTesting public static final String SAVED_TAB_STATE_FILE_PREFIX = "tab";
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static final String SAVED_TAB_STATE_FILE_PREFIX_INCOGNITO = "cryptonito";
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static final String FLATBUFFER_SAVED_TAB_STATE_FILE_PREFIX =
             FLATBUFFER_PREFIX + SAVED_TAB_STATE_FILE_PREFIX;
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static final String FLATBUFFER_SAVED_TAB_STATE_FILE_PREFIX_INCOGNITO =
             FLATBUFFER_PREFIX + SAVED_TAB_STATE_FILE_PREFIX_INCOGNITO;
 
@@ -79,13 +79,9 @@ public class TabStateFileManager {
     protected static final long KEY_CHECKER = 0;
 
     /** Overrides the Chrome channel/package name to test a variant channel-specific behaviour. */
-    private static String sChannelNameOverrideForTest;
+    private static @Nullable String sChannelNameOverrideForTest;
 
     private static final long NO_TAB_GROUP_ID = 0L;
-
-    public static final BooleanCachedFieldTrialParameter MIGRATE_STALE_TABS_CACHED_PARAM =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_STATE_FLAT_BUFFER, "migrate_stale_tabs", false);
 
     /** Enum representing the exception that occurred during {@link restoreTabState}. */
     @IntDef({
@@ -109,7 +105,7 @@ public class TabStateFileManager {
         TabStateRestoreMethod.NUM_ENTRIES,
     })
     @Retention(RetentionPolicy.SOURCE)
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public @interface TabStateRestoreMethod {
         /** TabState restored using FlatBuffer schema */
         int FLATBUFFER = 0;
@@ -123,35 +119,54 @@ public class TabStateFileManager {
         int NUM_ENTRIES = 3;
     }
 
+    @IntDef({
+        TabStateMigrationStatus.FLATBUFFER,
+        TabStateMigrationStatus.LEGACY_HAND_WRITTEN,
+        TabStateMigrationStatus.FLATBUFFER_AND_LEGACY_HAND_WRITTEN,
+        TabStateMigrationStatus.NUM_ENTRIES,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @VisibleForTesting
+    public @interface TabStateMigrationStatus {
+        /** TabState has been migrated to FlatBuffer and legacy TabState file removed. */
+        int FLATBUFFER = 0;
+
+        /** Tab hasn't been migrated to FlatBuffer yet. */
+        int LEGACY_HAND_WRITTEN = 1;
+
+        /** Tab is migrated to FlatBuffer and legacy HandWritten file hasn't been removed yet. */
+        int FLATBUFFER_AND_LEGACY_HAND_WRITTEN = 2;
+
+        int NUM_ENTRIES = 3;
+    }
+
     /**
      * @param stateFolder folder {@link TabState} files are stored in
      * @param id {@link Tab} identifier
+     * @param cipherFactory The {@link CipherFactory} used for encrypting and decrypting files.
      * @return {@link TabState} corresponding to Tab with id
      */
-    public static TabState restoreTabState(File stateFolder, int id) {
-        // If the FlatBuffer schema is enabled, try to restore using that. There are no guarantees,
-        // however - for example if the flag was just turned on there won't have been the
-        // opportunity to save any FlatBuffer based {@link TabState} files yet. So we
-        // always have a fallback to regular hand-written based TabState.
-        if (isFlatBufferSchemaEnabled()) {
-            TabState tabState = null;
-            try {
-                tabState = restoreTabState(stateFolder, id, true);
-            } catch (Exception e) {
-                // TODO(crbug.com/341122002) Add in metrics
-                Log.d(TAG, "Error restoring TabState using FlatBuffer", e);
-            }
-            if (tabState != null) {
-                RecordHistogram.recordEnumeratedHistogram(
-                        "Tabs.TabState.RestoreMethod",
-                        TabStateRestoreMethod.FLATBUFFER,
-                        TabStateRestoreMethod.NUM_ENTRIES);
-                return tabState;
-            }
+    public static @Nullable TabState restoreTabState(
+            File stateFolder, int id, CipherFactory cipherFactory) {
+        recordTabStateMigrationStatus(stateFolder, id);
+        // Try to restore using FlatBuffer file first.
+        TabState tabState = null;
+        try {
+            tabState = restoreTabState(stateFolder, id, cipherFactory, true);
+        } catch (Exception e) {
+            // TODO(crbug.com/341122002) Add in metrics
+            Log.d(TAG, "Error restoring TabState using FlatBuffer", e);
         }
-        // Flatbuffer flag is off or we couldn't restore the TabState using a FlatBuffer based
-        // file e.g. file doesn't exist for the Tab or is corrupt.
-        TabState tabState = restoreTabState(stateFolder, id, false);
+        if (tabState != null) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Tabs.TabState.RestoreMethod",
+                    TabStateRestoreMethod.FLATBUFFER,
+                    TabStateRestoreMethod.NUM_ENTRIES);
+            return tabState;
+        }
+        // If we couldn't restore using the FlatBuffer file it's possible we need to
+        // restore the legacy TabState file (i.e. the Tab has not been migrated yet).
+        tabState = restoreTabState(stateFolder, id, cipherFactory, false);
         if (tabState == null) {
             RecordHistogram.recordEnumeratedHistogram(
                     "Tabs.TabState.RestoreMethod",
@@ -166,17 +181,46 @@ public class TabStateFileManager {
         return tabState;
     }
 
+    @VisibleForTesting
+    public static void recordTabStateMigrationStatus(File stateFolder, int id) {
+        for (boolean encrypted : new boolean[] {false, true}) {
+            boolean legacyFileExists =
+                    getTabStateFile(stateFolder, id, encrypted, /* isFlatbuffer= */ false).exists();
+            boolean flatBufferFileExists =
+                    getTabStateFile(stateFolder, id, encrypted, /* isFlatbuffer= */ true).exists();
+
+            if (legacyFileExists && flatBufferFileExists) {
+                RecordHistogram.recordEnumeratedHistogram(
+                        "Tabs.TabState.MigrationStatus",
+                        TabStateMigrationStatus.FLATBUFFER_AND_LEGACY_HAND_WRITTEN,
+                        TabStateMigrationStatus.NUM_ENTRIES);
+            } else if (legacyFileExists) {
+                RecordHistogram.recordEnumeratedHistogram(
+                        "Tabs.TabState.MigrationStatus",
+                        TabStateMigrationStatus.LEGACY_HAND_WRITTEN,
+                        TabStateMigrationStatus.NUM_ENTRIES);
+            } else if (flatBufferFileExists) {
+                RecordHistogram.recordEnumeratedHistogram(
+                        "Tabs.TabState.MigrationStatus",
+                        TabStateMigrationStatus.FLATBUFFER,
+                        TabStateMigrationStatus.NUM_ENTRIES);
+            }
+        }
+    }
+
     /**
      * Restore a TabState file for a particular Tab. Checks if the Tab exists as a regular tab
      * before searching for an encrypted version.
      *
      * @param stateFolder Folder containing the TabState files.
      * @param id ID of the Tab to restore.
+     * @param cipherFactory The {@link CipherFactory} used for encrypting and decrypting files.
      * @param useFlatBuffer whether to restore using the FlatBuffer based TabState file or not.
      * @return TabState that has been restored, or null if it failed.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public static TabState restoreTabState(File stateFolder, int id, boolean useFlatBuffer) {
+    @VisibleForTesting
+    public static @Nullable TabState restoreTabState(
+            File stateFolder, int id, CipherFactory cipherFactory, boolean useFlatBuffer) {
         // First try finding an unencrypted file.
         boolean encrypted = false;
         File file = getTabStateFile(stateFolder, id, encrypted, useFlatBuffer);
@@ -192,10 +236,14 @@ public class TabStateFileManager {
 
         // If one of them passed, open the file input stream and read the state contents.
         long startTime = SystemClock.elapsedRealtime();
-        TabState tabState = restoreTabStateInternal(file, encrypted);
+        TabState tabState = restoreTabStateInternal(file, encrypted, cipherFactory);
         if (tabState != null) {
             RecordHistogram.recordTimesHistogram(
                     "Tabs.TabState.LoadTime", SystemClock.elapsedRealtime() - startTime);
+            if (useFlatBuffer) {
+                tabState.legacyFileToDelete =
+                        getTabStateFile(stateFolder, id, encrypted, /* isFlatbuffer= */ false);
+            }
         }
         return tabState;
     }
@@ -205,15 +253,17 @@ public class TabStateFileManager {
      *
      * @param tabFile Location of the TabState file.
      * @param isEncrypted Whether the Tab state is encrypted or not.
+     * @param cipherFactory The {@link CipherFactory} used for encrypting and decrypting files.
      * @return TabState that has been restored, or null if it failed.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public static TabState restoreTabStateInternal(File tabFile, boolean isEncrypted) {
+    @VisibleForTesting
+    public static @Nullable TabState restoreTabStateInternal(
+            File tabFile, boolean isEncrypted, CipherFactory cipherFactory) {
         TabState tabState = null;
         try {
             // TODO(b/307795775) investigate what strongly typed exceptions the FlatBuffer
             // code might throw and log metrics.
-            tabState = readState(tabFile, isEncrypted);
+            tabState = readState(tabFile, isEncrypted, cipherFactory);
         } catch (FileNotFoundException exception) {
             Log.e(TAG, "Failed to restore tab state for tab: " + tabFile);
             recordRestoreTabStateException(RestoreTabStateException.FILE_NOT_FOUND_EXCEPTION);
@@ -258,18 +308,20 @@ public class TabStateFileManager {
      *
      * @param file file with serialized {@link TabState}
      * @param encrypted Whether the file is encrypted or not.
+     * @param cipherFactory The {@link CipherFactory} used for encrypting and decrypting files.
      * @return TabState that has been restored, or null if it failed.
      */
-    private static TabState readState(File file, boolean encrypted)
+    private static @Nullable TabState readState(
+            File file, boolean encrypted, CipherFactory cipherFactory)
             throws IOException, FileNotFoundException {
         if (file.getName().startsWith(FLATBUFFER_PREFIX)) {
-            return readStateFlatBuffer(file, encrypted);
+            return readStateFlatBuffer(file, encrypted, cipherFactory);
         }
         FileInputStream input = new FileInputStream(file);
         DataInputStream stream = null;
         try {
             if (encrypted) {
-                Cipher cipher = CipherFactory.getInstance().getCipher(Cipher.DECRYPT_MODE);
+                Cipher cipher = cipherFactory.getCipher(Cipher.DECRYPT_MODE);
                 if (cipher != null) {
                     stream = new DataInputStream(new CipherInputStream(input, cipher));
                 }
@@ -282,18 +334,20 @@ public class TabStateFileManager {
             TabState tabState = new TabState();
             tabState.timestampMillis = stream.readLong();
             int size = stream.readInt();
+
+            ByteBuffer contentsStateBuffer;
             if (encrypted) {
                 // If it's encrypted, we have to read the stream normally to apply the cipher.
                 byte[] state = new byte[size];
                 stream.readFully(state);
-                tabState.contentsState = new WebContentsState(ByteBuffer.allocateDirect(size));
-                tabState.contentsState.buffer().put(state);
+                contentsStateBuffer = ByteBuffer.allocateDirect(size);
+                contentsStateBuffer.put(state);
+                contentsStateBuffer.rewind();
             } else {
                 // If not, we can mmap the file directly, saving time and copies into the java heap.
                 FileChannel channel = input.getChannel();
-                tabState.contentsState =
-                        new WebContentsState(
-                                channel.map(MapMode.READ_ONLY, channel.position(), size));
+                long position = channel.position();
+                contentsStateBuffer = channel.map(MapMode.READ_ONLY, position, size);
                 // Skip ahead to avoid re-reading data that mmap'd.
                 long skipped = input.skip(size);
                 if (skipped != size) {
@@ -307,6 +361,7 @@ public class TabStateFileManager {
                                     + "been skipped. Tab restore may fail.");
                 }
             }
+
             tabState.parentId = stream.readInt();
             try {
                 tabState.openerAppId = stream.readUTF();
@@ -315,12 +370,13 @@ public class TabStateFileManager {
                 // Could happen if reading a version of a TabState that does not include the app id.
                 Log.w(TAG, "Failed to read opener app id state from tab state");
             }
+            int webContentsStateVersion;
             try {
-                tabState.contentsState.setVersion(stream.readInt());
+                webContentsStateVersion = stream.readInt();
             } catch (EOFException eof) {
                 // On the stable channel, the first release is version 18. For all other channels,
                 // chrome 25 is the first release.
-                tabState.contentsState.setVersion(isStableChannelBuild() ? 0 : 1);
+                webContentsStateVersion = isStableChannelBuild() ? 0 : 1;
 
                 // Could happen if reading a version of a TabState that does not include the
                 // version id.
@@ -328,21 +384,20 @@ public class TabStateFileManager {
                         TAG,
                         "Failed to read saved state version id from tab state. Assuming "
                                 + "version "
-                                + tabState.contentsState.version());
+                                + webContentsStateVersion);
             }
+            tabState.contentsState =
+                    new WebContentsState(contentsStateBuffer, webContentsStateVersion);
             try {
                 // Skip obsolete sync ID.
                 stream.readLong();
             } catch (EOFException eof) {
             }
             try {
-                boolean shouldPreserveNotUsed = stream.readBoolean();
+                // Skip obsolete shouldPreserve.
+                stream.readBoolean();
             } catch (EOFException eof) {
                 // Could happen if reading a version of TabState without this flag set.
-                Log.w(
-                        TAG,
-                        "Failed to read shouldPreserve flag from tab state. "
-                                + "Assuming shouldPreserve is false");
             }
             tabState.isIncognito = encrypted;
             try {
@@ -359,14 +414,14 @@ public class TabStateFileManager {
                 tabState.tabLaunchTypeAtCreation = stream.readInt();
                 if (tabState.tabLaunchTypeAtCreation < 0
                         || tabState.tabLaunchTypeAtCreation >= TabLaunchType.SIZE) {
-                    tabState.tabLaunchTypeAtCreation = null;
+                    tabState.tabLaunchTypeAtCreation = TabLaunchType.UNSET;
                 }
             } catch (EOFException eof) {
-                tabState.tabLaunchTypeAtCreation = null;
+                tabState.tabLaunchTypeAtCreation = TabLaunchType.UNSET;
                 Log.w(
                         TAG,
                         "Failed to read tab launch type at creation from tab state. "
-                                + "Assuming tab launch type is null");
+                                + "Assuming tab launch type is UNSET");
             }
             try {
                 tabState.rootId = stream.readInt();
@@ -408,11 +463,24 @@ public class TabStateFileManager {
                         "Failed to read tabGroupId token from tab state."
                                 + " Assuming tabGroupId is null");
             }
+            try {
+                tabState.tabHasSensitiveContent = stream.readBoolean();
+            } catch (EOFException eof) {
+                tabState.tabHasSensitiveContent = false;
+                Log.w(
+                        TAG,
+                        "Failed to read tabHasSensitiveContent from tab state. "
+                                + "Assuming tabHasSensitiveContent is false");
+            }
+            try {
+                tabState.isPinned = stream.readBoolean();
+            } catch (EOFException eof) {
+                tabState.isPinned = false;
+                Log.w(TAG, "Failed to read isPinned from tab state. Assuming isPinned is false");
+            }
             // If TabState was restored using legacy format and the FlatBuffer flag is on, that
             // indicates the TabState hasn't been migrated yet and should be.
-            if (isMigrateStaleTabsToFlatBufferEnabled()) {
-                tabState.shouldMigrate = true;
-            }
+            tabState.shouldMigrate = true;
             return tabState;
         } finally {
             StreamUtil.closeQuietly(stream);
@@ -420,16 +488,16 @@ public class TabStateFileManager {
         }
     }
 
-    private static TabState readStateFlatBuffer(File file, boolean encrypted) throws IOException {
-        AtomicFile atomicFile = new AtomicFile(file);
+    private static @Nullable TabState readStateFlatBuffer(
+            File file, boolean encrypted, CipherFactory cipherFactory) throws IOException {
         FileInputStream fileInputStream = null;
         CipherInputStream cipherInputStream = null;
         DataInputStream dataInputStream = null;
         try {
+            fileInputStream = new FileInputStream(file);
             FlatBufferTabStateSerializer serializer = new FlatBufferTabStateSerializer(encrypted);
-            fileInputStream = atomicFile.openRead();
             if (encrypted) {
-                Cipher cipher = CipherFactory.getInstance().getCipher(Cipher.DECRYPT_MODE);
+                Cipher cipher = cipherFactory.getCipher(Cipher.DECRYPT_MODE);
                 if (cipher == null) {
                     Log.e(
                             TAG,
@@ -471,15 +539,34 @@ public class TabStateFileManager {
      * @param tabState TabState to store in a file
      * @param tabId identifier for the Tab
      * @param isEncrypted whether the stored Tab is encrypted or not
+     * @param cipherFactory The {@link CipherFactory} used for encrypting and decrypting files.
      */
     public static void saveState(
-            File directory, TabState tabState, int tabId, boolean isEncrypted) {
+            File directory,
+            TabState tabState,
+            int tabId,
+            boolean isEncrypted,
+            CipherFactory cipherFactory) {
         // Save regular hand-written based TabState file when the FlatBuffer flag is both on and
         // off.
         // We must always have a safe fallback to hand-written based TabState to be able to roll out
         // FlatBuffers safely.
         saveStateInternal(
-                getTabStateFile(directory, tabId, isEncrypted, false), tabState, isEncrypted);
+                getTabStateFile(
+                        directory,
+                        tabId,
+                        isEncrypted,
+                        /** isFlatbuffer= */
+                        true),
+                tabState,
+                isEncrypted,
+                cipherFactory);
+        PostTask.runOrPostTask(
+                TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                () -> {
+                    ThreadUtils.assertOnBackgroundThread();
+                    deleteLegacyTabStateIfExists(directory, tabId, isEncrypted);
+                });
     }
 
     /**
@@ -489,14 +576,24 @@ public class TabStateFileManager {
      * @param tabState TabState to store in a file
      * @param tabId identifier for the Tab
      * @param isEncrypted whether the stored Tab is encrypted or not
+     * @param cipherFactory The {@link CipherFactory} used for encrypting and decrypting files.
      * @return true if migration was successful.
      */
     public static boolean migrateTabState(
-            File directory, TabState tabState, int tabId, boolean isEncrypted) {
+            File directory,
+            TabState tabState,
+            int tabId,
+            boolean isEncrypted,
+            CipherFactory cipherFactory) {
         try {
             saveStateInternal(
-                    getTabStateFile(directory, tabId, isEncrypted, true), tabState, isEncrypted);
+                    getTabStateFile(directory, tabId, isEncrypted, true),
+                    tabState,
+                    isEncrypted,
+                    cipherFactory);
             return true;
+        } catch (OutOfMemoryError e) {
+            Log.d(TAG, "OutOfMemoryError while saving TabState FlatBuffer file", e);
         } catch (Exception e) {
             // TODO(crbug.com/341122002) Add in metrics
             Log.d(TAG, "Error saving TabState FlatBuffer file", e);
@@ -521,9 +618,11 @@ public class TabStateFileManager {
      * @param file File to write the tab's state to.
      * @param state State object obtained from from {@link Tab#getState()}.
      * @param encrypted Whether or not the TabState should be encrypted.
+     * @param cipherFactory The {@link CipherFactory} used for encrypting and decrypting files.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public static void saveStateInternal(File file, TabState state, boolean encrypted) {
+    @VisibleForTesting
+    public static void saveStateInternal(
+            File file, TabState state, boolean encrypted, CipherFactory cipherFactory) {
         if (state == null || state.contentsState == null) return;
         long startTime = SystemClock.elapsedRealtime();
 
@@ -538,13 +637,14 @@ public class TabStateFileManager {
         FileOutputStream fileOutputStream = null;
         try {
             if (file.getName().startsWith(FLATBUFFER_PREFIX)) {
-                saveStateFlatBuffer(file, state, encrypted, contentsStateBytes, startTime);
+                saveStateFlatBuffer(
+                        file, state, encrypted, cipherFactory, contentsStateBytes, startTime);
                 return;
             }
             fileOutputStream = new FileOutputStream(file);
 
             if (encrypted) {
-                Cipher cipher = CipherFactory.getInstance().getCipher(Cipher.ENCRYPT_MODE);
+                Cipher cipher = cipherFactory.getCipher(Cipher.ENCRYPT_MODE);
                 if (cipher != null) {
                     dataOutputStream =
                             new DataOutputStream(
@@ -572,8 +672,7 @@ public class TabStateFileManager {
             dataOutputStream.writeLong(-1); // Obsolete sync ID.
             dataOutputStream.writeBoolean(false); // Obsolete attribute |SHOULD_PRESERVE|.
             dataOutputStream.writeInt(state.themeColor);
-            dataOutputStream.writeInt(
-                    state.tabLaunchTypeAtCreation != null ? state.tabLaunchTypeAtCreation : -1);
+            dataOutputStream.writeInt(state.tabLaunchTypeAtCreation);
             dataOutputStream.writeInt(state.rootId);
             dataOutputStream.writeInt(state.userAgent);
             dataOutputStream.writeLong(state.lastNavigationCommittedTimestampMillis);
@@ -585,6 +684,8 @@ public class TabStateFileManager {
             }
             dataOutputStream.writeLong(tokenHigh);
             dataOutputStream.writeLong(tokenLow);
+            dataOutputStream.writeBoolean(state.tabHasSensitiveContent);
+            dataOutputStream.writeBoolean(state.isPinned);
             long saveTime = SystemClock.elapsedRealtime() - startTime;
             RecordHistogram.recordTimesHistogram("Tabs.TabState.SaveTime", saveTime);
             RecordHistogram.recordTimesHistogram("Tabs.TabState.SaveTime.Legacy", saveTime);
@@ -602,6 +703,7 @@ public class TabStateFileManager {
             File file,
             TabState state,
             boolean encrypted,
+            CipherFactory cipherFactory,
             byte[] contentsStateBytes,
             long startTime) {
         FileOutputStream fileOutputStream = null;
@@ -614,7 +716,7 @@ public class TabStateFileManager {
             FlatBufferTabStateSerializer serializer = new FlatBufferTabStateSerializer(encrypted);
             ByteBuffer data = serializer.serialize(state, contentsStateBytes);
             if (encrypted) {
-                Cipher cipher = CipherFactory.getInstance().getCipher(Cipher.ENCRYPT_MODE);
+                Cipher cipher = cipherFactory.getCipher(Cipher.ENCRYPT_MODE);
                 if (cipher == null) {
                     Log.e(TAG, "Cannot save TabState FlatBuffer file because cipher is null");
                     return;
@@ -638,6 +740,7 @@ public class TabStateFileManager {
             // the app and simply log what went wrong.
             Log.e(TAG, "Exception writing " + file.getName(), e);
         } finally {
+            assert fileOutputStream != null;
             StreamUtil.closeQuietly(dataOutputStream);
             StreamUtil.closeQuietly(cipherOutputStream);
             StreamUtil.closeQuietly(fileOutputStream);
@@ -694,6 +797,11 @@ public class TabStateFileManager {
         }
     }
 
+    private static void deleteLegacyTabStateIfExists(File directory, int tabId, boolean encrypted) {
+        File file = getTabStateFile(directory, tabId, encrypted, /* isFlatbuffer= */ false);
+        if (file.exists() && !file.delete()) Log.e(TAG, "Failed to delete TabState: " + file);
+    }
+
     /**
      * Delete migrated TabState file for corresponding Tab
      *
@@ -716,7 +824,7 @@ public class TabStateFileManager {
      * @param encrypted Whether or not the tab is incognito and should be encrypted.
      * @return The name of the file the Tab state should be saved to.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static String getTabStateFilename(int id, boolean encrypted, boolean isFlatBuffer) {
         if (isFlatBuffer) {
             return (encrypted
@@ -744,25 +852,6 @@ public class TabStateFileManager {
                 });
     }
 
-    /**
-     * Cleanup FlatBuffer files while the experiment is turned off. This ensures when the user
-     * re-enters the FlatBuffer migration experiment we don't attempt to restore their Tabs using
-     * out of date FlatBuffer files.
-     *
-     * @param stateDirectory directory where TabState files are saved.
-     */
-    public static void cleanupUnusedFiles(File stateDirectory) {
-        if (isFlatBufferSchemaEnabled()) {
-            return;
-        }
-        PostTask.postTask(
-                TaskTraits.BEST_EFFORT_MAY_BLOCK,
-                () -> {
-                    ThreadUtils.assertOnBackgroundThread();
-                    deleteFlatBufferFiles(stateDirectory);
-                });
-    }
-
     @VisibleForTesting
     protected static void deleteFlatBufferFiles(File stateDirectory) {
         if (stateDirectory == null || stateDirectory.listFiles() == null) {
@@ -785,10 +874,11 @@ public class TabStateFileManager {
 
     /**
      * Parse the tab id and whether the tab is incognito from the tab state filename.
+     *
      * @param name The given filename for the tab state file.
      * @return A {@link Pair} with tab id and incognito state read from the filename.
      */
-    public static Pair<Integer, Boolean> parseInfoFromFilename(String name) {
+    public static @Nullable Pair<Integer, Boolean> parseInfoFromFilename(String name) {
         try {
             if (name.startsWith(SAVED_TAB_STATE_FILE_PREFIX_INCOGNITO)) {
                 int id =
@@ -830,13 +920,5 @@ public class TabStateFileManager {
     public static void setChannelNameOverrideForTest(String name) {
         sChannelNameOverrideForTest = name;
         ResettersForTesting.register(() -> sChannelNameOverrideForTest = null);
-    }
-
-    private static boolean isFlatBufferSchemaEnabled() {
-        return ChromeFeatureList.sTabStateFlatBuffer.isEnabled();
-    }
-
-    private static boolean isMigrateStaleTabsToFlatBufferEnabled() {
-        return MIGRATE_STALE_TABS_CACHED_PARAM.getValue();
     }
 }

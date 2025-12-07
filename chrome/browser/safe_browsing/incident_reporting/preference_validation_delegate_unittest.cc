@@ -245,7 +245,6 @@ INSTANTIATE_TEST_SUITE_P(
     NoIncident,
     PreferenceValidationDelegateNoIncident,
     testing::Combine(testing::Values(ValueState::UNCHANGED,
-                                     ValueState::SECURE_LEGACY,
                                      ValueState::TRUSTED_UNKNOWN_VALUE),
                      testing::Values(ValueState::UNCHANGED,
                                      ValueState::UNSUPPORTED,
@@ -339,7 +338,6 @@ INSTANTIATE_TEST_SUITE_P(
     WithBypassIncident,
     PreferenceValidationDelegateWithIncident,
     testing::Combine(testing::Values(ValueState::UNCHANGED,
-                                     ValueState::SECURE_LEGACY,
                                      ValueState::TRUSTED_UNKNOWN_VALUE),
                      testing::Values(ValueState::CHANGED, ValueState::CLEARED),
                      testing::Bool()));

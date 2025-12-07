@@ -502,10 +502,6 @@ void TouchpadPrefHandlerImpl::InitializeLoginScreenTouchpadSettings(
     PrefService* local_state,
     const AccountId& account_id,
     mojom::Touchpad* touchpad) {
-  // Verify if the flag is enabled.
-  if (!features::IsInputDeviceSettingsSplitEnabled()) {
-    return;
-  }
   CHECK(local_state);
 
   const auto* settings_dict = GetLoginScreenSettingsDict(

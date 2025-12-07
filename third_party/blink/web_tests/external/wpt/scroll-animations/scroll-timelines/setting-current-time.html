@@ -42,13 +42,13 @@ promise_test(async t => {
 
 promise_test(async t => {
   const animation = createScrollLinkedAnimation(t);
-  assert_throws_dom('NotSupportedError', () => {
+  assert_throws_js(TypeError, () => {
     animation.currentTime = CSSNumericValue.parse("300");
   });
-  assert_throws_dom('NotSupportedError', () => {
+  assert_throws_js(TypeError, () => {
     animation.currentTime = CSSNumericValue.parse("300ms");
   });
-  assert_throws_dom('NotSupportedError', () => {
+  assert_throws_js(TypeError, () => {
     animation.currentTime = CSSNumericValue.parse("0.3s");
   });
 }, 'Setting the current time to an absolute time value throws exception');
@@ -228,9 +228,9 @@ promise_test(async t => {
   await animation.ready;
 
   // Make the timeline inactive.
-  scroller.style.overflow = 'visible';
-  scroller.scrollTop;
-  await waitForNextFrame();
+  await runAndWaitForFrameUpdate(() => {
+    scroller.style.overflow = 'visible';
+  });
 
   assert_equals(animation.currentTime, null,
     'Current time is unresolved when the timeline is inactive.');
@@ -255,9 +255,9 @@ promise_test(async t => {
     await animation.ready;
 
     // Make the timeline inactive.
-    scroller.style.overflow = 'visible';
-    scroller.scrollTop;
-    await waitForNextFrame();
+    await runAndWaitForFrameUpdate(() => {
+      scroller.style.overflow = 'visible';
+    });
 
     assert_equals(animation.timeline.currentTime, null,
       'Current time is unresolved when the timeline is inactive.');
@@ -270,9 +270,9 @@ promise_test(async t => {
       'timeline is inactive.');
 
     // Make the timeline active.
-    scroller.style.overflow = 'auto';
-    scroller.scrollTop;
-    await waitForNextFrame();
+    await runAndWaitForFrameUpdate(() => {
+      scroller.style.overflow = 'auto';
+    });
 
     assert_percents_equal(animation.timeline.currentTime, 0,
       'Current time is resolved when the timeline is active.');

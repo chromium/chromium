@@ -5,8 +5,8 @@
 import 'chrome://resources/ash/common/cr_elements/cr_radio_group/cr_radio_group.js';
 import 'chrome://resources/ash/common/cr_elements/cr_radio_button/cr_radio_button.js';
 
-import {CrRadioButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_radio_button/cr_radio_button.js';
-import {CrRadioGroupElement} from 'chrome://resources/ash/common/cr_elements/cr_radio_group/cr_radio_group.js';
+import type {CrRadioButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_radio_button/cr_radio_button.js';
+import type {CrRadioGroupElement} from 'chrome://resources/ash/common/cr_elements/cr_radio_group/cr_radio_group.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -224,37 +224,37 @@ suite('cr-radio-group', () => {
   test('radios with links', () => {
     const a = radioGroup.querySelector('a');
     assertTrue(!!a);
-    assertEquals(-1, a!.tabIndex);
+    assertEquals(-1, a.tabIndex);
     verifyNoneSelectedOneFocusable('1');
-    press('Enter', a!);
-    press(' ', a!);
-    a!.click();
+    press('Enter', a);
+    press(' ', a);
+    a.click();
     verifyNoneSelectedOneFocusable('1');
     radioGroup.querySelector<CrRadioButtonElement>('[name="1"]')!.click();
     checkSelected('1');
-    press('Enter', a!);
-    press(' ', a!);
-    a!.click();
+    press('Enter', a);
+    press(' ', a);
+    a.click();
     checkSelected('1');
     radioGroup.querySelector<CrRadioButtonElement>('[name="3"]')!.click();
     checkSelected('3');
-    assertEquals(0, a!.tabIndex);
+    assertEquals(0, a.tabIndex);
   });
 
   test('radios with input', () => {
     const input = radioGroup.querySelector('input');
     assertTrue(!!input);
     verifyNoneSelectedOneFocusable('1');
-    press('Enter', input!);
-    press(' ', input!);
+    press('Enter', input);
+    press(' ', input);
     verifyNoneSelectedOneFocusable('1');
-    input!.click();
+    input.click();
     checkSelected('2');
     radioGroup.querySelector<CrRadioButtonElement>('[name="1"]')!.click();
-    press('Enter', input!);
-    press(' ', input!);
+    press('Enter', input);
+    press(' ', input);
     checkSelected('1');
-    input!.click();
+    input.click();
     checkSelected('2');
   });
 

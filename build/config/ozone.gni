@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/cast.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/toolchain/toolchain.gni")
 
 declare_args() {
@@ -77,13 +76,10 @@ declare_args() {
       } else {
         ozone_platform = "cast"
       }
-    } else if (is_chromeos_ash) {
+    } else if (is_chromeos) {
       ozone_platform = "x11"
       ozone_platform_drm = true
       ozone_platform_x11 = true
-    } else if (is_chromeos_lacros) {
-      ozone_platform = "wayland"
-      ozone_platform_wayland = true
     } else if (is_linux) {
       ozone_platform = "x11"
       ozone_platform_wayland = true

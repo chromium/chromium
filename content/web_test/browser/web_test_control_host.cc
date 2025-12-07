@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/341324165): Fix and remove.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/web_test/browser/web_test_control_host.h"
 
 #include <stddef.h>
 #include <string.h>
 
+#include <algorithm>
 #include <iostream>
 #include <memory>
 #include <queue>
@@ -24,6 +20,7 @@
 #include "base/barrier_closure.h"
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -34,7 +31,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -47,6 +43,9 @@
 #include "cc/paint/skia_paint_canvas.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/custom_handlers/simple_protocol_handler_registry_factory.h"
+#include "components/subresource_filter/core/common/test_ruleset_creator.h"
+#include "components/subresource_filter/core/common/test_ruleset_utils.h"
+#include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/in_memory_federated_permission_context.h"
@@ -95,15 +94,15 @@
 #include "content/web_test/common/web_test_constants.h"
 #include "content/web_test/common/web_test_string_util.h"
 #include "content/web_test/common/web_test_switches.h"
-#include "ipc/ipc_channel_proxy.h"
+#include "crypto/obsolete/md5.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
+#include "net/cookies/cookie_util.h"
+#include "services/device/public/cpp/compute_pressure/buildflags.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
-#include "storage/browser/database/database_tracker.h"
 #include "storage/browser/file_system/isolated_context.h"
-#include "storage/browser/quota/quota_manager.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/common/page_state/page_state_serialization.h"
@@ -742,16 +741,15 @@ void WebTestControlHost::ResetBrowserAfterWebTest() {
   layout_dump_.reset();
   waiting_for_layout_dumps_ = 0;
   pixel_dump_.reset();
-  actual_pixel_hash_ = "";
   waiting_for_pixel_results_ = false;
   composite_all_frames_node_queue_ =
       std::queue<raw_ptr<Node, CtnExperimental>>();
   composite_all_frames_node_storage_.clear();
   next_pointer_lock_action_ = NextPointerLockAction::kWillSucceed;
 
-  BlockThirdPartyCookies(false);
+  BlockThirdPartyCookies(
+      net::cookie_util::IsForceThirdPartyCookieBlockingEnabled());
   SetBluetoothManualChooser(false);
-  SetDatabaseQuota(content::kDefaultDatabaseQuota);
 
   ShellBrowserContext* browser_context =
       ShellContentBrowserClient::Get()->browser_context();
@@ -759,6 +757,7 @@ void WebTestControlHost::ResetBrowserAfterWebTest() {
       browser_context->GetFederatedIdentityPermissionContext())
       ->ResetForTesting();
 
+#if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
   // Delete any ScopedVirtualPressureSourceForDevTools and
   // WebTestPressureManager instances created by WebTestContentBrowserClient.
   // At this point all other windows have been closed and their WebContents
@@ -775,6 +774,7 @@ void WebTestControlHost::ResetBrowserAfterWebTest() {
     main_window_->web_contents()->RemoveUserData(
         WebTestPressureManager::UserDataKey());
   }
+#endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 
   // Delete all cookies, Attribution Reporting data and Aggregation service data
   {
@@ -826,7 +826,7 @@ void WebTestControlHost::SetTempPath(const base::FilePath& temp_path) {
   temp_path_ = temp_path;
 }
 
-void WebTestControlHost::OverrideWebkitPrefs(
+void WebTestControlHost::OverrideWebPreferences(
     blink::web_pref::WebPreferences* prefs) {
   if (should_override_prefs_) {
     *prefs = prefs_;
@@ -978,8 +978,12 @@ void WebTestControlHost::CompositeNodeQueueThen(
       // The renderer is gone. Frames can also crash the renderer after the test
       // claims to be finished.
       frame = nullptr;
-    } else if (frame->GetParent() && frame->GetParent()->GetSiteInstance() ==
-                                         frame->GetSiteInstance()) {
+    } else if (frame->GetParent() &&
+               static_cast<SiteInstanceImpl*>(
+                   frame->GetParent()->GetSiteInstance())
+                       ->group() ==
+                   static_cast<SiteInstanceImpl*>(frame->GetSiteInstance())
+                       ->group()) {
       // The frame is not a local root, so nothing to do.
       frame = nullptr;
     }
@@ -1001,8 +1005,8 @@ WebTestControlHost::Node* WebTestControlHost::BuildFrameTree(
     WebContents* web_contents) {
   // Returns a Node for a given RenderFrameHost, or nullptr if doesn't exist.
   auto node_for_frame = [this](RenderFrameHost* rfh) {
-    auto it = base::ranges::find(composite_all_frames_node_storage_, rfh,
-                                 &Node::render_frame_host);
+    auto it = std::ranges::find(composite_all_frames_node_storage_, rfh,
+                                &Node::render_frame_host);
     return it == composite_all_frames_node_storage_.end() ? nullptr : it->get();
   };
 
@@ -1076,17 +1080,6 @@ void WebTestControlHost::RequestPointerLock(WebContents* web_contents) {
           : blink::mojom::PointerLockResult::kPermissionDenied);
 
   next_pointer_lock_action_ = NextPointerLockAction::kWillSucceed;
-}
-
-void WebTestControlHost::PluginCrashed(const base::FilePath& plugin_path,
-                                       base::ProcessId plugin_pid) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  printer_->AddErrorMessage(
-      base::StringPrintf("#CRASHED - plugin (pid %" CrPRIdPid ")", plugin_pid));
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(base::IgnoreResult(&WebTestControlHost::DiscardMainWindow),
-                     weak_factory_.GetWeakPtr()));
 }
 
 void WebTestControlHost::TitleWasSet(NavigationEntry* entry) {
@@ -1326,7 +1319,7 @@ void WebTestControlHost::OnTestFinished() {
       ShellContentBrowserClient::Get()->browser_context();
 
   base::RepeatingClosure barrier_closure = base::BarrierClosure(
-      2, base::BindOnce(&WebTestControlHost::PrepareRendererForNextWebTest,
+      3, base::BindOnce(&WebTestControlHost::PrepareRendererForNextWebTest,
                         weak_factory_.GetWeakPtr()));
 
   StoragePartition* storage_partition =
@@ -1334,6 +1327,41 @@ void WebTestControlHost::OnTestFinished() {
   storage_partition->GetServiceWorkerContext()->ClearAllServiceWorkersForTest(
       barrier_closure);
   storage_partition->ClearBluetoothAllowedDevicesMapForTesting();
+
+  // Clear all site-related storage APIs to ensure tests are hermetic.
+  // Use an "opt-out" (or "blacklist") approach for future-proofing. This
+  // ensures that new storage APIs added to `REMOVE_DATA_MASK_ALL` in the
+  // future are automatically cleared without needing to modify this code.
+  const uint32_t exclusion_mask =
+      // Cookies are excluded to preserve the state of the test runner itself
+      // and any test-specific setup.
+      content::StoragePartition::REMOVE_DATA_MASK_COOKIES |
+      // Media licenses can be costly to re-acquire and are not considered
+      // typical, per-test site data.
+      content::StoragePartition::REMOVE_DATA_MASK_MEDIA_LICENSES |
+      // Internal flags manage browser-internal state, not website data, and
+      // should not be cleared.
+      content::StoragePartition::
+          REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_INTERNAL |
+      content::StoragePartition::REMOVE_DATA_MASK_PRIVATE_AGGREGATION_INTERNAL |
+      content::StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS_INTERNAL |
+      // These flags are designed for explicit user actions in settings.
+      content::StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS_USER_CLEAR |
+      // This is a transient network state, not persistent storage.
+      content::StoragePartition::REMOVE_KEEPALIVE_LOADS_ATTEMPTING_RETRY |
+      // Device-bound sessions are security/session-related and should persist.
+      content::StoragePartition::REMOVE_DATA_MASK_DEVICE_BOUND_SESSIONS;
+
+  const uint32_t removal_mask =
+      content::StoragePartition::REMOVE_DATA_MASK_ALL & ~exclusion_mask;
+
+  storage_partition->ClearData(
+      removal_mask, content::StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
+      /*filter_builder=*/nullptr,
+      content::StoragePartition::StorageKeyPolicyMatcherFunction(),
+      /*cookie_deletion_filter=*/nullptr,
+      /*perform_storage_cleanup=*/false, base::Time::Min(), base::Time::Max(),
+      barrier_closure);
 
   // TODO(nhiroki): Add a comment about the reason why we terminate all shared
   // workers here.
@@ -1343,8 +1371,9 @@ void WebTestControlHost::OnTestFinished() {
                             barrier_closure);
 }
 
-void WebTestControlHost::OnDumpFrameLayoutResponse(int frame_tree_node_id,
-                                                   const std::string& dump) {
+void WebTestControlHost::OnDumpFrameLayoutResponse(
+    FrameTreeNodeId frame_tree_node_id,
+    const std::string& dump) {
   // Store the result.
   auto pair = frame_to_layout_dump_map_.emplace(frame_tree_node_id, dump);
   bool insertion_took_place = pair.second;
@@ -1369,7 +1398,9 @@ void WebTestControlHost::OnDumpFrameLayoutResponse(int frame_tree_node_id,
   ReportResults();
 }
 
-void WebTestControlHost::OnPixelDumpCaptured(const SkBitmap& snapshot) {
+void WebTestControlHost::OnPixelDumpCaptured(
+    const viz::CopyOutputBitmapWithMetadata& result) {
+  const SkBitmap& snapshot = result.bitmap;
   // In the test: test_runner/notify_done_and_defered_close_dump_surface.html,
   // the |main_window_| is closed while waiting for the pixel dump. When this
   // happens, every window is closed and while pumping the message queue,
@@ -1395,12 +1426,13 @@ void WebTestControlHost::ReportResults() {
 
   // Use the browser-generated |layout_dump_| if present, else use the
   // renderer's.
-  if (layout_dump_)
+  if (layout_dump_) {
     OnTextDump(*layout_dump_);
-  else if (renderer_dump_result_->layout)
+  } else if (renderer_dump_result_->layout) {
     OnTextDump(*renderer_dump_result_->layout);
-  else
-    NOTREACHED_IN_MIGRATION();
+  } else {
+    NOTREACHED();
+  }
 
   // Use the browser-generated |pixel_dump_| if present, else use the
   // renderer's.
@@ -1412,14 +1444,11 @@ void WebTestControlHost::ReportResults() {
     // can't track initializedness across processes, we must assure it that the
     // pixels are in fact initialized.
     MSAN_UNPOISON(pixel_dump_->getPixels(), pixel_dump_->computeByteSize());
-    base::MD5Digest digest;
-    auto bytes =
+    auto bytes = UNSAFE_TODO(
         base::span(static_cast<const uint8_t*>(pixel_dump_->getPixels()),
-                   pixel_dump_->computeByteSize());
-    base::MD5Sum(bytes, &digest);
-    actual_pixel_hash_ = base::MD5DigestToBase16(digest);
+                   pixel_dump_->computeByteSize()));
 
-    OnImageDump(actual_pixel_hash_, *pixel_dump_);
+    OnImageDump(Md5AsHexForWebTestPixels(bytes), *pixel_dump_);
   } else if (!renderer_dump_result_->actual_pixel_hash.empty()) {
     OnImageDump(renderer_dump_result_->actual_pixel_hash,
                 renderer_dump_result_->pixels);
@@ -1435,36 +1464,35 @@ void WebTestControlHost::OnImageDump(const std::string& actual_pixel_hash,
   // Only encode and dump the png if the hashes don't match. Encoding the
   // image is really expensive.
   if (actual_pixel_hash != expected_pixel_hash_) {
-    std::vector<unsigned char> png;
-
     bool discard_transparency = true;
     if (web_test_runtime_flags().dump_drag_image())
       discard_transparency = false;
 
-    gfx::PNGCodec::ColorFormat pixel_format;
-    switch (image.info().colorType()) {
-      case kBGRA_8888_SkColorType:
-        pixel_format = gfx::PNGCodec::FORMAT_BGRA;
-        break;
-      case kRGBA_8888_SkColorType:
-        pixel_format = gfx::PNGCodec::FORMAT_RGBA;
-        break;
-      default:
-        NOTREACHED_IN_MIGRATION();
-        return;
-    }
+    if (!image.drawsNothing()) {
+      gfx::PNGCodec::ColorFormat pixel_format;
+      switch (image.info().colorType()) {
+        case kBGRA_8888_SkColorType:
+          pixel_format = gfx::PNGCodec::FORMAT_BGRA;
+          break;
+        case kRGBA_8888_SkColorType:
+          pixel_format = gfx::PNGCodec::FORMAT_RGBA;
+          break;
+        default:
+          NOTREACHED();
+      }
 
-    std::vector<gfx::PNGCodec::Comment> comments;
-    // Used by
-    // //third_party/blink/tools/blinkpy/common/read_checksum_from_png.py
-    comments.push_back(gfx::PNGCodec::Comment("checksum", actual_pixel_hash));
-    bool success = gfx::PNGCodec::Encode(
-        static_cast<const unsigned char*>(image.getPixels()), pixel_format,
-        gfx::Size(image.width(), image.height()),
-        static_cast<int>(image.rowBytes()), discard_transparency, comments,
-        &png);
-    if (success)
-      printer_->PrintImageBlock(png);
+      std::vector<gfx::PNGCodec::Comment> comments;
+      // Used by
+      // //third_party/blink/tools/blinkpy/common/read_checksum_from_png.py
+      comments.emplace_back("checksum", actual_pixel_hash);
+      std::optional<std::vector<uint8_t>> png = gfx::PNGCodec::Encode(
+          static_cast<const unsigned char*>(image.getPixels()), pixel_format,
+          gfx::Size(image.width(), image.height()),
+          static_cast<int>(image.rowBytes()), discard_transparency, comments);
+      if (png) {
+        printer_->PrintImageBlock(png.value());
+      }
+    }
   }
   printer_->PrintImageFooter();
 }
@@ -1531,8 +1559,6 @@ void WebTestControlHost::SetPermission(const std::string& name,
     type = blink::PermissionType::PROTECTED_MEDIA_IDENTIFIER;
   } else if (name == "background-sync") {
     type = blink::PermissionType::BACKGROUND_SYNC;
-  } else if (name == "accessibility-events") {
-    type = blink::PermissionType::ACCESSIBILITY_EVENTS;
   } else if (name == "clipboard-read-write") {
     type = blink::PermissionType::CLIPBOARD_READ_WRITE;
   } else if (name == "clipboard-sanitized-write") {
@@ -1557,8 +1583,7 @@ void WebTestControlHost::SetPermission(const std::string& name,
   } else if (name == "top-level-storage-access") {
     type = blink::PermissionType::TOP_LEVEL_STORAGE_ACCESS;
   } else {
-    NOTREACHED_IN_MIGRATION();
-    type = blink::PermissionType::NOTIFICATIONS;
+    NOTREACHED();
   }
 
   WebTestContentBrowserClient::Get()
@@ -1639,6 +1664,23 @@ void WebTestControlHost::SetFilePathForMockFileDialog(
       std::make_unique<FakeSelectFileDialogFactory>(path));
 }
 
+void WebTestControlHost::CreateSubresourceFilterRulesetFile(
+    const std::vector<std::string>& disallowed_suffixes,
+    CreateSubresourceFilterRulesetFileCallback callback) {
+  std::vector<url_pattern_index::proto::UrlRule> rules;
+  for (const std::string& disallowed_suffix : disallowed_suffixes) {
+    rules.push_back(
+        subresource_filter::testing::CreateSuffixRule(disallowed_suffix));
+  }
+
+  subresource_filter::testing::TestRulesetPair test_ruleset_pair;
+  subresource_filter::testing::TestRulesetCreator ruleset_creator;
+  ruleset_creator.CreateRulesetWithRules(rules, &test_ruleset_pair);
+
+  std::move(callback).Run(subresource_filter::testing::TestRuleset::Open(
+      test_ruleset_pair.indexed));
+}
+
 void WebTestControlHost::FocusDevtoolsSecondaryWindow() {
   CHECK(secondary_window_);
   // We don't go down the normal system path of focusing RenderWidgetHostView
@@ -1664,55 +1706,6 @@ void WebTestControlHost::ClearTrustTokenState(base::OnceClosure callback) {
   storage_partition->GetNetworkContext()->ClearTrustTokenData(
       nullptr,  // A wildcard filter.
       std::move(callback));
-}
-
-void WebTestControlHost::SetDatabaseQuota(int32_t quota) {
-  auto run_on_io_thread = [](scoped_refptr<storage::QuotaManager> quota_manager,
-                             int32_t quota) {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
-    if (quota == kDefaultDatabaseQuota) {
-      // Reset quota to settings with a zero refresh interval to force
-      // QuotaManager to refresh settings immediately.
-      storage::QuotaSettings default_settings;
-      default_settings.refresh_interval = base::TimeDelta();
-      quota_manager->SetQuotaSettings(default_settings);
-    } else {
-      DCHECK_GE(quota, 0);
-      quota_manager->SetQuotaSettings(storage::GetHardCodedSettings(quota));
-    }
-  };
-
-  BrowserContext* browser_context =
-      ShellContentBrowserClient::Get()->browser_context();
-  StoragePartition* storage_partition =
-      browser_context->GetDefaultStoragePartition();
-  scoped_refptr<storage::QuotaManager> quota_manager =
-      base::WrapRefCounted(storage_partition->GetQuotaManager());
-
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(run_on_io_thread, std::move(quota_manager), quota));
-}
-
-void WebTestControlHost::ClearAllDatabases() {
-  auto run_on_database_sequence =
-      [](scoped_refptr<storage::DatabaseTracker> db_tracker) {
-        DCHECK(db_tracker->task_runner()->RunsTasksInCurrentSequence());
-        db_tracker->DeleteDataModifiedSince(base::Time(), base::DoNothing());
-      };
-
-  BrowserContext* browser_context =
-      ShellContentBrowserClient::Get()->browser_context();
-  StoragePartition* storage_partition =
-      browser_context->GetDefaultStoragePartition();
-  scoped_refptr<storage::DatabaseTracker> db_tracker =
-      base::WrapRefCounted(storage_partition->GetDatabaseTracker());
-
-  if (db_tracker) {
-    base::SequencedTaskRunner* task_runner = db_tracker->task_runner();
-    task_runner->PostTask(FROM_HERE, base::BindOnce(run_on_database_sequence,
-                                                    std::move(db_tracker)));
-  }
 }
 
 void WebTestControlHost::SimulateWebNotificationClick(
@@ -1901,7 +1894,7 @@ void WebTestControlHost::SetRegisterProtocolHandlerMode(
           custom_handlers::RphRegistrationMode::kAutoReject);
       return;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void WebTestControlHost::GoToOffset(int offset) {
@@ -1927,10 +1920,17 @@ void WebTestControlHost::SetMainWindowHidden(bool hidden) {
 void WebTestControlHost::SetFrameWindowHidden(
     const blink::LocalFrameToken& frame_token,
     bool hidden) {
+  WebContents* web_contents = GetWebContentsFromCurrentContext(frame_token);
+  // It's possible that the `frame_token` sent is stale and the RenderFrameHost
+  // is already deleted at this point, e.g. when the message is fired during
+  // unloading. In this case, there's nothing we can do.
+  if (!web_contents) {
+    return;
+  }
   if (hidden) {
-    GetWebContentsFromCurrentContext(frame_token)->WasHidden();
+    web_contents->WasHidden();
   } else {
-    GetWebContentsFromCurrentContext(frame_token)->WasShown();
+    web_contents->WasShown();
   }
 }
 
@@ -1939,7 +1939,9 @@ WebContents* WebTestControlHost::GetWebContentsFromCurrentContext(
   const int render_process_id = receiver_bindings_.current_context();
   auto* rfh =
       RenderFrameHostImpl::FromFrameToken(render_process_id, frame_token);
-  CHECK(rfh);
+  if (!rfh) {
+    return nullptr;
+  }
   return WebContents::FromRenderFrameHost(rfh);
 }
 
@@ -1998,6 +2000,7 @@ void WebTestControlHost::PrepareRendererForNextWebTest() {
   params.force_new_browsing_instance =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kResetBrowsingInstanceBetweenTests);
+  params.force_new_compositor = true;
   web_contents->GetController().LoadURLWithParams(params);
 
   // The navigation might have to wait for before unload handler to execute. The
@@ -2184,7 +2187,7 @@ void WebTestControlHost::BindNonAssociatedWebTestControlHost(
 
 mojo::AssociatedRemote<mojom::WebTestRenderFrame>&
 WebTestControlHost::GetWebTestRenderFrameRemote(RenderFrameHost* frame) {
-  GlobalRenderFrameHostId key(frame->GetProcess()->GetID(),
+  GlobalRenderFrameHostId key(frame->GetProcess()->GetDeprecatedID(),
                               frame->GetRoutingID());
   if (!base::Contains(web_test_render_frame_map_, key)) {
     mojo::AssociatedRemote<mojom::WebTestRenderFrame>& new_ptr =
@@ -2205,7 +2208,8 @@ void WebTestControlHost::HandleWebTestRenderFrameRemoteError(
 
 WebTestControlHost::Node::Node(RenderFrameHost* host)
     : render_frame_host(host),
-      render_frame_host_id(host->GetProcess()->GetID(), host->GetRoutingID()) {}
+      render_frame_host_id(host->GetProcess()->GetDeprecatedID(),
+                           host->GetRoutingID()) {}
 
 WebTestControlHost::Node::Node(Node&& other) = default;
 WebTestControlHost::Node& WebTestControlHost::Node::operator=(Node&& other) =

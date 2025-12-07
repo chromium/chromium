@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/350788890): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
+#include <string>
+#include <string_view>
 
 #include "base/check.h"
-#include "base/cpu_reduction_experiment.h"
+#include "base/compiler_specific.h"
 #include "url/url_canon.h"
 #include "url/url_canon_internal.h"
 #include "url/url_features.h"
@@ -182,7 +180,7 @@ const uint8_t kHostCharacterTable[128] = {
 // clang-format on
 
 bool IsForbiddenHostCodePoint(uint8_t ch) {
-  return ch <= 0x7F && (kHostCharacterTable[ch] & kForbiddenHost);
+  return ch <= 0x7F && (UNSAFE_TODO(kHostCharacterTable[ch]) & kForbiddenHost);
 }
 
 // RFC1034 maximum FQDN length.
@@ -203,19 +201,18 @@ using StackBufferW = RawCanonOutputT<char16_t, kTempHostBufferLen>;
 // Scans a host name and fills in the output flags according to what we find.
 // |has_non_ascii| will be true if there are any non-7-bit characters, and
 // |has_escaped| will be true if there is a percent sign.
-template<typename CHAR, typename UCHAR>
-void ScanHostname(const CHAR* spec,
-                  const Component& host,
+template <typename CHAR, typename UCHAR>
+void ScanHostname(std::basic_string_view<CHAR> host,
                   bool* has_non_ascii,
                   bool* has_escaped) {
-  int end = host.end();
   *has_non_ascii = false;
   *has_escaped = false;
-  for (int i = host.begin; i < end; i++) {
-    if (static_cast<UCHAR>(spec[i]) >= 0x80)
+  for (const CHAR ch : host) {
+    if (static_cast<UCHAR>(ch) >= 0x80) {
       *has_non_ascii = true;
-    else if (spec[i] == '%')
+    } else if (ch == '%') {
       *has_escaped = true;
+    }
   }
 }
 
@@ -240,21 +237,19 @@ void ScanHostname(const CHAR* spec,
 //    |*has_non_ascii| flag.
 //
 // The return value indicates if the output is a potentially valid host name.
-template <typename INCHAR, typename OUTCHAR>
-bool DoSimpleHost(const INCHAR* host,
-                  size_t host_len,
+template <CanonMode canon_mode, typename INCHAR, typename OUTCHAR>
+bool DoSimpleHost(std::basic_string_view<INCHAR> host,
                   CanonOutputT<OUTCHAR>* output,
                   bool* has_non_ascii) {
   *has_non_ascii = false;
 
   bool success = true;
-  for (size_t i = 0; i < host_len; ++i) {
+  for (size_t i = 0; i < host.length(); ++i) {
     unsigned int source = host[i];
     if (source == '%') {
       // Unescape first, if possible.
       // Source will be used only if decode operation was successful.
-      if (!DecodeEscaped(host, &i, host_len,
-                         reinterpret_cast<unsigned char*>(&source))) {
+      if (!DecodeEscaped(host, &i, reinterpret_cast<unsigned char*>(&source))) {
         // Invalid escaped character. There is nothing that can make this
         // host valid. We append an escaped percent so the URL looks reasonable
         // and mark as failed.
@@ -266,7 +261,7 @@ bool DoSimpleHost(const INCHAR* host,
 
     if (source < 0x80) {
       // We have ASCII input, we can use our lookup table.
-      unsigned char replacement = kHostCharLookup[source];
+      unsigned char replacement = UNSAFE_TODO(kHostCharLookup[source]);
       if (!replacement) {
         // Invalid character, add it as percent-escaped and mark as failed.
         AppendEscapedChar(source, output);
@@ -274,6 +269,11 @@ bool DoSimpleHost(const INCHAR* host,
       } else if (replacement == kEsc) {
         // This character is valid but should be escaped.
         AppendEscapedChar(source, output);
+        if (source == ' ' &&
+            url::IsDisallowingSpaceCharacterInURLHostParsing() &&
+            canon_mode != CanonMode::kFileURL) {
+          success = false;
+        }
       } else {
         // Common case, the given character is valid in a hostname, the lookup
         // table tells us the canonical representation of that character (lower
@@ -292,16 +292,17 @@ bool DoSimpleHost(const INCHAR* host,
 }
 
 // Canonicalizes a host that requires IDN conversion. Returns true on success
-bool DoIDNHost(const char16_t* src, size_t src_len, CanonOutput* output) {
+template <CanonMode canon_mode>
+bool DoIdnHost(std::u16string_view host_view, CanonOutput* output) {
   int original_output_len = output->length();  // So we can rewind below.
 
   // We need to escape URL before doing IDN conversion, since punicode strings
   // cannot be escaped after they are created.
   RawCanonOutputW<kTempHostBufferLen> url_escaped_host;
   bool has_non_ascii;
-  DoSimpleHost(src, src_len, &url_escaped_host, &has_non_ascii);
+  DoSimpleHost<canon_mode>(host_view, &url_escaped_host, &has_non_ascii);
   if (url_escaped_host.length() > kMaxHostBufferLength) {
-    AppendInvalidNarrowString(src, 0, src_len, output);
+    AppendInvalidNarrowString(host_view, output);
     return false;
   }
 
@@ -309,15 +310,15 @@ bool DoIDNHost(const char16_t* src, size_t src_len, CanonOutput* output) {
   if (!IDNToASCII(url_escaped_host.view(), &wide_output)) {
     // Some error, give up. This will write some reasonable looking
     // representation of the string to the output.
-    AppendInvalidNarrowString(src, 0, src_len, output);
+    AppendInvalidNarrowString(host_view, output);
     return false;
   }
 
   // Now we check the ASCII output like a normal host. It will also handle
   // unescaping. Although we unescaped everything before this function call, if
   // somebody does %00 as fullwidth, ICU will convert this to ASCII.
-  bool success = DoSimpleHost(wide_output.data(), wide_output.length(), output,
-                              &has_non_ascii);
+  bool success =
+      DoSimpleHost<canon_mode>(wide_output.view(), output, &has_non_ascii);
   if (has_non_ascii) {
     // ICU generated something that DoSimpleHost didn't think looked like
     // ASCII. This is quite rare, but ICU might convert some characters to
@@ -334,8 +335,7 @@ bool DoIDNHost(const char16_t* src, size_t src_len, CanonOutput* output) {
     // ASCII isn't strictly necessary, but DoSimpleHost handles this case
     // anyway so we handle it/
     output->set_length(original_output_len);
-    AppendInvalidNarrowString(wide_output.data(), 0, wide_output.length(),
-                              output);
+    AppendInvalidNarrowString(wide_output.view(), output);
     return false;
   }
   return success;
@@ -344,8 +344,8 @@ bool DoIDNHost(const char16_t* src, size_t src_len, CanonOutput* output) {
 // 8-bit convert host to its ASCII version: this converts the UTF-8 input to
 // UTF-16. The has_escaped flag should be set if the input string requires
 // unescaping.
-bool DoComplexHost(const char* host,
-                   size_t host_len,
+template <CanonMode canon_mode>
+bool DoComplexHost(std::string_view host,
                    bool has_non_ascii,
                    bool has_escaped,
                    CanonOutput* output) {
@@ -355,8 +355,7 @@ bool DoComplexHost(const char* host,
 
   // Points to the UTF-8 data we want to convert. This will either be the
   // input or the unescaped version written to |*output| if necessary.
-  const char* utf8_source;
-  size_t utf8_source_len;
+  std::string_view utf8_source;
   bool are_all_escaped_valid = true;
   if (has_escaped) {
     // Unescape before converting to UTF-16 for IDN. We write this into the
@@ -364,7 +363,7 @@ bool DoComplexHost(const char* host,
     // save another huge stack buffer. It will be replaced below if it requires
     // IDN. This will also update our non-ASCII flag so we know whether the
     // unescaped input requires IDN.
-    if (!DoSimpleHost(host, host_len, output, &has_non_ascii)) {
+    if (!DoSimpleHost<canon_mode>(host, output, &has_non_ascii)) {
       // Error with some escape sequence. We'll call the current output
       // complete. DoSimpleHost will have written some "reasonable" output
       // for the invalid escapes, but the output could be non-ASCII and
@@ -380,42 +379,40 @@ bool DoComplexHost(const char* host,
 
     // Save the pointer into the data was just converted (it may be appended to
     // other data in the output buffer).
-    utf8_source = &output->data()[begin_length];
-    utf8_source_len = output->length() - begin_length;
+    utf8_source = output->view().substr(begin_length);
   } else {
     // We don't need to unescape, use input for IDNization later. (We know the
     // input has non-ASCII, or the simple version would have been called
     // instead of us.)
     utf8_source = host;
-    utf8_source_len = host_len;
   }
 
   // Non-ASCII input requires IDN, convert to UTF-16 and do the IDN conversion.
   // Above, we may have used the output to write the unescaped values to, so
   // we have to rewind it to where we started after we convert it to UTF-16.
   StackBufferW utf16;
-  if (!ConvertUTF8ToUTF16(utf8_source, utf8_source_len, &utf16)) {
+  if (!ConvertUTF8ToUTF16(utf8_source, &utf16)) {
     // In this error case, the input may or may not be the output.
     StackBuffer utf8;
-    for (size_t i = 0; i < utf8_source_len; i++)
+    for (size_t i = 0; i < utf8_source.length(); i++) {
       utf8.push_back(utf8_source[i]);
+    }
     output->set_length(begin_length);
-    AppendInvalidNarrowString(utf8.data(), 0, utf8.length(), output);
+    AppendInvalidNarrowString(utf8.view(), output);
     return false;
   }
   output->set_length(begin_length);
 
   // This will call DoSimpleHost which will do normal ASCII canonicalization
   // and also check for IP addresses in the outpt.
-  return DoIDNHost(utf16.data(), utf16.length(), output) &&
-         are_all_escaped_valid;
+  return DoIdnHost<canon_mode>(utf16.view(), output) && are_all_escaped_valid;
 }
 
 // UTF-16 convert host to its ASCII version. The set up is already ready for
 // the backend, so we just pass through. The has_escaped flag should be set if
 // the input string requires unescaping.
-bool DoComplexHost(const char16_t* host,
-                   size_t host_len,
+template <CanonMode canon_mode>
+bool DoComplexHost(std::u16string_view host,
                    bool has_non_ascii,
                    bool has_escaped,
                    CanonOutput* output) {
@@ -429,40 +426,35 @@ bool DoComplexHost(const char16_t* host,
     // very rare that host names have escaped characters, and it is relatively
     // fast to do the conversion anyway.
     StackBuffer utf8;
-    if (!ConvertUTF16ToUTF8(host, host_len, &utf8)) {
-      AppendInvalidNarrowString(host, 0, host_len, output);
+    if (!ConvertUTF16ToUTF8(host, &utf8)) {
+      AppendInvalidNarrowString(host, output);
       return false;
     }
 
     // Once we convert to UTF-8, we can use the 8-bit version of the complex
     // host handling code above.
-    return DoComplexHost(utf8.data(), utf8.length(), has_non_ascii, has_escaped,
-                         output);
+    return DoComplexHost<canon_mode>(utf8.view(), has_non_ascii, has_escaped,
+                                     output);
   }
 
   // No unescaping necessary, we can safely pass the input to ICU. This
   // function will only get called if we either have escaped or non-ascii
   // input, so it's safe to just use ICU now. Even if the input is ASCII,
   // this function will do the right thing (just slower than we could).
-  return DoIDNHost(host, host_len, output);
+  return DoIdnHost<canon_mode>(host, output);
 }
 
-template <typename CHAR, typename UCHAR>
-bool DoHostSubstring(const CHAR* spec,
-                     const Component& host,
+template <typename CHAR, typename UCHAR, CanonMode canon_mode>
+bool DoHostSubstring(const std::basic_string_view<CHAR> host,
                      CanonOutput* output) {
-  DCHECK(host.is_valid());
-
   bool has_non_ascii, has_escaped;
-  ScanHostname<CHAR, UCHAR>(spec, host, &has_non_ascii, &has_escaped);
+  ScanHostname<CHAR, UCHAR>(host, &has_non_ascii, &has_escaped);
 
   if (has_non_ascii || has_escaped) {
-    return DoComplexHost(&spec[host.begin], static_cast<size_t>(host.len),
-                         has_non_ascii, has_escaped, output);
+    return DoComplexHost<canon_mode>(host, has_non_ascii, has_escaped, output);
   }
 
-  const bool success = DoSimpleHost(
-      &spec[host.begin], static_cast<size_t>(host.len), output, &has_non_ascii);
+  const bool success = DoSimpleHost<canon_mode>(host, output, &has_non_ascii);
   DCHECK(!has_non_ascii);
   return success;
 }
@@ -499,7 +491,7 @@ bool DoOpaqueHost(const std::basic_string_view<CharT> host,
     // > 4. Return the result of running UTF-8 percent-encode on input using
     // > the C0 control percent-encode set.
     if (IsInC0ControlPercentEncodeSet(ch)) {
-      AppendUTF8EscapedChar(host.data(), &i, host_len, &output);
+      AppendUtf8EscapedChar(host, &i, &output);
     } else {
       output.push_back(ch);
     }
@@ -508,14 +500,14 @@ bool DoOpaqueHost(const std::basic_string_view<CharT> host,
 }
 
 template <typename CHAR, typename UCHAR, CanonMode canon_mode>
-void DoHost(const CHAR* spec,
+void DoHost(std::basic_string_view<CHAR> spec,
             const Component& host,
             CanonOutput& output,
             CanonHostInfo& host_info) {
   // URL Standard: https://url.spec.whatwg.org/#host-parsing
 
   // Keep track of output's initial length, so we can rewind later.
-  const int output_begin = output.length();
+  const size_t output_begin = output.length();
 
   if (host.is_empty()) {
     // Empty hosts don't need anything.
@@ -534,12 +526,14 @@ void DoHost(const CHAR* spec,
     return;
   }
 
+  std::basic_string_view<CHAR> host_view = host.AsViewOn(spec);
   bool success;
-  if constexpr (canon_mode == CanonMode::kSpecialURL) {
-    success = DoHostSubstring<CHAR, UCHAR>(spec, host, &output);
+  if constexpr (canon_mode == CanonMode::kSpecialURL ||
+                canon_mode == CanonMode::kFileURL) {
+    success = DoHostSubstring<CHAR, UCHAR, canon_mode>(host_view, &output);
   } else {
     // URL Standard: https://url.spec.whatwg.org/#concept-opaque-host-parser
-    success = DoOpaqueHost(host.as_string_view_on(spec), output);
+    success = DoOpaqueHost(host_view, output);
   }
 
   if (success) {
@@ -548,15 +542,14 @@ void DoHost(const CHAR* spec,
     // should not cause an allocation.
     RawCanonOutput<64> canon_ip;
 
-    if constexpr (canon_mode == CanonMode::kSpecialURL) {
-      CanonicalizeIPAddress(output.data(),
-                            MakeRange(output_begin, output.length()), &canon_ip,
-                            &host_info);
+    std::string_view output_view =
+        output.view().substr(output_begin, output.length() - output_begin);
+    if constexpr (canon_mode == CanonMode::kSpecialURL ||
+                  canon_mode == CanonMode::kFileURL) {
+      CanonicalizeIPAddress(output_view, &canon_ip, &host_info);
     } else {
       // Non-special URLs support only IPv6.
-      CanonicalizeIPv6Address(output.data(),
-                              MakeRange(output_begin, output.length()),
-                              canon_ip, host_info);
+      CanonicalizeIPv6Address(output_view, canon_ip, host_info);
     }
 
     // If we got an IPv4/IPv6 address, copy the canonical form back to the
@@ -575,7 +568,7 @@ void DoHost(const CHAR* spec,
 
 }  // namespace
 
-bool CanonicalizeHost(const char* spec,
+bool CanonicalizeHost(std::string_view spec,
                       const Component& host,
                       CanonOutput* output,
                       Component* out_host) {
@@ -584,7 +577,7 @@ bool CanonicalizeHost(const char* spec,
   return CanonicalizeSpecialHost(spec, host, *output, *out_host);
 }
 
-bool CanonicalizeHost(const char16_t* spec,
+bool CanonicalizeHost(std::u16string_view spec,
                       const Component& host,
                       CanonOutput* output,
                       Component* out_host) {
@@ -593,7 +586,7 @@ bool CanonicalizeHost(const char16_t* spec,
   return CanonicalizeSpecialHost(spec, host, *output, *out_host);
 }
 
-bool CanonicalizeSpecialHost(const char* spec,
+bool CanonicalizeSpecialHost(std::string_view spec,
                              const Component& host,
                              CanonOutput& output,
                              Component& out_host) {
@@ -604,7 +597,7 @@ bool CanonicalizeSpecialHost(const char* spec,
   return (host_info.family != CanonHostInfo::BROKEN);
 }
 
-bool CanonicalizeSpecialHost(const char16_t* spec,
+bool CanonicalizeSpecialHost(std::u16string_view spec,
                              const Component& host,
                              CanonOutput& output,
                              Component& out_host) {
@@ -615,7 +608,29 @@ bool CanonicalizeSpecialHost(const char16_t* spec,
   return (host_info.family != CanonHostInfo::BROKEN);
 }
 
-bool CanonicalizeNonSpecialHost(const char* spec,
+bool CanonicalizeFileHost(std::string_view spec,
+                          const Component& host,
+                          CanonOutput& output,
+                          Component& out_host) {
+  CanonHostInfo host_info;
+  DoHost<char, unsigned char, CanonMode::kFileURL>(spec, host, output,
+                                                   host_info);
+  out_host = host_info.out_host;
+  return (host_info.family != CanonHostInfo::BROKEN);
+}
+
+bool CanonicalizeFileHost(std::u16string_view spec,
+                          const Component& host,
+                          CanonOutput& output,
+                          Component& out_host) {
+  CanonHostInfo host_info;
+  DoHost<char16_t, char16_t, CanonMode::kFileURL>(spec, host, output,
+                                                  host_info);
+  out_host = host_info.out_host;
+  return (host_info.family != CanonHostInfo::BROKEN);
+}
+
+bool CanonicalizeNonSpecialHost(std::string_view spec,
                                 const Component& host,
                                 CanonOutput& output,
                                 Component& out_host) {
@@ -626,7 +641,7 @@ bool CanonicalizeNonSpecialHost(const char* spec,
   return (host_info.family != CanonHostInfo::BROKEN);
 }
 
-bool CanonicalizeNonSpecialHost(const char16_t* spec,
+bool CanonicalizeNonSpecialHost(std::u16string_view spec,
                                 const Component& host,
                                 CanonOutput& output,
                                 Component& out_host) {
@@ -641,12 +656,12 @@ void CanonicalizeHostVerbose(const char* spec,
                              const Component& host,
                              CanonOutput* output,
                              CanonHostInfo* host_info) {
-  DCHECK(output);
-  DCHECK(host_info);
-  CanonicalizeSpecialHostVerbose(spec, host, *output, *host_info);
+  CanonicalizeHostVerbose(
+      std::string_view(spec, host.is_valid() ? host.end() : 0), host, output,
+      host_info);
 }
 
-void CanonicalizeHostVerbose(const char16_t* spec,
+void CanonicalizeHostVerbose(std::string_view spec,
                              const Component& host,
                              CanonOutput* output,
                              CanonHostInfo* host_info) {
@@ -655,7 +670,16 @@ void CanonicalizeHostVerbose(const char16_t* spec,
   CanonicalizeSpecialHostVerbose(spec, host, *output, *host_info);
 }
 
-void CanonicalizeSpecialHostVerbose(const char* spec,
+void CanonicalizeHostVerbose(std::u16string_view spec,
+                             const Component& host,
+                             CanonOutput* output,
+                             CanonHostInfo* host_info) {
+  DCHECK(output);
+  DCHECK(host_info);
+  CanonicalizeSpecialHostVerbose(spec, host, *output, *host_info);
+}
+
+void CanonicalizeSpecialHostVerbose(std::string_view spec,
                                     const Component& host,
                                     CanonOutput& output,
                                     CanonHostInfo& host_info) {
@@ -663,7 +687,7 @@ void CanonicalizeSpecialHostVerbose(const char* spec,
                                                       host_info);
 }
 
-void CanonicalizeSpecialHostVerbose(const char16_t* spec,
+void CanonicalizeSpecialHostVerbose(std::u16string_view spec,
                                     const Component& host,
                                     CanonOutput& output,
                                     CanonHostInfo& host_info) {
@@ -671,19 +695,35 @@ void CanonicalizeSpecialHostVerbose(const char16_t* spec,
                                                      host_info);
 }
 
-bool CanonicalizeHostSubstring(const char* spec,
-                               const Component& host,
-                               CanonOutput* output) {
-  return DoHostSubstring<char, unsigned char>(spec, host, output);
+void CanonicalizeFileHostVerbose(std::string_view spec,
+                                 const Component& host,
+                                 CanonOutput& output,
+                                 CanonHostInfo& host_info) {
+  DoHost<char, unsigned char, CanonMode::kFileURL>(spec, host, output,
+                                                   host_info);
 }
 
-bool CanonicalizeHostSubstring(const char16_t* spec,
-                               const Component& host,
-                               CanonOutput* output) {
-  return DoHostSubstring<char16_t, char16_t>(spec, host, output);
+void CanonicalizeFileHostVerbose(std::u16string_view spec,
+                                 const Component& host,
+                                 CanonOutput& output,
+                                 CanonHostInfo& host_info) {
+  DoHost<char16_t, char16_t, CanonMode::kFileURL>(spec, host, output,
+                                                  host_info);
 }
 
-void CanonicalizeNonSpecialHostVerbose(const char* spec,
+bool CanonicalizeHostSubstring(std::string_view host_view,
+                               CanonOutput* output) {
+  return DoHostSubstring<char, unsigned char, CanonMode::kSpecialURL>(host_view,
+                                                                      output);
+}
+
+bool CanonicalizeHostSubstring(std::u16string_view host_view,
+                               CanonOutput* output) {
+  return DoHostSubstring<char16_t, char16_t, CanonMode::kSpecialURL>(host_view,
+                                                                     output);
+}
+
+void CanonicalizeNonSpecialHostVerbose(std::string_view spec,
                                        const Component& host,
                                        CanonOutput& output,
                                        CanonHostInfo& host_info) {
@@ -691,7 +731,7 @@ void CanonicalizeNonSpecialHostVerbose(const char* spec,
                                                          host_info);
 }
 
-void CanonicalizeNonSpecialHostVerbose(const char16_t* spec,
+void CanonicalizeNonSpecialHostVerbose(std::u16string_view spec,
                                        const Component& host,
                                        CanonOutput& output,
                                        CanonHostInfo& host_info) {

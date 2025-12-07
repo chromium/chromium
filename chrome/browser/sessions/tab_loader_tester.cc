@@ -46,7 +46,7 @@ void TabLoaderTester::ForceLoadTimerFired() {
 }
 
 void TabLoaderTester::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+    base::MemoryPressureLevel memory_pressure_level) {
   tab_loader_->OnMemoryPressure(memory_pressure_level);
 }
 

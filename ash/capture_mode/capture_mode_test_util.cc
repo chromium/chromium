@@ -4,6 +4,8 @@
 
 #include "ash/capture_mode/capture_mode_test_util.h"
 
+#include <algorithm>
+
 #include "ash/accessibility/a11y_feature_type.h"
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/autoclick/autoclick_controller.h"
@@ -31,7 +33,6 @@
 #include "base/files/safe_base_name.h"
 #include "base/location.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -42,6 +43,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
+#include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
 
@@ -206,7 +208,7 @@ bool IsLayerStackedRightBelow(ui::Layer* layer, ui::Layer* sibling) {
   DCHECK_EQ(layer->parent(), sibling->parent());
   const auto& children = layer->parent()->children();
   const int sibling_index =
-      base::ranges::find(children, sibling) - children.begin();
+      std::ranges::find(children, sibling) - children.begin();
   return sibling_index > 0 && children[sibling_index - 1] == layer;
 }
 
@@ -409,6 +411,37 @@ size_t WaitForCameraAvailabilityWithTimeout(base::TimeDelta time_out) {
   return available_camera_num;
 }
 
+void SelectCaptureModeRegion(ui::test::EventGenerator* event_generator,
+                             const gfx::Rect& region_in_screen,
+                             bool release_mouse,
+                             bool verify_region) {
+  auto* controller = CaptureModeController::Get();
+  ASSERT_TRUE(controller->IsActive());
+  ASSERT_EQ(CaptureModeSource::kRegion, controller->source());
+  event_generator->MoveMouseTo(region_in_screen.origin());
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseTo(region_in_screen.bottom_right());
+  if (release_mouse) {
+    event_generator->ReleaseLeftButton();
+  }
+  if (verify_region) {
+    auto capture_region_in_root = region_in_screen;
+    wm::ConvertRectFromScreen(
+        controller->capture_mode_session()->current_root(),
+        &capture_region_in_root);
+    EXPECT_EQ(capture_region_in_root, controller->user_capture_region());
+  }
+}
+
+void VerifyActiveBehavior(BehaviorType type) {
+  auto* controller = CaptureModeController::Get();
+  ASSERT_TRUE(controller->IsActive());
+  CaptureModeBehavior* active_behavior =
+      controller->capture_mode_session()->active_behavior();
+  ASSERT_TRUE(active_behavior);
+  EXPECT_EQ(active_behavior->behavior_type(), type);
+}
+
 // -----------------------------------------------------------------------------
 // ProjectorCaptureModeIntegrationHelper:
 
@@ -419,11 +452,10 @@ void ProjectorCaptureModeIntegrationHelper::SetUp() {
   annotator_helper_.SetUp();
   auto* projector_controller = ProjectorController::Get();
   projector_controller->SetClient(&projector_client_);
-  ON_CALL(projector_client_, StopSpeechRecognition)
-      .WillByDefault(testing::Invoke([]() {
-        ProjectorController::Get()->OnSpeechRecognitionStopped(
-            /*forced=*/false);
-      }));
+  ON_CALL(projector_client_, StopSpeechRecognition).WillByDefault([]() {
+    ProjectorController::Get()->OnSpeechRecognitionStopped(
+        /*forced=*/false);
+  });
 
   // Simulate the availability of speech recognition.
   SpeechRecognitionAvailability availability;
@@ -470,7 +502,8 @@ void ViewVisibilityChangeWaiter::Wait() {
 
 void ViewVisibilityChangeWaiter::OnViewVisibilityChanged(
     views::View* observed_view,
-    views::View* starting_view) {
+    views::View* starting_view,
+    bool visible) {
   wait_loop_.Quit();
 }
 

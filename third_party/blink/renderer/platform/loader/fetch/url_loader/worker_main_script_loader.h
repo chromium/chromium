@@ -8,8 +8,6 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -37,10 +35,9 @@ class ResourceLoadInfoNotifierWrapper;
 class WorkerMainScriptLoaderClient;
 struct ResourceLoaderOptions;
 
-// For dedicated workers (PlzDedicatedWorker), service workers
-// (PlzServiceWorker), and shared workers, the main script is pre-requested by
-// the browser process. This class is used for receiving the response in the
-// renderer process.
+// For dedicated workers, shared workers, and service workers, the main script
+// is pre-requested by the browser process. This class is used for receiving the
+// response in the renderer process.
 class PLATFORM_EXPORT WorkerMainScriptLoader final
     : public GarbageCollected<WorkerMainScriptLoader>,
       public network::mojom::URLLoaderClient {
@@ -79,10 +76,10 @@ class PLATFORM_EXPORT WorkerMainScriptLoader final
   const ResourceResponse& GetResponse() const { return resource_response_; }
   // Gets the raw data of the main script.
   SharedBuffer* Data() const { return data_.get(); }
-  WTF::TextEncoding GetScriptEncoding() { return script_encoding_; }
+  TextEncoding GetScriptEncoding() { return script_encoding_; }
   CachedMetadataHandler* CreateCachedMetadataHandler();
 
-  virtual void Trace(Visitor*) const;
+  void Trace(Visitor*) const;
 
  private:
   void StartLoadingBody();
@@ -108,7 +105,7 @@ class PLATFORM_EXPORT WorkerMainScriptLoader final
   base::TimeTicks start_time_;
   ResourceResponse resource_response_;
   scoped_refptr<SharedBuffer> data_;
-  WTF::TextEncoding script_encoding_;
+  TextEncoding script_encoding_;
 
   // The final status received from network.
   network::URLLoaderCompletionStatus status_;
@@ -124,7 +121,7 @@ class PLATFORM_EXPORT WorkerMainScriptLoader final
   GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   mojo::Receiver<network::mojom::URLLoaderClient> receiver_{this};
 
-  // Used to notify the loading stats of main script when PlzDedicatedWorker.
+  // Used to notify the loading stats of main script.
   std::unique_ptr<ResourceLoadInfoNotifierWrapper>
       resource_load_info_notifier_wrapper_;
 };

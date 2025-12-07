@@ -282,8 +282,7 @@ void FileTransferMessageHandler::SetState(State state) {
   switch (state) {
     case kConnected:
       // This is the initial state, but should never be reached again.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case kReading:
       DCHECK_EQ(kConnected, state_);
       break;

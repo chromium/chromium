@@ -8,6 +8,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/containers/span.h"
+
 namespace remoting {
 
 // Helper used in audio capturers to detect and drop silent audio packets.
@@ -20,9 +22,10 @@ class AudioSilenceDetector {
 
   void Reset(int sampling_rate, int channels);
 
-  // Must be called for each new chunk of data. Return true the given packet
-  // is silence should be dropped.
-  bool IsSilence(const int16_t* samples, size_t frames);
+  // Must be called for each new chunk of data. The `samples` span should
+  // contain `frames * channels` total samples. Returns true if the given packet
+  // is considered silence and should be dropped.
+  bool IsSilence(base::span<const unsigned char> samples);
 
   // The count of channels received from last Reset().
   int channels() const;

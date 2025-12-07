@@ -8,7 +8,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/devtools/simple_devtools_protocol_client/simple_devtools_protocol_client.h"
 #include "components/embedder_support/user_agent_utils.h"
@@ -26,7 +25,6 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 
 using ::net::test_server::BasicHttpResponse;
 using ::net::test_server::HttpRequest;
@@ -48,6 +46,10 @@ base::Value::Dict MakeFakeMetadata() {
   base::Value::List full_version_list;
   full_version_list.Append(std::move(brand_version));
 
+  base::Value::List form_factors;
+  form_factors.Append("Mobile");
+  form_factors.Append("XR");
+
   base::Value::Dict metadata;
   metadata.Set("brands", std::move(brands));
   metadata.Set("fullVersionList", std::move(full_version_list));
@@ -59,6 +61,7 @@ base::Value::Dict MakeFakeMetadata() {
   metadata.Set("mobile", true);
   metadata.Set("bitness", "512");
   metadata.Set("wow64", true);
+  metadata.Set("formFactors", std::move(form_factors));
 
   return metadata;
 }
@@ -69,10 +72,6 @@ namespace headless {
 
 class HeadlessBrowserNavigatorUADataTest : public HeadlessBrowserTest {
  public:
-  void SetUpInProcessBrowserTestFixture() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kClientHintsFormFactors);
-  }
 
   void SetUpOnMainThread() override {
     HeadlessBrowserTest::SetUpOnMainThread();
@@ -158,9 +157,6 @@ class HeadlessBrowserNavigatorUADataTest : public HeadlessBrowserTest {
   static constexpr char kFormFactorScript[] = R"(
           navigator.userAgentData.getHighEntropyValues(['formFactors'])
               .then(r => r.formFactors.join(', ')))";
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // UA Metadata is available via `navigator.userAgentData`.
@@ -218,9 +214,8 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserNavigatorUADataTest, CDPOverride) {
               DictHasValue("result.result.value", "1.2.3"));
   EXPECT_THAT(GetUAMetadataValue(kWow64Script),
               DictHasValue("result.result.value", true));
-  // TODO(crbug.com/40910451): Allow overriding formFactors.
   EXPECT_THAT(GetUAMetadataValue(kFormFactorScript),
-              DictHasValue("result.result.value", ""));
+              DictHasValue("result.result.value", "Mobile, XR"));
 }
 
 class HeadlessBrowserUAHeaderTest : public HeadlessBrowserTest {
@@ -255,7 +250,7 @@ class HeadlessBrowserUAHeaderTest : public HeadlessBrowserTest {
   }
 
   std::unique_ptr<HttpResponse> HandleRequest(const HttpRequest& request) {
-    auto path = request.GetURL().path();
+    auto path = request.GetURL().GetPath();
     if (path == capture_headers_for_path_) {
       got_headers_ = request.headers;
     }

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #ifndef BASE_NUMERICS_BASIC_OPS_IMPL_H_
 #define BASE_NUMERICS_BASIC_OPS_IMPL_H_
 
@@ -12,7 +17,7 @@
 #include <span>
 #include <type_traits>
 
-namespace base::internal {
+namespace base::numerics_internal {
 
 // The correct type to perform math operations on given values of type `T`. This
 // may be a larger type than `T` to avoid promotion to `int` which involves sign
@@ -148,6 +153,6 @@ template <class T>
 inline constexpr std::array<uint8_t, sizeof(T)> ToLittleEndian(T val) {
   return ToLittleEndian(static_cast<std::make_unsigned_t<T>>(val));
 }
-}  // namespace base::internal
+}  // namespace base::numerics_internal
 
-#endif  //  BASE_NUMERICS_BASIC_OPS_IMPL_H_
+#endif  // BASE_NUMERICS_BASIC_OPS_IMPL_H_

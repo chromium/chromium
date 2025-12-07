@@ -20,8 +20,10 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -54,9 +56,9 @@ constexpr double kTestVideoDurationMillisecond = 16682;
 #if !BUILDFLAG(ENABLE_CROS_PROJECTOR_APP)
 
 void VerifyResponse(const content::EvalJsResult& result) {
-  EXPECT_TRUE(result.error.empty());
+  EXPECT_TRUE(result.is_ok());
 
-  const base::Value::Dict& dict = result.value.GetDict();
+  const base::Value::Dict& dict = result.ExtractDict();
   const std::string* file_id = dict.FindString("fileId");
   ASSERT_TRUE(file_id);
   EXPECT_EQ(*file_id, kVideoFileId);
@@ -193,7 +195,7 @@ class ScreencastManagerTestWithDriveFs : public ScreencastManagerTest {
     fake_drivefs_helpers_[profile] =
         std::make_unique<drive::FakeDriveFsHelper>(profile, mount_path);
     auto* integration_service = new drive::DriveIntegrationService(
-        profile, std::string(), mount_path,
+        g_browser_process->local_state(), profile, std::string(), mount_path,
         fake_drivefs_helpers_[profile]->CreateFakeDriveFsListenerFactory());
     return integration_service;
   }
@@ -419,7 +421,7 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs,
       "a JavaScript error: \"Failed to fetch DriveFS file with video file "
       "id=%s and error code=%d\"\n",
       kVideoFileId, drive::FILE_ERROR_NOT_FOUND);
-  EXPECT_EQ(result.error, expected_error);
+  EXPECT_EQ(result.ExtractError(), expected_error);
 }
 
 // Tests a disk I/O error when trying to access the file handle in launch.js.
@@ -442,7 +444,7 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs,
   const std::string& script = base::StringPrintf(kGetVideoScript, kVideoFileId);
   content::EvalJsResult result = EvalJs(app, script);
   EXPECT_EQ(
-      result.error,
+      result.ExtractError(),
       "a JavaScript error: \"NotFoundError: A requested file or directory "
       "could not be found at the time an operation was processed.\"\n");
 }
@@ -466,7 +468,8 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs, NotAVideoMimeType) {
 
   const std::string& script = base::StringPrintf(kGetVideoScript, kVideoFileId);
   content::EvalJsResult result = EvalJs(app, script);
-  EXPECT_EQ(result.error, "a JavaScript error: \"NotAVideo: Not a video.\"\n");
+  EXPECT_EQ(result.ExtractError(),
+            "a JavaScript error: \"NotAVideo: Not a video.\"\n");
 }
 
 #endif  // !BUILDFLAG(ENABLE_CROS_PROJECTOR_APP)

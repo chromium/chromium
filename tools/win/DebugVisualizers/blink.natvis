@@ -47,7 +47,7 @@
       <ExpandedItem Condition="raw_ != 0">raw_</ExpandedItem>
     </Expand>
   </Type>
-  <Type Name="WTF::String">
+  <Type Name="blink::String">
     <DisplayString Condition="impl_.ptr_ == 0">(null)</DisplayString>
     <DisplayString IncludeView="bare">{*impl_.ptr_,view(bare)}</DisplayString>
     <DisplayString>{*impl_.ptr_}</DisplayString>
@@ -56,7 +56,7 @@
       <ExpandedItem Condition="impl_.ptr_ != 0">impl_.ptr_</ExpandedItem>
     </Expand>
   </Type>
-  <Type Name="WTF::StringImpl">
+  <Type Name="blink::StringImpl">
     <DisplayString IncludeView="bare"
                    Condition="*(int*)&amp;hash_and_flags_ &amp; 1">
         {(this+1),[length_]sb}</DisplayString>
@@ -82,11 +82,11 @@
       <Item Name="HashRaw">*(int*)&amp;hash_and_flags_ >> 8</Item>
     </Expand>
   </Type>
-  <Type Name="WTF::AtomicString">
+  <Type Name="blink::AtomicString">
     <DisplayString IncludeView="bare">{string_,view(bare)}</DisplayString>
     <DisplayString>{string_}</DisplayString>
   </Type>
-  <Type Name="WTF::Vector&lt;*&gt;">
+  <Type Name="blink::Vector&lt;*&gt;">
     <DisplayString Condition="size_==0">(empty)</DisplayString>
     <DisplayString Condition="size_==1">[{size_}] {buffer_,1}</DisplayString>
     <DisplayString Condition="size_==2">[{size_}] {buffer_,2}</DisplayString>
@@ -104,7 +104,7 @@
       </ArrayItems>
     </Expand>
   </Type>
-  <Type Name="WTF::HashTable&lt;*&gt;">
+  <Type Name="blink::HashTable&lt;*&gt;">
     <DisplayString>keyCount={key_count_}, tableSize={table_size_}</DisplayString>
     <Expand>
       <ArrayItems Condition="table_size_>0">
@@ -113,18 +113,10 @@
       </ArrayItems>
     </Expand>
   </Type>
-  <Type Name="WTF::RefPtr&lt;*&gt;">
-    <AlternativeType Name="WTF::PassRefPtr&lt;*&gt;"/>
-    <DisplayString Condition="ptr_ == 0">null</DisplayString>
-    <DisplayString>{*ptr_}</DisplayString>
+  <Type Name="blink::FixedPoint&lt;*&gt;">
+    <DisplayString>{(float)value_ / kFixedPointDenominator}</DisplayString>
     <Expand>
-      <Item Name="Ptr">ptr_</Item>
-    </Expand>
-  </Type>
-  <Type Name="blink::LayoutUnit">
-    <DisplayString>{(float)value_ / 64}</DisplayString>
-    <Expand>
-      <Item Name="FloatVal">(float)value_ / 64</Item>
+      <Item Name="FloatVal">(float)value_ / kFixedPointDenominator</Item>
       <Item Name="RawVal">value_</Item>
     </Expand>
   </Type>
@@ -156,8 +148,8 @@
     </Expand>
   </Type>
   <Type Name="blink::Length">
-    <DisplayString Condition="is_float_">{(blink::Length::Type)type_} {float_value_}</DisplayString>
-    <DisplayString>{(blink::Length::Type)type_} {int_value_}</DisplayString>
+    <DisplayString Condition="type_ == blink::Length::kCalculated">{(blink::Length::Type)type_} {calculation_handle_}</DisplayString>
+    <DisplayString>{(blink::Length::Type)type_} {value_}</DisplayString>
   </Type>
   <Type Name="blink::LogicalOffset">
     <DisplayString>({inline_offset}, {block_offset})</DisplayString>
@@ -173,11 +165,11 @@
   </Type>
   <!-- Component build version -->
   <Type Name="blink::WebString">
-    <DisplayString>{(blink_platform_wtf.dll!WTF::StringImpl*)(impl_.ptr_)}</DisplayString>
+    <DisplayString>{(blink_platform_wtf.dll!blink::StringImpl*)(impl_.ptr_)}</DisplayString>
   </Type>
   <!-- Non-component build version -->
   <Type Name="blink::WebString" Priority="Low">
-    <DisplayString>{(WTF::StringImpl*)(impl_.ptr_)}</DisplayString>
+    <DisplayString>{(blink::StringImpl*)(impl_.ptr_)}</DisplayString>
   </Type>
   <!-- DOM -->
   <Type Name="blink::QualifiedName">

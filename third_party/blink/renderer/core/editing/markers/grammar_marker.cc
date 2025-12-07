@@ -8,8 +8,12 @@ namespace blink {
 
 GrammarMarker::GrammarMarker(unsigned start_offset,
                              unsigned end_offset,
-                             const String& description)
-    : SpellCheckMarker(start_offset, end_offset, description) {
+                             const String& description,
+                             bool should_hide_suggestion_menu)
+    : SpellCheckMarker(start_offset,
+                       end_offset,
+                       description,
+                       should_hide_suggestion_menu) {
   DCHECK_LT(start_offset, end_offset);
 }
 

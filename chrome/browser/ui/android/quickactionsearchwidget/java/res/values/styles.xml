@@ -11,7 +11,7 @@ found in the LICENSE file.
         <item name="android:layout_height">@dimen/quick_action_search_widget_xsmall_button_height</item>
         <item name="android:background">@drawable/quick_action_search_widget_xsmall_button_background</item>
         <item name="android:padding">@dimen/quick_action_search_widget_xsmall_button_icon_padding</item>
-        <item name="android:tint">@color/default_icon_color_baseline</item>
+        <item name="android:tint">@macro/default_icon_color_secondary</item>
         <item name="android:scaleType">fitCenter</item>
     </style>
 
@@ -20,7 +20,7 @@ found in the LICENSE file.
         <item name="android:layout_height">@dimen/quick_action_search_widget_small_button_height</item>
         <item name="android:background">@drawable/quick_action_search_widget_small_button_background</item>
         <item name="android:padding">@dimen/quick_action_search_widget_small_button_icon_padding</item>
-        <item name="android:tint">@color/default_icon_color_baseline</item>
+        <item name="android:tint">@macro/default_icon_color_secondary</item>
         <item name="android:scaleType">fitCenter</item>
     </style>
 
@@ -29,7 +29,7 @@ found in the LICENSE file.
         <item name="android:layout_height">@dimen/quick_action_search_widget_medium_button_height</item>
         <item name="android:background">@drawable/quick_action_search_widget_medium_button_background</item>
         <item name="android:padding">@dimen/quick_action_search_widget_medium_button_icon_padding</item>
-        <item name="android:tint">@color/default_icon_color_baseline</item>
+        <item name="android:tint">@macro/default_icon_color_secondary</item>
         <item name="android:scaleType">fitCenter</item>
     </style>
 

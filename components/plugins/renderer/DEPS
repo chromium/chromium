@@ -13,4 +13,6 @@ include_rules = [
   "+skia",
   "+ui/base/cursor",
   "+ui/base/ime/mojom",
+  "+v8/include/cppgc",
+  "+v8/include/v8-cppgc.h",
 ]

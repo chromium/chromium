@@ -35,11 +35,11 @@ void GarbageCollectedCannotBeUnretained() {
   }
   {
     DECLARE_UNIQUE(UnretainableObject, obj);
-    WTF::BindOnce([] (void*) {}, base::Unretained(&obj));  // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
+    blink::BindOnce([] (void*) {}, base::Unretained(&obj));  // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
   }
   {
     DECLARE_UNIQUE(UnretainableObject, obj);
-    WTF::BindOnce([] (void*) {}, WTF::Unretained(&obj));  // expected-error@*:* {{WTF::Unretained() + GCed type is forbidden}}
+    blink::BindOnce([] (void*) {}, blink::Unretained(&obj));  // expected-error@*:* {{blink::Unretained() + GCed type is forbidden}}
   }
 }
 
@@ -50,11 +50,11 @@ void GCMixinCannotBeUnretained() {
   }
   {
     DECLARE_UNIQUE(UnretainableMixin, obj);
-    WTF::BindOnce([] (void*) {}, base::Unretained(&obj));  // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
+    blink::BindOnce([] (void*) {}, base::Unretained(&obj));  // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
   }
   {
     DECLARE_UNIQUE(UnretainableMixin, obj);
-    WTF::BindOnce([] (void*) {}, WTF::Unretained(&obj));  // expected-error@*:* {{WTF::Unretained() + GCed type is forbidden}}
+    blink::BindOnce([] (void*) {}, blink::Unretained(&obj));  // expected-error@*:* {{blink::Unretained() + GCed type is forbidden}}
   }
 }
 
@@ -65,27 +65,27 @@ void GCImplWithMixinCannotBeUnretained() {
   }
   {
     DECLARE_UNIQUE(UnretainableImpl, obj);
-    WTF::BindOnce([] (void*) {}, base::Unretained(&obj));  // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
+    blink::BindOnce([] (void*) {}, base::Unretained(&obj));  // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
   }
   {
     DECLARE_UNIQUE(UnretainableImpl, obj);
-    WTF::BindOnce([] (void*) {}, WTF::Unretained(&obj));  // expected-error@*:* {{WTF::Unretained() + GCed type is forbidden}}
+    blink::BindOnce([] (void*) {}, blink::Unretained(&obj));  // expected-error@*:* {{blink::Unretained() + GCed type is forbidden}}
   }
 }
 
 void GarbageCollectedCannotBeBoundAsRawPointer(UnretainableObject* ptr) {
   base::BindOnce([] (void* ptr) {}, ptr);               // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
-  WTF::BindOnce([] (UnretainableObject* ptr) {}, ptr);  // expected-error@*:* {{Raw pointers are not allowed to bind into WTF::Function.}}
+  blink::BindOnce([] (UnretainableObject* ptr) {}, ptr);  // expected-error@*:* {{Raw pointers are not allowed to bind.}}
 }
 
 void GCMixinCannotBeBoundAsRawPointer(UnretainableMixin* ptr) {
   base::BindOnce([] (void* ptr) {}, ptr);  // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
-  WTF::BindOnce([] (void* ptr) {}, ptr);   // expected-error@*:* {{Raw pointers are not allowed to bind into WTF::Function.}}
+  blink::BindOnce([] (void* ptr) {}, ptr);   // expected-error@*:* {{Raw pointers are not allowed to bind.}}
 }
 
 void GCImplWithmixinCannotBeBoundAsRawPointer(UnretainableImpl* ptr) {
   base::BindOnce([] (void* ptr) {}, ptr);             // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
-  WTF::BindOnce([] (UnretainableImpl* ptr) {}, ptr);  // expected-error@*:* {{Raw pointers are not allowed to bind into WTF::Function.}}
+  blink::BindOnce([] (UnretainableImpl* ptr) {}, ptr);  // expected-error@*:* {{Raw pointers are not allowed to bind.}}
 }
 
 void GarbageCollectedCannotBeBoundByCref() {
@@ -95,7 +95,7 @@ void GarbageCollectedCannotBeBoundByCref() {
   }
   {
     DECLARE_UNIQUE(UnretainableObject, obj);
-    WTF::BindOnce([] (const UnretainableObject& ref) {}, std::cref(obj));  // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
+    blink::BindOnce([] (const UnretainableObject& ref) {}, std::cref(obj));  // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
   }
 }
 
@@ -106,7 +106,7 @@ void GarbageCollectedCannotBeBoundByRef() {
   }
   {
     DECLARE_UNIQUE(UnretainableObject, obj);
-    WTF::BindOnce([] (const UnretainableObject& ref) {}, std::ref(obj));  // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
+    blink::BindOnce([] (const UnretainableObject& ref) {}, std::ref(obj));  // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
   }
 }
 
@@ -117,7 +117,7 @@ void GCMixinCannotBeBoundByCref() {
   }
   {
     DECLARE_UNIQUE(UnretainableMixin, obj);
-    WTF::BindOnce([] (const UnretainableMixin& ref) {}, std::cref(obj));  // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
+    blink::BindOnce([] (const UnretainableMixin& ref) {}, std::cref(obj));  // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
   }
 }
 
@@ -128,7 +128,7 @@ void GCMixinCannotBeBoundByRef(UnretainableMixin& ref) {
   }
   {
     DECLARE_UNIQUE(UnretainableMixin, obj);
-    WTF::BindOnce([] (const UnretainableMixin& ref) {}, std::ref(obj));  // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
+    blink::BindOnce([] (const UnretainableMixin& ref) {}, std::ref(obj));  // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
   }
 }
 
@@ -139,7 +139,7 @@ void GCImplWithMixinCannotBeBoundByCref(UnretainableImpl& ref) {
   }
   {
     DECLARE_UNIQUE(UnretainableImpl, obj);
-    WTF::BindOnce([] (const UnretainableImpl& ref) {}, std::cref(obj));  // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
+    blink::BindOnce([] (const UnretainableImpl& ref) {}, std::cref(obj));  // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
   }
 }
 
@@ -150,7 +150,7 @@ void GCImplWithMixinCannotBeBoundByRef(UnretainableImpl& ref) {
   }
   {
     DECLARE_UNIQUE(UnretainableImpl, obj);
-    WTF::BindOnce([] (const UnretainableImpl& ref) {}, std::ref(obj));  // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
+    blink::BindOnce([] (const UnretainableImpl& ref) {}, std::ref(obj));  // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
   }
 }
 

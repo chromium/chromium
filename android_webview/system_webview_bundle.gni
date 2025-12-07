@@ -18,19 +18,21 @@ template("system_webview_bundle") {
       proguard_enabled = true
       repackage_classes = "WV"
     }
-    enable_language_splits = true
-    if (_is_trichrome) {
-      min_sdk_version = 29
-    }
-    system_image_locale_allowlist = platform_pak_locales
-    is_multi_abi =
-        android_64bit_target_cpu && (!defined(invoker.include_64_bit_webview) ||
-                                     invoker.include_64_bit_webview) &&
-        (!defined(invoker.include_32_bit_webview) ||
-         invoker.include_32_bit_webview)
 
-    if (!defined(proguard_android_sdk_dep)) {
-      proguard_android_sdk_dep = webview_framework_dep
+    # TODO(crbug.com/41486995): Set this back to true once split translations
+    # are working again.
+    enable_language_splits = false
+    system_image_locale_allowlist = platform_pak_locales
+    if (android_64bit_target_cpu) {
+      _include_32_bit_webview = !defined(invoker.include_32_bit_webview) ||
+                                invoker.include_32_bit_webview
+      _include_64_bit_webview = !defined(invoker.include_64_bit_webview) ||
+                                invoker.include_64_bit_webview
+      is_multi_abi = _include_32_bit_webview && _include_64_bit_webview
+      not_needed([ "_include_64_bit_webview" ])
+      if (!defined(android_app_secondary_abi)) {
+        assert(!is_multi_abi, "target should not be enabled: $target_name")
+      }
     }
 
     if (enable_silent_java_assert_reporting) {

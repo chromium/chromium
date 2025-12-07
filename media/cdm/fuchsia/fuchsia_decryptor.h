@@ -5,6 +5,7 @@
 #ifndef MEDIA_CDM_FUCHSIA_FUCHSIA_DECRYPTOR_H_
 #define MEDIA_CDM_FUCHSIA_FUCHSIA_DECRYPTOR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
@@ -44,7 +45,7 @@ class FuchsiaDecryptor : public Decryptor {
   bool CanAlwaysDecrypt() override;
 
  private:
-  FuchsiaCdmContext* const cdm_context_;
+  const raw_ptr<FuchsiaCdmContext> cdm_context_;
 
   // TaskRunner for the thread on which |audio_decryptor_| was created.
   scoped_refptr<base::SingleThreadTaskRunner> audio_decryptor_task_runner_;

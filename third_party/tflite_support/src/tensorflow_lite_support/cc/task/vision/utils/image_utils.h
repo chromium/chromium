@@ -15,10 +15,11 @@ limitations under the License.
 #ifndef TENSORFLOW_LITE_SUPPORT_EXAMPLES_TASK_VISION_DESKTOP_UTILS_IMAGE_UTILS_H_
 #define TENSORFLOW_LITE_SUPPORT_EXAMPLES_TASK_VISION_DESKTOP_UTILS_IMAGE_UTILS_H_
 
+#include <cstdint>
+
 #include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/string_view.h"  // from @com_google_absl
 #include "stb_image.h"  // from @stblib
-#include "tensorflow_lite_support/cc/port/integral_types.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
 #include "tensorflow_lite_support/cc/task/vision/core/frame_buffer.h"
 
@@ -32,7 +33,7 @@ namespace vision {
 // 3 : RGB, interleaved
 // 4 : RGBA, interleaved
 struct ImageData {
-  uint8* pixel_data;
+  uint8_t* pixel_data;
   int width;
   int height;
   int channels;

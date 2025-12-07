@@ -13,7 +13,10 @@
 #include "extensions/renderer/bindings/api_invocation_errors.h"
 #include "gin/arguments.h"
 #include "gin/handle.h"
+#include "gin/public/gin_embedders.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "v8/include/cppgc/allocation.h"
+#include "v8/include/v8-cppgc.h"
 
 namespace extensions {
 
@@ -38,13 +41,14 @@ class APIBindingJSUtilUnittest : public APIBindingsSystemTest {
   APIBindingJSUtilUnittest() {}
   ~APIBindingJSUtilUnittest() override {}
 
-  gin::Handle<APIBindingJSUtil> CreateUtil() {
-    return gin::CreateHandle(
-        isolate(),
-        new APIBindingJSUtil(bindings_system()->type_reference_map(),
-                             bindings_system()->request_handler(),
-                             bindings_system()->event_handler(),
-                             bindings_system()->exception_handler()));
+  v8::Local<v8::Object> CreateUtil() {
+    APIBindingJSUtil* util = cppgc::MakeGarbageCollected<APIBindingJSUtil>(
+        isolate()->GetCppHeap()->GetAllocationHandle(),
+        bindings_system()->type_reference_map(),
+        bindings_system()->request_handler(),
+        bindings_system()->event_handler(),
+        bindings_system()->exception_handler());
+    return util->GetWrapper(isolate()).ToLocalChecked();
   }
 
   v8::Local<v8::Object> GetLastErrorParent(
@@ -82,8 +86,7 @@ TEST_F(APIBindingJSUtilUnittest, TestSetLastError) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
-  gin::Handle<APIBindingJSUtil> util = CreateUtil();
-  v8::Local<v8::Object> v8_util = util.ToV8().As<v8::Object>();
+  v8::Local<v8::Object> v8_util = CreateUtil();
 
   EXPECT_FALSE(last_error()->HasError(context));
   EXPECT_EQ("[undefined]", GetExposedError(context));
@@ -102,8 +105,7 @@ TEST_F(APIBindingJSUtilUnittest, TestHasLastError) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
-  gin::Handle<APIBindingJSUtil> util = CreateUtil();
-  v8::Local<v8::Object> v8_util = util.ToV8().As<v8::Object>();
+  v8::Local<v8::Object> v8_util = CreateUtil();
 
   EXPECT_FALSE(last_error()->HasError(context));
   EXPECT_EQ("[undefined]", GetExposedError(context));
@@ -129,8 +131,7 @@ TEST_F(APIBindingJSUtilUnittest, TestGetLastError) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
-  gin::Handle<APIBindingJSUtil> util = CreateUtil();
-  v8::Local<v8::Object> v8_util = util.ToV8().As<v8::Object>();
+  v8::Local<v8::Object> v8_util = CreateUtil();
 
   EXPECT_FALSE(last_error()->HasError(context));
   EXPECT_EQ("[undefined]", GetExposedError(context));
@@ -156,8 +157,7 @@ TEST_F(APIBindingJSUtilUnittest, TestRunWithLastError) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
-  gin::Handle<APIBindingJSUtil> util = CreateUtil();
-  v8::Local<v8::Object> v8_util = util.ToV8().As<v8::Object>();
+  v8::Local<v8::Object> v8_util = CreateUtil();
 
   EXPECT_FALSE(last_error()->HasError(context));
   EXPECT_EQ("[undefined]", GetExposedError(context));
@@ -180,8 +180,7 @@ TEST_F(APIBindingJSUtilUnittest, TestSendRequestWithOptions) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
-  gin::Handle<APIBindingJSUtil> util = CreateUtil();
-  v8::Local<v8::Object> v8_util = util.ToV8().As<v8::Object>();
+  v8::Local<v8::Object> v8_util = CreateUtil();
 
   const char kSendRequestWithNoOptions[] =
       "obj.sendRequest('alpha.functionWithCallback',\n"
@@ -229,8 +228,7 @@ TEST_F(APIBindingJSUtilUnittest, TestSendRequestSerializationFailure) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
-  gin::Handle<APIBindingJSUtil> util = CreateUtil();
-  v8::Local<v8::Object> v8_util = util.ToV8().As<v8::Object>();
+  v8::Local<v8::Object> v8_util = CreateUtil();
 
   // Note: `undefined` and `1/0` fail to serialize with V8ValueConverter; they
   // should instead be serialized to null values.
@@ -249,8 +247,7 @@ TEST_F(APIBindingJSUtilUnittest, TestCallHandleException) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
-  gin::Handle<APIBindingJSUtil> util = CreateUtil();
-  v8::Local<v8::Object> v8_util = util.ToV8().As<v8::Object>();
+  v8::Local<v8::Object> v8_util = CreateUtil();
 
   ASSERT_TRUE(console_errors().empty());
   CallFunctionOnObject(context, v8_util, kHandleException);
@@ -274,8 +271,7 @@ TEST_F(APIBindingJSUtilUnittest, TestSetExceptionHandler) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
-  gin::Handle<APIBindingJSUtil> util = CreateUtil();
-  v8::Local<v8::Object> v8_util = util.ToV8().As<v8::Object>();
+  v8::Local<v8::Object> v8_util = CreateUtil();
 
   struct ErrorInfo {
     std::string full_message;
@@ -291,7 +287,8 @@ TEST_F(APIBindingJSUtilUnittest, TestSetExceptionHandler) {
 
     ASSERT_TRUE(info.Data()->IsExternal());
     ErrorInfo* error_out =
-        static_cast<ErrorInfo*>(info.Data().As<v8::External>()->Value());
+        static_cast<ErrorInfo*>(info.Data().As<v8::External>()->Value(
+            gin::kAPIBindingJSUtilUnittestErrorInfoTag));
     error_out->full_message = full_message;
     error_out->exception_message = GetStringPropertyFromObject(
         error_object, arguments.GetHolderCreationContext(), "message");
@@ -299,8 +296,10 @@ TEST_F(APIBindingJSUtilUnittest, TestSetExceptionHandler) {
 
   ErrorInfo error_info;
   v8::Local<v8::Function> v8_handler =
-      v8::Function::New(context, custom_handler,
-                        v8::External::New(isolate(), &error_info))
+      v8::Function::New(
+          context, custom_handler,
+          v8::External::New(isolate(), &error_info,
+                            gin::kAPIBindingJSUtilUnittestErrorInfoTag))
           .ToLocalChecked();
   v8::Local<v8::Function> add_handler = FunctionFromString(
       context,
@@ -320,8 +319,7 @@ TEST_F(APIBindingJSUtilUnittest, TestValidateType) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
-  gin::Handle<APIBindingJSUtil> util = CreateUtil();
-  v8::Local<v8::Object> v8_util = util.ToV8().As<v8::Object>();
+  v8::Local<v8::Object> v8_util = CreateUtil();
 
   auto call_validate_type = [context, v8_util](
                                 const char* function,
@@ -360,8 +358,7 @@ TEST_F(APIBindingJSUtilUnittest, TestValidateCustomSignature) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
-  gin::Handle<APIBindingJSUtil> util = CreateUtil();
-  v8::Local<v8::Object> v8_util = util.ToV8().As<v8::Object>();
+  v8::Local<v8::Object> v8_util = CreateUtil();
 
   constexpr char kSignatureName[] = "custom_signature";
   EXPECT_FALSE(bindings_system()->type_reference_map()->GetCustomSignature(

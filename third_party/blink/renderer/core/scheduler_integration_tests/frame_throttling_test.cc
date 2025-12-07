@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
+#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -56,17 +57,8 @@ using html_names::kStyleAttr;
 
 // NOTE: This test uses <iframe sandbox> to create cross origin iframes.
 
-// This should not conflict with the existing PaintTestConfiguration bits.
-enum { kIntersectionOptimization = 1 << 20 };
-
-class FrameThrottlingTest : public PaintTestConfigurations,
-                            public SimTest,
-                            private ScopedIntersectionOptimizationForTest {
+class FrameThrottlingTest : public PaintTestConfigurations, public SimTest {
  protected:
-  FrameThrottlingTest()
-      : ScopedIntersectionOptimizationForTest(GetParam() &
-                                              kIntersectionOptimization) {}
-
   void SetUp() override {
     SimTest::SetUp();
     WebView().MainFrameViewWidget()->Resize(gfx::Size(640, 480));
@@ -100,10 +92,7 @@ class FrameThrottlingTest : public PaintTestConfigurations,
   };
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         FrameThrottlingTest,
-                         ::testing::Values(PAINT_TEST_SUITE_P_VALUES,
-                                           kIntersectionOptimization));
+INSTANTIATE_PAINT_TEST_SUITE_P(FrameThrottlingTest);
 
 TEST_P(FrameThrottlingTest, ThrottleInvisibleFrames) {
   SimRequest main_resource("https://example.com/", "text/html");
@@ -537,11 +526,7 @@ TEST_P(FrameThrottlingTest, ThrottledFrameCompositing) {
   EXPECT_FALSE(frame_view->CanThrottleRendering());
   auto* root_layer = WebView().MainFrameImpl()->GetFrameView()->RootCcLayer();
   EXPECT_EQ(0u, CcLayersByDOMElementId(root_layer, "container").size());
-  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
-    EXPECT_TRUE(CcLayerByOwnerNodeId(root_layer, frame_doc->GetDomNodeId()));
-  } else {
-    EXPECT_EQ(1u, CcLayersByDOMElementId(root_layer, "inner_frame").size());
-  }
+  EXPECT_TRUE(CcLayerByOwnerNodeId(root_layer, frame_doc->GetDomNodeId()));
 
   // First make the child hidden to enable throttling, and composite
   // the container.
@@ -553,11 +538,7 @@ TEST_P(FrameThrottlingTest, ThrottledFrameCompositing) {
   CompositeFrame();
   EXPECT_TRUE(frame_view->CanThrottleRendering());
   EXPECT_EQ(1u, CcLayersByDOMElementId(root_layer, "container").size());
-  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
-    EXPECT_TRUE(CcLayerByOwnerNodeId(root_layer, frame_doc->GetDomNodeId()));
-  } else {
-    EXPECT_EQ(1u, CcLayersByDOMElementId(root_layer, "inner_frame").size());
-  }
+  EXPECT_TRUE(CcLayerByOwnerNodeId(root_layer, frame_doc->GetDomNodeId()));
 
   // Then bring it back on-screen, and decomposite container.
   container_element->setAttribute(kStyleAttr, g_empty_atom);
@@ -566,11 +547,7 @@ TEST_P(FrameThrottlingTest, ThrottledFrameCompositing) {
   CompositeFrame();
   EXPECT_FALSE(frame_view->CanThrottleRendering());
   EXPECT_EQ(0u, CcLayersByDOMElementId(root_layer, "container").size());
-  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
-    EXPECT_TRUE(CcLayerByOwnerNodeId(root_layer, frame_doc->GetDomNodeId()));
-  } else {
-    EXPECT_EQ(1u, CcLayersByDOMElementId(root_layer, "inner_frame").size());
-  }
+  EXPECT_TRUE(CcLayerByOwnerNodeId(root_layer, frame_doc->GetDomNodeId()));
 }
 
 TEST_P(FrameThrottlingTest, MutatingThrottledFrameDoesNotCauseAnimation) {
@@ -663,7 +640,8 @@ TEST_P(FrameThrottlingTest, UnthrottlingTriggersRepaint) {
   // Scroll down to unthrottle the frame. The first frame we composite after
   // scrolling won't contain the frame yet, but will schedule another repaint.
   WebView().MainFrameImpl()->GetFrameView()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 480), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 480), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   auto commands = CompositeFrame();
   EXPECT_FALSE(commands.Contains(SimCanvas::kRect, "green"));
 
@@ -703,7 +681,8 @@ TEST_P(FrameThrottlingTest, UnthrottlingTriggersRepaintInCompositedChild) {
   // Scroll down to unthrottle the frame. The first frame we composite after
   // scrolling won't contain the frame yet, but will schedule another repaint.
   WebView().MainFrameImpl()->GetFrameView()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 480), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 480), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   auto commands = CompositeFrame();
   EXPECT_FALSE(commands.Contains(SimCanvas::kRect, "green"));
 
@@ -737,7 +716,8 @@ TEST_P(FrameThrottlingTest, ChangeStyleInThrottledFrame) {
 
   // Scroll down to unthrottle the frame.
   WebView().MainFrameImpl()->GetFrameView()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 480), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 480), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   auto commands = CompositeFrame();
   EXPECT_FALSE(commands.Contains(SimCanvas::kRect, "red"));
   EXPECT_FALSE(commands.Contains(SimCanvas::kRect, "green"));
@@ -1958,8 +1938,9 @@ TEST_P(FrameThrottlingTest, ClearPaintArtifactOnThrottlingLocalRoot) {
   LocalFrameView* view = LocalFrameRoot().GetFrame()->View();
   Element* div =
       view->GetFrame().GetDocument()->QuerySelector(AtomicString("div"));
-  EXPECT_FALSE(
-      view->GetPaintControllerForTesting().GetPaintArtifact().IsEmpty());
+  EXPECT_FALSE(view->GetPaintControllerPersistentDataForTesting()
+                   .GetPaintArtifact()
+                   .IsEmpty());
 
   // This emulates javascript.
   div->setAttribute(html_names::kStyleAttr, g_empty_atom);
@@ -1968,8 +1949,9 @@ TEST_P(FrameThrottlingTest, ClearPaintArtifactOnThrottlingLocalRoot) {
   view->UpdateRenderThrottlingStatus(true, false, false, true);
   // UpdateRenderThrottlingStatus should have cleared out previous paint
   // results.
-  EXPECT_TRUE(
-      view->GetPaintControllerForTesting().GetPaintArtifact().IsEmpty());
+  EXPECT_TRUE(view->GetPaintControllerPersistentDataForTesting()
+                  .GetPaintArtifact()
+                  .IsEmpty());
 }
 
 TEST_P(FrameThrottlingTest, PrintThrottledFrame) {

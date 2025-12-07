@@ -13,6 +13,7 @@
 #include "base/version.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/update_service.h"
+#include "components/policy/core/common/policy_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace updater {
@@ -32,6 +33,7 @@ TEST(UpdateServiceImplInactiveTest, All) {
   {
     base::RunLoop run_loop;
     update_service->FetchPolicies(
+        policy::PolicyFetchReason::kTest,
         base::BindLambdaForTesting([&run_loop](int result) {
           EXPECT_EQ(result, -1);
           run_loop.Quit();
@@ -68,7 +70,8 @@ TEST(UpdateServiceImplInactiveTest, All) {
     update_service->CheckForUpdate(
         /*app_id=*/"", UpdateService::Priority::kForeground,
         UpdateService::PolicySameVersionUpdate::kNotAllowed,
-        UpdateService::StateChangeCallback(),
+        /*language=*/{},
+        base::RepeatingCallback<void(const UpdateService::UpdateState&)>(),
         base::BindLambdaForTesting([&run_loop](UpdateService::Result result) {
           EXPECT_EQ(result, UpdateService::Result::kInactive);
           run_loop.Quit();
@@ -81,7 +84,8 @@ TEST(UpdateServiceImplInactiveTest, All) {
         /*app_id=*/"",
         /*install_data_index=*/"", UpdateService::Priority::kForeground,
         UpdateService::PolicySameVersionUpdate::kNotAllowed,
-        UpdateService::StateChangeCallback(),
+        /*language=*/{},
+        base::RepeatingCallback<void(const UpdateService::UpdateState&)>(),
         base::BindLambdaForTesting([&run_loop](UpdateService::Result result) {
           EXPECT_EQ(result, UpdateService::Result::kInactive);
           run_loop.Quit();
@@ -91,7 +95,7 @@ TEST(UpdateServiceImplInactiveTest, All) {
   {
     base::RunLoop run_loop;
     update_service->UpdateAll(
-        UpdateService::StateChangeCallback(),
+        base::RepeatingCallback<void(const UpdateService::UpdateState&)>(),
         base::BindLambdaForTesting([&run_loop](UpdateService::Result result) {
           EXPECT_EQ(result, UpdateService::Result::kInactive);
           run_loop.Quit();
@@ -104,7 +108,8 @@ TEST(UpdateServiceImplInactiveTest, All) {
         RegistrationRequest(),
         /*client_install_data=*/"",
         /*install_data_index=*/"", UpdateService::Priority::kForeground,
-        UpdateService::StateChangeCallback(),
+        /*language=*/{},
+        base::RepeatingCallback<void(const UpdateService::UpdateState&)>(),
         base::BindLambdaForTesting([&run_loop](UpdateService::Result result) {
           EXPECT_EQ(result, UpdateService::Result::kInactive);
           run_loop.Quit();
@@ -122,7 +127,9 @@ TEST(UpdateServiceImplInactiveTest, All) {
         /*installer_path=*/base::FilePath(),
         /*install_args=*/"",
         /*install_data=*/"",
-        /*install_settings=*/"", UpdateService::StateChangeCallback(),
+        /*install_settings=*/"",
+        /*language=*/{},
+        base::RepeatingCallback<void(const UpdateService::UpdateState&)>(),
         base::BindLambdaForTesting([&run_loop](UpdateService::Result result) {
           EXPECT_EQ(result, UpdateService::Result::kInactive);
           run_loop.Quit();

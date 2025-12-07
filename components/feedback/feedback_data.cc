@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/ref_counted_memory.h"

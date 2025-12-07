@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_fetcher.h"
-#import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_fetcher+testing.h"
 
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
+#import "base/strings/escape.h"
+#import "base/strings/strcat.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
@@ -16,11 +17,11 @@
 #import "components/variations/variations_url_constants.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/variations/model/constants.h"
+#import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_fetcher+testing.h"
+#import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_store+fetcher.h"
 #import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_store.h"
 #import "ios/chrome/common/channel_info.h"
 #import "net/http/http_status_code.h"
-
-#import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_store+fetcher.h"
 
 namespace {
 
@@ -40,6 +41,13 @@ const char kSeedFetchTimeHistogram[] = "IOS.Variations.FirstRun.SeedFetchTime";
 // it aborts the task to make sure the fetch result won't be overriden.
 static BOOL g_seed_fetching_in_progress = NO;
 
+// Returns the trimmed and URL-escaped value of the given string.
+std::string GetEscapedValue(std::string_view value) {
+  return base::EscapeQueryParamValue(
+      base::TrimWhitespaceASCII(value, base::TrimPositions::TRIM_ALL),
+      /*use_plus=*/false);
+}
+
 }  // namespace
 
 @implementation IOSChromeVariationsSeedFetcher {
@@ -53,6 +61,10 @@ static BOOL g_seed_fetching_in_progress = NO;
   // The forced channel string retrieved from the command line. Accessed on the
   // main thread.
   std::string _forcedChannel;
+
+  // The fored variations seed corpus retrieved from the command line. Accessed
+  // on the main thread.
+  std::string _forcedCorpus;
 
   // The timestamp when the current seed request starts. This is used for metric
   // reporting, and will be reset to null value when the request finishes.
@@ -74,11 +86,16 @@ static BOOL g_seed_fetching_in_progress = NO;
     _forcedChannel = std::string();
 
     std::string url_switch =
-        "--" + std::string(variations::switches::kVariationsServerURL) + "=";
+        base::StrCat({"--", variations::switches::kVariationsServerURL, "="});
     std::string channel_switch =
-        "--" + std::string(variations::switches::kFakeVariationsChannel) + "=";
+        base::StrCat({"--", variations::switches::kFakeVariationsChannel, "="});
+    std::string corpus_switch =
+        base::StrCat({"--", variations::switches::kVariationsSeedCorpus, "="});
     for (NSString* a in arguments) {
-      std::string arg = base::SysNSStringToUTF8(a);
+      std::string arg_string = base::SysNSStringToUTF8(a);
+
+      // Use a view of `arg_string`to avoid unnecessary substr copies.
+      std::string_view arg(arg_string);
 
       if (base::StartsWith(arg, url_switch)) {
         _variationsDomain = arg.substr(url_switch.size());
@@ -86,7 +103,9 @@ static BOOL g_seed_fetching_in_progress = NO;
           _fetchingEnabled = YES;
         }
       } else if (base::StartsWith(arg, channel_switch)) {
-        _forcedChannel = arg.substr(channel_switch.size());
+        _forcedChannel = GetEscapedValue(arg.substr(channel_switch.size()));
+      } else if (base::StartsWith(arg, corpus_switch)) {
+        _forcedCorpus = GetEscapedValue(arg.substr(corpus_switch.size()));
       }
     }
   }
@@ -119,9 +138,7 @@ static BOOL g_seed_fetching_in_progress = NO;
   // from `doActualFetch` immediately. Note that the block will retain `self`.
   dispatch_async(queue, ^{
     if (g_seed_fetching_in_progress) {
-      NOTREACHED_IN_MIGRATION()
-          << "SeedFetch started while already in progress";
-      [self notifyDelegateSeedFetchResult:NO];
+      NOTREACHED() << "SeedFetch started while already in progress";
     } else {
       [self doActualFetch];
     }
@@ -134,20 +151,25 @@ static BOOL g_seed_fetching_in_progress = NO;
 // the request initiator. Accessed in the static serial queue
 // "*.first_run_variations_seed_manager".
 - (NSURL*)variationsURL {
-  // Setting "osname", "milestone" and "channel" as parameters. Dogfood
-  // experimenting is not supported on Chrome iOS, therefore we do not need the
-  // "restrict" parameter.
-  std::string queryString =
-      "?osname=ios&milestone=" + version_info::GetMajorVersionNumber();
-  std::string channel = _forcedChannel;
-  if (channel.empty() && GetChannel() != version_info::Channel::UNKNOWN) {
-    channel = GetChannelString();
-  }
+  // Construct the variations seed request URL. The URL contains the "osname",
+  // "milestone", "channel" and "corpus" as parameters. Dogfood experimenting
+  // is not supported on Chrome iOS, therefore we do not need the "restrict"
+  // parameter.
+  const std::string channel =
+      _forcedChannel.empty()
+          ? (GetChannel() != version_info::Channel::UNKNOWN ? GetChannelString()
+                                                            : "")
+          : _forcedChannel;
+  std::string url = base::StrCat({_variationsDomain, "?osname=ios&milestone=",
+                                  version_info::GetMajorVersionNumber()});
   if (!channel.empty()) {
-    queryString += "&channel=" + channel;
+    base::StrAppend(&url, {"&channel=", channel});
   }
-  return [NSURL
-      URLWithString:base::SysUTF8ToNSString(_variationsDomain + queryString)];
+  if (!_forcedCorpus.empty()) {
+    base::StrAppend(&url, {"&corpus=", _forcedCorpus});
+  }
+
+  return [NSURL URLWithString:base::SysUTF8ToNSString(url)];
 }
 
 // Helper method for `startSeedFetch` that initiates an HTTPS request to the
@@ -198,9 +220,9 @@ static BOOL g_seed_fetching_in_progress = NO;
     if (seed) {
       [IOSChromeVariationsSeedStore updateSharedSeed:std::move(seed)];
     } else {
-      // Currently, only the IM header is mandatory to create a first run seed,
-      // and is the only possible reason that a seed is downloaded but not
-      // created.
+      // Currently, only the IM header is mandatory to create a first run
+      // seed, and is the only possible reason that a seed is downloaded but
+      // not created.
       exception = IOSSeedFetchException::kInvalidIMHeader;
       success = NO;
     }
@@ -231,6 +253,10 @@ static BOOL g_seed_fetching_in_progress = NO;
   NSString* signature =
       [httpResponse valueForHTTPHeaderField:@"X-Seed-Signature"];
   NSString* country = [httpResponse valueForHTTPHeaderField:@"X-Country"];
+  NSString* dateString = [httpResponse valueForHTTPHeaderField:@"Date"];
+  base::Time date;
+  BOOL dateParsed = base::Time::FromUTCString(
+      base::SysNSStringToUTF8(dateString).c_str(), &date);
 
   // Returned seed should have been gzip compressed.
   NSCharacterSet* whitespace = [NSCharacterSet whitespaceCharacterSet];
@@ -252,9 +278,11 @@ static BOOL g_seed_fetching_in_progress = NO;
       seed->data = std::string(reinterpret_cast<const char*>([data bytes]),
                                [data length]);
     }
+    if (dateParsed) {
+      seed->date = date;
+    }
     seed->signature = base::SysNSStringToUTF8(signature);
     seed->country = base::SysNSStringToUTF8(country);
-    seed->date = base::Time::Now();
     seed->is_gzip_compressed = YES;
     return seed;
   }

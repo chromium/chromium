@@ -12,6 +12,8 @@
 
 #include "ash/style/typography.h"
 #include "base/files/file_path.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_error_dialog.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_warn_dialog.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_string_util.h"
@@ -21,6 +23,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/label.h"
@@ -45,6 +48,7 @@ std::u16string GetAccessibleLearnMoreLinkNameForBlockReason(
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware:
       return l10n_util::GetStringUTF16(
           IDS_POLICY_DLP_FILES_LEARN_MORE_ABOUT_MALWARE_PROTECTION_ACCESSIBLE_NAME);
+    case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsScanFailed:
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsUnknownScanResult:
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsEncryptedFile:
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsLargeFile:
@@ -66,6 +70,8 @@ PolicyDialogBase::ViewIds FilesPolicyDialog::MapBlockReasonToViewID(
       return PolicyDialogBase::kDlpSectionId;
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsUnknownScanResult:
       return PolicyDialogBase::kEnterpriseConnectorsUnknownScanResultSectionId;
+    case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsScanFailed:
+      return PolicyDialogBase::kEnterpriseConnectorsScanFailedResultSectionId;
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsSensitiveData:
       return PolicyDialogBase::kEnterpriseConnectorsSensitiveDataSectionId;
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware:
@@ -148,10 +154,6 @@ bool FilesPolicyDialog::Info::operator==(const Info& other) const {
              other.accessible_learn_more_link_name_;
 }
 
-bool FilesPolicyDialog::Info::operator!=(const Info& other) const {
-  return !(*this == other);
-}
-
 const std::vector<DlpConfidentialFile>& FilesPolicyDialog::Info::GetFiles()
     const {
   return files_;
@@ -205,8 +207,8 @@ FilesPolicyDialog::FilesPolicyDialog(size_t file_count,
                                      dlp::FileAction action,
                                      gfx::NativeWindow modal_parent)
     : action_(action), file_count_(file_count) {
-  ui::ModalType modal =
-      modal_parent ? ui::MODAL_TYPE_WINDOW : ui::MODAL_TYPE_SYSTEM;
+  ui::mojom::ModalType modal = modal_parent ? ui::mojom::ModalType::kWindow
+                                            : ui::mojom::ModalType::kSystem;
 
   set_margins(gfx::Insets::TLBR(24, 0, 20, 0));
 

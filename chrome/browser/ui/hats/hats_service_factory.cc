@@ -5,11 +5,16 @@
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 
 #include "base/no_destructor.h"
+#include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/android/hats/hats_service_android.h"
 #include "chrome/browser/ui/hats/hats_service.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/android/hats/hats_service_android.h"
+#else
 #include "chrome/browser/ui/hats/hats_service_desktop.h"
+#endif
 
 // static
 HatsService* HatsServiceFactory::GetForProfile(Profile* profile,
@@ -28,12 +33,13 @@ HatsServiceFactory::HatsServiceFactory()
     : ProfileKeyedServiceFactory(
           "HatsService",
           ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kOriginalOnly)
+              .WithRegular(ProfileSelection::kOwnInstance)
               // TODO(crbug.com/41488885): Check if this service is needed for
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(GoogleGroupsManagerFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService>

@@ -23,6 +23,7 @@
 
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/html/cross_origin_attribute.h"
 #include "third_party/blink/renderer/core/script/pending_script.h"
 #include "third_party/blink/renderer/core/script/script_scheduling_type.h"
@@ -50,7 +51,7 @@ class CORE_EXPORT ScriptLoader final : public ResourceFinishObserver,
   ScriptLoader(ScriptElementBase*, const CreateElementFlags);
   ~ScriptLoader() override;
   void Trace(Visitor*) const override;
-  const char* NameInHeapSnapshot() const override { return "ScriptLoader"; }
+  const char* GetHumanReadableName() const override { return "ScriptLoader"; }
   String DebugName() const override { return "ScriptLoader"; }
 
   // Script type at the time of #prepare-the-script-element. Import maps are
@@ -60,6 +61,7 @@ class CORE_EXPORT ScriptLoader final : public ResourceFinishObserver,
     kClassic,
     kModule,
     kImportMap,
+    kRouteMap,
     kSpeculationRules,
     kWebBundle,
     kInvalid
@@ -101,7 +103,7 @@ class CORE_EXPORT ScriptLoader final : public ResourceFinishObserver,
 
   // Helper functions used by our parent classes.
   void DidNotifySubtreeInsertionsToDocument();
-  void ChildrenChanged();
+  void ChildrenChanged(const ContainerNode::ChildrenChange&);
   void HandleSourceAttribute(const String& source_url);
   void HandleAsyncAttribute();
   void Removed();

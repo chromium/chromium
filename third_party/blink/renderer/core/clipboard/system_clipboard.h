@@ -8,9 +8,13 @@
 #include <memory>
 #include <optional>
 
+#include "build/build_config.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/frame/platform_event_dispatcher.h"
+#include "third_party/blink/renderer/platform/bindings/bigint.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -31,7 +35,9 @@ class ScopedSystemClipboardSnapshot;
 //
 // All calls to write functions must be followed by a call to CommitWrite().
 class CORE_EXPORT SystemClipboard final
-    : public GarbageCollected<SystemClipboard> {
+    : public GarbageCollected<SystemClipboard>,
+      public PlatformEventDispatcher,
+      public mojom::blink::ClipboardListener {
  public:
   enum SmartReplaceOption { kCanSmartReplace, kCannotSmartReplace };
 
@@ -39,7 +45,21 @@ class CORE_EXPORT SystemClipboard final
   SystemClipboard(const SystemClipboard&) = delete;
   SystemClipboard& operator=(const SystemClipboard&) = delete;
 
-  ClipboardSequenceNumberToken SequenceNumber();
+  // Inherited from PlatformEventDispatcher.
+  void StartListening(LocalDOMWindow*) override;
+  void StopListening() override;
+
+  // Inherited from ClipboardListener.
+  void OnClipboardDataChanged(const Vector<String>& types,
+                              const absl::uint128& changeId) override;
+
+  struct ClipboardChangeData {
+    const Vector<String> types;
+    const BigInt change_id;
+  };
+  const ClipboardChangeData& GetClipboardChangeEventData();
+
+  absl::uint128 SequenceNumber();
   bool IsSelectionMode() const;
   void SetSelectionMode(bool);
   Vector<String> ReadAvailableTypes();
@@ -88,6 +108,11 @@ class CORE_EXPORT SystemClipboard final
 
   void CopyToFindPboard(const String& text);
 
+#if BUILDFLAG(IS_MAC)
+  void GetPlatformPermissionState(
+      mojom::blink::ClipboardHost::GetPlatformPermissionStateCallback callback);
+#endif
+
   void ReadAvailableCustomAndStandardFormats(
       mojom::blink::ClipboardHost::ReadAvailableCustomAndStandardFormatsCallback
           callback);
@@ -99,7 +124,7 @@ class CORE_EXPORT SystemClipboard final
   void WriteUnsanitizedCustomFormat(const String& type,
                                     mojo_base::BigBuffer data);
 
-  void Trace(Visitor*) const;
+  void Trace(Visitor*) const override;
 
  private:
   friend class ScopedSystemClipboardSnapshot;
@@ -183,7 +208,7 @@ class CORE_EXPORT SystemClipboard final
 
     mutable std::optional<mojom::blink::ClipboardFilesPtr> files_;
 
-    WTF::HashMap<String, String> custom_data_;
+    HashMap<String, String> custom_data_;
   };
 
   bool IsValidBufferType(mojom::blink::ClipboardBuffer);
@@ -193,7 +218,14 @@ class CORE_EXPORT SystemClipboard final
   void TakeSnapshot();
   void DropSnapshot();
 
+  // Resets the clipboard snapshot if a write operation occurs
+  // while the snapshot is active.
+  void ResetSnapshot();
+
   HeapMojoRemote<mojom::blink::ClipboardHost> clipboard_;
+  HeapMojoReceiver<mojom::blink::ClipboardListener, SystemClipboard>
+      clipboard_listener_receiver_;
+
   // In some Linux environments, |buffer_| may equal ClipboardBuffer::kStandard
   // or kSelection.  In other platforms |buffer_| always equals
   // ClipboardBuffer::kStandard.
@@ -211,6 +243,12 @@ class CORE_EXPORT SystemClipboard final
   // made.
   std::unique_ptr<Snapshot> snapshot_;
   size_t snapshot_count_ = 0;
+
+  // A data from the most recent clipboard change notification.
+  // TODO(crbug.com/457463706): Possibly move this data somewhere within
+  // `ClipboardChangeEventController` or similar place.
+  std::optional<ClipboardChangeData> clipboard_change_data_;
+
   // Declared SystemClipboardTest class as friend to access the private members
   // of this class as we need to use clipboard_ and buffer_ for unbound remote
   // tests.

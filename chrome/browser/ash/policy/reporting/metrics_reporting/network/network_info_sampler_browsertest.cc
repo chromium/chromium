@@ -8,10 +8,9 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
-#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_device_client.h"
@@ -123,8 +122,10 @@ class NetworkInfoSamplerBrowserTest
   }
 
   void EnableReportingNetworkInterfaces() {
-    scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        ::ash::kReportDeviceNetworkConfiguration, true);
+    auto device_policy_update = device_state_.RequestDevicePolicyUpdate();
+    device_policy_update->policy_payload()
+        ->mutable_device_reporting()
+        ->set_report_network_configuration(true);
   }
 
   void AddDevice(const NetworkDevice& device) {
@@ -229,7 +230,6 @@ class NetworkInfoSamplerBrowserTest
  private:
   raw_ptr<::ash::ShillDeviceClient::TestInterface, DanglingUntriaged>
       device_client_;
-  ::ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
 IN_PROC_BROWSER_TEST_F(NetworkInfoSamplerBrowserTest,

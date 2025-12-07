@@ -8,10 +8,8 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.TraceEvent;
-import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.third_party.android.swiperefresh.SwipeRefreshLayout;
 
@@ -20,23 +18,24 @@ import org.chromium.third_party.android.swiperefresh.SwipeRefreshLayout;
  * on the modified version of the Android compat library's SwipeRefreshLayout due to the Player's
  * FrameLayout not behaving like a normal scrolling view.
  */
+@NullMarked
 public class PlayerSwipeRefreshHandler implements OverscrollHandler {
     // The duration of the refresh animation after a refresh signal.
     private static final int STOP_REFRESH_ANIMATION_DELAY_MS = 500;
 
     // The modified AppCompat version of the refresh effect.
-    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private final SwipeRefreshLayout mSwipeRefreshLayout;
 
     // A handler to delegate refreshes event to.
-    private Runnable mRefreshCallback;
+    private final Runnable mRefreshCallback;
 
-    /*
+    /**
      * Constructs a new instance of the handler.
      *
      * @param context The Context to create tha handler for.
      * @param refreshCallback The handler that refresh events are delegated to.
      */
-    public PlayerSwipeRefreshHandler(Context context, @NonNull Runnable refreshCallback) {
+    public PlayerSwipeRefreshHandler(Context context, Runnable refreshCallback) {
         TraceEvent.begin("PlayerSwipeRefreshHandler");
         mRefreshCallback = refreshCallback;
         mSwipeRefreshLayout = new SwipeRefreshLayout(context);
@@ -44,7 +43,7 @@ public class PlayerSwipeRefreshHandler implements OverscrollHandler {
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         // Use the same colors as {@link org.chromium.chrome.browser.SwipeRefreshHandler}.
         mSwipeRefreshLayout.setProgressBackgroundColorSchemeColor(
-                ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_2));
+                SemanticColorUtils.getColorSurfaceContainer(context));
         mSwipeRefreshLayout.setColorSchemeColors(
                 SemanticColorUtils.getDefaultControlColorActive(context));
         mSwipeRefreshLayout.setEnabled(true);

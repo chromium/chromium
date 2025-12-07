@@ -7,7 +7,6 @@
 
 #include <string>
 
-
 class GURL;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -20,7 +19,7 @@ class StatusBubble {
   // On hover, expand status bubble to fit long URL after this delay.
   static const int kExpandHoverDelayMS = 1600;
 
-  virtual ~StatusBubble() {}
+  virtual ~StatusBubble() = default;
 
   // Sets the bubble contents to a specific string and causes the bubble
   // to display immediately. Subsequent empty SetURL calls (typically called
@@ -41,11 +40,6 @@ class StatusBubble {
   // determine when the status area should move out of the way of the user's
   // mouse. |left_content| is true if the mouse just left the content area.
   virtual void MouseMoved(bool left_content) = 0;
-
-  // Called when the download shelf becomes visible or invisible.
-  // This is used by to ensure that the status bubble does not obscure
-  // the download shelf, when it is visible.
-  virtual void UpdateDownloadShelfVisibility(bool visible) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_STATUS_BUBBLE_H_

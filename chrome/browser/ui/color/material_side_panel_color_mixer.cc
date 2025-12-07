@@ -75,6 +75,10 @@ void AddMaterialSidePanelColorMixer(ui::ColorProvider* provider,
       ui::kColorSysOnSurface};
   mixer[kColorSidePanelBookmarksSelectedFolderIcon] = {
       ui::kColorSysOnSurfaceSubtle};
+  mixer[kColorSidePanelBookmarksActiveFolderForeground] = {
+      ui::kColorSysPrimary};
+  mixer[kColorSidePanelBookmarksActiveFolderBackground] = {
+      ui::kColorSysPrimaryContainer};
 
   /* Customize Chrome */
   mixer[kColorSidePanelCustomizeChromeClassicChromeTileBorder] = {

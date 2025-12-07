@@ -147,14 +147,14 @@ TEST_F(DownloadsDOMHandlerTest, ClearAll) {
   EXPECT_CALL(completed, UpdateObservers());
   downloads.push_back(&completed);
 
-  ASSERT_TRUE(DownloadItemModel(&completed).ShouldShowInShelf());
+  ASSERT_TRUE(DownloadItemModel(&completed).ShouldShowInUi());
 
   TestDownloadsDOMHandler handler(page_.BindAndGetRemote(), manager(),
                                   web_ui());
   handler.RemoveDownloads(downloads);
 
   // Ensure |completed| has been "soft removed" (i.e. can be revived).
-  EXPECT_FALSE(DownloadItemModel(&completed).ShouldShowInShelf());
+  EXPECT_FALSE(DownloadItemModel(&completed).ShouldShowInUi());
 
   // Make sure |completed| actually get removed when removals are "finalized".
   EXPECT_CALL(*manager(), GetDownload(1)).WillOnce(testing::Return(&completed));
@@ -278,48 +278,6 @@ TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTest, DiscardDangerous_IsDone) {
                   .empty());
 }
 
-TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTest, DiscardDangerous_EmptyURL) {
-  SetUpDangerousDownload();
-  GURL empty_url = GURL();
-  EXPECT_CALL(dangerous_download_, GetURL())
-      .WillRepeatedly(testing::ReturnRef(empty_url));
-
-  TestDownloadsDOMHandler handler(page_.BindAndGetRemote(), manager(),
-                                  web_ui());
-
-  EXPECT_CALL(dangerous_download_, Remove());
-  handler.DiscardDangerous("1");
-
-  // Verify that dangerous download report is not sent because the URL is empty.
-  EXPECT_TRUE(test_safe_browsing_factory_->test_safe_browsing_service()
-                  ->serialized_download_report()
-                  .empty());
-}
-
-TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTest,
-       DiscardDangerous_Incognito) {
-  SetUpDangerousDownload();
-  TestingProfile::Builder otr_profile_builder;
-  otr_profile_builder.DisallowBrowserWindows();
-  Profile* incognito_profile = otr_profile_builder.BuildIncognito(profile());
-  content::DownloadItemUtils::AttachInfoForTesting(&dangerous_download_,
-                                                   incognito_profile, nullptr);
-  ON_CALL(*manager(), GetBrowserContext())
-      .WillByDefault(testing::Return(incognito_profile));
-
-  TestDownloadsDOMHandler handler(page_.BindAndGetRemote(), manager(),
-                                  web_ui());
-
-  EXPECT_CALL(dangerous_download_, Remove());
-  handler.DiscardDangerous("1");
-
-  // Verify that dangerous download report is not sent because it's in
-  // Incognito.
-  EXPECT_TRUE(test_safe_browsing_factory_->test_safe_browsing_service()
-                  ->serialized_download_report()
-                  .empty());
-}
-
 TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTest,
        SaveSuspiciousRequiringGesture) {
   SetUpDangerousDownload();
@@ -432,138 +390,6 @@ TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTest,
                   .empty());
 }
 
-class DownloadsDOMHandlerTestDangerousDownloadInterstitial
-    : public DownloadsDOMHandlerWithFakeSafeBrowsingTest {
- public:
-  DownloadsDOMHandlerTestDangerousDownloadInterstitial() = default;
-
-  void SetUp() override {
-    DownloadsDOMHandlerWithFakeSafeBrowsingTest::SetUp();
-    SetUpDangerousDownload();
-    handler_ = std::make_unique<TestDownloadsDOMHandler>(
-        page_.BindAndGetRemote(), manager(), web_ui());
-    handler_->RecordOpenBypassWarningInterstitial("1");
-    task_environment_.FastForwardBy(base::Milliseconds(200));
-  }
-
-  void TearDown() override {
-    DownloadsDOMHandlerWithFakeSafeBrowsingTest::TearDown();
-  }
-
- protected:
-  base::HistogramTester histogram_tester_;
-  std::unique_ptr<TestDownloadsDOMHandler> handler_;
-
- private:
-  base::test::ScopedFeatureList feature_list_{
-      safe_browsing::kDangerousDownloadInterstitial};
-};
-
-TEST_F(DownloadsDOMHandlerTestDangerousDownloadInterstitial,
-       RecordOpenBypassWarningInterstitial) {
-  EXPECT_CALL(dangerous_download_, ValidateDangerousDownload()).Times(0);
-
-  histogram_tester_.ExpectBucketCount(
-      "Download.DangerousDownloadInterstitial.Action",
-      DangerousDownloadInterstitialAction::kOpenInterstitial, 1);
-
-  // Verify no report is sent, since it's not a terminal action.
-  EXPECT_TRUE(test_safe_browsing_factory_->test_safe_browsing_service()
-                  ->serialized_download_report()
-                  .empty());
-}
-
-TEST_F(DownloadsDOMHandlerTestDangerousDownloadInterstitial,
-       RecordOpenSurveyOnDangerousInterstitial) {
-  EXPECT_CALL(dangerous_download_, ValidateDangerousDownload()).Times(0);
-  handler_->RecordOpenSurveyOnDangerousInterstitial("1");
-
-  histogram_tester_.ExpectBucketCount(
-      "Download.DangerousDownloadInterstitial.Action",
-      DangerousDownloadInterstitialAction::kOpenSurvey, 1);
-  histogram_tester_.ExpectTimeBucketCount(
-      "Download.DangerousDownloadInterstitial.InteractionTime.OpenSurvey",
-      base::Milliseconds(200), 1);
-}
-
-TEST_F(DownloadsDOMHandlerTestDangerousDownloadInterstitial,
-       RecordCancelBypassWarningInterstitial) {
-  EXPECT_CALL(dangerous_download_, ValidateDangerousDownload()).Times(0);
-  handler_->RecordCancelBypassWarningInterstitial("1");
-
-  histogram_tester_.ExpectBucketCount(
-      "Download.DangerousDownloadInterstitial.Action",
-      DangerousDownloadInterstitialAction::kCancelInterstitial, 1);
-  histogram_tester_.ExpectTimeBucketCount(
-      "Download.DangerousDownloadInterstitial.InteractionTime."
-      "CancelInterstitial",
-      base::Milliseconds(200), 1);
-
-  // Verify no report is sent, since it's not a terminal action.
-  EXPECT_TRUE(test_safe_browsing_factory_->test_safe_browsing_service()
-                  ->serialized_download_report()
-                  .empty());
-}
-
-TEST_F(DownloadsDOMHandlerTestDangerousDownloadInterstitial,
-       SaveDangerousFromInterstitialNeedGesture) {
-  SimulateMouseGestureOnWebUI();
-
-  EXPECT_CALL(dangerous_download_, ValidateDangerousDownload());
-
-  handler_->RecordOpenSurveyOnDangerousInterstitial("1");
-  task_environment_.FastForwardBy(base::Milliseconds(100));
-  handler_->SaveDangerousFromInterstitialNeedGesture(
-      "1", downloads::mojom::DangerousDownloadInterstitialSurveyOptions::
-               kAcceptRisk);
-
-  histogram_tester_.ExpectBucketCount(
-      "Download.DangerousDownloadInterstitial.Action",
-      DangerousDownloadInterstitialAction::kSaveDangerous, 1);
-  histogram_tester_.ExpectTimeBucketCount(
-      "Download.DangerousDownloadInterstitial.InteractionTime.CompleteSurvey",
-      base::Milliseconds(100), 1);
-  histogram_tester_.ExpectTimeBucketCount(
-      "Download.DangerousDownloadInterstitial.InteractionTime.SaveDangerous",
-      base::Milliseconds(300), 1);
-  histogram_tester_.ExpectBucketCount(
-      "Download.DangerousDownloadInterstitial.SurveyResponse",
-      downloads::mojom::DangerousDownloadInterstitialSurveyOptions::kAcceptRisk,
-      1);
-
-  // Verify that dangerous download report is sent.
-  safe_browsing::ClientSafeBrowsingReportRequest expected_report;
-  std::string expected_serialized_report;
-  expected_report.set_url(GURL(kTestDangerousDownloadUrl).spec());
-  expected_report.set_type(safe_browsing::ClientSafeBrowsingReportRequest::
-                               DANGEROUS_DOWNLOAD_RECOVERY);
-  expected_report.set_did_proceed(true);
-  expected_report.set_download_verdict(
-      safe_browsing::ClientDownloadResponse::DANGEROUS);
-  expected_report.set_token("token");
-  expected_report.SerializeToString(&expected_serialized_report);
-  EXPECT_EQ(expected_serialized_report,
-            test_safe_browsing_factory_->test_safe_browsing_service()
-                ->serialized_download_report());
-}
-
-TEST_F(DownloadsDOMHandlerTestDangerousDownloadInterstitial,
-       SaveDangerousFromInterstitialNeedGesture_NoRecentInteraction) {
-  EXPECT_CALL(dangerous_download_, ValidateDangerousDownload()).Times(0);
-
-  handler_->RecordOpenSurveyOnDangerousInterstitial("1");
-  handler_->SaveDangerousFromInterstitialNeedGesture(
-      "1",
-      downloads::mojom::DangerousDownloadInterstitialSurveyOptions::kTrustSite);
-  histogram_tester_.ExpectBucketCount(
-      "Download.DangerousDownloadInterstitial.Action",
-      DangerousDownloadInterstitialAction::kSaveDangerous, 0);
-  histogram_tester_.ExpectBucketCount(
-      "Download.DangerousDownloadInterstitial.SurveyResponse",
-      downloads::mojom::DangerousDownloadInterstitialSurveyOptions::kTrustSite,
-      0);
-}
-
 class DownloadsDOMHandlerWithFakeSafeBrowsingTestTrustSafetySentimentService
     : public DownloadsDOMHandlerWithFakeSafeBrowsingTest {
  public:
@@ -633,37 +459,4 @@ TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTestTrustSafetySentimentService,
 
   EXPECT_CALL(dangerous_download_, ValidateDangerousDownload());
   handler.SaveDangerousFromDialogRequiringGesture("1");
-}
-
-TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTestTrustSafetySentimentService,
-       SaveDangerousFromInterstitial_CallsTrustSafetySentimentService) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(
-      safe_browsing::kDangerousDownloadInterstitial);
-
-  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingSurveysEnabled, true);
-  SetUpDangerousDownload();
-  ExpectTrustSafetySentimentServiceCall(
-      DownloadItemWarningData::WarningSurface::DOWNLOAD_PROMPT,
-      DownloadItemWarningData::WarningAction::PROCEED);
-
-  TestDownloadsDOMHandler handler(page_.BindAndGetRemote(), manager(),
-                                  web_ui());
-
-  SimulateMouseGestureOnWebUI();
-
-  EXPECT_CALL(dangerous_download_, ValidateDangerousDownload());
-
-  handler.RecordOpenBypassWarningInterstitial("1");
-  handler.RecordOpenSurveyOnDangerousInterstitial("1");
-  handler.SaveDangerousFromInterstitialNeedGesture(
-      "1", downloads::mojom::DangerousDownloadInterstitialSurveyOptions::
-               kCreatedFile);
-
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectBucketCount(
-      "Download.DangerousDownloadInterstitial.SurveyResponse",
-      downloads::mojom::DangerousDownloadInterstitialSurveyOptions::
-          kCreatedFile,
-      0);
 }

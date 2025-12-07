@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] VideoFrame interface: operation metadata()
-  assert_own_property: interface prototype object missing non-static operation expected property "metadata" missing
-[FAIL] VideoFrame interface: new VideoFrame(makeImageBitmap(32, 16), {timestamp: 100, duration: 33}) must inherit property "metadata()" with the proper type
-  assert_inherits: property "metadata" not found in prototype chain
-Harness: the test ran to completion.
-

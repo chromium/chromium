@@ -15,7 +15,7 @@ const INVALID_TEXT_ELEMENTS = new Set([
   'APPLET',   'AREA',     'AUDIO',    'BUTTON', 'CANVAS',   'EMBED',
   'FRAME',    'FRAMESET', 'IFRAME',   'IMG',    'INPUT',    'KEYGEN',
   'LABEL',    'MAP',      'NOSCRIPT', 'OBJECT', 'OPTGROUP', 'OPTION',
-  'PROGRESS', 'SCRIPT',   'SELECT',   'STYLE',  'TEXTAREA', 'VIDEO'
+  'PROGRESS', 'SCRIPT',   'SELECT',   'STYLE',  'TEXTAREA', 'VIDEO',
 ]);
 
 /**
@@ -23,7 +23,7 @@ const INVALID_TEXT_ELEMENTS = new Set([
  * surrounding text extended by `NUMBER_OF_SURROUNDING_CHARS` before and after
  * as much as possible.
  */
-class SurroundingText {
+export class SurroundingText {
   constructor(public position: number, public text: string) {}
 }
 
@@ -49,8 +49,9 @@ function getLastValid(node: Node): Node {
   const childrenCount = node.childNodes.length;
   for (let i = childrenCount - 1; i >= 0; i--) {
     const child = node.childNodes[i];
-    if (!child)
+    if (!child) {
       continue;
+    }
     if (child instanceof Element && isValidElement(child)) {
       return getLastValid(child);
     }
@@ -129,7 +130,7 @@ function getNextNode(node: Node|null): Node|null {
  */
 function getNextTextNode(node: Node|null): Node|null {
   let n = getNextNode(node);
-  while (n != null && n.nodeType != n.TEXT_NODE) {
+  while (n != null && n.nodeType !== n.TEXT_NODE) {
     n = getNextNode(n);
   }
   return n;
@@ -139,8 +140,8 @@ function getNextTextNode(node: Node|null): Node|null {
  * Returns the previous valid text node.
  */
 function getPrevTextNode(node: Node|null): Node|null {
-  var n = getPrevNode(node);
-  while (n != null && n.nodeType != n.TEXT_NODE) {
+  let n = getPrevNode(node);
+  while (n != null && n.nodeType !== n.TEXT_NODE) {
     n = getPrevNode(n);
   }
   return n;
@@ -153,7 +154,7 @@ function getPrevTextNode(node: Node|null): Node|null {
  * within the surrounding text, and the surrounding range.
  * @param range - the range where the user's selected point.
  */
-function getSurroundingText(range: Range): SurroundingText {
+export function getSurroundingText(range: Range): SurroundingText {
   const node = range.startContainer;
   const textContent = node.textContent;
   if (!textContent) {
@@ -185,6 +186,4 @@ function getSurroundingText(range: Range): SurroundingText {
   const middleText = textContent.substring(range.startOffset, range.endOffset);
   return new SurroundingText(
       leftText.length, leftText + middleText + rightText);
-};
-
-export {getSurroundingText, SurroundingText}
+}

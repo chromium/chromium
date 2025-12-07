@@ -13,10 +13,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.core.widget.ImageViewCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.R;
 
 /**
@@ -25,6 +26,7 @@ import org.chromium.components.browser_ui.widget.R;
  *
  * @param <E> The type of the item associated with this SelectableItemViewBase.
  */
+@NullMarked
 public abstract class SelectableItemView<E> extends CheckableSelectableItemView<E> {
     /** The LinearLayout containing the rest of the views for the selectable item. */
     protected LinearLayout mContentView;
@@ -42,7 +44,7 @@ public abstract class SelectableItemView<E> extends CheckableSelectableItemView<
     protected TextView mDescriptionView;
 
     /** Layout res to be used when inflating the view, used to swap in the visual refresh. */
-    private int mLayoutRes;
+    private final int mLayoutRes;
 
     /** Levels for the background. */
     private final int mDefaultLevel;
@@ -50,7 +52,7 @@ public abstract class SelectableItemView<E> extends CheckableSelectableItemView<
     private final int mSelectedLevel;
 
     /** The resource for the start icon background. */
-    private int mStartIconBackgroundRes;
+    private final int mStartIconBackgroundRes;
 
     /** Constructor for inflating from XML. */
     public SelectableItemView(Context context, AttributeSet attrs) {
@@ -111,12 +113,12 @@ public abstract class SelectableItemView<E> extends CheckableSelectableItemView<
      * Set drawable for the start icon view. Note that you may need to use this method instead of
      * mIconView#setImageDrawable to ensure icon view is correctly set in selection mode.
      */
-    protected void setStartIconDrawable(Drawable iconDrawable) {
+    protected void setStartIconDrawable(@Nullable Drawable iconDrawable) {
         setIconDrawable(iconDrawable);
     }
 
     /** Returns the drawable set for the start icon view, if any. */
-    protected Drawable getStartIconDrawable() {
+    protected @Nullable Drawable getStartIconDrawable() {
         return getIconDrawable();
     }
 }

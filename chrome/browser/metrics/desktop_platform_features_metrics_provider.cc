@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/os_settings_provider.h"
 
 namespace {
 
@@ -37,11 +38,13 @@ DesktopPlatformFeaturesMetricsProvider::
 
 void DesktopPlatformFeaturesMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
-  ui::NativeTheme* theme = ui::NativeTheme::GetInstanceForNativeUi();
   DarkModeStatus status = DarkModeStatus::kUnavailable;
-  if (ui::NativeTheme::SystemDarkModeSupported()) {
-    status = theme->ShouldUseDarkColors() ? DarkModeStatus::kDark
-                                          : DarkModeStatus::kLight;
+  if (ui::OsSettingsProvider::Get().DarkColorSchemeAvailable()) {
+    status =
+        (ui::NativeTheme::GetInstanceForNativeUi()->preferred_color_scheme() ==
+         ui::NativeTheme::PreferredColorScheme::kDark)
+            ? DarkModeStatus::kDark
+            : DarkModeStatus::kLight;
   }
   UMA_HISTOGRAM_ENUMERATION("Browser.DarkModeStatus", status);
 

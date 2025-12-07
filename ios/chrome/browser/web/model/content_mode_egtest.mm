@@ -29,7 +29,7 @@ const char kIFramePage[] = "/iframe.html";
 // iframe, or a page opening a new page with JavaScript window.open.
 std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
     const net::test_server::HttpRequest& request) {
-  if (request.GetURL().path() == kPage1) {
+  if (request.GetURL().GetPath() == kPage1) {
     auto result = std::make_unique<net::test_server::BasicHttpResponse>();
     result->set_content_type("text/html");
     std::string href = std::string(kLinkPage).substr(1);
@@ -42,7 +42,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
         "navigator.platform;</script></body></html>");
     return std::move(result);
   }
-  if (request.GetURL().path() == kLinkPage) {
+  if (request.GetURL().GetPath() == kLinkPage) {
     auto result = std::make_unique<net::test_server::BasicHttpResponse>();
     result->set_content_type("text/html");
     std::string href = std::string(kPage1).substr(1);
@@ -51,7 +51,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
                         "\">page with platform</a></body></html>");
     return std::move(result);
   }
-  if (request.GetURL().path() == kWindowOpenJSPage) {
+  if (request.GetURL().GetPath() == kWindowOpenJSPage) {
     auto result = std::make_unique<net::test_server::BasicHttpResponse>();
     result->set_content_type("text/html");
     std::string href = std::string(kPage1).substr(1);
@@ -62,7 +62,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
         href + "\");}</script></body></html>");
     return std::move(result);
   }
-  if (request.GetURL().path() == kIFramePage) {
+  if (request.GetURL().GetPath() == kIFramePage) {
     auto result = std::make_unique<net::test_server::BasicHttpResponse>();
     result->set_content_type("text/html");
     std::string href = std::string(kLinkPage).substr(1);

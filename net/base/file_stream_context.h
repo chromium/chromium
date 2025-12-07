@@ -31,7 +31,6 @@
 
 #include "base/files/file.h"
 #include "base/logging.h"
-#include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"

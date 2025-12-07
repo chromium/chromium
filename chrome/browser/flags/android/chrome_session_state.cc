@@ -40,13 +40,12 @@ CustomTabsVisibilityHistogram GetCustomTabsVisibleValue(
       return VISIBLE_CHROME_TAB;
     case ActivityType::kCustomTab:
     case ActivityType::kTrustedWebActivity:
-    case ActivityType::kAuthView:
+    case ActivityType::kAuthTab:
       return VISIBLE_CUSTOM_TAB;
     case ActivityType::kPreFirstTab:
       return NO_VISIBLE_TAB;
   }
-  NOTREACHED_IN_MIGRATION();
-  return VISIBLE_CHROME_TAB;
+  NOTREACHED();
 }
 
 ActivityType GetInitialActivityTypeForTesting() {
@@ -139,3 +138,5 @@ static void JNI_ChromeSessionState_SetIsInMultiWindowMode(
     jboolean j_is_in_multi_window_mode) {
   is_in_multi_window_mode = j_is_in_multi_window_mode;
 }
+
+DEFINE_JNI(ChromeSessionState)

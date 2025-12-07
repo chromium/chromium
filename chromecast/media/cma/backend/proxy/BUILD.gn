@@ -42,6 +42,7 @@ if (!is_android) {
       "buffer_id_manager.h",
       "cast_runtime_audio_channel_broker.cc",
       "cast_runtime_audio_channel_broker.h",
+      "cast_runtime_audio_channel_endpoint_simple.cc",
       "cma_backend_proxy.cc",
       "cma_backend_proxy.h",
       "cma_proxy_handler.h",
@@ -69,10 +70,5 @@ if (!is_android) {
       "//third_party/grpc:grpc++",
       "//third_party/protobuf:protobuf_full",
     ]
-
-    if (!enable_chromium_runtime_cast_renderer ||
-        chromecast_branding == "public") {
-      sources += [ "cast_runtime_audio_channel_endpoint_simple.cc" ]
-    }
   }
 }

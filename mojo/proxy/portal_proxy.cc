@@ -264,7 +264,7 @@ mojo::ScopedHandle PortalProxy::TranslateIpczToMojoHandle(
 
     default:
       // No other types of driver objects are supported by the proxy.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

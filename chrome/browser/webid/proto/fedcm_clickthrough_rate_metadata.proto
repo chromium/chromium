@@ -1,0 +1,27 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package webid;
+
+// The message contains the FedCM clickthrough rate aggregated across all users
+// for the page.
+message FedCmClickthroughRateMetadata {
+  // The number of FedCM sign-ins / number of page loads.
+  float per_page_load_clickthrough_rate = 1;
+
+  // The number of clients with FedCM sign-ins / number of clients shown.
+  float per_client_clickthrough_rate = 2;
+
+  // The number of FedCM sign-ins / number of FedCM impressions shown.
+  float per_impression_clickthrough_rate = 3;
+
+  // Likelihood of FedCM sign-ins. Value is between 0 and 1.
+  float likely_to_signin = 4;
+
+  // Likelihood of data being used to compute the above fields is insufficient.
+  // e.g. Low data volume. Value is between 0 and 1.
+  float likely_insufficient_data = 5;
+}

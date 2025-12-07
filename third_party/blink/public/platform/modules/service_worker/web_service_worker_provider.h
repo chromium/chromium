@@ -31,12 +31,12 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MODULES_SERVICE_WORKER_WEB_SERVICE_WORKER_PROVIDER_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MODULES_SERVICE_WORKER_WEB_SERVICE_WORKER_PROVIDER_H_
 
+#include <memory>
+#include <vector>
+
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom-shared.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_registration_object_info.h"
 #include "third_party/blink/public/platform/web_callbacks.h"
-#include "third_party/blink/public/platform/web_vector.h"
-
-#include <memory>
 
 namespace blink {
 
@@ -73,7 +73,7 @@ class WebServiceWorkerProvider {
                    const WebServiceWorkerError&>;
 
   using WebServiceWorkerGetRegistrationsCallbacks =
-      WebCallbacks<WebVector<WebServiceWorkerRegistrationObjectInfo>,
+      WebCallbacks<std::vector<WebServiceWorkerRegistrationObjectInfo>,
                    const WebServiceWorkerError&>;
   using GetRegistrationForReadyCallback =
       base::OnceCallback<void(WebServiceWorkerRegistrationObjectInfo)>;

@@ -1,4 +1,4 @@
-    <style include="cr-shared-style settings-shared md-select iron-flex">
+    <style include="cr-shared-style settings-shared md-select">
       /* Lines up with cr-input. */
       #custom-input {
         /* (cr-input line-height + cr-input top/bottom padding) / 2 -
@@ -38,8 +38,7 @@
       }
 
     </style>
-    <settings-animated-pages id="pages" section="appearance"
-        focus-config="[[focusConfig_]]">
+    <settings-section page-title="$i18n{appearancePageTitle}">
       <div route-path="default">
         <div class="settings-row first" id="themeRow"
             hidden="[[!pageVisibility.setTheme]]">
@@ -50,7 +49,8 @@
 <if expr="not is_linux">
           <template is="dom-if" if="[[prefs.extensions.theme.id.value]]">
             <div class="separator"></div>
-            <cr-button id="useDefault" on-click="onUseDefaultClick_">
+            <cr-button id="useDefault" on-click="onUseDefaultClick_"
+                aria-label="$i18n{resetToDefaultTheme}">
               $i18n{resetToDefault}
             </cr-button>
           </template>
@@ -82,21 +82,20 @@
           </div>
 </if>
         </div>
-        <template is="dom-if" if="[[toolbarPinningEnabled_]]">
-          <div id="toolbarRow" class="settings-row">
-            <cr-link-row id="customizeToolbar"
-                label="$i18n{customizeToolbar}"
-                on-click="onCustomizeToolbarClick_" external>
-            </cr-link-row>
-            <template is="dom-if" if="[[showResetPinnedActionsButton_]]">
-              <div class="separator"></div>
-              <cr-button id="resetPinnedToolbarActions"
-                  on-click="onResetPinnedToolbarActionsClick_">
-                $i18n{resetToDefault}
-              </cr-button>
-            </template>
-          </div>
-        </template>
+        <div id="toolbarRow" class="settings-row">
+          <cr-link-row id="customizeToolbar"
+              label="$i18n{customizeToolbar}"
+              on-click="onCustomizeToolbarClick_" external>
+          </cr-link-row>
+          <template is="dom-if" if="[[showResetPinnedActionsButton_]]">
+            <div class="separator"></div>
+            <cr-button id="resetPinnedToolbarActions"
+                on-click="onResetPinnedToolbarActionsClick_"
+                aria-label="$i18n{resetToolbarToDefault}">
+              $i18n{resetToDefault}
+            </cr-button>
+          </template>
+        </div>
         <div id="colorSchemeModeRow" class="cr-row"
 <if expr="is_linux">
             hidden="[[!showColorSchemeMode_(prefs.extensions.theme.id.value,
@@ -174,17 +173,29 @@
             label="$i18n{showBookmarksBar}">
         </settings-toggle-button>
 
+        <template is="dom-if" if="[[showVerticalTabsEnabled_]]">
+          <div class="cr-row">
+            <div class="flex cr-padded-text" aria-hidden="true">
+              $i18n{tabStripPosition}
+            </div>
+            <settings-dropdown-menu id="tabStripPosition"
+                label="$i18n{tabStripPosition}"
+                pref="{{prefs.vertical_tabs.enabled}}"
+                menu-options="[[tabStripOptions_]]">
+            </settings-dropdown-menu>
+          </div>
+        </template>
+
         <settings-toggle-button class="hr" id="showSavedTabGroups"
-            hidden="[[!showSavedTabGroupsInBookmarksBar_]]"
             pref="{{prefs.bookmark_bar.show_tab_groups}}"
             label="$i18n{showTabGroupsInBookmarksBar}">
         </settings-toggle-button>
 
         <settings-toggle-button class="hr" id="autoPinNewTabGroups"
-            hidden="[[!showAutoPinNewTabGroups_]]"
             pref="{{prefs.auto_pin_new_tab_groups}}"
             label="$i18n{autoPinNewTabGroups}">
         </settings-toggle-button>
+
         <template is="dom-if" if="[[showTabSearchPositionSettings_]]" restamp>
           <div class="cr-row" id="tabSearchPositionRow">
             <div class="flex cr-padded-text" aria-hidden="true">
@@ -288,15 +299,12 @@
         </settings-toggle-button>
 </if>
       </div>
-      <template is="dom-if" route-path="/fonts">
-        <settings-subpage
-            associated-control="[[$$('#customize-fonts-subpage-trigger')]]"
-            page-title="$i18n{customizeFonts}">
-          <settings-appearance-fonts-page prefs="{{prefs}}">
-          </settings-appearance-fonts-page>
-        </settings-subpage>
-      </template>
-    </settings-animated-pages>
+      <settings-toggle-button class="hr" id="splitViewDragAndDrop"
+          hidden="[[!showSplitViewDragAndDropSetting_]]"
+          pref="{{prefs.browser.split_view_drag_and_drop_enabled}}"
+          label="$i18n{allowSplitViewDragAndDrop}">
+      </settings-toggle-button>
+    </settings-section>
     <template is="dom-if" if="[[showManagedThemeDialog_]]" restamp>
       <managed-dialog on-close="onManagedDialogClosed_"
           title="$i18n{themeManagedDialogTitle}"

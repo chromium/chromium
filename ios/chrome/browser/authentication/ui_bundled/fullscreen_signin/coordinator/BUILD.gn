@@ -1,0 +1,29 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "fullscreen_signin_coordinator.h",
+    "fullscreen_signin_coordinator.mm",
+    "fullscreen_signin_coordinator_delegate.h",
+  ]
+  deps = [
+    "//base",
+    "//components/signin/public/identity_manager",
+    "//ios/chrome/browser/authentication/fullscreen_signin_screen/coordinator",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_in_progress",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_protected",
+    "//ios/chrome/browser/first_run/ui_bundled:screen_delegate",
+    "//ios/chrome/browser/first_run/ui_bundled:utils",
+    "//ios/chrome/browser/main/model",
+    "//ios/chrome/browser/screen/ui_bundled:screen_provider",
+    "//ios/chrome/browser/screen/ui_bundled:screen_type",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+  ]
+}

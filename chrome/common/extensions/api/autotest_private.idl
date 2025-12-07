@@ -32,7 +32,6 @@ namespace autotestPrivate {
   // A mapping of apps::mojom::Type
   enum AppType {
     Arc,
-    BuiltIn,
     Crostini,
     Extension,
     Web,
@@ -283,46 +282,6 @@ namespace autotestPrivate {
 
   callback IsArcPackageListInitialRefreshedCallback = void (boolean refreshed);
 
-  // A mapping of crosapi::BrowserManager::State
-  enum LacrosState {
-    NotInitialized,
-    Reloading,
-    Mounting,
-    Unavailable,
-    Stopped,
-    PreparingForLaunch,
-    PreLaunched,
-    Starting,
-    Running,
-    WaitingForMojoDisconnected,
-    WaitingForProcessTerminated
-  };
-
-  // A mapping of crosapi::browser_util::LacrosMode
-  enum LacrosMode {
-    Disabled,
-    Only
-  };
-
-  dictionary LacrosInfo {
-    // The state of lacros.
-    LacrosState state;
-    // True iff keepalive is enabled for lacros.
-    boolean isKeepAlive;
-    // Path to lacros-chrome directory. Note that this may change over time if
-    // omaha is used. This also may be empty if lacros is not running.
-    DOMString lacrosPath;
-    // Specifies the mode Lacros is currently running.
-    // For a full list of supported mode, see LacrosMode enum definition.
-    // DEPRECATED: please use isEnabled.
-    // TODO(crbug.com/40286020): Remove this field after tests are fixed.
-    LacrosMode mode;
-    // True iff Lacros is enabled for the current user session's primary user.
-    boolean isEnabled;
-  };
-
-  callback GetLacrosInfoCallback = void (LacrosInfo info);
-
   dictionary ArcAppDict {
     DOMString name;
     DOMString packageName;
@@ -505,7 +464,7 @@ namespace autotestPrivate {
     long id;
 
     // The name of the window object -- typically internal class name of the
-    // window (like 'BrowserFrame').
+    // window (like 'BrowserWidget').
     DOMString name;
 
     AppWindowType windowType;
@@ -726,8 +685,10 @@ namespace autotestPrivate {
     long jankCount;
     // Display throughput percentage at fixed intervals.
     long[] throughput;
+    // The timestamps of the janks during this animation in milllisecond.
+    long[] jankTimestamps;
     // The durations of the janks during this animation in millisecond.
-    double[] jankDurations;
+    long[] jankDurations;
   };
 
   // Callback invoked to report the smoothness after StopSmoothnessTracking is
@@ -853,6 +814,8 @@ namespace autotestPrivate {
   // Response callback to report if a field trial exists and has been activated.
   callback IsFieldTrialActiveCallback = void(boolean active);
 
+  callback OverrideLobsterResponseForTestingCallback = void(boolean success);
+
   // Request data containing the mock responses from
   // overrideOrcaResponseForTesting.
   dictionary OrcaResponseArray {
@@ -860,6 +823,14 @@ namespace autotestPrivate {
   };
 
   callback OverrideOrcaResponseForTestingCallback = void(boolean success);
+
+  // Request data containing the mock responses from
+  // overrideScannerResponsesForTesting.
+  dictionary ScannerResponseArray {
+    DOMString[] responses;
+  };
+
+  callback OverrideScannerResponsesForTestingCallback = void(boolean success);
 
   interface Functions {
     // Must be called to allow autotestPrivateAPI events to be fired.
@@ -972,10 +943,6 @@ namespace autotestPrivate {
     static void isArcProvisioned(
         IsArcProvisionedCallback callback);
 
-    // Gets various information about the state of lacros on the system.
-    static void getLacrosInfo(
-        GetLacrosInfoCallback callback);
-
     // Gets information about the requested ARC app.
     static void getArcApp(
         DOMString appId,
@@ -1037,16 +1004,6 @@ namespace autotestPrivate {
 
     // Remove printer.
     static void removePrinter(DOMString printerId);
-
-    // Start ARC directly, note this differs from |setPlayStoreEnabled|. It is
-    // used to restart ARC in tests.
-    // |callback|: Called when the operation has completed.
-    static void startArc(VoidCallback callback);
-
-    // Stop ARC directly, note this differs from |setPlayStoreEnabled|. It is
-    // used to restart ARC in tests. Note, this preserves ARC data.
-    // |callback|: Called when the operation has completed.
-    static void stopArc(VoidCallback callback);
 
     // Enable/disable the Play Store.
     // |enabled|: if set, enable the Play Store.
@@ -1140,48 +1097,6 @@ namespace autotestPrivate {
     // it's successfully loaded by smart dim ml_agent.
     // |callback|: Called when the operation has completed.
     static void loadSmartDimComponent(VoidCallback callback);
-
-    // Enables/disables the Google Assistant.
-    // |callback|: Called when the operation has completed.
-    static void setAssistantEnabled(
-        boolean enabled,
-        long timeout_ms,
-        VoidCallback callback);
-
-    // Bring up the Assistant service, and wait for the ready signal.
-    // |callback|: Called when the operation has completed.
-    static void enableAssistantAndWaitForReady(
-        VoidCallback callback);
-
-    // Sends a text query via Google Assistant.
-    // |callback|: Called when response has been received.
-    static void sendAssistantTextQuery(
-        DOMString query,
-        long timeout_ms,
-        AssistantQueryStatusCallback callback);
-
-    // Invokes |callback| once the current text/voice interaction is completed.
-    // Responds with the the query status if any valid response was caught
-    // before the timeout. This API should be called before sending the query.
-    // To use it for testing a voice query via OKG in Autotest, for example,
-    // you can do:
-    //
-    //    // Enable hotword setting for Assistant.
-    //    assistant_util.enable_hotword();
-    //
-    //    // Call this API with your callback function.
-    //    chrome.autotestPrivate.waitForAssistantQueryStatus(timeout_s,
-    //        function(status) {...});
-    //
-    // then start Assistant via OKG and send voice query before timeout.
-    //
-    // TODO(meilinw@): disable warmer welcome to avoid an unintended early
-    // return of this API when launching Assistant via hotkey.
-    // TODO(meilinw@): update the comment above to use Tast instead after
-    // adding API to enable hotword in Tast.
-    static void waitForAssistantQueryStatus(
-        long timeout_s,
-        AssistantQueryStatusCallback callback);
 
     // Whether the local list of installed ARC packages has been refreshed for
     // the first time after user login.
@@ -1668,11 +1583,22 @@ namespace autotestPrivate {
     static void getCurrentInputMethodDescriptor(
         GetCurrentInputMethodDescriptorCallback callback);
 
+    // Overrides the response from Lobster Fetcher and returns the boolean value
+    // that indicates if the overriding is successful or not.
+    static void overrideLobsterResponseForTesting(
+        OverrideLobsterResponseForTestingCallback callback);
+
     // Overrides the response from Orca Provider and returns the boolean value
     // that indicates if the overriding is successful or not.
     static void overrideOrcaResponseForTesting(
         OrcaResponseArray array,
         OverrideOrcaResponseForTestingCallback callback);
+
+    // Overrides the response from Scanner Provider and returns the boolean
+    // value that indicates if the overriding is successful or not.
+    static void overrideScannerResponsesForTesting(
+        ScannerResponseArray array,
+        OverrideScannerResponsesForTestingCallback callback);
 
     // ARC set interactive enable/disable state.
     // |enabled|: Enable ARC interactive.
@@ -1694,6 +1620,12 @@ namespace autotestPrivate {
     // A restart is required for this change to take effect.
     // |value|: the locale of the language.
     static void setDeviceLanguage(DOMString locale, VoidCallback callback);
+
+    // Gets the chrome://device-log entries for a given type or all types.
+    // |type|: A string like "printer" to fetch a specific type, or an empty
+    // string to fetch all entries.
+    // |callback|: Called with the logs as a single string.
+    static void getDeviceEventLog(DOMString type, DOMStringCallback callback);
   };
 
   interface Events {

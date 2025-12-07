@@ -16,17 +16,22 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_base.h"
+#include "base/metrics/histogram_flattener.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_snapshot_manager.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/metrics/record_histogram_checker.h"
 #include "base/metrics/sparse_histogram.h"
 #include "base/test/task_environment.h"
+#include "base/trace_event/histogram_scope.h"  // no-presubmit-check
 #include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
+using testing::_;
 
 // Class to make sure any manipulations we do to the min log level are
 // contained (i.e., do not affect other unit tests).
@@ -121,15 +126,24 @@ class StatisticsRecorderTest : public testing::TestWithParam<bool> {
     return StatisticsRecorder::top_ != nullptr;
   }
 
-  Histogram* CreateHistogram(const char* name,
-                             HistogramBase::Sample min,
-                             HistogramBase::Sample max,
+  Histogram* CreateHistogram(DurableStringView durable_name,
+                             HistogramBase::Sample32 min,
+                             HistogramBase::Sample32 max,
                              size_t bucket_count) {
     BucketRanges* ranges = new BucketRanges(bucket_count + 1);
     Histogram::InitializeBucketRanges(min, max, ranges);
     const BucketRanges* registered_ranges =
         StatisticsRecorder::RegisterOrDeleteDuplicateRanges(ranges);
-    return new Histogram(name, registered_ranges);
+    return new Histogram(durable_name, registered_ranges);
+  }
+
+  template <size_t N>
+  Histogram* CreateHistogram(const char (&literal)[N],
+                             HistogramBase::Sample32 min,
+                             HistogramBase::Sample32 max,
+                             size_t bucket_count) {
+    return CreateHistogram(DurableStringView(std::string_view(literal, N - 1)),
+                           min, max, bucket_count);
   }
 
   void InitLogOnShutdown() { StatisticsRecorder::InitLogOnShutdown(); }
@@ -246,6 +260,46 @@ TEST_P(StatisticsRecorderTest, FindHistogram) {
   EXPECT_FALSE(StatisticsRecorder::FindHistogram("TestHistogram"));
 }
 
+TEST_P(StatisticsRecorderTest, FindHistogramWithHash) {
+  HistogramBase* histogram1 = Histogram::FactoryGet(
+      "TestHistogram1", 1, 1000, 10, HistogramBase::kNoFlags);
+  HistogramBase* histogram2 = Histogram::FactoryGet(
+      "TestHistogram2", 1, 1000, 10, HistogramBase::kNoFlags);
+
+  auto hash_h1 = HashMetricName("TestHistogram1");
+  auto hash_h2 = HashMetricName("TestHistogram2");
+  auto hash_h = HashMetricName("TestHistogram");
+  EXPECT_EQ(histogram1,
+            StatisticsRecorder::FindHistogram(hash_h1, "TestHistogram1"));
+  EXPECT_EQ(histogram2,
+            StatisticsRecorder::FindHistogram(hash_h2, "TestHistogram2"));
+  EXPECT_FALSE(StatisticsRecorder::FindHistogram(hash_h, "TestHistogram"));
+
+  // Create a new global allocator using the same memory as the old one. Any
+  // old one is kept around so the memory doesn't get released.
+  GlobalHistogramAllocator* old_global_allocator =
+      GlobalHistogramAllocator::ReleaseForTesting();
+  if (use_persistent_histogram_allocator_) {
+    GlobalHistogramAllocator::CreateWithPersistentMemory(
+        const_cast<void*>(old_global_allocator->data()),
+        old_global_allocator->length(), 0, old_global_allocator->Id(),
+        old_global_allocator->Name());
+  }
+
+  // Reset statistics-recorder to validate operation from a clean start.
+  UninitializeStatisticsRecorder();
+  InitializeStatisticsRecorder();
+
+  if (use_persistent_histogram_allocator_) {
+    EXPECT_TRUE(StatisticsRecorder::FindHistogram(hash_h1, "TestHistogram1"));
+    EXPECT_TRUE(StatisticsRecorder::FindHistogram(hash_h2, "TestHistogram2"));
+  } else {
+    EXPECT_FALSE(StatisticsRecorder::FindHistogram(hash_h1, "TestHistogram1"));
+    EXPECT_FALSE(StatisticsRecorder::FindHistogram(hash_h2, "TestHistogram2"));
+  }
+  EXPECT_FALSE(StatisticsRecorder::FindHistogram(hash_h, "TestHistogram"));
+}
+
 TEST_P(StatisticsRecorderTest, WithName) {
   Histogram::FactoryGet("TestHistogram1", 1, 1000, 10, Histogram::kNoFlags);
   Histogram::FactoryGet("TestHistogram2", 1, 1000, 10, Histogram::kNoFlags);
@@ -319,8 +373,9 @@ TEST_P(StatisticsRecorderTest, RegisterHistogramWithMacros) {
   // Macros cache pointers and so tests that use them can only be run once.
   // Stop immediately if this test has run previously.
   static bool already_run = false;
-  if (already_run)
+  if (already_run) {
     return;
+  }
   already_run = true;
 
   StatisticsRecorder::Histograms registered_histograms;
@@ -364,7 +419,8 @@ TEST_P(StatisticsRecorderTest, ToJSON) {
   std::string json(StatisticsRecorder::ToJSON(JSON_VERBOSITY_LEVEL_FULL));
 
   // Check for valid JSON.
-  std::optional<Value> root = JSONReader::Read(json);
+  std::optional<Value> root =
+      JSONReader::Read(json, JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(root);
   Value::Dict* root_dict = root->GetIfDict();
   ASSERT_TRUE(root_dict);
@@ -403,7 +459,8 @@ TEST_P(StatisticsRecorderTest, ToJSONOmitBuckets) {
 
   std::string json =
       StatisticsRecorder::ToJSON(JSON_VERBOSITY_LEVEL_OMIT_BUCKETS);
-  std::optional<Value> root = JSONReader::Read(json);
+  std::optional<Value> root =
+      JSONReader::Read(json, JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(root);
   Value::Dict* root_dict = root->GetIfDict();
   ASSERT_TRUE(root_dict);
@@ -456,25 +513,30 @@ namespace {
 // CallbackCheckWrapper is simply a convenient way to check and store that
 // a callback was actually run.
 struct CallbackCheckWrapper {
-  CallbackCheckWrapper()
-      : called(false),
-        last_histogram_name(""),
-        last_name_hash(HashMetricName("")),
-        last_histogram_value(0) {}
+  CallbackCheckWrapper() : last_name_hash(HashMetricName("")) {}
 
-  void OnHistogramChanged(const char* histogram_name,
+  void OnHistogramChanged(std::string_view histogram_name,
                           uint64_t name_hash,
-                          base::HistogramBase::Sample histogram_value) {
+                          HistogramBase::Sample32 histogram_value) {
     called = true;
-    last_histogram_name = histogram_name;
+    last_histogram_name = std::string(histogram_name);
     last_name_hash = name_hash;
     last_histogram_value = histogram_value;
   }
 
-  bool called;
-  const char* last_histogram_name;
+  void OnHistogramChangedWithEventId(std::optional<uint64_t> event_id,
+                                     std::string_view histogram_name,
+                                     uint64_t name_hash,
+                                     HistogramBase::Sample32 histogram_value) {
+    last_event_id = event_id;
+    OnHistogramChanged(histogram_name, name_hash, histogram_value);
+  }
+
+  bool called = false;
+  std::optional<uint64_t> last_event_id;
+  std::string last_histogram_name = "";
   uint64_t last_name_hash;
-  base::HistogramBase::Sample last_histogram_value;
+  base::HistogramBase::Sample32 last_histogram_value = 0;
 };
 
 }  // namespace
@@ -482,7 +544,7 @@ struct CallbackCheckWrapper {
 TEST_P(StatisticsRecorderTest,
        AddHistogramCallbackBeforeHistogramRegistration) {
   test::TaskEnvironment task_environment;
-  const char* histogram_name = "TestHistogram";
+  constexpr char histogram_name[] = "TestHistogram";
   CallbackCheckWrapper callback_wrapper;
 
   auto callback =
@@ -496,14 +558,14 @@ TEST_P(StatisticsRecorderTest,
   EXPECT_EQ(StatisticsRecorder::RegisterOrDeleteDuplicate(histogram),
             histogram);
 
-  EXPECT_TRUE(histogram->HasFlags(base::HistogramBase::kCallbackExists));
+  EXPECT_TRUE(histogram->HasFlags(HistogramBase::kCallbackExists));
   EXPECT_TRUE(base::StatisticsRecorder::have_active_callbacks());
 }
 
 TEST_P(StatisticsRecorderTest,
        RemoveHistogramCallbackBeforeHistogramRegistrationWithMultipleClients) {
   test::TaskEnvironment task_environment;
-  const char* histogram_name = "TestHistogram";
+  constexpr char histogram_name[] = "TestHistogram";
   CallbackCheckWrapper callback_wrapper1;
   CallbackCheckWrapper callback_wrapper2;
 
@@ -531,7 +593,7 @@ TEST_P(StatisticsRecorderTest,
   EXPECT_EQ(StatisticsRecorder::RegisterOrDeleteDuplicate(histogram),
             histogram);
 
-  EXPECT_FALSE(histogram->HasFlags(base::HistogramBase::kCallbackExists));
+  EXPECT_FALSE(histogram->HasFlags(HistogramBase::kCallbackExists));
   EXPECT_FALSE(base::StatisticsRecorder::have_active_callbacks());
 }
 
@@ -551,7 +613,7 @@ TEST_P(StatisticsRecorderTest, AddHistogramCallbackWithMultipleClients) {
           base::BindRepeating(&CallbackCheckWrapper::OnHistogramChanged,
                               base::Unretained(&callback_wrapper1)));
 
-  EXPECT_TRUE(histogram->HasFlags(base::HistogramBase::kCallbackExists));
+  EXPECT_TRUE(histogram->HasFlags(HistogramBase::kCallbackExists));
   EXPECT_TRUE(base::StatisticsRecorder::have_active_callbacks());
 
   auto callback2 =
@@ -560,7 +622,7 @@ TEST_P(StatisticsRecorderTest, AddHistogramCallbackWithMultipleClients) {
           base::BindRepeating(&CallbackCheckWrapper::OnHistogramChanged,
                               base::Unretained(&callback_wrapper2)));
 
-  EXPECT_TRUE(histogram->HasFlags(base::HistogramBase::kCallbackExists));
+  EXPECT_TRUE(histogram->HasFlags(HistogramBase::kCallbackExists));
   EXPECT_TRUE(base::StatisticsRecorder::have_active_callbacks());
 
   histogram->Add(1);
@@ -592,11 +654,11 @@ TEST_P(StatisticsRecorderTest, RemoveHistogramCallbackWithMultipleClients) {
                               base::Unretained(&callback_wrapper2)));
 
   callback1.reset();
-  EXPECT_TRUE(histogram->HasFlags(base::HistogramBase::kCallbackExists));
+  EXPECT_TRUE(histogram->HasFlags(HistogramBase::kCallbackExists));
   EXPECT_TRUE(base::StatisticsRecorder::have_active_callbacks());
 
   callback2.reset();
-  EXPECT_FALSE(histogram->HasFlags(base::HistogramBase::kCallbackExists));
+  EXPECT_FALSE(histogram->HasFlags(HistogramBase::kCallbackExists));
   EXPECT_FALSE(base::StatisticsRecorder::have_active_callbacks());
 
   histogram->Add(1);
@@ -626,7 +688,7 @@ TEST_P(StatisticsRecorderTest, CallbackUsedTest) {
     base::RunLoop().RunUntilIdle();
 
     EXPECT_TRUE(callback_wrapper.called);
-    EXPECT_STREQ(callback_wrapper.last_histogram_name, "TestHistogram");
+    EXPECT_EQ(callback_wrapper.last_histogram_name, "TestHistogram");
     EXPECT_EQ(callback_wrapper.last_name_hash, HashMetricName("TestHistogram"));
     EXPECT_EQ(callback_wrapper.last_histogram_value, 1);
   }
@@ -647,7 +709,7 @@ TEST_P(StatisticsRecorderTest, CallbackUsedTest) {
     base::RunLoop().RunUntilIdle();
 
     EXPECT_TRUE(callback_wrapper.called);
-    EXPECT_STREQ(callback_wrapper.last_histogram_name, "TestLinearHistogram");
+    EXPECT_EQ(callback_wrapper.last_histogram_name, "TestLinearHistogram");
     EXPECT_EQ(callback_wrapper.last_name_hash,
               HashMetricName("TestLinearHistogram"));
     EXPECT_EQ(callback_wrapper.last_histogram_value, 1);
@@ -672,7 +734,7 @@ TEST_P(StatisticsRecorderTest, CallbackUsedTest) {
     base::RunLoop().RunUntilIdle();
 
     EXPECT_TRUE(callback_wrapper.called);
-    EXPECT_STREQ(callback_wrapper.last_histogram_name, "TestCustomHistogram");
+    EXPECT_EQ(callback_wrapper.last_histogram_name, "TestCustomHistogram");
     EXPECT_EQ(callback_wrapper.last_name_hash,
               HashMetricName("TestCustomHistogram"));
     EXPECT_EQ(callback_wrapper.last_histogram_value, 1);
@@ -694,7 +756,7 @@ TEST_P(StatisticsRecorderTest, CallbackUsedTest) {
     base::RunLoop().RunUntilIdle();
 
     EXPECT_TRUE(callback_wrapper.called);
-    EXPECT_STREQ(callback_wrapper.last_histogram_name, "TestSparseHistogram");
+    EXPECT_EQ(callback_wrapper.last_histogram_name, "TestSparseHistogram");
     EXPECT_EQ(callback_wrapper.last_name_hash,
               HashMetricName("TestSparseHistogram"));
     EXPECT_EQ(callback_wrapper.last_histogram_value, 1);
@@ -719,9 +781,47 @@ TEST_P(StatisticsRecorderTest, CallbackUsedBeforeHistogramCreatedTest) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(callback_wrapper.called);
-  EXPECT_STREQ(callback_wrapper.last_histogram_name, "TestHistogram");
+  EXPECT_EQ(callback_wrapper.last_histogram_name, "TestHistogram");
   EXPECT_EQ(callback_wrapper.last_name_hash, HashMetricName("TestHistogram"));
   EXPECT_EQ(callback_wrapper.last_histogram_value, 1);
+}
+
+// Check that setting a callback before the histogram exists works.
+TEST_P(StatisticsRecorderTest, CallbackWithEventIdTest) {
+  test::TaskEnvironment task_environment;
+  CallbackCheckWrapper callback_wrapper;
+
+  auto callback =
+      std::make_unique<base::StatisticsRecorder::ScopedHistogramSampleObserver>(
+          "TestHistogram",
+          base::BindRepeating(
+              &CallbackCheckWrapper::OnHistogramChangedWithEventId,
+              base::Unretained(&callback_wrapper)));
+
+  HistogramBase* histogram = Histogram::FactoryGet("TestHistogram", 1, 1000, 10,
+                                                   HistogramBase::kNoFlags);
+  EXPECT_TRUE(histogram);
+  {
+    base::trace_event::HistogramScope histogram_trace_scope(42);
+    histogram->Add(1);
+    base::RunLoop().RunUntilIdle();
+
+    EXPECT_TRUE(callback_wrapper.called);
+    EXPECT_EQ(callback_wrapper.last_histogram_name, "TestHistogram");
+    EXPECT_EQ(callback_wrapper.last_event_id, 42);
+    EXPECT_EQ(callback_wrapper.last_name_hash, HashMetricName("TestHistogram"));
+    EXPECT_EQ(callback_wrapper.last_histogram_value, 1);
+  }
+
+  callback_wrapper = CallbackCheckWrapper();  // clear previous callback data
+  histogram->Add(2);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(callback_wrapper.called);
+  EXPECT_EQ(callback_wrapper.last_histogram_name, "TestHistogram");
+  EXPECT_EQ(callback_wrapper.last_event_id, std::nullopt);
+  EXPECT_EQ(callback_wrapper.last_name_hash, HashMetricName("TestHistogram"));
+  EXPECT_EQ(callback_wrapper.last_histogram_value, 2);
 }
 
 TEST_P(StatisticsRecorderTest, GlobalCallbackCalled) {
@@ -734,9 +834,10 @@ TEST_P(StatisticsRecorderTest, GlobalCallbackCalled) {
   // function pointer.
   static size_t callback_callcount;
   callback_callcount = 0;
-  auto callback = [](const char* histogram_name, uint64_t name_hash,
-                     HistogramBase::Sample sample) {
-    EXPECT_STREQ(histogram_name, "TestHistogram");
+  auto callback = [](std::string_view histogram_name, uint64_t name_hash,
+                     HistogramBase::Sample32 sample,
+                     std::optional<uint64_t> event_id) {
+    EXPECT_EQ(histogram_name, "TestHistogram");
     EXPECT_EQ(sample, 1);
     ++callback_callcount;
   };
@@ -754,6 +855,10 @@ TEST_P(StatisticsRecorderTest, GlobalCallbackCalled) {
 }
 
 TEST_P(StatisticsRecorderTest, LogOnShutdownNotInitialized) {
+  // Some builds don't have runtime vlogging. See base/logging.h.
+  if (!VLOG_IS_ON(0)) {
+    GTEST_SKIP();
+  }
   ResetVLogInitialized();
   logging::SetMinLogLevel(logging::LOGGING_WARNING);
   InitializeStatisticsRecorder();
@@ -764,6 +869,10 @@ TEST_P(StatisticsRecorderTest, LogOnShutdownNotInitialized) {
 }
 
 TEST_P(StatisticsRecorderTest, LogOnShutdownInitializedExplicitly) {
+  // Some builds don't have runtime vlogging. See base/logging.h.
+  if (!VLOG_IS_ON(0)) {
+    GTEST_SKIP();
+  }
   ResetVLogInitialized();
   logging::SetMinLogLevel(logging::LOGGING_WARNING);
   InitializeStatisticsRecorder();
@@ -776,6 +885,10 @@ TEST_P(StatisticsRecorderTest, LogOnShutdownInitializedExplicitly) {
 }
 
 TEST_P(StatisticsRecorderTest, LogOnShutdownInitialized) {
+  // Some builds don't have runtime vlogging. See base/logging.h.
+  if (!VLOG_IS_ON(0)) {
+    GTEST_SKIP();
+  }
   ResetVLogInitialized();
   logging::SetMinLogLevel(logging::LOGGING_VERBOSE);
   InitializeStatisticsRecorder();
@@ -795,9 +908,10 @@ class TestHistogramProvider : public StatisticsRecorder::HistogramProvider {
   void MergeHistogramDeltas(bool async, OnceClosure done_callback) override {
     PersistentHistogramAllocator::Iterator hist_iter(allocator_.get());
     while (true) {
-      std::unique_ptr<base::HistogramBase> histogram = hist_iter.GetNext();
-      if (!histogram)
+      std::unique_ptr<HistogramBase> histogram = hist_iter.GetNext();
+      if (!histogram) {
         break;
+      }
       allocator_->MergeHistogramDeltaToStatisticsRecorder(histogram.get());
     }
     std::move(done_callback).Run();
@@ -863,6 +977,98 @@ TEST_P(StatisticsRecorderTest, RecordHistogramChecker) {
   StatisticsRecorder::SetRecordChecker(std::move(record_checker));
   EXPECT_TRUE(StatisticsRecorder::ShouldRecordHistogram(1));
   EXPECT_FALSE(StatisticsRecorder::ShouldRecordHistogram(2));
+}
+
+TEST_P(StatisticsRecorderTest, GetHistogramsExcludeFlags) {
+  std::vector<Histogram*> histograms = {
+      CreateHistogram("TestHistogram1", 1, 1000, 10),
+      CreateHistogram("TestHistogram2", 1, 1000, 10),
+      CreateHistogram("TestHistogram3", 1, 1000, 10),
+      CreateHistogram("TestHistogram4", 1, 1000, 10),
+      CreateHistogram("TestHistogram5", 1, 1000, 10),
+  };
+
+  // Set up histograms with different sets of flags.
+  histograms[0]->SetFlags(HistogramBase::Flags::kNoFlags);
+  histograms[1]->SetFlags(HistogramBase::Flags::kUmaTargetedHistogramFlag);
+  histograms[2]->SetFlags(HistogramBase::Flags::kUmaStabilityHistogramFlag);
+  histograms[3]->SetFlags(HistogramBase::Flags::kIPCSerializationSourceFlag);
+  histograms[4]->SetFlags(HistogramBase::Flags::kIPCSerializationSourceFlag |
+                          HistogramBase::Flags::kUmaTargetedHistogramFlag);
+
+  // Register histograms.
+  for (Histogram* histogram : histograms) {
+    EXPECT_EQ(histogram,
+              StatisticsRecorder::RegisterOrDeleteDuplicate(histogram));
+  }
+
+  EXPECT_EQ(StatisticsRecorder::GetHistograms().size(), 5);
+
+  EXPECT_THAT(
+      StatisticsRecorder::GetHistograms(true, HistogramBase::Flags::kNoFlags),
+      UnorderedElementsAre(  //
+          histograms[0], histograms[1], histograms[2], histograms[3],
+          histograms[4]));
+
+  EXPECT_THAT(StatisticsRecorder::GetHistograms(
+                  true, HistogramBase::Flags::kUmaTargetedHistogramFlag),
+              UnorderedElementsAre(histograms[0], histograms[3]));
+
+  EXPECT_THAT(StatisticsRecorder::GetHistograms(
+                  true, HistogramBase::Flags::kUmaStabilityHistogramFlag),
+              UnorderedElementsAre(histograms[0], histograms[3]));
+
+  EXPECT_THAT(
+      StatisticsRecorder::GetHistograms(
+          true, HistogramBase::Flags::kIPCSerializationSourceFlag),
+      UnorderedElementsAre(histograms[0], histograms[1], histograms[2]));
+
+  EXPECT_THAT(StatisticsRecorder::GetHistograms(
+                  true, HistogramBase::Flags::kCallbackExists),
+              UnorderedElementsAre(  //
+                  histograms[0], histograms[1], histograms[2], histograms[3],
+                  histograms[4]));
+
+  EXPECT_THAT(StatisticsRecorder::GetHistograms(
+                  true, HistogramBase::Flags::kUmaTargetedHistogramFlag |
+                            HistogramBase::Flags::kIPCSerializationSourceFlag),
+              UnorderedElementsAre(histograms[0]));
+}
+
+class MockHistogramFlattener : public base::HistogramFlattener {
+ public:
+  MockHistogramFlattener() = default;
+  ~MockHistogramFlattener() override = default;
+
+  MOCK_METHOD(void,
+              RecordDelta,
+              (const base::HistogramBase& histogram,
+               const base::HistogramSamples& snapshot),
+              (override));
+};
+
+TEST_P(StatisticsRecorderTest, PrepareDeltasDoesNotExcludeHistograms) {
+  Histogram* histogram =
+      CreateHistogram("TestHistogramPrepareDeltasExclude", 1, 1000, 10);
+
+  // Set kPumaRcTargetedHistogramFlag, this is a flag excluded by default by
+  // GetHistograms.
+  histogram->SetFlags(HistogramBase::Flags::kPumaRcTargetedHistogramFlag);
+
+  histogram->Add(12);
+
+  // Register histogram.
+  EXPECT_EQ(histogram,
+            StatisticsRecorder::RegisterOrDeleteDuplicate(histogram));
+
+  MockHistogramFlattener flattener;
+  HistogramSnapshotManager histogram_manager(&flattener);
+
+  EXPECT_CALL(flattener, RecordDelta(_, _)).Times(1);
+
+  StatisticsRecorder::PrepareDeltas(
+      true, HistogramBase::Flags::kNoFlags,
+      HistogramBase::Flags::kPumaRcTargetedHistogramFlag, &histogram_manager);
 }
 
 }  // namespace base

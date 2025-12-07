@@ -134,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerBrowserTest,
   ProtocolHandlerRegistry* registry =
       SimpleProtocolHandlerRegistryFactory::GetForBrowserContext(
           browser_context(), true);
-  ASSERT_EQ(0u, registry->GetHandlersFor(url.scheme()).size());
+  ASSERT_EQ(0u, registry->GetHandlersFor(url.GetScheme()).size());
 
   // Attempt to add an entry.
   ProtocolHandlerChangeWaiter waiter(registry);
@@ -145,8 +145,8 @@ IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerBrowserTest,
   waiter.Wait();
 
   // Verify the registration is ignored if no user gesture involved.
-  ASSERT_EQ(1u, registry->GetHandlersFor(url.scheme()).size());
-  ASSERT_FALSE(registry->IsHandledProtocol(url.scheme()));
+  ASSERT_EQ(1u, registry->GetHandlersFor(url.GetScheme()).size());
+  ASSERT_FALSE(registry->IsHandledProtocol(url.GetScheme()));
 }
 
 // FencedFrames can not register to handle any protocols.
@@ -167,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerBrowserTest, FencedFrame) {
   ProtocolHandlerRegistry* registry =
       SimpleProtocolHandlerRegistryFactory::GetForBrowserContext(
           browser_context(), true);
-  ASSERT_EQ(0u, registry->GetHandlersFor(url.scheme()).size());
+  ASSERT_EQ(0u, registry->GetHandlersFor(url.GetScheme()).size());
 
   // Attempt to add an entry.
   ProtocolHandlerChangeWaiter waiter(registry);
@@ -177,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerBrowserTest, FencedFrame) {
   waiter.Wait();
 
   // Ensure the registry is still empty.
-  ASSERT_EQ(0u, registry->GetHandlersFor(url.scheme()).size());
+  ASSERT_EQ(0u, registry->GetHandlersFor(url.GetScheme()).size());
 }
 #endif
 

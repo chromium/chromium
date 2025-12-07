@@ -1,0 +1,58 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/html/canvas/resources/canvas-promise-test.js"></script>
+<script>
+assert_true(!!window.chrome && !!chrome.gpuBenchmarking,
+  'This test requires chrome.gpuBenchmarking.');
+
+function drawAndReadBack(ctx, fillStyle) {
+  ctx.fillStyle = fillStyle;
+  ctx.fillRect(0, 0, 100, 100);
+  return ctx.getImageData(1, 1, 1, 1).data;
+}
+
+/**
+ * Validates setting an invalid canvas size while the GPU context is lost.
+ */
+canvasPromiseTest(async (canvas) => {
+  const ctx = canvas.getContext('2d', {
+    // Stay on GPU acceleration despite read-backs.
+    willReadFrequently: false,
+  });
+
+  // Make sure the canvas is fully initialized.
+  drawAndReadBack(ctx, 'red');
+
+  // Lose the GPU context.
+  chrome.gpuBenchmarking.terminateGpuProcessNormally();
+  await new Promise(resolve => canvas.oncontextlost = resolve);
+  assert_true(ctx.isContextLost(),
+              'Context should be lost after the GPU process was terminated.');
+
+  // Set invalid size on the canvas. This will disable automatic context restore
+  // until a valid size is specified.
+  canvas.width = 100000000;
+
+  // Check that the context isn't automatically restored. That would normally
+  // occur after 500ms, wait a whole second to be sure.
+  canvas.oncontextrestored = () =>
+    assert_unreached('Context should not have been restored.');
+  for (let i = 0; i < 10; ++i) {
+    await new Promise(resolve => setTimeout(resolve, 100));
+  }
+
+  // Specifying a valid canvas size will restore the context.
+  canvas.width = 200;
+  await new Promise(resolve => canvas.oncontextrestored = resolve);
+  assert_false(ctx.isContextLost(), 'Context should be restored.');
+  assert_array_equals(drawAndReadBack(ctx, 'lime'), [0, 255, 0, 255],
+                      `The canvas should be usable after it's restored.`);
+
+}, 'Canvas can be given an invalid size while the GPU context is lost.',
+   // Exclude WORKER because chrome.gpuBenchmarking isn't available on workers.
+   // Use PLACEHOLDER because OFFSCREEN uses a Canvas2DResourceProviderBitmap
+   // in CPU compositing mode, which cannot lose context.
+   {testTypes: [CanvasTestType.HTML, CanvasTestType.PLACEHOLDER]});
+
+</script>

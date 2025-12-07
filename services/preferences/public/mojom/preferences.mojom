@@ -18,7 +18,6 @@ struct TrackedPersistentPrefStoreConfiguration {
   array<TrackedPreferenceMetadata> tracking_configuration;
   uint64 reporting_ids_count;
   string seed;
-  string legacy_device_id;
   string registry_seed;
   mojo_base.mojom.String16 registry_path;
   pending_remote<TrackedPreferenceValidationDelegate>? validation_delegate;

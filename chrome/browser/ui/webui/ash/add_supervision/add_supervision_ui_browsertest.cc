@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_ui.h"
+
 #include <string>
 
 #include "base/strings/strcat.h"
@@ -9,7 +11,6 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_metrics_recorder.h"
-#include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_ui.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/confirm_signout_dialog.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -124,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(AddSupervisionBrowserTest, URLParameters) {
   ASSERT_TRUE(webview_gurl.has_query());
 
   // Split the query string into a map of keys to values.
-  std::string query_str = webview_gurl.query();
+  std::string query_str = webview_gurl.GetQuery();
   url::Component query(0, query_str.length());
   url::Component key;
   url::Component value;

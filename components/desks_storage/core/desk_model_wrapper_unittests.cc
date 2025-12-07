@@ -10,7 +10,6 @@
 
 #include "ash/public/cpp/desk_template.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -316,8 +315,8 @@ class DeskModelWrapperTest : public testing::Test {
   std::unique_ptr<LocalDeskDataManager> data_manager_;
   std::unique_ptr<syncer::DataTypeStore> store_;
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
-  std::unique_ptr<DeskSyncBridge> bridge_;
   testing::NiceMock<MockDeskModelObserver> mock_observer_;
+  std::unique_ptr<DeskSyncBridge> bridge_;
   std::unique_ptr<DeskModelWrapper> model_wrapper_;
 };
 
@@ -417,11 +416,11 @@ TEST_F(DeskModelWrapperTest, GetAllEntriesIncludesPolicyValues) {
   EXPECT_TRUE(
       FindUuidInUuidList(MakeTestUuidString(TestUuidId(5)), result.entries));
   // One of these templates should be from policy.
-  EXPECT_EQ(base::ranges::count_if(result.entries,
-                                   [](const ash::DeskTemplate* entry) {
-                                     return entry->source() ==
-                                            ash::DeskTemplateSource::kPolicy;
-                                   }),
+  EXPECT_EQ(std::ranges::count_if(result.entries,
+                                  [](const ash::DeskTemplate* entry) {
+                                    return entry->source() ==
+                                           ash::DeskTemplateSource::kPolicy;
+                                  }),
             1l);
 
   model_wrapper_->SetPolicyDeskTemplates("");

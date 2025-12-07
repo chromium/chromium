@@ -19,7 +19,12 @@
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
+#include "services/network/public/mojom/document_isolation_policy.mojom.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom.h"
+
+namespace blink {
+class StorageKey;
+}  // namespace blink
 
 namespace content {
 
@@ -49,12 +54,16 @@ class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl,
       network::mojom::ClientSecurityStatePtr client_security_state,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,
+      mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+          dip_reporter,
       const base::UnguessableToken& devtools_worker_token);
 
   ServiceWorkerDevToolsAgentHost(const ServiceWorkerDevToolsAgentHost&) =
       delete;
   ServiceWorkerDevToolsAgentHost& operator=(
       const ServiceWorkerDevToolsAgentHost&) = delete;
+
+  std::optional<blink::StorageKey> GetStorageKey() const;
 
   // DevToolsAgentHost overrides.
   BrowserContext* GetBrowserContext() override;
@@ -81,7 +90,9 @@ class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl,
   void UpdateClientSecurityState(
       network::mojom::ClientSecurityStatePtr client_security_state,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-          coep_reporter);
+          coep_reporter,
+      mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+          dip_reporter);
 
   void WorkerStopped();
   void WorkerVersionInstalled();
@@ -118,9 +129,10 @@ class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl,
   ~ServiceWorkerDevToolsAgentHost() override;
   void UpdateIsAttached(bool attached);
   void UpdateProcessHost();
+  void ForceUpdateOnReloadIfModified();
 
   // DevToolsAgentHostImpl overrides.
-  bool AttachSession(DevToolsSession* session, bool acquire_wake_lock) override;
+  bool AttachSession(DevToolsSession* session) override;
   void DetachSession(DevToolsSession* session) override;
   protocol::TargetAutoAttacher* auto_attacher() override;
 
@@ -163,6 +175,8 @@ class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl,
 
   mojo::Remote<network::mojom::CrossOriginEmbedderPolicyReporter>
       coep_reporter_;
+
+  mojo::Remote<network::mojom::DocumentIsolationPolicyReporter> dip_reporter_;
 
   base::ScopedObservation<RenderProcessHost, RenderProcessHostObserver>
       process_observation_{this};

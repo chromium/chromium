@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_SIGNIN_USER_POLICY_OIDC_SIGNIN_SERVICE_H_
 #define CHROME_BROWSER_ENTERPRISE_SIGNIN_USER_POLICY_OIDC_SIGNIN_SERVICE_H_
 
+#include <variant>
+
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -58,7 +60,7 @@ class UserPolicyOidcSigninService : public UserPolicySigninServiceBase,
       Profile* profile,
       PrefService* local_state,
       DeviceManagementService* device_management_service,
-      absl::variant<UserCloudPolicyManager*, ProfileCloudPolicyManager*>
+      std::variant<UserCloudPolicyManager*, ProfileCloudPolicyManager*>
           policy_manager,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory);
@@ -72,10 +74,12 @@ class UserPolicyOidcSigninService : public UserPolicySigninServiceBase,
 
   // CloudPolicyService::Observer implementation:
   void OnCloudPolicyServiceInitializationCompleted() override;
-  std::string_view name() const override;
 
   // CloudPolicyClient::Observer implementation:
   void OnPolicyFetched(CloudPolicyClient* client) override;
+
+  // UserPolicySigninServiceBase implementation:
+  void ShutdownCloudPolicyManager() override;
 
   void FetchPolicyForOidcUser(
       const AccountId& account_id,

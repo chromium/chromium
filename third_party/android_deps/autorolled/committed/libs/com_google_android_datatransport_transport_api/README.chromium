@@ -1,0 +1,16 @@
+Name: transport-api
+Short Name: transport-api
+URL: https://dl.google.com/dl/android/maven2/com/google/android/datatransport/transport-api/3.1.0/transport-api-3.1.0.aar
+Version: 3.1.0
+Update Mechanism: Autoroll
+License: Android Software Development Kit License
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+Interfaces for data logging in gmscore SDKs.
+
+Local Modifications:
+No modifications.

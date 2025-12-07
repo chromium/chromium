@@ -27,11 +27,23 @@ RemoteHostContactedSignal::RemoteHostContactedSignal(
       protocol_(protocol),
       contact_initiator_(contact_initiator) {}
 
+RemoteHostContactedSignal::RemoteHostContactedSignal(
+    const RemoteHostContactedSignal& other) = default;
+
+RemoteHostContactedSignal::RemoteHostContactedSignal(
+    RemoteHostContactedSignal&& other) = default;
+
+RemoteHostContactedSignal& RemoteHostContactedSignal::operator=(
+    const RemoteHostContactedSignal& other) = default;
+
+RemoteHostContactedSignal& RemoteHostContactedSignal::operator=(
+    RemoteHostContactedSignal&& other) = default;
+
 RemoteHostContactedSignal::~RemoteHostContactedSignal() = default;
 
 std::string RemoteHostContactedSignal::GetUniqueRemoteHostContactedId() const {
   return base::JoinString(
-      {remote_host_url_.host(), RemoteHostInfo::ProtocolType_Name(protocol_),
+      {remote_host_url_.GetHost(), RemoteHostInfo::ProtocolType_Name(protocol_),
        RemoteHostInfo::ContactInitiator_Name(contact_initiator_)},
       ",");
 }

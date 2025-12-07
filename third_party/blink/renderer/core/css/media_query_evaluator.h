@@ -29,6 +29,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_QUERY_EVALUATOR_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/kleene_value.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -36,23 +38,17 @@
 
 namespace blink {
 
+class CSSValue;
+class Document;
 class LocalFrame;
 class MediaQuery;
-class MediaQueryExpNode;
+class ConditionalExpNode;
 class MediaQueryFeatureExpNode;
+enum class MediaQueryOperator;
 class MediaQuerySet;
 class MediaQuerySetResult;
 class MediaValues;
 struct MediaQueryResultFlags;
-
-// See Kleene 3-valued logic
-//
-// https://drafts.csswg.org/mediaqueries-4/#evaluating
-enum class KleeneValue {
-  kTrue,
-  kFalse,
-  kUnknown,
-};
 
 // Class that evaluates css media queries as defined in
 // CSS3 Module "Media Queries" (http://www.w3.org/TR/css3-mediaqueries/)
@@ -90,6 +86,8 @@ class CORE_EXPORT MediaQueryEvaluator final
 
   const MediaValues& GetMediaValues() const { return *media_values_; }
 
+  const Document* GetDocument() const;
+
   bool MediaTypeMatch(const String& media_type_to_match) const;
 
   // Evaluates a list of media queries.
@@ -101,23 +99,23 @@ class CORE_EXPORT MediaQueryEvaluator final
   bool Eval(const MediaQuery&, MediaQueryResultFlags*) const;
 
   // https://drafts.csswg.org/mediaqueries-4/#evaluating
-  KleeneValue Eval(const MediaQueryExpNode&) const;
-  KleeneValue Eval(const MediaQueryExpNode&, MediaQueryResultFlags*) const;
+  KleeneValue Eval(const ConditionalExpNode&) const;
+  KleeneValue Eval(const ConditionalExpNode&, MediaQueryResultFlags*) const;
+
+  static KleeneValue EvalStyleRange(const CSSValue& reference_value,
+                                    const CSSValue& query_value,
+                                    MediaQueryOperator op,
+                                    bool reverse_op);
 
   // Returns true if any of the media queries in the results lists changed its
   // evaluation.
   bool DidResultsChange(const HeapVector<MediaQuerySetResult>& results) const;
+  bool DidResultsChange(
+      const HeapHashMap<Member<const MediaQuerySet>, bool>& results) const;
 
   void Trace(Visitor*) const;
 
  private:
-  KleeneValue EvalNot(const MediaQueryExpNode&, MediaQueryResultFlags*) const;
-  KleeneValue EvalAnd(const MediaQueryExpNode&,
-                      const MediaQueryExpNode&,
-                      MediaQueryResultFlags*) const;
-  KleeneValue EvalOr(const MediaQueryExpNode&,
-                     const MediaQueryExpNode&,
-                     MediaQueryResultFlags*) const;
   KleeneValue EvalFeature(const MediaQueryFeatureExpNode&,
                           MediaQueryResultFlags*) const;
   KleeneValue EvalStyleFeature(const MediaQueryFeatureExpNode&,

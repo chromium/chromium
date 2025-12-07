@@ -35,9 +35,9 @@ class IOSImageDecoderImpl : public ImageDecoder {
                    ImageDecodedCallback callback) override;
 };
 
-IOSImageDecoderImpl::IOSImageDecoderImpl() {}
+IOSImageDecoderImpl::IOSImageDecoderImpl() = default;
 
-IOSImageDecoderImpl::~IOSImageDecoderImpl() {}
+IOSImageDecoderImpl::~IOSImageDecoderImpl() = default;
 
 void IOSImageDecoderImpl::DecodeImage(const std::string& image_data,
                                       const gfx::Size& desired_image_frame_size,

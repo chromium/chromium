@@ -4,6 +4,8 @@
 
 'use strict';
 
+let testUtil;
+
 /**
  * Map of opened files, from a <code>openRequestId</code> to <code>filePath
  * </code>.
@@ -68,7 +70,7 @@ var TESTING_RELATIVE_NAME_FILE = Object.freeze({
  * @param {function(string)} onError Error callback.
  */
 function onOpenFileRequested(options, onSuccess, onError) {
-  if (options.fileSystemId !== test_util.FILE_SYSTEM_ID) {
+  if (options.fileSystemId !== testUtil.FILE_SYSTEM_ID) {
     onError('INVALID_OPERATION');  // enum ProviderError.
     return;
   }
@@ -98,7 +100,7 @@ function onOpenFileRequested(options, onSuccess, onError) {
  * @param {function(string)} onError Error callback.
  */
 function onCloseFileRequested(options, onSuccess, onError) {
-  if (options.fileSystemId !== test_util.FILE_SYSTEM_ID ||
+  if (options.fileSystemId !== testUtil.FILE_SYSTEM_ID ||
       !openedFiles[options.openRequestId]) {
     onError('INVALID_OPERATION');  // enum ProviderError.
     return;
@@ -119,7 +121,7 @@ function onCloseFileRequested(options, onSuccess, onError) {
  */
 function onReadFileRequested(options, onSuccess, onError) {
   var filePath = openedFiles[options.openRequestId];
-  if (options.fileSystemId !== test_util.FILE_SYSTEM_ID || !filePath) {
+  if (options.fileSystemId !== testUtil.FILE_SYSTEM_ID || !filePath) {
     onError('INVALID_OPERATION');  // enum ProviderError.
     return;
   }
@@ -170,15 +172,15 @@ function onReadFileRequested(options, onSuccess, onError) {
  */
 function setUp(callback) {
   chrome.fileSystemProvider.onGetMetadataRequested.addListener(
-      test_util.onGetMetadataRequestedDefault);
+      testUtil.onGetMetadataRequestedDefault);
 
-  test_util.defaultMetadata['/' + TESTING_TOO_LARGE_CHUNK_FILE.name] =
+  testUtil.defaultMetadata['/' + TESTING_TOO_LARGE_CHUNK_FILE.name] =
     TESTING_TOO_LARGE_CHUNK_FILE;
-  test_util.defaultMetadata['/' + TESTING_INVALID_CALLBACK_FILE.name] =
+  testUtil.defaultMetadata['/' + TESTING_INVALID_CALLBACK_FILE.name] =
     TESTING_INVALID_CALLBACK_FILE;
-  test_util.defaultMetadata['/' + TESTING_NEGATIVE_SIZE_FILE.name] =
+  testUtil.defaultMetadata['/' + TESTING_NEGATIVE_SIZE_FILE.name] =
     TESTING_NEGATIVE_SIZE_FILE;
-  test_util.defaultMetadata['/' + TESTING_RELATIVE_NAME_FILE.name] =
+  testUtil.defaultMetadata['/' + TESTING_RELATIVE_NAME_FILE.name] =
     TESTING_RELATIVE_NAME_FILE;
 
   chrome.fileSystemProvider.onOpenFileRequested.addListener(
@@ -188,7 +190,7 @@ function setUp(callback) {
   chrome.fileSystemProvider.onCloseFileRequested.addListener(
       onCloseFileRequested);
 
-  test_util.mountFileSystem(callback);
+  testUtil.mountFileSystem(callback);
 }
 
 /**
@@ -199,7 +201,7 @@ function runTests() {
     // Tests that returning a too big chunk (4 times larger than the file size,
     // and also much more than requested 1 KB of data).
     function returnTooLargeChunk() {
-      test_util.fileSystem.root.getFile(
+      testUtil.fileSystem.root.getFile(
           TESTING_TOO_LARGE_CHUNK_FILE.name,
           {create: false},
           chrome.test.callbackPass(function(fileEntry) {
@@ -225,7 +227,7 @@ function runTests() {
     // Tests that calling a success callback with a non-existing request id
     // doesn't cause any harm.
     function invalidCallback() {
-      test_util.fileSystem.root.getFile(
+      testUtil.fileSystem.root.getFile(
           TESTING_INVALID_CALLBACK_FILE.name,
           {create: false},
           chrome.test.callbackPass(function(fileEntry) {
@@ -250,7 +252,7 @@ function runTests() {
 
     // Test that reading from files with negative size is not allowed.
     function negativeSize() {
-      test_util.fileSystem.root.getFile(
+      testUtil.fileSystem.root.getFile(
           TESTING_NEGATIVE_SIZE_FILE.name,
           {create: false},
           chrome.test.callbackPass(function(fileEntry) {
@@ -279,7 +281,7 @@ function runTests() {
     // Tests that URLs generated from a file containing .. inside is properly
     // escaped.
     function relativeName() {
-      test_util.fileSystem.root.getFile(
+      testUtil.fileSystem.root.getFile(
           TESTING_RELATIVE_NAME_FILE.name,
           {create: false},
           function(fileEntry) {
@@ -292,5 +294,12 @@ function runTests() {
   ]);
 }
 
-// Setup and run all of the test cases.
-setUp(runTests);
+// This works-around that background scripts can't import because they aren't
+// considered modules.
+(async () => {
+  testUtil = await import(
+    '/_test_resources/api_test/file_system_provider/test_util.js');
+
+  // Setup and run all of the test cases.
+  setUp(runTests);
+})();

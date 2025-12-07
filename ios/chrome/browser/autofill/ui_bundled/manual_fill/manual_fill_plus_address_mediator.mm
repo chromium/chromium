@@ -4,17 +4,25 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_plus_address_mediator.h"
 
+#import <algorithm>
+
 #import "base/i18n/message_formatter.h"
-#import "base/ranges/algorithm.h"
+#import "base/memory/raw_ptr.h"
+#import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/plus_addresses/plus_address_service.h"
+#import "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
+#import "components/plus_addresses/core/browser/plus_address_service.h"
+#import "components/plus_addresses/core/browser/plus_address_ui_utils.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_action_cell.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_content_injector.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_plus_address.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_plus_address_cell.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_plus_address_consumer.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/plus_address_list_navigator.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -22,36 +30,40 @@
 #import "ui/gfx/favicon_size.h"
 #import "url/gurl.h"
 
+@interface ManualFillPlusAddressMediator () <ManualFillContentInjector>
+@end
+
 @implementation ManualFillPlusAddressMediator {
   // The favicon loader used in the cell.
-  FaviconLoader* _faviconLoader;
+  raw_ptr<FaviconLoader> _faviconLoader;
 
   // Used to fetch plus addresses.
-  plus_addresses::PlusAddressService* _plusAddressService;
-
-  // Origin to fetch plus addresses for.
-  GURL _URL;
+  raw_ptr<plus_addresses::PlusAddressService> _plusAddressService;
 
   // The origin to which all operations should be scoped.
   url::Origin _mainFrameOrigin;
 
-  // If YES, plus address manual fallback is shown.
-  BOOL _shouldShowManualFallback;
+  // If `YES`, the manual fallback UI was triggered for addresses, otherwise it
+  // was triggered for passwords.
+  BOOL _isAddressManualFallbackUI;
+
+  // A cache of all the plus addresses that are shown in the select plus
+  // address. Used for filtering out addresses based on the search string.
+  NSArray<ManualFillPlusAddress*>* _allPlusAddresses;
 }
 
 - (instancetype)initWithFaviconLoader:(FaviconLoader*)faviconLoader
                    plusAddressService:
                        (plus_addresses::PlusAddressService*)plusAddressService
                                   URL:(const GURL&)URL
-                       isOffTheRecord:(BOOL)isOffTheRecord {
+                       isOffTheRecord:(BOOL)isOffTheRecord
+              isAddressManualFallback:(BOOL)isAddressManualFallback {
   self = [super init];
   if (self) {
     _faviconLoader = faviconLoader;
     _plusAddressService = plusAddressService;
-    _URL = URL;
     _mainFrameOrigin = url::Origin::Create(URL);
-    _shouldShowManualFallback = _plusAddressService->ShouldShowManualFallback(
-        _mainFrameOrigin, isOffTheRecord);
+    _isAddressManualFallbackUI = isAddressManualFallback;
   }
 
   return self;
@@ -61,17 +73,88 @@
   if (consumer == _consumer) {
     return;
   }
+
   _consumer = consumer;
-  [self postPlusAddressesToConsumer];
+
+  if (_allPlusAddresses) {
+    [_consumer presentPlusAddresses:
+                   [self createManualFillPlusAddressItems:_allPlusAddresses]];
+  } else {
+    [self postPlusAddressesToConsumer];
+  }
+}
+
+- (void)fetchAllPlusAddresses {
+  base::span<const plus_addresses::PlusProfile> plusProfiles =
+      _plusAddressService->GetPlusProfiles();
+  _allPlusAddresses =
+      [self createManualFillPlusAddressesFromPlusProfiles:plusProfiles];
 }
 
 #pragma mark - TableViewFaviconDataSource
 
 - (void)faviconForPageURL:(CrURL*)URL
-               completion:(void (^)(FaviconAttributes*))completion {
+               completion:(void (^)(FaviconAttributes* attributes,
+                                    bool cached))completion {
   CHECK(completion);
   _faviconLoader->FaviconForPageUrlOrHost(URL.gurl, gfx::kFaviconSize,
                                           completion);
+}
+
+#pragma mark - UISearchResultsUpdating
+
+- (void)updateSearchResultsForSearchController:
+    (UISearchController*)searchController {
+  CHECK(_allPlusAddresses);
+  NSString* searchText = searchController.searchBar.text;
+  if (!searchText.length) {
+    [self.consumer presentPlusAddresses:[self createManualFillPlusAddressItems:
+                                                  _allPlusAddresses]];
+    return;
+  }
+
+  NSPredicate* predicate =
+      [NSPredicate predicateWithFormat:
+                       @"host CONTAINS[cd] %@ OR plusAddress CONTAINS[cd] %@",
+                       searchText, searchText];
+  NSArray* filteredPlusAddresses =
+      [_allPlusAddresses filteredArrayUsingPredicate:predicate];
+  [self.consumer presentPlusAddresses:[self createManualFillPlusAddressItems:
+                                                filteredPlusAddresses]];
+}
+
+#pragma mark - ManualFillContentInjector
+
+- (BOOL)canUserInjectInPasswordField:(BOOL)passwordField
+                       requiresHTTPS:(BOOL)requiresHTTPS {
+  NOTREACHED();
+}
+
+- (void)userDidPickContent:(NSString*)content
+             passwordField:(BOOL)passwordField
+             requiresHTTPS:(BOOL)requiresHTTPS {
+  // If the "Select Plus Address" view is presented, close the sheet and then
+  // initiate the filling.
+  if (self.delegate) {
+    [self.delegate manualFillPlusAddressMediatorWillInjectContent];
+  }
+  [self.contentInjector userDidPickContent:content
+                             passwordField:passwordField
+                             requiresHTTPS:requiresHTTPS];
+}
+
+- (void)autofillFormWithCredential:(ManualFillCredential*)credential
+                      shouldReauth:(BOOL)shouldReauth {
+  NOTREACHED();
+}
+
+- (void)autofillFormWithSuggestion:(FormSuggestion*)formSuggestion
+                           atIndex:(NSInteger)index {
+  NOTREACHED();
+}
+
+- (BOOL)isActiveFormAPasswordForm {
+  NOTREACHED();
 }
 
 #pragma mark - Private
@@ -79,8 +162,7 @@
 // Initiates the process of fetching and presenting Plus Addresses to the
 // consumer.
 - (void)postPlusAddressesToConsumer {
-  if (!_shouldShowManualFallback) {
-    [self.consumer presentPlusAddresses:@[]];
+  if (!self.consumer) {
     return;
   }
 
@@ -107,47 +189,168 @@
 // Presents the fetched `plusProfiles` to the consumer.
 - (void)onPlusAddressesFetched:
     (const std::vector<plus_addresses::PlusProfile>&)plusProfiles {
-  int plusAddressesCount = (int)plusProfiles.size();
+  NSArray<ManualFillPlusAddress*>* plusAddresses =
+      [self createManualFillPlusAddressesFromPlusProfiles:plusProfiles];
+  [self.consumer
+      presentPlusAddresses:[self
+                               createManualFillPlusAddressItems:plusAddresses]];
+  [self postActionsToConsumer:(plusAddresses.count > 0)];
+}
+
+// Creates and returns an array of `ManualFillPlusAddressItem` from
+// `ManualFillPlusAddress`.
+- (NSArray<ManualFillPlusAddressItem*>*)createManualFillPlusAddressItems:
+    (NSArray<ManualFillPlusAddress*>*)plusAddresses {
+  int plusAddressesCount = [plusAddresses count];
   NSMutableArray* items =
       [[NSMutableArray alloc] initWithCapacity:plusAddressesCount];
+
+  NSArray<UIAction*>* menuActions = @[ [self createManageMenuAction] ];
 
   for (int i = 0; i < plusAddressesCount; i++) {
     NSString* cellIndexAccessibilityLabel = base::SysUTF16ToNSString(
         base::i18n::MessageFormatter::FormatWithNamedArgs(
             l10n_util::GetStringUTF16(
-                IDS_IOS_MANUAL_FALLBACK_PLUS_ADDRESS_CELL_INDEX),
+                IDS_PLUS_ADDRESS_MANUAL_FALLBACK_CELL_INDEX_IOS),
             "count", plusAddressesCount, "position", i + 1));
-
-    ManualFillPlusAddress* manualFillPlusAddress =
-        [self createManualFillPlusAddress:base::SysUTF8ToNSString(
-                                              plusProfiles[i].plus_address)];
     ManualFillPlusAddressItem* item = [[ManualFillPlusAddressItem alloc]
-                initWithPlusAddress:manualFillPlusAddress
-                    contentInjector:_contentInjector
-                        menuActions:@[]
-        cellIndexAccessibilityLabel:cellIndexAccessibilityLabel];
+                initWithPlusAddress:plusAddresses[i]
+                    contentInjector:self
+                        menuActions:menuActions
+        cellIndexAccessibilityLabel:cellIndexAccessibilityLabel
+          isAddressManualFallbackUI:_isAddressManualFallbackUI];
     [items addObject:item];
   }
 
-  [self.consumer presentPlusAddresses:items];
+  return items;
+}
+
+// Creates and returns an array of `ManualFillPlusAddress` from `plusProfiles`.
+- (NSArray<ManualFillPlusAddress*>*)
+    createManualFillPlusAddressesFromPlusProfiles:
+        (base::span<const plus_addresses::PlusProfile>)plusProfiles {
+  int plusAddressesCount = (int)plusProfiles.size();
+  NSMutableArray* items =
+      [[NSMutableArray alloc] initWithCapacity:plusAddressesCount];
+
+  for (int i = 0; i < plusAddressesCount; i++) {
+    ManualFillPlusAddress* manualFillPlusAddress =
+        [self createManualFillPlusAddressFromPlusProfile:plusProfiles[i]];
+    [items addObject:manualFillPlusAddress];
+  }
+
+  return items;
 }
 
 // Creates `ManualFillPlusAddress` from `plusAddress`.
-- (ManualFillPlusAddress*)createManualFillPlusAddress:(NSString*)plusAddress {
-  std::string host = _URL.host();
-  std::string site_name =
-      net::registry_controlled_domains::GetDomainAndRegistry(
-          host, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  NSString* siteName = base::SysUTF8ToNSString(site_name);
-  NSString* plusAddressHost = base::SysUTF8ToNSString(host);
-  if ([plusAddressHost hasPrefix:@"www."] && plusAddressHost.length > 4) {
-    plusAddressHost = [plusAddressHost substringFromIndex:4];
-  }
+- (ManualFillPlusAddress*)createManualFillPlusAddressFromPlusProfile:
+    (const plus_addresses::PlusProfile&)plusProfile {
+  GURL URL(plusProfile.facet.canonical_spec());
+
+  std::string host = URL.GetHost();
+  std::string siteName = net::registry_controlled_domains::GetDomainAndRegistry(
+      host, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+
+  NSString* plusAddressSiteName =
+      base::SysUTF8ToNSString(siteName.size() > 0 ? siteName : host);
+  NSString* plusAddressHost = l10n_util::GetNSStringF(
+      IDS_PLUS_ADDRESS_MANUAL_FALLBACK_SUGGESTION_SUBLABEL_PREFIX_TEXT_IOS,
+      GetOriginForDisplay(plusProfile));
   return [[ManualFillPlusAddress alloc]
-      initWithPlusAddress:plusAddress
-                 siteName:siteName.length ? siteName : plusAddressHost
+      initWithPlusAddress:base::SysUTF8ToNSString(*plusProfile.plus_address)
+                 siteName:plusAddressSiteName
                      host:plusAddressHost
-                      URL:_URL];
+                      URL:URL];
+}
+
+// Records the select option user action and opens the list of plus addresses.
+- (void)openAllPlusAddressList {
+  if (_isAddressManualFallbackUI) {
+    base::RecordAction(base::UserMetricsAction("PlusAddresses."
+                                               "SelectPlusAddressOptionOnAddres"
+                                               "sManualFallbackSelected"));
+  } else {
+    base::RecordAction(base::UserMetricsAction("PlusAddresses."
+                                               "SelectPlusAddressOptionOnPasswo"
+                                               "rdManualFallbackSelected"));
+  }
+  [self.navigator openAllPlusAddressList:_isAddressManualFallbackUI];
+}
+
+// Sends actions to the consumer.
+- (void)postActionsToConsumer:(BOOL)hasPlusAddresses {
+  if (!self.consumer) {
+    return;
+  }
+
+  NSMutableArray<ManualFillActionItem*>* actions =
+      [[NSMutableArray alloc] init];
+
+  __weak __typeof(self) weakSelf = self;
+
+  // Offer manage action if there are any plus addresses for the domain.
+  if (hasPlusAddresses) {
+    NSString* managePlusAddressesTitle = l10n_util::GetNSString(
+        IDS_PLUS_ADDRESS_MANUAL_FALLBACK_MANAGE_ACTION_TEXT_IOS);
+    ManualFillActionItem* managePlusAddressItem = [[ManualFillActionItem alloc]
+        initWithTitle:managePlusAddressesTitle
+               action:^{
+                 ManualFillPlusAddressMediator* strongSelf = weakSelf;
+                 if (!strongSelf) {
+                   return;
+                 }
+                 if (strongSelf->_isAddressManualFallbackUI) {
+                   base::RecordAction(base::UserMetricsAction(
+                       "PlusAddresses."
+                       "ManageOptionOnAddressManualFallbackSelected"));
+                 } else {
+                   base::RecordAction(base::UserMetricsAction(
+                       "PlusAddresses."
+                       "ManageOptionOnPasswordManualFallbackSelected"));
+                 }
+
+                 [weakSelf.navigator openManagePlusAddress];
+               }];
+    managePlusAddressItem.accessibilityIdentifier =
+        manual_fill::kManagePlusAddressAccessibilityIdentifier;
+    [actions addObject:managePlusAddressItem];
+  }
+
+  // Offer the user to select the plus address manually if plus address filling
+  // is supported for the last committed origin and the user has at least 1 plus
+  // address.
+  if (_plusAddressService->IsPlusAddressFillingEnabled(_mainFrameOrigin) &&
+      !_plusAddressService->GetPlusProfiles().empty()) {
+    NSString* selectPlusAddressesTitle = l10n_util::GetNSString(
+        IDS_PLUS_ADDRESS_MANUAL_FALLBACK_SELECT_ACTION_TEXT_IOS);
+    ManualFillActionItem* selectPlusAddressItem = [[ManualFillActionItem alloc]
+        initWithTitle:selectPlusAddressesTitle
+               action:^{
+                 [weakSelf openAllPlusAddressList];
+               }];
+    selectPlusAddressItem.accessibilityIdentifier =
+        manual_fill::kSelectPlusAddressAccessibilityIdentifier;
+    [actions addObject:selectPlusAddressItem];
+  }
+
+  if (actions.count > 0) {
+    [self.consumer presentPlusAddressActions:actions];
+  }
+}
+
+// Creates a "Manage" UIAction to be used with a UIMenu. Tapping on it, would
+// open the manage view for the plus address.
+- (UIAction*)createManageMenuAction {
+  ActionFactory* actionFactory = [[ActionFactory alloc]
+      initWithScenario:
+          kMenuScenarioHistogramAutofillManualFallbackPlusAddressEntry];
+
+  __weak __typeof(self) weakSelf = self;
+  UIAction* manageAction = [actionFactory actionToManageLinkInNewTabWithBlock:^{
+    [weakSelf.navigator openManagePlusAddress];
+  }];
+
+  return manageAction;
 }
 
 @end

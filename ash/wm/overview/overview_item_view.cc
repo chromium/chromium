@@ -30,6 +30,7 @@
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -88,6 +89,8 @@ OverviewItemView::OverviewItemView(
   // Focusable so we can add accelerators to this view.
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
 
+  close_button_->SetPaintToLayer();
+  close_button_->layer()->SetFillsBoundsOpaquely(false);
   views::InkDrop::Get(close_button_)
       ->SetMode(views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
   close_button_->GetViewAccessibility().SetName(
@@ -107,30 +110,21 @@ OverviewItemView::OverviewItemView(
   // TODO: This doesn't allow |this| to be navigated by ChromeVox, find a way
   // to allow |this| as well as the title and close button.
   GetViewAccessibility().SetRole(ax::mojom::Role::kGenericContainer);
+  UpdateAccessibleDescription();
 }
 
 OverviewItemView::~OverviewItemView() = default;
 
 void OverviewItemView::SetCloseButtonVisible(bool visible) {
-  if (!close_button_->layer()) {
-    close_button_->SetPaintToLayer();
-    close_button_->layer()->SetFillsBoundsOpaquely(false);
-  }
-
+  CHECK(close_button_->layer());
   AnimateLayerOpacity(close_button_->layer(), visible);
   close_button_->SetEnabled(visible);
 }
 
 void OverviewItemView::HideCloseInstantlyAndThenShowItSlowly() {
   CHECK(close_button_);
-
-  if (!close_button_->layer()) {
-    close_button_->SetPaintToLayer();
-    close_button_->layer()->SetFillsBoundsOpaquely(false);
-  }
-
   ui::Layer* layer = close_button_->layer();
-
+  CHECK(layer);
   views::AnimationBuilder()
       .SetPreemptionStrategy(ui::LayerAnimator::REPLACE_QUEUED_ANIMATIONS)
       .Once()
@@ -267,24 +261,6 @@ bool OverviewItemView::CanAcceptEvent(const ui::Event& event) {
   return accept_events && views::View::CanAcceptEvent(event);
 }
 
-void OverviewItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  WindowMiniView::GetAccessibleNodeData(node_data);
-
-  // TODO: This doesn't allow |this| to be navigated by ChromeVox, find a way
-  // to allow |this| as well as the title and close button.
-  const bool is_group_item = [&]() {
-    auto* snap_group_controller = SnapGroupController::Get();
-    return snap_group_controller &&
-           snap_group_controller->GetSnapGroupForGivenWindow(source_window());
-  }();
-  node_data->AddStringAttribute(
-      ax::mojom::StringAttribute::kDescription,
-      l10n_util::GetStringUTF8(
-          is_group_item
-              ? IDS_ASH_SNAP_GROUP_WINDOW_CYCLE_DESCRIPTION
-              : IDS_ASH_OVERVIEW_CLOSABLE_HIGHLIGHT_ITEM_A11Y_EXTRA_TIP));
-}
-
 bool OverviewItemView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   if (accelerator.IsCtrlDown() && accelerator.key_code() == ui::VKEY_W) {
     if (overview_item_) {
@@ -305,6 +281,23 @@ bool OverviewItemView::AcceleratorPressed(const ui::Accelerator& accelerator) {
 
 bool OverviewItemView::CanHandleAccelerators() const {
   return HasFocus() && WindowMiniView::CanHandleAccelerators();
+}
+
+void OverviewItemView::OnWindowDestroying(aura::Window* window) {
+  WindowMiniView::OnWindowDestroying(window);
+  UpdateAccessibleDescription();
+}
+
+void OverviewItemView::UpdateAccessibleDescription() {
+  const bool is_group_item = [&]() {
+    auto* snap_group_controller = SnapGroupController::Get();
+    return snap_group_controller &&
+           snap_group_controller->GetSnapGroupForGivenWindow(source_window());
+  }();
+
+  GetViewAccessibility().SetDescription(l10n_util::GetStringUTF8(
+      is_group_item ? IDS_ASH_SNAP_GROUP_WINDOW_CYCLE_DESCRIPTION
+                    : IDS_ASH_OVERVIEW_CLOSABLE_HIGHLIGHT_ITEM_A11Y_EXTRA_TIP));
 }
 
 BEGIN_METADATA(OverviewItemView)

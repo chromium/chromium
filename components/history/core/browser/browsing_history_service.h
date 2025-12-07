@@ -15,7 +15,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -70,6 +70,7 @@ class BrowsingHistoryService : public HistoryServiceObserver,
                  const GURL& remote_icon_url_for_uma,
                  int visit_count,
                  int typed_count,
+                 bool is_actor_visit,
                  std::optional<std::string> app_id);
     HistoryEntry();
     HistoryEntry(const HistoryEntry& other);
@@ -94,8 +95,7 @@ class BrowsingHistoryService : public HistoryServiceObserver,
     std::string client_id;
 
     // Timestamps of all local or remote visits the same URL on the same day.
-    // TODO(skym): These should probably be converted to base::Time.
-    std::set<int64_t> all_timestamps;
+    std::set<base::Time> all_timestamps;
 
     // If true, this entry is a search result.
     bool is_search_result;
@@ -115,6 +115,9 @@ class BrowsingHistoryService : public HistoryServiceObserver,
     // Number of times this URL has been manually entered in the URL bar.
     int typed_count = 0;
 
+    // Whether the visit is actor-initiated.
+    bool is_actor_visit = false;
+
     // ID of the app this entry was generated for. Set to a non-null value
     // on Android only.
     std::optional<std::string> app_id;
@@ -133,12 +136,6 @@ class BrowsingHistoryService : public HistoryServiceObserver,
 
     // Whether the last call to Web History timed out.
     bool sync_timed_out = false;
-
-    // Whether the last call to Web History returned successfully with a message
-    // body. During continuation queries we are not guaranteed to always make a
-    // call to WebHistory, and this value could reflect the state from previous
-    // queries.
-    bool has_synced_results = false;
   };
 
   BrowsingHistoryService(BrowsingHistoryDriver* driver,
@@ -273,9 +270,6 @@ class BrowsingHistoryService : public HistoryServiceObserver,
   // Tracker for delete requests to the history service.
   base::CancelableTaskTracker delete_task_tracker_;
 
-  // The list of URLs that are in the process of being deleted.
-  std::set<GURL> urls_to_be_deleted_;
-
   // Timer used to implement a timeout on a Web History response.
   std::unique_ptr<base::OneShotTimer> web_history_timer_;
 
@@ -297,11 +291,11 @@ class BrowsingHistoryService : public HistoryServiceObserver,
   // Whether there are other forms of browsing history on the history server.
   bool has_other_forms_of_browsing_history_ = false;
 
-  raw_ptr<BrowsingHistoryDriver> driver_;
+  raw_ptr<BrowsingHistoryDriver, DanglingUntriaged> driver_;
 
-  raw_ptr<HistoryService> local_history_;
+  raw_ptr<HistoryService, DanglingUntriaged> local_history_;
 
-  raw_ptr<syncer::SyncService> sync_service_;
+  raw_ptr<syncer::SyncService, DanglingUntriaged> sync_service_;
 
   // The clock used to vend times.
   std::unique_ptr<base::Clock> clock_;

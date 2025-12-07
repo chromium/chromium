@@ -9,10 +9,10 @@
 #include <algorithm>
 #include <optional>
 
-#include "ash/constants/ash_features.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
@@ -57,10 +57,9 @@ UpgradeDetectorChromeos::UpgradeDetectorChromeos(
     : UpgradeDetector(clock, tick_clock),
       upgrade_notification_timer_(tick_clock),
       initialized_(false),
-      toggled_update_flag_(false),
       update_in_progress_(false) {}
 
-UpgradeDetectorChromeos::~UpgradeDetectorChromeos() {}
+UpgradeDetectorChromeos::~UpgradeDetectorChromeos() = default;
 
 // static
 void UpgradeDetectorChromeos::RegisterPrefs(PrefRegistrySimple* registry) {
@@ -145,6 +144,12 @@ void UpgradeDetectorChromeos::OnUpdate(const BuildState* build_state) {
     // Only start the timer if the build state is valid.
     set_upgrade_detected_time(clock()->Now());
     CalculateDeadlines();
+    if (ShouldFetchLastServedDate()) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&UpgradeDetectorChromeos::FetchLastServedDate,
+                         weak_factory_.GetWeakPtr()));
+    }
   }
 
   update_in_progress_ = false;
@@ -173,8 +178,12 @@ base::TimeDelta UpgradeDetectorChromeos::GetRelaunchHeadsUpPeriod() {
 
 void UpgradeDetectorChromeos::CalculateDeadlines() {
   base::TimeDelta notification_period = GetRelaunchNotificationPeriod();
-  if (notification_period.is_zero())
+  if (notification_period.is_zero()) {
     notification_period = kDefaultHighThreshold;
+  }
+  if (ShouldRelaunchFast()) {
+    notification_period = std::min(notification_period, base::Hours(2));
+  }
 
   const RelaunchWindow relaunch_window =
       GetRelaunchWindowPolicyValue().value_or(GetDefaultRelaunchWindow());
@@ -224,25 +233,18 @@ void UpgradeDetectorChromeos::UpdateStatusChanged(
     if (!upgrade_detected_time().is_null())
       NotifyOnUpgrade();
   }
-  // TODO(b/219067273): Cleanup toggling from ash into platform code.
-  if (!toggled_update_flag_) {
-    // Only send feature flag status one time.
-    toggled_update_flag_ = true;
-    UpdateEngineClient::Get()->ToggleFeature(
-        update_engine::kFeatureRepeatedUpdates,
-        base::FeatureList::IsEnabled(ash::features::kAllowRepeatedUpdates));
-  }
 }
 
 void UpgradeDetectorChromeos::OnUpdateOverCellularOneTimePermissionGranted() {
   NotifyUpdateOverCellularOneTimePermissionGranted();
 }
 
-void UpgradeDetectorChromeos::OnMonitoredPrefsChanged() {
+void UpgradeDetectorChromeos::RecomputeSchedule() {
   // Check the current stage and potentially notify observers now if a change to
   // the observed policies results in changes to the thresholds.
-  if (upgrade_detected_time().is_null())
+  if (upgrade_detected_time().is_null()) {
     return;
+  }
   const base::Time old_elevated_deadline = elevated_deadline_;
   const base::Time old_high_deadline = high_deadline_;
   CalculateDeadlines();

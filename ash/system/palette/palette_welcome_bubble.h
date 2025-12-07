@@ -8,7 +8,9 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event_handler.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget_observer.h"
 
 class PrefRegistrySimple;
@@ -20,6 +22,20 @@ class View;
 
 namespace ash {
 class PaletteTray;
+
+// Controlled by PaletteWelcomeBubble and anchored to a PaletteTray.
+class PaletteWelcomeBubbleView : public views::BubbleDialogDelegateView {
+  METADATA_HEADER(PaletteWelcomeBubbleView, views::BubbleDialogDelegateView)
+
+ public:
+  PaletteWelcomeBubbleView(views::View* anchor,
+                           views::BubbleBorder::Arrow arrow);
+  PaletteWelcomeBubbleView(const PaletteWelcomeBubbleView&) = delete;
+  PaletteWelcomeBubbleView& operator=(const PaletteWelcomeBubbleView&) = delete;
+  ~PaletteWelcomeBubbleView() override = default;
+
+  void Init() override;
+};
 
 // The PaletteWelcomeBubble handles displaying a warm welcome bubble letting
 // users know about the PaletteTray the first time a stylus is ejected, or if an
@@ -59,7 +75,6 @@ class ASH_EXPORT PaletteWelcomeBubble : public SessionObserver,
 
  private:
   friend class PaletteWelcomeBubbleTest;
-  class WelcomeBubbleView;
 
   // Shows or hides the welcome bubble.
   void Show();
@@ -78,7 +93,7 @@ class ASH_EXPORT PaletteWelcomeBubble : public SessionObserver,
 
   raw_ptr<PrefService> active_user_pref_service_ = nullptr;  // Not owned.
 
-  raw_ptr<WelcomeBubbleView> bubble_view_ = nullptr;
+  raw_ptr<PaletteWelcomeBubbleView> bubble_view_ = nullptr;
 };
 
 }  // namespace ash

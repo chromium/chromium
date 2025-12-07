@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/mojom/annotation/annotation.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/annotation/annotation.mojom-blink.h"
 #include "third_party/blink/renderer/core/annotation/annotation_agent_impl.h"
 #include "third_party/blink/renderer/core/annotation/annotation_selector.h"
@@ -31,7 +32,7 @@ class MockAnnotationSelector : public AnnotationSelector {
 
   String Serialize() const override { return ""; }
 
-  void FindRange(Document& document,
+  void FindRange(Range& search_range,
                  SearchType type,
                  FinishedCallback finished_cb) override {
     RangeInFlatTree* range;
@@ -41,12 +42,16 @@ class MockAnnotationSelector : public AnnotationSelector {
         range = nullptr;
       } else {
         range = mock_result_;
-        DCHECK_EQ(mock_result_->StartPosition().GetDocument(), &document);
+
+        DCHECK_EQ(mock_result_->StartPosition().GetDocument(),
+                  &search_range.OwnerDocument());
       }
     } else {
       // Just select the whole document.
-      auto range_start = PositionInFlatTree::FirstPositionInNode(document);
-      auto range_end = PositionInFlatTree::LastPositionInNode(document);
+      auto range_start =
+          PositionInFlatTree::FirstPositionInNode(search_range.OwnerDocument());
+      auto range_end =
+          PositionInFlatTree::LastPositionInNode(search_range.OwnerDocument());
       range = MakeGarbageCollected<RangeInFlatTree>(range_start, range_end);
     }
 
@@ -65,8 +70,8 @@ class MockAnnotationSelector : public AnnotationSelector {
 class ScopedUseMockAnnotationSelector {
  public:
   ScopedUseMockAnnotationSelector() {
-    AnnotationSelector::SetGeneratorForTesting(WTF::BindRepeating(
-        &ScopedUseMockAnnotationSelector::Generate, WTF::Unretained(this)));
+    AnnotationSelector::SetGeneratorForTesting(BindRepeating(
+        &ScopedUseMockAnnotationSelector::Generate, Unretained(this)));
   }
 
   ~ScopedUseMockAnnotationSelector() {
@@ -83,8 +88,10 @@ class MockAnnotationAgentHost : public mojom::blink::AnnotationAgentHost {
  public:
   MockAnnotationAgentHost() : receiver_(this) {}
   ~MockAnnotationAgentHost() override = default;
-  void DidFinishAttachment(const gfx::Rect& rect) override {
+  void DidFinishAttachment(const gfx::Rect& rect,
+                           mojom::blink::AttachmentResult result) override {
     did_finish_attachment_rect_ = rect;
+    attachment_result_ = result;
   }
 
   void BindToAgent(AnnotationAgentImpl& agent) {
@@ -93,8 +100,8 @@ class MockAnnotationAgentHost : public mojom::blink::AnnotationAgentHost {
     auto pending_remote = receiver_.BindNewPipeAndPassRemote();
     DCHECK(receiver_.is_bound());
     receiver_.set_disconnect_handler(
-        WTF::BindRepeating([](bool* did_disconnect) { *did_disconnect = true; },
-                           WTF::Unretained(&did_disconnect_)));
+        BindRepeating([](bool* did_disconnect) { *did_disconnect = true; },
+                      Unretained(&did_disconnect_)));
 
     agent.Bind(std::move(pending_remote), agent_.BindNewPipeAndPassReceiver());
   }
@@ -113,8 +120,8 @@ class MockAnnotationAgentHost : public mojom::blink::AnnotationAgentHost {
   RemoteHostReceiverAgentPair BindForCreateAgent() {
     auto pending_remote = receiver_.BindNewPipeAndPassRemote();
     receiver_.set_disconnect_handler(
-        WTF::BindRepeating([](bool* did_disconnect) { *did_disconnect = true; },
-                           WTF::Unretained(&did_disconnect_)));
+        BindRepeating([](bool* did_disconnect) { *did_disconnect = true; },
+                      Unretained(&did_disconnect_)));
 
     return std::make_pair(std::move(pending_remote),
                           agent_.BindNewPipeAndPassReceiver());
@@ -131,6 +138,7 @@ class MockAnnotationAgentHost : public mojom::blink::AnnotationAgentHost {
   mojo::Receiver<mojom::blink::AnnotationAgentHost> receiver_;
   mojo::Remote<mojom::blink::AnnotationAgent> agent_;
   std::optional<gfx::Rect> did_finish_attachment_rect_;
+  std::optional<mojom::blink::AttachmentResult> attachment_result_;
   bool did_disconnect_ = false;
 };
 

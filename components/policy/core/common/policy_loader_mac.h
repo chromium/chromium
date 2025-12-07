@@ -11,7 +11,7 @@
 #include "base/apple/scoped_cftyperef.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/async_policy_loader.h"
 #include "components/policy/core/common/policy_namespace.h"

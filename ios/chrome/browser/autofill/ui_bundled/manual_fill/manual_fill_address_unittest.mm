@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_address.h"
 
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
 using ManualFillAddressiOSTest = PlatformTest;
@@ -38,20 +39,19 @@ TEST_F(ManualFillAddressiOSTest, Creation) {
                                   phoneNumber:phoneNumber
                                  emailAddress:emailAddress];
   EXPECT_TRUE(address);
-  EXPECT_TRUE([GUID isEqualToString:address.GUID]);
-  EXPECT_TRUE([firstName isEqualToString:address.firstName]);
-  EXPECT_TRUE(
-      [middleNameOrInitial isEqualToString:address.middleNameOrInitial]);
-  EXPECT_TRUE([lastName isEqualToString:address.lastName]);
-  EXPECT_TRUE([company isEqualToString:address.company]);
-  EXPECT_TRUE([line1 isEqualToString:address.line1]);
-  EXPECT_TRUE([line2 isEqualToString:address.line2]);
-  EXPECT_TRUE([zip isEqualToString:address.zip]);
-  EXPECT_TRUE([city isEqualToString:address.city]);
-  EXPECT_TRUE([state isEqualToString:address.state]);
-  EXPECT_TRUE([country isEqualToString:address.country]);
-  EXPECT_TRUE([phoneNumber isEqualToString:address.phoneNumber]);
-  EXPECT_TRUE([emailAddress isEqualToString:address.emailAddress]);
+  EXPECT_NSEQ(GUID, address.GUID);
+  EXPECT_NSEQ(firstName, address.firstName);
+  EXPECT_NSEQ(middleNameOrInitial, address.middleNameOrInitial);
+  EXPECT_NSEQ(lastName, address.lastName);
+  EXPECT_NSEQ(company, address.company);
+  EXPECT_NSEQ(line1, address.line1);
+  EXPECT_NSEQ(line2, address.line2);
+  EXPECT_NSEQ(zip, address.zip);
+  EXPECT_NSEQ(city, address.city);
+  EXPECT_NSEQ(state, address.state);
+  EXPECT_NSEQ(country, address.country);
+  EXPECT_NSEQ(phoneNumber, address.phoneNumber);
+  EXPECT_NSEQ(emailAddress, address.emailAddress);
 }
 
 // Test equality between addresses (lexicographically).

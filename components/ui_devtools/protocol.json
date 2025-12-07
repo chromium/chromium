@@ -121,6 +121,62 @@
                         }
                     ],
                     "description": "Dispatch a keyboard event for a given node. Only used for UI Devtools."
+                },
+                {
+                    "name": "getNodeBoundsInScreen",
+                    "parameters": [
+                        {
+                            "name": "nodeId",
+                            "$ref": "NodeId",
+                            "description": "Id of the node."
+                        }
+                    ],
+                    "returns": [
+                        {
+                            "name": "boundsInScreen",
+                            "$ref": "Rect",
+                            "description": "Node bounds in screen coordinates"
+                        }
+                    ],
+                    "description": "Returns bounds in screen coordinates for the given node. Used for internal automated testing purposes",
+                    "experimental": true
+                },
+                {
+                    "name": "getDeviceScaleFactor",
+                    "parameters": [
+                        {
+                            "name": "nodeId",
+                            "$ref": "NodeId",
+                            "description": "Id of the node to get the device scale factor (Should be a window node)."
+                        }
+                    ],
+                    "returns": [
+                        {
+                            "name": "deviceScaleFactor",
+                            "type": "number",
+                            "description": "Device scale factor for the specified window"
+                        }
+                    ],
+                    "description": "Returns the device scale factor for the specified window. Used for converting between logical and physical coordinates.",
+                    "experimental": true
+                },
+                {
+                    "name": "getOuterHTML",
+                    "parameters": [
+                        {
+                            "name": "nodeId",
+                            "$ref": "NodeId",
+                            "description": "Id of the UI node to get markup for."
+                        }
+                    ],
+                    "returns": [
+                        {
+                            "name": "outerHTML",
+                            "type": "string",
+                            "description": "Serialized outer markup for the UIElement, including its children."
+                        }
+                    ],
+                    "description": "Returns the serialized markup representation of a UIElement node, matching the structure shown in the UI DevTools panel."
                 }
             ],
             "description": "This domain exposes DOM read/write operations. Each DOM Node is represented with its mirror object\nthat has an `id`. This `id` can be used to get additional information on the Node, resolve it into\nthe JavaScript object wrapper, etc. It is important that client receives DOM events only for the\nnodes that are known to the client. Backend keeps track of the nodes that were sent to the client\nand never sends the same node twice. It is client's responsibility to collect information about\nthe nodes that were sent to the client.<p>Note that `iframe` owner elements will return\ncorresponding document elements as their child nodes.</p>",
@@ -364,8 +420,35 @@
                           "type": "boolean",
                           "description": "Whether it's a character event or a key stroke event."
                       }
-                  ]
-              }
+                    ]
+                },
+                {
+                    "id": "Rect",
+                    "description": "Rectangle defined by x, y coordinates and width, height dimensions.",
+                    "type": "object",
+                    "properties": [
+                        {
+                            "name": "x",
+                            "type": "number",
+                            "description": "X coordinate."
+                        },
+                        {
+                            "name": "y",
+                            "type": "number",
+                            "description": "Y coordinate."
+                        },
+                        {
+                            "name": "width",
+                            "type": "number",
+                            "description": "Width dimension."
+                        },
+                        {
+                            "name": "height",
+                            "type": "number",
+                            "description": "Height dimension."
+                        }
+                    ]
+                }
             ]
         },
         {
@@ -887,18 +970,6 @@
                 {
                     "name": "enable",
                     "description": "Enables domain notifications."
-                },
-                {
-                    "name": "reload",
-                    "parameters": [
-                        {
-                            "name":"ignoreCache",
-                            "type": "boolean",
-                             "optional": true,
-                            "description": "If true, browser cache is ignored (as if the user pressed Shift+refresh)."
-                        }
-                    ],
-                    "description": "Called on Ctrl+R with |ignoreCache|=false, which is used to toggle debug bounds rectangles and Ctrl+Shift+R with |ignoreCache|=true, which is used to toggle bubble locking."
                 },
                 {
                     "name": "getResourceTree",

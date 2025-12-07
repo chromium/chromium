@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -19,7 +20,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/fake_device_trust_connector_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/mock_device_trust_service.h"
 #include "chrome/browser/enterprise/signals/user_permission_service_factory.h"
-#include "chrome/browser/ui/device_signals_consent/mock_consent_requester.h"
+#include "chrome/browser/ui/views/device_signals_consent/consent_dialog_coordinator.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/device_signals/core/browser/mock_user_permission_service.h"
 #include "components/device_signals/core/browser/pref_names.h"
@@ -32,6 +33,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/mock_navigation_throttle_registry.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "net/http/http_response_headers.h"
@@ -41,7 +43,6 @@
 
 using content::NavigationThrottle;
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Return;
 
 namespace enterprise_connectors {
@@ -114,6 +115,18 @@ scoped_refptr<net::HttpResponseHeaders> GetRedirectedHeader() {
 
 }  // namespace
 
+// Simple mock for ConsentRequester used in tests.
+class MockConsentRequester : public ConsentRequester {
+ public:
+  MockConsentRequester() = default;
+  ~MockConsentRequester() override = default;
+
+  MockConsentRequester(const MockConsentRequester&) = delete;
+  MockConsentRequester& operator=(const MockConsentRequester&) = delete;
+
+  MOCK_METHOD(void, RequestConsent, (RequestConsentCallback), (override));
+};
+
 class DeviceTrustNavigationThrottleTest : public testing::Test {
  protected:
   DeviceTrustNavigationThrottleTest() {
@@ -126,8 +139,8 @@ class DeviceTrustNavigationThrottleTest : public testing::Test {
         std::make_unique<FakeDeviceTrustConnectorService>(test_prefs_);
 
     ON_CALL(mock_device_trust_service_, Watches(_))
-        .WillByDefault(Invoke(
-            [this](const GURL& url) { return fake_connector_->Watches(url); }));
+        .WillByDefault(
+            [this](const GURL& url) { return fake_connector_->Watches(url); });
   }
 
   void CreateAndSetMockConsentRequester() {
@@ -163,11 +176,10 @@ class DeviceTrustNavigationThrottleTest : public testing::Test {
   }
 
   std::unique_ptr<DeviceTrustNavigationThrottle> CreateThrottle(
-      content::NavigationHandle* navigation_handle) {
+      content::MockNavigationThrottleRegistry& registry) {
     CreateAndSetMockConsentRequester();
     auto test_throttle = std::make_unique<DeviceTrustNavigationThrottle>(
-        &mock_device_trust_service_, &mock_user_permission_service_,
-        navigation_handle);
+        &mock_device_trust_service_, &mock_user_permission_service_, registry);
     return test_throttle;
   }
 
@@ -183,7 +195,10 @@ class DeviceTrustNavigationThrottleTest : public testing::Test {
                                               main_frame());
     SetShouldCollectConsent(/*should_collect=*/false);
     test_handle.set_response_headers(GetHeaderChallenge(kChallenge));
-    auto throttle = CreateThrottle(&test_handle);
+    content::MockNavigationThrottleRegistry test_registry(
+        &test_handle,
+        content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+    auto throttle = CreateThrottle(test_registry);
     base::RunLoop run_loop;
     throttle->set_resume_callback_for_testing(run_loop.QuitClosure());
     EXPECT_CALL(mock_device_trust_service_,
@@ -251,7 +266,10 @@ TEST_F(DeviceTrustNavigationThrottleTest, ExpectHeaderDeviceTrustOnRequest) {
   content::MockNavigationHandle test_handle(GURL(kTrustedUrl), main_frame());
   EXPECT_CALL(test_handle,
               SetRequestHeader("X-Device-Trust", "VerifiedAccess"));
-  auto throttle = CreateThrottle(&test_handle);
+  content::MockNavigationThrottleRegistry test_registry(
+      &test_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  auto throttle = CreateThrottle(test_registry);
   EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest().action());
   histogram_tester_.ExpectUniqueSample(
       kFunnelHistogramName, DTAttestationFunnelStep::kAttestationFlowStarted,
@@ -271,7 +289,10 @@ TEST_F(DeviceTrustNavigationThrottleTest,
 
   EXPECT_CALL(test_handle,
               SetRequestHeader("X-Device-Trust", "VerifiedAccess"));
-  auto throttle = CreateThrottle(&test_handle);
+  content::MockNavigationThrottleRegistry test_registry(
+      &test_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  auto throttle = CreateThrottle(test_registry);
   EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest().action());
   histogram_tester_.ExpectUniqueSample(
       kFunnelHistogramName, DTAttestationFunnelStep::kAttestationFlowStarted,
@@ -285,8 +306,11 @@ TEST_F(DeviceTrustNavigationThrottleTest, NullDeviceTrustService) {
   content::MockNavigationHandle test_handle(GURL(kTrustedUrl), main_frame());
   EXPECT_CALL(test_handle, SetRequestHeader("X-Device-Trust", "VerifiedAccess"))
       .Times(0);
+  content::MockNavigationThrottleRegistry test_registry(
+      &test_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
   auto throttle = std::make_unique<DeviceTrustNavigationThrottle>(
-      nullptr, &mock_user_permission_service_, &test_handle);
+      nullptr, &mock_user_permission_service_, test_registry);
   EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest().action());
   histogram_tester_.ExpectTotalCount(kFunnelHistogramName, 0);
 }
@@ -297,8 +321,11 @@ TEST_F(DeviceTrustNavigationThrottleTest, NullUserPermissionService) {
   content::MockNavigationHandle test_handle(GURL(kTrustedUrl), main_frame());
   EXPECT_CALL(test_handle, SetRequestHeader("X-Device-Trust", "VerifiedAccess"))
       .Times(0);
+  content::MockNavigationThrottleRegistry test_registry(
+      &test_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
   auto throttle = std::make_unique<DeviceTrustNavigationThrottle>(
-      &mock_device_trust_service_, nullptr, &test_handle);
+      &mock_device_trust_service_, nullptr, test_registry);
   EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest().action());
   histogram_tester_.ExpectTotalCount(kFunnelHistogramName, 0);
 }
@@ -309,7 +336,10 @@ TEST_F(DeviceTrustNavigationThrottleTest, DTCPolicyDisabled) {
   content::MockNavigationHandle test_handle(GURL(kTrustedUrl), main_frame());
   EXPECT_CALL(test_handle, SetRequestHeader("X-Device-Trust", "VerifiedAccess"))
       .Times(0);
-  auto throttle = CreateThrottle(&test_handle);
+  content::MockNavigationThrottleRegistry test_registry(
+      &test_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  auto throttle = CreateThrottle(test_registry);
 
   EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest().action());
   histogram_tester_.ExpectTotalCount(kFunnelHistogramName, 0);
@@ -324,7 +354,10 @@ TEST_F(DeviceTrustNavigationThrottleTest,
   content::MockNavigationHandle test_handle(GURL(kTrustedUrl), main_frame());
   EXPECT_CALL(test_handle, SetRequestHeader("X-Device-Trust", "VerifiedAccess"))
       .Times(0);
-  auto throttle = CreateThrottle(&test_handle);
+  content::MockNavigationThrottleRegistry test_registry(
+      &test_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  auto throttle = CreateThrottle(test_registry);
 
   EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest().action());
   histogram_tester_.ExpectTotalCount(kFunnelHistogramName, 0);
@@ -339,7 +372,10 @@ TEST_F(DeviceTrustNavigationThrottleTest, NoHeaderDeviceTrustOnRequest) {
                                             main_frame());
   EXPECT_CALL(test_handle, SetRequestHeader("X-Device-Trust", "VerifiedAccess"))
       .Times(0);
-  auto throttle = CreateThrottle(&test_handle);
+  content::MockNavigationThrottleRegistry test_registry(
+      &test_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  auto throttle = CreateThrottle(test_registry);
   EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest().action());
   histogram_tester_.ExpectTotalCount(kFunnelHistogramName, 0);
 }
@@ -352,7 +388,10 @@ TEST_F(DeviceTrustNavigationThrottleTest, InvalidURL) {
   content::MockNavigationHandle test_handle(invalid_url, main_frame());
   EXPECT_CALL(test_handle, SetRequestHeader("X-Device-Trust", "VerifiedAccess"))
       .Times(0);
-  auto throttle = CreateThrottle(&test_handle);
+  content::MockNavigationThrottleRegistry test_registry(
+      &test_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  auto throttle = CreateThrottle(test_registry);
   EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest().action());
   histogram_tester_.ExpectTotalCount(kFunnelHistogramName, 0);
 }
@@ -365,7 +404,10 @@ TEST_F(DeviceTrustNavigationThrottleTest, BuildChallengeResponseFromHeader) {
   content::MockNavigationHandle test_handle(GURL(kTrustedUrl), main_frame());
 
   test_handle.set_response_headers(GetHeaderChallenge(kChallenge));
-  auto throttle = CreateThrottle(&test_handle);
+  content::MockNavigationThrottleRegistry test_registry(
+      &test_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  auto throttle = CreateThrottle(test_registry);
 
   EXPECT_CALL(test_handle, RemoveRequestHeader("X-Device-Trust"));
   EXPECT_CALL(mock_device_trust_service_,
@@ -432,7 +474,10 @@ TEST_F(DeviceTrustNavigationThrottleTest, TestChallengeNotFromIdp) {
   test_handle.set_response_headers(
       base::MakeRefCounted<net::HttpResponseHeaders>(
           net::HttpUtil::AssembleRawHeaders(raw_response_headers)));
-  auto throttle = CreateThrottle(&test_handle);
+  content::MockNavigationThrottleRegistry test_registry(
+      &test_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  auto throttle = CreateThrottle(test_registry);
 
   EXPECT_CALL(test_handle, RemoveRequestHeader(_)).Times(0);
   EXPECT_CALL(mock_device_trust_service_, BuildChallengeResponse(_, _, _))
@@ -450,8 +495,11 @@ TEST_F(DeviceTrustNavigationThrottleTest, TestTimeout) {
 
   content::MockNavigationHandle test_handle(GURL(kTrustedUrl), main_frame());
   test_handle.set_response_headers(GetHeaderChallenge(kChallenge));
+  content::MockNavigationThrottleRegistry test_registry(
+      &test_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
 
-  auto throttle = CreateThrottle(&test_handle);
+  auto throttle = CreateThrottle(test_registry);
 
   base::RunLoop run_loop;
   throttle->set_resume_callback_for_testing(run_loop.QuitClosure());
@@ -507,7 +555,10 @@ TEST_F(DeviceTrustNavigationThrottleTest,
   SetHasUserGesture(&test_handle);
   EXPECT_CALL(test_handle,
               SetRequestHeader("X-Device-Trust", "VerifiedAccess"));
-  VerifyConsentDialogFlowSuccessful(CreateThrottle(&test_handle));
+  content::MockNavigationThrottleRegistry test_registry(
+      &test_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  VerifyConsentDialogFlowSuccessful(CreateThrottle(test_registry));
 }
 
 TEST_F(DeviceTrustNavigationThrottleTest, BlockedByConsentDialog) {
@@ -518,7 +569,10 @@ TEST_F(DeviceTrustNavigationThrottleTest, BlockedByConsentDialog) {
   SetHasUserGesture(&test_handle);
   EXPECT_CALL(test_handle, SetRequestHeader(_, _)).Times(0);
   EXPECT_CALL(test_handle, RemoveRequestHeader(_)).Times(0);
-  auto throttle = CreateThrottle(&test_handle);
+  content::MockNavigationThrottleRegistry test_registry(
+      &test_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  auto throttle = CreateThrottle(test_registry);
   EXPECT_CALL(*mock_consent_requester_, RequestConsent(_))
       .Times(1)
       .WillOnce(Return());
@@ -537,9 +591,12 @@ TEST_F(DeviceTrustNavigationThrottleTest,
   EXPECT_CALL(test_handle, SetRequestHeader("X-Device-Trust", "VerifiedAccess"))
       .Times(0);
   CreateAndSetMockConsentRequester();
+  content::MockNavigationThrottleRegistry test_registry(
+      &test_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
   VerifyConsentDialogFlowSuccessful(
       std::make_unique<DeviceTrustNavigationThrottle>(
-          nullptr, &mock_user_permission_service_, &test_handle));
+          nullptr, &mock_user_permission_service_, test_registry));
 }
 
 TEST_F(DeviceTrustNavigationThrottleTest,
@@ -554,7 +611,10 @@ TEST_F(DeviceTrustNavigationThrottleTest,
   EXPECT_CALL(test_handle, SetRequestHeader("X-Device-Trust", "VerifiedAccess"))
       .Times(0);
 
-  VerifyConsentDialogFlowSuccessful(CreateThrottle(&test_handle));
+  content::MockNavigationThrottleRegistry test_registry(
+      &test_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  VerifyConsentDialogFlowSuccessful(CreateThrottle(test_registry));
 }
 
 TEST_F(DeviceTrustNavigationThrottleTest, NavigationNoUserGesture) {
@@ -567,7 +627,10 @@ TEST_F(DeviceTrustNavigationThrottleTest, NavigationNoUserGesture) {
               SetRequestHeader("X-Device-Trust", "VerifiedAccess"));
   SetHasUserGesture(&test_handle, /*has_user_gesture=*/false);
 
-  auto throttle = CreateThrottle(&test_handle);
+  content::MockNavigationThrottleRegistry test_registry(
+      &test_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  auto throttle = CreateThrottle(test_registry);
   EXPECT_CALL(*mock_consent_requester_, RequestConsent(_)).Times(0);
   EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest().action());
 }
@@ -583,7 +646,10 @@ TEST_F(DeviceTrustNavigationThrottleTest, NavigationNotInMainFrame) {
               SetRequestHeader("X-Device-Trust", "VerifiedAccess"));
   SetHasUserGesture(&test_handle);
 
-  auto throttle = CreateThrottle(&test_handle);
+  content::MockNavigationThrottleRegistry test_registry(
+      &test_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  auto throttle = CreateThrottle(test_registry);
   EXPECT_CALL(*mock_consent_requester_, RequestConsent(_)).Times(0);
   EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest().action());
 }

@@ -1,7 +1,7 @@
 import base64
 
 import pytest
-from webdriver.error import NoSuchAlertException
+from webdriver.error import NoSuchAlertException, NoSuchWindowException
 
 from tests.support.image import png_dimensions, ImageDifference
 from tests.support.sync import Poll
@@ -43,10 +43,10 @@ def closed_frame(session, url):
     session.url = url("/webdriver/tests/support/html/frames.html")
 
     subframe = session.find.css("#sub-frame", all=False)
-    session.switch_frame(subframe)
+    session.switch_to_frame(subframe)
 
     deleteframe = session.find.css("#delete-frame", all=False)
-    session.switch_frame(deleteframe)
+    session.switch_to_frame(deleteframe)
 
     button = session.find.css("#remove-parent", all=False)
     button.click()
@@ -127,12 +127,12 @@ def create_dialog(session):
             }, 0);
             """, args=(dialog_type, text))
 
-        wait = Poll(
-            session,
-            timeout=15,
-            ignored_exceptions=NoSuchAlertException,
-            message="No user prompt with text '{}' detected".format(text))
-        wait.until(lambda s: s.alert.text == text)
+        def check_alert_text(s):
+            assert s.alert.text == text, f"No user prompt with text '{text}' detected"
+
+        wait = Poll(session, timeout=15,
+                    ignored_exceptions=NoSuchAlertException)
+        wait.until(check_alert_text)
 
     return create_dialog
 
@@ -156,6 +156,26 @@ def create_frame(session):
 
 
 @pytest.fixture
+def http_new_tab(session):
+    """Create a new tab to run the test isolated."""
+    original_handle = session.window_handle
+    new_handle = session.new_window(type_hint="tab")
+
+    session.window_handle = new_handle
+
+    yield
+
+    try:
+        # Make sure to close the correct tab that we opened before.
+        session.window_handle = new_handle
+        session.window.close()
+    except NoSuchWindowException:
+        pass
+
+    session.window_handle = original_handle
+
+
+@pytest.fixture
 def stale_element(current_session, get_test_page):
     """Create a stale element reference
 
@@ -168,7 +188,7 @@ def stale_element(current_session, get_test_page):
 
         if as_frame:
             frame = current_session.find.css("iframe", all=False)
-            current_session.switch_frame(frame)
+            current_session.switch_to_frame(frame)
 
         element = current_session.find.css(css_value, all=False)
         shadow_root = element.shadow_root if want_shadow_root else None

@@ -12,11 +12,13 @@
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/quota_exceeded_error.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_request.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_request_loader.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_value.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_value_wrapping.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -28,27 +30,43 @@ class IDBDatabaseGetAllResultSinkImpl
       mojo::PendingAssociatedReceiver<mojom::blink::IDBDatabaseGetAllResultSink>
           receiver,
       IDBRequestQueueItem* owner,
-      bool key_only)
+      mojom::blink::IDBGetAllResultType get_all_result_type)
       : receiver_(this, std::move(receiver)),
         owner_(owner),
-        key_only_(key_only) {}
+        get_all_result_type_(get_all_result_type) {}
 
   ~IDBDatabaseGetAllResultSinkImpl() override = default;
 
   bool IsWaiting() const { return active_; }
 
-  void ReceiveValues(WTF::Vector<mojom::blink::IDBReturnValuePtr> values,
-                     bool done) override {
-    DCHECK(active_);
-    DCHECK(!key_only_);
-    DCHECK_LE(values.size(),
-              static_cast<wtf_size_t>(mojom::blink::kIDBGetAllChunkSize));
-    if (values_.empty()) {
-      values_ = std::move(values);
-    } else {
-      values_.reserve(values_.size() + values.size());
-      for (auto& value : values) {
-        values_.emplace_back(std::move(value));
+  void ReceiveResults(Vector<mojom::blink::IDBRecordPtr> results,
+                      bool done) override {
+    CHECK(active_);
+    CHECK_LE(results.size(),
+             static_cast<wtf_size_t>(mojom::blink::kIDBGetAllChunkSize));
+
+    // Increase `Vector` capacities to make room for new `results`.
+    records_.primary_keys.reserve(records_.primary_keys.size() +
+                                  results.size());
+    records_.values.reserve(records_.values.size() + results.size());
+    records_.index_keys.reserve(records_.index_keys.size() + results.size());
+
+    // Add each record's primary key, value, and index key to `records_`.
+    // Depending on `get_all_result_type_`, some of these may remain empty.
+    for (auto& result : results) {
+      if (result->primary_key) {
+        records_.primary_keys.emplace_back(std::move(*result->primary_key));
+      }
+
+      if (result->return_value) {
+        std::unique_ptr<IDBValue> result_value =
+            IDBValue::ConvertReturnValue(result->return_value);
+        result_value->SetIsolate(owner_->request_->GetIsolate());
+        records_.values.emplace_back(std::move(result_value));
+      }
+
+      if (result->index_key) {
+        records_.index_keys.emplace_back(std::move(*result->index_key));
       }
     }
 
@@ -57,17 +75,9 @@ class IDBDatabaseGetAllResultSinkImpl
     }
 
     active_ = false;
-    owner_->response_type_ = IDBRequestQueueItem::kValueArray;
+    owner_->response_type_ = GetResponseType();
+    owner_->records_ = std::move(records_);
 
-    Vector<std::unique_ptr<IDBValue>> idb_values;
-    idb_values.ReserveInitialCapacity(values_.size());
-    for (const mojom::blink::IDBReturnValuePtr& value : values_) {
-      std::unique_ptr<IDBValue> idb_value = IDBValue::ConvertReturnValue(value);
-      idb_value->SetIsolate(owner_->request_->GetIsolate());
-      idb_values.emplace_back(std::move(idb_value));
-    }
-
-    owner_->values_ = std::move(idb_values);
     if (owner_->MaybeCreateLoader()) {
       if (owner_->started_loading_) {
         // Try again now that the values exist.
@@ -78,47 +88,50 @@ class IDBDatabaseGetAllResultSinkImpl
     }
   }
 
-  void ReceiveKeys(WTF::Vector<std::unique_ptr<IDBKey>> keys,
-                   bool done) override {
-    DCHECK(active_);
-    DCHECK(key_only_);
-    DCHECK_LE(keys.size(),
-              static_cast<wtf_size_t>(mojom::blink::kIDBGetAllChunkSize));
-    if (keys_.empty()) {
-      keys_ = std::move(keys);
-    } else {
-      keys_.reserve(keys_.size() + keys.size());
-      for (auto& key : keys) {
-        keys_.emplace_back(std::move(key));
-      }
-    }
-
-    if (!done) {
-      return;
-    }
-
-    active_ = false;
-    owner_->response_type_ = IDBRequestQueueItem::kKey;
-    owner_->key_ = IDBKey::CreateArray(std::move(keys_));
-    owner_->OnResultReady();
-  }
-
   void OnError(mojom::blink::IDBErrorPtr error) override {
     DCHECK(active_);
+    DOMException* dom_exception;
+    if (error->error_code == mojom::blink::IDBException::kQuotaError &&
+        RuntimeEnabledFeatures::QuotaExceededErrorUpdateEnabled()) {
+      dom_exception =
+          MakeGarbageCollected<QuotaExceededError>(error->error_message);
+    } else {
+      dom_exception = MakeGarbageCollected<DOMException>(
+          static_cast<DOMExceptionCode>(error->error_code),
+          error->error_message);
+    }
     owner_->response_type_ = IDBRequestQueueItem::kError;
-    owner_->error_ = MakeGarbageCollected<DOMException>(
-        static_cast<DOMExceptionCode>(error->error_code), error->error_message);
+    owner_->error_ = dom_exception;
     active_ = false;
     owner_->OnResultReady();
   }
 
  private:
+  IDBRequestQueueItem::ResponseType GetResponseType() const {
+    switch (get_all_result_type_) {
+      case mojom::blink::IDBGetAllResultType::Keys:
+        return IDBRequestQueueItem::kKeyArray;
+
+      case mojom::blink::IDBGetAllResultType::Values:
+        return IDBRequestQueueItem::kValueArray;
+
+      case mojom::blink::IDBGetAllResultType::Records:
+        return IDBRequestQueueItem::kRecordArray;
+    }
+    NOTREACHED();
+  }
+
   mojo::AssociatedReceiver<mojom::blink::IDBDatabaseGetAllResultSink> receiver_;
   raw_ptr<IDBRequestQueueItem> owner_;
-  bool key_only_;
+  mojom::blink::IDBGetAllResultType get_all_result_type_;
 
-  WTF::Vector<mojom::blink::IDBReturnValuePtr> values_;
-  WTF::Vector<std::unique_ptr<IDBKey>> keys_;
+  // Accumulates values in batches for `getAllKeys()`, `getAll()`, and
+  // `getAllRecords()` until the remote finishes sending the results.
+  // `get_all_result_type_` determines what `records_` contains. For example,
+  // when `get_all_result_type_` is `Keys`, `records_` will contain
+  // `primary_keys` only with `values` and `index_keys` remaining empty.
+  IDBRecordArray records_;
+
   // True while results are still being received.
   bool active_ = true;
 };
@@ -178,21 +191,7 @@ IDBRequestQueueItem::IDBRequestQueueItem(IDBRequest* request,
   DCHECK(on_result_ready_);
   DCHECK_EQ(request->queue_item_, nullptr);
   request_->queue_item_ = this;
-  values_.push_back(std::move(value));
-  MaybeCreateLoader();
-}
-
-IDBRequestQueueItem::IDBRequestQueueItem(
-    IDBRequest* request,
-    Vector<std::unique_ptr<IDBValue>> values,
-    base::OnceClosure on_result_ready)
-    : request_(request),
-      values_(std::move(values)),
-      on_result_ready_(std::move(on_result_ready)),
-      response_type_(kValueArray) {
-  DCHECK(on_result_ready_);
-  DCHECK_EQ(request->queue_item_, nullptr);
-  request_->queue_item_ = this;
+  records_.values.push_back(std::move(value));
   MaybeCreateLoader();
 }
 
@@ -209,7 +208,7 @@ IDBRequestQueueItem::IDBRequestQueueItem(IDBRequest* request,
   DCHECK(on_result_ready_);
   DCHECK_EQ(request->queue_item_, nullptr);
   request_->queue_item_ = this;
-  values_.push_back(std::move(value));
+  records_.values.push_back(std::move(value));
   MaybeCreateLoader();
 }
 
@@ -229,13 +228,13 @@ IDBRequestQueueItem::IDBRequestQueueItem(
   DCHECK(on_result_ready_);
   DCHECK_EQ(request->queue_item_, nullptr);
   request_->queue_item_ = this;
-  values_.push_back(std::move(value));
+  records_.values.push_back(std::move(value));
   MaybeCreateLoader();
 }
 
 IDBRequestQueueItem::IDBRequestQueueItem(
     IDBRequest* request,
-    bool key_only,
+    mojom::blink::IDBGetAllResultType get_all_result_type,
     mojo::PendingAssociatedReceiver<mojom::blink::IDBDatabaseGetAllResultSink>
         receiver,
     base::OnceClosure on_result_ready)
@@ -243,7 +242,7 @@ IDBRequestQueueItem::IDBRequestQueueItem(
   DCHECK_EQ(request->queue_item_, nullptr);
   request_->queue_item_ = this;
   get_all_sink_ = std::make_unique<IDBDatabaseGetAllResultSinkImpl>(
-      std::move(receiver), this, key_only);
+      std::move(receiver), this, get_all_result_type);
 }
 
 IDBRequestQueueItem::~IDBRequestQueueItem() {
@@ -262,11 +261,11 @@ void IDBRequestQueueItem::OnResultReady() {
 }
 
 bool IDBRequestQueueItem::MaybeCreateLoader() {
-  if (IDBValueUnwrapper::IsWrapped(values_)) {
+  if (IDBValueUnwrapper::IsWrapped(records_.values)) {
     loader_ = MakeGarbageCollected<IDBRequestLoader>(
-        std::move(values_), request_->GetExecutionContext(),
-        WTF::BindOnce(&IDBRequestQueueItem::OnLoadComplete,
-                      weak_factory_.GetWeakPtr()));
+        std::move(records_.values), request_->GetExecutionContext(),
+        blink::BindOnce(&IDBRequestQueueItem::OnLoadComplete,
+                        weak_factory_.GetWeakPtr()));
     return true;
   }
   return false;
@@ -275,7 +274,8 @@ bool IDBRequestQueueItem::MaybeCreateLoader() {
 void IDBRequestQueueItem::OnLoadComplete(
     Vector<std::unique_ptr<IDBValue>>&& values,
     DOMException* error) {
-  values_ = std::move(values);
+  records_.values = std::move(values);
+
   if (error) {
     DCHECK(!ready_);
     DCHECK(response_type_ != kError);
@@ -284,7 +284,7 @@ void IDBRequestQueueItem::OnLoadComplete(
     error_ = error;
 
     // This is not necessary, but releases non-trivial amounts of memory early.
-    values_.clear();
+    records_.clear();
   }
 
   OnResultReady();
@@ -331,7 +331,9 @@ void IDBRequestQueueItem::CancelLoading() {
   }
 
   if (loader_) {
-    values_ = loader_->Cancel();
+    // Take `loading_values` from `loader_` to destroy the values before garbage
+    // collection destroys `loader_`.
+    Vector<std::unique_ptr<IDBValue>> loading_values = loader_->Cancel();
     loader_.Clear();
 
     // IDBRequestLoader::Cancel() should not call any of the SendResult
@@ -341,7 +343,8 @@ void IDBRequestQueueItem::CancelLoading() {
 
   // Mark this item as ready so the transaction's result queue can be drained.
   response_type_ = kCanceled;
-  values_.clear();
+  records_.clear();
+
   OnResultReady();
 }
 
@@ -355,31 +358,29 @@ void IDBRequestQueueItem::SendResult() {
   request_->queue_item_ = nullptr;
 
   switch (response_type_) {
-    case kCanceled:
-      DCHECK_EQ(values_.size(), 0U);
+    case kCanceled: {
       break;
-
-    case kCursorKeyPrimaryKeyValue:
-      DCHECK_EQ(values_.size(), 1U);
+    }
+    case kCursorKeyPrimaryKeyValue: {
+      CHECK_EQ(records_.values.size(), 1U);
       request_->SendResultCursor(std::move(pending_cursor_), std::move(key_),
                                  std::move(primary_key_),
-                                 std::move(values_.front()));
+                                 std::move(records_.values.front()));
       break;
-
-    case kError:
+    }
+    case kError: {
       DCHECK(error_);
       request_->SendError(error_);
       break;
-
-    case kKeyPrimaryKeyValue:
-      DCHECK_EQ(values_.size(), 1U);
-      request_->SendResultAdvanceCursor(
-          std::move(key_), std::move(primary_key_), std::move(values_.front()));
+    }
+    case kKeyPrimaryKeyValue: {
+      CHECK_EQ(records_.values.size(), 1U);
+      request_->SendResultAdvanceCursor(std::move(key_),
+                                        std::move(primary_key_),
+                                        std::move(records_.values.front()));
       break;
-
-    case kKey:
-      DCHECK_EQ(values_.size(), 0U);
-
+    }
+    case kKey: {
       if (key_ && key_->IsValid()) {
         request_->SendResult(MakeGarbageCollected<IDBAny>(std::move(key_)));
       } else {
@@ -388,26 +389,50 @@ void IDBRequestQueueItem::SendResult() {
       }
 
       break;
+    }
+    case kKeyArray: {
+      CHECK(records_.values.empty());
+      CHECK(records_.index_keys.empty());
 
-    case kNumber:
-      DCHECK_EQ(values_.size(), 0U);
+      std::unique_ptr<IDBKey> key_array =
+          IDBKey::CreateArray(std::move(records_.primary_keys));
+      request_->SendResult(MakeGarbageCollected<IDBAny>(std::move(key_array)));
+      break;
+    }
+    case kNumber: {
       request_->SendResult(MakeGarbageCollected<IDBAny>(int64_value_));
       break;
+    }
+    case kRecordArray: {
+      // Each result for `getAllRecords()` must provide a primary key, value and
+      // maybe an index key.  `IDBIndex::getAllRecords()` must provide an index
+      // key, but `index_keys` must remain empty
+      // for`IDBObjectStore::getAllRecords()`.
+      CHECK_EQ(records_.primary_keys.size(), records_.values.size());
+      CHECK(records_.index_keys.empty() ||
+            records_.index_keys.size() == records_.primary_keys.size());
 
-    case kValue:
-      DCHECK_EQ(values_.size(), 1U);
-      request_->SendResultValue(std::move(values_.front()));
+      request_->SendResult(MakeGarbageCollected<IDBAny>(std::move(records_)));
       break;
-
-    case kValueArray:
-      request_->SendResult(MakeGarbageCollected<IDBAny>(std::move(values_)));
+    }
+    case kValue: {
+      CHECK_EQ(records_.values.size(), 1U);
+      request_->SendResultValue(std::move(records_.values.front()));
       break;
+    }
+    case kValueArray: {
+      CHECK(records_.primary_keys.empty());
+      CHECK(records_.index_keys.empty());
 
-    case kVoid:
-      DCHECK_EQ(values_.size(), 0U);
+      request_->SendResult(
+          MakeGarbageCollected<IDBAny>(std::move(records_.values)));
+      break;
+    }
+    case kVoid: {
       request_->SendResult(
           MakeGarbageCollected<IDBAny>(IDBAny::kUndefinedType));
       break;
+    }
   }
 }
 

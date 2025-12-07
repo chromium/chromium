@@ -73,28 +73,28 @@ TEST(SelectorQueryTest, NotMatchingPseudoElement) {
       Document::CreateForTest(execution_context.GetExecutionContext());
   auto* html = MakeGarbageCollected<HTMLHtmlElement>(*document);
   document->AppendChild(html);
-  document->documentElement()->setInnerHTML(
+  document->documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<body><style>span::before { content: 'X' }</style><span></span></body>");
 
   HeapVector<CSSSelector> arena;
   base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
       MakeGarbageCollected<CSSParserContext>(
           *document, NullURL(), true /* origin_clean */, Referrer()),
-      CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
-      /*is_within_scope=*/false, nullptr, "span::before", arena);
+      CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr, nullptr,
+      "span::before", arena);
   CSSSelectorList* selector_list =
       CSSSelectorList::AdoptSelectorVector(selector_vector);
-  std::unique_ptr<SelectorQuery> query = SelectorQuery::Adopt(selector_list);
+  SelectorQuery* query = MakeGarbageCollected<SelectorQuery>(selector_list);
   Element* elm = query->QueryFirst(*document);
   EXPECT_EQ(nullptr, elm);
 
   selector_vector = CSSParser::ParseSelector(
       MakeGarbageCollected<CSSParserContext>(
           *document, NullURL(), true /* origin_clean */, Referrer()),
-      CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
-      /*is_within_scope=*/false, nullptr, "span", arena);
+      CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr, nullptr,
+      "span", arena);
   selector_list = CSSSelectorList::AdoptSelectorVector(selector_vector);
-  query = SelectorQuery::Adopt(selector_list);
+  query = MakeGarbageCollected<SelectorQuery>(selector_list);
   elm = query->QueryFirst(*document);
   EXPECT_NE(nullptr, elm);
 }
@@ -106,8 +106,8 @@ TEST(SelectorQueryTest, LastOfTypeNotFinishedParsing) {
       HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
   auto* html = MakeGarbageCollected<HTMLHtmlElement>(*document);
   document->AppendChild(html);
-  document->documentElement()->setInnerHTML(
-      "<body><p></p><p id=last></p></body>", ASSERT_NO_EXCEPTION);
+  document->documentElement()->SetInnerHTMLWithoutTrustedTypes(
+      "<body><p></p><p id=last></p></body>");
 
   document->body()->BeginParsingChildren();
 
@@ -115,11 +115,11 @@ TEST(SelectorQueryTest, LastOfTypeNotFinishedParsing) {
   base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
       MakeGarbageCollected<CSSParserContext>(
           *document, NullURL(), true /* origin_clean */, Referrer()),
-      CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
-      /*is_within_scope=*/false, nullptr, "p:last-of-type", arena);
+      CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr, nullptr,
+      "p:last-of-type", arena);
   CSSSelectorList* selector_list =
       CSSSelectorList::AdoptSelectorVector(selector_vector);
-  std::unique_ptr<SelectorQuery> query = SelectorQuery::Adopt(selector_list);
+  SelectorQuery* query = MakeGarbageCollected<SelectorQuery>(selector_list);
   Element* elm = query->QueryFirst(*document);
   ASSERT_TRUE(elm);
   EXPECT_EQ("last", elm->IdForStyleResolution());
@@ -152,6 +152,9 @@ TEST(SelectorQueryTest, StandardsModeFastPaths) {
       </body>
     </html>
   )HTML");
+
+  // NOTE: If StringHasher changes and we're unlucky,
+  // the values for .two and .B may need updating.
   static const struct QueryTest kTestCases[] = {
       // Id in right most selector fast path.
       {"#A", false, 1, {1, 1, 0, 0, 0, 0, 0}},
@@ -171,17 +174,17 @@ TEST(SelectorQueryTest, StandardsModeFastPaths) {
       {"span", true, 9, {14, 0, 0, 14, 0, 0, 0}},
 
       // Single selector class fast path.
-      {".two", false, 1, {6, 0, 6, 0, 0, 0, 0}},
-      {".two", true, 4, {14, 0, 14, 0, 0, 0, 0}},
+      {".two", false, 1, {5, 0, 5, 0, 0, 0, 0}},
+      {".two", true, 4, {13, 0, 13, 0, 0, 0, 0}},
 
       // Class in the right most selector fast path.
-      {"body .two", false, 1, {6, 0, 6, 0, 0, 0, 0}},
-      {"div .two", false, 1, {12, 0, 12, 0, 0, 0, 0}},
+      {"body .two", false, 1, {5, 0, 5, 0, 0, 0, 0}},
+      {"div .two", false, 1, {11, 0, 11, 0, 0, 0, 0}},
 
       // Classes in the right most selector for querySelectorAll use a fast
       // path.
-      {"body .two", true, 4, {14, 0, 14, 0, 0, 0, 0}},
-      {"div .two", true, 2, {14, 0, 14, 0, 0, 0, 0}},
+      {"body .two", true, 4, {13, 0, 13, 0, 0, 0, 0}},
+      {"div .two", true, 2, {13, 0, 13, 0, 0, 0, 0}},
 
       // TODO: We could use the fast class path to find the elements inside
       // the id scope instead of the fast scan.
@@ -261,17 +264,20 @@ TEST(SelectorQueryTest, FastPathScoped) {
       scope->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   // Make the inside the shadow root be identical to that of the outer document.
   shadowRoot.appendChild(document->documentElement()->cloneNode(/*deep*/ true));
+
+  // NOTE: If StringHasher changes and we're unlucky,
+  // the values for .c and .child may need updating.
   static const struct QueryTest kTestCases[] = {
       // Id in the right most selector.
       {"#first", false, 0, {0, 0, 0, 0, 0, 0, 0}},
 
       {"#B", false, 1, {1, 1, 0, 0, 0, 0, 0}},
       {"#multiple", false, 1, {1, 1, 0, 0, 0, 0, 0}},
-      {"#multiple.c", false, 1, {2, 2, 0, 0, 0, 0, 0}},
+      {"#multiple.c", false, 1, {1, 1, 0, 0, 0, 0, 0}},
 
       // Class in the right most selector.
       {".child", false, 1, {1, 0, 1, 0, 0, 0, 0}},
-      {".child", true, 4, {7, 0, 7, 0, 0, 0, 0}},
+      {".child", true, 4, {4, 0, 4, 0, 0, 0, 0}},
 
       // If an ancestor has the class name we fast scan all the descendants of
       // the scope.
@@ -317,6 +323,9 @@ TEST(SelectorQueryTest, QuirksModeSlowPath) {
       </body>
     </html>
   )HTML");
+
+  // NOTE: If StringHasher changes and we're unlucky,
+  // the values for .two may need updating.
   static const struct QueryTest kTestCases[] = {
       // Quirks mode can't use the id fast path due to being case-insensitive.
       {"#one", false, 1, {5, 0, 0, 0, 5, 0, 0}},
@@ -330,12 +339,12 @@ TEST(SelectorQueryTest, QuirksModeSlowPath) {
       // Quirks can use the class and tag name fast paths though.
       {"span", false, 1, {4, 0, 0, 4, 0, 0, 0}},
       {"span", true, 3, {6, 0, 0, 6, 0, 0, 0}},
-      {".two", false, 1, {5, 0, 5, 0, 0, 0, 0}},
-      {".two", true, 2, {6, 0, 6, 0, 0, 0, 0}},
+      {".two", false, 1, {4, 0, 4, 0, 0, 0, 0}},
+      {".two", true, 2, {5, 0, 5, 0, 0, 0, 0}},
       {"body span", false, 1, {4, 0, 0, 0, 4, 0, 0}},
       {"body span", true, 3, {6, 0, 0, 0, 6, 0, 0}},
-      {"body .two", false, 1, {5, 0, 5, 0, 0, 0, 0}},
-      {"body .two", true, 2, {6, 0, 6, 0, 0, 0, 0}},
+      {"body .two", false, 1, {4, 0, 4, 0, 0, 0, 0}},
+      {"body .two", true, 2, {5, 0, 5, 0, 0, 0, 0}},
   };
   RunTests(*document, kTestCases);
 }
@@ -346,7 +355,7 @@ TEST(SelectorQueryTest, DisconnectedSubtree) {
   auto* document =
       HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
   Element* scope = document->CreateRawElement(html_names::kDivTag);
-  scope->setInnerHTML(R"HTML(
+  scope->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <section>
       <span id=first>
         <span id=A class=A></span>
@@ -356,13 +365,16 @@ TEST(SelectorQueryTest, DisconnectedSubtree) {
       </span>
     </section>
   )HTML");
+
+  // NOTE: If StringHasher changes and we're unlucky,
+  // the values for .child may need updating.
   static const struct QueryTest kTestCases[] = {
       {"#A", false, 1, {3, 0, 0, 0, 3, 0, 0}},
       {"#B", false, 1, {4, 0, 0, 0, 4, 0, 0}},
       {"#B", true, 1, {6, 0, 0, 0, 6, 0, 0}},
       {"#multiple", true, 2, {6, 0, 0, 0, 6, 0, 0}},
-      {".child", false, 1, {4, 0, 4, 0, 0, 0, 0}},
-      {".child", true, 2, {6, 0, 6, 0, 0, 0, 0}},
+      {".child", false, 1, {3, 0, 3, 0, 0, 0, 0}},
+      {".child", true, 2, {4, 0, 4, 0, 0, 0, 0}},
       {"#first span", false, 1, {3, 0, 0, 0, 3, 0, 0}},
       {"#first span", true, 4, {6, 0, 0, 0, 6, 0, 0}},
   };
@@ -378,7 +390,7 @@ TEST(SelectorQueryTest, DisconnectedTreeScope) {
   Element* host = document->CreateRawElement(html_names::kDivTag);
   ShadowRoot& shadowRoot =
       host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
-  shadowRoot.setInnerHTML(R"HTML(
+  shadowRoot.SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <section>
       <span id=first>
         <span id=A class=A></span>
@@ -388,13 +400,16 @@ TEST(SelectorQueryTest, DisconnectedTreeScope) {
       </span>
     </section>
   )HTML");
+
+  // NOTE: If StringHasher changes and we're unlucky,
+  // the values for .child may need updating.
   static const struct QueryTest kTestCases[] = {
       {"#A", false, 1, {1, 1, 0, 0, 0, 0, 0}},
       {"#B", false, 1, {1, 1, 0, 0, 0, 0, 0}},
       {"#B", true, 1, {1, 1, 0, 0, 0, 0, 0}},
       {"#multiple", true, 2, {2, 2, 0, 0, 0, 0, 0}},
-      {".child", false, 1, {4, 0, 4, 0, 0, 0, 0}},
-      {".child", true, 2, {6, 0, 6, 0, 0, 0, 0}},
+      {".child", false, 1, {3, 0, 3, 0, 0, 0, 0}},
+      {".child", true, 2, {4, 0, 4, 0, 0, 0, 0}},
       {"#first span", false, 1, {2, 1, 0, 0, 1, 0, 0}},
       {"#first span", true, 4, {5, 1, 0, 0, 4, 0, 0}},
   };

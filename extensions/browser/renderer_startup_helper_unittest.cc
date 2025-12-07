@@ -6,7 +6,6 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
@@ -18,6 +17,7 @@
 #include "extensions/browser/test_extensions_browser_client.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/mojom/renderer.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
@@ -29,11 +29,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/startup/browser_init_params.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace extensions {
 
@@ -120,9 +115,11 @@ class RendererStartupHelperInterceptor : public RendererStartupHelper,
 
   void SetDeveloperMode(bool current_developer_mode) override {}
 
+  void SetUserScriptsAllowed(const std::string& extension_id,
+                             bool allowed) override {}
+
   void SetSessionInfo(version_info::Channel channel,
-                      mojom::FeatureSessionType session,
-                      bool is_lock_screen_context) override {}
+                      mojom::FeatureSessionType session) override {}
   void SetSystemFont(const std::string& font_family,
                      const std::string& font_size) override {}
 
@@ -135,7 +132,7 @@ class RendererStartupHelperInterceptor : public RendererStartupHelper,
       std::vector<mojom::UserScriptWorldInfoPtr> info) override {}
 
   void ClearUserScriptWorldConfig(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       const std::optional<std::string>& world_id) override {}
 
   void ShouldSuspend(ShouldSuspendCallback callback) override {
@@ -426,25 +423,19 @@ TEST_F(RendererStartupHelperTest, LoadTheme) {
   scoped_refptr<const Extension> extension(CreateTheme("theme"));
   ASSERT_TRUE(extension->is_theme());
 
-  IPC::TestSink& sink = render_process_host_->sink();
-
   // Enable the theme. Verify it isn't loaded and activated in the renderer.
-  sink.ClearMessages();
   EXPECT_FALSE(IsExtensionLoaded(*extension));
   AddExtensionToRegistry(extension_);
   helper_->OnExtensionLoaded(*extension);
-  EXPECT_EQ(0u, sink.message_count());
   EXPECT_TRUE(IsExtensionLoaded(*extension));
   EXPECT_FALSE(
       IsExtensionLoadedInProcess(*extension, render_process_host_.get()));
 
   helper_->ActivateExtensionInProcess(*extension, render_process_host_.get());
-  EXPECT_EQ(0u, sink.message_count());
   EXPECT_FALSE(IsExtensionPendingActivationInProcess(
       *extension, render_process_host_.get()));
 
   helper_->OnExtensionUnloaded(*extension);
-  EXPECT_EQ(0u, sink.message_count());
   EXPECT_FALSE(IsExtensionLoaded(*extension));
 }
 
@@ -544,24 +535,11 @@ class RendererStartupHelperTestCaptivePortalPopupWindow
   RendererStartupHelperTestCaptivePortalPopupWindow() = default;
   ~RendererStartupHelperTestCaptivePortalPopupWindow() override = default;
   void SetUp() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    feature_list_.InitAndEnableFeature(
-        chromeos::features::kCaptivePortalPopupWindow);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-    crosapi::mojom::BrowserInitParamsPtr init_params =
-        chromeos::BrowserInitParams::GetForTests()->Clone();
-    init_params->is_captive_portal_popup_window_enabled = true;
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
     RendererStartupHelperTest::SetUp();
     static_cast<TestingPrefServiceSimple*>(pref_service())
         ->registry()
         ->RegisterBooleanPref(chromeos::prefs::kCaptivePortalSignin, false);
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that only incognito-enabled extensions are loaded in an incognito

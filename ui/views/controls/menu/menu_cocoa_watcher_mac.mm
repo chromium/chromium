@@ -69,6 +69,11 @@ MenuCocoaWatcherMac::MenuCocoaWatcherMac(base::OnceClosure callback)
                       return;
                     }
 
+                    if (ignore_window_key_notification_once_) {
+                      ignore_window_key_notification_once_ = false;
+                      return;
+                    }
+
                     ExecuteCallback();
                   }];
   objc_storage_->observer_token_app_change =
@@ -77,8 +82,9 @@ MenuCocoaWatcherMac::MenuCocoaWatcherMac(base::OnceClosure callback)
                       object:nil
                        queue:nil
                   usingBlock:^(NSNotification* notification) {
-                    if (ShouldIgnoreNotification(notification))
+                    if (ShouldIgnoreNotification(notification)) {
                       return;
+                    }
 
                     // Only destroy menus if the browser is losing focus, not if
                     // it's gaining focus. This is to ensure that we can invoke
@@ -111,6 +117,10 @@ void MenuCocoaWatcherMac::ExecuteCallback() {
       std::move(callback).Run();
     }
   });
+}
+
+void MenuCocoaWatcherMac::SetIgnoreWindowKeyNotificationOnce() {
+  ignore_window_key_notification_once_ = true;
 }
 
 }  // namespace views

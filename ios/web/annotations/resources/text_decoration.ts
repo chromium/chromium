@@ -6,29 +6,29 @@
  * @fileoverview Handles one node decoration on the web page.
  */
 
-import {HTMLElementWithSymbolIndex, NodeWithSymbolIndex, TextWithSymbolIndex} from '//ios/web/annotations/resources/text_dom_utils.js';
+import type {HTMLElementWithSymbolIndex, NodeWithSymbolIndex, TextWithSymbolIndex} from '//ios/web/annotations/resources/text_dom_utils.js';
 
 // Tags for on an `Element` part of an applied `TextDecoration`.
-const originalNodeDecorationId = Symbol('originalNodeDecorationId');
-const replacementNodeDecorationId = Symbol('replacementNodeDecorationId');
+export const originalNodeDecorationId = Symbol('originalNodeDecorationId');
+export const replacementNodeDecorationId = Symbol('replacementNodeDecorationId');
 
 // Tags for on a CHROME_ANNOTATION id.
-const annotationUniqueId = Symbol('annotationUniqueId');
+export const annotationUniqueId = Symbol('annotationUniqueId');
 // Tags for on a CHROME_ANNOTATION type.
-const annotationType = Symbol('annotationType');
+export const annotationType = Symbol('annotationType');
 // Tags for on a CHROME_ANNOTATION original full text.
-const annotationFullText = Symbol('annotationFullText');
+export const annotationFullText = Symbol('annotationFullText');
 // Tags for on a CHROME_ANNOTATION external data string.
-const annotationExternalData = Symbol('annotationExternalData');
+export const annotationExternalData = Symbol('annotationExternalData');
 
-type ReplacementWithSymbolIndex =
+export type ReplacementWithSymbolIndex =
     NodeWithSymbolIndex|HTMLElementWithSymbolIndex;
 
 // Creates a CHROME_ANNOTATION `HTMLElement` with `textContent` as text.
 // Attaches `id`, `type`, `data` and `fullText` to `annotationUniqueId`,
 // `annotationType`, `annotationExternalData` and `annotationFullText`,
 // respectively.
-function createChromeAnnotation(
+export function createChromeAnnotation(
     id: number, textContent: string, type: string, fullText: string,
     data: string): HTMLElementWithSymbolIndex {
   const element =
@@ -44,7 +44,7 @@ function createChromeAnnotation(
 }
 
 // Creates a <span>> with a single space. Attaches `id` and `type`.
-function createSpace(id: number, type: string): HTMLElementWithSymbolIndex {
+export function createSpace(id: number, type: string): HTMLElementWithSymbolIndex {
   const element = document.createElement('span') as HTMLElementWithSymbolIndex;
   element[annotationUniqueId] = id;
   element[annotationType] = type;
@@ -54,7 +54,7 @@ function createSpace(id: number, type: string): HTMLElementWithSymbolIndex {
 
 // Returns `true` if given `node` is either an original node or a replacement
 // node.
-function isDecorationNode(node: NodeWithSymbolIndex): boolean {
+export function isDecorationNode(node: NodeWithSymbolIndex): boolean {
   return !!node[originalNodeDecorationId] ||
       !!node[replacementNodeDecorationId];
 }
@@ -65,7 +65,7 @@ function isDecorationNode(node: NodeWithSymbolIndex): boolean {
 // address in it. Note that either `originalTextNode` or `replacements` are live
 // in the DOM at any time. If `apply` was called, it's `replacements` and nodes
 // are tagged with `originalNodeDecorationId` and `replacementNodeDecorationId`.
-class TextDecoration {
+export class TextDecoration {
   // An `originalTextNode` Node and the list of `Node`s that make up a similar
   // replacement. Note that `originalTextNode` is a text node, but replacements
   // can be any node type (in reality a CHROME_ANNOTATION or a text node).
@@ -191,18 +191,4 @@ class TextDecoration {
     }
     delete this.originalTextNode[originalNodeDecorationId];
   }
-}
-
-export {
-  ReplacementWithSymbolIndex,
-  originalNodeDecorationId,
-  replacementNodeDecorationId,
-  annotationUniqueId,
-  annotationType,
-  annotationFullText,
-  annotationExternalData,
-  createChromeAnnotation,
-  createSpace,
-  isDecorationNode,
-  TextDecoration,
 }

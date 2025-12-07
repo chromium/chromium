@@ -15,7 +15,7 @@ typedef PlatformTest URLOpenerParamsTest;
 
 // Simple test for initWithUIOpenURLContext:.
 // TODO(crbug.com/40166681): The test fails on device.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
 #define MAYBE_initWithUIOpenURLContext initWithUIOpenURLContext
 #else
 #define MAYBE_initWithUIOpenURLContext DISABLED_initWithUIOpenURLContext

@@ -6,13 +6,13 @@
 #define IOS_CHROME_TEST_EARL_GREY_CHROME_ACTIONS_H_
 
 #import <Foundation/Foundation.h>
-
 #import <UIKit/UIKit.h>
 
 #include <string>
 
 @class ElementSelector;
 @protocol GREYAction;
+typedef NS_ENUM(NSInteger, GREYDirection);
 
 namespace chrome_test_util {
 
@@ -54,6 +54,11 @@ id<GREYAction> TapWebElementWithId(const std::string& element_id);
 id<GREYAction> TapWebElementWithIdInFrame(const std::string& element_id,
                                           const int frame_index);
 
+// Action to long press on the center of an element. This is mostly to be used
+// when the element is occulted by something and so the grey_longPress action
+// would fail.
+id<GREYAction> LongPressOnHiddenElement();
+
 // Action to scroll to top of a UIScrollView.
 // On iOS 13 the settings menu appears as a card that can be dismissed with a
 // downward swipe, for this reason we need to swipe up programmatically to
@@ -66,8 +71,8 @@ id<GREYAction> ScrollToTop();
 id<GREYAction> TapAtPointPercentage(CGFloat xOriginStartPercentage,
                                     CGFloat yOriginStartPercentage);
 
-// Action to swipe a TableViewCell enough to display the "Delete" button and
-// not too much to have the cell being deleted right away.
+// Action to swipe a TableViewCell enough to display the "Delete" button and not
+// too much to have the cell being deleted right away.
 id<GREYAction> SwipeToShowDeleteButton();
 
 // Action to simulate the behaviour of swiping right using the 3-finger gesture
@@ -75,6 +80,19 @@ id<GREYAction> SwipeToShowDeleteButton();
 // simulate it, it is changing the content offset and triggering scroll view
 // delegate methods as there is no way to actually trigger the gesture.
 id<GREYAction> AccessibilitySwipeRight();
+
+// Swipes down and to the left or right depending on the given `direction`.
+// Use `kGREYDirectionDown` to indicate that the swipe should only be down and
+// not have a horizontal component.
+id<GREYAction> OverscrollSwipe(GREYDirection direction);
+
+// An action that notifies a `UITextView` that its content is about to change.
+//
+// The purpose of this custom action is to mitigate a shortcoming
+// of EarlGrey's `grey_replaceText`, that does not correctly invoke
+// `textView:shouldChangeTextInRange:replacementText:` before the text is
+// replaced.
+id<GREYAction> NotifyChangeTextInRange(NSString* text);
 
 }  // namespace chrome_test_util
 

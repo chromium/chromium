@@ -55,7 +55,7 @@ class SyncLoadContext::SignalHelper final {
   void SignalRedirectOrResponseComplete() {
     abort_watcher_.StopWatching();
     if (timeout_timer_)
-      timeout_timer_->AbandonAndStop();
+      timeout_timer_->Stop();
     redirect_or_response_event_->Signal();
   }
 
@@ -105,7 +105,7 @@ void SyncLoadContext::StartAsyncWithWaitableEvent(
     uint32_t loader_options,
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
         pending_url_loader_factory,
-    WebVector<std::unique_ptr<URLLoaderThrottle>> throttles,
+    std::vector<std::unique_ptr<URLLoaderThrottle>> throttles,
     SyncLoadResponse* response,
     SyncLoadContext** context_for_redirect,
     base::WaitableEvent* redirect_or_response_event,
@@ -315,13 +315,12 @@ void SyncLoadContext::OnBodyReadable(MojoResult,
     return;
   }
 
-  base::span<const char> chars = base::as_chars(buffer);
   if (!response_->data) {
-    response_->data = SharedBuffer::Create(chars.data(), chars.size());
+    response_->data = SharedBuffer::Create(buffer);
   } else {
-    response_->data->Append(chars.data(), chars.size());
+    response_->data->Append(buffer);
   }
-  body_handle_->EndReadData(chars.size());
+  body_handle_->EndReadData(buffer.size());
   body_watcher_.ArmOrNotify();
 }
 

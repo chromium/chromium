@@ -1,0 +1,66 @@
+<!--
+@WAIT-FOR:Ready
+@EVENTS-TREE-DUMP
+@AURALINUX-DENY:CHILDREN-CHANGED*
+@AURALINUX-DENY:PARENT-CHANGED*
+@UIA-WIN-DENY:*StructureChanged*
+@WIN-DENY:EVENT_OBJECT_LOCATIONCHANGE*
+@WIN-DENY:EVENT_OBJECT_REORDER*
+@WIN-DENY:IA2_EVENT_TEXT_INSERTED*
+@WIN-DENY:EVENT_OBJECT_SHOW*
+-->
+<!doctype html>
+<html>
+<head>
+    <title>Material Web Progress Events</title>
+    <script type="module">
+        import { injectImportMap, loadAndWaitForReady, setupEventTestRunner, waitForStable } from "../material-design/resources/utils.js";
+        injectImportMap();
+
+        const components = [
+            "md-linear-progress"
+        ];
+
+        setupEventTestRunner();
+        window.waitForStable = waitForStable;
+        loadAndWaitForReady(components, () => {
+            const statusDiv = document.getElementById("status");
+            const progress = document.createElement("md-linear-progress");
+            progress.id = "test-progress";
+            progress.setAttribute("aria-label", "Test Progress");
+            progress.value = 0.5; // Set initial value to avoid indeterminate animation
+            statusDiv.appendChild(progress);
+            statusDiv.setAttribute("aria-label", "Ready");
+        });
+    </script>
+</head>
+<body>
+    <div id="status" aria-label="Loading">
+    </div>
+</body>
+<script>
+    window.go_passes = [
+        async () => {
+            const progress = document.getElementById("test-progress");
+            if (progress) {
+                progress.value = 0;
+                await waitForStable(progress);
+            }
+        },
+        async () => {
+            const progress = document.getElementById("test-progress");
+            if (progress) {
+                progress.value = 0.7;
+                await waitForStable(progress);
+            }
+        },
+        async () => {
+            const progress = document.getElementById("test-progress");
+            if (progress) {
+                progress.value = 1.0;
+                await waitForStable(progress);
+            }
+        }
+    ];
+</script>
+</html>

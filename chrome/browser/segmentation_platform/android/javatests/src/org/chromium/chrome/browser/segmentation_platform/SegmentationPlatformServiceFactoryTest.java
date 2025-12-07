@@ -27,7 +27,9 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.segmentation_platform.ClassificationResult;
 import org.chromium.components.segmentation_platform.Constants;
 import org.chromium.components.segmentation_platform.InputContext;
@@ -45,15 +47,17 @@ import java.util.concurrent.TimeoutException;
 public class SegmentationPlatformServiceFactoryTest {
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
-    private CallbackHelper mCallbackHelper = new CallbackHelper();
+    private WebPageStation mPage;
+    private final CallbackHelper mCallbackHelper = new CallbackHelper();
 
     @Test
     @MediumTest
     public void testGetClassificationResult_withNullInputContext() throws TimeoutException {
         LibraryLoader.getInstance().ensureInitialized();
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
 
         ThreadUtils.runOnUiThreadBlocking(
                 new Runnable() {
@@ -68,7 +72,7 @@ public class SegmentationPlatformServiceFactoryTest {
                                 "intentional_user",
                                 options,
                                 null,
-                                new Callback<ClassificationResult>() {
+                                new Callback<>() {
                                     @Override
                                     public void onResult(ClassificationResult result) {
                                         Assert.assertEquals(
@@ -87,7 +91,7 @@ public class SegmentationPlatformServiceFactoryTest {
     @MediumTest
     public void testGetClassificationResult_withOnDemandModel() throws TimeoutException {
         LibraryLoader.getInstance().ensureInitialized();
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
 
         ThreadUtils.runOnUiThreadBlocking(
                 new Runnable() {
@@ -108,17 +112,25 @@ public class SegmentationPlatformServiceFactoryTest {
                         inputContext.addEntry(
                                 Constants.CONTEXTUAL_PAGE_ACTIONS_PRICE_INSIGHTS_INPUT,
                                 ProcessedValue.fromFloat(0.0f));
+                        inputContext.addEntry(
+                                Constants.CONTEXTUAL_PAGE_ACTIONS_DISCOUNTS_INPUT,
+                                ProcessedValue.fromFloat(0.0f));
+                        inputContext.addEntry(
+                                Constants.CONTEXTUAL_PAGE_ACTIONS_TAB_GROPING_INPUT,
+                                ProcessedValue.fromFloat(0.0f));
                         inputContext.addEntry("url", ProcessedValue.fromGURL(GURL.emptyGURL()));
 
                         segmentationPlatformService.getClassificationResult(
                                 "contextual_page_actions",
                                 options,
                                 inputContext,
-                                new Callback<ClassificationResult>() {
+                                new Callback<>() {
                                     @Override
                                     public void onResult(ClassificationResult result) {
                                         Assert.assertEquals(
-                                                PredictionStatus.SUCCEEDED, result.status);
+                                                "Prediction status should be SUCCEEDED",
+                                                PredictionStatus.SUCCEEDED,
+                                                result.status);
                                         assertThat(result.orderedLabels, hasSize(1));
                                         assertThat(
                                                 result.orderedLabels, contains("price_tracking"));

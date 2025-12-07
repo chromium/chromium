@@ -32,11 +32,9 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
-#include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-test-utils.h"
 
 using base::Bucket;
@@ -51,20 +49,6 @@ ukm::SourceId ToSourceId(int64_t navigation_id) {
                                 ukm::SourceIdType::NAVIGATION_ID);
 }
 
-// Some features are present in almost all page loads (especially the ones
-// which are related to the document finishing loading).
-// We ignore them to make tests easier to read and write.
-
-blink::scheduler::WebSchedulerTrackedFeatures GetFeaturesToIgnore() {
-  return {blink::scheduler::WebSchedulerTrackedFeature::kDocumentLoaded,
-          blink::scheduler::WebSchedulerTrackedFeature::
-              kOutstandingNetworkRequestFetch,
-          blink::scheduler::WebSchedulerTrackedFeature::
-              kOutstandingNetworkRequestXHR,
-          blink::scheduler::WebSchedulerTrackedFeature::
-              kOutstandingNetworkRequestOthers};
-}
-
 using UkmMetrics = ukm::TestUkmRecorder::HumanReadableUkmMetrics;
 using UkmEntry = ukm::TestUkmRecorder::HumanReadableUkmEntry;
 
@@ -73,12 +57,6 @@ enum BackForwardCacheStatus { kDisabled = 0, kEnabled = 1 };
 
 class BackForwardCacheMetricsBrowserTestBase : public ContentBrowserTest,
                                                public WebContentsObserver {
- public:
-  BackForwardCacheMetricsBrowserTestBase() {
-    geolocation_override_ =
-        std::make_unique<device::ScopedGeolocationOverrider>(1.0, 1.0);
-  }
-
  protected:
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -106,72 +84,7 @@ class BackForwardCacheMetricsBrowserTestBase : public ContentBrowserTest,
     navigation_ids_.push_back(navigation_handle->GetNavigationId());
   }
 
-  void NavigateAndWaitForDisablingFeature(
-      const GURL& url,
-      blink::scheduler::WebSchedulerTrackedFeature feature) {
-    class BfcacheDisabledByFeatureWaiter
-        : public blink::mojom::
-              BackForwardCacheControllerHostInterceptorForTesting {
-     public:
-      explicit BfcacheDisabledByFeatureWaiter(
-          RenderFrameHostImpl* render_frame_host,
-          blink::scheduler::WebSchedulerTrackedFeature expected_feature)
-          : render_frame_host_(render_frame_host),
-            swapped_impl_(
-                render_frame_host
-                    ->back_forward_cache_controller_host_receiver_for_testing(),
-                this),
-            expected_feature_(expected_feature) {}
-
-      void Wait() { run_loop_.Run(); }
-
-      // BackForwardCacheControllerHostInterceptorForTesting overrides:
-      blink::mojom::BackForwardCacheControllerHost* GetForwardingInterface()
-          override {
-        return swapped_impl_.old_impl();
-      }
-
-      // BackForwardCacheControllerHost overrides:
-      void DidChangeBackForwardCacheDisablingFeatures(
-          RenderFrameHostImpl::BackForwardCacheBlockingDetails details)
-          override {
-        GetForwardingInterface()->DidChangeBackForwardCacheDisablingFeatures(
-            std::move(details));
-        if (render_frame_host_->GetBackForwardCacheDisablingFeatures().Has(
-                expected_feature_)) {
-          run_loop_.Quit();
-        }
-      }
-
-     private:
-      base::RunLoop run_loop_;
-      const raw_ptr<RenderFrameHostImpl> render_frame_host_;
-      mojo::test::ScopedSwapImplForTesting<
-          blink::mojom::BackForwardCacheControllerHost>
-          swapped_impl_;
-      const blink::scheduler::WebSchedulerTrackedFeature expected_feature_;
-    };
-
-    {
-      BfcacheDisabledByFeatureWaiter waiter(current_frame_host(), feature);
-      EXPECT_TRUE(NavigateToURL(shell(), url));
-      waiter.Wait();
-    }
-
-    EXPECT_EQ(base::Difference(
-                  current_frame_host()->GetBackForwardCacheDisablingFeatures(),
-                  GetFeaturesToIgnore()),
-              blink::scheduler::WebSchedulerTrackedFeatures({feature}));
-
-    // Close the web contents to ensure that no new notifications arrive to the
-    // function local callback above after this function has returned.
-    web_contents()->Close();
-  }
-
   std::vector<int64_t> navigation_ids_;
-
- private:
-  std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_override_;
 };
 
 class BackForwardCacheMetricsBrowserTest
@@ -723,35 +636,6 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
   EXPECT_THAT(GetMetricsSourceIds(&recorder), testing::ElementsAre(id4));
 }
 
-// TODO(crbug.com/40290702): Shared workers are not available on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_SharedWorker DISABLED_SharedWorker
-#else
-#define MAYBE_SharedWorker SharedWorker
-#endif
-IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, MAYBE_SharedWorker) {
-  const GURL url(embedded_test_server()->GetURL(
-      "/back_forward_cache/page_with_shared_worker.html"));
-
-  NavigateAndWaitForDisablingFeature(
-      url, blink::scheduler::WebSchedulerTrackedFeature::kSharedWorker);
-}
-
-IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, Geolocation) {
-  const GURL url1(embedded_test_server()->GetURL("/title1.html"));
-  EXPECT_TRUE(NavigateToURL(shell(), url1));
-
-  RenderFrameHostImpl* main_frame = static_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetPrimaryMainFrame());
-  EXPECT_EQ("success", EvalJs(main_frame, R"(
-    new Promise(resolve => {
-      navigator.geolocation.getCurrentPosition(
-        resolve.bind(this, "success"),
-        resolve.bind(this, "failure"))
-      });
-  )"));
-}
-
 class RecordBackForwardCacheMetricsWithoutEnabling
     : public BackForwardCacheMetricsBrowserTestBase {
  public:
@@ -891,6 +775,131 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
           .empty());
 }
 
+// Tests that non-history/reload navigations that potentially match an entry in
+// BFCache are logged in the relevant histogram.
+IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
+                       NewPageNavHasPotentialMatch) {
+  if (!IsBackForwardCacheEnabled()) {
+    return;
+  }
+  base::HistogramTester histogram_tester;
+  const char kNewPageNavHasPotentialMatchHistogram[] =
+      "BackForwardCache.NewPageNavHasPotentialMatch";
+  const char kNewPageNavHasPotentialMatchWithNoSubframesHistogram[] =
+      "BackForwardCache.NewPageNavHasPotentialMatchWithNoSubframes";
+  const char kHistoryNavHasPotentialMatchHistogram[] =
+      "BackForwardCache.HistoryNavHasPotentialMatch";
+  GURL url1(embedded_test_server()->GetURL("a.com", "/page_with_iframe.html"));
+  GURL url2(embedded_test_server()->GetURL("b.com", "/title2.html"));
+
+  // 1) Navigate to url1, which has a subframe.
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+  // There should be no matching entry for `url1` in the back/forward cache.
+  histogram_tester.ExpectBucketCount(kNewPageNavHasPotentialMatchHistogram,
+                                     false, 1);
+  histogram_tester.ExpectBucketCount(kNewPageNavHasPotentialMatchHistogram,
+                                     true, 0);
+  histogram_tester.ExpectBucketCount(
+      kNewPageNavHasPotentialMatchWithNoSubframesHistogram, false, 1);
+  histogram_tester.ExpectBucketCount(
+      kNewPageNavHasPotentialMatchWithNoSubframesHistogram, true, 0);
+  histogram_tester.ExpectBucketCount(kHistoryNavHasPotentialMatchHistogram,
+                                     false, 0);
+  histogram_tester.ExpectBucketCount(kHistoryNavHasPotentialMatchHistogram,
+                                     true, 0);
+
+  // 2) Navigate to url2. The `url1` page will be BFCached.
+  EXPECT_TRUE(NavigateToURL(shell(), url2));
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  // There should be no matching entry for `url2` in the back/forward cache.
+  histogram_tester.ExpectBucketCount(kNewPageNavHasPotentialMatchHistogram,
+                                     false, 2);
+  histogram_tester.ExpectBucketCount(kNewPageNavHasPotentialMatchHistogram,
+                                     true, 0);
+  histogram_tester.ExpectBucketCount(
+      kNewPageNavHasPotentialMatchWithNoSubframesHistogram, false, 2);
+  histogram_tester.ExpectBucketCount(
+      kNewPageNavHasPotentialMatchWithNoSubframesHistogram, true, 0);
+  histogram_tester.ExpectBucketCount(kHistoryNavHasPotentialMatchHistogram,
+                                     false, 0);
+  histogram_tester.ExpectBucketCount(kHistoryNavHasPotentialMatchHistogram,
+                                     true, 0);
+
+  // 3) Navigate to url1 again as a new page.
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  // There is a matching entry for `url1` in the back/forward cache. Note that
+  // because the entry has a subframe, it will be recorded as "no match" in the
+  // "no subframes" histogram.
+  histogram_tester.ExpectBucketCount(kNewPageNavHasPotentialMatchHistogram,
+                                     false, 2);
+  histogram_tester.ExpectBucketCount(kNewPageNavHasPotentialMatchHistogram,
+                                     true, 1);
+  histogram_tester.ExpectBucketCount(
+      kNewPageNavHasPotentialMatchWithNoSubframesHistogram, false, 3);
+  histogram_tester.ExpectBucketCount(
+      kNewPageNavHasPotentialMatchWithNoSubframesHistogram, true, 0);
+  histogram_tester.ExpectBucketCount(kHistoryNavHasPotentialMatchHistogram,
+                                     false, 0);
+  histogram_tester.ExpectBucketCount(kHistoryNavHasPotentialMatchHistogram,
+                                     true, 0);
+
+  // 4) Navigate back to url2, restoring it from back/forward cache.
+  EXPECT_TRUE(HistoryGoBack(web_contents()));
+  // As the navigation is a BFCache restore already, no entry is recorded in the
+  // histogram.
+  histogram_tester.ExpectBucketCount(kNewPageNavHasPotentialMatchHistogram,
+                                     false, 2);
+  histogram_tester.ExpectBucketCount(kNewPageNavHasPotentialMatchHistogram,
+                                     true, 1);
+  histogram_tester.ExpectBucketCount(
+      kNewPageNavHasPotentialMatchWithNoSubframesHistogram, false, 3);
+  histogram_tester.ExpectBucketCount(
+      kNewPageNavHasPotentialMatchWithNoSubframesHistogram, true, 0);
+  histogram_tester.ExpectBucketCount(kHistoryNavHasPotentialMatchHistogram,
+                                     false, 0);
+  histogram_tester.ExpectBucketCount(kHistoryNavHasPotentialMatchHistogram,
+                                     true, 0);
+
+  // Flush BFCached entries so that there are no BFCached pages.
+  web_contents()->GetController().GetBackForwardCache().Flush();
+
+  // 5) Navigate back to url1 without restoring from back/forward cache.
+  EXPECT_TRUE(HistoryGoBack(web_contents()));
+  // The navigation has no matching BFCached entry, but it's also a history
+  // navigation, so we will only record on the history histogram.
+  histogram_tester.ExpectBucketCount(kNewPageNavHasPotentialMatchHistogram,
+                                     false, 2);
+  histogram_tester.ExpectBucketCount(kNewPageNavHasPotentialMatchHistogram,
+                                     true, 1);
+  histogram_tester.ExpectBucketCount(
+      kNewPageNavHasPotentialMatchWithNoSubframesHistogram, false, 3);
+  histogram_tester.ExpectBucketCount(
+      kNewPageNavHasPotentialMatchWithNoSubframesHistogram, true, 0);
+  histogram_tester.ExpectBucketCount(kHistoryNavHasPotentialMatchHistogram,
+                                     false, 1);
+  histogram_tester.ExpectBucketCount(kHistoryNavHasPotentialMatchHistogram,
+                                     true, 0);
+
+  // 5) Reload `url1`.
+  web_contents()->GetController().Reload(ReloadType::NORMAL, false);
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  // The navigation has no matching BFCached entry, but it's also a reload, so
+  // we don't record anything in the histograms.
+  histogram_tester.ExpectBucketCount(kNewPageNavHasPotentialMatchHistogram,
+                                     false, 2);
+  histogram_tester.ExpectBucketCount(kNewPageNavHasPotentialMatchHistogram,
+                                     true, 1);
+  histogram_tester.ExpectBucketCount(
+      kNewPageNavHasPotentialMatchWithNoSubframesHistogram, false, 3);
+  histogram_tester.ExpectBucketCount(
+      kNewPageNavHasPotentialMatchWithNoSubframesHistogram, true, 0);
+  histogram_tester.ExpectBucketCount(kHistoryNavHasPotentialMatchHistogram,
+                                     false, 1);
+  histogram_tester.ExpectBucketCount(kHistoryNavHasPotentialMatchHistogram,
+                                     true, 0);
+}
+
 class BackForwardCacheMetricsPrerenderingBrowserTest
     : public BackForwardCacheMetricsBrowserTest {
  public:
@@ -922,7 +931,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsPrerenderingBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url1));
 
   // Loads a page in the prerender.
-  int host_id = prerender_helper()->AddPrerender(prerender_url);
+  FrameTreeNodeId host_id = prerender_helper()->AddPrerender(prerender_url);
   test::PrerenderHostObserver host_observer(*web_contents(), host_id);
   RenderFrameHost* prerender_rfh =
       prerender_helper()->GetPrerenderedMainFrameHost(host_id);

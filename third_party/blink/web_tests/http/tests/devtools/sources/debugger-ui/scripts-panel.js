@@ -26,7 +26,7 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
     return navigatorView;
   }
 
-  TestRunner.addSniffer(Workspace.UISourceCode.UISourceCode.prototype, 'requestContent', onRequestContent, true);
+  TestRunner.addSniffer(Workspace.UISourceCode.UISourceCode.prototype, 'requestContentData', onRequestContent, true);
 
   function onRequestContent() {
     TestRunner.addResult('Source requested for ' + this.url());

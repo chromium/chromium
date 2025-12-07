@@ -8,15 +8,17 @@
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
-#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
+#include "content/public/browser/web_ui.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace policy::local_user_files {
 
-// The action signaling the user clicked on "Upload now" and migration should
-// start.
-inline constexpr char kStartMigration[] = "start-migration";
+// The action signaling the user clicked on "Upload now" or "Delete now" and
+// migration/deletion should start.
+inline constexpr char kStartMigration[] = "start-migration-or-deletion";
 
 using StartMigrationCallback = base::OnceClosure;
 
@@ -27,8 +29,8 @@ class LocalFilesMigrationDialog : public ash::SystemWebDialogDelegate {
   //
   // If a dialog is already open, brings it to the front and returns false.
   // Otherwise, shows the dialog and returns true.
-  static bool Show(CloudProvider cloud_provider,
-                   base::TimeDelta migration_delay,
+  static bool Show(MigrationDestination destination,
+                   base::Time migration_start_time,
                    StartMigrationCallback migration_callback);
 
   // Returns a pointer to the instance of LocalFilesMigrationDialog, if it
@@ -42,25 +44,29 @@ class LocalFilesMigrationDialog : public ash::SystemWebDialogDelegate {
   // Returns the native window. Should only be used in tests.
   gfx::NativeWindow GetDialogWindowForTesting() const;
 
+  // ash::SystemWebDialogDelegate implementation:
+  void OnDialogShown(content::WebUI* webui) override;
+
  private:
-  LocalFilesMigrationDialog(CloudProvider cloud_provider,
-                            base::TimeDelta migration_delay,
+  LocalFilesMigrationDialog(MigrationDestination destination,
+                            base::Time migration_start_time,
                             StartMigrationCallback migration_callback);
   ~LocalFilesMigrationDialog() override;
 
-  // ash::SystemWebDialogDelegate:
+  // ash::SystemWebDialogDelegate implementation:
   bool ShouldShowCloseButton() const override;
-  ui::ModalType GetDialogModalType() const override;
+  ui::mojom::ModalType GetDialogModalType() const override;
 
   // Called when the dialog is closed. If `ret-value` is set to kStartMigration,
   // the user clicked "Upload now" and uploads should start.
   void ProcessDialogClosing(const std::string& ret_value);
 
-  // Cloud provider to which files are uploaded.
-  CloudProvider cloud_provider_;
+  // Cloud provider to which files are uploaded, or delete if they should be
+  // removed.
+  MigrationDestination destination_;
 
-  // The time until automatic migration starts.
-  base::TimeDelta migration_delay_;
+  // The time at which migration automatically starts.
+  base::Time migration_start_time_;
 
   // Called if the user starts migration immediately.
   StartMigrationCallback migration_callback_;

@@ -4,6 +4,11 @@
 
 #include "components/update_client/unzip/unzip_impl.h"
 
+#include <utility>
+
+#include "base/files/file_path.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "components/services/unzip/public/cpp/unzip.h"
 
 namespace update_client {
@@ -18,7 +23,16 @@ class UnzipperImpl : public Unzipper {
   void Unzip(const base::FilePath& zip_file,
              const base::FilePath& destination,
              UnzipCompleteCallback callback) override {
-    unzip::Unzip(callback_.Run(), zip_file, destination, std::move(callback));
+    unzip::Unzip(callback_.Run(), zip_file, destination,
+                 unzip::mojom::UnzipOptions::New(), unzip::AllContents(),
+                 base::DoNothing(), std::move(callback));
+  }
+
+  base::OnceClosure DecodeXz(const base::FilePath& xz_file,
+                             const base::FilePath& destination,
+                             UnzipCompleteCallback callback) override {
+    return unzip::DecodeXz(callback_.Run(), xz_file, destination,
+                           std::move(callback));
   }
 
  private:

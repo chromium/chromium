@@ -40,7 +40,7 @@ AccountStatus::Type ParseAccountStatusType(
   }
   if (response.user_account_type() == em::CheckUserAccountResponse::CONSUMER) {
     const std::string domain = gaia::ExtractDomainName(email);
-    if (chrome::enterprise_util::IsKnownConsumerDomain(domain)) {
+    if (enterprise_util::IsKnownConsumerDomain(domain)) {
       return AccountStatus::Type::kConsumerWithConsumerDomain;
     }
     return AccountStatus::Type::kConsumerWithBusinessDomain;
@@ -91,15 +91,6 @@ void RecordEnrollmentNudgePolicyFetchResult(
 }
 
 }  // namespace
-
-bool operator==(const AccountStatus& lhs, const AccountStatus& rhs) {
-  return lhs.type == rhs.type &&
-         lhs.enrollment_required == rhs.enrollment_required;
-}
-
-bool operator!=(const AccountStatus& lhs, const AccountStatus& rhs) {
-  return !(lhs == rhs);
-}
 
 AccountStatusCheckFetcher::AccountStatusCheckFetcher(
     const std::string& canonicalized_email)

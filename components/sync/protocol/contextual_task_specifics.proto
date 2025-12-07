@@ -1,0 +1,58 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// If you change or add any fields in this file, update proto_visitors.h and
+// potentially proto_enum_conversions.{h, cc}.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
+option optimize_for = LITE_RUNTIME;
+
+package sync_pb;
+
+import "components/sync/protocol/ai_thread_specifics.proto";
+
+// LINT.IfChange(ContextualTaskSpecifics)
+
+// Sync datatype representing a contextual task.
+message ContextualTaskSpecifics {
+  // ID to uniquely identify the specifics proto.
+  optional string guid = 1;
+
+  oneof entity {
+    ContextualTask contextual_task = 2;
+    UrlResource url_resource = 3;
+  }
+
+  // A mechanism to identify the client version that wrote this specifics.
+  // Designed to aid business logic when reading newly added fields that
+  // didn't exist in older clients.
+  // The client version must be incremented whenever a new field is added to the
+  // specifics.
+  optional int32 version = 4;
+}
+
+message ContextualTask {
+  // Title of the task.
+  optional string title = 1;
+
+  // ID of the AI thread that is associated with the task.
+  optional string thread_id = 2;
+
+  // Type of the AI thread.
+  optional AiThreadSpecifics.ThreadType thread_type = 3;
+}
+
+message UrlResource {
+  // The GUID of its task.
+  optional string task_guid = 1;
+
+  // URL attached to the task.
+  optional string url = 2;
+}
+
+// LINT.ThenChange(//components/contextual_tasks/internal/contextual_task_sync_bridge.cc:TrimAllSupportedFieldsFromRemoteSpecifics)

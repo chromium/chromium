@@ -27,8 +27,8 @@ Response for fetch with existing resource without content type: {
 {
     id : <number>
     result : {
-        base64Encoded : true
-        data : eyJ2ZXJzaW9uIjozLCJmaWxlIjoic291cmNlLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsic291cmNlLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBLE9BQU8sQ0FBQyxHQUFHLENBQUMsT0FBTyxDQUFDLENBQUEifQo=
+        base64Encoded : false
+        data : {"version":3,"file":"source.js","sourceRoot":"","sources":["source.ts"],"names":[],"mappings":"AAAA,OAAO,CAAC,GAAG,CAAC,OAAO,CAAC,CAAA"} 
         eof : false
     }
     sessionId : <string>

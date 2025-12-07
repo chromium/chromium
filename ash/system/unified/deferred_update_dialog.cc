@@ -7,6 +7,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -40,11 +41,11 @@ void DeferredUpdateDialog::CreateDialog(Action callback_action,
   std::unique_ptr<ui::DialogModel> dialog_model =
       ui::DialogModel::Builder(std::make_unique<ui::DialogModelDelegate>())
           .SetTitle(l10n_util::GetStringUTF16(IDS_DEFERRED_UPDATE_DIALOG_TITLE))
-          .AddOkButton(
-              base::BindOnce(&DeferredUpdateDialog::OnApplyDeferredUpdate,
-                             base::Unretained(dialog_)),
-              ui::DialogModel::Button::Params().SetLabel(
-                  l10n_util::GetStringUTF16(ok_text)))
+          .AddOkButton(base::BindOnce(
+                           &DeferredUpdateDialog::OnApplyDeferredUpdateAdvanced,
+                           base::Unretained(dialog_)),
+                       ui::DialogModel::Button::Params().SetLabel(
+                           l10n_util::GetStringUTF16(ok_text)))
           .AddCancelButton(
               base::BindOnce(&DeferredUpdateDialog::OnContinueWithoutUpdate,
                              base::Unretained(dialog_)),
@@ -64,8 +65,8 @@ void DeferredUpdateDialog::CreateDialog(Action callback_action,
   dialog_->dialog_result_ = kClose;
 
   auto bubble = views::BubbleDialogModelHost::CreateModal(
-      std::move(dialog_model), ui::MODAL_TYPE_SYSTEM);
-  bubble->SetOwnedByWidget(true);
+      std::move(dialog_model), ui::mojom::ModalType::kSystem);
+  bubble->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
   views::DialogDelegate::CreateDialogWidget(std::move(bubble),
                                             /*context=*/nullptr,
                                             /*parent=*/nullptr)
@@ -73,7 +74,7 @@ void DeferredUpdateDialog::CreateDialog(Action callback_action,
 }
 
 // Invoked when "ok" button is clicked.
-void DeferredUpdateDialog::OnApplyDeferredUpdate() {
+void DeferredUpdateDialog::OnApplyDeferredUpdateAdvanced() {
   DCHECK(dialog_model_);
   ui::DialogModelCheckbox* check_box =
       dialog_model_->GetCheckboxByUniqueId(kAutoUpdateCheckboxId);
@@ -101,8 +102,8 @@ void DeferredUpdateDialog::OnDialogClosing(bool shutdown_after_update,
           /*enable=*/true);
       [[fallthrough]];
     case kApplyUpdate:
-      UpdateEngineClient::Get()->ApplyDeferredUpdate(shutdown_after_update,
-                                                     std::move(callback));
+      UpdateEngineClient::Get()->ApplyDeferredUpdateAdvanced(
+          shutdown_after_update, std::move(callback));
       break;
     case kIgnoreUpdate:
       std::move(callback).Run();

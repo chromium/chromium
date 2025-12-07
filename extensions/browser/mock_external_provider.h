@@ -42,6 +42,9 @@ class MockExternalProvider : public ExternalProviderInterface {
   // ExternalProviderInterface implementation:
   void VisitRegisteredExtension() override;
   bool HasExtension(const std::string& id) const override;
+  bool HasExtensionWithLocation(
+      const std::string& id,
+      mojom::ManifestLocation location) const override;
   bool GetExtensionDetails(
       const std::string& id,
       mojom::ManifestLocation* location,

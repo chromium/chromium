@@ -2,23 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <utility>
-
-#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "third_party/blink/renderer/modules/service_worker/fetch_event.h"
 
+#include <utility>
+
 #include "base/memory/scoped_refptr.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "third_party/blink/public/mojom/timing/performance_mark_or_measure.mojom-blink.h"
+#include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_error.h"
+#include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fetch/request.h"
 #include "third_party/blink/renderer/core/fetch/response.h"
+#include "third_party/blink/renderer/core/timing/global_performance.h"
 #include "third_party/blink/renderer/core/timing/performance_mark.h"
 #include "third_party/blink/renderer/core/timing/performance_measure.h"
-#include "third_party/blink/renderer/core/timing/worker_global_scope_performance.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/modules/service_worker/fetch_respond_with_observer.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_error.h"
@@ -30,6 +32,26 @@
 #include "third_party/blink/renderer/platform/network/network_utils.h"
 
 namespace blink {
+
+class FetchRespondWithFulfill final
+    : public ThenCallable<Response, FetchRespondWithFulfill> {
+ public:
+  explicit FetchRespondWithFulfill(FetchRespondWithObserver* observer)
+      : observer_(observer) {}
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(observer_);
+    ThenCallable<Response, FetchRespondWithFulfill>::Trace(visitor);
+  }
+
+  void React(ScriptState* script_state, Response* response) {
+    DCHECK(observer_);
+    observer_->OnResponseFulfilled(script_state, response);
+  }
+
+ private:
+  Member<FetchRespondWithObserver> observer_;
+};
 
 FetchEvent* FetchEvent::Create(ScriptState* script_state,
                                const AtomicString& type,
@@ -56,11 +78,15 @@ bool FetchEvent::isReload() const {
 }
 
 void FetchEvent::respondWith(ScriptState* script_state,
-                             ScriptPromiseUntyped script_promise,
+                             ScriptPromise<Response> script_promise,
                              ExceptionState& exception_state) {
   stopImmediatePropagation();
-  if (observer_)
-    observer_->RespondWith(script_state, script_promise, exception_state);
+  if (observer_) {
+    observer_->RespondWith(
+        script_state, script_promise,
+        MakeGarbageCollected<FetchRespondWithFulfill>(observer_),
+        exception_state);
+  }
 }
 
 ScriptPromise<IDLAny> FetchEvent::preloadResponse(ScriptState* script_state) {
@@ -76,8 +102,8 @@ void FetchEvent::ResolveHandledPromise() {
 }
 
 void FetchEvent::RejectHandledPromise(const String& error_message) {
-  handled_property_->Reject(ServiceWorkerError::GetException(
-      nullptr, mojom::blink::ServiceWorkerErrorType::kNetwork, error_message));
+  handled_property_->Reject(ServiceWorkerError::AsException(
+      mojom::blink::ServiceWorkerErrorType::kNetwork, error_message));
 }
 
 const AtomicString& FetchEvent::InterfaceName() const {
@@ -188,7 +214,7 @@ void FetchEvent::OnNavigationPreloadError(
     return;
   }
   preload_response_property_->Reject(
-      ServiceWorkerError::Take(nullptr, *error.get()));
+      ServiceWorkerError::AsException(error->error_type, error->message));
 }
 
 void FetchEvent::OnNavigationPreloadComplete(
@@ -223,7 +249,7 @@ void FetchEvent::OnNavigationPreloadComplete(
       request_time, request_->url(), &resource_response);
   info->response_end = completion_time;
   info->allow_negative_values = true;
-  WorkerGlobalScopePerformance::performance(*worker_global_scope)
+  GlobalPerformance::performance(*worker_global_scope)
       ->AddResourceTiming(std::move(info), AtomicString("navigation"));
 }
 

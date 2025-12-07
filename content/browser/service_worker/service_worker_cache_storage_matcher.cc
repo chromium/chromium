@@ -92,6 +92,7 @@ void ServiceWorkerCacheStorageMatcher::Run() {
   }
   control->AddReceiver(
       *coep, version_->embedded_worker()->GetCoepReporter(), *dip,
+      version_->embedded_worker()->GetDipReporter(),
       storage::BucketLocator::ForDefaultBucket(version_->key()),
       storage::mojom::CacheStorageOwner::kCacheAPI,
       remote_.BindNewPipeAndPassReceiver());
@@ -111,47 +112,46 @@ void ServiceWorkerCacheStorageMatcher::Run() {
 }
 
 void ServiceWorkerCacheStorageMatcher::DidMatch(
-    blink::mojom::MatchResultPtr result) {
+    blink::mojom::CacheStorage::MatchResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT_WITH_FLOW0("ServiceWorker",
                          "ServiceWorkerCacheStorageMatcher::DidMatch",
                          TRACE_ID_LOCAL(this),
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  cache_lookup_duration_ = base::TimeTicks::Now() - cache_lookup_start_;
+  base::UmaHistogramTimes(
+      "ServiceWorker.StaticRouter.MainResource.CacheLookupDuration",
+      cache_lookup_duration_);
 
   auto timing = blink::mojom::ServiceWorkerFetchEventTiming::New();
-  switch (result->which()) {
-    case blink::mojom::MatchResult::Tag::kStatus:  // error fallback.
-      base::UmaHistogramEnumeration(
-          "ServiceWorker.StaticRouter.MainResource.CacheStorageError",
-          result->get_status());
-      RunCallback(
-          blink::ServiceWorkerStatusCode::kOk,
-          ServiceWorkerFetchDispatcher::FetchEventResult::kShouldFallback,
-          blink::mojom::FetchAPIResponse::New(), nullptr, std::move(timing));
-      break;
-    case blink::mojom::MatchResult::Tag::kResponse:  // we got fetch response.
-      if (result->get_response()->parsed_headers) {
-        // We intend to reset the parsed header. Or, invalid parsed headers
-        // should be set.
-        //
-        // According to content/browser/cache_storage/cache_storage_cache.cc,
-        // the field looks not set up with the meaningful value.
-        // Also, the Cache Storage API code looks not using the parsed_header
-        // according to third_party/blink/renderer/core/fetch/response.cc.
-        // (It can be tracked from
-        // third_party/blink/renderer/modules/cache_storage/cache_storage.cc)
-        result->get_response()->parsed_headers.reset();
-      }
-      RunCallback(blink::ServiceWorkerStatusCode::kOk,
-                  ServiceWorkerFetchDispatcher::FetchEventResult::kGotResponse,
-                  std::move(result->get_response()), nullptr,
-                  std::move(timing));
-      break;
-    case blink::mojom::MatchResult::Tag::kEagerResponse:
-      // EagerResponse, which should be used only if `in_related_fetch_event`
-      // is set.
-      NOTREACHED_NORETURN();
+  if (!result.has_value()) {
+    base::UmaHistogramEnumeration(
+        "ServiceWorker.StaticRouter.MainResource.CacheStorageError",
+        result.error());
+    RunCallback(blink::ServiceWorkerStatusCode::kOk,
+                ServiceWorkerFetchDispatcher::FetchEventResult::kShouldFallback,
+                blink::mojom::FetchAPIResponse::New(), nullptr,
+                std::move(timing));
+    return;
   }
+  // EagerResponse should be used only if `in_related_fetch_event` is set.
+  CHECK(result.value()->is_response());
+  auto& response = result.value()->get_response();
+  if (response->parsed_headers) {
+    // We intend to reset the parsed header. Or, invalid parsed headers
+    // should be set.
+    //
+    // According to content/browser/cache_storage/cache_storage_cache.cc,
+    // the field looks not set up with the meaningful value.
+    // Also, the Cache Storage API code looks not using the parsed_header
+    // according to third_party/blink/renderer/core/fetch/response.cc.
+    // (It can be tracked from
+    // third_party/blink/renderer/modules/cache_storage/cache_storage.cc)
+    response->parsed_headers.reset();
+  }
+  RunCallback(blink::ServiceWorkerStatusCode::kOk,
+              ServiceWorkerFetchDispatcher::FetchEventResult::kGotResponse,
+              std::move(response), nullptr, std::move(timing));
 }
 
 void ServiceWorkerCacheStorageMatcher::FailFallback() {

@@ -40,8 +40,6 @@ TEST_F(FencedFrameConfigTest, FencedFrameConfigConstructionWithURL) {
       config->GetValueIgnoringVisibility<FencedFrameConfig::Attribute::kURL>(),
       url);
 
-  EXPECT_EQ(config->width(), nullptr);
-  EXPECT_EQ(config->height(), nullptr);
   EXPECT_EQ(config->GetSharedStorageContext(), String());
 
   config->setSharedStorageContext("some context");
@@ -68,8 +66,6 @@ TEST_F(FencedFrameConfigTest, FencedFrameConfigCreateWithURL) {
       config->GetValueIgnoringVisibility<FencedFrameConfig::Attribute::kURL>(),
       url);
 
-  EXPECT_EQ(config->width(), nullptr);
-  EXPECT_EQ(config->height(), nullptr);
   EXPECT_EQ(config->GetSharedStorageContext(), String());
 
   config->setSharedStorageContext("some context");

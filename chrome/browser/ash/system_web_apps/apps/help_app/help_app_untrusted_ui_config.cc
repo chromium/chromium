@@ -8,19 +8,19 @@
 #include <string_view>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/rgb_keyboard/rgb_keyboard_manager.h"
 #include "ash/shell.h"
 #include "ash/webui/help_app_ui/help_app_untrusted_ui.h"
 #include "ash/webui/help_app_ui/url_constants.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/arc/arc_util.h"
-#include "chrome/browser/ash/assistant/assistant_util.h"
 // TODO(b/342514059): Depending on chrome/browser/ash/child_accounts is not
 // ideal because it's in chrome.
 #include "chrome/browser/ash/child_accounts/on_device_controls/app_controls_service_factory.h"
@@ -32,27 +32,60 @@
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/scalable_iph/scalable_iph_factory_impl.h"
-#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/display/screen.h"
+#include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/devices/device_data_manager.h"
 
 namespace ash {
 
 namespace {
+
+// Refer https://crbug.com/458812793 for the source of this set.
+constexpr auto kCrosSwitcherCountriesSet =
+    base::MakeFixedFlatSet<std::string_view>(
+        {"us", "ae", "ar", "at", "au", "be", "bg", "br", "ca", "ch", "cl",
+         "co", "cz", "de", "ee", "es", "fi", "fr", "gb", "gr", "hk", "hr",
+         "id", "ie", "il", "in", "is", "it", "jp", "kr", "kw", "kz", "mx",
+         "my", "ng", "nl", "no", "nz", "pe", "ph", "pl", "pt", "ro", "ru",
+         "sa", "se", "sg", "sk", "th", "tr", "tw", "ua", "uy", "vn", "za"});
+
+bool IsCrosSwitcherEnabled(base::FeatureList* feature_list,
+                           variations::VariationsService* variations_service) {
+  if (!feature_list) {
+    // Disables Switcher as a fail-safe behavior.
+    return false;
+  }
+
+  // If feature flag is overridden, respect the value regardless of other
+  // conditions.
+  if (feature_list->IsFeatureOverridden(features::kCrosSwitcher.name)) {
+    return ash::features::IsCrosSwitcherEnabled();
+  }
+
+  if (!variations_service) {
+    // Disables Switcher as a fail-safe behavior.
+    return false;
+  }
+
+  return ash::features::IsCrosSwitcherEnabled() &&
+         kCrosSwitcherCountriesSet.contains(
+             variations_service->GetStoredPermanentCountry());
+}
 
 void PopulateLoadTimeData(content::WebUI* web_ui,
                           content::WebUIDataSource* source) {
@@ -69,7 +102,7 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
   source->AddString("boardName", base::SysInfo::GetLsbReleaseBoard());
   source->AddString("chromeOSVersion", base::SysInfo::OperatingSystemVersion());
   source->AddString("chromeVersion", chrome::kChromeVersion);
-  source->AddInteger("channel", static_cast<int>(chrome::GetChannel()));
+  source->AddInteger("channel", static_cast<int>(ash::GetChannel()));
   system::StatisticsProvider* provider =
       system::StatisticsProvider::GetInstance();
   // MachineStatistics may not exist for browser tests, but it is fine for these
@@ -89,18 +122,15 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
   // Add any features that have been enabled.
   source->AddBoolean(
       "HelpAppLauncherSearch",
-      base::FeatureList::IsEnabled(features::kHelpAppLauncherSearch) &&
-          base::FeatureList::IsEnabled(features::kEnableLocalSearchService));
-  source->AddBoolean(
-      "HelpAppSearchServiceIntegration",
-      base::FeatureList::IsEnabled(features::kEnableLocalSearchService));
+      base::FeatureList::IsEnabled(features::kHelpAppLauncherSearch));
+  source->AddBoolean("HelpAppSearchServiceIntegration", true);
   source->AddBoolean("isCloudGamingDevice",
                      chromeos::features::IsCloudGamingDeviceEnabled());
 
   Profile* profile = Profile::FromWebUI(web_ui);
 
   // Features the background page does not need to query:
-  if (web_ui->GetWebContents()->GetVisibleURL().path() != "/background") {
+  if (web_ui->GetWebContents()->GetVisibleURL().GetPath() != "/background") {
     // Flags for showing or hiding educational content about some feature.
     bool isEditorSwitchAllowed = false;
     if (chromeos::features::IsOrcaEnabled()) {
@@ -122,8 +152,10 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
         "isVcBackgroundReplaceAllowed",
         ash::features::IsVcBackgroundReplaceEnabled() &&
             ash::personalization_app::IsEligibleForSeaPen(profile));
-    source->AddBoolean("isCrosSwitcherEnabled",
-                       ash::features::IsCrosSwitcherEnabled());
+    source->AddBoolean(
+        "isCrosSwitcherEnabled",
+        IsCrosSwitcherEnabled(base::FeatureList::GetInstance(),
+                              g_browser_process->variations_service()));
     source->AddBoolean(
         "featureManagementShowoff",
         base::FeatureList::IsEnabled(ash::features::kFeatureManagementShowoff));
@@ -144,6 +176,11 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
     source->AddBoolean("HelpAppAutoTriggerInstallDialog",
                        base::FeatureList::IsEnabled(
                            features::kHelpAppAutoTriggerInstallDialog));
+    source->AddBoolean(
+        "HelpAppOnboardingRevamp",
+        base::FeatureList::IsEnabled(ash::features::kHelpAppOnboardingRevamp));
+    // TODO(crbug.com/370386104): Clean up flag in Showoff code.
+    source->AddBoolean("HelpAppAppMall", true);
     // Only use the action URL if the install URI is enabled.
     // TODO(b/346687914): Clean up flag in Showoff code.
     source->AddBoolean("UseActionUrl", true);
@@ -151,16 +188,6 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
 
   PrefService* pref_service = profile->GetPrefs();
 
-  bool is_scalable_iph_available =
-      ScalableIphFactoryImpl::IsBrowserContextEligible(profile);
-  if (is_scalable_iph_available) {
-    source->AddBoolean("HelpAppWelcomeTips",
-                       ash::features::AreHelpAppWelcomeTipsEnabled());
-    // Day count starts from 0 with `InDaysFloored`.
-    bool first_week_of_profile =
-        ((base::Time::Now() - profile->GetCreationTime()).InDaysFloored() < 7);
-    source->AddBoolean("shouldShowWelcomeTipsAtLaunch", first_week_of_profile);
-  }
   // Add state from the OOBE flow.
   source->AddBoolean(
       "shouldShowGetStarted",
@@ -176,8 +203,7 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
   source->AddBoolean(
       "multiDeviceFeaturesAllowed",
       multidevice_setup::AreAnyMultiDeviceFeaturesAllowed(pref_service));
-  source->AddBoolean("tabletMode",
-                     display::Screen::GetScreen()->InTabletMode());
+  source->AddBoolean("tabletMode", display::Screen::Get()->InTabletMode());
   // Whether or not RGB Keyboard is supported and configurable from the
   // Personalization Hub.
   RgbKeyboardManager* rgb_keyboard_manager =
@@ -185,6 +211,12 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
   source->AddBoolean(
       "rgbKeyboard",
       rgb_keyboard_manager && rgb_keyboard_manager->IsRgbKeyboardSupported());
+  // Whether or not there is a function key on any keyboard.
+  ui::KeyboardCapability* keyboard_capability =
+      Shell::Get()->keyboard_capability();
+  source->AddBoolean("hasFunctionKey",
+                     keyboard_capability &&
+                         keyboard_capability->HasFunctionKeyOnAnyKeyboard());
 
   // Checks if there are active touch screens.
   source->AddBoolean(
@@ -196,15 +228,9 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
       "Microsoft365",
       chromeos::cloud_upload::IsMicrosoftOfficeCloudUploadAllowed(profile));
 
-  // Checks if the Google Assistant is allowed on this device by going through
-  // policies.
-  assistant::AssistantAllowedState assistant_allowed_state =
-      ::assistant::IsAssistantAllowedForProfile(profile);
-  source->AddBoolean(
-      "assistantAllowed",
-      assistant_allowed_state == assistant::AssistantAllowedState::ALLOWED);
-  source->AddBoolean("assistantEnabled",
-                     AssistantState::Get()->settings_enabled().value_or(false));
+  // Google Assistant on ChromeOS is deprecated.
+  source->AddBoolean("assistantAllowed", false);
+  source->AddBoolean("assistantEnabled", false);
   source->AddBoolean("playStoreEnabled",
                      arc::IsArcPlayStoreEnabledForProfile(profile));
   source->AddBoolean("pinEnabled", quick_unlock::IsPinEnabled());
@@ -237,6 +263,14 @@ bool HelpAppUntrustedUIConfig::IsWebUIEnabled(
   // TODO(b/300226633): Maybe use `IsUserBrowserContext` to filter all ash
   // profiles.
   return !IsShimlessRmaAppBrowserContext(browser_context);
+}
+
+// static
+bool HelpAppUntrustedUIConfig::IsCrosSwitcherEnabledForTesting(
+    base::FeatureList* feature_list,
+    variations::VariationsService* variations_service) {
+  CHECK_IS_TEST();
+  return IsCrosSwitcherEnabled(feature_list, variations_service);
 }
 
 std::unique_ptr<content::WebUIController>

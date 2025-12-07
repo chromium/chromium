@@ -5,11 +5,13 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_desktop.h"
 
 #include "chrome/browser/apps/app_service/publisher_host.h"
+#include "chrome/browser/apps/app_service/publisher_host_factory.h"
 
 namespace apps {
 
-AppServiceProxy::AppServiceProxy(Profile* profile)
-    : AppServiceProxyBase(profile) {}
+AppServiceProxy::AppServiceProxy(Profile* profile,
+                                 PublisherHostFactory* publisher_host_factory)
+    : AppServiceProxyBase(profile, publisher_host_factory) {}
 
 AppServiceProxy::~AppServiceProxy() = default;
 
@@ -19,8 +21,7 @@ void AppServiceProxy::Initialize() {
   }
 
   AppServiceProxyBase::Initialize();
-
-  publisher_host_ = std::make_unique<PublisherHost>(this);
+  publisher_host_ = publisher_host_factory_->CreatePublisherHost(this);
 }
 
 bool AppServiceProxy::MaybeShowLaunchPreventionDialog(

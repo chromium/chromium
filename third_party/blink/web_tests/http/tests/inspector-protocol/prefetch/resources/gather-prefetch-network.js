@@ -73,7 +73,7 @@
   }
 
   if (log) {
-    const stabilizeNames = [...TestRunner.stabilizeNames, 'connectionId', 'timing', 'connectTiming', 'wallTime', 'responseTime', 'securityDetails', 'remoteIPAddress', 'Date', 'ETag', 'Last-Modified', 'User-Agent', 'X-Powered-By', 'headersText'];
+    const stabilizeNames = [...TestRunner.stabilizeNames, 'connectionId', 'timing', 'connectTiming', 'wallTime', 'responseTime', 'securityDetails', 'remoteIPAddress', 'Content-Length', 'Date', 'ETag', 'Last-Modified', 'User-Agent', 'X-Powered-By', 'headersText', 'encodedDataLength'];
     for (const event of events) {
       testRunner.log(event.params, event.method, stabilizeNames);
     }

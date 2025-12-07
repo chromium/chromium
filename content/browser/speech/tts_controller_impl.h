@@ -18,7 +18,6 @@
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/tts_controller.h"
 #include "content/public/browser/tts_platform.h"
@@ -30,7 +29,7 @@
 namespace content {
 class BrowserContext;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class TtsControllerDelegate;
 #endif
 
@@ -59,6 +58,27 @@ class CONTENT_EXPORT TtsControllerImpl
   void Stop(const GURL& source_url) override;
   void Pause() override;
   void Resume() override;
+  void UpdateLanguageStatus(BrowserContext* browser_context,
+                            const std::string& lang,
+                            LanguageInstallStatus install_status,
+                            const std::string& error) override;
+  void AddUpdateLanguageStatusDelegate(
+      UpdateLanguageStatusDelegate* delegate) override;
+  void RemoveUpdateLanguageStatusDelegate(
+      UpdateLanguageStatusDelegate* delegate) override;
+  void UninstallLanguageRequest(content::BrowserContext* browser_context,
+                                const std::string& lang,
+                                const std::string& client_id,
+                                int source,
+                                bool uninstall_immediately) override;
+  void InstallLanguageRequest(BrowserContext* browser_context,
+                              const std::string& lang,
+                              const std::string& client_id,
+                              int source) override;
+  void LanguageStatusRequest(BrowserContext* browser_context,
+                             const std::string& lang,
+                             const std::string& client_id,
+                             int source) override;
   void OnTtsEvent(int utterance_id,
                   TtsEventType event_type,
                   int char_index,
@@ -91,8 +111,6 @@ class CONTENT_EXPORT TtsControllerImpl
       const std::string& utterance,
       base::OnceCallback<void(const std::string&)> callback) override;
 
-  void SetRemoteTtsEngineDelegate(RemoteTtsEngineDelegate* delegate) override;
-
  protected:
   TtsControllerImpl();
   ~TtsControllerImpl() override;
@@ -103,12 +121,6 @@ class CONTENT_EXPORT TtsControllerImpl
  private:
   friend class TestTtsControllerImpl;
   friend struct base::DefaultSingletonTraits<TtsControllerImpl>;
-
-  void GetVoicesInternal(BrowserContext* browser_context,
-                         const GURL& source_url,
-                         std::vector<VoiceData>* out_voices);
-
-  void SpeakOrEnqueueInternal(std::unique_ptr<TtsUtterance> utterance);
 
   // Get the platform TTS implementation (or injected mock).
   TtsPlatform* GetTtsPlatform();
@@ -190,14 +202,11 @@ class CONTENT_EXPORT TtsControllerImpl
   void OnNetworkChanged(
       net::NetworkChangeNotifier::ConnectionType type) override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   TtsControllerDelegate* GetTtsControllerDelegate();
   void SetTtsControllerDelegateForTesting(TtsControllerDelegate* delegate);
   raw_ptr<TtsControllerDelegate, DanglingUntriaged> delegate_ = nullptr;
 #endif
-
-  raw_ptr<RemoteTtsEngineDelegate, DanglingUntriaged> remote_engine_delegate_ =
-      nullptr;
 
   raw_ptr<TtsEngineDelegate, DanglingUntriaged> engine_delegate_ = nullptr;
 
@@ -205,6 +214,11 @@ class CONTENT_EXPORT TtsControllerImpl
 
   // A set of delegates that want to be notified when the voices change.
   base::ObserverList<VoicesChangedDelegate> voices_changed_delegates_;
+
+  // A set of delegates to be notified when a voice status for a language
+  // changes.
+  base::ObserverList<UpdateLanguageStatusDelegate>
+      update_language_status_delegates_;
 
   // The current utterance being spoken.
   std::unique_ptr<TtsUtterance> current_utterance_;

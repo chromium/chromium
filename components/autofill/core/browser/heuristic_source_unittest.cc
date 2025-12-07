@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/heuristic_source.h"
 
+#include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/dense_set.h"
@@ -12,21 +13,18 @@
 
 namespace autofill {
 
-// Depending on `kAutofillModelPredictions`, the active and non active heuristic
-// sources will differ.
+// Depending on `kAutofillModelPredictions`, the active heuristic source will
+// differ.
 //
-// Currently, the available heuristic sources are the ML model and
-// the pattern sources. If the model predictions are disabled, then
-// only pattern sources are used. If model predictions are enabled,
-// `kMachineLearning` is also considered. Depending on
-// `kAutofillModelPredictionsAreActive`, use  `kMachineLearning`
-// as the active heuristic source.
+// Currently, the available heuristic sources are the ML model and regexes.
+// If the model predictions are disabled, then only regexes are used. If model
+// predictions are enabled, `kAutofillMachineLearning` is also considered.
+// Depending on `kAutofillModelPredictionsAreActive`, use
+// `kAutofillMachineLearning` as the active heuristic source.
 
 struct HeuristicSourceParams {
   std::optional<bool> model_predictions_feature;
-  std::string pattern_provider_feature;
   const HeuristicSource expected_active_source;
-  const DenseSet<HeuristicSource> expected_nonactive_sources;
 };
 
 class HeuristicSourceTest
@@ -36,9 +34,9 @@ class HeuristicSourceTest
     const HeuristicSourceParams& test_case = GetParam();
     std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
-    if (test_case.model_predictions_feature) {
+    if (test_case.model_predictions_feature.has_value()) {
       std::string model_prediction_active =
-          *test_case.model_predictions_feature ? "true" : "false";
+          base::ToString(test_case.model_predictions_feature.value());
       enabled_features.push_back(
           {features::kAutofillModelPredictions,
            {{features::kAutofillModelPredictionsAreActive.name,
@@ -46,10 +44,6 @@ class HeuristicSourceTest
     } else {
       disabled_features.push_back(features::kAutofillModelPredictions);
     }
-    enabled_features.push_back(
-        {features::kAutofillParsingPatternProvider,
-         {{features::kAutofillParsingPatternActiveSource.name,
-           test_case.pattern_provider_feature}}});
     features_.InitWithFeaturesAndParameters(enabled_features,
                                             disabled_features);
   }
@@ -58,62 +52,30 @@ class HeuristicSourceTest
   base::test::ScopedFeatureList features_;
 };
 
-TEST_P(HeuristicSourceTest, HeuristicSourceParams) {
+// TODO(crbug.com/373902907): Flaky on ios and android bots.
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+#define MAYBE_HeuristicSourceParams DISABLED_HeuristicSourceParams
+#else
+#define MAYBE_HeuristicSourceParams HeuristicSourceParams
+#endif
+TEST_P(HeuristicSourceTest, MAYBE_HeuristicSourceParams) {
   const HeuristicSourceParams& test_case = GetParam();
   EXPECT_EQ(GetActiveHeuristicSource(), test_case.expected_active_source);
-  EXPECT_EQ(GetNonActiveHeuristicSources(),
-            test_case.expected_nonactive_sources);
 }
 
 INSTANTIATE_TEST_SUITE_P(
     HeuristicSourceTest,
     HeuristicSourceTest,
     testing::Values(
-// The pattern provider behavior differs between Chrome and non-Chrome branded
-// instances.
-#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
         HeuristicSourceParams{
-            .pattern_provider_feature = "legacy",
-            .expected_active_source = HeuristicSource::kLegacy,
-            .expected_nonactive_sources = {}},
+            .expected_active_source = HeuristicSource::kRegexes},
 
-        HeuristicSourceParams{
-            .model_predictions_feature = true,
-            .pattern_provider_feature = "legacy",
-            .expected_active_source = HeuristicSource::kMachineLearning,
-            .expected_nonactive_sources = {HeuristicSource::kLegacy}},
-
-        HeuristicSourceParams {
-          .model_predictions_feature = false,
-          .pattern_provider_feature = "legacy",
-          .expected_active_source = HeuristicSource::kLegacy,
-          .expected_nonactive_sources = {
-            HeuristicSource::kMachineLearning
-          }
-        }
-#else
-        HeuristicSourceParams{
-            .model_predictions_feature = true,
-            .pattern_provider_feature = "default",
-            .expected_active_source = HeuristicSource::kMachineLearning,
-            .expected_nonactive_sources = {HeuristicSource::kDefault}},
+        HeuristicSourceParams{.model_predictions_feature = true,
+                              .expected_active_source =
+                                  HeuristicSource::kAutofillMachineLearning},
 
         HeuristicSourceParams{
             .model_predictions_feature = false,
-            .pattern_provider_feature = "default",
-            .expected_active_source = HeuristicSource::kDefault,
-            .expected_nonactive_sources = {HeuristicSource::kExperimental,
-                                           HeuristicSource::kMachineLearning}},
-        HeuristicSourceParams{
-            .pattern_provider_feature = "default",
-            .expected_active_source = HeuristicSource::kDefault,
-            .expected_nonactive_sources = {HeuristicSource::kExperimental}},
-
-        HeuristicSourceParams{
-            .pattern_provider_feature = "experimental",
-            .expected_active_source = HeuristicSource::kExperimental,
-            .expected_nonactive_sources = {}}
-#endif
-        ));
+            .expected_active_source = HeuristicSource::kRegexes}));
 
 }  // namespace autofill

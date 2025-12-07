@@ -223,10 +223,8 @@ bool LaunchArgumentsAreEqual(NSArray<NSString*>* args1,
   if ([self appIsLaunched]) {
     [BaseEarlGreyTestCaseAppInterface enableFastAnimation];
 
-#if !TARGET_IPHONE_SIMULATOR
-    if (@available(iOS 17, *)) {
-      [BaseEarlGreyTestCaseAppInterface swizzleKeyboardOOP];
-    }
+#if !TARGET_OS_SIMULATOR
+    [BaseEarlGreyTestCaseAppInterface swizzleKeyboardOOP];
 #endif
 
     // Wait for application to settle before continuing on with test.

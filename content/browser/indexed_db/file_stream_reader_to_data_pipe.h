@@ -5,23 +5,29 @@
 #ifndef CONTENT_BROWSER_INDEXED_DB_FILE_STREAM_READER_TO_DATA_PIPE_H_
 #define CONTENT_BROWSER_INDEXED_DB_FILE_STREAM_READER_TO_DATA_PIPE_H_
 
+#include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "content/common/content_export.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom.h"
 
-namespace storage {
-class FileStreamReader;
-}
+namespace content::indexed_db {
 
-namespace content {
-
-// A convenience function to read out data from a FileStreamReader
-// and write them into a data pipe. Must be called on an IO thread.
-void MakeFileStreamAdapterAndRead(
-    std::unique_ptr<storage::FileStreamReader> reader,
+CONTENT_EXPORT void OpenFileAndReadIntoPipe(
+    const base::FilePath& file_path,
+    uint64_t expected_file_size,
+    uint64_t offset,
+    uint64_t read_length,
     mojo::ScopedDataPipeProducerHandle dest,
-    base::OnceCallback<void(int)> completion_callback,
-    uint64_t read_length);
+    mojo::PendingRemote<blink::mojom::BlobReaderClient> client);
 
-}  // namespace content
+CONTENT_EXPORT void OpenFileAndReadIntoPipe(
+    const base::FilePath& file_path,
+    uint64_t offset,
+    uint64_t read_length,
+    mojo::ScopedDataPipeProducerHandle dest,
+    base::OnceCallback<void(int)> completion_callback);
+
+}  // namespace content::indexed_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_FILE_STREAM_READER_TO_DATA_PIPE_H_

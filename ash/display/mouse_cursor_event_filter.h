@@ -12,7 +12,6 @@
 #include "base/gtest_prod_util.h"
 #include "ui/display/manager/display_manager_observer.h"
 #include "ui/events/event_handler.h"
-#include "ui/gfx/geometry/rect.h"
 
 namespace aura {
 class Window;

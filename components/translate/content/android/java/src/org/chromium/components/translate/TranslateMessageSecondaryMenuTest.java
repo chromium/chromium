@@ -23,6 +23,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import android.app.Activity;
+import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -46,7 +47,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageScopeType;
@@ -101,7 +102,6 @@ public final class TranslateMessageSecondaryMenuTest {
     private static ViewGroup sContentView;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock TranslateMessage.Natives mMockJni;
     @Mock WebContents mWebContents;
@@ -122,7 +122,7 @@ public final class TranslateMessageSecondaryMenuTest {
 
     @Before
     public void setupTest() throws Exception {
-        mJniMocker.mock(TranslateMessageJni.TEST_HOOKS, mMockJni);
+        TranslateMessageJni.setInstanceForTesting(mMockJni);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -213,6 +213,9 @@ public final class TranslateMessageSecondaryMenuTest {
 
     @Test
     @MediumTest
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
+            message = "crbug.com/428259782")
     public void testMenuItemViewReUse() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

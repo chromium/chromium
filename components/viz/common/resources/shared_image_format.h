@@ -10,6 +10,7 @@
 #include <compare>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "base/check.h"
 #include "base/component_export.h"
@@ -21,7 +22,6 @@
 
 namespace viz {
 
-class LegacyMultiPlaneFormat;
 class SinglePlaneFormat;
 
 namespace mojom {
@@ -131,15 +131,14 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) SharedImageFormat final {
 #endif
   }
 
-  // Returns whether the resource format can be used as a software bitmap for
-  // export to the display compositor.
-  bool IsBitmapFormatSupported() const;
-
   // Return the number of planes associated with the format.
   int NumberOfPlanes() const;
 
   // Returns true is `plane_index` is valid.
   bool IsValidPlaneIndex(int plane_index) const;
+
+  // Returns the subsampling width and height scale for the format.
+  std::pair<int, int> GetSubsamplingScale() const;
 
   // Returns the size for a plane given `plane_index`.
   gfx::Size GetPlaneSize(int plane_index, const gfx::Size& size) const;
@@ -168,6 +167,10 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) SharedImageFormat final {
   // Returns the bit depth for multiplanar format based on the channel format.
   int MultiplanarBitDepth() const;
 
+  // Returns the number of bytes per channel for multiplanar format based on the
+  // channel format.
+  uint64_t MultiplanarStorageBytesPerChannel() const;
+
   // Returns a std::string for the format.
   std::string ToString() const;
 
@@ -180,13 +183,13 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) SharedImageFormat final {
   // Returns true if the format is ETC1 compressed.
   bool IsCompressed() const;
 
-  // Returns true if format is legacy multiplanar SingleplanarFormat i.e.
-  // YUV_420_BIPLANAR, YVU_420, YUVA_420_TRIPLANAR, P010.
-  bool IsLegacyMultiplanar() const;
+  // NOTE: Supported only for true single-plane formats that have a fixed number
+  // of bytes per pixel, eg. not ETC1.
+  int BytesPerPixel() const;
 
-  // NOTE: Supported only for true single-plane formats (i.e., formats for
-  // which is_single_plane() is true and IsLegacyMultiplanar() is false).
-  int BitsPerPixel() const;
+  // Returns a SharedImageFormat that matches Skia's kN32_SkColorType.  Use this
+  // function to get optimal 8 bit format for the Skia CPU backend.
+  static SharedImageFormat N32Format();
 
   bool operator==(const SharedImageFormat& o) const;
   std::weak_ordering operator<=>(const SharedImageFormat& o) const;
@@ -231,7 +234,6 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) SharedImageFormat final {
     MultiplanarFormat multiplanar_format;
   };
 
-  friend class LegacyMultiPlaneFormat;
   friend class SinglePlaneFormat;
   friend struct mojo::UnionTraits<mojom::SharedImageFormatDataView,
                                   SharedImageFormat>;
@@ -278,10 +280,6 @@ class SinglePlaneFormat {
       SharedImageFormat(mojom::SingleplanarFormat::BGRA_8888);
   static constexpr SharedImageFormat kALPHA_8 =
       SharedImageFormat(mojom::SingleplanarFormat::ALPHA_8);
-  static constexpr SharedImageFormat kLUMINANCE_8 =
-      SharedImageFormat(mojom::SingleplanarFormat::LUMINANCE_8);
-  static constexpr SharedImageFormat kRGB_565 =
-      SharedImageFormat(mojom::SingleplanarFormat::RGB_565);
   static constexpr SharedImageFormat kBGR_565 =
       SharedImageFormat(mojom::SingleplanarFormat::BGR_565);
   static constexpr SharedImageFormat kETC1 =
@@ -310,37 +308,10 @@ class SinglePlaneFormat {
       SharedImageFormat(mojom::SingleplanarFormat::R_F16);
 
   // All known singleplanar formats.
-  static constexpr SharedImageFormat kAll[19] = {
-      kRGBA_8888,     kRGBA_4444,    kBGRA_8888,    kALPHA_8, kLUMINANCE_8,
-      kRGB_565,       kBGR_565,      kETC1,         kR_8,     kRG_88,
-      kLUMINANCE_F16, kRGBA_F16,     kR_16,         kRG_1616, kRGBX_8888,
-      kBGRX_8888,     kRGBA_1010102, kBGRA_1010102, kR_F16};
-};
-
-// Constants for legacy single-plane representations of multiplanar formats.
-// NOTE: This is a class rather than a namespace so that SharedImageFormat can
-// friend it to give it access to the private constructor needed for creating
-// these constants.
-// TODO(crbug.com/40239769): Eliminate these once the codebase is completely
-// converted to using MultiplanarSharedImage.
-class LegacyMultiPlaneFormat {
- public:
-  static constexpr SharedImageFormat kYV12 =
-      SharedImageFormat(mojom::SingleplanarFormat::YV12_LEGACY);
-  static constexpr SharedImageFormat kNV12 =
-      SharedImageFormat(mojom::SingleplanarFormat::NV12_LEGACY);
-  static constexpr SharedImageFormat kNV12A =
-      SharedImageFormat(mojom::SingleplanarFormat::NV12A_LEGACY);
-  static constexpr SharedImageFormat kP010 =
-      SharedImageFormat(mojom::SingleplanarFormat::P010_LEGACY);
-
-  // All known legacy multiplanar formats.
-  static constexpr SharedImageFormat kAll[4] = {kYV12, kNV12, kNV12A, kP010};
-
-  // The number of singleplanar and legacy multiplanar formats should
-  // correspond exactly to the number of SingleplanarFormat types.
-  static_assert(std::size(SinglePlaneFormat::kAll) + std::size(kAll) ==
-                static_cast<int>(mojom::SingleplanarFormat::kMaxValue) + 1);
+  static constexpr SharedImageFormat kAll[17] = {
+      kRGBA_8888, kRGBA_4444, kBGRA_8888,     kALPHA_8,      kBGR_565, kETC1,
+      kR_8,       kRG_88,     kLUMINANCE_F16, kRGBA_F16,     kR_16,    kRG_1616,
+      kRGBX_8888, kBGRX_8888, kRGBA_1010102,  kBGRA_1010102, kR_F16};
 };
 
 // Constants for common multi-planar formats.

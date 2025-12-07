@@ -4,10 +4,10 @@
 
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/check.h"
-#include "base/ranges/algorithm.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "content/public/browser/back_forward_cache.h"
@@ -27,26 +27,25 @@ WebContentsModalDialogManager::~WebContentsModalDialogManager() {
 void WebContentsModalDialogManager::SetDelegate(
     WebContentsModalDialogManagerDelegate* d) {
   delegate_ = d;
-
-  for (const auto& dialog : child_dialogs_) {
-    // Delegate can be null on Views/Win32 during tab drag.
-    dialog.manager->HostChanged(d ? d->GetWebContentsModalDialogHost()
-                                  : nullptr);
-  }
+  UpdateDialogHost();
 }
 
 // TODO(gbillock): Maybe "ShowBubbleWithManager"?
 void WebContentsModalDialogManager::ShowDialogWithManager(
     gfx::NativeWindow dialog,
     std::unique_ptr<SingleWebContentsDialogManager> manager) {
-  if (delegate_)
-    manager->HostChanged(delegate_->GetWebContentsModalDialogHost());
+  observer_list_.Notify(&Observer::OnWillShow);
+  if (delegate_) {
+    manager->HostChanged(
+        delegate_->GetWebContentsModalDialogHost(web_contents()));
+  }
   child_dialogs_.emplace_back(dialog, std::move(manager));
 
   if (child_dialogs_.size() == 1) {
     BlockWebContentsInteraction(true);
-    if (delegate_ && delegate_->IsWebContentsVisible(web_contents()))
-      child_dialogs_.back().manager->Show();
+    if (delegate_ && delegate_->IsWebContentsVisible(web_contents())) {
+      ShowNextDialog();
+    }
   }
 }
 
@@ -59,14 +58,21 @@ void WebContentsModalDialogManager::FocusTopmostDialog() const {
   child_dialogs_.front().manager->Focus();
 }
 
-void WebContentsModalDialogManager::AddCloseOnNavigationObserver(
-    CloseOnNavigationObserver* observer) {
-  close_on_navigation_observer_list_.AddObserver(observer);
+void WebContentsModalDialogManager::UpdateDialogHost() {
+  for (const auto& dialog : child_dialogs_) {
+    // Delegate can be null on Views/Win32 during tab drag.
+    dialog.manager->HostChanged(
+        delegate_ ? delegate_->GetWebContentsModalDialogHost(web_contents())
+                  : nullptr);
+  }
 }
 
-void WebContentsModalDialogManager::RemoveCloseOnNavigationObserver(
-    CloseOnNavigationObserver* observer) {
-  close_on_navigation_observer_list_.RemoveObserver(observer);
+void WebContentsModalDialogManager::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void WebContentsModalDialogManager::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
 }
 
 content::WebContents* WebContentsModalDialogManager::GetWebContents() const {
@@ -74,19 +80,20 @@ content::WebContents* WebContentsModalDialogManager::GetWebContents() const {
 }
 
 void WebContentsModalDialogManager::WillClose(gfx::NativeWindow dialog) {
-  auto dlg = base::ranges::find(child_dialogs_, dialog, &DialogState::dialog);
+  auto dlg = std::ranges::find(child_dialogs_, dialog, &DialogState::dialog);
 
   // The Views tab contents modal dialog calls WillClose twice.  Ignore the
   // second invocation.
-  if (dlg == child_dialogs_.end())
+  if (dlg == child_dialogs_.end()) {
     return;
+  }
 
   bool removed_topmost_dialog = dlg == child_dialogs_.begin();
   child_dialogs_.erase(dlg);
   if (!closing_all_dialogs_ &&
       (!child_dialogs_.empty() && removed_topmost_dialog) &&
       (delegate_ && delegate_->IsWebContentsVisible(web_contents()))) {
-    child_dialogs_.front().manager->Show();
+    ShowNextDialog();
   }
 
   BlockWebContentsInteraction(!child_dialogs_.empty());
@@ -125,8 +132,13 @@ void WebContentsModalDialogManager::BlockWebContentsInteraction(bool blocked) {
   } else {
     scoped_ignore_input_events_.reset();
   }
-  if (delegate_)
+  if (delegate_) {
     delegate_->SetWebContentsBlocked(contents, blocked);
+  }
+}
+
+void WebContentsModalDialogManager::ShowNextDialog() {
+  child_dialogs_.front().manager->Show();
 }
 
 void WebContentsModalDialogManager::CloseAllDialogs() {
@@ -143,8 +155,9 @@ void WebContentsModalDialogManager::CloseAllDialogs() {
 void WebContentsModalDialogManager::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->IsInPrimaryMainFrame() ||
-      !navigation_handle->HasCommitted())
+      !navigation_handle->HasCommitted()) {
     return;
+  }
 
   if (!child_dialogs_.empty()) {
     // Disable BFCache for the page which had any modal dialog open.
@@ -163,10 +176,7 @@ void WebContentsModalDialogManager::DidFinishNavigation(
           navigation_handle->GetPreviousPrimaryMainFrameURL(),
           navigation_handle->GetURL(),
           net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES)) {
-    for (auto& observer : close_on_navigation_observer_list_) {
-      observer.OnWillClose();
-    }
-
+    observer_list_.Notify(&Observer::OnWillCloseOnNavigation);
     CloseAllDialogs();
   }
 }
@@ -201,7 +211,7 @@ void WebContentsModalDialogManager::OnVisibilityChanged(
        web_contents_visibility_ == content::Visibility::VISIBLE &&
        !child_dialogs_.front().manager->IsActive())) {
     // TODO(crbug.com/40283251): Add an interaction test for this.
-    child_dialogs_.front().manager->Show();
+    ShowNextDialog();
   }
 }
 

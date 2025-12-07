@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Setting pointer capture at `pointerdown` and releasing pointer capture at `pointerrawupdate`
+  assert_equals: expected "pointerrawupdate@div#child, pointermove@div#child, pointerdown@div#child, gotpointercapture@div#parent, pointerrawupdate@div#parent, lostpointercapture@div#parent, pointermove@div#child, pointerup@div#child" but got "pointerrawupdate@div#child, pointermove@div#child, pointerdown@div#child, pointerrawupdate@div#parent, pointermove@div#child, pointerup@div#child"
+[FAIL] Setting pointer capture at `pointerdown` and releasing pointer capture at `gotpointercapture`
+  assert_equals: expected "pointerrawupdate@div#child, pointermove@div#child, pointerdown@div#child, gotpointercapture@div#parent, pointerrawupdate@div#parent, lostpointercapture@div#parent, pointermove@div#child, pointerup@div#child" but got "pointerrawupdate@div#child, pointermove@div#child, pointerdown@div#child, pointerrawupdate@div#parent, gotpointercapture@div#parent, pointermove@div#parent, lostpointercapture@div#parent, pointerup@div#child"
+[FAIL] Setting pointer capture at `lostpointercapture`
+  assert_equals: expected "pointerrawupdate@div#child, pointermove@div#child, pointerdown@div#child, gotpointercapture@div#parent, pointerrawupdate@div#parent, pointermove@div#parent, lostpointercapture@div#parent, pointerrawupdate@div#child, gotpointercapture@div#parent, pointermove@div#parent, pointerup@div#parent, lostpointercapture@div#parent" but got "pointerrawupdate@div#child, pointermove@div#child, pointerdown@div#child, pointerrawupdate@div#parent, gotpointercapture@div#parent, pointermove@div#parent, pointerrawupdate@div#child, lostpointercapture@div#parent, pointermove@div#child, gotpointercapture@div#parent, pointerup@div#parent, lostpointercapture@div#parent"
+Harness: the test ran to completion.
+

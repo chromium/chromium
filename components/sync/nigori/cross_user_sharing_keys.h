@@ -5,12 +5,16 @@
 #ifndef COMPONENTS_SYNC_NIGORI_CROSS_USER_SHARING_KEYS_H_
 #define COMPONENTS_SYNC_NIGORI_CROSS_USER_SHARING_KEYS_H_
 
-#include <map>
 #include <memory>
 #include <string>
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 #include "components/sync/engine/nigori/cross_user_sharing_public_private_key_pair.h"
-#include "components/sync/protocol/nigori_local_data.pb.h"
+
+namespace sync_pb {
+class CrossUserSharingKeys;
+class CrossUserSharingPrivateKey;
+}  // namespace sync_pb
 
 namespace syncer {
 
@@ -31,7 +35,7 @@ class CrossUserSharingKeys {
   // Serialization to proto.
   sync_pb::CrossUserSharingKeys ToProto() const;
 
-  // Makes a deep copy of |*this|.
+  // Makes a deep copy of `*this`.
   CrossUserSharingKeys Clone() const;
 
   size_t size() const;
@@ -54,7 +58,7 @@ class CrossUserSharingKeys {
   CrossUserSharingKeys();
 
   // Public-private key-pairs we know about, mapped by version.
-  std::map<uint32_t, CrossUserSharingPublicPrivateKeyPair> key_pairs_map_;
+  absl::flat_hash_map<uint32_t, CrossUserSharingPublicPrivateKeyPair> key_pairs_map_;
 };
 
 }  // namespace syncer

@@ -99,7 +99,6 @@ EOF
 # $1 - File to modify.
 function convert_to_windows() {
   sed -i.bak \
-    -e 's/\(#define[[:space:]]INLINE[[:space:]]*\)inline/\1 __inline/' \
     -e 's/\(#define[[:space:]]HAVE_PTHREAD_H[[:space:]]*\)1/\1 0/' \
     -e 's/\(#define[[:space:]]HAVE_UNISTD_H[[:space:]]*\)1/\1 0/' \
     -e 's/\(#define[[:space:]]CONFIG_GCC[[:space:]]*\)1/\1 0/' \
@@ -124,7 +123,6 @@ all_platforms="-DCONFIG_SIZE_LIMIT=1"
 all_platforms+=" -DDECODE_HEIGHT_LIMIT=16384 -DDECODE_WIDTH_LIMIT=16384"
 all_platforms+=" -DCONFIG_AV1_ENCODER=1"
 all_platforms+=" -DCONFIG_AV1_DECODER=0"
-all_platforms+=" -DCONFIG_LIBYUV=0"
 # Use low bit depth.
 all_platforms+=" -DCONFIG_AV1_HIGHBITDEPTH=0"
 # Use real-time only build.
@@ -135,6 +133,10 @@ all_platforms+=" -DCONFIG_QUANT_MATRIX=0"
 # avx2 optimizations account for ~0.3mb of the decoder.
 #all_platforms+=" -DENABLE_AVX2=0"
 toolchain="-DCMAKE_TOOLCHAIN_FILE=${SRC}/build/cmake/toolchains"
+# chromium has required sse3 for x86 since 2020:
+# http://crrev.com/5bb2864fdd57e45c84459520234b37a01e7a015a
+x86_flags="-DAOM_RTCD_FLAGS="
+x86_flags+="--require-mmx;--require-sse;--require-sse2;--require-sse3"
 
 reset_dirs linux/generic
 gen_config_files linux/generic "-DAOM_TARGET_CPU=generic ${all_platforms}"
@@ -152,10 +154,10 @@ reset_dirs linux/ia32
 gen_config_files linux/ia32 "${toolchain}/i686-linux-gcc.cmake \
   ${all_platforms} \
   -DCONFIG_PIC=1 \
-  -DAOM_RTCD_FLAGS=--require-mmx;--require-sse;--require-sse2"
+  ${x86_flags}"
 
 reset_dirs linux/x64
-gen_config_files linux/x64 "${all_platforms}"
+gen_config_files linux/x64 "${all_platforms} ${x86_flags}"
 
 # Copy linux configurations and modify for Windows.
 reset_dirs win/ia32
@@ -187,13 +189,19 @@ gen_config_files linux/arm-neon-cpu-detect \
   "${toolchain}/armv7-linux-gcc.cmake ${all_platforms}"
 
 reset_dirs linux/arm64-cpu-detect
+# Note clang is use to allow detection of SVE/SVE2; gcc as of version 13 is
+# missing the required arm_neon_sve_bridge.h header.
 gen_config_files linux/arm64-cpu-detect \
-  "${toolchain}/arm64-linux-gcc.cmake ${all_platforms}"
+  "${toolchain}/arm64-linux-clang.cmake ${all_platforms}"
 
-# Copy linux configurations and modify for Windows.
+# Generate linux configurations and modify for Windows.
 reset_dirs win/arm64-cpu-detect
-cp "${CFG}/linux/arm64-cpu-detect/config"/* \
-  "${CFG}/win/arm64-cpu-detect/config/"
+# There are known problems with LLVM-based compilers targeting Windows for
+# SVE code generation. Since there are no client Windows devices that
+# support SVE(2) at this time, disable SVE(2) on AArch64 Windows targets.
+gen_config_files win/arm64-cpu-detect \
+  "${toolchain}/arm64-linux-clang.cmake -DENABLE_SVE=0 -DENABLE_SVE2=0 \
+   ${all_platforms}"
 convert_to_windows "${CFG}/win/arm64-cpu-detect/config/aom_config.h"
 )
 

@@ -9,8 +9,8 @@
 #include <tuple>
 #include <vector>
 
-#include "ash/components/arc/mojom/input_method_manager.mojom-forward.h"
 #include "chrome/browser/ash/arc/input_method_manager/arc_input_method_manager_bridge.h"
+#include "chromeos/ash/experiences/arc/mojom/input_method_manager.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace arc {

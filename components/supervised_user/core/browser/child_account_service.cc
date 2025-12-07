@@ -5,7 +5,6 @@
 #include "components/supervised_user/core/browser/child_account_service.h"
 
 #include <functional>
-#include <memory>
 #include <utility>
 
 #include "base/command_line.h"
@@ -15,24 +14,21 @@
 #include "base/no_destructor.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
-#include "components/policy/core/common/policy_pref_names.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/tribool.h"
+#include "components/supervised_user/core/browser/family_link_user_capabilities.h"
 #include "components/supervised_user/core/browser/list_family_members_service.h"
-#include "components/supervised_user/core/browser/permission_request_creator_impl.h"
 #include "components/supervised_user/core/browser/proto/families_common.pb.h"
 #include "components/supervised_user/core/browser/proto_fetcher.h"
-#include "components/supervised_user/core/browser/supervised_user_capabilities.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "google_apis/gaia/core_account_id.h"
 
 namespace supervised_user {
 
@@ -42,18 +38,13 @@ using ::base::BindRepeating;
 
 ChildAccountService::ChildAccountService(
     PrefService& user_prefs,
-    SupervisedUserService& supervised_user_service,
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    base::RepeatingCallback<std::unique_ptr<PermissionRequestCreator>()>
-        permission_creator_callback,
     base::OnceCallback<void(bool)> check_user_child_status_callback,
     ListFamilyMembersService& list_family_members_service)
     : identity_manager_(identity_manager),
       user_prefs_(user_prefs),
-      supervised_user_service_(supervised_user_service),
       url_loader_factory_(url_loader_factory),
-      permission_creator_callback_(std::move(permission_creator_callback)),
       check_user_child_status_callback_(
           std::move(check_user_child_status_callback)) {
   set_custodian_prefs_subscription_ =
@@ -67,7 +58,6 @@ ChildAccountService::ChildAccountService(
 ChildAccountService::~ChildAccountService() = default;
 
 void ChildAccountService::Init() {
-  supervised_user_service_->SetDelegate(this);
   identity_manager_->AddObserver(this);
 
   std::move(check_user_child_status_callback_)
@@ -87,8 +77,6 @@ void ChildAccountService::Init() {
 
 void ChildAccountService::Shutdown() {
   identity_manager_->RemoveObserver(this);
-  supervised_user_service_->SetDelegate(nullptr);
-  DCHECK(!active_);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -106,43 +94,43 @@ void ChildAccountService::AddChildStatusReceivedCallback(
 }
 #endif
 
-ChildAccountService::AuthState ChildAccountService::GetGoogleAuthState() {
-  signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info =
-      identity_manager_->GetAccountsInCookieJar();
-  if (!accounts_in_cookie_jar_info.accounts_are_fresh) {
-    return AuthState::PENDING;
+ChildAccountService::AuthState ChildAccountService::GetGoogleAuthState() const {
+  CoreAccountId primary_account_id =
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  if (primary_account_id.empty()) {
+    return AuthState::NOT_AUTHENTICATED;
   }
 
-  bool first_account_authenticated =
-      !accounts_in_cookie_jar_info.signed_in_accounts.empty() &&
-      accounts_in_cookie_jar_info.signed_in_accounts[0].valid;
+  signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info =
+      identity_manager_->GetAccountsInCookieJar();
+  bool primary_account_has_cookie =
+      accounts_in_cookie_jar_info.AreAccountsFresh() &&
+      std::ranges::any_of(
+          accounts_in_cookie_jar_info.GetPotentiallyInvalidSignedInAccounts(),
+          [primary_account_id](const gaia::ListedAccount& account) {
+            return account.id == primary_account_id && account.valid;
+          });
+  bool primary_account_has_token =
+      !identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
+          primary_account_id);
 
-  return first_account_authenticated ? AuthState::AUTHENTICATED
-                                     : AuthState::NOT_AUTHENTICATED;
+  if (primary_account_has_cookie && primary_account_has_token) {
+    return AuthState::AUTHENTICATED;
+  }
+  if (primary_account_has_token && !primary_account_has_cookie) {
+    // The account reconcilor should automatically fix this state, by rebuilding
+    // the account cookie.
+    return AuthState::TRANSIENT_MOVING_TO_AUTHENTICATED;
+  }
+  // We either have no token or cookie (in which case we're in the stable
+  // pending state), or we have a cookie and no token (in which case the
+  // reconcilor will eventually get us to the stable pending state).
+  return AuthState::PENDING;
 }
 
 base::CallbackListSubscription ChildAccountService::ObserveGoogleAuthState(
     const base::RepeatingCallback<void()>& callback) {
   return google_auth_state_observers_.Add(callback);
-}
-
-void ChildAccountService::SetActive(bool active) {
-  if (!supervised_user::IsSubjectToParentalControls(user_prefs_.get()) &&
-      !active_) {
-    return;
-  }
-  if (active_ == active) {
-    return;
-  }
-  active_ = active;
-  if (active_) {
-    CHECK(permission_creator_callback_);
-    std::unique_ptr<supervised_user::PermissionRequestCreator>
-        permission_creator = permission_creator_callback_.Run();
-    CHECK(permission_creator);
-    supervised_user_service_->remote_web_approvals_manager()
-        .AddApprovalRequestCreator(std::move(permission_creator));
-  }
 }
 
 void ChildAccountService::SetSupervisionStatusAndNotifyObservers(
@@ -180,10 +168,9 @@ void ChildAccountService::OnPrimaryAccountChanged(
 }
 
 void ChildAccountService::UpdateForceGoogleSafeSearch() {
-  if (!base::FeatureList::IsEnabled(
-          supervised_user::kForceSafeSearchForUnauthenticatedSupervisedUsers)) {
-    return;
-  }
+// On platforms without web sign-out (where the primary account is always
+// authenticated), there's no need to force SafeSearch.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   bool is_subject_to_parental_controls =
       IsPrimaryAccountSubjectToParentalControls(identity_manager_) ==
       signin::Tribool::kTrue;
@@ -196,8 +183,9 @@ void ChildAccountService::UpdateForceGoogleSafeSearch() {
   bool should_force_google_safe_search =
       (is_subject_to_parental_controls &&
        GetGoogleAuthState() != AuthState::AUTHENTICATED);
-  user_prefs_->SetBoolean(policy::policy_prefs::kForceGoogleSafeSearch,
-                          should_force_google_safe_search);
+  SetGoogleSafeSearch(*user_prefs_, static_cast<GoogleSafeSearchStateStatus>(
+                                        should_force_google_safe_search));
+#endif
 }
 
 void ChildAccountService::OnExtendedAccountInfoUpdated(
@@ -215,11 +203,38 @@ void ChildAccountService::OnExtendedAccountInfoUpdated(
 
   SetSupervisionStatusAndNotifyObservers(info.is_child_account ==
                                          signin::Tribool::kTrue);
+  OnAuthStateUpdated();
+}
+
+void ChildAccountService::OnRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& account_info) {
+  if (account_info.account_id !=
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin)) {
+    return;
+  }
+
+  OnAuthStateUpdated();
+}
+
+void ChildAccountService::OnErrorStateOfRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& account_info,
+    const GoogleServiceAuthError& error,
+    signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
+  if (account_info.account_id !=
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin)) {
+    return;
+  }
+
+  OnAuthStateUpdated();
 }
 
 void ChildAccountService::OnAccountsInCookieUpdated(
     const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
     const GoogleServiceAuthError& error) {
+  OnAuthStateUpdated();
+}
+
+void ChildAccountService::OnAuthStateUpdated() {
   UpdateForceGoogleSafeSearch();
   google_auth_state_observers_.Notify();
 }

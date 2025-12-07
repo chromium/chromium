@@ -133,7 +133,7 @@ while retaining the same official version number. Therefore, the server sends a
 more precise label with each update payload, which the client reports back in
 subsequent update checks. This value is called a "differential fingerprint".
 
-The sever should send a value determined by the hash of the binary (not, for
+The server should send a value determined by the hash of the binary (not, for
 example, a unique ID). In practice, Google's servers always send "1.hash" where
 "hash" is the SHA256 hash of the update payload.
 
@@ -243,8 +243,10 @@ A request object has the following members:
      "Chrome", "Chrome Extension Updater"). Default: "".
  *   `acceptformat`: A string, formatted as a comma-separated list of strings
      describing the formats of update payloads that this client accepts.
-     Default: "crx3". The following value(s) are supported:
+     Default: "". The following value(s) are supported:
      *   "crx3": The CRX file format, version 3.
+     *   "puff": The [Puffin](https://chromium.googlesource.com/chromium/src.git/+/main/third_party/puffin/README.md)
+         *.puff file format representing a differential Puffin update.
  *   `app`: A list of `app` objects.
  *   `dedup`: A string, must be "cr". This indicates to servers that the client
      intends to use client-regulated counting algorithms rather than any sort of
@@ -377,11 +379,12 @@ following members:
  *   `installdate`: The approximate date that the application installation took
      place on, or "-2" if unknown or not applicable. Default: "-2". During the
      installation request itself (the first communication to the server), the
-     client should use a special value of "-1". The `response.clock.date` value
-     for that request's response should be stored to use in all subsequent
-     requests. To mitigate privacy risk, clients should fuzz the value to the
-     week granularity by storing X - X % 7, where X is the server-provided date.
-     For offline installs, the client should send -2. Default: -2.
+     client should use a special value of "-1". The
+     `response.daystart.elapsed_days` value for that request's response should
+     be stored to use in all subsequent requests. To mitigate privacy risk,
+     clients should fuzz the value to the week granularity by storing X - X % 7,
+     where X is the server-provided date. For offline installs, the client
+     should send -2. Default: -2.
  *   `installedby`: A string describing the original cause of the installation.
      The string should be drawn from a small set of constant values, to minimize
      entropy and the ability for the client to be fingerprinted. Default: "".
@@ -494,6 +497,12 @@ object has the following members:
      >*   0: [0, 336) hours ago (0 to < ~2 weeks)
      >*   336: [336, 1344) hours ago (~2 weeks to ~2×28 days)
      >*   1344: at least 1344 hours ago (~2×28 days or more)
+ *   `lastupdatecheckerrorcat`: The numeric error category encountered on
+     the last update check. 0 for success. Default: "0".
+ *   `lastupdatecheckerrorcode`: The numeric error code encountered on the last
+     update check. 0 for success. Default: "0".
+ *   `lastupdatecheckextracode1`: The numeric extra code encountered on the
+     last update check. 0 for success. Default: "0".
  *   `laststarted`: An estimated number of hours since the other updater
      successfully ran (started and exited without crashing). A value of -1
      indicates the last check time is unknown. Default: -1. Clients should
@@ -628,10 +637,6 @@ in the response. It has the following members:
      *   "error-invalidAppId": The server is not aware of this application with
          this ID and furthermore the application ID was not in a format the
          server expected.
-     *   "error-osnotsupported": The server finds that the OS does not meet the
-         application requirements.
-     *   "error-hwnotsupported": The server finds that the computer does not
-         meet the hardware requirements of the application.
 
 #### `data` Objects (Update Check Response)
 Each data object in the response represents an answer to a data request from the
@@ -697,7 +702,6 @@ A manifest object contains details about how to fetch and apply an update.
  *   `version`: The new version the client should report for the application,
      after successfully applying this update. Compatible servers must send this
      member.
-
 
 #### `packages` Objects (Update Check Response)
 A packages object describes a set of downloadable files. The 3.1 protocol only
@@ -785,8 +789,8 @@ For `type == "run"`:
 
 ## Downloads
 Download requests occur when an application update is needed, as a result of a
-`response.app.updatecheck.manifest.package` member.  Download requests are HTTP
-GET requests and can use any HTTP implementation.
+`response.app.updatecheck.pipelines.operations.urls` member.  Download requests
+are HTTP GET requests and can use any HTTP implementation.
 
 ### Request Headers
 In addition to the regular HTTP headers, this protocol defines the following
@@ -835,9 +839,7 @@ for the following differences.
 
 A ping-back `app` object cannot contain any of the following members:
  *   `data`
- *   `ad`
- *   `rd`
- *   `ping_freshness`
+ *   `ping`
  *   `updatecheck`
 
 A ping-back `app` additionally contains the following members:
@@ -861,7 +863,7 @@ attmpted as part of this update session. All events have the following members:
      *   4: cancelled
  *   `errorcat`: An error category, for use in distinguishing between different
      classes of error codes. Default: 0. The following values are known:
-     *   0: No category / unknown.
+     *   0: No category.
      *   1: Errors acquiring the download.
      *   2: Errors during CRX unpacking.
      *   3: Update client errors during installation.
@@ -879,15 +881,15 @@ attmpted as part of this update session. All events have the following members:
 
 Depending on the event type, additional members may be present:
 
-For `type == 2` events:
+For `eventtype == 2` events:
  *   `nextfp`: The [differential fingerprint](#differential-updates) that
      the client was attempting to update to, regardless of whether that update
      was successful.
  *   `nextversion`: The application version that the client was attempting to
      update to, regardless of whether the update was successful.
 
-For `type == 3` events:
- *   All the members of `type == 2` events.
+For `eventtype == 3` events:
+ *   All the members of `eventtype == 2` events.
  *   `diffresult`: As `eventresult` but specifically for a differential update. A
      client that successfully applies a differential update should send the
      result both here and in `eventresult`. A client that attempts and fails a
@@ -905,7 +907,7 @@ For `type == 3` events:
  *   `previousversion`: The application version the client had prior to the
      update, regardless of whether that update was successful.
 
-For `type == 14` events:
+For `eventtype == 14` events:
  *   `download_time_ms`: The time elapsed between the start of the download and
      the end of the download, in milliseconds. -1 if unavailable.
      Default: -1.
@@ -920,10 +922,10 @@ For `type == 14` events:
  *   `total`: The number of bytes expected to be downloaded. Default: 0.
  *   `url`: The URL from which the download was attempted.
 
-For `type == 41` events:
+For `eventtype == 41` events:
  *   `appcommandid`: The id of the app command for which the ping is being sent.
 
-For `type == 42` events:
+For `eventtype == 42` events:
  *   `actiontype`: The type of the action that caused this event.
 
 ### Ping-Back Response Body

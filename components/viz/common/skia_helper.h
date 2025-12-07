@@ -9,9 +9,6 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageFilter.h"
 #include "third_party/skia/include/core/SkPoint.h"
-#include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/geometry/size.h"
-#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace viz {
 class VIZ_COMMON_EXPORT SkiaHelper {

@@ -13,7 +13,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/openscreen/src/cast/streaming/rpc_messenger.h"
+#include "third_party/openscreen/src/cast/streaming/public/rpc_messenger.h"
 
 namespace media {
 namespace remoting {

@@ -16,4 +16,8 @@ bool SyncEngineStoppedChecker::IsExitConditionSatisfied(std::ostream* os) {
   return !service()->IsEngineInitialized();
 }
 
+void SyncEngineStoppedChecker::WaitDone() {
+  service()->QueryDetailedSyncStatusForDebugging(&status_on_engine_stopped_);
+}
+
 }  // namespace syncer

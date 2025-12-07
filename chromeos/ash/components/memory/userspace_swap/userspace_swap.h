@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_MEMORY_USERSPACE_SWAP_USERSPACE_SWAP_H_
 
 #include <sys/mman.h>
+
 #include <cstdint>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/memory/userspace_swap/region.h"
 #include "chromeos/ash/components/memory/userspace_swap/userspace_swap.mojom.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
 
 #ifndef MREMAP_DONTUNMAP

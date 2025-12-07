@@ -16,17 +16,18 @@ import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityM
 import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel.DISCLOSURE_STATE_SHOWN;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
-import org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.FilledLazy;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -35,22 +36,22 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class DisclosureInfobarTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock public ActivityLifecycleDispatcher mLifecycleDispatcher;
     @Mock public SnackbarManager mSnackbarManager;
     @Mock public TrustedWebActivityModel.DisclosureEventsCallback mCallback;
 
-    private TrustedWebActivityModel mModel = new TrustedWebActivityModel();
+    private final TrustedWebActivityModel mModel = new TrustedWebActivityModel();
     private DisclosureInfobar mInfobar;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         mModel.set(DISCLOSURE_EVENTS_CALLBACK, mCallback);
         mInfobar =
                 new DisclosureInfobar(
                         RuntimeEnvironment.application.getResources(),
-                        new FilledLazy<>(mSnackbarManager),
+                        () -> mSnackbarManager,
                         mModel,
                         mLifecycleDispatcher);
     }

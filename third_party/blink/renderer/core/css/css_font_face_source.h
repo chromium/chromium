@@ -108,7 +108,6 @@ class CORE_EXPORT CSSFontFaceSource
   // Report the font lookup for metrics collection. Only used for local font
   // face sources currently.
   virtual void ReportFontLookup(const FontDescription& font_description,
-                                const SimpleFontData* font_data,
                                 bool is_loading_fallback = false) {}
 
  private:

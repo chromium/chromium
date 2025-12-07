@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/animation/css_image_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/image_list_property_functions.h"
 #include "third_party/blink/renderer/core/animation/list_interpolation_functions.h"
+#include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
@@ -114,7 +115,7 @@ InterpolationValue CSSImageListInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSImageListInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState*,
+    const StyleResolverState&,
     ConversionCheckers&) const {
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (identifier_value && identifier_value->GetValueID() == CSSValueID::kNone)
@@ -129,7 +130,7 @@ InterpolationValue CSSImageListInterpolationType::MaybeConvertValue(
 
   const wtf_size_t length = value_list.length();
   auto* interpolable_list = MakeGarbageCollected<InterpolableList>(length);
-  Vector<scoped_refptr<const NonInterpolableValue>> non_interpolable_values(
+  HeapVector<Member<const NonInterpolableValue>> non_interpolable_values(
       length);
   for (wtf_size_t i = 0; i < length; i++) {
     InterpolationValue component =
@@ -140,9 +141,9 @@ InterpolationValue CSSImageListInterpolationType::MaybeConvertValue(
     interpolable_list->Set(i, std::move(component.interpolable_value));
     non_interpolable_values[i] = std::move(component.non_interpolable_value);
   }
-  return InterpolationValue(
-      std::move(interpolable_list),
-      NonInterpolableList::Create(std::move(non_interpolable_values)));
+  return InterpolationValue(std::move(interpolable_list),
+                            MakeGarbageCollected<NonInterpolableList>(
+                                std::move(non_interpolable_values)));
 }
 
 PairwiseInterpolationValue CSSImageListInterpolationType::MaybeMergeSingles(
@@ -169,7 +170,7 @@ void CSSImageListInterpolationType::Composite(
     double underlying_fraction,
     const InterpolationValue& value,
     double interpolation_fraction) const {
-  underlying_value_owner.Set(*this, value);
+  underlying_value_owner.Set(this, value);
 }
 
 void CSSImageListInterpolationType::ApplyStandardPropertyValue(

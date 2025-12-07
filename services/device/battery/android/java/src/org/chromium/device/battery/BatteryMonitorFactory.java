@@ -4,8 +4,9 @@
 
 package org.chromium.device.battery;
 
-import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.device.battery.BatteryStatusManager.BatteryStatusCallback;
 import org.chromium.device.mojom.BatteryMonitor;
 import org.chromium.device.mojom.BatteryStatus;
@@ -19,7 +20,8 @@ import java.util.List;
  * Factory that creates instances of BatteryMonitor implementations and notifies them about battery
  * status changes.
  */
-public class BatteryMonitorFactory implements InterfaceFactory<BatteryMonitor> {
+@NullMarked
+public class BatteryMonitorFactory implements InterfaceFactory<@Nullable BatteryMonitor> {
     private static final String TAG = "BattMonitorFactory";
 
     // Backing source of battery information.
@@ -29,7 +31,7 @@ public class BatteryMonitorFactory implements InterfaceFactory<BatteryMonitor> {
             new HashSet<BatteryMonitorImpl>();
     // Tracks the latest battery status update for newly added observers.
     private boolean mHasStatusUpdate;
-    private BatteryStatus mBatteryStatus;
+    private @Nullable BatteryStatus mBatteryStatus;
 
     private final BatteryStatusCallback mCallback =
             new BatteryStatusCallback() {
@@ -56,8 +58,8 @@ public class BatteryMonitorFactory implements InterfaceFactory<BatteryMonitor> {
     public BatteryMonitor createImpl() {
         ThreadUtils.assertOnUiThread();
 
-        if (mSubscribedMonitors.isEmpty() && !mManager.start()) {
-            Log.e(TAG, "BatteryStatusManager failed to start.");
+        if (mSubscribedMonitors.isEmpty()) {
+            mManager.start();
         }
 
         BatteryMonitorImpl monitor = new BatteryMonitorImpl(this);

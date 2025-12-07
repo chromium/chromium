@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
 #include <string_view>
 
 #include "base/metrics/histogram.h"
+#include "base/metrics/histogram_base.h"
 #include "base/metrics/sparse_histogram.h"
 
 namespace webrtc {
@@ -47,7 +49,7 @@ Histogram* SparseHistogramFactoryGetEnumeration(std::string_view name,
       std::string(name), base::HistogramBase::kUmaTargetedHistogramFlag));
 }
 
-const char* GetHistogramName(Histogram* histogram_pointer) {
+std::string_view GetHistogramName(Histogram* histogram_pointer) {
   base::HistogramBase* ptr =
       reinterpret_cast<base::HistogramBase*>(histogram_pointer);
   return ptr->histogram_name();

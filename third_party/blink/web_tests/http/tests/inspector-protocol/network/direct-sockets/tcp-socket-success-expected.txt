@@ -1,0 +1,25 @@
+TCP DirectSockets success
+socket created
+   remoteAddr: 127.0.0.1
+   options:{
+    dnsQueryType : ipv4
+    keepAliveDelay : 10033
+    noDelay : true
+    receiveBufferSize : 10011
+    sendBufferSize : 10022
+}
+
+   Initiator Type: script
+   Stack #0
+     functionName: openSocket
+     url: tcp-socket-success.php
+     lineNumber: 15
+socket opened
+   remoteAddr: 127.0.0.1
+   localAddr: undefined
+socket chunk sent
+   data: I'm a netcat. Meow-meow!
+socket chunk received
+   data: I'm a netcat. Meow-meow!
+socket closed
+

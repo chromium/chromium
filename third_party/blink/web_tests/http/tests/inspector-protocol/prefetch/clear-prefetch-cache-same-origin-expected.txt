@@ -1,0 +1,109 @@
+
+Running test: clearSiteDataPrefetchCacheValueTest
+Tests that Preload.prefetchStatusUpdated is dispatched as Failure for prefetch requests if prefetch cache is cleared on same origin using prefetchCache value.
+{
+    method : Preload.prefetchStatusUpdated
+    params : {
+        initiatingFrameId : <string>
+        key : {
+            action : Prefetch
+            loaderId : <string>
+            url : https://127.0.0.1:8443/inspector-protocol/prefetch/resources/target_prefetch.html
+        }
+        pipelineId : <string>
+        prefetchStatus : PrefetchNotFinishedInTime
+        prefetchUrl : https://127.0.0.1:8443/inspector-protocol/prefetch/resources/target_prefetch.html
+        requestId : <string>
+        status : Running
+    }
+    sessionId : <string>
+}
+{
+    method : Preload.prefetchStatusUpdated
+    params : {
+        initiatingFrameId : <string>
+        key : {
+            action : Prefetch
+            loaderId : <string>
+            url : https://127.0.0.1:8443/inspector-protocol/prefetch/resources/target_prefetch.html
+        }
+        pipelineId : <string>
+        prefetchStatus : PrefetchSuccessfulButNotUsed
+        prefetchUrl : https://127.0.0.1:8443/inspector-protocol/prefetch/resources/target_prefetch.html
+        requestId : <string>
+        status : Ready
+    }
+    sessionId : <string>
+}
+{
+    method : Preload.prefetchStatusUpdated
+    params : {
+        initiatingFrameId : <string>
+        key : {
+            action : Prefetch
+            loaderId : <string>
+            url : https://127.0.0.1:8443/inspector-protocol/prefetch/resources/target_prefetch.html
+        }
+        pipelineId : <string>
+        prefetchStatus : PrefetchEvictedAfterBrowsingDataRemoved
+        prefetchUrl : https://127.0.0.1:8443/inspector-protocol/prefetch/resources/target_prefetch.html
+        requestId : <string>
+        status : Failure
+    }
+    sessionId : <string>
+}
+
+Running test: clearSiteDataCacheValueTest
+Tests that Preload.prefetchStatusUpdated is dispatched as Failure for prefetch requests if prefetch cache is cleared on same origin using cache value.
+{
+    method : Preload.prefetchStatusUpdated
+    params : {
+        initiatingFrameId : <string>
+        key : {
+            action : Prefetch
+            loaderId : <string>
+            url : https://127.0.0.1:8443/inspector-protocol/prefetch/resources/target_prefetch.html
+        }
+        pipelineId : <string>
+        prefetchStatus : PrefetchNotFinishedInTime
+        prefetchUrl : https://127.0.0.1:8443/inspector-protocol/prefetch/resources/target_prefetch.html
+        requestId : <string>
+        status : Running
+    }
+    sessionId : <string>
+}
+{
+    method : Preload.prefetchStatusUpdated
+    params : {
+        initiatingFrameId : <string>
+        key : {
+            action : Prefetch
+            loaderId : <string>
+            url : https://127.0.0.1:8443/inspector-protocol/prefetch/resources/target_prefetch.html
+        }
+        pipelineId : <string>
+        prefetchStatus : PrefetchSuccessfulButNotUsed
+        prefetchUrl : https://127.0.0.1:8443/inspector-protocol/prefetch/resources/target_prefetch.html
+        requestId : <string>
+        status : Ready
+    }
+    sessionId : <string>
+}
+{
+    method : Preload.prefetchStatusUpdated
+    params : {
+        initiatingFrameId : <string>
+        key : {
+            action : Prefetch
+            loaderId : <string>
+            url : https://127.0.0.1:8443/inspector-protocol/prefetch/resources/target_prefetch.html
+        }
+        pipelineId : <string>
+        prefetchStatus : PrefetchEvictedAfterBrowsingDataRemoved
+        prefetchUrl : https://127.0.0.1:8443/inspector-protocol/prefetch/resources/target_prefetch.html
+        requestId : <string>
+        status : Failure
+    }
+    sessionId : <string>
+}
+

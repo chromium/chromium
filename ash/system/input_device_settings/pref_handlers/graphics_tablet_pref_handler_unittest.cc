@@ -54,8 +54,7 @@ class GraphicsTabletPrefHandlerTest : public AshTestBase {
 
   // testing::Test:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({features::kPeripheralCustomization,
-                                           features::kInputDeviceSettingsSplit},
+    scoped_feature_list_.InitWithFeatures({features::kPeripheralCustomization},
                                           {});
     AshTestBase::SetUp();
     InitializePrefService();
@@ -177,17 +176,6 @@ TEST_F(GraphicsTabletPrefHandlerTest,
   EXPECT_EQ(tablet_button_remappings,
             updated_settings->tablet_button_remappings);
   EXPECT_EQ(pen_button_remappings, updated_settings->pen_button_remappings);
-}
-
-TEST_F(GraphicsTabletPrefHandlerTest,
-       LoginScreenPrefsNotPersistedWhenFlagIsDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kInputDeviceSettingsSplit);
-  mojom::GraphicsTablet graphics_tablet;
-  graphics_tablet.device_key = kGraphicsTabletKey1;
-  CallInitializeLoginScreenGraphicsTabletSettings(account_id_1,
-                                                  graphics_tablet);
-  EXPECT_FALSE(HasLoginScreenGraphicsTabletButtonRemappingList(account_id_1));
 }
 
 TEST_F(GraphicsTabletPrefHandlerTest, UpdateLoginScreenGraphicsTabletSettings) {

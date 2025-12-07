@@ -6,12 +6,12 @@
 
 #include <optional>
 
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/prefs/pref_service.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "content/public/test/browser_task_environment.h"
@@ -82,9 +82,6 @@ TEST_F(NetworkBandwidthSamplerTest, ReportsDownloadSpeedWhenPrefSet) {
 
 TEST_F(NetworkBandwidthSamplerTest,
        ReportsDownloadSpeedWhenFeatureFlagEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kEnableNetworkBandwidthReporting);
-
   UpdateDownloadSpeedKbps(kInitDownloadSpeedKbps);
   NetworkBandwidthSampler sampler(g_browser_process->network_quality_tracker(),
                                   profile_->GetWeakPtr());
@@ -98,35 +95,6 @@ TEST_F(NetworkBandwidthSamplerTest,
                 .bandwidth_data()
                 .download_speed_kbps(),
             kInitDownloadSpeedKbps);
-}
-
-TEST_F(NetworkBandwidthSamplerTest, DoesNotReportDownloadSpeedWhenPrefUnset) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(kEnableNetworkBandwidthReporting);
-  SetPrefValue(false);
-  UpdateDownloadSpeedKbps(kInitDownloadSpeedKbps);
-  NetworkBandwidthSampler sampler(g_browser_process->network_quality_tracker(),
-                                  profile_->GetWeakPtr());
-
-  ::reporting::test::TestEvent<std::optional<MetricData>> test_event;
-  sampler.MaybeCollect(test_event.cb());
-  const auto result = test_event.result();
-  ASSERT_FALSE(result.has_value());
-}
-
-TEST_F(NetworkBandwidthSamplerTest,
-       DoesNotReportDownloadSpeedWhenFeatureFlagDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(kEnableNetworkBandwidthReporting);
-
-  UpdateDownloadSpeedKbps(kInitDownloadSpeedKbps);
-  NetworkBandwidthSampler sampler(g_browser_process->network_quality_tracker(),
-                                  profile_->GetWeakPtr());
-
-  ::reporting::test::TestEvent<std::optional<MetricData>> test_event;
-  sampler.MaybeCollect(test_event.cb());
-  const auto result = test_event.result();
-  ASSERT_FALSE(result.has_value());
 }
 
 TEST_F(NetworkBandwidthSamplerTest, DoesNotReportDownloadSpeedIfUnavailable) {

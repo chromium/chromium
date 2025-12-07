@@ -45,7 +45,7 @@ class FakeSyncEncryptionHandler : public KeystoreKeysHandler,
       const std::vector<std::vector<uint8_t>>& keys) override;
   base::Time GetKeystoreMigrationTime() override;
   KeystoreKeysHandler* GetKeystoreKeysHandler() override;
-  const sync_pb::NigoriSpecifics::TrustedVaultDebugInfo&
+  const sync_pb::NigoriSpecifics_TrustedVaultDebugInfo&
   GetTrustedVaultDebugInfo() override;
 
   // KeystoreKeysHandler implementation.

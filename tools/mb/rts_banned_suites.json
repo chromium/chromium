@@ -1,0 +1,34 @@
+{
+    "*": [
+        "blink_python_tests",
+        "chromedriver_py_tests",
+        "chromedriver_py_tests_headless_shell",
+        "chromedriver_replay_unittests",
+        "content_shell_crash_test",
+        "gl_unittests_ozone",
+        "grit_python_unittests",
+        "maps_tests",
+        "metrics_python_tests",
+        "mojo_python_unittests",
+        "monochrome_public_apk_checker",
+        "telemetry_gpu_integration_test",
+        "telemetry_gpu_integration_test_android_chrome",
+        "telemetry_gpu_integration_test_android_monochrome",
+        "telemetry_gpu_integration_test_android_monochrome_bundle",
+        "telemetry_gpu_integration_test_android_webview",
+        "telemetry_gpu_unittests",
+        "telemetry_perf_unittests",
+        "telemetry_perf_unittests_android_chrome",
+        "telemetry_perf_unittests_android_monochrome",
+        "telemetry_perf_unittests_android_monochrome_bundle",
+        "telemetry_perf_unittests_android_webview",
+        "telemetry_unittests",
+        "test_env_py_unittests",
+        "webui_resources_tools_python_unittests",
+        "xr_browser_tests",
+        "xvfb_py_unittests"
+    ],
+    "fuchsia_x64_rts": [
+      "blink_web_tests"
+    ]
+  }

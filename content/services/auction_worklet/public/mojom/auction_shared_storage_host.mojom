@@ -4,7 +4,7 @@
 
 module auction_worklet.mojom;
 
-import "third_party/blink/public/mojom/shared_storage/shared_storage.mojom";
+import "services/network/public/mojom/shared_storage.mojom";
 
 enum AuctionWorkletFunction {
   kBidderGenerateBid,
@@ -18,24 +18,17 @@ enum AuctionWorkletFunction {
 // storage API (i.e. the setter methods). We intentionally do not return the
 // result of these calls to avoid leaking state to the worklet.
 interface AuctionSharedStorageHost {
-  // Handle sharedStorage.set(): set `key`’s entry to `value`. If
-  // `ignore_if_present` is true, the entry is not updated if `key` already
-  // exists.
-  Set(blink.mojom.SharedStorageKeyArgument key,
-      blink.mojom.SharedStorageValueArgument value,
-      bool ignore_if_present,
-      AuctionWorkletFunction source_auction_worklet_function);
+  // Handle the modifier method `method_with_options`.
+  SharedStorageUpdate(
+    network.mojom.SharedStorageModifierMethodWithOptions method_with_options,
+    AuctionWorkletFunction source_auction_worklet_function);
 
-  // Handle sharedStorage.append(): append `value` to the entry for `key`.
-  // Equivalent to "set" if the `key` is not present.
-  Append(blink.mojom.SharedStorageKeyArgument key,
-         blink.mojom.SharedStorageValueArgument value,
-         AuctionWorkletFunction source_auction_worklet_function);
-
-  // Handle sharedStorage.delete(): delete the entry at the given `key`.
-  Delete(blink.mojom.SharedStorageKeyArgument key,
-         AuctionWorkletFunction source_auction_worklet_function);
-
-  // Handle sharedStorage.clear(): delete all entries.
-  Clear(AuctionWorkletFunction source_auction_worklet_function);
+  // Handle each modifier method within `methods_with_options`. If `with_lock`
+  // is provided, the methods within the batch will be executed with a lock
+  // acquired on the resource with name `with_lock`. `with_lock` shouldn't start
+  // with '-'.
+  SharedStorageBatchUpdate(
+    network.mojom.SharedStorageBatchUpdateMethodsArgument methods_with_options,
+    network.mojom.LockName? with_lock,
+    AuctionWorkletFunction source_auction_worklet_function);
 };

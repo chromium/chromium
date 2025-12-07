@@ -36,11 +36,11 @@ suite('cr-tooltip', function() {
 
   customElements.define(TestElement.is, TestElement);
 
-  setup(async () => {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     parent = document.createElement('test-element') as TestElement;
     document.body.appendChild(parent);
-    tooltip = parent.shadowRoot!.querySelector('cr-tooltip')!;
+    tooltip = parent.shadowRoot.querySelector('cr-tooltip')!;
   });
 
   test('sets correct target', async() => {
@@ -48,8 +48,8 @@ suite('cr-tooltip', function() {
     assertEquals(parent, tooltip.target);
     tooltip.for = 'test-for';
     await microtasksFinished();
-    assertEquals(parent.shadowRoot!.querySelector('#test-for'), tooltip.target);
-    const manualDiv = parent.shadowRoot!.querySelector('#test-manual');
+    assertEquals(parent.shadowRoot.querySelector('#test-for'), tooltip.target);
+    const manualDiv = parent.shadowRoot.querySelector('#test-manual');
     assertTrue(!!manualDiv);
     tooltip.target = manualDiv;
     await microtasksFinished();
@@ -63,7 +63,7 @@ suite('cr-tooltip', function() {
     assertTrue(tooltip.$.tooltip.hidden);
 
     // Tooltip shows when show() is called and plays fade in animation.
-    const text = parent.shadowRoot!.querySelector<HTMLElement>('#tooltip-text');
+    const text = parent.shadowRoot.querySelector<HTMLElement>('#tooltip-text');
     assertTrue(!!text);
     text.textContent = 'test';
     tooltip.show();
@@ -103,15 +103,45 @@ suite('cr-tooltip', function() {
     assertTrue(tooltip.$.tooltip.hidden);
   });
 
+  test('can hover over tooltip', async () => {
+    const text = parent.shadowRoot.querySelector<HTMLElement>('#tooltip-text');
+    assertTrue(!!text);
+    text.textContent = 'test';
+    tooltip.show();
+    await eventToPromise('animationend', tooltip.$.tooltip);
+    assertFalse(tooltip.$.tooltip.hidden);
+
+    // Pointer leaves the target, but not enough time has passed to hide the
+    // tooltip.
+    const hideDelayMs = 100;
+    tooltip.hideDelay = hideDelayMs;
+    parent.dispatchEvent(
+        new CustomEvent('pointerleave', {bubbles: true, composed: true}));
+    await new Promise(resolve => setTimeout(resolve, hideDelayMs / 2));
+    assertFalse(tooltip.$.tooltip.hidden);
+
+    // Pointer enters the tooltip, which cancels the hide.
+    tooltip.dispatchEvent(
+        new CustomEvent('pointerenter', {bubbles: true, composed: true}));
+    await new Promise(resolve => setTimeout(resolve, hideDelayMs));
+    assertFalse(tooltip.$.tooltip.hidden);
+
+    // Pointer leaves tooltip, which should eventually hide the tooltip.
+    tooltip.dispatchEvent(
+        new CustomEvent('pointerleave', {bubbles: true, composed: true}));
+    await eventToPromise('animationend', tooltip.$.tooltip);
+    assertTrue(tooltip.$.tooltip.hidden);
+  });
+
   test('positioning', async () => {
-    const text = parent.shadowRoot!.querySelector<HTMLElement>('#tooltip-text');
+    const text = parent.shadowRoot.querySelector<HTMLElement>('#tooltip-text');
     assertTrue(!!text);
     text.textContent = 'test';
     tooltip.for = 'test-for';
     await microtasksFinished();
     tooltip.show();
 
-    const target = parent.shadowRoot!.querySelector('#test-for');
+    const target = parent.shadowRoot.querySelector('#test-for');
     assertTrue(!!target);
     const parentRect = parent.getBoundingClientRect();
     const targetRect = target.getBoundingClientRect();
@@ -188,16 +218,16 @@ suite('cr-tooltip in dialog', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     parent = document.createElement('test-dialog-element') as TestDialogElement;
     document.body.appendChild(parent);
-    tooltip = parent.shadowRoot!.querySelector('cr-tooltip')!;
+    tooltip = parent.shadowRoot.querySelector('cr-tooltip')!;
     await microtasksFinished();
   });
 
   test('positioning', () => {
     tooltip.show();
-    const dialog = parent.shadowRoot!.querySelector('cr-dialog');
+    const dialog = parent.shadowRoot.querySelector('cr-dialog');
     assertTrue(!!dialog);
     const parentRect = dialog.$.dialog.getBoundingClientRect();
-    const target = parent.shadowRoot!.querySelector('#test-for');
+    const target = parent.shadowRoot.querySelector('#test-for');
     assertTrue(!!target);
     const targetRect = target.getBoundingClientRect();
     const tooltipRect = tooltip.getBoundingClientRect();

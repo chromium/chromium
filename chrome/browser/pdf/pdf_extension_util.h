@@ -6,16 +6,20 @@
 #define CHROME_BROWSER_PDF_PDF_EXTENSION_UTIL_H_
 
 #include <string>
+#include <vector>
 
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "pdf/buildflags.h"
+#include "ui/base/webui/resource_path.h"
 
 #if !BUILDFLAG(ENABLE_PDF)
 #error "PDF must be enabled"
 #endif
 
+class GURL;
+
 namespace content {
+class BrowserContext;
 class RenderFrameHost;
 }
 
@@ -33,21 +37,28 @@ enum class PdfViewerContext {
   kAll,
 };
 
-// Adds all strings used by the PDF Viewer depending on the provided `context`.
-void AddStrings(PdfViewerContext context, base::Value::Dict* dict);
+// Gets all strings used by the PDF Viewer depending on the provided `context`.
+base::Value::Dict GetStrings(PdfViewerContext context);
 
-// Adds additional data used by the PDF Viewer UI in `dict`, for example
-// whether certain features are enabled/disabled.
-// `enable_printing` only applies for ChromeOS Ash.
-// `enable_annotations` only applies on platforms that supports annotations.
-void AddAdditionalData(bool enable_printing,
-                       bool enable_annotations,
-                       base::Value::Dict* dict);
+// Gets additional data used by the PDF Viewer UI. e.g. whether certain features
+// are enabled/disabled.
+base::Value::Dict GetAdditionalData(content::BrowserContext* context);
+
+// Returns the entries in `resources` that are relevant to `context`.
+// `context` must be `PdfViewerContext::kPdfViewer` or
+// `PdfViewerContext::kPrintPreview`.
+std::vector<webui::ResourcePath> GetResources(PdfViewerContext context);
 
 // For OOPIF PDF viewer only. Returns true if successfully sends a save event to
 // the PDF viewer, or false otherwise. Only successful if the PDF plugin should
 // handle the save event.
 bool MaybeDispatchSaveEvent(content::RenderFrameHost* embedder_host);
+
+// Dispatches an extension event to the PDF viewer containing an updated PDF URL
+// that was intended to be navigated to so the viewer can update its viewport
+// based on the fragment of that URL.
+void DispatchShouldUpdateViewportEvent(content::RenderFrameHost* embedder_host,
+                                       const GURL& new_pdf_url);
 
 }  // namespace pdf_extension_util
 

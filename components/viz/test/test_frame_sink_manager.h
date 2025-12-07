@@ -10,12 +10,14 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "components/input/render_input_router.mojom.h"
 #include "components/viz/common/surfaces/frame_sink_bundle_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
+#include "services/viz/privileged/mojom/compositing/frame_sink_manager_test_api.mojom.h"
 #include "services/viz/privileged/mojom/compositing/frame_sinks_metrics_recorder.mojom.h"
 
 namespace viz {
@@ -36,7 +38,8 @@ class TestFrameSinkManagerImpl : public mojom::FrameSinkManager {
   // mojom::FrameSinkManager:
   void RegisterFrameSinkId(const FrameSinkId& frame_sink_id,
                            bool report_activation) override {}
-  void InvalidateFrameSinkId(const FrameSinkId& frame_sink_id) override {}
+  void InvalidateFrameSinkId(const FrameSinkId& frame_sink_id,
+                             InvalidateFrameSinkIdCallback callback) override;
   void SetFrameSinkDebugLabel(const FrameSinkId& frame_sink_id,
                               const std::string& debug_label) override {}
   void CreateRootCompositorFrameSink(
@@ -50,7 +53,7 @@ class TestFrameSinkManagerImpl : public mojom::FrameSinkManager {
       const std::optional<FrameSinkBundleId>& bundle_id,
       mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
       mojo::PendingRemote<mojom::CompositorFrameSinkClient> client,
-      mojo::PendingRemote<blink::mojom::RenderInputRouterClient> rir_client)
+      input::mojom::RenderInputRouterConfigPtr render_input_router_config)
       override {}
   void DestroyCompositorFrameSink(
       const FrameSinkId& frame_sink_id,
@@ -64,7 +67,8 @@ class TestFrameSinkManagerImpl : public mojom::FrameSinkManager {
   void AddVideoDetectorObserver(
       mojo::PendingRemote<mojom::VideoDetectorObserver> observer) override {}
   void CreateVideoCapturer(
-      mojo::PendingReceiver<mojom::FrameSinkVideoCapturer> receiver) override {}
+      mojo::PendingReceiver<mojom::FrameSinkVideoCapturer> receiver,
+      uint32_t capture_version_source) override {}
   void EvictSurfaces(const std::vector<SurfaceId>& surface_ids) override {}
   void RequestCopyOfOutput(const SurfaceId& surface_id,
                            std::unique_ptr<CopyOutputRequest> request,
@@ -86,11 +90,16 @@ class TestFrameSinkManagerImpl : public mojom::FrameSinkManager {
   void CreateMetricsRecorderForTest(
       mojo::PendingReceiver<mojom::FrameSinksMetricsRecorder> receiver)
       override {}
-  void HasUnclaimedViewTransitionResourcesForTest(
-      HasUnclaimedViewTransitionResourcesForTestCallback callback) override {}
-  void SetSameDocNavigationScreenshotSizeForTesting(
-      const gfx::Size& result_size,
-      SetSameDocNavigationScreenshotSizeForTestingCallback callback) override {}
+  void EnableFrameSinkManagerTestApi(
+      mojo::PendingReceiver<mojom::FrameSinkManagerTestApi> receiver) override {
+  }
+  void SetupRendererInputRouterDelegateRegistry(
+      mojo::PendingReceiver<mojom::RendererInputRouterDelegateRegistry>
+          receiver) override {}
+  void NotifyRendererBlockStateChanged(
+      bool blocked,
+      const std::vector<FrameSinkId>& render_input_routers) override {}
+  void RequestInputBack() override {}
 
   mojo::Receiver<mojom::FrameSinkManager> receiver_{this};
   mojo::Remote<mojom::FrameSinkManagerClient> client_;

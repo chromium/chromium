@@ -4,6 +4,8 @@
 
 #include "components/sync/engine/syncer_error.h"
 
+#include <variant>
+
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -49,17 +51,17 @@ SyncerError SyncerError::ProtocolViolationError() {
 
 int SyncerError::GetNetworkErrorOrDie() const {
   CHECK_EQ(type_, Type::kNetworkError);
-  return absl::get<int>(value_);
+  return std::get<int>(value_);
 }
 
 net::HttpStatusCode SyncerError::GetHttpErrorOrDie() const {
   CHECK_EQ(type_, Type::kHttpError);
-  return absl::get<net::HttpStatusCode>(value_);
+  return std::get<net::HttpStatusCode>(value_);
 }
 
 SyncProtocolErrorType SyncerError::GetProtocolErrorOrDie() const {
   CHECK_EQ(type_, Type::kProtocolError);
-  return absl::get<SyncProtocolErrorType>(value_);
+  return std::get<SyncProtocolErrorType>(value_);
 }
 
 std::string SyncerError::ToString() const {
@@ -77,7 +79,7 @@ std::string SyncerError::ToString() const {
     case Type::kProtocolViolationError:
       return "Protocol violation error";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace syncer

@@ -10,7 +10,7 @@ import pathlib
 
 
 # Update this when upgrading NDK.
-_URL = "https://dl.google.com/android/repository/android-ndk-r27-linux.zip"
+_URL = "https://dl.google.com/android/repository/android-ndk-r28-linux.zip"
 
 def do_latest():
   # Change version time this file changes.

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/run_loop.h"
 #include "extensions/common/extension_id.h"
 
 namespace base {
@@ -15,6 +16,7 @@ class Value;
 
 namespace content {
 class BrowserContext;
+class WebContents;
 }  // namespace content
 
 namespace extensions::browsertest_util {
@@ -26,11 +28,11 @@ enum class ScriptUserActivation {
   kDontActivate,
 };
 
-// Waits until |script| calls "chrome.test.sendScriptResult(result)",
-// where |result| is a serializable value, and returns |result|. Fails
-// the test and returns an empty base::Value if |extension_id| isn't
-// installed in |context| or doesn't have a background page, or if
-// executing the script fails. The argument |script_user_activation|
+// Waits until `script` calls "chrome.test.sendScriptResult(result)",
+// where `result` is a serializable value, and returns `result`. Fails
+// the test and returns an empty base::Value if `extension_id` isn't
+// installed in `context` or doesn't have a background page, or if
+// executing the script fails. The argument `script_user_activation`
 // determines if the script should be executed after a user activation.
 base::Value ExecuteScriptInBackgroundPage(
     content::BrowserContext* context,
@@ -40,9 +42,9 @@ base::Value ExecuteScriptInBackgroundPage(
         ScriptUserActivation::kDontActivate);
 
 // Same as ExecuteScriptInBackgroundPage, but doesn't wait for the script
-// to return a result. Fails the test and returns false if |extension_id|
-// isn't installed in |context| or doesn't have a background page, or if
-// executing the script fails. The argument |script_user_activation|
+// to return a result. Fails the test and returns false if `extension_id`
+// isn't installed in `context` or doesn't have a background page, or if
+// executing the script fails. The argument `script_user_activation`
 // determines if the script should be executed after a user activation.
 bool ExecuteScriptInBackgroundPageNoWait(
     content::BrowserContext* context,
@@ -51,11 +53,11 @@ bool ExecuteScriptInBackgroundPageNoWait(
     ScriptUserActivation script_user_activation =
         ScriptUserActivation::kDontActivate);
 
-// Waits until |script| calls "window.domAutomationController.send(result)",
-// where |result| is a string, and returns |result|. Fails the test and returns
-// an empty string if |extension_id| isn't installed in |context| or doesn't
+// Waits until `script` calls "window.domAutomationController.send(result)",
+// where `result` is a string, and returns `result`. Fails the test and returns
+// an empty string if `extension_id` isn't installed in `context` or doesn't
 // have a background page, or if executing the script fails. The argument
-// |script_user_activation| determines if the script should be executed after a
+// `script_user_activation` determines if the script should be executed after a
 // user activation.
 std::string ExecuteScriptInBackgroundPageDeprecated(
     content::BrowserContext* context,
@@ -66,9 +68,22 @@ std::string ExecuteScriptInBackgroundPageDeprecated(
 
 // Synchronously stops the service worker registered by the extension with the
 // given `extension_id` at global scope. The extension must be installed and
-// enabled.
+// enabled. `stop_waiter_type` allows the caller to nest this call in another
+// base::RunLoop if needed in their test.
 void StopServiceWorkerForExtensionGlobalScope(content::BrowserContext* context,
                                               const ExtensionId& extension_id);
+void StopServiceWorkerForExtensionGlobalScope(
+    content::BrowserContext* context,
+    const ExtensionId& extension_id,
+    base::RunLoop::Type stop_waiter_type);
+
+// Returns whether the given `web_contents` has the associated
+// `changed_title`. If the web contents has neither `changed_title`
+// nor `original_title `, adds a failure to the test (for an unexpected
+// title).
+bool DidChangeTitle(content::WebContents& web_contents,
+                    const std::u16string& original_title,
+                    const std::u16string& changed_title);
 
 }  // namespace extensions::browsertest_util
 

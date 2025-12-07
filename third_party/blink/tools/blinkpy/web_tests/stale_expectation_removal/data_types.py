@@ -12,8 +12,8 @@ from unexpected_passes_common import data_types
 VIRTUAL_PREFIX = 'virtual/'
 
 SANITIZER_BUILDERS = {
-    'chromium/ci:WebKit Linux ASAN',
-    'chromium/ci:WebKit Linux MSAN',
+    'chromium/ci:linux-blink-asan-rel',
+    'chromium/ci:linux-blink-msan-rel',
 }
 
 
@@ -24,13 +24,16 @@ class WebTestExpectation(data_types.BaseExpectation):
     of virtual tests falling back to non-virtual expectations.
     """
 
-    def _CompareWildcard(self, result_test_name: str) -> bool:
+    def _CompareSimpleWildcard(self, result_test_name: str) -> bool:
         success = super(WebTestExpectation,
-                        self)._CompareWildcard(result_test_name)
+                        self)._CompareSimpleWildcard(result_test_name)
         if not success and result_test_name.startswith(VIRTUAL_PREFIX):
             result_test_name = _StripOffVirtualPrefix(result_test_name)
             success = fnmatch.fnmatch(result_test_name, self.test)
         return success
+
+    def _CompareFullWildcard(self, result_test_name: str) -> bool:
+        raise RuntimeError('Full wildcards are not supported for Blink tests')
 
     def _CompareNonWildcard(self, result_test_name: str) -> bool:
         success = super(WebTestExpectation,
@@ -129,9 +132,12 @@ class WebTestTestExpectationMap(data_types.BaseTestExpectationMap):
     Identical to the base implementation except it correctly handles adding
     slow results.
     """
-
+    # pytype: disable=signature-mismatch
+    # Pytype complains that WebTestResult is not a type of BaseResult, despite
+    # WebTestResult being a child. Suspected bug, but pytype team was laid off.
     def _AddSingleResult(self, result: WebTestResult,
                          stats: data_types.BuildStats) -> None:
+        # pytype: enable=signature-mismatch
         super(WebTestTestExpectationMap, self)._AddSingleResult(result, stats)
         if result.is_slow_result:
             stats.AddSlowBuild(result.build_id)

@@ -4,30 +4,25 @@
 
 #include "remoting/host/native_messaging/native_messaging_writer.h"
 
-#include <stddef.h>
-#include <stdint.h>
-
 #include <string>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 
 namespace {
 
 // 4-byte type used for the message header.
-typedef uint32_t MessageLengthType;
-
-// Defined as an int, for passing to APIs that take an int, to avoid
-// signed/unsigned warnings about implicit cast.
-const int kMessageHeaderSize = sizeof(MessageLengthType);
+using MessageLengthType = std::uint32_t;
 
 // Limit the size of sent messages, since Chrome will not accept messages
 // larger than 1MB, and this helps deal with the problem of integer overflow
 // when passing sizes to net::FileStream APIs that take |int| parameters.
 // This is defined as size_t (unsigned type) so it can be compared with the
 // result of std::string::length() without compiler warnings.
-const size_t kMaximumMessageSize = 1024 * 1024;
+constexpr std::size_t kMaximumMessageSize = 1024 * 1024;
 
 }  // namespace
 
@@ -44,34 +39,24 @@ bool NativeMessagingWriter::WriteMessage(base::ValueView message) {
     return false;
   }
 
-  std::string message_json;
-  base::JSONWriter::Write(message, &message_json);
-
+  std::string message_json = base::WriteJson(message).value_or("");
   CHECK_LE(message_json.length(), kMaximumMessageSize);
 
-  // Cast from size_t to the proper header type. The check above ensures this
-  // won't overflow.
+  // Cast from std::size_t to the proper header type, checking this won't
+  // overflow.
   MessageLengthType message_length =
-      static_cast<MessageLengthType>(message_json.length());
+      base::checked_cast<MessageLengthType>(message_json.length());
 
-  int result = write_stream_.WriteAtCurrentPos(
-      reinterpret_cast<char*>(&message_length), kMessageHeaderSize);
-  if (result != kMessageHeaderSize) {
-    LOG(ERROR) << "Failed to send message header, write returned " << result;
+  if (!write_stream_.WriteAtCurrentPosAndCheck(
+          base::byte_span_from_ref(message_length))) {
+    LOG(ERROR) << "Failed to send message header";
     fail_ = true;
     return false;
   }
 
-  // The length check above ensures that the cast won't overflow a signed
-  // 32-bit int.
-  int message_length_as_int = message_length;
-
-  // CHECK needed since data() is undefined on an empty std::string.
-  CHECK(!message_json.empty());
-  result = write_stream_.WriteAtCurrentPos(message_json.data(),
-                                           message_length_as_int);
-  if (result != message_length_as_int) {
-    LOG(ERROR) << "Failed to send message body, write returned " << result;
+  if (!write_stream_.WriteAtCurrentPosAndCheck(
+          base::as_byte_span(message_json))) {
+    LOG(ERROR) << "Failed to send message body";
     fail_ = true;
     return false;
   }

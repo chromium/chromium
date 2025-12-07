@@ -61,7 +61,7 @@ void* GetStackTop() {
     error = pthread_attr_getstack(&attr, &base, &size);
     PA_CHECK(!error);
     pthread_attr_destroy(&attr);
-    return reinterpret_cast<uint8_t*>(base) + size;
+    return PA_UNSAFE_TODO(reinterpret_cast<uint8_t*>(base) + size);
   }
 
 #if PA_BUILDFLAG(PA_LIBC_GLIBC)
@@ -150,7 +150,7 @@ StackTopRegistry::~StackTopRegistry() = default;
 // static
 StackTopRegistry& StackTopRegistry::Get() {
   static base::NoDestructor<StackTopRegistry> instance;
-  return *instance.get();
+  return *instance;
 }
 
 void StackTopRegistry::NotifyThreadCreated(void* stack_top) {

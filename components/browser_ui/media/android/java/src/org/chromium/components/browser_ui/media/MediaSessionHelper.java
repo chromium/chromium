@@ -4,8 +4,14 @@
 
 package org.chromium.components.browser_ui.media;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
+import android.app.KeyguardManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.os.Build;
@@ -13,17 +19,22 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.base.SysUtils;
+import org.chromium.build.annotations.EnsuresNonNullIf;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.components.browser_ui.media.MediaSessionUma.MediaSessionActionSource;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.MediaSession;
 import org.chromium.content_public.browser.MediaSessionObserver;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.media_session.mojom.MediaSessionAction;
@@ -41,43 +52,65 @@ import java.util.Set;
  * Glue code that relays events from the {@link org.chromium.content.browser.MediaSession} for a
  * WebContents to a delegate (ultimately, to {@link MediaNotificationController}).
  */
+@NullMarked
 public class MediaSessionHelper implements MediaImageCallback {
+    private static final String TAG = "MediaSessionHelper";
+
     private static final String UNICODE_PLAY_CHARACTER = "\u25B6";
     @VisibleForTesting public static final int HIDE_NOTIFICATION_DELAY_MILLIS = 2500;
 
-    private Delegate mDelegate;
-    private WebContents mWebContents;
-    @VisibleForTesting public WebContentsObserver mWebContentsObserver;
-    @VisibleForTesting public MediaSessionObserver mMediaSessionObserver;
-    private MediaImageManager mMediaImageManager;
-    private Bitmap mPageMediaImage;
-    @VisibleForTesting public Bitmap mFavicon;
-    private Bitmap mCurrentMediaImage;
-    private String mOrigin;
+    private final Delegate mDelegate;
+    private @Nullable WebContents mWebContents;
+    @VisibleForTesting public @Nullable WebContentsObserver mWebContentsObserver;
+    @VisibleForTesting public @Nullable MediaSessionObserver mMediaSessionObserver;
+    private final MediaImageManager mMediaImageManager;
+    private @Nullable Bitmap mPageMediaImage;
+    @VisibleForTesting public @Nullable Bitmap mFavicon;
+    private @Nullable Bitmap mCurrentMediaImage;
+    private @Nullable String mOrigin;
     private int mPreviousVolumeControlStream = AudioManager.USE_DEFAULT_STREAM_TYPE;
-    @VisibleForTesting public MediaNotificationInfo.Builder mNotificationInfoBuilder;
+    @VisibleForTesting public MediaNotificationInfo.@Nullable Builder mNotificationInfoBuilder;
     // The fallback title if |mPageMetadata| is null or its title is empty.
-    private String mFallbackTitle;
+    private @Nullable String mFallbackTitle;
     // Set to true if favicon update callback was called at least once.
     private boolean mMaybeHasFavicon;
     // The metadata set by the page.
-    private MediaMetadata mPageMetadata;
+    private @Nullable MediaMetadata mPageMetadata;
     // The currently showing metadata.
-    private MediaMetadata mCurrentMetadata;
+    private @Nullable MediaMetadata mCurrentMetadata;
     private Set<Integer> mMediaSessionActions = Collections.emptySet();
     private @Nullable MediaPosition mMediaPosition;
-    private Handler mHandler;
+    private final Handler mHandler;
     // The delayed task to hide notification. Hiding notification can be immediate or delayed.
     // Delayed hiding will schedule this delayed task to |mHandler|. The task will be canceled when
     // showing or immediate hiding.
-    private Runnable mHideNotificationDelayedTask;
-    @VisibleForTesting public LargeIconBridge mLargeIconBridge;
+    private @Nullable Runnable mHideNotificationDelayedTask;
+    @VisibleForTesting public @Nullable LargeIconBridge mLargeIconBridge;
 
     // Used to override the MediaSession object get from WebContents. This is to work around the
     // static getter {@link MediaSession#fromWebContents()}.
-    @VisibleForTesting public static MediaSession sOverriddenMediaSession;
+    @VisibleForTesting public static @Nullable MediaSession sOverriddenMediaSession;
 
-    private MediaNotificationListener mControlsListener =
+    // Receiver for ACTION_SCREEN_OFF. Used to hide the notification immediately when the screen
+    // is turned off, if we are currently waiting to hide it (e.g. because the media became
+    // uncontrollable).
+    // This is safe to do because `mHideNotificationDelayedTask` is cleared whenever we show a new
+    // notification or if the media becomes controllable again. Thus, if
+    // `mHideNotificationDelayedTask` is non-null here, we know for sure that we are still in the
+    // "waiting to hide" state for this specific session and it hasn't recovered.
+    private final BroadcastReceiver mScreenOffReceiver =
+            new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    if (Intent.ACTION_SCREEN_OFF.equals(intent.getAction())) {
+                        if (mHideNotificationDelayedTask != null) {
+                            hideNotificationImmediately();
+                        }
+                    }
+                }
+            };
+
+    private final MediaNotificationListener mControlsListener =
             new MediaNotificationListener() {
                 @Override
                 public void onPlay(int actionSource) {
@@ -113,14 +146,15 @@ public class MediaSessionHelper implements MediaImageCallback {
                 public void onMediaSessionAction(int action) {
                     if (!MediaSessionAction.isKnownValue(action)) return;
                     if (mMediaSessionObserver != null) {
-                        mMediaSessionObserver.getMediaSession().didReceiveAction(action);
+                        assumeNonNull(mMediaSessionObserver.getMediaSession())
+                                .didReceiveAction(action);
                     }
                 }
 
                 @Override
                 public void onMediaSessionSeekTo(long pos) {
                     if (mMediaSessionObserver == null) return;
-                    mMediaSessionObserver.getMediaSession().seekTo(pos);
+                    assumeNonNull(mMediaSessionObserver.getMediaSession()).seekTo(pos);
                 }
             };
 
@@ -185,9 +219,15 @@ public class MediaSessionHelper implements MediaImageCallback {
             @Override
             public void mediaSessionStateChanged(boolean isControllable, boolean isPaused) {
                 if (!isControllable) {
-                    hideNotificationDelayed();
+                    if (isDeviceLocked()) {
+                        hideNotificationImmediately();
+                    } else {
+                        hideNotificationDelayed();
+                    }
                     return;
                 }
+                assumeNonNull(mWebContents);
+                assumeNonNull(mOrigin);
 
                 Intent contentIntent = mDelegate.createBringTabToFrontIntent();
 
@@ -251,24 +291,43 @@ public class MediaSessionHelper implements MediaImageCallback {
 
             @Override
             public void mediaSessionPositionChanged(@Nullable MediaPosition position) {
+                if (position != null) {
+                    long now = android.os.SystemClock.elapsedRealtime();
+                    long updateTime = position.getLastUpdatedTime();
+                    long age = now - updateTime;
+
+                    // TODO(crbug.com/465571421): remove logs once the bug is fixed.
+                    Log.i(
+                            TAG,
+                            "Received Update: Speed=%.1f Pos=%d TimestampAge=%d ms (Now=%d,"
+                                    + " Upd=%d)",
+                            position.getPlaybackRate(),
+                            position.getPosition(),
+                            age,
+                            now,
+                            updateTime);
+                } else {
+                    Log.w(TAG, "Received Update: NULL");
+                }
+
                 mMediaPosition = position;
                 updateNotificationPosition();
             }
 
             /**
              * Adjust `mMediaPosition` so that it's unambiguous about what the current media time
-             * is.  Otherwise, when transitioning into the paused state, the platform won't know to
-             * adjust the time from the `getLastUpdatedTime()`.  This is especially bad since the
-             * playback rate in the MediaPosition and `isPaused` don't always agree immediately;
-             * we can find out about `isPaused` before being told of the final, playback rate = 0,
-             * MediaPosition.  To avoid this, we adjust the MediaPosition based on its current
+             * is. Otherwise, when transitioning into the paused state, the platform won't know to
+             * adjust the time from the `getLastUpdatedTime()`. This is especially bad since the
+             * playback rate in the MediaPosition and `isPaused` don't always agree immediately; we
+             * can find out about `isPaused` before being told of the final, playback rate = 0,
+             * MediaPosition. To avoid this, we adjust the MediaPosition based on its current
              * playback rate, and update the playback rate to zero so that it's unambiguous.
              */
             private void rebaseMediaPosition(boolean isPaused) {
                 if (mMediaPosition == null) return;
 
                 long now = SystemClock.elapsedRealtime();
-                long rebased_position =
+                long rebasedPosition =
                         mMediaPosition.getPosition()
                                 + (long)
                                         ((now - mMediaPosition.getLastUpdatedTime())
@@ -276,7 +335,7 @@ public class MediaSessionHelper implements MediaImageCallback {
                 mMediaPosition =
                         new MediaPosition(
                                 mMediaPosition.getDuration(),
-                                rebased_position,
+                                rebasedPosition,
                                 isPaused ? 0 : mMediaPosition.getPlaybackRate(),
                                 now);
             }
@@ -288,9 +347,9 @@ public class MediaSessionHelper implements MediaImageCallback {
 
         mWebContents = webContents;
 
-        if (mWebContentsObserver != null) mWebContentsObserver.destroy();
+        if (mWebContentsObserver != null) mWebContentsObserver.observe(null);
 
-        mMediaImageManager.setWebContents(mWebContents);
+        mMediaImageManager.setWebContents(webContents);
 
         if (webContents == null) {
             mWebContentsObserver = null;
@@ -341,8 +400,15 @@ public class MediaSessionHelper implements MediaImageCallback {
                     }
 
                     @Override
-                    public void wasShown() {
-                        mDelegate.activateAndroidMediaSession();
+                    public void onVisibilityChanged(@Visibility int visibility) {
+                        // We should activate back the MediaSession eagerly when the WC is visible
+                        // again because some old versions of Android will only notify the latest
+                        // activated MediaSession. However, we shouldn't attempt to activate a
+                        // session that isn't actually active as it needlessly triggers the entire
+                        // internal MediaSession machinery.
+                        if (visibility == Visibility.VISIBLE && !isNotificationHidingOrHidden()) {
+                            mDelegate.activateAndroidMediaSession();
+                        }
                     }
 
                     @Override
@@ -355,7 +421,7 @@ public class MediaSessionHelper implements MediaImageCallback {
         setUpMediaSessionObserver(mediaSession);
     }
 
-    private void setUpMediaSessionObserver(MediaSession mediaSession) {
+    private void setUpMediaSessionObserver(@Nullable MediaSession mediaSession) {
         if (mMediaSessionObserver != null
                 && mediaSession == mMediaSessionObserver.getMediaSession()) {
             return;
@@ -386,7 +452,7 @@ public class MediaSessionHelper implements MediaImageCallback {
          * Creates a {@link MediaNotificationInfo.Builder} with basic embedder-specific
          * initialization.
          */
-        public MediaNotificationInfo.Builder createMediaNotificationInfoBuilder();
+        MediaNotificationInfo.Builder createMediaNotificationInfoBuilder();
 
         /** Shows a notification with the given metadata. */
         void showMediaNotification(MediaNotificationInfo notificationInfo);
@@ -398,7 +464,7 @@ public class MediaSessionHelper implements MediaImageCallback {
         void activateAndroidMediaSession();
     }
 
-    public MediaSessionHelper(@NonNull WebContents webContents, @NonNull Delegate delegate) {
+    public MediaSessionHelper(WebContents webContents, Delegate delegate) {
         mDelegate = delegate;
         mMediaImageManager =
                 new MediaImageManager(
@@ -411,6 +477,11 @@ public class MediaSessionHelper implements MediaImageCallback {
         if (activity != null) {
             mPreviousVolumeControlStream = activity.getVolumeControlStream();
         }
+
+        ContextUtils.registerProtectedBroadcastReceiver(
+                ContextUtils.getApplicationContext(),
+                mScreenOffReceiver,
+                new IntentFilter(Intent.ACTION_SCREEN_OFF));
     }
 
     /**
@@ -420,10 +491,11 @@ public class MediaSessionHelper implements MediaImageCallback {
     public void destroy() {
         cleanupMediaSessionObserver();
         hideNotificationImmediately();
-        if (mWebContentsObserver != null) mWebContentsObserver.destroy();
+        if (mWebContentsObserver != null) mWebContentsObserver.observe(null);
         mWebContentsObserver = null;
         if (mLargeIconBridge != null) mLargeIconBridge.destroy();
         mLargeIconBridge = null;
+        ContextUtils.getApplicationContext().unregisterReceiver(mScreenOffReceiver);
     }
 
     /**
@@ -459,15 +531,24 @@ public class MediaSessionHelper implements MediaImageCallback {
         return null;
     }
 
-    private Activity getActivity() {
-        assert mWebContents != null;
+    private @Nullable Activity getActivity() {
+        if (mWebContents == null) return null;
+
         WindowAndroid windowAndroid = mWebContents.getTopLevelNativeWindow();
         if (windowAndroid == null) return null;
 
         return windowAndroid.getActivity().get();
     }
 
+    private boolean isDeviceLocked() {
+        Context context = ContextUtils.getApplicationContext();
+        KeyguardManager keyguardManager =
+                (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
+        return keyguardManager != null && keyguardManager.isKeyguardLocked();
+    }
+
     /** Returns true if a large favicon might be found. */
+    @RequiresNonNull("mWebContents")
     private boolean fetchLargeFaviconImage() {
         // The page does not have a favicon yet to fetch since onFaviconUpdated was never called.
         // Don't waste time trying to find it.
@@ -482,7 +563,7 @@ public class MediaSessionHelper implements MediaImageCallback {
                 new LargeIconBridge.LargeIconCallback() {
                     @Override
                     public void onLargeIconAvailable(
-                            Bitmap icon,
+                            @Nullable Bitmap icon,
                             int fallbackColor,
                             boolean isFallbackColorDefault,
                             int iconType) {
@@ -497,7 +578,7 @@ public class MediaSessionHelper implements MediaImageCallback {
      * Updates the best favicon if the given icon is better and the favicon is shown in
      * notification.
      */
-    public void updateFavicon(Bitmap icon) {
+    public void updateFavicon(@Nullable Bitmap icon) {
         if (icon == null) return;
 
         mMaybeHasFavicon = true;
@@ -521,7 +602,7 @@ public class MediaSessionHelper implements MediaImageCallback {
     }
 
     /** Sets an icon which will preferentially be used in place of a smaller favicon. */
-    public void setLargeIcon(Bitmap icon) {
+    public void setLargeIcon(@Nullable Bitmap icon) {
         if (isNotificationHidingOrHidden()) return;
 
         if (icon == null) {
@@ -543,7 +624,7 @@ public class MediaSessionHelper implements MediaImageCallback {
         if (isNotificationHidingOrHidden()) return;
 
         MediaMetadata newMetadata = getMetadata();
-        if (mCurrentMetadata.equals(newMetadata)) return;
+        if (newMetadata.equals(mCurrentMetadata)) return;
 
         mCurrentMetadata = newMetadata;
         mNotificationInfoBuilder.setMetadata(mCurrentMetadata);
@@ -556,7 +637,6 @@ public class MediaSessionHelper implements MediaImageCallback {
      * {@link MediaMetadata} object.
      */
     private MediaMetadata getMetadata() {
-        String title = mFallbackTitle;
         String artist = "";
         String album = "";
         if (mPageMetadata != null) {
@@ -567,13 +647,13 @@ public class MediaSessionHelper implements MediaImageCallback {
         }
 
         if (mCurrentMetadata != null
-                && TextUtils.equals(title, mCurrentMetadata.getTitle())
+                && TextUtils.equals(mFallbackTitle, mCurrentMetadata.getTitle())
                 && TextUtils.equals(artist, mCurrentMetadata.getArtist())
                 && TextUtils.equals(album, mCurrentMetadata.getAlbum())) {
             return mCurrentMetadata;
         }
 
-        return new MediaMetadata(title, artist, album);
+        return new MediaMetadata(mFallbackTitle, artist, album);
     }
 
     private void updateNotificationActions() {
@@ -591,13 +671,13 @@ public class MediaSessionHelper implements MediaImageCallback {
     }
 
     @Override
-    public void onImageDownloaded(Bitmap image) {
+    public void onImageDownloaded(@Nullable Bitmap image) {
         mPageMediaImage = MediaNotificationImageUtils.downscaleIconToIdealSize(image);
         mFavicon = null;
         updateNotificationImage(mPageMediaImage);
     }
 
-    private void updateNotificationImage(Bitmap newMediaImage) {
+    private void updateNotificationImage(@Nullable Bitmap newMediaImage) {
         if (mCurrentMediaImage == newMediaImage) return;
 
         mCurrentMediaImage = newMediaImage;
@@ -608,17 +688,24 @@ public class MediaSessionHelper implements MediaImageCallback {
         showNotification();
     }
 
-    private Bitmap getCachedNotificationImage() {
+    private @Nullable Bitmap getCachedNotificationImage() {
         if (mPageMediaImage != null) return mPageMediaImage;
         if (mFavicon != null) return mFavicon;
         return null;
     }
 
+    @EnsuresNonNullIf(
+            value = {"mNotificationInfoBuilder", "mMediaSessionObserver"},
+            result = false)
     private boolean isNotificationHidingOrHidden() {
-        return mNotificationInfoBuilder == null;
+        if (mNotificationInfoBuilder == null) {
+            return true;
+        }
+        assert mMediaSessionObserver != null;
+        return false;
     }
 
-    private MediaSession getMediaSession(WebContents contents) {
+    private @Nullable MediaSession getMediaSession(WebContents contents) {
         return (sOverriddenMediaSession != null)
                 ? sOverriddenMediaSession
                 : MediaSession.fromWebContents(contents);

@@ -45,4 +45,39 @@ uint32_t BufferUsageToGbmFlags(gfx::BufferUsage usage) {
   }
 }
 
+uint32_t NativePixmapUsageToGbmFlags(NativePixmapUsageSet usage) {
+  uint32_t flags = 0;
+  if (usage.Has(NativePixmapUsage::kScanout)) {
+    flags |= GBM_BO_USE_SCANOUT;
+  }
+  if (usage.Has(NativePixmapUsage::kRendering)) {
+    flags |= GBM_BO_USE_RENDERING;
+  }
+  if (usage.Has(NativePixmapUsage::kTexturing)) {
+    flags |= GBM_BO_USE_TEXTURING;
+  }
+  if (usage.Has(NativePixmapUsage::kCpuRead)) {
+    flags |= GBM_BO_USE_LINEAR;
+  }
+  if (usage.Has(NativePixmapUsage::kCamera)) {
+    flags |= GBM_BO_USE_CAMERA_WRITE;
+  }
+  if (usage.Has(NativePixmapUsage::kProtected)) {
+    flags |= GBM_BO_USE_PROTECTED;
+  }
+  if (usage.Has(NativePixmapUsage::kHWVideoDecoder)) {
+    flags |= GBM_BO_USE_HW_VIDEO_DECODER;
+  }
+  if (usage.Has(NativePixmapUsage::kHWVideoEncoder)) {
+    flags |= GBM_BO_USE_HW_VIDEO_ENCODER;
+  }
+  if (usage.Has(NativePixmapUsage::kSWReadOften)) {
+    flags |= GBM_BO_USE_SW_READ_OFTEN;
+  }
+  if (usage.Has(NativePixmapUsage::kFrontRendering)) {
+    flags |= GBM_BO_USE_FRONT_RENDERING;
+  }
+  return flags;
+}
+
 }  // namespace ui

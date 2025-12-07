@@ -83,26 +83,26 @@ class PLATFORM_EXPORT SequenceManagerFuzzerProcessor {
   // ThreadPoolManager::CreateThread is used to construct these threads and
   // given that it can be called from multiple threads, the order of
   // construction isn't deterministic.
-  const Vector<Vector<TaskForTest>>& ordered_tasks() const;
+  const blink::Vector<blink::Vector<TaskForTest>>& ordered_tasks() const;
 
   // Returns an ordered list of actions executed on each thread. Note that the
   // ordering of the threads isn't deterministic. For more details, check the
   // comment above on ordered_tasks().
-  const Vector<Vector<ActionForTest>>& ordered_actions() const;
+  const blink::Vector<blink::Vector<ActionForTest>>& ordered_actions() const;
 
  private:
   friend class ThreadManager;
 
   // Logs the task defined by the parameters passed to |ordered_tasks| if
   // |log_for_testing_| is enabled.
-  void LogTaskForTesting(Vector<TaskForTest>* ordered_tasks,
+  void LogTaskForTesting(blink::Vector<TaskForTest>* ordered_tasks,
                          uint64_t task_id,
                          base::TimeTicks start_time,
                          base::TimeTicks end_time);
 
   // Logs the action defined by the parameters passed to |ordered_actions| if
   // |log_for_testing_| is enabled.
-  void LogActionForTesting(Vector<ActionForTest>* ordered_actions,
+  void LogActionForTesting(blink::Vector<ActionForTest>* ordered_actions,
                            uint64_t action_id,
                            ActionForTest::ActionType type,
                            base::TimeTicks start_time);
@@ -121,12 +121,12 @@ class PLATFORM_EXPORT SequenceManagerFuzzerProcessor {
   // For Testing. Each entry contains the ordered list of tasks for one of the
   // created threads. The first entry is reserved for the main thread (which is
   // always empty since no tasks are executed on the main thread).
-  Vector<Vector<TaskForTest>> ordered_tasks_;
+  blink::Vector<blink::Vector<TaskForTest>> ordered_tasks_;
 
   // For Testing. Each entry contains the ordered list of actions for one of the
   // created threads. The first entry is reserved for the main thread (which
   // can only contain ActionType::kCreateThread actions).
-  Vector<Vector<ActionForTest>> ordered_actions_;
+  blink::Vector<blink::Vector<ActionForTest>> ordered_actions_;
 };
 
 }  // namespace sequence_manager

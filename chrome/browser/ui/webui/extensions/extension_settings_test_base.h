@@ -8,14 +8,21 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
+#include "extensions/browser/install_verifier.h"
 #include "extensions/browser/scoped_ignore_content_verifier_for_test.h"
+#include "extensions/buildflags/buildflags.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
 #include "base/base_paths_win.h"
 #include "base/test/scoped_path_override.h"
 #endif  // BUILDFLAG(IS_WIN)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 class Extension;
@@ -82,6 +89,11 @@ class ExtensionSettingsTestBase : public WebUIMochaBrowserTest {
 
   std::unique_ptr<extensions::ScopedTestDialogAutoConfirm>
       uninstall_auto_confirm_;
+
+#if !BUILDFLAG(IS_ANDROID)
+  // TODO(https://crbug.com/40804030): Remove this when updated to use MV3.
+  extensions::ScopedTestMV2Enabler mv2_enabler_;
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_EXTENSIONS_EXTENSION_SETTINGS_TEST_BASE_H_

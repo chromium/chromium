@@ -42,8 +42,8 @@ TEST(WebSocketBasicHandshakeStreamTest, ConnectionClosedOnFailure) {
       "HTTP/1.1 404 Not Found\r\n"
       "Content-Length: 0\r\n"
       "\r\n";
-  MockWrite writes[] = {MockWrite(SYNCHRONOUS, 0, request.c_str())};
-  MockRead reads[] = {MockRead(SYNCHRONOUS, 1, response.c_str()),
+  MockWrite writes[] = {MockWrite(SYNCHRONOUS, 0, request)};
+  MockRead reads[] = {MockRead(SYNCHRONOUS, 1, response),
                       MockRead(SYNCHRONOUS, ERR_IO_PENDING, 2)};
   IPEndPoint end_point(IPAddress(127, 0, 0, 1), 80);
   SequencedSocketData sequenced_socket_data(
@@ -98,8 +98,8 @@ TEST(WebSocketBasicHandshakeStreamTest, DnsAliasesCanBeAccessed) {
       url::Origin::Create(GURL("http://origin.example.org")),
       /*send_additional_request_headers=*/{}, /*extra_headers=*/{});
   std::string response = WebSocketStandardResponse("");
-  MockWrite writes[] = {MockWrite(SYNCHRONOUS, 0, request.c_str())};
-  MockRead reads[] = {MockRead(SYNCHRONOUS, 1, response.c_str()),
+  MockWrite writes[] = {MockWrite(SYNCHRONOUS, 0, request)};
+  MockRead reads[] = {MockRead(SYNCHRONOUS, 1, response),
                       MockRead(SYNCHRONOUS, ERR_IO_PENDING, 2)};
 
   IPEndPoint end_point(IPAddress(127, 0, 0, 1), 80);

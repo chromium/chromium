@@ -1,12 +1,4 @@
 include_rules = [
-  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
-  # details.
-  "-chrome",
-
-  # This directory is in //chrome, which violates the rule above. Allow this
-  # directory to #include its own files.
-  "+chrome/browser/ash/extensions",
-
   # Existing dependencies within //chrome. There is an active effort to
   # refactor //chrome/browser/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
@@ -21,13 +13,11 @@ include_rules = [
   "+chrome/browser/apps/platform_apps/api/media_galleries",
   "+chrome/browser/ash/accessibility",
   "+chrome/browser/ash/app_list/arc",
-  "+chrome/browser/ash/crosapi",
   "+chrome/browser/ash/file_manager",
   "+chrome/browser/ash/guest_os",
   "+chrome/browser/ash/input_method",
   "+chrome/browser/ash/login/demo_mode",
   "+chrome/browser/ash/login/users",
-  "+chrome/browser/ash/os_url_handler.h",
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/settings",
@@ -43,7 +33,6 @@ include_rules = [
   "+chrome/browser/download",
   "+chrome/browser/extensions/api/file_system",
   "+chrome/browser/extensions/api/input_ime",
-  "+chrome/browser/extensions/api/messaging",
   "+chrome/browser/extensions/api/settings_private",
   "+chrome/browser/extensions/chrome_app_icon.h",
   "+chrome/browser/extensions/chrome_extension_function_details.h",
@@ -56,13 +45,10 @@ include_rules = [
   "+chrome/browser/extensions/extension_util.h",
   "+chrome/browser/extensions/external_loader.h",
   "+chrome/browser/extensions/external_provider_impl.h",
-  "+chrome/browser/extensions/install_observer.h",
-  "+chrome/browser/extensions/install_tracker.h",
+  "+chrome/browser/extensions/install_tracker_factory.h",
   "+chrome/browser/extensions/mock_crx_installer.h",
-  "+chrome/browser/extensions/pending_extension_manager.h",
   "+chrome/browser/extensions/updater",
   "+chrome/browser/lifetime",
-  "+chrome/browser/metrics",
   "+chrome/browser/net",
   "+chrome/browser/notifications",
   "+chrome/browser/pdf",
@@ -77,7 +63,6 @@ include_rules = [
   "+chrome/browser/ui/aura/accessibility",
   "+chrome/browser/ui/browser_commands.h",
   "+chrome/browser/ui/browser.h",
-  "+chrome/browser/ui/browser_list.h",
   "+chrome/browser/ui/browser_tabstrip.h",
   "+chrome/browser/ui/browser_window.h",
   "+chrome/browser/ui/chrome_pages.h",
@@ -88,7 +73,7 @@ include_rules = [
   "+chrome/browser/ui/webui/ash/cloud_upload",
   "+chrome/browser/ui/webui/ash/crostini_installer",
   "+chrome/browser/ui/webui/ash/manage_mirrorsync",
-  "+chrome/browser/web_applications/web_app_id_constants.h",
+  "+chrome/browser/web_applications/policy/app_service_web_app_policy.h",
   "+chrome/browser/web_applications/web_app_provider.h",
   "+chrome/browser/web_applications/web_app_registrar.h",
   "+chrome/common/chrome_constants.h",
@@ -102,6 +87,9 @@ include_rules = [
   "+chrome/services/media_gallery_util/public/mojom",
   "+chrome/services/pdf/public/mojom",
   "+chrome/test/base",
+  "+chrome/browser/ash/login/lock/screen_locker_tester.h",
+  "+chrome/browser/ash/login/test/device_state_mixin.h",
+  "+chrome/browser/ash/login/test/login_manager_mixin.h",
 
   # Dependencies outside of //chrome:
   "+third_party/ced",

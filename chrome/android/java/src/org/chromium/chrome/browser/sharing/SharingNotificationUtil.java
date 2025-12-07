@@ -12,10 +12,10 @@ import android.graphics.BitmapFactory;
 import android.os.Build;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.SystemNotificationType;
@@ -28,6 +28,7 @@ import org.chromium.components.browser_ui.notifications.NotificationWrapperBuild
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 
 /** Provides common functionality for handling sharing notifications. */
+@NullMarked
 public final class SharingNotificationUtil {
     /**
      * Shows a notification with a configuration common to all sharing notifications.
@@ -49,10 +50,10 @@ public final class SharingNotificationUtil {
             @SystemNotificationType int type,
             String group,
             int id,
-            PendingIntentProvider contentIntent,
-            PendingIntentProvider deleteIntent,
-            PendingIntentProvider confirmIntent,
-            PendingIntentProvider cancelIntent,
+            @Nullable PendingIntentProvider contentIntent,
+            @Nullable PendingIntentProvider deleteIntent,
+            @Nullable PendingIntentProvider confirmIntent,
+            @Nullable PendingIntentProvider cancelIntent,
             String contentTitle,
             String contentText,
             @DrawableRes int smallIconId,
@@ -70,7 +71,6 @@ public final class SharingNotificationUtil {
                         .setBigTextStyle(contentText)
                         .setColor(context.getColor(color))
                         .setGroup(group)
-                        .setPriorityBeforeO(NotificationCompat.PRIORITY_HIGH)
                         .setSmallIcon(smallIconId)
                         .setAutoCancel(true)
                         .setDefaults(Notification.DEFAULT_ALL);
@@ -108,14 +108,13 @@ public final class SharingNotificationUtil {
         }
         NotificationWrapper notification = builder.buildNotificationWrapper();
 
-        BaseNotificationManagerProxyFactory.create(context).notify(notification);
+        BaseNotificationManagerProxyFactory.create().notify(notification);
         NotificationUmaTracker.getInstance()
                 .onNotificationShown(type, notification.getNotification());
     }
 
     public static void dismissNotification(String tag, int notificationId) {
-        Context context = ContextUtils.getApplicationContext();
-        BaseNotificationManagerProxyFactory.create(context).cancel(tag, notificationId);
+        BaseNotificationManagerProxyFactory.create().cancel(tag, notificationId);
     }
 
     /**
@@ -139,14 +138,13 @@ public final class SharingNotificationUtil {
                         .setContentTitle(contentTitle)
                         .setGroup(group)
                         .setColor(context.getColor(R.color.default_icon_color_accent1_baseline))
-                        .setPriorityBeforeO(NotificationCompat.PRIORITY_HIGH)
                         .setSmallIcon(R.drawable.ic_devices_16dp)
                         .setProgress(/* max= */ 0, /* percentage= */ 0, true)
                         .setOngoing(true)
                         .setDefaults(Notification.DEFAULT_ALL);
         NotificationWrapper notification = builder.buildNotificationWrapper();
 
-        BaseNotificationManagerProxyFactory.create(context).notify(notification);
+        BaseNotificationManagerProxyFactory.create().notify(notification);
         NotificationUmaTracker.getInstance()
                 .onNotificationShown(type, notification.getNotification());
     }
@@ -177,7 +175,6 @@ public final class SharingNotificationUtil {
                         .setContentTitle(contentTitle)
                         .setGroup(group)
                         .setColor(context.getColor(R.color.google_red_600))
-                        .setPriorityBeforeO(NotificationCompat.PRIORITY_HIGH)
                         .setSmallIcon(R.drawable.ic_error_outline_red_24dp)
                         .setContentText(contentText)
                         .setDefaults(Notification.DEFAULT_ALL)
@@ -194,7 +191,7 @@ public final class SharingNotificationUtil {
 
         NotificationWrapper notification = builder.buildWithBigTextStyle(contentText);
 
-        BaseNotificationManagerProxyFactory.create(context).notify(notification);
+        BaseNotificationManagerProxyFactory.create().notify(notification);
         NotificationUmaTracker.getInstance()
                 .onNotificationShown(type, notification.getNotification());
     }

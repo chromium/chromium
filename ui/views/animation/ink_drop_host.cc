@@ -5,10 +5,12 @@
 #include "ui/views/animation/ink_drop_host.h"
 
 #include <utility>
+#include <variant>
 
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "base/check_is_test.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_variant.h"
 #include "ui/events/event.h"
 #include "ui/events/scoped_target_handler.h"
 #include "ui/gfx/color_palette.h"
@@ -20,6 +22,7 @@
 #include "ui/views/animation/ink_drop_mask.h"
 #include "ui/views/animation/ink_drop_stub.h"
 #include "ui/views/animation/pulsing_ink_drop_mask.h"
+#include "ui/views/animation/pulsing_path_ink_drop_mask.h"
 #include "ui/views/animation/square_ink_drop_ripple.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -142,7 +145,8 @@ void InkDropHost::SetCreateHighlightCallback(
 std::unique_ptr<views::InkDropMask> InkDropHost::CreateInkDropMask() const {
   // Attention mask takes precedence.
   if (in_attention_state_) {
-    return std::make_unique<views::PulsingInkDropMask>(host_view_);
+    return std::make_unique<views::PulsingPathInkDropMask>(
+        host_view_, GetHighlightPath(host_view_));
   }
 
   if (create_ink_drop_mask_callback_) {
@@ -167,6 +171,13 @@ void InkDropHost::ToggleAttentionState(bool attention_on) {
 }
 
 SkColor InkDropHost::GetBaseColor() const {
+  // TODO(crbug.com/359904341): provide a fallback color provider for tests
+  // that don't care about colors.
+  if (!host_view_->GetWidget()) {
+    CHECK_IS_TEST();
+    return gfx::kPlaceholderColor;
+  }
+
   // Attention color takes precedence.
   if (in_attention_state_) {
     ui::ColorProvider* const color_provider = host_view_->GetColorProvider();
@@ -174,33 +185,25 @@ SkColor InkDropHost::GetBaseColor() const {
     return color_provider->GetColor(ui::kColorButtonFeatureAttentionHighlight);
   }
 
-  if (absl::holds_alternative<ui::ColorId>(ink_drop_base_color_)) {
+  if (std::holds_alternative<ui::ColorVariant>(ink_drop_base_color_)) {
     ui::ColorProvider* color_provider = host_view_->GetColorProvider();
     CHECK(color_provider);
-    return color_provider->GetColor(
-        absl::get<ui::ColorId>(ink_drop_base_color_));
-  }
-
-  if (absl::holds_alternative<SkColor>(ink_drop_base_color_)) {
-    return absl::get<SkColor>(ink_drop_base_color_);
+    return std::get<ui::ColorVariant>(ink_drop_base_color_)
+        .ResolveToSkColor(color_provider);
   }
 
   // The callback may need access to the color provider, which is only available
   // after the view is added to a widget.
   if (host_view_->GetWidget()) {
-    return absl::get<base::RepeatingCallback<SkColor()>>(ink_drop_base_color_)
+    return std::get<base::RepeatingCallback<SkColor()>>(ink_drop_base_color_)
         .Run();
   }
 
   return gfx::kPlaceholderColor;
 }
 
-void InkDropHost::SetBaseColor(SkColor color) {
+void InkDropHost::SetBaseColor(ui::ColorVariant color) {
   ink_drop_base_color_ = color;
-}
-
-void InkDropHost::SetBaseColorId(ui::ColorId color_id) {
-  ink_drop_base_color_ = color_id;
 }
 
 void InkDropHost::SetBaseColorCallback(

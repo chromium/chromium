@@ -182,12 +182,12 @@ class MachineCertificateUploaderTestBase : public ::testing::Test {
         EXPECT_CALL(policy_client_,
                     UploadEnterpriseMachineCertificate(
                         new_key ? kFakeCertificate : certificate, _))
-            .WillOnce(WithArgs<1>(Invoke(ResultCallbackNotRegistered)));
+            .WillOnce(WithArgs<1>(ResultCallbackNotRegistered));
       } else {
         EXPECT_CALL(policy_client_,
                     UploadEnterpriseMachineCertificate(
                         new_key ? kFakeCertificate : certificate, _))
-            .WillOnce(WithArgs<1>(Invoke(ResultCallbackSuccess)));
+            .WillOnce(WithArgs<1>(ResultCallbackSuccess));
       }
     }
 
@@ -241,19 +241,19 @@ TEST_P(MachineCertificateUploaderTest, UnregisteredPolicyClient) {
 
 TEST_P(MachineCertificateUploaderTest, GetCertificateUnspecifiedFailure) {
   EXPECT_CALL(attestation_flow_, GetCertificate(_, _, _, _, _, _, _, _))
-      .WillRepeatedly(WithArgs<7>(Invoke(CertCallbackUnspecifiedFailure)));
+      .WillRepeatedly(WithArgs<7>(CertCallbackUnspecifiedFailure));
   RunUploader();
 }
 
 TEST_P(MachineCertificateUploaderTest, GetCertificateBadRequestFailure) {
   EXPECT_CALL(attestation_flow_, GetCertificate(_, _, _, _, _, _, _, _))
-      .WillOnce(WithArgs<7>(Invoke(CertCallbackBadRequestFailure)));
+      .WillOnce(WithArgs<7>(CertCallbackBadRequestFailure));
   RunUploader();
 }
 
 TEST_P(MachineCertificateUploaderTest, GetCertificateNotAvailableFailure) {
   EXPECT_CALL(attestation_flow_, GetCertificate(_, _, _, _, _, _, _, _))
-      .WillOnce(WithArgs<7>(Invoke(CertCallbackNotAvailableFailure)));
+      .WillOnce(WithArgs<7>(CertCallbackNotAvailableFailure));
   RunUploader();
 }
 
@@ -301,7 +301,7 @@ TEST_P(MachineCertificateUploaderTest, WaitForUploadComplete) {
 
 TEST_P(MachineCertificateUploaderTest, WaitForUploadFail) {
   EXPECT_CALL(attestation_flow_, GetCertificate(_, _, _, _, _, _, _, _))
-      .WillOnce(WithArgs<7>(Invoke(CertCallbackBadRequestFailure)));
+      .WillOnce(WithArgs<7>(CertCallbackBadRequestFailure));
 
   StrictMock<CallbackObserver> waiting_callback_observer;
   MachineCertificateUploaderImpl uploader(&policy_client_, &attestation_flow_);

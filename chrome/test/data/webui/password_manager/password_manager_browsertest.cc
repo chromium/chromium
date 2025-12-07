@@ -56,16 +56,17 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, FullDataReset) {
   RunTest("password_manager/full_data_reset_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, MovePasswordsDialog) {
-  RunTest("password_manager/move_passwords_dialog_test.js", "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, PasskeyDetailsCard) {
   RunTest("password_manager/passkey_details_card_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, PasswordDetailsCard) {
   RunTest("password_manager/password_details_card_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, BackupPasswordDetailsCard) {
+  RunTest("password_manager/backup_password_details_card_test.js",
+          "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, PasswordDetailsSection) {
@@ -82,6 +83,12 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, PasswordsImporter) {
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, PasswordsSection) {
   RunTest("password_manager/passwords_section_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordManagerUITest,
+                       RemoveActorLoginPermissionDialog) {
+  RunTest("password_manager/remove_actor_login_permission_dialog_test.js",
+          "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, Routing) {

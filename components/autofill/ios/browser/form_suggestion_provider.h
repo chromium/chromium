@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_IOS_BROWSER_FORM_SUGGESTION_PROVIDER_H_
 #define COMPONENTS_AUTOFILL_IOS_BROWSER_FORM_SUGGESTION_PROVIDER_H_
 
-#include "components/autofill/core/browser/filling_product.h"
+#import "components/autofill/core/browser/filling/filling_product.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider_query.h"
 
@@ -57,9 +57,10 @@ typedef NS_ENUM(NSUInteger, SuggestionProviderType) {
                           webState:(web::WebState*)webState
                  completionHandler:(SuggestionsReadyCompletion)completion;
 
-// Handles user selection of a suggestion for the specified form and
+// Handles user selection of a suggestion at |index| for the specified form and
 // field, invoking |completion| when finished.
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
+                    atIndex:(NSInteger)index
                        form:(NSString*)formName
              formRendererID:(autofill::FormRendererId)formRendererID
             fieldIdentifier:(NSString*)fieldIdentifier

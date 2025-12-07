@@ -21,18 +21,16 @@ namespace {
 
 constexpr std::string_view kWebTestsPattern = "/web_tests/";
 constexpr std::string_view kFileURLPattern = "file://";
-const char* kFileTestPrefix = "(file test):";
-const char* kPolicyDownload = "download";
-const char* kPolicyCurrentTab = "current tab";
-const char* kPolicyNewBackgroundTab = "new background tab";
-const char* kPolicyNewForegroundTab = "new foreground tab";
-const char* kPolicyNewWindow = "new window";
-const char* kPolicyNewPopup = "new popup";
-const char* kPolicyPictureInPicture = "picture in picture";
+constexpr char kFileTestPrefix[] = "(file test):";
+constexpr char kPolicyDownload[] = "download";
+constexpr char kPolicyCurrentTab[] = "current tab";
+constexpr char kPolicyNewBackgroundTab[] = "new background tab";
+constexpr char kPolicyNewForegroundTab[] = "new foreground tab";
+constexpr char kPolicyNewWindow[] = "new window";
+constexpr char kPolicyNewPopup[] = "new popup";
+constexpr char kPolicyPictureInPicture[] = "picture in picture";
 
 }  // namespace
-
-const char* kIllegalString = "illegal value";
 
 std::string NormalizeWebTestURLForTextOutput(const std::string& url) {
   std::string result = url;
@@ -95,9 +93,10 @@ const char* WindowOpenDispositionToString(WindowOpenDisposition disposition) {
 
 blink::WebString V8StringToWebString(v8::Isolate* isolate,
                                      v8::Local<v8::String> v8_str) {
-  int length = v8_str->Utf8Length(isolate) + 1;
+  size_t length = v8_str->Utf8LengthV2(isolate) + 1;
   auto chars = base::HeapArray<char>::WithSize(length);
-  v8_str->WriteUtf8(isolate, chars.data(), chars.size());
+  v8_str->WriteUtf8V2(isolate, chars.data(), chars.size(),
+                      v8::String::WriteFlags::kNullTerminate);
   return blink::WebString::FromUTF8(chars.data());
 }
 

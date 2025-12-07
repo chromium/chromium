@@ -5,22 +5,24 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_PATH_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_PATH_H_
 
-#include <memory>
-#include "base/memory/scoped_refptr.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
+#include "third_party/blink/renderer/core/svg/svg_path_byte_stream.h"
+#include "third_party/blink/renderer/platform/geometry/path.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
 class CSSValue;
-class Path;
-class SVGPathByteStream;
 
 class StylePath final : public BasicShape {
  public:
-  static scoped_refptr<StylePath> Create(std::unique_ptr<SVGPathByteStream>,
-                                         WindRule wind_rule = RULE_NONZERO);
-  ~StylePath() override;
+  explicit StylePath(SVGPathByteStream byte_stream,
+                     WindRule wind_rule = RULE_NONZERO)
+      : byte_stream_(std::move(byte_stream)),
+        path_length_(std::numeric_limits<float>::quiet_NaN()),
+        wind_rule_(wind_rule) {}
 
   static const StylePath* EmptyPath();
 
@@ -28,11 +30,11 @@ class StylePath final : public BasicShape {
   float length() const;
   bool IsClosed() const;
 
-  const SVGPathByteStream& ByteStream() const { return *byte_stream_; }
+  const SVGPathByteStream& ByteStream() const { return byte_stream_; }
 
   CSSValue* ComputedCSSValue() const;
 
-  void GetPath(Path&, const gfx::RectF&, float zoom) const override;
+  Path GetPath(const gfx::RectF&, float zoom, float path_scale) const override;
   WindRule GetWindRule() const { return wind_rule_; }
 
   ShapeType GetType() const override { return kStylePathType; }
@@ -41,10 +43,8 @@ class StylePath final : public BasicShape {
   bool IsEqualAssumingSameType(const BasicShape&) const override;
 
  private:
-  explicit StylePath(std::unique_ptr<SVGPathByteStream>, WindRule wind_rule);
-
-  std::unique_ptr<SVGPathByteStream> byte_stream_;
-  mutable std::unique_ptr<Path> path_;
+  SVGPathByteStream byte_stream_;
+  mutable std::optional<Path> path_;
   mutable float path_length_;
   WindRule wind_rule_;
 };

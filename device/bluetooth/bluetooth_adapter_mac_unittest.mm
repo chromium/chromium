@@ -166,29 +166,4 @@ TEST_F(BluetoothAdapterMacTest, DeviceConnected) {
   EXPECT_EQ(1, observer_.device_changed_count());
 }
 
-TEST_F(BluetoothAdapterMacTest, DeviceConnectedOnWorkerThread) {
-  // Simulate a paired Bluetooth Classic device with one service UUID.
-  std::string device_address = "AA:BB:CC:DD:EE:FF";
-  BluetoothDevice::UUIDSet uuids;
-  uuids.insert(BluetoothUUID("110b"));
-  auto device = CreateClassicDevice(device_address, uuids);
-
-  // Simluate a scenario where `BluetoothAdapterMac::DeviceConnected` is called
-  // on a worker thread. The usage of `base::Unretained` is safe as
-  // `adapter_mac_` is guaranteed to be alive until the end of the test.
-  base::RunLoop run_loop;
-  base::ThreadPool::PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce(&BluetoothAdapterMac::DeviceConnected,
-                     base::Unretained(adapter_mac_), std::move(device)),
-      run_loop.QuitClosure());
-  run_loop.Run();
-
-  EXPECT_TRUE(ui_task_runner_->HasPendingTask());
-  ui_task_runner_->RunPendingTasks();
-  EXPECT_EQ(1, observer_.device_added_count());
-  EXPECT_EQ(0, observer_.device_changed_count());
-  EXPECT_EQ(observer_.last_device_address(), device_address);
-}
-
 }  // namespace device

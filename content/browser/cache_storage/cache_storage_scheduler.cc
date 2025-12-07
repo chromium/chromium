@@ -9,10 +9,10 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "content/browser/cache_storage/cache_storage_histogram_utils.h"
@@ -53,9 +53,7 @@ bool OpPointerLessThan(const std::unique_ptr<CacheStorageOperation>& left,
 
 // Enables support for parallel cache_storage operations via the
 // "max_shared_ops" fieldtrial parameter.
-BASE_FEATURE(kCacheStorageParallelOps,
-             "CacheStorageParallelOps",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCacheStorageParallelOps, base::FEATURE_ENABLED_BY_DEFAULT);
 
 CacheStorageScheduler::CacheStorageScheduler(
     CacheStorageSchedulerClient client_type,
@@ -97,7 +95,7 @@ void CacheStorageScheduler::CompleteOperationAndRunNext(
     CacheStorageSchedulerId id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = running_operations_.find(id);
-  CHECK(it != running_operations_.end(), base::NotFatalUntil::M130);
+  CHECK(it != running_operations_.end());
   DCHECK_EQ(it->second->id(), id);
 
   if (it->second->mode() == CacheStorageSchedulerMode::kShared) {
@@ -127,65 +125,74 @@ bool CacheStorageScheduler::IsRunningExclusiveOperation() const {
 
 void CacheStorageScheduler::DispatchOperationTask(base::OnceClosure task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  task_runner_->PostTask(FROM_HERE, std::move(task));
+  std::move(task).Run();
 }
 
 void CacheStorageScheduler::MaybeRunOperation() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // If there are no operations, then we can't run anything.
-  if (pending_operations_.empty()) {
-    DoneStartingAvailableOperations();
+  // Most operations are wrapped with `CompleteOperationAndRunNext()`, which
+  // means that executing an operation can cause re-entrancy in
+  // `MaybeRunOperation().` No-op in this case; the next operation will be run
+  // in the next loop iteration. Note that this doesn't use `AutoReset` because
+  // running an operation can cause `this` to be deleted. See
+  // https://crbug.com/370069678.
+  if (in_maybe_run_) {
     return;
   }
+  in_maybe_run_ = true;
+  base::WeakPtr<CacheStorageScheduler> this_ptr =
+      weak_ptr_factory_.GetWeakPtr();
+  base::ScopedClosureRunner reset(base::BindOnce(
+      [](base::WeakPtr<CacheStorageScheduler> scheduler) {
+        if (scheduler) {
+          scheduler->in_maybe_run_ = false;
+        }
+      },
+      this_ptr));
 
-  auto* next_operation = pending_operations_.front().get();
+  while (this_ptr && !pending_operations_.empty()) {
+    base::WeakPtr<CacheStorageOperation> next_operation =
+        pending_operations_.front()->AsWeakPtr();
 
-  // Determine if we can run the next operation based on its mode
-  // and the current state of executing operations.  We allow multiple
-  // kShared operations to run in parallel, but a kExclusive operation
-  // must not overlap with any other operation.
-  if (next_operation->mode() == CacheStorageSchedulerMode::kShared) {
-    if (num_running_exclusive_ > 0 ||
-        num_running_shared_ >= kCacheStorageMaxSharedOps.Get()) {
-      DoneStartingAvailableOperations();
+    // Determine if we can run the next operation based on its mode
+    // and the current state of executing operations.  We allow multiple
+    // kShared operations to run in parallel, but a kExclusive operation
+    // must not overlap with any other operation.
+    if (num_running_exclusive_ > 0) {
       return;
     }
-  } else if (num_running_shared_ > 0 || num_running_exclusive_ > 0) {
-    DCHECK_EQ(next_operation->mode(), CacheStorageSchedulerMode::kExclusive);
-    DoneStartingAvailableOperations();
-    return;
+    const bool is_shared_op =
+        next_operation->mode() == CacheStorageSchedulerMode::kShared;
+    const int max_concurrent_ops =
+        is_shared_op ? kCacheStorageMaxSharedOps.Get() : 1;
+    if (num_running_shared_ >= max_concurrent_ops) {
+      return;
+    }
+
+    running_operations_.emplace(next_operation->id(),
+                                std::move(pending_operations_.front()));
+    std::pop_heap(pending_operations_.begin(), pending_operations_.end(),
+                  &OpPointerLessThan);
+    pending_operations_.pop_back();
+
+    RecordCacheStorageSchedulerUMA(
+        CacheStorageSchedulerUMA::kQueueDuration, client_type_,
+        next_operation->op_type(),
+        base::TimeTicks::Now() - next_operation->creation_ticks());
+
+    if (is_shared_op) {
+      CHECK_EQ(num_running_exclusive_, 0);
+      num_running_shared_ += 1;
+    } else {
+      CHECK_EQ(num_running_exclusive_, 0);
+      CHECK_EQ(num_running_shared_, 0);
+      num_running_exclusive_ += 1;
+    }
+
+    DispatchOperationTask(
+        base::BindOnce(&CacheStorageOperation::Run, next_operation));
+    // `next_operation` and `this_ptr` may both be null at this point.
   }
-
-  running_operations_.emplace(next_operation->id(),
-                              std::move(pending_operations_.front()));
-  std::pop_heap(pending_operations_.begin(), pending_operations_.end(),
-                &OpPointerLessThan);
-  pending_operations_.pop_back();
-
-  RecordCacheStorageSchedulerUMA(
-      CacheStorageSchedulerUMA::kQueueDuration, client_type_,
-      next_operation->op_type(),
-      base::TimeTicks::Now() - next_operation->creation_ticks());
-
-  if (next_operation->mode() == CacheStorageSchedulerMode::kShared) {
-    DCHECK_EQ(num_running_exclusive_, 0);
-    num_running_shared_ += 1;
-  } else {
-    DCHECK_EQ(num_running_exclusive_, 0);
-    DCHECK_EQ(num_running_shared_, 0);
-    num_running_exclusive_ += 1;
-  }
-
-  DispatchOperationTask(
-      base::BindOnce(&CacheStorageOperation::Run, next_operation->AsWeakPtr()));
-
-  // If we just executed a kShared operation, then we may be able to schedule
-  // additional kShared parallel operations.  Recurse to process the next
-  // pending operation.
-  if (next_operation->mode() == CacheStorageSchedulerMode::kShared)
-    MaybeRunOperation();
-  else
-    DoneStartingAvailableOperations();
 }
 
 }  // namespace content

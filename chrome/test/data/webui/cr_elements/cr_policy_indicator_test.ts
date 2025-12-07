@@ -25,25 +25,25 @@ suite('CrPolicyIndicator', function() {
   });
 
   function getIconTooltipText(): string {
-    const icon = indicator.shadowRoot!.querySelector('cr-tooltip-icon');
+    const icon = indicator.shadowRoot.querySelector('cr-tooltip-icon');
     assertTrue(!!icon);
     return icon.tooltipText;
   }
 
   function getIconVisible(): boolean {
-    const icon = indicator.shadowRoot!.querySelector('cr-tooltip-icon');
+    const icon = indicator.shadowRoot.querySelector('cr-tooltip-icon');
     assertTrue(!!icon);
     return isVisible(icon);
   }
 
   function getIconClass(): string {
-    const icon = indicator.shadowRoot!.querySelector('cr-tooltip-icon');
+    const icon = indicator.shadowRoot.querySelector('cr-tooltip-icon');
     assertTrue(!!icon);
     return icon.iconClass;
   }
 
   test('none', function() {
-    const icon = indicator.shadowRoot!.querySelector('cr-tooltip-icon')!;
+    const icon = indicator.shadowRoot.querySelector('cr-tooltip-icon')!;
     assertTrue(icon.hidden);
   });
 
@@ -108,7 +108,7 @@ suite('CrPolicyIndicator', function() {
     assertEquals('extension', getIconTooltipText());
   });
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   test('primary-user controlled indicator', async () => {
     indicator.indicatorType = CrPolicyIndicatorType.PRIMARY_USER;
     indicator.indicatorSourceName = 'user@example.com';
@@ -121,7 +121,7 @@ suite('CrPolicyIndicator', function() {
   // </if>
 
   test('indicator', async () => {
-    const icon = indicator.shadowRoot!.querySelector('cr-tooltip-icon')!;
+    const icon = indicator.shadowRoot.querySelector('cr-tooltip-icon')!;
     indicator.indicatorType = CrPolicyIndicatorType.USER_POLICY;
     await microtasksFinished();
 
@@ -129,7 +129,7 @@ suite('CrPolicyIndicator', function() {
     assertEquals('cr20:domain', icon.iconClass);
     assertEquals('policy', icon.tooltipText);
 
-    // <if expr="chromeos_ash">
+    // <if expr="is_chromeos">
     indicator.indicatorType = CrPolicyIndicatorType.OWNER;
     indicator.indicatorSourceName = 'foo@example.com';
     await microtasksFinished();

@@ -6,26 +6,23 @@
 #define IOS_CHROME_BROWSER_DATA_SHARING_MODEL_DATA_SHARING_SERVICE_FACTORY_H_
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
-class ChromeBrowserState;
+class ProfileIOS;
 
 namespace data_sharing {
 
 class DataSharingService;
 
 // Factory for DataSharingService.
-class DataSharingServiceFactory : public BrowserStateKeyedServiceFactory {
+class DataSharingServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  static DataSharingService* GetForBrowserState(ChromeBrowserState* context);
+  static DataSharingService* GetForProfile(ProfileIOS* profile);
 
   static DataSharingServiceFactory* GetInstance();
 
-  DataSharingServiceFactory(DataSharingServiceFactory&) = delete;
-  DataSharingServiceFactory& operator=(DataSharingServiceFactory&) = delete;
-
   // Returns the default factory used to build DataSharingService. Can be
-  // registered with SetTestingFactory to use real instances during testing.
+  // registered with AddTestingFactory to use real instances during testing.
   static TestingFactory GetDefaultFactory();
 
  private:
@@ -34,11 +31,9 @@ class DataSharingServiceFactory : public BrowserStateKeyedServiceFactory {
   DataSharingServiceFactory();
   ~DataSharingServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory:
+  // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
-  web::BrowserState* GetBrowserStateToUse(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 }  // namespace data_sharing

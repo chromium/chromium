@@ -34,13 +34,6 @@ class CONTENT_EXPORT AXInspectFactory {
   // Returns the API type of the current platform's default platform recorder.
   static ui::AXApiType::Type DefaultPlatformRecorderType();
 
-  // Creates the appropriate event recorder for the platform we are currently
-  // running on.
-  static std::unique_ptr<ui::AXEventRecorder> CreatePlatformRecorder(
-      ui::AXPlatformTreeManager* manager = nullptr,
-      base::ProcessId pid = 0,
-      const ui::AXTreeSelector& selector = {});
-
   // Creates the internal accessibility tree formatter, AKA the Blink tree
   // formatter, which is used to dump the Blink accessibility tree to a string
   static std::unique_ptr<ui::AXTreeFormatter> CreateBlinkFormatter();

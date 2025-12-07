@@ -5,6 +5,7 @@
 #include "ash/login/ui/local_authentication_request_view.h"
 
 #include <string>
+#include <string_view>
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
@@ -14,11 +15,8 @@
 #include "ash/public/cpp/login/local_authentication_request_controller.h"
 #include "ash/public/cpp/login/login_utils.h"
 #include "ash/public/cpp/session/user_info.h"
-#include "ash/public/cpp/shelf_config.h"
-#include "ash/shell.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/system_shadow.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
@@ -32,6 +30,7 @@
 #include "components/account_id/account_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -141,11 +140,11 @@ LocalAuthenticationRequestView::LocalAuthenticationRequestView(
       default_description_(description),
       auth_performer_(UserDataAuthClient::Get()),
       user_context_(std::move(user_context)) {
-  //  MODAL_TYPE_SYSTEM is used to get a semi-transparent background behind the
+  //  ModalType::kSystem is used to get a semi-transparent background behind the
   //  local authentication request view, when it is used directly on a widget.
   //  The overlay consumes all the inputs from the user, so that they can only
   //  interact with the local authentication request view while it is visible.
-  SetModalType(ui::MODAL_TYPE_SYSTEM);
+  SetModalType(ui::mojom::ModalType::kSystem);
 
   // Main view contains all other views aligned vertically and centered.
   auto layout = std::make_unique<views::BoxLayout>(
@@ -158,11 +157,18 @@ LocalAuthenticationRequestView::LocalAuthenticationRequestView(
       views::BoxLayout::CrossAxisAlignment::kCenter);
   SetLayoutManager(std::move(layout));
 
-  // Set Backgground color and shape.
+  // Set Background color and shape.
   SetPaintToLayer();
-  layer()->SetBackgroundBlur(ShelfConfig::Get()->shelf_blur_radius());
-  ui::ColorId background_color_id = cros_tokens::kCrosSysSystemBaseElevated;
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  }
+
+  const ui::ColorId background_color_id =
+      chromeos::features::IsSystemBlurEnabled()
+          ? cros_tokens::kCrosSysSystemBaseElevated
+          : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
+  SetBackground(views::CreateRoundedRectBackground(
       background_color_id,
       kLocalAuthenticationRequestViewRoundedCornerRadiusDp));
 
@@ -237,7 +243,7 @@ LocalAuthenticationRequestView::LocalAuthenticationRequestView(
   close_button_->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
       IDS_ASH_LOGIN_LOCAL_AUTHENTICATION_CLOSE_DIALOG_BUTTON));
   close_button_->SetFocusBehavior(FocusBehavior::ALWAYS);
-  close_button_view->AddChildView(close_button_.get());
+  close_button_view->AddChildViewRaw(close_button_.get());
 
   auto add_spacer = [&](int height) {
     auto* spacer = new NonAccessibleView();
@@ -251,7 +257,7 @@ LocalAuthenticationRequestView::LocalAuthenticationRequestView(
     label->SetSubpixelRenderingEnabled(false);
     label->SetAutoColorReadabilityEnabled(false);
 
-    label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+    label->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
     label->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   };
 
@@ -265,7 +271,7 @@ LocalAuthenticationRequestView::LocalAuthenticationRequestView(
   title_label_->SetFontList(gfx::FontList().Derive(
       kTitleFontSizeDeltaDp, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
   decorate_label(title_label_);
-  AddChildView(title_label_.get());
+  AddChildViewRaw(title_label_.get());
 
   add_spacer(kTitleToDescriptionDistanceDp);
 
@@ -281,7 +287,7 @@ LocalAuthenticationRequestView::LocalAuthenticationRequestView(
       gfx::FontList().Derive(kDescriptionFontSizeDeltaDp, gfx::Font::NORMAL,
                              gfx::Font::Weight::NORMAL));
   decorate_label(description_label_);
-  AddChildView(description_label_.get());
+  AddChildViewRaw(description_label_.get());
 
   add_spacer(kDescriptionToAccessCodeDistanceDp);
 
@@ -304,16 +310,16 @@ LocalAuthenticationRequestView::LocalAuthenticationRequestView(
   add_spacer(kSubmitButtonBottomMarginDp);
 
   SetPreferredSize(GetLocalAuthenticationRequestViewSize());
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
+  UpdateAccessibleName();
+  description_label_changed_subscription_ =
+      description_label_->AddTextChangedCallback(base::BindRepeating(
+          &LocalAuthenticationRequestView::OnDescriptionLabelTextChanged,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 LocalAuthenticationRequestView::~LocalAuthenticationRequestView() = default;
-
-void LocalAuthenticationRequestView::GetAccessibleNodeData(
-    ui::AXNodeData* node_data) {
-  views::DialogDelegateView::GetAccessibleNodeData(node_data);
-  node_data->role = ax::mojom::Role::kDialog;
-  node_data->SetNameChecked(description_label_->GetText());
-}
 
 void LocalAuthenticationRequestView::RequestFocus() {
   login_password_view_->RequestFocus();
@@ -337,7 +343,7 @@ void LocalAuthenticationRequestView::UpdateState(
                              : cros_tokens::kCrosSysError;
   title_label_->SetText(title);
   description_label_->SetText(description);
-  description_label_->SetEnabledColorId(color_id);
+  description_label_->SetEnabledColor(color_id);
 }
 
 gfx::Size LocalAuthenticationRequestView::CalculatePreferredSize(
@@ -378,7 +384,7 @@ LocalAuthenticationRequestView::GetLocalAuthenticationRequestViewSize() const {
 
 void LocalAuthenticationRequestView::OnAuthSubmit(
     bool authenticated_by_pin,
-    const std::u16string& password) {
+    std::u16string_view password) {
   CHECK(!authenticated_by_pin);
   SetInputEnabled(false);
 
@@ -409,12 +415,26 @@ void LocalAuthenticationRequestView::OnAuthComplete(
         LocalAuthenticationRequestViewState::kError, default_title_,
         l10n_util::GetStringUTF16(IDS_ASH_LOGIN_ERROR_AUTHENTICATING_PWD));
     ClearInput();
-    NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
-                             true /*send_native_event*/);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert,
+                                       true /*send_native_event*/);
     SetInputEnabled(true);
   } else {
     LocalAuthenticationRequestWidget::Get()->Close(true /* success */,
                                                    std::move(user_context));
+  }
+}
+
+void LocalAuthenticationRequestView::OnDescriptionLabelTextChanged() {
+  UpdateAccessibleName();
+}
+
+void LocalAuthenticationRequestView::UpdateAccessibleName() {
+  if (description_label_->GetText().empty()) {
+    GetViewAccessibility().SetName(
+        std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  } else {
+    GetViewAccessibility().SetName(
+        std::u16string(description_label_->GetText()));
   }
 }
 

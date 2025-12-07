@@ -17,7 +17,6 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -28,7 +27,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
@@ -41,7 +39,6 @@ import org.chromium.url.mojom.Url;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -84,20 +81,17 @@ public class InstalledAppProviderTest {
     private static final String ORIGIN_DIFFERENT_HOST = "https://example.org:8000";
     private static final String ORIGIN_DIFFERENT_PORT = "https://example.com:8001";
 
-    @Rule public JniMocker mocker = new JniMocker();
-
     @Mock private MockRenderFrameHost mMockRenderFrameHost;
     private FakePackageManager mFakePackageManager;
     private InstalledAppProviderTestImpl mInstalledAppProvider;
-    private FakeInstantAppsHandler mFakeInstantAppsHandler;
     private TestInstalledAppProviderImplJni mTestInstalledAppProviderImplJni;
 
     private static class FakePackageManager extends PackageManagerDelegate {
-        private Map<String, PackageInfo> mPackageInfo = new HashMap<>();
-        private Map<String, Resources> mResources = new HashMap<>();
+        private final Map<String, PackageInfo> mPackageInfo = new HashMap<>();
+        private final Map<String, Resources> mResources = new HashMap<>();
 
         // The set of installed WebAPKs identified by their manifest URL.
-        private Set<String> mInstalledWebApks = new HashSet<>();
+        private final Set<String> mInstalledWebApks = new HashSet<>();
 
         public void addPackageInfo(PackageInfo packageInfo) {
             mPackageInfo.put(packageInfo.packageName, packageInfo);
@@ -137,8 +131,7 @@ public class InstalledAppProviderTest {
     }
 
     private class InstalledAppProviderTestImpl extends InstalledAppProviderImpl {
-        public InstalledAppProviderTestImpl(
-                RenderFrameHost renderFrameHost, FakeInstantAppsHandler instantAppsHandler) {
+        public InstalledAppProviderTestImpl(RenderFrameHost renderFrameHost) {
             super(
                     new BrowserContextHandle() {
                         @Override
@@ -146,8 +139,7 @@ public class InstalledAppProviderTest {
                             return 1;
                         }
                     },
-                    renderFrameHost,
-                    instantAppsHandler::isInstantAppAvailable);
+                    renderFrameHost);
         }
 
         @Override
@@ -199,39 +191,6 @@ public class InstalledAppProviderTest {
     }
 
     /**
-     * FakeInstantAppsHandler lets us mock getting RelatedApplications from a URL in the absence of
-     * proper GMSCore calls.
-     */
-    private static class FakeInstantAppsHandler {
-        private final List<Pair<String, Boolean>> mRelatedApplicationList;
-
-        public FakeInstantAppsHandler() {
-            mRelatedApplicationList = new ArrayList<Pair<String, Boolean>>();
-        }
-
-        public void addInstantApp(String url, boolean holdback) {
-            mRelatedApplicationList.add(Pair.create(url, holdback));
-        }
-
-        public void resetForTest() {
-            mRelatedApplicationList.clear();
-        }
-
-        // TODO(thildebr): When the implementation of isInstantAppAvailable is complete, we need to
-        // test its functionality instead of stubbing it out here. Instead we can create a wrapper
-        // around the GMSCore functionality we need and override that here instead.
-        public boolean isInstantAppAvailable(
-                String url, boolean checkHoldback, boolean includeUserPrefersBrowser) {
-            for (Pair<String, Boolean> pair : mRelatedApplicationList) {
-                if (url.startsWith(pair.first) && checkHoldback == pair.second) {
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
-
-    /**
      * Helper function allows for the "installation" of Android package names and setting up
      * Resources for installed packages.
      */
@@ -255,7 +214,7 @@ public class InstalledAppProviderTest {
      * for these tests).
      */
     private static class FakeResources extends Resources {
-        private static AssetManager sAssetManager = createAssetManager();
+        private static final AssetManager sAssetManager = createAssetManager();
         private final int mId;
         private final String mValue;
 
@@ -363,6 +322,7 @@ public class InstalledAppProviderTest {
         mInstalledAppProvider.filterInstalledApps(
                 manifestRelatedApps,
                 manifestUrl,
+                /* addSavedRelatedApplications= */ false,
                 new InstalledAppProvider.FilterInstalledApps_Response() {
                     @Override
                     public void call(RelatedApplication[] installedRelatedApps) {
@@ -385,15 +345,13 @@ public class InstalledAppProviderTest {
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
 
         mTestInstalledAppProviderImplJni = new TestInstalledAppProviderImplJni();
-        mocker.mock(InstalledAppProviderImplJni.TEST_HOOKS, mTestInstalledAppProviderImplJni);
+        InstalledAppProviderImplJni.setInstanceForTesting(mTestInstalledAppProviderImplJni);
 
         GURL urlOnOrigin = new GURL(URL_ON_ORIGIN);
         Mockito.when(mMockRenderFrameHost.getLastCommittedURL()).thenReturn(urlOnOrigin);
 
         mFakePackageManager = new FakePackageManager();
-        mFakeInstantAppsHandler = new FakeInstantAppsHandler();
-        mInstalledAppProvider =
-                new InstalledAppProviderTestImpl(mMockRenderFrameHost, mFakeInstantAppsHandler);
+        mInstalledAppProvider = new InstalledAppProviderTestImpl(mMockRenderFrameHost);
         mInstalledAppProvider.setPackageManagerDelegateForTest(mFakePackageManager);
     }
 
@@ -402,7 +360,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testOriginMissingParts() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -428,7 +386,7 @@ public class InstalledAppProviderTest {
     @UiThreadTest
     public void testNoRelatedApps() throws Exception {
         // The web manifest has no related apps.
-        RelatedApplication manifestRelatedApps[] = new RelatedApplication[] {};
+        RelatedApplication[] manifestRelatedApps = new RelatedApplication[] {};
 
         // One Android app is installed named |PACKAGE_NAME_1|. It has a related web app with origin
         // |ORIGIN|.
@@ -447,7 +405,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testOneRelatedAppNoId() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {createRelatedApplication(PLATFORM_ANDROID, null, null)};
 
         setAssetStatement(PACKAGE_NAME_1, NAMESPACE_WEB, RELATION_HANDLE_ALL_URLS, ORIGIN);
@@ -466,7 +424,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testOneRelatedNonAndroidApp() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_OTHER, PACKAGE_NAME_1, null)
                 };
@@ -487,7 +445,7 @@ public class InstalledAppProviderTest {
     @UiThreadTest
     public void testOneRelatedAppNotInstalled() throws Exception {
         // The web manifest has a related Android app named |PACKAGE_NAME_1|.
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -500,12 +458,14 @@ public class InstalledAppProviderTest {
         verifyInstalledApps(manifestRelatedApps, expectedInstalledRelatedApps);
     }
 
-    /** Android app manifest has an asset_statements key, but the resource it links to is missing. */
+    /**
+     * Android app manifest has an asset_statements key, but the resource it links to is missing.
+     */
     @Test
     @SmallTest
     @UiThreadTest
     public void testOneRelatedAppBrokenAssetStatementsResource() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -524,7 +484,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testOneRelatedAppNoAssetStatements() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -539,7 +499,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testOneRelatedAppNoAssetStatementsNullMetadata() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -561,7 +521,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testOneRelatedAppRelatedToDifferentOrigins() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -585,7 +545,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testOneInstalledRelatedApp() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -605,7 +565,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testDynamicallyChangingUrl() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -637,7 +597,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testInstalledRelatedAppWithUrl() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, URL_UNRELATED)
                 };
@@ -653,7 +613,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testMultipleAssetStatements() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -678,7 +638,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testAssetStatementSyntaxError() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -695,7 +655,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testAssetStatementNotArray() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -712,7 +672,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testAssetStatementArrayNoObjects() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -738,7 +698,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testAssetStatementNoRelation() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -765,7 +725,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testAssetStatementNonStandardRelation() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -783,7 +743,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testAssetStatementNoTarget() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -800,7 +760,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testAssetStatementNoNamespace() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -820,7 +780,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testNonWebAssetStatement() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -836,7 +796,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testAssetStatementNoSite() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -856,7 +816,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testAssetStatementSiteSyntaxError() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -873,7 +833,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testAssetStatementSiteMissingParts() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -902,7 +862,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testAssetStatementSiteHasPath() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -923,7 +883,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testExtraInstalledApp() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -973,7 +933,7 @@ public class InstalledAppProviderTest {
         setAssetStatement(PACKAGE_NAME_1, NAMESPACE_WEB, RELATION_HANDLE_ALL_URLS, ORIGIN);
 
         // Installed app.
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)
                 };
@@ -1017,32 +977,6 @@ public class InstalledAppProviderTest {
         Assert.assertEquals(8, mInstalledAppProvider.mLastDelayForTesting);
     }
 
-    @Test
-    @SmallTest
-    @UiThreadTest
-    public void testMultipleAppsIncludingInstantApps() throws Exception {
-        RelatedApplication[] manifestRelatedApps =
-                new RelatedApplication[] {
-                    createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null),
-                    // Instant Apps:
-                    createRelatedApplication(
-                            PLATFORM_ANDROID,
-                            InstalledAppProviderImpl.INSTANT_APP_ID_STRING,
-                            ORIGIN),
-                    createRelatedApplication(
-                            PLATFORM_ANDROID,
-                            InstalledAppProviderImpl.INSTANT_APP_HOLDBACK_ID_STRING,
-                            ORIGIN)
-                };
-
-        setAssetStatement(PACKAGE_NAME_1, NAMESPACE_WEB, RELATION_HANDLE_ALL_URLS, ORIGIN);
-        mFakeInstantAppsHandler.addInstantApp(ORIGIN, true);
-
-        RelatedApplication[] expectedInstalledRelatedApps =
-                new RelatedApplication[] {manifestRelatedApps[0], manifestRelatedApps[2]};
-        verifyInstalledApps(manifestRelatedApps, expectedInstalledRelatedApps);
-    }
-
     /**
      * Multiple related uninstalled apps (over the allowed limit) followed by one related Android
      * app which is installed and mutually related.
@@ -1051,7 +985,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testRelatedAppsOverAllowedThreshold() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[MAX_ALLOWED_RELATED_APPS + 1];
         for (int i = 0; i < MAX_ALLOWED_RELATED_APPS; i++) {
             manifestRelatedApps[i] =
@@ -1074,7 +1008,7 @@ public class InstalledAppProviderTest {
     @UiThreadTest
     public void testInstalledWebApkForWebsite() throws Exception {
         RelatedApplication webApk = createRelatedApplication(PLATFORM_WEBAPP, null, MANIFEST_URL);
-        RelatedApplication manifestRelatedApps[] = new RelatedApplication[] {webApk};
+        RelatedApplication[] manifestRelatedApps = new RelatedApplication[] {webApk};
         mFakePackageManager.addWebApk(MANIFEST_URL);
 
         RelatedApplication[] expectedInstalledRelatedApps = new RelatedApplication[] {webApk};
@@ -1088,7 +1022,7 @@ public class InstalledAppProviderTest {
     public void testInstalledWebApkForOtherWebsite() throws Exception {
         RelatedApplication webApk =
                 createRelatedApplication(PLATFORM_WEBAPP, null, OTHER_MANIFEST_URL);
-        RelatedApplication manifestRelatedApps[] = new RelatedApplication[] {webApk};
+        RelatedApplication[] manifestRelatedApps = new RelatedApplication[] {webApk};
         mFakePackageManager.addWebApk(OTHER_MANIFEST_URL);
 
         verifyInstalledApps(manifestRelatedApps, new RelatedApplication[] {});
@@ -1104,7 +1038,7 @@ public class InstalledAppProviderTest {
     public void testInstalledWebApkForOtherWebsiteNotInstalled() throws Exception {
         RelatedApplication webApk =
                 createRelatedApplication(PLATFORM_WEBAPP, null, OTHER_MANIFEST_URL);
-        RelatedApplication manifestRelatedApps[] = new RelatedApplication[] {webApk};
+        RelatedApplication[] manifestRelatedApps = new RelatedApplication[] {webApk};
 
         mTestInstalledAppProviderImplJni.addVerfication(MANIFEST_URL, OTHER_MANIFEST_URL);
         verifyInstalledApps(manifestRelatedApps, new RelatedApplication[] {});
@@ -1118,7 +1052,7 @@ public class InstalledAppProviderTest {
     @SmallTest
     @UiThreadTest
     public void testOrderOfResults() throws Exception {
-        RelatedApplication manifestRelatedApps[] =
+        RelatedApplication[] manifestRelatedApps =
                 new RelatedApplication[] {
                     createRelatedApplication(PLATFORM_WEBAPP, null, OTHER_MANIFEST_URL),
                     createRelatedApplication(PLATFORM_WEBAPP, null, OTHER_MANIFEST_URL3),

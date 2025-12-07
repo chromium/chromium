@@ -6,24 +6,34 @@
 #define DEVICE_BLUETOOTH_BLUETOOTH_ADAPTER_ANDROID_H_
 
 #include <memory>
+#include <string>
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_adapter.h"
+#include "device/bluetooth/bluetooth_device.h"
 
 using base::android::ScopedJavaLocalRef;
 
 namespace device {
 
+class BluetoothSocketThread;
+class BluetoothDeviceAndroid;
+
 // BluetoothAdapterAndroid, along with the Java class
 // org.chromium.device.bluetooth.BluetoothAdapter, implement BluetoothAdapter.
 //
-// The GATT Profile over Low Energy is supported, but not Classic Bluetooth at
-// this time. LE GATT support has been initially built out to support Web
-// Bluetooth, which does not need other Bluetooth features. There is no
-// technical reason they can not be supported should a need arrise.
+// The GATT Profile over Low Energy is supported. LE GATT support has been
+// initially built out to support Web Bluetooth, which does not need other
+// Bluetooth features. GATT Profile over paired Classic Bluetooth devices may
+// work, but it isn't well supported at this time. There is no technical reason
+// they can not be well supported should a need arise.
+//
+// Paired Classic Bluetooth devices visible in the device list for RFCOMM over
+// Web Serial.
 //
 // BluetoothAdapterAndroid is reference counted, and owns the lifetime of the
 // Java class BluetoothAdapter via j_adapter_. The adapter also owns a tree of
@@ -56,11 +66,13 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterAndroid final
   bool IsInitialized() const override;
   bool IsPresent() const override;
   bool IsPowered() const override;
+  PermissionStatus GetOsPermissionStatus() const override;
   bool IsDiscoverable() const override;
   void SetDiscoverable(bool discoverable,
                        base::OnceClosure callback,
                        ErrorCallback error_callback) override;
   bool IsDiscovering() const override;
+  ConstDeviceList GetDevices() const override;
   UUIDList GetUUIDs() const override;
   void CreateRfcommService(const BluetoothUUID& uuid,
                            const ServiceOptions& options,
@@ -79,35 +91,56 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterAndroid final
 
   // Called when adapter state changes.
   void OnAdapterStateChanged(JNIEnv* env,
-                             const base::android::JavaParamRef<jobject>& caller,
                              const bool powered);
 
   // Handles a scan error event by invalidating all discovery sessions.
-  void OnScanFailed(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& caller);
+  void OnScanFailed(JNIEnv* env);
 
   // Creates or updates device with advertised UUID information when a device is
   // discovered during a scan.
   void CreateOrUpdateDeviceOnScan(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& caller,
-      const base::android::JavaParamRef<jstring>& address,
-      const base::android::JavaParamRef<jobject>&
+      const base::android::JavaRef<jstring>& address,
+      const base::android::JavaRef<jobject>&
           bluetooth_device_wrapper,  // Java Type: bluetoothDeviceWrapper
-      const base::android::JavaParamRef<jstring>& local_name,
+      const base::android::JavaRef<jstring>& local_name,
       int32_t rssi,
-      const base::android::JavaParamRef<jobjectArray>&
+      const base::android::JavaRef<jobjectArray>&
           advertised_uuids,  // Java Type: String[]
       int32_t tx_power,
-      const base::android::JavaParamRef<jobjectArray>&
+      const base::android::JavaRef<jobjectArray>&
           service_data_keys,  // Java Type: String[]
-      const base::android::JavaParamRef<jobjectArray>&
+      const base::android::JavaRef<jobjectArray>&
           service_data_values,  // Java Type: byte[]
-      const base::android::JavaParamRef<jintArray>&
+      const base::android::JavaRef<jintArray>&
           manufacturer_data_keys,  // Java Type: int[]
-      const base::android::JavaParamRef<jobjectArray>&
+      const base::android::JavaRef<jobjectArray>&
           manufacturer_data_values,  // Java Type: byte[]
       int32_t advertisement_flags);
+
+  // Called when a new paired device is found or an existing device becomes
+  // paired. It creates a device if it isn't in |devices_|
+  void PopulateOrUpdatePairedDevice(
+      JNIEnv* env,
+      const base::android::JavaRef<jstring>& address,
+      const base::android::JavaRef<jobject>&
+          bluetooth_device_wrapper,  // Java Type: BluetoothDeviceWrapper
+      bool from_broadcast_receiver);
+
+  // Called when the Android system notifies us that a device is unpaired.
+  void OnDeviceUnpaired(JNIEnv* env,
+                        const base::android::JavaRef<jstring>& address);
+
+  // Updates the connected state of the device with |address| if it's in the
+  // device list for |transport| to |connected|. It creates a device if it's
+  // not in |devices_| and connected.
+  void UpdateDeviceAclConnectState(
+      JNIEnv* env,
+      const base::android::JavaRef<jstring>& address,
+      const base::android::JavaRef<jobject>&
+          bluetooth_device_wrapper,  // Java Type: BluetoothDeviceWrapper
+      uint8_t transport,
+      bool connected);
 
  protected:
   BluetoothAdapterAndroid();
@@ -135,6 +168,19 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterAndroid final
   base::android::ScopedJavaGlobalRef<jobject> j_adapter_;
 
  private:
+  void PopulatePairedDevices() const;
+  BluetoothDeviceAndroid* CreateDevice(
+      const std::string& device_address,
+      const base::android::JavaRef<jobject>&
+          bluetooth_device_wrapper);  // Java Type: BluetoothDeviceWrapper
+
+  // Update device connection states due to adapter turning off because Android
+  // doesn't notify ACL connected state broadcast receivers on adapter turning
+  // off.
+  void UpdateDeviceConnectStatesOnAdapterOff();
+
+  scoped_refptr<BluetoothSocketThread> socket_thread_;
+
   FRIEND_TEST_ALL_PREFIXES(BluetoothAdapterAndroidTest, ScanFilterTest);
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

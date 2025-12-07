@@ -1,0 +1,24 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Configuration for an Android-10 (Q, API 29) AVD on google_apis on x86
+
+emulator_package {
+  package_name: "chromium/third_party/android_sdk/public/emulator"
+  version: "v8yrLOpMlE0if7NxVuSlX0Etnq0k_FLX_hmYksbVSm0C"  # 36.1.9 (Stable)
+}
+
+system_image_package {
+  package_name: "chromium/third_party/android_sdk/public/system-images/android-29/google_apis/x86"
+  version: "rRUBEiJCti8o7FJnvVj6jDXvd1EteA6E5OnXWCmNR0cC"  # r13 QSR1.211112.011
+}
+system_image_name: "system-images;android-29;google_apis;x86"
+
+avd_package {
+  package_name: "chromium/third_party/android_sdk/public/avds/android-29/google_apis/x86"
+  # Created in https://ci.chromium.org/ui/b/8705255753993406753
+  # Patched gmscore version 25.07.33 in https://crrev.com/c/6377466
+  version: "eAFC4aq2-ExGLYCMObr--RQ1priDHhC3XVlBUSJydvEC"
+}
+avd_name: "android_29_google_apis_x86"

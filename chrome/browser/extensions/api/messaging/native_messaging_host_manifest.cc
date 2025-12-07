@@ -10,10 +10,13 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/strings/string_util.h"
 #include "chrome/common/chrome_features.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
-NativeMessagingHostManifest::~NativeMessagingHostManifest() {}
+NativeMessagingHostManifest::~NativeMessagingHostManifest() = default;
 
 // static
 bool NativeMessagingHostManifest::IsValidName(const std::string& name) {
@@ -68,8 +71,7 @@ std::unique_ptr<NativeMessagingHostManifest> NativeMessagingHostManifest::Load(
   return result;
 }
 
-NativeMessagingHostManifest::NativeMessagingHostManifest() {
-}
+NativeMessagingHostManifest::NativeMessagingHostManifest() = default;
 
 bool NativeMessagingHostManifest::Parse(const base::Value::Dict& dict,
                                         std::string* error_message) {

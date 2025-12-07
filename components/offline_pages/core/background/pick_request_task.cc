@@ -28,8 +28,8 @@ int signum(T t) {
   return (T(0) < t) - (t < T(0));
 }
 
-bool kCleanupNeeded = true;
-bool kNonUserRequestsFound = true;
+constexpr bool kCleanupNeeded = true;
+constexpr bool kNonUserRequestsFound = true;
 
 #define CALL_MEMBER_FUNCTION(object, ptrToMember) ((object)->*(ptrToMember))
 }  // namespace
@@ -54,7 +54,7 @@ PickRequestTask::PickRequestTask(
       disabled_requests_(disabled_requests),
       prioritized_requests_(prioritized_requests) {}
 
-PickRequestTask::~PickRequestTask() {}
+PickRequestTask::~PickRequestTask() = default;
 
 void PickRequestTask::Run() {
   GetRequests();
@@ -87,10 +87,11 @@ void PickRequestTask::Choose(
   RequestCompareFunction comparator = nullptr;
 
   // Choose which comparison function to use based on policy.
-  if (policy_->RetryCountIsMoreImportantThanRecency())
+  if (policy_->RetryCountIsMoreImportantThanRecency()) {
     comparator = &PickRequestTask::RetryCountFirstCompareFunction;
-  else
+  } else {
     comparator = &PickRequestTask::RecencyFirstCompareFunction;
+  }
 
   bool non_user_requested_tasks_remaining = false;
   bool cleanup_needed = false;

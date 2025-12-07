@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/context_menu_matcher.h"
+
 #include <string>
 
 #include "base/functional/bind.h"
@@ -12,16 +13,16 @@
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/extensions/menu_manager_factory.h"
 #include "chrome/browser/extensions/test_extension_menu_icon_loader.h"
-#include "chrome/browser/extensions/test_extension_prefs.h"
 #include "chrome/common/extensions/api/context_menus.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/test_extension_prefs.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/utils/extension_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 
 namespace extensions {
 
@@ -33,9 +34,9 @@ bool MenuItemHasAnyContext(const extensions::MenuItem* item) {
 class ContextMenuMatcherTest : public testing::Test {
  public:
   ContextMenuMatcherTest()
-      : profile_(std::make_unique<TestingProfile>()),
-        manager_(CreateMenuManager()),
-        prefs_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
+      : prefs_(base::SingleThreadTaskRunner::GetCurrentDefault(),
+               std::make_unique<TestingProfile>()),
+        manager_(CreateMenuManager()) {}
 
   ContextMenuMatcherTest(const ContextMenuMatcherTest&) = delete;
   ContextMenuMatcherTest& operator=(const ContextMenuMatcherTest&) = delete;
@@ -72,7 +73,8 @@ class ContextMenuMatcherTest : public testing::Test {
   Extension* AddExtension(const std::string& name) {
     scoped_refptr<Extension> extension = prefs_.AddExtension(name);
     extensions_.push_back(extension);
-    ExtensionRegistry* registry = ExtensionRegistry::Get(profile_.get());
+    ExtensionRegistry* registry =
+        ExtensionRegistry::Get(prefs_.browser_context());
     registry->AddEnabled(extension);
     return extension.get();
   }
@@ -81,18 +83,17 @@ class ContextMenuMatcherTest : public testing::Test {
   MenuManager* CreateMenuManager() {
     return static_cast<MenuManager*>(
         MenuManagerFactory::GetInstance()->SetTestingFactoryAndUse(
-            profile_.get(),
+            prefs_.browser_context(),
             base::BindRepeating(
                 &MenuManagerFactory::BuildServiceInstanceForTesting)));
   }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfile> profile_;
 
+  TestExtensionPrefs prefs_;
   raw_ptr<MenuManager> manager_;
   ExtensionList extensions_;
-  TestExtensionPrefs prefs_;
 };
 
 // Tests appending an extension item with an invisible submenu.
@@ -112,7 +113,7 @@ TEST_F(ContextMenuMatcherTest, AppendExtensionItemsWithInvisibleSubmenu) {
 
   std::unique_ptr<extensions::ContextMenuMatcher> extension_items =
       std::make_unique<extensions::ContextMenuMatcher>(
-          profile_.get(), nullptr, menu_model.get(),
+          prefs_.browser_context(), nullptr, menu_model.get(),
           base::BindRepeating(MenuItemHasAnyContext));
 
   std::u16string printable_selection_text;
@@ -146,7 +147,7 @@ TEST_F(ContextMenuMatcherTest, AppendExtensionItemsWithVisibleSubmenu) {
 
   std::unique_ptr<extensions::ContextMenuMatcher> extension_items =
       std::make_unique<extensions::ContextMenuMatcher>(
-          profile_.get(), nullptr, menu_model.get(),
+          prefs_.browser_context(), nullptr, menu_model.get(),
           base::BindRepeating(MenuItemHasAnyContext));
 
   // Add the items associated with the test extension.
@@ -179,7 +180,7 @@ TEST_F(ContextMenuMatcherTest, AppendExtensionItemsGroupTitle) {
 
   std::unique_ptr<extensions::ContextMenuMatcher> extension_items =
       std::make_unique<extensions::ContextMenuMatcher>(
-          profile_.get(), nullptr, menu_model.get(),
+          prefs_.browser_context(), nullptr, menu_model.get(),
           base::BindRepeating(MenuItemHasAnyContext));
 
   // Add the items associated with the test extension.
@@ -225,7 +226,7 @@ TEST_F(ContextMenuMatcherTest,
 
   std::unique_ptr<extensions::ContextMenuMatcher> extension_items =
       std::make_unique<extensions::ContextMenuMatcher>(
-          profile_.get(), nullptr, menu_model.get(),
+          prefs_.browser_context(), nullptr, menu_model.get(),
           base::BindRepeating(MenuItemHasAnyContext));
 
   // Add the items associated with the test extension.
@@ -275,7 +276,7 @@ TEST_F(ContextMenuMatcherTest, AppendExtensionItemWithInvisibleSubmenu) {
 
   std::unique_ptr<extensions::ContextMenuMatcher> extension_items =
       std::make_unique<extensions::ContextMenuMatcher>(
-          profile_.get(), nullptr, menu_model.get(),
+          prefs_.browser_context(), nullptr, menu_model.get(),
           base::BindRepeating(MenuItemHasAnyContext));
 
   // Add the items associated with the test extension.
@@ -314,7 +315,7 @@ TEST_F(ContextMenuMatcherTest, GetIconFromMenuIconLoader) {
 
   auto menu_model = std::make_unique<ui::SimpleMenuModel>(/*delegate=*/nullptr);
   auto extension_items = std::make_unique<extensions::ContextMenuMatcher>(
-      profile_.get(), /*delegate=*/nullptr, menu_model.get(),
+      prefs_.browser_context(), /*delegate=*/nullptr, menu_model.get(),
       base::BindRepeating(MenuItemHasAnyContext));
 
   // Add the items associated with the test extension.

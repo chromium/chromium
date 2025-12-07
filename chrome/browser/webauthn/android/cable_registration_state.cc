@@ -4,12 +4,15 @@
 
 #include "chrome/browser/webauthn/android/cable_registration_state.h"
 
+#include <array>
+
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "crypto/random.h"
 #include "device/fido/cable/v2_handshake.h"
-#include "device/fido/features.h"
+#include "device/fido/public/features.h"
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
 
 using device::cablev2::authenticator::Registration;
@@ -41,33 +44,12 @@ void RegistrationState::Register() {
       &RegistrationState::OnDeviceSupportResult, base::Unretained(this)));
   interface_->AmInWorkProfile(base::BindOnce(
       &RegistrationState::OnWorkProfileResult, base::Unretained(this)));
-
-  std::string secret_base64 = interface_->GetRootSecret();
-
-  if (!secret_base64.empty()) {
-    std::string secret_str;
-    if (base::Base64Decode(secret_base64, &secret_str) &&
-        secret_str.size() == secret_.size()) {
-      memcpy(secret_.data(), secret_str.data(), secret_.size());
-    } else {
-      secret_base64.clear();
-    }
-  }
-
-  if (secret_base64.empty()) {
-    crypto::RandBytes(secret_);
-    interface_->SetRootSecret(base::Base64Encode(secret_));
-  }
-
-  interface_->CalculateIdentityKey(
-      secret_, base::BindOnce(&RegistrationState::OnIdentityKeyReady,
-                              base::Unretained(this)));
 }
 
 // have_data_for_sync returns true if this object has loaded enough state to
 // put information into sync's DeviceInfo.
 bool RegistrationState::have_data_for_sync() const {
-  return device_supports_cable_.has_value() && identity_key_ &&
+  return device_supports_cable_.has_value() &&
          am_in_work_profile_.has_value() && sync_registration_ != nullptr &&
          sync_registration_->contact_id() && have_play_services_data();
 }
@@ -156,8 +138,8 @@ void RegistrationState::MaybeFlushPendingEvent() {
     // and we piggyback on that to transmit fresh keys. Therefore syncing
     // peers should have reasonably recent information.
     uint64_t id;
-    static_assert(EXTENT(event->pairing_id) == sizeof(id), "");
-    memcpy(&id, event->pairing_id.data(), sizeof(id));
+    static_assert(std::tuple_size_v<decltype(event->pairing_id)> == sizeof(id));
+    UNSAFE_TODO(memcpy(&id, event->pairing_id.data(), sizeof(id)));
 
     // A maximum age is enforced for sync secrets so that any leak of
     // information isn't valid forever. The desktop ignores DeviceInfo
@@ -170,15 +152,6 @@ void RegistrationState::MaybeFlushPendingEvent() {
       return;
     }
   }
-
-  const std::optional<std::vector<uint8_t>> serialized(event->Serialize());
-  if (!serialized) {
-    return;
-  }
-
-  interface_->OnCloudMessage(
-      std::move(*serialized),
-      event->request_type == device::FidoRequestType::kMakeCredential);
 }
 
 void RegistrationState::MaybeSignalSync() {
@@ -197,12 +170,6 @@ void RegistrationState::OnDeviceSupportResult(bool result) {
 
 void RegistrationState::OnWorkProfileResult(bool result) {
   am_in_work_profile_ = result;
-  MaybeSignalSync();
-}
-
-void RegistrationState::OnIdentityKeyReady(
-    bssl::UniquePtr<EC_KEY> identity_key) {
-  identity_key_ = std::move(identity_key);
   MaybeSignalSync();
 }
 

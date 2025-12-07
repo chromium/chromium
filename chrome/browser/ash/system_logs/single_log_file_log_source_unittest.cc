@@ -29,10 +29,6 @@ class SingleLogFileLogSourceTest : public ::testing::Test {
   SingleLogFileLogSourceTest& operator=(const SingleLogFileLogSourceTest&) =
       delete;
 
-  ~SingleLogFileLogSourceTest() override {
-    SingleLogFileLogSource::SetChromeStartTimeForTesting(nullptr);
-  }
-
  protected:
   // Sets up a dummy system log directory.
   void InitializeTestLogDir() {

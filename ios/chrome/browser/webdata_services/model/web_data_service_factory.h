@@ -5,17 +5,17 @@
 #ifndef IOS_CHROME_BROWSER_WEBDATA_SERVICES_MODEL_WEB_DATA_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_WEBDATA_SERVICES_MODEL_WEB_DATA_SERVICE_FACTORY_H_
 
-#include <memory>
+#import <memory>
 
-#include "base/memory/ref_counted.h"
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "base/memory/scoped_refptr.h"
+#import "base/no_destructor.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
-class ChromeBrowserState;
 class KeywordWebDataService;
+class ProfileIOS;
+enum class ServiceAccessType;
 class TokenWebData;
 class WebDataServiceWrapper;
-enum class ServiceAccessType;
 
 namespace autofill {
 class AutofillWebDataService;
@@ -27,41 +27,40 @@ class PlusAddressWebDataService;
 
 namespace ios {
 // Singleton that owns all WebDataServiceWrappers and associates them with
-// ChromeBrowserState.
-class WebDataServiceFactory : public BrowserStateKeyedServiceFactory {
+// ProfileIOS.
+class WebDataServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  // Returns the AutofillWebDataService associated with `browser_state`.
-  static WebDataServiceWrapper* GetForBrowserState(
-      ChromeBrowserState* browser_state,
-      ServiceAccessType access_type);
-  static WebDataServiceWrapper* GetForBrowserStateIfExists(
-      ChromeBrowserState* browser_state,
+  // Returns the AutofillWebDataService associated with `profile`.
+  static WebDataServiceWrapper* GetForProfile(ProfileIOS* profile,
+                                              ServiceAccessType access_type);
+  static WebDataServiceWrapper* GetForProfileIfExists(
+      ProfileIOS* profile,
       ServiceAccessType access_type);
 
-  // Returns the AutofillWebDataService associated with `browser_state`.
+  // Returns the AutofillWebDataService associated with `profile`.
   static scoped_refptr<autofill::AutofillWebDataService>
-  GetAutofillWebDataForBrowserState(ChromeBrowserState* browser_state,
-                                    ServiceAccessType access_type);
-
-  // Returns the account-scoped AutofillWebDataService associated with the
-  // `browser_state`.
-  static scoped_refptr<autofill::AutofillWebDataService>
-  GetAutofillWebDataForAccount(ChromeBrowserState* browser_state,
+  GetAutofillWebDataForProfile(ProfileIOS* profile,
                                ServiceAccessType access_type);
 
-  // Returns the KeywordWebDataService associated with `browser_state`.
-  static scoped_refptr<KeywordWebDataService> GetKeywordWebDataForBrowserState(
-      ChromeBrowserState* browser_state,
+  // Returns the account-scoped AutofillWebDataService associated with the
+  // `profile`.
+  static scoped_refptr<autofill::AutofillWebDataService>
+  GetAutofillWebDataForAccount(ProfileIOS* profile,
+                               ServiceAccessType access_type);
+
+  // Returns the KeywordWebDataService associated with `profile`.
+  static scoped_refptr<KeywordWebDataService> GetKeywordWebDataForProfile(
+      ProfileIOS* profile,
       ServiceAccessType access_type);
 
-  // Returns the PlusAddressWebDataService associated with `browser_state`.
+  // Returns the PlusAddressWebDataService associated with `profile`.
   static scoped_refptr<plus_addresses::PlusAddressWebDataService>
-  GetPlusAddressWebDataForBrowserState(ChromeBrowserState* browser_state,
-                                       ServiceAccessType access_type);
+  GetPlusAddressWebDataForProfile(ProfileIOS* profile,
+                                  ServiceAccessType access_type);
 
-  // Returns the TokenWebData associated with `browser_state`.
-  static scoped_refptr<TokenWebData> GetTokenWebDataForBrowserState(
-      ChromeBrowserState* browser_state,
+  // Returns the TokenWebData associated with `profile`.
+  static scoped_refptr<TokenWebData> GetTokenWebDataForProfile(
+      ProfileIOS* profile,
       ServiceAccessType access_type);
 
   static WebDataServiceFactory* GetInstance();
@@ -69,21 +68,15 @@ class WebDataServiceFactory : public BrowserStateKeyedServiceFactory {
   // Returns the default factory, useful in tests where it's null by default.
   static TestingFactory GetDefaultFactory();
 
-  WebDataServiceFactory(const WebDataServiceFactory&) = delete;
-  WebDataServiceFactory& operator=(const WebDataServiceFactory&) = delete;
-
  private:
   friend class base::NoDestructor<WebDataServiceFactory>;
 
   WebDataServiceFactory();
   ~WebDataServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
-  web::BrowserState* GetBrowserStateToUse(
-      web::BrowserState* context) const override;
-  bool ServiceIsNULLWhileTesting() const override;
+      ProfileIOS* profile) const override;
 };
 
 }  // namespace ios

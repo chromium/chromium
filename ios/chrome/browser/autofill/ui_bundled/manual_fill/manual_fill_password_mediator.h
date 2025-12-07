@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/memory/ref_counted.h"
+#import "base/memory/scoped_refptr.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 
@@ -31,15 +31,6 @@ class WebState;
 
 class FaviconLoader;
 class GURL;
-
-namespace manual_fill {
-
-extern NSString* const ManagePasswordsAccessibilityIdentifier;
-extern NSString* const ManageSettingsAccessibilityIdentifier;
-extern NSString* const OtherPasswordsAccessibilityIdentifier;
-extern NSString* const SuggestPasswordAccessibilityIdentifier;
-
-}  // namespace manual_fill
 
 // Delegate for the password mediator.
 @protocol ManualFillPasswordMediatorDelegate <NSObject>

@@ -6,9 +6,11 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/snackbar_background.xml",
     "java/res/drawable/snackbar_background_tablet.xml",
+    "java/res/layout/floating_snackbar.xml",
     "java/res/layout/snackbar.xml",
-    "java/res/values-night/dimens.xml",
+    "java/res/values-sw600dp/dimens.xml",
     "java/res/values/dimens.xml",
   ]
 
@@ -37,12 +39,14 @@ android_library("java") {
     ":java_resources",
     "//base:base_java",
     "//build/android:build_java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/ui/android/edge_to_edge:factory_java",
     "//chrome/browser/ui/android/edge_to_edge:java",
     "//chrome/browser/util:java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/widget/android:java",
+    "//components/cached_flags:java",
     "//components/infobars/android:infobar_android_enums_java",
     "//components/infobars/android:java",
     "//components/infobars/core:infobar_enums_java",
@@ -50,10 +54,12 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/accessibility:ax_base_java",
     "//ui/android:ui_full_java",
     "//ui/android:ui_utils_java",
+    "//ui/edge_to_edge:java",
   ]
 
   resources_package = "org.chromium.chrome.ui.messages"
@@ -78,13 +84,17 @@ android_library("unit_device_javatests") {
   testonly = true
   resources_package = "org.chromium.chrome.browser.ui.messages.test"
 
-  sources = [ "java/src/org/chromium/chrome/browser/ui/messages/snackbar/SnackbarTest.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/messages/snackbar/SnackbarRenderTest.java",
+    "java/src/org/chromium/chrome/browser/ui/messages/snackbar/SnackbarTest.java",
+  ]
 
   deps = [
     ":java",
     ":test_java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//chrome/browser/flags:java",
     "//chrome/browser/util:java",
     "//chrome/test/android:chrome_java_integration_test_support",
     "//content/public/android:content_java",

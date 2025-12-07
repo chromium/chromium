@@ -4,6 +4,8 @@
 
 module blink.mojom;
 
+import "third_party/blink/public/mojom/ai/ai_common.mojom";
+
 // The status of the ModelStreamingResponder response.
 // TODO(leimy): return more information about the erroneous case.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -41,15 +43,53 @@ enum ModelStreamingResponseStatus {
   kErrorCancelled = 12,
   // The session has been destroyed.
   kErrorSessionDestroyed = 13,
+  // The input exceeds the quota limit.
+  kErrorInputTooLarge = 14,
+  // Response was retracted due to low quality.
+  kErrorResponseLowQuality = 15,
   // Append new items here.
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ai/enums.xml:AIModelStreamingResponseStatus)
 
-// The responder provides methods for the session to return the execution
-// response in a streaming manner.
+// The struct stores the information about the context for the session.
+struct ModelExecutionContextInfo {
+  // The latest number of existing tokens.
+  uint64 current_tokens;
+};
+
+// Provides methods for the model session to pass the information back to the
+// built-in AI interfaces (e.g. AILanguageModel, AISummarizer etc.) when they
+// request to feed inputs to the session.
+// There are two cases that use this from the interfaces:
+// - When executing the model to perform some tasks and expecting the response
+// to be streamed back.
+// - When appending some inputs to the context without actually executing them.
+// The operation is only considered finished when `OnCompletion()` or
+// `OnError()` is called. After that, there won't be any request sent through
+// this interface and the remote should close the connection.
+// TODO(crbug.com/409355678): rename this to something that describes the
+// use cases more accurately (e.g. `AIInputFeedingClient`).
 interface ModelStreamingResponder {
-  // This is called when there is a new chunk of data available for
-  // streaming, or when the response is fully streamed, or when there are
-  // some errors.
-  OnResponse(ModelStreamingResponseStatus status, string? text);
+  // Called when the model execution completes. The optional `context_info`
+  // contain information about the session like the current number of tokens
+  // and if the context overflows.
+  // It will only be set when necessary, for example, in the `AILanguageModel`
+  // interface as it maintains the context of the past model execution.
+  // TODO(crbug.com/409355678): Merge OnCompletion and OnError.
+  OnCompletion(ModelExecutionContextInfo? context_info);
+
+  // Called when the model execution encounters errors.
+  // `quota_error_info` may provide additional info for kErrorInputTooLarge.
+  OnError(ModelStreamingResponseStatus status, QuotaErrorInfo? quota_error_info);
+
+  // The following methods might be called zero or one or multiple times, but
+  // they won't happen after `OnCompletion()` or `OnError()`.
+
+  // Called when there is a new chunk of data available for streaming.
+  OnStreaming(string text);
+
+  // Called when the context overflows when reserving the space for the newly
+  // added items. It does not indicate a failure or guarantee the success.
+  // Used by Prompt API only.
+  OnQuotaOverflow();
 };

@@ -4,8 +4,10 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {OsSyncBrowserProxyImpl, OsSyncControlsSubpageElement, OsSyncPrefs} from 'chrome://os-settings/lazy_load.js';
-import {CrRadioButtonElement, CrToggleElement, Router, routes} from 'chrome://os-settings/os_settings.js';
+import type {OsSyncControlsSubpageElement, OsSyncPrefs} from 'chrome://os-settings/lazy_load.js';
+import {OsSyncBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
+import type {CrRadioButtonElement, CrToggleElement} from 'chrome://os-settings/os_settings.js';
+import {Router, routes} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -163,7 +165,7 @@ suite('OsSyncControlsNavigationTest', () => {
     const browserProxy = new TestOsSyncBrowserProxy();
     OsSyncBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
-    Router.getInstance().navigateTo(routes.OS_SYNC);
+    Router.getInstance().navigateTo(routes.OS_SYNC_CONTROLS);
     await browserProxy.methodCalled('didNavigateToOsSyncPage');
 
     Router.getInstance().navigateTo(routes.OS_PEOPLE);

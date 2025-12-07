@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/time/time.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_bus.h"
@@ -96,8 +97,8 @@ int PlaybackRateShifter::FillFrames(int num_frames,
                                            amount, playback_rate_);
 
     for (size_t c = 0; c < num_channels_; ++c) {
-      std::copy_n(rate_shifter_output_->channel(c), amount,
-                  channel_data[c] + total_filled);
+      std::copy_n(rate_shifter_output_->channel_span(c).data(), amount,
+                  UNSAFE_TODO(channel_data[c] + total_filled));
     }
     total_filled += filled;
 
@@ -134,8 +135,8 @@ int PlaybackRateShifter::DrainBufferedData(int num_frames,
     int to_copy = rate_shifter_->FillBuffer(rate_shifter_output_.get(), 0,
                                             amount, playback_rate_);
     for (size_t c = 0; c < num_channels_; ++c) {
-      std::copy_n(rate_shifter_output_->channel(c), to_copy,
-                  channel_data[c] + filled);
+      std::copy_n(rate_shifter_output_->channel_span(c).data(), to_copy,
+                  UNSAFE_TODO(channel_data[c] + filled));
     }
     filled += to_copy;
 
@@ -148,7 +149,7 @@ int PlaybackRateShifter::DrainBufferedData(int num_frames,
     // Now there is no data buffered in the rate shifter.
     float* fill_channel_data[kMaxChannels];
     for (size_t c = 0; c < num_channels_; ++c) {
-      fill_channel_data[c] = channel_data[c] + filled;
+      UNSAFE_TODO(fill_channel_data[c]) = UNSAFE_TODO(channel_data[c] + filled);
     }
     int64_t timestamp = playout_timestamp + FramesToMicroseconds(filled);
     filled += provider_->FillFrames(num_frames - filled, timestamp,

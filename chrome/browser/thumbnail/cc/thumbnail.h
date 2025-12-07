@@ -34,7 +34,7 @@ class Thumbnail;
 class ThumbnailDelegate {
  public:
   virtual void InvalidateCachedThumbnail(Thumbnail* thumbnail) = 0;
-  virtual ~ThumbnailDelegate() {}
+  virtual ~ThumbnailDelegate() = default;
 };
 
 class Thumbnail : public cc::UIResourceClient {

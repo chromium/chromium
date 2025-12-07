@@ -31,7 +31,6 @@ namespace drm = ::fuchsia::media::drm;
 
 using ::testing::_;
 using ::testing::Eq;
-using ::testing::Invoke;
 using ::testing::SaveArg;
 using ::testing::WithArgs;
 
@@ -53,10 +52,10 @@ class MockProvisionFetcher : public ProvisionFetcher {
 std::unique_ptr<ProvisionFetcher> CreateMockProvisionFetcher() {
   auto mock_provision_fetcher = std::make_unique<MockProvisionFetcher>();
   ON_CALL(*mock_provision_fetcher, Retrieve(_, _, _))
-      .WillByDefault(WithArgs<2>(
-          Invoke([](ProvisionFetcher::ResponseCB response_callback) {
+      .WillByDefault(
+          WithArgs<2>([](ProvisionFetcher::ResponseCB response_callback) {
             std::move(response_callback).Run(true, "response");
-          })));
+          }));
   return mock_provision_fetcher;
 }
 
@@ -149,12 +148,12 @@ TEST_F(FuchsiaCdmManagerTest, CreateAndProvision) {
   uint32_t added_data_store_id = 0;
   uint32_t cdm_data_store_id = 0;
   EXPECT_CALL(mock_key_system(kKeySystem), AddDataStore(_, _, _))
-      .WillOnce(WithArgs<0, 2>(
-          Invoke([&](uint32_t data_store_id,
-                     drm::KeySystem::AddDataStoreCallback callback) {
+      .WillOnce(
+          WithArgs<0, 2>([&](uint32_t data_store_id,
+                             drm::KeySystem::AddDataStoreCallback callback) {
             added_data_store_id = data_store_id;
             callback(fpromise::ok());
-          })));
+          }));
 
   EXPECT_CALL(mock_key_system(kKeySystem), CreateContentDecryptionModule2(_, _))
       .WillOnce(SaveArg<0>(&cdm_data_store_id));
@@ -175,12 +174,12 @@ TEST_F(FuchsiaCdmManagerTest, RecreateAfterDisconnect) {
 
   uint32_t added_data_store_id = 0;
   EXPECT_CALL(mock_key_system(kKeySystem), AddDataStore(_, _, _))
-      .WillOnce(WithArgs<0, 2>(
-          Invoke([&](uint32_t data_store_id,
-                     drm::KeySystem::AddDataStoreCallback callback) {
+      .WillOnce(
+          WithArgs<0, 2>([&](uint32_t data_store_id,
+                             drm::KeySystem::AddDataStoreCallback callback) {
             added_data_store_id = data_store_id;
             callback(fpromise::ok());
-          })));
+          }));
 
   // Create a CDM to force a KeySystem binding
   base::RunLoop create_run_loop;
@@ -207,10 +206,9 @@ TEST_F(FuchsiaCdmManagerTest, RecreateAfterDisconnect) {
 
   EXPECT_CALL(mock_key_system(kKeySystem),
               AddDataStore(Eq(added_data_store_id), _, _))
-      .WillOnce(
-          WithArgs<2>(Invoke([](drm::KeySystem::AddDataStoreCallback callback) {
-            callback(fpromise::ok());
-          })));
+      .WillOnce(WithArgs<2>([](drm::KeySystem::AddDataStoreCallback callback) {
+        callback(fpromise::ok());
+      }));
 
   base::RunLoop recreate_run_loop;
   cdm_ptr.set_error_handler(
@@ -239,10 +237,9 @@ TEST_F(FuchsiaCdmManagerTest, SameOriginShareDataStore) {
   cdm2.set_error_handler(error_handler);
 
   EXPECT_CALL(mock_key_system(kKeySystem), AddDataStore(Eq(1u), _, _))
-      .WillOnce(
-          WithArgs<2>(Invoke([](drm::KeySystem::AddDataStoreCallback callback) {
-            callback(fpromise::ok());
-          })));
+      .WillOnce(WithArgs<2>([](drm::KeySystem::AddDataStoreCallback callback) {
+        callback(fpromise::ok());
+      }));
   EXPECT_CALL(mock_key_system(kKeySystem),
               CreateContentDecryptionModule2(Eq(1u), _))
       .Times(2);
@@ -275,15 +272,13 @@ TEST_F(FuchsiaCdmManagerTest, DifferentOriginDoNotShareDataStore) {
   cdm2.set_error_handler(error_handler);
 
   EXPECT_CALL(mock_key_system(kKeySystem), AddDataStore(Eq(1u), _, _))
-      .WillOnce(
-          WithArgs<2>(Invoke([](drm::KeySystem::AddDataStoreCallback callback) {
-            callback(fpromise::ok());
-          })));
+      .WillOnce(WithArgs<2>([](drm::KeySystem::AddDataStoreCallback callback) {
+        callback(fpromise::ok());
+      }));
   EXPECT_CALL(mock_key_system(kKeySystem), AddDataStore(Eq(2u), _, _))
-      .WillOnce(
-          WithArgs<2>(Invoke([](drm::KeySystem::AddDataStoreCallback callback) {
-            callback(fpromise::ok());
-          })));
+      .WillOnce(WithArgs<2>([](drm::KeySystem::AddDataStoreCallback callback) {
+        callback(fpromise::ok());
+      }));
   EXPECT_CALL(mock_key_system(kKeySystem),
               CreateContentDecryptionModule2(Eq(1u), _))
       .Times(1);

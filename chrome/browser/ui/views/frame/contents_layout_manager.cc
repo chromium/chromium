@@ -4,25 +4,14 @@
 
 #include "chrome/browser/ui/views/frame/contents_layout_manager.h"
 
+#include "base/check.h"
 #include "ui/views/view.h"
 
-ContentsLayoutManager::ContentsLayoutManager(views::View* devtools_view,
-                                             views::View* contents_view,
-                                             views::View* watermark_view)
-    : devtools_view_(devtools_view),
-      contents_view_(contents_view),
-      watermark_view_(watermark_view) {}
+ContentsLayoutManager::ContentsLayoutManager(views::View* contents_view,
+                                             views::View* lens_overlay_view)
+    : contents_view_(contents_view), lens_overlay_view_(lens_overlay_view) {}
 
 ContentsLayoutManager::~ContentsLayoutManager() = default;
-
-void ContentsLayoutManager::SetContentsResizingStrategy(
-    const DevToolsContentsResizingStrategy& strategy) {
-  if (strategy_.Equals(strategy))
-    return;
-
-  strategy_.CopyFrom(strategy);
-  InvalidateHost(true);
-}
 
 views::ProposedLayout ContentsLayoutManager::CalculateProposedLayout(
     const views::SizeBounds& size_bounds) const {
@@ -36,29 +25,21 @@ views::ProposedLayout ContentsLayoutManager::CalculateProposedLayout(
   int width = size_bounds.width().value();
 
   gfx::Size container_size(width, height);
-  gfx::Rect new_devtools_bounds;
-  gfx::Rect new_contents_bounds;
+  gfx::Rect contents_bounds(0, 0, container_size.width(),
+                            container_size.height());
 
-  ApplyDevToolsContentsResizingStrategy(strategy_, container_size,
-      &new_devtools_bounds, &new_contents_bounds);
+  const auto& contents_rect = host_view()->GetMirroredRect(contents_bounds);
+  views::SizeBounds optional_size_bound = views::SizeBounds(container_size);
+  layouts.child_layouts.emplace_back(contents_view_.get(),
+                                     contents_view_->GetVisible(),
+                                     contents_bounds, optional_size_bound);
 
-  // DevTools cares about the specific position, so we have to compensate RTL
-  // layout here.
-  layouts.child_layouts.emplace_back(
-      devtools_view_.get(), devtools_view_->GetVisible(),
-      host_view()->GetMirroredRect(new_devtools_bounds),
-      views::SizeBounds(container_size));
-  layouts.child_layouts.emplace_back(
-      contents_view_.get(), contents_view_->GetVisible(),
-      host_view()->GetMirroredRect(new_contents_bounds),
-      views::SizeBounds(container_size));
+  // The Lens overlay view bounds are the same as the contents view.
+  CHECK(lens_overlay_view_);
+  layouts.child_layouts.emplace_back(lens_overlay_view_.get(),
+                                     lens_overlay_view_->GetVisible(),
+                                     contents_rect, optional_size_bound);
 
-  // Enterprise watermark view is always overlaid, even when empty.
-  if (watermark_view_) {
-    layouts.child_layouts.emplace_back(
-        watermark_view_.get(), watermark_view_->GetVisible(),
-        gfx::Rect(0, 0, width, height), views::SizeBounds(container_size));
-  }
   layouts.host_size = gfx::Size(width, height);
   return layouts;
 }

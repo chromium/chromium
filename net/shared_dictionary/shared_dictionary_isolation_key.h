@@ -46,17 +46,10 @@ class NET_EXPORT SharedDictionaryIsolationKey {
       const SharedDictionaryIsolationKey& other);
   SharedDictionaryIsolationKey& operator=(SharedDictionaryIsolationKey&& other);
 
-  bool operator==(const SharedDictionaryIsolationKey& other) const {
-    return std::tie(frame_origin_, top_frame_site_) ==
-           std::tie(other.frame_origin_, other.top_frame_site_);
-  }
-  bool operator!=(const SharedDictionaryIsolationKey& other) const {
-    return !(*this == other);
-  }
-  bool operator<(const SharedDictionaryIsolationKey& other) const {
-    return std::tie(frame_origin_, top_frame_site_) <
-           std::tie(other.frame_origin_, other.top_frame_site_);
-  }
+  friend bool operator==(const SharedDictionaryIsolationKey&,
+                         const SharedDictionaryIsolationKey&) = default;
+  friend auto operator<=>(const SharedDictionaryIsolationKey&,
+                          const SharedDictionaryIsolationKey&) = default;
 
  private:
   url::Origin frame_origin_;

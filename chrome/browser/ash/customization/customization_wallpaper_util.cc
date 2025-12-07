@@ -19,6 +19,7 @@
 #include "components/user_manager/user_image/user_image.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/gfx/codec/jpeg_codec.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "url/gurl.h"
 
@@ -36,10 +37,14 @@ bool SaveResizedWallpaper(const gfx::ImageSkia& image,
                           const base::FilePath& file_path) {
   gfx::ImageSkia resized_image = gfx::ImageSkiaOperations::CreateResizedImage(
       image, skia::ImageOperations::RESIZE_LANCZOS3, size);
-  scoped_refptr<base::RefCountedBytes> image_data = new base::RefCountedBytes();
-  gfx::JPEGCodec::Encode(*resized_image.bitmap(), 90 /*quality=*/,
-                         &image_data->as_vector());
-  return base::WriteFile(file_path, *image_data);
+
+  std::optional<std::vector<uint8_t>> image_data =
+      gfx::JPEGCodec::Encode(*resized_image.bitmap(), /*quality=*/90);
+  if (!image_data) {
+    return false;
+  }
+
+  return base::WriteFile(file_path, image_data.value());
 }
 
 // Returns true if both file paths exist.
@@ -134,7 +139,8 @@ void SetCustomizedDefaultWallpaperAfterCheck(
             {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
              base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
     user_image_loader::StartWithFilePath(
-        task_runner, file_path, ImageDecoder::DEFAULT_CODEC,
+        task_runner, file_path,
+        user_manager::UserImage::ImageFormat::FORMAT_UNKNOWN,
         0,  // Do not crop.
         base::BindOnce(&OnCustomizedDefaultWallpaperDecoded, wallpaper_url,
                        resized_small_path, resized_large_path));

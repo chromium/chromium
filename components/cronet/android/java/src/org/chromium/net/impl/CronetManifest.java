@@ -13,6 +13,7 @@ import android.os.Bundle;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.net.impl.CronetLogger.CronetSource;
 
 /**
@@ -45,14 +46,21 @@ public final class CronetManifest {
     static final String META_DATA_HOLDER_SERVICE_NAME = "android.net.http.MetaDataHolder";
 
     @VisibleForTesting
-    static final String ENABLE_TELEMETRY_META_DATA_KEY = "android.net.http.EnableTelemetry";
+    public static final String ENABLE_TELEMETRY_META_DATA_KEY = "android.net.http.EnableTelemetry";
 
     @VisibleForTesting
     public static final String READ_HTTP_FLAGS_META_DATA_KEY = "android.net.http.ReadHttpFlags";
 
+    @VisibleForTesting
+    public static final String USE_PERFETTO_META_DATA_KEY = "android.net.http.UsePerfetto";
+
+    @VisibleForTesting
+    public static final String USE_LEGACY_DEFAULT_USER_AGENT =
+            "android.net.http.UseLegacyDefaultUserAgent";
+
     /**
      * @return True if telemetry should be enabled, based on the {@link
-     * #ENABLE_TELEMETRY_META_DATA_KEY} meta-data entry in the Android manifest.
+     *     #ENABLE_TELEMETRY_META_DATA_KEY} meta-data entry in the Android manifest.
      */
     public static boolean isAppOptedInForTelemetry(Context context, CronetSource source) {
         boolean telemetryIsDefaultEnabled =
@@ -64,12 +72,44 @@ public final class CronetManifest {
     }
 
     /**
+     * Same as above, for the case where the source is not known (e.g. because one has not been
+     * selected yet). If you know the source, use the other method as it gives a more accurate
+     * result.
+     */
+    public static boolean isAppOptedInForTelemetry(Context context) {
+        // Look for in-app native Cronet; if we can find it, assume the app is going to use its own
+        // Cronet, and set the telemetry default to disabled in this case. Note this is merely a
+        // heuristic, as the app could decide to ignore its own Cronet and use one from another
+        // source. But we have no way to know, so we err on the safe side. See also
+        // https://crbug.com/430895740.
+        boolean hasNativeCronet = true;
+        try {
+            Class.forName(
+                    "org.chromium.net.impl.NativeCronetEngineBuilderImpl",
+                    /* initialize= */ false,
+                    CronetManifest.class.getClassLoader());
+        } catch (ClassNotFoundException e) {
+            hasNativeCronet = false;
+        }
+        return getMetaData(context)
+                .getBoolean(ENABLE_TELEMETRY_META_DATA_KEY, /* default= */ !hasNativeCronet);
+    }
+
+    /**
      * @return True if HTTP flags (typically used for experiments) should be enabled, based on the
-     * {@link #READ_HTTP_FLAGS_META_DATA_KEY} meta-data entry in the Android manifest.
+     *     {@link #READ_HTTP_FLAGS_META_DATA_KEY} meta-data entry in the Android manifest.
      * @see HttpFlagsLoader
      */
     public static boolean shouldReadHttpFlags(Context context) {
         return getMetaData(context).getBoolean(READ_HTTP_FLAGS_META_DATA_KEY, /* default= */ true);
+    }
+
+    public static boolean shouldUsePerfetto(Context context) {
+        return getMetaData(context).getBoolean(USE_PERFETTO_META_DATA_KEY, /* default= */ true);
+    }
+
+    public static boolean shouldUseLegacyDefaultUserAgent(Context context) {
+        return getMetaData(context).getBoolean(USE_LEGACY_DEFAULT_USER_AGENT, /* default= */ false);
     }
 
     private static final Object sLock = new Object();
@@ -96,27 +136,30 @@ public final class CronetManifest {
             // considerably more efficient because PackageManager calls are expensive (they involve
             // an IPC to the system server). See also https://crbug.com/346546533.
             if (context != sLastContext) {
-                ServiceInfo serviceInfo;
-                try {
-                    serviceInfo =
-                            context.getPackageManager()
-                                    .getServiceInfo(
-                                            new ComponentName(
-                                                    context, META_DATA_HOLDER_SERVICE_NAME),
-                                            PackageManager.GET_META_DATA
-                                                    | PackageManager.MATCH_DISABLED_COMPONENTS
-                                                    | PackageManager.MATCH_DIRECT_BOOT_AWARE
-                                                    | PackageManager.MATCH_DIRECT_BOOT_UNAWARE);
-                } catch (PackageManager.NameNotFoundException | NullPointerException e) {
-                    // TODO(b/331573772): Consider removing this NPE check once we can check for
-                    // CRONET_SOURCE_FAKE when creating logger.
-                    serviceInfo = null;
+                try (var traceEvent =
+                        ScopedSysTraceEvent.scoped("CronetManifest#getMetaData fetching info")) {
+                    ServiceInfo serviceInfo;
+                    try {
+                        serviceInfo =
+                                context.getPackageManager()
+                                        .getServiceInfo(
+                                                new ComponentName(
+                                                        context, META_DATA_HOLDER_SERVICE_NAME),
+                                                PackageManager.GET_META_DATA
+                                                        | PackageManager.MATCH_DISABLED_COMPONENTS
+                                                        | PackageManager.MATCH_DIRECT_BOOT_AWARE
+                                                        | PackageManager.MATCH_DIRECT_BOOT_UNAWARE);
+                    } catch (PackageManager.NameNotFoundException | NullPointerException e) {
+                        // TODO(b/331573772): Consider removing this NPE check once we can check for
+                        // CRONET_SOURCE_FAKE when creating logger.
+                        serviceInfo = null;
+                    }
+                    sMetaData =
+                            serviceInfo != null && serviceInfo.metaData != null
+                                    ? serviceInfo.metaData
+                                    : new Bundle();
+                    sLastContext = context;
                 }
-                sMetaData =
-                        serviceInfo != null && serviceInfo.metaData != null
-                                ? serviceInfo.metaData
-                                : new Bundle();
-                sLastContext = context;
             }
             assert sMetaData != null;
             return sMetaData;

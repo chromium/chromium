@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/atomic_sequence_num.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/stringprintf.h"
@@ -16,7 +15,6 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
@@ -67,10 +65,12 @@ bool DisplayResourceProvider::OnMemoryDump(
     const auto& resource = resource_entry.second;
 
     bool backing_memory_allocated = false;
-    if (resource.transferable.is_software)
-      backing_memory_allocated = !!resource.shared_bitmap;
-    else
+    if (resource.transferable.GetIsSoftware()) {
+      backing_memory_allocated =
+          resource.shared_image_representation_created_and_set;
+    } else {
       backing_memory_allocated = !!resource.image_context;
+    }
 
     if (!backing_memory_allocated) {
       // Don't log unallocated resources - they have no backing memory.
@@ -87,9 +87,10 @@ bool DisplayResourceProvider::OnMemoryDump(
 
     // Texture resources may not come with a size, in which case don't report
     // one.
-    if (!resource.transferable.size.IsEmpty()) {
-      uint64_t total_bytes = resource.transferable.format.EstimatedSizeInBytes(
-          resource.transferable.size);
+    if (!resource.transferable.GetSize().IsEmpty()) {
+      uint64_t total_bytes =
+          resource.transferable.GetFormat().EstimatedSizeInBytes(
+              resource.transferable.GetSize());
       dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
                       base::trace_event::MemoryAllocatorDump::kUnitsBytes,
                       static_cast<uint64_t>(total_bytes));
@@ -102,14 +103,9 @@ bool DisplayResourceProvider::OnMemoryDump(
     // GPU service will use a lower one.
     constexpr int kImportance =
         static_cast<int>(gpu::TracingImportance::kServiceOwner);
-    if (resource.transferable.is_software) {
-      pmd->CreateSharedMemoryOwnershipEdge(
-          dump->guid(), resource.shared_bitmap_tracing_guid, kImportance);
-    } else {
       auto guid = GetSharedImageGUIDForTracing(resource.transferable.mailbox());
       pmd->CreateSharedGlobalAllocatorDump(guid);
       pmd->AddOwnershipEdge(dump->guid(), guid, kImportance);
-    }
   }
 
   return true;
@@ -120,9 +116,9 @@ base::WeakPtr<DisplayResourceProvider> DisplayResourceProvider::GetWeakPtr() {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-bool DisplayResourceProvider::IsBackedBySurfaceTexture(ResourceId id) const {
+bool DisplayResourceProvider::IsBackedBySurfaceView(ResourceId id) const {
   const ChildResource* resource = GetResource(id);
-  return resource->transferable.is_backed_by_surface_texture;
+  return resource->transferable.is_backed_by_surface_view;
 }
 #endif
 
@@ -142,7 +138,25 @@ bool DisplayResourceProvider::IsOverlayCandidate(ResourceId id) const {
   // TODO(ericrk): We should never fail TryGetResource, but we appear to
   // be doing so on Android in rare cases. Handle this gracefully until a
   // better solution can be found. https://crbug.com/811858
-  return resource && resource->transferable.is_overlay_candidate;
+  if (!resource) {
+    return false;
+  }
+  // Agtm rendering is currently only implemented in shaders. Use the
+  // mechanism of claiming that resources which have Agtm metadata were
+  // not marked as overlays to ensure that rendering falls back to shaders
+  // on all platforms.
+  // https://crbug.com/395659818
+  if (gfx::HdrMetadataAgtm::IsEnabled()) {
+    if (resource->transferable.hdr_metadata.agtm.has_value()) {
+      return false;
+    }
+  }
+  return resource->transferable.GetIsOverlayCandidate();
+}
+
+bool DisplayResourceProvider::IsLowLatencyRendering(ResourceId id) const {
+  const ChildResource* resource = TryGetResource(id);
+  return resource && resource->transferable.is_low_latency_rendering;
 }
 
 SurfaceId DisplayResourceProvider::GetSurfaceId(ResourceId id) const {
@@ -158,24 +172,23 @@ int DisplayResourceProvider::GetChildId(ResourceId id) const {
 }
 
 bool DisplayResourceProvider::IsResourceSoftwareBacked(ResourceId id) const {
-  return GetResource(id)->transferable.is_software;
+  return GetResource(id)->transferable.GetIsSoftware();
 }
 
 const gfx::Size DisplayResourceProvider::GetResourceBackedSize(
     ResourceId id) const {
-  return GetResource(id)->transferable.size;
+  return GetResource(id)->transferable.GetSize();
 }
 
 SharedImageFormat DisplayResourceProvider::GetSharedImageFormat(
     ResourceId id) const {
   const ChildResource* resource = GetResource(id);
-  return resource->transferable.format;
+  return resource->transferable.GetFormat();
 }
 
-const gfx::ColorSpace& DisplayResourceProvider::GetColorSpace(
-    ResourceId id) const {
+gfx::ColorSpace DisplayResourceProvider::GetColorSpace(ResourceId id) const {
   const ChildResource* resource = GetResource(id);
-  return resource->transferable.color_space;
+  return resource->transferable.GetColorSpace();
 }
 
 bool DisplayResourceProvider::GetNeedsDetiling(ResourceId id) const {
@@ -187,6 +200,16 @@ const gfx::HDRMetadata& DisplayResourceProvider::GetHDRMetadata(
     ResourceId id) const {
   const ChildResource* resource = GetResource(id);
   return resource->transferable.hdr_metadata;
+}
+
+GrSurfaceOrigin DisplayResourceProvider::GetOrigin(ResourceId id) const {
+  const ChildResource* resource = GetResource(id);
+  return resource->transferable.GetOrigin();
+}
+
+SkAlphaType DisplayResourceProvider::GetAlphaType(ResourceId id) const {
+  const ChildResource* resource = GetResource(id);
+  return resource->transferable.GetAlphaType();
 }
 
 int DisplayResourceProvider::CreateChild(ReturnCallback return_callback,
@@ -204,7 +227,7 @@ int DisplayResourceProvider::CreateChild(ReturnCallback return_callback,
 
 void DisplayResourceProvider::DestroyChild(int child_id) {
   auto it = children_.find(child_id);
-  CHECK(it != children_.end(), base::NotFatalUntil::M130);
+  CHECK(it != children_.end());
   DestroyChildInternal(it, NORMAL);
 }
 
@@ -228,7 +251,7 @@ void DisplayResourceProvider::ReceiveFromChild(
       continue;
     }
 
-    if (transferable_resource.is_software != IsSoftware() ||
+    if (transferable_resource.GetIsSoftware() != IsSoftware() ||
         transferable_resource.is_empty()) {
       TRACE_EVENT0(
           "viz", "DisplayResourceProvider::ReceiveFromChild dropping invalid");
@@ -239,12 +262,6 @@ void DisplayResourceProvider::ReceiveFromChild(
     }
 
     ResourceId local_id = resource_id_generator_.GenerateNextId();
-
-    // If using legacy shared bitmaps, verify that the format is supported.
-    DCHECK(!transferable_resource.is_software ||
-           transferable_resource.IsSoftwareSharedImage() ||
-           (!transferable_resource.IsSoftwareSharedImage() &&
-            transferable_resource.format.IsBitmapFormatSupported()));
     resources_.emplace(local_id,
                        ChildResource(child_id, transferable_resource));
     child_info.child_to_parent_map[transferable_resource.id] = local_id;
@@ -283,7 +300,7 @@ const std::unordered_map<ResourceId, ResourceId, ResourceIdHasher>&
 DisplayResourceProvider::GetChildToParentMap(int child) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = children_.find(child);
-  CHECK(it != children_.end(), base::NotFatalUntil::M130);
+  CHECK(it != children_.end());
   DCHECK(!it->second.marked_for_deletion);
   return it->second.child_to_parent_map;
 }
@@ -298,7 +315,7 @@ DisplayResourceProvider::GetResource(ResourceId id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(id);
   auto it = resources_.find(id);
-  CHECK(it != resources_.end(), base::NotFatalUntil::M130);
+  CHECK(it != resources_.end());
   return &it->second;
 }
 
@@ -503,14 +520,16 @@ DisplayResourceProvider::ScopedReadLockSharedImage::operator=(
 void DisplayResourceProvider::ScopedReadLockSharedImage::SetReleaseFence(
     gfx::GpuFenceHandle release_fence) {
   DCHECK(resource_);
+  DCHECK_EQ(SynchronizationType(),
+            TransferableResource::SynchronizationType::kReleaseFence);
   resource_->release_fence = std::move(release_fence);
 }
 
-bool DisplayResourceProvider::ScopedReadLockSharedImage::HasReadLockFence()
+TransferableResource::SynchronizationType
+DisplayResourceProvider::ScopedReadLockSharedImage::SynchronizationType()
     const {
   DCHECK(resource_);
-  return resource_->transferable.synchronization_type ==
-         TransferableResource::SynchronizationType::kGpuCommandsCompleted;
+  return resource_->transferable.synchronization_type;
 }
 
 void DisplayResourceProvider::ScopedReadLockSharedImage::Reset() {

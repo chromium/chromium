@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_manager_export.h"
 
 namespace user_manager {

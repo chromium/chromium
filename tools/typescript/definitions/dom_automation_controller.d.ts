@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 interface DomAutomationController {
-  send(message: string): void;
+  send(message: any): void;
 }
 
 interface Window {

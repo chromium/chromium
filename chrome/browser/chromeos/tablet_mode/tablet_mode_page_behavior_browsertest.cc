@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/browser_features.h"
+#include "chrome/browser/ui/ash/test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/chromeos/test_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -15,6 +14,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 
 namespace {
 
@@ -27,13 +27,6 @@ class TabletModePageBehaviorTest : public ChromeOSBrowserUITest {
       delete;
 
   ~TabletModePageBehaviorTest() override = default;
-
-  // ChromeOSBrowserUITest:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kDoubleTapToZoomInTabletMode);
-    ChromeOSBrowserUITest::SetUp();
-  }
 
   content::WebContents* GetActiveWebContents(Browser* browser) const {
     return browser->tab_strip_model()->GetActiveWebContents();
@@ -48,15 +41,15 @@ class TabletModePageBehaviorTest : public ChromeOSBrowserUITest {
                         bool tablet_mode_enabled) const {
     const blink::web_pref::WebPreferences web_prefs =
         GetWebKitPreferences(web_contents);
+    EXPECT_FALSE(web_prefs.double_tap_to_zoom_enabled);
+
     if (tablet_mode_enabled) {
-      EXPECT_TRUE(web_prefs.double_tap_to_zoom_enabled);
       EXPECT_TRUE(web_prefs.text_autosizing_enabled);
       EXPECT_TRUE(web_prefs.shrinks_viewport_contents_to_fit);
       EXPECT_TRUE(web_prefs.main_frame_resizes_are_orientation_changes);
       EXPECT_FLOAT_EQ(web_prefs.default_minimum_page_scale_factor, 0.25f);
       EXPECT_FLOAT_EQ(web_prefs.default_maximum_page_scale_factor, 5.0f);
     } else {
-      EXPECT_FALSE(web_prefs.double_tap_to_zoom_enabled);
       EXPECT_FALSE(web_prefs.text_autosizing_enabled);
       EXPECT_FALSE(web_prefs.shrinks_viewport_contents_to_fit);
       EXPECT_FALSE(web_prefs.main_frame_resizes_are_orientation_changes);
@@ -119,7 +112,7 @@ IN_PROC_BROWSER_TEST_F(TabletModePageBehaviorTest, ExcludeHostedApps) {
   Browser::CreateParams params = Browser::CreateParams::CreateForApp(
       "test_browser_app", true /* trusted_source */, gfx::Rect(),
       browser()->profile(), true);
-  params.initial_show_state = ui::SHOW_STATE_DEFAULT;
+  params.initial_show_state = ui::mojom::WindowShowState::kDefault;
   Browser* browser = Browser::Create(params);
   AddBlankTabAndShow(browser);
 

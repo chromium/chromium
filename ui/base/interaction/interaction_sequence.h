@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_specifier.h"
 #include "ui/base/interaction/element_tracker.h"
 
 namespace ui {
@@ -49,7 +50,7 @@ namespace ui {
 //      .SetCompletedCallback(base::BindOnce(...))
 //      .AddStep(InteractionSequence::WithInitialElement(initial_element))
 //      .AddStep(InteractionSequence::StepBuilder()
-//          .SetElementID(kDialogElementID)
+//          .SetElement(kDialogElementID)
 //          .SetType(StepType::kShown)
 //          .SetStartCallback(...)
 //          .Build())
@@ -60,7 +61,7 @@ namespace ui {
 // For more detailed instructions on using the ui/base/interaction library, see
 // README.md in this folder.
 //
-class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
+class COMPONENT_EXPORT(UI_BASE_INTERACTION) InteractionSequence {
  public:
   // The type of event that is expected to happen next in the sequence.
   enum class StepType {
@@ -68,10 +69,15 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     // user, or already being visible when the step starts.
     kShown,
     // Represents an element with the specified ID becoming activated by the
-    // user (for buttons or menu items, being clicked).
+    // user (for buttons or menu items, being clicked). If the element goes away
+    // before the step start callback can be called, null will be passed to the
+    // step start callback (you can avoid this by setting step start callback
+    // mode to immediate).
     kActivated,
-    // Represents an element with the specified ID becoming hidden or
-    // destroyed, or no elements with the specified ID being visible.
+    // Represents an element with the specified ID becoming hidden or destroyed,
+    // or no elements with the specified ID being visible. If there is no
+    // matching element or the element disappears before the start callback can
+    // be called, null will be passed to the start callback.
     kHidden,
     // Represents a custom event with a specific custom event type. You may
     // further specify a required element name or ID to filter down which
@@ -133,6 +139,9 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     kElementNotVisibleAtStartOfStep,
     // An element should have remained visible during a step but did not.
     kElementHiddenDuringStep,
+    // An element was hidden during an asynchronous step between trigger and
+    // step start.
+    kElementHiddenBetweenTriggerAndStepStart,
     // One or more subsequences were expected to run, but none could due to
     // failed preconditions.
     kNoSubsequenceRun,
@@ -145,8 +154,15 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     // A timeout was reached during execution. This might not be fatal, but the
     // current state can be dumped regardless.
     kSequenceTimedOut,
+    // A discrete triggering condition for the following step happened before
+    // the start callback for the current callback was even run.
+    kSubsequentStepTriggeredTooEarly,
+    // A triggering condition for the following step happened while waiting for
+    // the previous step to complete, but then the state changed in such a way
+    // that the trigger became invalid.
+    kSubsequentStepTriggerInvalidated,
     // Update this if values are added to the enumeration.
-    kMaxValue = kSequenceTimedOut
+    kMaxValue = kSubsequentStepTriggerInvalidated
   };
 
   // Specifies how the context for a step is determined.
@@ -165,6 +181,22 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     // Inherits the context from the previous step. Cannot be used on the first
     // step in a sequence.
     kFromPreviousStep
+  };
+
+  // Determines how each step's start callback executes - and by extension, when
+  // the following step is staged for execution.
+  enum class StepStartMode {
+    // The start callback will be posted and execute on a fresh call stack,
+    // after all immediately-pending tasks. Even if there is no start callback,
+    // staging of the following step will be done on that fresh call stack,
+    // preventing multiple steps from cascading on the same triggering callback.
+    // This is the default.
+    kAsynchronous,
+    // The start callback will execute immediately as soon as the step trigger
+    // is detected. This could be in the middle of an operation, such as a set
+    // of UI elements being shown together. Use this only when waiting even a
+    // small amount of time would cause a problem (which is almost never).
+    kImmediate
   };
 
   // Determines whether a subsequence will run. `seq` is the parent sequence,
@@ -193,7 +225,7 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   using StepEndCallback = base::OnceCallback<void(TrackedElement* element)>;
 
   // Information passed when a sequence fails or is aborted.
-  struct COMPONENT_EXPORT(UI_BASE) AbortedData {
+  struct COMPONENT_EXPORT(UI_BASE_INTERACTION) AbortedData {
     AbortedData();
     ~AbortedData();
     AbortedData(const AbortedData& other);
@@ -217,6 +249,10 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
 
     // The identifier of the element used by the failed step.
     ElementIdentifier element_id;
+
+    // The context of the element expected by the failed step, or null if
+    // unknown/unspecified.
+    ui::ElementContext context;
 
     // The reason the step failed/the sequence was aborted.
     AbortedReason aborted_reason = AbortedReason::kSequenceDestroyed;
@@ -242,7 +278,7 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   class StepBuilder;
   struct SubsequenceData;
 
-  struct COMPONENT_EXPORT(UI_BASE) Step {
+  struct COMPONENT_EXPORT(UI_BASE_INTERACTION) Step {
     Step();
     Step(const Step& other) = delete;
     void operator=(const Step& other) = delete;
@@ -268,6 +304,7 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     bool transition_only_on_event = false;
 
     StepStartCallback start_callback;
+    std::optional<StepStartMode> step_start_mode;
     StepEndCallback end_callback;
     ElementTracker::Subscription subscription;
 
@@ -287,7 +324,7 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   };
 
   // Use a Builder to specify parameters when creating an InteractionSequence.
-  class COMPONENT_EXPORT(UI_BASE) Builder {
+  class COMPONENT_EXPORT(UI_BASE_INTERACTION) Builder {
    public:
     Builder();
     Builder(Builder&& other);
@@ -318,6 +355,11 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     // this method.
     Builder& SetContext(ElementContext context);
 
+    // Sets the default step start mode for this sequence. This will acquire
+    // a default value if not set; for subsequences, the value of the parent
+    // sequence is inherited instead if no value is set.
+    Builder& SetDefaultStepStartMode(StepStartMode step_start_mode);
+
     // Creates the InteractionSequence. You must call Start() to initiate the
     // sequence; sequences cannot be re-used, and a Builder is no longer valid
     // after Build() is called.
@@ -327,32 +369,44 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     friend class InteractionSequence;
 
     std::unique_ptr<InteractionSequence> BuildSubsequence(
+        const Configuration* owner_config,
         const Step* owning_step);
 
     std::unique_ptr<Configuration> configuration_;
   };
 
   // Used inline in calls to Builder::AddStep to specify step parameters.
-  class COMPONENT_EXPORT(UI_BASE) StepBuilder {
+  //
+  // Methods intended to be used in Kombucha test bodies have rvalue versions
+  // to reduce the need for std::move().
+  class COMPONENT_EXPORT(UI_BASE_INTERACTION) StepBuilder {
    public:
     StepBuilder();
     ~StepBuilder();
     StepBuilder(StepBuilder&& other);
     StepBuilder& operator=(StepBuilder&& other);
 
+    // Sets the identifier or name of the element to use for this step.
+    // `SetElement()` or equivalent is required for all step types except
+    // `kCustomEvent`.
+    StepBuilder& SetElement(ElementSpecifier element_specifier);
+
     // Sets the unique identifier for this step. Either this or
     // SetElementName() is required for all step types except kCustomEvent.
+    // DEPRECATED: use `SetElement()`.
     StepBuilder& SetElementID(ElementIdentifier element_id);
 
     // Sets the step to refer to a named element instead of an
     // ElementIdentifier. Either this or SetElementID() is required for all
     // step types other than kCustomEvent.
+    // DEPRECATED: use `SetElement()`.
     StepBuilder& SetElementName(std::string_view name);
 
     // Sets the context for the step; useful for setting up the initial
     // element of the sequence if you do not know the context ahead of time, or
     // to specify that a step should not use the default context.
-    StepBuilder& SetContext(StepContext context);
+    StepBuilder& SetContext(StepContext context) &;
+    StepBuilder&& SetContext(StepContext context) &&;
 
     // Sets the type of step. Required. You must set `event_type` if and only
     // if `step_type` is kCustomEvent.
@@ -375,13 +429,15 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     // Indicates that the specified element must be visible at the start of the
     // step. Defaults to true for StepType::kActivated, false otherwise. Failure
     // To meet this condition will abort the sequence.
-    StepBuilder& SetMustBeVisibleAtStart(bool must_be_visible);
+    StepBuilder& SetMustBeVisibleAtStart(bool must_be_visible) &;
+    StepBuilder&& SetMustBeVisibleAtStart(bool must_be_visible) &&;
 
     // Indicates that the specified element must remain visible throughout the
     // step once it has been shown. Defaults to true for StepType::kShown, false
     // otherwise (and incompatible with StepType::kHidden). Failure to meet this
     // condition will abort the sequence.
-    StepBuilder& SetMustRemainVisible(bool must_remain_visible);
+    StepBuilder& SetMustRemainVisible(bool must_remain_visible) &;
+    StepBuilder&& SetMustRemainVisible(bool must_remain_visible) &&;
 
     // For kShown and kHidden events, if set to true, only allows a step
     // transition to happen when a "shown" or "hidden" event is received, and
@@ -400,7 +456,8 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     // that is, waiting for an element to appear and then it... never does. In
     // this case, you will need an external way to terminate the sequence (a
     // timeout, user interaction, etc.)
-    StepBuilder& SetTransitionOnlyOnEvent(bool transition_only_on_event);
+    StepBuilder& SetTransitionOnlyOnEvent(bool transition_only_on_event) &;
+    StepBuilder&& SetTransitionOnlyOnEvent(bool transition_only_on_event) &&;
 
     // Sets the callback called at the start of the step.
     StepBuilder& SetStartCallback(StepStartCallback start_callback);
@@ -414,6 +471,11 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     // that eliminates both arguments if you do not need them.
     StepBuilder& SetStartCallback(base::OnceClosure start_callback);
 
+    // Sets the step start mode for this step. If not set, inherits the default
+    // mode from its sequence.
+    StepBuilder& SetStepStartMode(StepStartMode step_start_mode) &;
+    StepBuilder&& SetStepStartMode(StepStartMode step_start_mode) &&;
+
     // Sets the callback called at the end of the step. Guaranteed to be called
     // if the start callback is called, before the start callback of the next
     // step or the sequence aborted or completed callback. Also called if this
@@ -425,12 +487,13 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     StepBuilder& SetEndCallback(base::OnceClosure end_callback);
 
     // Sets the description of the step.
-    StepBuilder& SetDescription(std::string_view description);
+    StepBuilder& SetDescription(std::string_view description) &;
+    StepBuilder&& SetDescription(std::string_view description) &&;
 
-    // Formats the existing description into a new string; allows for adding
-    // modifiers to an existing description. `format_string` should contain
-    // exactly one "%s".
-    StepBuilder& FormatDescription(std::string_view format_string);
+    // Prepends `prefix`, along with a colon and space, to this step's
+    // description.
+    StepBuilder& AddDescriptionPrefix(std::string_view prefix) &;
+    StepBuilder&& AddDescriptionPrefix(std::string_view prefix) &&;
 
     // Builds the step. The builder will not be valid after calling Build().
     std::unique_ptr<Step> Build();
@@ -474,6 +537,9 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   // Returns whether the current step uses ContextMode::kAny.
   bool IsCurrentStepInAnyContextForTesting() const;
 
+  // Returns whether the current step is using "immediate" execution mode.
+  bool IsCurrentStepImmediateForTesting() const;
+
   // Explicitly fails the sequence.
   void FailForTesting();
 
@@ -492,8 +558,8 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   // It is safe to call this method from a step start callback, but not a step
   // end or aborted callback, as in the latter case the sequence might be in
   // the process of being destructed.
-  TrackedElement* GetNamedElement(std::string_view name);
-  const TrackedElement* GetNamedElement(std::string_view name) const;
+  TrackedElement* GetNamedElement(const std::string& name);
+  const TrackedElement* GetNamedElement(const std::string& name) const;
 
   // Builds aborted data for the current step and the given reason.
   AbortedData BuildAbortedData(AbortedReason reason) const;
@@ -503,6 +569,21 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(InteractionSequenceSubsequenceTest, NamedElements);
+
+  // Describes the state of the sequence.
+  enum State {
+    // [Sub]sequence waiting to be started.
+    kNotStarted,
+    // No transition is currently in progress.
+    kIdle,
+    // The end callback of the previous step is running.
+    kInEndCallback,
+    // The next step has been loaded, and the sequence is preparing to run the
+    // new step's start callback.
+    kWaitingForStartCallback,
+    // The start callback for the new step is running.
+    kInStartCallback,
+  };
 
   explicit InteractionSequence(std::unique_ptr<Configuration> configuration,
                                const Step* reference_step);
@@ -531,8 +612,11 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   // making contradictory changes to state or calling callbacks in the wrong
   // order.
 
-  // Perform the transition from the current step to the next step.
-  void DoStepTransition(TrackedElement* element);
+  // Start the transition from the current step to the next step.
+  void StartStepTransition(TrackedElement* element);
+
+  // Finish the transition from the current step to the next step.
+  void CompleteStepTransition();
 
   // Looks at the next step to determine what needs to be done. Called at the
   // start of the sequence and after each subsequent step starts.
@@ -541,15 +625,11 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   // Cancels the sequence and cleans up.
   void Abort(AbortedReason reason);
 
-  // Returns true (and does some sanity checking) if the sequence was aborted
-  // during the most recent callback.
-  bool AbortedDuringCallback() const;
-
   // Returns true if `name` is non-empty and `element` matches the element
   // with the specified name, or if `name` is empty (indicating we don't care
   // about it being a named element). Otherwise returns false.
   bool MatchesNameIfSpecified(const TrackedElement* element,
-                              std::string_view name) const;
+                              const std::string& name) const;
 
   // Returns the next step, or null if none.
   Step* next_step();
@@ -572,12 +652,10 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   void BuildSubsequences(const Step* current_step);
   SubsequenceData* FindSubsequenceData(SubsequenceHandle subsequence);
 
+  State state_ = State::kNotStarted;
   int active_step_index_ = 0;
   bool missing_first_element_ = false;
-  bool started_ = false;
   bool trigger_during_callback_ = false;
-  bool processing_step_ = false;
-  bool running_start_callback_ = false;
   std::unique_ptr<Step> current_step_;
   ElementTracker::Subscription next_step_hidden_subscription_;
   std::unique_ptr<Configuration> configuration_;
@@ -589,34 +667,41 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   base::WeakPtrFactory<InteractionSequence> weak_factory_{this};
 };
 
-COMPONENT_EXPORT(UI_BASE)
+COMPONENT_EXPORT(UI_BASE_INTERACTION)
 extern void PrintTo(InteractionSequence::StepType step_type, std::ostream* os);
 
-COMPONENT_EXPORT(UI_BASE)
+COMPONENT_EXPORT(UI_BASE_INTERACTION)
 extern void PrintTo(InteractionSequence::AbortedReason reason,
                     std::ostream* os);
 
-COMPONENT_EXPORT(UI_BASE)
+COMPONENT_EXPORT(UI_BASE_INTERACTION)
 extern void PrintTo(InteractionSequence::SubsequenceMode mode,
                     std::ostream* os);
 
-COMPONENT_EXPORT(UI_BASE)
+COMPONENT_EXPORT(UI_BASE_INTERACTION)
+extern void PrintTo(InteractionSequence::StepStartMode mode, std::ostream* os);
+
+COMPONENT_EXPORT(UI_BASE_INTERACTION)
 extern void PrintTo(const InteractionSequence::AbortedData& aborted_data,
                     std::ostream* os);
 
-COMPONENT_EXPORT(UI_BASE)
+COMPONENT_EXPORT(UI_BASE_INTERACTION)
 extern std::ostream& operator<<(std::ostream& os,
                                 InteractionSequence::StepType step_type);
 
-COMPONENT_EXPORT(UI_BASE)
+COMPONENT_EXPORT(UI_BASE_INTERACTION)
 extern std::ostream& operator<<(std::ostream& os,
                                 InteractionSequence::AbortedReason reason);
 
-COMPONENT_EXPORT(UI_BASE)
+COMPONENT_EXPORT(UI_BASE_INTERACTION)
+extern std::ostream& operator<<(std::ostream& os,
+                                InteractionSequence::StepStartMode mode);
+
+COMPONENT_EXPORT(UI_BASE_INTERACTION)
 extern std::ostream& operator<<(std::ostream& os,
                                 InteractionSequence::SubsequenceMode mode);
 
-COMPONENT_EXPORT(UI_BASE)
+COMPONENT_EXPORT(UI_BASE_INTERACTION)
 extern std::ostream& operator<<(
     std::ostream& os,
     const InteractionSequence::AbortedData& aborted_data);

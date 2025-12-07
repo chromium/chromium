@@ -14,4 +14,11 @@ void PostTaskAndroid::SignalNativeSchedulerReady() {
   Java_PostTask_onNativeSchedulerReady(jni_zero::AttachCurrentThread());
 }
 
+// static
+void PostTaskAndroid::ResetTaskRunnerForTesting() {
+  Java_PostTask_resetTaskRunner(jni_zero::AttachCurrentThread());
+}
+
 }  // namespace base
+
+DEFINE_JNI(PostTask)

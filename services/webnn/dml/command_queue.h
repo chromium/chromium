@@ -58,6 +58,14 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandQueue
   uint64_t GetCompletedValue() const;
   uint64_t GetLastFenceValue() const;
 
+  ID3D12Fence* submission_fence() const { return fence_.Get(); }
+
+  // Pause further execution from WebNN until the fence value is reached.
+  // This method returns immediately and does not wait for outstanding
+  // work to complete.
+  HRESULT WaitForFence(Microsoft::WRL::ComPtr<ID3D12Fence> wait_fence,
+                       uint64_t wait_fence_value);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(WebNNCommandQueueTest, ReferenceAndRelease);
 
@@ -109,7 +117,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandQueue
         std::deque<CommandQueue::QueuedObject> queued_objects,
         Microsoft::WRL::ComPtr<ID3D12CommandQueue> command_queue,
         uint64_t last_fence_value,
-        Microsoft::WRL::ComPtr<ID3D12Fence> fence);
+        Microsoft::WRL::ComPtr<ID3D12Fence> fence,
+        base::win::ScopedHandle fence_event);
     ~PendingWorkDelegate() override;
 
     PendingWorkDelegate(const PendingWorkDelegate&) = delete;

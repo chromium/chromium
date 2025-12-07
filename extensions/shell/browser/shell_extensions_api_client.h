@@ -27,25 +27,29 @@ class ShellExtensionsAPIClient : public ExtensionsAPIClient {
   // ExtensionsAPIClient implementation.
   void AttachWebContentsHelpers(content::WebContents* web_contents) const
       override;
-  AppViewGuestDelegate* CreateAppViewGuestDelegate() const override;
-  WebViewGuestDelegate* CreateWebViewGuestDelegate(
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+  std::unique_ptr<AppViewGuestDelegate> CreateAppViewGuestDelegate()
+      const override;
+  std::unique_ptr<guest_view::GuestViewManagerDelegate>
+  CreateGuestViewManagerDelegate() const override;
+  std::unique_ptr<WebViewGuestDelegate> CreateWebViewGuestDelegate(
       WebViewGuest* web_view_guest) const override;
+  std::unique_ptr<WebViewPermissionHelperDelegate>
+  CreateWebViewPermissionHelperDelegate(
+      WebViewPermissionHelper* web_view_permission_helper) const override;
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
   std::unique_ptr<VirtualKeyboardDelegate> CreateVirtualKeyboardDelegate(
       content::BrowserContext* browser_context) const override;
   std::unique_ptr<DisplayInfoProvider> CreateDisplayInfoProvider()
       const override;
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   FileSystemDelegate* GetFileSystemDelegate() override;
 #endif
   MessagingDelegate* GetMessagingDelegate() override;
   FeedbackPrivateDelegate* GetFeedbackPrivateDelegate() override;
 
  private:
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   std::unique_ptr<FileSystemDelegate> file_system_delegate_;
 #endif
   std::unique_ptr<MessagingDelegate> messaging_delegate_;

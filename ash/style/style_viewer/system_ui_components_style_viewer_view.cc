@@ -14,12 +14,14 @@
 #include "ash/wm/desks/desks_util.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "chromeos/constants/chromeos_features.h"
+#include "chromeos/ui/frame/frame_utils.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/background.h"
@@ -68,13 +70,15 @@ class SystemUIComponentsStyleViewerClientView : public views::ClientView {
   ~SystemUIComponentsStyleViewerClientView() override = default;
 
   // ClientView:
-  void UpdateWindowRoundedCorners(int corner_radius) override {
-    //  The top corners will be rounded by NonClientFrameViewAsh. The
+  void UpdateWindowRoundedCorners(
+      const gfx::RoundedCornersF& window_radii) override {
+    // The top corners will be rounded by FrameViewAsh. The
     // client-view is responsible for rounding the bottom corners.
 
-    const gfx::RoundedCornersF radii(0, 0, corner_radius, corner_radius);
-    contents_view()->SetBackground(views::CreateThemedRoundedRectBackground(
-        ui::kColorDialogBackground, radii));
+    const gfx::RoundedCornersF radii(0, 0, window_radii.lower_right(),
+                                     window_radii.lower_left());
+    contents_view()->SetBackground(
+        views::CreateRoundedRectBackground(ui::kColorDialogBackground, radii));
   }
 };
 
@@ -95,54 +99,35 @@ class SystemUIComponentsStyleViewerView::ComponentButton
       : views::LabelButton(std::move(pressed_callback), name) {
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
     SetBorder(std::make_unique<views::HighlightBorder>(
-        0, chromeos::features::IsJellyrollEnabled()
-               ? views::HighlightBorder::Type::kHighlightBorderNoShadow
-               : views::HighlightBorder::Type::kHighlightBorder1));
+        0, views::HighlightBorder::Type::kHighlightBorderNoShadow));
+    SetBackground(
+        views::CreateSolidBackground(kInactiveButtonBackgroundColorId));
+    SetEnabledTextColors(kInactiveButtonTextColorId);
+
     label()->SetSubpixelRenderingEnabled(false);
     label()->SetFontList(views::Label::GetDefaultFontList().Derive(
         1, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
+
     SetFocusBehavior(views::View::FocusBehavior::NEVER);
   }
+
   ComponentButton(const ComponentButton&) = delete;
   ComponentButton& operator=(const ComponentButton&) = delete;
+
   ~ComponentButton() override = default;
 
   void SetActive(bool active) {
-    background_color_id_ = active ? kActiveButtonBackgroundColorId
-                                  : kInactiveButtonBackgroundColorId;
-    text_color_id_ =
-        active ? kActiveButtonTextColorId : kInactiveButtonTextColorId;
-    OnThemeChanged();
+    SetEnabledTextColors(active ? kActiveButtonTextColorId
+                                : kInactiveButtonTextColorId);
+    background()->SetColor(active ? kActiveButtonBackgroundColorId
+                                  : kInactiveButtonBackgroundColorId);
   }
 
   // views::LabelButton:
-  void AddedToWidget() override {
-    SetBackground(views::CreateSolidBackground(
-        GetColorProvider()->GetColor(background_color_id_)));
-  }
-
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override {
     return gfx::Size(kMenuWidth, kDefaultButtonHeight);
   }
-
-  int GetHeightForWidth(int w) const override { return kDefaultButtonHeight; }
-
-  void OnThemeChanged() override {
-    views::LabelButton::OnThemeChanged();
-
-    if (!GetWidget())
-      return;
-
-    ui::ColorProvider* color_provider = GetColorProvider();
-    SetEnabledTextColors(color_provider->GetColor(text_color_id_));
-    if (auto* bg = background())
-      bg->SetNativeControlColor(color_provider->GetColor(background_color_id_));
-  }
-
- private:
-  ui::ColorId background_color_id_ = kInactiveButtonBackgroundColorId;
-  ui::ColorId text_color_id_ = kInactiveButtonTextColorId;
 };
 
 BEGIN_METADATA(SystemUIComponentsStyleViewerView, ComponentButton)
@@ -157,7 +142,7 @@ SystemUIComponentsStyleViewerView::SystemUIComponentsStyleViewerView()
           AddChildView(std::make_unique<views::ScrollView>())) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal));
-  SetBackground(views::CreateThemedSolidBackground(ui::kColorDialogBackground));
+  SetBackground(views::CreateSolidBackground(ui::kColorDialogBackground));
   SetBorder(
       views::CreateEmptyBorder(gfx::Insets::TLBR(0, 0, kBottomSpacing, 0)));
 
@@ -180,13 +165,14 @@ SystemUIComponentsStyleViewerView::~SystemUIComponentsStyleViewerView() =
 // static.
 void SystemUIComponentsStyleViewerView::CreateAndShowWidget() {
   // Only create widget when there is no running instance.
-  if (g_instance)
+  if (g_instance) {
     return;
+  }
 
   // Owned by widget.
   SystemUIComponentsStyleViewerView* viewer_view =
       new SystemUIComponentsStyleViewerView();
-  viewer_view->SetOwnedByWidget(true);
+  viewer_view->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
 
   viewer_view->AddComponent(
       u"PillButton", base::BindRepeating(&CreatePillButtonInstancesGirdView));
@@ -227,6 +213,7 @@ void SystemUIComponentsStyleViewerView::CreateAndShowWidget() {
   params.parent =
       desks_util::GetActiveDeskContainerForRoot(Shell::GetPrimaryRootWindow());
   params.delegate = viewer_view;
+  params.rounded_corners = chromeos::GetWindowRoundedCorners();
 
   // The widget is owned by the native widget.
   g_instance = new views::Widget(std::move(params));

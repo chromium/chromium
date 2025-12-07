@@ -7,11 +7,11 @@ import {TestRunner} from 'test_runner';
 (async function() {
   TestRunner.addResult(`Test that ProfilerAgent start/stop doesn't crash.\n`);
 
-  TestRunner.ProfilerAgent.start().then(onStart);
+  TestRunner.ProfilerAgent.invoke_start().then(onStart);
 
   function onStart() {
     TestRunner.addResult('ProfilerAgent started.');
-    TestRunner.ProfilerAgent.stop().then(onStop);
+    TestRunner.ProfilerAgent.invoke_stop().then(onStop);
   }
 
   function onStop() {

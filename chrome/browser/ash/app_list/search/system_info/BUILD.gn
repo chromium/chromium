@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("system_info") {
   sources = [
@@ -20,9 +20,13 @@ static_library("system_info") {
     "system_info_card_provider.h",
   ]
 
-  public_deps = [ "//chrome/browser/ui/webui/ash/settings/calculator" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/webui/ash/settings/calculator",
+  ]
 
   deps = [
+    "//ash/app_list/vector_icons",
     "//ash/public/cpp",
     "//ash/strings",
     "//ash/webui/diagnostics_ui:url_constants",
@@ -31,15 +35,16 @@ static_library("system_info") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_list/search/common",
-    "//chrome/browser/ash/app_list/vector_icons",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/ui/webui/ash/settings/pages/storage",
     "//chrome/common:channel_info",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus/cicerone",
     "//chromeos/ash/components/launcher_search",
     "//chromeos/ash/components/string_matching",
     "//chromeos/ash/components/system_info",
+    "//chromeos/ash/experiences/settings_ui",
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/dbus/power",
@@ -64,11 +69,9 @@ source_set("unit_tests") {
 
   deps = [
     ":system_info",
-    "//ash/components/arc/session",
     "//ash/public/cpp",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_list/search/common",
     "//chrome/browser/ash/app_list/search/test:test_support",
@@ -84,6 +87,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/launcher_search",
     "//chromeos/ash/components/mojo_service_manager:test_support",
     "//chromeos/ash/components/system_info",
+    "//chromeos/ash/experiences/arc/session",
     "//chromeos/ash/services/cros_healthd/public/cpp:fakes",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/dbus/power",

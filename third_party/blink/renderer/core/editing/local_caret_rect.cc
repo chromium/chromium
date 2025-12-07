@@ -80,14 +80,13 @@ PositionWithAffinityTemplate<Strategy> AdjustForInlineCaretPosition(
           position_with_affinity.Affinity());
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return position_with_affinity;
+  NOTREACHED();
 }
 
 template <typename Strategy>
 LocalCaretRect LocalCaretRectOfPositionTemplate(
     const PositionWithAffinityTemplate<Strategy>& position,
-    LayoutUnit* extra_width_to_end_of_line,
+    CaretShape caret_shape,
     EditingBoundaryCrossingRule rule) {
   if (position.IsNull())
     return LocalCaretRect();
@@ -103,7 +102,7 @@ LocalCaretRect LocalCaretRectOfPositionTemplate(
   if (adjusted.IsNotNull()) {
     if (auto caret_position = ComputeInlineCaretPosition(
             AdjustForInlineCaretPosition(adjusted))) {
-      return ComputeLocalCaretRect(caret_position);
+      return ComputeLocalCaretRect(caret_position, caret_shape);
     }
   }
 
@@ -121,11 +120,11 @@ LocalCaretRect LocalCaretRectOfPositionTemplate(
     }
   }
 
-  return LocalCaretRect(layout_object,
-                        layout_object->LocalCaretRect(
-                            position.GetPosition().ComputeEditingOffset(),
-                            extra_width_to_end_of_line),
-                        root_box_fragment);
+  return LocalCaretRect(
+      layout_object,
+      layout_object->LocalCaretRect(
+          position.GetPosition().ComputeEditingOffset(), caret_shape),
+      root_box_fragment);
 }
 
 // This function was added because the caret rect that is calculated by
@@ -155,16 +154,18 @@ LocalCaretRect LocalSelectionRectOfPositionTemplate(
 }  // namespace
 
 LocalCaretRect LocalCaretRectOfPosition(const PositionWithAffinity& position,
+                                        CaretShape shape,
                                         EditingBoundaryCrossingRule rule) {
-  return LocalCaretRectOfPositionTemplate<EditingStrategy>(position, nullptr,
+  return LocalCaretRectOfPositionTemplate<EditingStrategy>(position, shape,
                                                            rule);
 }
 
 LocalCaretRect LocalCaretRectOfPosition(
     const PositionInFlatTreeWithAffinity& position,
+    CaretShape shape,
     EditingBoundaryCrossingRule rule) {
   return LocalCaretRectOfPositionTemplate<EditingInFlatTreeStrategy>(
-      position, nullptr, rule);
+      position, shape, rule);
 }
 
 LocalCaretRect LocalSelectionRectOfPosition(
@@ -177,20 +178,19 @@ LocalCaretRect LocalSelectionRectOfPosition(
 template <typename Strategy>
 static gfx::Rect AbsoluteCaretBoundsOfAlgorithm(
     const PositionWithAffinityTemplate<Strategy>& position,
-    LayoutUnit* extra_width_to_end_of_line,
+    CaretShape shape,
     EditingBoundaryCrossingRule rule) {
-  const LocalCaretRect& caret_rect = LocalCaretRectOfPositionTemplate<Strategy>(
-      position, extra_width_to_end_of_line, rule);
+  const LocalCaretRect& caret_rect =
+      LocalCaretRectOfPositionTemplate<Strategy>(position, shape, rule);
   if (caret_rect.IsEmpty())
     return gfx::Rect();
   return gfx::ToEnclosingRect(LocalToAbsoluteQuadOf(caret_rect).BoundingBox());
 }
 
 gfx::Rect AbsoluteCaretBoundsOf(const PositionWithAffinity& position,
-                                LayoutUnit* extra_width_to_end_of_line,
+                                CaretShape shape,
                                 EditingBoundaryCrossingRule rule) {
-  return AbsoluteCaretBoundsOfAlgorithm<EditingStrategy>(
-      position, extra_width_to_end_of_line, rule);
+  return AbsoluteCaretBoundsOfAlgorithm<EditingStrategy>(position, shape, rule);
 }
 
 template <typename Strategy>
@@ -208,10 +208,10 @@ gfx::Rect AbsoluteSelectionBoundsOf(const VisiblePosition& visible_position) {
   return AbsoluteSelectionBoundsOfAlgorithm<EditingStrategy>(visible_position);
 }
 
-gfx::Rect AbsoluteCaretBoundsOf(
-    const PositionInFlatTreeWithAffinity& position) {
+gfx::Rect AbsoluteCaretBoundsOf(const PositionInFlatTreeWithAffinity& position,
+                                CaretShape shape) {
   return AbsoluteCaretBoundsOfAlgorithm<EditingInFlatTreeStrategy>(
-      position, nullptr, kCanCrossEditingBoundary);
+      position, shape, kCanCrossEditingBoundary);
 }
 
 }  // namespace blink

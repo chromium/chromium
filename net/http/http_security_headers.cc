@@ -69,7 +69,7 @@ bool MaxAgeToLimitedInt(std::string_view s, uint32_t limit, uint32_t* result) {
 //     the UA, the UA MUST ignore the unrecognized directives and if the
 //     STS header field otherwise satisfies the above requirements (1
 //     through 4), the UA MUST process the recognized directives.
-bool ParseHSTSHeader(const std::string& value,
+bool ParseHSTSHeader(std::string_view value,
                      base::TimeDelta* max_age,
                      bool* include_subdomains) {
   uint32_t max_age_value = 0;
@@ -77,13 +77,11 @@ bool ParseHSTSHeader(const std::string& value,
   bool include_subdomains_value = false;
 
   HttpUtil::NameValuePairsIterator hsts_iterator(
-      value.begin(), value.end(), ';',
-      HttpUtil::NameValuePairsIterator::Values::NOT_REQUIRED,
+      value, ';', HttpUtil::NameValuePairsIterator::Values::NOT_REQUIRED,
       HttpUtil::NameValuePairsIterator::Quotes::STRICT_QUOTES);
   while (hsts_iterator.GetNext()) {
     // Process `max-age`:
-    if (base::EqualsCaseInsensitiveASCII(hsts_iterator.name_piece(),
-                                         "max-age")) {
+    if (base::EqualsCaseInsensitiveASCII(hsts_iterator.name(), "max-age")) {
       // Reject the header if `max-age` is specified more than once.
       if (max_age_seen) {
         return false;
@@ -92,21 +90,20 @@ bool ParseHSTSHeader(const std::string& value,
 
       // Reject the header if `max-age`'s value is invalid. Otherwise, store it
       // in `max_age_value`.
-      if (!MaxAgeToLimitedInt(hsts_iterator.value_piece(), kMaxHSTSAgeSecs,
+      if (!MaxAgeToLimitedInt(hsts_iterator.value(), kMaxHSTSAgeSecs,
                               &max_age_value)) {
         return false;
       }
 
       // Process `includeSubDomains`:
-    } else if (base::EqualsCaseInsensitiveASCII(hsts_iterator.name_piece(),
+    } else if (base::EqualsCaseInsensitiveASCII(hsts_iterator.name(),
                                                 "includeSubDomains")) {
       // Reject the header if `includeSubDomains` is specified more than once.
       if (include_subdomains_value) {
         return false;
       }
       // Reject the header if `includeSubDomains` has a value specified:
-      if (!hsts_iterator.value_piece().empty() ||
-          hsts_iterator.value_is_quoted()) {
+      if (!hsts_iterator.value().empty() || hsts_iterator.value_is_quoted()) {
         return false;
       }
 
@@ -116,13 +113,12 @@ bool ParseHSTSHeader(const std::string& value,
     } else {
       // Reject the header if a directive's name or unquoted value doesn't match
       // the `token` grammar.
-      if (!HttpUtil::IsToken(hsts_iterator.name_piece()) ||
-          hsts_iterator.name_piece().empty()) {
+      if (!HttpUtil::IsToken(hsts_iterator.name()) ||
+          hsts_iterator.name().empty()) {
         return false;
       }
-      if (!hsts_iterator.value_piece().empty() &&
-          !hsts_iterator.value_is_quoted() &&
-          !HttpUtil::IsToken(hsts_iterator.value_piece())) {
+      if (!hsts_iterator.value().empty() && !hsts_iterator.value_is_quoted() &&
+          !HttpUtil::IsToken(hsts_iterator.value())) {
         return false;
       }
     }

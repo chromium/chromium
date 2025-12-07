@@ -17,17 +17,18 @@ namespace blink {
 #endif
 
 const WrapperTypeInfo DOMArrayBufferView::wrapper_type_info_body_{
-    gin::kEmbedderBlink,
+    {gin::kEmbedderBlink},
     nullptr,
     nullptr,
     "ArrayBufferView",
     nullptr,
-    kDOMWrappersTag,
-    kDOMWrappersTag,
+    static_cast<v8::CppHeapPointerTag>(
+        ScriptWrappableArrayTag::kDOMArrayBufferViewTag),
+    static_cast<v8::CppHeapPointerTag>(
+        ScriptWrappableArrayTag::kDOMFloat64ArrayTag),
     WrapperTypeInfo::kWrapperTypeObjectPrototype,
     WrapperTypeInfo::kObjectClassId,
-    WrapperTypeInfo::kNotInheritFromActiveScriptWrappable,
-    WrapperTypeInfo::kIdlBufferSourceType,
+    WrapperTypeInfo::kIdlOtherType,
 };
 
 const WrapperTypeInfo& DOMArrayBufferView::wrapper_type_info_ =

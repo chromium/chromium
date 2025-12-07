@@ -87,7 +87,7 @@ void OverlayStrategySingleOnTop::Propose(
     const DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_pass_list,
     SurfaceDamageRectList* surface_damage_rect_list,
-    const PrimaryPlane* primary_plane,
+    const std::optional<OverlayCandidate>& primary_plane,
     std::vector<OverlayProposedCandidate>* candidates,
     std::vector<gfx::Rect>* content_bounds) {
   auto* render_pass = render_pass_list->back().get();
@@ -141,12 +141,12 @@ void OverlayStrategySingleOnTop::Propose(
 
       // Candidates with rounded-display masks should not overlap with any other
       // quad with rounded-display masks.
-      DCHECK(!candidate_factory.IsOccluded(candidate, quad_list->begin(),
-                                           quad_it));
+      DCHECK(!OverlayCandidateFactory::IsOccluded(**quad_it, quad_list->begin(),
+                                                  quad_it));
 
       candidates_with_masks.emplace_back(quad_it, candidate, this);
-    } else if (!candidate_factory.IsOccluded(candidate, first_non_mask_quad_it,
-                                             quad_it)) {
+    } else if (!OverlayCandidateFactory::IsOccluded(
+                   **quad_it, first_non_mask_quad_it, quad_it)) {
       // We exclude quads with rounded-display masks from the occlusion
       // calculation as they will be promoted to overlays if they occlude any
       // SingleOnTop candidate. In case these quads are not promoted, the
@@ -179,7 +179,7 @@ bool OverlayStrategySingleOnTop::Attempt(
     const DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_pass_list,
     SurfaceDamageRectList* surface_damage_rect_list,
-    const PrimaryPlane* primary_plane,
+    const std::optional<OverlayCandidate>& primary_plane,
     OverlayCandidateList* candidate_list,
     std::vector<gfx::Rect>* content_bounds,
     const OverlayProposedCandidate& proposed_candidate) {
@@ -192,7 +192,7 @@ bool OverlayStrategySingleOnTop::Attempt(
 
 bool OverlayStrategySingleOnTop::TryOverlay(
     AggregatedRenderPass* render_pass,
-    const PrimaryPlane* primary_plane,
+    const std::optional<OverlayCandidate>& primary_plane,
     OverlayCandidateList* candidate_list,
     const OverlayProposedCandidate& proposed_candidate) {
   // SingleOnTop strategy means we should have one candidate.

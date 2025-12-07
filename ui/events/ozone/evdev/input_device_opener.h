@@ -5,6 +5,7 @@
 #ifndef UI_EVENTS_OZONE_EVDEV_INPUT_DEVICE_OPENER_H_
 #define UI_EVENTS_OZONE_EVDEV_INPUT_DEVICE_OPENER_H_
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/events/ozone/evdev/event_converter_evdev.h"
 #include "ui/events/ozone/evdev/touch_filter/shared_palm_detection_filter_state.h"
@@ -31,7 +32,7 @@ struct OpenInputDeviceParams {
   // State shared between devices.
   raw_ptr<CursorDelegateEvdev> cursor;
 #if defined(USE_EVDEV_GESTURES)
-  GesturePropertyProvider* gesture_property_provider;
+  raw_ptr<GesturePropertyProvider> gesture_property_provider;
 #endif
   raw_ptr<SharedPalmDetectionFilterState> shared_palm_state;
 };

@@ -67,7 +67,7 @@ void FragmentPainter::AddURLRectIfNeeded(const PaintInfo& paint_info,
   Document& document = fragment.GetLayoutObject()->GetDocument();
   if (url.HasFragmentIdentifier() &&
       EqualIgnoringFragmentIdentifier(url, document.BaseURL())) {
-    String fragment_name = url.FragmentIdentifier();
+    String fragment_name = url.FragmentIdentifier().ToString();
     if (document.FindAnchor(fragment_name))
       paint_info.context.SetURLFragmentForRect(fragment_name, rect);
     return;

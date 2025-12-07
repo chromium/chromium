@@ -4,18 +4,19 @@
 
 package org.chromium.chrome.browser.segmentation_platform;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.segmentation_platform.SegmentationPlatformService;
 
 /** This factory creates SegmentationPlatformService for the given {@link Profile}. */
+@NullMarked
 public final class SegmentationPlatformServiceFactory {
-    private static SegmentationPlatformService sSegmentationPlatformServiceForTesting;
+    private static @Nullable SegmentationPlatformService sSegmentationPlatformServiceForTesting;
 
     // Don't instantiate me.
     private SegmentationPlatformServiceFactory() {}

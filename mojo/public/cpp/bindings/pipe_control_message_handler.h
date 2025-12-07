@@ -36,6 +36,12 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) PipeControlMessageHandler
   // NOTE: |message| must have passed message header validation.
   static bool IsPipeControlMessage(const Message* message);
 
+  // NOTE: |message| must have passed message header validation.
+  // If message is a PeerAssociatedEndpointClosed event, this returns the
+  // interface id of the endpoint being closed.
+  static std::optional<InterfaceId> IsPeerAssociatedEndpointClosedEvent(
+      const Message& message);
+
   // MessageReceiver implementation:
 
   // NOTE: |message| must:

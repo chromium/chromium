@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/values.h"
 
 namespace extensions {

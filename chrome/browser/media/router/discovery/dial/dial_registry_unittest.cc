@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/media/router/discovery/dial/dial_registry.h"
+
 #include <stddef.h>
 
 #include "base/memory/ptr_util.h"
@@ -9,7 +11,6 @@
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/media/router/discovery/dial/dial_device_data.h"
-#include "chrome/browser/media/router/discovery/dial/dial_registry.h"
 #include "chrome/browser/media/router/discovery/dial/dial_service.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -65,8 +66,9 @@ class MockDialRegistry : public DialRegistry {
   ~MockDialRegistry() override {
     // Don't let the DialRegistry delete this.
     DialService* tmp = dial_.release();
-    if (tmp)
+    if (tmp) {
       CHECK_EQ(&mock_service_, tmp);
+    }
   }
 
   // Returns the mock Dial service.

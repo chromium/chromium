@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include <deque>
 #include <memory>
 #include <set>
 #include <vector>
@@ -16,6 +15,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "cc/base/region.h"
 #include "cc/tiles/picture_layer_tiling.h"
+#include "cc/tiles/tiling_set_coverage_iterator.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace base {
@@ -31,9 +31,7 @@ class CC_EXPORT PictureLayerTilingSet {
   enum TilingRangeType {
     HIGHER_THAN_HIGH_RES,
     HIGH_RES,
-    BETWEEN_HIGH_AND_LOW_RES,
-    LOW_RES,
-    LOWER_THAN_LOW_RES
+    LOWER_THAN_HIGH_RES,
   };
   struct TilingRange {
     TilingRange(size_t start, size_t end) : start(start), end(end) {}
@@ -57,12 +55,6 @@ class CC_EXPORT PictureLayerTilingSet {
 
   const PictureLayerTilingClient* client() const { return client_; }
 
-  void CleanUpTilings(
-      float min_acceptable_high_res_scale_key,
-      float max_acceptable_high_res_scale_key,
-      const std::vector<raw_ptr<PictureLayerTiling, VectorExperimental>>&
-          needed_tilings,
-      PictureLayerTilingSet* twin_set);
   void RemoveNonIdealTilings();
 
   // This function is called on the active tree during activation.
@@ -142,63 +134,15 @@ class CC_EXPORT PictureLayerTilingSet {
                             float ideal_contents_scale,
                             double current_frame_time_in_seconds,
                             const Occlusion& occlusion_in_layer_space,
-                            bool can_require_tiles_for_activation,
-                            TileMemoryLimitPolicy memory_limit_policy);
+                            bool can_require_tiles_for_activation);
 
   void GetAllPrioritizedTilesForTracing(
       std::vector<PrioritizedTile>* prioritized_tiles) const;
 
-  // For a given rect, iterates through tiles that can fill it.  If no
-  // set of tiles with resources can fill the rect, then it will iterate
-  // through null tiles with valid geometry_rect() until the rect is full.
-  // If all tiles have resources, the union of all geometry_rects will
-  // exactly fill rect with no overlap.
-  class CC_EXPORT CoverageIterator {
-   public:
-    // |coverage_scale| is the scale at which we want to produce the coverage.
-    // This is the scale at which |coverage_rect| is specified (relative to
-    // identity).
-    // |coverage_rect| is a rect that we want to cover during this iteration.
-    // |ideal_contents_scale| is the ideal scale that we want, which determines
-    // the order in which tilings are processed to get the best ("crispest")
-    // coverage.
-    CoverageIterator(const PictureLayerTilingSet* set,
-                     float coverage_scale,
-                     const gfx::Rect& coverage_rect,
-                     float ideal_contents_scale);
-    ~CoverageIterator();
-
-    // Visible rect (no borders), in the space of |coverage_rect| (ie at
-    // |coverage_scale| from identity). This is clipped to the coverage_rect.
-    gfx::Rect geometry_rect() const;
-    // A geometry_rect scaled to the tiling's contents scale, which represents
-    // the texture rect in texels.
-    gfx::RectF texture_rect() const;
-
-    Tile* operator->() const;
-    Tile* operator*() const;
-
-    CoverageIterator& operator++();
-    operator bool() const;
-
-    TileResolution resolution() const;
-    PictureLayerTiling* CurrentTiling() const;
-
-   private:
-    size_t NextTiling() const;
-
-    // RAW_PTR_EXCLUSION: Renderer performance: visible in sampling profiler
-    // stacks.
-    RAW_PTR_EXCLUSION const PictureLayerTilingSet* set_;
-    float coverage_scale_;
-    PictureLayerTiling::CoverageIterator tiling_iter_;
-    size_t current_tiling_;
-    size_t ideal_tiling_;
-
-    Region current_region_;
-    Region missing_region_;
-    Region::Iterator region_iter_;
-  };
+  using CoverageIterator = TilingSetCoverageIterator<PictureLayerTiling>;
+  CoverageIterator Cover(const gfx::Rect& coverage_rect,
+                         float coverage_scale,
+                         float ideal_contents_scale);
 
   void AsValueInto(base::trace_event::TracedValue* array) const;
   size_t GPUMemoryUsageInBytes() const;
@@ -274,14 +218,14 @@ class CC_EXPORT PictureLayerTilingSet {
   raw_ptr<PictureLayerTilingClient> client_;
   const float max_preraster_distance_;
   // State saved for computing velocities based on finite differences.
-  // .front() of the deque refers to the most recent FrameVisibleRect.
-  std::deque<FrameVisibleRect> visible_rect_history_;
+  // .back() of the vector refers to the most recent FrameVisibleRect.
+  std::vector<FrameVisibleRect> visible_rect_history_;
   StateSinceLastTilePriorityUpdate state_since_last_tile_priority_update_;
 
   scoped_refptr<RasterSource> raster_source_;
 
   gfx::Rect visible_rect_in_layer_space_;
-  gfx::Rect skewport_in_layer_space_;
+  gfx::Rect skewport_rect_in_layer_space_;
   gfx::Rect soon_border_rect_in_layer_space_;
   gfx::Rect eventually_rect_in_layer_space_;
 

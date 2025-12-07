@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("magic_boost") {
   sources = [
@@ -22,6 +22,11 @@ static_library("magic_boost") {
     "//ash",
     "//ash/constants",
     "//base",
+    "//chrome/browser/ash/mahi:mahi_availability",
+    "//chrome/browser/profiles",
+    "//chrome/browser/signin",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/editor_menu/public/cpp",
     "//chromeos/components/magic_boost/public/cpp",
     "//chromeos/components/mahi/public/cpp",
     "//chromeos/crosapi/mojom",
@@ -53,8 +58,8 @@ static_library("test_support") {
   deps = [
     ":magic_boost",
     "//base",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/input_method",
+    "//chromeos/ash/components/editor_menu/public/cpp",
     "//testing/gmock",
   ]
 }
@@ -74,7 +79,8 @@ source_set("unit_tests") {
     "//ash:test_support",
     "//ash/constants",
     "//base",
-    "//chrome/browser/ash/input_method",
+    "//chrome/browser/profiles:profile",
+    "//chrome/test:test_support_unit",
     "//chromeos/components/magic_boost/public/cpp",
     "//components/sync_preferences:test_support",
     "//testing/gmock",
@@ -82,6 +88,10 @@ source_set("unit_tests") {
     "//ui/display",
     "//ui/lottie",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("browser_tests") {
@@ -92,19 +102,21 @@ source_set("browser_tests") {
   sources = [ "magic_boost_browsertest.cc" ]
 
   deps = [
-    ":magic_boost",
     "//ash",
     "//ash/constants",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash/input_method:input_method",
+    "//chrome/browser/ash/input_method",
     "//chrome/browser/ash/mahi:test_util",
-    "//chrome/browser/ui/chromeos/magic_boost:magic_boost",
-    "//chrome/browser/ui/chromeos/magic_boost:magic_boost_constants",
-    "//chrome/browser/ui/views/mahi:mahi",
+    "//chrome/browser/ui/ash/editor_menu:views",
+    "//chrome/browser/ui/ash/magic_boost",
+    "//chrome/browser/ui/ash/magic_boost:magic_boost_constants",
+    "//chrome/browser/ui/views/mahi",
     "//chrome/browser/ui/webui/ash/mako",
     "//chrome/test:test_support",
-    "//chromeos/components/magic_boost/public/cpp:cpp",
+    "//chromeos/ash/components/editor_menu/public/cpp",
+    "//chromeos/components/magic_boost/public/cpp",
+    "//chromeos/components/mahi/public/cpp",
     "//chromeos/constants",
     "//content/public/browser",
     "//content/test:test_support",

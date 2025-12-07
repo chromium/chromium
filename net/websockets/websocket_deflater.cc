@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/websockets/websocket_deflater.h"
 
 #include <string.h>
@@ -34,6 +29,7 @@ WebSocketDeflater::~WebSocketDeflater() {
 bool WebSocketDeflater::Initialize(int window_bits) {
   DCHECK(!stream_);
   stream_ = std::make_unique<z_stream>();
+  *stream_ = z_stream{};
 
   DCHECK_LE(8, window_bits);
   DCHECK_GE(15, window_bits);
@@ -59,7 +55,6 @@ bool WebSocketDeflater::Initialize(int window_bits) {
   // See https://crbug.com/691074
   window_bits = -std::max(window_bits, 9);
 
-  memset(stream_.get(), 0, sizeof(*stream_));
   int result = deflateInit2(stream_.get(),
                             Z_DEFAULT_COMPRESSION,
                             Z_DEFLATED,
@@ -76,13 +71,15 @@ bool WebSocketDeflater::Initialize(int window_bits) {
   return true;
 }
 
-bool WebSocketDeflater::AddBytes(const char* data, size_t size) {
-  if (!size)
+bool WebSocketDeflater::AddBytes(base::span<const uint8_t> data) {
+  if (data.empty()) {
     return true;
+  }
 
   are_bytes_added_ = true;
-  stream_->next_in = reinterpret_cast<Bytef*>(const_cast<char*>(data));
-  stream_->avail_in = size;
+  stream_->next_in =
+      reinterpret_cast<Bytef*>(const_cast<uint8_t*>(data.data()));
+  stream_->avail_in = data.size();
 
   int result = Deflate(Z_NO_FLUSH);
   DCHECK(result != Z_BUF_ERROR || !stream_->avail_in);
@@ -120,14 +117,14 @@ bool WebSocketDeflater::Finish() {
 
 void WebSocketDeflater::PushSyncMark() {
   DCHECK(!are_bytes_added_);
-  const char data[] = {'\x00', '\x00', '\xff', '\xff'};
-  buffer_.insert(buffer_.end(), &data[0], &data[sizeof(data)]);
+  auto span = base::byte_span_from_cstring("\x00\x00\xff\xff");
+  buffer_.insert(buffer_.end(), span.begin(), span.end());
 }
 
 scoped_refptr<IOBufferWithSize> WebSocketDeflater::GetOutput(size_t size) {
   size_t length_to_copy = std::min(size, buffer_.size());
-  base::circular_deque<char>::iterator begin = buffer_.begin();
-  base::circular_deque<char>::iterator end = begin + length_to_copy;
+  base::circular_deque<uint8_t>::iterator begin = buffer_.begin();
+  base::circular_deque<uint8_t>::iterator end = begin + length_to_copy;
 
   auto result = base::MakeRefCounted<IOBufferWithSize>(length_to_copy);
   std::copy(begin, end, result->data());
@@ -148,8 +145,8 @@ int WebSocketDeflater::Deflate(int flush) {
     stream_->avail_out = fixed_buffer_.size();
     result = deflate(stream_.get(), flush);
     size_t size = fixed_buffer_.size() - stream_->avail_out;
-    buffer_.insert(buffer_.end(), fixed_buffer_.data(),
-                   fixed_buffer_.data() + size);
+    auto data = base::span(fixed_buffer_).first(size);
+    buffer_.insert(buffer_.end(), data.begin(), data.end());
   } while (result == Z_OK);
   return result;
 }

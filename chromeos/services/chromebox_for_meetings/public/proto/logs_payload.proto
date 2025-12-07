@@ -7,18 +7,11 @@ syntax = "proto2";
 package ash.cfm.proto;
 
 option optimize_for = LITE_RUNTIME;
-option java_outer_classname = "LogEntryProto";
-option java_package = "com.google.videoconf.devices.hotlog";
 
-message LogsPayload {
-  reserved 1;
-
-  // Required. The loglines included in the payload.
-  repeated LogEntry log_lines = 2 [deprecated = true];
-}
 
 message LogPayload {
-  // Required. Sets of log entries with a common source.
+  // Required. Sets of log entries with a common source. Currently, we only
+  // support one of these per request.
   repeated LogSet log_sets = 1;
 }
 
@@ -40,16 +33,11 @@ message LogSet {
 // The representation of a log line, largely mapping to
 // google3/google/logging/v2/log_entry.proto
 message LogEntry {
-  // Was timestamp and gmt_offst.
-  reserved 1, 2;
-
+  reserved 1, 2, 4;
   // Required. The string payload (minus the timestamp)
   optional string text_payload = 3;
 
-  // Indictes the source of this LogEntry.
-  optional LogSource log_source = 4 [deprecated = true];
-
-  // Optional. The timestamp of the log entry.
+  // Required. The timestamp of the log entry.
   optional uint64 timestamp_micros = 5;
 
   // Optional. A unique identifier for the log entry. May be used to avoid
@@ -82,44 +70,4 @@ enum LogSeverity {
   LOG_SEVERITY_ALERT = 700;
   // (800) One or more systems are unusable.
   LOG_SEVERITY_EMERGENCY = 800;
-}
-
-enum LogSource {
-  DEFAULT_UNKNOWN = 0;
-
-  // Source: /var/log/atrus.log
-  ATRUS = 1;
-
-  // Source: /var/log/eventlog.txt
-  EVENT = 2;
-
-  // Source: Output of the command ifconfig
-  IF_CONFIG = 3;
-
-  // Source: Output of the command lspci
-  LS_PCI = 4;
-
-  // Source: /var/log/messages
-  MESSAGES = 5;
-
-  // Source: /var/log/net.log
-  NET_LOG = 6;
-
-  // Source: hotrod. See go/hotlog-hotrod for more details.
-  PACKAGED_APP = 7;
-
-  // Source: /var/log/power_manager/powerd.LATEST
-  POWERD_LATEST = 8;
-
-  // Source: /var/log/power_manager/powerd.PREVIOUS
-  POWERD_PREVIOUS = 9;
-
-  // Source: /var/log/ui/ui.LATEST
-  UI_LATEST = 10;
-
-  // Source: /var/log/update_engine.log
-  UPDATE_ENGINE_LOG = 11;
-
-  // Source: Output of the command lsusb
-  LS_USB = 12;
 }

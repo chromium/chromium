@@ -7,12 +7,17 @@
 
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/browser/ui/webauthn/passkey_deleted_confirmation_controller.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/models/image_model.h"
+#include "ui/views/view.h"
 
 // A view informing the user that their passkey was deleted.
 class PasskeyDeletedConfirmationView : public PasswordBubbleViewBase {
+  METADATA_HEADER(PasskeyDeletedConfirmationView, PasswordBubbleViewBase)
+
  public:
   PasskeyDeletedConfirmationView(content::WebContents* web_contents,
-                                 views::View* anchor_view,
+                                 views::BubbleAnchor anchor_view,
                                  DisplayReason display_reason);
   ~PasskeyDeletedConfirmationView() override;
 

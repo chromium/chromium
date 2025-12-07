@@ -28,7 +28,7 @@ std::string ToString(InkDropState state) {
     case InkDropState::DEACTIVATED:
       return std::string("DEACTIVATED");
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace views

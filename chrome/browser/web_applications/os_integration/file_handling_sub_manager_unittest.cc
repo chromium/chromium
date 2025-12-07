@@ -4,16 +4,19 @@
 
 #include "chrome/browser/web_applications/os_integration/file_handling_sub_manager.h"
 
+#include <map>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
-#include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/external_install_options.h"
+#include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
@@ -23,11 +26,15 @@
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -36,8 +43,20 @@ namespace web_app {
 
 namespace {
 
+struct FileHandlerMapping {
+  std::string file_extension;
+  std::string policy_id;
+};
+
 class FileHandlingSubManagerConfigureTest : public WebAppTest {
  public:
+  using InstallResults = std::map<GURL /*install_url*/,
+                                  ExternallyManagedAppManager::InstallResult>;
+  using UninstallResults =
+      std::map<GURL /*install_url*/, webapps::UninstallResultCode>;
+  using SynchronizeFuture =
+      base::test::TestFuture<InstallResults, UninstallResults>;
+
   const GURL kWebAppUrl = GURL("https://example.com/path/index.html");
 
   FileHandlingSubManagerConfigureTest() = default;
@@ -74,6 +93,18 @@ class FileHandlingSubManagerConfigureTest : public WebAppTest {
               webapps::InstallResultCode::kSuccessNewInstall);
     return result.Get<webapps::AppId>();
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  void UpdateDefaultHandlersPrefs(
+      const std::vector<FileHandlerMapping>& handlers = {}) {
+    base::Value::Dict pref_dict;
+    for (const auto& handler : handlers) {
+      pref_dict.Set(handler.file_extension, handler.policy_id);
+    }
+    profile()->GetTestingPrefService()->SetDict(
+        prefs::kDefaultHandlersForFileExtensions, std::move(pref_dict));
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
  protected:
   WebAppProvider& provider() { return *provider_; }
@@ -123,7 +154,8 @@ TEST_F(FileHandlingSubManagerConfigureTest, InstallWithFilehandlers) {
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
+  const proto::os_state::WebAppOsIntegration& os_integration_state =
+      state.value();
   ASSERT_TRUE(os_integration_state.has_file_handling());
   auto file_handling = os_integration_state.file_handling();
 
@@ -184,9 +216,271 @@ TEST_F(FileHandlingSubManagerConfigureTest, UpdateUserChoiceDisallowed) {
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
+  const proto::os_state::WebAppOsIntegration& os_integration_state =
+      state.value();
   ASSERT_FALSE(os_integration_state.has_file_handling());
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(FileHandlingSubManagerConfigureTest,
+       PolicyDefinedFileHandlerOverUserChoice) {
+  const GURL kInstallUrl =
+      GURL("https://www.example.com/path/install_url.html");
+  const GURL kStartUrl = GURL("https://example.com/path/");
+  const GURL kManifestUrl = GURL("https://www.example.com/path/manifest.json");
+  const webapps::AppId app_id = web_app::GenerateAppId(std::nullopt, kStartUrl);
+  const std::string file_extension = ".txt";
+
+  {
+    fake_provider().GetFakeWebContentsManager()->CreateBasicInstallPageState(
+        kInstallUrl, kManifestUrl, kWebAppUrl);
+    auto& page_state =
+        fake_provider().GetFakeWebContentsManager()->GetOrCreatePageState(
+            kInstallUrl);
+
+    auto manifest = blink::mojom::Manifest::New();
+    manifest->id = manifest->start_url.GetWithoutRef();
+    manifest->scope = manifest->start_url.GetWithoutFilename();
+    manifest->manifest_url = page_state.manifest_url;
+    manifest->start_url = kStartUrl;
+
+    auto handler = blink::mojom::ManifestFileHandler::New();
+    handler->action = kStartUrl;
+    handler->name = u"Text";
+    std::vector<std::u16string> extensions = {u".txt"};
+    handler->accept.emplace(u"text/plain", extensions);
+    manifest->file_handlers.push_back(std::move(handler));
+
+    page_state.manifest_before_default_processing = std::move(manifest);
+  }
+
+  // Install app with file handlers
+  SynchronizeFuture result;
+  std::vector<ExternalInstallOptions> install_options_list;
+  install_options_list.emplace_back(kInstallUrl,
+                                    /*user_display_mode=*/std::nullopt,
+                                    ExternalInstallSource::kExternalPolicy);
+
+  provider().externally_managed_app_manager().SynchronizeInstalledApps(
+      std::move(install_options_list), ExternalInstallSource::kExternalPolicy,
+      result.GetCallback());
+  ASSERT_TRUE(result.Wait());
+
+  // Verify file handler os registration and default approval state.
+  ASSERT_TRUE(provider().registrar_unsafe().GetAppById(app_id));
+  auto initial_state =
+      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+  ASSERT_TRUE(initial_state.has_value());
+  ASSERT_TRUE(initial_state.value().has_file_handling());
+  EXPECT_EQ(
+      provider().registrar_unsafe().GetAppFileHandlerUserApprovalState(app_id),
+      ApiApprovalState::kRequiresPrompt);
+
+  // User disallows file handling for the app.
+  base::test::TestFuture<void> future;
+  provider().scheduler().PersistFileHandlersUserChoice(
+      app_id, /*allowed=*/false, future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  // Verify that the file handlers are in disallowed state.
+  {
+    EXPECT_EQ(provider().registrar_unsafe().GetAppFileHandlerUserApprovalState(
+                  app_id),
+              ApiApprovalState::kDisallowed);
+    EXPECT_EQ(provider().registrar_unsafe().GetAppFileHandlerApprovalState(
+                  app_id, file_extension),
+              ApiApprovalState::kDisallowed);
+    auto state_after_user_choice =
+        provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+    ASSERT_TRUE(state_after_user_choice.has_value());
+  }
+
+  UpdateDefaultHandlersPrefs({{file_extension, kInstallUrl.spec()}});
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  // Verify that file handling is allowed.
+  {
+    auto final_state =
+        provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+    ASSERT_TRUE(final_state.has_value());
+    const proto::os_state::WebAppOsIntegration& os_integration_state =
+        final_state.value();
+    ASSERT_TRUE(os_integration_state.has_file_handling());
+
+    // Policy takes precedence, so the effective state is now allowed.
+    EXPECT_EQ(provider().registrar_unsafe().GetAppFileHandlerApprovalState(
+                  app_id, file_extension),
+              ApiApprovalState::kAllowed);
+
+    EXPECT_EQ(provider().registrar_unsafe().GetAppFileHandlerUserApprovalState(
+                  app_id),
+              ApiApprovalState::kDisallowed);
+  }
+}
+
+TEST_F(FileHandlingSubManagerConfigureTest,
+       PolicyRemovedMidSessionRevertsToUserChoice) {
+  const GURL kInstallUrl =
+      GURL("https://www.example.com/path/install_url.html");
+  const GURL kStartUrl = GURL("https://example.com/path/");
+  const GURL kManifestUrl = GURL("https://www.example.com/path/manifest.json");
+  const webapps::AppId app_id = web_app::GenerateAppId(std::nullopt, kStartUrl);
+  const std::string file_extension = ".txt";
+
+  {
+    fake_provider().GetFakeWebContentsManager()->CreateBasicInstallPageState(
+        kInstallUrl, kManifestUrl, kWebAppUrl);
+    auto& page_state =
+        fake_provider().GetFakeWebContentsManager()->GetOrCreatePageState(
+            kInstallUrl);
+
+    auto manifest = blink::mojom::Manifest::New();
+    manifest->id = manifest->start_url.GetWithoutRef();
+    manifest->scope = manifest->start_url.GetWithoutFilename();
+    manifest->manifest_url = page_state.manifest_url;
+    manifest->start_url = kStartUrl;
+
+    auto handler = blink::mojom::ManifestFileHandler::New();
+    handler->action = kStartUrl;
+    handler->name = u"Text";
+    std::vector<std::u16string> extensions = {u".txt"};
+    handler->accept.emplace(u"text/plain", extensions);
+    manifest->file_handlers.push_back(std::move(handler));
+
+    page_state.manifest_before_default_processing = std::move(manifest);
+  }
+
+  // Install app with file handlers
+  SynchronizeFuture result;
+  std::vector<ExternalInstallOptions> install_options_list;
+  install_options_list.emplace_back(kInstallUrl,
+                                    /*user_display_mode=*/std::nullopt,
+                                    ExternalInstallSource::kExternalPolicy);
+
+  provider().externally_managed_app_manager().SynchronizeInstalledApps(
+      std::move(install_options_list), ExternalInstallSource::kExternalPolicy,
+      result.GetCallback());
+  ASSERT_TRUE(result.Wait());
+
+  // Verify file handler os registration and default approval state.
+  ASSERT_TRUE(provider().registrar_unsafe().GetAppById(app_id));
+  auto initial_state =
+      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+  ASSERT_TRUE(initial_state.has_value());
+  ASSERT_TRUE(initial_state.value().has_file_handling());
+  EXPECT_EQ(
+      provider().registrar_unsafe().GetAppFileHandlerUserApprovalState(app_id),
+      ApiApprovalState::kRequiresPrompt);
+
+  // User disallows file handling for the app.
+  base::test::TestFuture<void> future;
+  provider().scheduler().PersistFileHandlersUserChoice(
+      app_id, /*allowed=*/false, future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  // Setting pref to overwrite the user choice.
+  UpdateDefaultHandlersPrefs({{file_extension, kInstallUrl.spec()}});
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  {
+    ASSERT_EQ(provider().registrar_unsafe().GetAppFileHandlerUserApprovalState(
+                  app_id),
+              ApiApprovalState::kDisallowed);
+    ASSERT_EQ(provider().registrar_unsafe().GetAppFileHandlerApprovalState(
+                  app_id, file_extension),
+              ApiApprovalState::kAllowed);
+    auto state_after_user_choice =
+        provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+    ASSERT_TRUE(state_after_user_choice.has_value());
+  }
+
+  // Resetting pref value, file handler approval state should default to
+  // previous user choice.
+  UpdateDefaultHandlersPrefs();
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  {
+    EXPECT_EQ(provider().registrar_unsafe().GetAppFileHandlerUserApprovalState(
+                  app_id),
+              ApiApprovalState::kDisallowed);
+    EXPECT_EQ(provider().registrar_unsafe().GetAppFileHandlerApprovalState(
+                  app_id, file_extension),
+              ApiApprovalState::kDisallowed);
+  }
+}
+
+TEST_F(FileHandlingSubManagerConfigureTest,
+       PolicyDefinedFileHandlerAddedMidSessionToManifest) {
+  const GURL kInstallUrl("https://www.example.com/install.html");
+  const GURL kStartUrl("https://example.com/path/");
+  const GURL kManifestUrl("https://www.example.com/manifest.json");
+  const webapps::AppId app_id = web_app::GenerateAppId(std::nullopt, kStartUrl);
+  const std::string file_extension = ".txt";
+
+  // Install the app WITHOUT any file handlers.
+  {
+    auto& page_state =
+        fake_provider().GetFakeWebContentsManager()->GetOrCreatePageState(
+            kInstallUrl);
+    page_state.url_load_result = {webapps::WebAppUrlLoaderResult::kUrlLoaded};
+    page_state.manifest_url = kManifestUrl;
+
+    auto manifest = blink::mojom::Manifest::New();
+    manifest->start_url = kStartUrl;
+    manifest->scope = kStartUrl.GetWithoutFilename();
+    page_state.manifest_before_default_processing = std::move(manifest);
+
+    std::vector<ExternalInstallOptions> install_options_list;
+    install_options_list.emplace_back(kInstallUrl,
+                                      /*user_display_mode=*/std::nullopt,
+                                      ExternalInstallSource::kExternalPolicy);
+    SynchronizeFuture result;
+    provider().externally_managed_app_manager().SynchronizeInstalledApps(
+        std::move(install_options_list), ExternalInstallSource::kExternalPolicy,
+        result.GetCallback());
+    ASSERT_TRUE(result.Wait());
+  }
+
+  // User disallows file handling for the app.
+  base::test::TestFuture<void> future;
+  provider().scheduler().PersistFileHandlersUserChoice(
+      app_id, /*allowed=*/false, future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  // Modify the manifest to ADD a file handler.
+  {
+    auto& page_state =
+        fake_provider().GetFakeWebContentsManager()->GetOrCreatePageState(
+            kInstallUrl);
+
+    auto handler = blink::mojom::ManifestFileHandler::New();
+    handler->action = kStartUrl;
+    handler->name = u"Text";
+    handler->accept.emplace(u"text/plain",
+                            std::vector<std::u16string>{u".txt"});
+    page_state.manifest_before_default_processing->file_handlers.push_back(
+        std::move(handler));
+  }
+
+  EXPECT_EQ(
+      provider().registrar_unsafe().GetAppFileHandlerUserApprovalState(app_id),
+      ApiApprovalState::kDisallowed);
+  EXPECT_EQ(provider().registrar_unsafe().GetAppFileHandlerApprovalState(
+                app_id, file_extension),
+            ApiApprovalState::kDisallowed);
+
+  // Allow the file handler via policy.
+  UpdateDefaultHandlersPrefs({{file_extension, kInstallUrl.spec()}});
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  EXPECT_EQ(
+      provider().registrar_unsafe().GetAppFileHandlerUserApprovalState(app_id),
+      ApiApprovalState::kDisallowed);
+  EXPECT_EQ(provider().registrar_unsafe().GetAppFileHandlerApprovalState(
+                app_id, file_extension),
+            ApiApprovalState::kAllowed);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(FileHandlingSubManagerConfigureTest, Uninstall) {
   apps::FileHandlers file_handlers;
@@ -269,7 +563,8 @@ TEST_F(FileHandlingSubManagerConfigureAndExecuteTest, InstallWithFilehandlers) {
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
+  const proto::os_state::WebAppOsIntegration& os_integration_state =
+      state.value();
   for (const auto& extension : GetFileExtensionsFromFileHandlingProto(
            os_integration_state.file_handling())) {
     ASSERT_EQ(
@@ -301,7 +596,8 @@ TEST_F(FileHandlingSubManagerConfigureAndExecuteTest,
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
+  const proto::os_state::WebAppOsIntegration& os_integration_state =
+      state.value();
 
   for (const auto& extension : GetFileExtensionsFromFileHandlingProto(
            os_integration_state.file_handling())) {
@@ -321,7 +617,7 @@ TEST_F(FileHandlingSubManagerConfigureAndExecuteTest,
   auto new_state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& new_os_integration_state =
+  const proto::os_state::WebAppOsIntegration& new_os_integration_state =
       new_state.value();
   ASSERT_FALSE(new_os_integration_state.has_file_handling());
 
@@ -354,7 +650,7 @@ TEST_F(FileHandlingSubManagerConfigureAndExecuteTest, Uninstall) {
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  proto::WebAppOsIntegrationState os_integration_state = state.value();
+  proto::os_state::WebAppOsIntegration os_integration_state = state.value();
   for (const auto& extension : GetFileExtensionsFromFileHandlingProto(
            os_integration_state.file_handling())) {
     ASSERT_EQ(
@@ -399,7 +695,8 @@ TEST_F(FileHandlingSubManagerConfigureAndExecuteTest,
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
+  const proto::os_state::WebAppOsIntegration& os_integration_state =
+      state.value();
   for (const auto& extension : GetFileExtensionsFromFileHandlingProto(
            os_integration_state.file_handling())) {
     ASSERT_EQ(IsFileHandlingEnabled(),
@@ -442,7 +739,7 @@ TEST_F(FileHandlingSubManagerConfigureAndExecuteTest,
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  proto::WebAppOsIntegrationState os_integration_state = state.value();
+  proto::os_state::WebAppOsIntegration os_integration_state = state.value();
   for (const auto& extension : GetFileExtensionsFromFileHandlingProto(
            os_integration_state.file_handling())) {
     EXPECT_EQ(IsFileHandlingEnabled(),
@@ -456,7 +753,7 @@ TEST_F(FileHandlingSubManagerConfigureAndExecuteTest,
     EXPECT_FALSE(fake_os_integration().IsFileExtensionHandled(
         profile(), app_id, app_name, extension));
   }
-  EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(app_id));
+  EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(app_id));
 
   // The file handling continues to not be registered.
   SynchronizeOsOptions options;

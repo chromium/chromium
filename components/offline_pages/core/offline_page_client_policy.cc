@@ -143,8 +143,9 @@ const OfflinePageClientPolicy& GetPolicy(const std::string& name) {
   const std::map<std::string, OfflinePageClientPolicy>& policies =
       GetPolicyData().policies;
   const auto& iter = policies.find(name);
-  if (iter != policies.end())
+  if (iter != policies.end()) {
     return iter->second;
+  }
   // Fallback when the namespace isn't defined.
   return policies.at(kDefaultNamespace);
 }

@@ -64,9 +64,10 @@ class PLATFORM_EXPORT LayerTreeView
   void Disconnect();
 
   // Drops any references back to the current delegate and attaches to
-  // `delegate`.
-  void ReattachTo(LayerTreeViewDelegate* delegate,
-                  scoped_refptr<scheduler::WidgetScheduler> scheduler);
+  // `delegate` if non-null.
+  void ClearPreviousDelegateAndReattachIfNeeded(
+      LayerTreeViewDelegate* delegate,
+      scoped_refptr<scheduler::WidgetScheduler> scheduler);
 
   cc::AnimationHost* animation_host() { return animation_host_.get(); }
 
@@ -115,8 +116,7 @@ class PLATFORM_EXPORT LayerTreeView
       cc::ActiveFrameSequenceTrackers trackers) override;
   std::unique_ptr<cc::BeginMainFrameMetrics> GetBeginMainFrameMetrics()
       override;
-  std::unique_ptr<cc::WebVitalMetrics> GetWebVitalMetrics() override;
-  void NotifyThroughputTrackerResults(
+  void NotifyCompositorMetricsTrackerResults(
       cc::CustomTrackerResults results) override;
   void DidObserveFirstScrollDelay(
       int source_frame_number,

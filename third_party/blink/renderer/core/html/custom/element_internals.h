@@ -44,7 +44,7 @@ class CORE_EXPORT ElementInternals : public ScriptWrappable,
   void setFormValue(const V8ControlValue* value,
                     const V8ControlValue* state,
                     ExceptionState& exception_state);
-  HTMLFormElement* form(ExceptionState& exception_state) const;
+  HTMLElement* formForBinding(ExceptionState& exception_state) const;
   void setValidity(ValidityStateFlags* flags, ExceptionState& exception_state);
   void setValidity(ValidityStateFlags* flags,
                    const String& message,
@@ -61,6 +61,10 @@ class CORE_EXPORT ElementInternals : public ScriptWrappable,
   LabelsNodeList* labels(ExceptionState& exception_state);
   CustomStateSet* states();
 
+  // Type attribute accessors
+  String type() const;
+  void setType(const String& value);
+
   bool HasState(const AtomicString& state) const;
 
   ShadowRoot* shadowRoot() const;
@@ -70,37 +74,42 @@ class CORE_EXPORT ElementInternals : public ScriptWrappable,
   const AtomicString& FastGetAttribute(const QualifiedName&) const;
   void setAttribute(const QualifiedName& attribute, const AtomicString& value);
 
-  void SetElementAttribute(const QualifiedName& name, Element* element);
-  Element* GetElementAttribute(const QualifiedName& name);
+  // These methods are used in the implementation of the DOM API setters/getters
+  // for Element/FrozenArray<Element> attributes.
+  void SetElementAttribute(const QualifiedName& attribute, Element* element);
+  Element* GetElementAttribute(const QualifiedName& attribute) const;
   void SetElementArrayAttribute(
-      const QualifiedName& name,
-      const HeapVector<Member<Element>>* given_elements);
+      const QualifiedName& attribute,
+      const GCedHeapVector<Member<Element>>* given_elements);
   const FrozenArray<Element>* GetElementArrayAttribute(
-      const QualifiedName& name);
+      const QualifiedName& attribute) const;
 
-  const FrozenArray<Element>* ariaControlsElements();
-  void setAriaControlsElements(HeapVector<Member<Element>>* given_elements);
-  const FrozenArray<Element>* ariaDescribedByElements();
-  void setAriaDescribedByElements(HeapVector<Member<Element>>* given_elements);
-  const FrozenArray<Element>* ariaDetailsElements();
-  void setAriaDetailsElements(HeapVector<Member<Element>>* given_elements);
-  const FrozenArray<Element>* ariaErrorMessageElements();
-  void setAriaErrorMessageElements(HeapVector<Member<Element>>* given_elements);
-  const FrozenArray<Element>* ariaFlowToElements();
-  void setAriaFlowToElements(HeapVector<Member<Element>>* given_elements);
-  const FrozenArray<Element>* ariaLabelledByElements();
-  void setAriaLabelledByElements(HeapVector<Member<Element>>* given_elements);
-  const FrozenArray<Element>* ariaOwnsElements();
-  void setAriaOwnsElements(HeapVector<Member<Element>>* given_elements);
+  const FrozenArray<Element>* ariaControlsElements() const;
+  void setAriaControlsElements(GCedHeapVector<Member<Element>>* given_elements);
+  const FrozenArray<Element>* ariaDescribedByElements() const;
+  void setAriaDescribedByElements(
+      GCedHeapVector<Member<Element>>* given_elements);
+  const FrozenArray<Element>* ariaDetailsElements() const;
+  void setAriaDetailsElements(GCedHeapVector<Member<Element>>* given_elements);
+  const FrozenArray<Element>* ariaErrorMessageElements() const;
+  void setAriaErrorMessageElements(
+      GCedHeapVector<Member<Element>>* given_elements);
+  const FrozenArray<Element>* ariaFlowToElements() const;
+  void setAriaFlowToElements(GCedHeapVector<Member<Element>>* given_elements);
+  const FrozenArray<Element>* ariaLabelledByElements() const;
+  void setAriaLabelledByElements(
+      GCedHeapVector<Member<Element>>* given_elements);
+  const FrozenArray<Element>* ariaOwnsElements() const;
+  void setAriaOwnsElements(GCedHeapVector<Member<Element>>* given_elements);
 
   bool HasAttribute(const QualifiedName& attribute) const;
+  bool HasAnyAttribute() const { return !accessibility_semantics_map_.empty(); }
   const HashMap<QualifiedName, AtomicString>& GetAttributes() const;
 
  private:
   bool IsTargetFormAssociated() const;
 
   // ListedElement overrides:
-  bool IsFormControlElement() const override;
   bool IsElementInternals() const override;
   bool IsEnumeratable() const override;
   void AppendToFormData(FormData& form_data) override;
@@ -131,7 +140,7 @@ class CORE_EXPORT ElementInternals : public ScriptWrappable,
   bool is_disabled_ = false;
   Member<ValidityStateFlags> validity_flags_;
   Member<Element> validation_anchor_;
-
+  String type_;
   Member<CustomStateSet> custom_states_;
 
   HashMap<QualifiedName, AtomicString> accessibility_semantics_map_;

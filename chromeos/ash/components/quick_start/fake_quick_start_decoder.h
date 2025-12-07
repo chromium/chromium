@@ -9,8 +9,6 @@
 
 #include "base/containers/queue.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
-#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-forward.h"
-#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 

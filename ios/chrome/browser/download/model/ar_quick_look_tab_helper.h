@@ -8,7 +8,6 @@
 #include <memory>
 
 #import "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "ios/web/public/download/download_task_observer.h"
 #import "ios/web/public/lazy_web_state_user_data.h"
 
@@ -90,8 +89,6 @@ class ARQuickLookTabHelper
 
   // The current download task.
   std::unique_ptr<web::DownloadTask> download_task_;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_MODEL_AR_QUICK_LOOK_TAB_HELPER_H_

@@ -13,7 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/additional_bid_result.h"
-#include "content/browser/interest_group/auction_result.h"
+#include "content/public/browser/auction_result.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-shared.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"

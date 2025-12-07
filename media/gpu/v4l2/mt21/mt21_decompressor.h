@@ -49,6 +49,8 @@ namespace media {
 struct GolombRiceTableEntry;
 
 struct MT21DecompressionJob : public base::RefCounted<MT21DecompressionJob> {
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   MT21DecompressionJob(const uint8_t* src,
                        const uint8_t* footer,
                        size_t offset,

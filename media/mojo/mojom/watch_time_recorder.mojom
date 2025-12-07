@@ -15,13 +15,13 @@ struct PlaybackProperties {
   bool has_video;
   bool is_background;  // Is report for playback in the background?
   bool is_muted;       // Is report for muted playback?
-  bool is_mse;
   bool is_eme;
   bool is_embedded_media_experience;  // Playback from 'Downloads' on Android.
   // Type of played-back MediaStream, or kNone if the playback is not from a
   // MediaStream.
   MediaStreamType media_stream_type;
   RendererType renderer_type;
+  DemuxerType demuxer_type;
 };
 
 // Structure describing mutable properties for the current watch time report.

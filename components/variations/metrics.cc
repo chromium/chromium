@@ -5,24 +5,15 @@
 #include "components/variations/metrics.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 
 namespace variations {
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 void RecordFirstRunSeedImportResult(FirstRunSeedImportResult result) {
-  UMA_HISTOGRAM_ENUMERATION("Variations.FirstRunResult", result,
-                            FirstRunSeedImportResult::ENUM_SIZE);
+  base::UmaHistogramEnumeration("Variations.FirstRunResult", result);
 }
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_IOS)
-void RecordFirstRunSeedImportResult(FirstRunSeedImportResult result) {
-  // TODO(crbug.com/40235387): Merge with Android implementation after first run
-  // seed import on iOS is fully implemented.
-}
-#endif  // BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 void RecordLoadSeedResult(LoadSeedResult state) {
   base::UmaHistogramEnumeration("Variations.SeedLoadResult", state);

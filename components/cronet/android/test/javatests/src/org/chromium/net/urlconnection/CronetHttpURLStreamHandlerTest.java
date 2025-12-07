@@ -18,8 +18,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
+import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule;
-import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.NativeTestServer;
 
@@ -37,23 +37,24 @@ import java.net.URL;
 public class CronetHttpURLStreamHandlerTest {
     @Rule public final CronetTestRule mTestRule = CronetTestRule.withAutomaticEngineStartup();
 
+    private NativeTestServer mNativeTestServer;
+
     @Before
     public void setUp() throws Exception {
-        assertThat(
-                        NativeTestServer.startNativeTestServer(
-                                mTestRule.getTestFramework().getContext()))
-                .isTrue();
+        mNativeTestServer =
+                NativeTestServer.createNativeTestServer(mTestRule.getTestFramework().getContext());
+        mNativeTestServer.start();
     }
 
     @After
     public void tearDown() throws Exception {
-        NativeTestServer.shutdownNativeTestServer();
+        mNativeTestServer.close();
     }
 
     @Test
     @SmallTest
     public void testOpenConnectionHttp() throws Exception {
-        URL url = new URL(NativeTestServer.getEchoMethodURL());
+        URL url = new URL(mNativeTestServer.getEchoMethodURL());
         CronetHttpURLStreamHandler streamHandler =
                 new CronetHttpURLStreamHandler(mTestRule.getTestFramework().getEngine());
         HttpURLConnection connection = (HttpURLConnection) streamHandler.openConnection(url);
@@ -88,8 +89,9 @@ public class CronetHttpURLStreamHandlerTest {
 
     @Test
     @SmallTest
+    @SuppressWarnings("AddressSelection")
     public void testOpenConnectionWithProxy() throws Exception {
-        URL url = new URL(NativeTestServer.getEchoMethodURL());
+        URL url = new URL(mNativeTestServer.getEchoMethodURL());
         CronetHttpURLStreamHandler streamHandler =
                 new CronetHttpURLStreamHandler(mTestRule.getTestFramework().getEngine());
         Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 8080));

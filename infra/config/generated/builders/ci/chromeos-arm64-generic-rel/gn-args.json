@@ -6,6 +6,7 @@
     "ozone_platform_headless": true,
     "target_cpu": "arm64",
     "target_os": "chromeos",
+    "use_reclient": false,
     "use_remoteexec": true,
     "use_siso": true
   }

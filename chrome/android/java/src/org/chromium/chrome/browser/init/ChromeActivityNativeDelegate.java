@@ -6,7 +6,8 @@ package org.chromium.chrome.browser.init;
 
 import android.content.Intent;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * An activity level delegate to handle native initialization and activity lifecycle related tasks
@@ -15,6 +16,7 @@ import androidx.annotation.Nullable;
  * have not been loaded yet, the calls in ChromeActivityNativeDelegate will be in the right order
  * among themselves, but can be deferred and out of sync wrt to Activity calls.
  */
+@NullMarked
 public interface ChromeActivityNativeDelegate {
     /**
      * Carry out native initialization related tasks and any other java tasks that can be done async
@@ -67,12 +69,13 @@ public interface ChromeActivityNativeDelegate {
     /**
      * Carry out native code dependent tasks that relate to processing an activity result coming to
      * Activity.onActivityResult().
+     *
      * @param requestCode The request code of the response.
-     * @param resultCode  The result code of the response.
-     * @param data        The intent data of the response.
-     * @return            Whether or not the result was handled
+     * @param resultCode The result code of the response.
+     * @param data The intent data of the response.
+     * @return Whether or not the result was handled
      */
-    boolean onActivityResultWithNative(int requestCode, int resultCode, Intent data);
+    boolean onActivityResultWithNative(int requestCode, int resultCode, @Nullable Intent data);
 
     /**
      * Called when any failure about the initialization occurs.

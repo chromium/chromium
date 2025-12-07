@@ -26,15 +26,15 @@ class DataTypeConnector {
   DataTypeConnector() = default;
   virtual ~DataTypeConnector() = default;
 
-  // Connect a worker on the sync sequence and |type|'s processor on the model
-  // sequence. Note that in production |activation_response| actually
+  // Connect a worker on the sync sequence and `type`'s processor on the model
+  // sequence. Note that in production `activation_response` actually
   // owns a processor proxy that forwards calls to the model sequence and is
   // safe to call from the sync sequence.
   virtual void ConnectDataType(
       DataType type,
       std::unique_ptr<DataTypeActivationResponse> activation_response) = 0;
 
-  // Disconnects the worker from |type|'s processor and stop syncing the type.
+  // Disconnects the worker from `type`'s processor and stop syncing the type.
   //
   // This is the sync sequence's chance to clear state associated with the type.
   // It also causes the syncer to stop requesting updates for this type, and to

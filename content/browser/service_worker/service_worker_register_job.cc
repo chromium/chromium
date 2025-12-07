@@ -163,15 +163,15 @@ void ServiceWorkerRegisterJob::StartImpl() {
   }
 
   scoped_refptr<ServiceWorkerRegistration> registration =
-      context_->registry()->GetUninstallingRegistration(scope_, key_);
+      context_->registry().GetUninstallingRegistration(scope_, key_);
   if (registration.get())
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(next_step),
                        blink::ServiceWorkerStatusCode::kOk, registration));
   else
-    context_->registry()->FindRegistrationForScope(scope_, key_,
-                                                   std::move(next_step));
+    context_->registry().FindRegistrationForScope(scope_, key_,
+                                                  std::move(next_step));
 }
 
 void ServiceWorkerRegisterJob::Abort() {
@@ -230,8 +230,7 @@ ServiceWorkerVersion* ServiceWorkerRegisterJob::new_version() {
 void ServiceWorkerRegisterJob::SetPhase(Phase phase) {
   switch (phase) {
     case INITIAL:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case START:
       DCHECK(phase_ == INITIAL) << phase_;
       break;
@@ -394,7 +393,7 @@ void ServiceWorkerRegisterJob::OnUpdateCheckFinished(
       // Update resource list on the database. Pass a no-op callback as the
       // checksums are only used for an optimization and we don't need to wait
       // for the completion.
-      context_->registry()->UpdateResourceSha256Checksums(
+      context_->registry().UpdateResourceSha256Checksums(
           registration()->id(), key_, updated_checksum_map,
           base::BindOnce([](blink::ServiceWorkerStatusCode status) {
             UMA_HISTOGRAM_ENUMERATION(
@@ -409,8 +408,8 @@ void ServiceWorkerRegisterJob::OnUpdateCheckFinished(
     return;
   }
 
-  context_->registry()->NotifyInstallingRegistration(registration());
-  context_->registry()->CreateNewVersion(
+  context_->registry().NotifyInstallingRegistration(registration());
+  context_->registry().CreateNewVersion(
       registration(), script_url_, worker_script_type_,
       base::BindOnce(&ServiceWorkerRegisterJob::StartWorkerForUpdate,
                      weak_factory_.GetWeakPtr()));
@@ -422,7 +421,7 @@ void ServiceWorkerRegisterJob::RegisterAndContinue() {
 
   blink::mojom::ServiceWorkerRegistrationOptions options(
       scope_, worker_script_type_, update_via_cache_);
-  context_->registry()->CreateNewRegistration(
+  context_->registry().CreateNewRegistration(
       options, key_, ancestor_frame_type_,
       base::BindOnce(&ServiceWorkerRegisterJob::ContinueWithNewRegistration,
                      weak_factory_.GetWeakPtr()));
@@ -482,6 +481,9 @@ void ServiceWorkerRegisterJob::
 void ServiceWorkerRegisterJob::
     MaybeThrottleForDevToolsBeforeStartingScriptFetch(
         scoped_refptr<ServiceWorkerVersion> version) {
+  if (!version) {
+    return;
+  }
   int64_t version_id = version->version_id();
   const GURL& script_url = version->script_url();
   const GURL& scope = version->scope();
@@ -589,7 +591,7 @@ void ServiceWorkerRegisterJob::StartWorkerForUpdate(
   if (GetContentClient()
           ->browser()
           ->ShouldServiceWorkerInheritPolicyContainerFromCreator(script_url_)) {
-    new_version()->set_policy_container_host(
+    new_version()->SetPolicyContainerHost(
         base::MakeRefCounted<PolicyContainerHost>(
             std::move(creator_policy_container_policies_)));
   }
@@ -614,6 +616,7 @@ void ServiceWorkerRegisterJob::StartWorkerForUpdate(
 void ServiceWorkerRegisterJob::UpdateAndContinue() {
   SetPhase(UPDATE);
 
+  context_->NotifyWillCreateURLLoaderFactory(scope_);
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory =
       context_->wrapper()->GetLoaderFactoryForUpdateCheck(
           scope_,
@@ -636,14 +639,13 @@ void ServiceWorkerRegisterJob::UpdateAndContinue() {
   }
 
   if (!IsUpdateCheckNeeded()) {
-    context_->registry()->NotifyInstallingRegistration(registration());
+    context_->registry().NotifyInstallingRegistration(registration());
     base::OnceCallback<void(scoped_refptr<ServiceWorkerVersion>)> next_task =
         base::BindOnce(&ServiceWorkerRegisterJob::
                            MaybeThrottleForDevToolsBeforeStartingScriptFetch,
                        weak_factory_.GetWeakPtr());
-    context_->registry()->CreateNewVersion(
-        registration(), script_url_, worker_script_type_,
-        std::move(next_task));
+    context_->registry().CreateNewVersion(
+        registration(), script_url_, worker_script_type_, std::move(next_task));
     return;
   }
 
@@ -770,7 +772,7 @@ void ServiceWorkerRegisterJob::OnInstallFinished(
 
   SetPhase(STORE);
   DCHECK(!registration()->last_update_check().is_null());
-  context_->registry()->StoreRegistration(
+  context_->registry().StoreRegistration(
       registration(), new_version(),
       base::BindOnce(&ServiceWorkerRegisterJob::OnStoreRegistrationComplete,
                      weak_factory_.GetWeakPtr()));
@@ -840,7 +842,8 @@ void ServiceWorkerRegisterJob::CompleteInternal(
   if (status != blink::ServiceWorkerStatusCode::kOk) {
     if (registration()) {
       if (should_uninstall_on_failure_) {
-        registration()->DeleteAndClearWhenReady();
+        registration()->DeleteAndClearWhenReady(
+            ServiceWorkerRegistration::DeleteInitiator::kRegistrationFailure);
       }
       if (new_version()) {
         if (status == blink::ServiceWorkerStatusCode::kErrorExists) {
@@ -865,9 +868,9 @@ void ServiceWorkerRegisterJob::CompleteInternal(
       if (!registration()->newest_installed_version()) {
         registration()->NotifyRegistrationFailed();
         if (!registration()->is_deleted()) {
-          context_->registry()->DeleteRegistration(registration(),
-                                                   base::DoNothing());
-          context_->registry()->NotifyDoneUninstallingRegistration(
+          context_->registry().DeleteRegistration(registration(),
+                                                  base::DoNothing());
+          context_->registry().NotifyDoneUninstallingRegistration(
               registration(), ServiceWorkerRegistration::Status::kUninstalled);
         }
       }
@@ -877,7 +880,7 @@ void ServiceWorkerRegisterJob::CompleteInternal(
   }
   DCHECK(callbacks_.empty());
   if (registration()) {
-    context_->registry()->NotifyDoneInstallingRegistration(
+    context_->registry().NotifyDoneInstallingRegistration(
         registration(), new_version(), status);
 #if DCHECK_IS_ON()
     switch (registration()->status()) {
@@ -965,7 +968,7 @@ void ServiceWorkerRegisterJob::BumpLastUpdateCheckTimeIfNeeded() {
     registration()->set_last_update_check(base::Time::Now());
 
     if (registration()->newest_installed_version()) {
-      context_->registry()->UpdateLastUpdateCheckTime(
+      context_->registry().UpdateLastUpdateCheckTime(
           registration()->id(), registration()->key(),
           registration()->last_update_check(),
           base::BindOnce([](blink::ServiceWorkerStatusCode status) {

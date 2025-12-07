@@ -8,7 +8,7 @@
 
 #include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/extensions/cws_info_service_factory.h"
-#include "chrome/browser/ui/safety_hub/safety_hub_service.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -60,7 +60,7 @@ TEST_F(SafetyHubExtensionsResultTest, CloneResult) {
   EXPECT_EQ(2U, result->GetNumTriggeringExtensions());
 
   // Cloning the result should also result in the same triggering result.
-  std::unique_ptr<SafetyHubService::Result> cloned_result = result->Clone();
+  std::unique_ptr<SafetyHubResult> cloned_result = result->Clone();
   auto* cloned_extensions_result =
       static_cast<SafetyHubExtensionsResult*>(cloned_result.get());
   EXPECT_TRUE(cloned_extensions_result->IsTriggerForMenuNotification());
@@ -76,7 +76,7 @@ TEST_F(SafetyHubExtensionsResultTest, GetResult) {
       profile(),
       base::BindRepeating(&SafetyHubExtensionsResultTest::SetMockCWSInfoService,
                           base::Unretained(this)));
-  std::optional<std::unique_ptr<SafetyHubService::Result>> sh_result =
+  std::optional<std::unique_ptr<SafetyHubResult>> sh_result =
       SafetyHubExtensionsResult::GetResult(profile(), false);
   ASSERT_TRUE(sh_result.has_value());
   auto* result = static_cast<SafetyHubExtensionsResult*>(sh_result->get());
@@ -88,7 +88,7 @@ TEST_F(SafetyHubExtensionsResultTest, GetResult) {
       profile(),
       base::BindRepeating(&SafetyHubExtensionsResultTest::SetMockCWSInfoService,
                           base::Unretained(this)));
-  std::optional<std::unique_ptr<SafetyHubService::Result>> sh_menu_result =
+  std::optional<std::unique_ptr<SafetyHubResult>> sh_menu_result =
       SafetyHubExtensionsResult::GetResult(profile(), true);
   ASSERT_TRUE(sh_menu_result.has_value());
   auto* menu_result =

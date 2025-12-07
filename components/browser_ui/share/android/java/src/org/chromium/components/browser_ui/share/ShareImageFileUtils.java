@@ -4,41 +4,41 @@
 
 package org.chromium.components.browser_ui.share;
 
-import android.app.DownloadManager;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
-import android.text.TextUtils;
 
-import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
-import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FileProviderUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.components.browser_ui.util.DownloadUtils;
+import org.chromium.build.annotations.Contract;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.Clipboard;
-import org.chromium.url.GURL;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -47,10 +47,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Locale;
+import java.util.function.Function;
 
 /** Utility class for file operations for image data. */
+@NullMarked
 public class ShareImageFileUtils {
     private static final String TAG = "share";
+
+    private static @Nullable Function<Bitmap, Uri> sGenerateTemporaryUriFromBitmapHook;
 
     /**
      * Directory name for shared images.
@@ -59,8 +63,6 @@ public class ShareImageFileUtils {
      * TODO(crbug.com/40676541): consider changing the directory name.
      */
     private static final String SHARE_IMAGES_DIRECTORY_NAME = "screenshot";
-
-    private static final String FILE_NUMBER_FORMAT = " (%d)";
 
     private static final String JPEG_EXTENSION = ".jpg";
     private static final String PNG_EXTENSION = ".png";
@@ -75,10 +77,11 @@ public class ShareImageFileUtils {
      * @param folder The folder that may contain the |fileUrl|.
      * @return Whether the |fileUri| is in the |folder|.
      */
-    private static boolean isUriInDirectory(Uri fileUri, File folder) {
+    @Contract("null, _ -> false")
+    private static boolean isUriInDirectory(@Nullable Uri fileUri, File folder) {
         if (fileUri == null) return false;
 
-        Uri chromeUriPrefix = ContentUriUtils.getContentUriFromFile(folder);
+        Uri chromeUriPrefix = FileProviderUtils.getContentUriFromFile(folder);
         if (chromeUriPrefix == null) return false;
 
         return fileUri.toString().startsWith(chromeUriPrefix.toString());
@@ -90,7 +93,7 @@ public class ShareImageFileUtils {
      *
      * @return The file name if system clipboard contains a Uri from Chrome, otherwise return null.
      */
-    private static String getClipboardCurrentFilepath() throws IOException {
+    private static @Nullable String getClipboardCurrentFilepath() throws IOException {
         Uri clipboardUri = Clipboard.getInstance().getImageUriIfSharedByThisApp();
         if (isUriInDirectory(clipboardUri, getSharedFilesDirectory())) {
             return clipboardUri.getPath();
@@ -158,7 +161,7 @@ public class ShareImageFileUtils {
         FileOutputStreamWriter fileWriter =
                 (fos, cb) -> {
                     writeImageData(fos, imageData);
-                    cb.onResult(/* success= */ true);
+                    cb.onResult(/* result= */ true);
                 };
 
         saveImage(
@@ -170,6 +173,11 @@ public class ShareImageFileUtils {
                 fileExtension);
     }
 
+    public static void setGenerateTemporaryUriFromBitmapHookForTesting(Function<Bitmap, Uri> hook) {
+        sGenerateTemporaryUriFromBitmapHook = hook;
+        ResettersForTesting.register(() -> sGenerateTemporaryUriFromBitmapHook = null);
+    }
+
     /**
      * Temporarily saves the bitmap and provides that URI to a callback for sharing.
      *
@@ -179,6 +187,11 @@ public class ShareImageFileUtils {
      */
     public static void generateTemporaryUriFromBitmap(
             String fileName, Bitmap bitmap, Callback<Uri> callback) {
+        if (sGenerateTemporaryUriFromBitmapHook != null) {
+            callback.onResult(sGenerateTemporaryUriFromBitmapHook.apply(bitmap));
+            return;
+        }
+
         OnImageSaveListener listener =
                 new OnImageSaveListener() {
                     @Override
@@ -193,7 +206,7 @@ public class ShareImageFileUtils {
         FileOutputStreamWriter fileWriter =
                 (fos, cb) -> {
                     writeBitmap(fos, bitmap);
-                    cb.onResult(/* success= */ true);
+                    cb.onResult(/* result= */ true);
                 };
 
         saveImage(
@@ -206,7 +219,7 @@ public class ShareImageFileUtils {
     }
 
     public static void getBitmapFromUriAsync(
-            Context context, Uri imageUri, Callback<Bitmap> callback) {
+            Context context, Uri imageUri, Callback<@Nullable Bitmap> callback) {
         new BackgroundOnlyAsyncTask<Void>() {
             @Override
             protected Void doInBackground() {
@@ -215,10 +228,7 @@ public class ShareImageFileUtils {
                     bitmap =
                             ApiCompatibilityUtils.getBitmapByUri(
                                     context.getContentResolver(), imageUri);
-                    // We don't want to use hardware bitmaps in case of software rendering. See
-                    // https://crbug.com/1172883.
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                            && isHardwareBitmap(bitmap)) {
+                    if (isHardwareBitmap(bitmap)) {
                         bitmap = bitmap.copy(Bitmap.Config.ARGB_8888, /* mutable= */ false);
                     }
                 } catch (IOException e) {
@@ -238,9 +248,7 @@ public class ShareImageFileUtils {
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private static boolean isHardwareBitmap(Bitmap bitmap) {
-        assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
         return bitmap.getConfig() == Bitmap.Config.HARDWARE;
     }
 
@@ -283,13 +291,13 @@ public class ShareImageFileUtils {
      */
     private static void saveImage(
             String fileName,
-            FilePathProvider filePathProvider,
+            @Nullable FilePathProvider filePathProvider,
             OnImageSaveListener listener,
             FileOutputStreamWriter writer,
             boolean isTemporary,
             String fileExtension) {
-        Callback<Uri> saveImageCallback =
-                (Uri uri) -> {
+        Callback<@Nullable Uri> saveImageCallback =
+                (@Nullable Uri uri) -> {
                     PostTask.postTask(
                             TaskTraits.UI_DEFAULT,
                             () -> {
@@ -311,16 +319,7 @@ public class ShareImageFileUtils {
                 (File destFile) -> {
                     Uri uri = null;
                     if (!isTemporary) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                            uri = addToMediaStore(destFile);
-                        } else {
-                            long downloadId = addCompletedDownload(destFile);
-                            DownloadManager manager =
-                                    (DownloadManager)
-                                            ContextUtils.getApplicationContext()
-                                                    .getSystemService(Context.DOWNLOAD_SERVICE);
-                            uri = manager.getUriForDownloadedFile(downloadId);
-                        }
+                        uri = addToMediaStore(destFile);
                     } else {
                         uri = FileUtils.getUriForFile(destFile);
                     }
@@ -330,8 +329,8 @@ public class ShareImageFileUtils {
         PostTask.postTask(
                 TaskTraits.BEST_EFFORT_MAY_BLOCK,
                 new Runnable() {
-                    FileOutputStream mFileOut;
-                    File mDestFile;
+                    @Nullable FileOutputStream mFileOut;
+                    @Nullable File mDestFile;
 
                     @Override
                     public void run() {
@@ -347,7 +346,8 @@ public class ShareImageFileUtils {
                                         (success) -> {
                                             StreamUtil.closeQuietly(mFileOut);
                                             if (success) {
-                                                outputStreamWriteCallback.onResult(mDestFile);
+                                                outputStreamWriteCallback.onResult(
+                                                        assumeNonNull(mDestFile));
                                             } else {
                                                 saveImageCallback.onResult(null);
                                             }
@@ -356,7 +356,7 @@ public class ShareImageFileUtils {
                                 Log.w(
                                         TAG,
                                         "Share failed -- Unable to create or write to destination"
-                                            + " file.");
+                                                + " file.");
                                 StreamUtil.closeQuietly(mFileOut);
                                 saveImageCallback.onResult(null);
                             }
@@ -378,7 +378,7 @@ public class ShareImageFileUtils {
      *
      * @return The new File object.
      */
-    private static File createFile(
+    private static @Nullable File createFile(
             String fileName, String filePath, boolean isTemporary, String fileExtension)
             throws IOException {
         File path;
@@ -406,10 +406,9 @@ public class ShareImageFileUtils {
      * @param filePath The file path a destination file.
      * @param fileName The file name a destination file.
      * @param extension The extension a destination file.
-     *
      * @return The new File object.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static File getNextAvailableFile(String filePath, String fileName, String extension)
             throws IOException {
         File destFile = new File(filePath, fileName + extension);
@@ -419,7 +418,7 @@ public class ShareImageFileUtils {
                     new File(
                             filePath,
                             fileName
-                                    + String.format(Locale.getDefault(), FILE_NUMBER_FORMAT, ++num)
+                                    + String.format(Locale.getDefault(), " (%d)", ++num)
                                     + extension);
         }
         destFile.createNewFile();
@@ -443,36 +442,13 @@ public class ShareImageFileUtils {
      * Writes given data to into the given fos.
      *
      * @param fos The FileOutputStream to write to.
-     * @param byte[] The byte[] to write.
+     * @param data The byte array to write.
      */
     private static void writeImageData(FileOutputStream fos, final byte[] data) throws IOException {
         fos.write(data);
     }
 
-    /**
-     * This is a pass through to the {@link AndroidDownloadManager} function of the same name.
-     * @param file The File corresponding to the download.
-     * @return the download ID of this item as assigned by the download manager.
-     */
-    public static long addCompletedDownload(File file) {
-        String title = file.getName();
-        String path = file.getPath();
-        long length = file.length();
-
-        return DownloadUtils.addCompletedDownload(
-                title,
-                title,
-                getImageMimeType(file),
-                path,
-                length,
-                GURL.emptyGURL(),
-                GURL.emptyGURL());
-    }
-
-    @RequiresApi(29)
-    public static Uri addToMediaStore(File file) {
-        assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
-
+    public static @Nullable Uri addToMediaStore(File file) {
         final ContentValues contentValues = new ContentValues();
         contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, file.getName());
         contentValues.put(MediaStore.MediaColumns.MIME_TYPE, getImageMimeType(file));
@@ -516,7 +492,7 @@ public class ShareImageFileUtils {
      * @param callback The callback that will be called once the screenshot is saved.
      */
     public static void captureScreenshotForContents(
-            WebContents contents, int width, int height, Callback<Uri> callback) {
+            WebContents contents, int width, int height, Callback<@Nullable Uri> callback) {
         RenderWidgetHostView rwhv = contents.getRenderWidgetHostView();
         if (rwhv == null) {
             callback.onResult(null);
@@ -570,31 +546,31 @@ public class ShareImageFileUtils {
     }
 
     private static class ExternallyVisibleUriCallback implements Callback<String> {
-        private Callback<Uri> mComposedCallback;
+        private final Callback<@Nullable Uri> mComposedCallback;
 
-        ExternallyVisibleUriCallback(Callback<Uri> cb) {
+        ExternallyVisibleUriCallback(Callback<@Nullable Uri> cb) {
             mComposedCallback = cb;
         }
 
         @Override
         public void onResult(final String path) {
-            if (TextUtils.isEmpty(path)) {
+            if (path.isEmpty()) {
                 mComposedCallback.onResult(null);
                 return;
             }
 
-            new AsyncTask<Uri>() {
+            new AsyncTask<@Nullable Uri>() {
                 @Override
-                protected Uri doInBackground() {
+                protected @Nullable Uri doInBackground() {
                     try {
-                        return ContentUriUtils.getContentUriFromFile(new File(path));
+                        return FileProviderUtils.getContentUriFromFile(new File(path));
                     } catch (IllegalArgumentException e) {
                         return null;
                     }
                 }
 
                 @Override
-                protected void onPostExecute(Uri uri) {
+                protected void onPostExecute(@Nullable Uri uri) {
                     mComposedCallback.onResult(uri);
                 }
             }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);

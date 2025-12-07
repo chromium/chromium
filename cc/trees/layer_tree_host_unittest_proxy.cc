@@ -493,7 +493,7 @@ class LayerTreeHostProxyTestImplFrameCausesAnimatePending
         break;
       }
       default: {
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       }
     }
   }
@@ -534,7 +534,7 @@ class LayerTreeHostProxyTestNeedsCommitFromImpl
         break;
       }
       default: {
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       }
     }
   }

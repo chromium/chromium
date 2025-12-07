@@ -1,7 +1,6 @@
 # flake8: noqa
 
 from .client import (
-    Cookies,
     Find,
     Session,
     ShadowRoot,
@@ -35,6 +34,6 @@ from .error import (
     UnknownErrorException,
     UnknownMethodException,
     UnsupportedOperationException,
-    WebDriverException)
-from .bidi import (
-    BidiSession)
+    WebDriverException,
+)
+from .bidi import BidiSession, BidiWindow

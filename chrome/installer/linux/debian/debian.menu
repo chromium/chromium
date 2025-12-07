@@ -1,6 +1,0 @@
-?package(@@USR_BIN_SYMLINK_NAME@@):needs="x11" \
-  section="Applications/Network/Web Browsing" \
-  hints="Web browsers" \
-  title="@@MENUNAME@@" \
-  icon="@@INSTALLDIR@@/@@LOGO_RESOURCE_XPM@@" \
-  command="@@INSTALLDIR@@/@@PACKAGE@@"

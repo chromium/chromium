@@ -6,6 +6,7 @@
 #define DEVICE_FIDO_CABLE_FIDO_TUNNEL_DEVICE_H_
 
 #include <array>
+#include <variant>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -15,10 +16,9 @@
 #include "base/timer/timer.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/cable/websocket_adapter.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_device.h"
 #include "device/fido/network_context_factory.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "device/fido/public/fido_constants.h"
 
 namespace device::cablev2 {
 
@@ -139,13 +139,15 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
   };
 
   struct QRInfo {
+    static constexpr size_t kPskSize = 32;
+
     QRInfo();
     ~QRInfo();
     QRInfo(const QRInfo&) = delete;
     QRInfo& operator=(const QRInfo&) = delete;
 
     CableEidArray decrypted_eid;
-    std::array<uint8_t, 32> psk;
+    std::array<uint8_t, kPskSize> psk;
     std::optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
         pairing_callback;
     std::array<uint8_t, kQRSeedSize> local_identity_seed;
@@ -153,6 +155,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
   };
 
   struct PairedInfo {
+    static constexpr size_t kPskSize = QRInfo::kPskSize;
+
     PairedInfo();
     ~PairedInfo();
     PairedInfo(const PairedInfo&) = delete;
@@ -162,7 +166,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
     std::array<uint8_t, kP256X962Length> peer_identity;
     std::vector<uint8_t> secret;
     std::optional<CableEidArray> decrypted_eid;
-    std::optional<std::array<uint8_t, 32>> psk;
+    std::optional<std::array<uint8_t, kPskSize>> psk;
     std::optional<std::vector<uint8_t>> handshake_message;
     base::OnceClosure pairing_is_invalid;
   };
@@ -233,7 +237,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
   bool ProcessConnectSignal(base::span<const uint8_t> data);
 
   State state_ = State::kConnecting;
-  absl::variant<QRInfo, PairedInfo> info_;
+  std::variant<QRInfo, PairedInfo> info_;
   const std::array<uint8_t, 8> id_;
   const std::optional<base::RepeatingCallback<void(Event)>> event_callback_;
   const bool must_support_ctap_;

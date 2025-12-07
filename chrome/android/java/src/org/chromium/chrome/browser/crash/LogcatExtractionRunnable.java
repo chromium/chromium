@@ -8,6 +8,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.crash.LogcatCrashExtractor;
 import org.chromium.components.minidump_uploader.CrashFileManager;
 
@@ -18,6 +19,7 @@ import java.io.File;
  * prepends the logcat data to the caller-provided minidump file, and initiates upload for the crash
  * report.
  */
+@NullMarked
 public class LogcatExtractionRunnable implements Runnable {
     private static final String TAG = "LogcatExtraction";
 
@@ -35,7 +37,7 @@ public class LogcatExtractionRunnable implements Runnable {
      * @param minidump The minidump file that needs logcat output to be attached.
      * @param logcatExtractor to allow injecting extractor for testing.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     protected LogcatExtractionRunnable(File minidump, LogcatCrashExtractor logcatExtractor) {
         mMinidumpFile = minidump;
         mLogcatExtractor = logcatExtractor;

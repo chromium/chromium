@@ -2,30 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/cert/internal/trust_store_win.h"
 
+#include <algorithm>
 #include <string_view>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
-#include "base/hash/sha1.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "crypto/obsolete/sha1.h"
 #include "net/base/features.h"
 #include "net/cert/x509_util.h"
+#include "net/cert/x509_util_win.h"
 #include "net/third_party/mozilla_win/cert/win_util.h"
 #include "third_party/boringssl/src/pki/cert_errors.h"
 #include "third_party/boringssl/src/pki/parsed_certificate.h"
 
 namespace net {
+
+std::array<uint8_t, crypto::obsolete::Sha1::kSize> Sha1ForWinTrust(
+    base::span<const uint8_t> data) {
+  return crypto::obsolete::Sha1::Hash(data);
+}
 
 namespace {
 
@@ -73,7 +76,7 @@ bool IsCertTrustedForServerAuth(PCCERT_CONTEXT cert) {
 
   std::vector<BYTE> usage_bytes(usage_size);
   CERT_ENHKEY_USAGE* usage =
-      reinterpret_cast<CERT_ENHKEY_USAGE*>(usage_bytes.data());
+      UNSAFE_TODO(reinterpret_cast<CERT_ENHKEY_USAGE*>(usage_bytes.data()));
   if (!CertGetEnhancedKeyUsage(cert, 0, usage, &usage_size)) {
     return false;
   }
@@ -91,8 +94,12 @@ bool IsCertTrustedForServerAuth(PCCERT_CONTEXT cert) {
         return false;
     }
   }
-  for (DWORD i = 0; i < usage->cUsageIdentifier; i++) {
-    std::string_view eku = std::string_view(usage->rgpszUsageIdentifier[i]);
+
+  // SAFETY: `usage->rgpszUsageIdentifier` is an array of LPSTR (pointer to null
+  // terminated string) of length `usage->cUsageIdentifier`.
+  base::span<LPSTR> usage_identifiers = UNSAFE_BUFFERS(
+      base::span(usage->rgpszUsageIdentifier, usage->cUsageIdentifier));
+  for (std::string_view eku : usage_identifiers) {
     if ((eku == szOID_PKIX_KP_SERVER_AUTH) ||
         (eku == szOID_ANY_ENHANCED_KEY_USAGE)) {
       return true;
@@ -106,8 +113,7 @@ void AddCertWithTrust(
     const bssl::CertificateTrust trust,
     std::vector<net::PlatformTrustStore::CertWithTrust>* certs) {
   certs->push_back(net::PlatformTrustStore::CertWithTrust(
-      base::ToVector(base::make_span(cert->pbCertEncoded, cert->cbCertEncoded)),
-      trust));
+      base::ToVector(x509_util::CertContextAsSpan(cert)), trust));
 }
 
 }  // namespace
@@ -251,15 +257,18 @@ class TrustStoreWin::Impl {
         L"Disallowed");
 
     // Auto-sync all of the cert stores to get updates to the cert store.
-    // Auto-syncing on all_certs_store seems to work to resync the nested
-    // stores, although the docs at
-    // https://docs.microsoft.com/en-us/windows/win32/api/wincrypt/nf-wincrypt-certcontrolstore
-    // are somewhat unclear. If and when root store changes are linked to
+    // Auto-sync must be invoked on each individual store so that any future
+    // checks performed on the collection will ensure the individual stores
+    // within it are properly synchronized. However, the documentation at:
+    // https://docs.microsoft.com/en-us/windows/win32/api/wincrypt/nf-wincrypt-certcontrolstore,
+    // is somewhat unclear. If and when root store changes are linked to
     // clearing various caches, this should be replaced with
     // CERT_STORE_CTRL_NOTIFY_CHANGE and CERT_STORE_CTRL_RESYNC.
-    if (!CertControlStore(stores.all.get(), 0, CERT_STORE_CTRL_AUTO_RESYNC,
+    if (!CertControlStore(stores.roots.get(), 0, CERT_STORE_CTRL_AUTO_RESYNC,
                           0) ||
         !CertControlStore(stores.trusted_people.get(), 0,
+                          CERT_STORE_CTRL_AUTO_RESYNC, 0) ||
+        !CertControlStore(stores.intermediates.get(), 0,
                           CERT_STORE_CTRL_AUTO_RESYNC, 0) ||
         !CertControlStore(stores.disallowed.get(), 0,
                           CERT_STORE_CTRL_AUTO_RESYNC, 0)) {
@@ -301,9 +310,8 @@ class TrustStoreWin::Impl {
     while ((cert_from_store = CertFindCertificateInStore(
                 all_certs_store_.get(), X509_ASN_ENCODING, 0,
                 CERT_FIND_SUBJECT_NAME, &cert_issuer_blob, cert_from_store))) {
-      bssl::UniquePtr<CRYPTO_BUFFER> der_crypto =
-          x509_util::CreateCryptoBuffer(base::make_span(
-              cert_from_store->pbCertEncoded, cert_from_store->cbCertEncoded));
+      bssl::UniquePtr<CRYPTO_BUFFER> der_crypto = x509_util::CreateCryptoBuffer(
+          x509_util::CertContextAsSpan(cert_from_store));
       bssl::CertErrors errors;
       bssl::ParsedCertificate::CreateAndAddToVector(
           std::move(der_crypto), x509_util::DefaultParseCertificateOptions(),
@@ -319,7 +327,8 @@ class TrustStoreWin::Impl {
     }
 
     base::span<const uint8_t> cert_span = cert->der_cert();
-    base::SHA1Digest cert_hash = base::SHA1Hash(cert_span);
+    std::array<uint8_t, crypto::obsolete::Sha1::kSize> cert_hash =
+        Sha1ForWinTrust(cert_span);
     CRYPT_HASH_BLOB cert_hash_blob;
     cert_hash_blob.cbData = static_cast<DWORD>(cert_hash.size());
     cert_hash_blob.pbData = cert_hash.data();
@@ -330,11 +339,11 @@ class TrustStoreWin::Impl {
     while ((cert_from_store = CertFindCertificateInStore(
                 disallowed_cert_store_.get(), X509_ASN_ENCODING, 0,
                 CERT_FIND_SHA1_HASH, &cert_hash_blob, cert_from_store))) {
-      base::span<const uint8_t> cert_from_store_span = base::make_span(
-          cert_from_store->pbCertEncoded, cert_from_store->cbCertEncoded);
+      base::span<const uint8_t> cert_from_store_span =
+          x509_util::CertContextAsSpan(cert_from_store);
       // If a cert is in the windows distruted store, it is considered
       // distrusted for all purporses. EKU isn't checked. See crbug.com/1355961.
-      if (base::ranges::equal(cert_span, cert_from_store_span)) {
+      if (std::ranges::equal(cert_span, cert_from_store_span)) {
         return bssl::CertificateTrust::ForDistrusted();
       }
     }
@@ -342,9 +351,9 @@ class TrustStoreWin::Impl {
     while ((cert_from_store = CertFindCertificateInStore(
                 root_cert_store_.get(), X509_ASN_ENCODING, 0,
                 CERT_FIND_SHA1_HASH, &cert_hash_blob, cert_from_store))) {
-      base::span<const uint8_t> cert_from_store_span = base::make_span(
-          cert_from_store->pbCertEncoded, cert_from_store->cbCertEncoded);
-      if (base::ranges::equal(cert_span, cert_from_store_span)) {
+      base::span<const uint8_t> cert_from_store_span =
+          x509_util::CertContextAsSpan(cert_from_store);
+      if (std::ranges::equal(cert_span, cert_from_store_span)) {
         // If we find at least one version of the cert that is trusted for TLS
         // Server Auth, we will trust the cert.
         if (IsCertTrustedForServerAuth(cert_from_store)) {
@@ -356,9 +365,9 @@ class TrustStoreWin::Impl {
     while ((cert_from_store = CertFindCertificateInStore(
                 trusted_people_cert_store_.get(), X509_ASN_ENCODING, 0,
                 CERT_FIND_SHA1_HASH, &cert_hash_blob, cert_from_store))) {
-      base::span<const uint8_t> cert_from_store_span = base::make_span(
-          cert_from_store->pbCertEncoded, cert_from_store->cbCertEncoded);
-      if (base::ranges::equal(cert_span, cert_from_store_span)) {
+      base::span<const uint8_t> cert_from_store_span =
+          x509_util::CertContextAsSpan(cert_from_store);
+      if (std::ranges::equal(cert_span, cert_from_store_span)) {
         // If we find at least one version of the cert that is trusted for TLS
         // Server Auth, we will trust the cert.
         if (IsCertTrustedForServerAuth(cert_from_store)) {

@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/check_op.h"
+#include "base/notreached.h"
 #include "base/values.h"
 #include "pdf/draw_utils/coordinates.h"
 #include "ui/gfx/geometry/insets.h"
@@ -103,6 +104,7 @@ void DocumentLayout::ComputeLayout(const std::vector<gfx::Size>& page_sizes) {
     case PageSpread::kTwoUpOdd:
       return ComputeTwoUpOddLayout(page_sizes);
   }
+  NOTREACHED();
 }
 
 void DocumentLayout::ComputeOneUpLayout(

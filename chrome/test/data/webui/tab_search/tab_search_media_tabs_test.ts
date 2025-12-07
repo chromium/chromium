@@ -50,10 +50,11 @@ suite('TabSearchMediaTabsTest', () => {
     TabSearchApiProxyImpl.setInstance(testProxy);
 
     tabSearchPage = document.createElement('tab-search-page');
+    tabSearchPage.availableHeight = 500;
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(tabSearchPage);
-    await eventToPromise('iron-select', tabSearchPage.$.tabsList);
+    await eventToPromise('selected-change', tabSearchPage.$.tabsList);
     await microtasksFinished();
   }
 
@@ -63,12 +64,12 @@ suite('TabSearchMediaTabsTest', () => {
           windows: SAMPLE_WINDOW_DATA_WITH_MEDIA_TAB,
         }),
         {mediaTabsEnabled: true});
-    assertEquals(1, tabSearchPage.getSelectedIndex());
+    assertEquals(1, tabSearchPage.getSelectedTabIndex());
     const tabSearchItems = queryRows();
     keyDownOn(tabSearchItems[1]!, 0, [], 'ArrowUp');
-    await eventToPromise('iron-select', tabSearchPage.$.tabsList);
+    await eventToPromise('selected-change', tabSearchPage.$.tabsList);
     await microtasksFinished();
-    assertEquals(0, tabSearchPage.getSelectedIndex());
+    assertEquals(0, tabSearchPage.getSelectedTabIndex());
 
     Object.defineProperty(
         document, 'visibilityState', {value: 'hidden', writable: true});
@@ -78,33 +79,34 @@ suite('TabSearchMediaTabsTest', () => {
     // search text' test case, if no search query was originally provided
     // onSearchChanged will not be called when hidden and the index is not
     // reset until the state is visible again.
-    assertEquals(-1, tabSearchPage.getSelectedIndex());
+    assertEquals(-1, tabSearchPage.getSelectedTabIndex());
 
     // The selected tab should again be the most recently used tab.
     Object.defineProperty(
         document, 'visibilityState', {value: 'visible', writable: true});
     document.dispatchEvent(new Event('visibilitychange'));
     await microtasksFinished();
-    assertEquals(1, tabSearchPage.getSelectedIndex());
+    assertEquals(1, tabSearchPage.getSelectedTabIndex());
 
     // During search there should be no Audio & Video section and the selected
     // index should be 0.
     tabSearchPage.setValue('Google');
     await microtasksFinished();
     verifyTabIds(queryRows(), [2, 1]);
-    assertEquals(0, tabSearchPage.getSelectedIndex());
+    assertEquals(0, tabSearchPage.getSelectedTabIndex());
 
     // When the search query is reset the initially selected index should also
     // be reset.
     tabSearchPage.setValue('');
     await microtasksFinished();
-    assertEquals(1, tabSearchPage.getSelectedIndex());
+    assertEquals(1, tabSearchPage.getSelectedTabIndex());
   });
 
   test('Verify initially selected tab is not the active tab', async () => {
     const tabs = [
       createTab({
         active: false,
+        visible: false,
         alertStates: [TabAlertState.kMediaRecording],
         index: 0,
         tabId: 1,
@@ -114,6 +116,7 @@ suite('TabSearchMediaTabsTest', () => {
       }),
       createTab({
         active: false,
+        visible: false,
         alertStates: [TabAlertState.kAudioPlaying],
         index: 1,
         tabId: 2,
@@ -123,6 +126,7 @@ suite('TabSearchMediaTabsTest', () => {
       }),
       createTab({
         active: true,
+        visible: true,
         index: 2,
         tabId: 3,
         title: 'Google',
@@ -131,6 +135,7 @@ suite('TabSearchMediaTabsTest', () => {
       }),
       createTab({
         active: false,
+        visible: false,
         index: 3,
         tabId: 4,
         title: 'Example',
@@ -141,13 +146,18 @@ suite('TabSearchMediaTabsTest', () => {
 
     await setupTest(
         createProfileData({
-          windows: [{active: true, height: SAMPLE_WINDOW_HEIGHT, tabs}],
+          windows: [{
+            active: true,
+            isHostWindow: true,
+            height: SAMPLE_WINDOW_HEIGHT,
+            tabs,
+          }],
         }),
         {mediaTabsEnabled: true});
 
     // MRU is the tab with Id 3 but since it is the active tab the selected
     // index should be the next MRU tab.
-    assertEquals(0, tabSearchPage.getSelectedIndex());
+    assertEquals(0, tabSearchPage.getSelectedTabIndex());
   });
 
   test('Show media tab in Audio & Video section', async () => {
@@ -171,6 +181,7 @@ suite('TabSearchMediaTabsTest', () => {
 
     const tabUpdateInfo = {
       inActiveWindow: true,
+      inHostWindow: true,
       tab: updatedTab,
     };
     testProxy.getCallbackRouterRemote().tabUpdated(tabUpdateInfo);
@@ -196,6 +207,7 @@ suite('TabSearchMediaTabsTest', () => {
 
     const tabUpdateInfo = {
       inActiveWindow: true,
+      inHostWindow: true,
       tab: updatedTab,
     };
     testProxy.getCallbackRouterRemote().tabUpdated(tabUpdateInfo);

@@ -1,0 +1,15 @@
+{
+  "name": "Windowing API Test Extension",
+  "description": "Test chrome.windows APIs",
+  "version": "1.0",
+  "manifest_version": 3,
+  "action": {
+    "default_popup": "default_popup.html"
+  },
+  "background": {
+    "service_worker": "window_event_listener_service_worker.js"
+  },
+  "permissions": [
+    "tabs"
+  ]
+}

@@ -1,17 +1,35 @@
 <!DOCTYPE html>
-<script src="../../resources/js-test.js"></script>
-<style>
-body { margin: 0; }
-</style>
-<svg width="400" height="100" viewBox="0 0 0 0">
-  <g class="p">
-    <rect class="a" width="200" height="100"/>
-    <rect class="b" width="100" height="100" fill="green"/>
-  </g>
-</svg>
-<script>
-if (window.testRunner)
-  eventSender.mouseMoveTo(150, 50);
+    <title>SVG hover transform viewBox test</title>
+    <script src="../../resources/testharness.js"></script>
+    <script src="../../resources/testharnessreport.js"></script>
+    <style>
+    body { margin: 0; }
+    </style>
+    <svg width="400" height="100" viewBox="0 0 0 0">
+      <g class="p">
+        <rect class="a" width="200" height="100"/>
+        <rect class="b" width="100" height="100" fill="green"/>
+      </g>
+    </svg>
+    <script>
+    test(() => {
+      // eventSender must be available to simulate hover.
+      assert_true(
+        'eventSender' in window,
+        'eventSender should exist for hover simulation'
+      );
+      eventSender.mouseMoveTo(150, 50);
 
-shouldBeNull("document.querySelector('.p:hover .a')");
-</script>
+      // Verify that .p:hover .a is selectable when viewBox is zero-sized.
+      const elem = document.querySelector('.p:hover .a');
+      assert_not_equals(
+        elem,
+        null,
+        "document.querySelector('.p:hover .a') should not be null"
+      );
+      assert_true(
+        elem instanceof SVGRectElement,
+        "Selected element should be an SVGRectElement"
+      );
+    }, "SVG hover transform viewBox test: <rect> element becomes selectable under .p:hover with zero viewBox");
+    </script>

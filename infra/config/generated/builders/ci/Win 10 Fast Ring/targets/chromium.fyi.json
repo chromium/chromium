@@ -1,0 +1,679 @@
+{
+  "Win 10 Fast Ring": {
+    "gtest_tests": [
+      {
+        "module_name": "//third_party/abseil-cpp:absl_hardening_tests",
+        "module_scheme": "gtest",
+        "name": "absl_hardening_tests",
+        "test": "absl_hardening_tests",
+        "test_id_prefix": "ninja://third_party/abseil-cpp:absl_hardening_tests/"
+      },
+      {
+        "module_name": "//ui/accessibility:accessibility_unittests",
+        "module_scheme": "gtest",
+        "name": "accessibility_unittests",
+        "test": "accessibility_unittests",
+        "test_id_prefix": "ninja://ui/accessibility:accessibility_unittests/"
+      },
+      {
+        "module_name": "//third_party/angle/src/tests:angle_unittests",
+        "module_scheme": "gtest",
+        "name": "angle_unittests",
+        "test": "angle_unittests",
+        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_unittests/",
+        "use_isolated_scripts_api": true
+      },
+      {
+        "module_name": "//extensions/shell:app_shell_unittests",
+        "module_scheme": "gtest",
+        "name": "app_shell_unittests",
+        "test": "app_shell_unittests",
+        "test_id_prefix": "ninja://extensions/shell:app_shell_unittests/"
+      },
+      {
+        "module_name": "//ui/aura:aura_unittests",
+        "module_scheme": "gtest",
+        "name": "aura_unittests",
+        "test": "aura_unittests",
+        "test_id_prefix": "ninja://ui/aura:aura_unittests/"
+      },
+      {
+        "module_name": "//base:base_unittests",
+        "module_scheme": "gtest",
+        "name": "base_unittests",
+        "test": "base_unittests",
+        "test_id_prefix": "ninja://base:base_unittests/"
+      },
+      {
+        "module_name": "//third_party/blink/common:blink_common_unittests",
+        "module_scheme": "gtest",
+        "name": "blink_common_unittests",
+        "test": "blink_common_unittests",
+        "test_id_prefix": "ninja://third_party/blink/common:blink_common_unittests/"
+      },
+      {
+        "module_name": "//third_party/blink/renderer/platform:blink_fuzzer_unittests",
+        "module_scheme": "gtest",
+        "name": "blink_fuzzer_unittests",
+        "test": "blink_fuzzer_unittests",
+        "test_id_prefix": "ninja://third_party/blink/renderer/platform:blink_fuzzer_unittests/"
+      },
+      {
+        "module_name": "//third_party/blink/renderer/platform/heap:blink_heap_unittests",
+        "module_scheme": "gtest",
+        "name": "blink_heap_unittests",
+        "test": "blink_heap_unittests",
+        "test_id_prefix": "ninja://third_party/blink/renderer/platform/heap:blink_heap_unittests/"
+      },
+      {
+        "args": [
+          "--git-revision=${got_revision}"
+        ],
+        "module_name": "//third_party/blink/renderer/platform:blink_platform_unittests",
+        "module_scheme": "gtest",
+        "name": "blink_platform_unittests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "test": "blink_platform_unittests",
+        "test_id_prefix": "ninja://third_party/blink/renderer/platform:blink_platform_unittests/"
+      },
+      {
+        "module_name": "//third_party/blink/renderer/controller:blink_unittests",
+        "module_scheme": "gtest",
+        "name": "blink_unittests",
+        "test": "blink_unittests",
+        "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests/"
+      },
+      {
+        "module_name": "//third_party/boringssl:boringssl_crypto_tests",
+        "module_scheme": "gtest",
+        "name": "boringssl_crypto_tests",
+        "test": "boringssl_crypto_tests",
+        "test_id_prefix": "ninja://third_party/boringssl:boringssl_crypto_tests/"
+      },
+      {
+        "module_name": "//third_party/boringssl:boringssl_ssl_tests",
+        "module_scheme": "gtest",
+        "name": "boringssl_ssl_tests",
+        "test": "boringssl_ssl_tests",
+        "test_id_prefix": "ninja://third_party/boringssl:boringssl_ssl_tests/"
+      },
+      {
+        "module_name": "//chrome/test:browser_tests",
+        "module_scheme": "gtest",
+        "name": "browser_tests",
+        "test": "browser_tests",
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
+      },
+      {
+        "args": [
+          "--gtest_filter=-*UsingRealWebcam*"
+        ],
+        "module_name": "//media/capture:capture_unittests",
+        "module_scheme": "gtest",
+        "name": "capture_unittests",
+        "test": "capture_unittests",
+        "test_id_prefix": "ninja://media/capture:capture_unittests/"
+      },
+      {
+        "module_name": "//media/cast:cast_unittests",
+        "module_scheme": "gtest",
+        "name": "cast_unittests",
+        "test": "cast_unittests",
+        "test_id_prefix": "ninja://media/cast:cast_unittests/"
+      },
+      {
+        "module_name": "//cc:cc_unittests",
+        "module_scheme": "gtest",
+        "name": "cc_unittests",
+        "test": "cc_unittests",
+        "test_id_prefix": "ninja://cc:cc_unittests/"
+      },
+      {
+        "module_name": "//chrome/test:chrome_app_unittests",
+        "module_scheme": "gtest",
+        "name": "chrome_app_unittests",
+        "test": "chrome_app_unittests",
+        "test_id_prefix": "ninja://chrome/test:chrome_app_unittests/"
+      },
+      {
+        "module_name": "//chrome/chrome_elf:chrome_elf_unittests",
+        "module_scheme": "gtest",
+        "name": "chrome_elf_unittests",
+        "test": "chrome_elf_unittests",
+        "test_id_prefix": "ninja://chrome/chrome_elf:chrome_elf_unittests/"
+      },
+      {
+        "module_name": "//chrome/test/chromedriver:chromedriver_unittests",
+        "module_scheme": "gtest",
+        "name": "chromedriver_unittests",
+        "test": "chromedriver_unittests",
+        "test_id_prefix": "ninja://chrome/test/chromedriver:chromedriver_unittests/"
+      },
+      {
+        "module_name": "//components:components_browsertests",
+        "module_scheme": "gtest",
+        "name": "components_browsertests",
+        "test": "components_browsertests",
+        "test_id_prefix": "ninja://components:components_browsertests/"
+      },
+      {
+        "module_name": "//components:components_unittests",
+        "module_scheme": "gtest",
+        "name": "components_unittests",
+        "test": "components_unittests",
+        "test_id_prefix": "ninja://components:components_unittests/"
+      },
+      {
+        "module_name": "//ui/compositor:compositor_unittests",
+        "module_scheme": "gtest",
+        "name": "compositor_unittests",
+        "test": "compositor_unittests",
+        "test_id_prefix": "ninja://ui/compositor:compositor_unittests/"
+      },
+      {
+        "module_name": "//content/test:content_browsertests",
+        "module_scheme": "gtest",
+        "name": "content_browsertests",
+        "test": "content_browsertests",
+        "test_id_prefix": "ninja://content/test:content_browsertests/"
+      },
+      {
+        "module_name": "//content/test:content_unittests",
+        "module_scheme": "gtest",
+        "name": "content_unittests",
+        "test": "content_unittests",
+        "test_id_prefix": "ninja://content/test:content_unittests/"
+      },
+      {
+        "module_name": "//third_party/crashpad/crashpad:crashpad_tests",
+        "module_scheme": "gtest",
+        "name": "crashpad_tests",
+        "test": "crashpad_tests",
+        "test_id_prefix": "ninja://third_party/crashpad/crashpad:crashpad_tests/"
+      },
+      {
+        "module_name": "//components/cronet:cronet_tests",
+        "module_scheme": "gtest",
+        "name": "cronet_tests",
+        "test": "cronet_tests",
+        "test_id_prefix": "ninja://components/cronet:cronet_tests/"
+      },
+      {
+        "module_name": "//components/cronet:cronet_unittests",
+        "module_scheme": "gtest",
+        "name": "cronet_unittests",
+        "test": "cronet_unittests",
+        "test_id_prefix": "ninja://components/cronet:cronet_unittests/"
+      },
+      {
+        "module_name": "//crypto:crypto_unittests",
+        "module_scheme": "gtest",
+        "name": "crypto_unittests",
+        "test": "crypto_unittests",
+        "test_id_prefix": "ninja://crypto:crypto_unittests/"
+      },
+      {
+        "module_name": "//chrome/test:delayloads_unittests",
+        "module_scheme": "gtest",
+        "name": "delayloads_unittests",
+        "test": "delayloads_unittests",
+        "test_id_prefix": "ninja://chrome/test:delayloads_unittests/"
+      },
+      {
+        "module_name": "//device:device_unittests",
+        "module_scheme": "gtest",
+        "name": "device_unittests",
+        "test": "device_unittests",
+        "test_id_prefix": "ninja://device:device_unittests/"
+      },
+      {
+        "module_name": "//ui/display:display_unittests",
+        "module_scheme": "gtest",
+        "name": "display_unittests",
+        "test": "display_unittests",
+        "test_id_prefix": "ninja://ui/display:display_unittests/"
+      },
+      {
+        "module_name": "//chrome/windows_services/elevated_tracing_service:elevated_tracing_service_unittests",
+        "module_scheme": "gtest",
+        "name": "elevated_tracing_service_unittests",
+        "test": "elevated_tracing_service_unittests",
+        "test_id_prefix": "ninja://chrome/windows_services/elevated_tracing_service:elevated_tracing_service_unittests/"
+      },
+      {
+        "module_name": "//chrome/elevation_service:elevation_service_unittests",
+        "module_scheme": "gtest",
+        "name": "elevation_service_unittests",
+        "test": "elevation_service_unittests",
+        "test_id_prefix": "ninja://chrome/elevation_service:elevation_service_unittests/"
+      },
+      {
+        "ci_only": true,
+        "module_name": "//third_party/leveldatabase:env_chromium_unittests",
+        "module_scheme": "gtest",
+        "name": "env_chromium_unittests",
+        "test": "env_chromium_unittests",
+        "test_id_prefix": "ninja://third_party/leveldatabase:env_chromium_unittests/"
+      },
+      {
+        "module_name": "//ui/events:events_unittests",
+        "module_scheme": "gtest",
+        "name": "events_unittests",
+        "test": "events_unittests",
+        "test_id_prefix": "ninja://ui/events:events_unittests/"
+      },
+      {
+        "module_name": "//extensions:extensions_browsertests",
+        "module_scheme": "gtest",
+        "name": "extensions_browsertests",
+        "test": "extensions_browsertests",
+        "test_id_prefix": "ninja://extensions:extensions_browsertests/"
+      },
+      {
+        "module_name": "//extensions:extensions_unittests",
+        "module_scheme": "gtest",
+        "name": "extensions_unittests",
+        "test": "extensions_unittests",
+        "test_id_prefix": "ninja://extensions:extensions_unittests/"
+      },
+      {
+        "module_name": "//components/services/filesystem:filesystem_service_unittests",
+        "module_scheme": "gtest",
+        "name": "filesystem_service_unittests",
+        "test": "filesystem_service_unittests",
+        "test_id_prefix": "ninja://components/services/filesystem:filesystem_service_unittests/"
+      },
+      {
+        "module_name": "//testing/libfuzzer/tests:fuzzing_unittests",
+        "module_scheme": "gtest",
+        "name": "fuzzing_unittests",
+        "test": "fuzzing_unittests",
+        "test_id_prefix": "ninja://testing/libfuzzer/tests:fuzzing_unittests/"
+      },
+      {
+        "module_name": "//google_apis/gcm:gcm_unit_tests",
+        "module_scheme": "gtest",
+        "name": "gcm_unit_tests",
+        "test": "gcm_unit_tests",
+        "test_id_prefix": "ninja://google_apis/gcm:gcm_unit_tests/"
+      },
+      {
+        "module_name": "//chrome/credential_provider/test:gcp_unittests",
+        "module_scheme": "gtest",
+        "name": "gcp_unittests",
+        "test": "gcp_unittests",
+        "test_id_prefix": "ninja://chrome/credential_provider/test:gcp_unittests/"
+      },
+      {
+        "module_name": "//ui/gfx:gfx_unittests",
+        "module_scheme": "gtest",
+        "name": "gfx_unittests",
+        "test": "gfx_unittests",
+        "test_id_prefix": "ninja://ui/gfx:gfx_unittests/"
+      },
+      {
+        "module_name": "//gin:gin_unittests",
+        "module_scheme": "gtest",
+        "name": "gin_unittests",
+        "test": "gin_unittests",
+        "test_id_prefix": "ninja://gin:gin_unittests/"
+      },
+      {
+        "module_name": "//google_apis:google_apis_unittests",
+        "module_scheme": "gtest",
+        "name": "google_apis_unittests",
+        "test": "google_apis_unittests",
+        "test_id_prefix": "ninja://google_apis:google_apis_unittests/"
+      },
+      {
+        "module_name": "//gpu:gpu_unittests",
+        "module_scheme": "gtest",
+        "name": "gpu_unittests",
+        "test": "gpu_unittests",
+        "test_id_prefix": "ninja://gpu:gpu_unittests/"
+      },
+      {
+        "module_name": "//components/gwp_asan:gwp_asan_unittests",
+        "module_scheme": "gtest",
+        "name": "gwp_asan_unittests",
+        "test": "gwp_asan_unittests",
+        "test_id_prefix": "ninja://components/gwp_asan:gwp_asan_unittests/"
+      },
+      {
+        "module_name": "//headless:headless_browsertests",
+        "module_scheme": "gtest",
+        "name": "headless_browsertests",
+        "test": "headless_browsertests",
+        "test_id_prefix": "ninja://headless:headless_browsertests/"
+      },
+      {
+        "module_name": "//headless:headless_unittests",
+        "module_scheme": "gtest",
+        "name": "headless_unittests",
+        "test": "headless_unittests",
+        "test_id_prefix": "ninja://headless:headless_unittests/"
+      },
+      {
+        "module_name": "//chrome/install_static:install_static_unittests",
+        "module_scheme": "gtest",
+        "name": "install_static_unittests",
+        "test": "install_static_unittests",
+        "test_id_prefix": "ninja://chrome/install_static:install_static_unittests/"
+      },
+      {
+        "module_name": "//chrome/installer/util:installer_util_unittests",
+        "module_scheme": "gtest",
+        "name": "installer_util_unittests",
+        "test": "installer_util_unittests",
+        "test_id_prefix": "ninja://chrome/installer/util:installer_util_unittests/"
+      },
+      {
+        "module_name": "//chrome/test:interactive_ui_tests",
+        "module_scheme": "gtest",
+        "name": "interactive_ui_tests",
+        "test": "interactive_ui_tests",
+        "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
+      },
+      {
+        "module_name": "//ipc:ipc_tests",
+        "module_scheme": "gtest",
+        "name": "ipc_tests",
+        "test": "ipc_tests",
+        "test_id_prefix": "ninja://ipc:ipc_tests/"
+      },
+      {
+        "module_name": "//ui/latency:latency_unittests",
+        "module_scheme": "gtest",
+        "name": "latency_unittests",
+        "test": "latency_unittests",
+        "test_id_prefix": "ninja://ui/latency:latency_unittests/"
+      },
+      {
+        "ci_only": true,
+        "module_name": "//third_party/leveldatabase:leveldb_unittests",
+        "module_scheme": "gtest",
+        "name": "leveldb_unittests",
+        "test": "leveldb_unittests",
+        "test_id_prefix": "ninja://third_party/leveldatabase:leveldb_unittests/"
+      },
+      {
+        "module_name": "//third_party/libjingle_xmpp:libjingle_xmpp_unittests",
+        "module_scheme": "gtest",
+        "name": "libjingle_xmpp_unittests",
+        "test": "libjingle_xmpp_unittests",
+        "test_id_prefix": "ninja://third_party/libjingle_xmpp:libjingle_xmpp_unittests/"
+      },
+      {
+        "module_name": "//third_party/liburlpattern:liburlpattern_unittests",
+        "module_scheme": "gtest",
+        "name": "liburlpattern_unittests",
+        "test": "liburlpattern_unittests",
+        "test_id_prefix": "ninja://third_party/liburlpattern:liburlpattern_unittests/"
+      },
+      {
+        "module_name": "//media:media_unittests",
+        "module_scheme": "gtest",
+        "name": "media_unittests",
+        "test": "media_unittests",
+        "test_id_prefix": "ninja://media:media_unittests/"
+      },
+      {
+        "module_name": "//ui/message_center:message_center_unittests",
+        "module_scheme": "gtest",
+        "name": "message_center_unittests",
+        "test": "message_center_unittests",
+        "test_id_prefix": "ninja://ui/message_center:message_center_unittests/"
+      },
+      {
+        "module_name": "//media/midi:midi_unittests",
+        "module_scheme": "gtest",
+        "name": "midi_unittests",
+        "test": "midi_unittests",
+        "test_id_prefix": "ninja://media/midi:midi_unittests/"
+      },
+      {
+        "module_name": "//mojo:mojo_unittests",
+        "module_scheme": "gtest",
+        "name": "mojo_unittests",
+        "test": "mojo_unittests",
+        "test_id_prefix": "ninja://mojo:mojo_unittests/"
+      },
+      {
+        "module_name": "//ui/native_theme:native_theme_unittests",
+        "module_scheme": "gtest",
+        "name": "native_theme_unittests",
+        "test": "native_theme_unittests",
+        "test_id_prefix": "ninja://ui/native_theme:native_theme_unittests/"
+      },
+      {
+        "module_name": "//net:net_unittests",
+        "module_scheme": "gtest",
+        "name": "net_unittests",
+        "test": "net_unittests",
+        "test_id_prefix": "ninja://net:net_unittests/"
+      },
+      {
+        "module_name": "//chrome/notification_helper:notification_helper_unittests",
+        "module_scheme": "gtest",
+        "name": "notification_helper_unittests",
+        "test": "notification_helper_unittests",
+        "test_id_prefix": "ninja://chrome/notification_helper:notification_helper_unittests/"
+      },
+      {
+        "module_name": "//pdf:pdf_unittests",
+        "module_scheme": "gtest",
+        "name": "pdf_unittests",
+        "test": "pdf_unittests",
+        "test_id_prefix": "ninja://pdf:pdf_unittests/"
+      },
+      {
+        "module_name": "//third_party/perfetto:perfetto_unittests",
+        "module_scheme": "gtest",
+        "name": "perfetto_unittests",
+        "test": "perfetto_unittests",
+        "test_id_prefix": "ninja://third_party/perfetto:perfetto_unittests/"
+      },
+      {
+        "module_name": "//printing:printing_unittests",
+        "module_scheme": "gtest",
+        "name": "printing_unittests",
+        "test": "printing_unittests",
+        "test_id_prefix": "ninja://printing:printing_unittests/"
+      },
+      {
+        "ci_only": true,
+        "module_name": "//third_party/pthreadpool:pthreadpool_unittests",
+        "module_scheme": "gtest",
+        "name": "pthreadpool_unittests",
+        "test": "pthreadpool_unittests",
+        "test_id_prefix": "ninja://third_party/pthreadpool:pthreadpool_unittests/"
+      },
+      {
+        "module_name": "//remoting:remoting_unittests",
+        "module_scheme": "gtest",
+        "name": "remoting_unittests",
+        "test": "remoting_unittests",
+        "test_id_prefix": "ninja://remoting:remoting_unittests/"
+      },
+      {
+        "module_name": "//sandbox/win:sbox_integration_tests",
+        "module_scheme": "gtest",
+        "name": "sbox_integration_tests",
+        "test": "sbox_integration_tests",
+        "test_id_prefix": "ninja://sandbox/win:sbox_integration_tests/"
+      },
+      {
+        "module_name": "//sandbox/win:sbox_unittests",
+        "module_scheme": "gtest",
+        "name": "sbox_unittests",
+        "test": "sbox_unittests",
+        "test_id_prefix": "ninja://sandbox/win:sbox_unittests/"
+      },
+      {
+        "module_name": "//sandbox/win:sbox_validation_tests",
+        "module_scheme": "gtest",
+        "name": "sbox_validation_tests",
+        "test": "sbox_validation_tests",
+        "test_id_prefix": "ninja://sandbox/win:sbox_validation_tests/"
+      },
+      {
+        "module_name": "//services:services_unittests",
+        "module_scheme": "gtest",
+        "name": "services_unittests",
+        "test": "services_unittests",
+        "test_id_prefix": "ninja://services:services_unittests/"
+      },
+      {
+        "module_name": "//chrome/installer/setup:setup_unittests",
+        "module_scheme": "gtest",
+        "name": "setup_unittests",
+        "test": "setup_unittests",
+        "test_id_prefix": "ninja://chrome/installer/setup:setup_unittests/"
+      },
+      {
+        "module_name": "//ui/shell_dialogs:shell_dialogs_unittests",
+        "module_scheme": "gtest",
+        "name": "shell_dialogs_unittests",
+        "test": "shell_dialogs_unittests",
+        "test_id_prefix": "ninja://ui/shell_dialogs:shell_dialogs_unittests/"
+      },
+      {
+        "module_name": "//skia:skia_unittests",
+        "module_scheme": "gtest",
+        "name": "skia_unittests",
+        "test": "skia_unittests",
+        "test_id_prefix": "ninja://skia:skia_unittests/"
+      },
+      {
+        "module_name": "//ui/snapshot:snapshot_unittests",
+        "module_scheme": "gtest",
+        "name": "snapshot_unittests",
+        "test": "snapshot_unittests",
+        "test_id_prefix": "ninja://ui/snapshot:snapshot_unittests/"
+      },
+      {
+        "module_name": "//sql:sql_unittests",
+        "module_scheme": "gtest",
+        "name": "sql_unittests",
+        "test": "sql_unittests",
+        "test_id_prefix": "ninja://sql:sql_unittests/"
+      },
+      {
+        "module_name": "//storage:storage_unittests",
+        "module_scheme": "gtest",
+        "name": "storage_unittests",
+        "test": "storage_unittests",
+        "test_id_prefix": "ninja://storage:storage_unittests/"
+      },
+      {
+        "module_name": "//chrome/test:sync_integration_tests",
+        "module_scheme": "gtest",
+        "name": "sync_integration_tests",
+        "test": "sync_integration_tests",
+        "test_id_prefix": "ninja://chrome/test:sync_integration_tests/"
+      },
+      {
+        "module_name": "//ui/base:ui_base_unittests",
+        "module_scheme": "gtest",
+        "name": "ui_base_unittests",
+        "test": "ui_base_unittests",
+        "test_id_prefix": "ninja://ui/base:ui_base_unittests/"
+      },
+      {
+        "module_name": "//ui/touch_selection:ui_touch_selection_unittests",
+        "module_scheme": "gtest",
+        "name": "ui_touch_selection_unittests",
+        "test": "ui_touch_selection_unittests",
+        "test_id_prefix": "ninja://ui/touch_selection:ui_touch_selection_unittests/"
+      },
+      {
+        "module_name": "//ui/tests:ui_unittests",
+        "module_scheme": "gtest",
+        "name": "ui_unittests",
+        "test": "ui_unittests",
+        "test_id_prefix": "ninja://ui/tests:ui_unittests/"
+      },
+      {
+        "module_name": "//chrome/test:unit_tests",
+        "module_scheme": "gtest",
+        "name": "unit_tests",
+        "test": "unit_tests",
+        "test_id_prefix": "ninja://chrome/test:unit_tests/"
+      },
+      {
+        "module_name": "//chrome/updater:updater_tests",
+        "module_scheme": "gtest",
+        "name": "updater_tests",
+        "test": "updater_tests",
+        "test_id_prefix": "ninja://chrome/updater:updater_tests/"
+      },
+      {
+        "module_name": "//chrome/updater:updater_tests_system",
+        "module_scheme": "gtest",
+        "name": "updater_tests_system",
+        "test": "updater_tests_system",
+        "test_id_prefix": "ninja://chrome/updater:updater_tests_system/"
+      },
+      {
+        "module_name": "//url:url_unittests",
+        "module_scheme": "gtest",
+        "name": "url_unittests",
+        "test": "url_unittests",
+        "test_id_prefix": "ninja://url:url_unittests/"
+      },
+      {
+        "module_name": "//ui/views:views_unittests",
+        "module_scheme": "gtest",
+        "name": "views_unittests",
+        "test": "views_unittests",
+        "test_id_prefix": "ninja://ui/views:views_unittests/"
+      },
+      {
+        "module_name": "//components/viz:viz_unittests",
+        "module_scheme": "gtest",
+        "name": "viz_unittests",
+        "test": "viz_unittests",
+        "test_id_prefix": "ninja://components/viz:viz_unittests/"
+      },
+      {
+        "module_name": "//chrome/browser/vr:vr_common_unittests",
+        "module_scheme": "gtest",
+        "name": "vr_common_unittests",
+        "test": "vr_common_unittests",
+        "test_id_prefix": "ninja://chrome/browser/vr:vr_common_unittests/"
+      },
+      {
+        "module_name": "//ui/wm:wm_unittests",
+        "module_scheme": "gtest",
+        "name": "wm_unittests",
+        "test": "wm_unittests",
+        "test_id_prefix": "ninja://ui/wm:wm_unittests/"
+      },
+      {
+        "module_name": "//third_party/blink/renderer/platform/wtf:wtf_unittests",
+        "module_scheme": "gtest",
+        "name": "wtf_unittests",
+        "test": "wtf_unittests",
+        "test_id_prefix": "ninja://third_party/blink/renderer/platform/wtf:wtf_unittests/"
+      },
+      {
+        "module_name": "//third_party/zlib:zlib_unittests",
+        "module_scheme": "gtest",
+        "name": "zlib_unittests",
+        "test": "zlib_unittests",
+        "test_id_prefix": "ninja://third_party/zlib:zlib_unittests/"
+      },
+      {
+        "module_name": "//components/zucchini:zucchini_unittests",
+        "module_scheme": "gtest",
+        "name": "zucchini_unittests",
+        "test": "zucchini_unittests",
+        "test_id_prefix": "ninja://components/zucchini:zucchini_unittests/"
+      }
+    ]
+  }
+}

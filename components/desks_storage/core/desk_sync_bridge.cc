@@ -22,7 +22,6 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
-#include "build/chromeos_buildflags.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
@@ -45,10 +44,6 @@
 #include "components/sync/protocol/workspace_desk_specifics.pb.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/base/window_open_disposition.h"
-
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/cpp/lacros_startup_state.h"  // nogncheck
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace desks_storage {
 
@@ -117,8 +112,7 @@ std::optional<syncer::ModelError> ParseDeskTemplatesOnBackendSequence(
       if (!uuid.is_valid()) {
         return syncer::ModelError(
             FROM_HERE,
-            base::StringPrintf("Failed to parse WorkspaceDeskSpecifics uuid %s",
-                               specifics->uuid().c_str()));
+            syncer::ModelError::Type::kWorkspaceDeskFailedToParseUuid);
       }
 
       std::unique_ptr<ash::DeskTemplate> entry =
@@ -129,7 +123,8 @@ std::optional<syncer::ModelError> ParseDeskTemplatesOnBackendSequence(
       (*desk_templates)[uuid] = std::move(entry);
     } else {
       return syncer::ModelError(
-          FROM_HERE, "Failed to deserialize WorkspaceDeskSpecifics.");
+          FROM_HERE,
+          syncer::ModelError::Type::kWorkspaceDeskFailedToDeserializeSpecifics);
     }
   }
 
@@ -174,8 +169,10 @@ std::optional<syncer::ModelError> DeskSyncBridge::MergeFullSyncData(
   // TODO(yzd) We will add a template update timestamp and update this logic to
   // be: for templates that exist on both local and server side, we will keep
   // the one with later update timestamp.
-  return ApplyIncrementalSyncChanges(std::move(metadata_change_list),
-                                     std::move(entity_data));
+  std::optional<syncer::ModelError> result = ApplyIncrementalSyncChanges(
+      std::move(metadata_change_list), std::move(entity_data));
+  OnMergeFullSyncDataFinished();
+  return result;
 }
 
 std::optional<syncer::ModelError> DeskSyncBridge::ApplyIncrementalSyncChanges(
@@ -268,13 +265,19 @@ std::unique_ptr<syncer::DataBatch> DeskSyncBridge::GetAllDataForDebugging() {
 }
 
 std::string DeskSyncBridge::GetClientTag(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   return GetStorageKey(entity_data);
 }
 
 std::string DeskSyncBridge::GetStorageKey(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   return entity_data.specifics.workspace_desk().uuid();
+}
+
+bool DeskSyncBridge::IsEntityDataValid(
+    const syncer::EntityData& entity_data) const {
+  return desk_template_conversion::FromSyncProto(
+             entity_data.specifics.workspace_desk()) != nullptr;
 }
 
 DeskModel::GetAllEntriesResult DeskSyncBridge::GetAllEntries() {
@@ -475,6 +478,10 @@ size_t DeskSyncBridge::GetDeskTemplateEntryCount() const {
   return template_count + policy_entries_.size();
 }
 
+size_t DeskSyncBridge::GetCoralEntryCount() const {
+  return 0u;
+}
+
 // Chrome sync does not support save and recall desks yet. Return 0 for max
 // count.
 size_t DeskSyncBridge::GetMaxSaveAndRecallDeskEntryCount() const {
@@ -483,6 +490,10 @@ size_t DeskSyncBridge::GetMaxSaveAndRecallDeskEntryCount() const {
 
 size_t DeskSyncBridge::GetMaxDeskTemplateEntryCount() const {
   return kMaxTemplateCount + policy_entries_.size();
+}
+
+size_t DeskSyncBridge::GetMaxCoralEntryCount() const {
+  return 0u;
 }
 
 std::set<base::Uuid> DeskSyncBridge::GetAllEntryUuids() const {
@@ -657,6 +668,22 @@ bool DeskSyncBridge::HasUuid(const base::Uuid& uuid) const {
 
 std::string DeskSyncBridge::GetCacheGuid() {
   return change_processor()->TrackedCacheGuid();
+}
+
+void DeskSyncBridge::SetOnMergeFullSyncDataCallback(
+    base::OnceClosure callback) {
+  if (merge_full_sync_data_finished_) {
+    std::move(callback).Run();
+    return;
+  }
+  on_merge_full_sync_data_callback_ = std::move(callback);
+}
+
+void DeskSyncBridge::OnMergeFullSyncDataFinished() {
+  if (on_merge_full_sync_data_callback_) {
+    std::move(on_merge_full_sync_data_callback_).Run();
+  }
+  merge_full_sync_data_finished_ = true;
 }
 
 }  // namespace desks_storage

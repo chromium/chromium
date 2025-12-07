@@ -1,0 +1,21 @@
+<!doctype html>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+<head>
+  <meta charset="utf-8">
+  <title>$i18n{splitViewTabTitle}</title>
+  <link rel="stylesheet" href="chrome://theme/colors.css?sets=ui,chrome">
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+  <style>
+    html,
+    body {
+      background-color: var(--color-split-view-background);
+      height: 100%;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <split-new-tab-page-app></split-new-tab-page-app>
+  <script type="module" src="split_new_tab_page.js"></script>
+</body>
+</html>

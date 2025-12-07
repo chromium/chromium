@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+<title>SVGPoint.prototype.matrixTransform</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+test(function() {
+  const svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  const point = svgElement.createSVGPoint();
+
+  point.x = -50;
+  point.y = 100;
+
+  // Multiply with -1,0,0,2,10,10 matrix, should flip x coordinate, multiply y
+  // by two and translate each coordinate by 10.
+  const ctm = svgElement.createSVGMatrix();
+  ctm.a = -1;
+  ctm.d = 2;
+  ctm.e = 10;
+  ctm.f = 10;
+  const newPoint = point.matrixTransform(ctm);
+  assert_true(newPoint instanceof SVGPoint);
+  assert_equals(newPoint.x, 60);
+  assert_equals(newPoint.y, 210);
+}, `${document.title}`);
+
+test(function() {
+  const svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  const point = svgElement.createSVGPoint();
+
+  // Check invalid arguments for 'matrixTransform()'.
+  assert_throws_js(TypeError, function() { point.matrixTransform(); });
+  assert_throws_js(TypeError, function() { point.matrixTransform(-1); });
+  assert_throws_js(TypeError, function() { point.matrixTransform(5); });
+  assert_throws_js(TypeError, function() { point.matrixTransform('aString'); });
+  assert_throws_js(TypeError, function() { point.matrixTransform(point); });
+  assert_throws_js(TypeError, function() { point.matrixTransform(svgElement); });
+}, `${document.title}, invalid arguments`);
+</script>

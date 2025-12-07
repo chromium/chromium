@@ -16,37 +16,8 @@ bool PreferredApp::operator==(const PreferredApp& other) const {
   return *intent_filter == *other.intent_filter && app_id == other.app_id;
 }
 
-bool PreferredApp::operator!=(const PreferredApp& other) const {
-  return !(*this == other);
-}
-
 std::unique_ptr<PreferredApp> PreferredApp::Clone() const {
   return std::make_unique<PreferredApp>(intent_filter->Clone(), app_id);
-}
-
-PreferredAppChanges::PreferredAppChanges() = default;
-
-PreferredAppChanges::~PreferredAppChanges() = default;
-
-PreferredAppChangesPtr PreferredAppChanges::Clone() const {
-  auto preferred_app_changes = std::make_unique<PreferredAppChanges>();
-  for (const auto& added_filter : added_filters) {
-    apps::IntentFilters filters;
-    for (auto& filter : added_filter.second) {
-      filters.push_back(filter->Clone());
-    }
-    preferred_app_changes->added_filters[added_filter.first] =
-        std::move(filters);
-  }
-  for (const auto& removed_filter : removed_filters) {
-    apps::IntentFilters filters;
-    for (auto& filter : removed_filter.second) {
-      filters.push_back(filter->Clone());
-    }
-    preferred_app_changes->removed_filters[removed_filter.first] =
-        std::move(filters);
-  }
-  return preferred_app_changes;
 }
 
 PreferredApps ClonePreferredApps(const PreferredApps& preferred_apps) {

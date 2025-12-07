@@ -53,10 +53,6 @@ class AllPasswordsBottomSheetHelperTest
       public testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
-    profile_.GetPrefs()->SetInteger(
-        password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
-        static_cast<int>(
-            password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
     profile_store_ = CreateAndUseTestPasswordStore(&profile_);
     account_store_ = CreateAndUseTestAccountPasswordStore(&profile_);
   }

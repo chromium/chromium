@@ -20,26 +20,29 @@ TEST(MultiSourceMemoryPressureMonitorTest, NoEvaluatorUponConstruction) {
 }
 
 TEST(MultiSourceMemoryPressureMonitorTest, RunDispatchCallback) {
+#if BUILDFLAG(IS_FUCHSIA)
+  // On Fuchsia, the previous SingleThreadTaskEnvironment was sufficient.
   base::test::SingleThreadTaskEnvironment task_environment(
       base::test::TaskEnvironment::MainThreadType::IO);
+#else
+  // On other platforms (like Mac), the full TaskEnvironment is needed for the
+  // ThreadPool.
+  base::test::TaskEnvironment task_environment;
+#endif
 
   MultiSourceMemoryPressureMonitor monitor;
   bool callback_called = false;
   monitor.SetDispatchCallbackForTesting(base::BindLambdaForTesting(
-      [&](base::MemoryPressureListener::MemoryPressureLevel) {
-        callback_called = true;
-      }));
+      [&](base::MemoryPressureLevel) { callback_called = true; }));
   monitor.MaybeStartPlatformVoter();
   auto* const aggregator = monitor.aggregator_for_testing();
 
-  aggregator->OnVoteForTesting(
-      std::nullopt, base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE);
+  aggregator->OnVoteForTesting(std::nullopt, base::MEMORY_PRESSURE_LEVEL_NONE);
   aggregator->NotifyListenersForTesting();
   EXPECT_TRUE(callback_called);
 
   // Clear vote so aggregator's destructor doesn't think there are loose voters.
-  aggregator->OnVoteForTesting(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE, std::nullopt);
+  aggregator->OnVoteForTesting(base::MEMORY_PRESSURE_LEVEL_NONE, std::nullopt);
 }
 
 }  // namespace memory_pressure

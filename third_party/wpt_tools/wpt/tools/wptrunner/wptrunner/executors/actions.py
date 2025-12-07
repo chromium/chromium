@@ -183,6 +183,30 @@ class SetPermissionAction:
         self.logger.debug("Setting permission %s to %s" % (name, state))
         self.protocol.set_permission.set_permission(descriptor, state)
 
+
+class SetGlobalPrivacyControlAction:
+    name = "set_global_privacy_control"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        gpc = payload["gpc"]
+        return self.protocol.global_privacy_control.set_global_privacy_control(gpc)
+
+class GetGlobalPrivacyControlAction:
+    name = "get_global_privacy_control"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        return self.protocol.global_privacy_control.get_global_privacy_control()
+
+
+
 class AddVirtualAuthenticatorAction:
     name = "add_virtual_authenticator"
 
@@ -475,6 +499,101 @@ class RunBounceTrackingMitigationsAction:
         self.logger.debug("Running bounce tracking mitigations")
         return self.protocol.storage.run_bounce_tracking_mitigations()
 
+class CreateVirtualPressureSourceAction:
+    name = "create_virtual_pressure_source"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        source_type = payload["source_type"]
+        metadata = payload["metadata"]
+        self.logger.debug("Creating %s pressure source with %s values" % (source_type, metadata))
+        return self.protocol.pressure.create_virtual_pressure_source(source_type, metadata)
+
+class UpdateVirtualPressureSourceAction:
+    name = "update_virtual_pressure_source"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        source_type = payload["source_type"]
+        sample = payload["sample"]
+        own_contribution_estimate = payload["own_contribution_estimate"]
+        return self.protocol.pressure.update_virtual_pressure_source(source_type, sample, own_contribution_estimate)
+
+class RemoveVirtualPressureSourceAction:
+    name = "remove_virtual_pressure_source"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        source_type = payload["source_type"]
+        return self.protocol.pressure.remove_virtual_pressure_source(source_type)
+
+class SetProtectedAudienceKAnonymityAction:
+    name = "set_protected_audience_k_anonymity"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        owner, name, hashes = payload["owner"], payload["name"], payload["hashes"]
+        return self.protocol.protected_audience.set_k_anonymity(owner, name, hashes)
+
+class SetDisplayFeaturesAction:
+    name = "set_display_features"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        features = payload["features"]
+        return self.protocol.display_features.set_display_features(features)
+
+class ClearDisplayFeaturesAction:
+    name = "clear_display_features"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        return self.protocol.display_features.clear_display_features()
+
+class WebExtensionInstallAction:
+    name = "install_web_extension"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        self.logger.debug("installing web extension")
+        type = payload["type"]
+        path = payload.get("path")
+        value = payload.get("value")
+        return self.protocol.web_extensions.install_web_extension(type, path, value)
+
+class WebExtensionUninstallAction:
+    name = "uninstall_web_extension"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        self.logger.debug("uninstalling web extension")
+        extension_id = payload["extension_id"]
+        return self.protocol.web_extensions.uninstall_web_extension(extension_id)
+
 actions = [ClickAction,
            DeleteAllCookiesAction,
            GetAllCookiesAction,
@@ -511,4 +630,14 @@ actions = [ClickAction,
            GetVirtualSensorInformationAction,
            SetDevicePostureAction,
            ClearDevicePostureAction,
-           RunBounceTrackingMitigationsAction]
+           RunBounceTrackingMitigationsAction,
+           CreateVirtualPressureSourceAction,
+           UpdateVirtualPressureSourceAction,
+           RemoveVirtualPressureSourceAction,
+           SetProtectedAudienceKAnonymityAction,
+           SetDisplayFeaturesAction,
+           ClearDisplayFeaturesAction,
+           GetGlobalPrivacyControlAction,
+           SetGlobalPrivacyControlAction,
+           WebExtensionInstallAction,
+           WebExtensionUninstallAction]

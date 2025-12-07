@@ -1,0 +1,19 @@
+Name: kotlinx-coroutines-play-services
+Short Name: kotlinx-coroutines-play-services
+URL: https://repo.maven.apache.org/maven2/org/jetbrains/kotlinx/kotlinx-coroutines-play-services/1.9.0/kotlinx-coroutines-play-services-1.9.0.jar
+Version: 1.9.0
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+Coroutines support libraries for Kotlin
+
+See also: https://github.com/Kotlin/kotlinx.coroutines
+
+
+Local Modifications:
+No modifications.

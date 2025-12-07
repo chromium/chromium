@@ -10,6 +10,7 @@
 #include "base/json/json_writer.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/printing/print_view_manager_common.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom.h"
@@ -38,8 +39,6 @@ const PrinterBasicInfoOptions kPrintInfoOptions{{"opt1", "123"},
                                                 {"opt2", "456"}};
 
 base::Value::Dict GetPrintTicket(mojom::PrinterType type) {
-  DCHECK_NE(type, mojom::PrinterType::kPrivetDeprecated);
-
   base::Value::Dict ticket;
 
   // Letter
@@ -76,15 +75,12 @@ base::Value::Dict GetPrintTicket(mojom::PrinterType type) {
   if (type == mojom::PrinterType::kExtension) {
     base::Value::Dict capabilities;
     capabilities.Set("duplex", true);  // non-empty
-    std::string caps_string;
-    base::JSONWriter::Write(capabilities, &caps_string);
-    ticket.Set(kSettingCapabilities, caps_string);
+    ticket.Set(kSettingCapabilities,
+               base::WriteJson(capabilities).value_or(""));
     base::Value::Dict print_ticket;
     print_ticket.Set("version", "1.0");
     print_ticket.Set("print", base::Value());
-    std::string ticket_string;
-    base::JSONWriter::Write(print_ticket, &ticket_string);
-    ticket.Set(kSettingTicket, ticket_string);
+    ticket.Set(kSettingTicket, base::WriteJson(print_ticket).value_or(""));
   }
 
   return ticket;
@@ -112,10 +108,14 @@ std::unique_ptr<PrintSettings> MakeDefaultPrintSettings(
 }
 
 std::unique_ptr<PrintSettings> MakeUserModifiedPrintSettings(
-    const std::string& printer_name) {
+    const std::string& printer_name,
+    const PageRanges* page_ranges) {
   std::unique_ptr<PrintSettings> settings =
       MakeDefaultPrintSettings(printer_name);
   settings->set_copies(kPrintSettingsCopies + 1);
+  if (page_ranges) {
+    settings->set_ranges(*page_ranges);
+  }
 #if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
   if (ShouldPrintJobOop()) {
     // Supply fake data to mimic what might be collected from the system print
@@ -147,7 +147,7 @@ std::unique_ptr<PrintSettings> MakeUserModifiedPrintSettings(
 
 void StartPrint(content::WebContents* contents) {
   printing::StartPrint(contents,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
                        /*print_renderer=*/mojo::NullAssociatedRemote(),
 #endif
                        /*print_preview_disabled=*/false,

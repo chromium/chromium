@@ -28,7 +28,7 @@ class Scheduler {
   virtual Entry* Next(const Model::EntryList& entries,
                       const DeviceStatus& device_status) = 0;
 
-  virtual ~Scheduler() {}
+  virtual ~Scheduler() = default;
 };
 
 }  // namespace download

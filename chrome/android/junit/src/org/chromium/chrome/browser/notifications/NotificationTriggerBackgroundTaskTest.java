@@ -17,10 +17,12 @@ import static org.mockito.Mockito.verify;
 import android.os.PersistableBundle;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
@@ -37,13 +39,13 @@ import org.chromium.components.background_task_scheduler.TaskParameters;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class NotificationTriggerBackgroundTaskTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private BackgroundTaskScheduler mTaskScheduler;
     @Mock private NotificationTriggerScheduler mTriggerScheduler;
     @Mock private BackgroundTask.TaskFinishedCallback mTaskFinishedCallback;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         BackgroundTaskSchedulerFactory.setSchedulerForTesting(mTaskScheduler);
         ChromeBackgroundTaskFactory.setAsDefault();
         NotificationTriggerScheduler.setInstanceForTests(mTriggerScheduler);

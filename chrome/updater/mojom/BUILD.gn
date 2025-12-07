@@ -1,0 +1,11 @@
+import("//mojo/public/tools/bindings/mojom.gni")
+mojom("mojom") {
+  sources = [
+    "updater_service.mojom",
+    "updater_service_internal.mojom",
+  ]
+  deps = [
+    "//chrome/enterprise_companion/mojom:policy_fetch_reason_mojom",
+    "//mojo/public/mojom/base/",
+  ]
+}

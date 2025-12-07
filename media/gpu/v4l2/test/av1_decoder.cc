@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/v4l2/test/av1_decoder.h"
 
 #include <linux/v4l2-controls.h>
@@ -14,6 +19,7 @@
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/test/upstream_pix_fmt.h"
 #include "media/parsers/ivf_parser.h"
+#include "third_party/libgav1/src/src/utils/common.h"
 #include "third_party/libgav1/src/src/warp_prediction.h"
 
 namespace media {
@@ -350,7 +356,7 @@ void FillLoopRestorationParams(v4l2_av1_loop_restoration* v4l2_lr,
         v4l2_lr->frame_restoration_type[i] = V4L2_AV1_FRAME_RESTORE_SWITCHABLE;
         break;
       default:
-        NOTREACHED_IN_MIGRATION() << "Invalid loop restoration type";
+        NOTREACHED() << "Invalid loop restoration type";
     }
 
     if (v4l2_lr->frame_restoration_type[i] != V4L2_AV1_FRAME_RESTORE_NONE) {
@@ -474,9 +480,8 @@ void FillGlobalMotionParams(
                                 V4L2_AV1_WARP_MODEL_AFFINE);
         break;
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Invalid global motion transformation type, "
-            << v4l2_gm->type[i];
+        NOTREACHED() << "Invalid global motion transformation type, "
+                     << v4l2_gm->type[i];
     }
 
     conditionally_set_flags(
@@ -739,8 +744,7 @@ void Av1Decoder::SetupFrameParams(
       v4l2_frame_params->frame_type = V4L2_AV1_SWITCH_FRAME;
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Invalid frame type, " << frm_header.frame_type;
+      NOTREACHED() << "Invalid frame type, " << frm_header.frame_type;
   }
 
   v4l2_frame_params->order_hint = frm_header.order_hint;
@@ -769,8 +773,8 @@ void Av1Decoder::SetupFrameParams(
           V4L2_AV1_INTERPOLATION_FILTER_SWITCHABLE;
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid interpolation filter, "
-                                << frm_header.interpolation_filter;
+      NOTREACHED() << "Invalid interpolation filter, "
+                   << frm_header.interpolation_filter;
   }
 
   switch (frm_header.tx_mode) {
@@ -784,7 +788,7 @@ void Av1Decoder::SetupFrameParams(
       v4l2_frame_params->tx_mode = V4L2_AV1_TX_MODE_SELECT;
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid tx mode, " << frm_header.tx_mode;
+      NOTREACHED() << "Invalid tx mode, " << frm_header.tx_mode;
   }
 
   v4l2_frame_params->frame_width_minus_1 = frm_header.width - 1;
@@ -1055,10 +1059,10 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(const int frame_number,
 
   std::vector<struct v4l2_ctrl_av1_tile_group_entry> tile_group_entry_vectors;
 
-  FillTileGroupParams(
-      &tile_group_entry_vectors,
-      base::make_span(ivf_frame_data_, ivf_frame_header_.frame_size),
-      current_frame_header.tile_info, obu_parser_->tile_buffers());
+  FillTileGroupParams(&tile_group_entry_vectors,
+                      base::span(ivf_frame_data_, ivf_frame_header_.frame_size),
+                      current_frame_header.tile_info,
+                      obu_parser_->tile_buffers());
 
   ext_ctrl_vectors.push_back({.id = V4L2_CID_STATELESS_AV1_TILE_GROUP_ENTRY,
                               .size = base::checked_cast<__u32>(

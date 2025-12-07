@@ -4,14 +4,20 @@
 
 import("//build/config/chrome_build.gni")
 import("//build/config/ozone.gni")
+import("//build/config/ui.gni")
 import("//testing/test.gni")
 
 source_set("headless") {
   sources = [
+    "headless_mode_platform.h",
     "headless_mode_switches.h",
     "headless_mode_util.cc",
     "headless_mode_util.h",
   ]
+
+  if (is_mac) {
+    sources += [ "headless_mode_platform_mac.mm" ]
+  }
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
@@ -27,6 +33,10 @@ source_set("headless") {
       "//ui/gl",
       "//ui/ozone",
     ]
+  }
+
+  if (is_win) {
+    deps += [ "//chrome/chrome_elf:chrome_elf_main_include" ]
   }
 }
 
@@ -103,27 +113,40 @@ if (!is_android) {
       ":headless",
       "//base",
       "//chrome/browser",
+      "//chrome/browser/infobars",
       "//chrome/test:test_support",
       "//content/test:test_support",
       "//pdf",
+      "//testing/gmock",
       "//testing/gtest",
     ]
 
     if (is_linux || is_win || is_mac) {
       deps += [
+        "//chrome/browser/infobars",
         "//chrome/browser/profiles",
         "//chrome/browser/ui",
+        "//chrome/browser/ui/views/frame:toolbar_button_provider",
         "//components/devtools/simple_devtools_protocol_client",
         "//components/headless/clipboard",
         "//components/headless/command_handler",
         "//components/headless/command_handler:switches",
         "//components/headless/select_file_dialog",
         "//components/headless/test",
+        "//components/headless/test:meta_info",
+        "//components/headless/test:shared_test",
         "//components/infobars/content",
         "//content/public/browser",
         "//ui/display",
         "//ui/gfx",
         "//ui/views",
+      ]
+    }
+
+    if (use_aura && is_win) {
+      deps += [
+        "//ui/aura",
+        "//ui/aura:test_support",
       ]
     }
 
@@ -133,7 +156,14 @@ if (!is_android) {
 
     data = [
       "test/data/",
+      "//components/headless/test/data",
       "//third_party/blink/web_tests/http/tests/inspector-protocol/resources/inspector-protocol-test.js",
+      "//third_party/blink/web_tests/http/tests/inspector-protocol/resources/inspector-protocol-test-subtarget.html",
+      "//third_party/blink/web_tests/http/tests/inspector-protocol/resources/http-interceptor.js",
     ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 }

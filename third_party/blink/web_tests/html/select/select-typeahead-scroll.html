@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../resources/js-test.js"></script>
+</head>
+<body>
+<p>
+  Test that selection box scrolls to where the focus jumps when pressing an alphanumeric key.
+</p>
+<select id="select">
+    <div style="max-height:10vh;overflow:auto" id="select-listbox-scroll">
+      <option>aardvark</option>
+      <option>blue</option>
+      <option>navy</option>
+      <option>indigo</option>
+      <option>azure</option>
+    </div>
+</select>
+
+<style>
+  select, ::picker(select) {
+    appearance: base-select;
+  }
+</style>
+<div id="result">Cannot run interactively.</div>
+<script>
+    if (window.testRunner) {
+        testRunner.dumpAsText();
+        testRunner.waitUntilDone();
+        var select = document.getElementById("select");
+        var listboxScroll = document.getElementById("select-listbox-scroll");
+        select.focus();
+        eventSender.keyDown(" ");
+        shouldBeTrue('select.matches(":open")');
+        eventSender.keyDown("a");
+        eventSender.keyDown("z");
+        setTimeout(function() {
+            var result = document.getElementById("result");
+            result.innerText = listboxScroll.scrollTop > 0 ? "SUCCESS" : "FAIL";
+            testRunner.notifyDone();
+        }, 1000);
+    }
+</script>

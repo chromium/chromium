@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.hub;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 
@@ -13,6 +14,7 @@ import org.chromium.chrome.browser.tab.Tab;
  * set via {@link HubController#setHubLayoutController} once during {@link HubLayout}
  * initialization.
  */
+@NullMarked
 public interface HubLayoutController {
     /**
      * Sets a tab as active and hides the Hub. A tab must be selected if the browser is
@@ -21,8 +23,11 @@ public interface HubLayoutController {
      *
      * @param tabId The ID of the tab to select or {@link Tab.INVALID_TAB_ID}.
      */
-    public void selectTabAndHideHubLayout(int tabId);
+    void selectTabAndHideHubLayout(int tabId);
 
     /** Returns a supplier of the {@link LayoutType} shown prior to entering the Hub. */
-    public ObservableSupplier<Integer> getPreviousLayoutTypeSupplier();
+    ObservableSupplier<Integer> getPreviousLayoutTypeSupplier();
+
+    /** Supplies whether an animation for the Hub Layout is running. */
+    ObservableSupplier<Boolean> getIsAnimatingSupplier();
 }

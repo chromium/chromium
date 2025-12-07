@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/test/mock_entropy_provider.h"
@@ -17,6 +18,7 @@
 #include "components/variations/entropy_provider.h"
 #include "components/variations/field_trial_config/fieldtrial_testing_config.h"
 #include "components/variations/proto/variations_seed.pb.h"
+#include "components/variations/seed_reader_writer.h"
 #include "components/variations/synthetic_trial_registry.h"
 #include "components/variations/variations_associated_data.h"
 
@@ -30,22 +32,31 @@ struct ClientFilterableState;
 // WriteSeedData(). This allows for encapsulated seed information to be created
 // below for generic test seeds as well as seeds which cause crashes.
 struct SignedSeedData {
-  base::span<const char*> study_names;  // Names of all studies in the seed.
+  // TODO(367764863) Rewrite to base::raw_span.
+  RAW_PTR_EXCLUSION base::span<const char*>
+      study_names;  // Names of all studies in the seed.
   const char* base64_uncompressed_data;
   const char* base64_compressed_data;
   const char* base64_signature;
+  const uint8_t* compressed_data;
+  size_t compressed_data_size;
 
   // Out-of-line constructor/destructor/copy/move required for 'complex'
   // classes.
   SignedSeedData(base::span<const char*> in_study_names,
                  const char* in_base64_uncompressed_data,
                  const char* in_base64_compressed_data,
-                 const char* in_base64_signature);
+                 const char* in_base64_signature,
+                 const uint8_t* in_compressed_data,
+                 size_t in_compressed_data_size);
   ~SignedSeedData();
   SignedSeedData(const SignedSeedData&);
   SignedSeedData(SignedSeedData&&);
   SignedSeedData& operator=(const SignedSeedData&);
   SignedSeedData& operator=(SignedSeedData&&);
+
+  // Converts SignedSeedData's compressed data to a string.
+  std::string_view GetCompressedData() const;
 };
 
 // Packages variations seed pref keys into a tuple for use with StoreSeedInfo().
@@ -88,12 +99,25 @@ bool ExtractVariationIds(const std::string& variations,
                          std::set<VariationID>* variation_ids,
                          std::set<VariationID>* trigger_ids);
 
-// Creates FieldTrial from given |key| and |id|.
+// Creates an inactive FieldTrial, `trial_name`, where the client is assigned to
+// `group_name`, and associates a VariationID for the trial using the given
+// `key`, `id` and optional `time_window`.
+scoped_refptr<base::FieldTrial> CreateInactiveTrialAndAssociateId(
+    const std::string& trial_name,
+    const std::string& group_name,
+    IDCollectionKey key,
+    VariationID id,
+    TimeWindow time_window = TimeWindow());
+
+// Creates an active FieldTrial, `trial_name`, where the client is assigned to
+// `group_name`, and associates a VariationID for the trial using the given
+// `key`, `id` and optional `time_window`.
 scoped_refptr<base::FieldTrial> CreateTrialAndAssociateId(
     const std::string& trial_name,
-    const std::string& default_group_name,
+    const std::string& group_name,
     IDCollectionKey key,
-    VariationID id);
+    VariationID id,
+    TimeWindow time_window = TimeWindow());
 
 // Simulates a crash by setting the clean exit pref to false and disabling
 // the steps to update the pref on clean shutdown.
@@ -160,6 +184,20 @@ bool ContainsTrialAndGroupName(
     const std::vector<ActiveGroupId>& active_group_ids,
     std::string_view trial_name,
     std::string_view group_name);
+
+// Sets up the seed file experiment where `group_name` is the active group.
+void SetUpSeedFileTrial(std::string group_name);
+
+// Returns true if there are no adjacent elements (a, b) when iterating over
+// `container` such that a >= b.
+template <typename Container>
+bool IsSortedAndUnique(const Container& container) {
+  return std::adjacent_find(container.begin(), container.end(),
+                            [](const typename Container::value_type& a,
+                               const typename Container::value_type& b) {
+                              return a >= b;
+                            }) == container.end();
+}
 
 }  // namespace variations
 

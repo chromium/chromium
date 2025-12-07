@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/format_macros.h"
 #include "base/trace_event/memory_allocator_dump_guid.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -16,13 +18,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using testing::ByRef;
 using testing::ElementsAre;
 using testing::Eq;
-using testing::ByRef;
 using testing::IsEmpty;
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 namespace {
 
@@ -74,8 +75,8 @@ void CheckScalar(const MemoryAllocatorDump* dump,
 }  // namespace
 
 TEST(MemoryAllocatorDumpTest, GuidGeneration) {
-  std::unique_ptr<MemoryAllocatorDump> mad(new MemoryAllocatorDump(
-      "foo", MemoryDumpLevelOfDetail::kFirst, MemoryAllocatorDumpGuid(0x42u)));
+  auto mad = std::make_unique<MemoryAllocatorDump>(
+      "foo", MemoryDumpLevelOfDetail::kFirst, MemoryAllocatorDumpGuid(0x42u));
   ASSERT_EQ("42", mad->guid().ToString());
 }
 
@@ -115,7 +116,7 @@ TEST(MemoryAllocatorDumpTest, DumpIntoProcessMemoryDump) {
   EXPECT_THAT(empty_sub_heap->entries(), IsEmpty());
 
   // Check that calling serialization routines doesn't cause a crash.
-  std::unique_ptr<TracedValue> traced_value(new TracedValue);
+  auto traced_value = std::make_unique<TracedValue>();
   pmd.SerializeAllocatorDumpsInto(traced_value.get());
 }
 
@@ -171,5 +172,4 @@ TEST(MemoryAllocatorDumpTest, ForbidStringsInBackgroundModeDeathTest) {
 }
 #endif
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event

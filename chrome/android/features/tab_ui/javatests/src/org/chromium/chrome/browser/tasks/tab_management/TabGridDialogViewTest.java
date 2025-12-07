@@ -4,22 +4,18 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.areAnimatorsEnabled;
-
+import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -30,35 +26,50 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogView.VisibilityListener;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
+import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
 /** BlankUiTestActivity Tests for the {@link TabGridDialogView}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DisableFeatures({ChromeFeatureList.DATA_SHARING_ANDROID})
+@DisableFeatures({ChromeFeatureList.DATA_SHARING, ChromeFeatureList.DATA_SHARING_JOIN_ONLY})
 @Batch(Batch.UNIT_TESTS)
-public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
+public class TabGridDialogViewTest {
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
+
     private int mMinMargin;
     private int mMaxMargin;
     private FrameLayout mTestParent;
@@ -70,15 +81,20 @@ public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
     private RelativeLayout mTabGridDialogContainer;
     private FrameLayout.LayoutParams mContainerParams;
     private TabGridDialogView mTabGridDialogView;
+    private ScrimManager mScrimManager;
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
+
+    @Before
+    public void setUp() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTestParent = new FrameLayout(getActivity());
-                    getActivity().setContentView(mTestParent);
-                    LayoutInflater.from(getActivity())
+                    mTestParent = new FrameLayout(sActivity);
+                    sActivity.setContentView(mTestParent);
+                    LayoutInflater.from(sActivity)
                             .inflate(R.layout.tab_grid_dialog_layout, mTestParent, true);
 
                     mTabGridDialogView = mTestParent.findViewById(R.id.dialog_parent_view);
@@ -91,17 +107,16 @@ public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
                     mAnimationCardView =
                             mTabGridDialogView.findViewById(R.id.dialog_animation_card_view);
                     mBackgroundFrameView = mTabGridDialogView.findViewById(R.id.dialog_frame);
-                    ScrimCoordinator scrimCoordinator =
-                            new ScrimCoordinator(getActivity(), null, mTestParent, Color.RED);
-                    mTabGridDialogView.setupScrimCoordinator(scrimCoordinator);
+                    mScrimManager = new ScrimManager(sActivity, mTestParent, ScrimClient.NONE);
+                    mTabGridDialogView.setupScrimManager(mScrimManager);
                     mTabGridDialogView.setScrimClickRunnable(() -> {});
 
                     mMinMargin =
-                            getActivity()
+                            sActivity
                                     .getResources()
                                     .getDimensionPixelSize(R.dimen.tab_grid_dialog_min_margin);
                     mMaxMargin =
-                            getActivity()
+                            sActivity
                                     .getResources()
                                     .getDimensionPixelSize(R.dimen.tab_grid_dialog_max_margin);
                 });
@@ -112,12 +127,13 @@ public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
     @UiThreadTest
     public void testUpdateDialogWithOrientation() {
         mockDialogStatus(false);
+        int appHeaderHeight = 10;
+        mTabGridDialogView.setAppHeaderHeight(appHeaderHeight);
 
         mTabGridDialogView.updateDialogWithOrientation(Configuration.ORIENTATION_PORTRAIT);
 
-        assertThat(
-                mContainerParams.topMargin,
-                allOf(greaterThanOrEqualTo(mMinMargin), lessThanOrEqualTo(mMaxMargin)));
+        assertThat(mContainerParams.topMargin).isAtLeast(mMinMargin);
+        assertThat(mContainerParams.topMargin).isAtMost(mMaxMargin);
         assertEquals(mContainerParams.leftMargin, mMinMargin);
         assertEquals(View.GONE, mTabGridDialogView.getVisibility());
 
@@ -125,19 +141,17 @@ public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
 
         mTabGridDialogView.updateDialogWithOrientation(Configuration.ORIENTATION_LANDSCAPE);
 
-        assertThat(
-                mContainerParams.leftMargin,
-                allOf(greaterThanOrEqualTo(mMinMargin), lessThanOrEqualTo(mMaxMargin)));
-        assertEquals(mContainerParams.topMargin, mMinMargin);
+        assertThat(mContainerParams.leftMargin).isAtLeast(mMinMargin);
+        assertThat(mContainerParams.leftMargin).isAtMost(mMaxMargin);
+        assertEquals(mContainerParams.topMargin, mMinMargin + appHeaderHeight);
         assertEquals(View.GONE, mTabGridDialogView.getVisibility());
 
         mockDialogStatus(true);
 
         mTabGridDialogView.updateDialogWithOrientation(Configuration.ORIENTATION_PORTRAIT);
 
-        assertThat(
-                mContainerParams.topMargin,
-                allOf(greaterThanOrEqualTo(mMinMargin), lessThanOrEqualTo(mMaxMargin)));
+        assertThat(mContainerParams.topMargin).isAtLeast(mMinMargin);
+        assertThat(mContainerParams.topMargin).isAtMost(mMaxMargin);
         assertEquals(mContainerParams.leftMargin, mMinMargin);
         assertEquals(View.VISIBLE, mTabGridDialogView.getVisibility());
 
@@ -145,28 +159,53 @@ public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
 
         mTabGridDialogView.updateDialogWithOrientation(Configuration.ORIENTATION_LANDSCAPE);
 
-        assertThat(
-                mContainerParams.leftMargin,
-                allOf(greaterThanOrEqualTo(mMinMargin), lessThanOrEqualTo(mMaxMargin)));
-        assertEquals(mContainerParams.topMargin, mMinMargin);
+        assertThat(mContainerParams.leftMargin).isAtLeast(mMinMargin);
+        assertThat(mContainerParams.leftMargin).isAtMost(mMaxMargin);
+        assertEquals(mContainerParams.topMargin, mMinMargin + appHeaderHeight);
         assertEquals(View.VISIBLE, mTabGridDialogView.getVisibility());
     }
 
     @Test
     @SmallTest
     @UiThreadTest
+    @Restriction({DeviceFormFactor.PHONE}) // Fails on tablets.
+    public void testUpdateDialogWithOrientation_NewOrientationFetchedEachTime() {
+        mockDialogStatus(false);
+        int appHeaderHeight = 10;
+        mTabGridDialogView.setAppHeaderHeight(appHeaderHeight);
+
+        // Setup the initial orientation and assert the margins are correct.
+        sActivity.getResources().getConfiguration().orientation =
+                Configuration.ORIENTATION_PORTRAIT;
+        mTabGridDialogView.updateDialogWithOrientation(Configuration.ORIENTATION_PORTRAIT);
+        assertThat(mContainerParams.topMargin).isAtLeast(mMinMargin);
+        assertThat(mContainerParams.topMargin).isAtMost(mMaxMargin);
+        assertEquals(mContainerParams.leftMargin, mMinMargin);
+
+        // Update the orientation and assert the margins are updated.
+        sActivity.getResources().getConfiguration().orientation =
+                Configuration.ORIENTATION_LANDSCAPE;
+        mTabGridDialogView.updateDialogWithOrientation(Configuration.ORIENTATION_LANDSCAPE);
+        assertThat(mContainerParams.leftMargin).isAtLeast(mMinMargin);
+        assertThat(mContainerParams.leftMargin).isAtMost(mMaxMargin);
+        assertEquals(mContainerParams.topMargin, mMinMargin + appHeaderHeight);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
     public void testResetDialog() {
-        View toolbarView = new View(getActivity());
-        View recyclerView = new View(getActivity());
+        View toolbarView = new View(sActivity);
+        View recyclerView = new View(sActivity);
         recyclerView.setVisibility(View.GONE);
 
         mTabGridDialogView.resetDialog(toolbarView, recyclerView);
 
         assertEquals(
-                getActivity().findViewById(R.id.tab_grid_dialog_toolbar_container),
+                sActivity.findViewById(R.id.tab_grid_dialog_toolbar_container),
                 toolbarView.getParent());
         assertEquals(
-                getActivity().findViewById(R.id.tab_grid_dialog_recycler_view_container),
+                sActivity.findViewById(R.id.tab_grid_dialog_recycler_view_container),
                 recyclerView.getParent());
         assertEquals(View.VISIBLE, recyclerView.getVisibility());
     }
@@ -179,8 +218,8 @@ public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
         // Initialize the dialog with stand-in views.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    View toolbarView = new View(getActivity());
-                    View recyclerView = new View(getActivity());
+                    View toolbarView = new View(sActivity);
+                    View recyclerView = new View(sActivity);
                     mTabGridDialogView.resetDialog(toolbarView, recyclerView);
                 });
 
@@ -317,9 +356,10 @@ public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
         // Setup the animation with a stand-in animation source view.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mSourceView = new View(getActivity());
+                    mSourceView = new View(sActivity);
                     mTestParent.addView(mSourceView, 0, new FrameLayout.LayoutParams(100, 100));
                 });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGridDialogView.setupDialogAnimation(mSourceView);
@@ -403,9 +443,10 @@ public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
         // Setup the animation with a stand-in animation source view.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mSourceView = new View(getActivity());
+                    mSourceView = new View(sActivity);
                     mTestParent.addView(mSourceView, 0, new FrameLayout.LayoutParams(100, 100));
                 });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGridDialogView.setupDialogAnimation(mSourceView);
@@ -491,7 +532,7 @@ public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGridDialogView.hideDialog();
-                    if (areAnimatorsEnabled()) {
+                    if (!AccessibilityState.prefersReducedMotion()) {
                         // At the very beginning of hiding animation, alpha of background frame and
                         // animation card should both be set to 0f.
                         assertEquals(0f, mAnimationCardView.getAlpha(), 0.0);
@@ -514,6 +555,21 @@ public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
                     assertEquals(0f, mBackgroundFrameView.getAlpha(), 0.0);
                     assertFalse(mTabGridDialogContainer.isFocused());
                 });
+    }
+
+    @Test
+    @MediumTest
+    public void testInvokeVisibilityListenerOnChange() throws TimeoutException {
+        CallbackHelper visibilityCallback = new CallbackHelper();
+        mTabGridDialogView.setVisibilityListener(
+                new VisibilityListener() {
+                    @Override
+                    public void finishedHidingDialogView() {
+                        visibilityCallback.notifyCalled();
+                    }
+                });
+        mTabGridDialogView.setVisibilityListener(null);
+        visibilityCallback.waitForNext();
     }
 
     @Test
@@ -561,7 +617,7 @@ public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     EditText textView =
-                            new EditText(getActivity()) {
+                            new EditText(sActivity) {
                                 @Override
                                 public boolean isFocused() {
                                     return isFocused[0];
@@ -591,6 +647,22 @@ public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
                     mTabGridDialogView.dispatchTouchEvent(event);
                 });
         assertTrue(isFocusCleared[0]);
+    }
+
+    @Test
+    @SmallTest
+    public void testSetScrimClickRunnable() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabGridDialogView.showDialog();
+                    mTabGridDialogView.setScrimClickRunnable(() -> {});
+                    mTabGridDialogView.hideDialog();
+                });
+        CriteriaHelper.pollInstrumentationThread(
+                () ->
+                        Criteria.checkThat(
+                                mScrimManager.getScrimVisibilitySupplier().get(),
+                                Matchers.is(false)));
     }
 
     private void mockDialogStatus(boolean isShowing) {

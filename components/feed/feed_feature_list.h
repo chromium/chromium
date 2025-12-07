@@ -7,8 +7,8 @@
 
 #include <string>
 
+#include "base/component_export.h"
 #include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/signin/public/base/consent_level.h"
@@ -17,102 +17,126 @@
 
 namespace feed {
 
-BASE_DECLARE_FEATURE(kInterestFeedV2);
-BASE_DECLARE_FEATURE(kInterestFeedV2Hearts);
-BASE_DECLARE_FEATURE(kInterestFeedV2Scrolling);
+namespace switches {
+// Specifies whether RssLinkReader is enabled.
+inline constexpr char kEnableRssLinkReader[] = "enable-rss-link-reader";
+}
 
-// Feature that allows the client to automatically dismiss the notice card based
-// on the clicks and views on the notice card.
-#if BUILDFLAG(IS_IOS)
-BASE_DECLARE_FEATURE(kInterestFeedNoticeCardAutoDismiss);
-#endif
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
+extern const char kFeedHeaderRemovalTreatmentParam[];
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
+extern const char kFeedHeaderRemovalTreatmentValue1[];
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
+extern const char kFeedHeaderRemovalTreatmentValue2[];
+
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
+BASE_DECLARE_FEATURE(kInterestFeedV2);
 
 // Use the new DiscoFeed endpoint.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kDiscoFeedEndpoint);
 
 // Feature that enables xsurface to provide the metrics reporting state to an
 // xsurface feed.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kXsurfaceMetricsReporting);
 
 // Feature that shows placeholder cards instead of a loading spinner at first
 // load.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kFeedLoadingPlaceholder);
 
 // Feature that allows tuning the size of the image memory cache. Value is a
 // percentage of the maximum size calculated for the device.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kFeedImageMemoryCacheSizePercentage);
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-// When enabled, causes the server to restrig the Sync Promo Banner for the
-// bottom of Feed to a Signin Promo.
-BASE_DECLARE_FEATURE(kFeedBottomSyncStringRemoval);
-#endif
-
 // Feature that enables StAMP cards in the feed.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kFeedStamp);
 
 // Feature that provides the user assistance in discovering the web feed.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kWebFeedAwareness);
 
 // Feature that provides the user assistance in using the web feed.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kWebFeedOnboarding);
 
 // Feature that enables sorting by different heuristics in the web feed.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kWebFeedSort);
 
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 bool IsCormorantEnabledForLocale(std::string country);
 
 // Personalize feed for unsigned users.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kPersonalizeFeedUnsignedUsers);
 
 // Returns the consent level needed to request a personalized feed.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 signin::ConsentLevel GetConsentLevelNeededForPersonalizedFeed();
 
-// Feature that enables tracking the acknowledgement state for the info cards.
-BASE_DECLARE_FEATURE(kInfoCardAcknowledgementTracking);
-
-// When enabled, schedule a background refresh for a feed sometime after the
-// last user engagement with that feed.
-BASE_DECLARE_FEATURE(kFeedCloseRefresh);
-// On each qualifying user engagement, schedule a background refresh this many
-// minutes out.
-extern const base::FeatureParam<int> kFeedCloseRefreshDelayMinutes;
-// If true, schedule the refresh only when the user scrolls or interacts. If
-// false, schedule only when the feed surface is opened to content.
-extern const base::FeatureParam<bool> kFeedCloseRefreshRequireInteraction;
-
 // When enabled, no view cache is used.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kFeedNoViewCache);
 
 // When enabled, allow show sign in command to request a user signs in / syncs.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kFeedShowSignInCommand);
 
 // When enabled, depending on params selected, enable different
 // performance-oriented features in Feed.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kFeedPerformanceStudy);
 
 // When enabled, allows the server to unilaterally alter capabilities sent
 // by the client, primarily to retroactively work around bugs.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kSyntheticCapabilities);
 
 // Feature that enables signed-out view demotion.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kFeedSignedOutViewDemotion);
 
-// Feature that enables dynamic colors in the feed.
-BASE_DECLARE_FEATURE(kFeedDynamicColors);
-
 // Feature that enables UI update for Follow.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kFeedFollowUiUpdate);
 
 // Feature that enables refreshing feed when Chrome restarts.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kRefreshFeedOnRestart);
 
 // Feature that enables feed containment.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kFeedContainment);
 
 // Kill-switch for the web feed feature.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kWebFeedKillSwitch);
 
+// Feature that unmount RecyclerBinder on view detach to fix a memory leak.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
+BASE_DECLARE_FEATURE(kFeedRecyclerBinderUnmountOnDetach);
+
+// Feature that enables feed streaming.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
+BASE_DECLARE_FEATURE(kFeedStreaming);
+
+// Feature that removes feed header.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
+BASE_DECLARE_FEATURE(kFeedHeaderRemoval);
+
+// Feature that enables feed audio overviews.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
+BASE_DECLARE_FEATURE(kFeedAudioOverviews);
+
+// Feature that enables opening Incognito windows.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
+BASE_DECLARE_FEATURE(kAndroidOpenIncognitoAsWindow);
+
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 bool IsWebFeedEnabledForLocale(const std::string& country);
 
 }  // namespace feed

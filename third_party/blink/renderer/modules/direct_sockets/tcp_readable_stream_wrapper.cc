@@ -6,11 +6,13 @@
 
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
+#include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_byob_request.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
@@ -28,23 +30,23 @@ namespace blink {
 TCPReadableStreamWrapper::TCPReadableStreamWrapper(
     ScriptState* script_state,
     CloseOnceCallback on_close,
-    mojo::ScopedDataPipeConsumerHandle handle)
+    mojo::ScopedDataPipeConsumerHandle handle,
+    uint64_t inspector_id)
     : ReadableByteStreamWrapper(script_state),
       on_close_(std::move(on_close)),
       data_pipe_(std::move(handle)),
       read_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL),
-      close_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC) {
-  read_watcher_.Watch(
-      data_pipe_.get(), MOJO_HANDLE_SIGNAL_READABLE,
-      MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
-      WTF::BindRepeating(&TCPReadableStreamWrapper::OnHandleReady,
-                         WrapWeakPersistent(this)));
+      close_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC),
+      inspector_id_(inspector_id) {
+  read_watcher_.Watch(data_pipe_.get(), MOJO_HANDLE_SIGNAL_READABLE,
+                      MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
+                      BindRepeating(&TCPReadableStreamWrapper::OnHandleReady,
+                                    WrapWeakPersistent(this)));
 
-  close_watcher_.Watch(
-      data_pipe_.get(), MOJO_HANDLE_SIGNAL_PEER_CLOSED,
-      MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
-      WTF::BindRepeating(&TCPReadableStreamWrapper::OnHandleReset,
-                         WrapWeakPersistent(this)));
+  close_watcher_.Watch(data_pipe_.get(), MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+                       MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
+                       BindRepeating(&TCPReadableStreamWrapper::OnHandleReset,
+                                     WrapWeakPersistent(this)));
 
   ScriptState::Scope scope(script_state);
 
@@ -82,7 +84,7 @@ void TCPReadableStreamWrapper::OnHandleReady(MojoResult result,
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -110,16 +112,24 @@ void TCPReadableStreamWrapper::Pull() {
         DOMArrayPiece view(request->view().Get());
         data_buffer =
             data_buffer.first(std::min(data_buffer.size(), view.ByteLength()));
-        view.ByteSpan().first(data_buffer.size()).copy_from(data_buffer);
+        view.ByteSpan().copy_prefix_from(data_buffer);
         request->respond(script_state, data_buffer.size(), exception_state);
       } else {
         auto buffer = NotShared(DOMUint8Array::Create(data_buffer));
         Controller()->enqueue(script_state, buffer, exception_state);
       }
 
+      // It is necessary to check |data_pipe_| as |enqueue()| may run
+      // JavaScript, leading to invalidation of |data_pipe_|.
+      if (!data_pipe_.is_valid()) {
+        return;
+      }
       result = data_pipe_->EndReadData(data_buffer.size());
       DCHECK_EQ(result, MOJO_RESULT_OK);
 
+      // Send data to DevTools protocol.
+      probe::DirectTCPSocketChunkReceived(*script_state, inspector_id_,
+                                          data_buffer);
       break;
     }
 
@@ -132,8 +142,7 @@ void TCPReadableStreamWrapper::Pull() {
       return;
 
     default:
-      NOTREACHED_IN_MIGRATION() << "Unexpected result: " << result;
-      return;
+      NOTREACHED() << "Unexpected result: " << result;
   }
 }
 
@@ -146,7 +155,7 @@ void TCPReadableStreamWrapper::CloseStream() {
   SetState(State::kClosed);
 
   ResetPipe();
-  std::move(on_close_).Run(ScriptValue());
+  std::move(on_close_).Run(v8::Local<v8::Value>(), net::OK);
   return;
 }
 
@@ -155,6 +164,9 @@ void TCPReadableStreamWrapper::ErrorStream(int32_t error_code) {
     return;
   }
   graceful_peer_shutdown_ = (error_code == net::OK);
+
+  // Error codes are negative.
+  base::UmaHistogramSparse("DirectSockets.TCPReadableStreamError", -error_code);
 
   auto* script_state = GetScriptState();
   ScriptState::Scope scope(script_state);
@@ -173,27 +185,27 @@ void TCPReadableStreamWrapper::ErrorStream(int32_t error_code) {
       DCHECK(ReadableStream::IsReadable(Readable()));
       NonThrowableExceptionState exception_state;
       Controller()->close(script_state, exception_state);
-      std::move(on_close_).Run(ScriptValue());
+      std::move(on_close_).Run(v8::Local<v8::Value>(), error_code);
     }
     return;
   }
 
   SetState(State::kAborted);
 
-  auto exception = ScriptValue(
-      script_state->GetIsolate(),
-      V8ThrowDOMException::CreateOrDie(script_state->GetIsolate(),
-                                       DOMExceptionCode::kNetworkError,
-                                       String{"Stream aborted by the remote: " +
-                                              net::ErrorToString(error_code)}));
+  auto exception = V8ThrowDOMException::CreateOrDie(
+      script_state->GetIsolate(), DOMExceptionCode::kNetworkError,
+      String{"Stream aborted by the remote: " +
+             net::ErrorToString(error_code)});
 
   if (data_pipe_) {
-    pending_exception_ = exception;
+    pending_exception_.Reset(script_state->GetIsolate(), exception);
+    pending_net_error_ = error_code;
     return;
   }
 
-  Controller()->error(script_state, exception);
-  std::move(on_close_).Run(exception);
+  Controller()->error(script_state,
+                      ScriptValue(script_state->GetIsolate(), exception));
+  std::move(on_close_).Run(exception, error_code);
 }
 
 void TCPReadableStreamWrapper::ResetPipe() {
@@ -231,19 +243,23 @@ void TCPReadableStreamWrapper::OnHandleReset(MojoResult result,
 
   ScriptState::Scope scope(script_state);
   if (!pending_exception_.IsEmpty()) {
-    Controller()->error(script_state, pending_exception_);
+    auto* isolate = script_state->GetIsolate();
+    auto exception = pending_exception_.Get(isolate);
+    Controller()->error(script_state,
+                        ScriptValue(script_state->GetIsolate(), exception));
 
     SetState(State::kAborted);
-    std::move(on_close_).Run(pending_exception_);
+    std::move(on_close_).Run(exception, pending_net_error_);
 
-    pending_exception_.Clear();
+    pending_exception_.Reset();
   } else if (graceful_peer_shutdown_) {
     DCHECK(ReadableStream::IsReadable(Readable()));
     NonThrowableExceptionState exception_state;
     Controller()->close(script_state, exception_state);
 
     SetState(State::kClosed);
-    std::move(on_close_).Run(ScriptValue());
+    std::move(on_close_).Run(/*exception=*/v8::Local<v8::Value>(),
+                             /*net_error=*/net::OK);
   }
 }
 

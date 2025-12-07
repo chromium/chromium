@@ -12,7 +12,6 @@
 #include <string>
 
 #include "build/build_config.h"
-#include "ui/gfx/geometry/rect.h"
 
 class FindBarController;
 class FindBarTesting;
@@ -22,8 +21,9 @@ class FindNotificationDetails;
 }
 
 namespace gfx {
+class Point;
 class Range;
-}
+}  // namespace gfx
 
 #if BUILDFLAG(IS_MAC)
 namespace views {
@@ -33,16 +33,16 @@ class Widget;
 
 class FindBar {
  public:
-  virtual ~FindBar() { }
+  virtual ~FindBar() {}
 
   // Accessor and setter for the FindBarController.
   virtual FindBarController* GetFindBarController() const = 0;
-  virtual void SetFindBarController(
-      FindBarController* find_bar_controller) = 0;
+  virtual void SetFindBarController(FindBarController* find_bar_controller) = 0;
 
   // Shows the find bar. Any previous search string will again be visible.
-  // If |animate| is true, we try to slide the find bar in.
-  virtual void Show(bool animate) = 0;
+  // If `animate` is true, we try to slide the find bar in.
+  // If `focus` is true, the find bar takes focus and accepts keyboard input.
+  virtual void Show(bool animate, bool focus) = 0;
 
   // Hide the find bar.  If |animate| is true, we try to slide the find bar
   // away.
@@ -68,7 +68,7 @@ class FindBar {
       const gfx::Range& selected_range) = 0;
 
   // Gets the search string currently visible in the find box.
-  virtual std::u16string GetFindText() const = 0;
+  virtual std::u16string_view GetFindText() const = 0;
 
   // Gets the selection.
   virtual gfx::Range GetSelectedRange() const = 0;
@@ -94,9 +94,19 @@ class FindBar {
   // Called when the web contents associated with the find bar changes.
   virtual void UpdateFindBarForChangedWebContents() = 0;
 
+  // Called to check if find bar text can be populated from selected text or
+  // not.
+  virtual bool CanPopulateFromSelectedText() = 0;
+
   // Returns a pointer to the testing interface to the FindBar, or NULL
   // if there is none.
   virtual const FindBarTesting* GetFindBarTesting() const = 0;
+
+  // Return |true| if find bar has focus.
+  virtual bool HasFocus() const = 0;
+
+  // Closes any overlapping bubbles, such as the translate bubble.
+  virtual void CloseOverlappingBubbles() = 0;
 
 #if BUILDFLAG(IS_MAC)
   // Get the host widget. Used by immersive fullscreen to detect the find bar
@@ -107,7 +117,7 @@ class FindBar {
 
 class FindBarTesting {
  public:
-  virtual ~FindBarTesting() { }
+  virtual ~FindBarTesting() {}
 
   // Computes the location of the find bar and whether it is fully visible in
   // its parent window. The return value indicates if the window is visible at
@@ -119,10 +129,10 @@ class FindBarTesting {
                                     bool* fully_visible) const = 0;
 
   // Gets the search string currently selected in the Find box.
-  virtual std::u16string GetFindSelectedText() const = 0;
+  virtual std::u16string_view GetFindSelectedText() const = 0;
 
   // Gets the match count text (ie. 1 of 3) visible in the Find box.
-  virtual std::u16string GetMatchCountText() const = 0;
+  virtual std::u16string_view GetMatchCountText() const = 0;
 
   // Gets the pixel width of the FindBar contents.
   virtual int GetContentsWidth() const = 0;

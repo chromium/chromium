@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/data_collection/training_data_cache.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
 
@@ -36,10 +37,11 @@ void TrainingDataCache::GetInputsAndDelete(SegmentId segment_id,
                                            TrainingRequestId request_id,
                                            TrainingDataCallback callback) {
   std::optional<TrainingData> result;
-  if (cache_.contains(std::make_pair(segment_id, model_source)) &&
-      cache_[std::make_pair(segment_id, model_source)].contains(request_id)) {
+  std::pair<SegmentId, ModelSource> key = {segment_id, model_source};
+  if (auto cache_it = cache_.find(key);
+      cache_it != cache_.end() && cache_it->second.contains(request_id)) {
     // TrainingRequestId found from cache, return and delete the cache entry.
-    auto& segment_data = cache_[std::make_pair(segment_id, model_source)];
+    auto& segment_data = cache_it->second;
     auto it = segment_data.find(request_id);
     CHECK(it != segment_data.end());
     result = std::move(it->second);

@@ -1,0 +1,20 @@
+Name: Webkit
+Short Name: webkit
+URL: https://androidx.dev/snapshots/builds/14500233/artifacts/repository/androidx/webkit/webkit/1.16.0-SNAPSHOT/webkit-1.16.0-20251126.133552-1.aar
+Version: 1.16.0-SNAPSHOT
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+The Jetpack Webkit Library is a static library you can add to your Android application in order to use android.webkit APIs that are not available for older platform versions.
+
+See also: https://developer.android.com/jetpack/androidx/releases/webkit#1.16.0-SNAPSHOT
+
+
+Local Modifications:
+No modifications.

@@ -33,7 +33,7 @@
 #include "services/network/public/mojom/network_service_test.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #endif
 
 namespace content {
@@ -59,8 +59,8 @@ class TransferableSocketBrowserTest : public ContentBrowserTest {
       GTEST_SKIP();
     }
 #elif BUILDFLAG(IS_ANDROID)
-    if (base::android::BuildInfo::GetInstance()->sdk_int() <
-        base::android::SdkVersion::SDK_VERSION_R) {
+    if (base::android::android_info::sdk_int() <
+        base::android::android_info::SdkVersion::SDK_VERSION_R) {
       // Android below R does not support transfer of sockets.
       GTEST_SKIP();
     }
@@ -100,9 +100,10 @@ IN_PROC_BROWSER_TEST_F(TransferableSocketBrowserTest, TransferSocket) {
       network_service_pending;
   GetNetworkService()->BindTestInterfaceForTesting(
       network_service_pending.InitWithNewPipeAndPassReceiver());
-  net::TCPSocket socket(nullptr, nullptr, net::NetLogSource());
-  socket.Open(net::AddressFamily::ADDRESS_FAMILY_IPV4);
-  socket.DetachFromThread();
+  std::unique_ptr<net::TCPSocket> socket =
+      net::TCPSocket::Create(nullptr, nullptr, net::NetLogSource());
+  socket->Open(net::AddressFamily::ADDRESS_FAMILY_IPV4);
+  socket->DetachFromThread();
 
   net::IPEndPoint endpoint(net::IPAddress::IPv4Localhost(),
                            embedded_test_server()->port());
@@ -110,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(TransferableSocketBrowserTest, TransferSocket) {
   content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
-          &net::TCPSocket::Connect, base::Unretained(&socket), endpoint,
+          &net::TCPSocket::Connect, base::Unretained(socket.get()), endpoint,
           base::BindLambdaForTesting([&connect_run_loop](int result) {
             EXPECT_EQ(result, net::OK);
             connect_run_loop.Quit();
@@ -122,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(TransferableSocketBrowserTest, TransferSocket) {
         EXPECT_EQ(result, net::ERR_IO_PENDING);
       }));
   connect_run_loop.Run();
-  socket.DetachFromThread();
+  socket->DetachFromThread();
 #if BUILDFLAG(IS_WIN)
   // Obtain the running process id of the network service, as this is needed to
   // duplicate the socket on Windows only.
@@ -136,12 +137,12 @@ IN_PROC_BROWSER_TEST_F(TransferableSocketBrowserTest, TransferSocket) {
   }
   ASSERT_TRUE(network_process.IsValid());
   network::TransferableSocket transferable(
-      socket.ReleaseSocketDescriptorForTesting(), network_process);
+      socket->ReleaseSocketDescriptorForTesting(), network_process);
 #else
   base::test::TestFuture<net::SocketDescriptor> socket_descriptor;
   GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindLambdaForTesting([&]() {
-        return socket.ReleaseSocketDescriptorForTesting();
+        return socket->ReleaseSocketDescriptorForTesting();
       }),
       socket_descriptor.GetCallback());
   network::TransferableSocket transferable(socket_descriptor.Get());

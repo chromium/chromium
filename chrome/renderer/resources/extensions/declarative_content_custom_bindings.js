@@ -4,16 +4,16 @@
 
 // Custom binding for the declarativeContent API.
 
-var setIcon = require('setIcon').setIcon;
+const setIcon = require('setIcon').setIcon;
 
 apiBridge.registerCustomHook(function(api) {
-  var declarativeContent = api.compiledApi;
+  const declarativeContent = api.compiledApi;
 
   // Validation for most types is done in the native C++ with native bindings,
   // but setIcon is funny (and sadly broken). Ideally, we can move this
   // validation entirely into the native code, and this whole file can go
   // away.
-  var nativeSetIcon = declarativeContent.SetIcon;
+  const nativeSetIcon = declarativeContent.SetIcon;
   declarativeContent.SetIcon = function(parameters) {
     // TODO(devlin): This is very, very wrong. setIcon() is potentially
     // asynchronous (in the case of a path being specified), which means this

@@ -10,7 +10,7 @@
 #include "base/memory/weak_ptr.h"         // For WeakPtrFactory.
 #include "base/process/process_handle.h"  // For ProcessId.
 #include "base/timer/timer.h"             // For RepeatingTimer.
-#include "chrome/browser/ash/arc/process/arc_process_service.h"
+#include "chromeos/ash/experiences/arc/process/arc_process_service.h"
 
 FORWARD_DECLARE_TEST(ContainerOomScoreManager, AssignOomScoreAdjs);
 

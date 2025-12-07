@@ -54,12 +54,15 @@ void NegotiatingHostAuthenticator::ProcessMessage(
   }
 
   std::string method_attr = message->Attr(kMethodAttributeQName);
-  Method method = HostAuthenticationConfig::ParseMethodString(method_attr);
+  AuthenticationMethod method = ParseAuthenticationMethodString(method_attr);
 
-  // If the host has already chosen a method, it can't be changed by the client.
-  if (current_method_ != Method::INVALID && method != current_method_) {
+  if (current_method_ != AuthenticationMethod::INVALID &&
+      method != current_method_) {
     state_ = REJECTED;
-    rejection_reason_ = RejectionReason::PROTOCOL_ERROR;
+    rejection_reason_ = RejectionReason::INVALID_STATE;
+    rejection_details_ = RejectionDetails(
+        "The host has already chosen an authentication method. "
+        "The client cannot change it.");
     std::move(resume_callback).Run();
     return;
   }
@@ -67,15 +70,18 @@ void NegotiatingHostAuthenticator::ProcessMessage(
   // If the client did not specify a preferred auth method, or specified an
   // unknown or unsupported method, then select the first known method from
   // the supported-methods attribute.
-  if (method == Method::INVALID || !base::Contains(methods_, method)) {
-    method = Method::INVALID;
+  if (method == AuthenticationMethod::INVALID ||
+      !base::Contains(methods_, method)) {
+    method = AuthenticationMethod::INVALID;
 
     std::string supported_methods_attr =
         message->Attr(kSupportedMethodsAttributeQName);
     if (supported_methods_attr.empty()) {
-      // Message contains neither method nor supported-methods attributes.
       state_ = REJECTED;
-      rejection_reason_ = RejectionReason::PROTOCOL_ERROR;
+      rejection_reason_ = RejectionReason::INVALID_ARGUMENT;
+      rejection_details_ = RejectionDetails(
+          "Message contains neither the 'method' nor the 'supported-methods' "
+          "attributes.");
       std::move(resume_callback).Run();
       return;
     }
@@ -85,20 +91,20 @@ void NegotiatingHostAuthenticator::ProcessMessage(
     for (const std::string& method_str : base::SplitString(
              supported_methods_attr, std::string(1, kSupportedMethodsSeparator),
              base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
-      Method list_value =
-          HostAuthenticationConfig::ParseMethodString(method_str);
-      if (list_value != Method::INVALID &&
-          base::Contains(methods_, list_value)) {
+      AuthenticationMethod value = ParseAuthenticationMethodString(method_str);
+      if (value != AuthenticationMethod::INVALID &&
+          base::Contains(methods_, value)) {
         // Found common method.
-        method = list_value;
+        method = value;
         break;
       }
     }
 
-    if (method == Method::INVALID) {
-      // Failed to find a common auth method.
+    if (method == AuthenticationMethod::INVALID) {
       state_ = REJECTED;
       rejection_reason_ = RejectionReason::NO_COMMON_AUTH_METHOD;
+      rejection_details_ = RejectionDetails(
+          "No common authentication method found between client and host.");
       std::move(resume_callback).Run();
       return;
     }
@@ -114,7 +120,7 @@ void NegotiatingHostAuthenticator::ProcessMessage(
 
   // If the client specified a supported method, and the host hasn't chosen a
   // method yet, use the client's preferred method and process the message.
-  if (current_method_ == Method::INVALID) {
+  if (current_method_ == AuthenticationMethod::INVALID) {
     current_method_ = method;
     // Copy the message since the authenticator may process it asynchronously.
     CreateAuthenticator(
@@ -138,15 +144,29 @@ NegotiatingHostAuthenticator::GetNextMessage() {
 void NegotiatingHostAuthenticator::CreateAuthenticator(
     Authenticator::State preferred_initial_state,
     base::OnceClosure resume_callback) {
-  DCHECK(current_method_ != Method::INVALID);
+  DCHECK(current_method_ != AuthenticationMethod::INVALID);
 
   switch (current_method_) {
-    case Method::INVALID:
-      NOTREACHED_IN_MIGRATION();
-      break;
+    case AuthenticationMethod::INVALID:
+      NOTREACHED();
 
-    case Method::CORP_SESSION_AUTHZ_SPAKE2_CURVE25519: {
-      DCHECK(config_->session_authz_client_factory);
+    case AuthenticationMethod::CLOUD_SESSION_AUTHZ_SPAKE2_CURVE25519: {
+      DCHECK_EQ(config_->session_authz_client_factory->method(),
+                AuthenticationMethod::CLOUD_SESSION_AUTHZ_SPAKE2_CURVE25519);
+      auto authenticator = std::make_unique<SessionAuthzAuthenticator>(
+          CredentialsType::CLOUD_SESSION_AUTHZ,
+          config_->session_authz_client_factory->Create(),
+          base::BindRepeating(&Spake2Authenticator::CreateForHost, local_id_,
+                              remote_id_, config_->local_cert,
+                              config_->key_pair));
+      authenticator->Start(std::move(resume_callback));
+      current_authenticator_ = std::move(authenticator);
+      break;
+    }
+
+    case AuthenticationMethod::CORP_SESSION_AUTHZ_SPAKE2_CURVE25519: {
+      DCHECK_EQ(config_->session_authz_client_factory->method(),
+                AuthenticationMethod::CORP_SESSION_AUTHZ_SPAKE2_CURVE25519);
       auto authenticator = std::make_unique<SessionAuthzAuthenticator>(
           CredentialsType::CORP_SESSION_AUTHZ,
           config_->session_authz_client_factory->Create(),
@@ -158,7 +178,7 @@ void NegotiatingHostAuthenticator::CreateAuthenticator(
       break;
     }
 
-    case Method::PAIRED_SPAKE2_CURVE25519: {
+    case AuthenticationMethod::PAIRED_SPAKE2_CURVE25519: {
       PairingHostAuthenticator* pairing_authenticator =
           new PairingHostAuthenticator(
               config_->pairing_registry,
@@ -172,7 +192,7 @@ void NegotiatingHostAuthenticator::CreateAuthenticator(
       break;
     }
 
-    case Method::SHARED_SECRET_SPAKE2_CURVE25519:
+    case AuthenticationMethod::SHARED_SECRET_SPAKE2_CURVE25519:
       current_authenticator_ = Spake2Authenticator::CreateForHost(
           local_id_, remote_id_, config_->local_cert, config_->key_pair,
           config_->shared_secret_hash, preferred_initial_state);

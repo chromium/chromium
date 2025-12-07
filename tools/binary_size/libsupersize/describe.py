@@ -714,20 +714,13 @@ class DescriberCsv(Describer):
     return self._RenderCsv(data)
 
 
-def _UtcToLocal(utc):
-  epoch = time.mktime(utc.timetuple())
-  offset = (datetime.datetime.fromtimestamp(epoch) -
-            datetime.datetime.utcfromtimestamp(epoch))
-  return utc + offset
-
-
 def DescribeDict(input_dict):
   display_dict = {}
   for k, v in input_dict.items():
     if k == models.METADATA_ELF_MTIME:
-      timestamp_obj = datetime.datetime.utcfromtimestamp(v)
+      timestamp_obj = datetime.datetime.fromtimestamp(v, datetime.timezone.utc)
       display_dict[k] = (
-          _UtcToLocal(timestamp_obj).strftime('%Y-%m-%d %H:%M:%S'))
+          timestamp_obj.astimezone().strftime('%Y-%m-%d %H:%M:%S'))
     elif isinstance(v, str):
       display_dict[k] = v
     elif isinstance(v, list):

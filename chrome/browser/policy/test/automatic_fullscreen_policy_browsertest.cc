@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/policy/policy_test_utils.h"
@@ -13,7 +12,6 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -49,10 +47,6 @@ class PolicyTestAutomaticFullscreen : public PolicyTest {
     return HostContentSettingsMapFactory::GetForProfile(
         chrome_test_utils::GetProfile(this));
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kAutomaticFullscreenContentSetting};
 };
 
 IN_PROC_BROWSER_TEST_F(PolicyTestAutomaticFullscreen, Default) {

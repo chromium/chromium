@@ -146,7 +146,7 @@ base::TimeTicks BackoffEntry::CalculateReleaseTime() const {
   delay_ms -= base::RandDouble() * policy_->jitter_factor * delay_ms;
 
   // Do overflow checking in microseconds, the internal unit of TimeTicks.
-  base::internal::CheckedNumeric<int64_t> backoff_duration_us = delay_ms + 0.5;
+  base::CheckedNumeric<int64_t> backoff_duration_us = delay_ms + 0.5;
   backoff_duration_us *= base::Time::kMicrosecondsPerMillisecond;
   base::TimeDelta backoff_duration = base::Microseconds(int64_t{
       backoff_duration_us.ValueOrDefault(std::numeric_limits<int64_t>::max())});
@@ -162,11 +162,11 @@ base::TimeTicks BackoffEntry::BackoffDurationToReleaseTime(
   const int64_t kTimeTicksNowUs =
       (GetTimeTicksNow() - base::TimeTicks()).InMicroseconds();
   // Do overflow checking in microseconds, the internal unit of TimeTicks.
-  base::internal::CheckedNumeric<int64_t> calculated_release_time_us =
+  base::CheckedNumeric<int64_t> calculated_release_time_us =
       backoff_duration.InMicroseconds();
   calculated_release_time_us += kTimeTicksNowUs;
 
-  base::internal::CheckedNumeric<int64_t> maximum_release_time_us =
+  base::CheckedNumeric<int64_t> maximum_release_time_us =
       std::numeric_limits<int64_t>::max();
   if (policy_->maximum_backoff_ms >= 0) {
     maximum_release_time_us = policy_->maximum_backoff_ms;

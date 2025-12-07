@@ -21,6 +21,9 @@ class InfoBarIOS;
 // Action handler delegate for the buttons.
 @property(nonatomic, weak) id<BadgeDelegate> delegate;
 
+// Whether the factory is creating buttons for an incognito browser.
+@property(nonatomic, assign, getter=isIncognito) BOOL incognito;
+
 // Returns a properly configured BadgeButton associated with `badgeType` with
 // the use of `infoBar`.
 - (BadgeButton*)badgeButtonForBadgeType:(BadgeType)badgeType

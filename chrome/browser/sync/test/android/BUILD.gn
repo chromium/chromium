@@ -17,6 +17,7 @@ android_library("test_support_java") {
     "//components/signin/public/android:java",
     "//components/sync/android:sync_java",
     "//content/public/test/android:content_java_test_support",
+    "//google_apis/gaia/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }

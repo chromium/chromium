@@ -4,17 +4,20 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 
 /**
  * Implements a {@link ContextualSearchHeuristic} that a Tap relatively far away from an existing
- * Contextual Search selection should just dismiss our UX.  When a Tap is close by, we assume the
+ * Contextual Search selection should just dismiss our UX. When a Tap is close by, we assume the
  * user must have missed the original intended target so we reselect based on the new Tap location.
  */
+@NullMarked
 class TapFarFromPreviousSuppression extends ContextualSearchHeuristic {
     private static final double RETAP_DISTANCE_SQUARED_DP = Math.pow(75, 2);
 
-    private final ContextualSearchTapState mPreviousTapState;
+    private final @Nullable ContextualSearchTapState mPreviousTapState;
     private final float mPxToDp;
     private final boolean mShouldHandleTap;
 
@@ -60,6 +63,7 @@ class TapFarFromPreviousSuppression extends ContextualSearchHeuristic {
     /**
      * @return Whether a tap at the given coordinates is considered "close" to the previous tap.
      */
+    @RequiresNonNull("mPreviousTapState")
     private boolean wasTapCloseToPreviousTap(int x, int y) {
         float deltaXDp = (mPreviousTapState.getX() - x) * mPxToDp;
         float deltaYDp = (mPreviousTapState.getY() - y) * mPxToDp;

@@ -44,11 +44,11 @@ enum USBTransferStatus {
     [CallWith=ScriptState, MeasureAs=UsbDeviceReleaseInterface, RaisesException] Promise<undefined> releaseInterface(octet interfaceNumber);
     [CallWith=ScriptState, MeasureAs=UsbDeviceSelectAlternateInterface, RaisesException] Promise<undefined> selectAlternateInterface(octet interfaceNumber, octet alternateSetting);
     [CallWith=ScriptState, MeasureAs=UsbDeviceControlTransferIn, RaisesException] Promise<USBInTransferResult> controlTransferIn(USBControlTransferParameters setup, unsigned short length);
-    [CallWith=ScriptState, MeasureAs=UsbDeviceControlTransferOut, RaisesException] Promise<USBOutTransferResult> controlTransferOut(USBControlTransferParameters setup, optional BufferSource data);
+    [CallWith=ScriptState, MeasureAs=UsbDeviceControlTransferOut, RaisesException] Promise<USBOutTransferResult> controlTransferOut(USBControlTransferParameters setup, optional [PassAsSpan] BufferSource data);
     [CallWith=ScriptState, MeasureAs=UsbDeviceClearHalt, RaisesException] Promise<undefined> clearHalt(USBDirection direction, octet endpointNumber);
     [CallWith=ScriptState, MeasureAs=UsbDeviceTransferIn, RaisesException] Promise<USBInTransferResult> transferIn(octet endpointNumber, unsigned long length);
-    [CallWith=ScriptState, MeasureAs=UsbDeviceTransferOut, RaisesException] Promise<USBOutTransferResult> transferOut(octet endpointNumber, BufferSource data);
+    [CallWith=ScriptState, MeasureAs=UsbDeviceTransferOut, RaisesException] Promise<USBOutTransferResult> transferOut(octet endpointNumber, [PassAsSpan] BufferSource data);
     [CallWith=ScriptState, MeasureAs=UsbDeviceIsochronousTransferIn, RaisesException] Promise<USBIsochronousInTransferResult>  isochronousTransferIn(octet endpointNumber, sequence<unsigned long> packetLengths);
-    [CallWith=ScriptState, MeasureAs=UsbDeviceIsochronousTransferOut, RaisesException] Promise<USBIsochronousOutTransferResult> isochronousTransferOut(octet endpointNumber, BufferSource data, sequence<unsigned long> packetLengths);
+    [CallWith=ScriptState, MeasureAs=UsbDeviceIsochronousTransferOut, RaisesException] Promise<USBIsochronousOutTransferResult> isochronousTransferOut(octet endpointNumber, [PassAsSpan] BufferSource data, sequence<unsigned long> packetLengths);
     [CallWith=ScriptState, MeasureAs=UsbDeviceReset, RaisesException] Promise<undefined> reset();
 };

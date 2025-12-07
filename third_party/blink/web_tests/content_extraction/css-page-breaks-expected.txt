@@ -1,0 +1,6 @@
+<Root> [box: 0,0 800x600]
+  <Container> [box: 0,0 800x20]
+    <Container> [box: 0,0 800x20]
+      <Paragraph> [box: 0,0 120x20]
+        <Text> "ABC DEF GHI JKL MNO PQR" [box: 0,0 110x20] [fragmentBox#0 0,0 110x10] [fragmentBox#1 0,10 110x10]
+

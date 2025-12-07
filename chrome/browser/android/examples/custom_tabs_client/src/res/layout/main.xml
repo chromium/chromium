@@ -1,17 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2015 Google Inc. All Rights Reserved.
-
-     Licensed under the Apache License, Version 2.0 (the "License");
-     you may not use this file except in compliance with the License.
-     You may obtain a copy of the License at
-
-         http://www.apache.org/licenses/LICENSE-2.0
-
-     Unless required by applicable law or agreed to in writing, software
-     distributed under the License is distributed on an "AS IS" BASIS,
-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     See the License for the specific language governing permissions and
-     limitations under the License.
+<!-- Copyright 2015 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
 -->
 
 <ScrollView
@@ -72,6 +62,25 @@
                 android:id="@+id/cct_spinner"
                 android:layout_margin="3dp"
                 android:layout_gravity="center_horizontal" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/custom_scheme_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:text="@string/custom_scheme"/>
+	    <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:inputType="text"
+                android:singleLine="true"
+                android:id="@+id/custom_scheme"/>
         </LinearLayout>
 
         <LinearLayout
@@ -194,22 +203,27 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="3dp"
             android:orientation="horizontal">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="3dp"
+                android:layout_gravity="center_vertical"
                 android:text="@string/color"/>
 
             <Spinner
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/color_spinner"
-                android:layout_margin="3dp"
-                android:layout_gravity="center_horizontal" />
+                android:layout_gravity="center_vertical" />
         </LinearLayout>
+
+        <CheckBox
+            android:id="@+id/navbar_color_toolbar_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked = "false"
+            android:text="@string/navbar_color_toolbar_text" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -237,20 +251,17 @@
                     android:id="@+id/system_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/theme_button_system"
-                    style="?attr/materialButtonOutlinedStyle" />
+                    android:text="@string/theme_button_system" />
                 <Button
                     android:id="@+id/light_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/theme_button_light"
-                    style="?attr/materialButtonOutlinedStyle" />
+                    android:text="@string/theme_button_light" />
                 <Button
                     android:id="@+id/dark_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/theme_button_dark"
-                    style="?attr/materialButtonOutlinedStyle" />
+                    android:text="@string/theme_button_dark" />
             </com.google.android.material.button.MaterialButtonToggleGroup>
         </LinearLayout>
 
@@ -280,14 +291,12 @@
                     android:id="@+id/start_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/close_button_start_text"
-                    style="?attr/materialButtonOutlinedStyle" />
+                    android:text="@string/close_button_start_text" />
                 <Button
                     android:id="@+id/end_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/close_button_end_text"
-                    style="?attr/materialButtonOutlinedStyle" />
+                    android:text="@string/close_button_end_text" />
             </com.google.android.material.button.MaterialButtonToggleGroup>
         </LinearLayout>
 
@@ -317,20 +326,17 @@
                     android:id="@+id/x_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/close_button_X"
-                    style="?attr/materialButtonOutlinedStyle" />
+                    android:text="@string/close_button_X" />
                 <Button
                     android:id="@+id/back_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/close_button_back"
-                    style="?attr/materialButtonOutlinedStyle" />
+                    android:text="@string/close_button_back" />
                 <Button
                     android:id="@+id/check_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/close_button_check"
-                    style="?attr/materialButtonOutlinedStyle" />
+                    android:text="@string/close_button_check" />
             </com.google.android.material.button.MaterialButtonToggleGroup>
         </LinearLayout>
 
@@ -361,14 +367,12 @@
                     android:id="@+id/side_sheet_start_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/side_sheet_start_text"
-                    style="?attr/materialButtonOutlinedStyle" />
+                    android:text="@string/side_sheet_start_text" />
                 <Button
                     android:id="@+id/side_sheet_end_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/side_sheet_end_text"
-                    style="?attr/materialButtonOutlinedStyle" />
+                    android:text="@string/side_sheet_end_text" />
             </com.google.android.material.button.MaterialButtonToggleGroup>
         </LinearLayout>
 
@@ -399,20 +403,98 @@
                     android:id="@+id/decoration_type_shadow_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/decoration_type_shadow_text"
-                    style="?attr/materialButtonOutlinedStyle" />
+                    android:text="@string/decoration_type_shadow_text" />
                 <Button
                     android:id="@+id/decoration_type_divider_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/decoration_type_divider_text"
-                    style="?attr/materialButtonOutlinedStyle" />
+                    android:text="@string/decoration_type_divider_text" />
                 <Button
                     android:id="@+id/decoration_type_none_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/decoration_type_none_text"
-                    style="?attr/materialButtonOutlinedStyle" />
+                    android:text="@string/decoration_type_none_text" />
+            </com.google.android.material.button.MaterialButtonToggleGroup>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginStart="3dp"
+            android:layout_marginBottom="16dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|start"
+                android:text="@string/open_in_browser_text"
+                android:layout_marginEnd="16dp"
+                style="?attr/textAppearanceLabelLarge" />
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/open_in_browser_toggle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                app:singleSelection="true"
+                app:selectionRequired="true">
+                <Button
+                    android:id="@+id/open_in_browser_default_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/open_in_browser_button_default_text" />
+                <Button
+                    android:id="@+id/open_in_browser_on_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/open_in_browser_button_on_text" />
+                <Button
+                    android:id="@+id/open_in_browser_off_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/open_in_browser_button_off_text" />
+            </com.google.android.material.button.MaterialButtonToggleGroup>
+        </LinearLayout>
+
+        <!-- Share state -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginStart="3dp"
+            android:layout_marginBottom="16dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|start"
+                android:text="@string/share_state_text"
+                android:layout_marginEnd="16dp"
+                style="?attr/textAppearanceLabelLarge" />
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/share_state_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                app:singleSelection="true"
+                app:selectionRequired="true">
+                <Button
+                    android:id="@+id/share_state_default_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/share_state_default_text" />
+                <Button
+                    android:id="@+id/share_state_on_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/share_state_on_text" />
+                <Button
+                    android:id="@+id/share_state_off_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/share_state_off_text" />
             </com.google.android.material.button.MaterialButtonToggleGroup>
         </LinearLayout>
 
@@ -635,5 +717,82 @@
             android:layout_height="wrap_content"
             android:checked = "false"
             android:text="@string/share_identity_text" />
+
+        <CheckBox
+            android:id="@+id/show_action_button_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked = "true"
+            android:text="@string/show_action_button_text" />
+
+        <CheckBox
+            android:id="@+id/show_additional_action_button_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked = "true"
+            android:text="@string/show_additional_action_button_text" />
+
+        <CheckBox
+            android:id="@+id/show_close_button_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked = "true"
+            android:text="@string/show_close_button_text" />
+
+        <CheckBox
+            android:id="@+id/ephemeral_cct_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked = "false"
+            android:text="@string/ephemeral_cct_text" />
+
+        <CheckBox
+            android:id="@+id/use_separate_task_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked = "false"
+            android:text="@string/use_separate_task_text" />
+
+        <CheckBox
+            android:id="@+id/add_image_custom_menu_item_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked = "false"
+            android:text="@string/add_image_custom_menu_item_text" />
+
+        <CheckBox
+            android:id="@+id/add_extra_image_custom_menu_item_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked = "false"
+            android:text="@string/add_extra_image_custom_menu_item_text" />
+
+        <CheckBox
+            android:id="@+id/add_link_custom_menu_item_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked = "false"
+            android:text="@string/add_link_custom_menu_item_text" />
+
+        <CheckBox
+            android:id="@+id/add_extra_link_custom_menu_item_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked = "false"
+            android:text="@string/add_extra_link_custom_menu_item_text" />
+
+        <CheckBox
+            android:id="@+id/add_overflow_custom_menu_item_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked = "false"
+            android:text="@string/add_overflow_custom_menu_item_text" />
+
+        <CheckBox
+            android:id="@+id/allow_initial_navigation_to_leave"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked = "false"
+            android:text="@string/allow_initial_navigation_to_leave" />
     </LinearLayout>
 </ScrollView>

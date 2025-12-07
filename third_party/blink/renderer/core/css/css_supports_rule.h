@@ -29,16 +29,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_SUPPORTS_RULE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_SUPPORTS_RULE_H_
 
-#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_condition_rule.h"
+#include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
 class StyleRuleSupports;
 
-// TODO(crbug.com/1517290): Remove CORE_EXPORT when we're done use-counting.
-class CORE_EXPORT CSSSupportsRule final : public CSSConditionRule {
+class CSSSupportsRule final : public CSSConditionRule {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

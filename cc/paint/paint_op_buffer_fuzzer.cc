@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/logging.h"
+#include "cc/paint/paint_cache.h"
 #include "cc/paint/paint_op.h"
 #include "cc/test/transfer_cache_test_helper.h"
 
@@ -20,8 +21,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   std::vector<uint8_t> scratch_buffer;
   cc::TransferCacheTestHelper transfer_cache_helper;
+  cc::ServicePaintCache service_paint_cache;
   cc::PaintOp::DeserializeOptions options{
       .transfer_cache = &transfer_cache_helper,
+      .paint_cache = &service_paint_cache,
       .scratch_buffer = scratch_buffer};
   cc::PaintOpBuffer::MakeFromMemory(data, size, options);
 

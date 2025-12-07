@@ -2,14 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# [VPYTHON:BEGIN]
-# python_version: "3.8"
-# wheel: <
-#   name: "infra/python/wheels/pywin32/${vpython_platform}"
-#    version: "version:300"
-# >
-# [VPYTHON:END]
-
 import contextlib
 import logging
 import os
@@ -17,6 +9,7 @@ import shutil
 import subprocess
 import socket
 import sys
+import sysconfig
 import time
 
 import pywintypes
@@ -56,6 +49,20 @@ def _RunCommand(command, log_error=True):
     return process.returncode == 0
 
 
+def _CopyDLLsInDirectory(source_dir, destination_dir):
+    """Copies all DLLs in `source_dir` to the `destination_dir`."""
+    for filename in os.listdir(source_dir):
+        source_file = os.path.join(source_dir, filename)
+        destination_file = os.path.join(destination_dir, filename)
+        if os.path.isfile(source_file) and source_file.endswith(
+                '.dll') and not os.path.exists(destination_file):
+            logging.info(f'Copying {source_file} ===> {destination_file} ...')
+            try:
+                shutil.copy(source_file, destination_file)
+            except PermissionError as err:
+                logging.exception(err)
+
+
 def _SetupEnvironmentForVPython():
     """Setup vpython environment."""
     # vpython_spec above brings the pywin32 module we need, but it may not be
@@ -63,22 +70,31 @@ def _SetupEnvironmentForVPython():
     # https://pypi.org/project/pywin32/.
     # This script outputs some error messages to stderr if it has run before.
     # So skip logging to avoid this log pollution.
-    post_install_script = os.path.join(
-        os.path.dirname(os.path.abspath(sys.executable)),
-        'pywin32_postinstall.py')
-    _RunCommand(
-        [sys.executable, post_install_script, '-install', '-silent', '-quiet'],
-        log_error=False)
 
     # Make pythonservice.exe explicit for our service. This is to avoid pickup
     # an incompatible interpreter accidentally.
     python_dir = os.path.dirname(os.path.abspath(sys.executable))
-    source = os.path.join(os.path.dirname(python_dir), 'Lib', 'site-packages',
-                          'win32', 'pythonservice.exe')
+    source = os.path.join(sysconfig.get_paths()['platlib'], 'win32',
+                          'pythonservice.exe')
     python_service_path = os.path.join(python_dir, 'pythonservice.exe')
     if os.path.exists(source) and not os.path.exists(python_service_path):
         shutil.copyfile(source, python_service_path)
     os.environ['PYTHON_SERVICE_EXE'] = python_service_path
+
+    # Copy the DLLs from `pywin32_system32` folder to the folder that
+    # `pythonservice.exe` resides. The DLLs are required by `pythonservice.exe`.
+    # Normally we run the post install scripts as described by
+    # https://pypi.org/project/pywin32/ to make pywin32 ready. However
+    # the script copies the DLLs to `%WINDIR%\\system32` which leads to version
+    # conflict when multiple versions of VPython exists. Hence we
+    # setup this running environment entirely within current VPython directory.
+    # This is less robust compared with running `pywin32_postinstall.py`, but
+    # works good enough for our test. This also avoids the issue that
+    # `pywin32_postinstall.py` accidentally omits `-silent` switch since
+    # https://github.com/mhammond/pywin32/commit/c6958cdccb38e5888a5141553dd36a21fa196f53.
+    _CopyDLLsInDirectory(
+        os.path.join(sysconfig.get_paths()['platlib'], 'pywin32_system32'),
+        python_dir)
 
 
 def _IsServiceInStatus(status):
@@ -136,8 +152,7 @@ def InstallService():
 
         logging.info('Installing service with script: %s', service_main)
         command = [
-            sys.executable, service_main, '--interactive', '--startup', 'auto',
-            'install'
+            sys.executable, service_main, '--startup', 'auto', 'install'
         ]
         if _RunCommand(command):
             logging.info('Service [%s] installed.', _UPDATER_TEST_SERVICE_NAME)

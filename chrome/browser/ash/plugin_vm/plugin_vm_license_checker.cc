@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_license_checker.h"
 
 #include <cstddef>
+#include <optional>
+#include <string>
 #include <string_view>
 
 #include "base/functional/callback_helpers.h"
@@ -33,8 +35,6 @@ namespace plugin_vm {
 
 namespace {
 
-constexpr char kValidationOAuth2Scope[] =
-    "https://www.googleapis.com/auth/applicense.bytebot";
 constexpr char kValidationEndpoint[] = "https://bytebot.googleapis.com/";
 constexpr char kValidationServicePath[] =
     "v1/applications/chromePluginVm:getLicenseStatus";
@@ -102,8 +102,8 @@ bool ResponseIndicatesValidLicense(int response_code,
 
   // Expected response body:
   // { "status": "ACTIVE", ...}
-  std::optional<base::Value::Dict> response =
-      base::JSONReader::ReadDict(response_body);
+  std::optional<base::Value::Dict> response = base::JSONReader::ReadDict(
+      response_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!response) {
     LOG(ERROR) << "response_body was of unexpected format.";
     return false;
@@ -148,11 +148,8 @@ void PluginVmLicenseChecker::FetchAccessToken() {
       IdentityManagerFactory::GetForProfile(profile_);
   DCHECK(identity_manager);
 
-  signin::ScopeSet validation_scope;
-  validation_scope.insert(kValidationOAuth2Scope);
-
   token_fetcher_ = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-      "ChromePluginVm", identity_manager, validation_scope,
+      signin::OAuthConsumerId::kPluginVmLicenseChecker, identity_manager,
       base::BindOnce(&PluginVmLicenseChecker::CallEndpointWithAccessToken,
                      weak_ptr_factory_.GetWeakPtr()),
       signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
@@ -198,9 +195,9 @@ PluginVmLicenseChecker::CreateResourceRequest(std::string_view access_token) {
 }
 
 void PluginVmLicenseChecker::HandleStringResponse(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   if (!simple_url_loader_->ResponseInfo() ||
-      !simple_url_loader_->ResponseInfo()->headers) {
+      !simple_url_loader_->ResponseInfo()->headers || !response_body) {
     LOG(ERROR) << "Did not recieve a response from server while attempting to"
                << " validate the license.";
     std::move(callback_).Run(false);
@@ -211,7 +208,7 @@ void PluginVmLicenseChecker::HandleStringResponse(
       simple_url_loader_->ResponseInfo()->headers->response_code();
 
   std::move(callback_).Run(
-      ResponseIndicatesValidLicense(response_code, *response_body));
+      ResponseIndicatesValidLicense(response_code, *std::move(response_body)));
 }
 
 }  // namespace plugin_vm

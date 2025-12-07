@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 @Config(manifest = Config.NONE)
 public class TaskInfoTest {
     private static final long TEST_START_MS = TimeUnit.MINUTES.toMillis(5);
-    private static final long TEST_END_MS = TimeUnit.MINUTES.toMillis((10));
+    private static final long TEST_END_MS = TimeUnit.MINUTES.toMillis(10);
     private static final long TEST_FLEX_MS = 100;
 
     @Before
@@ -139,7 +139,7 @@ public class TaskInfoTest {
         periodicTask.getTimingInfo().accept(visitor);
     }
 
-    private class CheckTimingInfoVisitor implements TaskInfo.TimingInfoVisitor {
+    private static class CheckTimingInfoVisitor implements TaskInfo.TimingInfoVisitor {
         private final Long mStartOrIntervalOrTriggerMs;
         private final Long mEndOrFlexMs;
         private final boolean mExpires;

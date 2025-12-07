@@ -10,6 +10,9 @@
 #include "base/win/access_token.h"
 
 #include <windows.h>
+#include <winternl.h>
+
+#include <authz.h>
 
 #include <memory>
 #include <utility>
@@ -18,10 +21,81 @@
 #include "base/numerics/checked_math.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/win/access_control_list.h"
+#include "base/win/win_util.h"
 
 namespace base::win {
 
 namespace {
+
+// These are the NT versions of the AUTHZ_SECURITY_ATTRIBUTE* defines in authz.h
+// and CLAIM_SECURITY_ATTRIBUTE* in winnt.h. We must use the TOKEN_ versions
+// here as they use UNICODE_STRING instead of PWSTR. Where possible,
+// static_asserts verify that the structures match the definitions from other
+// header files and will fail if they ever changed, but the TOKEN_ versions are
+// used here for self-consistency.
+typedef struct _TOKEN_SECURITY_ATTRIBUTE_V1 {
+  UNICODE_STRING Name;
+  USHORT ValueType;
+  USHORT Reserved;
+  ULONG Flags;
+  ULONG ValueCount;
+  PUNICODE_STRING pString;
+} TOKEN_SECURITY_ATTRIBUTE_V1, *PTOKEN_SECURITY_ATTRIBUTE_V1;
+
+#define TOKEN_SECURITY_ATTRIBUTES_INFORMATION_VERSION_V1 1
+static_assert(TOKEN_SECURITY_ATTRIBUTES_INFORMATION_VERSION_V1 ==
+              AUTHZ_SECURITY_ATTRIBUTES_INFORMATION_VERSION_V1);
+
+typedef struct _TOKEN_SECURITY_ATTRIBUTES_INFORMATION {
+  USHORT Version;
+  USHORT Reserved;
+  ULONG AttributeCount;
+  PTOKEN_SECURITY_ATTRIBUTE_V1 pAttributeV1;
+} TOKEN_SECURITY_ATTRIBUTES_INFORMATION,
+    *PTOKEN_SECURITY_ATTRIBUTES_INFORMATION;
+
+static_assert(sizeof(TOKEN_SECURITY_ATTRIBUTES_INFORMATION) ==
+              sizeof(AUTHZ_SECURITY_ATTRIBUTES_INFORMATION));
+static_assert(offsetof(TOKEN_SECURITY_ATTRIBUTES_INFORMATION, Version) ==
+              offsetof(AUTHZ_SECURITY_ATTRIBUTES_INFORMATION, Version));
+static_assert(offsetof(TOKEN_SECURITY_ATTRIBUTES_INFORMATION, AttributeCount) ==
+              offsetof(AUTHZ_SECURITY_ATTRIBUTES_INFORMATION, AttributeCount));
+static_assert(offsetof(TOKEN_SECURITY_ATTRIBUTES_INFORMATION, pAttributeV1) ==
+              offsetof(AUTHZ_SECURITY_ATTRIBUTES_INFORMATION,
+                       Attribute.pAttributeV1));
+
+typedef enum _TOKEN_SECURITY_ATTRIBUTE_OPERATION {
+  TOKEN_SECURITY_ATTRIBUTE_OPERATION_NONE,
+  TOKEN_SECURITY_ATTRIBUTE_OPERATION_REPLACE_ALL,
+  TOKEN_SECURITY_ATTRIBUTE_OPERATION_ADD,
+  TOKEN_SECURITY_ATTRIBUTE_OPERATION_DELETE,
+  TOKEN_SECURITY_ATTRIBUTE_OPERATION_REPLACE
+} TOKEN_SECURITY_ATTRIBUTE_OPERATION,
+    *PTOKEN_SECURITY_ATTRIBUTE_OPERATION;
+
+// Only Add is used.
+static_assert(int{TOKEN_SECURITY_ATTRIBUTE_OPERATION_ADD} ==
+              int{AUTHZ_SECURITY_ATTRIBUTE_OPERATION_ADD});
+
+// This structure is not reflected anywhere in Windows headers.
+typedef struct _TOKEN_SECURITY_ATTRIBUTES_AND_OPERATION_INFORMATION {
+  PTOKEN_SECURITY_ATTRIBUTES_INFORMATION Attributes;
+  PTOKEN_SECURITY_ATTRIBUTE_OPERATION Operations;
+} TOKEN_SECURITY_ATTRIBUTES_AND_OPERATION_INFORMATION,
+    *PTOKEN_SECURITY_ATTRIBUTES_AND_OPERATION_INFORMATION;
+
+#define TOKEN_SECURITY_ATTRIBUTE_TYPE_STRING 0x03
+static_assert(TOKEN_SECURITY_ATTRIBUTE_TYPE_STRING ==
+              AUTHZ_SECURITY_ATTRIBUTE_TYPE_STRING);
+
+#define TOKEN_SECURITY_ATTRIBUTE_NON_INHERITABLE 0x0001
+static_assert(TOKEN_SECURITY_ATTRIBUTE_NON_INHERITABLE ==
+              AUTHZ_SECURITY_ATTRIBUTE_NON_INHERITABLE);
+
+#define TOKEN_SECURITY_ATTRIBUTE_MANDATORY 0x0020
+static_assert(TOKEN_SECURITY_ATTRIBUTE_MANDATORY ==
+              CLAIM_SECURITY_ATTRIBUTE_MANDATORY);
 
 // The SECURITY_IMPERSONATION_LEVEL type is an enum and therefore can't be
 // forward declared in windows_types.h. Ensure our separate definition matches
@@ -50,8 +124,9 @@ std::optional<std::vector<char>> GetTokenInfo(
     TOKEN_INFORMATION_CLASS info_class) {
   // Get the buffer size. The call to GetTokenInformation should never succeed.
   DWORD size = 0;
-  if (::GetTokenInformation(token, info_class, nullptr, 0, &size) || !size)
+  if (::GetTokenInformation(token, info_class, nullptr, 0, &size) || !size) {
     return std::nullopt;
+  }
 
   std::vector<char> temp_buffer(size);
   if (!::GetTokenInformation(token, info_class, temp_buffer.data(), size,
@@ -67,8 +142,9 @@ std::optional<T> GetTokenInfoFixed(HANDLE token,
                                    TOKEN_INFORMATION_CLASS info_class) {
   T result;
   DWORD size = sizeof(T);
-  if (!::GetTokenInformation(token, info_class, &result, size, &size))
+  if (!::GetTokenInformation(token, info_class, &result, size, &size)) {
     return std::nullopt;
+  }
 
   return result;
 }
@@ -87,8 +163,9 @@ std::vector<AccessToken::Group> GetGroupsFromToken(
   // Sometimes only the GroupCount field is returned which indicates an empty
   // group set. If the buffer is smaller than the TOKEN_GROUPS structure then
   // just return an empty vector.
-  if (!groups || (groups->size() < sizeof(TOKEN_GROUPS)))
+  if (!groups || (groups->size() < sizeof(TOKEN_GROUPS))) {
     return {};
+  }
 
   TOKEN_GROUPS* groups_ptr = GetType<TOKEN_GROUPS>(groups);
   std::vector<AccessToken::Group> ret;
@@ -103,8 +180,9 @@ std::vector<AccessToken::Group> GetGroupsFromToken(
 TOKEN_STATISTICS GetTokenStatistics(HANDLE token) {
   std::optional<TOKEN_STATISTICS> value =
       GetTokenInfoFixed<TOKEN_STATISTICS>(token, TokenStatistics);
-  if (!value)
+  if (!value) {
     return {};
+  }
   return *value;
 }
 
@@ -208,6 +286,28 @@ std::optional<DWORD> AdjustPrivilege(const ScopedHandle& token,
   }
   return attributes;
 }
+
+std::optional<PTOKEN_SECURITY_ATTRIBUTE_V1> FindSecurityAttribute(
+    std::optional<std::vector<char>>& buffer,
+    std::wstring_view name) {
+  if (!buffer) {
+    return std::nullopt;
+  }
+
+  const auto* info = GetType<TOKEN_SECURITY_ATTRIBUTES_INFORMATION>(buffer);
+  if (info->Version != TOKEN_SECURITY_ATTRIBUTES_INFORMATION_VERSION_V1) {
+    return std::nullopt;
+  }
+
+  for (ULONG i = 0; i < info->AttributeCount; ++i) {
+    if (UnicodeStringToView(info->pAttributeV1[i].Name) == name) {
+      return &info->pAttributeV1[i];
+    }
+  }
+
+  return nullptr;
+}
+
 }  // namespace
 
 bool AccessToken::Group::IsIntegrity() const {
@@ -277,8 +377,9 @@ std::optional<AccessToken> AccessToken::FromProcess(
     ACCESS_MASK desired_access) {
   HANDLE token = nullptr;
   if (impersonation) {
-    if (!::OpenProcessToken(process, TOKEN_DUPLICATE, &token))
+    if (!::OpenProcessToken(process, TOKEN_DUPLICATE, &token)) {
       return std::nullopt;
+    }
     ScopedHandle primary_token(token);
     token = DuplicateToken(primary_token.get(), desired_access,
                            SecurityIdentification, TokenImpersonation);
@@ -286,8 +387,9 @@ std::optional<AccessToken> AccessToken::FromProcess(
       return std::nullopt;
     }
   } else {
-    if (!::OpenProcessToken(process, TOKEN_QUERY | desired_access, &token))
+    if (!::OpenProcessToken(process, TOKEN_QUERY | desired_access, &token)) {
       return std::nullopt;
+    }
   }
   return AccessToken(token);
 }
@@ -303,8 +405,9 @@ std::optional<AccessToken> AccessToken::FromThread(HANDLE thread,
                                                    ACCESS_MASK desired_access) {
   HANDLE token;
   if (!::OpenThreadToken(thread, TOKEN_QUERY | desired_access, open_as_self,
-                         &token))
+                         &token)) {
     return std::nullopt;
+  }
   return AccessToken(token);
 }
 
@@ -317,10 +420,12 @@ std::optional<AccessToken> AccessToken::FromCurrentThread(
 std::optional<AccessToken> AccessToken::FromEffective(
     ACCESS_MASK desired_access) {
   std::optional<AccessToken> token = FromCurrentThread(true, desired_access);
-  if (token)
+  if (token) {
     return token;
-  if (::GetLastError() != ERROR_NO_TOKEN)
+  }
+  if (::GetLastError() != ERROR_NO_TOKEN) {
     return std::nullopt;
+  }
   return FromCurrentProcess(false, desired_access);
 }
 
@@ -356,8 +461,9 @@ std::optional<Sid> AccessToken::LogonId() const {
   std::vector<AccessToken::Group> groups =
       GetGroupsFromToken(token_.get(), TokenLogonSid);
   for (const AccessToken::Group& group : groups) {
-    if (group.IsLogonId())
+    if (group.IsLogonId()) {
       return group.GetSid().Clone();
+    }
   }
   return std::nullopt;
 }
@@ -365,8 +471,9 @@ std::optional<Sid> AccessToken::LogonId() const {
 DWORD AccessToken::IntegrityLevel() const {
   std::optional<std::vector<char>> buffer =
       GetTokenInfo(token_.get(), TokenIntegrityLevel);
-  if (!buffer)
+  if (!buffer) {
     return MAXDWORD;
+  }
 
   PSID il_sid = GetType<TOKEN_MANDATORY_LABEL>(buffer)->Label.Sid;
   return *::GetSidSubAuthority(
@@ -389,8 +496,9 @@ bool AccessToken::SetIntegrityLevel(DWORD integrity_level) {
 DWORD AccessToken::SessionId() const {
   std::optional<DWORD> value =
       GetTokenInfoFixed<DWORD>(token_.get(), TokenSessionId);
-  if (!value)
+  if (!value) {
     return MAXDWORD;
+  }
   return *value;
 }
 
@@ -409,21 +517,24 @@ std::vector<AccessToken::Group> AccessToken::RestrictedSids() const {
 bool AccessToken::IsAppContainer() const {
   std::optional<DWORD> value =
       GetTokenInfoFixed<DWORD>(token_.get(), TokenIsAppContainer);
-  if (!value)
+  if (!value) {
     return false;
+  }
   return !!*value;
 }
 
 std::optional<Sid> AccessToken::AppContainerSid() const {
   std::optional<std::vector<char>> buffer =
       GetTokenInfo(token_.get(), TokenAppContainerSid);
-  if (!buffer)
+  if (!buffer) {
     return std::nullopt;
+  }
 
   TOKEN_APPCONTAINER_INFORMATION* info =
       GetType<TOKEN_APPCONTAINER_INFORMATION>(buffer);
-  if (!info->TokenAppContainer)
+  if (!info->TokenAppContainer) {
     return std::nullopt;
+  }
   return Sid::FromPSID(info->TokenAppContainer);
 }
 
@@ -434,23 +545,29 @@ std::vector<AccessToken::Group> AccessToken::Capabilities() const {
 std::optional<AccessToken> AccessToken::LinkedToken() const {
   std::optional<TOKEN_LINKED_TOKEN> value =
       GetTokenInfoFixed<TOKEN_LINKED_TOKEN>(token_.get(), TokenLinkedToken);
-  if (!value)
+  if (!value) {
     return std::nullopt;
+  }
   return AccessToken(value->LinkedToken);
 }
 
 std::optional<AccessControlList> AccessToken::DefaultDacl() const {
   std::optional<std::vector<char>> dacl_buffer =
       GetTokenInfo(token_.get(), TokenDefaultDacl);
-  if (!dacl_buffer)
+  if (!dacl_buffer) {
     return std::nullopt;
+  }
   TOKEN_DEFAULT_DACL* dacl_ptr = GetType<TOKEN_DEFAULT_DACL>(dacl_buffer);
   return AccessControlList::FromPACL(dacl_ptr->DefaultDacl);
 }
 
 bool AccessToken::SetDefaultDacl(const AccessControlList& default_dacl) {
+  // TOKEN_DEFAULT_DACL contains a non-const-qualified pointer to DACL, which we
+  // cannot obtain from const-qualified `default_dacl`. Let's make a copy and
+  // use it instead.
+  AccessControlList dacl = default_dacl.Clone();
   TOKEN_DEFAULT_DACL set_default_dacl = {};
-  set_default_dacl.DefaultDacl = default_dacl.get();
+  set_default_dacl.DefaultDacl = dacl.get();
   return Set(token_, TokenDefaultDacl, set_default_dacl);
 }
 
@@ -465,8 +582,9 @@ CHROME_LUID AccessToken::AuthenticationId() const {
 std::vector<AccessToken::Privilege> AccessToken::Privileges() const {
   std::optional<std::vector<char>> privileges =
       GetTokenInfo(token_.get(), TokenPrivileges);
-  if (!privileges)
+  if (!privileges) {
     return {};
+  }
   TOKEN_PRIVILEGES* privileges_ptr = GetType<TOKEN_PRIVILEGES>(privileges);
   std::vector<AccessToken::Privilege> ret;
   ret.reserve(privileges_ptr->PrivilegeCount);
@@ -480,8 +598,9 @@ std::vector<AccessToken::Privilege> AccessToken::Privileges() const {
 bool AccessToken::IsElevated() const {
   std::optional<TOKEN_ELEVATION> value =
       GetTokenInfoFixed<TOKEN_ELEVATION>(token_.get(), TokenElevation);
-  if (!value)
+  if (!value) {
     return false;
+  }
   return !!value->TokenIsElevated;
 }
 
@@ -625,15 +744,80 @@ bool AccessToken::RemoveAllPrivileges() {
     return false;
   }
 
-  for (auto privileges = base::make_span(&token_privileges->Privileges[0],
-                                         token_privileges->PrivilegeCount);
-       auto& privilege : privileges) {
+  for (auto& privilege : span(&token_privileges->Privileges[0],
+                              token_privileges->PrivilegeCount)) {
     privilege.Attributes = SE_PRIVILEGE_REMOVED;
   }
   return ::AdjustTokenPrivileges(
       token_.get(), /*DisableAllPrivileges=*/FALSE, token_privileges,
       static_cast<DWORD>(privileges_buffer->size()),
       /*PreviousState=*/nullptr, /*ReturnLength=*/nullptr);
+}
+
+bool AccessToken::AddSecurityAttribute(std::wstring_view name,
+                                       bool inherit,
+                                       std::wstring_view value) {
+  TOKEN_SECURITY_ATTRIBUTE_V1 attr = {};
+
+  attr.Flags = TOKEN_SECURITY_ATTRIBUTE_MANDATORY;
+  if (!inherit) {
+    attr.Flags |= TOKEN_SECURITY_ATTRIBUTE_NON_INHERITABLE;
+  }
+
+  if (!ViewToUnicodeString(name, attr.Name)) {
+    return false;
+  }
+
+  UNICODE_STRING ustr_value = {};
+  if (!ViewToUnicodeString(value, ustr_value)) {
+    return false;
+  }
+  attr.ValueCount = 1;
+  attr.ValueType = TOKEN_SECURITY_ATTRIBUTE_TYPE_STRING;
+  attr.pString = &ustr_value;
+
+  TOKEN_SECURITY_ATTRIBUTES_INFORMATION attrs = {};
+  attrs.Version = TOKEN_SECURITY_ATTRIBUTES_INFORMATION_VERSION_V1;
+  attrs.AttributeCount = 1;
+  attrs.pAttributeV1 = &attr;
+
+  TOKEN_SECURITY_ATTRIBUTE_OPERATION op =
+      TOKEN_SECURITY_ATTRIBUTE_OPERATION_ADD;
+
+  TOKEN_SECURITY_ATTRIBUTES_AND_OPERATION_INFORMATION info = {};
+  info.Attributes = &attrs;
+  info.Operations = &op;
+
+  return Set(token_, TokenSecurityAttributes, info);
+}
+
+std::optional<bool> AccessToken::HasSecurityAttribute(
+    std::wstring_view name) const {
+  std::optional<std::vector<char>> buffer =
+      GetTokenInfo(token_.get(), TokenSecurityAttributes);
+  const auto attr = FindSecurityAttribute(buffer, name);
+  if (!attr) {
+    return std::nullopt;
+  }
+  return *attr != nullptr;
+}
+
+std::optional<std::wstring> AccessToken::GetSecurityAttributeString(
+    std::wstring_view name) const {
+  std::optional<std::vector<char>> buffer =
+      GetTokenInfo(token_.get(), TokenSecurityAttributes);
+  const auto attr = FindSecurityAttribute(buffer, name);
+  if (!attr) {
+    return std::nullopt;
+  }
+  PTOKEN_SECURITY_ATTRIBUTE_V1 attr_val = *attr;
+  if (attr_val == nullptr ||
+      attr_val->ValueType != TOKEN_SECURITY_ATTRIBUTE_TYPE_STRING ||
+      attr_val->ValueCount < 1) {
+    return std::nullopt;
+  }
+
+  return std::wstring(UnicodeStringToView(*attr_val->pString));
 }
 
 bool AccessToken::is_valid() const {

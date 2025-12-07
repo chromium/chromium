@@ -9,6 +9,7 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_cloud_identifier.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_permission_mode.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -38,10 +39,10 @@ class FileSystemHandle : public ScriptWrappable, public ExecutionContextClient {
 
   virtual bool isFile() const { return false; }
   virtual bool isDirectory() const { return false; }
-  const char* kind() const {
-    const auto kind = isFile() ? V8FileSystemHandleKind::Enum::kFile
-                               : V8FileSystemHandleKind::Enum::kDirectory;
-    return V8FileSystemHandleKind(kind).AsCStr();
+  V8FileSystemHandleKind kind() const {
+    return V8FileSystemHandleKind(
+        isFile() ? V8FileSystemHandleKind::Enum::kFile
+                 : V8FileSystemHandleKind::Enum::kDirectory);
   }
   const String& name() const { return name_; }
 
@@ -86,10 +87,10 @@ class FileSystemHandle : public ScriptWrappable, public ExecutionContextClient {
 
  private:
   virtual void QueryPermissionImpl(
-      bool writable,
+      mojom::blink::FileSystemAccessPermissionMode mode,
       base::OnceCallback<void(mojom::blink::PermissionStatus)>) = 0;
   virtual void RequestPermissionImpl(
-      bool writable,
+      mojom::blink::FileSystemAccessPermissionMode mode,
       base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
                               mojom::blink::PermissionStatus)>) = 0;
   virtual void MoveImpl(
@@ -105,7 +106,7 @@ class FileSystemHandle : public ScriptWrappable, public ExecutionContextClient {
                               bool)>) = 0;
   virtual void GetUniqueIdImpl(
       base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
-                              const WTF::String&)>) = 0;
+                              const String&)>) = 0;
   virtual void GetCloudIdentifiersImpl(
       base::OnceCallback<
           void(mojom::blink::FileSystemAccessErrorPtr,

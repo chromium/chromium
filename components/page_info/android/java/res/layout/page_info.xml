@@ -10,7 +10,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/sheet_background"
+    android:background="@macro/sheet_bg_color"
     android:orientation="vertical">
 
     <LinearLayout
@@ -21,18 +21,23 @@
         android:showDividers="middle"
         android:divider="?android:listDivider"
         android:dividerPadding="2dp" >
+        <org.chromium.components.page_info.ConnectionSecurityView
+            android:id="@+id/page_info_connection_security"
+            android:visibility="gone"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"/>
         <org.chromium.components.page_info.PageInfoRowView
             android:id="@+id/page_info_connection_row"
             android:visibility="gone"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"/>
         <org.chromium.components.page_info.PageInfoRowView
-            android:id="@+id/page_info_permissions_row"
+            android:id="@+id/page_info_cookies_row"
             android:visibility="gone"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"/>
         <org.chromium.components.page_info.PageInfoRowView
-            android:id="@+id/page_info_cookies_row"
+            android:id="@+id/page_info_permissions_row"
             android:visibility="gone"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"/>

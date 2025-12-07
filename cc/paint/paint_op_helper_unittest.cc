@@ -370,6 +370,8 @@ TEST(PaintOpHelper, SaveLayerFiltersToString) {
           sk_make_sp<BlurPaintFilter>(1.0f, 2.0f, SkTileMode::kRepeat,
                                       /*input=*/nullptr),
           nullptr},
+      sk_make_sp<BlurPaintFilter>(1.0f, 2.0f, SkTileMode::kRepeat,
+                                  /*input=*/nullptr),
       flags);
   EXPECT_EQ(PaintOpHelper::ToString(op),
             "SaveLayerFiltersOp(flags=[color=rgba(0, 0, 0, 255), "
@@ -381,7 +383,9 @@ TEST(PaintOpHelper, SaveLayerFiltersToString) {
             "drawLooper=(nil), supportsFoldingAlpha=true, isValid=true, "
             "hasDiscardableImages=false], "
             "filters={BlurPaintFilter(sigma_x=1.000, sigma_y=2.000, "
-            "tile_mode=kRepeat, input=(nil), crop_rect=(nil)), (nil)})");
+            "tile_mode=kRepeat, input=(nil), crop_rect=(nil)), (nil)}, "
+            "backdrop_filter=BlurPaintFilter(sigma_x=1.000, sigma_y=2.000, "
+            "tile_mode=kRepeat, input=(nil), crop_rect=(nil)))");
 }
 
 TEST(PaintOpHelper, ScaleToString) {
@@ -549,7 +553,7 @@ TEST(PaintOpHelperFilters, MergePaintFilter) {
           SkRect::MakeWH(100.f, 100.f), SkRect::MakeWH(100.f, 100.f),
           PaintFlags::FilterQuality::kNone),
       nullptr};
-  MergePaintFilter filter(filters, 2, &crop_rect);
+  MergePaintFilter filter(filters, &crop_rect);
   EXPECT_EQ(PaintOpHelper::ToString(filter),
             "MergePaintFilter(input_count=2, input=[ImagePaintFilter("
             "image=<paint image>, "

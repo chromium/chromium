@@ -21,8 +21,9 @@ class MockCloudPolicyStore : public CloudPolicyStore {
   MOCK_METHOD0(Load, void(void));
 
   // Publish the protected members.
-  using CloudPolicyStore::NotifyStoreLoaded;
   using CloudPolicyStore::NotifyStoreError;
+  using CloudPolicyStore::NotifyStoreLoaded;
+  using CloudPolicyStore::SetPolicy;
 
   using CloudPolicyStore::invalidation_version_;
   using CloudPolicyStore::policy_map_;

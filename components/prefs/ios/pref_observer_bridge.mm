@@ -10,7 +10,7 @@
 PrefObserverBridge::PrefObserverBridge(id<PrefObserverDelegate> delegate)
     : delegate_(delegate) {}
 
-PrefObserverBridge::~PrefObserverBridge() {}
+PrefObserverBridge::~PrefObserverBridge() = default;
 
 void PrefObserverBridge::ObserveChangesForPreference(
     const std::string& pref_name,

@@ -49,7 +49,6 @@ class TabIterator {
   TabIterator& operator++();
   TabIterator operator++(int);
   bool operator==(TabIterator other) const;
-  bool operator!=(TabIterator other) const;
   const sessions::tab_restore::Tab& operator*() const;
   const sessions::tab_restore::Tab* operator->() const;
 
@@ -78,20 +77,20 @@ class RecentlyClosedTabsBridge : public sessions::TabRestoreServiceObserver {
 
   jboolean GetRecentlyClosedEntries(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jentries,
+      const base::android::JavaRef<jobject>& jentries,
       jint max_entry_count);
   jboolean OpenRecentlyClosedTab(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jtab_model,
+      const base::android::JavaRef<jobject>& jtab_model,
       jint tab_session_id,
       jint j_disposition);
   jboolean OpenRecentlyClosedEntry(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jtab_model,
+      const base::android::JavaRef<jobject>& jtab_model,
       jint session_id);
   jboolean OpenMostRecentlyClosedEntry(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jtab_model);
+      const base::android::JavaRef<jobject>& jtab_model);
   void ClearRecentlyClosedEntries(JNIEnv* env);
 
   // Observer callback for TabRestoreServiceObserver. Notifies the Java bridge
@@ -111,7 +110,7 @@ class RecentlyClosedTabsBridge : public sessions::TabRestoreServiceObserver {
 
   void RestoreAndroidTabGroups(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jtab_model,
+      const base::android::JavaRef<jobject>& jtab_model,
       const std::map<tab_groups::TabGroupId,
                      AndroidLiveTabContextRestoreWrapper::TabGroup>& groups);
 

@@ -14,7 +14,7 @@ namespace crashpad {
 
 static void JNI_CrashpadMain_CrashpadMain(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobjectArray>& j_argv) {
+    const base::android::JavaRef<jobjectArray>& j_argv) {
   std::vector<std::string> argv_strings;
   base::android::AppendJavaStringArrayToStringVector(env, j_argv,
                                                      &argv_strings);
@@ -25,3 +25,5 @@ static void JNI_CrashpadMain_CrashpadMain(
 }
 
 }  // namespace crashpad
+
+DEFINE_JNI(CrashpadMain)

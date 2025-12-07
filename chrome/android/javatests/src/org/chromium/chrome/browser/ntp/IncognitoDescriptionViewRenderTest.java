@@ -10,20 +10,25 @@ import android.view.ViewStub;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
 
 import java.io.IOException;
@@ -32,10 +37,17 @@ import java.util.List;
 /** Render test of incognito description in the incognito ntp. */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-public class IncognitoDescriptionViewRenderTest extends BlankUiTestActivityTestCase {
+@Batch(Batch.PER_CLASS)
+public class IncognitoDescriptionViewRenderTest {
     @ParameterAnnotations.ClassParameter
-    private static List<ParameterSet> sClassParams =
+    private static final List<ParameterSet> sClassParams =
             new NightModeTestUtils.NightModeParams().getParameters();
+
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
@@ -49,43 +61,31 @@ public class IncognitoDescriptionViewRenderTest extends BlankUiTestActivityTestC
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
     }
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
+
+    @Before
+    public void setUp() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Activity activity = getActivity();
-                    activity.setContentView(R.layout.incognito_description_layout);
+                    sActivity.setContentView(R.layout.incognito_description_layout);
                 });
     }
 
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    public void testRender_IncognitoDescriptionView() throws IOException {
-        View view = getActivity().findViewById(android.R.id.content);
+    public void render_IncognitoDescriptionView() throws IOException {
+        View view = sActivity.findViewById(android.R.id.content);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     view.setBackgroundResource(R.color.ntp_bg_incognito);
-                    ViewStub cardStub = getActivity().findViewById(R.id.cookie_card_stub);
-                    cardStub.setLayoutResource(R.layout.incognito_cookie_controls_card);
-                    cardStub.inflate();
-                });
-        mRenderTestRule.render(view, "incognito_description_view");
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
-    public void testRender_IncognitoDescriptionViewTrackingProtection() throws IOException {
-        View view = getActivity().findViewById(android.R.id.content);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    view.setBackgroundResource(R.color.ntp_bg_incognito);
-                    ViewStub cardStub = getActivity().findViewById(R.id.cookie_card_stub);
+                    ViewStub cardStub = sActivity.findViewById(R.id.cookie_card_stub);
                     cardStub.setLayoutResource(R.layout.incognito_tracking_protection_card);
                     cardStub.inflate();
                 });
-        mRenderTestRule.render(view, "incognito_description_view_tracking_protection");
+        mRenderTestRule.render(view, "incognito_description_view_always_block_3pcs_incognito_card");
     }
 }

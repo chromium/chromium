@@ -4,7 +4,9 @@
 
 #include "content/renderer/accessibility/annotations/ax_image_annotator.h"
 
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_discardable_memory_allocator.h"
 #include "content/renderer/accessibility/annotations/ax_annotators_manager.h"
 #include "content/renderer/accessibility/render_accessibility_impl_test.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -16,6 +18,18 @@ namespace content {
 using blink::WebAXObject;
 using blink::WebDocument;
 using testing::ElementsAre;
+
+namespace {
+
+constexpr char kImage1[] =
+    "data:imagepng;base64,"
+    "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/"
+    "w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==";
+constexpr char kImage2[] =
+    "data:image/png;base64,"
+    "iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAACXBIWXMAAAsTAAALEwEAmpwYAA"
+    "AAB3RJTUUH4gcVABQvx8CBmAAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBk"
+    "LmUHAAAAFUlEQVQY02P8//8/A27AxIAXjFRpAKXjAxH/0Dm5AAAAAElFTkSuQmCC";
 
 class TestAXImageAnnotator : public AXImageAnnotator {
  public:
@@ -85,6 +99,8 @@ class MockImageAnnotationService : public image_annotation::mojom::Annotator {
   mojo::ReceiverSet<image_annotation::mojom::Annotator> receivers_;
 };
 
+}  // namespace
+
 class AXImageAnnotatorTest : public RenderAccessibilityImplTest {
  public:
   AXImageAnnotatorTest() = default;
@@ -107,10 +123,14 @@ class AXImageAnnotatorTest : public RenderAccessibilityImplTest {
         ->ax_annotators_manager_for_testing()
         ->AddAnnotatorForTesting(std::move(annotator));
     AXImageAnnotator::IgnoreProtocolChecksForTesting();
+    base::DiscardableMemoryAllocator::SetInstance(
+        &discardable_memory_allocator);
+
     task_environment_.RunUntilIdle();
   }
 
   void TearDown() override {
+    base::DiscardableMemoryAllocator::SetInstance(nullptr);
     GetRenderAccessibilityImpl()
         ->ax_annotators_manager_for_testing()
         ->ClearAnnotatorsForTesting();
@@ -125,6 +145,7 @@ class AXImageAnnotatorTest : public RenderAccessibilityImplTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   MockImageAnnotationService mock_annotator_service_;
+  base::TestDiscardableMemoryAllocator discardable_memory_allocator;
 };
 
 // TODO(crbug.com/1477047, fuchsia:132924): Reenable test on Fuchsia once
@@ -135,22 +156,24 @@ class AXImageAnnotatorTest : public RenderAccessibilityImplTest {
 #define MAYBE_OnImageAdded OnImageAdded
 #endif
 TEST_F(AXImageAnnotatorTest, MAYBE_OnImageAdded) {
-  LoadHTMLAndRefreshAccessibilityTree(R"HTML(
+  LoadHTMLAndRefreshAccessibilityTree(base::StringPrintf(R"HTML(
       <body>
         <p>Test document</p>
-        <img id="A" src="test1.jpg"
+        <img id="A" src="%s"
             style="width: 200px; height: 150px;">
-        <img id="B" src="test2.jpg"
+        <img id="B" src="%s"
             style="visibility: hidden; width: 200px; height: 150px;">
       </body>
-      )HTML");
+      )HTML",
+                                                         kImage1, kImage2)
+                                          .c_str());
 
   // Every time we call a method on a Mojo interface, a message is posted to the
   // current task queue. We need to ask the queue to drain itself before we
   // check test expectations.
   task_environment_.RunUntilIdle();
 
-  EXPECT_THAT(mock_annotator_service().image_ids_, ElementsAre("test1.jpg"));
+  EXPECT_THAT(mock_annotator_service().image_ids_, ElementsAre(kImage1));
   ASSERT_EQ(1u, mock_annotator_service().image_processors_.size());
   EXPECT_TRUE(mock_annotator_service().image_processors_[0].is_bound());
   EXPECT_EQ(1u, mock_annotator_service().callbacks_.size());
@@ -171,7 +194,7 @@ TEST_F(AXImageAnnotatorTest, MAYBE_OnImageAdded) {
   SendPendingAccessibilityEvents();
 
   EXPECT_THAT(mock_annotator_service().image_ids_,
-              ElementsAre("test1.jpg", "test2.jpg", "test1.jpg", "test2.jpg"));
+              ElementsAre(kImage1, kImage2, kImage1, kImage2));
   ASSERT_EQ(4u, mock_annotator_service().image_processors_.size());
   EXPECT_TRUE(mock_annotator_service().image_processors_[0].is_bound());
   EXPECT_TRUE(mock_annotator_service().image_processors_[1].is_bound());
@@ -181,20 +204,21 @@ TEST_F(AXImageAnnotatorTest, MAYBE_OnImageAdded) {
 }
 
 TEST_F(AXImageAnnotatorTest, OnImageUpdated) {
-  LoadHTMLAndRefreshAccessibilityTree(R"HTML(
+  LoadHTMLAndRefreshAccessibilityTree(base::StringPrintf(R"HTML(
       <body>
         <p>Test document</p>
-        <img id="A" src="test1.jpg"
-            style="width: 200px; height: 150px;">
+        <img src="%s" style="width: 200px; height: 150px;">
       </body>
-      )HTML");
+      )HTML",
+                                                         kImage1)
+                                          .c_str());
 
   // Every time we call a method on a Mojo interface, a message is posted to the
   // current task queue. We need to ask the queue to drain itself before we
   // check test expectations.
   task_environment_.RunUntilIdle();
 
-  EXPECT_THAT(mock_annotator_service().image_ids_, ElementsAre("test1.jpg"));
+  EXPECT_THAT(mock_annotator_service().image_ids_, ElementsAre(kImage1));
   ASSERT_EQ(1u, mock_annotator_service().image_processors_.size());
   EXPECT_TRUE(mock_annotator_service().image_processors_[0].is_bound());
   EXPECT_EQ(1u, mock_annotator_service().callbacks_.size());
@@ -209,24 +233,24 @@ TEST_F(AXImageAnnotatorTest, OnImageUpdated) {
   SendPendingAccessibilityEvents();
 
   EXPECT_THAT(mock_annotator_service().image_ids_,
-              ElementsAre("test1.jpg", "test1.jpg"));
+              ElementsAre(kImage1, kImage1));
   ASSERT_EQ(2u, mock_annotator_service().image_processors_.size());
   EXPECT_TRUE(mock_annotator_service().image_processors_[0].is_bound());
   EXPECT_TRUE(mock_annotator_service().image_processors_[1].is_bound());
   EXPECT_EQ(2u, mock_annotator_service().callbacks_.size());
 
   // Update node "A".
-  ExecuteJavaScriptForTests("document.querySelector('img').src = 'test2.jpg';");
+  ExecuteJavaScriptForTests(
+      base::StringPrintf("document.querySelector('img').src = '%s';", kImage2));
   SendPendingAccessibilityEvents();
 
   ClearHandledUpdates();
   // This should update the annotations of all images on the page, including the
   // now updated image src.
-  MarkSubtreeDirty(root_obj);
   SendPendingAccessibilityEvents();
 
   EXPECT_THAT(mock_annotator_service().image_ids_,
-              ElementsAre("test1.jpg", "test1.jpg", "test2.jpg"));
+              ElementsAre(kImage1, kImage1, kImage2));
   ASSERT_EQ(3u, mock_annotator_service().image_processors_.size());
   EXPECT_TRUE(mock_annotator_service().image_processors_[0].is_bound());
   EXPECT_TRUE(mock_annotator_service().image_processors_[1].is_bound());

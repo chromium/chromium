@@ -7,11 +7,14 @@
 
 #include <string>
 
+class BrowserWindowInterface;
+
 namespace install_chrome_app {
 
 // Initiates the UI flow for installing a Chrome app.
 // Currently this is done by directing the user to the webstore page.
-void InstallChromeApp(const std::string& app_id);
+void InstallChromeApp(const std::string& app_id,
+                      BrowserWindowInterface* browser);
 
 }  // namespace install_chrome_app
 

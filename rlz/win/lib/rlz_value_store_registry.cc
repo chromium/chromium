@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "rlz/win/lib/rlz_value_store_registry.h"
 
+#include "base/compiler_specific.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
@@ -359,7 +355,8 @@ void RlzValueStoreRegistry::CollectGarbage() {
 
   for (size_t i = 0; i < std::size(subkeys); i++) {
     std::string subkey_name;
-    base::StringAppendF(&subkey_name, "%s\\%s", kLibKeyName, subkeys[i]);
+    base::StringAppendF(&subkey_name, "%s\\%s", kLibKeyName,
+                        UNSAFE_TODO(subkeys[i]));
     AppendBrandToString(&subkey_name);
     std::wstring subkey_namew = base::ASCIIToWide(subkey_name);
 

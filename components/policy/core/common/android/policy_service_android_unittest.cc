@@ -154,3 +154,5 @@ TEST_F(PolicyServiceAndroidTest, PolicyUpdateEvent) {
 
 }  // namespace android
 }  // namespace policy
+
+DEFINE_JNI(PolicyServiceTestSupporter)

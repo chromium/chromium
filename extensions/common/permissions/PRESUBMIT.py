@@ -10,21 +10,31 @@ for more details on the presubmit API built into depot_tools.
 
 import sys
 
-def _CreateAPIPermissionIDChecker(input_api, output_api):
+PRESUBMIT_VERSION = '2.0.0'
+
+
+def CheckAPIPermissionIDUpload(input_api, output_api):
   original_sys_path = sys.path
 
   try:
-    sys.path.append(input_api.os_path.join(
-        input_api.PresubmitLocalPath(), '..', '..', '..', 'tools',
-        'strict_enum_value_checker'))
+    sys.path.append(
+        input_api.os_path.join(
+            input_api.PresubmitLocalPath(),
+            '..',
+            '..',
+            '..',
+            'tools',
+            'strict_enum_value_checker',
+        )
+    )
     from strict_enum_value_checker import StrictEnumValueChecker
   finally:
     sys.path = original_sys_path
 
-  return StrictEnumValueChecker(input_api, output_api,
-      start_marker='enum APIPermissionID {', end_marker='};',
-      path='extensions/common/mojom/api_permission_id.mojom')
-
-def CheckChangeOnUpload(input_api, output_api):
-  return _CreateAPIPermissionIDChecker(input_api, output_api).Run()
-
+  return StrictEnumValueChecker(
+      input_api,
+      output_api,
+      start_marker='enum APIPermissionID {',
+      end_marker='};',
+      path='extensions/common/mojom/api_permission_id.mojom',
+  ).Run()

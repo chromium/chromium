@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SYNC_TEST_INTEGRATION_WALLET_HELPER_H_
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_WALLET_HELPER_H_
 
-#include <map>
 #include <string>
 #include <utility>
 #include <vector>
@@ -15,7 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -24,6 +23,7 @@ class CreditCard;
 struct CreditCardCloudTokenData;
 struct PaymentsCustomerData;
 struct PaymentsMetadata;
+class PaymentsDataManager;
 class PersonalDataManager;
 struct ServerCvc;
 }  // namespace autofill
@@ -41,7 +41,20 @@ inline constexpr char kDefaultBillingAddressID[] = "billing address entity ID";
 inline constexpr char kDefaultCreditCardCloudTokenDataID[] =
     "cloud token data ID";
 
-// Used to access the personal data manager within a particular sync profile.
+// Represents the two underlying instances of AutofillWebDataService, one for
+// the profile store (used when sync-the-feature is enabled) and the other one
+// for the account store (used otherwise).
+enum class StoreType {
+  kProfileStore,
+  kAccountStore,
+};
+
+// Used to access the `PaymentsDataManager` for a particular sync profile.
+[[nodiscard]] autofill::PaymentsDataManager* GetPaymentsDataManager(int index);
+
+// Used to access the `PersonalDataManager` for a particular sync profile.
+// Prefer using `GetPaymentsDataManager` instead - Wallet should not need to
+// know address-related information.
 [[nodiscard]] autofill::PersonalDataManager* GetPersonalDataManager(int index);
 
 // Used to access the web data service within a particular sync profile.
@@ -53,35 +66,49 @@ GetProfileWebDataService(int index);
 [[nodiscard]] scoped_refptr<autofill::AutofillWebDataService>
 GetAccountWebDataService(int index);
 
-void SetServerCreditCards(
+// Same as above but returns the instance corresponding to `store_type`.
+[[nodiscard]] scoped_refptr<autofill::AutofillWebDataService> GetWebDataService(
     int profile,
-    const std::vector<autofill::CreditCard>& credit_cards);
+    StoreType store_type);
+
+void SetServerCreditCards(int profile,
+                          const std::vector<autofill::CreditCard>& credit_cards,
+                          StoreType store_type);
 
 void SetPaymentsCustomerData(
     int profile,
-    const autofill::PaymentsCustomerData& customer_data);
+    const autofill::PaymentsCustomerData& customer_data,
+    StoreType store_type);
 
 void SetCreditCardCloudTokenData(
     int profile,
-    const std::vector<autofill::CreditCardCloudTokenData>& cloud_token_data);
+    const std::vector<autofill::CreditCardCloudTokenData>& cloud_token_data,
+    StoreType store_type);
 
 void SetServerCardCredentialData(int profile,
-                                 const autofill::CreditCard& credit_card);
+                                 const autofill::CreditCard& credit_card,
+                                 StoreType store_type);
 
 void RemoveServerCardCredentialData(int profile,
-                                    const autofill::CreditCard& credit_card);
+                                    const autofill::CreditCard& credit_card,
+                                    StoreType store_type);
 
 void UpdateServerCardCredentialData(int profile,
-                                    const autofill::CreditCard& credit_card);
+                                    const autofill::CreditCard& credit_card,
+                                    StoreType store_type);
 
 void UpdateServerCardMetadata(int profile,
-                              const autofill::CreditCard& credit_card);
+                              const autofill::CreditCard& credit_card,
+                              StoreType store_type);
 
-std::vector<autofill::PaymentsMetadata> GetServerCardsMetadata(int profile);
+std::vector<autofill::PaymentsMetadata> GetServerCardsMetadata(
+    int profile,
+    StoreType store_type);
 
 // Function supports AUTOFILL_WALLET_DATA and AUTOFILL_WALLET_OFFER.
 sync_pb::DataTypeState GetWalletDataTypeState(syncer::DataType type,
-                                              int profile);
+                                              int profile,
+                                              StoreType store_type);
 
 sync_pb::SyncEntity CreateDefaultSyncWalletCard();
 
@@ -117,7 +144,7 @@ void ExpectDefaultCreditCardValues(const autofill::CreditCard& card);
 void ExpectDefaultWalletCredentialValues(const autofill::CreditCard& card);
 
 // Load current data from the database of profile |profile|.
-std::vector<autofill::CreditCard*> GetServerCreditCards(int profile);
+std::vector<const autofill::CreditCard*> GetServerCreditCards(int profile);
 
 }  // namespace wallet_helper
 
@@ -129,37 +156,17 @@ class AutofillWalletChecker : public StatusChangeChecker,
   ~AutofillWalletChecker() override;
 
   // StatusChangeChecker implementation.
-  bool Wait() override;
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
   // autofill::PaymentsDataManager::Observer implementation.
   void OnPaymentsDataChanged() override;
 
  private:
-  const int profile_a_;
-  const int profile_b_;
-};
-
-// Checker to block until autofill wallet metadata sizes match on both profiles.
-class AutofillWalletMetadataSizeChecker
-    : public StatusChangeChecker,
-      public autofill::PaymentsDataManager::Observer {
- public:
-  AutofillWalletMetadataSizeChecker(int profile_a, int profile_b);
-  ~AutofillWalletMetadataSizeChecker() override;
-
-  // StatusChangeChecker implementation.
-  bool IsExitConditionSatisfied(std::ostream* os) override;
-
-  // autofill::PaymentsDataManager::Observer implementation.
-  void OnPaymentsDataChanged() override;
-
- private:
-  bool IsExitConditionSatisfiedImpl();
+  // StatusChangeChecker overrides.
+  void WillStartWaiting() override;
 
   const int profile_a_;
   const int profile_b_;
-  bool checking_exit_condition_in_flight_ = false;
 };
 
 // Checker to block until a new progress marker with correct timestamp is
@@ -183,6 +190,7 @@ class FullUpdateTypeProgressMarkerChecker : public StatusChangeChecker,
 
   // syncer::SyncServiceObserver:
   void OnSyncCycleCompleted(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
  private:
   const base::Time min_required_progress_marker_timestamp_;

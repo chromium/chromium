@@ -5,12 +5,11 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_SYSTEM_DISPLAY_DISPLAY_INFO_PROVIDER_CHROMEOS_H_
 #define CHROME_BROWSER_EXTENSIONS_SYSTEM_DISPLAY_DISPLAY_INFO_PROVIDER_CHROMEOS_H_
 
-#include <map>
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
-#include "extensions/browser/api/system_display/display_info_provider.h"
+#include "extensions/browser/display_info_provider_base.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -18,7 +17,7 @@
 namespace extensions {
 
 class DisplayInfoProviderChromeOS
-    : public DisplayInfoProvider,
+    : public DisplayInfoProviderBase,
       public crosapi::mojom::CrosDisplayConfigObserver {
  public:
   explicit DisplayInfoProviderChromeOS(

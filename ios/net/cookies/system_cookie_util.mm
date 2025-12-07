@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/net/cookies/system_cookie_util.h"
+#import "ios/net/cookies/system_cookie_util.h"
 
 #import <Foundation/Foundation.h>
-#include <stddef.h>
+#import <stddef.h>
 
-#include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/strings/sys_string_conversions.h"
-#include "net/cookies/cookie_constants.h"
-#include "url/gurl.h"
-#include "url/third_party/mozilla/url_parse.h"
+#import "base/logging.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/strings/sys_string_conversions.h"
+#import "net/cookies/cookie_constants.h"
+#import "url/gurl.h"
+#import "url/third_party/mozilla/url_parse.h"
 
 namespace net {
 
@@ -35,15 +35,18 @@ std::unique_ptr<net::CanonicalCookie> CanonicalCookieFromSystemCookie(
   net::CookieSameSite same_site = net::CookieSameSite::NO_RESTRICTION;
   if (@available(iOS 13, *)) {
     same_site = net::CookieSameSite::UNSPECIFIED;
-    if ([cookie.sameSitePolicy isEqual:NSHTTPCookieSameSiteLax])
+    if ([cookie.sameSitePolicy isEqual:NSHTTPCookieSameSiteLax]) {
       same_site = net::CookieSameSite::LAX_MODE;
+    }
 
-    if ([cookie.sameSitePolicy isEqual:NSHTTPCookieSameSiteStrict])
+    if ([cookie.sameSitePolicy isEqual:NSHTTPCookieSameSiteStrict]) {
       same_site = net::CookieSameSite::STRICT_MODE;
+    }
 
     if ([[cookie.sameSitePolicy lowercaseString]
-            isEqual:kNSHTTPCookieSameSiteNone])
+            isEqual:kNSHTTPCookieSameSiteNone]) {
       same_site = net::CookieSameSite::NO_RESTRICTION;
+    }
   }
 
   return net::CanonicalCookie::FromStorage(
@@ -57,9 +60,10 @@ std::unique_ptr<net::CanonicalCookie> CanonicalCookieFromSystemCookie(
       same_site,
       // When iOS begins to support the 'Priority' attribute, pass it through
       // here.
-      net::COOKIE_PRIORITY_DEFAULT, std::nullopt /* partition_key */,
+      net::COOKIE_PRIORITY_DEFAULT, /*partition_key=*/std::nullopt,
       net::CookieSourceScheme::kUnset, url::PORT_UNSPECIFIED,
-      net::CookieSourceType::kOther);
+      net::CookieSourceType::kOther,
+      net::CanonicalCookieFromStorageCallSite::kIosSystemCookieUtil);
 }
 
 // Converts net::CanonicalCookie to NSHTTPCookie.
@@ -111,8 +115,9 @@ NSHTTPCookie* SystemCookieFromCanonicalCookie(
   if (cookie.SecureAttribute()) {
     [properties setObject:@"Y" forKey:NSHTTPCookieSecure];
   }
-  if (cookie.IsHttpOnly())
+  if (cookie.IsHttpOnly()) {
     [properties setObject:@YES forKey:kNSHTTPCookieHttpOnly];
+  }
   NSHTTPCookie* system_cookie = [NSHTTPCookie cookieWithProperties:properties];
   DCHECK(system_cookie);
   return system_cookie;

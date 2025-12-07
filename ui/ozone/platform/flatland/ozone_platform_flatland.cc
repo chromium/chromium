@@ -14,17 +14,18 @@
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/no_destructor.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/ime/fuchsia/input_method_fuchsia.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/events/ozone/layout/stub/stub_keyboard_layout_engine.h"
 #include "ui/events/platform/platform_event_source.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/ozone/common/bitmap_cursor_factory.h"
 #include "ui/ozone/common/stub_overlay_manager.h"
 #include "ui/ozone/platform/flatland/flatland_gpu_host.h"
@@ -40,6 +41,7 @@
 #include "ui/ozone/public/input_controller.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/ozone_switches.h"
+#include "ui/ozone/public/stub_input_controller.h"
 #include "ui/ozone/public/system_input_injector.h"
 #include "ui/platform_window/fuchsia/view_ref_pair.h"
 #include "ui/platform_window/platform_window_init_properties.h"
@@ -161,7 +163,7 @@ class OzonePlatformFlatland : public OzonePlatform,
 
     window_manager_ = std::make_unique<FlatlandWindowManager>();
     overlay_manager_ = std::make_unique<StubOverlayManager>();
-    input_controller_ = CreateStubInputController();
+    input_controller_ = std::make_unique<StubInputController>();
     cursor_factory_ = std::make_unique<BitmapCursorFactory>();
 
     flatland_gpu_host_ =

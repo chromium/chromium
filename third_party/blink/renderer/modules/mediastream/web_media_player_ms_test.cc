@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -21,22 +22,23 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/layers/layer.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "media/base/media_content_type.h"
 #include "media/base/media_util.h"
 #include "media/base/test_helpers.h"
 #include "media/base/video_frame.h"
-#include "media/video/fake_gpu_memory_buffer.h"
 #include "media/video/mock_gpu_memory_buffer_video_frame_pool.h"
 #include "media/video/mock_gpu_video_accelerator_factories.h"
-#include "third_party/blink/public/common/media/display_type.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_fullscreen_video_status.h"
 #include "third_party/blink/public/platform/web_media_player.h"
-#include "third_party/blink/public/platform/web_media_player_client.h"
 #include "third_party/blink/public/platform/web_media_player_source.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_audio_renderer.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_renderer_factory.h"
 #include "third_party/blink/renderer/modules/mediastream/web_media_player_ms_compositor.h"
+#include "third_party/blink/renderer/platform/media/media_player_client.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
@@ -159,6 +161,8 @@ class FakeWebMediaPlayerDelegate : public WebMediaPlayerDelegate {
 
   bool IsPageHidden() override { return is_page_hidden_; }
 
+  bool IsFrameHidden() override { return false; }
+
   void set_page_hidden(bool is_page_hidden) {
     is_page_hidden_ = is_page_hidden;
   }
@@ -198,12 +202,12 @@ class ReusableMessageLoopEvent {
 };
 
 // The class is used mainly to inject VideoFrames into WebMediaPlayerMS.
-class MockMediaStreamVideoRenderer : public WebMediaStreamVideoRenderer {
+class MockMediaStreamVideoRenderer : public MediaStreamVideoRenderer {
  public:
   MockMediaStreamVideoRenderer(
       const scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       ReusableMessageLoopEvent* message_loop_controller,
-      const WebMediaStreamVideoRenderer::RepaintCB& repaint_cb,
+      const MediaStreamVideoRenderer::RepaintCB& repaint_cb,
       raw_ptr<base::test::TaskEnvironment> task_environment)
       : started_(false),
         standard_size_(kStandardWidth, kStandardHeight),
@@ -213,7 +217,7 @@ class MockMediaStreamVideoRenderer : public WebMediaStreamVideoRenderer {
         delay_till_next_generated_frame_(base::Seconds(1.0 / 30.0)),
         task_environment_(task_environment) {}
 
-  // Implementation of WebMediaStreamVideoRenderer
+  // Implementation of MediaStreamVideoRenderer
   void Start() override;
   void Stop() override;
   void Resume() override;
@@ -247,7 +251,7 @@ class MockMediaStreamVideoRenderer : public WebMediaStreamVideoRenderer {
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   const raw_ptr<ReusableMessageLoopEvent, DanglingUntriaged>
       message_loop_controller_;
-  const WebMediaStreamVideoRenderer::RepaintCB repaint_cb_;
+  const MediaStreamVideoRenderer::RepaintCB repaint_cb_;
 
   base::circular_deque<TestFrame> frames_;
   base::TimeDelta delay_till_next_generated_frame_;
@@ -255,7 +259,7 @@ class MockMediaStreamVideoRenderer : public WebMediaStreamVideoRenderer {
   raw_ptr<base::test::TaskEnvironment> task_environment_;
 };
 
-class MockMediaStreamAudioRenderer : public WebMediaStreamAudioRenderer {
+class MockMediaStreamAudioRenderer : public MediaStreamAudioRenderer {
  public:
   MockMediaStreamAudioRenderer() {}
 
@@ -263,7 +267,7 @@ class MockMediaStreamAudioRenderer : public WebMediaStreamAudioRenderer {
   void Stop() override {}
   void Play() override {}
   void Pause() override {}
-  void SetVolume(float volume) override {}
+  MOCK_METHOD(void, SetVolume, (float volume));
 
   void SwitchOutputDevice(const std::string& device_id,
                           media::OutputDeviceStatusCB callback) override {}
@@ -321,8 +325,7 @@ void MockMediaStreamVideoRenderer::QueueFrames(
           gfx::Size(standard_size_.width() * 2, standard_size_.height() * 2);
     }
     if (token < static_cast<int>(FrameType::MIN_TYPE)) {
-      CHECK(false) << "Unrecognized frame type: " << token;
-      return;
+      NOTREACHED() << "Unrecognized frame type: " << token;
     }
 
     if (token < 0) {
@@ -442,9 +445,9 @@ class MockRenderFactory : public MediaStreamRendererFactory {
         message_loop_controller_(message_loop_controller),
         task_environment_(task_environment) {}
 
-  scoped_refptr<WebMediaStreamVideoRenderer> GetVideoRenderer(
+  scoped_refptr<MediaStreamVideoRenderer> GetVideoRenderer(
       const WebMediaStream& web_stream,
-      const WebMediaStreamVideoRenderer::RepaintCB& repaint_cb,
+      const MediaStreamVideoRenderer::RepaintCB& repaint_cb,
       scoped_refptr<base::SequencedTaskRunner> video_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> main_render_task_runner)
       override;
@@ -453,7 +456,7 @@ class MockRenderFactory : public MediaStreamRendererFactory {
     return static_cast<MockMediaStreamVideoRenderer*>(provider_.get());
   }
 
-  scoped_refptr<WebMediaStreamAudioRenderer> GetAudioRenderer(
+  scoped_refptr<MediaStreamAudioRenderer> GetAudioRenderer(
       const WebMediaStream& web_stream,
       WebLocalFrame* web_frame,
       const WebString& device_id,
@@ -461,7 +464,7 @@ class MockRenderFactory : public MediaStreamRendererFactory {
     return audio_renderer_;
   }
 
-  void set_audio_renderer(scoped_refptr<WebMediaStreamAudioRenderer> renderer) {
+  void set_audio_renderer(scoped_refptr<MediaStreamAudioRenderer> renderer) {
     audio_renderer_ = std::move(renderer);
   }
 
@@ -474,22 +477,22 @@ class MockRenderFactory : public MediaStreamRendererFactory {
 
  private:
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  scoped_refptr<WebMediaStreamVideoRenderer> provider_;
+  scoped_refptr<MediaStreamVideoRenderer> provider_;
   const raw_ptr<ReusableMessageLoopEvent> message_loop_controller_;
   bool support_video_renderer_ = true;
-  scoped_refptr<WebMediaStreamAudioRenderer> audio_renderer_;
+  scoped_refptr<MediaStreamAudioRenderer> audio_renderer_;
   raw_ptr<base::test::TaskEnvironment> task_environment_;
 };
 
-scoped_refptr<WebMediaStreamVideoRenderer> MockRenderFactory::GetVideoRenderer(
+scoped_refptr<MediaStreamVideoRenderer> MockRenderFactory::GetVideoRenderer(
     const WebMediaStream& web_stream,
-    const WebMediaStreamVideoRenderer::RepaintCB& repaint_cb,
+    const MediaStreamVideoRenderer::RepaintCB& repaint_cb,
     scoped_refptr<base::SequencedTaskRunner> video_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> main_render_task_runner) {
   if (!support_video_renderer_)
     return nullptr;
 
-  provider_ = new MockMediaStreamVideoRenderer(
+  provider_ = base::MakeRefCounted<MockMediaStreamVideoRenderer>(
       task_runner_, message_loop_controller_, repaint_cb, task_environment_);
 
   return provider_;
@@ -498,8 +501,8 @@ scoped_refptr<WebMediaStreamVideoRenderer> MockRenderFactory::GetVideoRenderer(
 // This is the main class coordinating the tests.
 // Basic workflow:
 // 1. WebMediaPlayerMS::Load will generate and start
-// WebMediaStreamVideoRenderer.
-// 2. WebMediaStreamVideoRenderer will start pushing frames into
+// MediaStreamVideoRenderer.
+// 2. MediaStreamVideoRenderer will start pushing frames into
 //    WebMediaPlayerMS repeatedly.
 // 3. On WebMediaPlayerMS receiving the first frame, a cc::Layer will be
 //    created.
@@ -510,7 +513,7 @@ scoped_refptr<WebMediaStreamVideoRenderer> MockRenderFactory::GetVideoRenderer(
 //    WebMediaPlayerMSCompositor::UpdateCurrentFrame, GetCurrentFrame for
 //    rendering repeatedly.
 // 6. When WebMediaPlayerMS::pause gets called, it should trigger
-//    WebMediaStreamVideoRenderer::Pause, and then the provider will stop
+//    MediaStreamVideoRenderer::Pause, and then the provider will stop
 //    pushing frames into WebMediaPlayerMS, but instead digesting them;
 //    simultanously, it should call cc::VideoFrameProviderClient::StopRendering,
 //    so cc::VideoFrameProviderClient will stop asking frames from
@@ -522,7 +525,7 @@ class WebMediaPlayerMSTest
           testing::tuple<bool /* enable_surface_layer_for_video */,
                          bool /* opaque_frame */,
                          bool /* odd_size_frame */>>,
-      public WebMediaPlayerClient,
+      public MediaPlayerClient,
       public cc::VideoFrameProvider::Client {
  public:
   WebMediaPlayerMSTest()
@@ -534,6 +537,7 @@ class WebMediaPlayerMSTest
         surface_layer_bridge_(
             std::make_unique<NiceMock<MockSurfaceLayerBridge>>()),
         submitter_(std::make_unique<NiceMock<MockWebVideoFrameSubmitter>>()),
+        test_sii_(base::MakeRefCounted<gpu::TestSharedImageInterface>()),
         layer_set_(false),
         rendering_(false),
         background_rendering_(false) {
@@ -558,24 +562,14 @@ class WebMediaPlayerMSTest
   void SizeChanged() override;
   void SetCcLayer(cc::Layer* layer) override;
   void OnFirstFrame(base::TimeTicks, size_t) override {}
-  WebMediaPlayer::TrackId AddAudioTrack(const WebString& id,
-                                        AudioTrackKind,
-                                        const WebString& label,
-                                        const WebString& language,
-                                        bool enabled) override {
-    return WebMediaPlayer::TrackId();
-  }
-  void RemoveAudioTrack(WebMediaPlayer::TrackId) override {}
-  WebMediaPlayer::TrackId AddVideoTrack(const WebString& id,
-                                        VideoTrackKind,
-                                        const WebString& label,
-                                        const WebString& language,
-                                        bool selected) override {
-    return WebMediaPlayer::TrackId();
-  }
-  void RemoveVideoTrack(WebMediaPlayer::TrackId) override {}
+
+  void RemoveTrack(const media::MediaTrack&) override {}
+  void AddTrack(const media::MediaTrack&) override {}
+  void SetTrackState(const media::MediaTrack&,
+                     media::MediaTrack::State) override {}
+
   void MediaSourceOpened(std::unique_ptr<WebMediaSource>) override {}
-  void RemotePlaybackCompatibilityChanged(const WebURL& url,
+  void RemotePlaybackCompatibilityChanged(const KURL& url,
                                           bool is_compatible) override {}
   bool WasAlwaysMuted() override { return false; }
   bool HasSelectedVideoTrack() override { return false; }
@@ -589,7 +583,7 @@ class WebMediaPlayerMSTest
       const WebString& remote_device_friendly_name) override {}
   void MediaRemotingStopped(int error_code) override {}
   void ResumePlayback() override {}
-  void PausePlayback(PauseReason) override {}
+  void PausePlayback(WebMediaPlayer::PauseReason) override {}
   void DidPlayerStartPlaying() override {}
   void DidPlayerPaused(bool) override {}
   void DidPlayerMutedStatusChange(bool muted) override {}
@@ -631,10 +625,6 @@ class WebMediaPlayerMSTest
         new media::MockGpuMemoryBufferVideoFramePool(&frame_ready_cbs_));
   }
 
-  void DisableMaxVsyncDelayForRendererReset() {
-    compositor_->maximum_vsync_delay_for_renderer_reset_ =
-        base::TimeDelta::Max();
-  }
   // Sets the value of the rendering_ flag. Called from expectations in the
   // test.
   void SetRendering(bool rendering) { rendering_ = rendering; }
@@ -649,7 +639,7 @@ class WebMediaPlayerMSTest
   MOCK_METHOD1(DoNetworkStateChanged, void(WebMediaPlayer::NetworkState));
   MOCK_METHOD1(DoReadyStateChanged, void(WebMediaPlayer::ReadyState));
   MOCK_METHOD1(CheckSizeChanged, void(gfx::Size));
-  MOCK_CONST_METHOD0(GetDisplayType, DisplayType());
+  MOCK_CONST_METHOD0(GetDisplayType, WebMediaPlayer::DisplayType());
   MOCK_CONST_METHOD0(CouldPlayIfEnoughData, bool());
   MOCK_METHOD0(OnRequestVideoFrameCallback, void());
   MOCK_METHOD0(GetElementId, int());
@@ -665,6 +655,12 @@ class WebMediaPlayerMSTest
 
   // Testing harness for the RequestVideoFrameCallback test.
   void TestRequestFrameCallbackWithVideoFrameMetadata(bool algorithm_enabled);
+
+  void MapTimestampsToRenderTimeTicks(
+      const std::vector<base::TimeDelta>& timestamps,
+      std::vector<base::TimeTicks>* wall_clock_times);
+
+  void RunCompositorTaskRunner();
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -683,6 +679,7 @@ class WebMediaPlayerMSTest
       surface_layer_bridge_ptr_ = nullptr;
   raw_ptr<NiceMock<MockWebVideoFrameSubmitter>, DanglingUntriaged>
       submitter_ptr_ = nullptr;
+  scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
   bool enable_surface_layer_for_video_ = false;
   base::TimeTicks deadline_min_;
   base::TimeTicks deadline_max_;
@@ -709,8 +706,8 @@ void WebMediaPlayerMSTest::InitializeWebMediaPlayerMS() {
       scheduler::GetSingleThreadTaskRunnerForTesting(),
       scheduler::GetSingleThreadTaskRunnerForTesting(), gpu_factories_.get(),
       WebString(),
-      WTF::BindOnce(&WebMediaPlayerMSTest::CreateMockSurfaceLayerBridge,
-                    WTF::Unretained(this)),
+      blink::BindOnce(&WebMediaPlayerMSTest::CreateMockSurfaceLayerBridge,
+                      Unretained(this)),
       std::move(submitter_), enable_surface_layer_for_video_);
   player_->SetMediaStreamRendererFactoryForTesting(
       std::unique_ptr<MediaStreamRendererFactory>(render_factory_));
@@ -792,8 +789,8 @@ void WebMediaPlayerMSTest::StartRendering() {
   if (!rendering_) {
     rendering_ = true;
     scheduler::GetSingleThreadTaskRunnerForTesting()->PostTask(
-        FROM_HERE, WTF::BindOnce(&WebMediaPlayerMSTest::RenderFrame,
-                                 weak_factory_.GetWeakPtr()));
+        FROM_HERE, blink::BindOnce(&WebMediaPlayerMSTest::RenderFrame,
+                                   weak_factory_.GetWeakPtr()));
   }
   DoStartRendering();
 }
@@ -829,8 +826,8 @@ void WebMediaPlayerMSTest::RenderFrame() {
   }
   scheduler::GetSingleThreadTaskRunnerForTesting()->PostDelayedTask(
       FROM_HERE,
-      WTF::BindOnce(&WebMediaPlayerMSTest::RenderFrame,
-                    weak_factory_.GetWeakPtr()),
+      blink::BindOnce(&WebMediaPlayerMSTest::RenderFrame,
+                      weak_factory_.GetWeakPtr()),
       base::Seconds(1.0 / 60.0));
 }
 
@@ -912,20 +909,31 @@ void WebMediaPlayerMSTest::TestRequestFrameCallbackWithVideoFrameMetadata(
   player_->RequestVideoFrameCallback();
   player_->RequestVideoFrameCallback();
 
-  EXPECT_CALL(*this, OnRequestVideoFrameCallback())
-      .Times(1)
-      .WillOnce(testing::Invoke([&]() {
-        if (!algorithm_enabled && !enable_surface_layer_for_video_) {
-          metadata = player_->GetVideoFramePresentationMetadata();
-          // We use EXPECT_GE to compare the deadline_max value with the
-          // expected display time. This is because the deadline_max_ member
-          // gets updated in the RenderFrame() function which may get called
-          // multiple times before the OnRequestVideoFrameCallback() is invoked.
-          EXPECT_GE(deadline_max_, metadata->expected_display_time);
-        }
-      }));
+  EXPECT_CALL(*this, OnRequestVideoFrameCallback()).Times(1).WillOnce([&]() {
+    if (!algorithm_enabled && !enable_surface_layer_for_video_) {
+      metadata = player_->GetVideoFramePresentationMetadata();
+      // We use EXPECT_GE to compare the deadline_max value with the
+      // expected display time. This is because the deadline_max_ member
+      // gets updated in the RenderFrame() function which may get called
+      // multiple times before the OnRequestVideoFrameCallback() is invoked.
+      EXPECT_GE(deadline_max_, metadata->expected_display_time);
+    }
+  });
   message_loop_controller_.RunAndWaitForStatus(media::PIPELINE_OK);
   testing::Mock::VerifyAndClearExpectations(this);
+}
+
+void WebMediaPlayerMSTest::MapTimestampsToRenderTimeTicks(
+    const std::vector<base::TimeDelta>& timestamps,
+    std::vector<base::TimeTicks>* wall_clock_times) {
+  compositor_->MapTimestampsToRenderTimeTicks(timestamps, wall_clock_times);
+}
+
+void WebMediaPlayerMSTest::RunCompositorTaskRunner() {
+  base::RunLoop run_loop;
+  compositor_->video_frame_compositor_task_runner_->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 TEST_P(WebMediaPlayerMSTest, NoDataDuringLoadForVideo) {
@@ -948,8 +956,7 @@ TEST_P(WebMediaPlayerMSTest, NoDataDuringLoadForVideo) {
 TEST_P(WebMediaPlayerMSTest, NoWaitForFrameForAudio) {
   InitializeWebMediaPlayerMS();
   is_audio_element_ = true;
-  scoped_refptr<WebMediaStreamAudioRenderer> audio_renderer(
-      new MockMediaStreamAudioRenderer());
+  auto audio_renderer = base::MakeRefCounted<MockMediaStreamAudioRenderer>();
   render_factory_->set_audio_renderer(audio_renderer);
   EXPECT_CALL(*this,
               DoNetworkStateChanged(WebMediaPlayer::kNetworkStateLoading));
@@ -986,7 +993,8 @@ TEST_P(WebMediaPlayerMSTest, PictureInPictureStateChangeNotCalled) {
   if (enable_surface_layer_for_video_) {
     EXPECT_CALL(*submitter_ptr_, StartRendering());
     EXPECT_CALL(*this, GetDisplayType())
-        .WillRepeatedly(Return(DisplayType::kPictureInPicture));
+        .WillRepeatedly(
+            Return(WebMediaPlayer::DisplayType::kVideoPictureInPicture));
 
   } else {
     EXPECT_CALL(*this, DoSetCcLayer(true));
@@ -1016,8 +1024,7 @@ TEST_P(WebMediaPlayerMSTest, PictureInPictureStateChangeNotCalled) {
 TEST_P(WebMediaPlayerMSTest, NoWaitForFrameForAudioOnly) {
   InitializeWebMediaPlayerMS();
   render_factory_->set_support_video_renderer(false);
-  scoped_refptr<WebMediaStreamAudioRenderer> audio_renderer(
-      new MockMediaStreamAudioRenderer());
+  auto audio_renderer = base::MakeRefCounted<MockMediaStreamAudioRenderer>();
   render_factory_->set_audio_renderer(audio_renderer);
   EXPECT_CALL(*this,
               DoReadyStateChanged(WebMediaPlayer::kReadyStateHaveMetadata));
@@ -1104,7 +1111,7 @@ TEST_P(WebMediaPlayerMSTest, PlayThenPause) {
   else
     EXPECT_CALL(*this, DoStopRendering());
 
-  player_->Pause();
+  player_->Pause(WebMediaPlayer::PauseReason::kPauseCalled);
   auto prev_frame = compositor_->GetCurrentFrame();
   message_loop_controller_.RunAndWaitForStatus(media::PIPELINE_OK);
   auto after_frame = compositor_->GetCurrentFrame();
@@ -1152,7 +1159,7 @@ TEST_P(WebMediaPlayerMSTest, PlayThenPauseThenPlay) {
   else
     EXPECT_CALL(*this, DoStopRendering());
 
-  player_->Pause();
+  player_->Pause(WebMediaPlayer::PauseReason::kPauseCalled);
   auto prev_frame = compositor_->GetCurrentFrame();
   message_loop_controller_.RunAndWaitForStatus(media::PIPELINE_OK);
   auto after_frame = compositor_->GetCurrentFrame();
@@ -1228,12 +1235,12 @@ TEST_P(WebMediaPlayerMSTest, RotationChange) {
     EXPECT_CALL(*this, DoSetCcLayer(true));
     EXPECT_CALL(*this, DoStopRendering()).WillOnce([&]() {
       scheduler::GetSingleThreadTaskRunnerForTesting()->PostTask(
-          FROM_HERE, WTF::BindOnce(
+          FROM_HERE, BindOnce(
                          [](WebMediaPlayerMSTest* test) {
                            // Turn off rendering here to avoid an infinite loop.
                            test->SetRendering(/*rendering=*/false);
                          },
-                         WTF::Unretained(this)));
+                         Unretained(this)));
     });
     EXPECT_CALL(*this, DoStartRendering());
   }
@@ -1261,12 +1268,12 @@ TEST_P(WebMediaPlayerMSTest, RotationChange) {
     EXPECT_CALL(*this, DoSetCcLayer(true));
     EXPECT_CALL(*this, DoStopRendering()).WillOnce([&]() {
       scheduler::GetSingleThreadTaskRunnerForTesting()->PostTask(
-          FROM_HERE, WTF::BindOnce(
+          FROM_HERE, BindOnce(
                          [](WebMediaPlayerMSTest* test) {
                            // Turn off rendering here to avoid an infinite loop.
                            test->SetRendering(/*rendering=*/false);
                          },
-                         WTF::Unretained(this)));
+                         Unretained(this)));
     });
     EXPECT_CALL(*this, DoStartRendering());
   }
@@ -1515,7 +1522,7 @@ TEST_P(WebMediaPlayerMSTest, HiddenPlayerTests) {
   EXPECT_FALSE(player_->Paused());
 
   // A user generated pause() should clear the automatic resumption.
-  player_->Pause();
+  player_->Pause(WebMediaPlayer::PauseReason::kPauseCalled);
   delegate_.set_page_hidden(false);
   player_->OnPageShown();
   EXPECT_TRUE(player_->Paused());
@@ -1557,17 +1564,19 @@ TEST_P(WebMediaPlayerMSTest, RequestVideoFrameCallback_ForcesBeginFrames) {
 
   LoadAndGetFrameProvider(true);
 
-  EXPECT_CALL(*submitter_ptr_, SetForceBeginFrames(true));
+  base::RunLoop run_loop_set;
+  EXPECT_CALL(*submitter_ptr_, SetForceBeginFrames(true))
+      .WillOnce(base::test::RunClosure(run_loop_set.QuitClosure()));
   player_->RequestVideoFrameCallback();
-  base::RunLoop().RunUntilIdle();
+  run_loop_set.Run();
 
   testing::Mock::VerifyAndClearExpectations(submitter_ptr_);
 
   // The flag should be un-set when stop receiving callbacks.
-  base::RunLoop run_loop;
+  base::RunLoop run_loop_unset;
   EXPECT_CALL(*submitter_ptr_, SetForceBeginFrames(false))
-      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-  run_loop.Run();
+      .WillOnce(base::test::RunClosure(run_loop_unset.QuitClosure()));
+  run_loop_unset.Run();
 
   testing::Mock::VerifyAndClear(submitter_ptr_);
 }
@@ -1583,7 +1592,6 @@ TEST_P(WebMediaPlayerMSTest, GetVideoFramePresentationMetadataWithNoAlgorithm) {
 TEST_P(WebMediaPlayerMSTest, DuplicateFrameTimestamp) {
   InitializeWebMediaPlayerMS();
   LoadAndGetFrameProvider(true);
-  DisableMaxVsyncDelayForRendererReset();
 
   const bool opaque_frame = testing::get<1>(GetParam());
   const bool odd_size_frame = testing::get<2>(GetParam());
@@ -1595,24 +1603,27 @@ TEST_P(WebMediaPlayerMSTest, DuplicateFrameTimestamp) {
   auto frame = media::VideoFrame::CreateZeroInitializedFrame(
       opaque_frame ? media::PIXEL_FORMAT_I420 : media::PIXEL_FORMAT_I420A,
       frame_size, gfx::Rect(frame_size), frame_size, kStep);
-  frame->metadata().reference_time = base::TimeTicks() + kStep;
+  frame->metadata().reference_time = base::TimeTicks::Now() + kStep;
   auto frame2 = media::VideoFrame::CreateZeroInitializedFrame(
       opaque_frame ? media::PIXEL_FORMAT_I420 : media::PIXEL_FORMAT_I420A,
       frame_size, gfx::Rect(frame_size), frame_size, kStep);
-  frame2->metadata().reference_time = base::TimeTicks() + kStep;
+  frame2->metadata().reference_time = base::TimeTicks::Now() + kStep;
   auto frame3 = media::VideoFrame::CreateZeroInitializedFrame(
       opaque_frame ? media::PIXEL_FORMAT_I420 : media::PIXEL_FORMAT_I420A,
       frame_size, gfx::Rect(frame_size), frame_size, kStep * 2);
-  frame3->metadata().reference_time = base::TimeTicks() + kStep * 2;
+  frame3->metadata().reference_time = base::TimeTicks::Now() + kStep * 2;
+
+  compositor_->StartRendering();
+  task_environment_.RunUntilIdle();
+  base::TimeTicks deadline = base::TimeTicks::Now();
+  // Call UpdateCurrentFrame() to initialize last_deadline_max_ in
+  // WebMediaPlayerMSCompositor.
+  EXPECT_TRUE(compositor_->UpdateCurrentFrame(deadline, deadline + kStep));
 
   compositor_->EnqueueFrame(std::move(frame), true);
   compositor_->EnqueueFrame(std::move(frame2), true);
   compositor_->EnqueueFrame(std::move(frame3), true);
 
-  compositor_->StartRendering();
-  task_environment_.RunUntilIdle();
-
-  base::TimeTicks deadline;
   deadline += kStep;  // Don't start deadline at zero.
 
   for (int i = 1; i <= 2; ++i) {
@@ -1630,7 +1641,6 @@ TEST_P(WebMediaPlayerMSTest, DuplicateFrameTimestamp) {
 TEST_P(WebMediaPlayerMSTest, HandlesArbitraryTimestampConversions) {
   InitializeWebMediaPlayerMS();
   LoadAndGetFrameProvider(true);
-  DisableMaxVsyncDelayForRendererReset();
 
   const bool opaque_frame = testing::get<1>(GetParam());
   const bool odd_size_frame = testing::get<2>(GetParam());
@@ -1642,21 +1652,24 @@ TEST_P(WebMediaPlayerMSTest, HandlesArbitraryTimestampConversions) {
   auto frame = media::VideoFrame::CreateZeroInitializedFrame(
       opaque_frame ? media::PIXEL_FORMAT_I420 : media::PIXEL_FORMAT_I420A,
       frame_size, gfx::Rect(frame_size), frame_size, kStep);
-  frame->metadata().reference_time = base::TimeTicks() + kStep;
+  frame->metadata().reference_time = base::TimeTicks::Now() + kStep;
   frame->metadata().frame_duration = kStep - base::Microseconds(1);
   auto frame2 = media::VideoFrame::CreateZeroInitializedFrame(
       opaque_frame ? media::PIXEL_FORMAT_I420 : media::PIXEL_FORMAT_I420A,
       frame_size, gfx::Rect(frame_size), frame_size, kStep * 2);
-  frame2->metadata().reference_time = base::TimeTicks() + kStep * 2;
+  frame2->metadata().reference_time = base::TimeTicks::Now() + kStep * 2;
   frame2->metadata().frame_duration = kStep - base::Microseconds(1);
+
+  compositor_->StartRendering();
+  task_environment_.RunUntilIdle();
+  base::TimeTicks deadline = base::TimeTicks::Now();
+  // Call UpdateCurrentFrame() to initialize last_deadline_max_ in
+  // WebMediaPlayerMSCompositor.
+  EXPECT_TRUE(compositor_->UpdateCurrentFrame(deadline, deadline + kStep));
 
   compositor_->EnqueueFrame(std::move(frame), true);
   compositor_->EnqueueFrame(std::move(frame2), true);
 
-  compositor_->StartRendering();
-  task_environment_.RunUntilIdle();
-
-  base::TimeTicks deadline;
   deadline += kStep;  // Don't start deadline at zero.
 
   for (int i = 1; i <= 2; ++i) {
@@ -1671,10 +1684,52 @@ TEST_P(WebMediaPlayerMSTest, HandlesArbitraryTimestampConversions) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_P(WebMediaPlayerMSTest, HandlesTimestampMappingForUnknownFrame) {
+  InitializeWebMediaPlayerMS();
+  LoadAndGetFrameProvider(/*algorithm_enabled=*/true);
+  ASSERT_TRUE(compositor_);
+
+  const gfx::Size frame_size(kStandardWidth, kStandardHeight);
+  constexpr auto kTimestamp1 = base::Milliseconds(10);
+  const base::TimeTicks kReferenceTime1 =
+      task_environment_.GetMockTickClock()->NowTicks();
+
+  auto frame1 = media::VideoFrame::CreateZeroInitializedFrame(
+      media::PIXEL_FORMAT_I420, frame_size, gfx::Rect(frame_size), frame_size,
+      kTimestamp1);
+  frame1->metadata().reference_time = kReferenceTime1;
+  compositor_->EnqueueFrame(std::move(frame1), /*is_copy=*/false);
+
+  constexpr auto kTimestamp2 = base::Milliseconds(15);
+  // Advance the clock to get a different reference time.
+  task_environment_.AdvanceClock(base::Milliseconds(5));
+  const base::TimeTicks kReferenceTime2 =
+      task_environment_.GetMockTickClock()->NowTicks();
+  auto frame2 = media::VideoFrame::CreateZeroInitializedFrame(
+      media::PIXEL_FORMAT_I420, frame_size, gfx::Rect(frame_size), frame_size,
+      kTimestamp2);
+  frame2->metadata().reference_time = kReferenceTime2;
+  compositor_->EnqueueFrame(std::move(frame2), /*is_copy=*/false);
+
+  // Run the compositor task runner to process the enqueued frames.
+  RunCompositorTaskRunner();
+
+  constexpr auto kTimestampToMap = base::Milliseconds(20);
+  std::vector<base::TimeDelta> timestamps_to_map = {kTimestampToMap};
+  std::vector<base::TimeTicks> wall_clock_times;
+
+  MapTimestampsToRenderTimeTicks(timestamps_to_map, &wall_clock_times);
+
+  ASSERT_EQ(1u, wall_clock_times.size());
+  // It should use frame2 as reference, since it's closer.
+  const base::TimeTicks expected_reference_time =
+      kReferenceTime2 + (kTimestampToMap - kTimestamp2);
+  EXPECT_EQ(expected_reference_time, wall_clock_times[0]);
+}
+
 TEST_P(WebMediaPlayerMSTest, OutOfOrderEnqueue) {
   InitializeWebMediaPlayerMS();
   LoadAndGetFrameProvider(true);
-  DisableMaxVsyncDelayForRendererReset();
 
   const bool opaque_frame = testing::get<1>(GetParam());
   const bool odd_size_frame = testing::get<2>(GetParam());
@@ -1686,25 +1741,28 @@ TEST_P(WebMediaPlayerMSTest, OutOfOrderEnqueue) {
   auto frame = media::VideoFrame::CreateZeroInitializedFrame(
       opaque_frame ? media::PIXEL_FORMAT_I420 : media::PIXEL_FORMAT_I420A,
       frame_size, gfx::Rect(frame_size), frame_size, kStep);
-  frame->metadata().reference_time = base::TimeTicks() + kStep;
+  frame->metadata().reference_time = base::TimeTicks::Now() + kStep;
   auto frame2 = media::VideoFrame::CreateZeroInitializedFrame(
       opaque_frame ? media::PIXEL_FORMAT_I420 : media::PIXEL_FORMAT_I420A,
       frame_size, gfx::Rect(frame_size), frame_size, kStep * 2);
-  frame2->metadata().reference_time = base::TimeTicks() + kStep * 2;
+  frame2->metadata().reference_time = base::TimeTicks::Now() + kStep * 2;
   auto frame3 = media::VideoFrame::CreateZeroInitializedFrame(
       opaque_frame ? media::PIXEL_FORMAT_I420 : media::PIXEL_FORMAT_I420A,
       frame_size, gfx::Rect(frame_size), frame_size, kStep * 3);
-  frame3->metadata().reference_time = base::TimeTicks() + kStep * 3;
+  frame3->metadata().reference_time = base::TimeTicks::Now() + kStep * 3;
+
+  compositor_->StartRendering();
+  task_environment_.RunUntilIdle();
+  base::TimeTicks deadline = base::TimeTicks::Now();
+  // Call UpdateCurrentFrame() to initialize last_deadline_max_ in
+  // WebMediaPlayerMSCompositor.
+  EXPECT_TRUE(compositor_->UpdateCurrentFrame(deadline, deadline + kStep));
 
   compositor_->EnqueueFrame(std::move(frame), true);
   compositor_->EnqueueFrame(std::move(frame3), true);
   compositor_->EnqueueFrame(std::move(frame2), true);
 
-  compositor_->StartRendering();
-  task_environment_.RunUntilIdle();
-
   // Frames 1, 3 should be dropped.
-  base::TimeTicks deadline;
   deadline += kStep;  // Don't start deadline at zero.
 
   // Return value may be true or false depending on if surface layer is used.
@@ -1759,16 +1817,110 @@ TEST_P(WebMediaPlayerMSTest, OnContextLost) {
   compositor_->OnContextLost();
   EXPECT_EQ(non_gpu_frame, compositor_->GetCurrentFrame());
 
-  std::unique_ptr<gfx::GpuMemoryBuffer> gmb =
-      std::make_unique<media::FakeGpuMemoryBuffer>(
-          frame_size, gfx::BufferFormat::YUV_420_BIPLANAR);
-  auto gpu_frame = media::VideoFrame::WrapExternalGpuMemoryBuffer(
-      gfx::Rect(frame_size), frame_size, std::move(gmb), base::TimeDelta());
+  // Setting some default usage in order to get a mappable shared image.
+  const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
+                        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+  // Create a mappable shared image.
+  auto shared_image = test_sii_->CreateSharedImage(
+      {viz::MultiPlaneFormat::kNV12, frame_size, gfx::ColorSpace(),
+       gpu::SharedImageUsageSet(si_usage), "WebMediaPlayerMSTest"},
+      gpu::kNullSurfaceHandle, gfx::BufferUsage::GPU_READ);
+  auto gpu_frame = media::VideoFrame::WrapMappableSharedImage(
+      std::move(shared_image), test_sii_->GenVerifiedSyncToken(),
+      base::NullCallback(), gfx::Rect(frame_size), frame_size,
+      base::TimeDelta());
+
   compositor_->EnqueueFrame(gpu_frame, true);
   base::RunLoop().RunUntilIdle();
   // frame with gpu resource should be reset if context is lost
   compositor_->OnContextLost();
   EXPECT_NE(gpu_frame, compositor_->GetCurrentFrame());
+}
+
+TEST_P(WebMediaPlayerMSTest, VolumeMultiplierAdjustsOutputVolume) {
+  InitializeWebMediaPlayerMS();
+  is_audio_element_ = true;
+  auto audio_renderer = base::MakeRefCounted<MockMediaStreamAudioRenderer>();
+  render_factory_->set_audio_renderer(audio_renderer);
+
+  player_->Load(WebMediaPlayer::kLoadTypeURL, WebMediaPlayerSource(),
+                WebMediaPlayer::kCorsModeUnspecified,
+                /*is_cache_disabled=*/false);
+
+  message_loop_controller_.RunAndWaitForStatus(media::PIPELINE_OK);
+
+  // Setting the volume multiplier should adjust the volume sent to the audio
+  // renderer.
+  EXPECT_CALL(*audio_renderer, SetVolume(0.2));
+  player_->SetVolumeMultiplier(0.2);
+  testing::Mock::VerifyAndClearExpectations(audio_renderer.get());
+
+  // Setting the volume after the multiplier should still take the multiplier
+  // into account.
+  EXPECT_CALL(*audio_renderer, SetVolume(0.1));
+  player_->SetVolume(0.5);
+  testing::Mock::VerifyAndClearExpectations(audio_renderer.get());
+
+  // Resetting the multiplier should take the previously set volume into
+  // account.
+  EXPECT_CALL(*audio_renderer, SetVolume(0.5));
+  player_->SetVolumeMultiplier(1.0);
+  testing::Mock::VerifyAndClearExpectations(audio_renderer.get());
+}
+
+TEST_P(WebMediaPlayerMSTest, EnabledStateChangedForWebRtcAudio) {
+  InitializeWebMediaPlayerMS();
+  is_audio_element_ = true;
+  auto audio_renderer = base::MakeRefCounted<MockMediaStreamAudioRenderer>();
+  render_factory_->set_audio_renderer(audio_renderer);
+
+  player_->Load(WebMediaPlayer::kLoadTypeURL, WebMediaPlayerSource(),
+                WebMediaPlayer::kCorsModeUnspecified,
+                /*is_cache_disabled=*/false);
+
+  message_loop_controller_.RunAndWaitForStatus(media::PIPELINE_OK);
+
+  // Setting the volume multiplier should adjust the volume sent to the audio
+  // renderer.
+  EXPECT_CALL(*audio_renderer, SetVolume(0.4));
+  player_->SetVolume(0.4);
+  testing::Mock::VerifyAndClearExpectations(audio_renderer.get());
+
+  // disabled make volume 0.
+  EXPECT_CALL(*audio_renderer, SetVolume(0.0));
+  player_->EnabledStateChangedForWebRtcAudio(false);
+  testing::Mock::VerifyAndClearExpectations(audio_renderer.get());
+
+  // re-enable should restore volume.
+  EXPECT_CALL(*audio_renderer, SetVolume(0.4));
+  player_->EnabledStateChangedForWebRtcAudio(true);
+  testing::Mock::VerifyAndClearExpectations(audio_renderer.get());
+
+  // set multiplier should adjust volume.
+  EXPECT_CALL(*audio_renderer, SetVolume(0.32));
+  player_->SetVolumeMultiplier(0.8);
+  testing::Mock::VerifyAndClearExpectations(audio_renderer.get());
+
+  // calling enabled again does not change volume.
+  EXPECT_CALL(*audio_renderer, SetVolume(_)).Times(0);
+  player_->EnabledStateChangedForWebRtcAudio(true);
+  testing::Mock::VerifyAndClearExpectations(audio_renderer.get());
+
+  // disabled make volume 0.
+  EXPECT_CALL(*audio_renderer, SetVolume(0.0));
+  player_->EnabledStateChangedForWebRtcAudio(false);
+  testing::Mock::VerifyAndClearExpectations(audio_renderer.get());
+
+  // SetVolume during disabled state should not affect the renderer, but
+  // change the volume internally.
+  EXPECT_CALL(*audio_renderer, SetVolume(_)).Times(0);
+  player_->SetVolume(0.5);
+  testing::Mock::VerifyAndClearExpectations(audio_renderer.get());
+
+  // re-enable should restore volume that was set while disabled.
+  EXPECT_CALL(*audio_renderer, SetVolume(0.4));
+  player_->EnabledStateChangedForWebRtcAudio(true);
+  testing::Mock::VerifyAndClearExpectations(audio_renderer.get());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

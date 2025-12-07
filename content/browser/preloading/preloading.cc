@@ -26,8 +26,10 @@ std::string_view PreloadingTypeToString(PreloadingType type) {
       return "NoStatePrefetch";
     case PreloadingType::kLinkPreview:
       return "LinkPreview";
+    case PreloadingType::kPrerenderUntilScript:
+      return "PrerenderUntilScript";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 PreloadingPredictor GetPredictorForPreloadingTriggerType(
@@ -47,9 +49,9 @@ PreloadingPredictor GetPredictorForPreloadingTriggerType(
       // for embedder trigger code-path (while you might want to be specific
       // about the `PreloadingPredictor` more than just "embedder").
       // Revisit if needed.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace content

@@ -12,12 +12,21 @@ bool StructTraits<gpu::mojom::SharedImageCapabilitiesDataView,
     Read(gpu::mojom::SharedImageCapabilitiesDataView data,
          gpu::SharedImageCapabilities* out) {
   out->supports_scanout_shared_images = data.supports_scanout_shared_images();
+
+#if BUILDFLAG(IS_WIN)
+  out->supports_scanout_shared_images_for_software_video_frames =
+      data.supports_scanout_shared_images_for_software_video_frames();
+#endif
+
   out->supports_luminance_shared_images =
       data.supports_luminance_shared_images();
   out->supports_r16_shared_images = data.supports_r16_shared_images();
+  out->supports_native_nv12_mappable_shared_images =
+      data.supports_native_nv12_mappable_shared_images();
   out->is_r16f_supported = data.is_r16f_supported();
   out->disable_r8_shared_images = data.disable_r8_shared_images();
   out->disable_webgpu_shared_images = data.disable_webgpu_shared_images();
+  out->disable_one_component_textures = data.disable_one_component_textures();
 
   out->shared_image_d3d = data.shared_image_d3d();
   out->shared_image_swap_chain = data.shared_image_swap_chain();

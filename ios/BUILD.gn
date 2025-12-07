@@ -33,7 +33,7 @@ group("all") {
       "//ios/testing:all_tests",
       "//ios/web:all_tests",
       "//ios/web/shell/test:all_tests",
-      "//ios/web_view:all_tests",
+      "//ios/web_view/test:all_tests",
 
       # List all support targets that need to be build on iOS by default.
       "//third_party/breakpad:dump_syms",
@@ -42,6 +42,4 @@ group("all") {
   } else {
     deps = []
   }
-
-  deps += [ "//ios/intents/app:intents" ]
 }

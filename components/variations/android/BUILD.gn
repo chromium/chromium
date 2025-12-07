@@ -5,10 +5,13 @@
 import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
-generate_jni("variations_jni") {
+generate_jni("variations_seed_jni") {
+  sources = [ "java/src/org/chromium/components/variations/firstrun/VariationsSeedBridge.java" ]
+}
+
+generate_jni("variations_data_jni") {
   sources = [
     "java/src/org/chromium/components/variations/VariationsAssociatedData.java",
-    "java/src/org/chromium/components/variations/firstrun/VariationsSeedBridge.java",
   ]
 }
 
@@ -24,7 +27,10 @@ android_library("variations_java") {
     "//third_party/jni_zero:jni_zero_java",
   ]
 
-  srcjar_deps = [ ":variations_jni" ]
+  srcjar_deps = [
+    ":variations_data_jni",
+    ":variations_seed_jni",
+  ]
   sources = [
     "java/src/org/chromium/components/variations/NormalizedMurmurHashEntropyProvider.java",
     "java/src/org/chromium/components/variations/VariationsAssociatedData.java",
@@ -89,7 +95,7 @@ robolectric_library("components_variations_junit_tests") {
     "//components/variations:variations_java",
     "//components/variations/proto:proto_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
-    "//third_party/hamcrest:hamcrest_java",
+    "//third_party/google-truth:google_truth_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]

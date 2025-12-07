@@ -2,14 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("features") {
-  sources = [ "content_analysis_features.cc" ]
-
-  public = [ "content_analysis_features.h" ]
-
-  public_deps = [ "//base" ]
-}
-
 source_set("sdk_manager") {
   sources = [
     "content_analysis_sdk_manager.cc",
@@ -17,8 +9,8 @@ source_set("sdk_manager") {
   ]
 
   public_deps = [
-    "//base:base",
-    "//content/public/browser:browser",
+    "//base",
+    "//content/public/browser",
     "//third_party/content_analysis_sdk:liblcasdk",
   ]
 }

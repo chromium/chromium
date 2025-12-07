@@ -11,7 +11,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/format_utils.h"
 #include "media/base/video_frame.h"
@@ -19,22 +20,19 @@
 #include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libyuv/include/libyuv.h"
-#include "ui/gfx/buffer_format_util.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #include <sys/mman.h>
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-#include "media/gpu/chromeos/chromeos_compressed_gpu_memory_buffer_video_frame_utils.h"
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/video_frame_mapper.h"
 #include "media/gpu/video_frame_mapper_factory.h"
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 
-namespace media {
-namespace test {
+namespace media::test {
 
 namespace {
 
@@ -218,20 +216,14 @@ bool ConvertVideoFrameToARGB(const VideoFrame* src_frame,
 bool CopyVideoFrame(const VideoFrame* src_frame,
                     scoped_refptr<VideoFrame> dst_frame) {
   ASSERT_TRUE_OR_RETURN(src_frame->IsMappable(), false);
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   // If |dst_frame| is a Dmabuf-backed VideoFrame, we need to map its underlying
   // buffer into memory. We use a VideoFrameMapper to create a memory-based
   // VideoFrame that refers to the |dst_frame|'s buffer.
   if (dst_frame->storage_type() == VideoFrame::STORAGE_DMABUFS) {
-    // We should never get Intel media compressed VideoFrames backed by
-    // STORAGE_DMABUFS, so we don't need that capability from the
-    // VideoFrameMapper.
-    ASSERT_TRUE_OR_RETURN(
-        !IsIntelMediaCompressedModifier(dst_frame->layout().modifier()), false);
     auto video_frame_mapper = VideoFrameMapperFactory::CreateMapper(
         dst_frame->format(), VideoFrame::STORAGE_DMABUFS,
-        /*force_linear_buffer_mapper=*/true,
-        /*must_support_intel_media_compressed_buffers=*/false);
+        /*force_linear_buffer_mapper=*/true);
     ASSERT_TRUE_OR_RETURN(video_frame_mapper, false);
     dst_frame =
         video_frame_mapper->Map(std::move(dst_frame), PROT_READ | PROT_WRITE);
@@ -240,7 +232,7 @@ bool CopyVideoFrame(const VideoFrame* src_frame,
       return false;
     }
   }
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   ASSERT_TRUE_OR_RETURN(dst_frame->IsMappable(), false);
   ASSERT_TRUE_OR_RETURN(src_frame->format() == dst_frame->format(), false);
 
@@ -335,6 +327,7 @@ scoped_refptr<VideoFrame> ScaleVideoFrame(const VideoFrame* src_frame,
 scoped_refptr<VideoFrame> CloneVideoFrame(
     const VideoFrame* const src_frame,
     const VideoFrameLayout& dst_layout,
+    gpu::TestSharedImageInterface* test_sii,
     VideoFrame::StorageType dst_storage_type,
     std::optional<gfx::BufferUsage> dst_buffer_usage) {
   if (!src_frame)
@@ -346,8 +339,8 @@ scoped_refptr<VideoFrame> CloneVideoFrame(
 
   scoped_refptr<VideoFrame> dst_frame;
   switch (dst_storage_type) {
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-    case VideoFrame::STORAGE_GPU_MEMORY_BUFFER:
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
+    case VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE:
     case VideoFrame::STORAGE_DMABUFS:
       if (!dst_buffer_usage) {
         LOG(ERROR) << "Buffer usage is not specified for a graphic buffer";
@@ -358,7 +351,7 @@ scoped_refptr<VideoFrame> CloneVideoFrame(
           src_frame->visible_rect(), src_frame->natural_size(),
           src_frame->timestamp(), *dst_buffer_usage);
       break;
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
     case VideoFrame::STORAGE_OWNED_MEMORY:
       // Create VideoFrame, which allocates and owns data.
       dst_frame = VideoFrame::CreateFrameWithLayout(
@@ -380,12 +373,12 @@ scoped_refptr<VideoFrame> CloneVideoFrame(
     return nullptr;
   }
 
-  if (dst_storage_type == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+  if (dst_storage_type == VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
     // Here, the content in |src_frame| is already copied to |dst_frame|, which
     // is a DMABUF based VideoFrame.
     // Create GpuMemoryBuffer based VideoFrame from |dst_frame|.
-    dst_frame =
-        CreateGpuMemoryBufferVideoFrame(dst_frame.get(), *dst_buffer_usage);
+    dst_frame = CreateGpuMemoryBufferVideoFrame(dst_frame.get(),
+                                                *dst_buffer_usage, test_sii);
   }
 
   return dst_frame;
@@ -393,58 +386,76 @@ scoped_refptr<VideoFrame> CloneVideoFrame(
 
 scoped_refptr<VideoFrame> CreateDmabufVideoFrame(
     const VideoFrame* const frame) {
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-  if (!frame || frame->storage_type() != VideoFrame::STORAGE_GPU_MEMORY_BUFFER)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
+  if (!frame ||
+      frame->storage_type() != VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
     return nullptr;
+  }
   gfx::GpuMemoryBufferHandle gmb_handle = frame->GetGpuMemoryBufferHandle();
   DCHECK_EQ(gmb_handle.type, gfx::GpuMemoryBufferType::NATIVE_PIXMAP);
   std::vector<ColorPlaneLayout> planes;
   std::vector<base::ScopedFD> dmabuf_fds;
-  for (auto& plane : gmb_handle.native_pixmap_handle.planes) {
+  gfx::NativePixmapHandle native_pixmap_handle =
+      std::move(gmb_handle).native_pixmap_handle();
+  for (auto& plane : native_pixmap_handle.planes) {
     planes.emplace_back(plane.stride, plane.offset, plane.size);
     dmabuf_fds.emplace_back(plane.fd.release());
   }
-  return VideoFrame::WrapExternalDmabufs(
+  scoped_refptr<VideoFrame> video_frame = VideoFrame::WrapExternalDmabufs(
       frame->layout(), frame->visible_rect(), frame->natural_size(),
       std::move(dmabuf_fds), frame->timestamp());
+
+  video_frame->set_metadata(frame->metadata());
+
+  return video_frame;
 #else
   return nullptr;
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)}
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)}
 }
 
 scoped_refptr<VideoFrame> CreateGpuMemoryBufferVideoFrame(
     const VideoFrame* const frame,
-    gfx::BufferUsage buffer_usage) {
-  gfx::GpuMemoryBufferHandle gmb_handle;
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-  gmb_handle = CreateGpuMemoryBufferHandle(frame);
-#endif
+    gfx::BufferUsage buffer_usage,
+    gpu::TestSharedImageInterface* test_sii) {
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
+  gfx::GpuMemoryBufferHandle gmb_handle = CreateGpuMemoryBufferHandle(frame);
   if (gmb_handle.is_null() || gmb_handle.type != gfx::NATIVE_PIXMAP) {
     LOG(ERROR) << "Failed to create native GpuMemoryBufferHandle";
     return nullptr;
   }
 
-  std::optional<gfx::BufferFormat> buffer_format =
-      VideoPixelFormatToGfxBufferFormat(frame->format());
-  if (!buffer_format) {
+  auto si_format = VideoPixelFormatToSharedImageFormat(frame->format());
+  if (!si_format) {
     LOG(ERROR) << "Unexpected format: " << frame->format();
     return nullptr;
   }
 
-  // Create GpuMemoryBuffer from GpuMemoryBufferHandle.
-  gpu::GpuMemoryBufferSupport support;
-  std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
-      support.CreateGpuMemoryBufferImplFromHandle(
-          std::move(gmb_handle), frame->coded_size(), *buffer_format,
-          buffer_usage, base::DoNothing());
-  if (!gpu_memory_buffer) {
-    LOG(ERROR) << "Failed to create GpuMemoryBuffer from GpuMemoryBufferHandle";
+  // Setting some default usage in order to get a mappable shared image.
+  const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
+                        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+  // Create a mappable shared image.
+  auto shared_image = test_sii->CreateSharedImage(
+      {*si_format, frame->coded_size(), gfx::ColorSpace(),
+       gpu::SharedImageUsageSet(si_usage), "VideoFrameTestHelpers"},
+      gpu::kNullSurfaceHandle, buffer_usage, std::move(gmb_handle));
+  if (!shared_image) {
+    LOG(ERROR)
+        << "Failed to create ClientSharedImage with GpuMemoryBufferHandle";
     return nullptr;
   }
 
-  return media::VideoFrame::WrapExternalGpuMemoryBuffer(
-      frame->visible_rect(), frame->natural_size(),
-      std::move(gpu_memory_buffer), frame->timestamp());
+  scoped_refptr<VideoFrame> video_frame =
+      media::VideoFrame::WrapMappableSharedImage(
+          std::move(shared_image), test_sii->GenVerifiedSyncToken(),
+          base::NullCallback(), frame->visible_rect(), frame->natural_size(),
+          frame->timestamp());
+
+  video_frame->metadata().tracking_token = base::UnguessableToken::Create();
+
+  return video_frame;
+#else
+  return nullptr;
+#endif
 }
 
 scoped_refptr<const VideoFrame> CreateVideoFrameFromImage(const Image& image) {
@@ -463,14 +474,16 @@ scoped_refptr<const VideoFrame> CreateVideoFrameFromImage(const Image& image) {
     return nullptr;
   }
 
-  scoped_refptr<const VideoFrame> video_frame =
+  scoped_refptr<VideoFrame> video_frame =
       VideoFrame::WrapExternalDataWithLayout(
           *layout, image.VisibleRect(), image.VisibleRect().size(),
-          image.Data(), image.DataSize(), base::TimeDelta());
+          image.DataSpan(), base::TimeDelta());
   if (!video_frame) {
     LOG(ERROR) << "Failed to create VideoFrame";
     return nullptr;
   }
+
+  video_frame->metadata().tracking_token = base::UnguessableToken::Create();
 
   return video_frame;
 }
@@ -504,5 +517,4 @@ std::optional<VideoFrameLayout> CreateVideoFrameLayout(
                                             std::move(planes));
 }
 
-}  // namespace test
-}  // namespace media
+}  // namespace media::test

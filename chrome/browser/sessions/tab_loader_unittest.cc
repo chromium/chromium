@@ -120,7 +120,8 @@ class TabLoaderTest : public BrowserWithTestWindowTest {
     ResourceCoordinatorTabHelper::CreateForWebContents(raw_contents);
     restored_tabs_.push_back(
         RestoredTab(raw_contents, is_active /* is_active */, false /* is_app */,
-                    false /* is_pinned */, std::nullopt /* group */));
+                    false /* is_pinned */, std::nullopt /* group */,
+                    std::nullopt /* split */));
 
     // Add the contents to the tab strip model, which becomes the owner.
     auto* tab_strip_model = browser()->tab_strip_model();
@@ -176,7 +177,7 @@ class TabLoaderTest : public BrowserWithTestWindowTest {
         SimulatePrimaryPageChanged(tab.contents());
     }
 
-    TabLoader::RestoreTabs(restored_tabs_, clock_.NowTicks());
+    TabLoader::DeprecatedRestoreTabs(restored_tabs_, clock_.NowTicks());
     EXPECT_TRUE(tab_loader_.IsSharedTabLoader());
     EXPECT_FALSE(tab_loader_.IsLoadingEnabled());
     tab_loader_.WaitForTabLoadingEnabled();
@@ -308,8 +309,7 @@ TEST_F(TabLoaderTest, OnMemoryPressure) {
 
   // Simulate memory pressure and expect the tab loader to disable loading.
   EXPECT_TRUE(tab_loader_.IsLoadingEnabled());
-  tab_loader_.OnMemoryPressure(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+  tab_loader_.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_MODERATE);
   EXPECT_FALSE(tab_loader_.IsLoadingEnabled());
 
   // Finish loading the tab and expect the tab loader to disconnect.

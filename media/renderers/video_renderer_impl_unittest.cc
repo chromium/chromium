@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/renderers/video_renderer_impl.h"
+
 #include <stdint.h>
 
 #include <memory>
@@ -14,12 +16,15 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
@@ -33,7 +38,6 @@
 #include "media/base/test_helpers.h"
 #include "media/base/video_frame.h"
 #include "media/base/wall_clock_time_source.h"
-#include "media/renderers/video_renderer_impl.h"
 #include "media/video/mock_gpu_memory_buffer_video_frame_pool.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -98,7 +102,7 @@ class VideoRendererImplTest : public testing::Test {
         null_video_sink_.get(),
         base::BindRepeating(&VideoRendererImplTest::CreateVideoDecodersForTest,
                             base::Unretained(this)),
-        true, &media_log_, nullptr, 0);
+        true, &media_log_, nullptr, MediaPlayerLoggingID(0));
     renderer_->SetTickClockForTesting(&tick_clock_);
     null_video_sink_->set_tick_clock_for_testing(&tick_clock_);
 
@@ -184,7 +188,7 @@ class VideoRendererImplTest : public testing::Test {
       }
     }
 
-    scoped_refptr<DecoderBuffer> decoder_buffer(new DecoderBuffer(0));
+    auto decoder_buffer = base::MakeRefCounted<DecoderBuffer>(0);
 
     // Set |decoder_buffer| timestamp such that it won't match any of the
     // times provided to QueueFrames(). Otherwise the default timestamp of 0 may
@@ -256,7 +260,7 @@ class VideoRendererImplTest : public testing::Test {
         continue;
       }
 
-      CHECK(false) << "Unrecognized decoder buffer token: " << token;
+      NOTREACHED() << "Unrecognized decoder buffer token: " << token;
     }
   }
 
@@ -273,9 +277,9 @@ class VideoRendererImplTest : public testing::Test {
     WaitableMessageLoopEvent event;
     PipelineStatusCallback error_cb = event.GetPipelineStatusCB();
     EXPECT_CALL(mock_cb_, OnError(_))
-        .WillOnce(Invoke([cb = &error_cb](PipelineStatus status) {
+        .WillOnce([cb = &error_cb](PipelineStatus status) {
           std::move(*cb).Run(status);
-        }));
+        });
     event.RunAndWaitForStatus(expected);
   }
 
@@ -925,6 +929,50 @@ TEST_F(VideoRendererImplTest, RenderingStartedThenStopped) {
   Destroy();
 }
 
+// Ensures background rendering will try to signal underflow if no new decoded
+// frames arrive since the last Render() call.
+TEST_F(VideoRendererImplTest, BackgroundRenderingStillUnderflows) {
+  Initialize();
+  QueueFrames("0 30 60 90");
+
+  // Start the sink and wait for the first callback.
+  {
+    WaitableMessageLoopEvent event;
+    EXPECT_CALL(mock_cb_, OnBufferingStateChange(BUFFERING_HAVE_ENOUGH, _))
+        .WillOnce(RunOnceClosure(event.GetClosure()));
+    EXPECT_CALL(mock_cb_, OnStatisticsUpdate(_)).Times(5);
+    EXPECT_CALL(mock_cb_, FrameReceived(HasTimestampMatcher(0)));
+    EXPECT_CALL(mock_cb_, OnVideoNaturalSizeChange(_)).Times(1);
+    EXPECT_CALL(mock_cb_, OnVideoOpacityChange(_)).Times(1);
+    StartPlayingFrom(0);
+    event.RunAndWait();
+    Mock::VerifyAndClearExpectations(&mock_cb_);
+  }
+
+  renderer_->OnTimeProgressing();
+  time_source_.StartTicking();
+  EXPECT_CALL(mock_cb_, FrameReceived(_)).Times(testing::AnyNumber());
+
+  bool background_rendering = true;
+  null_video_sink_->set_render_cb(
+      base::BindRepeating(base::BindLambdaForTesting([&] {
+        null_video_sink_->set_background_render(background_rendering);
+        background_rendering = !background_rendering;
+      })));
+
+  // Advance enough that none of the queued frames are effective.
+  AdvanceWallclockTimeInMs(120);
+
+  {
+    WaitableMessageLoopEvent event;
+    EXPECT_CALL(mock_cb_, OnBufferingStateChange(BUFFERING_HAVE_NOTHING, _))
+        .WillOnce(RunOnceClosure(event.GetClosure()));
+    event.RunAndWait();
+  }
+
+  Destroy();
+}
+
 // Tests the case where underflow evicts all frames before EOS.
 TEST_F(VideoRendererImplTest, UnderflowEvictionBeforeEOS) {
   Initialize();
@@ -964,6 +1012,63 @@ TEST_F(VideoRendererImplTest, UnderflowEvictionBeforeEOS) {
   SatisfyPendingDecodeWithEndOfStream();
   EXPECT_CALL(mock_cb_, OnBufferingStateChange(BUFFERING_HAVE_ENOUGH, _));
   WaitForEnded();
+  Destroy();
+}
+
+// Tests the case where underflow evicts all frames then good frames come in.
+TEST_F(VideoRendererImplTest, UnderflowResume) {
+  Initialize();
+  QueueFrames("0 30 60 90 120");
+
+  EXPECT_CALL(mock_cb_, OnVideoFrameRateChange(_));
+
+  {
+    SCOPED_TRACE("Waiting for BUFFERING_HAVE_ENOUGH");
+    WaitableMessageLoopEvent event;
+    EXPECT_CALL(mock_cb_, OnBufferingStateChange(BUFFERING_HAVE_ENOUGH, _))
+        .WillOnce(RunOnceClosure(event.GetClosure()));
+    EXPECT_CALL(mock_cb_, FrameReceived(_)).Times(AnyNumber());
+    EXPECT_CALL(mock_cb_, OnVideoNaturalSizeChange(_)).Times(1);
+    EXPECT_CALL(mock_cb_, OnVideoOpacityChange(_)).Times(1);
+    EXPECT_CALL(mock_cb_, OnStatisticsUpdate(_)).Times(AnyNumber());
+    StartPlayingFrom(0);
+    event.RunAndWait();
+  }
+
+  {
+    SCOPED_TRACE("Waiting for BUFFERING_HAVE_NOTHING");
+    WaitableMessageLoopEvent event;
+    EXPECT_CALL(mock_cb_, OnBufferingStateChange(BUFFERING_HAVE_NOTHING, _))
+        .WillOnce(RunOnceClosure(event.GetClosure()));
+    renderer_->OnTimeProgressing();
+    time_source_.StartTicking();
+    // Jump time far enough forward that no frames are valid.
+    AdvanceTimeInMs(1000);
+    event.RunAndWait();
+  }
+
+  WaitForPendingDecode();
+
+  renderer_->OnTimeStopped();
+  time_source_.StopTicking();
+  EXPECT_FALSE(null_video_sink_->is_started());
+
+  renderer_->OnTimeProgressing();
+  time_source_.StartTicking();
+  EXPECT_FALSE(null_video_sink_->is_started());
+
+  QueueFrames("1000 1030 1060 1090 1120 1150");
+  SatisfyPendingDecode();
+
+  // Providing the end of stream packet should remove all frames and exit.
+  {
+    SCOPED_TRACE("Waiting for BUFFERING_HAVE_ENOUGH");
+    WaitableMessageLoopEvent event;
+    EXPECT_CALL(mock_cb_, OnBufferingStateChange(BUFFERING_HAVE_ENOUGH, _))
+        .WillOnce(RunOnceClosure(event.GetClosure()));
+    event.RunAndWait();
+  }
+  EXPECT_TRUE(null_video_sink_->is_started());
   Destroy();
 }
 
@@ -1274,7 +1379,7 @@ class VideoRendererImplAsyncAddFrameReadyTest : public VideoRendererImplTest {
                             base::Unretained(this)),
         true, &media_log_,
         std::make_unique<MockGpuMemoryBufferVideoFramePool>(&frame_ready_cbs_),
-        0);
+        MediaPlayerLoggingID(0));
     VideoRendererImplTest::Initialize();
   }
 

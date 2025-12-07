@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+ <LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    tools:ignore="UnusedResources">
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/extensions_menu_discover_extensions_button"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:text="@string/extensions_menu_main_page_discover_extensions"
+        android:textAppearance="@style/TextAppearance.TextMedium.Primary.Baseline"
+        android:textAlignment="viewStart"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:drawableStart="@drawable/ic_webstore"
+        android:drawablePadding="16dp"
+        android:drawableTint="?android:attr/textColorPrimary"
+        android:gravity="start|center_vertical"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/extensions_menu_manage_extensions_button"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:text="@string/manage_extensions"
+        android:textAppearance="@style/TextAppearance.TextMedium.Primary.Baseline"
+        android:textAlignment="viewStart"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:drawableStart="@drawable/ic_settings"
+        android:drawablePadding="16dp"
+        android:drawableTint="?android:attr/textColorPrimary"
+        android:gravity="start|center_vertical"/>
+
+</LinearLayout>

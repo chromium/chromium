@@ -5,20 +5,24 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_URL_LOADER_HELPER_H_
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_URL_LOADER_HELPER_H_
 
-#include "base/memory/weak_ptr.h"
-#include "content/browser/preloading/prefetch/prefetch_container.h"
+#include "base/functional/callback_forward.h"
 #include "content/common/content_export.h"
-#include "services/network/public/cpp/resource_request.h"
+#include "content/public/browser/frame_tree_node_id.h"
+
+class GURL;
 
 namespace content {
 
-// Checks if `prefetch_container` can be used for `tentative_resource_request`,
-// and starts checking `PrefetchOriginProber` if needed.
+class PrefetchServingHandle;
+
+// Checks if `prefetch_container` can be used for the url of intercepted
+// `tentative_resource_request`, and starts checking `PrefetchOriginProber` if
+// needed.
 void CONTENT_EXPORT OnGotPrefetchToServe(
-    int frame_tree_node_id,
-    const network::ResourceRequest& tentative_resource_request,
-    base::OnceCallback<void(PrefetchContainer::Reader)> get_prefetch_callback,
-    PrefetchContainer::Reader reader);
+    FrameTreeNodeId frame_tree_node_id,
+    const GURL& tentative_resource_request_url,
+    base::OnceCallback<void(PrefetchServingHandle)> get_prefetch_callback,
+    PrefetchServingHandle serving_handle);
 
 }  // namespace content
 

@@ -44,7 +44,7 @@ class TargetThread : public PlatformThread::Delegate {
   SamplingProfilerThreadToken thread_token() const { return thread_token_; }
 
  private:
-  SamplingProfilerThreadToken thread_token_ = {0};
+  SamplingProfilerThreadToken thread_token_ = {kInvalidThreadId};
   OnceClosure to_run_;
   PlatformThreadHandle target_thread_handle_;
 };
@@ -166,10 +166,6 @@ std::string FormatSampleForDiagnosticOutput(const std::vector<Frame>& sample);
 // ranges, in the specified order.
 void ExpectStackContains(const std::vector<Frame>& stack,
                          const std::vector<FunctionAddressRange>& functions);
-
-// Expects that the stack contains the function names in the specified order.
-void ExpectStackContainsNames(const std::vector<Frame>& stack,
-                              const std::vector<std::string>& function_names);
 
 // Expects that the stack does not contain the functions with the specified
 // address ranges.

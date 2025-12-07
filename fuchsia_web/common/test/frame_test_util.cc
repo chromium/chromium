@@ -52,7 +52,8 @@ std::optional<base::Value> ExecuteJavaScript(fuchsia::web::Frame* frame,
     return {};
   }
 
-  return base::JSONReader::Read(*result_json);
+  return base::JSONReader::Read(*result_json,
+                                base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 }
 
 fuchsia::web::LoadUrlParams CreateLoadUrlParamsWithUserActivation() {

@@ -9,14 +9,15 @@ import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import './firmware_shared.css.js';
 import './firmware_shared_fonts.css.js';
 import './firmware_update.mojom-webui.js';
-import './strings.m.js';
+import '/strings.m.js';
 
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
+import type {I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {FirmwareUpdate, UpdatePriority} from './firmware_update.mojom-webui.js';
-import {OpenConfirmationDialogEventDetail} from './firmware_update_types.js';
+import type {FirmwareUpdate} from './firmware_update.mojom-webui.js';
+import {UpdatePriority} from './firmware_update.mojom-webui.js';
+import type {OpenConfirmationDialogEventDetail} from './firmware_update_types.js';
 import {getTemplate} from './update_card.html.js';
 
 /**
@@ -70,11 +71,14 @@ export class UpdateCardElement extends UpdateCardElementBase {
   }
 
   protected computeDeviceName(): string {
-    return mojoString16ToString(this.update.deviceName);
+    return this.update.deviceName;
   }
 
   protected getUpdateButtonA11yLabel(): string {
-    return this.i18n('updateButtonA11yLabel', this.computeDeviceName());
+    const version = this.update.deviceVersion ?? '';
+
+    return this.i18n(
+        'updateButtonA11yLabel', this.computeDeviceName(), version);
   }
 }
 

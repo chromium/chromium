@@ -1,0 +1,7 @@
+This is a wdspec test.
+[FAIL] test_open_and_close
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot read properties of undefined (reading 'windowState'))
+[FAIL] test_activate_client_windows
+  webdriver.bidi.error.UnknownErrorException: unknown error (Cannot read properties of undefined (reading 'windowState'))
+Harness: the test ran to completion.
+

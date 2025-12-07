@@ -5,14 +5,16 @@
 #include "third_party/blink/renderer/core/testing/mock_clipboard_host.h"
 
 #include "base/containers/contains.h"
+#include "base/numerics/byte_conversions.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/renderer/core/clipboard/clipboard_mime_types.h"
 #include "third_party/blink/renderer/platform/graphics/color_behavior.h"
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/encode/SkPngRustEncoder.h"
+#include "ui/base/clipboard/clipboard_constants.h"
 
 namespace blink {
 
@@ -55,19 +57,22 @@ void MockClipboardHost::WriteFiles(mojom::blink::ClipboardFilesPtr files) {
 void MockClipboardHost::GetSequenceNumber(
     mojom::ClipboardBuffer clipboard_buffer,
     GetSequenceNumberCallback callback) {
-  std::move(callback).Run(sequence_number_);
+  auto bytes = sequence_number_.value().AsBytes();
+  std::move(callback).Run(
+      absl::MakeUint128(base::U64FromLittleEndian(bytes.first<8>()),
+                        base::U64FromLittleEndian(bytes.last<8>())));
 }
 
 Vector<String> MockClipboardHost::ReadStandardFormatNames() {
   Vector<String> types;
   if (!plain_text_.empty())
-    types.push_back(kMimeTypeTextPlain);
+    types.push_back(ui::kMimeTypePlainText);
   if (!html_text_.empty())
-    types.push_back(kMimeTypeTextHTML);
+    types.push_back(ui::kMimeTypeHtml);
   if (!svg_text_.empty())
-    types.push_back(kMimeTypeImageSvg);
+    types.push_back(ui::kMimeTypeSvg);
   if (!png_.empty())
-    types.push_back(kMimeTypeImagePng);
+    types.push_back(ui::kMimeTypePng);
   for (auto& it : custom_data_) {
     CHECK(!base::Contains(types, it.key));
     types.push_back(it.key);
@@ -183,12 +188,8 @@ void MockClipboardHost::WriteImage(const SkBitmap& bitmap) {
     Reset();
   SkPixmap pixmap;
   bitmap.peekPixels(&pixmap);
-  // Set encoding options to favor speed over size.
-  SkPngEncoder::Options options;
-  options.fZLibLevel = 1;
-  options.fFilterFlags = SkPngEncoder::FilterFlag::kNone;
-
-  ImageEncoder::Encode(&png_, pixmap, options);
+  // Use encoding options that favor speed over size.
+  ImageEncoder::Encode(&png_, pixmap, SkPngRustEncoder::CompressionLevel::kLow);
 }
 
 void MockClipboardHost::CommitWrite() {
@@ -228,8 +229,30 @@ void MockClipboardHost::WriteUnsanitizedCustomFormat(
   unsanitized_custom_data_map_.Set("web " + format, std::move(data_copy));
 }
 
+void MockClipboardHost::RegisterClipboardListener(
+    mojo::PendingRemote<mojom::blink::ClipboardListener> listener) {
+  clipboard_listener_.reset();
+  clipboard_listener_.Bind(std::move(listener));
+}
+
+void MockClipboardHost::OnClipboardDataChanged() {
+  if (clipboard_listener_) {
+    auto sequence_number_bytes = sequence_number_.value().AsBytes();
+    clipboard_listener_->OnClipboardDataChanged(
+        ReadStandardFormatNames(),
+        absl::MakeUint128(
+            base::U64FromLittleEndian(sequence_number_bytes.first<8>()),
+            base::U64FromLittleEndian(sequence_number_bytes.last<8>())));
+  }
+}
+
 #if BUILDFLAG(IS_MAC)
 void MockClipboardHost::WriteStringToFindPboard(const String& text) {}
+
+void MockClipboardHost::GetPlatformPermissionState(
+    GetPlatformPermissionStateCallback callback) {
+  std::move(callback).Run(platform_permission_state_);
+}
 #endif
 
 }  // namespace blink

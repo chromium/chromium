@@ -6,12 +6,15 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** An int def enum to represent one of the four corners of a rectangle/square. */
 @IntDef({Corner.TOP_LEFT, Corner.TOP_RIGHT, Corner.BOTTOM_LEFT, Corner.BOTTOM_RIGHT})
 @Retention(RetentionPolicy.SOURCE)
+@NullMarked
 public @interface Corner {
     // The ordering here must match the order Android uses, such
     // GradientDrawable#setCornerRadii(), which is clockwise starting with the top left.

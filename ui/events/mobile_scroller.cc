@@ -2,18 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "ui/events/mobile_scroller.h"
 
+#include <array>
 #include <cmath>
 #include <ostream>
 
 #include "base/check_op.h"
-#include "base/lazy_instance.h"
 #include "base/notreached.h"
 #include "base/numerics/math_constants.h"
 
@@ -51,7 +47,7 @@ struct ViscosityConstants {
   ViscosityConstants(const ViscosityConstants&) = delete;
   ViscosityConstants& operator=(const ViscosityConstants&) = delete;
 
-  float ApplyViscosity(float x) {
+  float ApplyViscosity(float x) const {
     x *= viscous_fluid_scale_;
     if (x < 1.0f) {
       x -= (1.0f - std::exp(-x));
@@ -120,7 +116,7 @@ struct SplineConstants {
 
   void CalculateCoefficients(float t,
                              float* distance_coef,
-                             float* velocity_coef) {
+                             float* velocity_coef) const {
     *distance_coef = 1.f;
     *velocity_coef = 0.f;
     const int index = base::ClampFloor(float{NUM_SAMPLES} * t);
@@ -137,8 +133,8 @@ struct SplineConstants {
  private:
   enum { NUM_SAMPLES = 100 };
 
-  float spline_position_[NUM_SAMPLES + 1];
-  float spline_time_[NUM_SAMPLES + 1];
+  std::array<float, NUM_SAMPLES + 1> spline_position_;
+  std::array<float, NUM_SAMPLES + 1> spline_time_;
 };
 
 float ComputeDeceleration(float friction) {
@@ -158,12 +154,17 @@ T Clamped(T t, T a, T b) {
   return t < a ? a : (t > b ? b : t);
 }
 
-// Leaky to allow access from the impl thread.
-base::LazyInstance<ViscosityConstants>::Leaky g_viscosity_constants =
-    LAZY_INSTANCE_INITIALIZER;
+const ViscosityConstants& GetViscosityConstants() {
+  // Trivially destructible, so no NoDestructor.
+  static const ViscosityConstants constants;
+  return constants;
+}
 
-base::LazyInstance<SplineConstants>::Leaky g_spline_constants =
-    LAZY_INSTANCE_INITIALIZER;
+const SplineConstants& GetSplineConstants() {
+  // Trivially destructible, so no NoDestructor.
+  static const SplineConstants constants;
+  return constants;
+}
 
 }  // namespace
 
@@ -411,13 +412,11 @@ bool MobileScroller::ComputeScrollOffsetInternal(base::TimeTicks time) {
   const float u = time_passed.InSecondsF() * duration_seconds_reciprocal_;
   switch (mode_) {
     case UNDEFINED:
-      NOTREACHED_IN_MIGRATION()
-          << "|StartScroll()| or |Fling()| must be called prior to "
-             "scroll offset computation.";
-      return false;
+      NOTREACHED() << "|StartScroll()| or |Fling()| must be called prior to "
+                      "scroll offset computation.";
 
     case SCROLL_MODE: {
-      float x = g_viscosity_constants.Get().ApplyViscosity(u);
+      float x = GetViscosityConstants().ApplyViscosity(u);
 
       curr_x_ = start_x_ + x * delta_x_;
       curr_y_ = start_y_ + x * delta_y_;
@@ -426,8 +425,8 @@ bool MobileScroller::ComputeScrollOffsetInternal(base::TimeTicks time) {
     case FLING_MODE: {
       float distance_coef = 1.f;
       float velocity_coef = 0.f;
-      g_spline_constants.Get().CalculateCoefficients(u, &distance_coef,
-                                                     &velocity_coef);
+      GetSplineConstants().CalculateCoefficients(u, &distance_coef,
+                                                 &velocity_coef);
 
       curr_velocity_ = velocity_coef * distance_ * duration_seconds_reciprocal_;
 

@@ -7,6 +7,7 @@
 #include "base/json/values_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -54,8 +55,7 @@ bool MaybeReturnCachedStatus(
     return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool IsReauthRequired(const TokenHandleUtil::Status& status,
@@ -71,8 +71,7 @@ bool IsReauthRequired(const TokenHandleUtil::Status& status,
       // only if the user is using their Gaia password for logging in.
       return user_has_gaia_password;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void FinishWithStatus(TokenHandleUtil::TokenValidationCallback callback,
@@ -143,7 +142,7 @@ TokenHandleUtil::TokenHandleUtil()
 TokenHandleUtil::~TokenHandleUtil() = default;
 
 // static
-bool TokenHandleUtil::HasToken(const AccountId& account_id) {
+bool TokenHandleUtil::HasToken(const AccountId& account_id) const {
   user_manager::KnownUser known_user(g_browser_process->local_state());
   const std::string* token =
       known_user.FindStringPath(account_id, kTokenHandlePref);
@@ -151,7 +150,7 @@ bool TokenHandleUtil::HasToken(const AccountId& account_id) {
 }
 
 // static
-bool TokenHandleUtil::IsRecentlyChecked(const AccountId& account_id) {
+bool TokenHandleUtil::IsRecentlyChecked(const AccountId& account_id) const {
   user_manager::KnownUser known_user(g_browser_process->local_state());
   const base::Value* value =
       known_user.FindPath(account_id, kTokenHandleLastCheckedPref);
@@ -167,15 +166,24 @@ bool TokenHandleUtil::IsRecentlyChecked(const AccountId& account_id) {
 }
 
 // static
-bool TokenHandleUtil::ShouldObtainHandle(const AccountId& account_id) {
+bool TokenHandleUtil::ShouldObtainHandle(const AccountId& account_id) const {
   return !HasToken(account_id) || HasTokenStatusInvalid(account_id);
 }
 
-// static
 void TokenHandleUtil::IsReauthRequired(
     const AccountId& account_id,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     TokenValidationCallback callback) {
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->FindUser(account_id);
+
+  if (!user) {
+    DUMP_WILL_BE_NOTREACHED() << "Invalid user";
+    std::move(callback).Run(account_id, std::string(),
+                            /*reauth_required=*/false);
+    return;
+  }
+
   user_manager::KnownUser known_user(g_browser_process->local_state());
   const std::string* token =
       known_user.FindStringPath(account_id, kTokenHandlePref);
@@ -222,6 +230,25 @@ void TokenHandleUtil::StoreTokenHandle(const AccountId& account_id,
                      base::TimeToValue(base::Time::Now()));
 }
 
+void TokenHandleUtil::MaybeFetchTokenHandle(
+    PrefService* token_handle_mapping_store,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const AccountId& account_id,
+    const std::string& access_token,
+    const std::string& refresh_token_hash) {
+  NOTREACHED() << "This is a new interface method not defined for the legacy"
+               << "implementation and should not be accessed";
+}
+
+void TokenHandleUtil::DiagnoseTokenHandleMapping(
+    PrefService* token_handle_mapping_store,
+    account_manager::AccountManager* account_manager,
+    const AccountId& account_id,
+    const std::string& token) const {
+  NOTREACHED() << "This is a new interface method not defined for the legacy"
+               << "implementation and should not be accessed";
+}
+
 // static
 void TokenHandleUtil::SetInvalidTokenForTesting(const char* token) {
   g_invalid_token_for_testing = token;
@@ -242,7 +269,7 @@ void TokenHandleUtil::OnStatusChecked(TokenValidationCallback callback,
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(account_id);
   if (!user) {
-    NOTREACHED_IN_MIGRATION() << "Invalid user";
+    DUMP_WILL_BE_NOTREACHED() << "Invalid user";
     FinishWithStatus(std::move(callback), token, account_id, status,
                      /*user_has_gaia_password=*/true);
     return;
@@ -312,6 +339,11 @@ void TokenHandleUtil::TokenDelegate::OnGetTokenInfoResponse(
 
   std::move(callback_).Run(account_id_, token_, outcome);
   NotifyDone(/*request_completed=*/true);
+}
+
+void TokenHandleUtil::SetTokenHandleStale(const AccountId& account_id) {
+  NOTREACHED() << "This is a new interface method not defined for the legacy"
+               << "implementation and should not be accessed";
 }
 
 }  // namespace ash

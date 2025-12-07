@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_WIFI_P2P_WIFI_P2P_GROUP_H_
 #define CHROMEOS_ASH_COMPONENTS_WIFI_P2P_WIFI_P2P_GROUP_H_
 
+#include <stdint.h>
+
 #include <string>
 
 #include "base/component_export.h"

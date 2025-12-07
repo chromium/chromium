@@ -9,13 +9,16 @@ import os
 import tempfile
 import unittest
 
-from pyfakefs import fake_filesystem_unittest
+# vpython-provided modules.
+from pyfakefs import fake_filesystem_unittest  # pylint: disable=import-error
 
 import test_filtering
 from test_filtering import _TestFilter
 from test_filtering import _TestFiltersGroup
 from test_filtering import _SetOfTestFiltersGroups
 
+# Protected access is allowed for unittests.
+# pylint: disable=protected-access
 
 class FilterTests(fake_filesystem_unittest.TestCase):
     def test_exact_match(self):

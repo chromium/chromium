@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "cc/animation/animation_events.h"
 #include "cc/animation/animation_export.h"
@@ -21,7 +21,6 @@
 #include "cc/trees/mutator_host_client.h"
 #include "cc/trees/target_property.h"
 #include "ui/gfx/animation/keyframe/keyframe_effect.h"
-#include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace cc {
@@ -37,7 +36,7 @@ struct PropertyAnimationState;
 // element id for this animation so that the compositor animation system
 // recognize it. We do not use ElementId because it's an invalid element id.
 inline constexpr ElementId kReservedElementIdForPaintWorklet(
-    std::numeric_limits<ElementId::InternalValue>::max());
+    std::numeric_limits<ElementId::InternalValue>::max() - 1);
 
 // A KeyframeEffect owns a group of KeyframeModels for a single target
 // (identified by an ElementId). It is responsible for managing the
@@ -85,6 +84,7 @@ class CC_ANIMATION_EXPORT KeyframeEffect : public gfx::KeyframeEffect {
 
   bool needs_push_properties() const { return needs_push_properties_; }
   void SetNeedsPushProperties();
+  void ResetNeedsPushProperties();
 
   void BindElementAnimations(ElementAnimations* element_animations);
   void UnbindElementAnimations();

@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/bind_post_task.h"
+#include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/media/media_devices_permission_checker.h"
@@ -172,7 +173,7 @@ bool ImageCaptureImpl::HasPanTiltZoomPermissionGranted() {
 
   return MediaDevicesPermissionChecker::
       HasPanTiltZoomPermissionGrantedOnUIThread(
-          render_frame_host().GetProcess()->GetID(),
+          render_frame_host().GetProcess()->GetDeprecatedID(),
           render_frame_host().GetRoutingID());
 }
 }  // namespace content

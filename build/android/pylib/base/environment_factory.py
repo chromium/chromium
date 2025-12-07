@@ -2,9 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-
 from pylib import constants
 from pylib.local.device import local_device_environment
+from pylib.local.device import local_device_network_environment
 from pylib.local.machine import local_machine_environment
 
 try:
@@ -26,6 +26,11 @@ def CreateEnvironment(args, output_manager, error_func):
           raise RuntimeError('error_func must call exit inside.')
         return local_emulator_environment.LocalEmulatorEnvironment(
             args, output_manager, error_func)
+
+      if args.connect_over_network:
+        return local_device_network_environment.LocalDeviceNetworkEnvironment(
+            args, output_manager, error_func)
+
       return local_device_environment.LocalDeviceEnvironment(
           args, output_manager, error_func)
     return local_machine_environment.LocalMachineEnvironment(

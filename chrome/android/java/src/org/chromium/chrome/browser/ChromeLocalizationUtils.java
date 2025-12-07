@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser;
 
+
 import android.os.LocaleList;
 import android.text.TextUtils;
 
@@ -13,6 +14,8 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.language.AppLocaleUtils;
 import org.chromium.chrome.browser.language.GlobalAppLocaleController;
@@ -23,6 +26,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
 
 /** This class provides the locale related methods for Chrome. */
+@NullMarked
 public class ChromeLocalizationUtils {
     // Constants used to log UI language availability. Must stay in sync with values in the
     // LanguageUsage.UI.Available enum. These values are persisted to logs. Entries should
@@ -84,19 +88,16 @@ public class ChromeLocalizationUtils {
 
     /**
      * @return the current Chromium locale used to display UI elements.
-     *
-     * This matches what the Android framework resolves localized string resources to, using the
-     * system locale and the application's resources. For example, if the system uses a locale
-     * that is not supported by Chromium resources (e.g. 'fur-rIT'), Android will likely fallback
-     * to 'en-rUS' strings when Resources.getString() is called, and this method will return the
-     * matching Chromium name (i.e. 'en-US').
-     *
-     * Using this value is necessary to ensure that the strings accessed from the locale .pak files
-     * from C++ match the resources displayed by the Java-based UI views.
+     *     <p>This matches what the Android framework resolves localized string resources to, using
+     *     the system locale and the application's resources. For example, if the system uses a
+     *     locale that is not supported by Chromium resources (e.g. 'fur-rIT'), Android will likely
+     *     fallback to 'en-rUS' strings when Resources.getString() is called, and this method will
+     *     return the matching Chromium name (i.e. 'en-US').
+     *     <p>Using this value is necessary to ensure that the strings accessed from the locale .pak
+     *     files from C++ match the resources displayed by the Java-based UI views.
      */
     public static String getJavaUiLocale() {
         return ContextUtils.getApplicationContext()
-                .getResources()
                 .getString(R.string.current_detected_ui_locale_name);
     }
 
@@ -104,13 +105,13 @@ public class ChromeLocalizationUtils {
      * Records the status of the current UI language under "LanguageUsage.UI.Android.*". Tracks if
      * the Android system language is available and if the Chromium UI language is correct.
      *
-     * On N+ both the top Android language and default Android language are checked for
+     * <p>On N+ both the top Android language and default Android language are checked for
      * availability. The default language is the one used by the JVM for localization. These will be
      * different if the top Android is not available for localization in Chromium. Otherwise they
      * are the same.
      *
-     * For correctness both the Java and native UI languages are checked. These can be different if
-     * an override language is set and Play Store hygiene has not run.
+     * <p>For correctness both the Java and native UI languages are checked. These can be different
+     * if an override language is set and Play Store hygiene has not run.
      */
     public static void recordUiLanguageStatus() {
         String defaultLanguage = LocaleUtils.toBaseLanguage(Locale.getDefault().toLanguageTag());
@@ -192,7 +193,7 @@ public class ChromeLocalizationUtils {
         if (isTopAndroidLanguageAvailable) {
             return UiAvailableTypes.TOP_AVAILABLE;
         }
-        if (isDefaultLanguageAvailable && !isTopAndroidLanguageAvailable) {
+        if (isDefaultLanguageAvailable) {
             return UiAvailableTypes.ONLY_DEFAULT_AVAILABLE;
         }
         return UiAvailableTypes.NONE_AVAILABLE;
@@ -266,10 +267,12 @@ public class ChromeLocalizationUtils {
     /**
      * Records the status of the previous system locale compared to the new system locale. The
      * histogram buckets are split based on if the Chrome app language is overridden.
+     *
      * @param previousLocale Comma separated string of the previous system locales.
      * @param currentLocale Comma separated string of the current system locales.
      */
-    public static void recordLocaleUpdateStatus(String previousLocale, String currentLocale) {
+    public static void recordLocaleUpdateStatus(
+            @Nullable String previousLocale, String currentLocale) {
         boolean isOverridden = GlobalAppLocaleController.getInstance().isOverridden();
         @LocaleUpdateStatus
         int status = getLocaleUpdateStatus(previousLocale, currentLocale, isOverridden);
@@ -281,6 +284,7 @@ public class ChromeLocalizationUtils {
      * Returns the status of the current system locale compared to a previous locale. If the
      * previous locale is empty returns |LocaleUpdateStatus.DO_NOT_RECORD| since this is the first
      * run.
+     *
      * @param previousLocale Comma separated string of the previous system locales.
      * @param currentLocale Comma separated string of the current system locales.
      * @param isOverridden True if the Chrome app language is overridden.
@@ -288,7 +292,7 @@ public class ChromeLocalizationUtils {
      */
     @VisibleForTesting
     static @LocaleUpdateStatus int getLocaleUpdateStatus(
-            String previousLocale, String currentLocale, boolean isOverridden) {
+            @Nullable String previousLocale, String currentLocale, boolean isOverridden) {
         if (TextUtils.isEmpty(previousLocale) || TextUtils.isEmpty(currentLocale)) {
             return LocaleUpdateStatus.FIRST_RUN;
         }

@@ -19,7 +19,7 @@
 
 namespace {
 // Schemes appropriate for suggestion by ClipboardRecentContent.
-const char* kAuthorizedSchemes[] = {
+constexpr const char* kAuthorizedSchemes[] = {
     url::kAboutScheme, url::kDataScheme, url::kHttpScheme, url::kHttpsScheme,
     // TODO(mpearson): add support for chrome:// URLs.  Right now the scheme
     // for that lives in content and is accessible via

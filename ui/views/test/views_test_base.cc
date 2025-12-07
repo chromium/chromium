@@ -19,6 +19,7 @@
 #include "ui/gl/test/gl_surface_test_support.h"
 #include "ui/views/buildflags.h"
 #include "ui/views/test/test_platform_native_widget.h"
+#include "ui/views/test/test_widget_builder.h"
 #include "ui/views/view_test_api.h"
 
 #if defined(USE_AURA)
@@ -30,10 +31,6 @@
 #include "ui/views/widget/native_widget_mac.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_params_proxy.h"
-#endif
-
 namespace views {
 
 void ViewsTestBase::WidgetCloser::operator()(Widget* widget) const {
@@ -42,16 +39,7 @@ void ViewsTestBase::WidgetCloser::operator()(Widget* widget) const {
 
 ViewsTestBase::ViewsTestBase(
     std::unique_ptr<base::test::TaskEnvironment> task_environment)
-    : task_environment_(std::move(task_environment)) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // ViewsTestBase is also used by a number of Lacros interactive_ui_tests.
-  // Lacros interactive_ui_tests are expected to process the
-  // --lacros-mojo-socket-for-testing command line switch in order to set up
-  // crosapi. However, ViewsTestBase doesn't implement that as it's also used by
-  // other tests and doesn't need crosapi. Hence disable crosapi explicitly.
-  chromeos::BrowserParamsProxy::DisableCrosapiForTesting();
-#endif
-}
+    : task_environment_(std::move(task_environment)) {}
 
 ViewsTestBase::~ViewsTestBase() {
   CHECK(setup_called_)
@@ -130,9 +118,9 @@ std::unique_ptr<Widget> ViewsTestBase::CreateTestWidget(
 
 std::unique_ptr<Widget> ViewsTestBase::CreateTestWidget(
     Widget::InitParams params) {
-  std::unique_ptr<Widget> widget = AllocateTestWidget();
-  widget->Init(std::move(params));
-  return widget;
+  return test::TestWidgetBuilder(std::move(params), {.show = false})
+      .SetWidget(AllocateTestWidget())
+      .BuildDeprecated();
 }
 
 void ViewsTestBase::SimulateNativeDestroy(Widget* widget) {
@@ -142,12 +130,6 @@ void ViewsTestBase::SimulateNativeDestroy(Widget* widget) {
 #if BUILDFLAG(ENABLE_DESKTOP_AURA)
 void ViewsTestBase::SimulateDesktopNativeDestroy(Widget* widget) {
   test_helper_->SimulateDesktopNativeDestroy(widget);
-}
-#endif
-
-#if !BUILDFLAG(IS_MAC)
-int ViewsTestBase::GetSystemReservedHeightAtTopOfScreen() {
-  return 0;
 }
 #endif
 
@@ -184,7 +166,7 @@ NativeWidget* ViewsTestBase::CreateNativeWidgetForTest(
   return new test::TestPlatformNativeWidget<NativeWidgetAura>(delegate, true,
                                                               nullptr);
 #else
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif
 }
 

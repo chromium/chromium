@@ -13,11 +13,13 @@
 #include <algorithm>
 #include <unordered_map>
 
+#include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
@@ -36,53 +38,43 @@ GesturesProp::GesturesProp(const std::string& name,
     : name_(name), type_(type), count_(count) {}
 
 std::vector<int> GesturesProp::GetIntValue() const {
-  NOTREACHED_IN_MIGRATION();
-  return std::vector<int>();
+  NOTREACHED();
 }
 
 bool GesturesProp::SetIntValue(const std::vector<int>& value) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 std::vector<int16_t> GesturesProp::GetShortValue() const {
-  NOTREACHED_IN_MIGRATION();
-  return std::vector<int16_t>();
+  NOTREACHED();
 }
 
 bool GesturesProp::SetShortValue(const std::vector<int16_t>& value) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 std::vector<bool> GesturesProp::GetBoolValue() const {
-  NOTREACHED_IN_MIGRATION();
-  return std::vector<bool>();
+  NOTREACHED();
 }
 
 bool GesturesProp::SetBoolValue(const std::vector<bool>& value) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 std::string GesturesProp::GetStringValue() const {
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 bool GesturesProp::SetStringValue(const std::string& value) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 std::vector<double> GesturesProp::GetDoubleValue() const {
-  NOTREACHED_IN_MIGRATION();
-  return std::vector<double>();
+  NOTREACHED();
 }
 
 bool GesturesProp::SetDoubleValue(const std::vector<double>& value) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void GesturesProp::SetHandlers(GesturesPropGetHandler get,
@@ -109,13 +101,11 @@ void GesturesProp::OnSet() const {
 }
 
 const char** GesturesProp::GetStringWritebackPtr() const {
-  NOTREACHED_IN_MIGRATION();
-  return NULL;
+  NOTREACHED();
 }
 
 bool GesturesProp::IsAllocated() const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // Type-templated GesturesProp.
@@ -149,7 +139,7 @@ class TypedGesturesProp : public GesturesProp {
   std::vector<U> GetNumericalPropertyValue() const {
     // Nothing should be modified so it is OK to call the get handler first.
     OnGet();
-    return this->template GetNumericalValue<U>();
+    return this->GetNumericalValue<U>();
   }
 
   template <typename U>
@@ -162,7 +152,7 @@ class TypedGesturesProp : public GesturesProp {
     // value of different size?).
     if (is_read_only_ || value.size() != count())
       return false;
-    bool ret = this->template SetNumericalValue(value);
+    bool ret = this->SetNumericalValue(value);
     OnSet();
     return ret;
   }
@@ -173,17 +163,17 @@ class TypedGesturesProp : public GesturesProp {
                                    const GesturesProp* default_property) {
     if (IsDefaultPropertyUsable(default_property)) {
       DVLOG(2) << "Default property found. Using its value ...";
-      this->template SetNumericalValue(default_property->GetDoubleValue());
+      this->SetNumericalValue(default_property->GetDoubleValue());
     } else {
       // To work with the interface exposed by the gesture lib, we have no
       // choice but to trust that the init array has sufficient size.
-      std::vector<T> temp(init, init + count());
-      this->template SetNumericalValue(temp);
+      std::vector<T> temp(init, UNSAFE_TODO(init + count()));
+      this->SetNumericalValue(temp);
     }
   }
 
   // Data pointer.
-  T* value_;
+  raw_ptr<T, AllowPtrArithmetic> value_;
 
   // If the flag is on, it means the GesturesProp is created by passing a NULL
   // data pointer to the creator functions. We define the property as a
@@ -212,15 +202,17 @@ class TypedGesturesProp : public GesturesProp {
     // as double because we can't identify their original type lexically.
     // TODO(sheckylin): Handle value out-of-range (e.g., double to int).
     std::vector<U> result(count());
-    for (size_t i = 0; i < count(); ++i)
-      result[i] = static_cast<U>(value_[i]);
+    for (size_t i = 0; i < count(); ++i) {
+      UNSAFE_TODO(result[i] = static_cast<U>(value_[i]));
+    }
     return result;
   }
 
   template <typename U>
   bool SetNumericalValue(const std::vector<U>& value) {
-    for (size_t i = 0; i < count(); ++i)
-      value_[i] = static_cast<T>(value[i]);
+    for (size_t i = 0; i < count(); ++i) {
+      UNSAFE_TODO(value_[i] = static_cast<T>(value[i]));
+    }
     return true;
   }
 
@@ -253,10 +245,10 @@ class GesturesIntProp : public TypedGesturesProp<int> {
     InitializeNumericalProperty(init, default_property);
   }
   std::vector<int> GetIntValue() const override {
-    return this->template GetNumericalPropertyValue<int>();
+    return this->GetNumericalPropertyValue<int>();
   }
   bool SetIntValue(const std::vector<int>& value) override {
-    return this->template SetNumericalPropertyValue(value);
+    return this->SetNumericalPropertyValue(value);
   }
 };
 
@@ -271,10 +263,10 @@ class GesturesShortProp : public TypedGesturesProp<short> {
     InitializeNumericalProperty(init, default_property);
   }
   std::vector<int16_t> GetShortValue() const override {
-    return this->template GetNumericalPropertyValue<int16_t>();
+    return this->GetNumericalPropertyValue<int16_t>();
   }
   bool SetShortValue(const std::vector<int16_t>& value) override {
-    return this->template SetNumericalPropertyValue(value);
+    return this->SetNumericalPropertyValue(value);
   }
 };
 
@@ -292,10 +284,10 @@ class GesturesBoolProp : public TypedGesturesProp<GesturesPropBool> {
     InitializeNumericalProperty(init, default_property);
   }
   std::vector<bool> GetBoolValue() const override {
-    return this->template GetNumericalPropertyValue<bool>();
+    return this->GetNumericalPropertyValue<bool>();
   }
   bool SetBoolValue(const std::vector<bool>& value) override {
-    return this->template SetNumericalPropertyValue(value);
+    return this->SetNumericalPropertyValue(value);
   }
 };
 
@@ -310,10 +302,10 @@ class GesturesDoubleProp : public TypedGesturesProp<double> {
     InitializeNumericalProperty(init, default_property);
   }
   std::vector<double> GetDoubleValue() const override {
-    return this->template GetNumericalPropertyValue<double>();
+    return this->GetNumericalPropertyValue<double>();
   }
   bool SetDoubleValue(const std::vector<double>& value) override {
-    return this->template SetNumericalPropertyValue(value);
+    return this->SetNumericalPropertyValue(value);
   }
 };
 
@@ -328,8 +320,11 @@ class GesturesStringProp : public TypedGesturesProp<std::string> {
                      const char** value,
                      const char* init,
                      const GesturesProp* default_property)
-      : TypedGesturesProp<std::string>(name, PropertyType::PT_STRING, 1, NULL),
-        write_back_(NULL) {
+      : TypedGesturesProp<std::string>(name,
+                                       PropertyType::PT_STRING,
+                                       1,
+                                       nullptr),
+        write_back_(nullptr) {
     InitializeStringProperty(value, init, default_property);
   }
   std::string GetStringValue() const override {
@@ -389,7 +384,7 @@ class GesturesStringProp : public TypedGesturesProp<std::string> {
   // the case of string). We thus need to store the write back pointer so that
   // we can update the value in the gesture lib if the property value gets
   // changed.
-  const char** write_back_;
+  raw_ptr<const char*> write_back_;
 };
 
 // Anonymous namespace for utility functions and internal constants.
@@ -399,8 +394,8 @@ namespace {
 const char kConfigurationFilePath[] = "/etc/gesture";
 
 // Special keywords for boolean values.
-const char* kTrue[] = {"on", "true", "yes"};
-const char* kFalse[] = {"off", "false", "no"};
+constexpr const char* kTrue[] = {"on", "true", "yes"};
+constexpr const char* kFalse[] = {"off", "false", "no"};
 
 // Check if a device falls into one device type category.
 bool IsDeviceOfType(const ui::GesturePropertyProvider::DevicePtr device,
@@ -488,18 +483,20 @@ bool IsMatchTypeSupported(const std::string& match_type) {
 
 // Check if a match criteria is a device type one.
 bool IsMatchDeviceType(const std::string& match_type) {
-  return base::StartsWith(match_type, "MatchIs", base::CompareCase::SENSITIVE);
+  return match_type.starts_with("MatchIs");
 }
 
 // Parse a boolean value keyword (e.g., on/off, true/false).
 int ParseBooleanKeyword(const std::string& value) {
   for (size_t i = 0; i < std::size(kTrue); ++i) {
-    if (base::EqualsCaseInsensitiveASCII(value, kTrue[i]))
+    if (base::EqualsCaseInsensitiveASCII(value, UNSAFE_TODO(kTrue[i]))) {
       return 1;
+    }
   }
   for (size_t i = 0; i < std::size(kFalse); ++i) {
-    if (base::EqualsCaseInsensitiveASCII(value, kFalse[i]))
+    if (base::EqualsCaseInsensitiveASCII(value, UNSAFE_TODO(kFalse[i]))) {
       return -1;
+    }
   }
   return 0;
 }
@@ -531,8 +528,7 @@ std::ostream& operator<<(std::ostream& out,
     TYPE_CASE(PT_STRING);
     TYPE_CASE(PT_REAL);
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 #undef TYPE_CASE
   return out << s;
@@ -580,9 +576,7 @@ std::ostream& operator<<(std::ostream& os, const GesturesProp& prop) {
       LogArrayProperty(os, property->GetDoubleValue());
       break;
     default:
-      LOG(ERROR) << "Unknown gesture property type: " << property->type();
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED() << "Unknown gesture property type: " << property->type();
   }
   return os;
 }
@@ -873,6 +867,9 @@ bool ConfigurationSection::Match(DevicePtr device) {
 }
 
 }  // namespace internal
+
+GestureDeviceProperties::GestureDeviceProperties() = default;
+GestureDeviceProperties::~GestureDeviceProperties() = default;
 
 GesturePropertyProvider::GesturePropertyProvider() {
   LoadDeviceConfigurations();
@@ -1225,8 +1222,7 @@ GesturePropertyProvider::CreateMatchCriteria(const std::string& match_type,
     return std::make_unique<internal::MatchIsTouchpad>(arg);
   if (match_type == "MatchIsTouchscreen")
     return std::make_unique<internal::MatchIsTouchscreen>(arg);
-  NOTREACHED_IN_MIGRATION();
-  return NULL;
+  NOTREACHED();
 }
 
 bool GesturePropertyProvider::LoadDmiProductName() {
@@ -1291,10 +1287,11 @@ std::unique_ptr<GesturesProp> GesturePropertyProvider::CreateDefaultProperty(
   // number and may contain numbers only.
   std::unique_ptr<GesturesProp> property;
   if (is_all_numeric && numbers.size()) {
-    property.reset(new GesturesDoubleProp(name, numbers.size(), NULL,
-                                          numbers.data(), NULL));
+    property.reset(new GesturesDoubleProp(name, numbers.size(), nullptr,
+                                          numbers.data(), nullptr));
   } else {
-    property.reset(new GesturesStringProp(name, NULL, value.c_str(), NULL));
+    property.reset(
+        new GesturesStringProp(name, nullptr, value.c_str(), nullptr));
   }
 
   DVLOG(2) << "Prop: " << *property;
@@ -1364,9 +1361,9 @@ GesturesProp* GesturesPropFunctionsWrapper::CreateString(void* device_data,
                                                          const char* name,
                                                          const char** value,
                                                          const char* init) {
-  GesturesProp* default_property = NULL;
+  GesturesProp* default_property = nullptr;
   if (!PreCreateProperty(device_data, name, &default_property))
-    return NULL;
+    return nullptr;
   GesturesProp* property =
       new GesturesStringProp(name, value, init, default_property);
   PostCreateProperty(device_data, name, base::WrapUnique(property));
@@ -1408,12 +1405,12 @@ bool GesturesPropFunctionsWrapper::InitializeDeviceProperties(
   /* Create Device Properties */
 
   // Read Only properties.
-  CreateString(
-      device_data, "Device Node", NULL, GetDeviceNodePath(device).c_str());
+  CreateString(device_data, "Device Node", nullptr,
+               GetDeviceNodePath(device).c_str());
   short vid = static_cast<short>(device->info.id.vendor);
-  CreateShort(device_data, "Device Vendor ID", NULL, 1, &vid);
+  CreateShort(device_data, "Device Vendor ID", nullptr, 1, &vid);
   short pid = static_cast<short>(device->info.id.product);
-  CreateShort(device_data, "Device Product ID", NULL, 1, &pid);
+  CreateShort(device_data, "Device Product ID", nullptr, 1, &pid);
 
   // Useable trackpad area. If not configured in .conf file,
   // use x/y valuator min/max as reported by kernel driver.
@@ -1460,7 +1457,7 @@ bool GesturesPropFunctionsWrapper::InitializeDeviceProperties(
   // set.
   GesturesProp* dump_debug_log_prop = CreateBoolSingle(
       device_data, "Dump Debug Log", &properties->dump_debug_log, false);
-  RegisterHandlers(device_data, dump_debug_log_prop, device, NULL,
+  RegisterHandlers(device_data, dump_debug_log_prop, device, nullptr,
                    DumpTouchEvdevDebugLog);
 
   // Whether to do the gesture recognition or just passing the multi-touch data
@@ -1484,9 +1481,9 @@ GesturesProp* GesturesPropFunctionsWrapper::CreateProperty(void* device_data,
                                                            size_t count,
                                                            const T* init) {
   // Create the property. Use the default property value if possible.
-  GesturesProp* default_property = NULL;
+  GesturesProp* default_property = nullptr;
   if (!PreCreateProperty(device_data, name, &default_property))
-    return NULL;
+    return nullptr;
   GesturesProp* property =
       new PROPTYPE(name, count, value, init, default_property);
 

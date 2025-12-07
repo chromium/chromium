@@ -28,13 +28,13 @@ class ValueCounter {
 
   ~ValueCounter();
 
-  // Adds |value| to the set. In the case where a Value equal to |value|
-  // doesn't already exist in this map, this function makes a copy of |value|
+  // Adds `value` to the set. In the case where a Value equal to `value`
+  // doesn't already exist in this map, this function makes a copy of `value`
   // and returns true. Otherwise, it returns false.
   bool Add(const base::Value& value);
 
-  // Removes |value| from the set, and returns true if it removed the last
-  // value equal to |value|. If there are more equal values, or if there
+  // Removes `value` from the set, and returns true if it removed the last
+  // value equal to `value`. If there are more equal values, or if there
   // weren't any in the first place, returns false.
   bool Remove(const base::Value& value);
 

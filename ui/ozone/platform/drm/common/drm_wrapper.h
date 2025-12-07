@@ -14,7 +14,6 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/display/types/display_constants.h"
@@ -135,6 +134,7 @@ class DrmWrapper {
 
   virtual bool SetMaster();
   virtual bool DropMaster();
+  virtual bool has_master() const;
 
   /**************
    * Dumb Buffers
@@ -309,6 +309,11 @@ class DrmWrapper {
   bool is_atomic_ = false;
 
   const bool is_primary_device_;
+
+  // DRM master for a device is initially acquired implicitly in Chrome by
+  // opening the device node when no one else is holding the master, not through
+  // set master ioctl.
+  bool has_master_ = true;
 };
 
 }  // namespace ui

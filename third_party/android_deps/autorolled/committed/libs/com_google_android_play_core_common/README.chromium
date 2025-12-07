@@ -1,0 +1,16 @@
+Name: core-common
+Short Name: core-common
+URL: https://dl.google.com/dl/android/maven2/com/google/android/play/core-common/2.0.3/core-common-2.0.3.aar
+Version: 2.0.3
+Update Mechanism: Autoroll
+License: Android Software Development Kit License
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+Play core common pulled in via gradle.
+
+Local Modifications:
+No modifications.

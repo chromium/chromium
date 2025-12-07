@@ -1,0 +1,2 @@
+TYPE_WINDOW_STATE_CHANGED - [contentTypes=16]
+TYPE_ANNOUNCEMENT - [Settings saved successfully!]

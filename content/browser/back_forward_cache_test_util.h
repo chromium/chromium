@@ -11,19 +11,21 @@
 #include "base/location.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/browser/renderer_host/back_forward_cache_can_store_document_result.h"
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 
 namespace content {
 
 namespace {
+// TODO(yuzus): Make a way to use a non sticky dummy feature.
 constexpr auto* kBlockingPagePath =
     "/back_forward_cache/page_with_blocking_feature.html";
 constexpr auto* kBlockingReasonString = "webxrdevice";
 constexpr auto kBlockingReasonEnum =
     blink::scheduler::WebSchedulerTrackedFeature::kWebXR;
+constexpr auto* kBlockingScript = "navigator.xr.isSessionSupported('inline');";
 }  // namespace
 
 // `BackForwardCacheMetricsTestMatcher` provides common matchers and
@@ -69,7 +71,7 @@ class BackForwardCacheMetricsTestMatcher {
   void ExpectRestored(base::Location location);
 
   void ExpectNotRestored(
-      std::vector<BackForwardCacheMetrics::NotRestoredReason> not_restored,
+      BackForwardCacheCanStoreDocumentResult::NotRestoredReasons not_restored,
       std::vector<blink::scheduler::WebSchedulerTrackedFeature> block_listed,
       const std::vector<ShouldSwapBrowsingInstance>& not_swapped,
       const std::vector<BackForwardCache::DisabledReason>&
@@ -94,7 +96,7 @@ class BackForwardCacheMetricsTestMatcher {
   template <typename T>
   void ExpectBucketCount(std::string_view name,
                          T sample,
-                         base::HistogramBase::Count expected_count) {
+                         base::HistogramBase::Count32 expected_count) {
     histogram_tester().ExpectBucketCount(name, sample, expected_count);
   }
 
@@ -111,11 +113,11 @@ class BackForwardCacheMetricsTestMatcher {
   // tests that it occurred.
   void ExpectOutcome(
       BackForwardCacheMetrics::HistoryNavigationOutcome outcome,
-      std::vector<BackForwardCacheMetrics::NotRestoredReason> not_restored,
+      BackForwardCacheCanStoreDocumentResult::NotRestoredReasons not_restored,
       base::Location location);
 
   void ExpectReasons(
-      std::vector<BackForwardCacheMetrics::NotRestoredReason> not_restored,
+      BackForwardCacheCanStoreDocumentResult::NotRestoredReasons not_restored,
       std::vector<blink::scheduler::WebSchedulerTrackedFeature> block_listed,
       const std::vector<ShouldSwapBrowsingInstance>& not_swapped,
       const std::vector<BackForwardCache::DisabledReason>&
@@ -124,7 +126,7 @@ class BackForwardCacheMetricsTestMatcher {
       base::Location location);
 
   void ExpectNotRestoredReasons(
-      std::vector<BackForwardCacheMetrics::NotRestoredReason> reasons,
+      BackForwardCacheCanStoreDocumentResult::NotRestoredReasons reasons,
       base::Location location);
 
   void ExpectBlocklistedFeatures(
@@ -152,6 +154,7 @@ class BackForwardCacheMetricsTestMatcher {
 
   std::vector<UkmMetrics> expected_ukm_outcomes_;
   std::vector<UkmMetrics> expected_ukm_not_restored_reasons_;
+  std::vector<UkmMetrics> expected_ukm_not_restored_reasons2_;
 
   // Indicates whether metrics for all sites regardless of the domains are
   // checked or not.

@@ -5,7 +5,6 @@
 <translation id="1140871961407805696">Основная</translation>
 <translation id="1196338895211115272">Не удалось экспортировать закрытый ключ.</translation>
 <translation id="132960226125594336">Не удалось загрузить файл "<ph name="RELATIVE_PATH" />" для скрипта обработки контента, так как превышен максимально допустимый размер скрипта или максимально допустимый общий размер скриптов для расширения.</translation>
-<translation id="1420684932347524586">Не удалось создать случайный закрытый ключ RSA.</translation>
 <translation id="1445572445564823378">Это расширение замедляет работу <ph name="PRODUCT_NAME" />. Чтобы восстановить нормальную работу <ph name="PRODUCT_NAME" />, отключите его.</translation>
 <translation id="1468038450257740950">WebGL не поддерживается.</translation>
 <translation id="1610570795592207282">Не удалось загрузить CSS (<ph name="RELATIVE_PATH" />) для скрипта.</translation>
@@ -19,13 +18,11 @@
 <translation id="3115238746683532089">Неизвестный продукт <ph name="PRODUCT_ID" /> от поставщика <ph name="VENDOR_ID" /> (серийный номер <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Не удалось переместить CRX-файл. Убедитесь, что он не используется.</translation>
 <translation id="3163201441334626963">Неизвестный продукт <ph name="PRODUCT_ID" /> от поставщика <ph name="VENDOR_ID" /></translation>
-<translation id="3369521687965833290">Не удается распаковать расширение. Для безопасной распаковки расширения необходим путь к каталогу вашего профиля, начинающийся с буквы диска. Он не должен содержать параметр слияния папок, точку монтирования или символьную ссылку. Такого пути для вашего профиля не существует.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (серийный номер <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> от поставщика <ph name="VENDOR_ID" /> (серийный номер <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Входное значение закрытого ключа должно предоставлять собой допустимый путь.</translation>
 <translation id="388442998277590542">Не удалось загрузить страницу параметров <ph name="OPTIONS_PAGE" />.</translation>
 <translation id="3984413272403535372">Ошибка при подписи расширения.</translation>
-<translation id="4115165561519362854">Администратор установил, что для запуска приложения "<ph name="EXTENSION_NAME" />" необходима версия <ph name="EXTENSION_VERSION" /> или выше. Обновите приложение.</translation>
 <translation id="4233778200880751280">Не удалось загрузить страницу <ph name="ABOUT_PAGE" />.</translation>
 <translation id="471800408830181311">Не удалось выгрузить закрытый ключ.</translation>
 <translation id="4811956658694082538">Не удалось установить пакет из-за сбоя. Перезагрузите браузер и повторите попытку.</translation>
@@ -39,7 +36,6 @@
 <translation id="5972529113578162692">Удаление расширения "<ph name="EXTENSION_NAME" />" на этом компьютере запрещено администратором</translation>
 <translation id="6027032947578871493">Неизвестный продукт <ph name="PRODUCT_ID" /> от <ph name="VENDOR_NAME" /> (серийный номер <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> от поставщика <ph name="VENDOR_ID" /></translation>
-<translation id="6143635259298204954">Не удается распаковать расширение. Для безопасной распаковки расширения необходим путь к каталогу вашего профиля, не содержащий символьную ссылку. Такого пути для вашего профиля не существует.</translation>
 <translation id="6322279351188361895">Не удалось прочитать закрытый ключ.</translation>
 <translation id="6391538222494443604">Каталог входа должен существовать.</translation>
 <translation id="641087317769093025">Не удалось распаковать расширение</translation>
@@ -52,12 +48,14 @@
 <translation id="7068383018033524534">Недопустимый файл манифеста</translation>
 <translation id="7217838517480956708">Удаление и изменение расширения <ph name="EXTENSION_NAME" /> на этом компьютере запрещено администратором.</translation>
 <translation id="7612608473764576263">Введите закрытый ключ в допустимом формате (закрытый ключ RSA в формате PKCS#8, PEM).</translation>
+<translation id="7876803335449432072">Не удалось загрузить файл <ph name="RELATIVE_PATH" /> для скрипта обработки контента. Таблицы стилей для таких скриптов можно загружать только из файлов подходящего формата, например CSS.</translation>
 <translation id="7939686037314084444">Не удалось корректно загрузить расширение. Перехват запросов сети может быть нарушен.</translation>
 <translation id="7972881773422714442">Options: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Фронтальная</translation>
 <translation id="8047248493720652249">Данному расширению не удалось присвоить скачанному файлу имя "<ph name="ATTEMPTED_FILENAME" />", поскольку другое расширение (<ph name="EXTENSION_NAME" />) уже присвоило ему другое имя: "<ph name="ACTUAL_FILENAME" />".</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> от <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Файл манифеста отсутствует или недоступен для чтения</translation>
+<translation id="8621383749470166852">Не удалось загрузить файл <ph name="RELATIVE_PATH" /> для скрипта обработки контента. Такие скрипты можно загружать только из файлов JavaScript подходящего формата, например JS.</translation>
 <translation id="8636666366616799973">Недопустимый пакет. Подробные сведения: "<ph name="ERROR_MESSAGE" />".</translation>
 <translation id="8761756413268424715">Приложение "<ph name="APP_NAME" />" запрашивает доступ к устройству.</translation>
 <translation id="8885905466771744233">Закрытый ключ для указанного расширения уже существует. Удалите этот ключ или используйте его повторно.</translation>

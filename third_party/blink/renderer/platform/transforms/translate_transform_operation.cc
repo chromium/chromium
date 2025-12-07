@@ -36,7 +36,8 @@ Length AddLengths(const Length& lhs, const Length& rhs) {
     return Length(result.pixels, Length::kFixed);
   if (result.pixels == 0)
     return Length(result.percent, Length::kPercent);
-  return Length(CalculationValue::Create(result, Length::ValueRange::kAll));
+  return Length(
+      MakeGarbageCollected<CalculationValue>(result, Length::ValueRange::kAll));
 }
 
 TransformOperation::OperationType GetTypeForTranslate(const Length& x,

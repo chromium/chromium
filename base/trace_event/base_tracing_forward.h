@@ -10,28 +10,6 @@
 
 #include "base/tracing_buildflags.h"
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"  // nogncheck
-#else
-
-namespace perfetto {
-
-class TracedValue;
-
-template <typename T>
-void WriteIntoTracedValue(TracedValue context, T&& value);
-
-template <typename T, class = void>
-struct TraceFormatTraits;
-
-template <typename T, typename ResultType = void, class = void>
-struct check_traced_value_support {
-  static constexpr bool value = true;
-  using type = ResultType;
-};
-
-}  // namespace perfetto
-
-#endif  // !BUILDFLAG(ENABLE_BASE_TRACING)
 
 #endif  // BASE_TRACE_EVENT_BASE_TRACING_FORWARD_H_

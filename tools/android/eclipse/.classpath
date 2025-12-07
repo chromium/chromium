@@ -59,7 +59,6 @@ to the classpath for downstream development. See "additional_entries" below.
     <classpathentry kind="src" path="chrome/android/features/keyboard_accessory/internal/java/src"/>
     <classpathentry kind="src" path="chrome/android/features/keyboard_accessory/javatests/src"/>
     <classpathentry kind="src" path="chrome/android/features/keyboard_accessory/junit/src"/>
-    <classpathentry kind="src" path="chrome/android/features/keyboard_accessory/public/java/src"/>
     <classpathentry kind="src" path="chrome/android/features/start_surface/java/src"/>
     <classpathentry kind="src" path="chrome/android/features/start_surface/javatests/src"/>
     <classpathentry kind="src" path="chrome/android/features/start_surface/junit/src"/>
@@ -106,6 +105,7 @@ to the classpath for downstream development. See "additional_entries" below.
     <classpathentry kind="src" path="chrome/browser/android/examples/partner_browser_customizations_provider/src"/>
     <classpathentry kind="src" path="chrome/browser/android/httpclient/java/src"/>
     <classpathentry kind="src" path="chrome/browser/android/httpclient/public/src"/>
+    <classpathentry kind="src" path="chrome/browser/android/keyboard_accessory/public/java/src"/>
     <classpathentry kind="src" path="chrome/browser/android/lifecycle/java/src"/>
     <classpathentry kind="src" path="chrome/browser/android/messages/java/src"/>
     <classpathentry kind="src" path="chrome/browser/android/metrics/javatests/src"/>
@@ -343,7 +343,6 @@ to the classpath for downstream development. See "additional_entries" below.
     <classpathentry kind="src" path="components/embedder_support/android/java/src"/>
     <classpathentry kind="src" path="components/embedder_support/android/javatests/src"/>
     <classpathentry kind="src" path="components/embedder_support/android/junit/src"/>
-    <classpathentry kind="src" path="components/embedder_support/android/metrics/java/src"/>
     <classpathentry kind="src" path="components/embedder_support/android/native_java_unittests/src"/>
     <classpathentry kind="src" path="components/externalauth/android/java/src"/>
     <classpathentry kind="src" path="components/externalauth/android/junit/src"/>
@@ -557,9 +556,6 @@ to the classpath for downstream development. See "additional_entries" below.
     <classpathentry kind="src" path="url/android/javatests/src"/>
     <classpathentry kind="src" path="url/android/junit/src"/>
     <classpathentry kind="src" path="url/android/test/java/src"/>
-    <classpathentry kind="src" path="weblayer/browser/android/javatests/src"/>
-    <classpathentry kind="src" path="weblayer/shell/android/browsertests_apk/src"/>
-    <classpathentry kind="src" path="weblayer/shell/android/webengine_shell_apk/src"/>
     <classpathentry kind="lib" path="../src/third_party/android_sdk/public/platforms/android-33/android.jar" sourcepath="../src/third_party/android_sdk/public/sources/">
         <attributes>
             <attribute name="javadoc_location" value="http://developer.android.com/reference/"/>

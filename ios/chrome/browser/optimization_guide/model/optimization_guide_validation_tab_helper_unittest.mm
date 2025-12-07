@@ -8,25 +8,26 @@
 #import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
-#import "base/test/task_environment.h"
+#import "components/optimization_guide/core/hints/test_hints_config.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "components/optimization_guide/core/optimization_guide_switches.h"
-#import "components/optimization_guide/core/optimization_guide_test_util.h"
 #import "components/optimization_guide/proto/string_value.pb.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_test_utils.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
 
 namespace {
 constexpr char kHintsHost[] = "hints.com";
 constexpr char kHintsURL[] = "https://hints.com/with_hints.html";
-}
+}  // namespace
 
 class OptimizationGuideValidationTabHelperTest : public PlatformTest {
  public:
@@ -56,20 +57,15 @@ class OptimizationGuideValidationTabHelperTest : public PlatformTest {
          optimization_guide::features::kOptimizationGuideMetadataValidation},
         {});
 
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
     optimization_guide_service_ =
-        OptimizationGuideServiceFactory::GetForBrowserState(
-            browser_state_.get());
-    optimization_guide_service_->DoFinalInit();
+        OptimizationGuideServiceFactory::GetForProfile(profile_.get());
 
-    web_state_.SetBrowserState(browser_state_.get());
-    optimization_guide_service_ =
-        OptimizationGuideServiceFactory::GetForBrowserState(
-            browser_state_.get());
+    web_state_.SetBrowserState(profile_.get());
 
     OptimizationGuideValidationTabHelper::CreateForWebState(&web_state_);
 
@@ -79,10 +75,11 @@ class OptimizationGuideValidationTabHelperTest : public PlatformTest {
   }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<OptimizationGuideService> optimization_guide_service_;
   web::FakeWebState web_state_;
 };

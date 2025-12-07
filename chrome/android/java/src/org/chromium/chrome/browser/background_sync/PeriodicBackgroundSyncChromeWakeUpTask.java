@@ -9,6 +9,7 @@ import android.content.Context;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.components.background_task_scheduler.NativeBackgroundTask;
 import org.chromium.components.background_task_scheduler.TaskIds;
@@ -16,6 +17,7 @@ import org.chromium.components.background_task_scheduler.TaskParameters;
 import org.chromium.net.ConnectionType;
 
 /** Handles servicing of Periodic Background Sync tasks to wake up Chrome. */
+@NullMarked
 public class PeriodicBackgroundSyncChromeWakeUpTask extends NativeBackgroundTask {
     @Override
     public @StartBeforeNativeResult int onStartTaskBeforeNativeLoaded(

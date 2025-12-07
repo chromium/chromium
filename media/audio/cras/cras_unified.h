@@ -17,6 +17,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/cras/audio_manager_cras_base.h"
 #include "media/audio/system_glitch_reporter.h"
@@ -88,7 +89,7 @@ class MEDIA_EXPORT CrasUnifiedStream : public AudioOutputStream {
   void ReportAndResetStats();
 
   // The client used to communicate with the audio server.
-  struct libcras_client* client_ = NULL;
+  raw_ptr<struct libcras_client, DanglingUntriaged> client_ = nullptr;
 
   // ID of the playing stream.
   cras_stream_id_t stream_id_ = 0;
@@ -103,10 +104,10 @@ class MEDIA_EXPORT CrasUnifiedStream : public AudioOutputStream {
   float volume_ = 1.0;
 
   // Audio manager that created us.  Used to report that we've been closed.
-  AudioManagerCrasBase* const manager_;
+  raw_ptr<AudioManagerCrasBase, DanglingUntriaged> const manager_;
 
   // Callback to get audio samples.
-  AudioSourceCallback* source_callback_ = NULL;
+  raw_ptr<AudioSourceCallback, DanglingUntriaged> source_callback_ = nullptr;
 
   // Container for exchanging data with AudioSourceCallback::OnMoreData().
   const std::unique_ptr<AudioBus> output_bus_;

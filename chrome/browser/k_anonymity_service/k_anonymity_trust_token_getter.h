@@ -96,7 +96,7 @@ class KAnonymityTrustTokenGetter {
   // Starts the HTTP request for the non-unique user ID.
   void FetchNonUniqueUserId();
   // Passes the non-unique user ID response body to the JSON parser.
-  void OnFetchedNonUniqueUserId(std::unique_ptr<std::string> response);
+  void OnFetchedNonUniqueUserId(std::optional<std::string> response);
   // Extracts the non-unique user ID from the decoded JSON and triggers fetching
   // the key commitment.
   void OnParsedNonUniqueUserId(data_decoder::DataDecoder::ValueOrError result);
@@ -104,7 +104,7 @@ class KAnonymityTrustTokenGetter {
   void FetchTrustTokenKeyCommitment(int non_unique_user_id);
   // Passes the trust token key commitment response body to the JSON parser.
   void OnFetchedTrustTokenKeyCommitment(int non_unique_user_id,
-                                        std::unique_ptr<std::string> response);
+                                        std::optional<std::string> response);
   // Extracts the trust token key commitment from the custom response structure
   // provided by the Google k-anonymity server and reformats it into the V3
   // trust token key commitment format expected by the network service.

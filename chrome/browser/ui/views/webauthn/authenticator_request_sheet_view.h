@@ -102,6 +102,9 @@ class AuthenticatorRequestSheetView : public views::View {
   virtual std::pair<std::unique_ptr<views::View>, AutoFocus>
   BuildStepSpecificContent();
 
+  // Returns the spacing between the step title and the description.
+  virtual int GetSpacingBetweenTitleAndDescription();
+
  private:
   // Children of these views are removed by `ReInitChildViews`. To avoid
   // dangling pointers, group references to the children in a struct that is

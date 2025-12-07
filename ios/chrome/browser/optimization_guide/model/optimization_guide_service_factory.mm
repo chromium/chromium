@@ -6,72 +6,62 @@
 
 #import "base/feature_list.h"
 #import "base/path_service.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/application_locale_storage/application_locale_storage.h"
+#import "components/optimization_guide/core/delivery/prediction_manager.h"
+#import "components/optimization_guide/core/hints/optimization_guide_store.h"
 #import "components/optimization_guide/core/optimization_guide_constants.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
-#import "components/optimization_guide/core/optimization_guide_store.h"
-#import "components/optimization_guide/core/prediction_manager.h"
 #import "ios/chrome/browser/optimization_guide/model/ios_chrome_hints_manager.h"
-#import "ios/chrome/browser/optimization_guide/model/ios_chrome_prediction_model_store.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
 
 std::unique_ptr<KeyedService> BuildOptimizationGuideService(
-    web::BrowserState* context) {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  ChromeBrowserState* original_browser_state =
-      chrome_browser_state->GetOriginalChromeBrowserState();
-  DCHECK(chrome_browser_state);
+    ProfileIOS* profile) {
+  if (!optimization_guide::features::IsOptimizationHintsEnabled()) {
+    return nullptr;
+  }
+
+  ProfileIOS* original_profile = profile->GetOriginalProfile();
+
   // Regardless of whether the profile is off the record or not, initialize the
   // Optimization Guide with the database associated with the original profile.
-  auto* proto_db_provider = original_browser_state->GetProtoDatabaseProvider();
-  base::FilePath profile_path = original_browser_state->GetStatePath();
+  auto* proto_db_provider = original_profile->GetProtoDatabaseProvider();
+  base::FilePath profile_path = original_profile->GetStatePath();
 
   base::WeakPtr<optimization_guide::OptimizationGuideStore> hint_store;
-  if (chrome_browser_state->IsOffTheRecord()) {
+  if (profile->IsOffTheRecord()) {
     OptimizationGuideService* original_ogs =
-        OptimizationGuideServiceFactory::GetForBrowserState(
-            original_browser_state);
+        OptimizationGuideServiceFactory::GetForProfile(original_profile);
     DCHECK(original_ogs);
     hint_store = original_ogs->GetHintsManager()->hint_store();
   }
 
-  return std::make_unique<OptimizationGuideService>(
-      proto_db_provider, profile_path, chrome_browser_state->IsOffTheRecord(),
-      GetApplicationContext()->GetApplicationLocale(), hint_store,
-      chrome_browser_state->GetPrefs(),
-      BrowserListFactory::GetForBrowserState(chrome_browser_state),
-      chrome_browser_state->GetSharedURLLoaderFactory(),
-      base::BindOnce(
-          [](ChromeBrowserState* browser_state) {
-            return BackgroundDownloadServiceFactory::GetForBrowserState(
-                browser_state);
-          },
-          // base::Unretained is safe here because the callback is owned
-          // by PredictionManager which is a transitively owned by
-          // OptimizationGuideService (a keyed service that is
-          // killed before ChromeBrowserState is deallocated).
-          base::Unretained(chrome_browser_state)),
-      IdentityManagerFactory::GetForBrowserState(chrome_browser_state));
-}
+  auto service = std::make_unique<OptimizationGuideService>(
+      proto_db_provider, profile_path, profile->IsOffTheRecord(),
+      GetApplicationContext()->GetApplicationLocaleStorage()->Get(), hint_store,
+      profile->GetPrefs(), BrowserListFactory::GetForProfile(profile),
+      GetApplicationContext()->GetSharedURLLoaderFactory(),
+      IdentityManagerFactory::GetForProfile(profile));
+
+  service->DoFinalInit(
+      BackgroundDownloadServiceFactory::GetForProfile(profile));
+  return service;
 }
 
+}  // namespace
+
 // static
-OptimizationGuideService* OptimizationGuideServiceFactory::GetForBrowserState(
-    ChromeBrowserState* context) {
-  if (!optimization_guide::features::IsOptimizationHintsEnabled())
-    return nullptr;
-  return static_cast<OptimizationGuideService*>(
-      GetInstance()->GetServiceForBrowserState(context, /*create=*/true));
+OptimizationGuideService* OptimizationGuideServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
+  return GetInstance()->GetServiceForProfileAs<OptimizationGuideService>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -87,14 +77,17 @@ void OptimizationGuideServiceFactory::InitializePredictionModelStore() {
   base::PathService::Get(ios::DIR_USER_DATA, &model_downloads_dir);
   model_downloads_dir = model_downloads_dir.Append(
       optimization_guide::kOptimizationGuideModelStoreDirPrefix);
-  optimization_guide::IOSChromePredictionModelStore::GetInstance()->Initialize(
-      model_downloads_dir);
+  GetApplicationContext()
+      ->GetOptimizationGuideGlobalState()
+      ->prediction_model_store()
+      .Initialize(model_downloads_dir);
 }
 
 OptimizationGuideServiceFactory::OptimizationGuideServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "OptimizationGuideService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("OptimizationGuideService",
+                                    ServiceCreation::kCreateWithProfile,
+                                    TestingCreation::kNoServiceForTests,
+                                    ProfileSelection::kOwnInstanceInIncognito) {
   DependsOn(BackgroundDownloadServiceFactory::GetInstance());
   DependsOn(BrowserListFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
@@ -103,26 +96,13 @@ OptimizationGuideServiceFactory::OptimizationGuideServiceFactory()
 OptimizationGuideServiceFactory::~OptimizationGuideServiceFactory() = default;
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactory
+OptimizationGuideServiceFactory::TestingFactory
 OptimizationGuideServiceFactory::GetDefaultFactory() {
-  return base::BindRepeating(&BuildOptimizationGuideService);
+  return base::BindOnce(&BuildOptimizationGuideService);
 }
 
 std::unique_ptr<KeyedService>
 OptimizationGuideServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  return BuildOptimizationGuideService(context);
-}
-
-bool OptimizationGuideServiceFactory::ServiceIsCreatedWithBrowserState() const {
-  return optimization_guide::features::IsOptimizationHintsEnabled();
-}
-
-web::BrowserState* OptimizationGuideServiceFactory::GetBrowserStateToUse(
-    web::BrowserState* context) const {
-  return GetBrowserStateOwnInstanceInIncognito(context);
-}
-
-bool OptimizationGuideServiceFactory::ServiceIsNULLWhileTesting() const {
-  return true;
+    ProfileIOS* profile) const {
+  return BuildOptimizationGuideService(profile);
 }

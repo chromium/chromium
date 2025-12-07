@@ -1,0 +1,35 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# TODO(crbug.com/395908100): Temporary exceptions to bookmark modularization.
+# Avoid adding to this list if possible, and ask wylieb@ if you have any
+# questions or concerns.
+unmodularized_bookmarks_java_files = [
+  "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/TabBookmarker.java",
+  "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/AddToBookmarksToolbarButtonController.java",
+  "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkManagerCoordinator.java",
+  "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkManagerMediator.java",
+  "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkPage.java",
+  "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkPane.java",
+  "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkPromoHeader.java",
+  "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkManagerProperties.java",
+  "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarMediator.java",
+  "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarIphController.java",
+  "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarCoordinator.java",
+  "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkRowViewBinder.java",
+  "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkQueryHandler.java",
+  "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkManagerViewBinder.java",
+  "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkManagerEmptyStateProperties.java",
+  "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkManagerEmptyStateViewBinder.java",
+  "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/ShoppingAccessoryCoordinator.java",
+  "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkRow.java",
+  "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkRowProperties.java",
+  "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkRowCoordinator.java",
+  "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkManagerTestingDelegate.java",
+  "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkFolderPickerCoordinator.java",
+  "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkFolderPickerMediator.java",
+  "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/BasicBookmarkQueryHandler.java",
+  "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkSearchBoxRowProperties.java",
+  "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkSearchBoxRowViewBinder.java",
+]

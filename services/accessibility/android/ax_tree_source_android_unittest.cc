@@ -77,7 +77,12 @@ class MockAutomationEventRouter
   }
 
   void DispatchAccessibilityLocationChange(
-      const ui::AXLocationChanges& details) override {}
+      const ui::AXTreeID& tree_id,
+      const ui::AXLocationChange& details) override {}
+
+  void DispatchAccessibilityScrollChange(
+      const ui::AXTreeID& tree_id,
+      const ui::AXScrollChange& details) override {}
 
   void DispatchTreeDestroyedEvent(ui::AXTreeID tree_id) override {}
 
@@ -401,16 +406,15 @@ TEST_F(AXTreeSourceAndroidTest, AccessibleNameComputationWindow) {
   // No attributes.
   CallNotifyAccessibilityEvent(event.get());
   data = GetSerializedWindow(root->window_id);
-  std::string name;
-  ASSERT_FALSE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_FALSE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
 
   // Title attribute
   SetProperty(root, AXWindowStringProperty::TITLE, "window title");
   CallNotifyAccessibilityEvent(event.get());
   data = GetSerializedWindow(root->window_id);
-  ASSERT_TRUE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
+  const std::string& name =
+      data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   EXPECT_EQ("window title", name);
 
   EXPECT_EQ(2, GetDispatchedEventCount(ax::mojom::Event::kFocus));
@@ -497,35 +501,35 @@ TEST_F(AXTreeSourceAndroidTest, AccessibleNameComputationWindowWithChildren) {
   std::string name;
 
   data = GetSerializedWindow(root->window_id);
-  ASSERT_TRUE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
+  name = data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   EXPECT_EQ("window title", name);
   EXPECT_NE(ax::mojom::Role::kRootWebArea, data.role);
   EXPECT_TRUE(data.GetBoolAttribute(ax::mojom::BoolAttribute::kModal));
 
   data = GetSerializedWindow(child->window_id);
-  ASSERT_TRUE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
+  name = data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   EXPECT_EQ("child window title", name);
   EXPECT_NE(ax::mojom::Role::kRootWebArea, data.role);
 
   data = GetSerializedNode(node->id);
-  ASSERT_TRUE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
+  name = data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   EXPECT_EQ("node text", name);
   EXPECT_EQ(ax::mojom::Role::kStaticText, data.role);
   ASSERT_FALSE(data.IsIgnored());
 
   data = GetSerializedNode(child_node->id);
-  ASSERT_TRUE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
+  name = data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   EXPECT_EQ("child node text", name);
   EXPECT_NE(ax::mojom::Role::kRootWebArea, data.role);
   ASSERT_FALSE(data.IsIgnored());
 
   data = GetSerializedWindow(child2->window_id);
-  ASSERT_TRUE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
+  name = data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   EXPECT_EQ("child2 window title", name);
   EXPECT_NE(ax::mojom::Role::kRootWebArea, data.role);
 
@@ -1039,8 +1043,8 @@ TEST_F(AXTreeSourceAndroidTest, OnDrawerOpened) {
   std::string name;
   data = GetSerializedNode(node2->id);
   ASSERT_EQ(ax::mojom::Role::kMenu, data.role);
-  ASSERT_TRUE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
+  name = data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   EXPECT_EQ("Navigation", name);
 
   // Validate that the drawer title is cached.
@@ -1051,8 +1055,8 @@ TEST_F(AXTreeSourceAndroidTest, OnDrawerOpened) {
   data.RemoveStringAttribute(ax::mojom::StringAttribute::kName);
   data = GetSerializedNode(node2->id);
   ASSERT_EQ(ax::mojom::Role::kMenu, data.role);
-  ASSERT_TRUE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
+  name = data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   EXPECT_EQ("Navigation", name);
 }
 
@@ -1436,10 +1440,8 @@ TEST_F(AXTreeSourceAndroidTest, ControlWithoutNameReceivesFocus) {
   EXPECT_EQ(1, GetDispatchedEventCount(ax::mojom::Event::kFocus));
 
   ui::AXNodeData data;
-  std::string name;
   data = GetSerializedNode(node->id);
-  ASSERT_FALSE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_FALSE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
   EXPECT_EQ(ax::mojom::Role::kSlider, data.role);
 
   ui::AXTreeData tree_data;
@@ -1483,9 +1485,10 @@ TEST_F(AXTreeSourceAndroidTest, AutoComplete) {
   ui::AXNodeData data;
   data = GetSerializedNode(editable->id);
   ASSERT_EQ(ax::mojom::Role::kTextField, data.role);
-  std::string attribute;
-  ASSERT_TRUE(data.GetStringAttribute(ax::mojom::StringAttribute::kAutoComplete,
-                                      &attribute));
+  ASSERT_TRUE(
+      data.HasStringAttribute(ax::mojom::StringAttribute::kAutoComplete));
+  std::string attribute =
+      data.GetStringAttribute(ax::mojom::StringAttribute::kAutoComplete);
   EXPECT_EQ("list", attribute);
   EXPECT_TRUE(data.HasState(ax::mojom::State::kCollapsed));
 
@@ -1522,9 +1525,10 @@ TEST_F(AXTreeSourceAndroidTest, AutoComplete) {
 
   data = GetSerializedNode(editable->id);
   EXPECT_TRUE(data.HasState(ax::mojom::State::kExpanded));
-  std::vector<int32_t> controlled_ids;
-  ASSERT_TRUE(data.GetIntListAttribute(
-      ax::mojom::IntListAttribute::kControlsIds, &controlled_ids));
+  ASSERT_TRUE(
+      data.HasIntListAttribute(ax::mojom::IntListAttribute::kControlsIds));
+  const std::vector<int32_t>& controlled_ids =
+      data.GetIntListAttribute(ax::mojom::IntListAttribute::kControlsIds);
   ASSERT_EQ(1U, controlled_ids.size());
   ASSERT_EQ(popup_window->window_id, controlled_ids[0]);
 
@@ -1538,9 +1542,10 @@ TEST_F(AXTreeSourceAndroidTest, AutoComplete) {
   CallNotifyAccessibilityEvent(event.get());
 
   data = GetSerializedNode(editable->id);
-  int32_t active_descendant;
-  ASSERT_TRUE(data.GetIntAttribute(ax::mojom::IntAttribute::kActivedescendantId,
-                                   &active_descendant));
+  ASSERT_TRUE(
+      data.HasIntAttribute(ax::mojom::IntAttribute::kActivedescendantId));
+  int32_t active_descendant =
+      data.GetIntAttribute(ax::mojom::IntAttribute::kActivedescendantId);
   ASSERT_EQ(list_item->id, active_descendant);
 
   // Delete popup window.
@@ -1556,8 +1561,10 @@ TEST_F(AXTreeSourceAndroidTest, AutoComplete) {
   CallNotifyAccessibilityEvent(event.get());
 
   data = GetSerializedNode(editable->id);
-  ASSERT_TRUE(data.GetStringAttribute(ax::mojom::StringAttribute::kAutoComplete,
-                                      &attribute));
+  ASSERT_TRUE(
+      data.HasStringAttribute(ax::mojom::StringAttribute::kAutoComplete));
+  attribute =
+      data.GetStringAttribute(ax::mojom::StringAttribute::kAutoComplete);
   EXPECT_EQ("list", attribute);
   EXPECT_TRUE(data.HasState(ax::mojom::State::kCollapsed));
 }
@@ -1654,16 +1661,16 @@ TEST_F(AXTreeSourceAndroidTest, UpdateChangeFromNameMergedNode) {
   // (Precondition) First, check name computation from children.
 
   data = GetSerializedNode(node1->id);
-  ASSERT_TRUE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
+  name = data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   EXPECT_EQ("text", name);
 
   data = GetSerializedNode(node2->id);
   ASSERT_TRUE(data.IsIgnored());
 
   data = GetSerializedNode(node3->id);
-  ASSERT_TRUE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
+  name = data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   EXPECT_EQ("button", name);
 
   // Update button text.
@@ -1674,8 +1681,8 @@ TEST_F(AXTreeSourceAndroidTest, UpdateChangeFromNameMergedNode) {
   CallNotifyAccessibilityEvent(event.get());
 
   data = GetSerializedNode(node3->id);
-  ASSERT_TRUE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
+  name = data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   EXPECT_EQ("button2", name);
 
   // Update text in node2.
@@ -1688,8 +1695,8 @@ TEST_F(AXTreeSourceAndroidTest, UpdateChangeFromNameMergedNode) {
   CallNotifyAccessibilityEvent(event.get());
 
   data = GetSerializedNode(node1->id);
-  ASSERT_TRUE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
+  name = data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   EXPECT_EQ("text2", name);
 }
 

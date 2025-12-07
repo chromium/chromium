@@ -11,16 +11,15 @@ component("shared") {
 
   defines = [ "IS_ASSISTANT_SERVICE_SHARED_IMPL" ]
 
-  sources = [
-    "constants.h",
-    "utils.h",
-  ]
+  sources = [ "constants.h" ]
 
-  if (is_chromeos && is_chrome_branded) {
+  # Some Quick Answers code depend on constants.
+  # TODO(crbug.com/406795923): move them out to a better place.
+  if (is_chrome_branded) {
     sources += [ "//chromeos/assistant/internal/constants.cc" ]
   } else {
     sources += [ "constants.cc" ]
   }
 
-  deps = [ "//base:base" ]
+  deps = [ "//base" ]
 }

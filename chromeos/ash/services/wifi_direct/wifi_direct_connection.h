@@ -6,7 +6,6 @@
 #define CHROMEOS_ASH_SERVICES_WIFI_DIRECT_WIFI_DIRECT_CONNECTION_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/timer/elapsed_timer.h"
 #include "chromeos/ash/components/wifi_p2p/wifi_p2p_controller.h"
 #include "chromeos/ash/components/wifi_p2p/wifi_p2p_group.h"

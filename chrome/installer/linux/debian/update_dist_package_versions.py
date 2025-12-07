@@ -26,6 +26,7 @@ SUPPORTED_DEBIAN_RELEASES = {
 }
 
 SUPPORTED_UBUNTU_RELEASES = {
+    "Ubuntu 18.04 (Bionic)": "bionic",
     "Ubuntu 20.04 (Focal)": "focal",
     "Ubuntu 22.04 (Jammy)": "jammy",
 }
@@ -42,13 +43,17 @@ PACKAGE_FILTER = {
     "libdrm2",
     "libexpat1",
     "libgbm1",
-    "libgcc-s1",
+    # See the comment in calculate_package_deps.py about libgcc_s.
+    # TODO(https://crbug.com/40549424): Add this once support for
+    # Ubuntu Bionic is dropped.
+    # "libgcc-s1",
     "libglib2.0-0",
     "libnspr4",
     "libnss3",
     "libpango-1.0-0",
     "libpangocairo-1.0-0",
     "libstdc++6",
+    "libudev1",
     "libuuid1",
     "libx11-6",
     "libx11-xcb1",
@@ -95,8 +100,7 @@ for release in SUPPORTED_UBUNTU_RELEASES:
     codename = SUPPORTED_UBUNTU_RELEASES[release]
     repos = ["main", "universe"]
     deb_sources[release] = [{
-        "base_url":
-        url,
+        "base_url": url,
         "packages": ["%s/binary-amd64/Packages.xz" % repo for repo in repos],
     } for url in [
         "http://us.archive.ubuntu.com/ubuntu/dists/%s" % codename,
@@ -168,9 +172,10 @@ if missing_any_package:
     sys.exit(1)
 
 with open(os.path.join(SCRIPT_DIR, "dist_package_versions.json"), "w") as f:
-    json.dump(distro_package_versions,
-              f,
-              sort_keys=True,
-              indent=4,
-              separators=(",", ": "))
+    json.dump(
+        distro_package_versions,
+        f,
+        sort_keys=True,
+        indent=4,
+        separators=(",", ": "))
     f.write("\n")

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 
 #include <memory>
@@ -14,6 +9,8 @@
 #include <string_view>
 
 #include "base/check.h"
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_restrictions.h"
@@ -44,19 +41,20 @@ std::vector<uint8_t> SerializeUnindexedRulesetWithMultipleRules(
   std::string ruleset_contents;
   google::protobuf::io::StringOutputStream output(&ruleset_contents);
   UnindexedRulesetWriter ruleset_writer(&output);
-  for (const auto& rule : rules)
+  for (const auto& rule : rules) {
     ruleset_writer.AddUrlRule(rule);
+  }
   ruleset_writer.Finish();
 
-  auto* data = reinterpret_cast<const uint8_t*>(ruleset_contents.data());
-  return std::vector<uint8_t>(data, data + ruleset_contents.size());
+  return base::ToVector(base::as_byte_span(ruleset_contents));
 }
 
 std::vector<uint8_t> SerializeIndexedRulesetWithMultipleRules(
     const std::vector<proto::UrlRule>& rules) {
   RulesetIndexer indexer;
-  for (const auto& rule : rules)
+  for (const auto& rule : rules) {
     EXPECT_TRUE(indexer.AddUrlRule(rule));
+  }
   indexer.Finish();
   return std::vector<uint8_t>(indexer.data().begin(), indexer.data().end());
 }
@@ -101,8 +99,9 @@ void TestRuleset::CorruptByFilling(const TestRuleset& ruleset,
   ASSERT_LE(to, ruleset.contents.size());
 
   std::vector<uint8_t> new_contents = ruleset.contents;
-  for (size_t i = from; i < to; ++i)
+  for (size_t i = from; i < to; ++i) {
     new_contents[i] = fill_with;
+  }
   WriteRulesetContents(new_contents, ruleset.path);
 }
 
@@ -143,8 +142,9 @@ void TestRulesetCreator::CreateRulesetToDisallowURLWithSubstrings(
     TestRulesetPair* test_ruleset_pair) {
   CHECK(test_ruleset_pair);
   std::vector<proto::UrlRule> url_rules;
-  for (const auto& substring : substrings)
+  for (const auto& substring : substrings) {
     url_rules.push_back(CreateSubstringRule(substring));
+  }
   CreateRulesetWithRules(url_rules, test_ruleset_pair);
 }
 

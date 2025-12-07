@@ -40,6 +40,7 @@ class AccessibilityControllerClient
                                   double value) override;
   void SetA11yOverrideWindow(aura::Window* a11y_override_window) override;
   std::string GetDictationDefaultLocale(bool new_user) override;
+  void SendFaceGazeDisableDialogResultToSettings(bool accepted) override;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_ACCESSIBILITY_ACCESSIBILITY_CONTROLLER_CLIENT_H_

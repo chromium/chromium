@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/app_constants/constants.h"
@@ -139,7 +138,7 @@ bool RestoreData::HasAppTypeBrowser() const {
   if (it == app_id_to_launch_list_.end())
     return false;
 
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       it->second,
       [](const std::pair<const int, std::unique_ptr<AppRestoreData>>& data) {
         return data.second->browser_extra_info.app_type_browser.value_or(false);
@@ -151,7 +150,7 @@ bool RestoreData::HasBrowser() const {
   if (it == app_id_to_launch_list_.end())
     return false;
 
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       it->second,
       [](const std::pair<const int, std::unique_ptr<AppRestoreData>>& data) {
         return !data.second->browser_extra_info.app_type_browser.value_or(
@@ -277,7 +276,7 @@ int32_t RestoreData::FetchRestoreWindowId(const std::string& app_id) {
 
   // Move to the next window_id.
   auto data_it = it->second.find(window_id);
-  CHECK(data_it != it->second.end(), base::NotFatalUntil::M130);
+  CHECK(data_it != it->second.end());
   ++data_it;
   if (data_it == it->second.end())
     chrome_app_id_to_current_window_id_.erase(app_id);
@@ -330,17 +329,6 @@ RestoreData::MakeWindowIdsUniqueForDeskTemplate() {
 
   has_unique_window_ids_for_desk_template_ = true;
   return mapping;
-}
-
-void RestoreData::UpdateBrowserAppIdToLacros() {
-  auto app_launch_list_iter =
-      app_id_to_launch_list_.find(app_constants::kChromeAppId);
-  if (app_launch_list_iter == app_id_to_launch_list_.end()) {
-    return;
-  }
-  app_id_to_launch_list_[app_constants::kLacrosAppId] =
-      std::move(app_launch_list_iter->second);
-  RemoveApp(app_constants::kChromeAppId);
 }
 
 std::string RestoreData::ToString() const {

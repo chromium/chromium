@@ -32,7 +32,7 @@ void StreamsPrivateAPI::SendExecuteMimeTypeHandlerEvent(
     const ExtensionId& extension_id,
     const std::string& stream_id,
     bool embedded,
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     blink::mojom::TransferrableURLLoaderPtr transferrable_loader,
     const GURL& original_url,
     const std::string& internal_id) {

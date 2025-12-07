@@ -18,8 +18,8 @@ class SyncChangeProcessorWrapperForTest : public SyncChangeProcessor {
  public:
   // Create a SyncChangeProcessorWrapperForTest.
   //
-  // All method calls are forwarded to |wrapped|. Caller maintains ownership
-  // of |wrapped| and is responsible for ensuring it outlives this object.
+  // All method calls are forwarded to `wrapped`. Caller maintains ownership
+  // of `wrapped` and is responsible for ensuring it outlives this object.
   explicit SyncChangeProcessorWrapperForTest(SyncChangeProcessor* wrapped);
   // Overload for SyncableService.
   explicit SyncChangeProcessorWrapperForTest(SyncableService* wrapped);

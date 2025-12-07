@@ -33,14 +33,16 @@
 
 #include <unicode/uchar.h>
 #include <unicode/uniset.h>
+#include <unicode/uscript.h>
 
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/character_property.h"
+#include "third_party/blink/renderer/platform/text/east_asian_spacing_type.h"
 #include "third_party/blink/renderer/platform/text/han_kerning_char_type.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
+#include "third_party/blink/renderer/platform/text/text_justify.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
@@ -66,6 +68,10 @@ class PLATFORM_EXPORT Character {
   static bool IsBlockHalfwidthAndFullwidthForms(UChar32 ch) {
     return IsInRange(ch, 0xFF00, 0xFFEF);
   }
+
+  // Commonly used Unicode General Categories.
+  // https://unicode.org/reports/tr44/#General_Category_Values
+  static bool IsGcMark(UChar32 ch) { return U_GET_GC_MASK(ch) & U_GC_M_MASK; }
 
   // East Asian Width: https://unicode.org/reports/tr11/
   static UEastAsianWidth EastAsianWidth(UChar32 ch) {
@@ -99,15 +105,21 @@ class PLATFORM_EXPORT Character {
            !(U_GET_GC_MASK(c) & (U_GC_M_MASK | U_GC_LM_MASK | U_GC_SK_MASK));
   }
 
+  static bool IsIdeographic(UChar32 c) {
+    return u_hasBinaryProperty(c, UCHAR_IDEOGRAPHIC);
+  }
+
   static bool IsHangul(UChar32 c) {
     // Below U+1100 is likely a common case.
     return c < 0x1100 ? false : IsHangulSlow(c);
   }
 
-  static unsigned ExpansionOpportunityCount(base::span<const LChar>,
+  static unsigned ExpansionOpportunityCount(TextJustify method,
+                                            base::span<const LChar>,
                                             TextDirection,
                                             bool& is_after_expansion);
-  static unsigned ExpansionOpportunityCount(base::span<const UChar>,
+  static unsigned ExpansionOpportunityCount(TextJustify method,
+                                            base::span<const UChar>,
                                             TextDirection,
                                             bool& is_after_expansion);
 
@@ -122,10 +134,12 @@ class PLATFORM_EXPORT Character {
 
   // http://unicode.org/reports/tr9/#Directional_Formatting_Characters
   static bool IsBidiControl(UChar32 character);
-  static bool MaybeBidiRtlUtf16(UChar);
+  static bool MaybeBidiRtlUtf16(base::StrictNumeric<UChar> ch);
+  static bool MaybeBidiRtl(UChar32 ch);
   static bool MaybeBidiRtl(const String&);
 
   static HanKerningCharType GetHanKerningCharType(UChar32 character);
+  static EastAsianSpacingType GetEastAsianSpacingType(UChar32 character);
   // Check the `HanKerningCharType` of a character without knowing the font.
   // It depends on fonts, so it may not be `kOpen` or `kClose` even when this
   // function returns `true`. See `HanKerning::GetCharType`.
@@ -140,52 +154,50 @@ class PLATFORM_EXPORT Character {
   // `MaybeHanKerningClose` but has more cases where it returns `true` for other
   // characters.
   static bool MaybeHanKerningOpenOrCloseFast(UChar32 character) {
-    return IsInRange(character, kLeftSingleQuotationMarkCharacter, 0x301F) ||
+    return IsInRange(character, uchar::kLeftSingleQuotationMark, 0x301F) ||
            IsInRange(character, 0xFF08, 0xFF60);
   }
+  static bool MayNeedEastAsianSpacing(UChar32);
 
   // Collapsible white space characters defined in CSS:
   // https://drafts.csswg.org/css-text-3/#collapsible-white-space
   static bool IsCollapsibleSpace(UChar c) {
-    return c == kSpaceCharacter || c == kNewlineCharacter ||
-           c == kTabulationCharacter || c == kCarriageReturnCharacter;
+    return c == uchar::kSpace || c == uchar::kLineFeed || c == uchar::kTab ||
+           c == uchar::kCarriageReturn;
   }
-  static bool IsLineFeed(UChar c) { return c == kNewlineCharacter; }
+  static bool IsLineFeed(UChar c) { return c == uchar::kLineFeed; }
   template <typename CharacterType>
   static bool IsOtherSpaceSeparator(CharacterType c) {
-    return c == kIdeographicSpaceCharacter;
+    return c == uchar::kIdeographicSpace;
   }
   static bool TreatAsSpace(UChar32 c) {
-    return c == kSpaceCharacter || c == kTabulationCharacter ||
-           c == kNewlineCharacter || c == kNoBreakSpaceCharacter;
+    return c == uchar::kSpace || c == uchar::kTab || c == uchar::kLineFeed ||
+           c == uchar::kNoBreakSpace;
   }
   static bool TreatAsZeroWidthSpace(UChar32 c) {
     return TreatAsZeroWidthSpaceInComplexScript(c) ||
-           c == kZeroWidthNonJoinerCharacter || c == kZeroWidthJoinerCharacter;
+           c == uchar::kZeroWidthNonJoiner || c == uchar::kZeroWidthJoiner;
   }
   static bool TreatAsZeroWidthSpaceInComplexScriptLegacy(UChar32 c) {
-    return c == kFormFeedCharacter || c == kCarriageReturnCharacter ||
-           c == kSoftHyphenCharacter || c == kZeroWidthSpaceCharacter ||
-           (c >= kLeftToRightMarkCharacter && c <= kRightToLeftMarkCharacter) ||
-           (c >= kLeftToRightEmbedCharacter &&
-            c <= kRightToLeftOverrideCharacter) ||
-           c == kZeroWidthNoBreakSpaceCharacter ||
-           c == kObjectReplacementCharacter;
+    return c == uchar::kFormFeed || c == uchar::kCarriageReturn ||
+           c == uchar::kSoftHyphen || c == uchar::kZeroWidthSpace ||
+           (c >= uchar::kLeftToRightMark && c <= uchar::kRightToLeftMark) ||
+           (c >= uchar::kLeftToRightEmbedding &&
+            c <= uchar::kRightToLeftOverride) ||
+           c == uchar::kZeroWidthNoBreakSpace ||
+           c == uchar::kObjectReplacementCharacter;
   }
   static bool TreatAsZeroWidthSpaceInComplexScript(UChar32 c) {
-    if (c == kFormFeedCharacter || c == kCarriageReturnCharacter ||
-        c == kObjectReplacementCharacter) {
+    if (c == uchar::kFormFeed || c == uchar::kCarriageReturn ||
+        c == uchar::kObjectReplacementCharacter) {
       return true;
     }
-    if (RuntimeEnabledFeatures::TextAlignJustifyBidiIsolateEnabled()) {
-      return IsDefaultIgnorable(c);
-    }
-    return TreatAsZeroWidthSpaceInComplexScriptLegacy(c);
+    return IsDefaultIgnorable(c);
   }
   // https://unicode.org/reports/tr44/#Default_Ignorable_Code_Point
   static bool IsDefaultIgnorable(UChar32 c) {
     if (c < 0x0100) {
-      return c == kSoftHyphenCharacter;
+      return c == uchar::kSoftHyphen;
     }
     return u_hasBinaryProperty(c, UCHAR_DEFAULT_IGNORABLE_CODE_POINT);
   }
@@ -200,12 +212,16 @@ class PLATFORM_EXPORT Character {
   // Returns true if the character has a Emoji property.
   // See http://www.unicode.org/Public/emoji/3.0/emoji-data.txt
   static bool IsEmoji(UChar32);
+  // Reserved ranges in blocks largely associated with emoji characters. This
+  // allows handling future Emoji code points.
+  static bool IsEmojiReserved(UChar32);
+  static bool IsEmojiIncludingReserved(UChar32);
   // Default presentation style according to:
   // http://www.unicode.org/reports/tr51/#Presentation_Style
   static bool IsEmojiTextDefault(UChar32);
   static bool IsEmojiEmojiDefault(UChar32);
   static bool IsEmojiModifierBase(UChar32);
-  static inline bool IsEmojiKeycapBase(UChar32 ch) {
+  static constexpr bool IsEmojiKeycapBase(UChar32 ch) {
     return (ch >= '0' && ch <= '9') || ch == '#' || ch == '*';
   }
   static bool IsRegionalIndicator(UChar32);
@@ -241,7 +257,8 @@ class PLATFORM_EXPORT Character {
 
   // Returns whether a script code could be determined for the given character
   // and that script code is not USCRIPT_COMMON or USCRIPT_INHERITED.
-  static bool HasDefiniteScript(UChar32);
+  static bool HasLikelyScript(UChar32);
+  static UScriptCode GetScriptBasedOnUnicodeBlock(UChar32);
 
   static bool IsModernGeorgianUppercase(UChar32 c) {
     return IsInRange(c, 0x1C90, 0x1CBF);
@@ -272,14 +289,35 @@ class PLATFORM_EXPORT Character {
 // `Bidi_Class` of `ch` isn't `R`, `AL`, nor Bidi controls.
 // https://util.unicode.org/UnicodeJsps/list-unicodeset.jsp?a=%5B%5B%3Abc%3DR%3A%5D%5B%3Abc%3DAL%3A%5D%5D&g=bc
 // https://util.unicode.org/UnicodeJsps/list-unicodeset.jsp?a=[:Bidi_C:]
-inline bool Character::MaybeBidiRtlUtf16(UChar ch) {
+//
+// This function assumes all non-BMP characters may be Bidi.
+inline bool Character::MaybeBidiRtlUtf16(base::StrictNumeric<UChar> ch) {
   return ch >= 0x0590 &&
+         // `InlineItemsBuilder` may emit U+200B Zero Width Space.
+         ch != uchar::kZeroWidthSpace &&
          // General Punctuation such as curly quotes.
          !IsInRange(ch, 0x2010, 0x2029) &&
          // CJK etc., up to Surrogate Pairs.
          !IsInRange(ch, 0x206A, 0xD7FF) &&
          // Common in CJK.
          !IsInRange(ch, 0xFF00, 0xFFFF);
+}
+
+inline bool Character::MaybeBidiRtl(UChar32 ch) {
+  return ch >= 0x0590 &&
+         // `InlineItemsBuilder` may emit U+200B Zero Width Space.
+         ch != uchar::kZeroWidthSpace &&
+         // General Punctuation such as curly quotes.
+         !IsInRange(ch, 0x2010, 0x2029) &&
+         // CJK etc., up to Surrogate Pairs.
+         !IsInRange(ch, 0x206A, 0xD7FF) &&
+         // Common in CJK.
+         !IsInRange(ch, 0xFF00, 0xFFFF) &&
+         // Kana Extended-B, Kana Supplement, Kana Extended-A, Small Kana
+         // Extension
+         !IsInRange(ch, 0x1AFF0, 0x1B16F) &&
+         // CJK Ideographs Extensions
+         !IsInRange(ch, 0x20000, 0x323AF);
 }
 
 inline bool Character::MaybeBidiRtl(const String& text) {
@@ -292,9 +330,19 @@ inline bool Character::IsEastAsianWidthFullwidth(UChar32 ch) {
   // All EAW=F characters are in the "Halfwidth and Fullwidth forms" block,
   // except U+3000 IDEOGRAPHIC SPACE.
   // https://util.unicode.org/UnicodeJsps/list-unicodeset.jsp?a=[:ea=F:]
-  return ch == kIdeographicSpaceCharacter ||
+  return ch == uchar::kIdeographicSpace ||
          (IsBlockHalfwidthAndFullwidthForms(ch) &&
           EastAsianWidth(ch) == UEastAsianWidth::U_EA_FULLWIDTH);
+}
+
+inline bool Character::MayNeedEastAsianSpacing(UChar32 ch) {
+  // `EastAsianSpacingType::kWide` may need the spacing. U+02C7 is the minimum
+  // code point of `kWide`.
+  return ch >= 0x02C7 && ch != uchar::kObjectReplacementCharacter &&
+         // U+2000-206F General Punctuation has rather popular characters, such
+         // as ZWSP and curly quotation marks. Exclude the largest range of
+         // non-`kWide` that include them.
+         !IsInRange(ch, 0x1200, 0x3004);
 }
 
 }  // namespace blink

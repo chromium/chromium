@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include "ash/app_list/views/search_result_view.h"
+
 #include <memory>
 
 #include "ash/app_list/model/search/test_search_result.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout_view.h"

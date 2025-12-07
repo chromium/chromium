@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "ui/events/ozone/evdev/gamepad_event_converter_evdev.h"
 
@@ -14,12 +10,12 @@
 #include <linux/input.h>
 #include <unistd.h>
 
+#include <array>
 #include <memory>
 #include <queue>
 #include <utility>
 #include <vector>
 
-#include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/posix/eintr_wrapper.h"
@@ -179,7 +175,7 @@ TEST_F(GamepadEventConverterEvdevTest, XboxGamepadEvents) {
   std::unique_ptr<ui::TestGamepadEventConverterEvdev> dev =
       CreateDevice(kXboxGamepad);
 
-  struct input_event mock_kernel_queue[] = {
+  auto mock_kernel_queue = std::to_array<input_event>({
       {{1493076826, 766851}, EV_ABS, 0, 19105},
       {{1493076826, 766851}, EV_SYN, SYN_REPORT},
       {{1493076826, 774849}, EV_ABS, 0, 17931},
@@ -212,13 +208,14 @@ TEST_F(GamepadEventConverterEvdevTest, XboxGamepadEvents) {
       {{1493076832, 526871}, EV_SYN, SYN_REPORT},
       {{1493076832, 750860}, EV_MSC, 4, 90004},
       {{1493076832, 750860}, EV_KEY, 307, 1},
-      {{1493076832, 750860}, EV_SYN, SYN_REPORT}};
+      {{1493076832, 750860}, EV_SYN, SYN_REPORT},
+  });
 
   // Advance test tick clock so the above events are strictly in the past.
   ui::test::ScopedEventTestTickClock clock;
   clock.SetNowSeconds(1493076833);
 
-  struct ExpectedEvent expected_events[] = {
+  auto expected_events = std::to_array<ExpectedEvent>({
       {GamepadEventType::AXIS, 0, 19105}, {GamepadEventType::FRAME, 0, 0},
       {GamepadEventType::AXIS, 0, 17931}, {GamepadEventType::FRAME, 0, 0},
       {GamepadEventType::AXIS, 0, 17398}, {GamepadEventType::FRAME, 0, 0},
@@ -231,7 +228,7 @@ TEST_F(GamepadEventConverterEvdevTest, XboxGamepadEvents) {
       {GamepadEventType::BUTTON, 306, 1}, {GamepadEventType::FRAME, 0, 0},
       {GamepadEventType::BUTTON, 306, 0}, {GamepadEventType::FRAME, 0, 0},
       {GamepadEventType::BUTTON, 307, 1}, {GamepadEventType::FRAME, 0, 0},
-  };
+  });
 
   for (unsigned i = 0; i < std::size(mock_kernel_queue); ++i) {
     dev->ProcessEvent(mock_kernel_queue[i]);

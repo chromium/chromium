@@ -2,30 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/net/cookies/cookie_store_ios.h"
+#import "ios/net/cookies/cookie_store_ios.h"
 
 #import <Foundation/Foundation.h>
 
-#include <memory>
+#import <memory>
 
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
-#include "base/run_loop.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/test/bind.h"
-#include "base/test/task_environment.h"
-#include "ios/net/cookies/cookie_store_ios_client.h"
+#import "base/memory/ref_counted.h"
+#import "base/run_loop.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/test/bind.h"
+#import "base/test/task_environment.h"
+#import "ios/net/cookies/cookie_store_ios_client.h"
 #import "ios/net/cookies/cookie_store_ios_test_util.h"
 #import "ios/net/cookies/ns_http_system_cookie_store.h"
 #import "net/base/apple/url_conversions.h"
-#include "net/cookies/canonical_cookie.h"
-#include "net/cookies/cookie_store_change_unittest.h"
-#include "net/cookies/cookie_store_unittest.h"
-#include "net/cookies/cookie_util.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
+#import "net/cookies/canonical_cookie.h"
+#import "net/cookies/cookie_store_change_unittest.h"
+#import "net/cookies/cookie_store_unittest.h"
+#import "net/cookies/cookie_util.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
 
 namespace net {
 
@@ -67,6 +67,7 @@ struct CookieStoreIOSTestTraits {
   static const int creation_time_granularity_in_ms = 1000;
   static const bool supports_cookie_access_semantics = false;
   static const bool supports_partitioned_cookies = false;
+  static const bool dispatches_events_on_no_change_overwrite = false;
 
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
@@ -164,10 +165,10 @@ class CookieStoreIOSTest : public PlatformTest {
                        const std::string& value) {
     system_store_->SetCookieAsync(
         [NSHTTPCookie cookieWithProperties:@{
-          NSHTTPCookiePath : base::SysUTF8ToNSString(url.path()),
+          NSHTTPCookiePath : base::SysUTF8ToNSString(url.GetPath()),
           NSHTTPCookieName : base::SysUTF8ToNSString(name),
           NSHTTPCookieValue : base::SysUTF8ToNSString(value),
-          NSHTTPCookieDomain : base::SysUTF8ToNSString(url.host()),
+          NSHTTPCookieDomain : base::SysUTF8ToNSString(url.GetHost()),
         }],
         base::BindOnce(&net::CookieStoreIOS::NotifySystemCookiesChanged));
     base::RunLoop().RunUntilIdle();
@@ -204,7 +205,7 @@ class CookieStoreIOSTest : public PlatformTest {
   // |system_store_| will point to the NSHTTPSystemCookieStore object owned by
   // |store_|. Once the store_ object is deleted the NSHTTPSystemCookieStore
   // object will be deleted.
-  raw_ptr<net::SystemCookieStore> system_store_;
+  raw_ptr<net::SystemCookieStore, DanglingUntriaged> system_store_;
   std::unique_ptr<net::CookieStoreIOS> store_;
   std::unique_ptr<net::CookieChangeSubscription> cookie_change_subscription_;
   std::vector<net::CanonicalCookie> cookies_changed_;

@@ -1,4 +1,5 @@
 // META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
 // META: script=/common/utils.js
 // META: script=resources/fledge-util.sub.js
 // META: script=/common/subset-tests.js
@@ -9,7 +10,7 @@
 // META: variant=?16-last
 
 
-"use strict;"
+"use strict";
 
 // This test ensures proper handling of deprecatedRenderURLReplacements within auctionConfigOverrides.
 // It validates that these replacements are correctly applied to the winning bid's renderURL by

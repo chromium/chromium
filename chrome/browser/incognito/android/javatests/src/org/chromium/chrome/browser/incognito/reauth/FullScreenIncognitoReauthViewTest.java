@@ -17,29 +17,36 @@ import static org.mockito.Mockito.verify;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
+import android.app.Activity;
 import android.view.View;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.incognito.R;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.io.IOException;
 
@@ -47,7 +54,13 @@ import java.io.IOException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
-public class FullScreenIncognitoReauthViewTest extends BlankUiTestActivityTestCase {
+public class FullScreenIncognitoReauthViewTest {
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
+
     private View mView;
     private PropertyModel mPropertyModel;
     private PropertyModelChangeProcessor mModelChangeProcessor;
@@ -56,26 +69,32 @@ public class FullScreenIncognitoReauthViewTest extends BlankUiTestActivityTestCa
     @Mock private Runnable mUnlockIncognitoRunnableMock;
     @Mock private Runnable mSeeOtherTabsRunnableMock;
     @Mock private Runnable mCloseAllIncognitoTabsRunnable;
-    @Mock private SettingsLauncher mSettingsLauncherMock;
+    @Mock private SettingsNavigation mSettingsNavigationMock;
+
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.PRIVACY_INCOGNITO)
+                    .setRevision(2)
                     .build();
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
-        MockitoAnnotations.initMocks(this);
-        SettingsLauncherFactory.setInstanceForTesting(mSettingsLauncherMock);
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
+
+    @Before
+    public void setUp() {
+        SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigationMock);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    getActivity().setContentView(R.layout.incognito_reauth_view);
-                    mView = getActivity().findViewById(android.R.id.content);
+                    sActivity.setContentView(R.layout.incognito_reauth_view);
+                    mView = sActivity.findViewById(android.R.id.content);
                     mIncognitoReauthMenuDelegate =
                             new IncognitoReauthMenuDelegate(
-                                    getActivity(), mCloseAllIncognitoTabsRunnable);
+                                    sActivity, mCloseAllIncognitoTabsRunnable);
                 });
     }
 
@@ -87,16 +106,20 @@ public class FullScreenIncognitoReauthViewTest extends BlankUiTestActivityTestCa
         onView(withId(R.id.incognito_reauth_unlock_incognito_button)).check(matches(isDisplayed()));
         onView(withText(R.string.incognito_reauth_page_unlock_incognito_button_label))
                 .check(matches(isDisplayed()));
-
-        onView(withId(R.id.incognito_reauth_see_other_tabs_label)).check(matches(isDisplayed()));
-        onView(withText(R.string.incognito_reauth_page_see_other_tabs_label))
-                .check(matches(isDisplayed()));
+        if (!IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            onView(withId(R.id.incognito_reauth_see_other_tabs_label))
+                    .check(matches(isDisplayed()));
+            onView(withText(R.string.incognito_reauth_page_see_other_tabs_label))
+                    .check(matches(isDisplayed()));
+        }
 
         onView(withId(R.id.incognito_reauth_unlock_incognito_button)).perform(click());
         verify(mUnlockIncognitoRunnableMock).run();
 
-        onView(withId(R.id.incognito_reauth_see_other_tabs_label)).perform(click());
-        verify(mSeeOtherTabsRunnableMock).run();
+        if (!IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            onView(withId(R.id.incognito_reauth_see_other_tabs_label)).perform(click());
+            verify(mSeeOtherTabsRunnableMock).run();
+        }
     }
 
     @Test
@@ -119,7 +142,7 @@ public class FullScreenIncognitoReauthViewTest extends BlankUiTestActivityTestCa
 
         // Inside three dots menu.
         onView(withText(R.string.menu_settings)).perform(click());
-        verify(mSettingsLauncherMock).launchSettingsActivity(any());
+        verify(mSettingsNavigationMock).startSettings(any());
     }
 
     @Test
@@ -150,7 +173,7 @@ public class FullScreenIncognitoReauthViewTest extends BlankUiTestActivityTestCa
                                     mUnlockIncognitoRunnableMock,
                                     mSeeOtherTabsRunnableMock,
                                     isFullScreen,
-                                    (isFullScreen)
+                                    isFullScreen
                                             ? () -> mIncognitoReauthMenuDelegate.getBasicListMenu()
                                             : null);
                     mModelChangeProcessor =

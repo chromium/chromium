@@ -1,0 +1,142 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("language") {
+  sources = [
+    "language_settings_mediator.h",
+    "language_settings_mediator.mm",
+  ]
+  deps = [
+    ":ui",
+    "//components/application_locale_storage",
+    "//components/language/core/browser",
+    "//components/language/core/common",
+    "//components/prefs",
+    "//components/prefs/ios",
+    "//components/translate/core/browser",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/settings/ui_bundled/language/cells",
+    "//ios/chrome/browser/settings/ui_bundled/utils",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/translate/model",
+    "//ui/base",
+  ]
+}
+
+source_set("ui") {
+  sources = [
+    "add_language_table_view_controller.h",
+    "add_language_table_view_controller.mm",
+    "language_details_table_view_controller.h",
+    "language_details_table_view_controller.mm",
+    "language_settings_commands.h",
+    "language_settings_consumer.h",
+    "language_settings_data_source.h",
+    "language_settings_histograms.h",
+    "language_settings_histograms.mm",
+    "language_settings_table_view_controller.h",
+    "language_settings_table_view_controller.mm",
+  ]
+  deps = [
+    "//components/password_manager/core/common:features",
+    "//components/prefs",
+    "//components/translate/core/browser:translate_pref_names",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/settings/ui_bundled:constants",
+    "//ios/chrome/browser/settings/ui_bundled:settings_root",
+    "//ios/chrome/browser/settings/ui_bundled/cells",
+    "//ios/chrome/browser/settings/ui_bundled/cells:public",
+    "//ios/chrome/browser/settings/ui_bundled/elements:enterprise_info_popover_view_controller",
+    "//ios/chrome/browser/settings/ui_bundled/language/cells",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/chrome/common/ui/util",
+    "//net",
+    "//ui/base",
+  ]
+  public_deps = [ ":ui_constants" ]
+}
+
+source_set("ui_constants") {
+  sources = [
+    "language_settings_ui_constants.h",
+    "language_settings_ui_constants.mm",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "language_settings_mediator_unittest.mm" ]
+  deps = [
+    ":ui",
+    "//base/test:test_support",
+    "//components/language/core/browser",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/sync_preferences",
+    "//components/sync_preferences:test_support",
+    "//components/translate/core/browser",
+    "//ios/chrome/browser/language/model",
+    "//ios/chrome/browser/settings/ui_bundled/language",
+    "//ios/chrome/browser/settings/ui_bundled/language/cells",
+    "//ios/chrome/browser/shared/model/prefs:browser_prefs",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/translate/model",
+    "//ios/web/public/test",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}
+
+source_set("eg_app_support+eg2") {
+  testonly = true
+  sources = [
+    "language_settings_app_interface.h",
+    "language_settings_app_interface.mm",
+  ]
+  deps = [
+    "//components/language/core/browser",
+    "//components/translate/core/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/translate/model",
+    "//ios/chrome/test/app:test_support",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "language_settings_app_interface.h",
+    "language_settings_app_interface_stub.mm",
+  ]
+  deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "language_settings_egtest.mm" ]
+  deps = [
+    ":eg_test_support+eg2",
+    ":ui_constants",
+    "//base/test:test_support",
+    "//components/translate/core/browser:translate_pref_names",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/strings:ui_strings_grit",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

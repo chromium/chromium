@@ -16,6 +16,6 @@
 # TODO(crbug.com/40274892): However there's also a second issue that #[no_mangle]
 # symbols get exported, which will need to be resolved too.
 
-_ChromeAppModeStart_v7
+_ChromeAppModeStart_v8
 _ChromeMain
 _ChromeWebAppShortcutCopierMain

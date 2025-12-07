@@ -7,19 +7,19 @@
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
 #include "third_party/blink/renderer/core/css/cssom/css_style_variable_reference_value.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
 namespace {
 
-StringView FindVariableName(CSSParserTokenRange& range) {
-  range.ConsumeWhitespace();
-  return range.Consume().Value();
+String FindVariableName(CSSParserTokenStream& stream) {
+  stream.ConsumeWhitespace();
+  return stream.Consume().Value().ToString();
 }
 
 V8CSSUnparsedSegment* VariableReferenceValue(
@@ -38,27 +38,38 @@ V8CSSUnparsedSegment* VariableReferenceValue(
   return MakeGarbageCollected<V8CSSUnparsedSegment>(variable_reference);
 }
 
-HeapVector<Member<V8CSSUnparsedSegment>> ParserTokenRangeToTokens(
-    CSSParserTokenRange range) {
+HeapVector<Member<V8CSSUnparsedSegment>> ParserTokenStreamToTokens(
+    CSSParserTokenStream& stream) {
+  int nesting_level = 0;
   HeapVector<Member<V8CSSUnparsedSegment>> tokens;
   StringBuilder builder;
-  while (!range.AtEnd()) {
-    if (range.Peek().FunctionId() == CSSValueID::kVar ||
-        range.Peek().FunctionId() == CSSValueID::kEnv) {
+  while (stream.Peek().GetType() != kEOFToken) {
+    if (stream.Peek().FunctionId() == CSSValueID::kVar ||
+        stream.Peek().FunctionId() == CSSValueID::kEnv) {
       if (!builder.empty()) {
         tokens.push_back(MakeGarbageCollected<V8CSSUnparsedSegment>(
             builder.ReleaseString()));
       }
-      CSSParserTokenRange block = range.ConsumeBlock();
-      StringView variable_name = FindVariableName(block);
-      block.ConsumeWhitespace();
-      if (block.Peek().GetType() == CSSParserTokenType::kCommaToken) {
-        block.Consume();
+
+      CSSParserTokenStream::BlockGuard guard(stream);
+      String variable_name = FindVariableName(stream);
+      stream.ConsumeWhitespace();
+      if (stream.Peek().GetType() == CSSParserTokenType::kCommaToken) {
+        stream.Consume();
       }
-      tokens.push_back(VariableReferenceValue(variable_name,
-                                              ParserTokenRangeToTokens(block)));
+      tokens.push_back(VariableReferenceValue(
+          variable_name, ParserTokenStreamToTokens(stream)));
     } else {
-      range.Consume().Serialize(builder);
+      if (stream.Peek().GetBlockType() == CSSParserToken::kBlockStart) {
+        ++nesting_level;
+      } else if (stream.Peek().GetBlockType() == CSSParserToken::kBlockEnd) {
+        --nesting_level;
+        if (nesting_level < 0) {
+          // Don't include the end right-paren.
+          break;
+        }
+      }
+      stream.ConsumeRaw().Serialize(builder);
     }
   }
   if (!builder.empty()) {
@@ -78,10 +89,8 @@ CSSUnparsedValue* CSSUnparsedValue::FromCSSValue(
 
 CSSUnparsedValue* CSSUnparsedValue::FromCSSVariableData(
     const CSSVariableData& value) {
-  CSSTokenizer tokenizer(value.OriginalText());
-  Vector<CSSParserToken, 32> tokens = tokenizer.TokenizeToEOF();
-  CSSParserTokenRange range(tokens);
-  return CSSUnparsedValue::Create(ParserTokenRangeToTokens(range));
+  CSSParserTokenStream stream(value.OriginalText());
+  return CSSUnparsedValue::Create(ParserTokenStreamToTokens(stream));
 }
 
 V8CSSUnparsedSegment* CSSUnparsedValue::AnonymousIndexedGetter(
@@ -115,11 +124,10 @@ IndexedPropertySetterResult CSSUnparsedValue::AnonymousIndexedSetter(
 }
 
 const CSSValue* CSSUnparsedValue::ToCSSValue() const {
-  CSSTokenizer tokenizer(ToUnparsedString());
-  const auto tokens = tokenizer.TokenizeToEOF();
-  CSSParserTokenRange range(tokens);
+  String unparsed_string = ToUnparsedString();
+  CSSParserTokenStream stream(unparsed_string);
 
-  if (range.AtEnd()) {
+  if (stream.AtEnd()) {
     return MakeGarbageCollected<CSSUnparsedDeclarationValue>(
         MakeGarbageCollected<CSSVariableData>());
   }
@@ -134,48 +142,73 @@ const CSSValue* CSSUnparsedValue::ToCSSValue() const {
   // spec:
   // https://github.com/w3c/css-houdini-drafts/issues/1021
   //
-  // Thus, we use the regular Serialize() on the token range here, which will
-  // insert empty comments but only when needed to avoid changing the meaning.
-  // If this CSSUnparsedValue came from serializing a string,
+  // Thus, we insert empty comments but only when needed to avoid changing
+  // the meaning. If this CSSUnparsedValue came from serializing a string,
   // the original contents of any comments will be lost, but Typed OM does
   // not have anywhere to store that kind of data, so it is expected.
-  String original_text = range.Serialize();
+  StringBuilder builder;
+  CSSParserToken token = stream.ConsumeRaw();
+  token.Serialize(builder);
+  while (!stream.Peek().IsEOF()) {
+    if (NeedsInsertedComment(token, stream.Peek())) {
+      builder.Append("/**/");
+    }
+    token = stream.ConsumeRaw();
+    token.Serialize(builder);
+  }
+  String original_text = builder.ReleaseString();
 
   // TODO(crbug.com/985028): We should probably propagate the CSSParserContext
   // to here.
   return MakeGarbageCollected<CSSUnparsedDeclarationValue>(
-      CSSVariableData::Create({range, original_text},
-                              false /* is_animation_tainted */,
+      CSSVariableData::Create(original_text, false /* is_animation_tainted */,
+                              false /* is_attr_tainted */,
                               false /* needs_variable_resolution */));
 }
 
 String CSSUnparsedValue::ToUnparsedString() const {
-  StringBuilder input;
+  StringBuilder builder;
+  HeapHashSet<Member<const CSSUnparsedValue>> values_on_stack;
+  if (AppendUnparsedString(builder, values_on_stack)) {
+    return builder.ReleaseString();
+  }
+  return g_empty_atom;
+}
 
+bool CSSUnparsedValue::AppendUnparsedString(
+    StringBuilder& builder,
+    HeapHashSet<Member<const CSSUnparsedValue>>& values_on_stack) const {
+  if (values_on_stack.Contains(this)) {
+    return false;  // Cycle.
+  }
+  values_on_stack.insert(this);
   for (unsigned i = 0; i < tokens_.size(); i++) {
     if (i) {
-      input.Append("/**/");
+      builder.Append("/**/");
     }
     switch (tokens_[i]->GetContentType()) {
       case V8CSSUnparsedSegment::ContentType::kCSSVariableReferenceValue: {
         const auto* reference_value =
             tokens_[i]->GetAsCSSVariableReferenceValue();
-        input.Append("var(");
-        input.Append(reference_value->variable());
+        builder.Append("var(");
+        builder.Append(reference_value->variable());
         if (reference_value->fallback()) {
-          input.Append(",");
-          input.Append(reference_value->fallback()->ToUnparsedString());
+          builder.Append(",");
+          if (!reference_value->fallback()->AppendUnparsedString(
+                  builder, values_on_stack)) {
+            return false;  // Cycle.
+          }
         }
-        input.Append(")");
+        builder.Append(")");
         break;
       }
       case V8CSSUnparsedSegment::ContentType::kString:
-        input.Append(tokens_[i]->GetAsString());
+        builder.Append(tokens_[i]->GetAsString());
         break;
     }
   }
-
-  return input.ReleaseString();
+  values_on_stack.erase(this);
+  return true;
 }
 
 }  // namespace blink

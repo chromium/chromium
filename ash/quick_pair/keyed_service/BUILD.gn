@@ -2,10 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash,
-       "Quick Pair protocols (e.g. Fast Pair) are ash-chrome only")
+assert(is_chromeos, "Quick Pair protocols (e.g. Fast Pair) are ash-chrome only")
 
 # TODO(b/279954848): Convert this to a component build
 static_library("keyed_service") {
@@ -38,13 +35,17 @@ static_library("keyed_service") {
     "//chromeos/ash/services/bluetooth_config/public/cpp",
     "//chromeos/ash/services/bluetooth_config/public/mojom",
     "//chromeos/ash/services/quick_pair",
-    "//components/cross_device/logging:logging",
+    "//components/cross_device/logging",
     "//components/keyed_service/core",
     "//components/prefs",
     "//components/user_manager",
     "//device/bluetooth",
     "//mojo/public/cpp/bindings",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 static_library("test_support") {
@@ -75,7 +76,6 @@ source_set("unit_tests") {
 
   sources = [
     "battery_update_message_handler_unittest.cc",
-    "fast_pair_bluetooth_config_delegate_unittest.cc",
     "quick_pair_mediator_unittest.cc",
     "quick_pair_metrics_logger_unittest.cc",
   ]
@@ -83,7 +83,7 @@ source_set("unit_tests") {
   deps = [
     ":keyed_service",
     "//ash:test_support",
-    "//ash/constants:constants",
+    "//ash/constants",
     "//ash/quick_pair/common",
     "//ash/quick_pair/common:test_support",
     "//ash/quick_pair/companion_app",
@@ -113,4 +113,8 @@ source_set("unit_tests") {
     "//mojo/public/cpp/bindings",
     "//testing/gtest",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

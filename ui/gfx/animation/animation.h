@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "build/buildflag.h"
 #include "ui/gfx/animation/animation_container_element.h"
 #include "ui/gfx/animation/animation_export.h"
 
@@ -79,6 +80,18 @@ class ANIMATION_EXPORT Animation : public AnimationContainerElement {
   // to give guidance for heavy animations such as "start download" arrow.
   static bool ShouldRenderRichAnimation();
 
+  // Returns the duration a rich animation should use given the nominal
+  // `duration`. The return value is either `duration` or zero, depending on
+  // whether rich animations are currently enabled. NOTE: Since rich animations
+  // can be enabled and disabled dynamically, it is not appropriate to store the
+  // result of this call long-term; callers should re-set the animation duration
+  // before each animation run.
+  //
+  // TODO(pkasting): It may be clearer and safer to have an "is rich animation"
+  // bit on animations, and have the animation system adjust the duration
+  // internally automatically, e.g. in `AnimationStarted()` in each subclass.
+  static base::TimeDelta RichAnimationDuration(base::TimeDelta duration);
+
   // Determines on a per-platform basis whether scroll animations (e.g. produced
   // by home/end key) should be enabled. Should only be called from the browser
   // process.
@@ -142,8 +155,24 @@ class ANIMATION_EXPORT Animation : public AnimationContainerElement {
   base::TimeTicks start_time_;
 
   // Obtaining the PrefersReducedMotion system setting can be expensive, so it
-  // is cached in this boolean.
+  // is cached in this boolean. A value of `std::nullopt` indicates that its
+  // value has not been queried from the platform yet.
   static std::optional<bool> prefers_reduced_motion_;
+
+#if BUILDFLAG(IS_WIN)
+  // On Windows, the `prefers_reduced_motion_` system setting is largely
+  // dictated by a platform call to SystemParametersInfo(), which can fail, and
+  // thus, `prefers_reduced_motion_` has a very slightly different semantic to
+  // ShouldRenderRichAnimationImpl(). This keeps track of Win32 API calls made
+  // to read the SPI parameter `SPI_GETCLIENTAREAANIMATION`, Windows'
+  // system-wide 'reduced-animation' setting, so it is known whether we have its
+  // value, since `prefers_reduced_motion_` defaults to false, allowing the use
+  // of its cached value in most cases. A value of `std::nullopt` indicates that
+  // a call to SystemParametersInfo() has not been made yet. It is updated on
+  // startup, as well as each time a WM_SETTINGCHANGE MSG is broadcasted for
+  // animations (as happens each time that setting is modified).
+  static std::optional<bool> has_reduced_motion_platform_parameter_;
+#endif
 };
 
 }  // namespace gfx

@@ -4,7 +4,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_matchers.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -18,9 +18,6 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
-using chrome_test_util::ManualFallbackPasswordIconMatcher;
-using chrome_test_util::ManualFallbackPasswordTableViewMatcher;
-using chrome_test_util::ManualFallbackProfilesIconMatcher;
 using chrome_test_util::TapWebElementWithId;
 
 namespace {
@@ -32,18 +29,8 @@ constexpr char kFormHTMLFile[] = "/readonly_form.html";
 
 // Matcher for the address manual fill button.
 id<GREYMatcher> KeyboardAccessoryAddressManualFill() {
-  return [AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]
-             ? grey_accessibilityLabel(l10n_util::GetNSString(
-                   IDS_IOS_AUTOFILL_ADDRESS_AUTOFILL_DATA))
-             : ManualFallbackProfilesIconMatcher();
-}
-
-// Matcher for the username chip button of a password option shown in the manual
-// fallback.
-id<GREYMatcher> UsernameChipButton() {
-  return grey_allOf(
-      chrome_test_util::ButtonWithAccessibilityLabel(@"concrete username"),
-      grey_interactable(), nullptr);
+  return grey_accessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_AUTOFILL_ADDRESS_AUTOFILL_DATA));
 }
 
 }  // namespace
@@ -65,22 +52,14 @@ id<GREYMatcher> UsernameChipButton() {
   const GURL URL = self.testServer->GetURL(kFormHTMLFile);
   [ChromeEarlGrey loadURL:URL];
   [ChromeEarlGrey waitForWebStateContainingText:"Hello"];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:chrome_test_util::WebViewMatcher()];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [AutofillAppInterface clearProfilesStore];
   [AutofillAppInterface clearProfilePasswordStore];
-  [super tearDown];
-}
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  if ([self isRunningTest:@selector
-            (testPasswordsVisibleWhenOpenedFromNonPasswordField)]) {
-    config.features_disabled.push_back(kIOSKeyboardAccessoryUpgrade);
-  }
-
-  return config;
+  [super tearDownHelper];
 }
 
 // Tests that readonly fields don't have Manual Fallback icons.
@@ -132,31 +111,8 @@ id<GREYMatcher> UsernameChipButton() {
       performAction:TapWebElementWithId(kFormElementNormal)];
 
   // Verify that the address manual fill button is visible.
-  [[EarlGrey selectElementWithMatcher:KeyboardAccessoryAddressManualFill()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Tests that saved passwords for the current site are visible in the manual
-// fallback even when the focused field is not password-related.
-- (void)testPasswordsVisibleWhenOpenedFromNonPasswordField {
-  // Save a password for the current site.
-  NSString* URLString =
-      base::SysUTF8ToNSString(self.testServer->GetURL(kFormHTMLFile).spec());
-  [AutofillAppInterface savePasswordFormForURLSpec:URLString];
-
-  // Tap the regular field.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:TapWebElementWithId(kFormElementNormal)];
-
-  // Tap the password icon to open manual fallback.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordIconMatcher()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Confirm that the password option is visible.
-  [[EarlGrey selectElementWithMatcher:UsernameChipButton()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:KeyboardAccessoryAddressManualFill()];
 }
 
 @end

@@ -43,7 +43,7 @@ class TestTextInputView : public views::WidgetDelegateView {
     text_field_->SetTextInputType(ui::TEXT_INPUT_TYPE_TEXT);
     std::string name = "Hello, world";
     text_field_->GetViewAccessibility().SetName(base::UTF8ToUTF16(name));
-    AddChildView(text_field_.get());
+    AddChildViewRaw(text_field_.get());
     SetLayoutManager(std::make_unique<views::FillLayout>());
   }
   TestTextInputView(const TestTextInputView&) = delete;

@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "chrome/browser/ash/kcer/nssdb_migration/pkcs12_migrator.h"
 
@@ -17,6 +13,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
@@ -25,10 +22,11 @@
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/kcer/cert_cache.h"
 #include "chromeos/ash/components/network/certificate_helper.h"
-#include "chromeos/components/kcer/cert_cache.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/cert/nss_cert_database.h"
+#include "net/cert/x509_util_nss.h"
 
 namespace kcer {
 namespace {
@@ -190,7 +188,7 @@ void Pkcs12Migrator::MigrateCerts(bool success,
   }
 
   base::WeakPtr<Kcer> kcer =
-      KcerFactory::GetKcer(Profile::FromBrowserContext(context_));
+      KcerFactoryAsh::GetKcer(Profile::FromBrowserContext(context_));
   kcer->ListCerts(
       {Token::kUser},
       base::BindOnce(&Pkcs12Migrator::MigrateCertsWithKcerCerts,
@@ -207,12 +205,12 @@ void Pkcs12Migrator::MigrateCertsWithKcerCerts(
     return RecordUmaEvent(KcerPkcs12MigrationEvent::kFailedToGetKcerCerts);
   }
 
-  kcer::internal::CertCache kcer_cert_cache(std::move(kcer_certs));
+  kcer::internal::CertCache kcer_cert_cache(kcer_certs);
   net::ScopedCERTCertificateList nss_certs_to_migrate;
 
   for (net::ScopedCERTCertificate& nss_cert : nss_certs) {
-    const base::span<const uint8_t> cert_span(nss_cert->derCert.data,
-                                              nss_cert->derCert.len);
+    const base::span<const uint8_t> cert_span(
+        net::x509_util::CERTCertificateAsSpan(nss_cert.get()));
     if (!kcer_cert_cache.FindCert(cert_span)) {
       nss_certs_to_migrate.push_back(std::move(nss_cert));
     }
@@ -264,13 +262,13 @@ void Pkcs12Migrator::ExportedOneCert(net::ScopedCERTCertificateList certs,
   }
 
   base::WeakPtr<Kcer> kcer =
-      KcerFactory::GetKcer(Profile::FromBrowserContext(context_));
+      KcerFactoryAsh::GetKcer(Profile::FromBrowserContext(context_));
 
   auto callback = base::BindOnce(&Pkcs12Migrator::ImportedOneCert,
                                  weak_factory_.GetWeakPtr(), std::move(certs));
   // Set the flag that some certs now exist in both NSS public slot and Chaps.
   // It might be needed for the rollback.
-  kcer::KcerFactory::RecordPkcs12CertDualWritten();
+  kcer::KcerFactoryAsh::RecordPkcs12CertDualWritten();
   kcer->ImportPkcs12Cert(Token::kUser, std::move(pkcs12),
                          /*password=*/std::string(),
                          /*hardware_backed=*/false, /*mark_as_migrated=*/true,

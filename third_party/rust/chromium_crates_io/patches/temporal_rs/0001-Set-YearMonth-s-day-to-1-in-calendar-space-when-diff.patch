@@ -1,0 +1,92 @@
+From 68463669bf3813f447c2094ab2769ec9ccd363d9 Mon Sep 17 00:00:00 2001
+From: Manish Goregaokar <manishearth@google.com>
+Date: Tue, 25 Nov 2025 22:43:49 +0000
+Subject: [PATCH] Set YearMonth's day to 1 in calendar space when diffing
+
+Uplift https://github.com/boa-dev/temporal/pull/640
+
+Change-Id: I62d593eef513e31fb4b7c39293c61c3c4e81aef0
+---
+ .../src/builtins/core/plain_year_month.rs     | 47 ++++++++++++++-----
+ 1 file changed, 36 insertions(+), 11 deletions(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_1/src/builtins/core/plain_year_month.rs b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_1/src/builtins/core/plain_year_month.rs
+index c61d69ed7f00b..27b6c8eed4992 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_1/src/builtins/core/plain_year_month.rs
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_1/src/builtins/core/plain_year_month.rs
+@@ -300,19 +300,25 @@ impl PlainYearMonth {
+         // 7. Let thisFields be ISODateToFields(calendar, yearMonth.[[ISODate]], year-month).
+         // 8. Set thisFields.[[Day]] to 1.
+         // 9. Let thisDate be ? CalendarDateFromFields(calendar, thisFields, constrain).
+-        let mut this_iso = self.iso;
+-        this_iso.day = 1;
+-        this_iso.check_within_limits()?;
++        let this_fields = CalendarFields::from(YearMonthCalendarFields::try_from_year_month(self)?);
++        let this_fields = this_fields.with_day(1);
++        let this_date = self
++            .calendar()
++            .date_from_fields(this_fields, Overflow::Constrain)?;
+         // 10. Let otherFields be ISODateToFields(calendar, other.[[ISODate]], year-month).
+         // 11. Set otherFields.[[Day]] to 1.
+         // 12. Let otherDate be ? CalendarDateFromFields(calendar, otherFields, constrain).
+-        let mut other_iso = other.iso;
+-        other_iso.day = 1;
+-        other_iso.check_within_limits()?;
+-        // 13. Let dateDifference be CalendarDateUntil(calendar, thisDate, otherDate, settings.[[LargestUnit]]).
+-        let result = self
++        let other_fields =
++            CalendarFields::from(YearMonthCalendarFields::try_from_year_month(other)?);
++        let other_fields = other_fields.with_day(1);
++        let other_date = self
+             .calendar()
+-            .date_until(&this_iso, &other_iso, resolved.largest_unit)?;
++            .date_from_fields(other_fields, Overflow::Constrain)?;
++
++        // 13. Let dateDifference be CalendarDateUntil(calendar, thisDate, otherDate, settings.[[LargestUnit]]).
++        let result =
++            self.calendar()
++                .date_until(&this_date.iso, &other_date.iso, resolved.largest_unit)?;
+         // 14. Let yearsMonthsDifference be ! AdjustDateDurationRecord(dateDifference, 0, 0).
+         let result = result.date().adjust(0, Some(0), None)?;
+ 
+@@ -322,9 +328,10 @@ impl PlainYearMonth {
+         // 16. If settings.[[SmallestUnit]] is not month or settings.[[RoundingIncrement]] ≠ 1, then
+         if resolved.smallest_unit != Unit::Month || resolved.increment != RoundingIncrement::ONE {
+             // a. Let isoDateTime be CombineISODateAndTimeRecord(thisDate, MidnightTimeRecord()).
+-            let iso_date_time = IsoDateTime::new_unchecked(this_iso, IsoTime::default());
++            let iso_date_time = IsoDateTime::new_unchecked(this_date.iso, IsoTime::default());
+             // b. Let isoDateTimeOther be CombineISODateAndTimeRecord(otherDate, MidnightTimeRecord()).
+-            let target_iso_date_time = IsoDateTime::new_unchecked(other_iso, IsoTime::default());
++            let target_iso_date_time =
++                IsoDateTime::new_unchecked(other_date.iso, IsoTime::default());
+             // c. Let destEpochNs be GetUTCEpochNanoseconds(isoDateTimeOther).
+             let dest_epoch_ns = target_iso_date_time.as_nanoseconds();
+             // d. Set duration to ? RoundRelativeDuration(duration, destEpochNs, isoDateTime, unset, calendar, resolved.[[LargestUnit]], resolved.[[RoundingIncrement]], resolved.[[SmallestUnit]], resolved.[[RoundingMode]]).
+@@ -799,6 +806,24 @@ mod tests {
+             assert_eq!(until.years(), 1);
+             assert_eq!(since.years(), -1);
+         }
++
++        // Chinese YearMonth date diffing bug
++        {
++            let earlier = PlainYearMonth::from_str("2000-07-02[u-ca=chinese]").unwrap();
++            let later = PlainYearMonth::from_str("2000-12-26[u-ca=chinese]").unwrap();
++            assert_eq!(earlier.month(), 6);
++            assert_eq!(later.month(), 12);
++            let settings = DifferenceSettings {
++                smallest_unit: Some(Unit::Month),
++                ..Default::default()
++            };
++
++            let until = earlier.until(&later, settings).unwrap();
++            let since = earlier.since(&later, settings).unwrap();
++
++            assert_eq!(until.months(), 6);
++            assert_eq!(since.months(), -6);
++        }
+     }
+     #[test]
+     fn test_diff_with_different_calendars() {
+-- 
+2.52.0.487.g5c8c507ade-goog
+

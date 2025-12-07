@@ -5,24 +5,23 @@
 syntax = "proto2";
 
 import "components/sync/protocol/web_app_specifics.proto";
-import "chrome/browser/ash/system_web_apps/types/proto/system_web_app_data.proto";
 import "chrome/browser/web_applications/proto/web_app_launch_handler.proto";
 import "chrome/browser/web_applications/proto/web_app_os_integration_state.proto";
 import "chrome/browser/web_applications/proto/web_app_install_state.proto";
 import "chrome/browser/web_applications/proto/web_app_isolation_data.proto";
-import "chrome/browser/web_applications/proto/web_app_proto_package.proto";
+import "chrome/browser/web_applications/proto/web_app_related_applications.proto";
 import "chrome/browser/web_applications/proto/web_app_share_target.proto";
 import "chrome/browser/web_applications/proto/web_app_tab_strip.proto";
+import "chrome/browser/web_applications/proto/web_app_url_pattern.proto";
+import "chromeos/ash/experiences/system_web_apps/types/proto/system_web_app_data.proto";
 
 option optimize_for = LITE_RUNTIME;
 
-// TODO(http://b/307989065) Make this web_app.proto and remove "Proto" from type
-// names.
-package web_app;
+package web_app.proto;
 
 // A mapping between a MIME type and a set of file extensions for a file handler
 // "accept" entry. See chrome/browser/web_applications/web_app.h for details.
-message WebAppFileHandlerAcceptProto {
+message WebAppFileHandlerAccept {
   optional string mimetype = 1;  // Required.
   repeated string file_extensions = 2;
 }
@@ -31,19 +30,25 @@ message WebAppFileHandlerAcceptProto {
 // which specifies a MIME type and corresponding set of file extensions that the
 // handler can handle. See chrome/browser/web_applications/web_app.h for
 // details.
-message WebAppFileHandlerProto {
+message WebAppFileHandler {
   optional string action = 1;  // Required.
-  repeated WebAppFileHandlerAcceptProto accept = 2;
+  repeated WebAppFileHandlerAccept accept = 2;
   repeated sync_pb.WebAppIconInfo downloaded_icons = 3;
   optional string display_name = 4;
 
   // This enum should be synced with `LaunchType` in `apps::FileHandler`.
   enum LaunchType {
-    UNDEFINED = 0;
-    SINGLE_CLIENT = 1;
-    MULTIPLE_CLIENTS = 2;
+    LAUNCH_TYPE_UNSPECIFIED = 0;
+    LAUNCH_TYPE_SINGLE_CLIENT = 1;
+    LAUNCH_TYPE_MULTIPLE_CLIENTS = 2;
   }
   optional LaunchType launch_type = 5;  // Required.
+}
+
+enum LinkCapturingUserPreference {
+  NAVIGATION_CAPTURING_PREFERENCE_DEFAULT = 0;
+  NAVIGATION_CAPTURING_PREFERENCE_CAPTURE = 1;
+  NAVIGATION_CAPTURING_PREFERENCE_DO_NOT_CAPTURE = 2;
 }
 
 message WebAppProtocolHandler {
@@ -51,21 +56,19 @@ message WebAppProtocolHandler {
   optional string url = 2;       // Required.
 }
 
-message WebAppUrlHandlerProto {
+// Represents a parsed and validated scope extension defined in the web app's
+// manifest. The `scope` field is a full URL, not only the path.
+message WebAppScopeExtension {
   optional string origin = 1;             // Required.
   optional bool has_origin_wildcard = 2;  // Required.
-}
-
-message WebAppScopeExtensionProto {
-  optional string origin = 1;             // Required.
-  optional bool has_origin_wildcard = 2;  // Required.
+  optional string scope = 3;              // Required.
 }
 
 // A set to track simultaneous installs and uninstalls from multiple install
 // sources. This should stay in sync with |WebAppManagement| in
 // chrome/browser/web_applications/web_app_constants.h
-// and the WebAppManagementProto enum below.
-message SourcesProto {
+// and the WebAppManagement enum below.
+message Sources {
   optional bool system = 1;
   optional bool policy = 2;
   optional bool web_app_store = 3;
@@ -80,10 +83,11 @@ message SourcesProto {
   optional bool iwa_shimless_rma = 12;
   optional bool iwa_policy = 13;
   optional bool iwa_user_installed = 14;
+  optional bool user_installed = 15;
 }
 
 // Properties for integrating with Chrome OS.
-message ChromeOSDataProto {
+message ChromeOSData {
   optional bool show_in_launcher = 1;
   optional bool show_in_search_and_shelf = 2;
   optional bool show_in_management = 3;
@@ -93,12 +97,12 @@ message ChromeOSDataProto {
   reserved 7;
 }
 
-message ClientDataProto {
+message ClientData {
   optional ash.SystemWebAppDataProto system_web_app_data = 1;
 }
 
 // Properties for a WebApp's shortcuts menu item.
-message WebAppShortcutsMenuItemInfoProto {
+message WebAppShortcutsMenuItemInfo {
   optional string name = 1;  // Required.
   optional string url = 2;   // Required.
   repeated sync_pb.WebAppIconInfo shortcut_manifest_icons = 3;
@@ -107,7 +111,7 @@ message WebAppShortcutsMenuItemInfoProto {
 }
 
 // List of icon sizes downloaded to disk for a shortcuts menu item.
-message DownloadedShortcutsMenuIconSizesProto {
+message DownloadedShortcutsMenuIconSizes {
   repeated int32 icon_sizes = 1;
   repeated int32 icon_sizes_maskable = 2;
   repeated int32 icon_sizes_monochrome = 3;
@@ -122,29 +126,30 @@ message WebAppPermissionsPolicy {
 
 // This enum should be synced with |WebAppManagement| in
 // chrome/browser/web_applications/web_app_constants.h as well as
-// with the SourcesProto message defined above.
-enum WebAppManagementProto {
-  WEBAPPMANAGEMENT_UNSPECIFIED = 0;
-  SYSTEM = 1;
-  POLICY = 2;
-  SUBAPP = 3;
-  WEBAPPSTORE = 4;
-  SYNC = 5;
-  DEFAULT = 6;
-  KIOSK = 7;
+// with the Sources message defined above.
+enum WebAppManagementType {
+  WEB_APP_MANAGEMENT_TYPE_UNSPECIFIED = 0;
+  WEB_APP_MANAGEMENT_TYPE_SYSTEM = 1;
+  WEB_APP_MANAGEMENT_TYPE_POLICY = 2;
+  WEB_APP_MANAGEMENT_TYPE_SUB_APP = 3;
+  WEB_APP_MANAGEMENT_TYPE_WEB_APP_STORE = 4;
+  WEB_APP_MANAGEMENT_TYPE_SYNC = 5;
+  WEB_APP_MANAGEMENT_TYPE_DEFAULT = 6;
+  WEB_APP_MANAGEMENT_TYPE_KIOSK = 7;
   reserved 8;
-  OEM = 9;
-  ONEDRIVEINTEGRATION = 10;
-  APS_DEFAULT = 11;
-  IWA_SHIMLESS_RMA = 12;
-  IWA_POLICY = 13;
-  IWA_USER_INSTALLED = 14;
+  WEB_APP_MANAGEMENT_TYPE_OEM = 9;
+  WEB_APP_MANAGEMENT_TYPE_ONE_DRIVE_INTEGRATION = 10;
+  WEB_APP_MANAGEMENT_TYPE_APS_DEFAULT = 11;
+  WEB_APP_MANAGEMENT_TYPE_IWA_SHIMLESS_RMA = 12;
+  WEB_APP_MANAGEMENT_TYPE_IWA_POLICY = 13;
+  WEB_APP_MANAGEMENT_TYPE_IWA_USER_INSTALLED = 14;
+  WEB_APP_MANAGEMENT_TYPE_USER_INSTALLED = 15;
 }
 
 // This stores data per-external-WebAppManagement::Type, as each installation
 // manager can have different installation configurations for the same web app.
 message ManagementToExternalConfigInfo {
-  optional WebAppManagementProto management = 1;
+  optional WebAppManagementType management = 1;
   // The collection of install_urls per web_app per WebAppManagement::Type.
   repeated string install_urls = 2;
   // Stores whether the app is a placeholder app or not.
@@ -159,10 +164,10 @@ message ManagementToExternalConfigInfo {
 
 // The initiator of a sync generated icon fix time window.
 enum GeneratedIconFixSource {
-  GeneratedIconFixSource_UNKNOWN = 0;
-  GeneratedIconFixSource_SYNC_INSTALL = 1;
-  GeneratedIconFixSource_RETROACTIVE = 2;
-  GeneratedIconFixSource_MANIFEST_UPDATE = 3;
+  GENERATED_ICON_FIX_SOURCE_UNKNOWN = 0;
+  GENERATED_ICON_FIX_SOURCE_SYNC_INSTALL = 1;
+  GENERATED_ICON_FIX_SOURCE_RETROACTIVE = 2;
+  GENERATED_ICON_FIX_SOURCE_MANIFEST_UPDATE = 3;
 };
 
 // Represents the current state of attempts to fix broken icons from sync
@@ -177,14 +182,48 @@ message GeneratedIconFix {
   optional uint32 attempt_count = 4;  // Required.
 }
 
+// Stores the mapping of an icon purpose to icon sizes for downloaded icons.
+// This is saved in PendingUpdateInfo if there are pending icons to be updated
+// from the ManifestSilentUpdateCommand. It is written to the web app in the
+// ApplyManifestPendingUpdateCommand if the user confirms the updates.
+message DownloadedIconSizeInfo {
+  optional sync_pb.WebAppIconInfo.Purpose purpose = 1;
+  repeated int32 icon_sizes = 2;
+}
+
+// Stores the pending updates for security sensitive members. Saved when an
+// update is registered in the ManifestSilentUpdateCommand, and used to show
+// update UX. At least one field should be populated. If the icon is populated,
+// the url, size, and purpose must all be populated. The downloaded manifest
+// and downloaded trusted icons map the stored manifest and trusted icon
+// purposes with all their downloaded sizes. If manifest icons and trusted
+// icons exist, the downloaded manifest and downloaded trusted icons must also
+// exist.
+message PendingUpdateInfo {
+  optional string name = 1;
+  reserved 2;
+  repeated sync_pb.WebAppIconInfo manifest_icons = 3;
+  repeated sync_pb.WebAppIconInfo trusted_icons = 4;
+  repeated DownloadedIconSizeInfo downloaded_manifest_icons = 5;
+  repeated DownloadedIconSizeInfo downloaded_trusted_icons = 6;
+  optional bool was_ignored = 7;
+}
+
+// This stores the time and requesting page URL of an attempted install of the
+// app via the Web Install API.
+message InstalledBy {
+  optional int64 install_api_call_time = 1;  // Required.
+  optional string requesting_url = 2;        // Required.
+}
+
 // Full WebApp object data. See detailed comments in
 // chrome/browser/web_applications/web_app.h. Note on database identities:
 // app_id is a hash of launch_url. app_id is the client tag for sync system.
 // app_id is the storage key in DataTypeStore.
-message WebAppProto {
+message WebApp {
   reserved "handle_links", "is_in_sync_install", "is_placeholder",
       "file_handler_os_integration_state",
-      "run_on_os_login_os_integration_state";
+      "run_on_os_login_os_integration_state", "url_handlers", "update_token";
   // Synced data. It is replicated across , all devices with WEB_APPS.
   //
   // |sync_data.name| and |sync_data.theme_color| are read by a device to
@@ -195,15 +234,15 @@ message WebAppProto {
   // This enum should be synced with
   // third_party/blink/public/mojom/manifest/display_mode.mojom
   enum DisplayMode {
-    // UNDEFINED if optional |display_mode| is absent.
-    BROWSER = 1;
-    MINIMAL_UI = 2;
-    STANDALONE = 3;
-    FULLSCREEN = 4;
-    WINDOW_CONTROLS_OVERLAY = 5;
-    TABBED = 6;
-    BORDERLESS = 7;
-    PICTURE_IN_PICTURE = 8;
+    DISPLAY_MODE_UNSPECIFIED = 0;
+    DISPLAY_MODE_BROWSER = 1;
+    DISPLAY_MODE_MINIMAL_UI = 2;
+    DISPLAY_MODE_STANDALONE = 3;
+    DISPLAY_MODE_FULLSCREEN = 4;
+    DISPLAY_MODE_WINDOW_CONTROLS_OVERLAY = 5;
+    DISPLAY_MODE_TABBED = 6;
+    DISPLAY_MODE_BORDERLESS = 7;
+    DISPLAY_MODE_PICTURE_IN_PICTURE = 8;
   }
 
   // Local data. May vary across devices. Not to be synced.
@@ -213,7 +252,7 @@ message WebAppProto {
   optional string description = 4;
   optional DisplayMode display_mode = 5;
   optional string scope = 6;
-  optional SourcesProto sources = 7;       // Required.
+  optional Sources sources = 7;  // Required.
   // This used to be `bool is_locally_installed`.
   required proto.InstallState install_state = 8;  // Required.
 
@@ -230,14 +269,14 @@ message WebAppProto {
   repeated int32 downloaded_icon_sizes_purpose_any = 11;
 
   // A list of file handlers.
-  repeated WebAppFileHandlerProto file_handlers = 12;
+  repeated WebAppFileHandler file_handlers = 12;
 
   // A list of additional search terms to use when searching for the app.
   repeated string additional_search_terms = 13;
 
   // Even though |chromeos_data| is optional, it should always exist on
   // ChromeOS.
-  optional ChromeOSDataProto chromeos_data = 14;
+  optional ChromeOSData chromeos_data = 14;
 
   // Last time the app is launched.
   // ms since the Unix epoch. See sync/base/time.h.
@@ -255,9 +294,9 @@ message WebAppProto {
   optional bool is_generated_icon = 18;
 
   // A list of Shortcuts Menu items specified in the Web App Manifest.
-  repeated WebAppShortcutsMenuItemInfoProto shortcuts_menu_item_infos = 19;
+  repeated WebAppShortcutsMenuItemInfo shortcuts_menu_item_infos = 19;
   // A list of icon sizes we successfully downloaded to store on disk.
-  repeated DownloadedShortcutsMenuIconSizesProto
+  repeated DownloadedShortcutsMenuIconSizes
       downloaded_shortcuts_menu_icons_sizes = 20;
 
   optional uint32 background_color = 21;
@@ -276,9 +315,9 @@ message WebAppProto {
   // with.
   enum RunOnOsLoginMode {
     // NOT_RUN if optional |user_run_on_os_login_mode| is absent.
-    NOT_RUN = 0;
-    WINDOWED = 1;
-    MINIMIZED = 2;
+    RUN_ON_OS_LOGIN_MODE_NOT_RUN = 0;
+    RUN_ON_OS_LOGIN_MODE_WINDOWED = 1;
+    RUN_ON_OS_LOGIN_MODE_MINIMIZED = 2;
   }
   // User preference: Run on OS Login mode for web app.
   // If present, the web app is configured to run on OS login.
@@ -288,9 +327,9 @@ message WebAppProto {
 
   optional string launch_query_params = 26;
 
-  repeated WebAppUrlHandlerProto url_handlers = 27;
+  reserved 27;
 
-  optional ClientDataProto client_data = 28;
+  optional ClientData client_data = 28;
 
   // This enum should be synced with |CaptureLinks| in
   // third_party/blink/public/mojom/manifest/capture_links.mojom
@@ -327,7 +366,7 @@ message WebAppProto {
   // when launching the web app.
   repeated string allowed_launch_protocols = 37;
 
-  optional LaunchHandlerProto launch_handler = 38;
+  optional LaunchHandler launch_handler = 38;
 
   // Time the app is updated.
   // ms since the Unix epoch. See sync/base/time.h.
@@ -393,7 +432,7 @@ message WebAppProto {
 
   // Contains customisations to the web app tab strip. Only present when the
   // display_mode is tabbed.
-  optional proto.TabStrip tab_strip = 57;
+  optional TabStrip tab_strip = 57;
 
   // Only used on Mac OS, stores whether the app should always show the
   // toolbar when in fullscreen mode.
@@ -402,25 +441,24 @@ message WebAppProto {
   // Contains the os_integration_state currently deployed for a web_app.
   // This will be populated from the fields in this proto when ran for the first
   // time after OS hooks have been registered.
-  optional proto.WebAppOsIntegrationState current_os_integration_states = 59;
+  optional os_state.WebAppOsIntegration current_os_integration_states = 59;
 
   // If present, signals that this app is an Isolated Web App, and contains
   // IWA-specific information like bundle location.
-  optional proto.IsolationData isolation_data = 60;
+  optional IsolationData isolation_data = 60;
 
   // Contains web origins that are part of the app's extended scope.
-  repeated WebAppScopeExtensionProto scope_extensions = 61;
+  repeated WebAppScopeExtension scope_extensions = 61;
 
   // The same as scope_extensions but filtered to origins that have validated
   // associations with this web app. See
   // https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md
   // for association requirements.
-  repeated WebAppScopeExtensionProto scope_extensions_validated = 62;
+  repeated WebAppScopeExtension scope_extensions_validated = 62;
 
   // Stores whether the current web app is set as the default app to capture
   // links.
-  optional proto.LinkCapturingUserPreference user_link_capturing_preference =
-      63;
+  optional LinkCapturingUserPreference user_link_capturing_preference = 63;
 
   // Time the app was updated as part of a full install. For example when a
   // policy installs an app that is already in the DB installed as a
@@ -442,4 +480,43 @@ message WebAppProto {
   // user (3-dot menu, Install page as App...). DIY apps aren't promotable or
   // installable, and the user can customize its name.
   optional bool is_diy_app = 68;
+
+  // Set to true if the app was installed via the shortcut app install path by
+  // the user and was migrated to being a DIY app.
+  optional bool was_shortcut_app = 69;
+
+  // The related applications field of the manifest for installed web apps.
+  repeated proto.RelatedApplications related_applications = 70;
+
+  // Only used on Mac OS, Set to true if the app was installed via the DIY app
+  // install path by the user and had new icons.
+  optional bool diy_app_icons_masked_on_mac = 71;
+
+  reserved 72;
+
+  // Populated when there is a pending update to security sensitive members. If
+  // not populated, then no update is registered.
+  optional PendingUpdateInfo pending_update_info = 73;
+
+  // Contains the metadata for the trusted icons to be shown on security
+  // sensitive surfaces by the web app.
+  repeated sync_pb.WebAppIconInfo trusted_icons = 74;
+
+  // A list of icon sizes for trusted icons stored on disk that are suitable for
+  // any purpose (ie. IconPurpose::ANY). See also:
+  // |stored_trusted_icon_sizes_maskable|.
+  repeated int32 stored_trusted_icon_sizes_any = 75;
+
+  // A list of icon sizes for trusted icons stored on disk that are designed for
+  // masking (ie. IconPurpose::MASKABLE). See also:
+  // |stored_trusted_icon_sizes_any|.
+  repeated int32 stored_trusted_icon_sizes_maskable = 76;
+
+  // A list of URL patterns in which the app window should be borderless.
+  repeated UrlPattern borderless_url_patterns = 77;
+
+  // A list of up to ten unique URLs of the most recent pages that attempt to
+  // install the app via the Web Install API. The order is that the front is
+  // the oldest entry and the back is the newest.
+  repeated InstalledBy installed_by = 78;
 }

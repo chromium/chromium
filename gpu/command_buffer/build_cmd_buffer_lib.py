@@ -51,6 +51,23 @@ _allow_unsafe_buffers_filenames = [
     "gpu/command_buffer/service/raster_decoder_autogen.h",
 ]
 
+# TODO(crbug.com/390223051): Remove this and generate code using safer
+# constructs.
+_ALLOW_UNSAFE_LIBC_CALLS = """
+
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
+"""
+_allow_unsafe_libc_calls_filenames = [
+    "gpu/command_buffer/common/gles2_cmd_format_test_autogen.h",
+    "gpu/command_buffer/common/raster_cmd_format_autogen.h",
+    "gpu/command_buffer/common/raster_cmd_format_test_autogen.h",
+    "gpu/command_buffer/common/webgpu_cmd_format_autogen.h",
+]
+
 # This string is copied directly out of the gl2.h file from GLES2.0
 #
 # Edits:
@@ -829,6 +846,8 @@ class CWriter():
     self._ENTER_MSG = _LICENSE % year + _DO_NOT_EDIT_WARNING % _lower_prefix
     if (filename in _allow_unsafe_buffers_filenames):
         self._ENTER_MSG += _ALLOW_UNSAFE_BUFFERS
+    if (filename in _allow_unsafe_libc_calls_filenames):
+        self._ENTER_MSG += _ALLOW_UNSAFE_LIBC_CALLS
     self._EXIT_MSG = ""
     try:
       os.makedirs(os.path.dirname(filename))
@@ -1786,7 +1805,7 @@ class StateSetNamedParameter(TypeHandler):
       f.write("      }\n")
       f.write("      break;\n")
     f.write("    default:\n")
-    f.write("      NOTREACHED_IN_MIGRATION();\n")
+    f.write("      NOTREACHED();\n")
     f.write("  }\n")
 
   def WriteImmediateCmdInit(self, func, f):
@@ -1956,20 +1975,7 @@ TEST_P(%(test_name)s, %(name)sValidArgs) {
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
 }
 """
-      if func.GetInfo("gen_func"):
-          valid_test += """
-TEST_P(%(test_name)s, %(name)sValidArgsNewId) {
-  EXPECT_CALL(*gl_, %(gl_func_name)s(kNewServiceId));
-  EXPECT_CALL(*gl_, %(gl_gen_func_name)s(1, _))
-     .WillOnce(SetArgPointee<1>(kNewServiceId));
-  SpecializedSetup<cmds::%(name)s, 0>(true);
-  cmds::%(name)s cmd;
-  cmd.Init(kNewClientId);
-  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
-  EXPECT_TRUE(Get%(resource_type)s(kNewClientId) != nullptr);
-}
-"""
+
       self.WriteValidUnitTest(func, f, valid_test, {
           'resource_type': func.GetOriginalArgs()[0].resource_type,
           'gl_gen_func_name': func.GetInfo("gen_func"),
@@ -1983,21 +1989,6 @@ TEST_P(%(test_name)s, %(name)sValidArgs) {
   cmd.Init(%(args)s);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
-}
-"""
-      if func.GetInfo("gen_func"):
-        valid_test += """
-TEST_P(%(test_name)s, %(name)sValidArgsNewId) {
-  EXPECT_CALL(*gl_,
-              %(gl_func_name)s(%(gl_args_with_new_id)s));
-  EXPECT_CALL(*gl_, %(gl_gen_func_name)s(1, _))
-     .WillOnce(SetArgPointee<1>(kNewServiceId));
-  SpecializedSetup<cmds::%(name)s, 0>(true);
-  cmds::%(name)s cmd;
-  cmd.Init(%(args_with_new_id)s);
-  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
-  EXPECT_TRUE(Get%(resource_type)s(kNewClientId) != nullptr);
 }
 """
 
@@ -2171,7 +2162,7 @@ class GENnHandler(TypeHandler):
     else:
       alloc_code = ("""\
       GetIdHandler(SharedIdNamespaces::k%(resource_types)s)->
-      MakeIds(this, 0, %(args)s);""" % args)
+      MakeIds(this, %(args)s);""" % args)
     args['alloc_code'] = alloc_code
 
     code = """\
@@ -2180,11 +2171,6 @@ class GENnHandler(TypeHandler):
     %(name)sHelper(%(args)s);
     helper_->%(name)sImmediate(%(args)s);
     """
-    if not not_shared:
-      code += """\
-      if (share_group_->bind_generates_resource())
-      helper_->CommandBufferHelper::Flush();
-      """
     code += """\
     %(log_code)s
     CheckGLError();
@@ -2197,7 +2183,7 @@ class GENnHandler(TypeHandler):
     """Overrriden from TypeHandler."""
     code = """
 TEST_F(%(prefix)sImplementationTest, %(name)s) {
-  GLuint ids[2] = { 0, };
+  GLuint ids[2] = {};
   struct Cmds {
     cmds::%(name)sImmediate gen;
     GLuint data[2];
@@ -2491,7 +2477,7 @@ TEST_P(%(test_name)s, %(name)sInvalidArgs%(arg_index)d_%(value_index)d) {
       else:
         f.write(
             "  GetIdHandler(SharedIdNamespaces::kProgramsAndShaders)->\n")
-      f.write("      MakeIds(this, 0, 1, &client_id);\n")
+      f.write("      MakeIds(this, 1, &client_id);\n")
     f.write("  helper_->%s(%s);\n" %
                (func.name, func.MakeCmdArgString("")))
     f.write('  GPU_CLIENT_LOG("returned " << client_id);\n')
@@ -3302,7 +3288,7 @@ TEST_P(%(test_name)s, %(name)sInvalidArgs%(arg_index)d_%(value_index)d) {
       return;
     code = """
 TEST_F(%(prefix)sImplementationTest, %(name)s) {
-  %(type)s data[%(count)d] = {0};
+  %(type)s data[%(count)d] = {};
   struct Cmds {
     cmds::%(name)sImmediate cmd;
     %(type)s data[%(count)d];
@@ -3507,7 +3493,7 @@ TEST_P(%(test_name)s, %(name)sValidArgsCountTooLarge) {
 TEST_P(%(test_name)s, %(name)sValidArgs) {
   cmds::%(name)s& cmd = *GetImmediateAs<cmds::%(name)s>();
   SpecializedSetup<cmds::%(name)s, 0>(true);
-  %(data_type)s temp[%(data_count)s * 2] = { 0, };
+  %(data_type)s temp[%(data_count)s * 2] = {};
   EXPECT_CALL(
       *gl_,
       %(gl_func_name)s(%(gl_args)s,
@@ -3540,7 +3526,7 @@ TEST_P(%(test_name)s, %(name)sInvalidArgs%(arg_index)d_%(value_index)d) {
   cmds::%(name)s& cmd = *GetImmediateAs<cmds::%(name)s>();
   EXPECT_CALL(*gl_, %(gl_func_name)s(%(gl_any_args)s, _)).Times(0);
   SpecializedSetup<cmds::%(name)s, 0>(false);
-  %(data_type)s temp[%(data_count)s * 2] = { 0, };
+  %(data_type)s temp[%(data_count)s * 2] = {};
   cmd.Init(%(all_but_last_args)s, &temp[0]);
   EXPECT_EQ(error::%(parse_result)s,
             ExecuteImmediateCmd(cmd, sizeof(temp)));%(gl_error_test)s
@@ -3602,7 +3588,7 @@ TEST_P(%(test_name)s, %(name)sInvalidArgs%(arg_index)d_%(value_index)d) {
 
     code = """
 TEST_F(%(prefix)sImplementationTest, %(name)s) {
-  %(type)s data[%(count_param)d][%(count)d] = {{0}};
+  %(type)s data[%(count_param)d][%(count)d] = {};
   struct Cmds {
     cmds::%(name)sImmediate cmd;
     %(type)s data[%(count_param)d][%(count)d];
@@ -3658,7 +3644,7 @@ TEST_F(%(prefix)sImplementationTest, %(name)s) {
     code = """
 TEST_F(%(prefix)sImplementationTest,
        %(name)sInvalidConstantArg%(invalid_index)d) {
-  %(type)s data[%(count_param)d][%(count)d] = {{0}};
+  %(type)s data[%(count_param)d][%(count)d] = {};
   for (int ii = 0; ii < %(count_param)d; ++ii) {
     for (int jj = 0; jj < %(count)d; ++jj) {
       data[ii][jj] = static_cast<%(type)s>(ii * %(count)d + jj);
@@ -6470,8 +6456,7 @@ class GLGenerator():
 
       f.write("""\
               default:
-                NOTREACHED_IN_MIGRATION();
-                return;
+                NOTREACHED();
             }
             if (enable)
               api()->glEnableFn(cap);
@@ -6720,8 +6705,7 @@ void ContextState::InitState(const ContextState *prev_state) const {
         f.write("    case GL_%s:\n" % capability['name'].upper())
         f.write("      return enable_flags.%s;\n" % capability['name'])
       f.write("""    default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 """)
@@ -6816,8 +6800,7 @@ bool GLES2DecoderImpl::SetCapabilityState(GLenum cap, bool enabled) {
               return false;
               """ % capability)
         f.write("""    default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 """)
@@ -7204,7 +7187,7 @@ extern const NameToFunc g_gles2_function_table[] = {
           continue
         if named_type.GetValidValues():
           code = """%(pre)s%(name)s(
-            valid_%(name)s_table, std::size(valid_%(name)s_table))"""
+            valid_%(name)s_table)"""
         else:
           code = "%(pre)s%(name)s()"
         f.write(code % {
@@ -7227,14 +7210,14 @@ extern const NameToFunc g_gles2_function_table[] = {
             continue
           if named_type.GetDeprecatedValuesES3():
             code = """  %(name)s.RemoveValues(
-      deprecated_%(name)s_table_es3, std::size(deprecated_%(name)s_table_es3));
+      deprecated_%(name)s_table_es3);
 """
             f.write(code % {
               'name': ToUnderscore(name),
             })
           if named_type.GetValidValuesES3():
             code = """  %(name)s.AddValues(
-      valid_%(name)s_table_es3, std::size(valid_%(name)s_table_es3));
+      valid_%(name)s_table_es3);
 """
             f.write(code % {
               'name': ToUnderscore(name),
@@ -7266,43 +7249,7 @@ extern const NameToFunc g_gles2_function_table[] = {
 
   def WriteCommonUtilsImpl(self, filename):
     """Writes the gles2 common utility header."""
-    enum_re = re.compile(r'\#define\s+(GL_[a-zA-Z0-9_]+)\s+([0-9A-Fa-fx]+)')
-    define_dict = {}
-    for fname in ['third_party/khronos/GLES2/gl2.h',
-                  'third_party/khronos/GLES2/gl2ext.h',
-                  'third_party/khronos/GLES3/gl3.h',
-                  'third_party/khronos/GLES3/gl31.h',
-                  'gpu/GLES2/gl2chromium.h',
-                  'gpu/GLES2/gl2extchromium.h']:
-      fname = os.path.join(self.chromium_root_dir, fname)
-      lines = open(fname).readlines()
-      for line in lines:
-        m = enum_re.match(line)
-        if m:
-          name = m.group(1)
-          value = m.group(2)
-          if len(value) <= 10 and value.startswith('0x'):
-            if not value in define_dict:
-              define_dict[value] = name
-            # check our own _CHROMIUM macro conflicts with khronos GL headers.
-            elif EnumsConflict(define_dict[value], name):
-              self.Error("code collision: %s and %s have the same code %s" %
-                         (define_dict[value], name, value))
-
     with CHeaderWriter(filename, self.year) as f:
-      f.write("static const %sUtil::EnumToString "
-                 "enum_to_string_table[] = {\n" % _prefix)
-      for value in sorted(define_dict):
-        f.write('  { %s, "%s", },\n' % (value, define_dict[value]))
-      f.write("""};
-
-const %(p)sUtil::EnumToString* const %(p)sUtil::enum_to_string_table_ =
-    enum_to_string_table;
-const size_t %(p)sUtil::enum_to_string_table_len_ =
-    sizeof(enum_to_string_table) / sizeof(enum_to_string_table[0]);
-
-""" % { 'p' : _prefix})
-
       enums = sorted(self.named_type_info.keys())
       for enum in enums:
         if self.named_type_info[enum]['type'] == 'GLenum':

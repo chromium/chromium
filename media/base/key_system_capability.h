@@ -5,6 +5,9 @@
 #ifndef MEDIA_BASE_KEY_SYSTEM_CAPABILITY_H_
 #define MEDIA_BASE_KEY_SYSTEM_CAPABILITY_H_
 
+#include <optional>
+
+#include "base/types/expected.h"
 #include "media/base/cdm_capability.h"
 #include "media/base/media_export.h"
 
@@ -12,14 +15,16 @@ namespace media {
 
 struct MEDIA_EXPORT KeySystemCapability {
   KeySystemCapability();
-  KeySystemCapability(std::optional<CdmCapability> sw_secure_capability,
-                      std::optional<CdmCapability> hw_secure_capability);
+  KeySystemCapability(CdmCapabilityOrStatus sw_cdm_capability_or_status,
+                      CdmCapabilityOrStatus hw_cdm_capability_or_status);
 
   KeySystemCapability(const KeySystemCapability& other);
   ~KeySystemCapability();
 
-  std::optional<CdmCapability> sw_secure_capability;
-  std::optional<CdmCapability> hw_secure_capability;
+  CdmCapabilityOrStatus sw_cdm_capability_or_status =
+      base::unexpected(CdmCapabilityQueryStatus::kUnknown);
+  CdmCapabilityOrStatus hw_cdm_capability_or_status =
+      base::unexpected(CdmCapabilityQueryStatus::kUnknown);
 };
 
 bool MEDIA_EXPORT operator==(const KeySystemCapability& lhs,

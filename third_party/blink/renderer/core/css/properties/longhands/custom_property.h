@@ -22,7 +22,7 @@ class PropertyRegistry;
 // TODO(andruud): Move functionality from Variable to here, and eventually
 // remove Variable.
 class CORE_EXPORT CustomProperty : public Variable {
-  DISALLOW_NEW();
+  STACK_ALLOCATED();
 
  public:
   CustomProperty() = default;
@@ -48,8 +48,8 @@ class CORE_EXPORT CustomProperty : public Variable {
   // available).
   //
   // NOTE: This is distinct from ParseSingleValue() because it takes in
-  // original_text, not just a token range.
-  const CSSValue* Parse(const CSSTokenizedValue,
+  // original_text, not a token stream.
+  const CSSValue* Parse(StringView,
                         const CSSParserContext&,
                         const CSSParserLocalContext&) const;
 
@@ -69,19 +69,17 @@ class CORE_EXPORT CustomProperty : public Variable {
   // https://drafts.css-houdini.org/css-properties-values-api-1/#universal-syntax-definition
   bool HasUniversalSyntax() const;
 
-  void Trace(Visitor* visitor) const { visitor->Trace(registration_); }
-
  private:
   CustomProperty(const AtomicString& name,
                  const PropertyRegistration* registration);
   explicit CustomProperty(const PropertyRegistration* registration);
 
-  const CSSValue* ParseUntyped(const CSSTokenizedValue&,
+  const CSSValue* ParseUntyped(StringView,
                                const CSSParserContext&,
                                const CSSParserLocalContext&) const;
 
   AtomicString name_;
-  Member<const PropertyRegistration> registration_;
+  const PropertyRegistration* registration_;
 };
 
 template <>

@@ -8,6 +8,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/check.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/prefs/android/pref_service_android.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
@@ -37,7 +38,7 @@ bool TouchToFillPasswordGenerationBridgeImpl::Show(
   java_object_.Reset(Java_TouchToFillPasswordGenerationBridge_create(
       base::android::AttachCurrentThread(),
       web_contents->GetNativeView()->GetWindowAndroid()->GetJavaObject(),
-      web_contents->GetJavaWebContents(), pref_service->GetJavaObject(),
+      web_contents->GetJavaWebContents(), pref_service,
       reinterpret_cast<intptr_t>(this)));
 
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -74,7 +75,7 @@ void TouchToFillPasswordGenerationBridgeImpl::OnDismissed(
 
 void TouchToFillPasswordGenerationBridgeImpl::OnGeneratedPasswordAccepted(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& password) {
+    const base::android::JavaRef<jstring>& password) {
   CHECK(delegate_);
   delegate_->OnGeneratedPasswordAccepted(
       base::android::ConvertJavaStringToUTF16(env, password));
@@ -85,3 +86,5 @@ void TouchToFillPasswordGenerationBridgeImpl::OnGeneratedPasswordRejected(
   CHECK(delegate_);
   delegate_->OnGeneratedPasswordRejected();
 }
+
+DEFINE_JNI(TouchToFillPasswordGenerationBridge)

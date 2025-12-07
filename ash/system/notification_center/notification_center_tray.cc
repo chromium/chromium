@@ -14,16 +14,17 @@
 #include "ash/shelf/shelf.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/notification_center/notification_center_bubble.h"
-#include "ash/system/notification_center/views/notification_center_view.h"
 #include "ash/system/notification_center/notification_metrics_recorder.h"
+#include "ash/system/notification_center/views/notification_center_view.h"
 #include "ash/system/privacy/privacy_indicators_tray_item_view.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_container.h"
-#include "chromeos/constants/chromeos_features.h"
+#include "ash/system/unified/notification_counter_view.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/screen.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
 
@@ -33,9 +34,9 @@ NotificationCenterTray::NotificationCenterTray(Shelf* shelf)
                          RoundedCornerBehavior::kStartRounded),
       notification_grouping_controller_(
           std::make_unique<NotificationGroupingController>(this)),
-      popup_collection_(std::make_unique<AshMessagePopupCollection>(
-          display::Screen::GetScreen(),
-          shelf)),
+      popup_collection_(
+          std::make_unique<AshMessagePopupCollection>(display::Screen::Get(),
+                                                      shelf)),
       notification_metrics_recorder_(
           std::make_unique<NotificationMetricsRecorder>(this)),
       notification_icons_controller_(
@@ -51,6 +52,8 @@ NotificationCenterTray::NotificationCenterTray(Shelf* shelf)
       /*main_axis_margin=*/kUnifiedTrayContentPadding -
           ShelfConfig::Get()->status_area_hit_region_padding(),
       0);
+
+  UpdateAccessibleName();
 }
 
 NotificationCenterTray::~NotificationCenterTray() {
@@ -82,6 +85,14 @@ void NotificationCenterTray::OnTrayItemVisibilityAboutToChange(
   // for this tray, then `SetVisiblePreferred()` (which is called by
   // `UpdateVisibility()`) will do nothing.
   UpdateVisibility();
+}
+
+void NotificationCenterTray::AddTooltipChangedCallbackToNotificationIcon(
+    NotificationIconTrayItemView* tray_item) {
+  notification_icon_image_tooltip_changed_subscriptions_.push_back(
+      tray_item->image_view()->AddTooltipTextChangedCallback(
+          base::BindRepeating(&NotificationCenterTray::UpdateAccessibleName,
+                              base::Unretained(this))));
 }
 
 void NotificationCenterTray::OnSystemTrayVisibilityChanged(
@@ -124,17 +135,18 @@ void NotificationCenterTray::Initialize() {
   // only added by host views.
   notification_icons_controller_->AddNotificationTrayItems(tray_container());
 
-  // Privacy indicator is only enabled when Video Conference is disabled.
-  if (!features::IsVideoConferenceEnabled()) {
-    privacy_indicators_view_ = tray_container()->AddChildView(
-        std::make_unique<PrivacyIndicatorsTrayItemView>(shelf()));
-  }
+  privacy_indicators_view_ = tray_container()->AddChildView(
+      std::make_unique<PrivacyIndicatorsTrayItemView>(shelf()));
+
   for (views::View* tray_item : tray_container()->children()) {
     static_cast<TrayItemView*>(tray_item)->AddObserver(this);
   }
   for (auto& observer : observers_) {
     observer.OnAllTrayItemsAdded();
   }
+
+  // Now that the NotificationTrayItem objects are created, add callbacks.
+  AddCallbacksForAccessibility();
 
   // Update this tray's visibility as well as the visibility of all of its tray
   // items according to the current state of notifications.
@@ -144,10 +156,6 @@ void NotificationCenterTray::Initialize() {
 }
 
 std::u16string NotificationCenterTray::GetAccessibleNameForBubble() {
-  return l10n_util::GetStringUTF16(IDS_ASH_MESSAGE_CENTER_ACCESSIBLE_NAME);
-}
-
-std::u16string NotificationCenterTray::GetAccessibleNameForTray() {
   return l10n_util::GetStringUTF16(IDS_ASH_MESSAGE_CENTER_ACCESSIBLE_NAME);
 }
 
@@ -170,14 +178,13 @@ void NotificationCenterTray::ClickedOutsideBubble(
 }
 
 void NotificationCenterTray::UpdateTrayItemColor(bool is_active) {
-  DCHECK(chromeos::features::IsJellyEnabled());
   for (views::View* tray_item : tray_container()->children()) {
     static_cast<TrayItemView*>(tray_item)->UpdateLabelOrImageViewColor(
         is_active);
   }
 }
 
-void NotificationCenterTray::CloseBubble() {
+void NotificationCenterTray::CloseBubbleInternal() {
   if (!bubble_) {
     return;
   }
@@ -238,14 +245,40 @@ void NotificationCenterTray::UpdateVisibility() {
       message_center::MessageCenter::Get()->NotificationCount() > 0 &&
       system_tray_visible_;
   SetVisiblePreferred(new_visibility);
-  if (chromeos::features::IsJellyEnabled()) {
-    UpdateTrayItemColor(is_active());
-  }
+  UpdateTrayItemColor(is_active());
 
   // We should close the bubble if there are no more notifications to show.
   if (!new_visibility && bubble_) {
     CloseBubble();
   }
+}
+
+void NotificationCenterTray::UpdateAccessibleName() {
+  std::u16string name =
+      notification_icons_controller_->GetAccessibleNameString().value_or(
+          l10n_util::GetStringUTF16(IDS_ASH_MESSAGE_CENTER_ACCESSIBLE_NAME));
+  GetViewAccessibility().SetName(name);
+}
+
+void NotificationCenterTray::AddCallbacksForAccessibility() {
+  notification_counter_image_tooltip_changed_subscription_ =
+      notification_icons_controller_->notification_counter_view()
+          ->image_view()
+          ->AddTooltipTextChangedCallback(
+              base::BindRepeating(&NotificationCenterTray::UpdateAccessibleName,
+                                  base::Unretained(this)));
+
+  quiet_mode_visibility_changed_subscription_ =
+      notification_icons_controller_->quiet_mode_view()
+          ->AddVisibleChangedCallback(
+              base::BindRepeating(&NotificationCenterTray::UpdateAccessibleName,
+                                  base::Unretained(this)));
+
+  notification_counter_visibility_changed_subscription_ =
+      notification_icons_controller_->notification_counter_view()
+          ->AddVisibleChangedCallback(
+              base::BindRepeating(&NotificationCenterTray::UpdateAccessibleName,
+                                  base::Unretained(this)));
 }
 
 BEGIN_METADATA(NotificationCenterTray)

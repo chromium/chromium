@@ -11,9 +11,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/sessions/session_data_deleter.h"
-#include "chrome/browser/sessions/sessions_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "storage/browser/quota/special_storage_policy.h"
@@ -47,13 +48,15 @@ SessionDataService::SessionDataService(
 
   SetStatusPref(Status::kInitialized);
   auto* policy = profile_->GetSpecialStoragePolicy();
-  if (policy && policy->HasSessionOnlyOrigins() &&
-      base::FeatureList::IsEnabled(kDeleteSessionOnlyDataOnStartup)) {
+  if (policy && policy->HasSessionOnlyOrigins()) {
     MaybeContinueDeletionFromLastSesssion(last_status);
   }
 
-  for (Browser* browser : *BrowserList::GetInstance())
-    OnBrowserAdded(browser);
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this](BrowserWindowInterface* browser) {
+        OnBrowserAdded(browser->GetBrowserForMigrationOnly());
+        return true;
+      });
 
   BrowserList::AddObserver(this);
 }
@@ -94,7 +97,7 @@ void SessionDataService::MaybeContinueDeletionFromLastSesssion(
   deleter_->DeleteSessionOnlyData(
       /*skip_session_cookies=*/true,
       base::BindOnce(&SessionDataService::OnCleanupAtStartupFinished,
-                     base::Unretained(this)));
+                     weak_factory_.GetWeakPtr()));
 }
 
 void SessionDataService::OnCleanupAtStartupFinished() {}
@@ -119,9 +122,16 @@ void SessionDataService::OnBrowserRemoved(Browser* browser) {
     return;
 
   // Check for any open windows for the current profile.
-  for (Browser* open_browser : *BrowserList::GetInstance()) {
-    if (open_browser->profile() == profile_)
-      return;
+  bool has_open_window = false;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this, &has_open_window](BrowserWindowInterface* bwi) {
+        if (bwi->GetProfile() == profile_) {
+          has_open_window = true;
+        }
+        return !has_open_window;
+      });
+  if (has_open_window) {
+    return;
   }
 
   // Session cookies should stay alive on platforms where the browser stays
@@ -151,12 +161,10 @@ void SessionDataService::StartCleanupInternal(bool skip_session_cookies) {
   cleanup_started_ = true;
   SetStatusPref(Status::kDeletionStarted);
 
-  // Using base::Unretained is safe as DeleteSessionOnlyData() uses a
-  // ScopedProfileKeepAlive.
   deleter_->DeleteSessionOnlyData(
       skip_session_cookies,
       base::BindOnce(&SessionDataService::OnCleanupAtSessionEndFinished,
-                     base::Unretained(this)));
+                     weak_factory_.GetWeakPtr()));
 }
 
 void SessionDataService::OnCleanupAtSessionEndFinished() {

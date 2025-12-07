@@ -12,7 +12,6 @@
 #include "base/sequence_checker.h"
 #include "base/threading/sequence_bound.h"
 #include "content/browser/media/capture/frame_sink_video_capture_device.h"
-#include "content/browser/media/capture/web_contents_frame_tracker.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
@@ -20,6 +19,8 @@
 #include "media/capture/mojom/video_capture_types.mojom.h"
 
 namespace content {
+
+class WebContentsFrameTracker;
 
 // Captures the displayed contents of a WebContents, producing a stream of video
 // frames.

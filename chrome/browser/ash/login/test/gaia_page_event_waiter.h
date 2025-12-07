@@ -10,6 +10,10 @@
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"
 #include "content/public/test/browser_test_utils.h"
 
+namespace contents {
+class WebContents;
+}
+
 namespace ash {
 
 // Helper class to wait for a given `event` from authenticator hosting Gaia
@@ -19,7 +23,8 @@ namespace ash {
 //   $('enterprise-enrollment').authenticator for enrollment screen
 class GaiaPageEventWaiter : public test::TestConditionWaiter {
  public:
-  GaiaPageEventWaiter(const std::string& authenticator_id,
+  GaiaPageEventWaiter(content::WebContents* web_contents,
+                      const std::string& authenticator_id,
                       const std::string& event);
   ~GaiaPageEventWaiter() override;
 

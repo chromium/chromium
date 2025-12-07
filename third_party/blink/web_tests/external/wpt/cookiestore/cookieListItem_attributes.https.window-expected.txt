@@ -1,0 +1,25 @@
+This is a testharness.js-based test.
+[FAIL] CookieListItem - cookieStore.set defaults with positional name and value
+  assert_array_equals: lengths differ, expected array ["name", "value"] length 2, got ["domain", "expires", "name", "partitioned", "path", "sameSite", "secure", "value"] length 8
+[FAIL] CookieListItem - cookieStore.set defaults with name and value in options
+  assert_array_equals: lengths differ, expected array ["name", "value"] length 2, got ["domain", "expires", "name", "partitioned", "path", "sameSite", "secure", "value"] length 8
+[FAIL] CookieListItem - cookieStore.set with expires set to a timestamp 10 years in the future
+  assert_array_equals: lengths differ, expected array ["name", "value"] length 2, got ["domain", "expires", "name", "partitioned", "path", "sameSite", "secure", "value"] length 8
+[FAIL] CookieListItem - cookieStore.set with expires set to a Date 10 years in the future
+  assert_array_equals: lengths differ, expected array ["name", "value"] length 2, got ["domain", "expires", "name", "partitioned", "path", "sameSite", "secure", "value"] length 8
+[FAIL] CookieListItem - cookieStore.set with domain set to the current hostname
+  assert_array_equals: lengths differ, expected array ["name", "value"] length 2, got ["domain", "expires", "name", "partitioned", "path", "sameSite", "secure", "value"] length 8
+[FAIL] CookieListItem - cookieStore.set with path set to the current directory
+  assert_array_equals: lengths differ, expected array ["name", "value"] length 2, got ["domain", "expires", "name", "partitioned", "path", "sameSite", "secure", "value"] length 8
+[FAIL] CookieListItem - cookieStore.set does not add / to path if it does not end with /
+  assert_array_equals: lengths differ, expected array ["name", "value"] length 2, got ["domain", "expires", "name", "partitioned", "path", "sameSite", "secure", "value"] length 8
+[FAIL] CookieListItem - cookieStore.set with sameSite set to strict
+  assert_array_equals: lengths differ, expected array ["name", "value"] length 2, got ["domain", "expires", "name", "partitioned", "path", "sameSite", "secure", "value"] length 8
+[FAIL] CookieListItem - cookieStore.set with sameSite set to lax
+  assert_array_equals: lengths differ, expected array ["name", "value"] length 2, got ["domain", "expires", "name", "partitioned", "path", "sameSite", "secure", "value"] length 8
+[FAIL] CookieListItem - cookieStore.set with sameSite set to none
+  assert_array_equals: lengths differ, expected array ["name", "value"] length 2, got ["domain", "expires", "name", "partitioned", "path", "sameSite", "secure", "value"] length 8
+[FAIL] Test max-age attribute over the 400 days
+  assert_array_equals: lengths differ, expected array ["name", "value"] length 2, got ["domain", "expires", "name", "partitioned", "path", "sameSite", "secure", "value"] length 8
+Harness: the test ran to completion.
+

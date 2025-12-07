@@ -14,18 +14,16 @@ source_set("top_chrome") {
     "top_chrome_webui_config.h",
     "untrusted_top_chrome_web_ui_controller.h",
     "webui_contents_preload_manager.h",
+    "webui_contents_preload_state.h",
     "webui_contents_warmup_level.h",
     "webui_contents_warmup_level_recorder.h",
     "webui_contents_wrapper.h",
-    "webui_contents_wrapper_service.h",
-    "webui_contents_wrapper_service_factory.h",
   ]
 
   public_deps = [
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:webui_name_variants",
-    "//components/keyed_service/core",
     "//content/public/browser",
     "//ui/base",
     "//ui/webui",
@@ -41,18 +39,17 @@ source_set("impl") {
 
   sources = [
     "per_profile_webui_tracker.cc",
-    "preload_candidate_selector.h",
+    "preload_candidate_selector.cc",
     "preload_context.cc",
     "profile_preload_candidate_selector.cc",
     "top_chrome_web_ui_controller.cc",
     "top_chrome_webui_config.cc",
     "untrusted_top_chrome_web_ui_controller.cc",
     "webui_contents_preload_manager.cc",
+    "webui_contents_preload_state.cc",
     "webui_contents_warmup_level.cc",
     "webui_contents_warmup_level_recorder.cc",
     "webui_contents_wrapper.cc",
-    "webui_contents_wrapper_service.cc",
-    "webui_contents_wrapper_service_factory.cc",
   ]
 
   deps = [
@@ -62,10 +59,24 @@ source_set("impl") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/task_manager",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/prefs",
     "//chrome/common",
-    "//components/site_engagement/content:content",
+    "//components/site_engagement/content",
     "//content/public/browser",
     "//ui/base",
     "//ui/webui",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "webui_contents_preload_manager_test_api.cc",
+    "webui_contents_preload_manager_test_api.h",
+  ]
+
+  deps = [
+    ":top_chrome",
+    "//url",
   ]
 }

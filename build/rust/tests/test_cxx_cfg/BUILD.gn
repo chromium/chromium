@@ -1,0 +1,23 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/rust_static_library.gni")
+import("//testing/test.gni")
+
+source_set("test_cxx_cfg") {
+  testonly = true
+  sources = [ "cxx_cfg_unittests.cc" ]
+  deps = [
+    ":rust_lib",
+    "//testing/gtest",
+  ]
+}
+
+rust_static_library("rust_lib") {
+  crate_root = "cxx_cfg_lib.rs"
+  sources = [ crate_root ]
+  cxx_bindings = [ crate_root ]
+  allow_unsafe = true
+  visibility = [ ":*" ]
+}

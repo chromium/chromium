@@ -18,7 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.TestUrlRequestCallback.ResponseStep;
 import org.chromium.net.test.ServerCertificate;
@@ -31,15 +31,19 @@ public class CronetUrlRequestHTTPSTest {
 
     @Rule public final CronetTestRule mTestRule = CronetTestRule.withAutomaticEngineStartup();
 
+    private NativeTestServer mNativeTestServer;
+
     @Before
     public void setUp() {
-        NativeTestServer.startNativeTestServerWithHTTPS(
-                mTestRule.getTestFramework().getContext(), ServerCertificate.CERT_EXPIRED);
+        mNativeTestServer =
+                NativeTestServer.createNativeTestServerWithHTTPS(
+                        mTestRule.getTestFramework().getContext(), ServerCertificate.CERT_EXPIRED);
+        mNativeTestServer.start();
     }
 
     @After
     public void tearDown() {
-        NativeTestServer.shutdownNativeTestServer();
+        mNativeTestServer.close();
     }
 
     /**
@@ -58,7 +62,9 @@ public class CronetUrlRequestHTTPSTest {
                         .getTestFramework()
                         .getEngine()
                         .newUrlRequestBuilder(
-                                NativeTestServer.getFileURL("/"), callback, callback.getExecutor());
+                                mNativeTestServer.getFileURL("/"),
+                                callback,
+                                callback.getExecutor());
 
         TestUploadDataProvider dataProvider =
                 new TestUploadDataProvider(

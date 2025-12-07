@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/connectors/interstitials/enterprise_block_page.h"
 #include "chrome/browser/enterprise/connectors/interstitials/enterprise_warn_page.h"
 
@@ -25,21 +24,23 @@ constexpr char kBlockDecisionHistogram[] =
 constexpr char kWarnDecisionHistogram[] =
     "interstitial.enterprise_warn.decision";
 constexpr char kTestUrl[] = "http://example.com";
-constexpr char kTestMessage[] = "Test message";
+constexpr char kTestBlockMessage[] = "Test block message";
+constexpr char kTestWarnMessage[] = "Test warn message";
 
 void AddCustomMessageToResource(
-    security_interstitials::UnsafeResource& unsafe_resource) {
+    security_interstitials::UnsafeResource& unsafe_resource,
+    const std::string& message,
+    const std::string& url,
+    safe_browsing::RTLookupResponse::ThreatInfo::VerdictType verdict_type) {
   safe_browsing::MatchedUrlNavigationRule_CustomMessage cm;
   auto* custom_segments = cm.add_message_segments();
-  custom_segments->set_text(kTestMessage);
-  custom_segments->set_link(kTestUrl);
+  custom_segments->set_text(message);
+  custom_segments->set_link(url);
 
-  safe_browsing::RTLookupResponse response;
-  auto* threat_info = response.add_threat_info();
+  auto* threat_info = unsafe_resource.rt_lookup_response.add_threat_info();
+  threat_info->set_verdict_type(verdict_type);
   *threat_info->mutable_matched_url_navigation_rule()
        ->mutable_custom_message() = cm;
-
-  unsafe_resource.rt_lookup_response = response;
 }
 
 class EnterprisePageTest : public testing::Test {
@@ -57,17 +58,11 @@ class EnterprisePageTest : public testing::Test {
     return web_contents_.get();
   }
 
-  void enable_custom_message_feature() {
-    scoped_feature_list.InitAndEnableFeature(
-        safe_browsing::kRealTimeUrlFilteringCustomMessage);
-  }
-
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> profile_;
   std::unique_ptr<content::WebContents> web_contents_;
-  base::test::ScopedFeatureList scoped_feature_list;
 };
 
 TEST_F(EnterprisePageTest, EnterpriseBlock_ShownAndMetricsRecorded) {
@@ -109,12 +104,11 @@ TEST_F(EnterprisePageTest, EnterpriseWarn_ShownAndMetricsRecorded) {
 }
 
 TEST_F(EnterprisePageTest, EnterpriseWarn_CustomMessageDisplayed) {
-  enable_custom_message_feature();
-
   auto unsafe_resources =
       safe_browsing::SafeBrowsingBlockingPage::UnsafeResourceList();
   security_interstitials::UnsafeResource resource;
-  AddCustomMessageToResource(resource);
+  AddCustomMessageToResource(resource, kTestWarnMessage, kTestUrl,
+                             safe_browsing::RTLookupResponse::ThreatInfo::WARN);
   unsafe_resources.emplace_back(resource);
 
   EnterpriseWarnPage test_page = EnterpriseWarnPage(
@@ -125,18 +119,18 @@ TEST_F(EnterprisePageTest, EnterpriseWarn_CustomMessageDisplayed) {
   base::Value::Dict load_time_data;
   std::string final_message = test_page.GetCustomMessageForTesting();
   std::string expected_message = base::StrCat(
-      {"Your administrator says: ", "\"<a target=\"_blank\" href=\"", kTestUrl,
-       "\">", kTestMessage, "</a>\""});
+      {"Your organization says: ", "\"<a target=\"_blank\" href=\"", kTestUrl,
+       "\">", kTestWarnMessage, "</a>\""});
   EXPECT_EQ(expected_message, final_message);
 }
 
 TEST_F(EnterprisePageTest, EnterpriseBlock_CustomMessageDisplayed) {
-  enable_custom_message_feature();
-
   auto unsafe_resources =
       safe_browsing::SafeBrowsingBlockingPage::UnsafeResourceList();
   security_interstitials::UnsafeResource resource;
-  AddCustomMessageToResource(resource);
+  AddCustomMessageToResource(
+      resource, kTestBlockMessage, kTestUrl,
+      safe_browsing::RTLookupResponse::ThreatInfo::DANGEROUS);
   unsafe_resources.emplace_back(resource);
 
   EnterpriseBlockPage test_page = EnterpriseBlockPage(
@@ -147,8 +141,74 @@ TEST_F(EnterprisePageTest, EnterpriseBlock_CustomMessageDisplayed) {
   base::Value::Dict load_time_data;
   std::string final_message = test_page.GetCustomMessageForTesting();
   std::string expected_message = base::StrCat(
-      {"Your administrator says: ", "\"<a target=\"_blank\" href=\"", kTestUrl,
-       "\">", kTestMessage, "</a>\""});
+      {"Your organization says: ", "\"<a target=\"_blank\" href=\"", kTestUrl,
+       "\">", kTestBlockMessage, "</a>\""});
   EXPECT_EQ(expected_message, final_message);
+}
+
+TEST_F(EnterprisePageTest, EnterpriseBlock_CustomMessagePrioritization) {
+  auto unsafe_resources =
+      safe_browsing::SafeBrowsingBlockingPage::UnsafeResourceList();
+  security_interstitials::UnsafeResource resource;
+
+  // Higher severity message should be displayed over lower.
+  AddCustomMessageToResource(resource, kTestWarnMessage, kTestUrl,
+                             safe_browsing::RTLookupResponse::ThreatInfo::WARN);
+  AddCustomMessageToResource(
+      resource, kTestBlockMessage, kTestUrl,
+      safe_browsing::RTLookupResponse::ThreatInfo::DANGEROUS);
+  unsafe_resources.emplace_back(resource);
+
+  EnterpriseBlockPage test_page1(
+      web_contents(), GURL(kTestUrl), unsafe_resources,
+      std::make_unique<EnterpriseBlockControllerClient>(web_contents(),
+                                                        GURL(kTestUrl)));
+
+  std::string expected_message = base::StrCat(
+      {"Your organization says: ", "\"<a target=\"_blank\" href=\"", kTestUrl,
+       "\">", kTestBlockMessage, "</a>\""});
+  EXPECT_EQ(expected_message, test_page1.GetCustomMessageForTesting());
+
+  // For equal severity, last non-empty message is shown.
+  unsafe_resources.clear();
+  resource = security_interstitials::UnsafeResource();
+  AddCustomMessageToResource(
+      resource, "", kTestUrl,
+      safe_browsing::RTLookupResponse::ThreatInfo::DANGEROUS);
+  AddCustomMessageToResource(
+      resource, kTestBlockMessage, kTestUrl,
+      safe_browsing::RTLookupResponse::ThreatInfo::DANGEROUS);
+  unsafe_resources.emplace_back(resource);
+
+  EnterpriseBlockPage test_page2(
+      web_contents(), GURL(kTestUrl), unsafe_resources,
+      std::make_unique<EnterpriseBlockControllerClient>(web_contents(),
+                                                        GURL(kTestUrl)));
+
+  expected_message = base::StrCat(
+      {"Your organization says: ", "\"<a target=\"_blank\" href=\"", kTestUrl,
+       "\">", kTestBlockMessage, "</a>\""});
+  EXPECT_EQ(expected_message, test_page2.GetCustomMessageForTesting());
+
+  // Empty message with higher severity overrides lower severity with message.
+  unsafe_resources.clear();
+  resource = security_interstitials::UnsafeResource();
+
+  AddCustomMessageToResource(resource, kTestWarnMessage, kTestUrl,
+                             safe_browsing::RTLookupResponse::ThreatInfo::WARN);
+  AddCustomMessageToResource(
+      resource, "", kTestUrl,
+      safe_browsing::RTLookupResponse::ThreatInfo::DANGEROUS);
+  unsafe_resources.emplace_back(resource);
+
+  EnterpriseBlockPage test_page3(
+      web_contents(), GURL(kTestUrl), unsafe_resources,
+      std::make_unique<EnterpriseBlockControllerClient>(web_contents(),
+                                                        GURL(kTestUrl)));
+
+  expected_message = base::StrCat(
+      {"Your organization says: ", "\"<a target=\"_blank\" href=\"", kTestUrl,
+       "\">", "", "</a>\""});
+  EXPECT_EQ(expected_message, test_page3.GetCustomMessageForTesting());
 }
 }  // namespace

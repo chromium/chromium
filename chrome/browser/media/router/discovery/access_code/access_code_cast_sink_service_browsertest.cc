@@ -2,22 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/test/media_router/access_code_cast/access_code_cast_integration_browsertest.h"
-
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_constants.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_media_sink_util.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_test_util.h"
+#include "chrome/test/media_router/access_code_cast/access_code_cast_integration_browsertest.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/json/values_util.h"
-#include "chromeos/crosapi/mojom/prefs.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#endif
 
 using testing::_;
 namespace media_router {
@@ -60,8 +53,7 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest,
 
   EnableAccessCodeCasting();
 
-  SetUpPrimaryAccountWithHostedDomain(signin::ConsentLevel::kSync,
-                                      browser()->profile());
+  SetUpPrimaryAccountWithHostedDomain(browser()->profile());
 
   auto* dialog_contents = ShowDialog();
   SetAccessCode("abcdef", dialog_contents);
@@ -87,21 +79,13 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest,
   UpdateRoutes({});
   task_runner()->FastForwardBy(AccessCodeCastSinkService::kExpirationDelay);
 
-  if (!IsAccessCodeCastLacrosSyncEnabled()) {
-    // When devices are in sync between Lacros and Ash, Lacros won't remove
-    // devices from the pref service.
-    // The device should not be stored in the pref service and not in the media
-    // router.
-    EXPECT_FALSE(HasSinkInDevicesDict("cast:<1234>"));
-  }
+  // The device should not be stored in the pref service and not in the media
+  // router.
+  EXPECT_FALSE(HasSinkInDevicesDict("cast:<1234>"));
 }
 
 IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest,
                        InstantExpiration) {
-  if (IsAccessCodeCastLacrosSyncEnabled()) {
-    GTEST_SKIP();
-  }
-
   // This test is run after an instant expiration device was successfully
   // added to the browser. Upon restart it should not exists in prefs nor
   // should it be added to the media router.
@@ -132,8 +116,7 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest, PRE_SavedDevice) {
 
   EnableAccessCodeCasting();
 
-  SetUpPrimaryAccountWithHostedDomain(signin::ConsentLevel::kSync,
-                                      browser()->profile());
+  SetUpPrimaryAccountWithHostedDomain(browser()->profile());
 
   // Set the saved devices pref value.
   browser()->profile()->GetPrefs()->Set(
@@ -197,46 +180,5 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest, SavedDevice) {
   EXPECT_EQ(GetDeviceAddedTimeFromDict("cast:<1234>").value(),
             device_added_time());
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest,
-                       OnAccessCodeCastDevicesChanged) {
-  if (!IsAccessCodeCastLacrosSyncEnabled()) {
-    GTEST_SKIP() << "Skipping as the prefs are not available in the "
-                    "current version of Ash";
-  }
-
-  // Set prefs value.
-  auto cast_sink = CreateCastSink(1);
-  base::RunLoop run_loop;
-  MediaSinkInternal actual_cast_sink;
-  base::Value::Dict devices_dict;
-  devices_dict.Set(cast_sink.id(),
-                   CreateValueDictFromMediaSinkInternal(cast_sink));
-  base::Value::Dict device_added_time_dict;
-  device_added_time_dict.Set(cast_sink.id(),
-                             base::TimeToValue(base::Time::Now()));
-
-  EXPECT_CALL(*mock_cast_media_sink_service_impl(), HasSink(cast_sink.id()));
-  EXPECT_CALL(*mock_cast_media_sink_service_impl(), OpenChannel)
-      .WillOnce(testing::WithArg<0>([&](const MediaSinkInternal& sink) {
-        actual_cast_sink = sink;
-        run_loop.Quit();
-      }));
-
-  auto& prefs =
-      chromeos::LacrosService::Get()->GetRemote<crosapi::mojom::Prefs>();
-  prefs->SetPref(crosapi::mojom::PrefPath::kAccessCodeCastDevices,
-                 base::Value(std::move(devices_dict)), base::DoNothing());
-  prefs->SetPref(crosapi::mojom::PrefPath::kAccessCodeCastDeviceAdditionTime,
-                 base::Value(std::move(device_added_time_dict)),
-                 base::DoNothing());
-
-  // Wait for the AccessCodeCastSinkService to be notified and add new sink to
-  // the Media Router.
-  run_loop.Run();
-  EXPECT_EQ(cast_sink.id(), actual_cast_sink.id());
-}
-#endif
 
 }  // namespace media_router

@@ -4,9 +4,10 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {ManageProfilesBrowserProxy, ProfileState} from './manage_profiles_browser_proxy.js';
@@ -45,16 +46,20 @@ export class ProfileSwitchElement extends CrLitElement {
     };
   }
 
-  protected profileState_: ProfileState = createDummyProfileState();
-  protected isProfileStateInitialized_: boolean = false;
+  protected accessor profileState_: ProfileState = createDummyProfileState();
+  protected accessor isProfileStateInitialized_: boolean = false;
   private manageProfilesBrowserProxy_: ManageProfilesBrowserProxy =
       ManageProfilesBrowserProxyImpl.getInstance();
 
   override firstUpdated() {
-    this.manageProfilesBrowserProxy_.getSwitchProfile().then(profileState => {
-      this.profileState_ = profileState;
-      this.isProfileStateInitialized_ = true;
-    });
+    const params = new URLSearchParams(window.location.search);
+    const profileSwitchPath = params.get('profileSwitchPath');
+    assert(profileSwitchPath !== null, '`profileSwitchPath` param is not set');
+    this.manageProfilesBrowserProxy_.getProfileState(profileSwitchPath)
+        .then(profileState => {
+          this.profileState_ = profileState;
+          this.isProfileStateInitialized_ = true;
+        });
   }
 
   protected onCancelClick_() {

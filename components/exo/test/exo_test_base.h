@@ -10,10 +10,6 @@
 #include "ash/test/ash_test_base.h"
 #include "components/exo/test/exo_test_helper.h"
 
-namespace ash {
-class TestShellDelegate;
-}
-
 namespace viz {
 class SurfaceManager;
 }
@@ -43,8 +39,6 @@ class ExoTestBase : public ash::AshTestBase {
   // ash::AshTestBase:
   void SetUp() override;
   void TearDown() override;
-
-  void SetUp(std::unique_ptr<ash::TestShellDelegate> shell_delegate);
 
   viz::SurfaceManager* GetSurfaceManager();
 

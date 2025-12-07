@@ -7,7 +7,6 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/configuration_provider.h"
 #include "components/feature_engagement/public/feature_list.h"
@@ -49,7 +48,7 @@ class ChromeVariationsConfiguration : public Configuration {
                    const FeatureVector& features,
                    const GroupVector& groups);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void UpdateConfig(const base::Feature& feature,
                     const ConfigurationProvider* provider) override;
 
@@ -66,7 +65,7 @@ class ChromeVariationsConfiguration : public Configuration {
   void LoadGroupConfig(
       const base::Feature& group,
       const ConfigurationProviderList& configuration_providers);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void LoadAllowedEventPrefixes(
       const base::Feature& feature,
       const ConfigurationProviderList& configuration_providers);
@@ -82,7 +81,7 @@ class ChromeVariationsConfiguration : public Configuration {
   // The current group configurations.
   GroupConfigMap group_configs_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // The allowed set of prefixes.
   EventPrefixSet event_prefixes_;
 #endif

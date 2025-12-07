@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -55,13 +54,13 @@ class StartupAppLauncher : public KioskAppLauncher,
   void LaunchApp() override;
 
   void BeginInstall();
-  void InstallAppInAsh();
-  void InstallAppInLacros();
   void OnInstallComplete(
       chromeos::ChromeKioskAppInstaller::InstallResult result);
   void OnInstallSuccess();
 
-  void OnLaunchComplete(chromeos::ChromeKioskAppLauncher::LaunchResult result);
+  void HandlePreLaunchError(
+      chromeos::ChromeKioskAppLauncher::PreLaunchError error);
+  void OnLaunchComplete(bool success);
 
   void OnLaunchSuccess();
   void OnLaunchFailure(KioskAppLaunchError::Error error);

@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/base/frame_buffer_pool.h"
 
+#include <algorithm>
+
+#include "base/compiler_specific.h"
+#include "base/functional/callback.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -20,30 +19,30 @@ TEST(FrameBufferPool, BasicFunctionality) {
   auto pool = base::MakeRefCounted<FrameBufferPool>();
 
   void* priv1 = nullptr;
-  uint8_t* buf1 = pool->GetFrameBuffer(kBufferSize, &priv1);
+  auto buf1 = pool->GetFrameBuffer(kBufferSize, &priv1);
+  ASSERT_FALSE(buf1.empty());
   ASSERT_TRUE(priv1);
-  ASSERT_TRUE(buf1);
-  memset(buf1, 0, kBufferSize);
+  std::ranges::fill(buf1, 0);
 
   void* priv2 = nullptr;
-  uint8_t* buf2 = pool->GetFrameBuffer(kBufferSize, &priv2);
+  auto buf2 = pool->GetFrameBuffer(kBufferSize, &priv2);
   ASSERT_TRUE(priv2);
-  ASSERT_TRUE(buf2);
+  ASSERT_FALSE(buf2.empty());
   EXPECT_NE(priv1, priv2);
-  EXPECT_NE(buf1, buf2);
-  memset(buf2, 0, kBufferSize);
+  EXPECT_NE(buf1.data(), buf2.data());
+  std::ranges::fill(buf2, 0);
 
-  uint8_t* alpha = pool->AllocateAlphaPlaneForFrameBuffer(kBufferSize, priv1);
-  ASSERT_TRUE(alpha);
-  EXPECT_NE(alpha, buf1);
-  EXPECT_NE(alpha, buf2);
-  memset(alpha, 0, kBufferSize);
+  auto alpha = pool->AllocateAlphaPlaneForFrameBuffer(kBufferSize, priv1);
+  ASSERT_FALSE(alpha.empty());
+  EXPECT_NE(alpha.data(), buf1.data());
+  EXPECT_NE(alpha.data(), buf2.data());
+  std::ranges::fill(alpha, 0);
 
   EXPECT_EQ(2u, pool->get_pool_size_for_testing());
 
   // Frames are not released immediately, so this should still show two frames.
   pool->ReleaseFrameBuffer(priv2);
-  priv2 = buf2 = nullptr;
+  priv2 = nullptr;
   EXPECT_EQ(2u, pool->get_pool_size_for_testing());
 
   auto frame_release_cb = pool->CreateFrameCallback(priv1);
@@ -52,8 +51,8 @@ TEST(FrameBufferPool, BasicFunctionality) {
   pool->Shutdown();
   EXPECT_EQ(1u, pool->get_pool_size_for_testing());
 
-  memset(buf1, 0, kBufferSize);
-  memset(alpha, 0, kBufferSize);
+  std::ranges::fill(buf1, 0);
+  std::ranges::fill(alpha, 0);
 
   // This will release all memory since we're in the shutdown state.
   std::move(frame_release_cb).Run();
@@ -66,9 +65,9 @@ TEST(FrameBufferPool, ForceAllocationError) {
   pool->force_allocation_error_for_testing();
 
   void* priv1 = nullptr;
-  uint8_t* buf1 = pool->GetFrameBuffer(kBufferSize, &priv1);
+  auto buf1 = pool->GetFrameBuffer(kBufferSize, &priv1);
   ASSERT_FALSE(priv1);
-  ASSERT_FALSE(buf1);
+  ASSERT_TRUE(buf1.empty());
   pool->Shutdown();
 }
 
@@ -79,16 +78,17 @@ TEST(FrameBufferPool, DeferredDestruction) {
   pool->set_tick_clock_for_testing(&test_clock);
 
   void* priv1 = nullptr;
-  uint8_t* buf1 = pool->GetFrameBuffer(kBufferSize, &priv1);
+  auto buf1 = pool->GetFrameBuffer(kBufferSize, &priv1);
   void* priv2 = nullptr;
-  uint8_t* buf2 = pool->GetFrameBuffer(kBufferSize, &priv2);
+  auto buf2 = pool->GetFrameBuffer(kBufferSize, &priv2);
   void* priv3 = nullptr;
-  uint8_t* buf3 = pool->GetFrameBuffer(kBufferSize, &priv3);
+  auto buf3 = pool->GetFrameBuffer(kBufferSize, &priv3);
   EXPECT_EQ(3u, pool->get_pool_size_for_testing());
 
   auto frame_release_cb = pool->CreateFrameCallback(priv1);
   pool->ReleaseFrameBuffer(priv1);
-  priv1 = buf1 = nullptr;
+  priv1 = nullptr;
+  buf1 = {};
   std::move(frame_release_cb).Run();
 
   // Frame buffers should not be immediately deleted upon return.
@@ -100,7 +100,8 @@ TEST(FrameBufferPool, DeferredDestruction) {
   // We should still have 3 frame buffers in the pool at this point.
   frame_release_cb = pool->CreateFrameCallback(priv2);
   pool->ReleaseFrameBuffer(priv2);
-  priv2 = buf2 = nullptr;
+  priv2 = nullptr;
+  buf2 = {};
   std::move(frame_release_cb).Run();
   EXPECT_EQ(3u, pool->get_pool_size_for_testing());
 
@@ -109,7 +110,8 @@ TEST(FrameBufferPool, DeferredDestruction) {
   // All but this most recently released frame should remain now.
   frame_release_cb = pool->CreateFrameCallback(priv3);
   pool->ReleaseFrameBuffer(priv3);
-  priv3 = buf3 = nullptr;
+  priv3 = nullptr;
+  buf3 = {};
   std::move(frame_release_cb).Run();
   EXPECT_EQ(1u, pool->get_pool_size_for_testing());
 
@@ -123,7 +125,7 @@ TEST(FrameBufferPool, DoesClearAllocations) {
   // Certainly this is not foolproof, but even flaky failures here indicate that
   // something is broken.
   void* priv1 = nullptr;
-  uint8_t* buf = pool->GetFrameBuffer(kBufferSize, &priv1);
+  auto buf = pool->GetFrameBuffer(kBufferSize, &priv1);
   bool nonzero = false;
   for (size_t i = 0; i < kBufferSize; i++) {
     nonzero |= !!buf[i];

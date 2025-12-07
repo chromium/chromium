@@ -5,13 +5,15 @@
 #include "chrome/browser/apps/digital_goods/util.h"
 
 #include <optional>
+#include <string>
 
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/web_contents.h"
 
@@ -23,18 +25,24 @@ std::string GetTwaPackageName(content::RenderFrameHost* render_frame_host) {
   if (!web_contents)
     return std::string();
 
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  if (!web_app::AppBrowserController::IsWebApp(browser)) {
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  if (!tab) {
+    // This can happen when the RenderFrameHost does not belong to a proper tab
+    // such as a PWA or in this case a TWA. In these cases, there are no
+    // guarantees that a TabInterface is associated with the WebContents. See
+    // crbug.com/425155901 for more details.
+    return std::string();
+  }
+  BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
+  if (!browser || !browser->GetProfile()) {
+    return std::string();
+  }
+  if (browser->GetProfile()->IsIncognitoProfile()) {
     return std::string();
   }
 
-  auto* profile =
-      Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
-  if (profile->IsIncognitoProfile()) {
-    return std::string();
-  }
-
-  auto* apk_web_app_service = ash::ApkWebAppService::Get(profile);
+  auto* apk_web_app_service = ash::ApkWebAppService::Get(browser->GetProfile());
   if (!apk_web_app_service) {
     return std::string();
   }
@@ -54,8 +62,9 @@ std::string GetScope(content::RenderFrameHost* render_frame_host) {
   }
 
   const web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
-  std::optional<webapps::AppId> app_id = registrar.FindAppWithUrlInScope(
-      render_frame_host->GetMainFrame()->GetLastCommittedURL());
+  std::optional<webapps::AppId> app_id = registrar.FindBestAppWithUrlInScope(
+      render_frame_host->GetMainFrame()->GetLastCommittedURL(),
+      web_app::WebAppFilter::InstalledInChrome());
   if (!app_id) {
     return std::string();
   }

@@ -1,11 +1,22 @@
 sinansahin@google.com
+skym@chromium.org
 tedchoc@chromium.org
 twellington@chromium.org
 
 # for UI resources
 dtrainor@chromium.org
-per-file BUILD.gn=file://ui/android/java/res/LAYOUT_OWNERS
 
 # for display/window/view_android
 boliu@chromium.org
 jinsukkim@chromium.org
+jonross@chromium.org
+
+# for window / keyboard insets
+wenyufu@chromium.org
+pnoland@chromium.org
+
+# for modaldialog
+per-file *modal_dialog*.*=jthiesen@chromium.org
+per-file *ModalDialog*.java=jthiesen@chromium.org
+
+per-file BUILD.gn=*

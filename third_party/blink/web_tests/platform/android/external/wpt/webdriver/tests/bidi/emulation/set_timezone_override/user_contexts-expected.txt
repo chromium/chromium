@@ -1,0 +1,13 @@
+This is a wdspec test.
+[ERROR] test_user_contexts
+  setup error: KeyError: 'value'
+[ERROR] test_set_to_default_user_context
+  setup error: KeyError: 'value'
+[ERROR] test_set_to_multiple_user_contexts
+  setup error: KeyError: 'value'
+[ERROR] test_set_to_user_context_and_then_to_context
+  setup error: KeyError: 'value'
+[ERROR] test_set_to_context_and_then_to_user_context
+  setup error: KeyError: 'value'
+Harness: the test ran to completion.
+

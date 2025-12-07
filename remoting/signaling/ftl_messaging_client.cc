@@ -12,13 +12,14 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "remoting/base/http_status.h"
 #include "remoting/base/protobuf_http_client.h"
 #include "remoting/base/protobuf_http_request.h"
 #include "remoting/base/protobuf_http_request_config.h"
-#include "remoting/base/protobuf_http_status.h"
 #include "remoting/base/protobuf_http_stream_request.h"
-#include "remoting/signaling/ftl_message_reception_channel.h"
+#include "remoting/signaling/ftl_message_channel_strategy.h"
 #include "remoting/signaling/ftl_services_context.h"
+#include "remoting/signaling/message_channel.h"
 #include "remoting/signaling/registration_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -26,7 +27,7 @@ namespace remoting {
 
 namespace {
 
-constexpr char kBatchAckMessagesPath[] = "/v1/message:batchAckMessages";
+constexpr char kBatchAckMessagesPath[] = "/v1/messages:batchAckMessages";
 constexpr char kReceiveMessagesPath[] = "/v1/messages:receive";
 constexpr char kSendMessagePath[] = "/v1/message:send";
 
@@ -175,31 +176,28 @@ FtlMessagingClient::FtlMessagingClient(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     RegistrationManager* registration_manager,
     SignalingTracker* signaling_tracker)
-    : FtlMessagingClient(
-          std::make_unique<ProtobufHttpClient>(
-              FtlServicesContext::GetServerEndpoint(),
-              token_getter,
-              url_loader_factory),
-          registration_manager,
-          std::make_unique<FtlMessageReceptionChannel>(signaling_tracker)) {}
+    : FtlMessagingClient(std::make_unique<ProtobufHttpClient>(
+                             FtlServicesContext::GetServerEndpoint(),
+                             token_getter,
+                             url_loader_factory),
+                         registration_manager,
+                         signaling_tracker,
+                         std::make_unique<FtlMessageChannelStrategy>()) {}
 
 FtlMessagingClient::FtlMessagingClient(
     std::unique_ptr<ProtobufHttpClient> client,
     RegistrationManager* registration_manager,
-    std::unique_ptr<MessageReceptionChannel> channel) {
-  DCHECK(client);
-  DCHECK(registration_manager);
-  DCHECK(channel);
-  client_ = std::move(client);
-  registration_manager_ = registration_manager;
-  reception_channel_ = std::move(channel);
-  reception_channel_->Initialize(
+    SignalingTracker* signaling_tracker,
+    std::unique_ptr<FtlMessageChannelStrategy> channel_strategy)
+    : client_(std::move(client)), registration_manager_(registration_manager) {
+  channel_strategy->Initialize(
       base::BindRepeating(&FtlMessagingClient::OpenReceiveMessagesStream,
                           base::Unretained(this)),
       base::BindRepeating(&FtlMessagingClient::OnMessageReceived,
                           base::Unretained(this)));
+  message_channel_ = std::make_unique<MessageChannel>(
+      std::move(channel_strategy), signaling_tracker);
 }
-
 FtlMessagingClient::~FtlMessagingClient() = default;
 
 base::CallbackListSubscription FtlMessagingClient::RegisterMessageCallback(
@@ -234,35 +232,42 @@ void FtlMessagingClient::SendMessage(
     request->add_dest_registration_ids(destination_registration_id);
   }
 
+  // SendMessage is non-idempotent (potentially duplicate messages will be
+  // sent), so retries may not be safe.
   ExecuteRequest(kSendMessageTrafficAnnotation, kSendMessagePath,
-                 std::move(request), &FtlMessagingClient::OnSendMessageResponse,
+                 /*enable_retries=*/false, std::move(request),
+                 &FtlMessagingClient::OnSendMessageResponse,
                  std::move(on_done));
 }
 
 void FtlMessagingClient::StartReceivingMessages(base::OnceClosure on_ready,
                                                 DoneCallback on_closed) {
-  reception_channel_->StartReceivingMessages(std::move(on_ready),
-                                             std::move(on_closed));
+  message_channel_->StartReceivingMessages(std::move(on_ready),
+                                           std::move(on_closed));
 }
 
 void FtlMessagingClient::StopReceivingMessages() {
-  reception_channel_->StopReceivingMessages();
+  message_channel_->StopReceivingMessages();
 }
 
 bool FtlMessagingClient::IsReceivingMessages() const {
-  return reception_channel_->IsReceivingMessages();
+  return message_channel_->IsReceivingMessages();
 }
 
 template <typename CallbackFunctor>
 void FtlMessagingClient::ExecuteRequest(
     const net::NetworkTrafficAnnotationTag& tag,
     const std::string& path,
+    bool enable_retries,
     std::unique_ptr<google::protobuf::MessageLite> request,
     CallbackFunctor callback_functor,
     DoneCallback on_done) {
   auto config = std::make_unique<ProtobufHttpRequestConfig>(tag);
   config->request_message = std::move(request);
   config->path = path;
+  if (enable_retries) {
+    config->UseSimpleRetryPolicy();
+  }
   auto http_request = std::make_unique<ProtobufHttpRequest>(std::move(config));
   http_request->SetResponseCallback(base::BindOnce(
       callback_functor, base::Unretained(this), std::move(on_done)));
@@ -271,7 +276,7 @@ void FtlMessagingClient::ExecuteRequest(
 
 void FtlMessagingClient::OnSendMessageResponse(
     DoneCallback on_done,
-    const ProtobufHttpStatus& status,
+    const HttpStatus& status,
     std::unique_ptr<ftl::InboxSendResponse> response) {
   std::move(on_done).Run(status);
 }
@@ -285,6 +290,7 @@ void FtlMessagingClient::BatchAckMessages(
   VLOG(1) << "Acking " << request.message_ids_size() << " messages";
 
   ExecuteRequest(kAckMessagesTrafficAnnotation, kBatchAckMessagesPath,
+                 /*enable_retries=*/true,
                  std::make_unique<ftl::BatchAckMessagesRequest>(request),
                  &FtlMessagingClient::OnBatchAckMessagesResponse,
                  std::move(on_done));
@@ -292,9 +298,10 @@ void FtlMessagingClient::BatchAckMessages(
 
 void FtlMessagingClient::OnBatchAckMessagesResponse(
     DoneCallback on_done,
-    const ProtobufHttpStatus& status,
+    const HttpStatus& status,
     std::unique_ptr<ftl::BatchAckMessagesResponse> response) {
-  // TODO(yuweih): Handle failure.
+  LOG_IF(WARNING, !status.ok())
+      << "Failed to ACK signaling message: " << status.error_message();
   std::move(on_done).Run(status);
 }
 
@@ -303,7 +310,7 @@ FtlMessagingClient::OpenReceiveMessagesStream(
     base::OnceClosure on_channel_ready,
     const base::RepeatingCallback<
         void(std::unique_ptr<ftl::ReceiveMessagesResponse>)>& on_incoming_msg,
-    base::OnceCallback<void(const ProtobufHttpStatus&)> on_channel_closed) {
+    base::OnceCallback<void(const HttpStatus&)> on_channel_closed) {
   auto request = std::make_unique<ftl::ReceiveMessagesRequest>();
   *request->mutable_header() = FtlServicesContext::CreateRequestHeader(
       registration_manager_->GetFtlAuthToken());

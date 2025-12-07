@@ -7,22 +7,30 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/byte_count.h"
 
-namespace base {
-namespace debug {
+namespace base::debug {
 
 // Describes a region of mapped memory and the path of the file mapped.
-struct MappedMemoryRegion {
+struct BASE_EXPORT MappedMemoryRegion {
   enum Permission {
     READ = 1 << 0,
     WRITE = 1 << 1,
     EXECUTE = 1 << 2,
     PRIVATE = 1 << 3,  // If set, region is private, otherwise it is shared.
   };
+
+  MappedMemoryRegion();
+  MappedMemoryRegion(const MappedMemoryRegion&);
+  MappedMemoryRegion(MappedMemoryRegion&&) noexcept;
+  MappedMemoryRegion& operator=(MappedMemoryRegion&);
+  MappedMemoryRegion& operator=(MappedMemoryRegion&&) noexcept;
 
   // The address range [start,end) of mapped memory.
   uintptr_t start;
@@ -36,6 +44,13 @@ struct MappedMemoryRegion {
 
   // Bitmask of read/write/execute/private/shared permissions.
   uint8_t permissions;
+
+  // Major and minor device numbers for the region.
+  uint8_t dev_major;
+  uint8_t dev_minor;
+
+  // Inode for the region.
+  long inode;
 
   // Name of the file mapped into memory.
   //
@@ -85,10 +100,27 @@ BASE_EXPORT bool ReadProcMaps(std::string* proc_maps);
 
 // Parses /proc/<pid>/maps input data and stores in |regions|. Returns true
 // and updates |regions| if and only if all of |input| was successfully parsed.
-BASE_EXPORT bool ParseProcMaps(const std::string& input,
+BASE_EXPORT bool ParseProcMaps(std::string_view input,
                                std::vector<MappedMemoryRegion>* regions);
 
-}  // namespace debug
-}  // namespace base
+struct SmapsRollup {
+  ByteCount rss = ByteCount(0);
+  ByteCount pss = ByteCount(0);
+  ByteCount pss_anon = ByteCount(0);
+  ByteCount pss_file = ByteCount(0);
+  ByteCount pss_shmem = ByteCount(0);
+  ByteCount private_dirty = ByteCount(0);
+  ByteCount swap = ByteCount(0);
+  ByteCount swap_pss = ByteCount(0);
+};
+
+// Attempts to read /proc/self/smaps_rollup. Returns nullopt on error.
+BASE_EXPORT std::optional<SmapsRollup> ReadAndParseSmapsRollup();
+
+// |smaps_rollup| should be the result of reading /proc/*/smaps_rollup.
+BASE_EXPORT std::optional<SmapsRollup> ParseSmapsRollupForTesting(
+    const std::string& smaps_rollup);
+
+}  // namespace base::debug
 
 #endif  // BASE_DEBUG_PROC_MAPS_LINUX_H_

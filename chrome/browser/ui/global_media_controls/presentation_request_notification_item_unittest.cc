@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/global_media_controls/presentation_request_notification_item.h"
 
+#include "base/functional/callback_helpers.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/global_media_controls/public/test/mock_device_service.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
@@ -61,11 +62,10 @@ TEST_F(PresentationRequestNotificationItemTest, MediaSessionMetadataChanged) {
   // The item should prioritize Media Session metadata except for
   // `source_title`, which should come from the Presentation Request.
   EXPECT_CALL(*provider_, OnMetadataChanged)
-      .WillOnce(testing::Invoke(
-          [metadata](const media_session::MediaMetadata& metadata_arg) {
-            EXPECT_EQ(u"example.com", metadata_arg.source_title);
-            EXPECT_EQ(metadata.artist, metadata_arg.artist);
-          }));
+      .WillOnce([metadata](const media_session::MediaMetadata& metadata_arg) {
+        EXPECT_EQ(u"example.com", metadata_arg.source_title);
+        EXPECT_EQ(metadata.artist, metadata_arg.artist);
+      });
   item_->MediaSessionMetadataChanged(metadata);
 }
 

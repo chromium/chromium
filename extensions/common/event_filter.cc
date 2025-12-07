@@ -8,11 +8,10 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "components/url_matcher/url_matcher_factory.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
-#include "ipc/ipc_message.h"
+#include "ipc/constants.mojom.h"
 
 using url_matcher::URLMatcher;
 using url_matcher::URLMatcherConditionSet;
@@ -82,7 +81,7 @@ EventMatcher* EventFilter::GetEventMatcher(MatcherID id) {
 
 const std::string& EventFilter::GetEventName(MatcherID id) const {
   auto it = id_to_event_name_.find(id);
-  CHECK(it != id_to_event_name_.end(), base::NotFatalUntil::M130);
+  CHECK(it != id_to_event_name_.end());
   return it->second;
 }
 
@@ -156,9 +155,7 @@ std::set<EventFilter::MatcherID> EventFilter::MatchEvent(
   for (const auto& id_key : matching_condition_set_ids) {
     auto matcher_id = condition_set_id_to_event_matcher_id_.find(id_key);
     if (matcher_id == condition_set_id_to_event_matcher_id_.end()) {
-      NOTREACHED_IN_MIGRATION()
-          << "id not found in condition set map (" << id_key << ")";
-      continue;
+      NOTREACHED() << "id not found in condition set map (" << id_key << ")";
     }
     MatcherID id = matcher_id->second;
     auto matcher_entry = matcher_map.find(id);
@@ -169,7 +166,7 @@ std::set<EventFilter::MatcherID> EventFilter::MatchEvent(
     const EventMatcher* event_matcher = matcher_entry->second->event_matcher();
     // The context that installed the event listener should be the same context
     // as the one where the event listener is called.
-    if (routing_id != MSG_ROUTING_NONE &&
+    if (routing_id != IPC::mojom::kRoutingIdNone &&
         event_matcher->routing_id() != routing_id) {
       continue;
     }

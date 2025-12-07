@@ -5,16 +5,21 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_PAYMENTS_CREDIT_CARD_SAVE_STRIKE_DATABASE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_PAYMENTS_CREDIT_CARD_SAVE_STRIKE_DATABASE_H_
 
-#include "components/autofill/core/browser/strike_databases/simple_autofill_strike_database.h"
-#include "components/autofill/core/browser/strike_databases/strike_database.h"
+#include <stddef.h>
+
+#include <optional>
+#include <string_view>
+
+#include "base/time/time.h"
+#include "components/strike_database/simple_strike_database.h"
+#include "components/strike_database/strike_database.h"
 
 namespace autofill {
 
 struct CreditCardSaveStrikeDatabaseTraits {
   static constexpr std::string_view kName = "CreditCardSave";
-  static constexpr std::optional<size_t> kMaxStrikeEntities = std::nullopt;
-  static constexpr std::optional<size_t> kMaxStrikeEntitiesAfterCleanup =
-      std::nullopt;
+  static constexpr std::optional<size_t> kMaxStrikeEntities;
+  static constexpr std::optional<size_t> kMaxStrikeEntitiesAfterCleanup;
   static constexpr size_t kMaxStrikeLimit = 3;
   static constexpr base::TimeDelta kExpiryTimeDelta = base::Days(183);
   static constexpr bool kUniqueIdRequired = true;
@@ -22,7 +27,7 @@ struct CreditCardSaveStrikeDatabaseTraits {
 
 // Strike database for credit card saves (both local and upload).
 using CreditCardSaveStrikeDatabase =
-    SimpleAutofillStrikeDatabase<CreditCardSaveStrikeDatabaseTraits>;
+    strike_database::SimpleStrikeDatabase<CreditCardSaveStrikeDatabaseTraits>;
 
 }  // namespace autofill
 

@@ -5,12 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_HISTORY_MODEL_WEB_HISTORY_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_HISTORY_MODEL_WEB_HISTORY_SERVICE_FACTORY_H_
 
-#include <memory>
+#import "base/no_destructor.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-
-class ChromeBrowserState;
+class ProfileIOS;
 
 namespace history {
 class WebHistoryService;
@@ -18,15 +16,11 @@ class WebHistoryService;
 
 namespace ios {
 // Singleton that owns all WebHistoryServices and associates them with
-// ChromeBrowserState.
-class WebHistoryServiceFactory : public BrowserStateKeyedServiceFactory {
+// profiles.
+class WebHistoryServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  static history::WebHistoryService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  static history::WebHistoryService* GetForProfile(ProfileIOS* profile);
   static WebHistoryServiceFactory* GetInstance();
-
-  WebHistoryServiceFactory(const WebHistoryServiceFactory&) = delete;
-  WebHistoryServiceFactory& operator=(const WebHistoryServiceFactory&) = delete;
 
  private:
   friend class base::NoDestructor<WebHistoryServiceFactory>;
@@ -34,9 +28,9 @@ class WebHistoryServiceFactory : public BrowserStateKeyedServiceFactory {
   WebHistoryServiceFactory();
   ~WebHistoryServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 }  // namespace ios

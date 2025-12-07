@@ -9,12 +9,13 @@ import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dial
 import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import type {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {CLICK_EXIT_BUTTON, TRANSITION_STATE} from 'chrome://shimless-rma/events.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {OnboardingLandingPage} from 'chrome://shimless-rma/onboarding_landing_page.js';
-import {StateResult} from 'chrome://shimless-rma/shimless_rma.mojom-webui.js';
+import type {StateResult} from 'chrome://shimless-rma/shimless_rma.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
@@ -27,6 +28,8 @@ suite('onboardingLandingPageTest', function() {
   const busyIconSelector = '#busyIcon';
   const verificationIconSelector = '#verificationIcon';
   const unqualifiedComponentsLinkSelector = '#unqualifiedComponentsLink';
+  const verificationSkipMessageSelector = '#verificationSkipMessage';
+  const exitButtonSelector = '#landingExit';
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -87,7 +90,7 @@ suite('onboardingLandingPageTest', function() {
 
     assert(service);
     service.triggerHardwareVerificationStatusObserver(
-        /* isCompliant= */ true, /* errorMessage= */ '', /* delayMs= */ 0);
+        /* result= */ {passResult: {}}, /* delayMs= */ 0);
     await flushTasks();
 
     const expectedPromise = new PromiseResolver<{stateResult: StateResult}>();
@@ -113,12 +116,44 @@ suite('onboardingLandingPageTest', function() {
 
     assert(service);
     service.triggerHardwareVerificationStatusObserver(
-        /* isCompliant= */ true, /* errorMessage= */ '', /* delayMs= */ 0);
+        /* result= */ {passResult: {}}, /* delayMs= */ 0);
     await flushTasks();
 
     assertFalse(isVisible(busyIcon));
     assertTrue(isVisible(verification));
     assertEquals('shimless-icon:check', verification.icon);
+  });
+
+  // Verify after skipping validation, the busy icon is hidden and the
+  // warning icon shows.
+  test('ValidationSkippedWarningShows', async () => {
+    await initializeLandingPage();
+
+    loadTimeData.overrideValues({
+      hardwareValidationSkipEnabled: true,
+    });
+
+    assert(component);
+    const busyIcon =
+        strictQuery(busyIconSelector, component.shadowRoot, HTMLElement);
+    const verificationIcon = strictQuery(
+                                 verificationIconSelector, component.shadowRoot,
+                                 HTMLElement) as IronIconElement;
+    const validationSkipMessage = strictQuery(
+        verificationSkipMessageSelector, component.shadowRoot, HTMLElement);
+    assertTrue(isVisible(busyIcon));
+    assertFalse(isVisible(verificationIcon));
+    assertFalse(isVisible(validationSkipMessage));
+
+    assert(service);
+    service.triggerHardwareVerificationStatusObserver(
+        /* result= */ {skipResult: {}}, /* delayMs= */ 0);
+    await flushTasks();
+
+    assertFalse(isVisible(busyIcon));
+    assertTrue(isVisible(verificationIcon));
+    assertTrue(isVisible(validationSkipMessage));
+    assertEquals('shimless-icon:warning', verificationIcon.icon);
   });
 
   // Verify the unqualified link shows if validation fails and the components
@@ -129,7 +164,8 @@ suite('onboardingLandingPageTest', function() {
     const failedComponent = 'Keyboard';
     assert(service);
     service.triggerHardwareVerificationStatusObserver(
-        /* isCompliant= */ false, failedComponent, /* delayMs= */ 0);
+        /* result= */ {failResult: {componentInfo: failedComponent}},
+        /* delayMs= */ 0);
     await flushTasks();
 
     assert(component);
@@ -149,7 +185,18 @@ suite('onboardingLandingPageTest', function() {
     assertEquals(
         failedComponent,
         strictQuery('#dialogBody', component.shadowRoot, HTMLElement)
-            .textContent!.trim());
+            .textContent.trim());
+  });
+
+  // Hides Exit button when canExit is false.
+  test('ExitButtonHidesWhenCannotExit', async () => {
+    await initializeLandingPage();
+    assert(component);
+    component.canExit = false;
+
+    assertTrue(
+        strictQuery(exitButtonSelector, component.shadowRoot, HTMLElement)
+            .hidden);
   });
 
   // Verify clicking the landing page's exit button sends the correct event.

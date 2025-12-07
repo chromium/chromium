@@ -1,0 +1,19 @@
+Document
+++Tab Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
+++++TabItem Name='your-file-name.pdf Close' AriaProperties='readonly=true;expanded=false;multiline=false;multiselectable=false;required=false;selected=false;hasactions=true' SelectionItem.IsSelected=false
+++++++Text Name='your-file-name.pdf ' IsControlElement=false
+++++++Button Name='Edit'
+++++++Hyperlink Name='Open'
+++++++++Text Name='Open' IsControlElement=false
+++++++Button Name='Close' Toggle.ToggleState='Off'
+++Button Name='Delete'
+=== Start Continuation ===
+Document Name='change-aria-action-id'
+++Tab Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
+++++TabItem Name='your-file-name.pdf Edit Open' AriaProperties='readonly=true;expanded=false;multiline=false;multiselectable=false;required=false;selected=false;hasactions=true' SelectionItem.IsSelected=false
+++++++Text Name='your-file-name.pdf ' IsControlElement=false
+++++++Button Name='Edit'
+++++++Hyperlink Name='Open'
+++++++++Text Name='Open' IsControlElement=false
+++++++Button Name='Close' Toggle.ToggleState='Off'
+++Button Name='Delete'

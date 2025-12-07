@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -21,6 +20,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "storage/common/database/db_status.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
 
 namespace base {
@@ -31,8 +31,6 @@ class ProcessMemoryDump;
 
 namespace storage {
 class AsyncDomStorageDatabase;
-
-BASE_DECLARE_FEATURE(kDomStorageSmartFlushing);
 
 // This is a wrapper around a AsyncDomStorageDatabase. Multiple interface
 // endpoints can be bound to the same object. The wrapper adds a couple of
@@ -62,8 +60,8 @@ class StorageAreaImpl : public blink::mojom::StorageArea,
     virtual void PrepareToCommit(
         std::vector<DomStorageDatabase::KeyValuePair>* extra_entries_to_add,
         std::vector<DomStorageDatabase::Key>* extra_keys_to_delete);
-    virtual void DidCommit(leveldb::Status error) = 0;
-    virtual void OnMapLoaded(leveldb::Status status);
+    virtual void DidCommit(DbStatus error) = 0;
+    virtual void OnMapLoaded();
   };
 
   enum class CacheMode {
@@ -203,14 +201,12 @@ class StorageAreaImpl : public blink::mojom::StorageArea,
   void GetAll(
       mojo::PendingRemote<blink::mojom::StorageAreaObserver> new_observer,
       GetAllCallback callback) override;
-  void Checkpoint() override;
 
   // Committer:
   std::optional<AsyncDomStorageDatabase::Commit> CollectCommit() override;
-  base::OnceCallback<void(leveldb::Status)> GetCommitCompleteCallback()
-      override;
+  base::OnceCallback<void(DbStatus)> GetCommitCompleteCallback() override;
 
-  void OnCommitComplete(leveldb::Status status);
+  void OnCommitComplete(DbStatus status);
 
   void SetOnLoadCallbackForTesting(base::OnceClosure callback) {
     on_load_callback_for_testing_ = std::move(callback);
@@ -276,11 +272,6 @@ class StorageAreaImpl : public blink::mojom::StorageArea,
     LOADED_KEYS_AND_VALUES
   };
 
-  using LoadStateForForkCallback = base::OnceCallback<
-      void(bool database_enabled, const ValueMap&, const KeysOnlyMap&)>;
-  using ForkSourceEarlyDeathCallback =
-      base::OnceCallback<void(std::vector<uint8_t> source_prefix)>;
-
   // Changes the cache mode of the area. If applicable, this will change the
   // internal storage type after the next commit. The keys-only mode can only
   // be set only when there is one client binding. It automatically changes to
@@ -298,8 +289,8 @@ class StorageAreaImpl : public blink::mojom::StorageArea,
   // Then if the |cache_mode_| is keys-only, it unloads the map to the
   // |keys_only_map_| and sets the |map_state_| to LOADED_KEYS_ONLY
   void LoadMap(base::OnceClosure completion_callback);
-  void OnMapLoaded(leveldb::Status status,
-                   std::vector<DomStorageDatabase::KeyValuePair> data);
+  void OnMapLoaded(
+      StatusOr<std::vector<DomStorageDatabase::KeyValuePair>> data);
   void CalculateStorageAndMemoryUsed();
   void OnLoadComplete();
 

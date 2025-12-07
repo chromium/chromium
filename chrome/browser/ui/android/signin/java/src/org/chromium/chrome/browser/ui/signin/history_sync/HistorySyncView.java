@@ -12,19 +12,22 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.signin.MinorModeHelper.ScreenMode;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.components.browser_ui.widget.DualControlLayout;
 import org.chromium.components.browser_ui.widget.DualControlLayout.DualControlLayoutAlignment;
 
 /** View that wraps history sync consent screen and caches references to UI elements. */
+@NullMarked
 public class HistorySyncView extends LinearLayout {
     private ImageView mAccountImage;
-    private Button mDeclineButton;
-    private Button mAcceptButton;
+    private TextView mTitle;
+    private TextView mSubtitle;
     private TextView mDetailsDescription;
+    private @Nullable Button mDeclineButton;
+    private @Nullable Button mAcceptButton;
 
     public HistorySyncView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -34,8 +37,12 @@ public class HistorySyncView extends LinearLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        // TODO(crbug.com/41493766): Set up scrollView.
+        // ScrollView sets focusable to true during construction. So setting focusable to false in
+        // xml file doesn't work. It has to be set after the construction of ScrollView.
+        findViewById(R.id.sync_consent_scroll_view).setFocusable(false);
         mAccountImage = findViewById(R.id.history_sync_account_image);
+        mTitle = findViewById(R.id.history_sync_title);
+        mSubtitle = findViewById(R.id.history_sync_subtitle);
         mDetailsDescription = findViewById(R.id.history_sync_footer);
     }
 
@@ -43,11 +50,19 @@ public class HistorySyncView extends LinearLayout {
         return mAccountImage;
     }
 
-    Button getDeclineButton() {
+    TextView getTitle() {
+        return mTitle;
+    }
+
+    TextView getSubtitle() {
+        return mSubtitle;
+    }
+
+    @Nullable Button getDeclineButton() {
         return mDeclineButton;
     }
 
-    Button getAcceptButton() {
+    @Nullable Button getAcceptButton() {
         return mAcceptButton;
     }
 

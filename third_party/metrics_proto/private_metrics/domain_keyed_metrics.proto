@@ -1,0 +1,42 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.metrics";
+
+package private_metrics;
+
+import "private_metrics/metric.proto";
+import "private_metrics/system_profiles/coarse_system_profile.proto";
+import "system_profile.proto";
+
+// Next tag: 2
+message DkmSource {
+  // The domain where the event occurred, represented as an eTLD+1.
+  optional string domain = 1;
+}
+
+// Next tag: 6
+message DkmEvent {
+  // A hash of the event name/type (such as "ReportingAPIUsage").
+  // Uses the same hash function as UMA.
+  // http://cs.chromium.org/chromium/src/base/metrics/metrics_hashes.cc?q=HashMetricName
+  optional fixed64 event_hash = 1;
+
+  // The metrics associated with this event.
+  repeated Metric metric = 2;
+
+  // A representation of the source, where the event took place. If the source
+  // is an URL, then the domain is an eTLD+1.
+  optional DkmSource source = 3;
+
+  // Field trials that we want to associate with this event, name id and
+  // group id behave the same as in UMA.
+  repeated metrics.SystemProfileProto.FieldTrial field_trials = 4;
+
+  // Coarse system profile associated with this event.
+  optional CoarseSystemProfile coarse_system_profile = 5;
+}

@@ -21,7 +21,7 @@ using blink::WebGestureEvent;
 using blink::WebInputEvent;
 
 using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace content {
@@ -64,10 +64,16 @@ int ToGestureEventType(WebInputEvent::Type type) {
       return ui::GESTURE_EVENT_TYPE_PINCH_BY;
     case WebInputEvent::Type::kGestureTwoFingerTap:
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Invalid source gesture type: " << WebInputEvent::GetName(type);
-      return -1;
+      NOTREACHED() << "Invalid source gesture type: "
+                   << WebInputEvent::GetName(type);
   }
+}
+
+bool IsUserInteractionInputType(WebInputEvent::Type event_type) {
+  return event_type == WebInputEvent::Type::kGestureTap ||
+         event_type == WebInputEvent::Type::kGestureLongTap ||
+         event_type == WebInputEvent::Type::kGestureLongPress ||
+         event_type == WebInputEvent::Type::kMouseDown;
 }
 
 }  // namespace
@@ -104,14 +110,23 @@ void GestureListenerManager::ResetScrollObserver::
 }
 
 GestureListenerManager::GestureListenerManager(JNIEnv* env,
-                                               const JavaParamRef<jobject>& obj,
+                                               const JavaRef<jobject>& obj,
                                                WebContentsImpl* web_contents)
     : RenderWidgetHostConnector(web_contents),
+      WebContentsObserver(web_contents),
       reset_scroll_observer_(new ResetScrollObserver(web_contents, this)),
       web_contents_(web_contents),
-      java_ref_(env, obj) {}
+      java_ref_(env, obj) {
+  RenderFrameHost* host = web_contents->GetPrimaryMainFrame();
+  if (host) {
+    host->GetRenderWidgetHost()->AddInputEventObserver(this);
+    observed_render_frames_.insert(host->GetGlobalId());
+  }
+}
 
 GestureListenerManager::~GestureListenerManager() {
+  UnobserveRenderFrames();
+
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> j_obj = java_ref_.get(env);
   if (j_obj.is_null())
@@ -119,25 +134,19 @@ GestureListenerManager::~GestureListenerManager() {
   Java_GestureListenerManagerImpl_onNativeDestroyed(env, j_obj);
 }
 
-void GestureListenerManager::ResetGestureDetection(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+void GestureListenerManager::ResetGestureDetection(JNIEnv* env) {
   if (rwhva_)
     rwhva_->ResetGestureDetection();
 }
 
-void GestureListenerManager::SetDoubleTapSupportEnabled(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    jboolean enabled) {
+void GestureListenerManager::SetDoubleTapSupportEnabled(JNIEnv* env,
+                                                        jboolean enabled) {
   if (rwhva_)
     rwhva_->SetDoubleTapSupportEnabled(enabled);
 }
 
-void GestureListenerManager::SetMultiTouchZoomSupportEnabled(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    jboolean enabled) {
+void GestureListenerManager::SetMultiTouchZoomSupportEnabled(JNIEnv* env,
+                                                             jboolean enabled) {
   if (rwhva_)
     rwhva_->SetMultiTouchZoomSupportEnabled(enabled);
 }
@@ -150,6 +159,55 @@ void GestureListenerManager::SetRootScrollOffsetUpdateFrequency(
   root_scroll_offset_update_frequency_ = new_frequency;
   if (rwhva_)
     rwhva_->UpdateRootScrollOffsetUpdateFrequency();
+}
+
+void GestureListenerManager::RenderFrameDeleted(
+    RenderFrameHost* render_frame_host) {
+  if (static_cast<RenderFrameHostImpl*>(render_frame_host)->is_local_root() &&
+      observed_render_frames_.erase(render_frame_host->GetGlobalId())) {
+    render_frame_host->GetRenderWidgetHost()->RemoveInputEventObserver(this);
+  }
+}
+
+void GestureListenerManager::RenderFrameHostChanged(RenderFrameHost* old_host,
+                                                    RenderFrameHost* new_host) {
+  if (new_host &&
+      static_cast<RenderFrameHostImpl*>(new_host)->is_local_root() &&
+      observed_render_frames_.insert(new_host->GetGlobalId()).second) {
+    new_host->GetRenderWidgetHost()->AddInputEventObserver(this);
+  }
+}
+
+void GestureListenerManager::OnInputEvent(const RenderWidgetHost& widget,
+                                          const blink::WebInputEvent& event) {
+  const blink::mojom::EventType event_type = event.GetType();
+
+  if (IsUserInteractionInputType(event_type)) {
+    web_contents_->GetNativeView()->RequestFocus();
+  }
+
+  if (WebInputEvent::IsTouchEventType(event_type) &&
+      static_cast<const blink::WebTouchEvent&>(event).IsTouchSequenceStart()) {
+    UpdateOnTouchDown();
+    return;
+  }
+
+  if (WebInputEvent::IsTouchEventType(event_type) &&
+      static_cast<const blink::WebTouchEvent&>(event).IsTouchSequenceEnd()) {
+    UpdateOnTouchUp();
+  }
+
+  if (event_type == blink::mojom::EventType::kGestureFlingStart) {
+    DCHECK(!is_in_a_fling_);
+    is_in_a_fling_ = true;
+  } else if (event_type == blink::mojom::EventType::kGestureFlingCancel ||
+             event_type == blink::mojom::EventType::kGestureScrollEnd ||
+             event_type == blink::mojom::EventType::kGestureScrollBegin) {
+    if (is_in_a_fling_) {
+      DidStopFlinging();
+    }
+    is_in_a_fling_ = false;
+  }
 }
 
 void GestureListenerManager::GestureEventAck(
@@ -180,6 +238,19 @@ void GestureListenerManager::GestureEventAck(
       env, j_obj, static_cast<int>(event.GetType()), consumed);
 }
 
+void GestureListenerManager::OnInputEventAck(
+    const RenderWidgetHost& widget,
+    blink::mojom::InputEventResultSource source,
+    blink::mojom::InputEventResultState state,
+    const blink::WebInputEvent& event) {
+  if (!WebInputEvent::IsGestureEventType(event.GetType())) {
+    return;
+  }
+  const blink::WebGestureEvent& gesture_event =
+      static_cast<const blink::WebGestureEvent&>(event);
+  GestureEventAck(gesture_event, state);
+}
+
 void GestureListenerManager::DidStopFlinging() {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> j_obj = java_ref_.get(env);
@@ -189,18 +260,14 @@ void GestureListenerManager::DidStopFlinging() {
 }
 
 bool GestureListenerManager::FilterInputEvent(const WebInputEvent& event) {
-  if (event.GetType() != WebInputEvent::Type::kGestureTap &&
-      event.GetType() != WebInputEvent::Type::kGestureLongTap &&
-      event.GetType() != WebInputEvent::Type::kGestureLongPress &&
-      event.GetType() != WebInputEvent::Type::kMouseDown)
+  if (!IsUserInteractionInputType(event.GetType())) {
     return false;
+  }
 
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> j_obj = java_ref_.get(env);
   if (j_obj.is_null())
     return false;
-
-  web_contents_->GetNativeView()->RequestFocus();
 
   if (event.GetType() == WebInputEvent::Type::kMouseDown)
     return false;
@@ -243,6 +310,16 @@ void GestureListenerManager::UpdateOnTouchDown() {
     return;
 
   Java_GestureListenerManagerImpl_updateOnTouchDown(env, obj);
+}
+
+void GestureListenerManager::UpdateOnTouchUp() {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (obj.is_null()) {
+    return;
+  }
+
+  Java_GestureListenerManagerImpl_updateOnTouchUp(env, obj);
 }
 
 void GestureListenerManager::OnRootScrollOffsetChanged(
@@ -292,10 +369,24 @@ void GestureListenerManager::ResetPopupsAndInput(bool render_process_gone) {
                                                       render_process_gone);
 }
 
-jlong JNI_GestureListenerManagerImpl_Init(
+void GestureListenerManager::UnobserveRenderFrames() {
+  for (GlobalRenderFrameHostId& id : observed_render_frames_) {
+    RenderFrameHost* rfh = RenderFrameHost::FromID(id);
+    if (!rfh) {
+      continue;
+    }
+    RenderWidgetHost* rwh = rfh->GetRenderWidgetHost();
+    if (rwh) {
+      rwh->RemoveInputEventObserver(this);
+    }
+  }
+  observed_render_frames_.clear();
+}
+
+static jlong JNI_GestureListenerManagerImpl_Init(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jweb_contents) {
+    const JavaRef<jobject>& obj,
+    const JavaRef<jobject>& jweb_contents) {
   auto* web_contents = WebContents::FromJavaWebContents(jweb_contents);
   CHECK(web_contents) << "Should be created with a valid WebContents.";
 
@@ -307,3 +398,5 @@ jlong JNI_GestureListenerManagerImpl_Init(
 }
 
 }  // namespace content
+
+DEFINE_JNI(GestureListenerManagerImpl)

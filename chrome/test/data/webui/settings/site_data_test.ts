@@ -5,14 +5,14 @@
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsSiteDataElement} from 'chrome://settings/lazy_load.js';
-import {ContentSetting, ContentSettingsTypes, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {ContentSetting, ContentSettingsTypes, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
+import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
 import {createContentSettingTypeToValuePair, createRawSiteException, createSiteSettingsPrefs} from './test_util.js';
 
 // clang-format on
@@ -23,7 +23,7 @@ const PREF_NAME = 'generated.cookie_default_content_setting';
 suite('SiteDataTest', function() {
   let page: SettingsSiteDataElement;
   let settingsPrefs: SettingsPrefsElement;
-  let siteSettingsBrowserProxy: TestSiteSettingsPrefsBrowserProxy;
+  let siteSettingsBrowserProxy: TestSiteSettingsBrowserProxy;
 
   suiteSetup(function() {
     settingsPrefs = document.createElement('settings-prefs');
@@ -31,8 +31,8 @@ suite('SiteDataTest', function() {
   });
 
   setup(function() {
-    siteSettingsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
+    siteSettingsBrowserProxy = new TestSiteSettingsBrowserProxy();
+    SiteSettingsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-site-data');
@@ -53,12 +53,12 @@ suite('SiteDataTest', function() {
   test('DefaultSettingAllowUpdatesPref', async function() {
     // Start from a different state than 'allow'.
     page.$.defaultSessionOnly.click();
-    await eventToPromise('selected-changed', page.$.defaultGroup);
+    await eventToPromise('change', page.$.defaultGroup);
     assertEquals(
         page.getPref(PREF_NAME + '.value'), ContentSetting.SESSION_ONLY);
 
     page.$.defaultAllow.click();
-    await eventToPromise('selected-changed', page.$.defaultGroup);
+    await eventToPromise('change', page.$.defaultGroup);
     assertEquals(page.getPref(PREF_NAME + '.value'), ContentSetting.ALLOW);
   });
 
@@ -67,7 +67,7 @@ suite('SiteDataTest', function() {
     assertEquals(page.getPref(PREF_NAME + '.value'), ContentSetting.ALLOW);
 
     page.$.defaultSessionOnly.click();
-    await eventToPromise('selected-changed', page.$.defaultGroup);
+    await eventToPromise('change', page.$.defaultGroup);
     assertEquals(
         page.getPref(PREF_NAME + '.value'), ContentSetting.SESSION_ONLY);
   });
@@ -77,7 +77,7 @@ suite('SiteDataTest', function() {
     assertEquals(page.getPref(PREF_NAME + '.value'), ContentSetting.ALLOW);
 
     page.$.defaultBlock.click();
-    await eventToPromise('selected-changed', page.$.defaultGroup);
+    await eventToPromise('change', page.$.defaultGroup);
     // Changing to block requires confirmation in the dialog to take effect.
     assertTrue(!!getDefaultBlockDialog());
     page.shadowRoot!.querySelector<HTMLElement>(
@@ -93,7 +93,7 @@ suite('SiteDataTest', function() {
     assertEquals(page.getPref(PREF_NAME + '.value'), ContentSetting.ALLOW);
 
     page.$.defaultBlock.click();
-    await eventToPromise('selected-changed', page.$.defaultGroup);
+    await eventToPromise('change', page.$.defaultGroup);
     assertTrue(!!getDefaultBlockDialog());
     page.shadowRoot!.querySelector<HTMLElement>(
                         '#defaultBlockDialogCancel')!.click();
@@ -106,12 +106,12 @@ suite('SiteDataTest', function() {
 
   test('BlockSiteDataFromSessionOnlyDontConfirmDialog', async function() {
     page.$.defaultSessionOnly.click();
-    await eventToPromise('selected-changed', page.$.defaultGroup);
+    await eventToPromise('change', page.$.defaultGroup);
     assertEquals(
         page.getPref(PREF_NAME + '.value'), ContentSetting.SESSION_ONLY);
 
     page.$.defaultBlock.click();
-    await eventToPromise('selected-changed', page.$.defaultGroup);
+    await eventToPromise('change', page.$.defaultGroup);
     assertTrue(!!getDefaultBlockDialog());
     page.shadowRoot!.querySelector<HTMLElement>(
                         '#defaultBlockDialogCancel')!.click();
@@ -128,15 +128,15 @@ suite('SiteDataTest', function() {
     assertEquals(page.$.defaultGroup.selected, ContentSetting.ALLOW);
 
     page.set('prefs.' + PREF_NAME + '.value', ContentSetting.SESSION_ONLY);
-    await eventToPromise('selected-changed', page.$.defaultGroup);
+    await microtasksFinished();
     assertEquals(page.$.defaultGroup.selected, ContentSetting.SESSION_ONLY);
 
     page.set('prefs.' + PREF_NAME + '.value', ContentSetting.BLOCK);
-    await eventToPromise('selected-changed', page.$.defaultGroup);
+    await microtasksFinished();
     assertEquals(page.$.defaultGroup.selected, ContentSetting.BLOCK);
 
     page.set('prefs.' + PREF_NAME + '.value', ContentSetting.ALLOW);
-    await eventToPromise('selected-changed', page.$.defaultGroup);
+    await microtasksFinished();
     assertEquals(page.$.defaultGroup.selected, ContentSetting.ALLOW);
   });
 

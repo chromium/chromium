@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/pagination_utils.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/box_background_paint_context.h"
 #include "third_party/blink/renderer/core/paint/box_decoration_data.h"
@@ -89,8 +90,7 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
   bool painting_background_in_contents_space =
       paint_info.IsPaintingBackgroundInContentsSpace();
   bool paints_hit_test_data =
-      (RuntimeEnabledFeatures::HitTestOpaquenessEnabled() &&
-       painting_background_in_contents_space) ||
+      painting_background_in_contents_space ||
       ObjectPainter(layout_view).ShouldRecordSpecialHitTestData(paint_info);
 
   Element* element = DynamicTo<Element>(layout_view.GetNode());
@@ -154,7 +154,7 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
   bool painted_separate_effect = false;
 
   bool should_apply_root_background_behavior =
-      document.IsHTMLDocument() || document.IsXHTMLDocument();
+      ShouldApplyRootBackgroundBehavior(document);
 
   bool should_paint_background = !paint_info.ShouldSkipBackground() &&
                                  (layout_view.HasBoxDecorationBackground() ||
@@ -327,11 +327,11 @@ void ViewPainter::PaintRootElementGroup(
   if (!root_object || !root_object->IsBox()) {
     background_renderable = false;
   } else {
-    const auto& view_contents_state =
-        layout_view.FirstFragment().ContentsProperties();
-    if (view_contents_state != background_paint_state) {
+    const auto& view_contents_transform =
+        layout_view.FirstFragment().ContentsTransform();
+    if (&view_contents_transform != &background_paint_state.Transform()) {
       GeometryMapper::SourceToDestinationRect(
-          view_contents_state.Transform(), background_paint_state.Transform(),
+          view_contents_transform, background_paint_state.Transform(),
           paint_rect);
       if (paint_rect.IsEmpty())
         background_renderable = false;
@@ -341,6 +341,14 @@ void ViewPainter::PaintRootElementGroup(
       background_image_offset = PhysicalOffset(paint_rect.origin());
     } else {
       background_image_offset = -root_object->FirstFragment().PaintOffset();
+      background_image_offset += PhysicalOffset(paint_rect.origin());
+    }
+
+    if (box_fragment_.GetBoxType() == PhysicalFragment::kPageContainer) {
+      // Background image origin is at the border box edge. A page container
+      // fragment covers the entire page box. Add the offset to the page border
+      // box fragment, to get past the margins.
+      background_image_offset -= GetPageBorderBoxLink(box_fragment_).offset;
     }
   }
 
@@ -366,12 +374,10 @@ void ViewPainter::PaintRootElementGroup(
 
   recorder.UniteVisualRect(paint_rect);
 
-  BoxPainterBase::FillLayerOcclusionOutputList reversed_paint_list;
-  bool should_draw_background_in_separate_buffer =
+  const FillLayer& background_layers = style.BackgroundLayers();
+  auto [should_draw_background_in_separate_buffer, last_background_layer] =
       BoxModelObjectPainter(layout_view)
-          .CalculateFillLayerOcclusionCulling(reversed_paint_list,
-                                              style.BackgroundLayers());
-  DCHECK(reversed_paint_list.size());
+          .AnalyzeFillLayersForPainting(background_layers);
 
   if (painted_separate_effect) {
     should_draw_background_in_separate_buffer = true;
@@ -422,15 +428,17 @@ void ViewPainter::PaintRootElementGroup(
     context.FillRect(paint_rect, Color(), auto_dark_mode, SkBlendMode::kClear);
   }
 
-  BoxBackgroundPaintContext bg_paint_context(layout_view,
+  BoxBackgroundPaintContext bg_paint_context(layout_view, &box_fragment_,
                                              background_image_offset);
   BoxModelObjectPainter box_model_painter(layout_view);
-  for (const auto* fill_layer : base::Reversed(reversed_paint_list)) {
-    DCHECK(fill_layer->Clip() == EFillBox::kBorder);
-    box_model_painter.PaintFillLayer(paint_info, Color(), *fill_layer,
-                                     PhysicalRect(paint_rect),
-                                     kBackgroundBleedNone, bg_paint_context);
-  }
+  FillLayer::IterateFillLayersInReverseOrder(
+      &background_layers, last_background_layer,
+      [&box_model_painter, paint_info, paint_rect,
+       bg_paint_context](const FillLayer& fill_layer) {
+        box_model_painter.PaintFillLayer(
+            paint_info, Color(), fill_layer, PhysicalRect(paint_rect),
+            kBackgroundBleedNone, bg_paint_context);
+      });
 
   if (should_draw_background_in_separate_buffer && !painted_separate_effect)
     context.EndLayer();
@@ -445,6 +453,10 @@ PhysicalRect ViewPainter::BackgroundRect() const {
     return box_fragment_.LocalRect();
   }
   return GetLayoutView().BackgroundRect();
+}
+
+bool ViewPainter::ShouldApplyRootBackgroundBehavior(const Document& document) {
+  return document.IsHTMLDocument() || document.IsXHTMLDocument();
 }
 
 }  // namespace blink

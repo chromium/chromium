@@ -1,0 +1,4 @@
+include_rules = [
+  "+ios/chrome/browser/saved_tab_groups/ui",
+  "+ios/chrome/browser/menu/ui_bundled/action_factory.h",
+]

@@ -7,6 +7,7 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/base_window.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace ui {
@@ -27,7 +28,7 @@ class MockBaseWindow : public BaseWindow {
   MOCK_METHOD(bool, IsFullscreen, (), (const));
   MOCK_METHOD(gfx::NativeWindow, GetNativeWindow, (), (const));
   MOCK_METHOD(gfx::Rect, GetRestoredBounds, (), (const));
-  MOCK_METHOD(ui::WindowShowState, GetRestoredState, (), (const));
+  MOCK_METHOD(ui::mojom::WindowShowState, GetRestoredState, (), (const));
   MOCK_METHOD(gfx::Rect, GetBounds, (), (const));
   MOCK_METHOD(void, Show, (), ());
   MOCK_METHOD(void, Hide, (), ());

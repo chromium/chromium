@@ -12,15 +12,17 @@ import "ash/public/mojom/input_device_settings.mojom";
 interface ShortcutInputObserver {
   // Called whenever a key event is pressed and the target window has focus.
   // `prerewritten_event` is the event before any event rewrites.
-  // `key_event` is the event after event rewrites.
+  // `key_event` is the event after event rewrites. Some events get discarded
+  // before a real event is produced, but we still want to be able to
+  // track the `prerewritten_event`.
   OnShortcutInputEventPressed(ash.mojom.KeyEvent prerewritten_key_event,
-                              ash.mojom.KeyEvent key_event);
+                              ash.mojom.KeyEvent? key_event);
 
   // Called whenever a key event is pressed and the target window has focus.
   // `prerewritten_event` is the event before any event rewrites.
   // `key_event` is the event after event rewrites.
   OnShortcutInputEventReleased(ash.mojom.KeyEvent prerewritten_key_event,
-                               ash.mojom.KeyEvent key_event);
+                               ash.mojom.KeyEvent? key_event);
 };
 
 // ShortcutInputProvider is the interface which key events are communicated for

@@ -22,3 +22,5 @@ void ProcessExitReasonFromSystem::RecordExitReasonToUma(
 }
 
 }  // namespace crash_reporter
+
+DEFINE_JNI(ProcessExitReasonFromSystem)

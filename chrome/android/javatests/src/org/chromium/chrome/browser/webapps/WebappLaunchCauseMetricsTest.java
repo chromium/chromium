@@ -5,11 +5,13 @@
 package org.chromium.chrome.browser.webapps;
 
 import android.app.Activity;
+import android.os.Build;
 
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,6 +27,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics.LaunchCause;
@@ -61,6 +64,7 @@ public final class WebappLaunchCauseMetricsTest {
     @Test
     @SmallTest
     @UiThreadTest
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.R, message = "crbug.com/40816321")
     public void testHomescreenLaunch() throws Throwable {
         var histogram =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -73,8 +77,9 @@ public final class WebappLaunchCauseMetricsTest {
         WebappLaunchCauseMetrics metrics = new WebappLaunchCauseMetrics(mActivity, mWebappInfo);
 
         metrics.onReceivedIntent();
-        metrics.recordLaunchCause();
+        int launchCause = metrics.recordLaunchCause();
         histogram.assertExpected();
+        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.WEBAPK_CHROME_DISTRIBUTOR, launchCause);
 
         LaunchCauseMetrics.resetForTests();
 
@@ -84,8 +89,9 @@ public final class WebappLaunchCauseMetricsTest {
                         LaunchCause.WEBAPK_OTHER_DISTRIBUTOR);
         Mockito.when(mWebappInfo.distributor()).thenReturn(WebApkDistributor.OTHER);
         metrics.onReceivedIntent();
-        metrics.recordLaunchCause();
+        launchCause = metrics.recordLaunchCause();
         histogram.assertExpected();
+        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.WEBAPK_OTHER_DISTRIBUTOR, launchCause);
 
         LaunchCauseMetrics.resetForTests();
 
@@ -95,8 +101,9 @@ public final class WebappLaunchCauseMetricsTest {
                         LaunchCause.WEBAPK_CHROME_DISTRIBUTOR);
         Mockito.when(mWebappInfo.isForWebApk()).thenReturn(false);
         metrics.onReceivedIntent();
-        metrics.recordLaunchCause();
+        launchCause = metrics.recordLaunchCause();
         histogram.assertExpected();
+        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.WEBAPK_CHROME_DISTRIBUTOR, launchCause);
     }
 
     @Test
@@ -113,8 +120,9 @@ public final class WebappLaunchCauseMetricsTest {
         WebappLaunchCauseMetrics metrics = new WebappLaunchCauseMetrics(mActivity, mWebappInfo);
 
         metrics.onReceivedIntent();
-        metrics.recordLaunchCause();
+        int launchCause = metrics.recordLaunchCause();
         histogram.assertExpected();
+        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.EXTERNAL_VIEW_INTENT, launchCause);
     }
 
     @Test
@@ -128,7 +136,8 @@ public final class WebappLaunchCauseMetricsTest {
         WebappLaunchCauseMetrics metrics = new WebappLaunchCauseMetrics(mActivity, null);
 
         metrics.onReceivedIntent();
-        metrics.recordLaunchCause();
+        int launchCause = metrics.recordLaunchCause();
         histogram.assertExpected();
+        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.OTHER, launchCause);
     }
 }

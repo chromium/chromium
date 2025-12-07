@@ -11,12 +11,12 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {SettingsSafetyHubUnusedSitePermissionsModuleElement, UnusedSitePermissions} from 'chrome://settings/lazy_load.js';
-import {ContentSettingsTypes, SafetyHubBrowserProxyImpl, SafetyHubEvent} from 'chrome://settings/lazy_load.js';
+import {ContentSettingsTypes, SafetyHubBrowserProxyImpl, SafetyHubEvent, PermissionsRevocationType} from 'chrome://settings/lazy_load.js';
 import {MetricsBrowserProxyImpl, resetRouterForTesting, Router, routes, SafetyCheckUnusedSitePermissionsModuleInteractions as Interactions, SettingsPluralStringProxyImpl} from 'chrome://settings/settings.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestSafetyHubBrowserProxy} from './test_safety_hub_browser_proxy.js';
@@ -34,15 +34,43 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     ContentSettingsTypes.MIC,
     ContentSettingsTypes.CAMERA,
     ContentSettingsTypes.COOKIES,
-    ContentSettingsTypes.NOTIFICATIONS,
   ];
 
-  const mockData = [1, 2, 3, 4, 5].map(
-      i => ({
-        origin: `https://www.example${i}.com:443`,
-        permissions: permissions.slice(0, i),
-        expiration: '13317004800000000',  // Represents 2023-01-01T00:00:00.
-      }));
+  const mockData =
+      [1, 2, 3, 4]
+          .map(i => ({
+                 origin: `https://www.example${i}.com:443`,
+                 permissions: permissions.slice(0, i),
+                 expiration:
+                     '13317004800000000',  // Represents 2023-01-01T00:00:00.
+                 revocationType: PermissionsRevocationType.UNUSED_PERMISSIONS,
+               }))
+          .concat([
+            {
+              origin: `https://www.example5.com:443`,
+              permissions: [ContentSettingsTypes.NOTIFICATIONS],
+              expiration:
+                  '13317004800000000',  // Represents 2023-01-01T00:00:00.
+              revocationType:
+                  PermissionsRevocationType.ABUSIVE_NOTIFICATION_PERMISSIONS,
+            },
+            {
+              origin: `https://www.example6.com:443`,
+              permissions: [ContentSettingsTypes.NOTIFICATIONS],
+              expiration:
+                  '13317004800000000',  // Represents 2023-01-01T00:00:00.
+              revocationType:
+                  PermissionsRevocationType.DISRUPTIVE_NOTIFICATION_PERMISSIONS,
+            },
+          ]);
+
+  async function waitFor(f: () => boolean, timeoutMs: number = 5000) {
+    if (f() || timeoutMs < 0) {
+      return;
+    }
+    await new Promise(resolve => setTimeout(resolve, 50));
+    await waitFor(f, timeoutMs - 50);
+  }
 
   function assertEqualsMockData(
       siteList: UnusedSitePermissions[], mockDataLength: number) {
@@ -51,8 +79,8 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     // about origins and associated permissions being equal.
     assertEquals(mockDataLength, siteList.length);
     for (const [i, site] of siteList.entries()) {
-      assertEquals(mockData[i]!.origin, site!.origin);
-      assertDeepEquals(site!.permissions, mockData[i]!.permissions);
+      assertEquals(mockData[i]!.origin, site.origin);
+      assertDeepEquals(site.permissions, mockData[i]!.permissions);
     }
   }
 
@@ -83,7 +111,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
         index = 0;
       }
       const expectedText = testElement.i18n(stringId, mockData[index]!.origin);
-      const actualText = undoToast.querySelector('div')!.textContent!.trim();
+      const actualText = undoToast.querySelector('div')!.textContent.trim();
       assertEquals(expectedText, actualText);
     }
   }
@@ -110,14 +138,15 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
 
   async function createPage() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testElement =
-        document.createElement('settings-safety-hub-unused-site-permissions');
+    testElement = document.createElement(
+        'settings-safety-hub-unused-site-permissions-module');
     Router.getInstance().navigateTo(routes.SAFETY_HUB);
     document.body.appendChild(testElement);
     // Wait until the element has asked for the list of revoked permissions
     // that will be shown for review.
     await browserProxy.whenCalled('getRevokedUnusedSitePermissionsList');
     await flushTasks();
+    testElement.$.module.setModelUpdateDelayMsForTesting(0);
   }
 
   /**
@@ -147,6 +176,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     const [origin] =
         await browserProxy.whenCalled('allowPermissionsAgainForUnusedSite');
     assertEquals(mockData[index]!.origin, origin);
+    browserProxy.resetResolver('allowPermissionsAgainForUnusedSite');
   }
 
   /**
@@ -176,13 +206,14 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
         'recordSafetyHubUnusedSitePermissionsModuleInteractionsHistogram');
     assertEquals(action, result);
 
-    if (!isAbusiveNotification) {
-      isAbusiveNotification = false;
-    }
     if (isAbusiveNotification) {
       const resultAbusiveNotification = await metricsBrowserProxy.whenCalled(
           'recordSafetyHubAbusiveNotificationPermissionRevocationInteractionsHistogram');
       assertEquals(action, resultAbusiveNotification);
+    } else {
+      // Verify that in non-abusive case, the abusive metric is not logged.
+      assertEquals(0, metricsBrowserProxy.getCallCount(
+        'recordSafetyHubAbusiveNotificationPermissionRevocationInteractionsHistogram'));
     }
     metricsBrowserProxy.reset();
   }
@@ -203,56 +234,61 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
 
   test('Abusive and Unused Site Permission strings', function() {
     const siteList = getSiteList();
-    assertEquals(5, siteList.length);
+    assertEquals(6, siteList.length);
 
     // Check that the text describing the permissions is correct.
     assertEquals(
         mockData[0]!.origin,
         getSiteList()[0]!.querySelector(
-                             '.site-representation')!.textContent!.trim());
+                             '.site-representation')!.textContent.trim());
     assertTrue(!!getSiteList()[0]!.querySelector(
-                                      '.cr-secondary-text')!.textContent!.trim()
+                                      '.cr-secondary-text')!.textContent.trim()
                      .match(
                          'You haven\'t visited recently. ' +
                          'Chrome|Chromium removed location'));
 
     assertEquals(
         mockData[1]!.origin,
-        siteList[1]!.querySelector(
-                        '.site-representation')!.textContent!.trim());
+        siteList[1]!.querySelector('.site-representation')!.textContent.trim());
     assertTrue(
-        !!siteList[1]!.querySelector('.cr-secondary-text')!.textContent!.trim()
+        !!siteList[1]!.querySelector('.cr-secondary-text')!.textContent.trim()
               .match(
                   'You haven\'t visited recently. ' +
                   'Chrome|Chromium removed location, microphone'));
 
     assertEquals(
         mockData[2]!.origin,
-        siteList[2]!.querySelector(
-                        '.site-representation')!.textContent!.trim());
+        siteList[2]!.querySelector('.site-representation')!.textContent.trim());
     assertTrue(
-        !!siteList[2]!.querySelector('.cr-secondary-text')!.textContent!.trim()
+        !!siteList[2]!.querySelector('.cr-secondary-text')!.textContent.trim()
               .match(
                   'You haven\'t visited recently. ' +
                   'Chrome|Chromium removed location, microphone, camera'));
 
     assertEquals(
         mockData[3]!.origin,
-        siteList[3]!.querySelector(
-                        '.site-representation')!.textContent!.trim());
+        siteList[3]!.querySelector('.site-representation')!.textContent.trim());
     assertTrue(
-        !!siteList[3]!.querySelector('.cr-secondary-text')!.textContent!.trim()
+        !!siteList[3]!.querySelector('.cr-secondary-text')!.textContent.trim()
               .match(
                   'You haven\'t visited recently. ' +
                   'Chrome|Chromium removed location, microphone, and 2 more'));
 
     assertEquals(
         mockData[4]!.origin,
-        siteList[4]!.querySelector(
-                        '.site-representation')!.textContent!.trim());
+        siteList[4]!.querySelector('.site-representation')!.textContent.trim());
     assertTrue(
-        !!siteList[4]!.querySelector('.cr-secondary-text')!.textContent!.trim()
+        !!siteList[4]!.querySelector('.cr-secondary-text')!.textContent.trim()
               .match('Dangerous site. Chrome|Chromium removed notifications.'));
+
+    assertEquals(
+        mockData[5]!.origin,
+        siteList[5]!.querySelector('.site-representation')!.textContent.trim());
+    assertTrue(
+        !!siteList[5]!.querySelector('.cr-secondary-text')!.textContent.trim()
+              .match(
+                  'You haven\'t visited recently. ' +
+                  'Chrome|Chromium removed notifications'));
   });
 
   test('Record Suggestions Count', async function() {
@@ -268,7 +304,8 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
 
     // Ensure the correctness of the browser proxy call and the undo toast.
     await assertAllowAgain();
-    assertUndoToast(true, 'safetyCheckUnusedSitePermissionsToastLabel');
+    assertUndoToast(true, 'safetyHubUnusedSitePermissionsToastLabel');
+    assertEquals(getDeepActiveElement(), testElement.$.toastUndoButton);
 
     await browserProxy.whenCalled('recordSafetyHubInteraction');
 
@@ -282,7 +319,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
 
     // Ensure the correctness of the browser proxy call and the undo toast.
     await assertAllowAgain(4);
-    assertUndoToast(true, 'safetyCheckUnusedSitePermissionsToastLabel', 4);
+    assertUndoToast(true, 'safetyHubUnusedSitePermissionsToastLabel', 4);
 
     await browserProxy.whenCalled('recordSafetyHubInteraction');
 
@@ -293,7 +330,12 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
   test('Undo Allow Again', async function() {
     for (const [i, site] of getSiteList().entries()) {
       // User clicks Allow Again and then Undo.
-      site!.querySelector('cr-icon-button')!.click();
+      site.querySelector('cr-icon-button')!.click();
+      await assertAllowAgain(i);
+      await flushTasks();
+      assertUndoToast(true, 'safetyHubUnusedSitePermissionsToastLabel', i);
+      assertEquals(getDeepActiveElement(), testElement.$.toastUndoButton);
+
       metricsBrowserProxy.reset();
       testElement.$.toastUndoButton.click();
 
@@ -306,6 +348,10 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
           SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, mockData);
       flush();
 
+      await waitFor(
+          () => getDeepActiveElement() === site.querySelector('#mainButton'));
+      assertEquals(getDeepActiveElement(), site.querySelector('#mainButton'));
+
       // Ensure the metric for 'Undo Allow Again' action is recorded. The
       // last site at index 4 includes revoked notifications, so the abusive
       // notification histogram should also be recorded.
@@ -316,6 +362,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
         await assertInteractionMetricRecorded(Interactions.UNDO_ALLOW_AGAIN);
       }
 
+      await flushTasks();
       assertInitialUi();
     }
   });
@@ -371,6 +418,8 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     assertFalse(isVisible(testElement.$.gotItButton));
     assertTrue(isVisible(testElement.$.bulkUndoButton));
 
+    assertEquals(getDeepActiveElement(), testElement.$.bulkUndoButton);
+
     // Ensure the metric for 'Acknowledge All' action is recorded.
     await assertInteractionMetricRecorded(Interactions.ACKNOWLEDGE_ALL, true);
   });
@@ -378,6 +427,11 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
   test('Undo Got It', async function() {
     // User clicks Got It and then Bulk Undo.
     testElement.$.gotItButton.click();
+
+    // UI should be in a completion state.
+    webUIListenerCallback(SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, []);
+    await flushTasks();
+
     metricsBrowserProxy.reset();
     testElement.$.bulkUndoButton.click();
 
@@ -390,11 +444,15 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     // UI should be back to its initial state.
     webUIListenerCallback(
         SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, mockData);
+    await flushTasks();
     assertInitialUi();
 
     // Check visibility of buttons
     assertTrue(isVisible(testElement.$.gotItButton));
     assertFalse(isVisible(testElement.$.bulkUndoButton));
+
+    await waitFor(() => getDeepActiveElement() === testElement.$.gotItButton);
+    assertEquals(getDeepActiveElement(), testElement.$.gotItButton);
 
     // Ensure the metric for 'Undo Acknowledge All' action is recorded.
     await assertInteractionMetricRecorded(
@@ -458,8 +516,8 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
   test('Header Strings', async function() {
     // Check header string for plural case.
     let entries = getSiteList();
-    assertEquals(5, entries.length);
-    await assertPluralString('safetyCheckUnusedSitePermissionsPrimaryLabel', 5);
+    assertEquals(6, entries.length);
+    await assertPluralString('safetyHubUnusedSitePermissionsPrimaryLabel', 6);
 
     // Check header string for singular case.
     const oneElementMockData = mockData.slice(0, 1);
@@ -469,7 +527,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
 
     entries = getSiteList();
     assertEquals(1, entries.length);
-    await assertPluralString('safetyCheckUnusedSitePermissionsPrimaryLabel', 1);
+    await assertPluralString('safetyHubUnusedSitePermissionsPrimaryLabel', 1);
 
     // Check the header string for a completion case after Got It action
     // (single entry in review).
@@ -478,7 +536,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     await flushTasks();
     testElement.$.gotItButton.click();
     await assertPluralString(
-        'safetyCheckUnusedSitePermissionsToastBulkLabel', 1, 2);
+        'safetyHubUnusedSitePermissionsToastBulkLabel', 1, 2);
 
     // Check the header string for a completion case after Got It action
     // (multiple entries in review).
@@ -487,7 +545,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     await flushTasks();
     testElement.$.gotItButton.click();
     await assertPluralString(
-        'safetyCheckUnusedSitePermissionsToastBulkLabel', 5, 2);
+        'safetyHubUnusedSitePermissionsToastBulkLabel', 6, 2);
 
     // Check the header string for a completion case after Allow Again action.
     webUIListenerCallback(
@@ -497,15 +555,15 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     webUIListenerCallback(SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, []);
     await flushTasks();
     const expectedHeaderString = testElement.i18n(
-        'safetyCheckUnusedSitePermissionsToastLabel', mockData[0]!.origin);
+        'safetyHubUnusedSitePermissionsToastLabel', mockData[0]!.origin);
     assertEquals(expectedHeaderString, testElement.$.module.header);
   });
 
   test('Subheader Strings', async function() {
     // Check header string for plural case.
     let entries = getSiteList();
-    assertEquals(5, entries.length);
-    await assertPluralString('safetyHubRevokedPermissionsSecondaryLabel', 5, 1);
+    assertEquals(6, entries.length);
+    await assertPluralString('safetyHubRevokedPermissionsSecondaryLabel', 6, 1);
 
     // Check header string for singular case.
     const oneElementMockData = mockData.slice(0, 1);
@@ -543,179 +601,16 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     // Click Allow Again for the first item in review to trigger an undo toast
     // to appear.
     getSiteList()[0]!.querySelector('cr-icon-button')!.click();
-    assertUndoToast(true, 'safetyCheckUnusedSitePermissionsToastLabel', 0);
+    assertUndoToast(true, 'safetyHubUnusedSitePermissionsToastLabel', 0);
 
     // Click Allow Again for the second item. This hides the existing toast and
     // shows a new one.
     getSiteList()[1]!.querySelector('cr-icon-button')!.click();
-    assertUndoToast(true, 'safetyCheckUnusedSitePermissionsToastLabel', 1);
+    assertUndoToast(true, 'safetyHubUnusedSitePermissionsToastLabel', 1);
 
     // Click Got It which hides the existing toast and does not show a new one.
     testElement.$.gotItButton.click();
     await flushTasks();
     assertUndoToast(false);
-  });
-});
-
-// TODO(crbug.com/328773301): Remove after
-// SafetyHubAbusiveNotificationRevocationDisabled is launched.
-suite('SafetyHubAbusiveNotificationRevocationDisabled', function() {
-  let browserProxy: TestSafetyHubBrowserProxy;
-  let pluralString: TestPluralStringProxy;
-  let metricsBrowserProxy: TestMetricsBrowserProxy;
-
-  let testElement: SettingsSafetyHubUnusedSitePermissionsModuleElement;
-
-  const permissions = [
-    ContentSettingsTypes.GEOLOCATION,
-    ContentSettingsTypes.MIC,
-    ContentSettingsTypes.CAMERA,
-    ContentSettingsTypes.NOTIFICATIONS,
-  ];
-
-  const mockData = [1, 2, 3, 4].map(
-      i => ({
-        origin: `https://www.example${i}.com:443`,
-        permissions: permissions.slice(0, i),
-        expiration: '13317004800000000',  // Represents 2023-01-01T00:00:00.
-      }));
-
-  function assertInitialUi() {
-    const expectedSiteCount = mockData.length;
-    assertEquals(getSiteList().length, expectedSiteCount);
-    assertUndoToast(false);
-  }
-
-  /**
-   * Asserts the Undo toast is shown with a correct origin-containing string.
-   * @param stringId The id to retrieve the correct toast string. Provided only
-   *     if shouldBeOpen is true.
-   * @param index The index of the element whose origin is in the toast string.
-   *     Provided only if shouldBeOpen is true. The default value is 0.
-   */
-  function assertUndoToast(
-      shouldBeOpen: boolean, stringId?: string, index?: number) {
-    const undoToast = testElement.$.undoToast;
-    if (!shouldBeOpen) {
-      assertFalse(undoToast.open);
-      return;
-    }
-    assertTrue(undoToast.open);
-
-    if (stringId) {
-      if (!index) {
-        index = 0;
-      }
-      const expectedText = testElement.i18n(stringId, mockData[index]!.origin);
-      const actualText = undoToast.querySelector('div')!.textContent!.trim();
-      assertEquals(expectedText, actualText);
-    }
-  }
-
-  /**
-   * Assert expected plural string is populated. Whenever getPluralString is
-   * called, TestPluralStringProxy stacks them in args. If getPluralString is
-   * called multiple times, passing 'index' will make the corresponding callback
-   * checked.
-   */
-  async function assertPluralString(
-      messageName: string, itemCount: number, index: number = 0) {
-    await pluralString.whenCalled('getPluralString');
-    const params = pluralString.getArgs('getPluralString')[index];
-    await flushTasks();
-    assertEquals(messageName, params.messageName);
-    assertEquals(itemCount, params.itemCount);
-    pluralString.resetResolver('getPluralString');
-  }
-
-  function getSiteList(): NodeListOf<HTMLElement> {
-    return testElement.$.module.shadowRoot!.querySelectorAll('.site-entry');
-  }
-
-  async function createPage() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testElement =
-        document.createElement('settings-safety-hub-unused-site-permissions');
-    Router.getInstance().navigateTo(routes.SAFETY_HUB);
-    document.body.appendChild(testElement);
-    // Wait until the element has asked for the list of revoked permissions
-    // that will be shown for review.
-    await browserProxy.whenCalled('getRevokedUnusedSitePermissionsList');
-    await flushTasks();
-  }
-
-  setup(async function() {
-    browserProxy = new TestSafetyHubBrowserProxy();
-    browserProxy.setUnusedSitePermissions(mockData);
-    SafetyHubBrowserProxyImpl.setInstance(browserProxy);
-    metricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
-    pluralString = new TestPluralStringProxy();
-    SettingsPluralStringProxyImpl.setInstance(pluralString);
-    loadTimeData.overrideValues({
-      safetyHubAbusiveNotificationRevocationEnabled: false,
-    });
-    resetRouterForTesting();
-    await createPage();
-    metricsBrowserProxy.reset();
-    assertInitialUi();
-  });
-
-  test('Subheader Strings', async function() {
-    // Check header string for plural case.
-    let entries = getSiteList();
-    assertEquals(4, entries.length);
-    await assertPluralString(
-        'safetyCheckUnusedSitePermissionsSecondaryLabel', 4, 1);
-
-    // Check header string for singular case.
-    const oneElementMockData = mockData.slice(0, 1);
-    webUIListenerCallback(
-        SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, oneElementMockData);
-    await flushTasks();
-
-    entries = getSiteList();
-    assertEquals(1, entries.length);
-    await assertPluralString(
-        'safetyCheckUnusedSitePermissionsSecondaryLabel', 1, 1);
-  });
-
-  test('Unused Site Permission strings', function() {
-    const siteList = getSiteList();
-    assertEquals(4, siteList.length);
-
-    // Check that the text describing the permissions is correct.
-    assertEquals(
-        mockData[0]!.origin,
-        getSiteList()[0]!.querySelector(
-                             '.site-representation')!.textContent!.trim());
-    assertEquals(
-        'Removed location',
-        getSiteList()[0]!.querySelector(
-                             '.cr-secondary-text')!.textContent!.trim());
-
-    assertEquals(
-        mockData[1]!.origin,
-        siteList[1]!.querySelector(
-                        '.site-representation')!.textContent!.trim());
-    assertEquals(
-        'Removed location, microphone',
-        siteList[1]!.querySelector('.cr-secondary-text')!.textContent!.trim());
-
-    assertEquals(
-        mockData[2]!.origin,
-        siteList[2]!.querySelector(
-                        '.site-representation')!.textContent!.trim());
-    assertEquals(
-        'Removed location, microphone, camera',
-        siteList[2]!.querySelector('.cr-secondary-text')!.textContent!.trim());
-
-    assertEquals(
-        mockData[3]!.origin,
-        siteList[3]!.querySelector(
-                        '.site-representation')!.textContent!.trim());
-    assertEquals(
-        'Removed location, microphone, and 2 more',
-        siteList[3]!.querySelector('.cr-secondary-text')!.textContent!.trim());
   });
 });

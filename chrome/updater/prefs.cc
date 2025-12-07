@@ -32,6 +32,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_service_factory.h"
 #include "components/update_client/update_client.h"
+#include "persisted_data.h"
 
 namespace updater {
 
@@ -54,7 +55,7 @@ constexpr base::TimeDelta kCreatePrefsWait(base::Minutes(2));
 std::unique_ptr<PrefService> CreatePrefService(
     const base::FilePath& prefs_dir,
     scoped_refptr<PrefRegistrySimple> pref_registry,
-    const base::TimeDelta& wait_period) {
+    base::TimeDelta wait_period) {
   const auto deadline(base::TimeTicks::Now() + wait_period);
   do {
     PrefServiceFactory pref_service_factory;
@@ -120,6 +121,8 @@ scoped_refptr<GlobalPrefs> CreateGlobalPrefsInternal(
   if (!pref_service) {
     return nullptr;
   }
+
+  MigrateObsoletePersistedDataPrefs(pref_service.get());
 
   return base::MakeRefCounted<UpdaterPrefsImpl>(
       *global_prefs_dir, std::move(lock), std::move(pref_service));

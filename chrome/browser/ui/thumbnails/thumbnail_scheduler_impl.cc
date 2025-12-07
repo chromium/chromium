@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/memory/raw_ptr.h"
-#include "base/not_fatal_until.h"
 
 // static
 constexpr int ThumbnailSchedulerImpl::kMaxTotalCaptures;
@@ -50,8 +49,9 @@ void ThumbnailSchedulerImpl::SetTabCapturePriority(
     TabCapturer* tab,
     TabCapturePriority priority) {
   TabNode* const node = GetTabNode(tab);
-  if (node->data.priority == priority)
+  if (node->data.priority == priority) {
     return;
+  }
 
   const TabSchedulingData old_data = node->data;
   node->data.priority = priority;
@@ -68,13 +68,18 @@ void ThumbnailSchedulerImpl::Schedule(TabNode* tab_node,
   // First, move the tab node to the correct list and update the
   // capturing counts.
 
-  if (tab_node->next())
+  if (tab_node->next()) {
     tab_node->RemoveFromList();
+  }
   if (tab_node->is_capturing) {
     switch (old_data.priority) {
       case TabCapturePriority::kNone:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        // TODO(crbug.com/347770670): ThumbnailSchedulerImpl may not correctly
+        // deschedule discarded tabs when their priority transitions to kNone.
+        // This should be corrected once WebContentsDiscard lands and the old
+        // discarding code path is cleaned up.
+        NOTREACHED(base::NotFatalUntil::M142);
+        return;
       case TabCapturePriority::kLow:
         lo_prio_capture_count_ -= 1;
         break;
@@ -175,7 +180,7 @@ void ThumbnailSchedulerImpl::Schedule(TabNode* tab_node,
 ThumbnailSchedulerImpl::TabNode* ThumbnailSchedulerImpl::GetTabNode(
     TabCapturer* tab) {
   auto it = tabs_.find(tab);
-  CHECK(it != tabs_.end(), base::NotFatalUntil::M130)
+  CHECK(it != tabs_.end())
       << "referenced tab that is not registered with scheduler";
   return &it->second;
 }

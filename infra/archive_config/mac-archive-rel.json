@@ -68,6 +68,22 @@
             "gcs_bucket": "chromium-browser-snapshots",
             "gcs_path": "Mac/{%position%}",
             "archive_type": "ARCHIVE_TYPE_FILES"
+        },
+        {
+            "files": [
+                "enterprise_companion.zip"
+            ],
+            "gcs_bucket": "chromium-browser-snapshots",
+            "gcs_path": "Mac/{%position%}",
+            "archive_type": "ARCHIVE_TYPE_FILES"
+        },
+        {
+            "files": [
+                "enterprise_companion_test.zip"
+            ],
+            "gcs_bucket": "chromium-browser-snapshots",
+            "gcs_path": "Mac/{%position%}",
+            "archive_type": "ARCHIVE_TYPE_FILES"
         }
     ]
 }

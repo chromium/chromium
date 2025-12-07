@@ -8,14 +8,13 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
-#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-
 #include "components/subresource_filter/tools/filter_tool.h"
 
 namespace {
@@ -26,7 +25,6 @@ const char kSwitchOrigin[] = "document_origin";
 const char kSwitchUrl[] = "url";
 const char kSwitchType[] = "type";
 const char kSwitchInputFile[] = "input_file";
-const char kSwitchMinMatches[] = "min_matches";
 
 const char kMatchCommand[] = "match";
 const char kMatchRulesCommand[] = "match_rules";
@@ -57,24 +55,22 @@ const char kHelpMsg[] = R"(
         {"origin":"http://www.example.com/","request_url":"http://www.exam
         ple.com/foo.js","request_type":"script"}
 
-    * match_rules [--input_file=<json_file_path>] [--min_matches=<optional>]
+    * match_rules [--input_file=<json_file_path>]
         For each record in the input (see match_batch for input formats),
-        records the matching rule (see match command above) and prints all of
-        the matched rules and the number of times they matched at the end.
+        records the matching rule (see match command above) and prints the
+        sum of the page's weights that they appeared on. The weight of a page
+        is given by the page rank provided by HttpArchive times a very rough
+        mapping of rank to page view.
 
         Which rules get recorded:
         If only a blocklist rule(s) matches, a blocklist rule is
         returned (chosen at random from list of matching blocklist rules). If
         both blocklist and allowlist rules match, an allowlist rule is
         returned. If only an allowlist rule matches, it's not recorded.
-
-        |min_matches| is the minimum number of times the rule has to be
-        matched to be included in the output. If not specified, the default is
-        1.
 )";
 
 void PrintHelp() {
-  printf("%s\n\n", kHelpMsg);
+  UNSAFE_TODO(printf("%s\n\n", kHelpMsg));
 }
 
 }  // namespace
@@ -133,8 +129,9 @@ int main(int argc, char* argv[]) {
         !command_line.HasSwitch(kSwitchType)) {
       std::vector<std::string> missing_args;
       for (auto* arg : {kSwitchOrigin, kSwitchUrl, kSwitchType}) {
-        if (!command_line.HasSwitch(arg))
+        if (!command_line.HasSwitch(arg)) {
           missing_args.push_back(arg);
+        }
       }
       LOG(ERROR) << "Missing arguments for match command: "
                  << base::JoinString(missing_args, ",");
@@ -152,16 +149,6 @@ int main(int argc, char* argv[]) {
     return 0;
   }
 
-  int min_match_count = 0;
-  if (command_line.HasSwitch(kSwitchMinMatches) &&
-      !base::StringToInt(command_line.GetSwitchValueASCII(kSwitchMinMatches),
-                         &min_match_count)) {
-    LOG(ERROR) << "Could not convert min matches to integer: "
-               << command_line.GetSwitchValueASCII(kSwitchMinMatches);
-    PrintHelp();
-    return 1;
-  }
-
   std::ifstream requests_stream;
   std::istream* input_stream = &std::cin;
   if (command_line.HasSwitch(kSwitchInputFile)) {
@@ -173,7 +160,7 @@ int main(int argc, char* argv[]) {
   if (cmd == kMatchBatchCommand) {
     filter_tool.MatchBatch(input_stream);
   } else if (cmd == kMatchRulesCommand) {
-    filter_tool.MatchRules(input_stream, min_match_count);
+    filter_tool.MatchRules(input_stream);
   }
 
   return 0;

@@ -4,4 +4,5 @@ include_rules = [
   "+ui/views",
   "+ui/webui/resources/cr_components/help_bubble",
   "+ui/webui/resources/js/browser_command",
+  "+ui/webui/resources/js/tracked_element",
 ]

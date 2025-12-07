@@ -6,12 +6,12 @@
 #define SERVICES_DEVICE_PUBLIC_CPP_TEST_FAKE_USB_DEVICE_INFO_H_
 
 #include <stdint.h>
+
 #include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "services/device/public/cpp/test/mock_usb_mojo_device.h"

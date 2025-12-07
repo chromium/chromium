@@ -1,4 +1,0 @@
-package: chromium/third_party/android_protoc
-description: Protobuf's protoc compiler prebuilt.
-data:
-  - file: protoc

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/350788890): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/at_exit.h"
 #include "base/check_op.h"
 #include "base/i18n/icu_util.h"
@@ -73,21 +68,23 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     size_t relative_size =
         *reinterpret_cast<const size_t*>(data) % (size - size_t_bytes);
     std::string relative_string(
-        reinterpret_cast<const char*>(data + size_t_bytes), relative_size);
+        reinterpret_cast<const char*>(UNSAFE_TODO(data + size_t_bytes)),
+        relative_size);
     std::string_view string_piece_part_input(
-        reinterpret_cast<const char*>(data + size_t_bytes + relative_size),
+        reinterpret_cast<const char*>(
+            UNSAFE_TODO(data + size_t_bytes + relative_size)),
         size - relative_size - size_t_bytes);
     const GURL url_from_string_piece_part(string_piece_part_input);
     CheckIdempotency(url_from_string_piece_part);
     CheckReplaceComponentsPreservesSpec(url_from_string_piece_part);
 
-    url_from_string_piece_part.Resolve(relative_string);
+    std::ignore = url_from_string_piece_part.Resolve(relative_string);
 
     if (relative_size % sizeof(char16_t) == 0) {
       std::u16string relative_string16(
-          reinterpret_cast<const char16_t*>(data + size_t_bytes),
+          reinterpret_cast<const char16_t*>(UNSAFE_TODO(data + size_t_bytes)),
           relative_size / sizeof(char16_t));
-      url_from_string_piece_part.Resolve(relative_string16);
+      std::ignore = url_from_string_piece_part.Resolve(relative_string16);
     }
   }
   return 0;

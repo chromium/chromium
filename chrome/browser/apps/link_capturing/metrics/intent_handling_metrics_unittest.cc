@@ -6,20 +6,21 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "build/build_config.h"
 #include "chrome/browser/apps/link_capturing/intent_picker_info.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/metrics/arc_metrics_service.h"
-#include "ash/components/arc/metrics/stability_metrics_manager.h"
-#include "ash/components/arc/session/arc_service_manager.h"
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "chromeos/ash/experiences/arc/metrics/arc_metrics_service.h"
+#include "chromeos/ash/experiences/arc/metrics/stability_metrics_manager.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "ui/display/test/test_screen.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace apps {
 
@@ -106,12 +107,6 @@ TEST(IntentHandlingMetricsTest, TestRecordLinkCapturingEntryPointShown) {
   // Link capturing entry point shown for unknown app type.
   test.RecordLinkCapturingEntryPointShown(app_info);
   histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent2.ArcApp",
-      IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 0);
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent2.WebApp",
-      IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 0);
-  histogram_tester.ExpectBucketCount(
       "ChromeOS.Intents.LinkCapturingEvent2",
       IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 1);
 
@@ -120,12 +115,6 @@ TEST(IntentHandlingMetricsTest, TestRecordLinkCapturingEntryPointShown) {
 
   // Link capturing entry point shown for web app type.
   test.RecordLinkCapturingEntryPointShown(app_info);
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent2.ArcApp",
-      IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 0);
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent2.WebApp",
-      IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 1);
   histogram_tester.ExpectBucketCount(
       "ChromeOS.Intents.LinkCapturingEvent2",
       IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 2);
@@ -137,12 +126,6 @@ TEST(IntentHandlingMetricsTest, TestRecordLinkCapturingEntryPointShown) {
 
   // Link capturing entry point shown for 2 web apps and 1 ARC app.
   test.RecordLinkCapturingEntryPointShown(app_info);
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent2.ArcApp",
-      IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 1);
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent2.WebApp",
-      IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 2);
   histogram_tester.ExpectBucketCount(
       "ChromeOS.Intents.LinkCapturingEvent2",
       IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 3);
@@ -157,12 +140,6 @@ TEST(IntentHandlingMetricsTest, TestRecordLinkCapturingEvent) {
       PickerEntryType::kArc,
       IntentHandlingMetrics::LinkCapturingEvent::kAppOpened);
   histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent2.ArcApp",
-      IntentHandlingMetrics::LinkCapturingEvent::kAppOpened, 1);
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent2.WebApp",
-      IntentHandlingMetrics::LinkCapturingEvent::kAppOpened, 0);
-  histogram_tester.ExpectBucketCount(
       "ChromeOS.Intents.LinkCapturingEvent2",
       IntentHandlingMetrics::LinkCapturingEvent::kAppOpened, 1);
 
@@ -171,17 +148,11 @@ TEST(IntentHandlingMetricsTest, TestRecordLinkCapturingEvent) {
       PickerEntryType::kWeb,
       IntentHandlingMetrics::LinkCapturingEvent::kSettingsChanged);
   histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent2.ArcApp",
-      IntentHandlingMetrics::LinkCapturingEvent::kSettingsChanged, 0);
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent2.WebApp",
-      IntentHandlingMetrics::LinkCapturingEvent::kSettingsChanged, 1);
-  histogram_tester.ExpectBucketCount(
       "ChromeOS.Intents.LinkCapturingEvent2",
       IntentHandlingMetrics::LinkCapturingEvent::kSettingsChanged, 1);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 // A fixture class that sets up arc::ArcMetricsService.
 class IntentHandlingMetricsTestWithMetricsService : public testing::Test {
@@ -263,6 +234,6 @@ TEST_F(IntentHandlingMetricsTestWithMetricsService,
   }
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace apps

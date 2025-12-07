@@ -13,6 +13,7 @@
 #include <memory>
 
 #include "base/atomic_sequence_num.h"
+#include "base/compiler_specific.h"
 #include "base/process/process_handle.h"
 #include "base/strings/stringprintf.h"
 #include "components/exo/display.h"
@@ -44,7 +45,7 @@ WaylandServerTestBase::ScopedTempSocket::ScopedTempSocket() {
 
   struct sockaddr_un addr;
   addr.sun_family = AF_UNIX;
-  strncpy(addr.sun_path, server_path_.MaybeAsASCII().c_str(), 108);
+  UNSAFE_TODO(strncpy(addr.sun_path, server_path_.MaybeAsASCII().c_str(), 108));
   int size = offsetof(struct sockaddr_un, sun_path) + strlen(addr.sun_path);
   CHECK(bind(fd_.get(), reinterpret_cast<struct sockaddr*>(&addr), size) == 0);
 }

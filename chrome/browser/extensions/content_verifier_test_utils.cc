@@ -15,16 +15,19 @@
 #include "extensions/browser/external_install_info.h"
 #include "extensions/browser/updater/extension_downloader.h"
 #include "extensions/browser/updater/manifest_fetch_data.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/verifier_formats.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
 namespace content_verifier_test {
 
-DownloaderTestDelegate::DownloaderTestDelegate() {}
-DownloaderTestDelegate::~DownloaderTestDelegate() {}
+DownloaderTestDelegate::DownloaderTestDelegate() = default;
+DownloaderTestDelegate::~DownloaderTestDelegate() = default;
 
 void DownloaderTestDelegate::AddResponse(const ExtensionId& extension_id,
                                          const std::string& version_string,
@@ -71,7 +74,7 @@ void DownloaderTestDelegate::StartUpdateCheck(
 }
 
 ForceInstallProvider::ForceInstallProvider(const ExtensionId& id) : id_(id) {}
-ForceInstallProvider::~ForceInstallProvider() {}
+ForceInstallProvider::~ForceInstallProvider() = default;
 
 std::string ForceInstallProvider::GetDebugPolicyProviderName() const {
   return "ForceInstallProvider";

@@ -5,59 +5,34 @@
       "win",
       "linux",
       "mac",
-      "chromeos_ash",
-      "chromeos_lacros",
+      "chromeos",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "ExemptDomainFileTypePairsFromFileTypeDownloadWarnings": [
-            {
-              "domains": [
-                "*"
-              ],
-              "file_extension": "txt"
-            },
-            {
-              "domains": [
-                "example.com"
-              ],
-              "file_extension": "exe"
-            },
-            {
-              "domains": [
-                ".example.com"
-              ],
-              "file_extension": "jpg"
-            }
-          ]
-        },
-        "prefs": {
-          "downloads.exempt_domain_filetype_pair_from_file_type_downloads_warnings": {
-            "value": [
-              {
-                "domains": [
-                  "*"
-                ],
-                "file_extension": "txt"
-              },
-              {
-                "domains": [
-                  "example.com"
-                ],
-                "file_extension": "exe"
-              },
-              {
-                "domains": [
-                  ".example.com"
-                ],
-                "file_extension": "jpg"
-              }
-            ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "downloads.exempt_domain_filetype_pair_from_file_type_downloads_warnings",
+      "default_value": [],
+      "values_to_test": [
+        [
+          {
+            "domains": [
+              "*"
+            ],
+            "file_extension": "txt"
+          },
+          {
+            "domains": [
+              "example.com"
+            ],
+            "file_extension": "exe"
+          },
+          {
+            "domains": [
+              ".example.com"
+            ],
+            "file_extension": "jpg"
           }
-        }
-      }
-    ]
+        ]
+      ]
+    }
   }
 ]

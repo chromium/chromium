@@ -10,6 +10,7 @@
 #include "base/test/task_environment.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/core/browser/active_primary_accounts_metrics_recorder.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -21,6 +22,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -34,8 +36,12 @@ constexpr char kWebSigninAccountStartTimesPrefForTesting[] =
 constexpr char kSigninPendingStartTimePrefForTesting[] =
     "signin.signin_pending_start_time";
 
+// Equivalent to private pref content: `kSyncPausedStartTimePref`.
+constexpr char kSyncPausedStartTimePrefForTesting[] =
+    "signin.sync_paused_start_time";
+
 const signin_metrics::AccessPoint kDefaultTestAccessPoint =
-    signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS;
+    signin_metrics::AccessPoint::kSettings;
 
 }  // namespace
 
@@ -47,38 +53,53 @@ class SigninMetricsServiceTest : public ::testing::Test {
       : identity_test_environment_(/*test_url_loader_factory=*/nullptr,
                                    &pref_service_) {
     SigninMetricsService::RegisterProfilePrefs(pref_service_.registry());
+    signin::ActivePrimaryAccountsMetricsRecorder::RegisterLocalStatePrefs(
+        local_state_.registry());
+
+    active_primary_accounts_metrics_recorder_ =
+        std::make_unique<signin::ActivePrimaryAccountsMetricsRecorder>(
+            local_state_);
   }
 
   void CreateSigninMetricsService() {
     signin_metrics_service_ = std::make_unique<SigninMetricsService>(
-        *identity_manager(), pref_service_);
+        *identity_manager(), pref_service_,
+        active_primary_accounts_metrics_recorder_.get());
   }
 
   void DestroySigninMetricsService() { signin_metrics_service_ = nullptr; }
 
   AccountInfo Signin(
       const std::string& email,
-      signin_metrics::AccessPoint access_point = kDefaultTestAccessPoint) {
+      signin_metrics::AccessPoint access_point = kDefaultTestAccessPoint,
+      const GaiaId& gaia_id = GaiaId()) {
+    signin::AccountAvailabilityOptionsBuilder builder;
+    builder.AsPrimary(signin::ConsentLevel::kSignin)
+        .WithAccessPoint(access_point);
+    if (!gaia_id.empty()) {
+      builder.WithGaiaId(gaia_id);
+    }
     return identity_test_environment_.MakeAccountAvailable(
-        signin::AccountAvailabilityOptionsBuilder()
-            .AsPrimary(signin::ConsentLevel::kSignin)
-            .WithAccessPoint(access_point)
-            .Build(email));
+        builder.Build(email));
   }
 
   void Signout() { identity_test_environment_.ClearPrimaryAccount(); }
 
-  void EnableSync(const std::string& email) {
-    identity_test_environment_.MakePrimaryAccountAvailable(
-        email, signin::ConsentLevel::kSync);
+  void EnableSync(const std::string& email,
+                  signin_metrics::AccessPoint access_point =
+                      signin_metrics::AccessPoint::kSettings) {
+    identity_test_environment_.MakeAccountAvailable(
+        signin::AccountAvailabilityOptionsBuilder()
+            .AsPrimary(signin::ConsentLevel::kSync)
+            .WithAccessPoint(access_point)
+            .Build(email));
   }
 
   AccountInfo WebSignin(const std::string& email) {
     return signin::MakeAccountAvailable(
         identity_manager(),
         signin::AccountAvailabilityOptionsBuilder()
-            .WithAccessPoint(
-                signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN)
+            .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
             .Build(email));
   }
 
@@ -101,7 +122,7 @@ class SigninMetricsServiceTest : public ::testing::Test {
         account.account_id);
   }
 
-  void ResolveSigninPending(Resolution resolution) {
+  void ResolveAuthErrorState(Resolution resolution) {
     CoreAccountInfo core_account_info =
         identity_manager()->GetPrimaryAccountInfo(
             signin::ConsentLevel::kSignin);
@@ -111,19 +132,18 @@ class SigninMetricsServiceTest : public ::testing::Test {
     switch (resolution) {
       case Resolution::kReauth:
         identity_test_environment_.SetRefreshTokenForPrimaryAccount();
-        return;
+        break;
       case Resolution::kWebSignin: {
         AccountInfo account_info =
             identity_manager()->FindExtendedAccountInfo(core_account_info);
-        account_info.access_point =
-            signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN;
+        account_info.access_point = signin_metrics::AccessPoint::kWebSignin;
         identity_test_environment_.UpdateAccountInfoForAccount(account_info);
         identity_test_environment_.SetRefreshTokenForPrimaryAccount();
-        return;
+        break;
       }
       case Resolution::kSignout:
         Signout();
-        return;
+        break;
     }
   }
 
@@ -152,7 +172,40 @@ class SigninMetricsServiceTest : public ::testing::Test {
                .contains(account_id.ToString());
   }
 
-  PrefService& pref_service() { return pref_service_; }
+  void TriggerSyncPaused() {
+    ASSERT_TRUE(
+        identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+
+    identity_test_environment_.SetInvalidRefreshTokenForPrimaryAccount();
+  }
+
+  // When loading credentials, simulates that the client is not aware of any
+  // error. The error may have occurred while the client was off or the error
+  // was not persisted.
+  void TriggerLoadingCredentialsWithNoError() {
+    CoreAccountInfo core_account_info =
+        identity_manager()->GetPrimaryAccountInfo(
+            signin::ConsentLevel::kSignin);
+    ASSERT_FALSE(core_account_info.IsEmpty());
+
+    identity_test_environment_.OnErrorStateOfRefreshTokenUpdatedForAccount(
+        core_account_info, GoogleServiceAuthError::AuthErrorNone(),
+        signin_metrics::SourceForRefreshTokenOperation::
+            kTokenService_LoadCredentials);
+  }
+
+  sync_preferences::TestingPrefServiceSyncable& pref_service() {
+    return pref_service_;
+  }
+
+  signin::ActivePrimaryAccountsMetricsRecorder*
+  active_primary_accounts_metrics_recorder() {
+    return active_primary_accounts_metrics_recorder_.get();
+  }
+
+  signin::IdentityTestEnvironment& GetIdentityTestEnvironment() {
+    return identity_test_environment_;
+  }
 
  private:
   signin::IdentityManager* identity_manager() {
@@ -161,14 +214,16 @@ class SigninMetricsServiceTest : public ::testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
+  TestingPrefServiceSimple local_state_;
+  std::unique_ptr<signin::ActivePrimaryAccountsMetricsRecorder>
+      active_primary_accounts_metrics_recorder_;
   signin::IdentityTestEnvironment identity_test_environment_;
 
   std::unique_ptr<SigninMetricsService> signin_metrics_service_;
 
-  base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kExplicitBrowserSigninUIOnDesktop};
 };
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 TEST_F(SigninMetricsServiceTest, SigninPendingResolutionReauth) {
   base::HistogramTester histogram_tester;
 
@@ -178,10 +233,10 @@ TEST_F(SigninMetricsServiceTest, SigninPendingResolutionReauth) {
 
   TriggerSigninPending();
 
-  ResolveSigninPending(Resolution::kReauth);
+  ResolveAuthErrorState(Resolution::kReauth);
 
   histogram_tester.ExpectUniqueSample("Signin.SigninPending.Resolution",
-                                      /*SigninPendingResolution::kReauth*/ 0,
+                                      /*PendingResolutionSource::kReauth*/ 0,
                                       1);
   histogram_tester.ExpectTotalCount(
       "Signin.SigninPending.ResolutionTime.Reauth", 1);
@@ -193,9 +248,11 @@ TEST_F(SigninMetricsServiceTest, SigninPendingResolutionReauth) {
   histogram_tester.ExpectBucketCount(
       "Signin.SigninPending.ResolutionSourceCompleted", kDefaultTestAccessPoint,
       1);
+
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix("Signin.SyncPaused"),
+              base::HistogramTester::CountsMap());
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 TEST_F(SigninMetricsServiceTest, SigninPendingResolutionSignout) {
   base::HistogramTester histogram_tester;
 
@@ -205,13 +262,16 @@ TEST_F(SigninMetricsServiceTest, SigninPendingResolutionSignout) {
 
   TriggerSigninPending();
 
-  ResolveSigninPending(Resolution::kSignout);
+  ResolveAuthErrorState(Resolution::kSignout);
 
   histogram_tester.ExpectUniqueSample("Signin.SigninPending.Resolution",
-                                      /*SigninPendingResolution::kSignout*/ 1,
+                                      /*PendingResolutionSource::kSignout*/ 1,
                                       1);
   histogram_tester.ExpectTotalCount(
       "Signin.SigninPending.ResolutionTime.Signout", 1);
+
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix("Signin.SyncPaused"),
+              base::HistogramTester::CountsMap());
 }
 
 TEST_F(SigninMetricsServiceTest, SigninPendingResolutionAfterRestart) {
@@ -227,14 +287,64 @@ TEST_F(SigninMetricsServiceTest, SigninPendingResolutionAfterRestart) {
   DestroySigninMetricsService();
   CreateSigninMetricsService();
 
-  ResolveSigninPending(Resolution::kSignout);
+  ResolveAuthErrorState(Resolution::kSignout);
 
   // Histograms should still be recorded.
   histogram_tester.ExpectUniqueSample("Signin.SigninPending.Resolution",
-                                      /*SigninPendingResolution::kSignout*/ 1,
+                                      /*PendingResolutionSource::kSignout*/ 1,
                                       1);
   histogram_tester.ExpectTotalCount(
       "Signin.SigninPending.ResolutionTime.Signout", 1);
+}
+
+TEST_F(SigninMetricsServiceTest, SigninPendingWithLoadingCredentials) {
+  base::HistogramTester histogram_tester;
+
+  CreateSigninMetricsService();
+
+  const std::string email("test@gmail.com");
+  Signin(email);
+
+  TriggerSigninPending();
+
+  ASSERT_TRUE(
+      pref_service().HasPrefPath(kSigninPendingStartTimePrefForTesting));
+  base::Time signin_pending_start_time =
+      pref_service().GetTime(kSigninPendingStartTimePrefForTesting);
+
+  // This simulates restarting the client, where the error may not necessarily
+  // be stored properly.
+  TriggerLoadingCredentialsWithNoError();
+
+  // Error time still exists and is not modified.
+  ASSERT_TRUE(
+      pref_service().HasPrefPath(kSigninPendingStartTimePrefForTesting));
+  EXPECT_EQ(signin_pending_start_time,
+            pref_service().GetTime(kSigninPendingStartTimePrefForTesting));
+
+  // Reauth should not be recorded, even though we were in SyncPaused state.
+  histogram_tester.ExpectTotalCount(
+      "Signin.SigninPending.ResolutionTime.Reauth", 0);
+
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix("Signin.SyncPaused"),
+              base::HistogramTester::CountsMap());
+
+  // In practice after a while, the client will notify the actual correct error
+  // when attempting to use the token.
+  TriggerSigninPending();
+
+  // Make sure the initial error time is not modified.
+  ASSERT_TRUE(
+      pref_service().HasPrefPath(kSigninPendingStartTimePrefForTesting));
+  EXPECT_EQ(signin_pending_start_time,
+            pref_service().GetTime(kSigninPendingStartTimePrefForTesting));
+
+  // And still no values are recorded.
+  histogram_tester.ExpectTotalCount(
+      "Signin.SigninPending.ResolutionTime.Reauth", 0);
+
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix("Signin.SyncPaused"),
+              base::HistogramTester::CountsMap());
 }
 
 TEST_F(SigninMetricsServiceTest, ReceivingNewTokenWhileNotInError) {
@@ -247,7 +357,7 @@ TEST_F(SigninMetricsServiceTest, ReceivingNewTokenWhileNotInError) {
   // Receiving new token or resolving a pending state while not in error should
   // not record or store anything.
   TriggerPrimaryAccountRefreshToken("new_token_value");
-  ResolveSigninPending(Resolution::kReauth);
+  ResolveAuthErrorState(Resolution::kReauth);
 
   EXPECT_FALSE(
       pref_service().HasPrefPath(kSigninPendingStartTimePrefForTesting));
@@ -310,11 +420,15 @@ struct AccessPointParam {
 };
 
 const AccessPointParam params[] = {
-    {signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN,
+    {signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo,
      "Signin.WebSignin.TimeToChromeSignin.ProfileMenu"},
-    {signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE,
+    {signin_metrics::AccessPoint::kPasswordBubble,
      "Signin.WebSignin.TimeToChromeSignin.PasswordSigninPromo"},
-    {signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS, ""},
+    {signin_metrics::AccessPoint::kAddressBubble,
+     "Signin.WebSignin.TimeToChromeSignin.AddressSigninPromo"},
+    {signin_metrics::AccessPoint::kBookmarkBubble,
+     "Signin.WebSignin.TimeToChromeSignin.BookmarkSigninPromo"},
+    {signin_metrics::AccessPoint::kSettings, ""},
 };
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -367,7 +481,7 @@ TEST_F(SigninMetricsServiceTest, WebSigninToChromeSigninAfterRestart) {
   CreateSigninMetricsService();
 
   Signin(account.email,
-         signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN);
+         signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo);
 
   histogram_tester.ExpectTotalCount(
       "Signin.WebSignin.TimeToChromeSignin.ProfileMenu", 1);
@@ -392,7 +506,7 @@ TEST_F(SigninMetricsServiceTest, WebSigninWithMultipleAccounts) {
 
   // Secondary accounts through the settings page, this is a real use case.
   signin_metrics::AccessPoint access_point =
-      signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS;
+      signin_metrics::AccessPoint::kSettings;
   Signin(second_account.email, access_point);
 
   // Pref should be cleared and metrics should be measured even with the
@@ -419,7 +533,6 @@ TEST_F(SigninMetricsServiceTest, WebSigninToSignout) {
   EXPECT_EQ(
       0., histogram_tester.GetTotalCountsForPrefix("Signin.WebSignin.").size());
 }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 TEST_F(SigninMetricsServiceTest, WebSigninForSigninPendingResolution) {
   base::HistogramTester histogram_tester;
@@ -428,17 +541,16 @@ TEST_F(SigninMetricsServiceTest, WebSigninForSigninPendingResolution) {
 
   Signin("test@gmail.com");
   TriggerSigninPending();
-  ResolveSigninPending(Resolution::kWebSignin);
+  ResolveAuthErrorState(Resolution::kWebSignin);
 
   histogram_tester.ExpectBucketCount(
       "Signin.SigninPending.ResolutionSourceStarted",
-      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN, 1);
+      signin_metrics::AccessPoint::kWebSignin, 1);
   histogram_tester.ExpectBucketCount(
       "Signin.SigninPending.ResolutionSourceCompleted",
-      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN, 1);
+      signin_metrics::AccessPoint::kWebSignin, 1);
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 TEST_F(SigninMetricsServiceTest, ExplicitSigninMigration) {
   {
     base::HistogramTester histogram_tester;
@@ -449,8 +561,7 @@ TEST_F(SigninMetricsServiceTest, ExplicitSigninMigration) {
         /*expected_bucket_count=*/1);
   }
 
-  Signin("test@gmail.com",
-         signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
+  Signin("test@gmail.com", signin_metrics::AccessPoint::kWebSignin);
   ASSERT_FALSE(pref_service().GetBoolean(prefs::kExplicitBrowserSignin));
 
   {
@@ -490,7 +601,7 @@ TEST_F(SigninMetricsServiceTest, ChromeSigninSettingOnSignin) {
   CreateSigninMetricsService();
 
   signin_metrics::AccessPoint access_point =
-      signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN;
+      signin_metrics::AccessPoint::kAvatarBubbleSignIn;
   AccountInfo account = Signin("test@gmail.com", access_point);
 
   // Default user choice is no choice.
@@ -526,5 +637,314 @@ TEST_F(SigninMetricsServiceTest, ChromeSigninSettingOnSignin) {
   histogram_tester.ExpectUniqueSample(
       "Signin.Settings.ChromeSignin.AccessPointWithDoNotSignin", access_point,
       1);
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+TEST_F(SigninMetricsServiceTest, UpdatesAccountLastActiveTimeOnSignin) {
+  const GaiaId gaia_id("gaia_id");
+
+  CreateSigninMetricsService();
+
+  // Sanity check: Before signing in, there's no last-active timestamp for the
+  // account.
+  ASSERT_FALSE(active_primary_accounts_metrics_recorder()
+                   ->GetLastActiveTimeForAccount(gaia_id)
+                   .has_value());
+
+  base::Time before_signin = base::Time::Now();
+  Signin("test@gmail.com", kDefaultTestAccessPoint, gaia_id);
+
+  // After signin, the last-active timestamp should've been updated.
+  EXPECT_TRUE(active_primary_accounts_metrics_recorder()
+                  ->GetLastActiveTimeForAccount(gaia_id)
+                  .has_value());
+  EXPECT_GE(active_primary_accounts_metrics_recorder()
+                ->GetLastActiveTimeForAccount(gaia_id)
+                .value_or(base::Time()),
+            before_signin);
+}
+
+TEST_F(SigninMetricsServiceTest, SyncPausedResolutionTimeReauth) {
+  base::HistogramTester histogram_tester;
+
+  CreateSigninMetricsService();
+
+  const std::string email("test@gmail.com");
+  Signin(email);
+  EnableSync(email);
+
+  TriggerSyncPaused();
+
+  ResolveAuthErrorState(Resolution::kReauth);
+
+  histogram_tester.ExpectTotalCount("Signin.SyncPaused.ResolutionTime.Reauth",
+                                    1);
+
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix("Signin.SigninPending"),
+              base::HistogramTester::CountsMap());
+}
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+TEST_F(SigninMetricsServiceTest, SyncPausedResolutionTimeSignout) {
+  base::HistogramTester histogram_tester;
+
+  CreateSigninMetricsService();
+
+  const std::string email("test@gmail.com");
+  Signin(email);
+  EnableSync(email);
+
+  TriggerSyncPaused();
+
+  ResolveAuthErrorState(Resolution::kSignout);
+
+  histogram_tester.ExpectTotalCount("Signin.SyncPaused.ResolutionTime.Signout",
+                                    1);
+
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix("Signin.SigninPending"),
+              base::HistogramTester::CountsMap());
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+TEST_F(SigninMetricsServiceTest, SyncPausedWithLoadingCredentials) {
+  base::HistogramTester histogram_tester;
+
+  CreateSigninMetricsService();
+
+  const std::string email("test@gmail.com");
+  Signin(email);
+  EnableSync(email);
+
+  TriggerSyncPaused();
+
+  ASSERT_TRUE(pref_service().HasPrefPath(kSyncPausedStartTimePrefForTesting));
+  base::Time sync_paused_start_time =
+      pref_service().GetTime(kSyncPausedStartTimePrefForTesting);
+
+  // This simulates restarting the client, where the error may not necessarily
+  // be stored properly.
+  TriggerLoadingCredentialsWithNoError();
+
+  // Error time still exists and is not modified.
+  ASSERT_TRUE(pref_service().HasPrefPath(kSyncPausedStartTimePrefForTesting));
+  EXPECT_EQ(sync_paused_start_time,
+            pref_service().GetTime(kSyncPausedStartTimePrefForTesting));
+
+  // Reauth should not be recorded, even though we are in SyncPaused state.
+  histogram_tester.ExpectTotalCount("Signin.SyncPaused.ResolutionTime.Reauth",
+                                    0);
+
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix("Signin.SigninPending"),
+              base::HistogramTester::CountsMap());
+
+  // Make sure the initial error time is not modified.
+  ASSERT_TRUE(pref_service().HasPrefPath(kSyncPausedStartTimePrefForTesting));
+  EXPECT_EQ(sync_paused_start_time,
+            pref_service().GetTime(kSyncPausedStartTimePrefForTesting));
+
+  // And still no values are recorded.
+  histogram_tester.ExpectTotalCount("Signin.SyncPaused.ResolutionTime.Reauth",
+                                    0);
+
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix("Signin.SigninPending"),
+              base::HistogramTester::CountsMap());
+}
+
+// Regression test for: crbug.com/363401501.
+TEST_F(SigninMetricsServiceTest, ErrorNotificationEmptyAccount) {
+  base::HistogramTester histogram_tester;
+
+  CreateSigninMetricsService();
+
+  ASSERT_FALSE(
+      GetIdentityTestEnvironment().identity_manager()->HasPrimaryAccount(
+          signin::ConsentLevel::kSignin));
+
+  GetIdentityTestEnvironment().OnErrorStateOfRefreshTokenUpdatedForAccount(
+      CoreAccountInfo(), GoogleServiceAuthError::AuthErrorNone(),
+      signin_metrics::SourceForRefreshTokenOperation::kUnknown);
+
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix("Signin.SigninPending"),
+              base::HistogramTester::CountsMap());
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix("Signin.SyncPaused"),
+              base::HistogramTester::CountsMap());
+}
+
+TEST_F(SigninMetricsServiceTest, HistorySyncPromoMetricLogging) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kAvatarButtonSyncPromoForTesting};
+
+  CreateSigninMetricsService();
+
+  const std::string email("test@gmail.com");
+  AccountInfo account = Signin(email);
+  SigninPrefs signin_prefs(pref_service());
+  signin_prefs.IncrementSyncPromoIdentityPillShownCount(account.gaia);
+  signin_prefs.IncrementSyncPromoIdentityPillShownCount(account.gaia);
+
+  EnableSync(
+      email,
+      signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SyncOptIn.IdentityPill.SyncAtShowCount",
+      signin_prefs.GetSyncPromoIdentityPillShownCount(account.gaia), 1);
+}
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+class SigninMetricsServicePromoLimitsExperimentTest
+    : public SigninMetricsServiceTest {
+ public:
+  SigninMetricsServicePromoLimitsExperimentTest() {
+    // Simulate registering it via signin_promo
+    pref_service().registry()->RegisterIntegerPref(
+        prefs::kPasswordSignInPromoShownCountPerProfileForLimitsExperiment, 0);
+    pref_service().registry()->RegisterIntegerPref(
+        prefs::kAddressSignInPromoShownCountPerProfileForLimitsExperiment, 0);
+    pref_service().registry()->RegisterIntegerPref(
+        prefs::kBookmarkSignInPromoShownCountPerProfileForLimitsExperiment, 0);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      switches::kSigninPromoLimitsExperiment};
+};
+
+TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
+       AddressPromoShownCountAtSigninFromWebSignin) {
+  base::HistogramTester histogram_tester;
+  CreateSigninMetricsService();
+
+  // Set a random profile value, to ensure that this is not the value being
+  // recorded.
+  pref_service().SetInteger(
+      prefs::kAddressSignInPromoShownCountPerProfileForLimitsExperiment, 8);
+
+  SigninPrefs signin_prefs(pref_service());
+  GaiaId gaia_id("gaia_id_for_test_gmail.com");
+  const std::string email("test@gmail.com");
+  WebSignin(email);
+  signin_prefs.IncrementAddressSigninPromoImpressionCount(gaia_id);
+
+  Signin(email, signin_metrics::AccessPoint::kAddressBubble, gaia_id);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.PromoLimitsExperiment.AddressSigninPromoShownCountAtSignin", 1,
+      1);
+}
+
+TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
+       AddressPromoShownCountAtSigninFromSignedOut) {
+  base::HistogramTester histogram_tester;
+  CreateSigninMetricsService();
+
+  pref_service().SetInteger(
+      prefs::kAddressSignInPromoShownCountPerProfileForLimitsExperiment, 1);
+
+  const std::string email("test@gmail.com");
+  Signin(email, signin_metrics::AccessPoint::kAddressBubble);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.PromoLimitsExperiment.AddressSigninPromoShownCountAtSignin", 1,
+      1);
+}
+
+TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
+       PasswordPromoShownCountAtSigninFromWebSignin) {
+  base::HistogramTester histogram_tester;
+  CreateSigninMetricsService();
+
+  // Set a random profile value, to ensure that this is not the value being
+  // recorded.
+  pref_service().SetInteger(
+      prefs::kPasswordSignInPromoShownCountPerProfileForLimitsExperiment, 8);
+
+  SigninPrefs signin_prefs(pref_service());
+  GaiaId gaia_id("gaia_id_for_test_gmail.com");
+  const std::string email("test@gmail.com");
+  WebSignin(email);
+
+  signin_prefs.IncrementPasswordSigninPromoImpressionCount(gaia_id);
+  Signin(email, signin_metrics::AccessPoint::kPasswordBubble, gaia_id);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.PromoLimitsExperiment.PasswordSigninPromoShownCountAtSignin", 1,
+      1);
+}
+
+TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
+       PasswordPromoShownCountAtSigninFromSignedOut) {
+  base::HistogramTester histogram_tester;
+  CreateSigninMetricsService();
+
+  pref_service().SetInteger(
+      prefs::kPasswordSignInPromoShownCountPerProfileForLimitsExperiment, 1);
+
+  const std::string email("test@gmail.com");
+
+  Signin(email, signin_metrics::AccessPoint::kPasswordBubble);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.PromoLimitsExperiment.PasswordSigninPromoShownCountAtSignin", 1,
+      1);
+}
+
+TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
+       BookmarkPromoShownCountAtSigninFromWebSignin) {
+  base::HistogramTester histogram_tester;
+  CreateSigninMetricsService();
+
+  // Set a random profile value, to ensure that this is not the value being
+  // recorded.
+  pref_service().SetInteger(
+      prefs::kBookmarkSignInPromoShownCountPerProfileForLimitsExperiment, 8);
+
+  SigninPrefs signin_prefs(pref_service());
+  GaiaId gaia_id("gaia_id_for_test_gmail.com");
+  const std::string email("test@gmail.com");
+  WebSignin(email);
+
+  signin_prefs.IncrementBookmarkSigninPromoImpressionCount(gaia_id);
+  Signin(email, signin_metrics::AccessPoint::kBookmarkBubble, gaia_id);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.PromoLimitsExperiment.BookmarkSigninPromoShownCountAtSignin", 1,
+      1);
+}
+
+TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
+       BookmarkPromoShownCountAtSigninFromSignedOut) {
+  base::HistogramTester histogram_tester;
+  CreateSigninMetricsService();
+
+  pref_service().SetInteger(
+      prefs::kBookmarkSignInPromoShownCountPerProfileForLimitsExperiment, 1);
+
+  const std::string email("test@gmail.com");
+
+  Signin(email, signin_metrics::AccessPoint::kBookmarkBubble);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.PromoLimitsExperiment.BookmarkSigninPromoShownCountAtSignin", 1,
+      1);
+}
+
+TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
+       UnoBubbleRepromptCountAtSigninFromWebSignin) {
+  base::HistogramTester histogram_tester;
+  CreateSigninMetricsService();
+
+  SigninPrefs signin_prefs(pref_service());
+  GaiaId gaia_id("gaia_id_for_test_gmail.com");
+
+  const std::string email("test@gmail.com");
+  WebSignin(email);
+
+  signin_prefs.IncrementChromeSigninBubbleRepromptCount(gaia_id);
+  Signin(email, signin_metrics::AccessPoint::kChromeSigninInterceptBubble,
+         gaia_id);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.PromoLimitsExperiment.UnoBubbleRepromptCountAtSignin", 1, 1);
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

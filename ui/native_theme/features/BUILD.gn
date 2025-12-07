@@ -1,0 +1,16 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("features") {
+  output_name = "native_theme_features"
+
+  defines = [ "IS_NATIVE_THEME_FEATURES_IMPL" ]
+
+  sources = [
+    "native_theme_features.cc",
+    "native_theme_features.h",
+  ]
+
+  deps = [ "//base" ]
+}

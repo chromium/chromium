@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/editing/set_selection_options.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -63,7 +64,7 @@ void UndoStep::Unapply() {
   DispatchInputEventEditableContentChanged(
       StartingRootEditableElement(), EndingRootEditableElement(),
       InputEvent::InputType::kHistoryUndo, g_null_atom,
-      InputEvent::EventIsComposing::kNotComposing);
+      InputEvent::EventIsComposing::kNotComposing, nullptr);
 
   const SelectionInDOMTree& new_selection =
       CorrectedSelectionAfterCommand(StartingSelection(), document_);
@@ -108,7 +109,7 @@ void UndoStep::Reapply() {
   DispatchInputEventEditableContentChanged(
       StartingRootEditableElement(), EndingRootEditableElement(),
       InputEvent::InputType::kHistoryRedo, g_null_atom,
-      InputEvent::EventIsComposing::kNotComposing);
+      InputEvent::EventIsComposing::kNotComposing, nullptr);
 
   const SelectionInDOMTree& new_selection =
       CorrectedSelectionAfterCommand(EndingSelection(), document_);
@@ -143,6 +144,15 @@ void UndoStep::SetStartingSelection(const SelectionForUndoStep& selection) {
 
 void UndoStep::SetEndingSelection(const SelectionForUndoStep& selection) {
   ending_selection_ = selection;
+}
+
+String UndoStep::ToString() const {
+  StringBuilder builder;
+  builder.Append("UndoStep {commands:[\n    ");
+  builder.AppendRange(commands_, ",\n    ",
+                      [](const auto& command) { return command->ToString(); });
+  builder.Append("]}");
+  return builder.ReleaseString();
 }
 
 void UndoStep::Trace(Visitor* visitor) const {

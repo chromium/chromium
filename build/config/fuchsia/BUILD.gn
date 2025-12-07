@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 import("//build/config/clang/clang.gni")
+import("//build/config/compiler/compiler.gni")
+import("//build/config/fuchsia/config.gni")
 import("//build/config/fuchsia/generate_runner_scripts.gni")
 import("//build/config/fuchsia/gn_configs.gni")
 
@@ -20,7 +22,25 @@ config("compiler") {
     "-Wl,-z,stack-size=0x800000",
     "-fexperimental-relative-c++-abi-vtables",
   ]
+
+  if (optimize_for_size) {
+    # Enable LLD's balanced partitioning for ordering function sections.
+    # The flag has a significant reduction on binary size (roughly 5MB on 50MB
+    # compressed webengine.far), but also slows down the runtime performance
+    # (~5.35% to javascript benchrmarks on PGO enabled builds, or 12% on size
+    # optimized builds). So we only enable it for size optimized builds to avoid
+    # unnecessary performance losses on non-storage-constrained devices.
+    # It's worth noting that this flag has a much smaller impact on browsing
+    # performance which is more important for WebEngine. So trading some
+    # performance for binary size savings is acceptable.
+    ldflags += [ "-Wl,--bp-compression-sort=function" ]
+  }
+
   cflags_cc = [ "-fexperimental-relative-c++-abi-vtables" ]
+
+  if (is_web_engine) {
+    defines = [ "IS_WEB_ENGINE" ]
+  }
 }
 
 # Files required to run on Fuchsia on isolated swarming clients.
@@ -30,46 +50,32 @@ group("deployment_resources") {
     "//build/util/lib/",
     "//third_party/fuchsia-sdk/sdk/.build-id/",
     "//third_party/fuchsia-sdk/sdk/meta/manifest.json",
-    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/ffx",
-    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/ffx-meta.json",
-
-    # The following folder contains standalone binaries running as ffx plugins.
-    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/ffx_tools/",
-    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/fvm",
-    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/fvm-meta.json",
-    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/merkleroot",
-    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/merkleroot-meta.json",
-    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/pm",
-    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/pm-meta.json",
-    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/symbolizer",
-    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/symbolizer-meta.json",
-    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/zbi",
-    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/zbi-meta.json",
+    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/",
   ]
 
   if (fuchsia_additional_boot_images == []) {
     data += [ "${boot_image_root}" ]
-  }
-
-  foreach(fuchsia_additional_boot_image, fuchsia_additional_boot_images) {
-    data += [ "${fuchsia_additional_boot_image}/" ]
+  } else {
+    # We never need to use both qemu images and device images.
+    foreach(fuchsia_additional_boot_image, fuchsia_additional_boot_images) {
+      data += [ "${fuchsia_additional_boot_image}/" ]
+    }
   }
 
   if (test_isolate_uses_emulator) {
-    if (test_host_cpu == "x64") {
+    # This assumes we are testing on QEMU with (U)EFI emulation only
+    # if host_cpu == target_cpu, and also that these tests are executed
+    # on x64 and arm64 only.
+    if (test_host_cpu == "arm64") {
       data += [
-        "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/aemu_internal",
-        "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/aemu_internal-meta.json",
-        "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/qemu_internal",
-        "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/qemu_internal-meta.json",
-      ]
-    } else if (test_host_cpu == "arm64") {
-      data += [
+        "//third_party/fuchsia-sdk/sdk/tools/qemu_uefi_internal/arm64",
+        "//third_party/fuchsia-sdk/sdk/tools/qemu_uefi_internal/arm64-meta.json",
         "//third_party/qemu-${host_os}-${test_host_cpu}/",
-
-        # TODO(crbug.com/42050489): remove when ffx has native support
-        # for starting emulator on arm64 host.
-        "//third_party/fuchsia-sdk/sdk/tools/x64/qemu_internal-meta.json",
+      ]
+    } else {
+      data += [
+        "//third_party/fuchsia-sdk/sdk/tools/qemu_uefi_internal/x64",
+        "//third_party/fuchsia-sdk/sdk/tools/qemu_uefi_internal/x64-meta.json",
       ]
     }
   }

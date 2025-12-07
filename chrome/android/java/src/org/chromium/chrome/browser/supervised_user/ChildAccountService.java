@@ -16,11 +16,13 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.ui.base.WindowAndroid;
 
 /** This class serves as a simple interface for native code to re-authenticate a child account. */
+@NullMarked
 public class ChildAccountService {
     private ChildAccountService() {
         // Only for static usage.
@@ -30,7 +32,7 @@ public class ChildAccountService {
     @CalledByNative
     static void reauthenticateChildAccount(
             WindowAndroid windowAndroid,
-            @JniType("std::string") String accountName,
+            @JniType("std::string") String accountEmail,
             final long nativeOnFailureCallback) {
         ThreadUtils.assertOnUiThread();
         final Activity activity = windowAndroid.getActivity().get();
@@ -43,7 +45,7 @@ public class ChildAccountService {
                     });
             return;
         }
-        Account account = AccountUtils.createAccountFromName(accountName);
+        Account account = AccountUtils.createAccountFromEmail(accountEmail);
         AccountManagerFacadeProvider.getInstance()
                 .updateCredentials(
                         account,

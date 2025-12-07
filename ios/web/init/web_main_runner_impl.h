@@ -5,9 +5,8 @@
 #ifndef IOS_WEB_INIT_WEB_MAIN_RUNNER_IMPL_H_
 #define IOS_WEB_INIT_WEB_MAIN_RUNNER_IMPL_H_
 
-#import "ios/web/public/init/web_main_runner.h"
-
 #import "base/memory/raw_ptr.h"
+#import "ios/web/public/init/web_main_runner.h"
 #import "ios/web/public/web_client.h"
 
 namespace web {
@@ -23,7 +22,8 @@ class WebMainRunnerImpl : public WebMainRunner {
   ~WebMainRunnerImpl() override;
 
   // WebMainRunner implementation:
-  int Initialize(WebMainParams params) override;
+  void Initialize(WebMainParams params) override;
+  int Startup() override;
   void ShutDown() override;
 
  protected:

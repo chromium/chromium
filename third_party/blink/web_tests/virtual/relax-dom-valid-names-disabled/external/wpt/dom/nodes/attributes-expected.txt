@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Basic functionality should be intact. (toggleAttribute)
+  Failed to execute 'toggleAttribute' on 'Element': 'invalid^Name' is not a valid attribute name.
+[FAIL] Basic functionality should be intact.
+  Failed to execute 'setAttribute' on 'Element': 'invalid^Name' is not a valid attribute name.
+Harness: the test ran to completion.
+

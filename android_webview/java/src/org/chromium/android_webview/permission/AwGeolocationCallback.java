@@ -9,21 +9,24 @@ import org.chromium.android_webview.AwGeolocationPermissions;
 import org.chromium.android_webview.CleanupReference;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.ref.WeakReference;
 
 /**
- * This class implements AwGeolocationPermissions.Callback, and will be sent to
- * WebView applications through WebChromeClient.onGeolocationPermissionsShowPrompt().
+ * This class implements AwGeolocationPermissions.Callback, and will be sent to WebView applications
+ * through WebChromeClient.onGeolocationPermissionsShowPrompt().
  */
+@NullMarked
 public class AwGeolocationCallback implements AwGeolocationPermissions.Callback {
     private static final String TAG = "Geolocation";
 
-    private CleanupRunable mCleanupRunable;
-    private CleanupReference mCleanupReference;
+    private @Nullable CleanupRunable mCleanupRunable;
+    private @Nullable CleanupReference mCleanupReference;
 
     private static class CleanupRunable implements Runnable {
-        private WeakReference<AwContents> mAwContents;
+        private final WeakReference<AwContents> mAwContents;
         private boolean mAllow;
         private boolean mRetain;
         private String mOrigin;

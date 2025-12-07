@@ -1,0 +1,111 @@
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of on_device_model enums. It
+is one of a group of files in this directory that are processed by the
+histograms-xml-to-struct.py script to generate enums for histograms.
+-->
+
+<histogram-configuration>
+
+<enums>
+
+<enum name="EmbeddingModelLoadDlcStatus">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kInvalidUuid"/>
+  <int value="2" label="kReadJsonFailed"/>
+  <int value="3" label="kParseJsonFailed"/>
+  <int value="4" label="kNoModelType"/>
+  <int value="5" label="kNoModelVersion"/>
+  <int value="6" label="kNoTfliteInfo"/>
+  <int value="7" label="kUnknownModelType"/>
+  <int value="8" label="kNoTflitePath"/>
+  <int value="9" label="kNoBuiltinSpm"/>
+  <int value="10" label="kNoSpmPath"/>
+  <int value="11" label="kNoDelegate"/>
+  <int value="12" label="kInstallFailed"/>
+</enum>
+
+<enum name="EmbeddingModelLoadEmbeddingStatus">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kRetryBlocked"/>
+  <int value="2" label="kBuildRunnerFailed"/>
+  <int value="3" label="kRunnerLoadFailed"/>
+</enum>
+
+<enum name="EmbeddingModelTfliteRunnerLoadStatus">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kUnsupportedDelegate"/>
+  <int value="2" label="kNoOdmlShim"/>
+  <int value="3" label="kFailedToLoadTokenizer"/>
+  <int value="4" label="kFailedToLoadFlatBufferModel"/>
+  <int value="5" label="kCantResolveModelOps"/>
+  <int value="6" label="kNoGpuOpenClDelegate"/>
+  <int value="7" label="kGpuOpenClDelegateModifyFailed"/>
+  <int value="8" label="kCantAllocateTensors"/>
+  <int value="9" label="kIncorrectInputSize"/>
+  <int value="10" label="kIncorrectOutputSize"/>
+</enum>
+
+<enum name="EmbeddingModelTfliteRunnerRunStatus">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kNotLoaded"/>
+  <int value="2" label="kNoFormatFunctionInShim"/>
+  <int value="3" label="kFormatFailed"/>
+  <int value="4" label="kTokenizeFailed"/>
+  <int value="5" label="kTooLong"/>
+  <int value="6" label="kInvokeFailed"/>
+</enum>
+
+<enum name="GpuBlockedReason">
+  <int value="0" label="GPU config error"/>
+  <int value="1" label="Blocklisted"/>
+  <int value="2" label="Blocklisted for CPU adapter"/>
+  <int value="3" label="Not blocked"/>
+</enum>
+
+<enum name="GpuErrorReason">
+  <int value="0" label="Other"/>
+  <int value="1" label="DXGI_ERROR_DEVICE_HUNG"/>
+  <int value="2" label="DXGI_ERROR_DEVICE_REMOVED or VK_ERROR_DEVICE_LOST"/>
+  <int value="3" label="Failed to create device."/>
+  <int value="4" label="VK_ERROR_OUT_OF_DEVICE_MEMORY"/>
+</enum>
+
+<enum name="OnDeviceModelAndroidGenerateResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="UnknownError"/>
+  <int value="2" label="ApiNotAvailable"/>
+  <int value="3" label="FeatureIsNull"/>
+  <int value="4" label="GetFeatureError"/>
+  <int value="5" label="InferenceGeneralError"/>
+  <int value="6" label="InferenceRequestProcessingError"/>
+  <int value="7" label="InferenceResponseProcessingError"/>
+</enum>
+
+<enum name="OnDeviceModelAndroidModelDownloadFailureReason">
+  <int value="0" label="UnknownError"/>
+  <int value="1" label="ApiNotAvailable"/>
+  <int value="2" label="FeatureIsNull"/>
+  <int value="3" label="GetFeatureError"/>
+  <int value="4" label="GetFeatureStatusError"/>
+  <int value="5" label="FeatureNotAvailable"/>
+  <int value="6" label="DownloadGeneralError"/>
+  <int value="7" label="DownloadNotEnoughDiskSpaceError"/>
+  <int value="8" label="GetPersistentModeError"/>
+  <int value="9" label="PersistentModeNotEnabled"/>
+</enum>
+
+<enum name="VeryLowPerformanceReason">
+  <int value="0" label="Low RAM"/>
+  <int value="1" label="Slow output"/>
+  <int value="2" label="Slow input"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

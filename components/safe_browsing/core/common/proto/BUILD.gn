@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/proto_extras/proto_extras.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 import("//third_party/protobuf/proto_library.gni")
@@ -20,6 +21,18 @@ fuzzable_proto_library("csd_proto") {
   sources = [ "csd.proto" ]
 }
 
+proto_extras("csd_proto_extras") {
+  sources = [ "csd.proto" ]
+  deps = [ ":csd_proto" ]
+
+  # The fuzzable_proto_library rule above uses the full protobuf runtime.
+  protobuf_full_support = true
+}
+
+proto_library("crx_info_proto") {
+  sources = [ "crx_info.proto" ]
+}
+
 proto_library("webui_proto") {
   sources = [ "webui.proto" ]
 }
@@ -27,7 +40,26 @@ proto_library("webui_proto") {
 fuzzable_proto_library("realtimeapi_proto") {
   proto_in_dir = "//"
   sources = [ "realtimeapi.proto" ]
-  deps = [ ":csd_proto" ]
+  deps = [
+    ":csd_proto",
+    "//components/enterprise/common/proto:connectors_proto",
+  ]
+}
+
+proto_extras("realtimeapi_proto_extras") {
+  sources = [ "realtimeapi.proto" ]
+  deps = [
+    ":csd_proto",
+    ":realtimeapi_proto",
+    "//components/enterprise/common/proto:connectors_proto",
+  ]
+  extras_deps = [
+    ":csd_proto_extras",
+    "//components/enterprise/common/proto:connectors_proto_extras",
+  ]
+
+  # The fuzzable_proto_library rule above uses the full protobuf runtime.
+  protobuf_full_support = true
 }
 
 fuzzable_proto_library("client_model_proto") {
@@ -38,4 +70,14 @@ fuzzable_proto_library("client_model_proto") {
 
 proto_library("safebrowsingv5_proto") {
   sources = [ "safebrowsingv5.proto" ]
+}
+
+proto_extras("safebrowsingv5_proto_extras") {
+  sources = [ "safebrowsingv5.proto" ]
+  deps = [ ":safebrowsingv5_proto" ]
+}
+
+fuzzable_proto_library("realtimeallowlist_proto") {
+  proto_in_dir = "//"
+  sources = [ "realtimeallowlist.proto" ]
 }

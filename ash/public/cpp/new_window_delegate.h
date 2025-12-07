@@ -8,7 +8,9 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "ash/webui/settings/public/constants/setting.mojom-shared.h"
 #include "base/functional/bind.h"
+#include "ui/display/types/display_constants.h"
 
 class GURL;
 
@@ -38,15 +40,8 @@ class ASH_PUBLIC_EXPORT NewWindowDelegate {
     kFeedbackSourceChannelIndicator,
   };
 
-  virtual ~NewWindowDelegate();
-
   // Returns an instance connected to ash-chrome.
   static NewWindowDelegate* GetInstance();
-
-  // Returns an instance connected to the primary browser.
-  // Specifically, if Lacros is the primary browser, the instance connected
-  // to the registered browser via crosapi.
-  static NewWindowDelegate* GetPrimary();
 
   // Invoked when the user uses Ctrl+T to open a new tab.
   virtual void NewTab() = 0;
@@ -137,25 +132,14 @@ class ASH_PUBLIC_EXPORT NewWindowDelegate {
   // Opens a file on the local file system (which may be DriveFS).
   virtual void OpenFile(const base::FilePath& file_path) = 0;
 
+  // Toggles Gemini.
+  virtual void ToggleGeminiApp() = 0;
+
  protected:
   NewWindowDelegate();
   NewWindowDelegate(const NewWindowDelegate&) = delete;
   NewWindowDelegate& operator=(const NewWindowDelegate&) = delete;
-};
-
-// Interface to provide delegate instances for
-// NewWindowDelegate::GetInstance/GetPrimary methods.
-class ASH_PUBLIC_EXPORT NewWindowDelegateProvider {
- public:
-  virtual ~NewWindowDelegateProvider();
-  virtual NewWindowDelegate* GetInstance() = 0;
-  virtual NewWindowDelegate* GetPrimary() = 0;
-
- protected:
-  NewWindowDelegateProvider();
-  NewWindowDelegateProvider(const NewWindowDelegateProvider&) = delete;
-  NewWindowDelegateProvider& operator=(const NewWindowDelegateProvider&) =
-      delete;
+  virtual ~NewWindowDelegate();
 };
 
 }  // namespace ash

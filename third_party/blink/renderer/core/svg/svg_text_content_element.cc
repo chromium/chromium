@@ -20,6 +20,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_text_content_element.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_point_init.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -51,10 +52,10 @@ bool IsNGTextOrInline(const LayoutObject* object) {
 
 template <>
 const SVGEnumerationMap& GetEnumerationMap<SVGLengthAdjustType>() {
-  static const SVGEnumerationMap::Entry enum_items[] = {
-      {kSVGLengthAdjustSpacing, "spacing"},
-      {kSVGLengthAdjustSpacingAndGlyphs, "spacingAndGlyphs"},
-  };
+  static constexpr auto enum_items = std::to_array<const char* const>({
+      "spacing",
+      "spacingAndGlyphs",
+  });
   static const SVGEnumerationMap entries(enum_items);
   return entries;
 }
@@ -229,15 +230,19 @@ float SVGTextContentElement::getRotationOfChar(
   return 0.0f;
 }
 
-int SVGTextContentElement::getCharNumAtPosition(
-    SVGPointTearOff* point,
-    ExceptionState& exception_state) {
+int SVGTextContentElement::getCharNumAtPosition(const DOMPointInit* point) {
+  // If either of the x or y properties on point are infinite or NaN, then the
+  // method must return -1.
+  if (!std::isfinite(point->x()) || !std::isfinite(point->y())) {
+    return -1;
+  }
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);
   auto* layout_object = GetLayoutObject();
   if (IsNGTextOrInline(layout_object)) {
-    return SvgTextQuery(*layout_object)
-        .CharacterNumberAtPosition(point->Target()->Value());
+    const gfx::PointF local_point(ClampTo<float>(point->x()),
+                                  ClampTo<float>(point->y()));
+    return SvgTextQuery(*layout_object).CharacterNumberAtPosition(local_point);
   }
   return -1;
 }
@@ -271,7 +276,7 @@ bool SVGTextContentElement::IsPresentationAttribute(
 void SVGTextContentElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (name.Matches(xml_names::kSpaceAttr)) {
     DEFINE_STATIC_LOCAL(const AtomicString, preserve_string, ("preserve"));
 
@@ -280,16 +285,16 @@ void SVGTextContentElement::CollectStyleForPresentationAttribute(
       // Longhands of `white-space: pre`.
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kWhiteSpaceCollapse, CSSValueID::kPreserve);
-      AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextWrap,
-                                              CSSValueID::kNowrap);
+      AddPropertyToPresentationAttributeStyle(
+          style, CSSPropertyID::kTextWrapMode, CSSValueID::kNowrap);
     } else {
       UseCounter::Count(GetDocument(),
                         WebFeature::kWhiteSpaceNowrapFromXMLSpace);
       // Longhands of `white-space: nowrap`.
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kWhiteSpaceCollapse, CSSValueID::kCollapse);
-      AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextWrap,
-                                              CSSValueID::kNowrap);
+      AddPropertyToPresentationAttributeStyle(
+          style, CSSPropertyID::kTextWrapMode, CSSValueID::kNowrap);
     }
   } else {
     SVGGraphicsElement::CollectStyleForPresentationAttribute(name, value,
@@ -306,8 +311,6 @@ void SVGTextContentElement::SvgAttributeChanged(
   if (attr_name == svg_names::kTextLengthAttr ||
       attr_name == svg_names::kLengthAdjustAttr ||
       attr_name == xml_names::kSpaceAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
-
     if (LayoutObject* layout_object = GetLayoutObject()) {
       if (auto* ng_text =
               LayoutSVGText::LocateLayoutSVGTextAncestor(layout_object)) {

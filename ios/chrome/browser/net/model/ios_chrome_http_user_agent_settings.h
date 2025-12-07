@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "ios/chrome/browser/net/model/accept_language_pref_watcher.h"
 #include "net/base/http_user_agent_settings.h"
 

@@ -16,19 +16,19 @@ TEST(DownloadHttpUtils, ParseRangeHeader) {
   auto byte_range = ParseRangeHeader(request_headers);
   EXPECT_FALSE(byte_range.has_value());
 
-  request_headers.AddHeaderFromString("Range: bytes=5-10");
+  request_headers.SetHeader("Range", "bytes=5-10");
   byte_range = ParseRangeHeader(request_headers);
   EXPECT_EQ(5, byte_range->first_byte_position());
   EXPECT_EQ(10, byte_range->last_byte_position());
 
   request_headers.Clear();
-  request_headers.AddHeaderFromString("Range: bytes=5-");
+  request_headers.SetHeader("Range", "bytes=5-");
   byte_range = ParseRangeHeader(request_headers);
   EXPECT_EQ(5, byte_range->first_byte_position());
   EXPECT_EQ(-1, byte_range->last_byte_position());
 
   request_headers.Clear();
-  request_headers.AddHeaderFromString("Range: bytes=-5");
+  request_headers.SetHeader("Range", "bytes=-5");
   byte_range = ParseRangeHeader(request_headers);
   EXPECT_TRUE(byte_range->IsSuffixByteRange());
   EXPECT_FALSE(byte_range->HasFirstBytePosition());
@@ -36,7 +36,7 @@ TEST(DownloadHttpUtils, ParseRangeHeader) {
   EXPECT_EQ(5, byte_range->suffix_length());
 
   request_headers.Clear();
-  request_headers.AddHeaderFromString("Range: bytes=5-10, 11-12");
+  request_headers.SetHeader("Range", "bytes=5-10, 11-12");
   byte_range = ParseRangeHeader(request_headers);
   EXPECT_FALSE(byte_range.has_value()) << "Multiple range are not supported.";
 }
@@ -44,11 +44,11 @@ TEST(DownloadHttpUtils, ParseRangeHeader) {
 TEST(DownloadHttpUtils, ValidateRequestHeaders) {
   net::HttpRequestHeaders request_headers;
   EXPECT_TRUE(ValidateRequestHeaders(request_headers));
-  request_headers.AddHeaderFromString("Range: bytes=5-10");
+  request_headers.SetHeader("Range", "bytes=5-10");
   EXPECT_TRUE(ValidateRequestHeaders(request_headers));
 
   request_headers.Clear();
-  request_headers.AddHeaderFromString("Range: kales=5-10");
+  request_headers.SetHeader("Range", "kales=5-10");
   EXPECT_FALSE(ValidateRequestHeaders(request_headers));
 }
 

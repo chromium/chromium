@@ -7,17 +7,12 @@
 #include <optional>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/screens/reset_screen.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
@@ -87,12 +82,12 @@ AdbSideloadingAllowanceModePolicyHandler::
         ash::CrosSettings* cros_settings,
         PrefService* local_state,
         chromeos::PowerManagerClient* power_manager_client,
-        ash::AdbSideloadingPolicyChangeNotification*
+        std::unique_ptr<ash::AdbSideloadingPolicyChangeNotification>
             adb_sideloading_policy_change_notification)
     : cros_settings_(cros_settings),
       local_state_(local_state),
       adb_sideloading_policy_change_notification_(
-          adb_sideloading_policy_change_notification),
+          std::move(adb_sideloading_policy_change_notification)),
       power_manager_observer_(this) {
   DCHECK(local_state_);
   policy_subscription_ = cros_settings_->AddSettingsObserver(
@@ -169,37 +164,7 @@ void AdbSideloadingAllowanceModePolicyHandler::MaybeShowNotification() {
 
 void AdbSideloadingAllowanceModePolicyHandler::CheckSideloadingStatus(
     base::OnceCallback<void(bool)> callback) {
-  // If the feature is not enabled, never show a notification
-  if (!base::FeatureList::IsEnabled(
-          ash::features::kArcManagedAdbSideloadingSupport)) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  using ResponseCode = ash::SessionManagerClient::AdbSideloadResponseCode;
-
-  auto* client = ash::SessionManagerClient::Get();
-  client->QueryAdbSideload(base::BindOnce(
-      [](base::OnceCallback<void(bool)> callback, ResponseCode response_code,
-         bool enabled) {
-        switch (response_code) {
-          case ResponseCode::SUCCESS:
-            // Everything is fine, so pass the |enabled| value to |callback|.
-            break;
-          case ResponseCode::FAILED:
-            // Status could not be established so return false so that the
-            // notifications would not be shown.
-            enabled = false;
-            break;
-          case ResponseCode::NEED_POWERWASH:
-            // This can only happen on devices initialized before M74, i.e. not
-            // powerwashed since then. Do not show the notifications there.
-            enabled = false;
-            break;
-        }
-        std::move(callback).Run(enabled);
-      },
-      std::move(callback)));
+  std::move(callback).Run(false);
 }
 
 void AdbSideloadingAllowanceModePolicyHandler::

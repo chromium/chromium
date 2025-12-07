@@ -8,9 +8,9 @@
 
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
-#include "base/not_fatal_until.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "third_party/blink/renderer/modules/media/audio/audio_renderer_mixer_input.h"
 
@@ -89,7 +89,7 @@ void AudioRendererMixer::RemoveMixerInput(
     aggregate_converter_.RemoveInput(input);
   } else {
     auto converter = converters_.find(input_sample_rate);
-    CHECK(converter != converters_.end(), base::NotFatalUntil::M130);
+    CHECK(converter != converters_.end());
     converter->second->RemoveInput(input);
     if (converter->second->empty()) {
       // Remove converter when it's empty.

@@ -6,7 +6,9 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_MODEL_ACCESS_CONTROLLER_H_
 
 #include "base/memory/raw_ref.h"
+#include "base/time/time.h"
 #include "base/values.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_validator.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 
 class PrefService;
@@ -31,13 +33,11 @@ class OnDeviceModelAccessController {
   void OnResponseCompleted();
 
   // Called when a connection from the remote happens prematurely.
-  void OnDisconnectedFromRemote();
+  // Returns the next time the model can be loaded.
+  base::Time OnDisconnectedFromRemote();
 
   // Called if using the gpu is blocked.
   void OnGpuBlocked();
-
-  // Called if the session times out.
-  void OnSessionTimedOut();
 
   bool ShouldValidateModel(std::string_view model_version);
   void OnValidationFinished(OnDeviceModelValidationResult result);
@@ -54,6 +54,7 @@ class OnDeviceModelAccessController {
 
   raw_ref<PrefService> pref_service_;
   bool is_gpu_blocked_ = false;
+  base::Time next_attempt_time_after_crash_ = base::Time::Now();
 };
 
 }  // namespace optimization_guide

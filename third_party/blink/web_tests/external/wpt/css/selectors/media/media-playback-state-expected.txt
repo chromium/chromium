@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Test :pseudo-class syntax is supported without throwing a SyntaxError
+  assert_unreached: :seeking is not supported Reached unreachable code
+[FAIL] Test :seeking pseudo-class
+  assert_implements: :seeking is not supported undefined
+Harness: the test ran to completion.
+

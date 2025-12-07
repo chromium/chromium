@@ -30,6 +30,7 @@
 
 #include "third_party/blink/public/web/web_input_element.h"
 
+#include "base/containers/to_vector.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_element_collection.h"
@@ -51,8 +52,8 @@ bool WebInputElement::IsTextField() const {
   return ConstUnwrap<HTMLInputElement>()->IsTextField();
 }
 
-void WebInputElement::SetHasBeenPasswordField() {
-  Unwrap<HTMLInputElement>()->SetHasBeenPasswordField();
+void WebInputElement::MaybeSetHasBeenPasswordField() {
+  Unwrap<HTMLInputElement>()->MaybeSetHasBeenPasswordField();
 }
 
 void WebInputElement::SetActivatedSubmit(bool activated) {
@@ -85,9 +86,10 @@ bool WebInputElement::IsMultiple() const {
   return ConstUnwrap<HTMLInputElement>()->Multiple();
 }
 
-WebVector<WebOptionElement> WebInputElement::FilteredDataListOptions() const {
-  return WebVector<WebOptionElement>(
-      ConstUnwrap<HTMLInputElement>()->FilteredDataListOptions());
+std::vector<WebOptionElement> WebInputElement::FilteredDataListOptions() const {
+  return base::ToVector(
+      ConstUnwrap<HTMLInputElement>()->FilteredDataListOptions(),
+      [](HTMLOptionElement* element) { return WebOptionElement(element); });
 }
 
 WebString WebInputElement::LocalizeValue(
@@ -103,15 +105,6 @@ bool WebInputElement::ShouldRevealPassword() const {
   return ConstUnwrap<HTMLInputElement>()->ShouldRevealPassword();
 }
 
-void WebInputElement::SetShouldShowStrongPasswordLabel(bool value) {
-  Unwrap<HTMLInputElement>()->SetShouldShowStrongPasswordLabel(value);
-}
-
-bool WebInputElement::ShouldShowStrongPasswordLabel() const {
-  return ConstUnwrap<HTMLInputElement>()->ShouldShowStrongPasswordLabel();
-}
-
-#if BUILDFLAG(IS_ANDROID)
 bool WebInputElement::IsLastInputElementInForm() {
   return Unwrap<HTMLInputElement>()->IsLastInputElementInForm();
 }
@@ -119,7 +112,6 @@ bool WebInputElement::IsLastInputElementInForm() {
 void WebInputElement::DispatchSimulatedEnter() {
   Unwrap<HTMLInputElement>()->DispatchSimulatedEnter();
 }
-#endif
 
 WebInputElement::WebInputElement(HTMLInputElement* elem)
     : WebFormControlElement(elem) {}

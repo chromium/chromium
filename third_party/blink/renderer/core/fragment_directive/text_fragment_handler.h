@@ -34,9 +34,6 @@ class CORE_EXPORT TextFragmentHandler final
   TextFragmentHandler(const TextFragmentHandler&) = delete;
   TextFragmentHandler& operator=(const TextFragmentHandler&) = delete;
 
-  // Determine if |result| represents a click on an existing highlight.
-  static bool IsOverTextFragment(const HitTestResult& result);
-
   // Called to notify the frame's TextFragmentHandler on context menu open over
   // a selection. Will trigger preemptive generation if needed.
   static void OpenedContextMenuOverSelection(LocalFrame* frame);
@@ -73,6 +70,7 @@ class CORE_EXPORT TextFragmentHandler final
   FRIEND_TEST_ALL_PREFIXES(TextFragmentHandlerTest,
                            IfGeneratorResetShouldRecordCorrectError);
   FRIEND_TEST_ALL_PREFIXES(TextFragmentHandlerTest, NotGenerated);
+  FRIEND_TEST_ALL_PREFIXES(TextFragmentHandlerTest, NotGeneratedWithFileInput);
   // Returns whether preemptive generation should run for the given frame.
   static bool ShouldPreemptivelyGenerateFor(LocalFrame* frame);
 

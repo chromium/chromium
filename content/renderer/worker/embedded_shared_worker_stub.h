@@ -23,6 +23,7 @@
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-forward.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom.h"
+#include "third_party/blink/public/mojom/frame/reporting_observer.mojom.h"
 #include "third_party/blink/public/mojom/renderer_preference_watcher.mojom-forward.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom-forward.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom-forward.h"
@@ -33,7 +34,6 @@
 #include "third_party/blink/public/mojom/worker/worker_main_script_load_params.mojom.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/web/web_shared_worker_client.h"
-#include "url/gurl.h"
 
 namespace blink {
 class ChildURLLoaderFactoryBundle;
@@ -60,6 +60,7 @@ class EmbeddedSharedWorkerStub : public blink::WebSharedWorkerClient,
       blink::mojom::SharedWorkerInfoPtr info,
       const blink::SharedWorkerToken& token,
       const blink::StorageKey& constructor_key,
+      const url::Origin& origin,
       bool is_constructor_secure_context,
       const std::string& user_agent,
       const blink::UserAgentMetadata& ua_metadata,
@@ -83,6 +84,10 @@ class EmbeddedSharedWorkerStub : public blink::WebSharedWorkerClient,
           browser_interface_broker,
       ukm::SourceId ukm_source_id,
       bool require_cross_site_request_for_cookies,
+      mojo::PendingReceiver<blink::mojom::ReportingObserver>
+          coep_reporting_observer,
+      mojo::PendingReceiver<blink::mojom::ReportingObserver>
+          dip_reporting_observer,
       const std::vector<std::string>& cors_exempt_header_list);
 
   EmbeddedSharedWorkerStub(const EmbeddedSharedWorkerStub&) = delete;

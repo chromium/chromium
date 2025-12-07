@@ -112,10 +112,6 @@ class PLATFORM_EXPORT MHTMLArchive final
   blink::mojom::MHTMLLoadResult LoadResult() const { return load_result_; }
 
  private:
-  static MHTMLArchive* CreateArchive(const KURL&,
-                                     scoped_refptr<const SharedBuffer>);
-  static void ReportLoadResult(blink::mojom::MHTMLLoadResult result);
-
   void SetMainResource(ArchiveResource*);
   void AddSubresource(ArchiveResource*);
   static bool CanLoadArchive(const KURL&);

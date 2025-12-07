@@ -20,7 +20,9 @@ static const int kToTBlinkRevision = 999999;
 struct BrowserInfo {
   BrowserInfo();
   BrowserInfo(const BrowserInfo&);
+  BrowserInfo(BrowserInfo&&);
   BrowserInfo& operator=(const BrowserInfo&);
+  BrowserInfo& operator=(BrowserInfo&&);
   ~BrowserInfo();
 
   std::string android_package;
@@ -31,6 +33,7 @@ struct BrowserInfo {
   int major_version = 0;
   int build_no = kToTBuildNo;
   int blink_revision = kToTBlinkRevision;
+  int process_id = 0;
   bool is_android = false;
   bool is_headless_shell = false;
 

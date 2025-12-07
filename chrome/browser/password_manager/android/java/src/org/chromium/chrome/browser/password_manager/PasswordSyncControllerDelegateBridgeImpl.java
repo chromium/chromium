@@ -9,17 +9,21 @@ import com.google.android.gms.common.api.ApiException;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * Java-counterpart of the native PasswordSyncControllerDelegateBridgeImpl. It's part of
  * PasswordSyncControllerDelegate that propagates sync events to a downstream implementation.
  */
+@NullMarked
 class PasswordSyncControllerDelegateBridgeImpl {
     private final PasswordSyncControllerDelegate mPasswordSyncControllerDelegate;
-    private long mNativeDelegateBridgeImpl;
+    private final long mNativeDelegateBridgeImpl;
 
     PasswordSyncControllerDelegateBridgeImpl(
             long nativePasswordSyncControllerDelegateBridgeImpl,
-            PasswordSyncControllerDelegate syncDelegate) {
+            @Nullable PasswordSyncControllerDelegate syncDelegate) {
         mNativeDelegateBridgeImpl = nativePasswordSyncControllerDelegateBridgeImpl;
         assert syncDelegate != null;
         mPasswordSyncControllerDelegate = syncDelegate;

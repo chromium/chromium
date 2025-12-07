@@ -9,8 +9,10 @@ assert(is_win || is_mac || is_linux || is_chromeos)
 source_set("themes") {
   public = [
     "browser_theme_pack.h",
+    "browser_theme_provider_delegate.h",
     "custom_theme_supplier.h",
     "theme_helper.h",
+    "theme_local_data_batch_uploader.h",
     "theme_properties.h",
     "theme_service.h",
     "theme_service_factory.h",
@@ -22,6 +24,7 @@ source_set("themes") {
     "browser_theme_pack.cc",
     "custom_theme_supplier.cc",
     "theme_helper.cc",
+    "theme_local_data_batch_uploader.cc",
     "theme_properties.cc",
     "theme_service.cc",
     "theme_service_factory.cc",
@@ -29,11 +32,14 @@ source_set("themes") {
     "theme_syncable_service.cc",
   ]
   deps = [
-    "//build:chromeos_buildflags",
     "//chrome/app/theme:theme_resources",
     "//chrome/browser/new_tab_page/chrome_colors",
+    "//chrome/browser/search/background",
+    "//chrome/browser/search/background:constants",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/frame",
+    "//chrome/browser/ui/tabs:tab_group",
+    "//chrome/browser/ui/webui/cr_components/theme_color_picker",
     "//chrome/common",
     "//components/crx_file",
     "//components/infobars/content",
@@ -41,9 +47,13 @@ source_set("themes") {
     "//components/pref_registry",
     "//components/resources:components_scaled_resources",
     "//components/sync/protocol",
+    "//components/sync_preferences",
+    "//components/tab_groups",
+    "//components/themes:prefs",
     "//content/public/browser",
     "//third_party/abseil-cpp:absl",
     "//ui/color",
+    "//ui/color/dynamic_color",
     "//ui/gfx",
     "//ui/native_theme",
   ]
@@ -66,16 +76,6 @@ source_set("themes") {
       "//extensions/common",
     ]
     deps += [ "//extensions/browser" ]
-  }
-  if (is_win || is_mac || is_linux) {
-    public += [ "theme_color_policy_handler.h" ]
-    sources += [ "theme_color_policy_handler.cc" ]
-    deps += [
-      "//components/policy:generated",
-      "//components/policy:policy_code_generate",
-      "//components/policy/core/browser",
-      "//third_party/re2",
-    ]
   }
   if (is_win) {
     sources += [

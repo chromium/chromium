@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<!--
+@WAIT-FOR:Dialog Ready
+@BLINK-ALLOW:htmlTag*
+@BLINK-ALLOW:className*
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Material Web Dialogs</title>
+    <meta name="viewport" content="width=400, height=300">
+    <style>
+        body {
+            margin: 0;
+            width: 400px;
+            height: 300px;
+        }
+    </style>
+    <script type="module">
+        import { injectImportMap, loadAndWaitForReady, waitForStable } from "./resources/utils.js";
+        injectImportMap();
+
+        const components = [
+            "md-dialog",
+            "md-text-button"
+        ];
+
+        // Make the main callback async to use await
+        loadAndWaitForReady(components, async () => {
+            const statusDiv = document.getElementById("status");
+            const dialog = document.createElement("md-dialog");
+            dialog.id = "dialog";
+            dialog.quick = true;
+
+            dialog.style.width = "300px";
+            dialog.style.height = "200px";
+
+            const headline = document.createElement("div");
+            headline.slot = "headline";
+            headline.style.padding = "0";
+            headline.style.margin = "0";
+            headline.textContent = "Basic Dialog";
+
+            const content = document.createElement("form");
+            content.slot = "content";
+            content.method = "dialog";
+            content.style.padding = "0";
+            content.style.margin = "0";
+
+            let longContent = "";
+            for (let i = 0; i < 10; i++) {
+                longContent += `<p style='margin:0;padding:0;'>This is line ${i + 1} to ensure overflow.</p>`;
+            }
+            longContent += "Dialog Ready";
+            content.innerHTML = longContent;
+            const actions = document.createElement("div");
+            actions.slot = "actions";
+
+            const cancelButton = document.createElement("md-text-button");
+            cancelButton.value = "cancel";
+            cancelButton.textContent = "Cancel";
+
+            const okButton = document.createElement("md-text-button");
+            okButton.value = "ok";
+            okButton.textContent = "OK";
+
+            actions.appendChild(cancelButton);
+            actions.appendChild(okButton);
+
+            dialog.appendChild(headline);
+            dialog.appendChild(content);
+            dialog.appendChild(actions);
+            statusDiv.appendChild(dialog);
+
+            dialog.show();
+            await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+            await dialog.updateComplete;
+            statusDiv.setAttribute("aria-label", "Ready");
+        });
+    </script>
+</head>
+<body>
+    <div id="status" aria-label="Loading">
+    </div>
+</body>
+</html>

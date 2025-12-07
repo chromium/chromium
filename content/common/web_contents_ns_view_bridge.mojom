@@ -22,8 +22,8 @@ interface WebContentsNSView {
   // Clear the parent NSView and related state.
   ResetParentNSView();
 
-  // Set the NSView's frame in its NSWindow to |bounds_in_window|.
-  SetBounds(gfx.mojom.Rect bounds_in_window);
+  // Sets the NSView's frame in its superview's coordinate.
+  SetBounds(gfx.mojom.Rect bounds_in_superview);
 
   // Short or hide the NSView.
   SetVisible(bool visible);
@@ -49,11 +49,6 @@ interface WebContentsNSView {
             gfx.mojom.ImageSkia? image,
             gfx.mojom.Vector2d image_offset,
             bool is_privileged);
-
-  // Intended for desktop PWAs with manifest entry of window-controls-overlay,
-  // this informs the view of which area at the top of the view is available for
-  // web contents.
-  UpdateWindowControlsOverlay(gfx.mojom.Rect bounding_rect);
 
   // TODO(crbug.com/40226213): This is a work around for a bug in mojo
   // where close notifications for associated messages pipes can sometimes be

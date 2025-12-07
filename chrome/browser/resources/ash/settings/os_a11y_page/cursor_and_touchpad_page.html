@@ -1,4 +1,4 @@
-<style include="settings-shared">
+<style include="settings-shared cr-icons">
   :host {
     --cr-section-indent-width: 60px;
   }
@@ -21,14 +21,20 @@
     padding-inline-start: var(--cr-section-padding);
   }
 
+  .mouse-keys-icon {
+    --iron-icon-fill-color: var(--cros-sys-primary);
+    padding-inline-end: var(--cr-icon-button-margin-start);
+  }
+
+  #mouseKeysSettingsRow:hover {
+    background-color: var(--cr-hover-background-color);
+    cursor: pointer;
+  }
+
   settings-toggle-button,
   cr-link-row {
     padding-inline-end: var(--cr-section-padding);
     padding-inline-start: var(--cr-section-padding);
-  }
-
-  #facegaze-icon {
-    padding-inline-end: var(--cr-section-padding);
   }
 </style>
 
@@ -75,100 +81,55 @@
   </settings-toggle-button>
 </div>
 <template is="dom-if" if="[[isAccessibilityMouseKeysEnabled_]]">
-  <settings-toggle-button
-      id="enableMouseKeys"
-      icon="os-settings:mouse-keys"
-      pref="{{prefs.settings.a11y.mouse_keys.enabled}}"
-      label="$i18n{mouseKeysLabel}"
-      sub-label="$i18n{mouseKeysDescription}"
-      deep-link-focus-id$="[[Setting.kMouseKeysEnabled]]">
-  </settings-toggle-button>
-  <div class="sub-item"
-      hidden$="[[!prefs.settings.a11y.mouse_keys.enabled.value]]">
-    <div class="settings-box continuation">
-      <div class="start settings-box-text" id="mouseKeysAcceleration"
-          aria-hidden="true">
-        $i18n{mouseKeysAcceleration}
-      </div>
-      <settings-slider show-markers
-          pref="{{prefs.settings.a11y.mouse_keys.acceleration}}"
-          ticks="[[mouseKeysAccelerationTicks_()]]"
-          label-aria="$i18n{mouseKeysAcceleration}"
-          label-min="$i18n{mouseKeysAccelerationMinLabel}"
-          label-max="$i18n{mouseKeysAccelerationMaxLabel}">
-      </settings-slider>
-    </div>
-    <div class="settings-box continuation">
-      <div class="start settings-box-text" id="mouseKeysMaxSpeed"
-          aria-hidden="true">
-        $i18n{mouseKeysMaxSpeed}
-      </div>
-      <settings-slider show-markers
-          pref="{{prefs.settings.a11y.mouse_keys.max_speed}}"
-          ticks="[[mouseKeysMaxSpeedTicks_()]]"
-          label-aria="$i18n{mouseKeysMaxSpeed}"
-          label-min="$i18n{mouseKeysMaxSpeedMinLabel}"
-          label-max="$i18n{mouseKeysMaxSpeedMaxLabel}">
-      </settings-slider>
-    </div>
-    <settings-toggle-button id="mouseKeysUsePrimaryKeys"
-        class="settings-box hr"
-        pref="{{prefs.settings.a11y.mouse_keys.use_primary_keys}}"
-        label="$i18n{mouseKeysUsePrimaryKeys}">
-    </settings-toggle-button>
-    <div class="settings-box"
-      hidden$="[[!prefs.settings.a11y.mouse_keys.use_primary_keys.value]]">
-      <div class="start settings-box-text" aria-hidden="true">
-        $i18n{mouseKeysDominantHand}
-      </div>
-      <settings-dropdown-menu id="mouseKeysDominantHand"
-          label="$i18n{mouseKeysDominantHand}"
-          pref="{{prefs.settings.a11y.mouse_keys.dominant_hand}}"
-          menu-options="[[mouseKeysDominantHandOptions_]]">
-      </settings-dropdown-menu>
-    </div>
-  </div>
-</template>
-<!-- TODO(b/341770655): Add deep link focus ID -->
-<template is="dom-if" if="[[isAccessibilityFaceGazeEnabled_]]">
-  <div class="settings-box two-line start-padding">
-    <div id="faceGazeDescription"
+  <div class="settings-box no-padding">
+    <div id="mouseKeysSettingsRow"
         class="flex layout horizontal center link-wrapper"
-        on-click="onFaceGazeSettingsClick_">
+        on-click="onMouseKeysRowClicked_">
+      <iron-icon icon="os-settings:mouse-keys"
+          class="mouse-keys-icon">
+      </iron-icon>
       <div id="details" aria-hidden="true">
-        <span id="facegaze-icon" aria-hidden="true">
-          <iron-icon slot="icon" icon="os-settings:face-gaze">
-          </iron-icon>
-        </span>
         <div class="flex settings-box-text">
-          <div id="faceGazeTitleText">
-            $i18n{accessibilityFaceGazeLabel}
+          <div id="mouseKeysTitleText">
+            $i18n{mouseKeysLabel}
           </div>
-          <div id="faceGazeDescriptionText" class="cr-secondary-text label">
-            $i18n{accessibilityFaceGazeDescription}
+          <div id="mouseKeysSublabel" class="cr-secondary-text sub-label">
+            <span class="sub-label-text">$i18n{mouseKeysDescription}</span>
           </div>
         </div>
       </div>
-      <template is="dom-if"
-          if="[[prefs.settings.a11y.face_gaze.enabled.value]]">
-        <cr-icon-button \
-            id="faceGazeSubpageButton"
-            class="subpage-arrow"
-            label="$i18n{accessibilityFaceGazeLabel}"
-            on-click="onFaceGazeSettingsClick_"
-            class="sub-item">
-        </cr-icon-button>
-        <div class="separator"></div>
-      </template>
-      <cr-toggle
-          id="faceGazeToggle"
-          checked="{{prefs.settings.a11y.face_gaze.enabled.value}}"
-          aria-labeledby="faceGazeTitleText"
-          aria-describedby="faceGazeDescriptionText"
-          on-checked-changed="onFaceGazeToggleChange_">
-      </cr-toggle>
+      <cr-icon-button id="mouseKeysRowArrowIcon"
+          class="subpage-arrow"
+          aria-labelledby="mouseKeysTitleText"
+          aria-describedby="mouseKeysSublabel"
+          aria-roledescription="$i18n{subpageArrowRoleDescription}"
+          on-click="onMouseKeysRowClicked_">
+      </cr-icon-button>
     </div>
+    <div class="separator"></div>
+    <cr-toggle id="mouseKeysToggle"
+        class="margin-matches-padding"
+        aria-label="$i18n{mouseKeysLabel}"
+        aria-describedby="mouseKeysSublabel"
+        checked="[[prefs.settings.a11y.mouse_keys.enabled.value]]"
+        on-change="onMouseKeysToggleClicked_">
+    </cr-toggle>
   </div>
+</template>
+<template is="dom-if" if="[[showFaceGazeRow_]]" restamp>
+  <cr-link-row
+      id="faceGazePageRow"
+      class="hr"
+      start-icon="os-settings:face-gaze"
+      label="$i18n{accessibilityFaceGazeLabel}"
+      on-click="onFaceGazeSettingsClick_"
+      role-description="$i18n{subpageArrowRoleDescription}">
+    <localized-link id="faceGazeSubLabel"
+        slot="sub-label"
+        localized-string="$i18n{accessibilityFaceGazeDescription}"
+        link-url="$i18n{faceGazeLearnMoreUrl}">
+    </localized-link>
+  </cr-link-row>
 </template>
 <settings-toggle-button
     id="largeCursorEnabledControl"
@@ -198,7 +159,7 @@
     $i18n{cursorColorOptionsLabel}
   </div>
   <settings-dropdown-menu id="cursorColorDropdown"
-      aria-labeledby="cursorColorOptionsLabel"
+      aria-labelledby="cursorColorOptionsLabel"
       pref="{{prefs.settings.a11y.cursor_color}}"
       menu-options="[[cursorColorOptions_]]"
       on-settings-control-change="onA11yCursorColorChange_"
@@ -211,13 +172,34 @@
     label="$i18n{cursorHighlightLabel}"
     deep-link-focus-id$="[[Setting.kHighlightCursorWhileMoving]]">
 </settings-toggle-button>
-<template is="dom-if" if="[[isAccessibilityOverscrollSettingFeatureEnabled_]]">
-  <settings-toggle-button id="overscrollToggle"
-      class="hr"
-      pref="{{prefs.settings.a11y.overscroll_history_navigation}}"
-      label="$i18n{overscrollHistoryNavigationTitle}"
-      deep-link-focus-id$="[[Setting.kOverscrollEnabled]]">
-  </settings-toggle-button>
+<settings-toggle-button id="overscrollToggle"
+    class="hr"
+    pref="{{prefs.settings.a11y.overscroll_history_navigation}}"
+    label="$i18n{overscrollHistoryNavigationTitle}"
+    deep-link-focus-id$="[[Setting.kOverscrollEnabled]]">
+</settings-toggle-button>
+<template is="dom-if" if="[[isAccessibilityDisableTouchpadEnabled_]]">
+  <div class="settings-box start-padding">
+    <div class="flex start settings-box-text">
+      <div id="disableInternalTouchpadLabel">
+          $i18n{disableTouchpadLabel}
+      </div>
+      <template is="dom-if" if="[[showTouchpadEnableMessage_(
+            prefs.settings.a11y.disable_trackpad_mode.value
+          )]]">
+        <div class="cr-secondary-text sub-label" id="reEnableTouchpadLabel" >
+           <span class="sub-label-text">$i18n{reEnableTouchpadLabel}</span>
+        </div>
+      </template>
+    </div>
+    <settings-dropdown-menu id="disableInternalTouchpadDropdown"
+          aria-labelledby="disableInternalTouchpadLabel"
+          pref="{{prefs.settings.a11y.disable_trackpad_mode}}"
+          menu-options="[[disableTouchpadOptions_]]"
+          deep-link-focus-id$="[[Setting.kDisableTouchpad]]"
+          >
+    </settings-dropdown-menu>
+  </div>
 </template>
 <template is="dom-if" if="[[showShelfNavigationButtonsSettings_]]" restamp>
   <!-- If shelf navigation buttons are implicitly enabled by other a11y

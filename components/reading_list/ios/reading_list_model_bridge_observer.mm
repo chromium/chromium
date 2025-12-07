@@ -96,15 +96,6 @@ void ReadingListModelBridge::ReadingListModelCompletedBatchUpdates(
   }
 }
 
-void ReadingListModelBridge::ReadingListWillMoveEntry(
-    const ReadingListModel* model,
-    const GURL& url) {
-  if ([observer_
-          respondsToSelector:@selector(readingListModel:willMoveEntry:)]) {
-    [observer_ readingListModel:model willMoveEntry:url];
-  }
-}
-
 void ReadingListModelBridge::ReadingListWillUpdateEntry(
     const ReadingListModel* model,
     const GURL& url) {

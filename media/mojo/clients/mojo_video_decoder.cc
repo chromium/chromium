@@ -5,7 +5,6 @@
 #include "media/mojo/clients/mojo_video_decoder.h"
 
 #include "base/check.h"
-#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -18,7 +17,6 @@
 #include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_switches.h"
@@ -36,6 +34,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace media {
 
@@ -98,7 +97,7 @@ MojoVideoDecoder::MojoVideoDecoder(
     : task_runner_(task_runner),
       pending_remote_decoder_(std::move(pending_remote_decoder)),
       gpu_factories_(gpu_factories),
-      media_log_(media_log),
+      media_log_(media_log->Clone()),
       timestamps_(128),
       writer_capacity_(
           GetDefaultDecoderBufferConverterCapacity(DemuxerStream::VIDEO)),
@@ -112,7 +111,7 @@ MojoVideoDecoder::MojoVideoDecoder(
 MojoVideoDecoder::~MojoVideoDecoder() {
   DVLOG(1) << __func__;
   if (request_overlay_info_cb_ && overlay_info_requested_)
-    request_overlay_info_cb_.Run(false, base::NullCallback());
+    request_overlay_info_cb_.Run(base::NullCallback());
 }
 
 bool MojoVideoDecoder::IsPlatformDecoder() const {
@@ -123,12 +122,6 @@ bool MojoVideoDecoder::SupportsDecryption() const {
   // Currently only the Android backends and specific ChromeOS configurations
   // support decryption.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kLacrosUseChromeosProtectedMedia)) {
-    return false;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   return true;
 #else
   return false;
@@ -161,7 +154,7 @@ void MojoVideoDecoder::Initialize(const VideoDecoderConfig& config,
   if (gpu_factories_ &&
       gpu_factories_->IsDecoderConfigSupported(config) ==
           GpuVideoAcceleratorFactories::Supported::kFalse &&
-      IsBuiltInVideoCodec(config.codec())) {
+      IsDecoderBuiltInVideoCodec(config.codec())) {
     FailInit(std::move(init_cb), DecoderStatus::Codes::kUnsupportedConfig);
     return;
   }
@@ -207,7 +200,8 @@ void MojoVideoDecoder::InitializeRemoteDecoder(
   }
 
   remote_decoder_->Initialize(
-      config, low_delay, cdm_id,
+      config, low_delay,
+      cdm_id ? mojom::Cdm::NewCdmId(cdm_id.value()) : nullptr,
       base::BindOnce(&MojoVideoDecoder::OnInitializeDone,
                      base::Unretained(this)));
 }
@@ -215,9 +209,9 @@ void MojoVideoDecoder::InitializeRemoteDecoder(
 void MojoVideoDecoder::OnInitializeDone(const DecoderStatus& status,
                                         bool needs_bitstream_conversion,
                                         int32_t max_decode_requests,
-                                        VideoDecoderType decoder_type) {
-  DVLOG(1) << __func__ << ": status = " << status.group() << ":"
-           << static_cast<int>(status.code());
+                                        VideoDecoderType decoder_type,
+                                        bool needs_transcryption) {
+  status.DebugLog(1);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   initialized_ = status.is_ok();
   needs_bitstream_conversion_ = needs_bitstream_conversion;
@@ -287,11 +281,10 @@ void MojoVideoDecoder::OnVideoFrameDecoded(
     const auto decode_start_time = timestamp_it->second;
     const auto decode_end_time = base::TimeTicks::Now();
 
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-        "media", "MojoVideoDecoder::Decode", timestamp, decode_start_time);
-    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP1(
-        "media", "MojoVideoDecoder::Decode", timestamp, decode_end_time,
-        "timestamp", timestamp);
+    TRACE_EVENT_BEGIN("media", "MojoVideoDecoder::Decode",
+                      perfetto::Track(timestamp), decode_start_time);
+    TRACE_EVENT_END("media", perfetto::Track(timestamp), decode_end_time,
+                    "timestamp", timestamp);
     UMA_HISTOGRAM_TIMES("Media.MojoVideoDecoder.Decode",
                         decode_end_time - decode_start_time);
   }
@@ -439,14 +432,13 @@ void MojoVideoDecoder::OnWaiting(WaitingReason reason) {
   waiting_cb_.Run(reason);
 }
 
-void MojoVideoDecoder::RequestOverlayInfo(bool restart_for_transitions) {
+void MojoVideoDecoder::RequestOverlayInfo() {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(request_overlay_info_cb_);
 
   overlay_info_requested_ = true;
   request_overlay_info_cb_.Run(
-      restart_for_transitions,
       base::BindPostTaskToCurrentDefault(base::BindRepeating(
           &MojoVideoDecoder::OnOverlayInfoChanged, weak_this_)));
 }

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/permissions/exclusive_access_permission_prompt.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_base_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -20,6 +21,12 @@ class ExclusiveAccessPermissionPromptView : public PermissionPromptBaseView {
   METADATA_HEADER(ExclusiveAccessPermissionPromptView, PermissionPromptBaseView)
 
  public:
+  enum class ButtonType {
+    kAlwaysAllow = 0,
+    kAllowThisTime = 1,
+    kNeverAllow = 2,
+  };
+
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAlwaysAllowId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAllowThisTimeId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kNeverAllowId);
@@ -50,12 +57,6 @@ class ExclusiveAccessPermissionPromptView : public PermissionPromptBaseView {
 
  private:
   friend class ExclusiveAccessPermissionPromptInteractiveTest;
-
-  enum class ButtonType {
-    kAlwaysAllow = 0,
-    kAllowThisTime = 1,
-    kNeverAllow = 2,
-  };
 
   static int GetViewId(ButtonType button) { return static_cast<int>(button); }
   static ButtonType GetButtonType(int button_id) {

@@ -61,9 +61,6 @@
   <message name="IDS_PAGE_INFO_SECURE_DETAILS" desc="A short paragraph explaining a secure site to the user.">
     Your information (for example, passwords or credit card numbers) is private when it is sent to this site.
   </message>
-  <message name="IDS_PAGE_INFO_ADMIN_PROVIDED_CERT_DETAILS" desc="A short paragraph explaining a site using an administrator-provided certificate to the user.">
-    You have accessed content using an administrator-provided certificate. Data you provide to <ph name="DOMAIN">$1<ex>www.google.com</ex></ph> can be intercepted by your administrator.
-  </message>
   <message name="IDS_PAGE_INFO_MIXED_CONTENT_DETAILS" desc="A short paragraph explaining a partially insecure site to the user.">
     Attackers might be able to see the images you’re looking at on this site and trick you by modifying them.
   </message>
@@ -74,13 +71,13 @@
     You should not enter any sensitive information on this site (for example, passwords or credit cards), because it could be stolen by attackers.
   </message>
   <message name="IDS_PAGE_INFO_MALWARE_DETAILS" desc="A short paragraph explaining to the user that the current website has been flagged as containing malware.">
-    Attackers on the site you're trying to visit might install harmful software that steals or deletes things like your password, photos, messages, or credit card number.
+    Attackers on the site you tried visiting might install harmful software that steals or deletes things like your passwords, photos, messages, or credit card numbers.
   </message>
   <message name="IDS_PAGE_INFO_SOCIAL_ENGINEERING_DETAILS" desc="A short paragraph explaining to the user that the current website has been flagged as social engineering.">
-    Attackers on the site you're trying to visit might trick you into installing software or revealing things like your password, phone, or credit card number.
+    Attackers on the site you tried visiting might trick you into installing software or revealing things like your passwords, phone, or credit card numbers.
   </message>
   <message name="IDS_PAGE_INFO_UNWANTED_SOFTWARE_DETAILS" desc="A short paragraph explaining to the user that the current website has been flagged as containing unwanted software.">
-    Attackers on the site you're trying to visit might trick you into installing harmful software that affects the way you browse — for example, by changing your homepage or showing you extra ads on sites you visit.
+    Attackers on the site you tried visiting might trick you into installing harmful software that affects the way you browse — for example, by changing your homepage or showing you extra ads on sites you visit.
   </message>
 
   <!-- Identity detail strings shared with iOS -->
@@ -121,10 +118,10 @@
 
     <!-- Certificate exception decision UI (after clicking through an SSL certificate error) -->
     <!-- TODO(crbug.com/41183997): Support revoking certificate overrides on iOS Page Info. -->
-    <message name="IDS_PAGE_INFO_INVALID_CERTIFICATE_DESCRIPTION" desc="A short paragraph to the user that security warnings are disabled. This is the case when the user has encountered a certificate error for the current site and chosen to override it.">
+    <message name="IDS_PAGE_INFO_INVALID_CERTIFICATE_DESCRIPTION" desc="A short paragraph to the user that security warnings are disabled. This is the case when the user has encountered a certificate error for the current site and chosen to override it." formatter_data="android_java">
       You have chosen to turn off security warnings for this site.
     </message>
-    <message name="IDS_PAGE_INFO_RESET_INVALID_CERTIFICATE_DECISIONS_BUTTON" desc="Text of button in the page info that resets allow/deny decisions of invalid certificates, which will start showing security warnings for the page again.">
+    <message name="IDS_PAGE_INFO_RESET_INVALID_CERTIFICATE_DECISIONS_BUTTON" desc="Text of button in the page info that resets allow/deny decisions of invalid certificates, which will start showing security warnings for the page again." formatter_data="android_java">
       Turn on warnings
     </message>
 
@@ -189,7 +186,6 @@
     </message>
 
     <!-- Certificate Viewer link -->
-    <if expr="not is_android">
       <message name="IDS_PAGE_INFO_CERTIFICATE" desc="Title of the certificate area in the Page Info bubble, shown when a HTTPS site is loaded.">
         Certificate
       </message>
@@ -211,7 +207,7 @@
       <message name="IDS_PAGE_INFO_CERTIFICATE_IS_VALID" desc="Title of the certificate area in the Page Info bubble, shown when a HTTPS site is loaded with a valid certificate.">
         Certificate is valid
       </message>
-      <message name="IDS_PAGE_INFO_CERTIFICATE_DETAILS" desc="Title of the certificate area in the Page Info bubble, shown when a HTTPS site is loaded with an invalid certificate.">
+      <message name="IDS_PAGE_INFO_CERTIFICATE_DETAILS" desc="Title of the certificate area in the Page Info bubble, shown when a HTTPS site is loaded with an invalid certificate." formatter_data="android_java">
         Certificate details
       </message>
       <message name="IDS_PAGE_INFO_CERTIFICATE_VALID_LINK_TOOLTIP" desc="The text of the tooltip on IDS_PAGE_INFO_CERTIFICATE_VALID_LINK.">
@@ -220,7 +216,11 @@
       <message name="IDS_PAGE_INFO_CERTIFICATE_INVALID_LINK_TOOLTIP" desc="The text of the tooltip on IDS_PAGE_INFO_CERTIFICATE_INVALID_LINK.">
         Show certificate
       </message>
-    </if>
+
+    <!-- QWAC Certificate Info strings -->
+    <message name="IDS_PAGE_INFO_QWAC_STATUS_TITLE" desc="The text of the title of the Page Info row that shows EU Qualified Certificate status." formatter_data="android_java">
+      EU Qualified Status
+    </message>
 
     <!-- Certificate Info strings -->
     <if expr="is_android">
@@ -247,42 +247,9 @@
       <message name="IDS_PAGE_INFO_COOKIES_TOOLTIP" desc="A tooltip that appears when the user hovers over the 'Cookies and site data' button. Options on the next screen include: Block third-party cookies, Manage cookies and site data, and See related sites.">
         Options for cookies and site data
       </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_TOOLTIP" desc="A tooltip that appears when the user hovers over the 'Tracking Protection' button. Options on the next screen include: Block third-party cookies, and Manage on-device site data.">
-        Options for tracking protections and on-device site data
-      </message>
     </if>
 
     <!-- Permission values -->
-    <message name="IDS_PAGE_INFO_BUTTON_TEXT_ALLOWED_BY_USER" desc="The Page Info popup contains several buttons for opening dropdown menus and changing site permissions. This is the text of such a button if the permission controlled by the button was explicitly set to allow by the user.">
-      Allow
-    </message>
-    <message name="IDS_PAGE_INFO_BUTTON_TEXT_ALLOWED_ONCE_BY_USER" desc="The Page Info popup contains several buttons for opening dropdown menus and changing site permissions. This is the text of such a button if the permission controlled by the button was explicitly set to allow once by the user.">
-      Only this time
-    </message>
-    <message name="IDS_PAGE_INFO_BUTTON_TEXT_BLOCKED_BY_USER" desc="The Page Info popup contains several buttons for opening dropdown menus and changing site permissions. This is the text of such a button if the permission controlled by the button was explicitly set to block by the user.">
-      Block
-    </message>
-    <if expr="not is_android">
-    <message name="IDS_PAGE_INFO_BUTTON_TEXT_MUTED_BY_USER" desc="The Page Info popup contains several buttons for opening dropdown menus and changing site permissions. This is the text of such a button if the button controls the sound permission and was explicitly set to mute by the user.">
-      Mute
-    </message>
-    </if>
-    <message name="IDS_PAGE_INFO_BUTTON_TEXT_ASK_BY_USER" desc="The Page Info popup contains several buttons for opening dropdown menus and changing site permissions. This is the text of such a button if the permission controlled by the button was explicitly set to ask by the user.">
-      Ask
-    </message>
-    <message name="IDS_PAGE_INFO_BUTTON_TEXT_DETECT_IMPORTANT_CONTENT_BY_USER" desc="The Page Info popup contains several buttons for opening dropdown menus and changing site permissions. This is the text of such a button if the permission controlled by the button was explicitly set to detect important content by the user.">
-      Detect
-    </message>
-
-    <message name="IDS_PAGE_INFO_BUTTON_TEXT_ALLOWED_BY_DEFAULT" desc="The Page Info popup contains several buttons for opening dropdown menus and changing site permissions. This is the text of such a button if the permission controlled by the button is set to the default setting and the default settings is allow.">
-      Allow (default)
-    </message>
-    <message name="IDS_PAGE_INFO_BUTTON_TEXT_BLOCKED_BY_DEFAULT" desc="The Page Info popup contains several buttons for opening dropdown menus and changing site permissions. This is the text of such a button if the permission controlled by the button is set to the default setting and the default settings is block.">
-      Block (default)
-    </message>
-    <message name="IDS_PAGE_INFO_BUTTON_TEXT_ASK_BY_DEFAULT" desc="The Page Info popup contains several buttons for opening dropdown menus and changing site permissions. This is the text of such a button if the permission controlled by the button is set to the default setting and the default settings is ask.">
-      Ask (default)
-    </message>
     <if expr="not is_android">
     <message name="IDS_PAGE_INFO_BUTTON_TEXT_AUTOMATIC_BY_DEFAULT" desc="The Page Info popup contains several buttons for opening dropdown menus and changing site permissions. This is the text of such a button if the button controls the sound permission and is set to the default setting and the default setting is automatic.">
       Automatic (default)
@@ -291,9 +258,6 @@
       Mute (default)
     </message>
     </if>
-    <message name="IDS_PAGE_INFO_BUTTON_TEXT_DETECT_IMPORTANT_CONTENT_BY_DEFAULT" desc="The Page Info popup contains several buttons for opening dropdown menus and changing site permissions. This is the text of such a button if the permission controlled by the button is set to the default setting and the default settings is detect important content.">
-      Detect (default)
-    </message>
 
     <message name="IDS_PAGE_INFO_MENU_ITEM_DEFAULT_ALLOW" desc="The text of the menu item of a permissions menu on the Page Info UI that resets the setting to the default setting which is allow.">
       Use global default (Allow)
@@ -304,9 +268,6 @@
     <message name="IDS_PAGE_INFO_MENU_ITEM_DEFAULT_ASK" desc="The text of the menu item of a permissions menu on the Page Info UI that reset the setting to the default setting which is ask.">
       Use global default (Ask)
     </message>
-    <message name="IDS_PAGE_INFO_MENU_ITEM_DEFAULT_DETECT_IMPORTANT_CONTENT" desc="The text of the menu item of a permissions menu on the Page Info UI that reset the setting to the default setting which is detect important content.">
-      Use global default (Detect)
-    </message>
 
     <message name="IDS_PAGE_INFO_MENU_ITEM_ALLOW" desc="The text of the menu item of a permissions menu on the Page Info UI that sets the setting to allow.">
       Always allow on this site
@@ -316,9 +277,6 @@
     </message>
     <message name="IDS_PAGE_INFO_MENU_ITEM_ASK" desc="The text of the menu item of a permissions menu on the Page Info UI that sets the setting to ask.">
       Always ask on this site
-    </message>
-     <message name="IDS_PAGE_INFO_MENU_ITEM_DETECT_IMPORTANT_CONTENT" desc="The text of the menu item of a permissions menu on the Page Info UI that sets the setting to detect important content.">
-      Always detect important content on this site
     </message>
     <message name="IDS_PAGE_INFO_MENU_ITEM_ADS_BLOCK" desc="The text of the menu item of a permissions menu on the Page Info UI for the ads permission in Block mode">
       Block on this site
@@ -388,6 +346,9 @@
     <message name="IDS_PAGE_INFO_STATE_TEXT_FILE_SYSTEM_WRITE_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the file system permission is in the ask state and the site can prompt the user to ask if they allow the site to edit files and folders on your device.">
       Can ask to edit files and folders on your device
     </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_HAND_TRACKING_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the hand tracking permission is in the ask state and the site can prompt the user to ask if they want to allow the site to track their hands.">
+      Can ask to track your hands
+    </message>
     <message name="IDS_PAGE_INFO_STATE_TEXT_HID_DEVICES_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the HID permission is in the ask state and the site can prompt the user to ask if they allow the site to connect to HID devices.">
       Can ask to connect to HID devices
     </message>
@@ -430,8 +391,17 @@
     <message name="IDS_PAGE_INFO_STATE_TEXT_BLUETOOTH_SCANNING_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the bluetooth scanning permission is in the ask state and the site can prompt the user to ask if they allow the site to discover nearby Bluetooth devices.">
       Can ask to discover nearby Bluetooth devices
     </message>
-    <message name="IDS_PAGE_INFO_STATE_TEXT_STORAGE_ACCESS_ASK" translateable="false"  desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the storage access permission is in the ask state and the site can prompt the user to ask if they allow the site to access cookies.">
+    <message name="IDS_PAGE_INFO_STATE_TEXT_STORAGE_ACCESS_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the storage access permission is in the ask state and the site can prompt the user to ask if they allow the site to access cookies.">
       Can ask to access cookies
+    </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_WEB_APP_INSTALLATION_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the web app installation permission is in the ask state and the site can prompt the user to ask if they allow the site to install web apps.">
+      Can ask to install web apps
+    </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_WEB_PRINTING_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the bluetooth devices permission is in the ask state and the site can prompt the user to ask if they allow the site to use advanced printer features.">
+      Can ask to use advanced printer features
+    </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_LOCAL_NETWORK_ACCESS_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the local network access permission is in the ask state and the site can prompt the user to ask if they allow the site to make local network requests.">
+      Can ask to connect to any device on your local network
     </message>
 
     <!-- UI for device access granted to the site using the device chooser (e.g. USB, Bluetooth) -->
@@ -468,6 +438,15 @@
     <message name="IDS_PAGE_INFO_DELETE_HID_DEVICE_WITH_NAME" desc="The tooltip displayed when hovering over the button that will remove permission to access a HID device that the user previously granted to the site.">
       Revoke access for <ph name="DEVICE_NAME">$1<ex>Stadia Controller</ex></ph>
     </message>
+    <message name="IDS_PAGE_INFO_SMART_CARD_READER_ALLOWED_BY_POLICY_LABEL" desc="The label displayed underneath the device name to inform the user that the item listed is refering to a Smart card reader device explicitly allowed by the user's enterprise policy.">
+      Smart card reader allowed by your administrator
+    </message>
+    <message name="IDS_PAGE_INFO_SMART_CARD_READER_SECONDARY_LABEL" desc="The label displayed underneath the device name to inform the user that the item refers to a smart card reader.">
+      Smart card reader
+    </message>
+    <message name="IDS_PAGE_INFO_DELETE_SMART_CARD_READER_WITH_NAME" desc="The tooltip displayed when hovering over the button that will remove permission to access a Smart Card Reader that the user previously granted to the site.">
+      Revoke access for <ph name="DEVICE_NAME">$1<ex>Reader 1</ex></ph>
+    </message>
 
     <!-- Site settings link -->
     <message name="IDS_PAGE_INFO_SITE_SETTINGS_LINK" desc="This is the text of the link pointing to Chrome's Site Settings page. This appears at the bottom of the Permissions pane of the Page Information Window.">
@@ -494,6 +473,9 @@
     </message>
     <message name="IDS_PAGE_INFO_LOCATION_SYSTEM_SETTINGS_DESCRIPTION" desc="The description for the location permission with a link to system settings.">
         To use your location, give Chrome access in <ph name="LINK">$1<ex>system settings</ex></ph>.
+    </message>
+    <message name="IDS_PAGE_INFO_CLIPBOARD_SYSTEM_SETTINGS_DESCRIPTION" desc="The description for the clipboard permission with a link to system settings.">
+        To use your clipboard, give Chrome access in <ph name="LINK">$1<ex>system settings</ex></ph>.
     </message>
     <message name="IDS_PAGE_INFO_SETTINGS_OF_A_SYSTEM_LINK" desc="This is the text of the link pointing to settings of a system. This appears under a permission in the Page Info bubble if the permission is blocked on the system level.">
         system settings
@@ -679,7 +661,7 @@
   <message name="IDS_PAGE_INFO_SECURITY_SUBPAGE_BUTTON" desc="The label of the button to open the Security subpage in Page Info bubble.">
     Show connection details
   </message>
-  <message name="IDS_PAGE_INFO_SECURITY_SUBPAGE_HEADER" desc="The header label of the Security subpage in Page Info bubble.">
+  <message name="IDS_PAGE_INFO_SECURITY_SUBPAGE_HEADER" desc="The header label of the Security subpage in Page Info bubble." formatter_data="android_java">
     Security
   </message>
 
@@ -724,41 +706,26 @@
   <message name="IDS_PAGE_INFO_COOKIES_HEADER" desc="The header label of cookies subpage in Page Info bubble.">
     Cookies and site data
   </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_NAME" desc="A button in the Page Info bubble (which shows when you click the lock icon) that expands to another bubble detailing the user's Tracking protection settings.">
-    Tracking Protection
-  </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_LABEL_ALLOWED" desc="The label for the Tracking Protection button in the Page Info bubble (which shows when you click the site info icon) detailing that third party cookies are allowed." formatter_data="android_java">
-    Third-party cookies allowed
-  </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_LABEL_BLOCKED" desc="The label for the Tracking Protection button in the Page Info bubble (which shows when you click the site info icon) detailing that third party cookies are blocked." formatter_data="android_java">
-    Third-party cookies blocked
-  </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_LABEL_LIMITED" desc="The label for the Tracking Protection button in the Page Info bubble (which shows when you click the site info icon) detailing that third party cookies are limited." formatter_data="android_java">
-    Third-party cookies limited
-  </message>
-  <message name="IDS_PAGE_INFO_SUB_PAGE_VIEW_TRACKING_PROTECTION_HEADER" desc="The header label of Tracking Protection subview page.">
-    Tracking Protection
-  </message>
   <message name="IDS_PAGE_INFO_COOKIES_DESCRIPTION" desc="The description of cookies in Cookies Subpage with placeholder for link to settings.">
     Cookies and other site data are used to remember you, for example to sign you in or to personalize ads. To manage cookies for all sites, see <ph name="SETTINGS">$1<ex>Settings</ex></ph>.
   </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_GRANT_DESCRIPTION" desc="Description text for the Tracking Protection subpage in the page info bubble for when a site has a TPCD grant. Contains a link to the Tracking Protection settings page.">
-   Chrome limits most sites from using third-party cookies. But third-party cookies are allowed on this site because it relies on them to provide basic services. Visit settings to <ph name="LINK">$1<ex>manage your tracking protections</ex></ph>.
+  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_GRANT_DESCRIPTION" desc="Description text for the 'Cookies and site data' subpage in the page info bubble for when a site has a TPCD grant. Contains a link to the third-party cookies settings page.">
+   Chrome limits most sites from using third-party cookies. But third-party cookies are allowed on this site because it relies on them to provide basic services. Visit settings to <ph name="LINK">$1<ex>manage access to third-party cookies</ex></ph>.
   </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_DESCRIPTION" desc="Description text for the Tracking Protection subpage in the page info bubble. Contains a link to the Tracking Protection settings page.">
-    Chrome limits most sites from using third-party cookies to track you as you browse. Visit settings to <ph name="LINK">$1<ex>manage your tracking protections</ex></ph>.
+  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_DESCRIPTION" desc="Description text for the 'Cookies and site data' subpage in the page info bubble. Contains a link to the third-party cookies settings page.">
+    Chrome limits most sites from using third-party cookies to track you as you browse. Visit settings to <ph name="LINK">$1<ex>manage access to third-party cookies</ex></ph>.
   </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_BLOCKED_COOKIES_DESCRIPTION" desc="Description text for the Tracking Protection subpage in the page info bubble if all cookies are blocked. Contains a link to the Tracking Protection settings page.">
-    You blocked sites from using third-party cookies to track you as you browse. Visit settings to <ph name="LINK">$1<ex>manage your tracking protections</ex></ph>.
+  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_BLOCKED_COOKIES_DESCRIPTION" desc="Description text for the 'Cookies and site data' subpage in the page info bubble if all cookies are blocked. Contains a link to the third-party cookies settings page.">
+    You blocked sites from using third-party cookies to track you as you browse. Visit settings to <ph name="LINK">$1<ex>manage access to third-party cookies</ex></ph>.
   </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_INCOGNITO_BLOCKED_COOKIES_DESCRIPTION" desc="Description text for the Tracking Protection subpage in the page info bubble in incognito mode when cookies are blocked. Contains a link to the Tracking Protection settings page.">
-    Chrome blocks sites from using third-party cookies to track you as you browse. Visit settings to <ph name="LINK">$1<ex>manage your tracking protections</ex></ph>.
+  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_INCOGNITO_BLOCKED_COOKIES_DESCRIPTION" desc="Description text for the 'Cookies and site data' subpage in the page info bubble in incognito mode when cookies are blocked. Contains a link to the third-party cookies settings page.">
+    Chrome blocks sites from using third-party cookies to track you as you browse. Visit settings to <ph name="LINK">$1<ex>manage access to third-party cookies</ex></ph>.
   </message>
   <message name="IDS_PAGE_INFO_COOKIES_SETTINGS_LINK" desc="The text of the link to cookies settings.">
     Settings
   </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SETTINGS_LINK" desc="The text of the link to the tracking protection settings used within the tracking protection description.">
-    manage your tracking protections
+  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SETTINGS_LINK" desc="The text of the link to the third-party cookies settings within the 'Cookies and site data' page info subpage description.">
+    manage access to third-party cookies
   </message>
   <message name="IDS_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_TITLE" desc="The title on the blocking third-party cookies toggle in cookies subpage.">
     Block third-party cookies
@@ -769,15 +736,6 @@
   <message name="IDS_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_MANAGED_BY_SETTINGS_TOOLTIP" desc="The tooltip on the blocking third-party cookies icon in cookies subpage if blocking is explicitly set by user in cookies settings.">
     Managed by cookies settings
   </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_ALLOWED" desc="The label detailing that third party cookies are allowed. This text will be shown on the blocking third-party cookies toggle when the toggle isn't active.">
-    Allowed
-  </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_LIMITED" desc="The label detailing that third party cookies are limited. This text will be shown on the blocking third-party cookies toggle when the toggle is active.">
-    Limited
-  </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_BLOCKED" desc="The label detailing that third party cookies are blocked. This text will be shown on the blocking third-party cookies toggle if the user has chosen to block all third party cookies.">
-    Blocked
-  </message>
   <message name="IDS_PAGE_INFO_COOKIES_ALLOWED_SITES_COUNT" desc="The label of the count for sites with allowed cookies on the page. This text will be shown on the cookies dialog button.">
     {NUM_COOKIES, plural, =0 {No sites allowed} =1 {1 site allowed} other {# sites allowed}}
   </message>
@@ -787,32 +745,127 @@
   <message name="IDS_PAGE_INFO_COOKIES_DIALOG_BUTTON_TOOLTIP" desc="A tooltip that appears when the user hovers over the 'Manage on-device site data' button. The following screen shows on-device site data used by the site the user is viewing.">
     Review a list of on-device site data in a new window
   </message>
-  <message name="IDS_PAGE_INFO_FPS_BUTTON_TOOLTIP" desc="The tooltip of first-party sets button in cookies subpage, which opens 'All Sites' settings page in a new tab with a filter for this set's pages.">
+  <message name="IDS_PAGE_INFO_RWS_BUTTON_TOOLTIP" desc="The tooltip of related website sets button in cookies subpage, which opens 'All Sites' settings page in a new tab with a filter for this set's pages.">
     See related sites in a new tab
   </message>
-  <message name="IDS_PAGE_INFO_FPS_BUTTON_TITLE" desc="The title of first-party sets button in cookies subpage with placeholder for name of the owner of this set.">
+  <message name="IDS_PAGE_INFO_RWS_BUTTON_TITLE" desc="The title of related website sets button in cookies subpage with placeholder for name of the owner of this set.">
     See related sites
   </message>
-  <message name="IDS_PAGE_INFO_FPS_BUTTON_SUBTITLE" desc="The subtitle of first-party sets button in cookies subpage with placeholder for name of the owner of this set.">
+  <message name="IDS_PAGE_INFO_RWS_BUTTON_SUBTITLE" desc="The subtitle of related website sets button in cookies subpage with placeholder for name of the owner of this set.">
     This site is in a group, defined by <ph name="SET_OWNER">$1<ex>gannett.com</ex></ph>, that can see your activity
+  </message>
+  <message name="IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_TITLE" desc="A heading in the page info bubble guiding the user where to go if the site they're on appears broken because of a third-party cookie dependency">
+    Site not working?
+  </message>
+  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY" desc="Descriptive text in the page info bubble explaining the trade-off of temporarily allowing third-party cookies for this site, a change that will automatically expire in the future.">
+    Try temporarily allowing third-party cookies, which means less browsing protection but site features are more likely to work as expected.
+  </message>
+  <message name="IDS_PAGE_INFO_COOKIES_THIRD_PARTY_COOKIES_LABEL" desc="A label next to a toggle that allows or blocks third-party cookies.  When the toggle is enabled, third party cookies are allowed.">
+    Third-party cookies
+  </message>
+  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_LIMITED_RESTART_TITLE" desc="Subtitle shown on the page info bubble indicating how long until cookies are limited again.">
+    {COUNT, plural,
+              =0 {Chrome will limit cookies again today}
+              =1 {Chrome will limit cookies again tomorrow}
+              other {# days until Chrome limits cookies again}}
+  </message>
+  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_BLOCKED_RESTART_TITLE" desc="Subtitle shown on the page info bubble indicating how long until cookies are blocked again.">
+    {COUNT, plural,
+              =0 {Cookies will be blocked again today}
+              =1 {Cookies will be blocked again tomorrow}
+              other {# days until cookies are blocked again}}
+  </message>
+  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_RESTART_DESCRIPTION" desc="Descriptive text in the page info bubble after the user has temporarily allowed third-party cookies on a site explaining the browsing protection trade-off of their decision.">
+    You temporarily allowed this site to use third-party cookies, which means less browsing protection but site features are more likely to work as expected.
+  </message>
+  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_PERMANENT_ALLOWED_TITLE" desc="A subtitle in the Tracking Protection subpage bubble telling the user they allowed third-party cookies on the current site.">
+    You allowed third-party cookies on this site
+  </message>
+  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_PERMANENT_ALLOWED_DESCRIPTION" desc="Descriptive text in the page info Tracking Protection subpage if the user is visiting a site on their third-party cookies allow list.">
+    This means site features should work as expected, but you may have less browsing protection.
+  </message>
+  <message name="IDS_PAGE_INFO_COOKIE_SYNC_DESCRIPTION" desc="The disclaimer about cookies for this site being synced across ChromeOS devices.">
+    Cookies for this site are synced across your ChromeOS devices. To manage what you sync, go to <ph name="SYNC_SETTINGS">$1<ex>Sync settings</ex></ph>.
+  </message>
+  <message name="IDS_PAGE_INFO_SYNC_SETTINGS_LINK" desc="The text of the link to Chrome Sync settings.">
+    Sync settings
+  </message>
+
+  <!-- Merchant trust strings -->
+  <message name="IDS_MERCHANT_TRUST_SIDE_PANEL_TITLE" desc="The title of the merchant trust side panel.">
+    What people are saying
+  </message>
+  <message name="IDS_PAGE_INFO_MERCHANT_TRUST_HEADER" desc="The title of the merchant trust subpage in the page info.">
+    Store reviews
+  </message>
+  <message name="IDS_PAGE_INFO_MERCHANT_TRUST_DESCRIPTION" desc="The description of the merchant trust feature in the page info.">
+    This info comes from independent review websites like Trustpilot, ScamAdviser, Google, and more. Summaries are created with AI.
+  </message>
+  <message name="IDS_PAGE_INFO_MERCHANT_TRUST_VIEW_ALL_REVIEWS" desc="The title of the button to view all reviews of a store, located in the page info merchant trust subpage. It has a placeholder for the number of reviews">
+    {NUM_REVIEWS, plural,
+                    =0 {View 0 reviews}
+                    =1 {View 1 review}
+                    other {View all # reviews}}
+  </message>
+  <message name="IDS_PAGE_INFO_MERCHANT_TRUST_STAR_RATING_AND_COUNT_A11Y_DESCRIPTION" desc="The accessibility description of the button to view all reviews of a store, located in the page info merchant trust subpage. It has a placeholder for the number of reviews and the star rating." is_accessibility_with_no_ui="true">
+    {NUM_REVIEWS, plural,
+                    =0 {View 0 reviews. Average rating is <ph name="STARS">{1,number,0.0}<ex>4.2</ex></ph> stars.}
+                    =1 {View 1 review. Average rating is <ph name="STARS">{1,number,0.0}<ex>4.2</ex></ph> stars.}
+                    other {View all # reviews. Average rating is <ph name="STARS">{1,number,0.0}<ex>4.2</ex></ph> stars.}}
+  </message>
+    <message name="IDS_PAGE_INFO_MERCHANT_TRUST_STAR_RATING_A11Y_DESCRIPTION"  desc="The accessibility description of the button to open the merchant trust subpage" is_accessibility_with_no_ui="true">
+      Store reviews. Average rating is <ph name="STARS">{0, number, 0.0}<ex>4.2</ex></ph> stars.
+  </message>
+  <message name="IDS_PAGE_INFO_MERCHANT_TRUST_REVIEWS_SUMMARY_TITLE" desc="The title of the reviews summary section of the merchant trust feature in the page info">
+    What people are saying
+  </message>
+  <message name="IDS_PAGE_INFO_MERCHANT_TRUST_HATS_BUTTON" desc="The button in merchant trust page info subpage that open HaTS dialog which allows users to submit a survey about the feature.">
+    Is this helpful?
+  </message>
+  <message name="IDS_PAGE_INFO_MERCHANT_TRUST_HATS_LOADING_BUTTON" desc="The loading state of the button in merchant trust page info subpage. It is shown after user has clicked it but before survey dialog is opened.">
+    Opening survey...
+  </message>
+  <message name="IDS_PAGE_INFO_MERCHANT_TRUST_HATS_FAILED_BUTTON" desc="The failed state of the button in merchant trust page info subpage. It is shown after user has clicked it and the survey failed to load.">
+    An error occurred with the survey.
   </message>
 
   <!-- History strings -->
-  <message name="IDS_PAGE_INFO_HISTORY" desc="The button label of the 'History' row in Page Info bubble. The button opens history page for the site.">
-    History
-  </message>
-  <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_TODAY" desc="Summary string for page info history row. The site was last visited today.">
-    Last visited today
-  </message>
-  <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_YESTERDAY" desc="Summary string for page info history row. The site was last visited yesterday.">
-    Last visited yesterday
-  </message>
-  <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_DAYS" desc="Summary string for page info history row. The site was last visited NUM_DAYS days ago.">
-    Last visited <ph name="NUM_DAYS">$1<ex>2</ex></ph> days ago
-  </message>
-  <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_DATE" desc="Summary string for page info history row. The site was last visited on a particular date.">
-    Last visited <ph name="DATE">$1<ex>Apr 4, 2021</ex></ph>
-  </message>
+  <if expr="is_ios">
+    <then>
+      <message name="IDS_PAGE_INFO_HISTORY" desc="Title of the Last Visited row in Page Info on iOS. The button opens history page for the site.">
+        Last visited
+      </message>
+      <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_TODAY" desc="Summary string for the Last Visited row in Page Info on iOS. The site was last visited today.">
+        Today
+      </message>
+      <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_YESTERDAY" desc="Summary string for the Last Visited row in Page Info on iOS. The site was last visited yesterday.">
+        Yesterday
+      </message>
+      <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_DAYS" desc="Summary string for the Last Visited row in Page Info on iOS. The site was last visited NUM_DAYS days ago.">
+        <ph name="NUM_DAYS">$1<ex>2</ex></ph> days ago
+      </message>
+      <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_DATE" desc="Summary string for the Last Visited row in Page Info on iOS. The site was last visited on a particular date.">
+        <ph name="DATE">$1<ex>Apr 4, 2021</ex></ph>
+      </message>
+    </then>
+    <else>
+      <message name="IDS_PAGE_INFO_HISTORY" desc="The button label of the 'History' row in Page Info bubble. The button opens history page for the site.">
+        History
+      </message>
+      <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_TODAY" desc="Summary string for page info history row. The site was last visited today.">
+        Last visited today
+      </message>
+      <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_YESTERDAY" desc="Summary string for page info history row. The site was last visited yesterday.">
+        Last visited yesterday
+      </message>
+      <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_DAYS" desc="Summary string for page info history row. The site was last visited NUM_DAYS days ago.">
+        Last visited <ph name="NUM_DAYS">$1<ex>2</ex></ph> days ago
+      </message>
+      <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_DATE" desc="Summary string for page info history row. The site was last visited on a particular date.">
+        Last visited <ph name="DATE">$1<ex>Apr 4, 2021</ex></ph>
+      </message>
+    </else>
+  </if>
 
   <!-- Enterprise interstitial strings -->
   <message name="IDS_PAGE_INFO_ENTERPRISE_WARN_SUMMARY" desc="A one-line summary at the top of the Page Info bubble (which shows when you click the security indicator) if the website has been flagged by your admin to show a warning">
@@ -846,38 +899,6 @@
   </message>
   <message name="IDS_PAGE_INFO_AD_PRIVACY_SUBPAGE_MANAGE_BUTTON" desc="A button label that opens the Ad privacy page, allowing a user to turn on / off the ad privacy settings and to manage the topics and sites that influence ad personalization.">
     Manage ad privacy
-  </message>
-
-  <!-- Tracking Protection strings -->
-  <message name="IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_TITLE" desc="A heading in the page info bubble guiding the user where to go if the site they're on appears broken because of a third-party cookie dependency">
-    Site not working?
-  </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY" desc="Descriptive text in the page info bubble explaining the trade-off of temporarily allowing third-party cookies for this site, a change that will automatically expire in the future.">
-    Try temporarily allowing third-party cookies, which means less browsing protection but site features are more likely to work as expected.
-  </message>
-  <message name="IDS_PAGE_INFO_COOKIES_THIRD_PARTY_COOKIES_LABEL" desc="A label next to a toggle that allows or blocks third-party cookies.  When the toggle is enabled, third party cookies are allowed.">
-    Third-party cookies
-  </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_LIMITED_RESTART_TITLE" desc="Subtitle shown on the page info bubble indicating how long until cookies are limited again.">
-    {COUNT, plural,
-              =0 {Chrome will limit cookies again today}
-              =1 {Chrome will limit cookies again tomorrow}
-              other {# days until Chrome limits cookies again}}
-  </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_BLOCKED_RESTART_TITLE" desc="Subtitle shown on the page info bubble indicating how long until cookies are blocked again.">
-    {COUNT, plural,
-              =0 {Cookies will be blocked again today}
-              =1 {Cookies will be blocked again tomorrow}
-              other {# days until cookies are blocked again}}
-  </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_RESTART_DESCRIPTION" desc="Descriptive text in the page info bubble after the user has temporarily allowed third-party cookies on a site explaining the browsing protection trade-off of their decision.">
-    You temporarily allowed this site to use third-party cookies, which means less browsing protection but site features are more likely to work as expected.
-  </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_PERMANENT_ALLOWED_TITLE" desc="A subtitle in the Tracking Protection subpage bubble telling the user they allowed third-party cookies on the current site.">
-    You allowed third-party cookies on this site
-  </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_PERMANENT_ALLOWED_DESCRIPTION" desc="Descriptive text in the page info Tracking Protection subpage if the user is visiting a site on their third-party cookies allow list.">
-    This means site features should work as expected, but you may have less browsing protection.
   </message>
 
 </grit-part>

@@ -76,9 +76,7 @@ void MultizoneAudioDecoderProxyImpl::LogicalResume() {
 
 int64_t MultizoneAudioDecoderProxyImpl::GetCurrentPts() const {
   CheckCalledOnCorrectThread();
-  NOTREACHED_IN_MIGRATION();
-
-  return 0;
+  NOTREACHED();
 }
 
 CmaBackend::Decoder::BufferStatus MultizoneAudioDecoderProxyImpl::PushBuffer(
@@ -120,7 +118,7 @@ void MultizoneAudioDecoderProxyImpl::GetStatistics(Statistics* statistics) {
 
 void MultizoneAudioDecoderProxyImpl::OnError() {
   CheckCalledOnCorrectThread();
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MultizoneAudioDecoderProxyImpl::OnPipelineStateChange(

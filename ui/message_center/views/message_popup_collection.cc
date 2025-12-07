@@ -7,17 +7,18 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/animation/tween.h"
+#include "ui/gfx/geometry/transform_util.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_types.h"
 #include "ui/message_center/notification_view_controller.h"
@@ -95,9 +96,17 @@ void MessagePopupCollection::Update() {
     }
     animation_->SetDuration(
         animation_duration *
-        ui::ScopedAnimationDurationScaleMode::duration_multiplier());
+        gfx::ScopedAnimationDurationScaleMode::duration_multiplier());
     animation_->Start();
     AnimationStarted();
+
+    // Set bounds to prepare to animate using transform.
+    if (CanUseTransformForBoundsAnimation()) {
+      for (auto& item : popup_items_) {
+        item.popup->SetPopupBounds(item.bounds);
+      }
+    }
+
     UpdateByAnimation();
   }
 
@@ -156,7 +165,7 @@ void MessagePopupCollection::AnimateResize() {
 
 MessageView* MessagePopupCollection::GetMessageViewForNotificationId(
     const std::string& notification_id) {
-  auto it = base::ranges::find_if(popup_items_, [&](const auto& child) {
+  auto it = std::ranges::find_if(popup_items_, [&](const auto& child) {
     // Exit early if the popup ptr has been set to nullptr by
     // `NotifyPopupClosed` but has not been cleared from `popup_items_`.
     if (!child.popup)
@@ -179,8 +188,8 @@ MessageView* MessagePopupCollection::GetMessageViewForNotificationId(
 void MessagePopupCollection::ConvertNotificationViewToGroupedNotificationView(
     const std::string& ungrouped_notification_id,
     const std::string& new_grouped_notification_id) {
-  auto it = base::ranges::find(popup_items_, ungrouped_notification_id,
-                               &PopupItem::id);
+  auto it = std::ranges::find(popup_items_, ungrouped_notification_id,
+                              &PopupItem::id);
   if (it == popup_items_.end())
     return;
 
@@ -192,7 +201,7 @@ void MessagePopupCollection::ConvertGroupedNotificationViewToNotificationView(
     const std::string& grouped_notification_id,
     const std::string& new_single_notification_id) {
   auto it =
-      base::ranges::find(popup_items_, grouped_notification_id, &PopupItem::id);
+      std::ranges::find(popup_items_, grouped_notification_id, &PopupItem::id);
   if (it == popup_items_.end())
     return;
 
@@ -493,10 +502,10 @@ void MessagePopupCollection::CalculateAndUpdateBounds() {
 
   int notification_width = GetNotificationWidth();
 
-  for (size_t i = 0; i < popup_items_.size(); ++i) {
+  for (auto& popup_item : popup_items_) {
     gfx::Size preferred_size(
         notification_width,
-        GetPopupItem(i)->popup->GetHeightForWidth(notification_width));
+        popup_item.popup->GetCachedHeightForWidth(notification_width));
 
     int origin_x = GetPopupOriginX(gfx::Rect(preferred_size));
 
@@ -506,8 +515,8 @@ void MessagePopupCollection::CalculateAndUpdateBounds() {
     if (!IsTopDown())
       origin_y -= preferred_size.height();
 
-    GetPopupItem(i)->start_bounds = GetPopupItem(i)->bounds;
-    GetPopupItem(i)->bounds =
+    popup_item.start_bounds = popup_item.bounds;
+    popup_item.bounds =
         gfx::Rect(gfx::Point(origin_x, origin_y), preferred_size);
 
     const int delta = preferred_size.height() + kMarginBetweenPopups;
@@ -537,6 +546,7 @@ void MessagePopupCollection::CalculateAndUpdateBounds() {
 void MessagePopupCollection::UpdateByAnimation() {
   DCHECK_NE(state_, State::kIdle);
 
+  const bool is_animating = animation_->is_animating();
   for (auto& item : popup_items_) {
     if (!item.is_animating)
       continue;
@@ -551,8 +561,19 @@ void MessagePopupCollection::UpdateByAnimation() {
       item.popup->SetOpacity(gfx::Tween::FloatValueBetween(value, 1.0f, 0.0f));
 
     if (state_ == State::kFadeIn || state_ == State::kMoveDown) {
-      item.popup->SetPopupBounds(
-          gfx::Tween::RectValueBetween(value, item.start_bounds, item.bounds));
+      const gfx::Rect current_bounds =
+          gfx::Tween::RectValueBetween(value, item.start_bounds, item.bounds);
+
+      if (CanUseTransformForBoundsAnimation()) {
+        if (is_animating) {
+          item.popup->SetPopupTransform(gfx::TransformBetweenRects(
+              gfx::RectF(item.bounds), gfx::RectF(current_bounds)));
+        } else {
+          item.popup->SetPopupTransform(gfx::Transform());
+        }
+      } else {
+        item.popup->SetPopupBounds(current_bounds);
+      }
     }
   }
 }
@@ -603,6 +624,9 @@ bool MessagePopupCollection::AddPopup() {
   // Reset animation flags of existing popups.
   for (auto& item : popup_items_) {
     item.is_animating = false;
+    if (CanUseTransformForBoundsAnimation()) {
+      item.popup->SetPopupTransform(gfx::Transform());
+    }
   }
 
   if (new_notification->group_child())
@@ -657,8 +681,9 @@ void MessagePopupCollection::MarkRemovedPopup() {
 }
 
 int MessagePopupCollection::GetNextEdge(const PopupItem& item) const {
-  const int delta = item.popup->GetHeightForWidth(GetNotificationWidth()) +
-                    kMarginBetweenPopups;
+  const int delta =
+      item.popup->GetCachedHeightForWidth(GetNotificationWidth()) +
+      kMarginBetweenPopups;
 
   int base = 0;
   if (popup_items_.empty()) {
@@ -723,11 +748,11 @@ bool MessagePopupCollection::CollapseAllPopups() {
   bool changed = false;
   int notification_width = GetNotificationWidth();
   for (auto& item : popup_items_) {
-    int old_height = item.popup->GetHeightForWidth(notification_width);
+    int old_height = item.popup->GetCachedHeightForWidth(notification_width);
 
     item.popup->AutoCollapse();
 
-    int new_height = item.popup->GetHeightForWidth(notification_width);
+    int new_height = item.popup->GetCachedHeightForWidth(notification_width);
     if (old_height != new_height)
       changed = true;
   }

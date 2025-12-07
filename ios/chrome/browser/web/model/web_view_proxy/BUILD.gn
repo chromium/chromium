@@ -1,0 +1,32 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("web_view_proxy") {
+  sources = [
+    "web_view_proxy_tab_helper.h",
+    "web_view_proxy_tab_helper.mm",
+    "web_view_proxy_tab_helper_observer_bridge.h",
+    "web_view_proxy_tab_helper_observer_bridge.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/web/public",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "web_view_proxy_tab_helper_observer_bridge_unittest.mm",
+    "web_view_proxy_tab_helper_unittest.mm",
+  ]
+  deps = [
+    ":web_view_proxy",
+    "//base/test:test_support",
+    "//ios/web/public/test/fakes",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

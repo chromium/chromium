@@ -12,7 +12,6 @@
 #include "base/memory/weak_ptr.h"
 #include "components/download/public/common/download_export.h"
 #include "components/download/public/common/input_stream.h"
-#include "url/gurl.h"
 
 namespace download {
 class DownloadDestinationObserver;

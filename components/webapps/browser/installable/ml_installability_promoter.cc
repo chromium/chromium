@@ -9,8 +9,8 @@
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
@@ -215,8 +215,7 @@ GURL MLInstallabilityPromoter::GetProjectedManifestIdAfterMetricsCollection() {
   switch (state_) {
     case MLPipelineState::kInactive:
     case MLPipelineState::kRunningMetricTasks:
-      CHECK(false) << "Cannot get manifest id without metrics collected";
-      break;
+      NOTREACHED() << "Cannot get manifest id without metrics collected";
     case MLPipelineState::kUKMCollectionComplete:
     case MLPipelineState::kMLClassificationRequested:
     case MLPipelineState::kWaitingForVisibility:
@@ -338,6 +337,12 @@ void MLInstallabilityPromoter::RequestMlClassification() {
                                             site_url_) ||
       client->IsInAppBrowsingContext(web_contents())) {
     // Finish the pipeline early if an app is installed here.
+    state_ = MLPipelineState::kComplete;
+    return;
+  }
+  if ((!manifest_ || !manifest_->has_valid_specified_start_url) &&
+      WebappsClient::Get()->IsUrlControlledBySeenManifest(
+          web_contents()->GetBrowserContext(), site_url_)) {
     state_ = MLPipelineState::kComplete;
     return;
   }
@@ -494,8 +499,10 @@ void MLInstallabilityPromoter::DidUpdateFaviconURL(
   }
 }
 
-void MLInstallabilityPromoter::OnRegistrationStored(int64_t registration_id,
-                                                    const GURL& scope) {
+void MLInstallabilityPromoter::OnRegistrationStored(
+    int64_t registration_id,
+    const GURL& scope,
+    const content::ServiceWorkerRegistrationInformation& service_worker_info) {
   if (!content::ServiceWorkerContext::ScopeMatches(scope, site_url_)) {
     return;
   }

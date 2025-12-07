@@ -5,33 +5,36 @@
 #ifndef NET_COOKIES_CANONICAL_COOKIE_H_
 #define NET_COOKIES_CANONICAL_COOKIE_H_
 
+#include <compare>
 #include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
 
-#include "base/feature_list.h"
-#include "base/gtest_prod_util.h"
-#include "base/time/time.h"
 #include "base/types/pass_key.h"
-#include "net/base/features.h"
+#include "crypto/process_bound_string.h"
 #include "net/base/net_export.h"
-#include "net/cookies/cookie_access_params.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_base.h"
 #include "net/cookies/cookie_constants.h"
-#include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_options.h"
-#include "net/cookies/cookie_partition_key.h"
+#include "net/cookies/ref_unique_cookie_key.h"
+#include "net/cookies/unique_cookie_key.h"
 #include "url/third_party/mozilla/url_parse.h"
 
 class GURL;
+
+namespace base {
+class Time;
+}  // namespace base
 
 namespace net {
 
 class ParsedCookie;
 class CanonicalCookie;
+class CookieInclusionStatus;
+class CookiePartitionKey;
 
 struct CookieWithAccessResult;
 struct CookieAndLineWithAccessResult;
@@ -41,10 +44,70 @@ using CookieAndLineAccessResultList =
     std::vector<CookieAndLineWithAccessResult>;
 using CookieAccessResultList = std::vector<CookieWithAccessResult>;
 
+// Represents the call sites of CanonicalCookie::FromStorage, used for metrics
+// so we can better identify any callers that are not enforcing cookie name and
+// value size limits as expected.
+// LINT.IfChange(CanonicalCookieFromStorageCallSite)
+enum class CanonicalCookieFromStorageCallSite {
+  kAndroidCookiesFetcherRestoreUtil,
+  kChromeOsCookieSyncConversions,
+  kOauthMultiloginResult,
+  kIosSystemCookieUtil,
+  kSqlitePersistentCookieStore,
+  kCookieManager,
+  kCookieManagerMojomTraits,
+  kRestrictedCookieManager,
+  kTests,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/cookie/histograms.xml:CanonicalCookieFromStorageCallSite)
+
 // Represents a real/concrete cookie, which may be sent on requests or set by a
 // response if the request context and attributes allow it.
 class NET_EXPORT CanonicalCookie : public CookieBase {
  public:
+  // Various reasons why `IsCanonical` and `IsCanonicalForFromStorage` can fail.
+  enum class CanonicalizationFailure {
+    kInvalidExpiryDate,
+    kUnparseableName,
+    kUnparseableValue,
+    kInvalidName,
+    kInvalidValue,
+    kInconsistentCreationAndLastAccessDate,
+    kNonAsciiCharactersDisallowed,
+    kInvalidDomain,
+    kInvalidPath,
+    kInvalidHostPrefix,
+    kInvalidSecurePrefix,
+    kEmptyNameWithHiddenPrefix,
+    kPartitionedInsecure,
+  };
+
+  // Carries metadata related to the canonicalization results for a given
+  // cookie.
+  class CanonicalizationResult {
+   public:
+    CanonicalizationResult() = delete;
+
+    CanonicalizationResult(base::PassKey<CanonicalCookie>,
+                           std::optional<CanonicalizationFailure> failure);
+
+    friend bool operator==(const CanonicalizationResult&,
+                           const CanonicalizationResult&) = default;
+
+    bool operator==(CanonicalizationFailure failure) const {
+      return failure_ == failure;
+    }
+
+    explicit operator bool() const { return !failure_.has_value(); }
+
+    NET_EXPORT friend std::ostream& operator<<(
+        std::ostream& os,
+        const CanonicalizationResult& result);
+
+   private:
+    std::optional<CanonicalizationFailure> failure_;
+  };
+
   CanonicalCookie();
   CanonicalCookie(const CanonicalCookie& other);
   CanonicalCookie(CanonicalCookie&& other);
@@ -110,8 +173,8 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   // understand and choose their inputs.
   static std::unique_ptr<CanonicalCookie> Create(
       const GURL& url,
-      const std::string& cookie_line,
-      const base::Time& creation_time,
+      std::string_view cookie_line,
+      base::Time creation_time,
       std::optional<base::Time> server_time,
       std::optional<CookiePartitionKey> cookie_partition_key,
       CookieSourceType source_type,
@@ -167,7 +230,8 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
       std::optional<CookiePartitionKey> partition_key,
       CookieSourceScheme source_scheme,
       int source_port,
-      CookieSourceType source_type);
+      CookieSourceType source_type,
+      CanonicalCookieFromStorageCallSite call_site);
 
   // Create a CanonicalCookie that is not guaranteed to actually be Canonical
   // for tests. Use this only if you want to bypass parameter validation to
@@ -177,10 +241,10 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
       const std::string& value,
       const std::string& domain,
       const std::string& path,
-      const base::Time& creation,
-      const base::Time& expiration,
-      const base::Time& last_access,
-      const base::Time& last_update,
+      base::Time creation,
+      base::Time expiration,
+      base::Time last_access,
+      base::Time last_update,
       bool secure,
       bool httponly,
       CookieSameSite same_site,
@@ -194,32 +258,34 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   static std::unique_ptr<CanonicalCookie> CreateForTesting(
       const GURL& url,
       const std::string& cookie_line,
-      const base::Time& creation_time,
+      base::Time creation_time,
       std::optional<base::Time> server_time = std::nullopt,
       std::optional<CookiePartitionKey> cookie_partition_key = std::nullopt,
       CookieSourceType source_type = CookieSourceType::kUnknown,
       CookieInclusionStatus* status = nullptr);
 
-  bool operator<(const CanonicalCookie& other) const {
+  friend auto operator<=>(const CanonicalCookie& left,
+                          const CanonicalCookie& right) {
     // Use the cookie properties that uniquely identify a cookie to determine
     // ordering.
-    return UniqueKey() < other.UniqueKey();
+    return left.RefUniqueKey() <=> right.RefUniqueKey();
   }
 
-  bool operator==(const CanonicalCookie& other) const {
-    return IsEquivalent(other);
+  friend bool operator==(const CanonicalCookie& left,
+                         const CanonicalCookie& right) {
+    return left.RefUniqueKey() == right.RefUniqueKey();
   }
 
   // See CookieBase for other accessors.
-  const std::string& Value() const { return value_; }
-  const base::Time& ExpiryDate() const { return expiry_date_; }
-  const base::Time& LastAccessDate() const { return last_access_date_; }
-  const base::Time& LastUpdateDate() const { return last_update_date_; }
+  std::string Value() const;
+  base::Time ExpiryDate() const { return expiry_date_; }
+  base::Time LastAccessDate() const { return last_access_date_; }
+  base::Time LastUpdateDate() const { return last_update_date_; }
   bool IsPersistent() const { return !expiry_date_.is_null(); }
   CookiePriority Priority() const { return priority_; }
   CookieSourceType SourceType() const { return source_type_; }
 
-  bool IsExpired(const base::Time& current) const {
+  bool IsExpired(base::Time current) const {
     return !expiry_date_.is_null() && current >= expiry_date_;
   }
 
@@ -239,17 +305,7 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   bool IsEquivalent(const CanonicalCookie& ecc) const {
     // It seems like it would make sense to take secure, httponly, and samesite
     // into account, but the RFC doesn't specify this.
-    // NOTE: Keep this logic in-sync with TrimDuplicateCookiesForKey().
-
-    // A host cookie will never match a domain cookie or vice-versa, this is
-    // because the "host-only-flag" is encoded within the `domain` field of the
-    // respective keys. So we don't need to explicitly check if ecc is also host
-    // or domain.
-    if (IsHostCookie()) {
-      return UniqueKey() == ecc.UniqueKey();
-    }
-    // Is domain cookie
-    return UniqueDomainKey() == ecc.UniqueDomainKey();
+    return RefUniqueKey() == ecc.RefUniqueKey();
   }
 
   // Checks a looser set of equivalency rules than 'IsEquivalent()' in order
@@ -260,9 +316,9 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   //
   // Returns 'true' if this cookie's name matches |secure_cookie|, and this
   // cookie is a domain-match for |secure_cookie| (or vice versa), and
-  // |secure_cookie|'s path is "on" this cookie's path (as per 'IsOnPath()').
-  // If partitioned cookies are enabled, it also checks that the cookie has
-  // the same partition key as |secure_cookie|.
+  // |secure_cookie|'s path is "on" this cookie's path (as per
+  // 'IsOnPath()'). If partitioned cookies are enabled, it also checks that
+  // the cookie has the same partition key as |secure_cookie|.
   //
   // Note that while the domain-match cuts both ways (e.g. 'example.com'
   // matches 'www.example.com' in either direction), the path-match is
@@ -270,59 +326,60 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   // '/login' and '/' do not match '/login/en').
   //
   // Conceptually:
-  // If new_cookie.IsEquivalentForSecureCookieMatching(secure_cookie) is true,
-  // this means that new_cookie would "shadow" secure_cookie: they would would
-  // be indistinguishable when serialized into a Cookie header. This is
-  // important because, if an attacker is attempting to set new_cookie, it
-  // should not be allowed to mislead the server into using new_cookie's value
-  // instead of secure_cookie's.
+  // If new_cookie.IsEquivalentForSecureCookieMatching(secure_cookie) is
+  // true, this means that new_cookie would "shadow" secure_cookie: they
+  // would would be indistinguishable when serialized into a Cookie header.
+  // This is important because, if an attacker is attempting to set
+  // new_cookie, it should not be allowed to mislead the server into using
+  // new_cookie's value instead of secure_cookie's.
   //
   // The reason for the asymmetric path comparison ("cookie1=bad; path=/a/b"
-  // from an insecure source is not allowed if "cookie1=good; secure; path=/a"
-  // exists, but "cookie2=bad; path=/a" from an insecure source is allowed if
-  // "cookie2=good; secure; path=/a/b" exists) is because cookies in the Cookie
-  // header are serialized with longer path first. (See CookieSorter in
-  // cookie_monster.cc.) That is, they would be serialized as "Cookie:
-  // cookie1=bad; cookie1=good" in one case, and "Cookie: cookie2=good;
-  // cookie2=bad" in the other case. The first scenario is not allowed because
-  // the attacker injects the bad value, whereas the second scenario is ok
-  // because the good value is still listed first.
+  // from an insecure source is not allowed if "cookie1=good; secure;
+  // path=/a" exists, but "cookie2=bad; path=/a" from an insecure source is
+  // allowed if "cookie2=good; secure; path=/a/b" exists) is because cookies
+  // in the Cookie header are serialized with longer path first. (See
+  // CookieSorter in cookie_monster.cc.) That is, they would be serialized
+  // as "Cookie: cookie1=bad; cookie1=good" in one case, and "Cookie:
+  // cookie2=good; cookie2=bad" in the other case. The first scenario is not
+  // allowed because the attacker injects the bad value, whereas the second
+  // scenario is ok because the good value is still listed first.
   bool IsEquivalentForSecureCookieMatching(
       const CanonicalCookie& secure_cookie) const;
+
+  // Returns true if the |other| cookie's data members match, except for the
+  // value. The heuristic is that, if the value changes, then `LastUpdateDate`
+  // is likely different.
+  bool IsProbablyEquivalentTo(const CanonicalCookie& other) const;
 
   // Returns true if the |other| cookie's data members (instance variables)
   // match, for comparing cookies in collections.
   bool HasEquivalentDataMembers(const CanonicalCookie& other) const;
 
-  // Similar to operator<, but considers all data members.
-  bool DataMembersPrecede(const CanonicalCookie& other) const;
+  // Checks if a another cookie is equivalent to this one with respect to what
+  // information about cookies is revealed to the web platform.
+  //
+  // If true, it implies that the two cookies would appear identical to cookie
+  // change subscribers such as the CookieStore API or service workers.
+  bool IsWebEquivalentTo(const CanonicalCookie& other) const;
 
-  void SetLastAccessDate(const base::Time& date) {
-    last_access_date_ = date;
-  }
+  void SetLastAccessDate(base::Time date) { last_access_date_ = date; }
 
   std::string DebugString() const;
 
   // Returns a "null" time if expiration was unspecified or invalid.
   static base::Time ParseExpiration(const ParsedCookie& pc,
-                                    const base::Time& current,
-                                    const base::Time& server_time);
+                                    base::Time current,
+                                    base::Time server_time);
 
   // Per rfc6265bis the maximum expiry date is no further than 400 days in the
   // future.
-  static base::Time ValidateAndAdjustExpiryDate(const base::Time& expiry_date,
-                                                const base::Time& creation_date,
+  static base::Time ValidateAndAdjustExpiryDate(base::Time expiry_date,
+                                                base::Time creation_date,
                                                 net::CookieSourceScheme scheme);
 
-  // Cookie ordering methods.
-
-  // Returns true if the cookie is less than |other|, considering only name,
-  // domain and path. In particular, two equivalent cookies (see IsEquivalent())
-  // are identical for PartialCompare().
-  bool PartialCompare(const CanonicalCookie& other) const;
-
-  // Return whether this object is a valid CanonicalCookie().  Invalid
-  // cookies may be constructed by the detailed constructor.
+  // Return whether this object is a valid CanonicalCookie(). If the object is
+  // invalid, return the first reason found why not. Invalid cookies may be
+  // constructed by the detailed constructor.
   // A cookie is considered canonical if-and-only-if:
   // * It can be created by CanonicalCookie::Create, or
   // * It is identical to a cookie created by CanonicalCookie::Create except
@@ -334,23 +391,24 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   // An additional requirement on a CanonicalCookie is that if the last
   // access time is non-null, the creation time must also be non-null and
   // greater than the last access time.
-  bool IsCanonical() const;
+  CanonicalizationResult IsCanonical() const;
 
   // Return whether this object is a valid CanonicalCookie() when retrieving the
-  // cookie from the persistent store. Cookie that exist in the persistent store
+  // cookie from the persistent store; and if the CanonicalCookie is invalid,
+  // return the first reason why not. Cookie that exist in the persistent store
   // may have been created before more recent changes to the definition of
   // "canonical". To ease the transition to the new definitions, and to prevent
   // users from having their cookies deleted, this function supports the older
   // definition of canonical. This function is intended to be temporary because
   // as the number of older cookies (which are non-compliant with the newer
-  // definition of canonical) decay toward zero it can eventually be replaced
-  // by `IsCanonical()` to enforce the newer definition of canonical.
+  // definition of canonical) decay toward zero it can eventually be replaced by
+  // `IsCanonical()` to enforce the newer definition of canonical.
   //
   // A cookie is considered canonical by this function if-and-only-if:
   // * It is considered canonical by IsCanonical()
   // * TODO(crbug.com/40787717): Add exceptions once IsCanonical() starts
   // enforcing them.
-  bool IsCanonicalForFromStorage() const;
+  CanonicalizationResult IsCanonicalForFromStorage() const;
 
   // Returns whether the effective SameSite mode is SameSite=None (i.e. no
   // SameSite restrictions).
@@ -377,14 +435,7 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
  private:
   FRIEND_TEST_ALL_PREFIXES(CanonicalCookieTest,
                            TestGetAndAdjustPortForTrustworthyUrls);
-  FRIEND_TEST_ALL_PREFIXES(CanonicalCookieTest, TestPrefixHistograms);
   FRIEND_TEST_ALL_PREFIXES(CanonicalCookieTest, TestHasHiddenPrefixName);
-
-  // Records histograms to measure how often cookie prefixes appear in
-  // the wild and how often they would be blocked.
-  static void RecordCookiePrefixMetrics(CookiePrefix prefix_case_sensitive,
-                                        CookiePrefix prefix_case_insensitive,
-                                        bool is_insensitive_prefix_valid);
 
   // Returns the appropriate port value for the given `source_url` depending on
   // if the url is considered trustworthy or not.
@@ -400,7 +451,11 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
                                                 bool url_is_trustworthy);
 
   // Checks for values that could be misinterpreted as a cookie name prefix.
-  static bool HasHiddenPrefixName(const std::string_view cookie_value);
+  static bool HasHiddenPrefixName(std::string_view cookie_value);
+
+  // Helpers for use in canonicalization checks.
+  static CanonicalizationResult Pass();
+  static CanonicalizationResult Fail(CanonicalizationFailure failure);
 
   // CookieBase:
   base::TimeDelta GetLaxAllowUnsafeThresholdAge() const override;
@@ -418,7 +473,7 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   // These are the fields specific to CanonicalCookie. See CookieBase for other
   // data fields.
   // If adding more data fields, please also adjust GetAllDataMembersAsTuple().
-  std::string value_;
+  std::optional<crypto::ProcessBoundString> value_;
   base::Time expiry_date_;
   base::Time last_access_date_;
   base::Time last_update_date_;
@@ -453,6 +508,10 @@ struct CookieWithAccessResult {
   CanonicalCookie cookie;
   CookieAccessResult access_result;
 };
+
+NET_EXPORT std::ostream& operator<<(
+    std::ostream& os,
+    CanonicalCookie::CanonicalizationFailure failure);
 
 // Provided to allow gtest to create more helpful error messages, instead of
 // printing hex.

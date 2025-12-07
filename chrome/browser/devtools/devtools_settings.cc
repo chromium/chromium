@@ -4,6 +4,7 @@
 
 #include "chrome/browser/devtools/devtools_settings.h"
 
+#include "base/strings/to_string.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -72,7 +73,7 @@ base::Value::Dict DevToolsSettings::Get() {
   // happening on the frontend.
   settings.Set(
       kSyncDevToolsPreferencesFrontendName,
-      prefs->GetBoolean(prefs::kDevToolsSyncPreferences) ? "true" : "false");
+      base::ToString(prefs->GetBoolean(prefs::kDevToolsSyncPreferences)));
   settings.Merge(prefs->GetDict(prefs::kDevToolsPreferences).Clone());
   settings.Merge(prefs->GetDict(GetDictionaryNameForSyncedPrefs()).Clone());
 
@@ -85,7 +86,7 @@ std::optional<base::Value> DevToolsSettings::Get(const std::string& name) {
     // DevTools expects any kind of preference to be a string. Parsing is
     // happening on the frontend.
     bool result = prefs->GetBoolean(prefs::kDevToolsSyncPreferences);
-    return base::Value(result ? "true" : "false");
+    return base::Value(base::ToString(result));
   }
   const char* dict_name = GetDictionaryNameForSettingsName(name);
   const base::Value::Dict& dict = prefs->GetDict(dict_name);

@@ -10,18 +10,22 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "net/base/host_port_pair.h"
 #include "net/ssl/client_cert_identity.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
 struct AccountInfo;
+struct CoreAccountId;
 class GURL;
 class PrefRegistrySimple;
 class Profile;
 
-namespace chrome {
 namespace enterprise_util {
 
 enum EnterpriseProfileBadgingTemporarySetting : int {
@@ -33,6 +37,20 @@ enum EnterpriseProfileBadgingTemporarySetting : int {
 
 // Represents which type of managed environment we have.
 enum class ManagementEnvironment { kNone, kSchool, kWork };
+
+// Represents the state of the browser management notice in the NTP footer.
+enum class BrowserManagementNoticeState {
+  kEnabled,
+  kDisabled,
+  kEnabledByPolicy,
+  kNotApplicable,
+};
+
+// Represents the management scope for which the enterprise logo applies.
+enum class EnterpriseLogoUrlScope {
+  kBrowser,
+  kProfile
+};
 
 // Determines whether the browser with `profile` as its primary profile is
 // managed. This is determined by looking it there are any policies applied or
@@ -81,7 +99,25 @@ bool ProfileCanBeManaged(Profile* profile);
 ManagementEnvironment GetManagementEnvironment(Profile* profile,
                                                const AccountInfo& account_info);
 
-bool CanShowEnterpriseBadging(Profile* profile);
+// Returns false if the toolbar enterprise badging is disabled by policy.
+bool IsEnterpriseBadgingEnabledForToolbar(Profile* profile);
+
+bool CanShowEnterpriseBadgingForAvatar(Profile* profile);
+
+bool CanShowEnterpriseBadgingForMenu(Profile* profile);
+
+bool CanShowEnterpriseProfileUI(Profile* profile);
+
+// Returns true if the enterprise badging can be shown inside the NTP footer,
+// irrespective of whether the footer itself can show.
+bool CanShowEnterpriseBadgingForNTPFooter(Profile* profile);
+
+BrowserManagementNoticeState GetManagementNoticeStateForNTPFooter(
+    Profile* profile);
+
+// Sets the enterprise label if an `EnterpriseCustomLabel` has been set which
+// will replace the profile name where it is used.
+void SetEnterpriseProfileLabel(Profile* profile);
 
 // Checks `email_domain` against the list of pre-defined known consumer domains.
 // Use this for optimization purposes when you want to skip some code paths for
@@ -95,9 +131,22 @@ bool IsKnownConsumerDomain(const std::string& email_domain);
 // image.
 void GetManagementIcon(const GURL& url,
                        Profile* profile,
+                       EnterpriseLogoUrlScope url_scope,
                        base::OnceCallback<void(const gfx::Image&)> callback);
 
+// Returns the default enterprise label "Work"/"School" or the
+// `EnterpriseCustomLabel` set by policy if present.
+// `truncated` indicates whether the label returned needs to be truncated.
+std::u16string GetEnterpriseLabel(Profile* profile, bool truncated = false);
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+base::ScopedClosureRunner DisableAutomaticManagementDisclaimerUntilReset(
+    Profile* profile);
+
+base::ScopedClosureRunner
+EnabledAutomaticManagementDisclaimerAcceptanceUntilReset(Profile* profile);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 }  // namespace enterprise_util
-}  // namespace chrome
 
 #endif  // CHROME_BROWSER_ENTERPRISE_UTIL_MANAGED_BROWSER_UTILS_H_

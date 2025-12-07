@@ -6,7 +6,7 @@
 
 #include <optional>
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/time/time.h"
 #include "ui/gfx/geometry/point.h"
 
@@ -60,6 +60,10 @@ std::optional<float>
 PlatformScreen::GetPreferredScaleFactorForAcceleratedWidget(
     gfx::AcceleratedWidget widget) const {
   return std::nullopt;
+}
+
+bool PlatformScreen::IsHeadless() const {
+  return false;
 }
 
 void PlatformScreen::StorePlatformNameIntoListOfValues(

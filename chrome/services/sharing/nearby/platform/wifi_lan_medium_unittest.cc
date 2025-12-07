@@ -46,8 +46,7 @@
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "third_party/nearby/src/internal/platform/nsd_service_info.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 namespace {
 
@@ -356,10 +355,10 @@ class WifiLanMediumTest : public ::testing::Test {
     }
   }
 
-  void StartMdnsDiscovery(std::string service_type) {
+  void StartMdnsDiscovery(const std::string& service_type) {
     api::WifiLanMedium::DiscoveredServiceCallback discovery_callback = {
         .service_discovered_cb =
-            [&](const NsdServiceInfo& service_info) {
+            [this, service_type](const NsdServiceInfo& service_info) {
               LOG(INFO) << "Service found for discovery session: "
                         << service_type;
               found_service_info_.push_back(service_info);
@@ -368,7 +367,7 @@ class WifiLanMediumTest : public ::testing::Test {
               }
             },
         .service_lost_cb =
-            [&](const NsdServiceInfo& service_info) {
+            [this, service_type](const NsdServiceInfo& service_info) {
               LOG(INFO) << "Service lost for discovery session: "
                         << service_type;
               lost_service_info_.push_back(service_info);
@@ -887,5 +886,4 @@ TEST_F(WifiLanMediumTest, GetDynamicPortRange) {
   EXPECT_EQ(ash::nearby::TcpServerSocketPort::kMax, port_range->second);
 }
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome

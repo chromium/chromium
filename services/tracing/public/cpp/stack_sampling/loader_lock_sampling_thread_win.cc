@@ -11,6 +11,7 @@
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "services/tracing/public/cpp/stack_sampling/loader_lock_sampler_win.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace tracing {
 
@@ -77,13 +78,12 @@ void LoaderLockSamplingThread::LoaderLockTracker::SampleLoaderLock() {
   bool loader_lock_now_held = g_loader_lock_sampler->IsLoaderLockHeld();
 
   if (loader_lock_now_held && !loader_lock_is_held_) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(TRACE_DISABLED_BY_DEFAULT("cpu_profiler"),
-                                      kLoaderLockHeldEventName,
-                                      TRACE_ID_LOCAL(this));
+    TRACE_EVENT_BEGIN(TRACE_DISABLED_BY_DEFAULT("cpu_profiler"),
+                      kLoaderLockHeldEventName,
+                      perfetto::Track::FromPointer(this));
   } else if (!loader_lock_now_held && loader_lock_is_held_) {
-    TRACE_EVENT_NESTABLE_ASYNC_END0(TRACE_DISABLED_BY_DEFAULT("cpu_profiler"),
-                                    kLoaderLockHeldEventName,
-                                    TRACE_ID_LOCAL(this));
+    TRACE_EVENT_END(TRACE_DISABLED_BY_DEFAULT("cpu_profiler"),
+                    perfetto::Track::FromPointer(this));
   }
   loader_lock_is_held_ = loader_lock_now_held;
 }

@@ -8,7 +8,9 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "ui/gfx/linux/client_native_pixmap_dmabuf.h"
+#include "ui/gfx/linux/native_pixmap_dmabuf.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/presenter.h"
@@ -23,19 +25,20 @@
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
+#include "ui/ozone/public/native_pixmap_usage_utils.h"
 
 #if defined(WAYLAND_GBM)
-#include "ui/gfx/buffer_format_util.h"
+#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/gfx/linux/gbm_device.h"  // nogncheck
 #include "ui/ozone/platform/wayland/gpu/gbm_pixmap_wayland.h"
 #include "ui/ozone/platform/wayland/gpu/gbm_surfaceless_wayland.h"
 #include "ui/ozone/public/ozone_platform.h"
-#endif
+#endif  // WAYLAND_GBM
 
 #if BUILDFLAG(ENABLE_VULKAN)
 #include "ui/ozone/platform/wayland/gpu/vulkan_implementation_wayland.h"
-#endif
+#endif  // ENABLE_VULKAN
 
 namespace ui {
 
@@ -52,16 +55,7 @@ class GLOzoneEGLWayland : public GLOzoneEGL {
 
   ~GLOzoneEGLWayland() override {}
 
-  bool CanImportNativePixmap(gfx::BufferFormat format) override;
-
-  std::unique_ptr<NativePixmapGLBinding> ImportNativePixmap(
-      scoped_refptr<gfx::NativePixmap> pixmap,
-      gfx::BufferFormat plane_format,
-      gfx::BufferPlane plane,
-      gfx::Size plane_size,
-      const gfx::ColorSpace& color_space,
-      GLenum target,
-      GLuint texture_id) override;
+  bool CanImportNativePixmap(viz::SharedImageFormat format) override;
 
   scoped_refptr<gl::GLSurface> CreateViewGLSurface(
       gl::GLDisplay* display,
@@ -80,23 +74,32 @@ class GLOzoneEGLWayland : public GLOzoneEGL {
   bool LoadGLES2Bindings(const gl::GLImplementationParts& impl) override;
 
  private:
-  const raw_ptr<WaylandConnection, AcrossTasksDanglingUntriaged> connection_;
-  const raw_ptr<WaylandBufferManagerGpu, AcrossTasksDanglingUntriaged>
-      buffer_manager_;
+  std::unique_ptr<NativePixmapGLBinding> ImportNativePixmap(
+      scoped_refptr<gfx::NativePixmap> pixmap,
+      viz::SharedImageFormat plane_format,
+      gfx::BufferPlane plane,
+      gfx::Size plane_size,
+      const gfx::ColorSpace& color_space,
+      GLenum target,
+      GLuint texture_id) override;
+
+  const raw_ptr<WaylandConnection> connection_;
+  const raw_ptr<WaylandBufferManagerGpu> buffer_manager_;
+  gl::EGLDisplayPlatform native_display_;
 };
 
-bool GLOzoneEGLWayland::CanImportNativePixmap(gfx::BufferFormat format) {
+bool GLOzoneEGLWayland::CanImportNativePixmap(viz::SharedImageFormat format) {
   if (!gl::GLSurfaceEGL::GetGLDisplayEGL()
            ->ext->b_EGL_EXT_image_dma_buf_import) {
     return false;
   }
 
-  return NativePixmapEGLBinding::IsBufferFormatSupported(format);
+  return NativePixmapEGLBinding::IsSharedImageFormatSupported(format);
 }
 
 std::unique_ptr<NativePixmapGLBinding> GLOzoneEGLWayland::ImportNativePixmap(
     scoped_refptr<gfx::NativePixmap> pixmap,
-    gfx::BufferFormat plane_format,
+    viz::SharedImageFormat plane_format,
     gfx::BufferPlane plane,
     gfx::Size plane_size,
     const gfx::ColorSpace& color_space,
@@ -174,7 +177,23 @@ gl::EGLDisplayPlatform GLOzoneEGLWayland::GetNativeDisplay() {
   if (connection_) {
     return connection_->GetNativeDisplay();
   }
-  return gl::EGLDisplayPlatform(EGL_DEFAULT_DISPLAY);
+  if (native_display_.Valid()) {
+    return native_display_;
+  }
+
+  auto gbm_display = buffer_manager_->GetNativeDisplay();
+  if (gbm_display.Valid() &&
+      gl::g_driver_egl.client_ext.b_EGL_EXT_platform_base &&
+      gl::g_driver_egl.client_ext.b_EGL_KHR_platform_gbm) {
+    native_display_ = gbm_display;
+  } else if (gl::g_driver_egl.client_ext.b_EGL_MESA_platform_surfaceless) {
+    native_display_ = gl::EGLDisplayPlatform(EGL_DEFAULT_DISPLAY,
+                                             EGL_PLATFORM_SURFACELESS_MESA);
+  } else {
+    native_display_ = gl::EGLDisplayPlatform(EGL_DEFAULT_DISPLAY);
+  }
+
+  return native_display_;
 }
 
 bool GLOzoneEGLWayland::LoadGLES2Bindings(
@@ -206,10 +225,6 @@ std::vector<gl::GLImplementationParts>
 WaylandSurfaceFactory::GetAllowedGLImplementations() {
   std::vector<gl::GLImplementationParts> impls;
   if (egl_implementation_) {
-    // Allow for Angle-vulkan implementation.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    impls.emplace_back(gl::kGLImplementationEGLANGLE);
-#endif
     impls.emplace_back(gl::ANGLEImplementation::kOpenGL);
     impls.emplace_back(gl::ANGLEImplementation::kOpenGLES);
     impls.emplace_back(gl::ANGLEImplementation::kSwiftShader);
@@ -233,6 +248,9 @@ GLOzone* WaylandSurfaceFactory::GetGLOzone(
 std::unique_ptr<gpu::VulkanImplementation>
 WaylandSurfaceFactory::CreateVulkanImplementation(bool use_swiftshader,
                                                   bool allow_protected_memory) {
+  LOG_IF(ERROR, !use_swiftshader)
+      << "'--ozone-platform=wayland' is not compatible with Vulkan. "
+         "Consider switching to '--ozone-platform=x11' or disabling Vulkan";
   return std::make_unique<VulkanImplementationWayland>(use_swiftshader);
 }
 #endif
@@ -241,7 +259,7 @@ scoped_refptr<gfx::NativePixmap> WaylandSurfaceFactory::CreateNativePixmap(
     gfx::AcceleratedWidget widget,
     gpu::VulkanDeviceQueue* device_queue,
     gfx::Size size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     gfx::BufferUsage usage,
     std::optional<gfx::Size> framebuffer_size) {
   if (framebuffer_size &&
@@ -249,50 +267,49 @@ scoped_refptr<gfx::NativePixmap> WaylandSurfaceFactory::CreateNativePixmap(
     return nullptr;
   }
 #if defined(WAYLAND_GBM)
-  scoped_refptr<GbmPixmapWayland> pixmap =
-      base::MakeRefCounted<GbmPixmapWayland>(buffer_manager_);
+  auto* gbm_device = buffer_manager_->GetGbmDevice();
+  if (gbm_device && gbm_device->CanCreateBufferForFormat(
+                        GetFourCCFormatFromSharedImageFormat(format))) {
+    scoped_refptr<GbmPixmapWayland> pixmap =
+        base::MakeRefCounted<GbmPixmapWayland>(buffer_manager_);
 
-  if (!pixmap->InitializeBuffer(widget, size, format, usage,
-                                framebuffer_size)) {
-    return nullptr;
+    auto native_usage = BufferUsageToNativePixmapUsage(usage);
+    if (!pixmap->InitializeBuffer(widget, size, format, native_usage,
+                                  framebuffer_size)) {
+      return nullptr;
+    }
+    return pixmap;
   }
-  return pixmap;
-#else
-  return nullptr;
 #endif
-}
-
-void WaylandSurfaceFactory::CreateNativePixmapAsync(
-    gfx::AcceleratedWidget widget,
-    gpu::VulkanDeviceQueue* device_queue,
-    gfx::Size size,
-    gfx::BufferFormat format,
-    gfx::BufferUsage usage,
-    NativePixmapCallback callback) {
-  // CreateNativePixmap is non-blocking operation. Thus, it is safe to call it
-  // and return the result with the provided callback.
-  std::move(callback).Run(
-      CreateNativePixmap(widget, device_queue, size, format, usage));
+  return nullptr;
 }
 
 scoped_refptr<gfx::NativePixmap>
 WaylandSurfaceFactory::CreateNativePixmapFromHandle(
     gfx::AcceleratedWidget widget,
     gfx::Size size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     gfx::NativePixmapHandle handle) {
 #if defined(WAYLAND_GBM)
-  scoped_refptr<GbmPixmapWayland> pixmap =
-      base::MakeRefCounted<GbmPixmapWayland>(buffer_manager_);
-
-  if (!pixmap->InitializeBufferFromHandle(widget, size, format,
-                                          std::move(handle))) {
-    return nullptr;
+  auto* gbm_device = buffer_manager_->GetGbmDevice();
+  if (gbm_device && gbm_device->CanCreateBufferForFormat(
+                        GetFourCCFormatFromSharedImageFormat(format))) {
+    scoped_refptr<GbmPixmapWayland> pixmap =
+        base::MakeRefCounted<GbmPixmapWayland>(buffer_manager_);
+    if (pixmap->InitializeBufferFromHandle(widget, size, format,
+                                           std::move(handle))) {
+      return pixmap;
+    }
+  } else {
+    scoped_refptr<gfx::NativePixmapDmaBuf> pixmap =
+        base::MakeRefCounted<gfx::NativePixmapDmaBuf>(size, format,
+                                                      std::move(handle));
+    if (pixmap->AreDmaBufFdsValid()) {
+      return pixmap;
+    }
   }
-  return pixmap;
-#else
+#endif  //  defined(WAYLAND_GBM)
   return nullptr;
-#endif
 }
 
 bool WaylandSurfaceFactory::SupportsNativePixmaps() const {
@@ -307,12 +324,12 @@ bool WaylandSurfaceFactory::SupportsNativePixmaps() const {
   return supports_native_pixmaps;
 }
 
-std::optional<gfx::BufferFormat>
+std::optional<viz::SharedImageFormat>
 WaylandSurfaceFactory::GetPreferredFormatForSolidColor() const {
   if (!buffer_manager_->SupportsFormat(gfx::BufferFormat::RGBA_8888)) {
-    return gfx::BufferFormat::BGRA_8888;
+    return viz::SinglePlaneFormat::kBGRA_8888;
   }
-  return gfx::BufferFormat::RGBA_8888;
+  return viz::SinglePlaneFormat::kRGBA_8888;
 }
 
 bool WaylandSurfaceFactory::SupportsDrmModifiersFilter() const {
@@ -344,6 +361,13 @@ WaylandSurfaceFactory::GetSupportedFormatsForTexturing() const {
 #else
   return {};
 #endif
+}
+
+void WaylandSurfaceFactory::SetBufferManagerForTesting(
+    WaylandBufferManagerGpu* buffer_manager) {
+  buffer_manager_ = buffer_manager;
+  egl_implementation_.reset(
+      new GLOzoneEGLWayland(connection_, buffer_manager_));
 }
 
 }  // namespace ui

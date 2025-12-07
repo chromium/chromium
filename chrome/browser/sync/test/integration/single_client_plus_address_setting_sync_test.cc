@@ -3,15 +3,16 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/plus_addresses/plus_address_setting_service_factory.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "components/plus_addresses/features.h"
-#include "components/plus_addresses/settings/plus_address_setting_service.h"
-#include "components/plus_addresses/settings/plus_address_setting_sync_test_util.h"
-#include "components/plus_addresses/settings/plus_address_setting_sync_util.h"
+#include "components/plus_addresses/core/browser/settings/plus_address_setting_service.h"
+#include "components/plus_addresses/core/browser/settings/plus_address_setting_sync_test_util.h"
+#include "components/plus_addresses/core/browser/settings/plus_address_setting_sync_util.h"
+#include "components/plus_addresses/core/common/features.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
@@ -25,7 +26,7 @@
 
 namespace {
 
-constexpr char kIsEnabledSettingName[] = "plus_address.is_enabled";
+constexpr char kIsEnabledSettingName[] = "has_feature_enabled";
 
 using plus_addresses::CreateSettingSpecifics;
 using plus_addresses::HasBoolSetting;
@@ -84,32 +85,27 @@ class FakeServerSpecificsChecker
   const testing::Matcher<sync_pb::PlusAddressSettingSpecifics> matcher_;
 };
 
-// PLUS_ADDRESS_SETTING is supposed to behave the same in and outside of
-// transport mode. These tests are parameterized by whether the test should run
-// in transport mode (true) or not (false).
 class SingleClientPlusAddressSettingSyncTest
     : public SyncTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   SingleClientPlusAddressSettingSyncTest() : SyncTest(SINGLE_CLIENT) {
-    features_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{plus_addresses::features::kPlusAddressesEnabled,
-                               {{plus_addresses::features::
-                                     kEnterprisePlusAddressServerUrl.name,
-                                 "https://not-used.com"}}},
-                              {syncer::kSyncPlusAddressSetting, {}}},
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    enabled_features.push_back({plus_addresses::features::kPlusAddressesEnabled,
+                                {{plus_addresses::features::
+                                      kEnterprisePlusAddressServerUrl.name,
+                                  "https://not-used.com"}}});
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      enabled_features.push_back(
+          {syncer::kReplaceSyncPromosWithSignInPromos, {}});
+    }
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        enabled_features,
         /*disabled_features=*/{});
   }
 
-  // Sets up the sync client in sync-the-feature or sync-the-transport mode,
-  // depending on `GetParam()`. Returns true if setup succeeded.
-  bool SetupSync() {
-    const bool should_run_in_transport_mode = GetParam();
-    if (should_run_in_transport_mode) {
-      return SetupClients() && GetClient(0)->SignInPrimaryAccount() &&
-             GetClient(0)->AwaitSyncTransportActive();
-    }
-    return SyncTest::SetupSync();
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
   }
 
   PlusAddressSettingService* GetPlusAddressSettingService() {
@@ -137,21 +133,13 @@ class SingleClientPlusAddressSettingSyncTest
   }
 
  private:
-  base::test::ScopedFeatureList features_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    SingleClientPlusAddressSettingSyncTest,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // On ChromeOS, sync-the-feature gets started automatically once a primary
-    // account is signed in and transport mode is not a thing. As such, only run
-    // the tests in sync-the-feature mode.
-    testing::Values(false)
-#else
-    testing::Bool()
-#endif
-);
+INSTANTIATE_TEST_SUITE_P(,
+                         SingleClientPlusAddressSettingSyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
 
 IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSettingSyncTest, InitialSync) {
   InjectSpecificsToServer(
@@ -195,8 +183,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSettingSyncTest,
           syncer::LoopbackServerEntity::CreateId(syncer::PLUS_ADDRESS_SETTING,
                                                  client_tag_hash),
           client_tag_hash));
-  // Non-existing settings behave as if they have their default value.
-  EXPECT_TRUE(WaitForPlusAddressEnabledState(false));
+  // Non-existing settings behave as if they have their (setting-specific)
+  // default value - which is true for the enabled setting.
+  EXPECT_TRUE(WaitForPlusAddressEnabledState(true));
 }
 
 IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSettingSyncTest,
@@ -205,22 +194,23 @@ IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSettingSyncTest,
   ASSERT_FALSE(GetPlusAddressSettingService()->GetHasAcceptedNotice());
   GetPlusAddressSettingService()->SetHasAcceptedNotice();
   EXPECT_TRUE(GetPlusAddressSettingService()->GetHasAcceptedNotice());
-  EXPECT_TRUE(FakeServerSpecificsChecker(
-                  HasBoolSetting("plus_address.has_accepted_notice", true))
-                  .Wait());
+  EXPECT_TRUE(
+      FakeServerSpecificsChecker(HasBoolSetting("has_accepted_notice", true))
+          .Wait());
 }
 
 // ChromeOS does not support signing out of the primary account.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSettingSyncTest,
                        Signout_DataCleared) {
   InjectSpecificsToServer(
-      plus_addresses::CreateSettingSpecifics(kIsEnabledSettingName, true));
+      plus_addresses::CreateSettingSpecifics(kIsEnabledSettingName, false));
   ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(WaitForPlusAddressEnabledState(true));
+  ASSERT_TRUE(WaitForPlusAddressEnabledState(false));
   GetClient(0)->SignOutPrimaryAccount();
-  EXPECT_TRUE(WaitForPlusAddressEnabledState(false));
+  // The enabled setting defaults to true if the state is unknown.
+  EXPECT_TRUE(WaitForPlusAddressEnabledState(true));
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace

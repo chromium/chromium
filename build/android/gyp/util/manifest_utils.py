@@ -8,11 +8,10 @@ import hashlib
 import os
 import re
 import shlex
-import sys
-import xml.dom.minidom as minidom
+from xml.dom import minidom
 from xml.etree import ElementTree
 
-from util import build_utils
+from util import build_utils  # pylint: disable=unused-import
 import action_helpers  # build_utils adds //build to sys.path.
 
 ANDROID_NAMESPACE = 'http://schemas.android.com/apk/res/android'
@@ -111,6 +110,19 @@ def SetTargetApiIfUnset(manifest_node, target_sdk_version):
   if curr_target_sdk_version is None:
     NamespacedSet(uses_sdk_node, 'targetSdkVersion', target_sdk_version)
   return curr_target_sdk_version is None
+
+
+def OverrideMinSdkVersionIfPresent(manifest_node, min_sdk_version):
+  uses_sdk_node = manifest_node.find('./uses-sdk')
+  if uses_sdk_node is not None:
+    NamespacedSet(uses_sdk_node, 'minSdkVersion', min_sdk_version)
+
+
+def RemoveUsesSdk(manifest_node):
+  """Removes the <uses-sdk> tag from the manifest node."""
+  uses_sdk_node = manifest_node.find('./uses-sdk')
+  if uses_sdk_node is not None:
+    manifest_node.remove(uses_sdk_node)
 
 
 def _SortAndStripElementTree(root):

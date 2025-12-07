@@ -8,7 +8,6 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
@@ -66,8 +65,8 @@ bool ClipboardApiTest::LoadHostedApp(const std::string& app_name,
 
   std::string launch_page_path =
       base::StringPrintf("%s/%s", app_name.c_str(), launch_page.c_str());
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           base_url.Resolve(launch_page_path)));
+  EXPECT_TRUE(NavigateToURL(GetActiveWebContents(),
+                            base_url.Resolve(launch_page_path)));
 
   return true;
 }
@@ -97,9 +96,7 @@ bool ClipboardApiTest::ExecuteCommandInIframeInSelectedTab(
 
 bool ClipboardApiTest::ExecuteScriptInSelectedTab(const std::string& script,
                                                   int options) {
-  return content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                         script, options)
-      .ExtractBool();
+  return content::EvalJs(GetActiveWebContents(), script, options).ExtractBool();
 }
 
 }  // namespace
@@ -201,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardApiTest, HostedAppNoPermission) {
   EXPECT_TRUE(ExecuteCopyInSelectedTab()) << message_;
   EXPECT_FALSE(ExecutePasteInSelectedTab()) << message_;
 
-  // User acitvation doesn't propagate to a child frame.
+  // User activation doesn't propagate to a child frame.
   EXPECT_FALSE(ExecuteCommandInIframeInSelectedTab("copy")) << message_;
   EXPECT_FALSE(ExecuteCommandInIframeInSelectedTab("paste")) << message_;
 }

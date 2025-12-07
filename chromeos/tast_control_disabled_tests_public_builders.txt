@@ -1,0 +1,37 @@
+# To disable a specific test in chrome_all_tast_tests for public builders only,
+# add the name of the test # to the following list and cite a bug.
+
+# Follow the syntax description at src/chromeos/tast_control_disabled_tests.txt
+
+# b/377802615: "runtime variable XXX is missing" error
+tast.bruschetta.AppVscodeWindowOperations.minimize
+tast.crostini.AppAudacity.bookworm_clamshell_stable
+tast.crostini.AppAudacityWindowOperations.maximize_bookworm_clamshell_stable
+tast.crostini.AppAudacityWindowOperations.minimize_bookworm_clamshell_stable
+tast.crostini.AppAudacityWindowOperations.switch_tablet_bookworm_clamshell_stable
+tast.crostini.AppEmacs.bookworm_clamshell_stable
+tast.crostini.AppEmacsWindowOperations.maximize_bookworm_clamshell_stable
+tast.crostini.AppEmacsWindowOperations.minimize_bookworm_clamshell_stable
+tast.crostini.AppEmacsWindowOperations.switch_tablet_bookworm_clamshell_stable
+tast.crostini.AppFirefox.bookworm_clamshell_stable
+tast.crostini.AppFirefoxNonalphanumericInput.bookworm_clamshell_stable
+tast.crostini.AppFirefoxWindowOperations.maximize_bookworm_clamshell_stable
+tast.crostini.AppFirefoxWindowOperations.minimize_bookworm_clamshell_stable
+tast.crostini.AppFirefoxWindowOperations.switch_tablet_bookworm_clamshell_stable
+tast.crostini.AppGedit.bookworm_clamshell_stable
+tast.crostini.AppGedit.bullseye_clamshell_stable
+tast.crostini.AppGeditFilesharing.bookworm_clamshell_stable
+tast.crostini.AppGeditUnshareFolder.bookworm_clamshell_stable
+tast.crostini.AppGeditNonalphanumericInput.bookworm_clamshell_stable
+tast.crostini.AppVSCodeNonalphanumericInput.bookworm_clamshell_stable
+tast.crostini.AppVscode.bookworm_clamshell_stable
+tast.crostini.AppVscode.bullseye_clamshell_stable
+tast.crostini.AppVscodeFromFileManager.bookworm_clamshell_stable
+tast.crostini.AppVscodeWindowOperations.maximize_bookworm_clamshell_stable
+tast.crostini.AppVscodeWindowOperations.minimize_bookworm_clamshell_stable
+tast.crostini.AppVscodeWindowOperations.switch_tablet_bookworm_clamshell_stable
+tast.crostini.RestartApp.bookworm_clamshell_stable
+tast.shimlessrma.SelectComponentsNoneNextCancel.critical
+tast.shimlessrma.WelcomeCancel.critical
+tast.shimlessrma.WelcomeNextCancel.critical
+

@@ -9,8 +9,7 @@
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/threading/thread_checker.h"
 
-namespace base {
-namespace sequence_manager {
+namespace base::sequence_manager {
 
 void TimeDomain::NotifyPolicyChanged() {
   sequence_manager_->ScheduleWork();
@@ -28,5 +27,4 @@ Value::Dict TimeDomain::AsValue() const {
   return state;
 }
 
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager

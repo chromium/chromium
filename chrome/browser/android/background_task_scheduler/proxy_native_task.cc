@@ -11,15 +11,16 @@
 #include "chrome/browser/android/profile_key_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/profiles/profile_key_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/ProxyNativeTask_jni.h"
 
 static jlong JNI_ProxyNativeTask_Init(JNIEnv* env,
-                                      const JavaParamRef<jobject>& jobj,
+                                      const JavaRef<jobject>& jobj,
                                       jint task_id,
                                       std::string& extras,
-                                      const JavaParamRef<jobject>& jcallback) {
+                                      const JavaRef<jobject>& jcallback) {
   std::unique_ptr<background_task::BackgroundTask> background_task =
       ChromeBackgroundTaskFactory::GetNativeBackgroundTaskFromTaskId(task_id);
 
@@ -48,17 +49,15 @@ ProxyNativeTask::ProxyNativeTask(
       task_params_(std::move(task_params)),
       finish_callback_(std::move(finish_callback)) {}
 
-ProxyNativeTask::~ProxyNativeTask() {}
+ProxyNativeTask::~ProxyNativeTask() = default;
 
-void ProxyNativeTask::Destroy(JNIEnv* env,
-                              const JavaParamRef<jobject>& jcaller) {
+void ProxyNativeTask::Destroy(JNIEnv* env) {
   delete this;
 }
 
 void ProxyNativeTask::StartBackgroundTaskInReducedMode(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jcaller,
-    const JavaParamRef<jobject>& jkey) {
+    const JavaRef<jobject>& jkey) {
   if (!background_task_) {
     std::move(finish_callback_).Run(false);
     return;
@@ -70,10 +69,8 @@ void ProxyNativeTask::StartBackgroundTaskInReducedMode(
                                              std::move(finish_callback_), key);
 }
 
-void ProxyNativeTask::StartBackgroundTaskWithFullBrowser(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jcaller,
-    Profile* profile) {
+void ProxyNativeTask::StartBackgroundTaskWithFullBrowser(JNIEnv* env,
+                                                         Profile* profile) {
   if (!background_task_) {
     std::move(finish_callback_).Run(false);
     return;
@@ -85,7 +82,6 @@ void ProxyNativeTask::StartBackgroundTaskWithFullBrowser(
 }
 
 void ProxyNativeTask::OnFullBrowserLoaded(JNIEnv* env,
-                                          const JavaParamRef<jobject>& jcaller,
                                           Profile* profile) {
   if (!background_task_)
     return;
@@ -94,11 +90,11 @@ void ProxyNativeTask::OnFullBrowserLoaded(JNIEnv* env,
   background_task_->OnFullBrowserLoaded(profile);
 }
 
-jboolean ProxyNativeTask::StopBackgroundTask(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jcaller) {
+jboolean ProxyNativeTask::StopBackgroundTask(JNIEnv* env) {
   if (!background_task_)
     return false;
 
   return background_task_->OnStopTask(task_params_);
 }
+
+DEFINE_JNI(ProxyNativeTask)

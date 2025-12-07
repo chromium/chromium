@@ -8,6 +8,9 @@
 <script src="/common/reftest-wait.js"></script>
 <script src="/common/rendering-utils.js"></script>
 <style>
+html {
+  scrollbar-width: none;
+}
 body {
   width: 150vw;
   height: 150vh;
@@ -49,9 +52,17 @@ body {
 <script>
 waitForAtLeastOneFrame().then(() => {
   window.scrollTo(250, 100);
+  // The initial option no longer fits. Switch to fallback.
   waitForAtLeastOneFrame().then(() => {
     window.scrollTo(0, 0);
-    takeScreenshot();
+
+    // The initial option would fit again, but so does the fallback. Redisplay
+    // to move away from the fallback option.
+    anchored.style.display = "none";
+    waitForAtLeastOneFrame().then(() => {
+      anchored.style.display = "block";
+      takeScreenshot();
+    });
   });
 });
 </script>

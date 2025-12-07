@@ -30,13 +30,13 @@ source_set("browser_tests") {
   ]
   deps = [
     ":test_support",
-    "//build:chromeos_buildflags",
     "//chrome/app:generated_resources",
     "//chrome/browser",
     "//chrome/browser/media/router",
     "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/media/router:test_support",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/media_router",
     "//chrome/browser/ui/views:test_support",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/common",
@@ -68,6 +68,7 @@ copy("browser_test_resources") {
   testonly = true
   sources = [
     "resources/basic_test.html",
+    "resources/bigbuck.webm",
     "resources/close_route_with_error_on_send.json",
     "resources/common.js",
     "resources/fail_create_route.json",

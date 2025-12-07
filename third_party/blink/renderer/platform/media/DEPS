@@ -9,19 +9,20 @@ include_rules = [
   # Dependencies.
   "+base/cancelable_callback.h",
   "+base/containers/circular_deque.h",
+  "+base/power_monitor",
   "+base/strings/utf_string_conversions.h",
   "+base/task/task_runner.h",
   "+base/threading/thread.h",
+  "+cc/base",
   "+cc/layers",
   "+components/viz/common",
   "+media/audio/null_audio_sink.h",
   "+media/base",
   "+media/capabilities/bucket_utility.h",
+  "+media/capture",
   "+media/cdm",
   "+media/filters",
   "+media/formats",
-  "+media/learning/common",
-  "+media/learning/mojo/public/cpp",
   "+media/media_buildflags.h",
   "+media/mojo/mojom",
   "+media/renderers/paint_canvas_video_renderer.h",
@@ -32,8 +33,11 @@ include_rules = [
   "+net/url_request/url_request_job.h",
   "+services/device/public/mojom",
   "+services/media_session/public/cpp",
+  "+third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h",
   "+third_party/blink/renderer/platform/allow_discouraged_type.h",
   "+third_party/blink/renderer/platform/platform_export.h",
+  "+third_party/blink/renderer/platform/scheduler/public",
+  "+third_party/blink/renderer/platform/weborigin",
   "+third_party/blink/renderer/platform/wtf",
 ]
 
@@ -42,13 +46,12 @@ specific_include_rules = {
     "+base/task/current_thread.h",
     "+base/threading/thread.h",
     "+components/viz/test",
+    "+gpu/command_buffer/client/test_shared_image_interface.h",
     "+media/mojo/services",
     "+media/renderers",
-    "+media/video/fake_gpu_memory_buffer.h",
     "+gin/v8_initializer.h",
 
     # Allow test support dependencies.
     "+third_party/blink/renderer/platform/media/testing",
   ],
 }
-

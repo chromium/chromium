@@ -3,13 +3,13 @@
 <translationbundle lang="pt-BR">
 <translation id="1002108253973310084">Foi detectada uma versão incompatível do protocolo. Certifique-se de que você tenha a versão mais recente do software instalada em ambos os computadores e tente novamente.</translation>
 <translation id="1008557486741366299">Não agora</translation>
-<translation id="1201402288615127009">Próxima</translation>
+<translation id="1201402288615127009">Avançar</translation>
 <translation id="1297009705180977556">Erro ao conectar-se a <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">O objeto solicitado não existe.</translation>
 <translation id="1480046233931937785">Créditos</translation>
 <translation id="1520828917794284345">Redimensionar área de trabalho para ajustar</translation>
 <translation id="1546934824884762070">Ocorreu um erro inesperado. Informe este problema aos desenvolvedores.</translation>
-<translation id="1697532407822776718">Pronto.</translation>
+<translation id="1697532407822776718">Tudo pronto!</translation>
 <translation id="1742469581923031760">Conectando...</translation>
 <translation id="177040763384871009">Para permitir que links clicados no dispositivo remoto sejam abertos no navegador do cliente, mude o navegador da Web do sistema para "<ph name="URL_FORWARDER_NAME" />".</translation>
 <translation id="177096447311351977">IP do canal do cliente: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' ip_host='<ph name="HOST_IP_ADDRESS_AND_PORT" />' canal='<ph name="CHANNEL_TYPE" />' conexão='<ph name="CONNECTION_TYPE" />'.</translation>
@@ -28,8 +28,9 @@ Se a opção "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-
 <translation id="2329392777730037872">Falha ao abrir <ph name="URL" /> no cliente.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2366718077645204424">Não é possível acessar o host. Isso se deve, provavelmente, à configuração da rede que você está usando.</translation>
+<translation id="242591256144136845">Copyright 2025 Google LLC. Todos os direitos reservados.</translation>
 <translation id="2504109125669302160">Conceder a permissão "Acessibilidade" para o <ph name="PRODUCT_NAME" /></translation>
-<translation id="2509394361235492552">Conectado a <ph name="HOSTNAME" /></translation>
+<translation id="2509394361235492552">Conectado à <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Gostaria de compartilhar este computador para que outro usuário o veja e controle?</translation>
 <translation id="2579271889603567289">Ocorreu uma falha no host ou não foi possível iniciá-lo.</translation>
 <translation id="2599300881200251572">Este serviço permite conexões de entrada a partir de clientes da Área de trabalho remota do Google Chrome.</translation>
@@ -39,6 +40,7 @@ Se a opção "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-
 <translation id="2758123043070977469">Ocorreu um problema durante a autenticação. Faça login novamente.</translation>
 <translation id="2803375539583399270">Insira o PIN</translation>
 <translation id="2919669478609886916">Esta máquina está sendo compartilhada com outro usuário. Quer continuar compartilhando?</translation>
+<translation id="2929683002824598593">Compartilhar dispositivo</translation>
 <translation id="2939145106548231838">Autenticar para host</translation>
 <translation id="3027681561976217984">Modo de toque</translation>
 <translation id="3106379468611574572">O computador remoto não está respondendo às solicitações de conexão. Certifique-se de que ele esteja on-line e tente novamente.</translation>
@@ -91,6 +93,7 @@ Se a opção "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-
 <translation id="4987330545941822761">A Área de trabalho remota do Google Chrome não conseguiu determinar em qual navegador abrir URLs localmente. Selecione uma opção na lista abaixo.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (off-line)</translation>
 <translation id="507204348399810022">Você quer mesmo desativar conexões remotas para <ph name="HOSTNAME" />?</translation>
+<translation id="5095424396646120601">Relatórios de erros</translation>
 <translation id="5170982930780719864">ID de host inválido.</translation>
 <translation id="5204575267916639804">Perguntas frequentes</translation>
 <translation id="5222676887888702881">Sair</translation>
@@ -116,10 +119,12 @@ Se a opção "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-
 <translation id="6178645564515549384">Host de mensagens nativas para assistência remota</translation>
 <translation id="618120821413932081">Atualizar a resolução remota para que fique do tamanho da janela</translation>
 <translation id="6223301979382383752">Abrir preferências de gravação de tela</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> pediu acesso para ver sua tela e controlar seu teclado e mouse. Quer compartilhar seu dispositivo?</translation>
 <translation id="6284412385303060032">O host que está sendo executado na tela de lógica do console foi encerrado para suportar o modo de cortina, alternando para um host executado em uma sessão específica do usuário.</translation>
 <translation id="6542902059648396432">Informar um problema...</translation>
 <translation id="6583902294974160967">Suporte</translation>
 <translation id="6612717000975622067">Enviar Ctrl-Alt-Del</translation>
+<translation id="6625262630437221505">{0,plural, =1{Se você não realizar nenhuma ação, seu dispositivo começará a compartilhar em # segundo.}one{Se você não realizar nenhuma ação, seu dispositivo começará a compartilhar em # segundo.}other{Se você não realizar nenhuma ação, seu dispositivo começará a compartilhar em # segundos.}}</translation>
 <translation id="6654753848497929428">Compartilhar</translation>
 <translation id="677755392401385740">Host iniciado para o usuário <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">Aplicativo para ajudar a abrir um URL no cliente da <ph name="PRODUCT_NAME" /></translation>
@@ -133,6 +138,7 @@ Se a opção "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-
 <translation id="7067321367069083429">A tela atua como uma touchscreen</translation>
 <translation id="7116737094673640201">Bem-vindo à Área de trabalho remota do Google Chrome</translation>
 <translation id="7144878232160441200">Tentar novamente</translation>
+<translation id="7298392173540380852">Copyright 2025 Autores do Chromium. Todos os direitos reservados.</translation>
 <translation id="7312846573060934304">O host está off-line.</translation>
 <translation id="7319983568955948908">Parar compartilhamento</translation>
 <translation id="7359298090707901886">Não é possível usar o navegador escolhido para abrir URLs na máquina local.</translation>
@@ -149,7 +155,6 @@ Se a opção "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-
 <translation id="7693372326588366043">Atualiza a lista de hosts</translation>
 <translation id="7714222945760997814">Informar</translation>
 <translation id="7868137160098754906">Digite seu PIN do computador remoto.</translation>
-<translation id="7881455334687220899">Copyright 2024 Autores do Chromium. Todos os direitos reservados.</translation>
 <translation id="7895403300744144251">As políticas de segurança no computador remoto não permitem conexões a partir da sua conta.</translation>
 <translation id="7936528439960309876">Ancorar à direita</translation>
 <translation id="7970576581263377361">Falha na autenticação. Faça login novamente no Chromium.</translation>
@@ -181,7 +186,6 @@ Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-a e marque
 <translation id="8747048596626351634">Ocorreu uma falha na sessão ou não foi possível iniciá-la. Se ~/.chrome-remote-desktop-session existe no computador remoto, verifique se ele inicia um processo de execução longa em primeiro plano, como um ambiente de área de trabalho ou um gerenciador de janelas.</translation>
 <translation id="8804164990146287819">Política de Privacidade</translation>
 <translation id="8906511416443321782">O acesso ao microfone é necessário para capturar áudio e transmiti-lo ao cliente da Área de trabalho remota do Google Chrome.</translation>
-<translation id="9042277333359847053">Copyright 2024 Google LLC. Todos os direitos reservados.</translation>
 <translation id="9111855907838866522">Você está conectado ao seu dispositivo remoto. Para abrir o menu, toque na tela com quatro dedos.</translation>
 <translation id="9126115402994542723">Não pedir um PIN novamente ao se conectar a este host neste dispositivo.</translation>
 <translation id="916856682307586697">Abrir a XSession padrão</translation>

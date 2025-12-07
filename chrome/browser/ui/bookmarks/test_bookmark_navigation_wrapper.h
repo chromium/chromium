@@ -15,7 +15,7 @@ struct NavigateParams;
 
 // Replacement BookmarkNavigationWrapper to support testing.
 class TestingBookmarkNavigationWrapper
-    : public chrome::BookmarkNavigationWrapper {
+    : public bookmarks::BookmarkNavigationWrapper {
  public:
   TestingBookmarkNavigationWrapper();
   ~TestingBookmarkNavigationWrapper() override;

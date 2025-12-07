@@ -17,33 +17,18 @@
 
 namespace performance_manager {
 
-SystemNodeImpl::SystemNodeImpl() {
-  memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
-      FROM_HERE, base::BindRepeating(&SystemNodeImpl::OnMemoryPressure,
-                                     base::Unretained(this)));
-}
+SystemNodeImpl::SystemNodeImpl() = default;
 
 SystemNodeImpl::~SystemNodeImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void SystemNodeImpl::RemoveNodeAttachedData() {}
+void SystemNodeImpl::CleanUpNodeState() {}
 
 void SystemNodeImpl::OnProcessMemoryMetricsAvailable() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& observer : GetObservers()) {
     observer.OnProcessMemoryMetricsAvailable(this);
-  }
-}
-
-void SystemNodeImpl::OnMemoryPressure(MemoryPressureLevel new_level) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  for (auto& observer : GetObservers()) {
-    observer.OnBeforeMemoryPressure(new_level);
-  }
-  for (auto& observer : GetObservers()) {
-    observer.OnMemoryPressure(new_level);
   }
 }
 

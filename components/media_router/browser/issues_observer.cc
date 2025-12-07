@@ -15,13 +15,15 @@ IssuesObserver::IssuesObserver(IssueManager* issue_manager)
 }
 
 IssuesObserver::~IssuesObserver() {
-  if (initialized_)
+  if (initialized_) {
     issue_manager_->UnregisterObserver(this);
+  }
 }
 
 void IssuesObserver::Init() {
-  if (initialized_)
+  if (initialized_) {
     return;
+  }
 
   issue_manager_->RegisterObserver(this);
   initialized_ = true;

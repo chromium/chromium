@@ -1,0 +1,87 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac)
+
+source_set("pin_infobar") {
+  sources = [
+    "pin_infobar_controller.h",
+    "pin_infobar_delegate.h",
+    "pin_infobar_prefs.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser:shell_integration",
+  ]
+  deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//components/infobars/core",
+    "//components/vector_icons",
+    "//ui/gfx:native_widget_types",
+  ]
+
+  if (is_mac) {
+    sources += [ "pin_infobar_mac_util.h" ]
+  }
+}
+
+source_set("impl") {
+  sources = [
+    "pin_infobar_controller.cc",
+    "pin_infobar_delegate.cc",
+    "pin_infobar_prefs.cc",
+  ]
+  deps = [
+    ":pin_infobar",
+    "//chrome/app:branded_strings",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/infobars",
+    "//chrome/browser/profiles",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/common:constants",
+    "//components/omnibox/browser:vector_icons",
+    "//components/prefs",
+    "//components/tabs:public",
+    "//ui/base",
+  ]
+
+  if (is_win) {
+    deps += [
+      "//chrome/install_static:install_static_util",
+      "//chrome/installer/util:with_no_strings",
+    ]
+  }
+
+  if (is_mac) {
+    sources += [ "pin_infobar_mac_util.mm" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "pin_infobar_controller_unittest.cc",
+    "pin_infobar_delegate_unittest.cc",
+    "pin_infobar_prefs_unittest.cc",
+  ]
+  deps = [
+    ":pin_infobar",
+    "//base/test:test_support",
+    "//chrome/browser:shell_integration",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:test_support",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs:test_support",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//components/infobars/content",
+    "//components/sync_preferences:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

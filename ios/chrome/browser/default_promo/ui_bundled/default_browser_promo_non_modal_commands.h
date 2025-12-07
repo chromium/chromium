@@ -5,10 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_DEFAULT_PROMO_UI_BUNDLED_DEFAULT_BROWSER_PROMO_NON_MODAL_COMMANDS_H_
 #define IOS_CHROME_BROWSER_DEFAULT_PROMO_UI_BUNDLED_DEFAULT_BROWSER_PROMO_NON_MODAL_COMMANDS_H_
 
+#import <UIKit/UIKit.h>
+
+enum class NonModalDefaultBrowserPromoReason;
+
 @protocol DefaultBrowserPromoNonModalCommands
 
-// Shows the non-modal default promo.
-- (void)showDefaultBrowserNonModalPromo;
+// Shows the non-modal default promo with a reason.
+- (void)showDefaultBrowserNonModalPromoWithReason:
+    (NonModalDefaultBrowserPromoReason)promoReason;
 
 // Dismisses the non-modal default promo.
 - (void)dismissDefaultBrowserNonModalPromoAnimated:(BOOL)animated;

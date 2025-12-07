@@ -11,7 +11,8 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/process/kill.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
+#include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 
 #if BUILDFLAG(CLANG_PROFILING)
@@ -21,20 +22,11 @@
 namespace {
 
 DWORD kBasicProcessAccess =
-  PROCESS_TERMINATE | PROCESS_QUERY_INFORMATION | SYNCHRONIZE;
+    PROCESS_TERMINATE | PROCESS_QUERY_INFORMATION | SYNCHRONIZE;
 
-} // namespace
+}  // namespace
 
 namespace base {
-
-// Sets Eco QoS (Quality of Service) level for background process which would
-// select efficient CPU frequency and schedule the process to efficient cores
-// (available on hybrid CPUs).
-// QoS is a scheduling Win API which indicates the desired performance and power
-// efficiency of a process/thread. EcoQoS is introduced since Windows 11.
-BASE_FEATURE(kUseEcoQoSForBackgroundProcess,
-             "UseEcoQoSForBackgroundProcess",
-             FEATURE_ENABLED_BY_DEFAULT);
 
 Process::Process(ProcessHandle handle)
     : process_(handle), is_current_process_(false) {
@@ -47,8 +39,7 @@ Process::Process(Process&& other)
   other.Close();
 }
 
-Process::~Process() {
-}
+Process::~Process() = default;
 
 Process& Process::operator=(Process&& other) {
   DCHECK_NE(this, &other);
@@ -91,7 +82,7 @@ void Process::TerminateCurrentProcessImmediately(int exit_code) {
 #if BUILDFLAG(CLANG_PROFILING)
   WriteClangProfilingProfile();
 #endif
-  ::TerminateProcess(GetCurrentProcess(), static_cast<UINT>(exit_code));
+  ::TerminateProcess(::GetCurrentProcess(), static_cast<UINT>(exit_code));
   // There is some ambiguity over whether the call above can return. Rather than
   // hitting confusing crashes later on we should crash right here.
   ImmediateCrash();
@@ -102,29 +93,27 @@ bool Process::IsValid() const {
 }
 
 ProcessHandle Process::Handle() const {
-  return is_current_process_ ? GetCurrentProcess() : process_.get();
+  return is_current_process_ ? ::GetCurrentProcess() : process_.get();
 }
 
 Process Process::Duplicate() const {
-  if (is_current())
+  if (is_current()) {
     return Current();
+  }
 
   ProcessHandle out_handle;
-  if (!IsValid() || !::DuplicateHandle(GetCurrentProcess(),
-                                       Handle(),
-                                       GetCurrentProcess(),
-                                       &out_handle,
-                                       0,
-                                       FALSE,
-                                       DUPLICATE_SAME_ACCESS)) {
+  if (!IsValid() ||
+      !::DuplicateHandle(::GetCurrentProcess(), Handle(), ::GetCurrentProcess(),
+                         &out_handle, 0, FALSE, DUPLICATE_SAME_ACCESS)) {
     return Process();
   }
   return Process(out_handle);
 }
 
 ProcessHandle Process::Release() {
-  if (is_current())
+  if (is_current()) {
     return ::GetCurrentProcess();
+  }
   return process_.release();
 }
 
@@ -151,8 +140,9 @@ bool Process::is_current() const {
 
 void Process::Close() {
   is_current_process_ = false;
-  if (!process_.is_valid())
+  if (!process_.is_valid()) {
     return;
+  }
 
   process_.Close();
 }
@@ -165,8 +155,9 @@ bool Process::Terminate(int exit_code, bool wait) const {
       ::TerminateProcess(Handle(), static_cast<UINT>(exit_code)) != FALSE;
   if (result) {
     // The process may not end immediately due to pending I/O
-    if (wait && ::WaitForSingleObject(Handle(), kWaitMs) != WAIT_OBJECT_0)
+    if (wait && ::WaitForSingleObject(Handle(), kWaitMs) != WAIT_OBJECT_0) {
       DPLOG(ERROR) << "Error waiting for process exit";
+    }
     Exited(exit_code);
   } else {
     // The process can't be terminated, perhaps because it has already exited or
@@ -174,8 +165,9 @@ bool Process::Terminate(int exit_code, bool wait) const {
     // undocumented-but-expected result if the process has already exited or
     // started exiting when TerminateProcess is called, so don't print an error
     // message in that case.
-    if (GetLastError() != ERROR_ACCESS_DENIED)
+    if (::GetLastError() != ERROR_ACCESS_DENIED) {
       DPLOG(ERROR) << "Unable to terminate process";
+    }
     // A non-zero timeout is necessary here for the same reasons as above.
     if (::WaitForSingleObject(Handle(), kWaitMs) == WAIT_OBJECT_0) {
       DWORD actual_exit;
@@ -189,7 +181,7 @@ bool Process::Terminate(int exit_code, bool wait) const {
 }
 
 Process::WaitExitStatus Process::WaitForExitOrEvent(
-    const base::win::ScopedHandle& stop_event_handle,
+    const win::ScopedHandle& stop_event_handle,
     int* exit_code) const {
   HANDLE events[] = {Handle(), stop_event_handle.get()};
   DWORD wait_result =
@@ -197,11 +189,13 @@ Process::WaitExitStatus Process::WaitForExitOrEvent(
 
   if (wait_result == WAIT_OBJECT_0) {
     DWORD temp_code;  // Don't clobber out-parameters in case of failure.
-    if (!::GetExitCodeProcess(Handle(), &temp_code))
+    if (!::GetExitCodeProcess(Handle(), &temp_code)) {
       return Process::WaitExitStatus::FAILED;
+    }
 
-    if (exit_code)
+    if (exit_code) {
       *exit_code = static_cast<int>(temp_code);
+    }
 
     Exited(static_cast<int>(temp_code));
     return Process::WaitExitStatus::PROCESS_EXITED;
@@ -231,15 +225,18 @@ bool Process::WaitForExitWithTimeout(TimeDelta timeout, int* exit_code) const {
 
   // Limit timeout to INFINITE.
   DWORD timeout_ms = saturated_cast<DWORD>(timeout.InMilliseconds());
-  if (::WaitForSingleObject(Handle(), timeout_ms) != WAIT_OBJECT_0)
+  if (::WaitForSingleObject(Handle(), timeout_ms) != WAIT_OBJECT_0) {
     return false;
+  }
 
   DWORD temp_code;  // Don't clobber out-parameters in case of failure.
-  if (!::GetExitCodeProcess(Handle(), &temp_code))
+  if (!::GetExitCodeProcess(Handle(), &temp_code)) {
     return false;
+  }
 
-  if (exit_code)
+  if (exit_code) {
     *exit_code = static_cast<int>(temp_code);
+  }
 
   Exited(static_cast<int>(temp_code));
   return true;
@@ -249,13 +246,21 @@ void Process::Exited(int exit_code) const {}
 
 Process::Priority Process::GetPriority() const {
   DCHECK(IsValid());
-  int priority = GetOSPriority();
-  if (priority == 0)
+  const int priority = GetOSPriority();
+  if (priority == 0) {
     return Priority::kUserBlocking;  // Failure case. Use default value.
+  }
   if ((priority == BELOW_NORMAL_PRIORITY_CLASS) ||
       (priority == IDLE_PRIORITY_CLASS)) {
     return Priority::kBestEffort;
   }
+
+  // Return Priority::kUserVisible if EcoQos is enabled.
+  if (win::GetProcessEcoQoSState(Handle()) ==
+      win::ProcessPowerState::kEnabled) {
+    return Priority::kUserVisible;
+  }
+
   return Priority::kUserBlocking;
 }
 
@@ -266,35 +271,19 @@ bool Process::SetPriority(Priority priority) {
   // broken in Windows 11 22H2. So, it is no longer supported. See
   // https://crbug.com/1396155 for details.
   DCHECK(!is_current());
-  const DWORD priority_class = priority == Priority::kBestEffort
-                                   ? IDLE_PRIORITY_CLASS
-                                   : NORMAL_PRIORITY_CLASS;
 
-  if (base::win::OSInfo::GetInstance()->version() >=
-          base::win::Version::WIN11 &&
-      FeatureList::IsEnabled(kUseEcoQoSForBackgroundProcess)) {
-    PROCESS_POWER_THROTTLING_STATE power_throttling;
-    RtlZeroMemory(&power_throttling, sizeof(power_throttling));
-    power_throttling.Version = PROCESS_POWER_THROTTLING_CURRENT_VERSION;
+  // Clear EcoQoS for kUserBlocking; otherwise enable it. Process power
+  // throttling is a Windows 11 feature, but before 22H2 there was no way to
+  // query the current state using GetProcessInformation. This is needed in
+  // GetPriority to determine the current priority. Calls made to
+  // SetProcessEcoQoSState before 22H2 are a no-op.
+  win::SetProcessEcoQoSState(Handle(), priority == Priority::kUserBlocking
+                                           ? win::ProcessPowerState::kUnset
+                                           : win::ProcessPowerState::kEnabled);
 
-    if (priority == Priority::kBestEffort) {
-      // Sets Eco QoS level.
-      power_throttling.ControlMask = PROCESS_POWER_THROTTLING_EXECUTION_SPEED;
-      power_throttling.StateMask = PROCESS_POWER_THROTTLING_EXECUTION_SPEED;
-    } else {
-      // Uses system default.
-      power_throttling.ControlMask = 0;
-      power_throttling.StateMask = 0;
-    }
-    bool ret =
-        ::SetProcessInformation(Handle(), ProcessPowerThrottling,
-                                &power_throttling, sizeof(power_throttling));
-    if (ret == 0) {
-      DPLOG(ERROR) << "Setting process QoS policy fails";
-    }
-  }
-
-  return (::SetPriorityClass(Handle(), priority_class) != 0);
+  return ::SetPriorityClass(Handle(), priority == Priority::kBestEffort
+                                          ? IDLE_PRIORITY_CLASS
+                                          : NORMAL_PRIORITY_CLASS) != 0;
 }
 
 int Process::GetOSPriority() const {

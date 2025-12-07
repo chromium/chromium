@@ -1,0 +1,5 @@
+include_rules = [
+  "+crypto/random.h",
+  "+media/capture/video/chromeos/camera_hal_dispatcher_impl.h",
+  "+mojo/core",
+]

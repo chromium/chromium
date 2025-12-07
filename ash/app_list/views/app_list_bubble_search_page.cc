@@ -8,14 +8,14 @@
 
 #include "ash/app_list/views/app_list_search_view.h"
 #include "ash/bubble/bubble_constants.h"
-#include "ash/constants/ash_features.h"
 #include "base/check_op.h"
 #include "base/time/time.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/animation/animation_builder.h"
+#include "ui/views/border.h"
 #include "ui/views/layout/fill_layout.h"
 
 namespace ash {
@@ -29,9 +29,7 @@ constexpr int kHideAnimationVerticalOffset = -40 * 50 / 250;
 constexpr base::TimeDelta kHideAnimationDuration = base::Milliseconds(50);
 
 constexpr auto kSearchViewBorder =
-    gfx::Insets::TLBR(0, 0, kUpdatedBubbleCornerRadius, 0);
-constexpr auto kDeprecatedSearchViewBorder =
-    gfx::Insets::TLBR(0, 0, kDeprecatedBubbleCornerRadius, 0);
+    gfx::Insets::TLBR(0, 0, kBubbleCornerRadius, 0);
 }  // namespace
 
 AppListBubbleSearchPage::AppListBubbleSearchPage(
@@ -41,17 +39,14 @@ AppListBubbleSearchPage::AppListBubbleSearchPage(
   SetLayoutManager(std::make_unique<views::FillLayout>());
   search_view_ = AddChildView(std::make_unique<AppListSearchView>(
       view_delegate, dialog_controller, search_box_view));
-  search_view_->SetBorder(
-      views::CreateEmptyBorder(features::IsBubbleCornerRadiusUpdateEnabled()
-                                   ? kSearchViewBorder
-                                   : kDeprecatedSearchViewBorder));
+  search_view_->SetBorder(views::CreateEmptyBorder(kSearchViewBorder));
 }
 
 AppListBubbleSearchPage::~AppListBubbleSearchPage() = default;
 
 void AppListBubbleSearchPage::AnimateShowPage() {
   // If skipping animations, just update visibility.
-  if (ui::ScopedAnimationDurationScaleMode::is_zero()) {
+  if (gfx::ScopedAnimationDurationScaleMode::is_zero()) {
     SetVisible(true);
     return;
   }
@@ -78,7 +73,7 @@ void AppListBubbleSearchPage::AnimateShowPage() {
 
 void AppListBubbleSearchPage::AnimateHidePage() {
   // If skipping animations, just update visibility.
-  if (ui::ScopedAnimationDurationScaleMode::is_zero()) {
+  if (gfx::ScopedAnimationDurationScaleMode::is_zero()) {
     SetVisible(false);
     return;
   }

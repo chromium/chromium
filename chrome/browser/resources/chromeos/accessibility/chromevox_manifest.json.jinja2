@@ -6,13 +6,13 @@
   "manifest_version": 3,
   "minimum_chrome_version": "93",
   "background": {
-    "service_worker": "chromevox/chromevox_loader.js",
+    "service_worker": "chromevox/mv3/chromevox_loader.js",
     "type": "module"
   },
 {% else %}
   "manifest_version": 2,
   "background": {
-    "page": "chromevox/background/background.html"
+    "page": "chromevox/mv2/background/background.html"
   },
 {% endif %}
   "name": "__MSG_CHROMEVOX_NAME__",
@@ -38,10 +38,21 @@
     "storage",
     "tabs",
     "tts",
+{% if is_manifest_v3 == '1' %}
+    "offscreen"
+{% else %}
+    "chrome://resources/",
+    "https://docs.google.com/*",
+    "https://docs.sandbox.google.com/*"
+{% endif %}
+  ],
+{% if is_manifest_v3 == '1' %}
+  "host_permissions": [
     "chrome://resources/",
     "https://docs.google.com/*",
     "https://docs.sandbox.google.com/*"
   ],
+{% endif %}
   "content_scripts": [
     {
       "matches": [
@@ -50,7 +61,7 @@
       ],
       "all_frames": true,
       "js": [
-        "chromevox/injected/cvox_gdocs_script.js"
+        "chromevox/mv2/injected/cvox_gdocs_script.js"
       ]
     }
   ],
@@ -59,7 +70,13 @@
   },
   "options_page": "chromevox/options/options.html",
   "default_locale": "en",
+{% if is_manifest_v3 != '1' %}
   "content_security_policy": "default-src 'none'; script-src 'self' 'wasm-eval' chrome://resources; style-src 'unsafe-inline' chrome://resources; img-src 'self' data:;",
+{% else %}
+  "content_security_policy": {
+    "extension_pages": "default-src 'none'; script-src 'self' chrome://resources 'wasm-unsafe-eval'; style-src 'unsafe-inline' chrome://resources; img-src 'self' data:;"
+  },
+{% endif %}
   "externally_connectable": {
     "ids": [
       // Braille IME.

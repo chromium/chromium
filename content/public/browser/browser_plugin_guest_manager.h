@@ -11,6 +11,8 @@
 namespace content {
 
 class WebContents;
+class GuestPageHolder;
+class Page;
 
 // A BrowserPluginGuestManager offloads guest management and routing
 // operations outside of the content layer.
@@ -20,9 +22,15 @@ class CONTENT_EXPORT BrowserPluginGuestManager {
 
   // Iterates over guest WebContents that belong to a given
   // |owner_web_contents|, but have not yet been attached.
-  virtual void ForEachUnattachedGuest(
+  virtual void ForEachUnattachedGuestContents(
       WebContents* owner_web_contents,
       base::FunctionRef<void(WebContents*)> fn) {}
+
+  // Iterates over guest pages that belong to a given `page`, but have not yet
+  // been attached.
+  virtual void ForEachUnattachedGuestPage(
+      Page& owner_page,
+      base::FunctionRef<void(GuestPageHolder&)> fn) {}
 
   // Prefer using |RenderFrameHost::ForEachRenderFrameHost|.
   // Iterates over all WebContents belonging to a given |owner_web_contents|,

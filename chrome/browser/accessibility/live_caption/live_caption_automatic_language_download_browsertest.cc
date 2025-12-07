@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/accessibility/live_caption/live_caption_speech_recognition_host_browsertest.h"
-
 #include <set>
 
 #include "base/containers/contains.h"
-#include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/accessibility/live_caption/live_caption_speech_recognition_host_browsertest.h"
 #include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
+#include "media/base/media_switches.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 
 namespace captions {
@@ -26,6 +26,12 @@ class LiveCaptionAutomaticLanguageDownloadTest
       const LiveCaptionAutomaticLanguageDownloadTest&) = delete;
   LiveCaptionAutomaticLanguageDownloadTest& operator=(
       const LiveCaptionAutomaticLanguageDownloadTest&) = delete;
+
+  // InProcessBrowserTest:
+  void SetUp() override {
+    scoped_feature_list()->InitAndEnableFeature(media::kLiveCaptionAutomaticLanguageDownload);
+    InProcessBrowserTest::SetUp();
+  }
 
   // SodaInstaller::Observer:
   void OnSodaInstalled(speech::LanguageCode language_code) override {}

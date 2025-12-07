@@ -27,23 +27,23 @@ using ImageDecodedCallback = base::OnceCallback<void(const gfx::Image&)>;
 // sure to decode safely.
 class ImageDecoder {
  public:
-  ImageDecoder() {}
+  ImageDecoder() = default;
 
   ImageDecoder(const ImageDecoder&) = delete;
   ImageDecoder& operator=(const ImageDecoder&) = delete;
 
-  virtual ~ImageDecoder() {}
+  virtual ~ImageDecoder() = default;
 
-  // Decodes the passed |image_data| and runs the given callback. The callback
+  // Decodes the passed `image_data` and runs the given callback. The callback
   // is run even if decoding the image fails. In case an error occured during
   // decoding the image an empty image is passed to the callback.
   // For images with multiple frames (e.g. ico files), a frame with a size as
-  // close as possible to |desired_image_frame_size| is chosen (tries to take
+  // close as possible to `desired_image_frame_size` is chosen (tries to take
   // one in larger size if there's no precise match). Passing gfx::Size() as
-  // |desired_image_frame_size| is also supported and will result in chosing the
-  // smallest available size. Pass |data_decoder| to batch multiple image
-  // decodes in the same process. If |data_decoder| is null, a new process will
-  // be created to decode this image. |data_decoder| must outlive the
+  // `desired_image_frame_size` is also supported and will result in chosing the
+  // smallest available size. Pass `data_decoder` to batch multiple image
+  // decodes in the same process. If `data_decoder` is null, a new process will
+  // be created to decode this image. `data_decoder` must outlive the
   // ImageDecoder.
   virtual void DecodeImage(const std::string& image_data,
                            const gfx::Size& desired_image_frame_size,

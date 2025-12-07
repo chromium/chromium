@@ -4,14 +4,37 @@
 
 #include "media/gpu/android/video_accelerator_util.h"
 
-#include "base/android/build_info.h"
 #include "base/android/jni_string.h"
 #include "base/no_destructor.h"
+#include "media/base/media_switches.h"
+#include "media/base/video_codecs.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "media/base/android/media_jni_headers/VideoAcceleratorUtil_jni.h"
 
+namespace {
+bool isEncoderSupportedProfile(media::VideoCodecProfile profile) {
+  media::VideoCodec codec = media::VideoCodecProfileToVideoCodec(profile);
+  if (codec == media::VideoCodec::kHEVC) {
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+    // Currently only 8bit NV12 and I420 encoding is supported, so limit
+    // this to main profile only just like other platforms.
+    return base::FeatureList::IsEnabled(media::kPlatformHEVCEncoderSupport) &&
+           profile == media::VideoCodecProfile::HEVCPROFILE_MAIN;
+#else
+    return false;
+#endif
+  }
+  return true;
+}
+}  // namespace
+
 namespace media {
+
+MediaCodecDecoderInfo::MediaCodecDecoderInfo() = default;
+MediaCodecDecoderInfo::MediaCodecDecoderInfo(
+    const MediaCodecDecoderInfo& other) = default;
+MediaCodecDecoderInfo::~MediaCodecDecoderInfo() = default;
 
 const std::vector<MediaCodecEncoderInfo>& GetEncoderInfoCache() {
   static const base::NoDestructor<std::vector<MediaCodecEncoderInfo>> infos([] {
@@ -32,6 +55,9 @@ const std::vector<MediaCodecEncoderInfo>& GetEncoderInfoCache() {
       MediaCodecEncoderInfo info;
       info.profile.profile = static_cast<VideoCodecProfile>(
           Java_SupportedProfileAdapter_getProfile(env, java_profile));
+      if (!isEncoderSupportedProfile(info.profile.profile)) {
+        continue;
+      }
       info.profile.min_resolution = gfx::Size(
           Java_SupportedProfileAdapter_getMinWidth(env, java_profile),
           Java_SupportedProfileAdapter_getMinHeight(env, java_profile));
@@ -109,6 +135,19 @@ const std::vector<MediaCodecDecoderInfo>& GetDecoderInfoCache() {
           Java_SupportedProfileAdapter_getMaxHeight(env, java_profile));
       info.is_software_codec =
           Java_SupportedProfileAdapter_isSoftwareCodec(env, java_profile);
+
+      bool supports_low_latency =
+          Java_SupportedProfileAdapter_supportsLowLatency(env, java_profile);
+      bool requires_low_latency =
+          Java_SupportedProfileAdapter_requiresLowLatency(env, java_profile);
+      // If the decoder requires low latency, it must support low latency.
+      DCHECK(!requires_low_latency || supports_low_latency);
+      info.low_latency_capability =
+          requires_low_latency
+              ? LowLatencyCapability::kRequired
+              : (supports_low_latency ? LowLatencyCapability::kAny
+                                      : LowLatencyCapability::kNone);
+
       bool supports_secure_playback =
           Java_SupportedProfileAdapter_supportsSecurePlayback(env,
                                                               java_profile);
@@ -141,3 +180,5 @@ const std::vector<MediaCodecDecoderInfo>& GetDecoderInfoCache() {
 }
 
 }  // namespace media
+
+DEFINE_JNI(VideoAcceleratorUtil)

@@ -3,9 +3,11 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/sanitizers/sanitizers.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("reporting") {
   sources = [
@@ -48,27 +50,33 @@ static_library("reporting") {
     "user_event_reporter_helper.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
-    "//ash/components/arc:prefs",
-    "//ash/components/arc/mojom",
     "//ash/constants",
     "//base",
     "//base:i18n",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/arc/policy",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/policy/messaging_layer/proto:app_install_events_proto",
     "//chrome/browser/policy/messaging_layer/proto:crd_event_proto",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_util",
     "//chrome/common:constants",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/disks",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc:prefs",
+    "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/dbus/power",
     "//components/policy:generated",
     "//components/policy/core/common",
@@ -135,8 +143,6 @@ source_set("unit_tests") {
     ":reporting",
     ":test_support",
     ":user_event_reporter_testing_record_proto",
-    "//ash/components/arc:prefs",
-    "//ash/components/arc/mojom",
     "//ash/constants",
     "//base",
     "//base/test:test_support",
@@ -144,6 +150,7 @@ source_set("unit_tests") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/app_list/arc:test_support",
     "//chrome/browser/policy/messaging_layer/proto:crd_event_proto",
+    "//chrome/browser/prefs",
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
     "//chrome/test:test_support",
@@ -153,6 +160,8 @@ source_set("unit_tests") {
     "//chromeos/ash/components/disks:test_support",
     "//chromeos/ash/components/network:test_support",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc:prefs",
+    "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/dbus/power",
     "//components/policy:generated",
     "//components/policy/core/common",
@@ -170,4 +179,20 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+}
+
+if (use_fuzzing_engine_with_lpm) {
+  fuzzer_test("policy_single_install_event_log_fuzzer") {
+    sources = [ "single_install_event_log_fuzzer.cc" ]
+
+    deps = [
+      ":reporting",
+      "//base",
+
+      # TODO(crbug.com/335294371): Remove dependency on //chrome/browser to
+      # implement the proper fix.
+      "//chrome/browser",
+      "//components/exo/wayland:ui_controls_protocol_stub",
+    ]
+  }
 }

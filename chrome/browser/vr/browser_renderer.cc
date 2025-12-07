@@ -39,7 +39,7 @@ void BrowserRenderer::DrawWebXrFrame(base::TimeTicks current_time,
 void BrowserRenderer::Draw(FrameType frame_type,
                            base::TimeTicks current_time,
                            const gfx::Transform& head_pose) {
-  TRACE_EVENT1("gpu", __func__, "frame_type", frame_type);
+  TRACE_EVENT1("gpu", "BrowserRenderer::Draw", "frame_type", frame_type);
   const auto& render_info =
       graphics_delegate_->GetRenderInfo(frame_type, head_pose);
   UpdateUi(render_info, current_time, frame_type);
@@ -57,7 +57,7 @@ void BrowserRenderer::Draw(FrameType frame_type,
 }
 
 void BrowserRenderer::DrawWebXrOverlay(const RenderInfo& render_info) {
-  TRACE_EVENT0("gpu", __func__);
+  TRACE_EVENT0("gpu", "BrowserRenderer::DrawWebXrOverlay");
   // Calculate optimized viewport and corresponding render info.
   const auto& recommended_fovs = graphics_delegate_->GetRecommendedFovs();
   const auto& fovs = ui_->GetMinimalFovForWebXrOverlayElements(
@@ -71,7 +71,7 @@ void BrowserRenderer::DrawWebXrOverlay(const RenderInfo& render_info) {
 }
 
 void BrowserRenderer::DrawBrowserUi(const RenderInfo& render_info) {
-  TRACE_EVENT0("gpu", __func__);
+  TRACE_EVENT0("gpu", "BrowserRenderer::DrawBrowserUi");
   ui_->Draw(render_info);
 }
 
@@ -88,7 +88,7 @@ void BrowserRenderer::WatchElementForVisibilityStatusForTesting(
 void BrowserRenderer::UpdateUi(const RenderInfo& render_info,
                                base::TimeTicks current_time,
                                FrameType frame_type) {
-  TRACE_EVENT0("gpu", __func__);
+  TRACE_EVENT0("gpu", "UpdateUi");
 
   // Update the render position of all UI elements.
   base::TimeTicks timing_start = base::TimeTicks::Now();

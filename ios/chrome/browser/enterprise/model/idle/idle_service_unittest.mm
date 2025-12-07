@@ -12,7 +12,7 @@
 #import "components/enterprise/idle/metrics.h"
 #import "ios/chrome/browser/enterprise/model/idle/action_runner.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
@@ -28,7 +28,6 @@ using ::testing::_;
 
 namespace enterprise_idle {
 
-class ChromeBrowserState;
 class ActionRunner;
 
 // Tests that the idle service schedules tasks and runs actions as expected when
@@ -62,11 +61,10 @@ class IdleTimeoutServiceTest : public PlatformTest {
     base::Value::List actions;
     actions.Append(
         static_cast<int>(enterprise_idle::ActionType::kClearBrowsingHistory));
-    browser_state_->GetPrefs()->SetList(
-        enterprise_idle::prefs::kIdleTimeoutActions, std::move(actions));
+    profile_->GetPrefs()->SetList(enterprise_idle::prefs::kIdleTimeoutActions,
+                                  std::move(actions));
 
-    browser_state_.get()->GetPrefs()->SetTimeDelta(prefs::kIdleTimeout,
-                                                   timeout);
+    profile_.get()->GetPrefs()->SetTimeDelta(prefs::kIdleTimeout, timeout);
   }
 
   void SetLastActiveTime(base::Time time) {
@@ -74,12 +72,12 @@ class IdleTimeoutServiceTest : public PlatformTest {
   }
 
   base::Time GetLastIdleTime() {
-    return browser_state_.get()->GetPrefs()->GetTime(prefs::kLastIdleTimestamp);
+    return profile_.get()->GetPrefs()->GetTime(prefs::kLastIdleTimestamp);
   }
 
   void InitIdleService() {
-    idle_service_ = std::make_unique<IdleService>(
-        browser_state_->GetOriginalChromeBrowserState());
+    idle_service_ =
+        std::make_unique<IdleService>(profile_->GetOriginalProfile());
     idle_service_->SetActionRunnerForTesting(
         base::WrapUnique(new MockActionRunner()));
     action_runner_ = static_cast<MockActionRunner*>(
@@ -94,28 +92,26 @@ class IdleTimeoutServiceTest : public PlatformTest {
         FakeSystemIdentityManager::FromSystemIdentityManager(
             GetApplicationContext()->GetSystemIdentityManager());
     system_identity_manager->AddIdentity(identity);
-    authentication_service_->SignIn(
-        identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+    authentication_service_->SignIn(identity,
+                                    signin_metrics::AccessPoint::kUnknown);
   }
 
   void SetUp() override {
-    TestChromeBrowserState::Builder test_cbs_builder;
-    test_cbs_builder.AddTestingFactory(
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
-    browser_state_ = std::move(test_cbs_builder).Build();
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
-    authentication_service_ = static_cast<AuthenticationService*>(
-        AuthenticationServiceFactory::GetForBrowserState(browser_state_.get()));
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
+    profile_ = std::move(builder).Build();
+    authentication_service_ =
+        AuthenticationServiceFactory::GetForProfile(profile_.get());
   }
 
   void TearDown() override {
     idle_service_->RemoveObserver(&mock_observer_);
     idle_service_->Shutdown();
     idle_service_.reset();
-    browser_state_.reset();
+    profile_.reset();
     base::RunLoop run_loop;
     run_loop.RunUntilIdle();
   }
@@ -128,11 +124,11 @@ class IdleTimeoutServiceTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   MockObserver mock_observer_;
-  raw_ptr<MockActionRunner> action_runner_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  raw_ptr<MockActionRunner, DanglingUntriaged> action_runner_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<IdleService> idle_service_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  raw_ptr<AuthenticationService> authentication_service_;
+  raw_ptr<AuthenticationService, DanglingUntriaged> authentication_service_;
 };
 
 // Test that the observer methods are not called when the policy is not set, and
@@ -140,7 +136,7 @@ class IdleTimeoutServiceTest : public PlatformTest {
 TEST_F(IdleTimeoutServiceTest, IdleTimeoutPolicyNotSet) {
   InitIdleService();
   // The pref value should not be positive if the policy is not set.
-  ASSERT_FALSE(browser_state_->GetPrefs()
+  ASSERT_FALSE(profile_->GetPrefs()
                    ->GetTimeDelta(enterprise_idle::prefs::kIdleTimeout)
                    .is_positive());
   EXPECT_CALL(*action_runner_, Run(_)).Times(0);
@@ -383,8 +379,8 @@ TEST_F(IdleTimeoutServiceTest, NoActionsRunWhenNotNeeded_SignoutCase) {
   InitIdleService();
   base::Value::List actions;
   actions.Append(static_cast<int>(enterprise_idle::ActionType::kSignOut));
-  browser_state_->GetPrefs()->SetList(
-      enterprise_idle::prefs::kIdleTimeoutActions, std::move(actions));
+  profile_->GetPrefs()->SetList(enterprise_idle::prefs::kIdleTimeoutActions,
+                                std::move(actions));
 
   EXPECT_CALL(mock_observer_, OnIdleTimeoutOnStartup()).Times(0);
   EXPECT_CALL(*action_runner_, Run(_)).Times(0);
@@ -399,8 +395,8 @@ TEST_F(IdleTimeoutServiceTest, NoActionsRunWhenNotNeeded_UnknownActionsCase) {
   base::Value::List actions;
   // This can be the case if a string value supported on desktop is the only
   // action that was set for the policy.
-  browser_state_->GetPrefs()->SetList(
-      enterprise_idle::prefs::kIdleTimeoutActions, std::move(actions));
+  profile_->GetPrefs()->SetList(enterprise_idle::prefs::kIdleTimeoutActions,
+                                std::move(actions));
 
   EXPECT_CALL(mock_observer_, OnIdleTimeoutOnStartup()).Times(0);
   EXPECT_CALL(*action_runner_, Run(_)).Times(0);
@@ -416,8 +412,8 @@ TEST_F(IdleTimeoutServiceTest, ActionsRunWhenNeeded_OnlySignoutSet) {
   SignIn();
   base::Value::List actions;
   actions.Append(static_cast<int>(enterprise_idle::ActionType::kSignOut));
-  browser_state_->GetPrefs()->SetList(
-      enterprise_idle::prefs::kIdleTimeoutActions, std::move(actions));
+  profile_->GetPrefs()->SetList(enterprise_idle::prefs::kIdleTimeoutActions,
+                                std::move(actions));
 
   EXPECT_CALL(mock_observer_, OnIdleTimeoutOnStartup());
   EXPECT_CALL(*action_runner_, Run(_)).Times(1);
@@ -433,8 +429,8 @@ TEST_F(IdleTimeoutServiceTest, ActionsRunWhenNeeded_OnlyActionSetIsNotSignOut) {
   base::Value::List actions;
   actions.Append(
       static_cast<int>(enterprise_idle::ActionType::kClearBrowsingHistory));
-  browser_state_->GetPrefs()->SetList(
-      enterprise_idle::prefs::kIdleTimeoutActions, std::move(actions));
+  profile_->GetPrefs()->SetList(enterprise_idle::prefs::kIdleTimeoutActions,
+                                std::move(actions));
 
   EXPECT_CALL(mock_observer_, OnIdleTimeoutOnStartup());
   EXPECT_CALL(*action_runner_, Run(_)).Times(1);
@@ -452,8 +448,8 @@ TEST_F(IdleTimeoutServiceTest,
   actions.Append(
       static_cast<int>(enterprise_idle::ActionType::kClearBrowsingHistory));
   actions.Append(static_cast<int>(enterprise_idle::ActionType::kSignOut));
-  browser_state_->GetPrefs()->SetList(
-      enterprise_idle::prefs::kIdleTimeoutActions, std::move(actions));
+  profile_->GetPrefs()->SetList(enterprise_idle::prefs::kIdleTimeoutActions,
+                                std::move(actions));
 
   EXPECT_CALL(mock_observer_, OnIdleTimeoutOnStartup());
   EXPECT_CALL(*action_runner_, Run(_)).Times(1);

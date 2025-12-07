@@ -45,7 +45,7 @@ IdleManagerFactory::BuildServiceInstanceForBrowserContext(
 content::BrowserContext* IdleManagerFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
   return ExtensionsBrowserClient::Get()->GetContextRedirectedToOriginal(
-      context, /*force_guest_profile=*/true);
+      context);
 }
 
 bool IdleManagerFactory::ServiceIsCreatedWithBrowserContext() const {

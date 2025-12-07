@@ -8,6 +8,8 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 
+#include <array>
+
 #include "base/trace_event/common/trace_event_common.h"
 
 namespace chromecast {

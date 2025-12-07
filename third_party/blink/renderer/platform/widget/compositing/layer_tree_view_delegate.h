@@ -15,7 +15,6 @@
 namespace cc {
 class LayerTreeFrameSink;
 struct BeginMainFrameMetrics;
-struct WebVitalMetrics;
 class RenderFrameMetadataObserver;
 }  // namespace cc
 
@@ -38,7 +37,7 @@ class LayerTreeViewDelegate {
       const cc::CompositorCommitData& commit_data) = 0;
 
   // Notifies that the compositor has issued a BeginMainFrame.
-  virtual void BeginMainFrame(base::TimeTicks frame_time) = 0;
+  virtual void BeginMainFrame(const viz::BeginFrameArgs& args) = 0;
 
   virtual void OnDeferMainFrameUpdatesChanged(bool) = 0;
   virtual void OnDeferCommitsChanged(
@@ -94,8 +93,6 @@ class LayerTreeViewDelegate {
   // RecordEndOfFrameMetrics.
   virtual std::unique_ptr<cc::BeginMainFrameMetrics>
   GetBeginMainFrameMetrics() = 0;
-
-  virtual std::unique_ptr<cc::WebVitalMetrics> GetWebVitalMetrics() = 0;
 
   // Notification of the beginning and end of LayerTreeHost::UpdateLayers, for
   // metrics collection.

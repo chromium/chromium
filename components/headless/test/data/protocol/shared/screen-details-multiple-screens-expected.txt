@@ -1,0 +1,3 @@
+Tests multiple screens details origin and size.
+1st screen: 0,0 800x600 avail: 0,0 800x600 isPrimary=true isExtended=true
+2nd screen: 800,0 600x800 avail: 800,0 600x800 isPrimary=false isExtended=true

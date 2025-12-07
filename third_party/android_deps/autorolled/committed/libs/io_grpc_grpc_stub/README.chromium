@@ -1,0 +1,19 @@
+Name: io.grpc:grpc-stub
+Short Name: grpc-stub
+URL: https://repo.maven.apache.org/maven2/io/grpc/grpc-stub/1.77.0/grpc-stub-1.77.0.jar
+Version: 1.77.0
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: cpe:/a:grpc:grpc
+Security Critical: yes
+Shipped: yes
+
+Description:
+gRPC: Stub
+
+See also: https://github.com/grpc/grpc-java
+
+
+Local Modifications:
+No modifications.

@@ -4,9 +4,12 @@
 
 syntax = "proto2";
 
+package reporting;
+
 option optimize_for = LITE_RUNTIME;
 
-package reporting;
+// Used for annotating sensitive fields in google3.
+// ${COPYBARA_DATAPOL_IMPORT}
 
 import "components/reporting/proto/synced/status.proto";
 
@@ -51,7 +54,11 @@ message UploadTracker {
   // finalize the upload at the end (after that, this field should be cleared).
   // This field is implementation-dependent; having it generic allows to choose
   // the actual upload protocol and/or unit test the whole process.
-  optional string session_token = 4;  // required, while upload is in progress.
+  optional string session_token = 4
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_ACCOUNT_CREDENTIAL]
+      // copybara:datapol_end
+      ;  // required, while upload is in progress.
 
   // URL and optionally other parameters to access the uploaded file from the
   // server side. Populated once the upload has been finalized successfully.

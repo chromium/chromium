@@ -93,3 +93,35 @@ DirectSocketsSettings:
   - DefaultDirectSocketsSetting
   - DirectSocketsAllowedForUrls
   - DirectSocketsBlockedForUrls
+  - DefaultDirectSocketsPrivateNetworkAccessSetting
+  - DirectSocketsPrivateNetworkAccessAllowedForUrls
+  - DirectSocketsPrivateNetworkAccessBlockedForUrls
+ControlledFrameSettings:
+  caption: Controlled Frame settings
+  policies:
+  - DefaultControlledFrameSetting
+  - ControlledFrameAllowedForUrls
+  - ControlledFrameBlockedForUrls
+SmartCardConnectSettings:
+  caption: Smart Card Connect settings
+  policies:
+  - SmartCardConnectAllowedForUrls
+  - SmartCardConnectBlockedForUrls
+  - DefaultSmartCardConnectSetting
+LegacyCookieScopeSettings:
+  caption: Legacy Cookie Scope settings
+  policies:
+  - LegacyCookieScopeEnabled
+  - LegacyCookieScopeEnabledForDomainList
+DeviceAttributesSettings:
+  caption: Device Attributes settings
+  policies:
+  - DefaultDeviceAttributesSetting
+  - DeviceAttributesAllowedForOrigins
+  - DeviceAttributesBlockedForOrigins
+GeolocationSettings:
+  caption: Geolocation settings
+  policies:
+  - DefaultGeolocationSetting
+  - PreciseGeolocationAllowedForUrls
+  - GeolocationBlockedForUrls

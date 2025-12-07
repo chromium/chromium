@@ -16,7 +16,7 @@ import("//tools/grit/grit_rule.gni")
 
 group("resources") {
   public_deps = [
-    ":launchscreen_xib",
+    ":launchscreen",
     ":quick_action_icons",
     ":system_strings",
     "//ios/chrome/app/resources:packed_resources",
@@ -59,35 +59,55 @@ ios_chrome_repack_scalables("repack_scalable_resources") {
 repack("repack_unscaled_resources") {
   visibility = [ ":packed_resources" ]
   sources = [
+    "$root_gen_dir/components/autofill_and_password_manager_internals_resources.pak",
+    "$root_gen_dir/components/chrome_urls_resources.pak",
     "$root_gen_dir/components/commerce_internals_resources.pak",
     "$root_gen_dir/components/components_resources.pak",
+    "$root_gen_dir/components/crashes_resources.pak",
+    "$root_gen_dir/components/data_sharing_internals_resources.pak",
     "$root_gen_dir/components/dev_ui_components_resources.pak",
     "$root_gen_dir/components/download_internals_resources.pak",
     "$root_gen_dir/components/flags_ui_resources.pak",
+    "$root_gen_dir/components/internal_debug_pages_disabled_resources.pak",
+    "$root_gen_dir/components/management_resources.pak",
+    "$root_gen_dir/components/metrics/metrics_server_urls.pak",
+    "$root_gen_dir/components/net_export_resources.pak",
+    "$root_gen_dir/components/ntp_tiles_internals_resources.pak",
     "$root_gen_dir/components/optimization_guide_internals_resources.pak",
     "$root_gen_dir/components/policy_resources.pak",
+    "$root_gen_dir/components/regional_capabilities_internals_resources.pak",
+    "$root_gen_dir/components/signin_internals_resources.pak",
     "$root_gen_dir/components/sync_service_sync_internals_resources.pak",
+    "$root_gen_dir/components/translate_internals_resources.pak",
     "$root_gen_dir/components/ukm_resources.pak",
+    "$root_gen_dir/components/user_actions_ui_resources.pak",
     "$root_gen_dir/components/version_ui_resources.pak",
     "$root_gen_dir/ios/chrome/ios_resources.pak",
+    "$root_gen_dir/ios/chrome/profile_internals_resources.pak",
     "$root_gen_dir/ios/web/ios_web_resources.pak",
     "$root_gen_dir/mojo/public/js/mojo_bindings_resources.pak",
     "$root_gen_dir/net/net_resources.pak",
-    "$root_gen_dir/ui/resources/webui_resources.pak",
+    "$root_gen_dir/ui/webui/resources/webui_resources.pak",
   ]
   deps = [
     ":ios_resources",
     "//components/commerce/core/internals/resources",
+    "//components/data_sharing/data_sharing_internals/resources",
     "//components/download/resources/download_internals:resources",
+    "//components/metrics:server_urls_grd",
+    "//components/ntp_tiles/webui/resources",
     "//components/optimization_guide/optimization_guide_internals/resources",
     "//components/policy/resources/webui:resources",
     "//components/resources",
     "//components/sync/service/resources",
+    "//components/translate/translate_internals:resources",
     "//components/ukm/debug:resources",
+    "//components/webui/chrome_urls/resources",
+    "//ios/chrome/app/resources/profile_internals:resources",
     "//ios/web:resources",
     "//mojo/public/js:resources",
     "//net:net_resources",
-    "//ui/resources",
+    "//ui/webui/resources",
   ]
 
   output = "$target_gen_dir/resources.pak"
@@ -111,7 +131,7 @@ repack("repack_unscaled_resources") {
     deps += [
       "//base/tracing/protos:chrome_track_event_resources",
       "//content:content_resources",
-      "//content/browser/resources:resources",
+      "//content/browser/resources",
       "//content/browser/resources/media:resources",
       "//content/browser/webrtc/resources",
       "//third_party/blink/public:devtools_inspector_resources",
@@ -124,13 +144,28 @@ repack("repack_unscaled_resources") {
   }
 }
 
+bundle_data_xcassets("chromium_icons_legacy") {
+  catalog = "ChromiumIconsLegacy.xcassets"
+  sources = [
+    "ChromiumIconsLegacy.xcassets/AppIcon.appiconset/Contents.json",
+    "ChromiumIconsLegacy.xcassets/AppIcon.appiconset/Icon-1024.png",
+    "ChromiumIconsLegacy.xcassets/AppIcon.appiconset/Icon-1024Dark.png",
+    "ChromiumIconsLegacy.xcassets/AppIcon.appiconset/Icon-1024Tinted.png",
+  ]
+}
+
 bundle_data_xcassets("chromium_icons") {
   catalog = "ChromiumIcons.xcassets"
   sources = [
-    "ChromiumIcons.xcassets/AppIcon.appiconset/Contents.json",
-    "ChromiumIcons.xcassets/AppIcon.appiconset/Icon-1024.png",
-    "ChromiumIcons.xcassets/AppIcon.appiconset/Icon-1024Dark.png",
-    "ChromiumIcons.xcassets/AppIcon.appiconset/Icon-1024Tinted.png",
+    "ChromiumIcons.xcassets/AppIcon.icon/Assets/2.svg",
+    "ChromiumIcons.xcassets/AppIcon.icon/Assets/3.svg",
+    "ChromiumIcons.xcassets/AppIcon.icon/Assets/5.svg",
+    "ChromiumIcons.xcassets/AppIcon.icon/Assets/blue.svg",
+    "ChromiumIcons.xcassets/AppIcon.icon/Assets/cr.svg",
+    "ChromiumIcons.xcassets/AppIcon.icon/Assets/donut.svg",
+    "ChromiumIcons.xcassets/AppIcon.icon/Assets/pill.svg",
+    "ChromiumIcons.xcassets/AppIcon.icon/Assets/ring.png",
+    "ChromiumIcons.xcassets/AppIcon.icon/icon.json",
   ]
 }
 
@@ -153,12 +188,22 @@ bundle_data_xcassets("launchscreen_assets") {
 # The scene startup flow (which is needed for multi-window) requires both
 # additional plist entries (handled in ../BUILD.gn) and an additional storyboard
 # file.
-bundle_data_ib_file("base_scene_storyboard") {
+bundle_data_storyboard_file("base_scene_storyboard") {
   source = "BaseScene.storyboard"
+  bundle_files = [
+    "Info.plist",
+    "j72-TL-eGS-view-6ef-rW-4AQ.nib",
+    "UIViewController-j72-TL-eGS.nib",
+  ]
 }
 
-bundle_data_ib_file("launchscreen_xib") {
-  source = "LaunchScreen.xib"
+bundle_data_storyboard_file("launchscreen") {
+  source = "LaunchScreen.storyboard"
+  bundle_files = [
+    "Info.plist",
+    "Y6W-OH-hqX-view-5EZ-qb-Rvc.nib",
+    "UIViewController-Y6W-OH-hqX.nib",
+  ]
   deps = [ ios_launchscreen_assets_target ]
 }
 

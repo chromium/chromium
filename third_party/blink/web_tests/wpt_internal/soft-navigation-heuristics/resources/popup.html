@@ -1,0 +1,24 @@
+<!doctype html>
+
+<button id="closeButton" onclick="closeMe()">Click Me!</button>
+
+<script>
+  function closeMe() {
+    window.opener.onPopupClicked().then(opener.onLongTimeoutComplete);
+  }
+
+  window.onload = () => {
+    requestAnimationFrame(() => {
+      setTimeout(async () => {
+        // Using eventSender here because test_driver consistently sends input
+        // to the main page, likely due to crbug.com/40272065.
+        closeButton.focus();
+        eventSender.keyDown('Enter', []);
+      }, 0);
+    });
+  };
+
+  window.addEventListener('pagehide', () => {
+    window.opener.onPopupClosed();
+  });
+</script>

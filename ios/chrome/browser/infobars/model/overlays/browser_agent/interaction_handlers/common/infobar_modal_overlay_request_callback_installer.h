@@ -44,7 +44,8 @@ class InfobarModalOverlayRequestCallbackInstaller
   // The request support for `interaction_handler_`.
   raw_ptr<const OverlayRequestSupport> request_support_ = nullptr;
   // The handler for received responses.
-  raw_ptr<InfobarModalInteractionHandler> interaction_handler_ = nullptr;
+  raw_ptr<InfobarModalInteractionHandler, DanglingUntriaged>
+      interaction_handler_ = nullptr;
 
   base::WeakPtrFactory<InfobarModalOverlayRequestCallbackInstaller>
       weak_factory_{this};

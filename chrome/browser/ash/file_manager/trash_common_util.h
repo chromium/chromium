@@ -68,7 +68,7 @@ struct TrashLocation {
 
   // For some trash directories, the restore path requires a prefix to ensure
   // restoration is done correctly. This is used in Crostini to denote the
-  // user's local directory and in Downloads to prefix the reestoration path
+  // user's local directory and in Downloads to prefix the restoration path
   // with /Downloads as MyFiles and Downloads share the same mount point. This
   // prefix is prepended to the restore path when creating out the .trashinfo
   // file.
@@ -102,9 +102,7 @@ const base::FilePath GenerateTrashPath(const base::FilePath& trash_path,
 // parents folders preceding children. The `mount_point_path` is used to
 // identify locations that share the same volume.
 using TrashPathsMap = std::map<const base::FilePath, TrashLocation>;
-TrashPathsMap GenerateEnabledTrashLocationsForProfile(
-    Profile* profile,
-    const base::FilePath& base_path);
+TrashPathsMap GenerateEnabledTrashLocationsForProfile(Profile* profile);
 
 // Enum of possible UMA values for histogram FileBrowser.Trash.DirectorySetup.
 // Keep the order of this in sync with FileManagerTrashDirectorySetupStep in

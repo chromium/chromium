@@ -19,6 +19,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/events/event.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
@@ -38,7 +39,7 @@ TEST_F(AcceleratorFilterTest, TestFilterWithoutFocus) {
 TEST_F(AcceleratorFilterTest, TestFilterWithFocus) {
   aura::test::TestWindowDelegate test_delegate;
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithDelegate(&test_delegate, -1, gfx::Rect()));
+      CreateTestWindowInShell({.delegate = &test_delegate, .window_id = -1}));
   wm::ActivateWindow(window.get());
 
   // AcceleratorFilter should ignore the key events since the root window is
@@ -90,7 +91,8 @@ TEST_F(AcceleratorFilterTest, CanConsumeSystemKeys) {
   EXPECT_TRUE(press_mute.stopped_propagation());
 
   // Setting a window property on the target allows system keys to pass through.
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShell({.window_id = 1}));
   WindowState::Get(window.get())->SetCanConsumeSystemKeys(true);
   ui::KeyEvent press_volume_up(ui::EventType::kKeyPressed, ui::VKEY_VOLUME_UP,
                                ui::EF_NONE);
@@ -101,7 +103,8 @@ TEST_F(AcceleratorFilterTest, CanConsumeSystemKeys) {
 
   // System keys pass through to a child window if the parent (top level)
   // window has the property set.
-  std::unique_ptr<aura::Window> child(CreateTestWindowInShellWithId(2));
+  std::unique_ptr<aura::Window> child(
+      CreateTestWindowInShell({.window_id = 2}));
   window->AddChild(child.get());
   dispatch_helper.set_target(child.get());
   filter.OnKeyEvent(&press_volume_up);
@@ -131,9 +134,10 @@ TEST_F(AcceleratorFilterTest, SearchKeyShortcutsAreAlwaysHandled) {
 
   // Search+L is also processed when there is a full screen window.
   aura::test::TestWindowDelegate window_delegate;
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-      &window_delegate, 0, gfx::Rect(200, 200)));
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_FULLSCREEN);
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.delegate = &window_delegate, .bounds = {200, 200}, .window_id = 0}));
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kFullscreen);
   PressAndReleaseKey(ui::VKEY_L, ui::EF_COMMAND_DOWN);
   GetSessionControllerClient()->FlushForTest();  // LockScreen is an async call.
   EXPECT_TRUE(session_controller->IsScreenLocked());

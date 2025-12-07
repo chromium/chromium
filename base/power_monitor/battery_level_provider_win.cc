@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/374320451): Fix and remove.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/power_monitor/battery_level_provider.h"
 
 #define INITGUID
@@ -40,8 +45,9 @@ base::win::ScopedHandle GetBatteryHandle(
   ::SetupDiGetDeviceInterfaceDetail(devices, interface_data, nullptr, 0,
                                     &required_size, nullptr);
   DWORD error = ::GetLastError();
-  if (error != ERROR_INSUFFICIENT_BUFFER)
+  if (error != ERROR_INSUFFICIENT_BUFFER) {
     return base::win::ScopedHandle();
+  }
 
   // |interface_detail->DevicePath| is variable size.
   std::vector<uint8_t> raw_buf(required_size);
@@ -52,8 +58,9 @@ base::win::ScopedHandle GetBatteryHandle(
   BOOL success = ::SetupDiGetDeviceInterfaceDetail(
       devices, interface_data, interface_detail, required_size, nullptr,
       nullptr);
-  if (!success)
+  if (!success) {
     return base::win::ScopedHandle();
+  }
 
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
@@ -104,8 +111,9 @@ std::optional<BATTERY_INFORMATION> GetBatteryInformation(HANDLE battery,
       battery, IOCTL_BATTERY_QUERY_INFORMATION, &query_information,
       sizeof(query_information), &battery_information,
       sizeof(battery_information), &bytes_returned, nullptr);
-  if (!success)
+  if (!success) {
     return std::nullopt;
+  }
   return battery_information;
 }
 
@@ -132,13 +140,15 @@ std::optional<uint32_t> GetBatteryBatteryDischargeGranularity(
       battery, IOCTL_BATTERY_QUERY_INFORMATION, &query_information,
       sizeof(query_information), &battery_reporting_scales,
       sizeof(battery_reporting_scales), &bytes_returned, nullptr);
-  if (!success)
+  if (!success) {
     return std::nullopt;
+  }
 
   ptrdiff_t nb_elements = base::checked_cast<ptrdiff_t>(
       bytes_returned / sizeof(BATTERY_REPORTING_SCALE));
-  if (!nb_elements)
+  if (!nb_elements) {
     return std::nullopt;
+  }
 
   // The granularities are ordered from the highest capacity to the lowest
   // capacity, or from the most coarse granularity to the most precise
@@ -174,8 +184,9 @@ std::optional<BATTERY_STATUS> GetBatteryStatus(HANDLE battery,
   BOOL success = ::DeviceIoControl(
       battery, IOCTL_BATTERY_QUERY_STATUS, &wait_status, sizeof(wait_status),
       &battery_status, sizeof(battery_status), &bytes_returned, nullptr);
-  if (!success)
+  if (!success) {
     return std::nullopt;
+  }
   return battery_status;
 }
 
@@ -253,16 +264,18 @@ BatteryLevelProviderWin::GetBatteryStateImpl() {
                                       device_index, &interface_data);
     if (!success) {
       // Enumeration ended normally.
-      if (::GetLastError() == ERROR_NO_MORE_ITEMS)
+      if (::GetLastError() == ERROR_NO_MORE_ITEMS) {
         break;
+      }
       // Error.
       return std::nullopt;
     }
 
     base::win::ScopedHandle battery =
         GetBatteryHandle(devices.get(), &interface_data);
-    if (!battery.IsValid())
+    if (!battery.is_valid()) {
       return std::nullopt;
+    }
 
     std::optional<ULONG> battery_tag = GetBatteryTag(battery.Get());
     if (!battery_tag.has_value()) {

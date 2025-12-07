@@ -11,7 +11,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "ipc/ipc_channel.h"
+#include "ipc/constants.mojom.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -19,7 +19,7 @@
 namespace {
 
 const int64_t kMaxImageSizeInBytes =
-    static_cast<int64_t>(IPC::Channel::kMaximumMessageSize);
+    static_cast<int64_t>(IPC::mojom::kChannelMaximumMessageSize);
 
 // Note that this is always called on the thread which initiated the
 // corresponding data_decoder::DecodeImage request.
@@ -49,8 +49,7 @@ void DecodeImage(ImageDataType image_data,
                  data_decoder::DecodeImageCallback callback,
                  scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
                  data_decoder::DataDecoder* data_decoder) {
-  base::span<const uint8_t> image_data_span(
-      base::as_bytes(base::make_span(image_data)));
+  base::span<const uint8_t> image_data_span(base::as_byte_span(image_data));
 
   if (data_decoder) {
     data_decoder::DecodeImage(

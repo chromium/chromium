@@ -31,7 +31,6 @@
 
 #include <memory>
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/audio/hrtf_kernel.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -41,7 +40,7 @@ namespace blink {
 // HRTFElevation contains all of the HRTFKernels (one left ear and one right ear
 // per azimuth angle) for a particular elevation.
 
-class HRTFElevation {
+class HRTFElevation final {
   USING_FAST_MALLOC(HRTFElevation);
 
  public:

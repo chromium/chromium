@@ -1,0 +1,45 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("test_support_proto") {
+  testonly = true
+  proto_in_dir = "//"
+  sources = [
+    "extended_saved_tab_group_specifics.proto",
+    "extended_shared_tab_group_data_specifics.proto",
+  ]
+  deps = [
+    "//components/data_sharing:personal_collaboration_data_test_support_proto",
+    "//components/sync/protocol",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_tab_group_sync_service.cc",
+    "fake_tab_group_sync_service.h",
+    "mock_tab_group_sync_delegate.cc",
+    "mock_tab_group_sync_delegate.h",
+    "mock_tab_group_sync_service.cc",
+    "mock_tab_group_sync_service.h",
+    "mock_versioning_message_controller.cc",
+    "mock_versioning_message_controller.h",
+    "saved_tab_group_test_utils.cc",
+    "saved_tab_group_test_utils.h",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/saved_tab_groups/delegate",
+    "//components/saved_tab_groups/public",
+    "//components/sync_device_info",
+    "//components/tab_groups",
+    "//testing/gtest",
+    "//url",
+  ]
+}

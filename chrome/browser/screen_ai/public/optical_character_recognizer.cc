@@ -4,6 +4,11 @@
 
 #include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
 
+#include <utility>
+
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
@@ -11,12 +16,6 @@
 #include "content/public/browser/browser_thread.h"
 
 namespace {
-
-// The delay after which the idle connection to OCR service will be
-// disconnected.
-// TODO(b/353718857): Remove this when ScreenAI service is set to auto shut down
-// on idle.
-constexpr base::TimeDelta kIdleDisconnectDelay = base::Minutes(5);
 
 class SequenceBoundReceiver {
  public:
@@ -59,7 +58,11 @@ OpticalCharacterRecognizer::CreateWithStatusCallback(
   CHECK(profile);
   auto ocr = base::MakeRefCounted<screen_ai::OpticalCharacterRecognizer>(
       profile, client_type);
-  ocr->Initialize(std::move(status_callback));
+  // Post a task to initialize the OCR asynchronously, so that `status_callback`
+  // can be called only after `ocr` is created and returned.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&OpticalCharacterRecognizer::Initialize, ocr,
+                                std::move(status_callback)));
   return ocr;
 }
 
@@ -101,17 +104,24 @@ void OpticalCharacterRecognizer::OnOCRInitializationCallback(
     bool successful) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  RunCallback(std::move(status_callback), successful && profile_);
-
   // If the profile is already destroyed, stop here.
   if (!profile_) {
     ready_ = false;
-    return;
+  } else {
+    // This should be called only once.
+    DCHECK(!is_ready());
+    ready_ = successful;
   }
 
-  // This should be called only once.
-  DCHECK(!is_ready());
-  ready_ = successful;
+  RunCallback(std::move(status_callback), *ready_);
+}
+
+void OpticalCharacterRecognizer::OnOcrDisconnected() {
+  screen_ai_annotator_.reset();
+  // Triggers the on disconnection callback if set.
+  if (!ocr_disconnected_callback_.is_null()) {
+    ocr_disconnected_callback_.Run();
+  }
 }
 
 void OpticalCharacterRecognizer::MaybeConnectToOcrService() {
@@ -126,9 +136,10 @@ void OpticalCharacterRecognizer::MaybeConnectToOcrService() {
   ScreenAIServiceRouterFactory::GetForBrowserContext(profile_)
       ->BindScreenAIAnnotator(
           screen_ai_annotator_->BindNewPipeAndPassReceiver());
-  screen_ai_annotator_->reset_on_disconnect();
-  screen_ai_annotator_->reset_on_idle_timeout(kIdleDisconnectDelay);
   (*screen_ai_annotator_)->SetClientType(client_type_);
+  screen_ai_annotator_->set_disconnect_handler(
+      base::BindOnce(&OpticalCharacterRecognizer::OnOcrDisconnected,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void OpticalCharacterRecognizer::OnProfileWillBeDestroyed(Profile* profile) {
@@ -194,6 +205,7 @@ void OpticalCharacterRecognizer::PerformOCR(
               ref_ptr, std::move(callback)))));
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 void OpticalCharacterRecognizer::PerformOCR(
     const SkBitmap& image,
     base::OnceCallback<void(const ui::AXTreeUpdate&)> callback) {
@@ -209,6 +221,84 @@ void OpticalCharacterRecognizer::PerformOCR(
   MaybeConnectToOcrService();
   (*screen_ai_annotator_)
       ->PerformOcrAndReturnAXTreeUpdate(image, std::move(callback));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+void OpticalCharacterRecognizer::SetOCRLightMode(bool enabled) {
+  // This should be executed in UI thread only. Re-post this request to UI
+  // thread if it's called from the other threads.
+  if (!::content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
+    content::GetUIThreadTaskRunner()->PostTask(
+        FROM_HERE, base::BindOnce(&OpticalCharacterRecognizer::SetOCRLightMode,
+                                  weak_ptr_factory_.GetWeakPtr(), enabled));
+    return;
+  }
+
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!is_ready()) {
+    return;
+  }
+
+  MaybeConnectToOcrService();
+  (*screen_ai_annotator_)->SetOCRLightMode(enabled);
+}
+
+void OpticalCharacterRecognizer::IsOCRBusy(
+    mojom::ScreenAIAnnotator::IsOCRBusyCallback callback) {
+  // This should be executed in UI thread only. Re-post this request to UI
+  // thread if it's called from the other threads.
+  if (!::content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
+    content::GetUIThreadTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&OpticalCharacterRecognizer::IsOCRBusy,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
+
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!is_ready()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  MaybeConnectToOcrService();
+  (*screen_ai_annotator_)->IsOCRBusy(std::move(callback));
+}
+
+void OpticalCharacterRecognizer::DisconnectAnnotator() {
+  if (!screen_ai_annotator_) {
+    return;
+  }
+
+  // This should be executed in UI thread only. Re-post this request to UI
+  // thread if it's called from the other threads.
+  if (!::content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
+    content::GetUIThreadTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&OpticalCharacterRecognizer::DisconnectAnnotator,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  screen_ai_annotator_->reset();
+}
+
+void OpticalCharacterRecognizer::SetDisconnectedCallback(
+    OcrDisconnectedCallback callback) {
+  ocr_disconnected_callback_ = std::move(callback);
+}
+
+void OpticalCharacterRecognizer::GetMaxImageDimension(
+    base::OnceCallback<void(uint32_t)> callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!is_ready()) {
+    std::move(callback).Run(0);
+    return;
+  }
+
+  MaybeConnectToOcrService();
+  (*screen_ai_annotator_)->GetMaxImageDimension(std::move(callback));
 }
 
 }  // namespace screen_ai

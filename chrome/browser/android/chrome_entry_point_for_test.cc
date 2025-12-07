@@ -11,9 +11,7 @@
 #include "chrome/utility/chrome_content_utility_client.h"
 #include "content/public/test/network_service_test_helper.h"
 
-namespace {
-
-bool NativeInit(base::android::LibraryProcessType) {
+bool NativeInitializationHook(base::android::LibraryProcessType) {
   // Setup a working test environment for the network service in case it's used.
   // Only create this object in the utility process, so that its members don't
   // interfere with other test objects in the browser process.
@@ -23,11 +21,9 @@ bool NativeInit(base::android::LibraryProcessType) {
   return android::OnJNIOnLoadInit();
 }
 
-}  // namespace
-
 // This is called by the VM when the shared library is first loaded.
 JNI_EXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
   base::android::InitVM(vm);
-  base::android::SetNativeInitializationHook(NativeInit);
+  base::android::SetNativeInitializationHook(NativeInitializationHook);
   return JNI_VERSION_1_4;
 }

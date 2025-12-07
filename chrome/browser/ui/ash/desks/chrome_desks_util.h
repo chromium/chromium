@@ -5,18 +5,24 @@
 #ifndef CHROME_BROWSER_UI_ASH_DESKS_CHROME_DESKS_UTIL_H_
 #define CHROME_BROWSER_UI_ASH_DESKS_CHROME_DESKS_UTIL_H_
 
+#include <cstdint>
 #include <memory>
+#include <vector>
 
 class TabGroupModel;
 
-namespace app_restore {
+namespace ash {
+class BrowserDelegate;
+}  // namespace ash
+
+namespace tab_groups {
 struct TabGroupInfo;
-}  // namespace app_restore
+}  // namespace tab_groups
 
 namespace chrome_desks_util {
 
 // Name for app not available toast.
-constexpr char kAppNotAvailableTemplateToastName[] =
+inline constexpr char kAppNotAvailableTemplateToastName[] =
     "AppNotAvailableTemplateToast";
 
 // Given a TabGroupModel that contains at least a single TabGroup this method
@@ -25,14 +31,15 @@ constexpr char kAppNotAvailableTemplateToastName[] =
 std::vector<tab_groups::TabGroupInfo> ConvertTabGroupsToTabGroupInfos(
     const TabGroupModel* group_model);
 
-// Given a vector of TabGroupInfo this function attaches tab groups to the
-// out_browser instance passed as the second parameter.
+// Given a vector of TabGroupInfo this function attaches tab groups to the given
+// browser instance.
 void AttachTabGroupsToBrowserInstance(
     const std::vector<tab_groups::TabGroupInfo>& tab_groups,
-    Browser* browser);
+    ash::BrowserDelegate* browser);
 
 // Sets tabs in `browser` to be pinned up to the `first_non_pinned_tab_index`.
-void SetBrowserPinnedTabs(int32_t first_non_pinned_tab_index, Browser* browser);
+void SetBrowserPinnedTabs(int32_t first_non_pinned_tab_index,
+                          ash::BrowserDelegate* browser);
 
 }  // namespace chrome_desks_util
 

@@ -20,8 +20,6 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 
 import org.chromium.base.test.BaseRobolectricTestRule;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,10 +28,6 @@ import java.util.Set;
 
 /** JUnit tests of the class {@link PrivacyGuidePagerAdapter} */
 @RunWith(ParameterizedRobolectricTestRunner.class)
-@EnableFeatures({
-    ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3,
-    ChromeFeatureList.PRIVACY_GUIDE_PRELOAD_ANDROID
-})
 public class PrivacyGuidePagerAdapterTest {
     public static Collection<Object[]> generateBooleanCombinations(int nElements) {
         Collection<Object[]> result = new ArrayList<>();
@@ -59,7 +53,7 @@ public class PrivacyGuidePagerAdapterTest {
 
     @Parameters
     public static Collection<Object[]> data() {
-        int nElements = 5; // Number of elements in each combination
+        int nElements = 4; // Number of elements in each combination
         return generateBooleanCombinations(nElements);
     }
 
@@ -76,9 +70,6 @@ public class PrivacyGuidePagerAdapterTest {
     public boolean mShouldDisplayCookies;
 
     @Parameter(3)
-    public boolean mShouldDisplayPreload;
-
-    @Parameter(4)
     public boolean mShouldDisplayAdTopics;
 
     private StepDisplayHandler mStepDisplayHandler;
@@ -119,11 +110,6 @@ public class PrivacyGuidePagerAdapterTest {
                     }
 
                     @Override
-                    public boolean shouldDisplayPreload() {
-                        return mShouldDisplayPreload;
-                    }
-
-                    @Override
                     public boolean shouldDisplayAdTopics() {
                         return mShouldDisplayAdTopics;
                     }
@@ -132,7 +118,7 @@ public class PrivacyGuidePagerAdapterTest {
                 new PrivacyGuidePagerAdapter(
                         mFragment,
                         mStepDisplayHandler,
-                        PrivacyGuideFragment.ALL_FRAGMENT_TYPE_ORDER_PG3);
+                        PrivacyGuideFragment.ALL_FRAGMENT_TYPE_ORDER);
     }
 
     private Set<Class> getDisplayedFragmentClasses() {
@@ -159,11 +145,6 @@ public class PrivacyGuidePagerAdapterTest {
                 "Safe Browsing step displayed incorrectly",
                 mShouldDisplaySafeBrowsing,
                 fragmentClassSet.contains(SafeBrowsingFragment.class));
-        Assert.assertTrue(fragmentClassSet.contains(SearchSuggestionsFragment.class));
-        Assert.assertEquals(
-                "Preload step displayed incorrectly",
-                mShouldDisplayPreload,
-                fragmentClassSet.contains(PreloadFragment.class));
         Assert.assertEquals(
                 "Ad Topics step displayed incorrectly",
                 mShouldDisplayAdTopics,

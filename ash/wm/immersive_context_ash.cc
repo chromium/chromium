@@ -31,9 +31,8 @@ void ImmersiveContextAsh::OnEnteringOrExitingImmersive(
 }
 
 gfx::Rect ImmersiveContextAsh::GetDisplayBoundsInScreen(views::Widget* widget) {
-  display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
-          widget->GetNativeWindow());
+  display::Display display = display::Screen::Get()->GetDisplayNearestWindow(
+      widget->GetNativeWindow());
   return display.bounds();
 }
 

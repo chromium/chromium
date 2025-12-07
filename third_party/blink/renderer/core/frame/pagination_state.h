@@ -58,11 +58,11 @@ class PaginationState : public GarbageCollected<PaginationState> {
   // CreateAnonymousPageLayoutObject().
   void DestroyAnonymousPageLayoutObjects();
 
-  void SetCurrentPageNumber(wtf_size_t n) { current_page_number_ = n; }
-  wtf_size_t CurrentPageNumber() const { return current_page_number_; }
+  void SetCurrentPageIndex(wtf_size_t n) { current_page_index_ = n; }
+  wtf_size_t CurrentPageIndex() const { return current_page_index_; }
 
   ObjectPaintProperties& ContentAreaProperties() {
-    return *content_area_paint_properties_.get();
+    return *content_area_paint_properties_;
   }
 
   // Make sure that the content area properties have been created, so that they
@@ -72,7 +72,7 @@ class PaginationState : public GarbageCollected<PaginationState> {
       const ClipPaintPropertyNodeOrAlias& parent_clip);
 
   // Update transform (translation + scaling) and clipping for the current page
-  // (see CurrentPageNumber()). This will update the translation into the
+  // (see CurrentPageIndex()). This will update the translation into the
   // stitched coordinate system for paginated content (where all pages are
   // imagined to be laid out stacked after oneanother in the block direction, to
   // accommodate for overflow from one page into another). Furthermore, all
@@ -88,8 +88,8 @@ class PaginationState : public GarbageCollected<PaginationState> {
 
  private:
   HeapVector<Member<LayoutObject>> anonymous_page_objects_;
-  std::unique_ptr<ObjectPaintProperties> content_area_paint_properties_;
-  wtf_size_t current_page_number_ = 0;
+  Member<ObjectPaintProperties> content_area_paint_properties_;
+  wtf_size_t current_page_index_ = 0;
 };
 
 }  // namespace blink

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
@@ -17,6 +18,11 @@
 
 namespace update_client {
 
+namespace switches {
+const char kComponentUpdaterCompatProtocols[] =
+    "component-updater-compat-protocols";
+}  // namespace switches
+
 std::string ProtocolSerializerJSON::Serialize(
     const protocol_request::Request& request) const {
   base::Value::Dict root_node;
@@ -24,10 +30,17 @@ std::string ProtocolSerializerJSON::Serialize(
   request_node.Set("protocol", request.protocol_version);
   request_node.Set("ismachine", request.is_machine);
   request_node.Set("dedup", "cr");
-  request_node.Set("acceptformat", "crx3,puff");
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kComponentUpdaterCompatProtocols)) {
+    // Don't change this string without consulting webview-leads. Add new
+    // protocols to the 'else' branch below instead.
+    request_node.Set("acceptformat", "crx3,download,puff,run");
+  } else {
+    request_node.Set("acceptformat", "crx3,download,puff,run,xz,zucc");
+  }
   if (!request.additional_attributes.empty()) {
-    for (const auto& attr : request.additional_attributes) {
-      request_node.Set(attr.first, attr.second);
+    for (const auto& [name, value] : request.additional_attributes) {
+      request_node.Set(name, value);
     }
   }
   request_node.Set("sessionid", request.session_id);
@@ -37,7 +50,6 @@ std::string ProtocolSerializerJSON::Serialize(
   request_node.Set("updaterversion", request.updaterversion);
   request_node.Set("@os", request.operating_system);
   request_node.Set("arch", request.arch);
-  request_node.Set("nacl_arch", request.nacl_arch);
 #if BUILDFLAG(IS_WIN)
   if (request.is_wow64) {
     request_node.Set("wow64", request.is_wow64);
@@ -98,7 +110,7 @@ std::string ProtocolSerializerJSON::Serialize(
     if (updater.last_started) {
       updater_node.Set("laststarted", *updater.last_started);
     }
-    request_node.Set("updater", std::move(updater_node));
+    request_node.Set("updaters", std::move(updater_node));
   }
 #endif
 
@@ -118,6 +130,9 @@ std::string ProtocolSerializerJSON::Serialize(
     }
     if (app.install_date != kDateUnknown) {
       app_node.Set("installdate", app.install_date);
+    }
+    if (!app.install_id.empty()) {
+      app_node.Set("iid", app.install_id);
     }
     if (!app.install_source.empty()) {
       app_node.Set("installsource", app.install_source);
@@ -143,6 +158,16 @@ std::string ProtocolSerializerJSON::Serialize(
       app_node.Set("enabled", *app.enabled);
     }
 
+    if (!app.cached_hashes.empty()) {
+      base::Value::List hash_list;
+      for (const auto& hash : app.cached_hashes) {
+        base::Value::Dict node;
+        node.Set("sha256", hash);
+        hash_list.Append(std::move(node));
+      }
+      app_node.Set("cached_items", std::move(hash_list));
+    }
+
     if (app.disabled_reasons && !app.disabled_reasons->empty()) {
       base::Value::List disabled_nodes;
       for (const int disabled_reason : *app.disabled_reasons) {
@@ -153,8 +178,8 @@ std::string ProtocolSerializerJSON::Serialize(
       app_node.Set("disabled", std::move(disabled_nodes));
     }
 
-    for (const auto& attr : app.installer_attributes) {
-      app_node.Set(attr.first, attr.second);
+    for (const auto& [name, value] : app.installer_attributes) {
+      app_node.Set(name, value);
     }
 
     if (app.update_check) {
@@ -218,30 +243,20 @@ std::string ProtocolSerializerJSON::Serialize(
       app_node.Set("ping", std::move(ping_node));
     }
 
-    if (!app.fingerprint.empty()) {
-      base::Value::List package_nodes;
-      base::Value::Dict package;
-      package.Set("fp", app.fingerprint);
-      package_nodes.Append(std::move(package));
-      base::Value::Dict packages_node;
-      packages_node.Set("package", std::move(package_nodes));
-      app_node.Set("packages", std::move(packages_node));
-    }
-
     if (app.events) {
       base::Value::List event_nodes;
       for (const auto& event : *app.events) {
         CHECK(!event.empty());
         event_nodes.Append(event.Clone());
       }
-      app_node.Set("event", std::move(event_nodes));
+      app_node.Set("events", std::move(event_nodes));
     }
 
     app_nodes.Append(std::move(app_node));
   }
 
   if (!app_nodes.empty()) {
-    request_node.Set("app", std::move(app_nodes));
+    request_node.Set("apps", std::move(app_nodes));
   }
 
   root_node.Set("request", std::move(request_node));

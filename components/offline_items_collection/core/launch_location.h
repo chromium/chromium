@@ -23,10 +23,10 @@ enum class LaunchLocation {
   SUGGESTION,
   // Due to clicking a suggestion on the net error page.
   NET_ERROR_SUGGESTION,
-  // From Download shelf.
-  DOWNLOAD_SHELF,
   // From Download interstitial open button.
   DOWNLOAD_INTERSTITIAL,
+  // From Download bubble UI.
+  DOWNLOAD_BUBBLE,
 };
 
 }  // namespace offline_items_collection

@@ -196,6 +196,24 @@ class Signals {
   //! \note This function is safe to call from a signal handler.
   static bool WillSignalReraiseAutonomously(const siginfo_t* siginfo);
 
+  //! \brief Restores a previous signal action or reinstalls the default signal
+  //!     handler for a given signal.
+  //!
+  //! Attempts to reinstate the action given by \a old_action and, in case of
+  //! failure or if \a old_actiono is `nullptr`, resets the handler for \a sig
+  //! to the default action.
+  //!
+  //! \param[in] sig The signal to manage.
+  //! \param[in] old_action The previous action for the signal, which will be
+  //!     re-established as the signal’s action. May be `nullptr`, which directs
+  //!     the default action for the signal to be used.
+  //!
+  //! \return `true` on success, `false` if `sigaction()` fails.
+  //!
+  //! \note This function is safe to call from a signal handler.
+  static bool RestoreOrResetHandler(int sig,
+                                    const struct sigaction* old_action);
+
   //! \brief Restores a previous signal action and arranges to re-raise a signal
   //!     on return from a signal handler.
   //!

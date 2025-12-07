@@ -109,6 +109,12 @@ class AuthFactorConfig : public mojom::AuthFactorConfig {
   // Called when user is known to have knowledge factor set up.
   void OnUserHasKnowledgeFactor(const UserContext& context);
 
+  // Checks if the given authentication factors are configured for the user.
+  // Returns the set of configured factors via the provided callback.
+  void CheckConfiguredFactors(const std::string& auth_token,
+                              AuthFactorSet factors,
+                              base::OnceCallback<void(AuthFactorSet)> callback);
+
  private:
   friend class TestApi;
 
@@ -129,6 +135,18 @@ class AuthFactorConfig : public mojom::AuthFactorConfig {
                                mojom::AuthFactor factor,
                                FactorStatusCheckResultCallback,
                                std::unique_ptr<UserContext> context);
+  void CheckConfiguredFactorsInternal(
+      const std::string& auth_token,
+      AuthFactorSet factors,
+      AuthFactorSet configured_factors,
+      base::OnceCallback<void(AuthFactorSet)> callback);
+  void CheckConfiguredFactorsOnResult(
+      const std::string& auth_token,
+      AuthFactorSet factors,
+      AuthFactorSet configured_factors,
+      base::OnceCallback<void(AuthFactorSet)> callback,
+      mojom::AuthFactor factor_under_check,
+      bool success);
   void IsEditableWithContext(const std::string& auth_token,
                              mojom::AuthFactor factor,
                              FactorStatusCheckResultCallback,

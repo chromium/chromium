@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/view_factory.h"
 
 class ToolbarChipButton : public ToolbarButton {
   METADATA_HEADER(ToolbarChipButton, ToolbarButton)

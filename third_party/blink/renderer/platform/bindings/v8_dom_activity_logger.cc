@@ -6,6 +6,8 @@
 
 #include <memory>
 #include "third_party/blink/public/common/scheme_registry.h"
+#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -38,12 +40,12 @@ DomActivityLoggersForIsolatedWorld() {
 void V8DOMActivityLogger::LogMethod(ScriptState* script_state,
                                     const char* api_name,
                                     v8::FunctionCallbackInfo<v8::Value> info) {
-  v8::LocalVector<v8::Value> loggerArgs(info.GetIsolate());
-  loggerArgs.reserve(info.Length());
+  v8::LocalVector<v8::Value> logger_args(info.GetIsolate());
+  logger_args.reserve(info.Length());
   for (int i = 0; i < info.Length(); ++i) {
-    loggerArgs.push_back(info[i]);
+    logger_args.push_back(info[i]);
   }
-  LogMethod(script_state, api_name, info.Length(), loggerArgs.data());
+  LogMethod(script_state, api_name, logger_args);
 }
 
 void V8DOMActivityLogger::SetActivityLogger(
@@ -86,7 +88,7 @@ V8DOMActivityLogger* V8DOMActivityLogger::ActivityLogger(int world_id,
   if (!CommonSchemeRegistry::IsExtensionScheme(url.Protocol().Ascii()))
     return nullptr;
 
-  return ActivityLogger(world_id, url.Host());
+  return ActivityLogger(world_id, url.Host().ToString());
 }
 
 V8DOMActivityLogger* V8DOMActivityLogger::CurrentActivityLogger(

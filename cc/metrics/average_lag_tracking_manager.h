@@ -14,7 +14,7 @@
 #include "cc/metrics/event_metrics.h"
 
 namespace viz {
-struct FrameTimingDetails;
+class FrameTimingDetails;
 }  // namespace viz
 
 namespace cc {

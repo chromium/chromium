@@ -102,13 +102,15 @@ class FontFaceCreationParams {
       // encoding and endianness. However, since the hash is not transferred
       // over a network or permanently stored and only used for the runtime of
       // Chromium, this is not a concern.
-      std::tuple<int, int, unsigned> hash_data = {
-          ttc_index_, fontconfig_interface_id_,
-          HasFilename() ? StringHasher::HashMemory(
-                              Filename().data(),
-                              static_cast<unsigned>(Filename().length()))
-                        : 0};
-      return StringHasher::HashMemory(&hash_data, sizeof(hash_data));
+      struct HashData {
+        int index;
+        int id;
+        uint64_t filename_hash;
+      } hash_data = {ttc_index_, fontconfig_interface_id_,
+                     HasFilename() ? StringHasher::HashMemory(
+                                         base::as_byte_span(Filename()))
+                                   : 0};
+      return StringHasher::HashMemory(base::byte_span_from_ref(hash_data));
     }
     return CaseFoldingHash::GetHash(family_.empty() ? g_empty_atom : family_);
   }
@@ -155,7 +157,7 @@ class FontFaceCreationParams {
 #if defined(ADDRESS_SANITIZER)
   // We put the `std::string` behind an optional as ASAN counter checks require
   // that we properly call constructors and destructors for all strings. This is
-  // not the case when `FontFaceCreationParams` is used in `WTF::HashMap` as key
+  // not the case when `FontFaceCreationParams` is used in `HashMap` as key
   // where we also cosntruct empty and deleted values that are never properly
   // destroyed.
   //

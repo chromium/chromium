@@ -1,5 +1,5 @@
 // META: title=test WebNN API element-wise greaterOrEqual operation
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -14,14 +14,6 @@
 //
 // MLOperand greaterOrEqual(MLOperand a, MLOperand b);
 
-
-const getGreaterOrEqualPrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {uint8: 0};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
-
 const greaterOrEqualTests = [
   {
     'name': 'greaterOrEqual float32 0D scalar',
@@ -29,11 +21,11 @@ const greaterOrEqualTests = [
       'inputs': {
         'inputA': {
           'data': [0.2829853594303131],
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         },
         'inputB': {
           'data': [6.156983375549316],
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -42,8 +34,7 @@ const greaterOrEqualTests = [
         'outputs': 'output'
       }],
       'expectedOutputs': {
-        'output':
-            {'data': [0], 'descriptor': {'dimensions': [], 'dataType': 'uint8'}}
+        'output': {'data': [0], 'descriptor': {shape: [], dataType: 'uint8'}}
       }
     }
   },
@@ -62,7 +53,7 @@ const greaterOrEqualTests = [
             5.782289028167725,   1.8712012767791748, -0.5233999490737915,
             0.43433287739753723, 8.93836498260498,   1.6568396091461182
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'},
+          'descriptor': {shape: [24], dataType: 'float32'},
           'constant': true
         },
         'inputB': {
@@ -76,7 +67,7 @@ const greaterOrEqualTests = [
             8.678308486938477,   -9.449530601501465, 0.7702168822288513,
             -1.5186073780059814, -9.153943061828613, -4.991735935211182
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'},
+          'descriptor': {shape: [24], dataType: 'float32'},
           'constant': true
         }
       },
@@ -91,7 +82,7 @@ const greaterOrEqualTests = [
             0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1,
             0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'uint8'}
+          'descriptor': {shape: [24], dataType: 'uint8'}
         }
       }
     }
@@ -111,7 +102,7 @@ const greaterOrEqualTests = [
             5.782289028167725,   1.8712012767791748, -0.5233999490737915,
             0.43433287739753723, 8.93836498260498,   1.6568396091461182
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         },
         'inputB': {
           'data': [
@@ -124,7 +115,7 @@ const greaterOrEqualTests = [
             8.678308486938477,   -9.449530601501465, 0.7702168822288513,
             -1.5186073780059814, -9.153943061828613, -4.991735935211182
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -138,7 +129,7 @@ const greaterOrEqualTests = [
             0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1,
             0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'uint8'}
+          'descriptor': {shape: [24], dataType: 'uint8'}
         }
       }
     }
@@ -158,7 +149,7 @@ const greaterOrEqualTests = [
             5.782289028167725,   1.8712012767791748, -0.5233999490737915,
             0.43433287739753723, 8.93836498260498,   1.6568396091461182
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         },
         'inputB': {
           'data': [
@@ -171,7 +162,7 @@ const greaterOrEqualTests = [
             8.678308486938477,   -9.449530601501465, 0.7702168822288513,
             -1.5186073780059814, -9.153943061828613, -4.991735935211182
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -185,7 +176,7 @@ const greaterOrEqualTests = [
             0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1,
             0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'uint8'}
+          'descriptor': {shape: [4, 6], dataType: 'uint8'}
         }
       }
     }
@@ -205,7 +196,7 @@ const greaterOrEqualTests = [
             5.782289028167725,   1.8712012767791748, -0.5233999490737915,
             0.43433287739753723, 8.93836498260498,   1.6568396091461182
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         },
         'inputB': {
           'data': [
@@ -218,7 +209,7 @@ const greaterOrEqualTests = [
             8.678308486938477,   -9.449530601501465, 0.7702168822288513,
             -1.5186073780059814, -9.153943061828613, -4.991735935211182
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -232,7 +223,7 @@ const greaterOrEqualTests = [
             0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1,
             0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'uint8'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'uint8'}
         }
       }
     }
@@ -252,7 +243,7 @@ const greaterOrEqualTests = [
             5.782289028167725,   1.8712012767791748, -0.5233999490737915,
             0.43433287739753723, 8.93836498260498,   1.6568396091461182
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         },
         'inputB': {
           'data': [
@@ -265,7 +256,7 @@ const greaterOrEqualTests = [
             8.678308486938477,   -9.449530601501465, 0.7702168822288513,
             -1.5186073780059814, -9.153943061828613, -4.991735935211182
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -279,7 +270,7 @@ const greaterOrEqualTests = [
             0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1,
             0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'uint8'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'uint8'}
         }
       }
     }
@@ -299,7 +290,7 @@ const greaterOrEqualTests = [
             5.782289028167725,   1.8712012767791748, -0.5233999490737915,
             0.43433287739753723, 8.93836498260498,   1.6568396091461182
           ],
-          'descriptor': {'dimensions': [2, 2, 1, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 1, 2, 3], dataType: 'float32'}
         },
         'inputB': {
           'data': [
@@ -312,7 +303,7 @@ const greaterOrEqualTests = [
             8.678308486938477,   -9.449530601501465, 0.7702168822288513,
             -1.5186073780059814, -9.153943061828613, -4.991735935211182
           ],
-          'descriptor': {'dimensions': [2, 2, 1, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 1, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -326,7 +317,7 @@ const greaterOrEqualTests = [
             0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1,
             0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1
           ],
-          'descriptor': {'dimensions': [2, 2, 1, 2, 3], 'dataType': 'uint8'}
+          'descriptor': {shape: [2, 2, 1, 2, 3], dataType: 'uint8'}
         }
       }
     }
@@ -337,7 +328,7 @@ const greaterOrEqualTests = [
       'inputs': {
         'inputA': {
           'data': [-1.0187573432922363],
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         },
         'inputB': {
           'data': [
@@ -350,7 +341,7 @@ const greaterOrEqualTests = [
             5.782289028167725,   1.8712012767791748, -0.5233999490737915,
             0.43433287739753723, 8.93836498260498,   1.6568396091461182
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -364,7 +355,7 @@ const greaterOrEqualTests = [
             1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1,
             0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'uint8'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'uint8'}
         }
       }
     }
@@ -375,7 +366,7 @@ const greaterOrEqualTests = [
       'inputs': {
         'inputA': {
           'data': [-1.0187573432922363],
-          'descriptor': {'dimensions': [1], 'dataType': 'float32'}
+          'descriptor': {shape: [1], dataType: 'float32'}
         },
         'inputB': {
           'data': [
@@ -388,7 +379,7 @@ const greaterOrEqualTests = [
             5.782289028167725,   1.8712012767791748, -0.5233999490737915,
             0.43433287739753723, 8.93836498260498,   1.6568396091461182
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -402,7 +393,7 @@ const greaterOrEqualTests = [
             1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1,
             0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'uint8'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'uint8'}
         }
       }
     }
@@ -422,14 +413,14 @@ const greaterOrEqualTests = [
             5.782289028167725,   1.8712012767791748, -0.5233999490737915,
             0.43433287739753723, 8.93836498260498,   1.6568396091461182
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         },
         'inputB': {
           'data': [
             -4.19451379776001, 3.8917839527130127, -3.5139973163604736,
             6.279316425323486, 0.001788170775398612, -0.7928582429885864
           ],
-          'descriptor': {'dimensions': [2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -443,7 +434,7 @@ const greaterOrEqualTests = [
             0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 1, 0,
             1, 0, 0, 0, 1, 1, 1, 0, 1, 0, 1, 1
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'uint8'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'uint8'}
         }
       }
     }
@@ -463,14 +454,14 @@ const greaterOrEqualTests = [
             5.782289028167725,   1.8712012767791748, -0.5233999490737915,
             0.43433287739753723, 8.93836498260498,   1.6568396091461182
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         },
         'inputB': {
           'data': [
             -3.2823047637939453, -1.3975636959075928, 0.49053606390953064,
             -6.882648944854736
           ],
-          'descriptor': {'dimensions': [2, 2, 1], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 1], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -484,7 +475,7 @@ const greaterOrEqualTests = [
             0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 1, 1,
             1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'uint8'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'uint8'}
         }
       }
     }
@@ -495,7 +486,7 @@ const greaterOrEqualTests = [
       'inputs': {
         'inputA': {
           'data': [-1.0187573432922363],
-          'descriptor': {'dimensions': [1, 1, 1, 1], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 1, 1, 1], dataType: 'float32'}
         },
         'inputB': {
           'data': [
@@ -508,7 +499,7 @@ const greaterOrEqualTests = [
             5.782289028167725,   1.8712012767791748, -0.5233999490737915,
             0.43433287739753723, 8.93836498260498,   1.6568396091461182
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -522,18 +513,467 @@ const greaterOrEqualTests = [
             1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1,
             0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'uint8'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'uint8'}
+        }
+      }
+    }
+  },
+
+  // float16 tests
+  {
+    'name': 'greaterOrEqual float16 0D scalar',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [0.282958984375],
+          'descriptor': {shape: [], dataType: 'float16'}
+        },
+        'inputB':
+            {'data': [6.15625], 'descriptor': {shape: [], dataType: 'float16'}}
+      },
+      'operators': [{
+        'name': 'greaterOrEqual',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {'data': [0], 'descriptor': {shape: [], dataType: 'uint8'}}
+      }
+    }
+  },
+  {
+    'name': 'greaterOrEqual float16 1D constant tensors',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [
+            -8.046875,   -5.5234375,     -2.09765625,  -7.45703125, -5.44921875,
+            9.8046875,   -3.60546875,    4.08984375,   -5.06640625, 1.58203125,
+            5.67578125,  -4.33984375,    1.6943359375, 2.92578125,  -7,
+            -2.52734375, 1.443359375,    7.86328125,   5.78125,     1.87109375,
+            -0.5234375,  0.434326171875, 8.9375,       1.6572265625
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'},
+          'constant': true
+        },
+        'inputB': {
+          'data': [
+            -7.02734375,   1.9111328125,  3.576171875, 1.716796875,
+            2.845703125,   -2.3125,       -6.0859375,  -3.4375,
+            -3.4765625,    -2.1953125,    2.99609375,  -5.5390625,
+            5.09765625,    6.77734375,    2.451171875, 5.2109375,
+            -9.7109375,    -2.412109375,  8.6796875,   -9.453125,
+            0.77001953125, -1.5185546875, -9.15625,    -4.9921875
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'greaterOrEqual',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1,
+            0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1
+          ],
+          'descriptor': {shape: [24], dataType: 'uint8'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'greaterOrEqual float16 1D tensors',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [
+            -8.046875,   -5.5234375,     -2.09765625,  -7.45703125, -5.44921875,
+            9.8046875,   -3.60546875,    4.08984375,   -5.06640625, 1.58203125,
+            5.67578125,  -4.33984375,    1.6943359375, 2.92578125,  -7,
+            -2.52734375, 1.443359375,    7.86328125,   5.78125,     1.87109375,
+            -0.5234375,  0.434326171875, 8.9375,       1.6572265625
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        },
+        'inputB': {
+          'data': [
+            -7.02734375,   1.9111328125,  3.576171875, 1.716796875,
+            2.845703125,   -2.3125,       -6.0859375,  -3.4375,
+            -3.4765625,    -2.1953125,    2.99609375,  -5.5390625,
+            5.09765625,    6.77734375,    2.451171875, 5.2109375,
+            -9.7109375,    -2.412109375,  8.6796875,   -9.453125,
+            0.77001953125, -1.5185546875, -9.15625,    -4.9921875
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'greaterOrEqual',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1,
+            0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1
+          ],
+          'descriptor': {shape: [24], dataType: 'uint8'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'greaterOrEqual float16 2D tensors',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [
+            -8.046875,   -5.5234375,     -2.09765625,  -7.45703125, -5.44921875,
+            9.8046875,   -3.60546875,    4.08984375,   -5.06640625, 1.58203125,
+            5.67578125,  -4.33984375,    1.6943359375, 2.92578125,  -7,
+            -2.52734375, 1.443359375,    7.86328125,   5.78125,     1.87109375,
+            -0.5234375,  0.434326171875, 8.9375,       1.6572265625
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        },
+        'inputB': {
+          'data': [
+            -7.02734375,   1.9111328125,  3.576171875, 1.716796875,
+            2.845703125,   -2.3125,       -6.0859375,  -3.4375,
+            -3.4765625,    -2.1953125,    2.99609375,  -5.5390625,
+            5.09765625,    6.77734375,    2.451171875, 5.2109375,
+            -9.7109375,    -2.412109375,  8.6796875,   -9.453125,
+            0.77001953125, -1.5185546875, -9.15625,    -4.9921875
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'greaterOrEqual',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1,
+            0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'uint8'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'greaterOrEqual float16 3D tensors',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [
+            -8.046875,   -5.5234375,     -2.09765625,  -7.45703125, -5.44921875,
+            9.8046875,   -3.60546875,    4.08984375,   -5.06640625, 1.58203125,
+            5.67578125,  -4.33984375,    1.6943359375, 2.92578125,  -7,
+            -2.52734375, 1.443359375,    7.86328125,   5.78125,     1.87109375,
+            -0.5234375,  0.434326171875, 8.9375,       1.6572265625
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'float16'}
+        },
+        'inputB': {
+          'data': [
+            -7.02734375,   1.9111328125,  3.576171875, 1.716796875,
+            2.845703125,   -2.3125,       -6.0859375,  -3.4375,
+            -3.4765625,    -2.1953125,    2.99609375,  -5.5390625,
+            5.09765625,    6.77734375,    2.451171875, 5.2109375,
+            -9.7109375,    -2.412109375,  8.6796875,   -9.453125,
+            0.77001953125, -1.5185546875, -9.15625,    -4.9921875
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'greaterOrEqual',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1,
+            0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'uint8'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'greaterOrEqual float16 4D tensors',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [
+            -8.046875,   -5.5234375,     -2.09765625,  -7.45703125, -5.44921875,
+            9.8046875,   -3.60546875,    4.08984375,   -5.06640625, 1.58203125,
+            5.67578125,  -4.33984375,    1.6943359375, 2.92578125,  -7,
+            -2.52734375, 1.443359375,    7.86328125,   5.78125,     1.87109375,
+            -0.5234375,  0.434326171875, 8.9375,       1.6572265625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        },
+        'inputB': {
+          'data': [
+            -7.02734375,   1.9111328125,  3.576171875, 1.716796875,
+            2.845703125,   -2.3125,       -6.0859375,  -3.4375,
+            -3.4765625,    -2.1953125,    2.99609375,  -5.5390625,
+            5.09765625,    6.77734375,    2.451171875, 5.2109375,
+            -9.7109375,    -2.412109375,  8.6796875,   -9.453125,
+            0.77001953125, -1.5185546875, -9.15625,    -4.9921875
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'greaterOrEqual',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1,
+            0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'uint8'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'greaterOrEqual float16 5D tensors',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [
+            -8.046875,   -5.5234375,     -2.09765625,  -7.45703125, -5.44921875,
+            9.8046875,   -3.60546875,    4.08984375,   -5.06640625, 1.58203125,
+            5.67578125,  -4.33984375,    1.6943359375, 2.92578125,  -7,
+            -2.52734375, 1.443359375,    7.86328125,   5.78125,     1.87109375,
+            -0.5234375,  0.434326171875, 8.9375,       1.6572265625
+          ],
+          'descriptor': {shape: [2, 2, 1, 2, 3], dataType: 'float16'}
+        },
+        'inputB': {
+          'data': [
+            -7.02734375,   1.9111328125,  3.576171875, 1.716796875,
+            2.845703125,   -2.3125,       -6.0859375,  -3.4375,
+            -3.4765625,    -2.1953125,    2.99609375,  -5.5390625,
+            5.09765625,    6.77734375,    2.451171875, 5.2109375,
+            -9.7109375,    -2.412109375,  8.6796875,   -9.453125,
+            0.77001953125, -1.5185546875, -9.15625,    -4.9921875
+          ],
+          'descriptor': {shape: [2, 2, 1, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'greaterOrEqual',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1,
+            0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1
+          ],
+          'descriptor': {shape: [2, 2, 1, 2, 3], dataType: 'uint8'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'greaterOrEqual float16 broadcast 0D to 4D',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [-1.0185546875],
+          'descriptor': {shape: [], dataType: 'float16'}
+        },
+        'inputB': {
+          'data': [
+            -8.046875,   -5.5234375,     -2.09765625,  -7.45703125, -5.44921875,
+            9.8046875,   -3.60546875,    4.08984375,   -5.06640625, 1.58203125,
+            5.67578125,  -4.33984375,    1.6943359375, 2.92578125,  -7,
+            -2.52734375, 1.443359375,    7.86328125,   5.78125,     1.87109375,
+            -0.5234375,  0.434326171875, 8.9375,       1.6572265625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'greaterOrEqual',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1,
+            0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'uint8'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'greaterOrEqual float16 broadcast 1D to 4D',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [-1.0185546875],
+          'descriptor': {shape: [1], dataType: 'float16'}
+        },
+        'inputB': {
+          'data': [
+            -8.046875,   -5.5234375,     -2.09765625,  -7.45703125, -5.44921875,
+            9.8046875,   -3.60546875,    4.08984375,   -5.06640625, 1.58203125,
+            5.67578125,  -4.33984375,    1.6943359375, 2.92578125,  -7,
+            -2.52734375, 1.443359375,    7.86328125,   5.78125,     1.87109375,
+            -0.5234375,  0.434326171875, 8.9375,       1.6572265625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'greaterOrEqual',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1,
+            0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'uint8'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'greaterOrEqual float16 broadcast 2D to 4D',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [
+            -8.046875,   -5.5234375,     -2.09765625,  -7.45703125, -5.44921875,
+            9.8046875,   -3.60546875,    4.08984375,   -5.06640625, 1.58203125,
+            5.67578125,  -4.33984375,    1.6943359375, 2.92578125,  -7,
+            -2.52734375, 1.443359375,    7.86328125,   5.78125,     1.87109375,
+            -0.5234375,  0.434326171875, 8.9375,       1.6572265625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        },
+        'inputB': {
+          'data': [
+            -4.1953125, 3.892578125, -3.513671875, 6.28125,
+            0.0017881393432617188, -0.79296875
+          ],
+          'descriptor': {shape: [2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'greaterOrEqual',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 1, 0,
+            1, 0, 0, 0, 1, 1, 1, 0, 1, 0, 1, 1
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'uint8'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'greaterOrEqual float16 broadcast 3D to 4D',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [
+            -8.046875,   -5.5234375,     -2.09765625,  -7.45703125, -5.44921875,
+            9.8046875,   -3.60546875,    4.08984375,   -5.06640625, 1.58203125,
+            5.67578125,  -4.33984375,    1.6943359375, 2.92578125,  -7,
+            -2.52734375, 1.443359375,    7.86328125,   5.78125,     1.87109375,
+            -0.5234375,  0.434326171875, 8.9375,       1.6572265625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        },
+        'inputB': {
+          'data': [-3.283203125, -1.3974609375, 0.490478515625, -6.8828125],
+          'descriptor': {shape: [2, 2, 1], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'greaterOrEqual',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 1, 1,
+            1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'uint8'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'greaterOrEqual float16 broadcast 4D to 4D',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [-1.0185546875],
+          'descriptor': {shape: [1, 1, 1, 1], dataType: 'float16'}
+        },
+        'inputB': {
+          'data': [
+            -8.046875,   -5.5234375,     -2.09765625,  -7.45703125, -5.44921875,
+            9.8046875,   -3.60546875,    4.08984375,   -5.06640625, 1.58203125,
+            5.67578125,  -4.33984375,    1.6943359375, 2.92578125,  -7,
+            -2.52734375, 1.443359375,    7.86328125,   5.78125,     1.87109375,
+            -0.5234375,  0.434326171875, 8.9375,       1.6572265625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'greaterOrEqual',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1,
+            0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'uint8'}
         }
       }
     }
   }
 ];
 
-if (navigator.ml) {
-  greaterOrEqualTests.forEach((test) => {
-    webnn_conformance_test(
-        buildGraphAndCompute, getGreaterOrEqualPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(
+    greaterOrEqualTests, buildAndExecuteGraph, getZeroULPTolerance);

@@ -61,16 +61,16 @@ Tab* FakeTabSlotController::GetTabAt(const gfx::Point& point) {
   return nullptr;
 }
 
-const Tab* FakeTabSlotController::GetAdjacentTab(const Tab* tab, int offset) {
+Tab* FakeTabSlotController::GetAdjacentTab(const Tab* tab, int offset) {
   return nullptr;
+}
+
+std::vector<Tab*> FakeTabSlotController::GetTabsInSplit(const Tab* tab) {
+  return {};
 }
 
 bool FakeTabSlotController::HoverCardIsShowingForTab(Tab* tab) {
   return false;
-}
-
-int FakeTabSlotController::GetBackgroundOffset() const {
-  return 0;
 }
 
 int FakeTabSlotController::GetStrokeThickness() const {
@@ -87,11 +87,6 @@ bool FakeTabSlotController::HasVisibleBackgroundTabShapes() const {
 
 SkColor FakeTabSlotController::GetTabSeparatorColor() const {
   return SK_ColorBLACK;
-}
-
-SkColor FakeTabSlotController::GetTabForegroundColor(TabActive active) const {
-  return active == TabActive::kActive ? tab_fg_color_active_
-                                      : tab_fg_color_inactive_;
 }
 
 std::optional<int> FakeTabSlotController::GetCustomBackgroundId(
@@ -138,19 +133,20 @@ SkColor FakeTabSlotController::GetPaintedGroupColor(
   return SkColor();
 }
 
-const Browser* FakeTabSlotController::GetBrowser() const {
+Browser* FakeTabSlotController::GetBrowser() {
   return nullptr;
-}
-
-int FakeTabSlotController::GetInactiveTabWidth() const {
-  return inactive_tab_width_;
 }
 
 bool FakeTabSlotController::IsFrameCondensed() const {
   return false;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+TabGroup* FakeTabSlotController::GetTabGroup(
+    const tab_groups::TabGroupId& group_id) const {
+  return nullptr;
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
 bool FakeTabSlotController::IsLockedForOnTask() {
   return on_task_locked_;
 }

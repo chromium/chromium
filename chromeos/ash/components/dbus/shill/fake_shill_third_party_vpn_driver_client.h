@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/dbus/shill/shill_third_party_vpn_driver_client.h"
 
 namespace ash {
@@ -60,7 +61,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillThirdPartyVpnDriverClient
                          uint32_t message) override;
 
  private:
-  using ObserverMap = std::map<std::string, ShillThirdPartyVpnObserver*>;
+  using ObserverMap =
+      std::map<std::string,
+               raw_ptr<ShillThirdPartyVpnObserver, CtnExperimental>>;
 
   ObserverMap observer_map_;
 };

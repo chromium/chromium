@@ -4,29 +4,29 @@
 
 #import "ios/net/protocol_handler_util.h"
 
-#include <memory>
-#include <utility>
+#import <memory>
+#import <utility>
 
-#include "base/memory/ptr_util.h"
-#include "base/run_loop.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/test/task_environment.h"
+#import "base/memory/ptr_util.h"
+#import "base/run_loop.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/test/task_environment.h"
 #import "net/base/apple/url_conversions.h"
-#include "net/base/elements_upload_data_stream.h"
-#include "net/base/upload_bytes_element_reader.h"
-#include "net/http/http_request_headers.h"
-#include "net/http/http_response_headers.h"
-#include "net/url_request/url_request.h"
-#include "net/url_request/url_request_context.h"
-#include "net/url_request/url_request_context_builder.h"
-#include "net/url_request/url_request_filter.h"
-#include "net/url_request/url_request_interceptor.h"
-#include "net/url_request/url_request_job.h"
-#include "net/url_request/url_request_test_util.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
-#include "url/gurl.h"
+#import "net/base/elements_upload_data_stream.h"
+#import "net/base/upload_bytes_element_reader.h"
+#import "net/http/http_request_headers.h"
+#import "net/http/http_response_headers.h"
+#import "net/url_request/url_request.h"
+#import "net/url_request/url_request_context.h"
+#import "net/url_request/url_request_context_builder.h"
+#import "net/url_request/url_request_filter.h"
+#import "net/url_request/url_request_interceptor.h"
+#import "net/url_request/url_request_job.h"
+#import "net/url_request/url_request_test_util.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
+#import "url/gurl.h"
 
 namespace net {
 namespace {
@@ -55,7 +55,7 @@ class HeadersURLRequestJob : public URLRequestJob {
     header_string.push_back('\0');
     header_string += std::string("Cache-Control: max-age=600");
     header_string.push_back('\0');
-    if (request()->url().path_piece() == "/multiplecontenttype") {
+    if (request()->url().path() == "/multiplecontenttype") {
       header_string += std::string(
           "coNteNt-tYPe: text/plain; charset=iso-8859-4, image/png");
       header_string.push_back('\0');
@@ -79,8 +79,9 @@ class HeadersURLRequestJob : public URLRequestJob {
 
  protected:
   std::string GetContentTypeValue() const {
-    if (request()->url().path_piece() == "/badcontenttype")
+    if (request()->url().path() == "/badcontenttype") {
       return "\xff";
+    }
     return kTextHtml;
   }
 };
@@ -153,8 +154,7 @@ TEST_F(ProtocolHandlerUtilTest, BadHttpContentType) {
   // Create a response from the request.
   @try {
     GetNSURLResponseForRequest(request.get());
-  }
-  @catch (id exception) {
+  } @catch (id exception) {
     FAIL() << "Exception while creating response";
   }
 }
@@ -181,10 +181,10 @@ TEST_F(ProtocolHandlerUtilTest, CopyHttpHeaders) {
   NSMutableURLRequest* in_request =
       [[NSMutableURLRequest alloc] initWithURL:NSURLWithGURL(url)];
   [in_request setAllHTTPHeaderFields:@{
-      @"Referer" : @"referrer",
-      @"User-Agent" : @"secret",
-      @"Accept" : @"money/cash",
-      @"Foo" : @"bar",
+    @"Referer" : @"referrer",
+    @"User-Agent" : @"secret",
+    @"Accept" : @"money/cash",
+    @"Foo" : @"bar",
   }];
   std::unique_ptr<URLRequest> out_request(
       request_context_->CreateRequest(url, DEFAULT_PRIORITY, nullptr));
@@ -193,11 +193,8 @@ TEST_F(ProtocolHandlerUtilTest, CopyHttpHeaders) {
   EXPECT_EQ("referrer", out_request->referrer());
   const HttpRequestHeaders& headers = out_request->extra_request_headers();
   EXPECT_FALSE(headers.HasHeader("Content-Type"));  // Only in POST requests.
-  std::string header;
-  EXPECT_TRUE(headers.GetHeader("Accept", &header));
-  EXPECT_EQ("money/cash", header);
-  EXPECT_TRUE(headers.GetHeader("Foo", &header));
-  EXPECT_EQ("bar", header);
+  EXPECT_EQ("money/cash", headers.GetHeader("Accept"));
+  EXPECT_EQ("bar", headers.GetHeader("Foo"));
 }
 
 TEST_F(ProtocolHandlerUtilTest, AddMissingHeaders) {
@@ -207,19 +204,17 @@ TEST_F(ProtocolHandlerUtilTest, AddMissingHeaders) {
   std::unique_ptr<URLRequest> out_request(
       request_context_->CreateRequest(url, DEFAULT_PRIORITY, nullptr));
   out_request->set_method("POST");
-  std::unique_ptr<UploadElementReader> reader(
-      new UploadBytesElementReader(nullptr, 0));
+  auto reader = std::make_unique<UploadBytesElementReader>(
+      base::byte_span_from_cstring(""));
   out_request->set_upload(
-      ElementsUploadDataStream::CreateWithReader(std::move(reader), 0));
+      ElementsUploadDataStream::CreateWithReader(std::move(reader)));
   CopyHttpHeaders(in_request, out_request.get());
 
   // Some headers are added by default if missing.
   const HttpRequestHeaders& headers = out_request->extra_request_headers();
-  std::string header;
-  EXPECT_TRUE(headers.GetHeader("Accept", &header));
-  EXPECT_EQ("*/*", header);
-  EXPECT_TRUE(headers.GetHeader("Content-Type", &header));
-  EXPECT_EQ("application/x-www-form-urlencoded", header);
+  EXPECT_EQ("*/*", headers.GetHeader("Accept"));
+  EXPECT_EQ("application/x-www-form-urlencoded",
+            headers.GetHeader("Content-Type"));
 }
 
 }  // namespace net

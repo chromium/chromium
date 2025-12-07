@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs.features.minimizedcustomtab;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -12,44 +14,31 @@ import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.text.TextUtils;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
-import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
-import org.chromium.base.cached_flags.StringCachedFieldTrialParameter;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.R;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.customtabs.CustomTabFeatureOverridesManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
 /** Utility methods for the Minimized Custom Tab feature. */
+@NullMarked
 public class MinimizedFeatureUtils {
-    public static final IntCachedFieldTrialParameter ICON_VARIANT =
-            ChromeFeatureList.newIntCachedFieldTrialParameter(
-                    ChromeFeatureList.CCT_MINIMIZED, "icon_variant", 0);
 
-    // Devices from this OEM--and potentially others--sometimes crash when we call
-    // `Activity#enterPictureInPictureMode` on Android R. So, we disable the feature on those
-    // devices. See: https://crbug.com/1519164.
-    public static final StringCachedFieldTrialParameter MANUFACTURER_EXCLUDE_LIST =
-            ChromeFeatureList.newStringCachedFieldTrialParameter(
-                    ChromeFeatureList.CCT_MINIMIZED_ENABLED_BY_DEFAULT,
-                    "manufacturer_exclude_list",
-                    "xiaomi");
-
-    private static Set<String> sManufacturerExcludeList;
+    private static @Nullable Set<String> sManufacturerExcludeList;
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
@@ -61,6 +50,7 @@ public class MinimizedFeatureUtils {
         MinimizedFeatureAvailability.UNAVAILABLE_EXCLUDED_MANUFACTURER,
         MinimizedFeatureAvailability.NUM_ENTRIES
     })
+    @Retention(RetentionPolicy.SOURCE)
     @VisibleForTesting
     @interface MinimizedFeatureAvailability {
         int AVAILABLE = 0;
@@ -73,30 +63,17 @@ public class MinimizedFeatureUtils {
         int NUM_ENTRIES = 6;
     }
 
-    private static Boolean sIsDeviceEligibleForMinimizedCustomTab;
+    private static @Nullable Boolean sIsDeviceEligibleForMinimizedCustomTab;
     private static boolean sIsDeviceEligibleForMinimizedCustomTabForTesting;
 
     /**
-     * Computes the availability of the Minimized Custom Tab feature based on multiple signals and
-     * emits histograms accordingly.
+     * Computes the availability of the Minimized Custom Tab feature.
      *
      * @param context The {@link Context}.
-     * @param featureOverridesManager The {@link CustomTabFeatureOverridesManager} to check
-     *     overridden features.
      * @return Whether the Minimized Custom Tab feature is available.
      */
-    public static boolean isMinimizedCustomTabAvailable(
-            Context context, @Nullable CustomTabFeatureOverridesManager featureOverridesManager) {
-        if (!isDeviceEligibleForMinimizedCustomTab(context)) return false;
-        if (!ChromeFeatureList.sCctIntentFeatureOverrides.isEnabled()) {
-            return ChromeFeatureList.sCctMinimized.isEnabled();
-        }
-        if (featureOverridesManager == null) return ChromeFeatureList.sCctMinimized.isEnabled();
-
-        Boolean override =
-                featureOverridesManager.isFeatureEnabled(ChromeFeatureList.CCT_MINIMIZED);
-        if (override != null) return override;
-        return ChromeFeatureList.sCctMinimized.isEnabled();
+    public static boolean isMinimizedCustomTabAvailable(Context context) {
+        return isDeviceEligibleForMinimizedCustomTab(context);
     }
 
     /**
@@ -151,7 +128,8 @@ public class MinimizedFeatureUtils {
 
     private static boolean isDeviceExcluded() {
         sManufacturerExcludeList = new HashSet<>();
-        String listStr = MANUFACTURER_EXCLUDE_LIST.getValue();
+        String listStr =
+                ChromeFeatureList.sCctMinimizedEnabledByDefaultManufacturerExcludeList.getValue();
         if (!TextUtils.isEmpty(listStr)) {
             Collections.addAll(sManufacturerExcludeList, listStr.split(","));
         }
@@ -166,21 +144,31 @@ public class MinimizedFeatureUtils {
                 () -> sIsDeviceEligibleForMinimizedCustomTabForTesting = false);
     }
 
-    public static @DrawableRes int getMinimizeIcon() {
-        return ICON_VARIANT.getValue() == 1 ? R.drawable.ic_pip_24dp : R.drawable.ic_minimize;
-    }
+    /**
+     * Returns whether Minimized Custom Tabs should be enabled based on the intent data provider.
+     *
+     * @param intentDataProvider The {@link BrowserServicesIntentDataProvider}.
+     * @return Whether Minimized Custom Tabs should be enabled.
+     */
+    public static boolean shouldEnableMinimizedCustomTabs(
+            BrowserServicesIntentDataProvider intentDataProvider) {
+        boolean isWebApp =
+                intentDataProvider.isWebappOrWebApkActivity()
+                        || intentDataProvider.isTrustedWebActivity();
+        if (isWebApp) return false;
 
-    /** Returns whether the current Activity is a web app, web apk or TWA. */
-    public static boolean isWebApp(BrowserServicesIntentDataProvider intentDataProvider) {
-        return intentDataProvider.isWebappOrWebApkActivity()
-                || intentDataProvider.isTrustedWebActivity();
-    }
+        boolean isFedCmIntent =
+                intentDataProvider.isTrustedIntent()
+                        && IntentUtils.safeGetIntExtra(
+                                        assertNonNull(intentDataProvider.getIntent()),
+                                        IntentHandler.EXTRA_FEDCM_ID,
+                                        -1)
+                                != -1;
+        if (isFedCmIntent) return false;
 
-    /** Returns whether the intent was launched by the FedCM code. */
-    public static boolean isFedCmIntent(BrowserServicesIntentDataProvider intentDataProvider) {
-        return intentDataProvider.isTrustedIntent()
-                && IntentUtils.safeGetIntExtra(
-                                intentDataProvider.getIntent(), IntentHandler.EXTRA_FEDCM_ID, -1)
-                        != -1;
+        boolean isAuthTab = intentDataProvider.isAuthTab();
+        if (isAuthTab) return false;
+
+        return true;
     }
 }

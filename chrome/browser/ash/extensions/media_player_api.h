@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_EXTENSIONS_MEDIA_PLAYER_API_H_
 #define CHROME_BROWSER_ASH_EXTENSIONS_MEDIA_PLAYER_API_H_
 
-#include <map>
 #include <memory>
 #include <vector>
 

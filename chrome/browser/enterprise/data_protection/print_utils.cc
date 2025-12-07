@@ -8,9 +8,9 @@
 #include <optional>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/memory/read_only_shared_memory_region.h"
-#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/enterprise/buildflags/buildflags.h"
@@ -54,18 +54,6 @@ bool ShouldScan(PrintScanningContext context) {
   }
 }
 
-void RecordPrintType(
-    PrintScanningContext context,
-    const enterprise_connectors::ContentAnalysisDelegate::Data& scanning_data) {
-  if (scanning_data.settings.cloud_or_local_settings.is_local_analysis()) {
-    base::UmaHistogramEnumeration("Enterprise.OnPrint.Local.PrintType",
-                                  context);
-  } else {
-    base::UmaHistogramEnumeration("Enterprise.OnPrint.Cloud.PrintType",
-                                  context);
-  }
-}
-
 }  // namespace
 
 void PrintIfAllowedByPolicy(scoped_refptr<base::RefCountedMemory> print_data,
@@ -75,7 +63,7 @@ void PrintIfAllowedByPolicy(scoped_refptr<base::RefCountedMemory> print_data,
                             base::OnceCallback<void(bool)> on_verdict,
                             base::OnceClosure hide_preview) {
   // In some cases like the web contents closing or the render process crashing,
-  // tt's possible for `initiator` to be null. In that case, printing can simply
+  // it's possible for `initiator` to be null. In that case, printing can simply
   // be aborted.
   if (!initiator) {
     std::move(on_verdict).Run(/*allowed=*/false);
@@ -130,7 +118,7 @@ void PrintIfAllowedByPolicy(
     std::move(on_verdict).Run(/*allowed=*/true);
     return;
   }
-  std::memcpy(region.mapping.memory(), print_data->data(), print_data->size());
+  region.mapping.GetMemoryAsSpan<uint8_t>().copy_prefix_from(*print_data);
   scanning_data.page = std::move(region.region);
 
   auto on_scan_result = base::BindOnce(
@@ -151,7 +139,7 @@ void PrintIfAllowedByPolicy(
 
   enterprise_connectors::ContentAnalysisDelegate::CreateForWebContents(
       web_contents, std::move(scanning_data), std::move(on_scan_result),
-      safe_browsing::DeepScanAccessPoint::PRINT);
+      enterprise_connectors::DeepScanAccessPoint::PRINT);
 }
 
 std::optional<enterprise_connectors::ContentAnalysisDelegate::Data>
@@ -165,11 +153,6 @@ GetPrintAnalysisData(content::WebContents* web_contents,
       &scanning_data, enterprise_connectors::AnalysisConnector::PRINT);
 
   if (enabled && ShouldScan(context)) {
-    // Returning a non-null value here means the user triggered an action
-    // leading to a scan, so logging the print type metric here will apply it to
-    // every print content analysis workflow.
-    RecordPrintType(context, scanning_data);
-
     switch (context) {
 #if BUILDFLAG(IS_MAC)
       case PrintScanningContext::kOpenPdfInPreview:

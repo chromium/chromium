@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/files/scoped_temp_dir.h"
+
 #include <string>
 
 #include "base/files/file.h"
 #include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -62,7 +64,8 @@ TEST(ScopedTempDir, TempDir) {
 
 #if BUILDFLAG(IS_WIN)
     FilePath expected_parent_dir;
-    if (!GetSecureSystemTemp(&expected_parent_dir)) {
+    if (!::IsUserAnAdmin() ||
+        !PathService::Get(DIR_SYSTEM_TEMP, &expected_parent_dir)) {
       EXPECT_TRUE(PathService::Get(DIR_TEMP, &expected_parent_dir));
     }
     EXPECT_TRUE(expected_parent_dir.IsParent(test_path));
@@ -73,6 +76,44 @@ TEST(ScopedTempDir, TempDir) {
 #endif  // BUILDFLAG(IS_WIN)
   }
   EXPECT_FALSE(DirectoryExists(test_path));
+}
+
+TEST(ScopedTempDir, Prefix) {
+  EXPECT_STREQ(ScopedTempDir::GetDefaultTempDirPrefix(),
+               FILE_PATH_LITERAL("scoped_dir"));
+
+  // Default prefix.
+  {
+    ScopedTempDir dir;
+    EXPECT_TRUE(dir.CreateUniqueTempDir());
+    EXPECT_THAT(dir.GetPath().BaseName().value(),
+                ::testing::HasSubstr(FILE_PATH_LITERAL("scoped_dir")));
+    EXPECT_TRUE(DirectoryExists(dir.GetPath()));
+  }
+
+  // "test_prefix".
+  {
+    ScopedTempDir dir;
+    EXPECT_TRUE(dir.CreateUniqueTempDir(FILE_PATH_LITERAL("test_prefix")));
+    EXPECT_THAT(dir.GetPath().BaseName().value(),
+                ::testing::HasSubstr(FILE_PATH_LITERAL("test_prefix")));
+    EXPECT_TRUE(DirectoryExists(dir.GetPath()));
+
+    ScopedTempDir dir_under_path;
+    EXPECT_TRUE(dir_under_path.CreateUniqueTempDirUnderPath(
+        dir.GetPath(), FILE_PATH_LITERAL("dir_under_path_prefix")));
+    EXPECT_THAT(
+        dir_under_path.GetPath().BaseName().value(),
+        ::testing::HasSubstr(FILE_PATH_LITERAL("dir_under_path_prefix")));
+    EXPECT_TRUE(DirectoryExists(dir_under_path.GetPath()));
+  }
+
+  // No prefix.
+  {
+    ScopedTempDir dir;
+    EXPECT_TRUE(dir.CreateUniqueTempDir(FILE_PATH_LITERAL("")));
+    EXPECT_TRUE(DirectoryExists(dir.GetPath()));
+  }
 }
 
 TEST(ScopedTempDir, UniqueTempDirUnderPath) {
@@ -117,7 +158,7 @@ TEST(ScopedTempDir, Move) {
     ScopedTempDir other_dir(std::move(dir));
     EXPECT_EQ(dir_path, other_dir.GetPath());
     EXPECT_TRUE(DirectoryExists(dir_path));
-    EXPECT_FALSE(dir.IsValid());
+    EXPECT_FALSE(dir.IsValid());  // NOLINT(bugprone-use-after-move)
   }
   EXPECT_FALSE(DirectoryExists(dir_path));
 }
@@ -130,7 +171,7 @@ TEST(ScopedTempDir, LockedTempDir) {
             File::FLAG_CREATE_ALWAYS | File::FLAG_WRITE);
   EXPECT_TRUE(file.IsValid());
   EXPECT_EQ(File::FILE_OK, file.error_details());
-  EXPECT_FALSE(dir.Delete());  // We should not be able to delete.
+  EXPECT_FALSE(dir.Delete());           // We should not be able to delete.
   EXPECT_FALSE(dir.GetPath().empty());  // We should still have a valid path.
   file.Close();
   // Now, we should be able to delete.

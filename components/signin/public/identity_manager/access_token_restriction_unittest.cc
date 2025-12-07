@@ -4,9 +4,13 @@
 
 #include "components/signin/public/identity_manager/access_token_restriction.h"
 
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if !BUILDFLAG(IS_FUCHSIA)
+#include "pdf/buildflags.h"  // nogncheck
+#endif                       // !BUILDFLAG(IS_FUCHSIA)
 
 namespace {
 struct AccessTokenRestrictionTestParam {
@@ -44,24 +48,31 @@ const AccessTokenRestrictionTestParam kTestParams[] = {
  {GaiaConstants::kOptimizationGuideServiceGetHintsOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kOptimizationGuideServiceModelExecutionOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kCloudSearchQueryOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
+ {GaiaConstants::kDiscoveryEngineCompleteQueryOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kOAuth1LoginScope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kCalendarReadOnlyOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+ {GaiaConstants::kDriveReadOnlyOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
+#if BUILDFLAG(IS_CHROMEOS)
  {GaiaConstants::kAssistantOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kAuditRecordingOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kCastBackdropOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kClearCutOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kDriveOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
- {GaiaConstants::kDriveReadOnlyOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kExperimentsAndConfigsOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kGCMGroupServerOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
- {GaiaConstants::kCloudPlatformProjectsOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
+ {GaiaConstants::kNearbyDevicesOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kNearbyShareOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kNearbyPresenceOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kPeopleApiReadOnlyOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
+ {GaiaConstants::kContactsOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kPhotosOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kTachyonOAuthScope, OAuth2ScopeRestriction::kSignedIn},
- #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+ #endif  // BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+ {GaiaConstants::kDriveOAuth2Scope, OAuth2ScopeRestriction::kNoRestriction},
+#endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+#endif  // !BUILDFLAG(IS_FUCHSIA)
  {GaiaConstants::kAnyApiOAuth2Scope, OAuth2ScopeRestriction::kPrivilegedOAuth2Consumer},
  {GaiaConstants::kChromeSyncSupervisedOAuth2Scope, OAuth2ScopeRestriction::kExplicitConsent},
  {GaiaConstants::kKidManagementPrivilegedOAuth2Scope, OAuth2ScopeRestriction::kExplicitConsent},

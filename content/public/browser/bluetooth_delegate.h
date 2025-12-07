@@ -20,7 +20,7 @@
 // Some OS Bluetooth stacks (macOS and Android) automatically bond to a device
 // when accessing a characteristic/descriptor which requires an authenticated
 // client. For other platforms Chrome does the on-demand pairing.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define PAIR_BLUETOOTH_ON_DEMAND() true
 #else
 #define PAIR_BLUETOOTH_ON_DEMAND() false
@@ -161,6 +161,9 @@ class CONTENT_EXPORT BluetoothDelegate {
   virtual void RevokeDevicePermissionWebInitiated(
       RenderFrameHost* frame,
       const blink::WebBluetoothDeviceId& device_id) = 0;
+
+  // This should return true if |frame| is allowed to use bluetooth.
+  virtual bool MayUseBluetooth(RenderFrameHost* frame) = 0;
 
   // This should return true if |frame| has permission to access |service| from
   // the device with |device_id|.

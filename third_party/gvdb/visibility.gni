@@ -1,0 +1,9 @@
+# gvdb should only be used in testing code. This visibility list helps
+# enforce that.
+visibility = [
+  "//third_party/gvdb/*",
+
+  # These are also test-only
+  "//third_party/glib/*",
+  "//third_party/mutter/*",
+]

@@ -19,9 +19,8 @@
 #include "base/version.h"
 #include "chrome/browser/ash/policy/login/signin_profile_extensions_policy_test_base.h"
 #include "chrome/browser/extensions/crx_installer.h"
-#include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/install_observer.h"
-#include "chrome/browser/extensions/install_tracker.h"
+#include "chrome/browser/extensions/install_tracker_factory.h"
+#include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
@@ -30,9 +29,11 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/install_observer.h"
+#include "extensions/browser/install_tracker.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/update_observer.h"
 #include "extensions/common/extension.h"
@@ -103,7 +104,8 @@ class ExtensionInstallErrorObserver : public extensions::InstallObserver {
   ExtensionInstallErrorObserver(Profile* profile,
                                 const std::string& extension_id)
       : extension_id_(extension_id) {
-    auto* tracker = extensions::InstallTracker::Get(profile);
+    auto* tracker =
+        extensions::InstallTrackerFactory::GetForBrowserContext(profile);
     CHECK(tracker);
     observation_.Observe(tracker);
   }
@@ -116,8 +118,9 @@ class ExtensionInstallErrorObserver : public extensions::InstallObserver {
 
   // extensions::InstallObserver:
   void OnFinishCrxInstall(content::BrowserContext* context,
-                          const extensions::CrxInstaller& installer,
+                          const base::FilePath& source_file,
                           const std::string& extension_id,
+                          const extensions::Extension* extension,
                           bool success) override {
     if (extension_id == extension_id_) {
       run_loop_.Quit();
@@ -142,9 +145,7 @@ class ExtensionUpdateAvailabilityObserver final
       : profile_(profile),
         extension_id_(extension_id),
         awaited_version_(awaited_version) {
-    extensions::ExtensionSystem::Get(profile_)
-        ->extension_service()
-        ->AddUpdateObserver(this);
+    update_observation_.Observe(extensions::ExtensionUpdater::Get(profile_));
   }
 
   ExtensionUpdateAvailabilityObserver(
@@ -152,11 +153,7 @@ class ExtensionUpdateAvailabilityObserver final
   ExtensionUpdateAvailabilityObserver& operator=(
       const ExtensionUpdateAvailabilityObserver&) = delete;
 
-  ~ExtensionUpdateAvailabilityObserver() override {
-    extensions::ExtensionSystem::Get(profile_)
-        ->extension_service()
-        ->RemoveUpdateObserver(this);
-  }
+  ~ExtensionUpdateAvailabilityObserver() override = default;
 
   // Should be called no more than once.
   void Wait() {
@@ -165,9 +162,9 @@ class ExtensionUpdateAvailabilityObserver final
     run_loop_.Run();
   }
 
-  void OnAppUpdateAvailable(const extensions::Extension* extension) override {
-    if (extension->id() == extension_id_ &&
-        extension->version() == awaited_version_) {
+  void OnAppUpdateAvailable(const extensions::Extension& extension) override {
+    if (extension.id() == extension_id_ &&
+        extension.version() == awaited_version_) {
       run_loop_.Quit();
     }
   }
@@ -179,6 +176,9 @@ class ExtensionUpdateAvailabilityObserver final
   const extensions::ExtensionId extension_id_;
   const base::Version awaited_version_;
   base::RunLoop run_loop_;
+  base::ScopedObservation<extensions::ExtensionUpdater,
+                          extensions::UpdateObserver>
+      update_observation_{this};
 };
 
 // Class for testing sign-in profile apps/extensions.
@@ -275,8 +275,7 @@ IN_PROC_BROWSER_TEST_F(SigninProfileExtensionsPolicyTest,
 // Tests that the extension system enables non-standard extensions in the
 // sign-in profile.
 IN_PROC_BROWSER_TEST_F(SigninProfileExtensionsPolicyTest, ExtensionsEnabled) {
-  EXPECT_TRUE(extensions::ExtensionSystem::Get(GetInitialProfile())
-                  ->extension_service()
+  EXPECT_TRUE(extensions::ExtensionRegistrar::Get(GetInitialProfile())
                   ->extensions_enabled());
 }
 

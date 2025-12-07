@@ -8,19 +8,24 @@
 #include <utility>
 
 #include "base/containers/to_vector.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "cc/base/math_util.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/offset_tag.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
-#include "components/viz/common/quads/yuv_video_draw_quad.h"
+#include "components/viz/common/resources/resource_id.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_f.h"
+#include "ui/gfx/overlay_layer_id.h"
 
 namespace viz {
 namespace {
@@ -40,8 +45,6 @@ const std::optional<gfx::Rect>& GetOptionalDamageRectFromQuad(
     const DrawQuad* quad) {
   if (auto* texture_quad = quad->DynamicCast<TextureDrawQuad>()) {
     return texture_quad->damage_rect;
-  } else if (auto* yuv_video_quad = quad->DynamicCast<YUVVideoDrawQuad>()) {
-    return yuv_video_quad->damage_rect;
   } else {
     static std::optional<gfx::Rect> no_damage;
     return no_damage;
@@ -49,7 +52,7 @@ const std::optional<gfx::Rect>& GetOptionalDamageRectFromQuad(
 }
 
 ResolvedQuadData::ResolvedQuadData(const DrawQuad& quad)
-    : remapped_resources(quad.resources) {}
+    : remapped_resource_id(quad.resource_id) {}
 
 FixedPassData::FixedPassData() = default;
 FixedPassData::FixedPassData(FixedPassData&& other) = default;
@@ -105,7 +108,7 @@ void ResolvedPassData::ResetCompositorRenderPass() {
 
 ResolvedFrameData::ResolvedFrameData(DisplayResourceProvider* resource_provider,
                                      Surface* surface,
-                                     uint64_t previous_frame_index,
+                                     uint32_t previous_frame_index,
                                      AggregatedRenderPassId prev_root_pass_id)
     : resource_provider_(resource_provider),
       surface_id_(surface->surface_id()),
@@ -135,8 +138,10 @@ float ResolvedFrameData::device_scale_factor() const {
   return surface_->device_scale_factor();
 }
 
-uint32_t ResolvedFrameData::GetClientNamespaceId() const {
-  return static_cast<uint32_t>(child_resource_id_);
+gfx::OverlayLayerId::NamespaceId ResolvedFrameData::GetClientNamespaceId()
+    const {
+  return {surface_id_.frame_sink_id().client_id(),
+          surface_id_.frame_sink_id().sink_id()};
 }
 
 void ResolvedFrameData::ForceReleaseResource() {
@@ -239,7 +244,8 @@ void ResolvedFrameData::UpdateActiveFrame(
       }
 
       draw_quads.emplace_back(*quad);
-      for (ResourceId& resource_id : draw_quads.back().remapped_resources) {
+      if (ResourceId& resource_id = draw_quads.back().remapped_resource_id;
+          resource_id != kInvalidResourceId) {
         // If we're using a resource which was not declared in the
         // |resource_list| then this is an invalid frame, we can abort.
         auto iter = child_to_parent_map.find(resource_id);
@@ -251,7 +257,7 @@ void ResolvedFrameData::UpdateActiveFrame(
 
         referenced_resources.push_back(resource_id);
 
-        // Update `ResolvedQuadData::remapped_resources` to have the remapped
+        // Update `ResolvedQuadData::remapped_resource_id` to have the remapped
         // display resource_id.
         resource_id = iter->second;
       }
@@ -305,7 +311,20 @@ void ResolvedFrameData::UpdateOffsetTags(OffsetTagLookupFn lookup_value_fn) {
   // Find the offset value for all defined tags first.
   has_non_zero_offset_tag_value_ = false;
   for (auto& tag_def : offset_tags_to_find) {
-    auto offset = tag_def.constraints.Clamp(lookup_value_fn(tag_def));
+    auto offset = lookup_value_fn(tag_def);
+    if (!tag_def.constraints.IsOffsetValid(offset)) {
+#if BUILDFLAG(IS_ANDROID)
+      if (base::FeatureList::IsEnabled(
+              features::kAndroidDumpForBadCompositedUiState)) {
+        SCOPED_CRASH_KEY_STRING32("BCIV", "offset", offset.ToString());
+        SCOPED_CRASH_KEY_STRING32("BCIV", "OffsetTagConstraints",
+                                  tag_def.constraints.ToString());
+        base::debug::DumpWithoutCrashing();
+      }
+#endif
+      offset = tag_def.constraints.Clamp(offset);
+    }
+
     auto& tag_data = offset_tag_data_[tag_def.tag];
     tag_data.current_offset = offset;
     tag_data.defined_in_frame = true;
@@ -396,14 +415,26 @@ void ResolvedFrameData::RebuildRenderPassesForOffsetTags() {
     source_pass->copy_requests = std::move(copy_requests);
 
     for (auto* sqs : modified_pass->shared_quad_state_list) {
-      if (sqs->offset_tag && offset_tag_data_.contains(sqs->offset_tag)) {
-        auto& tag_data = offset_tag_data_[sqs->offset_tag];
-        if (!tag_data.current_offset.IsZero()) {
-          sqs->quad_to_target_transform.PostTranslate(tag_data.current_offset);
+      if (sqs->offset_tag) {
+        if (auto it = offset_tag_data_.find(sqs->offset_tag);
+            it != offset_tag_data_.end()) {
+          auto& tag_data = it->second;
+          if (!tag_data.current_offset.IsZero()) {
+            sqs->quad_to_target_transform.PostTranslate(
+                tag_data.current_offset);
+
+            if (!sqs->mask_filter_info.IsEmpty()) {
+              // Slim compositor enforces that mask filter info isn't added on
+              // a fixed parent layer that has a child layer with offset tag, so
+              // we can assume the mask filter info should also be translated.
+              // See crbug.com/361804880 for details.
+              sqs->mask_filter_info.ApplyTransform(
+                  gfx::Transform::MakeTranslation(tag_data.current_offset));
+            }
+          }
         }
       }
     }
-
     // Replace the CompositorRenderPass pointer so that modified frame is used
     // during aggregation.
     resolved_pass.fixed_.render_pass = modified_pass.get();
@@ -433,11 +464,12 @@ void ResolvedFrameData::RecomputeOffsetTagDamage() {
       offset_tag_added_damage_.Union(
           EnclosingOffsetRect(data.last_containing_rect, data.last_offset));
     } else if (!data.current_offset.IsZero()) {
-      // If the offset didn't change then adjust client provided damage to take
-      // into account quads that were offset. This assumes that any damage which
-      // intersects the tagged quads comes from the tagged quads. This isn't
-      // necessarily true but there isn't enough information in viz to know what
-      // layer/quads introduced the damage so this is pessimistic.
+      // If the offset didn't change and current offset is non-zero then adjust
+      // client provided damage to take into account quads that were offset.
+      // This assumes that any damage which intersects the tagged quads comes
+      // from the tagged quads. This isn't necessarily true but there isn't
+      // enough information here to know what layer/quads introduced the damage
+      // so this is pessimistic.
       offset_tag_added_damage_.Union(
           EnclosingOffsetRect(gfx::IntersectRects(data.current_containing_rect,
                                                   surface_damage_rect),
@@ -447,12 +479,12 @@ void ResolvedFrameData::RecomputeOffsetTagDamage() {
           !data.current_containing_rect.Contains(data.last_containing_rect)) {
         // This case aims to detect when a layer had a tag removed or a tagged
         // layer was deleted. The client will add damage for the removed layer
-        // at it's default location but that isn't necessarily where the layer
-        // was drawn last aggregation. Viz needs to add damage where the removed
-        // layer was drawn. There is no simple way to track when tagged layers
-        // are removed, so this uses an imperfect proxy of containing rect
-        // shrinking, and if that happens it adds damage for all tagged layers
-        // last frame.
+        // at it's default location but since `last_offset` is non-zero the
+        // content was drawn elsewhere. Viz needs to add damage where the
+        // removed layer was drawn. There is no simple way to track when tagged
+        // layers are removed, so this uses an imperfect proxy of containing
+        // rect shrinking, and if that happens it adds damage for all tagged
+        // layers last frame.
         //
         // It's possible the containing rect shrinks without removing a tagged
         // layer, eg. size or position of the tagged layers change. This case

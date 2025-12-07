@@ -9,13 +9,14 @@ import type {VolumeInfo} from '../../background/js/volume_info.js';
 import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {getDriveQuotaMetadata, getSizeStats} from '../../common/js/api.js';
 import {RateLimiter} from '../../common/js/async_util.js';
-import {getTeamDriveName, isFakeEntry} from '../../common/js/entry_utils.js';
+import {getTeamDriveName, isFakeEntry, isOneDrive} from '../../common/js/entry_utils.js';
 import type {FakeEntry, FilesAppDirEntry} from '../../common/js/files_app_entry_types.js';
 import {isGoogleOneOfferFilesBannerEligibleAndEnabled, isSkyvaultV2Enabled} from '../../common/js/flags.js';
 import {storage} from '../../common/js/storage.js';
 import {isNullOrUndefined} from '../../common/js/util.js';
 import type {RootType} from '../../common/js/volume_manager_types.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
+import {deviceSlice} from '../../state/ducks/device.js';
 import {DialogType, type State} from '../../state/state.js';
 import {getStore, type Store} from '../../state/store.js';
 
@@ -35,6 +36,7 @@ import {TAG_NAME as GoogleOneOfferBannerTagName} from './ui/banners/google_one_o
 import {TAG_NAME as HoldingSpaceWelcomeBannerTagName} from './ui/banners/holding_space_welcome_banner.js';
 import {TAG_NAME as InvalidUsbFileSystemBannerTagName} from './ui/banners/invalid_usb_filesystem_banner.js';
 import {TAG_NAME as LocalDiskLowSpaceBannerTagName} from './ui/banners/local_disk_low_space_banner.js';
+import {TAG_NAME as OdfsOfflineBannerTagName} from './ui/banners/odfs_offline_banner.js';
 import {TAG_NAME as PhotosWelcomeBannerTagName} from './ui/banners/photos_welcome_banner.js';
 import {TAG_NAME as SharedWithCrostiniPluginVmBanner} from './ui/banners/shared_with_crostini_pluginvm_banner.js';
 import {TAG_NAME as TrashBannerTagName} from './ui/banners/trash_banner.js';
@@ -172,8 +174,8 @@ export class BannerController extends EventTarget {
   /**
    * The container where all the banners will be appended to.
    */
-  private container_: HTMLDivElement =
-      document.querySelector<HTMLDivElement>('#banners')!;
+  private container_: HTMLElement =
+      document.querySelector<HTMLElement>('#banners')!;
 
   /**
    * Whether banners should be loaded or not during for unit tests.
@@ -254,16 +256,17 @@ export class BannerController extends EventTarget {
   private bulkPinningEnabled_ = false;
 
   /**
-   * Whether local user files are currently allowed.
+   * SkyVault migration destination. If set, one of {Google Drive, OneDrive,
+   * Delete}.
    */
-  private localUserFilesAllowed_ = true;
+  private migrationDestination_:
+      chrome.fileManagerPrivate.MigrationDestination =
+      chrome.fileManagerPrivate.MigrationDestination.NOT_SPECIFIED;
 
   /**
-   * Default downloads location, usually My Files, or {Google Drive, OneDrive}
-   * if SkyVault is enabled.
+   * SkyVault migration or deletion start time.
    */
-  private defaultLocation_: chrome.fileManagerPrivate.DefaultLocation =
-      chrome.fileManagerPrivate.DefaultLocation.MY_FILES;
+  private migrationStartTime_: string|undefined = undefined;
 
   constructor(
       private directoryModel_: DirectoryModel,
@@ -285,18 +288,20 @@ export class BannerController extends EventTarget {
     chrome.fileManagerPrivate.onPreferencesChanged.addListener(
         this.onPreferencesChanged_.bind(this));
     this.onPreferencesChanged_();
+
+    deviceSlice.selector.subscribe(this.reconcile.bind(this));
   }
 
   private onPreferencesChanged_() {
     chrome.fileManagerPrivate.getPreferences(pref => {
       if (this.bulkPinningAvailable_ !== pref.driveFsBulkPinningAvailable ||
           this.bulkPinningEnabled_ !== pref.driveFsBulkPinningEnabled ||
-          this.localUserFilesAllowed_ !== pref.localUserFilesAllowed ||
-          this.defaultLocation_ !== pref.defaultLocation) {
+          this.migrationDestination_ !== pref.skyVaultMigrationDestination ||
+          this.migrationStartTime_ !== pref.skyVaultMigrationStartTime) {
         this.bulkPinningAvailable_ = pref.driveFsBulkPinningAvailable;
         this.bulkPinningEnabled_ = pref.driveFsBulkPinningEnabled;
-        this.localUserFilesAllowed_ = pref.localUserFilesAllowed;
-        this.defaultLocation_ = pref.defaultLocation;
+        this.migrationDestination_ = pref.skyVaultMigrationDestination;
+        this.migrationStartTime_ = pref.skyVaultMigrationStartTime;
         this.reconcile();
       }
     });
@@ -329,6 +334,7 @@ export class BannerController extends EventTarget {
       // denotes the priority of the banner, 0th index is highest priority.
       this.setWarningBannersInOrder([
         FilesMigratingToCloudBannerTagName,
+        OdfsOfflineBannerTagName,
         LocalDiskLowSpaceBannerTagName,
         DriveOutOfOrganizationSpaceBanner,
         DriveOutOfSharedDriveSpaceBanner,
@@ -440,11 +446,28 @@ export class BannerController extends EventTarget {
         context: () => ({type: this.dialogType_}),
       });
 
-      // TODO(b/351773604): Use MigrationDestination instead of
-      // DownloadDirectory.
       this.registerCustomBannerFilter(FilesMigratingToCloudBannerTagName, {
-        shouldShow: () => isSkyvaultV2Enabled() && !this.localUserFilesAllowed_,
-        context: () => ({defaultLocation: this.defaultLocation_}),
+        shouldShow: () => this.migrationDestination_ !==
+            chrome.fileManagerPrivate.MigrationDestination.NOT_SPECIFIED,
+        context: () => ({
+          migrationDestination: this.migrationDestination_,
+          migrationStartTime: this.migrationStartTime_,
+        }),
+      });
+
+      this.registerCustomBannerFilter(OdfsOfflineBannerTagName, {
+        shouldShow: () => {
+          if (!isSkyvaultV2Enabled()) {
+            return false;
+          }
+          if (!this.currentVolume_) {
+            return false;
+          }
+          return isOneDrive(this.currentVolume_!) &&
+              (this.store_.getState().device.connection ===
+               chrome.fileManagerPrivate.DeviceConnectionState.OFFLINE);
+        },
+        context: () => ({}),
       });
     }
 

@@ -10,6 +10,7 @@ import android.app.Activity;
 import android.text.TextUtils;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.FrameLayout.LayoutParams;
 
 import androidx.test.filters.SmallTest;
 
@@ -70,6 +71,10 @@ public class UrlBarUiUnitTest {
                     sContentView.removeAllViews();
                     sActivity.getLayoutInflater().inflate(R.layout.url_bar, sContentView);
                     mUrlBar = (UrlBar) sContentView.getChildAt(0);
+                    FrameLayout.LayoutParams layoutParams =
+                            (LayoutParams) mUrlBar.getLayoutParams();
+                    layoutParams.width = LayoutParams.MATCH_PARENT;
+                    mUrlBar.setLayoutParams(layoutParams);
                 });
     }
 

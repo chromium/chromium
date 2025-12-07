@@ -16,6 +16,7 @@
 #include "third_party/blink/public/mojom/css/preferred_contrast.mojom-shared.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-forward.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-shared.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -64,6 +65,7 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   bool shrinks_standalone_images_to_fit = true;
   bool text_areas_are_resizable = true;
   bool allow_scripts_to_close_windows = false;
+  bool allow_window_focus_without_user_gesture = false;
   bool remote_fonts_enabled = true;
   bool javascript_can_access_clipboard = false;
   // We don't use dns_prefetching_enabled to disable DNS prefetching.  Instead,
@@ -74,7 +76,6 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // 'Save-Data: on'.
   bool data_saver_enabled = false;
   bool local_storage_enabled = false;
-  bool databases_enabled = false;
   bool tabs_to_links = true;
   bool disable_ipc_flooding_protection = false;
   bool hyperlink_auditing_enabled = true;
@@ -82,7 +83,6 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   bool allow_file_access_from_file_urls = false;
   bool webgl1_enabled = true;
   bool webgl2_enabled = true;
-  bool pepper_3d_enabled = false;
   bool privileged_webgl_extensions_enabled = false;
   bool webgl_errors_to_console_enabled = true;
   bool hide_scrollbars = false;
@@ -113,7 +113,8 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // Disallow user opt-in for blockable mixed content.
   bool strictly_block_blockable_mixed_content = false;
   bool block_mixed_plugin_content = false;
-  bool password_echo_enabled = false;
+  bool password_echo_enabled_physical = false;
+  bool password_echo_enabled_touch = false;
   bool should_print_backgrounds = false;
   bool should_clear_document_background = true;
   bool enable_scroll_animator = false;
@@ -136,8 +137,8 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   bool sync_xhr_in_documents_enabled = true;
   // TODO(https://crbug.com/1163644): Remove once Chrome Apps are deprecated.
   bool target_blank_implies_no_opener_enabled_will_be_removed = true;
-  // TODO(https://crbug.com/1172495): Remove once Chrome Apps are deprecated.
-  bool allow_non_empty_navigator_plugins = false;
+  // TODO(https://crbug.com/404106817): Remove once Chrome Apps are deprecated.
+  bool ignore_permission_for_device_changed_event = false;
   int number_of_cpu_cores = 1;
   blink::mojom::EditingBehavior editing_behavior =
 #if BUILDFLAG(IS_APPLE)
@@ -252,6 +253,7 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   int text_size_contrast_factor = 0;
   float device_scale_adjustment = 1.0f;
   bool force_enable_zoom = false;
+  bool enable_touchpad_overscroll_history_navigation = true;
   GURL default_video_poster_url;
   bool support_deprecated_target_density_dpi = false;
   bool wide_viewport_quirk = false;
@@ -344,10 +346,6 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // `FileOrDirectoryPickerWithoutGestureAllowedForOrigins` policy.
   bool require_transient_activation_for_show_file_or_directory_picker = true;
 
-  // HTML Fullscreen (e.g. `Element.requestFullscreen()`) transient activation
-  // requirement can be bypassed via the "Automatic Fullscreen" content setting.
-  bool require_transient_activation_for_html_fullscreen = true;
-
   // `navigator.subApps.{add|remove|list}()`'s user gesture and authorization
   // can be bypassed via
   // `SubAppsAPIsAllowedWithoutGestureAndAuthorizationForOrigins` policy.
@@ -362,6 +360,10 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // This allows users opt out of forced colors on specific sites.
   // Forced colors are disabled for sites in the `kPageColorsBlockList` pref.
   bool is_forced_colors_disabled = false;
+
+  // Holds the browser's theme color to be used to render root non-overlay
+  // Fluent scrollbars. Stored from an SkColor as ARGB.
+  std::optional<SkColor> root_scrollbar_theme_color;
 
   // The preferred color scheme set by the user's browser settings. The variable
   // follows the browser's color mode setting unless a browser theme (custom or
@@ -417,11 +419,11 @@ struct BLINK_COMMON_EXPORT WebPreferences {
 
   // Whether touch input can trigger HTML drag-and-drop operations. The
   // default value depends on the platform.
-  bool touch_drag_drop_enabled;  // Set in web_preferences.cc
+  bool touch_drag_drop_enabled = false;
 
   // Whether the end of a drag fires a contextmenu event and possibly shows a
-  // context-menu (depends on how the event is handled).  Currently touch-drags
-  // cannot show context menus, see crbug.com/1096189.
+  // context-menu (depends on how the event is handled). Follows
+  // `touch_drag_drop_enabled` in Windows.
   bool touch_dragend_context_menu = false;
 
   // By default, WebXR's immersive-ar session creation is allowed, but this can
@@ -440,6 +442,27 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // Whether modal context menu is used. A modal context menu meaning it is
   // blocking user's access to the background web content.
   bool modal_context_menu = true;
+
+  // Whether the safe-area-insets should be changed dynamically based on
+  // browser controls shown ratio on Android.
+  bool dynamic_safe_area_insets_enabled = false;
+
+  // Whether PaymentRequest is enabled. Controlled by WebView settings on
+  // WebView and by `kWebPayments` feature flag everywhere.
+  bool payment_request_enabled = false;
+
+  bool ai_prompt_api_enabled = false;
+
+#if BUILDFLAG(IS_MAC)
+  bool should_disable_external_popups = false;
+#endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_ANDROID)
+  // Whether a screenshot will be take for every traversable mainframe same-doc
+  // navigation. This will increment the `viz::LocalSurfaceId` from the impl
+  // thread as a side-effect.
+  bool should_screenshot_on_mainframe_same_doc_navigation = true;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // We try to keep the default values the same as the default values in
   // chrome, except for the cases where it would require lots of extra work for

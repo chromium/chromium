@@ -2,18 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/ntlm/ntlm_buffer_writer.h"
 
 #include <string.h>
 
+#include <algorithm>
 #include <limits>
 
 #include "base/check_op.h"
+#include "base/containers/span_writer.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 
@@ -28,8 +25,9 @@ bool NtlmBufferWriter::CanWrite(size_t len) const {
   if (len == 0)
     return true;
 
-  if (!GetBufferPtr())
+  if (buffer_.empty()) {
     return false;
+  }
 
   DCHECK_LE(GetCursor(), GetLength());
 
@@ -37,15 +35,30 @@ bool NtlmBufferWriter::CanWrite(size_t len) const {
 }
 
 bool NtlmBufferWriter::WriteUInt16(uint16_t value) {
-  return WriteUInt<uint16_t>(value);
+  base::SpanWriter writer(base::span(buffer_).subspan(cursor_));
+  if (writer.WriteU16LittleEndian(value)) {
+    AdvanceCursor(sizeof(value));
+    return true;
+  }
+  return false;
 }
 
 bool NtlmBufferWriter::WriteUInt32(uint32_t value) {
-  return WriteUInt<uint32_t>(value);
+  base::SpanWriter writer(base::span(buffer_).subspan(cursor_));
+  if (writer.WriteU32LittleEndian(value)) {
+    AdvanceCursor(sizeof(value));
+    return true;
+  }
+  return false;
 }
 
 bool NtlmBufferWriter::WriteUInt64(uint64_t value) {
-  return WriteUInt<uint64_t>(value);
+  base::SpanWriter writer(base::span(buffer_).subspan(cursor_));
+  if (writer.WriteU64LittleEndian(value)) {
+    AdvanceCursor(sizeof(value));
+    return true;
+  }
+  return false;
 }
 
 bool NtlmBufferWriter::WriteFlags(NegotiateFlags flags) {
@@ -59,7 +72,7 @@ bool NtlmBufferWriter::WriteBytes(base::span<const uint8_t> bytes) {
   if (!CanWrite(bytes.size()))
     return false;
 
-  memcpy(GetBufferPtrAtCursor(), bytes.data(), bytes.size());
+  GetSubspanAtCursor(bytes.size()).copy_from(bytes);
   AdvanceCursor(bytes.size());
   return true;
 }
@@ -71,7 +84,7 @@ bool NtlmBufferWriter::WriteZeros(size_t count) {
   if (!CanWrite(count))
     return false;
 
-  memset(GetBufferPtrAtCursor(), 0, count);
+  std::ranges::fill(GetSubspanAtCursor(count), 0);
   AdvanceCursor(count);
   return true;
 }
@@ -133,17 +146,15 @@ bool NtlmBufferWriter::WriteUtf16String(const std::u16string& str) {
   if (!CanWrite(num_bytes))
     return false;
 
+  auto dest = GetSubspanAtCursor(num_bytes);
 #if defined(ARCH_CPU_BIG_ENDIAN)
-  uint8_t* ptr = reinterpret_cast<uint8_t*>(GetBufferPtrAtCursor());
 
   for (int i = 0; i < num_bytes; i += 2) {
-    ptr[i] = str[i / 2] & 0xff;
-    ptr[i + 1] = str[i / 2] >> 8;
+    dest[i] = str[i / 2] & 0xff;
+    dest[i + 1] = str[i / 2] >> 8;
   }
 #else
-  memcpy(reinterpret_cast<void*>(GetBufferPtrAtCursor()), str.c_str(),
-         num_bytes);
-
+  dest.copy_from(base::as_byte_span(str));
 #endif
 
   AdvanceCursor(num_bytes);
@@ -162,23 +173,8 @@ bool NtlmBufferWriter::WriteMessageHeader(MessageType message_type) {
   return WriteSignature() && WriteMessageType(message_type);
 }
 
-template <typename T>
-bool NtlmBufferWriter::WriteUInt(T value) {
-  size_t int_size = sizeof(T);
-  if (!CanWrite(int_size))
-    return false;
-
-  for (size_t i = 0; i < int_size; i++) {
-    GetBufferPtrAtCursor()[i] = static_cast<uint8_t>(value & 0xff);
-    value >>= 8;
-  }
-
-  AdvanceCursor(int_size);
-  return true;
-}
-
 void NtlmBufferWriter::SetCursor(size_t cursor) {
-  DCHECK(GetBufferPtr() && cursor <= GetLength());
+  DCHECK(!buffer_.empty() && cursor <= GetLength());
 
   cursor_ = cursor;
 }

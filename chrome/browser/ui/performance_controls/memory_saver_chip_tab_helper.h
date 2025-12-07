@@ -5,12 +5,14 @@
 #ifndef CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_MEMORY_SAVER_CHIP_TAB_HELPER_H_
 #define CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_MEMORY_SAVER_CHIP_TAB_HELPER_H_
 
-#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
+#include "base/byte_count.h"
+#include "base/memory/raw_ptr.h"
+#include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
+#include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "components/prefs/pref_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_widget_host.h"
-#include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 
 namespace memory_saver {
 enum class ChipState {
@@ -32,13 +34,11 @@ enum class ChipState {
 // user which conveys information about the discarded tab to the user.
 // The MemorySaverChipTabHelper is a per-tab class which manages the state of
 // the memory saver chip.
-class MemorySaverChipTabHelper
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<MemorySaverChipTabHelper> {
+class MemorySaverChipTabHelper : public tabs::ContentsObservingTabFeature,
+                                 public performance_manager::user_tuning::
+                                     UserPerformanceTuningManager::Observer {
  public:
-  MemorySaverChipTabHelper(const MemorySaverChipTabHelper&) = delete;
-  MemorySaverChipTabHelper& operator=(const MemorySaverChipTabHelper&) = delete;
-
+  explicit MemorySaverChipTabHelper(tabs::TabInterface& tab);
   ~MemorySaverChipTabHelper() override;
 
   static constexpr int kChipAnimationCount = 3;
@@ -50,17 +50,18 @@ class MemorySaverChipTabHelper
       content::NavigationHandle* navigation_handle) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
 
+  // performance_manager::user_tuning::UserPerformanceTuningManager::Observer:
+  // Checks whether memory saver mode is currently enabled.
+  void OnMemorySaverModeChanged() override;
+
   // Returns whether the tab associated with this helper has been navigated
   // away from and to another tab.
   bool ShouldChipAnimate();
 
  private:
-  friend class content::WebContentsUserData<MemorySaverChipTabHelper>;
-  explicit MemorySaverChipTabHelper(content::WebContents* contents);
-
-  // Threshold was selected based on the 75th percentile of tab memory usage
-  static constexpr int64_t kExpandedMemorySaverChipThresholdBytes =
-      197 * 1024 * 1024;
+  // Threshold was selected based on the 75th percentile of tab memory usage.
+  static constexpr base::ByteCount kExpandedMemorySaverChipThreshold =
+      base::MiB(197);
 
   static constexpr base::TimeDelta kExpandedMemorySaverChipFrequency =
       base::Days(1);
@@ -79,11 +80,23 @@ class MemorySaverChipTabHelper
   // recent navigation.
   void ComputeChipState(content::NavigationHandle* navigation_handle);
 
+  // Applies the computed page action icon or chip state to the new page action
+  // framework.
+  void UpdatePageActionState();
+
   memory_saver::ChipState chip_state_ = memory_saver::ChipState::HIDDEN;
   // Represents whether the current chip state has been properly rendered. This
   // gets reset when a tab gets hidden so the chip can be redrawn.
   bool was_rendered_ = false;
   raw_ptr<PrefService> pref_service_;
+
+  // Used to track whether MemorySaver mode is enabled, and hence whether
+  // related UI should be surfaced.
+  base::ScopedObservation<
+      performance_manager::user_tuning::UserPerformanceTuningManager,
+      performance_manager::user_tuning::UserPerformanceTuningManager::Observer>
+      user_performance_tuning_manager_observation_{this};
+  bool is_memory_saver_mode_enabled_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

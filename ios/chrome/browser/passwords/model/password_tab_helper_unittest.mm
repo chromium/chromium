@@ -12,7 +12,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
 #import "components/password_manager/core/browser/password_manager_constants.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -38,9 +38,9 @@ class PasswordTabHelperTest : public PlatformTest {
  public:
   PasswordTabHelperTest()
       : web_client_(std::make_unique<web::FakeWebClient>()) {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
 
-    web::WebState::CreateParams params(browser_state_.get());
+    web::WebState::CreateParams params(profile_.get());
     web_state_ = web::WebState::Create(params);
 
     PasswordTabHelper::CreateForWebState(web_state_.get());
@@ -66,7 +66,7 @@ class PasswordTabHelperTest : public PlatformTest {
   web::ScopedTestingWebClient web_client_;
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::MainThreadType::IO};
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
   raw_ptr<PasswordTabHelper> helper_ = nullptr;
   id dispatcher_;
@@ -92,8 +92,7 @@ TEST_F(PasswordTabHelperTest, RedirectsToPasswordsAndCancelsRequest) {
         callback_called = true;
       });
 
-  OCMExpect([dispatcher_ showSavedPasswordsSettingsFromViewController:nil
-                                                     showCancelButton:NO]);
+  OCMExpect([dispatcher_ showSavedPasswordsSettingsFromViewController:nil]);
 
   helper_->ShouldAllowRequest(request, request_info, std::move(callback));
 

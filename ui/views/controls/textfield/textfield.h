@@ -12,6 +12,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -19,13 +20,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/ime/text_edit_commands.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_type.h"
-#include "ui/base/models/simple_menu_model.h"
-#include "ui/base/pointer/touch_editing_controller.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/events/gesture_event_details.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -34,6 +34,8 @@
 #include "ui/gfx/range/range.h"
 #include "ui/gfx/selection_model.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/menus/simple_menu_model.h"
+#include "ui/touch_selection/touch_editing_controller.h"
 #include "ui/touch_selection/touch_selection_metrics.h"
 #include "ui/views/buildflags.h"
 #include "ui/views/context_menu_controller.h"
@@ -109,9 +111,6 @@ class VIEWS_EXPORT Textfield : public View,
   // Pair of |text_changed|, |cursor_changed|.
   using EditCommandResult = std::pair<bool, bool>;
 
-  // Returns the text cursor blink time, or 0 for no blinking.
-  static base::TimeDelta GetCaretBlinkInterval();
-
   // Returns the default FontList used by all textfields.
   static const gfx::FontList& GetDefaultFontList();
 
@@ -133,6 +132,12 @@ class VIEWS_EXPORT Textfield : public View,
   void SetReadOnly(bool read_only);
 
   // Sets the input type; displays only asterisks for TEXT_INPUT_TYPE_PASSWORD.
+  // Note: The check for TEXT_INPUT_TYPE_NUMBER is stricter than the HTML
+  // number type and only allows digits. This currently only restricts key
+  // events to digits, but does not prevent pasting non-numeric content. Other
+  // input types are currently no-ops.
+  // TODO(crbug.com/419034676): restrict inputs appropriately for the type.
+  // e.g. TEXT_INPUT_TYPE_NUMBER should take only numbers.
   void SetTextInputType(ui::TextInputType type);
 
   // Sets the input flags so that the system input methods can turn on/off some
@@ -142,10 +147,10 @@ class VIEWS_EXPORT Textfield : public View,
   // Gets the text for the Textfield.
   // NOTE: Call sites should take care to not reveal the text for a password
   // textfield.
-  const std::u16string& GetText() const;
+  std::u16string_view GetText() const;
 
   // Sets the text currently displayed in the Textfield.
-  void SetText(const std::u16string& new_text);
+  void SetText(std::u16string_view new_text);
 
   // Sets the text currently displayed in the Textfield and the cursor position.
   // Does not fire notifications about the caret bounds changing. This is
@@ -155,7 +160,7 @@ class VIEWS_EXPORT Textfield : public View,
   // selection or cursor separately afterwards does not update the edit history,
   // i.e. the cursor position after redoing this change will be determined by
   // |cursor_position| and not by subsequent calls to e.g. SetSelectedRange().
-  void SetTextWithoutCaretBoundsChangeNotification(const std::u16string& text,
+  void SetTextWithoutCaretBoundsChangeNotification(std::u16string_view text,
                                                    size_t cursor_position);
 
   // Scrolls all of |scroll_positions| into view, if possible. For each
@@ -179,7 +184,7 @@ class VIEWS_EXPORT Textfield : public View,
   // Returns the text that is currently selected.
   // NOTE: Call sites should take care to not reveal the text for a password
   // textfield.
-  std::u16string GetSelectedText() const;
+  std::u16string_view GetSelectedText() const;
 
   // Select the entire text range. If |reversed| is true, the range will end at
   // the logical beginning of the text; this generally shows the leading portion
@@ -238,8 +243,8 @@ class VIEWS_EXPORT Textfield : public View,
   void SetMinimumWidthInChars(int minimum_width);
 
   // Gets/Sets the text to display when empty.
-  const std::u16string& GetPlaceholderText() const;
-  void SetPlaceholderText(const std::u16string& text);
+  std::u16string_view GetPlaceholderText() const;
+  void SetPlaceholderText(std::u16string_view text);
 
   void set_placeholder_text_color(SkColor color) {
     placeholder_text_color_ = color;
@@ -359,7 +364,10 @@ class VIEWS_EXPORT Textfield : public View,
   views::View::DropCallback GetDropCallback(
       const ui::DropTargetEvent& event) override;
   void OnDragDone() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  // We don't want to compute the accessible text offsets unless accessibility
+  // is enabled. We need to override this function to make sure that when
+  // accessibility turns on, we compute the current accessible text offsets.
+  void OnAccessibilityInitializing(ui::AXNodeData* node_data) override;
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   bool GetNeedsNotificationWhenVisibleBoundsChange() const override;
@@ -373,11 +381,14 @@ class VIEWS_EXPORT Textfield : public View,
   // TextfieldModel::Delegate overrides:
   void OnCompositionTextConfirmedOrCleared() override;
   void OnTextChanged() override;
+  void WriteTextToClipboard(ui::ClipboardBuffer clipboard_buffer,
+                            const std::u16string_view& text) override;
 
   // ContextMenuController overrides:
-  void ShowContextMenuForViewImpl(View* source,
-                                  const gfx::Point& point,
-                                  ui::MenuSourceType source_type) override;
+  void ShowContextMenuForViewImpl(
+      View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override;
 
   // DragController overrides:
   void WriteDragDataForView(View* sender,
@@ -435,6 +446,13 @@ class VIEWS_EXPORT Textfield : public View,
   bool CanComposeInline() const override;
   gfx::Rect GetCaretBounds() const override;
   gfx::Rect GetSelectionBoundingBox() const override;
+#if BUILDFLAG(IS_WIN)
+  std::optional<gfx::Rect> GetProximateCharacterBounds(
+      const gfx::Range& range) const override;
+  std::optional<size_t> GetProximateCharacterIndexFromPoint(
+      const gfx::Point& screen_point_in_dips,
+      ui::IndexFromPointFlags flags) const override;
+#endif  // BUILDFLAG(IS_WIN)
   bool GetCompositionCharacterBounds(size_t index,
                                      gfx::Rect* rect) const override;
   bool HasCompositionText() const override;
@@ -477,11 +495,9 @@ class VIEWS_EXPORT Textfield : public View,
       const std::vector<ui::GrammarFragment>& fragments) override;
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   void GetActiveTextInputControlLayoutBounds(
       std::optional<gfx::Rect>* control_bounds,
       std::optional<gfx::Rect>* selection_bounds) override;
-#endif
 
 #if BUILDFLAG(IS_WIN)
   void SetActiveCompositionForAccessibility(
@@ -547,12 +563,6 @@ class VIEWS_EXPORT Textfield : public View,
   // Get the default command for a given key |event|.
   virtual ui::TextEditCommand GetCommandForKeyEvent(const ui::KeyEvent& event);
 
-#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
-  // Called when the accessible text offsets for the textfield need to be
-  // recomputed on the next pass.
-  virtual void SetNeedsAccessibleTextOffsetsUpdate();
-#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
-
   // Update the cursor position in the text field.
   void UpdateCursorViewPosition();
 
@@ -562,7 +572,11 @@ class VIEWS_EXPORT Textfield : public View,
   // Returns true if a context menu for this view is showing.
   bool IsMenuShowing() const;
 
-  virtual void UpdateAccessibleTextSelection();
+  void AddedToWidget() override;
+
+#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+  void UpdateAccessibleTextOffsetsIfNeeded();
+#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 
  private:
   friend class TextfieldTestApi;
@@ -605,6 +619,8 @@ class VIEWS_EXPORT Textfield : public View,
   // Updates the selection background color.
   void UpdateSelectionBackgroundColor();
 
+  virtual void UpdateAccessibleTextSelection();
+
   // Does necessary updates when the text and/or cursor position changes.
   // If |notify_caret_bounds_changed| is not explicitly set, it will be computed
   // based on whether either of the other arguments is set.
@@ -614,6 +630,10 @@ class VIEWS_EXPORT Textfield : public View,
       std::optional<bool> notify_caret_bounds_changed = std::nullopt);
 
   virtual void UpdateAccessibilityTextDirection();
+
+  // Subclass OmniboxViewViews is overriding this method to update the
+  // accessible value.
+  virtual void UpdateAccessibleValue();
 
   // Updates cursor visibility and blinks the cursor if needed.
   void ShowCursor();

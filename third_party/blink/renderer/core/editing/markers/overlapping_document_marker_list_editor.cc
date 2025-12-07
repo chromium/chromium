@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/editing/markers/overlapping_document_marker_list_editor.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "third_party/blink/renderer/core/editing/markers/spell_check_marker_list_impl.h"
 
 namespace blink {
@@ -129,7 +130,7 @@ OverlappingDocumentMarkerListEditor::MarkersIntersectingRange(
                        });
 
   HeapVector<Member<DocumentMarker>> results;
-  base::ranges::copy_if(
+  std::ranges::copy_if(
       list.begin(), end_it, std::back_inserter(results),
       [start_offset, end_offset](const DocumentMarker* marker) {
         return marker->StartOffset() < end_offset &&

@@ -4,14 +4,10 @@
 
 package org.chromium.components.browser_ui.webshare;
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.net.Uri;
 
-import androidx.annotation.Nullable;
-
-import org.chromium.base.CollectionUtil;
-import org.chromium.base.ContentUriUtils;
+import org.chromium.base.FileProviderUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
@@ -19,9 +15,11 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.browser_ui.share.ShareParams;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.mojo.system.MojoException;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.mojom.Url;
@@ -33,7 +31,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Random;
 import java.util.Set;
 
@@ -41,6 +38,7 @@ import java.util.Set;
  * Android implementation of the ShareService service defined in
  * third_party/blink/public/mojom/webshare/webshare.mojom.
  */
+@NullMarked
 public class ShareServiceImpl implements ShareService {
     private final WebShareDelegate mDelegate;
 
@@ -69,96 +67,59 @@ public class ShareServiceImpl implements ShareService {
     // - //chrome/browser/webshare/share_service_impl.cc
 
     private static final Set<String> PERMITTED_EXTENSIONS =
-            Collections.unmodifiableSet(
-                    CollectionUtil.newHashSet(
-                            "avif", // image/avif
-                            "bmp", // image/bmp / image/x-ms-bmp
-                            "css", // text/css
-                            "csv", // text/csv / text/comma-separated-values
-                            "ehtml", // text/html
-                            "flac", // audio/flac
-                            "gif", // image/gif
-                            "htm", // text/html
-                            "html", // text/html
-                            "ico", // image/x-icon
-                            "jfif", // image/jpeg
-                            "jpeg", // image/jpeg
-                            "jpg", // image/jpeg
-                            "m4a", // audio/x-m4a
-                            "m4v", // video/mp4
-                            "mp3", // audio/mpeg audio/mp3
-                            "mp4", // video/mp4
-                            "mpeg", // video/mpeg
-                            "mpg", // video/mpeg
-                            "oga", // audio/ogg
-                            "ogg", // audio/ogg
-                            "ogm", // video/ogg
-                            "ogv", // video/ogg
-                            "opus", // audio/ogg
-                            "pdf", // application/pdf
-                            "pjp", // image/jpeg
-                            "pjpeg", // image/jpeg
-                            "png", // image/png
-                            "shtm", // text/html
-                            "shtml", // text/html
-                            "svg", // image/svg+xml
-                            "svgz", // image/svg+xml
-                            "text", // text/plain
-                            "tif", // image/tiff
-                            "tiff", // image/tiff
-                            "txt", // text/plain
-                            "wav", // audio/wav
-                            "weba", // audio/webm
-                            "webm", // video/webm
-                            "webp", // image/webp
-                            "xbm" // image/x-xbitmap
-                            ));
+            Set.of(
+                    "avif", "bmp", "css", "csv", "ehtml", "flac", "gif", "htm", "html", "ico",
+                    "jfif", "jpeg", "jpg", "m4a", "m4v", "mp3", "mp4", "mpeg", "mpg", "oga", "ogg",
+                    "ogm", "ogv", "opus", "pdf", "pjp", "pjpeg", "png", "shtm", "shtml", "svg",
+                    "svgz", "text", "tif", "tiff", "txt", "wav", "weba", "webm", "webp", "xbm");
 
     private static final Set<String> PERMITTED_MIME_TYPES =
-            Collections.unmodifiableSet(
-                    CollectionUtil.newHashSet(
-                            "audio/flac",
-                            "application/pdf",
-                            "audio/mp3",
-                            "audio/mpeg",
-                            "audio/ogg",
-                            "audio/wav",
-                            "audio/webm",
-                            "audio/x-m4a",
-                            "image/avif",
-                            "image/bmp",
-                            "image/gif",
-                            "image/jpeg",
-                            "image/png",
-                            "image/svg+xml",
-                            "image/tiff",
-                            "image/webp",
-                            "image/x-icon",
-                            "image/x-ms-bmp",
-                            "image/x-xbitmap",
-                            "text/comma-separated-values",
-                            "text/css",
-                            "text/csv",
-                            "text/html",
-                            "text/plain",
-                            "video/mp4",
-                            "video/mpeg",
-                            "video/ogg",
-                            "video/webm"));
+            Set.of(
+                    "audio/flac",
+                    "application/pdf",
+                    "audio/mp3",
+                    "audio/mpeg",
+                    "audio/ogg",
+                    "audio/wav",
+                    "audio/webm",
+                    "audio/x-m4a",
+                    "image/avif",
+                    "image/bmp",
+                    "image/gif",
+                    "image/jpeg",
+                    "image/png",
+                    "image/svg+xml",
+                    "image/tiff",
+                    "image/webp",
+                    "image/x-icon",
+                    "image/x-ms-bmp",
+                    "image/x-xbitmap",
+                    "text/comma-separated-values",
+                    "text/css",
+                    "text/csv",
+                    "text/html",
+                    "text/plain",
+                    "video/mp4",
+                    "video/mpeg",
+                    "video/ogg",
+                    "video/webm");
 
     private static final TaskRunner TASK_RUNNER =
             PostTask.createSequencedTaskRunner(TaskTraits.USER_BLOCKING);
 
     /** Delegate class that provides embedder-specific functionality. */
     public interface WebShareDelegate {
-        /** @return true if sharing is currently possible. */
-        public boolean canShare();
+        /**
+         * @return true if sharing is currently possible.
+         */
+        boolean canShare();
 
         /**
          * Overridden by the embedder to execute the share.
+         *
          * @param params the share data.
          */
-        public void share(ShareParams params);
+        void share(ShareParams params);
 
         /**
          * @return The current {@link WindowAndroid} used to perform sharing.
@@ -198,7 +159,7 @@ public class ShareServiceImpl implements ShareService {
         ShareParams.TargetChosenCallback innerCallback =
                 new ShareParams.TargetChosenCallback() {
                     @Override
-                    public void onTargetChosen(ComponentName chosenComponent) {
+                    public void onTargetChosen(@Nullable ComponentName chosenComponent) {
                         RecordHistogram.recordEnumeratedHistogram(
                                 "WebShare.ShareOutcome",
                                 WEBSHARE_OUTCOME_SUCCESS,
@@ -238,7 +199,7 @@ public class ShareServiceImpl implements ShareService {
                         "Cannot share potentially dangerous \""
                                 + file.blob.contentType
                                 + "\" file \""
-                                + file.name
+                                + file.name.path.path
                                 + "\".");
                 callback.call(ShareError.PERMISSION_DENIED);
                 return;
@@ -248,12 +209,14 @@ public class ShareServiceImpl implements ShareService {
         new AsyncTask<Boolean>() {
             @Override
             protected void onPostExecute(Boolean result) {
-                if (result.equals(Boolean.FALSE)) {
+                if (!result) {
                     callback.call(ShareError.INTERNAL_ERROR);
                 }
             }
 
             @Override
+            // NullAway is failing due to the lambda.
+            @NullUnmarked
             protected Boolean doInBackground() {
                 ArrayList<Uri> fileUris = new ArrayList<>(files.length);
                 ArrayList<BlobReceiver> blobReceivers = new ArrayList<>(files.length);
@@ -285,7 +248,7 @@ public class ShareServiceImpl implements ShareService {
                             tempFile = new File(tempDir, file.name.path.path);
                         } while (!tempFile.createNewFile());
 
-                        fileUris.add(ContentUriUtils.getContentUriFromFile(tempFile));
+                        fileUris.add(FileProviderUtils.getContentUriFromFile(tempFile));
                         blobReceivers.add(
                                 new BlobReceiver(
                                         new FileOutputStream(tempFile), MAX_SHARED_FILE_BYTES));
@@ -325,15 +288,5 @@ public class ShareServiceImpl implements ShareService {
 
     static boolean isDangerousMimeType(String contentType) {
         return !PERMITTED_MIME_TYPES.contains(contentType);
-    }
-
-    @Nullable
-    private static Activity activityFromWebContents(@Nullable WebContents webContents) {
-        if (webContents == null) return null;
-
-        WindowAndroid window = webContents.getTopLevelNativeWindow();
-        if (window == null) return null;
-
-        return window.getActivity().get();
     }
 }

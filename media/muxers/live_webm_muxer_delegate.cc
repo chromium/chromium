@@ -47,12 +47,10 @@ void LiveWebmMuxerDelegate::ElementStartNotify(mkvmuxer::uint64 element_id,
       << "Can't go back in a live WebM stream.";
 }
 
-mkvmuxer::int32 LiveWebmMuxerDelegate::DoWrite(const void* buf,
-                                               mkvmuxer::uint32 len) {
+mkvmuxer::int32 LiveWebmMuxerDelegate::DoWrite(base::span<const uint8_t> buf) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  write_data_callback_.Run(
-      std::string_view(reinterpret_cast<const char*>(buf), len));
+  write_data_callback_.Run(buf);
   return 0;
 }
 

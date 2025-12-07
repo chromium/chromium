@@ -19,10 +19,12 @@
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/holding_space/holding_space_util.h"
 #include "ash/system/holding_space/holding_space_view_delegate.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/class_property.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/compositor/layer.h"
@@ -35,6 +37,7 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/painter.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/widget/widget.h"
@@ -125,7 +128,7 @@ HoldingSpaceItemView::HoldingSpaceItemView(HoldingSpaceViewDelegate* delegate,
       std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
 
   // Background.
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemOnBase, kHoldingSpaceCornerRadius));
 
   // Layer.
@@ -262,7 +265,7 @@ void HoldingSpaceItemView::OnHoldingSpaceItemUpdated(
   if (updated_fields.previous_accessible_name) {
     GetViewAccessibility().SetName(item_->GetAccessibleName(),
                                    ax::mojom::NameFrom::kAttribute);
-    NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kTextChanged, true);
   }
 
   // Primary action.
@@ -441,11 +444,9 @@ void HoldingSpaceItemView::OnPrimaryActionPressed() {
 
   // Cancel.
   if (primary_action_cancel_->GetVisible()) {
-    if (!holding_space_util::ExecuteInProgressCommand(
-            item(), HoldingSpaceCommandId::kCancelItem,
-            holding_space_metrics::EventSource::kHoldingSpaceItem)) {
-      NOTREACHED_IN_MIGRATION();
-    }
+    const bool success = holding_space_util::ExecuteInProgressCommand(
+        item(), HoldingSpaceCommandId::kCancelItem);
+    CHECK(success);
     return;
   }
 
@@ -457,11 +458,9 @@ void HoldingSpaceItemView::OnPrimaryActionPressed() {
   // Unpinning `item()` may result in the destruction of this view.
   auto weak_ptr = weak_factory_.GetWeakPtr();
   if (is_item_pinned) {
-    HoldingSpaceController::Get()->client()->UnpinItems(
-        {item()}, holding_space_metrics::EventSource::kHoldingSpaceItem);
+    HoldingSpaceController::Get()->client()->UnpinItems({item()});
   } else {
-    HoldingSpaceController::Get()->client()->PinItems(
-        {item()}, holding_space_metrics::EventSource::kHoldingSpaceItem);
+    HoldingSpaceController::Get()->client()->PinItems({item()});
   }
 
   if (weak_ptr)

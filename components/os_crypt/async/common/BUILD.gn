@@ -58,8 +58,6 @@ component("common") {
   sources = [
     "encryptor.cc",
     "encryptor.h",
-    "encryptor_features.cc",
-    "encryptor_features.h",
   ]
 
   deps = [
@@ -74,6 +72,23 @@ component("common") {
   ]
 
   defines = [ "IS_OS_CRYPT_ASYNC_IMPL" ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  # Access this class via browser/test_utils.h.
+  visibility = [ "//components/os_crypt/async/browser:test_support" ]
+
+  sources = [
+    "test_encryptor.cc",
+    "test_encryptor.h",
+  ]
+
+  deps = [
+    ":common",
+    "//base",
+  ]
 }
 
 # Mojo typemaps do not support adding a library dependency directly, so this

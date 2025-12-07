@@ -1,0 +1,94 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+android_library("java") {
+  resources_package = "org.chromium.chrome.browser.pwm_disabled"
+
+  sources = [
+    "java/src/org/chromium/chrome/browser/pwm_disabled/CallbackDelayer.java",
+    "java/src/org/chromium/chrome/browser/pwm_disabled/DialogManager.java",
+    "java/src/org/chromium/chrome/browser/pwm_disabled/ExportErrorDialogFragment.java",
+    "java/src/org/chromium/chrome/browser/pwm_disabled/NonCancelableProgressBar.java",
+    "java/src/org/chromium/chrome/browser/pwm_disabled/PasswordCsvDownloadDialogController.java",
+    "java/src/org/chromium/chrome/browser/pwm_disabled/PasswordCsvDownloadDialogFragment.java",
+    "java/src/org/chromium/chrome/browser/pwm_disabled/PasswordCsvDownloadDialogProperties.java",
+    "java/src/org/chromium/chrome/browser/pwm_disabled/PasswordCsvDownloadDialogViewBinder.java",
+    "java/src/org/chromium/chrome/browser/pwm_disabled/PasswordCsvDownloadFlowController.java",
+    "java/src/org/chromium/chrome/browser/pwm_disabled/PasswordCsvDownloadFlowControllerFactory.java",
+    "java/src/org/chromium/chrome/browser/pwm_disabled/PasswordManagerUnavailableDialogCoordinator.java",
+    "java/src/org/chromium/chrome/browser/pwm_disabled/PasswordManagerUnavailableDialogMediator.java",
+    "java/src/org/chromium/chrome/browser/pwm_disabled/PwmDeprecationDialogsMetricsRecorder.java",
+    "java/src/org/chromium/chrome/browser/pwm_disabled/SingleThreadBarrierClosure.java",
+    "java/src/org/chromium/chrome/browser/pwm_disabled/TimedCallbackDelayer.java",
+  ]
+
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//chrome/browser/device_reauth/android:java",
+    "//chrome/browser/password_manager/android:utils_java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/theme/android:java_resources",
+    "//components/browser_ui/widget/android:java",
+    "//components/device_reauth:device_reauth_java_enums",
+    "//components/prefs/android:java",
+    "//components/strings:components_strings_grd",
+    "//components/user_prefs/android:java",
+    "//content/public/android:content_full_java",
+    "//third_party/androidx:androidx_activity_activity_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
+android_resources("java_resources") {
+  sources = [ "java/res/layout/password_csv_download_dialog_view.xml" ]
+
+  deps = [ "//components/browser_ui/styles/android:java_resources" ]
+}
+
+robolectric_library("junit") {
+  testonly = true
+
+  sources = [
+    "java/src/org/chromium/chrome/browser/pwm_disabled/DialogManagerTest.java",
+    "java/src/org/chromium/chrome/browser/pwm_disabled/EnsureAsyncPostingRule.java",
+    "java/src/org/chromium/chrome/browser/pwm_disabled/ManualCallbackDelayer.java",
+    "java/src/org/chromium/chrome/browser/pwm_disabled/PasswordCsvDownloadDialogTest.java",
+    "java/src/org/chromium/chrome/browser/pwm_disabled/PasswordCsvDownloadFlowControllerTest.java",
+    "java/src/org/chromium/chrome/browser/pwm_disabled/PasswordManagerUnavailableDialogTest.java",
+    "java/src/org/chromium/chrome/browser/pwm_disabled/SingleThreadBarrierClosureTest.java",
+    "java/src/org/chromium/chrome/browser/pwm_disabled/TimedCallbackDelayerTest.java",
+  ]
+
+  deps = [
+    ":java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//base:callback_java",
+    "//chrome/browser/device_reauth/android:java",
+    "//chrome/browser/password_manager/android:utils_java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/test/android:test_support_java",
+    "//components/device_reauth:device_reauth_java_enums",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/google-truth:google_truth_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}

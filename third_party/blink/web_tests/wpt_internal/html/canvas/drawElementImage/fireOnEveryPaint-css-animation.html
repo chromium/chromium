@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<title>fireOnEveryPaint causes callback for CSS animations</title>
+<link rel="help" href="https://github.com/WICG/html-in-canvas">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+  @keyframes spin {
+    from { transform: rotate(0); }
+    to { transform: rotate(360deg); }
+  }
+  #grandchild {
+    width: 100px;
+    height: 100px;
+    animation: spin 2s linear infinite;
+    background: green;
+  }
+</style>
+
+<canvas id="canvas" width="200" height="200" layoutsubtree>
+  <div id="child">
+    <div id="grandchild"></div>
+  </div>
+</canvas>
+
+<script>
+  'use strict';
+
+  function waitForOneFrame() {
+    return new Promise(resolve => {
+      requestAnimationFrame(() => {
+        setTimeout(resolve, 0);
+      });
+    });
+  }
+
+  promise_test(async t => {
+    let observationCount = 0;
+    const resizeObserver = new ResizeObserver(entries => {
+      const entry = entries.find(entry => entry.target === canvas);
+      if (entry) {
+        observationCount++;
+        canvas.getContext('2d').drawElementImage(child, 0, 0);
+      }
+    });
+    resizeObserver.observe(canvas, {fireOnEveryPaint: true});
+
+    // 1. Wait a frame and assert that the initial observation occurred.
+    await waitForOneFrame();
+    assert_equals(observationCount, 1, 'An initial resize observer observation should always occur.');
+
+    // 2. Wait a frame and assert that another observation occurred.
+    await waitForOneFrame();
+    assert_equals(observationCount, 2, 'An observation should occur as the css animation ticks.');
+
+    // 3. Wait a frame and assert that another observation occurred.
+    await waitForOneFrame();
+    assert_equals(observationCount, 3, 'An observation should occur as the css animation ticks.');
+  }, 'fireOnEveryPaint should trigger for CSS animations');
+</script>

@@ -150,8 +150,8 @@ bool IsSwipeTrackingFromScrollEventsEnabled() {
   return NSEvent.swipeTrackingFromScrollEventsEnabled;
 }
 
-NSWindow* GetActiveWindow() {
-  return [NSApp keyWindow];
+gfx::NativeWindow GetActiveWindow() {
+  return gfx::NativeWindow(NSApp.keyWindow);
 }
 
 }  // namespace platform_util

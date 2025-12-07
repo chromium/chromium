@@ -16,58 +16,73 @@ namespace initial_preferences {
 // value takes precedence.
 
 // Boolean pref that disables all logging.
-extern const char kDisableLogging[];
+inline constexpr char kDisableLogging[] = "disable_logging";
 // Name of the dictionary that holds the distribution values.
-extern const char kDistroDict[];
+inline constexpr char kDistroDict[] = "distribution";
 // String pref that triggers silent import of bookmarks from the html file at
 // given path.
-extern const char kDistroImportBookmarksFromFilePref[];
+inline constexpr char kDistroImportBookmarksFromFilePref[] =
+    "import_bookmarks_from_file";
 // String of Chrome version for which the "set as default browser" infobar will
 // never be shown.
-extern const char kDistroSuppressDefaultBrowserPromptPref[];
+inline constexpr char kDistroSuppressDefaultBrowserPromptPref[] =
+    "suppress_default_browser_prompt_for_version";
 // Boolean. Prevent creation of all shortcuts to chrome, including the
 // desktop, quick launch, taskbar and the start menu shortcuts.
-extern const char kDoNotCreateAnyShortcuts[];
+inline constexpr char kDoNotCreateAnyShortcuts[] =
+    "do_not_create_any_shortcuts";
 // Boolean. Prevent creation of the Desktop shortcut on install (and later on
 // Active Setup for each user on a system-level install).
-extern const char kDoNotCreateDesktopShortcut[];
+inline constexpr char kDoNotCreateDesktopShortcut[] =
+    "do_not_create_desktop_shortcut";
 // Boolean. Prevent creation of the Quick Launch shortcut on install (and later
 // on Active Setup for each user on a system-level install).
-extern const char kDoNotCreateQuickLaunchShortcut[];
+inline constexpr char kDoNotCreateQuickLaunchShortcut[] =
+    "do_not_create_quick_launch_shortcut";
 // Boolean. Prevent creation of the Taskbar (since Windows 7) shortcut on
 // install (and later on Active Setup for each user on a system-level install).
-extern const char kDoNotCreateTaskbarShortcut[];
+inline constexpr char kDoNotCreateTaskbarShortcut[] =
+    "do_not_create_taskbar_shortcut";
 // Boolean. Do not launch Chrome after first install. Cmd line override present.
-extern const char kDoNotLaunchChrome[];
+inline constexpr char kDoNotLaunchChrome[] = "do_not_launch_chrome";
 // Boolean. Do not register with Google Update to have Chrome launched after
 // install. Cmd line override present.
-extern const char kDoNotRegisterForUpdateLaunch[];
+inline constexpr char kDoNotRegisterForUpdateLaunch[] =
+    "do_not_register_for_update_launch";
 // String.  Specifies the file path to write logging info to.
-extern const char kLogFile[];
-// Boolean. Register Chrome as default browser. Cmd line override present.
-extern const char kMakeChromeDefault[];
+inline constexpr char kLogFile[] = "log_file";
 // Boolean. Register Chrome as default browser for the current user.
-extern const char kMakeChromeDefaultForUser[];
+inline constexpr char kMakeChromeDefaultForUser[] =
+    "make_chrome_default_for_user";
 // Boolean. Expect to be run by an MSI installer. Cmd line override present.
-extern const char kMsi[];
+inline constexpr char kMsi[] = "msi";
 // String. The MSI Product ID under which the MSI stores its information.  This
 // is used to update the DisplayVersion to match Chrome's version number.
-extern const char kMsiProductId[];
+inline constexpr char kMsiProductId[] = "msi_product_id";
 // Installs Chrome in the location specified by the msi PROGRAMFILESDIR custom
 // property. The only accepted values are the values mapped to
 // CSIDL_PROGRAM_FILESX86 and CSIDL_PROGRAM_FILES. This property will only be
 // applied on fresh system installs.
-extern const char kProgramFilesDir[];
+inline constexpr char kProgramFilesDir[] = "program_files_dir";
 // Boolean. Show EULA dialog before install.
-extern const char kRequireEula[];
+inline constexpr char kRequireEula[] = "require_eula";
 // Boolean. Install Chrome to system wise location. Cmd line override present.
-extern const char kSystemLevel[];
+inline constexpr char kSystemLevel[] = "system_level";
 // Boolean. Run installer in verbose mode. Cmd line override present.
-extern const char kVerboseLogging[];
+inline constexpr char kVerboseLogging[] = "verbose_logging";
 // Name of the block that contains the extensions on the initial preferences.
-extern const char kExtensionsBlock[];
+inline constexpr char kExtensionsBlock[] = "extensions.settings";
+// A preference that indicates the name of the provider of the initial
+// extensions list.
+inline constexpr char kInitialExtensionsProviderName[] =
+    "initial_extensions.provider_name";
+// Name of the block that contains the extensions ids in the initial
+// preferences.
+inline constexpr char kInitialExtensionsList[] = "initial_extensions.list";
+// Name of the block that contains the bookmarks on the initial preferences.
+inline constexpr char kBookmarksBlock[] = "bookmarks";
 // Boolean. Allow Chrome to be downgraded to a previous version if true.
-extern const char kAllowDowngrade[];
+inline constexpr char kAllowDowngrade[] = "allow_downgrade";
 
 }  // namespace initial_preferences
 }  // namespace installer

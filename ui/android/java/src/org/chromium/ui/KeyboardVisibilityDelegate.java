@@ -8,11 +8,14 @@ import android.content.Context;
 import android.view.View;
 
 import org.chromium.base.ObserverList;
+import org.chromium.base.ui.KeyboardUtils;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * A delegate that can be overridden to change the methods to figure out and change the current
  * state of Android's soft keyboard.
  */
+@NullMarked
 public class KeyboardVisibilityDelegate {
 
     /** The delegate to determine keyboard visibility. */
@@ -106,11 +109,10 @@ public class KeyboardVisibilityDelegate {
     /**
      * Returns whether the keyboard is showing.
      *
-     * @param context A {@link Context} instance.
      * @param view A {@link View}.
      * @return Whether or not the software keyboard is visible.
      */
-    public boolean isKeyboardShowing(Context context, View view) {
+    public boolean isKeyboardShowing(View view) {
         return KeyboardUtils.isAndroidSoftKeyboardShowing(view);
     }
 

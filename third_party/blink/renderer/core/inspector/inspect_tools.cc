@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -681,70 +680,6 @@ void SourceOrderTool::Trace(Visitor* visitor) const {
   visitor->Trace(node_);
 }
 
-// NearbyDistanceTool ----------------------------------------------------------
-
-String NearbyDistanceTool::GetOverlayName() {
-  return OverlayNames::OVERLAY_DISTANCES;
-}
-
-bool NearbyDistanceTool::HandleMouseDown(const WebMouseEvent& event,
-                                         bool* swallow_next_mouse_up) {
-  return true;
-}
-
-bool NearbyDistanceTool::HandleMouseMove(const WebMouseEvent& event) {
-  Node* node = HoveredNodeForEvent(overlay_->GetFrame(), event, true);
-
-  // Do not highlight within user agent shadow root
-  ShadowRoot* shadow_root = InspectorDOMAgent::UserAgentShadowRoot(node);
-  if (shadow_root)
-    node = &shadow_root->host();
-
-  // Shadow roots don't have boxes - use host element instead.
-  if (node && node->IsShadowRoot())
-    node = node->ParentOrShadowHostNode();
-
-  if (!node)
-    return true;
-
-  if (auto* frame_owner = DynamicTo<HTMLFrameOwnerElement>(node)) {
-    if (!IsA<LocalFrame>(frame_owner->ContentFrame())) {
-      // Do not consume event so that remote frame can handle it.
-      overlay_->hideHighlight();
-      hovered_node_.Clear();
-      return false;
-    }
-  }
-  node = DetermineContentVisibilityState(node).first;
-
-  // Store values for the highlight.
-  hovered_node_ = node;
-  overlay_->EnsureAXContext(node);
-  return true;
-}
-
-bool NearbyDistanceTool::HandleMouseUp(const WebMouseEvent& event) {
-  return true;
-}
-
-void NearbyDistanceTool::Draw(float scale) {
-  Node* node = hovered_node_.Get();
-  if (!node)
-    return;
-  DCHECK(overlay_->HasAXContext(node));
-  auto content_visibility_state = DetermineSelfContentVisibilityState(node);
-  InspectorHighlight highlight(
-      node, InspectorHighlight::DefaultConfig(),
-      InspectorHighlightContrastInfo(), false /* append_element_info */,
-      true /* append_distance_info */, content_visibility_state);
-  overlay_->EvaluateInOverlay("drawDistances", highlight.AsProtocolValue());
-}
-
-void NearbyDistanceTool::Trace(Visitor* visitor) const {
-  InspectTool::Trace(visitor);
-  visitor->Trace(hovered_node_);
-}
-
 // ShowViewSizeTool ------------------------------------------------------------
 
 void ShowViewSizeTool::Draw(float scale) {
@@ -864,12 +799,19 @@ void PausedInDebuggerTool::Dispatch(const ScriptValue& message,
                                     ExceptionState& exception_state) {
   String message_string;
   if (message.ToString(message_string)) {
+    auto task_runner =
+        overlay_->GetFrame()->GetTaskRunner(TaskType::kInternalInspector);
     if (message_string == "resume") {
-      v8_session_->resume();
+      task_runner->PostTask(FROM_HERE,
+                            BindOnce(&v8_inspector::V8InspectorSession::resume,
+                                     Unretained(v8_session_),
+                                     /* setTerminateOnResume */ false));
       return;
     }
     if (message_string == "stepOver") {
-      v8_session_->stepOver();
+      task_runner->PostTask(
+          FROM_HERE, BindOnce(&v8_inspector::V8InspectorSession::stepOver,
+                              Unretained(v8_session_)));
       return;
     }
   }

@@ -18,11 +18,6 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/screen_manager.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#endif
-
 class SaveDesktopSnapshotTest : public InProcessBrowserTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {

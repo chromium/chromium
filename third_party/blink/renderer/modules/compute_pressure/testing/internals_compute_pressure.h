@@ -20,22 +20,23 @@ class InternalsComputePressure {
   STATIC_ONLY(InternalsComputePressure);
 
  public:
-  static ScriptPromiseUntyped createVirtualPressureSource(
+  static ScriptPromise<IDLUndefined> createVirtualPressureSource(
       ScriptState* script_state,
       Internals&,
       V8PressureSource source,
       CreateVirtualPressureSourceOptions*);
 
-  static ScriptPromiseUntyped removeVirtualPressureSource(
+  static ScriptPromise<IDLUndefined> removeVirtualPressureSource(
       ScriptState* script_state,
       Internals&,
       V8PressureSource source);
 
-  static ScriptPromiseUntyped updateVirtualPressureSource(
+  static ScriptPromise<IDLUndefined> updateVirtualPressureSource(
       ScriptState* script_state,
       Internals&,
-      V8PressureSource posture,
-      V8PressureState state);
+      V8PressureSource source,
+      V8PressureState state,
+      double own_contribution_estimate);
 };
 
 }  // namespace blink

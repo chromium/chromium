@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.compositor.bottombar.contextualsearch;
 
 import org.chromium.base.TimeUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchHeuristics;
@@ -18,9 +20,8 @@ import org.chromium.chrome.browser.profiles.Profile;
  * ContextualSearchPanel}. Typically this consists of tracking user activity logging that to UMA
  * when the interaction ends as the panel is dismissed.
  */
+@NullMarked
 public class ContextualSearchPanelMetrics {
-    // Flags for logging.
-    private boolean mDidSearchInvolvePromo;
     private boolean mWasSearchContentViewSeen;
     private boolean mIsPromoActive;
     private boolean mHasExitedPeeking;
@@ -31,18 +32,11 @@ public class ContextualSearchPanelMetrics {
     @ResolvedSearchTerm.CardTag private int mCardTag;
     private boolean mWasQuickActionShown;
     private int mQuickActionCategory;
-    private boolean mWasQuickActionClicked;
-    // Time when the panel was triggered (not reset by a chained search).
-    // Panel transitions are animated so mPanelTriggerTimeNs will be less than mFirstPeekTimeNs.
-    private long mPanelTriggerTimeFromTapNs;
     // Time when the panel peeks into view (not reset by a chained search).
     // Used to log total time the panel is showing (not closed).
     private long mFirstPeekTimeNs;
-    // Time when a search request was started. Reset by chained searches.
-    // Used to log the time it takes for a Search Result to become available.
-    private long mSearchRequestStartTimeNs;
     // The current set of heuristics that should be logged with results seen when the panel closes.
-    private ContextualSearchHeuristics mResultsSeenExperiments;
+    private @Nullable ContextualSearchHeuristics mResultsSeenExperiments;
 
     /** Whether the Search was prefetched or not. */
     private boolean mWasPrefetch;
@@ -92,8 +86,7 @@ public class ContextualSearchPanelMetrics {
             if (mWasQuickActionShown) {
                 ContextualSearchUma.logQuickActionResultsSeen(
                         mWasSearchContentViewSeen, mQuickActionCategory);
-                ContextualSearchUma.logQuickActionClicked(
-                        mWasQuickActionClicked, mQuickActionCategory);
+                ContextualSearchUma.logQuickActionClicked(false, mQuickActionCategory);
             }
 
             if (mResultsSeenExperiments != null) {
@@ -102,9 +95,6 @@ public class ContextualSearchPanelMetrics {
                 if (!isChained) mResultsSeenExperiments = null;
             }
 
-            if (mWasActivatedByTap) {
-                ContextualSearchUma.logTapResultsSeen(mWasSearchContentViewSeen, profile);
-            }
             ContextualSearchUma.logAllResultsSeen(mWasSearchContentViewSeen);
             if (mWasSearchContentViewSeen) {
                 ContextualSearchUma.logAllSearches(/* wasRelatedSearches= */ false);
@@ -137,7 +127,6 @@ public class ContextualSearchPanelMetrics {
         }
 
         if (isEndingSearch) {
-            mDidSearchInvolvePromo = false;
             mWasSearchContentViewSeen = false;
             mHasExitedPeeking = false;
             mHasExitedExpanded = false;
@@ -146,16 +135,9 @@ public class ContextualSearchPanelMetrics {
             mWasQuickActionShown = false;
             mQuickActionCategory = QuickActionCategory.NONE;
             mCardTag = ResolvedSearchTerm.CardTag.CT_NONE;
-            mWasQuickActionClicked = false;
-            mPanelTriggerTimeFromTapNs = 0;
             mDidFirstNonEmptyPaint = false;
             mWasPrefetch = false;
         }
-    }
-
-    /** Sets that the contextual search involved the promo. */
-    public void setDidSearchInvolvePromo() {
-        mDidSearchInvolvePromo = true;
     }
 
     /** Sets that the Search Content View was seen. */
@@ -184,24 +166,10 @@ public class ContextualSearchPanelMetrics {
         if (mWasQuickActionShown) mQuickActionCategory = quickActionCategory;
     }
 
-    /** Sets |mWasQuickActionClicked| to true. */
-    public void setWasQuickActionClicked() {
-        mWasQuickActionClicked = true;
-    }
-
-    /** Should be called when the panel first starts showing due to a tap. */
-    public void onPanelTriggeredFromTap() {
-        mPanelTriggerTimeFromTapNs = System.nanoTime();
-    }
-
-    /** Called to record the time when a search request started, for resolve and prefetch timing. */
-    public void onSearchRequestStarted() {
-        mSearchRequestStartTimeNs = System.nanoTime();
-    }
-
     /**
      * Notifies that we were able to start painting the document in the Content View so the user can
      * actually see the SRP.
+     *
      * @param didPrefetch Whether this was a prefetched SRP.
      */
     public void onFirstNonEmptyPaint(boolean didPrefetch) {

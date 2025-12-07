@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import '../cr_icon_button/cr_icon_button.js';
-import '../icons_lit.html.js';
+import '../icons.html.js';
 import './cr_toolbar_search_field.js';
 
 import {assert} from '//resources/js/assert.js';
@@ -93,20 +93,20 @@ export class CrToolbarElement extends CrLitElement {
     };
   }
 
-  pageName: string = '';
-  searchPrompt: string = '';
-  clearLabel: string = '';
-  menuLabel?: string;
-  spinnerActive: boolean = false;
-  showMenu: boolean = false;
-  showSearch: boolean = true;
-  override autofocus: boolean = false;
-  narrow: boolean = false;
-  narrowThreshold: number = 900;
-  alwaysShowLogo: boolean = false;
-  protected showingSearch_: boolean = false;
-  searchIconOverride?: string;
-  searchInputAriaDescription: string = '';
+  accessor pageName: string = '';
+  accessor searchPrompt: string = '';
+  accessor clearLabel: string = '';
+  accessor menuLabel: string|undefined;
+  accessor spinnerActive: boolean = false;
+  accessor showMenu: boolean = false;
+  accessor showSearch: boolean = true;
+  override accessor autofocus: boolean = false;
+  accessor narrow: boolean = false;
+  accessor narrowThreshold: number = 900;
+  accessor alwaysShowLogo: boolean = false;
+  protected accessor showingSearch_: boolean = false;
+  accessor searchIconOverride: string|undefined;
+  accessor searchInputAriaDescription: string = '';
   private narrowQuery_: MediaQueryList|null = null;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -132,14 +132,14 @@ export class CrToolbarElement extends CrLitElement {
     // Wait for rendering to finish to ensure menuButton exists on the DOM.
     await this.updateComplete;
     const menuButton =
-        this.shadowRoot!.querySelector<HTMLElement>('#menuButton');
+        this.shadowRoot.querySelector<HTMLElement>('#menuButton');
     assert(!!menuButton);
     menuButton.focus();
   }
 
   isMenuFocused(): boolean {
-    return !!this.shadowRoot!.activeElement &&
-        this.shadowRoot!.activeElement.id === 'menuButton';
+    return !!this.shadowRoot.activeElement &&
+        this.shadowRoot.activeElement.id === 'menuButton';
   }
 
   protected onShowingSearchChanged_(e: CustomEvent<{value: boolean}>) {

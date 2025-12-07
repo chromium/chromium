@@ -5,9 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_POLICY_MODEL_SCHEMA_REGISTRY_FACTORY_H_
 #define IOS_CHROME_BROWSER_POLICY_MODEL_SCHEMA_REGISTRY_FACTORY_H_
 
-#include <memory>
+#import <memory>
 
-class ChromeBrowserState;
+class ProfileIOS;
 
 namespace policy {
 class CombinedSchemaRegistry;
@@ -15,8 +15,8 @@ class Schema;
 class SchemaRegistry;
 }  // namespace policy
 
-std::unique_ptr<policy::SchemaRegistry> BuildSchemaRegistryForBrowserState(
-    ChromeBrowserState* browser_state,
+std::unique_ptr<policy::SchemaRegistry> BuildSchemaRegistryForProfile(
+    ProfileIOS* profile,
     const policy::Schema& chrome_schema,
     policy::CombinedSchemaRegistry* global_registry);
 

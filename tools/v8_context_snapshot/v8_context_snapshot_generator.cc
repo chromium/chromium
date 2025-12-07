@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/single_thread_task_runner.h"
@@ -18,8 +21,6 @@
 
 namespace {
 
-constexpr char kPredictableFlag[] = "--predictable";
-
 class SnapshotPlatform final : public blink::Platform {
  public:
   bool IsTakingV8ContextSnapshot() override { return true; }
@@ -31,15 +32,32 @@ class SnapshotPlatform final : public blink::Platform {
 // The snapshot file is consumed by Blink.
 //
 // Usage:
-// % v8_context_snapshot_generator --output_file=<filename>
+// % v8_context_snapshot_generator
+//     --snapshot_blob=<filename>
+//     --output_file=<filename>
 int main(int argc, char** argv) {
   base::AtExitManager at_exit;
 
   const bool kRemoveRecognizedFlags = true;
   v8::V8::SetFlagsFromCommandLine(&argc, argv, kRemoveRecognizedFlags);
   base::CommandLine::Init(argc, argv);
+
+  // Initialize an empty feature list for gin startup.
+  auto early_access_feature_list = std::make_unique<base::FeatureList>();
+  // This should be called after CommandLine::Init().
+  base::FeatureList::SetInstance(std::move(early_access_feature_list));
 #ifdef V8_USE_EXTERNAL_STARTUP_DATA
-  gin::V8Initializer::LoadV8Snapshot();
+  static constexpr std::string_view kSnapshotBlobFlag("snapshot_blob");
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(kSnapshotBlobFlag)) {
+    base::File file(base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+                        kSnapshotBlobFlag),
+                    base::File::FLAG_OPEN | base::File::FLAG_READ);
+    CHECK(file.IsValid());
+    gin::V8Initializer::LoadV8SnapshotFromFile(
+        std::move(file), nullptr, gin::V8SnapshotFileType::kDefault);
+  } else {
+    gin::V8Initializer::LoadV8Snapshot(gin::V8SnapshotFileType::kDefault);
+  }
 #endif
 
   // Set up environment to make Blink and V8 workable.
@@ -48,6 +66,7 @@ int main(int argc, char** argv) {
   mojo::core::Init();
 
   // Set predictable flag in V8 to generate identical snapshot file.
+  static constexpr char kPredictableFlag[] = "--predictable";
   v8::V8::SetFlagsFromString(kPredictableFlag, sizeof(kPredictableFlag) - 1);
 
   // Take a snapshot.
@@ -63,7 +82,7 @@ int main(int argc, char** argv) {
   CHECK(!file_path.empty());
   int error_code = 0;
   if (!base::WriteFile(file_path,
-                       base::as_bytes(base::make_span(
+                       base::as_bytes(base::span(
                            blob.data, static_cast<size_t>(blob.raw_size))))) {
     fprintf(stderr, "Error: WriteFile of %d snapshot has failed.\n",
             blob.raw_size);

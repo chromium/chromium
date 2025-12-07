@@ -67,8 +67,11 @@ void DidCommitNavigationInterceptor::RenderFrameCreated(
 
 void DidCommitNavigationInterceptor::RenderFrameDeleted(
     RenderFrameHost* render_frame_host) {
-  bool did_remove = !!frame_agents_.erase(render_frame_host);
-  DCHECK(did_remove);
+  // We might observe deletions of RenderFrameHosts that were not observed in
+  // RenderFrameCreated() because some RenderFrameHost destructions are async
+  // and might correspond to RenderFrameHosts created before we attach to the
+  // observer.
+  frame_agents_.erase(render_frame_host);
 }
 
 }  // namespace content

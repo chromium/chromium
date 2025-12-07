@@ -10,7 +10,7 @@
 
 namespace syncer {
 
-class FakeLocalDeviceInfoProvider : public LocalDeviceInfoProvider {
+class FakeLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
  public:
   FakeLocalDeviceInfoProvider();
 
@@ -25,6 +25,17 @@ class FakeLocalDeviceInfoProvider : public LocalDeviceInfoProvider {
   const DeviceInfo* GetLocalDeviceInfo() const override;
   base::CallbackListSubscription RegisterOnInitializedCallback(
       const base::RepeatingClosure& callback) override;
+
+  // Overrides for MutableLocalDeviceInfoProvider:
+  void Initialize(const std::string& cache_guid,
+                  const std::string& client_name,
+                  const std::string& manufacturer_name,
+                  const std::string& model_name,
+                  const std::string& full_hardware_class,
+                  const DeviceInfo* device_info_restored_from_store) override;
+  void Clear() override;
+  void UpdateClientName(const std::string& client_name) override;
+  void UpdateRecentSignInTime(base::Time time) override;
 
   void SetReady(bool ready);
   DeviceInfo* GetMutableDeviceInfo();

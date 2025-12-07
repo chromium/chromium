@@ -51,18 +51,18 @@ suite('onboardingWaitForManualWpDisablePageTest', function() {
         '#manuallyDisableHwwpInstructions', component.shadowRoot, HTMLElement);
     assertEquals(
         loadTimeData.getString('manuallyDisableWpTitleText'),
-        title.textContent!.trim());
+        title.textContent.trim());
     assertEquals(
         loadTimeData.getString('manuallyDisableWpInstructionsText'),
-        manualDisableComponent.textContent!.trim());
+        manualDisableComponent.textContent.trim());
 
     // Disable write protect and expect the page text to update.
     component.onHardwareWriteProtectionStateChanged(/* enabled= */ false);
     assertEquals(
         loadTimeData.getString('manuallyDisableWpTitleTextReboot'),
-        title.textContent!.trim());
+        title.textContent.trim());
     assertEquals(
         loadTimeData.getString('manuallyDisableWpInstructionsTextReboot'),
-        manualDisableComponent.textContent!.trim());
+        manualDisableComponent.textContent.trim());
   });
 });

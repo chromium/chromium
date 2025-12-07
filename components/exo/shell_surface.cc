@@ -6,7 +6,7 @@
 
 #include <optional>
 
-#include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/frame/frame_view_ash.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
@@ -35,6 +35,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/widget/widget.h"
@@ -47,8 +48,7 @@ namespace exo {
 namespace {
 
 // Default maximum amount of time to wait for contents to change. For example,
-// happens during a maximize, fullscreen or pinned state change, or raster scale
-// change.
+// happens during a maximize, or fullscreen or pinned state change.
 constexpr int kDefaultCompositorLockTimeoutMs = 100;
 
 // Compositor lock timeout for slower changes (e.g. display scale change).
@@ -58,7 +58,7 @@ gfx::Rect GetClientBoundsInScreen(views::Widget* widget) {
   gfx::Rect window_bounds = widget->GetWindowBoundsInScreen();
   // Account for popup windows not having a non-client view.
   if (widget->non_client_view()) {
-    return static_cast<ash::NonClientFrameViewAsh*>(
+    return static_cast<ash::FrameViewAsh*>(
                widget->non_client_view()->frame_view())
         ->GetClientBoundsForWindowBounds(window_bounds);
   }
@@ -141,7 +141,7 @@ ShellSurface::OcclusionObserver::OcclusionObserver(ShellSurface* shell_surface,
   window_observation_.Observe(window);
 }
 
-ShellSurface::OcclusionObserver::~OcclusionObserver() {}
+ShellSurface::OcclusionObserver::~OcclusionObserver() = default;
 
 void ShellSurface::OcclusionObserver::OnWindowDestroying(aura::Window* window) {
   window_observation_.Reset();
@@ -251,9 +251,10 @@ void ShellSurface::Maximize() {
   TRACE_EVENT0("exo", "ShellSurface::Maximize");
 
   if (!widget_) {
-    if (initial_show_state_ != ui::SHOW_STATE_FULLSCREEN ||
-        ShouldExitFullscreenFromRestoreOrMaximized())
-      initial_show_state_ = ui::SHOW_STATE_MAXIMIZED;
+    if (initial_show_state_ != ui::mojom::WindowShowState::kFullscreen ||
+        ShouldExitFullscreenFromRestoreOrMaximized()) {
+      initial_show_state_ = ui::mojom::WindowShowState::kMaximized;
+    }
     return;
   }
 
@@ -270,7 +271,7 @@ void ShellSurface::Minimize() {
   TRACE_EVENT0("exo", "ShellSurface::Minimize");
 
   if (!widget_) {
-    initial_show_state_ = ui::SHOW_STATE_MINIMIZED;
+    initial_show_state_ = ui::mojom::WindowShowState::kMinimized;
     return;
   }
 
@@ -284,9 +285,10 @@ void ShellSurface::Restore() {
   TRACE_EVENT0("exo", "ShellSurface::Restore");
 
   if (!widget_) {
-    if (initial_show_state_ != ui::SHOW_STATE_FULLSCREEN ||
-        ShouldExitFullscreenFromRestoreOrMaximized())
-      initial_show_state_ = ui::SHOW_STATE_NORMAL;
+    if (initial_show_state_ != ui::mojom::WindowShowState::kFullscreen ||
+        ShouldExitFullscreenFromRestoreOrMaximized()) {
+      initial_show_state_ = ui::mojom::WindowShowState::kNormal;
+    }
     return;
   }
 
@@ -304,9 +306,9 @@ void ShellSurface::SetFullscreen(bool fullscreen, int64_t display_id) {
                "display_id", display_id);
   if (!widget_) {
     if (fullscreen) {
-      initial_show_state_ = ui::SHOW_STATE_FULLSCREEN;
-    } else if (initial_show_state_ == ui::SHOW_STATE_FULLSCREEN) {
-      initial_show_state_ = ui::SHOW_STATE_DEFAULT;
+      initial_show_state_ = ui::mojom::WindowShowState::kFullscreen;
+    } else if (initial_show_state_ == ui::mojom::WindowShowState::kFullscreen) {
+      initial_show_state_ = ui::mojom::WindowShowState::kDefault;
     }
     return;
   }
@@ -598,9 +600,7 @@ gfx::Point ShellSurface::GetSurfaceOrigin() const {
                         client_bounds.height() - visible_bounds.height()) -
              visible_bounds.OffsetFromOrigin();
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unsupported component:" << resize_component_;
-      return gfx::Point();
+      NOTREACHED() << "Unsupported component:" << resize_component_;
   }
 }
 
@@ -618,7 +618,7 @@ void ShellSurface::OnDidProcessDisplayChanges(
 
   // Keep client surface coordinates in sync with the server when display
   // layouts change.
-  const bool should_update_window_position = base::ranges::any_of(
+  const bool should_update_window_position = std::ranges::any_of(
       configuration_change.display_metrics_changes,
       [id = output_display_id()](
           const DisplayManagerObserver::DisplayMetricsChange& change) {
@@ -740,17 +740,6 @@ void ShellSurface::OnWindowPropertyChanged(aura::Window* window,
             window->GetProperty(chromeos::kIsShowingInOverviewKey));
       }
     }
-
-    if (key == aura::client::kRasterScale) {
-      float raster_scale = window->GetProperty(aura::client::kRasterScale);
-
-      if (raster_scale == pending_raster_scale_) {
-        return;
-      }
-
-      pending_raster_scale_ = raster_scale;
-      Configure();
-    }
   }
 }
 
@@ -857,7 +846,7 @@ gfx::Rect ShellSurface::ComputeAdjustedBounds(const gfx::Rect& bounds) const {
 
   // The size should never be bigger than work area, even if the min size is
   // bigger than that.
-  auto work_area = display::Screen::GetScreen()
+  auto work_area = display::Screen::Get()
                        ->GetDisplayNearestWindow(widget_->GetNativeWindow())
                        .work_area();
   size.SetToMin(work_area.size());
@@ -901,8 +890,9 @@ bool ShellSurface::OnPreWidgetCommit() {
         root_surface()->surface_hierarchy_content_bounds().IsEmpty()) {
       Configure();
 
-      if (initial_show_state_ != ui::SHOW_STATE_MINIMIZED)
+      if (initial_show_state_ != ui::mojom::WindowShowState::kMinimized) {
         needs_layout_on_show_ = true;
+      }
     }
 
     CreateShellSurfaceWidget(initial_show_state_);
@@ -933,12 +923,12 @@ void ShellSurface::ShowWidget(bool activate) {
   occlusion_observer_->MaybeConfigure(root_surface()->window());
 }
 
-std::unique_ptr<views::NonClientFrameView>
-ShellSurface::CreateNonClientFrameView(views::Widget* widget) {
+std::unique_ptr<views::FrameView> ShellSurface::CreateFrameView(
+    views::Widget* widget) {
   ash::WindowState* window_state =
       ash::WindowState::Get(widget->GetNativeWindow());
   window_state->SetDelegate(std::make_unique<CustomWindowStateDelegate>(this));
-  return CreateNonClientFrameViewInternal(widget);
+  return CreateFrameViewInternal(widget);
 }
 
 void ShellSurface::SetRootSurface(Surface* root_surface) {
@@ -1051,14 +1041,14 @@ void ShellSurface::Configure(bool ends_drag) {
       serial = configure_callback_.Run(
           GetClientBoundsInScreen(widget_), window_state->GetStateType(),
           IsResizing(), widget_->IsActive(), origin_offset,
-          pending_raster_scale_, occlusion_state, restore_state_type);
+          /*raster_scale=*/1.0, occlusion_state, restore_state_type);
     } else {
       auto state = chromeos::ToWindowStateType(initial_show_state_);
       auto occlusion_state =
           occlusion_observer_->GetInitialStateForConfigure(state);
       gfx::Rect bounds = GetInitialBoundsForState(state);
       serial = configure_callback_.Run(bounds, state, false, false,
-                                       origin_offset, pending_raster_scale_,
+                                       origin_offset, /*raster_scale=*/1.0,
                                        occlusion_state, std::nullopt);
     }
   }
@@ -1167,7 +1157,7 @@ gfx::Rect ShellSurface::GetInitialBoundsForState(
 }
 
 display::Display ShellSurface::GetDisplayForInitialBounds() const {
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   display::Display display = screen->GetDisplayForNewWindows();
   // Use `pending_display_id_` as this is called before first commit.
   if (!screen->GetDisplayWithDisplayId(pending_display_id_, &display) &&

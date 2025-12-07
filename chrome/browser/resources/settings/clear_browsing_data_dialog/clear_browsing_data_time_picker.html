@@ -1,0 +1,52 @@
+<style>
+  :host {
+    --cr-menu-border-radius: 12px;
+  }
+
+  #timePicker {
+    max-width: 512px;
+  }
+
+  .dropdown-item {
+    padding: 4px 16px;
+  }
+
+  .row {
+    align-items: center;
+    display: flex;
+  }
+
+  .time-period-chip {
+    margin-inline-end: 5px;
+  }
+</style>
+
+<div class="row" id="timePicker">
+  <template is="dom-repeat" items="[[expandedOptionList_]]"
+      on-dom-change="onTimePickerDomChanged_">
+    <cr-chip class="time-period-chip"
+        selected="[[isTimePeriodSelected_(item.value)]]"
+        on-click="onTimePeriodSelected_">
+      <cr-icon icon="cr:check" hidden="[[!isTimePeriodSelected_(item.value)]]">
+      </cr-icon>
+      [[item.label]]
+    </cr-chip>
+  </template>
+  <cr-chip id="moreButton" hidden="[[!moreOptionList_.length]]"
+      on-click="onMoreTimePeriodsButtonClick_">
+    $i18n{clearBrowsingDataMore}
+    <cr-icon icon="cr:arrow-drop-down"></cr-icon>
+  </cr-chip>
+  <cr-lazy-render id="moreTimePeriodsMenu">
+    <template>
+      <cr-action-menu role-description="$i18n{menu}"
+          on-close="onMoreOptionsMenuClose_">
+        <template is="dom-repeat" items="[[moreOptionList_]]">
+          <button class="dropdown-item" on-click="onMenuTimePeriodSelected_">
+            [[item.label]]
+          </button>
+        </template>
+      </cr-action-menu>
+    </template>
+  </cr-lazy-render>
+</div>

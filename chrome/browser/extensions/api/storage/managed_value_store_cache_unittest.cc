@@ -18,11 +18,14 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 namespace {
@@ -35,7 +38,8 @@ constexpr auto kAnotherPolicyDomain =
     policy::PolicyDomain::POLICY_DOMAIN_SIGNIN_EXTENSIONS;
 
 base::Value::Dict CreateDict(const std::string& json) {
-  auto dict = base::JSONReader::Read(json);
+  auto dict =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_NE(dict, std::nullopt) << "Invalid json: '" << json << "'";
   return std::move(dict.value()).TakeDict();
 }

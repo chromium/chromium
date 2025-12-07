@@ -1,15 +1,11 @@
 This is a testharness.js-based test.
-Found 68 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] FontFace interface: attribute variationSettings
-  assert_true: The prototype object must have a property "variationSettings" expected true got false
+Found 66 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] FontFace interface: attribute features
   assert_true: The prototype object must have a property "features" expected true got false
 [FAIL] FontFace interface: attribute variations
   assert_true: The prototype object must have a property "variations" expected true got false
 [FAIL] FontFace interface: attribute palettes
   assert_true: The prototype object must have a property "palettes" expected true got false
-[FAIL] FontFace interface: fontFace must inherit property "variationSettings" with the proper type
-  assert_inherits: property "variationSettings" not found in prototype chain
 [FAIL] FontFace interface: fontFace must inherit property "features" with the proper type
   assert_inherits: property "features" not found in prototype chain
 [FAIL] FontFace interface: fontFace must inherit property "variations" with the proper type

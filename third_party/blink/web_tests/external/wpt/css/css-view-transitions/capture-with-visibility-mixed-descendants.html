@@ -8,6 +8,9 @@
 <script src="/common/reftest-wait.js"></script>
 
 <style>
+:root {
+  scrollbar-width: none;
+}
 .target {
   width: 100px;
   height: 100px;
@@ -34,6 +37,22 @@
   visibility: hidden;
   animation-duration: 500s;
 }
+
+::view-transition-group(*),
+::view-transition-image-pair(*) {
+  animation-play-state: paused;
+}
+
+::view-transition-old(*) {
+  animation: unset;
+  opacity: 1;
+}
+
+::view-transition-new(*) {
+  animation: unset;
+  opacity: 0;
+}
+
 ::view-transition {
   background: pink;
 }

@@ -43,6 +43,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
@@ -96,7 +97,6 @@ public class CustomTabPostMessageTest {
 
     private String mTestPage;
     private String mTestPage2;
-    private CustomTabsConnection mConnectionToCleanup;
     private TestWebServer mWebServer;
 
     @Before
@@ -109,7 +109,7 @@ public class CustomTabPostMessageTest {
 
     @After
     public void tearDown() {
-        if (mConnectionToCleanup != null) CustomTabsTestUtils.cleanupSessions(mConnectionToCleanup);
+        CustomTabsTestUtils.cleanupSessions();
         if (mWebServer != null) mWebServer.shutdown();
     }
 
@@ -119,26 +119,24 @@ public class CustomTabPostMessageTest {
     }
 
     private void setCanUseHiddenTabForSession(
-            CustomTabsConnection connection, CustomTabsSessionToken token, boolean useHiddenTab) {
-        assert mConnectionToCleanup == null || mConnectionToCleanup == connection;
-        // Save the connection. In case the hidden tab is not consumed by the test, ensure that it
-        // is properly cleaned up after the test.
-        mConnectionToCleanup = connection;
-        connection.setCanUseHiddenTabForSession(token, useHiddenTab);
+            SessionHolder<?> sessionHolder, boolean useHiddenTab) {
+        CustomTabsConnection.getInstance()
+                .setCanUseHiddenTabForSession(sessionHolder, useHiddenTab);
     }
 
-    private static void ensureCompletedSpeculationForUrl(
-            final CustomTabsConnection connection, final String url) {
+    private static void ensureCompletedSpeculationForUrl(final String url) {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
                             "Tab was not created",
-                            connection.getSpeculationParamsForTesting(),
+                            CustomTabsConnection.getInstance().getSpeculationParamsForTesting(),
                             Matchers.notNullValue());
                 },
                 LONG_TIMEOUT_MS,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-        ChromeTabUtils.waitForTabPageLoaded(connection.getSpeculationParamsForTesting().tab, url);
+        ChromeTabUtils.waitForTabPageLoaded(
+                CustomTabsConnection.getInstance().getSpeculationParamsForTesting().hiddenTab.tab,
+                url);
     }
 
     /**
@@ -147,6 +145,7 @@ public class CustomTabPostMessageTest {
      */
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/437076832")
     public void testPostMessageBasic() throws Exception {
         final CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
         Context context = ApplicationProvider.getApplicationContext();
@@ -414,7 +413,7 @@ public class CustomTabPostMessageTest {
         final CallbackHelper messageChannelHelper = new CallbackHelper();
         final String url =
                 mWebServer.setResponse("/test.html", TITLE_FROM_POSTMESSAGE_TO_CHANNEL, null);
-        final CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
+        CustomTabsTestUtils.warmUpAndWait();
 
         final CustomTabsSession session =
                 CustomTabsTestUtils.bindWithCallback(
@@ -432,7 +431,7 @@ public class CustomTabPostMessageTest {
                 new ComponentName(
                         ApplicationProvider.getApplicationContext(), ChromeLauncherActivity.class));
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        var sessionHolder = SessionHolder.getSessionHolderFromIntent(intent);
 
         boolean channelRequested = false;
         String titleString = "";
@@ -443,9 +442,9 @@ public class CustomTabPostMessageTest {
             Assert.assertTrue(channelRequested);
         }
 
-        setCanUseHiddenTabForSession(connection, token, true);
+        setCanUseHiddenTabForSession(sessionHolder, true);
         session.mayLaunchUrl(Uri.parse(url), null, null);
-        ensureCompletedSpeculationForUrl(connection, url);
+        ensureCompletedSpeculationForUrl(url);
 
         if (requestTime == BEFORE_INTENT) {
             channelRequested =

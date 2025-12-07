@@ -14,7 +14,17 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
+// LINT.IfChange(ContactInfoSpecifics)
 message ContactInfoSpecifics {
+  // Used to distinguish whether the address is the dedicated Home or Work
+  // address of the user's account.
+  // This translates into `AutofillProfile::RecordType::kAccount*`.
+  enum AddressType {
+    REGULAR = 0;
+    HOME = 1;
+    WORK = 2;
+  }
+
   // Represents the validation status of a stored value.
   enum VerificationStatus {
     // No verification status assigned.
@@ -71,11 +81,16 @@ message ContactInfoSpecifics {
   optional string guid = 1;
   reserved 2;
   reserved "source";
+  optional AddressType address_type = 56 [default = REGULAR];
+
   // The number of time this profile has been used.
   optional int64 use_count = 3;
 
-  // The last time this profile was used.
+  // The last time this profile was used. Since profile creation counts as a
+  // use, this should always have a value.
   optional int64 use_date_unix_epoch_seconds = 4;
+  reserved 54, 55;
+  reserved "use_date2_unix_epoch_seconds", "use_date3_unix_epoch_seconds";
 
   // The last time the profile was modified.
   optional int64 date_modified_unix_epoch_seconds = 37;
@@ -97,10 +112,24 @@ message ContactInfoSpecifics {
   // All StringTokens, and the `profile_label` are considered non-metadata.
   optional int32 last_modifier_id = 40;
 
+  // Used to hide account addresses in Chrome.
+  // Chrome will set this value to true if the address should be filtered out
+  // on the server side and not passed to Chrome again.
+  // If Chrome set this value to false or if the value is not set, the address
+  // will be passed to Chrome.
+  optional bool invisible_in_autofill = 62;
+
   // Contact info name fields.
   optional StringToken name_first = 7;
   optional StringToken name_middle = 8;
   optional StringToken name_last = 9;
+
+  // Prefix of the last name, e.g., "von" in "von Neumann".
+  optional StringToken name_last_prefix = 60;
+
+  // Core of the last name, excluding prefixes.
+  optional StringToken name_last_core = 61;
+
   // Sometimes the last name is composed of two names as it is common for
   // Hispanic/Latinx names. In the unstructured representation of the last name,
   // there may be even a conjunction between the first and the second last
@@ -114,6 +143,11 @@ message ContactInfoSpecifics {
 
   reserved 14;
   reserved "name_full_with_honorific";
+
+  // Contact info alternative name fields (e.g. phonetic names in Japan).
+  optional StringToken alternative_full_name = 57;
+  optional StringToken alternative_given_name = 58;
+  optional StringToken alternative_family_name = 59;
 
   // Contact info additional fields.
   optional StringToken email_address = 15;
@@ -201,6 +235,11 @@ message ContactInfoSpecifics {
   // some address forms require the combination of both in a single field as
   // opposed to each one separately.
   optional StringToken address_thoroughfare_number_and_apt = 53;
+  // Prefix of the zip code, e.g., "12345" in "12345-6789".
+  optional StringToken address_zip_prefix = 63;
+  // Part of the zip code, excluding prefix and separator.
+  // For example, "6789" in "12345-6789".
+  optional StringToken address_zip_suffix = 64;
 
   // Phone.
   optional StringToken phone_home_whole_number = 33;
@@ -217,3 +256,4 @@ message ContactInfoSpecifics {
   reserved 6;
   reserved "name_honorific";
 }
+// LINT.ThenChange(//components/autofill/core/browser/webdata/addresses/contact_info_sync_util.cc:TrimContactInfoSpecificsData)

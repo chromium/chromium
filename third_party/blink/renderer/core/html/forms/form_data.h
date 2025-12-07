@@ -64,7 +64,7 @@ class CORE_EXPORT FormData final : public ScriptWrappable,
                           HTMLElement* submitter,
                           ExceptionState& exception_state);
 
-  explicit FormData(const WTF::TextEncoding&);
+  explicit FormData(const TextEncoding&);
   // Clones form_data.  This clones |form_data.entries_| Vector, but
   // doesn't clone entries in it because they are immutable.
   FormData(const FormData& form_data);
@@ -86,7 +86,7 @@ class CORE_EXPORT FormData final : public ScriptWrappable,
 
   // Internal functions.
 
-  const WTF::TextEncoding& Encoding() const { return encoding_; }
+  const TextEncoding& Encoding() const { return encoding_; }
   std::string Encode(const String& key) const;
   class Entry;
   const HeapVector<Member<const Entry>>& Entries() const { return entries_; }
@@ -112,10 +112,9 @@ class CORE_EXPORT FormData final : public ScriptWrappable,
 
  private:
   void SetEntry(const Entry*);
-  IterationSource* CreateIterationSource(ScriptState*,
-                                         ExceptionState&) override;
+  IterationSource* CreateIterationSource(ScriptState*) override;
 
-  WTF::TextEncoding encoding_;
+  TextEncoding encoding_;
   // Entry pointers in entries_ never be nullptr.
   HeapVector<Member<const Entry>> entries_;
   bool contains_password_data_ = false;

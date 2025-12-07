@@ -7,21 +7,22 @@
 
 #include <utility>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chromeos/crosapi/mojom/cert_provisioning.mojom.h"
 #include "content/public/browser/web_ui_message_handler.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 
 class Profile;
+
+namespace ash::cert_provisioning {
+class CertProvisioningScheduler;
+}  // namespace ash::cert_provisioning
 
 namespace chromeos {
 namespace cert_provisioning {
 
-class CertificateProvisioningUiHandler
-    : public content::WebUIMessageHandler,
-      public crosapi::mojom::CertProvisioningObserver {
+class CertificateProvisioningUiHandler : public content::WebUIMessageHandler {
  public:
   // Creates a CertificateProvisioningUiHandler for |profile|.
   // If the |profile| should be able to see and control cert provisioning
@@ -31,12 +32,11 @@ class CertificateProvisioningUiHandler
   static std::unique_ptr<CertificateProvisioningUiHandler> CreateForProfile(
       Profile* profile);
 
-  // |cert_provisioning_interface| is the mojo interface to communicate with the
-  // cert provisioning component, can be nullptr.
   // The constructor is public for testing, prefer using CreateForProfile when
   // possible.
-  explicit CertificateProvisioningUiHandler(
-      crosapi::mojom::CertProvisioning* cert_provisioning_interface);
+  CertificateProvisioningUiHandler(
+      ash::cert_provisioning::CertProvisioningScheduler* user_scheduler,
+      ash::cert_provisioning::CertProvisioningScheduler* device_scheduler);
 
   CertificateProvisioningUiHandler(
       const CertificateProvisioningUiHandler& other) = delete;
@@ -48,8 +48,6 @@ class CertificateProvisioningUiHandler
   // content::WebUIMessageHandler
   void RegisterMessages() override;
 
-  // crosapi::mojom::CertProvisioningObserver
-  void OnStateChanged() override;
 
   // For testing: Reads the count of UI refreshes sent to the WebUI (since
   // instantiation or the last call to this function) and resets it to 0.
@@ -83,16 +81,18 @@ class CertificateProvisioningUiHandler
   // Send the list of certificate provisioning processes to the UI.
   void RefreshCertificateProvisioningProcesses();
 
-  // Called when the status of cert provisioning processes is received.
-  void GotStatus(
-      std::vector<crosapi::mojom::CertProvisioningProcessStatusPtr> status);
+  // Called on updates of schedulers.
+  void OnStateChanged();
 
-  // The interface to communicate with the cert provisioning component.
-  // Can be null (e.g. for non-primary / non-main profiles), in which case this
-  // part of the UI should show and do nothing.
-  const raw_ptr<crosapi::mojom::CertProvisioning> cert_provisioning_interface_;
-  // Receives mojo messages about cert provisioning updates.
-  mojo::Receiver<crosapi::mojom::CertProvisioningObserver> receiver_{this};
+  // Schedulers for the given profile.
+  const raw_ptr<ash::cert_provisioning::CertProvisioningScheduler>
+      user_scheduler_;
+  const raw_ptr<ash::cert_provisioning::CertProvisioningScheduler>
+      device_scheduler_;
+
+  // Subscribes schedulers.
+  base::CallbackListSubscription user_subscription_;
+  base::CallbackListSubscription device_subscription_;
 
   // Keeps track of the count of UI refreshes sent to the WebUI.
   unsigned int ui_refresh_count_for_testing_ = 0;

@@ -11,7 +11,6 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/version.h"
 #include "components/component_updater/component_updater_service.h"

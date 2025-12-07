@@ -21,6 +21,10 @@ class ExecutionContext;
 class ScriptState;
 class ViewTransition;
 
+namespace scheduler {
+class TaskAttributionInfo;
+}
+
 // This class handles script interaction for the ViewTransition object. It
 // implements the ViewTransition IDL interface.
 class CORE_EXPORT DOMViewTransition : public ScriptWrappable,
@@ -48,8 +52,11 @@ class CORE_EXPORT DOMViewTransition : public ScriptWrappable,
   ScriptPromise<IDLUndefined> finished(ScriptState*) const;
   ScriptPromise<IDLUndefined> ready(ScriptState*) const;
   ScriptPromise<IDLUndefined> updateCallbackDone(ScriptState*) const;
+  void waitUntil(ScriptState*, const ScriptPromise<IDLAny>&);
 
   ViewTransitionTypeSet* types() const;
+
+  Element* transitionRoot() const;
 
   // Called from ViewTransition when the transition is skipped/aborted for any
   // reason.
@@ -69,26 +76,17 @@ class CORE_EXPORT DOMViewTransition : public ScriptWrappable,
   void Trace(Visitor* visitor) const override;
 
  private:
+  class WaitUntilPromiseSettledCallback;
+
   void AtMicrotask(ViewTransition::PromiseResponse response,
                    PromiseProperty* resolver);
   void HandlePromise(ViewTransition::PromiseResponse response,
                      PromiseProperty* property);
 
-  void NotifyDOMCallbackFinished(bool success, ScriptValue value);
-
-  // Invoked when ViewTransitionCallback finishes running.
-  class DOMChangeFinishedCallback : public ScriptFunction::Callable {
-   public:
-    explicit DOMChangeFinishedCallback(DOMViewTransition&, bool success);
-    ~DOMChangeFinishedCallback() override;
-
-    ScriptValue Call(ScriptState*, ScriptValue) override;
-    void Trace(Visitor*) const override;
-
-   private:
-    Member<DOMViewTransition> dom_view_transition_;
-    const bool success_;
-  };
+  friend class DOMChangeFinishedCallback;
+  friend class DOMChangeRejectedCallback;
+  void NotifyDOMCallbackFinished();
+  void NotifyDOMCallbackRejected(ScriptValue value);
 
   // Cleared when the context is destroyed.
   Member<ExecutionContext> execution_context_;
@@ -99,6 +97,10 @@ class CORE_EXPORT DOMViewTransition : public ScriptWrappable,
   Member<PromiseProperty> finished_promise_property_;
   Member<PromiseProperty> ready_promise_property_;
   Member<PromiseProperty> dom_updated_promise_property_;
+
+  // The task attribution task state to be restored for `update_dom_callback_`,
+  // captured on startViewTransition() path.
+  Member<scheduler::TaskAttributionInfo> task_state_;
 
   // The result of running the `update_dom_callback_`. This is set from
   // InvokeDOMChangeCallback.

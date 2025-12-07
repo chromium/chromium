@@ -9,11 +9,13 @@
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "extensions/common/extension_features.h"
@@ -57,7 +59,7 @@ std::u16string GetAccessibleText(ExtensionsToolbarButton::State state) {
 }  // namespace
 
 ExtensionsToolbarButton::ExtensionsToolbarButton(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     ExtensionsToolbarContainer* extensions_container,
     ExtensionsMenuCoordinator* extensions_menu_coordinator)
     : ToolbarChipButton(PressedCallback()),
@@ -102,10 +104,14 @@ ExtensionsToolbarButton::ExtensionsToolbarButton(
     // accessibility mode.
     SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_EXTENSIONS_BUTTON));
   }
+
+  UpdateCachedTooltipText();
 }
 
 ExtensionsToolbarButton::~ExtensionsToolbarButton() {
-  CHECK(!IsInObserverList());
+  if (extensions_menu_widget_) {
+    extensions_menu_widget_->CloseNow();
+  }
 }
 
 gfx::Size ExtensionsToolbarButton::CalculatePreferredSize(
@@ -128,8 +134,9 @@ void ExtensionsToolbarButton::OnBoundsChanged(
   // size and the preferred button size.
 
   const gfx::Size current_size = size();
-  if (current_size.IsEmpty())
+  if (current_size.IsEmpty()) {
     return;
+  }
   const int icon_size = GetIconSize();
   gfx::Insets new_insets;
   if (icon_size < current_size.width()) {
@@ -155,10 +162,11 @@ void ExtensionsToolbarButton::UpdateState(State state) {
   state_ = state;
   SetVectorIcon(GetIcon(state_));
   GetViewAccessibility().SetName(GetAccessibleText(state_));
+  UpdateCachedTooltipText();
 }
 
 void ExtensionsToolbarButton::OnWidgetDestroying(views::Widget* widget) {
-  widget->RemoveObserver(this);
+  extension_menu_observation_.Reset();
   pressed_lock_.reset();
   extensions_container_->OnMenuClosed();
 }
@@ -190,10 +198,14 @@ void ExtensionsToolbarButton::ToggleExtensionsMenu() {
     extensions_menu_coordinator_->Show(this, extensions_container_);
     menu = extensions_menu_coordinator_->GetExtensionsMenuWidget();
   } else {
-    menu =
-        ExtensionsMenuView::ShowBubble(this, browser_, extensions_container_);
+    // Desktop Android will use the
+    // extensions_features::kExtensionsMenuAccessControl menu, therefore we can
+    // use Browser for the other menu until the feature is rolled out.
+    menu = ExtensionsMenuView::ShowBubble(
+        this, browser_->GetBrowserForMigrationOnly(), extensions_container_);
   }
-  menu->AddObserver(this);
+  extensions_menu_widget_ = menu->GetWeakPtr();
+  extension_menu_observation_.Observe(menu);
 }
 
 bool ExtensionsToolbarButton::GetExtensionsMenuShowing() const {
@@ -202,15 +214,14 @@ bool ExtensionsToolbarButton::GetExtensionsMenuShowing() const {
 
 int ExtensionsToolbarButton::GetIconSize() const {
   const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
-  if (touch_ui && !browser_->app_controller()) {
+  if (touch_ui && !web_app::AppBrowserController::IsWebApp(browser_)) {
     return kDefaultTouchableIconSize;
   }
 
   return kDefaultIconSizeChromeRefresh;
 }
 
-std::u16string ExtensionsToolbarButton::GetTooltipText(
-    const gfx::Point& p) const {
+void ExtensionsToolbarButton::UpdateCachedTooltipText() {
   int message_id;
   switch (state_) {
     case ExtensionsToolbarButton::State::kDefault:
@@ -223,7 +234,7 @@ std::u16string ExtensionsToolbarButton::GetTooltipText(
       message_id = IDS_TOOLTIP_EXTENSIONS_BUTTON_ANY_EXTENSION_HAS_ACCESS;
       break;
   }
-  return l10n_util::GetStringUTF16(message_id);
+  SetTooltipText(l10n_util::GetStringUTF16(message_id));
 }
 
 BEGIN_METADATA(ExtensionsToolbarButton)

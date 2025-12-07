@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_DEVTOOLS_DEVTOOLS_THROTTLE_HANDLE_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 
 namespace content {

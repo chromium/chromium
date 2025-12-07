@@ -11,4 +11,5 @@ import "ui/gfx/mojom/linear_gradient.mojom";
 struct MaskFilterInfo {
   gfx.mojom.RRectF rounded_corner_bounds;
   gfx.mojom.LinearGradient? gradient_mask;
+  int32? clip_id;
 };

@@ -4,14 +4,17 @@
 
 package org.chromium.chrome.browser.share.share_sheet;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.app.Activity;
 import android.content.ComponentName;
+import android.graphics.drawable.Drawable;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeProvidedSharingOptionsProviderBase;
@@ -25,6 +28,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.share.ShareParams;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.WindowAndroid;
@@ -33,8 +37,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /** Provides {@code PropertyModel}s of Chrome-provided sharing options. */
+@NullMarked
 public class ChromeProvidedSharingOptionsProvider extends ChromeProvidedSharingOptionsProviderBase {
     // ComponentName used for Chrome share options in ShareParams.TargetChosenCallback
     public static final ComponentName CHROME_PROVIDED_FEATURE_COMPONENT_NAME =
@@ -52,27 +58,27 @@ public class ChromeProvidedSharingOptionsProvider extends ChromeProvidedSharingO
      * @param windowAndroid The current window.
      * @param tabProvider Supplier for the current activity tab.
      * @param bottomSheetController The {@link BottomSheetController} for the current activity.
-     * @param bottomSheetContent The {@link ShareSheetBottomSheetContent} for the current
-     * activity.
+     * @param bottomSheetContent The {@link ShareSheetBottomSheetContent} for the current activity.
      * @param shareParams The {@link ShareParams} for the current share.
      * @param printTab A {@link Callback} that will print a given Tab.
      * @param isIncognito Whether incognito mode is enabled.
      * @param shareStartTime The start time of the current share.
      * @param chromeOptionShareCallback A ChromeOptionShareCallback that can be used by
-     * Chrome-provided sharing options.
+     *     Chrome-provided sharing options.
      * @param featureEngagementTracker feature engagement tracker.
      * @param url Url to share.
      * @param linkGenerationStatusForMetrics User action of sharing text from failed link-to-text
-     * generation, sharing text from successful link-to-text generation, or sharing link-to-text.
+     *     generation, sharing text from successful link-to-text generation, or sharing
+     *     link-to-text.
      * @param linkToggleMetricsDetails {@link LinkToggleMetricsDetails} for recording the final
-     *         toggle state.
+     *     toggle state.
      * @param profile The current profile of the User.
      * @param deviceLockActivityLauncher The launcher to start up the device lock page.
      */
     ChromeProvidedSharingOptionsProvider(
             Activity activity,
-            WindowAndroid windowAndroid,
-            Supplier<Tab> tabProvider,
+            @Nullable WindowAndroid windowAndroid,
+            Supplier<@Nullable Tab> tabProvider,
             BottomSheetController bottomSheetController,
             ShareSheetBottomSheetContent bottomSheetContent,
             ShareParams shareParams,
@@ -131,8 +137,13 @@ public class ChromeProvidedSharingOptionsProvider extends ChromeProvidedSharingO
     private PropertyModel getShareSheetModel(FirstPartyOption option) {
         boolean hideBottomSheetContentOnTap = hideBottomSheetContentOnTap(option);
 
+        Drawable icon = AppCompatResources.getDrawable(mActivity, option.icon);
+        if (icon != null) {
+            icon.setTint(SemanticColorUtils.getDefaultIconColor(mActivity));
+        }
+
         return ShareSheetPropertyModelBuilder.createPropertyModel(
-                AppCompatResources.getDrawable(mActivity, option.icon),
+                icon,
                 mActivity.getResources().getString(option.iconLabel),
                 option.iconContentDescription,
                 (view) -> {
@@ -174,7 +185,7 @@ public class ChromeProvidedSharingOptionsProvider extends ChromeProvidedSharingO
                             LongScreenshotsCoordinator coordinator =
                                     LongScreenshotsCoordinator.create(
                                             mActivity,
-                                            mTabProvider.get(),
+                                            assertNonNull(mTabProvider.get()),
                                             mUrl,
                                             mChromeOptionShareCallback,
                                             mBottomSheetController);
@@ -184,9 +195,8 @@ public class ChromeProvidedSharingOptionsProvider extends ChromeProvidedSharingO
                 .build();
     }
 
-    @Nullable
     @Override
-    protected FirstPartyOption createPageInfoFirstPartyOption() {
+    protected @Nullable FirstPartyOption createCollaborateFirstPartyOption() {
         return null;
     }
 

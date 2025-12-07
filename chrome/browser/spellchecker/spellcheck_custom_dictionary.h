@@ -12,7 +12,7 @@
 #include "base/cancelable_callback.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
@@ -134,7 +134,7 @@ class SpellcheckCustomDictionary final : public SpellcheckDictionary,
   ~SpellcheckCustomDictionary() override;
 
   // Returns the in-memory cache of words in the custom dictionary.
-  const std::set<std::string>& GetWords() const;
+  std::set<std::string> GetWords() const;
 
   // Adds |word| to the dictionary, schedules a write to disk, and notifies
   // observers of the change. Returns true if |word| is valid and not a
@@ -174,11 +174,12 @@ class SpellcheckCustomDictionary final : public SpellcheckDictionary,
       const syncer::SyncDataList& initial_sync_data,
       std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) override;
   void StopSyncing(syncer::DataType type) override;
-  syncer::SyncDataList GetAllSyncDataForTesting(syncer::DataType type) const;
   std::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
   base::WeakPtr<SyncableService> AsWeakPtr() override;
+  std::string GetClientTag(
+      const syncer::EntityData& entity_data) const override;
 
  private:
   friend class DictionarySyncIntegrationTestHelper;
@@ -203,7 +204,12 @@ class SpellcheckCustomDictionary final : public SpellcheckDictionary,
   // LoadDictionaryFile finishes reading the dictionary file.
   void OnLoaded(std::unique_ptr<LoadFileResult> result);
 
-  // Applies the |dictionary_change| to the in-memory copy of the dictionary.
+  // Applies the `dictionary_change` to the given set of words.
+  void ApplyToSet(const Change& dictionary_change,
+                  std::set<std::string>* words);
+  // Applies the `dictionary_change` to the in-memory copy of the dictionary.
+  // This applies the change to both local and account words if syncing,
+  // otherwise only to local words.
   void Apply(const Change& dictionary_change);
 
   // Schedules a write of the words in |load_file_result| to disk when the
@@ -226,8 +232,14 @@ class SpellcheckCustomDictionary final : public SpellcheckDictionary,
   // Task runner where the file operations takes place.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  // In-memory cache of the custom words file.
+  // In-memory cache of the custom words file. When
+  // kSpellcheckSeparateLocalAndAccountDictionaries is disabled, this contains
+  // both local and account words, otherwise only local words.
   std::set<std::string> words_;
+
+  // Account words.Used only when
+  // kSpellcheckSeparateLocalAndAccountDictionaries is enabled.
+  std::set<std::string> account_words_;
 
   // The path to the custom dictionary file.
   base::FilePath custom_dictionary_path_;

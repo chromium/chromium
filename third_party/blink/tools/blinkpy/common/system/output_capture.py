@@ -28,10 +28,9 @@
 #
 # Class for unittest support.  Used for capturing stderr/stdout.
 
+import io
 import logging
 import sys
-
-from six import StringIO
 
 
 class OutputCapture(object):
@@ -50,7 +49,7 @@ class OutputCapture(object):
 
     def _capture_output_with_name(self, output_name):
         stream = getattr(sys, output_name)
-        captured_output = StringIO()
+        captured_output = io.StringIO()
         self.saved_outputs[output_name] = stream
         setattr(sys, output_name, captured_output)
         return captured_output
@@ -62,7 +61,7 @@ class OutputCapture(object):
         return captured_output
 
     def capture_output(self):
-        self._logs = StringIO()
+        self._logs = io.StringIO()
         self._logs_handler = logging.StreamHandler(self._logs)
         self._logs_handler.setLevel(self._log_level)
         self._logger = logging.getLogger()

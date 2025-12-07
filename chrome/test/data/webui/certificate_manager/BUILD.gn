@@ -5,19 +5,39 @@
 import("//chrome/common/features.gni")
 import("../build_webui_tests.gni")
 
-assert(!is_android && !is_ios)
+assert(!is_ios)
 assert(chrome_root_store_cert_management_ui)
 
 build_webui_tests("build") {
-  files = [ "certificate_manager_test.ts" ]
-
-  ts_definitions = [
-    "//tools/typescript/definitions/chrome_event.d.ts",
-    "//tools/typescript/definitions/settings_private.d.ts",
+  files = [
+    "certificate_entry_test.ts",
+    "certificate_list_test.ts",
+    "certificate_manager_focus_test.ts",
+    "certificate_manager_test_support.ts",
+    "certificate_manager_test.ts",
+    "certificate_manager_v2_test.ts",
+    "certificate_password_dialog_test.ts",
+    "certificate_subpage_test.ts",
+    "local_certs_section_test.ts",
+    "navigation_test.ts",
   ]
+
+  if (is_chromeos) {
+    files += [
+      "certificate_manager_provisioning_test.ts",
+      "test_certificate_provisioning_browser_proxy.ts",
+    ]
+  }
 
   ts_deps = [
-    "//ui/webui/resources/cr_components/certificate_manager:build_ts",
+    "//chrome/browser/resources/certificate_manager:build_ts",
+    "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/js:build_ts",
   ]
+
+  ts_path_mappings =
+      [ "chrome://certificate-manager/*|" +
+        rebase_path(
+            "$root_gen_dir/chrome/browser/resources/certificate_manager/tsc/*",
+            target_gen_dir) ]
 }

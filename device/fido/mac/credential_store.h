@@ -20,8 +20,8 @@
 #include "device/fido/mac/authenticator_config.h"
 #include "device/fido/mac/credential_metadata.h"
 #include "device/fido/platform_credential_store.h"
-#include "device/fido/public_key_credential_descriptor.h"
-#include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/public/public_key_credential_descriptor.h"
+#include "device/fido/public/public_key_credential_user_entity.h"
 
 #if defined(__OBJC__)
 @class LAContext;

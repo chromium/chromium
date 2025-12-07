@@ -10,7 +10,9 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/color/color_variant.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -19,9 +21,8 @@
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/input_event_activation_protector.h"
 #include "ui/views/layout/box_layout_view.h"
-#include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/style/typography.h"
-#include "ui/views/window/non_client_view.h"
+#include "ui/views/window/frame_view.h"
 
 namespace gfx {
 class RoundedCornersF;
@@ -57,9 +58,8 @@ class ImageView;
 // and the minimize buttons will be positioned at the end of the
 // title row. Otherwise, they will be positioned closer to the frame
 // edge.
-class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView,
-                                     public LayoutDelegate {
-  METADATA_HEADER(BubbleFrameView, NonClientFrameView)
+class VIEWS_EXPORT BubbleFrameView : public FrameView {
+  METADATA_HEADER(BubbleFrameView, FrameView)
 
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMinimizeButtonElementId);
@@ -85,7 +85,7 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView,
   static std::unique_ptr<Button> CreateMinimizeButton(
       Button::PressedCallback callback);
 
-  // NonClientFrameView:
+  // FrameView:
   gfx::Rect GetBoundsForClientView() const override;
   gfx::Rect GetWindowBoundsForClientBounds(
       const gfx::Rect& client_bounds) const override;
@@ -95,7 +95,6 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView,
   void ResetWindowControls() override;
   void UpdateWindowIcon() override;
   void UpdateWindowTitle() override;
-  void SizeConstraintsChanged() override;
   void InsertClientView(ClientView* client_view) override;
   void UpdateWindowRoundedCorners() override;
   bool HasWindowTitle() const override;
@@ -123,6 +122,7 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView,
       const SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
+  void Layout(PassKey) override;
   void OnPaint(gfx::Canvas* canvas) override;
   void PaintChildren(const PaintInfo& paint_info) override;
   void OnThemeChanged() override;
@@ -141,12 +141,10 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView,
         static_cast<const BubbleFrameView*>(this)->title());
   }
 
+  Label* default_title() { return default_title_.get(); }
+
   void SetContentMargins(const gfx::Insets& content_margins);
   gfx::Insets GetContentMargins() const;
-
-  // Overridden from LayoutDelegate:
-  ProposedLayout CalculateProposedLayout(
-      const SizeBounds& size_bounds) const override;
 
   // Sets a custom header view for the dialog. If there is an existing header
   // view it will be deleted. The header view will be inserted above the title,
@@ -182,8 +180,8 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView,
   }
 
   // Set the corner radius of the bubble border.
-  void SetCornerRadius(int radius);
-  int GetCornerRadius() const;
+  void SetRoundedCorners(const gfx::RoundedCornersF& radii);
+  gfx::RoundedCornersF GetRoundedCorners() const;
 
   // Set the arrow of the bubble border.
   void SetArrow(BubbleBorder::Arrow arrow);
@@ -194,11 +192,10 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView,
   bool GetDisplayVisibleArrow() const;
 
   // Set the background color of the bubble border.
-  // TODO(b/261653838): Update this function to use color id instead.
-  void SetBackgroundColor(SkColor color);
-  SkColor GetBackgroundColor() const;
+  void SetBackgroundColor(ui::ColorVariant color);
+  ui::ColorVariant background_color() const { return bubble_border_->color(); }
 
-  // For masking reasons, the ClientView may be painted to a textured layer. To
+  // For masking reasons, the ClientView is painted to a textured layer. To
   // ensure bubbles that rely on the frame background color continue to work as
   // expected, we must set the background of the ClientView to match that of the
   // BubbleFrameView.
@@ -345,6 +342,9 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView,
       style::TextContext text_context,
       style::TextStyle text_style);
 
+  // Note: The method is defined for meta data framework.
+  SkColor GetBackgroundColor() const;
+
   // The bubble border.
   raw_ptr<BubbleBorder> bubble_border_ = nullptr;
 
@@ -405,7 +405,7 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView,
   // Set by bubble clients to compose additional non-client hit test rules for
   // their host bubble. HTNOWHERE should be returned to tell the caller to do
   // further processing to determine where in the non-client area the tested
-  // point is (if present at all). See NonClientFrameView::NonClientHitTest()
+  // point is (if present at all). See FrameView::NonClientHitTest()
   // for details.
   HitTestCallback non_client_hit_test_cb_;
 

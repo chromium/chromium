@@ -6,15 +6,21 @@
 
 #include <algorithm>
 #include <utility>
+#include <vector>
 
 #include "base/auto_reset.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notimplemented.h"
 #include "base/task/delay_policy.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/features.h"
+#include "components/viz/common/frame_sinks/begin_frame_args.h"
+#include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/service/performance_hint/hint_session.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace viz {
 
@@ -29,8 +35,12 @@ base::TimeDelta ComputeAdpfTarget(const BeginFrameArgs& args) {
   return base::Milliseconds(12);
 }
 
-bool DrawImmediatelyWhenInteractive() {
-  return features::ShouldDrawImmediatelyWhenInteractive();
+bool AdpfCanUseSetThreads() {
+#if BUILDFLAG(IS_ANDROID)
+  return android_get_device_api_level() >= __ANDROID_API_U__;
+#else
+  return false;
+#endif
 }
 
 }  // namespace
@@ -56,7 +66,11 @@ class DisplayScheduler::BeginFrameObserver : public BeginFrameObserverBase {
   }
 
   bool OnBeginFrameDerivedImpl(const BeginFrameArgs& args) override {
-    return scheduler_->OnBeginFrame(args);
+    if (base::FeatureList::IsEnabled(features::kDisplaySchedulerAsClient)) {
+      return true;
+    } else {
+      return scheduler_->OnBeginFrame(args);
+    }
   }
 
  private:
@@ -83,17 +97,35 @@ DisplayScheduler::DisplayScheduler(BeginFrameSource* begin_frame_source,
       wait_for_all_surfaces_before_draw_(wait_for_all_surfaces_before_draw),
       observing_begin_frame_source_(false),
       hint_session_factory_(hint_session_factory) {
+  if (base::FeatureList::IsEnabled(features::kDisplaySchedulerAsClient)) {
+    begin_frame_source_->SetSchedulerClient(this);
+  }
   begin_frame_deadline_timer_.SetTaskRunner(task_runner);
   begin_frame_deadline_closure_ = base::BindRepeating(
       &DisplayScheduler::OnBeginFrameDeadline, weak_ptr_factory_.GetWeakPtr());
+  session_states_.emplace_back(HintSession::SessionType::kAnimation);
+  if (base::FeatureList::IsEnabled(
+          features::kEnableADPFSeparateRendererMainSession)) {
+    session_states_.emplace_back(HintSession::SessionType::kRendererMain);
+  }
 }
 
 DisplayScheduler::~DisplayScheduler() {
+  if (base::FeatureList::IsEnabled(features::kDisplaySchedulerAsClient)) {
+    begin_frame_source_->SetSchedulerClient(nullptr);
+  }
   // It is possible for DisplayScheduler to be destroyed while there's an
   // in-flight swap. So always mark the gpu as not busy during destruction.
   begin_frame_source_->SetIsGpuBusy(false);
   StopObservingBeginFrames();
 }
+
+DisplayScheduler::AdpfSessionState::AdpfSessionState(
+    HintSession::SessionType type)
+    : type(type) {}
+DisplayScheduler::AdpfSessionState::AdpfSessionState(AdpfSessionState&&) =
+    default;
+DisplayScheduler::AdpfSessionState::~AdpfSessionState() = default;
 
 void DisplayScheduler::SetDamageTracker(DisplayDamageTracker* damage_tracker) {
   DisplaySchedulerBase::SetDamageTracker(damage_tracker);
@@ -167,32 +199,65 @@ void DisplayScheduler::OutputSurfaceLost() {
   ScheduleBeginFrameDeadline();
 }
 
-void DisplayScheduler::MaybeCreateHintSession(
-    base::flat_set<base::PlatformThreadId> thread_ids) {
+void DisplayScheduler::MaybeCreateHintSessions(
+    base::flat_set<base::PlatformThreadId> animation_thread_ids,
+    base::flat_set<base::PlatformThreadId> renderer_main_thread_ids) {
   if (!hint_session_factory_)
     return;
 
-  if ((!create_session_for_current_thread_ids_failed_ && !hint_session_) ||
-      current_thread_ids_ != thread_ids) {
-    hint_session_.reset();
-    current_thread_ids_ = std::move(thread_ids);
-    hint_session_ = hint_session_factory_->CreateSession(
-        current_thread_ids_, ComputeAdpfTarget(current_begin_frame_args_));
-    create_session_for_current_thread_ids_failed_ = !hint_session_;
+  if (!renderer_main_thread_ids.empty() &&
+      !base::FeatureList::IsEnabled(
+          features::kEnableADPFSeparateRendererMainSession)) {
+    animation_thread_ids.insert(renderer_main_thread_ids.begin(),
+                                renderer_main_thread_ids.end());
+    renderer_main_thread_ids.clear();
+  }
+
+  const auto adpf_target = ComputeAdpfTarget(current_begin_frame_args_);
+  for (auto& state : session_states_) {
+    auto thread_ids = state.type == HintSession::SessionType::kAnimation
+                          ? animation_thread_ids
+                          : renderer_main_thread_ids;
+
+    // Use SetThreads whenever possible - it's cheaper than recreating the
+    // session.
+    if (state.hint_session && state.thread_ids != thread_ids &&
+        AdpfCanUseSetThreads()) {
+      state.thread_ids = std::move(thread_ids);
+      state.hint_session->SetThreads(hint_session_factory_->GetSessionThreadIds(
+          state.thread_ids, state.type));
+      continue;
+    }
+    // If SetThreads cannot be used, (re)create the ADPF session - this is a
+    // more a expensive operation.
+    if ((!state.create_session_for_current_thread_ids_failed &&
+         !state.hint_session) ||
+        state.thread_ids != thread_ids) {
+      state.hint_session.reset();
+      state.thread_ids = std::move(thread_ids);
+      state.hint_session = hint_session_factory_->CreateSession(
+          state.thread_ids, adpf_target, state.type);
+      state.create_session_for_current_thread_ids_failed = !state.hint_session;
+    }
   }
 }
 
 void DisplayScheduler::ReportFrameTime(
     base::TimeDelta frame_time,
-    base::flat_set<base::PlatformThreadId> thread_ids,
+    base::flat_set<base::PlatformThreadId> animation_thread_ids,
+    base::flat_set<base::PlatformThreadId> renderer_main_thread_ids,
     base::TimeTicks draw_start,
     HintSession::BoostType boost_type) {
-  MaybeCreateHintSession(std::move(thread_ids));
-  if (hint_session_) {
-    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES("Compositing.Display.AdpfHintUs",
-                                            frame_time, base::Microseconds(1),
-                                            base::Milliseconds(50), 50);
-    hint_session_->ReportCpuCompletionTime(frame_time, draw_start, boost_type);
+  MaybeCreateHintSessions(std::move(animation_thread_ids),
+                          std::move(renderer_main_thread_ids));
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES("Compositing.Display.AdpfHintUs",
+                                          frame_time, base::Microseconds(1),
+                                          base::Milliseconds(50), 50);
+  for (const auto& state : session_states_) {
+    if (state.hint_session) {
+      state.hint_session->ReportCpuCompletionTime(frame_time, draw_start,
+                                                  boost_type);
+    }
   }
 }
 
@@ -275,8 +340,11 @@ void DisplayScheduler::OnBeginFrameContinuation(const BeginFrameArgs& args) {
 
   // Schedule the deadline.
   current_begin_frame_args_ = args;
-  if (hint_session_) {
-    hint_session_->UpdateTargetDuration(ComputeAdpfTarget(args));
+  const auto adpf_target = ComputeAdpfTarget(args);
+  for (auto& state : session_states_) {
+    if (state.hint_session) {
+      state.hint_session->UpdateTargetDuration(adpf_target);
+    }
   }
 
   current_begin_frame_args_.deadline -=
@@ -289,7 +357,8 @@ void DisplayScheduler::OnBeginFrameContinuation(const BeginFrameArgs& args) {
 }
 
 int DisplayScheduler::MaxPendingSwaps() const {
-  // Interval for 90hz and 120hz with some delta for margin of error.
+  // Interval for 72, 90, and 120hz with some delta for margin of error.
+  constexpr base::TimeDelta k72HzInterval = base::Microseconds(14000);
   constexpr base::TimeDelta k90HzInterval = base::Microseconds(11500);
   constexpr base::TimeDelta k120HzInterval = base::Microseconds(8500);
   int param_max_pending_swaps;
@@ -301,6 +370,10 @@ int DisplayScheduler::MaxPendingSwaps() const {
              pending_swap_params_.max_pending_swaps_90hz) {
     param_max_pending_swaps =
         pending_swap_params_.max_pending_swaps_90hz.value();
+  } else if (current_begin_frame_args_.interval < k72HzInterval &&
+             pending_swap_params_.max_pending_swaps_72hz) {
+    param_max_pending_swaps =
+        pending_swap_params_.max_pending_swaps_72hz.value();
   } else {
     param_max_pending_swaps = pending_swap_params_.max_pending_swaps;
   }
@@ -324,15 +397,24 @@ int DisplayScheduler::MaxPendingSwaps() const {
   // here the 0.8 constant is chosen to bias rounding up.
   int deadline_max_pending_swaps =
       (total_time_nanos + 0.8 * interval_nanos) / interval_nanos;
-  return std::clamp(deadline_max_pending_swaps, 0, param_max_pending_swaps);
+  return std::clamp(deadline_max_pending_swaps, 1, param_max_pending_swaps);
 }
 
-void DisplayScheduler::SetNeedsOneBeginFrame(bool needs_draw) {
+void DisplayScheduler::SetNeedsOneBeginFrame(const BeginFrameArgs& args,
+                                             bool needs_draw) {
   // If we are not currently observing BeginFrames because needs_draw_ is false,
   // we will stop observing again after one BeginFrame in AttemptDrawAndSwap().
   StartObservingBeginFrames();
   if (needs_draw)
     needs_draw_ = true;
+  if (base::FeatureList::IsEnabled(features::kNoLateBeginFrames) &&
+      args.IsValid() &&
+      (!begin_frame_observer_->LastUsedBeginFrameArgs().IsValid() ||
+       args.frame_id.sequence_number >
+           begin_frame_observer_->LastUsedBeginFrameArgs()
+               .frame_id.sequence_number)) {
+    OnBeginFrame(args);
+  }
 }
 
 void DisplayScheduler::MaybeStartObservingBeginFrames() {
@@ -343,6 +425,15 @@ void DisplayScheduler::MaybeStartObservingBeginFrames() {
 void DisplayScheduler::StartObservingBeginFrames() {
   if (!observing_begin_frame_source_) {
     begin_frame_source_->AddObserver(begin_frame_observer_.get());
+    // TODO(crbug.com/40900977): Some tests still have reliance on Missed
+    // begin frames. We should update the test helpers.
+    if (base::FeatureList::IsEnabled(features::kDisplaySchedulerAsClient)) {
+      auto args = begin_frame_observer_->LastUsedBeginFrameArgs();
+      if (args.IsValid() && args.type == BeginFrameArgs::MISSED &&
+          args.frame_time > current_begin_frame_args_.frame_time) {
+        OnBeginFrame(begin_frame_observer_->LastUsedBeginFrameArgs());
+      }
+    }
     observing_begin_frame_source_ = true;
   }
 }
@@ -379,8 +470,7 @@ base::TimeTicks DisplayScheduler::DesiredBeginFrameDeadlineTime(
     case BeginFrameDeadlineMode::kNone:
       return base::TimeTicks::Max();
     default:
-      NOTREACHED_IN_MIGRATION();
-      return base::TimeTicks();
+      NOTREACHED();
   }
 }
 
@@ -423,8 +513,7 @@ DisplayScheduler::DesiredBeginFrameDeadlineMode() const {
   // Only wait if we actually have pending surfaces and we're not forcing draw
   // due to an ongoing interaction.
   bool wait_for_pending_surfaces =
-      has_pending_surfaces_ && !(DrawImmediatelyWhenInteractive() &&
-                                 damage_tracker_->HasDamageDueToInteraction());
+      has_pending_surfaces_ && !(damage_tracker_->HasDamageDueToInteraction());
 
   bool all_surfaces_ready =
       !wait_for_pending_surfaces && damage_tracker_->IsRootSurfaceValid() &&
@@ -543,7 +632,8 @@ void DisplayScheduler::DidSwapBuffers() {
     begin_frame_source_->SetIsGpuBusy(true);
 
   uint32_t swap_id = next_swap_id_++;
-  TRACE_EVENT_ASYNC_BEGIN0("viz", "DisplayScheduler:pending_swaps", swap_id);
+  TRACE_EVENT_BEGIN("viz", "DisplayScheduler:pending_swaps",
+                    perfetto::Track(swap_id));
 }
 
 void DisplayScheduler::DidReceiveSwapBuffersAck() {
@@ -554,8 +644,15 @@ void DisplayScheduler::DidReceiveSwapBuffersAck() {
   // ensure any callback from BeginFrameSource observes the correct swap
   // throttled state.
   begin_frame_source_->SetIsGpuBusy(false);
-  TRACE_EVENT_ASYNC_END0("viz", "DisplayScheduler:pending_swaps", swap_id);
+  TRACE_EVENT_END(
+      "viz", /* DisplayScheduler:pending_swaps */ perfetto::Track(swap_id));
   ScheduleBeginFrameDeadline();
+}
+
+void DisplayScheduler::OnBeginFrameForScheduling(const BeginFrameArgs& args) {
+  if (observing_begin_frame_source_) {
+    OnBeginFrame(args);
+  }
 }
 
 }  // namespace viz

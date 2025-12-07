@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/linux_key_persistence_delegate.h"
 
 #include <string>
@@ -88,7 +89,7 @@ void ValidateSigningKey(enterprise_connectors::SigningKeyPair* key_pair,
 
   // Signing should work.
   auto signed_data = key_pair->key()->SignSlowly(
-      base::as_bytes(base::make_span("data to sign")));
+      base::byte_span_with_nul_from_cstring("data to sign"));
   ASSERT_TRUE(signed_data.has_value());
   ASSERT_GT(signed_data->size(), 0u);
 }
@@ -165,7 +166,8 @@ TEST_F(LinuxKeyPersistenceDelegateTest, StoreKeyPair_ValidOSKeyPair) {
   // Modifying file contents
   base::File file = base::File(GetKeyFilePath(),
                                base::File::FLAG_OPEN | base::File::FLAG_APPEND);
-  EXPECT_TRUE(file.WriteAtCurrentPos(kGibberish, strlen(kGibberish)) > 0);
+  EXPECT_TRUE(
+      file.WriteAtCurrentPosAndCheck(base::byte_span_from_cstring(kGibberish)));
   std::string expected_file_contents(kValidOSKeyFileContent);
   expected_file_contents.append(kGibberish);
   EXPECT_EQ(expected_file_contents, GetFileContents());
@@ -192,7 +194,8 @@ TEST_F(LinuxKeyPersistenceDelegateTest, StoreKeyPair_ValidHWKeyPair) {
   // Modifying file contents
   base::File file = base::File(GetKeyFilePath(),
                                base::File::FLAG_OPEN | base::File::FLAG_APPEND);
-  EXPECT_TRUE(file.WriteAtCurrentPos(kGibberish, strlen(kGibberish)) > 0);
+  EXPECT_TRUE(
+      file.WriteAtCurrentPosAndCheck(base::byte_span_from_cstring(kGibberish)));
   std::string expected_file_contents(kValidHWKeyFileContent);
   expected_file_contents.append(kGibberish);
   EXPECT_EQ(expected_file_contents, GetFileContents());

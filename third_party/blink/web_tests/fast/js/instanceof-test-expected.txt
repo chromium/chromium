@@ -12,8 +12,6 @@ PASS (new WebKitCSSMatrix()) instanceof WebKitCSSMatrix is true
 PASS (new Array()) instanceof WebKitCSSMatrix is false
 PASS (new Worker('instanceof-operator-dummy-worker.js')) instanceof Worker is true
 PASS (new Array()) instanceof Worker is false
-PASS (new XSLTProcessor()) instanceof XSLTProcessor is true
-PASS (new Array()) instanceof XSLTProcessor is false
 PASS successfullyParsed is true
 
 TEST COMPLETE

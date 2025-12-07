@@ -12,11 +12,11 @@
 
 #include <string>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/notimplemented.h"
-#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -62,8 +62,9 @@ void* GetPermissionInfo(const FilePath& path, size_t* length) {
 // |length| is the length of the blob.
 // Either |info| or |length| may be NULL/0, in which case nothing happens.
 bool RestorePermissionInfo(const FilePath& path, void* info, size_t length) {
-  if (!info || (length == 0))
+  if (!info || (length == 0)) {
     return false;
+  }
 
   DCHECK_EQ(sizeof(mode_t), length);
   mode_t* mode = reinterpret_cast<mode_t*>(info);
@@ -80,8 +81,9 @@ bool RestorePermissionInfo(const FilePath& path, void* info, size_t length) {
 bool DieFileDie(const FilePath& file, bool recurse) {
   // There is no need to workaround Windows problems on POSIX.
   // Just pass-through.
-  if (recurse)
+  if (recurse) {
     return DeletePathRecursively(file);
+  }
   return DeleteFile(file);
 }
 
@@ -115,8 +117,8 @@ FilePermissionRestorer::FilePermissionRestorer(const FilePath& path)
 }
 
 FilePermissionRestorer::~FilePermissionRestorer() {
-  if (!RestorePermissionInfo(path_, info_, length_))
-    NOTREACHED_IN_MIGRATION();
+  const bool success = RestorePermissionInfo(path_, info_, length_);
+  CHECK(success);
 }
 
 }  // namespace base

@@ -29,6 +29,7 @@
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -37,10 +38,11 @@
 namespace {
 
 int GetDownloadProgress(int64_t downloaded_bytes, int64_t total_bytes) {
-  if (downloaded_bytes < 0 || total_bytes <= 0)
+  if (downloaded_bytes < 0 || total_bytes <= 0) {
     return -1;
+  }
   return 100 * std::clamp(static_cast<double>(downloaded_bytes) / total_bytes,
-                           0.0, 1.0);
+                          0.0, 1.0);
 }
 
 void UpdateStatus(VersionUpdater::StatusCallback status_callback,
@@ -60,6 +62,10 @@ void UpdateStatus(VersionUpdater::StatusCallback status_callback,
       progress = GetDownloadProgress(update_state.downloaded_bytes,
                                      update_state.total_bytes);
       [[fallthrough]];
+    case updater::UpdateService::UpdateState::State::kDecompressing:
+      [[fallthrough]];
+    case updater::UpdateService::UpdateState::State::kPatching:
+      [[fallthrough]];
     case updater::UpdateService::UpdateState::State::kInstalling:
       status = VersionUpdater::Status::UPDATING;
       break;
@@ -72,14 +78,28 @@ void UpdateStatus(VersionUpdater::StatusCallback status_callback,
                    : VersionUpdater::Status::UPDATED;
       break;
     case updater::UpdateService::UpdateState::State::kUpdateError:
-      status = VersionUpdater::Status::FAILED;
-      err_message = l10n_util::GetStringFUTF16(
-          IDS_ABOUT_BOX_ERROR_DURING_UPDATE_CHECK,
-          l10n_util::GetStringFUTF16(IDS_ABOUT_BOX_GOOGLE_UPDATE_ERROR,
-                                     base::UTF8ToUTF16(base::StringPrintf(
-                                         "%d", update_state.error_code)),
-                                     base::UTF8ToUTF16(base::StringPrintf(
-                                         "%d", update_state.extra_code1))));
+      switch (update_state.error_code) {
+        case updater::GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY:
+          status = VersionUpdater::Status::DISABLED_BY_ADMIN;
+          err_message =
+              l10n_util::GetStringUTF16(IDS_UPGRADE_DISABLED_BY_POLICY);
+          break;
+        case updater::GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY_MANUAL:
+          status = VersionUpdater::Status::DISABLED_BY_ADMIN;
+          err_message =
+              l10n_util::GetStringUTF16(IDS_UPGRADE_DISABLED_BY_POLICY_MANUAL);
+          break;
+        default:
+          status = VersionUpdater::Status::FAILED;
+          err_message = l10n_util::GetStringFUTF16(
+              IDS_ABOUT_BOX_ERROR_DURING_UPDATE_CHECK,
+              l10n_util::GetStringFUTF16(IDS_ABOUT_BOX_GOOGLE_UPDATE_ERROR,
+                                         base::UTF8ToUTF16(base::StringPrintf(
+                                             "%d", update_state.error_code)),
+                                         base::UTF8ToUTF16(base::StringPrintf(
+                                             "%d", update_state.extra_code1))));
+          break;
+      }
       break;
     case updater::UpdateService::UpdateState::State::kNotStarted:
       [[fallthrough]];
@@ -103,6 +123,7 @@ class VersionUpdaterMac : public VersionUpdater {
   void CheckForUpdate(StatusCallback status_callback,
                       PromoteCallback promote_callback) override {
     EnsureUpdater(
+        base::TaskPriority::USER_VISIBLE,
         base::BindOnce(
             [](PromoteCallback prompt) {
               prompt.Run(PromotionState::PROMOTE_ENABLED);
@@ -114,7 +135,7 @@ class VersionUpdaterMac : public VersionUpdater {
                    status_callback) {
               base::ThreadPool::PostTaskAndReplyWithResult(
                   FROM_HERE, {base::MayBlock()},
-                  base::BindOnce(&GetUpdaterScope),
+                  base::BindOnce(&GetBrowserUpdaterScope),
                   base::BindOnce(
                       [](base::RepeatingCallback<void(
                              const updater::UpdateService::UpdateState&)>

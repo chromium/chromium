@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_SMART_CARD_CHROMEOS_SMART_CARD_DELEGATE_H_
 #define CHROME_BROWSER_SMART_CARD_CHROMEOS_SMART_CARD_DELEGATE_H_
 
-#include "base/memory/weak_ptr.h"
 #include "content/public/browser/smart_card_delegate.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 class ChromeOsSmartCardDelegate : public content::SmartCardDelegate {
  public:
@@ -24,6 +24,16 @@ class ChromeOsSmartCardDelegate : public content::SmartCardDelegate {
       content::RenderFrameHost& render_frame_host,
       const std::string& reader_name,
       RequestReaderPermissionCallback callback) override;
+
+  void NotifyConnectionUsed(
+      content::RenderFrameHost& render_frame_host) override;
+  void NotifyLastConnectionLost(
+      content::RenderFrameHost& render_frame_host) override;
+
+  void AddObserver(content::RenderFrameHost& render_frame_host,
+                   PermissionObserver* observer) override;
+  void RemoveObserver(content::RenderFrameHost& render_frame_host,
+                      PermissionObserver* observer) override;
 };
 
 #endif  // CHROME_BROWSER_SMART_CARD_CHROMEOS_SMART_CARD_DELEGATE_H_

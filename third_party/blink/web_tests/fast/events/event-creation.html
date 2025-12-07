@@ -88,16 +88,6 @@
     shouldBeTrue("document.createEvent('MouseEvENts') instanceof window.Event");
     shouldBeTrue("document.createEvent('MouseEvENts').constructor === window.MouseEvent");
 
-    // MutationEvent
-    shouldBeTrue("document.createEvent('MutationEvent') instanceof window.MutationEvent");
-    shouldBeTrue("document.createEvent('MutationEvent') instanceof window.Event");
-    shouldBeTrue("document.createEvent('MutationEvent').constructor === window.MutationEvent");
-
-    // MutationEvents (MutationEvent alternative)
-    shouldBeTrue("document.createEvent('MutationEvents') instanceof window.MutationEvent");
-    shouldBeTrue("document.createEvent('MutationEvents') instanceof window.Event");
-    shouldBeTrue("document.createEvent('MutationEvents').constructor === window.MutationEvent");
-
     // PageTransitionEvent
     shouldBeTrue("document.createEvent('PageTransitionEvent') instanceof window.PageTransitionEvent");
     shouldBeTrue("document.createEvent('PageTransitionEvent') instanceof window.Event");

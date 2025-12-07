@@ -13,7 +13,6 @@
 #include "chrome/browser/profiles/android/jni_headers/ProfileKey_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -21,7 +20,7 @@ ProfileKeyAndroid::ProfileKeyAndroid(ProfileKey* key) : key_(key) {
   JNIEnv* env = AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> jkey =
       Java_ProfileKey_create(env, reinterpret_cast<intptr_t>(this));
-  obj_.Reset(env, jkey.obj());
+  obj_.Reset(env, jkey);
 }
 
 ProfileKeyAndroid::~ProfileKeyAndroid() {
@@ -59,3 +58,5 @@ jlong ProfileKeyAndroid::GetSimpleFactoryKeyPointer(JNIEnv* env) {
 ScopedJavaLocalRef<jobject> ProfileKeyAndroid::GetJavaObject() {
   return ScopedJavaLocalRef<jobject>(obj_);
 }
+
+DEFINE_JNI(ProfileKey)

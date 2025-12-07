@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/linux/pkg_config.gni")
 import("//media/media_options.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
@@ -31,8 +30,6 @@ source_set("audio") {
   # is a roll-up target which is part of the //media component. Most other DEPs
   # should be using //media and not directly DEP this roll-up target.
   visibility = [
-    ":flac_audio_handler_fuzzer",
-    ":wav_audio_handler_fuzzer",
     "//media",
     "//media/renderers",
 
@@ -49,6 +46,8 @@ source_set("audio") {
     "agc_audio_stream.h",
     "alive_checker.cc",
     "alive_checker.h",
+    "application_loopback_device_helper.cc",
+    "application_loopback_device_helper.h",
     "audio_debug_file_writer.cc",
     "audio_debug_file_writer.h",
     "audio_debug_recording_helper.cc",
@@ -142,10 +141,9 @@ source_set("audio") {
   deps = [
     "//base",
     "//build:chromecast_buildflags",
-    "//build:chromeos_buildflags",
     "//media/base",
     "//third_party/flac",
-    "//third_party/opus:opus",
+    "//third_party/opus",
     "//url",
   ]
   libs = []
@@ -165,6 +163,8 @@ source_set("audio") {
       "apple/audio_low_latency_input.h",
       "apple/audio_manager_apple.cc",
       "apple/audio_manager_apple.h",
+      "apple/glitch_helper.cc",
+      "apple/glitch_helper.h",
       "apple/scoped_audio_unit.cc",
       "apple/scoped_audio_unit.h",
     ]
@@ -187,6 +187,12 @@ source_set("audio") {
       "mac/audio_loopback_input_mac_impl.mm",
       "mac/audio_manager_mac.cc",
       "mac/audio_manager_mac.h",
+      "mac/avfoundation_output_stream.h",
+      "mac/avfoundation_output_stream.mm",
+      "mac/catap_api.h",
+      "mac/catap_api.mm",
+      "mac/catap_audio_input_stream.h",
+      "mac/catap_audio_input_stream.mm",
       "mac/core_audio_util_mac.cc",
       "mac/core_audio_util_mac.h",
       "mac/screen_capture_kit_swizzler.h",
@@ -215,12 +221,16 @@ source_set("audio") {
     sources += [
       "win/audio_device_listener_win.cc",
       "win/audio_device_listener_win.h",
+      "win/audio_ducker_win.cc",
+      "win/audio_ducker_win.h",
       "win/audio_low_latency_input_win.cc",
       "win/audio_low_latency_input_win.h",
       "win/audio_low_latency_output_win.cc",
       "win/audio_low_latency_output_win.h",
       "win/audio_manager_win.cc",
       "win/audio_manager_win.h",
+      "win/audio_session_creation_observer_win.cc",
+      "win/audio_session_creation_observer_win.h",
       "win/audio_session_event_listener_win.cc",
       "win/audio_session_event_listener_win.h",
       "win/avrt_wrapper_win.cc",
@@ -239,30 +249,43 @@ source_set("audio") {
       "dxguid.lib",
       "setupapi.lib",
       "winmm.lib",
+      "mmdevapi.lib",
     ]
   }
 
   if (is_android) {
     sources += [
+      "android/aaudio_bluetooth_output.cc",
+      "android/aaudio_bluetooth_output.h",
       "android/aaudio_input.cc",
       "android/aaudio_input.h",
       "android/aaudio_output.cc",
       "android/aaudio_output.h",
       "android/aaudio_stream_wrapper.cc",
       "android/aaudio_stream_wrapper.h",
+      "android/audio_device.cc",
+      "android/audio_device.h",
+      "android/audio_device_id.cc",
+      "android/audio_device_id.h",
+      "android/audio_device_type.cc",
+      "android/audio_device_type.h",
       "android/audio_manager_android.cc",
       "android/audio_manager_android.h",
       "android/audio_track_output_stream.cc",
       "android/audio_track_output_stream.h",
       "android/muteable_audio_output_stream.h",
-      "android/opensles_input.cc",
-      "android/opensles_input.h",
-      "android/opensles_output.cc",
-      "android/opensles_output.h",
-      "android/opensles_util.cc",
-      "android/opensles_util.h",
-      "android/opensles_wrapper.cc",
     ]
+    if (media_use_opensles) {
+      sources += [
+        "android/opensles_input.cc",
+        "android/opensles_input.h",
+        "android/opensles_output.cc",
+        "android/opensles_output.h",
+        "android/opensles_util.cc",
+        "android/opensles_util.h",
+        "android/opensles_wrapper.cc",
+      ]
+    }
     libs += [ "aaudio" ]
 
     deps += [ "//media/base/android:media_jni_headers" ]
@@ -389,7 +412,6 @@ static_library("test_support") {
   deps = [
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
 
     # Do not add any other //media deps except this; it will automatically pull
     # a dep on //media which is required to ensure test_support targets all use
@@ -404,6 +426,10 @@ static_library("test_support") {
       "alsa/mock_alsa_wrapper.h",
     ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("unit_tests") {
@@ -411,6 +437,7 @@ source_set("unit_tests") {
   sources = [
     "aecdump_recording_manager_unittest.cc",
     "alive_checker_unittest.cc",
+    "application_loopback_device_helper_unittest.cc",
     "audio_debug_file_writer_unittest.cc",
     "audio_debug_recording_helper_unittest.cc",
     "audio_debug_recording_manager_unittest.cc",
@@ -426,19 +453,20 @@ source_set("unit_tests") {
     "audio_output_unittest.cc",
     "audio_system_impl_unittest.cc",
     "audio_thread_hang_monitor_unittest.cc",
+    "null_audio_sink_unittest.cc",
     "power_observer_helper_unittest.cc",
     "reconfigurable_audio_bus_pool_unittest.cc",
     "simple_sources_unittest.cc",
+    "wav_audio_handler_unittest.cc",
   ]
 
   deps = [
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//media:test_support",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/opus:opus",
+    "//third_party/opus",
     "//url",
   ]
 
@@ -448,9 +476,14 @@ source_set("unit_tests") {
   ]
 
   if (is_android) {
-    sources += [ "android/audio_android_unittest.cc" ]
+    sources += [
+      "android/audio_android_unittest.cc",
+      "android/audio_device_id_unittest.cc",
+      "android/audio_device_type_unittest.cc",
+      "android/audio_device_unittest.cc",
+    ]
     deps += [
-      "//media/gpu:gpu",
+      "//media/gpu",
       "//ui/gl",
     ]
   }
@@ -467,17 +500,18 @@ source_set("unit_tests") {
       "mac/audio_device_listener_mac_unittest.cc",
       "mac/audio_loopback_input_mac_unittest.mm",
       "mac/audio_manager_mac_unittest.cc",
+      "mac/avfoundation_output_stream_unittest.mm",
+      "mac/catap_audio_input_stream_unittest.mm",
     ]
     deps += [ "//third_party/ocmock" ]
     frameworks = [ "CoreMedia.framework" ]
     weak_frameworks = [ "ScreenCaptureKit.framework" ]  # macOS 13.0
   }
 
-  if (is_chromeos_ash || is_castos || is_cast_android) {
+  if (is_chromeos || is_castos || is_cast_android) {
     sources += [
       "flac_audio_handler_unittest.cc",
       "test_data.h",
-      "wav_audio_handler_unittest.cc",
     ]
   }
 
@@ -499,9 +533,18 @@ source_set("unit_tests") {
       "win/audio_session_event_listener_win_unittest.cc",
       "win/core_audio_util_win_unittest.cc",
       "win/device_enumeration_win_unittest.cc",
+      "win/test_support/fake_iactivate_audio_interface_async_operation.cc",
+      "win/test_support/fake_iactivate_audio_interface_async_operation.h",
+      "win/test_support/fake_iaudio_capture_client.cc",
+      "win/test_support/fake_iaudio_capture_client.h",
+      "win/test_support/fake_iaudio_client.cc",
+      "win/test_support/fake_iaudio_client.h",
+      "win/test_support/fake_win_wasapi_environment.cc",
+      "win/test_support/fake_win_wasapi_environment.h",
+      "win/test_support/wasapi_test_error_code.h",
     ]
 
-    deps += [ "//media/gpu:gpu" ]
+    deps += [ "//media/gpu" ]
   }
 
   if (is_fuchsia) {
@@ -516,12 +559,15 @@ source_set("unit_tests") {
       "audio_low_latency_input_output_unittest.cc",
     ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 fuzzer_test("wav_audio_handler_fuzzer") {
   sources = [ "wav_audio_handler_fuzzer.cc" ]
   deps = [
-    ":audio",
     "//base",
     "//media:test_support",
   ]
@@ -530,7 +576,6 @@ fuzzer_test("wav_audio_handler_fuzzer") {
 fuzzer_test("flac_audio_handler_fuzzer") {
   sources = [ "flac_audio_handler_fuzzer.cc" ]
   deps = [
-    ":audio",
     "//base",
     "//media:test_support",
   ]

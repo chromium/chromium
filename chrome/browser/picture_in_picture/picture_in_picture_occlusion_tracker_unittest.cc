@@ -14,7 +14,6 @@
 namespace {
 
 using testing::_;
-using testing::Invoke;
 
 class MockPictureInPictureOcclusionObserver
     : public PictureInPictureOcclusionObserver {
@@ -291,18 +290,55 @@ TEST_F(PictureInPictureOcclusionTrackerTest,
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   occludable_widget2->Show();
 
-  EXPECT_CALL(observer, OnOcclusionStateChanged(true)).WillOnce(Invoke([&]() {
+  EXPECT_CALL(observer, OnOcclusionStateChanged(true)).WillOnce([&]() {
     testing::Mock::VerifyAndClearExpectations(&observer);
 
     // Synchronously start observing the second widget when we see that the
     // first is occluded. This should not crash.
     observation.Observe(occludable_widget2.get());
-  }));
+  });
 
   // Start observing `occludable_widget`. This should immediately inform the
   // observer that the window is occluded and therefore synchronously start
   // observing `occludable_widget2`.
   observation.Observe(occludable_widget1.get());
+}
+
+TEST_F(PictureInPictureOcclusionTrackerTest,
+       CanStopObservingExistingPictureInPictureWidget) {
+  MockPictureInPictureOcclusionObserver observer;
+  ScopedPictureInPictureOcclusionObservation observation(&observer);
+  std::unique_ptr<views::Widget> picture_in_picture_widget =
+      CreatePictureInPictureWidget();
+
+  // Create a widget to track the occlusion state of, placing it so that it
+  // starts out occluded.
+  std::unique_ptr<views::Widget> occludable_widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  occludable_widget->Show();
+  occludable_widget->SetBounds({50, 50, 200, 200});
+
+  // Start observing occlusion state. This should immediately tell the observer
+  // that it's occluded.
+  EXPECT_CALL(observer, OnOcclusionStateChanged(true));
+  observation.Observe(occludable_widget.get());
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // Tell the tracker to stop tracking the picture-in-picture widget. This
+  // should inform the observer that it's no longer occluded.
+  EXPECT_CALL(observer, OnOcclusionStateChanged(false));
+  PictureInPictureWindowManager::GetInstance()
+      ->GetOcclusionTracker()
+      ->RemovePictureInPictureWidget(picture_in_picture_widget.get());
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // Tell the tracker to start tracking the picture-in-picture widget again.
+  // This should inform the observer that it's occluded again.
+  EXPECT_CALL(observer, OnOcclusionStateChanged(true));
+  PictureInPictureWindowManager::GetInstance()
+      ->GetOcclusionTracker()
+      ->OnPictureInPictureWidgetOpened(picture_in_picture_widget.get());
+  testing::Mock::VerifyAndClearExpectations(&observer);
 }
 
 }  // namespace

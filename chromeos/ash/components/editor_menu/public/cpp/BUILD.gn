@@ -1,0 +1,51 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+assert(is_chromeos)
+
+component("cpp") {
+  defines = [ "IS_EDITOR_MENU_PUBLIC_CPP_IMPL" ]
+
+  sources = [
+    "editor_consent_status.cc",
+    "editor_consent_status.h",
+    "editor_context.cc",
+    "editor_context.h",
+    "editor_enterprise_policy_enums.h",
+    "editor_helpers.cc",
+    "editor_helpers.h",
+    "editor_mode.h",
+    "editor_text_selection_mode.h",
+    "icon.cc",
+    "icon.h",
+    "preset_text_query.cc",
+    "preset_text_query.h",
+  ]
+
+  deps = [
+    "//base",
+    "//build:branding_buildflags",
+    "//chromeos/ui/vector_icons",
+    "//components/vector_icons",
+    "//ui/gfx",
+    "//ui/gfx/range",
+  ]
+
+  if (is_chrome_branded) {
+    deps += [ "//chromeos/ash/resources/internal/icons:vector_icons" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":cpp",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+  sources = [ "editor_helpers_unittest.cc" ]
+}

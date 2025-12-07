@@ -5,7 +5,11 @@
 #ifndef COMPONENTS_WEBAUTHN_ANDROID_WEBAUTHN_CRED_MAN_DELEGATE_H_
 #define COMPONENTS_WEBAUTHN_ANDROID_WEBAUTHN_CRED_MAN_DELEGATE_H_
 
+#include <optional>
+#include <string>
+
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
 
 namespace content {
@@ -20,10 +24,13 @@ class WebAuthnCredManDelegate {
  public:
   using RequestPasswords = base::StrongAlias<class RequestPasswordsTag, bool>;
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum State {
-    kNotReady,
-    kNoPasskeys,
-    kHasPasskeys,
+    kNotReady = 0,
+    kNoPasskeys = 1,
+    kHasPasskeys = 2,
+    kMaxValue = kHasPasskeys
   };
 
   enum CredManEnabledMode {
@@ -79,7 +86,16 @@ class WebAuthnCredManDelegate {
   virtual void FillUsernameAndPassword(const std::u16string& username,
                                        const std::u16string& password);
 
+  // Callers of this method will be notified via `closure` when the credential
+  // list from CredMan is available. `closure` can be invoked mmediately if the
+  // passkey list has already been received. This CHECKs if called twice
+  // without the first having resolved.
+  virtual void RequestNotificationWhenCredentialsReady(
+      base::OnceClosure closure);
+
   static CredManEnabledMode CredManMode();
+
+  virtual base::WeakPtr<WebAuthnCredManDelegate> AsWeakPtr();
 
 #if defined(UNIT_TEST)
   static void override_cred_man_support_for_testing(int support) {
@@ -94,7 +110,16 @@ class WebAuthnCredManDelegate {
   base::OnceCallback<void(const std::u16string&, const std::u16string&)>
       filling_callback_;
 
+  // Callback awaiting notification of credentials being available.
+  base::OnceClosure credentials_available_closure_;
+
+  // Trakcks whether the PasskeysArrivedAfterAutofillDisplay metric has been
+  // recorded.
+  bool passkeys_after_fill_recorded_ = false;
+
   static std::optional<int> cred_man_support_;
+
+  base::WeakPtrFactory<WebAuthnCredManDelegate> weak_ptr_factory_{this};
 };
 
 }  // namespace webauthn

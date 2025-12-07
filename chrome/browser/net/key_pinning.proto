@@ -18,8 +18,8 @@ message PinSet {
   // Optional set of forbidden SPKIs hashes, represented as the SHA256 of the
   // public key.
   repeated bytes bad_static_spki_hashes_sha256 = 3;
-  // Optional URI to send bad pin reports to.
-  string report_uri = 4;
+
+  reserved 4;
 }
 
 message PinSetInfo {

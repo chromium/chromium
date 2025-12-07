@@ -8,42 +8,46 @@ import android.app.Activity;
 import android.content.Context;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.home.DownloadManagerCoordinator;
 import org.chromium.chrome.browser.download.home.DownloadManagerCoordinatorFactory;
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
 import org.chromium.chrome.browser.download.settings.DownloadSettings;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** A helper class to build and return an {@link DownloadManagerCoordinator}. */
+@NullMarked
 class DownloadManagerCoordinatorFactoryHelper {
     /**
      * Returns an instance of a {@link DownloadManagerCoordinator} to be used in the UI.
-     * @param activity           The parent {@link Activity}.
-     * @param config             A {@link DownloadManagerUiConfig} to provide configuration params.
-     * @param snackbarManager    The {@link SnackbarManager} that should be used to show snackbars.
+     *
+     * @param activity The parent {@link Activity}.
+     * @param config A {@link DownloadManagerUiConfig} to provide configuration params.
+     * @param snackbarManager The {@link SnackbarManager} that should be used to show snackbars.
      * @param modalDialogManager The {@link ModalDialogManager} that should be used to show dialog.
-     * @return                   A new {@link DownloadManagerCoordinator} instance.
+     * @return A new {@link DownloadManagerCoordinator} instance.
      */
     public static DownloadManagerCoordinator create(
             Activity activity,
             DownloadManagerUiConfig config,
             SnackbarManager snackbarManager,
-            ModalDialogManager modalDialogManager) {
+            @Nullable ModalDialogManager modalDialogManager) {
         Profile profile =
-                OTRProfileID.isOffTheRecord(config.otrProfileID)
+                config.otrProfileId != null
                         ? ProfileManager.getLastUsedRegularProfile()
                                 .getOffTheRecordProfile(
-                                        config.otrProfileID, /* createIfNeeded= */ true)
+                                        config.otrProfileId, /* createIfNeeded= */ true)
                         : ProfileManager.getLastUsedRegularProfile();
+        assert profile != null;
         Callback<Context> settingsLaunchHelper =
                 DownloadManagerCoordinatorFactoryHelper::settingsLaunchHelper;
         return DownloadManagerCoordinatorFactory.create(
@@ -53,6 +57,7 @@ class DownloadManagerCoordinatorFactoryHelper {
                 settingsLaunchHelper,
                 snackbarManager,
                 modalDialogManager,
+                new DownloadHelpPageLauncherImpl(profile),
                 TrackerFactory.getTrackerForProfile(profile),
                 new FaviconProviderImpl(profile),
                 OfflineContentAggregatorFactory.get(),
@@ -60,7 +65,8 @@ class DownloadManagerCoordinatorFactoryHelper {
     }
 
     private static void settingsLaunchHelper(Context context) {
-        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
-        settingsLauncher.launchSettingsActivity(context, DownloadSettings.class);
+        SettingsNavigation settingsNavigation =
+                SettingsNavigationFactory.createSettingsNavigation();
+        settingsNavigation.startSettings(context, DownloadSettings.class);
     }
 }

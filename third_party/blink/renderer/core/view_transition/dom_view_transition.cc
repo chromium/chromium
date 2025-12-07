@@ -15,8 +15,10 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/events/error_event.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
+#include "third_party/blink/renderer/core/scheduler/task_attribution_util.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 
 namespace blink {
 
@@ -29,6 +31,27 @@ const char kTimeoutMessage[] =
     "Transition was aborted because of timeout in DOM update";
 
 }  // namespace
+
+class DOMViewTransition::WaitUntilPromiseSettledCallback
+    : public ThenCallable<IDLAny, WaitUntilPromiseSettledCallback> {
+ public:
+  explicit WaitUntilPromiseSettledCallback(ViewTransition* view_transition)
+      : view_transition_(view_transition) {}
+
+  ScriptPromise<IDLUndefined> React(ScriptState* script_state,
+                                    const ScriptValue&) {
+    view_transition_->DecrementWaitUntilPromises();
+    return EmptyPromise();
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(view_transition_);
+    ThenCallable::Trace(visitor);
+  }
+
+ private:
+  Member<ViewTransition> view_transition_;
+};
 
 DOMViewTransition::DOMViewTransition(ExecutionContext& execution_context,
                                      ViewTransition& view_transition)
@@ -57,7 +80,11 @@ DOMViewTransition::DOMViewTransition(
       ready_promise_property_(
           MakeGarbageCollected<PromiseProperty>(execution_context_)),
       dom_updated_promise_property_(
-          MakeGarbageCollected<PromiseProperty>(execution_context_)) {
+          MakeGarbageCollected<PromiseProperty>(execution_context_)),
+      task_state_(update_dom_callback_
+                      ? CaptureCurrentTaskStateIfMainWorld(
+                            update_dom_callback_->CallbackRelevantScriptState())
+                      : nullptr) {
   CHECK(execution_context_->GetAgent());
 }
 
@@ -86,6 +113,18 @@ ScriptPromise<IDLUndefined> DOMViewTransition::updateCallbackDone(
   return dom_updated_promise_property_->Promise(script_state->World());
 }
 
+void DOMViewTransition::waitUntil(ScriptState* script_state,
+                                  const ScriptPromise<IDLAny>& promise) {
+  if (promise.IsEmpty()) {
+    return;
+  }
+  view_transition_->IncrementWaitUntilPromises();
+  auto* promise_settled_callback =
+      MakeGarbageCollected<WaitUntilPromiseSettledCallback>(view_transition_);
+  promise.Then(script_state, promise_settled_callback,
+               promise_settled_callback);
+}
+
 void DOMViewTransition::DidSkipTransition(
     ViewTransition::PromiseResponse response) {
   CHECK_NE(response, ViewTransition::PromiseResponse::kResolve);
@@ -103,10 +142,15 @@ void DOMViewTransition::DidSkipTransition(
   // The finished promise will propagate the result of the updateCallbackDone
   // promise when this callback runs.
   if (dom_callback_result_ == DOMCallbackResult::kNotInvoked) {
+    // Signal that the VT should block any replacement until the callback has
+    // been triggered.  We don't wait for completion of the callback, and the
+    // burden is on the web developer in the case of an async callback to
+    // properly synchronize the transitions.
+    view_transition_->NotifySkippedTransitionDOMCallbackScheduled();
     execution_context_->GetTaskRunner(TaskType::kMiscPlatformAPI)
         ->PostTask(FROM_HERE,
-                   WTF::BindOnce(&DOMViewTransition::InvokeDOMChangeCallback,
-                                 WrapPersistent(this)));
+                   BindOnce(&DOMViewTransition::InvokeDOMChangeCallback,
+                            WrapPersistent(this)));
   } else if (dom_callback_result_ == DOMCallbackResult::kFailed) {
     // If the DOM callback finished and there was a failure then the finished
     // promise should have been rejected with updateCallbackDone.
@@ -120,35 +164,38 @@ void DOMViewTransition::DidSkipTransition(
   }
 }
 
-void DOMViewTransition::NotifyDOMCallbackFinished(bool success,
-                                                  ScriptValue value) {
+void DOMViewTransition::NotifyDOMCallbackFinished() {
   CHECK_EQ(dom_callback_result_, DOMCallbackResult::kRunning);
   // Handle all promises which depend on this callback.
-  if (success) {
-    dom_updated_promise_property_->ResolveWithUndefined();
+  dom_updated_promise_property_->ResolveWithUndefined();
 
-    // If we're already at the terminal state, the transition was skipped before
-    // the callback finished. Also handle the finish promise.
-    if (view_transition_->IsDone()) {
-      finished_promise_property_->ResolveWithUndefined();
-    }
-  } else {
-    dom_updated_promise_property_->Reject(value);
-
-    // The ready promise rejects with the value of updateCallbackDone callback
-    // if it's skipped because of an error in the callback.
-    if (!view_transition_->IsDone()) {
-      ready_promise_property_->Reject(value);
-    }
-
-    // If the domUpdate callback fails the transition is skipped. The finish
-    // promise should mirror the result of updateCallbackDone.
-    finished_promise_property_->Reject(value);
+  // If we're already at the terminal state, the transition was skipped before
+  // the callback finished. Also handle the finish promise.
+  if (view_transition_->IsDone()) {
+    finished_promise_property_->ResolveWithUndefined();
   }
 
-  dom_callback_result_ =
-      success ? DOMCallbackResult::kSucceeded : DOMCallbackResult::kFailed;
-  view_transition_->NotifyDOMCallbackFinished(success);
+  dom_callback_result_ = DOMCallbackResult::kSucceeded;
+  view_transition_->NotifyDOMCallbackFinished(true);
+}
+
+void DOMViewTransition::NotifyDOMCallbackRejected(ScriptValue value) {
+  CHECK_EQ(dom_callback_result_, DOMCallbackResult::kRunning);
+  // Handle all promises which depend on this callback.
+  dom_updated_promise_property_->Reject(value);
+
+  // The ready promise rejects with the value of updateCallbackDone callback
+  // if it's skipped because of an error in the callback.
+  if (!view_transition_->IsDone()) {
+    ready_promise_property_->Reject(value);
+  }
+
+  // If the domUpdate callback fails the transition is skipped. The finish
+  // promise should mirror the result of updateCallbackDone.
+  finished_promise_property_->Reject(value);
+
+  dom_callback_result_ = DOMCallbackResult::kFailed;
+  view_transition_->NotifyDOMCallbackFinished(false);
 }
 
 void DOMViewTransition::DidStartAnimating() {
@@ -161,53 +208,102 @@ void DOMViewTransition::DidFinishAnimating() {
               finished_promise_property_);
 }
 
+// Invoked when ViewTransitionCallback finishes running.
+class DOMChangeFinishedCallback
+    : public ThenCallable<IDLUndefined, DOMChangeFinishedCallback> {
+ public:
+  explicit DOMChangeFinishedCallback(DOMViewTransition& dom_view_transition)
+      : dom_view_transition_(&dom_view_transition) {}
+  ~DOMChangeFinishedCallback() override = default;
+
+  void React(ScriptState*) {
+    dom_view_transition_->NotifyDOMCallbackFinished();
+  }
+  void Trace(Visitor* visitor) const override {
+    ThenCallable<IDLUndefined, DOMChangeFinishedCallback>::Trace(visitor);
+    visitor->Trace(dom_view_transition_);
+  }
+
+ private:
+  Member<DOMViewTransition> dom_view_transition_;
+};
+
+class DOMChangeRejectedCallback
+    : public ThenCallable<IDLAny, DOMChangeRejectedCallback> {
+ public:
+  explicit DOMChangeRejectedCallback(DOMViewTransition& dom_view_transition)
+      : dom_view_transition_(&dom_view_transition) {}
+  ~DOMChangeRejectedCallback() override = default;
+
+  void React(ScriptState*, ScriptValue value) {
+    dom_view_transition_->NotifyDOMCallbackRejected(std::move(value));
+  }
+  void Trace(Visitor* visitor) const override {
+    ThenCallable<IDLAny, DOMChangeRejectedCallback>::Trace(visitor);
+    visitor->Trace(dom_view_transition_);
+  }
+
+ private:
+  Member<DOMViewTransition> dom_view_transition_;
+};
+
 void DOMViewTransition::InvokeDOMChangeCallback() {
   CHECK_EQ(dom_callback_result_, DOMCallbackResult::kNotInvoked)
       << "UpdateDOM callback invoked multiple times.";
 
   if (!execution_context_) {
+    view_transition_->NotifyInvokeDOMChangeCallback();
     return;
   }
 
   dom_callback_result_ = DOMCallbackResult::kRunning;
 
-  v8::Maybe<ScriptPromiseUntyped> result = v8::Nothing<ScriptPromiseUntyped>();
-  ScriptState* script_state = nullptr;
+  ScriptPromise<IDLUndefined> result;
+
+  // This has to be set before the ScriptState::Scope, since creating that will
+  // cause the top-level check to fail.
+  std::optional<scheduler::TaskAttributionTracker::TaskScope>
+      task_attribution_scope;
+  if (update_dom_callback_) {
+    task_attribution_scope = SetCurrentTaskStateIfTopLevel(
+        task_state_, execution_context_, TaskScopeType::kCallback);
+  }
+
+  // It's ok to use the main world when there is no callback, since we're only
+  // using it to call DOMChangeFinishedCallback which doesn't use the script
+  // state or execute any script.
+  ScriptState* script_state =
+      update_dom_callback_ ? update_dom_callback_->CallbackRelevantScriptState()
+                           : ToScriptStateForMainWorld(execution_context_);
+  ScriptState::Scope scope(script_state);
 
   if (update_dom_callback_) {
-    script_state = update_dom_callback_->CallbackRelevantScriptState();
-    result = update_dom_callback_->Invoke(nullptr);
+    v8::Maybe<ScriptPromise<IDLUndefined>> maybe_result =
+        update_dom_callback_->Invoke(nullptr);
 
     // If the callback couldn't be run for some reason, treat it as an empty
     // promise rejected with an abort exception.
-    if (result.IsNothing()) {
-      auto value = ScriptValue::From(
+    if (maybe_result.IsNothing()) {
+      result = ScriptPromise<IDLUndefined>::RejectWithDOMException(
           script_state, MakeGarbageCollected<DOMException>(
                             DOMExceptionCode::kAbortError, kAbortedMessage));
-      result = v8::Just(ScriptPromiseUntyped::Reject(script_state, value));
+    } else {
+      result = maybe_result.FromJust();
     }
   } else {
-    // It's ok to use the main world here since we're only using it to call
-    // DOMChangeFinishedCallback which doesn't use the script state or execute
-    // any script.
-    script_state = ToScriptStateForMainWorld(execution_context_);
-
-    ScriptState::Scope scope(script_state);
-
     // If there's no callback provided, treat the same as an empty promise
     // resolved without a value.
-    result = v8::Just(ScriptPromiseUntyped::CastUndefined(script_state));
+    result = ToResolvedUndefinedPromise(script_state);
   }
 
   // Note, the DOMChangeFinishedCallback will be invoked asynchronously.
-  ScriptState::Scope scope(script_state);
-  result.ToChecked().Then(
-      MakeGarbageCollected<ScriptFunction>(
-          script_state,
-          MakeGarbageCollected<DOMChangeFinishedCallback>(*this, true)),
-      MakeGarbageCollected<ScriptFunction>(
-          script_state,
-          MakeGarbageCollected<DOMChangeFinishedCallback>(*this, false)));
+  result.Then(script_state,
+              MakeGarbageCollected<DOMChangeFinishedCallback>(*this),
+              MakeGarbageCollected<DOMChangeRejectedCallback>(*this));
+
+  if (view_transition_) {
+    view_transition_->NotifyInvokeDOMChangeCallback();
+  }
 }
 
 void DOMViewTransition::Trace(Visitor* visitor) const {
@@ -217,6 +313,7 @@ void DOMViewTransition::Trace(Visitor* visitor) const {
   visitor->Trace(finished_promise_property_);
   visitor->Trace(ready_promise_property_);
   visitor->Trace(dom_updated_promise_property_);
+  visitor->Trace(task_state_);
 
   ExecutionContextLifecycleObserver::Trace(visitor);
   ScriptWrappable::Trace(visitor);
@@ -228,8 +325,8 @@ void DOMViewTransition::AtMicrotask(ViewTransition::PromiseResponse response,
     return;
   }
   execution_context_->GetAgent()->event_loop()->EnqueueMicrotask(
-      WTF::BindOnce(&DOMViewTransition::HandlePromise, WrapPersistent(this),
-                    response, WrapPersistent(property)));
+      BindOnce(&DOMViewTransition::HandlePromise, WrapPersistent(this),
+               response, WrapPersistent(property)));
 }
 
 void DOMViewTransition::HandlePromise(ViewTransition::PromiseResponse response,
@@ -294,26 +391,8 @@ ViewTransitionTypeSet* DOMViewTransition::types() const {
   return view_transition_->Types();
 }
 
-// DOMChangeFinishedCallback implementation.
-DOMViewTransition::DOMChangeFinishedCallback::DOMChangeFinishedCallback(
-    DOMViewTransition& dom_view_transition,
-    bool success)
-    : dom_view_transition_(&dom_view_transition), success_(success) {}
-
-DOMViewTransition::DOMChangeFinishedCallback::~DOMChangeFinishedCallback() =
-    default;
-
-ScriptValue DOMViewTransition::DOMChangeFinishedCallback::Call(
-    ScriptState*,
-    ScriptValue value) {
-  dom_view_transition_->NotifyDOMCallbackFinished(success_, std::move(value));
-  return ScriptValue();
-}
-
-void DOMViewTransition::DOMChangeFinishedCallback::Trace(
-    Visitor* visitor) const {
-  ScriptFunction::Callable::Trace(visitor);
-  visitor->Trace(dom_view_transition_);
+Element* DOMViewTransition::transitionRoot() const {
+  return view_transition_->Scope();
 }
 
 }  // namespace blink

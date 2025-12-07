@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/mojom/url_loader.mojom-forward.h"
 #include "third_party/blink/public/common/common_export.h"

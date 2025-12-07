@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/values.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_host.h"
@@ -22,11 +23,15 @@
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "extensions/browser/api/web_request/web_request_permissions.h"
 #include "extensions/browser/api/web_request/web_request_resource_type.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "net/base/auth.h"
 #include "net/base/upload_data_stream.h"
+#include "net/cert/cert_status_flags.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using extension_web_request_api_helpers::ExtraInfoSpec;
 
@@ -43,6 +48,26 @@ void EraseHeadersIf(
   headers.EraseIf([&predicate](const base::Value& v) {
     return predicate.Run(*v.GetDict().FindString(keys::kHeaderNameKey));
   });
+}
+
+void FilterSecurityInfo(base::Value::Dict& result, int extra_info_spec) {
+  if (!(extra_info_spec & ExtraInfoSpec::SECURITY_INFO)) {
+    result.Remove(keys::kSecurityInfoKey);
+    return;
+  }
+  if (!(extra_info_spec & ExtraInfoSpec::SECURITY_INFO_RAW_DER)) {
+    auto* security_info = result.FindDict(keys::kSecurityInfoKey);
+    if (!security_info) {
+      return;
+    }
+    auto* certificates = security_info->FindList(keys::kCertificatesKey);
+    if (!certificates || certificates->size() <= 0) {
+      return;
+    }
+    if (certificates->front().is_dict()) {
+      certificates->front().GetDict().Remove(keys::kRawDerKey);
+    }
+  }
 }
 
 }  // namespace
@@ -80,8 +105,9 @@ WebRequestEventDetails::WebRequestEventDetails(const WebRequestInfo& request,
 WebRequestEventDetails::~WebRequestEventDetails() = default;
 
 void WebRequestEventDetails::SetRequestBody(WebRequestInfo* request) {
-  if (!(extra_info_spec_ & ExtraInfoSpec::REQUEST_BODY))
+  if (!(extra_info_spec_ & ExtraInfoSpec::REQUEST_BODY)) {
     return;
+  }
   request_body_ = std::nullopt;
   if (request->request_body_data) {
     request_body_ = std::move(request->request_body_data);
@@ -91,8 +117,9 @@ void WebRequestEventDetails::SetRequestBody(WebRequestInfo* request) {
 
 void WebRequestEventDetails::SetRequestHeaders(
     const net::HttpRequestHeaders& request_headers) {
-  if (!(extra_info_spec_ & ExtraInfoSpec::REQUEST_HEADERS))
+  if (!(extra_info_spec_ & ExtraInfoSpec::REQUEST_HEADERS)) {
     return;
+  }
 
   request_headers_ = base::Value::List();
   for (net::HttpRequestHeaders::Iterator it(request_headers); it.GetNext();) {
@@ -104,10 +131,12 @@ void WebRequestEventDetails::SetRequestHeaders(
 void WebRequestEventDetails::SetAuthInfo(
     const net::AuthChallengeInfo& auth_info) {
   dict_.Set(keys::kIsProxyKey, auth_info.is_proxy);
-  if (!auth_info.scheme.empty())
+  if (!auth_info.scheme.empty()) {
     dict_.Set(keys::kSchemeKey, auth_info.scheme);
-  if (!auth_info.realm.empty())
+  }
+  if (!auth_info.realm.empty()) {
     dict_.Set(keys::kRealmKey, auth_info.realm);
+  }
   base::Value::Dict challenger;
   challenger.Set(keys::kHostKey, auth_info.challenger.host());
   challenger.Set(keys::kPortKey, auth_info.challenger.port());
@@ -144,10 +173,51 @@ void WebRequestEventDetails::SetResponseHeaders(
   }
 }
 
+void WebRequestEventDetails::SetSecurityInfo(const WebRequestInfo& request) {
+  if (!(extra_info_spec_ & ExtraInfoSpec::SECURITY_INFO)) {
+    return;
+  }
+
+  base::Value::Dict security_info;
+
+  if (!request.ssl_info || !request.ssl_info->cert) {
+    security_info.Set(keys::kStateKey, "insecure");
+  } else {
+    if (net::IsCertStatusError(request.ssl_info->cert_status)) {
+      security_info.Set(keys::kStateKey, "broken");
+    } else {
+      security_info.Set(keys::kStateKey, "secure");
+    }
+
+    base::Value::Dict leaf_cert;
+    if (extra_info_spec_ & ExtraInfoSpec::SECURITY_INFO_RAW_DER) {
+      base::span<const uint8_t> cert_span = request.ssl_info->cert->cert_span();
+      leaf_cert.Set(keys::kRawDerKey, base::Value::BlobStorage(
+                                          cert_span.begin(), cert_span.end()));
+    }
+
+    base::Value::Dict fingerprint;
+    std::array<uint8_t, 32> sha256_bytes =
+        net::X509Certificate::CalculateFingerprint256(
+            request.ssl_info->cert->cert_buffer());
+    fingerprint.Set(keys::kSha256Key, base::HexEncode(sha256_bytes));
+
+    leaf_cert.Set(keys::kFingerprintKey, std::move(fingerprint));
+
+    base::Value::List certificates;
+    certificates.Append(std::move(leaf_cert));
+
+    security_info.Set(keys::kCertificatesKey, std::move(certificates));
+  }
+
+  dict_.Set(keys::kSecurityInfoKey, std::move(security_info));
+}
+
 void WebRequestEventDetails::SetResponseSource(const WebRequestInfo& request) {
   dict_.Set(keys::kFromCache, request.response_from_cache);
-  if (!request.response_ip.empty())
+  if (!request.response_ip.empty()) {
     dict_.Set(keys::kIpKey, request.response_ip);
+  }
 }
 
 base::Value::Dict WebRequestEventDetails::GetFilteredDict(
@@ -178,6 +248,8 @@ base::Value::Dict WebRequestEventDetails::GetFilteredDict(
                                        extra_info_spec));
     result.Set(keys::kResponseHeadersKey, std::move(response_headers));
   }
+
+  FilterSecurityInfo(result, extra_info_spec);
 
   // Only listeners with a permission for the initiator should receive it.
   if (initiator_) {

@@ -10,10 +10,12 @@
 #import "base/supports_user_data.h"
 #import "components/tab_groups/tab_group_color.h"
 #import "components/tab_groups/tab_group_id.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/web_state_list_builder_from_description.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_groups_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
@@ -120,7 +122,7 @@ class WebStateListTestObserver : public WebStateListObserver {
 
   // Returns the last group for the last detached WebState.
   const TabGroup* web_state_detached_group() const {
-    return web_state_detached_group_;
+    return web_state_detached_group_.get();
   }
 
   // Returns whether a WebState was activated.
@@ -337,30 +339,35 @@ class WebStateListTestObserver : public WebStateListObserver {
 
  private:
   int web_state_inserted_count_ = 0;
-  raw_ptr<const TabGroup> web_state_inserted_group_ = nullptr;
+  raw_ptr<const TabGroup, DanglingUntriaged> web_state_inserted_group_ =
+      nullptr;
   int web_state_moved_count_ = 0;
-  raw_ptr<const TabGroup> web_state_moved_old_group_ = nullptr;
-  raw_ptr<const TabGroup> web_state_moved_new_group_ = nullptr;
+  raw_ptr<const TabGroup, DanglingUntriaged> web_state_moved_old_group_ =
+      nullptr;
+  raw_ptr<const TabGroup, DanglingUntriaged> web_state_moved_new_group_ =
+      nullptr;
   int web_state_replaced_count_ = 0;
   int web_state_detached_count_ = 0;
-  raw_ptr<const TabGroup> web_state_detached_group_ = nullptr;
+  raw_ptr<const TabGroup, DanglingUntriaged> web_state_detached_group_ =
+      nullptr;
   int web_state_activated_count_ = 0;
   int pinned_state_changed_count_ = 0;
   int status_only_count_ = 0;
-  raw_ptr<web::WebState> status_only_web_state_ = nullptr;
-  raw_ptr<const TabGroup> status_only_old_group_ = nullptr;
-  raw_ptr<const TabGroup> status_only_new_group_ = nullptr;
+  raw_ptr<web::WebState, DanglingUntriaged> status_only_web_state_ = nullptr;
+  raw_ptr<const TabGroup, DanglingUntriaged> status_only_old_group_ = nullptr;
+  raw_ptr<const TabGroup, DanglingUntriaged> status_only_new_group_ = nullptr;
   int group_created_count_ = 0;
-  raw_ptr<const TabGroup> group_created_group_ = nullptr;
+  raw_ptr<const TabGroup, DanglingUntriaged> group_created_group_ = nullptr;
   int visual_data_updated_count_ = 0;
-  raw_ptr<const TabGroup> visual_data_updated_group_ = nullptr;
+  raw_ptr<const TabGroup, DanglingUntriaged> visual_data_updated_group_ =
+      nullptr;
   TabGroupVisualData old_visual_data_ = TabGroupVisualData();
   int group_moved_count_ = 0;
-  raw_ptr<const TabGroup> group_moved_group_ = nullptr;
+  raw_ptr<const TabGroup, DanglingUntriaged> group_moved_group_ = nullptr;
   TabGroupRange group_moved_from_range_ = TabGroupRange::InvalidRange();
   TabGroupRange group_moved_to_range_ = TabGroupRange::InvalidRange();
   int group_deleted_count_ = 0;
-  raw_ptr<const TabGroup> group_deleted_group_ = nullptr;
+  raw_ptr<const TabGroup, DanglingUntriaged> group_deleted_group_ = nullptr;
   int batch_operation_started_count_ = 0;
   int batch_operation_ended_count_ = 0;
   int web_state_list_destroyed_count_ = 0;
@@ -417,16 +424,20 @@ class TestWebStateListDelegate final : public WebStateListDelegate {
   void ResetStatistics() {
     inserted_web_state_count_ = 0;
     activated_web_state_count_ = 0;
+    removed_web_state_count_ = 0;
 
     last_inserted_web_state_ = nullptr;
     last_activated_web_state_ = nullptr;
+    last_removed_web_state_ = nullptr;
   }
 
   int InsertedWebStateCount() const { return inserted_web_state_count_; }
   int ActivatedWebStateCount() const { return activated_web_state_count_; }
+  int RemovedWebStateCount() const { return removed_web_state_count_; }
 
   web::WebState* LastInsertedWebState() { return last_inserted_web_state_; }
   web::WebState* LastActivatedWebState() { return last_activated_web_state_; }
+  web::WebState* LastRemovedWebState() { return last_removed_web_state_; }
 
   // WebStateListDelegate implementation.
   void WillAddWebState(web::WebState* web_state) final {
@@ -437,19 +448,48 @@ class TestWebStateListDelegate final : public WebStateListDelegate {
     ++activated_web_state_count_;
     last_activated_web_state_ = web_state;
   }
+  void WillRemoveWebState(web::WebState* web_state) final {
+    ++removed_web_state_count_;
+    last_removed_web_state_ = web_state;
+  }
 
  private:
   int inserted_web_state_count_ = 0;
   int activated_web_state_count_ = 0;
-  raw_ptr<web::WebState> last_inserted_web_state_;
-  raw_ptr<web::WebState> last_activated_web_state_;
+  int removed_web_state_count_ = 0;
+  raw_ptr<web::WebState, DanglingUntriaged> last_inserted_web_state_;
+  raw_ptr<web::WebState, DanglingUntriaged> last_activated_web_state_;
+  raw_ptr<web::WebState, DanglingUntriaged> last_removed_web_state_;
+};
+
+class TestWebStateListGroupsDelegate final : public WebStateListGroupsDelegate {
+ public:
+  void SetShouldDeleteGroup(bool group_deletion) {
+    group_deletion_ = group_deletion;
+  }
+
+  // WebStateListGroupsDelegate implementation.
+  bool ShouldDeleteGroup(const TabGroup* group) final {
+    return group_deletion_;
+  }
+
+  std::unique_ptr<web::WebState> WebStateToAddToEmptyGroup() final {
+    auto fake_web_state = std::make_unique<web::FakeWebState>();
+    fake_web_state->SetCurrentURL(GURL(kChromeUINewTabURL));
+    fake_web_state->SetNavigationManager(
+        std::make_unique<FakeNavigationManager>());
+    return fake_web_state;
+  }
+
+ private:
+  bool group_deletion_ = true;
 };
 
 }  // namespace
 
 class WebStateListTest : public PlatformTest {
  public:
-  WebStateListTest() : web_state_list_(&delegate_) {
+  WebStateListTest() : web_state_list_(&delegate_, &groups_delegate_) {
     observer_.Observe(&web_state_list_);
   }
 
@@ -458,6 +498,7 @@ class WebStateListTest : public PlatformTest {
 
  protected:
   TestWebStateListDelegate delegate_;
+  TestWebStateListGroupsDelegate groups_delegate_;
   WebStateList web_state_list_;
   WebStateListTestObserver observer_;
 
@@ -530,6 +571,7 @@ TEST_F(WebStateListTest, IsEmpty) {
   AppendNewWebState(kURL0);
 
   ASSERT_GE(web_state_list_.count(), 1);
+  EXPECT_EQ(delegate_.InsertedWebStateCount(), 1);
   EXPECT_EQ(delegate_.LastInsertedWebState(), web_state_list_.GetWebStateAt(0));
   EXPECT_EQ(delegate_.LastActivatedWebState(), nullptr);
 
@@ -543,6 +585,7 @@ TEST_F(WebStateListTest, InsertUrlSingle) {
   AppendNewWebState(kURL0);
 
   ASSERT_GE(web_state_list_.count(), 1);
+  EXPECT_EQ(delegate_.InsertedWebStateCount(), 1);
   EXPECT_EQ(delegate_.LastInsertedWebState(), web_state_list_.GetWebStateAt(0));
   EXPECT_EQ(delegate_.LastActivatedWebState(), nullptr);
 
@@ -557,6 +600,7 @@ TEST_F(WebStateListTest, InsertUrlMultiple) {
                                  WebStateList::InsertionParams::AtIndex(0));
 
   ASSERT_GE(web_state_list_.count(), 1);
+  EXPECT_EQ(delegate_.InsertedWebStateCount(), 1);
   EXPECT_EQ(delegate_.LastInsertedWebState(), web_state_list_.GetWebStateAt(0));
   EXPECT_EQ(delegate_.LastActivatedWebState(), nullptr);
 
@@ -564,6 +608,7 @@ TEST_F(WebStateListTest, InsertUrlMultiple) {
                                  WebStateList::InsertionParams::AtIndex(0));
 
   ASSERT_GE(web_state_list_.count(), 1);
+  EXPECT_EQ(delegate_.InsertedWebStateCount(), 2);
   EXPECT_EQ(delegate_.LastInsertedWebState(), web_state_list_.GetWebStateAt(0));
   EXPECT_EQ(delegate_.LastActivatedWebState(), nullptr);
 
@@ -571,6 +616,7 @@ TEST_F(WebStateListTest, InsertUrlMultiple) {
                                  WebStateList::InsertionParams::AtIndex(1));
 
   ASSERT_GE(web_state_list_.count(), 1);
+  EXPECT_EQ(delegate_.InsertedWebStateCount(), 3);
   EXPECT_EQ(delegate_.LastInsertedWebState(), web_state_list_.GetWebStateAt(1));
   EXPECT_EQ(delegate_.LastActivatedWebState(), nullptr);
 
@@ -587,12 +633,14 @@ TEST_F(WebStateListTest, ActivateWebState) {
   EXPECT_EQ(nullptr, web_state_list_.GetActiveWebState());
 
   ASSERT_GE(web_state_list_.count(), 1);
+  EXPECT_EQ(delegate_.InsertedWebStateCount(), 1);
   EXPECT_EQ(delegate_.LastInsertedWebState(), web_state_list_.GetWebStateAt(0));
   EXPECT_EQ(delegate_.LastActivatedWebState(), nullptr);
 
   web_state_list_.ActivateWebStateAt(0);
 
   ASSERT_GE(web_state_list_.count(), 1);
+  EXPECT_EQ(delegate_.InsertedWebStateCount(), 1);
   EXPECT_EQ(delegate_.LastInsertedWebState(), web_state_list_.GetWebStateAt(0));
   EXPECT_EQ(delegate_.LastActivatedWebState(),
             web_state_list_.GetWebStateAt(0));
@@ -610,6 +658,7 @@ TEST_F(WebStateListTest, InsertActivate) {
       WebStateList::InsertionParams::AtIndex(0).Activate());
 
   ASSERT_GE(web_state_list_.count(), 1);
+  EXPECT_EQ(delegate_.InsertedWebStateCount(), 1);
   EXPECT_EQ(delegate_.LastInsertedWebState(), web_state_list_.GetWebStateAt(0));
   EXPECT_EQ(delegate_.LastActivatedWebState(),
             web_state_list_.GetWebStateAt(0));
@@ -721,7 +770,10 @@ TEST_F(WebStateListTest, GetIndexOfInactiveWebStateWithURL) {
 
   // Remove the webstate at index 1, so the only webstate with the target URL
   // is after the active webstate.
-  web_state_list_.DetachWebStateAt(1);
+  auto detached_web_state = web_state_list_.DetachWebStateAt(1);
+  EXPECT_EQ(delegate_.RemovedWebStateCount(), 1);
+  EXPECT_EQ(delegate_.LastRemovedWebState(), detached_web_state.get());
+  detached_web_state.reset();
 
   // Active webstate is now index 1, target URL is at index 2.
   EXPECT_EQ(2, web_state_list_.GetIndexOfInactiveWebStateWithURL(GURL(kURL0)));
@@ -966,9 +1018,12 @@ TEST_F(WebStateListTest, DetachWebStateAtIndexBeginning) {
   EXPECT_EQ(WebStateList::kInvalidIndex, web_state_list_.active_index());
 
   observer_.ResetStatistics();
-  web_state_list_.DetachWebStateAt(0);
+  auto detached_web_state = web_state_list_.DetachWebStateAt(0);
 
   EXPECT_EQ(delegate_.LastActivatedWebState(), nullptr);
+  EXPECT_EQ(delegate_.RemovedWebStateCount(), 1);
+  EXPECT_EQ(delegate_.LastRemovedWebState(), detached_web_state.get());
+  detached_web_state.reset();
 
   EXPECT_TRUE(observer_.web_state_detached());
   EXPECT_FALSE(observer_.web_state_activated());
@@ -992,9 +1047,12 @@ TEST_F(WebStateListTest, DetachWebStateAtIndexMiddle) {
   EXPECT_EQ(WebStateList::kInvalidIndex, web_state_list_.active_index());
 
   observer_.ResetStatistics();
-  web_state_list_.DetachWebStateAt(1);
+  auto detached_web_state = web_state_list_.DetachWebStateAt(1);
 
   EXPECT_EQ(delegate_.LastActivatedWebState(), nullptr);
+  EXPECT_EQ(delegate_.RemovedWebStateCount(), 1);
+  EXPECT_EQ(delegate_.LastRemovedWebState(), detached_web_state.get());
+  detached_web_state.reset();
 
   EXPECT_TRUE(observer_.web_state_detached());
   EXPECT_FALSE(observer_.web_state_activated());
@@ -1018,9 +1076,12 @@ TEST_F(WebStateListTest, DetachWebStateAtIndexLast) {
   EXPECT_EQ(WebStateList::kInvalidIndex, web_state_list_.active_index());
 
   observer_.ResetStatistics();
-  web_state_list_.DetachWebStateAt(2);
+  auto detached_web_state = web_state_list_.DetachWebStateAt(2);
 
   EXPECT_EQ(delegate_.LastActivatedWebState(), nullptr);
+  EXPECT_EQ(delegate_.RemovedWebStateCount(), 1);
+  EXPECT_EQ(delegate_.LastRemovedWebState(), detached_web_state.get());
+  detached_web_state.reset();
 
   EXPECT_TRUE(observer_.web_state_detached());
   EXPECT_FALSE(observer_.web_state_activated());
@@ -1048,7 +1109,11 @@ TEST_F(WebStateListTest, DetachActiveWebState) {
   EXPECT_EQ(0, web_state_list_.active_index());
 
   observer_.ResetStatistics();
-  web_state_list_.DetachWebStateAt(0);
+  auto detached_web_state = web_state_list_.DetachWebStateAt(0);
+
+  EXPECT_EQ(delegate_.RemovedWebStateCount(), 1);
+  EXPECT_EQ(delegate_.LastRemovedWebState(), detached_web_state.get());
+  detached_web_state.reset();
 
   // Note: this is a different WebState.
   EXPECT_EQ(delegate_.LastActivatedWebState(),
@@ -1076,7 +1141,8 @@ TEST_F(WebStateListTest, CloseAllNonPinnedWebStates_PinnedWebStatesPresent) {
   EXPECT_TRUE(observer_.pinned_state_changed());
 
   observer_.ResetStatistics();
-  CloseAllNonPinnedWebStates(web_state_list_, WebStateList::CLOSE_USER_ACTION);
+  CloseAllNonPinnedWebStates(web_state_list_,
+                             WebStateList::ClosingReason::kUserAction);
 
   EXPECT_EQ(1, web_state_list_.count());
   EXPECT_TRUE(web_state_list_.IsWebStatePinnedAt(0));
@@ -1105,7 +1171,8 @@ TEST_F(WebStateListTest,
   EXPECT_TRUE(observer_.pinned_state_changed());
 
   observer_.ResetStatistics();
-  CloseAllNonPinnedWebStates(web_state_list_, WebStateList::CLOSE_USER_ACTION);
+  CloseAllNonPinnedWebStates(web_state_list_,
+                             WebStateList::ClosingReason::kUserAction);
 
   EXPECT_EQ(3, web_state_list_.count());
   EXPECT_TRUE(web_state_list_.IsWebStatePinnedAt(0));
@@ -1127,7 +1194,8 @@ TEST_F(WebStateListTest, CloseAllNonPinnedWebStates_PinnedWebStatesNotPresent) {
   EXPECT_EQ(3, web_state_list_.count());
 
   observer_.ResetStatistics();
-  CloseAllNonPinnedWebStates(web_state_list_, WebStateList::CLOSE_USER_ACTION);
+  CloseAllNonPinnedWebStates(web_state_list_,
+                             WebStateList::ClosingReason::kUserAction);
 
   EXPECT_EQ(0, web_state_list_.count());
 
@@ -1153,7 +1221,8 @@ TEST_F(WebStateListTest,
   EXPECT_TRUE(observer_.pinned_state_changed());
 
   observer_.ResetStatistics();
-  CloseAllNonPinnedWebStates(web_state_list_, WebStateList::CLOSE_USER_ACTION);
+  CloseAllNonPinnedWebStates(web_state_list_,
+                             WebStateList::ClosingReason::kUserAction);
 
   EXPECT_EQ(1, web_state_list_.count());
   EXPECT_EQ(0, web_state_list_.active_index());
@@ -1183,7 +1252,8 @@ TEST_F(WebStateListTest,
   EXPECT_TRUE(observer_.pinned_state_changed());
 
   observer_.ResetStatistics();
-  CloseAllNonPinnedWebStates(web_state_list_, WebStateList::CLOSE_USER_ACTION);
+  CloseAllNonPinnedWebStates(web_state_list_,
+                             WebStateList::ClosingReason::kUserAction);
 
   EXPECT_EQ(1, web_state_list_.count());
   EXPECT_EQ(0, web_state_list_.active_index());
@@ -1203,7 +1273,7 @@ TEST_F(WebStateListTest, CloseAllWebStatesInGroup_NonGroupedWebStatesPresent) {
 
   observer_.ResetStatistics();
   CloseAllWebStatesInGroup(web_state_list_, group,
-                           WebStateList::CLOSE_USER_ACTION);
+                           WebStateList::ClosingReason::kUserAction);
 
   EXPECT_EQ("a | b", builder.GetWebStateListDescription());
   EXPECT_EQ(2, observer_.web_state_detached_count());
@@ -1220,7 +1290,7 @@ TEST_F(WebStateListTest,
 
   observer_.ResetStatistics();
   CloseAllWebStatesInGroup(web_state_list_, group,
-                           WebStateList::CLOSE_USER_ACTION);
+                           WebStateList::ClosingReason::kUserAction);
 
   EXPECT_EQ("|", builder.GetWebStateListDescription());
   EXPECT_EQ(3, observer_.web_state_detached_count());
@@ -1238,7 +1308,7 @@ TEST_F(WebStateListTest,
 
   observer_.ResetStatistics();
   CloseAllWebStatesInGroup(web_state_list_, group,
-                           WebStateList::CLOSE_USER_ACTION);
+                           WebStateList::ClosingReason::kUserAction);
 
   EXPECT_EQ("| a*", builder.GetWebStateListDescription());
   EXPECT_EQ(2, observer_.web_state_detached_count());
@@ -1257,7 +1327,7 @@ TEST_F(WebStateListTest,
 
   observer_.ResetStatistics();
   CloseAllWebStatesInGroup(web_state_list_, group,
-                           WebStateList::CLOSE_USER_ACTION);
+                           WebStateList::ClosingReason::kUserAction);
 
   EXPECT_EQ("| c*", builder.GetWebStateListDescription());
   EXPECT_EQ(2, observer_.web_state_detached_count());
@@ -1277,7 +1347,7 @@ TEST_F(
 
   observer_.ResetStatistics();
   CloseAllWebStatesInGroup(web_state_list_, group,
-                           WebStateList::CLOSE_USER_ACTION);
+                           WebStateList::ClosingReason::kUserAction);
 
   EXPECT_EQ("| a d*", builder.GetWebStateListDescription());
   EXPECT_EQ(2, observer_.web_state_detached_count());
@@ -1302,7 +1372,7 @@ TEST_F(WebStateListTest, CloseAllWebStates_PinnedNonPinned) {
   EXPECT_TRUE(observer_.pinned_state_changed());
 
   observer_.ResetStatistics();
-  CloseAllWebStates(web_state_list_, WebStateList::CLOSE_USER_ACTION);
+  CloseAllWebStates(web_state_list_, WebStateList::ClosingReason::kUserAction);
 
   EXPECT_EQ(0, web_state_list_.count());
 
@@ -1321,7 +1391,7 @@ TEST_F(WebStateListTest, CloseAllWebStates_NonPinned) {
   EXPECT_EQ(3, web_state_list_.count());
 
   observer_.ResetStatistics();
-  CloseAllWebStates(web_state_list_, WebStateList::CLOSE_USER_ACTION);
+  CloseAllWebStates(web_state_list_, WebStateList::ClosingReason::kUserAction);
 
   EXPECT_EQ(0, web_state_list_.count());
 
@@ -1346,7 +1416,7 @@ TEST_F(WebStateListTest, CloseAllWebStates_PinnedNonPinnedWithActiveWebState) {
   EXPECT_TRUE(observer_.pinned_state_changed());
 
   observer_.ResetStatistics();
-  CloseAllWebStates(web_state_list_, WebStateList::CLOSE_USER_ACTION);
+  CloseAllWebStates(web_state_list_, WebStateList::ClosingReason::kUserAction);
 
   EXPECT_EQ(0, web_state_list_.count());
   EXPECT_EQ(WebStateList::kInvalidIndex, web_state_list_.active_index());
@@ -1401,7 +1471,7 @@ TEST_F(WebStateListTest, CloseAllWebStates_ObserverNotificationOrder) {
         observation2.Reset();
       });
 
-  CloseAllWebStates(web_state_list_, WebStateList::CLOSE_USER_ACTION);
+  CloseAllWebStates(web_state_list_, WebStateList::ClosingReason::kUserAction);
 
   EXPECT_TRUE(observer_.batch_operation_ended());
 }
@@ -1424,8 +1494,8 @@ TEST_F(WebStateListTest, CloseWebStatesAtIndices) {
 
   delegate_.ResetStatistics();
   observer_.ResetStatistics();
-  web_state_list_.CloseWebStatesAtIndices(WebStateList::CLOSE_USER_ACTION,
-                                          RemovingIndexes{2, 3, 4, 6});
+  web_state_list_.CloseWebStatesAtIndices(
+      WebStateList::ClosingReason::kUserAction, RemovingIndexes{2, 3, 4, 6});
 
   // Check that the correct elements have been closed, and that the
   // active WebState is the expected one.
@@ -1454,7 +1524,7 @@ TEST_F(WebStateListTest, CloseWebState) {
   EXPECT_EQ(3, web_state_list_.count());
 
   observer_.ResetStatistics();
-  web_state_list_.CloseWebStateAt(0, WebStateList::CLOSE_USER_ACTION);
+  web_state_list_.CloseWebStateAt(0, WebStateList::ClosingReason::kUserAction);
 
   EXPECT_EQ(2, web_state_list_.count());
   EXPECT_TRUE(observer_.web_state_detached());
@@ -1824,19 +1894,20 @@ TEST_F(WebStateListTest, InsertWebState_Groups_Automatic) {
 TEST_F(WebStateListTest, InsertWebState_Groups_AtIndex) {
   constexpr std::string_view web_state_list_description_before_insertion =
       "a | b [ 0 c d ] e f [ 1 g ]";
-  constexpr std::string_view expected_description_for_insertion_index[]{
-      "a | b [ 0 c d ] e f [ 1 g ] X",  // Insertion at 'a'.
-      "a | X b [ 0 c d ] e f [ 1 g ]",  // Insertion at 'b'.
-      "a | b X [ 0 c d ] e f [ 1 g ]",  // Insertion at 'c'.
-      "a | b [ 0 c X d ] e f [ 1 g ]",  // Insertion at 'd',.
-      "a | b [ 0 c d ] X e f [ 1 g ]",  // Insertion at 'e'.
-      "a | b [ 0 c d ] e X f [ 1 g ]",  // Insertion at 'f'.
-      "a | b [ 0 c d ] e f X [ 1 g ]",  // Insertion at 'g'.
-      "a | b [ 0 c d ] e f [ 1 g ] X",  // Insertion after 'g'.
-  };
+  constexpr auto expected_description_for_insertion_index =
+      std::to_array<std::string_view>({
+          "a | b [ 0 c d ] e f [ 1 g ] X",  // Insertion at 'a'.
+          "a | X b [ 0 c d ] e f [ 1 g ]",  // Insertion at 'b'.
+          "a | b X [ 0 c d ] e f [ 1 g ]",  // Insertion at 'c'.
+          "a | b [ 0 c X d ] e f [ 1 g ]",  // Insertion at 'd',.
+          "a | b [ 0 c d ] X e f [ 1 g ]",  // Insertion at 'e'.
+          "a | b [ 0 c d ] e X f [ 1 g ]",  // Insertion at 'f'.
+          "a | b [ 0 c d ] e f X [ 1 g ]",  // Insertion at 'g'.
+          "a | b [ 0 c d ] e f [ 1 g ] X",  // Insertion after 'g'.
+      });
 
-  for (int insertion_index = 0;
-       insertion_index < std::ssize(expected_description_for_insertion_index);
+  for (size_t insertion_index = 0;
+       insertion_index < expected_description_for_insertion_index.size();
        ++insertion_index) {
     // Setting up WebStateList and WebState to insert.
     WebStateListBuilderFromDescription builder(&web_state_list_);
@@ -1869,7 +1940,7 @@ TEST_F(WebStateListTest, InsertWebState_Groups_AtIndex) {
     EXPECT_EQ(1, observer_.web_state_inserted_count());
 
     // Resetting.
-    CloseAllWebStates(web_state_list_, WebStateList::CLOSE_NO_FLAGS);
+    CloseAllWebStates(web_state_list_, WebStateList::ClosingReason::kDefault);
   }
 }
 
@@ -1879,19 +1950,20 @@ TEST_F(WebStateListTest, InsertWebState_Groups_AtIndex) {
 TEST_F(WebStateListTest, InsertWebState_Groups_AutomaticWithOpener) {
   constexpr std::string_view web_state_list_description_before_insertion =
       "a b | c [ 0 d e ] f g [ 1 h ]";
-  constexpr std::string_view expected_description_for_opener_index[]{
-      "a b | c [ 0 d e ] f g [ 1 h ] X",  // Opener is 'a'.
-      "a b | X c [ 0 d e ] f g [ 1 h ]",  // Opener is 'b'.
-      "a b | c X [ 0 d e ] f g [ 1 h ]",  // Opener is 'c'.
-      "a b | c [ 0 d X e ] f g [ 1 h ]",  // Opener is 'd'.
-      "a b | c [ 0 d e X ] f g [ 1 h ]",  // Opener is 'e'.
-      "a b | c [ 0 d e ] f X g [ 1 h ]",  // Opener is 'f'.
-      "a b | c [ 0 d e ] f g X [ 1 h ]",  // Opener is 'g'.
-      "a b | c [ 0 d e ] f g [ 1 h X ]",  // Opener is 'h'.
-  };
+  constexpr auto expected_description_for_opener_index =
+      std::to_array<std::string_view>({
+          "a b | c [ 0 d e ] f g [ 1 h ] X",  // Opener is 'a'.
+          "a b | X c [ 0 d e ] f g [ 1 h ]",  // Opener is 'b'.
+          "a b | c X [ 0 d e ] f g [ 1 h ]",  // Opener is 'c'.
+          "a b | c [ 0 d X e ] f g [ 1 h ]",  // Opener is 'd'.
+          "a b | c [ 0 d e X ] f g [ 1 h ]",  // Opener is 'e'.
+          "a b | c [ 0 d e ] f X g [ 1 h ]",  // Opener is 'f'.
+          "a b | c [ 0 d e ] f g X [ 1 h ]",  // Opener is 'g'.
+          "a b | c [ 0 d e ] f g [ 1 h X ]",  // Opener is 'h'.
+      });
 
-  for (int opener_index = 0;
-       opener_index < std::ssize(expected_description_for_opener_index);
+  for (size_t opener_index = 0;
+       opener_index < expected_description_for_opener_index.size();
        ++opener_index) {
     // Setting up WebStateList, opener and WebState to insert.
     WebStateListBuilderFromDescription builder(&web_state_list_);
@@ -1908,10 +1980,10 @@ TEST_F(WebStateListTest, InsertWebState_Groups_AutomaticWithOpener) {
     ASSERT_TRUE(RangesOfTabGroupsAreValid());
 
     // Inserting the WebState with opener at `opener_index`.
-    WebStateOpener opener(opener_web_state);
     web_state_list_.InsertWebState(
         std::move(web_state_to_insert),
-        WebStateList::InsertionParams::Automatic().WithOpener(opener));
+        WebStateList::InsertionParams::Automatic().WithOpener(
+            WebStateOpener(opener_web_state)));
 
     // Check everything is as expected after insertion.
     EXPECT_TRUE(RangesOfTabGroupsAreValid())
@@ -1930,7 +2002,7 @@ TEST_F(WebStateListTest, InsertWebState_Groups_AutomaticWithOpener) {
     EXPECT_EQ(1, observer_.web_state_inserted_count());
 
     // Resetting.
-    CloseAllWebStates(web_state_list_, WebStateList::CLOSE_NO_FLAGS);
+    CloseAllWebStates(web_state_list_, WebStateList::ClosingReason::kDefault);
   }
 }
 
@@ -1941,19 +2013,20 @@ TEST_F(WebStateListTest, InsertWebState_Groups_AutomaticWithOpener) {
 TEST_F(WebStateListTest, InsertWebState_Groups_AutomaticInheritOpener) {
   constexpr std::string_view web_state_list_description_before_insertion =
       "a b | c [ 0 d e ] f g [ 1 h ]";
-  constexpr std::string_view expected_description_for_opener_index[]{
-      "a* b | c [ 0 d e ] f g [ 1 h ] X",  // Opener is 'a'.
-      "a b* | X c [ 0 d e ] f g [ 1 h ]",  // Opener is 'b'.
-      "a b | c* X [ 0 d e ] f g [ 1 h ]",  // Opener is 'c'.
-      "a b | c [ 0 d* X e ] f g [ 1 h ]",  // Opener is 'd'.
-      "a b | c [ 0 d e* X ] f g [ 1 h ]",  // Opener is 'e'.
-      "a b | c [ 0 d e ] f* X g [ 1 h ]",  // Opener is 'f'.
-      "a b | c [ 0 d e ] f g* X [ 1 h ]",  // Opener is 'g'.
-      "a b | c [ 0 d e ] f g [ 1 h* X ]",  // Opener is 'h'.
-  };
+  constexpr auto expected_description_for_opener_index =
+      std::to_array<std::string_view>({
+          "a* b | c [ 0 d e ] f g [ 1 h ] X",  // Opener is 'a'.
+          "a b* | X c [ 0 d e ] f g [ 1 h ]",  // Opener is 'b'.
+          "a b | c* X [ 0 d e ] f g [ 1 h ]",  // Opener is 'c'.
+          "a b | c [ 0 d* X e ] f g [ 1 h ]",  // Opener is 'd'.
+          "a b | c [ 0 d e* X ] f g [ 1 h ]",  // Opener is 'e'.
+          "a b | c [ 0 d e ] f* X g [ 1 h ]",  // Opener is 'f'.
+          "a b | c [ 0 d e ] f g* X [ 1 h ]",  // Opener is 'g'.
+          "a b | c [ 0 d e ] f g [ 1 h* X ]",  // Opener is 'h'.
+      });
 
-  for (int opener_index = 0;
-       opener_index < std::ssize(expected_description_for_opener_index);
+  for (size_t opener_index = 0;
+       opener_index < expected_description_for_opener_index.size();
        ++opener_index) {
     // Setting up WebStateList, opener and WebState to insert.
     WebStateListBuilderFromDescription builder(&web_state_list_);
@@ -1970,8 +2043,6 @@ TEST_F(WebStateListTest, InsertWebState_Groups_AutomaticInheritOpener) {
     builder.SetWebStateIdentifier(web_state_to_insert_ptr, 'X');
     ASSERT_TRUE(RangesOfTabGroupsAreValid());
 
-    // Inserting the WebState with opener at `opener_index`.
-    WebStateOpener opener(opener_web_state);
     web_state_list_.InsertWebState(
         std::move(web_state_to_insert),
         WebStateList::InsertionParams::Automatic().InheritOpener());
@@ -1993,7 +2064,7 @@ TEST_F(WebStateListTest, InsertWebState_Groups_AutomaticInheritOpener) {
     EXPECT_EQ(1, observer_.web_state_inserted_count());
 
     // Resetting.
-    CloseAllWebStates(web_state_list_, WebStateList::CLOSE_NO_FLAGS);
+    CloseAllWebStates(web_state_list_, WebStateList::ClosingReason::kDefault);
   }
 }
 
@@ -2047,7 +2118,7 @@ TEST_F(WebStateListTest, InsertWebState_Groups_AutomaticInGroup) {
     EXPECT_EQ(1, observer_.web_state_inserted_count());
 
     // Resetting.
-    CloseAllWebStates(web_state_list_, WebStateList::CLOSE_NO_FLAGS);
+    CloseAllWebStates(web_state_list_, WebStateList::ClosingReason::kDefault);
   }
 }
 
@@ -2057,23 +2128,24 @@ TEST_F(WebStateListTest, InsertWebState_Groups_AutomaticInGroup) {
 TEST_F(WebStateListTest, InsertWebState_Groups_AtIndexInGroup1) {
   constexpr std::string_view web_state_list_description_before_insertion =
       "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k ]";
-  constexpr std::string_view expected_description_for_insertion_index[]{
-      "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'a'.
-      "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'b'.
-      "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'c'.
-      "a b | c [ 1 X d ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'd'.
-      "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'e'.
-      "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'f'.
-      "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'g'.
-      "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'h'.
-      "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'i'.
-      "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'j'.
-      "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'k'.
-      "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert after 'k'.
-  };
+  constexpr auto expected_description_for_insertion_index =
+      std::to_array<std::string_view>({
+          "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'a'.
+          "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'b'.
+          "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'c'.
+          "a b | c [ 1 X d ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'd'.
+          "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'e'.
+          "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'f'.
+          "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'g'.
+          "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'h'.
+          "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'i'.
+          "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'j'.
+          "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert at 'k'.
+          "a b | c [ 1 d X ] e f [ 2 g h ] [ 3 i j k ]",  // Insert after 'k'.
+      });
 
-  for (int insertion_index = 0;
-       insertion_index < std::ssize(expected_description_for_insertion_index);
+  for (size_t insertion_index = 0;
+       insertion_index < expected_description_for_insertion_index.size();
        ++insertion_index) {
     // Setting up WebStateList, opener and WebState to insert.
     WebStateListBuilderFromDescription builder(&web_state_list_);
@@ -2111,7 +2183,7 @@ TEST_F(WebStateListTest, InsertWebState_Groups_AtIndexInGroup1) {
     EXPECT_EQ(1, observer_.web_state_inserted_count());
 
     // Resetting.
-    CloseAllWebStates(web_state_list_, WebStateList::CLOSE_NO_FLAGS);
+    CloseAllWebStates(web_state_list_, WebStateList::ClosingReason::kDefault);
   }
 }
 
@@ -2121,23 +2193,24 @@ TEST_F(WebStateListTest, InsertWebState_Groups_AtIndexInGroup1) {
 TEST_F(WebStateListTest, InsertWebState_Groups_AtIndexInGroup2) {
   constexpr std::string_view web_state_list_description_before_insertion =
       "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k ]";
-  constexpr std::string_view expected_description_for_insertion_index[]{
-      "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'a'.
-      "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'b'.
-      "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'c'.
-      "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'd'.
-      "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'e'.
-      "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'f'.
-      "a b | c [ 1 d ] e f [ 2 X g h ] [ 3 i j k ]",  // Insert at 'g'.
-      "a b | c [ 1 d ] e f [ 2 g X h ] [ 3 i j k ]",  // Insert at 'h'.
-      "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'i'.
-      "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'j'.
-      "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'k'.
-      "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert after 'k'.
-  };
+  constexpr auto expected_description_for_insertion_index =
+      std::to_array<std::string_view>({
+          "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'a'.
+          "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'b'.
+          "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'c'.
+          "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'd'.
+          "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'e'.
+          "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'f'.
+          "a b | c [ 1 d ] e f [ 2 X g h ] [ 3 i j k ]",  // Insert at 'g'.
+          "a b | c [ 1 d ] e f [ 2 g X h ] [ 3 i j k ]",  // Insert at 'h'.
+          "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'i'.
+          "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'j'.
+          "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert at 'k'.
+          "a b | c [ 1 d ] e f [ 2 g h X ] [ 3 i j k ]",  // Insert after 'k'.
+      });
 
-  for (int insertion_index = 0;
-       insertion_index < std::ssize(expected_description_for_insertion_index);
+  for (size_t insertion_index = 0;
+       insertion_index < expected_description_for_insertion_index.size();
        ++insertion_index) {
     // Setting up WebStateList, opener and WebState to insert.
     WebStateListBuilderFromDescription builder(&web_state_list_);
@@ -2175,7 +2248,7 @@ TEST_F(WebStateListTest, InsertWebState_Groups_AtIndexInGroup2) {
     EXPECT_EQ(1, observer_.web_state_inserted_count());
 
     // Resetting.
-    CloseAllWebStates(web_state_list_, WebStateList::CLOSE_NO_FLAGS);
+    CloseAllWebStates(web_state_list_, WebStateList::ClosingReason::kDefault);
   }
 }
 
@@ -2185,23 +2258,24 @@ TEST_F(WebStateListTest, InsertWebState_Groups_AtIndexInGroup2) {
 TEST_F(WebStateListTest, InsertWebState_Groups_AtIndexInGroup3) {
   constexpr std::string_view web_state_list_description_before_insertion =
       "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k ]";
-  constexpr std::string_view expected_description_for_insertion_index[]{
-      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'a'.
-      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'b'.
-      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'c'.
-      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'd'.
-      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'e'.
-      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'f'.
-      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'g'.
-      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'h'.
-      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 X i j k ]",  // Insert at 'i'.
-      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i X j k ]",  // Insert at 'j'.
-      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j X k ]",  // Insert at 'k'.
-      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert after 'k'.
-  };
+  constexpr auto expected_description_for_insertion_index =
+      std::to_array<std::string_view>({
+          "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'a'.
+          "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'b'.
+          "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'c'.
+          "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'd'.
+          "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'e'.
+          "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'f'.
+          "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'g'.
+          "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert at 'h'.
+          "a b | c [ 1 d ] e f [ 2 g h ] [ 3 X i j k ]",  // Insert at 'i'.
+          "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i X j k ]",  // Insert at 'j'.
+          "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j X k ]",  // Insert at 'k'.
+          "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k X ]",  // Insert after 'k'.
+      });
 
-  for (int insertion_index = 0;
-       insertion_index < std::ssize(expected_description_for_insertion_index);
+  for (size_t insertion_index = 0;
+       insertion_index < expected_description_for_insertion_index.size();
        ++insertion_index) {
     // Setting up WebStateList, opener and WebState to insert.
     WebStateListBuilderFromDescription builder(&web_state_list_);
@@ -2239,7 +2313,7 @@ TEST_F(WebStateListTest, InsertWebState_Groups_AtIndexInGroup3) {
     EXPECT_EQ(1, observer_.web_state_inserted_count());
 
     // Resetting.
-    CloseAllWebStates(web_state_list_, WebStateList::CLOSE_NO_FLAGS);
+    CloseAllWebStates(web_state_list_, WebStateList::ClosingReason::kDefault);
   }
 }
 
@@ -2267,22 +2341,23 @@ TEST_F(WebStateListTest, InsertWebState_Grouped_Grouped) {
 TEST_F(WebStateListTest, DetachWebStateAt_Groups) {
   constexpr std::string_view web_state_list_description_before_detach =
       "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k ]";
-  constexpr std::string_view expected_description_for_detach_index[]{
-      "b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k ]",  // Detach 'a'.
-      "a | c [ 1 d ] e f [ 2 g h ] [ 3 i j k ]",  // Detach 'b'.
-      "a b | [ 1 d ] e f [ 2 g h ] [ 3 i j k ]",  // Detach 'c'.
-      "a b | c e f [ 2 g h ] [ 3 i j k ]",        // Detach 'd'.
-      "a b | c [ 1 d ] f [ 2 g h ] [ 3 i j k ]",  // Detach 'e'.
-      "a b | c [ 1 d ] e [ 2 g h ] [ 3 i j k ]",  // Detach 'f'.
-      "a b | c [ 1 d ] e f [ 2 h ] [ 3 i j k ]",  // Detach 'g'.
-      "a b | c [ 1 d ] e f [ 2 g ] [ 3 i j k ]",  // Detach 'h'.
-      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 j k ]",  // Detach 'i'.
-      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i k ]",  // Detach 'j'.
-      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j ]",  // Detach 'k'.
-  };
+  constexpr auto expected_description_for_detach_index =
+      std::to_array<std::string_view>({
+          "b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k ]",  // Detach 'a'.
+          "a | c [ 1 d ] e f [ 2 g h ] [ 3 i j k ]",  // Detach 'b'.
+          "a b | [ 1 d ] e f [ 2 g h ] [ 3 i j k ]",  // Detach 'c'.
+          "a b | c e f [ 2 g h ] [ 3 i j k ]",        // Detach 'd'.
+          "a b | c [ 1 d ] f [ 2 g h ] [ 3 i j k ]",  // Detach 'e'.
+          "a b | c [ 1 d ] e [ 2 g h ] [ 3 i j k ]",  // Detach 'f'.
+          "a b | c [ 1 d ] e f [ 2 h ] [ 3 i j k ]",  // Detach 'g'.
+          "a b | c [ 1 d ] e f [ 2 g ] [ 3 i j k ]",  // Detach 'h'.
+          "a b | c [ 1 d ] e f [ 2 g h ] [ 3 j k ]",  // Detach 'i'.
+          "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i k ]",  // Detach 'j'.
+          "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j ]",  // Detach 'k'.
+      });
 
-  for (int detach_index = 0;
-       detach_index < std::ssize(expected_description_for_detach_index);
+  for (size_t detach_index = 0;
+       detach_index < expected_description_for_detach_index.size();
        ++detach_index) {
     // Setting up WebStateList and WebState to insert.
     WebStateListBuilderFromDescription builder(&web_state_list_);
@@ -2307,7 +2382,7 @@ TEST_F(WebStateListTest, DetachWebStateAt_Groups) {
     EXPECT_EQ(group_before_detach, observer_.web_state_detached_group());
 
     // Resetting.
-    CloseAllWebStates(web_state_list_, WebStateList::CLOSE_NO_FLAGS);
+    CloseAllWebStates(web_state_list_, WebStateList::ClosingReason::kDefault);
   }
 }
 
@@ -2319,7 +2394,10 @@ TEST_F(WebStateListTest, DetachWebStateAt_DeleteEmptyGroup) {
   const TabGroup* group = builder.GetTabGroupForIdentifier('0');
 
   observer_.ResetStatistics();
-  web_state_list_.DetachWebStateAt(1);
+  auto detached_web_state = web_state_list_.DetachWebStateAt(1);
+  EXPECT_EQ(delegate_.RemovedWebStateCount(), 1);
+  EXPECT_EQ(delegate_.LastRemovedWebState(), detached_web_state.get());
+  detached_web_state.reset();
 
   EXPECT_EQ("| a*", builder.GetWebStateListDescription());
   EXPECT_EQ(1, observer_.group_deleted_count());
@@ -2840,26 +2918,6 @@ TEST_F(WebStateListTest, MoveToGroup_NoMove_GoToLeftGroup) {
   EXPECT_EQ(group_0, observer_.status_only_new_group());
 }
 
-// Tests keeping the same index but adding to the group on the right.
-// TODO(crbug.com/328831758): Update to use MoveToGroup when it accepts a
-// `to_index`.
-TEST_F(WebStateListTest, MoveToGroup_NoMove_GoToRightGroup) {
-  WebStateListBuilderFromDescription builder(&web_state_list_);
-  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a [ 0 b ]"));
-  const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
-
-  observer_.ResetStatistics();
-  auto lock = web_state_list_.LockForMutation();
-  web_state_list_.MoveWebStateWrapperAt(0, 0, false, group_0);
-
-  EXPECT_EQ("| [ 0 a b ]", builder.GetWebStateListDescription());
-  EXPECT_EQ(TabGroupRange(0, 2), group_0->range());
-  EXPECT_EQ(0, observer_.web_state_moved_count());
-  EXPECT_EQ(1, observer_.status_only_count());
-  EXPECT_EQ(nullptr, observer_.status_only_old_group());
-  EXPECT_EQ(group_0, observer_.status_only_new_group());
-}
-
 // Tests keeping the same index but moving from own group to the group on the
 // left (old group having no remaining tab in it).
 TEST_F(WebStateListTest, MoveToGroup_NoMove_GoToLeftGroup_OldGroupEmpty) {
@@ -2882,30 +2940,6 @@ TEST_F(WebStateListTest, MoveToGroup_NoMove_GoToLeftGroup_OldGroupEmpty) {
 }
 
 // Tests keeping the same index but moving from own group to the group on the
-// right (old group having no remaining tab in it).
-// TODO(crbug.com/328831758): Update to use MoveToGroup when it accepts a
-// `to_index`.
-TEST_F(WebStateListTest, MoveToGroup_NoMove_GoToRightGroup_OldGroupEmpty) {
-  WebStateListBuilderFromDescription builder(&web_state_list_);
-  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| [ 0 a ] [ 1 b ]"));
-  const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
-  const TabGroup* group_1 = builder.GetTabGroupForIdentifier('1');
-
-  observer_.ResetStatistics();
-  auto lock = web_state_list_.LockForMutation();
-  web_state_list_.MoveWebStateWrapperAt(0, 0, false, group_1);
-
-  EXPECT_EQ("| [ 1 a b ]", builder.GetWebStateListDescription());
-  EXPECT_EQ(TabGroupRange(0, 2), group_1->range());
-  EXPECT_EQ(0, observer_.web_state_moved_count());
-  EXPECT_EQ(1, observer_.status_only_count());
-  EXPECT_EQ(group_0, observer_.status_only_old_group());
-  EXPECT_EQ(group_1, observer_.status_only_new_group());
-  EXPECT_EQ(1, observer_.group_deleted_count());
-  EXPECT_EQ(group_0, observer_.group_deleted_group());
-}
-
-// Tests keeping the same index but moving from own group to the group on the
 // left (old group still having remaining tab in it).
 TEST_F(WebStateListTest, MoveToGroup_NoMove_GoToLeftGroup_OldGroupNonEmpty) {
   WebStateListBuilderFromDescription builder(&web_state_list_);
@@ -2924,51 +2958,6 @@ TEST_F(WebStateListTest, MoveToGroup_NoMove_GoToLeftGroup_OldGroupNonEmpty) {
   EXPECT_EQ(1, observer_.status_only_count());
   EXPECT_EQ(group_1, observer_.status_only_old_group());
   EXPECT_EQ(group_0, observer_.status_only_new_group());
-}
-
-// Tests keeping the same index but moving from own group to the group on the
-// right (old group still having remaining tabs in it).
-// TODO(crbug.com/328831758): Update to use MoveToGroup when it accepts a
-// `to_index`.
-TEST_F(WebStateListTest, MoveToGroup_NoMove_GoToRightGroup_OldGroupNonEmpty) {
-  WebStateListBuilderFromDescription builder(&web_state_list_);
-  ASSERT_TRUE(
-      builder.BuildWebStateListFromDescription("| [ 0 a b ] [ 1 c d ]"));
-  const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
-  const TabGroup* group_1 = builder.GetTabGroupForIdentifier('1');
-
-  observer_.ResetStatistics();
-  auto lock = web_state_list_.LockForMutation();
-  web_state_list_.MoveWebStateWrapperAt(1, 1, false, group_1);
-
-  EXPECT_EQ("| [ 0 a ] [ 1 b c d ]", builder.GetWebStateListDescription());
-  EXPECT_EQ(TabGroupRange(0, 1), group_0->range());
-  EXPECT_EQ(TabGroupRange(1, 3), group_1->range());
-  EXPECT_EQ(0, observer_.web_state_moved_count());
-  EXPECT_EQ(1, observer_.status_only_count());
-  EXPECT_EQ(group_0, observer_.status_only_old_group());
-  EXPECT_EQ(group_1, observer_.status_only_new_group());
-}
-
-// Tests moving a pinned tab to a group while keeping the same position.
-// TODO(crbug.com/328831758): Update to use MoveToGroup when it accepts a
-// `to_index`.
-TEST_F(WebStateListTest, MoveToGroup_NoMove_PinnedToGroup) {
-  WebStateListBuilderFromDescription builder(&web_state_list_);
-  ASSERT_TRUE(builder.BuildWebStateListFromDescription("a | [ 0 b ]"));
-  const TabGroup* group = builder.GetTabGroupForIdentifier('0');
-
-  observer_.ResetStatistics();
-  auto lock = web_state_list_.LockForMutation();
-  web_state_list_.MoveWebStateWrapperAt(0, 0, false, group);
-
-  EXPECT_EQ("| [ 0 a b ]", builder.GetWebStateListDescription());
-  EXPECT_EQ(TabGroupRange(0, 2), group->range());
-  EXPECT_EQ(0, observer_.web_state_moved_count());
-  EXPECT_EQ(1, observer_.status_only_count());
-  EXPECT_EQ(1, observer_.pinned_state_changed());
-  EXPECT_EQ(nullptr, observer_.status_only_old_group());
-  EXPECT_EQ(group, observer_.status_only_new_group());
 }
 
 // Tests moving a pinned tab to a group with a change of index.
@@ -3320,7 +3309,7 @@ TEST_F(WebStateListTest, MoveGroup_MovingActiveWebState) {
     }
 
     // Resetting.
-    CloseAllWebStates(web_state_list_, WebStateList::CLOSE_NO_FLAGS);
+    CloseAllWebStates(web_state_list_, WebStateList::ClosingReason::kDefault);
     ++to_index;
   }
 }
@@ -3382,7 +3371,7 @@ TEST_F(WebStateListTest, MoveGroup_NotMovingActiveWebState) {
     }
 
     // Resetting.
-    CloseAllWebStates(web_state_list_, WebStateList::CLOSE_NO_FLAGS);
+    CloseAllWebStates(web_state_list_, WebStateList::ClosingReason::kDefault);
     ++to_index;
   }
 }
@@ -3434,7 +3423,8 @@ TEST_F(WebStateListTest, CloseOtherWebStates_NoGroup) {
   WebStateListBuilderFromDescription builder(&web_state_list_);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription("a | b c d"));
   observer_.ResetStatistics();
-  CloseOtherWebStates(web_state_list_, 2, WebStateList::CLOSE_USER_ACTION);
+  CloseOtherWebStates(web_state_list_, 2,
+                      WebStateList::ClosingReason::kUserAction);
 
   EXPECT_EQ("a | c", builder.GetWebStateListDescription());
   EXPECT_EQ(2, observer_.web_state_detached_count());
@@ -3449,7 +3439,8 @@ TEST_F(WebStateListTest, CloseOtherWebStates_GroupPinned) {
   const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
 
   observer_.ResetStatistics();
-  CloseOtherWebStates(web_state_list_, 0, WebStateList::CLOSE_USER_ACTION);
+  CloseOtherWebStates(web_state_list_, 0,
+                      WebStateList::ClosingReason::kUserAction);
 
   EXPECT_EQ("a |", builder.GetWebStateListDescription());
   EXPECT_EQ(3, observer_.web_state_detached_count());
@@ -3465,11 +3456,96 @@ TEST_F(WebStateListTest, CloseOtherWebStates_GroupNoPinned) {
   const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
 
   observer_.ResetStatistics();
-  CloseOtherWebStates(web_state_list_, 3, WebStateList::CLOSE_USER_ACTION);
+  CloseOtherWebStates(web_state_list_, 3,
+                      WebStateList::ClosingReason::kUserAction);
 
   EXPECT_EQ("| [ 0 d ]", builder.GetWebStateListDescription());
   EXPECT_EQ(3, observer_.web_state_detached_count());
   EXPECT_TRUE(web_state_list_.ContainsGroup(group_0));
   EXPECT_TRUE(observer_.batch_operation_started());
   EXPECT_TRUE(observer_.batch_operation_ended());
+}
+
+// Ensures when the delegate allows group deletion, detaching the last tab
+// results in the group's removal.
+TEST_F(WebStateListTest, GroupDeletedWhenShouldBeDeleted) {
+  WebStateListBuilderFromDescription builder(&web_state_list_);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| [ 0 a ]"));
+
+  observer_.ResetStatistics();
+  web_state_list_.DetachWebStateAt(0);
+  EXPECT_EQ("|", builder.GetWebStateListDescription());
+  EXPECT_TRUE(observer_.web_state_detached());
+}
+
+// Ensures when the delegate prevents group deletion, the group remains, and
+// detaching its final tab results in a new tab being added to it (replacing
+// the detached tab).
+TEST_F(WebStateListTest, GroupNotDeletedWhenShouldNotBeDeleted) {
+  WebStateListBuilderFromDescription builder(&web_state_list_);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| [ 0 a ]"));
+  const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
+
+  ASSERT_EQ(web_state_list_.count(), 1);
+  const web::WebStateID old_web_state_id =
+      web_state_list_.GetWebStateAt(0)->GetUniqueIdentifier();
+
+  observer_.ResetStatistics();
+  groups_delegate_.SetShouldDeleteGroup(false);
+  web_state_list_.DetachWebStateAt(0);
+
+  // The WebState is going to be replaced by a new WebState, so
+  // WebStateListBuilderFromDescription reuse the identifer for
+  // the new WebState. The identifier should be different though.
+  EXPECT_EQ("| [ 0 a ]", builder.GetWebStateListDescription());
+  ASSERT_EQ(web_state_list_.count(), 1);
+  EXPECT_NE(old_web_state_id,
+            web_state_list_.GetWebStateAt(0)->GetUniqueIdentifier());
+  EXPECT_TRUE(web_state_list_.ContainsGroup(group_0));
+  EXPECT_TRUE(observer_.web_state_replaced());
+  EXPECT_EQ(1, group_0->range().count());
+}
+
+// Ensures when the delegate prevents group deletion, the group remains, and
+// detaching its final tab results in a new tab being added to it (replacing
+// the detached tab).
+TEST_F(WebStateListTest, GroupNotDeletedWhenShouldNotBeDeleted_UserAction) {
+  WebStateListBuilderFromDescription builder(&web_state_list_);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| [ 0 a ]"));
+  const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
+
+  ASSERT_EQ(web_state_list_.count(), 1);
+  const web::WebStateID old_web_state_id =
+      web_state_list_.GetWebStateAt(0)->GetUniqueIdentifier();
+
+  observer_.ResetStatistics();
+  groups_delegate_.SetShouldDeleteGroup(false);
+  web_state_list_.CloseWebStateAt(0, WebStateList::ClosingReason::kUserAction);
+
+  // The WebState is going to be replaced by a new WebState, so
+  // WebStateListBuilderFromDescription reuse the identifer for
+  // the new WebState. The identifier should be different though.
+  EXPECT_EQ("| [ 0 a ]", builder.GetWebStateListDescription());
+  ASSERT_EQ(web_state_list_.count(), 1);
+  EXPECT_NE(old_web_state_id,
+            web_state_list_.GetWebStateAt(0)->GetUniqueIdentifier());
+  EXPECT_TRUE(web_state_list_.ContainsGroup(group_0));
+  EXPECT_TRUE(observer_.web_state_replaced());
+  EXPECT_EQ(1, group_0->range().count());
+}
+
+// Ensures when the delegate cannot prevent when closing the last tab in a
+// group if the WebStateList determines the close action is part of the app
+// shutdown.
+TEST_F(WebStateListTest, GroupDeletedEvenIfShouldNotBeDeletedAtAppShutdown) {
+  WebStateListBuilderFromDescription builder(&web_state_list_);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| [ 0 a ]"));
+
+  observer_.ResetStatistics();
+  groups_delegate_.SetShouldDeleteGroup(false);
+  web_state_list_.CloseWebStateAt(0, WebStateList::ClosingReason::kDefault);
+
+  EXPECT_EQ("|", builder.GetWebStateListDescription());
+  EXPECT_TRUE(observer_.web_state_detached());
+  EXPECT_TRUE(web_state_list_.empty());
 }

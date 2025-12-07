@@ -9,14 +9,16 @@
 #include "base/time/time.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_connection_type.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_effective_connection_type.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/navigator_base.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -24,29 +26,45 @@ namespace blink {
 
 namespace {
 
-String ConnectionTypeToString(WebConnectionType type) {
+V8ConnectionType::Enum ConnectionTypeToEnum(WebConnectionType type) {
   switch (type) {
     case kWebConnectionTypeCellular2G:
     case kWebConnectionTypeCellular3G:
     case kWebConnectionTypeCellular4G:
-      return "cellular";
+      return V8ConnectionType::Enum::kCellular;
     case kWebConnectionTypeBluetooth:
-      return "bluetooth";
+      return V8ConnectionType::Enum::kBluetooth;
     case kWebConnectionTypeEthernet:
-      return "ethernet";
+      return V8ConnectionType::Enum::kEthernet;
     case kWebConnectionTypeWifi:
-      return "wifi";
+      return V8ConnectionType::Enum::kWifi;
     case kWebConnectionTypeWimax:
-      return "wimax";
+      return V8ConnectionType::Enum::kWimax;
     case kWebConnectionTypeOther:
-      return "other";
+      return V8ConnectionType::Enum::kOther;
     case kWebConnectionTypeNone:
-      return "none";
+      return V8ConnectionType::Enum::kNone;
     case kWebConnectionTypeUnknown:
-      return "unknown";
+      return V8ConnectionType::Enum::kUnknown;
   }
-  NOTREACHED_IN_MIGRATION();
-  return "none";
+  NOTREACHED();
+}
+
+V8EffectiveConnectionType::Enum EffectiveConnectionTypeToEnum(
+    WebEffectiveConnectionType type) {
+  switch (type) {
+    case WebEffectiveConnectionType::kTypeSlow2G:
+      return V8EffectiveConnectionType::Enum::kSlow2G;
+    case WebEffectiveConnectionType::kType2G:
+      return V8EffectiveConnectionType::Enum::k2G;
+    case WebEffectiveConnectionType::kType3G:
+      return V8EffectiveConnectionType::Enum::k3G;
+    case WebEffectiveConnectionType::kTypeUnknown:
+    case WebEffectiveConnectionType::kTypeOffline:
+    case WebEffectiveConnectionType::kType4G:
+      return V8EffectiveConnectionType::Enum::k4G;
+  }
+  NOTREACHED();
 }
 
 String GetConsoleLogStringForWebHoldback() {
@@ -64,18 +82,20 @@ bool NetworkInformation::IsObserving() const {
   return !!connection_observer_handle_;
 }
 
-String NetworkInformation::type() const {
+V8ConnectionType NetworkInformation::type() const {
   if (RuntimeEnabledFeatures::NetInfoConstantTypeEnabled()) {
-    return ConnectionTypeToString(kWebConnectionTypeUnknown);
+    return V8ConnectionType(V8ConnectionType::Enum::kUnknown);
   }
 
   // type_ is only updated when listening for events, so ask
   // networkStateNotifier if not listening (crbug.com/379841).
-  if (!IsObserving())
-    return ConnectionTypeToString(GetNetworkStateNotifier().ConnectionType());
+  if (!IsObserving()) {
+    return V8ConnectionType(
+        ConnectionTypeToEnum(GetNetworkStateNotifier().ConnectionType()));
+  }
 
   // If observing, return m_type which changes when the event fires, per spec.
-  return ConnectionTypeToString(type_);
+  return V8ConnectionType(ConnectionTypeToEnum(type_));
 }
 
 double NetworkInformation::downlinkMax() const {
@@ -89,24 +109,25 @@ double NetworkInformation::downlinkMax() const {
   return downlink_max_mbps_;
 }
 
-String NetworkInformation::effectiveType() {
+V8EffectiveConnectionType NetworkInformation::effectiveType() {
   MaybeShowWebHoldbackConsoleMsg();
   std::optional<WebEffectiveConnectionType> override_ect =
       GetNetworkStateNotifier().GetWebHoldbackEffectiveType();
   if (override_ect) {
-    return NetworkStateNotifier::EffectiveConnectionTypeToString(
-        override_ect.value());
+    return V8EffectiveConnectionType(
+        EffectiveConnectionTypeToEnum(override_ect.value()));
   }
 
   // effective_type_ is only updated when listening for events, so ask
   // networkStateNotifier if not listening (crbug.com/379841).
   if (!IsObserving()) {
-    return NetworkStateNotifier::EffectiveConnectionTypeToString(
-        GetNetworkStateNotifier().EffectiveType());
+    return V8EffectiveConnectionType(EffectiveConnectionTypeToEnum(
+        GetNetworkStateNotifier().EffectiveType()));
   }
 
   // If observing, return m_type which changes when the event fires, per spec.
-  return NetworkStateNotifier::EffectiveConnectionTypeToString(effective_type_);
+  return V8EffectiveConnectionType(
+      EffectiveConnectionTypeToEnum(effective_type_));
 }
 
 uint32_t NetworkInformation::rtt() {
@@ -143,8 +164,12 @@ double NetworkInformation::downlink() {
 }
 
 bool NetworkInformation::saveData() const {
-  return IsObserving() ? save_data_
-                       : GetNetworkStateNotifier().SaveDataEnabled();
+  bool save_data =
+      IsObserving() ? save_data_ : GetNetworkStateNotifier().SaveDataEnabled();
+
+  probe::ApplyDataSaverOverride(probe::ToCoreProbeSink(GetExecutionContext()),
+                                save_data);
+  return save_data;
 }
 
 void NetworkInformation::ConnectionChange(
@@ -264,23 +289,19 @@ void NetworkInformation::StopObserving() {
   }
 }
 
-const char NetworkInformation::kSupplementName[] = "NetworkInformation";
-
 NetworkInformation* NetworkInformation::connection(NavigatorBase& navigator) {
   if (!navigator.GetExecutionContext())
     return nullptr;
-  NetworkInformation* supplement =
-      Supplement<NavigatorBase>::From<NetworkInformation>(navigator);
+  NetworkInformation* supplement = navigator.GetNetworkInformation();
   if (!supplement) {
     supplement = MakeGarbageCollected<NetworkInformation>(navigator);
-    ProvideTo(navigator, supplement);
+    navigator.SetNetworkInformation(supplement);
   }
   return supplement;
 }
 
 NetworkInformation::NetworkInformation(NavigatorBase& navigator)
     : ActiveScriptWrappable<NetworkInformation>({}),
-      Supplement<NavigatorBase>(navigator),
       ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
       web_holdback_console_message_shown_(false),
       context_stopped_(false) {
@@ -300,12 +321,12 @@ NetworkInformation::NetworkInformation(NavigatorBase& navigator)
 
 void NetworkInformation::Trace(Visitor* visitor) const {
   EventTarget::Trace(visitor);
-  Supplement<NavigatorBase>::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
 const String NetworkInformation::Host() const {
-  return GetExecutionContext() ? GetExecutionContext()->Url().Host() : String();
+  return GetExecutionContext() ? GetExecutionContext()->Url().Host().ToString()
+                               : String();
 }
 
 void NetworkInformation::MaybeShowWebHoldbackConsoleMsg() {

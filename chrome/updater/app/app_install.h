@@ -31,8 +31,9 @@ class UpdateService;
 class AppInstallController
     : public base::RefCountedThreadSafe<AppInstallController> {
  public:
-  using Maker = base::RepeatingCallback<scoped_refptr<AppInstallController>(
-      scoped_refptr<UpdateService> update_service)>;
+  using Maker = base::RepeatingCallback<scoped_refptr<AppInstallController>()>;
+  virtual void Initialize() = 0;
+
   virtual void InstallApp(const std::string& app_id,
                           const std::string& app_name,
                           base::OnceCallback<void(int)> callback) = 0;
@@ -40,6 +41,10 @@ class AppInstallController
   virtual void InstallAppOffline(const std::string& app_id,
                                  const std::string& app_name,
                                  base::OnceCallback<void(int)> callback) = 0;
+  virtual void Exit(int exit_code) = 0;
+
+  virtual void set_update_service(
+      scoped_refptr<UpdateService> update_service) = 0;
 
  protected:
   virtual ~AppInstallController() = default;
@@ -57,6 +62,10 @@ class AppInstall : public App {
  private:
   ~AppInstall() override;
 
+  void SendPing(int exit_code, base::OnceClosure callback);
+  void PingAndShutdown(int exit_code);
+  void ShutdownNow(int exit_code);
+
   // Overrides for App.
   [[nodiscard]] int Initialize() override;
   void FirstTaskRun() override;
@@ -71,8 +80,6 @@ class AppInstall : public App {
   void InstallCandidateDone(bool valid_version, int result);
 
   void WakeCandidate();
-
-  void FetchPolicies();
 
   void RegisterUpdater();
 

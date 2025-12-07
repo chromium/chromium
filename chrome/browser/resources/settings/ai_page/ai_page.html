@@ -1,61 +1,47 @@
-<style include="cr-shared-style settings-shared">
-  .list-frame {
-    padding-inline-end: 0;
-  }
+<style include="cr-shared-style settings-shared"></style>
 
-  .list-frame settings-toggle-button,
-  .list-frame cr-link-row {
-    padding-inline-start: 0;
-  }
-</style>
-
-<settings-toggle-button
-    pref="{{prefs.optimization_guide.model_execution_main_toggle_setting_state}}"
-    hidden="[[!shouldShowMainToggle_(showComposeControl_,
-        showTabOrganizationControl_, showWallpaperSearchControl_)]]"
-    numeric-unchecked-values="[[numericUncheckedValues_]]"
-    numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]"
-    label="$i18n{aiPageMainLabel}"
-    sub-label="$i18n{aiPageMainSublabel}">
-</settings-toggle-button>
-
-<cr-collapse opened="[[isExpanded_(
-    prefs.optimization_guide.model_execution_main_toggle_setting_state.value)]]">
-  <div class="list-frame">
-    <settings-toggle-button
+<!-- TODO(crbug.com/362225975): Remove V2 suffixes. -->
+<settings-section page-title="$i18n{aiInnovationsPageTitle}">
+  <div>
+    <cr-link-row id="passwordChangeRowV2" class="hr"
+        hidden="[[!showPasswordChangeControl_]]"
+        start-icon="cr20:password"
+        label="$i18n{passwordChangeSettingLabel}"
+        sub-label="$i18n{passwordChangeSettingSubLabel}"
+        on-click="onPasswordChangeRowClick_" external>
+    </cr-link-row>
+    <cr-link-row id="historySearchRowV2" class="hr"
+        hidden="[[!showHistorySearchControl_]]"
+        start-icon="settings20:search-spark"
+        label="$i18n{historySearchSettingLabel}"
+        sub-label="[[getHistorySearchSublabel_(
+          prefs.optimization_guide.history_search_setting_state.value)]]"
+        role-description="$i18n{subpageArrowRoleDescription}"
+        on-click="onHistorySearchRowClick_">
+    </cr-link-row>
+    <cr-link-row id="compareRowV2" class="hr"
+        hidden="[[!showCompareControl_]]"
+        start-icon="settings20:table-chart-organize"
+        label="$i18n{aiCompareLabel}"
+        sub-label="$i18n{aiCompareSublabel}"
+        role-description="$i18n{subpageArrowRoleDescription}"
+        on-click="onCompareRowClick_">
+    </cr-link-row>
+    <cr-link-row id="composeRowV2" class="hr"
         hidden="[[!showComposeControl_]]"
-        pref="{{prefs.optimization_guide.compose_setting_state}}"
-        numeric-unchecked-values="[[numericUncheckedValues_]]"
-        numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]"
+        start-icon="settings20:pen-spark"
         label="$i18n{aiComposeLabel}"
-        sub-label="$i18n{aiComposeSublabel}">
-    </settings-toggle-button>
-    <settings-toggle-button
-        class$="[[getTabOrganizationHrCssClass_(showComposeControl_)]]"
+        sub-label="$i18n{aiComposeSublabelV2}"
+        role-description="$i18n{subpageArrowRoleDescription}"
+        on-click="onComposeRowClick_">
+    </cr-link-row>
+    <cr-link-row id="tabOrganizationRowV2" class="hr"
         hidden="[[!showTabOrganizationControl_]]"
-        pref="{{prefs.optimization_guide.tab_organization_setting_state}}"
-        numeric-unchecked-values="[[numericUncheckedValues_]]"
-        numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]"
-        label="$i18n{experimentalAdvancedFeature2Label}"
-        sub-label="$i18n{experimentalAdvancedFeature2Sublabel}">
-    </settings-toggle-button>
-    <settings-toggle-button
-        class$="[[getWallpaperSearchHrCssClass_(
-            showComposeControl_, showTabOrganizationControl_)]]"
-        hidden="[[!showWallpaperSearchControl_]]"
-        pref="{{prefs.optimization_guide.wallpaper_search_setting_state}}"
-        numeric-unchecked-values="[[numericUncheckedValues_]]"
-        numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]"
-        label="$i18n{experimentalAdvancedFeature3Label}"
-        sub-label="$i18n{experimentalAdvancedFeature3Sublabel}">
-    </settings-toggle-button>
+        start-icon="settings20:auto-tab-group"
+        label="$i18n{tabOrganizationSettingLabel}"
+        sub-label="$i18n{tabOrganizationSettingSublabelV2}"
+        role-description="$i18n{subpageArrowRoleDescription}"
+        on-click="onTabOrganizationRowClick_">
+    </cr-link-row>
   </div>
-</cr-collapse>
-<cr-link-row id="historySearchRow"
-    class="hr"
-    hidden="[[!showHistorySearchControl_]]"
-    label="$i18n{historySearchSettingLabel}"
-    sub-label="$i18n{historySearchSettingSublabel}"
-    role-description="$i18n{subpageArrowRoleDescription}"
-    on-click="onHistorySearchRowClick_">
-</cr-link-row>
+</settings-section>

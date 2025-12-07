@@ -77,7 +77,8 @@ class AttributionSourceBrowserTest : public ContentBrowserTest {
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
 };
 
-class AttributionSourceDisabledBrowserTest : public AttributionSourceBrowserTest {
+class AttributionSourceDisabledBrowserTest
+    : public AttributionSourceBrowserTest {
  public:
   AttributionSourceDisabledBrowserTest() {
     scoped_feature_list_.InitWithFeatures(

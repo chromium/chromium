@@ -18,7 +18,6 @@
 #include "base/threading/thread.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/network/public/mojom/cookie_manager.mojom-forward.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
 class GURL;
@@ -116,57 +115,37 @@ class CookieManager {
   // be needed in production, as the default is the desirable behavior.
   void SetWorkaroundHttpSecureCookiesForTesting(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       jboolean allow);
   void SetShouldAcceptCookies(JNIEnv* env,
-                              const base::android::JavaParamRef<jobject>& obj,
                               jboolean accept);
-  jboolean GetShouldAcceptCookies(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  jboolean GetShouldAcceptCookies(JNIEnv* env);
   void SetCookie(JNIEnv* env,
-                 const base::android::JavaParamRef<jobject>& obj,
-                 const base::android::JavaParamRef<jstring>& url,
-                 const base::android::JavaParamRef<jstring>& value,
-                 const base::android::JavaParamRef<jobject>& java_callback);
+                 const base::android::JavaRef<jstring>& url,
+                 std::string& value,
+                 const base::android::JavaRef<jobject>& java_callback);
   void SetCookieSync(JNIEnv* env,
-                     const base::android::JavaParamRef<jobject>& obj,
-                     const base::android::JavaParamRef<jstring>& url,
-                     const base::android::JavaParamRef<jstring>& value);
+                     const base::android::JavaRef<jstring>& url,
+                     std::string& value);
 
-  base::android::ScopedJavaLocalRef<jstring> GetCookie(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jstring>& url);
+  std::string GetCookie(JNIEnv* env,
+                        const base::android::JavaRef<jstring>& url);
 
   base::android::ScopedJavaLocalRef<jobjectArray> GetCookieInfo(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jstring>& url);
+      const base::android::JavaRef<jstring>& url);
 
-  void RemoveAllCookies(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jobject>& java_callback);
+  void RemoveAllCookies(JNIEnv* env,
+                        const base::android::JavaRef<jobject>& java_callback);
   void RemoveSessionCookies(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jobject>& java_callback);
-  void RemoveAllCookiesSync(JNIEnv* env,
-                            const base::android::JavaParamRef<jobject>& obj);
-  void RemoveSessionCookiesSync(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
-  void RemoveExpiredCookies(JNIEnv* env,
-                            const base::android::JavaParamRef<jobject>& obj);
-  void FlushCookieStore(JNIEnv* env,
-                        const base::android::JavaParamRef<jobject>& obj);
-  jboolean HasCookies(JNIEnv* env,
-                      const base::android::JavaParamRef<jobject>& obj);
+      const base::android::JavaRef<jobject>& java_callback);
+  void RemoveAllCookiesSync(JNIEnv* env);
+  void RemoveSessionCookiesSync(JNIEnv* env);
+  void RemoveExpiredCookies(JNIEnv* env);
+  void FlushCookieStore(JNIEnv* env);
+  jboolean HasCookies(JNIEnv* env);
   bool GetAllowFileSchemeCookies();
-  jboolean GetAllowFileSchemeCookies(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  jboolean GetAllowFileSchemeCookies(JNIEnv* env);
 
   // Configures whether CookieManager and WebView instances will honor requests
   // to set cookies for file:// scheme URLs. This method must be called (and
@@ -179,7 +158,6 @@ class CookieManager {
   // this call finishes.
   void SetAllowFileSchemeCookies(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       jboolean allow);
 
   base::FilePath GetCookieStorePath();

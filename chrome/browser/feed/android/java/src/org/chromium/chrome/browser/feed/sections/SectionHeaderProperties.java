@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.feed.sections;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 
 /** Represents the data for a header of a group of snippets. */
+@NullMarked
 public class SectionHeaderProperties {
     /** The header text to be shown. */
     public static final PropertyModel.WritableObjectPropertyKey<String> HEADER_TEXT_KEY =
@@ -25,7 +28,7 @@ public class SectionHeaderProperties {
     public static final PropertyModel.WritableBooleanPropertyKey ANIMATION_START_KEY =
             new PropertyModel.WritableBooleanPropertyKey();
 
-    public static PropertyModel createSectionHeader(String headerText) {
+    public static PropertyModel createSectionHeader(@Nullable String headerText) {
         return new PropertyModel.Builder(
                         HEADER_TEXT_KEY,
                         UNREAD_CONTENT_KEY,

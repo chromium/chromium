@@ -156,7 +156,8 @@ TEST_F(GPUTimingTest, QueryTimestampUsingElapsedTest) {
   gpu_timing_fake_queries_.ExpectGPUTimeStampQuery(*gl_, true);
 
   // Custom mock override to ensure the timestamp bits are 0
-  EXPECT_CALL(*gl_, GetQueryiv(GL_TIMESTAMP, GL_QUERY_COUNTER_BITS, NotNull()))
+  EXPECT_CALL(
+      *gl_, GetQueryiv(GL_TIMESTAMP_EXT, GL_QUERY_COUNTER_BITS_EXT, NotNull()))
       .Times(Exactly(1))
       .WillRepeatedly(DoAll(SetArgPointee<2>(0), Return()));
 

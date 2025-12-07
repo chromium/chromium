@@ -1,0 +1,38 @@
+# FFmpeg Tips & Tricks
+
+## Performing a Roll `Updated [10/15/2025]`
+This is a long and arduous journey. Please visit [go/robosushi](go/robosushi)
+the long-form documentation.
+
+Note: we might be better served by the documentation living in the tree along
+side the scripts in order to best prevent stale instructions.
+
+## Upstreaming Your Patch(es) `Updated [10/15/2025]`
+
+### Using `git send-email`
+1. Visit [app-passwords](https://myaccount.google.com/apppasswords)
+and create a new app named `git-send-email`.
+
+2. SAVE THIS PASSWORD. You can't view it again once you hide it.
+
+3. Set up your git configuration - in `~/.gitconfig` you should include:
+  ```
+  [sendemail]
+    smtpencryption = tls
+    smtpserver = smtp.gmail.com
+    smtpuser = [username]@chromium.org
+    smtpserverport = 587
+  ```
+ - `@google.com` addresses should work fine as well.
+ - You _can_ save the password here using `smtppass = aaaa bbbb cccc dddd`
+(but don't tell big brother)
+
+4. Check out a totally fresh, upstream copy of ffmpeg:
+`git clone https://git.ffmpeg.org/ffmpeg.git`
+
+5. Apply your patch, commit it, and view the upstream instructions for testing
+and formatting your patch
+[here](https://ffmpeg.org/developer.html#Submitting-patches-1).
+
+6. Send your patch. This will ask you for the password from steps 1&2.
+ - `git send-email --confirm=auto --to=ffmpeg-devel@ffmpeg.org --annotate HEAD^`

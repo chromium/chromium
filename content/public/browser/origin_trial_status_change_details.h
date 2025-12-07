@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "content/common/content_export.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/origin.h"
@@ -37,8 +39,8 @@ struct CONTENT_EXPORT OriginTrialStatusChangeDetails {
     out << "{";
     out << "origin: " << origin << ", ";
     out << "partition_site: " << partition_site << ", ";
-    out << "match_subdomains:" << (match_subdomains ? "true" : "false") << ", ";
-    out << "enabled: " << (enabled ? "true" : "false") << ", ";
+    out << "match_subdomains:" << base::ToString(match_subdomains) << ", ";
+    out << "enabled: " << base::ToString(enabled) << ", ";
     out << "source_id: "
         << (source_id.has_value() ? base::NumberToString(source_id.value())
                                   : "<empty>");

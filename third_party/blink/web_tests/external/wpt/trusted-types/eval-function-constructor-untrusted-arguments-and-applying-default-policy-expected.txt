@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] TrustedScript with forged toString() at index 0 (default policy modifying the function text).
+  assert_throws_js: function "_ => new Function(...mixed_args)" did not throw
+[FAIL] TrustedScript with forged toString() at index 1 (default policy modifying the function text).
+  assert_throws_js: function "_ => new Function(...mixed_args)" did not throw
+[FAIL] TrustedScript with forged toString() at index 2 (default policy modifying the function text).
+  assert_throws_js: function "_ => new Function(...mixed_args)" did not throw
+[FAIL] TrustedScript with forged toString() at index 3 (default policy modifying the function text).
+  assert_throws_js: function "_ => new Function(...mixed_args)" did not throw
+Harness: the test ran to completion.
+

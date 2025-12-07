@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_POLICY_DLP_TEST_FILES_POLICY_NOTIFICATION_MANAGER_TEST_UTILS_H_
 
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
@@ -18,7 +17,7 @@
 namespace policy {
 
 // The id of the first notification FPNM shows.
-constexpr char kNotificationId[] = "dlp_files_0";
+inline constexpr char kNotificationId[] = "dlp_files_0";
 
 // Creates a dummy file in `path`. Returns whether it was created successfully.
 bool CreateDummyFile(const base::FilePath& path);

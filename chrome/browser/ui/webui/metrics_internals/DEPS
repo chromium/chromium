@@ -1,0 +1,5 @@
+include_rules = [
+  # absl::Time is needed for fcp::confidential_compute integration.
+  "+third_party/abseil-cpp/absl/time/time.h",
+  "+third_party/federated_compute/src/fcp/confidentialcompute/cose.h",
+]

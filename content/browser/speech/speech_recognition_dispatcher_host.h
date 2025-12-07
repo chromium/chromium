@@ -14,7 +14,6 @@
 #include "media/mojo/mojom/speech_recognizer.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace network {
 class PendingSharedURLLoaderFactory;
@@ -26,7 +25,10 @@ class Origin;
 
 namespace content {
 
+class RenderFrameHost;
 class SpeechRecognitionManager;
+struct SpeechRecognitionSessionConfig;
+struct SpeechRecognitionAudioForwarderConfig;
 
 // SpeechRecognitionDispatcherHost is an implementation of the SpeechRecognizer
 // interface that allows a RenderFrame to start a speech recognition session
@@ -43,17 +45,13 @@ class SpeechRecognitionDispatcherHost : public media::mojom::SpeechRecognizer {
   ~SpeechRecognitionDispatcherHost() override;
   static void Create(
       int render_process_id,
-      int render_frame_id,
+      RenderFrameHost* host,
       mojo::PendingReceiver<media::mojom::SpeechRecognizer> receiver);
   base::WeakPtr<SpeechRecognitionDispatcherHost> AsWeakPtr();
 
   // media::mojom::SpeechRecognizer implementation
   void Start(
       media::mojom::StartSpeechRecognitionRequestParamsPtr params) override;
-  void OnDeviceWebSpeechAvailable(
-      const std::string& language,
-      SpeechRecognitionDispatcherHost::OnDeviceWebSpeechAvailableCallback
-          callback) override;
 
  private:
   static void StartRequestOnUI(
@@ -69,7 +67,19 @@ class SpeechRecognitionDispatcherHost : public media::mojom::SpeechRecognizer {
       const url::Origin& origin,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           pending_shared_url_loader_factory,
-      const std::string& accept_language);
+      const std::string& language,
+      bool can_render_frame_use_on_device,
+      bool on_device_available);
+
+  int CreateSession(
+      const SpeechRecognitionSessionConfig& config,
+      mojo::PendingReceiver<media::mojom::SpeechRecognitionSession>
+          session_receiver,
+      mojo::PendingRemote<media::mojom::SpeechRecognitionSessionClient>
+          client_remote,
+      std::optional<SpeechRecognitionAudioForwarderConfig>
+          audio_forwarder_config,
+      bool can_render_frame_use_on_device);
 
   const int render_process_id_;
   const int render_frame_id_;

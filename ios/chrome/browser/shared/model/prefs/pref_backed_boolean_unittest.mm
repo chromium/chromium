@@ -38,10 +38,7 @@ class PrefBackedBooleanTest : public PlatformTest {
  protected:
   bool GetPref() { return pref_service_.GetBoolean(kTestSwitchPref); }
 
-  void SetPref(bool value) {
-    auto booleanValue = std::make_unique<base::Value>(value);
-    pref_service_.SetUserPref(kTestSwitchPref, std::move(booleanValue));
-  }
+  void SetPref(bool value) { pref_service_.SetBoolean(kTestSwitchPref, value); }
 
   PrefBackedBoolean* GetObservableBoolean() { return observable_boolean_; }
 

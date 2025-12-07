@@ -16,6 +16,7 @@ test("test_cpp_including_rust_unittests") {
     "//base",
     "//base/allocator:buildflags",
     "//base/test:run_all_unittests",
+    "//build/rust/tests/test_cxx_cfg",
     "//build/rust/tests/test_rust_static_library",
     "//testing/gmock",
     "//testing/gtest",

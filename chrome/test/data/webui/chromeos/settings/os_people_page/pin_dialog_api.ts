@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {CrButtonElement} from 'chrome://os-settings/os_settings.js';
+import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {hasBooleanProperty, hasStringProperty, retry, sleep} from '../utils.js';
@@ -64,6 +65,8 @@ export class PinDialogApi {
       case PinDialogType.AUTOSUBMIT:
         pinKeyboard = this.shadowRoot().getElementById('pinKeyboard');
         break;
+      default:
+        assertNotReachedCase(this.dialogType);
     }
     assertTrue(pinKeyboard !== null);
     assertTrue(hasStringProperty(pinKeyboard, 'value'));
@@ -104,6 +107,8 @@ export class PinDialogApi {
         el = this.shadowRoot().querySelector('#errorDiv');
         break;
       }
+      default:
+        assertNotReachedCase(this.dialogType);
     }
 
     if (el === null) {
@@ -140,7 +145,7 @@ export class PinDialogApi {
     // This sleep shouldn't be here, but appears to be necessary because PIN
     // dialogs can't immediately submit after their PIN values have changed.
     // Consider removing this check and fixing PIN dialog logic.
-    await sleep(2000);
+    await sleep(10);
     (await retry(() => this.submitButton())).click();
   }
 
@@ -191,6 +196,8 @@ export class PinDialogApi {
         return pe.classList.contains('error');
       case PinDialogType.AUTOSUBMIT:
         return true;
+      default:
+        assertNotReachedCase(this.dialogType);
     }
   }
 

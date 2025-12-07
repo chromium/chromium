@@ -2,16 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = 'proto2';
+syntax = 'proto3';
 
 option optimize_for = LITE_RUNTIME;
 
 package lens;
 
+import "lens_overlay_routing_info.proto";
+
 // The cluster info for a Lens Overlay session.
 message LensOverlayClusterInfo {
   // ID for subsequent server requests.
-  optional string server_session_id = 1;
+  string server_session_id = 1;
+
   // ID for subsequent search requests.
-  optional string search_session_id = 2;
+  string search_session_id = 2;
+
+  // Info used for routing subsequent requests.
+  LensOverlayRoutingInfo routing_info = 6;
 }

@@ -8,10 +8,13 @@
 #include <optional>
 
 #include "base/functional/callback.h"
-#include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
+
+namespace base {
+class CancelableTaskTracker;
+}
 
 class OptimizationGuideKeyedService;
 class PreloadingModelHandler;

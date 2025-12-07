@@ -27,25 +27,26 @@ SubresourceFilterSafeBrowsingClientRequest::
         base::TimeTicks start_time,
         scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
             database_manager,
-        scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
         SubresourceFilterSafeBrowsingClient* client)
-    : request_id_(request_id),
+    : safe_browsing::SafeBrowsingDatabaseManager::Client(GetPassKey()),
+      request_id_(request_id),
       start_time_(start_time),
       database_manager_(std::move(database_manager)),
       client_(client) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M129);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
 SubresourceFilterSafeBrowsingClientRequest::
     ~SubresourceFilterSafeBrowsingClientRequest() {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M129);
-  if (!request_completed_)
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!request_completed_) {
     database_manager_->CancelCheck(this);
+  }
   timer_.Stop();
 }
 
 void SubresourceFilterSafeBrowsingClientRequest::Start(const GURL& url) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M129);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Just return SAFE if the database is not supported.
   bool synchronous_finish =
       database_manager_->CheckUrlForSubresourceFilter(url, this);
@@ -67,14 +68,14 @@ void SubresourceFilterSafeBrowsingClientRequest::OnCheckBrowseUrlResult(
     const GURL& url,
     safe_browsing::SBThreatType threat_type,
     const safe_browsing::ThreatMetadata& metadata) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M129);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
   request_completed_ = true;
   SendCheckResultToClient(true /* served_from_network */, threat_type,
                           metadata);
 }
 
 void SubresourceFilterSafeBrowsingClientRequest::OnCheckUrlTimeout() {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M129);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
   SendCheckResultToClient(true /* served_from_network */,
                           safe_browsing::SBThreatType::SB_THREAT_TYPE_SAFE,
                           safe_browsing::ThreatMetadata());

@@ -46,7 +46,7 @@ TEST(SequenceManagerWorkTrackerTest, SetRunTaskSynchronouslyAllowedBlocks) {
   Thread other_thread("OtherThread");
   other_thread.Start();
   other_thread.task_runner()->PostTask(
-      FROM_HERE, BindLambdaForTesting([&]() {
+      FROM_HERE, BindLambdaForTesting([&] {
         std::optional<SyncWorkAuthorization> auth =
             tracker.TryAcquireSyncWorkAuthorization();
         EXPECT_TRUE(auth->IsValid());
@@ -131,7 +131,7 @@ TEST(SequenceManagerWorkTrackerTest, OnBeginWorkBlocks) {
   Thread other_thread("OtherThread");
   other_thread.Start();
   other_thread.task_runner()->PostTask(
-      FROM_HERE, BindLambdaForTesting([&]() {
+      FROM_HERE, BindLambdaForTesting([&] {
         std::optional<SyncWorkAuthorization> auth =
             tracker.TryAcquireSyncWorkAuthorization();
         EXPECT_TRUE(auth->IsValid());

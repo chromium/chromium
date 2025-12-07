@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_INTEREST_GROUP_AUCTION_RUNNER_H_
 #define CONTENT_BROWSER_INTEREST_GROUP_AUCTION_RUNNER_H_
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -81,6 +80,17 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   //
   // `errors` are various error messages to be used for debugging. These are too
   //  sensitive for the renderers to see.
+  //
+  // `interest_group_auction_reporter` is the InterestGroupAuctionReporter to be
+  // used to report the result of the auction.
+  //
+  // `contained_server_auction` is true if any component of the auction was a
+  // server auction.
+  //
+  // `contained_on_device_auction` is true if the auction contained any
+  // on-device component or if there was only a top-level auction.
+  //
+  // `result` is the result of the auction.
   using RunAuctionCallback = base::OnceCallback<void(
       AuctionRunner* auction_runner,
       bool aborted_by_script,
@@ -90,7 +100,10 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       std::vector<blink::AdDescriptor> ad_component_descriptors,
       std::vector<std::string> errors,
       std::unique_ptr<InterestGroupAuctionReporter>
-          interest_group_auction_reporter)>;
+          interest_group_auction_reporter,
+      bool contained_server_auction,
+      bool contained_on_device_auction,
+      AuctionResult result)>;
 
   // Returns true if `origin` is allowed to use the interest group API. Will be
   // called on worklet / interest group origins before using them in any
@@ -132,8 +145,9 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   //   issued the auction request -- this is used for post-auction interest
   //   group updates, and sending reports.
   //
-  //  `url_loader_factory` will be used to issue reporting requests. It should
-  //  be backed by a trusted URLLoaderFactory.
+  //  `url_loader_factory` will be used to issue reporting requests and request
+  //   trusted KVv2 signals. It should be backed by a trusted URLLoaderFactory
+  //   associated with the frame running the auction.
   //
   //  `is_interest_group_api_allowed_callback` will be called on all buyer and
   //   seller origins, and those for which it returns false will not be allowed
@@ -148,6 +162,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   //   after CreateAndStart() returns.
   static std::unique_ptr<AuctionRunner> CreateAndStart(
       AuctionMetricsRecorder* auction_metrics_recorder,
+      DwaAuctionMetricsManager* dwa_auction_metrics_manager,
       AuctionWorkletManager* auction_worklet_manager,
       AuctionNonceManager* auction_nonce_manager,
       InterestGroupManagerImpl* interest_group_manager,
@@ -159,6 +174,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       const blink::AuctionConfig& auction_config,
       const url::Origin& main_frame_origin,
       const url::Origin& frame_origin,
+      std::optional<std::string> user_agent_override,
       network::mojom::ClientSecurityStatePtr client_security_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
@@ -180,6 +196,10 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       blink::mojom::AuctionAdConfigAuctionIdPtr auction_id,
       const std::optional<base::flat_map<url::Origin, std::string>>&
           per_buyer_signals) override;
+  void ResolvedBuyerTkvSignalsPromise(
+      blink::mojom::AuctionAdConfigAuctionIdPtr auction_id,
+      const url::Origin& buyer,
+      const std::optional<std::string>& buyer_tkv_signals) override;
   void ResolvedBuyerTimeoutsPromise(
       blink::mojom::AuctionAdConfigAuctionIdPtr auction_id,
       blink::mojom::AuctionAdConfigBuyerTimeoutField field,
@@ -235,6 +255,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
 
   AuctionRunner(
       AuctionMetricsRecorder* auction_metrics_recorder,
+      DwaAuctionMetricsManager* dwa_auction_metrics_manager,
       AuctionWorkletManager* auction_worklet_manager,
       AuctionNonceManager* auction_nonce_manager,
       InterestGroupManagerImpl* interest_group_manager,
@@ -247,6 +268,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       const blink::AuctionConfig& auction_config,
       const url::Origin& main_frame_origin,
       const url::Origin& frame_origin,
+      std::optional<std::string> user_agent_override,
       network::mojom::ClientSecurityStatePtr client_security_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
@@ -292,11 +314,16 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   // Notify relevant InterestGroupAuctions of progress in resolving promises in
   // config, as appropriate. Manages `promise_fields_in_auction_config_`.
   void NotifyPromiseResolved(
-      const blink::mojom::AuctionAdConfigAuctionId* auction_id,
-      blink::AuctionConfig* config);
+      const blink::mojom::AuctionAdConfigAuctionId& auction_id,
+      const blink::AuctionConfig& config);
 
   // Looks up the decoder from AdAuctionPageData, if that's available.
   data_decoder::DataDecoder* GetDataDecoder(const url::Origin& origin);
+
+  // Returns whether this auction includes any server component or top-level
+  // auction (in the first bool) and on-device component or top-level auction
+  // (in the second bool).
+  std::pair<bool, bool> IncludesServerAndOnDeviceAuctions();
 
   const raw_ptr<InterestGroupManagerImpl> interest_group_manager_;
 
@@ -312,6 +339,8 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   // will be used to update interest groups that participated in the auction
   // after the auction.
   const network::mojom::ClientSecurityStatePtr client_security_state_;
+
+  std::optional<std::string> user_agent_override_;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 

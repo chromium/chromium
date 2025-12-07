@@ -10,6 +10,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
@@ -406,6 +407,7 @@ TEST_P(ZeroSuggestCacheServiceTest,
 
   AutocompleteInput ac_input(u"", metrics::OmniboxEventProto::OTHER,
                              TestSchemeClassifier());
+  base::test::TaskEnvironment task_environment;
   FakeAutocompleteProviderClient client;
 
   const std::vector<TestCacheEntry> invalid_json_responses = {

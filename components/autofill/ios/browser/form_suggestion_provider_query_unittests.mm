@@ -4,8 +4,8 @@
 
 #import "components/autofill/ios/browser/form_suggestion_provider_query.h"
 
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
 
 using autofill::FormRendererId;
 using autofill::FieldRendererId;
@@ -36,7 +36,8 @@ TEST_F(FormSuggestionProviderQueryTest, PasswordFieldFocused) {
              fieldType:kObfuscatedFieldType
                   type:kTestFocusType
             typedValue:kTestTypedValue
-               frameID:kTestFrameID];
+               frameID:kTestFrameID
+          onlyPassword:NO];
 
   EXPECT_TRUE([formQuery hasFocusType]);
 }
@@ -52,7 +53,8 @@ TEST_F(FormSuggestionProviderQueryTest, InputInTextField) {
              fieldType:kTestTextFieldType
                   type:kTestInputType
             typedValue:kTestTypedValue
-               frameID:kTestFrameID];
+               frameID:kTestFrameID
+          onlyPassword:NO];
 
   EXPECT_FALSE([formQuery hasFocusType]);
 }

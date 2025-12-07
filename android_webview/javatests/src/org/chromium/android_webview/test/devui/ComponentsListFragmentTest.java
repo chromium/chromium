@@ -51,7 +51,7 @@ public class ComponentsListFragmentTest {
     @Rule
     public BaseActivityTestRule mRule = new BaseActivityTestRule<MainActivity>(MainActivity.class);
 
-    private static File sComponentsDownloadDir =
+    private static final File sComponentsDownloadDir =
             new File(ComponentsProviderPathUtil.getComponentUpdateServiceDirectoryPath());
 
     @Before

@@ -77,7 +77,8 @@ void CheckJSONIsStillTheSame(const Value& value) {
 }
 
 void ValidateJsonList(const std::string& json) {
-  std::optional<Value> value = JSONReader::Read(json);
+  std::optional<Value> value =
+      JSONReader::Read(json, JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value);
   Value::List* list = value->GetIfList();
   ASSERT_TRUE(list);
@@ -370,7 +371,8 @@ TEST(JSONValueSerializerTest, JSONReaderComments) {
   ValidateJsonList("[ 1 //// ,2\r\n ]");
 
   // It's ok to have a comment in a string.
-  std::optional<Value> value = JSONReader::Read("[\"// ok\\n /* foo */ \"]");
+  std::optional<Value> value = JSONReader::Read("[\"// ok\\n /* foo */ \"]",
+                                                JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value);
   Value::List* list = value->GetIfList();
   ASSERT_TRUE(list);
@@ -380,10 +382,11 @@ TEST(JSONValueSerializerTest, JSONReaderComments) {
   ASSERT_EQ("// ok\n /* foo */ ", elt.GetString());
 
   // You can't nest comments.
-  ASSERT_FALSE(JSONReader::Read("/* /* inner */ outer */ [ 1 ]"));
+  ASSERT_FALSE(JSONReader::Read("/* /* inner */ outer */ [ 1 ]",
+                                JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   // Not a open comment token.
-  ASSERT_FALSE(JSONReader::Read("/ * * / [1]"));
+  ASSERT_FALSE(JSONReader::Read("/ * * / [1]", JSON_PARSE_CHROMIUM_EXTENSIONS));
 }
 
 class JSONFileValueSerializerTest : public testing::Test {

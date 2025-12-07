@@ -26,8 +26,9 @@ enum class LegendBlockAlignment {
   kEnd,
 };
 
-// This function is very similar to BlockAlignment() in length_utils.cc, but
-// it supports text-align:left/center/right.
+// Legends aren't inline-level. Yet they may be aligned within the fieldset
+// block-start border using the text-align property (in addition to using auto
+// margins).
 inline LegendBlockAlignment ComputeLegendBlockAlignment(
     const ComputedStyle& legend_style,
     const ComputedStyle& fieldset_style) {
@@ -79,13 +80,13 @@ const LayoutResult* FieldsetLayoutAlgorithm::Layout() {
   // scrollbars are handled by the anonymous child box, and since padding is
   // inside the scrollport, padding also needs to be handled by the anonymous
   // child.
-  intrinsic_block_size_ =
-      IsBreakInside(GetBreakToken()) ? LayoutUnit() : Borders().block_start;
+  if (ShouldIncludeBlockStartBorderPadding(container_builder_)) {
+    intrinsic_block_size_ = Borders().block_start;
+  }
 
   if (InvolvedInBlockFragmentation(container_builder_)) {
     container_builder_.SetBreakTokenData(
-        MakeGarbageCollected<FieldsetBreakTokenData>(
-            container_builder_.GetBreakTokenData()));
+        MakeGarbageCollected<FieldsetBreakTokenData>());
   }
 
   BreakStatus break_status = LayoutChildren();
@@ -94,9 +95,10 @@ const LayoutResult* FieldsetLayoutAlgorithm::Layout() {
     return container_builder_.Abort(LayoutResult::kNeedsEarlierBreak);
   }
 
-  intrinsic_block_size_ = ClampIntrinsicBlockSize(
-      GetConstraintSpace(), Node(), GetBreakToken(), BorderScrollbarPadding(),
-      intrinsic_block_size_ + Borders().block_end);
+  intrinsic_block_size_ =
+      ClampIntrinsicBlockSize(GetConstraintSpace(), Node(), GetBreakToken(),
+                              Borders() + Scrollbar() + Padding(),
+                              intrinsic_block_size_ + Borders().block_end);
 
   // Recompute the block-axis size now that we know our content size.
   border_box_size_.block_size =
@@ -124,8 +126,7 @@ const LayoutResult* FieldsetLayoutAlgorithm::Layout() {
   container_builder_.SetIsFieldsetContainer();
 
   if (InvolvedInBlockFragmentation(container_builder_)) [[unlikely]] {
-    BreakStatus status =
-        FinishFragmentation(Borders().block_end, &container_builder_);
+    BreakStatus status = FinishFragmentation(&container_builder_);
     if (status == BreakStatus::kNeedsEarlierBreak) {
       // If we found a good break somewhere inside this block, re-layout and
       // break at that location.
@@ -284,38 +285,32 @@ void FieldsetLayoutAlgorithm::LayoutLegend(BlockNode& legend) {
   // pushed so that the center of the border will be flush with the center
   // of the border-box of the legend.
 
-  LayoutUnit legend_inline_start = ComputeLegendInlineOffset(
-      legend.Style(),
+  LayoutUnit legend_border_box_inline_size =
       LogicalFragment(writing_direction_, result->GetPhysicalFragment())
-          .InlineSize(),
-      legend_margins, Style(), BorderScrollbarPadding().inline_start,
-      ChildAvailableSize().inline_size);
-  LogicalOffset legend_offset = {legend_inline_start, block_offset};
+          .InlineSize();
 
-  container_builder_.AddResult(*result, legend_offset);
-}
-
-LayoutUnit FieldsetLayoutAlgorithm::ComputeLegendInlineOffset(
-    const ComputedStyle& legend_style,
-    LayoutUnit legend_border_box_inline_size,
-    const BoxStrut& legend_margins,
-    const ComputedStyle& fieldset_style,
-    LayoutUnit fieldset_border_padding_inline_start,
-    LayoutUnit fieldset_content_inline_size) {
+  // Padding is mostly ignored for the fieldset container, but rather set on the
+  // anonymous fieldset content wrapper child (which is reflected in the
+  // BorderScrollbarPadding() of the builders). However, legends should honor
+  // it. Scrollbars should never occur at the inline-start, so no need to add
+  // that.
   LayoutUnit legend_inline_start =
-      fieldset_border_padding_inline_start + legend_margins.inline_start;
-  // The following logic is very similar to ResolveInlineMargins(), but it uses
-  // ComputeLegendBlockAlignment().
+      Borders().inline_start + Scrollbar().inline_start +
+      Padding().inline_start + legend_margins.inline_start;
+
   const LayoutUnit available_space =
-      fieldset_content_inline_size - legend_border_box_inline_size;
+      ChildAvailableSize().inline_size - legend_border_box_inline_size;
   if (available_space > LayoutUnit()) {
-    auto alignment = ComputeLegendBlockAlignment(legend_style, fieldset_style);
+    auto alignment = ComputeLegendBlockAlignment(legend.Style(), Style());
     if (alignment == LegendBlockAlignment::kCenter)
       legend_inline_start += available_space / 2;
     else if (alignment == LegendBlockAlignment::kEnd)
       legend_inline_start += available_space - legend_margins.inline_end;
   }
-  return legend_inline_start;
+
+  LogicalOffset legend_offset = {legend_inline_start, block_offset};
+
+  container_builder_.AddResult(*result, legend_offset);
 }
 
 BreakStatus FieldsetLayoutAlgorithm::LayoutFieldsetContent(
@@ -454,8 +449,13 @@ MinMaxSizesResult FieldsetLayoutAlgorithm::ComputeMinMaxSizes(
   bool has_inline_size_containment = Node().ShouldApplyInlineSizeContainment();
   if (has_inline_size_containment) {
     // Size containment does not consider the legend for sizing.
+    //
+    // Add borders, scrollbar and padding separately, since padding for most
+    // purposes are ignored on fieldset containers, and are therefore not
+    // included in BorderScrollbarPadding().
     std::optional<MinMaxSizesResult> result_without_children =
-        CalculateMinMaxSizesIgnoringChildren(Node(), BorderScrollbarPadding());
+        CalculateMinMaxSizesIgnoringChildren(
+            Node(), Borders() + Scrollbar() + Padding());
     if (result_without_children)
       return *result_without_children;
   } else {

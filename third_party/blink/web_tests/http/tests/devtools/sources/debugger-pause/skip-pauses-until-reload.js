@@ -17,6 +17,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   await TestRunner.navigatePromise('resources/skip-pauses-until-reload.html')
 
   SourcesTestRunner.startDebuggerTest(step1);
+  SourcesTestRunner.setQuiet(true);
 
   function step1() {
     SourcesTestRunner.showScriptSource(
@@ -30,8 +31,8 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     await SourcesTestRunner.setBreakpoint(sourceFrame, 9, '', true);
     TestRunner.addResult('Set up to pause on all exceptions.');
     // FIXME: Test is flaky with PauseOnAllExceptions due to races in debugger.
-    TestRunner.DebuggerAgent.setPauseOnExceptions(
-        SDK.DebuggerModel.PauseOnExceptionsState.DontPauseOnExceptions);
+    TestRunner.DebuggerAgent.invoke_setPauseOnExceptions(
+        {state: SDK.DebuggerModel.PauseOnExceptionsState.DontPauseOnExceptions});
     ElementsTestRunner.nodeWithId('element', didResolveNode);
     testRunner.logToStderr('didShowScriptSource');
   }
@@ -63,8 +64,9 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 
   async function didPause(callFrames) {
     testRunner.logToStderr('didPause');
+    TestRunner.addResult('Script execution paused.');
     await SourcesTestRunner.captureStackTrace(callFrames);
-    TestRunner.DebuggerAgent.setSkipAllPauses(true).then(didSetSkipAllPauses);
+    TestRunner.DebuggerAgent.invoke_setSkipAllPauses({skip: true}).then(didSetSkipAllPauses);
   }
 
   function didSetSkipAllPauses() {
@@ -96,7 +98,6 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 
   function completeTest() {
     testRunner.logToStderr('completeTest');
-    SourcesTestRunner.setEventListenerBreakpoint('listener:click', false);
-    SourcesTestRunner.completeDebuggerTest();
+    TestRunner.completeTest();
   }
 })();

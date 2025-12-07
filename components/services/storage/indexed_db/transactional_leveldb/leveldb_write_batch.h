@@ -12,7 +12,7 @@ namespace leveldb {
 class WriteBatch;
 }
 
-namespace content {
+namespace content::indexed_db {
 
 // Wrapper around leveldb::WriteBatch.
 // This class holds a collection of updates to apply atomically to a database.
@@ -33,6 +33,6 @@ class LevelDBWriteBatch {
   std::unique_ptr<leveldb::WriteBatch> write_batch_;
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // COMPONENTS_SERVICES_STORAGE_INDEXED_DB_TRANSACTIONAL_LEVELDB_LEVELDB_WRITE_BATCH_H_

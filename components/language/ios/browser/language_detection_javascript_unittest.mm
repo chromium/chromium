@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #import "base/test/ios/wait_util.h"
 #import "components/language/ios/browser/ios_language_detection_tab_helper.h"
 #import "ios/web/public/test/javascript_test.h"
@@ -53,14 +58,13 @@ class LanguageDetectionJavascriptTest : public web::JavascriptTest {
         addScriptMessageHandler:handler_
                            name:@"LanguageDetectionTextCaptured"];
   }
-  ~LanguageDetectionJavascriptTest() override {}
+  ~LanguageDetectionJavascriptTest() override = default;
 
   void SetUp() override {
     web::JavascriptTest::SetUp();
 
     AddGCrWebScript();
     AddCommonScript();
-    AddMessageScript();
     AddUserScript(@"language_detection");
   }
 
@@ -70,8 +74,9 @@ class LanguageDetectionJavascriptTest : public web::JavascriptTest {
     // Reset value to ensure wait below stops at correct time.
     handler_.lastReceivedMessage = nil;
 
-    web::test::ExecuteJavaScript(
-        web_view(), @"__gCrWeb.languageDetection.detectLanguage()");
+    web::test::ExecuteJavaScriptInWebView(
+        web_view(), @"__gCrWeb.getRegisteredApi('languageDetection')."
+                    @"getFunction('detectLanguage')()");
     // Wait until `detectLanguage` completes.
     return WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool() {
       return handler_.lastReceivedMessage;
@@ -81,8 +86,8 @@ class LanguageDetectionJavascriptTest : public web::JavascriptTest {
   // Retrieves the buffered text content from the language detection script.
   id GetTextContent() {
     return web::test::ExecuteJavaScript(
-        web_view(),
-        @"__gCrWeb.languageDetection.retrieveBufferedTextContent()");
+        web_view(), @"__gCrWeb.getRegisteredApi('languageDetection')."
+                    @"getFunction('retrieveBufferedTextContent')()");
   }
 
   FakeScriptMessageHandler* handler() { return handler_; }
@@ -155,8 +160,9 @@ TEST_F(LanguageDetectionJavascriptTest, LongTextContent) {
   EXPECT_EQ(language::kMaxIndexChars, [GetTextContent() length]);
 }
 
-// Tests if `__gCrWeb.languageDetection.retrieveBufferedTextContent` correctly
-// retrieves the cache and then purges it.
+// Tests if
+// `__gCrWeb.getRegisteredApi('languageDetection').getFunction('retrieveBufferedTextContent')()`
+// correctly retrieves the cache and then purges it.
 TEST_F(LanguageDetectionJavascriptTest, RetrieveBufferedTextContent) {
   LoadHtml(@"<html>foo</html>");
 
@@ -185,8 +191,9 @@ TEST_F(LanguageDetectionJavascriptTest,
   EXPECT_TRUE(body[@"httpContentLanguage"]);
 }
 
-// Tests if `__gCrWeb.languageDetection.detectLanguage` correctly informs the
-// native side when the notranslate meta tag is specified.
+// Tests if
+// `__gCrWeb.getRegisteredApi('languageDetection').getFunction('detectLanguage')()`
+// correctly informs the native side when the notranslate meta tag is specified.
 TEST_F(LanguageDetectionJavascriptTest, DetectLanguageWithNoTranslateMeta) {
   // A simple page using the notranslate meta tag.
   NSString* html = @"<html><head>"
@@ -204,8 +211,50 @@ TEST_F(LanguageDetectionJavascriptTest, DetectLanguageWithNoTranslateMeta) {
       [handler().lastReceivedMessage.body[@"hasNoTranslate"] boolValue]);
 }
 
-// Tests if `__gCrWeb.languageDetection.detectLanguage` correctly informs the
-// native side when no notranslate meta tag is specified.
+// Tests if
+// `__gCrWeb.getRegisteredApi('languageDetection').getFunction('detectLanguage')()`
+// correctly informs the native side when the notranslate html attribute is
+// specified
+TEST_F(LanguageDetectionJavascriptTest, DetectLanguageWithHTMLNoTranslate) {
+  // A simple page using the notranslate meta tag.
+  NSString* html = @"<html translate='no'><head>"
+                   @"<meta http-equiv='content-language' content='foo'>"
+                   @"</head></html>";
+  LoadHtml(html);
+  ASSERT_TRUE(TriggerLanguageDetection());
+
+  ASSERT_TRUE(handler().lastReceivedMessage.body[@"httpContentLanguage"]);
+  EXPECT_NSEQ(@"foo",
+              handler().lastReceivedMessage.body[@"httpContentLanguage"]);
+  ASSERT_TRUE(handler().lastReceivedMessage.body[@"hasNoTranslate"]);
+  EXPECT_TRUE(
+      [handler().lastReceivedMessage.body[@"hasNoTranslate"] boolValue]);
+}
+
+// Tests if
+// `__gCrWeb.getRegisteredApi('languageDetection').getFunction('detectLanguage')()`
+// does not confuse a body or div language='no' for a page wide translate
+// disabling.
+TEST_F(LanguageDetectionJavascriptTest, DetectLanguageWithDIVNoTranslate) {
+  // A simple page using the notranslate meta tag.
+  NSString* html = @"<html><head>"
+                   @"<meta http-equiv='content-language' content='foo'>"
+                   @"</head><body translate='no'>"
+                   @"<div translate='no'>test</div></html>";
+  LoadHtml(html);
+  ASSERT_TRUE(TriggerLanguageDetection());
+
+  ASSERT_TRUE(handler().lastReceivedMessage.body[@"httpContentLanguage"]);
+  EXPECT_NSEQ(@"foo",
+              handler().lastReceivedMessage.body[@"httpContentLanguage"]);
+  ASSERT_TRUE(handler().lastReceivedMessage.body[@"hasNoTranslate"]);
+  EXPECT_FALSE(
+      [handler().lastReceivedMessage.body[@"hasNoTranslate"] boolValue]);
+}
+
+// Tests if
+// `__gCrWeb.getRegisteredApi('languageDetection').getFunction('detectLanguage')()`
+// correctly informs the native side when no notranslate meta tag is specified.
 TEST_F(LanguageDetectionJavascriptTest, DetectLanguageWithoutNoTranslateMeta) {
   // A simple page using the notranslate meta tag.
   NSString* html = @"<html><head>"

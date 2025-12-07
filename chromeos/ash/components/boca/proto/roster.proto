@@ -5,6 +5,8 @@ syntax = "proto3";
 
 package boca;
 
+option optimize_for = LITE_RUNTIME;
+
 message Roster {
   string roster_id = 1;
 
@@ -17,6 +19,16 @@ message StudentGroup {
   string title = 1;
 
   repeated UserIdentity students = 2;
+
+  enum GroupSource {
+    GROUP_SOURCE_UNKNOWN = 0;
+    CLASSROOM = 1;
+    JOIN_CODE = 2;
+  }
+
+  GroupSource group_source = 3;
+
+  string student_group_id = 4;
 }
 
 message UserIdentity {

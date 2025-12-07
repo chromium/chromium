@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/ash/chromebox_for_meetings/artemis/data_aggregator_service.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -19,6 +20,7 @@ using mojom::DataFilter::FilterType::CHANGE;
 using mojom::DataFilter::FilterType::REGEX;
 
 constexpr std::string kDataSourceName = "fake_display_name";
+constexpr size_t kDataBufferSizeLimit = 1000;  // 1Kb
 
 // These are all arguments passed to the |LocalDataSource| object.
 // Add them as named variables for clarity.
@@ -77,7 +79,10 @@ class LocalDataSourcePeer : public LocalDataSource {
   LocalDataSourcePeer(base::TimeDelta poll_rate,
                       bool data_needs_redacting,
                       bool is_incremental)
-      : LocalDataSource(poll_rate, data_needs_redacting, is_incremental) {
+      : LocalDataSource(kDataBufferSizeLimit,
+                        poll_rate,
+                        data_needs_redacting,
+                        is_incremental) {
     // The data that will be returned on the next call to GetNextData().
     next_data_ = "";
 
@@ -202,24 +207,19 @@ TEST(ArtemisLocalDataSourceTest, TestBufferSizeIsCapped) {
   auto source =
       LocalDataSourcePeer(kPollFrequency, kDoNotRedactData, kIsIncremental);
 
-  std::vector<std::string> fake_data = {"a", "b", "c", "d", "e", "f"};
+  std::vector<std::string> large_data = {
+      std::string(kDataBufferSizeLimit + 1, '!')};
 
-  // Fill buffer to the max limit
-  for (int i = 0; i < kMaxInternalBufferSize; i++) {
-    int index = i % fake_data.size();
-    source.FillDataBufferForTesting(fake_data[index]);
-  }
+  // Fill buffer to exceed our max limit
+  source.FillDataBufferForTesting(large_data);
 
-  // Now fill beyond that limit
+  // Now try adding more
   source.FillDataBufferForTesting({"a", "b", "c"});
 
-  // Verify that returned data is capped at the limit. Also verify that
-  // the beginning of the Fetch buffer is as expected, ie with older
-  // data purged.
+  // Verify that returned data is capped at the limit.
   auto callback =
       base::BindLambdaForTesting([&](const std::vector<std::string>& data) {
-        EXPECT_EQ((int)data.size(), kMaxInternalBufferSize);
-        EXPECT_EQ(data[0], "d");
+        EXPECT_EQ(data.size(), 1u);
       });
   source.Fetch(std::move(callback));
 }
@@ -252,7 +252,7 @@ TEST(ArtemisLocalDataSourceTest, TestTimestampAndSeverityParser) {
   const proto::LogSeverity severity = proto::LOG_SEVERITY_ERROR;
 
   const std::string default_timestamp_str = "1970-01-01T00:00:00.000000Z";
-  const std::string default_severity_str = "INFO";
+  const std::string default_severity_str = "DEFAULT";
   const uint64_t default_timestamp = 0;  // us since epoch
   const proto::LogSeverity default_severity = proto::LOG_SEVERITY_INFO;
 
@@ -267,7 +267,7 @@ TEST(ArtemisLocalDataSourceTest, TestTimestampAndSeverityParser) {
                                             default_severity);
   EXPECT_EQ(entry.timestamp_micros(), timestamp);
   EXPECT_EQ(entry.severity(), severity);
-  EXPECT_EQ(entry.text_payload(), text_payload);
+  EXPECT_EQ(entry.text_payload(), severity_str + " " + text_payload);
 
   // Test log line with missing severity
   log_line = timestamp_str + " " + text_payload;
@@ -275,7 +275,7 @@ TEST(ArtemisLocalDataSourceTest, TestTimestampAndSeverityParser) {
                                             default_severity);
   EXPECT_EQ(entry.timestamp_micros(), timestamp);
   EXPECT_EQ(entry.severity(), default_severity);
-  EXPECT_EQ(entry.text_payload(), text_payload);
+  EXPECT_EQ(entry.text_payload(), default_severity_str + " " + text_payload);
 
   // Test log line with missing timestamp
   log_line = severity_str + " " + text_payload;
@@ -283,7 +283,7 @@ TEST(ArtemisLocalDataSourceTest, TestTimestampAndSeverityParser) {
                                             default_severity);
   EXPECT_EQ(entry.timestamp_micros(), default_timestamp);
   EXPECT_EQ(entry.severity(), severity);
-  EXPECT_EQ(entry.text_payload(), text_payload);
+  EXPECT_EQ(entry.text_payload(), severity_str + " " + text_payload);
 
   // Test log line with text payload only
   log_line = text_payload;
@@ -291,7 +291,7 @@ TEST(ArtemisLocalDataSourceTest, TestTimestampAndSeverityParser) {
                                             default_severity);
   EXPECT_EQ(entry.timestamp_micros(), default_timestamp);
   EXPECT_EQ(entry.severity(), default_severity);
-  EXPECT_EQ(entry.text_payload(), text_payload);
+  EXPECT_EQ(entry.text_payload(), default_severity_str + " " + text_payload);
 
   // Instantiate a new incremental source and verify that timestamps
   // are "carried forward" for logs that contain newlines.
@@ -303,7 +303,7 @@ TEST(ArtemisLocalDataSourceTest, TestTimestampAndSeverityParser) {
   source_incr.BuildLogEntryFromLogLineForTesting(
       entry, log_line, default_timestamp, default_severity);
   EXPECT_EQ(entry.timestamp_micros(), timestamp);
-  EXPECT_EQ(entry.text_payload(), text_payload);
+  EXPECT_EQ(entry.text_payload(), default_severity_str + " " + text_payload);
 
   // Next log line contains no timestamp, so it should inherit the
   // previously seen timestamp above, plus one microsecond.
@@ -311,21 +311,21 @@ TEST(ArtemisLocalDataSourceTest, TestTimestampAndSeverityParser) {
   source_incr.BuildLogEntryFromLogLineForTesting(
       entry, log_line, default_timestamp, default_severity);
   EXPECT_EQ(entry.timestamp_micros(), timestamp + 1);
-  EXPECT_EQ(entry.text_payload(), text_payload);
+  EXPECT_EQ(entry.text_payload(), default_severity_str + " " + text_payload);
 
   // Try one more line with no timestamp to verify incrementation.
   log_line = text_payload;
   source_incr.BuildLogEntryFromLogLineForTesting(
       entry, log_line, default_timestamp, default_severity);
   EXPECT_EQ(entry.timestamp_micros(), timestamp + 2);
-  EXPECT_EQ(entry.text_payload(), text_payload);
+  EXPECT_EQ(entry.text_payload(), default_severity_str + " " + text_payload);
 
   // Verify that a new line with a timestamp works as expected again.
   log_line = timestamp_str + " " + text_payload;
   source_incr.BuildLogEntryFromLogLineForTesting(
       entry, log_line, default_timestamp, default_severity);
   EXPECT_EQ(entry.timestamp_micros(), timestamp);
-  EXPECT_EQ(entry.text_payload(), text_payload);
+  EXPECT_EQ(entry.text_payload(), default_severity_str + " " + text_payload);
 }
 
 TEST(ArtemisWatchdogTest, TestVariousInvalidWatchdogs) {

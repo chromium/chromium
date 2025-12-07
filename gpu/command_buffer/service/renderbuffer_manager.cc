@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -43,7 +44,7 @@ struct RenderbufferSignature {
                         GLsizei samples,
                         GLsizei width,
                         GLsizei height) {
-    memset(this, 0, sizeof(RenderbufferSignature));
+    UNSAFE_TODO(memset(this, 0, sizeof(RenderbufferSignature)));
     internal_format_ = internal_format;
     samples_ = samples;
     width_ = width;
@@ -51,13 +52,12 @@ struct RenderbufferSignature {
   }
 };
 
-RenderbufferManager::RenderbufferManager(MemoryTracker* memory_tracker,
-                                         GLint max_renderbuffer_size,
-                                         GLint max_samples,
-                                         FeatureInfo* feature_info)
-    : memory_type_tracker_(
-          new MemoryTypeTracker(memory_tracker)),
-      memory_tracker_(memory_tracker),
+RenderbufferManager::RenderbufferManager(
+    scoped_refptr<MemoryTracker> memory_tracker,
+    GLint max_renderbuffer_size,
+    GLint max_samples,
+    FeatureInfo* feature_info)
+    : memory_type_tracker_(new MemoryTypeTracker(std::move(memory_tracker))),
       max_renderbuffer_size_(max_renderbuffer_size),
       max_samples_(max_samples),
       feature_info_(feature_info),
@@ -66,7 +66,7 @@ RenderbufferManager::RenderbufferManager(MemoryTracker* memory_tracker,
       have_context_(true) {
   // When created from InProcessCommandBuffer, we won't have a |memory_tracker_|
   // so don't register a dump provider.
-  if (memory_tracker_) {
+  if (memory_type_tracker_->memory_tracker()) {
     base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
         this, "gpu::RenderbufferManager",
         base::SingleThreadTaskRunner::GetCurrentDefault());
@@ -308,7 +308,9 @@ bool RenderbufferManager::OnMemoryDump(
   using base::trace_event::MemoryAllocatorDump;
   using base::trace_event::MemoryDumpLevelOfDetail;
   const uint64_t context_group_tracing_id =
-      memory_tracker_->ContextGroupTracingId();
+      memory_type_tracker_->memory_tracker()
+          ? memory_type_tracker_->memory_tracker()->ContextGroupTracingId()
+          : 0;
 
   if (args.level_of_detail == MemoryDumpLevelOfDetail::kBackground) {
     std::string dump_name =

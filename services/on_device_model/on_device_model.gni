@@ -2,15 +2,26 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/chrome_build.gni")
 import("//build/config/gclient_args.gni")
 import("//chromeos/components/libsegmentation/buildflags.gni")
 import("//components/optimization_guide/features.gni")
 
 declare_args() {
+  is_cbx = is_chromeos && overlay_include_cbx
+}
+
+declare_args() {
+  # The on device model service is only enabled on a subset of platforms.
+  # Exclude it on other platforms due to binary size.
+  use_on_device_model_service = is_win || is_mac || is_linux || is_ios || is_cbx
+}
+
+declare_args() {
+  # Constraint code is disabled on platforms where the on-device model does not
+  # run due to binary size.
+  enable_constraints = use_on_device_model_service
   enable_ml_internal =
-      build_with_internal_optimization_guide && checkout_src_internal &&
-      (is_win || is_mac || is_linux || is_ios)
-  use_chromeos_model_service =
-      checkout_src_internal && (is_chromeos_ash && overlay_include_cbx)
+      build_with_internal_optimization_guide && use_on_device_model_service
+  use_chromeos_model_service = is_chrome_branded && is_cbx
 }

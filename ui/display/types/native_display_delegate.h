@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "ui/display/types/display_configuration_params.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_types_export.h"
 #include "ui/display/types/fake_display_controller.h"
@@ -28,7 +27,9 @@ struct GammaAdjustment;
 
 using GetDisplaysCallback = base::OnceCallback<void(
     const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>&)>;
-using ConfigureCallback = base::OnceCallback<void(bool)>;
+using ConfigureCallback = base::OnceCallback<void(
+    const std::vector<DisplayConfigurationParams>& request_results,
+    bool status)>;
 using SetHdcpKeyPropCallback = base::OnceCallback<void(bool)>;
 using GetHDCPStateCallback =
     base::OnceCallback<void(bool, HDCPState, ContentProtectionMethod)>;

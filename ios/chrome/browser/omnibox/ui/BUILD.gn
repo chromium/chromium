@@ -1,0 +1,140 @@
+# Copyright 2017 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [ "omnibox_focus_delegate.h" ]
+  deps = [
+    "//base",
+    "//components/omnibox/browser",
+    "//components/search_engines",
+    "//ui/base",
+  ]
+}
+
+source_set("omnibox_popup_shared") {
+  sources = [ "omnibox_keyboard_delegate.h" ]
+}
+
+# See the comment above on omnibox_suggestion_icon_util
+# for why these two targets are separated.
+source_set("omnibox_util") {
+  sources = [ "omnibox_text_input_delegate.h" ]
+  deps = [
+    "//base",
+    "//components/omnibox/browser",
+    "//components/safe_browsing/core/common",
+    "//components/security_state/core",
+    "//ios/chrome/browser/omnibox/public:features",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//third_party/omnibox_proto",
+  ]
+  public_deps = [ "//ios/chrome/app/theme" ]
+}
+
+# Build target allowed while moving files from ui_bundled to other folders.
+# TODO(crbug.com/394567614): Move model files to model folder.
+source_set("model_interface") {
+  sources = [
+    "omnibox_text_field_ios.h",
+    "omnibox_text_input.h",
+  ]
+
+  deps = [
+    ":omnibox_popup_shared",
+    ":omnibox_util",
+    "//base",
+    "//ios/chrome/browser/omnibox/public",
+  ]
+}
+
+source_set("omnibox_internal") {
+  sources = [
+    "omnibox_consumer.h",
+    "omnibox_container_view.h",
+    "omnibox_container_view.mm",
+    "omnibox_drs_view_controller.h",
+    "omnibox_drs_view_controller.mm",
+    "omnibox_mutator.h",
+    "omnibox_text_field_ios.mm",
+    "omnibox_text_field_paste_delegate.h",
+    "omnibox_text_field_paste_delegate.mm",
+    "omnibox_text_view_ios.h",
+    "omnibox_text_view_ios.mm",
+    "omnibox_thumbnail_button.h",
+    "omnibox_thumbnail_button.mm",
+    "omnibox_view_controller.h",
+    "omnibox_view_controller.mm",
+    "text_field_view_containing.h",
+  ]
+  deps = [
+    ":omnibox_popup_shared",
+    ":omnibox_util",
+    "//components/open_from_clipboard",
+    "//components/open_from_clipboard:open_from_clipboard_impl",
+    "//components/resources:components_scaled_resources_grit",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/autocomplete/model",
+    "//ios/chrome/browser/omnibox/model",
+    "//ios/chrome/browser/omnibox/public",
+    "//ios/chrome/browser/omnibox/public:constants",
+    "//ios/chrome/browser/omnibox/public:features",
+    "//ios/chrome/browser/omnibox/ui/popup",
+    "//ios/chrome/browser/orchestrator/ui_bundled",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:util_swift",
+    "//ios/chrome/browser/toolbar/ui_bundled/public:constants",
+    "//ios/chrome/common:timing",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ios/chrome/common/ui/util:dynamic_type_util",
+    "//ios/chrome/common/ui/util:image_util",
+    "//ios/public/provider/chrome/browser/lens:lens_api",
+    "//ui/base",
+  ]
+  public_deps = [
+    ":model_interface",
+    "//components/omnibox/browser",
+  ]
+  frameworks = [
+    "CoreText.framework",
+    "MobileCoreServices.framework",
+    "QuartzCore.framework",
+    "UIKit.framework",
+    "UniformTypeIdentifiers.framework",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "omnibox_text_field_ios_unittest.mm" ]
+  deps = [
+    ":omnibox_internal",
+    ":omnibox_util",
+    ":resources_unit_tests",
+    ":ui",
+    "//base/test:test_support",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/omnibox/public",
+    "//ios/chrome/browser/shared/model/paths",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common:string_conversions",
+    "//ios/web/common:uikit",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+  ]
+}
+
+bundle_data("resources_unit_tests") {
+  visibility = [ ":unit_tests" ]
+  testonly = true
+  sources = [ "//ios/chrome/test/data/omnibox/selected_ranges.txt" ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "ios/chrome/test/data/omnibox/{{source_file_part}}" ]
+}

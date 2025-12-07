@@ -10,6 +10,7 @@
 #include "chrome/browser/signin/signin_error_controller_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/sync/service/sync_service.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/webui/web_ui_util.h"
 
@@ -46,11 +47,13 @@ void TabSearchSyncHandler::OnJavascriptDisallowed() {
 bool TabSearchSyncHandler::GetSignInState() const {
   const signin::IdentityManager* const identity_manager(
       IdentityManagerFactory::GetInstance()->GetForProfile(profile_));
-  const auto stored_account = identity_manager->FindExtendedAccountInfo(
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
-  const bool has_sign_in_error =
-      SigninErrorControllerFactory::GetForProfile(profile_)->HasError();
-  return stored_account.IsValid() && !has_sign_in_error;
+  CoreAccountId primary_account_id =
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  const bool signed_out = primary_account_id.empty();
+  const bool has_error =
+      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+          primary_account_id);
+  return !signed_out && !has_error;
 }
 
 void TabSearchSyncHandler::HandleGetSignInState(const base::Value::List& args) {

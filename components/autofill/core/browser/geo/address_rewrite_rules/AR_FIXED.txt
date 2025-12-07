@@ -1,0 +1,55 @@
+\btierra\s+del\s+fuego\s+antartida\s+e\s+islas\s+del\s+atlantico\s+sur\b	tierra del fuego
+\bciudad\s+autonoma\s+de\s+buenos\s+aires\b	caba
+\bdomingo\s+faustino\s+sarmiento\b	d sarmiento
+\bla\s+ciudad\s+de\s+buenos\s+aires\b	caba
+\bbernardino\s+rivadavia\b	rivadavia
+\bpresidente\s+sarmiento\b	d sarmiento
+\bdomingo\s+f\s+sarmiento\b	d sarmiento
+\bjose\s+de\s+san\s+martin\b	san martin
+\bdomingo\s+sarmiento\b	d sarmiento
+\bbelgrano\s+manuel\b	belgrano
+\bcapital\s+federal\b	caba
+\bmanuel\s+belgrano\b	belgrano
+\bruta\s+provincial\b	e
+\bd\s+f\s+sarmiento\b	d sarmiento
+\bneighbourhood\b	ba
+\bruta\s+nacional\b	rn
+\ba\s+lattention\b	at
+\bb\s+rivadavia\b	rivadavia
+\bm\s+belgrano\b	belgrano
+\bargentina\b	ar
+\battention\b	at
+\bautopista\b	ap
+\bboulevard\b	bv
+\bingeniero\b	ing
+\bingenieur\b	ing
+\bpresident\b	pres
+\batencion\b	at
+\bdiagonal\b	diag
+\bengineer\b	ing
+\bmonsieur\b	d
+\bquartier\b	ba
+\bautovia\b	ap
+\bchannel\b	can
+\blateral\b	lat
+\bvillage\b	ald
+\bbarrio\b	ba
+\bcamino\b	cam
+\bchemin\b	cam
+\bdoctor\b	dr
+\bmadame\b	dna
+\bmister\b	d
+\bpasaje\b	pje
+\baldea\b	ald
+\bcanal\b	can
+\bnorte\b	n
+\boeste\b	o
+\bdona\b	dna
+\beste\b	e
+\bmiss\b	dna
+\bpath\b	cam
+\bcno\b	cam
+\bdon\b	d
+\bsur\b	s
+\bau\b	ap
+\brp\b	e

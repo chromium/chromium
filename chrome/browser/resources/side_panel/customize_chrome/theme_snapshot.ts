@@ -42,8 +42,8 @@ export class ThemeSnapshotElement extends CrLitElement {
     };
   }
 
-  protected theme_: Theme|null = null;
-  protected themeType_: CustomizeThemeType|null = null;
+  protected accessor theme_: Theme|null = null;
+  protected accessor themeType_: CustomizeThemeType|null = null;
 
   private callbackRouter_: CustomizeChromePageCallbackRouter;
   private pageHandler_: CustomizeChromePageHandlerInterface;

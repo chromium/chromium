@@ -12,22 +12,23 @@
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test_utils.h"
 
-namespace {
-// Returns the current RFH owned by the FrameTreeNode, denoted by
-// |frame_tree_node_id|.
-content::RenderFrameHost* GetCurrentGuestMainRenderFrameHost(
-    int frame_tree_node_id) {
-  auto* web_contents =
-      content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
-  DCHECK(web_contents);
-  return web_contents->UnsafeFindFrameByFrameTreeNodeId(frame_tree_node_id);
-}
-}  // namespace
-
 namespace guest_view {
+
+namespace {
+
+// Returns the current guest main RFH of the guest associated with the given
+// `frame_tree_node_id`.
+content::RenderFrameHost* GetCurrentGuestMainRenderFrameHost(
+    content::FrameTreeNodeId frame_tree_node_id) {
+  auto* guest = GuestViewBase::FromFrameTreeNodeId(frame_tree_node_id);
+  DCHECK(guest);
+  return guest->GetGuestMainFrame();
+}
+
+}  // namespace
 
 TestGuestViewManager::TestGuestViewManager(
     content::BrowserContext* context,
@@ -56,14 +57,9 @@ TestGuestViewManager::GetLastGuestRenderFrameHostCreated() {
   return nullptr;
 }
 
-content::WebContents* TestGuestViewManager::DeprecatedGetLastGuestCreated() {
-  return content::WebContents::FromRenderFrameHost(
-      GetLastGuestRenderFrameHostCreated());
-}
-
 GuestViewBase* TestGuestViewManager::GetLastGuestViewCreated() {
-  auto* last_guest = DeprecatedGetLastGuestCreated();
-  return GuestViewBase::FromWebContents(last_guest);
+  return GuestViewBase::FromRenderFrameHost(
+      GetLastGuestRenderFrameHostCreated());
 }
 
 void TestGuestViewManager::WaitForAllGuestsDeleted() {
@@ -94,14 +90,9 @@ TestGuestViewManager::WaitForSingleGuestRenderFrameHostCreated() {
   return GetLastGuestRenderFrameHostCreated();
 }
 
-content::WebContents*
-TestGuestViewManager::DeprecatedWaitForSingleGuestCreated() {
-  return content::WebContents::FromRenderFrameHost(
-      WaitForSingleGuestRenderFrameHostCreated());
-}
-
 GuestViewBase* TestGuestViewManager::WaitForSingleGuestViewCreated() {
-  return GuestViewBase::FromWebContents(DeprecatedWaitForSingleGuestCreated());
+  return GuestViewBase::FromRenderFrameHost(
+      WaitForSingleGuestRenderFrameHostCreated());
 }
 
 content::RenderFrameHost*
@@ -111,14 +102,9 @@ TestGuestViewManager::WaitForNextGuestRenderFrameHostCreated() {
   return GetLastGuestRenderFrameHostCreated();
 }
 
-content::WebContents*
-TestGuestViewManager::DeprecatedWaitForNextGuestCreated() {
-  return content::WebContents::FromRenderFrameHost(
-      WaitForNextGuestRenderFrameHostCreated());
-}
-
 GuestViewBase* TestGuestViewManager::WaitForNextGuestViewCreated() {
-  return GuestViewBase::FromWebContents(DeprecatedWaitForNextGuestCreated());
+  return GuestViewBase::FromRenderFrameHost(
+      WaitForNextGuestRenderFrameHostCreated());
 }
 
 void TestGuestViewManager::WaitForNumGuestsCreated(size_t count) {
@@ -134,18 +120,36 @@ void TestGuestViewManager::WaitForNumGuestsCreated(size_t count) {
 }
 
 void TestGuestViewManager::WaitUntilAttached(GuestViewBase* guest_view) {
-  if (guest_view->attached())
+  if (guest_view->attached()) {
     return;
+  }
 
-  instance_waiting_for_attach_ = guest_view->guest_instance_id();
+  // It's possible attachment is in progress, so first check if we've already
+  // seen the `AttachGuest` for this guest, before trying to wait for it.
+  if (!reverse_instance_id_map_.contains(guest_view->guest_instance_id())) {
+    instance_waiting_for_attach_ = guest_view->guest_instance_id();
 
-  attached_run_loop_ = std::make_unique<base::RunLoop>();
-  attached_run_loop_->Run();
+    attached_run_loop_ = std::make_unique<base::RunLoop>();
+    attached_run_loop_->Run();
+  }
 
   // Completion of the attachment process may be delayed despite AttachGuest
   // having been called. We need to wait until the attachment is no longer
   // considered in progress.
   EXPECT_TRUE(base::test::RunUntil([&]() { return guest_view->attached(); }));
+}
+
+bool TestGuestViewManager::WaitUntilAttachedAndLoaded(
+    GuestViewBase* guest_view) {
+  WaitUntilAttached(guest_view);
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    return base::test::RunUntil([&]() {
+      return guest_view->GetGuestMainFrame()
+          ->IsDocumentOnLoadCompletedInMainFrame();
+    });
+  } else {
+    return content::WaitForLoadStop(guest_view->web_contents());
+  }
 }
 
 void TestGuestViewManager::WaitForViewGarbageCollected() {
@@ -176,10 +180,11 @@ void TestGuestViewManager::AddGuest(GuestViewBase* guest) {
   }
 }
 
-void TestGuestViewManager::AttachGuest(int embedder_process_id,
-                                       int element_instance_id,
-                                       int guest_instance_id,
-                                       const base::Value::Dict& attach_params) {
+void TestGuestViewManager::AttachGuest(
+    content::ChildProcessId embedder_process_id,
+    int element_instance_id,
+    int guest_instance_id,
+    const base::Value::Dict& attach_params) {
   auto* guest_to_attach =
       GuestViewBase::FromInstanceID(embedder_process_id, guest_instance_id);
   if (will_attach_callback_)
@@ -195,6 +200,14 @@ void TestGuestViewManager::AttachGuest(int embedder_process_id,
   }
 }
 
+void TestGuestViewManager::AttachGuest(int embedder_process_id,
+                                       int element_instance_id,
+                                       int guest_instance_id,
+                                       const base::Value::Dict& attach_params) {
+  AttachGuest(content::ChildProcessId(embedder_process_id), element_instance_id,
+              guest_instance_id, attach_params);
+}
+
 void TestGuestViewManager::GetGuestRenderFrameHostList(
     std::vector<content::RenderFrameHost*>* guest_render_frame_host_list) {
   for (auto& watcher : guest_view_watchers_) {
@@ -205,13 +218,15 @@ void TestGuestViewManager::GetGuestRenderFrameHostList(
   }
 }
 
-void TestGuestViewManager::EmbedderProcessDestroyed(int embedder_process_id) {
+void TestGuestViewManager::EmbedderProcessDestroyed(
+    content::ChildProcessId embedder_process_id) {
   ++num_embedder_processes_destroyed_;
   GuestViewManager::EmbedderProcessDestroyed(embedder_process_id);
 }
 
-void TestGuestViewManager::ViewGarbageCollected(int embedder_process_id,
-                                                int view_instance_id) {
+void TestGuestViewManager::ViewGarbageCollected(
+    content::ChildProcessId embedder_process_id,
+    int view_instance_id) {
   GuestViewManager::ViewGarbageCollected(embedder_process_id, view_instance_id);
   ++num_views_garbage_collected_;
   if (gc_run_loop_)

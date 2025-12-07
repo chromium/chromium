@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/renderer/java/gin_java_bridge_value_converter.h"
 
 #include <stddef.h>
@@ -125,21 +120,25 @@ TEST_F(GinJavaBridgeValueConverterTest, TypedArrays) {
       "array_view[0] = 42;"
       "return array_view;"
       "})();";
-  const char* array_types[] = {
-    "1", "Int8Array", "1", "Uint8Array", "1", "Uint8ClampedArray",
-    "2", "Int16Array", "2", "Uint16Array",
-    "4", "Int32Array", "4", "Uint32Array",
-    "4", "Float32Array", "8", "Float64Array"
-  };
-  for (size_t i = 0; i < std::size(array_types); i += 2) {
-    const char* typed_array_type = array_types[i + 1];
+  const std::array<std::pair<const char*, const char*>, 9> array_types = {{
+      {"1", "Int8Array"},
+      {"1", "Uint8Array"},
+      {"1", "Uint8ClampedArray"},
+      {"2", "Int16Array"},
+      {"2", "Uint16Array"},
+      {"4", "Int32Array"},
+      {"4", "Uint32Array"},
+      {"4", "Float32Array"},
+      {"8", "Float64Array"},
+  }};
+  for (const auto& [type_size, typed_array_type] : array_types) {
     v8::Local<v8::Script> script(
         v8::Script::Compile(
             context,
             v8::String::NewFromUtf8(
-                isolate_, base::StringPrintf(kSourceTemplate, array_types[i],
-                                             typed_array_type)
-                              .c_str())
+                isolate_,
+                base::StringPrintf(kSourceTemplate, type_size, typed_array_type)
+                    .c_str())
                 .ToLocalChecked())
             .ToLocalChecked());
     v8::Local<v8::Value> v8_typed_array = script->Run(context).ToLocalChecked();

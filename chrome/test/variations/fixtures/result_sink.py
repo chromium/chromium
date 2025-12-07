@@ -138,9 +138,20 @@ def _report_test_result(result: pytest.TestReport,
   artifacts.update(_extract_artifacts_from_properties(item.user_properties))
   if sink_client := item.session.sink_client:
     tags = _extract_tags_from_properties(item.user_properties)
-    sink_client.Post(result.nodeid, _RESULT_TYPES[result.outcome],
-                     result.duration, result.caplog, test_file, tags=tags,
-                     failure_reason=failure_reason, artifacts=artifacts)
+    sink_client.Post(
+      test_id=result.nodeid,
+      test_id_structured={
+        'coarseName': '',  # Not used.
+        'fineName': '',  # Not used.
+        'caseNameComponents': [f'Variations/SmokeTests.{item.name}'],
+      },
+      status=_RESULT_TYPES[result.outcome],
+      duration=result.duration,
+      test_log=result.caplog,
+      test_file=test_file,
+      tags=tags,
+      failure_reason=failure_reason,
+      artifacts=artifacts)
 
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)

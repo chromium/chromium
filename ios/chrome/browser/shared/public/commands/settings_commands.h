@@ -5,6 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_SETTINGS_COMMANDS_H_
 #define IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_SETTINGS_COMMANDS_H_
 
+#import <UIKit/UIKit.h>
+
+#import <optional>
+
 namespace autofill {
 class AutofillProfile;
 class CreditCard;
@@ -14,6 +18,7 @@ namespace password_manager {
 struct CredentialUIEntry;
 enum class PasswordCheckReferrer;
 }  // namespace password_manager
+enum class PushNotificationClientId;
 
 @protocol SettingsCommands
 
@@ -25,6 +30,9 @@ enum class PasswordCheckReferrer;
 - (void)showAccountsSettingsFromViewController:
             (UIViewController*)baseViewController
                           skipIfUINotAvailable:(BOOL)skipIfUINotAvailable;
+
+// Shows the BWG settings UI.
+- (void)showBWGSettings;
 
 // TODO(crbug.com/41352590) : Do not pass baseViewController through dispatcher.
 // Shows the Google services settings UI, presenting from `baseViewController`.
@@ -41,29 +49,29 @@ enum class PasswordCheckReferrer;
 // TODO(crbug.com/41352590) : Do not pass baseViewController through dispatcher.
 // Shows the sync encryption passphrase UI, presenting from
 // `baseViewController`.
+// Does nothing if the current scene is blocked.
 - (void)showSyncPassphraseSettingsFromViewController:
     (UIViewController*)baseViewController;
 
-// Shows the list of saved passwords in the settings. `showCancelButton`
-// indicates whether a cancel button should be added as the left navigation item
-// of the saved passwords view.
+// Shows the list of saved passwords in the settings.
 - (void)showSavedPasswordsSettingsFromViewController:
-            (UIViewController*)baseViewController
-                                    showCancelButton:(BOOL)showCancelButton;
+    (UIViewController*)baseViewController;
+
+// Shows password manager on main page with a purpose to run the credential
+// exchange import flow. `UUID` is a token received from the OS during app
+// launch needed to receive credentials from an OS library.
+- (void)showPasswordManagerForCredentialImport:(NSUUID*)UUID;
 
 // Shows the password details page for a credential. `editMode` indicates
-// whether the details page should be opened in edit mode. `showCancelButton`
-// indicates whether a cancel button should be added as the left navigation item
-// of the password details view.
+// whether the details page should be opened in edit mode.
 - (void)showPasswordDetailsForCredential:
             (password_manager::CredentialUIEntry)credential
-                              inEditMode:(BOOL)editMode
-                        showCancelButton:(BOOL)showCancelButton;
+                              inEditMode:(BOOL)editMode;
 
 // Shows the address details view. `editMode` indicates whether the details page
 // should be opened in edit mode. `offerMigrateToAccount` indicates whether or
 // not the option to migrate the address to the account should be available.
-- (void)showAddressDetails:(const autofill::AutofillProfile*)address
+- (void)showAddressDetails:(autofill::AutofillProfile)address
                 inEditMode:(BOOL)editMode
      offerMigrateToAccount:(BOOL)offerMigrateToAccount;
 
@@ -76,7 +84,7 @@ enum class PasswordCheckReferrer;
 
 // Shows the credit card details view. `editMode` indicates whether the details
 // page should be opened in edit mode.
-- (void)showCreditCardDetails:(const autofill::CreditCard*)creditCard
+- (void)showCreditCardDetails:(autofill::CreditCard)creditCard
                    inEditMode:(BOOL)editMode;
 
 // Shows the settings page informing the user how to set Chrome as the default
@@ -86,9 +94,6 @@ enum class PasswordCheckReferrer;
                                         sourceForUMA:
                                             (DefaultBrowserSettingsPageSource)
                                                 source;
-
-// Shows the settings page allowing the user to clear their browsing data.
-- (void)showClearBrowsingDataSettings;
 
 // Shows the Safety Check page and starts the Safety Check for `referrer`.
 - (void)showAndStartSafetyCheckForReferrer:
@@ -110,6 +115,11 @@ enum class PasswordCheckReferrer;
 
 // Shows the Notifications Settings page in the settings.
 - (void)showNotificationsSettings;
+
+// Shows the Notification Settings page and highlights the row for the push
+// notification client with the given `clientID`.
+- (void)showNotificationsSettingsAndHighlightClient:
+    (std::optional<PushNotificationClientId>)clientID;
 
 @end
 

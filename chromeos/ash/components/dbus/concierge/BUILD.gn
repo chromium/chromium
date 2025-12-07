@@ -2,10 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos/ash")
 
 component("concierge") {
   defines = [ "IS_CONCIERGE_IMPL" ]
@@ -41,6 +40,8 @@ proto_library("concierge_proto_lib") {
     "//third_party/cros_system_api/dbus/vm_concierge/concierge_service.proto",
   ]
   proto_deps = [ "//chromeos/ash/components/dbus/arc:arc_proto" ]
+  deps = [ "//chromeos/ash/components/dbus/arc:arc_proto_lib" ]
+
   import_dirs = [ "//third_party/cros_system_api/dbus" ]
   proto_out_dir = "chromeos/ash/components/dbus/vm_concierge"
 }

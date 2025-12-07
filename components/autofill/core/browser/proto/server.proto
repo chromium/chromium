@@ -6,56 +6,9 @@
 
 syntax = "proto2";
 
-option optimize_for = LITE_RUNTIME;
-
 package autofill;
 
-import "password_requirements.proto";
-
-// NOT USED ANYMORE. Please use `AutofillPageQueryRequest` in api_v1.proto
-// instead.
-// Next available id: 15
-message AutofillQueryContents {
-  reserved 11;  // Reserved for server use.
-  required string client_version = 1;
-  repeated group Form = 2 {
-    required fixed64 signature = 3;
-    optional AutofillRandomizedFormMetadata form_metadata = 12;
-    repeated group Field = 4 {
-      required fixed32 signature = 5;
-      optional string name = 8;
-      optional string type = 9;  // Control type.
-      optional AutofillRandomizedFieldMetadata field_metadata = 13;
-    }
-  }
-  repeated int64 experiments = 14;
-}
-
-// Response from Autofill query on the legacy API that gives field suggestions
-// for forms of a page in a flattened representation. The fields are returned in
-// the exact same order as filled in the request.
-// Next available id: 10
-message AutofillQueryResponseContents {
-  optional bool upload_required = 1 [deprecated = true];
-  repeated group Field = 2 {
-    required fixed32 overall_type_prediction = 3;
-    // Detailed list of all possible predictions (including
-    // |overall_type_prediction| as the first item).
-    message FieldPrediction {
-      // The predicted field type.
-      optional fixed32 type = 1;
-
-      // True if the serverside classification believes that the field
-      // may be pre-filled with a placeholder in the value attribute.
-      optional bool may_use_prefilled_placeholder = 2;
-    }
-    repeated FieldPrediction predictions = 7;
-
-    // For fields of type NEW_PASSWORD and ACCOUNT_CREATION_PASSWORD, this may
-    // specify requirements for the generation of passwords.
-    optional PasswordRequirementsSpec password_requirements = 9;
-  }
-}
+option optimize_for = LITE_RUNTIME;
 
 // This message contains a randomized encoding of a string, where each bit
 // in the encoded string is randomly sent as either the true value seen by
@@ -221,19 +174,115 @@ message AutofillRandomizedFieldMetadata {
 
   // Value of the autocomplete attribute. Example: <input autocomplete="XXX">
   optional AutofillRandomizedValue autocomplete = 10;
+
+  // Value of the pattern attribute. Example: <input pattern="XXXXX">
+  optional AutofillRandomizedValue pattern = 11;
+
+  // Value of the maxlength attribute. Example: <input maxlength=4>
+  optional AutofillRandomizedValue max_length = 12;
+
+  // Corresponds to a `autofill::SelectOption`.
+  message AutofillRandomizedSelectOption {
+    // The option's "value" attribute, or, if not present, its text content.
+    optional AutofillRandomizedValue value = 1;
+    // The option's "label" attribute, or, if not present, its text content.
+    // Emitted only if it is not the same as the "value" field above.
+    optional AutofillRandomizedValue text = 2;
+  }
+
+  // The <option>s if the field is a <select>. Note that if the <select>
+  // has more than 3 options, this only includes the first, the second, and the
+  // last option.
+  repeated AutofillRandomizedSelectOption select_option = 13;
+}
+
+// A format string describes a value pattern.
+message FormatString {
+  enum Type {
+    // The format string represents a date as documented
+    // autofill::data_util::IsValidDateFormat().
+    DATE = 0;
+    // The format string is the length of a prefix or suffix as documented
+    // autofill::data_util::IsValidAffixFormat().
+    AFFIX = 1;
+    // The format string represents the components of a flight number. See
+    // autofill::data_util::IsValidFlightNumberFormat().
+    FLIGHT_NUMBER = 2;
+    // The format string represents a date as documented in
+    // https://unicode.org/reports/tr35/tr35-dates.html#Date_Format_Patterns.
+    // This format cannot be used for setting the value.
+    ICU_DATE = 3;
+  }
+  optional Type type = 49;
+  optional string format_string = 50;
+}
+
+// The collection of autofill field metadata hashes using three bits.
+message ThreeBitHashedFieldMetadata {
+  // Input element id attribute hash.
+  optional int32 id = 1;
+
+  // Input element name attribute hash.
+  optional int32 name = 2;
+
+  // Input element type attribute hash.
+  optional int32 type = 3;
+
+  // Input field label hash.
+  optional int32 label = 4;
+
+  // Input field aria-label attribute hash.
+  optional int32 aria_label = 5;
+
+  // Input field aria-description attribute hash.
+  optional int32 aria_description = 6;
+
+  // Input field placeholder attribute hash.
+  optional int32 placeholder = 7;
+
+  // Input field initial value hash.
+  optional int32 initial_value = 8;
+
+  // Input field autocomplete attribute hash.
+  optional int32 autocomplete = 9;
+
+  // Input field pattern attribute hash.
+  optional int32 pattern = 10;
+}
+
+// The collection of autofill form metadata hashes using three bits.
+message ThreeBitHashedFormMetadata {
+  // Form element id attribute hash.
+  optional int32 id = 1;
+
+  // Form element name attribute hash.
+  optional int32 name = 2;
+
+  // Form element action attribute hash.
+  optional int32 action = 3;
+
+  // Hash of all button titles in the form.
+  optional int32 button_titles_concatenated = 4;
 }
 
 // This message contains information about the field types in a single form.
 // It is sent by the toolbar to contribute to the field type statistics.
-// Next available id: 48
+// Next available id: 51
 message AutofillUploadContents {
   required string client_version = 1;
   required fixed64 form_signature = 2;
 
   // The secondary form signature is calculated based on field types instead of
   // names and is used if the primary one is unstable, i.e. the field names
-  // change on every page load. Not used currently.
-  optional fixed64 secondary_form_signature = 34;
+  // change on every page load. Deprecated due to instability on small (<3 field
+  // forms): use `structural_form_signature` instead.
+  optional fixed64 secondary_form_signature = 34 [deprecated = true];
+
+  // The structural form signature is calculated based on domain name and field
+  // types instead of field names and is equivalent to
+  // `secondary_form_signature` for forms with more than 2 fields.
+  // go/autofill-stable-form-signature
+  optional fixed64 structural_form_signature = 50;
 
   // True if the autofill feature was used to fill this form, false otherwise.
   required bool autofill_used = 3;
@@ -245,7 +294,7 @@ message AutofillUploadContents {
   required string data_present = 4;
 
   // List of the fields in the form and their types.
-  repeated group Field = 5 {
+  message Field {
     // Field identification inside the current form.
     required fixed32 signature = 6;
 
@@ -256,21 +305,11 @@ message AutofillUploadContents {
     // AutoFillFieldType
     repeated fixed32 autofill_type = 7;
 
-    // The value of the name attribute on the field, if present. Otherwise, the
-    // value of the id attribute. See HTMLFormControlElement::nameForAutofill.
-    // TODO(850606): Deprecate once randomized metadata is launched.
-    optional string name = 8;
-
-    // The value of the autocomplete attribute on the field, if present.
-    // TODO(850606): Deprecate once randomized metadata is launched.
-    optional string autocomplete = 9;
-
-    // The type of input control for this field (e.g. text, textarea, email).
-    // TODO(850606): Deprecate once randomized metadata is launched.
-    optional string type = 10;
-
     // The field-level metadata associated with this field, randomized.
     optional AutofillRandomizedFieldMetadata randomized_field_metadata = 33;
+
+    // Low precision hashes for field-level metadata associated with this field.
+    optional ThreeBitHashedFieldMetadata three_bit_hashed_field_metadata = 52;
 
     enum PasswordGenerationType {
       NO_GENERATION = 0;
@@ -283,18 +322,9 @@ message AutofillUploadContents {
     // The type of password generation, if it happened.
     optional PasswordGenerationType generation_type = 17;
 
-    // The value of the class attribute on the field, if present.
-    // TODO(850606): Deprecate once randomized metadata is launched.
-    optional string css_classes = 19;
-
     // The properties mask (i.e. whether the field was autofilled, user
     // modified, etc.) See FieldPropertiesFlags.
     optional uint32 properties_mask = 20;
-
-    // The value of the id attribute, if it differs from the name attribute.
-    // Otherwise, this field is absent.
-    // TODO(850606): Deprecate once randomized metadata is launched.
-    optional string id = 21;
 
     // True iff the user changed generated password. If there was no generation,
     // the field is absent.
@@ -381,9 +411,14 @@ message AutofillUploadContents {
     // between then and form submission. Set to `false` if the pre-filled value
     // wasn't changed. Not set if the field didn't have a pre-filled value.
     optional bool initial_value_changed = 47;
+
+    // List of format strings which match the field's value.
+    repeated FormatString format_string = 51;
+
+    reserved 8, 9, 10, 19, 21;
+    reserved "name", "autocomplete", "type", "css_classes", "id";
   }
-  // Signature of the form action host (e.g. Hash64Bit("example.com")).
-  optional fixed64 action_signature = 13;
+  repeated Field field_data = 48;
 
   // Signature of the form. This is currently used when password generated on a
   // password field of a registration form is used on a password field of a
@@ -392,9 +427,6 @@ message AutofillUploadContents {
 
   // Whether a form submission event was observed.
   optional bool submission = 15;
-
-  // The form name.
-  optional string form_name = 16;
 
   // True if the non-obfuscated password values were shown to the user.
   optional bool passwords_revealed = 24;
@@ -457,18 +489,8 @@ message AutofillUploadContents {
   // Form-level metadata observed by the client, randomized.
   optional AutofillRandomizedFormMetadata randomized_form_metadata = 32;
 
-  // Information about a button's title (sync with another ButtonTitle in this
-  // proto).
-  message ButtonTitle {
-    // Text showed on the button.
-    optional string title = 1;
-
-    // Describes how the button is implemented in HTML source.
-    optional ButtonTitleType type = 2;
-  }
-  // Titles of form's buttons.
-  // TODO(850606): Deprecate once randomized metadata is launched.
-  repeated ButtonTitle button_title = 36;
+  // Low precision hashes for form-level metadata observed by the client.
+  optional ThreeBitHashedFormMetadata three_bit_hashed_form_metadata = 49;
 
   // Whether the fields are enclosed by a <form> tag or are unowned elements.
   optional bool has_form_tag = 37;
@@ -476,20 +498,6 @@ message AutofillUploadContents {
   // Captures whether or not this upload was a candidate for throttling.
   optional bool was_throttleable = 38 [deprecated = true];
 
-  // Type of the value seen in the potential single username field.
-  enum ValueType {
-    TYPE_UNSPECIFIED = 0;
-    NO_VALUE_TYPE = 1;
-    STORED_FOR_CURRENT_DOMAIN = 2;
-    // TODO(crbug.com/40626063) Not used yet. Check against all domains to be
-    // implemented.
-    STORED_FOR_ANOTHER_DOMAIN = 3;
-    EMAIL = 4;
-    PHONE = 5;
-    USERNAME_LIKE = 6;
-    VALUE_WITH_NO_WHITESPACE = 7;
-    VALUE_WITH_WHITESPACE = 8;
-  }
   // Information received from user interaction with the prompt.
   enum SingleUsernamePromptEdit {
     EDIT_UNSPECIFIED = 0;
@@ -498,16 +506,6 @@ message AutofillUploadContents {
     EDITED_POSITIVE = 3;
     EDITED_NEGATIVE = 4;
   }
-  message SingleUsernameData {
-    optional fixed64 username_form_signature = 1;
-    optional fixed32 username_field_signature = 2;
-    optional ValueType value_type = 3;
-    optional SingleUsernamePromptEdit prompt_edit = 4;
-  }
-  // This message is recorded on forms that do not have a username field.
-  // The message contains data on preceding forms with potential username
-  // fields.
-  repeated SingleUsernameData single_username_data = 42;
 
   // The form signature of related forms, which were submitted on the same
   // origin shortly prior. If set, `last_address_form_submitted` or
@@ -515,25 +513,8 @@ message AutofillUploadContents {
   optional fixed64 last_address_form_submitted = 43;
   optional fixed64 second_last_address_form_submitted = 44;
   optional fixed64 last_credit_card_form_submitted = 45;
-}
 
-// This proto contains information about the validity of each field in an
-// autofill profile. It is used to transfer the results of running the profile
-// validation pipeline on the server side to the client via ChromeSync
-// PriorityPreferences. An identical copy of this proto is maintained in
-// the server code base.
-message ProfileValidityMap {
-  // Map from autofill type to the validity of its value in the profile.
-  //
-  // Key should be one of the enum values from FieldType. Values should be
-  // from the AutofillProfile::ValidityState. Plain integers are used
-  // instead of enums because proto2 treats unknown enum values as unknown
-  // fields, which is confusing when the enums are in maps.
-  map<int32, int32> field_validity_states = 1;
-}
-
-// Map from profile GUIDs to profile validity maps for that profile. Each
-// message should contain entries for all profiles from a single user.
-message UserProfileValidityMap {
-  map<string, ProfileValidityMap> profile_validity = 1;
+  reserved 5, 13, 16, 36, 42;
+  reserved "Field", "action_signature", "form_name", "button_title";
+  reserved "ButtonTitle";
 }

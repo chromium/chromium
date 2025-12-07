@@ -1,0 +1,31 @@
+This is a testharness.js-based test.
+[FAIL] .test 1
+  assert_equals: \n<div class="container test" data-expected-height="100">\n  <img class="block-step test" src="../../support/60x60-green.png" data-expected-margin-top="20" data-expected-margin-bottom="20">\n</div>\nheight expected 100 but got 60
+[FAIL] .test 2
+  assert_equals: \n<img class="block-step test" src="../../support/60x60-green.png" data-expected-margin-top="20" data-expected-margin-bottom="20">\nheight expected 100 but got 60
+[FAIL] .test 3
+  assert_equals: \n<div class="container test" data-expected-height="100">\n  <canvas width="20" height="20" class="block-step test" data-expected-margin-top="40" data-expected-margin-bottom="40"></canvas>\n</div>\nheight expected 100 but got 20
+[FAIL] .test 4
+  assert_equals: \n<canvas width="20" height="20" class="block-step test" data-expected-margin-top="40" data-expected-margin-bottom="40"></canvas>\nheight expected 100 but got 20
+[FAIL] .test 5
+  assert_equals: \n<div class="container test" data-expected-height="100">\n  <svg class="block-step test" viewBox="0 0 100 50" data-expected-margin-top="25" data-expected-margin-bottom="25"></svg>\n</div>\nheight expected 100 but got 50
+[FAIL] .test 6
+  assert_equals: \n<svg class="block-step test" viewBox="0 0 100 50" data-expected-margin-top="25" data-expected-margin-bottom="25"></svg>\nheight expected 100 but got 50
+[FAIL] .test 7
+  assert_equals: \n<div class="container test" data-expected-height="100">\n  <embed type="text/xml" width="20" height="20" class="block-step test" data-expected-margin-top="40" data-expected-margin-bottom="40">\n</div>\nheight expected 100 but got 20
+[FAIL] .test 8
+  assert_equals: \n<embed type="text/xml" width="20" height="20" class="block-step test" data-expected-margin-top="40" data-expected-margin-bottom="40">\nheight expected 100 but got 20
+[FAIL] .test 9
+  assert_equals: \n<div class="container test" data-expected-height="100">\n  <iframe src="" width="20" height="20" class="block-step test" data-expected-margin-top="40" data-expected-margin-bottom="40"></iframe>\n</div>\nheight expected 100 but got 20
+[FAIL] .test 10
+  assert_equals: \n<iframe src="" width="20" height="20" class="block-step test" data-expected-margin-top="40" data-expected-margin-bottom="40"></iframe>\nheight expected 100 but got 20
+[FAIL] .test 11
+  assert_equals: \n<div class="container test" data-expected-height="100">\n  <object width="20" height="20" class="block-step test" data-expected-margin-top="40" data-expected-margin-bottom="40"></object>\n</div>\nheight expected 100 but got 20
+[FAIL] .test 12
+  assert_equals: \n<object width="20" height="20" class="block-step test" data-expected-margin-top="40" data-expected-margin-bottom="40"></object>\nheight expected 100 but got 20
+[FAIL] .test 13
+  assert_equals: \n<div class="container test" data-expected-height="100">\n  <video width="20" height="20" class="block-step test" data-expected-margin-top="40" data-expected-margin-bottom="40"></video>\n</div>\nheight expected 100 but got 20
+[FAIL] .test 14
+  assert_equals: \n<video width="20" height="20" class="block-step test" data-expected-margin-top="40" data-expected-margin-bottom="40"></video>\nheight expected 100 but got 20
+Harness: the test ran to completion.
+

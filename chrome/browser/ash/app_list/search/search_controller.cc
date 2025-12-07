@@ -12,9 +12,7 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "ash/system/federated/federated_service_controller_impl.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/strcat.h"
@@ -39,7 +37,6 @@
 #include "chrome/browser/ash/app_list/search/search_session_metrics_manager.h"
 #include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/browser/metrics/structured/event_logging_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -61,17 +58,14 @@ void ClearNonZeroStateResults(ResultsMap& results) {
 
 }  // namespace
 
-SearchController::SearchController(
-    AppListModelUpdater* model_updater,
-    AppListControllerDelegate* list_controller,
-    ash::AppListNotifier* notifier,
-    Profile* profile,
-    ash::federated::FederatedServiceController* federated_service_controller)
+SearchController::SearchController(AppListModelUpdater* model_updater,
+                                   AppListControllerDelegate* list_controller,
+                                   ash::AppListNotifier* notifier,
+                                   Profile* profile)
     : profile_(profile),
       model_updater_(model_updater),
       list_controller_(list_controller),
-      notifier_(notifier),
-      federated_service_controller_(federated_service_controller) {}
+      notifier_(notifier) {}
 
 SearchController::~SearchController() = default;
 
@@ -83,9 +77,6 @@ void SearchController::Initialize() {
       std::make_unique<SearchMetricsManager>(profile_, notifier_);
   session_metrics_manager_ =
       std::make_unique<SearchSessionMetricsManager>(profile_, notifier_);
-  federated_metrics_manager_ =
-      std::make_unique<federated::FederatedMetricsManager>(
-          notifier_, federated_service_controller_);
   app_search_data_source_ = std::make_unique<AppSearchDataSource>(
       profile_, list_controller_, base::DefaultClock::GetInstance());
   app_discovery_metrics_manager_ =
@@ -154,20 +145,18 @@ void SearchController::StartSearch(const std::u16string& query) {
   categories_ = CreateAllCategories();
   SearchOptions search_options;
 
-  if (ash::features::IsLauncherSearchControlEnabled()) {
-    search_options.search_categories = std::vector<SearchCategory>();
-    base::flat_set<ControlCategory> disabled_categories;
-    for (const auto category : toggleable_categories_) {
-      if (!IsControlCategoryEnabled(profile_, category)) {
-        disabled_categories.insert(category);
-      }
+  search_options.search_categories = std::vector<SearchCategory>();
+  base::flat_set<ControlCategory> disabled_categories;
+  for (const auto category : toggleable_categories_) {
+    if (!IsControlCategoryEnabled(profile_, category)) {
+      disabled_categories.insert(category);
     }
+  }
 
-    for (const auto category : search_engine_->GetAllSearchCategories()) {
-      if (!disabled_categories.contains(
-              MapSearchCategoryToControlCategory(category))) {
-        search_options.search_categories->push_back(category);
-      }
+  for (const auto category : search_engine_->GetAllSearchCategories()) {
+    if (!disabled_categories.contains(
+            MapSearchCategoryToControlCategory(category))) {
+      search_options.search_categories->push_back(category);
     }
   }
 
@@ -237,7 +226,7 @@ void SearchController::OnZeroStateTimedOut() {
 void SearchController::AppListViewChanging(bool is_visible) {
   // In tablet mode, the launcher is always visible so do not log launcher open
   // if the device is in tablet mode.
-  if (is_visible && !display::Screen::GetScreen()->InTabletMode()) {
+  if (is_visible && !display::Screen::Get()->InTabletMode()) {
     app_discovery_metrics_manager_->OnLauncherOpen();
   }
 
@@ -264,7 +253,7 @@ void SearchController::OpenResult(ChromeSearchResult* result, int event_flags) {
 
   // Launching apps can take some time. It looks nicer to eagerly dismiss the
   // app list if |result| permits it. Do not close app list for home launcher.
-  if (dismiss_view_on_open && !display::Screen::GetScreen()->InTabletMode()) {
+  if (dismiss_view_on_open && !display::Screen::Get()->InTabletMode()) {
     list_controller_->DismissView();
   }
 }
@@ -458,10 +447,6 @@ void SearchController::AddObserver(Observer* observer) {
 
 void SearchController::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
-}
-
-void SearchController::OnDefaultSearchIsGoogleSet(bool is_google) {
-  federated_metrics_manager_->OnDefaultSearchIsGoogleSet(is_google);
 }
 
 std::u16string SearchController::get_query() {

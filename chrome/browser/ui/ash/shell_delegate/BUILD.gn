@@ -1,0 +1,103 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+static_library("shell_delegate") {
+  sources = [
+    "chrome_shell_delegate.cc",
+    "chrome_shell_delegate.h",
+    "tab_scrubber.cc",
+    "tab_scrubber.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/api/tasks",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc:arc_util",
+    "//chrome/browser/ash/arc/locked_fullscreen",
+    "//chrome/browser/ash/arc/session:service_launcher",
+    "//chrome/browser/ash/browser_delegate",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/multidevice_setup",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/scanner",
+    "//chrome/browser/feedback",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/sessions",
+    "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui/ash/accelerator",
+    "//chrome/browser/ui/ash/accessibility",
+    "//chrome/browser/ui/ash/back_gesture",
+    "//chrome/browser/ui/ash/boca",
+    "//chrome/browser/ui/ash/capture_mode",
+    "//chrome/browser/ui/ash/desks",
+    "//chrome/browser/ui/ash/focus_mode",
+    "//chrome/browser/ui/ash/game_dashboard",
+    "//chrome/browser/ui/ash/global_media_controls",
+    "//chrome/browser/ui/ash/keyboard",
+    "//chrome/browser/ui/ash/session",
+    "//chrome/browser/ui/ash/user_education",
+    "//chrome/browser/ui/ash/wm",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/views",
+    "//chrome/browser/ui/views/frame",
+    "//chrome/browser/ui/views/frame:immersive_mode_controller",
+    "//chrome/browser/ui/webui/ash/diagnostics_dialog",
+    "//chrome/browser/web_applications",
+    "//chrome/common",
+    "//chromeos/ash/components/audio",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/channel",
+    "//chromeos/ash/components/specialized_features",
+    "//chromeos/ash/experiences/clipboard",
+    "//chromeos/ash/services/multidevice_setup",
+    "//components/ui_devtools",
+    "//components/ui_devtools/views",
+    "//components/user_manager",
+    "//components/version_info",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/events:gesture_detection",
+    "//url",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "tab_scrubber_browsertest.cc" ]
+
+  deps = [
+    ":shell_delegate",
+    "//ash",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/test:test_support_ui",
+    "//components/exo",
+    "//components/exo:test_support",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//ui/aura",
+    "//ui/events:gesture_detection",
+    "//ui/events:test_support",
+    "//ui/wm",
+  ]
+}

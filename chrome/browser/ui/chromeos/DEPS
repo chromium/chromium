@@ -1,6 +1,10 @@
+include_rules = [
+  "-ash",
+  "-chrome",
+]
+
 specific_include_rules = {
-  "test_util\.cc": [
-      "+ash",
-      "+chrome/browser/ui/views",
+  ".*test.*": [
+    "+chrome/test",
   ],
 }

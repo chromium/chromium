@@ -1,0 +1,13 @@
+include_rules = [
+  "+mojo/public",
+  "+sql",
+  "+third_party/sqlite",
+
+  # persistent_cache is not expected to depend on other components and should
+  # stay as decoupled as possible from the rest of the application.
+  "-components",
+  "-content",
+  "-chrome",
+
+  "+components/persistent_cache",
+]

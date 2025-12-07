@@ -6,3 +6,5 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++++ROLE_SYSTEM_GRAPHIC name='  . To get missing image descriptions, open the context menu.' READONLY
 ++++ROLE_SYSTEM_STATICTEXT name=' '
 ++++ROLE_SYSTEM_GRAPHIC name='SVG face' READONLY
+++++ROLE_SYSTEM_STATICTEXT name=' '
+++++ROLE_SYSTEM_GRAPHIC name='clickable_image' READONLY

@@ -6,24 +6,25 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <iterator>
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/functional/overloaded.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
@@ -34,6 +35,7 @@
 #include "components/attribution_reporting/trigger_config.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/aggregatable_debug_report.h"
+#include "content/browser/attribution_reporting/aggregatable_named_budget_pair.h"
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_internals.mojom.h"
@@ -55,8 +57,8 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/common/content_client.h"
 #include "net/base/net_errors.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -74,6 +76,19 @@ using ReportStatusPtr = ::attribution_internals::mojom::ReportStatusPtr;
 using ::attribution_internals::mojom::WebUIAggregatableDebugReport;
 using ::attribution_internals::mojom::WebUIDebugReport;
 
+std::string SerializeBudgetsMap(
+    const StoredSource::AggregatableNamedBudgets& map) {
+  base::Value::Dict dict;
+  for (const auto& [key, value] : map) {
+    base::Value::Dict inner_dict;
+    inner_dict.Set("original_budget", value.original_budget());
+    inner_dict.Set("remaining_budget", value.remaining_budget());
+    dict.Set(key, std::move(inner_dict));
+  }
+
+  return SerializeAttributionJson(dict, /*pretty_print=*/true);
+}
+
 attribution_internals::mojom::WebUISourcePtr WebUISource(
     const StoredSource& source,
     Attributability attributability) {
@@ -84,8 +99,9 @@ attribution_internals::mojom::WebUISourcePtr WebUISource(
       common_info.reporting_origin(),
       source.source_time().InMillisecondsFSinceUnixEpoch(),
       source.expiry_time().InMillisecondsFSinceUnixEpoch(),
-      SerializeAttributionJson(source.trigger_specs().ToJson(),
-                               /*pretty_print=*/true),
+      source.event_report_windows(),
+      base::ToVector(source.trigger_data().trigger_data()),
+      source.max_event_level_reports(),
       source.aggregatable_report_window_time().InMillisecondsFSinceUnixEpoch(),
       common_info.source_type(), source.priority(), source.debug_key(),
       source.dedup_keys(), source.filter_data(),
@@ -98,19 +114,22 @@ attribution_internals::mojom::WebUISourcePtr WebUISource(
           }),
       source.remaining_aggregatable_attribution_budget(),
       source.aggregatable_dedup_keys(), source.trigger_data_matching(),
-      source.event_level_epsilon(), source.common_info().debug_cookie_set(),
+      source.event_level_epsilon(),
+      source.common_info().cookie_based_debug_allowed(),
       source.remaining_aggregatable_debug_budget(),
       attribution_reporting::HexEncodeAggregationKey(
           source.aggregatable_debug_key_piece()),
+      source.attribution_scopes_data().has_value()
+          ? SerializeAttributionJson(source.attribution_scopes_data()->ToJson(),
+                                     /*pretty_print=*/true)
+          : "null",
+      SerializeBudgetsMap(source.aggregatable_named_budgets()),
       attributability);
 }
 
 std::vector<attribution_internals::mojom::WebUISourcePtr> ToWebUISources(
     const std::vector<StoredSource>& active_sources) {
-  std::vector<attribution_internals::mojom::WebUISourcePtr> web_ui_sources;
-  web_ui_sources.reserve(active_sources.size());
-
-  for (const StoredSource& source : active_sources) {
+  return base::ToVector(active_sources, [](const StoredSource& source) {
     Attributability attributability;
     switch (source.attribution_logic()) {
       case StoredSource::AttributionLogic::kTruthfully:
@@ -133,14 +152,12 @@ std::vector<attribution_internals::mojom::WebUISourcePtr> ToWebUISources(
           attributability = Attributability::kReachedEventLevelAttributionLimit;
           break;
         case StoredSource::ActiveState::kInactive:
-          NOTREACHED_NORETURN();
+          NOTREACHED();
       }
     }
 
-    web_ui_sources.push_back(WebUISource(source, attributability));
-  }
-
-  return web_ui_sources;
+    return WebUISource(source, attributability);
+  });
 }
 
 attribution_internals::mojom::WebUIReportPtr WebUIReport(
@@ -151,8 +168,8 @@ attribution_internals::mojom::WebUIReportPtr WebUIReport(
 
   const AttributionInfo& attribution_info = report.attribution_info();
 
-  ai_mojom::WebUIReportDataPtr data = absl::visit(
-      base::Overloaded{
+  ai_mojom::WebUIReportDataPtr data = std::visit(
+      absl::Overload{
           [](const AttributionReport::EventLevelData& event_level_data) {
             return ai_mojom::WebUIReportData::NewEventLevelData(
                 ai_mojom::WebUIReportEventLevelData::New(
@@ -160,46 +177,36 @@ attribution_internals::mojom::WebUIReportPtr WebUIReport(
                     event_level_data.attributed_truthfully));
           },
 
-          [](const AttributionReport::AggregatableAttributionData&
-                 aggregatable_data) {
+          [](const AttributionReport::AggregatableData& aggregatable_data) {
             std::vector<ai_mojom::AggregatableHistogramContributionPtr>
                 contributions;
-            base::ranges::transform(
-                aggregatable_data.contributions,
-                std::back_inserter(contributions),
-                [](const auto& contribution) {
-                  return ai_mojom::AggregatableHistogramContribution::New(
-                      attribution_reporting::HexEncodeAggregationKey(
-                          contribution.bucket),
-                      base::checked_cast<uint32_t>(contribution.value));
-                });
+
+            if (aggregatable_data.is_null()) {
+              contributions.push_back(
+                  ai_mojom::AggregatableHistogramContribution::New(
+                      attribution_reporting::HexEncodeAggregationKey(0),
+                      /*value=*/0,
+                      /*filtering_id=*/0));
+            } else {
+              contributions = base::ToVector(
+                  aggregatable_data.contributions(),
+                  [](const auto& contribution) {
+                    return ai_mojom::AggregatableHistogramContribution::New(
+                        attribution_reporting::HexEncodeAggregationKey(
+                            contribution.bucket),
+                        base::checked_cast<uint32_t>(contribution.value),
+                        contribution.filtering_id.value_or(0));
+                  });
+            }
 
             return ai_mojom::WebUIReportData::NewAggregatableAttributionData(
                 ai_mojom::WebUIReportAggregatableAttributionData::New(
                     std::move(contributions),
-                    aggregatable_data.common_data.aggregation_coordinator_origin
-                        ? aggregatable_data.common_data
-                              .aggregation_coordinator_origin->Serialize()
-                        : "",
-                    /*is_null_report=*/false));
-          },
-
-          [](const AttributionReport::NullAggregatableData& null_data)
-              -> ai_mojom::WebUIReportDataPtr {
-            std::vector<ai_mojom::AggregatableHistogramContributionPtr>
-                contributions;
-            contributions.push_back(
-                ai_mojom::AggregatableHistogramContribution::New(
-                    attribution_reporting::HexEncodeAggregationKey(0),
-                    /*value=*/0));
-            return ai_mojom::WebUIReportData::NewAggregatableAttributionData(
-                ai_mojom::WebUIReportAggregatableAttributionData::New(
-                    std::move(contributions),
-                    null_data.common_data.aggregation_coordinator_origin
-                        ? null_data.common_data.aggregation_coordinator_origin
+                    aggregatable_data.aggregation_coordinator_origin()
+                        ? aggregatable_data.aggregation_coordinator_origin()
                               ->Serialize()
                         : "",
-                    /*is_null_report=*/true));
+                    aggregatable_data.is_null()));
           },
       },
       report.data());
@@ -214,20 +221,14 @@ attribution_internals::mojom::WebUIReportPtr WebUIReport(
 
 std::vector<attribution_internals::mojom::WebUIReportPtr> ToWebUIReports(
     const std::vector<AttributionReport>& pending_reports) {
-  std::vector<attribution_internals::mojom::WebUIReportPtr> web_ui_reports;
-  web_ui_reports.reserve(pending_reports.size());
-
-  for (const AttributionReport& report : pending_reports) {
-    web_ui_reports.push_back(
-        WebUIReport(report, /*is_debug_report=*/false,
-                    ReportStatus::NewPending(Empty::New())));
-  }
-
-  return web_ui_reports;
+  return base::ToVector(pending_reports, [](const AttributionReport& report) {
+    return WebUIReport(report, /*is_debug_report=*/false,
+                       ReportStatus::NewPending(Empty::New()));
+  });
 }
 
 attribution_internals::mojom::NetworkStatusPtr NetworkStatus(int status) {
-  return status > 0
+  return status >= 0
              ? attribution_internals::mojom::NetworkStatus::NewHttpResponseCode(
                    status)
              : attribution_internals::mojom::NetworkStatus::NewNetworkError(
@@ -376,10 +377,13 @@ void AttributionInternalsHandlerImpl::OnReportSent(
     const AttributionReport& report,
     bool is_debug_report,
     const SendResult& info) {
-  ReportStatusPtr status = absl::visit(
-      base::Overloaded{
+  ReportStatusPtr status = std::visit(
+      absl::Overload{
           [](SendResult::Sent sent) {
             return ReportStatus::NewNetworkStatus(NetworkStatus(sent.status));
+          },
+          [](SendResult::Expired) {
+            return ReportStatus::NewExpired(Empty::New());
           },
           [](SendResult::Dropped) {
             return ReportStatus::NewProhibitedByBrowserPolicy(Empty::New());
@@ -422,8 +426,8 @@ void AttributionInternalsHandlerImpl::OnAggregatableDebugReportSent(
       SerializeAttributionJson(report_body, /*pretty_print=*/true);
   web_report->process_result = process_result;
 
-  web_report->send_result = absl::visit(
-      base::Overloaded{
+  web_report->send_result = std::visit(
+      absl::Overload{
           [](const SendAggregatableDebugReportResult::Sent& sent) {
             return attribution_internals::mojom::
                 SendAggregatableDebugReportResult::NewNetworkStatus(
@@ -481,10 +485,10 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
   observer_->OnTriggerHandled(std::move(web_ui_trigger));
 
   if (const AttributionReport* report = result.replaced_event_level_report()) {
-    DCHECK_EQ(
+    CHECK_EQ(
         result.event_level_status(),
         AttributionTrigger::EventLevelResult::kSuccessDroppedLowerPriority);
-    DCHECK(result.new_event_level_report());
+    CHECK(result.new_event_level_report());
 
     observer_->OnReportHandled(
         WebUIReport(*report, /*is_debug_report=*/false,

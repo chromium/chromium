@@ -5,7 +5,9 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 
 #include "base/check.h"
+#include "base/strings/string_number_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/form_structure.h"
 
@@ -16,19 +18,37 @@ namespace internal {
 constexpr DenseSet<FormType> kAddressFormTypes = {FormType::kAddressForm};
 constexpr DenseSet<FormType> kCreditCardFormTypes = {
     FormType::kCreditCardForm, FormType::kStandaloneCvcForm};
-constexpr DenseSet<FieldType> kFieldTypesOfATypicalStoreLocatorForm = {
+constexpr DenseSet<FormType> kLoyaltyCardFormTypes = {
+    FormType::kLoyaltyCardForm};
+constexpr DenseSet<FormType> kOneTimePasswordFormTypes = {
+    FormType::kOneTimePasswordForm};
+constexpr FieldTypeSet kFieldTypesOfATypicalStoreLocatorForm = {
     ADDRESS_HOME_CITY, ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP};
+
+bool IsCvcOnlyForm(const FormStructure& form) {
+  if (form.fields().size() != 1) {
+    return false;
+  }
+  // Theoretically we don't need to check
+  // CREDIT_CARD_STANDALONE_VERIFICATION_CODE type here since if it's
+  // CREDIT_CARD_STANDALONE_VERIFICATION_CODE, the form type would be treated as
+  // kStandaloneCvcForm already. Add CREDIT_CARD_STANDALONE_VERIFICATION_CODE
+  // here just for completion.
+  static constexpr FieldTypeSet kCvcTypes = {
+      CREDIT_CARD_VERIFICATION_CODE, CREDIT_CARD_STANDALONE_VERIFICATION_CODE};
+  return kCvcTypes.contains(form.fields()[0]->Type().GetCreditCardType());
+}
 
 bool IsEmailOnlyForm(const FormStructure& form) {
   bool has_email_field = false;
   for (const auto& field : form.fields()) {
-    FieldType field_type = field->Type().GetStorableType();
-    if (field_type == EMAIL_ADDRESS) {
+    const FieldTypeSet field_types = field->Type().GetTypes();
+    if (field_types.contains(EMAIL_ADDRESS)) {
       has_email_field = true;
     }
-    if (field_type != EMAIL_ADDRESS && field_type != UNKNOWN_TYPE &&
-        FieldTypeGroupToFormType(field->Type().group()) !=
-            FormType::kPasswordForm) {
+    if (!field_types.contains(EMAIL_ADDRESS) &&
+        !field_types.contains(UNKNOWN_TYPE) &&
+        !field->Type().GetFormTypes().contains(FormType::kPasswordForm)) {
       return false;
     }
   }
@@ -36,11 +56,11 @@ bool IsEmailOnlyForm(const FormStructure& form) {
 }
 
 bool IsPostalAddressForm(const FormStructure& form) {
-  DenseSet<FieldType> postal_address_field_types;
+  FieldTypeSet postal_address_field_types;
   for (const auto& field : form.fields()) {
-    if (field->Type().group() == FieldTypeGroup::kAddress &&
-        field->Type().GetStorableType() != ADDRESS_HOME_COUNTRY) {
-      postal_address_field_types.insert(field->Type().GetStorableType());
+    if (field->Type().GetGroups().contains(FieldTypeGroup::kAddress) &&
+        field->Type().GetAddressType() != ADDRESS_HOME_COUNTRY) {
+      postal_address_field_types.insert(field->Type().GetAddressType());
     }
   }
   return postal_address_field_types.size() >= 3 &&
@@ -68,10 +88,18 @@ DenseSet<FormTypeNameForLogging> GetFormTypesForLogging(
         }
         break;
       case FormType::kCreditCardForm:
-        form_types.insert(FormTypeNameForLogging::kCreditCardForm);
+        form_types.insert(IsCvcOnlyForm(form)
+                              ? FormTypeNameForLogging::kStandaloneCvcForm
+                              : FormTypeNameForLogging::kCreditCardForm);
         break;
       case FormType::kStandaloneCvcForm:
         form_types.insert(FormTypeNameForLogging::kStandaloneCvcForm);
+        break;
+      case FormType::kLoyaltyCardForm:
+        form_types.insert(FormTypeNameForLogging::kLoyaltyCardForm);
+        break;
+      case FormType::kOneTimePasswordForm:
+        form_types.insert(FormTypeNameForLogging::kOneTimePasswordForm);
         break;
       case FormType::kPasswordForm:
       case FormType::kUnknownFormType:
@@ -83,28 +111,60 @@ DenseSet<FormTypeNameForLogging> GetFormTypesForLogging(
 
 }  // namespace internal
 
-AutofillProfileSourceCategory GetCategoryOfProfile(
+AutofillProfileRecordTypeCategory GetCategoryOfProfile(
     const AutofillProfile& profile) {
-  switch (profile.source()) {
-    case AutofillProfile::Source::kLocalOrSyncable:
-      return AutofillProfileSourceCategory::kLocalOrSyncable;
-    case AutofillProfile::Source::kAccount:
+  switch (profile.record_type()) {
+    case AutofillProfile::RecordType::kLocalOrSyncable:
+      return AutofillProfileRecordTypeCategory::kLocalOrSyncable;
+    case AutofillProfile::RecordType::kAccount:
       return profile.initial_creator_id() ==
                      AutofillProfile::kInitialCreatorOrModifierChrome
-                 ? AutofillProfileSourceCategory::kAccountChrome
-                 : AutofillProfileSourceCategory::kAccountNonChrome;
+                 ? AutofillProfileRecordTypeCategory::kAccountChrome
+                 : AutofillProfileRecordTypeCategory::kAccountNonChrome;
+    case AutofillProfile::RecordType::kAccountHome:
+      return AutofillProfileRecordTypeCategory::kAccountHome;
+    case AutofillProfile::RecordType::kAccountWork:
+      return AutofillProfileRecordTypeCategory::kAccountWork;
+    case AutofillProfile::RecordType::kAccountNameEmail:
+      return AutofillProfileRecordTypeCategory::kAccountNameEmail;
   }
 }
 
-const char* GetProfileCategorySuffix(AutofillProfileSourceCategory category) {
+const char* GetProfileCategorySuffix(
+    AutofillProfileRecordTypeCategory category) {
   switch (category) {
-    case AutofillProfileSourceCategory::kLocalOrSyncable:
+    case AutofillProfileRecordTypeCategory::kLocalOrSyncable:
       return "Legacy";
-    case AutofillProfileSourceCategory::kAccountChrome:
+    case AutofillProfileRecordTypeCategory::kAccountChrome:
       return "AccountChrome";
-    case AutofillProfileSourceCategory::kAccountNonChrome:
+    case AutofillProfileRecordTypeCategory::kAccountNonChrome:
       return "AccountNonChrome";
+    case AutofillProfileRecordTypeCategory::kAccountHome:
+      return "AccountHome";
+    case AutofillProfileRecordTypeCategory::kAccountWork:
+      return "AccountWork";
+    case AutofillProfileRecordTypeCategory::kAccountNameEmail:
+      return "AccountNameEmail";
   }
+}
+
+const char* GetProfileRecordTypeSuffix(
+    AutofillProfile::RecordType record_type) {
+  // LINT.IfChange(ProfileRecordTypeSuffix)
+  using RecordType = AutofillProfile::RecordType;
+  switch (record_type) {
+    case RecordType::kLocalOrSyncable:
+      return "LocalOrSyncable";
+    case RecordType::kAccount:
+      return "Account";
+    case RecordType::kAccountHome:
+      return "AccountHome";
+    case RecordType::kAccountWork:
+      return "AccountWork";
+    case RecordType::kAccountNameEmail:
+      return "AccountNameEmail";
+  }
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/histograms.xml:ProfileRecordTypeSuffix)
 }
 
 SettingsVisibleFieldTypeForMetrics ConvertSettingsVisibleFieldTypeForMetrics(
@@ -143,6 +203,9 @@ SettingsVisibleFieldTypeForMetrics ConvertSettingsVisibleFieldTypeForMetrics(
     case ADDRESS_HOME_ADMIN_LEVEL2:
       return SettingsVisibleFieldTypeForMetrics::kAdminLevel2;
 
+    case ALTERNATIVE_FULL_NAME:
+      return SettingsVisibleFieldTypeForMetrics::kAlternativeName;
+
     default:
       return SettingsVisibleFieldTypeForMetrics::kUndefined;
   }
@@ -158,9 +221,86 @@ DenseSet<FormTypeNameForLogging> GetAddressFormTypesForLogging(
   return internal::GetFormTypesForLogging(form, internal::kAddressFormTypes);
 }
 
+DenseSet<FormTypeNameForLogging> GetOneTimePasswordTypesForLogging(
+    const FormStructure& form) {
+  return internal::GetFormTypesForLogging(form,
+                                          internal::kOneTimePasswordFormTypes);
+}
+
+DenseSet<FormTypeNameForLogging> GetLoyaltyFormTypesForLogging(
+    const FormStructure& form) {
+  return internal::GetFormTypesForLogging(form,
+                                          internal::kLoyaltyCardFormTypes);
+}
+
 DenseSet<FormTypeNameForLogging> GetCreditCardFormTypesForLogging(
     const FormStructure& form) {
   return internal::GetFormTypesForLogging(form, internal::kCreditCardFormTypes);
+}
+
+bool IsPostalAddress(const AutofillProfile& profile) {
+  static constexpr FieldTypeSet kPostalAddressFieldTypes = {
+      ADDRESS_HOME_CITY, ADDRESS_HOME_STATE, ADDRESS_HOME_STREET_ADDRESS,
+      ADDRESS_HOME_ZIP};
+  int number_of_set_fields = 0;
+  for (FieldType type : kPostalAddressFieldTypes) {
+    if (!profile.GetRawInfo(type).empty()) {
+      number_of_set_fields++;
+    }
+  }
+  return number_of_set_fields >= 2;
+}
+
+bool ShouldLogAutofillSuggestionShown(
+    AutofillSuggestionTriggerSource trigger_source) {
+  switch (trigger_source) {
+    case AutofillSuggestionTriggerSource::kUnspecified:
+    case AutofillSuggestionTriggerSource::kFormControlElementClicked:
+    case AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick:
+    case AutofillSuggestionTriggerSource::kContentEditableClicked:
+    case AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown:
+    case AutofillSuggestionTriggerSource::kOpenTextDataListChooser:
+    case AutofillSuggestionTriggerSource::kComposeDialogLostFocus:
+    case AutofillSuggestionTriggerSource::kPasswordManager:
+    case AutofillSuggestionTriggerSource::kiOS:
+    case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
+    case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
+    case AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses:
+    case AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
+      return true;
+    case AutofillSuggestionTriggerSource::kTextFieldValueChanged:
+    case AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge:
+    case AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess:
+      return false;
+  }
+}
+
+int GetBucketForAcceptanceMetricsGroupedByFieldType(FieldType field_type,
+                                                    bool suggestion_accepted) {
+  static_assert(FieldType::MAX_VALID_FIELD_TYPE <= (UINT16_MAX >> 4),
+                "Autofill::FieldType value needs more than 12 bits.");
+
+  return (field_type << 2) | suggestion_accepted;
+}
+
+int GetDuplicationRank(
+    base::span<const DifferingProfileWithTypeSet> min_incompatible_sets) {
+  // All elements of `min_incompatible_sets` have the same size.
+  return min_incompatible_sets.empty()
+             ? std::numeric_limits<int>::max()
+             : min_incompatible_sets.back().field_type_set.size();
+}
+
+uint64_t FormGlobalIdToHash64Bit(const FormGlobalId& form_global_id) {
+  return StrToHash64Bit(
+      base::NumberToString(form_global_id.renderer_id.value()) +
+      form_global_id.frame_token.ToString());
+}
+
+uint64_t FieldGlobalIdToHash64Bit(const FieldGlobalId& field_global_id) {
+  return StrToHash64Bit(
+      base::NumberToString(field_global_id.renderer_id.value()) +
+      field_global_id.frame_token.ToString());
 }
 
 }  // namespace autofill::autofill_metrics

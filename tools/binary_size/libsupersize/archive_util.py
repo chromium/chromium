@@ -16,6 +16,21 @@ def ExtendSectionRange(section_range_by_name, section_name, delta_size):
   section_range_by_name[section_name] = (prev_address, prev_size + delta_size)
 
 
+def ExtendSectionRangeAdjacent(section_range_by_name, section_name, addr, size):
+  """Extends the section to consume the start / size of an adjacent section"""
+  prev_address, prev_size = section_range_by_name[section_name]
+  prev_end_address = prev_address + prev_size
+  # Consistency check: The sections don't overlap.
+  assert addr - prev_end_address >= 0, (
+      f'{section_name} {prev_end_address} {addr}')
+  # Consistency check: Gap between them is less than 64 KiB.
+  assert addr - prev_end_address < 64 * 1024, (
+      f'{section_name} {prev_end_address} {addr}')
+  new_end_address = addr + size
+  new_size = new_end_address - prev_address
+  section_range_by_name[section_name] = (prev_address, new_size)
+
+
 def _NormalizeObjectPath(path, obj_prefixes):
   """Normalizes object paths.
 
@@ -150,3 +165,13 @@ def CompactLargeAliasesIntoSharedSymbols(raw_symbols, max_count):
   num_removed = src_cursor - dst_cursor
   logging.debug('Converted %d aliases into %d shared-path symbols', num_removed,
                 num_shared_symbols)
+
+
+def RemoveAssetSuffix(path):
+  """Undo asset path suffixing. https://crbug.com/357131361"""
+  # E.g.: "assets/foo.pak+org.foo.bar+"
+  if path.endswith('+'):
+    suffix_idx = path.rfind('+', 0, len(path) - 1)
+    if suffix_idx != -1:
+      path = path[:suffix_idx]
+  return path

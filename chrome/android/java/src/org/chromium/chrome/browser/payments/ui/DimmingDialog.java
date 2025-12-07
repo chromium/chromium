@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.payments.ui;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -13,7 +15,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnLayoutChangeListener;
@@ -23,7 +24,10 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.browser_ui.widget.AlwaysDismissedDialog;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.interpolators.Interpolators;
@@ -38,14 +42,12 @@ import java.util.Collection;
  * the web contents of a payment handler CCT to also dim on some versions of Android (e.g., Nougat).
  *
  * <p>Note: Do not use this class outside of the payments.ui package!
- * TODO(crbug.com/40560343): Revert the visibility to package default again when it is no longer
- * used by Autofill Assistant.
- * Revert the visibility to package default again when it is no longer used by Autofill Assistant.
  */
+@NullMarked
 /* package */ class DimmingDialog {
     /**
      * Length of the animation to either show the UI or expand it to full height. Note that click of
-     * 'Pay' button in PaymentRequestUI is not accepted until the animation is done, so this
+     * 'Pay' button in PaymentRequestUi is not accepted until the animation is done, so this
      * duration also serves the function of preventing the user from accidentally double-clicking on
      * the screen when triggering payment and thus authorizing unwanted transaction.
      */
@@ -54,10 +56,10 @@ import java.util.Collection;
     /** Length of the animation to hide the bottom sheet UI. */
     private static final int DIALOG_EXIT_ANIMATION_MS = 195;
 
-    private final Dialog mDialog;
+    private final AlwaysDismissedDialog mDialog;
     private final ViewGroup mFullContainer;
     private final int mAnimatorTranslation;
-    private OnDismissListener mDismissListener;
+    private @Nullable OnDismissListener mDismissListener;
     private boolean mIsAnimatingDisappearance;
 
     /** Listener for the dismissal of the DimmingDialog. */
@@ -80,12 +82,17 @@ import java.util.Collection;
         // forth between the peeking and expanded state.
         mFullContainer = new FrameLayout(activity);
         mFullContainer.setBackgroundColor(activity.getColor(R.color.modal_dialog_scrim_color));
-        mDialog = new AlwaysDismissedDialog(activity, R.style.DimmingDialog);
+        mDialog =
+                new AlwaysDismissedDialog(
+                        activity,
+                        R.style.DimmingDialog,
+                        EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled());
         mDialog.setOnDismissListener((v) -> notifyListenerDialogDismissed());
         mDialog.addContentView(
                 mFullContainer,
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         Window dialogWindow = mDialog.getWindow();
+        assumeNonNull(dialogWindow);
         dialogWindow.setGravity(Gravity.CENTER);
         dialogWindow.setLayout(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         dialogWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -97,22 +104,26 @@ import java.util.Collection;
 
     /**
      * Makes sure that the color of the icons in the status bar makes the icons visible.
+     *
      * @param window The window whose status bar icon color is being set.
      */
     /* package */ static void setVisibleStatusBarIconColor(Window window) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
         UiUtils.setStatusBarIconColor(
                 window.getDecorView().getRootView(),
                 !ColorUtils.shouldUseLightForegroundOnBackground(window.getStatusBarColor()));
     }
 
-    /** @param bottomSheetView The view to show in the bottom sheet. */
-    /* package */ void addBottomSheetView(View bottomSheetView) {
+    /**
+     * @param bottomSheetView The view to show in the bottom sheet.
+     * @param backgroundColor The color for the bottom sheet view. Used to color navigation bar.
+     */
+    /* package */ void addBottomSheetView(View bottomSheetView, int backgroundColor) {
         FrameLayout.LayoutParams bottomSheetParams =
                 new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         bottomSheetParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
         mFullContainer.addView(bottomSheetView, bottomSheetParams);
         bottomSheetView.addOnLayoutChangeListener(new FadeInAnimator());
+        mDialog.setNavBarColor(backgroundColor);
     }
 
     /**
@@ -287,6 +298,8 @@ import java.util.Collection;
 
     /** Force the Dialog window to refresh its visual state. */
     /* package */ void refresh() {
-        mDialog.getWindow().setAttributes(mDialog.getWindow().getAttributes());
+        Window window = mDialog.getWindow();
+        assumeNonNull(window);
+        window.setAttributes(window.getAttributes());
     }
 }

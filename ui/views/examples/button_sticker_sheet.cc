@@ -29,8 +29,9 @@ TableLayout* MakeStretchyTableLayout(View* host, int ncols) {
 
   auto* layout = host->SetLayoutManager(std::make_unique<views::TableLayout>());
   for (int i = 0; i < ncols; ++i) {
-    if (i != 0)
+    if (i != 0) {
       layout->AddPaddingColumn(kPaddingResizesEqually, kPaddingWidth);
+    }
     layout->AddColumn(LayoutAlignment::kStretch, LayoutAlignment::kStretch,
                       TableLayout::kFixedSize, TableLayout::ColumnSize::kFixed,
                       kColumnWidth, kColumnWidth);
@@ -48,8 +49,9 @@ void AddLabeledRow(View* parent,
                    const std::string& label_text,
                    std::vector<std::unique_ptr<T>> views) {
   parent->AddChildView(MakePlainLabel(label_text));
-  for (auto& view : views)
+  for (auto& view : views) {
     parent->AddChildView(std::move(view));
+  }
 }
 
 // Constructs a pair of MdTextButtons in the specified |state| with the

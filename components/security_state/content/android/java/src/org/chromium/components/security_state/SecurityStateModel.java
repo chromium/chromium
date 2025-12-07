@@ -6,27 +6,44 @@ package org.chromium.components.security_state;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 
 /** Provides a way of accessing helpers for page security state. */
+@NullMarked
 public class SecurityStateModel {
     /**
-     * Fetch the security level for a given web contents.
+     * Fetch the security level for given web contents.
      *
      * @param webContents The web contents to get the security level for.
      * @return The ConnectionSecurityLevel for the specified web contents.
-     *
      * @see ConnectionSecurityLevel
      */
-    public static int getSecurityLevelForWebContents(WebContents webContents) {
+    public static @ConnectionSecurityLevel int getSecurityLevelForWebContents(
+            @Nullable WebContents webContents) {
         if (webContents == null) return ConnectionSecurityLevel.NONE;
         return SecurityStateModelJni.get().getSecurityLevelForWebContents(webContents);
     }
 
-    public static boolean isContentDangerous(WebContents webContents) {
+    public static boolean isContentDangerous(@Nullable WebContents webContents) {
         return getSecurityLevelForWebContents(webContents) == ConnectionSecurityLevel.DANGEROUS;
+    }
+
+    /**
+     * Fetch the malicious content status for given web contents.
+     *
+     * @param webContents The web contents to get the security level for.
+     * @return The ConnectionMaliciousContentStatus for the specified web contents.
+     * @see ConnectionMaliciousContentStatus
+     */
+    public static @ConnectionMaliciousContentStatus int getMaliciousContentStatusForWebContents(
+            @Nullable WebContents webContents) {
+        if (webContents == null) return ConnectionMaliciousContentStatus.NONE;
+        return SecurityStateModelJni.get().getMaliciousContentStatusForWebContents(webContents);
     }
 
     private SecurityStateModel() {}
@@ -34,6 +51,12 @@ public class SecurityStateModel {
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
-        int getSecurityLevelForWebContents(WebContents webContents);
+        @ConnectionMaliciousContentStatus
+        int getMaliciousContentStatusForWebContents(
+                @JniType("content::WebContents*") @Nullable WebContents webContents);
+
+        @ConnectionSecurityLevel
+        int getSecurityLevelForWebContents(
+                @JniType("content::WebContents*") @Nullable WebContents webContents);
     }
 }

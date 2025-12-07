@@ -20,4 +20,5 @@ component("color") {
     "//ui/gfx:color_space",
     "//ui/gfx/ipc/buffer_types",
   ]
+  deps = [ "//components/viz/common/resources:shared_image_format" ]
 }

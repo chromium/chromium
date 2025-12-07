@@ -1,0 +1,4 @@
+WebView focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++AlertDialog viewIdResName:"d1" focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="dialog"]
+++++TextView heading actions:[AX_FOCUS] bundle:[chromeRole="heading", roleDescription="heading 1"]
+++++TextView heading actions:[AX_FOCUS] bundle:[chromeRole="heading", roleDescription="heading 2"]

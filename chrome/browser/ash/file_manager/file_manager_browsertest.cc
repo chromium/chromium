@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <stddef.h>
+
 #include <memory>
 
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
@@ -12,6 +13,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/immediate_crash.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -28,8 +30,6 @@
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
-#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -39,7 +39,9 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ash/components/policy/device_policy/cached_device_policy_updater.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/settings/device_settings_cache_test_support.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/account_id/account_id.h"
 #include "components/download/public/common/download_item.h"
@@ -48,7 +50,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/user_manager/user_manager.h"
-#include "components/user_manager/user_manager_base.h"
+#include "components/user_manager/user_manager_impl.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/download_test_observer.h"
@@ -56,10 +58,11 @@
 
 using file_manager::test::TestCase;
 
+namespace em = enterprise_management;
+
 namespace file_manager {
 namespace {
 constexpr char kOwnerEmail[] = "owner@example.com";
-
 }  // namespace
 
 // FilesApp browser test.
@@ -119,6 +122,10 @@ class LoggedInUserFilesAppBrowserTest : public FilesAppBrowserTest {
         LogInTypeFor(GetOptions().test_account_type),
         /*include_initial_user=*/true,
         AccountIdFor(GetOptions().test_account_type));
+  }
+
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    FilesAppBrowserTest::SetUpLocalStatePrefService(local_state);
 
     // Set up owner email of a device. We set up owner email only if a device is
     // kConsumerOwned. If a device is enrolled, an account cannot be an owner of
@@ -139,8 +146,14 @@ class LoggedInUserFilesAppBrowserTest : public FilesAppBrowserTest {
           break;
       }
 
-      scoped_testing_cros_settings_.device_settings()->Set(
-          ash::kDeviceOwner, base::Value(owner_email));
+      ash::device_settings_cache::Update(
+          local_state,
+          [&](em::PolicyData& policy) { policy.set_username(owner_email); });
+
+      policy::CachedDevicePolicyUpdater updater;
+      updater.policy_data().set_username(owner_email);
+      updater.policy_data().set_management_mode(em::PolicyData::LOCAL_OWNER);
+      updater.Commit();
     }
   }
 
@@ -158,10 +171,8 @@ class LoggedInUserFilesAppBrowserTest : public FilesAppBrowserTest {
   ash::DeviceStateMixin::State DeviceStateFor(DeviceMode device_mode) {
     switch (device_mode) {
       case kDeviceModeNotSet:
-        CHECK(false) << "device_mode option must be set for "
+        NOTREACHED() << "device_mode option must be set for "
                         "LoggedInUserFilesAppBrowserTest";
-        // TODO(crbug.com/40122554): `base::ImmediateCrash` is necessary.
-        base::ImmediateCrash();
       case kConsumerOwned:
         return ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED;
       case kEnrolled:
@@ -171,8 +182,6 @@ class LoggedInUserFilesAppBrowserTest : public FilesAppBrowserTest {
 
   std::unique_ptr<ash::LoggedInUserMixin> logged_in_user_mixin_;
   std::unique_ptr<ash::DeviceStateMixin> device_state_mixin_;
-
-  ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
 IN_PROC_BROWSER_TEST_P(LoggedInUserFilesAppBrowserTest, Test) {
@@ -227,38 +236,18 @@ class QuickOfficeBrowserTestBase : public InProcessBrowserTest {
     base::PathService::Get(chrome::DIR_TEST_DATA, &test_file_directory);
     return test_file_directory;
   }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 class QuickOfficeForceFileDownloadEnabledBrowserTest
     : public QuickOfficeBrowserTestBase {
  public:
-  QuickOfficeForceFileDownloadEnabledBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kQuickOfficeForceFileDownload);
-  }
+  QuickOfficeForceFileDownloadEnabledBrowserTest() = default;
   ~QuickOfficeForceFileDownloadEnabledBrowserTest() override = default;
 
   QuickOfficeForceFileDownloadEnabledBrowserTest(
       const QuickOfficeForceFileDownloadEnabledBrowserTest&) = delete;
   QuickOfficeForceFileDownloadEnabledBrowserTest& operator=(
       const QuickOfficeForceFileDownloadEnabledBrowserTest&) = delete;
-};
-
-class QuickOfficeForceFileDownloadDisabledBrowserTest
-    : public QuickOfficeBrowserTestBase {
- public:
-  QuickOfficeForceFileDownloadDisabledBrowserTest() {
-    feature_list_.InitAndDisableFeature(
-        features::kQuickOfficeForceFileDownload);
-  }
-  ~QuickOfficeForceFileDownloadDisabledBrowserTest() override = default;
-
-  QuickOfficeForceFileDownloadDisabledBrowserTest(
-      const QuickOfficeForceFileDownloadDisabledBrowserTest&) = delete;
-  QuickOfficeForceFileDownloadDisabledBrowserTest& operator=(
-      const QuickOfficeForceFileDownloadDisabledBrowserTest&) = delete;
 };
 
 IN_PROC_BROWSER_TEST_F(QuickOfficeForceFileDownloadEnabledBrowserTest,
@@ -292,36 +281,6 @@ IN_PROC_BROWSER_TEST_F(QuickOfficeForceFileDownloadEnabledBrowserTest,
   DownloadItem* download = downloads[0];
 
   download->Cancel(true);
-}
-
-IN_PROC_BROWSER_TEST_F(QuickOfficeForceFileDownloadDisabledBrowserTest,
-                       OfficeDocumentsAreNotDownloaded) {
-  using download::DownloadItem;
-
-  GURL download_url =
-      embedded_test_server()->GetURL("/chromeos/file_manager/text.docx");
-
-  content::DownloadManager* download_manager =
-      browser()->profile()->GetDownloadManager();
-  std::unique_ptr<content::DownloadTestObserver> download_observer(
-      new content::DownloadTestObserverTerminal(
-          download_manager, /*num_downloads=*/1,
-          content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL));
-
-  // This call will block until the condition X, but will not wait for the
-  // download to finish.
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), download_url, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-
-  EXPECT_EQ(0u, download_observer->NumDownloadsSeenInState(
-                    DownloadItem::IN_PROGRESS));
-  EXPECT_EQ(0u,
-            download_observer->NumDownloadsSeenInState(DownloadItem::COMPLETE));
-
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> downloads;
-  download_manager->GetAllDownloads(&downloads);
-  ASSERT_EQ(0u, downloads.size());
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
@@ -384,20 +343,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("fileDisplayCheckReadOnlyIconOnFakeDirectory"),
         TestCase("fileDisplayCheckNoReadOnlyIconOnDownloads"),
         TestCase("fileDisplayCheckNoReadOnlyIconOnLinuxFiles"),
-        TestCase("fileDisplayCheckNoReadOnlyIconOnGuestOs"),
-        TestCase("fileDisplayLocalFilesDisabledUnmountRemovable")
-            .DontMountVolumes()
-            .EnableSkyVault(),
-        // TODO(b/347643334): Enable.
-        // TestCase("fileDisplayLocalFilesDisableInMyFiles")
-        //     .DontMountVolumes()
-        //     .EnableSkyVault(),
-        // TestCase("fileDisplayOneDrivePlaceholder")
-        //     .DontMountVolumes()
-        //     .EnableSkyVault(),
-        TestCase("fileDisplayFileSystemDisabled")
-            .DontMountVolumes()
-            .EnableSkyVault()));
+        TestCase("fileDisplayCheckNoReadOnlyIconOnGuestOs")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     OpenVideoMediaApp, /* open_video_media_app.ts */
@@ -649,12 +595,17 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openQuickViewImageClick"),
         TestCase("openQuickViewVideo"),
         TestCase("openQuickViewVideoOnDrive"),
-        TestCase("openQuickViewPdf"),
-        TestCase("openQuickViewPdfPopup"),
+#if BUILDFLAG(ENABLE_PDF)
+        TestCase("openQuickViewPdf").SetEnableOopifPdf(false),
+        TestCase("openQuickViewPdf").SetEnableOopifPdf(true),
+        TestCase("openQuickViewPdfPopup").SetEnableOopifPdf(false),
+        TestCase("openQuickViewPdfPopup").SetEnableOopifPdf(true),
 #if !defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
         // TODO(http://crbug.com/1291090): Flaky on ASan non-DEBUG.
-        TestCase("openQuickViewPdfPreviewsDisabled"),
-#endif
+        TestCase("openQuickViewPdfPreviewsDisabled").SetEnableOopifPdf(false),
+        TestCase("openQuickViewPdfPreviewsDisabled").SetEnableOopifPdf(true),
+#endif  // !defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
+#endif  // BUILDFLAG(ENABLE_PDF)
         TestCase("openQuickViewKeyboardUpDownChangesView"),
         TestCase("openQuickViewKeyboardLeftRightChangesView"),
         TestCase("openQuickViewSniffedText"),
@@ -728,7 +679,11 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("directoryTreeExpandFolderOnDelayExpansionVolume"),
         TestCase("directoryTreeExpandAndSelectedOnDragMove"),
         TestCase("directoryTreeClickDriveRootWhenMyDriveIsActive"),
+#if !defined(ADDRESS_SANITIZER) && defined(NDEBUG)
+        // TODO(crbug.com/339374326): Flaking on
+        // "Linux Chromium OS ASan LSan Tests (1)" and on several dbg bots.
         TestCase("directoryTreeHideExpandIconWhenLastSubFolderIsRemoved"),
+#endif
         TestCase("directoryTreeKeepDriveOrderAfterReconnected")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
@@ -1339,12 +1294,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("pluginVmFileDropFailErrorDialog")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
-    MaterializedViews, /* materialized_views.ts */
-    FilesAppBrowserTest,
-    ::testing::Values(TestCase("mvDisplayInTree").EnableMaterializedViews(),
-                      TestCase("mvScanner").EnableMaterializedViews()));
-
-WRAPPED_INSTANTIATE_TEST_SUITE_P(
     MyFiles, /* my_files.ts */
     FilesAppBrowserTest,
     ::testing::Values(
@@ -1399,9 +1348,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("recentsNested"),
         TestCase("recentsNoRenameForPlayFiles").EnableArc(),
         TestCase("recentsPlayFiles").EnableArc(),
-        TestCase("recentsSearchPlayFilesShowDownloads")
-            .EnableArc()
-            .EnableFSPsInRecents(),
+        TestCase("recentsSearchPlayFilesShowDownloads").EnableArc(),
         TestCase("recentsReadOnlyHidden"),
         TestCase("recentsRespectSearchWhenSwitchingFilter"),
         TestCase("recentsRespondToTimezoneChangeForGridView"),
@@ -1419,9 +1366,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("recentVideosDownloads"),
         TestCase("recentVideosDownloadsAndDrive"),
         TestCase("recentVideosDownloadsAndDriveAndPlayFiles").EnableArc(),
-        TestCase("recentFileSystemProviderFiles")
-            .FakeFileSystemProvider()
-            .EnableFSPsInRecents()));
+        TestCase("recentFileSystemProviderFiles").FakeFileSystemProvider()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Metadata, /* metadata.ts */

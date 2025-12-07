@@ -18,7 +18,7 @@
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/prefs/pref_service.h"
 #import "components/sync/service/sync_service.h"
-#import "ios/chrome/browser/browsing_data/model/browsing_data_features.h"
+#import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/browsing_data/model/cache_counter.h"
 #import "ios/chrome/browser/browsing_data/model/tabs_counter.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
@@ -27,51 +27,52 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 
 namespace {
 
 // Creates a new instance of BrowsingDataCounter that is counting the data
-// for `browser_state` related to a given deletion preference `pref_name`.
+// for `profile` related to a given deletion preference `pref_name`.
 std::unique_ptr<browsing_data::BrowsingDataCounter>
-CreateCounterForBrowserStateAndPref(ChromeBrowserState* browser_state,
-                                    std::string_view pref_name) {
+CreateCounterForProfileAndPref(ProfileIOS* profile,
+                               std::string_view pref_name) {
   if (pref_name == browsing_data::prefs::kDeleteBrowsingHistory) {
     return std::make_unique<browsing_data::HistoryCounter>(
-        ios::HistoryServiceFactory::GetForBrowserStateIfExists(
-            browser_state, ServiceAccessType::EXPLICIT_ACCESS),
-        base::BindRepeating(&ios::WebHistoryServiceFactory::GetForBrowserState,
-                            base::Unretained(browser_state)),
-        SyncServiceFactory::GetForBrowserState(browser_state));
+        ios::HistoryServiceFactory::GetForProfile(
+            profile, ServiceAccessType::EXPLICIT_ACCESS),
+        base::BindRepeating(&ios::WebHistoryServiceFactory::GetForProfile,
+                            base::Unretained(profile)),
+        SyncServiceFactory::GetForProfile(profile));
   }
 
   if (pref_name == browsing_data::prefs::kDeleteCache) {
-    return std::make_unique<CacheCounter>(browser_state);
+    return std::make_unique<CacheCounter>(profile);
   }
 
   if (pref_name == browsing_data::prefs::kDeletePasswords) {
     return std::make_unique<browsing_data::PasswordsCounter>(
-        IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-            browser_state, ServiceAccessType::EXPLICIT_ACCESS),
-        IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
-            browser_state, ServiceAccessType::EXPLICIT_ACCESS),
-        browser_state->GetPrefs(),
-        SyncServiceFactory::GetForBrowserState(browser_state));
+        IOSChromeProfilePasswordStoreFactory::GetForProfile(
+            profile, ServiceAccessType::EXPLICIT_ACCESS),
+        IOSChromeAccountPasswordStoreFactory::GetForProfile(
+            profile, ServiceAccessType::EXPLICIT_ACCESS),
+        profile->GetPrefs(), SyncServiceFactory::GetForProfile(profile));
   }
 
   if (pref_name == browsing_data::prefs::kDeleteFormData) {
     return std::make_unique<browsing_data::AutofillCounter>(
-        ios::WebDataServiceFactory::GetAutofillWebDataForBrowserState(
-            browser_state, ServiceAccessType::EXPLICIT_ACCESS),
-        SyncServiceFactory::GetForBrowserState(browser_state));
+        autofill::PersonalDataManagerFactory::GetForProfile(profile),
+        ios::WebDataServiceFactory::GetAutofillWebDataForProfile(
+            profile, ServiceAccessType::EXPLICIT_ACCESS),
+        /*entity_data_manager=*/nullptr,
+        SyncServiceFactory::GetForProfile(profile));
   }
 
   if (pref_name == browsing_data::prefs::kCloseTabs) {
     return std::make_unique<TabsCounter>(
-        BrowserListFactory::GetForBrowserState(browser_state),
-        SessionRestorationServiceFactory::GetForBrowserState(browser_state));
+        BrowserListFactory::GetForProfile(profile),
+        SessionRestorationServiceFactory::GetForProfile(profile));
   }
 
   return nullptr;
@@ -83,11 +84,11 @@ CreateCounterForBrowserStateAndPref(ChromeBrowserState* browser_state,
 std::unique_ptr<BrowsingDataCounterWrapper>
 BrowsingDataCounterWrapper::CreateCounterWrapper(
     std::string_view pref_name,
-    ChromeBrowserState* browser_state,
+    ProfileIOS* profile,
     PrefService* pref_service,
     UpdateUICallback update_ui_callback) {
   std::unique_ptr<browsing_data::BrowsingDataCounter> counter =
-      CreateCounterForBrowserStateAndPref(browser_state, pref_name);
+      CreateCounterForProfileAndPref(profile, pref_name);
   if (!counter) {
     return nullptr;
   }
@@ -97,10 +98,34 @@ BrowsingDataCounterWrapper::CreateCounterWrapper(
                                      std::move(update_ui_callback)));
 }
 
+// static
+std::unique_ptr<BrowsingDataCounterWrapper>
+BrowsingDataCounterWrapper::CreateCounterWrapper(
+    std::string_view pref_name,
+    ProfileIOS* profile,
+    PrefService* pref_service,
+    base::Time begin_time,
+    UpdateUICallback update_ui_callback) {
+  std::unique_ptr<browsing_data::BrowsingDataCounter> counter =
+      CreateCounterForProfileAndPref(profile, pref_name);
+  if (!counter) {
+    return nullptr;
+  }
+
+  return base::WrapUnique<BrowsingDataCounterWrapper>(
+      new BrowsingDataCounterWrapper(std::move(counter), pref_service,
+                                     begin_time,
+                                     std::move(update_ui_callback)));
+}
+
 BrowsingDataCounterWrapper::~BrowsingDataCounterWrapper() = default;
 
 void BrowsingDataCounterWrapper::RestartCounter() {
   counter_->Restart();
+}
+
+void BrowsingDataCounterWrapper::SetBeginTime(base::Time beginTime) {
+  counter_->SetBeginTime(beginTime);
 }
 
 BrowsingDataCounterWrapper::BrowsingDataCounterWrapper(
@@ -113,6 +138,21 @@ BrowsingDataCounterWrapper::BrowsingDataCounterWrapper(
   DCHECK(update_ui_callback_);
   counter_->Init(
       pref_service, browsing_data::ClearBrowsingDataTab::ADVANCED,
+      base::BindRepeating(&BrowsingDataCounterWrapper::UpdateWithResult,
+                          base::Unretained(this)));
+}
+
+BrowsingDataCounterWrapper::BrowsingDataCounterWrapper(
+    std::unique_ptr<browsing_data::BrowsingDataCounter> counter,
+    PrefService* pref_service,
+    base::Time begin_time,
+    UpdateUICallback update_ui_callback)
+    : counter_(std::move(counter)),
+      update_ui_callback_(std::move(update_ui_callback)) {
+  DCHECK(counter_);
+  DCHECK(update_ui_callback_);
+  counter_->InitWithoutPeriodPref(
+      pref_service, browsing_data::ClearBrowsingDataTab::ADVANCED, begin_time,
       base::BindRepeating(&BrowsingDataCounterWrapper::UpdateWithResult,
                           base::Unretained(this)));
 }

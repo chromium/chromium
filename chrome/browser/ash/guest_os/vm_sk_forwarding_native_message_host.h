@@ -5,13 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_GUEST_OS_VM_SK_FORWARDING_NATIVE_MESSAGE_HOST_H_
 #define CHROME_BROWSER_ASH_GUEST_OS_VM_SK_FORWARDING_NATIVE_MESSAGE_HOST_H_
 
-// This file has been duplicated for lacros in
-// //chrome/browser/lacros/guest_os/vm_sk_forwarding_native_message_host.h and
-// should eventually be removed.
-
 #include <memory>
 #include <string>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 
@@ -35,10 +32,11 @@ namespace guest_os {
 // opened and closes the channel once a response is received.
 class VmSKForwardingNativeMessageHost : public extensions::NativeMessageHost {
  public:
-  static const char* const kHostName;
-  static const char* const kOrigins[];
+  static constexpr char kHostName[] = "com.google.vm_sk_forwarding";
+  static constexpr const char* kOrigins[] = {
+      "chrome-extension://lehkgnicackihfeppclgiffgbgbhmbdp/",
+      "chrome-extension://lcooaekmckohjjnpaaokodoepajbnill/"};
   static const char* const kHostCreatedByExtensionNotSupportedError;
-  static const size_t kOriginCount;
 
   using ResponseCallback =
       base::OnceCallback<void(const std::string& response)>;

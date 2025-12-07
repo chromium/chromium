@@ -12,12 +12,10 @@
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "pdf/pdf_features.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/pdfium/public/fpdf_annot.h"
@@ -38,15 +36,6 @@ std::string WideStringToString(FPDF_WIDESTRING wide_string) {
 #endif
 
 }  // namespace
-
-// static
-PDFiumFormFiller::ScriptOption PDFiumFormFiller::DefaultScriptOption() {
-#if defined(PDF_ENABLE_XFA)
-  if (base::FeatureList::IsEnabled(features::kPdfXfaSupport))
-    return PDFiumFormFiller::ScriptOption::kJavaScriptAndXFA;
-#endif  // defined(PDF_ENABLE_XFA)
-  return PDFiumFormFiller::ScriptOption::kJavaScript;
-}
 
 PDFiumFormFiller::PDFiumFormFiller(PDFiumEngine* engine,
                                    ScriptOption script_option)
@@ -641,7 +630,7 @@ int PDFiumFormFiller::Form_Response(IPDF_JSPLATFORM* param,
   int rv_bytes = rv_16.size() * sizeof(char16_t);
   if (response) {
     int bytes_to_copy = rv_bytes < length ? rv_bytes : length;
-    memcpy(response, rv_16.c_str(), bytes_to_copy);
+    UNSAFE_TODO(memcpy(response, rv_16.c_str(), bytes_to_copy));
   }
   return rv_bytes;
 }
@@ -656,8 +645,9 @@ int PDFiumFormFiller::Form_GetFilePath(IPDF_JSPLATFORM* param,
 
   // Account for the trailing null.
   int necessary_length = rv.size() + 1;
-  if (file_path && necessary_length <= length)
-    memcpy(file_path, rv.c_str(), necessary_length);
+  if (file_path && necessary_length <= length) {
+    UNSAFE_TODO(memcpy(file_path, rv.c_str(), necessary_length));
+  }
   return necessary_length;
 }
 
@@ -776,7 +766,7 @@ PDFiumFormFiller::GetEngineInIsolateScope(IPDF_JSPLATFORM* platform) {
       .GetEngineInIsolateScope();
 }
 
-int PDFiumFormFiller::SetTimer(const base::TimeDelta& delay,
+int PDFiumFormFiller::SetTimer(base::TimeDelta delay,
                                TimerCallback timer_func) {
   const int timer_id = ++g_last_timer_id;
   DCHECK(!base::Contains(timers_, timer_id));

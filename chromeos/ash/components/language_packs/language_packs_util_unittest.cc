@@ -198,7 +198,7 @@ TEST(LanguagePacksUtil, MapThenFilterStringsNoInput) {
 
 TEST(LanguagePacksUtil, MapThenFilterStringsAllToNullopt) {
   EXPECT_THAT(MapThenFilterStrings(
-                  {{"en", "de"}},
+                  {"en", "de"},
                   base::BindRepeating(
                       [](const std::string&) -> std::optional<std::string> {
                         return std::nullopt;
@@ -209,7 +209,7 @@ TEST(LanguagePacksUtil, MapThenFilterStringsAllToNullopt) {
 TEST(LanguagePacksUtil, MapThenFilterStringsAllToUniqueStrings) {
   EXPECT_THAT(
       MapThenFilterStrings(
-          {{"en", "de"}},
+          {"en", "de"},
           base::BindRepeating(
               [](const std::string& input) -> std::optional<std::string> {
                 return input;
@@ -220,7 +220,7 @@ TEST(LanguagePacksUtil, MapThenFilterStringsAllToUniqueStrings) {
 TEST(LanguagePacksUtil, MapThenFilterStringsRepeatedString) {
   EXPECT_THAT(
       MapThenFilterStrings(
-          {{"repeat", "unique", "repeat"}},
+          {"repeat", "unique", "repeat"},
           base::BindRepeating(
               [](const std::string& input) -> std::optional<std::string> {
                 return input;
@@ -231,7 +231,7 @@ TEST(LanguagePacksUtil, MapThenFilterStringsRepeatedString) {
 TEST(LanguagePacksUtil, MapThenFilterStringsSomeNullopt) {
   EXPECT_THAT(
       MapThenFilterStrings(
-          {{"pass_1", "fail", "pass_2"}},
+          {"pass_1", "fail", "pass_2"},
           base::BindRepeating(
               [](const std::string& input) -> std::optional<std::string> {
                 return (input == "fail") ? std::nullopt
@@ -243,7 +243,7 @@ TEST(LanguagePacksUtil, MapThenFilterStringsSomeNullopt) {
 TEST(LanguagePacksUtil, MapThenFilterStringsDeduplicateOutput) {
   EXPECT_THAT(
       MapThenFilterStrings(
-          {{"a", "dedup-1", "dedup-2"}},
+          {"a", "dedup-1", "dedup-2"},
           base::BindRepeating(
               [](const std::string& input) -> std::optional<std::string> {
                 return (input.length() < 2) ? input : "dedup";
@@ -254,7 +254,7 @@ TEST(LanguagePacksUtil, MapThenFilterStringsDeduplicateOutput) {
 TEST(LanguagePacksUtil, MapThenFilterStringsDisjointSet) {
   EXPECT_THAT(
       MapThenFilterStrings(
-          {{"a", "b", "d"}},
+          {"a", "b", "d"},
           base::BindRepeating(
               [](const std::string& input) -> std::optional<std::string> {
                 return "something else";

@@ -50,7 +50,7 @@ class AuctionWorkletDevToolsAgentHost : public DevToolsAgentHostImpl {
   void WorkletDestroyed();
 
   // DevToolsAgentHostImpl overrides.
-  bool AttachSession(DevToolsSession* session, bool acquire_wake_lock) override;
+  bool AttachSession(DevToolsSession* session) override;
 
   raw_ptr<DebuggableAuctionWorklet> worklet_ = nullptr;
   mojo::AssociatedRemote<blink::mojom::DevToolsAgent> associated_agent_remote_;

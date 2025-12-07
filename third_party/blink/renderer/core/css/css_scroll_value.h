@@ -9,10 +9,6 @@
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
-namespace WTF {
-class String;
-}  // namespace WTF
-
 namespace blink {
 namespace cssvalue {
 
@@ -24,7 +20,7 @@ class CORE_EXPORT CSSScrollValue : public CSSValue {
   const CSSValue* Scroller() const { return scroller_.Get(); }
   const CSSValue* Axis() const { return axis_.Get(); }
 
-  WTF::String CustomCSSText() const;
+  String CustomCSSText() const;
   bool Equals(const CSSScrollValue&) const;
   void TraceAfterDispatch(blink::Visitor*) const;
 

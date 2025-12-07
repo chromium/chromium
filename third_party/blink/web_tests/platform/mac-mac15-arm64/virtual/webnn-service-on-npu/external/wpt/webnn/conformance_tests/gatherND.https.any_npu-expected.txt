@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] [required] gatherND float32 2D input and 2D negative indices
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gatherND float32 actual -66.05901336669922 should be close enough to expected 44.92119598388672 by ULP distance: expected a number less than or equal to 0n but got 2226638213n
+[FAIL] [required] gatherND float32 1D input and 2D out-of-bounds indices
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gatherND float32 actual -66.05901336669922 should be close enough to expected 56.828636169433594 by ULP distance: expected a number less than or equal to 0n but got 2229759677n
+[FAIL] [required] gatherND float32 2D input and 2D out-of-bounds indices
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gatherND float32 actual -66.05901336669922 should be close enough to expected 56.828636169433594 by ULP distance: expected a number less than or equal to 0n but got 2229759677n
+[FAIL] [required] gatherND float16 2D input and 2D negative indices
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gatherND float16 actual -66.0625 should be close enough to expected 44.90625 by ULP distance: expected a number less than or equal to 0 but got 33412
+Harness: the test ran to completion.
+

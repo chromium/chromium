@@ -1,0 +1,43 @@
+This is a testharness.js-based test.
+[FAIL] [required] averagePool2d float32 4D tensor options.padding
+  assert_less_than_equal: assert_array_approx_equals_ulp: test averagePool2d float32 actual 41.9493293762207 should be close enough to expected 52.43666076660156 by ULP distance: expected a number less than or equal to 27n but got 2749191n
+[FAIL] [required] averagePool2d float32 4D tensor options.dilations
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Pool2d in tflite doesn't support dilations."
+[FAIL] [required] averagePool2d float32 4D tensor options.roundingType=floor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test averagePool2d float32 actual 36.13502502441406 should be close enough to expected 54.20252990722656 by ULP distance: expected a number less than or equal to 11n but got 4736288n
+[FAIL] [required] averagePool2d float32 4D tensor options.roundingType=ceil
+  assert_less_than_equal: assert_array_approx_equals_ulp: test averagePool2d float32 actual 36.13502502441406 should be close enough to expected 54.20252990722656 by ULP distance: expected a number less than or equal to 11n but got 4736288n
+[FAIL] [required] averagePool2d float32 4D tensor options.roundingType=ceil and no padding
+  assert_less_than_equal: assert_array_approx_equals_ulp: test averagePool2d float32 actual 50.63130569458008 should be close enough to expected 40.29140853881836 by ULP distance: expected a number less than or equal to 11n but got 2710542n
+[FAIL] [required] averagePool2d float32 4D tensor options.layout=nhwc and options.roundingType=floor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test averagePool2d float32 actual 36.13502502441406 should be close enough to expected 54.20252990722656 by ULP distance: expected a number less than or equal to 11n but got 4736288n
+[FAIL] [required] averagePool2d float32 4D tensor options.layout=nhwc and options.roundingType=ceil
+  assert_less_than_equal: assert_array_approx_equals_ulp: test averagePool2d float32 actual 36.13502502441406 should be close enough to expected 54.20252990722656 by ULP distance: expected a number less than or equal to 11n but got 4736288n
+[FAIL] [required] averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test averagePool2d float32 actual 36.13502502441406 should be close enough to expected 54.20252990722656 by ULP distance: expected a number less than or equal to 11n but got 4736288n
+[FAIL] [required] averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil
+  assert_less_than_equal: assert_array_approx_equals_ulp: test averagePool2d float32 actual 36.13502502441406 should be close enough to expected 54.20252990722656 by ULP distance: expected a number less than or equal to 11n but got 4736288n
+[FAIL] [required] averagePool2d float32 4D tensor options.dilations with options.strides
+  assert_less_than_equal: assert_array_approx_equals_ulp: test averagePool2d float32 actual 28.626827239990234 should be close enough to expected 42.940242767333984 by ULP distance: expected a number less than or equal to 11n but got 4636433n
+[FAIL] [required] averagePool2d float16 4D tensor options.padding
+  assert_less_than_equal: assert_array_approx_equals_ulp: test averagePool2d float16 actual 41.9375 should be close enough to expected 52.4375 by ULP distance: expected a number less than or equal to 27 but got 336
+[FAIL] [required] averagePool2d float16 4D tensor options.dilations
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Pool2d in tflite doesn't support dilations."
+[FAIL] [required] averagePool2d float16 4D tensor options.roundingType=floor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test averagePool2d float16 actual 36.125 should be close enough to expected 54.1875 by ULP distance: expected a number less than or equal to 11 but got 578
+[FAIL] [required] averagePool2d float16 4D tensor options.roundingType=ceil
+  assert_less_than_equal: assert_array_approx_equals_ulp: test averagePool2d float16 actual 36.125 should be close enough to expected 54.1875 by ULP distance: expected a number less than or equal to 11 but got 578
+[FAIL] [required] averagePool2d float16 4D tensor options.roundingType=ceil and no padding
+  assert_less_than_equal: assert_array_approx_equals_ulp: test averagePool2d float16 actual 50.625 should be close enough to expected 40.28125 by ULP distance: expected a number less than or equal to 11 but got 331
+[FAIL] [required] averagePool2d float16 4D tensor options.layout=nhwc and options.roundingType=floor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test averagePool2d float16 actual 36.125 should be close enough to expected 54.1875 by ULP distance: expected a number less than or equal to 11 but got 578
+[FAIL] [required] averagePool2d float16 4D tensor options.layout=nhwc and options.roundingType=ceil
+  assert_less_than_equal: assert_array_approx_equals_ulp: test averagePool2d float16 actual 36.125 should be close enough to expected 54.1875 by ULP distance: expected a number less than or equal to 11 but got 578
+[FAIL] [required] averagePool2d float16 4D tensor options.outputSizes ignores options.roundingType=floor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test averagePool2d float16 actual 36.125 should be close enough to expected 54.1875 by ULP distance: expected a number less than or equal to 11 but got 578
+[FAIL] [required] averagePool2d float16 4D tensor options.outputSizes ignores options.roundingType=ceil
+  assert_less_than_equal: assert_array_approx_equals_ulp: test averagePool2d float16 actual 36.125 should be close enough to expected 54.1875 by ULP distance: expected a number less than or equal to 11 but got 578
+[FAIL] [required] averagePool2d float16 4D tensor options.dilations with options.strides
+  assert_less_than_equal: assert_array_approx_equals_ulp: test averagePool2d float16 actual 28.625 should be close enough to expected 42.9375 by ULP distance: expected a number less than or equal to 11 but got 566
+Harness: the test ran to completion.
+

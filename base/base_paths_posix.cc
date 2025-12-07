@@ -42,37 +42,33 @@ bool PathProviderPosix(int key, FilePath* result) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
       FilePath bin_dir;
       if (!ReadSymbolicLink(FilePath(kProcSelfExe), &bin_dir)) {
-        NOTREACHED_IN_MIGRATION()
-            << "Unable to resolve " << kProcSelfExe << ".";
-        return false;
+        NOTREACHED() << "Unable to resolve " << kProcSelfExe << ".";
       }
       *result = bin_dir;
       return true;
 #elif BUILDFLAG(IS_FREEBSD)
-      int name[] = { CTL_KERN, KERN_PROC, KERN_PROC_PATHNAME, -1 };
+      int name[] = {CTL_KERN, KERN_PROC, KERN_PROC_PATHNAME, -1};
       std::optional<std::string> bin_dir = StringSysctl(name, std::size(name));
       if (!bin_dir.has_value() || bin_dir.value().length() <= 1) {
-        NOTREACHED_IN_MIGRATION() << "Unable to resolve path.";
-        return false;
+        NOTREACHED() << "Unable to resolve path.";
       }
       *result = FilePath(bin_dir.value());
       return true;
 #elif BUILDFLAG(IS_SOLARIS)
       char bin_dir[PATH_MAX + 1];
       if (realpath(getexecname(), bin_dir) == NULL) {
-        NOTREACHED_IN_MIGRATION()
-            << "Unable to resolve " << getexecname() << ".";
-        return false;
+        NOTREACHED() << "Unable to resolve " << getexecname() << ".";
       }
       *result = FilePath(bin_dir);
       return true;
 #elif BUILDFLAG(IS_OPENBSD) || BUILDFLAG(IS_AIX)
       // There is currently no way to get the executable path on OpenBSD
       char* cpath;
-      if ((cpath = getenv("CHROME_EXE_PATH")) != NULL)
+      if ((cpath = getenv("CHROME_EXE_PATH")) != NULL) {
         *result = FilePath(cpath);
-      else
+      } else {
         *result = FilePath("/usr/local/chrome/chrome");
+      }
       return true;
 #endif
     }

@@ -2,37 +2,92 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/protobuf/proto_library.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
+import("//ui/webui/resources/tools/bundle_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/resources/tools/minify_js.gni")
+
+bundle_js("bufbuild_bundle") {
+  visibility = [ ":bufbuild_min_js" ]
+  host = "_ignored_"
+  input =
+      rebase_path("//third_party/node/node_modules/@bufbuild/protobuf/dist/esm",
+                  root_build_dir)
+  js_module_in_files = [ "wire/index.js" ]
+  out_folder = "$target_gen_dir/bufbuild/bundled"
+}
+
+minify_js("bufbuild_min_js") {
+  visibility = [ ":bufbuild_grdp" ]
+  deps = [ ":bufbuild_bundle" ]
+  in_folder = "$target_gen_dir/bufbuild/bundled"
+  in_files = [ "wire/index.rollup.js" ]
+  out_folder = "$target_gen_dir/bufbuild/minified"
+}
+
+generate_grd("bufbuild_grdp") {
+  deps = [ ":bufbuild_min_js" ]
+  grd_prefix = "bufbuild"
+  out_grd = "$root_gen_dir/bufbuild.grdp"
+  input_files = [ "wire/index.rollup.js" ]
+
+  input_files_base_dir =
+      rebase_path("$target_gen_dir/bufbuild/minified", root_build_dir)
+  resource_path_rewrites =
+      [ "wire/index.rollup.js|@bufbuild/protobuf/wire/index.js" ]
+}
+
+# This proto library is a workaround needed specifically for traces_internals.
+# This should not be used generally in WebUI without first consulting with the
+# WebUI team.
+# See http://crrev.com/c/6823635/comments/3315c843_b662261c for more details.
+proto_library("config_proto") {
+  sources =
+      [ "//third_party/perfetto/protos/perfetto/config/perfetto_config.proto" ]
+  proto_in_dir = "//third_party/perfetto/"
+  generate_typescript = true
+  generate_cc = false
+  generate_python = false
+  generate_library = false
+}
 
 build_webui("build") {
   grd_prefix = "traces_internals"
 
   static_files = [
-    "trace_report_internals.html",
-    "trace_report_internals.css",
+    "traces_internals.css",
+    "traces_internals.html",
   ]
 
-  non_web_component_files = [
-    "app.ts",
+  ts_files = [
     "app.html.ts",
-    "trace_report_browser_proxy.ts",
-    "trace_report_list.ts",
-    "trace_report_list.html.ts",
-    "trace_report.ts",
+    "app.ts",
+    "trace_util.ts",
     "trace_report.html.ts",
+    "trace_report.ts",
+    "traces_browser_proxy.ts",
+    "trace_report_list.html.ts",
+    "trace_report_list.ts",
     "tracing_scenarios_config.html.ts",
     "tracing_scenarios_config.ts",
+    "tracing_scenario.html.ts",
+    "tracing_scenario.ts",
+    "trace_recorder.html.ts",
+    "trace_recorder.ts",
   ]
 
   css_files = [
     "app.css",
+    "trace_recorder.css",
+    "config_toggle.css",
     "trace_report_list.css",
     "trace_report.css",
     "tracing_scenarios_config.css",
+    "tracing_scenario.css",
   ]
 
   icons_html_files = [ "icons.html" ]
-  html_to_wrapper_template = "detect"
 
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
@@ -43,9 +98,21 @@ build_webui("build") {
 
   webui_context_type = "trusted"
 
-  mojo_files_deps =
-      [ "//content/browser/tracing/trace_report:mojo_bindings_ts__generator" ]
-  mojo_files = [ "$root_gen_dir/content/browser/tracing/trace_report/trace_report.mojom-webui.ts" ]
+  mojo_files_deps = [
+    ":config_proto_gen",
+    "//content/browser/tracing/traces_internals:mojo_bindings_ts__generator",
+  ]
+  mojo_files = [
+    "$root_gen_dir/content/browser/tracing/traces_internals/traces_internals.mojom-webui.ts",
+    "$proto_ts_root/third_party/perfetto/protos/perfetto/config/perfetto_config.ts",
+  ]
+
+  extra_grdp_deps = [ ":bufbuild_grdp" ]
+  extra_grdp_files = [ "$root_gen_dir/bufbuild.grdp" ]
+
+  ts_path_mappings = [ "/@bufbuild/protobuf/wire/index.js|" + rebase_path(
+                           "//third_party/node/node_modules/@bufbuild/protobuf/dist/esm/wire/index.d.ts",
+                           target_gen_dir) ]
 
   grit_output_dir = "$root_gen_dir/content"
 }

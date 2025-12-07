@@ -4,9 +4,12 @@
 
 #include "content/browser/private_aggregation/private_aggregation_budget_storage.h"
 
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -20,6 +23,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/clamped_math.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/sqlite_proto/key_value_data.h"
@@ -46,6 +50,15 @@ void RecordInitializationStatus(
     PrivateAggregationBudgetStorage::InitStatus status) {
   base::UmaHistogramEnumeration(
       "PrivacySandbox.PrivateAggregation.BudgetStorage.InitStatus", status);
+}
+
+void RecordFileSizeHistogram(const base::FilePath& path_to_database) {
+  std::optional<int64_t> size_bytes = base::GetFileSize(path_to_database);
+  if (size_bytes.has_value()) {
+    base::UmaHistogramCounts1M(
+        "PrivacySandbox.PrivateAggregation.BudgetStorage.DbSize",
+        base::MakeClampedNum(size_bytes.value() / 1024));
+  }
 }
 
 }  // namespace
@@ -100,7 +113,8 @@ PrivateAggregationBudgetStorage::PrivateAggregationBudgetStorage(
                     kFlushDelay),
       db_task_runner_(std::move(db_task_runner)),
       db_(std::make_unique<sql::Database>(
-          sql::DatabaseOptions{.page_size = 4096, .cache_size = 32})) {}
+          sql::DatabaseOptions().set_cache_size(32),
+          sql::Database::Tag("PrivateAggregation"))) {}
 
 PrivateAggregationBudgetStorage::~PrivateAggregationBudgetStorage() {
   Shutdown();
@@ -112,8 +126,6 @@ bool PrivateAggregationBudgetStorage::InitializeOnDbSequence(
     base::FilePath path_to_db_dir) {
   CHECK(db_task_runner_->RunsTasksInCurrentSequence());
   CHECK(db);
-
-  db->set_histogram_tag("PrivateAggregation");
 
   // TODO(crbug.com/40224647): Record histograms for the different
   // outcomes/errors.
@@ -135,6 +147,7 @@ bool PrivateAggregationBudgetStorage::InitializeOnDbSequence(
       RecordInitializationStatus(InitStatus::kFailedToOpenDbFile);
       return false;
     }
+    RecordFileSizeHistogram(path_to_database);
   }
 
   table_manager_->InitializeOnDbSequence(

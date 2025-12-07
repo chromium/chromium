@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <variant>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
@@ -22,19 +23,19 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"
-#include "net/dns/host_cache.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/httpssvc_metrics.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/resolve_context.h"
 #include "net/log/net_log_with_source.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace net {
 
 class DnsClient;
 class DnsTransaction;
 class DnsResponse;
+class HostResolverInternalResult;
+class HostResolverInternalErrorResult;
 
 // Resolves the hostname using DnsTransaction, which is a full implementation of
 // a DNS stub resolver. One DnsTransaction is created for each resolution
@@ -43,10 +44,11 @@ class DnsResponse;
 class NET_EXPORT_PRIVATE HostResolverDnsTask final {
  public:
   using Results = std::set<std::unique_ptr<HostResolverInternalResult>>;
+  using ResultRefs = std::set<const HostResolverInternalResult*>;
 
   // Represents a single transaction results.
   struct SingleTransactionResults {
-    SingleTransactionResults(DnsQueryType query_type, Results results);
+    SingleTransactionResults(DnsQueryType query_type, ResultRefs results);
     ~SingleTransactionResults();
 
     SingleTransactionResults(SingleTransactionResults&&);
@@ -57,14 +59,14 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask final {
         delete;
 
     DnsQueryType query_type;
-    Results results;
+    ResultRefs results;
   };
 
   class Delegate {
    public:
     virtual void OnDnsTaskComplete(base::TimeTicks start_time,
                                    bool allow_fallback,
-                                   HostCache::Entry results,
+                                   Results results,
                                    bool secure) = 0;
 
     // Called when one transaction completes successfully, or one more
@@ -76,6 +78,8 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask final {
         std::optional<SingleTransactionResults> single_transaction_results) = 0;
 
     virtual RequestPriority priority() const = 0;
+
+    virtual bool IsHappyEyeballsV3Enabled() const = 0;
 
     virtual void AddTransactionTimeQueued(base::TimeDelta time_queued) = 0;
 
@@ -110,6 +114,8 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask final {
   }
 
   bool secure() const { return secure_; }
+
+  bool https_disabled() const { return https_disabled_; }
 
   void StartNextTransaction();
 
@@ -190,7 +196,7 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask final {
       std::optional<SingleTransactionResults> single_transaction_results);
 
   void OnSortComplete(base::TimeTicks sort_start_time,
-                      HostCache::Entry results,
+                      Results results,
                       bool secure,
                       bool success,
                       std::vector<IPEndPoint> sorted);
@@ -199,13 +205,12 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask final {
 
   void CancelNonFatalTransactions();
 
-  void OnFailure(
-      int net_error,
-      bool allow_fallback,
-      std::optional<base::TimeDelta> ttl = std::nullopt,
-      std::optional<DnsQueryType> failed_transaction_type = std::nullopt);
+  void OnFailure(int net_error,
+                 bool allow_fallback,
+                 const Results* base_results = nullptr);
+  void OnDeferredFailure(bool allow_fallback = true);
 
-  void OnSuccess(HostCache::Entry results);
+  void OnSuccess(Results results);
 
   // Returns whether any transactions left to finish are of a transaction type
   // in `types`. Used for logging and starting the timeout timer (see
@@ -243,8 +248,8 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask final {
   base::TimeTicks a_record_end_time_;
   base::TimeTicks aaaa_record_end_time_;
 
-  std::optional<HostCache::Entry> saved_results_;
-  bool saved_results_is_failure_ = false;
+  Results saved_results_;
+  std::unique_ptr<HostResolverInternalErrorResult> deferred_failure_;
 
   const raw_ptr<const base::TickClock> tick_clock_;
   base::TimeTicks task_start_time_;
@@ -261,6 +266,9 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask final {
   bool fallback_available_;
 
   const HostResolver::HttpsSvcbOptions https_svcb_options_;
+
+  // Set to true when HTTPS query is disabled.
+  bool https_disabled_ = false;
 
   base::WeakPtrFactory<HostResolverDnsTask> weak_ptr_factory_{this};
 };

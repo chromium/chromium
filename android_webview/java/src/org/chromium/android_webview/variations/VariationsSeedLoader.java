@@ -19,10 +19,13 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.AwBrowserProcess;
+import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwSwitches;
+import org.chromium.android_webview.common.WebViewCachedFlags;
 import org.chromium.android_webview.common.services.IVariationsSeedServer;
 import org.chromium.android_webview.common.services.IVariationsSeedServerCallback;
 import org.chromium.android_webview.common.services.ServiceConnectionDelayRecorder;
@@ -34,6 +37,8 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.variations.LoadSeedResult;
 
 import java.io.File;
@@ -74,6 +79,7 @@ import java.util.concurrent.TimeoutException;
  *    before AwFeatureListCreator::SetUpFieldTrials() runs.
  */
 @JNINamespace("android_webview")
+@NullMarked
 public class VariationsSeedLoader {
     private static final String TAG = "VariationsSeedLoader";
 
@@ -113,12 +119,13 @@ public class VariationsSeedLoader {
     private static long sCachedSeedFreshness;
     private static long sCachedAppSeedFreshness;
 
-    private FutureTask<SeedLoadResult> mLoadTask;
-    private SeedServerCallback mSeedServerCallback = new SeedServerCallback();
+    @Nullable private FutureTask<SeedLoadResult> mLoadTask;
+    private final SeedServerCallback mSeedServerCallback = new SeedServerCallback();
+    private boolean mPostedServiceConnected;
 
     private static void recordLoadSeedResult(@LoadSeedResult int result) {
         RecordHistogram.recordEnumeratedHistogram(
-                SEED_LOAD_RESULT_HISTOGRAM_NAME, result, LoadSeedResult.MAX_VALUE + 1);
+                SEED_LOAD_RESULT_HISTOGRAM_NAME, result, LoadSeedResult.MAX_VALUE);
     }
 
     private static void recordSeedLoadBlockingTime(long timeMs) {
@@ -194,6 +201,10 @@ public class VariationsSeedLoader {
         long maxRequestPeriodMillis =
                 VariationsUtils.getDurationSwitchValueInMillis(
                         AwSwitches.FINCH_SEED_MIN_UPDATE_PERIOD, MAX_REQUEST_PERIOD_MILLIS);
+        if (WebViewCachedFlags.get()
+                .isCachedFeatureEnabled(AwFeatures.WEBVIEW_REDUCED_SEED_REQUEST_PERIOD)) {
+            maxRequestPeriodMillis /= 2;
+        }
         return now < lastRequestTime + maxRequestPeriodMillis;
     }
 
@@ -201,6 +212,10 @@ public class VariationsSeedLoader {
         long expirationDuration =
                 VariationsUtils.getDurationSwitchValueInMillis(
                         AwSwitches.FINCH_SEED_EXPIRATION_AGE, SEED_EXPIRATION_MILLIS);
+        if (WebViewCachedFlags.get()
+                .isCachedFeatureEnabled(AwFeatures.WEBVIEW_REDUCED_SEED_EXPIRATION)) {
+            expirationDuration /= 2;
+        }
         return getCurrentTimeMillis() > seedFileTime + expirationDuration;
     }
 
@@ -312,7 +327,7 @@ public class VariationsSeedLoader {
     private void updateSeedFileAndRequestNewFromServiceOnBackgroundThread(
             boolean foundNewSeed, boolean needNewSeed, long seedFileTime) {
         // This work is not time critical.
-        PostTask.postTask(
+        PostTask.postDelayedTask(
                 TaskTraits.BEST_EFFORT_MAY_BLOCK,
                 () -> {
                     if (foundNewSeed) {
@@ -331,14 +346,15 @@ public class VariationsSeedLoader {
                     }
 
                     onBackgroundWorkFinished();
-                });
+                },
+                2500);
     }
 
     // Connects to VariationsSeedServer service. Sends a file descriptor for our local copy of the
     // seed to the service, to which the service will write a new seed.
     private class SeedServerConnection extends ServiceConnectionDelayRecorder {
-        private ParcelFileDescriptor mNewSeedFd;
-        private long mOldSeedDate;
+        private final ParcelFileDescriptor mNewSeedFd;
+        private final long mOldSeedDate;
 
         public SeedServerConnection(ParcelFileDescriptor newSeedFd, long oldSeedDate) {
             mNewSeedFd = newSeedFd;
@@ -371,24 +387,35 @@ public class VariationsSeedLoader {
 
         @Override
         public void onServiceConnectedImpl(ComponentName name, IBinder service) {
-            try {
-                if (mNewSeedFd.getFd() >= 0) {
-                    IVariationsSeedServer.Stub.asInterface(service)
-                            .getSeed(mNewSeedFd, mOldSeedDate, mSeedServerCallback);
-                }
-            } catch (RemoteException e) {
-                Log.e(TAG, "Faild requesting seed", e);
-            } finally {
-                ContextUtils.getApplicationContext().unbindService(this);
-                VariationsUtils.closeSafely(mNewSeedFd);
+            if (mPostedServiceConnected) {
+                // Only post this task once.
+                return;
             }
+            // onServiceConnected is called on the app's main thread. Punt this back to the
+            // background thread as this work is not time critical.
+            mPostedServiceConnected = true;
+            PostTask.postTask(
+                    TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                    () -> {
+                        try {
+                            if (mNewSeedFd.getFd() >= 0) {
+                                IVariationsSeedServer.Stub.asInterface(service)
+                                        .getSeed(mNewSeedFd, mOldSeedDate, mSeedServerCallback);
+                            }
+                        } catch (RemoteException e) {
+                            Log.e(TAG, "Faild requesting seed", e);
+                        } finally {
+                            ContextUtils.getApplicationContext().unbindService(this);
+                            VariationsUtils.closeSafely(mNewSeedFd);
+                        }
+                    });
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {}
     }
 
-    private class SeedServerCallback extends IVariationsSeedServerCallback.Stub {
+    private static class SeedServerCallback extends IVariationsSeedServerCallback.Stub {
         @Override
         public void reportVariationsServiceMetrics(Bundle metricsBundle) {
             VariationsServiceMetricsHelper metrics =
@@ -470,6 +497,7 @@ public class VariationsSeedLoader {
         long start = SystemClock.elapsedRealtime();
         try {
             try {
+                assert mLoadTask != null : "startVariationsInit should be called first.";
                 SeedLoadResult loadResult =
                         mLoadTask.get(getSeedLoadTimeoutMillis(), TimeUnit.MILLISECONDS);
                 maybeRecordSeedFileTime(loadResult.mSeedFileTime);
@@ -503,7 +531,7 @@ public class VariationsSeedLoader {
         // Parses the AwVariationsSeed proto stored in the file with the given path, saving it in
         // memory for later use by native code if the parsing succeeded. Returns true if the loading
         // and parsing were successful.
-        boolean parseAndSaveSeedProto(String path);
+        boolean parseAndSaveSeedProto(@JniType("std::string") String path);
 
         // Parses the AwVariationsSeed proto stored in the given byte array, saving it in
         // memory for later use by native code if the parsing succeeded. Returns true if the loading

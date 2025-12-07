@@ -13,7 +13,6 @@
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "url/gurl.h"
 
 namespace ukm {
 class UkmRecorder;
@@ -42,7 +41,9 @@ class CC_EXPORT UkmManager {
       const CompositorFrameReporter::ProcessedBlinkBreakdown&
           processed_blink_breakdown,
       const CompositorFrameReporter::ProcessedVizBreakdown&
-          processed_viz_breakdown) const;
+          processed_viz_breakdown,
+      const CompositorFrameReporter::ProcessedTreesInVizBreakdown&
+          processed_trees_in_viz_breakdown) const;
 
   void RecordEventLatencyUKM(
       const EventMetrics::List& events_metrics,

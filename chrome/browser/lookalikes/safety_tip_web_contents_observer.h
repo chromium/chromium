@@ -18,12 +18,13 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/lookalikes/safety_tip_message_delegate_android.h"
+#else
+#include "ui/views/widget/widget.h"
 #endif
 
 class Profile;

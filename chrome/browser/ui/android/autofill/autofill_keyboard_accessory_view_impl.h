@@ -23,13 +23,13 @@ class AutofillKeyboardAccessoryController;
 // A suggestion view that acts as an alternative to the field-attached popup
 // window. This view appears above the keyboard and spans the width of the
 // screen, condensing rather than overlaying the content area.
-class AutofillKeyboardAccessoryViewImpl
-    : public AutofillKeyboardAccessoryView {
+class AutofillKeyboardAccessoryViewImpl : public AutofillKeyboardAccessoryView {
  public:
   explicit AutofillKeyboardAccessoryViewImpl(
       base::WeakPtr<AutofillKeyboardAccessoryController> controller);
 
-  AutofillKeyboardAccessoryViewImpl(const AutofillKeyboardAccessoryViewImpl&) = delete;
+  AutofillKeyboardAccessoryViewImpl(const AutofillKeyboardAccessoryViewImpl&) =
+      delete;
   AutofillKeyboardAccessoryViewImpl& operator=(
       const AutofillKeyboardAccessoryViewImpl&) = delete;
 
@@ -43,6 +43,8 @@ class AutofillKeyboardAccessoryViewImpl
   void ConfirmDeletion(
       const std::u16string& confirmation_title,
       const std::u16string& confirmation_body,
+      const std::u16string& confirmation_body_link,
+      const std::u16string& confirm_button_text,
       base::OnceCallback<void(bool)> deletion_callback) override;
 
   // --------------------------------------------------------------------------
@@ -51,22 +53,18 @@ class AutofillKeyboardAccessoryViewImpl
 
   // Called when an autofill item was selected.
   void SuggestionSelected(JNIEnv* env,
-                          const base::android::JavaParamRef<jobject>& obj,
                           jint list_index);
 
   // Called when the deletion of an autofill item was requested.
   void DeletionRequested(JNIEnv* env,
-                         const base::android::JavaParamRef<jobject>& obj,
                          jint list_index);
 
   // Called when the user closes the deletion dialog.
   void OnDeletionDialogClosed(JNIEnv* env,
-                              const base::android::JavaParamRef<jobject>& obj,
                               jboolean confirmed);
 
   // Called when this view was dismissed.
-  void ViewDismissed(JNIEnv* env,
-                     const base::android::JavaParamRef<jobject>& obj);
+  void ViewDismissed(JNIEnv* env);
 
  private:
   // Weak reference to the controller of this view. It can be null if the

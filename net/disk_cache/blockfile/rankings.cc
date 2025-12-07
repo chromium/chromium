@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/disk_cache/blockfile/rankings.h"
 
 #include <stdint.h>
@@ -180,18 +175,18 @@ void GenerateCrash(CrashLocation location) {
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 #endif  // NDEBUG
 }
 
 // Update the timestamp fields of |node|.
-void UpdateTimes(disk_cache::CacheRankingsBlock* node, bool modified) {
+void UpdateTimes(disk_cache::CacheRankingsBlock* node) {
   base::Time now = base::Time::Now();
-  node->Data()->last_used = now.ToInternalValue();
-  if (modified)
-    node->Data()->last_modified = now.ToInternalValue();
+  auto timestamp = now.ToInternalValue();
+  auto* node_data = node->Data();
+  node_data->last_used = timestamp;
+  node_data->no_longer_used_last_modified = timestamp;
 }
 
 }  // namespace
@@ -206,6 +201,18 @@ Rankings::ScopedRankingsBlock::ScopedRankingsBlock(Rankings* rankings)
 Rankings::ScopedRankingsBlock::ScopedRankingsBlock(Rankings* rankings,
                                                    CacheRankingsBlock* node)
     : std::unique_ptr<CacheRankingsBlock>(node), rankings_(rankings) {}
+
+Rankings::ScopedRankingsBlock::~ScopedRankingsBlock() {
+  rankings_->FreeRankingsBlock(get());
+}
+
+// scoped_ptr::reset will delete `p`.
+void Rankings::ScopedRankingsBlock::reset(CacheRankingsBlock* p) {
+  if (p != get()) {
+    rankings_->FreeRankingsBlock(get());
+  }
+  std::unique_ptr<CacheRankingsBlock>::reset(p);
+}
 
 Rankings::Iterator::Iterator() = default;
 
@@ -252,7 +259,7 @@ void Rankings::Reset() {
   control_data_ = nullptr;
 }
 
-void Rankings::Insert(CacheRankingsBlock* node, bool modified, List list) {
+void Rankings::Insert(CacheRankingsBlock* node, List list) {
   DCHECK(node->HasData());
   Addr& my_head = heads_[list];
   Addr& my_tail = tails_[list];
@@ -285,7 +292,7 @@ void Rankings::Insert(CacheRankingsBlock* node, bool modified, List list) {
     GenerateCrash(ON_INSERT_2);
   }
 
-  UpdateTimes(node, modified);
+  UpdateTimes(node);
   node->Store();
   // Make sure other aliased in-memory copies get synchronized.
   UpdateIterators(node);
@@ -408,16 +415,16 @@ void Rankings::Remove(CacheRankingsBlock* node, List list, bool strict) {
 // list. We want to avoid that case as much as we can (as while waiting for IO),
 // but the net effect is just an assert on debug when attempting to remove the
 // entry. Otherwise we'll need reentrant transactions, which is an overkill.
-void Rankings::UpdateRank(CacheRankingsBlock* node, bool modified, List list) {
+void Rankings::UpdateRank(CacheRankingsBlock* node, List list) {
   Addr& my_head = heads_[list];
   if (my_head.value() == node->address().value()) {
-    UpdateTimes(node, modified);
+    UpdateTimes(node);
     node->set_modified();
     return;
   }
 
   Remove(node, list, true);
-  Insert(node, modified, list);
+  Insert(node, list);
 }
 
 CacheRankingsBlock* Rankings::GetNext(CacheRankingsBlock* node, List list) {
@@ -555,8 +562,9 @@ bool Rankings::DataSanityCheck(CacheRankingsBlock* node, bool from_list) const {
     return false;
 
   // It may have never been inserted.
-  if (from_list && (!data->last_used || !data->last_modified))
+  if (from_list && (!data->last_used)) {
     return false;
+  }
 
   return true;
 }
@@ -618,7 +626,7 @@ bool Rankings::GetRanking(CacheRankingsBlock* rankings) {
   }
 
   // Note that we should not leave this module without deleting rankings first.
-  rankings->SetData(entry->rankings()->Data());
+  rankings->SetData(entry->rankings()->AllData());
 
   return true;
 }
@@ -639,9 +647,7 @@ void Rankings::ConvertToLongLived(CacheRankingsBlock* rankings) {
 void Rankings::CompleteTransaction() {
   Addr node_addr(static_cast<CacheAddr>(control_data_->transaction));
   if (!node_addr.is_initialized() || node_addr.is_separate_file()) {
-    NOTREACHED_IN_MIGRATION();
-    LOG(ERROR) << "Invalid rankings info.";
-    return;
+    NOTREACHED() << "Invalid rankings info.";
   }
 
   CacheRankingsBlock node(backend_->File(node_addr), node_addr);
@@ -658,8 +664,7 @@ void Rankings::CompleteTransaction() {
   } else if (REMOVE == control_data_->operation) {
     RevertRemove(&node);
   } else {
-    NOTREACHED_IN_MIGRATION();
-    LOG(ERROR) << "Invalid operation to recover.";
+    NOTREACHED() << "Invalid operation to recover.";
   }
 }
 
@@ -674,7 +679,7 @@ void Rankings::FinishInsert(CacheRankingsBlock* node) {
       node->Data()->next = my_tail.value();
     }
 
-    Insert(node, true, static_cast<List>(control_data_->operation_list));
+    Insert(node, static_cast<List>(control_data_->operation_list));
   }
 
   // Tell the backend about this entry.
@@ -690,10 +695,7 @@ void Rankings::RevertRemove(CacheRankingsBlock* node) {
     return;
   }
   if (next_addr.is_separate_file() || prev_addr.is_separate_file()) {
-    NOTREACHED_IN_MIGRATION();
-    LOG(WARNING) << "Invalid rankings info.";
-    control_data_->transaction = 0;
-    return;
+    NOTREACHED() << "Invalid rankings info.";
   }
 
   CacheRankingsBlock next(backend_->File(next_addr), next_addr);

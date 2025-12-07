@@ -5,6 +5,7 @@
 #include "components/feature_engagement/internal/init_aware_event_model.h"
 
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 
 namespace feature_engagement {
 

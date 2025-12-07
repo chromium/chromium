@@ -14,6 +14,7 @@
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/events/ozone/evdev/cursor_delegate_evdev.h"
 #include "ui/events/ozone/evdev/event_device_util.h"
 #include "ui/events/ozone/evdev/event_dispatch_callback.h"
@@ -63,9 +64,9 @@ class COMPONENT_EXPORT(EVDEV) GestureInterpreterLibevdevCros
   void SetupHapticButtonGeneration(
       const base::RepeatingCallback<void(bool)>& callback) override;
   void SetReceivedValidKeyboardInputCallback(
-      base::RepeatingCallback<void(uint64_t)> callback) override;
+      base::RepeatingCallback<void(uint64_t, double)> callback) override;
   void SetReceivedValidMouseInputCallback(
-      base::RepeatingCallback<void(int)> callback) override;
+      base::RepeatingCallback<void(int, double)> callback) override;
   void SetBlockModifiers(bool block_modifiers) override;
 
   // Handler for gesture events generated from libgestures.
@@ -119,16 +120,16 @@ class COMPONENT_EXPORT(EVDEV) GestureInterpreterLibevdevCros
   bool block_modifiers_;
 
   // Shared cursor state.
-  CursorDelegateEvdev* cursor_;
+  raw_ptr<CursorDelegateEvdev> cursor_;
 
   // Shared gesture property provider.
-  GesturePropertyProvider* property_provider_;
+  raw_ptr<GesturePropertyProvider> property_provider_;
 
   // Dispatcher for events.
-  DeviceEventDispatcherEvdev* dispatcher_;
+  raw_ptr<DeviceEventDispatcherEvdev> dispatcher_;
 
   // Gestures interpretation state.
-  gestures::GestureInterpreter* interpreter_ = nullptr;
+  raw_ptr<gestures::GestureInterpreter> interpreter_ = nullptr;
 
   // Last key state from libevdev.
   unsigned long prev_key_state_[EVDEV_BITS_TO_LONGS(KEY_CNT)];
@@ -141,7 +142,7 @@ class COMPONENT_EXPORT(EVDEV) GestureInterpreterLibevdevCros
   gfx::Vector2dF click_movement_;
 
   // Device pointer.
-  Evdev* evdev_ = nullptr;
+  raw_ptr<Evdev> evdev_ = nullptr;
 
   // Gesture lib device properties.
   std::unique_ptr<GestureDeviceProperties> device_properties_;
@@ -153,10 +154,10 @@ class COMPONENT_EXPORT(EVDEV) GestureInterpreterLibevdevCros
   base::RepeatingCallback<void(bool)> click_callback_;
 
   // Callback for when a keyboard key press is registered.
-  base::RepeatingCallback<void(uint64_t)> received_keyboard_input_;
+  base::RepeatingCallback<void(uint64_t, double)> received_keyboard_input_;
 
   // Callback for when a mouse rel event is registered.
-  base::RepeatingCallback<void(int)> received_mouse_input_;
+  base::RepeatingCallback<void(int, double)> received_mouse_input_;
 };
 
 }  // namespace ui

@@ -41,25 +41,7 @@ TEST_F(JavaScriptFeatureUtilImplTest, CommonFeature) {
 
   const web::JavaScriptFeature::FeatureScript* script = scripts.front();
   EXPECT_TRUE([script->GetScriptString() containsString:@"__gCrWeb.common"]);
-  EXPECT_FALSE([script->GetScriptString() containsString:@"__gCrWeb.message"]);
 
-  EXPECT_EQ(
-      web::JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,
-      script->GetInjectionTime());
-  EXPECT_EQ(web::JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames,
-            script->GetTargetFrames());
-}
-
-TEST_F(JavaScriptFeatureUtilImplTest, MessageFeature) {
-  web::JavaScriptFeature* feature =
-      web::java_script_features::GetMessageJavaScriptFeature();
-
-  std::vector<const web::JavaScriptFeature::FeatureScript*> scripts =
-      feature->GetScripts();
-  EXPECT_EQ(1ul, scripts.size());
-
-  const web::JavaScriptFeature::FeatureScript* script = scripts.front();
-  EXPECT_TRUE([script->GetScriptString() containsString:@"__gCrWeb.message"]);
   EXPECT_EQ(
       web::JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,
       script->GetInjectionTime());

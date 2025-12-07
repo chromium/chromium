@@ -13,12 +13,13 @@
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/engine/sync_manager.h"
-#include "components/sync/protocol/client_debug_info.pb.h"
-#include "components/sync/protocol/sync_enums.pb.h"
 
 namespace sync_pb {
+class DebugEventInfo;
+class DebugInfo;
 class EncryptedData;
-}
+enum SyncEnums_SingletonDebugEventType : int;
+}  // namespace sync_pb
 
 namespace syncer {
 
@@ -80,7 +81,7 @@ class DebugInfoEventListener : public SyncManager::Observer,
   FRIEND_TEST_ALL_PREFIXES(DebugInfoEventListenerTest, VerifyClearEvents);
 
   void AddEventToQueue(const sync_pb::DebugEventInfo& event_info);
-  void CreateAndAddEvent(sync_pb::SyncEnums::SingletonDebugEventType type);
+  void CreateAndAddEvent(sync_pb::SyncEnums_SingletonDebugEventType type);
 
   // Stores the most recent events, up to some limit.
   base::circular_deque<sync_pb::DebugEventInfo> events_;

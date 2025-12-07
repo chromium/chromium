@@ -15,7 +15,7 @@
 </form>
 <script>
 // Submits using XHR. Used for the subresource test.
-async function submitXhr() {
+async function submitXhr(formData) {
   const xhr = new XMLHttpRequest();
   const loaded = new Promise(resolve => {
     xhr.onload = resolve;
@@ -25,10 +25,18 @@ async function submitXhr() {
   });
 
   xhr.open("post", form.action);
-  xhr.send(new FormData(form));
+  xhr.send(formData);
   await loaded;
   await loadEnded;
   return xhr.responseText;
+}
+async function submitFormDataViaXhr() {
+  return submitXhr(new FormData(form));
+}
+async function submitFormDataWithBlobViaXhr(name, content) {
+  const formData =  new FormData(form);
+  formData.append(name, new Blob([content]));
+  return submitXhr(formData);
 }
 
 const fileInput = document.querySelector('#file');

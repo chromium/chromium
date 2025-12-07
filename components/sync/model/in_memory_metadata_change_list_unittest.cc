@@ -4,17 +4,15 @@
 
 #include "components/sync/model/in_memory_metadata_change_list.h"
 
+#include "base/test/protobuf_matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {
 namespace {
 
+using base::test::EqualsProto;
 using testing::StrictMock;
-
-MATCHER_P(EqualsProto, expected, "") {
-  return arg.SerializeAsString() == expected.SerializeAsString();
-}
 
 class MockMetadataChangeList : public MetadataChangeList {
  public:
@@ -32,6 +30,7 @@ class MockMetadataChangeList : public MetadataChangeList {
               ClearMetadata,
               (const std::string& storage_key),
               (override));
+  MOCK_METHOD(void, TransferChangesTo, (MetadataChangeList * other), (override));
 };
 
 TEST(InMemoryMetadataChangeListTest, ShouldTransferNothingIfEmptyChangeList) {

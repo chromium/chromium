@@ -7,6 +7,7 @@
 #include <fcntl.h>
 #include <linux/input.h>
 
+#include <algorithm>
 #include <vector>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
@@ -27,7 +28,8 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_util.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/display/screen.h"
@@ -190,9 +192,9 @@ void InputDataProvider::GetConnectedDevicesHelper(
     touch_device_vector.push_back(touch_device_info.second.Clone());
   }
 
-  base::ranges::sort(keyboard_vector, std::less<>(), &mojom::KeyboardInfo::id);
-  base::ranges::sort(touch_device_vector, std::less<>(),
-                     &mojom::TouchDeviceInfo::id);
+  std::ranges::sort(keyboard_vector, std::less<>(), &mojom::KeyboardInfo::id);
+  std::ranges::sort(touch_device_vector, std::less<>(),
+                    &mojom::TouchDeviceInfo::id);
 
   std::move(callback).Run(std::move(keyboard_vector),
                           std::move(touch_device_vector));
@@ -287,7 +289,7 @@ void InputDataProvider::OnPowerStateChanged(
 void InputDataProvider::MoveAppToTestingScreen(uint32_t evdev_id) {
   aura::Window* window = widget_->GetNativeWindow();
   const int64_t current_display_id =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
+      display::Screen::Get()->GetDisplayNearestWindow(window).id();
 
   // Find the testing touchscreen device.
   auto it = touch_devices_.find((int)evdev_id);
@@ -587,11 +589,14 @@ void InputDataProvider::AddKeyboard(const InputDeviceInformation* device_info) {
       keyboard_helper_.ConstructKeyboard(device_info, aux_data.get());
   const bool is_internal_keyboard =
       keyboard->connection_type == mojom::ConnectionType::kInternal;
-  // Don't add keyboard if internal keyboard is a split modifier keyboard.
+  // Don't add keyboard if internal keyboard is a split modifier keyboard
+  // and the config for bottom left/right is unknown.
   if (is_internal_keyboard &&
-      IsSplitModifierKeyboard(device_info->input_device.id)) {
-    return;
-  }
+      IsSplitModifierKeyboard(device_info->input_device.id) &&
+      (keyboard->bottom_left_layout == mojom::BottomLeftLayout::kUnknown ||
+        keyboard->bottom_right_layout == mojom::BottomRightLayout::kUnknown)) {
+      return;
+    }
   if (!features::IsExternalKeyboardInDiagnosticsAppEnabled() &&
       !is_internal_keyboard) {
     return;

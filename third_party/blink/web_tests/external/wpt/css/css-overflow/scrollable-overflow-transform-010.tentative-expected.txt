@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] .container 1
+  assert_equals: \n<div class="container" data-expected-scroll-height="241">\n    <div style="transform: rotate(-45deg);" class="element">\n      <div style="transform: rotate(45deg);" class="element-2">\n      </div>\n    </div>\n  </div>\nscrollHeight expected 241 but got 300
+[FAIL] .container 2
+  assert_equals: \n<div class="container" data-expected-scroll-height="222">\n    <div style="transform: rotate(30deg) rotate(-15deg);" class="element">\n      <div style="transform: rotate(-30deg) rotate(105deg);" class="element-2">\n      </div>\n    </div>\n  </div>\nscrollHeight expected 222 but got 250
+Harness: the test ran to completion.
+

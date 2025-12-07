@@ -7,6 +7,7 @@
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/chrome_metrics_service_client.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -14,14 +15,10 @@
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_test_helper.h"
-#include "content/public/test/browser_task_environment.h"
-#endif
 
 using ::testing::NotNull;
 
@@ -36,41 +33,23 @@ class ChromeMetricsServicesManagerClientTest : public testing::Test {
 
   ~ChromeMetricsServicesManagerClientTest() override = default;
 
-  void SetUp() override {
-    // Set up Local State prefs.
-    TestingBrowserProcess::GetGlobal()->SetLocalState(&local_state_);
-    ChromeMetricsServiceClient::RegisterPrefs(local_state()->registry());
+  PrefService* local_state() {
+    return TestingBrowserProcess::GetGlobal()->local_state();
   }
-
-  void TearDown() override {
-    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
-  }
-
-  TestingPrefServiceSimple* local_state() { return &local_state_; }
-
- private:
-  TestingPrefServiceSimple local_state_;
 };
 
 using IsClientInSampleTest = ChromeMetricsServicesManagerClientTest;
 
 TEST_F(ChromeMetricsServicesManagerClientTest, ForceTrialsDisablesReporting) {
   // First, test with UMA reporting setting defaulting to off.
-  local_state()->registry()->RegisterBooleanPref(
-      metrics::prefs::kMetricsReportingEnabled, false);
+  local_state()->SetBoolean(metrics::prefs::kMetricsReportingEnabled, false);
   // Force the pref to be used, even in unofficial builds.
   ChromeMetricsServiceAccessor::SetForceIsMetricsReportingEnabledPrefLookup(
       true);
 
   ChromeMetricsServicesManagerClient client(local_state());
   const metrics::EnabledStateProvider& provider =
-      client.GetEnabledStateProviderForTesting();
-  metrics_services_manager::MetricsServicesManagerClient* base_client = &client;
-
-  // The provider and client APIs should agree.
-  EXPECT_EQ(provider.IsConsentGiven(), base_client->IsMetricsConsentGiven());
-  EXPECT_EQ(provider.IsReportingEnabled(),
-            base_client->IsMetricsReportingEnabled());
+      client.GetEnabledStateProvider();
 
   // Both consent and reporting should be false.
   EXPECT_FALSE(provider.IsConsentGiven());
@@ -78,11 +57,6 @@ TEST_F(ChromeMetricsServicesManagerClientTest, ForceTrialsDisablesReporting) {
 
   // Set the pref to true.
   local_state()->SetBoolean(metrics::prefs::kMetricsReportingEnabled, true);
-
-  // The provider and client APIs should agree.
-  EXPECT_EQ(provider.IsConsentGiven(), base_client->IsMetricsConsentGiven());
-  EXPECT_EQ(provider.IsReportingEnabled(),
-            base_client->IsMetricsReportingEnabled());
 
   // Both consent and reporting should be true.
   EXPECT_TRUE(provider.IsConsentGiven());
@@ -93,26 +67,14 @@ TEST_F(ChromeMetricsServicesManagerClientTest, ForceTrialsDisablesReporting) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kForceFieldTrials, "Foo/Bar");
 
-  // The provider and client APIs should agree.
-  EXPECT_EQ(provider.IsConsentGiven(), base_client->IsMetricsConsentGiven());
-  EXPECT_EQ(provider.IsReportingEnabled(),
-            base_client->IsMetricsReportingEnabled());
-
   // Consent should be true but reporting should be false.
   EXPECT_TRUE(provider.IsConsentGiven());
   EXPECT_FALSE(provider.IsReportingEnabled());
 }
 
 TEST_F(ChromeMetricsServicesManagerClientTest, PopulateStartupVisibility) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Set up ScopedLacrosServiceTestHelper needed for Lacros.
-  content::BrowserTaskEnvironment task_environment;
-  chromeos::ScopedLacrosServiceTestHelper helper;
-#endif
-
   // Register the kMetricsReportingEnabled pref.
-  local_state()->registry()->RegisterBooleanPref(
-      metrics::prefs::kMetricsReportingEnabled, false);
+  local_state()->SetBoolean(metrics::prefs::kMetricsReportingEnabled, false);
 
   ChromeMetricsServicesManagerClient client(local_state());
   metrics::MetricsStateManager* metrics_state_manager =

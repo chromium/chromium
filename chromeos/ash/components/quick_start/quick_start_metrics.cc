@@ -121,8 +121,8 @@ constexpr const char kScreenClosedQSComplete[] =
     "QuickStart.ScreenClosed.QSComplete";
 constexpr const char kScreenClosedQSConnectingToWifi[] =
     "QuickStart.ScreenClosed.QSConnectingToWifi";
-constexpr const char kScreenClosedQSResumingConnectionAfterUpdate[] =
-    "QuickStart.ScreenClosed.QSResumingConnectionAfterUpdate";
+constexpr const char kScreenClosedQSConnectingToPhone[] =
+    "QuickStart.ScreenClosed.QSConnectingToPhone";
 constexpr const char kScreenClosedQSSelectGoogleAccount[] =
     "QuickStart.ScreenClosed.QSSelectGoogleAccount";
 constexpr const char kScreenClosedQSSetUpWithAndroidPhone[] =
@@ -143,9 +143,12 @@ constexpr const char kScreenClosedQSCreatingAccount[] =
     "QuickStart.ScreenClosed.QSCreatingAccount";
 constexpr const char kScreenClosedQSFallbackURL[] =
     "QuickStart.ScreenClosed.QSFallbackURL";
+constexpr const char kSetupCompleteHistogramName[] = "QuickStart.SetupComplete";
 constexpr const char kAbortFlowReasonHistogramName[] =
     "QuickStart.FlowAborted.Reason";
 constexpr const char kEntryPointHistogramName[] = "QuickStart.EntryPoint";
+constexpr const char kEntryPointVisibleHistogramName[] =
+    "QuickStart.EntryPointVisible";
 constexpr const char kConsumerUpdateStartedHistogramName[] =
     "QuickStart.ConsumerUpdateStarted";
 constexpr const char kConsumerUpdateCancelledHistogramName[] =
@@ -196,8 +199,8 @@ std::string MapScreenNameToMetric(QuickStartMetrics::ScreenName screen_name) {
       return kScreenClosedChooseChromebookSetup;
     case QuickStartMetrics::ScreenName::kConsumerUpdate:
       return kScreenClosedConsumerUpdate;
-    case QuickStartMetrics::ScreenName::kQSResumingConnectionAfterUpdate:
-      return kScreenClosedQSResumingConnectionAfterUpdate;
+    case QuickStartMetrics::ScreenName::kQSConnectingToPhone:
+      return kScreenClosedQSConnectingToPhone;
     case QuickStartMetrics::ScreenName::kQSGettingGoogleAccountInfo:
       return kScreenClosedQSGettingGoogleAccountInfo;
     case QuickStartMetrics::ScreenName::kQSComplete:
@@ -327,6 +330,11 @@ void QuickStartMetrics::RecordEntryPoint(EntryPoint entry_point) {
 }
 
 // static
+void QuickStartMetrics::RecordEntryPointVisible(EntryPoint entry_point) {
+  base::UmaHistogramEnumeration(kEntryPointVisibleHistogramName, entry_point);
+}
+
+// static
 void QuickStartMetrics::RecordAuthenticationMethod(
     AuthenticationMethod auth_method) {
   base::UmaHistogramEnumeration(kAuthenticationMethodHistogramName,
@@ -364,6 +372,11 @@ void QuickStartMetrics::RecordEstablishConnection(bool success,
     metrics::structured::StructuredMetricsClient::Record(std::move(
         cros_events::QuickStart_EstablishConnection().SetSuccess(success)));
   }
+}
+
+// static
+void QuickStartMetrics::RecordSetupComplete() {
+  base::UmaHistogramBoolean(kSetupCompleteHistogramName, true);
 }
 
 QuickStartMetrics::QuickStartMetrics() = default;
@@ -429,17 +442,16 @@ void QuickStartMetrics::RecordChallengeBytesRequestEnded(
 }
 
 void QuickStartMetrics::RecordAttestationCertificateRequested() {
-  CHECK(!attestation_certificate_timer_)
-      << "Only 1 attestation certificate request can be active at a time";
+  // Timer may already exist if the user entered and cancelled Quick Start.
+  if (attestation_certificate_timer_) {
+    attestation_certificate_timer_.reset();
+  }
+
   attestation_certificate_timer_ = std::make_unique<base::ElapsedTimer>();
 }
 
 void QuickStartMetrics::RecordAttestationCertificateRequestEnded(
     std::optional<AttestationCertificateRequestErrorCode> error_code) {
-  CHECK(attestation_certificate_timer_)
-      << "Attestation certificate request timer was not active. Unexpected "
-         "response.";
-
   if (error_code) {
     base::UmaHistogramEnumeration(
         kAttestationCertificateFailureReasonHistogramName, error_code.value());
@@ -450,9 +462,11 @@ void QuickStartMetrics::RecordAttestationCertificateRequestEnded(
                               true);
   }
 
-  base::UmaHistogramTimes(kAttestationCertificateFetchDurationHistogramName,
-                          attestation_certificate_timer_->Elapsed());
-  attestation_certificate_timer_.reset();
+  if (attestation_certificate_timer_) {
+    base::UmaHistogramTimes(kAttestationCertificateFetchDurationHistogramName,
+                            attestation_certificate_timer_->Elapsed());
+    attestation_certificate_timer_.reset();
+  }
 }
 
 void QuickStartMetrics::RecordGaiaAuthenticationStarted() {
@@ -650,8 +664,8 @@ std::ostream& operator<<(
     case QuickStartMetrics::ScreenName::kConsumerUpdate:
       stream << "[consumer update]";
       break;
-    case QuickStartMetrics::ScreenName::kQSResumingConnectionAfterUpdate:
-      stream << "[QS resuming connection after update]";
+    case QuickStartMetrics::ScreenName::kQSConnectingToPhone:
+      stream << "[QS Connecting to Phone]";
       break;
     case QuickStartMetrics::ScreenName::kQSGettingGoogleAccountInfo:
       stream << "[QS getting Google account info]";

@@ -12,7 +12,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "content/browser/media/cdm_storage_manager.h"
-#include "content/browser/media/media_license_storage_host.h"
 #include "media/cdm/cdm_helpers.h"
 #include "media/cdm/cdm_type.h"
 #include "media/mojo/mojom/cdm_storage.mojom.h"
@@ -60,21 +59,6 @@ bool CdmFileImpl::IsValidName(const std::string& name) {
 }
 
 CdmFileImpl::CdmFileImpl(
-    MediaLicenseStorageHost* host,
-    const media::CdmType& cdm_type,
-    const std::string& file_name,
-    mojo::PendingAssociatedReceiver<media::mojom::CdmFile> pending_receiver)
-    : file_name_(file_name), cdm_type_(cdm_type), host_(host) {
-  DVLOG(3) << __func__ << " " << file_name_;
-  DCHECK(IsValidName(file_name_));
-  DCHECK(host_);
-
-  receiver_.Bind(std::move(pending_receiver));
-  receiver_.set_disconnect_handler(base::BindOnce(
-      &CdmFileImpl::OnReceiverDisconnect, weak_factory_.GetWeakPtr()));
-}
-
-CdmFileImpl::CdmFileImpl(
     CdmStorageManager* manager,
     const blink::StorageKey& storage_key,
     const media::CdmType& cdm_type,
@@ -107,7 +91,7 @@ CdmFileImpl::~CdmFileImpl() {
 void CdmFileImpl::Read(ReadCallback callback) {
   DVLOG(3) << __func__ << " file: " << file_name_;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(host_ || cdm_storage_manager_);
+  DCHECK(cdm_storage_manager_);
 
   // Only 1 Read() or Write() is allowed at any time.
   if (read_callback_ || write_callback_) {
@@ -119,15 +103,9 @@ void CdmFileImpl::Read(ReadCallback callback) {
   read_callback_ = std::move(callback);
   start_time_ = base::TimeTicks::Now();
 
-  if (host_) {
-    host_->ReadFile(
-        cdm_type_, file_name_,
-        base::BindOnce(&CdmFileImpl::DidRead, weak_factory_.GetWeakPtr()));
-  } else {
-    cdm_storage_manager_->ReadFile(
-        storage_key_, cdm_type_, file_name_,
-        base::BindOnce(&CdmFileImpl::DidRead, weak_factory_.GetWeakPtr()));
-  }
+  cdm_storage_manager_->ReadFile(
+      storage_key_, cdm_type_, file_name_,
+      base::BindOnce(&CdmFileImpl::DidRead, weak_factory_.GetWeakPtr()));
 }
 
 void CdmFileImpl::DidRead(std::optional<std::vector<uint8_t>> data) {
@@ -135,7 +113,7 @@ void CdmFileImpl::DidRead(std::optional<std::vector<uint8_t>> data) {
            << ", success: " << (data.has_value() ? "yes" : "no");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(read_callback_);
-  DCHECK(host_ || cdm_storage_manager_);
+  DCHECK(cdm_storage_manager_);
 
   bool success = data.has_value();
   ReportFileOperationUMA(success, kReadFile);
@@ -153,7 +131,7 @@ void CdmFileImpl::Write(const std::vector<uint8_t>& data,
                         WriteCallback callback) {
   DVLOG(3) << __func__ << " file: " << file_name_ << ", size: " << data.size();
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(host_ || cdm_storage_manager_);
+  DCHECK(cdm_storage_manager_);
 
   // Only 1 Read() or Write() is allowed at any time.
   if (read_callback_ || write_callback_) {
@@ -181,29 +159,22 @@ void CdmFileImpl::Write(const std::vector<uint8_t>& data,
     return;
   }
 
-  if (host_) {
-    host_->WriteFile(
-        cdm_type_, file_name_, data,
-        base::BindOnce(&CdmFileImpl::DidWrite, weak_factory_.GetWeakPtr()));
-  } else {
-    cdm_storage_manager_->WriteFile(
-        storage_key_, cdm_type_, file_name_, data,
-        base::BindOnce(&CdmFileImpl::DidWrite, weak_factory_.GetWeakPtr()));
-  }
+  cdm_storage_manager_->WriteFile(
+      storage_key_, cdm_type_, file_name_, data,
+      base::BindOnce(&CdmFileImpl::DidWrite, weak_factory_.GetWeakPtr()));
 }
 
 void CdmFileImpl::ReportFileOperationUMA(bool success,
                                          const std::string& operation) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(host_ || cdm_storage_manager_);
+  DCHECK(cdm_storage_manager_);
 
   // Strings for UMA names.
   static const char kUmaPrefix[] = "Media.EME.CdmFileIO";
   static const char kTimeTo[] = "TimeTo";
 
-  const bool in_memory =
-      (host_) ? host_->in_memory() : cdm_storage_manager_->in_memory();
-  const std::string mode_suffix = in_memory ? "Incognito" : "Normal";
+  const std::string mode_suffix =
+      cdm_storage_manager_->in_memory() ? "Incognito" : "Normal";
 
   // Records the result to the base histogram as well as splitting it out by
   // incognito or normal mode.
@@ -228,7 +199,7 @@ void CdmFileImpl::DidWrite(bool success) {
   DVLOG(3) << __func__ << " file: " << file_name_;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(write_callback_);
-  DCHECK(host_ || cdm_storage_manager_);
+  DCHECK(cdm_storage_manager_);
 
   ReportFileOperationUMA(success, kWriteFile);
 
@@ -245,27 +216,20 @@ void CdmFileImpl::DeleteFile() {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(write_callback_);
-  DCHECK(host_ || cdm_storage_manager_);
+  DCHECK(cdm_storage_manager_);
 
   DVLOG(3) << "Deleting " << file_name_;
 
-  if (host_) {
-    host_->DeleteFile(cdm_type_, file_name_,
-                      base::BindOnce(&CdmFileImpl::DidDeleteFile,
-                                     weak_factory_.GetWeakPtr()));
-  } else {
-    cdm_storage_manager_->DeleteFile(
-        storage_key_, cdm_type_, file_name_,
-        base::BindOnce(&CdmFileImpl::DidDeleteFile,
-                       weak_factory_.GetWeakPtr()));
-  }
+  cdm_storage_manager_->DeleteFile(
+      storage_key_, cdm_type_, file_name_,
+      base::BindOnce(&CdmFileImpl::DidDeleteFile, weak_factory_.GetWeakPtr()));
 }
 
 void CdmFileImpl::DidDeleteFile(bool success) {
   DVLOG(3) << __func__ << " file: " << file_name_;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(write_callback_);
-  DCHECK(host_ || cdm_storage_manager_);
+  DCHECK(cdm_storage_manager_);
 
   ReportFileOperationUMA(success, kDeleteFile);
 
@@ -280,16 +244,11 @@ void CdmFileImpl::DidDeleteFile(bool success) {
 
 void CdmFileImpl::OnReceiverDisconnect() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(host_ || cdm_storage_manager_);
+  DCHECK(cdm_storage_manager_);
 
   // May delete `this`.
-  if (host_) {
-    host_->OnFileReceiverDisconnect(file_name_, cdm_type_,
-                                    base::PassKey<CdmFileImpl>());
-  } else {
-    cdm_storage_manager_->OnFileReceiverDisconnect(
-        file_name_, cdm_type_, storage_key_, base::PassKey<CdmFileImpl>());
-  }
+  cdm_storage_manager_->OnFileReceiverDisconnect(
+      file_name_, cdm_type_, storage_key_, base::PassKey<CdmFileImpl>());
 }
 
 }  // namespace content

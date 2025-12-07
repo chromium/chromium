@@ -4,19 +4,46 @@
 
 #include "third_party/blink/renderer/core/css/cascade_layer_map.h"
 
+#include <compare>
+
+#include "third_party/blink/renderer/core/css/cascade_layer.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
 
 namespace blink {
 namespace {
 
-// See layer_map.h.
-using CanonicalLayerMap = LayerMap;
+// When building CascadeLayerMap (cascade_layer_map.h), we combine
+// layers from all active RuleSets (layers with the same name are
+// to be treated as the same layer; anonymous layers are all distinct),
+// so that we can give them a canonical ordering (LayerOrderMap).
+// This map contains one newly-created “merged layer” for each such
+// group of equivalent layers.
+using CanonicalLayerMap =
+    HeapHashMap<Member<const CascadeLayer>, Member<const CascadeLayer>>;
 
-void ComputeLayerOrder(CascadeLayer& layer, unsigned& next) {
-  for (const auto& sub_layer : layer.GetDirectSubLayers()) {
-    ComputeLayerOrder(*sub_layer, next);
+using LayerOrderMap = HeapHashMap<Member<const CascadeLayer>, unsigned>;
+
+void AddLayers(CascadeLayer* canonical_layer,
+               const CascadeLayer& layer_from_sheet,
+               CanonicalLayerMap& canonical_layer_map) {
+  DCHECK_EQ(canonical_layer->GetName(), layer_from_sheet.GetName());
+  canonical_layer_map.insert(&layer_from_sheet, canonical_layer);
+  for (const auto& sub_layer_from_sheet :
+       layer_from_sheet.GetDirectSubLayers()) {
+    StyleRuleBase::LayerName sub_layer_name({sub_layer_from_sheet->GetName()});
+    CascadeLayer* canonical_sub_layer =
+        canonical_layer->GetOrAddSubLayer(sub_layer_name);
+    AddLayers(canonical_sub_layer, *sub_layer_from_sheet, canonical_layer_map);
   }
-  layer.SetOrder(next++);
+}
+
+void ComputeLayerOrder(CascadeLayer& layer,
+                       uint16_t& next,
+                       LayerOrderMap& canonical_layer_order_map) {
+  for (const auto& sub_layer : layer.GetDirectSubLayers()) {
+    ComputeLayerOrder(*sub_layer, next, canonical_layer_order_map);
+  }
+  canonical_layer_order_map.insert(&layer, next++);
 }
 
 }  // namespace
@@ -28,21 +55,22 @@ CascadeLayerMap::CascadeLayerMap(const ActiveStyleSheetVector& sheets) {
   for (const auto& sheet : sheets) {
     const RuleSet* rule_set = sheet.second;
     if (rule_set && rule_set->HasCascadeLayers()) {
-      canonical_root_layer->Merge(rule_set->CascadeLayers(),
-                                  canonical_layer_map);
+      AddLayers(canonical_root_layer, rule_set->CascadeLayers(),
+                canonical_layer_map);
     }
   }
 
-  unsigned next = 0;
-  ComputeLayerOrder(*canonical_root_layer, next);
+  uint16_t next = 0;
+  LayerOrderMap canonical_layer_order_map;
+  ComputeLayerOrder(*canonical_root_layer, next, canonical_layer_order_map);
+  canonical_layer_order_map.Set(canonical_root_layer, kImplicitOuterLayerOrder);
 
-  canonical_root_layer->SetOrder(kImplicitOuterLayerOrder);
   canonical_root_layer_ = canonical_root_layer;
 
   for (const auto& iter : canonical_layer_map) {
     const CascadeLayer* layer_from_sheet = iter.key;
     const CascadeLayer* canonical_layer = iter.value;
-    unsigned layer_order = canonical_layer->GetOrder().value();
+    uint16_t layer_order = canonical_layer_order_map.at(canonical_layer);
     layer_order_map_.insert(layer_from_sheet, layer_order);
 
 #if DCHECK_IS_ON()
@@ -54,11 +82,12 @@ CascadeLayerMap::CascadeLayerMap(const ActiveStyleSheetVector& sheets) {
   }
 }
 
-int CascadeLayerMap::CompareLayerOrder(const CascadeLayer* lhs,
-                                       const CascadeLayer* rhs) const {
-  unsigned lhs_order = lhs ? GetLayerOrder(*lhs) : kImplicitOuterLayerOrder;
-  unsigned rhs_order = rhs ? GetLayerOrder(*rhs) : kImplicitOuterLayerOrder;
-  return lhs_order < rhs_order ? -1 : (lhs_order > rhs_order ? 1 : 0);
+std::weak_ordering CascadeLayerMap::CompareLayerOrder(
+    const CascadeLayer* lhs,
+    const CascadeLayer* rhs) const {
+  uint16_t lhs_order = lhs ? GetLayerOrder(*lhs) : kImplicitOuterLayerOrder;
+  uint16_t rhs_order = rhs ? GetLayerOrder(*rhs) : kImplicitOuterLayerOrder;
+  return lhs_order <=> rhs_order;
 }
 
 const CascadeLayer* CascadeLayerMap::GetRootLayer() const {

@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/core/model_execution/repetition_checker.h"
 
+#include "base/containers/adapters.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 
 namespace optimization_guide {
@@ -40,6 +41,46 @@ bool HasRepeatingSuffix(std::string_view text) {
   }
   return HasRepeatingSuffix(features::GetOnDeviceModelMinRepeatChars(),
                             num_repeats, text);
+}
+
+size_t GetNumTrailingNewlines(std::string_view text) {
+  size_t num_trailing_newlines = 0;
+  for (const char it : base::Reversed(text)) {
+    if (it == '\n') {
+      num_trailing_newlines++;
+    } else {
+      break;
+    }
+  }
+  return num_trailing_newlines;
+}
+
+bool CheckTextContainsNonNewline(std::string_view text) {
+  return text.find_first_not_of('\n') != std::string::npos;
+}
+
+NewlineBuffer::Chunk NewlineBuffer::Append(std::string_view text) {
+  NewlineBuffer::Chunk released_chunk{};
+
+  if (CheckTextContainsNonNewline(text)) {
+    // If we hit a non-newline character, release the newline buffer
+    released_chunk.text = std::string(num_newlines_, '\n');
+    released_chunk.num_tokens = num_tokens_;
+
+    num_newlines_ = 0;
+    num_tokens_ = 0;
+  } else {
+    num_tokens_++;
+  }
+
+  const auto num_trailing_newlines = GetNumTrailingNewlines(text);
+  const auto num_non_newline_chars = text.size() - num_trailing_newlines;
+  num_newlines_ += num_trailing_newlines;
+
+  released_chunk.text += text.substr(0, num_non_newline_chars);
+  released_chunk.num_tokens += (num_non_newline_chars > 0);
+
+  return released_chunk;
 }
 
 }  // namespace optimization_guide

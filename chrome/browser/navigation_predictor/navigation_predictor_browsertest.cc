@@ -185,8 +185,7 @@ class TestObserver : public NavigationPredictorKeyedService::Observer {
 
  private:
   void OnPredictionUpdated(
-      const std::optional<NavigationPredictorKeyedService::Prediction>
-          prediction) override {
+      const NavigationPredictorKeyedService::Prediction& prediction) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     ++count_predictions_;
     last_prediction_ = prediction;
@@ -793,7 +792,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorPrerenderBrowserTest,
   // Start prerendering. This shouldn't create a NavigationPredictor instance.
   // If it happens, the constructor of NavigationPredictor is called for the
   // non-primary page and the DCHECK there should fail.
-  int host_id = prerender_test_helper().AddPrerender(url);
+  content::FrameTreeNodeId host_id = prerender_test_helper().AddPrerender(url);
   content::test::PrerenderHostObserver host_observer(*GetWebContents(),
                                                      host_id);
   EXPECT_FALSE(host_observer.was_activated());

@@ -7,26 +7,29 @@
  * addresses for use in autofill and payments APIs.
  */
 
-import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import '../settings_shared.css.js';
+import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
+import '/shared/settings/prefs/prefs.js';
 import '../controls/settings_toggle_button.js';
+import '../settings_page/settings_subpage.js';
+import '../settings_shared.css.js';
 import './address_edit_dialog.js';
 import './address_remove_confirmation_dialog.js';
 import './passwords_shared.css.js';
+import './your_saved_info_shared.css.js';
 
 import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -34,16 +37,37 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import type {AutofillManagerProxy, PersonalDataChangedListener} from './autofill_manager_proxy.js';
 import {AutofillManagerImpl} from './autofill_manager_proxy.js';
 import {getTemplate} from './autofill_section.html.js';
+
+
+/**
+ * The enum values for the Autofill.Address.IsEnabled.Change metric.
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ */
+// LINT.IfChange(AutofillAddressOptInChange)
+export enum AutofillAddressOptInChange {
+  OPT_IN = 0,
+  OPT_OUT = 1,
+
+  // Must be last.
+  COUNT = 2,
+}
+// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAddressOptInChange)
 
 declare global {
   interface HTMLElementEventMap {
     'save-address': CustomEvent<chrome.autofillPrivate.AddressEntry>;
   }
 }
+
+// TODO(crbug.com/447113309): This file along with all of its dependencies
+// should be moved to .../settings/your_saved_info_page directory after
+// full release of the `Your Saved Info` page.
 
 export interface SettingsAutofillSectionElement {
   $: {
@@ -59,7 +83,8 @@ export interface SettingsAutofillSectionElement {
   };
 }
 
-const SettingsAutofillSectionElementBase = I18nMixin(PolymerElement);
+const SettingsAutofillSectionElementBase =
+    SettingsViewMixin(I18nMixin(PolymerElement));
 
 export class SettingsAutofillSectionElement extends
     SettingsAutofillSectionElementBase {
@@ -73,7 +98,12 @@ export class SettingsAutofillSectionElement extends
 
   static get properties() {
     return {
-      accountInfo_: Object,
+      prefs: Object,
+
+      accountInfo_: {
+        type: Object,
+        value: null,
+      },
 
       /** An array of saved addresses. */
       addresses: Array,
@@ -84,20 +114,37 @@ export class SettingsAutofillSectionElement extends
       showAddressDialog_: Boolean,
       showAddressRemoveConfirmationDialog_: Boolean,
 
-      isPlusAddressAddressLevelSettingEnabled_: {
+      isGoogleProfileAddress: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('plusAddressEnabled') &&
-            loadTimeData.getBoolean('plusAddressSettingInAddressSection'),
+        computed: 'computeIsGoogleProfileAddress_(activeAddress)',
+      },
+
+      isPlusAddressEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('plusAddressEnabled'),
+      },
+
+      /**
+       * Indicates if this element is used as a Your saved info subpage. Causes
+       * slight adjustments like different title, no page shadow, cards being
+       * visible.
+       */
+      isYourSavedInfoSubpage_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableYourSavedInfoSettingsPage'),
       },
     };
   }
 
-  prefs: {[key: string]: any};
-  addresses: chrome.autofillPrivate.AddressEntry[];
-  activeAddress: chrome.autofillPrivate.AddressEntry|null;
-  private accountInfo_: chrome.autofillPrivate.AccountInfo|null = null;
-  private showAddressDialog_: boolean;
-  private showAddressRemoveConfirmationDialog_: boolean;
+  declare prefs: {[key: string]: any};
+  declare addresses: chrome.autofillPrivate.AddressEntry[];
+  declare activeAddress: chrome.autofillPrivate.AddressEntry|null;
+  declare private accountInfo_: chrome.autofillPrivate.AccountInfo|null;
+  declare private showAddressDialog_: boolean;
+  declare private showAddressRemoveConfirmationDialog_: boolean;
+  declare private isGoogleProfileAddress: boolean;
+  declare private isPlusAddressEnabled_: boolean;
+  declare private isYourSavedInfoSubpage_: boolean;
   private autofillManager_: AutofillManagerProxy =
       AutofillManagerImpl.getInstance();
   private setPersonalDataListener_: PersonalDataChangedListener|null = null;
@@ -125,7 +172,8 @@ export class SettingsAutofillSectionElement extends
           this.accountInfo_ = accountInfo || null;
         };
     const setPersonalDataListener: PersonalDataChangedListener =
-        (addressList, _cardList, _ibans, accountInfo?) => {
+        (addressList, _cardList, _ibans, _payOverTimeIssuerList,
+         accountInfo?) => {
           this.addresses = addressList;
           this.accountInfo_ = accountInfo || null;
         };
@@ -151,6 +199,28 @@ export class SettingsAutofillSectionElement extends
     this.autofillManager_.removePersonalDataManagerListener(
         this.setPersonalDataListener_!);
     this.setPersonalDataListener_ = null;
+  }
+
+  private getMultiCardClass_(): string {
+    return this.isYourSavedInfoSubpage_ ? 'multi-card' : '';
+  }
+
+  private getPageTitleLabel_(): string {
+    return this.i18n(
+        this.isYourSavedInfoSubpage_ ? 'contactInfoTitle' : 'addressesTitle');
+  }
+
+  /**
+   * Returns the text for the remove button in the action menu.
+   */
+  private getMenuRemoveAddressLabel_(
+      address: chrome.autofillPrivate.AddressEntry): string {
+    const isGoogleProfileAddress = this.isAccountHomeAddress_(address) ||
+        this.isAccountWorkAddress_(address) ||
+        this.isAccountNameEmailAddress_(address);
+
+    return this.i18n(
+        isGoogleProfileAddress ? 'removeFromChrome' : 'removeAddress');
   }
 
   /**
@@ -185,7 +255,15 @@ export class SettingsAutofillSectionElement extends
    */
   private onMenuEditAddressClick_(e: Event) {
     e.preventDefault();
-    this.showAddressDialog_ = true;
+    if (this.isAccountHomeAddress_(this.activeAddress!)) {
+      this.onAccountHomeAddressClick_();
+    } else if (this.isAccountWorkAddress_(this.activeAddress!)) {
+      this.onAccountWorkAddressClick_();
+    } else if (this.isAccountNameEmailAddress_(this.activeAddress!)) {
+      this.onAccountNameEmailAddressClick_();
+    } else {
+      this.showAddressDialog_ = true;
+    }
     this.$.addressSharedMenu.close();
   }
 
@@ -195,6 +273,10 @@ export class SettingsAutofillSectionElement extends
         this.shadowRoot!
             .querySelector(
                 'settings-address-remove-confirmation-dialog')!.wasConfirmed();
+    const isHomeOrWorkAddress =
+        this.isAccountHomeAddress_(this.activeAddress!) ||
+        this.isAccountWorkAddress_(this.activeAddress!);
+    const recordType = this.activeAddress?.metadata?.recordType;
     if (wasDeletionConfirmed) {
       // Two corner cases are handled:
       // 1. removing the only address: the focus goes to the Add button
@@ -205,21 +287,27 @@ export class SettingsAutofillSectionElement extends
         focusWithoutInk(this.$.addAddress);
       } else {
         const lastIndex = this.addresses.length - 1;
-        if (this.activeAddress!.guid === this.addresses[lastIndex]!.guid) {
+        if (this.activeAddress!.guid === this.addresses[lastIndex].guid) {
           focusWithoutInk(this.$.addressList.querySelectorAll<HTMLElement>(
               '.address-menu')[lastIndex - 1]);
         }
       }
 
       this.autofillManager_.removeAddress(this.activeAddress!.guid as string);
-      getAnnouncerInstance().announce(
-          loadTimeData.getString('addressRemovedMessage'));
+      if (isHomeOrWorkAddress) {
+        getAnnouncerInstance().announce(
+            loadTimeData.getString('homeAndWorkAddressRemovedMessage'));
+      } else if (this.isAccountNameEmailAddress_(this.activeAddress!)) {
+        getAnnouncerInstance().announce(
+            loadTimeData.getString('nameEmailAddressRemovedMessage'));
+      } else {
+        getAnnouncerInstance().announce(
+            loadTimeData.getString('addressRemovedMessage'));
+      }
     }
-    chrome.metricsPrivate.recordBoolean(
-        'Autofill.ProfileDeleted.Settings',
-        /*confirmed=*/ wasDeletionConfirmed);
-    chrome.metricsPrivate.recordBoolean(
-        'Autofill.ProfileDeleted.Any', /*confirmed=*/ wasDeletionConfirmed);
+    if (recordType) {
+      this.recordDeletionMetrics_(wasDeletionConfirmed, recordType);
+    }
     this.showAddressRemoveConfirmationDialog_ = false;
   }
 
@@ -246,11 +334,59 @@ export class SettingsAutofillSectionElement extends
     this.autofillManager_.saveAddress(event.detail);
   }
 
+  private isAccountHomeAddress_(address: chrome.autofillPrivate.AddressEntry) {
+    return address.metadata?.recordType ===
+        chrome.autofillPrivate.AddressRecordType.ACCOUNT_HOME;
+  }
+
+  private isAccountWorkAddress_(address: chrome.autofillPrivate.AddressEntry) {
+    return address.metadata?.recordType ===
+        chrome.autofillPrivate.AddressRecordType.ACCOUNT_WORK;
+  }
+
+  private isAccountNameEmailAddress_(
+      address: chrome.autofillPrivate.AddressEntry) {
+    return address.metadata?.recordType ===
+        chrome.autofillPrivate.AddressRecordType.ACCOUNT_NAME_EMAIL;
+  }
+
+  private computeIsGoogleProfileAddress_(
+      address: chrome.autofillPrivate.AddressEntry): boolean {
+    if (!address) {
+      return false;
+    }
+
+    return this.isAccountHomeAddress_(address) ||
+        this.isAccountWorkAddress_(address) ||
+        this.isAccountNameEmailAddress_(address);
+  }
+
+  private onAccountHomeAddressClick_() {
+    OpenWindowProxyImpl.getInstance().openUrl(
+        this.i18n('googleAccountHomeAddressUrl'));
+  }
+
+  private onAccountWorkAddressClick_() {
+    OpenWindowProxyImpl.getInstance().openUrl(
+        this.i18n('googleAccountWorkAddressUrl'));
+  }
+
+  private onAccountNameEmailAddressClick_() {
+    OpenWindowProxyImpl.getInstance().openUrl(
+        this.i18n('googleAccountNameEmailAddressEditUrl'));
+  }
+
   private isCloudOffVisible_(
       address: chrome.autofillPrivate.AddressEntry,
       accountInfo: chrome.autofillPrivate.AccountInfo|null): boolean {
-    if (address.metadata?.source ===
-        chrome.autofillPrivate.AddressSource.ACCOUNT) {
+    if (address.metadata?.recordType ===
+            chrome.autofillPrivate.AddressRecordType.ACCOUNT ||
+        address.metadata?.recordType ===
+            chrome.autofillPrivate.AddressRecordType.ACCOUNT_HOME ||
+        address.metadata?.recordType ===
+            chrome.autofillPrivate.AddressRecordType.ACCOUNT_WORK ||
+        address.metadata?.recordType ===
+            chrome.autofillPrivate.AddressRecordType.ACCOUNT_NAME_EMAIL) {
       return false;
     }
 
@@ -262,29 +398,120 @@ export class SettingsAutofillSectionElement extends
       return false;
     }
 
-    if (!loadTimeData.getBoolean(
-            'syncEnableContactInfoDataTypeInTransportMode')) {
-      return false;
-    }
-
     // Local profile of a logged-in user with disabled address sync and
     // enabled feature.
     return true;
   }
 
   /**
-   * @returns the title for the More Actions button corresponding to the address
-   *     which is described by `label` and `sublabel`.
+   * Determines if an icon is to be shown for the given address.
    */
-  private moreActionsTitle_(label: string, sublabel: string) {
-    return this.i18n(
-        'moreActionsForAddress', label + (sublabel ? sublabel : ''));
+  private shouldShowAddressIcon_(
+      address: chrome.autofillPrivate.AddressEntry,
+      accountInfo: chrome.autofillPrivate.AccountInfo|null): boolean {
+    return this.getAddressIcon_(address, accountInfo).length > 0;
+  }
+
+  /**
+   * Determines which icon to show for a given address.
+   *
+   * @return The icon string or an empty string.
+   */
+  private getAddressIcon_(
+      address: chrome.autofillPrivate.AddressEntry,
+      accountInfo: chrome.autofillPrivate.AccountInfo|null): string {
+    if (loadTimeData.getBoolean('enableSupportForHomeAndWork')) {
+      if (this.isAccountHomeAddress_(address)) {
+        return 'settings20:home';
+      }
+      if (this.isAccountWorkAddress_(address)) {
+        return 'settings20:work';
+      }
+    }
+    if (this.isCloudOffVisible_(address, accountInfo)) {
+      return 'cr20:cloud-off';
+    }
+    return '';
+  }
+
+  /**
+   * Determines which a11y string to announce for a given address.
+   *
+   * @return The a11y string or an empty string.
+   */
+  private getA11yLabelForIcon_(
+      address: chrome.autofillPrivate.AddressEntry,
+      accountInfo: chrome.autofillPrivate.AccountInfo|null): string {
+    if (this.isCloudOffVisible_(address, accountInfo)) {
+      return this.i18n('localAddressIconA11yLabel');
+    }
+    if (this.isAccountHomeAddress_(address)) {
+      return this.i18n('homeAddressIconA11yLabel');
+    }
+    if (this.isAccountWorkAddress_(address)) {
+      return this.i18n('workAddressIconA11yLabel');
+    }
+    return '';
+  }
+
+  /**
+   * @returns the title for the More Actions button corresponding to the address
+   */
+  private moreActionsTitle_(address: chrome.autofillPrivate.AddressEntry):
+      string {
+    const label = address.metadata?.summaryLabel;
+    const subLabel = address.metadata?.summarySublabel;
+    const fullLabel = label + (subLabel ?? '');
+
+    let messageKey: string;
+    if (this.isAccountHomeAddress_(address)) {
+      messageKey = 'moreOptionsForHomeAddress';
+    } else if (this.isAccountWorkAddress_(address)) {
+      messageKey = 'moreOptionsForWorkAddress';
+    } else {
+      messageKey = 'moreActionsForAddress';
+    }
+
+    return this.i18n(messageKey, fullLabel);
   }
 
   private isAutofillSyncToggleVisible_(accountInfo:
                                            chrome.autofillPrivate.AccountInfo|
                                        null): boolean {
     return !!(accountInfo?.isAutofillSyncToggleAvailable);
+  }
+
+  private getRecordTypeSuffix_(
+      recordType: chrome.autofillPrivate.AddressRecordType): string {
+    switch (recordType) {
+      case chrome.autofillPrivate.AddressRecordType.LOCAL_OR_SYNCABLE:
+        return 'LocalOrSyncable';
+      case chrome.autofillPrivate.AddressRecordType.ACCOUNT:
+        return 'Account';
+      case chrome.autofillPrivate.AddressRecordType.ACCOUNT_HOME:
+        return 'AccountHome';
+      case chrome.autofillPrivate.AddressRecordType.ACCOUNT_WORK:
+        return 'AccountWork';
+      case chrome.autofillPrivate.AddressRecordType.ACCOUNT_NAME_EMAIL:
+        return 'AccountNameEmail';
+      default:
+        assertNotReached();
+    }
+  }
+
+  private recordDeletionMetrics_(
+      wasDeletionConfirmed: boolean,
+      recordType: chrome.autofillPrivate.AddressRecordType) {
+    const suffix = this.getRecordTypeSuffix_(recordType);
+
+    chrome.metricsPrivate.recordBoolean(
+        'Autofill.ProfileDeleted.Settings.Total', wasDeletionConfirmed);
+    chrome.metricsPrivate.recordBoolean(
+        'Autofill.ProfileDeleted.Any.Total', wasDeletionConfirmed);
+    chrome.metricsPrivate.recordBoolean(
+        'Autofill.ProfileDeleted.Settings.' + suffix, wasDeletionConfirmed);
+    chrome.metricsPrivate.recordBoolean(
+        'Autofill.ProfileDeleted.Any.' + suffix, wasDeletionConfirmed);
   }
 
   /**
@@ -299,9 +526,25 @@ export class SettingsAutofillSectionElement extends
         this.$.autofillSyncToggle.checked);
   }
 
+  private onAutofillProfileToggleChanged_() {
+    const value = this.$.autofillProfileToggle.checked ?
+        AutofillAddressOptInChange.OPT_IN :
+        AutofillAddressOptInChange.OPT_OUT;
+    chrome.metricsPrivate.recordEnumerationValue(
+        'Autofill.Address.IsEnabled.Change', value,
+        AutofillAddressOptInChange.COUNT);
+  }
+
   private onPlusAddressClick_() {
+    chrome.metricsPrivate.recordUserAction(
+        'Settings.ManageOptionOnSettingsSelected');
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('plusAddressManagementUrl'));
+  }
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

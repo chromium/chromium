@@ -59,10 +59,13 @@ class FakePersonalizationAppAmbientProvider
   void HandleTimeOfDayBannerDismissed() override {}
   void IsGeolocationEnabledForSystemServices(
       IsGeolocationEnabledForSystemServicesCallback callback) override;
+  void IsGeolocationUserModifiable(
+      IsGeolocationUserModifiableCallback callback) override;
   void EnableGeolocationForSystemServices() override;
 
  private:
   bool geolocation_enabled_for_system = true;
+  bool is_geolocation_user_modifiable = true;
   mojo::Receiver<ash::personalization_app::mojom::AmbientProvider>
       ambient_receiver_{this};
 };

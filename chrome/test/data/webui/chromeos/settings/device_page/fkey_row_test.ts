@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://os-settings/lazy_load.js';
 import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
-import {fakeKeyboards, Fkey, FkeyRowElement, Keyboard, Router, routes, SettingsDropdownMenuElement, TopRowActionKey} from 'chrome://os-settings/os_settings.js';
+import {FkeyRowElement} from 'chrome://os-settings/lazy_load.js';
+import type {Keyboard, SettingsDropdownMenuElement} from 'chrome://os-settings/os_settings.js';
+import {fakeKeyboards, Fkey, Router, routes, TopRowActionKey} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';

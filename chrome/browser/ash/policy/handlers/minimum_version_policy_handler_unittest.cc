@@ -18,7 +18,6 @@
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
@@ -55,7 +54,7 @@ class MinimumVersionPolicyHandlerTest
     : public testing::Test,
       public MinimumVersionPolicyHandler::Delegate {
  public:
-  MinimumVersionPolicyHandlerTest();
+  MinimumVersionPolicyHandlerTest() = default;
 
   void SetUp() override;
   void TearDown() override;
@@ -92,7 +91,6 @@ class MinimumVersionPolicyHandlerTest
 
  private:
   bool user_managed_ = true;
-  ScopedTestingLocalState local_state_;
   base::test::ScopedFeatureList feature_list_;
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   ash::ScopedStubInstallAttributes scoped_stub_install_attributes_;
@@ -102,11 +100,6 @@ class MinimumVersionPolicyHandlerTest
   std::unique_ptr<base::Version> current_version_;
   std::unique_ptr<MinimumVersionPolicyHandler> minimum_version_policy_handler_;
 };
-
-MinimumVersionPolicyHandlerTest::MinimumVersionPolicyHandlerTest()
-    : local_state_(TestingBrowserProcess::GetGlobal()) {
-  feature_list_.InitAndEnableFeature(ash::features::kMinimumChromeVersion);
-}
 
 void MinimumVersionPolicyHandlerTest::SetUp() {
   fake_update_engine_client_ = ash::UpdateEngineClient::InitializeFakeForTest();
@@ -233,12 +226,10 @@ TEST_F(MinimumVersionPolicyHandlerTest, CriticalUpdates) {
 
   base::RunLoop run_loop;
   // Expect calls to make sure that user is logged out.
-  EXPECT_CALL(*this, RestartToLoginScreen())
-      .Times(1)
-      .WillOnce(testing::Invoke([&run_loop]() {
-        run_loop.Quit();
-        return false;
-      }));
+  EXPECT_CALL(*this, RestartToLoginScreen()).Times(1).WillOnce([&run_loop]() {
+    run_loop.Quit();
+    return false;
+  });
   EXPECT_CALL(*this, ShowUpdateRequiredScreen()).Times(0);
   EXPECT_CALL(*this, HideUpdateRequiredScreenIfShown()).Times(0);
   EXPECT_CALL(*this, IsLoginSessionState())
@@ -270,12 +261,10 @@ TEST_F(MinimumVersionPolicyHandlerTest, CriticalUpdatesUnmanagedUser) {
   // Unmanaged user is not logged out of the session. The run loop is quit on
   // reaching IsLoginSessionState() because that implies we have fetched the
   // EOL status and reached the end of the policy handler code flow.
-  EXPECT_CALL(*this, IsLoginSessionState())
-      .Times(1)
-      .WillOnce(testing::Invoke([&run_loop]() {
-        run_loop.Quit();
-        return false;
-      }));
+  EXPECT_CALL(*this, IsLoginSessionState()).Times(1).WillOnce([&run_loop]() {
+    run_loop.Quit();
+    return false;
+  });
 
   // Set user as unmanaged.
   SetUserManaged(false);

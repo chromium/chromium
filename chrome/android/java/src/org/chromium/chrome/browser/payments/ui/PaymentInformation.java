@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.payments.ui;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** The data to show in the PaymentRequest UI. */
+@NullMarked
 public class PaymentInformation {
     private final ShoppingCart mShoppingCart;
     private final SectionInformation mShippingAddresses;

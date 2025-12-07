@@ -9,12 +9,11 @@
 #import <algorithm>
 #import <memory>
 
-#import "base/apple/foundation_util.h"
 #import "base/check_op.h"
 #import "base/containers/contains.h"
+#import "base/debug/dump_without_crashing.h"
 #import "base/functional/callback.h"
 #import "base/metrics/histogram_functions.h"
-#import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/sessions/core/session_id.h"
 #import "components/sessions/core/session_id_generator.h"
@@ -22,51 +21,69 @@
 #import "ios/chrome/browser/sessions/model/features.h"
 #import "ios/chrome/browser/sessions/model/proto/storage.pb.h"
 #import "ios/chrome/browser/sessions/model/proto/tab_group.pb.h"
-#import "ios/chrome/browser/sessions/model/session_constants.h"
-#import "ios/chrome/browser/sessions/model/session_tab_group.h"
-#import "ios/chrome/browser/sessions/model/session_window_ios.h"
 #import "ios/chrome/browser/sessions/model/tab_group_util.h"
-#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller.h"
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller_source_from_web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-#import "ios/web/public/session/crw_session_storage.h"
-#import "ios/web/public/session/crw_session_user_data.h"
-#import "ios/web/public/session/serializable_user_data_manager.h"
 #import "ios/web/public/web_state.h"
 
 using tab_group_util::DeserializedGroup;
 
 namespace {
 
-// Whether a particular web state should be kept or filtered out. This checks
-// for empty tabs (i.e. without navigation), and duplicates.
-bool ShouldKeepWebState(const web::WebState* web_state,
-                        const std::set<web::WebStateID>& seen_identifiers,
-                        int& duplicate_count) {
+// Represents what decision should be made on keeping a web state.
+enum class KeepWebStateDecision {
+  kKeep,
+  kKeepNTP,
+  kDiscard,
+  kDiscardDuplicate,
+  kDiscardNTP,
+};
+
+// Holds the relevent information for a tab group for NTP cleanup.
+struct GroupNTPInfo {
+  int last_empty_ntp_index = -1;
+  bool has_non_empty_ntp = false;
+};
+
+// Returns a decision on whether a web state should be kept or filtered out.
+// This checks for empty tabs (i.e. without navigation), duplicates, and NTPs.
+KeepWebStateDecision ShouldKeepWebState(
+    const web::WebState* web_state,
+    const std::set<web::WebStateID>& seen_identifiers) {
   if (seen_identifiers.contains(web_state->GetUniqueIdentifier())) {
-    duplicate_count++;
-    return false;
+    return KeepWebStateDecision::kDiscardDuplicate;
   }
 
-  if (web_state->GetNavigationItemCount()) {
+  const int navigation_item_count = web_state->GetNavigationItemCount();
+
+  if (IsAvoidNTPCleanupOnBackgroundEnabled()) {
+    if (IsUrlNtp(web_state->GetVisibleURL())) {
+      return navigation_item_count <= 1 ? KeepWebStateDecision::kDiscardNTP
+                                        : KeepWebStateDecision::kKeepNTP;
+    }
+  }
+
+  if (navigation_item_count) {
     // WebState has navigation history, keep.
-    return true;
+    return KeepWebStateDecision::kKeep;
   }
 
   if (web_state->IsRealized()) {
     const web::NavigationManager* manager = web_state->GetNavigationManager();
-    if (manager->IsRestoreSessionInProgress() || manager->GetPendingItem()) {
-      // WebState has restoration or navigation pending, keep.
-      return true;
+    if (manager->GetPendingItem()) {
+      // WebState has navigation pending, keep.
+      return KeepWebStateDecision::kKeep;
     }
   }
 
-  return false;
+  return KeepWebStateDecision::kDiscard;
 }
 
 // Creates a RemovingIndexes that records the indexes of the WebStates that
@@ -82,18 +99,63 @@ bool ShouldKeepWebState(const web::WebState* web_state,
 RemovingIndexes GetIndexOfWebStatesToDrop(const WebStateList& web_state_list) {
   std::vector<int> web_state_to_skip_indexes;
   std::set<web::WebStateID> seen_identifiers;
-  // Count the number of dropped tabs because they are duplicates, for
-  // reporting.
+  std::map<const TabGroup*, GroupNTPInfo> groups_to_ntp_info;
+
   int duplicate_count = 0;
+
   for (int index = 0; index < web_state_list.count(); ++index) {
     const web::WebState* web_state = web_state_list.GetWebStateAt(index);
-    if (ShouldKeepWebState(web_state, seen_identifiers, duplicate_count)) {
-      seen_identifiers.insert(web_state->GetUniqueIdentifier());
+    switch (ShouldKeepWebState(web_state, seen_identifiers)) {
+        // Increment the number of duplicate founds.
+      case KeepWebStateDecision::kDiscardDuplicate:
+        duplicate_count++;
+        [[fallthrough]];
+
+        // Add the tab to the list of tabs to close.
+      case KeepWebStateDecision::kDiscard:
+        web_state_to_skip_indexes.push_back(index);
+        break;
+
+        // Record the identifier of the tab, and keep it.
+      case KeepWebStateDecision::kKeep:
+        seen_identifiers.insert(web_state->GetUniqueIdentifier());
+        break;
+
+      // Record the identifier of the tab and update `groups_to_ntp_info`.
+      case KeepWebStateDecision::kKeepNTP: {
+        const TabGroup* tab_group = web_state_list.GetGroupOfWebStateAt(index);
+        groups_to_ntp_info[tab_group].has_non_empty_ntp = true;
+        seen_identifiers.insert(web_state->GetUniqueIdentifier());
+        break;
+      }
+        // Add the tab to the map of groups to NTPs and update
+        // `groups_to_ntp_info`.
+      case KeepWebStateDecision::kDiscardNTP: {
+        const TabGroup* tab_group = web_state_list.GetGroupOfWebStateAt(index);
+        groups_to_ntp_info[tab_group].last_empty_ntp_index = index;
+        web_state_to_skip_indexes.push_back(index);
+        break;
+      }
+    }
+  }
+
+  // For each tab group, if there are only empty NTPs, keep the last one by
+  // removing it from `web_state_to_skip_indexes`.
+  for (const auto& pair : groups_to_ntp_info) {
+    const GroupNTPInfo& ntp_info = pair.second;
+    if (ntp_info.has_non_empty_ntp) {
       continue;
     }
-
-    web_state_to_skip_indexes.push_back(index);
+    if (ntp_info.last_empty_ntp_index != -1) {
+      auto index = std::find(web_state_to_skip_indexes.begin(),
+                             web_state_to_skip_indexes.end(),
+                             ntp_info.last_empty_ntp_index);
+      if (index != web_state_to_skip_indexes.end()) {
+        web_state_to_skip_indexes.erase(index);
+      }
+    }
   }
+
   base::UmaHistogramCounts100("Tabs.DroppedDuplicatesCountOnSessionSave",
                               duplicate_count);
 
@@ -145,102 +207,6 @@ class Deserializer {
   // Returns the deserisalized tab group at `index`.
   virtual DeserializedGroup GetDeserializedGroupAt(int index) const = 0;
 };
-
-// An implementation of Deserializer used to restore from legacy storage.
-class DeserializeFromSessionWindow : public Deserializer {
- public:
-  DeserializeFromSessionWindow(SessionWindowIOS* session_window,
-                               const WebStateFactory& factory);
-
-  // Deserializer implementation.
-  int GetActiveIndex() const override;
-  int GetRestoredTabsCount() const override;
-  int GetRestoredPinnedTabsCount() const override;
-  OpenerReference GetOpenerForTabAt(int index) const override;
-  std::unique_ptr<web::WebState> RestoreTabAt(int index) const override;
-  int GetTabGroupsCount() const override;
-  DeserializedGroup GetDeserializedGroupAt(int index) const override;
-
- private:
-  SessionWindowIOS* const session_window_;
-  WebStateFactory const factory_;
-};
-
-DeserializeFromSessionWindow::DeserializeFromSessionWindow(
-    SessionWindowIOS* session_window,
-    const WebStateFactory& factory)
-    : session_window_(session_window), factory_(factory) {
-  DCHECK(factory_);
-}
-
-int DeserializeFromSessionWindow::GetActiveIndex() const {
-  if (!session_window_ || session_window_.selectedIndex == NSNotFound) {
-    return -1;
-  }
-  return static_cast<int>(session_window_.selectedIndex);
-}
-
-int DeserializeFromSessionWindow::GetRestoredTabsCount() const {
-  return session_window_.sessions.count;
-}
-
-int DeserializeFromSessionWindow::GetRestoredPinnedTabsCount() const {
-  int pinned_tabs_count = 0;
-  for (CRWSessionStorage* session in session_window_.sessions) {
-    CRWSessionUserData* user_data = session.userData;
-    NSNumber* pinned_state = base::apple::ObjCCast<NSNumber>(
-        [user_data objectForKey:kLegacyWebStateListPinnedStateKey]);
-    if (!pinned_state || ![pinned_state boolValue]) {
-      // The pinned tabs are always at the beginning of the list,
-      // so stop iterating as soon as a non-pinned tab is found.
-      break;
-    }
-
-    ++pinned_tabs_count;
-  }
-  return pinned_tabs_count;
-}
-
-OpenerReference DeserializeFromSessionWindow::GetOpenerForTabAt(
-    int index) const {
-  DCHECK_GE(index, 0);
-  DCHECK_LT(index, static_cast<int>(session_window_.sessions.count));
-  CRWSessionStorage* session = session_window_.sessions[index];
-  CRWSessionUserData* user_data = session.userData;
-
-  NSNumber* opener_index = base::apple::ObjCCast<NSNumber>(
-      [user_data objectForKey:kLegacyWebStateListOpenerIndexKey]);
-
-  NSNumber* opener_navigation_index = base::apple::ObjCCast<NSNumber>(
-      [user_data objectForKey:kLegacyWebStateListOpenerNavigationIndexKey]);
-
-  if (!opener_index || !opener_navigation_index) {
-    return OpenerReference::Invalid();
-  }
-
-  return OpenerReference{
-      .index = [opener_index intValue],
-      .navigation_index = [opener_navigation_index intValue],
-  };
-}
-
-std::unique_ptr<web::WebState> DeserializeFromSessionWindow::RestoreTabAt(
-    int index) const {
-  DCHECK_GE(index, 0);
-  DCHECK_LT(index, static_cast<int>(session_window_.sessions.count));
-  return factory_.Run(session_window_.sessions[index]);
-}
-
-int DeserializeFromSessionWindow::GetTabGroupsCount() const {
-  return session_window_.tabGroups.count;
-}
-
-DeserializedGroup DeserializeFromSessionWindow::GetDeserializedGroupAt(
-    int index) const {
-  DCHECK_GE(index, 0);
-  DCHECK_LT(index, static_cast<int>(session_window_.tabGroups.count));
-  return tab_group_util::FromSerializedValue(session_window_.tabGroups[index]);
-}
 
 // An implementation of Deserializer used to restore from optimized storage.
 class DeserializeFromProto : public Deserializer {
@@ -320,7 +286,6 @@ DeserializedGroup DeserializeFromProto::GetDeserializedGroupAt(
 std::vector<web::WebState*> DeserializeWebStateListInternal(
     WebStateList* web_state_list,
     bool enable_pinned_web_states,
-    bool enable_tab_groups,
     const Deserializer& deserializer) {
   DCHECK(web_state_list);
   DCHECK(web_state_list->empty());
@@ -362,7 +327,7 @@ std::vector<web::WebState*> DeserializeWebStateListInternal(
     if (base::FeatureList::IsEnabled(
             session::features::kSessionRestorationSessionIDCheck)) {
       web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
-      CHECK(web_state_id.valid(), base::NotFatalUntil::M125);
+      CHECK(web_state_id.valid());
       if (!max_identifier.is_valid() ||
           max_identifier.id() < web_state_id.identifier()) {
         max_identifier = web_state_id.ToSessionID();
@@ -401,129 +366,41 @@ std::vector<web::WebState*> DeserializeWebStateListInternal(
   }
 
   // Deserialize and create tab groups.
-  if (enable_tab_groups) {
-    const int tab_group_count = deserializer.GetTabGroupsCount();
-    std::set<tab_groups::TabGroupId> tab_group_ids;
-    for (int i = 0; i < tab_group_count; ++i) {
-      DeserializedGroup group = deserializer.GetDeserializedGroupAt(i);
-      if (group.range_start < restored_pinned_tabs_count ||
-          group.range_start > restored_tabs_count) {
-        continue;
-      }
-      if (group.range_count <= 0 ||
-          group.range_start + group.range_count > restored_tabs_count) {
-        continue;
-      }
-
-      tab_groups::TabGroupId tab_group_id = group.tab_group_id;
-      if (!tab_group_id.is_empty()) {
-        // Check that there is no duplicate  of `tab_group_id`.
-        // It is improbable, but not impossible, for this to occur.
-        if (tab_group_ids.contains(tab_group_id)) {
-          base::debug::DumpWithoutCrashing();
-          continue;
-        }
-        tab_group_ids.insert(tab_group_id);
-      } else {
-        tab_group_id = tab_groups::TabGroupId::GenerateNew();
-      }
-
-      web_state_list->CreateGroup(
-          TabGroupRange(group.range_start, group.range_count).AsSet(),
-          group.visual_data, tab_group_id);
+  const int tab_group_count = deserializer.GetTabGroupsCount();
+  std::set<tab_groups::TabGroupId> tab_group_ids;
+  for (int i = 0; i < tab_group_count; ++i) {
+    DeserializedGroup group = deserializer.GetDeserializedGroupAt(i);
+    if (group.range_start < restored_pinned_tabs_count ||
+        group.range_start > restored_tabs_count) {
+      continue;
     }
+    if (group.range_count <= 0 ||
+        group.range_start + group.range_count > restored_tabs_count) {
+      continue;
+    }
+
+    tab_groups::TabGroupId tab_group_id = group.tab_group_id;
+    if (!tab_group_id.is_empty()) {
+      // Check that there is no duplicate  of `tab_group_id`.
+      // It is improbable, but not impossible, for this to occur.
+      if (tab_group_ids.contains(tab_group_id)) {
+        base::debug::DumpWithoutCrashing();
+        continue;
+      }
+      tab_group_ids.insert(tab_group_id);
+    } else {
+      tab_group_id = tab_groups::TabGroupId::GenerateNew();
+    }
+
+    web_state_list->CreateGroup(
+        TabGroupRange(group.range_start, group.range_count).AsSet(),
+        group.visual_data, tab_group_id);
   }
 
   return restored_web_states;
 }
 
 }  // namespace
-
-SessionWindowIOS* SerializeWebStateList(const WebStateList* web_state_list) {
-  const RemovingIndexes removing_indexes =
-      GetIndexOfWebStatesToDrop(*web_state_list);
-
-  std::map<const web::WebState*, int> index_mapping;
-  for (int index = 0; index < web_state_list->count(); ++index) {
-    const web::WebState* web_state = web_state_list->GetWebStateAt(index);
-    index_mapping.insert(std::make_pair(web_state, index));
-  }
-
-  NSMutableArray<CRWSessionStorage*>* serialized_session =
-      [[NSMutableArray alloc] init];
-
-  for (int index = 0; index < web_state_list->count(); ++index) {
-    if (removing_indexes.Contains(index)) {
-      continue;
-    }
-
-    const web::WebState* web_state = web_state_list->GetWebStateAt(index);
-    CRWSessionStorage* session_storage = web_state->BuildSessionStorage();
-    [serialized_session addObject:session_storage];
-
-    CRWSessionUserData* user_data = session_storage.userData;
-    if (!user_data) {
-      user_data = [[CRWSessionUserData alloc] init];
-      session_storage.userData = user_data;
-    }
-
-    [user_data removeObjectForKey:kLegacyWebStateListPinnedStateKey];
-    [user_data removeObjectForKey:kLegacyWebStateListOpenerIndexKey];
-    [user_data removeObjectForKey:kLegacyWebStateListOpenerNavigationIndexKey];
-
-    const bool is_pinned = web_state_list->IsWebStatePinnedAt(index);
-    if (is_pinned) {
-      [user_data setObject:@YES forKey:kLegacyWebStateListPinnedStateKey];
-    }
-
-    WebStateOpener opener = web_state_list->GetOpenerOfWebStateAt(index);
-    if (opener.opener) {
-      DCHECK(base::Contains(index_mapping, opener.opener));
-      const int opener_index =
-          removing_indexes.IndexAfterRemoval(index_mapping[opener.opener]);
-      if (opener_index != WebStateList::kInvalidIndex) {
-        [user_data setObject:@(opener_index)
-                      forKey:kLegacyWebStateListOpenerIndexKey];
-        [user_data setObject:@(opener.navigation_index)
-                      forKey:kLegacyWebStateListOpenerNavigationIndexKey];
-      }
-    }
-  }
-
-  OrderControllerSourceFromWebStateList source(*web_state_list);
-  OrderController order_controller(source);
-  const int active_index = removing_indexes.IndexAfterRemoval(
-      order_controller.DetermineNewActiveIndex(web_state_list->active_index(),
-                                               removing_indexes));
-
-  NSUInteger selectedIndex = active_index != WebStateList::kInvalidIndex
-                                 ? static_cast<NSUInteger>(active_index)
-                                 : static_cast<NSUInteger>(NSNotFound);
-
-  NSMutableArray<SessionTabGroup*>* serialized_groups =
-      [[NSMutableArray alloc] init];
-  for (const TabGroup* group : web_state_list->GetGroups()) {
-    const TabGroupRange initial_range = group->range();
-    const TabGroupRange final_range =
-        removing_indexes.RangeAfterRemoval(initial_range);
-    if (final_range.valid()) {
-      SessionTabGroup* serialized_group = [[SessionTabGroup alloc]
-          initWithRangeStart:final_range.range_begin()
-                  rangeCount:final_range.count()
-                       title:base::SysUTF16ToNSString(
-                                 group->visual_data().title())
-                     colorId:static_cast<NSInteger>(
-                                 group->visual_data().color())
-              collapsedState:group->visual_data().is_collapsed()
-                  tabGroupId:group->tab_group_id()];
-      [serialized_groups addObject:serialized_group];
-    }
-  }
-
-  return [[SessionWindowIOS alloc] initWithSessions:[serialized_session copy]
-                                          tabGroups:[serialized_groups copy]
-                                      selectedIndex:selectedIndex];
-}
 
 void SerializeWebStateList(const WebStateList& web_state_list,
                            const WebStateMetadataMap& metadata_map,
@@ -608,22 +485,10 @@ void SerializeWebStateList(const WebStateList& web_state_list,
 
 std::vector<web::WebState*> DeserializeWebStateList(
     WebStateList* web_state_list,
-    SessionWindowIOS* session_window,
-    bool enable_pinned_web_states,
-    bool enable_tab_groups,
-    const WebStateFactory& factory) {
-  return DeserializeWebStateListInternal(
-      web_state_list, enable_pinned_web_states, enable_tab_groups,
-      DeserializeFromSessionWindow(session_window, factory));
-}
-
-std::vector<web::WebState*> DeserializeWebStateList(
-    WebStateList* web_state_list,
     ios::proto::WebStateListStorage storage,
     bool enable_pinned_web_states,
-    bool enable_tab_groups,
     const WebStateFactoryFromProto& factory) {
   return DeserializeWebStateListInternal(
-      web_state_list, enable_pinned_web_states, enable_tab_groups,
+      web_state_list, enable_pinned_web_states,
       DeserializeFromProto(std::move(storage), factory));
 }

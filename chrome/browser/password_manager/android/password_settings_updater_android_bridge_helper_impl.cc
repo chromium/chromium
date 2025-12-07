@@ -70,9 +70,7 @@ PasswordSettingsUpdaterAndroidBridgeHelperImpl::
       FROM_HERE, std::move(dispatcher_bridge_));
 
   if (!will_delete) {
-    NOTREACHED_IN_MIGRATION()
-        << "Failed to post bridge deletion on background thread.";
-    base::debug::DumpWithoutCrashing(FROM_HERE);
+    NOTREACHED() << "Failed to post bridge deletion on background thread.";
   }
 }
 

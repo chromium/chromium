@@ -16,6 +16,7 @@ namespace blink {
 
 class CanvasContextCreationAttributesModule;
 class OffscreenCanvas;
+class V8OffscreenRenderingContextType;
 
 class MODULES_EXPORT OffscreenCanvasModule {
   STATIC_ONLY(OffscreenCanvasModule);
@@ -24,7 +25,7 @@ class MODULES_EXPORT OffscreenCanvasModule {
   static V8OffscreenRenderingContext* getContext(
       ScriptState* script_state,
       OffscreenCanvas& offscreen_canvas,
-      const String& context_id,
+      const V8OffscreenRenderingContextType& context_id,
       const CanvasContextCreationAttributesModule* attributes,
       ExceptionState& exception_state);
 };

@@ -11,7 +11,6 @@
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_number_conversions_internal.h"
 #include "components/reporting/proto/synced/status.pb.h"
 
 namespace reporting {
@@ -75,10 +74,6 @@ Status::Status(error::Code error_code, std::string error_message)
     : error_code_(error_code),
       error_message_{error_code != error::OK ? std::move(error_message)
                                              : std::string()} {}
-
-bool Status::operator==(const Status& x) const {
-  return error_code_ == x.error_code_ && error_message_ == x.error_message_;
-}
 
 std::string Status::ToString() const {
   if (error_code_ == error::OK) {

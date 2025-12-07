@@ -48,7 +48,7 @@ class BLINK_EXPORT WebNavigationBodyLoader {
         const WebString& data,
         const WebEncodingData& encoding_data,
         base::SpanOrSize<const char> encoded_data) {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
 
     // Called once at the end. If something went wrong, |error| will be set.
@@ -65,7 +65,7 @@ class BLINK_EXPORT WebNavigationBodyLoader {
     // callback will be called on a background thread with the same decoded data
     // which will be given to DecodedBodyDataReceived().
     using ProcessBackgroundDataCallback =
-        WTF::CrossThreadRepeatingFunction<void(const WebString&)>;
+        CrossThreadRepeatingFunction<void(const WebString&)>;
     virtual ProcessBackgroundDataCallback TakeProcessBackgroundDataCallback() {
       return ProcessBackgroundDataCallback();
     }

@@ -30,10 +30,12 @@ class SharedURLLoaderFactory;
 
 namespace update_client {
 
+class CrxCache;
 class CrxDownloaderFactory;
 class NetworkFetcherFactory;
 class PatchChromiumFactory;
 class ProtocolHandlerFactory;
+class TestActivityDataService;
 class UnzipChromiumFactory;
 
 #define POST_INTERCEPT_SCHEME "https"
@@ -77,6 +79,8 @@ class TestConfigurator : public Configurator {
   TestConfigurator(const TestConfigurator&) = delete;
   TestConfigurator& operator=(const TestConfigurator&) = delete;
 
+  TestActivityDataService* GetActivityDataService() const;
+
   // Overrides for Configurator.
   base::TimeDelta InitialDelay() const override;
   base::TimeDelta NextCheckDelay() const override;
@@ -95,7 +99,6 @@ class TestConfigurator : public Configurator {
   scoped_refptr<CrxDownloaderFactory> GetCrxDownloaderFactory() override;
   scoped_refptr<UnzipperFactory> GetUnzipperFactory() override;
   scoped_refptr<PatcherFactory> GetPatcherFactory() override;
-  bool EnabledDeltas() const override;
   bool EnabledBackgroundDownloader() const override;
   bool EnabledCupSigning() const override;
   PrefService* GetPrefService() const override;
@@ -105,7 +108,7 @@ class TestConfigurator : public Configurator {
       const override;
   std::optional<bool> IsMachineExternallyManaged() const override;
   UpdaterStateProvider GetUpdaterStateProvider() const override;
-  std::optional<base::FilePath> GetCrxCachePath() const override;
+  scoped_refptr<CrxCache> GetCrxCache() const override;
   bool IsConnectionMetered() const override;
 
   void SetOnDemandTime(base::TimeDelta seconds);
@@ -138,6 +141,7 @@ class TestConfigurator : public Configurator {
   bool enabled_cup_signing_;
   raw_ptr<PrefService> pref_service_;
   std::unique_ptr<PersistedData> persisted_data_;
+  raw_ptr<TestActivityDataService> activity_data_service_;
   std::vector<GURL> update_check_urls_;
   GURL ping_url_;
   scoped_refptr<update_client::UnzipChromiumFactory> unzip_factory_;
@@ -150,6 +154,7 @@ class TestConfigurator : public Configurator {
   std::optional<bool> is_machine_externally_managed_;
   bool is_network_connection_metered_;
   base::ScopedTempDir crx_cache_root_temp_dir_;
+  scoped_refptr<CrxCache> crx_cache_;
 };
 
 }  // namespace update_client

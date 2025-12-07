@@ -30,9 +30,7 @@ class AppServiceLogSourceTest : public ::testing::Test {
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     EXPECT_TRUE(profile_manager_->SetUp());
-    auto* profile =
-        profile_manager_->CreateTestingProfile(kEmail,
-                                               /*is_main_profile=*/true);
+    auto* profile = profile_manager_->CreateTestingProfile(kEmail);
     profile_ = profile;
     fake_user_manager->AddUserWithAffiliationAndTypeAndProfile(
         account_id, false, user_manager::UserType::kRegular, profile);

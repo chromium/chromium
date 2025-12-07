@@ -1,0 +1,2 @@
+# Prefer rsult over directory owners.
+per-file *browser_context_keyed_service_factories*=rsult@google.com

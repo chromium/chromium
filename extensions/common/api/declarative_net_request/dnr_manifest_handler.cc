@@ -157,12 +157,11 @@ bool DNRManifestHandler::Parse(Extension* extension, std::u16string* error) {
   return true;
 }
 
-bool DNRManifestHandler::Validate(const Extension* extension,
+bool DNRManifestHandler::Validate(const Extension& extension,
                                   std::string* error,
                                   std::vector<InstallWarning>* warnings) const {
-  DNRManifestData* data =
-      static_cast<DNRManifestData*>(extension->GetManifestData(
-          dnr_api::ManifestKeys::kDeclarativeNetRequest));
+  DNRManifestData* data = static_cast<DNRManifestData*>(
+      extension.GetManifestData(dnr_api::ManifestKeys::kDeclarativeNetRequest));
   DCHECK(data);
 
   for (const DNRManifestData::RulesetInfo& info : data->rulesets) {
@@ -170,7 +169,7 @@ bool DNRManifestHandler::Validate(const Extension* extension,
     // returns a failure if the relative path contains Windows path separators
     // and we have already normalized the path separators.
     if (ExtensionResource::GetFilePath(
-            extension->path(), info.relative_path,
+            extension.path(), info.relative_path,
             ExtensionResource::SYMLINKS_MUST_RESOLVE_WITHIN_ROOT)
             .empty()) {
       *error = ErrorUtils::FormatErrorMessage(

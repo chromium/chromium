@@ -19,7 +19,7 @@ find build -name '*.h' -printf '%P\n' |
   rsync -R --files-from=- build/ ../include/
 # config.h has "#define _GNU_SOURCE" which would conflict with
 # our "#define _GNU_SOURCE 1".
-sed -i 's/_GNU_SOURCE$/_GNU_SOURCE 1/' ../include/config.h
+sed -i 's/_GNU_SOURCE$/_GNU_SOURCE 1/' ../include/meson-config.h
 # Use libxml2 instead of libexpat.  Currently, there's no way
 # to configure this with meson options.
 echo '#define ENABLE_LIBXML2 1' >>../include/config.h

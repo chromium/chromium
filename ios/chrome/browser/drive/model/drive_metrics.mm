@@ -13,6 +13,10 @@ const char kDriveCreateFolderResultSuccessful[] =
     "IOS.SaveToDrive.CreateFolder.Successful";
 const char kDriveCreateFolderResultErrorCode[] =
     "IOS.SaveToDrive.CreateFolder.ErrorCode";
+const char kDriveFetchClientFolderResultSuccessful[] =
+    "IOS.SaveToDrive.FetchClientFolder.Successful";
+const char kDriveFetchClientFolderResultErrorCode[] =
+    "IOS.SaveToDrive.FetchClientFolder.ErrorCode";
 const char kDriveFileUploadResultSuccessful[] =
     "IOS.SaveToDrive.UploadFile.Successful";
 const char kDriveFileUploadResultErrorCode[] =

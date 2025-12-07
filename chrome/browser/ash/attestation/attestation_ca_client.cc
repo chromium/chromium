@@ -128,7 +128,7 @@ AttestationCAClient::AttestationCAClient() {
   pca_type_ = GetAttestationServerType();
 }
 
-AttestationCAClient::~AttestationCAClient() {}
+AttestationCAClient::~AttestationCAClient() = default;
 
 void AttestationCAClient::SendEnrollRequest(const std::string& request,
                                             DataCallback on_response) {
@@ -147,7 +147,7 @@ void AttestationCAClient::SendCertificateRequest(const std::string& request,
 void AttestationCAClient::OnURLLoadComplete(
     std::list<std::unique_ptr<network::SimpleURLLoader>>::iterator it,
     DataCallback callback,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   // Move the loader out of the active loaders list.
   std::unique_ptr<network::SimpleURLLoader> url_loader = std::move(*it);
   url_loaders_.erase(it);

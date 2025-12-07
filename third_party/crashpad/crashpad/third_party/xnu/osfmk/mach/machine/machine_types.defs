@@ -43,6 +43,15 @@ type unsigned = uint32_t;
 type float = MACH_MSG_TYPE_REAL_32;
 type double = MACH_MSG_TYPE_REAL_64;
 
+#if VM_KERNEL_SERVER
+#define VM_ADD_CTYPE(type) ctype: type
+#define VM_TYPE_SAFE_UNSAFE(_safe_type, _unsafe_type) ctype: _unsafe_type
+#else /* VM_KERNEL_SERVER */
+#define VM_ADD_CTYPE(type)
+#define VM_TYPE_SAFE_UNSAFE(_safe_type, _unsafe_type) ctype: _safe_type
+#endif /* VM_KERNEL_SERVER */
+
+#define VM_UNSAFE_TYPE(_unsafe_type) VM_ADD_CTYPE(_unsafe_type)
 
 /* from ISO/IEC 988:1999 spec */
 /* 7.18.1.4 Integer types capable of hgolding object pointers */
@@ -86,13 +95,13 @@ type natural_t = uint32_t;
  */
 
 #if defined(__LP64__)
-type vm_address_t = uint64_t;
-type vm_offset_t = uint64_t;
-type vm_size_t = uint64_t;
+type vm_address_t = uint64_t VM_UNSAFE_TYPE(vm_address_ut);
+type vm_offset_t = uint64_t VM_UNSAFE_TYPE(vm_offset_ut);
+type vm_size_t = uint64_t VM_UNSAFE_TYPE(vm_size_ut);
 #else
-type vm_address_t = natural_t;
-type vm_offset_t = natural_t;
-type vm_size_t = natural_t;
+type vm_address_t = natural_t VM_UNSAFE_TYPE(vm_address_ut);
+type vm_offset_t = natural_t VM_UNSAFE_TYPE(vm_offset_ut);
+type vm_size_t = natural_t VM_UNSAFE_TYPE(vm_size_ut);
 #endif
 
 /* This is a bit of a hack for arm.  We implement the backend with a wide type, but present a native-sized type to callers */
@@ -103,17 +112,9 @@ type mach_port_context_t = uint64_t;
  * maximum pointer, offset, etc... supported on the
  * platform.
  */
-type mach_vm_address_t = uint64_t;
-type mach_vm_offset_t = uint64_t;
-type mach_vm_size_t = uint64_t;
-
-#if	MACH_IPC_COMPAT
-/*
- * For the old IPC interface
- */
-#define	MSG_TYPE_PORT_NAME	natural_t
-
-#endif	/* MACH_IPC_COMPAT */
+type mach_vm_address_t = uint64_t VM_UNSAFE_TYPE(mach_vm_address_ut);
+type mach_vm_offset_t = uint64_t VM_UNSAFE_TYPE(mach_vm_offset_ut);
+type mach_vm_size_t = uint64_t VM_UNSAFE_TYPE(mach_vm_size_ut);
 
 /*
  * These are types used internal to Mach to implement the
@@ -121,9 +122,9 @@ type mach_vm_size_t = uint64_t;
  */
 #define	VM32_SUPPORT	1
 
-type vm32_address_t = uint32_t;
-type vm32_offset_t = uint32_t;
-type vm32_size_t = uint32_t;
+type vm32_address_t = uint32_t VM_UNSAFE_TYPE(vm32_address_ut);
+type vm32_offset_t = uint32_t VM_UNSAFE_TYPE(vm32_offset_ut);
+type vm32_size_t = uint32_t VM_UNSAFE_TYPE(vm32_size_ut);
 
 #endif /* _MACH_MACHINE_MACHNINE_TYPES_DEFS */
 

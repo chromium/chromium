@@ -17,11 +17,11 @@
 #include "base/i18n/file_util_icu.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/not_fatal_until.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -56,7 +56,6 @@
 #include "content/public/browser/download_manager_delegate.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/resource_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/mhtml_generation_params.h"
 #include "content/public/common/referrer_type_converters.h"
@@ -89,11 +88,13 @@ const char kDefaultSaveName[] = "saved_resource";
 // name-conflict files which has same base file name.
 const int32_t kMaxFileOrdinalNumber = 9999;
 
+#if BUILDFLAG(IS_WIN)
 // Maximum length for file path. Since Windows have MAX_PATH limitation for
 // file path, we need to make sure length of file path of every saved file
-// is less than MAX_PATH
-#if BUILDFLAG(IS_WIN)
+// is less than MAX_PATH.
 const uint32_t kMaxFilePathLength = MAX_PATH - 1;
+// Maximum component length for NTFS/FAT32 compatibility.
+const uint32_t kMaxComponentLength = 255;
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 const uint32_t kMaxFilePathLength = PATH_MAX - 1;
 #endif
@@ -147,10 +148,9 @@ const std::string GetMimeTypeForSaveType(SavePageType save_type) {
       return "multipart/related";
     case SAVE_PAGE_TYPE_UNKNOWN:
     case SAVE_PAGE_TYPE_MAX:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 WebContents* GetWebContents(Page* page) {
@@ -309,7 +309,7 @@ void SavePackage::InternalInit() {
   ukm_source_id_ = page_->GetMainDocument().GetPageUkmSourceId();
   ukm_download_id_ = download::GetUniqueDownloadId();
   download::DownloadUkmHelper::RecordDownloadStarted(
-      ukm_download_id_, ukm_source_id_, download::DownloadContent::TEXT,
+      ukm_download_id_, ukm_source_id_, download::DownloadContent::kText,
       download::DownloadSource::UNKNOWN,
       download::CheckDownloadConnectionSecurity(
           page_->GetMainDocument().GetLastCommittedURL(),
@@ -331,14 +331,14 @@ bool SavePackage::Init(
   BrowserContext* browser_context =
       page_->GetMainDocument().GetBrowserContext();
   if (!browser_context) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   RenderFrameHost& frame_host = page_->GetMainDocument();
   download_manager_->CreateSavePackageDownloadItem(
-      saved_main_file_path_, page_url_, GetMimeTypeForSaveType(save_type_),
-      frame_host.GetProcess()->GetID(), frame_host.GetRoutingID(),
+      saved_main_file_path_, saved_main_file_display_name_, page_url_,
+      GetMimeTypeForSaveType(save_type_),
+      frame_host.GetProcess()->GetDeprecatedID(), frame_host.GetRoutingID(),
       base::BindOnce(&CancelSavePackage, weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&SavePackage::InitWithDownloadItem,
                      weak_ptr_factory_.GetWeakPtr(),
@@ -376,8 +376,7 @@ void SavePackage::InitWithDownloadItem(
     waiting_item_queue_.push_back(base::WrapUnique(new SaveItem(
         page_url_, Referrer(), page_isolation_info_,
         network::mojom::RequestMode::kNavigate, page_is_outermost_main_frame_,
-        this, SaveFileCreateInfo::SAVE_FILE_FROM_NET,
-        FrameTreeNode::kFrameTreeNodeInvalidId,
+        this, SaveFileCreateInfo::SAVE_FILE_FROM_NET, FrameTreeNodeId(),
         page_->GetMainDocument().GetFrameTreeNodeId())));
     all_save_items_count_ = 1;
     download_->SetTotalBytes(1);
@@ -407,18 +406,45 @@ void SavePackage::OnMHTMLGenerated(int64_t size) {
   }
 }
 
-// On POSIX, the length of |base_name| + |file_name_ext| is further
-// restricted by NAME_MAX. The maximum allowed path looks like:
-// '/path/to/save_dir' + '/' + NAME_MAX.
-uint32_t SavePackage::GetMaxPathLengthForDirectory(
+// static
+uint32_t SavePackage::ComputeMaxPathLengthForDirectory(
     const base::FilePath& base_dir) {
+  // Query runtime filesystem constraints.
+  int runtime_max = base::GetMaximumPathComponentLength(base_dir);
+  uint32_t max_component_length;
+
+  if (runtime_max > 0) {
+    max_component_length = static_cast<uint32_t>(runtime_max);
+  } else {
+    // Fall back to platform defaults if query fails.
 #if BUILDFLAG(IS_WIN)
-  return kMaxFilePathLength;
+    // NTFS/FAT32 compatible.
+    max_component_length = kMaxComponentLength;
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+    // Standard POSIX limit.
+    max_component_length = NAME_MAX;
+#endif
+  }
+
+  return std::min(kMaxFilePathLength,
+                  static_cast<uint32_t>(base_dir.value().length() + 1 +
+                                        max_component_length));
+}
+
+uint32_t SavePackage::GetMaxPathLengthForDirectory() const {
+  // Use platform defaults to avoid blocking I/O during save operations.
+  uint32_t max_component_length;
+
+#if BUILDFLAG(IS_WIN)
+  max_component_length = kMaxComponentLength;
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+  max_component_length = NAME_MAX;
+#endif
+
   return std::min(
       kMaxFilePathLength,
-      static_cast<uint32_t>(base_dir.value().length()) + NAME_MAX + 1);
-#endif
+      static_cast<uint32_t>(saved_main_directory_path_.value().length() + 1 +
+                            max_component_length));
 }
 
 // static
@@ -439,9 +465,33 @@ bool SavePackage::TruncateBaseNameToFitPathConstraints(
   if (static_cast<int>(base_name->length()) <= available_length)
     return true;
 
-  // Limited room. Truncate |base_name| to fit.
+  // Limited room. Truncate |base_name| to fit, respecting character boundaries.
   if (available_length > 0) {
-    *base_name = base_name->substr(0, available_length);
+#if BUILDFLAG(IS_WIN)
+    // On Windows, FilePath uses UTF-16, so truncate at UTF-16 code unit
+    // boundaries.
+    if (static_cast<size_t>(available_length) < base_name->length()) {
+      *base_name = base_name->substr(0, available_length);
+    }
+#else
+    // On POSIX, FilePath uses native encoding (usually UTF-8)
+    // Convert to UTF-8, truncate safely, then convert back.
+    std::string utf8_name = base::FilePath(*base_name).AsUTF8Unsafe();
+    std::string truncated_utf8;
+    base::TruncateUTF8ToByteSize(utf8_name, available_length, &truncated_utf8);
+
+    // Convert back to native string, but handle potential encoding issues.
+    base::FilePath temp_path = base::FilePath::FromUTF8Unsafe(truncated_utf8);
+    *base_name = temp_path.value();
+
+    // Double-check that the result fits - if conversion caused expansion,
+    // retry.
+    if (static_cast<int>(base_name->length()) > available_length) {
+      // If UTF-8 conversion caused size increase, use simple byte truncation
+      // as a last resort (this should be rare).
+      *base_name = base_name->substr(0, available_length);
+    }
+#endif
     return true;
   }
 
@@ -479,8 +529,8 @@ bool SavePackage::GenerateFileName(const std::string& disposition,
       file_path.RemoveExtension().BaseName().value();
   base::FilePath::StringType file_name_ext = file_path.Extension();
 
-  // Need to make sure the suggested file name is not too long.
-  uint32_t max_path = GetMaxPathLengthForDirectory(saved_main_directory_path_);
+  // Get path length constraints for truncation.
+  uint32_t max_path = GetMaxPathLengthForDirectory();
 
   // Get safe pure file name.
   if (!TruncateBaseNameToFitPathConstraints(
@@ -642,7 +692,7 @@ SaveItem* SavePackage::LookupInProgressSaveItem(SaveItemId save_item_id) {
 void SavePackage::PutInProgressItemToSavedMap(SaveItem* save_item) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto it = in_progress_items_.find(save_item->id());
-  CHECK(it != in_progress_items_.end(), base::NotFatalUntil::M130);
+  CHECK(it != in_progress_items_.end());
   DCHECK_EQ(save_item, it->second.get());
   std::unique_ptr<SaveItem> owned_item = std::move(it->second);
   in_progress_items_.erase(it);
@@ -775,10 +825,11 @@ void SavePackage::RenameIfAllowed(bool allowed) {
     final_names.insert(std::make_pair(it.first, it.second->full_path()));
 
   download::GetDownloadTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&SaveFileManager::RenameAllFiles, file_manager_,
-                                final_names, dir,
-                                page_->GetMainDocument().GetProcess()->GetID(),
-                                page_->GetMainDocument().GetRoutingID(), id()));
+      FROM_HERE,
+      base::BindOnce(&SaveFileManager::RenameAllFiles, file_manager_,
+                     final_names, dir,
+                     page_->GetMainDocument().GetProcess()->GetDeprecatedID(),
+                     page_->GetMainDocument().GetRoutingID(), id()));
 }
 
 // Successfully finished all items of this SavePackage.
@@ -916,12 +967,11 @@ void SavePackage::SaveNextFile(bool process_all_remaining_items) {
 
     // Find the frame responsible for making the network request below - it will
     // be used in security checks made later.
-    int requester_frame_tree_node_id =
+    FrameTreeNodeId requester_frame_tree_node_id =
         save_item_ptr->save_source() == SaveFileCreateInfo::SAVE_FILE_FROM_NET
             ? save_item_ptr->container_frame_tree_node_id()
             : save_item_ptr->frame_tree_node_id();
-    DCHECK_NE(FrameTreeNode::kFrameTreeNodeInvalidId,
-              requester_frame_tree_node_id);
+    DCHECK(requester_frame_tree_node_id);
     FrameTreeNode* requester_frame_tree_node =
         FrameTreeNode::GloballyFindByID(requester_frame_tree_node_id);
     if (!requester_frame_tree_node) {
@@ -941,7 +991,7 @@ void SavePackage::SaveNextFile(bool process_all_remaining_items) {
         save_item_ptr->id(), save_item_ptr->url(), save_item_ptr->referrer(),
         save_item_ptr->isolation_info(), save_item_ptr->request_mode(),
         save_item_ptr->is_outermost_main_frame(),
-        requester_frame->GetProcess()->GetID(),
+        requester_frame->GetProcess()->GetDeprecatedID(),
         requester_frame->render_view_host()->GetRoutingID(),
         requester_frame->GetRoutingID(), save_item_ptr->save_source(),
         save_item_ptr->full_path(),
@@ -1042,7 +1092,7 @@ void SavePackage::GetSerializedHtmlWithLocalLinks() {
       static_cast<RenderFrameHostImpl*>(&page_->GetMainDocument())
           ->frame_tree();
   for (const auto& item : frame_tree_node_id_to_save_item_) {
-    int frame_tree_node_id = item.first;
+    FrameTreeNodeId frame_tree_node_id = item.first;
     const SaveItem* save_item = item.second;
 
     FrameTreeNode* frame_tree_node = frame_tree->FindByID(frame_tree_node_id);
@@ -1070,7 +1120,8 @@ void SavePackage::GetSerializedHtmlWithLocalLinksForFrame(
     FrameTreeNode* target_tree_node) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(target_tree_node);
-  int target_frame_tree_node_id = target_tree_node->frame_tree_node_id();
+  FrameTreeNodeId target_frame_tree_node_id =
+      target_tree_node->frame_tree_node_id();
   RenderFrameHostImpl* target = target_tree_node->current_frame_host();
 
   // Collect all saved success items.
@@ -1101,8 +1152,7 @@ void SavePackage::GetSerializedHtmlWithLocalLinksForFrame(
       // Insert the link into |url_to_local_path| or
       // |frame_token_to_local_path|.
       if (save_item->save_source() != SaveFileCreateInfo::SAVE_FILE_FROM_DOM) {
-        DCHECK_EQ(FrameTreeNode::kFrameTreeNodeInvalidId,
-                  save_item->frame_tree_node_id());
+        DCHECK(!save_item->frame_tree_node_id());
         url_to_local_path[save_item->url()] = local_path;
       } else {
         FrameTreeNode* save_item_frame_tree_node =
@@ -1210,7 +1260,8 @@ const SaveItem* SavePackage::LookupSaveItemForSender(
   if (!sender)
     return nullptr;
 
-  int frame_tree_node_id = sender->frame_tree_node()->frame_tree_node_id();
+  FrameTreeNodeId frame_tree_node_id =
+      sender->frame_tree_node()->frame_tree_node_id();
   auto it = frame_tree_node_id_to_save_item_.find(frame_tree_node_id);
   if (it == frame_tree_node_id_to_save_item_.end())
     return nullptr;
@@ -1240,7 +1291,7 @@ void SavePackage::GetSavableResourceLinks() {
   wait_state_ = RESOURCES_LIST;
 
   DCHECK_EQ(0, number_of_frames_pending_response_);
-  page_->GetMainDocument().ForEachRenderFrameHost(
+  page_->GetMainDocument().ForEachRenderFrameHostImpl(
       [this](RenderFrameHostImpl* rfh) {
         GetSavableResourceLinksForRenderFrameHost(rfh);
       });
@@ -1251,7 +1302,7 @@ void SavePackage::GetSavableResourceLinks() {
   FrameTreeNode* main_frame_tree_node =
       static_cast<RenderFrameHostImpl*>(&page_->GetMainDocument())
           ->frame_tree_node();
-  EnqueueFrame(FrameTreeNode::kFrameTreeNodeInvalidId,  // No container.
+  EnqueueFrame(FrameTreeNodeId(),  // No container.
                main_frame_tree_node->frame_tree_node_id(),
                main_frame_tree_node->current_url());
   all_save_items_count_ = 1;
@@ -1267,7 +1318,7 @@ void SavePackage::SavableResourceLinksResponse(
     return;
 
   // Add all sub-resources to wait list.
-  int container_frame_tree_node_id =
+  FrameTreeNodeId container_frame_tree_node_id =
       sender->frame_tree_node()->frame_tree_node_id();
   for (const GURL& u : resources_list) {
     EnqueueSavableResource(container_frame_tree_node_id, u,
@@ -1291,8 +1342,8 @@ void SavePackage::SavableResourceLinksResponse(
 }
 
 SaveItem* SavePackage::CreatePendingSaveItem(
-    int container_frame_tree_node_id,
-    int save_item_frame_tree_node_id,
+    FrameTreeNodeId container_frame_tree_node_id,
+    FrameTreeNodeId save_item_frame_tree_node_id,
     const GURL& url,
     const Referrer& referrer,
     SaveFileCreateInfo::SaveFileSource save_source) {
@@ -1314,8 +1365,8 @@ SaveItem* SavePackage::CreatePendingSaveItem(
 }
 
 void SavePackage::CreatePendingSaveItemDeduplicatingByUrl(
-    int container_frame_tree_node_id,
-    int save_item_frame_tree_node_id,
+    FrameTreeNodeId container_frame_tree_node_id,
+    FrameTreeNodeId save_item_frame_tree_node_id,
     const GURL& url,
     const Referrer& referrer,
     SaveFileCreateInfo::SaveFileSource save_source) {
@@ -1336,20 +1387,21 @@ void SavePackage::CreatePendingSaveItemDeduplicatingByUrl(
   }
 }
 
-void SavePackage::EnqueueSavableResource(int container_frame_tree_node_id,
-                                         const GURL& url,
-                                         const Referrer& referrer) {
+void SavePackage::EnqueueSavableResource(
+    FrameTreeNodeId container_frame_tree_node_id,
+    const GURL& url,
+    const Referrer& referrer) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!url.is_valid())
     return;
 
   CreatePendingSaveItemDeduplicatingByUrl(
-      container_frame_tree_node_id, FrameTreeNode::kFrameTreeNodeInvalidId, url,
-      referrer, SaveFileCreateInfo::SAVE_FILE_FROM_NET);
+      container_frame_tree_node_id, FrameTreeNodeId(), url, referrer,
+      SaveFileCreateInfo::SAVE_FILE_FROM_NET);
 }
 
-void SavePackage::EnqueueFrame(int container_frame_tree_node_id,
-                               int frame_tree_node_id,
+void SavePackage::EnqueueFrame(FrameTreeNodeId container_frame_tree_node_id,
+                               FrameTreeNodeId frame_tree_node_id,
                                const GURL& frame_original_url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   SaveItem* save_item = CreatePendingSaveItem(
@@ -1458,8 +1510,8 @@ base::FilePath SavePackage::CreateDirectoryOnFileThread(
       suggested_filename.RemoveExtension().BaseName().value();
   base::FilePath::StringType file_name_ext = suggested_filename.Extension();
 
-  // Need to make sure the suggested file name is not too long.
-  uint32_t max_path = GetMaxPathLengthForDirectory(save_dir);
+  // Get path length constraints for truncation.
+  uint32_t max_path = SavePackage::ComputeMaxPathLengthForDirectory(save_dir);
 
   if (TruncateBaseNameToFitPathConstraints(save_dir, file_name_ext, max_path,
                                            &base_name)) {
@@ -1505,6 +1557,15 @@ void SavePackage::OnPathPicked(
     return;
   // Ensure the filename is safe.
   saved_main_file_path_ = params.file_path;
+
+#if BUILDFLAG(IS_ANDROID)
+  if (saved_main_file_path_.IsContentUri()) {
+    save_type_ = SAVE_PAGE_TYPE_AS_MHTML;
+    saved_main_file_display_name_ = params.display_name;
+    Init(std::move(download_created_callback));
+    return;
+  }
+#endif
   // TODO(asanka): This call may block on IO and shouldn't be made
   // from the UI thread.  See http://crbug.com/61827.
   std::string mime_type =

@@ -1,0 +1,84 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #import=./omnibox_popup_shared_style.css.js
+ * #include=omnibox-popup-shared-style
+ * #css_wrapper_metadata_end */
+
+:host {
+  --composebox-context-menu-entrypoint-button-color: var(--color-sys-primary);
+  --cr-composebox-custom-font-size: var(--omnibox-font-size);
+  --cr-composebox-expanded-border-radius: 16px;
+  --cr-composebox-file-thumbnail-remove-button-fill-color: var(--color-omnibox-results-icon);
+  --cr-composebox-input-bottom-spacing: 8px;
+  --cr-composebox-input-placeholder-font-size: var(--omnibox-font-size);
+  --cr-composebox-match-height: 40px;
+  --cr-composebox-match-icon-container-padding-inline-start: 20px;
+  --cr-composebox-match-icon-size: 16px;
+  --cr-composebox-match-match-padding-bottom: 0;
+  --cr-composebox-match-remove-button-top: 4px;
+  --cr-composebox-match-text-container-font-size: var(--omnibox-font-size);
+  --cr-composebox-max-height: 800px;
+  --cr-composebox-text-container-padding-block-start: 0;
+  --search-animated-glif-rotation-duration: 2000ms;
+  --cr-composebox-cancel-button-top: 5px;
+}
+
+cr-composebox {
+  --color-composebox-background: var(--color-omnibox-results-background);
+  --color-composebox-cancel-button: unset; /* Lens only */
+  --color-composebox-cancel-button-light: var(--color-omnibox-text-dimmed);
+  --color-composebox-context-entrypoint-hover-background: var(--color-omnibox-action-icon-hover);
+  --color-composebox-context-entrypoint-text-disabled: var(--color-omnibox-composebox-foreground-disabled);
+  --color-composebox-file-carousel-remove-button: var(--color-omnibox-results-button-ink-drop-row-hovered);
+
+  /* Themed gradient hover background color for the close button in
+   * cr-composebox-file-thumbnail. */
+  --color-composebox-file-carousel-remove-gradient-start: var(--color-omnibox-composebox-chip-background);
+  --color-composebox-file-carousel-remove-gradient-end: color-mix(
+    in srgb,
+    var(--color-composebox-file-carousel-remove-gradient-start),
+    transparent 100%);
+
+  --color-composebox-file-carousel-url: var(--color-omnibox-text-dimmed);
+  --color-composebox-file-image-overlay: var(--color-omnibox-text);
+  --color-composebox-font: var(--color-omnibox-text);
+  --color-composebox-font-light: var(--color-omnibox-text);
+  --color-composebox-hover: unset; /* Lens only */
+  --color-composebox-input-icon: var(--color-omnibox-results-icon);
+  --color-composebox-lens-button: unset; /* Lens only */
+  --color-composebox-pdf-chip-icon: var(--color-omnibox-text-dimmed);
+  --color-composebox-recent-tab-chip-outline: unset; /* Omnibox has no recent tab chip. */
+  --color-composebox-scrim-background: unset; /* No scrim. */
+  --color-composebox-submit-button-background: var(--color-omnibox-composebox-submit-button-background);
+  --color-composebox-submit-button-icon: var(--color-omnibox-composebox-submit-button-icon);
+  --color-composebox-submit-button-hover: var(--color-omnibox-action-icon-hover);
+  --color-composebox-suggestion-activity: unset; /* No activity suggestion disclaimer. */
+  --color-composebox-type-ahead: var(--color-omnibox-composebox-foreground-disabled);
+  --color-composebox-type-ahead-chip: var(--color-omnibox-composebox-foreground-disabled);
+  --color-composebox-upload-button: var(--omnibox-results-chip-background);
+  --color-composebox-upload-button-disabled: var(--color-omnibox-composebox-foreground-disabled);
+  --cr-composebox-background-color: var(--color-omnibox-results-background);
+  --cr-composebox-input-placeholder-color: var(--color-omnibox-text-dimmed);
+  --cr-composebox-outline-hcm: none;
+  --cr-composebox-submit-button-margin-inline-start: auto;
+  --cr-composebox-suggestion-activity-bottom: 0;
+  --cr-composebox-suggestion-activity-margin-top: 0;
+
+  position: relative;
+}
+
+cr-composebox[searchbox-layout-mode="Compact"] {
+  --input-bottom-spacing: 14px;
+}
+
+cr-composebox[searchbox-layout-mode="Compact"]::part(context-menu-entrypoint-icon) {
+  --cr-icon-button-icon-size: 20px;
+  --cr-icon-button-size: 28px;
+  left: 12px;
+  top: 14px;
+}

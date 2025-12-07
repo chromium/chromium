@@ -17,12 +17,10 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/window/frame_buttons.h"
 
+class SkBitmap;
+
 namespace aura {
 class Window;
-}
-
-namespace ui {
-class KeyEvent;
 }
 
 namespace gtk {
@@ -62,6 +60,10 @@ class CairoSurface {
   // Attaches a cairo surface to an SkBitmap so that GTK can render
   // into it.  |bitmap| must outlive this CairoSurface.
   explicit CairoSurface(SkBitmap& bitmap);
+
+  // Attaches a cairo surface to a pointer to pixel data.  `pixels`
+  // must outlive this CairoSurface.
+  CairoSurface(void* pixels, int width, int height);
 
   // Creates a new cairo surface with the given size.  The memory for
   // this surface is deallocated when this CairoSurface is destroyed.
@@ -166,46 +168,12 @@ SkColor GetBgColor(const std::string& css_selector);
 // returns the average color.
 SkColor GetBorderColor(const std::string& css_selector);
 
-// On Gtk3.20 or later, behaves like GetBgColor.  Otherwise, returns
-// the background-color property.
-SkColor GetSelectionBgColor(const std::string& css_selector);
-
 // Get the color of the GtkSeparator specified by |css_selector|.
 SkColor GetSeparatorColor(const std::string& css_selector);
 
 // Get a GtkSettings property as a C++ string.
 std::string GetGtkSettingsStringProperty(GtkSettings* settings,
                                          const gchar* prop_name);
-
-// Xkb Events store group attribute into XKeyEvent::state bit field, along with
-// other state-related info, while GdkEventKey objects have separate fields for
-// that purpose, they are ::state and ::group. This function is responsible for
-// recomposing them into a single bit field value when translating GdkEventKey
-// into XKeyEvent. This is similar to XkbBuildCoreState(), but assumes state is
-// an uint rather than an uchar.
-//
-// More details:
-// https://gitlab.freedesktop.org/xorg/proto/xorgproto/blob/master/include/X11/extensions/XKB.h#L372
-int BuildXkbStateFromGdkEvent(unsigned int state, unsigned char group);
-
-// GDK uses different flags for modifiers than are defined in ui::EventFlags.
-// This function translates ui::EventFlags to GDK flags.
-//
-// More details:
-// https://gitlab.gnome.org/GNOME/gtk/-/blob/master/gdk/gdktypes.h#L131
-GdkModifierType ExtractGdkEventStateFromKeyEventFlags(int flags);
-
-int GetKeyEventProperty(const ui::KeyEvent& key_event,
-                        const char* property_key);
-
-GdkModifierType GetGdkKeyEventState(const ui::KeyEvent& key_event);
-
-// Translates |key_event| into a GdkEvent. GdkEvent::key::window is the only
-// field not set by this function, callers must set it, as the way for
-// retrieving it may vary depending on the event being processed. E.g: for IME
-// Context impl, X11 window XID is obtained through Event::target() which is
-// root aura::Window targeted by that key event.  Only available in GTK3.
-GdkEvent* GdkEventFromKeyEvent(const ui::KeyEvent& key_event);
 
 GtkIconTheme* GetDefaultIconTheme();
 

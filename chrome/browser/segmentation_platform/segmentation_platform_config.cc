@@ -8,15 +8,18 @@
 #include <string_view>
 #include <vector>
 
+#include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "components/compose/buildflags.h"
 #include "components/search/ntp_features.h"
+#include "components/segmentation_platform/embedder/default_model/chrome_user_engagement.h"
 #include "components/segmentation_platform/embedder/default_model/cross_device_user_segment.h"
 #include "components/segmentation_platform/embedder/default_model/database_api_clients.h"
 #include "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
+#include "components/segmentation_platform/embedder/default_model/fedcm_user_segment.h"
 #include "components/segmentation_platform/embedder/default_model/feed_user_segment.h"
 #include "components/segmentation_platform/embedder/default_model/frequent_feature_user_model.h"
 #include "components/segmentation_platform/embedder/default_model/low_user_engagement_model.h"
@@ -27,7 +30,9 @@
 #include "components/segmentation_platform/embedder/default_model/search_user_model.h"
 #include "components/segmentation_platform/embedder/default_model/shopping_user_model.h"
 #include "components/segmentation_platform/embedder/default_model/tab_resumption_ranker.h"
+#include "components/segmentation_platform/embedder/default_model/tips_notifications_ranker.h"
 #include "components/segmentation_platform/embedder/default_model/url_visit_resumption_ranker.h"
+#include "components/segmentation_platform/embedder/home_modules/ephemeral_home_module_backend.h"
 #include "components/segmentation_platform/internal/config_parser.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/constants.h"
@@ -138,7 +143,8 @@ std::unique_ptr<Config> GetConfigForDesktopNtpModule() {
 
 // Note: Do not remove feature flag for models that are served on the server.
 std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
-    content::BrowserContext* context) {
+    content::BrowserContext* context,
+    home_modules::HomeModulesCardRegistry* home_modules_card_registry) {
   std::vector<std::unique_ptr<Config>> configs;
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
@@ -169,6 +175,16 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
   configs.emplace_back(PasswordManagerUserModel::GetConfig());
   configs.emplace_back(DatabaseApiClients::GetConfig());
   configs.emplace_back(MetricsClustering::GetConfig());
+  configs.emplace_back(FedCmUserModel::GetConfig());
+  configs.emplace_back(ChromeUserEngagement::GetConfig());
+  configs.emplace_back(TipsNotificationsRanker::GetConfig());
+
+  if (home_modules_card_registry) {
+    configs.emplace_back(home_modules::EphemeralHomeModuleBackend::GetConfig(
+        home_modules_card_registry));
+  } else {
+    CHECK_IS_TEST();
+  }
 
 #if BUILDFLAG(ENABLE_COMPOSE)
   configs.emplace_back(ComposePromotion::GetConfig());

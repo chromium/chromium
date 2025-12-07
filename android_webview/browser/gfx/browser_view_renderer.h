@@ -19,7 +19,7 @@
 #include "base/cancelable_callback.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -53,7 +53,6 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
                             public CompositorFrameProducer,
                             public RootFrameSinkProxyClient {
  public:
-  static void CalculateTileMemoryPolicy();
   static BrowserViewRenderer* FromWebContents(
       content::WebContents* web_contents);
 
@@ -165,7 +164,7 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
 
   void AddBeginFrameCompletionCallback(base::OnceClosure callback) override;
 
-  void SetThreadIds(const std::vector<int32_t>& thread_ids) override;
+  void SetThreads(const std::vector<viz::Thread>& threads) override;
 
   // CompositorFrameProducer overrides
   base::WeakPtr<CompositorFrameProducer> GetWeakPtr() override;
@@ -243,7 +242,9 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
   // A map from compositor's per-WebView unique ID to the compositor's raw
   // pointer. A raw pointer here is fine because the entry will be erased when
   // a compositor is destroyed.
-  std::map<viz::FrameSinkId, content::SynchronousCompositor*> compositor_map_;
+  std::map<viz::FrameSinkId,
+           raw_ptr<content::SynchronousCompositor, CtnExperimental>>
+      compositor_map_;
 
   bool is_paused_;
   bool view_visible_;
@@ -295,7 +296,7 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
 
   std::unique_ptr<BeginFrameSourceWebView> begin_frame_source_;
 
-  std::vector<int32_t> renderer_thread_ids_;
+  std::vector<viz::Thread> renderer_threads_;
   base::PlatformThreadId browser_io_thread_id_ = base::kInvalidThreadId;
 
   base::WeakPtrFactory<BrowserViewRenderer> weak_ptr_factory_{this};

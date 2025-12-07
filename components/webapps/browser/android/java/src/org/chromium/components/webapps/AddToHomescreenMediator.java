@@ -4,15 +4,17 @@
 
 package org.chromium.components.webapps;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.graphics.Bitmap;
 import android.util.Pair;
-
-import androidx.annotation.NonNull;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -25,28 +27,24 @@ import org.chromium.ui.modelutil.PropertyModel;
  * side.
  */
 @JNINamespace("webapps")
+@NullMarked
 class AddToHomescreenMediator implements AddToHomescreenViewDelegate {
     private long mNativeAddToHomescreenMediator;
-    private PropertyModel mModel;
-    private WindowAndroid mWindowAndroid;
-    private AppData mNativeAppData;
+    private final PropertyModel mModel;
+    private final WindowAndroid mWindowAndroid;
+    private @Nullable AppData mNativeAppData;
+    private final Runnable mOnFlowCompleted;
 
-    AddToHomescreenMediator(PropertyModel model, WindowAndroid windowAndroid) {
+    AddToHomescreenMediator(
+            PropertyModel model,
+            WindowAndroid windowAndroid,
+            WebContents webContents,
+            Runnable onFlowCompleted) {
         mModel = model;
         mWindowAndroid = windowAndroid;
-        mNativeAddToHomescreenMediator = AddToHomescreenMediatorJni.get().initialize(this);
-    }
-
-    void startForAppMenu(
-            @NonNull WebContents webContents, int menuItemType, boolean universalInstall) {
-        if (mNativeAddToHomescreenMediator == 0) return;
-
-        AddToHomescreenMediatorJni.get()
-                .startForAppMenu(
-                        mNativeAddToHomescreenMediator,
-                        webContents,
-                        menuItemType,
-                        universalInstall);
+        mNativeAddToHomescreenMediator =
+                AddToHomescreenMediatorJni.get().initialize(this, webContents);
+        mOnFlowCompleted = onFlowCompleted;
     }
 
     @CalledByNative
@@ -85,12 +83,11 @@ class AddToHomescreenMediator implements AddToHomescreenViewDelegate {
     }
 
     @Override
-    public void onAddToHomescreen(String title, @AppType int selectedType) {
+    public void onAddToHomescreen(String title) {
         if (mNativeAddToHomescreenMediator == 0) return;
 
-        AddToHomescreenMediatorJni.get()
-                .addToHomescreen(mNativeAddToHomescreenMediator, title, selectedType);
-        destroyNative();
+        AddToHomescreenMediatorJni.get().addToHomescreen(mNativeAddToHomescreenMediator, title);
+        onFlowCompleted();
     }
 
     @Override
@@ -99,6 +96,7 @@ class AddToHomescreenMediator implements AddToHomescreenViewDelegate {
             return false;
         }
 
+        assumeNonNull(mNativeAppData);
         mWindowAndroid.showIntent(mNativeAppData.detailsIntent(), null, null);
 
         if (mNativeAddToHomescreenMediator != 0) {
@@ -112,28 +110,23 @@ class AddToHomescreenMediator implements AddToHomescreenViewDelegate {
         if (mNativeAddToHomescreenMediator == 0) return;
 
         AddToHomescreenMediatorJni.get().onUiDismissed(mNativeAddToHomescreenMediator);
-        destroyNative();
+        onFlowCompleted();
     }
 
-    private void destroyNative() {
-        if (mNativeAddToHomescreenMediator == 0) return;
+    private void onFlowCompleted() {
+        if (mNativeAddToHomescreenMediator != 0) {
+            AddToHomescreenMediatorJni.get().destroy(mNativeAddToHomescreenMediator);
+            mNativeAddToHomescreenMediator = 0;
+        }
 
-        AddToHomescreenMediatorJni.get().destroy(mNativeAddToHomescreenMediator);
-        mNativeAddToHomescreenMediator = 0;
+        mOnFlowCompleted.run();
     }
 
     @NativeMethods
     interface Natives {
-        long initialize(AddToHomescreenMediator instance);
+        long initialize(AddToHomescreenMediator instance, WebContents webContents);
 
-        void startForAppMenu(
-                long nativeAddToHomescreenMediator,
-                WebContents webContents,
-                int menuItemType,
-                boolean universalInstall);
-
-        void addToHomescreen(
-                long nativeAddToHomescreenMediator, String title, @AppType int appType);
+        void addToHomescreen(long nativeAddToHomescreenMediator, String title);
 
         void onNativeDetailsShown(long nativeAddToHomescreenMediator);
 

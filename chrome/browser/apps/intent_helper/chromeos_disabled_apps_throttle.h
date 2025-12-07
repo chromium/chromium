@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_APPS_INTENT_HELPER_CHROMEOS_DISABLED_APPS_THROTTLE_H_
 #define CHROME_BROWSER_APPS_INTENT_HELPER_CHROMEOS_DISABLED_APPS_THROTTLE_H_
 
-#include <memory>
-
 #include "content/public/browser/navigation_throttle.h"
 
 namespace content {
@@ -23,8 +21,7 @@ class ChromeOsDisabledAppsThrottle : public content::NavigationThrottle {
 
   // Possibly creates a navigation throttle that checks if the given url is
   // part of a disabled app.
-  static std::unique_ptr<content::NavigationThrottle> MaybeCreate(
-      content::NavigationHandle* handle);
+  static void MaybeCreateAndAdd(content::NavigationThrottleRegistry& registry);
 
   ChromeOsDisabledAppsThrottle(const ChromeOsDisabledAppsThrottle&) = delete;
   ChromeOsDisabledAppsThrottle& operator=(const ChromeOsDisabledAppsThrottle&) =
@@ -38,7 +35,7 @@ class ChromeOsDisabledAppsThrottle : public content::NavigationThrottle {
 
  private:
   explicit ChromeOsDisabledAppsThrottle(
-      content::NavigationHandle* navigation_handle);
+      content::NavigationThrottleRegistry& registry);
   ThrottleCheckResult HandleRequest();
 };
 

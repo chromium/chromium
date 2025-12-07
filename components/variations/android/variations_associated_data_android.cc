@@ -5,25 +5,28 @@
 #include <string>
 
 #include "base/android/jni_string.h"
+#include "base/base64.h"
 #include "base/metrics/field_trial_params.h"
-#include "components/variations/variations_associated_data.h"
+#include "base/metrics/histogram_functions.h"
+#include "components/variations/net/variations_command_line.h"
 #include "components/variations/variations_ids_provider.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "components/variations/android/variations_jni/VariationsAssociatedData_jni.h"
+#include "components/variations/android/variations_data_jni/VariationsAssociatedData_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace variations {
 namespace android {
 
-ScopedJavaLocalRef<jstring> JNI_VariationsAssociatedData_GetVariationParamValue(
+static ScopedJavaLocalRef<jstring>
+JNI_VariationsAssociatedData_GetVariationParamValue(
     JNIEnv* env,
-    const JavaParamRef<jstring>& jtrial_name,
-    const JavaParamRef<jstring>& jparam_name) {
+    const JavaRef<jstring>& jtrial_name,
+    const JavaRef<jstring>& jparam_name) {
   std::string trial_name(ConvertJavaStringToUTF8(env, jtrial_name));
   std::string param_name(ConvertJavaStringToUTF8(env, jparam_name));
   std::string param_value =
@@ -31,15 +34,33 @@ ScopedJavaLocalRef<jstring> JNI_VariationsAssociatedData_GetVariationParamValue(
   return ConvertUTF8ToJavaString(env, param_value);
 }
 
-ScopedJavaLocalRef<jstring> JNI_VariationsAssociatedData_GetFeedbackVariations(
-    JNIEnv* env) {
+static ScopedJavaLocalRef<jstring>
+JNI_VariationsAssociatedData_GetFeedbackVariations(JNIEnv* env) {
   const std::string values =
       VariationsIdsProvider::GetInstance()->GetVariationsString();
   return ConvertUTF8ToJavaString(env, values);
 }
 
-ScopedJavaLocalRef<jstring> JNI_VariationsAssociatedData_GetGoogleAppVariations(
-    JNIEnv* env) {
+static ScopedJavaLocalRef<jstring>
+JNI_VariationsAssociatedData_GetVariationsState(JNIEnv* env) {
+  if (!base::FeatureList::IsEnabled(variations::kFeedbackIncludeVariations)) {
+    return nullptr;
+  }
+  std::vector<uint8_t> ciphertext;
+  const auto status =
+      variations::VariationsCommandLine::GetForCurrentProcess().EncryptToString(
+          &ciphertext);
+  base::UmaHistogramEnumeration("Variations.VariationsStateEncryptionStatus",
+                                status);
+  if (status != variations::VariationsStateEncryptionStatus::kSuccess) {
+    return nullptr;
+  }
+  std::string value = base::Base64Encode(ciphertext);
+  return ConvertUTF8ToJavaString(env, value);
+}
+
+static ScopedJavaLocalRef<jstring>
+JNI_VariationsAssociatedData_GetGoogleAppVariations(JNIEnv* env) {
   const std::string values =
       VariationsIdsProvider::GetInstance()->GetGoogleAppVariationsString();
   return ConvertUTF8ToJavaString(env, values);
@@ -47,3 +68,5 @@ ScopedJavaLocalRef<jstring> JNI_VariationsAssociatedData_GetGoogleAppVariations(
 
 }  // namespace android
 }  // namespace variations
+
+DEFINE_JNI(VariationsAssociatedData)

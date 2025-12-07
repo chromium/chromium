@@ -12,7 +12,14 @@ if (is_win || is_mac) {
       "browser_updater_client.h",
       "browser_updater_client_util.cc",
       "browser_updater_client_util.h",
+      "check_updater_health_task.h",
     ]
+
+    if (enable_updater) {
+      sources += [ "check_updater_health_task.cc" ]
+    } else {
+      sources += [ "check_updater_health_task_no_updater.cc" ]
+    }
 
     deps = [
       "//base",
@@ -20,6 +27,7 @@ if (is_win || is_mac) {
       "//chrome/common:version_header",
       "//chrome/updater:branding_header",
       "//chrome/updater:browser_sources",
+      "//chrome/updater/mojom",
       "//components/version_info",
     ]
 
@@ -76,7 +84,10 @@ source_set("scheduler") {
 
   if (enable_updater) {
     if (is_mac) {
-      sources += [ "scheduler_mac.cc" ]
+      sources += [
+        "scheduler_impl.cc",
+        "scheduler_mac.cc",
+      ]
       deps += [
         ":browser_updater_client",
         "//chrome/browser/ui",
@@ -84,7 +95,10 @@ source_set("scheduler") {
         "//chrome/updater:browser_sources",
       ]
     } else if (is_win) {
-      sources += [ "scheduler_win.cc" ]
+      sources += [
+        "scheduler_impl.cc",
+        "scheduler_win.cc",
+      ]
       deps += [
         ":browser_updater_client",
         "//chrome/updater:browser_sources",

@@ -1,0 +1,27 @@
+caption: Enable Automatic Sign-out Service
+default: false
+desc: |-
+  This policy controls whether a user is automatically signed out of their previous session when they sign in to a new <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> device.
+
+  Setting the policy to Enabled will sign out the user from their previous session upon a successful sign-in to a new <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> device.
+
+  Setting the policy to Disabled or not set will sign out the user from their previous session only if either <ph name="FLOATING_SSO_ENABLED_POLICY_NAME">FloatingSsoEnabled</ph> or <ph name="FLOATING_WORKSPACE_V2_ENABLED_POLICY_NAME">FloatingWorkspaceV2Enabled</ph> policies are Enabled.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+supported_on:
+- chrome_os:142-
+items:
+- caption: Sign out user from previous session upon sign-in to a new device
+  value: true
+- caption: Sign out user from previous session upon sign-in to new device only if windows or cookies are synced
+  value: false
+owners:
+- andreydav@google.com
+- mpetrisor@chromium.org
+- chromeos-commercial-identity@google.com
+schema:
+  type: boolean
+tags: []
+type: main

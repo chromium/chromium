@@ -29,15 +29,41 @@ class ExtensionsHandler : public protocol::Extensions::Backend {
   void OnLoaded(std::unique_ptr<LoadUnpackedCallback> callback,
                 const extensions::Extension* extension,
                 const base::FilePath&,
-                const std::string&);
+                const std::u16string& err);
+  void Uninstall(const protocol::String& id,
+                 std::unique_ptr<UninstallCallback> callback) override;
+  void OnUninstalled(std::unique_ptr<UninstallCallback> callback);
   void GetStorageItems(
       const protocol::String& id,
       const protocol::String& storage_area,
-      protocol::Maybe<protocol::Array<protocol::String>> keys,
+      std::unique_ptr<protocol::Array<protocol::String>> keys,
       std::unique_ptr<GetStorageItemsCallback> callback) override;
   void OnGetStorageItemsFinished(
       std::unique_ptr<GetStorageItemsCallback> callback,
       extensions::StorageFrontend::GetResult result);
+  void SetStorageItems(
+      const protocol::String& id,
+      const protocol::String& storage_area,
+      std::unique_ptr<protocol::DictionaryValue> values,
+      std::unique_ptr<SetStorageItemsCallback> callback) override;
+  void OnSetStorageItemsFinished(
+      std::unique_ptr<SetStorageItemsCallback> callback,
+      extensions::StorageFrontend::ResultStatus result);
+  void RemoveStorageItems(
+      const protocol::String& id,
+      const protocol::String& storage_area,
+      std::unique_ptr<protocol::Array<protocol::String>> keys,
+      std::unique_ptr<RemoveStorageItemsCallback> callback) override;
+  void OnRemoveStorageItemsFinished(
+      std::unique_ptr<RemoveStorageItemsCallback> callback,
+      extensions::StorageFrontend::ResultStatus result);
+  void ClearStorageItems(
+      const protocol::String& id,
+      const protocol::String& storage_area,
+      std::unique_ptr<ClearStorageItemsCallback> callback) override;
+  void OnClearStorageItemsFinished(
+      std::unique_ptr<ClearStorageItemsCallback> callback,
+      extensions::StorageFrontend::ResultStatus result);
 
   const std::string target_id_;
   bool allow_loading_extensions_;

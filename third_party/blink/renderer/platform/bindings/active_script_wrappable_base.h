@@ -38,7 +38,7 @@ class PLATFORM_EXPORT ActiveScriptWrappableBase : public GarbageCollectedMixin {
  protected:
   ActiveScriptWrappableBase() = default;
 
-  void RegisterActiveScriptWrappable(v8::Isolate*);
+  void RegisterActiveScriptWrappable();
 };
 
 }  // namespace blink

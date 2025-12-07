@@ -10,7 +10,9 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "ui/aura/client/drag_drop_client.h"
+#include "ui/aura/client/drag_drop_client_observer.h"
 #include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/cursor/cursor.h"
@@ -18,7 +20,7 @@
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/platform_window/wm/wm_drag_handler.h"
 #include "ui/platform_window/wm/wm_drop_handler.h"
 #include "ui/views/views_export.h"
@@ -112,6 +114,7 @@ class VIEWS_EXPORT DesktopDragDropClientOzone
   // Returns a WmDragHandler::LocationDelegate passed to `StartDrag`.
   virtual ui::WmDragHandler::LocationDelegate* GetLocationDelegate();
 
+  void OnDragStarted();
   void OnDragFinished(ui::mojom::DragOperation operation);
 
   // Creates and returns a DropTargetEvent instance based on |last_drag_point_|,
@@ -142,7 +145,8 @@ class VIEWS_EXPORT DesktopDragDropClientOzone
   aura::client::DragUpdateInfo current_drag_update_info_;
 
   // Current window under the mouse.
-  raw_ptr<aura::Window> entered_window_ = nullptr;
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      entered_window_observation_{this};
 
   // The delegate corresponding to the window located at the mouse position.
   raw_ptr<aura::client::DragDropDelegate> delegate_ = nullptr;
@@ -167,6 +171,9 @@ class VIEWS_EXPORT DesktopDragDropClientOzone
 
   // Holds data about the ongoing outcoming drag session, if any.
   std::unique_ptr<DragContext> drag_context_;
+
+  base::ObserverList<aura::client::DragDropClientObserver>::Unchecked
+      observers_;
 
   base::WeakPtrFactory<DesktopDragDropClientOzone> weak_factory_{this};
 };

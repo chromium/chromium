@@ -11,6 +11,7 @@
 namespace blink {
 
 class ExceptionState;
+class FedCmTitleAndSubtitle;
 class Internals;
 class ScriptState;
 class V8DialogButton;
@@ -20,7 +21,9 @@ class InternalsFedCm {
 
  public:
   static ScriptPromise<IDLString> getFedCmDialogType(ScriptState*, Internals&);
-  static ScriptPromise<IDLString> getFedCmTitle(ScriptState*, Internals&);
+  static ScriptPromise<FedCmTitleAndSubtitle> getFedCmTitleAndSubtitle(
+      ScriptState*,
+      Internals&);
   static ScriptPromise<IDLUndefined> selectFedCmAccount(ScriptState*,
                                                         Internals&,
                                                         int account_index,

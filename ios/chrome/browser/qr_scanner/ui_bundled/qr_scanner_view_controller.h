@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_QR_SCANNER_UI_BUNDLED_QR_SCANNER_VIEW_CONTROLLER_H_
 
 #include "ios/chrome/browser/qr_scanner/ui_bundled/qr_scanner_camera_controller.h"
-#import "ios/chrome/browser/ui/scanner/scanner_view_controller.h"
+#import "ios/chrome/browser/scanner/ui_bundled/scanner_view_controller.h"
 
 @protocol LoadQueryCommands;
 

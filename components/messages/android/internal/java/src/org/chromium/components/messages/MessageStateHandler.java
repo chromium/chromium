@@ -7,13 +7,15 @@ package org.chromium.components.messages;
 import android.animation.Animator;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Interface of a handler to show, hide or dismiss the message. */
+@NullMarked
 public interface MessageStateHandler {
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({Position.INVISIBLE, Position.FRONT, Position.BACK})
@@ -30,7 +32,6 @@ public interface MessageStateHandler {
      * @param toIndex The target position at which the message view animation will stop.
      * @return The animator to trigger the showing animation.
      */
-    @NonNull
     Animator show(@Position int fromIndex, @Position int toIndex);
 
     /**
@@ -41,8 +42,7 @@ public interface MessageStateHandler {
      * @param animate Whether animation should be run or not.
      * @return The animator to trigger the hiding animation.
      */
-    @Nullable
-    Animator hide(@Position int fromIndex, @Position int toIndex, boolean animate);
+    @Nullable Animator hide(@Position int fromIndex, @Position int toIndex, boolean animate);
 
     /**
      * Notify that the message is about to be dismissed from the queue.

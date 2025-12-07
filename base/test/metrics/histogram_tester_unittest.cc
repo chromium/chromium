@@ -9,14 +9,18 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_samples.h"
+#include "base/metrics/puma_histogram_functions.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-spi.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace base {
+namespace {
+
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
-
-namespace {
+using ::testing::Pair;
+using ::testing::UnorderedElementsAre;
 
 const char kHistogram1[] = "Test1";
 const char kHistogram2[] = "Test2";
@@ -25,13 +29,7 @@ const char kHistogram4[] = "Test4";
 const char kHistogram5[] = "Test5";
 const char kHistogram6[] = "Test6";
 
-}  // namespace
-
-namespace base {
-
-typedef testing::Test HistogramTesterTest;
-
-TEST_F(HistogramTesterTest, Scope) {
+TEST(HistogramTesterTest, Scope) {
   // Record a histogram before the creation of the recorder.
   UMA_HISTOGRAM_BOOLEAN(kHistogram1, true);
 
@@ -50,7 +48,7 @@ TEST_F(HistogramTesterTest, Scope) {
   EXPECT_EQ(1, samples->TotalCount());
 }
 
-TEST_F(HistogramTesterTest, GetHistogramSamplesSinceCreationNotNull) {
+TEST(HistogramTesterTest, GetHistogramSamplesSinceCreationNotNull) {
   // Chose the histogram name uniquely, to ensure nothing was recorded for it so
   // far.
   static const char kHistogram[] =
@@ -64,7 +62,7 @@ TEST_F(HistogramTesterTest, GetHistogramSamplesSinceCreationNotNull) {
   tester.ExpectTotalCount(kHistogram, 0);
 }
 
-TEST_F(HistogramTesterTest, TestUniqueSample) {
+TEST(HistogramTesterTest, TestUniqueSample) {
   HistogramTester tester;
 
   // Emit '2' three times.
@@ -78,7 +76,7 @@ TEST_F(HistogramTesterTest, TestUniqueSample) {
 
 // Verify that the expectation is violated if the bucket contains an incorrect
 // number of samples.
-TEST_F(HistogramTesterTest, TestUniqueSample_TooManySamplesInActualBucket) {
+TEST(HistogramTesterTest, TestUniqueSample_TooManySamplesInActualBucket) {
   auto failing_code = [] {
     HistogramTester tester;
 
@@ -97,7 +95,7 @@ TEST_F(HistogramTesterTest, TestUniqueSample_TooManySamplesInActualBucket) {
 
 // Verify that the expectation is violated if the bucket contains the correct
 // number of samples but another bucket contains extra samples.
-TEST_F(HistogramTesterTest, TestUniqueSample_OneExtraSampleInWrongBucket) {
+TEST(HistogramTesterTest, TestUniqueSample_OneExtraSampleInWrongBucket) {
   auto failing_code = [] {
     HistogramTester tester;
 
@@ -115,7 +113,7 @@ TEST_F(HistogramTesterTest, TestUniqueSample_OneExtraSampleInWrongBucket) {
                           "Histogram \"Test2\" did not meet its expectations.");
 }
 
-TEST_F(HistogramTesterTest, TestBucketsSample) {
+TEST(HistogramTesterTest, TestBucketsSample) {
   HistogramTester tester;
 
   UMA_HISTOGRAM_COUNTS_100(kHistogram3, 2);
@@ -130,7 +128,7 @@ TEST_F(HistogramTesterTest, TestBucketsSample) {
   tester.ExpectTotalCount(kHistogram3, 5);
 }
 
-TEST_F(HistogramTesterTest, TestBucketsSampleWithScope) {
+TEST(HistogramTesterTest, TestBucketsSampleWithScope) {
   // Emit values twice, once before the tester creation and once after.
   UMA_HISTOGRAM_COUNTS_100(kHistogram4, 2);
 
@@ -143,7 +141,7 @@ TEST_F(HistogramTesterTest, TestBucketsSampleWithScope) {
   tester.ExpectTotalCount(kHistogram4, 1);
 }
 
-TEST_F(HistogramTesterTest, TestGetAllSamples) {
+TEST(HistogramTesterTest, TestGetAllSamples) {
   HistogramTester tester;
   UMA_HISTOGRAM_ENUMERATION(kHistogram5, 2, 5);
   UMA_HISTOGRAM_ENUMERATION(kHistogram5, 3, 5);
@@ -154,12 +152,51 @@ TEST_F(HistogramTesterTest, TestGetAllSamples) {
               ElementsAre(Bucket(2, 1), Bucket(3, 2), Bucket(5, 1)));
 }
 
-TEST_F(HistogramTesterTest, TestGetAllSamples_NoSamples) {
+TEST(HistogramTesterTest, TestGetAllSamples_NoSamples) {
   HistogramTester tester;
   EXPECT_THAT(tester.GetAllSamples(kHistogram5), IsEmpty());
 }
 
-TEST_F(HistogramTesterTest, TestGetTotalSum) {
+TEST(HistogramTesterTest, TestGetAllSamplesForPrefixMultipleHistograms) {
+  HistogramTester tester;
+  UMA_HISTOGRAM_ENUMERATION("SomePrefix", 1, 5);
+  UMA_HISTOGRAM_ENUMERATION("SomePrefix.Foo", 2, 5);
+  UMA_HISTOGRAM_ENUMERATION("SomePrefix.Bar", 3, 5);
+
+  EXPECT_THAT(
+      tester.GetAllSamplesForPrefix("SomePrefix"),
+      UnorderedElementsAre(Pair("SomePrefix", BucketsAre(Bucket(1, 1))),
+                           Pair("SomePrefix.Foo", BucketsAre(Bucket(2, 1))),
+                           Pair("SomePrefix.Bar", BucketsAre(Bucket(3, 1)))));
+}
+
+TEST(HistogramTesterTest, TestGetAllSamplesForPrefixMultipleBuckets) {
+  HistogramTester tester;
+  UMA_HISTOGRAM_ENUMERATION("SomePrefix.Foo", 1, 5);
+  UMA_HISTOGRAM_ENUMERATION("SomePrefix.Foo", 1, 5);
+  UMA_HISTOGRAM_ENUMERATION("SomePrefix.Foo", 2, 5);
+
+  EXPECT_THAT(tester.GetAllSamplesForPrefix("SomePrefix"),
+              UnorderedElementsAre(Pair(
+                  "SomePrefix.Foo", BucketsAre(Bucket(1, 2), Bucket(2, 1)))));
+}
+
+TEST(HistogramTesterTest, TestGetAllSamplesForPrefixIgnoresOtherHistograms) {
+  HistogramTester tester;
+  UMA_HISTOGRAM_ENUMERATION("SomePrefix.Foo", 1, 5);
+  UMA_HISTOGRAM_ENUMERATION("OtherPrefix.Foo", 2, 5);
+
+  EXPECT_THAT(
+      tester.GetAllSamplesForPrefix("SomePrefix"),
+      UnorderedElementsAre(Pair("SomePrefix.Foo", BucketsAre(Bucket(1, 1)))));
+}
+
+TEST(HistogramTesterTest, TestGetAllSamplesForPrefixNoSamples) {
+  HistogramTester tester;
+  EXPECT_THAT(tester.GetAllSamplesForPrefix("SomePrefix"), IsEmpty());
+}
+
+TEST(HistogramTesterTest, TestGetTotalSum) {
   // Emit values twice, once before the tester creation and once after.
   UMA_HISTOGRAM_COUNTS_100(kHistogram4, 2);
 
@@ -170,7 +207,29 @@ TEST_F(HistogramTesterTest, TestGetTotalSum) {
   EXPECT_EQ(7, tester.GetTotalSum(kHistogram4));
 }
 
-TEST_F(HistogramTesterTest, TestGetTotalCountsForPrefix) {
+TEST(HistogramTesterTest, TestGetTotalSumWithoutName) {
+  UMA_HISTOGRAM_COUNTS_100(kHistogram4, 2);
+
+  HistogramTester tester;
+  UMA_HISTOGRAM_COUNTS_100(kHistogram3, 4);
+  UMA_HISTOGRAM_COUNTS_100(kHistogram4, 3);
+  UMA_HISTOGRAM_COUNTS_100(kHistogram4, 4);
+
+  EXPECT_EQ(11, tester.GetTotalSum());
+}
+
+TEST(HistogramTesterTest, TestGetTotalSumForPrefix) {
+  HistogramTester tester;
+  UMA_HISTOGRAM_COUNTS_100("Prefix1.foo", 4);
+  UMA_HISTOGRAM_COUNTS_100("Prefix1.foo", 4);
+  UMA_HISTOGRAM_COUNTS_100("Prefix2.foo", 4);
+
+  EXPECT_EQ(8, tester.GetTotalSumForPrefix("Prefix1"));
+  EXPECT_EQ(4, tester.GetTotalSumForPrefix("Prefix2"));
+  EXPECT_EQ(0, tester.GetTotalSumForPrefix("SomePrefix"));
+}
+
+TEST(HistogramTesterTest, TestGetTotalCountsForPrefix) {
   HistogramTester tester;
   UMA_HISTOGRAM_ENUMERATION("Test1.Test2.Test3", 2, 5);
 
@@ -180,7 +239,7 @@ TEST_F(HistogramTesterTest, TestGetTotalCountsForPrefix) {
   EXPECT_EQ(1u, tester.GetTotalCountsForPrefix("Test1.").size());
 }
 
-TEST_F(HistogramTesterTest, TestGetAllChangedHistograms) {
+TEST(HistogramTesterTest, TestGetAllChangedHistograms) {
   // Emit multiple values, some before tester creation.
   UMA_HISTOGRAM_COUNTS_100(kHistogram6, true);
   UMA_HISTOGRAM_COUNTS_100(kHistogram4, 4);
@@ -206,7 +265,7 @@ TEST_F(HistogramTesterTest, TestGetAllChangedHistograms) {
       results.find("Histogram: Test1.Test2.Test3 recorded 1 new samples"));
 }
 
-TEST_F(HistogramTesterTest, MissingHistogramMeansEmptyBuckets) {
+TEST(HistogramTesterTest, MissingHistogramMeansEmptyBuckets) {
   // When a histogram hasn't been instantiated, expecting counts of zero should
   // still succeed.
   static const char kHistogram[] = "MissingHistogramMeansEmptyBucketsHistogram";
@@ -221,10 +280,10 @@ TEST_F(HistogramTesterTest, MissingHistogramMeansEmptyBuckets) {
             tester.GetHistogramSamplesSinceCreation(kHistogram)->TotalCount());
 }
 
-TEST_F(HistogramTesterTest, BucketsAre) {
+TEST(HistogramTesterTest, BucketsAre) {
   // Auxiliary functions for keeping the lines short.
   auto a = [](std::vector<Bucket> b) { return b; };
-  auto b = [](base::Histogram::Sample min, base::Histogram::Count count) {
+  auto b = [](base::Histogram::Sample32 min, base::Histogram::Count32 count) {
     return Bucket(min, count);
   };
   using ::testing::Not;
@@ -260,10 +319,10 @@ TEST_F(HistogramTesterTest, BucketsAre) {
               Not(BucketsAre(b(0, 0), b(1, 0), b(2, 0))));
 }
 
-TEST_F(HistogramTesterTest, BucketsInclude) {
+TEST(HistogramTesterTest, BucketsInclude) {
   // Auxiliary function for the "actual" values to shorten lines.
   auto a = [](std::vector<Bucket> b) { return b; };
-  auto b = [](base::Histogram::Sample min, base::Histogram::Count count) {
+  auto b = [](base::Histogram::Sample32 min, base::Histogram::Count32 count) {
     return Bucket(min, count);
   };
   using ::testing::Not;
@@ -299,4 +358,47 @@ TEST_F(HistogramTesterTest, BucketsInclude) {
               Not(BucketsInclude(b(0, 0), b(1, 0), b(2, 0))));
 }
 
+TEST(HistogramTesterTest, PumaScope) {
+  // Record a PUMA histogram before the creation of the recorder.
+  base::PumaHistogramBoolean(base::PumaType::kRc, kHistogram1, true);
+
+  HistogramTester tester;
+
+  // Verify that no PUMA histogram is recorded.
+  tester.ExpectTotalCount(kHistogram1, 0);
+
+  // Record a PUMA histogram after the creation of the recorder.
+  base::PumaHistogramBoolean(base::PumaType::kRc, kHistogram1, true);
+
+  // Verify that one PUMA histogram is recorded.
+  std::unique_ptr<HistogramSamples> samples(
+      tester.GetHistogramSamplesSinceCreation(kHistogram1));
+  EXPECT_TRUE(samples);
+  EXPECT_EQ(1, samples->TotalCount());
+}
+
+TEST(HistogramTesterTest, PumaTestUniqueSample) {
+  HistogramTester tester;
+
+  // Emit '2' three times.
+  base::PumaHistogramExactLinear(base::PumaType::kRc, kHistogram2, 2, 5);
+  base::PumaHistogramExactLinear(base::PumaType::kRc, kHistogram2, 2, 5);
+  base::PumaHistogramExactLinear(base::PumaType::kRc, kHistogram2, 2, 5);
+
+  tester.ExpectUniqueSample(kHistogram2, 2, 3);
+  tester.ExpectUniqueTimeSample(kHistogram2, base::Milliseconds(2), 3);
+}
+
+TEST(HistogramTesterTest, PumaTestGetAllSamples) {
+  HistogramTester tester;
+  base::PumaHistogramExactLinear(base::PumaType::kRc, kHistogram5, 2, 5);
+  base::PumaHistogramExactLinear(base::PumaType::kRc, kHistogram5, 3, 5);
+  base::PumaHistogramExactLinear(base::PumaType::kRc, kHistogram5, 3, 5);
+  base::PumaHistogramExactLinear(base::PumaType::kRc, kHistogram5, 5, 5);
+
+  EXPECT_THAT(tester.GetAllSamples(kHistogram5),
+              ElementsAre(Bucket(2, 1), Bucket(3, 2), Bucket(5, 1)));
+}
+
+}  // namespace
 }  // namespace base

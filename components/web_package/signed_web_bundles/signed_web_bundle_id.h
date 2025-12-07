@@ -10,7 +10,6 @@
 #include <string_view>
 
 #include "base/containers/span.h"
-#include "base/functional/callback.h"
 #include "base/types/expected.h"
 #include "components/web_package/signed_web_bundles/ecdsa_p256_public_key.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"

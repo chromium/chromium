@@ -46,5 +46,5 @@ cat ${HTML} | sed -e 's/ *$//g' > ${HTML}+ && mv ${HTML}+ ${HTML}
 cat ${CSS}  | sed -e 's/ *$//g' > ${CSS}+ && mv ${CSS}+ ${CSS}
 
 
-VERSION=$(fgrep Version ${HTML} | sed 's/.*Version \([0-9]\.[0-9]\.[0-9]\).*/\1/')
+VERSION=$(grep -F Version ${HTML} | sed 's/.*Version \([0-9]\.[0-9]\.[0-9]\).*/\1/')
 echo Now at version ${VERSION}

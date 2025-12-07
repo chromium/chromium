@@ -1,6 +1,6 @@
 # Structured Metrics and CrOS Events API
 
-This document describes the client side API for defining and recording Structured Metrics and CrOS Events. Structured Metrics is supported on ChromeOS, Windows, Mac, and Linux. ChromeOS support includes LaCrOS, Ash Chrome, and Platform2 processes.
+This document describes the client side API for defining and recording Structured Metrics and CrOS Events. Structured Metrics is supported on ChromeOS, Windows, Mac, and Linux. ChromeOS support includes Ash Chrome, and Platform2 processes.
 
 This is not a technical document.
 

@@ -1,0 +1,23 @@
+<!--
+@BLINK-ALLOW:hierarchicalLevel*
+@MAC-ALLOW:AXDisclosureLevel
+@WIN-ALLOW:level:*
+@WIN-ALLOW:xml-roles*
+@UIA-WIN-ALLOW:Level*
+@AURALINUX-ALLOW:level:*
+@AURALINUX-ALLOW:xml-roles*
+-->
+<html>
+<body>
+  <div headingoffset="3">
+    <h1><!-- Level 4 --></h1>
+    <dialog id="d1">
+        <h1><!-- Level 1 (reset) --></h1>
+        <h2><!-- Level 2 (reset) --></h2>
+    </dialog>
+  </div>
+  <script>
+    d1.showModal();
+  </script>
+</body>
+</html>

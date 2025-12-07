@@ -73,7 +73,7 @@ void WifiP2PMetricsLogger::RecordWifiP2POperationResult(
       base::UmaHistogramEnumeration(kDisconnectP2PGroupHistogram, result);
       return;
   }
-  NOTREACHED_IN_MIGRATION() << "Unknown WiFi P2P operation type: " << type;
+  NOTREACHED() << "Unknown WiFi P2P operation type: " << type;
 }
 
 void WifiP2PMetricsLogger::RecordTagSocketOperationResult(bool success) {

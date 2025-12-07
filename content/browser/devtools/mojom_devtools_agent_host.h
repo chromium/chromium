@@ -33,7 +33,7 @@ class MojomDevToolsAgentHost : public DevToolsAgentHostImpl {
   ~MojomDevToolsAgentHost() override;
 
   // DevToolsAgentHostImpl overrides:
-  bool AttachSession(DevToolsSession* session, bool acquire_wake_lock) override;
+  bool AttachSession(DevToolsSession* session) override;
 
   // DevToolsAgentHost overrides:
   std::string GetType() override;

@@ -12,6 +12,7 @@
 #include "ash/system/hotspot/hotspot_icon.h"
 #include "ash/system/hotspot/hotspot_icon_animation.h"
 #include "ash/system/tray/tray_constants.h"
+#include "base/strings/string_number_conversions.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -19,6 +20,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 
 namespace ash {
@@ -57,6 +59,9 @@ HotspotTrayView::HotspotTrayView(Shelf* shelf) : TrayItemView(shelf) {
       remote_cros_hotspot_config_.BindNewPipeAndPassReceiver());
   remote_cros_hotspot_config_->AddObserver(
       hotspot_config_observer_receiver_.BindNewPipeAndPassRemote());
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kImage);
+  UpdateAccessibleName();
 }
 
 HotspotTrayView::~HotspotTrayView() {
@@ -64,23 +69,13 @@ HotspotTrayView::~HotspotTrayView() {
   Shell::Get()->hotspot_icon_animation()->RemoveObserver(this);
 }
 
-void HotspotTrayView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // A valid role must be set prior to setting the name.
-  node_data->role = ax::mojom::Role::kImage;
-  node_data->SetName(tooltip_);
-}
-
 std::u16string HotspotTrayView::GetAccessibleNameString() const {
-  return tooltip_;
+  return GetTooltipText();
 }
 
 views::View* HotspotTrayView::GetTooltipHandlerForPoint(
     const gfx::Point& point) {
   return GetLocalBounds().Contains(point) ? this : nullptr;
-}
-
-std::u16string HotspotTrayView::GetTooltipText(const gfx::Point& p) const {
-  return tooltip_;
 }
 
 void HotspotTrayView::OnThemeChanged() {
@@ -93,10 +88,6 @@ void HotspotTrayView::HandleLocaleChange() {
 }
 
 void HotspotTrayView::UpdateLabelOrImageViewColor(bool active) {
-  if (!chromeos::features::IsJellyEnabled()) {
-    return;
-  }
-
   TrayItemView::UpdateLabelOrImageViewColor(active);
   UpdateIconImage();
 }
@@ -139,7 +130,8 @@ void HotspotTrayView::OnGetHotspotInfo(HotspotInfoPtr hotspot_info) {
   }
 
   SetVisible(true);
-  tooltip_ = ComputeHotspotTooltip(hotspot_info->client_count);
+  SetTooltipText(ComputeHotspotTooltip(hotspot_info->client_count));
+  UpdateAccessibleName();
 
   if (hotspot_info->state == HotspotState::kEnabling) {
     Shell::Get()->hotspot_icon_animation()->AddObserver(this);
@@ -150,6 +142,10 @@ void HotspotTrayView::OnGetHotspotInfo(HotspotInfoPtr hotspot_info) {
     state_ = hotspot_info->state;
     UpdateIconImage();
   }
+}
+
+void HotspotTrayView::UpdateAccessibleName() {
+  GetViewAccessibility().SetName(GetTooltipText());
 }
 
 BEGIN_METADATA(HotspotTrayView)

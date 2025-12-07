@@ -73,7 +73,7 @@ suite('onboardingUpdatePageTest', function() {
     assertEquals(
         loadTimeData.getStringF('currentVersionOutOfDateText', version),
         strictQuery(versionInfoSelector, component.shadowRoot, HTMLElement)
-            .textContent!.trim());
+            .textContent.trim());
     assertFalse(
         strictQuery(
             performUpdateButtonSelector, component.shadowRoot, CrButtonElement)
@@ -133,7 +133,8 @@ suite('onboardingUpdatePageTest', function() {
     // Simulate all compliant hardware.
     assert(service);
     service.triggerHardwareVerificationStatusObserver(
-        /* isCompliant= */ true, /* errorMessage= */ '', /* delayMs= */ 0);
+        /* result= */ {passResult: {}},
+        /* delayMs= */ 0);
     await flushTasks();
 
     // Verify the unqualified link isn't showing.
@@ -150,7 +151,7 @@ suite('onboardingUpdatePageTest', function() {
     const failedComponent = 'Keyboard';
     assert(service);
     service.triggerHardwareVerificationStatusObserver(
-        /* isCompliant= */ false, /* errorMessage= */ failedComponent,
+        /* result= */ {failResult: {componentInfo: failedComponent}},
         /* delayMs= */ 0);
     await flushTasks();
 
@@ -167,7 +168,7 @@ suite('onboardingUpdatePageTest', function() {
     assertEquals(
         failedComponent,
         strictQuery('#dialogBody', component.shadowRoot, HTMLElement)
-            .textContent!.trim());
+            .textContent.trim());
   });
 
   // Verify an error shows when an update fails.

@@ -24,10 +24,7 @@ using sync_pb::DataTypeStoreSchemaDescriptor;
 
 namespace syncer {
 
-const int64_t kInvalidSchemaVersion = -1;
-const int64_t DataTypeStoreBackend::kLatestSchemaVersion = 1;
-const char DataTypeStoreBackend::kDBSchemaDescriptorRecordId[] =
-    "_mts_schema_descriptor";
+constexpr int64_t kInvalidSchemaVersion = -1;
 
 namespace {
 
@@ -38,12 +35,7 @@ void LogDbStatusByCallingSiteIfNeeded(const std::string& calling_site,
   }
   const std::string histogram_name =
       "Sync.DataTypeStoreBackendError." + calling_site;
-  const std::string legacy_histogram_name =
-      "Sync.ModelTypeStoreBackendError." + calling_site;
   base::UmaHistogramEnumeration(histogram_name,
-                                leveldb_env::GetLevelDBStatusUMAValue(status),
-                                leveldb_env::LEVELDB_STATUS_MAX);
-  base::UmaHistogramEnumeration(legacy_histogram_name,
                                 leveldb_env::GetLevelDBStatusUMAValue(status),
                                 leveldb_env::LEVELDB_STATUS_MAX);
 }
@@ -92,13 +84,13 @@ DataTypeStoreBackend::CreateUninitialized() {
 // This is a refcounted class and the destructor is safe on any sequence and
 // hence DCHECK_CALLED_ON_VALID_SEQUENCE is omitted. Note that blocking
 // operations in leveldb's DBImpl::~DBImpl are posted to the backend sequence
-// due to the custom deleter used for |db_|.
+// due to the custom deleter used for `db_`.
 DataTypeStoreBackend::~DataTypeStoreBackend() = default;
 
 std::optional<ModelError> DataTypeStoreBackend::Init(
     const base::FilePath& path,
-    const std::vector<std::pair<std::string, std::string>>&
-        prefixes_to_update) {
+    const base::flat_map<std::string, std::optional<std::string>>&
+        prefixes_to_update_or_delete) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!IsInitialized());
   const std::string path_str = path.AsUTF8Unsafe();
@@ -107,18 +99,22 @@ std::optional<ModelError> DataTypeStoreBackend::Init(
   if (status.IsCorruption()) {
     DCHECK(db_ == nullptr);
     status = DestroyDatabase(path_str, env_.get());
-    if (status.ok())
+    if (status.ok()) {
       status = OpenDatabase(path_str, env_.get());
+    }
   }
   LogDbStatusByCallingSiteIfNeeded("Init", status);
   if (!status.ok()) {
-    DCHECK(db_ == nullptr);
-    return ModelError(FROM_HERE, status.ToString());
+    DCHECK(!db_);
+    return ModelError(FROM_HERE,
+                      ModelError::Type::kDataTypeStoreBackendDbOpenFailed);
   }
 
   int64_t current_version = GetStoreVersion();
   if (current_version == kInvalidSchemaVersion) {
-    return ModelError(FROM_HERE, "Invalid schema descriptor");
+    return ModelError(
+        FROM_HERE,
+        ModelError::Type::kDataTypeStoreBackendInvalidSchemaDescriptor);
   }
 
   if (current_version != kLatestSchemaVersion) {
@@ -131,8 +127,9 @@ std::optional<ModelError> DataTypeStoreBackend::Init(
 
   // Note: It's the caller's responsibility to ensure that the prefix migration
   // is only triggered once.
-  for (const auto& [from, to] : prefixes_to_update) {
-    std::optional<ModelError> error = UpdateDataPrefix(from, to);
+  for (const auto& [from, to] : prefixes_to_update_or_delete) {
+    std::optional<ModelError> error =
+        to.has_value() ? UpdateDataPrefix(from, *to) : RemoveDataPrefix(from);
     if (error) {
       return error;
     }
@@ -158,8 +155,9 @@ leveldb::Status DataTypeStoreBackend::OpenDatabase(const std::string& path,
   options.paranoid_checks = true;
   options.write_buffer_size = 512 * 1024;
 
-  if (env)
+  if (env) {
     options.env = env;
+  }
 
   std::unique_ptr<leveldb::DB> tmp_db;
   const leveldb::Status status = leveldb_env::OpenDB(options, path, &tmp_db);
@@ -174,8 +172,9 @@ leveldb::Status DataTypeStoreBackend::OpenDatabase(const std::string& path,
 leveldb::Status DataTypeStoreBackend::DestroyDatabase(const std::string& path,
                                                       leveldb::Env* env) {
   leveldb_env::Options options;
-  if (env)
+  if (env) {
     options.env = env;
+  }
   return leveldb::DestroyDB(path, options);
 }
 
@@ -201,7 +200,8 @@ std::optional<ModelError> DataTypeStoreBackend::ReadRecordsWithPrefix(
     } else if (status.IsNotFound()) {
       missing_id_list->push_back(id);
     } else {
-      return ModelError(FROM_HERE, status.ToString());
+      return ModelError(FROM_HERE,
+                        ModelError::Type::kDataTypeStoreBackendDbReadFailed);
     }
   }
   return std::nullopt;
@@ -219,15 +219,18 @@ std::optional<ModelError> DataTypeStoreBackend::ReadAllRecordsWithPrefix(
   const leveldb::Slice prefix_slice(prefix);
   for (iter->Seek(prefix_slice); iter->Valid(); iter->Next()) {
     leveldb::Slice key = iter->key();
-    if (!key.starts_with(prefix_slice))
+    if (!key.starts_with(prefix_slice)) {
       break;
+    }
     key.remove_prefix(prefix_slice.size());
     record_list->emplace_back(key.ToString(), iter->value().ToString());
   }
   LogDbStatusByCallingSiteIfNeeded("ReadAllRecords", iter->status());
-  return iter->status().ok() ? std::nullopt
-                             : std::optional<ModelError>(
-                                   {FROM_HERE, iter->status().ToString()});
+  return iter->status().ok()
+             ? std::nullopt
+             : std::optional<ModelError>(
+                   {FROM_HERE,
+                    ModelError::Type::kDataTypeStoreBackendDbIterationFailed});
 }
 
 std::optional<ModelError> DataTypeStoreBackend::WriteModifications(
@@ -237,9 +240,11 @@ std::optional<ModelError> DataTypeStoreBackend::WriteModifications(
   leveldb::Status status =
       db_->Write(leveldb::WriteOptions(), write_batch.get());
   LogDbStatusByCallingSiteIfNeeded("WriteModifications", status);
-  return status.ok()
-             ? std::nullopt
-             : std::optional<ModelError>({FROM_HERE, status.ToString()});
+  return status.ok() ? std::nullopt
+                     : std::optional<ModelError>(
+                           {FROM_HERE,
+                            ModelError::Type::
+                                kDataTypeStoreBackendWriteModificationsFailed});
 }
 
 std::optional<ModelError> DataTypeStoreBackend::DeleteDataAndMetadataForPrefix(
@@ -253,15 +258,18 @@ std::optional<ModelError> DataTypeStoreBackend::DeleteDataAndMetadataForPrefix(
   const leveldb::Slice prefix_slice(prefix);
   for (iter->Seek(prefix_slice); iter->Valid(); iter->Next()) {
     leveldb::Slice key = iter->key();
-    if (!key.starts_with(prefix_slice))
+    if (!key.starts_with(prefix_slice)) {
       break;
+    }
     write_batch.Delete(key);
   }
   leveldb::Status status = db_->Write(leveldb::WriteOptions(), &write_batch);
   LogDbStatusByCallingSiteIfNeeded("DeleteData", status);
   return status.ok()
              ? std::nullopt
-             : std::optional<ModelError>({FROM_HERE, status.ToString()});
+             : std::optional<ModelError>(
+                   {FROM_HERE,
+                    ModelError::Type::kDataTypeStoreBackendDeletePrefixFailed});
 }
 
 std::optional<ModelError> DataTypeStoreBackend::MigrateForTest(
@@ -304,9 +312,11 @@ std::optional<ModelError> DataTypeStoreBackend::Migrate(
   if (current_version == desired_version) {
     return std::nullopt;
   } else if (current_version > desired_version) {
-    return ModelError(FROM_HERE, "Schema version too high");
+    return ModelError(
+        FROM_HERE, ModelError::Type::kDataTypeStoreBackendSchemaVersionTooHigh);
   } else {
-    return ModelError(FROM_HERE, "Schema upgrade failed");
+    return ModelError(
+        FROM_HERE, ModelError::Type::kDataTypeStoreBackendSchemaUpgradeFailed);
   }
 }
 
@@ -336,6 +346,25 @@ std::optional<ModelError> DataTypeStoreBackend::UpdateDataPrefix(
     // is now the prefix-less ID.
     write_batch->Delete(old_prefix + record.id);
     write_batch->Put(new_prefix + record.id, record.value);
+  }
+
+  return WriteModifications(std::move(write_batch));
+}
+
+std::optional<ModelError> DataTypeStoreBackend::RemoveDataPrefix(
+    const std::string& prefix) {
+  DataTypeStore::RecordList records;
+
+  if (std::optional<ModelError> error =
+          ReadAllRecordsWithPrefix(prefix, &records)) {
+    return error;
+  }
+
+  auto write_batch = std::make_unique<leveldb::WriteBatch>();
+  for (const DataTypeStore::Record& record : records) {
+    // Note that `ReadAllRecordsWithPrefix` strips the prefix, so `record.id`
+    // is now the prefix-less ID.
+    write_batch->Delete(base::StrCat({prefix, record.id}));
   }
 
   return WriteModifications(std::move(write_batch));

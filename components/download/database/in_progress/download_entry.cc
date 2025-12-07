@@ -26,17 +26,4 @@ DownloadEntry::DownloadEntry(
 
 DownloadEntry::~DownloadEntry() = default;
 
-bool DownloadEntry::operator==(const DownloadEntry& other) const {
-  return guid == other.guid && request_origin == other.request_origin &&
-         download_source == other.download_source &&
-         ukm_download_id == other.ukm_download_id &&
-         bytes_wasted == other.bytes_wasted &&
-         fetch_error_body == other.fetch_error_body &&
-         request_headers == other.request_headers;
-}
-
-bool DownloadEntry::operator!=(const DownloadEntry& other) const {
-  return !(*this == other);
-}
-
 }  // namespace download

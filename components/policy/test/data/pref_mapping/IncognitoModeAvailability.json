@@ -4,22 +4,18 @@
       "win",
       "linux",
       "mac",
-      "chromeos_ash",
-      "chromeos_lacros",
+      "chromeos",
       "android",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "IncognitoModeAvailability": 1
-        },
-        "prefs": {
-          "incognito.mode_availability": {
-            "value": 1
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "incognito.mode_availability",
+      "default_value": 0,
+      "values_to_test": [
+        0,
+        1,
+        2
+      ]
+    }
   }
 ]

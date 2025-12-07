@@ -1,0 +1,20 @@
+This is not ABI-compatible but:
+- neither were the previous patches
+- this makes things a lot easier for a followup fix for generate-id()
+  in libxslt
+
+This patch will not be upstreamed.
+
+diff --git a/include/libxml/tree.h b/include/libxml/tree.h
+index e5a8fb70..ff975230 100644
+--- a/include/libxml/tree.h
++++ b/include/libxml/tree.h
+@@ -752,7 +752,7 @@ struct _xmlNode {
+     /** Line number */
+     unsigned short   line;
+     /** Extra data for XPath/XSLT */
+-    unsigned short   extra;
++    unsigned int     extra;
+ };
+ 
+ /**

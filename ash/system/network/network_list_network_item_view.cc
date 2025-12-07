@@ -26,6 +26,8 @@
 #include "ash/system/tray/tray_info_label.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_utils.h"
+#include "base/check.h"
+#include "base/check_deref.h"
 #include "base/i18n/number_formatting.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
@@ -79,8 +81,7 @@ bool NetworkTypeIsConfigurable(NetworkType type) {
     case NetworkType::kWireless:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 ActivationStateType GetNetworkActivationState(
@@ -286,7 +287,7 @@ void NetworkListNetworkItemView::UpdateViewForNetwork(
   }
 
   if (text_label()) {
-    text_label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+    text_label()->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                           *text_label());
   }
@@ -325,8 +326,8 @@ void NetworkListNetworkItemView::UpdateViewForNetwork(
 void NetworkListNetworkItemView::NetworkIconChanged() {
   DCHECK(views::IsViewClass<views::ImageView>(left_view()));
   static_cast<views::ImageView*>(left_view())
-      ->SetImage(
-          GetNetworkImageForNetwork(GetColorProvider(), network_properties_));
+      ->SetImage(ui::ImageModel::FromImageSkia(
+          GetNetworkImageForNetwork(GetColorProvider(), network_properties_)));
 }
 
 void NetworkListNetworkItemView::OnThemeChanged() {
@@ -346,7 +347,7 @@ void NetworkListNetworkItemView::SetupCellularSubtext() {
   }
 
   SetSubText(l10n_util::GetStringUTF16(cellular_subtext_message_id));
-  sub_text_label()->SetEnabledColorId(cros_tokens::kCrosSysWarning);
+  sub_text_label()->SetEnabledColor(cros_tokens::kCrosSysWarning);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
                                         *sub_text_label());
 }
@@ -387,8 +388,10 @@ void NetworkListNetworkItemView::UpdateDisabledTextColor() {
 
 void NetworkListNetworkItemView::AddPowerStatusView() {
   auto image_icon = std::make_unique<views::ImageView>();
-  const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary);
+
+  auto& color_provider = CHECK_DEREF(GetColorProvider());
+  const SkColor icon_color =
+      color_provider.GetColor(cros_tokens::kIconColorPrimary);
   image_icon->SetPreferredSize(gfx::Size(kMenuIconSize, kMenuIconSize));
   image_icon->SetFlipCanvasOnPaintForRTLUI(true);
 
@@ -409,10 +412,8 @@ void NetworkListNetworkItemView::AddPowerStatusView() {
 void NetworkListNetworkItemView::AddPolicyView() {
   std::unique_ptr<views::ImageView> controlled_icon(
       TrayPopupUtils::CreateMainImageView(/*use_wide_layout=*/false));
-  const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary);
-  controlled_icon->SetImage(
-      gfx::CreateVectorIcon(kSystemMenuBusinessIcon, icon_color));
+  controlled_icon->SetImage(ui::ImageModel::FromVectorIcon(
+      kSystemMenuBusinessIcon, cros_tokens::kIconColorPrimary));
   AddRightView(controlled_icon.release());
 }
 

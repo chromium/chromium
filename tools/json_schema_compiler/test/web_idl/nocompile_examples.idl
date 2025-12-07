@@ -1,0 +1,61 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+dictionary NormalDictionary {
+  DOMString normalMember;
+};
+
+[nocompile] dictionary DictionaryWithNoCompile {
+  DOMString memberOnNoCompileDict;
+};
+
+dictionary DictionaryWithNoCompileMember {
+  [nocompile] DOMString nocompileMember;
+  DOMString normalMember;
+};
+
+enum NormalEnum {
+  "name1",
+  "name2"
+};
+
+[nocompile] enum EnumWithNoCompile {
+  "name1",
+  "name2"
+};
+
+callback SharedEventListener = undefined ();
+interface NoCompileEvent : ExtensionEvent {
+  static void addListener(SharedEventListener listener);
+  static void removeListener(SharedEventListener listener);
+  static void hasListener(SharedEventListener listener);
+};
+interface NormalEvent : ExtensionEvent {
+  static void addListener(SharedEventListener listener);
+  static void removeListener(SharedEventListener listener);
+  static void hasListener(SharedEventListener listener);
+};
+
+// The nocompile API. This exists to demonstrate a variety of nocompile extended
+// attribute usage.
+// Note: Practically with how nocompile works during actual schema compilation
+// this schema doesn't really make sense, as the top level schema node would be
+// deleted, making all the other 'nocompile's redundant. However we can still
+// use this schema to check that the attribute is set correctly on each node
+// after just the parsing and processing steps (before compilation).
+[nocompile] interface NoCompileAPI {
+
+  [nocompile] static undefined functionWithNoCompile();
+  static undefined normalFunction();
+
+  [nocompile] static attribute NoCompileEvent noCompileEvent;
+  static attribute NormalEvent normalEvent;
+
+  [nocompile] const long PROPERTY_WITH_NOCOMPILE = 6;
+  const long NORMAL_PROPERTY = 6;
+};
+
+partial interface Browser {
+  static attribute NoCompileAPI nocompileAPI;
+};

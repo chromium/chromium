@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/kiosk_mode_info.h"
@@ -21,7 +21,6 @@ namespace ash {
 
 // Wrapper around extensions::ExtensionBuilder for creating extension::Extension
 // instances for usage in kiosk app tests.
-// TODO(b/227985497): Turn this into a proper builder
 class TestKioskExtensionBuilder {
  public:
   TestKioskExtensionBuilder(extensions::Manifest::Type type,

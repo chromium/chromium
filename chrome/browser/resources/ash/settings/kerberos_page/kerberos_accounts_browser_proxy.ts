@@ -140,7 +140,7 @@ export class KerberosAccountsBrowserProxyImpl implements
   }
 
   removeAccount(account: KerberosAccount): Promise<KerberosErrorType> {
-    return sendWithPromise('removeKerberosAccount', account!.principalName);
+    return sendWithPromise('removeKerberosAccount', account.principalName);
   }
 
   validateConfig(krb5conf: string): Promise<ValidateKerberosConfigResult> {
@@ -148,6 +148,6 @@ export class KerberosAccountsBrowserProxyImpl implements
   }
 
   setAsActiveAccount(account: KerberosAccount): void {
-    chrome.send('setAsActiveKerberosAccount', [account!.principalName]);
+    chrome.send('setAsActiveKerberosAccount', [account.principalName]);
   }
 }

@@ -10,6 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/animation/interpolable_shadow.h"
 #include "third_party/blink/renderer/core/animation/list_interpolation_functions.h"
+#include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
@@ -30,8 +31,7 @@ const ShadowList* GetShadowList(const CSSProperty& property,
     case CSSPropertyID::kTextShadow:
       return style.TextShadow();
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 }  // namespace
@@ -126,7 +126,7 @@ class AlwaysInvalidateChecker
 
 InterpolationValue CSSShadowListInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState* state,
+    const StyleResolverState& state,
     ConversionCheckers&) const {
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (identifier_value && identifier_value->GetValueID() == CSSValueID::kNone)
@@ -137,16 +137,9 @@ InterpolationValue CSSShadowListInterpolationType::MaybeConvertValue(
 
   const auto& value_list = To<CSSValueList>(value);
   return ListInterpolationFunctions::CreateList(
-      value_list.length(), [&value_list, state](wtf_size_t index) {
-        mojom::blink::ColorScheme color_scheme =
-            state ? state->StyleBuilder().UsedColorScheme()
-                  : mojom::blink::ColorScheme::kLight;
-        const ui::ColorProvider* color_provider =
-            state
-                ? state->GetDocument().GetColorProviderForPainting(color_scheme)
-                : nullptr;
+      value_list.length(), [&value_list, &state](wtf_size_t index) {
         return InterpolationValue(InterpolableShadow::MaybeConvertCSSValue(
-            value_list.Item(index), color_scheme, color_provider));
+            value_list.Item(index), state));
       });
 }
 
@@ -179,7 +172,7 @@ void CSSShadowListInterpolationType::Composite(
     double interpolation_fraction) const {
   // We do our compositing behavior in |PreInterpolationCompositeIfNeeded|; see
   // the documentation on that method.
-  underlying_value_owner.Set(*this, value);
+  underlying_value_owner.Set(this, value);
 }
 
 static ShadowList* CreateShadowList(
@@ -213,7 +206,7 @@ void CSSShadowListInterpolationType::ApplyStandardPropertyValue(
       state.StyleBuilder().SetTextShadow(shadow_list);
       return;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

@@ -27,13 +27,12 @@ net::IPEndPoint FakeIPAddress() {
 FakeNetworkContext::DnsResult::DnsResult(
     int32_t result,
     net::ResolveErrorInfo resolve_error_info,
-    std::optional<net::AddressList> resolved_addresses,
-    std::optional<net::HostResolverEndpointResults>
-        endpoint_results_with_metadata)
+    net::AddressList resolved_addresses,
+    net::HostResolverEndpointResults alternative_endpoints)
     : result_(result),
-      resolve_error_info_(resolve_error_info),
-      resolved_addresses_(resolved_addresses),
-      endpoint_results_with_metadata_(endpoint_results_with_metadata) {}
+      resolve_error_info_(std::move(resolve_error_info)),
+      resolved_addresses_(std::move(resolved_addresses)),
+      alternative_endpoints_(std::move(alternative_endpoints)) {}
 
 FakeNetworkContext::DnsResult::~DnsResult() = default;
 
@@ -56,14 +55,14 @@ void FakeNetworkContext::ResolveHost(
     rpc->OnComplete(fake_dns_result_->result_,
                     fake_dns_result_->resolve_error_info_,
                     fake_dns_result_->resolved_addresses_,
-                    fake_dns_result_->endpoint_results_with_metadata_);
+                    fake_dns_result_->alternative_endpoints_);
   } else {
     CHECK(!fake_dns_results_.empty());
     auto dns_result = std::move(fake_dns_results_.front());
     fake_dns_results_.pop_front();
     rpc->OnComplete(dns_result->result_, dns_result->resolve_error_info_,
                     dns_result->resolved_addresses_,
-                    dns_result->endpoint_results_with_metadata_);
+                    dns_result->alternative_endpoints_);
   }
   rpc.reset();
 }

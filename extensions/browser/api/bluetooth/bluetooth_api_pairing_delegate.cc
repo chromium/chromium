@@ -102,9 +102,9 @@ void BluetoothApiPairingDelegate::AuthorizePairing(
 void BluetoothApiPairingDelegate::DispatchPairingEvent(
     const bt_private::PairingEvent& pairing_event) {
   auto args = bt_private::OnPairing::Create(pairing_event);
-  std::unique_ptr<Event> event(new Event(events::BLUETOOTH_PRIVATE_ON_PAIRING,
-                                         bt_private::OnPairing::kEventName,
-                                         std::move(args)));
+  auto event = std::make_unique<Event>(events::BLUETOOTH_PRIVATE_ON_PAIRING,
+                                       bt_private::OnPairing::kEventName,
+                                       std::move(args));
   EventRouter::Get(browser_context_)->BroadcastEvent(std::move(event));
 }
 

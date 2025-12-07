@@ -22,7 +22,7 @@
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF16ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -33,7 +33,7 @@ AppModalDialogViewAndroid::AppModalDialogViewAndroid(
     AppModalDialogController* controller,
     gfx::NativeWindow parent)
     : controller_(controller),
-      parent_jobject_weak_ref_(env, parent->GetJavaObject().obj()) {
+      parent_jobject_weak_ref_(env, parent->GetJavaObject()) {
   controller->web_contents()->GetDelegate()->ActivateContents(
       controller->web_contents());
 }
@@ -80,7 +80,7 @@ void AppModalDialogViewAndroid::ShowAppModalDialog() {
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   // Keep a ref to the java side object until we get a confirm or cancel.
@@ -95,7 +95,7 @@ void AppModalDialogViewAndroid::ActivateAppModalDialog() {
   // that does not host the currently active app modal dialog, as a way to
   // redirect activation to the app modal dialog host. It's not relevant on
   // Android.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void AppModalDialogViewAndroid::CloseAppModalDialog() {
@@ -110,8 +110,7 @@ void AppModalDialogViewAndroid::AcceptAppModalDialog() {
 
 void AppModalDialogViewAndroid::DidAcceptAppModalDialog(
     JNIEnv* env,
-    const JavaParamRef<jobject>&,
-    const JavaParamRef<jstring>& prompt,
+    const JavaRef<jstring>& prompt,
     bool should_suppress_js_dialogs) {
   std::u16string prompt_text =
       base::android::ConvertJavaStringToUTF16(env, prompt);
@@ -130,7 +129,6 @@ bool AppModalDialogViewAndroid::IsShowing() const {
 
 void AppModalDialogViewAndroid::DidCancelAppModalDialog(
     JNIEnv* env,
-    const JavaParamRef<jobject>&,
     bool should_suppress_js_dialogs) {
   controller_->OnCancel(should_suppress_js_dialogs);
   delete this;
@@ -152,8 +150,8 @@ AppModalDialogViewAndroid::~AppModalDialogViewAndroid() {
 }
 
 // static
-ScopedJavaLocalRef<jobject> JNI_JavascriptAppModalDialog_GetCurrentModalDialog(
-    JNIEnv* env) {
+static ScopedJavaLocalRef<jobject>
+JNI_JavascriptAppModalDialog_GetCurrentModalDialog(JNIEnv* env) {
   AppModalDialogController* controller =
       AppModalDialogQueue::GetInstance()->active_dialog();
   if (!controller || !controller->view())
@@ -165,3 +163,5 @@ ScopedJavaLocalRef<jobject> JNI_JavascriptAppModalDialog_GetCurrentModalDialog(
 }
 
 }  // namespace javascript_dialogs
+
+DEFINE_JNI(JavascriptAppModalDialog)

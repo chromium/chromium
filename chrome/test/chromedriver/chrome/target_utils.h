@@ -17,14 +17,15 @@ class WebViewsInfo;
 
 namespace target_utils {
 
-Status GetWebViewsInfo(DevToolsClient& devtools_websocket_client,
-                       const Timeout* timeout,
-                       WebViewsInfo& views_info);
-Status WaitForPage(DevToolsClient& client, const Timeout& timeout);
-Status AttachToPageTarget(DevToolsClient& browser_client,
-                          const std::string& target_id,
-                          const Timeout* timeout,
-                          std::unique_ptr<DevToolsClient>& target_client);
+Status GetTopLevelViewsInfo(DevToolsClient& devtools_websocket_client,
+                            const Timeout* timeout,
+                            WebViewsInfo& views_info);
+Status WaitForTab(DevToolsClient& client, const Timeout& timeout);
+Status AttachToPageOrTabTarget(DevToolsClient& browser_client,
+                               const std::string& target_id,
+                               const Timeout* timeout,
+                               std::unique_ptr<DevToolsClient>& target_client,
+                               bool is_tab);
 
 }  // namespace target_utils
 

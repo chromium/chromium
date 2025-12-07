@@ -4,7 +4,7 @@
 
 module ash.camera_app.mojom;
 
-import "ash/components/arc/mojom/camera_intent.mojom";
+import "chromeos/ash/experiences/arc/mojom/camera_intent.mojom";
 import "ash/webui/camera_app_ui/events_sender.mojom";
 import "ash/webui/camera_app_ui/ocr.mojom";
 import "ash/webui/camera_app_ui/pdf_builder.mojom";
@@ -183,6 +183,13 @@ interface WindowStateController {
   Focus() => ();
 };
 
+// The values for generating a custom aspect ratio order.
+enum AspectRatio {
+  kOthers = 0,
+  k4To3 = 1,
+  k16To9 = 2,
+};
+
 // Interface for communication between Chrome Camera App (Remote) and Chrome
 // (Receiver).
 interface CameraAppHelper {
@@ -334,4 +341,7 @@ interface CameraAppHelper {
 
   // Creates a PDF builder.
   CreatePdfBuilder(pending_receiver<PdfBuilder> builder);
+
+  // Returns the custom aspect ratio order for the device.
+  GetAspectRatioOrder() => (array<AspectRatio> order);
 };

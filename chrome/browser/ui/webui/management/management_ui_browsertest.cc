@@ -7,7 +7,6 @@
 #include "base/json/json_reader.h"
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -76,7 +75,7 @@ class ManagementUITest : public InProcessBrowserTest {
   policy::FakeBrowserDMTokenStorage fake_dm_token_storage_;
 };
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(ManagementUITest, ManagementStateChange) {
   // Ensure the device is not considered managed.
@@ -99,8 +98,8 @@ IN_PROC_BROWSER_TEST_F(ManagementUITest, ManagementStateChange) {
   std::string unmanaged_json =
       content::EvalJs(contents, javascript).ExtractString();
 
-  std::optional<base::Value> unmanaged_value_ptr =
-      base::JSONReader::Read(unmanaged_json);
+  std::optional<base::Value> unmanaged_value_ptr = base::JSONReader::Read(
+      unmanaged_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   std::map<std::string, std::u16string> expected_unmanaged_values{
       {"browserManagementNotice",
        l10n_util::GetStringFUTF16(
@@ -131,8 +130,8 @@ IN_PROC_BROWSER_TEST_F(ManagementUITest, ManagementStateChange) {
   std::string managed_json =
       content::EvalJs(contents, javascript).ExtractString();
 
-  std::optional<base::Value> managed_value_ptr =
-      base::JSONReader::Read(managed_json);
+  std::optional<base::Value> managed_value_ptr = base::JSONReader::Read(
+      managed_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   std::map<std::string, std::u16string> expected_managed_values{
       {"browserManagementNotice",
        l10n_util::GetStringFUTF16(
@@ -147,4 +146,4 @@ IN_PROC_BROWSER_TEST_F(ManagementUITest, ManagementStateChange) {
 
   VerifyTexts(&*managed_value_ptr, expected_managed_values);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)

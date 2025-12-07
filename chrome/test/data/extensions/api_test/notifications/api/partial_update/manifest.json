@@ -1,11 +1,10 @@
 {
   "name": "chrome.notifications",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "version": "0.1",
   "description": "chrome.notifications API events",
   "background": {
-    "scripts": ["background.js"],
-    "persistent": false
+    "service_worker": "background.js"
   },
   "permissions": [
     "notifications"

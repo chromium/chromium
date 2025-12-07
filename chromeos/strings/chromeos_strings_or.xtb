@@ -5,9 +5,13 @@
 <translation id="1014750484722996375">ଡେସ୍କଗୁଡ଼ିକ</translation>
 <translation id="1018219910092211213">DNSର ସମାଧାନ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="1018656279737460067">ବାତିଲ୍‌ କରାଗଲା</translation>
+<translation id="1019971142067430077">ଏହି ବିଷୟବସ୍ତୁ ପାଇଁ ରେକର୍ଡିଂ ଟାଇଟେଲ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="1020274983236703756">ଏକ୍ସକ୍ଲୁସିଭ <ph name="PRODUCT_NAME" /> ଆସେଟଗୁଡ଼ିକ ବର୍ତ୍ତମାନ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="1022628058306505708">ଆର୍ଥ ଫ୍ଲୋ</translation>
+<translation id="102432830749687801">ଆକ୍ସେସ ହରାଇବା ପୂର୍ବରୁ ଆପଣଙ୍କ ସ୍କୁଲ ଆକାଉଣ୍ଟ ଡାଟାକୁ ଆପଣଙ୍କର ବ୍ୟକ୍ତିଗତ ଆକାଉଣ୍ଟକୁ ମୁଭ କରିବା ପାଇଁ Googleର Content Transfer ଆପକୁ ବ୍ୟବହାର କରିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
 <translation id="1026212596705997935">ସର୍ଟକଟକୁ "<ph name="CONFLICT_ACCEL_NAME" />" ପାଇଁ ବ୍ୟବହାର କରାଯାଉଛି। ଏକ ନୂଆ ସର୍ଟକଟକୁ ଦବାନ୍ତୁ। ପୂର୍ବରୁ ଥିବା ସର୍ଟକଟକୁ ବଦଳାଇବା ପାଇଁ ଏହି ସର୍ଟକଟକୁ ପୁଣି ଦବାନ୍ତୁ।</translation>
+<translation id="1030856839388844477">ଡାଟା ବ୍ୟବହାର ରିସେଟ କରନ୍ତୁ</translation>
+<translation id="1047095725494118091">ଡାଉନଲୋଡ କରାଯାଇପାରିବ ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କର <ph name="DEVICE_TYPE" /> ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ।</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" />ଟି ଥ୍ରେଡ୍, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">ନୂଆ ଫିଚର୍ ଉପଲବ୍ଧ ଅଛି, ଅଧିକ ଜାଣିବାକୁ ଅପ୍ ତୀର କୀ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="1049663189809099096">ପେଷ୍ଟେଲ ହଳଦିଆ</translation>
@@ -16,14 +20,20 @@
 <translation id="1059913517121127803">ସ୍କାନିଂ ଆରମ୍ଭ କରାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="1061864016440983342">ଲୋକେସନ ବିନା ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="1062823486781306604"><ph name="COUNT" />ଟିରୁ <ph name="INDEX" />, <ph name="NAME" />।</translation>
+<translation id="106558928761833284">ନୀଳ, ଗୋଲାପୀ ଏବଂ ବାଇଗଣୀ ରଙ୍ଗର ଏକ ଦ୍ରୁତ ଅତ୍ୟାଧୁନିକ ମହାକାଶଯାନ ସହିତ ଏକ ସୁନ୍ଦର କସମିକ ନେବୁଲା ଗାଲାକ୍ସି</translation>
+<translation id="1069150558259542054">କଷ୍ଟମ ସର୍ଟକଟଗୁଡ଼ିକ ପାଇଁ କୁଇକ ଇନସାର୍ଟକୁ ବ୍ୟବହାର କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ଫାୟାରୱାଲ୍ ଥିବାର ଚିହ୍ନଟ କରାଯାଇଛି</translation>
 <translation id="1075811647922107217">ପୃଷ୍ଠାର ଆକାର</translation>
 <translation id="1082009148392559545">ସ୍କ୍ରିନ ସେଭର ଡାଉନଲୋଡ କରାଯାଉଛି</translation>
 <translation id="1094693127011229778">IP ଠିକଣା ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="1100902271996134409">ଇମେଜଗୁଡ଼ିକ ତିଆରି କରାଯାଉଛି...</translation>
+<translation id="1102946598597843031">4kରେ ଚେରି ଫୁଲର ପତ୍ର ଝଡ଼ୁଥିବା ସହ ହ୍ରଦ ଉପରେ ଦେଖାଯାଉଥିବା ଚନ୍ଦ୍ରର ଏକ ଫଟୋ</translation>
+<translation id="1107856713690040084"><ph name="DEVICE_TYPE" /> ଅଡିଓ</translation>
 <translation id="1116694919640316211">ବିଷୟରେ</translation>
 <translation id="1118572504348554005">ଆପଣ ଆମକୁ ରିପୋର୍ଟ କରିଥିବା ବଗ ଏବଂ ଅନ୍ୟ ସମସ୍ୟାଗୁଡ଼ିକର ଟ୍ରବୁଲସୁଟ କରିବା ପାଇଁ ଏହି ଫର୍ମ ମାଧ୍ୟମରେ ଦାଖଲ କରାଯାଇଥିବା ମତାମତକୁ ଆମେ ଆମ ପାର୍ଟନରମାନଙ୍କ ସହ ସେୟାର କରିପାରୁ। ପାସୱାର୍ଡଗୁଡ଼ିକ ପରି ସମ୍ବେଦନଶୀଳ ସୂଚନା ଅନ୍ତର୍ଭୁକ୍ତ କରନ୍ତୁ ନାହିଁ।</translation>
+<translation id="1118596190635569417">ଏହି ମେନୁକୁ ଡାହାଣପଟକୁ ମୁଭ କରନ୍ତୁ</translation>
+<translation id="1119403468619527527">ସରଳ କରିବା ପାଇଁ ବହୁତ କମ ଶବ୍ଦ ଅଛି</translation>
 <translation id="1119447706177454957">ଇଣ୍ଟର୍ନଲ୍‌ ତ୍ରୁଟି</translation>
 <translation id="1124772482545689468">ୟୁଜର</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -36,32 +46,39 @@
 <translation id="1164939766849482256">ଡନ ଟୁ ଡାର୍କ ସ୍କ୍ରିନ ସେଭର</translation>
 <translation id="1167755866710282443">କୀ'ଗୁଡ଼ିକୁ କଷ୍ଟମାଇଜ କରିବା ପାଇଁ ମେନୁ ଖୋଲନ୍ତୁ। ମୁଭ କରିବା ପାଇଁ ମେନୁକୁ ଡ୍ରାଗ କରନ୍ତୁ।</translation>
 <translation id="1171349345463658120">ବାଲୁକାମୟ ହ୍ରଦ</translation>
-<translation id="1173894706177603556">ରିନେମ୍ କରନ୍ତୁ</translation>
 <translation id="1174073918202301297">ସର୍ଟକଟ୍ ଯୋଗ କରାଗଲା</translation>
 <translation id="11743817593307477">ଆପଣ ଚାହୁଁଥିବା ଗେମ ଆକ୍ସନକୁ ଏହି ନିୟନ୍ତ୍ରଣ ମୁଭ କରିବାକୁ ତୀର କୀ'ଗୁଡ଼ିକ ବ୍ୟବହାର କରନ୍ତୁ। ନିୟନ୍ତ୍ରଣ ରଖିବାକୁ ଏଣ୍ଟର କୀ'କୁ ବ୍ୟବହାର କରନ୍ତୁ। ବାତିଲ କରିବା ପାଇଁ ଏସକେପ କୀ'କୁ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="1175697296044146566">ଏହି <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି।</translation>
 <translation id="1175951029573070619">ସାଧାରଣ (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">ବିରତି</translation>
 <translation id="1180621378971766337">ଆରାମଦାୟକ</translation>
 <translation id="1181037720776840403">କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="1191518099344003522">APNକୁ ସକ୍ଷମ କରାଯାଇଛି।</translation>
 <translation id="1195447618553298278">ଅଜ୍ଞାତ ତୃଟି ।</translation>
+<translation id="1196264380943975940">ସାରାଂଶ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ। ଏକ ଲମ୍ବା ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ।</translation>
 <translation id="1196959502276349371">ସଂସ୍କରଣ <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">ଚଲାନ୍ତୁ/ବିରତ କରନ୍ତୁ</translation>
 <translation id="1201402288615127009">ପରବର୍ତ୍ତୀ</translation>
 <translation id="1204296502688602597">DNS ଲାଟେନ୍ସି</translation>
 <translation id="1207734034680156868">ଆପଣଙ୍କର ବର୍ଣ୍ଣନା ଆଧାରରେ ପରାମର୍ଶଗୁଡ଼ିକ</translation>
 <translation id="121090498480012229">ମିଡିଆ ଚଲାନ୍ତୁ ବା ବିରତ କରନ୍ତୁ</translation>
+<translation id="1216675364136048456">ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1223498995510244364">ସାରାଂଶ ପ୍ରସ୍ତୁତ କର</translation>
 <translation id="123124571410524056">ପୋର୍ଟାଲକୁ ସନ୍ଦେହ କରାଯାଇଛି</translation>
 <translation id="1232610416724362657">ଜଳପ୍ରପାତ</translation>
+<translation id="1238163879850290856">ଅନ୍ୟମାନେ ଡାଟା ଆକ୍ସେସ ପ୍ରତିରୋଧ କରିବା ପାଇଁ ରିସେଟ କରନ୍ତୁ। କେବଳ ଆପଣ ବିଶ୍ୱାସ କରୁଥିବା ଇନପୁଟ ପଦ୍ଧତିଗୁଡ଼ିକୁ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="1238612778414822719">HTTPS ଲାଟେନ୍ସି</translation>
 <translation id="1252766349417594414">ଜଏଷ୍ଟିକ</translation>
+<translation id="1261045951892393759">ଏକ ବିଲେଇ ଏକ ୟୁନିକର୍ନ ଉପରେ ବସି ଯାଉଥିବା ବେଳେ ବେକଗ୍ରାଉଣ୍ଡରେ ବିଜୁଳି ଚମକୁଥିବା ସହ ଏକ ଉଡ଼ୁଥିବା v ଖେଳୁଛି</translation>
 <translation id="1270369111467284986">କ୍ୟାପ୍ଟିଭ୍ ପୋର୍ଟାଲକୁ ସନ୍ଦେହ କରାଯାଇଛି</translation>
 <translation id="1274654146705270731">କମଳା</translation>
 <translation id="1275718070701477396">ଚୟନ କରାଯାଇଛି</translation>
 <translation id="1290331692326790741">ଦୁର୍ବଳ ସିଗ୍‌‌‌‌‌‌‌ନାଲ୍</translation>
+<translation id="1292474106138697109">କ୍ଲାସ ଟୁଲ ଡିସପ୍ଲେ</translation>
 <translation id="1300115153046603471">APN ପ୍ରକାର ଡିଫଲ୍ଟ ଏବଂ <ph name="ATTACH" /> ଅଟେ।</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">କନଭର୍ଟ କରନ୍ତୁ</translation>
+<translation id="1304014921944666344">ତିଆରି କରାଯାଇଥିବା ତାରିଖ</translation>
 <translation id="1308754910631152188">ଅପଡେଟ କରାଯାଉଛି (<ph name="PERCENTAGE_VALUE" />% ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> ମିନିଟ</translation>
 <translation id="1310380015393971138">କୌଣସି <ph name="NETWORK_NAME" /> ନେଟୱାର୍କ ଉପଲବ୍ଧ ନାହିଁ</translation>
@@ -70,22 +87,31 @@
 <translation id="131461803491198646">ହୋମ୍ ନେଟ୍‌ୱର୍କ, ରୋମିଂ ନୁହେଁ</translation>
 <translation id="1327977588028644528">ଗେଟ୍‌ୱେ</translation>
 <translation id="1328223165223065150">ୱାଲପେପର ରଙ୍ଗ</translation>
+<translation id="1329478709358066995">ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">ସ୍କାନ୍ କ୍ଷେତ୍ର ଅନୁସାରେ ଫିଟ୍ କରନ୍ତୁ</translation>
 <translation id="1343442362630695901">ଲୁଣି ହ୍ରଦ</translation>
+<translation id="1348657754632799065">ରେକର୍ଡିଂ ବାର</translation>
+<translation id="1350909945461913813">ଯେ କୌଣସି ୱାର୍କ ସେଭ କରିବା ପାଇଁ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="1367951781824006909">ଏକ ଫାଇଲ୍ ବାଛନ୍ତୁ</translation>
 <translation id="1371650399987522809">Google AI ଦ୍ୱାରା ପରିଚାଳିତ ୱାଲପେପର ପାଇଁ ମତାମତ</translation>
+<translation id="1374385338586507108">ପରିଭାଷିତ କରନ୍ତୁ</translation>
+<translation id="1376064675713230088">ଟି-ରେକ୍ସ</translation>
+<translation id="1383876407941801731">ସର୍ଚ୍ଚ</translation>
 <translation id="1387854245479784695">ଏହା ସମସ୍ତ କୋରର ଏକ ଏକତ୍ରୀକରଣ ଅଟେ</translation>
+<translation id="1388919980490622894">ରଙ୍ଗ ଗ୍ରେଡିଂ ସହ</translation>
 <translation id="1393206549145430405">କେସଲ</translation>
 <translation id="1394661041439318933">ଡିଭାଇସ କେସରେ <ph name="BATTERY_PERCENTAGE" />% ବ୍ୟାଟେରୀ ଚାର୍ଜ ଅଛି।</translation>
 <translation id="1397738625398125236">ଗେଟୱେକୁ ପିଙ୍ଗ୍ କରାଯାଇପାରିବ</translation>
 <translation id="1398634363027580500">HTTPSର ଅଧିକ ଲାଟେନ୍ସି</translation>
+<translation id="1406389211945506521">ଆପଣଙ୍କ ମତାମତ ସେୟାର କରିଥିବା ଯୋଗୁଁ ଧନ୍ୟବାଦ। ଆପଣଙ୍କର ମତାମତ ଆମକୁ ଅଧିକ ସଠିକ ଏବଂ ଲାଭକାରୀ ବିଷୟବସ୍ତୁ ତିଆରି କରିବାରେ ସାହାଯ୍ୟ କରେ।</translation>
 <translation id="1407069428457324124">ଗାଢ଼ ଥିମ୍</translation>
 <translation id="1413240736185167732">ବିଫଳ ହୋଇଛି - ଫିଲ୍ଟର୍ ବିଫଳ ହୋଇଛି</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1418991483994088776">ଅର୍କିଡ</translation>
 <translation id="142205161612889714">WEBM</translation>
 <translation id="142228117786570094">ମୋ ପାଖରେ ଏକ କୀପେୟାର ଅଛି</translation>
+<translation id="1422912431241997307">ଟାଇଟେଲ ଏଡିଟ କରାଯାଇଛି</translation>
 <translation id="1423591390236870726"><ph name="KEY_NAME" /> କୀ'କୁ ଦବାଯାଇନାହିଁ</translation>
 <translation id="1432110487435300883">ଏକ ଆନୁମାନିକ ଫଳାଫଳ ପାଇଁ <ph name="CONVERSION_RATE" /> ଭେଲ୍ୟୁକୁ <ph name="CATEGORY_TEXT" /> ଦ୍ୱାରା ଭାଗ କରନ୍ତୁ</translation>
 <translation id="1435763214710588005">ପ୍ରତି ମାସ ଚୟନ କରାଯାଇଥିବା ଗୋଟିଏ ଦିନରେ ସ୍ୱଚାଳିତ ଭାବରେ ଡାଟା ବ୍ୟବହାର ରିସେଟ ହୁଏ</translation>
@@ -94,6 +120,7 @@
 <translation id="1449035143498573192">Google Searchରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="1451536289672181509">ଡିଭାଇସଟି ଏକ କୀବୋର୍ଡ ଅଟେ।</translation>
 <translation id="1452939186874918380">ଛତା</translation>
+<translation id="145402479967797468">ପ୍ଲେବେକ ନିୟନ୍ତ୍ରଣ</translation>
 <translation id="1459693405370120464">ପାଣିପାଗ</translation>
 <translation id="1463084054301832672">କୁଟୀର</translation>
 <translation id="1468664791493211953">ଅଫରଗୁଡ଼ିକ</translation>
@@ -105,11 +132,21 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> ଏହି ୟୁଜରଙ୍କୁ ପରିଚାଳନା କରେ ଏବଂ ରିମୋଟ ଭାବେ ସେଟିଂସକୁ ପରିଚାଳନା ଏବଂ ୟୁଜର କାର୍ଯ୍ୟକଳାପକୁ ନିରୀକ୍ଷଣ କରିପାରେ।</translation>
 <translation id="150962533380566081">ଅବୈଧ PUK।</translation>
 <translation id="1510238584712386396">ଲଞ୍ଚର୍</translation>
+<translation id="1512872158112631650">ଡ୍ରାମାଟିକ ସେଡୋ</translation>
 <translation id="1514446283880973949">ଅଧିକ ଆତ୍ମବିଶ୍ୱାସର ସହ ଲେଖନ୍ତୁ, ବିଷୟବସ୍ତୁର ସାରାଂଶ ତିଆରି କରନ୍ତୁ, ସଂଜ୍ଞା ପାଆନ୍ତୁ ଏବଂ ଆହୁରି ଅନେକ କିଛି କରନ୍ତୁ</translation>
 <translation id="1515129336378114413">ବ୍ରାଉଜର ହୋମ</translation>
 <translation id="1526389707933164996">ସ୍କ୍ରିନ ସେଭର ଆନିମେସନ</translation>
 <translation id="152892567002884378">ଭଲ୍ୟୁମ୍ ବଢ଼ାନ୍ତୁ</translation>
 <translation id="1539864135338521185">ଲେପିସ ଲାଜୁଲି</translation>
+<translation id="1548555207631326346">ଏକ ଥିମ ବାଛନ୍ତୁ ଏବଂ ତା'ପରେ ଆପଣଙ୍କର AI ଇମେଜଗୁଡ଼ିକୁ ପର୍ସନାଲାଇଜ କରିବା ପାଇଁ ଅଣ୍ଡରଲାଇନ କରାଯାଇଥିବା ଶବ୍ଦଗୁଡ଼ିକୁ ଚୟନ କରନ୍ତୁ।<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ଅଧିକ ସ୍ୱତନ୍ତ୍ର ଏବଂ ବିଭିନ୍ନ AI ଇମେଜ ବିକଳ୍ପ ପାଇବା ପାଇଁ "ମୋତେ ପ୍ରେରଣା ଦିଅନ୍ତୁ"କୁ ଚୟନ କରନ୍ତୁ।
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ଆପଣ AI ମାଧ୍ୟମରେ ତିଆରି କରିବା ସମୟରେ ଇମେଜ ଜେନେରେଟ କରିବା ଏବଂ ପ୍ରଡକ୍ଟକୁ ଉନ୍ନତ କରିବା ପାଇଁ <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleର ଗୋପନୀୟତା ନୀତି<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> ଅଧୀନରେ Google AI ସର୍ଭରଗୁଡ଼ିକୁ ପ୍ରମ୍ପ୍ଟ ପଠାଯାଏ।
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ଜେନେରେଟିଭ AI ପରୀକ୍ଷାମୂଳକ ଅଟେ, ଏହା ପ୍ରାରମ୍ଭିକ ବିକାଶରେ ଅଛି ଏବଂ ବର୍ତ୍ତମାନ ଏହାର ସୀମିତ ଉପଲବ୍ଧତା ଅଛି।</translation>
 <translation id="1555130319947370107">ନୀଳ</translation>
 <translation id="155865706765934889">ଟଚ୍‌ପ୍ୟାଡ୍</translation>
 <translation id="1561927818299383735">ବେକଲିଟ ରଙ୍ଗ</translation>
@@ -118,9 +155,11 @@
 <translation id="1567064801249837505">ଆଲବମ</translation>
 <translation id="1572585716423026576">ୱାଲ୍‌‌ପେପର୍‌ ଭାବରେ ସେଟ୍‍ କରନ୍ତୁ</translation>
 <translation id="1578784163189013834">ସ୍କ୍ରିନ୍ ସେଭରର ବ୍ୟାକଗ୍ରାଉଣ୍ଡ ବାଛନ୍ତୁ</translation>
+<translation id="1587031308639983732">ସମୟ ଆଧାରିତ ପରିବର୍ତ୍ତନଗୁଡ଼ିକ ସଠିକ ହୋଇନପାରେ। ଏହି ସେଟିଂ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ ହୁଏ।</translation>
 <translation id="1588438908519853928">ସାଧାରଣ</translation>
 <translation id="1591562245178063882">ଏହି ମାସ</translation>
 <translation id="1593528591614229756">ଆପଣଙ୍କ ମୋବାଇଲ ସେବା ପ୍ରଦାନକାରୀ କିମ୍ବା ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପ୍ରଦାନ କରାଯାଇଥିବା APNଗୁଡ଼ିକୁ ଚୟନ କରିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ। ଏକ APNକୁ ଚୟନ କରିବା ଫଳରେ ଏହା ଯେ କୌଣସି କଷ୍ଟମ APNକୁ ଅକ୍ଷମ କରିଦେବ। ଅବୈଧ APNଗୁଡ଼ିକ ଆପଣଙ୍କ ମୋବାଇଲ କନେକ୍ସନରେ ବାଧା ସୃଷ୍ଟି କରିପାରେ। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
+<translation id="1604959087182679653">ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ଲୁଚାନ୍ତୁ</translation>
 <translation id="160633243685262989">ଇମେଜର ପ୍ରିଭ୍ୟୁ କରନ୍ତୁ</translation>
 <translation id="1611649489706141841">ଆଗକୁ ବଢ଼ିବା କୀ</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />ଠାରୁ ଡାଟା ବ୍ୟବହାର</translation>
@@ -134,7 +173,9 @@
 <translation id="1643449475550628585">ୱାଲପେପର୍ ଛବିକୁ ଦୈନିକ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="1644574205037202324">ଇତିହାସ</translation>
 <translation id="1651925268237749928">ଆପଣ ଏକ ସେୟାର କରାଯାଇଥିବା ଆଲବମ ଚୟନ କରିଛନ୍ତି। ଅନ୍ୟ ଲୋକମାନେ ଫଟୋଗୁଡ଼ିକ ଯୋଗ କରିପାରିବେ କିମ୍ବା ସେଗୁଡ଼ିକୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ। ବର୍ତ୍ତମାନ ଏହି ଆଲବମରେ ନଥିବା ଫଟୋଗୁଡ଼ିକୁ ଆପଣଙ୍କ ୱାଲପେପର ବ୍ୟବହାର କରିପାରେ।</translation>
+<translation id="1661512400125589646">ବିରତ କରନ୍ତୁ</translation>
 <translation id="1661865805917886535">କିଛି ଆକାଉଣ୍ଟ ଏବଂ ସିଷ୍ଟମ ସୂଚନା Googleକୁ ପଠାଯାଇପାରେ। ଆମର ଗୋପନୀୟତା ନୀତି (<ph name="PRIVACYPOLICYURL" />) ଏବଂ ସେବାର ସର୍ତ୍ତାବଳୀ (<ph name="TERMSOFSERVICEURL" />) ଅନୁସାରେ, ଟେକନିକାଲ ସମସ୍ୟାର ସମାଧାନ କରିବା ଏବଂ ଆମର ସେବାଗୁଡ଼ିକୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରିବା ପାଇଁ ଆମେ ଏହି ସୂଚନାକୁ ବ୍ୟବହାର କରୁ। ବିଷୟବସ୍ତୁ ପରିବର୍ତ୍ତନର ଅନୁରୋଧ କରିବାକୁ ଆଇନଗତ ସହାୟତା (<ph name="LEGALHELPPAGEURL" />)କୁ ଯାଆନ୍ତୁ।</translation>
+<translation id="1662699081856352167">ସାରାଂଶ ସଫଳତାର ସହ ଜେନେରେଟ କରାଯାଇଛି</translation>
 <translation id="1662989795263954667">ବନ୍ଦ ହୋଇଯାଇଛି - ସ୍ୟାହି ସରିଯାଇଛି</translation>
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" />ର ପ୍ରିଭ୍ୟୁ କରନ୍ତୁ</translation>
 <translation id="1668469839109562275">ବିଲ୍ଟ-ଇନ VPN</translation>
@@ -143,6 +184,7 @@
 <translation id="1672499492233627739">ୱେବକ୍ୟାମ ଭିଡିଓ ଫିଡ</translation>
 <translation id="1676557873873341166">ଭିଡିଓ ନିଆଯାଉଛି</translation>
 <translation id="1684279041537802716">ଆକ୍ସେଣ୍ଟ ରଙ୍ଗ</translation>
+<translation id="1697278726914783200">ରେକର୍ଡ କରନ୍ତୁ</translation>
 <translation id="1703835215927279855">ଲେଟର୍</translation>
 <translation id="1706391837335750954">DNS ରିଜଲଭର୍ ଉପସ୍ଥିତ ଅଛି</translation>
 <translation id="1708602061922134366">Google ବ୍ଲୁ</translation>
@@ -160,10 +202,13 @@
 <translation id="1753496554272155572">ୱାଲପେପର ପ୍ରିଭ୍ୟୁରୁ ବାହାରି ଯାଆନ୍ତୁ</translation>
 <translation id="1754578112426924640"><ph name="ACCELERATOR_INFO" /> ପାଇଁ "ଏଡିଟ କରନ୍ତୁ" ବଟନ।</translation>
 <translation id="1755556344721611131">Diagnostics ଆପ</translation>
+<translation id="1756681705074952506">ଇନ୍‌ପୁଟ୍ ପଦ୍ଧତି</translation>
 <translation id="175763766237925754">ଭଲ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">ଆପଣ ବର୍ତ୍ତମାନ କେବଳ କ୍ଲାସ ଟୁଲ୍ସକୁ ବ୍ୟବହାର କରିବାକୁ ସକ୍ଷମ ଅଟନ୍ତି</translation>
+<translation id="1762483337755424125">ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ</translation>
 <translation id="1765169783255151332">ଶୀଘ୍ର କୀଗୁଡ଼ିକୁ ସୁଇଚ କରନ୍ତୁ</translation>
 <translation id="1768959921651994223">ପ୍ରମାଣୀକରଣର ପ୍ରକାର</translation>
 <translation id="1776228893584526149">ୱାଲପେପର ଟୋନ</translation>
@@ -174,9 +219,13 @@
 <translation id="1801418420130173017">ଗାଢ଼ା ଥିମକୁ ଅକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="1807246157184219062">ଫିକା</translation>
 <translation id="1808803439260407870">କ୍ଲାସିକ ଆର୍ଟ</translation>
+<translation id="181434555916624618">ବର୍ତ୍ତମାନ ପାଇଁ ଲୋକଙ୍କ ସହ ଫଳାଫଳ ଦେଖାଯିବ ନାହିଁ। ଅନ୍ୟ ଏକ ପ୍ରମ୍ପ୍ଟ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ।</translation>
 <translation id="1815850098929213707"><ph name="KEYS" /> ହେଉଛି ଚୟନିତ କୀ। ନିୟନ୍ତ୍ରଣକୁ ଏଡିଟ କରିବା ପାଇଁ ବଟନରେ ଟାପ କରନ୍ତୁ</translation>
+<translation id="1818174214124933000">ଯେତେବେଳେ ଆପଣ ପଠାନ୍ତୁ ଚୟନ କରିବେ, ଆପଣଙ୍କର ମତାମତ ଏବଂ ବିଷୟବସ୍ତୁ (ନିମ୍ନରେ ଦେଖାଯାଇଛି) Googleକୁ ପଠାଯିବ, ମନୁଷ୍ୟଙ୍କ ଦ୍ୱାରା ସମୀକ୍ଷା ଏବଂ <ph name="LINK_POLICY_BEGIN" />ଗୋପନୀୟତା ନୀତି<ph name="LINK_POLICY_END" /> ଏବଂ <ph name="LINK_TERMS_OF_SERVICE_BEGIN" /> Google ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="LINK_TERMS_OF_SERVICE_END" /> ଅନୁଯାୟୀ ଆମର ଉତ୍ପାଦ ଏବଂ ସେବାଗୁଡ଼ିକୁ ତାଲିମ କିମ୍ବା ଉନ୍ନତ କରିବା ପାଇଁ ବ୍ୟବହୃତ ହେବ।</translation>
 <translation id="1823120442877418684">ଚରିତ୍ର</translation>
 <translation id="1827738518074806965">ଆର୍ଟ ଗ୍ୟାଲେରୀ</translation>
+<translation id="183287940576828840">ଅପମାନଜନକ/ଅସୁରକ୍ଷିତ</translation>
+<translation id="1834032517784994783">ଟ୍ରାନ୍ସକ୍ରିପସନ ଭାଷା ଚୟନ କରନ୍ତୁ</translation>
 <translation id="1836553715834333258">ସିଷ୍ଟମର ରଙ୍ଗ</translation>
 <translation id="183675228220305365">ରିଆଲିଷ୍ଟ</translation>
 <translation id="1838374766361614909">ସର୍ଚ୍ଚ ଖାଲି କରନ୍ତୁ</translation>
@@ -188,6 +237,7 @@
 <translation id="1854156910036166007">ସ୍ଲଥ</translation>
 <translation id="1856388568474281774">ତଳ ତୀର</translation>
 <translation id="1858620243986915808">ସ୍କ୍ରିନସଟ ଆଟାଚ କରନ୍ତୁ</translation>
+<translation id="1860654594958086756">3D ରେଣ୍ଡର</translation>
 <translation id="1871413952174074704">APNରେ <ph name="CHAR_LIMIT" />ରୁ ଅଧିକ କେରେକ୍ଟର ରହିପାରିବ ନାହିଁ</translation>
 <translation id="1871569928317311284">ଗାଢ଼ା ଥିମ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1874612839560830905">MTU</translation>
@@ -201,13 +251,18 @@
 <translation id="1905710495812624430">ସର୍ବାଧିକ ଅନୁମୋଦିତ ପ୍ରଚେଷ୍ଟା ସୀମା ଅତିକ୍ରମ କଲା।</translation>
 <translation id="1908234395526491708">UDP ଅନୁରୋଧ ବିଫଳ</translation>
 <translation id="1908394185991500139">ବାମପଟକୁ ତୀର</translation>
+<translation id="1914144885717544695">ଶୁକ୍ରବାର ଦିନ</translation>
+<translation id="1915960750806557358">ଆପଣଙ୍କ ମତାମତ ସେୟାର କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କ ସମସ୍ୟାର ବର୍ଣ୍ଣନା କରନ୍ତୁ। ବ୍ୟକ୍ତିଗତ, ସମ୍ବେଦନଶୀଳ କିମ୍ବା ଗୋପନୀୟ କିଛି ଅନ୍ତର୍ଭୁକ୍ତ ନକରିବା ନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
 <translation id="1923388006036088459">ଆକ୍ସେଣ୍ଟ ରଙ୍ଗଗୁଡ଼ିକ</translation>
+<translation id="1926611810597212636">ୟୁନିକର୍ନ</translation>
+<translation id="1944321879609775960">ଏକ ସାରାଂଶ ତିଆରି କରିବାକୁ, ଆପଣଙ୍କ <ph name="DEVICE_TYPE" /> ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="1945403655450283000">Recorder</translation>
 <translation id="1947737735496445907">ପ୍ରିଣ୍ଟ କରାଯାଇଛି</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954818433534793392">ବିଲ୍ଡିଂ</translation>
 <translation id="1962550982027027473">ଏକ ଡିଫଲ୍ଟ APN ଆବଶ୍ୟକ</translation>
 <translation id="1967860190218310525">ନୂଆ APN ତିଆରି କରନ୍ତୁ</translation>
+<translation id="1967917622327567355">ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ଦେଖାନ୍ତୁ</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977973007732255293">ପାରମ୍ପାରିକ</translation>
 <translation id="1977994649430373166">Google ପ୍ରୋଫାଇଲ ଫଟୋ</translation>
@@ -223,14 +278,13 @@
 <translation id="2045814230297767491">କଟଲେରି</translation>
 <translation id="2047316797244836561">ସ୍କ୍ରିନ ସେଭର ଦେଖିବା ପାଇଁ ଦୟାକରି ଏକ ନେଟୱାର୍କ ସହ କନେକ୍ଟ କରି ପୃଷ୍ଠାଟିକୁ ପୁଣି ଲୋଡ କରନ୍ତୁ।</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
+<translation id="2068472557797646626">କ୍ରୋମ ସ୍ଥାପତ୍ୟ ଉପାଦାନର ବେକଗ୍ରାଉଣ୍ଡରେ କ୍ରୋମ ଗୋଲକ ଏବଂ ଗୋଲାକାର ଆକୃତିର 3D ଉପସ୍ଥାପନା। ବିଜ୍ଞାପନ, ବ୍ରାଣ୍ଡିଂ କିମ୍ବା ପ୍ରେଜେଣ୍ଟେସନ ପାଇଁ କପି ସ୍ପେସ ସହିତ ଏହି କମ୍ପୋଜିସନ ଏକ ଆଧୁନିକ ଏବଂ ସର୍ବନିମ୍ନ ଧାରଣା ଅଟେ। ସର୍ବନିମ୍ନତା ଷ୍ଟାଇଲରେ ଏକ ଆବଷ୍ଟ୍ରାକ୍ଟ ବେକଗ୍ରାଉଣ୍ଡ ସମ୍ମୁଖରେ ଏକ ବିଶାଳ ଆର୍କ ଷ୍ଟାଣ୍ଡ। ଷ୍ଟୁଡିଓ ଲାଇଟିଂ। କ୍ଲୋଜଅପ ସଟ।</translation>
 <translation id="2073232437457681324">ବିସ୍ତୀର୍ଣ୍ଣ ମହାସାଗର</translation>
 <translation id="2080070583977670716">ଅଧିକ ସେଟିଂ</translation>
 <translation id="2082932131694554252">ଆସାଇନ କରାଯାଇଥିବା କୀବୋର୍ଡ କୀ</translation>
 <translation id="2085089206770112532">ଡିସପ୍ଲେର ଉଜ୍ଜ୍ୱଳତା କମ୍ କରନ୍ତୁ</translation>
-<translation id="2085876078937250610">ସେଭ୍ କରନ୍ତୁ…</translation>
 <translation id="2086091080968010660">ସମୟ ଆଧାରିତ ପରିବର୍ତ୍ତନଗୁଡ଼ିକ ସଠିକ ହୋଇନପାରେ। ସେଟିଂସରେ ସିଷ୍ଟମ ଲୋକେସନ ଆକ୍ସେସକୁ ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="2102231663024125441">ଟେକ୍ସଟ ଏଡିଟିଂ</translation>
-<translation id="2102648867808308635">ଏହି ପୃଷ୍ଠା ପଢ଼ିବାକୁ ମୋତେ ସାହାଯ୍ୟ କର</translation>
 <translation id="2105810540595158374">ଡିଭାଇସଟି ଏକ ଗେମ କଣ୍ଟ୍ରୋଲର ଅଟେ।</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, ସଂସ୍କରଣ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">ବର୍ତ୍ତମାନ କେବଳ ଇଂରାଜୀ (US)ରେ ଉପଲବ୍ଧ ଅଟେ</translation>
@@ -239,8 +293,9 @@
 <translation id="2138109643290557664">ଆନିମେସନ ମାଧ୍ୟମରେ ଦେଖନ୍ତୁ</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">ଆଜି</translation>
+<translation id="215206000155329774"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="2152882202543497059"><ph name="NUMBER" />ଟି ଫଟୋ</translation>
-<translation id="2156072344042480449">ଆପଣଙ୍କର 2 ବର୍ତ୍ତମାନର ପ୍ରମ୍ପ୍ଟ। ଆପଣ ଏହି ପୃଷ୍ଠାରେ ଥିବା ସମୟରେ କେବଳ ଏହି ପ୍ରମ୍ପ୍ଟଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିପାରିବେ।</translation>
+<translation id="2154460308960858308">ସର୍ଚ୍ଚ ଖାଲି କରନ୍ତୁ</translation>
 <translation id="2157660087437850958">ଇମୋଜି ପିକର୍</translation>
 <translation id="2157959690810728433">ଧାଡ଼ିରେ ରଖାଯାଇଛି</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
@@ -248,9 +303,13 @@
 <translation id="2161394479394250669">ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟକୁ ବାତିଲ୍ କରନ୍ତୁ</translation>
 <translation id="2161656808144014275">ଟେକ୍ସଟ୍</translation>
 <translation id="2163937499206714165">ଡାର୍କ ମୋଡ୍ ଚାଲୁ କରନ୍ତୁ</translation>
+<translation id="2164131940279488868">ଅଡିଓ ରେକର୍ଡ କରିବା ଆରମ୍ଭ କରିବାକୁ ଏକ ମାଇକ କାନେକ୍ଟ ହୋଇଥିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
+<translation id="2173302385160625112">ଆପଣଙ୍କ ଇଣ୍ଟର୍ନେଟ୍ ସଂଯୋଗ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
+<translation id="2176909213844392588"><ph name="LANGUAGE_NAME" /> ଟ୍ରାନ୍ସକ୍ରିପ୍ସନ ମଡେଲକୁ ଡାଉନଲୋଡ କରାଯାଇପାରିବ ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କର <ph name="DEVICE_TYPE" /> ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ।</translation>
 <translation id="2180197493692062006">କିଛି ତ୍ରୁଟି ହୋଇଛି। ଆପକୁ ପୁଣି ଖୋଲିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="2189104374785738357">APN ବିବରଣୀକୁ ଏଡିଟ କରନ୍ତୁ</translation>
 <translation id="2195732836444333448">ବର୍ତ୍ତମାନ କୌଣସି ରିସୋର୍ସ ନାହିଁ। ଶୀଘ୍ର ଫେରି ଆସନ୍ତୁ।</translation>
+<translation id="2197185031095816179">ସେଫ୍ଟି ରିସେଟ ଅବାଞ୍ଛିତ ପପ-ଅପଗୁଡ଼ିକୁ କାଢ଼ି ଦେବା, ନେଟୱାର୍କ ସମସ୍ୟାଗୁଡ଼ିକୁ ସମାଧାନ କରିବା ଏବଂ ଅନ୍ୟ ଅପ୍ରତ୍ୟାଶିତ ସମସ୍ୟାଗୁଡ଼ିକୁ ସମାଧାନ କରିବାରେ ସାହାଯ୍ୟ କରିପାରେ।</translation>
 <translation id="2201758491318984023">ବାଇସାଇକେଲ</translation>
 <translation id="2203272733515928691">ହଟ ସ୍ପ୍ରିଙ୍ଗ</translation>
 <translation id="2203642483788377106">କ୍ଲିଫ</translation>
@@ -259,6 +318,7 @@
 <translation id="2212733584906323460">ନାମ ରିଜୋଲ୍ୟୁସନ</translation>
 <translation id="2215920961700443347">କୌଣସି ଇଣ୍ଟରନେଟ୍‌ ନାହିଁ ଇଣ୍ଟରନେଟ ସହ ସଂଯୋଗ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="2217935453350629363">ବର୍ତ୍ତମାନର ସ୍ପିଡ୍</translation>
+<translation id="221994303562837085">ରେକର୍ଡିଂ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="2224337661447660594">କୌଣସି ଇଣ୍ଟର୍ନେଟ୍‍ ନାହିଁ</translation>
 <translation id="222447520299472966">ଅତି କମରେ ଏକ ଆର୍ଟ ଗ୍ୟାଲେରୀ ଆଲବମ୍ ଚୟନ କରାଯିବା ଆବଶ୍ୟକ</translation>
 <translation id="2230005943220647148">ସେଲସିୟସ୍</translation>
@@ -266,9 +326,12 @@
 <translation id="2230624078793142213">ଅଧିକ ୱାଲପେପର ତିଆରି କରନ୍ତୁ</translation>
 <translation id="2236746079896696523">କୀବୋର୍ଡ ବ୍ୟାକଲାଇଟ ଟୋଗଲ</translation>
 <translation id="2240366984605217732">ଲେଆଉଟ ସ୍ୱିଚ</translation>
+<translation id="224421911978987610">ଲଙ୍ଗ ଏକ୍ସପୋଜର</translation>
 <translation id="2244834438220057800">ସବୁଜ</translation>
+<translation id="2248689665683494517">କଳା ବେକଗ୍ରାଉଣ୍ଡରେ କାଚର ଫୁଲଦାନୀରେ ପାପାଭେର ରିଆ ଫୁଲର ସରଳ ସ୍ଥିର ଜୀବନ</translation>
 <translation id="225692081236532131">ସକ୍ରିୟକରଣ ସ୍ଥିତି</translation>
 <translation id="2267285889943769271">ସ୍କ୍ରିନସଟ ଯୋଗ କରନ୍ତୁ</translation>
+<translation id="2268044343513325586">ମାର୍ଜିତ କରନ୍ତୁ</translation>
 <translation id="2271469253353559191">ଡାର୍କ ମୋଡ୍ ସିଡୁଲ୍</translation>
 <translation id="2276999893457278469">ଶ୍ରେଷ୍ଠ ସହାୟତା ବିଷୟବସ୍ତୁ</translation>
 <translation id="2277631741861284101">ଆପଣଙ୍କ ଅଡିଓକୁ ସହଜରେ ରେକର୍ଡ କରି ସେୟାର କରନ୍ତୁ</translation>
@@ -292,15 +355,20 @@
 <translation id="2380886658946992094">ଆଇନ</translation>
 <translation id="2391082728065870591">ମତାମତ ରିପୋର୍ଟ ପଠାନ୍ତୁ</translation>
 <translation id="2407209115954268704">SIM ଲକ୍ ସ୍ଥିତି</translation>
+<translation id="240798792848608143"><ph name="LANGUAGE_NAME" />ରେ ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ପାଇବାକୁ, ଆପଣଙ୍କ <ph name="DEVICE_TYPE" /> ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="241419523391571119">ଟେଷ୍ଟ କରିବକୁ ଲିଡ ପୁଣି ଖୋଲନ୍ତୁ</translation>
 <translation id="2414660853550118611">ୱାଲପେପର ବିଷୟରେ</translation>
 <translation id="2414886740292270097">ଗାଢ଼</translation>
 <translation id="2418150275289244458">ସେଟିଂସରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" />ରୁ <ph name="CURRENT_PAGE" /> ନମ୍ବର ଇମେଜ</translation>
 <translation id="242825218556404975">କୌଣସି ସ୍ପିଚକୁ ଚିହ୍ନଟ କରାଯାଇନାହିଁ</translation>
+<translation id="2438248248625638801">ରେକର୍ଡିଂ ଟାଇଟେଲ ତିଆରି କରାଯାଉଛି</translation>
 <translation id="2446553403094072641">ଫ୍ଲୋଟିଂ ପଏଣ୍ଟର ସଠିକତା</translation>
 <translation id="2448312741937722512">ପ୍ରକାର</translation>
+<translation id="2448857983905133469">କ୍ଲାସ ଟୁଲ</translation>
+<translation id="2468124392950503650"><ph name="BEGIN_LINK_PROMPTING_GUIDE" />ପ୍ରମ୍ପ୍ଟ ଗାଇଡ<ph name="END_LINK_PROMPTING_GUIDE" /> ତିଆରି କରିବା କିମ୍ବା ଦେଖିବା ପାଇଁ ପ୍ରମ୍ପ୍ଟକୁ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="2472215337771558851">ଏକ ଡ୍ରାଫ୍ଟ ତିଆରି କରିବା କିମ୍ବା Google AI ଦ୍ୱାରା ପରିଚାଳିତ ପୂର୍ବରୁ ଥିବା କାର୍ଯ୍ୟକୁ ରିଫାଇନ କରିବା ପାଇଁ 'ଲେଖିବାରେ ମୋତେ ସାହାଯ୍ୟ କରନ୍ତୁ'କୁ ବ୍ୟବହାର କରନ୍ତୁ</translation>
+<translation id="2475982808118771221">ଏକ ତ୍ରୁଟି ଦେଖାଦେଲା</translation>
 <translation id="2480572840229215612">କଙ୍କଡ଼ା</translation>
 <translation id="248546197012830854">ଡିଭାଇସ ଅଫଲାଇନ ଅଛି। ସହାୟତା ବିଷୟବସ୍ତୁ ଦେଖିବାକୁ ୱାଇ-ଫାଇ ନେଟୱାର୍କ ସହ କନେକ୍ଟ କରନ୍ତୁ।</translation>
 <translation id="2486301288428798846">କାଠ</translation>
@@ -308,7 +376,9 @@
 <translation id="2493126929778606526">ସ୍ୱଚାଳିତ ଭାବେ ଚୟନିତ, ଆପଣଙ୍କର ଶ୍ରେଷ୍ଠ ଫଟୋଗୁଡ଼ିକ</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">ଓପାଲ</translation>
+<translation id="2501278716633472235">ଫେରନ୍ତୁ</translation>
 <translation id="2505327257735685095">ବର୍ତ୍ତମାନର ୱାଲପେପର୍ ଛବିକୁ ରିଫ୍ରେସ୍ କରନ୍ତୁ</translation>
+<translation id="2507491234071975894">ସ୍ପିକର</translation>
 <translation id="2512979179176933762">ୱିଣ୍ଡୋଗୁଡ଼ିକ ଦେଖାନ୍ତୁ</translation>
 <translation id="2513396635448525189">ଲଗଇନ୍ ଛବି</translation>
 <translation id="2521835766824839541">ପୂର୍ବବର୍ତ୍ତୀ ଟ୍ରାକ୍</translation>
@@ -319,9 +389,9 @@
 <translation id="2533048460510040082">ପ୍ରସ୍ତାବିତ ସହାୟତା ବିଷୟବସ୍ତୁ</translation>
 <translation id="2536159006530886390">ଇଣ୍ଟରନେଟ୍ ସହ ସଂଯୋଗ କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="2538719227433767804">+<ph name="NUM_HIDDEN_OPTIONS" />ଟି ଅଧିକ</translation>
+<translation id="2560876255701405320">ଅଡିଓ ରେକର୍ଡିଂଗୁଡ଼ିକର ତାଲିକା</translation>
 <translation id="2561093647892030937">ଲେମ୍ବୁ</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> ପରୀକ୍ଷା ଚଲାଯାଉଛି...</translation>
-<translation id="2575552334616524665">ଆପଣ ଏହାକୁ ସେଟିଂସ କିମ୍ବା <ph name="THREE_DOTS_MENU_ICON" /> ମେନୁରେ ଚାଲୁ କରିପାରିବେ</translation>
 <translation id="2576253868710695442">ଏହା 2GB ପର୍ଯ୍ୟନ୍ତ ଷ୍ଟୋରେଜ ସ୍ପେସ ନେବ</translation>
 <translation id="2584547424703650812">ଗ୍ଲୋସ୍କେପଗୁଡ଼ିକ</translation>
 <translation id="2584559707064218956">ସେଟ ଅପ କରିବାକୁ, ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
@@ -329,6 +399,7 @@
 <translation id="2589921777872778654">ଏଡିଟ କରନ୍ତୁ ଏବଂ ଡିଲିଟ କରନ୍ତୁ ମେନୁ</translation>
 <translation id="2597774443162333062">ଡିବଗିଂ ପାଇଁ ଫାଇଲଗୁଡ଼ିକ Googleକୁ ପଠାଯିବ</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{ସ୍କାନ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି। 1ଟି ପୃଷ୍ଠାକୁ ସ୍କାନ କରାଯାଇଛି}other{ସ୍କାନ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି। {NUMBER_OF_PAGES}ଟି ପୃଷ୍ଠାକୁ ସ୍କାନ କରାଯାଇଛି}}</translation>
+<translation id="261322795497077164">ସ୍ପିକର ଚିହ୍ନଟକରଣ</translation>
 <translation id="2617397783536231890">କଟନ</translation>
 <translation id="2618015542787108131">ସେଣ୍ଡ ଡ୍ୟୁନ</translation>
 <translation id="2619761439309613843">ଦୈନିକ ରିଫ୍ରେଶ୍</translation>
@@ -349,9 +420,12 @@
 <translation id="2713444072780614174">ଧଳା</translation>
 <translation id="2715723665057727940">ନଦୀ</translation>
 <translation id="2717139507051041123">ଡାର୍କ କଲର ମୋଡକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
+<translation id="2726755229438917165">ସୋମବାର ଦିନ</translation>
 <translation id="2728460467788544679">ସମସ୍ତ ପ୍ରିଣ୍ଟ ଇତିହାସକୁ ଖାଲି କରନ୍ତୁ</translation>
+<translation id="2731700343119398978">ଦୟାକରି ଅପେକ୍ଷା କରନ୍ତୁ...</translation>
 <translation id="2740531572673183784">ଠିକ୍ ଅଛି</translation>
 <translation id="2744221223678373668">ସେୟାର କରାଯାଇଛି</translation>
+<translation id="2749164457515831917">ପରାମର୍ଶଗୁଡ଼ିକୁ ସଫଲ କରାଯାଇଛି</translation>
 <translation id="2751739896257479635">EAP ଫେଜ୍‍ 2 ପ୍ରମାଣିକରଣ</translation>
 <translation id="2754757901767760034">ଲେମ୍ପ</translation>
 <translation id="2780756493585863768">Google AI ଦ୍ୱାରା ପରିଚାଳିତ ବର୍ତ୍ତମାନର ବେକଗ୍ରାଉଣ୍ଡ</translation>
@@ -362,22 +436,28 @@
 <translation id="2805756323405976993">ଆପ୍ସ</translation>
 <translation id="28232023175184696">ଇଣ୍ଟରନେଟ୍ ସହ ସଂଯୋଗ କରାଯାଇପାରିବ ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରିବାକୁ କ୍ଲିକ୍ କରନ୍ତୁ।</translation>
 <translation id="2855718259207180827">ଉଲ</translation>
+<translation id="2856429654176718363">ଅନେକ ଚମକ ସହିତ ଆଲୋକିତ ହେଉଥିବା ଏକ ବିଶାଳ ମହାକାଶଯାନ ସହର ଉପରେ ଭାସୁଛି। ସମଗ୍ର ଦୃଶ୍ୟ ତୈଳ ପେଣ୍ଟିଂ ଷ୍ଟାଇଲର ଏବଂ ଗାଢ଼ ରଙ୍ଗ ଉପସ୍ଥାପନ କରୁଛି। ଏହା ଅତ୍ୟାଧୁନିକ ସାଇ-ଫାଇ ଏଲିମେଣ୍ଟ ଥିବା ଏକ ରହସ୍ୟମୟ ପରିବେଶ ତିଆରି କରୁଛି। ଏହି କଳାକୃତି ଉଚ୍ଚ ରିଜୋଲ୍ୟୁସନ ଏବଂ ଅଧିକ ବିବରଣୀକୁ ହାଇଲାଇଟ କରିବା ପାଇଁ C4D ସଫ୍ଟୱେର ଏବଂ OC ରେଣ୍ଡରେର ବ୍ୟବହାର କରି ତିଆରି କରାଯାଇଛି। ପାଖରେ ସହରର ଆହୁରି କିଛି କୋଠା ଥିଲା, ଯାହା ଫଳରେ ଫିଲ୍ଡ ଇଫେକ୍ଟ ବଢ଼ିଯାଇଥିଲା। ଏହି ଦୃଶ୍ୟକୁ ଏକ ତୈଳ ପେଣ୍ଟିଂ ଷ୍ଟାଇଲରେ ଉପସ୍ଥାପନା କରାଯାଇଛି, ଯେଉଁଥିରେ ଗାଢ଼ ରଙ୍ଗ ଥିବା ସହ ଏହା ଅତ୍ୟାଧୁନିକ ସାଇ-ଫାଇ ଏଲିମେଣ୍ଟ ଥିବା ଏକ ରହସ୍ୟମୟ ପରିବେଶ ତିଆରି କରୁଛି।</translation>
 <translation id="2859243502336719778">ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ଅପଡେଟ</translation>
 <translation id="2860473693272905224">ଅନ୍ୟ ଏକ ପୃଷ୍ଠାକୁ ସ୍କାନରରେ ରଖନ୍ତୁ</translation>
+<translation id="286265581261662583">ସଂଜ୍ଞା, ଅନୁବାଦ କିମ୍ବା ୟୁନିଟ କନଭର୍ସନଗୁଡ଼ିକ ପାଇବା ପାଇଁ ଡାହାଣ-କ୍ଲିକ କରନ୍ତୁ କିମ୍ବା ଦବାଇ ଧରି ରଖନ୍ତୁ</translation>
 <translation id="2872961005593481000">ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="2873483161362553159">ବ୍ରାଉଜର ନାଭିଗେସନ</translation>
 <translation id="2874939134665556319">ପୂର୍ବବର୍ତ୍ତୀ ଟ୍ରାକ୍‌</translation>
 <translation id="2875812231449496375">ଏହି ୱାଲପେପର ସହିତ ସର୍ବୋତ୍ତମ ଫଳାଫଳ ପାଇଁ ଏହାକୁ ଚାଲୁ କରନ୍ତୁ। ଆପଣ ଯେ କୌଣସି ଏହି ସେଟିଂକୁ ବନ୍ଦ କରିପାରିବେ।</translation>
+<translation id="2878126681324394319">ସାରାଂଶ ଏବଂ ଟାଇଟେଲ କ୍ରିଏସନ ମଡେଲ ଡାଉନଲୋଡ କରନ୍ତୁ</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> ସେକେଣ୍ଡରେ <ph name="RATE" /> ଡିସଚାର୍ଜ ହୋଇଛି।</translation>
 <translation id="2880569433548999039">କ୍ଲାଉଡ ଫ୍ଲୋ ସ୍କ୍ରିନ ସେଭର</translation>
 <translation id="2882230315487799269">AI ପ୍ରମ୍ପ୍ଟକୁ କଷ୍ଟମାଇଜ କରନ୍ତୁ</translation>
 <translation id="2888298276507578975">"ଏକ ଧନ୍ୟବାଦ ନୋଟ ଲେଖ" ପରି ଏକ ପ୍ରମ୍ପ୍ଟ ଲେଖନ୍ତୁ</translation>
 <translation id="2890557891229184386">ଟ୍ରପିକାଲ ଆଇଲାଣ୍ଡ</translation>
 <translation id="2895772081848316509">ଗାଢ଼ା</translation>
+<translation id="2915996080311180594">ପରେ ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="2926057806159140518">ଆପଣଙ୍କ ୟୁଜରନେମ ଏବଂ ପାସୱାର୍ଡ ଲେଖନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କର QR କୋଡ ସ୍କାନ କରନ୍ତୁ</translation>
+<translation id="2927007463545347013">ଚେରି ଫୁଲର ପତ୍ର ଝଡ଼ୁଥିବା ସହ ସମୁଦ୍ର ସମ୍ମୁଖରେ ଆନିମେ ପାଥ</translation>
 <translation id="2940811910881150316">ଡିଭାଇସକୁ ଟେଷ୍ଟ କରାଯାଇପାରିବ ନାହିଁ। ଟେଷ୍ଟ କରିବକୁ ଲିଡ ପୁଣି ଖୋଲନ୍ତୁ।</translation>
 <translation id="2941112035454246133">କମ୍</translation>
 <translation id="2956070106555335453">ସାରାଂଶ</translation>
+<translation id="2968959705684615497">ସୁନା ଆଖି ଏବଂ ସୁବର୍ଣ୍ଣ ପଟ୍ଟି ଥିବା ଏକ ସ୍ୱପ୍ନମୟ ଧଳା ବାଘ ଏକ ଧଳା ବାଲୁକା ଟିଲା ଉପରେ ବସିଛି</translation>
 <translation id="299385721391037602">ଗୋଲାପୀ ଏବଂ ହଳଦିଆ</translation>
 <translation id="3008341117444806826">ରିଫ୍ରେଶ୍ କରନ୍ତୁ</translation>
 <translation id="3009958530611748826">ଏଥିରେ ସେଭ୍ କରିବାକୁ ଏକ ଫୋଲ୍ଡର୍ ଚୟନ କରନ୍ତୁ</translation>
@@ -388,7 +468,9 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">ଏଣ୍ଡପଏଣ୍ଟ</translation>
 <translation id="3060579846059757016">ଆଉଟଲାଇନଗୁଡ଼ିକ</translation>
+<translation id="3060798442805232711">କ୍ଲାସ ଟୁଲଗୁଡ଼ିକ ତୁମ ମାଇକ୍ରୋଫୋନ ବ୍ୟବହାର କରୁଛି</translation>
 <translation id="3061850252076394168">ସିଲେକ୍ଟ ଟୁ ସ୍ପିକ ସକ୍ଷମ କରନ୍ତୁ</translation>
+<translation id="3066772729299747758">ମଙ୍ଗଳବାର ଦିନ</translation>
 <translation id="3069085583900247081">ଟେଷ୍ଟ ବିଫଳ ହୋଇଛି</translation>
 <translation id="3078740164268491126">ଟେବଲ୍</translation>
 <translation id="3081652522083185657">ଲାଇଟ</translation>
@@ -396,17 +478,23 @@
 <translation id="3084958266922136097">ସ୍କ୍ରିନ୍ ସେଭର୍ ଅକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="3091839911843451378">ବିଫଳ ହୋଇଛି - ପ୍ରିଣ୍ଟର୍ ବନ୍ଦ ହୋଇଯାଇଛି</translation>
 <translation id="3102119246920354026">କ୍ୟାଶ୍</translation>
+<translation id="3103783611481501187">ଅବାସ୍ତବ</translation>
+<translation id="3119672627216736407">ଅନୁବାଦ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">ପୁଲ</translation>
 <translation id="3122883569442693641">ଅଧିକ ବିବରଣୀ</translation>
 <translation id="3124039320086536031">ଡିଭାଇସଟି ସଂଯୁକ୍ତ ହୋଇଛି।</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{ପୃଷ୍ଠାକୁ କାଢ଼ିବେ?}=1{{PAGE_NUMBER} ନମ୍ବର ପୃଷ୍ଠାକୁ କାଢ଼ିବେ?}other{{PAGE_NUMBER} ନମ୍ବର ପୃଷ୍ଠାକୁ କାଢ଼ିବେ?}}</translation>
+<translation id="3134486240968249588">ମନେ ରଖିବା ପାଇଁ କିଛି ବିଷୟ</translation>
 <translation id="3140130301071865159">ବରଫ</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> ପାଇଁ ଏକ୍ସକ୍ଲୁସିଭ</translation>
 <translation id="315116470104423982">ମୋବାଇଲ୍ ଡାଟା</translation>
+<translation id="3153094818810437149">ଆପଣ ଏହାକୁ ପରେ ରେକର୍ଡର ସେଟିଂସରେ ବଦଳାଇପାରିବେ</translation>
+<translation id="3156511682997763015">10 ସେକେଣ୍ଡ ଆଗକୁ ନିଅନ୍ତୁ</translation>
 <translation id="3156846309055100599">ପୃଷ୍ଠା <ph name="PAGE_NUMBER" />କୁ ସ୍କାନ୍ କରାଯାଉଛି...</translation>
 <translation id="315738237743207937">କ୍ୟାପ୍ଟିଭ୍ ପୋର୍ଟାଲକୁ ଚିହ୍ନଟ କରାଯାଇଛି</translation>
 <translation id="3160172848211257835"><ph name="BEGIN_LINK1" />ସିଷ୍ଟମ ଓ ଆପ ସୂଚନା <ph name="END_LINK1" /> ଏବଂ <ph name="BEGIN_LINK2" />ମେଟ୍ରିକ୍ସ<ph name="END_LINK2" /> ପଠାନ୍ତୁ</translation>
+<translation id="3161556797767210144">ସାରାଂଶ ଏବଂ ଟାଇଟେଲ ତିଆରି କରିବାକୁ, ଆପଣଙ୍କ <ph name="DEVICE_TYPE" /> ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="3170673040743561620">ଆପଣଙ୍କ ଡକ୍ୟୁମେଣ୍ଟକୁ ସ୍କାନରରେ ରଖନ୍ତୁ</translation>
 <translation id="3174321110679064523">ଡନ ଟୁ ଡାର୍କ ୱାଲପେପର</translation>
 <translation id="3178532070248519384">ଏଭାଣ୍ଟ-ଗାର୍ଡ</translation>
@@ -417,23 +505,30 @@
 <translation id="3199982728237701504">ଡକ୍ୟୁମେଣ୍ଟ ଫିଡର୍ (ଦୁଇ-ପାର୍ଶ୍ୱ)</translation>
 <translation id="3201315366910775591">ସେୟାର କରାଯାଇଥିବା ଆଲବମ ଅନ୍ୟ ଲୋକମାନଙ୍କ ଦ୍ୱାରା ଅପଡେଟ କରାଯାଇପାରିବ</translation>
 <translation id="3211671540163313381">କୀମେପିଂ ଡି-ପେଡ</translation>
+<translation id="3217462202230355157">ଆପଣଙ୍କ ମାଇକ ସଂଯୁକ୍ତ ଅଛି ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କ <ph name="DEVICE_TYPE" /> ରିଷ୍ଟାର୍ଟ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="3226405216343213872">ସ୍କାନରଗୁଡ଼ିକୁ ଖୋଜାଯାଉଛି</translation>
 <translation id="3226657629376379887">ଲେଆଉଟ ଆକ୍ସନ ମେନୁ</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> ଭେଲ୍ୟୁକୁ <ph name="CONVERSION_RATE" /> ଦ୍ୱାରା ଭାଗ କରନ୍ତୁ</translation>
-<translation id="3237710083340813756">ପୁଣି ଲେଖନ୍ତୁ</translation>
+<translation id="3242622575335502454">ଡିଜିଟାଲ ଆର୍ଟ</translation>
 <translation id="3246869037381808805">1ଦିନରୁ ଅଧିକ ପୁରୁଣା ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟଗୁଡ଼ିକୁ କାଢ଼ି ଦିଆଯିବ</translation>
+<translation id="3248791727258378769">କୌଣସି ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ତିଆରି କରାଯିବ ନାହିଁ</translation>
 <translation id="324961752321393509">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ଏହି ଆପକୁ ବନ୍ଦ କରିବାକୁ ଅନୁମତି ଦିଅନ୍ତି ନାହିଁ</translation>
 <translation id="3263941347294171263">ଅପଡେଟ ପ୍ରକ୍ରିୟା ଜାରି ରଖିବାକୁ <ph name="DEVICE_NAME" />କୁ ଅନପ୍ଲଗ କରି ପୁଣି ପ୍ଲଗ କରନ୍ତୁ</translation>
 <translation id="3268178239013324452">ବିଫଳ ହୋଇଛି - ପ୍ରିଣ୍ଟରର କଭର୍ ଖୋଲା ଅଛି</translation>
 <translation id="3275729367986477355">ଅବତାର ଇମେଜ</translation>
 <translation id="3283504360622356314">{0,plural, =1{ଫାଇଲକୁ ଏଡିଟ୍ କରନ୍ତୁ}other{ଫାଇଲଗୁଡ଼ିକୁ ଏଡିଟ୍ କରନ୍ତୁ}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
+<translation id="3286538390144397061">ଏବେ ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="3291996639387199448">ପ୍ରମାଣୀକରଣ କୀ'ର ଦିଗ</translation>
 <translation id="3294437725009624529">ଅତିଥି</translation>
 <translation id="3303855915957856445">କୌଣସି ସର୍ଚ୍ଚ ଫଳାଫଳ ମିଳିଲା ନାହିଁ</translation>
 <translation id="3305294846493618482">ଅଧିକ</translation>
 <translation id="3310640316857623290">DNS ଲାଟେନ୍ସି ଅନୁମୋଦିତ ସୀମା ଠାରୁ ଉଲ୍ଲେଖଯୋଗ୍ୟ ଭାବରେ ଉପରେ ଅଛି</translation>
+<translation id="3316495615885967552">ସାରାଂଶ ଏବଂ ଟାଇଟେଲ କ୍ରିଏସନ ମଡେଲ ଡାଉନଲୋଡ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି</translation>
+<translation id="3321030238473337787">ପ୍ଲେବ୍ୟାକର ସ୍ପିଡ୍</translation>
+<translation id="3327613592010997943">ଆପଣ ଏହି ଡିଭାଇସକୁ ପୁଣି <ph name="DAY" /> <ph name="TIME" />ରେ ବ୍ୟବହାର କରିବାକୁ ସକ୍ଷମ ହେବେ।</translation>
 <translation id="3328783797891415197">ଟେଷ୍ଟ ଚାଲୁଛି</translation>
+<translation id="3332683265015995419">ବାଲି ଝଡ଼ରେ ଉଡ଼ୁଥିବା ଷ୍ଟିମପଙ୍କ ମହାକାଶଯାନ</translation>
 <translation id="3340011300870565703">ଡିଭାଇସର ଡାହାଣପଟ ବଡରେ <ph name="BATTERY_PERCENTAGE" />% ବ୍ୟାଟେରୀ ଚାର୍ଜ ଅଛି।</translation>
 <translation id="3340978935015468852">ସେଟିଂସ୍</translation>
 <translation id="3347558044552027859">ଆଧୁନିକ</translation>
@@ -442,15 +537,18 @@
 <translation id="3361618936611118375">ସୁଶି</translation>
 <translation id="3368922792935385530">ସଂଯୁକ୍ତ ହୋଇଛି</translation>
 <translation id="3369013195428705271">ଆପଣ ସମସ୍ତ ପ୍ରିଣ୍ଟ ଇତିହାସ ଖାଲି କରିବାକୁ ଚାହୁଁଥିବା ନିଶ୍ଚିତ କି? ଆପଣଙ୍କ ଚାଲୁଥିବା ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟଗୁଡ଼ିକ ଖାଲି ହେବ ନାହିଁ।</translation>
+<translation id="3369632935976756339"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">ଆର୍ଥ ଫ୍ଲୋ ୱାଲପେପର</translation>
 <translation id="33736539805963175"><ph name="LETTERS_LETTER" /> ଅକ୍ଷର ସହିତ <ph name="LETTERS_COLOR" /> ପୃଷ୍ଠପଟ</translation>
+<translation id="3382806462014639823"><ph name="TEACHER_NAME" /> ଆପଣଙ୍କ ସ୍କ୍ରିନକୁ ଭ୍ୟୁ କରୁଛନ୍ତି</translation>
 <translation id="3383623117265110236">ଏକ୍ସକ୍ଲୁସିଭ</translation>
 <translation id="3404249063913988450">ସ୍କ୍ରିନ୍ ସେଭର୍ ସକ୍ଷମ କରନ୍ତୁ</translation>
-<translation id="3410165745972100556">ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ବନ୍ଦ ଅଛି</translation>
 <translation id="3413935475507503304">ଅପଡେଟ କରିବାକୁ ଆଗକୁ ବଢ଼ିବା ପାଇଁ, "ପରବର୍ତ୍ତୀ"କୁ କ୍ଲିକ କରନ୍ତୁ।</translation>
+<translation id="3416709353545797224">ସମସ୍ତ <ph name="DEVICE_TYPE" /> ଅଡିଓ ରେକର୍ଡ କରୁଛି</translation>
 <translation id="3428551088151258685">ଆଉଟଡୋର</translation>
 <translation id="3428971106895559033">ପାଷ୍ଟେଲ</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="3434988468785284438">ପ୍ରତିଫଳନ ✨</translation>
 <translation id="3435738964857648380">ସୁରକ୍ଷା</translation>
 <translation id="3435896845095436175">ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="345256797477978759">ସ୍କ୍ରିନର <ph name="DIRECTION" /> ବଡ଼ ଅଂଶରେ ୱିଣ୍ଡୋକୁ ଡକ କରନ୍ତୁ</translation>
@@ -460,6 +558,7 @@
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" />କୁ ଅପଡେଟ କରାଯାଉଛି</translation>
 <translation id="346423161771747987">କରେଣ୍ଟ</translation>
 <translation id="346539236881580388">ପୁଣି ଉଠାନ୍ତୁ</translation>
+<translation id="3479552764303398839">ଏବେ ନୁହେଁ</translation>
 <translation id="3484914941826596830">ଫାର୍ମୱେରକୁ ଅପଡେଟ କରାଯାଉଥିବା ସମୟରେ ଏହି ଏକ୍ସଟର୍ନଲ ଡିଭାଇସକୁ ଅନପ୍ଲଗ କରନ୍ତୁ ନାହିଁ କିମ୍ବା ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟରକୁ ବନ୍ଦ କରନ୍ତୁ ନାହିଁ। ଆପଣ ଏହି ୱିଣ୍ଡୋକୁ ଛୋଟ କରିପାରିବେ। ଏହି ଅପଡେଟ ପାଇଁ କିଛି ସମୟ ଲାଗିପାରେ ଏବଂ ଏହି ସମୟରେ ଆପଣଙ୍କ ଏକ୍ସଟର୍ନଲ ଡିଭାଇସ କାମ କରିନପାରେ।</translation>
 <translation id="3486220673238053218">ସଂଜ୍ଞା</translation>
 <translation id="3487866404496702283">ମାହି ଫିଚର ପାଇଁ ମତାମତ</translation>
@@ -474,9 +573,11 @@
 <translation id="3532980081107202182">ପ୍ରାୟ <ph name="MIN_REMAINING" /> ମିନିଟ୍ ବାକି ଅଛି</translation>
 <translation id="3533790840489634638">ପୁଲ</translation>
 <translation id="3547264467365135390">ସୂତ୍ର</translation>
+<translation id="3552832331940389362">ଅପରାହ୍ନରେ ଝରକା ପାଖରେ ବସି ବର୍ଷାକୁ ଦେଖୁଥିବା ଏକ ବିଲେଇର ଜାପାନିଜ ଆନିମେସନ ଇଲୁଷ୍ଟ୍ରେସନ</translation>
 <translation id="3557205324756024651">ସ୍ଥାନୀୟ ପରିଚୟ (ଇଚ୍ଛାଧୀନ)</translation>
 <translation id="3565064564551103223">ଅନୁମତି ଦିଆଯାଇଥିବା IPଗୁଡ଼ିକ</translation>
 <translation id="3569407787324516067">ସ୍କ୍ରିନ୍ ସେଭର୍</translation>
+<translation id="3571184524500629183">ସର୍ଚ୍ଚ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="3577473026931028326">କିଛି ତ୍ରୁଟି ହୋଇଛି। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="357889014807611375">ମିଟର୍ ହୋଇଥିବା ୱାଇ-ଫାଇ</translation>
 <translation id="3583278742022654445">ସିଗନାଲ କ୍ଷମତା ଦୁର୍ବଳ ଅଟେ। ୱାଇ-ଫାଇ ସିଗନାଲ ସୋର୍ସ ନିକଟକୁ ଯାଇ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
@@ -489,30 +590,42 @@
 <translation id="3604713164406837697">ୱାଲପେପର୍ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="360565022852130722">ଦୁର୍ବଳ ପ୍ରୋଟୋକଲ୍ WEP 802.1x ବ୍ୟବହାର କରି ୱାଇଫାଇ ନେଟୱାର୍କକୁ ସୁରକ୍ଷିତ କରାଯାଇଛି</translation>
 <translation id="3606583719724308068">HTTPS ୱେବସାଇଟଗୁଡ଼ିକ ପାଇଁ ଲାଟେନ୍ସି ଅଧିକ ଅଛି</translation>
+<translation id="3614639364827854748">ଏହି ମେନୁକୁ ବାମପଟକୁ ମୁଭ କରନ୍ତୁ</translation>
 <translation id="361575905210396100">ଆପଣଙ୍କ ମତାମତ ପାଇଁ ଧନ୍ୟବାଦ</translation>
 <translation id="3621072146987826699">ହାତୀ</translation>
+<translation id="3628462041319107639">ଟ୍ରାନ୍ସକ୍ରିପ୍ସନ ମଡେଲ ଡାଉନଲୋଡ ହେଉଛି…</translation>
 <translation id="3632040286124154621">ଭଲ ପରାମର୍ଶ</translation>
 <translation id="3632579075709132555">ଗୋପନୀୟତା ସ୍କ୍ରିନ ଟୋଗଲ</translation>
-<translation id="3639873154908477486">ନାମ (Aରୁ Z)</translation>
+<translation id="3634941468757842845">ଗୋଟିଏ ଥିମ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="3644695927181369554">ଖରାପ ପରାମର୍ଶ</translation>
 <translation id="3651050199673793219">ଏକ ତାପମାତ୍ରା ୟୁନିଟ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="3661106764436337772">ଶୀଘ୍ର ଏବଂ ଅଧିକ ଆତ୍ମବିଶ୍ୱାସର ସହ ଲେଖନ୍ତୁ</translation>
 <translation id="3662461537616691585">ବରଗୁଣ୍ଡି ଏବଂ ମେରୁନ</translation>
+<translation id="3664755900672940272">ସାମ୍ପଲ ପ୍ରମ୍ପ୍ଟ ସଫଲ କରାଯାଇଛି</translation>
 <translation id="3668449597372804501">କ୍ଲାଉଡ ଫ୍ଲୋ ୱାଲପେପର</translation>
+<translation id="3668570675727296296">ଭାଷା ସେଟିଂସ୍</translation>
 <translation id="3675132884790542448">ଘୁଷୁରୀ</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> ଟେଷ୍ଟ</translation>
 <translation id="370665806235115550">ଲୋଡ୍ କରୁଛି...</translation>
 <translation id="3708186454126126312">ପୂର୍ବରୁ ସଂଯୋଗ କରାଯାଇଛି</translation>
 <translation id="3715651196924935218">ଫ୍ଲୋଟରୁ ବାହାରି ଯାଆନ୍ତୁ</translation>
 <translation id="3716250181321371108">ନିୟନ୍ତ୍ରଣ ତିଆରି କରନ୍ତୁ</translation>
+<translation id="3716830479327464973">ଆପଣ ଏହାକୁ ଅନୁମତି ଦେଲେ, Recorder ଏସବୁ ପାଇଁ ଆପଣଙ୍କ ଅଡିଓ ରେକର୍ଡିଂଗୁଡ଼ିକୁ ବିଶ୍ଳେଷଣ କରିବ:</translation>
+<translation id="3719826155360621982">ମୂଳ ପୃଷ୍ଠା</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" />ଟି ସମୀକ୍ଷା)</translation>
 <translation id="3748026146096797577">ସଂଯୁକ୍ତ ହୋଇନାହିଁ</translation>
 <translation id="3749289110408117711">ଫାଇଲ୍ ନାମ</translation>
+<translation id="3763034084412196440">ଭଲ୍ୟୁମକୁ ଆଡଜଷ୍ଟ କରନ୍ତୁ</translation>
+<translation id="3767737419527918477">ରେକର୍ଡିଂ ଫାଇଲଗୁଡ଼ିକୁ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="3771294271822695279">ଭିଡିଓ ଫାଇଲ୍‌ଗୁଡ଼ିକ</translation>
+<translation id="3771694256347217732">Google ସେବାର ସର୍ତ୍ତାବଳୀ</translation>
+<translation id="3772164567520167489">ଏହି ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ଭାଷା ପାଇଁ ରେକର୍ଡିଂ ଟାଇଟେଲ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="3780740315729837296">କୀବୋର୍ଡ କୀକୁ ଆସାଇନ କରନ୍ତୁ</translation>
 <translation id="3784455785234192852">ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="3785643128701396311">ପିକ୍ସେଲ ଆର୍ଟ</translation>
+<translation id="3799381533888781854">ବନ୍ଦ ଅଛି - ଏହି ସେଟିଂ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ ହୁଏ।</translation>
 <translation id="380097101658023925">RGB ନିୟନ୍ତ୍ରଣଗୁଡ଼ିକ</translation>
+<translation id="380493988330050229">ଏହି ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ଭାଷା ପାଇଁ ସାରାଂଶ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="38114475217616659">ସମସ୍ତ ଇତିହାସ ଖାଲି କରନ୍ତୁ</translation>
 <translation id="3820172043799983114">ଅବୈଧ PIN।</translation>
 <translation id="382043424867370667">ସୂର୍ଯ୍ୟାସ୍ତ ୱାଲପେପର</translation>
@@ -521,6 +634,7 @@
 <translation id="3845880861638660475">ଡାଏଲଗ ବନ୍ଦ କରିବା ପାଇଁ <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> କୀ ଦବାନ୍ତୁ।</translation>
 <translation id="3848280697030027394">କୀବୋର୍ଡକୁ ଗାଢ଼ା କରନ୍ତୁ</translation>
 <translation id="385051799172605136">ପଛକୁ</translation>
+<translation id="3852931845120288955">ଟାଇଟେଲ (Aରୁ Z)</translation>
 <translation id="3858860766373142691">ନାମ</translation>
 <translation id="3862598938296403232">ବର୍ଣ୍ଣନା ଆବଶ୍ୟକ ଅଟେ</translation>
 <translation id="386280020966669610">ମୋତେ ପ୍ରେରଣା ଦିଅନ୍ତୁ</translation>
@@ -531,12 +645,18 @@
 <translation id="3869314628814282185">ଟ୍ୟୁଲ</translation>
 <translation id="387301095347517405">ଆପଣଙ୍କ ବ୍ୟାଟେରୀ ଯେତେ ଥର ସମ୍ପୂର୍ଣ୍ଣ ରୂପେ ଚାର୍ଜ ହୋଇଛି</translation>
 <translation id="3877066159641251281">ଅନୁବାଦକୁ ଶୁଣନ୍ତୁ</translation>
+<translation id="3880601782712134623">ସ୍ୱତନ୍ତ୍ର ଭଏସଗୁଡ଼ିକୁ ସ୍ୱତଃ ଚିହ୍ନଟ କରି ପ୍ରତ୍ୟେକ ସ୍ପିକରଙ୍କୁ ସ୍ପିକର 1 ଏବଂ ସ୍ପିକର 2 ପରି ଏକ ଜେନେରିକ ଲେବଲ ଦେବ</translation>
+<translation id="38811596981744338">ଆଇନଗତ ସମସ୍ୟା</translation>
 <translation id="3885327323343477505">ସ୍କ୍ରିନ ସେଭର ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="3889914174935857450">ତାରିଖ ରିସେଟ କରନ୍ତୁ</translation>
+<translation id="3889954687526985291">ନିଓନ ଲାଇଟ ଓ ଡାର୍କ ବେକଗ୍ରାଉଣ୍ଡ ସହ କଳା କାଗଜରେ ତିଆରି ଏକ ଅତ୍ୟାଧୁନିକ ମୋଟରସାଇକେଲ</translation>
 <translation id="3897092660631435901">ମେନୁ</translation>
+<translation id="3902271751020176019">ଟ୍ରାନ୍ସକ୍ରିପସନର ଭାଷା</translation>
+<translation id="390890062090528082">ତାରା-ପୂର୍ଣ୍ଣ ଆକାଶ</translation>
 <translation id="391412459402535266">ଡିଭାଇସକୁ ଟେଷ୍ଟ କରାଯାଇପାରିବ ନାହିଁ। ଟେଷ୍ଟ କରିବା ପାଇଁ ଲାପଟପ ମୋଡକୁ ସ୍ୱିଚ କରନ୍ତୁ।</translation>
 <translation id="3916998944874125962">ସ୍କ୍ରିନସଟ ନିଅନ୍ତୁ</translation>
 <translation id="3923184630988645767">ଡାଟାର ବ୍ୟବହାର</translation>
+<translation id="392943705803418306">ଆପଣଙ୍କ ପାଇଁ କ୍ଲାସ ଟୁଲ୍ସ ସେସନ ସମାପ୍ତ ହୋଇଯାଇଛି</translation>
 <translation id="3932043219784172185">କୌଣସି ଡିଭାଇସ ସଂଯୋଗ କରାଯାଇନାହିଁ</translation>
 <translation id="3934185438132762746">ଆସାଇନ କରାଯାଇନଥିବା <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">ହୋଷ୍ଟ ସମ୍ବନ୍ଧିତ ସମସ୍ୟାର ସମାଧାନ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
@@ -551,6 +671,7 @@
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> ଦିନରୁ ଅଧିକ ପୁରୁଣା ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟଗୁଡ଼ିକୁ କାଢ଼ି ଦିଆଯିବ</translation>
 <translation id="3993704782688964914">ଆପଣଙ୍କ <ph name="DEVICE_NAME" /> ବର୍ତ୍ତମାନ ଅପଟୁଡେଟ ଅଛି</translation>
 <translation id="3998976413398910035">ପ୍ରିଣ୍ଟରଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
+<translation id="4002066346123236978">ଆଖ୍ୟା</translation>
 <translation id="4003384961948020559">ବିଫଳ ହୋଇଛି - ଆଉଟପୁଟ୍ ଟ୍ରେ ପୂର୍ଣ୍ଣ ଅଛି</translation>
 <translation id="401147258241215701">ଅବସିଡିଅନ</translation>
 <translation id="4021031199988160623">ଟେଷ୍ଟ କରିବା ପାଇଁ ଲାପଟପ ମୋଡକୁ ସ୍ୱିଚ କରନ୍ତୁ</translation>
@@ -561,6 +682,7 @@
 <translation id="4046123991198612571">ପରବର୍ତ୍ତୀ ଟ୍ରାକ୍</translation>
 <translation id="404928562651467259">ଚେତାବନୀ</translation>
 <translation id="4050208988451295487">କିଛି ବିକଳ୍ପ:</translation>
+<translation id="405181879009056822">ChromeOS ସେଟିଂସ</translation>
 <translation id="4054683689023980771">ଇମେଜ ଡାଉନଲୋଡ ହେଉଛି</translation>
 <translation id="4059839844193047929">ଏହି ପୃଷ୍ଠାରୁ ବାହାରି ଯିବା ଫଳରେ ଏହା ଆପଣଙ୍କ ବର୍ତ୍ତମାନର ରେକର୍ଡିଂକୁ ସମାପ୍ତ କରିଦେବ</translation>
 <translation id="4063039537646912479">ଫିକା ନୀଳ</translation>
@@ -570,14 +692,19 @@
 <translation id="4093865285251893588">ପ୍ରୋଫାଇଲ୍ ଛବି</translation>
 <translation id="409427325554347132">ଟେଷ୍ଟ ବିବରଣୀ ସେଭ୍ କରନ୍ତୁ</translation>
 <translation id="409469431304488632">ପରୀକ୍ଷା</translation>
+<translation id="4095155732125588500">ସାରାଂଶ ଏବଂ ଟାଇଟେଲ କ୍ରିଏସନ ମଡେଲ ଡାଉନଲୋଡ ଚାଲିଛି</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">ଆଲବମ୍ <ph name="TITLE" /> <ph name="DESC" /> ଚୟନ କରନ୍ତୁ</translation>
 <translation id="4111761024568264522">USB ଟଚପ୍ୟାଡ</translation>
 <translation id="4113067922640381334">ନୂଆ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ୱାଲପେପର<ph name="END_LINK_WALLPAPER_SUBPAGE" />କୁ ଆପଣଙ୍କର ବର୍ତ୍ତମାନ ଆକ୍ସେସ ଅଛି</translation>
 <translation id="4117637339509843559">ଡାର୍କ ମୋଡ୍</translation>
+<translation id="4126551873361000548">10 ସେକେଣ୍ଡ ପଛକୁ ନିଅନ୍ତୁ</translation>
+<translation id="4128271910628504223">"ଏକ ଘଞ୍ଚ ଜଙ୍ଗଲ ଡ୍ର କରନ୍ତୁ" ଭଳି ଏକ ପ୍ରମ୍ପ୍ଟ ଲେଖନ୍ତୁ</translation>
 <translation id="4130035430755296270">ଅଧିକ ଲେଆଉଟ ବିକଳ୍ପ ପାଇଁ ହୋଭର କରିବା ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="4130750466177569591">ମୁଁ ରାଜି</translation>
 <translation id="4131410914670010031">କଳା ଏବଂ ଧଳା</translation>
+<translation id="4137700675046373159">ଶନିବାର ଦିନ</translation>
+<translation id="4139326893730851150">ଫାର୍ମୱେର ଅପଡେଟଗୁଡ଼ିକ</translation>
 <translation id="4143226836069425823">ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ଅନ୍ୟ ଏକ କୀବୋର୍ଡରେ ଟାପ କରନ୍ତୁ</translation>
 <translation id="4145784616224233563">HTTP ଫାୟାରୱାଲ୍</translation>
 <translation id="4147897805161313378">Google Photos</translation>
@@ -585,25 +712,41 @@
 <translation id="4155551848414053977">ସ୍କାନରକୁ ଚାଲୁ କରାଯାଇଛି ଏବଂ ଏହା ଆପଣଙ୍କ ନେଟୱାର୍କ କିମ୍ବା ଏକ ସିଧାସଳଖ ସଂଯୋଗ ମାଧ୍ୟମରେ ଉପଲବ୍ଧ ଅଛି ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="4159238217853743776">ଆଂଶିକ</translation>
 <translation id="4159784952369912983">ବାଇଗଣୀ</translation>
+<translation id="416219735020840807">ଟ୍ରାନ୍ସକ୍ରିପ୍ସନ ମଡେଲକୁ ଡାଉନଲୋଡ କରାଯାଇପାରିବ ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କର <ph name="DEVICE_TYPE" /> ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ।</translation>
 <translation id="4170180284036919717">ଗୋଟିଏ ଫଟୋ ଉଠାନ୍ତୁ</translation>
 <translation id="4170700058716978431">ବିଫଳ ହୋଇଛି</translation>
 <translation id="4171077696775491955">ଉଜ୍ଜ୍ୱଳତା କମ୍ କରନ୍ତୁ</translation>
 <translation id="4176463684765177261">ଅକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="4176659219503619100">କଣ୍ଟ୍ରୋଲ ପ୍ୟାନେଲ</translation>
+<translation id="4192913637640303603">ରେକର୍ଡିଂ ଟାଇଟେଲ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="4193496492959950834">Recorderର ସେଟିଂସ</translation>
 <translation id="4198398257084619072">ପାଣ୍ଡା</translation>
 <translation id="420283545744377356">ସ୍କ୍ରିନ୍ ସେଭର ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="4210636113897977670">ସେଭ କରି ବାହାରି ଯାଆନ୍ତୁ</translation>
 <translation id="4210659479607886331">ଗ୍ଲେସିଆଲ ନଦୀ</translation>
+<translation id="4212169537710712814"><ph name="LANGUAGE_NAME" /> ଟ୍ରାନ୍ସକ୍ରିପସନ ମୋଡେଲ ଡାଉନଲୋଡ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି</translation>
 <translation id="42126664696688958">ଏକ୍ସପୋର୍ଟ କରନ୍ତୁ</translation>
 <translation id="4213104098953699324">USB କୀବୋର୍ଡ</translation>
 <translation id="4227825898293920515"><ph name="TIME" />ରେ ପାସ୍‌ୱାର୍ଡର ମିଆଦ ଶେଷ ହେଉଛି</translation>
 <translation id="4238516577297848345">କୌଣସି ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟ ଚାଲୁ ନାହିଁ</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4249717042534905822">ରବିବାର ଦିନ</translation>
 <translation id="4250229828105606438">ସ୍କ୍ରିନସଟ</translation>
 <translation id="4251839292699800785">ଷ୍ଟାଇଲିସ ଅଫିସ</translation>
+<translation id="4252261480746798874">ଆପଣ "ଆପଣ ନିଜେ ତିଆରି କରନ୍ତୁ" ଚୟନ କଲେ, ଆପଣ ଏକ କଷ୍ଟମ ପ୍ରମ୍ପ୍ଟ ଲେଖିପାରିବେ। ଆପଣ "ଏକ ଥିମ ବାଛନ୍ତୁ" ମଧ୍ୟ ଚୟନ କରିପାରିବେ ଏବଂ ତା'ପରେ ଆପଣଙ୍କ AI ୱାଲପେପରକୁ ପର୍ସନାଲାଇଜ କରିବା ପାଇଁ ଅଣ୍ଡରଲାଇନ ହୋଇଥିବା ଶବ୍ଦଗୁଡ଼ିକୁ ଚୟନ କରିପାରିବେ।
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ଅଧିକ ସ୍ୱତନ୍ତ୍ର ଏବଂ ବିଭିନ୍ନ AI ଇମେଜ ବିକଳ୍ପ ପାଇବା ପାଇଁ "ମୋତେ ପ୍ରେରଣା ଦିଅନ୍ତୁ"କୁ ଚୟନ କରନ୍ତୁ।
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ଆପଣ ନିଜର ୱାଲପେପର ତିଆରି କରିବା ବେଳେ ଇମେଜ ଜେନେରେଟ କରିବା ଏବଂ ପ୍ରଡକ୍ଟକୁ ଉନ୍ନତ କରିବା ପାଇଁ <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleର ସେବାର ସର୍ତ୍ତାବଳୀ ଏବଂ ଗୋପନୀୟତା ନୀତି<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> ଅଧୀନରେ Google ସର୍ଭରଗୁଡ଼ିକୁ ପ୍ରମ୍ପ୍ଟ ପଠାଯାଏ। କୌଣସି ବ୍ୟକ୍ତିଗତ, ସମ୍ବେଦନଶୀଳ କିମ୍ବା ଗୋପନୀୟ ସୂଚନା ଅନ୍ତର୍ଭୁକ୍ତ କରନ୍ତୁ ନାହିଁ।
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ଜେନେରେଟିଭ AI ଭୁଲ କରିପାରେ, ଯେଉଁଥିରେ ଲୋକମାନଙ୍କ ବିଷୟରେ ସୂଚନା ଅନ୍ତର୍ଭୁକ୍ତ, ତେଣୁ ଏହାକୁ ଦୁଇଥର-ଯାଞ୍ଚ କରନ୍ତୁ। <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
+<translation id="4253971074682120908">ନେଗେଟିଭ ସ୍ପେସ</translation>
 <translation id="4258281355379922695">HTTP ଲାଟେନ୍ସି</translation>
 <translation id="4266143281602681663">ସୂତା ବଲ</translation>
+<translation id="4269815121975886860">ଷ୍ଟାର୍ଟଅପ ପସନ୍ଦ</translation>
 <translation id="4271957103967917607">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରେ ଦେଖନ୍ତୁ</translation>
 <translation id="4275663329226226506">ମିଡିଆ</translation>
 <translation id="4278766082079064416">ସର୍ଟକଟକୁ "<ph name="CONFLICT_ACCEL_NAME" />" ପାଇଁ ବ୍ୟବହାର କରାଯାଉଛି। ଦ୍ୱନ୍ଦ୍ୱର ସମାଧାନ କରିବା ପାଇଁ ଏଡିଟ କରନ୍ତୁ କିମ୍ବା କାଢ଼ି ଦିଅନ୍ତୁ।</translation>
@@ -612,19 +755,25 @@
 <translation id="4289849978083912975">ସ୍ଲାଇଡ ଶୋ</translation>
 <translation id="4297501883039923494">ବନ୍ଦ ହୋଇଯାଇଛି - ଅଜଣା ତ୍ରୁଟି</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" />ଟି ଛବି</translation>
+<translation id="4300272766492248925">ଆପ ଖୋଲନ୍ତୁ</translation>
 <translation id="430786093962686457">ସିଫନ</translation>
+<translation id="4309762678330556039">ସ୍ୱତଃ ଟ୍ରାନ୍ସକ୍ରିପସନଗୁଡ଼ିକ ତିଆରି କରନ୍ତୁ ଏବଂ ଅଡିଓ ସର୍ଚ୍ଚ କରନ୍ତୁ। ଆପଣ ଇଣ୍ଟର୍ନେଟ ସହ କନେକ୍ଟ ନଥିବା ବେଳେ ମଧ୍ୟ ରେକର୍ଡିଂ ତିଆରି କରିପାରିବେ।</translation>
 <translation id="4310735698903592804">Google AI ଦ୍ୱାରା ପରିଚାଳିତ ବର୍ତ୍ତମାନର ୱାଲପେପରଗୁଡ଼ିକ</translation>
 <translation id="4320904097188876154">ନିଅନ ପିଙ୍କ</translation>
+<translation id="432961742358282111">ସଂଜ୍ଞା, ଅନୁବାଦ କିମ୍ବା ୟୁନିଟ କନଭର୍ସନଗୁଡ଼ିକ ପାଇବା ପାଇଁ ଡାହାଣ-କ୍ଲିକ କରନ୍ତୁ କିମ୍ବା ଦବାଇ ଧରି ରଖନ୍ତୁ। ଏହି ଫିଚରକୁ ପରିଚାଳନା କରିବା ପାଇଁ ବାମ କିମ୍ବା ଡାହାଣ ତୀର କୀ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> କୀ'କୁ ଦବାଯାଇଛି</translation>
 <translation id="4334293042716981313">ଆପଣ <ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />ନିଜର ପ୍ରମ୍ପ୍ଟ ମଧ୍ୟ ଲେଖିପାରିବେ<ph name="END_LINK_FREEFORM_SUBPAGE" /></translation>
 <translation id="4354430579665871434">କୀ</translation>
+<translation id="4356100841225547054">ଭଲ୍ୟୁମକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="4361257691546579041">APN ହେଉଛି ଡିଫଲ୍ଟ ପ୍ରକାର।</translation>
+<translation id="4368101969572512692">ପରାମର୍ଶଗୁଡ଼ିକୁ ସଫଲ କରନ୍ତୁ</translation>
 <translation id="437294888293595148">ସମସ୍ତ ସର୍ଟକଟକୁ ରିସେଟ କରନ୍ତୁ</translation>
 <translation id="437477383107495720">ଠେକୁଆ</translation>
 <translation id="4376423484621194274">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର <ph name="APP_NAME" />କୁ ବନ୍ଦ କରିବା ପାଇଁ ଅନୁମତି ଦିଅନ୍ତି ନାହିଁ</translation>
 <translation id="4378373042927530923">ଚାଲୁନାହିଁ</translation>
 <translation id="4378551569595875038">ସଂଯୋଗ କରୁଛି...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4383322413532809099">ଆପଣଙ୍କ ରେକର୍ଡିଂ ପାଇଁ ଟାଇଟେଲଗୁଡ଼ିକ ତିଆରି କରିବାକୁ, ଆପଣଙ୍କ <ph name="DEVICE_TYPE" /> ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="4394049700291259645">ଅକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> ରିଷ୍ଟାର୍ଟ କରାଯାଉଛି</translation>
 <translation id="4395835743215824109">କୀବୋର୍ଡକୁ କଷ୍ଟମାଇଜ କରନ୍ତୁ</translation>
@@ -634,7 +783,9 @@
 <translation id="4422041425070339732">ତଳ ଆଡ଼କୁ ତୀର</translation>
 <translation id="4425149324548788773">ମୋ ଡ୍ରାଇଭ୍</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ବନ୍ଦ ଅଛି</translation>
+<translation id="4428840632568803690">ସ୍ପିକର <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Kerberos ଟିକେଟ୍‍ର ମିଆଦ ଶୀଘ୍ର ଶେଷ ହୋଇଯିବ</translation>
+<translation id="4430019312045809116">ଭଲ୍ୟୁମ୍</translation>
 <translation id="4431821876790500265">ରିପୋର୍ଟ ଦେଖନ୍ତୁ</translation>
 <translation id="4443192710976771874">ନାଲି</translation>
 <translation id="4447592701292766824">ଏହି ବିଷୟବସ୍ତୁ ପାଇଁ ସାରାଂଶ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ</translation>
@@ -647,8 +798,11 @@
 <translation id="4474142134969976028">ମେଳ ହେଉଥିବା କୌଣସି ଫଳାଫଳ ନାହିଁ</translation>
 <translation id="4479639480957787382">ଇଥର୍‌ନେଟ୍‌</translation>
 <translation id="4483049906298469269">ଡିଫଲ୍ଟ-ନଥିବା ନେଟୱାର୍କ ଗେଟୱେକୁ ପିଙ୍ଗ୍ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
+<translation id="4483498983731992167">ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ</translation>
+<translation id="4486524074141928967">ଆପଣଙ୍କୁ <ph name="TIME" />ରେ ସାଇନ ଆଉଟ କରାଯିବ</translation>
 <translation id="4500722292849917410">ସର୍ଟକଟ ଉପଲବ୍ଧ ନାହିଁ। ଏକ ମୋଡିଫାୟର କୀ (ctrl, alt, shift କିମ୍ବା <ph name="META_KEY" />) ବ୍ୟବହାର କରି ଏକ ନୂଆ ସର୍ଟକଟ ଦବାନ୍ତୁ।</translation>
 <translation id="4500966230243561393">ଇଣ୍ଟରଫେସ ରଙ୍ଗ</translation>
+<translation id="4501302804999678844">ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ତିଆରି କରିବାକୁ, ଆପଣଙ୍କ <ph name="DEVICE_TYPE" /> ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="4503223151711056411">ବାମ ତୀର</translation>
 <translation id="4503441351962730761">ମଡର୍ଣ୍ଣ ଆର୍ଟ</translation>
 <translation id="4507392511610824664">ଉଜ୍ଜ୍ୱଳତା ବଢ଼ାନ୍ତୁ</translation>
@@ -666,10 +820,12 @@
 <translation id="4562494484721939086">କୌଣସି ସେବା ନାହିଁ</translation>
 <translation id="4570558255126759859">ରେକର୍ଡିଂଗୁଡ଼ିକର ସାରାଂଶ ପ୍ରସ୍ତୁତ କରିବା ପାଇଁ Gemini ମଡେଲ ଡାଉନଲୋଡ କରିବେ?</translation>
 <translation id="4573777384450697571">ବିଫଳ ହୋଇଛି - ସାର୍ଟିଫିକେଟର ମିଆଦ ଶେଷ ହୋଇଯାଇଛି</translation>
+<translation id="4575450106703099687">ଆକ୍ସେସିବିଲିଟୀ ବିକଳ୍ପଗୁଡ଼ିକ</translation>
 <translation id="458794348635939462">ହୋଷ୍ଟ ସମ୍ବନ୍ଧିତ ସମସ୍ତ ସମସ୍ୟାର ସମାଧାନ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
 <translation id="4593212453765072419">ପ୍ରକ୍ସି ପ୍ରାମାଣିକତା ଆବଶ୍ୟକ</translation>
 <translation id="4594021849294327751">ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ତିଆରି କରନ୍ତୁ</translation>
-<translation id="4607282946861182308">ଏହାର ଇମେଜ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ। ଅନ୍ୟ ଏକ ପ୍ରମ୍ପ୍ଟ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
+<translation id="4594541568452132351">ଟ୍ରାନ୍ସକ୍ରିପସନର ଭାଷା ଚୟନ କରି ମଡେଲ ଡାଉନଲୋଡ କରନ୍ତୁ</translation>
+<translation id="4600301862817165514">ଗାଲାକ୍ସିରେ ଗତି କରୁଥିବା ନିଓନ ଆଲୋକରେ ଆଲୋକିତ ଏକ ଡେଲୋରିଆନ ଯାହାର ନିକଟରେ ନକ୍ଷତ୍ରଗୁଡ଼ିକ ଅତିକ୍ରମ କରୁଛନ୍ତି</translation>
 <translation id="4609350030397390689">କୀବୋର୍ଡର ଉଜ୍ଜ୍ୱଳତା କମ୍ କରନ୍ତୁ</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" />ଟି ମଧ୍ୟରୁ <ph name="PRINTED_PAGE_NUMBER" /> ନମ୍ବର ପୃଷ୍ଠା। ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟ ବାତିଲ୍ କରିବାକୁ Enter ଦବାନ୍ତୁ।</translation>
 <translation id="463791356324567266">ସ୍କାନିଂ ବାତିଲ୍ କରାଯାଉଛି...</translation>
@@ -678,20 +834,30 @@
 <translation id="4650608062294027130">ଡାହାଣ Shift</translation>
 <translation id="4654549501020883054">ଦୈନିକ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="4655868084888499342">ଇମେଜକୁ ୱାଲପେପର ଭାବେ ସେଟ କରାଯାଇଛି</translation>
+<translation id="4660989616054030633">ଜେନେରେଟିଭ AI ଭୁଲ କରିପାରେ, ଯେଉଁଥିରେ ଲୋକମାନଙ୍କ ବିଷୟରେ ସୂଚନା ଅନ୍ତର୍ଭୁକ୍ତ, ତେଣୁ ଏହାକୁ ଦୁଇଥର-ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="4661249927038176904">ଅବାସ୍ତବ</translation>
+<translation id="4661392828086261436">ଏହି ଅପଡେଟ ଡିଭାଇସର ନିର୍ମାତା ଦ୍ୱାରା ପ୍ରଦାନ କରାଯାଇଛି ଏବଂ ଏହାକୁ Google ଦ୍ୱାରା ଯାଞ୍ଚ କରାଯାଇନାହିଁ।</translation>
 <translation id="4664651912255946953">ଲୋମ</translation>
 <translation id="4665014895760275686">ଉତ୍ପାଦକ</translation>
 <translation id="467510802200863975">ପାସ୍‌ୱାର୍ଡ ମେଳ ହେଉ ନାହିଁ</translation>
 <translation id="467715984478005772">ଫାୟାରୱାଲ୍ ଥିବାର ସନ୍ଦେହ କରାଯାଇଛି</translation>
+<translation id="4678534708181186163">ସାରାଂଶ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ। ଏକ ଛୋଟ ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ।</translation>
 <translation id="4683762547447150570">ମୁଖ୍ୟ ଆସାଇନମେଣ୍ଟ ଉପରେ ଫୋକସ କରିବାକୁ ବଟନରେ ଟାପ କରନ୍ତୁ</translation>
 <translation id="4691278870498629773">ବନ୍ଦ ହୋଇଯାଇଛି - ଟ୍ରେ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="469379815867856270">ସିଗନାଲର କ୍ଷମତା</translation>
 <translation id="4697260493945012995">ଆପଣଙ୍କ ନିୟନ୍ତ୍ରଣର ପ୍ରକାର ଚୟନ କରନ୍ତୁ</translation>
+<translation id="4712940987669302829">ବୋକେ ଇଫେକ୍ଟ</translation>
 <translation id="4731797938093519117">ମାତା-ପିତାଙ୍କର ଆକ୍ସେସ୍</translation>
+<translation id="4733200407105375152">କ୍ଲାସ ଟୁଲ୍ସରେ ନାହିଁ</translation>
+<translation id="4734982181169850310">ପାଷ୍ଟେଲ ରଙ୍ଗ</translation>
 <translation id="473775607612524610">ଅପ୍‍‍ଡେଟ୍</translation>
 <translation id="4744944742468440486">ଆପଣଙ୍କ ଚୟନ ସମ୍ବନ୍ଧିତ ସୂଚନା</translation>
+<translation id="4750394297954878236">ପରାମର୍ଶ</translation>
+<translation id="4763771683769971829">ଉପଲବ୍ଧ ଭାଷାର ତାଲିକା</translation>
 <translation id="4771607256327216405">କୀବୋର୍ଡ ଉଜ୍ଜ୍ୱଳ କରନ୍ତୁ</translation>
+<translation id="4771923071974529837">ଆସନ୍ତାକାଲି</translation>
 <translation id="4773299976671772492">ବନ୍ଦ ହୋଇଯାଇଛି</translation>
+<translation id="4777310452073659583">ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ପାଇବାକୁ, ଆପଣଙ୍କ <ph name="DEVICE_TYPE" /> ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="4778082030331381943">ଆମେଥିଷ୍ଟ</translation>
 <translation id="4782311465517282004">ଯେତେବେଳେ ଆପଣ ଟେକ୍ସଟରେ ଡାହାଣ-କ୍ଲିକ୍ କରନ୍ତି କିମ୍ବା ଏହାକୁ ସ୍ପର୍ଶ କରି ଧରି ରଖନ୍ତି, ସଂଜ୍ଞା, ଅନୁବାଦ କିମ୍ବା ୟୁନିଟ୍ ରୂପାନ୍ତରଗୁଡ଼ିକ ପାଆନ୍ତୁ</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" />ଟି ଫଟୋ</translation>
@@ -734,28 +900,38 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> ସେକେଣ୍ଡରେ <ph name="RATE" /> ଚାର୍ଜ ହୋଇଛି</translation>
 <translation id="4930320165497208503">ଏକ ସଂଯୋଗ ସେଟ ଅପ କିମ୍ବା ଅପଡେଟ କରିବାକୁ, <ph name="BEGIN_LINK" />ସେଟିଂସ<ph name="END_LINK" />କୁ ଯାଆନ୍ତୁ।</translation>
 <translation id="4932733599132424254">ତାରିଖ</translation>
+<translation id="493637535592633700">ବାୟୋଲୁମିନସେଣ୍ଟ</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" />, ନୂଆ ଟାବରେ ଖୋଲେ</translation>
+<translation id="4946927805998996217">ସାରାଂଶ ଜେନେରେଟ କରାଯାଉଛି</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> ଫାର୍ମୱେରକୁ ସଂସ୍କରଣ <ph name="VERSION" />ରେ ଅପଡେଟ କରାଯାଇଛି</translation>
 <translation id="4950893758552030541">ଟ୍ରି ଟନେଲ</translation>
+<translation id="4964806321337443935">4k</translation>
+<translation id="4965661459364092269">ସେଫ୍ଟି ରିସେଟ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି</translation>
 <translation id="4965703485264574128">ଏକ ଆନୁମାନିକ ଫଳାଫଳ ପାଇଁ <ph name="CONVERSION_RATE" /> ଭେଲ୍ୟୁକୁ <ph name="CATEGORY_TEXT" /> ଦ୍ୱାରା ଗୁଣନ କରନ୍ତୁ</translation>
 <translation id="4969079779290789265">ସ୍ପ୍ଲିଟ କରନ୍ତୁ</translation>
 <translation id="4972592110715526173">ମୋଡ୍‍ ପରିବର୍ତ୍ତନ</translation>
+<translation id="497421865427891073">ଆଗକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="4981003703840817201">ନୀଳ ଏବଂ ଗୋଲାପୀ</translation>
 <translation id="498186245079027698">ସ୍କାନର୍ ଯାଞ୍ଚ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ। ସ୍କାନ୍ କରାଯାଇଥିବା ଫାଇଲଗୁଡ଼ିକୁ ସେଭ୍ କରିବାକୁ ଯଥେଷ୍ଟ ଲୋକାଲ୍ ସ୍ଥାନ ଥିବା ନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
 <translation id="4982627662315910959">ସର୍ଟକଟ ଉପଲବ୍ଧ ନାହିଁ। shift ଏବଂ 1 ଅଧିକ ମୋଡିଫାୟର କୀ (ctrl, alt କିମ୍ବା <ph name="META_KEY" />) ବ୍ୟବହାର କରି ଏକ ନୂଆ ସର୍ଟକଟ ଦବାନ୍ତୁ।</translation>
-<translation id="4983216687482551672">Chromebook ଅଡିଓ</translation>
 <translation id="4985509611418653372">ଚଲାନ୍ତୁ</translation>
 <translation id="4987769320337599931">ଫାୟାରୱାଲ୍</translation>
 <translation id="4988526792673242964">ପୃଷ୍ଠାଗୁଡ଼ିକ</translation>
 <translation id="4989542687859782284">ଉପଲବ୍ଧ ନାହିଁ</translation>
+<translation id="4999267570108760491">ଭେକ୍ଟର ଆର୍ଟ ଷ୍ଟାଇଲ</translation>
 <translation id="4999333166442584738">ରିପୋର୍ଟ ଲୁଚାନ୍ତୁ</translation>
 <translation id="500920857929044050">ଟେଷ୍ଟ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">ଥିମର ରଙ୍ଗ</translation>
+<translation id="5037240652947866174">ଆଜି</translation>
 <translation id="5038292761217083259">କୀବୋର୍ଡକୁ ଏକାଧିକ ରଙ୍ଗର କରନ୍ତୁ</translation>
 <translation id="5039804452771397117">ଅନୁମତି</translation>
 <translation id="5049856988445523908">SIM ଲକ୍ କରାଯାଇଛି (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">ଗୋଷ୍ଠୀର ନାମ</translation>
 <translation id="5051044138948155788">ଏହା ହେଉଛି ଏକମାତ୍ର ପୃଷ୍ଠା। ଏହା ଆପଣଙ୍କୁ ସ୍କାନ୍ ଆରମ୍ଭ ହେବାର ସ୍କ୍ରିନକୁ ନେଇଯିବ।</translation>
+<translation id="5053233795640754917">ବିରତ କରନ୍ତୁ</translation>
+<translation id="5056587122125565772">ଇମେଜ ତିଆରି କରନ୍ତୁ</translation>
+<translation id="5078711626843651677">ସ୍ପିକର ଲେବଲିଂ ସମ୍ପୂର୍ଣ୍ଣ ନ ହେବା ପର୍ଯ୍ୟନ୍ତ ଭଏସ ମଡେଲଗୁଡ଼ିକୁ ଅସ୍ଥାୟୀ ଭାବରେ ଡିଭାଇସରେ ଷ୍ଟୋର କରାଯାଏ। ଆପଣ ଏହାକୁ ସେଟିଂସରେ ଯେ କୌଣସି ସମୟରେ ବନ୍ଦ କରିପାରିବେ।</translation>
 <translation id="5078983345702708852">ଫ୍ୟୁଚରିଷ୍ଟିକ</translation>
 <translation id="5087864757604726239">ପଛକୁ</translation>
 <translation id="5088172560898466307">ସର୍ଭର୍ ହୋଷ୍ଟନାମ</translation>
@@ -767,6 +943,8 @@
 <translation id="5108781503443873320">ସମାନ:</translation>
 <translation id="5130848777448318809">ପୋନି</translation>
 <translation id="5137451382116112100">ପୂର୍ଣ୍ଣସ୍କ୍ରିନ</translation>
+<translation id="5139813694804168398">ବିରକ୍ତ କରନ୍ତୁ ନାହିଁ</translation>
+<translation id="5140788690559353412">ଆପଣଙ୍କର ସ୍କୁଲ ଆକାଉଣ୍ଟକୁ ଆପଣ ଆକ୍ସେସ ହରାଇଲେ, ଆପଣଙ୍କ ପାଖରେ ଆଉ ସମ୍ବନ୍ଧିତ ଇମେଲ ଏବଂ Gmail, Docs, Slides ଓ ଆହୁରି ଅନେକ କିଛି ପରି Google Drive ଫାଇଲଗୁଡ଼ିକୁ ଆକ୍ସେସ ରହିବ ନାହିଁ।</translation>
 <translation id="5142961317498132443">ପ୍ରମାଣିକରଣ</translation>
 <translation id="5144311987923128508">ସୁନିଶ୍ଚିତ କରନ୍ତୁ ବଟନକୁ ବର୍ତ୍ତମାନ ଅକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="5144887194300568405">ଅନୁବାଦ କପି କରନ୍ତୁ</translation>
@@ -778,6 +956,7 @@
 <translation id="5170568018924773124">ଫୋଲ୍ଡରରେ ଦେଖାନ୍ତୁ</translation>
 <translation id="517075088756846356">ଅପଡେଟ ପ୍ରକ୍ରିୟା ଜାରି ରଖିବାକୁ <ph name="DEVICE_NAME" />ର ପାୱାର କେବୁଲକୁ ଅନପ୍ଲଗ କରି ପୁଣି ପ୍ଲଗ କରନ୍ତୁ</translation>
 <translation id="5180108905184566358">ବାଓବାବ ଗଛ</translation>
+<translation id="5180431943345994173">ତୁମ ଶିକ୍ଷକ କ୍ଲାସ ଟୁଲରୁ ବିଷୟବସ୍ତୁ କାଢ଼ି ଦେଇଛନ୍ତି</translation>
 <translation id="5180712487038406644">ଏକ୍ସପ୍ରେସିଭ</translation>
 <translation id="5190187232518914472">ଆପଣଙ୍କର ପ୍ରିୟ ସ୍ମୃତିଗୁଡ଼ିକୁ ପୁନର୍ଜୀବିତ କରନ୍ତୁ। ଆଲବମଗୁଡ଼ିକ ଯୋଗ କରିବା କିମ୍ବା ସେଗୁଡ଼ିକୁ ଏଡିଟ୍ କରିବା ପାଇଁ <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />କୁ ଯାଆନ୍ତୁ।</translation>
 <translation id="5212593641110061691">ଟାବଲଏଡ୍</translation>
@@ -787,13 +966,16 @@
 <translation id="5223226274641517059">ଆପଣ ରେକର୍ଡିଂ କରୁଥିବା ସମୟରେ ଲାଇଭ ଟ୍ରାନ୍ସକ୍ରିପ୍ଟଗୁଡ଼ିକ ଦେଖାଯିବ ନାହିଁ। ଆପଣ ଏହାକୁ ସେଟିଂସରେ ଯେ କୌଣସି ସମୟରେ ବନ୍ଦ କରିପାରିବେ।</translation>
 <translation id="5226879510707344687">ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ଏକ୍ସପୋର୍ଟ କରନ୍ତୁ</translation>
 <translation id="5227902338748591677">ଗାଢ଼ା ଥିମ୍ ସିଡୁଲ୍</translation>
+<translation id="5229104491259541281">"<ph name="QUERY" />"କୁ କନଭର୍ଟ କରନ୍ତୁ</translation>
 <translation id="5229344016299762883">ପୂର୍ଣ୍ଣସ୍କ୍ରିନରୁ ବାହାରି ଯାଆନ୍ତୁ</translation>
 <translation id="5234764350956374838">ଖାରଜ କରନ୍ତୁ</translation>
+<translation id="5236119614998611749">ସାରାଂଶ ଜେନେରେଟ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{ଆପଣ ପ୍ରତ୍ୟେକ ଥର ଲଗ ଇନ କରିବା ସମୟରେ "<ph name="APP_NAME" />" ସ୍ୱତଃ ଆରମ୍ଭ ହେବା ପାଇଁ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ସେଟ ଅପ କରିଛନ୍ତି।}=2{ଆପଣ ପ୍ରତ୍ୟେକ ଥର ଲଗ ଇନ କରିବା ସମୟରେ "<ph name="APP_NAME" />" ଏବଂ ଅନ୍ୟ 1 ଆପ ସ୍ୱତଃ ଆରମ୍ଭ ହେବା ପାଇଁ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ସେଟ ଅପ କରିଛନ୍ତି।}other{ଆପଣ ପ୍ରତ୍ୟେକ ଥର ଲଗ ଇନ କରିବା ସମୟରେ "<ph name="APP_NAME" />" ଏବଂ ଅନ୍ୟ # ଆପ୍ସ ସ୍ୱତଃ ଆରମ୍ଭ ହେବା ପାଇଁ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ସେଟ ଅପ କରିଛନ୍ତି।}}</translation>
 <translation id="5248419081947706722">ନୀଳ</translation>
 <translation id="5252456968953390977">ରୋମିଂ</translation>
 <translation id="5254600740122644523">ଗୋଟିଏ <ph name="SIMPLE_TONE" /> ରୁମରେ ଏକ <ph name="SIMPLE_STYLE" /> ବହିଥାକ</translation>
 <translation id="5257811368506016604">ଲାଇଟ କଲର ମୋଡକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
+<translation id="5261479807286543505">ଷ୍ଟାର୍ଟଅପ ସେଟିଂସ</translation>
 <translation id="5264277876637023664">CPU ଟେଷ୍ଟ ଚଲାନ୍ତୁ</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="527501763019887383">APNକୁ ଅକ୍ଷମ କରାଯାଇଛି।</translation>
@@ -802,20 +984,25 @@
 <translation id="5286263799730375393">ବେକଲାଇଟ ରଙ୍ଗ</translation>
 <translation id="5292579816060236070">ସୂର୍ଯ୍ୟୋଦୟ ୱାଲପେପର</translation>
 <translation id="5294769550414936029">ସଂସ୍କରଣ <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5300172019534884676">କେମେରା ଆକ୍ସେସ ଟୋଗଲ କରନ୍ତୁ</translation>
 <translation id="5300814202279832142">ୱିଣ୍ଡୋକୁ ଡେସ୍କ ସବମେନୁକୁ ମୁଭ୍ କରନ୍ତୁ</translation>
+<translation id="5302048478445481009">ଭାଷା</translation>
+<translation id="5303459213631364445">ଗ୍ଲୋଇଂ</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> ଏକ୍ସକ୍ଲୁସିଭ ୱାଲପେପର</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="530883153651464140"><ph name="DEVICE_NAME" />କୁ <ph name="VERSION" /> ଭର୍ସନକୁ ଅପଡେଟ କରନ୍ତୁ</translation>
 <translation id="5315873049536339193">ପରିଚୟ</translation>
-<translation id="5317780077021120954">ସଞ୍ଚୟ</translation>
+<translation id="5317780077021120954">ସେଭ କରନ୍ତୁ</translation>
 <translation id="5318334351163689047">TCP ଅନୁରୋଧ ବିଫଳ</translation>
 <translation id="53196409393069519">ଟ୍ରାନ୍ସକ୍ରିପସନକୁ ଚାଲୁ କରିବେ?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
-<translation id="5327248766486351172">ନାମ</translation>
 <translation id="5332948983412042822">ବର୍ତ୍ତମାନ ଏକ ନୂଆ ବାଛନ୍ତୁ</translation>
 <translation id="5333530671332546086">ଅଜଣା ପୋର୍ଟାଲ୍ ସ୍ଥିତି</translation>
 <translation id="5335373365677455232">ଗୋଲାପି</translation>
+<translation id="5344619683981067131">ପରାମର୍ଶ ସହିତ ଚୟନିତ ଟେକ୍ସଟକୁ ପରିବର୍ତ୍ତନ କରାଯାଉଛି</translation>
 <translation id="5346687412805619883">ସ୍ଥାନୀୟ ନେଟୱାର୍କ</translation>
 <translation id="5358174242040570474">କିଛି ତ୍ରୁଟି ହୋଇଛି। ପୁଣି ଏକ ୱାଲପେପର ବାଛିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ କିମ୍ବା ଆପକୁ ପୁଣି ଖୋଲନ୍ତୁ।</translation>
+<translation id="5368228070728130240">ସାରାଂଶ ଏବଂ ଟାଇଟେଲ କ୍ରିଏସନ ପାଇଁ ମଡେଲ ଡାଉନଲୋଡ କରାଯାଇପାରିବ ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କର <ph name="DEVICE_TYPE" /> ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ।</translation>
 <translation id="5372659122375744710">ୱାଇଫାଇ ନେଟୱାର୍କ ସୁରକ୍ଷିତ ନୁହେଁ</translation>
 <translation id="5376354385557966694">ସ୍ଵଚାଳିତ ଲାଇଟ୍ ମୋଡ୍</translation>
 <translation id="5378184552853359930">IP ପ୍ରକାର</translation>
@@ -829,6 +1016,7 @@
 <translation id="5431318178759467895">ରଙ୍ଗ</translation>
 <translation id="5457599981699367932">ଅତିଥି ହିସାବରେ ବ୍ରାଉଜ୍ କରନ୍ତୁ</translation>
 <translation id="54609108002486618">ପରିଚାଳିତ ହେଉଛି</translation>
+<translation id="5461608756903394951"><ph name="LANGUAGE_NAME" /> ଟ୍ରାନ୍ସକ୍ରିପସନ ମୋଡେଲ ଡାଇନଲୋଡ ଚାଲିଛି</translation>
 <translation id="5470776029649730099">ବରଲାପ</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0}ଟି ପ୍ରଚେଷ୍ଟା ବାକି ଅଛି}other{{0}ଟି ପ୍ରଚେଷ୍ଟା ବାକି ଅଛି}}</translation>
 <translation id="5488280942828718790">ମାଜେଣ୍ଟା</translation>
@@ -837,8 +1025,11 @@
 <translation id="5499762266711462226">କୀବୋର୍ଡର ରଙ୍ଗ ୱାଲପେପର ଉପରେ ଆଧାରିତ ଅଟେ</translation>
 <translation id="5502931783115429516">Android ଚାଲୁ ନାହିଁ</translation>
 <translation id="550600468576850160">ମିଡୋ</translation>
+<translation id="5507504956167780539">ଚମକଦାର କଳା ବାଲିରେ ପରିପୂର୍ଣ୍ଣ ଏବଂ ନାଟକୀୟ ଛାୟା ସହିତ ବାଲୁକା ଟିଲାର ଏକ ସରଳ, ପ୍ରଫେସନାଲ ଫଟୋ</translation>
 <translation id="551689408806449779">ଡିଭାଇସକୁ ଡିସକନେକ୍ଟ କରାଯାଇଛି। ଟେଷ୍ଟ କରିବା ପାଇଁ ପୁଣି କନେକ୍ଟ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="552644173505433109">ସାରାଂଶ ଏବଂ ଟାଇଟେଲ କ୍ରିଏସନ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
+<translation id="5527146180235316490">ମାଇକ ବିକଳ୍ପ</translation>
 <translation id="5534900277405737921">ଭୂଭାଗ</translation>
 <translation id="554067135846762198">କୋରାଲ ଏବଂ ଟାନ</translation>
 <translation id="5543701552415191873">ଲକ କରାଯାଇଛି</translation>
@@ -855,27 +1046,33 @@
 <translation id="5595623927872580850">ଧୂସର</translation>
 <translation id="5596627076506792578">ଅଧିକ ବିକଳ୍ପ</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> କୀ'କୁ ପରୀକ୍ଷା କରାଯାଇଛି</translation>
+<translation id="5606865426897221650">ଟାବ</translation>
+<translation id="5612205513582918357">କ୍ଲାସ ଟୁଲ ଆପଣଙ୍କ ସ୍କ୍ରିନକୁ <ph name="RECEIVER_NAME" />ଙ୍କ ସହ ସେୟାର କରୁଛି</translation>
+<translation id="5613201299517339763">ଆପଣଙ୍କୁ ସାଇନ ଆଉଟ କରାଯାଇଛି</translation>
 <translation id="5620281292257375798">କେବଳ ଇଣ୍ଟର୍ନଲ୍</translation>
+<translation id="5628106863521633649">ଉପଲବ୍ଧ ଭାଷା</translation>
 <translation id="5630438231335788050">ବଉହସ</translation>
 <translation id="5631759159893697722">ସାରାଂଶ</translation>
+<translation id="5655084389678168978">ତୁମ ଶିକ୍ଷକ କ୍ଲାସ ଟୁଲଗୁଡ଼ିକରେ ନୂଆ ବିଷୟବସ୍ତୁ ଯୋଗ କରିଛନ୍ତି</translation>
 <translation id="5655283760733841251">କୀବୋର୍ଡର ଉଜ୍ଜ୍ୱଳତା ବଢ଼ାନ୍ତୁ</translation>
 <translation id="5655296450510165335">ଡିଭାଇସର ପଞ୍ଜିକରଣ</translation>
 <translation id="5655776422854483175">କୌଣସି ପ୍ରିଣ୍ଟ ଜବ ନାହିଁ</translation>
-<translation id="5659593005791499971">ଇମେଲ୍</translation>
+<translation id="5659593005791499971">ଇମେଲ</translation>
 <translation id="5662240986744577912">ଗୋପନୀୟତା ସ୍କ୍ରିନ୍ ଟୋଗଲ୍ କରନ୍ତୁ।</translation>
 <translation id="5669267381087807207">ସକ୍ରିୟ ହେଉଛି</translation>
 <translation id="5670702108860320605">BSSID</translation>
+<translation id="5674943355143004615">ଆପଣ ତିଆରି କରିବାକୁ ଚାହୁଁଥିବା ୱାଲପେପରର ବର୍ଣ୍ଣନା କରନ୍ତୁ</translation>
 <translation id="5680504961595602662"><ph name="SURREAL_SUBJECT" /> ସହିତ ଏକ ଅବାସ୍ତବ <ph name="SURREAL_LANDSCAPE" /></translation>
 <translation id="5685478548317291523">ଚେରି</translation>
 <translation id="5691511426247308406">ଫ୍ୟାମିଲି</translation>
-<translation id="5692395212036914927">ରେକର୍ଡିଂ ସାରାଂଶ ଏବଂ ନାମ ତିଆରି କରିବା</translation>
 <translation id="5695599963893094957">ଆପଣଙ୍କ କୀବୋର୍ଡରେ ଯେ କୌଣସି କୀ ଟାଇପ କରନ୍ତୁ। ଆପଣ ଗୋଟିଏ ସମୟରେ 4ଟି ପର୍ଯ୍ୟନ୍ତ କୀ ଦବାଇପାରିବେ।</translation>
 <translation id="5701381305118179107">କେନ୍ଦ୍ର</translation>
 <translation id="5703716265115423771">ଭଲ୍ୟୁମ୍ କମାନ୍ତୁ</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />ରୁ <ph name="CURRENT_PAGE" /></translation>
 <translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> ପାଇଁ "ଏଡିଟ କରନ୍ତୁ" ବଟନ।</translation>
-<translation id="5733298426544876109"><ph name="DEVICE_NAME" />କୁ ଅପଡେଟ କରନ୍ତୁ</translation>
+<translation id="5736820754189340309">ଡାଟା ବ୍ୟବହାରକୁ ରିସେଟ କରାଯାଇଛି</translation>
 <translation id="574392208103952083">ମଧ୍ୟମ</translation>
+<translation id="5744175046705638478">"<ph name="QUERY" />"କୁ ଅନୁବାଦ କରନ୍ତୁ</translation>
 <translation id="5757187557809630523">ପରବର୍ତ୍ତୀ ଟ୍ରାକ୍</translation>
 <translation id="5760715441271661976">ପୋର୍ଟାଲ୍ ସ୍ଥିତି</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" />କୁ ରିଷ୍ଟାର୍ଟ କରାଯାଇ ଅପଡେଟ କରାଯାଉଛି</translation>
@@ -896,23 +1093,30 @@
 <translation id="5859969039821714932">ସର୍ଟକଟ ଉପଲବ୍ଧ ନାହିଁ। <ph name="KEY" /> ବିନା ଏକ ନୂଆ ସର୍ଟକଟକୁ ଦବାନ୍ତୁ।</translation>
 <translation id="5860033963881614850">ବନ୍ଦ ଅଛି</translation>
 <translation id="5860491529813859533">ଚାଲୁ କରନ୍ତୁ</translation>
+<translation id="586463370326011345">ବିଜୁଳି ମାରିବା</translation>
+<translation id="5875913454160982848">ଟ୍ରାନ୍ସକ୍ରିପସନ ମଡେଲ ଡାଉନଲୋଡ କରନ୍ତୁ</translation>
 <translation id="5876385649737594562">ବିକଳ୍ପଗୁଡ଼ିକୁ ଚୟନ କରିବା ପାଇଁ ଚାଲୁ କରନ୍ତୁ</translation>
+<translation id="5877503382465267833"><ph name="RECORDING_NAME" />କୁ ବିରତ କରନ୍ତୁ</translation>
 <translation id="588258955323874662">ପୂର୍ଣ୍ଣସ୍କ୍ରିନ</translation>
+<translation id="5889539348012432386">କ୍ଲାସ ଟୁଲ୍ସ ହୋମ</translation>
 <translation id="5893975327266416093">ଆସାଇନ କରିବାକୁ ଏକ କୀବୋର୍ଡର କୀରେ ଟାପ କରନ୍ତୁ</translation>
 <translation id="5895138241574237353">ପୁନଃଆରମ୍ଭ</translation>
+<translation id="5896602941605730551">ପ୍ଲେ କରନ୍ତୁ</translation>
 <translation id="5901630391730855834">ହଳଦିଆ</translation>
 <translation id="5903200662178656908">ଡିଭାଇସଟି ଏକ କୀବୋର୍ଡ ଏବଂ ମାଉସର କମ୍ବୋ ଅଟେ।</translation>
 <translation id="5904994456462260490">ଏକ ନୂଆ APN ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="590746845088109442">ବିଲେଇ</translation>
 <translation id="5907649332524363701">କୀ'ର ରଙ୍ଗ</translation>
+<translation id="5908813850962688338">ଏହି ଅପଡେଟ ଇନଷ୍ଟଲ କରିବାକୁ କିଛି ସମୟ ଲାଗିବ। ଅପଡେଟ ଡାଉନଲୋଡ ହେଉଥିବା ସମୟରେ ଆପଣଙ୍କ ଡିଭାଇସକୁ ପ୍ଲଗ ଇନ କରି ପାୱାର ଚାଲୁ ରଖନ୍ତୁ। ଏହି ପ୍ରକ୍ରିୟା ସମୟରେ ଆପଣଙ୍କ ଡିଭାଇସ ଅନେକ ଥର ରିବୁଟ ହୋଇପାରେ ଏବଂ ଏକ କଳା ସ୍କ୍ରିନ ଦେଖାଇପାରେ। ଇନଷ୍ଟଲେସନ ସମ୍ପୂର୍ଣ୍ଣ କରିବା ପାଇଁ ଆପଣଙ୍କୁ ଆପଣଙ୍କ ଡିଭାଇସକୁ ରିଷ୍ଟାର୍ଟ କରିବାକୁ ପ୍ରମ୍ପ୍ଟ କରିବାକୁ କୁହାଯିବ।</translation>
+<translation id="5915794087373112615">ଆପଣଙ୍କ ଶିକ୍ଷକ <ph name="NUM_SECONDS" /> ସେକେଣ୍ଡରେ ଆପଣଙ୍କ ସ୍କ୍ରିନକୁ ଭ୍ୟୁ କରିବେ</translation>
 <translation id="5916084858004523819">ନିଷିଦ୍ଧ</translation>
 <translation id="5916664084637901428">ଚାଲୁ</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{ଆପଣଙ୍କ ଫାଇଲକୁ ସଫଳତାପୂର୍ବକ ସ୍କାନ୍ କରାଯାଇ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />ରେ ସେଭ୍ କରାଯାଇଛି।}other{ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକୁ ସଫଳତାପୂର୍ବକ ସ୍କାନ୍ କରାଯାଇ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />ରେ ସେଭ୍ କରାଯାଇଛି।}}</translation>
 <translation id="5928411637936685857"><ph name="ACCELERATOR_INFO" /> ପାଇଁ "ଡିଲିଟ କରନ୍ତୁ" ବଟନ।</translation>
 <translation id="5930669310554144537">ଡ୍ରିମସ୍କେପ</translation>
 <translation id="5931523347251946569">ଫାଇଲ୍ ମିଳିଲା ନାହିଁ</translation>
-<translation id="5938286923316838007">ଏହି ବିଷୟବସ୍ତୁ ପାଇଁ ରେକର୍ଡିଂ ନାମଗୁଡ଼ିକ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="5939518447894949180">ପୁନଃସେଟ୍</translation>
+<translation id="5942727615796467094">ଏହି <ph name="DEVICE_TYPE" />କୁ କେତେବେଳେ ବ୍ୟବହାର କରାଯାଇପାରିବ ତାହା <ph name="MANAGER" /> ଆଡମିନିଷ୍ଟ୍ରେଟର ସେଟ କରିଛନ୍ତି</translation>
 <translation id="594552776027197022">ରେଣ୍ଡମ କୀପେୟାର ସୃଷ୍ଟି କରନ୍ତୁ</translation>
 <translation id="5946538341867151940">ଏପର୍ଯ୍ୟନ୍ତ ଆପଣ କନେକ୍ଟ ନାହାଁନ୍ତି। ଯଦି ଆପଣଙ୍କ ମୋବାଇଲ କେରିଅର ଏକ କଷ୍ଟମ APN ସୁପାରିଶ କରେ, ତେବେ "+ ନୂଆ APN"କୁ ଚୟନ କରି APN ସୂଚନା ଲେଖନ୍ତୁ</translation>
 <translation id="5947266287934282605">ଯଦି ମାସର ଶେଷ ଦିନ ଏହି ଦିନ ପୂର୍ବରୁ ହୋଇଥାଏ, ତେବେ ମାସର ଶେଷ ଦିନରେ ଡାଟା ରିସେଟ ହେବ</translation>
@@ -922,8 +1126,10 @@
 <translation id="5972388717451707488">ଇଞ୍ଜିନ୍ ଅପଡେଟ୍ କରନ୍ତୁ</translation>
 <translation id="5972801171078377748">ପୁଣି ଦେଖାନ୍ତୁ ନାହିଁ</translation>
 <translation id="5975130252842127517">କୋରାଲ</translation>
+<translation id="5982621672636444458">ସଜାଇବା ବିକଳ୍ପଗୁଡ଼ିକ</translation>
 <translation id="5984145644188835034">ଡିଫଲ୍ଟ ୱାଲପେପର</translation>
 <translation id="5996832681196460718">ସିଲ୍କ</translation>
+<translation id="6016750809509395299">ଜେନେରେଟ କରାଯାଇଥିବା ଟାଇଟେଲ:</translation>
 <translation id="6017514345406065928">ସବୁଜ</translation>
 <translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="6034694447310538551">ସ୍ୱଚାଳିତ ମାସିକ ରିସେଟକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
@@ -931,16 +1137,18 @@
 <translation id="6040143037577758943">ବନ୍ଦ</translation>
 <translation id="6040852767465482106">ବେନାମୀ ପରିଚୟ</translation>
 <translation id="604124094241169006">ସ୍ୱଚାଳିତ</translation>
-<translation id="6042308850641462728">ଅଧିକ</translation>
 <translation id="6048107060512778456">ବିଫଳ ହୋଇଛି - କାଗଜ ଅଟକି ଯାଇଛି</translation>
 <translation id="6050189528197190982">ଗ୍ରେସ୍କେଲ୍</translation>
 <translation id="6054711098834486579">ଏକ୍ସପ୍ରେସୋନିଷ୍ଟ</translation>
 <translation id="6058625436358447366">ସମ୍ପୂର୍ଣ୍ଣ କରିବା ପାଇଁ, ଆପଣଙ୍କର ପୁରୁଣା ଏବଂ ନୂଆ ପାସ୍‍ୱାର୍ଡଗୁଡ଼ିକ ଲେଖନ୍ତୁ</translation>
 <translation id="6061772781719867950">ବିଫଳ ହୋଇଥିବା HTTP ଅନୁରୋଧ</translation>
 <translation id="6073292342939316679">କୀବୋର୍ଡର ଉଜ୍ଜ୍ୱଳତା କମ୍ କରନ୍ତୁ</translation>
-<translation id="6073451960410192870">ରେକର୍ଡିଂ ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="6074608334942655098">ଅନୁବାଦ କରିବା ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="6074752328838739425">ସାରାଂଶ ଲୁଚାନ୍ତୁ</translation>
 <translation id="6075872808778243331">(Android) HTTP ଲାଟେନ୍ସି</translation>
 <translation id="6078323886959318429">ସର୍ଟକଟ୍ ଯୋଗ କରନ୍ତୁ</translation>
+<translation id="6079693086494835199">ଡିଫଲ୍ଟ ହୋମପେଜଟି ଏକ ଫିସିଂ ସାଇଟ ନୁହେଁ ତାହା ନିଶ୍ଚିତ କରିବା ପାଇଁ ରିସେଟ କରନ୍ତୁ। କେବଳ ଆପଣ ବିଶ୍ୱାସ କରୁଥିବା ୱେବସାଇଟ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
+<translation id="6090672065638047175">ସୁନ୍ଦର ରାତିର ଆକାଶ ଏବଂ ବେକଗ୍ରାଉଣ୍ଡରେ ଗାଲାକ୍ସି ସହ ତାରାଗୁଡ଼ିକରେ ତିଆରି ଏକ ଚମକୁଥିବା ଗଛର ଫଟୋ</translation>
 <translation id="6091080061796993741">ହଳଦିଆ</translation>
 <translation id="6104112872696127344">ସ୍କାନିଂ ବାତିଲ୍ କରାଯାଇଛି</translation>
 <translation id="6106186594183574873">ସମ୍ପୂର୍ଣ୍ଣ କରିବା ପାଇଁ, ଆପଣଙ୍କର ପୁରୁଣା ପାସ୍‍ୱାର୍ଡ ଲେଖନ୍ତୁ</translation>
@@ -959,11 +1167,15 @@
 <translation id="6137767437444130246">ୟୁଜରଙ୍କ ସାର୍ଟିଫିକେଟ</translation>
 <translation id="6146993107019042706">ସମ୍ପୂର୍ଣ୍ଣ କରିବା ପାଇଁ, ଆପଣଙ୍କର ନୂଆ ପାସ୍‍ୱାର୍ଡ ଲେଖନ୍ତୁ</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">ଇଣ୍ଟର୍ନେଟ ସହ କନେକ୍ଟ ହୋଇପାରୁନାହିଁ</translation>
 <translation id="6156030503438652198">ମେରୁନ ଏବଂ ଗୋଲାପୀ</translation>
+<translation id="6163318050265152852">ଟାଇଟେଲ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ। ଏକ ଛୋଟ ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ।</translation>
 <translation id="6165508094623778733">ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6185263894115593524">ଅନ୍ୟମାନଙ୍କୁ ଆପଣଙ୍କ ମାଇକ୍ରୋଫୋନ କିମ୍ବା କେମେରା ବ୍ୟବହାର କରିବାରୁ ରୋକିବା ପାଇଁ ରିସେଟ କରନ୍ତୁ। କେବଳ ଆପଣ ବିଶ୍ୱାସ କରୁଥିବା ସାଇଟଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ।</translation>
 <translation id="6188737759358894319"><ph name="DATE" />ରେ ତିଆରି କରାଯାଇଛି</translation>
 <translation id="6189418609903030344">ବ୍ୟବହାର ଯୋଗୁଁ ବ୍ୟାଟେରୀର କ୍ଷମତା ହ୍ରାସ ପାଏ</translation>
+<translation id="6189987971574353264">ପ୍ଲେ କରନ୍ତୁ</translation>
 <translation id="6191293864534840972">ତ୍ରୁଟିପୂର୍ଣ୍ଣ ନେମ୍ ସର୍ଭର୍</translation>
 <translation id="6196607555925437199">ପୁଣି ତିଆରି କରନ୍ତୁ</translation>
 <translation id="6205145102504628069">କ୍ଲାଉଡ ଫ୍ଲୋ</translation>
@@ -972,13 +1184,13 @@
 <translation id="6231648282154119906">ଆପଣ ବାଛିଥିବା ଉନ୍ନତ ସୁରକ୍ଷାର ଅଂଶ ଭାବରେ Google ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂ ଦ୍ୱାରା ସନ୍ଦେହଜନକ ଫାଇଲଗୁଡ଼ିକ ସ୍ୱତଃ ସ୍କାନ ହେବ</translation>
 <translation id="6232017090690406397">ବେଟେରୀ</translation>
 <translation id="6234024205316847054">ଆଉଟଲାଇନ ଦେଖାନ୍ତୁ</translation>
-<translation id="6235460611964961764">ଡାଟା ବ୍ୟବହାରକୁ ମାନୁଆଲୀ ରିସେଟ କରନ୍ତୁ</translation>
 <translation id="6243280677745499710">ବର୍ତ୍ତମାନ ସେଟ୍ ହୋଇଛି</translation>
 <translation id="6250316632541035980">ବାକନ ଏବଂ ଅଣ୍ଡା</translation>
 <translation id="6265268291107409527"><ph name="KEYS" /> ହେଉଛି ଚୟନିତ କୀ। <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">ଡାହାଣ ତୀର</translation>
 <translation id="6278428485366576908">ଥିମ୍</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281936070694347328">"<ph name="QUERY" />"କୁ ପରିଭାଷିତ କରନ୍ତୁ</translation>
 <translation id="6283581480003247988">ନୀଳ ଏବଂ ବାଇଗଣୀ</translation>
 <translation id="6284632978374966585">ଗାଢ଼ା ଥିମ୍ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="6285260286443238386">ରେକର୍ଡିଂ ଏକ୍ସପୋର୍ଟ କରନ୍ତୁ</translation>
@@ -987,6 +1199,7 @@
 <translation id="629550705077076970">କୀବୋର୍ଡକୁ ଡିମ କରନ୍ତୁ</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> ଟେଷ୍ଟକୁ ବାତିଲ୍ କରାଯାଇଛି</translation>
 <translation id="631063167932043783">ଆପ ଏକ୍ସପ୍ଲୋର କରନ୍ତୁ</translation>
+<translation id="6314333689576767865">ଆପଣଙ୍କ Chromebookକୁ ସୁରକ୍ଷିତ ଡିଫଲ୍ଟରେ ରିସେଟ କରାଯାଇଛି। ଆପଣ ସେଟିଂସରେ ଯେ କୌଣସି ସମୟରେ ପରିବର୍ତ୍ତନଗୁଡ଼ିକ କରିପାରିବେ।</translation>
 <translation id="6318437367327684789">ସବୁଦିନ ପାଇଁ</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" />ରେ ଫାର୍ମୱେର ଅପଡେଟ କରନ୍ତୁ</translation>
 <translation id="6321407676395378991">ସ୍କ୍ରିନ୍ ସେଭର୍ ଚାଲୁ କରନ୍ତୁ</translation>
@@ -1018,11 +1231,13 @@
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6419454453018688975">ସିଷ୍ଟମର ଲୋକେସନ ଆକ୍ସେସକୁ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="642713342828771202">ସୂର୍ଯ୍ୟାସ୍ତ</translation>
 <translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">ଦୁର୍ବଳ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">ଆକାଉଣ୍ଟ ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="6462978824459367242">'APN ଯୋଗ କରନ୍ତୁ' ବଟନକୁ ବର୍ତ୍ତମାନ ସକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{ପୃଷ୍ଠାକୁ ପୁଣି ସ୍କାନ୍ କରିବେ?}=1{{PAGE_NUMBER} ନମ୍ବର ପୃଷ୍ଠାକୁ ପୁଣି ସ୍କାନ୍ କରିବେ?}other{{PAGE_NUMBER} ନମ୍ବର ପୃଷ୍ଠାକୁ ପୁଣି ସ୍କାନ୍ କରିବେ?}}</translation>
+<translation id="6468146470109254228">ଆପଣଙ୍କର 3 ବର୍ତ୍ତମାନର ପ୍ରମ୍ପ୍ଟ ଏବଂ ଆଉଟପୁଟ। ଆପଣ ୱାଲପେପର ଏବଂ ଷ୍ଟାଇଲକୁ ବ୍ୟବହାର କରିବା ସମୟରେ କେବଳ ଏଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିପାରିବେ।</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">ନୌକାଗୁଡ଼ିକ</translation>
 <translation id="64778964625672495">ଗାଢ଼ ଲାଲ</translation>
@@ -1035,12 +1250,15 @@
 <translation id="6500818810472529210">Google Searchରେ ଫଳାଫଳ ଦେଖନ୍ତୁ</translation>
 <translation id="650266656685499220">ଆଲବମଗୁଡ଼ିକ ତିଆରି କରିବାକୁ, Google Photosକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="6505750420152840539">ଡନ ଟୁ ଡାର୍କ</translation>
+<translation id="6515056490985026110">ଟାଇଟେଲ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ। ଏକ ଲମ୍ବା ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ।</translation>
 <translation id="6516990319416533844">ବ୍ୟାଟେରୀ ଚାର୍ଜିଂ ରେଟ୍ ପରୀକ୍ଷା କରିବା ପାଇଁ ଆପଣଙ୍କ ବ୍ୟାଟେରୀକୁ ଅଳ୍ପ ସମୟ ପାଇଁ ଖାଲି ହେବାକୁ ଦିଅନ୍ତୁ</translation>
 <translation id="6517239166834772319">ଏକ୍ସପ୍ଲୋର୍</translation>
 <translation id="6526200165918397681">ୱାଲପେପର ମେଳ କରନ୍ତୁ</translation>
 <translation id="6527081081771465939">ଅଜଣା ୱାଇଫାଇ ସୁରକ୍ଷା ପ୍ରୋଟୋକଲ୍</translation>
+<translation id="6531528791584205545">କୁଇକ ଇନସାର୍ଟ</translation>
 <translation id="6535178685492749208">ଆପଣ ଅଫଲାଇନ ଅଛନ୍ତି। ପରେ ମତାମତ ପଠାଯିବ।</translation>
 <translation id="6543412779435705598">ଟାକୋସ</translation>
+<translation id="6550369542114086980">ଗୁରୁବାର ଦିନ</translation>
 <translation id="6551839203326557324">ସେଓ</translation>
 <translation id="65526652485742171">ସୁନିଶ୍ଚିତ କରନ୍ତୁ ବଟନକୁ ଏବେ ସକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="6557784757915238407">APN ପ୍ରକାର <ph name="ATTACH" /> ଅଟେ।</translation>
@@ -1056,7 +1274,8 @@
 <translation id="6595046262780525922">ଟ୍ରାନ୍ସକ୍ରିପସନକୁ ଚାଲୁ କରି ଟ୍ରାନ୍ସକ୍ରିପସନ ମଡେଲ ଡାଉନଲୋଡ କରିବେ?</translation>
 <translation id="6596816719288285829">IP ଠିକଣା</translation>
 <translation id="6599673642868607614">ଆପଣଙ୍କ ମତାମତ ପାଇଁ ଧନ୍ୟବାଦ। Chromebook ଅନୁଭୂତିକୁ ଉନ୍ନତ କରିବାରେ ଆପଣଙ୍କ ମତାମତ ଆମକୁ ସାହାଯ୍ୟ କରେ ଏବଂ ଏହାକୁ ଆମ ଟିମ ଦ୍ୱାରା ସମୀକ୍ଷା କରାଯିବ। ବହୁ ସଂଖ୍ୟକ ରିପୋର୍ଟ ଯୋଗୁଁ ଆମେ ଏକ ପ୍ରତ୍ୟୁତ୍ତର ପଠାଇବାକୁ ସକ୍ଷମ ହେବୁ ନାହିଁ।</translation>
-<translation id="660846213831377756">ମାଉସ କୀଗୁଡ଼ିକ</translation>
+<translation id="6608043585557830684">ଟ୍ରାନ୍ସକ୍ରିପସନ ବନ୍ଦ ଅଛି। ସେଟିଂସରେ କିମ୍ବା <ph name="THREE_DOTS_MENU_ICON" /> ମେନୁରେ ଚାଲୁ କରନ୍ତୁ।</translation>
+<translation id="660846213831377756">ମାଉସ କୀ</translation>
 <translation id="6618744767048954150">ଚାଲୁଛି</translation>
 <translation id="6620487321149975369">ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟଗୁଡ଼ିକୁ ମାନୁଆଲୀ କାଢ଼ି ନଦିଆଯିବା ପର୍ଯ୍ୟନ୍ତ ସେଗୁଡ଼ିକ ଇତିହାସରେ ଦେଖାଯିବ</translation>
 <translation id="6624819909909965616">10 MBରୁ ବଡ଼ ଫାଇଲ ଅପଲୋଡ କରାଯାଇପାରିବ ନାହିଁ</translation>
@@ -1066,11 +1285,13 @@
 <translation id="6650062777702288430">କାନା/ଆଲଫାନ୍ୟୁମେରିକ ସ୍ୱିଚ</translation>
 <translation id="6657240842932274095">ସିଷ୍ଟମ ସେବାଗୁଡ଼ିକୁ ଆପଣଙ୍କ ଲୋକେସନ ବ୍ୟବହାର କରିବାକୁ ଅନୁମତି ଦେବେ?</translation>
 <translation id="6657585470893396449">ପାସ୍‌ୱର୍ଡ</translation>
-<translation id="6659594942844771486">ଟାବ୍</translation>
 <translation id="66621959568103627">କୋରାଲ ପିଙ୍କ</translation>
+<translation id="6669485505082792176">ବର୍ତ୍ତମାନ ଏହାର ଇମେଜ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ। ଆପଣଙ୍କ ବର୍ଣ୍ଣନାକୁ ଭିନ୍ନ ବାକ୍ୟାଂଶରେ ଲେଖି ଦେଖନ୍ତୁ। ଆପଣ ଲୋକମାନଙ୍କର, କ୍ଷତିକାରକ କିମ୍ବା ଏକ୍ସପ୍ଲିସିଟ ବିଷୟବସ୍ତୁର ଇମେଜ ତିଆରି କରିପାରିବେ ନାହିଁ ବୋଲି ମନେ ରଖନ୍ତୁ। <ph name="BEGIN_LINK_LEARN_MORE" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6673898378497337661">କୀବୋର୍ଡର ଉଜ୍ଜ୍ୱଳତା ବଢ଼ାନ୍ତୁ</translation>
 <translation id="6692996468359469499">ଆପଣଙ୍କ ଚୟନ ସମ୍ବନ୍ଧିତ ସୂଚନା ପାଆନ୍ତୁ</translation>
 <translation id="6694534975463174713">ଲକ୍ କରନ୍ତୁ</translation>
+<translation id="6700703207451721535">ଏହି ଲିଙ୍କ ପାଇଁ ଆକ୍ସେସକୁ ଅନୁମତି ଦିଆଯାଏ ନାହିଁ। ଯଦି ଆପଣ ଆକ୍ସେସ ଆବଶ୍ୟକ କରନ୍ତି, ତେବେ ଆପଣଙ୍କ ଶିକ୍ଷକଙ୍କ ସହ ଯାଞ୍ଚ କରନ୍ତୁ।</translation>
+<translation id="6703179086771097594">କ'ଣ ଠିକ ଭାବେ କାମ କରୁନାହିଁ?</translation>
 <translation id="6704062477274546131">DNS ରିଜୋଲ୍ୟୁସନ୍</translation>
 <translation id="6712933881624804031">ଉପତ୍ୟକା</translation>
 <translation id="6716013206176357696">ଷ୍ଟ୍ରବେରୀ</translation>
@@ -1086,32 +1307,47 @@
 <translation id="6747035363363040417">ନ୍ୟୁଟ୍ରାଲ</translation>
 <translation id="6747215703636344499">ବନ୍ଦ ହୋଇଯାଇଛି - ଆଉଟପୁଟ୍ ପୂର୍ଣ୍ଣ ହୋଇଯାଇଛି</translation>
 <translation id="6749473226660745022">ଫଟୋଗୁଡ଼ିକ</translation>
+<translation id="6752960629591143793">ସେଟିଂସ କିମ୍ବା <ph name="THREE_DOTS_MENU_ICON" /> ମେନୁରେ ଟ୍ରାନ୍ସକ୍ରିପସନର ଭାଷା ଚୟନ କରି ଡାଉନଲୋଡ କରନ୍ତୁ</translation>
 <translation id="6753452347192452143">ଡିଭାଇସଟି ଏକ କମ୍ପ୍ୟୁଟର ଅଟେ।</translation>
 <translation id="6756731097889387912">ସ୍କାନିଂ ବାତିଲ୍ କରାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="6760706756348334449">ଭଲ୍ୟୁମ୍ କମାନ୍ତୁ</translation>
 <translation id="6761537227090937007">ଅଧିକ ରିଜୋଲ୍ୟୁସନ ଥିବା ଇମେଜ ତିଆରି କରାଯାଉଛି…</translation>
 <translation id="6766275201586212568">ବିଫଳ ହୋଇଥିବା DNS ରିଜୋଲ୍ୟୁସନ୍</translation>
 <translation id="6768237774506518020">ଉଚ୍ଚ DNS ରିଜୋଲ୍ୟୁସନ୍ ବିଫଳତା ହାର</translation>
+<translation id="6786747875388722282">ପରିବର୍ଦ୍ଧନ</translation>
+<translation id="6789891265243243337"><ph name="DEVICE_TYPE" /> ଅଡିଓ ଚାଲୁ ଥିଲେ, Recorder ଏହି ଭିଡିଓରେ ପ୍ଲେ ହେଉଥିବା ସମସ୍ତ ଅଡିଓକୁ କେପଚର କରେ</translation>
 <translation id="6791471867139427246">କୀ'ବୋର୍ଡ ଲାଇଟ ରଙ୍ଗ</translation>
 <translation id="6796229976413584781">ସର୍ଟକଟ ଡିଲିଟ କରାଯାଇଛି</translation>
 <translation id="6798678288485555829">ଟେକ୍ସଟ ନାଭିଗେସନ</translation>
 <translation id="680983167891198932">କୀ</translation>
 <translation id="6816797338148849397">ଆପଣଙ୍କ ଚୟନ ସମ୍ବନ୍ଧିତ ସୂଚନା ଉପଲବ୍ଧ ଅଛି। ଆକ୍ସେସ୍ କରିବାକୁ ଅପ୍ ତୀର କୀ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
+<translation id="6831043979455480757">Translate</translation>
+<translation id="6846843854964504403">ସେଫ୍ଟି ରିସେଟ</translation>
 <translation id="6853312040151791195">ଡିସଚାର୍ଜିଂ ରେଟ୍</translation>
+<translation id="6862228900689076919">ଏହି ଫିଚର ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ ହୁଏ</translation>
+<translation id="6862416241246624313">ମତାମତ ଦାଖଲ କରାଯାଇଛି</translation>
 <translation id="6866732840889595464">ଡେଇଜି</translation>
 <translation id="6871256179359663621">ହାଲୁକା ବାଇଗଣୀ</translation>
+<translation id="6887967050249348172">ସେଟିଂସରେ ପରିବର୍ତ୍ତନଗୁଡ଼ିକୁ ପ୍ରତିରୋଧ କରିବା ପାଇଁ ଏକ୍ସଟେନସସଗୁଡ଼ିକୁ ଅକ୍ଷମ କରାଯାଇଛି। ଆପଣ ବିଶ୍ୱାସ କରୁଥିବା ଏକ୍ସଟେନସନଗୁଡ଼ିକୁ କେବଳ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="6889786074662672253">ରିଷ୍ଟାର୍ଟ କରାଯାଉଥିବା ସମୟରେ, ଏହି ଏକ୍ସଟର୍ନଲ ଡିଭାଇସକୁ ଅନପ୍ଲଗ କରନ୍ତୁ ନାହିଁ କିମ୍ବା ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟରକୁ ବନ୍ଦ କରନ୍ତୁ ନାହିଁ। ଆପଣ ଏହି ୱିଣ୍ଡୋକୁ ଛୋଟ କରିପାରିବେ। ଏଥିପାଇଁ କିଛି ସମୟ ଲାଗିପାରେ ଏବଂ ଏହି ସମୟରେ ଆପଣଙ୍କ ଏକ୍ସଟର୍ନଲ ଡିଭାଇସ କାମ କରିନପାରେ।</translation>
+<translation id="6899460405678814458">ସାରାଂଶ ଦେଖାନ୍ତୁ</translation>
 <translation id="6900701049656042631">ଏହି ଆଲବମରେ କୌଣସି ଫଟୋ ନାହିଁ। ଫଟୋଗୁଡ଼ିକୁ ଯୋଗ କରିବା ପାଇଁ <ph name="LINK" />କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="6902359863093437070">AI ଦ୍ୱାରା ବେକଗ୍ରାଉଣ୍ଡ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="6905163627763043954">ଏହାକୁ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ</translation>
+<translation id="6905275015682612674">ସୂର୍ଯ୍ୟାସ୍ତ ସମୟରେ ଆକାଶରେ ତାରାଗୁଡ଼ିକ ସହିତ ସୁନ୍ଦର ପାଷ୍ଟେଲ ରଙ୍ଗ ସହ 4kରେ ଏକ ବାୟୋଲୁମିନିସେଣ୍ଟ ସମୁଦ୍ର କୂଳର ଏକ ଲମ୍ବା ଏକ୍ସପୋଜର ଥିବା ଫଟୋ</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" />କୁ ଫେରନ୍ତୁ</translation>
 <translation id="6910312834584889076">ସ୍କାନରର କଭର୍ ଖୋଲା ଅଛି। କଭର୍ ବନ୍ଦ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
+<translation id="6910845598686542904">ରେକର୍ଡିଂରେ ଚିହ୍ନଟ କରାଯାଇଥିବା ଭଏସର ମଡେଲଗୁଡ଼ିକୁ ଗଣନା କରିବା</translation>
 <translation id="6911383237894364323">ମିଡିଆ ସର୍ଭରଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରିବାକୁ ଅସମର୍ଥ</translation>
+<translation id="6926069762081461162">ରେକର୍ଡିଂ ଟାଇଟେଲ</translation>
 <translation id="6930242544192836755">ଅବଧି</translation>
 <translation id="6930597342185648547">ବେକଗ୍ରାଉଣ୍ଡ ବିଷୟରେ</translation>
-<translation id="6939667434404433010">ରେକର୍ଡିଂର ନାମ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
+<translation id="6931666215260956151">ଗାଲାକ୍ସି</translation>
 <translation id="6939766318048400022">କାଫେ</translation>
+<translation id="6940212863873359282">କ୍ରିମ ରଙ୍ଗର ବେକଗ୍ରାଉଣ୍ଡ ସହ ଧଳା ମାର୍ବଲ ଆର୍କ ଉପରେ ମଝିରେ ଭାସୁଥିବା ଏକ ଧଳା ଅର୍ଗାନଜର</translation>
+<translation id="6942253772720771875">ଆପଣଙ୍କ ମତାମତ ସେୟାର କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କ ସମସ୍ୟାର ବର୍ଣ୍ଣନା କରନ୍ତୁ</translation>
 <translation id="6943893908656559156">ରିମୋଟ ପରିଚୟ (ଇଚ୍ଛାଧୀନ)</translation>
+<translation id="694981048020558038">ରେକର୍ଡିଂ ଟାଇଟେଲ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="6953137545147683679">ଗୋଲ୍ଡ</translation>
 <translation id="6957231940976260713">ସେବାର ନାମ</translation>
 <translation id="695776212669661671">ଡାହାଣପଟକୁ ତୀର</translation>
@@ -1119,20 +1355,12 @@
 <translation id="6961170852793647506">ଆରମ୍ଭ କରିବା ପାଇଁ, ଆପଣଙ୍କ ଡକ୍ୟୁମେଣ୍ଟକୁ ସ୍କାନରରେ ରଖନ୍ତୁ</translation>
 <translation id="6965382102122355670">ଓକେ ବଟନ୍</translation>
 <translation id="6965978654500191972">ଡିଭାଇସ୍</translation>
+<translation id="6972754398087986839">ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="6975620886940770104">ଏକ ଗ୍ଲୋଇଂ <ph name="GLOWSCAPES_FEATURE" /> ସହିତ ଗୋଟିଏ <ph name="GLOWSCAPES_LANDSCAPE" /></translation>
 <translation id="6975981640379148271">କୋଆଲା</translation>
 <translation id="6977381486153291903">ଫାର୍ମୱେର୍ ପୁନରାବୃତ୍ତି</translation>
+<translation id="6978396562261420054">ଜେନେରେଟ କରାଯାଇଥିବା ଇମେଜ</translation>
 <translation id="6981982820502123353">ଆକ୍ସେସିବିଲିଟୀ</translation>
-<translation id="698242338298293034">ଏକ ଥିମ ବାଛନ୍ତୁ ଏବଂ ତା'ପରେ ଆପଣଙ୍କର AI ଇମେଜଗୁଡ଼ିକୁ ପର୍ସନାଲାଇଜ କରିବା ପାଇଁ ଅଣ୍ଡରଲାଇନ କରାଯାଇଥିବା ଶବ୍ଦଗୁଡ଼ିକୁ ଚୟନ କରନ୍ତୁ।
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ଅଧିକ ସ୍ୱତନ୍ତ୍ର ଏବଂ ବିଭିନ୍ନ AI ଇମେଜ ବିକଳ୍ପ ପାଇବା ପାଇଁ "ମୋତେ ପ୍ରେରଣା ଦିଅନ୍ତୁ"କୁ ଚୟନ କରନ୍ତୁ।
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ଆପଣ AI ମାଧ୍ୟମରେ ତିଆରି କରିବା ସମୟରେ ଇମେଜ ଜେନେରେଟ କରିବା ଏବଂ ପ୍ରଡକ୍ଟକୁ ଉନ୍ନତ କରିବା ପାଇଁ <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleର ଗୋପନୀୟତା ନୀତି<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> ଅଧୀନରେ Google AI ସର୍ଭରଗୁଡ଼ିକୁ ପ୍ରମ୍ପ୍ଟ ପଠାଯାଏ।
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ଜେନେରେଟିଭ AI ପରୀକ୍ଷାମୂଳକ ଅଟେ, ଏହା ପ୍ରାରମ୍ଭିକ ବିକାଶରେ ଅଛି ଏବଂ ବର୍ତ୍ତମାନ ଏହାର ସୀମିତ ଉପଲବ୍ଧତା ଅଛି।</translation>
 <translation id="6982462588253070448">ବାଲିର ସ୍ତୂପ</translation>
 <translation id="7005833343836210400">ଡିଭାଇସ ଅଫଲାଇନ ଅଛି</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ଏହି ଡିଭାଇସକୁ ପରିଚାଳନା କରେ ଏବଂ ଏହା ପାଖରେ ଭିଜିଟ କରାଯାଇଥିବା ୱେବପୃଷ୍ଠା, ପାସୱାର୍ଡ ଏବଂ ଇମେଲ ସମେତ ସମସ୍ତ ୟୁଜର କାର୍ଯ୍ୟକଳାପକୁ ଆକ୍ସେସ ଅଛି।</translation>
@@ -1140,9 +1368,13 @@
 <translation id="7040230719604914234">ଅପରେଟର୍</translation>
 <translation id="7040729769968826896">ସ୍ପିକର ଚିହ୍ନଟକରଣକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="7041549558901442110">ଡିଭାଇସଟି ସଂଯୋଗ ହୋଇନାହିଁ।</translation>
+<translation id="704183341263526038">ବୃହସ୍ପତି</translation>
 <translation id="7046522406494308071">ସମସ୍ତ ସର୍ଟକଟକୁ ଡିଫଲ୍ଟରେ ରିସେଟ କରିବେ?</translation>
+<translation id="7049916119678019302">ସେଟିଂସରେ ଟ୍ରାନ୍ସକ୍ରିପ୍ସନ ମଡେଲକୁ ଡାଉନଲୋଡ କରନ୍ତୁ</translation>
 <translation id="7058278511608979688">ସମ୍ପୂର୍ଣ୍ଣ କରି ସେଭ୍ କରନ୍ତୁ</translation>
 <translation id="7059230779847288458">ଚାର୍ଜ କରାଯାଉଛି, ପୂର୍ଣ୍ଣ ହେବାକୁ <ph name="TIME_VALUE" /> ବାକି ଅଛି</translation>
+<translation id="7064209589142995848">ବିଷୟବସ୍ତୁ ଟ୍ରାନ୍ସଫର</translation>
+<translation id="7065336548231472971"><ph name="LANGUAGE_NAME" />କୁ ଚୟନ କରାଯାଇଛି</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> କୀ</translation>
 <translation id="7068619307603204412">ଆପଣଙ୍କ ଡିଭାଇସକୁ ପ୍ରସ୍ତୁତ କରନ୍ତୁ</translation>
 <translation id="7076851914315147928">ଏକ ୱାଲପେପର ବାଛନ୍ତୁ</translation>
@@ -1153,14 +1385,18 @@
 <translation id="710028965487274708">ବିଫଳ ହୋଇଛି - ଅଥୋରାଇଜେସନ ବିଫଳ ହୋଇଛି</translation>
 <translation id="7101959270679078188">ଅପଡେଟ ପ୍ରକ୍ରିୟା ଜାରି ରଖିବାକୁ <ph name="DEVICE_NAME" />କୁ ଅନଲକ କରନ୍ତୁ</translation>
 <translation id="7103252855940681301"><ph name="COUNT" />ଟିରୁ <ph name="NAME" /> ନାମ ଥିବା <ph name="INDEX" /> ନମ୍ବର ଡିଭାଇସ।</translation>
+<translation id="7103793063702494489">ଚୟନ କରାଯାଇଥିବା ଭାଷା</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> ଏକ୍ସକ୍ଲୁସିଭ କଳାକୃତି ବାଛନ୍ତୁ</translation>
-<translation id="7108668606237948702">ଏଣ୍ଟର୍</translation>
+<translation id="7108668606237948702">ଏଣ୍ଟର</translation>
+<translation id="7117228822971127758">ଦୟାକରି ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="7118522231018231199">ଆପଣଙ୍କ ମୋବାଇଲ ସେବା ପ୍ରଦାନକାରୀ କିମ୍ବା ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପ୍ରଦାନ କରାଯାଇଥିବା APNଗୁଡ଼ିକୁ ଚୟନ କରିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ। ଏକ APNକୁ ଚୟନ କରିବା ଫଳରେ ଏହା ଯେ କୌଣସି କଷ୍ଟମ APNକୁ ଅକ୍ଷମ କରିଦେବ। ଅବୈଧ APNଗୁଡ଼ିକ ଆପଣଙ୍କ ମୋବାଇଲ କନେକ୍ସନରେ ବାଧା ସୃଷ୍ଟି କରିପାରେ।</translation>
 <translation id="7119389851461848805">ପାୱାର</translation>
 <translation id="7129287270910503851">ପ୍ରତ୍ୟେକ ମାସ ଏହି ଦିନ ଆପଣଙ୍କ ଡାଟା ବ୍ୟବହାରକୁ ରିସେଟ କରାଯିବ</translation>
 <translation id="7130438335435247835">ଆକ୍ସେସ ପଏଣ୍ଟ ନାମ (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{ନାମ ସର୍ଭର୍}other{ନାମ ସର୍ଭର୍}}</translation>
 <translation id="7135814714616751706">ସର୍ଟକଟ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
+<translation id="7138614237884624401">ସରଳୀକୃତ ଟେକ୍ସଟ</translation>
+<translation id="7138668887584231801">ସାରାଂଶ ତିଆରି କରିବା ପାଇଁ ଯଥେଷ୍ଟ ଶବ୍ଦ ନାହିଁ</translation>
 <translation id="7143207342074048698">ସଂଯୋଗ କରୁଛି</translation>
 <translation id="7144878232160441200">ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="7144954474087165241">ପାଗୋଡା</translation>
@@ -1177,21 +1413,28 @@
 <translation id="7180865173735832675">କଷ୍ଟୋମାଇଜ୍</translation>
 <translation id="7182063559013288142">ଇନଷ୍ଟାଣ୍ଟ ହଟସ୍ପଟ</translation>
 <translation id="7184043045742675738">ଆପଣଙ୍କ ବଟନକୁ କଷ୍ଟମାଇଜ କରିବା ପାଇଁ ଯେ କୌଣସି କୀ'ରେ କ୍ଲିକ କରନ୍ତୁ। ମାଉସ କିମ୍ବା ତୀର କୀ'ଗୁଡ଼ିକ ସହ କୀ ରିପୋଜିସନ କରନ୍ତୁ।</translation>
+<translation id="7187669805838282391">ବୁଧବାର ଦିନ</translation>
+<translation id="7205318498545665455">ଆପଣଙ୍କର ମାଇକ ବାଛନ୍ତୁ</translation>
 <translation id="7206979415662233817">ସେବାର ସର୍ତ୍ତାବଳୀ</translation>
 <translation id="7210635925306941239">ସିଆନ</translation>
 <translation id="7212547870105584639">ନେଟୱାର୍କ APN ସେଟିଂସକୁ ପରିଚାଳନା କରନ୍ତୁ। APNଗୁଡ଼ିକ ଏକ ସେଲୁଲାର ନେଟୱାର୍କ ଏବଂ ଇଣ୍ଟରନେଟ ମଧ୍ୟରେ ଏକ କନେକ୍ସନ ତିଆରି କରେ। <ph name="BEGIN_LINK_LEARN_MORE" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">ଏକ୍ସଟର୍ନଲ ଡିଭାଇସଗୁଡ଼ିକ ପାଇଁ ଫାର୍ମୱେର ଅପଡେଟଗୁଡ଼ିକ</translation>
 <translation id="7216409898977639127">ସେଲ୍ୟୁଲାର୍ ସେବା ପ୍ରଦାତା</translation>
+<translation id="7221869452894271364">ଏହି ପୃଷ୍ଠାଟି ପୁନଃଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="7223952304612664117">ଏହା ସିଷ୍ଟମ ସାର୍ଭିସକୁ ଆପଣଙ୍କ ଲୋକେସନ ନିର୍ଦ୍ଧାରଣ କରିବା ପାଇଁ ଲୋକେସନ ସଠିକତା ବ୍ୟବହାର କରିବା ପାଇଁ ଅନୁମତି ଦିଏ। ଡିଭାଇସର ଲୋକେସନକୁ ଆକଳନ କରିବା ପାଇଁ ଲୋକେସନ ସଠିକତା ୱାୟାରଲେସ ସିଗନାଲ ଏବଂ ସେନ୍ସରଗୁଡ଼ିକ ବିଷୟରେ ଥିବା ସୂଚନାକୁ ବ୍ୟବହାର କରେ।</translation>
 <translation id="7233782086689993269">ସର୍ଟକଟ ରିଷ୍ଟୋର କରାଯାଇଛି</translation>
+<translation id="723419678599947502">Google AI ବ୍ୟବହାର କରି ଟାଇଟେଲ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="725133483556299729">ଇମେଲ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="7255187042098209569">ଗୋଲାପି ଏବଂ ବାଇଗଣୀ</translation>
+<translation id="7267918995585557751">ଡିଫଲ୍ଟ ଆରମ୍ଭ ପୃଷ୍ଠାଟି ଏକ ଫିସିଂ ୱେବସାଇଟ ନୁହେଁ ତାହା ନିଶ୍ଚିତ କରିବା ପାଇଁ ରିସେଟ କରନ୍ତୁ। କେବଳ ଆପଣ ବିଶ୍ୱାସ କରୁଥିବା ୱେବସାଇଟ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="7271000785316964275">କ୍ଲାସିସିଷ୍ଟ</translation>
 <translation id="7271040990581020067">ସ୍କାନରକୁ ବର୍ତ୍ତମାନ ବ୍ୟବହାର କରାଯାଉଛି। ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="7271932918253517778">ଶୀର୍ଷ ଧାଡ଼ିର କୀଗୁଡ଼ିକ ଥିବା ସର୍ଟକଟରେ <ph name="META_KEY" /> କୀ'କୁ ଅନ୍ତର୍ଭୁକ୍ତ କରିବା ଆବଶ୍ୟକ।</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7275707758336796649">ହାଇ-ରିଜୋଲ୍ୟୁସନ ଫଟୋଗ୍ରାଫି ସହ ହାଇପର-ରିୟଲିଷ୍ଟିକ ଷ୍ଟକ ବେକଗ୍ରାଉଣ୍ଡରେ ରଙ୍ଗ ଗ୍ରେଡିଂ ସହ ସୁଟ କରାଯାଇଥିବା ଗୋଲାପୀ ବେକଗ୍ରାଉଣ୍ଡ ସମ୍ମୁଖରେ ଡାଇନାମିକ ପୋଜରେ ନିଜ ପୂରା ଶରୀରକୁ ଦେଖାଉଥିବା ଡାଲମାଟିଆନ କୁକୁର</translation>
 <translation id="7281657306185710294">ମୃଦୁ ପବନର ଆନନ୍ଦ ନିଅନ୍ତୁ</translation>
 <translation id="7287310195820267359">ୱାଲପେପର୍ ସଂଗ୍ରହଗୁଡ଼ିକ</translation>
+<translation id="7293429513719260019">ଭାଷା ଚୟନ କରନ୍ତୁ</translation>
 <translation id="7297226631177386107">ଫାୟାରୱାଲ ମାଧ୍ୟମରେ HTTPS ୱେବସାଇଟଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="7297726121602187087">ଗାଢ଼ ସବୁଜ</translation>
 <translation id="7301262279595293068">ଏହି ଆପ୍ଲିକେସନକୁ ଅପଡେଟ କରାଯିବା ସମୟରେ ଦୟାକରି ଅପେକ୍ଷା କରନ୍ତୁ</translation>
@@ -1215,16 +1458,21 @@
 <translation id="7353413232959255829"><ph name="LIST_SIZE" />ଟିରୁ <ph name="LIST_POSITION" /> ନମ୍ବର ସର୍ଚ୍ଚ ଫଳାଫଳ: <ph name="SEARCH_RESULT_TEXT" />। ସର୍ଟକଟକୁ ନାଭିଗେଟ କରିବା ପାଇଁ Enter ଦବାନ୍ତୁ।</translation>
 <translation id="7359657277149375382">ଫାଇଲର ପ୍ରକାର</translation>
 <translation id="73631062356239394">ଡାଏଗ୍ନୋଷ୍ଟିକ ଡାଟା ସେୟାର କରନ୍ତୁ</translation>
+<translation id="7369648056634183167">ବର୍ଷା ଦିନେ ଶିଶିରରେ ଆଚ୍ଛାଦିତ ଲିଲି ଫୁଲ ଥିବା ଏକ ବଡ଼ ପୋଖରୀର କ୍ଲୋଜଅପ। ଏହାର ଫୋକସ ହେଉଛି ଆଲୋକକୁ ପ୍ରତିଫଳିତ କରୁଥିବା ସୂକ୍ଷ୍ମ ପାଖୁଡ଼ି ଏବଂ ପାଣି ବୁନ୍ଦା ଉପରେ, ଯାହା ନୀଳ ବେକଗ୍ରାଉଣ୍ଡରେ ସେଗୁଡ଼ିକର ନରମ ପାଷ୍ଟେଲ ରଙ୍ଗକୁ କେପଚର କରୁଛି। ପ୍ରାକୃତିକ ଆଲୋକ ବ୍ୟବହାର କରି ଆଖି ଲେଭେଲରୁ ନିଆଯାଇଥିବା ସଟ</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378170410161264436">Recorder ସ୍ପିଚ ସହିତ ରେକର୍ଡିଂ ପାଇଁ ଟ୍ରାନ୍ସକ୍ରିପସନ ତିଆରି କରିପାରିବ।
 ଏହି ଟ୍ରାନ୍ସକ୍ରିପସନଗୁଡ଼ିକ ପାଇବାକୁ ଟ୍ରାନ୍ସକ୍ରିପସନ ମଡେଲ (100MB ପର୍ଯ୍ୟନ୍ତ) ଡାଉନଲୋଡ କରନ୍ତୁ।</translation>
 <translation id="7384004438856720753">ପେଲେସ</translation>
+<translation id="7388345524791662148"><ph name="RECORDING_NAME" /> ପାଇଁ ଅଧିକ ବିକଳ୍ପ</translation>
 <translation id="7388959671917308825">ବିଲ୍ଟ-ଇନ ଟଚପେଡ</translation>
 <translation id="7397270852490618635">ହାଲୁକା ଥିମକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="7401543881546089382">ସର୍ଟକଟକୁ ଡିଲିଟ କରନ୍ତୁ</translation>
+<translation id="7405493795721832710"><ph name="DEVICE_NAME" /> ଅପଡେଟ ହେବା ପାଇଁ ପ୍ରସ୍ତୁତ ଅଛି</translation>
 <translation id="741244894080940828">କନଭର୍ସନ୍</translation>
 <translation id="7415801143053185905">HTTPର ବହୁତ ଅଧିକ ଲାଟେନ୍ସି</translation>
+<translation id="7418738250896500352">ସରଳ କରିବା ପାଇଁ ବହୁତ ଅଧିକ ଶବ୍ଦ ଅଛି</translation>
 <translation id="7425037327577270384">ମୋତେ ଲେଖିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ</translation>
+<translation id="7425832472614771259"><ph name="LANGUAGE_NAME" /> ଟ୍ରାନ୍ସକ୍ରିପ୍ସନ ମଡେଲ <ph name="PROGRESS_PERCENTAGE" />% ଡାଉନଲୋଡ କରାଯାଇଛି</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">ଏହି APNକୁ ଅକ୍ଷମ କରାଯାଇପାରିବ ନାହିଁ କିମ୍ବା କାଢ଼ି ଦିଆଯାଇପାରିବ ନାହିଁ। ସକ୍ଷମ କରାଯାଇଥିବା <ph name="ATTACH" /> APNଗୁଡ଼ିକୁ ଅକ୍ଷମ କରାଯାଇଛି କିମ୍ବା କାଢ଼ି ଦିଆଯାଇଛି ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
 <translation id="7458970041932198923">ଅବତାରଗୁଡ଼ିକୁ ଦେଖି ସେଟ କରିବା ପାଇଁ ଦୟାକରି ଏକ ନେଟୱାର୍କ ସହ କନେକ୍ଟ କରି ପୃଷ୍ଠାଟିକୁ ପୁଣି ଲୋଡ କରନ୍ତୁ।</translation>
@@ -1232,14 +1480,17 @@
 <translation id="7481312909269577407">ଅଗ୍ରଗତି</translation>
 <translation id="7487067081878637334">ଟେକ୍ନୋଲୋଜି</translation>
 <translation id="7490813197707563893">MAC ଠିକଣା</translation>
+<translation id="7494145938791663804">ସୁନ୍ଦର</translation>
 <translation id="7497215489070763236">CA ସାର୍ଟିଫିକେଟ୍ ସର୍ଭର୍</translation>
 <translation id="7500205272584643581">ସ୍ପିକରଗୁଡ଼ିକୁ ଚିହ୍ନଟ କରି ଲେବଲ କରିବା ପାଇଁ Recorderକୁ ଅନୁମତି ଦେବେ?</translation>
 <translation id="7501957181231305652">କିମ୍ବା</translation>
 <translation id="7502658306369382406">IPv6 ଠିକଣା</translation>
+<translation id="7503342217608032738">ଡିଭାଇସକୁ ବ୍ୟବହାର କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="7507061649493508884">ଏକ ରାଡିଆଣ୍ଟ <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /></translation>
 <translation id="7513770521371759388">ନିମ୍ନ</translation>
 <translation id="7514365320538308">ଡାଉନ୍‌‌ଲୋଡ୍‌ କରନ୍ତୁ</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519481256236810334"><ph name="RECORDING_NAME" /> ଚଲାନ୍ତୁ</translation>
 <translation id="7525067979554623046">ତିଆରି କରନ୍ତୁ</translation>
 <translation id="7528507600602050979">ସହାୟତା ବିଷୟବସ୍ତୁ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="7535791657097741517">ହାଲୁକା ଥିମ୍ ଚାଲୁ କରନ୍ତୁ</translation>
@@ -1249,14 +1500,18 @@
 <translation id="7551123448725492271">ଡିଭାଇସଟି ଏକ ଅଡିଓ ଡିଭାଇସ ଅଟେ।</translation>
 <translation id="7559239713112547082">ସ୍କ୍ରିନସଟର ପ୍ରିଭ୍ୟୁ କରନ୍ତୁ</translation>
 <translation id="7561454561030345039">ଏହି କାର୍ଯ୍ୟ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ ହୁଏ</translation>
+<translation id="7561759921596375678">ଭଲ୍ୟୁମକୁ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB ଟଚସ୍କ୍ରିନ</translation>
 <translation id="757747079855995705">ପଥର</translation>
+<translation id="7590883480672980941">ଇନପୁଟ୍ ସେଟିଂସ୍</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> ବାକି ଅଛି</translation>
+<translation id="7600430297804876776">ଏହି <ph name="DEVICE_TYPE" />କୁ କେତେବେଳେ ବ୍ୟବହାର କରାଯାଇପାରିବ ତାହା <ph name="MANAGER" /> ଆଡମିନିଷ୍ଟ୍ରେଟର ସେଟ କରିଛନ୍ତି।</translation>
 <translation id="7613724632293948900">ମାଉସ କିମ୍ବା ତୀର କୀ'ଗୁଡ଼ିକ ସହ ରିପୋଜିସନ କରନ୍ତୁ।</translation>
+<translation id="7618216277886673749"><ph name="LANGUAGE_NAME" />କୁ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="7618774594543487847">ନ୍ୟୁଟ୍ରାଲ୍</translation>
 <translation id="7620771111601174153">ସହାୟତା କେନ୍ଦ୍ରରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
-<translation id="7625095758347640998">AI ୱାଲପେପର</translation>
+<translation id="7623327321610992184">OnTask ପଡ</translation>
 <translation id="763165478673169849">ଗତଥର ରିସେଟ୍ କରାଯାଇଥିବା ସମୟ</translation>
 <translation id="7633068090678117093">ପୃଷ୍ଠପଟ ଇମେଜ</translation>
 <translation id="763873111564339966">ଇଣ୍ଡିଗୋ</translation>
@@ -1278,9 +1533,12 @@
 <translation id="7746357909584236306">ଏଡିଟ କରାଯାଇପାରିବ</translation>
 <translation id="7747039790905080783">ପୂର୍ବରୁ ସେୟାର୍ କରାଯାଇଥିବା କୀ</translation>
 <translation id="7752963721013053477">ଡନ ଟୁ ଡାର୍କ - ଏକ୍ସକ୍ଲୁସିଭ</translation>
+<translation id="7760571082554155847">ହୋମପେଜ ସେଟିଂସ</translation>
 <translation id="7762130827864645708">ଆପଣଙ୍କ ପାସୱାର୍ଡ ପରିବର୍ତ୍ତନ ସଫଳ ହୋଇଛି। ଦୟାକରି ବର୍ତ୍ତମାନଠାରୁ ନୂଆ ପାସୱାର୍ଡ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="7763470514545477072">ଡୋମେନ୍ ସଫିକ୍ସ ସହ ମେଳ</translation>
+<translation id="7764171263909999400">ଭଲ୍ୟୁମେଟ୍ରିକ ଲାଇଟ</translation>
 <translation id="7769672763586021400">ମଡେଲ୍ ID</translation>
+<translation id="7774759755755950354">ପଛକୁ ଫେରନ୍ତୁ</translation>
 <translation id="7778717409420828014">Chromebook ଅନୁଭୂତିକୁ ଉନ୍ନତ କରିବାରେ ଆପଣଙ୍କ ମତାମତ ଆମକୁ ସାହାଯ୍ୟ କରେ ଏବଂ ଏହାକୁ ଆମ ଟିମ ଦ୍ୱାରା ସମୀକ୍ଷା କରାଯିବ। ବହୁ ସଂଖ୍ୟକ ରିପୋର୍ଟ ଯୋଗୁଁ ଆମେ ଏକ ପ୍ରତ୍ୟୁତ୍ତର ପଠାଇବାକୁ ସକ୍ଷମ ହେବୁ ନାହିଁ।</translation>
 <translation id="7781829728241885113">ଗତକଲି</translation>
 <translation id="7784116172884276937">କୌଣସି DNS ସର୍ଭର ସେଟ ଅପ କରାଯାଇନାହିଁ</translation>
@@ -1290,12 +1548,14 @@
 <translation id="7802764839223122985">କୀ ଉପଲବ୍ଧ ନାହିଁ। <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">ନା, ଧନ୍ୟବାଦ</translation>
 <translation id="7805768142964895445">ସ୍ଥିତି</translation>
+<translation id="7811024689617730980">1ରୁ 31 ପର୍ଯ୍ୟନ୍ତ ରେଞ୍ଜରେ ଏକ ସ୍ୱତଃ ରିସେଟ ଦିନ ଚୟନ କରନ୍ତୁ, ଯେଉଁଥିରେ ଅନ୍ତର୍ଭୁକ୍ତ</translation>
 <translation id="7813073042185856802">ପର୍ବତ</translation>
 <translation id="7819857487979277519">PSK (WPA or RSN)</translation>
 <translation id="7824219488248240180">ପୋଷ୍ଟ-ଇମ୍ପ୍ରେସନିଷ୍ଟ</translation>
 <translation id="7828503206075800057">ଗୋଟିଏ <ph name="CAFE_STYLE" /> <ph name="CAFE_TYPE" /> କାଫେ</translation>
 <translation id="7841134249932030522">ଡାର୍କ ମୋଡ୍ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="7846634333498149051">କୀ'ବୋର୍ଡ</translation>
+<translation id="7847923465436619066">ଟ୍ରାନ୍ସକ୍ରିପସନ ଭାଷା ପିକର</translation>
 <translation id="7849030488395653706">ନର୍ଦର୍ଣ୍ଣ ଲାଇଟ୍ସ</translation>
 <translation id="7849737607196682401">ଲେସ</translation>
 <translation id="7850320739366109486">ବିରକ୍ତ କରନାହିଁ</translation>
@@ -1303,19 +1563,26 @@
 <translation id="785170686607360576">ଟ୍ୟୁଲିପ</translation>
 <translation id="7856267634822906833">ବ୍ଲୁଟୁଥ ଟଚସ୍କ୍ରିନ</translation>
 <translation id="7859006200041800233">କାକଟସ ଫୁଲ</translation>
+<translation id="7865217133132122390">ମାଇକ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="7869143217755017858">ଡାର୍କ ମୋଡକୁ ଅକ୍ଷମ କରନ୍ତୁ</translation>
+<translation id="7878972877380405573">ପଢ଼ିବାକୁ ମୋତେ ସାହାଯ୍ୟ କର ମାଧ୍ୟମରେ ସାରାଂଶ ପ୍ରସ୍ତୁତ କରନ୍ତୁ</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">ପ୍ରଦାତା ପ୍ରକାର</translation>
 <translation id="7882501334836096755">ସାର୍ବଜନୀନ କୀ</translation>
+<translation id="7889966925761734854">ଖୋଜନ୍ତୁ</translation>
 <translation id="78957024357676568">ବାମ</translation>
 <translation id="7897043345768902965">ୱାକୱେ</translation>
 <translation id="7902285181767404769">ରେକର୍ଡିଂ କରିବା ସମୟରେ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ନୀରବ କରନ୍ତୁ</translation>
 <translation id="7903695460270716054">କ୍ୟୁରେଟ କରାଯାଇଥିବା କଳାକୃତି ଏବଂ ଇମେଜ ବାଛନ୍ତୁ</translation>
+<translation id="7908543555831145677">ରେକର୍ଡିଂ ଟାଇଟେଲ ସଫଳତାର ସହ ତିଆରି କରାଯାଇଛି</translation>
+<translation id="7912005977894000746">ମୁଖ୍ୟ ପୃଷ୍ଠାକୁ ଫେରନ୍ତୁ</translation>
 <translation id="7915220255123750251">ନେଟୱାର୍କ APN ସେଟିଂସକୁ ପରିଚାଳନା କରନ୍ତୁ। APNଗୁଡ଼ିକ ଏକ ସେଲୁଲାର ନେଟୱାର୍କ ଏବଂ ଇଣ୍ଟରନେଟ ମଧ୍ୟରେ ଏକ କନେକ୍ସନ ତିଆରି କରେ।</translation>
+<translation id="7915759923880480519">ଆପଣଙ୍କ ନେଟୱାର୍କ ମାଧ୍ୟମରେ ପଠାଯାଇଥିବା ଡାଟାକୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ ରିସେଟ କରନ୍ତୁ। କେବଳ ଆପଣ ବିଶ୍ୱାସ କରୁଥିବା ନେଟୱାର୍କ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="7936303884198020182">କୌଣସି ନେମ୍ ସର୍ଭର୍ ମିଳୁ ନାହିଁ</translation>
 <translation id="7942349550061667556">ନାଲି</translation>
 <translation id="7943235353293548836">ଅବିରତ କିପଆଲାଇଭ୍ ଇଣ୍ଟରଭାଲ୍</translation>
 <translation id="7943516765291457328">ଆଖପାଖର ହଟସ୍ପଟଗୁଡ଼ିକୁ ସ୍କାନ କରିବା ପାଇଁ ବ୍ଲୁଟୁଥ ଚାଲୁ କରନ୍ତୁ</translation>
+<translation id="7944482598620888754">ସାଇଟର ବିଷୟବସ୍ତୁ</translation>
 <translation id="7944562637040950644">କୀବୋର୍ଡ ବେକଲାଇଟକୁ ଟୋଗଲ କରନ୍ତୁ</translation>
 <translation id="7953669802889559161">ଇନପୁଟଗୁଡ଼ିକ</translation>
 <translation id="7955587717700691983">ବ୍ଲୁଟୁଥ କୀବୋର୍ଡ</translation>
@@ -1323,11 +1590,15 @@
 <translation id="7971535376154084247">ସାଧାରଣ ନିୟନ୍ତ୍ରଣଗୁଡ଼ିକ</translation>
 <translation id="7977800524392185497">ଏକ <ph name="NETWORK_NAME" /> ନେଟୱାର୍କରେ ଯୋଗ ଦେବା ପାଇଁ, ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="7978412674231730200">ବ୍ୟକ୍ତିଗତ କୀ</translation>
+<translation id="7979468455552394856">କ୍ଲାସ ଟୁଲଗୁଡ଼ିକ ଛାତ୍ର/ଛାତ୍ରୀମାନଙ୍କ ସହ କନେକ୍ଟ ହୋଇଛି</translation>
+<translation id="7982789257301363584">ନେଟୱାର୍କ</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" ସ୍ୱତଃ ଆରମ୍ଭ ହୋଇଛି}other{# ଆପ୍ସ ସ୍ୱତଃ ଆରମ୍ଭ ହୋଇଛି}}</translation>
 <translation id="7994702968232966508">EAP ପଦ୍ଧତି</translation>
 <translation id="8004582292198964060">ବ୍ରାଉଜର</translation>
+<translation id="8010765388850538088">ଜେନେରେଟିଭ AI ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="8017679124341497925">ସର୍ଟକଟ୍ ଏଡିଟ୍ କରାଯାଇଛି</translation>
 <translation id="802154636333426148">ଡାଉନ୍‌ଲୋଡ୍ ବିଫଳ ହୋଇଛି</translation>
+<translation id="8027467664787098346">ଚୟନିତ ୱାଲପେପର ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="8028993641010258682">ଆକାର</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">ଅଟୋ କଲର ମୋଡକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
@@ -1335,6 +1606,8 @@
 <translation id="8045012663542226664">ମାଇକ୍ରୋଫୋନ ମ୍ୟୁଟ</translation>
 <translation id="8054112564438735763">ବେଜ</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_BACKGROUND" /> ପୃଷ୍ଠପଟରେ <ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /></translation>
+<translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">ଅଡିଓ ରେକର୍ଡ କରିବା ଆରମ୍ଭ କରିବାକୁ ଏକ ମାଇକ କନେକ୍ଟ କରନ୍ତୁ</translation>
 <translation id="8067126283828232460">APNକୁ କନେକ୍ଟ କରାଯାଇଛି।</translation>
 <translation id="8067208048261192356">ମାଟିଆ</translation>
 <translation id="8067224607978179455"><ph name="ACTION_NAME" />କୁ ଡିଲିଟ କରନ୍ତୁ</translation>
@@ -1344,13 +1617,18 @@
 <translation id="8082366717211101304">Android ଆପଗୁଡ଼ିକରୁ DNSର ସମାଧାନ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="8082644724189923105">କୀବୋର୍ଡ ଜୋନ</translation>
 <translation id="808894953321890993">ପାସ୍‌ୱାର୍ଡ ବଦଳାନ୍ତୁ</translation>
+<translation id="8088963492174775412">ରେକର୍ଡ କରିବାକୁ ଦବାନ୍ତୁ</translation>
 <translation id="8094062939584182041">ଏହି ସମସ୍ୟା ବିଷୟରେ ଆପଣଙ୍କୁ ଇମେଲ କରିବା ପାଇଁ Googleକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="8104083085214006426">ଆପଣ ଏକ ଖୋଲା ଏବଂ ଅସୁରକ୍ଷିତ ନେଟୱାର୍କ ବ୍ୟବହାର କରୁଛନ୍ତି</translation>
+<translation id="8108879170356113798">ଆପଣ କେବଳ <ph name="NUM_SECONDS" /> ସେକେଣ୍ଡରେ କ୍ଲାସ ଟୁଲ୍ସକୁ ବ୍ୟବହାର କରିବାକୁ ସକ୍ଷମ ହେବେ</translation>
 <translation id="811820734797650957">(Android) ଗେଟୱେକୁ ପିଙ୍ଗ୍ କରାଯାଇପାରିବ</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">ନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="8132480444149501833">ଟ୍ରାଫିକ୍ କାଉଣ୍ଟରର ଅନୁରୋଧ କରନ୍ତୁ</translation>
+<translation id="8135609423982943441">ଆପଣଙ୍କ Chromebookକୁ ସୁରକ୍ଷିତ ଡିଫଲ୍ଟରେ ରିସେଟ କରାଯାଇଛି। ଆପଣ ସେଟିଂସରେ ଯେ କୌଣସି ସମୟରେ ଏହି ପରିବର୍ତ୍ତନଗୁଡ଼ିକୁ ଆଡଜଷ୍ଟ କରିପାରିବେ।</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8140591278915222789">ନିଜ ଅନୁସାରେ ତିଆରି କରନ୍ତୁ</translation>
+<translation id="8142182840415860496">ଅନେକ ଧଳା ଓ ହଳଦିଆ ଫୁଲର କ୍ଲୋଜଅପ, ଆନିମେଟେଡ ଫିଲ୍ମରୁ ନିଆଯାଇଥିବା ଏକ ଫଟୋ, ପାଷ୍ଟେଲ ରଙ୍ଗରେ ନୀଳ ଆକାଶ ସମ୍ମୁଖରେ କୌଣସି ପତ୍ର କିମ୍ବା ଫୋଲିଏଜ ନଥିବା ଦୁଇଟି ବଡ଼ ହଳଦିଆ ଟ୍ୟୁଲିପ ମଧ୍ୟରେ ରଖାଯାଇଥିବା ଲମ୍ବା ପାଖୁଡ଼ି ଥିବା ଏକ କୋମଳ ଗୋଲାପୀ ଫୁଲ ଏବଂ ସବୁଜ କାଣ୍ଡ, ଉଚ୍ଚ ରିଜୋଲ୍ୟୁସନ ଏବଂ ବହୁତ ବିସ୍ତୃତ ଜଟିଳ ବିବରଣୀ ସହିତ ନିଆଯାଇଥିବା ଏକ ସିନେମାଟିକ ସଟ, ସୁନ୍ଦର ଆଲୋକ ସହ ଅକ୍ଟେନ ରେଣ୍ଡର, ଭଲ୍ୟୁମେଟ୍ରିକ ଲାଇଟିଂ ଏବଂ ମୁଡି ଲାଇଟ।</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> ଚୟନ କରନ୍ତୁ</translation>
 <translation id="8151185429379586178">ଡେଭେଲପର ଟୁଲଗୁଡ଼ିକ</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />।</translation>
@@ -1361,26 +1639,28 @@
 <translation id="8179976553408161302">ପ୍ରବେଶ</translation>
 <translation id="8183975772394450380">ବେଳାଭୂମି</translation>
 <translation id="819278132617411009">ଅଧିକ ପ୍ରଡକ୍ଟିଭ ହେବା ପାଇଁ Google AI ବ୍ୟବହାର କରନ୍ତୁ</translation>
+<translation id="8200772114523450471">ସାରାଶଂ</translation>
 <translation id="8206859287963243715">ସେଲ୍ୟୁଲାର୍</translation>
 <translation id="8208861521865154048">ପର୍କଗୁଡ଼ିକ</translation>
 <translation id="8226628635270268143">ଆପଣଙ୍କ ପସନ୍ଦର ଫଟୋ ଏବଂ ଆଲବମଗୁଡ଼ିକ ବାଛନ୍ତୁ</translation>
 <translation id="8227119283605456246">ଫାଇଲ୍ ସଂଲଗ୍ନ କରନ୍ତୁ</translation>
-<translation id="8227488649450500937">ଏହି ପ୍ରମ୍ପ୍ଟଗୁଡ଼ିକ ମଧ୍ୟରୁ ଗୋଟିଏକୁ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ କିମ୍ବା <ph name="BEGIN_LINK_PROMPTING_GUIDE" />ପ୍ରମ୍ପ୍ଟିଂ ଗାଇଡ<ph name="END_LINK_PROMPTING_GUIDE" /> ଦେଖନ୍ତୁ</translation>
 <translation id="8230672074305416752">ଡିଫଲ୍ଟ ନେଟୱାର୍କ ଗେଟୱେକୁ ପିଙ୍ଗ୍ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
 <translation id="8238771987802558562">ଏକ APN ବାଛନ୍ତୁ</translation>
 <translation id="8246209727385807362">ଅଜଣା ବାହକ</translation>
 <translation id="8250926778281121244">କଳଙ୍କି</translation>
 <translation id="8257572018929862473">କୁଇକ ଉତ୍ତର ସେଟିଂସ ଖୋଲନ୍ତୁ</translation>
-<translation id="8261506727792406068">ବିଲୋପ</translation>
+<translation id="8261506727792406068">ଡିଲିଟ</translation>
 <translation id="8262870577632766028">1 ଘଣ୍ଟା</translation>
 <translation id="827422111966801947">ଘନନୀଳ</translation>
-<translation id="8281886186245836920">ବାଦ ଦିଅନ୍ତୁ</translation>
+<translation id="8280687443902283243">ଟାଇଟେଲ ଏଡିଟ କରନ୍ତୁ</translation>
 <translation id="8286154143153872371">ୱାଲପେପର୍ ଦେଖିବାକୁ ଦୟାକରି ଏକ ନେଟୱାର୍କରେ ସଂଯୋଗ କରି ପୃଷ୍ଠାଟିକୁ ପୁଣି ଲୋଡ୍ କରନ୍ତୁ।</translation>
 <translation id="8291967909914612644">ମୂଳ ପ୍ରଦାତା ଦେଶ</translation>
 <translation id="8294431847097064396">ଉତ୍ସ</translation>
 <translation id="8302368968391049045">HTTPS ଫାୟାରୱାଲ୍</translation>
+<translation id="8308787307410010965">ସାଇଟର ବିଷୟବସ୍ତୁ ସେଟିଂସ</translation>
 <translation id="8312330582793120272">ମିଡିଆ ପ୍ଲେ କରନ୍ତୁ</translation>
 <translation id="8318753676953949627">କୌଣସି ଇମେଜ୍ ନାହିଁ</translation>
+<translation id="8319809980370328428">ରେକର୍ଡିଂ ସାରାଂଶ ଏବଂ ଟାଇଟେଲ ତିଆରି କରିବା</translation>
 <translation id="8320910311642849813">ଜଙ୍ଗଲ</translation>
 <translation id="8329018942023753850">କାଲକୁଲେଟର ଆପ</translation>
 <translation id="8336739000755212683">ଡିଭାଇସ୍ ଆକାଉଣ୍ଟ ଛବି ବଦଳାନ୍ତୁ</translation>
@@ -1402,12 +1682,14 @@
 <translation id="8395584934117017006">ଏହି <ph name="DEVICE_TYPE" /> ଏଣ୍ଟରପ୍ରାଇଜ୍ ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="8398927464629426868">ଡିଭାଇସଟି ବର୍ତ୍ତମାନ ଯେଉଁ ହାରରେ ଚାର୍ଜ କିମ୍ବା ଡିସଚାର୍ଜ ହେଉଛି</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> ଷ୍ଟାଇଲରେ ଏକ <ph name="ART_FEATURE" />ର ପେଣ୍ଟିଂ</translation>
+<translation id="8409219750150841791">ସୃଷ୍ଟି ହୋଇଥିବା ସାରାଂଶ:</translation>
 <translation id="8410244574650205435">ସ୍ୱଚାଳିତ ଭାବେ ଚିହ୍ନଟ କରାଯାଇଛି</translation>
 <translation id="8420955526972171689">ହାର୍ଡୱେର ସମସ୍ୟାଗୁଡ଼ିକ ପାଇଁ ପରୀକ୍ଷା ଏବଂ ଟ୍ରବୁଲସୁଟିଂ ଚଲାନ୍ତୁ</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">ତଳ</translation>
 <translation id="8428213095426709021">ସେଟିଂସ୍</translation>
 <translation id="8431300646573772016">ChromeOSରେ ନୂଆ କଣ ଅଛି</translation>
+<translation id="8433186206711564395">ନେଟ୍‍ୱର୍କ ସେଟିଂସ୍</translation>
 <translation id="843568408673868420">ଇଣ୍ଟରନେଟ ସଂଯୋଗ</translation>
 <translation id="844521431886043384">DNS ସେଟ ଅପ କରାଯାଇନାହିଁ</translation>
 <translation id="8456200178779628126">ପଢି଼ବା ଏବଂ ଲେଖିବାରେ ସାହାଯ୍ୟ ପାଇବାକୁ Google AI ବ୍ୟବହାର କରନ୍ତୁ</translation>
@@ -1418,6 +1700,8 @@
 <translation id="8476942730579767658">ୱିଣ୍ଡୋ ଏବଂ ଡେସ୍କଗୁଡ଼ିକ</translation>
 <translation id="8477536061607044749">ଗ୍ରାଫିକ ଡିଜାଇନ</translation>
 <translation id="8477551185774834963">DNS ଲାଟେନ୍ସି ଅନୁମୋଦିତ ସୀମା ଠାରୁ ଅଳ୍ପ ଉପରେ ଅଛି</translation>
+<translation id="8481308460877552925">ତଥ୍ୟ ଅନୁସାରେ ଭୁଲ</translation>
+<translation id="8482376765267780829">ସରଳ କରିବା ପାଇଁ କିଛି ଟେକ୍ସଟ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="8483248364096924578">IP ଠିକଣା</translation>
 <translation id="8491311378305535241">Android ଆପଗୁଡ଼ିକରୁ ଫାୟାରୱାଲ ମାଧ୍ୟମରେ HTTP ୱେବସାଇଟଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="8495070016475833911">ଫେଲ୍ଟ</translation>
@@ -1425,30 +1709,37 @@
 <translation id="8503813439785031346">ଉପଯୋଗକର୍ତ୍ତାନାମ</translation>
 <translation id="8503836310948963452">ଆଉ ଅଳ୍ପ କିଛି ମିନିଟ୍ ଅଛି…</translation>
 <translation id="8505011850330200833">ଟ୍ରାନ୍ସକ୍ରିପ୍ଟଗୁଡ଼ିକୁ ପ୍ରକ୍ରିୟାନ୍ୱିତ କରି ସାରାଂଶ ତିଆରି କରିବା ପାଇଁ Gemini ମଡେଲ 2GB ଷ୍ଟୋରେଜ ଆବଶ୍ୟକ କରେ</translation>
+<translation id="8506063704538210734">ଉଲକାପାତ ଏବଂ ସମ୍ମୁଖଭାଗରେ କିଛି ଗଛ ସହିତ ବାଇଗଣୀ ଓ ଗୋଲାପୀ ରଙ୍ଗରେ ରାତି ଆକାଶର ଫଟୋ</translation>
+<translation id="8506394543220680287">ବରଫରେ ଆଚ୍ଛାଦିତ</translation>
 <translation id="8508640263392900755">APN ବିବରଣୀ</translation>
 <translation id="8522687886059337719">ବର୍ତ୍ତମାନ ନୂଆ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ୱାଲପେପର<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ଏବଂ <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />ସ୍କ୍ରିନ ସେଭର<ph name="END_LINK_SCREENSAVER_SUBPAGE" />କୁ ଆପଣଙ୍କର ଆକ୍ସେସ ଅଛି</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">ଟି ହାଉସ</translation>
+<translation id="8531692079895415839">କୁହୁଡ଼ିଆ</translation>
 <translation id="8538236298648811558">Google AI ଦ୍ୱାରା ପରିଚାଳିତ</translation>
 <translation id="8550364285433943656">ଆପଣଙ୍କ କୀବୋର୍ଡ କୀ ମାଧ୍ୟମରେ ପ୍ଲେ କରିବା ପାଇଁ ଗେମ ଆକ୍ସନରେ ନିୟନ୍ତ୍ରଣ ଲାଗୁ କରନ୍ତୁ</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">ଜେନେରେଟିଭ AI ଭୁଲ କରିପାରେ, ଯେଉଁଥିରେ ଲୋକମାନଙ୍କ ବିଷୟରେ ସୂଚନା ଅନ୍ତର୍ଭୁକ୍ତ, ତେଣୁ ଏହାକୁ ଦୁଇଥର-ଯାଞ୍ଚ କରନ୍ତୁ।</translation>
 <translation id="8575298406870537639">ଆପଣଙ୍କ କ୍ୟାରିଅର୍ ଏହାର ନେଟୱାର୍କ ସହ ସଂଯୋଗ କରିବାକୁ ଏହି ବିକଳ୍ପ ଆବଶ୍ୟକ କରିପାରେ। ବିବରଣୀ ପାଇଁ ଆପଣଙ୍କ କ୍ୟାରିଅର୍ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ।</translation>
 <translation id="8576249514688522074">ଆରମ୍ଭ କରାଯାଇନାହିଁ</translation>
+<translation id="8584654835905316966"><ph name="VERSION" />ଭର୍ସନରେ <ph name="DEVICE_NAME" /> ପାଇଁ ଫାର୍ମୱେର ଇନଷ୍ଟଲେସନ ସମ୍ପୂର୍ଣ୍ଣ କରିବାକୁ ଏହାକୁ ରିଷ୍ଟାର୍ଟ କରିବା ଆବଶ୍ୟକ। ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟର ଅନେକ ଥର ରିବୁଟ ହୋଇପାରେ। ଏହି ଆଚରଣ ଆଶା କରାଯାଏ।</translation>
 <translation id="8593058461203131755">ମିଡିଆକୁ ବିରତ କରନ୍ତୁ</translation>
 <translation id="8620617069779373398">ରୋମିଂ ସ୍ଥିତି</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> ପାଇଁ ଅଧିକ ପଦକ୍ଷେପ</translation>
 <translation id="86356131183441916">ହାଲୁକା ବାଇଗଣୀ</translation>
 <translation id="8647595191512746911">ଅଡିଓ ଟ୍ରାନ୍ସକ୍ରିପସନ</translation>
+<translation id="8650852232143958317">ଆପଣଙ୍କ Gmail ଏବଂ Google Drive ଫାଇଲଗୁଡ଼ିକୁ ଆପଣଙ୍କ ସହିତ ନିଅନ୍ତୁ</translation>
 <translation id="8651481478098336970">ଭଲ୍ୟୁମ୍ ମ୍ୟୁଟ୍ କରନ୍ତୁ</translation>
 <translation id="8655295600908251630">ଚ୍ୟାନେଲ୍</translation>
 <translation id="8655828773034788261">URL ସେୟାର କରନ୍ତୁ:</translation>
 <translation id="8660881923941176839">ପାଉଣ୍ଡ</translation>
-<translation id="8670057600920888023">ଜେନେରେଟିଭ AI ପରୀକ୍ଷାମୂଳକ ଅଟେ ଏବଂ ବିଷୟବସ୍ତୁ ଭୁଲ, ବିଭ୍ରାନ୍ତିକର କିମ୍ବା ଅପମାନଜନକ ହୋଇପାରେ।</translation>
+<translation id="8669187096858652220">ଟାବଗୁଡ଼ିକ ଦେଖାଇବା ପାଇଁ କ୍ଲିକ କରନ୍ତୁ</translation>
 <translation id="8670574982334489519">ଡାହାଣ</translation>
 <translation id="8675354002693747642">ପୂର୍ବରୁ-ସେୟାର୍ କରାଯାଇଥିବା କୀ</translation>
 <translation id="8677859815076891398">କୌଣସି ଆଲବମ୍ ନାହିଁ। <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />ରେ ଏକ ଆଲବମ୍ ତିଆରି କରନ୍ତୁ।</translation>
 <translation id="8682949824227998083">ରାମେନ</translation>
 <translation id="8689520252402395106">ଅପଡେଟ ପ୍ରକ୍ରିୟା ଜାରି ରଖିବାକୁ <ph name="DEVICE_NAME" />ର USB କେବୁଲକୁ ପୁଣି ଇନସାର୍ଟ କରନ୍ତୁ</translation>
+<translation id="8699053192961439771">ଟାବଗୁଡ଼ିକୁ ସ୍ୱତଃ ଲୁଚାଇବା ପାଇଁ କ୍ଲିକ କରନ୍ତୁ</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ଏହି ଫିଚରକୁ ପରିଚାଳନା କରିବା ପାଇଁ ବାମ କିମ୍ବା ଡାହାଣ ତୀର କୀ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="8712637175834984815">ବୁଝିଗଲି</translation>
 <translation id="871560550817059752">ବିଫଳ ହୋଇଛି - ସ୍ୟାହି ଶେଷ ହୋଇଯାଇଛି</translation>
@@ -1461,8 +1752,8 @@
 <translation id="8747900814994928677">ପରିବର୍ତ୍ତନକୁ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="8749478549112817787">କେମେରା ପୃଷ୍ଠପଟ</translation>
 <translation id="8755946156089753497">ଟାୱାର</translation>
-<translation id="8756235582947991808">AI ମାଧ୍ୟମରେ କିପରି ତିଆରି କରିବେ ଏବଂ ମନେ ରଖିବା ପାଇଁ କିଛି ବିଷୟ</translation>
 <translation id="8760616037557661287">ପୂର୍ବବର୍ତ୍ତୀ ପ୍ରମ୍ପ୍ଟ</translation>
+<translation id="876280838467039397">ଡାଉନଲୋଡ କରି <ph name="LANGUAGE_NAME" /> ଟ୍ରାନ୍ସକ୍ରିପସନ ମୋଡେଲ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos ଆଲବମ</translation>
 <translation id="8775713578693478175">ମୋଡେମ APN</translation>
@@ -1470,6 +1761,8 @@
 <translation id="879568662008399081">ଏହି ନେଟୱାର୍କରେ ଏକ କ୍ୟାପ୍ଟିଭ ପୋର୍ଟାଲ ଥାଇପାରେ</translation>
 <translation id="8798099450830957504">ଡିଫଲ୍ଟ</translation>
 <translation id="8798441408945964110">ପ୍ରଦାତାଙ୍କ ନାମ</translation>
+<translation id="8804164990146287819">ଗୋପନୀୟତା ନୀତି</translation>
+<translation id="8808828119384186784">Chrome ସେଟିଂସ</translation>
 <translation id="8814190375133053267">ୱାଇ-ଫାଇ</translation>
 <translation id="8818152010000655963">ୱାଲପେପର୍</translation>
 <translation id="8820457400746201697">ନୀଳ ଟଚ ପଏଣ୍ଟକୁ ଏକ କାର୍ଯ୍ୟକୁ ମୁଭ କରନ୍ତୁ। କଷ୍ଟମାଇଜ କରିବା ପାଇଁ ସମ୍ବନ୍ଧିତ କୀ'କୁ ଚୟନ କରନ୍ତୁ।</translation>
@@ -1489,6 +1782,7 @@
 <translation id="8876270629542503161">ଡିଭାଇସଟି ଏକ ଟାବଲେଟ ଅଟେ।</translation>
 <translation id="8881098542468797602">ଟେଷ୍ଟ ସଫଳ ହୋଇଛି</translation>
 <translation id="8882789155418924367">ପେଚା</translation>
+<translation id="8885038613856655272">ଏକ ମାଇକ କାନେକ୍ଟ କରନ୍ତୁ</translation>
 <translation id="8892443466059986410">ସର୍ଟକଟ ଏଡିଟିଂକୁ ବାତିଲ କରନ୍ତୁ</translation>
 <translation id="8898840733695078011">ସିଗନାଲ୍‌ ଦକ୍ଷତା</translation>
 <translation id="8909114361904403025">ଉପର ଆଡ଼କୁ ତୀର</translation>
@@ -1503,6 +1797,7 @@
 <translation id="8930622219860340959">ୱେୟାରଲେସ୍</translation>
 <translation id="8933650076320258356"><ph name="DIRECTION" /> ପାଇଁ ଚୟନିତ କୀ ହେଉଛି <ph name="KEYS" />। <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">କ୍ଲାଏଣ୍ଟର IP ଠିକଣା</translation>
+<translation id="8938606491880817721">ଡାଉନଲୋଡ କରାଯାଇପାରିବ ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କର <ph name="DEVICE_TYPE" /> ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ।</translation>
 <translation id="8944651180182756621">ଲଞ୍ଚରର ରଙ୍ଗ</translation>
 <translation id="8945308580158685341">ମହୁମାଛି</translation>
 <translation id="894617464444543719">ଡିଭାଇସଟି ଏକ ଫୋନ ଅଟେ।</translation>
@@ -1517,10 +1812,13 @@
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{ସ୍କାନ୍ କରନ୍ତୁ}=1{{NUMBER_OF_PAGES}ଟି ପୃଷ୍ଠା ସ୍କାନ୍ କରନ୍ତୁ}other{{NUMBER_OF_PAGES}ଟି ପୃଷ୍ଠା ସ୍କାନ୍ କରନ୍ତୁ}}</translation>
 <translation id="89945434909472341">ଗ୍ରାମ</translation>
 <translation id="8997710128084572139">ଡିଭାଇସରେ <ph name="BATTERY_PERCENTAGE" />% ବ୍ୟାଟେରୀ ଚାର୍ଜ ଅଛି।</translation>
+<translation id="8998002498898621320">ବାସ୍ତବବାଦୀ ଫଟୋ</translation>
 <translation id="8998289560386111590">ଆପଣଙ୍କ ଡିଭାଇସରେ ଉପଲବ୍ଧ ନାହିଁ</translation>
+<translation id="9000871120886759611">ଆପଣ ଆପଣଙ୍କ ପସନ୍ଦର ଭାଷାରେ ସୂଚନା ଆକ୍ସେସ କରିପାରିବେ ତାହା ନିଶ୍ଚିତ କରିବା ପାଇଁ ପୁନଃସେଟ କରନ୍ତୁ। କେବଳ ପସନ୍ଦର ଭାଷା ବ୍ୟବହାର ହେଉଛି କି ନାହିଁ ଯାଞ୍ଚ କରନ୍ତୁ।</translation>
 <translation id="9003499805101629690">ପିଜା</translation>
 <translation id="9003704114456258138">ଫ୍ରିକ୍ୱେନ୍ସୀ</translation>
-<translation id="901834265349196618">ଇମେଲ୍</translation>
+<translation id="9017411601860840405">ନିଅନ ଲାଇଟ</translation>
+<translation id="901834265349196618">ଇମେଲ</translation>
 <translation id="9022897536196898720">ଫୁଲ</translation>
 <translation id="9024331582947483881">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍</translation>
 <translation id="9025198690966128418">ଏକ ବ୍ୟକ୍ତିଗତ ଡିଭାଇସ ଭାବେ ବ୍ୟବହାର କରନ୍ତୁ</translation>
@@ -1540,10 +1838,13 @@
 <translation id="9082718469794970195">ଏହି ଭିଡିଓ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="9087578468327036362">ଏହି କ୍ୱେରୀ ବିଷୟରେ ରିପୋର୍ଟ କରନ୍ତୁ</translation>
 <translation id="9088306295921699330">ବର୍ତ୍ତମାନର ବ୍ୟବହାର</translation>
+<translation id="9088994563996376283">ସରଳ କରନ୍ତୁ</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">ତାରିଖ ରିସେଟ କରନ୍ତୁ ବିଷୟରେ ଅଧିକ ସୂଚନା</translation>
 <translation id="9100765901046053179">ଉନ୍ନତ ସେଟିଂସ୍</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> ପାଇଁ ଟିକେଟ୍ ରିଫ୍ରେଶ୍ କରନ୍ତୁ</translation>
 <translation id="9106415115617144481">ପୃଷ୍ଠା <ph name="PAGE_NUMBER" />କୁ ସ୍କାନ୍ କରାଯାଉଛି</translation>
+<translation id="9108856746036501072">Recorder ସ୍ପିଚ ସହିତ ରେକର୍ଡିଂ ପାଇଁ ଟ୍ରାନ୍ସକ୍ରିପସନ ତିଆରି କରିପାରିବ। ପରବର୍ତ୍ତୀ ଷ୍ଟେପରେ, ଆପଣଙ୍କୁ ଟ୍ରାନ୍ସକ୍ରିପସନର ଭାଷା ଚୟନ କରି ମଡେଲ (100MB ପର୍ଯ୍ୟନ୍ତ) ଡାଉନଲୋଡ କରିବାକୁ ହେବ।</translation>
 <translation id="9111102763498581341">ଅନ୍‌ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="9122492456897874028">ବିଷୟବସ୍ତୁର ସାରାଂଶ ତିଆରି କରନ୍ତୁ, ସଂଜ୍ଞା ପାଆନ୍ତୁ ଏବଂ ଆହୁରି ଅନେକ କିଛି କରନ୍ତୁ</translation>
 <translation id="9122602430962285795">ପୁଣି ସଂଯୋଗ କରିବାକୁ, ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
@@ -1561,6 +1862,7 @@
 <translation id="917720651393141712">ପରୀକ୍ଷା କରନ୍ତୁ</translation>
 <translation id="9188992814426075118">ଆପଣଙ୍କ କୀବୋର୍ଡ ସ୍ୱଚାଳିତ ଭାବେ ଆପଣଙ୍କର ୱାଲପେପର ସହ ମେଳ କରିପାରିବ</translation>
 <translation id="9189000703457422362">ସ୍ୱତଃ ଚିହ୍ନଟ ହୋଇଥିବା APNଗୁଡ଼ିକୁ ବ୍ୟବହାର କରି ଏହି ନେଟୱାର୍କ ସହ କନେକ୍ଟ କରାଯାଇପାରିବ ନାହିଁ। ଅଧିକ ସୂଚନା ପାଇଁ ଆପଣଙ୍କ ମୋବାଇଲ କେରିଅର ସହ କଣ୍ଟାକ୍ଟ କରନ୍ତୁ।</translation>
+<translation id="9190726385682694354"><ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9195918315673527512">ଚୟନିତ ଜଏଷ୍ଟିକ କୀ'ଗୁଡ଼ିକ ହେଉଛି <ph name="KEYS" />। ନିୟନ୍ତ୍ରଣକୁ ଏଡିଟ କରିବା ପାଇଁ ବଟନରେ ଟାପ କରନ୍ତୁ</translation>
 <translation id="9204237731135241582">Android ଆପଗୁଡ଼ିକରୁ ଗେଟୱେ ସହ ଯୋଗାଯୋଗ କରାଯାଇପାରିବ ନାହିଁ</translation>
@@ -1571,8 +1873,11 @@
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">ମତାମତ ପଠାନ୍ତୁ</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> ପାଇଁ କୀ ଉପଲବ୍ଧ ନାହିଁ। <ph name="ASSIGN_INSTRUCTION" /></translation>
+<translation id="951780398843003443">ସମ୍ପୂର୍ଣ୍ଣ ରେକର୍ଡିଂରେ ଭଏସଗୁଡ଼ିକୁ ତୁଳନା କରିବା ଯାହା ଫଳରେ ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ପ୍ରତ୍ୟେକ ସ୍ପିକର କଣ ଏବଂ କେତେବେଳେ କହିଲେ ତାହା ପ୍ରତିଫଳିତ କରେ</translation>
 <translation id="952992212772159698">ସକ୍ରିୟ ହୋ‍ଇନାହିଁ</translation>
 <translation id="95718197892796296">କାଦୁଅ</translation>
+<translation id="959792926760890141">ସେଫ୍ଟି ରିସେଟ, Chrome ବ୍ରାଉଜର ଏକ୍ସଟେନସନଗୁଡ଼ିକୁ ବନ୍ଦ କରିଦିଏ ଏବଂ ନେଟୱାର୍କ ଓ ଅନ୍ୟ ସେଟିଂସକୁ ସୁରକ୍ଷିତ ଡିଫଲ୍ଟରେ ରିସେଟ କରେ।
+          ଆପଣଙ୍କ ଡିଫଲ୍ଟ ସର୍ଚ୍ଚ ଇଞ୍ଜିନ ରିସେଟ ହୋଇଯିବ, କିନ୍ତୁ ଆପଣଙ୍କର ଟାବ, ଫାଇଲ, କୁକୀ ଏବଂ ଇତିହାସ ପରିବର୍ତ୍ତନ ହେବ ନାହିଁ।</translation>
 <translation id="960719561871045870">ଅପରେଟର୍ କୋଡ୍</translation>
 <translation id="965918541715156800">ହଳଦିଆ ଏବଂ ଟିଲ</translation>
 <translation id="966787709310836684">ମେନୁ</translation>
@@ -1580,5 +1885,6 @@
 <translation id="982713511914535780">ବ୍ୟାଟେରୀ ଡିସଚାର୍ଜ ଟେଷ୍ଟ ଚଲାନ୍ତୁ</translation>
 <translation id="98515147261107953">ଲେଣ୍ଡସ୍କେପ</translation>
 <translation id="987264212798334818">ସାଧାରଣ</translation>
+<translation id="994473081369871639">ମାଇକ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="995062385528875723">ଆକ୍ସେଣ୍ଟେଡ ଅକ୍ଷର, ଅଣ-ଲାଟିନ ବର୍ଣ୍ଣମାଳା କିମ୍ବା ଚିହ୍ନଗୁଡ଼ିକୁ ବ୍ୟବହାର କରାଯାଇପାରିବ ନାହିଁ</translation>
 </translationbundle>

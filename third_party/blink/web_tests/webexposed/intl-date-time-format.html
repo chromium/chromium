@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<pre id="output"></pre>
+<script type="module">
+import { locales } from "./resources/intl-locales.js";
+
+if (window.testRunner) {
+  testRunner.dumpAsText();
+}
+
+const output = document.getElementById('output');
+function print(text) {
+  output.textContent += text + '\n';
+}
+
+print('This test dumps the output of Intl.DateTimeFormat.prototype.format() for');
+print('some common locales.');
+print('');
+
+const date = new Date('2023-06-14T13:50Z');
+
+const variants = {
+  "default": undefined,
+  "short": { dateStyle: "short", timeStyle: "short" },
+  "medium": { dateStyle: "medium", timeStyle: "medium" },
+  "long": { dateStyle: "long", timeStyle: "long" },
+  "full": { dateStyle: "full", timeStyle: "full" },
+};
+
+for (const [locale, { displayName, timeZone }] of Object.entries(locales)) {
+  print(`[${locale}] ${displayName}`);
+  for (const [variant, options] of Object.entries((variants))) {
+    const formatter = new Intl.DateTimeFormat(locale, { ...options, timeZone });
+    print(`  [${variant}] ${formatter.format(date)}`);
+  }
+  print('');
+}
+
+</script>

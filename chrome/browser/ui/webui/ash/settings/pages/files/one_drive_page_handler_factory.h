@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/files/mojom/one_drive_handler.mojom.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/files/one_drive_page_handler.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

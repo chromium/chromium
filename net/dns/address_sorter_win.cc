@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/dns/address_sorter.h"
 
 #include <winsock2.h>
@@ -15,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -79,7 +75,7 @@ class AddressSorterWin : public AddressSorter {
               reinterpret_cast<SOCKET_ADDRESS_LIST*>(malloc(buffer_size_))) {
       input_buffer_->iAddressCount = base::checked_cast<INT>(endpoints.size());
       SOCKADDR_STORAGE* storage = reinterpret_cast<SOCKADDR_STORAGE*>(
-          input_buffer_->Address + input_buffer_->iAddressCount);
+          UNSAFE_TODO(input_buffer_->Address + input_buffer_->iAddressCount));
 
       for (size_t i = 0; i < endpoints.size(); ++i) {
         IPEndPoint ipe = endpoints[i];
@@ -89,12 +85,13 @@ class AddressSorterWin : public AddressSorter {
                            ipe.port());
         }
 
-        struct sockaddr* addr = reinterpret_cast<struct sockaddr*>(storage + i);
+        struct sockaddr* addr =
+            reinterpret_cast<struct sockaddr*>(UNSAFE_TODO(storage + i));
         socklen_t addr_len = sizeof(SOCKADDR_STORAGE);
         bool result = ipe.ToSockAddr(addr, &addr_len);
         DCHECK(result);
-        input_buffer_->Address[i].lpSockaddr = addr;
-        input_buffer_->Address[i].iSockaddrLength = addr_len;
+        UNSAFE_TODO(input_buffer_->Address[i]).lpSockaddr = addr;
+        UNSAFE_TODO(input_buffer_->Address[i]).iSockaddrLength = addr_len;
       }
     }
 
@@ -124,9 +121,9 @@ class AddressSorterWin : public AddressSorter {
         sorted.reserve(output_buffer_->iAddressCount);
         for (int i = 0; i < output_buffer_->iAddressCount; ++i) {
           IPEndPoint ipe;
-          bool result =
-              ipe.FromSockAddr(output_buffer_->Address[i].lpSockaddr,
-                               output_buffer_->Address[i].iSockaddrLength);
+          bool result = ipe.FromSockAddr(
+              UNSAFE_TODO(output_buffer_->Address[i]).lpSockaddr,
+              UNSAFE_TODO(output_buffer_->Address[i]).iSockaddrLength);
           DCHECK(result) << "Unable to roundtrip between IPEndPoint and "
                          << "SOCKET_ADDRESS!";
           // Unmap V4MAPPED IPv6 addresses so that Happy Eyeballs works.

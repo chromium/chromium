@@ -487,6 +487,17 @@ Called by update_bad_message_reasons.py.-->
   <int value="320"
       label="PSI_ADD_PAGE_EMBEDDED_PERMISSION_OBSERVER_WITHOUT_FEATURE"/>
   <int value="321" label="RFH_INITIATOR_BASE_URL_IS_EMPTY"/>
+  <int value="322" label="MDDH_SELECT_AUDIO_OUTPUT_WITHOUT_FEATURE"/>
+  <int value="323" label="MDDH_SET_PREFERRED_SINK_ID_WITHOUT_FEATURE"/>
+  <int value="324" label="MH_MULTIPLE_MIDI_SESSIONS"/>
+  <int value="325" label="RFHI_INVALID_NET_ERROR_CODE"/>
+  <int value="326" label="MSDH_RESTRICT_OWN_AUDIO_IS_SET_WHEN_UNSUPPORTED"/>
+  <int value="327" label="RFH_SAME_DOC_INSECURE_REQUEST_POLICY_CHANGE"/>
+  <int value="328" label="RFH_SAME_DOC_INSECURE_NAV_SET_CHANGE"/>
+  <int value="329" label="RFH_ORIGIN_TO_COMMIT_MISMATCH"/>
+  <int value="330" label="RFH_CRASH_REPORT_STORAGE_SIZE_TOO_LARGE"/>
+  <int value="331" label="RFH_CRASH_REPORT_STORAGE_ALREADY_INITIALIZED"/>
+  <int value="332" label="RFH_INVALID_DOCUMENT_SEQUENCE_NUMBER"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">
@@ -529,6 +540,9 @@ Called by update_bad_message_reasons.py.-->
   <int value="31" label="EFH_NO_BACKGROUND_HOST_FOR_FRAME"/>
   <int value="32" label="LEGACY_IPC_MISMATCH"/>
   <int value="33" label="ER_SW_INVALID_LAZY_BACKGROUND_PARAM"/>
+  <int value="34" label="SWH_BAD_WORKER_THREAD_ID"/>
+  <int value="35" label="ER_INVALID_EXTENSION_ID_FOR_PROCESS"/>
+  <int value="36" label="CEFH_INVALID_EXTENSION_ID_FOR_SCRIPT_INJECT_REQUEST"/>
 </enum>
 
 <enum name="BadMessageReasonGuestView">
@@ -539,15 +553,6 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="GVM_INVALID_GUESTVIEW_TYPE"/>
   <int value="2" label="GVMF_UNEXPECTED_MESSAGE_BEFORE_GVM_CREATION"/>
   <int value="3" label="GVM_INVALID_ATTACH"/>
-</enum>
-
-<enum name="BadMessageReasonNaCl">
-<!-- Generated from components/nacl/browser/bad_message.h.
-Called by update_bad_message_reasons.py.-->
-
-  <int value="0" label="NFH_OPEN_EXECUTABLE_BAD_ROUTING_ID"/>
-  <int value="1" label="NHMF_LAUNCH_CONTINUATION_BAD_ROUTING_ID"/>
-  <int value="2" label="NHMF_GET_NEXE_FD_BAD_URL"/>
 </enum>
 
 <enum name="BadMessageReasonPasswordManager">
@@ -571,6 +576,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="13"
       label="CPMD_BAD_ORIGIN_GENERATION_AVAILABLE_FOR_FORM_OBSOLETE"/>
   <int value="14" label="CPMD_BAD_ORIGIN_PRERENDERING"/>
+  <int value="15" label="CPMD_BAD_ORIGIN_NO_GENERATED_PASSWORD_TO_EDIT"/>
 </enum>
 
 <enum name="BooleanHasPossibleExplanation">
@@ -757,6 +763,16 @@ Called by update_debug_scenarios.py.-->
     frame changed the iframe element's visibility through CSS.
   </int>
 </enum>
+
+<!-- LINT.IfChange(SpareRendererAvailabilityWhenKilled) -->
+
+<enum name="SpareRendererAvailabilityWhenKilled">
+  <int value="0" label="KillSpareRenderer"/>
+  <int value="1" label="KillNonSpareRendererWithoutSpareRenderer"/>
+  <int value="2" label="KillNonSpareRendererWithSpareRenderer"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/crash/content/browser/crash_metrics_reporter_android.h:SpareRendererAvailabilityWhenKilled) -->
 
 <enum name="StabilityEventType">
   <summary>
@@ -1019,6 +1035,10 @@ Called by update_debug_scenarios.py.-->
   <int value="33" label="chrome::RESULT_CODE_DOWNGRADE_AND_RELAUNCH"/>
   <int value="34" label="chrome::RESULT_CODE_GPU_EXIT_ON_CONTEXT_LOST"/>
   <int value="35" label="chrome::RESULT_CODE_NORMAL_EXIT_UPGRADE_RELAUNCHED"/>
+  <int value="36"
+      label="chrome::RESULT_CODE_NORMAL_EXIT_PACK_EXTENSION_SUCCESS"/>
+  <int value="37" label="chrome::RESULT_CODE_SYSTEM_RESOURCE_EXHAUSTED"/>
+  <int value="38" label="chrome::RESULT_CODE_NORMAL_EXIT_AUTO_DE_ELEVATED"/>
   <int value="259" label="0x103 - STILL_ACTIVE."/>
   <int value="1285" label="ERROR_DELAY_LOAD_FAILED"/>
   <int value="1717" label="RPC_S_UNKNOWN_IF"/>
@@ -1027,6 +1047,7 @@ Called by update_debug_scenarios.py.-->
   <int value="1766" label="RPC_S_INTERNAL_ERROR"/>
   <int value="1783" label="RPC_X_BAD_STUB_DATA"/>
   <int value="1818" label="RPC_S_CALL_CANCELLED"/>
+  <int value="7014" label="SBOX_FATAL_BROKER_SHUTDOWN_HUNG"/>
   <int value="85436397" label="0x517a7ed - Crashpad simulated exception"/>
   <int value="1073807364" label="0x40010004 - DBG_TERMINATE_PROCESS"/>
 </enum>

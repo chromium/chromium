@@ -13,7 +13,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/queue.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -36,6 +36,11 @@ namespace network {
 class NetworkConnectionTracker;
 class SharedURLLoaderFactory;
 }
+
+namespace os_crypt_async {
+class Encryptor;
+class OSCryptAsync;
+}  // namespace os_crypt_async
 
 namespace gcm {
 
@@ -61,7 +66,8 @@ class GCMDriverDesktop : public GCMDriver,
       network::NetworkConnectionTracker* network_connection_tracker,
       const scoped_refptr<base::SequencedTaskRunner>& ui_thread,
       const scoped_refptr<base::SequencedTaskRunner>& io_thread,
-      const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner);
+      const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner,
+      os_crypt_async::OSCryptAsync* os_crypt_async);
 
   GCMDriverDesktop(const GCMDriverDesktop&) = delete;
   GCMDriverDesktop& operator=(const GCMDriverDesktop&) = delete;
@@ -137,6 +143,10 @@ class GCMDriverDesktop : public GCMDriver,
   struct TokenTupleComparer {
     bool operator()(const TokenTuple& a, const TokenTuple& b) const;
   };
+
+  void OnOsCryptReady(
+      base::OnceCallback<void(os_crypt_async::Encryptor)> io_callback,
+      os_crypt_async::Encryptor encryptor);
 
   void DoValidateRegistration(scoped_refptr<RegistrationInfo> registration_info,
                               const std::string& registration_id,

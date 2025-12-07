@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 
-#include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/wm/window_restore/informed_restore_contents_data.h"
 #include "base/callback_list.h"
@@ -16,12 +15,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ash/crosapi/full_restore_ash.h"
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sessions/core/session_types.h"
-#include "ui/message_center/public/cpp/notification_delegate.h"
 
 class Profile;
 
@@ -29,19 +26,11 @@ namespace app_restore {
 class RestoreData;
 }  // namespace app_restore
 
-namespace message_center {
-class Notification;
-}  // namespace message_center
-
 namespace ash::full_restore {
 
 class FullRestoreAppLaunchHandler;
 class FullRestoreDataHandler;
 class NewUserRestorePrefHandler;
-
-extern const char kRestoreForCrashNotificationId[];
-extern const char kRestoreNotificationId[];
-extern const char kSetRestorePrefNotificationId[];
 
 // The restore notification button index.
 enum class RestoreNotificationButtonIndex {
@@ -62,18 +51,9 @@ enum class RestoreAction {
   kMaxValue = kCloseNotByUser,
 };
 
-// Returns true if FullRestoreService can be created to restore/launch Lacros
-// during the system startup phase when all of the below conditions are met:
-// 1. The FullRestoreForLacros flag is enabled.
-// 2. Lacros is enabled.
-// 3. FullRestoreService can be created for the primary profile.
-bool MaybeCreateFullRestoreServiceForLacros();
-
 // The FullRestoreService class calls AppService and Window Management
 // interfaces to restore the app launchings and app windows.
 class FullRestoreService : public KeyedService,
-                           public message_center::NotificationObserver,
-                           public AcceleratorController::Observer,
                            public SessionObserver {
  public:
   // Delegate class that talks to ash shell. Ash shell is not created in
@@ -90,13 +70,15 @@ class FullRestoreService : public KeyedService,
     virtual void OnInformedRestoreContentsDataUpdated() = 0;
   };
 
-  static FullRestoreService* GetForProfile(Profile* profile);
-  static void MaybeCloseNotification(Profile* profile);
-
   explicit FullRestoreService(Profile* profile);
   FullRestoreService(const FullRestoreService&) = delete;
   FullRestoreService& operator=(const FullRestoreService&) = delete;
   ~FullRestoreService() override;
+
+  // If the last session was sanitized, skip showing any full restore UI. It is
+  // a static function since the pref gets reset before a `FullRestoreService`
+  // is created.
+  static void SetLastSessionSanitized();
 
   FullRestoreAppLaunchHandler* app_launch_handler() {
     return app_launch_handler_.get();
@@ -117,16 +99,6 @@ class FullRestoreService : public KeyedService,
   // Implement the restoration.
   void Restore();
 
-  // message_center::NotificationObserver:
-  void Close(bool by_user) override;
-  void Click(const std::optional<int>& button_index,
-             const std::optional<std::u16string>& reply) override;
-
-  // AcceleratorController::Observer:
-  void OnActionPerformed(AcceleratorAction action) override;
-  void OnAcceleratorControllerWillBeDestroyed(
-      AcceleratorController* controller) override;
-
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
@@ -146,8 +118,7 @@ class FullRestoreService : public KeyedService,
   //     first one is for apps, and the second one is for windows.
   //   - The data from session restore is a single vector.
   // We build a map to avoid doing a O(n) search each loop of the former.
-  using SessionWindowsMap =
-      base::flat_map<int, crosapi::mojom::SessionWindowPtr>;
+  using SessionWindowsMap = base::flat_map<int, sessions::SessionWindow*>;
 
   // KeyedService:
   void Shutdown() override;
@@ -160,12 +131,9 @@ class FullRestoreService : public KeyedService,
       InformedRestoreContentsData::DialogType dialog_type);
 
   // Shows the restore notification or the informed restore dialog on startup.
-  void MaybeShowRestoreNotification(
+  void MaybeShowRestoreDialog(
       InformedRestoreContentsData::DialogType dialog_type,
-      bool& show_notification);
-
-  void RecordRestoreAction(const std::string& notification_id,
-                           RestoreAction restore_action);
+      bool& out_show_notification);
 
   // Callback used when the pref |kRestoreAppsAndPagesPrefName| changes.
   void OnPreferenceChanged(const std::string& pref_name);
@@ -186,8 +154,6 @@ class FullRestoreService : public KeyedService,
                        bool read_error);
   void OnGotAllSessionsAsh(
       const std::vector<SessionWindows>& all_session_windows);
-  void OnGotAllSessionsLacros(
-      std::vector<crosapi::mojom::SessionWindowPtr> all_session_windows);
 
   // Called when session information is ready to be processed. Constructs the
   // object needed to show the informed restore dialog. It will be passed to ash
@@ -219,11 +185,6 @@ class FullRestoreService : public KeyedService,
   // Specifies whether it is the first time to run the full restore feature.
   bool first_run_full_restore_ = false;
 
-  // If the user clicks a notification button, set
-  // |skip_notification_histogram_| as true to skip the notification close
-  // histogram.
-  bool skip_notification_histogram_ = false;
-
   std::unique_ptr<NewUserRestorePrefHandler> new_user_pref_handler_;
 
   // |app_launch_handler_| is responsible for launching apps based on the
@@ -237,8 +198,6 @@ class FullRestoreService : public KeyedService,
   // session.
   std::unique_ptr<InformedRestoreContentsData> contents_data_;
 
-  std::unique_ptr<message_center::Notification> notification_;
-
   std::unique_ptr<Delegate> delegate_;
 
   base::CallbackListSubscription on_app_terminating_subscription_;
@@ -246,10 +205,6 @@ class FullRestoreService : public KeyedService,
   // Browser session restore exit type service lock. This is created when the
   // system is restored from crash to help set the browser saving flag.
   std::unique_ptr<ExitTypeService::CrashedLock> crashed_lock_;
-
-  base::ScopedObservation<AcceleratorController,
-                          AcceleratorController::Observer>
-      accelerator_controller_observer_{this};
 
   base::WeakPtrFactory<FullRestoreService> weak_ptr_factory_{this};
 };

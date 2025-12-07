@@ -9,7 +9,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/utils/content_script_utils.h"
@@ -33,7 +32,7 @@ struct BackForwardCacheDisabledDestructiveScriptTestPassToString {
 
 }  // namespace
 
-using ContextType = ExtensionApiTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class ExecuteScriptApiTestBase : public ExtensionApiTest {
  public:
@@ -85,6 +84,10 @@ IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptBasic) {
 
 IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptBadEncoding) {
   ASSERT_TRUE(RunExtensionTest("executescript/bad_encoding")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptBadMimeType) {
+  ASSERT_TRUE(RunExtensionTest("executescript/bad_mime_type")) << message_;
 }
 
 // If failing, mark disabled and update http://crbug.com/92105.
@@ -166,8 +169,8 @@ IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, InjectScriptInFileFrameAllowed) {
   // script into it.
   base::FilePath test_file =
       test_data_dir_.DirName().AppendASCII("test_file.txt");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           net::FilePathToFileURL(test_file)));
+  ASSERT_TRUE(
+      NavigateToURL(GetActiveWebContents(), net::FilePathToFileURL(test_file)));
 
   SetCustomArg("ALLOWED");
   ASSERT_TRUE(RunExtensionTest("executescript/file_access", {},
@@ -182,8 +185,8 @@ IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, InjectScriptInFileFrameDenied) {
   // script into it.
   base::FilePath test_file =
       test_data_dir_.DirName().AppendASCII("test_file.txt");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           net::FilePathToFileURL(test_file)));
+  ASSERT_TRUE(
+      NavigateToURL(GetActiveWebContents(), net::FilePathToFileURL(test_file)));
 
   SetCustomArg("DENIED");
   ASSERT_TRUE(RunExtensionTest("executescript/file_access")) << message_;

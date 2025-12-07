@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/gfx/geometry/point.h"
 
 class Profile;
 

@@ -30,14 +30,13 @@
 #include "base/check_op.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
-#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
+#include "third_party/blink/renderer/core/paint/fragment_data.h"
 #include "third_party/blink/renderer/core/paint/paint_flags.h"
 #include "third_party/blink/renderer/core/paint/paint_phase.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -118,9 +117,15 @@ struct CORE_EXPORT PaintInfo {
   bool IsRenderingResourceSubtree() const {
     return paint_flags_ & PaintFlag::kPaintingResourceSubtree;
   }
+  bool IsPrivacyPreserving() const {
+    return paint_flags_ & PaintFlag::kPrivacyPreserving;
+  }
 
   bool ShouldSkipBackground() const { return skips_background_; }
   void SetSkipsBackground(bool b) { skips_background_ = b; }
+
+  bool ShouldSkipGapDecorations() const { return skips_gap_decorations_; }
+  void SetSkipsGapDecorations(bool skip) { skips_gap_decorations_ = skip; }
 
   bool ShouldAddUrlMetadata() const {
     return paint_flags_ & PaintFlag::kAddUrlMetadata;
@@ -172,6 +177,7 @@ struct CORE_EXPORT PaintInfo {
   bool DescendantPaintingBlocked() const {
     return descendant_painting_blocked_;
   }
+  void SetDescendantPaintingBlocked() { descendant_painting_blocked_ = true; }
 
   GraphicsContext& context;
   PaintPhase phase;
@@ -196,8 +202,7 @@ struct CORE_EXPORT PaintInfo {
 
   bool is_painting_background_in_contents_space = false;
   bool skips_background_ = false;
-
-  // Used by display-locking.
+  bool skips_gap_decorations_ = false;
   bool descendant_painting_blocked_ = false;
 };
 

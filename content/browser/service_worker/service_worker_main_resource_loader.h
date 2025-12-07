@@ -15,6 +15,7 @@
 #include "content/browser/loader/navigation_loader_interceptor.h"
 #include "content/browser/service_worker/service_worker_cache_storage_matcher.h"
 #include "content/browser/service_worker/service_worker_fetch_dispatcher.h"
+#include "content/browser/service_worker/service_worker_synthetic_response_manager.h"
 #include "content/common/content_export.h"
 #include "content/common/service_worker/forwarded_race_network_request_url_loader_factory.h"
 #include "content/common/service_worker/race_network_request_url_loader_client.h"
@@ -75,8 +76,8 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   // is used instead of NavigationURLLoaderImpl.
   ServiceWorkerMainResourceLoader(
       NavigationLoaderInterceptor::FallbackCallback fallback_callback,
+      std::string fetch_event_client_id,
       base::WeakPtr<ServiceWorkerClient> service_worker_client,
-      int frame_tree_node_id,
       base::TimeTicks find_registration_start_time);
 
   ServiceWorkerMainResourceLoader(const ServiceWorkerMainResourceLoader&) =
@@ -89,9 +90,12 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   // Passed as the RequestHandler for
   // NavigationLoaderInterceptor::MaybeCreateLoader.
   void StartRequest(
-      const network::ResourceRequest& resource_request,
-      mojo::PendingReceiver<network::mojom::URLLoader> receiver,
-      mojo::PendingRemote<network::mojom::URLLoaderClient> client);
+      mojo::PendingReceiver<network::mojom::URLLoader> loader,
+      int32_t request_id,
+      uint32_t options,
+      const network::ResourceRequest& request,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation);
 
   // The navigation request that was holding this job is
   // going away. Calling this internally calls |DeleteIfNeeded()|
@@ -100,22 +104,17 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   // endpoint is held by the client.
   void DetachedFromRequest();
 
-  void set_worker_parent_client_uuid(std::string uuid) {
-    worker_parent_client_uuid_ = std::move(uuid);
-  }
-
   base::WeakPtr<ServiceWorkerMainResourceLoader> AsWeakPtr();
 
  private:
-  class StreamWaiter;
   class RaceNetworkRequestURLLoaderClient;
+  class StreamWaiter;
+
   enum class Status {
     kNotStarted,
     // |receiver_| is bound and the fetch event is being dispatched to the
     // service worker.
     kStarted,
-    // The response head has been sent to |url_loader_client_|.
-    kSentHeader,
     // The data pipe for the response body has been sent to
     // |url_loader_client_|. The body is being written to the pipe.
     kSentBody,
@@ -141,10 +140,6 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
                      blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream);
 
   // ServiceWorkerResourceLoader overrides:
-  // Calls url_loader_client_->OnReceiveResponse() with given |response_head|.
-  void CommitResponseHeaders(
-      const network::mojom::URLResponseHeadPtr& response_head) override;
-
   // Calls url_loader_client_->OnReceiveResponse() with
   // |response_head|, |response_body| and |cached_metadata|.
   void CommitResponseBody(
@@ -175,8 +170,6 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
       const std::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
-  void PauseReadingBodyFromNet() override;
-  void ResumeReadingBodyFromNet() override;
 
   void OnBlobReadingComplete(int net_error);
 
@@ -190,7 +183,10 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
       blink::EmbeddedWorkerStatus embedded_status,
       bool is_warming_up,
       bool is_warmed_up);
-  std::string GetInitialServiceWorkerStatusString();
+
+  void Fallback(ResponseHeadUpdateParams response_header_params);
+
+  std::string_view GetInitialServiceWorkerStatusString();
   std::string GetFrameTreeNodeTypeString();
   bool IsEligibleForRecordingTimingMetrics();
   void RecordFindRegistrationToCompletedTrace();
@@ -229,6 +225,8 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   void RecordFetchEventHandlerMetrics(
       ServiceWorkerFetchDispatcher::FetchEventResult fetch_result);
 
+  void RecordFindRegistrationTiming(bool is_fallback);
+
   void TransitionToStatus(Status new_status);
 
   // Dispatch preloading request based on the condition and feature enablement
@@ -255,12 +253,49 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   bool MaybeStartNavigationPreload(
       scoped_refptr<ServiceWorkerContextWrapper> context_wrapper);
 
+  // If the request URL is eligible, and it's an outermost main frame,
+  // SyntheticResponse is triggered.
+  //
+  // This initiates a network request, and stores its response header to
+  // `ServiceWorkerVersion` so that it can be used for the next navigation with
+  // SyntheticResponse. The stored header is always refreshed with the new one.
+  //
+  // If the header already exists at the time of navigation, this method
+  // immediately return the response with the stored header and empty body. The
+  // remaining body is appended after receiving the actual response from the
+  // network.
+  bool MaybeStartSyntheticNetworkRequest(
+      scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
+      scoped_refptr<ServiceWorkerVersion> version);
+
+  void OnReceiveResponseFromSyntheticNetworkRequest(
+      network::mojom::URLResponseHeadPtr response_head,
+      mojo::ScopedDataPipeConsumerHandle body);
+
+  void OnReceiveRedirectFromSyntheticNetworkRequest(
+      const net::RedirectInfo& redirect_info,
+      network::mojom::URLResponseHeadPtr response_head);
+
+  void OnCompleteSyntheticNetworkRequest(
+      const network::URLLoaderCompletionStatus& status);
+
+  void CreateAndRunCacheMatcher(
+      const std::optional<std::string>& cache_name,
+      scoped_refptr<ServiceWorkerVersion> active_worker);
+
+  // Returns true if `race-network-and-fetch-handler` router source is used, and
+  // the fetch event is not completed yet, or the data pipe for `fetch()` is not
+  // consumed yet. This is used to decide the timing of the object destruction.
+  bool ShouldDelayDeletion();
+
   NavigationLoaderInterceptor::FallbackCallback fallback_callback_;
 
+  int32_t request_id_ = 0;
+  uint32_t options_ = 0;
   network::ResourceRequest resource_request_;
+  net::MutableNetworkTrafficAnnotationTag traffic_annotation_;
 
   base::WeakPtr<ServiceWorkerClient> service_worker_client_;
-  const int frame_tree_node_id_;
 
   std::unique_ptr<ServiceWorkerFetchDispatcher> fetch_dispatcher_;
   std::unique_ptr<ServiceWorkerCacheStorageMatcher> cache_matcher_;
@@ -287,13 +322,7 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   std::optional<network::mojom::ServiceWorkerStatus>
       initial_service_worker_status_;
   const bool is_browser_startup_completed_;
-  enum class FrameTreeNodeType {
-    kOutermostMainFrame = 0,
-    kNotOutermostMainFrame = 1,
-    kUnknown = 2,
-    kMaxValue = kUnknown,
-  };
-  FrameTreeNodeType frame_tree_node_type_ = FrameTreeNodeType::kUnknown;
+  const std::string frame_tree_node_type_;
   bool is_detached_ = false;
 
   scoped_refptr<network::SharedURLLoaderFactory>
@@ -303,14 +332,18 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   std::optional<ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory>
       forwarded_race_network_request_url_loader_factory_;
 
+  std::optional<ServiceWorkerSyntheticResponseManager>
+      synthetic_response_manager_;
+
   base::TimeTicks find_registration_start_time_;
 
-  // Dedicated Worker's parent container's UUID.
-  // Valid for fetching the worker script with the PlzDedicatedWorker is
-  // enabled.
-  std::string worker_parent_client_uuid_;
+  // FetchEvent.clientId
+  // https://w3c.github.io/ServiceWorker/#fetch-event-clientid
+  const std::string fetch_event_client_id_;
 
-  bool has_fetch_event_finished_ = false;
+  bool did_dispatch_event_ = false;
+
+  bool is_synthetic_response_used_ = false;
 
   base::WeakPtrFactory<ServiceWorkerMainResourceLoader> weak_factory_{this};
 };

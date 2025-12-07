@@ -13,9 +13,7 @@ namespace content {
 
 enum ThreeDAPIType {
   THREE_D_API_TYPE_WEBGL,
-  THREE_D_API_TYPE_PEPPER_3D,
-  THREE_D_API_TYPE_LAST = THREE_D_API_TYPE_PEPPER_3D
-
+  THREE_D_API_TYPE_LAST = THREE_D_API_TYPE_WEBGL
 };
 
 }  // namespace content

@@ -27,7 +27,7 @@ class TouchToFillPasswordGenerationBridge {
   virtual void OnDismissed(JNIEnv* env, bool generated_password_accepted) = 0;
   virtual void OnGeneratedPasswordAccepted(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& password) = 0;
+      const base::android::JavaRef<jstring>& password) = 0;
   virtual void OnGeneratedPasswordRejected(JNIEnv* env) = 0;
 };
 

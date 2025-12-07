@@ -10,6 +10,7 @@ import "third_party/blink/public/mojom/file_system_access/file_system_access_dir
 import "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom";
 import "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom";
 import "third_party/blink/public/mojom/file_system_access/file_system_access_observer_host.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_permission_mode.mojom";
 import "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom";
 
 enum WellKnownDirectory {
@@ -50,7 +51,7 @@ struct SaveFilePickerOptions {
 };
 
 struct DirectoryPickerOptions {
-  bool request_writable;
+  FileSystemAccessPermissionMode permission_mode;
 };
 
 union TypeSpecificFilePickerOptionsUnion {

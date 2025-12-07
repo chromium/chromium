@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] [required] lstmCell float32 tensors with options.bias, options.recurrentBias and options.activations=['relu', 'relu', 'relu']
+  assert_less_than_equal: assert_array_approx_equals_ulp: test lstmCell float32 actual 0 should be close enough to expected 1 by ULP distance: expected a number less than or equal to 1n but got 1065353216n
+[FAIL] [required] lstmCell float32 tensors with options.bias, options.recurrentBias, options.activations=['relu', 'relu', 'relu'] and options.peepholeWeight
+  assert_less_than_equal: assert_array_approx_equals_ulp: test lstmCell float32 actual 0 should be close enough to expected 1 by ULP distance: expected a number less than or equal to 1n but got 1065353216n
+[FAIL] [required] lstmCell float32 tensors with options.bias, options.recurrentBias, options.activations=['relu', 'relu', 'relu'] and explicit options.layout='iofg'
+  assert_less_than_equal: assert_array_approx_equals_ulp: test lstmCell float32 actual 0 should be close enough to expected 1 by ULP distance: expected a number less than or equal to 1n but got 1065353216n
+[FAIL] [required] lstmCell float32 tensors with options.bias, options.recurrentBias, options.activations=['relu', 'relu', 'relu'] and options.layout='ifgo'
+  assert_less_than_equal: assert_array_approx_equals_ulp: test lstmCell float32 actual 0 should be close enough to expected 1 by ULP distance: expected a number less than or equal to 1n but got 1065353216n
+[FAIL] [required] lstmCell float32 tensors with all options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test lstmCell float32 actual 0 should be close enough to expected 1 by ULP distance: expected a number less than or equal to 1n but got 1065353216n
+Harness: the test ran to completion.
+

@@ -28,7 +28,7 @@
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
-#include "chrome/browser/password_manager/bulk_leak_check_service_factory.h"
+#include "chrome/browser/password_manager/factories/bulk_leak_check_service_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -62,6 +62,7 @@
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/test_event_router.h"
 #include "extensions/browser/test_event_router_observer.h"
+#include "net/base/net_errors.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1058,7 +1059,7 @@ TEST_F(PasswordCheckDelegateTest, WellKnownChangePasswordUrl) {
   RunUntilIdle();
   GURL change_password_url(
       *delegate().GetInsecureCredentials().at(0).change_password_url);
-  EXPECT_EQ(change_password_url.path(),
+  EXPECT_EQ(change_password_url.GetPath(),
             password_manager::kWellKnownChangePasswordPath);
 }
 
@@ -1077,7 +1078,7 @@ TEST_F(PasswordCheckDelegateTest, WellKnownChangePasswordUrl_androidrealm) {
 
   EXPECT_FALSE(delegate().GetInsecureCredentials().at(0).change_password_url);
   EXPECT_EQ(GURL(*delegate().GetInsecureCredentials().at(1).change_password_url)
-                .path(),
+                .GetPath(),
             password_manager::kWellKnownChangePasswordPath);
 }
 

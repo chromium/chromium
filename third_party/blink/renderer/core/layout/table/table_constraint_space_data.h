@@ -85,7 +85,6 @@ class TableConstraintSpaceData : public RefCounted<TableConstraintSpaceData> {
              has_descendant_that_depends_on_percentage_block_size ==
                  other.has_descendant_that_depends_on_percentage_block_size;
     }
-    bool operator!=(const Cell& other) const { return !(*this == other); }
 
     // Size of borders drawn on the inside of the border box.
     const BoxStrut borders;

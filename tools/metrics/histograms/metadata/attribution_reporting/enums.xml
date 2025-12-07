@@ -26,14 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="AttributionDestinationRateLimitResult">
-  <int value="0" label="Allowed"/>
-  <int value="1" label="Disallowed (global limit)"/>
-  <int value="2" label="Disallowed (reporting site limit)"/>
-  <int value="3" label="Disallowed (both limits)"/>
-  <int value="4" label="Internal error"/>
-</enum>
-
 <!-- LINT.IfChange(AttributionSourceDestinationLimitResult) -->
 
 <enum name="AttributionSourceDestinationLimitResult">
@@ -132,11 +124,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_resolver_impl.cc:AttributionResult) -->
 
+<!-- LINT.IfChange(ConversionAttributionSrcRequestStatus) -->
+
 <enum name="ConversionAttributionSrcRequestStatus">
   <int value="0" label="Requested"/>
   <int value="1" label="Received"/>
   <int value="2" label="Failed"/>
+  <int value="3" label="Redirected"/>
+  <int value="4" label="Received afer redirect"/>
+  <int value="5" label="Failed after redirect"/>
+  <int value="6" label="Dropped"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/attribution_reporting/attribution_src_request_status.h:AttributionSrcRequestStatus) -->
 
 <!-- LINT.IfChange(ConversionBackgroundNavigationOutcome) -->
 
@@ -178,9 +178,7 @@ chromium-metrics-reviews@google.com.
   <int value="20" label="Corresponding source - invalid filter data"/>
   <int value="21" label="Corresponding source - invalid active state"/>
   <int value="22" label="Corresponding source - invalid read only source data"/>
-  <int value="23"
-      label="(Obsolete): Corresponding source - invalid event report windows.
-             Removed in 2024/02."/>
+  <int value="23" label="Corresponding source - invalid event report windows."/>
   <int value="24"
       label="Corresponding source - invalid max event level reports"/>
   <int value="25" label="Corresponding source - invalid event level epsilon"/>
@@ -188,34 +186,17 @@ chromium-metrics-reviews@google.com.
       label="Corresponding source - destination sites query failed"/>
   <int value="27" label="Corresponding source - invalid destination sites"/>
   <int value="28" label="Corresponding source - construction failed"/>
-  <int value="29" label="Corresponding source - invalid trigger specs"/>
+  <int value="29" label="Corresponding source - invalid trigger data"/>
   <int value="30" label="Corresponding source - dedup key query failed"/>
   <int value="31"
       label="Corresponding source - invalid randomized response rate"/>
+  <int value="32"
+      label="Corresponding source - invalid attribution scopes data"/>
+  <int value="33"
+      label="Corresponding source - invalid aggregatable named budgets"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_storage_sql.h:ReportCorruptionStatus) -->
-
-<!-- LINT.IfChange(ConversionCreateAggregatableReportStatus) -->
-
-<enum name="ConversionCreateAggregatableReportStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="Internal error"/>
-  <int value="2" label="No capacity for conversion destination"/>
-  <int value="3" label="No matching impressions"/>
-  <int value="4" label="Excessive attributions"/>
-  <int value="5" label="Excessive reporting origins"/>
-  <int value="6" label="No histograms created"/>
-  <int value="7" label="Insufficient aggregatable budget"/>
-  <int value="8" label="No matching source filter data"/>
-  <int value="9" label="Not registered"/>
-  <int value="10" label="Prohibited by browser policy"/>
-  <int value="11" label="Deduplicated"/>
-  <int value="12" label="Report window has passed"/>
-  <int value="13" label="Excessive reports"/>
-</enum>
-
-<!-- LINT.ThenChange(//content/browser/attribution_reporting/aggregatable_result.mojom:AggregatableResult) -->
 
 <!-- LINT.IfChange(ConversionNavigationDataHostStatus) -->
 
@@ -243,7 +224,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Passed to OS"/>
   <int value="2" label="Invalid registration url"/>
   <int value="3" label="Prohibited by browser policy"/>
-  <int value="4" label="Excessive queue size"/>
+  <int value="4" label="(Obsolete) Excessive queue size"/>
   <int value="5" label="Rejected by OS"/>
 </enum>
 
@@ -287,6 +268,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/attribution_reporting/registrar_info.h:RegistrarIssue) -->
 
+<!-- LINT.IfChange(ConversionReportDebugKeyUsage) -->
+
+<enum name="ConversionReportDebugKeyUsage">
+  <int value="0" label="None"/>
+  <int value="1" label="Source only"/>
+  <int value="2" label="Trigger only"/>
+  <int value="3" label="Both"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_resolver_impl.cc:DebugKeyUsage) -->
+
 <!-- LINT.IfChange(ConversionReportSendOutcome) -->
 
 <enum name="ConversionReportSendOutcome">
@@ -294,6 +286,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Failed due to error"/>
   <int value="2" label="Dropped due to embedder disabling the API"/>
   <int value="3" label="Failed to assemble"/>
+  <int value="4" label="Expired"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_manager_impl.cc:ConversionReportSendOutcome) -->
@@ -304,20 +297,11 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="None"/>
   <int value="1" label="One retry"/>
   <int value="2" label="Two retries"/>
-  <int value="3" label="Failed"/>
+  <int value="3" label="Three retries"/>
+  <int value="4" label="Failed"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_manager_impl.cc:ConversionReportSendRetryCount) -->
-
-<!-- LINT.IfChange(ConversionReportStatus) -->
-
-<enum name="ConversionReportStatus">
-  <int value="0" label="OK"/>
-  <int value="1" label="Internal network error"/>
-  <int value="2" label="External non-200 HTTP error"/>
-</enum>
-
-<!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_report_network_sender.cc:Status) -->
 
 <!-- LINT.IfChange(ConversionRequestSupportHeader) -->
 
@@ -366,28 +350,34 @@ chromium-metrics-reviews@google.com.
   <int value="25" label="event_report_windows' start_time value is invalid"/>
   <int value="26" label="event_report_windows' end time value is invalid"/>
   <int value="27" label="trigger_data_matching value is invalid"/>
-  <int value="28" label="trigger_specs has wrong type"/>
-  <int value="29" label="trigger spec's trigger_data missing"/>
-  <int value="30" label="trigger_spec's trigger_data not a valid list"/>
+  <int value="28" label="(Obsolete) trigger_specs has wrong type"/>
+  <int value="29" label="(Obsolete) trigger spec's trigger_data missing"/>
+  <int value="30"
+      label="(Obsolete) trigger_spec's trigger_data not a valid list"/>
   <int value="31" label="trigger_data not a valid list"/>
   <int value="32" label="duplicate trigger data"/>
-  <int value="33" label="trigger_specs duplicate trigger data"/>
+  <int value="33" label="(Obsolete) trigger_specs duplicate trigger data"/>
   <int value="34" label="excessive trigger data"/>
-  <int value="35" label="trigger_specs excessive trigger data"/>
+  <int value="35" label="(Obsolete) trigger_specs excessive trigger data"/>
   <int value="36" label="invalid trigger data for matching mode"/>
   <int value="37"
-      label="top-level trigger_data and specs are mutually exclusive"/>
-  <int value="38" label="summary_operator value is invalid"/>
-  <int value="39" label="summary_buckets not a valid list"/>
-  <int value="40" label="summary_buckets value invalid"/>
+      label="(Obsolete) top-level trigger_data and specs are mutually
+             exclusive"/>
+  <int value="38" label="(Obsolete) summary_operator value is invalid"/>
+  <int value="39" label="(Obsolete) summary_buckets not a valid list"/>
+  <int value="40" label="(Obsolete) summary_buckets value invalid"/>
   <int value="41" label="event_level_epsilon value is invalid"/>
   <int value="42" label="destination_limit_priority is invalid"/>
-  <int value="43" label="attribution_scope_limit value is invalid"/>
-  <int value="44"
-      label="attribution_scope_limit is required for this configuration"/>
-  <int value="45" label="max_event_states value is invalid"/>
-  <int value="46" label="attribution_scopes value not a valid list"/>
-  <int value="47" label="attribution_scopes list value is invalid"/>
+  <int value="43" label="attribution_scopes' limit value is invalid"/>
+  <int value="44" label="attribution_scopes' limit missing"/>
+  <int value="45"
+      label="attribution_scopes' max_event_states value is invalid"/>
+  <int value="46" label="attribution_scopes not a valid dictionary"/>
+  <int value="47" label="attribution_scopes' values not a valid list"/>
+  <int value="48" label="attribution_scopes' values list value is invalid"/>
+  <int value="49" label="named_budgets not a valid dictionary"/>
+  <int value="50" label="named_budgets key too long"/>
+  <int value="51" label="named_budgets value is invalid"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/attribution_reporting/source_registration_error.mojom:SourceRegistrationError) -->
@@ -429,56 +419,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_data_host_manager_impl.cc:RegistrationMethod) -->
 
-<!-- LINT.IfChange(ConversionStorageCreateReportStatus) -->
-
-<enum name="ConversionStorageCreateReportStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="Success, but dropped lower-priority report"/>
-  <int value="2" label="Internal error"/>
-  <int value="3" label="No capacity for conversion destination"/>
-  <int value="4" label="No matching impressions"/>
-  <int value="5" label="Deduplicated against existing report"/>
-  <int value="6" label="Excessive attributions"/>
-  <int value="7" label="Priority lower than existing reports"/>
-  <int value="8" label="Source never attributed (noised)"/>
-  <int value="9" label="Excessive reporting origins"/>
-  <int value="10" label="No matching source filter data"/>
-  <int value="11" label="Prohibited by browser policy"/>
-  <int value="12" label="No matching configurations"/>
-  <int value="13" label="Excessive reports"/>
-  <int value="14" label="Falsely attributed source"/>
-  <int value="15" label="Report window has passed"/>
-  <int value="16" label="Not registered"/>
-  <int value="17" label="Report window has not started"/>
-  <int value="18" label="No matching trigger data"/>
-</enum>
-
-<!-- LINT.ThenChange(//content/browser/attribution_reporting/event_level_result.mojom:EventLevelResult) -->
-
-<!-- LINT.IfChange(ConversionStorageSourceStatus) -->
-
-<enum name="ConversionStorageSourceStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="Internal error"/>
-  <int value="2" label="No capacity for source site"/>
-  <int value="3" label="Excessive unique destination sites"/>
-  <int value="4" label="Excessive reporting orgins"/>
-  <int value="5" label="Prohibited by browser policy"/>
-  <int value="6" label="Success but noise applied"/>
-  <int value="7" label="Excessive destinations (per-reporting rate-limit)"/>
-  <int value="8" label="Excessive destinations (global rate-limit)"/>
-  <int value="9" label="Excessive destinations (both rate-limits)"/>
-  <int value="10" label="Excessive reporting origins per site limit"/>
-  <int value="11" label="Excessive channel capacity"/>
-  <int value="12"
-      label="(Obsolete) Event Report Windows start time is invalid. Removed
-             in 2023/10."/>
-  <int value="13" label="Excessive trigger state cardinality"/>
-  <int value="14" label="Excessive destinations (per reporting site per day)"/>
-</enum>
-
-<!-- LINT.ThenChange(//content/browser/attribution_reporting/store_source_result.mojom:StoreSourceResult) -->
-
 <!-- LINT.IfChange(ConversionStorageSqlInitStatus) -->
 
 <enum name="ConversionStorageSqlInitStatus">
@@ -490,6 +430,15 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_storage_sql.h:InitStatus) -->
+
+<!-- LINT.IfChange(ConversionTriggerDataMatching) -->
+
+<enum name="ConversionTriggerDataMatching">
+  <int value="0" label="modulus"/>
+  <int value="1" label="exact"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/attribution_reporting/trigger_data_matching.mojom:TriggerDataMatching) -->
 
 <!-- LINT.IfChange(ConversionTriggerRegistrationError) -->
 
@@ -530,13 +479,15 @@ chromium-metrics-reviews@google.com.
   <int value="28"
       label="trigger_context_id disallowed for
              aggregatable_source_registration_time"/>
-  <int value="29" label="event_trigger_data value field is invalid"/>
+  <int value="29" label="(Obsolete) event_trigger_data value field is invalid"/>
   <int value="30" label="aggregatable_filtering_id_max_bytes field is invalid"/>
   <int value="31"
       label="non-default aggregatable_filtering_id_max_bytes is disallowed
              for aggregatable_source_registration_time"/>
   <int value="32" label="attribution_scopes value not a valid list"/>
   <int value="33" label="attribution_scopes list value is invalid"/>
+  <int value="34" label="named_budgets wrong type"/>
+  <int value="35" label="named_budgets's name invalid"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/attribution_reporting/trigger_registration_error.mojom:TriggerRegistrationError) -->
@@ -580,9 +531,21 @@ chromium-metrics-reviews@google.com.
   <int value="32" label="source-channel-capacity-limit"/>
   <int value="33" label="source-trigger-state-cardinality-limit"/>
   <int value="36" label="source-destination-per-day-rate-limit"/>
+  <int value="38" label="source-scopes-channel-capacity-limit"/>
+  <int value="39" label="source-max-event-states-limit"/>
+  <int value="40" label="trigger-aggregate-insufficient-named-budget"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/attribution_reporting/debug_types.mojom:DebugDataType) -->
+
+<!-- LINT.IfChange(DataAvailableCallsite) -->
+
+<enum name="DataAvailableCallsite">
+  <int value="0" label="Blink"/>
+  <int value="1" label="Browser"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/attribution_reporting/data_host.mojom:DataAvailableCallsite) -->
 
 <!-- LINT.IfChange(SourceRegistrationTimeConfig) -->
 

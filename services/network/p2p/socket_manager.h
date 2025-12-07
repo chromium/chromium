@@ -116,8 +116,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketManager
                        net::IPAddress default_ipv6_local_address);
 
   // P2PSocket::Delegate.
-  void AddAcceptedConnection(
-      std::unique_ptr<P2PSocket> accepted_connection) override;
   void DestroySocket(P2PSocket* socket) override;
   void DumpPacket(base::span<const uint8_t> data, bool incoming) override;
 
@@ -126,11 +124,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketManager
       mojo::PendingRemote<mojom::P2PNetworkNotificationClient> client) override;
   void GetHostAddress(
       const std::string& host_name,
-      bool enable_mdns,
-      mojom::P2PSocketManager::GetHostAddressCallback callback) override;
-  void GetHostAddressWithFamily(
-      const std::string& host_name,
-      int address_family,
+      std::optional<net::AddressFamily> address_family,
       bool enable_mdns,
       mojom::P2PSocketManager::GetHostAddressCallback callback) override;
   void CreateSocket(
@@ -148,12 +142,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketManager
   void StopRtpDump(bool incoming, bool outgoing) override;
 
   void NetworkNotificationClientConnectionError();
-
-  void DoGetHostAddress(
-      const std::string& host_name,
-      std::optional<int> address_family,
-      bool enable_mdns,
-      mojom::P2PSocketManager::GetHostAddressCallback callback);
 
   void OnAddressResolved(
       DnsRequest* request,

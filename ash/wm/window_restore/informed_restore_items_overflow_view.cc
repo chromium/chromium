@@ -9,12 +9,14 @@
 #include "ash/style/typography.h"
 #include "ash/wm/window_restore/informed_restore_app_image_view.h"
 #include "ash/wm/window_restore/informed_restore_constants.h"
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/number_formatting.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace ash {
 
@@ -67,7 +69,7 @@ InformedRestoreItemsOverflowView::InformedRestoreItemsOverflowView(
           .CopyAddressTo(&outer_box_view)
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
           .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter)
-          .SetBackground(views::CreateThemedRoundedRectBackground(
+          .SetBackground(views::CreateRoundedRectBackground(
               informed_restore::kIconBackgroundColorId,
               kOverflowBackgroundRounding))
           .Build());
@@ -88,8 +90,8 @@ InformedRestoreItemsOverflowView::InformedRestoreItemsOverflowView(
               // display.
               .SetText(base::FormatNumber(num_elements - kOverflowMaxThreshold))
               .SetPreferredSize(kOverflowCountPreferredSize)
-              .SetEnabledColorId(cros_tokens::kCrosSysOnPrimaryContainer)
-              .SetBackground(views::CreateThemedRoundedRectBackground(
+              .SetEnabledColor(cros_tokens::kCrosSysOnPrimaryContainer)
+              .SetBackground(views::CreateRoundedRectBackground(
                   cros_tokens::kCrosSysPrimaryContainer,
                   kOverflowCountBackgroundRounding))
               .Build());
@@ -139,7 +141,7 @@ InformedRestoreItemsOverflowView::InformedRestoreItemsOverflowView(
   views::Label* remaining_windows_label;
   AddChildView(views::Builder<views::Label>()
                    .CopyAddressTo(&remaining_windows_label)
-                   .SetEnabledColorId(informed_restore::kItemTextColorId)
+                   .SetEnabledColor(informed_restore::kItemTextColorId)
                    .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                    .SetText(l10n_util::GetStringFUTF16Int(
                        IDS_ASH_INFORMED_RESTORE_WINDOW_OVERFLOW_COUNT,

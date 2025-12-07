@@ -23,6 +23,36 @@ namespace net {
 
 class ClientCertVerifier;
 
+struct NET_EXPORT SSLServerCredential {
+  SSLServerCredential();
+  SSLServerCredential(SSLServerCredential&& other);
+  SSLServerCredential& operator=(SSLServerCredential&& other);
+  ~SSLServerCredential();
+
+  // Certificate chain for this credential.
+  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> cert_chain;
+
+  // Private key used by this credential.
+  bssl::UniquePtr<EVP_PKEY> pkey;
+
+  // signature_algorithm_for_testing, if set, causes the server to only support
+  // the specified signature algorithm in TLS 1.2 and below. This should only be
+  // used in unit tests.
+  std::optional<uint16_t> signature_algorithm_for_testing;
+
+  // If non-empty, the DER-encoded OCSP response to staple.
+  std::vector<uint8_t> ocsp_response;
+
+  // If non-empty, the serialized SignedCertificateTimestampList to send in the
+  // handshake.
+  std::vector<uint8_t> signed_cert_timestamp_list;
+
+  // If non-empty, the TLS Trust Anchor Identifier of this credential. If
+  // specified, this credential will only be used if the client advertised
+  // a matching id.
+  std::vector<uint8_t> trust_anchor_id;
+};
+
 // A collection of server-side SSL-related configuration settings.
 struct NET_EXPORT SSLServerConfig {
   enum ClientCertType {
@@ -65,11 +95,6 @@ struct NET_EXPORT SSLServerConfig {
   // unit tests.
   std::optional<uint16_t> cipher_suite_for_testing;
 
-  // signature_algorithm_for_testing, if set, causes the server to only support
-  // the specified signature algorithm in TLS 1.2 and below. This should only be
-  // used in unit tests.
-  std::optional<uint16_t> signature_algorithm_for_testing;
-
   // curves_for_testing, if not empty, specifies the list of NID values (e.g.
   // NID_X25519) to configure as supported curves for the TLS connection.
   std::vector<int> curves_for_testing;
@@ -90,6 +115,10 @@ struct NET_EXPORT SSLServerConfig {
   // If a verifier is not provided then all certificates are accepted.
   raw_ptr<ClientCertVerifier> client_cert_verifier = nullptr;
 
+  // If set, causes the server to support the specified client certificate
+  // signature algorithms.
+  std::vector<uint16_t> client_cert_signature_algorithms;
+
   // The list of application level protocols supported with ALPN (Application
   // Layer Protocol Negotiation), in decreasing order of preference.  Protocols
   // will be advertised in this order during TLS handshake.
@@ -99,13 +128,6 @@ struct NET_EXPORT SSLServerConfig {
   // client also enabled ALPS, for each NextProto in |application_settings|.
   // Data might be empty.
   base::flat_map<NextProto, std::vector<uint8_t>> application_settings;
-
-  // If non-empty, the DER-encoded OCSP response to staple.
-  std::vector<uint8_t> ocsp_response;
-
-  // If non-empty, the serialized SignedCertificateTimestampList to send in the
-  // handshake.
-  std::vector<uint8_t> signed_cert_timestamp_list;
 
   // If specified, called at the start of each connection with the ClientHello.
   // Returns true to continue the handshake and false to fail it.

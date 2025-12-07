@@ -6,23 +6,23 @@
 
 #include <memory>
 
+#include "base/command_line.h"
 #include "base/location.h"
 #include "base/strings/stringprintf.h"
-#include "base/command_line.h"
 #include "components/performance_manager/execution_context/execution_context_registry_impl.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/test_support/performance_manager_browsertest_harness.h"
-#include "components/performance_manager/test_support/run_in_graph.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-#include "content/public/test/test_utils.h"
 
 namespace performance_manager {
 namespace v8_memory {
@@ -34,12 +34,24 @@ struct ContextCounts {
   size_t destroyed_execution_context_count = 0;
 };
 
-class V8ContextTrackerTest : public PerformanceManagerBrowserTestHarness {
+// TODO(crbug.com/40931300): Re-enable on Mac and Android.
+// The whole theory behind this test suite is wrong, because it assumes that
+// navigating to a page has a precise effect on the number of contexts. But the
+// test doesn't control the environment enough to be sure of this -
+// platform-specific policies, such as preloading, can change the number. Still,
+// leaving it enabled on platforms that aren't currently flaking gives some
+// coverage.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+#define MAYBE_V8ContextTrackerTest DISABLED_V8ContextTrackerTest
+#else
+#define MAYBE_V8ContextTrackerTest V8ContextTrackerTest
+#endif
+class MAYBE_V8ContextTrackerTest : public PerformanceManagerBrowserTestHarness {
  public:
   using Super = PerformanceManagerBrowserTestHarness;
 
-  V8ContextTrackerTest() = default;
-  ~V8ContextTrackerTest() override = default;
+  MAYBE_V8ContextTrackerTest() = default;
+  ~MAYBE_V8ContextTrackerTest() override = default;
 
   void SetUp() override {
     GetGraphFeatures().EnableV8ContextTracker();
@@ -54,81 +66,73 @@ class V8ContextTrackerTest : public PerformanceManagerBrowserTestHarness {
   }
 
   void SetUpOnMainThread() override {
-    RunInGraph([&](Graph* graph) {
-      auto* v8ct = V8ContextTracker::GetFromGraph(graph);
-      ASSERT_TRUE(v8ct);
+    Graph* graph = PerformanceManager::GetGraph();
+    auto* v8ct = V8ContextTracker::GetFromGraph(graph);
+    ASSERT_TRUE(v8ct);
 
-      // The browser could start with execution contexts and/or v8 contexts (for
-      // example if it creates a spare renderer loading about:blank, or
-      // something preloads a utility context).
-      current_counts_.v8_context_count = v8ct->GetV8ContextCountForTesting();
-      current_counts_.execution_context_count =
-          v8ct->GetExecutionContextCountForTesting();
+    // The browser could start with execution contexts and/or v8 contexts (for
+    // example if it creates a spare renderer loading about:blank, or
+    // something preloads a utility context).
+    current_counts_.v8_context_count = v8ct->GetV8ContextCountForTesting();
+    current_counts_.execution_context_count =
+        v8ct->GetExecutionContextCountForTesting();
 
-      // There should not be any detached or destroyed contexts on start.
-      EXPECT_EQ(v8ct->GetDetachedV8ContextCountForTesting(), 0u);
-      EXPECT_EQ(v8ct->GetDestroyedExecutionContextCountForTesting(), 0u);
-    });
+    // There should not be any detached or destroyed contexts on start.
+    EXPECT_EQ(v8ct->GetDetachedV8ContextCountForTesting(), 0u);
+    EXPECT_EQ(v8ct->GetDestroyedExecutionContextCountForTesting(), 0u);
     Super::SetUpOnMainThread();
   }
 
   void ExpectCountIncrease(
       ContextCounts count_change,
       const base::Location& location = base::Location::Current()) {
-    RunInGraph([&](Graph* graph) {
-      SCOPED_TRACE(location.ToString());
-      auto* v8ct = V8ContextTracker::GetFromGraph(graph);
-      ASSERT_TRUE(v8ct);
+    Graph* graph = PerformanceManager::GetGraph();
+    SCOPED_TRACE(location.ToString());
+    auto* v8ct = V8ContextTracker::GetFromGraph(graph);
+    ASSERT_TRUE(v8ct);
 
-      // There may be extra V8 contexts created, such as for lazily-created
-      // utility contexts.
-      EXPECT_GE(
-          v8ct->GetV8ContextCountForTesting(),
-          current_counts_.v8_context_count + count_change.v8_context_count)
-          << "expected increase " << count_change.v8_context_count;
-      current_counts_.v8_context_count = v8ct->GetV8ContextCountForTesting();
+    // There may be extra V8 contexts created, such as for lazily-created
+    // utility contexts.
+    EXPECT_GE(v8ct->GetV8ContextCountForTesting(),
+              current_counts_.v8_context_count + count_change.v8_context_count)
+        << "expected increase " << count_change.v8_context_count;
+    current_counts_.v8_context_count = v8ct->GetV8ContextCountForTesting();
 
-      EXPECT_EQ(v8ct->GetExecutionContextCountForTesting(),
-                current_counts_.execution_context_count +
-                    count_change.execution_context_count)
-          << "expected increase " << count_change.execution_context_count;
-      current_counts_.execution_context_count =
-          v8ct->GetExecutionContextCountForTesting();
+    EXPECT_EQ(v8ct->GetExecutionContextCountForTesting(),
+              current_counts_.execution_context_count +
+                  count_change.execution_context_count)
+        << "expected increase " << count_change.execution_context_count;
+    current_counts_.execution_context_count =
+        v8ct->GetExecutionContextCountForTesting();
 
-      EXPECT_EQ(v8ct->GetDetachedV8ContextCountForTesting(),
-                current_counts_.detached_v8_context_count +
-                    count_change.detached_v8_context_count)
-          << "expected increase " << count_change.detached_v8_context_count;
-      current_counts_.detached_v8_context_count =
-          v8ct->GetDetachedV8ContextCountForTesting();
+    EXPECT_EQ(v8ct->GetDetachedV8ContextCountForTesting(),
+              current_counts_.detached_v8_context_count +
+                  count_change.detached_v8_context_count)
+        << "expected increase " << count_change.detached_v8_context_count;
+    current_counts_.detached_v8_context_count =
+        v8ct->GetDetachedV8ContextCountForTesting();
 
-      EXPECT_EQ(v8ct->GetDestroyedExecutionContextCountForTesting(),
-                current_counts_.destroyed_execution_context_count +
-                    count_change.destroyed_execution_context_count)
-          << "expected increase "
-          << count_change.destroyed_execution_context_count;
-      ;
-      current_counts_.destroyed_execution_context_count =
-          v8ct->GetDestroyedExecutionContextCountForTesting();
-    });
+    EXPECT_EQ(v8ct->GetDestroyedExecutionContextCountForTesting(),
+              current_counts_.destroyed_execution_context_count +
+                  count_change.destroyed_execution_context_count)
+        << "expected increase "
+        << count_change.destroyed_execution_context_count;
+    ;
+    current_counts_.destroyed_execution_context_count =
+        v8ct->GetDestroyedExecutionContextCountForTesting();
   }
 
  private:
   ContextCounts current_counts_;
 };
 
-// TODO(crbug.com/40931300): Re-enable on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_AboutBlank DISABLED_AboutBlank
-#else
-#define MAYBE_AboutBlank AboutBlank
-#endif
-IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, MAYBE_AboutBlank) {
+IN_PROC_BROWSER_TEST_F(MAYBE_V8ContextTrackerTest, AboutBlank) {
   ASSERT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
   ExpectCountIncrease({.v8_context_count = 1, .execution_context_count = 1});
 }
 
-IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, SameOriginIframeAttributionData) {
+IN_PROC_BROWSER_TEST_F(MAYBE_V8ContextTrackerTest,
+                       SameOriginIframeAttributionData) {
   GURL urla(embedded_test_server()->GetURL("a.com", "/a_embeds_a.html"));
   auto* contents = shell()->web_contents();
   ASSERT_TRUE(
@@ -142,26 +146,18 @@ IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, SameOriginIframeAttributionData) {
   auto frame_node =
       PerformanceManager::GetFrameNodeForRenderFrameHost(child_rfh);
 
-  RunInGraph([&frame_node](Graph* graph) {
-    ASSERT_TRUE(frame_node);
-    auto* v8_context_tracker = V8ContextTracker::GetFromGraph(graph);
-    ASSERT_TRUE(v8_context_tracker);
-    auto* ec_state = v8_context_tracker->GetExecutionContextState(
-        frame_node->GetFrameToken());
-    ASSERT_TRUE(ec_state);
-    ASSERT_TRUE(ec_state->iframe_attribution_data);
-  });
+  Graph* graph = PerformanceManager::GetGraph();
+  ASSERT_TRUE(frame_node);
+  auto* v8_context_tracker = V8ContextTracker::GetFromGraph(graph);
+  ASSERT_TRUE(v8_context_tracker);
+  auto* ec_state =
+      v8_context_tracker->GetExecutionContextState(frame_node->GetFrameToken());
+  ASSERT_TRUE(ec_state);
+  ASSERT_TRUE(ec_state->iframe_attribution_data);
 }
 
-// TODO(crbug.com/40931300): Re-enable on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_CrossOriginIframeAttributionData \
-  DISABLED_CrossOriginIframeAttributionData
-#else
-#define MAYBE_CrossOriginIframeAttributionData CrossOriginIframeAttributionData
-#endif  // BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest,
-                       MAYBE_CrossOriginIframeAttributionData) {
+IN_PROC_BROWSER_TEST_F(MAYBE_V8ContextTrackerTest,
+                       CrossOriginIframeAttributionData) {
   GURL urla(embedded_test_server()->GetURL("a.com", "/a_embeds_b.html"));
   auto* contents = shell()->web_contents();
   ASSERT_TRUE(
@@ -174,27 +170,20 @@ IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest,
   auto frame_node =
       PerformanceManager::GetFrameNodeForRenderFrameHost(child_rfh);
 
-  RunInGraph([&frame_node](Graph* graph) {
-    ASSERT_TRUE(frame_node);
-    auto* v8_context_tracker = V8ContextTracker::GetFromGraph(graph);
-    ASSERT_TRUE(v8_context_tracker);
-    auto* ec_state = v8_context_tracker->GetExecutionContextState(
-        frame_node->GetFrameToken());
-    ASSERT_TRUE(ec_state);
-    ASSERT_TRUE(ec_state->iframe_attribution_data)
-        << "url " << frame_node->GetURL() << ", current "
-        << frame_node->IsCurrent() << ", state "
-        << frame_node->GetLifecycleState();
-  });
+  Graph* graph = PerformanceManager::GetGraph();
+  ASSERT_TRUE(frame_node);
+  auto* v8_context_tracker = V8ContextTracker::GetFromGraph(graph);
+  ASSERT_TRUE(v8_context_tracker);
+  auto* ec_state =
+      v8_context_tracker->GetExecutionContextState(frame_node->GetFrameToken());
+  ASSERT_TRUE(ec_state);
+  ASSERT_TRUE(ec_state->iframe_attribution_data)
+      << "url " << frame_node->GetURL() << ", current "
+      << frame_node->IsCurrent() << ", state "
+      << frame_node->GetLifecycleState();
 }
 
-// TODO(crbug.com/40931300): Re-enable on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_SameSiteNavigation DISABLED_SameSiteNavigation
-#else
-#define MAYBE_SameSiteNavigation SameSiteNavigation
-#endif  // BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, MAYBE_SameSiteNavigation) {
+IN_PROC_BROWSER_TEST_F(MAYBE_V8ContextTrackerTest, SameSiteNavigation) {
   auto* contents = shell()->web_contents();
   GURL urla(embedded_test_server()->GetURL("a.com", "/a_embeds_b.html"));
   ASSERT_TRUE(
@@ -232,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, MAYBE_SameSiteNavigation) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, DetachedContext) {
+IN_PROC_BROWSER_TEST_F(MAYBE_V8ContextTrackerTest, DetachedContext) {
   auto* contents = shell()->web_contents();
   GURL urla(embedded_test_server()->GetURL("a.com", "/a_embeds_a.html"));
   ASSERT_TRUE(
@@ -242,6 +231,9 @@ IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, DetachedContext) {
   // Get pointers to the RFHs for each frame.
   content::RenderFrameHost* rfha = contents->GetPrimaryMainFrame();
 
+  content::RenderFrameHost* iframe = ChildFrameAt(rfha, 0);
+  content::RenderFrameDeletedObserver iframe_deleted_observer(iframe);
+
   // Keep a pointer to the window associated with the child iframe, but
   // unload it.
   ASSERT_TRUE(ExecJs(rfha,
@@ -249,6 +241,8 @@ IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, DetachedContext) {
                      "document.body.leakyRef = iframe.contentWindow.window; "
                      "iframe.parentNode.removeChild(iframe); "
                      "console.log('detached and leaked iframe');"));
+
+  iframe_deleted_observer.WaitUntilDeleted();
 
   ExpectCountIncrease({
       .detached_v8_context_count = 1,

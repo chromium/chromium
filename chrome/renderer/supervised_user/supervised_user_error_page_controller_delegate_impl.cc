@@ -39,6 +39,16 @@ void SupervisedUserErrorPageControllerDelegateImpl::RequestUrlAccessLocal(
     supervised_user_interface_->RequestUrlAccessLocal(std::move(callback));
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void SupervisedUserErrorPageControllerDelegateImpl::LearnMore(
+    base::OnceClosure open_help_page) {
+  if (supervised_user_interface_) {
+    supervised_user_interface_->LearnMore(std::move(open_help_page));
+  }
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
+
 void SupervisedUserErrorPageControllerDelegateImpl::OnDestruct() {
   delete this;
 }

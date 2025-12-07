@@ -4,7 +4,6 @@
 
 # Defines fuzzer_test.
 #
-import("//build/config/features.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//testing/test.gni")
 
@@ -45,9 +44,39 @@ import("//testing/test.gni")
 # config (.options file) file would be generated or modified in root output
 # dir (next to test).
 template("fuzzer_test") {
+  _additional_configs = []
+  if (defined(invoker.additional_configs)) {
+    _additional_configs = invoker.additional_configs
+  }
+
+  # This ensures that the target name is suffixed by `_fuzzer` if
+  # "//testing/libfuzzer:no_clusterfuzz" cannot be found in
+  # `additional_configs`.
+  # This statement is a bit tricky. Basically:
+  # 1. We first check whether additional_configs contains
+  # "//testing/libfuzzer:no_clusterfuzz". To do that, we simply use
+  # `filter_include` and use "//testing/libfuzzer:no_clusterfuzz" as the
+  # pattern for an exact match. If the list isn't empty, that means that the
+  # configuration was added. Otherwise, we'll use this fuzzer on ClusterFuzz
+  # and we must check whether the fuzzer name ends with `_fuzzer` (2.).
+  # 2. We use `filter_exclude` with `*_fuzzer` as a pattern and check that
+  # against `target_name`. If the list is empty, that means the fuzzer matches
+  # the pattern correctly. Note that we can't use `label_matches` here because
+  # it only accepts wildcard as a suffix.
+  assert(filter_include(_additional_configs,
+                        [ "//testing/libfuzzer:no_clusterfuzz" ]) != [] ||
+             filter_exclude([ target_name ], [ "*_fuzzer" ]) == [],
+         "$target_name name must be suffixed by `_fuzzer`")
   _high_end_job_required = false
-  if (defined(invoker.high_end_job_required)) {
-    _high_end_job_required = invoker.high_end_job_required
+  if (defined(invoker.high_end_job_required) && invoker.high_end_job_required) {
+    # Target should run in pure release mode, i.e. no debug and no dchecks.
+    _high_end_job_required = !is_debug && !dcheck_always_on
+  }
+  if (defined(invoker.high_end_debug_job_required) &&
+      invoker.high_end_debug_job_required) {
+    # Target should run in debug'ish mode, i.e. with debug or dchecks.
+    _high_end_job_required =
+        _high_end_job_required || is_debug || dcheck_always_on
   }
 
   # If the job is a high_end job and that we are currently building a high_end
@@ -69,12 +98,16 @@ template("fuzzer_test") {
       test_deps += [ "//testing/libfuzzer:fuzzing_engine_main" ]
     }
     test_data_deps = []
+    test_data = []
 
     if (defined(invoker.deps)) {
       test_deps += invoker.deps
     }
     if (defined(invoker.data_deps)) {
       test_data_deps += invoker.data_deps
+    }
+    if (defined(invoker.data)) {
+      test_data += invoker.data
     }
 
     supporting_file_test_deps = []
@@ -118,6 +151,7 @@ template("fuzzer_test") {
       }
 
       if (archive_seed_corpus) {
+        test_data_deps += [ ":" + target_name + "_seed_corpus" ]
         supporting_file_test_deps += [ ":" + target_name + "_seed_corpus" ]
       }
     }
@@ -133,6 +167,7 @@ template("fuzzer_test") {
           sources = [ invoker.dict ]
           outputs = [ "$root_build_dir/" + target_name + ".dict" ]
         }
+        test_data_deps += [ ":" + target_name + "_dict_copy" ]
         supporting_file_test_deps += [ ":" + target_name + "_dict_copy" ]
       }
 
@@ -257,7 +292,7 @@ template("fuzzer_test") {
               target_name + "_codesign_supporting_files_" + _deps_type_label
           action_foreach(_codesign_action_name) {
             testonly = true
-            script = "//build/config/ios/codesign.py"
+            script = "//build/config/apple/codesign.py"
             sources = _files_to_sign
             _codesign_output_path =
                 "${root_build_dir}/codesign/{{source_file_part}}"
@@ -289,7 +324,12 @@ template("fuzzer_test") {
       test_data_deps += supporting_file_test_data_deps
     }
 
-    test(target_name) {
+    if (is_android) {
+      _template_type = "executable"
+    } else {
+      _template_type = "test"
+    }
+    target(_template_type, target_name) {
       forward_variables_from(invoker,
                              [
                                "cflags",
@@ -304,11 +344,15 @@ template("fuzzer_test") {
                              ])
       deps = test_deps
       data_deps = test_data_deps
+      data = test_data
+      testonly = true
 
-      if (defined(invoker.additional_configs)) {
-        configs += invoker.additional_configs
-      }
+      configs += _additional_configs
       configs += [ "//testing/libfuzzer:fuzzer_test_config" ]
+
+      # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+      # enable the diagnostic by removing this line.
+      configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 
       # Used by WebRTC to suppress some Clang warnings in their codebase.
       if (defined(invoker.suppressed_configs)) {

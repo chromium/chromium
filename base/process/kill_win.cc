@@ -11,10 +11,12 @@
 
 #include <algorithm>
 
+#include "base/features.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/process/memory.h"
 #include "base/process/process_iterator.h"
+#include "partition_alloc/page_allocator.h"
 
 namespace base {
 
@@ -76,6 +78,15 @@ TerminationStatus GetTerminationStatus(ProcessHandle handle, int* exit_code) {
                                             // object memory limits.
     case win::kOomExceptionCode:            // Ran out of memory.
       return TERMINATION_STATUS_OOM;
+    // This exit code is used when a process is terminated by another process
+    // due to a commit failure. See
+    // `CHROME_RESULT_CODE_TERMINATED_BY_OTHER_PROCESS_ON_COMMIT_FAILURE`
+    // in `chrome/common/chrome_result_codes.h`.
+    case partition_alloc::kTerminateOnCommitFailureExitCode:
+      return FeatureList::IsEnabled(
+                 features::kUseTerminationStatusMemoryExhaustion)
+                 ? TERMINATION_STATUS_EVICTED_FOR_MEMORY
+                 : TERMINATION_STATUS_OOM;
     // This exit code means the process failed an OS integrity check.
     // This is tested in ProcessMitigationsTest.* in sandbox.
     case win::kStatusInvalidImageHashExitCode:
@@ -99,9 +110,7 @@ bool WaitForProcessesToExit(const FilePath::StringType& executable_name,
     DWORD remaining_wait = static_cast<DWORD>(
         std::max(static_cast<int64_t>(0),
                  wait.InMilliseconds() - (GetTickCount() - start_time)));
-    HANDLE process = OpenProcess(SYNCHRONIZE,
-                                 FALSE,
-                                 entry->th32ProcessID);
+    HANDLE process = OpenProcess(SYNCHRONIZE, FALSE, entry->th32ProcessID);
     DWORD wait_result = WaitForSingleObject(process, remaining_wait);
     CloseHandle(process);
     result &= (wait_result == WAIT_OBJECT_0);
@@ -114,8 +123,9 @@ bool CleanupProcesses(const FilePath::StringType& executable_name,
                       TimeDelta wait,
                       int exit_code,
                       const ProcessFilter* filter) {
-  if (WaitForProcessesToExit(executable_name, wait, filter))
+  if (WaitForProcessesToExit(executable_name, wait, filter)) {
     return true;
+  }
   KillProcesses(executable_name, exit_code, filter);
   return false;
 }

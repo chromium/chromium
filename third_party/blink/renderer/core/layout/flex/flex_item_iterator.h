@@ -6,14 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FLEX_FLEX_ITEM_ITERATOR_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/flex/flex_line.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 class BlockBreakToken;
-struct NGFlexItem;
-struct NGFlexLine;
 
 // A utility class for flexbox layout which given a list of flex lines and a
 // break token will iterate through unfinished flex items.
@@ -31,7 +30,7 @@ class CORE_EXPORT FlexItemIterator {
   STACK_ALLOCATED();
 
  public:
-  FlexItemIterator(const HeapVector<NGFlexLine>& flex_lines,
+  FlexItemIterator(const FlexLineVector& flex_lines,
                    const BlockBreakToken* break_token,
                    bool is_column);
 
@@ -49,11 +48,11 @@ class CORE_EXPORT FlexItemIterator {
   void NextLine();
 
  private:
-  NGFlexItem* FindNextItem(const BlockBreakToken* item_break_token = nullptr);
+  FlexItemData* FindNextItem(const BlockBreakToken* item_break_token = nullptr);
   void AdjustItemIndexForNewLine();
 
-  NGFlexItem* next_unstarted_item_ = nullptr;
-  const HeapVector<NGFlexLine>& flex_lines_;
+  FlexItemData* next_unstarted_item_ = nullptr;
+  const FlexLineVector& flex_lines_;
   const BlockBreakToken* break_token_;
   bool is_column_ = false;
 
@@ -74,7 +73,7 @@ struct FlexItemIterator::Entry {
   STACK_ALLOCATED();
 
  public:
-  Entry(NGFlexItem* flex_item,
+  Entry(FlexItemData* flex_item,
         wtf_size_t flex_item_idx,
         wtf_size_t flex_line_idx,
         const BlockBreakToken* token)
@@ -83,7 +82,7 @@ struct FlexItemIterator::Entry {
         flex_line_idx(flex_line_idx),
         token(token) {}
 
-  NGFlexItem* flex_item;
+  FlexItemData* flex_item;
   wtf_size_t flex_item_idx;
   wtf_size_t flex_line_idx;
   const BlockBreakToken* token;

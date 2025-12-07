@@ -22,11 +22,10 @@
 #include "components/download/internal/background_service/proto/entry.pb.h"
 #include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/background_service/clients.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "ios/chrome/browser/optimization_guide/model/prediction_model_download_client.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // The root directory for background download system, under browser state
 // directory.
@@ -42,10 +41,10 @@ const base::FilePath::CharType kFilesStorageDir[] = FILE_PATH_LITERAL("Files");
 
 // static
 download::BackgroundDownloadService*
-BackgroundDownloadServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
-  return static_cast<download::BackgroundDownloadService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+BackgroundDownloadServiceFactory::GetForProfile(ProfileIOS* profile) {
+  return GetInstance()
+      ->GetServiceForProfileAs<download::BackgroundDownloadService>(
+          profile, /*create=*/true);
 }
 
 // static
@@ -56,40 +55,37 @@ BackgroundDownloadServiceFactory::GetInstance() {
 }
 
 BackgroundDownloadServiceFactory::BackgroundDownloadServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "BackgroundDownloadService",
-          BrowserStateDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactoryIOS("BackgroundDownloadService") {}
 
 BackgroundDownloadServiceFactory::~BackgroundDownloadServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 BackgroundDownloadServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  DCHECK(!context->IsOffTheRecord());
+    ProfileIOS* profile) const {
+  DCHECK(!profile->IsOffTheRecord());
   auto clients = std::make_unique<download::DownloadClientMap>();
   // Clients should be registered here.
-  if (optimization_guide::features::IsModelDownloadingEnabled()) {
-    auto prediction_model_download_client =
-        std::make_unique<optimization_guide::PredictionModelDownloadClient>(
-            ChromeBrowserState::FromBrowserState(context));
-    clients->insert(std::make_pair(
-        download::DownloadClient::OPTIMIZATION_GUIDE_PREDICTION_MODELS,
-        std::move(prediction_model_download_client)));
-  }
-  return BuildServiceWithClients(context, std::move(clients));
+  auto prediction_model_download_client =
+      std::make_unique<optimization_guide::PredictionModelDownloadClient>(
+          profile);
+  clients->insert(std::make_pair(
+      download::DownloadClient::OPTIMIZATION_GUIDE_PREDICTION_MODELS,
+      std::move(prediction_model_download_client)));
+
+  return BuildServiceWithClients(profile, std::move(clients));
 }
 
 std::unique_ptr<KeyedService>
 BackgroundDownloadServiceFactory::BuildServiceWithClients(
-    web::BrowserState* context,
+    ProfileIOS* profile,
     std::unique_ptr<download::DownloadClientMap> clients) const {
   auto client_set = std::make_unique<download::ClientSet>(std::move(clients));
   base::FilePath storage_dir =
-      context->GetStatePath().Append(kDownloadServiceStorageDir);
+      profile->GetStatePath().Append(kDownloadServiceStorageDir);
   scoped_refptr<base::SequencedTaskRunner> background_task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
-  auto entry_db = context->GetProtoDatabaseProvider()->GetDB<protodb::Entry>(
+  auto entry_db = profile->GetProtoDatabaseProvider()->GetDB<protodb::Entry>(
       leveldb_proto::ProtoDbType::DOWNLOAD_STORE,
       storage_dir.Append(kEntryDBStorageDir), background_task_runner);
   auto store = std::make_unique<download::DownloadStore>(std::move(entry_db));

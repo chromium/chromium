@@ -30,6 +30,12 @@ class VIZ_SERVICE_EXPORT OverdrawTracker {
     uint16_t interval_length_in_seconds = 1;
   };
 
+  static void EstimateAndRecordOverdrawAsUMAMetric(
+      const AggregatedFrame* frame);
+
+  // Estimates the overdraw of the `frame`.
+  static float EstimateOverdraw(const AggregatedFrame* frame);
+
   explicit OverdrawTracker(const Settings& settings);
 
   OverdrawTracker(const OverdrawTracker&) = delete;
@@ -37,8 +43,8 @@ class VIZ_SERVICE_EXPORT OverdrawTracker {
 
   ~OverdrawTracker();
 
-  // Estimates the overdraw of the `frame` seen at `timestamp`. The `timestamp`
-  // must be in future w.r.t `start_time`.
+  // Estimates and records the overdraw of the `frame` seen at `timestamp`. The
+  // `timestamp` must be in future w.r.t `start_time`.
   void EstimateAndRecordOverdraw(const AggregatedFrame* frame,
                                  base::TimeTicks timestamp);
 
@@ -53,11 +59,6 @@ class VIZ_SERVICE_EXPORT OverdrawTracker {
   base::TimeTicks start_time_for_testing() const { return start_time_; }
 
  private:
-  // Estimates overdraw by counting how many draw quads draw onto each grid
-  // cell. The grid covers the entire output_rect of `frame` and each grid cell
-  // has size of (grid_cell_length_in_pixels, grid_cell_length_in_pixels).
-  float EstimateOverdraw(const AggregatedFrame* frame);
-
   void Record(float overdraw, base::TimeTicks timestamp);
 
   size_t GetIntervalIndex(base::TimeTicks timestamp) const;

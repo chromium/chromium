@@ -2,13 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/vaapi/test/h265_vaapi_wrapper.h"
 
-#include "build/chromeos_buildflags.h"
+#include <va/va.h>
+
+#include "base/containers/span.h"
+#include "base/memory/scoped_refptr.h"
+#include "build/build_config.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/test/macros.h"
-
-#include <va/va.h>
 namespace media {
 
 namespace {
@@ -68,7 +75,7 @@ scoped_refptr<H265Picture> H265VaapiWrapper::CreateH265Picture(
 
   scoped_refptr<SharedVASurface> surface = SharedVASurface::Create(
       *va_device_, va_config_->va_rt_format(), size, attribute);
-  return base::WrapRefCounted(new vaapi_test::H265Picture(surface));
+  return base::MakeRefCounted<vaapi_test::H265Picture>(surface);
 }
 
 bool H265VaapiWrapper::IsChromaSamplingSupported(
@@ -440,10 +447,10 @@ bool H265VaapiWrapper::SubmitSlice(
   SHDR_TO_SP(five_minus_max_num_merge_cand);
 
   // TODO(jchinlee): Remove this guard once Chrome has libva uprev'd to 2.6.0.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   slice_param_.slice_data_num_emu_prevn_bytes =
       slice_hdr->header_emulation_prevention_bytes;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   last_slice_data_.assign(data, data + size);
   return true;
@@ -494,7 +501,7 @@ void H265VaapiWrapper::FillVAPicture(VAPictureHEVC* va_pic,
 
 void H265VaapiWrapper::FillVARefFramesFromRefList(
     const H265Picture::Vector& ref_pic_list,
-    VAPictureHEVC* va_pics) {
+    base::span<VAPictureHEVC> va_pics) {
   ref_pic_list_pocs_.clear();
   for (auto& it : ref_pic_list) {
     if (!it->IsUnused()) {

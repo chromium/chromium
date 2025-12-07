@@ -8,8 +8,10 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 
 /** Deals with multiple parts of browser UI code calls. */
+@NullMarked
 public class BrowserUiUtils {
     /**
      * ModuleTypeOnStartAndNTP defined in tools/metrics/histograms/enums.xml.
@@ -27,6 +29,10 @@ public class BrowserUiUtils {
         ModuleTypeOnStartAndNtp.DOODLE,
         ModuleTypeOnStartAndNtp.MENU_BUTTON,
         ModuleTypeOnStartAndNtp.MAGIC_STACK,
+        ModuleTypeOnStartAndNtp.COMPOSEPLATE_BUTTON,
+        ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_INCOGNITO_BUTTON,
+        ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_VOICE_SEARCH_BUTTON,
+        ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_LENS_BUTTON,
         ModuleTypeOnStartAndNtp.NUM_ENTRIES
     })
     public @interface ModuleTypeOnStartAndNtp {
@@ -40,9 +46,13 @@ public class BrowserUiUtils {
         int DOODLE = 7;
         int MENU_BUTTON = 8;
         int MAGIC_STACK = 9;
+        int COMPOSEPLATE_BUTTON = 10;
+        int COMPOSEPLATE_VIEW_INCOGNITO_BUTTON = 11;
+        int COMPOSEPLATE_VIEW_VOICE_SEARCH_BUTTON = 12;
+        int COMPOSEPLATE_VIEW_LENS_BUTTON = 13;
 
         // Be sure to also update enums.xml when updating these values.
-        int NUM_ENTRIES = 10;
+        int NUM_ENTRIES = 14;
     }
 
     private static final String TAG = "BrowserUiUtils";

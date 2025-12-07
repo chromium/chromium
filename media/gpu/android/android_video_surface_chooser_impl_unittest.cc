@@ -59,7 +59,6 @@ class MockClient {
 enum class ShouldUseOverlay { No, Yes };
 enum class ShouldBePowerEfficient { No, Yes, Ignored /* for clarity */ };
 // Inputs to the chooser.
-enum class AllowDynamic { No, Yes };
 enum class IsFullscreen { No, Yes };
 enum class IsRequired { No, Yes };
 enum class IsSecure { No, Yes };
@@ -75,7 +74,6 @@ enum class MiscFlags { None, Rotated, Persistent };
 
 using TestParams = std::tuple<ShouldUseOverlay,
                               ShouldBePowerEfficient,
-                              AllowDynamic,
                               IsRequired,
                               IsFullscreen,
                               IsSecure,
@@ -133,8 +131,7 @@ class AndroidVideoSurfaceChooserImplTest
 
   // Start the chooser, providing |factory| as the initial factory.
   void StartChooser(AndroidOverlayFactoryCB factory) {
-    chooser_ = std::make_unique<AndroidVideoSurfaceChooserImpl>(allow_dynamic_,
-                                                                &tick_clock_);
+    chooser_ = std::make_unique<AndroidVideoSurfaceChooserImpl>(&tick_clock_);
     chooser_->SetClientCallbacks(
         base::BindRepeating(&MockClient::UseOverlayImpl,
                             base::Unretained(&client_)),
@@ -210,9 +207,6 @@ class AndroidVideoSurfaceChooserImplTest
 
   std::unique_ptr<DestructionObserver> destruction_observer_;
 
-  // Will the chooser created by StartChooser() support dynamic surface changes?
-  bool allow_dynamic_ = true;
-
   base::SimpleTestTickClock tick_clock_;
 
   AndroidVideoSurfaceChooser::State chooser_state_;
@@ -281,7 +275,6 @@ TEST_F(AndroidVideoSurfaceChooserImplTest, NullLaterOverlayUsesTextureOwner) {
   // Start with TextureOwner.
   chooser_state_.is_fullscreen = true;
   EXPECT_CALL(client_, UseTextureOwner());
-  allow_dynamic_ = true;
   StartChooser(AndroidOverlayFactoryCB());
   testing::Mock::VerifyAndClearExpectations(&client_);
 
@@ -400,16 +393,15 @@ TEST_P(AndroidVideoSurfaceChooserImplTest, OverlayIsUsedOrNotBasedOnState) {
   const bool should_use_overlay = IsYes(ShouldUseOverlay, 0);
   const bool should_be_power_efficient = IsYes(ShouldBePowerEfficient, 1);
   const bool ignore_power_efficient = IsIgnored(ShouldBePowerEfficient, 1);
-  allow_dynamic_ = IsYes(AllowDynamic, 2);
-  chooser_state_.is_required = IsYes(IsRequired, 3);
-  chooser_state_.is_fullscreen = IsYes(IsFullscreen, 4);
-  chooser_state_.is_secure = IsYes(IsSecure, 5);
-  chooser_state_.is_compositor_promotable = IsYes(IsCCPromotable, 6);
-  chooser_state_.is_expecting_relayout = IsYes(IsExpectingRelayout, 7);
-  chooser_state_.promote_secure_only = IsYes(PromoteSecureOnly, 8);
+  chooser_state_.is_required = IsYes(IsRequired, 2);
+  chooser_state_.is_fullscreen = IsYes(IsFullscreen, 3);
+  chooser_state_.is_secure = IsYes(IsSecure, 4);
+  chooser_state_.is_compositor_promotable = IsYes(IsCCPromotable, 5);
+  chooser_state_.is_expecting_relayout = IsYes(IsExpectingRelayout, 6);
+  chooser_state_.promote_secure_only = IsYes(PromoteSecureOnly, 7);
   chooser_state_.video_rotation =
-      IsEqual(MiscFlags, 9, Rotated) ? VIDEO_ROTATION_90 : VIDEO_ROTATION_0;
-  chooser_state_.is_persistent_video = IsEqual(MiscFlags, 9, Persistent);
+      IsEqual(MiscFlags, 8, Rotated) ? VIDEO_ROTATION_90 : VIDEO_ROTATION_0;
+  chooser_state_.is_persistent_video = IsEqual(MiscFlags, 8, Persistent);
 
   MockAndroidOverlay* overlay = overlay_.get();
 
@@ -439,7 +431,6 @@ INSTANTIATE_TEST_SUITE_P(NoFullscreenUsesTextureOwner,
                          AndroidVideoSurfaceChooserImplTest,
                          Combine(Values(ShouldUseOverlay::No),
                                  Values(ShouldBePowerEfficient::Ignored),
-                                 Either(AllowDynamic),
                                  Values(IsRequired::No),
                                  Values(IsFullscreen::No),
                                  Values(IsSecure::No),
@@ -452,7 +443,6 @@ INSTANTIATE_TEST_SUITE_P(FullscreenUsesOverlay,
                          AndroidVideoSurfaceChooserImplTest,
                          Combine(Values(ShouldUseOverlay::Yes),
                                  Values(ShouldBePowerEfficient::Ignored),
-                                 Either(AllowDynamic),
                                  Either(IsRequired),
                                  Values(IsFullscreen::Yes),
                                  Values(IsSecure::No),
@@ -465,7 +455,6 @@ INSTANTIATE_TEST_SUITE_P(RequiredUsesOverlay,
                          AndroidVideoSurfaceChooserImplTest,
                          Combine(Values(ShouldUseOverlay::Yes),
                                  Values(ShouldBePowerEfficient::No),
-                                 Values(AllowDynamic::Yes),
                                  Values(IsRequired::Yes),
                                  Either(IsFullscreen),
                                  Either(IsSecure),
@@ -482,7 +471,6 @@ INSTANTIATE_TEST_SUITE_P(SecureUsesOverlayIfPromotable,
                          AndroidVideoSurfaceChooserImplTest,
                          Combine(Values(ShouldUseOverlay::Yes),
                                  Values(ShouldBePowerEfficient::No),
-                                 Either(AllowDynamic),
                                  Either(IsRequired),
                                  Either(IsFullscreen),
                                  Values(IsSecure::Yes),
@@ -500,7 +488,6 @@ INSTANTIATE_TEST_SUITE_P(NotCCPromotableNotRequiredUsesTextureOwner,
                          AndroidVideoSurfaceChooserImplTest,
                          Combine(Values(ShouldUseOverlay::No),
                                  Values(ShouldBePowerEfficient::No),
-                                 Values(AllowDynamic::Yes),
                                  Values(IsRequired::No),
                                  Either(IsFullscreen),
                                  Either(IsSecure),
@@ -515,7 +502,6 @@ INSTANTIATE_TEST_SUITE_P(InsecureExpectingRelayoutUsesTextureOwner,
                          AndroidVideoSurfaceChooserImplTest,
                          Combine(Values(ShouldUseOverlay::No),
                                  Values(ShouldBePowerEfficient::No),
-                                 Values(AllowDynamic::Yes),
                                  Values(IsRequired::No),
                                  Either(IsFullscreen),
                                  Either(IsSecure),
@@ -524,57 +510,11 @@ INSTANTIATE_TEST_SUITE_P(InsecureExpectingRelayoutUsesTextureOwner,
                                  Either(PromoteSecureOnly),
                                  AnyMisc));
 
-// "is_fullscreen" should be enough to trigger an overlay pre-M.
-INSTANTIATE_TEST_SUITE_P(NotDynamicInFullscreenUsesOverlay,
-                         AndroidVideoSurfaceChooserImplTest,
-                         Combine(Values(ShouldUseOverlay::Yes),
-                                 Values(ShouldBePowerEfficient::No),
-                                 Values(AllowDynamic::No),
-                                 Either(IsRequired),
-                                 Values(IsFullscreen::Yes),
-                                 Either(IsSecure),
-                                 Either(IsCCPromotable),
-                                 Either(IsExpectingRelayout),
-                                 Values(PromoteSecureOnly::No),
-                                 Values(MiscFlags::None,
-                                        MiscFlags::Persistent)));
-
-// "is_secure" should be enough to trigger an overlay pre-M.
-INSTANTIATE_TEST_SUITE_P(NotDynamicSecureUsesOverlay,
-                         AndroidVideoSurfaceChooserImplTest,
-                         Combine(Values(ShouldUseOverlay::Yes),
-                                 Values(ShouldBePowerEfficient::No),
-                                 Values(AllowDynamic::No),
-                                 Either(IsRequired),
-                                 Either(IsFullscreen),
-                                 Values(IsSecure::Yes),
-                                 Either(IsCCPromotable),
-                                 Either(IsExpectingRelayout),
-                                 Either(PromoteSecureOnly),
-                                 Values(MiscFlags::None,
-                                        MiscFlags::Persistent)));
-
-// "is_required" should be enough to trigger an overlay pre-M.
-INSTANTIATE_TEST_SUITE_P(NotDynamicRequiredUsesOverlay,
-                         AndroidVideoSurfaceChooserImplTest,
-                         Combine(Values(ShouldUseOverlay::Yes),
-                                 Values(ShouldBePowerEfficient::No),
-                                 Values(AllowDynamic::No),
-                                 Values(IsRequired::Yes),
-                                 Either(IsFullscreen),
-                                 Either(IsSecure),
-                                 Either(IsCCPromotable),
-                                 Either(IsExpectingRelayout),
-                                 Either(PromoteSecureOnly),
-                                 Values(MiscFlags::None,
-                                        MiscFlags::Persistent)));
-
 // Overlay should request power efficient by default.
 INSTANTIATE_TEST_SUITE_P(AggressiveOverlayIsPowerEfficient,
                          AndroidVideoSurfaceChooserImplTest,
                          Combine(Values(ShouldUseOverlay::Yes),
                                  Values(ShouldBePowerEfficient::Yes),
-                                 Values(AllowDynamic::Yes),
                                  Values(IsRequired::No),
                                  Values(IsFullscreen::No),
                                  Values(IsSecure::No),
@@ -588,7 +528,6 @@ INSTANTIATE_TEST_SUITE_P(IsVideoRotatedUsesTextureOwner,
                          AndroidVideoSurfaceChooserImplTest,
                          Combine(Values(ShouldUseOverlay::No),
                                  Either(ShouldBePowerEfficient),
-                                 Either(AllowDynamic),
                                  Either(IsRequired),
                                  Either(IsFullscreen),
                                  Either(IsSecure),
@@ -602,7 +541,6 @@ INSTANTIATE_TEST_SUITE_P(FullscreenPersistentVideoUsesSurfaceTexture,
                          AndroidVideoSurfaceChooserImplTest,
                          Combine(Values(ShouldUseOverlay::No),
                                  Values(ShouldBePowerEfficient::Ignored),
-                                 Values(AllowDynamic::Yes),
                                  Values(IsRequired::No),
                                  Values(IsFullscreen::Yes),
                                  Either(IsSecure),

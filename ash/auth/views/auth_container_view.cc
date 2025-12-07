@@ -5,11 +5,15 @@
 #include "ash/auth/views/auth_container_view.h"
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "ash/auth/views/auth_input_row_view.h"
 #include "ash/auth/views/auth_view_utils.h"
+#include "ash/auth/views/fingerprint_view.h"
 #include "ash/auth/views/pin_container_view.h"
+#include "ash/auth/views/pin_status_view.h"
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
@@ -22,7 +26,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "ui/accessibility/ax_node_data.h"
+#include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -32,6 +36,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view.h"
 
@@ -55,13 +60,13 @@ class PinObserverAdapter : public PinContainerView::Observer {
   PinObserverAdapter& operator=(const PinObserverAdapter&) = delete;
 
   // PinContainerView::Observer:
-  void OnSubmit(const std::u16string& text) override {
+  void OnSubmit(std::u16string_view text) override {
     auth_container_->PinSubmit(text);
   }
 
   void OnEscape() override { auth_container_->Escape(); }
 
-  void OnContentsChanged(const std::u16string& text) override {
+  void OnContentsChanged(std::u16string_view text) override {
     auth_container_->ContentsChanged();
   }
 
@@ -82,13 +87,13 @@ class PasswordObserverAdapter : public AuthInputRowView::Observer {
   PasswordObserverAdapter& operator=(const PasswordObserverAdapter&) = delete;
 
   // AuthInputRowView::Observer:
-  void OnSubmit(const std::u16string& text) override {
+  void OnSubmit(std::u16string_view text) override {
     auth_container_->PasswordSubmit(text);
   }
 
   void OnEscape() override { auth_container_->Escape(); }
 
-  void OnContentsChanged(const std::u16string& text) override {
+  void OnContentsChanged(std::u16string_view text) override {
     auth_container_->ContentsChanged();
   }
 
@@ -118,7 +123,15 @@ raw_ptr<views::Button> AuthContainerView::TestApi::GetSwitchButton() {
   return view_->switch_button_;
 }
 
-AuthInputType AuthContainerView::TestApi::GetCurrentInputType() {
+raw_ptr<PinStatusView> AuthContainerView::TestApi::GetPinStatusView() {
+  return view_->pin_status_;
+}
+
+raw_ptr<FingerprintView> AuthContainerView::TestApi::GetFingerprintView() {
+  return view_->fingerprint_view_;
+}
+
+std::optional<AuthInputType> AuthContainerView::TestApi::GetCurrentInputType() {
   return view_->current_input_type_;
 }
 
@@ -128,11 +141,9 @@ raw_ptr<AuthContainerView> AuthContainerView::TestApi::GetView() {
 
 AuthContainerView::AuthContainerView(AuthFactorSet auth_factors)
     : available_auth_factors_(auth_factors) {
-  CHECK(!auth_factors.empty());
-
-  CHECK(auth_factors.Has(AuthInputType::kPassword) ||
-        auth_factors.Has(AuthInputType::kPin));
-  if (!auth_factors.Has(AuthInputType::kPassword)) {
+  if (auth_factors.Has(AuthInputType::kPassword)) {
+    current_input_type_ = AuthInputType::kPassword;
+  } else if (auth_factors.Has(AuthInputType::kPin)) {
     current_input_type_ = AuthInputType::kPin;
   }
 
@@ -144,14 +155,18 @@ AuthContainerView::AuthContainerView(AuthFactorSet auth_factors)
       views::BoxLayout::CrossAxisAlignment::kCenter);
   layout_ = SetLayoutManager(std::move(layout));
 
-  // Add password input view and set visibility of the view.
+  // Add child views and adjust their visibility.
   AddPasswordView();
 
-  // Add pin container view and set visibility of the view.
   AddPinView();
 
-  // Add switch button and set visibility of the view.
   AddSwitchButton();
+
+  AddPinStatusView();
+
+  AddFingerprintView();
+
+  GetViewAccessibility().SetIsInvisible(true);
 }
 
 AuthContainerView::~AuthContainerView() {
@@ -162,13 +177,19 @@ AuthContainerView::~AuthContainerView() {
   password_view_->RemoveObserver(password_observer_.get());
   password_view_ = nullptr;
   password_observer_.reset();
+
+  pin_status_ = nullptr;
+
+  fingerprint_view_ = nullptr;
 }
 
 void AuthContainerView::AddPasswordView() {
   CHECK_EQ(password_view_, nullptr);
   password_view_ = AddChildView(std::make_unique<AuthInputRowView>(
       AuthInputRowView::AuthType::kPassword));
-  password_view_->SetVisible(current_input_type_ == AuthInputType::kPassword);
+  password_view_->SetVisible(current_input_type_.has_value() &&
+                             current_input_type_.value() ==
+                                 AuthInputType::kPassword);
 
   password_observer_ = std::make_unique<PasswordObserverAdapter>(this);
   password_view_->AddObserver(password_observer_.get());
@@ -177,7 +198,9 @@ void AuthContainerView::AddPasswordView() {
 void AuthContainerView::AddPinView() {
   CHECK_EQ(pin_container_, nullptr);
   pin_container_ = AddChildView(std::make_unique<PinContainerView>());
-  pin_container_->SetVisible(current_input_type_ == AuthInputType::kPin);
+  pin_container_->SetVisible(current_input_type_.has_value() &&
+                             current_input_type_.value() ==
+                                 AuthInputType::kPin);
 
   pin_observer_ = std::make_unique<PinObserverAdapter>(this);
   pin_container_->AddObserver(pin_observer_.get());
@@ -200,6 +223,20 @@ void AuthContainerView::AddSwitchButton() {
   switch_button_spacer_->SetVisible(switch_button_->GetVisible());
 }
 
+void AuthContainerView::AddPinStatusView() {
+  CHECK_EQ(pin_status_, nullptr);
+  pin_status_ = AddChildView(std::make_unique<PinStatusView>());
+  pin_status_->SetVisible(false);
+}
+
+void AuthContainerView::AddFingerprintView() {
+  CHECK_EQ(fingerprint_view_, nullptr);
+  fingerprint_view_ = AddChildView(std::make_unique<FingerprintView>());
+  if (available_auth_factors_.Has(AuthInputType::kFingerprint)) {
+    SetFingerprintState(FingerprintState::AVAILABLE_DEFAULT);
+  }
+}
+
 gfx::Size AuthContainerView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   int preferred_height = 0;
@@ -213,6 +250,15 @@ gfx::Size AuthContainerView::CalculatePreferredSize(
         password_view_->GetPreferredSize(available_size).height();
   }
 
+  if (pin_status_->GetVisible()) {
+    preferred_height += pin_status_->GetPreferredSize(available_size).height();
+  }
+
+  if (fingerprint_view_->GetVisible()) {
+    preferred_height +=
+        fingerprint_view_->GetPreferredSize(available_size).height();
+  }
+
   if (switch_button_->GetVisible()) {
     preferred_height +=
         switch_button_->GetPreferredSize(available_size).height();
@@ -223,18 +269,17 @@ gfx::Size AuthContainerView::CalculatePreferredSize(
   return gfx::Size(kAuthContainerViewWidthDp, preferred_height);
 }
 
-void AuthContainerView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->AddState(ax::mojom::State::kInvisible);
-}
-
 std::string AuthContainerView::GetObjectName() const {
   return "AuthContainerView";
 }
 
 void AuthContainerView::RequestFocus() {
-  if (current_input_type_ == AuthInputType::kPassword) {
+  if (!current_input_type_.has_value()) {
+    return;
+  }
+  if (current_input_type_.value() == AuthInputType::kPassword) {
     password_view_->RequestFocus();
-  } else if (current_input_type_ == AuthInputType::kPin) {
+  } else if (current_input_type_.value() == AuthInputType::kPin) {
     pin_container_->RequestFocus();
   }
 }
@@ -260,6 +305,9 @@ void AuthContainerView::SetHasPin(bool has_pin) {
   }
   available_auth_factors_.PutOrRemove(AuthInputType::kPin, has_pin);
 
+  CHECK(fingerprint_view_);
+  fingerprint_view_->SetHasPin(has_pin);
+
   UpdateAuthInput();
   UpdateSwitchButtonState();
   PreferredSizeChanged();
@@ -267,6 +315,36 @@ void AuthContainerView::SetHasPin(bool has_pin) {
 
 bool AuthContainerView::HasPin() const {
   return available_auth_factors_.Has(AuthInputType::kPin);
+}
+
+void AuthContainerView::SetPinStatus(
+    std::unique_ptr<cryptohome::PinStatus> pin_status) {
+  if (pin_status != nullptr) {
+    SetHasPin(!pin_status->IsLockedFactor());
+  }
+  pin_status_->SetPinStatus(std::move(pin_status));
+  PreferredSizeChanged();
+}
+
+std::u16string_view AuthContainerView::GetPinStatusMessage() const {
+  return pin_status_->GetCurrentText();
+}
+
+void AuthContainerView::SetFingerprintState(FingerprintState state) {
+  CHECK(fingerprint_view_);
+  fingerprint_view_->SetState(state);
+}
+
+void AuthContainerView::NotifyFingerprintAuthSuccess(
+    base::OnceCallback<void()> on_success_animation_finished) {
+  CHECK(fingerprint_view_);
+  fingerprint_view_->NotifyAuthSuccess(
+      std::move(on_success_animation_finished));
+}
+
+void AuthContainerView::NotifyFingerprintAuthFailure() {
+  CHECK(fingerprint_view_);
+  fingerprint_view_->NotifyAuthFailure();
 }
 
 void AuthContainerView::SetInputEnabled(bool enabled) {
@@ -277,47 +355,84 @@ void AuthContainerView::SetInputEnabled(bool enabled) {
 }
 
 void AuthContainerView::UpdateAuthInput() {
-  // If necessary change to the available factor
-  if (current_input_type_ == AuthInputType::kPassword && !HasPassword()) {
-    current_input_type_ = AuthInputType::kPin;
-  }
-  if (current_input_type_ == AuthInputType::kPin && !HasPin()) {
+  // If no input type is selected, default to password.
+  if (!current_input_type_.has_value()) {
     current_input_type_ = AuthInputType::kPassword;
   }
-  // Show the current_input_type_'s view.
-  if (current_input_type_ == AuthInputType::kPassword &&
-      !password_view_->GetVisible()) {
-    pin_container_->SetVisible(false);
-    password_view_->SetVisible(true);
-    password_view_->RequestFocus();
-  } else if (current_input_type_ == AuthInputType::kPin &&
-             !pin_container_->GetVisible()) {
-    password_view_->SetVisible(false);
-    pin_container_->SetVisible(true);
-    pin_container_->RequestFocus();
+
+  bool show_password = false;
+  bool show_pin = false;
+
+  // Ensure a valid input type is selected (password or PIN).
+  CHECK(current_input_type_.has_value());
+  CHECK(current_input_type_.value() == AuthInputType::kPassword ||
+        current_input_type_.value() == AuthInputType::kPin);
+
+  // Determine which authentication factor to display based on
+  // the preferred type (current_input_type_) and availability.
+  if (current_input_type_.value() == AuthInputType::kPassword) {
+    if (HasPassword()) {
+      show_password = true;
+    } else if (HasPin()) {
+      show_pin = true;
+      current_input_type_ = AuthInputType::kPin;
+    } else {
+      current_input_type_.reset();
+    }
+  } else if (current_input_type_.value() == AuthInputType::kPin) {
+    if (HasPin()) {
+      show_pin = true;
+    } else if (HasPassword()) {
+      show_password = true;
+      current_input_type_ = AuthInputType::kPassword;
+    } else {
+      current_input_type_.reset();
+    }
   }
-  PreferredSizeChanged();
+
+  CHECK(!show_pin || !show_password);
+
+  // Update UI only if there's a change in visibility.
+  bool has_change = false;
+  if (password_view_->GetVisible() != show_password) {
+    has_change = true;
+  }
+
+  if (pin_container_->GetVisible() != show_pin) {
+    has_change = true;
+  }
+
+  if (has_change) {
+    password_view_->SetVisible(show_password);
+    pin_container_->SetVisible(show_pin);
+    if (show_password) {
+      password_view_->RequestFocus();
+    } else if (show_pin) {
+      pin_container_->RequestFocus();
+    }
+    PreferredSizeChanged();
+  }
 }
 
 void AuthContainerView::UpdateSwitchButtonState() {
-  CHECK(HasPassword() || HasPin());
   switch_button_->SetVisible(HasPassword() && HasPin());
   switch_button_spacer_->SetVisible(switch_button_->GetVisible());
   if (HasPassword() && HasPin()) {
+    CHECK(current_input_type_.has_value());
     switch_button_->SetText(l10n_util::GetStringUTF16(
-        current_input_type_ == AuthInputType::kPassword
+        current_input_type_.value() == AuthInputType::kPassword
             ? (IDS_ASH_LOGIN_SWITCH_TO_PIN)
             : IDS_ASH_LOGIN_SWITCH_TO_PASSWORD));
   }
 }
 
-void AuthContainerView::PinSubmit(const std::u16string& pin) const {
+void AuthContainerView::PinSubmit(std::u16string_view pin) const {
   for (auto& observer : observers_) {
     observer.OnPinSubmit(pin);
   }
 }
 
-void AuthContainerView::PasswordSubmit(const std::u16string& password) const {
+void AuthContainerView::PasswordSubmit(std::u16string_view password) const {
   for (auto& observer : observers_) {
     observer.OnPasswordSubmit(password);
   }
@@ -337,7 +452,8 @@ void AuthContainerView::ContentsChanged() const {
 
 void AuthContainerView::ToggleCurrentAuthType() {
   CHECK(HasPassword() && HasPin());
-  if (current_input_type_ == AuthInputType::kPassword) {
+  CHECK(current_input_type_.has_value());
+  if (current_input_type_.value() == AuthInputType::kPassword) {
     current_input_type_ = AuthInputType::kPin;
   } else {
     current_input_type_ = AuthInputType::kPassword;

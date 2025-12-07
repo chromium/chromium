@@ -1,0 +1,136 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/web/public/js_messaging/optimize_ts.gni")
+
+optimize_ts("page_context_extractor_js") {
+  visibility = [ ":page_context_extractor_feature" ]
+  sources = [ "resources/page_context_extractor.ts" ]
+  deps = [ "//ios/web/public/js_messaging:gcrweb" ]
+}
+
+source_set("page_context_extractor_feature") {
+  sources = [
+    "page_context_extractor_java_script_feature.h",
+    "page_context_extractor_java_script_feature.mm",
+  ]
+  deps = [
+    ":page_context_extractor_js",
+    "//base",
+    "//ios/public/provider/chrome/browser/bwg:bwg_api",
+    "//ios/web/public/js_messaging",
+  ]
+}
+
+source_set("proto_wrappers") {
+  sources = [
+    "page_context_wrapper.h",
+    "page_context_wrapper.mm",
+    "page_context_wrapper_config.h",
+    "page_context_wrapper_config.mm",
+    "tab_organization_request_wrapper.h",
+    "tab_organization_request_wrapper.mm",
+  ]
+
+  deps = [
+    ":page_context_extractor_feature",
+    ":page_context_metrics",
+    "//base",
+    "//components/optimization_guide:optimization_guide_buildflags",
+    "//components/optimization_guide/core:page_content",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/snapshots/model",
+    "//ios/public/provider/chrome/browser/bwg:bwg_api",
+    "//ios/web/find_in_page",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+    "//url",
+  ]
+}
+
+source_set("ios_smart_tab_grouping_proto_wrapper") {
+  sources = [
+    "ios_smart_tab_grouping_request_wrapper.h",
+    "ios_smart_tab_grouping_request_wrapper.mm",
+  ]
+
+  deps = [
+    ":proto_wrappers",
+    "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto_gen",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/intelligence/persist_tab_context/model",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/web/public",
+  ]
+}
+
+source_set("page_context_metrics") {
+  sources = [
+    "page_context_wrapper_metrics.h",
+    "page_context_wrapper_metrics.mm",
+  ]
+  deps = [
+    ":metrics_constants",
+    "//base",
+  ]
+}
+
+source_set("utils") {
+  sources = [
+    "page_context_utils.h",
+    "page_context_utils.mm",
+  ]
+  deps = [
+    "//ios/web/public",
+    "//ios/web/util",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "page_context_extractor_java_script_feature_unittest.mm",
+    "page_context_utils_unittest.mm",
+    "page_context_wrapper_metrics_unittest.mm",
+    "page_context_wrapper_unittest.mm",
+  ]
+  deps = [
+    ":metrics_constants",
+    ":page_context_extractor_feature",
+    ":page_context_metrics",
+    ":proto_wrappers",
+    ":utils",
+    "//base/test:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/snapshots/model:model_swift",
+    "//ios/chrome/browser/snapshots/model:snapshot_source",
+    "//ios/chrome/browser/snapshots/model:test_utils",
+    "//ios/chrome/test:test_support",
+    "//ios/testing:embedded_test_server_support",
+    "//ios/web/find_in_page",
+    "//ios/web/js_messaging:java_script_feature_manager_header",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//ios/web/test/fakes",
+    "//net:test_support",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
+source_set("metrics_constants") {
+  sources = [
+    "metrics_constants.h",
+    "metrics_constants.mm",
+  ]
+}

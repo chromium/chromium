@@ -5,11 +5,16 @@
   <meta name="viewport"
       content="initial-scale=1, minimum-scale=1, width=device-width">
   <meta http-equiv="Content-Security-Policy"
-      content="require-trusted-types-for 'script'; trusted-types jstemplate;">
+      content="require-trusted-types-for 'script';">
   <title>$i18n{tabTitle}</title>
   <link rel="stylesheet" href="../../common/resources/interstitial_core.css">
   <link rel="stylesheet" href="interstitial_webview_quiet.css">
+<if expr="not optimize_webui">
   <script src="%ROOT_GEN_DIR%/components/security_interstitials/core/browser/resources/interstitial_webview_quiet/interstitial_webview_quiet.rollup.js"></script>
+</if>
+<if expr="optimize_webui">
+  <script src="%ROOT_GEN_DIR%/components/security_interstitials/core/browser/resources/minified/interstitial_webview_quiet/interstitial_webview_quiet.rollup.js"></script>
+</if>
 </head>
 <body id="body">
   <div class="interstitial-wrapper">

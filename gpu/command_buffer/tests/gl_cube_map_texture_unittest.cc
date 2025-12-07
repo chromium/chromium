@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <GLES2/gl2.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 
 #include "base/containers/heap_array.h"
@@ -20,11 +16,14 @@
 namespace gpu {
 
 namespace {
-const GLenum kCubeMapTextureTargets[] = {
-    GL_TEXTURE_CUBE_MAP_POSITIVE_X, GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
-    GL_TEXTURE_CUBE_MAP_POSITIVE_Y, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
-    GL_TEXTURE_CUBE_MAP_POSITIVE_Z, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
-};
+constexpr auto kCubeMapTextureTargets = std::to_array<GLenum>({
+    GL_TEXTURE_CUBE_MAP_POSITIVE_X,
+    GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
+    GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
+    GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
+    GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
+    GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
+});
 }  // namespace
 
 // A collection of tests that exercise the cube map texture.
@@ -64,7 +63,7 @@ class GLCubeMapTextureTest : public testing::TestWithParam<GLenum> {
   }
 
   GLManager gl_;
-  uint8_t pixels_[256 * 4];
+  std::array<uint8_t, 256 * 4> pixels_;
   const int width_ = 16;
   GLuint texture_;
   GLuint framebuffer_id_;
@@ -86,7 +85,7 @@ TEST_P(GLCubeMapTextureTest, TexImage2DAfterFBOBinding) {
   // force_cube_map_positive_x_allocation workaround prevents Nexus 5 crash.
   // TODO(dshwang): remove the workaround when it's fixed. crbug.com/518889
   glTexImage2D(cube_map_target, 0, GL_RGBA, width_, width_, 0, GL_RGBA,
-               GL_UNSIGNED_BYTE, pixels_);
+               GL_UNSIGNED_BYTE, pixels_.data());
   EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
 }
 
@@ -100,7 +99,7 @@ TEST_P(GLCubeMapTextureTest, DISABLED_ReadPixels) {
   // Make a cube texture complete
   for (unsigned i = 0; i < std::size(kCubeMapTextureTargets); i++) {
     glTexImage2D(kCubeMapTextureTargets[i], 0, GL_RGBA, width_, width_, 0,
-                 GL_RGBA, GL_UNSIGNED_BYTE, pixels_);
+                 GL_RGBA, GL_UNSIGNED_BYTE, pixels_.data());
     EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
   }
 
@@ -113,7 +112,7 @@ TEST_P(GLCubeMapTextureTest, DISABLED_ReadPixels) {
   EXPECT_EQ(static_cast<GLenum>(GL_FRAMEBUFFER_COMPLETE),
             glCheckFramebufferStatus(GL_FRAMEBUFFER));
 
-  GLTestHelper::CheckPixels(0, 0, width_, width_, 0, pixels_, nullptr);
+  GLTestHelper::CheckPixels(0, 0, width_, width_, 0, pixels_.data(), nullptr);
   EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
 }
 
@@ -125,7 +124,7 @@ TEST_P(GLCubeMapTextureTest, DISABLED_ReadPixelsFromIncompleteCubeTexture) {
   EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
 
   glTexImage2D(cube_map_target, 0, GL_RGBA, width_, width_, 0, GL_RGBA,
-               GL_UNSIGNED_BYTE, pixels_);
+               GL_UNSIGNED_BYTE, pixels_.data());
   EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
 
   glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_id_);

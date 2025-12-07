@@ -5,19 +5,20 @@
 import {
   POWER_SCALE_FACTOR,
   SAMPLE_RATE,
+  SAMPLES_PER_POWER_BAR,
   SAMPLES_PER_SLICE,
 } from './audio_constants.js';
 import {PlatformHandler} from './platform_handler.js';
-import {computed, effect, signal} from './reactive/signal.js';
+import {computed, signal} from './reactive/signal.js';
+import {LanguageCode} from './soda/language_info.js';
 import {SodaEventTransformer, Transcription} from './soda/soda.js';
 import {SodaSession} from './soda/types.js';
 import {
   assert,
-  assertExhaustive,
   assertExists,
-  assertNotReached,
 } from './utils/assert.js';
 import {AsyncJobInfo, AsyncJobQueue} from './utils/async_job_queue.js';
+import {InteriorMutableArray} from './utils/interior_mutable_array.js';
 import {Unsubscribe} from './utils/observer_list.js';
 import {clamp} from './utils/utils.js';
 
@@ -32,22 +33,35 @@ const AUDIO_MIME_TYPE = 'audio/webm;codecs=opus';
 
 const TIME_SLICE_MS = 100;
 
+// Logical group size for each aggregated power data point.
+// Note that in implementation we only take one slice from each group to avoid
+// calculation overhead.
+const POWER_GROUP_SIZE = Math.round(SAMPLES_PER_POWER_BAR / SAMPLES_PER_SLICE);
+
+// The number of samples to calculate one power slice.
+const SAMPLE_SIZE = 16;
+
 interface RecordingProgress {
   // Length in seconds.
   length: number;
   // All samples of the power. To conserve space while saving metadata with
   // JSON and since this is used for visualization only, the value will be
   // integer in range [0, 255], scaled from the original value of [0, 1].
-  powers: number[];
+  powers: InteriorMutableArray<number>;
   // Transcription of the ongoing recording. null if transcription is never
   // enabled throughout the recording.
   transcription: Transcription|null;
 }
 
-function getMicrophoneStream(micId: string): Promise<MediaStream> {
+function getMicrophoneStream(
+  micId: string,
+  echoCancellation: boolean,
+): Promise<MediaStream> {
   return navigator.mediaDevices.getUserMedia({
     audio: {
+      autoGainControl: {exact: false},
       deviceId: {exact: micId},
+      echoCancellation: {exact: echoCancellation},
     },
   });
 }
@@ -57,19 +71,25 @@ interface RecordingSessionConfig {
   micId: string;
   platformHandler: PlatformHandler;
   speakerLabelEnabled: boolean;
+  canCaptureSystemAudioWithLoopback: boolean;
 }
 
 let audioCtxGlobal: AudioContext|null = null;
 
 async function getAudioContext(): Promise<AudioContext> {
   if (audioCtxGlobal === null) {
-    audioCtxGlobal = new AudioContext({sampleRate: SAMPLE_RATE});
+    // Set null output device when recording.
+    audioCtxGlobal = new AudioContext({
+      sampleRate: SAMPLE_RATE,
+      sinkId: {type: 'none'},
+    });
     await audioCtxGlobal.audioWorklet.addModule('./static/audio_worklet.js');
   }
   return audioCtxGlobal;
 }
 
 interface SodaSessionInfo {
+  language: LanguageCode;
   session: SodaSession;
   startOffsetMs: number;
   unsubscribe: Unsubscribe;
@@ -87,7 +107,7 @@ export class RecordingSession {
 
   private readonly sodaEnableQueue = new AsyncJobQueue('keepLatest');
 
-  private readonly powers = signal<number[]>([]);
+  private readonly powers = signal(new InteriorMutableArray<number>([]));
 
   private readonly transcription = signal<Transcription|null>(null);
 
@@ -99,9 +119,21 @@ export class RecordingSession {
 
   private readonly combinedInputNode: MediaStreamAudioDestinationNode;
 
+  private micAudioSourceNode: MediaStreamAudioSourceNode|null = null;
+
+  private systemAudioSourceNode: MediaStreamAudioSourceNode|null = null;
+
+  private micMuted = false;
+
+  private everPausedInternal = false;
+
+  private everMutedInternal = false;
+
+  private powerCounts = 0;
+
   readonly progress = computed<RecordingProgress>(() => {
     const powers = this.powers.value;
-    const length = (powers.length * SAMPLES_PER_SLICE) / SAMPLE_RATE;
+    const length = powers.length * SAMPLES_PER_POWER_BAR / SAMPLE_RATE;
     return {
       length,
       powers,
@@ -110,12 +142,12 @@ export class RecordingSession {
   });
 
   private constructor(
-    private readonly platformHandler: PlatformHandler,
     private readonly audioCtx: AudioContext,
-    private readonly sourceStreams: MediaStream[],
-    speakerLabelEnabled: boolean,
+    private readonly config: RecordingSessionConfig,
   ) {
-    this.sodaEventTransformer = new SodaEventTransformer(speakerLabelEnabled);
+    this.sodaEventTransformer = new SodaEventTransformer(
+      config.speakerLabelEnabled,
+    );
     this.combinedInputNode = audioCtx.createMediaStreamDestination();
     this.audioProcessor = new AudioWorkletNode(audioCtx, 'audio-processor');
     this.mediaRecorder = new MediaRecorder(this.combinedInputNode.stream, {
@@ -132,23 +164,136 @@ export class RecordingSession {
     this.audioProcessor.port.addEventListener(
       'message',
       (ev: MessageEvent<Float32Array>) => {
+        this.powerCounts = (this.powerCounts + 1) % POWER_GROUP_SIZE;
         const samples = ev.data;
-        // Calculates the power of the slice. The value range is [0, 1].
-        const power = Math.sqrt(
-          samples.map((v) => v * v).reduce((x, y) => x + y, 0) / samples.length,
-        );
-        const scaledPower = clamp(
-          Math.floor(power * POWER_SCALE_FACTOR),
-          0,
-          POWER_SCALE_FACTOR - 1,
-        );
-        this.powers.mutate((d) => {
-          d.push(scaledPower);
-        });
+        if (this.powerCounts === 0) {
+          // Calculates the power of the slice. The value range is [0, 1].
+          const squaredSum = samples
+            .slice(0, SAMPLE_SIZE)
+            .map((v) => v * v)
+            .reduce((x, y) => x + y, 0);
+          const power = Math.sqrt(
+            squaredSum / SAMPLE_SIZE,
+          );
+          // Takes another `sqrt` to apply non-linear distortion, making small
+          // gain easier to be seen.
+          const scaledPower = clamp(
+            Math.floor(Math.sqrt(power) * POWER_SCALE_FACTOR),
+            0,
+            POWER_SCALE_FACTOR - 1,
+          );
+          this.powers.value = this.powers.value.push(scaledPower);
+        }
         this.currentSodaSession?.session.addAudio(samples);
         this.processedSamples += samples.length;
       },
     );
+  }
+
+  /**
+   * Sets the mute state of the mic stream.
+   *
+   * Note that this doesn't change the state of the system audio stream, as the
+   * mute button is intended to only mute the mic stream.
+   */
+  setMicMuted(muted: boolean): void {
+    this.micMuted = muted;
+    if (muted) {
+      this.everMutedInternal = true;
+    }
+    if (this.micAudioSourceNode !== null) {
+      for (const track of this.micAudioSourceNode.mediaStream.getTracks()) {
+        track.enabled = !muted;
+      }
+    }
+  }
+
+  setSpeakerLabelEnabled(enabled: boolean): void {
+    this.sodaEventTransformer.speakerLabelEnabled = enabled;
+  }
+
+  get everPaused(): boolean {
+    return this.everPausedInternal;
+  }
+
+  get everMuted(): boolean {
+    return this.everMutedInternal;
+  }
+
+  private connectSourceNode(node: MediaStreamAudioSourceNode) {
+    node.connect(this.combinedInputNode);
+    node.connect(this.audioProcessor);
+  }
+
+  private async initMicAudioSourceNode() {
+    if (this.micAudioSourceNode !== null) {
+      return;
+    }
+
+    // Turn on AEC when capturing system audio via getDisplayMedia.
+    const micStream = await getMicrophoneStream(
+      this.config.micId,
+      this.config.canCaptureSystemAudioWithLoopback,
+    );
+    this.micAudioSourceNode = this.audioCtx.createMediaStreamSource(micStream);
+    this.connectSourceNode(this.micAudioSourceNode);
+
+    // Set the mic muted setting again onto the new mic stream.
+    this.setMicMuted(this.micMuted);
+  }
+
+  private async initSystemAudioSourceNode() {
+    if (this.systemAudioSourceNode !== null) {
+      return;
+    }
+
+    if (!this.config.includeSystemAudio ||
+        !this.config.canCaptureSystemAudioWithLoopback) {
+      return;
+    }
+
+    const systemAudioStream =
+      await this.config.platformHandler.getSystemAudioMediaStream();
+    this.systemAudioSourceNode =
+      this.audioCtx.createMediaStreamSource(systemAudioStream);
+    this.connectSourceNode(this.systemAudioSourceNode);
+  }
+
+  private closeAudioSourceNode(node: MediaStreamAudioSourceNode) {
+    for (const track of node.mediaStream.getTracks()) {
+      track.stop();
+    }
+    node.disconnect();
+  }
+
+  private closeMicAudioSourceNode() {
+    if (this.micAudioSourceNode !== null) {
+      this.closeAudioSourceNode(this.micAudioSourceNode);
+      this.micAudioSourceNode = null;
+    }
+  }
+
+  private closeSystemAudioSourceNode() {
+    if (this.systemAudioSourceNode !== null) {
+      this.closeAudioSourceNode(this.systemAudioSourceNode);
+      this.systemAudioSourceNode = null;
+    }
+  }
+
+  async setPaused(paused: boolean): Promise<void> {
+    if (paused) {
+      await this.audioCtx.suspend();
+      // We still need to explicitly pause the media recorder, otherwise the
+      // exported webm will have wrong timestamps.
+      this.mediaRecorder.pause();
+      // Close the mic when paused, so the "mic in use" indicator would go away.
+      this.closeMicAudioSourceNode();
+      this.everPausedInternal = true;
+    } else {
+      await this.initMicAudioSourceNode();
+      this.mediaRecorder.resume();
+      await this.audioCtx.resume();
+    }
   }
 
   private onDataAvailable(event: BlobEvent): void {
@@ -161,64 +306,52 @@ export class RecordingSession {
     console.error(event);
   }
 
-  private async ensureSodaInstalled(): Promise<void> {
-    const sodaState = this.platformHandler.sodaState;
+  private async isSodaInstalled(
+    language: LanguageCode,
+  ): Promise<boolean> {
+    const {platformHandler} = this.config;
+    const sodaState = platformHandler.getSodaState(language);
     assert(
       sodaState.value.kind !== 'unavailable',
       `Trying to install SODA when it's unavailable`,
     );
-    if (sodaState.value.kind === 'installed') {
-      return;
-    }
-    this.platformHandler.installSoda();
-    await new Promise<void>((resolve, reject) => {
-      effect(({dispose}) => {
-        switch (sodaState.value.kind) {
-          case 'error':
-            dispose();
-            reject(new Error('Install SODA failed'));
-            break;
-          case 'installed':
-            dispose();
-            resolve();
-            break;
-          case 'notInstalled':
-          case 'installing':
-            break;
-          case 'unavailable':
-            return assertNotReached(
-              `Trying to install SODA when it's unavailable`,
-            );
-          default:
-            assertExhaustive(sodaState.value);
-        }
-      });
-    });
+    // Because there's no `OnSodaUninstalled` event, `installed` state may be
+    // outdated when other process removes the library. Wait for status update
+    // to avoid state inconsistency.
+    // TODO: b/375306309 - Remove "await" when soda states are always consistent
+    // after the `OnSodaUninstalled` event is implemented.
+    await platformHandler.installSoda(language);
+    return sodaState.value.kind === 'installed';
   }
 
-  startNewSodaSession(): AsyncJobInfo {
+  tryStartSodaSession(language: LanguageCode): AsyncJobInfo {
     return this.sodaEnableQueue.push(async () => {
+      if (!await this.isSodaInstalled(language)) {
+        return;
+      }
       if (this.currentSodaSession !== null) {
         return;
       }
       if (this.transcription.value === null) {
-        this.transcription.value = new Transcription([]);
+        this.transcription.value = new Transcription([], language);
       }
-      await this.ensureSodaInstalled();
       // Abort current running job if there's a new enable/disable request.
       if (this.sodaEnableQueue.hasPendingJob()) {
         return;
       }
 
-      const session = await this.platformHandler.newSodaSession();
+      const session =
+        await this.config.platformHandler.newSodaSession(language);
       const unsubscribe = session.subscribeEvent((ev) => {
         this.sodaEventTransformer.addEvent(
           ev,
           assertExists(this.currentSodaSession).startOffsetMs,
         );
-        this.transcription.value = this.sodaEventTransformer.getTranscription();
+        this.transcription.value =
+          this.sodaEventTransformer.getTranscription(language);
       });
       this.currentSodaSession = {
+        language,
         session,
         unsubscribe,
         startOffsetMs: (this.processedSamples / SAMPLE_RATE) * 1000,
@@ -234,6 +367,12 @@ export class RecordingSession {
       }
       await this.currentSodaSession.session.stop();
       this.currentSodaSession.unsubscribe();
+      // TODO: b/369277555 - Investigate why SODA does not convert all results
+      // to final.
+      this.sodaEventTransformer.finalizeTokens();
+      this.transcription.value = this.sodaEventTransformer.getTranscription(
+        this.currentSodaSession.language,
+      );
       this.currentSodaSession = null;
     });
   }
@@ -242,26 +381,31 @@ export class RecordingSession {
    * Starts the recording session.
    *
    * Note that each recording session is intended to only be started once.
-   * TODO(pihsun): Have function for pause/resume the recording.
    */
-  async start(transcriptionEnabled: boolean): Promise<void> {
-    if (transcriptionEnabled) {
-      // If the transcription is enabled from the beginning, await for the soda
-      // session to start to avoid having start of audio not transcribed.
-      // TODO(pihsun): Should this be happened asynchronously and have the
-      // audio buffered?
-      await this.startNewSodaSession().result;
+  async start(
+    transcriptionEnabled: boolean,
+    language: LanguageCode|null = null,
+  ): Promise<void> {
+    // Suspend the context while initializing the source nodes.
+    await this.audioCtx.suspend();
+
+    if (transcriptionEnabled && language !== null) {
+      // Do not wait for session start to avoid SODA failure hangs recording.
+      // TODO(hsuanling): Have the audio buffered and send to recognizer later?
+      this.tryStartSodaSession(language);
     }
+
+    await Promise.all([
+      this.initMicAudioSourceNode(),
+      this.initSystemAudioSourceNode(),
+    ]);
+
+    // Resume the context and start the recorder & audio processor after we've
+    // initialized all sources.
+    await this.audioCtx.resume();
+
     this.audioProcessor.port.start();
     this.mediaRecorder.start(TIME_SLICE_MS);
-
-    // Connect the input to the MediaRecorder and processor, to make sure both
-    // only starts after soda is initialized.
-    for (const stream of this.sourceStreams) {
-      const source = this.audioCtx.createMediaStreamSource(stream);
-      source.connect(this.combinedInputNode);
-      source.connect(this.audioProcessor);
-    }
   }
 
   async finish(): Promise<Blob> {
@@ -273,12 +417,8 @@ export class RecordingSession {
     await this.stopSodaSession().result;
     await stopped;
 
-    const streams = [this.combinedInputNode.stream, ...this.sourceStreams];
-    for (const stream of streams) {
-      for (const track of stream.getTracks()) {
-        track.stop();
-      }
-    }
+    this.closeMicAudioSourceNode();
+    this.closeSystemAudioSourceNode();
 
     return new Blob(this.dataChunks, {type: AUDIO_MIME_TYPE});
   }
@@ -286,21 +426,7 @@ export class RecordingSession {
   static async create(
     config: RecordingSessionConfig,
   ): Promise<RecordingSession> {
-    const requestingStreams = [getMicrophoneStream(config.micId)];
-    if (config.includeSystemAudio) {
-      requestingStreams.push(
-        config.platformHandler.getSystemAudioMediaStream(),
-      );
-    }
-    const streams = await Promise.all(requestingStreams);
-
     const audioCtx = await getAudioContext();
-
-    return new RecordingSession(
-      config.platformHandler,
-      audioCtx,
-      streams,
-      config.speakerLabelEnabled,
-    );
+    return new RecordingSession(audioCtx, config);
   }
 }

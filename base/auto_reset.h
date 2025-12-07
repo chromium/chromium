@@ -6,6 +6,8 @@
 #define BASE_AUTO_RESET_H_
 
 #include <utility>
+// Necessary per <utility>'s usage of `sizeof(std::intmax_t)` without IWYU.
+#include <stdint.h>
 
 #include "base/check_op.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -51,8 +53,9 @@ class [[maybe_unused, nodiscard]] AutoReset {
   }
 
   ~AutoReset() {
-    if (scoped_variable_)
+    if (scoped_variable_) {
       *scoped_variable_ = std::move(original_value_);
+    }
   }
 
  private:

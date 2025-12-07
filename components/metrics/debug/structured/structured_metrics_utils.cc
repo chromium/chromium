@@ -5,6 +5,7 @@
 #include "components/metrics/debug/structured/structured_metrics_utils.h"
 
 #include "base/i18n/number_formatting.h"
+#include "base/strings/string_number_conversions.h"
 #include "components/metrics/structured/structured_metrics_service.h"
 
 namespace metrics::structured {
@@ -12,13 +13,13 @@ namespace metrics::structured {
 base::Value GetStructuredMetricsSummary(StructuredMetricsService* service) {
   base::Value::Dict result = base::Value::Dict().Set("enabled", false);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   result.Set("crosDeviceId", "-");
 #endif
 
   if (service && service->recording_enabled()) {
     result.Set("enabled", true);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     auto id =
         service->recorder()->key_data_provider()->GetSecondaryId("CrOSEvents");
     if (id.has_value()) {

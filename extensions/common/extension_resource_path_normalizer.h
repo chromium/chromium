@@ -15,7 +15,7 @@
 bool NormalizeExtensionResourcePath(const base::FilePath& path,
                                     base::FilePath* result);
 
-// Applies |NormalizeExtensionResourcePath| for each resource path and adds it
+// Applies `NormalizeExtensionResourcePath` for each resource path and adds it
 // to result in the case of success.
 std::set<base::FilePath> NormalizeExtensionResourcePaths(
     const std::set<base::FilePath>& paths);

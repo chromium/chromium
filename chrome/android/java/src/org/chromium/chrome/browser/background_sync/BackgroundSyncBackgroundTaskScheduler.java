@@ -16,17 +16,23 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TimeUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskInfo;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
- * The {@link BackgroundSyncBackgroundTaskScheduler} singleton is responsible
- * for scheduling and cancelling background tasks to wake Chrome up so that
- * Background Sync events ready to be fired can be fired.
+ * The {@link BackgroundSyncBackgroundTaskScheduler} singleton is responsible for scheduling and
+ * cancelling background tasks to wake Chrome up so that Background Sync events ready to be fired
+ * can be fired.
  *
- * Thread model: This class is to be run on the UI thread only.
+ * <p>Thread model: This class is to be run on the UI thread only.
  */
+@NullMarked
 public class BackgroundSyncBackgroundTaskScheduler {
     /** An observer interface for BackgroundSyncBackgroundTaskScheduler. */
     interface Observer {
@@ -44,17 +50,15 @@ public class BackgroundSyncBackgroundTaskScheduler {
     public static final String TASK_TAG = "BackgroundSync Event";
 
     /**
-     * Denotes the one-off Background Sync Background Tasks scheduled through
-     * this class.
-     * ONE_SHOT_SYNC_CHROME_WAKE_UP is the task that processes one-shot
-     * Background Sync registrations.
-     * PERIODIC_SYNC_CHROME_WAKE_UP processes Periodic Background Sync
-     * registrations.
+     * Denotes the one-off Background Sync Background Tasks scheduled through this class.
+     * ONE_SHOT_SYNC_CHROME_WAKE_UP is the task that processes one-shot Background Sync
+     * registrations. PERIODIC_SYNC_CHROME_WAKE_UP processes Periodic Background Sync registrations.
      */
     @IntDef({
         BackgroundSyncTask.ONE_SHOT_SYNC_CHROME_WAKE_UP,
         BackgroundSyncTask.PERIODIC_SYNC_CHROME_WAKE_UP
     })
+    @Retention(RetentionPolicy.SOURCE)
     public @interface BackgroundSyncTask {
         int ONE_SHOT_SYNC_CHROME_WAKE_UP = 0;
         int PERIODIC_SYNC_CHROME_WAKE_UP = 1;
@@ -68,7 +72,7 @@ public class BackgroundSyncBackgroundTaskScheduler {
     // this task.
     public static final String SOONEST_EXPECTED_WAKETIME = "SoonestWakeupTime";
 
-    private static BackgroundSyncBackgroundTaskScheduler sInstance;
+    private static @Nullable BackgroundSyncBackgroundTaskScheduler sInstance;
 
     private final ObserverList<Observer> mObservers = new ObserverList<>();
 

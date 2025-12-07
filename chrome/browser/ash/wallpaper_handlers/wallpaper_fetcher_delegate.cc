@@ -9,6 +9,7 @@
 #include <string>
 
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/wallpaper_handlers/google_photos_wallpaper_handlers.h"
 #include "chrome/browser/ash/wallpaper_handlers/sea_pen_fetcher.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
 #include "chrome/browser/manta/manta_service_factory.h"
@@ -87,9 +88,8 @@ void WallpaperFetcherDelegateImpl::FetchGooglePhotosAccessToken(
   Profile* profile =
       ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
   auto fetcher = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-      "wallpaper_fetcher_delegate",
+      signin::OAuthConsumerId::kWallpaperFetcherDelegate,
       IdentityManagerFactory::GetForProfile(profile),
-      signin::ScopeSet({GaiaConstants::kPhotosModuleImageOAuth2Scope}),
       signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
       signin::ConsentLevel::kSignin);
   auto* fetcher_ptr = fetcher.get();

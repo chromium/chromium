@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INVALIDATION_SET_TO_SELECTOR_MAP_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INVALIDATION_SET_TO_SELECTOR_MAP_H_
 
-#include "third_party/blink/renderer/core/css/style_rule.h"
+#include "third_party/blink/renderer/core/css/active_style_sheets.h"
+#include "third_party/blink/renderer/core/inspector/style_rule_to_style_sheet_contents_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -16,29 +17,35 @@
 namespace blink {
 
 class InvalidationSet;
+class RuleFeatureSet;
+class StyleEngine;
 class StyleRule;
+class TreeScope;
 
 // Implements a back-mapping from InvalidationSet entries to the selectors that
 // placed them there, for use in diagnostic traces.
 // Only active while the appropriate tracing configuration is enabled.
-class InvalidationSetToSelectorMap final
+class CORE_EXPORT InvalidationSetToSelectorMap final
     : public GarbageCollected<InvalidationSetToSelectorMap> {
  public:
   // A small helper to bundle together a StyleRule plus an index into its
   // selector list.
-  class IndexedSelector final : public GarbageCollected<IndexedSelector> {
+  class CORE_EXPORT IndexedSelector final
+      : public GarbageCollected<IndexedSelector> {
    public:
     IndexedSelector(StyleRule* style_rule, unsigned selector_index);
     void Trace(Visitor*) const;
     StyleRule* GetStyleRule() const;
     unsigned GetSelectorIndex() const;
     String GetSelectorText() const;
+    const StyleSheetContents* GetStyleSheetContents() const;
 
    private:
+    friend struct HashTraits<InvalidationSetToSelectorMap::IndexedSelector>;
     Member<StyleRule> style_rule_;
     unsigned selector_index_;
   };
-  using IndexedSelectorList = HeapHashSet<Member<IndexedSelector>>;
+  using IndexedSelectorList = GCedHeapHashSet<Member<IndexedSelector>>;
 
   enum class SelectorFeatureType {
     kUnknown,
@@ -46,13 +53,32 @@ class InvalidationSetToSelectorMap final
     kId,
     kTagName,
     kAttribute,
+    kPart,
     kWholeSubtree
   };
 
   // Instantiates a new mapping if a diagnostic tracing session with the
   // appropriate configuration has started, or deletes an existing mapping if
   // tracing is no longer enabled.
-  CORE_EXPORT static void StartOrStopTrackingIfNeeded();
+  static void StartOrStopTrackingIfNeeded(const TreeScope& tree_scope,
+                                          const StyleEngine& style_engine);
+
+  // Returns true if a mapping is active and tracking invalidations.
+  // This is primarily intended for tests. Product code generally should not
+  // need to call this; the other static entry points will check this state and
+  // immediately return if tracking is not active.
+  static bool IsTracking();
+
+  // Call at the start and end of indexing rules within a StyleSheetContents.
+  static void BeginStyleSheetContents(const StyleSheetContents* contents);
+  static void EndStyleSheetContents();
+
+  // Helper object for a Begin/EndStylesheet pair.
+  class StyleSheetContentsScope {
+   public:
+    explicit StyleSheetContentsScope(const StyleSheetContents* contents);
+    ~StyleSheetContentsScope();
+  };
 
   // Call at the start and end of indexing features for a given selector.
   static void BeginSelector(StyleRule* style_rule, unsigned selector_index);
@@ -83,6 +109,11 @@ class InvalidationSetToSelectorMap final
     ~CombineScope();
   };
 
+  // Call when an invalidation set is no longer in use, for example when it is
+  // being destroyed.
+  static void RemoveEntriesForInvalidationSet(
+      const InvalidationSet* invalidation_set);
+
   // Given an invalidation set and a selector feature representing an entry in
   // that invalidation set, returns a list of selectors that contributed to that
   // entry existing in that invalidation set.
@@ -91,28 +122,84 @@ class InvalidationSetToSelectorMap final
       SelectorFeatureType type,
       const AtomicString& value);
 
+  // Given a StyleRule, attempt to look up the containing StyleSheetContents.
+  static const StyleSheetContents* LookupStyleSheetContentsForRule(
+      const StyleRule* style_rule);
+
   InvalidationSetToSelectorMap();
   void Trace(Visitor*) const;
 
  protected:
   friend class InvalidationSetToSelectorMapTest;
-  CORE_EXPORT static Persistent<InvalidationSetToSelectorMap>&
-  GetInstanceReference();
+  static Persistent<InvalidationSetToSelectorMap>& GetInstanceReference();
+
+  void RevisitActiveStyleSheets(
+      const ActiveStyleSheetVector& active_style_sheets,
+      const StyleEngine& style_engine);
+  void RevisitStylesheetOnce(const StyleEngine* style_engine,
+                             StyleSheetContents* contents,
+                             const RuleFeatureSet* features);
 
  private:
   // The back-map is stored in two levels: first from an invalidation set
   // pointer to a map of entries, then from each entry to a list of selectors.
   // We don't retain a strong pointer to the InvalidationSet because we don't
-  // need it for any purpose other than as a lookup key.
+  // need it for any purpose other than as a lookup key, and because extra refs
+  // on InvalidationSets may cause copy-on-writes that diverge from untraced
+  // execution.
   using InvalidationSetEntry = std::pair<SelectorFeatureType, AtomicString>;
   using InvalidationSetEntryMap =
-      HeapHashMap<InvalidationSetEntry, Member<IndexedSelectorList>>;
+      GCedHeapHashMap<InvalidationSetEntry, Member<IndexedSelectorList>>;
   using InvalidationSetMap =
-      HeapHashMap<const InvalidationSet*, Member<InvalidationSetEntryMap>>;
+      GCedHeapHashMap<const InvalidationSet*, Member<InvalidationSetEntryMap>>;
 
+  // Holds the back-map described above.
   Member<InvalidationSetMap> invalidation_set_map_;
+
+  // Holds the set of stylesheets that have been revisited for indexing into
+  // the back-map.
+  HeapHashSet<Member<const StyleSheetContents>> revisited_style_sheets_;
+
+  // Used during back-map construction.
+  // Holds the stylesheet currently being analyzed.
+  Member<const StyleSheetContents> current_style_sheet_contents_;
+
+  // Used during back-map construction.
+  // Holds the selector currently being analyzed.
   Member<IndexedSelector> current_selector_;
+
+  // Used during back-map construction.
+  // Tracks how deeply we've recursed on InvalidationSet::Combine() operations.
   unsigned combine_recursion_depth_ = 0;
+
+  // Holds a table for mapping rules back to sheets on behalf of inner class
+  // IndexedSelector.
+  Member<StyleRuleToStyleSheetContentsMap> style_rule_to_sheet_map_;
+};
+
+// These two HashTraits specializations are needed so that
+// HeapHashSet<Member<IndexedSelector>> will do value-wise comparisons instead
+// of pointer-wise comparisons.
+template <>
+struct HashTraits<InvalidationSetToSelectorMap::IndexedSelector>
+    : TwoFieldsHashTraits<
+          InvalidationSetToSelectorMap::IndexedSelector,
+          &InvalidationSetToSelectorMap::IndexedSelector::style_rule_,
+          &InvalidationSetToSelectorMap::IndexedSelector::selector_index_> {};
+
+template <>
+struct HashTraits<Member<InvalidationSetToSelectorMap::IndexedSelector>>
+    : MemberHashTraits<InvalidationSetToSelectorMap::IndexedSelector> {
+  using IndexedSelector = InvalidationSetToSelectorMap::IndexedSelector;
+  static unsigned GetHash(const Member<IndexedSelector>& key) {
+    return blink::GetHash(*key);
+  }
+  static bool Equal(const Member<IndexedSelector>& a,
+                    const Member<IndexedSelector>& b) {
+    return HashTraits<IndexedSelector>::Equal(*a, *b);
+  }
+
+  static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
 };
 
 }  // namespace blink

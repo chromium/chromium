@@ -7,40 +7,42 @@ package org.chromium.chrome.browser.hub;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.ChromeColors;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/** Wrapper around {@link ScrimCoordinator} to inject into {@link HubLayout}. */
+import java.util.function.Supplier;
+
+/** Wrapper around {@link ScrimManager} to inject into {@link HubLayout}. */
+@NullMarked
 public class HubLayoutScrimController implements ScrimController {
     // From TabSwitcherLayout.java.
     private static final int SCRIM_FADE_DURATION_MS = 350;
 
-    private final @NonNull ScrimCoordinator mScrimCoordinator;
-    private final @NonNull Supplier<View> mAnchorViewSupplier;
-    private final @NonNull ObservableSupplier<Boolean> mIsIncognitoSupplier;
-    private final @NonNull Callback<Boolean> mOnIncognitoChange = this::onIncognitoChange;
+    private final ScrimManager mScrimManager;
+    private final Supplier<View> mAnchorViewSupplier;
+    private final NonNullObservableSupplier<Boolean> mIsIncognitoSupplier;
+    private final Callback<Boolean> mOnIncognitoChange = this::onIncognitoChange;
 
     private @Nullable PropertyModel mPropertyModel;
 
     /**
-     * @param scrimCoordinator The {@link ScrimCoordinator} to use.
+     * @param scrimManager The {@link ScrimManager} to use.
      * @param anchorViewSupplier The supplier for a {@link View} to anchor the scrim to. This must
      *     not return null if a scrim is going to be shown.
      * @param isIncognitoSupplier For checking and observing if the current UI is incognito.
      */
     public HubLayoutScrimController(
-            @NonNull ScrimCoordinator scrimCoordinator,
-            @NonNull Supplier<View> anchorViewSupplier,
-            @NonNull ObservableSupplier<Boolean> isIncognitoSupplier) {
-        mScrimCoordinator = scrimCoordinator;
+            ScrimManager scrimManager,
+            Supplier<View> anchorViewSupplier,
+            NonNullObservableSupplier<Boolean> isIncognitoSupplier) {
+        mScrimManager = scrimManager;
         mAnchorViewSupplier = anchorViewSupplier;
         mIsIncognitoSupplier = isIncognitoSupplier;
     }
@@ -53,31 +55,37 @@ public class HubLayoutScrimController implements ScrimController {
         PropertyModel.Builder scrimPropertiesBuilder =
                 new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
                         .with(ScrimProperties.ANCHOR_VIEW, anchorView)
-                        .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, false)
                         .with(ScrimProperties.AFFECTS_STATUS_BAR, true)
                         .with(ScrimProperties.BACKGROUND_COLOR, calculateScrimColor());
 
         mPropertyModel = scrimPropertiesBuilder.build();
+        assert mPropertyModel != null;
         mIsIncognitoSupplier.addObserver(mOnIncognitoChange);
-        mScrimCoordinator.showScrim(mPropertyModel);
+        mScrimManager.showScrim(mPropertyModel);
     }
 
     @Override
     public void startHidingScrim() {
-        if (!mScrimCoordinator.isShowingScrim()) return;
+        if (!mScrimManager.isShowingScrim()) return;
 
-        mPropertyModel = null;
         mIsIncognitoSupplier.removeObserver(mOnIncognitoChange);
-        mScrimCoordinator.hideScrim(true, SCRIM_FADE_DURATION_MS);
+        if (mPropertyModel != null) {
+            mScrimManager.hideScrim(mPropertyModel, /* animate= */ true, SCRIM_FADE_DURATION_MS);
+            mPropertyModel = null;
+        }
     }
 
     /** Forces the current animation to finish. */
     public void forceAnimationToFinish() {
-        mScrimCoordinator.forceAnimationToFinish();
+        if (mPropertyModel == null) return;
+
+        mScrimManager.forceAnimationToFinish(mPropertyModel);
     }
 
     private void onIncognitoChange(Boolean ignored) {
-        mPropertyModel.set(ScrimProperties.BACKGROUND_COLOR, calculateScrimColor());
+        if (mPropertyModel == null) return;
+
+        mScrimManager.setScrimColor(calculateScrimColor(), mPropertyModel);
     }
 
     private @ColorInt int calculateScrimColor() {

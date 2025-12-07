@@ -16,10 +16,16 @@
               "builder_group": "chromium.gpu.fyi",
               "execution_mode": "TEST",
               "legacy_android_config": {
-                "config": "main_builder_rel_mb"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
-                "config": "android",
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "main_builder",
+                "target_arch": "arm",
+                "target_bits": 32,
                 "target_platform": "android"
               },
               "legacy_gclient_config": {
@@ -46,10 +52,16 @@
               "builder_group": "chromium.gpu.fyi",
               "execution_mode": "TEST",
               "legacy_android_config": {
-                "config": "main_builder_rel_mb"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
-                "config": "android",
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "main_builder",
+                "target_arch": "arm",
+                "target_bits": 32,
                 "target_platform": "android"
               },
               "legacy_gclient_config": {
@@ -75,10 +87,16 @@
               "builder_group": "chromium.gpu.fyi",
               "execution_mode": "TEST",
               "legacy_android_config": {
-                "config": "main_builder_rel_mb"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
-                "config": "android",
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "main_builder",
+                "target_arch": "arm",
+                "target_bits": 32,
                 "target_platform": "android"
               },
               "legacy_gclient_config": {
@@ -104,10 +122,16 @@
               "builder_group": "chromium.gpu.fyi",
               "execution_mode": "TEST",
               "legacy_android_config": {
-                "config": "main_builder_rel_mb"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
-                "config": "android",
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "main_builder",
+                "target_arch": "arm",
+                "target_bits": 32,
                 "target_platform": "android"
               },
               "legacy_gclient_config": {
@@ -134,10 +158,16 @@
               "builder_group": "chromium.gpu.fyi",
               "execution_mode": "TEST",
               "legacy_android_config": {
-                "config": "main_builder_rel_mb"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
-                "config": "android",
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "main_builder",
+                "target_arch": "arm",
+                "target_bits": 32,
                 "target_platform": "android"
               },
               "legacy_gclient_config": {
@@ -164,10 +194,16 @@
               "builder_group": "chromium.gpu.fyi",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {
-                "config": "main_builder_rel_mb"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
-                "config": "android",
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "main_builder",
+                "target_arch": "arm",
+                "target_bits": 32,
                 "target_platform": "android"
               },
               "legacy_gclient_config": {
@@ -216,32 +252,38 @@
       ],
       "mirroring_builder_group_and_names": [
         {
+          "builder": "gpu-fyi-try-android-a13-32",
+          "group": "tryserver.chromium.android"
+        },
+        {
+          "builder": "gpu-fyi-try-android-a23-32",
+          "group": "tryserver.chromium.android"
+        },
+        {
           "builder": "gpu-fyi-try-android-nvidia-shield-tv",
           "group": "tryserver.chromium.android"
         },
         {
-          "builder": "gpu-fyi-try-android-p-pixel-2-32",
+          "builder": "gpu-fyi-try-android-q-pixel-2-32",
           "group": "tryserver.chromium.android"
         },
         {
           "builder": "gpu-fyi-try-android-r-pixel-4-32",
           "group": "tryserver.chromium.android"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/GPU FYI Android arm Builder/targets"
     }
-  },
-  "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "metrics_project": "chromium-reclient-metrics",
-    "scandeps_server": true
   },
   "$build/siso": {
     "configs": [
       "builder"
     ],
+    "enable_cloud_monitoring": true,
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
+    "metrics_project": "chromium-reclient-metrics",
     "project": "rbe-chromium-trusted",
     "remote_jobs": 500
   },

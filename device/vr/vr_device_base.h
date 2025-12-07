@@ -6,13 +6,11 @@
 #define DEVICE_VR_VR_DEVICE_BASE_H_
 
 #include "base/component_export.h"
-#include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/public/mojom/xr_device.mojom.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
-#include "device/vr/vr_device.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

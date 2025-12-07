@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_source.h"
 
@@ -19,7 +20,7 @@ template <typename AXSourceNode>
 class AXTreeSourceChecker {
  public:
   explicit AXTreeSourceChecker(
-      AXTreeSource<AXSourceNode, ui::AXTreeData*, ui::AXNodeData>* tree);
+      AXTreeSource<AXSourceNode, AXTreeData*, AXNodeData>* tree);
 
   AXTreeSourceChecker(const AXTreeSourceChecker&) = delete;
   AXTreeSourceChecker& operator=(const AXTreeSourceChecker&) = delete;
@@ -35,14 +36,14 @@ class AXTreeSourceChecker {
   bool Check(AXSourceNode node, std::string indent, std::string* output);
   std::string NodeToString(AXSourceNode node);
 
-  raw_ptr<AXTreeSource<AXSourceNode, ui::AXTreeData*, ui::AXNodeData>> tree_;
+  raw_ptr<AXTreeSource<AXSourceNode, AXTreeData*, AXNodeData>> tree_;
 
   std::map<AXNodeID, AXNodeID> node_id_to_parent_id_map_;
 };
 
 template <typename AXSourceNode>
 AXTreeSourceChecker<AXSourceNode>::AXTreeSourceChecker(
-    AXTreeSource<AXSourceNode, ui::AXTreeData*, ui::AXNodeData>* tree)
+    AXTreeSource<AXSourceNode, AXTreeData*, AXNodeData>* tree)
     : tree_(tree) {}
 
 template <typename AXSourceNode>

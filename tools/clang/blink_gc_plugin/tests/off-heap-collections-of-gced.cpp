@@ -19,6 +19,7 @@ class WithCollections : public GarbageCollected<WithCollections> {
     (void)vector_pair_;
     (void)ignored_set_;
     (void)array_;
+    (void)array_of_vectors_;
 
     v->Trace(heap_hash_set_);
     v->Trace(heap_deque_);
@@ -48,15 +49,16 @@ class WithCollections : public GarbageCollected<WithCollections> {
   std::map<const Mixin, int> map_const_;
   std::vector<std::pair<Base, int>> vector_pair_;
   std::array<Base, 4> array_;
+  std::array<HeapVector<Base>, 4> array_of_vectors_;
 
   // Bad WTF collections:
-  WTF::HashSet<Base> wtf_hash_set_;
-  WTF::Deque<Derived> wtf_deque_;
-  WTF::Vector<Mixin> wtf_vector_;
-  WTF::LinkedHashSet<Base*> wtf_linked_hash_set_;
-  WTF::HashCountedSet<Derived&> wtf_hash_counted_set_;
-  WTF::HashMap<Mixin, bool> wtf_hash_map_key_;
-  WTF::HashMap<double, const Base> wtf_hash_map_value_;
+  HashSet<Base> wtf_hash_set_;
+  Deque<Derived> wtf_deque_;
+  Vector<Mixin> wtf_vector_;
+  LinkedHashSet<Base*> wtf_linked_hash_set_;
+  HashCountedSet<Derived&> wtf_hash_counted_set_;
+  HashMap<Mixin, bool> wtf_hash_map_key_;
+  HashMap<double, const Base> wtf_hash_map_value_;
 
   // Good collections:
   blink::HeapHashSet<Base> heap_hash_set_;
@@ -75,10 +77,14 @@ class StackAllocated {
   STACK_ALLOCATED();
 
  public:
-  StackAllocated() { (void)array_; }
+  StackAllocated() {
+    (void)array_;
+    (void)array_of_vectors_;
+  }
 
  private:
   std::array<Base, 4> array_;
+  std::array<HeapVector<Base>, 4> array_of_vectors_;
 };
 
 void DisallowedUseOfCollections() {
@@ -101,13 +107,13 @@ void DisallowedUseOfCollections() {
   (void)vector_pair;
 
   // Bad WTF collections:
-  WTF::HashSet<Base> wtf_hash_set;
-  WTF::Deque<Derived> wtf_deque;
-  WTF::Vector<Mixin> wtf_vector;
-  WTF::LinkedHashSet<Base*> wtf_linked_hash_set;
-  WTF::HashCountedSet<Derived&> wtf_hash_counted_set;
-  WTF::HashMap<Mixin, bool> wtf_hash_map_key;
-  WTF::HashMap<double, const Base> wtf_hash_map_value;
+  HashSet<Base> wtf_hash_set;
+  Deque<Derived> wtf_deque;
+  Vector<Mixin> wtf_vector;
+  LinkedHashSet<Base*> wtf_linked_hash_set;
+  HashCountedSet<Derived&> wtf_hash_counted_set;
+  HashMap<Mixin, bool> wtf_hash_map_key;
+  HashMap<double, const Base> wtf_hash_map_value;
 
   // Good collections:
   blink::HeapHashSet<Base> heap_hash_set;
@@ -120,6 +126,8 @@ void DisallowedUseOfCollections() {
 
   std::array<Base, 4> array;
   (void)array;
+  std::array<HeapVector<Base>, 4> array_of_vectors;
+  (void)array_of_vectors;
 
   GC_PLUGIN_IGNORE("For testing")
   std::set<Base> ignored_set;

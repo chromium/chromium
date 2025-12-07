@@ -17,6 +17,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.stringContainsInOrder;
 
 import android.app.Activity;
+import android.content.Context;
 
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
@@ -33,6 +34,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.components.browser_ui.settings.ManagedPreferenceTestDelegates.TestManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.test.R;
 
 /** Tests of {@link ChromeSwitchPreference}. */
@@ -50,6 +52,18 @@ public class ChromeSwitchPreferenceTest {
 
     private Activity mActivity;
     private PreferenceScreen mPreferenceScreen;
+
+    /** Test-only subclass of {@link ChromeSwitchPreference} to expose notifyChanged(). */
+    private static class TestChromeSwitchPreference extends ChromeSwitchPreference {
+        public TestChromeSwitchPreference(Context context) {
+            super(context);
+        }
+
+        @Override
+        public void notifyChanged() {
+            super.notifyChanged();
+        }
+    }
 
     @Before
     public void setUp() {
@@ -141,7 +155,7 @@ public class ChromeSwitchPreferenceTest {
         onView(withId(android.R.id.title)).check(matches(allOf(withText(TITLE), isDisplayed())));
         onView(withId(android.R.id.summary))
                 .check(matches(allOf(withText(R.string.managed_by_your_parent), isDisplayed())));
-        onView(withId(R.id.managed_disclaimer_text)).check(doesNotExist());
+        onView(withId(R.id.managed_disclaimer_text)).check(matches(not(isDisplayed())));
         onView(withId(android.R.id.icon)).check(matches(isDisplayed()));
         onView(withId(R.id.switchWidget)).check(matches(allOf(not(isEnabled()), isDisplayed())));
     }
@@ -160,9 +174,119 @@ public class ChromeSwitchPreferenceTest {
         onView(withId(android.R.id.title)).check(matches(allOf(withText(TITLE), isDisplayed())));
         onView(withId(android.R.id.summary))
                 .check(matches(allOf(withText(R.string.managed_by_your_parents), isDisplayed())));
-        onView(withId(R.id.managed_disclaimer_text)).check(doesNotExist());
+        onView(withId(R.id.managed_disclaimer_text)).check(matches(not(isDisplayed())));
         onView(withId(android.R.id.icon)).check(matches(isDisplayed()));
         onView(withId(R.id.switchWidget)).check(matches(allOf(not(isEnabled()), isDisplayed())));
+    }
+
+    @Test
+    @LargeTest
+    public void testRecommended_startsFollowingAndToggles() {
+        final TestChromeSwitchPreference preference = new TestChromeSwitchPreference(mActivity);
+        preference.setTitle(TITLE);
+        preference.setSummary(SUMMARY);
+        final TestManagedPreferenceDelegate delegate = new TestManagedPreferenceDelegate();
+
+        delegate.setIsRecommendation(true);
+        preference.setManagedPreferenceDelegate(delegate);
+        mPreferenceScreen.addPreference(preference);
+
+        // 1. Verify initial "following" state.
+        Assert.assertTrue(preference.isEnabled());
+        onView(withId(android.R.id.title)).check(matches(allOf(withText(TITLE), isDisplayed())));
+        onView(withId(android.R.id.summary))
+                .check(matches(allOf(withText(SUMMARY), isDisplayed())));
+        onView(withId(R.id.managed_disclaimer_text))
+                .check(
+                        matches(
+                                allOf(
+                                        withText(R.string.recommended_by_your_organization),
+                                        Matchers.hasDrawableStart(),
+                                        isDisplayed())));
+        onView(withId(android.R.id.icon)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.switchWidget)).check(matches(isEnabled()));
+
+        // 2. Simulate user overriding the recommendation.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    delegate.setIsRecommendation(false);
+                    preference.notifyChanged();
+                });
+
+        // Verify "overridden" state.
+        onView(withId(R.id.managed_disclaimer_text)).check(matches(not(isDisplayed())));
+        onView(withId(android.R.id.icon)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.switchWidget)).check(matches(isEnabled()));
+
+        // 3. Simulate user changing back to follow the recommendation.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    delegate.setIsRecommendation(true);
+                    preference.notifyChanged();
+                });
+
+        // Verify "following" state again.
+        onView(withId(R.id.managed_disclaimer_text))
+                .check(
+                        matches(
+                                allOf(
+                                        withText(R.string.recommended_by_your_organization),
+                                        Matchers.hasDrawableStart(),
+                                        isDisplayed())));
+        onView(withId(android.R.id.icon)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.switchWidget)).check(matches(isEnabled()));
+    }
+
+    @Test
+    @LargeTest
+    public void testRecommended_startsOverriddenAndToggles() {
+        final TestChromeSwitchPreference preference = new TestChromeSwitchPreference(mActivity);
+        preference.setTitle(TITLE);
+        preference.setSummary(SUMMARY);
+        final TestManagedPreferenceDelegate delegate = new TestManagedPreferenceDelegate();
+
+        delegate.setIsRecommendation(false);
+        preference.setManagedPreferenceDelegate(delegate);
+        mPreferenceScreen.addPreference(preference);
+
+        // 1. Verify initial "overridden" state.
+        Assert.assertTrue(preference.isEnabled());
+        onView(withId(android.R.id.title)).check(matches(allOf(withText(TITLE), isDisplayed())));
+        onView(withId(android.R.id.summary))
+                .check(matches(allOf(withText(SUMMARY), isDisplayed())));
+        onView(withId(R.id.managed_disclaimer_text)).check(matches(not(isDisplayed())));
+        onView(withId(android.R.id.icon)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.switchWidget)).check(matches(isEnabled()));
+
+        // 2. Simulate user aligning with the recommendation.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    delegate.setIsRecommendation(true);
+                    preference.notifyChanged();
+                });
+
+        // 3. Verify "following" state.
+        onView(withId(R.id.managed_disclaimer_text))
+                .check(
+                        matches(
+                                allOf(
+                                        withText(R.string.recommended_by_your_organization),
+                                        Matchers.hasDrawableStart(),
+                                        isDisplayed())));
+        onView(withId(android.R.id.icon)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.switchWidget)).check(matches(isEnabled()));
+
+        // 4. Simulate user overriding the recommendation again.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    delegate.setIsRecommendation(false);
+                    preference.notifyChanged();
+                });
+
+        // 5. Verify "overridden" state again.
+        onView(withId(R.id.managed_disclaimer_text)).check(matches(not(isDisplayed())));
+        onView(withId(android.R.id.icon)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.switchWidget)).check(matches(isEnabled()));
     }
 
     @Test

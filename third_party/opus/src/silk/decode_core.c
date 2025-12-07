@@ -58,7 +58,13 @@ void silk_decode_core(
     ALLOC( sLTP, psDec->ltp_mem_length, opus_int16 );
     ALLOC( sLTP_Q15, psDec->ltp_mem_length + psDec->frame_length, opus_int32 );
     ALLOC( res_Q14, psDec->subfr_length, opus_int32 );
+    /* Work around a clang bug (verified with clang 6.0 through clang 20.1.0) that causes the last
+       memset to be flagged as an invalid read by valgrind (not caught by asan). */
+#if defined(__clang__) && defined(VAR_ARRAYS)
+    ALLOC( sLPC_Q14, MAX_SUB_FRAME_LENGTH + MAX_LPC_ORDER, opus_int32 );
+#else
     ALLOC( sLPC_Q14, psDec->subfr_length + MAX_LPC_ORDER, opus_int32 );
+#endif
 
     offset_Q10 = silk_Quantization_Offsets_Q10[ psDec->indices.signalType >> 1 ][ psDec->indices.quantOffsetType ];
 

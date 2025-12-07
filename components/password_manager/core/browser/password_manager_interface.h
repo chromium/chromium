@@ -23,6 +23,10 @@
 #include "components/password_manager/core/browser/password_form_cache.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 
+namespace autofill {
+struct AutofillServerPrediction;
+}
+
 namespace password_manager {
 
 class PasswordManagerClient;
@@ -42,7 +46,7 @@ class PasswordManagerInterface : public FormSubmissionObserver {
 
   // Returns form cache containing information about parsed password forms on
   // the web page.
-  virtual const PasswordFormCache* GetPasswordFormCache() const = 0;
+  virtual PasswordFormCache* GetPasswordFormCache() = 0;
 
   // Returns true if password element is detected on the current page.
   virtual bool IsPasswordFieldDetectedOnPage() const = 0;
@@ -129,7 +133,14 @@ class PasswordManagerInterface : public FormSubmissionObserver {
       PasswordManagerDriver* driver,
       const autofill::FormData& form,
       const base::flat_map<autofill::FieldGlobalId,
-                           autofill::AutofillType::ServerPrediction>&
+                           autofill::AutofillServerPrediction>&
+          field_predictions) = 0;
+
+  // Processes the classification model predictions received via Autofill.
+  virtual void ProcessClassificationModelPredictions(
+      PasswordManagerDriver* driver,
+      const autofill::FormData& form,
+      const base::flat_map<autofill::FieldGlobalId, autofill::FieldType>&
           field_predictions) = 0;
 
   // Getter for the PasswordManagerClient.
@@ -170,6 +181,7 @@ class PasswordManagerInterface : public FormSubmissionObserver {
   // than in Blink.
   virtual void UpdateStateOnUserInput(
       PasswordManagerDriver* driver,
+      const autofill::FieldDataManager& field_data_manager,
       std::optional<autofill::FormRendererId> form_id,
       autofill::FieldRendererId field_id,
       const std::u16string& field_value) = 0;
@@ -202,6 +214,9 @@ class PasswordManagerInterface : public FormSubmissionObserver {
       const autofill::FieldDataManager& field_data_manager,
       const PasswordManagerDriver* driver) = 0;
 #endif
+
+  // Returns true if a form manager is processing a password update.
+  virtual bool IsFormManagerPendingPasswordUpdate() const = 0;
 };
 
 }  // namespace password_manager

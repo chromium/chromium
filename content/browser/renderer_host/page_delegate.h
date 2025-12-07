@@ -38,7 +38,7 @@ class PageDelegate {
 
   // Notifies `BrowserView` about the resizable boolean having been set vith
   // `window.setResizable(bool)` API.
-  virtual void OnCanResizeFromWebAPIChanged() = 0;
+  virtual void OnWebApiWindowResizableChanged() = 0;
 
   // Notify the page uses a forbidden powerful API and cannot be shown in
   // preview mode.

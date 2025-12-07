@@ -4,68 +4,111 @@
 
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 
+#include "base/check_deref.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/signin/signin_ui_util.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/profiles/incognito_menu_view.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_view_base.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/user_education/common/feature_promo_controller.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/views/profiles/profile_menu_view.h"
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 ProfileMenuCoordinator::~ProfileMenuCoordinator() {
-  // Forcefully close the Widget if it hasn't been closed by the time the
-  // browser is torn down to avoid dangling references.
-  if (IsShowing())
+  // Ensure the ProfileMenuCoordinator does not outlive its associated bubble
+  // widget to mitigate the risk of dangling references.
+  if (bubble_tracker_ && bubble_tracker_.view()->GetWidget()) {
     bubble_tracker_.view()->GetWidget()->CloseNow();
+  }
 }
 
-void ProfileMenuCoordinator::Show(bool is_source_accelerator) {
+void ProfileMenuCoordinator::Show(bool is_source_accelerator,
+                                  bool from_avatar_promo) {
+  // TODO(crbug.com/425953501): Update this code.
+  Browser* const browser = browser_->GetBrowserForMigrationOnly();
   auto* avatar_toolbar_button =
-      BrowserView::GetBrowserViewForBrowser(&GetBrowser())
-          ->toolbar_button_provider()
-          ->GetAvatarToolbarButton();
+      BrowserElements::From(browser)->GetElement(kToolbarAvatarButtonElementId);
 
-  // Do not show avatar bubble if there is no avatar menu button, the button
-  // action is disabled or the bubble is already showing.
-  if (!avatar_toolbar_button ||
-      avatar_toolbar_button->IsButtonActionDisabled() || IsShowing()) {
+  // Do not show avatar bubble if there is no avatar menu button or if the
+  // bubble is already showing.
+  if (!avatar_toolbar_button || IsShowing()) {
     return;
   }
 
-  auto& browser = GetBrowser();
-  signin_ui_util::RecordProfileMenuViewShown(browser.profile());
-  // Close any existing IPH bubble for the profile menu.
-  browser.window()->CloseFeaturePromo(
-      feature_engagement::kIPHProfileSwitchFeature);
-
-  std::unique_ptr<ProfileMenuViewBase> bubble;
-  bool is_incognito = browser.profile()->IsIncognitoProfile();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // On Lacros, the guest session returns true for `IsIncognitoProfile()`, see
-  // https://crbug.com/1348572
-  is_incognito &= !browser.profile()->IsGuestSession();
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Only request promo info if the user is signed in.
+  if (signin_util::GetSignedInState(IdentityManagerFactory::GetForProfile(
+          GetProfile())) == signin_util::SignedInState::kSignedIn) {
+    signin::ComputeProfileMenuAvatarButtonPromoInfo(
+        *GetProfile(),
+        base::BindOnce(&ProfileMenuCoordinator::ShowWithPromoResults,
+                       weak_pointer_factory_.GetWeakPtr(),
+                       is_source_accelerator, from_avatar_promo));
+    return;
+  }
 #endif
 
+  ShowWithPromoResults(is_source_accelerator, from_avatar_promo
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+                       ,
+                       signin::ProfileMenuAvatarButtonPromoInfo()
+#endif
+  );
+}
+
+void ProfileMenuCoordinator::ShowWithPromoResults(
+    bool is_source_accelerator,
+    bool from_avatar_promo
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    ,
+    signin::ProfileMenuAvatarButtonPromoInfo promo_info
+#endif
+) {
+  signin_ui_util::RecordProfileMenuViewShown(GetProfile());
+  // Close any existing IPH bubble for the profile menu.
+  BrowserUserEducationInterface::From(GetBrowser())
+      ->NotifyFeaturePromoFeatureUsed(
+          feature_engagement::kIPHProfileSwitchFeature,
+          FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  BrowserUserEducationInterface::From(GetBrowser())
+      ->NotifyFeaturePromoFeatureUsed(
+          feature_engagement::kIPHSupervisedUserProfileSigninFeature,
+          FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+#endif
+
+  Browser* const browser = browser_->GetBrowserForMigrationOnly();
+  auto* avatar_toolbar_button =
+      BrowserElements::From(browser)->GetElement(kToolbarAvatarButtonElementId);
+  std::unique_ptr<ProfileMenuViewBase> bubble;
+  const bool is_incognito = GetProfile()->IsIncognitoProfile();
   if (is_incognito) {
     bubble =
-        std::make_unique<IncognitoMenuView>(avatar_toolbar_button, &browser);
+        std::make_unique<IncognitoMenuView>(avatar_toolbar_button, browser);
   } else {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Note: on Ash, only incognito windows have a profile menu.
-    NOTREACHED_NORETURN() << "The profile menu is not implemented on Ash.";
+    NOTREACHED() << "The profile menu is not implemented on Ash.";
 #else
-    bubble = std::make_unique<ProfileMenuView>(avatar_toolbar_button, &browser);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    bubble = std::make_unique<ProfileMenuView>(avatar_toolbar_button, browser,
+                                               promo_info, from_avatar_promo);
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
   bubble->SetProperty(views::kElementIdentifierKey,
                       kToolbarAvatarBubbleElementId);
@@ -78,8 +121,9 @@ void ProfileMenuCoordinator::Show(bool is_source_accelerator) {
       views::BubbleDialogDelegateView::CreateBubble(std::move(bubble));
   bubble_ptr->CreateAXWidgetObserver(widget);
   widget->Show();
-  if (is_source_accelerator)
+  if (is_source_accelerator) {
     bubble_ptr->FocusFirstProfileButton();
+  }
 }
 
 bool ProfileMenuCoordinator::IsShowing() const {
@@ -93,7 +137,14 @@ ProfileMenuCoordinator::GetProfileMenuViewBaseForTesting() {
              : nullptr;
 }
 
-ProfileMenuCoordinator::ProfileMenuCoordinator(Browser* browser)
-    : BrowserUserData<ProfileMenuCoordinator>(*browser) {}
+BrowserWindowInterface* ProfileMenuCoordinator::GetBrowser() {
+  return &browser_.get();
+}
 
-BROWSER_USER_DATA_KEY_IMPL(ProfileMenuCoordinator);
+Profile* ProfileMenuCoordinator::GetProfile() {
+  return &profile_.get();
+}
+
+ProfileMenuCoordinator::ProfileMenuCoordinator(BrowserWindowInterface* browser,
+                                               Profile* profile)
+    : browser_(CHECK_DEREF(browser)), profile_(CHECK_DEREF(profile)) {}

@@ -11,9 +11,6 @@ include_rules = [
   "-v8",
   "+v8/include",
 
-  # Limit what we include from nacl.
-  "-native_client",
-
   # Individual subdirectories of chrome/ must explicitly declare their
   # dependencies on other subdirectories of chrome/.
   "-chrome",
@@ -27,13 +24,13 @@ include_rules = [
   "+components/media_router/common",
   "+components/omnibox/common",
   "+components/services/heap_profiling/public",
+  "+components/webapps/isolated_web_apps/scheme.h",
   "+components/url_formatter",
   "+components/variations",
   "+content/public/common",
   "+content/public/test",
   "+media/media_buildflags.h",
   "+mojo/public",
-  "+ppapi/buildflags",
 
   # Don't allow inclusion of these other libs we shouldn't be calling directly.
   "-webkit",

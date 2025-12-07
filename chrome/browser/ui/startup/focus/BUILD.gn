@@ -1,0 +1,77 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+# Focus functionality is only for desktop platforms
+assert(!is_android)
+
+# Focus flag implementation for startup
+source_set("focus") {
+  sources = [
+    "focus_handler.cc",
+    "focus_handler.h",
+    "focus_result_file_writer.cc",
+    "focus_result_file_writer.h",
+    "match_candidate.cc",
+    "match_candidate.h",
+    "selector.cc",
+    "selector.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/profiles",
+    "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/sync",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/web_applications",
+    "//chrome/browser/web_applications",
+    "//chrome/common:non_code_constants",
+    "//components/sync_sessions",
+    "//components/webapps/common",
+    "//content/public/browser",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "focus_handler_unittest.cc",
+    "match_candidate_unittest.cc",
+    "selector_unittest.cc",
+  ]
+
+  deps = [
+    ":focus",
+    "//base/test:test_support",
+    "//chrome/browser/ui/tabs:test_support",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  sources = [ "focus_handler_browsertest.cc" ]
+
+  deps = [
+    ":focus",
+    "//chrome/browser",
+    "//chrome/browser/ui/web_applications",
+    "//chrome/test:test_support",
+    "//components/webapps/common",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+}

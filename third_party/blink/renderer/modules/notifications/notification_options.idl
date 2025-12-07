@@ -32,5 +32,5 @@ dictionary NotificationOptions {
     any data = null;
     sequence<NotificationAction> actions = [];
     [RuntimeEnabled=NotificationTriggers] TimestampTrigger showTrigger;
-    [RuntimeEnabled=IncomingCallNotifications] NotificationScenario scenario = "default";
+    [RuntimeEnabled=IncomingCallNotifications, MeasureAs="WebDXFeature::kDRAFT_IncomingCallNotifications"] NotificationScenario scenario = "default";
 };

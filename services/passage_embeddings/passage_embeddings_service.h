@@ -24,13 +24,17 @@ class PassageEmbeddingsService : public mojom::PassageEmbeddingsService {
 
  private:
   // mojom::PassageEmbeddingsService:
-  void LoadModels(mojom::PassageEmbeddingsLoadModelsParamsPtr params,
-                  mojo::PendingReceiver<mojom::PassageEmbedder> model,
+  void LoadModels(mojom::PassageEmbeddingsLoadModelsParamsPtr model_params,
+                  mojom::PassageEmbedderParamsPtr embedder_params,
+                  mojo::PendingReceiver<mojom::PassageEmbedder> receiver,
                   LoadModelsCallback callback) override;
 
   mojo::Receiver<mojom::PassageEmbeddingsService> receiver_;
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  // Called when the embedder remote disconnects.
+  void OnEmbedderDisconnect();
+
   std::unique_ptr<PassageEmbedder> embedder_;
 #endif
 };

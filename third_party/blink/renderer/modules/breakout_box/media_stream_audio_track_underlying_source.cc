@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/breakout_box/media_stream_audio_track_underlying_source.h"
 
+#include "base/compiler_specific.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/audio_buffer.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_transferring_optimizer.h"
@@ -67,8 +68,9 @@ class AudioBufferPoolImpl
     // Copy the data over.
     const std::vector<uint8_t*>& dest_data = buffer->channel_data();
     for (int ch = 0; ch < audio_bus.channels(); ++ch) {
-      const float* src_channel = audio_bus.channel(ch);
-      memcpy(dest_data[ch], src_channel, sizeof(float) * audio_bus.frames());
+      const float* src_channel = audio_bus.channel_span(ch).data();
+      UNSAFE_TODO(memcpy(dest_data[ch], src_channel,
+                         sizeof(float) * audio_bus.frames()));
     }
 
     buffers_.push_back(buffer);
@@ -119,7 +121,7 @@ class AudioBufferPoolImpl
   media::AudioParameters params_;
 
   static constexpr int kInlineCapacity = 4;
-  WTF::Deque<scoped_refptr<media::AudioBuffer>, kInlineCapacity> buffers_;
+  Deque<scoped_refptr<media::AudioBuffer>, kInlineCapacity> buffers_;
 };
 
 MediaStreamAudioTrackUnderlyingSource::MediaStreamAudioTrackUnderlyingSource(

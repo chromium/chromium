@@ -15,9 +15,9 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
-#include "components/autofill/core/browser/test_autofill_manager_waiter.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
@@ -54,7 +54,7 @@ class AutofillAccessibilityWinBrowserTest : public InProcessBrowserTest {
   class TestAutofillManager : public BrowserAutofillManager {
    public:
     explicit TestAutofillManager(ContentAutofillDriver* driver)
-        : BrowserAutofillManager(driver, "en-US") {}
+        : BrowserAutofillManager(driver) {}
 
     testing::AssertionResult WaitForFormsSeen(int min_num_awaited_calls) {
       return forms_seen_waiter_.Wait(min_num_awaited_calls);
@@ -126,7 +126,7 @@ class AutofillAccessibilityWinBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(AutofillAccessibilityWinBrowserTest,
                        MAYBE_AutofillPopupControllerFor) {
   content::AccessibilityNotificationWaiter waiter(
-      GetWebContents(), ui::kAXModeComplete, ax::mojom::Event::kLoadComplete);
+      GetWebContents(), ax::mojom::Event::kLoadComplete);
   NavigateToAndWaitForForm(
       embedded_test_server()->GetURL("/accessibility/input_datalist.html"));
   ASSERT_TRUE(waiter.WaitForNotification());

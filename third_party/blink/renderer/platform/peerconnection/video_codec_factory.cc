@@ -5,7 +5,9 @@
 #include "third_party/blink/renderer/platform/peerconnection/video_codec_factory.h"
 
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
@@ -98,7 +100,7 @@ class EncoderAdapter : public webrtc::VideoEncoderFactory {
     // not allow profile mismatch when only software encoder factory is used for
     // creating the simulcast encoder adapter.
     if (base::EqualsCaseInsensitiveASCII(format.name.c_str(),
-                                         cricket::kH264CodecName) &&
+                                         webrtc::kH264CodecName) &&
         supported_in_hardware) {
       allow_h264_profile_fallback = IsFormatSupported(
           &software_encoder_factory_,
@@ -246,8 +248,6 @@ std::unique_ptr<webrtc::VideoEncoderFactory> CreateWebrtcVideoEncoderFactory(
 
 std::unique_ptr<webrtc::VideoDecoderFactory> CreateWebrtcVideoDecoderFactory(
     media::GpuVideoAcceleratorFactories* gpu_factories,
-    base::WeakPtr<media::DecoderFactory> media_decoder_factory,
-    scoped_refptr<base::SequencedTaskRunner> media_task_runner,
     const gfx::ColorSpace& render_color_space,
     StatsCollector::StoreProcessingStatsCB stats_callback) {
   const bool use_hw_decoding =
@@ -255,19 +255,48 @@ std::unique_ptr<webrtc::VideoDecoderFactory> CreateWebrtcVideoDecoderFactory(
       gpu_factories->IsGpuVideoDecodeAcceleratorEnabled() &&
       Platform::Current()->IsWebRtcHWDecodingEnabled();
 
-  // If RTCVideoDecoderStreamAdapter is used then RTCVideoDecoderFactory can
-  // support both SW and HW decoding, and should therefore always be
-  // instantiated regardless of whether HW decoding is enabled or not.
   std::unique_ptr<RTCVideoDecoderFactory> decoder_factory;
-  if (use_hw_decoding ||
-      base::FeatureList::IsEnabled(media::kUseDecoderStreamForWebRTC)) {
+  if (use_hw_decoding) {
     decoder_factory = std::make_unique<RTCVideoDecoderFactory>(
-        use_hw_decoding ? gpu_factories : nullptr, media_decoder_factory,
-        std::move(media_task_runner), render_color_space);
+        use_hw_decoding ? gpu_factories : nullptr, render_color_space);
   }
 
   return std::make_unique<DecoderAdapter>(std::move(decoder_factory),
                                           stats_callback);
+}
+
+std::unique_ptr<webrtc::VideoEncoderFactory>
+CreateWebrtcVideoEncoderFactoryForUmaLogging(
+    media::GpuVideoAcceleratorFactories* gpu_factories) {
+  if (gpu_factories && gpu_factories->IsGpuVideoEncodeAcceleratorEnabled() &&
+      Platform::Current()->IsWebRtcHWEncodingEnabled()) {
+    return std::make_unique<RTCVideoEncoderFactory>(
+        gpu_factories, /*encoder_metrics_provider_factory=*/nullptr,
+        /*override_disabled_profiles=*/true);
+  }
+
+  // EncoderAdapter without HW encoder will always return powerEfficient=false
+  // when QueryCodecSupport() is called.
+  return std::make_unique<EncoderAdapter>(nullptr, base::DoNothing());
+}
+
+std::unique_ptr<webrtc::VideoDecoderFactory>
+CreateWebrtcVideoDecoderFactoryForUmaLogging(
+    media::GpuVideoAcceleratorFactories* gpu_factories,
+    const gfx::ColorSpace& render_color_space) {
+  const bool use_hw_decoding =
+      gpu_factories != nullptr &&
+      gpu_factories->IsGpuVideoDecodeAcceleratorEnabled() &&
+      Platform::Current()->IsWebRtcHWDecodingEnabled();
+
+  if (use_hw_decoding) {
+    return std::make_unique<RTCVideoDecoderFactory>(
+        gpu_factories, render_color_space, /*override_disabled_profiles=*/true);
+  }
+
+  // DecoderAdapter without HW decoder will always return powerEfficient=false
+  // when QueryCodecSupport() is called.
+  return std::make_unique<DecoderAdapter>(nullptr, base::DoNothing());
 }
 
 }  // namespace blink

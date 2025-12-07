@@ -40,6 +40,8 @@ class DeviceServiceTestBase : public testing::Test {
   // global state before the service is constructed.
   void SetUp() override;
 
+  void TearDown() override;
+
  protected:
   mojom::DeviceService* device_service() { return service_remote_.get(); }
   DeviceService* device_service_impl() { return service_.get(); }

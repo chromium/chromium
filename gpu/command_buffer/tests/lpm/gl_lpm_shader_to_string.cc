@@ -7,6 +7,7 @@
 #include <ostream>
 
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 
 namespace gl_lpm_fuzzer {
@@ -115,8 +116,7 @@ std::string GetType(const fuzzing::Type& type, bool void_ok) {
       return "mat4x4";
     }
   }
-  CHECK(false);
-  return "";
+  NOTREACHED();
 }
 
 std::ostream& operator<<(std::ostream& os, const fuzzing::Statement& statement);

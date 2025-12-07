@@ -13,6 +13,7 @@
 #include "components/supervised_user/core/browser/supervised_user_metrics_service.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "content/public/browser/browser_context.h"
+#include "chrome/browser/supervised_user/metrics_service_accessor_delegate.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/supervised_user/linux_mac_windows/supervised_user_extensions_metrics_delegate_impl.h"
@@ -54,7 +55,8 @@ void SupervisedUserMetricsServiceFactory::RegisterProfilePrefs(
   supervised_user::SupervisedUserMetricsService::RegisterProfilePrefs(registry);
 }
 
-KeyedService* SupervisedUserMetricsServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SupervisedUserMetricsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
@@ -68,10 +70,12 @@ KeyedService* SupervisedUserMetricsServiceFactory::BuildServiceInstanceFor(
   CHECK(extensions_metrics_delegate);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-  return new supervised_user::SupervisedUserMetricsService(
+  return std::make_unique<supervised_user::SupervisedUserMetricsService>(
       profile->GetPrefs(),
-      SupervisedUserServiceFactory::GetForProfile(profile)->GetURLFilter(),
-      std::move(extensions_metrics_delegate));
+      *SupervisedUserServiceFactory::GetForProfile(profile),
+      std::move(extensions_metrics_delegate),
+      std::make_unique<supervised_user::MetricsServiceAccessorDelegateImpl>()
+      );
 }
 
 bool SupervisedUserMetricsServiceFactory::ServiceIsCreatedWithBrowserContext()

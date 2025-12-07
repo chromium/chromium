@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {LanguageHelper, LanguageSettingsMetricsProxy, LanguageSettingsPageImpressionType, SettingsSpellCheckPageElement} from 'chrome://settings/lazy_load.js';
+import type {LanguageSettingsMetricsProxy, LanguageSettingsPageImpressionType, SettingsSpellCheckPageElement} from 'chrome://settings/lazy_load.js';
 import {LanguagesBrowserProxyImpl, LanguageSettingsActionType, LanguageSettingsMetricsProxyImpl} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -34,7 +34,6 @@ class TestSpellCheckSettingsMetricsProxy extends TestBrowserProxy implements
 }
 
 suite('SpellCheckPageMetricsBrowser', function() {
-  let languageHelper: LanguageHelper;
   let spellCheckPage: SettingsSpellCheckPageElement;
   let browserProxy: TestLanguagesBrowserProxy;
   let languageSettingsMetricsProxy: TestSpellCheckSettingsMetricsProxy;
@@ -75,15 +74,11 @@ suite('SpellCheckPageMetricsBrowser', function() {
       spellCheckPage.prefs = settingsLanguages.prefs;
       fakeDataBind(settingsLanguages, spellCheckPage, 'prefs');
 
-      spellCheckPage.languageHelper = settingsLanguages.languageHelper;
-      fakeDataBind(settingsLanguages, spellCheckPage, 'language-helper');
-
       spellCheckPage.languages = settingsLanguages.languages;
       fakeDataBind(settingsLanguages, spellCheckPage, 'languages');
 
       document.body.appendChild(spellCheckPage);
-      languageHelper = spellCheckPage.languageHelper;
-      return languageHelper.whenReady();
+      return settingsLanguages.whenReady();
     });
   });
 

@@ -39,7 +39,7 @@ class AndroidStreamReaderURLLoader : public network::mojom::URLLoader {
   // Delegate abstraction for obtaining input streams.
   class ResponseDelegate {
    public:
-    virtual ~ResponseDelegate() {}
+    virtual ~ResponseDelegate() = default;
 
     // This method is called from a worker thread, not from the IO thread.
     virtual std::unique_ptr<embedder_support::InputStream> OpenInputStream(
@@ -85,9 +85,11 @@ class AndroidStreamReaderURLLoader : public network::mojom::URLLoader {
     bool allow_cors_to_same_scheme = false;
   };
 
+  // Delegate that ensures that the provided `value` is set as a Set-Cookie
+  // response to the given `request`.
   using SetCookieHeader = base::RepeatingCallback<void(
       const network::ResourceRequest& request,
-      const std::string& value,
+      std::string_view value,
       const std::optional<base::Time>& server_time)>;
 
   AndroidStreamReaderURLLoader(
@@ -114,8 +116,6 @@ class AndroidStreamReaderURLLoader : public network::mojom::URLLoader {
       const std::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int intra_priority_value) override;
-  void PauseReadingBodyFromNet() override;
-  void ResumeReadingBodyFromNet() override;
 
  private:
   bool ParseRange(const net::HttpRequestHeaders& headers);

@@ -481,8 +481,9 @@ bool MockConnectionManager::ProcessGetUpdates(
   }
 
   // Fill the keystore key if requested.
-  if (gu.need_encryption_key())
+  if (gu.need_encryption_key()) {
     response->mutable_get_updates()->add_encryption_keys(keystore_key_);
+  }
 
   update_queue_.pop_front();
 
@@ -554,8 +555,9 @@ bool MockConnectionManager::ProcessCommit(
 
     committed_ids_.push_back(id_string);
 
-    if (response_map.end() == response_map.find(id_string))
+    if (response_map.end() == response_map.find(id_string)) {
       response_map[id_string] = commit_response->add_entryresponse();
+    }
     sync_pb::CommitResponse_EntryResponse* er = response_map[id_string];
     if (ShouldConflictThisCommit()) {
       er->set_response_type(CommitResponse::CONFLICT);

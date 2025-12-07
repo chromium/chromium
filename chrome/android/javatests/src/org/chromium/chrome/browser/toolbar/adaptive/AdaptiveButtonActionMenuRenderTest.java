@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.toolbar.adaptive;
 
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
+import static org.chromium.base.test.util.Batch.UNIT_TESTS;
+
 import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +27,7 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -41,11 +44,8 @@ import java.util.List;
 /** Render tests for adaptive test long-press menu popup. */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    "force-fieldtrials=Study/Group",
-    "force-fieldtrial-params=Study.Group:mode/always-share"
-})
+@CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
+@Batch(UNIT_TESTS)
 public class AdaptiveButtonActionMenuRenderTest {
     @ParameterAnnotations.ClassParameter
     public static List<ParameterSet> sClassParams =
@@ -58,7 +58,7 @@ public class AdaptiveButtonActionMenuRenderTest {
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(1)
+                    .setRevision(3)
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_TOOLBAR)
                     .build();
 
@@ -76,7 +76,7 @@ public class AdaptiveButtonActionMenuRenderTest {
                 () -> {
                     Activity activity = mActivityTestRule.getActivity();
                     AdaptiveButtonActionMenuCoordinator coordinator =
-                            new AdaptiveButtonActionMenuCoordinator();
+                            new AdaptiveButtonActionMenuCoordinator(/* showMenu= */ true);
 
                     coordinator.displayMenu(
                             activity,

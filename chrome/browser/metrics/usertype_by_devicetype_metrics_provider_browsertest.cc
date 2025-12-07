@@ -13,9 +13,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/app_mode/kiosk_test_helper.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
-#include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
+#include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
+#include "chrome/browser/ash/app_mode/test/scoped_device_settings.h"
+#include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_data.h"
+#include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_utils.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
@@ -30,11 +31,11 @@
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "components/metrics/metrics_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
-#include "components/policy/core/common/device_local_account_type.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "content/public/test/browser_test.h"
 
@@ -42,10 +43,10 @@ namespace {
 
 namespace em = enterprise_management;
 using UserSegment = UserTypeByDeviceTypeMetricsProvider::UserSegment;
-using ash::KioskSessionInitializedWaiter;
+using ash::KioskWebAppManager;
 using ash::LoginScreenTestApi;
 using ash::ScopedDeviceSettings;
-using ash::WebKioskAppManager;
+using ash::kiosk::test::WaitKioskLaunched;
 using testing::InvokeWithoutArgs;
 
 const char kAccountId1[] = "dla1@example.com";
@@ -62,8 +63,7 @@ std::optional<em::PolicyData::MarketSegment> GetMarketSegment(
     case policy::MarketSegment::ENTERPRISE:
       return em::PolicyData::ENROLLED_ENTERPRISE;
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
+  NOTREACHED();
 }
 
 std::optional<em::PolicyData::MetricsLogSegment> GetMetricsLogSegment(
@@ -83,8 +83,7 @@ std::optional<em::PolicyData::MetricsLogSegment> GetMetricsLogSegment(
     case UserSegment::kDemoMode:
       return std::nullopt;
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
+  NOTREACHED();
 }
 
 void ProvideHistograms() {
@@ -363,13 +362,13 @@ class UserTypeByDeviceTypeMetricsProviderTest
 
   bool LaunchApp() {
     return LoginScreenTestApi::LaunchApp(
-        WebKioskAppManager::Get()->GetAppByAccountId(account_id_2_)->app_id());
+        KioskWebAppManager::Get()->GetAppByAccountId(account_id_2_)->app_id());
   }
 
   void StartKioskApp() {
     PrepareAppLaunch();
     LaunchApp();
-    KioskSessionInitializedWaiter().Wait();
+    ASSERT_TRUE(WaitKioskLaunched());
   }
 
   void WaitForSessionStart() {

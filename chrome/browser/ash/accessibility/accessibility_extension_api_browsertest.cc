@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/ui/accessibility_confirmation_dialog.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/shell.h"
+#include "ash/system/accessibility/facegaze_bubble_controller.h"
+#include "ash/system/accessibility/facegaze_bubble_view.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
@@ -15,11 +19,12 @@
 #include "chrome/browser/ash/accessibility/dictation_bubble_test_helper.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -30,8 +35,15 @@
 #include "ui/events/base_event_utils.h"
 
 namespace ash {
+namespace {
+// Written to match function in components/live_caption/caption_util.h
+bool IsLiveCaptionFeatureSupported() {
+  return base::FeatureList::IsEnabled(
+      ash::features::kOnDeviceSpeechRecognition);
+}
+}  // namespace
 
-using ContextType = ::extensions::ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class AccessibilityPrivateApiTest
     : public extensions::ExtensionApiTest,
@@ -46,9 +58,11 @@ class AccessibilityPrivateApiTest
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ExtensionApiTest::SetUpCommandLine(command_line);
-    // Required for the installFaceGazeAssets API to work.
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kAccessibilityFaceGaze);
+    scoped_feature_list_.InitWithFeatures(
+        {// Live Caption only works if on-device speech recognition is
+         // available.
+         ash::features::kOnDeviceSpeechRecognition},
+        /*disabled_features=*/{});
   }
 
   void SetUpOnMainThread() override {
@@ -72,6 +86,14 @@ class AccessibilityPrivateApiTest
     return dictation_bubble_test_helper_.get();
   }
 
+  std::u16string_view GetFaceGazeBubbleText() {
+    FaceGazeBubbleController* controller =
+        Shell::Get()
+            ->accessibility_controller()
+            ->GetFaceGazeBubbleControllerForTest();
+    return controller->facegaze_bubble_view_->GetTextForTesting();
+  }
+
  private:
   std::unique_ptr<DictationBubbleTestHelper> dictation_bubble_test_helper_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -84,6 +106,17 @@ IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, SendSyntheticKeyEvent) {
 IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest,
                        GetDisplayNameForLocaleTest) {
   ASSERT_TRUE(RunSubtest("testGetDisplayNameForLocale")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, EnableLiveCaption) {
+  ASSERT_TRUE(IsLiveCaptionFeatureSupported());
+
+  PrefService* prefs = AccessibilityManager::Get()->profile()->GetPrefs();
+
+  ASSERT_FALSE(
+      prefs->GetBoolean("accessibility.captions.live_caption_enabled"));
+  ASSERT_TRUE(RunSubtest("testEnableLiveCaption")) << message_;
+  ASSERT_TRUE(prefs->GetBoolean("accessibility.captions.live_caption_enabled"));
 }
 
 IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, OpenSettingsSubpage) {
@@ -425,8 +458,7 @@ IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, SetCursorPosition) {
     // The screen point is in density-independent pixels, so it should always be
     // the same as what the JS has set, (450, 350), assuming all the
     // multiple-display and DPI math was correct.
-    const gfx::Point point =
-        display::Screen::GetScreen()->GetCursorScreenPoint();
+    const gfx::Point point = display::Screen::Get()->GetCursorScreenPoint();
     EXPECT_EQ(point, gfx::Point(450, 350));
   }
 }
@@ -484,6 +516,31 @@ IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest,
       "Fake mediapipe web assembly"));
 
   ASSERT_TRUE(RunSubtest("testInstallFaceGazeAssetsSuccess")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, UpdateFaceGazeBubble) {
+  // Enable FaceGaze to allow the API to work.
+  Shell::Get()->accessibility_controller()->face_gaze().SetEnabled(true);
+
+  // This test requires some back and forth communication between C++ and JS.
+  // Use message listeners to force the synchronicity of this test.
+  ExtensionTestMessageListener hello_world_listener("Confirm hello world",
+                                                    ReplyBehavior::kWillReply);
+  ExtensionTestMessageListener empty_text_listener("Confirm empty text",
+                                                   ReplyBehavior::kWillReply);
+
+  extensions::ResultCatcher result_catcher;
+  ASSERT_TRUE(RunSubtest("testUpdateFaceGazeBubble")) << message_;
+
+  ASSERT_TRUE(hello_world_listener.WaitUntilSatisfied());
+  EXPECT_EQ(GetFaceGazeBubbleText(), u"Hello world");
+  hello_world_listener.Reply("Continue");
+
+  ASSERT_TRUE(empty_text_listener.WaitUntilSatisfied());
+  EXPECT_EQ(GetFaceGazeBubbleText(), u"");
+  empty_text_listener.Reply("Continue");
+
+  ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
 INSTANTIATE_TEST_SUITE_P(

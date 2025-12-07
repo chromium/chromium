@@ -25,24 +25,24 @@ public class AppMenuPopupPositionTest {
 
     private final int[] mTempLocation = new int[2];
 
-    private final int mAppWidth = 400;
-    private final int mAppHeight = 1000;
-    private final int mBgPadding = 10;
-    private final int mPopupWidth = 300;
-    private final int mAnchorX = 100;
-    private final int mAnchorY = 300;
-    private final int mAnchorWidth = 40;
-    private final int mNegativeSoftwareVerticalOffset = 25;
+    private static final int APP_WIDTH = 400;
+    private static final int APP_HEIGHT = 1000;
+    private static final int BG_PADDING = 10;
+    private static final int POPUP_WIDTH = 300;
+    private static final int ANCHOR_X = 100;
+    private static final int ANCHOR_Y = 300;
+    private static final int ANCHOR_WIDTH = 40;
+    private static final int NEGATIVE_SOFTWARE_VERTICAL_OFFSET = 25;
     private final View mAnchorView = Mockito.mock(View.class);
-    private final Rect mAppRect = new Rect(0, 0, mAppWidth, mAppHeight);
-    private final Rect mBgPaddingRect = new Rect(mBgPadding, mBgPadding, mBgPadding, mBgPadding);
+    private final Rect mAppRect = new Rect(0, 0, APP_WIDTH, APP_HEIGHT);
+    private final Rect mBgPaddingRect = new Rect(BG_PADDING, BG_PADDING, BG_PADDING, BG_PADDING);
 
     @Before
     public void setUp() {
         Mockito.doAnswer(
                         (InvocationOnMock invocation) -> {
-                            mTempLocation[0] = mAnchorX;
-                            mTempLocation[1] = mAnchorY;
+                            mTempLocation[0] = ANCHOR_X;
+                            mTempLocation[1] = ANCHOR_Y;
                             return null;
                         })
                 .when(mAnchorView)
@@ -50,21 +50,21 @@ public class AppMenuPopupPositionTest {
 
         Mockito.doAnswer(
                         (InvocationOnMock invocation) -> {
-                            mTempLocation[0] = mAnchorX;
-                            mTempLocation[1] = mAnchorY;
+                            mTempLocation[0] = ANCHOR_X;
+                            mTempLocation[1] = ANCHOR_Y;
                             return null;
                         })
                 .when(mAnchorView)
                 .getLocationOnScreen(mTempLocation);
 
-        Mockito.when(mAnchorView.getWidth()).thenReturn(mAnchorWidth);
+        Mockito.when(mAnchorView.getWidth()).thenReturn(ANCHOR_WIDTH);
     }
 
     @Test
     public void testPermanentButton_Portrait() {
         // Popup should should be in the middle of the screen, anchored near the anchor view.
-        int expectedX = (mAppWidth - mPopupWidth) / 2;
-        int expectedY = mAnchorY - mBgPadding;
+        int expectedX = (APP_WIDTH - POPUP_WIDTH) / 2;
+        int expectedY = ANCHOR_Y - BG_PADDING;
 
         int[] results = getPopupPosition(true, Surface.ROTATION_0, View.LAYOUT_DIRECTION_LTR);
         Assert.assertEquals("Incorrect popup x", expectedX, results[0]);
@@ -81,8 +81,8 @@ public class AppMenuPopupPositionTest {
 
         // Popup should be positioned toward the right edge of the screen, anchored near the anchor
         // view.
-        int expectedX = mAppWidth - mPopupWidth;
-        int expectedY = mAnchorY - mBgPadding;
+        int expectedX = APP_WIDTH - POPUP_WIDTH;
+        int expectedY = ANCHOR_Y - BG_PADDING;
         Assert.assertEquals("Incorrect popup x", expectedX, results[0]);
         Assert.assertEquals("Incorrect popup y", expectedY, results[1]);
 
@@ -99,8 +99,8 @@ public class AppMenuPopupPositionTest {
         int[] results = getPopupPosition(false, Surface.ROTATION_0, View.LAYOUT_DIRECTION_LTR);
 
         // The top right edge of the popup should be aligned with the top right edge of the button.
-        int expectedX = mAnchorX + mAnchorWidth - mPopupWidth;
-        int expectedY = mAnchorY - mNegativeSoftwareVerticalOffset;
+        int expectedX = ANCHOR_X + ANCHOR_WIDTH - POPUP_WIDTH;
+        int expectedY = ANCHOR_Y - NEGATIVE_SOFTWARE_VERTICAL_OFFSET;
         Assert.assertEquals("Incorrect popup x", expectedX, results[0]);
         Assert.assertEquals("Incorrect popup y", expectedY, results[1]);
     }
@@ -110,8 +110,8 @@ public class AppMenuPopupPositionTest {
         int[] results = getPopupPosition(false, Surface.ROTATION_0, View.LAYOUT_DIRECTION_RTL);
 
         // The top left edge of the popup should be aligned with the top left edge of the button.
-        int expectedX = mAnchorX;
-        int expectedY = mAnchorY - mNegativeSoftwareVerticalOffset;
+        int expectedX = ANCHOR_X;
+        int expectedY = ANCHOR_Y - NEGATIVE_SOFTWARE_VERTICAL_OFFSET;
         Assert.assertEquals("Incorrect popup x", expectedX, results[0]);
         Assert.assertEquals("Incorrect popup y", expectedY, results[1]);
     }
@@ -120,12 +120,12 @@ public class AppMenuPopupPositionTest {
         return AppMenu.getPopupPosition(
                 mTempLocation,
                 isByPermanentButton,
-                mNegativeSoftwareVerticalOffset,
+                NEGATIVE_SOFTWARE_VERTICAL_OFFSET,
                 rotation,
                 mAppRect,
                 mBgPaddingRect,
                 mAnchorView,
-                mPopupWidth,
+                POPUP_WIDTH,
                 layoutDirection);
     }
 }

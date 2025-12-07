@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "components/metrics/clean_exit_beacon.h"
+#include "components/metrics/metrics_service.h"
 #include "components/variations/service/ui_string_overrider.h"
 #include "components/variations/service/variations_service_client.h"
 #include "components/web_resource/resource_request_allowed_notifier_test_util.h"
@@ -48,23 +49,24 @@ class TestVariationsServiceClient : public VariationsServiceClient {
 
 }  // namespace
 
-TestVariationsService::TestVariationsService(PrefService* prefs)
+TestVariationsService::TestVariationsService(
+    PrefService* prefs,
+    metrics::MetricsStateManager* state_manager)
     : variations::VariationsService(
           std::make_unique<TestVariationsServiceClient>(),
           std::make_unique<web_resource::TestRequestAllowedNotifier>(
               prefs,
               network::TestNetworkConnectionTracker::GetInstance()),
           prefs,
-          nullptr,
-          variations::UIStringOverrider(),
-          nullptr) {}
+          state_manager,
+          variations::UIStringOverrider()) {}
 
 TestVariationsService::~TestVariationsService() = default;
 
 // static
 void TestVariationsService::RegisterPrefs(PrefRegistrySimple* registry) {
   // This call is required for full registration of variations service prefs.
-  metrics::CleanExitBeacon::RegisterPrefs(registry);
+  metrics::MetricsService::RegisterPrefs(registry);
   variations::VariationsService::RegisterPrefs(registry);
 }
 

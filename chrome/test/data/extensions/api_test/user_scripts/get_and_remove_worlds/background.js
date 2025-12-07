@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {waitForUserScriptsAPIAllowed} from '/_test_resources/test_util/user_script_test_util.js';
+
 const otherWorldId = 'some other id';
 
 const configForDefaultWorld =
@@ -30,6 +32,8 @@ function sortWorlds(worlds) {
 }
 
 chrome.test.runTests([
+  waitForUserScriptsAPIAllowed,
+
   async function noWorldsReturnedWhenNoneConfigured() {
     const worlds = await chrome.userScripts.getWorldConfigurations();
     chrome.test.assertEq([], worlds);
@@ -43,6 +47,27 @@ chrome.test.runTests([
 
     // Remove the default world configuration.
     await chrome.userScripts.resetWorldConfiguration();
+
+    // There should no longer be any registered configurations.
+    worlds = await chrome.userScripts.getWorldConfigurations();
+    chrome.test.assertEq([], worlds);
+
+    chrome.test.succeed();
+  },
+
+  async function emptyWorldIdMapsToDefaultWorld() {
+    let defaultWorldWithEmptyIdConfig = { ...configForDefaultWorld };
+    defaultWorldWithEmptyIdConfig.worldId = '';
+
+    // Assign a config for a world with ''. This will map to the default world
+    // (where `worldId` is omitted).
+    await chrome.userScripts.configureWorld(defaultWorldWithEmptyIdConfig);
+    let worlds = await chrome.userScripts.getWorldConfigurations();
+    chrome.test.assertEq([configForDefaultWorld], worlds);
+
+    // Remove the default world configuration by removing the config for the
+    // empty-string world.
+    await chrome.userScripts.resetWorldConfiguration('');
 
     // There should no longer be any registered configurations.
     worlds = await chrome.userScripts.getWorldConfigurations();
@@ -96,10 +121,6 @@ chrome.test.runTests([
   },
 
   async function callingResetWithInvalidIdsFails() {
-    await chrome.test.assertPromiseRejects(
-        chrome.userScripts.resetWorldConfiguration(''),
-        'Error: If specified, `worldId` must be non-empty.');
-
     await chrome.test.assertPromiseRejects(
         chrome.userScripts.resetWorldConfiguration('_foo'),
         `Error: World IDs beginning with '_' are reserved.`);

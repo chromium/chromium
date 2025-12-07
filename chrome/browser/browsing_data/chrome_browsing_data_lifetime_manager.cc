@@ -6,11 +6,11 @@
 
 #include <algorithm>
 #include <limits>
+#include <set>
 #include <string>
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/containers/flat_set.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -41,14 +41,15 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
+#include "content/public/browser/download_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #else
 #include "chrome/browser/android/tab_android.h"
@@ -204,8 +205,7 @@ uint64_t GetRemoveMask(const base::Value::List& data_types) {
         result |= chrome_browsing_data_remover::DATA_TYPE_SITE_DATA;
         break;
       case browsing_data::PolicyDataType::kNumTypes:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
   return result;
@@ -227,18 +227,21 @@ std::vector<ScheduledRemovalSettings> ConvertToScheduledRemovalSettings(
   return scheduled_removals_settings;
 }
 
-base::flat_set<GURL> GetOpenedUrls(Profile* profile) {
-  base::flat_set<GURL> result;
+std::set<GURL> GetOpenedUrlsAndOngoingDownloads(Profile* profile) {
+  std::set<GURL> result;
   // TODO (crbug/1288416): Enable this for android.
 #if !BUILDFLAG(IS_ANDROID)
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->profile() != profile) {
-      continue;
-    }
-    for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
-      result.insert(browser->tab_strip_model()->GetWebContentsAt(i)->GetURL());
-    }
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [profile, &result](BrowserWindowInterface* browser) {
+        if (browser->GetProfile() != profile) {
+          return true;
+        }
+        TabStripModel* const tab_strip_model = browser->GetTabStripModel();
+        for (int i = 0; i < tab_strip_model->count(); ++i) {
+          result.insert(tab_strip_model->GetWebContentsAt(i)->GetURL());
+        }
+        return true;
+      });
 #else
   for (const TabModel* model : TabModelList::models()) {
     for (int index = 0; index < model->GetTabCount(); ++index) {
@@ -248,6 +251,18 @@ base::flat_set<GURL> GetOpenedUrls(Profile* profile) {
     }
   }
 #endif
+
+  download::SimpleDownloadManager::DownloadVector downloads;
+  if (auto* download_manager = profile->GetDownloadManager()) {
+    download_manager->GetAllDownloads(&downloads);
+  }
+  for (const download::DownloadItem* download : downloads) {
+    auto state = download->GetState();
+    if (state != download::DownloadItem::DownloadState::IN_PROGRESS) {
+      continue;
+    }
+    result.insert(download->GetURL());
+  }
   return result;
 }
 
@@ -387,11 +402,11 @@ void ChromeBrowsingDataLifetimeManager::StartScheduledBrowsingDataRemoval() {
     if (filterable_remove_mask) {
       auto filter_builder = content::BrowsingDataFilterBuilder::Create(
           content::BrowsingDataFilterBuilder::Mode::kPreserve);
-      for (const auto& url : GetOpenedUrls(profile_)) {
+      for (const auto& url : GetOpenedUrlsAndOngoingDownloads(profile_)) {
         std::string domain = GetDomainAndRegistry(
             url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
         if (domain.empty()) {
-          domain = url.host();  // IP address or internal hostname.
+          domain = url.GetHost();  // IP address or internal hostname.
         }
         filter_builder->AddRegisterableDomain(domain);
       }

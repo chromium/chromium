@@ -6,11 +6,10 @@ package org.chromium.base;
 
 import android.util.Pair;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.CheckDiscard;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,10 +21,11 @@ import javax.annotation.concurrent.NotThreadSafe;
  *
  * @param <T> The boxed type of data behind held.
  */
+@NullMarked
 @NotThreadSafe
 public abstract class FeatureParam<T> {
     @CheckDiscard("Only needed to reset tests. Production code shouldn't use.")
-    private static Map<Pair<String, String>, FeatureParam> sParamsForTesting = new HashMap<>();
+    private static Map<Pair<String, String>, FeatureParam<?>> sParamsForTesting = new HashMap<>();
 
     protected final FeatureMap mFeatureMap;
     protected final String mFeatureName;
@@ -33,13 +33,10 @@ public abstract class FeatureParam<T> {
     protected final T mDefaultValue;
 
     // Null means this is not cached, and the feature map should be read from.
-    @Nullable protected T mInMemoryCachedValue;
+    protected @Nullable T mInMemoryCachedValue;
 
     public FeatureParam(
-            @NonNull FeatureMap featureMap,
-            @NonNull String featureName,
-            @NonNull String paramName,
-            @NonNull T defaultValue) {
+            FeatureMap featureMap, String featureName, String paramName, T defaultValue) {
         assert defaultValue != null;
         mFeatureMap = featureMap;
         mFeatureName = featureName;
@@ -47,9 +44,11 @@ public abstract class FeatureParam<T> {
         mDefaultValue = defaultValue;
 
         if (BuildConfig.IS_FOR_TEST) {
-            FeatureParam previous =
+            FeatureParam<?> previous =
                     sParamsForTesting.put(new Pair<>(mFeatureName, mParamName), this);
-            assert previous == null;
+            assert previous == null
+                    : String.format(
+                            "Feature '%s' has a duplicate parameter: '%s'", featureName, paramName);
         }
     }
 
@@ -70,7 +69,7 @@ public abstract class FeatureParam<T> {
      */
     public static void resetAllInMemoryCachedValuesForTesting() {
         if (sParamsForTesting == null) return;
-        for (FeatureParam param : sParamsForTesting.values()) {
+        for (FeatureParam<?> param : sParamsForTesting.values()) {
             param.mInMemoryCachedValue = null;
         }
     }
@@ -80,7 +79,7 @@ public abstract class FeatureParam<T> {
      * the same process (batched or Robolectric).
      */
     public static void useTemporaryParamsCreatedForTesting() {
-        Map<Pair<String, String>, FeatureParam> oldValues = sParamsForTesting;
+        Map<Pair<String, String>, FeatureParam<?>> oldValues = sParamsForTesting;
         sParamsForTesting = new HashMap<>();
         ResettersForTesting.register(() -> sParamsForTesting = oldValues);
     }

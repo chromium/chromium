@@ -24,13 +24,6 @@ namespace metrics {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// Needed for a check to see if we retrieved entropy values before we have
-// transferred them from Ash.
-bool g_entropy_source_has_been_retrieved = false;
-bool g_entropy_source_has_been_set = false;
-#endif
-
 // Generates a new non-identifying entropy source used to seed persistent
 // activities. Make it static so that the new low entropy source value will
 // only be generated on first access. And thus, even though we may write the
@@ -76,17 +69,10 @@ constexpr int EntropyState::kLowEntropySourceNotSet;
 
 // static
 void EntropyState::ClearPrefs(PrefService* local_state) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // There are currently multiple EntropyState objects (crbug/1495576) and as
-  // Lacros does not own the entropy values anyways, it shouldn't clear them
-  // either.
-  LOG(WARNING) << "EntropyState::ClearPrefs ignored as set remotely.";
-#else
   local_state->ClearPref(prefs::kMetricsLowEntropySource);
   local_state->ClearPref(prefs::kMetricsOldLowEntropySource);
   local_state->ClearPref(prefs::kMetricsPseudoLowEntropySource);
   local_state->ClearPref(prefs::kMetricsLimitedEntropyRandomizationSource);
-#endif
 }
 
 // static
@@ -100,39 +86,6 @@ void EntropyState::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::kMetricsLimitedEntropyRandomizationSource,
                                std::string());
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// static
-void EntropyState::SetExternalPrefs(
-    PrefService* local_state,
-    int low_entropy_source,
-    int old_low_entropy_source,
-    int pseudo_low_entropy_source,
-    std::string_view limited_entropy_randomization_source) {
-  if (!g_entropy_source_has_been_set) {
-    g_entropy_source_has_been_set = true;
-    // As an |EntropyState| object has an internal state, we need to make sure
-    // that none gets read before the Ash values have been transferred.
-    // This is usually taken care of by
-    // `ChromeMetricsServicesManagerClient::GetMetricsStateManager` which first
-    // sets the Ash values and then creates the `MetricsStateManager`.
-    if (g_entropy_source_has_been_retrieved) {
-      LOG(ERROR) << "Entropy value was retrieved before they were updated";
-    }
-    DCHECK(!g_entropy_source_has_been_retrieved);
-  }
-  local_state->SetInteger(prefs::kMetricsLowEntropySource, low_entropy_source);
-  local_state->SetInteger(prefs::kMetricsOldLowEntropySource,
-                          old_low_entropy_source);
-  local_state->SetInteger(prefs::kMetricsPseudoLowEntropySource,
-                          pseudo_low_entropy_source);
-  if (IsValidLimitedEntropyRandomizationSource(
-          limited_entropy_randomization_source)) {
-    local_state->SetString(prefs::kMetricsLimitedEntropyRandomizationSource,
-                           limited_entropy_randomization_source);
-  }
-}
-#endif
 
 std::string EntropyState::GetHighEntropySource(
     const std::string& initial_client_id) {
@@ -150,8 +103,9 @@ std::string EntropyState::GetHighEntropySource(
   // sources ever becomes small enough (see UMA.LowEntropySourceValue), we could
   // remove it, and just use the new source here.
   int low_entropy_source = GetOldLowEntropySource();
-  if (low_entropy_source == kLowEntropySourceNotSet)
+  if (low_entropy_source == kLowEntropySourceNotSet) {
     low_entropy_source = GetLowEntropySource();
+  }
 
   return initial_client_id + base::NumberToString(low_entropy_source);
 }
@@ -216,15 +170,12 @@ void EntropyState::UpdateLimitedEntropyRandomizationSource() {
 }
 
 void EntropyState::UpdateLowEntropySources() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Coming here, someone was reading an entropy value.
-  g_entropy_source_has_been_retrieved = true;
-#endif
   // The default value for |low_entropy_source_| and the default pref value are
   // both |kLowEntropySourceNotSet|, which indicates the value has not been set.
   if (low_entropy_source_ != kLowEntropySourceNotSet &&
-      pseudo_low_entropy_source_ != kLowEntropySourceNotSet)
+      pseudo_low_entropy_source_ != kLowEntropySourceNotSet) {
     return;
+  }
 
   const base::CommandLine* command_line(base::CommandLine::ForCurrentProcess());
   // Only try to load the value from prefs if the user did not request a reset.
@@ -234,15 +185,18 @@ void EntropyState::UpdateLowEntropySources() {
   // UpdateLowEntropySources().
   if (!command_line->HasSwitch(switches::kResetVariationState)) {
     int new_pref = local_state_->GetInteger(prefs::kMetricsLowEntropySource);
-    if (IsValidLowEntropySource(new_pref))
+    if (IsValidLowEntropySource(new_pref)) {
       low_entropy_source_ = new_pref;
+    }
     int old_pref = local_state_->GetInteger(prefs::kMetricsOldLowEntropySource);
-    if (IsValidLowEntropySource(old_pref))
+    if (IsValidLowEntropySource(old_pref)) {
       old_low_entropy_source_ = old_pref;
+    }
     int pseudo_pref =
         local_state_->GetInteger(prefs::kMetricsPseudoLowEntropySource);
-    if (IsValidLowEntropySource(pseudo_pref))
+    if (IsValidLowEntropySource(pseudo_pref)) {
       pseudo_low_entropy_source_ = pseudo_pref;
+    }
   }
 
   // If the new source is missing or corrupt (or requested to be reset), then
@@ -295,3 +249,7 @@ bool EntropyState::IsValidLimitedEntropyRandomizationSource(
 }
 
 }  // namespace metrics
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(LowEntropySource)
+#endif

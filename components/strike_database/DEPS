@@ -1,0 +1,7 @@
+include_rules = [
+  # go/keep-sorted start
+  "+components/history/core/browser",
+  "+components/keyed_service/core",
+  "+components/leveldb_proto",
+  # go/keep-sorted end
+]

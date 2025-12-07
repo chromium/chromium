@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
@@ -23,11 +22,10 @@ class SubAppsAddParams;
 class SubAppsListResult;
 class V8SubAppsResultCode;
 
-class SubApps : public ScriptWrappable, public Supplement<Navigator> {
+class SubApps : public ScriptWrappable, public GarbageCollectedMixin {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
   static SubApps* subApps(Navigator&);
 
   explicit SubApps(Navigator&);
@@ -55,6 +53,7 @@ class SubApps : public ScriptWrappable, public Supplement<Navigator> {
   void OnConnectionError();
   bool CheckPreconditionsMaybeThrow(ScriptState*, ExceptionState&);
 
+  Member<Navigator> navigator_;
   HeapMojoRemote<mojom::blink::SubAppsService> service_;
 };
 

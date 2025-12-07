@@ -19,7 +19,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /** Tests for the Safety Hub Magic Stack bridge. */
@@ -29,7 +28,6 @@ public class MagicStackBridgeTest {
     private static final String DESCRIPTION = "description";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock MagicStackBridge.Natives mNatives;
     @Mock MagicStackBridge.Observer mObserver;
@@ -39,7 +37,7 @@ public class MagicStackBridgeTest {
 
     @Before
     public void setUp() {
-        mJniMocker.mock(MagicStackBridgeJni.TEST_HOOKS, mNatives);
+        MagicStackBridgeJni.setInstanceForTesting(mNatives);
         mBridge = MagicStackBridge.getForProfile(mProfile);
         mBridge.addObserver(mObserver);
     }
@@ -64,6 +62,13 @@ public class MagicStackBridgeTest {
     public void testDismissSafeBrowsingModule() {
         mBridge.dismissSafeBrowsingModule();
         verify(mNatives).dismissSafeBrowsingModule(mProfile);
+        verify(mObserver, times(0)).activeModuleDismissed();
+    }
+
+    @Test
+    public void testDismissCompromisedPasswordsModule() {
+        mBridge.dismissCompromisedPasswordsModule();
+        verify(mNatives).dismissCompromisedPasswordsModule(mProfile);
         verify(mObserver, times(0)).activeModuleDismissed();
     }
 }

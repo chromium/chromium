@@ -21,6 +21,7 @@
 #include "base/trace_event/trace_event.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
+#include "chromeos/ash/components/login/auth/public/session_auth_factors.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/crash/core/common/crash_key.h"
 
@@ -60,6 +61,9 @@ constexpr char kNbPasswordAttemptsHistogramName[] =
 constexpr char kRecoveryResultHistogramName[] =
     "Login.CryptohomeRecoveryResult";
 
+constexpr char kPasswordlessRecoveryResultHistogramName[] =
+    "Login.CryptohomePasswordlessRecoveryResult";
+
 constexpr char kRecoveryDurationHistogramPrefix[] =
     "Login.CryptohomeRecoveryDuration.";
 
@@ -70,6 +74,9 @@ constexpr int kManyUserLimit = 5;
 // "Ash.OSAuth.Login.ConfiguredAuthFactors.{Pin,Password,...}"
 constexpr char kConfiguredAuthFactorsHistogramPrefix[] =
     "Ash.OSAuth.Login.ConfiguredAuthFactors.";
+
+// Histogram for recording the passwordless user login.
+constexpr char kPasswordlessLoginHistogram[] = "Ash.OSAuth.Login.Passwordless";
 
 // Histogram prefix for recording duration of various login flow phases.
 // Format: "Ash.OSAuth.Login.Times.{...}"
@@ -129,8 +136,7 @@ std::string GetAuthenticationSurfaceName(AuthenticationSurface screen) {
     case AuthenticationSurface::kLogin:
       return "Login";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 // Suffix for grouping by screen exit type. Should match suffixes of the
@@ -145,8 +151,7 @@ std::string GetAuthenticationOutcomeSuffix(AuthenticationOutcome exit_type) {
     case AuthenticationOutcome::kRecovery:
       return "UntilRecovery";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 // Complete name of the login flow histogram.
@@ -180,10 +185,8 @@ std::string GetConfiguredAuthFactorsHistogramSuffix(
     case cryptohome::AuthFactorType::kSmartCard:
       return "SmartCard";
     case cryptohome::AuthFactorType::kPassword:
-      NOTREACHED_IN_MIGRATION()
-          << "For password factor use "
-             "`GetConfiguredPasswordFactorsHistogramSuffix()`";
-      return "";
+      NOTREACHED() << "For password factor use "
+                      "`GetConfiguredPasswordFactorsHistogramSuffix()`";
     case cryptohome::AuthFactorType::kUnknownLegacy:
     case cryptohome::AuthFactorType::kLegacyFingerprint:
     case cryptohome::AuthFactorType::kFingerprint:
@@ -274,8 +277,7 @@ std::string GetUserLoginTypeName(AuthEventsRecorder::UserLoginType type) {
     case UserLoginType::kEphemeral:
       return "ephemeral";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 std::string GetAuthenticationOutcomeName(AuthenticationOutcome exit_type) {
@@ -287,8 +289,7 @@ std::string GetAuthenticationOutcomeName(AuthenticationOutcome exit_type) {
     case AuthenticationOutcome::kRecovery:
       return "recovery";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 std::string GetUserVaultTypeName(
@@ -302,8 +303,7 @@ std::string GetUserVaultTypeName(
     case UserVaultType::kGuest:
       return "guest";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 std::string GetCrashKeyStringWithStatus(const std::string& event_name,
@@ -418,6 +418,8 @@ void AuthEventsRecorder::RecordSessionAuthFactors(
   DCHECK(auth_surface_.has_value());
   DCHECK_EQ(auth_surface_.value(), AuthenticationSurface::kLogin);
 
+  bool passwordless = true;
+
   const auto factor_types = auth_factors.GetSessionFactors();
   for (const auto factor : kTrackedAuthFactors) {
     if (factor == cryptohome::AuthFactorType::kPassword) {
@@ -429,18 +431,28 @@ void AuthEventsRecorder::RecordSessionAuthFactors(
       base::UmaHistogramBoolean(GetConfiguredPasswordFactorHistogramName(
                                     ConfiguredPasswordType::kLocal),
                                 local_password != nullptr);
+      if (local_password || online_password) {
+        passwordless = false;
+      }
       continue;
     }
 
     base::UmaHistogramBoolean(GetConfiguredAuthFactorsHistogramName(factor),
                               base::Contains(factor_types, factor));
   }
+
+  base::UmaHistogramBoolean(kPasswordlessLoginHistogram, passwordless);
 }
 
 void AuthEventsRecorder::OnRecoveryDone(CryptohomeRecoveryResult result,
+                                        const SessionAuthFactors& auth_factors,
                                         const base::TimeDelta& time) {
   base::UmaHistogramMediumTimes(GetRecoveryDurationHistogramName(result), time);
   base::UmaHistogramEnumeration(kRecoveryResultHistogramName, result);
+  if (!auth_factors.FindAnyPasswordFactor()) {
+    base::UmaHistogramEnumeration(kPasswordlessRecoveryResultHistogramName,
+                                  result);
+  }
   AddAuthEvent(GetCrashKeyStringWithStatus(
       "recovery_done", result == CryptohomeRecoveryResult::kSucceeded));
 }

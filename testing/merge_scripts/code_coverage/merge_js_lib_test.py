@@ -10,8 +10,10 @@ import shutil
 import tempfile
 import unittest
 
+# vpython-provided modules.
+from parameterized import parameterized  # pylint: disable=import-error
+
 import merge_js_lib as merger
-from parameterized import parameterized
 
 
 class MergeJSLibTest(unittest.TestCase):
@@ -51,13 +53,13 @@ class MergeJSLibTest(unittest.TestCase):
       for i, test_script in enumerate(test_files):
         file_path = os.path.join(scripts_dir, '%d.js.json' % i)
 
-        source_map = ""
+        source_map = ''
         if test_script['exists']:
           # Create an inline sourcemap with just the required keys.
           source_map_data_url = base64.b64encode(
               json.dumps({
-                  "sources": [os.path.join(*test_script['location'])],
-                  "sourceRoot": ""
+                  'sources': [os.path.join(*test_script['location'])],
+                  'sourceRoot': ''
               }).encode('utf-8'))
 
           source_map = 'data:application/json;base64,' + \
@@ -302,8 +304,8 @@ export const add = (a, b) => a + b; // should not be excluded
         }"""
 
     expected_after_remap = {
-        "chrome/browser/fileA.js": {
-            "path": "chrome/browser/fileA.js"
+        'chrome/browser/fileA.js': {
+            'path': 'chrome/browser/fileA.js'
         }
     }
 
@@ -315,8 +317,8 @@ export const add = (a, b) => a + b; // should not be excluded
       with open(coverage_file_path, 'w', encoding='utf-8', newline='') as f:
         f.write(test_file_data)
 
-      merger.remap_paths_to_relative(coverage_file_path, "/path/to/checkout",
-                                     "/path/to/checkout/out/dir")
+      merger.remap_paths_to_relative(coverage_file_path, '/path/to/checkout',
+                                     '/path/to/checkout/out/dir')
 
       with open(coverage_file_path, 'rb') as f:
         coverage_json = json.load(f)

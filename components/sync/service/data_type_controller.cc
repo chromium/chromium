@@ -8,9 +8,10 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/task/sequenced_task_runner.h"
+#include "base/strings/strcat.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/data_type_activation_request.h"
@@ -19,13 +20,6 @@
 
 namespace syncer {
 namespace {
-
-void ReportErrorOnModelThread(
-    scoped_refptr<base::SequencedTaskRunner> ui_thread,
-    const ModelErrorHandler& error_handler,
-    const ModelError& error) {
-  ui_thread->PostTask(error.location(), base::BindOnce(error_handler, error));
-}
 
 // Takes the strictest policy for clearing sync metadata.
 SyncStopMetadataFate TakeStrictestMetadataFate(SyncStopMetadataFate fate1,
@@ -36,8 +30,7 @@ SyncStopMetadataFate TakeStrictestMetadataFate(SyncStopMetadataFate fate1,
     case KEEP_METADATA:
       return fate2;
   }
-  NOTREACHED_IN_MIGRATION();
-  return KEEP_METADATA;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -58,8 +51,7 @@ std::string DataTypeController::StateToString(State state) {
     case FAILED:
       return "Failed";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "Invalid";
+  NOTREACHED();
 }
 
 DataTypeController::DataTypeController(
@@ -74,7 +66,7 @@ DataTypeController::DataTypeController(
     std::unique_ptr<DataTypeLocalDataBatchUploader> batch_uploader)
     : DataTypeController(type, std::move(batch_uploader)) {
   InitDataTypeController(std::move(delegate_for_full_sync_mode),
-                          std::move(delegate_for_transport_mode));
+                         std::move(delegate_for_transport_mode));
 }
 
 DataTypeController::~DataTypeController() = default;
@@ -149,7 +141,6 @@ void DataTypeController::InitDataTypeController(
                                                  WORKSPACE_DESK,
                                                  HISTORY,
                                                  PRINTERS_AUTHORIZATION_SERVERS,
-                                                 POWER_BOOKMARK,
                                                  NIGORI,
                                                  COOKIES};
     CHECK(kLegacyTypes.Has(type()))
@@ -176,16 +167,13 @@ void DataTypeController::LoadModels(
 
   DataTypeActivationRequest request;
   request.error_handler = base::BindRepeating(
-      &ReportErrorOnModelThread, base::SequencedTaskRunner::GetCurrentDefault(),
-      base::BindRepeating(&DataTypeController::ReportModelError,
-                          weak_ptr_factory_.GetWeakPtr(),
-                          SyncError::DATATYPE_ERROR));
-  request.authenticated_account_id = configure_context.authenticated_account_id;
+      &DataTypeController::ReportModelError, weak_ptr_factory_.GetWeakPtr());
+  request.authenticated_gaia_id = configure_context.authenticated_gaia_id;
   request.cache_guid = configure_context.cache_guid;
   request.sync_mode = configure_context.sync_mode;
   request.configuration_start_time = configure_context.configuration_start_time;
 
-  // Note that |request.authenticated_account_id| may be empty for local sync.
+  // Note that `request.authenticated_account_id` may be empty for local sync.
   DCHECK(!request.cache_guid.empty());
 
   // Ask the delegate to actually start the datatype.
@@ -212,7 +200,7 @@ std::unique_ptr<DataTypeActivationResponse> DataTypeController::Connect() {
 }
 
 void DataTypeController::Stop(SyncStopMetadataFate fate,
-                               StopCallback callback) {
+                              StopCallback callback) {
   DCHECK(CalledOnValidThread());
   CHECK(delegate_ || state() == NOT_RUNNING || state() == FAILED);
 
@@ -268,8 +256,8 @@ DataTypeController::State DataTypeController::state() const {
   return state_;
 }
 
-DataTypeController::PreconditionState
-DataTypeController::GetPreconditionState() const {
+DataTypeController::PreconditionState DataTypeController::GetPreconditionState()
+    const {
   return PreconditionState::kPreconditionsMet;
 }
 
@@ -281,16 +269,26 @@ bool DataTypeController::ShouldRunInTransportOnlyMode() const {
   return delegate_map_.count(SyncMode::kTransportOnly) != 0;
 }
 
-void DataTypeController::HasUnsyncedData(
-    base::OnceCallback<void(bool)> callback) {
-  if (!delegate_) {
-    std::move(callback).Run(false);
+void DataTypeController::GetUnsyncedDataCount(
+    base::OnceCallback<void(size_t)> callback) {
+  auto it = delegate_map_.find(SyncMode::kTransportOnly);
+  if (it == delegate_map_.end()) {
+    std::move(callback).Run(/*count=*/0);
     return;
   }
-  delegate_->HasUnsyncedData(std::move(callback));
+  CHECK(it->second);
+  // This should only be triggered for transport-only mode.
+  CHECK(!delegate_ || delegate_ == it->second.get(), base::NotFatalUntil::M138);
+  it->second->GetUnsyncedDataCount(std::move(callback));
 }
 
-void DataTypeController::GetAllNodes(AllNodesCallback callback) {
+void DataTypeController::GetAllNodesForDebugging(AllNodesCallback callback) {
+  // Precautionary safeguard.
+  if (state_ != RUNNING) {
+    std::move(callback).Run(base::Value::List());
+    return;
+  }
+
   CHECK(delegate_);
   delegate_->GetAllNodesForDebugging(std::move(callback));
 }
@@ -330,9 +328,9 @@ DataTypeControllerDelegate* DataTypeController::GetDelegateForTesting(
   return it != delegate_map_.end() ? it->second.get() : nullptr;
 }
 
-void DataTypeController::ReportModelError(SyncError::ErrorType error_type,
-                                           const ModelError& error) {
+void DataTypeController::ReportModelError(const ModelError& error) {
   DCHECK(CalledOnValidThread());
+  LogModelErrorToHistogram(error);
 
   switch (state_) {
     case MODEL_LOADED:
@@ -363,12 +361,16 @@ void DataTypeController::ReportModelError(SyncError::ErrorType error_type,
 
   state_ = FAILED;
 
-  TriggerCompletionCallbacks(
-      SyncError(error.location(), error_type, error.message(), type()));
+  TriggerCompletionCallbacks(error);
 }
 
 bool DataTypeController::CalledOnValidThread() const {
   return sequence_checker_.CalledOnValidSequence();
+}
+
+void DataTypeController::ClearDelegateMap() {
+  delegate_ = nullptr;
+  delegate_map_.clear();
 }
 
 void DataTypeController::RecordStartFailure() const {
@@ -381,6 +383,18 @@ void DataTypeController::RecordRunFailure() const {
   DCHECK(CalledOnValidThread());
   UMA_HISTOGRAM_ENUMERATION("Sync.DataTypeRunFailures2",
                             DataTypeHistogramValue(type()));
+}
+
+void DataTypeController::LogModelErrorToHistogram(
+    const ModelError& model_error) const {
+  DCHECK(CalledOnValidThread());
+  // Log specific error type for all sync data types.
+  base::UmaHistogramSparse("Sync.ModelError",
+                           static_cast<int>(model_error.type()));
+  // Log specific error type for the current sync data type.
+  base::UmaHistogramSparse(
+      base::StrCat({"Sync.ModelError.", DataTypeToHistogramSuffix(type())}),
+      static_cast<int>(model_error.type()));
 }
 
 void DataTypeController::OnDelegateStarted(
@@ -410,21 +424,22 @@ void DataTypeController::OnDelegateStarted(
     case MODEL_LOADED:
     case RUNNING:
     case NOT_RUNNING:
-      NOTREACHED_IN_MIGRATION() << " type " << DataTypeToDebugString(type())
-                                << " state " << StateToString(state_);
+      NOTREACHED() << " type " << DataTypeToDebugString(type()) << " state "
+                   << StateToString(state_);
   }
 
-  TriggerCompletionCallbacks(SyncError());
+  TriggerCompletionCallbacks(/*error=*/std::nullopt);
 }
 
-void DataTypeController::TriggerCompletionCallbacks(const SyncError& error) {
+void DataTypeController::TriggerCompletionCallbacks(
+    const std::optional<ModelError>& error) {
   DCHECK(CalledOnValidThread());
 
   if (model_load_callback_) {
     DCHECK(model_stop_callbacks_.empty());
     CHECK(state_ == MODEL_LOADED || state_ == FAILED);
 
-    model_load_callback_.Run(type(), error);
+    model_load_callback_.Run(error);
   } else if (!model_stop_callbacks_.empty()) {
     // State FAILED is possible if an error occurred during STOPPING, either
     // because the load failed or because ReportModelError() was called

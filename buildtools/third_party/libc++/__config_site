@@ -20,30 +20,40 @@
 
 #define _LIBCPP_ABI_VERSION 2
 
-/* #undef _LIBCPP_ABI_FORCE_ITANIUM */
-/* #undef _LIBCPP_ABI_FORCE_MICROSOFT */
-/* #undef _LIBCPP_HAS_NO_THREADS */
-/* #undef _LIBCPP_HAS_NO_MONOTONIC_CLOCK */
-/* #undef _LIBCPP_HAS_MUSL_LIBC */
-/* #undef _LIBCPP_HAS_THREAD_API_PTHREAD */
-/* #undef _LIBCPP_HAS_THREAD_API_EXTERNAL */
-/* #undef _LIBCPP_HAS_THREAD_API_WIN32 */
-/* #undef _LIBCPP_HAS_THREAD_LIBRARY_EXTERNAL */
+#define _LIBCPP_ABI_FORCE_ITANIUM 0
+#define _LIBCPP_ABI_FORCE_MICROSOFT 0
+#define _LIBCPP_HAS_THREADS 1
+#define _LIBCPP_HAS_MONOTONIC_CLOCK 1
+#define _LIBCPP_HAS_TERMINAL 1
+#define _LIBCPP_HAS_MUSL_LIBC 0
+
+#ifdef _WIN32
+#define _LIBCPP_HAS_THREAD_API_PTHREAD 0
+#define _LIBCPP_HAS_THREAD_API_EXTERNAL 0
+#define _LIBCPP_HAS_THREAD_API_WIN32 1
+#else
+#define _LIBCPP_HAS_THREAD_API_PTHREAD 1
+#define _LIBCPP_HAS_THREAD_API_EXTERNAL 0
+#define _LIBCPP_HAS_THREAD_API_WIN32 0
+#endif
+
 /* #undef _LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS */
-#define _LIBCPP_HAS_NO_VENDOR_AVAILABILITY_ANNOTATIONS
+#define _LIBCPP_HAS_VENDOR_AVAILABILITY_ANNOTATIONS 0
 /* #undef _LIBCPP_NO_VCRUNTIME */
 /* #undef _LIBCPP_TYPEINFO_COMPARISON_IMPLEMENTATION */
-/* #undef _LIBCPP_HAS_NO_FILESYSTEM */
-/* #undef _LIBCPP_HAS_PARALLEL_ALGORITHMS */
-/* #undef _LIBCPP_HAS_NO_RANDOM_DEVICE */
-/* #undef _LIBCPP_HAS_NO_LOCALIZATION */
-/* #undef _LIBCPP_HAS_NO_WIDE_CHARACTERS */
+#define _LIBCPP_HAS_FILESYSTEM 1
+#define _LIBCPP_HAS_RANDOM_DEVICE 1
+#define _LIBCPP_HAS_LOCALIZATION 1
+#define _LIBCPP_HAS_UNICODE 1
+#define _LIBCPP_HAS_WIDE_CHARACTERS 1
 
 // TODO(thakis): Is this right?
 /* #undef _LIBCPP_HAS_NO_STD_MODULES */
 
 // TODO(thakis): Is this right?
-/* #undef _LIBCPP_HAS_NO_TIME_ZONE_DATABASE */
+#define _LIBCPP_HAS_TIME_ZONE_DATABASE 1
+
+// _LIBCPP_INSTRUMENTED_WITH_ASAN is set in build/config/c++/BUILD.gn.
 
 // PSTL backends
 /* #undef _LIBCPP_PSTL_BACKEND_SERIAL */
@@ -52,6 +62,18 @@
 #else
 #define _LIBCPP_PSTL_BACKEND_STD_THREAD
 #endif
+
+// _LIBCPP_HARDENING_MODE_DEFAULT is not defined here. Instead, we define
+// _LIBCPP_HARDENING_MODE in build/config/compiler/BUILD.gn.
+
+// Define _LIBCPP_ASSERTION_SEMANTIC_DEFAULT instead of
+// _LIBCPP_ASSERTION_SEMANTIC because the latter requires setting
+// _LIBCPP_HAS_EXPERIMENTAL_LIBRARY too.
+#define _LIBCPP_ASSERTION_SEMANTIC_DEFAULT \
+    _LIBCPP_ASSERTION_SEMANTIC_HARDENING_DEPENDENT
+
+#define _LIBCPP_LIBC_PICOLIBC 0
+#define _LIBCPP_LIBC_NEWLIB 0
 
 // Settings below aren't part of __config_site upstream.
 // We set them here since we want them to take effect everywhere,
@@ -63,6 +85,9 @@
 // does not match ours.  Only has an effect on Windows.
 #define _LIBCPP_NO_AUTO_LINK
 
+// See https://libcxx.llvm.org/DesignDocs/HeaderRemovalPolicy.html
+#define _LIBCPP_REMOVE_TRANSITIVE_INCLUDES
+
 // Don't add ABI tags to libc++ symbols. ABI tags increase mangled name sizes.
 // This only exists to allow multiple // libc++ versions to be linked into a
 // binary, which Chrome doesn't do.
@@ -72,5 +97,8 @@
 // function because by default, this macro will does not call the verbose
 // termination function on Apple platforms.
 #define _LIBCPP_VERBOSE_ABORT(...) ::std::__libcpp_verbose_abort(__VA_ARGS__)
+
+// Disable header include for parallel algorithms.
+#define _LIBCPP_HAS_NO_INCOMPLETE_PSTL
 
 #endif // _LIBCPP_CONFIG_SITE

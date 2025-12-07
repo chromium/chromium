@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/not_fatal_until.h"
 #include "build/build_config.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
@@ -58,10 +57,12 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             "Change of results for the query typed by the user in the "
             "omnibox."
           data:
-            "The only data sent is the path to an image. No user data is "
-            "included, although some might be inferrable (e.g. whether the "
-            "weather is sunny or rainy in the user's current location) "
-            "from the name of the image in the path."
+            "The only data sent is the path to an image and cookies. User data "
+            "might be present in cookies, and some user data might be "
+            "inferrable (e.g. whether the weather is sunny or rainy in the "
+            "user's current location) from the name of the image in the path. "
+            "Requests are sent as same-site: "
+            "https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis#name-same-site-and-cross-site-re."
           destination: WEBSITE
         }
         policy {
@@ -200,12 +201,14 @@ bool BitmapFetcherService::IsCached(const GURL& url) {
 std::unique_ptr<BitmapFetcher> BitmapFetcherService::CreateFetcher(
     const GURL& url,
     const net::NetworkTrafficAnnotationTag& traffic_annotation) {
+  // TODO(https://crbug.com/408008982): Consider merging to `ImageFetcher.`
   std::unique_ptr<BitmapFetcher> new_fetcher = std::make_unique<BitmapFetcher>(
       url, this, traffic_annotation, shared_data_decoder_.get());
 
   new_fetcher->Init(
       net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN,
-      network::mojom::CredentialsMode::kInclude);
+      network::mojom::CredentialsMode::kInclude, /*additional_headers=*/{},
+      /*initiator=*/url::Origin(), /*is_same_site_request=*/true);
   new_fetcher->Start(context_->GetDefaultStoragePartition()
                          ->GetURLLoaderFactoryForBrowserProcess()
                          .get());
@@ -246,7 +249,7 @@ void BitmapFetcherService::RemoveFetcher(const BitmapFetcher* fetcher) {
       break;
   }
   // RemoveFetcher should always result in removal.
-  CHECK(it != active_fetchers_.end(), base::NotFatalUntil::M130);
+  CHECK(it != active_fetchers_.end());
   active_fetchers_.erase(it);
 }
 

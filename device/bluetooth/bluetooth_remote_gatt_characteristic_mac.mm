@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/notimplemented.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -161,7 +162,7 @@ void BluetoothRemoteGattCharacteristicMac::ReadRemoteCharacteristic(
 }
 
 void BluetoothRemoteGattCharacteristicMac::WriteRemoteCharacteristic(
-    const std::vector<uint8_t>& value,
+    base::span<const uint8_t> value,
     WriteType write_type,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
@@ -201,7 +202,7 @@ void BluetoothRemoteGattCharacteristicMac::WriteRemoteCharacteristic(
 }
 
 void BluetoothRemoteGattCharacteristicMac::DeprecatedWriteRemoteCharacteristic(
-    const std::vector<uint8_t>& value,
+    base::span<const uint8_t> value,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
   if (!IsWritable()) {

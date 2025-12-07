@@ -5,10 +5,11 @@
 #include <optional>
 
 #include "base/json/json_reader.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_expected_support.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/base/math_util.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
@@ -39,7 +40,7 @@
 #include "ui/base/test/scoped_preferred_scroller_style_mac.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/aura/test/test_screen.h"
 #endif
 
@@ -66,8 +67,8 @@ void LayoutNonRecursiveForTestingViewportIntersection(
         child.height = height;
       }
   )";
-  ASSERT_TRUE(EvalJsAfterLifecycleUpdate(execution_target, kRafScript, "")
-                  .error.empty());
+  ASSERT_TRUE(
+      EvalJsAfterLifecycleUpdate(execution_target, kRafScript, "").is_ok());
 }
 
 // Check |intersects_viewport| on widget and process.
@@ -406,7 +407,7 @@ INSTANTIATE_TEST_SUITE_P(SitePerProcess,
                          testing::Values(1.0, 1.5, 2.0));
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        SubframeUpdateToCorrectDeviceScaleFactor) {
   GURL main_url(embedded_test_server()->GetURL(
@@ -426,7 +427,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // TODO(oshima): allow DeviceScaleFactor change on other platforms
   // (win, linux, mac, android and mus).
   aura::TestScreen* test_screen =
-      static_cast<aura::TestScreen*>(display::Screen::GetScreen());
+      static_cast<aura::TestScreen*>(display::Screen::Get());
   test_screen->CreateHostForPrimaryDisplay();
   test_screen->SetDeviceScaleFactor(expected_dip_scale);
 
@@ -491,7 +492,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       root->current_frame_host(),
       "document.getElementsByTagName('div')[0].scrollTo(0, 5000);",
       "document.getElementsByTagName('div')[0].getBoundingClientRect().top;");
-  ASSERT_TRUE(eval_result.error.empty());
+  ASSERT_TRUE(eval_result.is_ok());
   int div_offset_top = eval_result.ExtractInt();
   gfx::Rect compositing_rect =
       filter->GetIntersectionState()->compositor_visible_rect;
@@ -581,7 +582,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // means that in the coordinate system of the subframes, 50px are clipped.
   ASSERT_TRUE(EvalJsAfterLifecycleUpdate(root->current_frame_host(),
                                          "window.scrollBy(0, 10)", "")
-                  .error.empty());
+                  .is_ok());
 
   // This scrolls the div containing in the 'Site B' iframe that contains the
   // 'Site C' iframe, and then we verify that the 'Site C' frame receives the
@@ -594,7 +595,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       child_b->current_frame_host(),
       "document.getElementsByTagName('div')[0].scrollTo(0, 5000);",
       "document.getElementsByTagName('div')[0].getBoundingClientRect().top;");
-  ASSERT_TRUE(child_eval_result.error.empty());
+  ASSERT_TRUE(child_eval_result.is_ok());
   int child_div_offset_top = child_eval_result.ExtractInt();
 
   gfx::Rect compositing_rect =
@@ -701,11 +702,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Force lifecycle update in root and child2 to make sure child2 has sent
   // viewport intersection into to grand child before child2 becomes throttled.
-  ASSERT_TRUE(EvalJsAfterLifecycleUpdate(root->current_frame_host(), "", "")
-                  .error.empty());
+  ASSERT_TRUE(
+      EvalJsAfterLifecycleUpdate(root->current_frame_host(), "", "").is_ok());
   ASSERT_TRUE(EvalJsAfterLifecycleUpdate(
                   root->child_at(2)->current_frame_host(), "", "")
-                  .error.empty());
+                  .is_ok());
   child2_filter->Clear();
 
   LayoutNonRecursiveForTestingViewportIntersection(shell()->web_contents());
@@ -718,7 +719,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // grand child.
   ASSERT_TRUE(EvalJsAfterLifecycleUpdate(
                   root->child_at(0)->current_frame_host(), "", "")
-                  .error.empty());
+                  .is_ok());
   // Grand child should match parent.
   EXPECT_TRUE(CheckIntersectsViewport(true, root->child_at(0)->child_at(0)));
   // Child 1 should be partially in viewport.
@@ -757,9 +758,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   )");
   EvalJsResult iframe_b_result =
       EvalJsAfterLifecycleUpdate(root->current_frame_host(), "", script);
-  base::Value iframe_b_offset = iframe_b_result.ExtractList();
-  int iframe_b_offset_left = iframe_b_offset.GetList()[0].GetInt();
-  int iframe_b_offset_top = iframe_b_offset.GetList()[1].GetInt();
+  const base::Value::List& iframe_b_offset = iframe_b_result.ExtractList();
+  int iframe_b_offset_left = iframe_b_offset[0].GetInt();
+  int iframe_b_offset_top = iframe_b_offset[1].GetInt();
 
   // Make sure a new IPC is sent after dirty-ing layout.
   filter->Clear();
@@ -773,9 +774,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   )");
   EvalJsResult iframe_c_result = EvalJsAfterLifecycleUpdate(
       root->child_at(0)->current_frame_host(), raf_script, script);
-  base::Value iframe_c_offset = iframe_c_result.ExtractList();
-  int iframe_c_offset_left = iframe_c_offset.GetList()[0].GetInt();
-  int iframe_c_offset_top = iframe_c_offset.GetList()[1].GetInt();
+  const base::Value::List& iframe_c_offset = iframe_c_result.ExtractList();
+  int iframe_c_offset_left = iframe_c_offset[0].GetInt();
+  int iframe_c_offset_top = iframe_c_offset[1].GetInt();
 
   // The IPC should already have been sent
   EXPECT_TRUE(filter->MessageReceived());
@@ -837,7 +838,7 @@ IN_PROC_BROWSER_TEST_P(
                   child_b->current_frame_host(),
                   "document.getElementsByTagName('div')[0].scrollTo(0, 5000);",
                   "")
-                  .error.empty());
+                  .is_ok());
   ASSERT_TRUE(filter->MessageReceived());
 
   // Check that we currently intersect with the viewport.
@@ -933,11 +934,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Run requestAnimationFrame in A and B to make sure initial layout has
   // completed and initial IPCs sent.
-  ASSERT_TRUE(EvalJsAfterLifecycleUpdate(root->current_frame_host(), "", "")
-                  .error.empty());
+  ASSERT_TRUE(
+      EvalJsAfterLifecycleUpdate(root->current_frame_host(), "", "").is_ok());
   ASSERT_TRUE(
       EvalJsAfterLifecycleUpdate(child_node->current_frame_host(), "", "")
-          .error.empty());
+          .is_ok());
   filter->Clear();
 
   // Scroll the child frame out of view, causing it to become throttled.
@@ -983,11 +984,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Run requestAnimationFrame in A and B to make sure initial layout has
   // completed and initial IPC's sent.
-  ASSERT_TRUE(EvalJsAfterLifecycleUpdate(root->current_frame_host(), "", "")
-                  .error.empty());
+  ASSERT_TRUE(
+      EvalJsAfterLifecycleUpdate(root->current_frame_host(), "", "").is_ok());
   ASSERT_TRUE(
       EvalJsAfterLifecycleUpdate(child_node_b->current_frame_host(), "", "")
-          .error.empty());
+          .is_ok());
   filter->Clear();
 
   // Scroll the child frame out of view, causing it to become throttled.
@@ -1052,8 +1053,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // Running requestAnimationFrame will ensure that any pending IPC's have been
   // sent by the renderer and received by the browser.
   auto flush_ipcs = [](FrameTreeNode* node) {
-    ASSERT_TRUE(EvalJsAfterLifecycleUpdate(node->current_frame_host(), "", "")
-                    .error.empty());
+    ASSERT_TRUE(
+        EvalJsAfterLifecycleUpdate(node->current_frame_host(), "", "").is_ok());
   };
 
   flush_ipcs(a_node);
@@ -1115,7 +1116,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // the values for all child frames.
   ASSERT_TRUE(EvalJsAfterLifecycleUpdate(a_node->current_frame_host(),
                                          "window.scrollTo(0, 5)", "")
-                  .error.empty());
+                  .is_ok());
   flush_ipcs(b1_node);
   flush_ipcs(b2_node);
   ASSERT_TRUE(b1_to_c1_message_filter->MessageReceived());
@@ -1199,7 +1200,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ScrollByRAF) {
   ASSERT_TRUE(
       EvalJsAfterLifecycleUpdate(
           root->child_at(0)->child_at(0)->current_frame_host(), "", addContent)
-          .error.empty());
+          .is_ok());
   frame_observer.WaitForAnyFrameSubmission();
 
   // Fetch the initial metrics, as adding a div can incidentally trigger RAF
@@ -1228,7 +1229,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ScrollByRAF) {
   ASSERT_TRUE(
       EvalJsAfterLifecycleUpdate(
           root->child_at(0)->child_at(0)->current_frame_host(), scrollByRAF, "")
-          .error.empty());
+          .is_ok());
 
   // There will have been one frame before the RAF sequence. The minimum for
   // reporting if 100 frames, however we need to wait at least one extra frame.
@@ -1255,6 +1256,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ScrollByRAF) {
 // Make sure that when a relevant feature of the main frame changes, e.g. the
 // frame width, that the browser is notified.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, TextAutosizerPageInfo) {
+  if (base::FeatureList::IsEnabled(blink::features::kForceOffTextAutosizing)) {
+    GTEST_SKIP() << "Test does not apply when forcing off text autosizing.";
+  }
+
   UpdateTextAutosizerInfoProxyObserver update_text_autosizer_info_observer;
 
   blink::web_pref::WebPreferences prefs =
@@ -1314,7 +1319,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, TextAutosizerPageInfo) {
       web_contents()->GetSiteInstance()->GetRelatedSiteInstance(c_url);
   // Force creation of a render process for c's SiteInstance, this will get
   // used when we dynamically create the new frame.
-  auto* c_rph = static_cast<RenderProcessHostImpl*>(c_site->GetProcess());
+  auto* c_rph = static_cast<RenderProcessHostImpl*>(
+      c_site->GetOrCreateProcessForTesting());
   ASSERT_TRUE(c_rph);
   ASSERT_NE(c_rph, root->current_frame_host()->GetProcess());
   ASSERT_NE(c_rph, b_child->current_frame_host()->GetProcess());
@@ -1698,8 +1704,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // This test verifies that changing the CSS visibility of a cross-origin
 // <iframe> is forwarded to its corresponding RenderWidgetHost and all other
 // RenderWidgetHosts corresponding to the nested cross-origin frame.
-// TODO(crbug.com/40865141): Flaky on mac, linux-lacros, android.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/40865141): Flaky on mac and android.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_CSSVisibilityChanged DISABLED_CSSVisibilityChanged
 #else
 #define MAYBE_CSSVisibilityChanged CSSVisibilityChanged
@@ -1728,7 +1734,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, MAYBE_CSSVisibilityChanged) {
 
   // Initially all the RenderWidgetHosts should be visible.
   for (size_t index = 0; index < child_widget_hosts.size(); ++index) {
-    EXPECT_FALSE(child_widget_hosts[index]->is_hidden())
+    EXPECT_FALSE(child_widget_hosts[index]->IsHidden())
         << "The RWH at distance " << index + 1U
         << " from root RWH should not be hidden.";
   }
@@ -2253,7 +2259,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(
       EvalJs(root->current_frame_host(),
              "document.querySelector('iframe').style.transform = 'scale(0)'")
-          .error.empty());
+          .is_ok());
 
   // Wait for b.com frame's compositing scale factor to change, and check that
   // the final value is non-zero.
@@ -2439,7 +2445,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       scroll_end_location_in_screen.y());
   ASSERT_OK_AND_ASSIGN(
       auto parsed_json,
-      base::JSONReader::ReadAndReturnValueWithError(touch_move_sequence_json));
+      base::JSONReader::ReadAndReturnValueWithError(
+          touch_move_sequence_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   ActionsParser actions_parser(std::move(parsed_json));
 
   ASSERT_TRUE(actions_parser.Parse());

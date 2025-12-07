@@ -48,6 +48,9 @@ enum class NavigationDiscardReason {
   // the response failed security checks (e.g. claiming an incompatible origin),
   // so the renderer got killed and the commit didn't go through.
   kFailedSecurityCheck,
+  // Cancelled by a new navigation with identical conditions to the discarded
+  // navigation.
+  kNewDuplicateNavigation,
 };
 
 } // namespace content

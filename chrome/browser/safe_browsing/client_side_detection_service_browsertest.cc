@@ -16,6 +16,7 @@
 #include "chrome/browser/safe_browsing/client_side_detection_service_factory.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/client_side_phishing_model.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
@@ -23,6 +24,7 @@
 #include "components/safe_browsing/core/common/proto/client_model.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ipc/ipc_channel_proxy.h"
@@ -34,10 +36,8 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
-#include "chrome/test/base/android/android_browser_test.h"
 #else
 #include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #endif  // defined (
 
@@ -171,17 +171,18 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
     mojom::PhishingDetectorResult result;
     std::optional<mojo_base::ProtoWrapper> verdict;
     phishing_detector->StartPhishingDetection(
-        url, base::BindOnce(
-                 [](base::RepeatingClosure quit_closure,
-                    mojom::PhishingDetectorResult* out_result,
-                    std::optional<mojo_base::ProtoWrapper>* out_verdict,
-                    mojom::PhishingDetectorResult result,
-                    std::optional<mojo_base::ProtoWrapper> verdict) {
-                   *out_result = result;
-                   *out_verdict = std::move(verdict);
-                   quit_closure.Run();
-                 },
-                 run_loop.QuitClosure(), &result, &verdict));
+        url, safe_browsing::mojom::ClientSideDetectionType::kTriggerModels,
+        base::BindOnce(
+            [](base::RepeatingClosure quit_closure,
+               mojom::PhishingDetectorResult* out_result,
+               std::optional<mojo_base::ProtoWrapper>* out_verdict,
+               mojom::PhishingDetectorResult result,
+               std::optional<mojo_base::ProtoWrapper> verdict) {
+              *out_result = result;
+              *out_verdict = std::move(verdict);
+              quit_closure.Run();
+            },
+            run_loop.QuitClosure(), &result, &verdict));
 
     run_loop.Run();
 
@@ -264,17 +265,18 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
     mojom::PhishingDetectorResult result;
     std::optional<mojo_base::ProtoWrapper> verdict;
     phishing_detector->StartPhishingDetection(
-        url, base::BindOnce(
-                 [](base::RepeatingClosure quit_closure,
-                    mojom::PhishingDetectorResult* out_result,
-                    std::optional<mojo_base::ProtoWrapper>* out_verdict,
-                    mojom::PhishingDetectorResult result,
-                    std::optional<mojo_base::ProtoWrapper> verdict) {
-                   *out_result = result;
-                   *out_verdict = std::move(verdict);
-                   quit_closure.Run();
-                 },
-                 run_loop.QuitClosure(), &result, &verdict));
+        url, safe_browsing::mojom::ClientSideDetectionType::kTriggerModels,
+        base::BindOnce(
+            [](base::RepeatingClosure quit_closure,
+               mojom::PhishingDetectorResult* out_result,
+               std::optional<mojo_base::ProtoWrapper>* out_verdict,
+               mojom::PhishingDetectorResult result,
+               std::optional<mojo_base::ProtoWrapper> verdict) {
+              *out_result = result;
+              *out_verdict = std::move(verdict);
+              quit_closure.Run();
+            },
+            run_loop.QuitClosure(), &result, &verdict));
 
     run_loop.Run();
 
@@ -405,17 +407,18 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
     mojom::PhishingDetectorResult result;
     std::optional<mojo_base::ProtoWrapper> verdict;
     phishing_detector->StartPhishingDetection(
-        url, base::BindOnce(
-                 [](base::RepeatingClosure quit_closure,
-                    mojom::PhishingDetectorResult* out_result,
-                    std::optional<mojo_base::ProtoWrapper>* out_verdict,
-                    mojom::PhishingDetectorResult result,
-                    std::optional<mojo_base::ProtoWrapper> verdict) {
-                   *out_result = result;
-                   *out_verdict = std::move(verdict);
-                   quit_closure.Run();
-                 },
-                 run_loop.QuitClosure(), &result, &verdict));
+        url, safe_browsing::mojom::ClientSideDetectionType::kTriggerModels,
+        base::BindOnce(
+            [](base::RepeatingClosure quit_closure,
+               mojom::PhishingDetectorResult* out_result,
+               std::optional<mojo_base::ProtoWrapper>* out_verdict,
+               mojom::PhishingDetectorResult result,
+               std::optional<mojo_base::ProtoWrapper> verdict) {
+              *out_result = result;
+              *out_verdict = std::move(verdict);
+              quit_closure.Run();
+            },
+            run_loop.QuitClosure(), &result, &verdict));
 
     run_loop.Run();
 
@@ -432,6 +435,267 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
         "SBClientPhishing.ClassifyThresholdsResult",
         safe_browsing::SBClientDetectionClassifyThresholdsResult::kSuccess, 1);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
+                       NoImageEmbeddingMatch) {
+  GURL url(embedded_test_server()->GetURL("/empty.html"));
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
+  content::RenderProcessHost* rph = rfh->GetProcess();
+
+  safe_browsing::ClientSideDetectionService* csd_service =
+      ClientSideDetectionServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+  ASSERT_TRUE(csd_service);
+  // Update the model and wait for confirmation.
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+
+    std::unique_ptr<PhishingModelWaiter> waiter =
+        CreatePhishingModelWaiter(rph);
+
+    base::RunLoop run_loop;
+    waiter->SetCallback(run_loop.QuitClosure());
+
+    base::FilePath tflite_path;
+    ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &tflite_path));
+#if BUILDFLAG(IS_ANDROID)
+    tflite_path = tflite_path.AppendASCII("safe_browsing")
+                      .AppendASCII("visual_model_android.tflite");
+#else
+    tflite_path = tflite_path.AppendASCII("safe_browsing")
+                      .AppendASCII("visual_model_desktop.tflite");
+#endif
+    base::File tflite_model(tflite_path,
+                            base::File::FLAG_OPEN | base::File::FLAG_READ);
+    ASSERT_TRUE(tflite_model.IsValid());
+
+    base::FilePath model_file_path;
+    ASSERT_TRUE(
+        base::PathService::Get(chrome::DIR_TEST_DATA, &model_file_path));
+    model_file_path = model_file_path.AppendASCII("safe_browsing")
+                          .AppendASCII("client_model.pb");
+
+    csd_service->SetModelAndVisualTfLiteForTesting(model_file_path,
+                                                   tflite_path);
+    run_loop.Run();
+  }
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  // Setup TargetEmbeddings.
+  float threshold = 0.95;
+  tflite::task::vision::FeatureVector target_fv;
+  for (int i = 0; i < 64; ++i) {
+    target_fv.add_value_float(i / 100.0);
+  }
+  TargetEmbedding target(target_fv, threshold);
+  std::vector<TargetEmbedding> test_targets;
+  test_targets.push_back(std::move(target));
+  csd_service->SetTargetImageEmbeddingsForTesting(std::move(test_targets));
+
+  // Case 1: ClientPhishingRequest's image embedding doesn't meet threshold.
+  {
+    // First obtain the verdict through the phishing detector.
+    base::RunLoop run_loop;
+
+    mojo::AssociatedRemote<mojom::PhishingDetector> phishing_detector;
+    rfh->GetRemoteAssociatedInterfaces()->GetInterface(&phishing_detector);
+
+    mojom::PhishingDetectorResult result;
+    std::optional<mojo_base::ProtoWrapper> verdict;
+    phishing_detector->StartPhishingDetection(
+        url, safe_browsing::mojom::ClientSideDetectionType::kTriggerModels,
+        base::BindOnce(
+            [](base::RepeatingClosure quit_closure,
+               mojom::PhishingDetectorResult* out_result,
+               std::optional<mojo_base::ProtoWrapper>* out_verdict,
+               mojom::PhishingDetectorResult result,
+               std::optional<mojo_base::ProtoWrapper> verdict) {
+              *out_result = result;
+              *out_verdict = std::move(verdict);
+              quit_closure.Run();
+            },
+            run_loop.QuitClosure(), &result, &verdict));
+
+    run_loop.Run();
+
+    EXPECT_EQ(result, mojom::PhishingDetectorResult::SUCCESS);
+
+    ASSERT_TRUE(verdict.has_value());
+    auto request = verdict->As<ClientPhishingRequest>();
+
+    // Add an image_feature_embedding that will match.
+    auto* features = request->mutable_image_feature_embedding();
+    for (int i = 0; i < 64; ++i) {
+      features->add_embedding_value(100);  // No match.
+    }
+
+    // Call the classification function.
+    csd_service->ClassifyPhishingThroughThresholds(&request.value());
+
+    EXPECT_FALSE(request->is_phishing());
+    ASSERT_FALSE(request->has_target_image_embedding_score());
+  }
+  // Case 2: Visual TFLite already flagged the page phishy.
+  {
+    // First obtain the verdict through the phishing detector.
+    base::RunLoop run_loop;
+
+    mojo::AssociatedRemote<mojom::PhishingDetector> phishing_detector;
+    rfh->GetRemoteAssociatedInterfaces()->GetInterface(&phishing_detector);
+
+    mojom::PhishingDetectorResult result;
+    std::optional<mojo_base::ProtoWrapper> verdict;
+    phishing_detector->StartPhishingDetection(
+        url, safe_browsing::mojom::ClientSideDetectionType::kTriggerModels,
+        base::BindOnce(
+            [](base::RepeatingClosure quit_closure,
+               mojom::PhishingDetectorResult* out_result,
+               std::optional<mojo_base::ProtoWrapper>* out_verdict,
+               mojom::PhishingDetectorResult result,
+               std::optional<mojo_base::ProtoWrapper> verdict) {
+              *out_result = result;
+              *out_verdict = std::move(verdict);
+              quit_closure.Run();
+            },
+            run_loop.QuitClosure(), &result, &verdict));
+
+    run_loop.Run();
+
+    EXPECT_EQ(result, mojom::PhishingDetectorResult::SUCCESS);
+
+    ASSERT_TRUE(verdict.has_value());
+    auto request = verdict->As<ClientPhishingRequest>();
+
+    // Add an image_feature_embedding that will match.
+    auto* features = request->mutable_image_feature_embedding();
+    for (int i = 0; i < 64; ++i) {
+      features->add_embedding_value(i / 100.0);  // Perfect match.
+    }
+
+    // Preemptively set the phishing to true.
+    request->set_is_phishing(true);
+
+    // Call the classification function.
+    csd_service->ClassifyPhishingThroughThresholds(&request.value());
+
+    EXPECT_TRUE(request->is_phishing());
+    ASSERT_FALSE(
+        request->has_target_image_embedding_score());  // Not set despite
+                                                       // perfect match.
+  }
+#endif
+}
+
+IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
+                       ImageEmbeddingMatch) {
+  GURL url(embedded_test_server()->GetURL("/empty.html"));
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
+  content::RenderProcessHost* rph = rfh->GetProcess();
+
+  safe_browsing::ClientSideDetectionService* csd_service =
+      ClientSideDetectionServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+  ASSERT_TRUE(csd_service);
+  // Update the model and wait for confirmation.
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+
+    std::unique_ptr<PhishingModelWaiter> waiter =
+        CreatePhishingModelWaiter(rph);
+
+    base::RunLoop run_loop;
+    waiter->SetCallback(run_loop.QuitClosure());
+
+    base::FilePath tflite_path;
+    ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &tflite_path));
+#if BUILDFLAG(IS_ANDROID)
+    tflite_path = tflite_path.AppendASCII("safe_browsing")
+                      .AppendASCII("visual_model_android.tflite");
+#else
+    tflite_path = tflite_path.AppendASCII("safe_browsing")
+                      .AppendASCII("visual_model_desktop.tflite");
+#endif
+    base::File tflite_model(tflite_path,
+                            base::File::FLAG_OPEN | base::File::FLAG_READ);
+    ASSERT_TRUE(tflite_model.IsValid());
+
+    base::FilePath model_file_path;
+    ASSERT_TRUE(
+        base::PathService::Get(chrome::DIR_TEST_DATA, &model_file_path));
+    model_file_path = model_file_path.AppendASCII("safe_browsing")
+                          .AppendASCII("client_model.pb");
+
+    csd_service->SetModelAndVisualTfLiteForTesting(model_file_path,
+                                                   tflite_path);
+    run_loop.Run();
+  }
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  {
+    // First obtain the verdict through the phishing detector.
+    base::RunLoop run_loop;
+
+    mojo::AssociatedRemote<mojom::PhishingDetector> phishing_detector;
+    rfh->GetRemoteAssociatedInterfaces()->GetInterface(&phishing_detector);
+
+    mojom::PhishingDetectorResult result;
+    std::optional<mojo_base::ProtoWrapper> verdict;
+    phishing_detector->StartPhishingDetection(
+        url,
+        safe_browsing::mojom::ClientSideDetectionType::kImageEmbeddingMatch,
+        base::BindOnce(
+            [](base::RepeatingClosure quit_closure,
+               mojom::PhishingDetectorResult* out_result,
+               std::optional<mojo_base::ProtoWrapper>* out_verdict,
+               mojom::PhishingDetectorResult result,
+               std::optional<mojo_base::ProtoWrapper> verdict) {
+              *out_result = result;
+              *out_verdict = std::move(verdict);
+              quit_closure.Run();
+            },
+            run_loop.QuitClosure(), &result, &verdict));
+
+    run_loop.Run();
+
+    EXPECT_EQ(result, mojom::PhishingDetectorResult::SUCCESS);
+
+    ASSERT_TRUE(verdict.has_value());
+    auto request = verdict->As<ClientPhishingRequest>();
+
+    // Setup TargetEmbeddings.
+    float threshold = 0.95;
+    tflite::task::vision::FeatureVector target_fv;
+    for (int i = 0; i < 64; ++i) {
+      target_fv.add_value_float(0.1);
+    }
+    TargetEmbedding target(target_fv, threshold);
+    std::vector<TargetEmbedding> test_targets;
+    test_targets.push_back(std::move(target));
+    csd_service->SetTargetImageEmbeddingsForTesting(std::move(test_targets));
+
+    // Add an image_feature_embedding that will match.
+    auto* features = request->mutable_image_feature_embedding();
+    for (int i = 0; i < 64; ++i) {
+      features->add_embedding_value(0.1);  // Perfect match.
+    }
+
+    // Call the classification function.
+    csd_service->ClassifyPhishingThroughThresholds(&request.value());
+
+    EXPECT_TRUE(request->is_phishing());
+    ASSERT_TRUE(request->has_target_image_embedding_score());
+    EXPECT_EQ(
+        request->target_image_embedding_score().id(),
+        "ac7d206f95fb23a5ad4d52d76c4acd22d16bdcdbb3a6decc66f8eaabc9b40534");
+    EXPECT_NEAR(request->target_image_embedding_score().score(), 1.0, 0.001);
+  }
+
+#endif
 }
 
 }  // namespace safe_browsing

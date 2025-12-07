@@ -39,8 +39,7 @@ ChromeUserPopulation GetUserPopulation(
     // The below state is optional, as it is not available in all
     // contexts/embedders.
     std::optional<size_t> num_profiles,
-    std::optional<size_t> num_loaded_profiles,
-    std::optional<size_t> num_open_profiles);
+    std::optional<size_t> num_loaded_profiles);
 
 }  // namespace safe_browsing
 

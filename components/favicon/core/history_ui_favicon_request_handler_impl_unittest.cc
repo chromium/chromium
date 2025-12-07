@@ -10,7 +10,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
@@ -36,12 +35,13 @@ const base::CancelableTaskTracker::TaskId kTaskId = 1;
 favicon_base::FaviconRawBitmapResult CreateTestBitmapResult(
     const GURL& icon_url,
     int desired_size_in_pixel) {
-  scoped_refptr<base::RefCountedBytes> data(new base::RefCountedBytes());
-  gfx::PNGCodec::EncodeBGRASkBitmap(
-      gfx::test::CreateBitmap(desired_size_in_pixel, SK_ColorRED), false,
-      &data->as_vector());
+  std::optional<std::vector<uint8_t>> png_data =
+      gfx::PNGCodec::EncodeBGRASkBitmap(
+          gfx::test::CreateBitmap(desired_size_in_pixel, SK_ColorRED),
+          /*discard_transparency=*/false);
   favicon_base::FaviconRawBitmapResult result;
-  result.bitmap_data = data;
+  result.bitmap_data =
+      base::MakeRefCounted<base::RefCountedBytes>(std::move(png_data.value()));
   result.icon_url = icon_url;
   result.pixel_size = gfx::Size(desired_size_in_pixel, desired_size_in_pixel);
   return result;
@@ -246,17 +246,11 @@ class HistoryUiFaviconRequestHandlerImplTest : public ::testing::Test {
   testing::NiceMock<base::MockCallback<
       HistoryUiFaviconRequestHandlerImpl::CanSendHistoryDataGetter>>
       can_send_history_data_getter_;
-  base::HistogramTester histogram_tester_;
   HistoryUiFaviconRequestHandlerImpl history_ui_favicon_request_handler_;
 
   // Convenience constants used in the tests.
   const GURL kPageUrl = GURL("https://www.example.com");
   const GURL kIconUrl = GURL("https://www.example.com/favicon16.png");
-  const HistoryUiFaviconRequestOrigin kOrigin =
-      HistoryUiFaviconRequestOrigin::kHistory;
-  const std::string kOriginHistogramSuffix = ".HISTORY";
-  const std::string kAvailabilityHistogramName =
-      "Sync.SyncedHistoryFaviconAvailability";
 };
 
 TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetEmptyBitmap) {
@@ -265,12 +259,9 @@ TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetEmptyBitmap) {
                                       /*desired_size_in_pixel=*/16, _, _, _));
   favicon_base::FaviconRawBitmapResult result;
   history_ui_favicon_request_handler_.GetRawFaviconForPageURL(
-      kPageUrl, /*desired_size_in_pixel=*/16,
-      base::BindOnce(&StoreBitmap, &result), kOrigin);
+      kPageUrl, /*desired_size_in_pixel=*/16, /*fallback_to_host=*/true,
+      base::BindOnce(&StoreBitmap, &result));
   EXPECT_FALSE(result.is_valid());
-  histogram_tester_.ExpectUniqueSample(
-      kAvailabilityHistogramName + kOriginHistogramSuffix,
-      FaviconAvailability::kNotAvailable, 1);
 }
 
 TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetLocalBitmap) {
@@ -281,12 +272,9 @@ TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetLocalBitmap) {
   EXPECT_CALL(mock_large_icon_service_, TouchIconFromGoogleServer(kIconUrl));
   favicon_base::FaviconRawBitmapResult result;
   history_ui_favicon_request_handler_.GetRawFaviconForPageURL(
-      kPageUrl, /*desired_size_in_pixel=*/16,
-      base::BindOnce(&StoreBitmap, &result), kOrigin);
+      kPageUrl, /*desired_size_in_pixel=*/16, /*fallback_to_host=*/true,
+      base::BindOnce(&StoreBitmap, &result));
   EXPECT_TRUE(result.is_valid());
-  histogram_tester_.ExpectUniqueSample(
-      kAvailabilityHistogramName + kOriginHistogramSuffix,
-      FaviconAvailability::kLocal, 1);
 }
 
 TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetGoogleServerBitmap) {
@@ -302,23 +290,17 @@ TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetGoogleServerBitmap) {
                   /*should_trim_page_url_path=*/false, _, _));
   favicon_base::FaviconRawBitmapResult result;
   history_ui_favicon_request_handler_.GetRawFaviconForPageURL(
-      kPageUrl, /*desired_size_in_pixel=*/16,
-      base::BindOnce(&StoreBitmap, &result), kOrigin);
+      kPageUrl, /*desired_size_in_pixel=*/16, /*fallback_to_host=*/true,
+      base::BindOnce(&StoreBitmap, &result));
   EXPECT_TRUE(result.is_valid());
-  histogram_tester_.ExpectUniqueSample(
-      kAvailabilityHistogramName + kOriginHistogramSuffix,
-      FaviconAvailability::kLocal, 1);
 }
 
 TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetEmptyImage) {
   EXPECT_CALL(mock_favicon_service_, GetFaviconImageForPageURL(kPageUrl, _, _));
   favicon_base::FaviconImageResult result;
   history_ui_favicon_request_handler_.GetFaviconImageForPageURL(
-      kPageUrl, base::BindOnce(&StoreImage, &result), kOrigin);
+      kPageUrl, base::BindOnce(&StoreImage, &result));
   EXPECT_TRUE(result.image.IsEmpty());
-  histogram_tester_.ExpectUniqueSample(
-      kAvailabilityHistogramName + kOriginHistogramSuffix,
-      FaviconAvailability::kNotAvailable, 1);
 }
 
 TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetLocalImage) {
@@ -327,11 +309,8 @@ TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetLocalImage) {
   EXPECT_CALL(mock_large_icon_service_, TouchIconFromGoogleServer(kIconUrl));
   favicon_base::FaviconImageResult result;
   history_ui_favicon_request_handler_.GetFaviconImageForPageURL(
-      kPageUrl, base::BindOnce(&StoreImage, &result), kOrigin);
+      kPageUrl, base::BindOnce(&StoreImage, &result));
   EXPECT_FALSE(result.image.IsEmpty());
-  histogram_tester_.ExpectUniqueSample(
-      kAvailabilityHistogramName + kOriginHistogramSuffix,
-      FaviconAvailability::kLocal, 1);
 }
 
 TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetGoogleServerImage) {
@@ -345,11 +324,8 @@ TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetGoogleServerImage) {
                   /*should_trim_page_url_path=*/false, _, _));
   favicon_base::FaviconImageResult result;
   history_ui_favicon_request_handler_.GetFaviconImageForPageURL(
-      kPageUrl, base::BindOnce(&StoreImage, &result), kOrigin);
+      kPageUrl, base::BindOnce(&StoreImage, &result));
   EXPECT_FALSE(result.image.IsEmpty());
-  histogram_tester_.ExpectUniqueSample(
-      kAvailabilityHistogramName + kOriginHistogramSuffix,
-      FaviconAvailability::kLocal, 1);
 }
 
 TEST_F(HistoryUiFaviconRequestHandlerImplTest,
@@ -370,7 +346,8 @@ TEST_F(HistoryUiFaviconRequestHandlerImplTest,
       GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(_, _, _, _))
       .Times(0);
   history_ui_favicon_request_handler_.GetRawFaviconForPageURL(
-      kPageUrl, /*desired_size_in_pixel=*/16, base::DoNothing(), kOrigin);
+      kPageUrl, /*desired_size_in_pixel=*/16, /*fallback_to_host=*/true,
+      base::DoNothing());
 }
 
 }  // namespace

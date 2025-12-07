@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("ui") {
   sources = [
@@ -24,10 +24,10 @@ static_library("ui") {
 
   deps = [
     "//ash",
-    "//ash/components/arc",
     "//ash/style",
     "//base",
     "//chrome/browser/nearby_sharing/common",
+    "//chromeos/ash/experiences/arc",
     "//components/exo",
     "//components/strings:components_strings_grit",
     "//ui/base",
@@ -47,12 +47,12 @@ source_set("unit_tests") {
   ]
 
   deps = [
-    "//ash/components/arc:arc_test_support",
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash/arc/nearby_share/ui",
     "//chrome/browser/nearby_sharing/common",
     "//chrome/browser/ui",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/strings:components_strings_grit",
     "//testing/gtest",
     "//ui/base",

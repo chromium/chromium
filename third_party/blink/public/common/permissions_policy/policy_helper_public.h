@@ -8,16 +8,15 @@
 #include <string_view>
 
 #include "base/containers/flat_map.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-shared.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
 namespace blink {
 
 using PermissionsPolicyFeatureToNameMap =
-    base::flat_map<mojom::PermissionsPolicyFeature, std::string_view>;
+    base::flat_map<network::mojom::PermissionsPolicyFeature, std::string_view>;
 
 using PermissionsPolicyNameToFeatureMap =
-    base::flat_map<std::string_view, mojom::PermissionsPolicyFeature>;
+    base::flat_map<std::string_view, network::mojom::PermissionsPolicyFeature>;
 
 // This method defines the feature names which will be recognized by the parser
 // for the Permissions-Policy HTTP header and the <iframe> "allow" attribute, as

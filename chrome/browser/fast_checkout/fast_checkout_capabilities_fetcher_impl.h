@@ -7,6 +7,9 @@
 
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher.h"
 
+#include <optional>
+#include <string>
+
 #include "chrome/browser/fast_checkout/fast_checkout_funnels.pb.h"
 #include "components/autofill/core/common/signatures.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -99,7 +102,7 @@ class FastCheckoutCapabilitiesFetcherImpl
   };
   // Called when the request's response arrives.
   void OnFetchComplete(base::TimeTicks start_time,
-                       std::unique_ptr<std::string> response_body);
+                       std::optional<std::string> response_body);
   // Returns if the cache is stale, i.e. if `kCacheTimeout` minutes since the
   // last successful request have passed or if no request was done yet.
   bool IsCacheStale() const;

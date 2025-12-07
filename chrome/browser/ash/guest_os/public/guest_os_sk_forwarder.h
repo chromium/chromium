@@ -8,8 +8,6 @@
 #include <string>
 
 #include "chromeos/crosapi/mojom/guest_os_sk_forwarder.mojom.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 class Profile;
 
@@ -27,12 +25,6 @@ class GuestOsSkForwarder {
       Profile* profile,
       const std::string& json_message,
       crosapi::mojom::GuestOsSkForwarder::ForwardRequestCallback);
-
-  void BindCrosapiRemote(
-      mojo::PendingRemote<crosapi::mojom::GuestOsSkForwarder> remote);
-
- private:
-  mojo::Remote<crosapi::mojom::GuestOsSkForwarder> remote_;
 };
 
 }  // namespace guest_os

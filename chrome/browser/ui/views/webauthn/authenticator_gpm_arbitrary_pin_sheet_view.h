@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/webauthn/authenticator_gpm_arbitrary_pin_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
 class View;
@@ -22,6 +23,9 @@ class View;
 class AuthenticatorGPMArbitraryPinSheetView
     : public AuthenticatorRequestSheetView,
       public AuthenticatorGPMArbitraryPinView::Delegate {
+  METADATA_HEADER(AuthenticatorGPMArbitraryPinSheetView,
+                  AuthenticatorRequestSheetView)
+
  public:
   explicit AuthenticatorGPMArbitraryPinSheetView(
       std::unique_ptr<AuthenticatorGpmArbitraryPinSheetModel> sheet_model);
@@ -40,6 +44,7 @@ class AuthenticatorGPMArbitraryPinSheetView
   std::unique_ptr<views::View> BuildStepSpecificHeader() override;
   std::pair<std::unique_ptr<views::View>, AutoFocus> BuildStepSpecificContent()
       override;
+  int GetSpacingBetweenTitleAndDescription() override;
 
   // AuthenticatorGPMArbitraryPinView::Delegate:
   void OnPinChanged(std::u16string pin) override;

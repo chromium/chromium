@@ -9,10 +9,11 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.IphDialogView;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -20,6 +21,7 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Coordinator for the IPH dialog in grid tab switcher. */
+@NullMarked
 public class TabGridIphDialogCoordinator implements TabSwitcherIphController {
     private final IphDialogView mIphDialogView;
     private final PropertyModel mModel;
@@ -35,14 +37,13 @@ public class TabGridIphDialogCoordinator implements TabSwitcherIphController {
                     (IphDialogView)
                             LayoutInflater.from(context)
                                     .inflate(R.layout.iph_dialog_layout, null, false);
-            mIphDialogView.setDrawable(
+            String title = context.getString(R.string.iph_drag_and_drop_title);
+            String description = context.getString(R.string.iph_drag_and_drop_content);
+            mIphDialogView.initialize(
                     AppCompatResources.getDrawable(
                             context, R.drawable.iph_drag_and_drop_animated_drawable),
-                    context.getResources().getString(R.string.iph_drag_and_drop_content));
-            mIphDialogView.setTitle(
-                    context.getResources().getString(R.string.iph_drag_and_drop_title));
-            mIphDialogView.setDescription(
-                    context.getResources().getString(R.string.iph_drag_and_drop_content));
+                    title,
+                    description);
             mModalDialogManager = modalDialogManager;
 
             ModalDialogProperties.Controller dialogController =
@@ -57,7 +58,7 @@ public class TabGridIphDialogCoordinator implements TabSwitcherIphController {
 
                         @Override
                         public void onDismiss(PropertyModel model, int dismissalCause) {
-                            mIphDialogView.stopIPHAnimation();
+                            mIphDialogView.stopIphAnimation();
                             detachParentGlobalLayoutListener();
                         }
                     };
@@ -67,7 +68,7 @@ public class TabGridIphDialogCoordinator implements TabSwitcherIphController {
                             .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
                             .with(
                                     ModalDialogProperties.POSITIVE_BUTTON_TEXT,
-                                    context.getResources().getString(R.string.ok))
+                                    context.getString(R.string.ok))
                             .with(ModalDialogProperties.CUSTOM_VIEW, mIphDialogView)
                             .build();
 
@@ -92,7 +93,7 @@ public class TabGridIphDialogCoordinator implements TabSwitcherIphController {
 
         attachParentGlobalLayoutListener();
         mModalDialogManager.showDialog(mModel, ModalDialogManager.ModalDialogType.APP);
-        mIphDialogView.startIPHAnimation();
+        mIphDialogView.startIphAnimation();
     }
 
     /** Destroy the IPH component. */

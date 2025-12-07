@@ -11,10 +11,11 @@ import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.view.View.OnClickListener;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareContentTypeHelper.ContentType;
 import org.chromium.chrome.browser.share.ShareHelper;
@@ -39,6 +40,7 @@ import java.util.Set;
  *   <li>#chrome-sharing-hub enabled: custom share sheet
  * </ul>
  */
+@NullMarked
 class ShareSheetPropertyModelBuilder {
     public static final int MAX_NUM_APPS = 7;
     // Variations parameter name for the comma-separated list of third-party activity names.
@@ -66,6 +68,8 @@ class ShareSheetPropertyModelBuilder {
     private final BottomSheetController mBottomSheetController;
     private final PackageManager mPackageManager;
     private final Profile mProfile;
+
+    private static @Nullable List<PropertyModel> sSelectThirdPartyAppsOverrideForTesting;
 
     ShareSheetPropertyModelBuilder(
             BottomSheetController bottomSheetController,
@@ -105,6 +109,11 @@ class ShareSheetPropertyModelBuilder {
                 /* showNewBadge= */ false);
     }
 
+    public static void setSelectThirdPartyAppsOverrideForTesting(List<PropertyModel> value) {
+        sSelectThirdPartyAppsOverrideForTesting = value;
+        ResettersForTesting.register(() -> sSelectThirdPartyAppsOverrideForTesting = null);
+    }
+
     protected List<PropertyModel> selectThirdPartyApps(
             ShareSheetBottomSheetContent bottomSheet,
             Set<Integer> contentTypes,
@@ -113,6 +122,10 @@ class ShareSheetPropertyModelBuilder {
             long shareStartTime,
             @LinkGeneration int linkGenerationStatusForMetrics,
             LinkToggleMetricsDetails linkToggleMetricsDetails) {
+        if (sSelectThirdPartyAppsOverrideForTesting != null) {
+            return sSelectThirdPartyAppsOverrideForTesting;
+        }
+
         List<String> thirdPartyActivityNames = FALLBACK_ACTIVITIES;
         List<ResolveInfo> resolveInfoList =
                 getCompatibleApps(contentTypes, params.getFileContentType());
@@ -198,15 +211,16 @@ class ShareSheetPropertyModelBuilder {
     /**
      * Returns a list of compatible {@link ResolveInfo}s for the set of {@link ContentType}s.
      *
-     * Adds {@link ResolveInfo}s according to the following logic:
+     * <p>Adds {@link ResolveInfo}s according to the following logic:
      *
      * <ul>
-     *     <li>If the {@link ContentType}s contain URL or Text, add text-sharing apps.
-     *     <li>If the {@link ContentType}s contain a file, add file-sharing apps compatible
-     *     {@code fileContentType}.
+     *   <li>If the {@link ContentType}s contain URL or Text, add text-sharing apps.
+     *   <li>If the {@link ContentType}s contain a file, add file-sharing apps compatible {@code
+     *       fileContentType}.
      * </ul>
      */
-    private List<ResolveInfo> getCompatibleApps(Set<Integer> contentTypes, String fileContentType) {
+    private List<ResolveInfo> getCompatibleApps(
+            Set<Integer> contentTypes, @Nullable String fileContentType) {
         List<ResolveInfo> resolveInfoList = new ArrayList<>();
         if (!Collections.disjoint(
                 contentTypes,

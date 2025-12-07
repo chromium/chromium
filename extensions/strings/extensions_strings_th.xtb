@@ -5,7 +5,6 @@
 <translation id="1140871961407805696">กล้องหลัง</translation>
 <translation id="1196338895211115272">ไม่สามารถส่งออกคีย์ส่วนตัว</translation>
 <translation id="132960226125594336">โหลดไฟล์ "<ph name="RELATIVE_PATH" />" สําหรับสคริปต์เนื้อหาไม่ได้เนื่องจากมีขนาดเกินขนาดสคริปต์หรือขนาดสคริปต์เนื้อหารวมของส่วนขยายสูงสุด</translation>
-<translation id="1420684932347524586">อ้าว! ไม่สามารถสร้างคีย์ส่วนตัว RSA แบบสุ่มได้</translation>
 <translation id="1445572445564823378">ส่วนขยายนี้จะทำให้ <ph name="PRODUCT_NAME" /> ทำงานช้าลง คุณควรปิดใช้งานส่วนขยายเพื่อให้ประสิทธิภาพการทำงานของ <ph name="PRODUCT_NAME" /> กลับมาเป็นปกติ</translation>
 <translation id="1468038450257740950">WebGL ไม่ไ้ด้รับการสนับสนุน</translation>
 <translation id="1610570795592207282">ไม่สามารถโหลด CSS "<ph name="RELATIVE_PATH" />" สำหรับสคริปต์</translation>
@@ -19,13 +18,11 @@
 <translation id="3115238746683532089">ผลิตภัณฑ์ที่ไม่รู้จัก <ph name="PRODUCT_ID" /> จากผู้ขาย <ph name="VENDOR_ID" /> (หมายเลขซีเรียล <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">ไม่สามารถแทนที่ไฟล์ CRX ได้ โปรดตรวจสอบดูว่าไฟล์มีการใช้งานอยู่หรือไม่</translation>
 <translation id="3163201441334626963">ผลิตภัณฑ์ที่ไม่รู้จัก <ph name="PRODUCT_ID" /> จากผู้ขาย <ph name="VENDOR_ID" /></translation>
-<translation id="3369521687965833290">ไม่สามารถแยกส่วนขยายได้ หากต้องการแยกส่วนขยายอย่างปลอดภัย คุณต้องมีเส้นทางไปยังไดเรกทอรีโปรไฟล์ของคุณซึ่งขึ้นต้นด้วยตัวอักษรของไดรฟ์และจะต้องไม่มีจังก์ชัน จุดต่อเชื่อม หรือลิงก์สัญลักษณ์ ไม่มีเส้นทางในรูปแบบดังกล่าวสำหรับโปรไฟล์ของคุณ</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (หมายเลขซีเรียล <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> จากผู้ขาย <ph name="VENDOR_ID" /> (หมายเลขซีเรียล <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ค่าที่ป้อนสำหรับคีย์ส่วนตัวจะต้องเป็นเส้นทางที่ถูกต้อง</translation>
 <translation id="388442998277590542">ไม่สามารถโหลดหน้าตัวเลือก "<ph name="OPTIONS_PAGE" />"</translation>
 <translation id="3984413272403535372">พบข้อผิดพลาดขณะเซ็นชื่อบนส่วนขยาย</translation>
-<translation id="4115165561519362854">ผู้ดูแลระบบของเครื่องนี้ต้องการ <ph name="EXTENSION_NAME" /> เวอร์ชัน <ph name="EXTENSION_VERSION" /> ซึ่งเป็นเวอร์ชันขั้นต่ำ จะไม่สามารถเปิดใช้ได้จนกว่าจะมีการอัปเดตส่วนขยายนี้เป็นเวอร์ชันดังกล่าว (หรือสูงกว่า)</translation>
 <translation id="4233778200880751280">ไม่สามารถโหลดหน้าเกี่ยวกับ "<ph name="ABOUT_PAGE" />"</translation>
 <translation id="471800408830181311">ไม่สามารถส่งค่าคีย์ส่วนตัว</translation>
 <translation id="4811956658694082538">ไม่สามารถติดตั้งแพ็กเกจเนื่องจากกระบวนการอรรถประโยชน์ขัดข้อง ลองรีสตาร์ท Chrome และลองใหม่อีกครั้ง</translation>
@@ -39,7 +36,6 @@
 <translation id="5972529113578162692">ผู้ดูแลระบบของอุปกรณ์เครื่องนี้กำหนดให้ติดตั้ง <ph name="EXTENSION_NAME" /> ไม่สามารถถอนการติดตั้งส่วนขยายนี้ได้</translation>
 <translation id="6027032947578871493">ผลิตภัณฑ์ที่ไม่รู้จัก <ph name="PRODUCT_ID" /> จาก <ph name="VENDOR_NAME" /> (หมายเลขซีเรียล <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> จากผู้ขาย <ph name="VENDOR_ID" /></translation>
-<translation id="6143635259298204954">ไม่สามารถแยกส่วนขยาย หากต้องการแยกส่วนขยายอย่างปลอดภัย คุณต้องมีเส้นทางไปยังไดเรกทอรีโปรไฟล์ของคุณซึ่งไม่มีลิงก์สัญลักษณ์ ไม่มีเส้นทางในรูปแบบดังกล่าวอยู่สำหรับโปรไฟล์ของคุณ</translation>
 <translation id="6322279351188361895">ไม่สามารถอ่านคีย์ส่วนตัว</translation>
 <translation id="6391538222494443604">ไดเรกทอรีที่ป้อนต้องมีอยู่จริง</translation>
 <translation id="641087317769093025">ไม่สามารถแตกไฟล์ซิปส่วนขยาย</translation>
@@ -52,12 +48,14 @@
 <translation id="7068383018033524534">ไฟล์ Manifest ไม่ถูกต้อง</translation>
 <translation id="7217838517480956708">ผู้ดูแลระบบของเครื่องนี้ต้องการให้มีการติดตั้ง <ph name="EXTENSION_NAME" /> โดยไม่สามารถลบหรือแก้ไขได้</translation>
 <translation id="7612608473764576263">ค่าที่ป้อนสำหรับคีย์ส่วนตัวจะต้องเป็นรูปแบบที่ถูกต้อง (คีย์ RSA ที่เข้ารหัส PEM ในรูปแบบ PKCS#8)</translation>
+<translation id="7876803335449432072">โหลดไฟล์ "<ph name="RELATIVE_PATH" />" สําหรับสคริปต์เนื้อหาไม่ได้ สไตล์ชีตของสคริปต์เนื้อหาจะโหลดได้เฉพาะจากไฟล์สไตล์ชีตที่รองรับเท่านั้น เช่น ไฟล์ .css</translation>
 <translation id="7939686037314084444">ส่วนขยายโหลดไม่ถูกต้อง และอาจดักจับคำขอของเครือข่ายไม่ได้</translation>
 <translation id="7972881773422714442">ตัวเลือก: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">กล้องหน้า</translation>
 <translation id="8047248493720652249">ส่วนขยายนี้ล้มเหลวในการตั้งชื่อการดาวน์โหลดว่า "<ph name="ATTEMPTED_FILENAME" />" เนื่องจากอีกส่วนขยายหนึ่ง (<ph name="EXTENSION_NAME" />) ได้กำหนดชื่อไฟล์ที่แตกต่างไว้ว่า "<ph name="ACTUAL_FILENAME" />"</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> จาก <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">ไฟล์ Manifest หายไปหรืออ่านไม่ได้</translation>
+<translation id="8621383749470166852">โหลดไฟล์ "<ph name="RELATIVE_PATH" />" สําหรับสคริปต์เนื้อหาไม่ได้ สคริปต์เนื้อหาจะโหลดได้เฉพาะจากไฟล์ JavaScript ที่รองรับเท่านั้น เช่น ไฟล์ .js</translation>
 <translation id="8636666366616799973">แพ็กเกจไม่ถูกต้อง รายละเอียด: "<ph name="ERROR_MESSAGE" />"</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" ขอสิทธิ์ในการเข้าถึงอุปกรณ์เครื่องใดเครื่องหนึ่งของคุณ:</translation>
 <translation id="8885905466771744233">คีย์ส่วนตัวของส่วนขยายที่ระบุมีอยู่แล้ว นำคีย์นั้นมาใช้ซ้ำหรือลบคีย์ออกก่อน</translation>

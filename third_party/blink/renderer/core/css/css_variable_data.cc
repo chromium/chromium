@@ -2,18 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
+#include "third_party/blink/renderer/core/html/parser/input_stream_preprocessor.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
@@ -61,40 +60,30 @@ static bool IsLineHeightUnitToken(CSSParserToken token) {
 void CSSVariableData::ExtractFeatures(const CSSParserToken& token,
                                       bool& has_font_units,
                                       bool& has_root_font_units,
-                                      bool& has_line_height_units) {
+                                      bool& has_line_height_units,
+                                      bool& has_dashed_functions) {
   has_font_units |= IsFontUnitToken(token);
   has_root_font_units |= IsRootFontUnitToken(token);
   has_line_height_units |= IsLineHeightUnitToken(token);
-}
-
-CSSVariableData* CSSVariableData::Create(CSSTokenizedValue value,
-                                         bool is_animation_tainted,
-                                         bool needs_variable_resolution) {
-  bool has_font_units = false;
-  bool has_root_font_units = false;
-  bool has_line_height_units = false;
-  while (!value.range.AtEnd()) {
-    ExtractFeatures(value.range.Consume(), has_font_units, has_root_font_units,
-                    has_line_height_units);
-  }
-  return Create(value.text, is_animation_tainted, needs_variable_resolution,
-                has_font_units, has_root_font_units, has_line_height_units);
+  has_dashed_functions |= css_parsing_utils::IsDashedFunctionName(token);
 }
 
 CSSVariableData* CSSVariableData::Create(const String& original_text,
                                          bool is_animation_tainted,
+                                         bool is_attr_tainted,
                                          bool needs_variable_resolution) {
   bool has_font_units = false;
   bool has_root_font_units = false;
   bool has_line_height_units = false;
-  CSSTokenizer tokenizer(original_text);
-  CSSParserTokenStream stream(tokenizer);
+  bool has_dashed_functions = false;
+  CSSParserTokenStream stream(original_text);
   while (!stream.AtEnd()) {
     ExtractFeatures(stream.ConsumeRaw(), has_font_units, has_root_font_units,
-                    has_line_height_units);
+                    has_line_height_units, has_dashed_functions);
   }
-  return Create(original_text, is_animation_tainted, needs_variable_resolution,
-                has_font_units, has_root_font_units, has_line_height_units);
+  return Create(original_text, is_animation_tainted, is_attr_tainted,
+                needs_variable_resolution, has_font_units, has_root_font_units,
+                has_line_height_units, has_dashed_functions);
 }
 
 String CSSVariableData::Serialize() const {
@@ -111,8 +100,7 @@ String CSSVariableData::Serialize() const {
     serialized_text.Append(OriginalText());
     serialized_text.Resize(serialized_text.length() - 1);
 
-    CSSTokenizer tokenizer(OriginalText());
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(OriginalText());
     CSSParserTokenType last_token_type = kEOFToken;
     for (;;) {
       CSSParserTokenType token_type = stream.ConsumeRaw().GetType();
@@ -141,31 +129,43 @@ String CSSVariableData::Serialize() const {
   return OriginalText().ToString();
 }
 
-bool CSSVariableData::operator==(const CSSVariableData& other) const {
+bool CSSVariableData::EqualsIgnoringAttrTainting(
+    const CSSVariableData& other) const {
   return OriginalText() == other.OriginalText();
+}
+
+bool CSSVariableData::operator==(const CSSVariableData& other) const {
+  return OriginalText() == other.OriginalText() &&
+         IsAttrTainted() == other.IsAttrTainted();
 }
 
 CSSVariableData::CSSVariableData(PassKey,
                                  StringView original_text,
                                  bool is_animation_tainted,
+                                 bool is_attr_tainted,
                                  bool needs_variable_resolution,
                                  bool has_font_units,
                                  bool has_root_font_units,
-                                 bool has_line_height_units)
+                                 bool has_line_height_units,
+                                 bool has_dashed_functions)
     : length_(original_text.length()),
       is_animation_tainted_(is_animation_tainted),
+      is_attr_tainted_(is_attr_tainted),
       needs_variable_resolution_(needs_variable_resolution),
       is_8bit_(original_text.Is8Bit()),
       has_font_units_(has_font_units),
       has_root_font_units_(has_root_font_units),
       has_line_height_units_(has_line_height_units),
-      unused_(0) {
+      has_dashed_functions_(has_dashed_functions) {
+  // SAFETY: This constructor is only reachable from CSSVariableData::Create()
+  // (because it requires a PassKey), which allocates enough memory in
+  // AdditionalBytes to hold the string.
   if (is_8bit_) {
-    base::ranges::copy(original_text.Span8(),
-                       reinterpret_cast<LChar*>(this + 1));
+    std::ranges::copy(original_text.Span8(),
+                      UNSAFE_BUFFERS(reinterpret_cast<LChar*>(this + 1)));
   } else {
-    base::ranges::copy(original_text.Span16(),
-                       reinterpret_cast<UChar*>(this + 1));
+    std::ranges::copy(original_text.Span16(),
+                      UNSAFE_BUFFERS(reinterpret_cast<UChar*>(this + 1)));
   }
 }
 
@@ -175,12 +175,9 @@ const CSSValue* CSSVariableData::ParseForSyntax(
   DCHECK(!NeedsVariableResolution());
   // TODO(timloh): This probably needs a proper parser context for
   // relative URL resolution.
-  CSSTokenizer tokenizer(OriginalText());
-  Vector<CSSParserToken, 32> tokens = tokenizer.TokenizeToEOF();
-  CSSParserTokenRange range(tokens);
-  return syntax.Parse(CSSTokenizedValue{range, OriginalText()},
+  return syntax.Parse(OriginalText(),
                       *StrictCSSParserContext(secure_context_mode),
-                      is_animation_tainted_);
+                      is_animation_tainted_, is_attr_tainted_);
 }
 
 }  // namespace blink

@@ -8,6 +8,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace metrics {
+namespace {
 
 TEST(ExpiredHistogramsCheckerTests, BasicTest) {
   uint32_t expired_hashes[] = {1, 2, 3};
@@ -35,4 +36,5 @@ TEST(ExpiredHistogramsCheckerTests, AllowlistTest) {
   EXPECT_TRUE(checker.ShouldRecord(base::HashMetricNameAs32Bits(hist4)));
 }
 
+}  // namespace
 }  // namespace metrics

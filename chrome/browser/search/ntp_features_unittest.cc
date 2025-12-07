@@ -11,6 +11,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
 
+namespace {
+
+const char kMobilePromoQRCodeURL[] =
+    "https://apps.apple.com/app/apple-store/"
+    "id535886823?pt=9008&ct=desktop-chr-ntp&mt=8";
+
+}
+
 namespace ntp_features {
 
 using testing::ElementsAre;
@@ -85,5 +93,27 @@ TEST(NTPFeaturesTest, WallpaperSearchButtonAnimationShownThreshold) {
       {});
   threshold = GetWallpaperSearchButtonAnimationShownThreshold();
   EXPECT_EQ(15, threshold);
+}
+
+TEST(NTPFeaturesTest, MobilePromoTargetURL) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  // If the param is unset, the default value is used.
+  std::string target_url = GetMobilePromoTargetURL();
+  EXPECT_EQ(kMobilePromoQRCodeURL, target_url);
+
+  // If the param is empty, the default value is still used.
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{kNtpMobilePromo, {{kNtpMobilePromoTargetUrlParam, ""}}}}, {});
+  target_url = GetMobilePromoTargetURL();
+  EXPECT_EQ(kMobilePromoQRCodeURL, target_url);
+
+  // Some alternate url will override the default.
+  std::string test_url = "http://www.google.com";
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{kNtpMobilePromo, {{kNtpMobilePromoTargetUrlParam, test_url}}}}, {});
+  target_url = GetMobilePromoTargetURL();
+  EXPECT_EQ(test_url, target_url);
 }
 }  // namespace ntp_features

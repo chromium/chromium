@@ -7,12 +7,15 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/functional/bind.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
+#include "media/base/media_switches.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -26,7 +29,7 @@ enum {
 // Returns the block ID closest to (but less or equal than) |pos| from |index|.
 template <class T>
 static MultiBuffer::BlockId ClosestPreviousEntry(
-    const std::map<MultiBuffer::BlockId, T>& index,
+    const base::flat_map<MultiBuffer::BlockId, T>& index,
     MultiBuffer::BlockId pos) {
   auto i = index.upper_bound(pos);
   DCHECK(i == index.end() || i->first > pos);
@@ -42,7 +45,7 @@ static MultiBuffer::BlockId ClosestPreviousEntry(
 // from |index|.
 template <class T>
 static MultiBuffer::BlockId ClosestNextEntry(
-    const std::map<MultiBuffer::BlockId, T>& index,
+    const base::flat_map<MultiBuffer::BlockId, T>& index,
     MultiBuffer::BlockId pos) {
   auto i = index.lower_bound(pos);
   if (i == index.end()) {
@@ -115,8 +118,10 @@ bool MultiBuffer::GlobalLRU::Pruneable() const {
 
 void MultiBuffer::GlobalLRU::SchedulePrune() {
   if (Pruneable() && !background_pruning_pending_) {
-    task_runner_->PostDelayedTask(
-        FROM_HERE, base::BindOnce(&MultiBuffer::GlobalLRU::PruneTask, this),
+    PostDelayedCrossThreadTask(
+        *task_runner_, FROM_HERE,
+        CrossThreadBindOnce(&MultiBuffer::GlobalLRU::PruneTask,
+                            blink::RetainedRef(this)),
         base::Seconds(kBlockPruneInterval));
     background_pruning_pending_ = true;
   }
@@ -181,7 +186,7 @@ MultiBuffer::~MultiBuffer() {
   DCHECK_EQ(max_size_, 0);
   // Remove all blocks from the LRU.
   for (const auto& i : data_) {
-    lru_->Remove(this, i.first);
+    lru_->Remove(this, i.key);
   }
   lru_->IncrementDataSize(-static_cast<int64_t>(data_.size()));
   lru_->IncrementMaxSize(-max_size_);
@@ -206,8 +211,7 @@ void MultiBuffer::AddReader(const BlockId& pos, Reader* reader) {
     BlockId closest_block;
     if (i.value()) {
       // Shouldn't happen, we already tested that Contains(pos) is true.
-      NOTREACHED_IN_MIGRATION();
-      closest_block = pos;
+      NOTREACHED();
     } else if (i == present_.begin()) {
       closest_block = -1;
     } else {
@@ -281,7 +285,7 @@ void MultiBuffer::ReleaseBlocks(const std::vector<MultiBufferBlockId>& blocks) {
   {
     base::AutoLock auto_lock(data_lock_);
     for (MultiBufferBlockId to_free : blocks) {
-      DCHECK(data_[to_free]);
+      DCHECK(data_.Contains(to_free));
       DCHECK_EQ(pinned_[to_free], 0);
       DCHECK_EQ(present_[to_free], 1);
       data_.erase(to_free);
@@ -339,7 +343,7 @@ std::unique_ptr<MultiBuffer::DataProvider> MultiBuffer::RemoveProvider(
     DataProvider* provider) {
   BlockId pos = provider->Tell();
   auto iter = writer_index_.find(pos);
-  CHECK(iter != writer_index_.end(), base::NotFatalUntil::M130);
+  CHECK(iter != writer_index_.end());
   DCHECK_EQ(iter->second.get(), provider);
   std::unique_ptr<DataProvider> ret = std::move(iter->second);
   writer_index_.erase(iter);
@@ -408,7 +412,7 @@ void MultiBuffer::OnDataProviderEvent(DataProvider* provider_tmp) {
       }
       DCHECK_GE(pos, 0);
       scoped_refptr<media::DataBuffer> data = provider->Read();
-      data_[pos] = data;
+      data_.Set(pos, data);
       eof = data->end_of_stream();
       if (!pinned_[pos])
         lru_->Use(this, pos);
@@ -458,9 +462,9 @@ void MultiBuffer::MergeFrom(MultiBuffer* other) {
     // Import data and update LRU.
     size_t data_size = data_.size();
     for (const auto& data : other->data_) {
-      if (data_.insert(std::make_pair(data.first, data.second)).second) {
-        if (!pinned_[data.first]) {
-          lru_->Insert(this, data.first);
+      if (data_.insert(data.key, data.value).is_new_entry) {
+        if (!pinned_[data.key]) {
+          lru_->Insert(this, data.key);
         }
       }
     }
@@ -492,8 +496,8 @@ void MultiBuffer::GetBlocksThreadsafe(
   base::AutoLock auto_lock(data_lock_);
   auto i = data_.find(from);
   BlockId j = from;
-  while (j <= to && i != data_.end() && i->first == j) {
-    output->push_back(i->second);
+  while (j <= to && i != data_.end() && i->key == j) {
+    output->push_back(i->value);
     ++j;
     ++i;
   }

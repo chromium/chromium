@@ -20,6 +20,7 @@
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "components/omnibox/browser/scored_history_match.h"
 #include "components/omnibox/browser/url_index_private_data.h"
+#include "components/omnibox/common/string_cleaning.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "url/gurl.h"
 
@@ -31,7 +32,7 @@ void UrlScoringSignalsAnnotator::AnnotateResult(const AutocompleteInput& input,
       URLIndexPrivateData::GetTermsAndWordStartsOffsets(lower_raw_string);
   for (auto& match : *result) {
     // Skip ineligible matches
-    if (!IsEligibleMatch(match)) {
+    if (!match.IsMlSignalLoggingEligible()) {
       continue;
     }
 
@@ -40,19 +41,22 @@ void UrlScoringSignalsAnnotator::AnnotateResult(const AutocompleteInput& input,
       match.scoring_signals = std::make_optional<ScoringSignals>();
     }
 
-    match.scoring_signals->set_length_of_url(
-        match.destination_url.spec().length());
-    match.scoring_signals->set_is_host_only(
-        history::HistoryMatch::IsHostOnly(match.destination_url));
     match.scoring_signals->set_allowed_to_be_default_match(
         match.allowed_to_be_default_match);
 
-    // Populate query-URL matching signals if not set.
-    if (!match.scoring_signals->has_total_url_match_length() &&
-        !match.destination_url.is_empty()) {
-      PopulateQueryUrlMatchingSignals(
-          lower_raw_terms, lower_terms_to_word_starts_offsets,
-          match.destination_url, &*match.scoring_signals);
+    if (match.destination_url.is_valid()) {
+      match.scoring_signals->set_length_of_url(
+          match.destination_url.spec().length());
+      match.scoring_signals->set_is_host_only(
+          history::HistoryMatch::IsHostOnly(match.destination_url));
+
+      // Populate query-URL matching signals if not set.
+      if (!match.scoring_signals->has_total_url_match_length() &&
+          !match.destination_url.is_empty()) {
+        PopulateQueryUrlMatchingSignals(
+            lower_raw_terms, lower_terms_to_word_starts_offsets,
+            match.destination_url, &*match.scoring_signals);
+      }
     }
   }
 }
@@ -64,7 +68,7 @@ void UrlScoringSignalsAnnotator::PopulateQueryUrlMatchingSignals(
     ScoringSignals* scoring_signals) {
   base::OffsetAdjuster::Adjustments adjustments;
   std::u16string cleaned_up_url =
-      bookmarks::CleanUpUrlForMatching(url, &adjustments);
+      omnibox::CleanUpUrlForMatching(url, &adjustments);
 
   WordStarts url_word_starts;
   String16Set url_words =

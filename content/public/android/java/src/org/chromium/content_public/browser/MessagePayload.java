@@ -4,8 +4,8 @@
 
 package org.chromium.content_public.browser;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -13,10 +13,11 @@ import java.util.Objects;
  * Represents a JavaScript message payload.
  * Currently only String and ArrayBuffer is supported.
  */
+@NullMarked
 public final class MessagePayload {
     @MessagePayloadType private final int mType;
-    @Nullable private final String mString;
-    @Nullable private final byte[] mArrayBuffer;
+    private final @Nullable String mString;
+    private final byte @Nullable [] mArrayBuffer;
 
     /**
      * Create a MessagePayload String type.
@@ -30,7 +31,7 @@ public final class MessagePayload {
     }
 
     /** Create a MessagePayload ArrayBuffer type. */
-    public MessagePayload(@NonNull byte[] arrayBuffer) {
+    public MessagePayload(byte[] arrayBuffer) {
         Objects.requireNonNull(arrayBuffer, "arrayBuffer cannot be null.");
         mType = MessagePayloadType.ARRAY_BUFFER;
         mArrayBuffer = arrayBuffer;
@@ -42,13 +43,11 @@ public final class MessagePayload {
         return mType;
     }
 
-    @Nullable
-    public String getAsString() {
+    public @Nullable String getAsString() {
         checkType(MessagePayloadType.STRING);
         return mString;
     }
 
-    @NonNull
     public byte[] getAsArrayBuffer() {
         checkType(MessagePayloadType.ARRAY_BUFFER);
         Objects.requireNonNull(mArrayBuffer, "mArrayBuffer cannot be null.");
@@ -65,7 +64,6 @@ public final class MessagePayload {
         }
     }
 
-    @NonNull
     public static String typeToString(@MessagePayloadType int type) {
         switch (type) {
             case MessagePayloadType.STRING:

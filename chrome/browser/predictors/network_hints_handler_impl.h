@@ -9,11 +9,11 @@
 #include "components/network_hints/common/network_hints.mojom.h"
 
 namespace content {
+class PreconnectManager;
 class RenderFrameHost;
 }
 
 namespace predictors {
-class PreconnectManager;
 
 class NetworkHintsHandlerImpl
     : public network_hints::mojom::NetworkHintsHandler {
@@ -38,7 +38,7 @@ class NetworkHintsHandlerImpl
 
   const int32_t render_process_id_;
   const int32_t render_frame_id_;
-  base::WeakPtr<PreconnectManager> preconnect_manager_;
+  base::WeakPtr<content::PreconnectManager> preconnect_manager_;
 };
 
 }  // namespace predictors

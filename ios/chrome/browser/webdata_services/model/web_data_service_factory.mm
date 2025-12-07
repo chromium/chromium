@@ -9,16 +9,15 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/no_destructor.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
-#import "components/plus_addresses/webdata/plus_address_webdata_service.h"
+#import "components/plus_addresses/core/browser/webdata/plus_address_webdata_service.h"
 #import "components/search_engines/keyword_web_data_service.h"
 #import "components/signin/public/webdata/token_web_data.h"
 #import "components/webdata_services/web_data_service_wrapper.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 
@@ -26,82 +25,79 @@ namespace ios {
 
 namespace {
 
-std::unique_ptr<KeyedService> BuildWebDataService(web::BrowserState* context) {
-  const base::FilePath& browser_state_path = context->GetStatePath();
+std::unique_ptr<KeyedService> BuildWebDataService(ProfileIOS* profile) {
+  const base::FilePath& state_path = profile->GetStatePath();
+  // On iOS (and Android), the account storage is persisted on disk.
   return std::make_unique<WebDataServiceWrapper>(
-      browser_state_path, GetApplicationContext()->GetApplicationLocale(),
-      web::GetUIThreadTaskRunner({}), base::DoNothing());
+      state_path, GetApplicationContext()->GetApplicationLocaleStorage()->Get(),
+      web::GetUIThreadTaskRunner({}), base::DoNothing(),
+      GetApplicationContext()->GetOSCryptAsync(),
+      /*use_in_memory_autofill_account_database=*/false);
 }
 
 }  // namespace
 
 // static
-WebDataServiceWrapper* WebDataServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state,
+WebDataServiceWrapper* WebDataServiceFactory::GetForProfile(
+    ProfileIOS* profile,
     ServiceAccessType access_type) {
   DCHECK(access_type == ServiceAccessType::EXPLICIT_ACCESS ||
-         !browser_state->IsOffTheRecord());
-  return static_cast<WebDataServiceWrapper*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+         !profile->IsOffTheRecord());
+  return GetInstance()->GetServiceForProfileAs<WebDataServiceWrapper>(
+      profile, /*create=*/true);
 }
 
 // static
-WebDataServiceWrapper* WebDataServiceFactory::GetForBrowserStateIfExists(
-    ChromeBrowserState* browser_state,
+WebDataServiceWrapper* WebDataServiceFactory::GetForProfileIfExists(
+    ProfileIOS* profile,
     ServiceAccessType access_type) {
   DCHECK(access_type == ServiceAccessType::EXPLICIT_ACCESS ||
-         !browser_state->IsOffTheRecord());
-  return static_cast<WebDataServiceWrapper*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, false));
+         !profile->IsOffTheRecord());
+  return GetInstance()->GetServiceForProfileAs<WebDataServiceWrapper>(
+      profile, /*create*/ false);
 }
 
 // static
 scoped_refptr<autofill::AutofillWebDataService>
-WebDataServiceFactory::GetAutofillWebDataForBrowserState(
-    ChromeBrowserState* browser_state,
+WebDataServiceFactory::GetAutofillWebDataForProfile(
+    ProfileIOS* profile,
     ServiceAccessType access_type) {
-  WebDataServiceWrapper* wrapper =
-      GetForBrowserState(browser_state, access_type);
+  WebDataServiceWrapper* wrapper = GetForProfile(profile, access_type);
   return wrapper ? wrapper->GetProfileAutofillWebData() : nullptr;
 }
 
 // static
 scoped_refptr<autofill::AutofillWebDataService>
 WebDataServiceFactory::GetAutofillWebDataForAccount(
-    ChromeBrowserState* browser_state,
+    ProfileIOS* profile,
     ServiceAccessType access_type) {
-  WebDataServiceWrapper* wrapper =
-      GetForBrowserState(browser_state, access_type);
+  WebDataServiceWrapper* wrapper = GetForProfile(profile, access_type);
   return wrapper ? wrapper->GetAccountAutofillWebData() : nullptr;
 }
 
 // static
 scoped_refptr<KeywordWebDataService>
-WebDataServiceFactory::GetKeywordWebDataForBrowserState(
-    ChromeBrowserState* browser_state,
+WebDataServiceFactory::GetKeywordWebDataForProfile(
+    ProfileIOS* profile,
     ServiceAccessType access_type) {
-  WebDataServiceWrapper* wrapper =
-      GetForBrowserState(browser_state, access_type);
+  WebDataServiceWrapper* wrapper = GetForProfile(profile, access_type);
   return wrapper ? wrapper->GetKeywordWebData() : nullptr;
 }
 
 // static
 scoped_refptr<plus_addresses::PlusAddressWebDataService>
-WebDataServiceFactory::GetPlusAddressWebDataForBrowserState(
-    ChromeBrowserState* browser_state,
+WebDataServiceFactory::GetPlusAddressWebDataForProfile(
+    ProfileIOS* profile,
     ServiceAccessType access_type) {
-  WebDataServiceWrapper* wrapper =
-      GetForBrowserState(browser_state, access_type);
+  WebDataServiceWrapper* wrapper = GetForProfile(profile, access_type);
   return wrapper ? wrapper->GetPlusAddressWebData() : nullptr;
 }
 
 // static
-scoped_refptr<TokenWebData>
-WebDataServiceFactory::GetTokenWebDataForBrowserState(
-    ChromeBrowserState* browser_state,
+scoped_refptr<TokenWebData> WebDataServiceFactory::GetTokenWebDataForProfile(
+    ProfileIOS* profile,
     ServiceAccessType access_type) {
-  WebDataServiceWrapper* wrapper =
-      GetForBrowserState(browser_state, access_type);
+  WebDataServiceWrapper* wrapper = GetForProfile(profile, access_type);
   return wrapper ? wrapper->GetTokenWebData() : nullptr;
 }
 
@@ -112,30 +108,21 @@ WebDataServiceFactory* WebDataServiceFactory::GetInstance() {
 }
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactory
+WebDataServiceFactory::TestingFactory
 WebDataServiceFactory::GetDefaultFactory() {
-  return base::BindRepeating(&BuildWebDataService);
+  return base::BindOnce(&BuildWebDataService);
 }
 
 WebDataServiceFactory::WebDataServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "WebDataService",
-          BrowserStateDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactoryIOS("WebDataService",
+                                    ProfileSelection::kRedirectedInIncognito,
+                                    TestingCreation::kNoServiceForTests) {}
 
 WebDataServiceFactory::~WebDataServiceFactory() {}
 
 std::unique_ptr<KeyedService> WebDataServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  return BuildWebDataService(context);
-}
-
-web::BrowserState* WebDataServiceFactory::GetBrowserStateToUse(
-    web::BrowserState* context) const {
-  return GetBrowserStateRedirectedInIncognito(context);
-}
-
-bool WebDataServiceFactory::ServiceIsNULLWhileTesting() const {
-  return true;
+    ProfileIOS* profile) const {
+  return BuildWebDataService(profile);
 }
 
 }  // namespace ios

@@ -108,8 +108,8 @@ void SetProxyConfigForNetwork(const ProxyConfigDictionary& proxy_config,
                        "SetProxyConfig.ClearProperty Failed", network.path(),
                        network_handler::ErrorCallback()));
   } else {
-    std::string proxy_config_str;
-    base::JSONWriter::Write(proxy_config.GetDictionary(), &proxy_config_str);
+    std::string proxy_config_str =
+        base::WriteJson(proxy_config.GetDictionary()).value_or("");
     ShillServiceClient::Get()->SetProperty(
         dbus::ObjectPath(network.path()), shill::kProxyConfigProperty,
         base::Value(proxy_config_str),

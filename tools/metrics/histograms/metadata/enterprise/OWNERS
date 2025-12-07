@@ -6,7 +6,6 @@ per-file OWNERS=file://tools/metrics/histograms/metadata/METRIC_REVIEWER_OWNERS
 # When making changes, also update MetricsOwners in the GwsQ config:
 # http://google3/chrome/enterprise/gwsq/enterprise-policy-review.gwsq
 
-emaxx@chromium.org
 hendrich@chromium.org
 igorruvinov@chromium.org
 poromov@chromium.org

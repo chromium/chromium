@@ -14,23 +14,8 @@ import {sendWithPromise} from 'chrome://resources/js/cr.js';
 // Keep in sync with the respective enum in
 // components/browsing_data/core/browsing_data_utils.h, and leave out values
 // that are not available on Desktop.
+// LINT.IfChange(TimePeriod)
 export enum TimePeriod {
-  LAST_HOUR = 0,
-  LAST_DAY = 1,
-  LAST_WEEK = 2,
-  FOUR_WEEKS = 3,
-  ALL_TIME = 4,
-  // OLDER_THAN_30_DAYS = 5 is not used on Desktop.
-  // LAST_15_MINUTES = 6 is not used on Desktop.
-  TIME_PERIOD_LAST = ALL_TIME
-}
-
-// TODO(crbug.com/40283307): Remove this after CbdTimeframeRequired finishes.
-// Keep in sync with the respective enum in
-// components/browsing_data/core/browsing_data_utils.h, and leave out values
-// that are not available on Desktop.
-export enum TimePeriodExperiment {
-  NOT_SELECTED = -1,
   LAST_HOUR = 0,
   LAST_DAY = 1,
   LAST_WEEK = 2,
@@ -40,6 +25,26 @@ export enum TimePeriodExperiment {
   LAST_15_MINUTES = 6,
   TIME_PERIOD_LAST = LAST_15_MINUTES
 }
+// LINT.ThenChange(/components/browsing_data/core/browsing_data_utils.h:TimePeriod)
+
+// Keep in sync with the respective enum in
+// components/browsing_data/core/browsing_data_utils.h, and leave out values
+// that are not available on Desktop.
+// This enum represents ClearBrowsingDataDialogV2 and does not match the
+// datatypes in the old dialog.
+// LINT.IfChange(BrowsingDataType)
+export enum BrowsingDataType {
+  HISTORY = 0,
+  CACHE = 1,
+  SITE_DATA = 2,
+  // PASSWORDS = 3, Not used on Desktop.
+  FORM_DATA = 4,
+  SITE_SETTINGS = 5,
+  DOWNLOADS = 6,
+  HOSTED_APPS_DATA = 7,
+  // TABS = 8, Not used on Desktop.
+}
+// LINT.ThenChange(/components/browsing_data/core/browsing_data_utils.h:BrowsingDataType)
 
 /**
  * ClearBrowsingDataResult contains any possible follow-up notices that should
@@ -53,10 +58,13 @@ export interface ClearBrowsingDataResult {
 /**
  * UpdateSyncStateEvent contains relevant information for a summary of a user's
  * updated Sync State.
+ *
+ * TODO(crbug.com/397187800): Clean up UpdateSyncStateEvent interface when
+ * kDBDRevampDesktop is launched. We only need to fetch isNonGoogleDse &
+ * nonGoogleSearchHistoryString for the DBDv2 dialog.
  */
 export interface UpdateSyncStateEvent {
   signedIn: boolean;
-  syncConsented: boolean;
   syncingHistory: boolean;
   shouldShowCookieException: boolean;
   isNonGoogleDse: boolean;
@@ -91,11 +99,11 @@ export interface ClearBrowsingDataBrowserProxy {
    */
   restartCounters(isBasic: boolean, timePeriod: number): void;
 
-  recordSettingsClearBrowsingDataBasicTimePeriodHistogram(
-      bucket: TimePeriodExperiment): void;
+  recordSettingsClearBrowsingDataBasicTimePeriodHistogram(bucket: TimePeriod):
+      void;
 
   recordSettingsClearBrowsingDataAdvancedTimePeriodHistogram(
-      bucket: TimePeriodExperiment): void;
+      bucket: TimePeriod): void;
 }
 
 export class ClearBrowsingDataBrowserProxyImpl implements
@@ -116,21 +124,20 @@ export class ClearBrowsingDataBrowserProxyImpl implements
     chrome.send('restartClearBrowsingDataCounters', [isBasic, timePeriod]);
   }
 
-  recordSettingsClearBrowsingDataBasicTimePeriodHistogram(
-      bucket: TimePeriodExperiment) {
+  recordSettingsClearBrowsingDataBasicTimePeriodHistogram(bucket: TimePeriod) {
     chrome.send('metricsHandler:recordInHistogram', [
       'Settings.ClearBrowsingData.Basic.TimePeriod',
       bucket,
-      TimePeriodExperiment.TIME_PERIOD_LAST,
+      TimePeriod.TIME_PERIOD_LAST,
     ]);
   }
 
-  recordSettingsClearBrowsingDataAdvancedTimePeriodHistogram(
-      bucket: TimePeriodExperiment) {
+  recordSettingsClearBrowsingDataAdvancedTimePeriodHistogram(bucket:
+                                                                 TimePeriod) {
     chrome.send('metricsHandler:recordInHistogram', [
       'Settings.ClearBrowsingData.Advanced.TimePeriod',
       bucket,
-      TimePeriodExperiment.TIME_PERIOD_LAST,
+      TimePeriod.TIME_PERIOD_LAST,
     ]);
   }
 

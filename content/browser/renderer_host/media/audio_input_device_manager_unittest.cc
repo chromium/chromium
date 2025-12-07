@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -31,8 +32,7 @@ using testing::InSequence;
 
 namespace content {
 
-class MockAudioInputDeviceManagerListener
-    : public MediaStreamProviderListener {
+class MockAudioInputDeviceManagerListener : public MediaStreamProviderListener {
  public:
   MockAudioInputDeviceManagerListener() {}
 
@@ -165,8 +165,8 @@ TEST_F(MAYBE_AudioInputDeviceManagerTest, OpenMultipleDevices) {
   InSequence s;
 
   int index = 0;
-  std::unique_ptr<base::UnguessableToken[]> session_id(
-      new base::UnguessableToken[devices_.size()]);
+  auto session_id =
+      base::HeapArray<base::UnguessableToken>::WithSize(devices_.size());
 
   // Opens the devices in a loop.
   for (blink::MediaStreamDevices::const_iterator iter = devices_.begin();
@@ -268,8 +268,8 @@ TEST_F(MAYBE_AudioInputDeviceManagerTest, AccessAndCloseSession) {
   InSequence s;
 
   int index = 0;
-  std::unique_ptr<base::UnguessableToken[]> session_id(
-      new base::UnguessableToken[devices_.size()]);
+  auto session_id =
+      base::HeapArray<base::UnguessableToken>::WithSize(devices_.size());
 
   // Loops through the devices and calls Open()/Close()/GetOpenedDeviceById
   // for each device.

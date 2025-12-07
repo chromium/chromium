@@ -2,7 +2,7 @@ include_rules = [
   "-components/devtools_bridge",
   "+components/resources/android",
   "+cc/input/browser_controls_state.h",
-  "+cc/input/browser_controls_offset_tags_info.h",
+  "+cc/input/browser_controls_offset_tag_modifications.h",
   "+cc/slim/layer.h",
   "+chrome/android",
   "+chrome/browser/web_share_target",
@@ -10,6 +10,7 @@ include_rules = [
   "+components/browser_ui/site_settings/android",
   "+components/browser_ui/sms/android",
   "+components/browser_ui/util/android/url_constants.h",
+  "+components/omnibox/composebox",
   "+components/query_tiles",
   "+components/session_proto_db",
   "+components/webapk",
@@ -21,20 +22,16 @@ include_rules = [
   "+third_party/gvr-android-sdk",
   "+third_party/blink/public/common",
   "+third_party/blink/public/mojom/unhandled_tap_notifier/unhandled_tap_notifier.mojom.h",
+  "+ui/base/unowned_user_data",
 ]
 
 specific_include_rules = {
-  # Special-case where monochrome composes chrome+webview+weblayer
+  # Special-case where monochrome composes chrome+webview
   "monochrome_entry_point\.cc": [
     "+android_webview",
-    "+weblayer",
   ],
   # Allowed for test setup.
   "chrome_entry_point_for_test\.cc": [
     "+chrome/utility/chrome_content_utility_client.h",
-  ],
-  # TODO(b/40284908): Remove this after SeedAccountsRevamp is fully rolled out.
-  "signin_manager_android.cc": [
-    "+components/signin/internal/identity_manager",
   ],
 }

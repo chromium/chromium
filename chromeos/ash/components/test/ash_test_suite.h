@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/files/scoped_temp_dir.h"
 #include "base/test/test_discardable_memory_allocator.h"
 #include "base/test/test_suite.h"
 
@@ -33,6 +34,7 @@ class AshTestSuite : public base::TestSuite {
  private:
   std::unique_ptr<aura::Env> env_;
   base::TestDiscardableMemoryAllocator discardable_memory_allocator_;
+  base::ScopedTempDir user_data_dir_;
 };
 
 }  // namespace ash

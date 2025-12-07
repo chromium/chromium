@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Link to some site</title>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0">
+    <style>
+      /* Make link cover entire page */
+      body {
+        height: 100%;
+        left: 0;
+        margin: 0;
+        padding: 0;
+        top: 0;
+        width: 100%;
+      }
+      a {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <a id="link" href="https://www.example.com">Go to blocked site</a>
+    <script>
+      if (location.search) {
+        const params = new URLSearchParams(location.search);
+        const href = params.get('href');
+        if (href) {
+          document.getElementById('link').href = decodeURIComponent(href);
+        }
+      }
+    </script>
+  </body>
+</html>

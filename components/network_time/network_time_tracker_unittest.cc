@@ -11,7 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -46,13 +45,47 @@ struct MockedResponse {
   network::URLLoaderCompletionStatus status;
 };
 
+static constexpr auto kDevKeyPubBytes = std::to_array<uint8_t>(
+    {0x30, 0x59, 0x30, 0x13, 0x06, 0x07, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x02,
+     0x01, 0x06, 0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x03, 0x01, 0x07, 0x03,
+     0x42, 0x00, 0x04, 0xe0, 0x6b, 0x0d, 0x76, 0x75, 0xa3, 0x99, 0x7d, 0x7c,
+     0x1b, 0xd6, 0x3c, 0x73, 0xbb, 0x4b, 0xfe, 0x0a, 0xe7, 0x2f, 0x61, 0x3d,
+     0x77, 0x0a, 0xaa, 0x14, 0xd8, 0x5a, 0xbf, 0x14, 0x60, 0xec, 0xf6, 0x32,
+     0x77, 0xb5, 0xa7, 0xe6, 0x35, 0xa5, 0x61, 0xaf, 0xdc, 0xdf, 0x91, 0xce,
+     0x45, 0x34, 0x5f, 0x36, 0x85, 0x2f, 0xb9, 0x53, 0x00, 0x5d, 0x86, 0xe7,
+     0x04, 0x16, 0xe2, 0x3d, 0x21, 0x76, 0x2b});
+
 }  // namespace
 
 class NetworkTimeTrackerTest : public ::testing::Test {
  public:
-  ~NetworkTimeTrackerTest() override {}
+  class NetworkTimeTestObserver
+      : public NetworkTimeTracker::NetworkTimeObserver {
+   public:
+    using Super = NetworkTimeTracker::NetworkTimeObserver;
+    explicit NetworkTimeTestObserver(NetworkTimeTracker* tracker)
+        : Super(tracker) {}
+    ~NetworkTimeTestObserver() override = default;
 
-  NetworkTimeTrackerTest()
+    void OnNetworkTimeChanged(TimeTracker::TimeTrackerState state) override {
+      times_called_++;
+      last_state_ = state;
+    }
+
+    void OnNetworkTimeTrackerDestroyed(NetworkTimeTracker* tracker) override {
+      Super::OnNetworkTimeTrackerDestroyed(tracker);
+      times_tracker_destroyed_++;
+    }
+
+    int times_called_ = 0;
+    int times_tracker_destroyed_ = 0;
+    TimeTracker::TimeTrackerState last_state_;
+  };
+
+  ~NetworkTimeTrackerTest() override = default;
+
+  NetworkTimeTrackerTest() : NetworkTimeTrackerTest(false) {}
+  explicit NetworkTimeTrackerTest(bool dev_keys)
       : task_environment_(
             base::test::SingleThreadTaskEnvironment::MainThreadType::IO),
         field_trial_test_(new FieldTrialTest()),
@@ -72,7 +105,7 @@ class NetworkTimeTrackerTest : public ::testing::Test {
         std::unique_ptr<const base::TickClock>(tick_clock_), &pref_service_,
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &url_loader_factory_),
-        std::nullopt);
+        std::nullopt, dev_keys ? kDevKeyPubBytes : base::span<const uint8_t>());
 
     // Do this to be sure that |is_null| returns false.
     clock_->Advance(base::Days(111));
@@ -198,6 +231,11 @@ class NetworkTimeTrackerTest : public ::testing::Test {
   }
 
   base::WeakPtrFactory<NetworkTimeTrackerTest> weak_ptr_factory_{this};
+};
+
+class NetworkTimeTrackerWithDevKeysTest : public NetworkTimeTrackerTest {
+ public:
+  NetworkTimeTrackerWithDevKeysTest() : NetworkTimeTrackerTest(true) {}
 };
 
 TEST_F(NetworkTimeTrackerTest, Uninitialized) {
@@ -581,8 +619,6 @@ TEST_F(NetworkTimeTrackerTest, NoNetworkQueryWhileFeatureDisabled) {
   field_trial_test_->SetFeatureParams(
       false, 0.0, NetworkTimeTracker::FETCHES_IN_BACKGROUND_AND_ON_DEMAND);
   EXPECT_FALSE(tracker_->QueryTimeServiceForTesting());
-  // The timer is not started when the feature is disabled.
-  EXPECT_EQ(base::Minutes(0), tracker_->GetTimerDelayForTesting());
 
   // Enable time queries and check that a query is sent.
   field_trial_test_->SetFeatureParams(
@@ -592,7 +628,7 @@ TEST_F(NetworkTimeTrackerTest, NoNetworkQueryWhileFeatureDisabled) {
   tracker_->WaitForFetchForTesting(123123123);
 }
 
-TEST_F(NetworkTimeTrackerTest, UpdateFromNetworkBadSignature) {
+TEST_F(NetworkTimeTrackerWithDevKeysTest, UpdateFromNetworkBadSignature) {
   SetResponseHandler(base::BindRepeating(&BadSignatureResponseHandler));
   EXPECT_TRUE(tracker_->QueryTimeServiceForTesting());
   tracker_->WaitForFetchForTesting(123123123);
@@ -603,22 +639,9 @@ TEST_F(NetworkTimeTrackerTest, UpdateFromNetworkBadSignature) {
   EXPECT_EQ(base::Minutes(120), tracker_->GetTimerDelayForTesting());
 }
 
-static const uint8_t kDevKeyPubBytes[] = {
-    0x30, 0x59, 0x30, 0x13, 0x06, 0x07, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x02,
-    0x01, 0x06, 0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x03, 0x01, 0x07, 0x03,
-    0x42, 0x00, 0x04, 0xe0, 0x6b, 0x0d, 0x76, 0x75, 0xa3, 0x99, 0x7d, 0x7c,
-    0x1b, 0xd6, 0x3c, 0x73, 0xbb, 0x4b, 0xfe, 0x0a, 0xe7, 0x2f, 0x61, 0x3d,
-    0x77, 0x0a, 0xaa, 0x14, 0xd8, 0x5a, 0xbf, 0x14, 0x60, 0xec, 0xf6, 0x32,
-    0x77, 0xb5, 0xa7, 0xe6, 0x35, 0xa5, 0x61, 0xaf, 0xdc, 0xdf, 0x91, 0xce,
-    0x45, 0x34, 0x5f, 0x36, 0x85, 0x2f, 0xb9, 0x53, 0x00, 0x5d, 0x86, 0xe7,
-    0x04, 0x16, 0xe2, 0x3d, 0x21, 0x76, 0x2b};
-
 TEST_F(NetworkTimeTrackerTest, UpdateFromNetworkBadData) {
   SetResponseHandler(
       base::BindRepeating(&NetworkTimeTrackerTest::BadDataResponseHandler));
-  std::string_view key = {reinterpret_cast<const char*>(kDevKeyPubBytes),
-                          sizeof(kDevKeyPubBytes)};
-  tracker_->SetPublicKeyForTesting(key);
   EXPECT_TRUE(tracker_->QueryTimeServiceForTesting());
   tracker_->WaitForFetchForTesting(123123123);
   base::Time out_network_time;
@@ -678,12 +701,9 @@ TEST_F(NetworkTimeTrackerTest, UpdateFromNetworkLargeResponse) {
             tracker_->GetNetworkTime(&out_network_time, nullptr));
 }
 
-TEST_F(NetworkTimeTrackerTest, UpdateFromNetworkFirstSyncPending) {
+TEST_F(NetworkTimeTrackerWithDevKeysTest, UpdateFromNetworkFirstSyncPending) {
   SetResponseHandler(
       base::BindRepeating(&NetworkTimeTrackerTest::BadDataResponseHandler));
-  std::string_view key = {reinterpret_cast<const char*>(kDevKeyPubBytes),
-                          sizeof(kDevKeyPubBytes)};
-  tracker_->SetPublicKeyForTesting(key);
   EXPECT_TRUE(tracker_->QueryTimeServiceForTesting());
 
   // Do not wait for the fetch to complete; ask for the network time
@@ -695,12 +715,10 @@ TEST_F(NetworkTimeTrackerTest, UpdateFromNetworkFirstSyncPending) {
   tracker_->WaitForFetchForTesting(123123123);
 }
 
-TEST_F(NetworkTimeTrackerTest, UpdateFromNetworkSubseqeuntSyncPending) {
+TEST_F(NetworkTimeTrackerWithDevKeysTest,
+       UpdateFromNetworkSubsequentSyncPending) {
   SetResponseHandler(
       base::BindRepeating(&NetworkTimeTrackerTest::BadDataResponseHandler));
-  std::string_view key = {reinterpret_cast<const char*>(kDevKeyPubBytes),
-                          sizeof(kDevKeyPubBytes)};
-  tracker_->SetPublicKeyForTesting(key);
   EXPECT_TRUE(tracker_->QueryTimeServiceForTesting());
   tracker_->WaitForFetchForTesting(123123123);
 
@@ -728,6 +746,53 @@ TEST_F(NetworkTimeTrackerTest, CustomFetchBehaviorTest) {
   Reset(NetworkTimeTracker::FetchBehavior::FETCHES_IN_BACKGROUND_ONLY);
   EXPECT_EQ(NetworkTimeTracker::FetchBehavior::FETCHES_IN_BACKGROUND_ONLY,
             tracker_->GetFetchBehavior());
+}
+
+TEST_F(NetworkTimeTrackerTest, ObserverTest) {
+  // Test that the observer is notified when the network time changes.
+  // Also test that the observer removes itself as an observer when it is
+  // destroyed.
+  {
+    NetworkTimeTestObserver observer(tracker_.get());
+    base::Time now = clock_->Now();
+    base::TimeTicks now_ticks = tick_clock_->NowTicks();
+    base::Time in_network_time = now;
+    UpdateNetworkTime(in_network_time - latency_ / 2, resolution_, latency_,
+                      now_ticks);
+    base::TimeDelta expected_offset = latency_ / 2;
+
+    EXPECT_EQ(observer.times_called_, 1);
+    EXPECT_EQ(observer.last_state_.known_time, in_network_time - latency_ / 2);
+    EXPECT_EQ(observer.last_state_.system_time, now - expected_offset);
+    EXPECT_EQ(observer.last_state_.system_ticks, now_ticks - expected_offset);
+    EXPECT_EQ(observer.last_state_.uncertainty,
+              resolution_ + latency_ + adjustment_);
+  }
+  // The observer from the previous scope should have removed itself as an
+  // observer when it was destroyed, so this should not crash.
+  {
+    base::Time now = clock_->Now();
+    base::TimeTicks now_ticks = tick_clock_->NowTicks();
+    base::Time in_network_time = now;
+    UpdateNetworkTime(in_network_time - latency_ / 2, resolution_, latency_,
+                      now_ticks);
+  }
+}
+
+TEST_F(NetworkTimeTrackerTest, OnNetworkTimeTrackerDestroyed) {
+  // Reset the clock and tick clock pointers to avoid dangling raw_ptr errors.
+  // These clock objects are owned by the NetworkTimeTracker, and the test
+  // just keeps an extra pointer to them.
+  clock_ = nullptr;
+  tick_clock_ = nullptr;
+
+  // The observer should remove itself as an observer when it is notified that
+  // its network time tracker is destroyed, so this test should not crash when
+  // the observer is destroyed.
+  NetworkTimeTestObserver observer(tracker_.get());
+  ASSERT_EQ(observer.times_tracker_destroyed_, 0);
+  tracker_.reset();
+  ASSERT_EQ(observer.times_tracker_destroyed_, 1);
 }
 
 }  // namespace network_time

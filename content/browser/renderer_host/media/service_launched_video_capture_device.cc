@@ -7,9 +7,9 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/token.h"
+#include "base/trace_event/trace_event.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 
 namespace content {
@@ -102,7 +102,7 @@ void ServiceLaunchedVideoCaptureDevice::SetDesktopCaptureWindowIdAsync(
   // This method should only be called for desktop capture devices.
   // The video_capture Mojo service does not support desktop capture devices
   // (yet) and should not be used for it.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ServiceLaunchedVideoCaptureDevice::OnUtilizationReport(

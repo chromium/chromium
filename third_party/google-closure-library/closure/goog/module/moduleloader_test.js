@@ -114,7 +114,7 @@ testSuite({
     /** @suppress {undefinedVars} suppression added to enable type checking */
     modB1Loaded = false;
 
-    goog.provide = goog.nullFunction;
+    goog.provide = () => {};
     moduleManager = ModuleManager.getInstance();
     stubs.replace(moduleManager, 'getBackOff_', functions.constant(0));
 
@@ -316,7 +316,7 @@ testSuite({
     // functionality.
     const oldXmlHttp = goog.net.XmlHttp;
     stubs.set(goog.net, 'XmlHttp', function() {
-      return {open: functions.error('mock error'), abort: goog.nullFunction};
+      return {open: functions.error('mock error'), abort: () => {}};
     });
     googObject.extend(goog.net.XmlHttp, oldXmlHttp);
 
@@ -382,11 +382,6 @@ testSuite({
   },
 
   testEventError() {
-    // Don't run this test on older IE, because the way the test runner catches
-    // errors on IE plays badly with the simulated errors in the test.
-    if (userAgent.IE && !userAgent.isVersionOrHigher(11)) {
-      return;
-    }
 
     // Modules will throw an exception if this boolean is set to true.
     modA1Loaded = true;
@@ -524,9 +519,10 @@ testSuite({
           assertEquals(
               'REQUEST_ERROR', 0,
               observer.getEvents(EventType.REQUEST_ERROR).length);
-          assertThrows('Module load already requested: modB', () => {
-            moduleManager.prefetchModule('modA');
+          stubs.set(BulkLoader.prototype, 'load', () => {
+            fail('modA should not be downloaded again.');
           });
+          moduleManager.prefetchModule('modA');
         });
   },
 
@@ -543,7 +539,7 @@ testSuite({
     // functionality.
     const oldXmlHttp = goog.net.XmlHttp;
     stubs.set(goog.net, 'XmlHttp', function() {
-      return {open: functions.error('mock error'), abort: goog.nullFunction};
+      return {open: functions.error('mock error'), abort: () => {}};
     });
     googObject.extend(goog.net.XmlHttp, oldXmlHttp);
 

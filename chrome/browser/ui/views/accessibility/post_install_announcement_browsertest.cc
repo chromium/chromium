@@ -5,12 +5,12 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
-#include "ui/views/accessibility/ax_event_manager.h"
+#include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/test/ax_event_counter.h"
 
 class PostInstallAnnouncementTestBase : public InProcessBrowserTest {
  protected:
-  views::test::AXEventCounter event_counter_{views::AXEventManager::Get()};
+  views::test::AXEventCounter event_counter_{views::AXUpdateNotifier::Get()};
 };
 
 IN_PROC_BROWSER_TEST_F(PostInstallAnnouncementTestBase, NormalLaunch) {

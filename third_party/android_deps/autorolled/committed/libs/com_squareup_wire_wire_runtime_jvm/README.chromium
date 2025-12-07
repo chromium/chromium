@@ -1,0 +1,19 @@
+Name: wire-runtime
+Short Name: wire-runtime-jvm
+URL: https://repo.maven.apache.org/maven2/com/squareup/wire/wire-runtime-jvm/5.4.0/wire-runtime-jvm-5.4.0.jar
+Version: 5.4.0
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: no
+Shipped: no
+
+Description:
+gRPC and protocol buffers for Android, Kotlin, and Java.
+
+See also: https://github.com/square/wire/
+
+
+Local Modifications:
+No modifications.

@@ -2,22 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/child_accounts/usage_time_limit_processor.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <utility>
 
 #include "base/check_deref.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -1078,9 +1074,9 @@ base::TimeDelta DictToTimeDelta(const base::Value::Dict& policy_time) {
 
 // Transforms weekday strings into the Weekday enum.
 Weekday GetWeekday(std::string weekday) {
-  base::ranges::transform(weekday, weekday.begin(), ::tolower);
+  std::ranges::transform(weekday, weekday.begin(), ::tolower);
   for (int i = 0; i < static_cast<int>(Weekday::kCount); i++) {
-    if (weekday == kTimeLimitWeekdays[i]) {
+    if (weekday == UNSAFE_TODO(kTimeLimitWeekdays[i])) {
       return static_cast<Weekday>(i);
     }
   }
@@ -1092,11 +1088,6 @@ Weekday GetWeekday(std::string weekday) {
 }  // namespace
 
 TimeWindowLimitEntry::TimeWindowLimitEntry() = default;
-
-bool TimeWindowLimitEntry::operator==(const TimeWindowLimitEntry& rhs) const {
-  return starts_at == rhs.starts_at && ends_at == rhs.ends_at &&
-         last_updated == rhs.last_updated;
-}
 
 bool TimeWindowLimitEntry::IsOvernight() const {
   return ends_at < starts_at;
@@ -1161,15 +1152,7 @@ TimeWindowLimit::TimeWindowLimit(TimeWindowLimit&&) = default;
 
 TimeWindowLimit& TimeWindowLimit::operator=(TimeWindowLimit&&) = default;
 
-bool TimeWindowLimit::operator==(const TimeWindowLimit& rhs) const {
-  return entries == rhs.entries;
-}
-
 TimeUsageLimitEntry::TimeUsageLimitEntry() = default;
-
-bool TimeUsageLimitEntry::operator==(const TimeUsageLimitEntry& rhs) const {
-  return usage_quota == rhs.usage_quota && last_updated == rhs.last_updated;
-}
 
 TimeUsageLimit::TimeUsageLimit(const base::Value::Dict& usage_limit_dict)
     // Default reset time is midnight.
@@ -1208,10 +1191,6 @@ TimeUsageLimit::TimeUsageLimit(const base::Value::Dict& usage_limit_dict)
 }
 
 TimeUsageLimit::~TimeUsageLimit() = default;
-
-bool TimeUsageLimit::operator==(const TimeUsageLimit& rhs) const {
-  return entries == rhs.entries && resets_at == rhs.resets_at;
-}
 
 TimeUsageLimit::TimeUsageLimit(TimeUsageLimit&&) = default;
 

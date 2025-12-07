@@ -1,0 +1,3 @@
+Element with starting-style has affectedByStartingStyles set to true
+true
+

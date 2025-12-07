@@ -11,7 +11,7 @@ blink_modules_sources("browsing_topics") {
   ]
 
   deps = [
-    "//components/browsing_topics/common:common",
+    "//components/browsing_topics/common",
     "//services/metrics/public/cpp:ukm_builders",
   ]
 

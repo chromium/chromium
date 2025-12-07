@@ -5,8 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 
-assert(enable_extensions,
-       "Cannot depend on extensions because enable_extensions=false.")
+assert(enable_extensions_core)
 
 source_set("virtual_keyboard_private") {
   sources = [
@@ -16,23 +15,27 @@ source_set("virtual_keyboard_private") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
-    "//content/public/browser",
+  public_deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//extensions/browser:browser_sources",
     "//extensions/common/api",
   ]
 
-  if (is_chromeos_ash) {
-    deps += [ "//ash" ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/crosapi/mojom" ]
-  }
-
-  public_deps = [
+  deps = [
     ":virtual_keyboard_delegate",
-    "//extensions/browser:browser_sources",
+    "//content/public/browser",
+    "//extensions/browser/api:extensions_api_client",
   ]
+
+  if (is_chromeos) {
+    deps += [
+      "//ash",
+      "//chromeos/crosapi/mojom",
+      "//ui/base",
+      "//ui/color:color_headers",
+    ]
+  }
 }
 
 source_set("virtual_keyboard_delegate") {
@@ -40,8 +43,8 @@ source_set("virtual_keyboard_delegate") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
-    "//content/public/browser",
+  public_deps = [
+    "//base",
     "//extensions/common/api",
     "//ui/gfx/geometry",
   ]

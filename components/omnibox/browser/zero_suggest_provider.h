@@ -10,9 +10,11 @@
 #define COMPONENTS_OMNIBOX_BROWSER_ZERO_SUGGEST_PROVIDER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_provider_debouncer.h"
 #include "components/omnibox/browser/base_search_provider.h"
 
@@ -22,7 +24,6 @@ class PrefRegistrySimple;
 namespace network {
 class SimpleURLLoader;
 }
-
 
 // Autocomplete provider for searches based on the current URL.
 //
@@ -49,36 +50,30 @@ class ZeroSuggestProvider : public BaseSearchProvider {
     kRemoteSendURL = 2,
   };
 
-  // Returns the type of results that should be generated for the given context;
-  // however, it does not check whether or not a suggest request can be made.
-  // Those checks must be done using
-  // BaseSearchProvider::CanSendSuggestRequestWithoutPageURL() for the
-  // kRemoteNoURL variant and
-  // BaseSearchProvider::CanSendSuggestRequestWithPageURL() for the
-  // kRemoteSendURL variant.
-  // This method is static to avoid depending on the provider state.
-  static ResultType ResultTypeToRun(const AutocompleteInput& input);
-
   // Creates and returns an instance of this provider.
   static ZeroSuggestProvider* Create(AutocompleteProviderClient* client,
                                      AutocompleteProviderListener* listener);
 
+  // Returns an AutocompleteMatch for a navigational suggestion |navigation|.
+  static AutocompleteMatch NavigationToMatch(
+      AutocompleteProvider* provider,
+      AutocompleteProviderClient* client,
+      const SearchSuggestionParser::NavigationResult& navigation);
+
   // Registers a preference used to cache the zero suggest response.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  // Called in Start() or StartPrefetch(), confirms whether zero-prefix
-  // suggestions are allowed in the given context and logs eligibility UMA
-  // metrics. Must be called exactly once. Otherwise the meaning of the the
-  // metrics it logs would change. This method is virtual to mock for testing.
-  virtual bool AllowZeroPrefixSuggestions(
+  // Returns the type of results that should be generated for the given context
+  // and their eligibility.
+  // This method is static to avoid depending on the provider state.
+  static std::pair<ResultType, bool> GetResultTypeAndEligibility(
       const AutocompleteProviderClient* client,
       const AutocompleteInput& input);
 
   // AutocompleteProvider:
   void StartPrefetch(const AutocompleteInput& input) override;
   void Start(const AutocompleteInput& input, bool minimal_changes) override;
-  void Stop(bool clear_cached_results,
-            bool due_to_user_inactivity) override;
+  void Stop(AutocompleteStopReason stop_reason) override;
   void DeleteMatch(const AutocompleteMatch& match) override;
   void AddProviderInfo(ProvidersInfo* provider_info) const override;
 
@@ -87,6 +82,12 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   const SearchSuggestionParser::ExperimentStatsV2s& experiment_stats_v2s()
       const {
     return experiment_stats_v2s_;
+  }
+
+  // Returns the list of GWS event ID hashes corresponding to `matches_`. Will
+  // be logged to SearchboxStats as needed.
+  const SearchSuggestionParser::GwsEventIdHashes& gws_event_id_hashes() const {
+    return gws_event_id_hashes_;
   }
 
   ResultType GetResultTypeRunningForTesting() const {
@@ -102,6 +103,10 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   ~ZeroSuggestProvider() override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(ZeroSuggestProviderTest,
+                           TestCacheStateWithSRPPrefetchDisabled);
+  FRIEND_TEST_ALL_PREFIXES(ZeroSuggestProviderTest,
+                           TestCacheStateWithWebPrefetchDisabled);
   // BaseSearchProvider:
   bool ShouldAppendExtraParams(
       const SearchSuggestionParser::SuggestResult& result) const override;
@@ -115,7 +120,7 @@ class ZeroSuggestProvider : public BaseSearchProvider {
                          const ResultType result_type,
                          const network::SimpleURLLoader* source,
                          const int response_code,
-                         std::unique_ptr<std::string> response_body);
+                         std::optional<std::string> response_body);
   // Called when the prefetch network request has completed.
   // `input` and `result_type` are bound to this callback. The former is the
   // input for which the request was made and the latter indicates the result
@@ -124,15 +129,11 @@ class ZeroSuggestProvider : public BaseSearchProvider {
                                  const ResultType result_type,
                                  const network::SimpleURLLoader* source,
                                  const int response_code,
-                                 std::unique_ptr<std::string> response_body);
+                                 std::optional<std::string> response_body);
 
   // Called by `debouncer_`.
   void RunZeroSuggestPrefetch(const AutocompleteInput& input,
                               const ResultType result_type);
-
-  // Returns an AutocompleteMatch for a navigational suggestion |navigation|.
-  AutocompleteMatch NavigationToMatch(
-      const SearchSuggestionParser::NavigationResult& navigation);
 
   // Called either in Start() with |results| populated from the cached response,
   // where |matches_| are empty; or in OnURLLoadComplete() with |results|
@@ -165,6 +166,9 @@ class ZeroSuggestProvider : public BaseSearchProvider {
 
   // The list of experiment stats corresponding to |matches_|.
   SearchSuggestionParser::ExperimentStatsV2s experiment_stats_v2s_;
+
+  // The list of GWS event ID hashes corresponding to `matches_`.
+  SearchSuggestionParser::GwsEventIdHashes gws_event_id_hashes_;
 
   // For callbacks that may be run after destruction.
   base::WeakPtrFactory<ZeroSuggestProvider> weak_ptr_factory_{this};

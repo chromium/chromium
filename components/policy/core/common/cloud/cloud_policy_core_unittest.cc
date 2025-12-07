@@ -42,7 +42,7 @@ class CloudPolicyCoreTest : public testing::Test,
  protected:
   CloudPolicyCoreTest() {
     core_ = std::make_unique<CloudPolicyCore>(
-        dm_protocol::kChromeUserPolicyType, std::string(), &store_,
+        dm_protocol::GetChromeUserPolicyType(), std::string(), &store_,
         base::SingleThreadTaskRunner::GetCurrentDefault(),
         network::TestNetworkConnectionTracker::CreateGetter());
     prefs_.registry()->RegisterIntegerPref(

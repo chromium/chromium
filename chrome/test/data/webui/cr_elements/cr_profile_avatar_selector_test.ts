@@ -46,7 +46,7 @@ suite('cr-profile-avatar-selector', function() {
   }
 
   function getGridItems() {
-    return avatarSelector.shadowRoot!.querySelectorAll<CrButtonElement>(
+    return avatarSelector.shadowRoot.querySelectorAll<CrButtonElement>(
         '.avatar');
   }
 
@@ -161,7 +161,7 @@ suite('cr-profile-avatar-selector', function() {
   });
 
   test('sets ignoreModifiedKeyEvents', async function() {
-    const grid = avatarSelector.shadowRoot!.querySelector('cr-grid');
+    const grid = avatarSelector.shadowRoot.querySelector('cr-grid');
     assertTrue(!!grid);
 
     assertFalse(avatarSelector.ignoreModifiedKeyEvents);

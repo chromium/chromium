@@ -20,14 +20,18 @@ struct COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemRequestInfo {
   // The storage domain (always set).
   std::string storage_domain;
   // Set by the network service for use by callbacks.
+  // TODO(https://crbug.com/364652019): Do something about this. This is really
+  // a content::FrameTreeNodeId, but DEPS don't allow it to be correctly typed.
+  // This is used to smuggle a FrameTreeNodeId from content/ to chrome/ in
+  // violation of layering practices.
   int content_id = 0;
   // The original request blink::StorageKey (always set).
   blink::StorageKey storage_key;
 
-  FileSystemRequestInfo(const GURL url,
-                        const std::string storage_domain,
+  FileSystemRequestInfo(const GURL& url,
+                        const std::string& storage_domain,
                         int content_id,
-                        const blink::StorageKey storage_key);
+                        const blink::StorageKey& storage_key);
 };
 
 }  // namespace storage

@@ -17,7 +17,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -47,6 +46,10 @@ class MockView : public View {
  public:
   enum class SizeMode { kUsePreferredSize, kFixedArea };
 
+  void set_preferred_size(gfx::Size preferred_size) {
+    preferred_size_ = preferred_size;
+  }
+
   void SetMinimumSize(const Size& minimum_size) {
     minimum_size_ = minimum_size;
   }
@@ -59,15 +62,24 @@ class MockView : public View {
 
   Size GetMaximumSize() const override { return maximum_size_; }
 
-  int GetHeightForWidth(int width) const override {
-    const gfx::Size preferred = GetPreferredSize({width, {}});
-    if (width <= 0)
-      return preferred.height();
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& available_size) const override {
+    gfx::Size preferred_size =
+        preferred_size_ ? preferred_size_.value()
+                        : View::CalculatePreferredSize(available_size);
     switch (size_mode_) {
       case SizeMode::kUsePreferredSize:
-        return preferred.height();
-      case SizeMode::kFixedArea:
-        return (preferred.width() * preferred.height()) / width;
+        return preferred_size;
+      case SizeMode::kFixedArea: {
+        int width = available_size.width().min_of(preferred_size.width());
+        if (width <= 0) {
+          return preferred_size;
+        }
+
+        width = std::max(width, minimum_size_ ? minimum_size_->width() : 0);
+        return gfx::Size(
+            width, (preferred_size.width() * preferred_size.height()) / width);
+      }
     }
   }
 
@@ -83,6 +95,7 @@ class MockView : public View {
   void ResetCounts() { set_visible_count_ = 0; }
 
  private:
+  std::optional<gfx::Size> preferred_size_;
   optional<Size> minimum_size_;
   gfx::Size maximum_size_;
   int set_visible_count_ = 0;
@@ -101,15 +114,17 @@ Size CustomFlexImpl(bool snap_to_zero,
   const Size large_size = view->GetPreferredSize({});
   const Size small_size = Size(large_size.width() / 2, large_size.height() / 2);
   int horizontal = 0;
-  if (maximum_size.width() >= large_size.width())
+  if (maximum_size.width() >= large_size.width()) {
     horizontal = large_size.width();
-  else if (maximum_size.width() >= small_size.width() || !snap_to_zero)
+  } else if (maximum_size.width() >= small_size.width() || !snap_to_zero) {
     horizontal = small_size.width();
+  }
   int vertical = 0;
-  if (maximum_size.height() >= large_size.height())
+  if (maximum_size.height() >= large_size.height()) {
     vertical = large_size.height();
-  else if (maximum_size.height() >= small_size.height() || !snap_to_zero)
+  } else if (maximum_size.height() >= small_size.height() || !snap_to_zero) {
     vertical = small_size.height();
+  }
   return Size(horizontal, vertical);
 }
 
@@ -132,21 +147,23 @@ class FlexLayoutTest : public testing::Test {
       const optional<Size>& minimum_size = optional<Size>(),
       bool visible = true) {
     MockView* const child = new MockView();
-    child->SetPreferredSize(preferred_size);
-    if (minimum_size.has_value())
+    child->set_preferred_size(preferred_size);
+    if (minimum_size.has_value()) {
       child->SetMinimumSize(minimum_size.value());
-    if (!visible)
+    }
+    if (!visible) {
       child->SetVisible(false);
-    parent->AddChildView(child);
+    }
+    parent->AddChildViewRaw(child);
     return child;
   }
 
   std::vector<Rect> GetChildBounds() const {
     std::vector<Rect> result;
-    base::ranges::transform(
-        host_->children(), std::back_inserter(result), [](const View* v) {
-          return v->GetVisible() ? v->bounds() : gfx::Rect();
-        });
+    std::ranges::transform(host_->children(), std::back_inserter(result),
+                           [](const View* v) {
+                             return v->GetVisible() ? v->bounds() : gfx::Rect();
+                           });
     return result;
   }
 
@@ -3482,8 +3499,9 @@ TEST_F(FlexLayoutCrossAxisFitTest, Layout_CrossCenter) {
   EXPECT_EQ(expected, child_views_[2]->origin().y());
 
   // Expect child views to retain their preferred sizes.
-  for (size_t i = 0; i < kNumChildren; ++i)
+  for (size_t i = 0; i < kNumChildren; ++i) {
     EXPECT_EQ(kChildSizes[i].height(), child_views_[i]->size().height());
+  }
 }
 
 TEST_F(FlexLayoutCrossAxisFitTest, Layout_CrossEnd) {
@@ -4113,7 +4131,7 @@ const DirectionalFlexRuleTestParam DirectionalFlexRuleTestParamList[] = {
     {LayoutOrientation::kVertical,
      kFlexUseHeightForWidth,
      gfx::Size(4, 20),
-     {{-3, 0, 10, 10}, {2, 10, 0, 10}}},
+     {{-3, 0, 10, 10}, {2, 10, 0, 20}}},
 };
 
 }  // anonymous namespace
@@ -4137,8 +4155,9 @@ TEST_P(FlexLayoutDirectionalRuleTest, TestRules) {
                         param.rules.max_main_rule,
                         param.rules.use_height_for_width,
                         param.rules.min_cross_rule));
-  if (param.rules.use_height_for_width)
+  if (param.rules.use_height_for_width) {
     child2->set_size_mode(MockView::SizeMode::kFixedArea);
+  }
 
   host_->SetSize(param.size);
   EXPECT_EQ(param.expected, GetChildBounds())

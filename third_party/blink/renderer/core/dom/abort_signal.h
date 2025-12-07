@@ -6,26 +6,31 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ABORT_SIGNAL_H_
 
 #include "base/functional/callback_forward.h"
-#include "base/functional/function_ref.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/abort_signal_composition_type.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
+
+namespace v8 {
+class Isolate;
+}  // namespace v8
 
 namespace blink {
 
 class AbortController;
 class AbortSignalCompositionManager;
 class AbortSignalRegistry;
-class ExceptionState;
 class ExecutionContext;
 class ScriptState;
 
 // Implementation of https://dom.spec.whatwg.org/#interface-AbortSignal
-class CORE_EXPORT AbortSignal : public EventTarget {
+class CORE_EXPORT AbortSignal : public EventTarget,
+                                public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -97,11 +102,14 @@ class CORE_EXPORT AbortSignal : public EventTarget {
   static AbortSignal* timeout(ScriptState*, uint64_t milliseconds);
   ScriptValue reason(ScriptState*) const;
   bool aborted() const { return !abort_reason_.IsEmpty(); }
-  void throwIfAborted(ScriptState*, ExceptionState&) const;
+  void throwIfAborted(v8::Isolate*) const;
   DEFINE_ATTRIBUTE_EVENT_LISTENER(abort, kAbort)
 
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
+
+  // `ExecutionContextLifecycleObserver` overrides:
+  void ContextDestroyed() override;
 
   // Internal API
 
@@ -181,9 +189,8 @@ class CORE_EXPORT AbortSignal : public EventTarget {
   void OnEventListenerAddedOrRemoved(const AtomicString& event_type,
                                      AddRemoveType);
 
-  // Invokes the given callback on the associated `AbortSignalRegistry`. Must
-  // only be called for composite signals.
-  void InvokeRegistryCallback(base::FunctionRef<void(AbortSignalRegistry&)>);
+  void SetAbortReason(ScriptState* script_state, ScriptValue reason);
+  void RunAbortSteps();
 
   // https://dom.spec.whatwg.org/#abortsignal-abort-reason
   // There is one difference from the spec. The value is empty instead of
@@ -192,13 +199,17 @@ class CORE_EXPORT AbortSignal : public EventTarget {
   // ScriptValue::IsEmpty does not.
   ScriptValue abort_reason_;
   HeapLinkedHashSet<WeakMember<AbortSignal::AlgorithmHandle>> abort_algorithms_;
-  Member<ExecutionContext> execution_context_;
   SignalType signal_type_;
 
   // This is set to a DependentSignalCompositionManager for composite signals or
   // a SourceSignalCompositionManager for non-composite signals. Null if
   // AbortSignalAny isn't enabled.
   Member<AbortSignalCompositionManager> composition_manager_;
+
+  // Handle for the delayed task associated with `SignalType::kTimeout` signals.
+  TaskHandle timout_task_handle_;
+
+  bool is_running_abort_steps_ = false;
 };
 
 }  // namespace blink

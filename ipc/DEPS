@@ -1,8 +1,6 @@
 include_rules = [
   "+crypto",
   "+mojo/public",
-  # For ipc_channel_nacl.cc:
-  "+native_client/src/public",
   "+sandbox/mac/seatbelt.h",
   "+services/tracing/public/cpp",
   "+third_party/perfetto/protos/perfetto/trace/track_event",
@@ -17,7 +15,7 @@ specific_include_rules = {
     "+mojo/core/embedder",
     "+mojo/core/test",
   ],
-  "ipc_message_protobuf_utils\.h": [
+  "param_traits_protobuf_utils\.h": [
     # Support serializing RepeatedField / RepeatedPtrField:
     "+third_party/protobuf/src/google/protobuf/repeated_field.h",
   ],

@@ -5,16 +5,19 @@
 package org.chromium.components.crash.anr;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.version_info.VersionInfo;
 import org.chromium.components.crash.anr.AnrDataOuterClass.AnrData;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.List;
 
 /** Unit tests for AnrCollector. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -1458,5 +1461,78 @@ public final class AnrCollectorTest {
         assertEquals(PREAMBLE, anrData.getPreamble());
         assertEquals(MAIN_THREAD_STACK_TRACE, anrData.getMainThreadStackTrace());
         assertEquals(OTHER_STACK_TRACES, anrData.getStackTraces());
+    }
+
+    @Test
+    public void testByteArrayToHexString() {
+        byte[] byteArray = {
+            Byte.MIN_VALUE, Byte.MAX_VALUE, (byte) 0, (byte) -1, (byte) 1, (byte) 0xFF
+        };
+        String hexString = AnrCollector.byteArrayToHexString(byteArray);
+        String expectedHexString = "807f00ff01ff";
+        assertEquals(expectedHexString, hexString);
+    }
+
+    @Test
+    public void testHandleProcessStateSummary_NoFileSaved() {
+        String buildIdString = "fakebuildid";
+        String variationsString = "fakevariations";
+        byte[] variationsHash = AnrCollector.computeMD5Hash(variationsString);
+        assertNotNull(variationsHash);
+        byte[] summary = AnrCollector.getProcessStateSummaryToSave(variationsHash, buildIdString);
+        List<String> parsedSummary = AnrCollector.handleProcessStateSummary(summary);
+        assertEquals(3, parsedSummary.size());
+        assertEquals(VersionInfo.getProductVersion(), parsedSummary.get(0));
+        assertEquals(buildIdString, parsedSummary.get(1));
+        // handleProcessStateSummary() returns an empty variations string, because we did not save
+        // the variations string to a file, so it could not find a file matching the variations hash
+        assertEquals("", parsedSummary.get(2));
+    }
+
+    @Test
+    public void testHandleProcessStateSummary_OneFileSaved() {
+        String buildIdString = "fakebuildid";
+        String variationsString = "fakevariations";
+        byte[] variationsHash = AnrCollector.computeMD5Hash(variationsString);
+        assertNotNull(variationsHash);
+        AnrCollector.saveVariationsToFile(variationsHash, variationsString, false);
+        byte[] summary = AnrCollector.getProcessStateSummaryToSave(variationsHash, buildIdString);
+        List<String> parsedSummary = AnrCollector.handleProcessStateSummary(summary);
+        assertEquals(3, parsedSummary.size());
+        assertEquals(VersionInfo.getProductVersion(), parsedSummary.get(0));
+        assertEquals(buildIdString, parsedSummary.get(1));
+        // handleProcessStateSummary() returns the correct variations string this time, because we
+        // have saved the variations string to a file via saveVariationsToFile()
+        assertEquals(variationsString, parsedSummary.get(2));
+    }
+
+    @Test
+    public void testHandleProcessStateSummary_MultipleFilesSaved() {
+        String buildIdString = "de46dd9da11415e70fc13e95e6bb0ee0e48b2489";
+        String wrongVariationsString1 = "wrongvariations1";
+        byte[] wrongVariationsHash1 = AnrCollector.computeMD5Hash(wrongVariationsString1);
+        assertNotNull(wrongVariationsHash1);
+        AnrCollector.saveVariationsToFile(wrongVariationsHash1, wrongVariationsString1, false);
+        String wrongVariationsString2 = "wrongvariations2";
+        byte[] wrongVariationsHash2 = AnrCollector.computeMD5Hash(wrongVariationsString2);
+        assertNotNull(wrongVariationsHash2);
+        AnrCollector.saveVariationsToFile(wrongVariationsHash2, wrongVariationsString2, false);
+        String correctVariationsString = "2\n5e3a236d-59e286d0,3ac60855-486e2a9c,";
+        byte[] correctVariationsHash = AnrCollector.computeMD5Hash(correctVariationsString);
+        assertNotNull(correctVariationsHash);
+        AnrCollector.saveVariationsToFile(correctVariationsHash, correctVariationsString, false);
+        String wrongVariationsString3 = "wrongvariations3";
+        byte[] wrongVariationsHash3 = AnrCollector.computeMD5Hash(wrongVariationsString3);
+        assertNotNull(wrongVariationsHash3);
+        AnrCollector.saveVariationsToFile(wrongVariationsHash3, wrongVariationsString3, false);
+        byte[] summary =
+                AnrCollector.getProcessStateSummaryToSave(correctVariationsHash, buildIdString);
+        List<String> parsedSummary = AnrCollector.handleProcessStateSummary(summary);
+        assertEquals(3, parsedSummary.size());
+        assertEquals(VersionInfo.getProductVersion(), parsedSummary.get(0));
+        assertEquals(buildIdString, parsedSummary.get(1));
+        // handleProcessStateSummary() iterates over the list of files in the ANR variations
+        // directory and finds and returns the correct variations string
+        assertEquals(correctVariationsString, parsedSummary.get(2));
     }
 }

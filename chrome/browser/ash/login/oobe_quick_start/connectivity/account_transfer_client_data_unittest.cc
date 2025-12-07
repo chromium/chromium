@@ -33,8 +33,8 @@ TEST_F(AccountTransferClientDataTest, CreateFidoAccountTransferClientDataJson) {
   AccountTransferClientData data(challenge_b64url_);
 
   std::string client_data_json = data.CreateJson();
-  std::optional<base::Value> parsed_json =
-      base::JSONReader::Read(client_data_json);
+  std::optional<base::Value> parsed_json = base::JSONReader::Read(
+      client_data_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(parsed_json);
   ASSERT_TRUE(parsed_json->is_dict());
   base::Value::Dict& parsed_json_dict = parsed_json.value().GetDict();
@@ -49,15 +49,9 @@ TEST_F(AccountTransferClientDataTest, CreateFidoAccountTransferClientDataJson) {
 TEST_F(AccountTransferClientDataTest, CreateHash) {
   AccountTransferClientData data(challenge_b64url_);
 
-  std::string client_data_json = data.CreateJson();
-
-  std::string json = data.CreateJson();
-  std::array<uint8_t, crypto::kSHA256Length> expected_hash;
-  crypto::SHA256HashString(json, expected_hash.data(), expected_hash.size());
-
-  std::array<uint8_t, crypto::kSHA256Length> result = data.CreateHash();
-
-  EXPECT_EQ(expected_hash, result);
+  auto expected_hash =
+      crypto::hash::Sha256(base::as_byte_span(data.CreateJson()));
+  EXPECT_EQ(expected_hash, data.CreateHash());
 }
 
 }  // namespace ash::quick_start

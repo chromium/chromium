@@ -18,6 +18,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -29,21 +30,30 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/favicon/core/history_ui_favicon_request_handler.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sessions/core/tab_restore_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_sessions/synced_session.h"
@@ -63,6 +73,14 @@
 #include "ui/resources/grit/ui_resources.h"
 
 namespace {
+// Command ID for recently closed items header or disabled item to which the
+// accelerator string will be appended.
+static constexpr int kDisabledRecentlyClosedHeaderCommandId =
+    AppMenuModel::kMinRecentTabsCommandId;
+static constexpr int kFirstMenuEntryCommandId =
+    kDisabledRecentlyClosedHeaderCommandId +
+    AppMenuModel::kNumUnboundedMenuTypes;
+
 // The index of the first tab in the group menu item. Before the tab item is the
 // "Restore group" item and a separator.
 constexpr int kInitialGroupItem = 2;
@@ -235,9 +253,13 @@ bool RecentTabsSubMenuModel::ExecuteCustomCommand(int command_id,
   // Supported custom commands.
   static constexpr auto custom_commands = base::MakeFixedFlatSet<int>(
       {IDC_SHOW_HISTORY, IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL,
-       IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS});
+       IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS, IDC_RECENT_TABS_SEE_DEVICE_TABS});
 
   if (!custom_commands.contains(command_id)) {
+    return false;
+  }
+  if (command_id == IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL &&
+      !HistoryClustersSidePanelCoordinator::IsSupported(browser_->profile())) {
     return false;
   }
   if (log_menu_metrics_callback_) {
@@ -262,7 +284,8 @@ void RecentTabsSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
   sessions::TabRestoreService* service =
       TabRestoreServiceFactory::GetForProfile(browser_->profile());
   CHECK(service);
-  sessions::LiveTabContext* context = browser_->live_tab_context();
+  sessions::LiveTabContext* context =
+      browser_->GetFeatures().live_tab_context();
   CHECK(context);
 
   WindowOpenDisposition disposition = ui::DispositionFromEventFlags(
@@ -315,6 +338,11 @@ void RecentTabsSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
   }
 }
 
+// static
+int RecentTabsSubMenuModel::GetDisabledRecentlyClosedHeaderCommandId() {
+  return kDisabledRecentlyClosedHeaderCommandId;
+}
+
 int RecentTabsSubMenuModel::GetFirstRecentTabsCommandId() {
   return local_window_items_.begin()->first;
 }
@@ -337,11 +365,13 @@ void RecentTabsSubMenuModel::Build() {
   InsertItemWithStringIdAt(0, IDC_SHOW_HISTORY, IDS_HISTORY_SHOW_HISTORY);
   SetCommandIcon(this, IDC_SHOW_HISTORY,
                  vector_icons::kHistoryChromeRefreshIcon);
-
-  InsertItemWithStringIdAt(1, IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL,
-                           IDS_HISTORY_CLUSTERS_SHOW_SIDE_PANEL);
-  SetCommandIcon(this, IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL,
-                 vector_icons::kHistoryChromeRefreshIcon);
+  if (browser_->GetFeatures().side_panel_ui() &&
+      HistoryClustersSidePanelCoordinator::IsSupported(browser_->profile())) {
+    InsertItemWithStringIdAt(1, IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL,
+                             IDS_HISTORY_CLUSTERS_SHOW_SIDE_PANEL);
+    SetCommandIcon(this, IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL,
+                   vector_icons::kHistoryChromeRefreshIcon);
+  }
 
   AddSeparator(ui::NORMAL_SEPARATOR);
   history_separator_index_ = GetItemCount() - 1;
@@ -383,6 +413,8 @@ void RecentTabsSubMenuModel::BuildLocalEntries() {
         }
         case sessions::tab_restore::Type::WINDOW: {
           auto& window = static_cast<sessions::tab_restore::Window&>(*entry);
+          // TODO(https://crbug.com/41227458): Consider if we should re-add the
+          // ability for single tab windows to be represented as single tabs.
           BuildLocalWindowItem(window, ++last_local_model_index_);
           break;
         }
@@ -401,6 +433,42 @@ void RecentTabsSubMenuModel::BuildLocalEntries() {
 }
 
 void RecentTabsSubMenuModel::BuildTabsFromOtherDevices() {
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    syncer::SyncService* sync_service =
+        SyncServiceFactory::GetForProfile(browser_->profile());
+    if (!sync_service) {
+      return;
+    }
+
+    if (!signin_util::IsSyncingUserSelectableTypesAllowedByPolicy(
+            sync_service, {syncer::UserSelectableType::kTabs})) {
+      // This option should not be built if syncing tabs is disabled by policy.
+      return;
+    }
+
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(browser_->profile());
+    switch (signin_util::GetSignedInState(identity_manager)) {
+      case signin_util::SignedInState::kSignedIn:
+      case signin_util::SignedInState::kSignInPending:
+        if (signin_util::HasExplicitlyDisabledHistorySync(sync_service,
+                                                          identity_manager)) {
+          // This option should not be built if syncing tabs is explicitly
+          // disabled by the user.
+          return;
+        }
+        break;
+      case signin_util::SignedInState::kSignedOut:
+      case signin_util::SignedInState::kWebOnlySignedIn:
+      case signin_util::SignedInState::kSyncing:
+      case signin_util::SignedInState::kSyncPaused:
+        break;
+    }
+  }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
   // All other devices' items (device headers or tabs) use AddItem*() to append
   // a menu item, because they take always place in the end of menu.
   AddSeparator(ui::NORMAL_SEPARATOR);
@@ -413,6 +481,13 @@ void RecentTabsSubMenuModel::BuildTabsFromOtherDevices() {
     if (open_tabs) {
       AddItemWithStringId(IDC_RECENT_TABS_NO_DEVICE_TABS,
                           IDS_RECENT_TABS_NO_DEVICE_TABS);
+    } else if (base::FeatureList::IsEnabled(
+                   syncer::kReplaceSyncPromosWithSignInPromos)) {
+      AddItemWithStringIdAndIcon(IDC_RECENT_TABS_SEE_DEVICE_TABS,
+                                 IDS_RECENT_TABS_SEE_DEVICE_TABS,
+                                 ui::ImageModel::FromVectorIcon(
+                                     kSyncRefreshIcon, ui::kColorMenuIcon,
+                                     ui::SimpleMenuModel::kDefaultIconSize));
     } else {
       AddItemWithStringIdAndIcon(IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS,
                                  IDS_RECENT_TABS_LOGIN_FOR_DEVICE_TABS,
@@ -681,7 +756,7 @@ std::u16string RecentTabsSubMenuModel::GetGroupItemLabel(std::u16string title,
   } else {
     item_label = l10n_util::GetPluralStringFUTF16(IDS_RECENTLY_CLOSED_GROUP,
                                                   static_cast<int>(num_tabs));
-    item_label = base::ReplaceStringPlaceholders(item_label, {title}, nullptr);
+    item_label = base::ReplaceStringPlaceholders(item_label, title, nullptr);
   }
   return item_label;
 }
@@ -708,8 +783,15 @@ void RecentTabsSubMenuModel::AddDeviceFavicon(
     case syncer::DeviceInfo::FormFactor::kTablet:
       favicon = &kTabletIcon;
       break;
+    // Return the laptop icon as default.
     case syncer::DeviceInfo::FormFactor::kUnknown:
-      [[fallthrough]];  // Return the laptop icon as default.
+      [[fallthrough]];
+    case syncer::DeviceInfo::FormFactor::kAutomotive:
+      [[fallthrough]];
+    case syncer::DeviceInfo::FormFactor::kWearable:
+      [[fallthrough]];
+    case syncer::DeviceInfo::FormFactor::kTv:
+      [[fallthrough]];
     case syncer::DeviceInfo::FormFactor::kDesktop:
       favicon = &kLaptopIcon;
       break;
@@ -754,9 +836,7 @@ void RecentTabsSubMenuModel::AddTabFavicon(int command_id,
         url,
         base::BindOnce(&RecentTabsSubMenuModel::OnFaviconDataAvailable,
                        weak_ptr_factory_for_other_devices_tab_.GetWeakPtr(),
-                       command_id, menu_model),
-
-        favicon::HistoryUiFaviconRequestOrigin::kRecentTabs);
+                       command_id, menu_model));
   }
 }
 
@@ -876,6 +956,5 @@ bool RecentTabsSubMenuModel::IsCommandType(CommandType command_type,
       return remote_sub_menu_items_.contains(command_id);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }

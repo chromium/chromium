@@ -8,7 +8,7 @@
 #include <set>
 #include <string>
 
-#include "chrome/browser/ui/safety_hub/safety_hub_service.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 
 struct PasswordPair {
   std::string origin;
@@ -21,7 +21,7 @@ struct PasswordPair {
 // compromised passwords. This result will be used to show a notifcication on
 // the three dot menu. Whenever any compromised passwords is detected, the
 // origin should be added here.
-class PasswordStatusCheckResult : public SafetyHubService::Result {
+class PasswordStatusCheckResult : public SafetyHubResult {
  public:
   PasswordStatusCheckResult();
 
@@ -36,9 +36,9 @@ class PasswordStatusCheckResult : public SafetyHubService::Result {
 
   void AddToCompromisedPasswords(std::string origin, std::string username);
 
-  // SafetyHubService::Result implementation
+  // SafetyHubResult implementation
 
-  std::unique_ptr<SafetyHubService::Result> Clone() const override;
+  std::unique_ptr<SafetyHubResult> Clone() const override;
 
   base::Value::Dict ToDictValue() const override;
 

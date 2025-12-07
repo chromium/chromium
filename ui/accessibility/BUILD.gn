@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
 import("//build/config/linux/pkg_config.gni")
 import("//build/config/ui.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -63,8 +62,10 @@ component("ax_base") {
     "ax_action_handler_registry.cc",
     "ax_action_handler_registry.h",
     "ax_action_target.h",
+    "ax_attributes.cc",
+    "ax_attributes.h",
     "ax_base_export.h",
-    "ax_bit_map.h",
+    "ax_bitset.h",
     "ax_enum_util.cc",
     "ax_enum_util.h",
     "ax_error_types.h",
@@ -72,6 +73,8 @@ component("ax_base") {
     "ax_event.h",
     "ax_event_intent.cc",
     "ax_event_intent.h",
+    "ax_location_and_scroll_updates.cc",
+    "ax_location_and_scroll_updates.h",
     "ax_mode.cc",
     "ax_mode.h",
     "ax_mode_histogram_logger.cc",
@@ -83,6 +86,8 @@ component("ax_base") {
     "ax_relative_bounds.h",
     "ax_role_properties.cc",
     "ax_role_properties.h",
+    "ax_states.cc",
+    "ax_states.h",
     "ax_text_attributes.cc",
     "ax_text_attributes.h",
     "ax_tree_checks.h",
@@ -99,12 +104,17 @@ component("ax_base") {
     "ax_updates_and_events.h",
   ]
 
-  if (!is_chromeos) {
+  if (!is_chromeos && !is_fuchsia) {
     sources += [
       "ax_enum_localization_util.cc",
       "ax_enum_localization_util.h",
     ]
   }
+
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
 
   public_deps = [
     ":ax_constants_mojo",
@@ -123,9 +133,9 @@ component("ax_base") {
     ]
   }
 
-  deps = [ "//build:chromeos_buildflags" ]
+  deps = []
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//ash/constants" ]
   }
 
@@ -169,8 +179,6 @@ component("accessibility_internal") {
     "ax_hypertext.h",
     "ax_language_detection.cc",
     "ax_language_detection.h",
-    "ax_mode_observer.cc",
-    "ax_mode_observer.h",
     "ax_node.cc",
     "ax_node.h",
     "ax_node_position.cc",
@@ -207,8 +215,11 @@ component("accessibility_internal") {
     "ax_tree_update_util.h",
     "null_ax_action_target.cc",
     "null_ax_action_target.h",
-    "test_single_ax_tree_manager.cc",
-    "test_single_ax_tree_manager.h",
+  ]
+
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
   ]
 
   deps = [
@@ -236,11 +247,16 @@ component("accessibility_internal") {
   }
 }
 
-if (is_android || is_chromeos_ash) {
+if (is_android || is_chromeos) {
   source_set("ax_assistant") {
     sources = [
       "ax_assistant_structure.cc",
       "ax_assistant_structure.h",
+    ]
+
+    configs += [
+      "//build/config/compiler:wexit_time_destructors",
+      "//build/config/compiler:wglobal_constructors",
     ]
 
     deps = [ ":accessibility" ]
@@ -252,6 +268,8 @@ if (is_android || is_chromeos_ash) {
 static_library("test_support") {
   testonly = true
   sources = [
+    "ax_enum_test_util.cc",
+    "ax_enum_test_util.h",
     "platform/ax_platform_for_test.cc",
     "platform/ax_platform_for_test.h",
     "platform/ax_platform_node_test_helper.cc",
@@ -268,6 +286,8 @@ static_library("test_support") {
     "test_ax_node_helper.h",
     "test_ax_tree_update.cc",
     "test_ax_tree_update.h",
+    "test_single_ax_tree_manager.cc",
+    "test_single_ax_tree_manager.h",
     "tree_generator.cc",
     "tree_generator.h",
   ]
@@ -285,12 +305,17 @@ static_library("test_support") {
     "//base/test:test_support",
     "//third_party/abseil-cpp:absl",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 test("accessibility_unittests") {
   testonly = true
   sources = [
-    "ax_bit_map_unittest.cc",
+    "ax_attributes_unittest.cc",
+    "ax_bitset_unittest.cc",
     "ax_computed_node_data_unittest.cc",
     "ax_enum_util_unittest.cc",
     "ax_event_generator_unittest.cc",
@@ -317,6 +342,7 @@ test("accessibility_unittests") {
     "mojom/ax_action_data_mojom_traits_unittest.cc",
     "mojom/ax_event_intent_mojom_traits_unittest.cc",
     "mojom/ax_event_mojom_traits_unittest.cc",
+    "mojom/ax_location_and_scroll_updates_mojom_traits_unittest.cc",
     "mojom/ax_mode_mojom_traits_unittest.cc",
     "mojom/ax_node_data_mojom_traits_unittest.cc",
     "mojom/ax_relative_bounds_mojom_traits_unittest.cc",
@@ -326,7 +352,6 @@ test("accessibility_unittests") {
     "null_ax_action_target_unittest.cc",
     "platform/ax_platform_node_unittest.cc",
     "platform/ax_platform_node_unittest.h",
-    "platform/ax_platform_unittest.cc",
     "platform/ax_unique_id_unittest.cc",
     "platform/inspect/ax_inspect_scenario_unittest.cc",
     "platform/inspect/ax_inspect_test_helper_unittest.cc",
@@ -334,6 +359,7 @@ test("accessibility_unittests") {
     "platform/inspect/ax_property_node_unittest.cc",
     "platform/inspect/ax_script_instruction_unittest.cc",
     "run_all_unittests.cc",
+    "test_ax_tree_update_unittest.cc",
   ]
 
   deps = [
@@ -373,6 +399,8 @@ test("accessibility_unittests") {
   if (is_fuchsia) {
     sources += [
       "platform/fuchsia/accessibility_bridge_fuchsia_unittest.cc",
+      "platform/fuchsia/browser_accessibility_fuchsia_unittest.cc",
+      "platform/fuchsia/browser_accessibility_manager_fuchsia_unittest.cc",
       "platform/fuchsia/semantic_provider_unittest.cc",
     ]
 
@@ -398,6 +426,8 @@ test("accessibility_unittests") {
         "platform/ax_platform_node_textrangeprovider_win_unittest.cc",
         "platform/ax_platform_node_win_unittest.cc",
         "platform/ax_platform_node_win_unittest.h",
+        "platform/browser_accessibility_manager_win_unittest.cc",
+        "platform/browser_accessibility_win_unittest.cc",
         "platform/iaccessible2/scoped_co_mem_array_unittest.cc",
       ]
 
@@ -412,15 +442,33 @@ test("accessibility_unittests") {
       ]
     }
 
+    if (is_mac) {
+      sources += [
+        "platform/ax_platform_node_cocoa_unittest.mm",
+        "platform/browser_accessibility_cocoa_unittest.mm",
+        "platform/browser_accessibility_mac_unittest.mm",
+        "platform/inspect/ax_element_wrapper_mac_unittest.mm",
+      ]
+      deps += [ "//ui/base:test_support" ]
+    }
+
     if (use_atk) {
       sources += [
         "platform/atk_util_auralinux_unittest.cc",
         "platform/ax_platform_node_auralinux_unittest.cc",
+        "platform/browser_accessibility_auralinux_unittest.cc",
+        "platform/browser_accessibility_manager_auralinux_unittest.cc",
       ]
+
+      deps += [ "//ui/base/glib" ]
 
       configs += [ "//build/config/linux/atk" ]
     }
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 fuzzer_test("ax_tree_fuzzer") {
@@ -472,7 +520,7 @@ if (is_android) {
     # External code should depend on ":accessibility_features_java" instead.
     visibility = [ ":*" ]
     sources = [ "//ui/accessibility/accessibility_features.cc" ]
-    template = "//ui/accessibility/android/java_templates/AccessibilityFeatures.java.tmpl"
+    class_name = "org.chromium.ui.accessibility.AccessibilityFeatures"
   }
 
   # A minimal library used to expose accessibility features to webview.
@@ -488,22 +536,20 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/ui/accessibility/AccessibilityAutofillHelper.java",
       "android/java/src/org/chromium/ui/accessibility/AccessibilityState.java",
-      "android/java/src/org/chromium/ui/accessibility/UiAccessibilityFeatureMap.java",
     ]
   }
 
-  source_set("ax_base_android") {
+  component("ax_base_android") {
     sources = [
       "android/accessibility_state.cc",
       "android/accessibility_state.h",
-      "android/ui_accessibility_feature_map.cc",
-      "android/ui_accessibility_features.cc",
-      "android/ui_accessibility_features.h",
     ]
-    deps = [
-      ":ax_jni_headers",
-      "//base",
-    ]
+
+    defines = [ "IS_AX_BASE_ANDROID_IMPL" ]
+
+    deps = [ ":ax_jni_headers" ]
+
+    public_deps = [ "//base" ]
   }
 
   android_library("accessibility_features_native_map_java") {
@@ -521,11 +567,11 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/ui/accessibility/AccessibilityAutofillHelper.java",
       "android/java/src/org/chromium/ui/accessibility/AccessibilityState.java",
-      "android/java/src/org/chromium/ui/accessibility/UiAccessibilityFeatureMap.java",
     ]
     deps = [
-      ":ui_accessibility_features_java",
       "//base:base_java",
+      "//base:flagged_apis_java",
+      "//base:service_loader_java",
       "//build/android:build_java",
       "//third_party/androidx:androidx_annotation_annotation_jvm_java",
       "//third_party/jni_zero:jni_zero_java",
@@ -537,24 +583,24 @@ if (is_android) {
     sources = [ "android/javatests/src/org/chromium/ui/accessibility/AccessibilityStateTest.java" ]
     deps = [
       ":ax_base_java",
-      ":ui_accessibility_features_java",
       "//base:base_java_test_support",
       "//base:base_junit_test_support",
       "//third_party/androidx:androidx_test_runner_java",
-      "//third_party/junit:junit",
+      "//third_party/google-truth:google_truth_java",
+      "//third_party/junit",
     ]
   }
 
-  java_cpp_features("ui_accessibility_features_srcjar") {
-    # External code should depend on ":ui_accessibility_features_java" instead.
-    visibility = [ ":*" ]
-    sources = [ "android/ui_accessibility_features.cc" ]
-    template = "//ui/accessibility/android/java_templates/UiAccessibilityFeatures.java.tmpl"
-  }
-
-  # A minimal library used to expose ui accessibility features.
-  android_library("ui_accessibility_features_java") {
-    srcjar_deps = [ ":ui_accessibility_features_srcjar" ]
+  android_library("keyboard_focus_java") {
+    sources = [
+      "android/java/src/org/chromium/ui/accessibility/KeyboardFocusRow.java",
+      "android/java/src/org/chromium/ui/accessibility/KeyboardFocusUtil.java",
+    ]
+    deps = [
+      "//base:base_java",
+      "//build/android:build_java",
+      "//third_party/androidx:androidx_annotation_annotation_jvm_java",
+    ]
   }
 }
 

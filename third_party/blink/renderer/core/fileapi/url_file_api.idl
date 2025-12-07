@@ -4,8 +4,9 @@
 
 // https://w3c.github.io/FileAPI/#creating-revoking
 [
-    ImplementedAs=URLFileAPI
+    ImplementedAs=URLFileAPI,
+    Exposed=(Window,DedicatedWorker,SharedWorker)
 ] partial interface URL {
-    [Exposed=(Window,DedicatedWorker,SharedWorker), CallWith=ScriptState, RaisesException] static DOMString createObjectURL(Blob blob);
-    [Exposed=(Window,DedicatedWorker,SharedWorker), CallWith=ScriptState] static void revokeObjectURL(DOMString url);
+    [CallWith=ScriptState, RaisesException] static DOMString createObjectURL(Blob blob);
+    [CallWith=ScriptState] static undefined revokeObjectURL(DOMString url);
 };

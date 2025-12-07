@@ -6,8 +6,7 @@
 #include "third_party/blink/renderer/core/permissions_policy/policy_helper.h"
 
 #include "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom-blink.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/protocol/page.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -30,26 +29,32 @@ const char k{{feature.name}}PolicyName[] = "{{feature.permissions_policy_name}}"
 // permissions policy to allow use of the feature in subframes (The framed
 // document will still require a valid origin trial token to use the feature in
 // this scenario).
-const FeatureNameMap GetDefaultFeatureNameMap(bool is_isolated_context) {
-  DEFINE_STATIC_LOCAL(FeatureNameMapCache, default_feature_name_map_cache, ());
-  FeatureNameMapCacheKey key(is_isolated_context);
-  if (default_feature_name_map_cache.Contains(key) &&
-      !default_feature_name_map_cache.at(key).empty()) {
-    return default_feature_name_map_cache.at(key);
+const FeatureNameMap& GetDefaultFeatureNameMap(bool is_isolated_context) {
+  DEFINE_STATIC_LOCAL(FeatureNameMap, isolated_default_feature_name_map, ());
+  DEFINE_STATIC_LOCAL(FeatureNameMap, non_isolated_default_feature_name_map, ());
+
+  FeatureNameMap& default_feature_name_map = is_isolated_context ?
+    isolated_default_feature_name_map : non_isolated_default_feature_name_map;
+
+  // If we've already computed the map, return it.
+  if (default_feature_name_map.size() > 0) {
+    return default_feature_name_map;
   }
 
-  FeatureNameMap default_feature_name_map;
+  // Build the map for the first time.
+  default_feature_name_map.ReserveCapacityForSize({{ permissions_policy_features|length }});
+
   {% for feature in permissions_policy_features %}
   {% if not feature.depends_on or feature.name in pp_origin_trial_dependency_map %}
   {% if feature.visibility == "All" %}
   default_feature_name_map.Set(
       k{{feature.name}}PolicyName,
-      mojom::PermissionsPolicyFeature::k{{feature.name}});
+      network::mojom::PermissionsPolicyFeature::k{{feature.name}});
   {% elif feature.visibility == "IsolatedContext" %}
   if (is_isolated_context) {
     default_feature_name_map.Set(
         k{{feature.name}}PolicyName,
-        mojom::PermissionsPolicyFeature::k{{feature.name}});
+        network::mojom::PermissionsPolicyFeature::k{{feature.name}});
   }
   {% endif %}
   {% endif %}
@@ -59,27 +64,17 @@ const FeatureNameMap GetDefaultFeatureNameMap(bool is_isolated_context) {
     {% for feature in dependent_features %}
     {% if name_to_permissions_policy_map[feature].visibility == "All" %}
     default_feature_name_map.Set(k{{feature}}PolicyName,
-                                 mojom::PermissionsPolicyFeature::k{{feature}});
+                                 network::mojom::PermissionsPolicyFeature::k{{feature}});
     {% elif name_to_permissions_policy_map[feature].visibility == "IsolatedContext" %}
     if (is_isolated_context) {
       default_feature_name_map.Set(
           k{{feature}}PolicyName,
-          mojom::PermissionsPolicyFeature::k{{feature}});
+          network::mojom::PermissionsPolicyFeature::k{{feature}});
     }
     {% endif %}
     {% endfor %}
   }
   {% endfor %}
-
-  // Before we set |key| in the hash to be the map, check that it's empty.
-  if (default_feature_name_map_cache.Contains(key)) {
-    CHECK(default_feature_name_map_cache.at(key).empty());
-  }
-
-  // The contents of |default_feature_name_map| are copied into
-  // |default_feature_name_map_cache| here, which is declared static
-  // local above.
-  default_feature_name_map_cache.Set(key, default_feature_name_map);
 
   return default_feature_name_map;
 }
@@ -95,6 +90,19 @@ void ResetAvailableDocumentPolicyFeaturesForTest() {
   GetAvailableDocumentPolicyFeaturesInternal().clear();
 }
 
+bool IsPrivacySensitiveFeature(network::mojom::blink::PermissionsPolicyFeature feature) {
+  switch (feature) {
+    {% for feature in permissions_policy_features %}
+    {% if feature.privacy_sensitive %}
+    case network::mojom::PermissionsPolicyFeature::k{{feature.name}}:
+      return true;
+    {% endif %}
+    {% endfor %}
+    default:
+      return false;
+  }
+  NOTREACHED();
+}
 
 const DocumentPolicyFeatureSet& GetAvailableDocumentPolicyFeatures() {
   DocumentPolicyFeatureSet& features = GetAvailableDocumentPolicyFeaturesInternal();
@@ -145,12 +153,12 @@ bool DisabledByOriginTrial(mojom::blink::DocumentPolicyFeature feature,
   return false;
 }
 
-String PermissionsPolicyFeatureToProtocol(mojom::blink::PermissionsPolicyFeature feature, ExecutionContext* execution_context) {
+String PermissionsPolicyFeatureToProtocol(network::mojom::PermissionsPolicyFeature feature, ExecutionContext* execution_context) {
   if (execution_context && execution_context->IsIsolatedContext()) {
     switch (feature) {
       {% for feature in permissions_policy_features %}
       {% if feature.visibility == "IsolatedContext" %}
-      case mojom::blink::PermissionsPolicyFeature::k{{feature.name}}:
+      case network::mojom::PermissionsPolicyFeature::k{{feature.name}}:
         return protocol::Page::PermissionsPolicyFeatureEnum::{{feature.devtools_enum_name}};
       {% endif %}
       {% endfor %}
@@ -161,15 +169,14 @@ String PermissionsPolicyFeatureToProtocol(mojom::blink::PermissionsPolicyFeature
   switch (feature) {
     {% for feature in permissions_policy_features %}
     {% if feature.visibility == "All" %}
-    case mojom::blink::PermissionsPolicyFeature::k{{feature.name}}:
+    case network::mojom::PermissionsPolicyFeature::k{{feature.name}}:
       return protocol::Page::PermissionsPolicyFeatureEnum::{{feature.devtools_enum_name}};
     {% endif %}
     {% endfor %}
     default:
       // This default case also handles the mojom entry for
-      // mojom::blink::PermissionsPolicyFeature::kNotFound.
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      // network::mojom::PermissionsPolicyFeature::kNotFound.
+      NOTREACHED();
   }
 }
 

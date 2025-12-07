@@ -9,16 +9,18 @@ mojom_component("vr_service") {
   output_prefix = "device_vr_service_mojo_bindings"
   macro_prefix = "DEVICE_VR_SERVICE_MOJO_BINDINGS"
 
-  sources = [ "vr_service.mojom" ]
+  sources = [
+    "vr_service.mojom",
+    "xr_hand_tracking_data.mojom",
+  ]
 
   public_deps = [
-    ":test_mojom",
     ":xr_common",
     "//device/gamepad/public/mojom",
     "//gpu/ipc/common:interfaces",
     "//mojo/public/mojom/base",
-    "//services/viz/public/mojom:shared_image_format",
-    "//ui/display/mojom:mojom",
+    "//services/viz/public/mojom/compositing:shared_image_format",
+    "//ui/display/mojom",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
   ]
@@ -26,16 +28,32 @@ mojom_component("vr_service") {
   shared_cpp_typemap = {
     types = [
       {
-        mojom = "device.mojom.RgbaTupleF16"
-        cpp = "::device::RgbaTupleF16"
-      },
-      {
         mojom = "device.mojom.RgbTupleF32"
         cpp = "::device::RgbTupleF32"
       },
       {
         mojom = "device.mojom.Pose"
         cpp = "::device::Pose"
+      },
+      {
+        mojom = "device.mojom.PlaneId"
+        cpp = "::device::PlaneId"
+      },
+      {
+        mojom = "device.mojom.AnchorId"
+        cpp = "::device::AnchorId"
+      },
+      {
+        mojom = "device.mojom.HitTestSubscriptionId"
+        cpp = "::device::HitTestSubscriptionId"
+      },
+      {
+        mojom = "device.mojom.LayerId"
+        cpp = "::device::LayerId"
+      },
+      {
+        mojom = "device.mojom.XrVisibilityMaskId"
+        cpp = "::device::XrVisibilityMaskId"
       },
     ]
     traits_headers = [ "//device/vr/public/mojom/vr_service_mojom_traits.h" ]
@@ -58,9 +76,9 @@ mojom_component("isolated_xr_service") {
   disable_variants = true
 
   public_deps = [
-    ":test_mojom",
     ":vr_service",
     ":xr_common",
+    "//device/vr/public/mojom/test:test_mojom",
     "//gpu/ipc/common:interfaces",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
@@ -71,31 +89,23 @@ mojom_component("isolated_xr_service") {
   deps = [ "//services/viz/public/mojom" ]
 }
 
-mojom_component("test_mojom") {
-  output_prefix = "device_vr_test_mojo_bindings"
-  macro_prefix = "DEVICE_VR_TEST_MOJO_BINDINGS"
-
-  sources = [ "browser_test_interfaces.mojom" ]
-
-  public_deps = [
-    ":xr_common",
-    "//ui/gfx/geometry/mojom",
-    "//ui/gfx/mojom",
-  ]
-}
-
 component("vr_public_typemaps") {
   output_name = "device_vr_public_typemaps"
 
   defines = [ "IS_VR_PUBLIC_TYPEMAPS_IMPL" ]
 
   sources = [
+    "anchor_id.h",
+    "hit_test_subscription_id.h",
+    "layer_id.h",
+    "plane_id.h",
     "pose.cc",
     "pose.h",
+    "visibility_mask_id.h",
   ]
 
   deps = [
-    "//base:base",
+    "//base",
     "//skia",
     "//ui/gfx/geometry",
     "//ui/gfx/geometry:geometry_skia",

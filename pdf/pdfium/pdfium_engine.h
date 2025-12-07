@@ -8,31 +8,40 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/dcheck_is_on.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_span.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "pdf/accessibility_structs.h"
+#include "pdf/buildflags.h"
 #include "pdf/document_attachment_info.h"
 #include "pdf/document_layout.h"
 #include "pdf/document_metadata.h"
 #include "pdf/loader/document_loader.h"
+#include "pdf/pdf_annotation_agent.h"
+#include "pdf/pdf_caret.h"
+#include "pdf/pdf_caret_client.h"
+#include "pdf/pdf_rect.h"
 #include "pdf/pdfium/pdfium_engine_client.h"
 #include "pdf/pdfium/pdfium_form_filler.h"
 #include "pdf/pdfium/pdfium_page.h"
 #include "pdf/pdfium/pdfium_print.h"
 #include "pdf/pdfium/pdfium_range.h"
+#include "pdf/region_data.h"
 #include "printing/mojom/print.mojom-forward.h"
 #include "services/screen_ai/buildflags/buildflags.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
@@ -57,7 +66,15 @@
 #include "pdf/flatten_pdf_result.h"
 #endif
 
+#if BUILDFLAG(ENABLE_PDF_INK2)
+#include "pdf/pdf_ink_ids.h"
+#include "pdf/pdf_ink_metrics_handler.h"
+#include "third_party/ink/src/ink/geometry/partitioned_mesh.h"
+#include "ui/gfx/geometry/transform.h"
+#endif
+
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "pdf/pdfium/pdfium_searchify.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom-forward.h"
 #endif
 
@@ -69,6 +86,12 @@ class WebTouchEvent;
 struct WebPrintParams;
 }  // namespace blink
 
+#if BUILDFLAG(ENABLE_PDF_INK2)
+namespace ink {
+class Stroke;
+}  // namespace ink
+#endif
+
 namespace chrome_pdf {
 
 class PDFiumDocument;
@@ -77,14 +100,13 @@ class Thumbnail;
 enum class AccessibilityScrollAlignment;
 struct AccessibilityActionData;
 struct AccessibilityFocusInfo;
-struct AccessibilityHighlightInfo;
-struct AccessibilityImageInfo;
-struct AccessibilityLinkInfo;
-struct AccessibilityTextFieldInfo;
-struct AccessibilityTextRunInfo;
 struct DocumentAttachmentInfo;
 struct DocumentMetadata;
 struct PageCharacterIndex;
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+class PDFiumOnDemandSearchifier;
+#endif
 
 namespace draw_utils {
 class ShadowMatrix;
@@ -116,11 +138,15 @@ void InitializeSDK(bool enable_v8,
 void ShutdownSDK();
 
 using SendThumbnailCallback = base::OnceCallback<void(Thumbnail)>;
+using AddSearchResultCallback = base::RepeatingCallback<void(PDFiumRange)>;
 
 // This class implements a PDF rendering engine using the PDFium library.
 //
 // Many methods in this class are virtual to facilitate testing.
-class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
+class PDFiumEngine : public DocumentLoader::Client,
+                     public IFSDK_PAUSE,
+                     public PdfAnnotationAgent::Container,
+                     public PdfCaretClient {
  public:
   // Maximum number of parameters a nameddest view can contain.
   static constexpr size_t kMaxViewParams = 4;
@@ -146,15 +172,15 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
     // Parameters for the view. Their meaning depends on the `view` and their
     // number is defined by `num_params` but is at most `kMaxViewParams`. Note:
     // If a parameter stands for the x/y coordinates, it should be transformed
-    // into the corresponding in-screen coordinates before it's sent to the
+    // into the corresponding screen coordinates before it's sent to the
     // viewport.
-    float params[kMaxViewParams];
+    std::array<float, kMaxViewParams> params;
 
     // A string of parameters for view fit type XYZ in the format of "x,y,zoom",
-    // where x and y parameters are the in-screen coordinates and zoom is the
-    // zoom level. If a parameter is "null", then current value of that
-    // parameter in the viewport should be retained. Note: This string is empty
-    // if the view's fit type is not XYZ.
+    // where x and y parameters are the screen coordinates and zoom is the zoom
+    // level. If a parameter is "null", then current value of that parameter in
+    // the viewport should be retained. Note: This string is empty if the view's
+    // fit type is not XYZ.
     std::string xyz_params;
   };
 
@@ -164,6 +190,8 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   PDFiumEngine(const PDFiumEngine&) = delete;
   PDFiumEngine& operator=(const PDFiumEngine&) = delete;
   ~PDFiumEngine() override;
+
+  PdfCaret* caret() { return caret_.get(); }
 
   // Replaces the normal DocumentLoader for testing. Must be called before
   // HandleDocumentLoad().
@@ -194,7 +222,7 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   virtual bool HandleInputEvent(const blink::WebInputEvent& event);
   void PrintBegin();
   virtual std::vector<uint8_t> PrintPages(
-      const std::vector<int>& page_numbers,
+      base::span<const int> page_indices,
       const blink::WebPrintParams& print_params);
   void PrintEnd();
   void StartFind(const std::u16string& text, bool case_sensitive);
@@ -204,9 +232,13 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   void RotateClockwise();
   void RotateCounterclockwise();
   bool IsReadOnly() const;
-  void SetReadOnly(bool enable);
+  void SetReadOnly(bool read_only);
   void SetDocumentLayout(DocumentLayout::PageSpread page_spread);
   void DisplayAnnotations(bool display);
+
+  // Returns the text contained on the given page. The caller is responsible for
+  // passing a valid `page_index`.
+  std::u16string GetPageText(int page_index);
 
   // Applies the document layout options proposed by a call to
   // PDFiumEngineClient::ProposeDocumentLayout(), returning the overall size of
@@ -235,7 +267,7 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // Handles actions invoked by Accessibility clients.
   void HandleAccessibilityAction(const AccessibilityActionData& action_data);
 
-  std::string GetLinkAtPosition(const gfx::Point& point);
+  std::string GetLinkAtPosition(const gfx::PointF& point);
 
   // Checks the permissions associated with this document.
   virtual bool HasPermission(DocumentPermission permission) const;
@@ -276,73 +308,18 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // Gets the index of the most visible page, or -1 if none are visible.
   int GetMostVisiblePage();
 
-  // Returns whether the page at `index` is visible or not.
-  virtual bool IsPageVisible(int index) const;
-
-  // Gets the current layout orientation.
-  PageOrientation GetCurrentOrientation() const;
-
-  // Gets the rectangle of the page not including the shadow.
-  gfx::Rect GetPageBoundsRect(int index);
+  // Returns whether the page at `page_index` is visible or not.
+  virtual bool IsPageVisible(int page_index) const;
 
   // Gets the rectangle of the page excluding any additional areas.
-  virtual gfx::Rect GetPageContentsRect(int index);
+  virtual gfx::Rect GetPageContentsRect(int page_index);
 
   // Returns a page's rect in screen coordinates, as well as its surrounding
   // border areas and bottom separator.
   virtual gfx::Rect GetPageScreenRect(int page_index) const;
 
-  // Return a page's bounding box rectangle, or an empty rectangle if
-  // `page_index` is invalid.
-  gfx::RectF GetPageBoundingBox(int page_index);
-
   // Set color / grayscale rendering modes.
   virtual void SetGrayscale(bool grayscale);
-
-  // Get the number of characters on a given page.
-  int GetCharCount(int page_index);
-
-  // Get the bounds in page pixels of a character on a given page.
-  gfx::RectF GetCharBounds(int page_index, int char_index);
-
-  // Get a given unicode character on a given page.
-  uint32_t GetCharUnicode(int page_index, int char_index);
-
-  // Given a start char index, find the longest continuous run of text that's
-  // in a single direction and with the same text style. Return a filled out
-  // AccessibilityTextRunInfo on success or std::nullopt on failure. e.g. When
-  // `start_char_index` is out of bounds.
-  std::optional<AccessibilityTextRunInfo> GetTextRunInfo(int page_index,
-                                                         int start_char_index);
-
-  // For all the links on page `page_index`, get their urls, underlying text
-  // ranges and bounding boxes.
-  std::vector<AccessibilityLinkInfo> GetLinkInfo(
-      int page_index,
-      const std::vector<AccessibilityTextRunInfo>& text_runs);
-
-  // For all the images in page `page_index`, get their alt texts and bounding
-  // boxes. If the alt text is empty or unavailable, and if the user has
-  // requested that the OCR service tag the PDF so that it is made accessible,
-  // transfer the raw image pixels in the `image_data` field. Otherwise do not
-  // populate the `image_data` field.
-  std::vector<AccessibilityImageInfo> GetImageInfo(int page_index,
-                                                   uint32_t text_run_count);
-
-  // Returns the image as a 32-bit bitmap format for OCR.
-  SkBitmap GetImageForOcr(int page_index, int image_index);
-
-  // For all the highlights in page `page_index`, get their underlying text
-  // ranges and bounding boxes.
-  std::vector<AccessibilityHighlightInfo> GetHighlightInfo(
-      int page_index,
-      const std::vector<AccessibilityTextRunInfo>& text_runs);
-
-  // For all the text fields in page `page_index`, get their properties like
-  // name, value, bounding boxes etc.
-  std::vector<AccessibilityTextFieldInfo> GetTextFieldInfo(
-      int page_index,
-      uint32_t text_run_count);
 
   // Gets the PDF document's print scaling preference. True if the document can
   // be scaled to fit.
@@ -353,6 +330,11 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
 
   // Returns the duplex setting.
   printing::mojom::DuplexMode GetDuplexMode();
+
+  // Gets the size of the page in points for the page at `page_index`. Any
+  // fractional portion of the size is retained in the result.  Returns
+  // `std::nullopt` if the indicated page index is not available.
+  virtual std::optional<gfx::SizeF> GetPageSizeInPoints(int page_index) const;
 
   // Returns the uniform page size of the document in points. Returns
   // `std::nullopt` if the document has more than one page size.
@@ -374,10 +356,7 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
 
   void SetSelectionBounds(const gfx::Point& base, const gfx::Point& extent);
 
-  void GetSelection(uint32_t* selection_start_page_index,
-                    uint32_t* selection_start_char_index,
-                    uint32_t* selection_end_page_index,
-                    uint32_t* selection_end_char_index);
+  std::optional<Selection> GetSelection() const;
 
   // Remove focus from form widgets, consolidating the user input.
   void KillFormFocus();
@@ -385,20 +364,140 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // Notify whether the PDF currently has the focus or not.
   void UpdateFocus(bool has_focus);
 
+  bool has_focus() const { return has_focus_; }
+
   // Returns the focus info of current focus item.
   AccessibilityFocusInfo GetFocusInfo();
 
-  bool IsPDFDocTagged();
+  // Returns whether the "/Marked" attribute in the "MarkInfo" dictionary in the
+  // PDF's catalog is set to true. This should indicate whether the PDF includes
+  // a tree of structural elements which describe the logical organization of
+  // the document, e.g. into sections and headings, and describe special
+  // elements, e.g. headings and table cells.
+  virtual bool IsPDFDocTagged() const;
+
+  // Returns a copy of the structure tree which describes the logical
+  // organization of the PDF, if present.
+  std::unique_ptr<AccessibilityStructureElement> GetStructureTree() const;
 
   virtual uint32_t GetLoadedByteSize();
 
-  virtual bool ReadLoadedBytes(uint32_t length, void* buffer);
+  // Copies data from `doc_loader_` into `buffer` starting from `offset`.
+  // - `buffer` is completely filled, so its size should be less than or equal
+  //   to GetLoadedByteSize() - `offset`.
+  //
+  // Returns true on success and writes into `buffer. Returns false on failure.
+  virtual bool ReadLoadedBytes(uint32_t offset, base::span<uint8_t> buffer);
 
-  // Requests for a thumbnail to be sent using a callback when the page is ready
-  // to be rendered. `send_callback` is run with the thumbnail data when ready.
-  void RequestThumbnail(int page_index,
-                        float device_pixel_ratio,
-                        SendThumbnailCallback send_callback);
+  // Requests rendering the page at `page_index` as a thumbnail at a given
+  // `device_pixel_ratio`. Runs `send_callback` with the rendered thumbnail.
+  //
+  // - The callback is asynchronous because the request may be delayed if the
+  //   page is not ready to be rendered.
+  // - Modifications made with ApplyStroke() are not included in the thumbnail.
+  //
+  // Virtual to support testing.
+  virtual void RequestThumbnail(int page_index,
+                                float device_pixel_ratio,
+                                SendThumbnailCallback send_callback);
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  // Virtual to support testing.
+  virtual gfx::Size GetThumbnailSize(int page_index, float device_pixel_ratio);
+
+  // Writes the supplied stroke for the page at `page_index`.  The same `id`
+  // gets used with `UpdateStrokeUsage()`.  Must provide a valid `page_index`.
+  // Virtual to support testing.
+  virtual void ApplyStroke(int page_index,
+                           InkStrokeId id,
+                           const ink::Stroke& stroke);
+
+  // Modifies an existing stroke identified by `id` on the page at `page_index`
+  // to become either active or inactive.  The caller must pass the same
+  // consistent and valid `page_index`/`id` pair as was provided to
+  // `ApplyStroke()`.
+  // Stroke objects that become inactive will no longer be included for
+  // rendering or saving out to PDF data.  Their inclusion can be restored if
+  // another call makes them active again.  Virtual to support testing.
+  virtual void UpdateStrokeActive(int page_index, InkStrokeId id, bool active);
+
+  // Removes an existing stroke identified by `id`. The caller must pass the
+  // same consistent and valid `page_index/`id` pair as was provided to
+  // `ApplyStroke()`. Virtual to support testing.
+  virtual void DiscardStroke(int page_index, InkStrokeId id);
+
+  // Returns whether any of the pages contains a "V2" path created by Ink or
+  // unknown if unable to find any "V2" paths within `timeout`. Virtual to
+  // support testing.
+  virtual PDFLoadedWithV2InkAnnotations ContainsV2InkPath(
+      base::TimeDelta timeout) const;
+
+  // Loads "V2" Ink paths from a page in the PDF identified by `page_index`. The
+  // `page_index` must be in bounds.
+  //
+  // Returns a mapping to identify shapes by IDs. In `this`, store a mapping
+  // from IDs to PDFium page objects. This allows the caller to associate shapes
+  // with their corresponding PDFium page objects, without any direct exposure
+  // to PDFium types.
+  //
+  // It is the caller's responsibility to not call this multiple times per page,
+  // or else there will be multiple IDs associated with the same underlying
+  // PDFium page object.
+  //
+  // Virtual to support testing.
+  virtual std::map<InkModeledShapeId, ink::PartitionedMesh>
+  LoadV2InkPathsForPage(int page_index);
+
+  // Modifies an existing shape identified by `id` on the page at `page_index`
+  // to become either active or inactive. The caller must pass the same
+  // consistent and valid `page_index`/`id` pair as was provided by
+  // `LoadV2InkPathsForPage()`.
+  // Shape objects that become inactive will no longer be included for
+  // rendering or saving out to PDF data. Their inclusion can be restored if
+  // another call makes them active again.
+  //
+  // Virtual to support testing.
+  virtual void UpdateShapeActive(int page_index,
+                                 InkModeledShapeId id,
+                                 bool active);
+
+  // Regenerate contents for all pages that need it due to Ink strokes.
+  void RegenerateContents();
+
+  // Extends the current text selection to the nearest page and character to
+  // `point`. Returns whether any text is being selected after extending.
+  // `point` must be in device coordinates. Virtual to support testing.
+  virtual bool ExtendSelectionByPoint(const gfx::PointF& point);
+
+  // Returns the transform required to convert canonical coordinates to PDF
+  // coordinates. Virtual to support testing.
+  virtual gfx::Transform GetCanonicalToPdfTransform(int page_index);
+
+  // Returns all current text selection rects in PDF coordinates, indexed by
+  // their page indices. Skips any selections that do not have rects. The rects
+  // have tighter bounds than normal, so they can be used with Ink Strokes to
+  // generate less highlight overlap. Virtual to support testing.
+  virtual std::map<int, std::vector<PdfRect>> GetSelectionRectMap();
+
+  // Returns whether `point` is within a selectable text area or within a link
+  // area, excluding form fields. `point` must be in device coordinates. Virtual
+  // to support testing.
+  virtual bool IsSelectableTextOrLinkArea(const gfx::PointF& point);
+
+  // Handles a text or link area being clicked at `point`, `click_count` times.
+  // The area must selectable, otherwise a crash occurs. `point` must be in
+  // device coordinates. Virtual to support testing.
+  virtual void OnTextOrLinkAreaClick(const gfx::PointF& point, int click_count);
+
+  const std::map<InkModeledShapeId, FPDF_PAGEOBJECT>&
+  ink_modeled_shape_map_for_testing() const {
+    return ink_modeled_shape_map_;
+  }
+
+  const std::map<int, PDFiumPage::ScopedUnloadPreventer>&
+  stroked_pages_unload_preventers_for_testing() const {
+    return stroked_pages_unload_preventers_;
+  }
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
   // DocumentLoader::Client:
   std::unique_ptr<URLLoaderWrapper> CreateURLLoader() override;
@@ -407,9 +506,70 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   void OnDocumentComplete() override;
   void OnDocumentCanceled() override;
 
+  // PdfCaretClient:
+  void ClearTextSelection() override;
+  void ExtendAndInvalidateSelectionByChar(
+      const PageCharacterIndex& index) override;
+  uint32_t GetCharCount(uint32_t page_index) const override;
+  uint32_t GetCharUnicode(const PageCharacterIndex& index) const override;
+  PageOrientation GetCurrentOrientation() const override;
+  std::vector<gfx::Rect> GetScreenRectsForCaret(
+      const PageCharacterIndex& index) const override;
+  std::optional<AccessibilityTextRunInfo> GetTextRunInfoAt(
+      const PageCharacterIndex& index) const override;
+  void InvalidateRect(const gfx::Rect& rect) override;
+  bool IsSelecting() const override;
+  bool IsSynthesizedNewline(const PageCharacterIndex& index) const override;
+  bool PageIndexInBounds(int index) const override;
+  void ScrollToChar(const PageCharacterIndex& index) override;
+  void StartSelection(const PageCharacterIndex& index) override;
+
+  // `PdfAnnotationAgent::Container`:
+  bool FindAndHighlightTextFragments(
+      base::span<const std::string> text_fragments) override;
+  void ScrollTextFragmentIntoView() override;
+  void RemoveTextFragments() override;
+
 #if defined(PDF_ENABLE_XFA)
   void UpdatePageCount();
 #endif  // defined(PDF_ENABLE_XFA)
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  // Starts the searchify process and passes two callbacks to functions that
+  // return the maximum image dimension and performs OCR.
+  // This function is expected to be called only once.
+  void StartSearchify(GetOcrMaxImageDimensionCallbackAsync get_max_dimension,
+                      PerformOcrCallbackAsync perform_ocr_callback);
+
+  // Returns a function to pass OCR disconnection events to the searchifier.
+  base::RepeatingClosure GetOcrDisconnectHandler();
+
+  // Tells if the page is waiting to be searchified.
+  bool IsPageScheduledForSearchify(int page_index) const;
+
+  // Schedules searchify for the page if it has no text. `page` must be non-null
+  // and in an available state.
+  void ScheduleSearchifyIfNeeded(PDFiumPage* page);
+
+  // Notifies that PDF searchifier has switched between busy or not busy.
+  // A busy state is when it has some queued pages to process or is processing a
+  // page at the moment. It comes out of this state either when all tasks are
+  // completed or canceled.
+  void OnSearchifyStateChange(bool busy);
+
+  // Called when searchify text is added.
+  void OnHasSearchifyText();
+
+  PDFiumOnDemandSearchifier* GetSearchifierForTesting() {
+    return searchifier_.get();
+  }
+
+  // Tells if the page is in `progressive_paints_`
+  bool IsPageScheduledForPaint(uint32_t page_index) const;
+
+  // Unloads the page if it is not visible or prevented from unloading.
+  void MaybeUnloadPage(int page_index);
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
   void UnsupportedFeature(const std::string& feature);
 
@@ -423,30 +583,96 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
 
   bool IsValidLink(const std::string& url);
 
+  // Sets whether form highlight should be enabled or cleared.
+  virtual void SetFormHighlight(bool enable_form);
+
+  // Scrolls to and highlights the first entry in `text_fragment_highlights_`.
+  // Only valid if `text_fragment_highlights_` is non-empty (gated by a CHECK).
+  // `force_smooth_scroll` forces smooth scrolling regardless of the current
+  // animation settings.
+  virtual void ScrollToFirstTextFragment(bool force_smooth_scroll);
+
+  // Searches for a text fragment within the text of the PDF.
+  void SearchForFragment(const std::u16string& term,
+                         int character_to_start_searching_from,
+                         int last_character_index_to_search,
+                         int page_to_search,
+                         AddSearchResultCallback add_result_callback);
+
+  // Sets whether caret browsing is enabled or not. Initializes `caret_` if it
+  // is the first time enabling caret browsing mode. If the caret was disabled
+  // and is now enabled, then moves the caret to the start of the first visible
+  // text run. If there is no visible text, the caret will not move. Virtual to
+  // support testing.
+  virtual void SetCaretBrowsingEnabled(bool enabled);
+
+  // Sets the blink interval for the caret. No-op if the caret was never
+  // initialized. Virtual to support testing.
+  virtual void SetCaretBlinkInterval(base::TimeDelta interval);
+
  private:
-  // This helper class is used to detect the difference in selection between
-  // construction and destruction.  At destruction, it invalidates all the
-  // parts that are newly selected, along with all the parts that used to be
-  // selected but are not anymore.
-  class SelectionChangeInvalidator {
-   public:
-    explicit SelectionChangeInvalidator(PDFiumEngine* engine);
-    ~SelectionChangeInvalidator();
+  // This is a base class for shared functions and data needed for change
+  // invalidators. Subclasses are used to detect the difference in change rects
+  // between construction and destruction. At destruction, it invalidates all
+  // the tracked rects that changed.
+  class ChangeInvalidator {
+   protected:
+    explicit ChangeInvalidator(PDFiumEngine* engine);
+    virtual ~ChangeInvalidator();
 
-   private:
-    // Returns all the currently visible selection rectangles, in screen
-    // coordinates.
-    std::vector<gfx::Rect> GetVisibleSelections() const;
+    // Gets all visible rects for the tracked changes.
+    virtual std::vector<gfx::Rect> GetVisibleChangeRects() const = 0;
 
-    // Invalidates `selection`, but with `selection` slightly expanded to
-    // compensate for any rounding errors.
-    void Invalidate(const gfx::Rect& selection);
+    // Gets all of the visible screen rects from a list of `ranges`.
+    std::vector<gfx::Rect> GetVisibleScreenRectsFromRanges(
+        base::span<const PDFiumRange> ranges) const;
 
+    // Invalidates all `screen_rects`, but with each rect slightly expanded to
+    // compensate for any rounding errors. Skips any empty rects. Returns
+    // whether any rect invalidation occurred.
+    bool Invalidate(base::span<const gfx::Rect> screen_rects);
+
+    // Invalidates all rects added or removed between construction and
+    // destruction. Returns whether any invalidation occurred.
+    bool InvalidateChangesOnDestruct();
+
+    // Must be non-nullptr.
     const raw_ptr<PDFiumEngine> engine_;
     // The origin at the time this object was constructed.
     const gfx::Point previous_origin_;
-    // Screen rectangles that were selected on construction.
-    std::vector<gfx::Rect> old_selections_;
+
+    // Screen rectangles that were highlighted on construction.
+    std::vector<gfx::Rect> previous_rects_;
+  };
+
+  // Tracks and invalidates text selection changes.
+  class SelectionChangeInvalidator : public ChangeInvalidator {
+   public:
+    explicit SelectionChangeInvalidator(PDFiumEngine* engine);
+    ~SelectionChangeInvalidator() override;
+
+   private:
+    std::vector<gfx::Rect> GetVisibleChangeRects() const override;
+  };
+
+  // Tracks and invalidates find result changes.
+  class FindResultChangeInvalidator : public ChangeInvalidator {
+   public:
+    explicit FindResultChangeInvalidator(PDFiumEngine* engine);
+    ~FindResultChangeInvalidator() override;
+
+   private:
+    std::vector<gfx::Rect> GetVisibleChangeRects() const override;
+  };
+
+  // Tracks and invalidates text fragment highlight changes.
+  class HighlightChangeInvalidator : public ChangeInvalidator {
+   public:
+    explicit HighlightChangeInvalidator(PDFiumEngine* engine);
+    ~HighlightChangeInvalidator() override;
+
+   private:
+    std::vector<gfx::Rect> GetVisibleChangeRects() const override;
   };
 
   // Used to store mouse down state to handle it in other mouse event handlers.
@@ -469,18 +695,20 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
     PDFiumPage::LinkTarget target_;
   };
 
-  struct RegionData {
-    RegionData(base::span<uint8_t> buffer, size_t stride);
-    RegionData(RegionData&&) noexcept;
-    RegionData& operator=(RegionData&&) noexcept;
-    ~RegionData();
-
-    base::raw_span<uint8_t> buffer;  // Never empty.
-    size_t stride;
+  struct PointData {
+    PDFiumPage::Area area = PDFiumPage::NONSELECTABLE_AREA;
+    int page_index = -1;
+    int char_index = -1;
+    PdfRect char_bounds;
+    int form_type = FPDF_FORMFIELD_UNKNOWN;
+    PDFiumPage::LinkTarget target;
+    gfx::PointF pdf_point;
   };
 
   friend class FormFillerTest;
+  friend class PDFiumDrawSelectionTestBase;
   friend class PDFiumEngineTabbingTest;
+  friend class PDFiumEngineTest;
   friend class PDFiumFormFiller;
   friend class PDFiumTestBase;
   friend class SelectionChangeInvalidator;
@@ -560,10 +788,12 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // Checks if a page is now available, and if so marks it as such and returns
   // true.  Otherwise, it will return false and will add the index to the given
   // array if it's not already there.
-  bool CheckPageAvailable(int index, std::vector<int>* pending);
+  bool CheckPageAvailable(uint32_t index, std::vector<uint32_t>* pending);
 
-  // Helper function to get a given page's size in pixels.  This is not part of
-  // PDFiumPage because we might not have that structure when we need this.
+  // Helper function to get a given page's size in pixels.  Converting from
+  // points to pixels are rounded down as part of generating integer values.
+  // This is not part of PDFiumPage because we might not have that structure
+  // when we need this.
   gfx::Size GetPageSize(int index);
   gfx::Size GetPageSizeForLayout(int index,
                                  const DocumentLayout::Options& layout_options);
@@ -583,7 +813,7 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
       size_t num_of_pages) const;
 
   std::vector<gfx::Rect> GetAllScreenRectsUnion(
-      const std::vector<PDFiumRange>& rect_range,
+      base::span<const PDFiumRange> rect_range,
       const gfx::Point& point) const;
 
   void UpdateTickMarks();
@@ -592,22 +822,21 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   void ContinueFind(bool case_sensitive);
 
   // Inserts a find result into `find_results_`, which is sorted.
-  void AddFindResult(const PDFiumRange& result);
+  void AddFindResult(PDFiumRange result);
 
-  // Search a page using PDFium's methods.  Doesn't work with unicode.  This
-  // function is just kept arount in case PDFium code is fixed.
-  void SearchUsingPDFium(const std::u16string& term,
-                         bool case_sensitive,
-                         bool first_search,
-                         int character_to_start_searching_from,
-                         int current_page);
+  // Returns the current find selection, otherwise returns nullptr if there is
+  // no find selection.
+  const PDFiumRange* GetFindSelection() const;
 
   // Search a page ourself using ICU.
   void SearchUsingICU(const std::u16string& term,
                       bool case_sensitive,
                       bool first_search,
                       int character_to_start_searching_from,
-                      int current_page);
+                      int last_character_index_to_search,
+                      int current_page,
+                      int last_page_to_search,
+                      AddSearchResultCallback add_result_callback);
 
   // Input event handlers.
   bool OnMouseDown(const blink::WebMouseEvent& event);
@@ -622,45 +851,53 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   ui::mojom::CursorType DetermineCursorType(PDFiumPage::Area area,
                                             int form_type) const;
 
-  bool ExtendSelection(int page_index, int char_index);
+  bool ExtendSelection(const PointData& point_data);
+
+  // Returns whether the text selection was extended to `index`.
+  bool ExtendSelectionByChar(const PageCharacterIndex& index);
 
   std::vector<uint8_t> PrintPagesAsRasterPdf(
-      const std::vector<int>& page_numbers,
+      base::span<const int> page_indices,
       const blink::WebPrintParams& print_params);
 
   std::vector<uint8_t> PrintPagesAsPdf(
-      const std::vector<int>& page_numbers,
+      base::span<const int> page_indices,
       const blink::WebPrintParams& print_params);
 
   // Checks if `page` has selected text in a form element. If so, sets that as
   // the plugin's text selection.
   void SetFormSelectedText(FPDF_FORMHANDLE form_handle, FPDF_PAGE page);
 
-  // Given `point`, returns which page and character location it's closest to,
-  // as well as extra information about objects at that point.
-  PDFiumPage::Area GetCharIndex(const gfx::Point& point,
-                                int* page_index,
-                                int* char_index,
-                                int* form_type,
-                                PDFiumPage::LinkTarget* target);
+  // Returns information about `point` and the objects at that point.
+  // `point` is in device coordinates.
+  PointData GetPointData(const gfx::PointF& point);
+
+  // Helper that returns `point_data.char_index`, possibly with an adjustment,
+  // based on the relative position of the point to the character.
+  int GetCharIndexBasedOnPointData(const PointData& point_data);
 
   void OnSingleClick(int page_index, int char_index);
   void OnMultipleClick(int click_count, int page_index, int char_index);
+  // Internal version of `OnTextOrLinkAreaClick()` that takes a PointData
+  // instead of a point.
+  void OnTextOrLinkAreaClickInternal(const PointData& point_data,
+                                     int click_count);
+
   bool OnLeftMouseDown(const blink::WebMouseEvent& event);
   bool OnMiddleMouseDown(const blink::WebMouseEvent& event);
   bool OnRightMouseDown(const blink::WebMouseEvent& event);
 
   // Starts a progressive paint operation given a rectangle in screen
-  // coordinates. Returns the index in progressive_rects_.
-  int StartPaint(int page_index, const gfx::Rect& dirty);
+  // coordinates. Returns the index in `progressive_paints_`.
+  size_t StartPaint(uint32_t page_index, const gfx::Rect& dirty);
 
   // Continues a paint operation that was started earlier.  Returns true if the
   // paint is done, or false if it needs to be continued.
-  bool ContinuePaint(int progressive_index, SkBitmap& image_data);
+  bool ContinuePaint(size_t progressive_index, SkBitmap& image_data);
 
   // Called once PDFium is finished rendering a page so that we draw our
   // borders, highlighting etc.
-  void FinishPaint(int progressive_index, SkBitmap& image_data);
+  void FinishPaint(size_t progressive_index, SkBitmap& image_data);
 
   // Stops any paints that are in progress.
   void CancelPaints();
@@ -673,19 +910,22 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // with the page background.
   void FillPageSides(int progressive_index);
 
-  void PaintPageShadow(int progressive_index, SkBitmap& image_data);
+  void PaintPageShadow(size_t progressive_index, SkBitmap& image_data);
+
+  // Draw the text caret. No-op if `caret_` is nullptr.
+  void DrawCaret(size_t progressive_index, SkBitmap& image_data) const;
 
   // Highlight visible find results and selections.
-  void DrawSelections(int progressive_index, SkBitmap& image_data) const;
+  void DrawSelections(size_t progressive_index, SkBitmap& image_data) const;
 
   // Paints an page that hasn't finished downloading.
   void PaintUnavailablePage(int page_index,
                             const gfx::Rect& dirty,
                             SkBitmap& image_data);
 
-  // Given a page index, returns the corresponding index in progressive_rects_,
-  // or -1 if it doesn't exist.
-  int GetProgressiveIndex(int page_index) const;
+  // Given a page index, returns the corresponding index in
+  // `progressive_paints_`, or nullopt if it does not exist.
+  std::optional<size_t> GetProgressiveIndex(uint32_t page_index) const;
 
   // Creates a FPDF_BITMAP from a rectangle in screen coordinates.
   ScopedFPDFBitmap CreateBitmap(const gfx::Rect& rect,
@@ -694,12 +934,7 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
 
   // Given a rectangle in screen coordinates, returns the coordinates in the
   // units that PDFium rendering functions expect.
-  void GetPDFiumRect(int page_index,
-                     const gfx::Rect& rect,
-                     int* start_x,
-                     int* start_y,
-                     int* size_x,
-                     int* size_y) const;
+  gfx::Rect GetPDFiumRect(int page_index, const gfx::Rect& rect) const;
 
   // Returns the rendering flags to pass to PDFium.
   int GetRenderingFlags() const;
@@ -711,6 +946,11 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // coordinates. (i.e. 0,0 is top left corner of plugin area)
   gfx::Rect GetScreenRect(const gfx::Rect& rect) const;
 
+  // Returns screen rects for a caret at the top-left of the no-text PDF page,
+  // or an empty vector if the caret cannot fit on the page.
+  std::vector<gfx::Rect> GetNoTextPageScreenRectsForCaret(
+      PDFiumPage* page) const;
+
   // Given an image `region`, highlights `rect`.
   // `highlighted_rects` contains the already highlighted rectangles and will be
   // updated to include `rect` if `rect` has not already been highlighted.
@@ -719,16 +959,13 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
                  SkColor color,
                  std::vector<gfx::Rect>& highlighted_rects) const;
 
-  // Helper function to convert device coordinates to page coordinates.  If the
-  // page is not yet loaded, `page_x` and `page_y` will be set to 0.
-  void DeviceToPage(int page_index,
-                    const gfx::Point& device_point,
-                    double* page_x,
-                    double* page_y);
+  // Helper function to convert device coordinates to PDF coordinates.  If the
+  // page is not yet loaded, returns (0, 0).
+  gfx::PointF DeviceToPdf(uint32_t page_index, const gfx::PointF& device_point);
 
   // Helper function to convert device coordinates to screen coordinates.
   // Normalizes `device_point` based on `position_` and `current_zoom_`.
-  gfx::Point DeviceToScreen(const gfx::Point& device_point) const;
+  gfx::Point DeviceToScreen(const gfx::PointF& device_point) const;
 
   // Helper function to get the index of a given FPDF_PAGE.  Returns -1 if not
   // found.
@@ -742,6 +979,14 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
                       const gfx::Rect& shadow_rect,
                       const gfx::Rect& clip_rect,
                       SkBitmap& image_data);
+
+  // Draws the highlight for the provided `range` if visible.
+  void DrawHighlightOnPage(const PDFiumRange& range,
+                           const gfx::Rect& dirty_in_screen,
+                           const gfx::Rect& visible_rect,
+                           const RegionData& region,
+                           SkColor color,
+                           std::vector<gfx::Rect>& highlighted_rects) const;
 
   std::optional<RegionData> GetRegion(const gfx::Point& location,
                                       SkBitmap& image_data) const;
@@ -765,7 +1010,6 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   bool IsAnnotationAnEditableFormTextArea(FPDF_ANNOTATION annot,
                                           int form_type) const;
 
-  bool PageIndexInBounds(int index) const;
   bool IsPageCharacterIndexInBounds(const PageCharacterIndex& index) const;
 
   void ScheduleTouchTimer(const blink::WebTouchEvent& event);
@@ -815,6 +1059,12 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // Given `annot`, scroll the `annot` into view if not already in view.
   void ScrollAnnotationIntoView(FPDF_ANNOTATION annot, int page_index);
 
+  // Scrolls to the bounding rectangles that represent the `range` on the
+  // screen. `force_smooth_scroll` forces smooth scrolling regardless of the
+  // current animation settings.
+  void ScrollToBoundingRects(const PDFiumRange& range,
+                             bool force_smooth_scroll);
+
   void OnFocusedAnnotationUpdated(FPDF_ANNOTATION annot, int page_index);
 
   // Read the attachments' information inside the PDF document, and set
@@ -844,6 +1094,23 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // Checks whether a given `page_index` exists in `pending_thumbnails_`. If so,
   // requests the thumbnail for that page.
   void MaybeRequestPendingThumbnail(int page_index);
+
+  // Returns the first text run that is visible on the page at `page_index`.
+  // Otherwise, returns std::nullopt if the PDF has not loaded yet or there is
+  // no visible text on the page. `page_index` must be valid, otherwise a crash
+  // occurs.
+  std::optional<AccessibilityTextRunInfo> GetFirstVisibleTextRun(
+      uint32_t page_index) const;
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  // Called if OCR service gets disconnected.
+  void OnOcrDisconnected();
+#endif
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  std::vector<FPDF_PAGEOBJECT> GetActiveInkPageObjectsForPage(
+      int page_index) const;
+#endif
 
   const raw_ptr<PDFiumEngineClient> client_;
 
@@ -875,6 +1142,17 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // form filler.
   PDFiumFormFiller form_filler_;
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  std::unique_ptr<PDFiumOnDemandSearchifier> searchifier_;
+
+  // Keeps track of the indices of pages for which "PDF.PageHasText" metric is
+  // reported.
+  std::set<int> page_has_text_metric_reported_;
+
+  // Records if at least one page has searchify text.
+  bool has_searchify_text_ = false;
+#endif
+
   std::unique_ptr<PDFiumDocument> document_;
   bool document_pending_ = false;
   bool document_loaded_ = false;
@@ -883,10 +1161,10 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   std::vector<std::unique_ptr<PDFiumPage>> pages_;
 
   // The indexes of the pages currently visible.
-  std::vector<int> visible_pages_;
+  std::vector<uint32_t> visible_pages_;
 
   // The indexes of the pages pending download.
-  std::vector<int> pending_pages_;
+  std::vector<uint32_t> pending_pages_;
 
   // During handling of input events we don't want to unload any pages in
   // callbacks to us from PDFium, since the current page can change while PDFium
@@ -914,11 +1192,9 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // True if left mouse button is currently being held down.
   bool mouse_left_button_down_ = false;
 
-  // True if middle mouse button is currently being held down.
-  bool mouse_middle_button_down_ = false;
-
-  // Last known position while performing middle mouse button pan.
-  gfx::Point mouse_middle_button_last_position_;
+  // Last known position while performing middle mouse button pan, or
+  // std::nullopt if the middle mouse button is currently not held down.
+  std::optional<gfx::PointF> mouse_middle_button_last_position_;
 
   // The current text used for searching.
   std::u16string current_find_text_;
@@ -945,6 +1221,9 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
 
   // Set to true when handling long touch press.
   bool handling_long_press_ = false;
+
+  // Whether the plugin element currently has focus.
+  bool has_focus_ = false;
 
   // Set to true when updating plugin focus.
   bool updating_focus_ = false;
@@ -995,12 +1274,12 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // Pending progressive paints.
   class ProgressivePaint {
    public:
-    ProgressivePaint(int page_index, const gfx::Rect& rect);
+    ProgressivePaint(uint32_t page_index, const gfx::Rect& rect);
     ProgressivePaint(ProgressivePaint&& that) noexcept;
     ProgressivePaint& operator=(ProgressivePaint&& that) noexcept;
     ~ProgressivePaint();
 
-    int page_index() const { return page_index_; }
+    uint32_t page_index() const { return page_index_; }
     const gfx::Rect& rect() const { return rect_; }
     FPDF_BITMAP bitmap() const { return bitmap_.get(); }
     bool painted() const { return painted_; }
@@ -1009,7 +1288,7 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
     void SetBitmapAndImageData(ScopedFPDFBitmap bitmap, SkBitmap image_data);
 
    private:
-    int page_index_;
+    uint32_t page_index_;
     gfx::Rect rect_;            // In screen coordinates.
     SkBitmap image_data_;       // Maintains reference while |bitmap_| exists.
     ScopedFPDFBitmap bitmap_;   // Must come after |image_data_|.
@@ -1025,6 +1304,12 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
 
   // The timeout to use for the current progressive paint.
   base::TimeDelta progressive_paint_timeout_;
+
+  // When this class was created.
+  const base::TimeTicks engine_creation_time_;
+
+  // Keeps track of sending `PDF.FirstPaintTime` metric.
+  bool first_paint_metric_reported_ = false;
 
   // Shadow matrix for generating the page shadow bitmap.
   std::unique_ptr<draw_utils::ShadowMatrix> page_shadow_;
@@ -1067,6 +1352,59 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   bool read_only_ = false;
 
   PDFiumPrint print_;
+
+  // The text caret on the PDF, excluding AcroForms. Once initialized, it will
+  // not be destroyed until the destructor is called. The caret needs to store
+  // state, such as its position, blink interval, etc.
+  std::unique_ptr<PdfCaret> caret_;
+
+  // The list of text fragments to highlight on the PDF.
+  std::vector<PDFiumRange> text_fragment_highlights_;
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  // Map of zero-based page indices with Ink strokes to page unload preventers.
+  // Pages with Ink strokes have page references in `ink_stroke_data_`, so these
+  // unload preventers ensure those page handles stay valid by keeping the page
+  // in memory.  Use one unload preventer per page for simplicity.
+  std::map<int, PDFiumPage::ScopedUnloadPreventer>
+      stroked_pages_unload_preventers_;
+
+  struct InkStrokeData {
+    InkStrokeData(int page_index, std::vector<FPDF_PAGEOBJECT> page_objects);
+    InkStrokeData(InkStrokeData&&) noexcept;
+    InkStrokeData& operator=(InkStrokeData&&) noexcept;
+    ~InkStrokeData();
+
+    int page_index;
+
+    // The handles for stroke path page objects within the PDF document.
+    // `stroked_pages_unload_preventers_` protects these handles from going
+    // stale.
+    std::vector<FPDF_PAGEOBJECT> page_objects;
+  };
+
+  // Data associated for Ink strokes, keyed by stroke IDs.
+  std::map<InkStrokeId, InkStrokeData> ink_stroke_data_;
+
+  // Tracks the pages which need to be regenerated before saving due to Ink
+  // stroke changes.
+  std::set<int> ink_stroked_pages_needing_regeneration_;
+
+#if DCHECK_IS_ON()
+  // Used to keep track of LoadV2InkPathsForPage() calls as a sanity check.
+  // Stores the 0-based page indices for pages that have been loaded.
+  std::set<int> pages_with_loaded_v2_ink_paths_;
+#endif  // DCHECK_IS_ON()
+
+  // Used to hand out unique IDs of type InkModeledShapeId for the V2 Ink paths
+  // read out of the PDF. It is stored here as the raw type to simplify
+  // management.
+  size_t next_ink_modeled_shape_id_ = 0;
+
+  // Key: ID to identify a shape.
+  // Value: The PDFium page object associated with the shape.
+  std::map<InkModeledShapeId, FPDF_PAGEOBJECT> ink_modeled_shape_map_;
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
   base::WeakPtrFactory<PDFiumEngine> weak_factory_{this};
 

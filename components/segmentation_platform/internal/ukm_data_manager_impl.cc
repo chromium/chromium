@@ -6,6 +6,7 @@
 
 #include "base/check_is_test.h"
 #include "base/check_op.h"
+#include "base/functional/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/segmentation_platform/internal/database/ukm_database_impl.h"
 #include "components/segmentation_platform/internal/signals/ukm_config.h"
@@ -24,6 +25,9 @@ const base::TimeDelta kDatabaseCleanupDelayNormal = base::Days(1);
 
 // Number of days to keep UKM metrics in database.
 constexpr base::TimeDelta kUkmEntriesTTL = base::Days(30);
+
+// Number of days to keep UMA metrics in database.
+constexpr base::TimeDelta kUmaEntriesTTL = base::Days(365);
 
 }  // namespace
 
@@ -148,7 +152,8 @@ void UkmDataManagerImpl::RemoveRef() {
 
 void UkmDataManagerImpl::RunCleanupTask() {
   DCHECK(ukm_database_);
-  ukm_database_->DeleteEntriesOlderThan(base::Time::Now() - kUkmEntriesTTL);
+  base::Time now = base::Time::Now();
+  ukm_database_->CleanupOldEntries(now - kUkmEntriesTTL, now - kUmaEntriesTTL);
 
   // Consider waiting for the above task to finish successfully before posting
   // the next one.

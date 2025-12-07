@@ -1,0 +1,55 @@
+{
+  "ios-wpt-fyi-rel": {
+    "isolated_scripts": [
+      {
+        "args": [
+          "--test-type",
+          "reftest",
+          "crashtest",
+          "--xcode-build-version",
+          "17a400"
+        ],
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "module_name": "//ios/chrome/test/wpt:chrome_ios_wpt",
+        "module_scheme": "webtest",
+        "name": "wpt_tests_ios",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:4c7290150d1c360cecc6a93c0214dc531585c3ab"
+            }
+          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-15",
+            "pool": "chromium.tests.ioswpt"
+          },
+          "expiration": 18000,
+          "hard_timeout": 14400,
+          "named_caches": [
+            {
+              "name": "xcode_ios_17a400",
+              "path": "Xcode.app"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 36
+        },
+        "test": "chrome_ios_wpt",
+        "test_id_prefix": "ninja://ios/chrome/test/wpt:chrome_ios_wpt/"
+      }
+    ]
+  }
+}

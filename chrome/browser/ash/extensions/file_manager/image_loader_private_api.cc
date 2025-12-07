@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "chrome/browser/ash/extensions/file_manager/image_loader_private_api.h"
 
@@ -20,6 +16,7 @@
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root_map.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/extensions/file_manager/private_api_util.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -35,6 +32,8 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "net/base/mime_sniffer.h"
 #include "net/base/mime_util.h"
+#include "skia/ext/codec_utils.h"
+#include "skia/ext/skia_utils_base.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
@@ -42,8 +41,6 @@
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-#include "third_party/skia/include/core/SkStream.h"
-#include "third_party/skia/include/encode/SkPngEncoder.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace extensions {
@@ -65,15 +62,13 @@ std::string ConvertAndEncode(const SkBitmap& bitmap) {
     DLOG(WARNING) << "Got an invalid bitmap";
     return std::string();
   }
-  SkDynamicMemoryWStream stream;
-  if (!SkPngEncoder::Encode(&stream, bitmap.pixmap(), {}) ||
-      !stream.bytesWritten()) {
+  sk_sp<SkData> png_data = skia::EncodePngAsSkData(bitmap.pixmap());
+  if (!png_data) {
     DLOG(WARNING) << "Thumbnail encoding error";
     return std::string();
   }
-  sk_sp<SkData> png_data = stream.detachAsData();
-  return MakeThumbnailDataUrlOnThreadPool(
-      kMimeTypeImagePng, base::make_span(png_data->bytes(), png_data->size()));
+  return MakeThumbnailDataUrlOnThreadPool(kMimeTypeImagePng,
+                                          skia::as_byte_span(*png_data));
 }
 
 // The maximum size of the input PDF file for which thumbnails are generated.
@@ -82,13 +77,14 @@ constexpr uint32_t kMaxPdfSizeInBytes = 1024u * 1024u;
 // A function that performs IO operations to read and render PDF thumbnail
 // Must be run by a blocking task runner.
 std::string ReadLocalPdf(const base::FilePath& pdf_file_path) {
-  int64_t file_size;
-  if (!base::GetFileSize(pdf_file_path, &file_size)) {
+  std::optional<int64_t> file_size = base::GetFileSize(pdf_file_path);
+  if (!file_size.has_value()) {
     DLOG(ERROR) << "Failed to get file size of " << pdf_file_path;
     return std::string();
   }
-  if (file_size > kMaxPdfSizeInBytes) {
-    DLOG(ERROR) << "File " << pdf_file_path << " is too large " << file_size;
+  if (file_size.value() > kMaxPdfSizeInBytes) {
+    DLOG(ERROR) << "File " << pdf_file_path << " is too large "
+                << file_size.value();
     return std::string();
   }
   std::string contents;
@@ -147,8 +143,7 @@ ImageLoaderPrivateGetDriveThumbnailFunction::Run() {
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());
   scoped_refptr<storage::FileSystemContext> file_system_context =
-      file_manager::util::GetFileSystemContextForRenderFrameHost(
-          profile, render_frame_host());
+      file_manager::util::GetFileManagerFileSystemContext(profile);
   const GURL url = GURL(params->url);
   const storage::FileSystemURL file_system_url =
       file_system_context->CrackURLInFirstPartyContext(url);
@@ -210,10 +205,9 @@ ImageLoaderPrivateGetPdfThumbnailFunction::Run() {
   const std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  Profile* const profile = Profile::FromBrowserContext(browser_context());
   scoped_refptr<storage::FileSystemContext> file_system_context =
-      file_manager::util::GetFileSystemContextForRenderFrameHost(
-          profile, render_frame_host());
+      file_manager::util::GetFileManagerFileSystemContext(
+          Profile::FromBrowserContext(browser_context()));
   const GURL url = GURL(params->url);
   const storage::FileSystemURL file_system_url =
       file_system_context->CrackURLInFirstPartyContext(url);
@@ -222,8 +216,8 @@ ImageLoaderPrivateGetPdfThumbnailFunction::Run() {
     return RespondNow(Error("Expected a native local URL"));
   }
 
-  base::FilePath path = file_manager::util::GetLocalPathFromURL(
-      render_frame_host(), profile, url);
+  base::FilePath path =
+      file_manager::util::GetLocalPathFromURL(file_system_context, url);
   if (path.empty() ||
       base::FilePath::CompareIgnoreCase(path.Extension(), ".pdf") != 0) {
     return RespondNow(Error("Can only handle PDF files"));
@@ -302,8 +296,8 @@ ImageLoaderPrivateGetArcDocumentsProviderThumbnailFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   scoped_refptr<storage::FileSystemContext> file_system_context =
-      file_manager::util::GetFileSystemContextForRenderFrameHost(
-          Profile::FromBrowserContext(browser_context()), render_frame_host());
+      file_manager::util::GetFileManagerFileSystemContext(
+          Profile::FromBrowserContext(browser_context()));
   const GURL url = GURL(params->url);
   const storage::FileSystemURL file_system_url =
       file_system_context->CrackURLInFirstPartyContext(url);

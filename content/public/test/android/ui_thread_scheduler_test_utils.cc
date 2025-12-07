@@ -10,10 +10,12 @@
 
 namespace content {
 
-void JNI_UiThreadSchedulerTestUtils_PostBrowserMainLoopStartupTasks(
+static void JNI_UiThreadSchedulerTestUtils_PostBrowserMainLoopStartupTasks(
     JNIEnv* env,
     jboolean enabled) {
   BrowserMainLoop::EnableStartupTasks(enabled);
 }
 
 }  // namespace content
+
+DEFINE_JNI(UiThreadSchedulerTestUtils)

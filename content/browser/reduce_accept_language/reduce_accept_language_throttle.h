@@ -8,22 +8,23 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/frame_tree_node_id.h"
+#include "content/public/browser/reduce_accept_language_utils.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
 namespace content {
 
-class ReduceAcceptLanguageControllerDelegate;
 class OriginTrialsControllerDelegate;
 
 class CONTENT_EXPORT ReduceAcceptLanguageThrottle
     : public blink::URLLoaderThrottle {
  public:
   explicit ReduceAcceptLanguageThrottle(
-      ReduceAcceptLanguageControllerDelegate& accept_language_delegate,
+      ReduceAcceptLanguageUtils reduce_accept_language_utils,
       OriginTrialsControllerDelegate* origin_trials_delegate,
-      int frame_tree_node_id);
+      FrameTreeNodeId frame_tree_node_id);
   ~ReduceAcceptLanguageThrottle() override;
 
   // blink::URLLoaderThrottle
@@ -50,13 +51,12 @@ class CONTENT_EXPORT ReduceAcceptLanguageThrottle
       const network::mojom::URLResponseHead& response_head,
       RestartWithURLReset* restart_with_url_reset);
 
-  // The delegate is owned by the BrowserContext, and both are expected to
-  // outlive this throttle.
-  raw_ref<ReduceAcceptLanguageControllerDelegate> accept_language_delegate_;
+  // The utils to call reduce Accept-Language functions.
+  ReduceAcceptLanguageUtils reduce_accept_language_utils_;
   // The delegate is owned by the BrowserContext, and both are expected to
   // outlive this throttle.
   raw_ptr<OriginTrialsControllerDelegate> origin_trials_delegate_;
-  int frame_tree_node_id_;
+  FrameTreeNodeId frame_tree_node_id_;
 
   // Ensure that there's only one restart per origin.
   base::flat_set<url::Origin> restarted_origins_;

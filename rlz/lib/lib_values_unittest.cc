@@ -62,4 +62,16 @@ TEST(LibValuesUnittest, GetEventFromName) {
 
   EXPECT_FALSE(rlz_lib::GetEventFromName("F ", &event));
   EXPECT_EQ(rlz_lib::INVALID_EVENT, event);
+
+  EXPECT_TRUE(rlz_lib::GetEventFromName("X", &event));
+  EXPECT_EQ(rlz_lib::ENTERPRISE_ENROLLMENT, event);
+
+  EXPECT_TRUE(rlz_lib::GetEventFromName("Y", &event));
+  EXPECT_EQ(rlz_lib::ENTERPRISE_UNENROLLMENT, event);
+
+  EXPECT_TRUE(rlz_lib::GetEventFromName("Z", &event));
+  EXPECT_EQ(rlz_lib::ENTERPRISE_ENROLLED_ACTIVATE, event);
+
+  EXPECT_TRUE(rlz_lib::GetEventFromName("W", &event));
+  EXPECT_EQ(rlz_lib::ENTERPRISE_ENROLLED_FIRST_SEARCH, event);
 }

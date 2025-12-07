@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/screenlock_monitor/screenlock_monitor_source.h"
 #include "content/common/content_export.h"
 
@@ -18,23 +17,16 @@
 #include <wtsapi32.h>
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include <optional>
 
 #include "components/session_manager/core/session_manager_observer.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include <optional>
-
-#include "chromeos/crosapi/mojom/login_state.mojom.h"  // nogncheck
-#include "mojo/public/cpp/bindings/receiver.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
-namespace gfx {
-class SingletonHwndObserver;
-}  // namespace gfx
+#include "base/callback_list.h"
+#include "base/functional/bind.h"
+#include "ui/gfx/win/singleton_hwnd.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace content {
@@ -89,7 +81,10 @@ class CONTENT_EXPORT ScreenlockMonitorDeviceSource
         register_session_notification_function_;
     static WTSUnRegisterSessionNotificationFunction
         unregister_session_notification_function_;
-    std::unique_ptr<gfx::SingletonHwndObserver> singleton_hwnd_observer_;
+    base::CallbackListSubscription hwnd_subscription_ =
+        gfx::SingletonHwnd::GetInstance()->RegisterCallback(
+            base::BindRepeating(&SessionMessageWindow::OnWndProc,
+                                base::Unretained(this)));
   };
 
   SessionMessageWindow session_message_window_;
@@ -100,7 +95,7 @@ class CONTENT_EXPORT ScreenlockMonitorDeviceSource
   void StopListeningForScreenlock();
 #endif  // BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   class ScreenLockListener : public session_manager::SessionManagerObserver {
    public:
     ScreenLockListener();
@@ -118,29 +113,7 @@ class CONTENT_EXPORT ScreenlockMonitorDeviceSource
   };
 
   ScreenLockListener screenlock_listener_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  class ScreenLockListener
-      : public crosapi::mojom::SessionStateChangedEventObserver {
-   public:
-    ScreenLockListener();
-
-    ScreenLockListener(const ScreenLockListener&) = delete;
-    ScreenLockListener& operator=(const ScreenLockListener&) = delete;
-
-    ~ScreenLockListener() override;
-
-    // crosapi::mojom::SessionStateChangedEventObserver:
-    void OnSessionStateChanged(crosapi::mojom::SessionState state) override;
-
-   private:
-    std::optional<ScreenlockEvent> prev_event_;
-    mojo::Receiver<crosapi::mojom::SessionStateChangedEventObserver> receiver_;
-  };
-
-  ScreenLockListener screenlock_listener_;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 }  // namespace content

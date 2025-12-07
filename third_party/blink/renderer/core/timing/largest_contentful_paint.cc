@@ -11,26 +11,19 @@
 
 namespace blink {
 
-LargestContentfulPaint::LargestContentfulPaint(
-    double start_time,
-    DOMHighResTimeStamp render_time,
-    uint64_t size,
-    DOMHighResTimeStamp load_time,
-    DOMHighResTimeStamp first_animated_frame_time,
-    const AtomicString& id,
-    const String& url,
-    Element* element,
-    DOMWindow* source,
-    bool is_triggered_by_soft_navigation)
-    : PerformanceEntry(g_empty_atom,
-                       start_time,
-                       start_time,
-                       source,
-                       is_triggered_by_soft_navigation),
+LargestContentfulPaint::LargestContentfulPaint(double start_time,
+                                               DOMHighResTimeStamp render_time,
+                                               uint64_t size,
+                                               DOMHighResTimeStamp load_time,
+                                               const AtomicString& id,
+                                               const String& url,
+                                               Element* element,
+                                               DOMWindow* source,
+                                               uint32_t navigation_id)
+    : PerformanceEntry(/*duration=*/0.0, g_empty_atom, start_time, source, navigation_id),
       size_(size),
       render_time_(render_time),
       load_time_(load_time),
-      first_animated_frame_time_(first_animated_frame_time),
       id_(id),
       url_(url),
       element_(element) {}
@@ -62,7 +55,6 @@ void LargestContentfulPaint::BuildJSONValue(V8ObjectBuilder& builder) const {
   builder.AddInteger("size", size_);
   builder.AddNumber("renderTime", render_time_);
   builder.AddNumber("loadTime", load_time_);
-  builder.AddNumber("firstAnimatedFrameTime", first_animated_frame_time_);
   builder.AddString("id", id_);
   builder.AddString("url", url_);
 }

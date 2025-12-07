@@ -1,0 +1,138 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.metrics";
+
+package private_metrics;
+
+import "dwa/deidentified_web_analytics.proto";
+import "private_metrics/domain_keyed_metrics.proto";
+import "private_metrics/private_user_metrics.proto";
+
+// A header included with each uploaded encrypted report in “associated data”,
+// documenting how the report is encrypted and how the report may be used.
+// Next tag: 3
+message PrivateMetricReportHeader {
+  // The COSE "kid" property (RFC 9052) of the asymmetric key used to encrypt
+  // the report. This is used to determine which decryption key is needed to
+  // decrypt the report.
+  optional bytes key_id = 1;
+
+  // The epoch the report is associated with. Reports may only be processed with
+  // other reports from the same epoch.
+  optional fixed64 epoch_id = 2;
+}
+
+// A report containing encrypted private metrics data. Private metrics leverage
+// Trusted Execution Environments (TEEs) to enable secure and private collection
+// of essential metrics, facilitating safer releases and a better understanding
+// of user experience without compromising privacy. This proto will be stored
+// in Sawmill post upload to the UMA frontend, and will be subsequently
+// processed up by the k-anonymity pipeline in a trusted execution environment.
+// Next tag: 7
+message EncryptedPrivateMetricReport {
+  // HPKE-encrypted and proto-serialized report, with associated data.
+  // Associated data is the unencrypted non-sensitive header portion in
+  // HPKE encryption. For `encrypted_report`, the associated data includes
+  // information how the report was encrypted, the ID of the key used to encrypt
+  // the report, and the ID of the epoch for which the report was generated.
+  optional bytes encrypted_report = 1;
+
+  // The PrivateMetricReportHeader protocol buffer `report_header` in a
+  // serialized form. This string is cryptographically bound to the
+  // `encrypted_report` field as its associated data and must be provided as a
+  // parameter as-is for the `encrypted_report` to be decrypted. This field must
+  // be provided in addition to `report_header` field due to protocol buffer
+  // serialization not being deterministic. See:
+  // go/proto-serialization-not-canonical
+  optional bytes serialized_report_header = 2;
+
+  // The PrivateMetricReportHeader protocol buffer provided as a non-serialized
+  // form. This field is provided to be prevent `serialized_report_header` from
+  // including arbitrary data. Server-side validation is performed to ensure
+  // that the fields and values provided in `serialized_report_header` are
+  // equivalent to those included in the `report_header` field.
+  optional PrivateMetricReportHeader report_header = 3;
+
+  // The type of report. This is used to determine the Sawmill location to store
+  // the report post upload.
+  // Next tag: 3
+  enum ReportType {
+    REPORT_TYPE_INVALID = 0;
+    DWA = 1;
+    DKM = 2;
+  }
+
+  optional ReportType report_type = 4;
+
+  // The symmetric key used to encrypt the ciphertext, encrypted using HPKE.
+  // The key is encoded as a COSE_Key struct (RFC 9052); at least the
+  // following algorithms should be supported:
+  //   -65538: AEAD_AES_128_GCM_SIV (fixed nonce)
+  optional bytes encrypted_symmetric_key = 5;
+
+  // The ephemeral Diffie-Hellman key needed to derive the symmetric key used
+  // to encrypt `encrypted_secret_key`.
+  optional bytes encapsulated_public_key = 6;
+}
+
+// A report containing unencrypted private metrics data. The unencrypted report
+// does not leave the client.
+// Next tag: 4
+message PrivateMetricReport {
+  // A temporary unique identifier that changes every epoch. One epoch is a
+  // period of 24 hours. This is generated and managed by the Private Metrics
+  // service.
+  optional fixed64 ephemeral_id = 1;
+
+  message Event {
+    // Each event may contain multiple buckets that need to pass the k-anonymity
+    // filter. Buckets may contain quasi-identifiers. For example, for
+    // `dwa_event`, there are two buckets: one that combines the system profile,
+    // event hash, and field trial experiments, and the other the content hash.
+    // This field should be used for the sole purpose of enforcing k-anonymity,
+    // and nothing else. We are not concerned that the values of the buckets may
+    // diverge from the actual values (e.g. system profile, event hash, etc.)
+    // used to generate the bucket values because in a genuine Chrome client,
+    // the bucket values generated are trusted. We treat the k-anonymity bucket
+    // values as opaque and do not attempt to interpret them.
+    repeated fixed64 k_anonymity_buckets = 1 [packed = true];
+    // Content/value of the measurement.
+    oneof data {
+      dwa.DeidentifiedWebAnalyticsEvent dwa_event = 2;
+      DkmEvent dkm_event = 3;
+    }
+  }
+
+  // Each report is composed of a collection of events.
+  repeated Event events = 2;
+
+  // The epoch the report is associated with. Reports may only be processed with
+  // other reports from the same epoch.
+  optional fixed64 epoch_id = 3;
+}
+
+// The payload of the PrivateMetricEndpoint request. This is a generic container
+// for different types of private metrics payloads sent to the Private Metrics
+// Collector (PMC) endpoint. It is designed to be extensible to support future
+// private metrics use cases.
+// Next tag: 4
+message PrivateMetricEndpointPayload {
+  oneof payload {
+    EncryptedPrivateMetricReport encrypted_private_metric_report = 1;
+    PrivateUserMetrics private_uma_report = 2;
+  }
+
+  enum ReportType {
+    REPORT_TYPE_INVALID = 1;
+    DWA = 2;
+    DKM = 3;
+    PUMA_RC = 4;
+    PUMA_SEARCH = 5;
+  }
+  optional ReportType report_type = 3;
+}

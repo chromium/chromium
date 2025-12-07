@@ -127,24 +127,8 @@ class BasicUnwrappingCrossThreadHandle final
 };
 
 }  // namespace internal
+
 }  // namespace blink
-
-namespace WTF {
-
-template <typename T, typename WeaknessPolicy>
-struct CrossThreadCopier<
-    blink::internal::BasicCrossThreadHandle<T, WeaknessPolicy>>
-    : public CrossThreadCopierPassThrough<
-          blink::internal::BasicCrossThreadHandle<T, WeaknessPolicy>> {};
-
-template <typename T, typename WeaknessPolicy>
-struct CrossThreadCopier<
-    blink::internal::BasicUnwrappingCrossThreadHandle<T, WeaknessPolicy>>
-    : public CrossThreadCopierPassThrough<
-          blink::internal::BasicUnwrappingCrossThreadHandle<T,
-                                                            WeaknessPolicy>> {};
-
-}  // namespace WTF
 
 namespace base {
 

@@ -25,6 +25,7 @@ namespace content {
 
 using ::testing::ByRef;
 using ::testing::Eq;
+using ::testing::IsNull;
 using ::testing::Pointee;
 
 namespace {
@@ -629,6 +630,101 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest, HistoryForChildFrame) {
       entry1->GetFrameEntry(child)->policy_container_policies(),
       Pointee(Eq(ByRef(
           child->current_frame_host()->policy_container_host()->policies()))));
+}
+
+// Test for https://crbug.com/364773822.
+IN_PROC_BROWSER_TEST_F(
+    PolicyContainerHostBrowserTest,
+    PoliciesAreNotReloadedFromHistoryIfNavigationEncounteredError) {
+  NavigationControllerImpl& controller = web_contents()->GetController();
+  GURL main_url(embedded_test_server()->GetURL("/page_with_blank_iframe.html"));
+
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+
+  ASSERT_EQ(1U, root->child_count());
+  FrameTreeNode* child = root->child_at(0);
+  ASSERT_NE(nullptr, child);
+
+  GURL child_frame_url(
+      embedded_test_server()->GetURL("/page_with_srcdoc_iframe_and_csp.html"));
+  ASSERT_TRUE(NavigateFrameToURL(child, child_frame_url));
+
+  ASSERT_EQ(1, controller.GetEntryCount());
+
+  PolicyContainerPolicies child_frame_policies =
+      child->current_frame_host()->policy_container_host()->policies().Clone();
+  EXPECT_EQ(1u, child_frame_policies.content_security_policies.size());
+  NavigationEntryImpl* entry1 = controller.GetEntryAtIndex(0);
+  EXPECT_THAT(
+      entry1->GetFrameEntry(child)->policy_container_policies(),
+      Pointee(Eq(ByRef(
+          child->current_frame_host()->policy_container_host()->policies()))));
+
+  // The srcdoc document inherits from the parent, except for COOP.
+  ASSERT_EQ(1U, child->child_count());
+  FrameTreeNode* grandchild = child->child_at(0);
+  ASSERT_NE(nullptr, grandchild);
+  EXPECT_TRUE(EqualsExceptCOOPAndTopNavigation(
+      child_frame_policies,
+      grandchild->current_frame_host()->policy_container_host()->policies()));
+
+  ASSERT_EQ(1, controller.GetEntryCount());
+
+  GURL about_blank("about:blank#1");
+  ASSERT_TRUE(NavigateFrameToURL(grandchild, about_blank));
+
+  // Add a sandbox to the child iframe and navigate away and back to recompute
+  // the sandbox flag, so that it gets reloaded with an opaque origin.
+  ASSERT_TRUE(ExecJs(current_frame_host(), R"(
+    document.getElementById('test_iframe').sandbox = 'allow-scripts';
+  )"));
+  ASSERT_TRUE(NavigateFrameToURL(child, about_blank));
+  controller.GoBack();
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  EXPECT_TRUE(child->current_origin().opaque());
+
+  // Trying to navigate the grandchild back to about:srcdoc is disallowed by
+  // https://source.chromium.org/chromium/chromium/src/+/main:content/browser/renderer_host/navigation_request.cc;l=6957-6967;drc=580a3da6e0ea94caa1f127e4455fbdbd05625065.
+  controller.GoBack();
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  EXPECT_TRUE(child->child_at(0)->current_frame_host()->IsErrorDocument());
+
+  // The error page should be loaded without inheriting the parent policies.
+  EXPECT_FALSE(EqualsExceptCOOPAndTopNavigation(child_frame_policies,
+                                                child->child_at(0)
+                                                    ->current_frame_host()
+                                                    ->policy_container_host()
+                                                    ->policies()));
+
+  // The policy container of the FrameNavigationEntry should have been cleared
+  // so that the error page's policies are not used on later successful loads.
+  EXPECT_THAT(
+      entry1->GetFrameEntry(child->child_at(0))->policy_container_policies(),
+      IsNull());
+
+  controller.GoForward();
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  controller.GoForward();
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+  // Remove the sandbox flag so that the srcdoc frame can successfully load
+  // again.
+  ASSERT_TRUE(ExecJs(current_frame_host(), R"(
+    document.getElementById('test_iframe').removeAttribute('sandbox');
+  )"));
+
+  controller.GoBack();
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  controller.GoBack();
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+  // The srcdoc document inherits again from the parent, except for COOP.
+  EXPECT_TRUE(EqualsExceptCOOPAndTopNavigation(child_frame_policies,
+                                               child->child_at(0)
+                                                   ->current_frame_host()
+                                                   ->policy_container_host()
+                                                   ->policies()));
 }
 
 // Check that the FrameNavigationEntry for the initial empty document is

@@ -53,7 +53,7 @@ CSSParserContext::CSSParserContext(const CSSParserContext* other,
                                    const KURL& base_url,
                                    bool origin_clean,
                                    const Referrer& referrer,
-                                   const WTF::TextEncoding& charset,
+                                   const TextEncoding& charset,
                                    const Document* use_counter_document)
     : CSSParserContext(base_url,
                        origin_clean,
@@ -73,7 +73,7 @@ CSSParserContext::CSSParserContext(CSSParserMode mode,
                                    const Document* use_counter_document)
     : CSSParserContext(KURL(),
                        true /* origin_clean */,
-                       WTF::TextEncoding(),
+                       TextEncoding(),
                        mode,
                        Referrer(),
                        false,
@@ -102,7 +102,7 @@ CSSParserContext::CSSParserContext(
     const KURL& base_url_override,
     bool origin_clean,
     const Referrer& referrer,
-    const WTF::TextEncoding& charset,
+    const TextEncoding& charset,
     enum ResourceFetchRestriction resource_fetch_restriction)
     : CSSParserContext(
           base_url_override,
@@ -123,7 +123,7 @@ CSSParserContext::CSSParserContext(
 CSSParserContext::CSSParserContext(const ExecutionContext& context)
     : CSSParserContext(context.Url(),
                        true /* origin_clean */,
-                       WTF::TextEncoding(),
+                       TextEncoding(),
                        kHTMLStandardMode,
                        Referrer(context.Url().StrippedForUseAsReferrer(),
                                 context.GetReferrerPolicy()),
@@ -138,7 +138,7 @@ CSSParserContext::CSSParserContext(const ExecutionContext& context)
 CSSParserContext::CSSParserContext(
     const KURL& base_url,
     bool origin_clean,
-    const WTF::TextEncoding& charset,
+    const TextEncoding& charset,
     CSSParserMode mode,
     const Referrer& referrer,
     bool is_html_document,
@@ -222,6 +222,12 @@ void CSSParserContext::Count(WebFeature feature) const {
   }
 }
 
+void CSSParserContext::Count(WebDXFeature feature) const {
+  if (IsUseCounterRecordingEnabled()) {
+    document_->CountWebDXFeature(feature);
+  }
+}
+
 void CSSParserContext::CountDeprecation(WebFeature feature) const {
   if (IsUseCounterRecordingEnabled() && document_) {
     Deprecation::CountDeprecation(document_->GetExecutionContext(), feature);
@@ -244,12 +250,31 @@ const Document* CSSParserContext::GetDocument() const {
 
 // Fuzzers may execution CSS parsing code without a Document being available,
 // thus this method can return null.
-const ExecutionContext* CSSParserContext::GetExecutionContext() const {
+ExecutionContext* CSSParserContext::GetExecutionContext() const {
   return (document_.Get()) ? document_.Get()->GetExecutionContext() : nullptr;
 }
 
 bool CSSParserContext::IsForMarkupSanitization() const {
   return document_ && document_->IsForMarkupSanitization();
+}
+
+bool CSSParserContext::InElementContext() const {
+  switch (Mode()) {
+    case kCSSFontFaceRuleMode:
+    case kCSSPropertyRuleMode:
+    case kCSSFontPaletteValuesRuleMode:
+      return false;
+    case kHTMLStandardMode:
+    case kHTMLQuirksMode:
+    case kSVGAttributeMode:
+    case kCSSKeyframeRuleMode:
+    case kCSSPositionTryRuleMode:
+    case kCSSFunctionDescriptorsMode:
+    case kUASheetMode:
+      return true;
+    case kNumCSSParserModes:
+      NOTREACHED();
+  }
 }
 
 void CSSParserContext::Trace(Visitor* visitor) const {

@@ -22,7 +22,7 @@ class PermissionsDialogRequest
   NSString* message() const { return message_; }
 
  private:
-  OVERLAY_USER_DATA_SETUP(PermissionsDialogRequest);
+  friend class OverlayUserData<PermissionsDialogRequest>;
   PermissionsDialogRequest(const GURL& url,
                            NSArray<NSNumber*>* requested_permissions);
 
@@ -40,7 +40,7 @@ class PermissionsDialogResponse
   bool capture_allow() const { return capture_allow_; }
 
  private:
-  OVERLAY_USER_DATA_SETUP(PermissionsDialogResponse);
+  friend class OverlayUserData<PermissionsDialogResponse>;
   PermissionsDialogResponse(bool capture_allow);
   const bool capture_allow_;
 };

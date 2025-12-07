@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "components/sync/engine/commit_queue.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 
 namespace syncer {
 
@@ -20,7 +21,7 @@ void FakeDataTypeProcessor::ConnectSync(std::unique_ptr<CommitQueue> worker) {}
 void FakeDataTypeProcessor::DisconnectSync() {}
 
 void FakeDataTypeProcessor::GetLocalChanges(size_t max_entries,
-                                             GetLocalChangesCallback callback) {
+                                            GetLocalChangesCallback callback) {
   std::move(callback).Run(CommitRequestDataList());
 }
 void FakeDataTypeProcessor::OnCommitCompleted(

@@ -6,14 +6,16 @@
 
 #include <launch.h>
 #include <sys/types.h>
-#include <utility>
 
 #include <optional>
+#include <utility>
+
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/osstatus_logging.h"
 #include "base/command_line.h"
-#include "base/files/file_util.h"
+#include "base/compiler_specific.h"
+#include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -48,7 +50,7 @@ constexpr char kIoThreadName[] = "DaemonControllerDelegateMac IO thread";
 // deleter function.
 class ScopedWaitpid {
  public:
-  // -1 is treated as an invalid PID and waitpit() will not be called in this
+  // -1 is treated as an invalid PID and waitpid() will not be called in this
   // case. Note that -1 is the value returned from
   // base::mac::ExecuteWithPrivilegesAndGetPID() when the child PID could not be
   // determined.
@@ -132,8 +134,8 @@ bool RunHelperAsRoot(const std::string& command,
   }
 
   if (!input_data.empty()) {
-    size_t bytes_written =
-        fwrite(input_data.data(), sizeof(char), input_data.size(), pipe);
+    size_t bytes_written = UNSAFE_TODO(
+        fwrite(input_data.data(), sizeof(char), input_data.size(), pipe));
     // According to the fwrite manpage, a partial count is returned only if a
     // write error has occurred.
     if (bytes_written != input_data.size()) {
@@ -290,7 +292,7 @@ void DaemonControllerDelegateMac::UpdateConfig(
   }
 
   host_config->Merge(std::move(config));
-  ElevateAndSetConfig(std::move(host_config.value()), std::move(done));
+  ElevateAndSetConfig(std::move(*host_config), std::move(done));
 }
 
 void DaemonControllerDelegateMac::Stop(
@@ -313,7 +315,7 @@ DaemonControllerDelegateMac::GetUsageStatsConsent() {
     std::optional<bool> host_config_value =
         host_config->FindBool(kUsageStatsConsentConfigPath);
     if (host_config_value.has_value()) {
-      consent.allowed = host_config_value.value();
+      consent.allowed = *host_config_value;
     }
   }
 

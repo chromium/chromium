@@ -26,6 +26,20 @@ BASE_FEATURE(kiOSDefaultBrowserPromosGroup,
 BASE_FEATURE(kiOSTailoredDefaultBrowserPromosGroup,
              "IPH_iOSTailoredDefaultBrowserPromosGroup",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kiOSTailoredNonModalDefaultBrowserPromosGroup,
+             "IPH_iOSTailoredNonModalDefaultBrowserPromosGroup",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kiOSNonModalSigninPromosGroup,
+             "IPH_iOSNonModalSigninPromosGroup",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kiOSHomepageNewBadgesGroup,
+             "IPH_iOSHomepageNewBadgesGroup",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kClankDefaultBrowserPromosGroup,
+             "IPH_ClankDefaultBrowserPromosGroup",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace feature_engagement

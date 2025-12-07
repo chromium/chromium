@@ -8,13 +8,13 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
+#import "ios/chrome/browser/infobars/ui_bundled/modals/test/fake_infobar_password_modal_consumer.h"
 #import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_response.h"
 #import "ios/chrome/browser/passwords/model/test/mock_ios_chrome_save_passwords_infobar_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
-#import "ios/chrome/browser/ui/infobars/modals/test/fake_infobar_password_modal_consumer.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -32,7 +32,7 @@ NSString* const kUsername = @"username";
 NSString* const kPassword = @"password";
 NSString* const kMaskedPassword = @"••••••••";
 const char kAccount[] = "foobar@gmail.com";
-}
+}  // namespace
 
 // Test fixture for PasswordInfobarModalOverlayMediator.
 class PasswordInfobarModalOverlayMediatorTest : public PlatformTest {
@@ -80,7 +80,7 @@ class PasswordInfobarModalOverlayMediatorTest : public PlatformTest {
 TEST_F(PasswordInfobarModalOverlayMediatorTest, SetUpConsumerSavingToAccount) {
   InitInfobar(kAccount);
 
-  EXPECT_NSEQ(kUsername, consumer_.username);
+  EXPECT_NSEQ(kUsername, consumer_.originalUsername);
   EXPECT_NSEQ(kMaskedPassword, consumer_.maskedPassword);
   EXPECT_NSEQ(kPassword, consumer_.unmaskedPassword);
   EXPECT_NSEQ(
@@ -102,7 +102,7 @@ TEST_F(PasswordInfobarModalOverlayMediatorTest, SetUpConsumerSavingToAccount) {
 TEST_F(PasswordInfobarModalOverlayMediatorTest, SetUpConsumerSavingLocally) {
   InitInfobar();
 
-  EXPECT_NSEQ(kUsername, consumer_.username);
+  EXPECT_NSEQ(kUsername, consumer_.originalUsername);
   EXPECT_NSEQ(kMaskedPassword, consumer_.maskedPassword);
   EXPECT_NSEQ(kPassword, consumer_.unmaskedPassword);
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORD_FOOTER_NOT_SYNCING),
@@ -147,8 +147,7 @@ TEST_F(PasswordInfobarModalOverlayMediatorTest, PresentPasswordSettings) {
   [mock_delegate().GetDispatcher()
       startDispatchingToTarget:commands_handler
                    forProtocol:@protocol(SettingsCommands)];
-  [[commands_handler expect] showSavedPasswordsSettingsFromViewController:nil
-                                                         showCancelButton:YES];
+  [[commands_handler expect] showSavedPasswordsSettingsFromViewController:nil];
 
   OCMExpect([delegate_ stopOverlayForMediator:mediator_]);
 

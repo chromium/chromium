@@ -28,7 +28,7 @@ namespace {
 const char kValidProtocolChars[] =
     "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+-.";
 
-bool IsValidProtocol(const std::string_view protocol) {
+bool IsValidProtocol(std::string_view protocol) {
   // RFC3986: ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
   if (protocol.empty())
     return false;
@@ -43,10 +43,11 @@ bool IsValidProtocol(const std::string_view protocol) {
 
 // Catches obvious errors like including a [/path] or [@query] element in the
 // pattern.
-bool IsValidOriginMatchingPattern(const std::string_view origin_pattern) {
+bool IsValidOriginMatchingPattern(std::string_view origin_pattern) {
   GURL gurl(origin_pattern);
-  if (gurl.has_path() && gurl.path_piece() != "/")
+  if (gurl.has_path() && gurl.path() != "/") {
     return false;
+  }
   if (gurl.has_query())
     return false;
   return true;

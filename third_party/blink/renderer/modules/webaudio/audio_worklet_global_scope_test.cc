@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_global_scope.h"
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/synchronization/waitable_event.h"
+#include "media/base/audio_bus.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -337,15 +334,16 @@ class AudioWorkletGlobalScopeTest : public PageTestBase, public ModuleTestBase {
     output_buses.push_back(output_bus.get());
 
     // Fill `input_channel` with 1 and zero out `output_bus`.
-    std::fill(input_channel->MutableData(),
-              input_channel->MutableData() + input_channel->length(), 1);
+    std::fill(
+        input_channel->MutableData(),
+        UNSAFE_TODO(input_channel->MutableData() + input_channel->length()), 1);
     output_bus->Zero();
 
     // Then invoke the process() method to perform JS buffer manipulation. The
     // output buffer should contain a constant value of 2.
     processor->Process(input_buses, output_buses, param_data_map);
     for (unsigned i = 0; i < output_channel->length(); ++i) {
-      EXPECT_EQ(output_channel->Data()[i], 2);
+      UNSAFE_TODO(EXPECT_EQ(output_channel->Data()[i], 2));
     }
 
     wait_event->Signal();

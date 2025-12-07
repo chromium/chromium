@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 void silk_NSQ_del_dec_neon(
     const silk_encoder_state *psEncC, silk_nsq_state *NSQ,
     SideInfoIndices *psIndices, const opus_int16 x16[], opus_int8 pulses[],
-    const opus_int16 PredCoef_Q12[2 * MAX_LPC_ORDER],
+    const opus_int16 *PredCoef_Q12,
     const opus_int16 LTPCoef_Q14[LTP_ORDER * MAX_NB_SUBFR],
     const opus_int16 AR_Q13[MAX_NB_SUBFR * MAX_SHAPE_LPC_ORDER],
     const opus_int HarmShapeGain_Q14[MAX_NB_SUBFR],
@@ -65,7 +65,7 @@ void silk_NSQ_del_dec_neon(
 extern void (*const SILK_NSQ_DEL_DEC_IMPL[OPUS_ARCHMASK + 1])(
     const silk_encoder_state *psEncC, silk_nsq_state *NSQ,
     SideInfoIndices *psIndices, const opus_int16 x16[], opus_int8 pulses[],
-    const opus_int16 PredCoef_Q12[2 * MAX_LPC_ORDER],
+    const opus_int16 *PredCoef_Q12,
     const opus_int16 LTPCoef_Q14[LTP_ORDER * MAX_NB_SUBFR],
     const opus_int16 AR_Q13[MAX_NB_SUBFR * MAX_SHAPE_LPC_ORDER],
     const opus_int HarmShapeGain_Q14[MAX_NB_SUBFR],

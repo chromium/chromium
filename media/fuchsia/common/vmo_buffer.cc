@@ -10,9 +10,12 @@
 #include "media/fuchsia/common/vmo_buffer.h"
 
 #include <zircon/rights.h>
+
 #include <algorithm>
 
 #include "base/bits.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/memory/page_size.h"
 
@@ -72,7 +75,7 @@ VmoBuffer::~VmoBuffer() {
   }
 
   zx_status_t status = zx::vmar::root_self()->unmap(
-      reinterpret_cast<uintptr_t>(base_address_), mapped_size());
+      reinterpret_cast<uintptr_t>(base_address_.get()), mapped_size());
   ZX_DCHECK(status == ZX_OK, status) << "zx_vmar_unmap";
 }
 
@@ -133,12 +136,12 @@ size_t VmoBuffer::Write(base::span<const uint8_t> data) {
 
 base::span<const uint8_t> VmoBuffer::GetMemory() {
   FlushCache(0, size_, /*invalidate=*/true);
-  return base::make_span(base_address_ + offset_, size_);
+  return base::span((base_address_ + offset_).get(), size_);
 }
 
 base::span<uint8_t> VmoBuffer::GetWritableMemory() {
   DCHECK(writable_);
-  return base::make_span(base_address_ + offset_, size_);
+  return base::span((base_address_ + offset_).get(), size_);
 }
 
 void VmoBuffer::FlushCache(size_t flush_offset,

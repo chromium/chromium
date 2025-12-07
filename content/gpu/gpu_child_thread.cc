@@ -17,23 +17,23 @@
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_device_source.h"
 #include "base/run_loop.h"
+#include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/child/child_process.h"
 #include "content/common/process_visibility_tracker.h"
 #include "content/gpu/browser_exposed_gpu_interfaces.h"
 #include "content/gpu/gpu_service_factory.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/gpu/content_gpu_client.h"
 #include "gpu/command_buffer/common/shm_count.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "gpu/ipc/service/gpu_init.h"
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
-#include "ipc/ipc_sync_message_filter.h"
 #include "media/gpu/ipc/service/media_gpu_channel_manager.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -51,7 +51,7 @@
 #include "media/mojo/clients/mojo_android_overlay.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/services/font/public/cpp/font_loader.h"  // nogncheck
 #include "components/services/font/public/mojom/font_service.mojom.h"  // nogncheck
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -84,10 +84,12 @@ ChildThreadImpl::Options GetOptions(
 
 viz::VizMainImpl::ExternalDependencies CreateVizMainDependencies() {
   viz::VizMainImpl::ExternalDependencies deps;
-  if (!base::PowerMonitor::IsInitialized()) {
+  if (!base::PowerMonitor::GetInstance()->IsInitialized()) {
     deps.power_monitor_source =
         std::make_unique<base::PowerMonitorDeviceSource>();
   }
+
+#if BUILDFLAG(IS_ANDROID)
   if (GetContentClient()->gpu()) {
     deps.sync_point_manager = GetContentClient()->gpu()->GetSyncPointManager();
     deps.shared_image_manager =
@@ -95,7 +97,11 @@ viz::VizMainImpl::ExternalDependencies CreateVizMainDependencies() {
     deps.scheduler = GetContentClient()->gpu()->GetScheduler();
     deps.viz_compositor_thread_runner =
         GetContentClient()->gpu()->GetVizCompositorThreadRunner();
+    deps.gr_context_options_provider =
+        GetContentClient()->gpu()->GetGrContextOptionsProvider();
   }
+#endif
+
   auto* process = ChildProcess::current();
   deps.shutdown_event = process->GetShutDownEvent();
   deps.io_thread_task_runner = process->io_task_runner();
@@ -136,7 +142,9 @@ GpuChildThread::GpuChildThread(base::RepeatingClosure quit_closure,
 
 GpuChildThread::~GpuChildThread() = default;
 
-void GpuChildThread::Init(const base::TimeTicks& process_start_time) {
+void GpuChildThread::Init(
+    const base::TimeTicks& process_start_time,
+    base::sequence_manager::SequenceManager* sequence_manager) {
   if (!in_process_gpu())
     mojo::SetDefaultProcessErrorHandler(base::BindRepeating(&HandleBadMessage));
 
@@ -155,7 +163,7 @@ void GpuChildThread::Init(const base::TimeTicks& process_start_time) {
   }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!in_process_gpu()) {
     mojo::PendingRemote<font_service::mojom::FontService> font_service;
     BindHostReceiver(font_service.InitWithNewPipeAndPassReceiver());
@@ -164,9 +172,14 @@ void GpuChildThread::Init(const base::TimeTicks& process_start_time) {
   }
 #endif
 
-  memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
-      FROM_HERE, base::BindRepeating(&GpuChildThread::OnMemoryPressure,
-                                     base::Unretained(this)));
+  memory_pressure_listener_registration_ =
+      std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
+          FROM_HERE, base::MemoryPressureListenerTag::kGpuChildThread, this);
+  if (sequence_manager &&
+      base::FeatureList::IsEnabled(
+          features::kBoostThreadsPriorityDuringInputScenario)) {
+    sequence_manager->AddTaskObserver(this);
+  }
 }
 
 bool GpuChildThread::in_process_gpu() const {
@@ -201,7 +214,7 @@ void GpuChildThread::OnGpuServiceConnection(viz::GpuServiceImpl* gpu_service) {
       gpu_service->gpu_channel_manager()->gpu_driver_bug_workarounds(),
       gpu_service->gpu_feature_info(), gpu_service->gpu_info(),
       gpu_service->media_gpu_channel_manager()->AsWeakPtr(),
-      gpu_service->gpu_memory_buffer_factory(), std::move(overlay_factory_cb));
+      std::move(overlay_factory_cb));
   for (auto& receiver : pending_service_receivers_)
     BindServiceInterface(std::move(receiver));
   pending_service_receivers_.clear();
@@ -216,7 +229,7 @@ void GpuChildThread::OnGpuServiceConnection(viz::GpuServiceImpl* gpu_service) {
   // that will ensure security review coverage.
   mojo::BinderMap binders;
   content::ExposeGpuInterfacesToBrowser(
-      gpu_service->gpu_preferences(),
+      gpu_service, gpu_service->gpu_preferences(),
       gpu_service->gpu_channel_manager()->gpu_driver_bug_workarounds(),
       &binders);
   ExposeInterfacesToBrowser(std::move(binders));
@@ -233,10 +246,26 @@ void GpuChildThread::QuitMainMessageLoop() {
   quit_closure_.Run();
 }
 
-void GpuChildThread::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel level) {
-  if (level != base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL)
+void GpuChildThread::WillProcessTask(const base::PendingTask& pending_task,
+                                     bool was_blocked_or_low_priority) {
+  performance_scenarios::InputScenario input_scenario =
+      performance_scenarios::GetInputScenario(
+          performance_scenarios::ScenarioScope::kGlobal)
+          ->load(std::memory_order_relaxed);
+
+  // Post a task to the IO thread if the input scenario has changed. This is
+  // used to make sure the IO thread checks the scenarios in time.
+  if (input_scenario != last_input_scenario_) {
+    last_input_scenario_ = input_scenario;
+    ChildProcess::current()->io_task_runner()->PostTask(FROM_HERE,
+                                                        base::DoNothing());
+  }
+}
+
+void GpuChildThread::OnMemoryPressure(base::MemoryPressureLevel level) {
+  if (level != base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
     return;
+  }
 
   if (viz_main_.discardable_shared_memory_manager())
     viz_main_.discardable_shared_memory_manager()->ReleaseFreeMemory();

@@ -5,14 +5,14 @@ import {GamepadHand, GamepadMapping} from '/gen/device/gamepad/public/mojom/game
 // This polyfill library implements the WebXR Test API as specified here:
 // https://github.com/immersive-web/webxr-test-api
 
-const defaultMojoFromFloor = {
-  matrix: [1, 0,     0, 0,
-           0, 1,     0, 0,
-           0, 0,     1, 0,
-           0, -1.65, 0, 1]
+const defaultMojoFromStage = {
+  data: { matrix: [1, 0,     0, 0,
+                   0, 1,     0, 0,
+                   0, 0,     1, 0,
+                   0, -1.65, 0, 1] }
 };
 const default_stage_parameters = {
-  mojoFromFloor: defaultMojoFromFloor,
+  mojoFromStage: defaultMojoFromStage,
   bounds: null
 };
 
@@ -57,7 +57,7 @@ function getPoseFromTransform(transform) {
 }
 
 function composeGFXTransform(fakeTransformInit) {
-  return {matrix: getMatrixFromTransform(fakeTransformInit)};
+  return {data: {matrix: getMatrixFromTransform(fakeTransformInit)}};
 }
 
 // Value equality for camera image init objects - they must contain `width` &
@@ -355,6 +355,23 @@ class MockRuntime {
     "world-space": vrMojom.XRInteractionMode.kWorldSpace,
   };
 
+  static _depthTypeToMojoMap = {
+    "raw": xrSessionMojom.XRDepthType.kRawDepth,
+    "smooth": xrSessionMojom.XRDepthType.kSmoothDepth,
+  };
+
+  static _depthUsageToMojoMap = {
+    "cpu-optimized": xrSessionMojom.XRDepthUsage.kCPUOptimized,
+    "gpu-optimized": xrSessionMojom.XRDepthUsage.kGPUOptimized,
+  };
+
+  static _depthDataFormatToMojoMap = {
+    "luminance-alpha": xrSessionMojom.XRDepthDataFormat.kLuminanceAlpha,
+    "float32": xrSessionMojom.XRDepthDataFormat.kFloat32,
+    "unsigned-short": xrSessionMojom.XRDepthDataFormat.kUnsignedShort,
+  };
+
+
   constructor(fakeDeviceInit, service) {
     this.sessionClient_ = null;
     this.presentation_provider_ = new MockXRPresentationProvider();
@@ -365,6 +382,7 @@ class MockRuntime {
     this.send_mojo_space_reset_ = false;
     this.stageParameters_ = null;
     this.stageParametersId_ = 1;
+    this.nextVisibilityMaskId_ = 1;
 
     this.service_ = service;
 
@@ -439,6 +457,8 @@ class MockRuntime {
 
     this.setViews(fakeDeviceInit.views, fakeDeviceInit.secondaryViews);
 
+    this._setDepthSupport(fakeDeviceInit.depthSupport || {});
+
     // Need to support webVR which doesn't have a notion of features
     this._setFeatures(fakeDeviceInit.supportedFeatures || []);
   }
@@ -512,9 +532,9 @@ class MockRuntime {
       this.stageParameters_.bounds = this.bounds_;
     }
 
-    // floorOrigin is passed in as mojoFromFloor.
-    this.stageParameters_.mojoFromFloor =
-        {matrix: getMatrixFromTransform(floorOrigin)};
+    // floorOrigin is passed in as mojoFromStage.
+    this.stageParameters_.mojoFromStage =
+        {data: {matrix: getMatrixFromTransform(floorOrigin)}};
 
     this._onStageParametersUpdated();
   }
@@ -658,6 +678,32 @@ class MockRuntime {
   }
 
   // WebXR Test API depth Sensing Extensions
+  _setDepthSupport(depthSupport) {
+    this.depthSupport_ = {};
+
+    this.depthSupport_.depthTypes = [];
+    for (const type of (depthSupport.depthTypes || [])) {
+      this.depthSupport_.depthTypes.push(MockRuntime._depthTypeToMojoMap[type]);
+    }
+
+    this.depthSupport_.depthFormats = [];
+    for (const format of (depthSupport.depthFormats || [])) {
+      this.depthSupport_.depthFormats.push(MockRuntime._depthDataFormatToMojoMap[format]);
+    }
+
+    this.depthSupport_.depthUsages = [];
+    for (const usage of (depthSupport.depthUsages || [])) {
+      // Because chrome doesn't support gpu-optimized for any devices at present
+      // avoid "false positive" WPTs by indicating that we don't support
+      // gpu-optimized.
+      if (usage === "gpu-optimized") {
+        continue;
+      }
+
+      this.depthSupport_.depthUsages.push(MockRuntime._depthUsageToMojoMap[usage]);
+    }
+  }
+
   setDepthSensingData(depthSensingData) {
     for(const key of ["depthData", "normDepthBufferFromNormView", "rawValueToMeters", "width", "height"]) {
       if(!(key in depthSensingData)) {
@@ -757,32 +803,56 @@ class MockRuntime {
     const viewport_size = 20;
     return [{
         eye: vrMojom.XREye.kLeft,
-        fieldOfView: {
-          upDegrees: 48.316,
-          downDegrees: 50.099,
-          leftDegrees: 50.899,
-          rightDegrees: 35.197
+        geometry: {
+          fieldOfView: {
+            upDegrees: 48.316,
+            downDegrees: 50.099,
+            leftDegrees: 50.899,
+            rightDegrees: 35.197
+          },
+          mojoFromView: this._getMojoFromViewerWithOffset(composeGFXTransform({
+            position: [-0.032, 0, 0],
+            orientation: [0, 0, 0, 1]
+          }))
         },
-        mojoFromView: this._getMojoFromViewerWithOffset(composeGFXTransform({
-          position: [-0.032, 0, 0],
-          orientation: [0, 0, 0, 1]
-        })),
         viewport: { x: 0, y: 0, width: viewport_size, height: viewport_size }
       },
       {
         eye: vrMojom.XREye.kRight,
-        fieldOfView: {
-          upDegrees: 48.316,
-          downDegrees: 50.099,
-          leftDegrees: 50.899,
-          rightDegrees: 35.197
+        geometry: {
+          fieldOfView: {
+            upDegrees: 48.316,
+            downDegrees: 50.099,
+            leftDegrees: 50.899,
+            rightDegrees: 35.197
+          },
+          mojoFromView: this._getMojoFromViewerWithOffset(composeGFXTransform({
+            position: [0.032, 0, 0],
+            orientation: [0, 0, 0, 1]
+          }))
         },
-        mojoFromView: this._getMojoFromViewerWithOffset(composeGFXTransform({
-          position: [0.032, 0, 0],
-          orientation: [0, 0, 0, 1]
-        })),
         viewport: { x: viewport_size, y: 0, width: viewport_size, height: viewport_size }
       }];
+  }
+
+  _getFovFromProjectionMatrix(projectionMatrix) {
+    const m = projectionMatrix;
+
+    function toDegrees(tan) {
+      return Math.atan(tan) * 180 / Math.PI;
+    }
+
+    const leftTan = (1 - m[8]) / m[0];
+    const rightTan = (1 + m[8]) / m[0];
+    const upTan = (1 + m[9]) / m[5];
+    const downTan = (1 - m[9]) / m[5];
+
+    return {
+      upDegrees: toDegrees(upTan),
+      downDegrees: toDegrees(downTan),
+      leftDegrees: toDegrees(leftTan),
+      rightDegrees: toDegrees(rightTan)
+    };
   }
 
   // This function converts between the matrix provided by the WebXR test API
@@ -798,23 +868,7 @@ class MockRuntime {
         rightDegrees: fakeXRViewInit.fieldOfView.rightDegrees
       };
     } else {
-      const m = fakeXRViewInit.projectionMatrix;
-
-      function toDegrees(tan) {
-        return Math.atan(tan) * 180 / Math.PI;
-      }
-
-      const leftTan = (1 - m[8]) / m[0];
-      const rightTan = (1 + m[8]) / m[0];
-      const upTan = (1 + m[9]) / m[5];
-      const downTan = (1 - m[9]) / m[5];
-
-      fov = {
-        upDegrees: toDegrees(upTan),
-        downDegrees: toDegrees(downTan),
-        leftDegrees: toDegrees(leftTan),
-        rightDegrees: toDegrees(rightTan)
-      };
+      fov = this._getFovFromProjectionMatrix(fakeXRViewInit.projectionMatrix);
     }
 
     let viewEye = vrMojom.XREye.kNone;
@@ -833,19 +887,39 @@ class MockRuntime {
         break;
     }
 
+    let visibilityMask = null;
+    if (fakeXRViewInit.visibilityMask) {
+      let maskInit = fakeXRViewInit.visibilityMask;
+      visibilityMask = {
+        unvalidatedIndices: maskInit.indices,
+        vertices: []
+      };
+      for (let i = 0; i + 1 < maskInit.vertices.length; i+= 2) {
+        visibilityMask.vertices.push( { x: maskInit.vertices[i], y: maskInit.vertices[i+1]});
+      }
+    }
+
     return {
       eye: viewEye,
-      fieldOfView: fov,
-      mojoFromView: this._getMojoFromViewerWithOffset(composeGFXTransform(fakeXRViewInit.viewOffset)),
+      geometry: {
+        fieldOfView: fov,
+        mojoFromView: this._getMojoFromViewerWithOffset(composeGFXTransform(fakeXRViewInit.viewOffset)),
+        // Mojo will ignore extra members, we stash the raw projection matrix
+        // here for ease of use with the depth extensions.
+        projectionMatrix: fakeXRViewInit.projectionMatrix,
+      },
       viewport: {
         x: xOffset,
-        y: 0,
-        width: fakeXRViewInit.resolution.width,
-        height: fakeXRViewInit.resolution.height
+      y: 0,
+      width: fakeXRViewInit.resolution.width,
+      height: fakeXRViewInit.resolution.height
       },
       isFirstPersonObserver: fakeXRViewInit.isFirstPersonObserver ? true : false,
-      viewOffset: composeGFXTransform(fakeXRViewInit.viewOffset)
+      viewOffset: composeGFXTransform(fakeXRViewInit.viewOffset),
+      visibilityMask: visibilityMask,
+      visibilityMaskId: { idValue : this.nextVisibilityMaskId_++ }
     };
+
   }
 
   _setFeatures(supportedFeatures) {
@@ -915,12 +989,12 @@ class MockRuntime {
 
         let frame_views = this.primaryViews_;
         for (let i = 0; i < this.primaryViews_.length; i++) {
-          this.primaryViews_[i].mojoFromView =
+          this.primaryViews_[i].geometry.mojoFromView =
             this._getMojoFromViewerWithOffset(this.primaryViews_[i].viewOffset);
         }
         if (this.enabledFeatures_.includes(xrSessionMojom.XRSessionFeature.SECONDARY_VIEWS)) {
           for (let i = 0; i < this.secondaryViews_.length; i++) {
-            this.secondaryViews_[i].mojoFromView =
+            this.secondaryViews_[i].geometry.mojoFromView =
               this._getMojoFromViewerWithOffset(this.secondaryViews_[i].viewOffset);
           }
 
@@ -928,15 +1002,17 @@ class MockRuntime {
         }
 
         const frameData = {
-          mojoFromViewer: this.pose_,
-          views: frame_views,
+          renderInfo: {
+            frameId: this.next_frame_id_,
+            mojoFromViewer: this.pose_,
+            views: frame_views
+          },
           mojoSpaceReset: mojo_space_reset,
           inputState: input_state,
           timeDelta: {
             // window.performance.now() is in milliseconds, so convert to microseconds.
             microseconds: BigInt(Math.floor(window.performance.now() * 1000)),
           },
-          frameId: this.next_frame_id_,
           bufferHolder: null,
           cameraImageSize: this.cameraImage_ ? {
             width: this.cameraImage_.width,
@@ -954,7 +1030,9 @@ class MockRuntime {
 
         this._calculateAnchorInformation(frameData);
 
-        this._calculateDepthInformation(frameData);
+        if (options.depthActive) {
+          this._calculateDepthInformation(frameData);
+        }
 
         this._injectAdditionalFrameData(options, frameData);
 
@@ -990,15 +1068,13 @@ class MockRuntime {
     if (!this.supportedModes_.includes(xrSessionMojom.XRSessionMode.kImmersiveAr)) {
       // Reject outside of AR.
       return Promise.resolve({
-        result : vrMojom.SubscribeToHitTestResult.FAILURE_GENERIC,
-        subscriptionId : 0n
+        subscriptionId : null
       });
     }
 
     if (!this._nativeOriginKnown(nativeOriginInformation)) {
       return Promise.resolve({
-        result : vrMojom.SubscribeToHitTestResult.FAILURE_GENERIC,
-        subscriptionId : 0n
+        subscriptionId : null
       });
     }
 
@@ -1015,13 +1091,11 @@ class MockRuntime {
           this.hitTestSubscriptions_.set(id, { nativeOriginInformation, entityTypes, ray, controller });
 
           return Promise.resolve({
-            result : vrMojom.SubscribeToHitTestResult.SUCCESS,
-            subscriptionId : id
+            subscriptionId : { idValue : id }
           });
         } else {
           return Promise.resolve({
-            result : vrMojom.SubscribeToHitTestResult.FAILURE_GENERIC,
-            subscriptionId : 0n
+            subscriptionId : null
           });
         }
       });
@@ -1031,8 +1105,7 @@ class MockRuntime {
     if (!this.supportedModes_.includes(xrSessionMojom.XRSessionMode.kImmersiveAr)) {
       // Reject outside of AR.
       return Promise.resolve({
-        result : vrMojom.SubscribeToHitTestResult.FAILURE_GENERIC,
-        subscriptionId : 0n
+        subscriptionId : null
       });
     }
 
@@ -1050,26 +1123,25 @@ class MockRuntime {
           this.transientHitTestSubscriptions_.set(id, { profileName, entityTypes, ray, controller });
 
           return Promise.resolve({
-            result : vrMojom.SubscribeToHitTestResult.SUCCESS,
-            subscriptionId : id
+            subscriptionId : { idValue : id }
           });
         } else {
           return Promise.resolve({
-            result : vrMojom.SubscribeToHitTestResult.FAILURE_GENERIC,
-            subscriptionId : 0n
+            subscriptionId : null
           });
         }
       });
   }
 
   unsubscribeFromHitTest(subscriptionId) {
+    let id = subscriptionId.idValue;
     let controller = null;
-    if(this.transientHitTestSubscriptions_.has(subscriptionId)){
-      controller = this.transientHitTestSubscriptions_.get(subscriptionId).controller;
-      this.transientHitTestSubscriptions_.delete(subscriptionId);
-    } else if(this.hitTestSubscriptions_.has(subscriptionId)){
-      controller = this.hitTestSubscriptions_.get(subscriptionId).controller;
-      this.hitTestSubscriptions_.delete(subscriptionId);
+    if(this.transientHitTestSubscriptions_.has(id)){
+      controller = this.transientHitTestSubscriptions_.get(id).controller;
+      this.transientHitTestSubscriptions_.delete(id);
+    } else if(this.hitTestSubscriptions_.has(id)){
+      controller = this.hitTestSubscriptions_.get(id).controller;
+      this.hitTestSubscriptions_.delete(id);
     }
 
     if(controller) {
@@ -1077,12 +1149,11 @@ class MockRuntime {
     }
   }
 
-  createAnchor(nativeOriginInformation, nativeOriginFromAnchor) {
+  createAnchor(nativeOriginInformation, nativeOriginFromAnchor, planeId) {
     return new Promise((resolve) => {
       if(this.anchor_creation_callback_ == null) {
         resolve({
-          result : vrMojom.CreateAnchorResult.FAILURE,
-          anchorId : 0n
+          anchorId : null
         });
 
         return;
@@ -1091,8 +1162,7 @@ class MockRuntime {
       const mojoFromNativeOrigin = this._getMojoFromNativeOrigin(nativeOriginInformation);
       if(mojoFromNativeOrigin == null) {
         resolve({
-          result : vrMojom.CreateAnchorResult.FAILURE,
-          anchorId : 0n
+          anchorId : null
         });
 
         return;
@@ -1121,36 +1191,23 @@ class MockRuntime {
                 anchorController.id = anchor_id;
 
                 resolve({
-                  result : vrMojom.CreateAnchorResult.SUCCESS,
-                  anchorId : anchor_id
+                  anchorId : {
+                    idValue: anchor_id
+                  }
                 });
               } else {
                 // The test has rejected anchor creation.
                 resolve({
-                  result : vrMojom.CreateAnchorResult.FAILURE,
-                  anchorId : 0n
+                  anchorId : null
                 });
               }
             })
             .catch(() => {
               // The test threw an error, treat anchor creation as failed.
               resolve({
-                result : vrMojom.CreateAnchorResult.FAILURE,
-                anchorId : 0n
+                anchorId : null
               });
             });
-    });
-  }
-
-  createPlaneAnchor(planeFromAnchor, planeId) {
-    return new Promise((resolve) => {
-
-      // Not supported yet.
-
-      resolve({
-        result : vrMojom.CreateAnchorResult.FAILURE,
-        anchorId : 0n,
-      });
     });
   }
 
@@ -1189,7 +1246,7 @@ class MockRuntime {
         const enabled_features = [];
         for (let i = 0; i < sessionOptions.requiredFeatures.length; i++) {
           const feature = sessionOptions.requiredFeatures[i];
-          if (this._runtimeSupportsFeature(feature, sessionOptions)) {
+          if (this._maybeEnableFeature(feature, sessionOptions)) {
             enabled_features.push(feature);
           } else {
             return Promise.resolve({session: null});
@@ -1198,7 +1255,7 @@ class MockRuntime {
 
         for (let i =0; i < sessionOptions.optionalFeatures.length; i++) {
           const feature = sessionOptions.optionalFeatures[i];
-          if (this._runtimeSupportsFeature(feature, sessionOptions)) {
+          if (this._maybeEnableFeature(feature, sessionOptions)) {
             enabled_features.push(feature);
           }
         }
@@ -1214,14 +1271,8 @@ class MockRuntime {
             deviceConfig: {
               defaultFramebufferScale: this.defaultFramebufferScale_,
               supportsViewportScaling: true,
-              depthConfiguration: enabled_features.includes(
-                                      xrSessionMojom.XRSessionFeature.DEPTH) ?
-                  {
-                    depthUsage: xrSessionMojom.XRDepthUsage.kCPUOptimized,
-                    depthDataFormat:
-                        xrSessionMojom.XRDepthDataFormat.kLuminanceAlpha,
-                  } :
-                  null,
+              // If depth was not enabled above, this should be null.
+              depthConfiguration: this.depthConfiguration_,
               views: this._getDefaultViews(),
             },
             enviromentBlendMode: this.enviromentBlendMode_,
@@ -1241,21 +1292,67 @@ class MockRuntime {
     });
   }
 
-  _runtimeSupportsFeature(feature, options) {
+  _tryGetDepthConfig(options) {
+    if (!options.depthOptions) {
+      return null;
+    }
+
+    // At present, there are only two depth usages, and we only support CPU.
+    if (options.depthOptions.usagePreferences.length !== 0 &&
+        !options.depthOptions.usagePreferences.includes(
+          xrSessionMojom.XRDepthUsage.kCPUOptimized)) {
+      return null;
+    }
+    const selectedUsage = xrSessionMojom.XRDepthUsage.kCPUOptimized;
+
+    let selectedFormat = null;
+    if (options.depthOptions.dataFormatPreferences.length === 0) {
+      selectedFormat = this.depthSupport_.depthFormats.length === 0 ?
+        xrSessionMojom.XRDepthDataFormat.kLuminanceAlpha : this.depthSupport_.depthFormats[0];
+    } else {
+      for (const dataFormatRequest of options.depthOptions.dataFormatPreferences) {
+        if (this.depthSupport_.depthFormats.length === 0 ||
+            this.depthSupport_.depthFormats.includes(dataFormatRequest)) {
+          selectedFormat = dataFormatRequest;
+          break;
+        }
+      }
+    }
+
+    if (selectedFormat === null) {
+      return null;
+    }
+
+    // Default to our first supported depth type. If it's empty (meaning all),
+    // then just default to raw.
+    let selectedDepthType = this.depthSupport_.depthTypes.length === 0 ?
+    xrSessionMojom.XRDepthType.kRawDepth : this.depthSupport_.depthTypes[0];
+    // Try to set the depthType to the earliest requested one if it's supported.
+    for (const depthTypeRequest of options.depthOptions.depthTypeRequest) {
+      if (this.depthSupport_.depthTypes.length === 0 ||
+          this.depthSupport_.depthTypes.includes(depthTypeRequest)) {
+        selectedDepthType = depthTypeRequest;
+        break;
+      }
+    }
+
+    return {
+        depthUsage: selectedUsage,
+        depthDataFormat: selectedFormat,
+        depthType: selectedDepthType,
+      };
+  }
+
+  _maybeEnableFeature(feature, options) {
     if (this.supportedFeatures_.indexOf(feature) === -1) {
       return false;
     }
 
     switch (feature) {
       case xrSessionMojom.XRSessionFeature.DEPTH:
-        // This matches what Chrome can currently support.
-        return options.depthOptions &&
-               (options.depthOptions.usagePreferences.length == 0 ||
-                options.depthOptions.usagePreferences.includes(
-                  xrSessionMojom.XRDepthUsage.kCPUOptimized)) &&
-               (options.depthOptions.dataFormatPreferences.length == 0 ||
-                options.depthOptions.dataFormatPreferences.includes(
-                 xrSessionMojom.XRDepthDataFormat.kLuminanceAlpha));
+        this.depthConfiguration_ = this._tryGetDepthConfig(options);
+        this.matchDepthView_ = options.depthOptions && options.depthOptions.matchDepthView;
+        return this.depthConfiguration_ != null;
       default:
         return true;
     }
@@ -1295,11 +1392,11 @@ class MockRuntime {
 
     frameData.anchorsData = {allAnchorsIds: [], updatedAnchorsData: []};
     for(const [id, controller] of this.anchor_controllers_) {
-      frameData.anchorsData.allAnchorsIds.push(id);
+      frameData.anchorsData.allAnchorsIds.push({ idValue : id });
 
       // Send the entire anchor data over if there was a change since last GetFrameData().
       if(controller.dirty) {
-        const anchorData = {id};
+        const anchorData = { id : { idValue : id }};
         if(!controller.paused) {
           anchorData.mojoFromAnchor = getPoseFromTransform(
               XRMathHelper.decomposeRigidTransform(
@@ -1314,6 +1411,179 @@ class MockRuntime {
   }
 
   // Private functions - depth sensing implementation:
+
+  /**
+   * Helper to get a TypedArray view for a given depth format.
+   * @param {ArrayBuffer} buffer The ArrayBuffer.
+   * @param {xrSessionMojom.XRDepthDataFormat} format The depth format.
+   * @return {Uint16Array|Float32Array} A typed array view.
+   */
+  static _getTypedArrayForFormat(buffer, format) {
+    if (format === xrSessionMojom.XRDepthDataFormat.kFloat32) {
+      return new Float32Array(buffer);
+    } else { // "luminance-alpha" or "unsigned-short"
+      return new Uint16Array(buffer);
+    }
+  }
+
+  /**
+   * Helper to get a TypedArray for the given depth format.
+   * @param {xrSessionMojom.XRDepthDataFormat} format - The Depth format
+   * @param {number} size - The size of the array to be created.
+   * @return {Uint16Array|Float32Array} A typed array view.
+   */
+  static _getEmptyTypedArrayForFormat(format, size) {
+    if (format === xrSessionMojom.XRDepthDataFormat.kFloat32) {
+        return new Float32Array(size).fill(0.0);
+    } else { // "luminance-alpha" or "unsigned-short" (Uint16)
+        return new Uint16Array(size).fill(0);
+    }
+  }
+
+  /**
+   * Reprojects depth data from a source view to a target view.
+   * The returned array will be the same width/height, but will be returned as a
+   * Uint8Array of the targetFormat (essentially a byte array that can be sent
+   * across mojo), so the overall returned size may be different.
+   *
+   * @param {ArrayBuffer} sourceDepthArrayBuffer - Raw depth data for the source.
+   * @param {number} width - Width of the depth data.
+   * @param {number} height - Height of the depth data.
+   * @param {xrSessionMojom.XRDepthDataFormat} sourceFormatEnum - Format of the source depth data.
+   * @param {Float32Array} sourceClipFromSourceView - Projection matrix for the source view.
+   * @param {Float32Array} mojoFromSourceView- Matrix of the transform for the source view.
+   * @param {xrSessionMojom.XRDepthDataFormat} targetFormatEnum - Format of the target depth data.
+   * @param {Float32Array} targetClipFromTargetView - Projection matrix for the target view.
+   * @param {Float32Array} mojoFromTargetView - Matrix of the transform for the target view.
+   * @return {Uint8Array | null} The reprojected depth data as an Uint8Array, or null on matrix error.
+   */
+  static copyDepthData(
+      sourceDepthArrayBuffer, width, height, sourceFormatEnum,
+      sourceClipFromSourceView, mojoFromSourceView,
+      targetFormatEnum,
+      targetClipFromTargetView, mojoFromTargetView) {
+
+      const targetViewFromTargetClip = XRMathHelper.inverse(targetClipFromTargetView);
+      const sourceViewFromMojo = XRMathHelper.inverse(mojoFromSourceView);
+
+      // Check if any matrices were not supplied or matrix inversions failed.
+      if (!targetViewFromTargetClip || !sourceViewFromMojo || !mojoFromTargetView) {
+          return null;
+      }
+
+      // Build the full transformation from Target Clip space to Source Clip space.
+      const mojoFromTargetClip = XRMathHelper.mul4x4(mojoFromTargetView, targetViewFromTargetClip);
+      if (!mojoFromTargetClip) return null;
+
+      const sourceViewFromTargetClip = XRMathHelper.mul4x4(sourceViewFromMojo, mojoFromTargetClip);
+      if (!sourceViewFromTargetClip) return null;
+
+      const sourceClipFromTargetClip = XRMathHelper.mul4x4(sourceClipFromSourceView, sourceViewFromTargetClip);
+      if (!sourceClipFromTargetClip) return null;
+
+      const sourceTypedArray = MockRuntime._getTypedArrayForFormat(sourceDepthArrayBuffer, sourceFormatEnum);
+      let internalTargetDepthTypedArray = MockRuntime._getEmptyTypedArrayForFormat(targetFormatEnum, width * height);
+
+      // Iterate over target pixels (Backward Mapping)
+      for (let ty = 0; ty < height; ++ty) {
+          for (let tx = 0; tx < width; ++tx) {
+              // Convert target pixel (tx, ty) to target NDC coordinates
+              const u_tgt_pixel = (tx + 0.5) / width;  // u in [0, 1], Y-down from top-left
+              const v_tgt_pixel = (ty + 0.5) / height; // v in [0, 1], Y-down from top-left
+
+              const ndc_x_tgt = u_tgt_pixel * 2.0 - 1.0;   // NDC X in [-1, 1]
+              const ndc_y_tgt = 1.0 - v_tgt_pixel * 2.0;   // NDC Y in [-1, 1], Y-up
+
+              // Define a point on the near plane in target clip space
+              const P_clip_tgt = { x: ndc_x_tgt, y: ndc_y_tgt, z: -1.0, w: 1.0 };
+
+              // Transform this point to source clip space
+              const P_clip_src = XRMathHelper.transform_by_matrix(sourceClipFromTargetClip, P_clip_tgt);
+
+              // Homogenize to get source NDC coordinates
+              if (Math.abs(P_clip_src.w) < XRMathHelper.EPSILON) {
+                  internalTargetDepthTypedArray[ty * width + tx] = 0; // Cannot project
+                  continue;
+              }
+              const ndc_x_src = P_clip_src.x / P_clip_src.w;
+              const ndc_y_src = P_clip_src.y / P_clip_src.w;
+
+              // Convert source NDC to source pixel coordinates
+              const u_src_pixel = (ndc_x_src + 1.0) / 2.0;
+              const v_src_pixel = (1.0 - ndc_y_src) / 2.0; // Convert source NDC Y-up to pixel Y-down
+
+              const sx = Math.floor(u_src_pixel * width);
+              const sy = Math.floor(v_src_pixel * height);
+
+              let target_raw_depth = 0; // Default to 0 (no data)
+
+              // Check if the calculated source pixel is within bounds
+              if (sx >= 0 && sx < width && sy >= 0 && sy < height) {
+                  const source_raw_value = sourceTypedArray[sy * width + sx];
+
+                  let isValidSourceDepth = false;
+                  if (sourceFormatEnum === xrSessionMojom.XRDepthDataFormat.kFloat32) {
+                      if (source_raw_value > 0 && isFinite(source_raw_value)) {
+                          isValidSourceDepth = true;
+                      }
+                  } else { // Uint16 source
+                      if (source_raw_value > 0) {
+                          isValidSourceDepth = true;
+                      }
+                  }
+
+                  if (isValidSourceDepth) {
+                      if (targetFormatEnum === xrSessionMojom.XRDepthDataFormat.kFloat32) {
+                          target_raw_depth = source_raw_value;
+                      } else {
+                          // Clamp to the valid range for Uint16
+                          target_raw_depth = Math.max(0, Math.min(0xFFFF, Math.round(source_raw_value)));
+                      }
+                  }
+              }
+
+              // If not in bounds or source depth invalid, target_raw_depth remains 0.
+              internalTargetDepthTypedArray[ty * width + tx] = target_raw_depth;
+          }
+      }
+
+      return new Uint8Array(internalTargetDepthTypedArray.buffer);
+  }
+
+  _getDepthPixelData(depthGeometry) {
+    if (!this.matchDepthView_ || !depthGeometry) {
+      return { bytes: this.depthSensingData_.depthData };
+    }
+
+    const sourceProjectionMatrix = depthGeometry.projectionMatrix;
+    const sourceViewOffset = depthGeometry.mojoFromView;
+    if (!sourceProjectionMatrix || !sourceViewOffset) {
+      return { bytes: this.depthSensingData_.depthData };
+    }
+
+    if (this.primaryViews_.length === 0) {
+      return { bytes: this.depthSensingData_.depthData };
+    }
+
+    const targetView = this.primaryViews_[0];
+    const targetProjectionMatrix = targetView.geometry.projectionMatrix;
+    const targetViewOffset = targetView.geometry.mojoFromView;
+    if (!targetProjectionMatrix || !targetViewOffset) {
+      return { bytes: this.depthSensingData_.depthData };
+    }
+
+    return { bytes: MockRuntime.copyDepthData(
+      this.depthSensingData_.depthData,
+      this.depthSensingData_.width,
+      this.depthSensingData_.height,
+      MockRuntime._depthDataFormatToMojoMap[this.depthSensingData_.depthFormat],
+      sourceProjectionMatrix,
+      sourceViewOffset.data.matrix,
+      this.depthConfiguration_.depthDataFormat,
+      targetProjectionMatrix,
+      targetViewOffset.data.matrix
+    )};
+  }
 
   // Modifies passed in frameData to add anchor information.
   _calculateDepthInformation(frameData) {
@@ -1334,13 +1604,29 @@ class MockRuntime {
     } else if(!this.depthSensingDataDirty_) {
       newDepthData = { dataStillValid: {}};
     } else {
+      let viewGeometry = null;
+      const projectionMatrix = this.depthSensingData_.projectionMatrix;
+      const viewOffset = this.depthSensingData_.viewOffset;
+
+      if (projectionMatrix && viewOffset) {
+        const fov = this._getFovFromProjectionMatrix(projectionMatrix);
+
+        viewGeometry = {
+          fieldOfView: fov,
+          mojoFromView: this._getMojoFromViewerWithOffset(composeGFXTransform(viewOffset)),
+          // Convenience member for `_getDepthPixelData`
+          projectionMatrix: projectionMatrix
+        };
+      }
+
       newDepthData = {
         updatedDepthData: {
           timeDelta: frameData.timeDelta,
           normTextureFromNormView: this.depthSensingData_.normDepthBufferFromNormView,
           rawValueToMeters: this.depthSensingData_.rawValueToMeters,
           size: { width: this.depthSensingData_.width, height: this.depthSensingData_.height },
-          pixelData: { bytes: this.depthSensingData_.depthData }
+          pixelData: this._getDepthPixelData(viewGeometry),
+          viewGeometry: this.matchDepthView_ ? null : viewGeometry
         }
       };
     }
@@ -1394,14 +1680,14 @@ class MockRuntime {
 
       const results = this._hitTestWorld(mojo_ray_origin, mojo_ray_direction, subscription.entityTypes);
       frameData.hitTestSubscriptionResults.results.push(
-          {subscriptionId: id, hitTestResults: results});
+          {subscriptionId: { idValue: id }, hitTestResults: results});
     }
 
     // Transient hit test:
     const mojo_from_viewer = this._getMojoFromViewer();
 
     for (const [id, subscription] of this.transientHitTestSubscriptions_) {
-      const result = {subscriptionId: id,
+      const result = {subscriptionId: { idValue: id },
                       inputSourceIdToHitTestResults: new Map()};
 
       // Find all input sources that match the profile name:
@@ -1569,7 +1855,7 @@ class MockRuntime {
           return null;
         }
 
-        const hitResult = {planeId: 0n};
+        const hitResult = {};
         hitResult.distance = distance;  // Extend the object with additional information used by higher layers.
                                         // It will not be serialized over mojom.
 
@@ -1622,7 +1908,7 @@ class MockRuntime {
   }
 
   _getMojoFromViewerWithOffset(viewOffset) {
-    return { matrix: XRMathHelper.mul4x4(this._getMojoFromViewer(), viewOffset.matrix) };
+    return {data: { matrix: XRMathHelper.mul4x4(this._getMojoFromViewer(), viewOffset.data.matrix) }};
   }
 
   _getMojoFromNativeOrigin(nativeOriginInformation) {
@@ -1640,11 +1926,11 @@ class MockRuntime {
         case vrMojom.XRReferenceSpaceType.kLocal:
           return XRMathHelper.identity();
         case vrMojom.XRReferenceSpaceType.kLocalFloor:
-          if (this.stageParameters_ == null || this.stageParameters_.mojoFromFloor == null) {
+          if (this.stageParameters_ == null || this.stageParameters_.mojoFromStage == null) {
             console.warn("Standing transform not available.");
             return null;
           }
-          return this.stageParameters_.mojoFromFloor.matrix;
+          return this.stageParameters_.mojoFromStage.data.matrix;
         case vrMojom.XRReferenceSpaceType.kViewer:
           return mojo_from_viewer;
         case vrMojom.XRReferenceSpaceType.kBoundedFloor:
@@ -1947,7 +2233,7 @@ class MockXRInputSource {
           // that. If we don't, then we'll just set the pointer offset directly,
           // using identity as set above.
           if (this.mojo_from_input_) {
-            mojo_from_input = this.mojo_from_input_.matrix;
+            mojo_from_input = this.mojo_from_input_.data.matrix;
           }
           break;
         default:
@@ -1960,8 +2246,9 @@ class MockXRInputSource {
       // multiplying.
       let input_from_mojo = XRMathHelper.inverse(mojo_from_input);
       input_desc.inputFromPointer = {};
-      input_desc.inputFromPointer.matrix =
-        XRMathHelper.mul4x4(input_from_mojo, this.mojo_from_pointer_.matrix);
+      input_desc.inputFromPointer.data = {
+        matrix : XRMathHelper.mul4x4(input_from_mojo,
+                                     this.mojo_from_pointer_.data.matrix)};
 
       input_desc.profiles = this.profiles_;
 
@@ -2065,7 +2352,7 @@ class MockXRInputSource {
   }
 
   _getMojoFromInputSource(mojo_from_viewer) {
-    return this.mojo_from_pointer_.matrix;
+    return this.mojo_from_pointer_.data.matrix;
   }
 }
 
@@ -2130,7 +2417,7 @@ class MockXRPresentationProvider {
 
   submitFrameWithTextureHandle(frameId, texture, syncToken) {}
 
-  submitFrameDrawnIntoTexture(frameId, syncToken, timeWaited) {}
+  submitFrameDrawnIntoTexture(frameId, layer_ids, syncToken, timeWaited) {}
 
   // Utility methods
   _close() {

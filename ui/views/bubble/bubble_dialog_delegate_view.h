@@ -8,18 +8,25 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <unordered_set>
+#include <string_view>
 #include <utility>
 
+#include "base/check.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/base/class_property.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_utils.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/color/color_variant.h"
+#include "ui/compositor/layer_type.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/metadata/view_factory.h"
@@ -33,18 +40,210 @@
 #include "ui/base/cocoa/bubble_closer.h"
 #endif
 
+class AccountChooserDialogView;
+class AppDialogView;
+class AnnouncementView;
+class BruschettaUninstallerView;
+class ChromeLabsBubbleView;
+class ColorPickerViewTest;
+class ContentSettingBubbleContents;
+class CriticalNotificationBubbleView;
+class CrostiniAnsibleSoftwareConfigView;
+class CrostiniExpiredContainerWarningView;
+class CrostiniForceCloseView;
+class CrostiniPackageInstallFailureView;
+class CrostiniRecoveryView;
+class CrostiniUninstallerView;
+class CrostiniUpdateFilesystemView;
+class DiceWebSigninInterceptionBubbleView;
+class ExtensionInstallDialogView;
+class ExtensionPopup;
+class ExtensionsMenuView;
+class FlyingIndicator;
+class GlobalErrorBubbleView;
+class HomePageUndoBubble;
+class MediaDialogView;
+class HatsNextWebDialog;
+class IncognitoClearBrowsingDataDialog;
+class IOSPromoBubbleView;
+class LocationBarBubbleDelegateView;
+class NetworkProfileBubbleView;
+class PageInfoBubbleViewBase;
+class PermissionPromptBaseView;
+class PluginVmInstallerView;
+class ProfileMenuViewBase;
+class RemoveSuggestionBubbleDialogDelegateView;
+class StoragePressureBubbleView;
+class TabGroupEditorBubbleView;
+class TabHoverCardBubbleView;
+class TestBubbleView;
+class ToolbarActionHoverCardBubbleView;
+class ScreenshotSurfaceTestDialog;
+class WebBubbleView;
+class WebUIBubbleDialogView;
+FORWARD_DECLARE_TEST(InProcessBrowserTest,
+                     RunsScheduledLayoutOnAnchoredBubbles);
+
+namespace ambient_signin {
+class AmbientSigninBubbleView;
+}
+
+namespace arc {
+class ArcSplashScreenDialogView;
+class BaseDialogDelegateView;
+class ResizeConfirmationDialogView;
+
+namespace input_overlay {
+class DeleteEditShortcut;
+class RichNudge;
+}  // namespace input_overlay
+}  // namespace arc
+
+namespace ash {
+class AnchoredNudge;
+class ContextualNudge;
+class DictationBubbleView;
+class FaceGazeBubbleView;
+class GameDashboardMainMenuView;
+class HelpBubbleViewAsh;
+class ImeModeIndicatorView;
+class KioskAppInstructionBubble;
+class MouseKeysBubbleView;
+class NetworkInfoBubble;
+class NetworkStateListInfoBubble;
+class PaletteWelcomeBubbleView;
+class QuickInsertCapsLockStateView;
+class QuickInsertPreviewBubbleView;
+class ShelfBubble;
+class TestBubbleDialogDelegateView;
+class TestBubbleDialogDelegate;
+class TrayBubbleView;
+FORWARD_DECLARE_TEST(OverviewSessionTest, DoNotHideBubbleTransient);
+FORWARD_DECLARE_TEST(ResizeShadowAndCursorTest,
+                     DefaultCursorOnBubbleWidgetCorners);
+FORWARD_DECLARE_TEST(SnapGroupOverviewTest, BubbleTransientIsVisibleInOverview);
+FORWARD_DECLARE_TEST(
+    SnapGroupDesksTest,
+    NoCrashWhenDraggingOverviewGroupItemWithBubbleToAnotherDesk);
+FORWARD_DECLARE_TEST(SnapGroupTest,
+                     NoCrashWhenReSnappingSecondaryToPrimaryWithTransient);
+
+namespace sharesheet {
+class SharesheetBubbleView;
+}
+}  // namespace ash
+
+namespace autofill {
+class CardUnmaskAuthenticationSelectionDialogView;
+class CardUnmaskPromptViews;
+class LocalCardMigrationDialogView;
+class LocalCardMigrationErrorDialogView;
+}  // namespace autofill
+
+namespace captions {
+class CaptionBubble;
+}
+
+namespace chromeos {
+class MultitaskMenu;
+}
+
 namespace gfx {
 class Rect;
 }
 
+namespace lens {
+class LensPreselectionBubble;
+class LensRegionSearchInstructionsView;
+}  // namespace lens
+
+namespace media_router {
+class CastDialogView;
+class MediaRemotingDialogView;
+}  // namespace media_router
+
+namespace send_tab_to_self {
+class SendTabToSelfToolbarBubbleView;
+}
+
+namespace toasts {
+class ToastView;
+}
+
+namespace ui {
+class TrackedElement;
+}  // namespace ui
+
+namespace ui::ime {
+class AnnouncementView;
+class CandidateWindowView;
+class GrammarSuggestionWindow;
+class InfolistWindow;
+class SuggestionWindowView;
+class UndoWindow;
+}  // namespace ui::ime
+
+namespace user_education {
+class HelpBubbleView;
+
+namespace test {
+class TestCustomHelpBubbleView;
+}
+}  // namespace user_education
+
+namespace webid {
+class AccountSelectionBubbleView;
+}
+
 namespace views {
 
+class AnchorTestBubbleDialogDelegateView;
 class Button;
+class FocusManagerTestBubbleDialogDelegateView;
+class FrameViewTestBubbleDialogDelegateView;
+class InfoBubble;
+class InteractionSequenceViewsTest;
+class TestBubbleDialogDelegateView;
+class TestBubbleView;
+class TouchSelectionMenuViews;
+
+namespace examples {
+template <class DialogType>
+class DialogExampleDelegate;
+class ExampleBubble;
+class LoginBubbleDialogView;
+}  // namespace examples
+
+namespace test {
+class SimpleBubbleView;
+class TestBubbleView;
+class WidgetTestBubbleDialogDelegateView;
+FORWARD_DECLARE_TEST(DesktopWidgetTestInteractive, FocusChangesOnBubble);
+FORWARD_DECLARE_TEST(InteractionTestUtilViewsTest, ActivateSurface);
+FORWARD_DECLARE_TEST(InteractionTestUtilViewsTest, Confirm);
+}  // namespace test
+
+// A bubble can be anchored to a view, a tracked element, or nothing.
+// BubbleAnchor is a variant type that can hold any of these.
+//
+// A tracked element is useful when the element could be either a View or a HTML
+// element in a WebUI. The element can be retrieved using its ElementIdentifier,
+// example:
+//
+//   #include "ui/base/interaction/element_tracker.h"
+//   ui::TrackedElement* element = ui::ElementTracker::GetElementTracker()
+//       ->GetElementInAnyContext(kElementId);
+//   auto bubble_delegate = std::make_unique<BubbleDialogDelegate>(
+//       element, BubbleBorder::Arrow::TOP_LEFT);
+//   views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate));
+//   ...
+//
+using BubbleAnchor = std::variant<View*, ui::TrackedElement*, std::nullptr_t>;
 
 class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
  public:
   BubbleDialogDelegate(
-      View* anchor_view,
+      BubbleAnchor anchor,
       BubbleBorder::Arrow arrow,
       BubbleBorder::Shadow shadow = BubbleBorder::DIALOG_SHADOW,
       bool autosize = false);
@@ -54,14 +253,24 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
 
   // DialogDelegate:
   BubbleDialogDelegate* AsBubbleDialogDelegate() override;
-  std::unique_ptr<NonClientFrameView> CreateNonClientFrameView(
-      Widget* widget) override;
+  std::unique_ptr<FrameView> CreateFrameView(Widget* widget) override;
   ClientView* CreateClientView(Widget* widget) override;
   ax::mojom::Role GetAccessibleWindowRole() final;
 
   // Create and initialize the bubble Widget with proper bounds.
+  // The default ownership for now is NATIVE_WIDGET_OWNS_WIDGET. If any other
+  // ownership mode is used, the returned Widget's lifetime must be managed by
+  // the caller. This is usually done by wrapping the pointer as a unique_ptr
+  // using base::WrapUnique().
   static Widget* CreateBubble(
-      std::unique_ptr<BubbleDialogDelegate> bubble_delegate);
+      std::unique_ptr<BubbleDialogDelegate> bubble_delegate,
+      Widget::InitParams::Ownership ownership =
+          Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
+
+  static Widget* CreateBubble(
+      BubbleDialogDelegate* bubble_delegate,
+      Widget::InitParams::Ownership ownership =
+          Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
 
   //////////////////////////////////////////////////////////////////////////////
   // The anchor view and rectangle:
@@ -92,6 +301,19 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   void SetAnchorRect(const gfx::Rect& rect);
 
   //////////////////////////////////////////////////////////////////////////////
+  // The generic anchor:
+  //
+  // Use this when you want to anchor the bubble to a DOM element in WebUI,
+  // represented by a TrackedElementWebUI.
+  //
+  // The BubbleAnchor is a generic type that can be constructed from a
+  // views::View* or a ui::TrackedElement*. This is designed to be transparently
+  // constructed from a views::View*, so that code that previously uses an
+  // anchor view can easily migrate to accept a WebUI anchor.
+  void SetAnchor(BubbleAnchor anchor);
+  BubbleAnchor GetAnchor() const;
+
+  //////////////////////////////////////////////////////////////////////////////
   // The anchor widget:
   //
   // The bubble will close when the anchor widget closes. Also, when the anchor
@@ -100,10 +322,11 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   // bubble is active, and will optionally resize itself to fit within the
   // anchor widget if the anchor widget's size changes.
   //
-  // The anchor widget is implied by the anchor view - bubbles with no anchor
-  // view cannot be anchored to a widget.
-
+  // The anchor widget can be explicitly set, or is implied by the anchor view
+  // or by the generic anchor.
+  void SetAnchorWidget(views::Widget* anchor_widget);
   Widget* anchor_widget() { return anchor_widget_; }
+  const Widget* anchor_widget() const { return anchor_widget_; }
 
   //////////////////////////////////////////////////////////////////////////////
   // The arrow:
@@ -261,54 +484,36 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   // look and feel does not work for your use case, BubbleDialogDelegate may not
   // be a good fit for the UI you are building.
 
-  // Ensures the bubble's background color is up-to-date, then returns it.
-  SkColor GetBackgroundColor();
+  ui::ColorVariant background_color() const { return color_; }
+  void SetBackgroundColor(ui::ColorVariant color);
 
-  // Direct access to the background color. Only use the getter when you know
-  // you don't need to worry about the color being out-of-date due to a recent
-  // theme update.
-  SkColor color() const { return color_; }
-  void set_color(SkColor color) {
-    color_ = color;
-    color_explicitly_set_ = true;
+  // TODO(crbug.com/431219296): Deprecate after API migration.
+  gfx::Insets footnote_margins() const {
+    return frame_margins().footnote.value_or(gfx::Insets());
   }
-
-  void set_force_create_contents_background(
-      bool force_create_contents_background) {
-    force_create_contents_background_ = force_create_contents_background;
-  }
-
-  void set_title_margins(const gfx::Insets& title_margins) {
-    title_margins_ = title_margins;
-  }
-
-  gfx::Insets footnote_margins() const { return footnote_margins_; }
-  void set_footnote_margins(const gfx::Insets& footnote_margins) {
-    footnote_margins_ = footnote_margins;
-  }
-
-  // Sets whether or not CreateClientView() returns a Layer backed ClientView.
-  // TODO(pbos): Remove all calls to this, then remove `paint_client_to_layer_`.
-  // See comment around `paint_client_to_layer_`.
-  void SetPaintClientToLayer(bool paint_client_to_layer);
 
   // Sets the content margins to a default picked for smaller bubbles.
   void UseCompactMargins();
 
-  // Override to configure the layer type of the bubble widget.
-  virtual ui::LayerType GetLayerType() const;
+  // Set/Get the layer type of the bubble widget and client view.
+  ui::LayerType layer_type() const { return layer_type_; }
+  void set_layer_type(ui::LayerType layer_type) {
+    CHECK(layer_type == ui::LAYER_TEXTURED ||
+          layer_type == ui::LAYER_NOT_DRAWN);
+    layer_type_ = layer_type;
+  }
 
   // Override to provide custom parameters before widget initialization.
   virtual void OnBeforeBubbleWidgetInit(Widget::InitParams* params,
                                         Widget* widget) const {}
 
   // Get the maximum available screen space to place a bubble anchored to
-  // |anchor_view| at |arrow|. If offscreen adjustment is on, this would return
+  // |anchor| at |arrow|. If offscreen adjustment is on, this would return
   // the max space corresponding to the possible arrow positions of the bubble.
   // NOTE: This function should not be called in ozone platforms where global
   // screen coordinates are not available.
   static gfx::Size GetMaxAvailableScreenSpaceToPlaceBubble(
-      View* anchor_view,
+      BubbleAnchor anchor,
       BubbleBorder::Arrow arrow,
       bool adjust_if_offscreen,
       BubbleFrameView::PreferredArrowAdjustment arrow_adjustment);
@@ -327,6 +532,10 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   // TODO(crbug.com/41493925) Not recommended; Use autosize in the constructor
   // instead.
   void SizeToContents();
+
+  // Override this method if you want to position the bubble regardless of its
+  // anchor, while retaining the other anchor view logic.
+  virtual gfx::Rect GetBubbleBounds();
 
  protected:
   // A helper class for logging UMA metrics related to bubbles.
@@ -357,8 +566,8 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
     // - "Bubble.{bubble_name}.{histogram_name}" for a specific bubble
     //   subclass, if `bubble_name` is set.
     template <typename Value>
-    void LogMetric(void (*uma_func)(const std::string&, Value),
-                   const std::string& histogram_name,
+    void LogMetric(void (*uma_func)(std::string_view, Value),
+                   std::string_view histogram_name,
                    Value value) const;
 
    private:
@@ -369,20 +578,10 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
     base::WeakPtrFactory<BubbleUmaLogger> weak_factory_{this};
   };
 
-  // Override this method if you want to position the bubble regardless of its
-  // anchor, while retaining the other anchor view logic.
-  virtual gfx::Rect GetBubbleBounds();
-
   // Override this to perform initialization after the Widget is created but
   // before it is shown.
   // TODO(pbos): Turn this into a (Once?)Callback and add set_init(cb).
   virtual void Init() {}
-
-  // TODO(ellyjones): Replace uses of this with uses of set_color(), and/or
-  // otherwise get rid of this function.
-  void set_color_internal(SkColor color) { color_ = color; }
-
-  bool color_explicitly_set() const { return color_explicitly_set_; }
 
   BubbleUmaLogger& bubble_uma_logger() { return bubble_uma_logger_; }
 
@@ -407,7 +606,6 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   class AnchorViewObserver;
   class AnchorWidgetObserver;
   class BubbleWidgetObserver;
-  class ThemeObserver;
 
   FRIEND_TEST_ALL_PREFIXES(BubbleDialogDelegateViewTest,
                            VisibleWidgetShowsInkDropOnAttaching);
@@ -422,7 +620,6 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   friend class AnchorWidgetObserver;
   friend class BubbleWidgetObserver;
   friend class TestBubbleUmaLogger;
-  friend class ThemeObserver;
 
   friend class BubbleBorderDelegate;
   friend class BubbleWindowTargeter;
@@ -437,12 +634,9 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   void OnBubbleWidgetClosing();
   void OnBubbleWidgetVisibilityChanged(bool visible);
   void OnBubbleWidgetActivationChanged(bool active);
-  void OnBubbleWidgetPaintAsActiveChanged();
 
   void OnDeactivate();
-
-  // Update the bubble color from the NativeTheme unless it was explicitly set.
-  void UpdateColorsFromTheme();
+  void UpdateFrameColor();
 
   // Notify this bubble that it is now the primary anchored bubble. When a new
   // bubble becomes the primary anchor, the previous primary silently loses its
@@ -456,23 +650,21 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
 
   gfx::Rect GetDesiredBubbleBounds();
 
-  gfx::Insets title_margins_;
-  gfx::Insets footnote_margins_;
   BubbleBorder::Arrow arrow_ = BubbleBorder::NONE;
   BubbleBorder::Shadow shadow_;
-  SkColor color_ = gfx::kPlaceholderColor;
-  bool color_explicitly_set_ = false;
+  ui::ColorVariant color_ = ui::kColorBubbleBackground;
   raw_ptr<Widget> anchor_widget_ = nullptr;
+  raw_ptr<ui::TrackedElement> anchor_tracked_element_ = nullptr;
   std::unique_ptr<AnchorViewObserver> anchor_view_observer_;
   std::unique_ptr<AnchorWidgetObserver> anchor_widget_observer_;
   std::unique_ptr<BubbleWidgetObserver> bubble_widget_observer_;
-  std::unique_ptr<ThemeObserver> theme_observer_;
   bool adjust_if_offscreen_ = true;
   bool focus_traversable_from_anchor_view_ = true;
   ViewTracker highlighted_button_tracker_;
   ui::ImageModel main_image_;
   std::u16string subtitle_;
   bool subtitle_allow_character_break_ = false;
+  ui::LayerType layer_type_ = ui::LayerType::LAYER_TEXTURED;
 
   // Whether the bubble should automatically resize to match its contents'
   // preferred size.
@@ -493,24 +685,6 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
 
   // By default, all BubbleDialogDelegates have parent windows.
   bool has_parent_ = true;
-
-  // Pointer to this bubble's ClientView.
-  raw_ptr<ClientView> client_view_ = nullptr;
-
-  // A BubbleFrameView will apply a masking path to its ClientView to ensure
-  // contents are appropriately clipped to the frame's rounded corners. If the
-  // bubble uses layers in its views hierarchy, these will not be clipped to
-  // the client mask unless the ClientView is backed by a textured ui::Layer.
-  // This flag tracks whether or not to to create a layer backed ClientView.
-  //
-  // TODO(tluk): Fix all cases where bubble transparency is used and have bubble
-  // ClientViews always paint to a layer.
-  // TODO(tluk): Flip this to true for all bubbles.
-  bool paint_client_to_layer_ = false;
-
-  // If true, contents view will be forced to create a solid color background in
-  // UpdateColorsFromTheme().
-  bool force_create_contents_background_ = false;
 
 #if BUILDFLAG(IS_MAC)
   // Special handler for close_on_deactivate() on Mac. Window (de)activation is
@@ -535,8 +709,13 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
 };
 
 // BubbleDialogDelegateView is a BubbleDialogDelegate that is also a View.
-// Prefer using a BubbleDialogDelegate that sets a separate View as its contents
-// view.
+//
+// DEPRECATED: Using this class makes it more challenging to reason about object
+// ownership/lifetimes and promotes writing "fat" views that also contain
+// business logic. Instead, use DialogModel if possible; otherwise, use separate
+// subclasses of BubbleDialogDelegate and View to handle those interfaces'
+// respective concerns.
+//
 // TODO(pbos): Migrate existing uses of BubbleDialogDelegateView to directly
 // inherit or use BubbleDialogDelegate.
 class VIEWS_EXPORT BubbleDialogDelegateView : public View,
@@ -544,28 +723,42 @@ class VIEWS_EXPORT BubbleDialogDelegateView : public View,
   METADATA_HEADER(BubbleDialogDelegateView, View)
 
  public:
+  // Not named `PassKey` as `View::PassKey` already exists in this hierarchy.
+  using BddvPassKey = base::PassKey<BubbleDialogDelegateView>;
+
   template <typename T>
   static bool IsBubbleDialogDelegateView(const BubbleDialogDelegateView* view) {
     return ui::metadata::IsClass<T, BubbleDialogDelegateView>(view);
   }
 
   // Create and initialize the bubble Widget(s) with proper bounds.
+  // Like BubbleDialogDelegate::CreateBubble, the default ownership for now is
+  // NATIVE_WIDGET_OWNS_WIDGET. If any other ownership mode is used, the
+  // returned Widget's lifetime must be managed by the caller. This is usually
+  // done by wrapping the pointer as a unique_ptr using base::WrapUnique().
   template <typename T>
-  static Widget* CreateBubble(std::unique_ptr<T> delegate) {
+  static Widget* CreateBubble(
+      std::unique_ptr<T> delegate,
+      Widget::InitParams::Ownership ownership =
+          Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET) {
     CHECK(IsBubbleDialogDelegateView<T>(delegate.get()));
-    return BubbleDialogDelegate::CreateBubble(std::move(delegate));
+    return BubbleDialogDelegate::CreateBubble(std::move(delegate), ownership);
   }
-  static Widget* CreateBubble(BubbleDialogDelegateView* bubble_delegate);
+  static Widget* CreateBubble(
+      BubbleDialogDelegateView* bubble_delegate,
+      Widget::InitParams::Ownership ownership =
+          Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
 
-  BubbleDialogDelegateView();
-  // |shadow| usually doesn't need to be explicitly set, just uses the default
-  // argument. Unless on Mac when the bubble needs to use Views base shadow,
-  // override it with suitable bubble border type.
-  BubbleDialogDelegateView(
-      View* anchor_view,
-      BubbleBorder::Arrow arrow,
+  // For use with std::make_unique<>(). Callers still must be in the friend list
+  // below, just as with the private constructor.
+  explicit BubbleDialogDelegateView(
+      BddvPassKey,
+      View* anchor_view = nullptr,
+      BubbleBorder::Arrow arrow = views::BubbleBorder::TOP_LEFT,
       BubbleBorder::Shadow shadow = BubbleBorder::DIALOG_SHADOW,
-      bool autosize = false);
+      bool autosize = false)
+      : BubbleDialogDelegateView(anchor_view, arrow, shadow, autosize) {}
+
   BubbleDialogDelegateView(const BubbleDialogDelegateView&) = delete;
   BubbleDialogDelegateView& operator=(const BubbleDialogDelegateView&) = delete;
   ~BubbleDialogDelegateView() override;
@@ -589,6 +782,145 @@ class VIEWS_EXPORT BubbleDialogDelegateView : public View,
  private:
   FRIEND_TEST_ALL_PREFIXES(BubbleDelegateTest, CreateDelegate);
   FRIEND_TEST_ALL_PREFIXES(BubbleDelegateTest, NonClientHitTest);
+
+  // DO NOT ADD TO THIS LIST!
+  // These existing cases are "grandfathered in", but there shouldn't be more.
+  // See comments atop class.
+  friend class ::AccountChooserDialogView;
+  friend class ::AnnouncementView;
+  friend class ::AppDialogView;
+  friend class ::BruschettaUninstallerView;
+  friend class ::ChromeLabsBubbleView;
+  friend class ::ColorPickerViewTest;
+  friend class ::ContentSettingBubbleContents;
+  friend class ::CriticalNotificationBubbleView;
+  friend class ::CrostiniAnsibleSoftwareConfigView;
+  friend class ::CrostiniExpiredContainerWarningView;
+  friend class ::CrostiniForceCloseView;
+  friend class ::CrostiniPackageInstallFailureView;
+  friend class ::CrostiniRecoveryView;
+  friend class ::CrostiniUninstallerView;
+  friend class ::CrostiniUpdateFilesystemView;
+  friend class ::DiceWebSigninInterceptionBubbleView;
+  friend class ::ExtensionInstallDialogView;
+  friend class ::ExtensionPopup;
+  friend class ::ExtensionsMenuView;
+  friend class ::FlyingIndicator;
+  friend class ::GlobalErrorBubbleView;
+  friend class ::HomePageUndoBubble;
+  friend class ::IOSPromoBubbleView;
+  friend class ::MediaDialogView;
+  friend class ::HatsNextWebDialog;
+  friend class ::IncognitoClearBrowsingDataDialog;
+  friend class ::LocationBarBubbleDelegateView;
+  friend class ::NetworkProfileBubbleView;
+  friend class ::PageInfoBubbleViewBase;
+  friend class ::PermissionPromptBaseView;
+  friend class ::PluginVmInstallerView;
+  friend class ::ProfileMenuViewBase;
+  friend class ::RemoveSuggestionBubbleDialogDelegateView;
+  friend class ::StoragePressureBubbleView;
+  friend class ::TabGroupEditorBubbleView;
+  friend class ::TabHoverCardBubbleView;
+  friend class ::TestBubbleView;
+  friend class ::ToolbarActionHoverCardBubbleView;
+  friend class ::ScreenshotSurfaceTestDialog;
+  friend class ::WebBubbleView;
+  friend class ::WebUIBubbleDialogView;
+  FRIEND_TEST_ALL_PREFIXES(::InProcessBrowserTest,
+                           RunsScheduledLayoutOnAnchoredBubbles);
+  friend class ::ambient_signin::AmbientSigninBubbleView;
+  friend class ::arc::ArcSplashScreenDialogView;
+  friend class ::arc::BaseDialogDelegateView;
+  friend class ::arc::ResizeConfirmationDialogView;
+  friend class ::arc::input_overlay::DeleteEditShortcut;
+  friend class ::arc::input_overlay::RichNudge;
+  friend class ::ash::AnchoredNudge;
+  friend class ::ash::ContextualNudge;
+  friend class ::ash::DictationBubbleView;
+  friend class ::ash::FaceGazeBubbleView;
+  friend class ::ash::GameDashboardMainMenuView;
+  friend class ::ash::HelpBubbleViewAsh;
+  friend class ::ash::ImeModeIndicatorView;
+  friend class ::ash::KioskAppInstructionBubble;
+  friend class ::ash::MouseKeysBubbleView;
+  friend class ::ash::NetworkInfoBubble;
+  friend class ::ash::NetworkStateListInfoBubble;
+  friend class ::ash::PaletteWelcomeBubbleView;
+  friend class ::ash::QuickInsertCapsLockStateView;
+  friend class ::ash::QuickInsertPreviewBubbleView;
+  friend class ::ash::ShelfBubble;
+  friend class ::ash::TestBubbleDialogDelegateView;
+  friend class ::ash::TestBubbleDialogDelegate;
+  friend class ::ash::TrayBubbleView;
+  FRIEND_TEST_ALL_PREFIXES(::ash::OverviewSessionTest,
+                           DoNotHideBubbleTransient);
+  FRIEND_TEST_ALL_PREFIXES(::ash::ResizeShadowAndCursorTest,
+                           DefaultCursorOnBubbleWidgetCorners);
+  FRIEND_TEST_ALL_PREFIXES(::ash::SnapGroupOverviewTest,
+                           BubbleTransientIsVisibleInOverview);
+  FRIEND_TEST_ALL_PREFIXES(
+      ::ash::SnapGroupDesksTest,
+      NoCrashWhenDraggingOverviewGroupItemWithBubbleToAnotherDesk);
+  FRIEND_TEST_ALL_PREFIXES(
+      ::ash::SnapGroupTest,
+      NoCrashWhenReSnappingSecondaryToPrimaryWithTransient);
+  friend class ::ash::sharesheet::SharesheetBubbleView;
+  friend class ::autofill::CardUnmaskAuthenticationSelectionDialogView;
+  friend class ::autofill::CardUnmaskPromptViews;
+  friend class ::autofill::LocalCardMigrationDialogView;
+  friend class ::autofill::LocalCardMigrationErrorDialogView;
+  friend class ::captions::CaptionBubble;
+  friend class ::chromeos::MultitaskMenu;
+  friend class ::lens::LensPreselectionBubble;
+  friend class ::lens::LensRegionSearchInstructionsView;
+  friend class ::media_router::CastDialogView;
+  friend class ::media_router::MediaRemotingDialogView;
+  friend class ::send_tab_to_self::SendTabToSelfToolbarBubbleView;
+  friend class ::toasts::ToastView;
+  friend class ::ui::ime::AnnouncementView;
+  friend class ::ui::ime::CandidateWindowView;
+  friend class ::ui::ime::GrammarSuggestionWindow;
+  friend class ::ui::ime::InfolistWindow;
+  friend class ::ui::ime::SuggestionWindowView;
+  friend class ::ui::ime::UndoWindow;
+  friend class ::user_education::HelpBubbleView;
+  friend class ::user_education::test::TestCustomHelpBubbleView;
+  friend class ::webid::AccountSelectionBubbleView;
+  friend class AnchorTestBubbleDialogDelegateView;
+  friend class FocusManagerTestBubbleDialogDelegateView;
+  friend class FrameViewTestBubbleDialogDelegateView;
+  friend class InfoBubble;
+  friend class InteractionSequenceViewsTest;
+  friend class TestBubbleDialogDelegateView;
+  friend class TestBubbleView;
+  friend class TouchSelectionMenuViews;
+  FRIEND_TEST_ALL_PREFIXES(BubbleDialogDelegateViewInteractiveTest,
+                           BubbleAndParentNotActiveSimultaneously);
+  FRIEND_TEST_ALL_PREFIXES(BubbleDialogDelegateViewTest,
+                           ClientViewIsPaintedToLayer);
+  FRIEND_TEST_ALL_PREFIXES(WidgetFocusObserverTest, Bubble);
+  friend class examples::DialogExampleDelegate<BubbleDialogDelegateView>;
+  friend class examples::ExampleBubble;
+  friend class examples::LoginBubbleDialogView;
+  friend class test::SimpleBubbleView;
+  friend class test::TestBubbleView;
+  friend class test::WidgetTestBubbleDialogDelegateView;
+  FRIEND_TEST_ALL_PREFIXES(test::DesktopWidgetTestInteractive,
+                           FocusChangesOnBubble);
+  FRIEND_TEST_ALL_PREFIXES(test::InteractionTestUtilViewsTest, ActivateSurface);
+  FRIEND_TEST_ALL_PREFIXES(test::InteractionTestUtilViewsTest, Confirm);
+
+  // |shadow| usually doesn't need to be explicitly set, just uses the default
+  // argument. Unless on Mac when the bubble needs to use Views base shadow,
+  // override it with suitable bubble border type.
+  explicit BubbleDialogDelegateView(
+      BubbleAnchor anchor = nullptr,
+      BubbleBorder::Arrow arrow = views::BubbleBorder::TOP_LEFT,
+      BubbleBorder::Shadow shadow = BubbleBorder::DIALOG_SHADOW,
+      bool autosize = false);
+
+  static BddvPassKey CreatePassKey() { return BddvPassKey(); }
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, BubbleDialogDelegateView, View)
@@ -604,8 +936,8 @@ VIEW_BUILDER_PROPERTY(bool, EnableArrowKeyTraversal)
 VIEW_BUILDER_PROPERTY(ui::ImageModel, Icon)
 VIEW_BUILDER_PROPERTY(ui::ImageModel, AppIcon)
 VIEW_BUILDER_PROPERTY(ui::ImageModel, MainImage)
-VIEW_BUILDER_PROPERTY(ui::ModalType, ModalType)
-VIEW_BUILDER_PROPERTY(bool, OwnedByWidget)
+VIEW_BUILDER_PROPERTY(ui::mojom::ModalType, ModalType)
+VIEW_BUILDER_PROPERTY(WidgetDelegate::OwnedByWidgetPassKey, OwnedByWidget)
 VIEW_BUILDER_PROPERTY(bool, ShowCloseButton)
 VIEW_BUILDER_PROPERTY(bool, ShowIcon)
 VIEW_BUILDER_PROPERTY(bool, ShowTitle)
@@ -618,9 +950,10 @@ VIEW_BUILDER_PROPERTY(bool, CenterTitle)
 #endif
 VIEW_BUILDER_PROPERTY(int, Buttons)
 VIEW_BUILDER_PROPERTY(int, DefaultButton)
-VIEW_BUILDER_METHOD(SetButtonLabel, ui::DialogButton, std::u16string)
-VIEW_BUILDER_METHOD(SetButtonEnabled, ui::DialogButton, bool)
+VIEW_BUILDER_METHOD(SetButtonLabel, ui::mojom::DialogButton, std::u16string)
+VIEW_BUILDER_METHOD(SetButtonEnabled, ui::mojom::DialogButton, bool)
 VIEW_BUILDER_METHOD(set_margins, gfx::Insets)
+VIEW_BUILDER_METHOD(set_frame_margins, const DialogDelegate::FrameMargins&)
 VIEW_BUILDER_METHOD(set_use_round_corners, bool)
 VIEW_BUILDER_METHOD(set_corner_radius, int)
 VIEW_BUILDER_METHOD(set_draggable, bool)

@@ -5,6 +5,7 @@
 #include "remoting/host/win/window_station_and_desktop.h"
 
 #include <algorithm>
+#include <utility>
 
 namespace remoting {
 

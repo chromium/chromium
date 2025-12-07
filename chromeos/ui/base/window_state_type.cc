@@ -5,6 +5,7 @@
 #include "chromeos/ui/base/window_state_type.h"
 
 #include "base/notreached.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 
 namespace chromeos {
 
@@ -23,72 +24,69 @@ std::ostream& operator<<(std::ostream& stream, WindowStateType state) {
     case WindowStateType::kFullscreen:
       return stream << "kFullscreen";
     case WindowStateType::kPrimarySnapped:
-      return stream << "kLeftSnapped";
+      return stream << "kPrimarySnapped";
     case WindowStateType::kSecondarySnapped:
-      return stream << "kRightSnapped";
+      return stream << "kSecondarySnapped";
     case WindowStateType::kPinned:
       return stream << "kPinned";
-    case WindowStateType::kTrustedPinned:
-      return stream << "kTrustedPinned";
+    case WindowStateType::kLockedFullscreen:
+      return stream << "kLockedFullscreen";
     case WindowStateType::kPip:
       return stream << "kPip";
     case WindowStateType::kFloated:
       return stream << "kFloated";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return stream;
+  NOTREACHED();
 }
 
-WindowStateType ToWindowStateType(ui::WindowShowState state) {
+WindowStateType ToWindowStateType(ui::mojom::WindowShowState state) {
   switch (state) {
-    case ui::SHOW_STATE_DEFAULT:
+    case ui::mojom::WindowShowState::kDefault:
       return WindowStateType::kDefault;
-    case ui::SHOW_STATE_NORMAL:
+    case ui::mojom::WindowShowState::kNormal:
       return WindowStateType::kNormal;
-    case ui::SHOW_STATE_MINIMIZED:
+    case ui::mojom::WindowShowState::kMinimized:
       return WindowStateType::kMinimized;
-    case ui::SHOW_STATE_MAXIMIZED:
+    case ui::mojom::WindowShowState::kMaximized:
       return WindowStateType::kMaximized;
-    case ui::SHOW_STATE_INACTIVE:
+    case ui::mojom::WindowShowState::kInactive:
       return WindowStateType::kInactive;
-    case ui::SHOW_STATE_FULLSCREEN:
+    case ui::mojom::WindowShowState::kFullscreen:
       return WindowStateType::kFullscreen;
-    case ui::SHOW_STATE_END:
-      NOTREACHED_IN_MIGRATION();
-      return WindowStateType::kDefault;
+    case ui::mojom::WindowShowState::kEnd:
+      NOTREACHED();
   }
 }
 
-ui::WindowShowState ToWindowShowState(WindowStateType type) {
+ui::mojom::WindowShowState ToWindowShowState(WindowStateType type) {
   switch (type) {
     case WindowStateType::kDefault:
-      return ui::SHOW_STATE_DEFAULT;
+      return ui::mojom::WindowShowState::kDefault;
     case WindowStateType::kNormal:
     case WindowStateType::kSecondarySnapped:
     case WindowStateType::kPrimarySnapped:
     case WindowStateType::kPip:
     case WindowStateType::kFloated:
-      return ui::SHOW_STATE_NORMAL;
+      return ui::mojom::WindowShowState::kNormal;
 
     case WindowStateType::kMinimized:
-      return ui::SHOW_STATE_MINIMIZED;
+      return ui::mojom::WindowShowState::kMinimized;
     case WindowStateType::kMaximized:
-      return ui::SHOW_STATE_MAXIMIZED;
+      return ui::mojom::WindowShowState::kMaximized;
     case WindowStateType::kInactive:
-      return ui::SHOW_STATE_INACTIVE;
+      return ui::mojom::WindowShowState::kInactive;
     case WindowStateType::kFullscreen:
     case WindowStateType::kPinned:
-    case WindowStateType::kTrustedPinned:
-      return ui::SHOW_STATE_FULLSCREEN;
+    case WindowStateType::kLockedFullscreen:
+      return ui::mojom::WindowShowState::kFullscreen;
   }
-  NOTREACHED_IN_MIGRATION();
-  return ui::SHOW_STATE_DEFAULT;
+  NOTREACHED();
 }
 
 bool IsPinnedWindowStateType(WindowStateType type) {
   return type == WindowStateType::kPinned ||
-         type == WindowStateType::kTrustedPinned;
+         type == WindowStateType::kLockedFullscreen;
 }
 
 bool IsFullscreenOrPinnedWindowStateType(WindowStateType type) {

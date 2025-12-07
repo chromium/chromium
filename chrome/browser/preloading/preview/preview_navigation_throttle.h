@@ -7,10 +7,6 @@
 
 #include "content/public/browser/navigation_throttle.h"
 
-namespace content {
-class NavigationHandle;
-}  // namespace content
-
 // Enforces block policy for Link Preview.
 //
 // This throttle is installed only for Link Preview navigations, which are used
@@ -26,8 +22,7 @@ class PreviewNavigationThrottle : public content::NavigationThrottle {
  public:
   ~PreviewNavigationThrottle() override;
 
-  static std::unique_ptr<PreviewNavigationThrottle> MaybeCreateThrottleFor(
-      content::NavigationHandle* navigation_handle);
+  static void MaybeCreateAndAdd(content::NavigationThrottleRegistry& registry);
 
   // content::NavigationThrottle:
   const char* GetNameForLogging() override;
@@ -36,7 +31,7 @@ class PreviewNavigationThrottle : public content::NavigationThrottle {
 
  private:
   explicit PreviewNavigationThrottle(
-      content::NavigationHandle* navigation_handle);
+      content::NavigationThrottleRegistry& registry);
 
   ThrottleCheckResult WillStartRequestOrRedirect();
 };

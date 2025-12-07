@@ -34,13 +34,23 @@ FakeProfileReportGeneratorDelegate::~FakeProfileReportGeneratorDelegate() =
 bool FakeProfileReportGeneratorDelegate::Init(const base::FilePath& path) {
   return true;
 }
+
 void FakeProfileReportGeneratorDelegate::GetSigninUserInfo(
+    enterprise_management::ChromeUserProfileInfo* report) {}
+
+void FakeProfileReportGeneratorDelegate::GetAffiliationInfo(
     enterprise_management::ChromeUserProfileInfo* report) {}
 
 void FakeProfileReportGeneratorDelegate::GetExtensionInfo(
     enterprise_management::ChromeUserProfileInfo* report) {}
 
 void FakeProfileReportGeneratorDelegate::GetExtensionRequest(
+    enterprise_management::ChromeUserProfileInfo* report) {}
+
+void FakeProfileReportGeneratorDelegate::GetProfileId(
+    enterprise_management::ChromeUserProfileInfo* report) {}
+
+void FakeProfileReportGeneratorDelegate::GetProfileName(
     enterprise_management::ChromeUserProfileInfo* report) {}
 
 std::unique_ptr<policy::PolicyConversionsClient>

@@ -11,8 +11,6 @@ namespace chromeos {
 
 // The URI scheme for triggering app installs from Almanac.
 inline constexpr std::string_view kAppInstallUriScheme = "cros-apps";
-// TODO(b/333983839): Remove legacy scheme when M124 is out of circulation.
-inline constexpr std::string_view kLegacyAppInstallUriScheme = "almanac";
 
 // The base URL for the Mall app.
 inline constexpr std::string_view kAppMallBaseUrl =

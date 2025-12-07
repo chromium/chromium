@@ -11,6 +11,7 @@
 #include <dshow.h>
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "base/win/win_util.h"
@@ -128,7 +129,7 @@ bool SinkInputPin::GetValidMediaType(int index, AM_MEDIA_TYPE* media_type) {
   VIDEOINFOHEADER* const pvi =
       reinterpret_cast<VIDEOINFOHEADER*>(media_type->pbFormat);
 
-  ZeroMemory(pvi, sizeof(VIDEOINFOHEADER));
+  UNSAFE_TODO(ZeroMemory(pvi, sizeof(VIDEOINFOHEADER)));
   pvi->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
   pvi->bmiHeader.biPlanes = 1;
   pvi->bmiHeader.biClrImportant = 0;

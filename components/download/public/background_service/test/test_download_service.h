@@ -10,6 +10,7 @@
 #include <optional>
 #include <string>
 
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/background_service/client.h"

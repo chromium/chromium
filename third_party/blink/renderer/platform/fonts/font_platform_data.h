@@ -31,9 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_PLATFORM_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_PLATFORM_DATA_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/public/platform/web_font_render_style.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_orientation.h"
@@ -68,7 +66,7 @@ class PLATFORM_EXPORT FontPlatformData
   // to this "Deleted" one. It expects the Deleted one to be differentiable
   // from the 0 one (created with the empty constructor), so we can't just
   // set everything to 0.
-  FontPlatformData(WTF::HashTableDeletedValueType);
+  FontPlatformData(HashTableDeletedValueType);
   FontPlatformData();
   FontPlatformData(const FontPlatformData&);
   FontPlatformData(const FontPlatformData& src, float text_size);
@@ -93,12 +91,12 @@ class PLATFORM_EXPORT FontPlatformData
 #endif
 
   String FontFamilyName() const;
-  bool IsAhem() const;
   float size() const { return text_size_; }
   bool SyntheticBold() const { return synthetic_bold_; }
   bool SyntheticItalic() const { return synthetic_italic_; }
 
   SkTypeface* Typeface() const;
+  sk_sp<SkTypeface> TypefaceSp() const { return typeface_; }
   HarfBuzzFace* GetHarfBuzzFace() const;
   bool HasSpaceInLigaturesOrKerning(TypesettingFeatures) const;
   SkTypefaceID UniqueID() const;
@@ -110,6 +108,9 @@ class PLATFORM_EXPORT FontPlatformData
   }
   bool IsVerticalAnyUpright() const {
     return blink::IsVerticalAnyUpright(orientation_);
+  }
+  bool IsVerticalNonCJKUpright() const {
+    return blink::IsVerticalNonCJKUpright(orientation_);
   }
   void SetOrientation(FontOrientation orientation) {
     orientation_ = orientation;
@@ -124,7 +125,6 @@ class PLATFORM_EXPORT FontPlatformData
     avoid_embedded_bitmaps_ = embedded_bitmaps;
   }
   bool operator==(const FontPlatformData&) const;
-  bool operator!=(const FontPlatformData& a) const { return !operator==(a); }
   FontPlatformData& operator=(const FontPlatformData&) = delete;
 
   bool IsHashTableDeletedValue() const { return is_hash_table_deleted_value_; }
@@ -137,16 +137,6 @@ class PLATFORM_EXPORT FontPlatformData
 #endif
 
   SkFont CreateSkFont(const FontDescription* = nullptr) const;
-
-  // Computes a digest from the typeface. The digest only depends on the
-  // underlying font itself, and does not vary by the style (size, weight,
-  // italics, etc). This is aimed at discovering the fingerprinting information
-  // a particular local font may provide websites.
-  //
-  // The digest algorithm is designed for fast computation, rather than to be
-  // robust against an attacker with control of local fonts looking to attack
-  // the fingerprinting algorithm.
-  IdentifiableToken ComputeTypefaceDigest() const;
 
   // Gets the postscript name from the typeface.
   String GetPostScriptName() const;

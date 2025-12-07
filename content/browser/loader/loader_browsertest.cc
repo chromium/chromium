@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -40,6 +41,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -86,8 +88,9 @@ class LoaderBrowserTest : public ContentBrowserTest,
     ShellAddedObserver new_shell_observer;
 
     // Create dynamic popup.
-    if (!ExecJs(shell(), "OpenPopup();"))
+    if (!ExecJs(shell(), "OpenPopup();")) {
       return false;
+    }
 
     Shell* new_shell = new_shell_observer.GetShell();
     *title = new_shell->web_contents()->GetTitle();
@@ -272,8 +275,9 @@ std::unique_ptr<net::test_server::HttpResponse> CancelOnRequest(
     int child_id,
     base::RepeatingClosure crash_network_service_callback,
     const net::test_server::HttpRequest& request) {
-  if (request.relative_url != relative_url)
+  if (request.relative_url != relative_url) {
     return nullptr;
+  }
 
   GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
                                       crash_network_service_callback);
@@ -294,12 +298,17 @@ std::unique_ptr<net::test_server::HttpResponse> CancelOnRequest(
 #endif
 IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, MAYBE_SyncXMLHttpRequest_Cancelled) {
   // If network service is running in-process, we can't simulate a crash.
-  if (IsInProcessNetworkService())
+  if (IsInProcessNetworkService()) {
     return;
+  }
 
   embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
       &CancelOnRequest, "/hung",
-      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      shell()
+          ->web_contents()
+          ->GetPrimaryMainFrame()
+          ->GetProcess()
+          ->GetDeprecatedID(),
       base::BindRepeating(&BrowserTestBase::SimulateNetworkServiceCrash,
                           base::Unretained(this))));
 
@@ -398,7 +407,8 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, CrossSiteNoUnloadOn204) {
 // app isn't stripped of debug symbols, this takes about five minutes to
 // complete and isn't conducive to quick turnarounds. As we don't currently
 // strip the app on the build bots, this is bad times.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/440535492): Flaky on Win dbg. Re-enable this test.
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_WIN) && !defined(NDEBUG))
 #define MAYBE_CrossSiteAfterCrash DISABLED_CrossSiteAfterCrash
 #else
 #define MAYBE_CrossSiteAfterCrash CrossSiteAfterCrash
@@ -725,8 +735,9 @@ class RequestDataBrowserTest : public ContentBrowserTest {
       base::RunLoop run_loop;
       {
         base::AutoLock auto_lock(requests_lock_);
-        if (requests_.size() == count)
+        if (requests_.size() == count) {
           return;
+        }
         requests_closure_ = run_loop.QuitClosure();
       }
       run_loop.Run();
@@ -755,8 +766,9 @@ class RequestDataBrowserTest : public ContentBrowserTest {
   void RequestCreated(RequestData data) {
     base::AutoLock auto_lock(requests_lock_);
     requests_.push_back(data);
-    if (requests_closure_)
+    if (requests_closure_) {
       std::move(requests_closure_).Run();
+    }
   }
 
   base::Lock requests_lock_;
@@ -1104,8 +1116,9 @@ class URLModifyingThrottle : public blink::URLLoaderThrottle {
 
   void WillStartRequest(network::ResourceRequest* request,
                         bool* defer) override {
-    if (!modify_start_)
+    if (!modify_start_) {
       return;
+    }
 
     GURL::Replacements replacements;
     replacements.SetQueryStr("foo=bar");
@@ -1121,15 +1134,17 @@ class URLModifyingThrottle : public blink::URLLoaderThrottle {
       std::vector<std::string>* to_be_removed_request_headers,
       net::HttpRequestHeaders* modified_request_headers,
       net::HttpRequestHeaders* modified_cors_exempt_request_headers) override {
-    if (!modify_redirect_)
+    if (!modify_redirect_) {
       return;
+    }
 
     modified_request_headers->SetHeader("Foo", "BarRedirect");
     modified_cors_exempt_request_headers->SetHeader("ExemptFoo",
                                                     "ExemptBarRedirect");
 
-    if (modified_redirect_url_)
+    if (modified_redirect_url_) {
       return;  // Only need to do this once.
+    }
 
     modified_redirect_url_ = true;
     GURL::Replacements replacements;
@@ -1163,7 +1178,7 @@ class ThrottleContentBrowserClient
       BrowserContext* browser_context,
       const base::RepeatingCallback<WebContents*()>& wc_getter,
       NavigationUIData* navigation_ui_data,
-      int frame_tree_node_id,
+      FrameTreeNodeId frame_tree_node_id,
       std::optional<int64_t> navigation_id) override {
     std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
     auto throttle =
@@ -1271,6 +1286,87 @@ IN_PROC_BROWSER_TEST_F(LoaderNoScriptStreamingBrowserTest, LoadScript) {
       })();
     )"));
   EXPECT_EQ(expected_title16, title_watcher.WaitAndGetTitle());
+}
+
+// Regression test for https://crbug.com/362788339
+// Tests that script can be loaded when the server responded 304 response.
+// TODO(crbug.com/369439037):  Re-enable once flakiness is resolved for Windows
+// ASAN.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_Subresource304Response DISABLED_Subresource304Response
+#else
+#define MAYBE_Subresource304Response Subresource304Response
+#endif
+IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, MAYBE_Subresource304Response) {
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url == "/test.html") {
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_content_type("text/html");
+          const size_t kScriptCount = 100;
+          std::vector<std::string> html_strings;
+          html_strings.emplace_back("<head><title></title><head><script>");
+          html_strings.emplace_back("const kScriptCount = ");
+          html_strings.emplace_back(base::NumberToString(kScriptCount));
+          html_strings.emplace_back(";\n");
+          html_strings.emplace_back(R"(
+              let count = 0;
+              function done() {
+                if (++count == kScriptCount) {
+                  document.title='Scripts Loaded';
+                }
+              }
+            )");
+          html_strings.emplace_back("</script>");
+          for (size_t i = 0; i < kScriptCount; ++i) {
+            html_strings.emplace_back("<script src=\"./test.js?");
+            html_strings.emplace_back(base::NumberToString(i));
+            html_strings.emplace_back("\"></script>");
+          }
+          response->set_content(base::StrCat(html_strings));
+          return response;
+        } else if (request.relative_url.starts_with("/test.js?")) {
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          if (request.headers.contains("if-modified-since")) {
+            response->set_code(net::HTTP_NOT_MODIFIED);
+            return response;
+          }
+          response->set_content_type("application/javascript");
+          response->set_content("done();");
+          response->AddCustomHeader("Cache-Control", "max-age=0, no-cache");
+          response->AddCustomHeader("pragma", "no-cache");
+          response->AddCustomHeader("Last-Modified",
+                                    "Wed, 20 Dec 2023 01:00:00 GMT");
+          return response;
+        }
+        return nullptr;
+      }));
+  ASSERT_TRUE(embedded_test_server()->Start());
+  {
+    std::u16string expected_title(u"Scripts Loaded");
+    TitleWatcher title_watcher(shell()->web_contents(), expected_title);
+    EXPECT_TRUE(
+        NavigateToURL(shell(), embedded_test_server()->GetURL("/test.html")));
+    EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
+  }
+  {
+    {
+      std::u16string expected_title(u"Title Cleared");
+      TitleWatcher title_watcher(shell()->web_contents(), expected_title);
+      EXPECT_EQ("Title Cleared",
+                EvalJs(shell(), "document.title = 'Title Cleared';"));
+      EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
+    }
+    {
+      std::u16string expected_title(u"Scripts Loaded");
+      TitleWatcher title_watcher(shell()->web_contents(), expected_title);
+      shell()->Reload();
+      EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
+    }
+  }
 }
 
 }  // namespace content

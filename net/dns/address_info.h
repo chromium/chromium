@@ -20,9 +20,25 @@
 namespace net {
 
 class AddressList;
-class AddrInfoGetter;
 
 using FreeAddrInfoFunc = void (*)(addrinfo*);
+
+// Encapsulates calls to getaddrinfo and freeaddrinfo for tests.
+class NET_EXPORT_PRIVATE AddrInfoGetter {
+ public:
+  AddrInfoGetter();
+
+  AddrInfoGetter(const AddrInfoGetter&) = delete;
+  AddrInfoGetter& operator=(const AddrInfoGetter&) = delete;
+
+  // Virtual for tests.
+  virtual ~AddrInfoGetter();
+  virtual std::unique_ptr<addrinfo, FreeAddrInfoFunc> getaddrinfo(
+      const std::string& host,
+      const addrinfo* hints,
+      int* out_os_error,
+      handles::NetworkHandle network);
+};
 
 // AddressInfo -- this encapsulates the system call to getaddrinfo and the
 // data structure that it populates and returns.
@@ -39,7 +55,8 @@ class NET_EXPORT_PRIVATE AddressInfo {
 
     const_iterator(const const_iterator& other) = default;
     explicit const_iterator(const addrinfo* ai);
-    bool operator!=(const const_iterator& o) const;
+    friend bool operator==(const const_iterator&,
+                           const const_iterator&) = default;
     const_iterator& operator++();  // prefix
     const addrinfo* operator->() const;
     const addrinfo& operator*() const;
@@ -90,23 +107,6 @@ class NET_EXPORT_PRIVATE AddressInfo {
   std::unique_ptr<addrinfo, FreeAddrInfoFunc>
       ai_;  // Never null (except after move)
   std::unique_ptr<AddrInfoGetter> getter_;
-};
-
-// Encapsulates calls to getaddrinfo and freeaddrinfo for tests.
-class NET_EXPORT_PRIVATE AddrInfoGetter {
- public:
-  AddrInfoGetter();
-
-  AddrInfoGetter(const AddrInfoGetter&) = delete;
-  AddrInfoGetter& operator=(const AddrInfoGetter&) = delete;
-
-  // Virtual for tests.
-  virtual ~AddrInfoGetter();
-  virtual std::unique_ptr<addrinfo, FreeAddrInfoFunc> getaddrinfo(
-      const std::string& host,
-      const addrinfo* hints,
-      int* out_os_error,
-      handles::NetworkHandle network);
 };
 
 }  // namespace net

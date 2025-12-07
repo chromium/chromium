@@ -11,7 +11,6 @@ import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_indicator.js';
 import 'chrome://resources/ash/common/cr_elements/policy/cr_tooltip_icon.js';
-import '/shared/settings/prefs/prefs.js';
 import '../settings_shared.css.js';
 import './channel_switcher_dialog.js';
 import './consumer_auto_update_toggle_dialog.js';
@@ -30,11 +29,14 @@ import {castExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {routes} from '../router.js';
 
-import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, browserChannelToI18nId, ChannelInfo, VersionInfo} from './about_page_browser_proxy.js';
+import type {AboutPageBrowserProxy, ChannelInfo, VersionInfo} from './about_page_browser_proxy.js';
+import {AboutPageBrowserProxyImpl, browserChannelToI18nId} from './about_page_browser_proxy.js';
 import {getTemplate} from './detailed_build_info_subpage.html.js';
-import {DeviceNameBrowserProxy, DeviceNameBrowserProxyImpl, DeviceNameMetadata} from './device_name_browser_proxy.js';
+import type {DeviceNameBrowserProxy, DeviceNameMetadata} from './device_name_browser_proxy.js';
+import {DeviceNameBrowserProxyImpl} from './device_name_browser_proxy.js';
 import {DeviceNameState} from './device_name_util.js';
 
 declare global {
@@ -80,18 +82,6 @@ export class SettingsDetailedBuildInfoSubpageElement extends
       eolMessageWithMonthAndYear: {
         type: String,
         value: '',
-      },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kChangeChromeChannel,
-          Setting.kChangeDeviceName,
-          Setting.kCopyDetailedBuildInfo,
-        ]),
       },
 
       shouldHideEolInfo_: {
@@ -155,6 +145,13 @@ export class SettingsDetailedBuildInfoSubpageElement extends
       },
     };
   }
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kChangeChromeChannel,
+    Setting.kChangeDeviceName,
+    Setting.kCopyDetailedBuildInfo,
+  ]);
 
   private versionInfo_: VersionInfo;
   private channelInfo_: ChannelInfo;

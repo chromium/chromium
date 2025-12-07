@@ -16,11 +16,6 @@
 #include "ui/display/screen_base.h"
 #include "ui/display/test/virtual_display_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/shell.h"
-#include "ui/display/test/display_manager_test_api.h"
-#endif
-
 namespace web_app {
 namespace {
 constexpr const char kExampleURL[] = "http://example.org/";
@@ -33,29 +28,33 @@ class WebAppInteractiveUiTest : public WebAppBrowserTestBase {};
 // solution is possible using display::Screen::SetScreenInstance on other
 // platforms, window placement doesn't work right with a faked Screen
 // instance. See: //docs/ui/display/multiscreen_testing.md
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 #define MAYBE_TabOpensOnCorrectDisplayMultiScreen \
   TabOpensOnCorrectDisplayMultiScreen
 #else
 #define MAYBE_TabOpensOnCorrectDisplayMultiScreen \
   DISABLED_TabOpensOnCorrectDisplayMultiScreen
 #endif
+#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/371121282): Re-enable the test.
+// TODO(crbug.com/365126887): Re-enable the test.
+#undef MAYBE_TabOpensOnCorrectDisplayMultiScreen
+#define MAYBE_TabOpensOnCorrectDisplayMultiScreen \
+  DISABLED_TabOpensOnCorrectDisplayMultiScreen
+#endif  // BUILDFLAG(IS_WIN)
 // Tests that PWAs that open in a tab open tabs on the correct display.
 IN_PROC_BROWSER_TEST_F(WebAppInteractiveUiTest,
                        MAYBE_TabOpensOnCorrectDisplayMultiScreen) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
-      .UpdateDisplay("801x802,802x803");
-#else
   std::unique_ptr<display::test::VirtualDisplayUtil> virtual_display_util;
-  if ((virtual_display_util = display::test::VirtualDisplayUtil::TryCreate(
-           display::Screen::GetScreen()))) {
-    virtual_display_util->AddDisplay(
-        1, display::test::VirtualDisplayUtil::k1024x768);
-  } else {
-    GTEST_SKIP() << "Skipping test; unavailable multi-screen support.";
+  if (display::Screen::Get()->GetNumDisplays() < 2) {
+    if ((virtual_display_util = display::test::VirtualDisplayUtil::TryCreate(
+             display::Screen::Get()))) {
+      virtual_display_util->AddDisplay(
+          display::test::VirtualDisplayUtil::k1024x768);
+    } else {
+      GTEST_SKIP() << "Skipping test; unavailable multi-screen support.";
+    }
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Install test app.
   const webapps::AppId app_id = InstallPWA(GURL(kExampleURL));
@@ -64,9 +63,9 @@ IN_PROC_BROWSER_TEST_F(WebAppInteractiveUiTest,
   // as what the display Id is for a second display.
   Browser* original_browser = browser();
   const std::vector<display::Display>& displays =
-      display::Screen::GetScreen()->GetAllDisplays();
+      display::Screen::Get()->GetAllDisplays();
   display::Display original_display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
+      display::Screen::Get()->GetDisplayNearestWindow(
           original_browser->window()->GetNativeWindow());
   display::Display other_display;
   for (const auto& d : displays) {
@@ -95,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInteractiveUiTest,
     EXPECT_NE(app_browser, original_browser);
     EXPECT_EQ(
         other_display.id(),
-        display::Screen::GetScreen()
+        display::Screen::Get()
             ->GetDisplayNearestWindow(app_browser->window()->GetNativeWindow())
             .id());
     EXPECT_EQ(2, original_browser->tab_strip_model()->count());

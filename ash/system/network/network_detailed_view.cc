@@ -126,7 +126,7 @@ void NetworkDetailedView::OnInfoClicked() {
       weak_ptr_factory_.GetWeakPtr(), tri_view());
   info_bubble_tracker_.SetView(info_bubble.get());
   views::BubbleDialogDelegateView::CreateBubble(std::move(info_bubble))->Show();
-  info_bubble_tracker_.view()->NotifyAccessibilityEvent(
+  info_bubble_tracker_.view()->NotifyAccessibilityEventDeprecated(
       ax::mojom::Event::kAlert, false);
 }
 

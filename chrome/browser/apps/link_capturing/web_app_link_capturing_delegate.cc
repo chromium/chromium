@@ -8,10 +8,12 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/values_equivalent.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/navigation_handle.h"
@@ -44,7 +46,7 @@ void LaunchAppAndMaybeTriggerIPH(base::WeakPtr<Profile> profile,
                   WebAppProvider::GetForWebApps(profile.get());
               provider->ui_manager()
                   .MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
-                      web_contents.get(), profile.get(), app_id);
+                      /*browser=*/nullptr, profile.get(), app_id);
             }
 
             std::move(callback).Run();
@@ -57,9 +59,9 @@ WebAppLinkCapturingDelegate::WebAppLinkCapturingDelegate() = default;
 WebAppLinkCapturingDelegate::~WebAppLinkCapturingDelegate() = default;
 
 bool WebAppLinkCapturingDelegate::ShouldCancelThrottleCreation(
-    content::NavigationHandle* handle) {
+    content::NavigationThrottleRegistry& registry) {
   Profile* profile = Profile::FromBrowserContext(
-      handle->GetWebContents()->GetBrowserContext());
+      registry.GetNavigationHandle().GetWebContents()->GetBrowserContext());
   return !web_app::AreWebAppsUserInstallable(profile);
 }
 
@@ -68,12 +70,14 @@ WebAppLinkCapturingDelegate::CreateLinkCaptureLaunchClosure(
     Profile* profile,
     content::WebContents* web_contents,
     const GURL& url,
-    bool is_navigation_from_link) {
+    bool is_navigation_from_link,
+    int redirection_chain_size) {
   if (!is_navigation_from_link) {
     return std::nullopt;
   }
 
   WebAppProvider* provider = WebAppProvider::GetForWebApps(profile);
+  CHECK(provider);
 
   // This operation must be synchronous, so unfortunately we must use unsafe
   // access to the registrar.
@@ -92,6 +96,7 @@ WebAppLinkCapturingDelegate::CreateLinkCaptureLaunchClosure(
   }
 
   // Don't capture if already inside the target app scope.
+  CHECK(web_contents);
   if (base::ValuesEquivalent(web_app::WebAppTabHelper::GetAppId(web_contents),
                              &app_id)) {
     return std::nullopt;
@@ -101,8 +106,10 @@ WebAppLinkCapturingDelegate::CreateLinkCaptureLaunchClosure(
   // previous early return didn't trigger, this means we are in an app window
   // but out of scope of the original app, and navigating will put us back in
   // scope.
-  if (base::ValuesEquivalent(
-          provider->ui_manager().GetAppIdForWindow(web_contents), &app_id)) {
+  web_app::WebAppTabHelper* tab_helper =
+      web_app::WebAppTabHelper::FromWebContents(web_contents);
+  CHECK(tab_helper);
+  if (tab_helper->window_app_id() == possible_app_id) {
     return std::nullopt;
   }
   // Note: The launch can occur after this object is destroyed, so bind to a

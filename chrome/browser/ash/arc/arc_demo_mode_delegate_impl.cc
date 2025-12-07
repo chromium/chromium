@@ -8,12 +8,13 @@
 
 #include "chrome/browser/ash/login/demo_mode/demo_components.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 
 namespace arc {
 
 void ArcDemoModeDelegateImpl::EnsureResourcesLoaded(
     base::OnceClosure callback) {
-  if (!ash::DemoSession::IsDeviceInDemoMode()) {
+  if (!ash::demo_mode::IsDeviceInDemoMode()) {
     std::move(callback).Run();
     return;
   }
@@ -21,8 +22,9 @@ void ArcDemoModeDelegateImpl::EnsureResourcesLoaded(
 }
 
 base::FilePath ArcDemoModeDelegateImpl::GetDemoAppsPath() {
-  if (!ash::DemoSession::IsDeviceInDemoMode())
+  if (!ash::demo_mode::IsDeviceInDemoMode()) {
     return base::FilePath();
+  }
   return ash::DemoSession::Get()->components()->GetDemoAndroidAppsPath();
 }
 

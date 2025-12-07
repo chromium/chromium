@@ -2,19 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../strings.m.js';
+import '/strings.m.js';
+import '//bookmarks-side-panel.top-chrome/shared/sp_heading.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import {assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {BookmarksTreeNode} from './bookmarks.mojom-webui.js';
 import {getTemplate} from './power_bookmarks_edit_dialog.html.js';
 import {getFolderDescendants} from './power_bookmarks_service.js';
 
@@ -68,30 +73,36 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
         type: Boolean,
         value: false,
       },
+
+      newFolderName_: String,
+      showNewFolderInput_: Boolean,
     };
   }
 
-  private topLevelBookmarks_: chrome.bookmarks.BookmarkTreeNode[];
-  private selectedBookmarks_: chrome.bookmarks.BookmarkTreeNode[];
-  private selectedFolder_: chrome.bookmarks.BookmarkTreeNode|undefined;
-  private activeFolderPath_: chrome.bookmarks.BookmarkTreeNode[];
-  private newFolders_: chrome.bookmarks.BookmarkTreeNode[];
-  private moveOnly_: boolean;
+  declare private topLevelBookmarks_: BookmarksTreeNode[];
+  declare private selectedBookmarks_: BookmarksTreeNode[];
+  declare private selectedFolder_: BookmarksTreeNode|undefined;
+  declare private activeFolderPath_: BookmarksTreeNode[];
+  declare private newFolders_: BookmarksTreeNode[];
+  declare private moveOnly_: boolean;
+  declare private newFolderName_: string;
+  declare private showNewFolderInput_: boolean;
 
   showDialog(
-      activeFolderPath: chrome.bookmarks.BookmarkTreeNode[],
-      topLevelBookmarks: chrome.bookmarks.BookmarkTreeNode[],
-      selectedBookmarks: chrome.bookmarks.BookmarkTreeNode[],
-      moveOnly: boolean) {
+      activeFolderPath: BookmarksTreeNode[],
+      topLevelBookmarks: BookmarksTreeNode[],
+      selectedBookmarks: BookmarksTreeNode[], moveOnly: boolean) {
     this.activeFolderPath_ = activeFolderPath.slice();
     this.topLevelBookmarks_ = topLevelBookmarks;
     this.selectedBookmarks_ = selectedBookmarks;
     this.newFolders_ = [];
     this.moveOnly_ = moveOnly;
     this.$.dialog.showModal();
+    this.newFolderName_ = loadTimeData.getString('newFolderTitle');
+    this.showNewFolderInput_ = false;
   }
 
-  private isAvailableFolder_(node: chrome.bookmarks.BookmarkTreeNode): boolean {
+  private isAvailableFolder_(node: BookmarksTreeNode): boolean {
     if (node.url) {
       return false;
     }
@@ -115,19 +126,19 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
 
   private getBookmarkName_(): string {
     if (this.selectedBookmarks_.length === 1) {
-      return this.selectedBookmarks_[0]!.title;
+      return this.selectedBookmarks_[0].title;
     }
     return '';
   }
 
   private getBookmarkUrl_(): string {
     if (this.selectedBookmarks_.length === 1) {
-      return this.selectedBookmarks_[0]!.url!;
+      return this.selectedBookmarks_[0].url!;
     }
     return '';
   }
 
-  private getActiveFolder_(): chrome.bookmarks.BookmarkTreeNode|undefined {
+  private getActiveFolder_(): BookmarksTreeNode|undefined {
     if (this.activeFolderPath_.length) {
       return this.activeFolderPath_[this.activeFolderPath_.length - 1];
     }
@@ -138,20 +149,19 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
     return this.getFolderTitle_(this.getActiveFolder_());
   }
 
-  private getFolderTitle_(folder: chrome.bookmarks.BookmarkTreeNode|
-                          undefined): string {
+  private getFolderTitle_(folder: BookmarksTreeNode|undefined): string {
     if (folder && folder.id !== loadTimeData.getString('otherBookmarksId') &&
         folder.id !== loadTimeData.getString('mobileBookmarksId')) {
-      return folder!.title;
+      return folder.title;
     } else {
       return loadTimeData.getString('allBookmarks');
     }
   }
 
-  private getShownFolders_(): chrome.bookmarks.BookmarkTreeNode[] {
+  private getShownFolders_(): BookmarksTreeNode[] {
     const activeFolder = this.getActiveFolder_();
     if (activeFolder && activeFolder.children) {
-      return activeFolder.children!.filter(this.isAvailableFolder_, this);
+      return activeFolder.children.filter(this.isAvailableFolder_, this);
     } else if (!activeFolder && this.topLevelBookmarks_) {
       return this.topLevelBookmarks_.filter(this.isAvailableFolder_, this);
     }
@@ -159,7 +169,7 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
   }
 
   private getBackButtonLabel_(): string {
-    let activeFolderParent: chrome.bookmarks.BookmarkTreeNode|undefined;
+    let activeFolderParent: BookmarksTreeNode|undefined;
     if (this.activeFolderPath_.length > 1) {
       activeFolderParent =
           this.activeFolderPath_[this.activeFolderPath_.length - 2];
@@ -168,20 +178,17 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
         'backButtonLabel', this.getFolderTitle_(activeFolderParent));
   }
 
-  private getForwardButtonTooltip_(folder: chrome.bookmarks.BookmarkTreeNode):
-      string {
+  private getForwardButtonTooltip_(folder: BookmarksTreeNode): string {
     return loadTimeData.getStringF(
         'openBookmarkLabel', this.getFolderTitle_(folder));
   }
 
-  private getForwardButtonLabel_(folder: chrome.bookmarks.BookmarkTreeNode):
-      string {
+  private getForwardButtonLabel_(folder: BookmarksTreeNode): string {
     return loadTimeData.getStringF(
         'forwardButtonLabel', this.getFolderTitle_(folder));
   }
 
-  private hasAvailableChildFolders_(folder: chrome.bookmarks.BookmarkTreeNode):
-      boolean {
+  private hasAvailableChildFolders_(folder: BookmarksTreeNode): boolean {
     return folder.children!.filter(this.isAvailableFolder_, this).length > 0;
   }
 
@@ -203,7 +210,7 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
     return false;
   }
 
-  private isSelected_(folder: chrome.bookmarks.BookmarkTreeNode): boolean {
+  private isSelected_(folder: BookmarksTreeNode): boolean {
     return folder === this.selectedFolder_;
   }
 
@@ -212,13 +219,12 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
     this.pop('activeFolderPath_');
   }
 
-  private onForward_(event: DomRepeatEvent<chrome.bookmarks.BookmarkTreeNode>) {
+  private onForward_(event: DomRepeatEvent<BookmarksTreeNode>) {
     this.selectedFolder_ = undefined;
     this.push('activeFolderPath_', event.model.item);
   }
 
-  private onFolderSelected_(
-      event: DomRepeatEvent<chrome.bookmarks.BookmarkTreeNode>) {
+  private onFolderSelected_(event: DomRepeatEvent<BookmarksTreeNode>) {
     if (this.selectedFolder_ === event.model.item) {
       this.selectedFolder_ = undefined;
     } else {
@@ -226,16 +232,71 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
     }
   }
 
-  private onNewFolder_() {
+  private onNewFolderClick_() {
+    this.showNewFolderInput_ = true;
+  }
+
+  private onNewFolderInputDomChange_() {
+    const input =
+        this.shadowRoot!.querySelector<CrInputElement>('#newFolderInput');
+    if (!input) {
+      return;
+    }
+    input.select();
+  }
+
+  private onInput_(event: CustomEvent<{value: string}>): void {
+    this.newFolderName_ = event.detail.value;
+  }
+
+  private onKeyDown_(event: KeyboardEvent): void {
+    /**
+     * This key down listener overrides the existing behaviour where the
+     * parent dialog would close on 'Enter'.
+     */
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      event.stopPropagation();
+      this.saveNewFolder_();
+
+      const saveButton =
+          this.shadowRoot!.querySelector<CrButtonElement>('#saveFolderButton');
+
+      assert(!!saveButton);
+      saveButton.focus();
+    }
+  }
+
+  private onBlur_(event: KeyboardEvent): void {
+    /**
+     * This prevents the blur event from being called when the save button is
+     * focused when the enter key is pressed.
+     */
+    if (!this.showNewFolderInput_) {
+      return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
+    this.saveNewFolder_();
+  }
+
+  private saveNewFolder_() {
+    this.showNewFolderInput_ = false;
+
     const parent =
         this.selectedFolder_ ? this.selectedFolder_ : this.getActiveFolder_();
     const parentId =
         parent ? parent.id : loadTimeData.getString('otherBookmarksId');
-    const newFolder: chrome.bookmarks.BookmarkTreeNode = {
+    const newFolder: BookmarksTreeNode = {
       id: TEMP_FOLDER_ID_PREFIX + this.newFolders_.length,
-      title: loadTimeData.getString('newFolderTitle'),
+      title: this.newFolderName_,
+      index: 0,
+      url: null,
       children: [],
       parentId: parentId,
+      dateAdded: null,
+      dateLastUsed: null,
+      unmodifiable: false,
     };
     if (parent) {
       parent.children!.unshift(newFolder);
@@ -247,6 +308,8 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
       this.push('activeFolderPath_', parent);
     }
     this.selectedFolder_ = newFolder;
+
+    this.newFolderName_ = loadTimeData.getString('newFolderTitle');
   }
 
   private onCancel_() {

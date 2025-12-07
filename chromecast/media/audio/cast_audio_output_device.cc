@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -25,6 +26,7 @@
 #include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/audio_sample_types.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "net/base/io_buffer.h"
 
@@ -248,9 +250,9 @@ class CastAudioOutputDevice::Internal
           base::MakeRefCounted<net::IOBufferWithSize>(io_buffer_size);
       audio_bus_->ToInterleaved<::media::SignedInt16SampleTypeTraits>(
           frames_filled,
-          reinterpret_cast<int16_t*>(
+          reinterpret_cast<int16_t*>(UNSAFE_TODO(
               io_buffer->data() +
-              audio_output_service::OutputSocket::kAudioMessageHeaderSize));
+              audio_output_service::OutputSocket::kAudioMessageHeaderSize)));
 
       DCHECK(output_connection_);
       output_connection_->SendAudioBuffer(std::move(io_buffer), filled_bytes,

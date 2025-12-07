@@ -7,6 +7,8 @@
 #include <algorithm>
 
 #include "base/strings/stringprintf.h"
+#include "base/trace_event/traced_value.h"
+#include "cc/base/math_util.h"
 #include "ui/gfx/geometry/outsets_f.h"
 
 namespace viz {
@@ -57,6 +59,11 @@ bool OffsetTagConstraints::IsValid() const {
          min_offset.y() <= max_offset.y();
 }
 
+bool OffsetTagConstraints::IsOffsetValid(gfx::Vector2dF offset) const {
+  return offset.x() >= min_offset.x() && offset.x() <= max_offset.x() &&
+         offset.y() >= min_offset.y() && offset.y() <= max_offset.y();
+}
+
 std::string OffsetTagConstraints::ToString() const {
   return base::StringPrintf("[%g-%g %g-%g]", min_offset.x(), max_offset.x(),
                             min_offset.y(), max_offset.y());
@@ -80,6 +87,13 @@ OffsetTagDefinition::~OffsetTagDefinition() = default;
 
 bool OffsetTagDefinition::IsValid() const {
   return tag && provider.IsValid() && constraints.IsValid();
+}
+
+void OffsetTagDefinition::AsValueInto(
+    base::trace_event::TracedValue* value) const {
+  value->SetString("tag", tag.ToString());
+  value->SetString("provider", provider.ToString());
+  value->SetString("constraints", constraints.ToString());
 }
 
 }  // namespace viz

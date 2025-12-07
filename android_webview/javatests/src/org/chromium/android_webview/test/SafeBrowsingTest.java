@@ -8,7 +8,6 @@ import static org.junit.Assert.assertNotEquals;
 
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
@@ -30,14 +29,15 @@ import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContents.DependencyFactory;
 import org.chromium.android_webview.AwContents.InternalAccessDelegate;
-import org.chromium.android_webview.AwContents.NativeDrawFunctorFactory;
 import org.chromium.android_webview.AwContentsClient;
 import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwSettings;
+import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.SafeBrowsingAction;
 import org.chromium.android_webview.WebviewErrorCode;
 import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.PlatformServiceBridge;
+import org.chromium.android_webview.gfx.AwDrawFnImpl;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingConfigHelper;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingConversionHelper;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingResponse;
@@ -53,15 +53,10 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
 import org.chromium.components.safe_browsing.SafeBrowsingApiHandler;
-import org.chromium.components.safe_browsing.SafeBrowsingFeatures;
-import org.chromium.components.safe_browsing.SafeBrowsingResult;
-import org.chromium.components.safe_browsing.SafetyNetApiHandler;
-import org.chromium.components.safe_browsing.VerifyAppsResult;
 import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.ArrayList;
@@ -74,22 +69,12 @@ import java.util.Arrays;
  */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
-@EnableFeatures({SafeBrowsingFeatures.SAFE_BROWSING_NEW_GMS_API_FOR_BROWSE_URL_DATABASE_CHECK})
+@DoNotBatch(reason = "setSafeBrowsingHandler() should be only called once per process.")
 public class SafeBrowsingTest extends AwParameterizedTest {
     @Rule public AwActivityTestRule mActivityTestRule;
 
     public SafeBrowsingTest(AwSettingsMutation param) {
-        mActivityTestRule =
-                new AwActivityTestRule(param.getMutation()) {
-                    /**
-                     * Creates a special BrowserContext that has a safebrowsing api handler which always says
-                     * sites are malicious
-                     */
-                    @Override
-                    public AwBrowserContext createAwBrowserContextOnUiThread() {
-                        return new MockAwBrowserContext();
-                    }
-                };
+        mActivityTestRule = new AwActivityTestRule(param.getMutation());
     }
 
     private SafeBrowsingContentsClient mContentsClient;
@@ -137,81 +122,6 @@ public class SafeBrowsingTest extends AwParameterizedTest {
     private static final String WEB_UI_MALWARE_URL = "chrome://safe-browsing/match?type=malware";
     private static final String WEB_UI_PHISHING_URL = "chrome://safe-browsing/match?type=phishing";
     private static final String WEB_UI_HOST = "safe-browsing";
-
-    /**
-     * A fake SafetyNetApiHandler which treats URLs ending in MALWARE_HTML_PATH as malicious URLs
-     * that should be blocked.
-     */
-    public static class MockSafetyNetApiHandler implements SafetyNetApiHandler {
-        private Observer mObserver;
-        private static final String SAFE_METADATA = "{}";
-
-        // These codes are defined in "safebrowsing.proto".
-        private static final int PHISHING_CODE = 5;
-        private static final int MALWARE_CODE = 4;
-        private static final int UNWANTED_SOFTWARE_CODE = 3;
-        private static final int BILLING_CODE = 15;
-
-        // Mock time it takes for a lookup request to complete.
-        private static final long CHECK_DELTA_US = 10;
-
-        @Override
-        public boolean init(Observer result) {
-            mObserver = result;
-            return true;
-        }
-
-        private String buildMetadataFromCode(int code) {
-            return "{\"matches\":[{\"threat_type\":\"" + code + "\"}]}";
-        }
-
-        @Override
-        public void startUriLookup(final long callbackId, String uri, int[] threatsOfInterest) {
-            final String metadata;
-            Arrays.sort(threatsOfInterest);
-
-            if (uri.endsWith(PHISHING_HTML_PATH)
-                    && Arrays.binarySearch(threatsOfInterest, PHISHING_CODE) >= 0) {
-                metadata = buildMetadataFromCode(PHISHING_CODE);
-            } else if (uri.endsWith(MALWARE_HTML_PATH)
-                    && Arrays.binarySearch(threatsOfInterest, MALWARE_CODE) >= 0) {
-                metadata = buildMetadataFromCode(MALWARE_CODE);
-            } else if (uri.endsWith(UNWANTED_SOFTWARE_HTML_PATH)
-                    && Arrays.binarySearch(threatsOfInterest, UNWANTED_SOFTWARE_CODE) >= 0) {
-                metadata = buildMetadataFromCode(UNWANTED_SOFTWARE_CODE);
-            } else if (uri.endsWith(BILLING_HTML_PATH)
-                    && Arrays.binarySearch(threatsOfInterest, BILLING_CODE) >= 0) {
-                metadata = buildMetadataFromCode(BILLING_CODE);
-            } else {
-                metadata = SAFE_METADATA;
-            }
-
-            PostTask.runOrPostTask(
-                    TaskTraits.UI_DEFAULT,
-                    (Runnable)
-                            () ->
-                                    mObserver.onUrlCheckDone(
-                                            callbackId,
-                                            SafeBrowsingResult.SUCCESS,
-                                            metadata,
-                                            CHECK_DELTA_US));
-        }
-
-        @Override
-        public boolean startAllowlistLookup(final String uri, int threatType) {
-            return false;
-        }
-
-        @Override
-        public void isVerifyAppsEnabled(long callbackId) {
-            mObserver.onVerifyAppsEnabledDone(callbackId, VerifyAppsResult.SUCCESS_ENABLED);
-        }
-
-        @Override
-        public void enableVerifyApps(long callbackId) {
-            throw new RuntimeException("WebView should not be able to enable Verify Apps");
-        }
-    }
 
     /**
      * A fake SafeBrowsingApiHandler which treats URLs ending in certain HTML paths as malicious
@@ -278,15 +188,6 @@ public class SafeBrowsingTest extends AwParameterizedTest {
         }
     }
 
-    /** A fake AwBrowserContext which loads the MockSafetyNetApiHandler instead of the real one. */
-    private static class MockAwBrowserContext extends AwBrowserContext {
-        public MockAwBrowserContext() {
-            super(0);
-            SafeBrowsingApiBridge.setSafetyNetApiHandler(new MockSafetyNetApiHandler());
-            SafeBrowsingApiBridge.setSafeBrowsingApiHandler(new MockSafeBrowsingApiHandler());
-        }
-    }
-
     private static class MockAwContents extends TestAwContents {
         private boolean mCanShowInterstitial;
         private boolean mCanShowBigInterstitial;
@@ -296,7 +197,7 @@ public class SafeBrowsingTest extends AwParameterizedTest {
                 ViewGroup containerView,
                 Context context,
                 InternalAccessDelegate internalAccessAdapter,
-                NativeDrawFunctorFactory nativeDrawFunctorFactory,
+                AwDrawFnImpl.DrawFnAccess drawFnAccess,
                 AwContentsClient contentsClient,
                 AwSettings settings,
                 DependencyFactory dependencyFactory) {
@@ -305,7 +206,7 @@ public class SafeBrowsingTest extends AwParameterizedTest {
                     containerView,
                     context,
                     internalAccessAdapter,
-                    nativeDrawFunctorFactory,
+                    drawFnAccess,
                     contentsClient,
                     settings,
                     dependencyFactory);
@@ -380,7 +281,7 @@ public class SafeBrowsingTest extends AwParameterizedTest {
                 ViewGroup containerView,
                 Context context,
                 InternalAccessDelegate internalAccessAdapter,
-                NativeDrawFunctorFactory nativeDrawFunctorFactory,
+                AwDrawFnImpl.DrawFnAccess drawFnAccess,
                 AwContentsClient contentsClient,
                 AwSettings settings,
                 DependencyFactory dependencyFactory) {
@@ -389,7 +290,7 @@ public class SafeBrowsingTest extends AwParameterizedTest {
                     containerView,
                     context,
                     internalAccessAdapter,
-                    nativeDrawFunctorFactory,
+                    drawFnAccess,
                     contentsClient,
                     settings,
                     dependencyFactory);
@@ -426,13 +327,12 @@ public class SafeBrowsingTest extends AwParameterizedTest {
 
         // Some tests need to inject JavaScript.
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
-    }
 
-    private int getPageColor() {
-        Bitmap bitmap =
-                GraphicsTestUtils.drawAwContentsOnUiThread(
-                        mAwContents, mContainerView.getWidth(), mContainerView.getHeight());
-        return bitmap.getPixel(0, 0);
+        // Load the MockSafeBrowsingApiHandler instead of the real one.
+        // TODO(crbug.com/394290281): Consider moving to @BeforeClass as this should be called once
+        // per
+        // process.
+        SafeBrowsingApiBridge.setSafeBrowsingApiHandler(new MockSafeBrowsingApiHandler());
     }
 
     private void loadGreenPage() throws Exception {
@@ -607,19 +507,6 @@ public class SafeBrowsingTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @DisableFeatures({SafeBrowsingFeatures.SAFE_BROWSING_NEW_GMS_API_FOR_BROWSE_URL_DATABASE_CHECK})
-    public void testSafeBrowsingBlocksUnwantedSoftwarePagesWithSafetyNet() throws Throwable {
-        loadGreenPage();
-        loadPathAndWaitForInterstitial(UNWANTED_SOFTWARE_HTML_PATH);
-        assertGreenPageNotShowing();
-        assertTargetPageNotShowing(UNWANTED_SOFTWARE_PAGE_BACKGROUND_COLOR);
-        // Assume that we are rendering the interstitial, since we see neither the previous page nor
-        // the target page
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
     public void testSafeBrowsingBlocksBillingPages() throws Throwable {
         loadGreenPage();
         loadPathAndWaitForInterstitial(BILLING_HTML_PATH);
@@ -638,7 +525,7 @@ public class SafeBrowsingTest extends AwParameterizedTest {
 
         // Check onSafeBrowsingHit arguments
         final String responseUrl = mTestServer.getURL(BILLING_HTML_PATH);
-        Assert.assertEquals(responseUrl, mContentsClient.getLastRequest().url);
+        Assert.assertEquals(responseUrl, mContentsClient.getLastRequest().getUrl());
         // The expectedCode intentionally depends on targetSdk (and is disconnected from SDK_INT).
         // This is for backwards compatibility with apps with a lower targetSdk.
         int expectedCode =
@@ -712,12 +599,12 @@ public class SafeBrowsingTest extends AwParameterizedTest {
         Assert.assertEquals(
                 "Network error is for the malicious page",
                 WEB_UI_MALWARE_URL,
-                errorHelper.getRequest().url);
+                errorHelper.getRequest().getUrl());
 
         assertGreenPageShowing();
 
         // Check onSafeBrowsingHit arguments
-        Assert.assertEquals(WEB_UI_MALWARE_URL, mContentsClient.getLastRequest().url);
+        Assert.assertEquals(WEB_UI_MALWARE_URL, mContentsClient.getLastRequest().getUrl());
         Assert.assertEquals(
                 AwSafeBrowsingConversionHelper.SAFE_BROWSING_THREAT_MALWARE,
                 mContentsClient.getLastThreatType());
@@ -806,7 +693,7 @@ public class SafeBrowsingTest extends AwParameterizedTest {
         Assert.assertEquals(
                 "Network error is for the malicious page",
                 responseUrl,
-                errorHelper.getRequest().url);
+                errorHelper.getRequest().getUrl());
     }
 
     @Test
@@ -886,7 +773,7 @@ public class SafeBrowsingTest extends AwParameterizedTest {
         Assert.assertEquals(
                 "Network error is for the malicious page",
                 responseUrl,
-                errorHelper.getRequest().url);
+                errorHelper.getRequest().getUrl());
     }
 
     @Test
@@ -961,7 +848,7 @@ public class SafeBrowsingTest extends AwParameterizedTest {
 
         // Check onSafeBrowsingHit arguments
         final String responseUrl = mTestServer.getURL(PHISHING_HTML_PATH);
-        Assert.assertEquals(responseUrl, mContentsClient.getLastRequest().url);
+        Assert.assertEquals(responseUrl, mContentsClient.getLastRequest().getUrl());
         Assert.assertEquals(
                 AwSafeBrowsingConversionHelper.SAFE_BROWSING_THREAT_PHISHING,
                 mContentsClient.getLastThreatType());
@@ -981,7 +868,7 @@ public class SafeBrowsingTest extends AwParameterizedTest {
         assertTargetPageHasLoaded(PHISHING_PAGE_BACKGROUND_COLOR);
 
         // Check onSafeBrowsingHit arguments
-        Assert.assertEquals(responseUrl, mContentsClient.getLastRequest().url);
+        Assert.assertEquals(responseUrl, mContentsClient.getLastRequest().getUrl());
         Assert.assertEquals(
                 AwSafeBrowsingConversionHelper.SAFE_BROWSING_THREAT_PHISHING,
                 mContentsClient.getLastThreatType());
@@ -1004,12 +891,12 @@ public class SafeBrowsingTest extends AwParameterizedTest {
         Assert.assertEquals(
                 "Network error is for the malicious page",
                 responseUrl,
-                errorHelper.getRequest().url);
+                errorHelper.getRequest().getUrl());
 
         assertGreenPageShowing();
 
         // Check onSafeBrowsingHit arguments
-        Assert.assertEquals(responseUrl, mContentsClient.getLastRequest().url);
+        Assert.assertEquals(responseUrl, mContentsClient.getLastRequest().getUrl());
         Assert.assertEquals(
                 AwSafeBrowsingConversionHelper.SAFE_BROWSING_THREAT_MALWARE,
                 mContentsClient.getLastThreatType());
@@ -1219,10 +1106,10 @@ public class SafeBrowsingTest extends AwParameterizedTest {
         mContentsClient.getOnPageFinishedHelper().waitForCallback(pageFinishedCount);
         // Some click tests involve URLs that redirect and mAwContents.getUrl() sometimes
         // returns the post-redirect URL, so we instead check with ShouldInterceptRequest.
-        AwContentsClient.AwWebResourceRequest requestsForUrl =
+        AwWebResourceRequest requestsForUrl =
                 mContentsClient.getShouldInterceptRequestHelper().getRequestsForUrl(linkUrl);
         // Make sure the URL was seen for a main frame navigation.
-        Assert.assertTrue(requestsForUrl.isOutermostMainFrame);
+        Assert.assertTrue(requestsForUrl.isOutermostMainFrame());
     }
 
     @Test

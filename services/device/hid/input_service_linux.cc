@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
@@ -110,6 +111,9 @@ class InputServiceLinuxImpl::BlockingTaskRunnerHelper
                   UdevWatcher::Filter(kSubsystemHid, ""),
                   UdevWatcher::Filter(kSubsystemInput, ""),
               }});
+    if (!watcher_) {
+      return;
+    }
     watcher_->EnumerateExistingDevices();
   }
 
@@ -150,7 +154,7 @@ InputServiceLinuxImpl::InputServiceLinuxImpl() {
 
 InputServiceLinuxImpl::~InputServiceLinuxImpl() {
   // Never destroyed.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void InputServiceLinuxImpl::BlockingTaskRunnerHelper::OnDeviceAdded(
@@ -171,10 +175,10 @@ void InputServiceLinuxImpl::BlockingTaskRunnerHelper::OnDeviceAdded(
   const char* subsystem = udev_device_get_subsystem(device.get());
   if (!subsystem)
     return;
-  if (strcmp(subsystem, kSubsystemHid) == 0) {
+  if (UNSAFE_TODO(strcmp(subsystem, kSubsystemHid)) == 0) {
     info->subsystem = mojom::InputDeviceSubsystem::SUBSYSTEM_HID;
     info->name = GetParentDeviceName(device.get(), kSubsystemHid);
-  } else if (strcmp(subsystem, kSubsystemInput) == 0) {
+  } else if (UNSAFE_TODO(strcmp(subsystem, kSubsystemInput)) == 0) {
     info->subsystem = mojom::InputDeviceSubsystem::SUBSYSTEM_INPUT;
     info->name = GetParentDeviceName(device.get(), kSubsystemInput);
   } else {

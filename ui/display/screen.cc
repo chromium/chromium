@@ -10,7 +10,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "ui/display/display.h"
@@ -32,11 +32,7 @@ Screen::Screen() : display_id_for_new_windows_(kInvalidDisplayId) {}
 Screen::~Screen() = default;
 
 // static
-Screen* Screen::GetScreen() {
-#if BUILDFLAG(IS_IOS)
-  if (!g_screen)
-    g_screen = CreateNativeScreen();
-#endif
+Screen* Screen::Get() {
   return g_screen;
 }
 
@@ -86,14 +82,14 @@ void Screen::SetDisplayForNewWindows(int64_t display_id) {
   display_id_for_new_windows_ = display_id;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 Screen::ScreenSaverSuspender::~ScreenSaverSuspender() = default;
 
 std::unique_ptr<Screen::ScreenSaverSuspender> Screen::SuspendScreenSaver() {
   NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
 
 bool Screen::IsScreenSaverActive() const {
   NOTIMPLEMENTED_LOG_ONCE();
@@ -159,6 +155,10 @@ std::optional<float> Screen::GetPreferredScaleFactorForWindow(
 std::optional<float> Screen::GetPreferredScaleFactorForView(
     gfx::NativeView view) const {
   return GetPreferredScaleFactorForWindow(GetWindowForView(view));
+}
+
+bool Screen::IsHeadless() const {
+  return false;
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -245,18 +245,14 @@ ScreenInfos Screen::GetScreenInfosNearestDisplay(int64_t nearest_id) const {
 
 ScopedNativeScreen::ScopedNativeScreen(const base::Location& location) {
   if (!Screen::HasScreen()) {
-#if BUILDFLAG(IS_IOS)
-    Screen::GetScreen();
-#else
     screen_ = base::WrapUnique(CreateNativeScreen());
     Screen::SetScreenInstance(screen_.get(), location);
-#endif
   }
 }
 
 ScopedNativeScreen::~ScopedNativeScreen() {
   if (screen_) {
-    DCHECK_EQ(screen_.get(), Screen::GetScreen());
+    DCHECK_EQ(screen_.get(), Screen::Get());
     Screen::SetScreenInstance(nullptr);
     screen_.reset();
   }

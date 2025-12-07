@@ -13,7 +13,7 @@ class ComposeTest : public WebUIMochaBrowserTest,
  public:
   static std::string DescribeParams(
       const testing::TestParamInfo<ParamType>& info) {
-    return info.param ? "RefinedUI" : "LegacyUI";
+    return info.param ? "InputModesUI" : "LegacyUI";
   }
 
  protected:
@@ -23,7 +23,7 @@ class ComposeTest : public WebUIMochaBrowserTest,
     scoped_compose_enabled_ = ComposeEnabling::ScopedEnableComposeForTesting();
     scoped_feature_list_.InitWithFeatureStates(
         {{compose::features::kEnableCompose, true},
-         {compose::features::kComposeUiRefinement, GetParam()}});
+         {compose::features::kComposeUpfrontInputModes, GetParam()}});
   }
 
  private:

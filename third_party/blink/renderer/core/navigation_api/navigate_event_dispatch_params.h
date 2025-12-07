@@ -38,7 +38,7 @@ struct CORE_EXPORT NavigateEventDispatchParams
   NavigateEventDispatchParams(const KURL&, NavigateEventType, WebFrameLoadType);
   ~NavigateEventDispatchParams();
 
-  const KURL url;
+  KURL url;
   const NavigateEventType event_type;
   const WebFrameLoadType frame_load_type;
   UserNavigationInvolvement involvement = UserNavigationInvolvement::kNone;
@@ -46,10 +46,12 @@ struct CORE_EXPORT NavigateEventDispatchParams
   scoped_refptr<SerializedScriptValue> state_object;
   Member<HistoryItem> destination_item;
   bool is_browser_initiated = false;
+  bool has_ua_visual_transition = false;
   bool is_synchronously_committed_same_document = true;
   String download_filename;
   std::optional<scheduler::TaskAttributionId>
       soft_navigation_heuristics_task_id;
+  bool should_skip_screenshot;
 
   void Trace(Visitor*) const;
 };

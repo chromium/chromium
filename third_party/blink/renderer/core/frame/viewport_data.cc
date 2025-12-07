@@ -128,9 +128,6 @@ void ViewportData::UpdateViewportDescription() {
           // features after data collected (end of '23)
           UseCounter::Count(document_,
                             WebFeature::kViewportFitCoverOrSafeAreaInsetBottom);
-          // TODO(https://crbug.com/1482559#c23) remove this line by end of
-          // 2023.
-          VLOG(0) << "E2E_Used ViewportFitCover";
         }
       }
     }
@@ -142,6 +139,30 @@ void ViewportData::UpdateViewportDescription() {
       document_->GetPage()->GetVisualViewport().IsActiveViewport()) {
     document_->GetPage()->GetChromeClient().DispatchViewportPropertiesDidChange(
         GetViewportDescription());
+  }
+}
+
+void ViewportData::SetHasComplexSafeAreaConstraint(bool value) {
+  if (has_complex_safe_area_constraint_ == value || !document_->GetFrame()) {
+    return;
+  }
+
+  if (AssociatedInterfaceProvider* provider =
+          document_->GetFrame()
+              ->Client()
+              ->GetRemoteNavigationAssociatedInterfaces()) {
+    // Bind the mojo interface.
+    if (!display_cutout_host_.is_bound()) {
+      provider->GetInterface(
+          display_cutout_host_.BindNewEndpointAndPassReceiver(
+              provider->GetTaskRunner()));
+      DCHECK(display_cutout_host_.is_bound());
+    }
+
+    // Even though we bind the mojo interface above there still may be cases
+    // where this will fail (e.g. unit tests).
+    display_cutout_host_->NotifyComplexSafeAreaConstraintChanged(value);
+    has_complex_safe_area_constraint_ = value;
   }
 }
 

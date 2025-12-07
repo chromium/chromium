@@ -14,6 +14,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_features.h"
 #include "net/cookies/site_for_cookies.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 using PermissionStatus =
@@ -49,8 +50,7 @@ FederatedIdentityApiPermissionContext::GetApiPermissionStatus(
     case CONTENT_SETTING_BLOCK:
       return PermissionStatus::BLOCKED_SETTINGS;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return PermissionStatus::BLOCKED_SETTINGS;
+      NOTREACHED();
   }
 
   if (permission_autoblocker_->IsEmbargoed(
@@ -65,7 +65,7 @@ void FederatedIdentityApiPermissionContext::RecordDismissAndEmbargo(
     const url::Origin& relying_party_embedder) {
   const GURL rp_embedder_url = relying_party_embedder.GetURL();
   // If content setting is allowed for `rp_embedder_url`, reset it.
-  // See crbug.com/1340127 for why the resetting is not conditional on the
+  // See crbug.com/40230194 for why the resetting is not conditional on the
   // default content setting state.
   const ContentSetting setting = host_content_settings_map_->GetContentSetting(
       rp_embedder_url, rp_embedder_url,
@@ -77,7 +77,7 @@ void FederatedIdentityApiPermissionContext::RecordDismissAndEmbargo(
   }
   permission_autoblocker_->RecordDismissAndEmbargo(
       rp_embedder_url, ContentSettingsType::FEDERATED_IDENTITY_API,
-      false /* dismissed_prompt_was_quiet */);
+      /*dismissed_prompt_was_quiet=*/false);
 }
 
 void FederatedIdentityApiPermissionContext::RemoveEmbargoAndResetCounts(
@@ -96,5 +96,11 @@ bool FederatedIdentityApiPermissionContext::HasThirdPartyCookiesAccess(
       /*first_party_url=*/
       net::SiteForCookies::FromOrigin(relying_party_embedder),
       /*top_frame_origin=*/relying_party_embedder,
-      host.GetCookieSettingOverrides());
+      host.GetCookieSettingOverrides(),
+      host.GetStorageKey().ToCookiePartitionKey());
+}
+
+bool FederatedIdentityApiPermissionContext::
+    AreThirdPartyCookiesEnabledInSettings() const {
+  return !cookie_settings_->ShouldBlockThirdPartyCookies();
 }

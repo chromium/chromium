@@ -21,7 +21,7 @@ class AndroidHomeModuleRankerTest : public DefaultModelTestBase {
     DefaultModelTestBase::SetUp();
     bool isAndroidHomeModuleRankerV2Enabled = base::FeatureList::IsEnabled(
         features::kSegmentationPlatformAndroidHomeModuleRankerV2);
-    input_size = isAndroidHomeModuleRankerV2Enabled ? 12 : 8;
+    input_size = isAndroidHomeModuleRankerV2Enabled ? 9 : 6;
   }
 
   void TearDown() override { DefaultModelTestBase::TearDown(); }
@@ -40,8 +40,7 @@ TEST_F(AndroidHomeModuleRankerTest, ExecuteModelWithInputForAllModules) {
 
   EXPECT_FALSE(ExecuteWithInput(/*inputs=*/{}));
   std::vector<float> input(input_size, 0);
-  ExpectClassifierResults(input, {kPriceChange, kSingleTab,
-                                  kTabResumptionForAndroidHome, kSafetyHub});
+  ExpectClassifierResults(input, {kPriceChange, kSingleTab, kSafetyHub});
 }
 
 TEST_F(AndroidHomeModuleRankerTest,
@@ -54,9 +53,7 @@ TEST_F(AndroidHomeModuleRankerTest,
   input[0] = 1;
   input[2] = 1;
   input[4] = 1;
-  input[6] = 1;
-  ExpectClassifierResults(input, {kSafetyHub, kPriceChange, kSingleTab,
-                                  kTabResumptionForAndroidHome});
+  ExpectClassifierResults(input, {kSafetyHub, kPriceChange, kSingleTab});
 }
 
 TEST_F(AndroidHomeModuleRankerTest,
@@ -69,9 +66,7 @@ TEST_F(AndroidHomeModuleRankerTest,
   input[1] = 1;
   input[3] = 1;
   input[5] = 1;
-  input[7] = 1;
-  ExpectClassifierResults(input, {kSingleTab, kTabResumptionForAndroidHome,
-                                  kPriceChange, kSafetyHub});
+  ExpectClassifierResults(input, {kSingleTab, kPriceChange, kSafetyHub});
 }
 
 }  // namespace segmentation_platform

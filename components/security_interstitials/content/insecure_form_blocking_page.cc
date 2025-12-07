@@ -69,8 +69,7 @@ void InsecureFormBlockingPage::CommandReceived(const std::string& command) {
     case security_interstitials::CMD_OPEN_LOGIN:
     case security_interstitials::CMD_REPORT_PHISHING_ERROR:
       // Not supported by the insecure form blocking page.
-      NOTREACHED_IN_MIGRATION() << "Unsupported command: " << command;
-      break;
+      NOTREACHED() << "Unsupported command: " << command;
     case security_interstitials::CMD_ERROR:
     case security_interstitials::CMD_TEXT_FOUND:
     case security_interstitials::CMD_TEXT_NOT_FOUND:
@@ -106,8 +105,6 @@ void InsecureFormBlockingPage::PopulateValuesForSharedHTML(
   load_time_data.Set("type", "INSECURE_FORM");
   load_time_data.Set("overridable", false);
   load_time_data.Set("hide_primary_button", false);
-  load_time_data.Set("show_recurrent_error_paragraph", false);
-  load_time_data.Set("recurrentErrorParagraph", "");
   load_time_data.Set("openDetails", "");
   load_time_data.Set("explanationParagraph", "");
   load_time_data.Set("finalParagraph", "");

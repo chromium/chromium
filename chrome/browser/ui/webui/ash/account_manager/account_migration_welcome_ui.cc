@@ -13,20 +13,19 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/signin/ash/inline_login_dialog.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "components/account_manager_core/account_manager_facade.h"
-#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/resources/grit/webui_resources.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
+#include "ui/webui/webui_util.h"
 
 namespace ash {
 
@@ -63,7 +62,8 @@ class MigrationMessageHandler : public content::WebUIMessageHandler {
     const std::string& account_email = args[0].GetString();
 
     Profile* profile = Profile::FromWebUI(web_ui());
-    ::GetAccountManagerFacade(profile->GetPath().value())
+    AccountManagerFactory::Get()
+        ->GetAccountManagerFacade(profile->GetPath().value())
         ->ShowReauthAccountDialog(
             account_manager::AccountManagerFacade::AccountAdditionSource::
                 kAccountManagerMigrationWelcomeScreen,

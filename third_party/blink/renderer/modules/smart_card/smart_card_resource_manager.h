@@ -17,7 +17,6 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 
 namespace blink {
@@ -27,13 +26,10 @@ class SmartCardContext;
 
 class MODULES_EXPORT SmartCardResourceManager final
     : public ScriptWrappable,
-      public Supplement<NavigatorBase>,
       public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
-
   // Getter for navigator.smartCard
   static SmartCardResourceManager* smartCard(NavigatorBase&);
 

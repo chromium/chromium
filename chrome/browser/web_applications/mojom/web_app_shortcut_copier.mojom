@@ -1,0 +1,22 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module web_app.mojom;
+
+import "mojo/public/mojom/base/file_path.mojom";
+
+// Interface for delegating installation of the native app representing
+// a Progressive Web Application to `web_app_shortcut_copier`.
+// The implementation lives within `web_app_shortcut_copier` and is called by
+// the browser process during PWA installation.
+[EnableIf=is_mac]
+interface WebAppShortcutCopier {
+  // Copy the application bundle rooted at `source_path` to
+  // `destination_path`. Returns true on success or false if an error occurred
+  // during copying.
+  [Sync]
+  CopyWebAppShortcut(mojo_base.mojom.FilePath source_path,
+                     mojo_base.mojom.FilePath destination_path)
+      => (bool result);
+};

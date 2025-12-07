@@ -26,8 +26,9 @@ const char* const kAllowListSchemesToRenderingMhtml[] = {
 // scheme.
 bool ShouldAlwaysRenderMhtmlAsHtml(const GURL& url) {
   for (const char* scheme : kAllowListSchemesToRenderingMhtml) {
-    if (url.SchemeIs(scheme))
+    if (url.SchemeIs(scheme)) {
       return true;
+    }
   }
 
   return false;
@@ -43,9 +44,10 @@ bool MustDownload(BrowserContext* browser_context,
                   const net::HttpResponseHeaders* headers,
                   const std::string& mime_type) {
   if (headers) {
-    std::string disposition;
-    if (headers->GetNormalizedHeader("content-disposition", &disposition) &&
-        !disposition.empty() &&
+    std::string disposition =
+        headers->GetNormalizedHeader("content-disposition")
+            .value_or(std::string());
+    if (!disposition.empty() &&
         net::HttpContentDisposition(disposition, std::string())
             .is_attachment()) {
       return true;
@@ -56,8 +58,9 @@ bool MustDownload(BrowserContext* browser_context,
     }
     if (mime_type == "multipart/related" || mime_type == "message/rfc822") {
       // Always allow rendering mhtml for content:// (on Android) and file:///.
-      if (ShouldAlwaysRenderMhtmlAsHtml(url))
+      if (ShouldAlwaysRenderMhtmlAsHtml(url)) {
         return false;
+      }
 
       // TODO(crbug.com/40552600): retrieve the new NavigationUIData from
       // the request and and pass it to AllowRenderingMhtmlOverHttp().
@@ -79,8 +82,9 @@ bool IsDownload(BrowserContext* browser_context,
     return true;
   }
 
-  if (blink::IsSupportedMimeType(mime_type))
+  if (blink::IsSupportedMimeType(mime_type)) {
     return false;
+  }
 
   return !headers || headers->response_code() / 100 == 2;
 }

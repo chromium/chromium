@@ -8,6 +8,7 @@
 
 #import <string_view>
 
+#import "base/notimplemented.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/init/web_main_parts.h"
 #import "url/gurl.h"
@@ -44,6 +45,10 @@ bool WebClient::IsAppSpecificURL(const GURL& url) const {
 }
 
 std::string WebClient::GetUserAgent(UserAgentType type) const {
+  return std::string();
+}
+
+std::string WebClient::GetMainThreadName() const {
   return std::string();
 }
 
@@ -112,16 +117,34 @@ bool WebClient::IsPointingToSameDocument(const GURL& url1,
   return url1 == url2;
 }
 
-bool WebClient::IsBrowserLockdownModeEnabled(web::BrowserState* browser_state) {
+bool WebClient::IsBrowserLockdownModeEnabled() {
   return false;
 }
 
-void WebClient::SetOSLockdownModeEnabled(web::BrowserState* browser_state,
-                                         bool enabled) {}
+void WebClient::SetOSLockdownModeEnabled(bool enabled) {}
 
 bool WebClient::IsInsecureFormWarningEnabled(
     web::BrowserState* browser_state) const {
   return true;
+}
+
+void WebClient::BuildEditMenu(web::WebState* web_state,
+                              id<UIMenuBuilder>) const {}
+
+bool WebClient::CanRunOpenPanel(web::WebState* web_state) const
+    API_AVAILABLE(ios(18.4)) {
+  return false;
+}
+
+void WebClient::RunOpenPanel(
+    web::WebState* web_state,
+    WKOpenPanelParameters* parameters,
+    WKFrameInfo* frame,
+    base::OnceCallback<void(NSArray<NSURL*>*)> completion) const
+    API_AVAILABLE(ios(18.4)) {
+  NOTIMPLEMENTED() << "WebClient::RunOpenPanel() is not implemented.\n"
+                      "If a subclass returns true from CanRunOpenPanel(),"
+                      "then it must override RunOpenPanel().";
 }
 
 }  // namespace web

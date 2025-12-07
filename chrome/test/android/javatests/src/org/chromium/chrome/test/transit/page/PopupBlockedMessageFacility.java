@@ -4,11 +4,10 @@
 
 package org.chromium.chrome.test.transit.page;
 
-import static androidx.test.espresso.action.ViewActions.click;
+import android.view.View;
 
-import org.chromium.base.test.transit.Elements;
-import org.chromium.base.test.transit.ViewSpec;
-import org.chromium.chrome.test.transit.MessageFacility;
+import org.chromium.base.test.transit.ViewElement;
+import org.chromium.chrome.test.transit.ui.MessageFacility;
 
 /**
  * Represents a "Pop-up blocked" message.
@@ -17,37 +16,27 @@ import org.chromium.chrome.test.transit.MessageFacility;
  */
 public class PopupBlockedMessageFacility<HostStationT extends WebPageStation>
         extends MessageFacility<HostStationT> {
-
-    public static final ViewSpec ALWAYS_SHOW_BUTTON = primaryButtonViewSpec("Always show");
-
-    private final int mCount;
+    public ViewElement<View> titleElement;
+    public ViewElement<View> alwaysShowButtonElement;
 
     public PopupBlockedMessageFacility(int count) {
-        mCount = count;
-    }
-
-    @Override
-    public void declareElements(Elements.Builder elements) {
-        super.declareElements(elements);
-
         String title;
-        if (mCount == 1) {
+        if (count == 1) {
             title = "Pop-up blocked";
         } else {
-            title = String.format("%s pop-ups blocked", mCount);
+            title = String.format("%s pop-ups blocked", count);
         }
-        elements.declareView(titleViewSpec(title));
-
-        elements.declareView(ALWAYS_SHOW_BUTTON);
+        titleElement = declareTitleView(title);
+        alwaysShowButtonElement = declarePrimaryButtonView("Always show");
     }
 
     public WebPageStation clickAlwaysAllow() {
-        WebPageStation popupPage =
-                WebPageStation.newWebPageStationBuilder()
-                        .initFrom(mHostStation)
-                        .withIsOpeningTabs(1)
-                        .withIsSelectingTabs(1)
-                        .build();
-        return mHostStation.travelToSync(popupPage, () -> ALWAYS_SHOW_BUTTON.perform(click()));
+        return alwaysShowButtonElement
+                .clickTo()
+                .arriveAt(
+                        WebPageStation.newBuilder()
+                                .initFrom(mHostStation)
+                                .initOpeningNewTab()
+                                .build());
     }
 }

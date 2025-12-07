@@ -2,28 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/media_router/common/providers/cast/certificate/cast_crl.h"
 
+#include <memory>
 #include <unordered_map>
 #include <unordered_set>
 
-#include <memory>
-
 #include "base/build_time.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "components/media_router/common/providers/cast/certificate/cast_fallback_crl.h"
+#include "crypto/evp.h"
 #include "crypto/sha2.h"
 #include "net/cert/time_conversions.h"
 #include "net/cert/x509_util.h"
-#include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/digest.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/pki/cert_errors.h"
@@ -147,11 +143,9 @@ bool VerifyCRL(const Crl& crl,
     return false;
   }
 
-  CBS spki;
-  CBS_init(&spki, parsed_cert->tbs().spki_tlv.data(),
-           parsed_cert->tbs().spki_tlv.size());
-  bssl::UniquePtr<EVP_PKEY> pubkey(EVP_parse_public_key(&spki));
-  if (!pubkey || CBS_len(&spki) != 0) {
+  bssl::UniquePtr<EVP_PKEY> pubkey =
+      crypto::evp::PublicKeyFromBytes(parsed_cert->tbs().spki_tlv);
+  if (!pubkey) {
     VLOG(2) << "CRL - Parsing public key failed";
 #ifndef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
     return false;
@@ -160,8 +154,8 @@ bool VerifyCRL(const Crl& crl,
 
   // Verify the signature in the CRL. It should be signed with RSASSA-PKCS1-v1_5
   // and SHA-256.
-  auto signature_bytes = base::as_bytes(base::make_span(crl.signature()));
-  auto tbs_crl_bytes = base::as_bytes(base::make_span(crl.tbs_crl()));
+  auto signature_bytes = base::as_byte_span(crl.signature());
+  auto tbs_crl_bytes = base::as_byte_span(crl.tbs_crl());
   bssl::ScopedEVP_MD_CTX ctx;
   if (EVP_PKEY_id(pubkey.get()) != EVP_PKEY_RSA ||
       !EVP_DigestVerifyInit(ctx.get(), nullptr, EVP_sha256(), nullptr,
@@ -314,8 +308,9 @@ CastCRLImpl::CastCRLImpl(const TbsCrl& tbs_crl,
   // means that these calls were successful.
   ConvertTimeSeconds(tbs_crl.not_before_seconds(), &not_before_);
   ConvertTimeSeconds(tbs_crl.not_after_seconds(), &not_after_);
-  if (overall_not_after < not_after_)
+  if (overall_not_after < not_after_) {
     not_after_ = overall_not_after;
+  }
 
   // Parse the revoked hashes.
   for (const auto& hash : tbs_crl.revoked_public_key_hashes()) {
@@ -341,15 +336,16 @@ CastCRLImpl::CastCRLImpl(const TbsCrl& tbs_crl,
   }
 }
 
-CastCRLImpl::~CastCRLImpl() {}
+CastCRLImpl::~CastCRLImpl() = default;
 
 // Verifies the revocation status of the certificate chain, at the specified
 // time.
 bool CastCRLImpl::CheckRevocation(
     const bssl::ParsedCertificateList& trusted_chain,
     const base::Time& time) const {
-  if (trusted_chain.empty())
+  if (trusted_chain.empty()) {
     return false;
+  }
 
   // Check the validity of the CRL at the specified time.
   bssl::der::GeneralizedTime verification_time;
@@ -368,7 +364,8 @@ bool CastCRLImpl::CheckRevocation(
     const bssl::der::Input& spki_tlv = trusted_chain[i]->tbs().spki_tlv;
 
     // Calculate the public key's hash to check for revocation.
-    std::string spki_hash = crypto::SHA256HashString(spki_tlv.AsString());
+    std::string spki_hash =
+        crypto::SHA256HashString(base::as_string_view(spki_tlv));
 #ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
     // Revocation data (if any) was saved in the constructor using this fake
     // hash code.
@@ -418,8 +415,9 @@ std::unique_ptr<CastCRL> ParseAndVerifyCRLUsingCustomTrustStore(
     const base::Time& time,
     bssl::TrustStore* trust_store,
     const bool is_fallback_crl) {
-  if (!trust_store)
+  if (!trust_store) {
     return ParseAndVerifyCRL(crl_proto, time, is_fallback_crl);
+  }
 
   CrlBundle crl_bundle;
   if (!crl_bundle.ParseFromString(crl_proto)) {
@@ -458,8 +456,9 @@ std::unique_ptr<CastCRL> ParseAndVerifyFallbackCRLUsingCustomTrustStore(
     const base::Time& time,
     bssl::TrustStore* trust_store) {
   std::string fallback_serialized_crl(
-      kCastFallbackCRLs, kCastFallbackCRLs + sizeof kCastFallbackCRLs /
-                                                 sizeof kCastFallbackCRLs[0]);
+      kCastFallbackCRLs,
+      UNSAFE_TODO(kCastFallbackCRLs +
+                  sizeof kCastFallbackCRLs / sizeof kCastFallbackCRLs[0]));
   return ParseAndVerifyCRLUsingCustomTrustStore(
       fallback_serialized_crl, time, trust_store, true /* is_fallback_crl */);
 }

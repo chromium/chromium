@@ -16,6 +16,7 @@
 #include "components/sessions/core/tab_restore_types.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 
 namespace base {
 class Uuid;
@@ -59,12 +60,13 @@ class LiveTabContextBrowserAgent
       const tab_groups::TabGroupId& group,
       const tab_groups::TabGroupVisualData& visual_data) override;
   const gfx::Rect GetRestoredBounds() const override;
-  ui::WindowShowState GetRestoredState() const override;
+  ui::mojom::WindowShowState GetRestoredState() const override;
   std::string GetWorkspace() const override;
   sessions::LiveTab* AddRestoredTab(
       const sessions::tab_restore::Tab& tab,
       int tab_index,
       bool select,
+      bool is_restoring_group_or_window,
       sessions::tab_restore::Type original_session_type) override;
   sessions::LiveTab* ReplaceRestoredTab(
       const sessions::tab_restore::Tab& tab) override;
@@ -72,11 +74,10 @@ class LiveTabContextBrowserAgent
 
  private:
   friend class BrowserUserData<LiveTabContextBrowserAgent>;
-  BROWSER_USER_DATA_KEY_DECL();
 
   explicit LiveTabContextBrowserAgent(Browser* browser);
 
-  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<ProfileIOS> profile_;
   raw_ptr<WebStateList> web_state_list_;
   SessionID session_id_;
 };

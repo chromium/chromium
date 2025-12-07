@@ -2,20 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
+
 #include <algorithm>
+#include <array>
 #include <string>
 #include <tuple>
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_math.h"
 #include "base/run_loop.h"
@@ -32,8 +30,9 @@
 #include "mojo/public/cpp/bindings/tests/validation_test_input_parser.h"
 #include "mojo/public/cpp/system/message.h"
 #include "mojo/public/cpp/test_support/test_support.h"
-#include "mojo/public/interfaces/bindings/tests/validation_test_associated_interfaces.mojom.h"
-#include "mojo/public/interfaces/bindings/tests/validation_test_interfaces.mojom.h"
+#include "mojo/public/cpp/test_support/validation_errors_test_util.h"
+#include "mojo/public/interfaces/bindings/tests/validation_test_associated_interfaces.test-mojom.h"
+#include "mojo/public/interfaces/bindings/tests/validation_test_interfaces.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo {
@@ -63,7 +62,7 @@ template <typename T>
 void Append(std::vector<uint8_t>* data_vector, T data) {
   size_t pos = data_vector->size();
   data_vector->resize(pos + sizeof(T));
-  memcpy(&(*data_vector)[pos], &data, sizeof(T));
+  UNSAFE_TODO(memcpy(&(*data_vector)[pos], &data, sizeof(T)));
 }
 
 bool TestInputParser(const std::string& input,
@@ -122,7 +121,7 @@ bool ReadFile(const std::string& path, std::string* result) {
   }
   fseek(fp, 0, SEEK_SET);
   result->resize(size);
-  size_t size_read = fread(&result->at(0), 1, size, fp);
+  size_t size_read = UNSAFE_TODO(fread(&result->at(0), 1, size, fp));
   fclose(fp);
   return size == size_read;
 }
@@ -148,8 +147,7 @@ bool ReadResultFile(const std::string& path, std::string* result) {
     return false;
 
   // Result files are new-line delimited text files. Remove any CRs.
-  result->erase(std::remove(result->begin(), result->end(), '\r'),
-                result->end());
+  std::erase(*result, '\r');
 
   // Remove trailing LFs.
   size_t pos = result->find_last_not_of('\n');
@@ -179,7 +177,7 @@ bool ReadTestCase(const std::string& test,
 
   *message = CreateRawMessage(data.size());
   if (!data.empty())
-    memcpy(message->mutable_data(), &data[0], data.size());
+    UNSAFE_TODO(memcpy(message->mutable_data(), &data[0], data.size()));
   message->mutable_handles()->resize(num_handles);
 
   return true;
@@ -393,19 +391,21 @@ TEST_F(ValidationTest, InputParser) {
 
   // Test some failure cases.
   {
-    const char* error_inputs[] = {"/ hello world",
-                                  "[u1]x",
-                                  "[u2]-1000",
-                                  "[u1]0x100",
-                                  "[s2]-0x8001",
-                                  "[b]1",
-                                  "[b]1111111k",
-                                  "[dist4]unmatched",
-                                  "[anchr]hello [dist8]hello",
-                                  "[dist4]a [dist4]a [anchr]a",
-                                  "[dist4]a [anchr]a [dist4]a [anchr]a",
-                                  "0 [handles]50",
-                                  nullptr};
+    auto error_inputs = std::to_array<const char*>({
+        "/ hello world",
+        "[u1]x",
+        "[u2]-1000",
+        "[u1]0x100",
+        "[s2]-0x8001",
+        "[b]1",
+        "[b]1111111k",
+        "[dist4]unmatched",
+        "[anchr]hello [dist8]hello",
+        "[dist4]a [dist4]a [anchr]a",
+        "[dist4]a [anchr]a [dist4]a [anchr]a",
+        "0 [handles]50",
+        nullptr,
+    });
 
     for (size_t i = 0; error_inputs[i]; ++i) {
       std::vector<uint8_t> expected;

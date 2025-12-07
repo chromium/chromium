@@ -35,7 +35,6 @@
 #include "third_party/blink/public/common/context_menu_data/menu_item_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_show_context_menu_item.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
@@ -52,6 +51,7 @@
 #include "third_party/blink/renderer/core/page/context_menu_provider.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
@@ -59,6 +59,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -66,7 +67,7 @@ namespace blink {
 class FrontendMenuProvider final : public ContextMenuProvider {
  public:
   FrontendMenuProvider(DevToolsHost* devtools_host,
-                       WebVector<MenuItemInfo> items)
+                       std::vector<MenuItemInfo> items)
       : devtools_host_(devtools_host), items_(std::move(items)) {}
   ~FrontendMenuProvider() override {
     // Verify that this menu provider has been detached.
@@ -89,20 +90,21 @@ class FrontendMenuProvider final : public ContextMenuProvider {
     items_.clear();
   }
 
-  WebVector<MenuItemInfo> PopulateContextMenu() override {
+  std::vector<MenuItemInfo> PopulateContextMenu() override {
     return std::move(items_);
   }
 
   void ContextMenuItemSelected(unsigned action) override {
     if (!devtools_host_ || action >= DevToolsHost::kMaxContextMenuAction)
       return;
-    devtools_host_->EvaluateScript("DevToolsAPI.contextMenuItemSelected(" +
-                                   String::Number(action) + ")");
+    devtools_host_->EvaluateScript(StrCat(
+        {"DevToolsAPI.contextMenuItemSelected(", String::Number(action), ")"}));
   }
 
  private:
   Member<DevToolsHost> devtools_host_;
-  WebVector<MenuItemInfo> items_;
+  std::vector<MenuItemInfo> items_
+      ALLOW_DISCOURAGED_TYPE("Matches ContextMenuData");
 };
 
 DevToolsHost::DevToolsHost(InspectorFrontendClient* client,
@@ -123,11 +125,7 @@ void DevToolsHost::Trace(Visitor* visitor) const {
 void DevToolsHost::EvaluateScript(const String& expression) {
   if (ScriptForbiddenScope::IsScriptForbidden())
     return;
-  if (RuntimeEnabledFeatures::BlinkLifecycleScriptForbiddenEnabled()) {
-    CHECK(!ScriptForbiddenScope::WillBeScriptForbidden());
-  } else {
-    DCHECK(!ScriptForbiddenScope::WillBeScriptForbidden());
-  }
+
   ClassicScript::CreateUnspecifiedScript(expression,
                                          ScriptSourceLocationType::kInternal)
       ->RunScriptOnScriptState(ToScriptStateForMainWorld(frontend_frame_));
@@ -172,25 +170,38 @@ String DevToolsHost::platform() const {
 void DevToolsHost::sendMessageToEmbedder(const String& message) {
   if (client_) {
     // Strictly convert, as we expect message to be serialized JSON.
-    auto value = base::JSONReader::Read(
-        message.Utf8(WTF::UTF8ConversionMode::kStrictUTF8Conversion));
-    if (!value || !value->is_dict()) {
+    auto value =
+        base::JSONReader::ReadDict(message.Utf8(Utf8ConversionMode::kStrict),
+                                   base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+    if (!value) {
       ScriptState* script_state = ToScriptStateForMainWorld(frontend_frame_);
       if (!script_state)
         return;
       V8ThrowException::ThrowTypeError(
           script_state->GetIsolate(),
-          value ? "Message to embedder must deserialize to a dictionary value"
-                : "Message to embedder couldn't be JSON-deserialized");
+          "Message to embedder couldn't be deserialized as a JSON object");
       return;
     }
-    client_->SendMessageToEmbedder(std::move(*value).TakeDict());
+    client_->SendMessageToEmbedder(std::move(*value));
   }
 }
 
 void DevToolsHost::sendMessageToEmbedder(base::Value::Dict message) {
   if (client_)
     client_->SendMessageToEmbedder(std::move(message));
+}
+
+static std::u16string GetLabel(const Member<ShowContextMenuItem> item) {
+  // '&' does not show up in context menus unless replaced by '&&'.
+  String label = item->getLabelOr(String()).Replace('&', "&&");
+  label.Ensure16Bit();
+  return std::u16string(label.View16());
+}
+
+static std::u16string GetFeatureName(const Member<ShowContextMenuItem>& item) {
+  String feature_name = item->getFeatureNameOr(String());
+  feature_name.Ensure16Bit();
+  return std::u16string(feature_name.View16());
 }
 
 static std::vector<MenuItemInfo> PopulateContextMenuItems(
@@ -208,9 +219,8 @@ static std::vector<MenuItemInfo> PopulateContextMenuItems(
       item_info.enabled = true;
       item_info.action = DevToolsHost::kMaxContextMenuAction;
       item_info.sub_menu_items = PopulateContextMenuItems(item->subItems());
-      String label = item->getLabelOr(String());
-      label.Ensure16Bit();
-      item_info.label = std::u16string(label.Characters16(), label.length());
+      item_info.label = GetLabel(item);
+      item_info.feature_name = GetFeatureName(item);
     } else {
       if (!item->hasId() || item->id() >= DevToolsHost::kMaxContextMenuAction) {
         return std::vector<MenuItemInfo>();
@@ -221,9 +231,17 @@ static std::vector<MenuItemInfo> PopulateContextMenuItems(
       } else {
         item_info.type = MenuItemInfo::kOption;
       }
-      String label = item->getLabelOr(String());
-      label.Ensure16Bit();
-      item_info.label = std::u16string(label.Characters16(), label.length());
+      item_info.label = GetLabel(item);
+      item_info.feature_name = GetFeatureName(item);
+      if (item->hasAccelerator()) {
+        AcceleratorContainer accelerator;
+        accelerator.key_code = item->accelerator()->keyCode();
+        accelerator.modifiers = item->accelerator()->modifiers();
+        item_info.accelerator = accelerator;
+        item_info.force_show_accelerator_for_item =
+            item->isDevToolsPerformanceMenuItem();
+      }
+      item_info.is_experimental_feature = item->isExperimentalFeature();
       item_info.enabled = item->enabled();
       item_info.action = item->id();
       item_info.checked = item->checked();

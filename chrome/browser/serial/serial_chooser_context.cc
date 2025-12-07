@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/serial/serial_chooser_context.h"
 
 #include <string_view>
@@ -15,6 +10,7 @@
 #include "base/base64.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -22,7 +18,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -33,13 +28,16 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "content/public/browser/device_service.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/device/public/cpp/usb/usb_ids.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID)
+#include "services/device/public/cpp/usb/usb_ids.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "components/user_manager/user.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -72,9 +70,11 @@ base::UnguessableToken DecodeToken(std::string_view input) {
     return base::UnguessableToken();
   }
 
-  const uint64_t* data = reinterpret_cast<const uint64_t*>(buffer.data());
+  base::span<const uint8_t> byte_buffer = base::as_byte_span(buffer);
+  uint64_t high = base::U64FromLittleEndian(byte_buffer.first<8>());
+  uint64_t low = base::U64FromLittleEndian(byte_buffer.subspan<8, 8>());
   std::optional<base::UnguessableToken> token =
-      base::UnguessableToken::Deserialize(data[0], data[1]);
+      base::UnguessableToken::Deserialize(high, low);
   if (!token.has_value()) {
     return base::UnguessableToken();
   }
@@ -88,6 +88,7 @@ bool IsPolicyGrantedObject(const base::Value::Dict& object) {
 base::Value VendorAndProductIdsToValue(uint16_t vendor_id,
                                        uint16_t product_id) {
   base::Value::Dict object;
+#if !BUILDFLAG(IS_ANDROID)
   const char* product_name =
       device::UsbIds::GetProductName(vendor_id, product_id);
   if (product_name) {
@@ -102,19 +103,23 @@ base::Value VendorAndProductIdsToValue(uint16_t vendor_id,
               base::ASCIIToUTF16(base::StringPrintf("%04X", product_id)),
               base::UTF8ToUTF16(vendor_name)));
     } else {
+#endif  // !BUILDFLAG(IS_ANDROID)
       object.Set(
           kPortNameKey,
           l10n_util::GetStringFUTF16(
               IDS_SERIAL_POLICY_DESCRIPTION_FOR_USB_PRODUCT_ID_AND_VENDOR_ID,
               base::ASCIIToUTF16(base::StringPrintf("%04X", product_id)),
               base::ASCIIToUTF16(base::StringPrintf("%04X", vendor_id))));
+#if !BUILDFLAG(IS_ANDROID)
     }
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
   return base::Value(std::move(object));
 }
 
 base::Value VendorIdToValue(uint16_t vendor_id) {
   base::Value::Dict object;
+#if !BUILDFLAG(IS_ANDROID)
   const char* vendor_name = device::UsbIds::GetVendorName(vendor_id);
   if (vendor_name) {
     object.Set(kPortNameKey,
@@ -122,11 +127,14 @@ base::Value VendorIdToValue(uint16_t vendor_id) {
                    IDS_SERIAL_POLICY_DESCRIPTION_FOR_USB_VENDOR_NAME,
                    base::UTF8ToUTF16(vendor_name)));
   } else {
+#endif  // !BUILDFLAG(IS_ANDROID)
     object.Set(kPortNameKey,
                l10n_util::GetStringFUTF16(
                    IDS_SERIAL_POLICY_DESCRIPTION_FOR_USB_VENDOR_ID,
                    base::ASCIIToUTF16(base::StringPrintf("%04X", vendor_id))));
+#if !BUILDFLAG(IS_ANDROID)
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
   return base::Value(std::move(object));
 }
 
@@ -701,7 +709,7 @@ void SerialChooserContext::OnPortManagerConnectionError() {
 }
 
 bool SerialChooserContext::CanApplyPortSpecificPolicy() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   auto* profile_helper = ash::ProfileHelper::Get();
   DCHECK(profile_helper);
   user_manager::User* user = profile_helper->GetUserByProfile(profile_);

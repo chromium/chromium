@@ -6,10 +6,16 @@
 '''
 
 
+import copy
 import os
+import re
 
+from grit import constants
 from grit import xtb_reader
 from grit.node import base
+
+DATA_PACKAGE_FILENAME_RE = re.compile(r'((\w|-)+).pak')
+ANDROID_FILENAME_RE = re.compile(r'(values(-((\w|-|\+)+))?)/')
 
 
 class FileNode(base.Node):
@@ -67,6 +73,61 @@ class FileNode(base.Node):
 class OutputNode(base.Node):
   '''An <output> element.'''
 
+  def EndParsing(self):
+    super().EndParsing()
+
+    # 'data_package' and 'android' types are expected to always have a gender
+    # set, even if self.translate_genders=False.
+    if self.GetType() == 'data_package' or self.GetType() == 'android':
+      self.gender = constants.DEFAULT_GENDER
+
+    if not self.translate_genders:
+      return
+
+    # Create 3 extra copies of each data_package and android output node so that
+    # we have one per gender per language. Adjust file names accordingly.
+    if self.GetType() == 'data_package' or self.GetType() == 'android':
+      for gender in constants.TRANSLATED_GENDERS:
+        cloned_node = self._Clone()
+        cloned_node.gender = gender
+        cloned_node._AddGenderToFilenames()
+
+      self._AddGenderToFilenames()
+
+  def _AddGenderToFilenames(self):
+    if hasattr(self, 'output_filename'):
+      self.output_filename = self._AddGenderToFilename(self.output_filename)
+    self.attrs['filename'] = self._AddGenderToFilename(self.attrs['filename'])
+
+  def _Clone(self):
+    # Temporarily remove the parent to avoid deep-copying it.
+    parent = self.parent
+    self.parent = None
+    self_copy = copy.deepcopy(self)
+
+    self.parent = parent
+    self_copy.parent = parent
+    parent.AddChild(self_copy)
+
+    return self_copy
+
+  def _AddGenderToFilename(self, path):
+    assert self.GetType() == 'data_package' or self.GetType() == 'android'
+
+    if self.GetGender() == constants.DEFAULT_GENDER:
+      return path
+
+    if self.GetType() == 'data_package':
+      match = DATA_PACKAGE_FILENAME_RE.search(path)
+      assert match is not None, f'unrecognized data_package path: {path}'
+      return path.replace(match.group(),
+                          f'{match.group(1)}_{self.GetGender()}.pak')
+    else:  # self.GetType() == 'android'
+      match = ANDROID_FILENAME_RE.search(path)
+      assert match is not None, f'unrecognized android path: {path}'
+      return path.replace(match.group(1),
+                          f'{match.group(1)}-{self.GetGender()}')
+
   def MandatoryAttributes(self):
     return ['filename', 'type']
 
@@ -101,6 +162,15 @@ class OutputNode(base.Node):
 
   def GetFallbackToDefaultLayout(self):
     return self.attrs['fallback_to_default_layout'].lower() == 'true'
+
+  def GetGender(self):
+    # Only 'data_package' and 'android' output node types will have gender set.
+    if hasattr(self, 'gender'):
+      assert self.GetType() == 'data_package' or self.GetType() == 'android'
+      return self.gender
+
+    assert self.GetType() != 'data_package' and self.GetType() != 'android'
+    return None
 
   def _IsValidChild(self, child):
     return isinstance(child, EmitNode)

@@ -31,7 +31,7 @@ bool AllocationHook(void** out,
                     partition_alloc::AllocFlags flags,
                     size_t size,
                     const char* type_name) {
-  if (sampling_state.Sample()) [[unlikely]] {
+  if (sampling_state.Sample(size)) [[unlikely]] {
     // Ignore allocation requests with unknown flags.
     // TODO(crbug.com/40277643): Add support for memory tagging in GWP-Asan.
     constexpr auto kKnownFlags = partition_alloc::AllocFlags::kReturnNull |
@@ -73,19 +73,24 @@ GWP_ASAN_EXPORT GuardedPageAllocator& GetPartitionAllocGpaForTesting() {
   return *gpa;
 }
 
-void InstallPartitionAllocHooks(
+bool InstallPartitionAllocHooks(
     const AllocatorSettings& settings,
     GuardedPageAllocator::OutOfMemoryCallback callback) {
   static crash_reporter::CrashKeyString<24> pa_crash_key(
       kPartitionAllocCrashKey);
   gpa = new GuardedPageAllocator();
-  gpa->Init(settings, std::move(callback), true);
+  if (!gpa->Init(settings, std::move(callback), true)) {
+    return false;
+  }
   pa_crash_key.Set(gpa->GetCrashKey());
   sampling_state.Init(settings.sampling_frequency);
+  sampling_state.SetSampleSizeRestriction(settings.sampling_min_size,
+                                          settings.sampling_max_size);
   // TODO(vtsyrklevich): Allow SetOverrideHooks to be passed in so we can hook
   // PDFium's PartitionAlloc fork.
   partition_alloc::PartitionAllocHooks::SetOverrideHooks(
       &AllocationHook, &FreeHook, &ReallocHook);
+  return true;
 }
 
 }  // namespace internal

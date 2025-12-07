@@ -4,11 +4,8 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/cast.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/sanitizers/sanitizers.gni")
-import("//chromeos/ash/components/assistant/assistant.gni")
-import("//printing/buildflags/buildflags.gni")
-import("//services/screen_ai/buildflags/features.gni")
+import("//media/media_options.gni")
 import("//testing/test.gni")
 
 # Most consumers of sandbox::policy should depend on this target.
@@ -28,11 +25,7 @@ component("policy") {
   defines = [ "SANDBOX_POLICY_IMPL" ]
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
-    "//ppapi/buildflags",
-    "//printing/buildflags",
     "//sandbox/policy/mojom",
-    "//services/screen_ai/buildflags",
   ]
   public_deps = [ "//sandbox:common" ]
   if (is_android) {
@@ -41,6 +34,10 @@ component("policy") {
       "linux/bpf_base_policy_linux.h",
       "linux/bpf_renderer_policy_linux.cc",
       "linux/bpf_renderer_policy_linux.h",
+      "linux/landlock_gpu_policy_android.cc",
+      "linux/landlock_gpu_policy_android.h",
+      "linux/landlock_util.cc",
+      "linux/landlock_util.h",
     ]
     deps += [
       "//sandbox:sandbox_buildflags",
@@ -67,22 +64,30 @@ component("policy") {
       "linux/bpf_cros_intel_gpu_policy_linux.h",
       "linux/bpf_cros_nvidia_gpu_policy_linux.cc",
       "linux/bpf_cros_nvidia_gpu_policy_linux.h",
+      "linux/bpf_cros_virtio_gpu_policy_linux.cc",
+      "linux/bpf_cros_virtio_gpu_policy_linux.h",
       "linux/bpf_gpu_policy_linux.cc",
       "linux/bpf_gpu_policy_linux.h",
       "linux/bpf_network_policy_linux.cc",
       "linux/bpf_network_policy_linux.h",
-      "linux/bpf_ppapi_policy_linux.cc",
-      "linux/bpf_ppapi_policy_linux.h",
+      "linux/bpf_on_device_translation_policy_linux.cc",
+      "linux/bpf_on_device_translation_policy_linux.h",
+      "linux/bpf_print_backend_policy_linux.cc",
+      "linux/bpf_print_backend_policy_linux.h",
       "linux/bpf_print_compositor_policy_linux.cc",
       "linux/bpf_print_compositor_policy_linux.h",
       "linux/bpf_renderer_policy_linux.cc",
       "linux/bpf_renderer_policy_linux.h",
+      "linux/bpf_screen_ai_policy_linux.cc",
+      "linux/bpf_screen_ai_policy_linux.h",
       "linux/bpf_service_policy_linux.cc",
       "linux/bpf_service_policy_linux.h",
       "linux/bpf_speech_recognition_policy_linux.cc",
       "linux/bpf_speech_recognition_policy_linux.h",
       "linux/bpf_utility_policy_linux.cc",
       "linux/bpf_utility_policy_linux.h",
+      "linux/landlock_util.cc",
+      "linux/landlock_util.h",
       "linux/sandbox_debug_handling_linux.cc",
       "linux/sandbox_debug_handling_linux.h",
       "linux/sandbox_linux.cc",
@@ -90,27 +95,14 @@ component("policy") {
       "linux/sandbox_seccomp_bpf_linux.cc",
       "linux/sandbox_seccomp_bpf_linux.h",
     ]
-    if (is_linux || is_chromeos_ash) {
+    if (allow_oop_video_decoder) {
       sources += [
         "linux/bpf_hardware_video_decoding_policy_linux.cc",
         "linux/bpf_hardware_video_decoding_policy_linux.h",
       ]
-      deps += [ "//media/gpu:buildflags" ]
     }
     if (is_linux) {
       deps += [ "//net" ]  # TODO(crbug.com/40220507): remove this.
-    }
-    if (enable_oop_printing) {
-      sources += [
-        "linux/bpf_print_backend_policy_linux.cc",
-        "linux/bpf_print_backend_policy_linux.h",
-      ]
-    }
-    if (enable_screen_ai_service) {
-      sources += [
-        "linux/bpf_screen_ai_policy_linux.cc",
-        "linux/bpf_screen_ai_policy_linux.h",
-      ]
     }
     configs += [
       "//media:media_config",
@@ -118,13 +110,15 @@ component("policy") {
     ]
     deps += [
       ":chromecast_sandbox_allowlist_buildflags",
+      "//media:media_buildflags",
+      "//media/gpu:buildflags",
       "//sandbox:sandbox_buildflags",
       "//sandbox/linux:sandbox_services",
       "//sandbox/linux:seccomp_bpf",
       "//sandbox/linux:suid_sandbox_client",
     ]
   }
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "linux/bpf_ime_policy_linux.cc",
       "linux/bpf_ime_policy_linux.h",
@@ -133,14 +127,6 @@ component("policy") {
       "linux/bpf_tts_policy_linux.cc",
       "linux/bpf_tts_policy_linux.h",
     ]
-    deps += [ "//chromeos/ash/components/assistant:buildflags" ]
-
-    if (enable_cros_libassistant) {
-      sources += [
-        "linux/bpf_libassistant_policy_linux.cc",
-        "linux/bpf_libassistant_policy_linux.h",
-      ]
-    }
   }
   if (is_mac) {
     sources += [
@@ -167,7 +153,10 @@ component("policy") {
       "win/sandbox_win.cc",
       "win/sandbox_win.h",
     ]
-    deps += [ "//sandbox/win:sandbox" ]
+    deps += [
+      ":win_hook_util",
+      "//sandbox/win:sandbox",
+    ]
   }
   if (is_fuchsia) {
     sources += [
@@ -195,6 +184,7 @@ component("policy") {
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec:fuchsia.mediacodec_hlcpp",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.memorypressure:fuchsia.memorypressure_hlcpp",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.net.interfaces:fuchsia.net.interfaces_hlcpp",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.scheduler:fuchsia.scheduler_cpp",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem:fuchsia.sysmem_hlcpp",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.tracing.perfetto:fuchsia.tracing.perfetto_hlcpp",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.tracing.provider:fuchsia.tracing.provider_hlcpp",
@@ -208,6 +198,20 @@ buildflag_header("chromecast_sandbox_allowlist_buildflags") {
   flags = [ "ENABLE_CHROMECAST_GPU_SANDBOX_ALLOWLIST=$is_castos" ]
 }
 
+if (is_win) {
+  static_library("win_hook_util") {
+    # This library is used and tested in chrome_elf and must not dep on anything
+    # beyond //base:base_static.
+    sources = [
+      "win/hook_util/hook_util.cc",
+      "win/hook_util/hook_util.h",
+    ]
+    deps = [
+      "//base:base_static",  # pe_image
+    ]
+  }
+}
+
 # TODO(crbug.com/40136586): Figure out a better organization for //sandbox
 # tests.
 source_set("tests") {
@@ -219,8 +223,6 @@ source_set("tests") {
     ":policy",
     "//base",
     "//base/test:test_support",
-    "//ppapi/buildflags:buildflags",
-    "//printing/buildflags",
     "//sandbox/policy/mojom",
     "//testing/gtest",
   ]
@@ -238,6 +240,22 @@ source_set("tests") {
       "//base/test/data/pe_image/pe_image_test_32.dll",
       "//base/test/data/pe_image/pe_image_test_64.dll",
       "//base/test/data/pe_image/pe_image_test_arm64.dll",
+    ]
+  }
+}
+
+source_set("integration_tests") {
+  testonly = true
+  if (is_win) {
+    sources = [ "win/sandbox_warmup_unittest.cc" ]
+    deps = [
+      ":policy",
+      ":sandbox_test_utils",
+      "//base",
+      "//base/test:test_support",
+      "//sandbox/win:sandbox",
+      "//sandbox/win:test_support",
+      "//testing/gtest",
     ]
   }
 }

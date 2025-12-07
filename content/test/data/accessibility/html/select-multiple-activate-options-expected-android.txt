@@ -1,0 +1,5 @@
+android.webkit.WebView focusable
+++android.view.View
+++++android.widget.ListView clickable collection focusable multiselectable interesting state_description='multiselectable, 2 of 2 selected.' item_count=2 row_count=2 column_count=1 selection_mode=2
+++++++android.view.View clickable collection_item focusable selected interesting content_description='one' row_span=1 column_span=1
+++++++android.view.View clickable collection_item focusable focused selected interesting content_description='two' item_index=1 row_index=1 row_span=1 column_span=1

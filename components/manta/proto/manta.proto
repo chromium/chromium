@@ -6,7 +6,6 @@ syntax = "proto2";
 option optimize_for = LITE_RUNTIME;
 
 import "components/manta/proto/common.proto";
-import "components/manta/proto/sparky.proto";
 
 package manta.proto;
 
@@ -19,8 +18,10 @@ enum FeatureName {
   CHROMEOS_READER_SUMMARY = 303;
   CHROMEOS_READER_TOC = 312;
   CHROMEOS_READER_Q_AND_A = 313;
-  CHROMEOS_SPARKY = 314;
   CHROMEOS_LOBSTER = 315;
+  CHROMEOS_SCANNER = 316;
+  CHROMEOS_READER_ELUCIDATION = 317;
+  CHROMEOS_WALRUS = 318;
   reserved 304 to 311;
 
   ACCESSIBILITY_IMAGE_DESCRIPTION = 700;
@@ -108,7 +109,6 @@ message InputData {
     string text = 1;
     Image image = 2;
     Proto3Any custom = 3;
-    SparkyContextData sparky_context_data = 5;
   }
   optional string tag = 4;
 }
@@ -126,12 +126,13 @@ message OutputData {
     string text = 1;
     Image image = 2;
     Proto3Any custom = 3;
-    SparkyResponse sparky_response = 7;
   }
 
   optional float score = 5;
 
   optional uint32 generation_seed = 6;
+
+  optional string generative_prompt = 8;
 }
 
 enum FilteredReason {
@@ -140,14 +141,16 @@ enum FilteredReason {
   TEXT_SAFETY = 2;
   TEXT_LOW_QUALITY = 3;
   TEXT_BLOCKLIST = 4;
+  IMAGE_SAFETY_PERSON = 8;
 
   reserved 5, 6, 7;
 }
 
 message FilteredData {
-  reserved 1;
+  reserved 1, 4;
   optional bool is_output_data = 2;
   optional FilteredReason reason = 3;
+  repeated FilteredReason additional_reasons = 5;
 }
 
 message Response {

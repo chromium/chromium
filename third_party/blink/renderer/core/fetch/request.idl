@@ -9,7 +9,7 @@ typedef (Request or USVString) RequestInfo;
 enum RequestDestination {
     // https://fetch.spec.whatwg.org/#requestdestination
     "", "audio", "audioworklet", "document", "embed", "font", "frame", "iframe", "image", "json", "manifest", "object", "paintworklet", "report",
-    "script", "sharedworker", "style",  "track", "video", "worker", "xslt",
+    "script", "serviceworker", "sharedworker", "style",  "track", "video", "worker", "xslt",
 
     // https://wicg.github.io/fenced-frame/#new-request-destination
     "fencedframe",
@@ -18,7 +18,13 @@ enum RequestDestination {
     "dictionary",
 
     // https://wicg.github.io/nav-speculation/speculation-rules.html#fetch-destination
-    "speculationrules"
+    "speculationrules",
+
+    // https://wicg.github.io/shared-storage/#request-destination-monkey-patch
+    "sharedstorageworklet",
+
+    // https://github.com/whatwg/fetch/issues/1120
+    "webbundle",
 };
 enum RequestMode { "navigate", "same-origin", "no-cors", "cors" };
 enum RequestCredentials { "omit", "same-origin", "include" };
@@ -27,7 +33,7 @@ enum RequestCache { "default", "no-store", "reload", "no-cache", "force-cache",
                     "only-if-cached" };
 enum FetchPriority {"low", "auto", "high"};
 enum RequestDuplex {"half"};
-enum IPAddressSpace {"local", "private", "public", "unknown"};
+enum IPAddressSpace {"loopback", "local", "private", "public", "unknown"};
 
 // https://w3c.github.io/webappsec-referrer-policy/#referrer-policies
 
@@ -60,10 +66,13 @@ enum ReferrerPolicy {
     readonly attribute DOMString integrity;
     readonly attribute boolean keepalive;
     readonly attribute AbortSignal signal;
-    [RuntimeEnabled=PrivateNetworkAccessPermissionPrompt] readonly attribute IPAddressSpace targetAddressSpace;
+    readonly attribute RequestDuplex duplex;
+    [RuntimeEnabled=LocalNetworkAccessPermissionPolicy] readonly attribute IPAddressSpace targetAddressSpace;
 
     [MeasureAs=RequestIsHistoryNavigation] readonly attribute boolean isHistoryNavigation;
     [RaisesException, CallWith=ScriptState, NewObject] Request clone();
+
+    [RuntimeEnabled=FetchRetry] RetryOptions? getRetryOptions();
 
     [Affects=Everything, RuntimeEnabled=FetchUploadStreaming] readonly attribute ReadableStream? body;
 };

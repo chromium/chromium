@@ -1,1 +1,19 @@
-../resources/tests25.dat: PASS
+../resources/tests25.dat:
+8
+
+Test 8 of 26 in ../resources/tests25.dat failed. Input:
+<!DOCTYPE html><body><command>A
+Got:
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <command>
+|     "A"
+Expected:
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <command>
+|       "A"

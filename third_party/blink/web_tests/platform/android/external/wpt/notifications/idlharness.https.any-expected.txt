@@ -1,7 +1,9 @@
 This is a testharness.js-based test.
-Found 27 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 29 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] idl_test setup
   promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'Notification': Illegal constructor. Use ServiceWorkerRegistration.showNotification() instead."
+[FAIL] Notification interface: attribute navigate
+  assert_true: The prototype object must have a property "navigate" expected true got false
 [FAIL] Notification must be primary interface of notification
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
 [FAIL] Stringification of notification
@@ -30,6 +32,8 @@ Found 27 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
 [FAIL] Notification interface: notification must inherit property "body" with the proper type
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "navigate" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
 [FAIL] Notification interface: notification must inherit property "tag" with the proper type
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
 [FAIL] Notification interface: notification must inherit property "image" with the proper type
@@ -55,3 +59,4 @@ Found 27 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Notification interface: notification must inherit property "close()" with the proper type
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
 Harness: the test ran to completion.
+

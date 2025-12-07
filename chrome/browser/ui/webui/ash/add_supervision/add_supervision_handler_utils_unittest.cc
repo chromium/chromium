@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_handler_utils.h"
+
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,7 +21,7 @@ TEST_F(AddSupervisionHandlerUtilsTest, TestShouldIncludeAppUpdate) {
 
   // Don't return non-ARC apps.
   auto non_arc_state =
-      std::make_unique<apps::App>(apps::AppType::kBuiltIn, "builtin_app_id");
+      std::make_unique<apps::App>(apps::AppType::kWeb, "web_app_id");
   apps::AppUpdate non_arc_update(non_arc_state.get(), nullptr /* delta */,
                                  EmptyAccountId());
   EXPECT_FALSE(ShouldIncludeAppUpdate(non_arc_update));

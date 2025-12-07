@@ -14,7 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "components/webapps/common/web_app_id.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace views {
@@ -53,6 +53,17 @@ class SubAppsInstallDialogController : public views::WidgetObserver {
             const webapps::AppId& parent_app_id,
             Profile* profile,
             gfx::NativeWindow window);
+
+  // Creates a dialog that requests the consent from the user to install the
+  // requested apps as sub apps to the named parent app. This is triggered by
+  // an app calling the Multi App API add() function. The dialog is modal to
+  // the browser containing the app calling the API. |sub_apps| contains the
+  // information to represent each app to the user.
+  static views::Widget* CreateWidget(
+      const std::u16string parent_app_name,
+      const std::vector<std::unique_ptr<WebAppInstallInfo>>& sub_apps,
+      base::RepeatingClosure settings_page_callback,
+      gfx::NativeWindow window);
 
   views::Widget* GetWidgetForTesting();
 

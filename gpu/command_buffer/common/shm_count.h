@@ -8,15 +8,16 @@
 #include <atomic>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
-#include "gpu/gpu_export.h"
+#include "gpu/command_buffer/common/gpu_command_buffer_common_export.h"
 
 namespace gpu {
 
 // Base class for GpuProcessShmCount and GpuProcessHostShmCount,
 // can not be used directly.
-class GPU_EXPORT ShmCountBase {
+class GPU_COMMAND_BUFFER_COMMON_EXPORT ShmCountBase {
  public:
   using CountType = int32_t;
 
@@ -25,6 +26,7 @@ class GPU_EXPORT ShmCountBase {
 
   ShmCountBase();
   ShmCountBase(ShmCountBase&& other);
+  ShmCountBase& operator=(ShmCountBase&& other);
   ~ShmCountBase();
 
   void Initialize(base::UnsafeSharedMemoryRegion region);
@@ -41,35 +43,41 @@ class GPU_EXPORT ShmCountBase {
 // Provides write-only access to the count for the gpu process.
 // It is safe to use ScopedIncrement from multiple threads on the same instance
 // of GpuProcessShmCount.
-class GPU_EXPORT GpuProcessShmCount : public ShmCountBase {
+class GPU_COMMAND_BUFFER_COMMON_EXPORT GpuProcessShmCount
+    : public ShmCountBase {
  public:
   class ScopedIncrement {
    public:
     explicit ScopedIncrement(GpuProcessShmCount* shm_count)
         : shm_count_(shm_count) {
+      CHECK(shm_count_);
       shm_count_->Increment();
     }
     ~ScopedIncrement() { shm_count_->Decrement(); }
 
    private:
-    raw_ptr<GpuProcessShmCount> shm_count_;
+    const raw_ptr<GpuProcessShmCount> shm_count_;
   };
 
   GpuProcessShmCount();
-  GpuProcessShmCount(GpuProcessShmCount&& other);
   explicit GpuProcessShmCount(base::UnsafeSharedMemoryRegion region);
 
- private:
-  void Increment();
-  void Decrement();
+ protected:
+  // Virtual for testing.
+  virtual void Increment();
+  virtual void Decrement();
 };
+
+// Ref counted GpuProcessShmCount
+using RefCountedGpuProcessShmCount = base::RefCountedData<GpuProcessShmCount>;
 
 // Provides read-only access to the count for the browser process.
 // GpuProcessHostShmCount will initialize a new mojo shared buffer. The
 // handle to this buffer should be passed to the GPU process via CloneHandle.
 // The GPU process will then increment the count, which can be read via this
 // class.
-class GPU_EXPORT GpuProcessHostShmCount : public ShmCountBase {
+class GPU_COMMAND_BUFFER_COMMON_EXPORT GpuProcessHostShmCount
+    : public ShmCountBase {
  public:
   GpuProcessHostShmCount();
 

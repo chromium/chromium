@@ -4,7 +4,8 @@
 
 import {crosAudioConfigMojom, fakeCrosAudioConfig} from 'chrome://os-settings/os_settings.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {MockController, MockMethod} from 'chrome://webui-test/mock_controller.js';
+import type {MockMethod} from 'chrome://webui-test/mock_controller.js';
+import {MockController} from 'chrome://webui-test/mock_controller.js';
 
 suite('FakeCrosAudioConfig', () => {
   // Observer for testing updates which have not been added to mojo yet.
@@ -55,6 +56,8 @@ suite('FakeCrosAudioConfig', () => {
       inputGainPercent: 0,
       inputDevices: [],
       inputMuteState: crosAudioConfigMojom.MuteState.MIN_VALUE,
+      voiceIsolationUiAppearance:
+          fakeCrosAudioConfig.fakeVoiceIsolationUIAppearance,
     };
     crosAudioConfig.setAudioSystemProperties(updatedProperties);
 

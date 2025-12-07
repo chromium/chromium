@@ -17,7 +17,8 @@ public class FakeCookieControlsBridge implements CookieControlsBridge.Natives {
     public long init(
             CookieControlsBridge caller,
             WebContents webContents,
-            BrowserContextHandle originalContextHandle) {
+            BrowserContextHandle originalContextHandle,
+            boolean isIncognitoBranded) {
         return 0;
     }
 
@@ -25,10 +26,11 @@ public class FakeCookieControlsBridge implements CookieControlsBridge.Natives {
     public void updateWebContents(
             long nativeCookieControlsBridge,
             WebContents webContents,
-            @Nullable BrowserContextHandle originalBrowserContext) {}
+            @Nullable BrowserContextHandle originalBrowserContext,
+            boolean isIncognitoBranded) {}
 
     @Override
-    public void destroy(long nativeCookieControlsBridge, CookieControlsBridge caller) {}
+    public void destroy(long nativeCookieControlsBridge) {}
 
     @Override
     public void setThirdPartyCookieBlockingEnabledForSite(

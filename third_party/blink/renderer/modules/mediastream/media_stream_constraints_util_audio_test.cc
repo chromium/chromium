@@ -22,6 +22,7 @@
 #include "media/webrtc/constants.h"
 #include "media/webrtc/webrtc_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/mediastream/media_stream_controls.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_platform_media_stream_source.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -29,6 +30,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/modules/mediastream/local_media_stream_audio_source.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_constraint_factory.h"
 #include "third_party/blink/renderer/modules/mediastream/processed_local_audio_source.h"
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_impl.h"
@@ -41,7 +43,6 @@ namespace blink {
 
 using blink::AudioCaptureSettings;
 using blink::AudioProcessingProperties;
-using EchoCancellationType = AudioProcessingProperties::EchoCancellationType;
 using ProcessingType = AudioCaptureSettings::ProcessingType;
 
 namespace {
@@ -49,29 +50,35 @@ namespace {
 using BoolSetFunction = void (blink::BooleanConstraint::*)(bool);
 using StringSetFunction =
     void (blink::StringConstraint::*)(const blink::WebString&);
+using BoolOrStringSetBooleanFunction =
+    void (blink::BooleanOrStringConstraint::*)(bool);
 using MockFactoryAccessor =
     MediaTrackConstraintSetPlatform& (blink::MockConstraintFactory::*)();
 
-const BoolSetFunction kBoolSetFunctions[] = {
+const std::array<BoolSetFunction, 2> kBoolSetFunctions = {
     &blink::BooleanConstraint::SetExact,
     &blink::BooleanConstraint::SetIdeal,
 };
 
-const MockFactoryAccessor kFactoryAccessors[] = {
+const std::array<BoolOrStringSetBooleanFunction, 2>
+    kBoolOrStringSetBooleanFunctions = {
+        &blink::BooleanOrStringConstraint::SetExactBoolean,
+        &blink::BooleanOrStringConstraint::SetIdealBoolean,
+};
+
+const std::array<MockFactoryAccessor, 2> kFactoryAccessors = {
     &blink::MockConstraintFactory::basic,
     &blink::MockConstraintFactory::AddAdvanced};
 
-const bool kBoolValues[] = {true, false};
+const std::array<bool, 2> kBoolValues = {true, false};
 
 const int kMinChannels = 1;
 
-using AudioSettingsBoolMembers =
-    WTF::Vector<bool (AudioCaptureSettings::*)() const>;
-using AudioPropertiesBoolMembers =
-    WTF::Vector<bool AudioProcessingProperties::*>;
+using AudioSettingsBoolMembers = Vector<bool (AudioCaptureSettings::*)() const>;
+using AudioPropertiesBoolMembers = Vector<bool AudioProcessingProperties::*>;
 
 template <typename T>
-static bool Contains(const WTF::Vector<T>& vector, T value) {
+static bool Contains(const Vector<T>& vector, T value) {
   return base::Contains(vector, value);
 }
 
@@ -79,18 +86,6 @@ static bool Contains(const WTF::Vector<T>& vector, T value) {
 
 class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
  protected:
-  void MakeSystemEchoCancellerDeviceExperimental() {
-    media::AudioParameters experimental_system_echo_canceller_parameters(
-        media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-        media::ChannelLayoutConfig::Stereo(),
-        media::AudioParameters::kAudioCDSampleRate, 1000);
-    experimental_system_echo_canceller_parameters.set_effects(
-        media::AudioParameters::EXPERIMENTAL_ECHO_CANCELLER);
-    capabilities_[1] = {"experimental_system_echo_canceller_device",
-                        "fake_group3",
-                        experimental_system_echo_canceller_parameters};
-  }
-
   void SetMediaStreamSource(const std::string& source) {}
 
   void ResetFactory() {
@@ -103,12 +98,8 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
   virtual std::string GetMediaStreamSource() { return std::string(); }
   bool IsDeviceCapture() { return GetMediaStreamSource().empty(); }
   static AudioPropertiesBoolMembers GetAudioProcessingProperties() {
-    return {&AudioProcessingProperties::goog_audio_mirroring,
-            &AudioProcessingProperties::goog_auto_gain_control,
-            &AudioProcessingProperties::goog_experimental_echo_cancellation,
-            &AudioProcessingProperties::goog_noise_suppression,
-            &AudioProcessingProperties::goog_experimental_noise_suppression,
-            &AudioProcessingProperties::goog_highpass_filter};
+    return {&AudioProcessingProperties::auto_gain_control,
+            &AudioProcessingProperties::noise_suppression};
   }
 
   blink::mojom::MediaStreamType GetMediaStreamType() {
@@ -134,8 +125,10 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
     device.input.set_effects(effects);
 
     return std::make_unique<ProcessedLocalAudioSource>(
-        *MainFrame().GetFrame(), device, disable_local_echo, properties,
-        num_requested_channels, base::NullCallback(),
+        *MainFrame().GetFrame(), device, disable_local_echo,
+        MediaStreamAudioProcessingLayout(properties, effects,
+                                         num_requested_channels),
+        base::NullCallback(),
         blink::scheduler::GetSingleThreadTaskRunnerForTesting());
   }
 
@@ -154,7 +147,6 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
       bool enable_system_echo_canceller,
       bool disable_local_echo,
       bool render_to_associated_sink,
-      bool enable_experimental_echo_canceller = false,
       const int* requested_buffer_size = nullptr) {
     blink::MediaStreamDevice device;
     device.type = GetMediaStreamType();
@@ -162,8 +154,6 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
     int effects = 0;
     if (enable_system_echo_canceller)
       effects |= media::AudioParameters::ECHO_CANCELLER;
-    if (enable_experimental_echo_canceller)
-      effects |= media::AudioParameters::EXPERIMENTAL_ECHO_CANCELLER;
     device.input.set_effects(effects);
 
     if (render_to_associated_sink)
@@ -171,7 +161,9 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
 
     return std::make_unique<blink::LocalMediaStreamAudioSource>(
         /*blink::WebLocalFrame=*/nullptr, device, requested_buffer_size,
-        enable_system_echo_canceller, disable_local_echo,
+        /*disable_local_echo=*/disable_local_echo,
+        MediaStreamAudioProcessingLayout::MakeForUnprocessedLocalSourceForTests(
+            enable_system_echo_canceller, effects),
         blink::WebPlatformMediaStreamSource::ConstraintsRepeatingCallback(),
         blink::scheduler::GetSingleThreadTaskRunnerForTesting());
   }
@@ -182,13 +174,11 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
           std::nullopt) {
     MediaConstraints constraints = constraint_factory_.CreateMediaConstraints();
     if (capabilities) {
-      return SelectSettingsAudioCapture(*capabilities, constraints,
-                                        GetMediaStreamType(), false,
-                                        is_reconfigurable);
+      return SelectSettingsAudioCapture(
+          *capabilities, constraints, GetMediaStreamType(), is_reconfigurable);
     } else {
-      return SelectSettingsAudioCapture(capabilities_, constraints,
-                                        GetMediaStreamType(), false,
-                                        is_reconfigurable);
+      return SelectSettingsAudioCapture(
+          capabilities_, constraints, GetMediaStreamType(), is_reconfigurable);
     }
   }
 
@@ -196,21 +186,7 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
   SelectEligibleSettings(bool is_reconfigurable = false) {
     MediaConstraints constraints = constraint_factory_.CreateMediaConstraints();
     return SelectEligibleSettingsAudioCapture(
-        capabilities_, constraints, GetMediaStreamType(),
-        /*should_disable_hardware_noise_suppression=*/false, is_reconfigurable);
-  }
-
-  // When googExperimentalEchoCancellation is not explicitly set, its default
-  // value is always false on Android. On other platforms it behaves like other
-  // audio-processing properties.
-  void CheckGoogExperimentalEchoCancellationDefault(
-      const AudioProcessingProperties& properties,
-      bool value) {
-#if BUILDFLAG(IS_ANDROID)
-    EXPECT_FALSE(properties.goog_experimental_echo_cancellation);
-#else
-    EXPECT_EQ(value, properties.goog_experimental_echo_cancellation);
-#endif
+        capabilities_, constraints, GetMediaStreamType(), is_reconfigurable);
   }
 
   void CheckBoolDefaultsDeviceCapture(
@@ -228,30 +204,12 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
 
     const auto& properties = result.audio_processing_properties();
     if (!Contains(exclude_audio_properties,
-                  &AudioProcessingProperties::goog_audio_mirroring)) {
-      EXPECT_FALSE(properties.goog_audio_mirroring);
+                  &AudioProcessingProperties::auto_gain_control)) {
+      EXPECT_TRUE(properties.auto_gain_control);
     }
     if (!Contains(exclude_audio_properties,
-                  &AudioProcessingProperties::goog_auto_gain_control)) {
-      EXPECT_TRUE(properties.goog_auto_gain_control);
-    }
-    if (!Contains(
-            exclude_audio_properties,
-            &AudioProcessingProperties::goog_experimental_echo_cancellation)) {
-      CheckGoogExperimentalEchoCancellationDefault(properties, true);
-    }
-    if (!Contains(exclude_audio_properties,
-                  &AudioProcessingProperties::goog_noise_suppression)) {
-      EXPECT_TRUE(properties.goog_noise_suppression);
-    }
-    if (!Contains(
-            exclude_audio_properties,
-            &AudioProcessingProperties::goog_experimental_noise_suppression)) {
-      EXPECT_TRUE(properties.goog_experimental_noise_suppression);
-    }
-    if (!Contains(exclude_audio_properties,
-                  &AudioProcessingProperties::goog_highpass_filter)) {
-      EXPECT_TRUE(properties.goog_highpass_filter);
+                  &AudioProcessingProperties::noise_suppression)) {
+      EXPECT_TRUE(properties.noise_suppression);
     }
   }
 
@@ -271,30 +229,12 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
 
     const auto& properties = result.audio_processing_properties();
     if (!Contains(exclude_audio_properties,
-                  &AudioProcessingProperties::goog_audio_mirroring)) {
-      EXPECT_FALSE(properties.goog_audio_mirroring);
+                  &AudioProcessingProperties::auto_gain_control)) {
+      EXPECT_FALSE(properties.auto_gain_control);
     }
     if (!Contains(exclude_audio_properties,
-                  &AudioProcessingProperties::goog_auto_gain_control)) {
-      EXPECT_FALSE(properties.goog_auto_gain_control);
-    }
-    if (!Contains(
-            exclude_audio_properties,
-            &AudioProcessingProperties::goog_experimental_echo_cancellation)) {
-      EXPECT_FALSE(properties.goog_experimental_echo_cancellation);
-    }
-    if (!Contains(exclude_audio_properties,
-                  &AudioProcessingProperties::goog_noise_suppression)) {
-      EXPECT_FALSE(properties.goog_noise_suppression);
-    }
-    if (!Contains(
-            exclude_audio_properties,
-            &AudioProcessingProperties::goog_experimental_noise_suppression)) {
-      EXPECT_FALSE(properties.goog_experimental_noise_suppression);
-    }
-    if (!Contains(exclude_audio_properties,
-                  &AudioProcessingProperties::goog_highpass_filter)) {
-      EXPECT_FALSE(properties.goog_highpass_filter);
+                  &AudioProcessingProperties::noise_suppression)) {
+      EXPECT_FALSE(properties.noise_suppression);
     }
   }
 
@@ -311,14 +251,14 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
     }
   }
 
-  void CheckEchoCancellationTypeDefault(const AudioCaptureSettings& result) {
+  void CheckEchoCancellationModeDefault(const AudioCaptureSettings& result) {
     const auto& properties = result.audio_processing_properties();
     if (IsDeviceCapture()) {
-      EXPECT_EQ(properties.echo_cancellation_type,
-                EchoCancellationType::kEchoCancellationAec3);
+      EXPECT_EQ(properties.echo_cancellation_mode,
+                EchoCancellationMode::kBrowserDecides);
     } else {
-      EXPECT_EQ(properties.echo_cancellation_type,
-                EchoCancellationType::kEchoCancellationDisabled);
+      EXPECT_EQ(properties.echo_cancellation_mode,
+                EchoCancellationMode::kDisabled);
     }
   }
 
@@ -326,22 +266,18 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
     ProcessingType expected_type = ProcessingType::kUnprocessed;
     const auto& properties = result.audio_processing_properties();
     bool properties_value = false;
-    // Skip audio mirroring and start directly from auto gain control.
-    for (WTF::wtf_size_t i = 1; i < GetAudioProcessingProperties().size(); ++i)
+    for (wtf_size_t i = 0; i < GetAudioProcessingProperties().size(); ++i) {
       properties_value |= properties.*GetAudioProcessingProperties()[i];
+    }
 
-    // If goog_audio_mirroring is true but all the other properties are false,
-    // we should be expecting kProcessed, however if any of the properties was
-    // true, we should expected kApmProcessed.
-    if (properties.goog_audio_mirroring && !properties_value)
-      expected_type = ProcessingType::kNoApmProcessed;
-    else if (properties_value)
+    if (properties_value) {
       expected_type = ProcessingType::kApmProcessed;
+    }
 
     // Finally, if the chosen echo cancellation type is either AEC3 or AEC2, the
     // only possible processing type to expect is kWebRtcProcessed.
-    if (properties.echo_cancellation_type ==
-        EchoCancellationType::kEchoCancellationAec3) {
+    if (properties.echo_cancellation_mode ==
+        EchoCancellationMode::kBrowserDecides) {
       expected_type = ProcessingType::kApmProcessed;
     }
     EXPECT_EQ(result.processing_type(), expected_type);
@@ -365,43 +301,24 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
       const AudioCaptureSettings& result) {
     CheckProcessingType(result);
     CheckBoolDefaults(exclude_main_settings, exclude_audio_properties, result);
-    CheckEchoCancellationTypeDefault(result);
+    CheckEchoCancellationModeDefault(result);
     CheckDeviceDefaults(result);
   }
 
-  void CheckAudioProcessingPropertiesForIdealEchoCancellationType(
+  void CheckAudioProcessingPropertiesForIdealEchoCancellationMode(
       const AudioCaptureSettings& result) {
     const AudioProcessingProperties& properties =
         result.audio_processing_properties();
 
-    EXPECT_EQ(EchoCancellationType::kEchoCancellationSystem,
-              properties.echo_cancellation_type);
-    EXPECT_TRUE(properties.goog_auto_gain_control);
-    CheckGoogExperimentalEchoCancellationDefault(properties, true);
-    EXPECT_TRUE(properties.goog_noise_suppression);
-    EXPECT_TRUE(properties.goog_experimental_noise_suppression);
-    EXPECT_TRUE(properties.goog_highpass_filter);
+    EXPECT_EQ(EchoCancellationMode::kAll, properties.echo_cancellation_mode);
+    EXPECT_TRUE(properties.auto_gain_control);
+    EXPECT_TRUE(properties.noise_suppression);
 
     // The following are not audio processing.
-    EXPECT_FALSE(properties.goog_audio_mirroring);
     EXPECT_EQ(GetMediaStreamSource() != blink::kMediaStreamSourceDesktop,
               result.disable_local_echo());
     EXPECT_FALSE(result.render_to_associated_sink());
     CheckDevice(*system_echo_canceller_device_, result);
-  }
-
-  EchoCancellationType GetEchoCancellationTypeFromConstraintString(
-      const blink::WebString& constraint_string) {
-    if (constraint_string == kEchoCancellationTypeValues[0])
-      return EchoCancellationType::kEchoCancellationAec3;
-    if (constraint_string == kEchoCancellationTypeValues[1])
-      return EchoCancellationType::kEchoCancellationAec3;
-    if (constraint_string == kEchoCancellationTypeValues[2])
-      return EchoCancellationType::kEchoCancellationSystem;
-
-    ADD_FAILURE() << "Invalid echo cancellation type constraint: "
-                  << constraint_string.Ascii();
-    return EchoCancellationType::kEchoCancellationDisabled;
   }
 
   void CheckLatencyConstraint(const AudioDeviceCaptureCapability* device,
@@ -409,21 +326,21 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
                               double max_latency) {
     constraint_factory_.Reset();
     constraint_factory_.basic().device_id.SetExact(device->DeviceID());
-    constraint_factory_.basic().echo_cancellation.SetExact(false);
+    constraint_factory_.basic().echo_cancellation.SetExactBoolean(false);
     constraint_factory_.basic().latency.SetExact(0.0);
     auto result = SelectSettings();
     EXPECT_FALSE(result.HasValue());
 
     constraint_factory_.Reset();
     constraint_factory_.basic().device_id.SetExact(device->DeviceID());
-    constraint_factory_.basic().echo_cancellation.SetExact(false);
+    constraint_factory_.basic().echo_cancellation.SetExactBoolean(false);
     constraint_factory_.basic().latency.SetMin(max_latency + 0.001);
     result = SelectSettings();
     EXPECT_FALSE(result.HasValue());
 
     constraint_factory_.Reset();
     constraint_factory_.basic().device_id.SetExact(device->DeviceID());
-    constraint_factory_.basic().echo_cancellation.SetExact(false);
+    constraint_factory_.basic().echo_cancellation.SetExactBoolean(false);
     constraint_factory_.basic().latency.SetMax(min_latency - 0.001);
     result = SelectSettings();
     EXPECT_FALSE(result.HasValue());
@@ -440,7 +357,7 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
       int expected_buffer_size) {
     constraint_factory_.Reset();
     constraint_factory_.basic().device_id.SetExact(device->DeviceID());
-    constraint_factory_.basic().echo_cancellation.SetExact(false);
+    constraint_factory_.basic().echo_cancellation.SetExactBoolean(false);
     constraint_factory_.basic().latency.SetIdeal(requested_latency);
     auto result = SelectSettings();
     EXPECT_TRUE(result.HasValue());
@@ -450,7 +367,6 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
             false /* enable_system_echo_canceller */,
             false /* disable_local_echo */,
             false /* render_to_associated_sink */,
-            false /* enable_experimental_echo_canceller */,
             base::OptionalToPtr(result.requested_buffer_size()));
     EXPECT_EQ(local_source->GetAudioParameters().frames_per_buffer(),
               expected_buffer_size);
@@ -465,14 +381,7 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
   raw_ptr<const AudioDeviceCaptureCapability> variable_latency_device_ =
       nullptr;
   std::unique_ptr<ProcessedLocalAudioSource> system_echo_canceller_source_;
-  const WTF::Vector<media::Point> kMicPositions = {{8, 8, 8}, {4, 4, 4}};
-
-  // TODO(grunell): Store these as separate constants and compare against those
-  // in tests, instead of indexing the vector.
-  const WTF::Vector<blink::WebString> kEchoCancellationTypeValues = {
-      blink::WebString::FromASCII("browser"),
-      blink::WebString::FromASCII("aec3"),
-      blink::WebString::FromASCII("system")};
+  const Vector<media::Point> kMicPositions = {{8, 8, 8}, {4, 4, 4}};
 
  private:
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
@@ -539,11 +448,7 @@ class MediaStreamConstraintsUtilAudioTest
   std::string GetMediaStreamSource() override { return GetParam(); }
 };
 
-enum class ChromeWideAecExperiment {
-  kDisabled,
-  kEnabledWithoutResamplingMitigation,
-  kEnabledWithResamplingMitigation
-};
+enum class ChromeWideAecExperiment { kDisabled, kEnabled };
 
 class MediaStreamConstraintsRemoteAPMTest
     : public MediaStreamConstraintsUtilAudioTestBase,
@@ -564,11 +469,8 @@ class MediaStreamConstraintsRemoteAPMTest
       case ChromeWideAecExperiment::kDisabled:
         experiment_string = "disabled";
         break;
-      case ChromeWideAecExperiment::kEnabledWithoutResamplingMitigation:
-        experiment_string = "\"enabled without resampling mitigation\"";
-        break;
-      case ChromeWideAecExperiment::kEnabledWithResamplingMitigation:
-        experiment_string = "\"enabled with resampling mitigation\"";
+      case ChromeWideAecExperiment::kEnabled:
+        experiment_string = "enabled";
         break;
     }
     return testing::Message()
@@ -594,12 +496,10 @@ class MediaStreamConstraintsRemoteAPMTest
     switch (GetChromeWideAecExperiment()) {
       case ChromeWideAecExperiment::kDisabled:
         return ApmLocation::kProcessedLocalAudioSource;
-      case ChromeWideAecExperiment::kEnabledWithoutResamplingMitigation:
+      case ChromeWideAecExperiment::kEnabled:
         return ApmLocation::kAudioService;
-      case ChromeWideAecExperiment::kEnabledWithResamplingMitigation:
-        return ApmLocation::kAudioServiceAvoidResampling;
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
  private:
@@ -612,17 +512,9 @@ class MediaStreamConstraintsRemoteAPMTest
         scoped_feature_list_.InitAndDisableFeature(
             media::kChromeWideEchoCancellation);
         break;
-      case ChromeWideAecExperiment::kEnabledWithoutResamplingMitigation:
-        scoped_feature_list_.InitAndEnableFeatureWithParameters(
-            media::kChromeWideEchoCancellation,
-            {{ "minimize_resampling",
-               "false" }});
-        break;
-      case ChromeWideAecExperiment::kEnabledWithResamplingMitigation:
-        scoped_feature_list_.InitAndEnableFeatureWithParameters(
-            media::kChromeWideEchoCancellation,
-            {{ "minimize_resampling",
-               "true" }});
+      case ChromeWideAecExperiment::kEnabled:
+        scoped_feature_list_.InitAndEnableFeature(
+            media::kChromeWideEchoCancellation);
         break;
     }
 #endif
@@ -659,7 +551,7 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, SingleBoolConstraint) {
       &AudioCaptureSettings::disable_local_echo,
       &AudioCaptureSettings::render_to_associated_sink};
 
-  const WTF::Vector<blink::BooleanConstraint MediaTrackConstraintSetPlatform::*>
+  const Vector<blink::BooleanConstraint MediaTrackConstraintSetPlatform::*>
       kMainBoolConstraints = {
           &MediaTrackConstraintSetPlatform::disable_local_echo,
           &MediaTrackConstraintSetPlatform::render_to_associated_sink};
@@ -674,7 +566,7 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, SingleBoolConstraint) {
           accessor == kFactoryAccessors[1]) {
         continue;
       }
-      for (WTF::wtf_size_t i = 0; i < kMainSettings.size(); ++i) {
+      for (wtf_size_t i = 0; i < kMainSettings.size(); ++i) {
         for (bool value : kBoolValues) {
           ResetFactory();
           (((constraint_factory_.*accessor)().*kMainBoolConstraints[i]).*
@@ -689,14 +581,10 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, SingleBoolConstraint) {
     }
   }
 
-  const WTF::Vector<blink::BooleanConstraint MediaTrackConstraintSetPlatform::*>
+  const Vector<blink::BooleanConstraint MediaTrackConstraintSetPlatform::*>
       kAudioProcessingConstraints = {
-          &MediaTrackConstraintSetPlatform::goog_audio_mirroring,
-          &MediaTrackConstraintSetPlatform::goog_auto_gain_control,
-          &MediaTrackConstraintSetPlatform::goog_experimental_echo_cancellation,
-          &MediaTrackConstraintSetPlatform::goog_noise_suppression,
-          &MediaTrackConstraintSetPlatform::goog_experimental_noise_suppression,
-          &MediaTrackConstraintSetPlatform::goog_highpass_filter,
+          &MediaTrackConstraintSetPlatform::auto_gain_control,
+          &MediaTrackConstraintSetPlatform::noise_suppression,
       };
 
   ASSERT_EQ(GetAudioProcessingProperties().size(),
@@ -710,8 +598,7 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, SingleBoolConstraint) {
           accessor == kFactoryAccessors[1]) {
         continue;
       }
-      for (WTF::wtf_size_t i = 0; i < GetAudioProcessingProperties().size();
-           ++i) {
+      for (wtf_size_t i = 0; i < GetAudioProcessingProperties().size(); ++i) {
         for (bool value : kBoolValues) {
           ResetFactory();
           (((constraint_factory_.*accessor)().*kAudioProcessingConstraints[i]).*
@@ -892,19 +779,19 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, MultiChannelEchoCancellation) {
   EXPECT_EQ(result.device_id(), "default_device");
   // By default, use the default deevice with echo cancellation enabled
   // and 1 channel,
-  EXPECT_EQ(result.audio_processing_properties().echo_cancellation_type,
-            EchoCancellationType::kEchoCancellationAec3);
+  EXPECT_EQ(result.audio_processing_properties().echo_cancellation_mode,
+            EchoCancellationMode::kBrowserDecides);
   EXPECT_EQ(result.num_channels(), 1);
 
   ResetFactory();
   constraint_factory_.basic().device_id.SetExact("default_device");
-  constraint_factory_.basic().echo_cancellation.SetExact(true);
+  constraint_factory_.basic().echo_cancellation.SetExactBoolean(true);
   result = SelectSettings();
   EXPECT_TRUE(result.HasValue());
   EXPECT_EQ(result.device_id(), "default_device");
   // By default, use 1 channel, even with a stereo device.
-  EXPECT_EQ(result.audio_processing_properties().echo_cancellation_type,
-            EchoCancellationType::kEchoCancellationAec3);
+  EXPECT_EQ(result.audio_processing_properties().echo_cancellation_mode,
+            EchoCancellationMode::kBrowserDecides);
   EXPECT_EQ(result.num_channels(), 1);
 
   ResetFactory();
@@ -912,8 +799,8 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, MultiChannelEchoCancellation) {
   result = SelectSettings();
   EXPECT_TRUE(result.HasValue());
   EXPECT_EQ(result.device_id(), "default_device");
-  EXPECT_EQ(result.audio_processing_properties().echo_cancellation_type,
-            EchoCancellationType::kEchoCancellationAec3);
+  EXPECT_EQ(result.audio_processing_properties().echo_cancellation_mode,
+            EchoCancellationMode::kBrowserDecides);
   EXPECT_EQ(result.num_channels(), 2);
 
   ResetFactory();
@@ -921,8 +808,8 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, MultiChannelEchoCancellation) {
   result = SelectSettings();
   EXPECT_TRUE(result.HasValue());
   EXPECT_EQ(result.device_id(), "default_device");
-  EXPECT_EQ(result.audio_processing_properties().echo_cancellation_type,
-            EchoCancellationType::kEchoCancellationAec3);
+  EXPECT_EQ(result.audio_processing_properties().echo_cancellation_mode,
+            EchoCancellationMode::kBrowserDecides);
   EXPECT_EQ(result.num_channels(), 2);
 
   ResetFactory();
@@ -930,8 +817,8 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, MultiChannelEchoCancellation) {
   result = SelectSettings();
   EXPECT_TRUE(result.HasValue());
   EXPECT_EQ(result.device_id(), "4_channels_device");
-  EXPECT_EQ(result.audio_processing_properties().echo_cancellation_type,
-            EchoCancellationType::kEchoCancellationAec3);
+  EXPECT_EQ(result.audio_processing_properties().echo_cancellation_mode,
+            EchoCancellationMode::kBrowserDecides);
   EXPECT_EQ(result.num_channels(), 4);
 }
 
@@ -1297,7 +1184,7 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, ExactArbitraryDeviceID) {
     EXPECT_EQ(kArbitraryDeviceID.Utf8(), result.device_id());
     CheckBoolDefaults(AudioSettingsBoolMembers(), AudioPropertiesBoolMembers(),
                       result);
-    CheckEchoCancellationTypeDefault(result);
+    CheckEchoCancellationModeDefault(result);
   }
 }
 
@@ -1317,7 +1204,7 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, IdealArbitraryDeviceID) {
   CheckProcessingType(result);
   CheckBoolDefaults(AudioSettingsBoolMembers(), AudioPropertiesBoolMembers(),
                     result);
-  CheckEchoCancellationTypeDefault(result);
+  CheckEchoCancellationModeDefault(result);
 }
 
 TEST_P(MediaStreamConstraintsUtilAudioTest, ExactValidDeviceID) {
@@ -1329,19 +1216,13 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, ExactValidDeviceID) {
     CheckProcessingType(result);
     CheckBoolDefaults(AudioSettingsBoolMembers(), AudioPropertiesBoolMembers(),
                       result);
-    EchoCancellationType expected_echo_cancellation_type =
-        EchoCancellationType::kEchoCancellationDisabled;
+    EchoCancellationMode expected_echo_cancellation_mode =
+        EchoCancellationMode::kDisabled;
     if (IsDeviceCapture()) {
-      const bool has_system_echo_cancellation =
-          device.Parameters().effects() &
-          media::AudioParameters::ECHO_CANCELLER;
-      expected_echo_cancellation_type =
-          has_system_echo_cancellation
-              ? EchoCancellationType::kEchoCancellationSystem
-              : EchoCancellationType::kEchoCancellationAec3;
+      expected_echo_cancellation_mode = EchoCancellationMode::kBrowserDecides;
     }
-    EXPECT_EQ(expected_echo_cancellation_type,
-              result.audio_processing_properties().echo_cancellation_type);
+    EXPECT_EQ(expected_echo_cancellation_mode,
+              result.audio_processing_properties().echo_cancellation_mode);
   }
 }
 
@@ -1354,31 +1235,25 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, ExactGroupID) {
     CheckProcessingType(result);
     CheckBoolDefaults(AudioSettingsBoolMembers(), AudioPropertiesBoolMembers(),
                       result);
-    EchoCancellationType expected_echo_cancellation_type =
-        EchoCancellationType::kEchoCancellationDisabled;
+    EchoCancellationMode expected_echo_cancellation_mode =
+        EchoCancellationMode::kDisabled;
     if (IsDeviceCapture()) {
-      const bool has_system_echo_cancellation =
-          device.Parameters().effects() &
-          media::AudioParameters::ECHO_CANCELLER;
-      expected_echo_cancellation_type =
-          has_system_echo_cancellation
-              ? EchoCancellationType::kEchoCancellationSystem
-              : EchoCancellationType::kEchoCancellationAec3;
+      expected_echo_cancellation_mode = EchoCancellationMode::kBrowserDecides;
     }
-    EXPECT_EQ(expected_echo_cancellation_type,
-              result.audio_processing_properties().echo_cancellation_type);
+    EXPECT_EQ(expected_echo_cancellation_mode,
+              result.audio_processing_properties().echo_cancellation_mode);
   }
 }
 
 // Tests the echoCancellation constraint with a device without system echo
 // cancellation.
 TEST_P(MediaStreamConstraintsUtilAudioTest, EchoCancellationWithWebRtc) {
-  for (auto set_function : kBoolSetFunctions) {
+  for (auto set_function : kBoolOrStringSetBooleanFunctions) {
     for (auto accessor : kFactoryAccessors) {
       // Ideal advanced is ignored by the SelectSettings algorithm.
       // Using array elements instead of pointer values due to the comparison
       // failing on some build configurations.
-      if (set_function == kBoolSetFunctions[1] &&
+      if (set_function == kBoolOrStringSetBooleanFunctions[1] &&
           accessor == kFactoryAccessors[1]) {
         continue;
       }
@@ -1395,26 +1270,17 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, EchoCancellationWithWebRtc) {
         // With content capture, the echo_cancellation constraint controls
         // only the echo_cancellation properties. The other audio processing
         // properties default to false.
-        const EchoCancellationType expected_echo_cancellation_type =
-            value ? EchoCancellationType::kEchoCancellationAec3
-                  : EchoCancellationType::kEchoCancellationDisabled;
-        EXPECT_EQ(expected_echo_cancellation_type,
-                  properties.echo_cancellation_type);
+        const EchoCancellationMode expected_echo_cancellation_mode =
+            value ? EchoCancellationMode::kBrowserDecides
+                  : EchoCancellationMode::kDisabled;
+        EXPECT_EQ(expected_echo_cancellation_mode,
+                  properties.echo_cancellation_mode);
         const bool enable_webrtc_audio_processing =
             IsDeviceCapture() ? value : false;
-        EXPECT_EQ(enable_webrtc_audio_processing,
-                  properties.goog_auto_gain_control);
-        CheckGoogExperimentalEchoCancellationDefault(
-            properties, enable_webrtc_audio_processing);
-        EXPECT_EQ(enable_webrtc_audio_processing,
-                  properties.goog_noise_suppression);
-        EXPECT_EQ(enable_webrtc_audio_processing,
-                  properties.goog_experimental_noise_suppression);
-        EXPECT_EQ(enable_webrtc_audio_processing,
-                  properties.goog_highpass_filter);
+        EXPECT_EQ(enable_webrtc_audio_processing, properties.auto_gain_control);
+        EXPECT_EQ(enable_webrtc_audio_processing, properties.noise_suppression);
 
         // The following are not audio processing.
-        EXPECT_FALSE(properties.goog_audio_mirroring);
         EXPECT_EQ(GetMediaStreamSource() != blink::kMediaStreamSourceDesktop,
                   result.disable_local_echo());
         EXPECT_FALSE(result.render_to_associated_sink());
@@ -1437,12 +1303,12 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, EchoCancellationWithSystem) {
   if (!IsDeviceCapture())
     return;
 
-  for (auto set_function : kBoolSetFunctions) {
+  for (auto set_function : kBoolOrStringSetBooleanFunctions) {
     for (auto accessor : kFactoryAccessors) {
       // Ideal advanced is ignored by the SelectSettings algorithm.
       // Using array elements instead of pointer values due to the comparison
       // failing on some build configurations.
-      if (set_function == kBoolSetFunctions[1] &&
+      if (set_function == kBoolOrStringSetBooleanFunctions[1] &&
           accessor == kFactoryAccessors[1]) {
         continue;
       }
@@ -1460,19 +1326,15 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, EchoCancellationWithSystem) {
         // enables/disables all audio processing by default, WebRTC echo
         // cancellation is always disabled, and system echo cancellation is
         // disabled if the echo_cancellation constraint is false.
-        const EchoCancellationType expected_echo_cancellation_type =
-            value ? EchoCancellationType::kEchoCancellationSystem
-                  : EchoCancellationType::kEchoCancellationDisabled;
-        EXPECT_EQ(expected_echo_cancellation_type,
-                  properties.echo_cancellation_type);
-        EXPECT_EQ(value, properties.goog_auto_gain_control);
-        CheckGoogExperimentalEchoCancellationDefault(properties, value);
-        EXPECT_EQ(value, properties.goog_noise_suppression);
-        EXPECT_EQ(value, properties.goog_experimental_noise_suppression);
-        EXPECT_EQ(value, properties.goog_highpass_filter);
+        const EchoCancellationMode expected_echo_cancellation_mode =
+            value ? EchoCancellationMode::kBrowserDecides
+                  : EchoCancellationMode::kDisabled;
+        EXPECT_EQ(expected_echo_cancellation_mode,
+                  properties.echo_cancellation_mode);
+        EXPECT_EQ(value, properties.auto_gain_control);
+        EXPECT_EQ(value, properties.noise_suppression);
 
         // The following are not audio processing.
-        EXPECT_FALSE(properties.goog_audio_mirroring);
         EXPECT_EQ(GetMediaStreamSource() != blink::kMediaStreamSourceDesktop,
                   result.disable_local_echo());
         EXPECT_FALSE(result.render_to_associated_sink());
@@ -1483,145 +1345,44 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, EchoCancellationWithSystem) {
   }
 }
 
-// Tests the googEchoCancellation constraint with a device without system echo
-// cancellation.
-TEST_P(MediaStreamConstraintsUtilAudioTest, GoogEchoCancellationWithWebRtc) {
-  for (auto set_function : kBoolSetFunctions) {
-    for (auto accessor : kFactoryAccessors) {
-      // Ideal advanced is ignored by the SelectSettings algorithm.
-      // Using array elements instead of pointers due to the comparison failing
-      // on compilers.
-      if (set_function == kBoolSetFunctions[1] &&
-          accessor == kFactoryAccessors[1]) {
-        continue;
-      }
-      for (bool value : kBoolValues) {
-        ResetFactory();
-        ((constraint_factory_.*accessor)().goog_echo_cancellation.*
-         set_function)(value);
-        auto result = SelectSettings();
-        EXPECT_TRUE(result.HasValue());
-        const AudioProcessingProperties& properties =
-            result.audio_processing_properties();
-        // The goog_echo_cancellation constraint controls only the
-        // echo_cancellation properties. The other audio processing properties
-        // use the default values.
-        const EchoCancellationType expected_echo_cancellation_type =
-            value ? EchoCancellationType::kEchoCancellationAec3
-                  : EchoCancellationType::kEchoCancellationDisabled;
-        EXPECT_EQ(expected_echo_cancellation_type,
-                  properties.echo_cancellation_type);
-        CheckProcessingType(result);
-        CheckBoolDefaults(AudioSettingsBoolMembers(),
-                          AudioPropertiesBoolMembers(), result);
-        if (IsDeviceCapture()) {
-          CheckDevice(*default_device_, result);
-        } else {
-          EXPECT_TRUE(result.device_id().empty());
-        }
-      }
-    }
-  }
-}
-
-// Tests the googEchoCancellation constraint with a device with system echo
-// cancellation.
-TEST_P(MediaStreamConstraintsUtilAudioTest, GoogEchoCancellationWithSystem) {
-  // With content capture, there is no system echo cancellation, so
-  // nothing to test.
-  if (!IsDeviceCapture())
-    return;
-
-  for (auto set_function : kBoolSetFunctions) {
-    for (auto accessor : kFactoryAccessors) {
-      // Ideal advanced is ignored by the SelectSettings algorithm.
-      // Using array elements instead of pointer values due to the comparison
-      // failing on some build configurations.
-      if (set_function == kBoolSetFunctions[1] &&
-          accessor == kFactoryAccessors[1]) {
-        continue;
-      }
-      for (bool value : kBoolValues) {
-        ResetFactory();
-        constraint_factory_.basic().device_id.SetExact(
-            system_echo_canceller_device_->DeviceID());
-        ((constraint_factory_.*accessor)().goog_echo_cancellation.*
-         set_function)(value);
-        auto result = SelectSettings();
-        EXPECT_TRUE(result.HasValue());
-        const AudioProcessingProperties& properties =
-            result.audio_processing_properties();
-        // With system echo cancellation, WebRTC echo cancellation is always
-        // disabled, and system echo cancellation is disabled if
-        // goog_echo_cancellation is false.
-        const EchoCancellationType expected_echo_cancellation_type =
-            value ? EchoCancellationType::kEchoCancellationSystem
-                  : EchoCancellationType::kEchoCancellationDisabled;
-        EXPECT_EQ(expected_echo_cancellation_type,
-                  properties.echo_cancellation_type);
-        CheckProcessingType(result);
-        CheckBoolDefaults(AudioSettingsBoolMembers(),
-                          AudioPropertiesBoolMembers(), result);
-        CheckDevice(*system_echo_canceller_device_, result);
-      }
-    }
-  }
-}
-
-// Test that having differing mandatory values for echoCancellation and
-// googEchoCancellation fails.
-TEST_P(MediaStreamConstraintsUtilAudioTest, ContradictoryEchoCancellation) {
-  for (bool value : kBoolValues) {
-    constraint_factory_.basic().echo_cancellation.SetExact(value);
-    constraint_factory_.basic().goog_echo_cancellation.SetExact(!value);
-    auto result = SelectSettings();
-    EXPECT_FALSE(result.HasValue());
-    EXPECT_EQ(result.failed_constraint_name(),
-              constraint_factory_.basic().echo_cancellation.GetName());
-  }
-}
-
 // Tests that individual boolean audio-processing constraints override the
 // default value set by the echoCancellation constraint.
 TEST_P(MediaStreamConstraintsUtilAudioTest,
        EchoCancellationAndSingleBoolConstraint) {
-  const WTF::Vector<blink::BooleanConstraint MediaTrackConstraintSetPlatform::*>
+  const Vector<blink::BooleanConstraint MediaTrackConstraintSetPlatform::*>
       kAudioProcessingConstraints = {
-          &MediaTrackConstraintSetPlatform::goog_audio_mirroring,
-          &MediaTrackConstraintSetPlatform::goog_auto_gain_control,
-          &MediaTrackConstraintSetPlatform::goog_experimental_echo_cancellation,
-          &MediaTrackConstraintSetPlatform::goog_noise_suppression,
-          &MediaTrackConstraintSetPlatform::goog_experimental_noise_suppression,
-          &MediaTrackConstraintSetPlatform::goog_highpass_filter,
+          &MediaTrackConstraintSetPlatform::auto_gain_control,
+          &MediaTrackConstraintSetPlatform::noise_suppression,
       };
 
   ASSERT_EQ(GetAudioProcessingProperties().size(),
             kAudioProcessingConstraints.size());
-  for (auto set_function : kBoolSetFunctions) {
+  for (size_t function_idx = 0; function_idx < kBoolSetFunctions.size();
+       ++function_idx) {
     for (auto accessor : kFactoryAccessors) {
       // Ideal advanced is ignored by the SelectSettings algorithm.
       // Using array elements instead of pointer values due to the comparison
       // failing on some build configurations.
-      if (set_function == kBoolSetFunctions[1] &&
-          accessor == kFactoryAccessors[1]) {
+      if (function_idx == 1 && accessor == kFactoryAccessors[1]) {
         continue;
       }
-      for (WTF::wtf_size_t i = 0; i < GetAudioProcessingProperties().size();
-           ++i) {
+      auto set_bool_function = kBoolSetFunctions[function_idx];
+      auto set_bool_or_string_function =
+          kBoolOrStringSetBooleanFunctions[function_idx];
+      for (wtf_size_t i = 0; i < GetAudioProcessingProperties().size(); ++i) {
         ResetFactory();
         ((constraint_factory_.*accessor)().echo_cancellation.*
-         set_function)(false);
+         set_bool_or_string_function)(false);
         (((constraint_factory_.*accessor)().*kAudioProcessingConstraints[i]).*
-         set_function)(true);
+         set_bool_function)(true);
         auto result = SelectSettings();
         EXPECT_TRUE(result.HasValue());
         CheckProcessingType(result);
-        EXPECT_EQ(EchoCancellationType::kEchoCancellationDisabled,
-                  result.audio_processing_properties().echo_cancellation_type);
+        EXPECT_EQ(EchoCancellationMode::kDisabled,
+                  result.audio_processing_properties().echo_cancellation_mode);
         EXPECT_TRUE(result.audio_processing_properties().*
                     GetAudioProcessingProperties()[i]);
-        for (WTF::wtf_size_t j = 0; j < GetAudioProcessingProperties().size();
-             ++j) {
+        for (wtf_size_t j = 0; j < GetAudioProcessingProperties().size(); ++j) {
           if (i == j)
             continue;
           EXPECT_FALSE(result.audio_processing_properties().*
@@ -1641,8 +1402,7 @@ TEST_P(MediaStreamConstraintsUtilAudioTest,
   // Create a capability that is based on a already opened source with system
   // echo cancellation enabled.
   AudioProcessingProperties properties;
-  properties.echo_cancellation_type =
-      EchoCancellationType::kEchoCancellationSystem;
+  properties.echo_cancellation_mode = EchoCancellationMode::kBrowserDecides;
   std::unique_ptr<ProcessedLocalAudioSource> system_echo_canceller_source =
       GetProcessedLocalAudioSource(
           properties, false /* disable_local_echo */,
@@ -1657,14 +1417,14 @@ TEST_P(MediaStreamConstraintsUtilAudioTest,
   constraint_factory_.Reset();
   constraint_factory_.basic().device_id.SetExact(
       system_echo_canceller_with_source->DeviceID());
-  constraint_factory_.basic().echo_cancellation.SetExact(true);
+  constraint_factory_.basic().echo_cancellation.SetExactBoolean(true);
   auto result = SelectSettings(true, capabilities);
   EXPECT_TRUE(result.HasValue());
 
   constraint_factory_.Reset();
   constraint_factory_.basic().device_id.SetExact(
       system_echo_canceller_with_source->DeviceID());
-  constraint_factory_.basic().echo_cancellation.SetExact(false);
+  constraint_factory_.basic().echo_cancellation.SetExactBoolean(false);
   result = SelectSettings(true, capabilities);
 #if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS supports reopening a device with a different system AEC setting.
@@ -1675,6 +1435,9 @@ TEST_P(MediaStreamConstraintsUtilAudioTest,
 }
 
 TEST_P(MediaStreamConstraintsUtilAudioTest, VoiceIsolationControl) {
+  if (!IsDeviceCapture()) {
+    return;
+  }
   constraint_factory_.Reset();
   constraint_factory_.basic().voice_isolation.SetExact(true);
   AudioCaptureSettings settings = SelectSettings(true, capabilities_);
@@ -1701,16 +1464,14 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, VoiceIsolationControl) {
 // Test advanced constraints sets that can be satisfied.
 TEST_P(MediaStreamConstraintsUtilAudioTest, AdvancedCompatibleConstraints) {
   constraint_factory_.AddAdvanced().render_to_associated_sink.SetExact(true);
-  constraint_factory_.AddAdvanced().goog_audio_mirroring.SetExact(true);
   auto result = SelectSettings();
   EXPECT_TRUE(result.HasValue());
   CheckDeviceDefaults(result);
   CheckProcessingType(result);
-  CheckBoolDefaults({&AudioCaptureSettings::render_to_associated_sink},
-                    {&AudioProcessingProperties::goog_audio_mirroring}, result);
-  CheckEchoCancellationTypeDefault(result);
+  CheckBoolDefaults({&AudioCaptureSettings::render_to_associated_sink}, {},
+                    result);
+  CheckEchoCancellationModeDefault(result);
   EXPECT_TRUE(result.render_to_associated_sink());
-  EXPECT_TRUE(result.audio_processing_properties().goog_audio_mirroring);
 }
 
 // Test that an advanced constraint set that contradicts a previous constraint
@@ -1718,40 +1479,32 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, AdvancedCompatibleConstraints) {
 // applied.
 TEST_P(MediaStreamConstraintsUtilAudioTest,
        AdvancedConflictingMiddleConstraints) {
-  constraint_factory_.AddAdvanced().goog_highpass_filter.SetExact(true);
+  constraint_factory_.AddAdvanced().noise_suppression.SetExact(true);
   auto& advanced2 = constraint_factory_.AddAdvanced();
-  advanced2.goog_highpass_filter.SetExact(false);
-  constraint_factory_.AddAdvanced().goog_audio_mirroring.SetExact(true);
+  advanced2.noise_suppression.SetExact(false);
   auto result = SelectSettings();
   EXPECT_TRUE(result.HasValue());
   CheckProcessingType(result);
   CheckDeviceDefaults(result);
-  CheckBoolDefaults({},
-                    {&AudioProcessingProperties::goog_audio_mirroring,
-                     &AudioProcessingProperties::goog_highpass_filter},
+  CheckBoolDefaults({}, {&AudioProcessingProperties::noise_suppression},
                     result);
-  CheckEchoCancellationTypeDefault(result);
-  EXPECT_TRUE(result.audio_processing_properties().goog_audio_mirroring);
-  EXPECT_TRUE(result.audio_processing_properties().goog_highpass_filter);
+  CheckEchoCancellationModeDefault(result);
+  EXPECT_TRUE(result.audio_processing_properties().noise_suppression);
 }
 
 // Test that an advanced constraint set that contradicts a previous constraint
 // set with a boolean constraint is ignored.
 TEST_P(MediaStreamConstraintsUtilAudioTest, AdvancedConflictingLastConstraint) {
-  constraint_factory_.AddAdvanced().goog_highpass_filter.SetExact(true);
-  constraint_factory_.AddAdvanced().goog_audio_mirroring.SetExact(true);
+  constraint_factory_.AddAdvanced().noise_suppression.SetExact(true);
   auto result = SelectSettings();
   EXPECT_TRUE(result.HasValue());
   CheckProcessingType(result);
   CheckDeviceDefaults(result);
-  CheckBoolDefaults({},
-                    {&AudioProcessingProperties::goog_audio_mirroring,
-                     &AudioProcessingProperties::goog_highpass_filter},
+  CheckBoolDefaults({}, {&AudioProcessingProperties::noise_suppression},
                     result);
-  CheckEchoCancellationTypeDefault(result);
+  CheckEchoCancellationModeDefault(result);
   // The fourth advanced set is ignored because it contradicts the second set.
-  EXPECT_TRUE(result.audio_processing_properties().goog_audio_mirroring);
-  EXPECT_TRUE(result.audio_processing_properties().goog_highpass_filter);
+  EXPECT_TRUE(result.audio_processing_properties().noise_suppression);
 }
 
 // NoDevices tests verify that the case with no devices is handled correctly.
@@ -1786,6 +1539,13 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, NoDevicesWithConstraints) {
 // sources that have no audio processing.
 TEST_P(MediaStreamConstraintsUtilAudioTest, SourceWithNoAudioProcessing) {
   for (bool enable_properties : {true, false}) {
+    if (enable_properties && media::IsSystemLoopbackAsAecReferenceEnabled()) {
+      // LocalMediaStreamAudioSource is never created with system echo canceller
+      // when loopback AEC is enabled.
+      continue;
+    }
+
+    SCOPED_TRACE(enable_properties);
     std::unique_ptr<blink::LocalMediaStreamAudioSource> source =
         GetLocalMediaStreamAudioSource(
             enable_properties /* enable_system_echo_canceller */,
@@ -1793,15 +1553,14 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, SourceWithNoAudioProcessing) {
             enable_properties /* render_to_associated_sink */);
 
     // These constraints are false in |source|.
-    const WTF::Vector<
-        blink::BooleanConstraint MediaTrackConstraintSetPlatform::*>
+    const Vector<blink::BooleanConstraint MediaTrackConstraintSetPlatform::*>
         kConstraints = {
-            &MediaTrackConstraintSetPlatform::echo_cancellation,
             &MediaTrackConstraintSetPlatform::disable_local_echo,
             &MediaTrackConstraintSetPlatform::render_to_associated_sink,
         };
 
-    for (WTF::wtf_size_t i = 0; i < kConstraints.size(); ++i) {
+    for (wtf_size_t i = 0; i < kConstraints.size(); ++i) {
+      SCOPED_TRACE(i);
       constraint_factory_.Reset();
       (constraint_factory_.basic().*kConstraints[i])
           .SetExact(enable_properties);
@@ -1842,42 +1601,28 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, SourceWithAudioProcessing) {
   for (bool use_defaults : {true, false}) {
     AudioProcessingProperties properties;
     if (!use_defaults) {
-      properties.echo_cancellation_type =
-          EchoCancellationType::kEchoCancellationDisabled;
-      properties.goog_audio_mirroring = !properties.goog_audio_mirroring;
-      properties.goog_auto_gain_control = !properties.goog_auto_gain_control;
-      properties.goog_experimental_echo_cancellation =
-          !properties.goog_experimental_echo_cancellation;
-      properties.goog_noise_suppression = !properties.goog_noise_suppression;
-      properties.goog_experimental_noise_suppression =
-          !properties.goog_experimental_noise_suppression;
-      properties.goog_highpass_filter = !properties.goog_highpass_filter;
+      properties.echo_cancellation_mode = EchoCancellationMode::kDisabled;
+      properties.auto_gain_control = !properties.auto_gain_control;
+      properties.noise_suppression = !properties.noise_suppression;
     }
 
     std::unique_ptr<ProcessedLocalAudioSource> source =
         GetProcessedLocalAudioSource(
             properties, use_defaults /* disable_local_echo */,
             use_defaults /* render_to_associated_sink */);
-    const WTF::Vector<
-        blink::BooleanConstraint MediaTrackConstraintSetPlatform::*>
+    const Vector<blink::BooleanConstraint MediaTrackConstraintSetPlatform::*>
         kAudioProcessingConstraints = {
-            &MediaTrackConstraintSetPlatform::goog_audio_mirroring,
-            &MediaTrackConstraintSetPlatform::goog_auto_gain_control,
-            &MediaTrackConstraintSetPlatform::
-                goog_experimental_echo_cancellation,
-            &MediaTrackConstraintSetPlatform::goog_noise_suppression,
-            &MediaTrackConstraintSetPlatform::
-                goog_experimental_noise_suppression,
-            &MediaTrackConstraintSetPlatform::goog_highpass_filter,
+            &MediaTrackConstraintSetPlatform::auto_gain_control,
+            &MediaTrackConstraintSetPlatform::noise_suppression,
         };
     ASSERT_EQ(kAudioProcessingConstraints.size(),
               GetAudioProcessingProperties().size());
 
-    for (WTF::wtf_size_t i = 0; i < kAudioProcessingConstraints.size(); ++i) {
+    for (wtf_size_t i = 0; i < kAudioProcessingConstraints.size(); ++i) {
       constraint_factory_.Reset();
       (constraint_factory_.basic().*kAudioProcessingConstraints[i])
           .SetExact(properties.*GetAudioProcessingProperties()[i]);
-      auto result = SelectSettingsAudioCapture(
+      blink::AudioCaptureSettings result = SelectSettingsAudioCapture(
           source.get(), constraint_factory_.CreateMediaConstraints());
       EXPECT_TRUE(result.HasValue());
 
@@ -1906,41 +1651,40 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, SourceWithAudioProcessing) {
 
     // Test same as above but for echo cancellation.
     constraint_factory_.Reset();
-    constraint_factory_.basic().echo_cancellation.SetExact(
-        properties.echo_cancellation_type ==
-        EchoCancellationType::kEchoCancellationAec3);
+    constraint_factory_.basic().echo_cancellation.SetExactBoolean(
+        properties.echo_cancellation_mode ==
+        EchoCancellationMode::kBrowserDecides);
     auto result = SelectSettingsAudioCapture(
         source.get(), constraint_factory_.CreateMediaConstraints());
     EXPECT_TRUE(result.HasValue());
 
     constraint_factory_.Reset();
-    constraint_factory_.basic().echo_cancellation.SetExact(
-        properties.echo_cancellation_type !=
-        EchoCancellationType::kEchoCancellationAec3);
+    constraint_factory_.basic().echo_cancellation.SetExactBoolean(
+        properties.echo_cancellation_mode !=
+        EchoCancellationMode::kBrowserDecides);
     result = SelectSettingsAudioCapture(
         source.get(), constraint_factory_.CreateMediaConstraints());
     EXPECT_FALSE(result.HasValue());
 
     constraint_factory_.Reset();
-    constraint_factory_.basic().echo_cancellation.SetIdeal(true);
+    constraint_factory_.basic().echo_cancellation.SetIdealBoolean(true);
     result = SelectSettingsAudioCapture(
         source.get(), constraint_factory_.CreateMediaConstraints());
     EXPECT_TRUE(result.HasValue());
 
     constraint_factory_.Reset();
-    constraint_factory_.basic().echo_cancellation.SetIdeal(false);
+    constraint_factory_.basic().echo_cancellation.SetIdealBoolean(false);
     result = SelectSettingsAudioCapture(
         source.get(), constraint_factory_.CreateMediaConstraints());
     EXPECT_TRUE(result.HasValue());
 
     // These constraints are false in |source|.
-    const WTF::Vector<
-        blink::BooleanConstraint MediaTrackConstraintSetPlatform::*>
+    const Vector<blink::BooleanConstraint MediaTrackConstraintSetPlatform::*>
         kAudioBrowserConstraints = {
             &MediaTrackConstraintSetPlatform::disable_local_echo,
             &MediaTrackConstraintSetPlatform::render_to_associated_sink,
         };
-    for (WTF::wtf_size_t i = 0; i < kAudioBrowserConstraints.size(); ++i) {
+    for (wtf_size_t i = 0; i < kAudioBrowserConstraints.size(); ++i) {
       constraint_factory_.Reset();
       (constraint_factory_.basic().*kAudioBrowserConstraints[i])
           .SetExact(use_defaults);
@@ -1971,25 +1715,26 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, SourceWithAudioProcessing) {
 
     // Test same as above for echo cancellation.
     constraint_factory_.Reset();
-    constraint_factory_.basic().echo_cancellation.SetExact(use_defaults);
+    constraint_factory_.basic().echo_cancellation.SetExactBoolean(use_defaults);
     result = SelectSettingsAudioCapture(
         source.get(), constraint_factory_.CreateMediaConstraints());
     EXPECT_TRUE(result.HasValue());
 
     constraint_factory_.Reset();
-    constraint_factory_.basic().echo_cancellation.SetExact(!use_defaults);
+    constraint_factory_.basic().echo_cancellation.SetExactBoolean(
+        !use_defaults);
     result = SelectSettingsAudioCapture(
         source.get(), constraint_factory_.CreateMediaConstraints());
     EXPECT_FALSE(result.HasValue());
 
     constraint_factory_.Reset();
-    constraint_factory_.basic().echo_cancellation.SetIdeal(true);
+    constraint_factory_.basic().echo_cancellation.SetIdealBoolean(true);
     result = SelectSettingsAudioCapture(
         source.get(), constraint_factory_.CreateMediaConstraints());
     EXPECT_TRUE(result.HasValue());
 
     constraint_factory_.Reset();
-    constraint_factory_.basic().echo_cancellation.SetIdeal(false);
+    constraint_factory_.basic().echo_cancellation.SetIdealBoolean(false);
     result = SelectSettingsAudioCapture(
         source.get(), constraint_factory_.CreateMediaConstraints());
     EXPECT_TRUE(result.HasValue());
@@ -2016,47 +1761,30 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, UsedAndUnusedSources) {
 
   {
     constraint_factory_.Reset();
-    constraint_factory_.basic().echo_cancellation.SetExact(false);
+    constraint_factory_.basic().echo_cancellation.SetExactBoolean(false);
 
     auto result = SelectSettingsAudioCapture(
         capabilities, constraint_factory_.CreateMediaConstraints(),
         GetMediaStreamType(),
-        false /* should_disable_hardware_noise_suppression */);
+        /*is_reconfiguration_allowed=*/false);
     EXPECT_TRUE(result.HasValue());
     EXPECT_EQ(result.device_id(), kUnusedDeviceID.Utf8());
-    EXPECT_EQ(result.audio_processing_properties().echo_cancellation_type,
-              EchoCancellationType::kEchoCancellationDisabled);
+    EXPECT_EQ(result.audio_processing_properties().echo_cancellation_mode,
+              EchoCancellationMode::kDisabled);
   }
 
   {
     constraint_factory_.Reset();
-    constraint_factory_.basic().echo_cancellation.SetExact(true);
+    constraint_factory_.basic().echo_cancellation.SetExactBoolean(true);
     auto result = SelectSettingsAudioCapture(
         capabilities, constraint_factory_.CreateMediaConstraints(),
         GetMediaStreamType(),
-        false /* should_disable_hardware_noise_suppression */);
+        /*is_reconfiguration_allowed=*/false);
     EXPECT_TRUE(result.HasValue());
     EXPECT_EQ(result.device_id(), processed_source->device().id);
-    EXPECT_EQ(result.audio_processing_properties().echo_cancellation_type,
-              EchoCancellationType::kEchoCancellationAec3);
+    EXPECT_EQ(result.audio_processing_properties().echo_cancellation_mode,
+              EchoCancellationMode::kBrowserDecides);
   }
-}
-
-TEST_P(MediaStreamConstraintsUtilAudioTest, ExperimentalEcWithSource) {
-  std::unique_ptr<blink::LocalMediaStreamAudioSource> source =
-      GetLocalMediaStreamAudioSource(
-          false /* enable_system_echo_canceller */,
-          false /* disable_local_echo */, false /* render_to_associated_sink */,
-          true /* enable_experimental_echo_canceller */);
-
-  constraint_factory_.Reset();
-  constraint_factory_.basic().echo_cancellation.SetExact(false);
-
-  auto result = SelectSettingsAudioCapture(
-      source.get(), constraint_factory_.CreateMediaConstraints());
-  EXPECT_TRUE(result.HasValue());
-  EXPECT_EQ(result.audio_processing_properties().echo_cancellation_type,
-            EchoCancellationType::kEchoCancellationDisabled);
 }
 
 TEST_P(MediaStreamConstraintsUtilAudioTest,
@@ -2097,15 +1825,10 @@ TEST_P(MediaStreamConstraintsRemoteAPMTest, DeviceSampleRate) {
   ResetFactory();
   constraint_factory_.basic().sample_rate.SetExact(
       media::AudioParameters::kAudioCDSampleRate);
-  constraint_factory_.basic().echo_cancellation.SetExact(true);
+  constraint_factory_.basic().echo_cancellation.SetExactBoolean(true);
   result = SelectSettings();
 
-  // Native sample rate is only supported by APM in the audio service, without
-  // resampling mitigations.
-  if (GetApmLocation() == ApmLocation::kAudioService)
-    EXPECT_TRUE(result.HasValue());
-  else
-    EXPECT_FALSE(result.HasValue());
+  EXPECT_FALSE(result.HasValue());
 }
 
 TEST_P(MediaStreamConstraintsRemoteAPMTest,
@@ -2116,63 +1839,11 @@ TEST_P(MediaStreamConstraintsRemoteAPMTest,
   ResetFactory();
   constraint_factory_.basic().sample_rate.SetExact(
       media::WebRtcAudioProcessingSampleRateHz());
-  constraint_factory_.basic().echo_cancellation.SetExact(true);
+  constraint_factory_.basic().echo_cancellation.SetExactBoolean(true);
   result = SelectSettings();
 
-  // Native sample rate is only supported by APM in the audio service, without
-  // resampling mitigations.
-  if (GetApmLocation() == ApmLocation::kAudioService)
-    EXPECT_FALSE(result.HasValue());
-  else
-    EXPECT_TRUE(result.HasValue());
+  EXPECT_TRUE(result.HasValue());
 }
-
-#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-class MediaStreamConstraintsRemoteAPMSampleRateRestrictionTest
-    : public MediaStreamConstraintsUtilAudioTestBase,
-      public testing::WithParamInterface<bool> {
- protected:
-  bool AllowAllSampleRates() { return GetParam(); }
-
- private:
-  void SetUp() override {
-    MediaStreamConstraintsUtilAudioTestBase::SetUp();
-
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        media::kChromeWideEchoCancellation,
-        {{"allow_all_sample_rates", AllowAllSampleRates() ? "true" : "false"}});
-
-    // Setup the capabilities with a prohibited sample rate.
-    ResetFactory();
-    constexpr int kNondivisibleSampleRateHz = 22050;
-    const std::string k22050HzDeviceId = "22050hz_device";
-    capabilities_.emplace_back(
-        k22050HzDeviceId.c_str(), "22050hz_fake_group",
-        media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                               media::ChannelLayoutConfig::Stereo(),
-                               kNondivisibleSampleRateHz, 1000));
-    default_device_ = &capabilities_[0];
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_P(MediaStreamConstraintsRemoteAPMSampleRateRestrictionTest,
-       ToggleNondivisibleSampleRatesParameter) {
-  SCOPED_TRACE(testing::Message()
-               << "allow_all_sample_rates=" << AllowAllSampleRates());
-
-  constraint_factory_.basic().echo_cancellation.SetExact(true);
-  AudioCaptureSettings result = SelectSettings();
-
-  EXPECT_EQ(result.HasValue(), AllowAllSampleRates());
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    MediaStreamConstraintsRemoteAPMSampleRateRestrictionTest,
-    testing::Bool());
-#endif
 
 TEST_P(MediaStreamConstraintsUtilAudioTest, LatencyConstraint) {
   if (!IsDeviceCapture())
@@ -2233,15 +1904,12 @@ INSTANTIATE_TEST_SUITE_P(All,
 INSTANTIATE_TEST_SUITE_P(
     All,
     MediaStreamConstraintsRemoteAPMTest,
-    testing::Combine(
-        testing::Values("",
-                        blink::kMediaStreamSourceTab,
-                        blink::kMediaStreamSourceSystem,
-                        blink::kMediaStreamSourceDesktop),
-        testing::Values(
-            ChromeWideAecExperiment::kDisabled,
-            ChromeWideAecExperiment::kEnabledWithoutResamplingMitigation,
-            ChromeWideAecExperiment::kEnabledWithResamplingMitigation)));
+    testing::Combine(testing::Values("",
+                                     blink::kMediaStreamSourceTab,
+                                     blink::kMediaStreamSourceSystem,
+                                     blink::kMediaStreamSourceDesktop),
+                     testing::Values(ChromeWideAecExperiment::kDisabled,
+                                     ChromeWideAecExperiment::kEnabled)));
 #else
 INSTANTIATE_TEST_SUITE_P(
     All,
@@ -2252,4 +1920,350 @@ INSTANTIATE_TEST_SUITE_P(
                                      blink::kMediaStreamSourceDesktop),
                      testing::Values(ChromeWideAecExperiment::kDisabled)));
 #endif
+
+class MediaStreamConstraintsEchoCancellationModeTest
+    : public MediaStreamConstraintsUtilAudioTestBase {
+ protected:
+  static bool PlatformSupportsRemoteOnly() {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+    return false;
+#else
+    return true;
+#endif
+  }
+
+ private:
+  void SetUp() override {
+    MediaStreamConstraintsUtilAudioTestBase::SetUp();
+    ResetFactory();
+    CHECK(IsDeviceCapture());
+    capabilities_.emplace_back(
+        "default_device", "fake_group1",
+        media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                               media::ChannelLayoutConfig::Stereo(),
+                               media::AudioParameters::kAudioCDSampleRate,
+                               1000));
+
+    media::AudioParameters system_echo_canceller_parameters(
+        media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+        media::ChannelLayoutConfig::Stereo(),
+        media::AudioParameters::kAudioCDSampleRate, 1000);
+    system_echo_canceller_parameters.set_effects(
+        media::AudioParameters::ECHO_CANCELLER);
+    capabilities_.emplace_back("system_echo_canceller_device", "fake_group2",
+                               system_echo_canceller_parameters);
+
+    default_device_ = &capabilities_[0];
+    system_echo_canceller_device_ = &capabilities_[1];
+  }
+};
+
+TEST_F(MediaStreamConstraintsEchoCancellationModeTest, ExactAll) {
+  constraint_factory_.Reset();
+  constraint_factory_.basic().echo_cancellation.SetExactString("all");
+  AudioCaptureSettings settings = SelectSettings(true, capabilities_);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(settings.audio_processing_properties().echo_cancellation_mode,
+            EchoCancellationMode::kAll);
+  // If loopback AEC is enabled, it can be used to provide system AEC for the
+  // default device. Otherwise, the device that supports system AEC will be
+  // selected.
+  const AudioDeviceCaptureCapability* expected_device =
+      media::IsSystemLoopbackAsAecReferenceEnabled()
+          ? default_device_
+          : system_echo_canceller_device_;
+  CheckDevice(*expected_device, settings);
+}
+
+TEST_F(MediaStreamConstraintsEchoCancellationModeTest, IdealAll) {
+  constraint_factory_.Reset();
+  constraint_factory_.basic().echo_cancellation.SetIdealString("all");
+  AudioCaptureSettings settings = SelectSettings(true, capabilities_);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(settings.audio_processing_properties().echo_cancellation_mode,
+            EchoCancellationMode::kAll);
+  // If loopback AEC is enabled, it can be used to provide system AEC for the
+  // default device. Otherwise, the device that supports system AEC will be
+  // selected.
+  const AudioDeviceCaptureCapability* expected_device =
+      media::IsSystemLoopbackAsAecReferenceEnabled()
+          ? default_device_
+          : system_echo_canceller_device_;
+  CheckDevice(*expected_device, settings);
+}
+
+TEST_F(MediaStreamConstraintsEchoCancellationModeTest,
+       ExactAllUnsupportedDevice) {
+  constraint_factory_.Reset();
+  constraint_factory_.basic().echo_cancellation.SetExactString("all");
+  // Exclude the device with system AEC from consideration.
+  constraint_factory_.basic().device_id.SetExact(default_device_->DeviceID());
+  AudioCaptureSettings settings = SelectSettings(true, capabilities_);
+  if (media::IsSystemLoopbackAsAecReferenceEnabled()) {
+    CheckDevice(*default_device_, settings);
+  } else {
+    EXPECT_FALSE(settings.HasValue());
+    EXPECT_THAT(settings.failed_constraint_name(),
+                testing::MatchesRegex("echoCancellation|deviceId"));
+  }
+}
+
+TEST_F(MediaStreamConstraintsEchoCancellationModeTest,
+       IdealAllUnsupportedDevice) {
+  constraint_factory_.Reset();
+  constraint_factory_.basic().echo_cancellation.SetIdealString("all");
+  // Exclude the device with system AEC from consideration.
+  constraint_factory_.basic().device_id.SetExact(default_device_->DeviceID());
+  AudioCaptureSettings settings = SelectSettings(true, capabilities_);
+  EXPECT_TRUE(settings.HasValue());
+  // If loopback AEC is available, we use it to provide All AEC. Otherwise, fall
+  // back to BrowserDecides AEC.
+  EXPECT_EQ(settings.audio_processing_properties().echo_cancellation_mode,
+            media::IsSystemLoopbackAsAecReferenceEnabled()
+                ? EchoCancellationMode::kAll
+                : EchoCancellationMode::kBrowserDecides);
+  CheckDevice(*default_device_, settings);
+}
+
+TEST_F(MediaStreamConstraintsEchoCancellationModeTest, ExactRemoteOnly) {
+  constraint_factory_.Reset();
+  constraint_factory_.basic().echo_cancellation.SetExactString("remote-only");
+  AudioCaptureSettings settings = SelectSettings(true, capabilities_);
+  EXPECT_EQ(settings.HasValue(), PlatformSupportsRemoteOnly());
+  if (PlatformSupportsRemoteOnly()) {
+    EXPECT_EQ(settings.audio_processing_properties().echo_cancellation_mode,
+              EchoCancellationMode::kRemoteOnly);
+  } else {
+    EXPECT_THAT(settings.failed_constraint_name(),
+                testing::StrEq("echoCancellation"));
+  }
+}
+
+TEST_F(MediaStreamConstraintsEchoCancellationModeTest, IdealRemoteOnly) {
+  constraint_factory_.Reset();
+  constraint_factory_.basic().echo_cancellation.SetIdealString("remote-only");
+  AudioCaptureSettings settings = SelectSettings(true, capabilities_);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(settings.audio_processing_properties().echo_cancellation_mode,
+            PlatformSupportsRemoteOnly()
+                ? EchoCancellationMode::kRemoteOnly
+                : EchoCancellationMode::kBrowserDecides);
+}
+
+TEST_F(MediaStreamConstraintsEchoCancellationModeTest, ExactInvalidMode) {
+  constraint_factory_.Reset();
+  constraint_factory_.basic().echo_cancellation.SetExactString("invalid");
+  AudioCaptureSettings settings = SelectSettings(true, capabilities_);
+  EXPECT_FALSE(settings.HasValue());
+  EXPECT_THAT(settings.failed_constraint_name(),
+              testing::StrEq("echoCancellation"));
+}
+
+TEST_F(MediaStreamConstraintsEchoCancellationModeTest, IdealInvalidMode) {
+  constraint_factory_.Reset();
+  constraint_factory_.basic().echo_cancellation.SetIdealString("invalid");
+  AudioCaptureSettings settings = SelectSettings(true, capabilities_);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(settings.audio_processing_properties().echo_cancellation_mode,
+            EchoCancellationMode::kBrowserDecides);
+}
+
+TEST_F(MediaStreamConstraintsEchoCancellationModeTest, ExactTrue) {
+  constraint_factory_.Reset();
+  constraint_factory_.basic().echo_cancellation.SetExactBoolean(true);
+  AudioCaptureSettings settings = SelectSettings(true, capabilities_);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(settings.audio_processing_properties().echo_cancellation_mode,
+            EchoCancellationMode::kBrowserDecides);
+}
+
+#if BUILDFLAG(SYSTEM_LOOPBACK_AS_AEC_REFERENCE)
+TEST_F(MediaStreamConstraintsEchoCancellationModeTest,
+       AecRequiresApmOrSystemAec) {
+  // Enable system loopback as AEC reference, to simulate the conditions of
+  // http://crbug.com/441029775
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      media::kSystemLoopbackAsAecReference);
+  constraint_factory_.Reset();
+  // APM does not support this sample rate, so this rules out APM.
+  constraint_factory_.basic().sample_rate.SetExact(
+      media::AudioParameters::kAudioCDSampleRate);
+  // Delete the device that supports system AEC. It is no longer possible to
+  // provide AEC, because both system AEC and APM are ruled out.
+  capabilities_.pop_back();
+  // Demand AEC.
+  constraint_factory_.basic().echo_cancellation.SetExactBoolean(true);
+  AudioCaptureSettings settings = SelectSettings(true, capabilities_);
+  // We have demanded an impossible combination of sample rate and AEC, so
+  // constraint matching will fail.
+  EXPECT_FALSE(settings.HasValue());
+}
+#endif  // BUILDFLAG(SYSTEM_LOOPBACK_AS_AEC_REFERENCE)
+
+TEST_F(MediaStreamConstraintsEchoCancellationModeTest, IdealTrue) {
+  constraint_factory_.Reset();
+  constraint_factory_.basic().echo_cancellation.SetIdealBoolean(true);
+  AudioCaptureSettings settings = SelectSettings(true, capabilities_);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(settings.audio_processing_properties().echo_cancellation_mode,
+            EchoCancellationMode::kBrowserDecides);
+}
+
+TEST_F(MediaStreamConstraintsEchoCancellationModeTest, ExactFalse) {
+  constraint_factory_.Reset();
+  constraint_factory_.basic().echo_cancellation.SetExactBoolean(false);
+  AudioCaptureSettings settings = SelectSettings(true, capabilities_);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(settings.audio_processing_properties().echo_cancellation_mode,
+            EchoCancellationMode::kDisabled);
+}
+
+TEST_F(MediaStreamConstraintsEchoCancellationModeTest, IdealFalse) {
+  constraint_factory_.Reset();
+  constraint_factory_.basic().echo_cancellation.SetIdealBoolean(false);
+  AudioCaptureSettings settings = SelectSettings(true, capabilities_);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(settings.audio_processing_properties().echo_cancellation_mode,
+            EchoCancellationMode::kDisabled);
+}
+
+TEST_F(MediaStreamConstraintsEchoCancellationModeTest, ExactOverrulesIdeal) {
+  constraint_factory_.Reset();
+  constraint_factory_.basic().echo_cancellation.SetExactBoolean(true);
+  constraint_factory_.basic().echo_cancellation.SetIdealBoolean(false);
+  AudioCaptureSettings settings = SelectSettings(true, capabilities_);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(settings.audio_processing_properties().echo_cancellation_mode,
+            EchoCancellationMode::kBrowserDecides);
+}
+
+class MediaStreamConstraintsEchoCancellationModeNoDevicesTest
+    : public MediaStreamConstraintsUtilAudioTestBase {
+ private:
+  void SetUp() override {
+    MediaStreamConstraintsUtilAudioTestBase::SetUp();
+    ResetFactory();
+    CHECK(IsDeviceCapture());
+    CHECK(capabilities_.empty());
+  }
+};
+
+TEST_F(MediaStreamConstraintsEchoCancellationModeNoDevicesTest, ExactString) {
+  for (const String& value : {"all", "remote-only", "invalid"}) {
+    constraint_factory_.Reset();
+    constraint_factory_.basic().echo_cancellation.SetExactString(value);
+    AudioCaptureSettings settings = SelectSettings(true, capabilities_);
+    EXPECT_FALSE(settings.HasValue());
+  }
+}
+
+TEST_F(MediaStreamConstraintsEchoCancellationModeNoDevicesTest, IdealString) {
+  for (const String& value : {"all", "remote-only", "invalid"}) {
+    constraint_factory_.Reset();
+    constraint_factory_.basic().echo_cancellation.SetIdealString("all");
+    AudioCaptureSettings settings = SelectSettings(true, capabilities_);
+    EXPECT_FALSE(settings.HasValue());
+  }
+}
+
+TEST_F(MediaStreamConstraintsEchoCancellationModeNoDevicesTest, ExactBoolean) {
+  for (bool value : {true, false}) {
+    constraint_factory_.Reset();
+    constraint_factory_.basic().echo_cancellation.SetExactBoolean(value);
+    AudioCaptureSettings settings = SelectSettings(true, capabilities_);
+    EXPECT_FALSE(settings.HasValue());
+  }
+}
+
+TEST_F(MediaStreamConstraintsEchoCancellationModeNoDevicesTest, IdealBoolean) {
+  for (bool value : {true, false}) {
+    constraint_factory_.Reset();
+    constraint_factory_.basic().echo_cancellation.SetIdealBoolean(value);
+    AudioCaptureSettings settings = SelectSettings(true, capabilities_);
+    EXPECT_FALSE(settings.HasValue());
+  }
+}
+
+class MediaStreamConstraintsEchoCancellationModeScreenCaptureTest
+    : public MediaStreamConstraintsUtilAudioTestBase {
+  void SetUp() override {
+    MediaStreamConstraintsUtilAudioTestBase::SetUp();
+    ResetFactory();
+    CHECK(!IsDeviceCapture());
+    capabilities_.emplace_back();
+  }
+
+  std::string GetMediaStreamSource() override {
+    return blink::kMediaStreamSourceTab;
+  }
+};
+
+TEST_F(MediaStreamConstraintsEchoCancellationModeScreenCaptureTest,
+       Unconstrained) {
+  constraint_factory_.Reset();
+  AudioCaptureSettings settings = SelectSettings(true, capabilities_);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(settings.audio_processing_properties().echo_cancellation_mode,
+            EchoCancellationMode::kBrowserDecides);
+}
+
+TEST_F(MediaStreamConstraintsEchoCancellationModeScreenCaptureTest, ExactAll) {
+  constraint_factory_.Reset();
+  constraint_factory_.basic().echo_cancellation.SetExactString("all");
+  AudioCaptureSettings settings = SelectSettings(true, capabilities_);
+  EXPECT_FALSE(settings.HasValue());
+}
+
+TEST_F(MediaStreamConstraintsEchoCancellationModeScreenCaptureTest, IdealAll) {
+  constraint_factory_.Reset();
+  constraint_factory_.basic().echo_cancellation.SetIdealString("all");
+  AudioCaptureSettings settings = SelectSettings(true, capabilities_);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(settings.audio_processing_properties().echo_cancellation_mode,
+            EchoCancellationMode::kBrowserDecides);
+}
+
+TEST_F(MediaStreamConstraintsEchoCancellationModeScreenCaptureTest,
+       ExactRemoteOnly) {
+  constraint_factory_.Reset();
+  constraint_factory_.basic().echo_cancellation.SetExactString("remote-only");
+  AudioCaptureSettings settings = SelectSettings(true, capabilities_);
+  EXPECT_FALSE(settings.HasValue());
+}
+
+TEST_F(MediaStreamConstraintsEchoCancellationModeScreenCaptureTest,
+       IdealRemoteOnly) {
+  constraint_factory_.Reset();
+  constraint_factory_.basic().echo_cancellation.SetIdealString("remote-only");
+  AudioCaptureSettings settings = SelectSettings(true, capabilities_);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(settings.audio_processing_properties().echo_cancellation_mode,
+            EchoCancellationMode::kBrowserDecides);
+}
+
+TEST_F(MediaStreamConstraintsEchoCancellationModeScreenCaptureTest,
+       MediaStreamSourceEmpty) {
+  constraint_factory_.Reset();
+  constraint_factory_.basic().media_stream_source.SetExact("");
+  AudioCaptureSettings settings = SelectSettings(true, capabilities_);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(settings.audio_processing_properties().echo_cancellation_mode,
+            EchoCancellationMode::kBrowserDecides);
+}
+
+TEST_F(MediaStreamConstraintsEchoCancellationModeScreenCaptureTest,
+       MediaStreamSourceNonEmpty) {
+  for (const auto& source :
+       {kMediaStreamSourceTab, kMediaStreamSourceScreen,
+        kMediaStreamSourceDesktop, kMediaStreamSourceSystem}) {
+    constraint_factory_.Reset();
+    constraint_factory_.basic().media_stream_source.SetExact(source);
+    AudioCaptureSettings settings = SelectSettings(true, capabilities_);
+    EXPECT_TRUE(settings.HasValue());
+    EXPECT_EQ(settings.audio_processing_properties().echo_cancellation_mode,
+              EchoCancellationMode::kDisabled);
+  }
+}
+
 }  // namespace blink

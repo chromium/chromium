@@ -4,33 +4,30 @@
 
 package org.chromium.components.webapps.bottomsheet;
 
+import android.content.Context;
 import android.view.View;
 
-import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
+import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
-import org.chromium.components.webapps.AddToHomescreenViewDelegate;
 import org.chromium.components.webapps.R;
 
 /**
  * The class handling the bottom sheet install for PWA installs. The UI is shown on construction
  * using the supplied BottomSheetController.
  */
+@NullMarked
 public class PwaInstallBottomSheetContent implements BottomSheetContent {
     /** The view for our bottom sheet. */
     private final PwaInstallBottomSheetView mView;
 
-    /** The delegate handling the install. */
-    @VisibleForTesting protected final AddToHomescreenViewDelegate mDelegate;
-
     /** This content's priority. */
     private @ContentPriority int mPriority = ContentPriority.LOW;
 
-    public PwaInstallBottomSheetContent(
-            PwaInstallBottomSheetView view, AddToHomescreenViewDelegate delegate) {
+    public PwaInstallBottomSheetContent(PwaInstallBottomSheetView view) {
         mView = view;
-        mDelegate = delegate;
     }
 
     public void setPriority(@ContentPriority int priority) {
@@ -44,9 +41,8 @@ public class PwaInstallBottomSheetContent implements BottomSheetContent {
         return mView.getContentView();
     }
 
-    @Nullable
     @Override
-    public View getToolbarView() {
+    public @Nullable View getToolbarView() {
         return null;
     }
 
@@ -67,9 +63,7 @@ public class PwaInstallBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public void destroy() {
-        mDelegate.onViewDismissed();
-    }
+    public void destroy() {}
 
     @Override
     public int getPriority() {
@@ -82,22 +76,22 @@ public class PwaInstallBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
+    public String getSheetContentDescription(Context context) {
+        return context.getString(R.string.pwa_install_bottom_sheet_accessibility);
+    }
+
+    @Override
+    public @StringRes int getSheetHalfHeightAccessibilityStringId() {
         return R.string.pwa_install_bottom_sheet_accessibility;
     }
 
     @Override
-    public int getSheetHalfHeightAccessibilityStringId() {
+    public @StringRes int getSheetFullHeightAccessibilityStringId() {
         return R.string.pwa_install_bottom_sheet_accessibility;
     }
 
     @Override
-    public int getSheetFullHeightAccessibilityStringId() {
-        return R.string.pwa_install_bottom_sheet_accessibility;
-    }
-
-    @Override
-    public int getSheetClosedAccessibilityStringId() {
+    public @StringRes int getSheetClosedAccessibilityStringId() {
         return R.string.pwa_install_bottom_sheet_accessibility;
     }
 }

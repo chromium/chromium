@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_writer.h"
+#include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/task/current_thread.h"
@@ -262,17 +263,14 @@ TEST_F(TransportSecurityPersisterTest, DeserializeLegacyExpectCTData) {
       R"("expect_ct_enforce": true, "expect_ct_report_uri": ""}]})";
   LOG(ERROR) << kInput;
   persister_->LoadEntries(kInput);
-  FastForwardBy(TransportSecurityPersister::GetCommitInterval() +
-                base::Seconds(1));
   EXPECT_EQ(1u, state_->num_sts_entries());
-  // Now read the data and check that there are no Expect-CT entries.
-  std::string persisted;
-  ASSERT_TRUE(
-      base::ReadFileToString(transport_security_file_path_, &persisted));
+  // Check that there are no Expect-CT entries.
+  std::optional<std::string> persisted = persister_->SerializeData();
+  ASSERT_TRUE(persisted);
   // Smoke test that the file contains some data as expected...
-  ASSERT_NE(std::string::npos, persisted.find(kHost));
+  ASSERT_NE(std::string::npos, persisted->find(kHost));
   // But it shouldn't contain any Expect-CT data.
-  EXPECT_EQ(std::string::npos, persisted.find("expect_ct"));
+  EXPECT_EQ(std::string::npos, persisted->find("expect_ct"));
 }
 
 class TransportSecurityPersisterCommitTest

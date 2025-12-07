@@ -9,10 +9,13 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/logging/logging_settings.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/single_thread_task_runner.h"
@@ -20,8 +23,9 @@
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
+#include "net/ssl/client_cert_store.h"
 #include "net/url_request/url_request_context_getter.h"
-#include "remoting/base/breakpad.h"
+#include "remoting/base/certificate_helpers.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/url_request_context_getter.h"
 #include "remoting/host/setup/cloud_host_starter.h"
@@ -38,6 +42,7 @@
 #endif  // BUILDFLAG(IS_POSIX)
 
 #if BUILDFLAG(IS_LINUX)
+#include "remoting/base/crash/crash_reporting_crashpad.h"
 #include "remoting/host/setup/daemon_controller_delegate_linux.h"
 #include "remoting/host/setup/start_host_as_root.h"
 #endif  // BUILDFLAG(IS_LINUX)
@@ -46,6 +51,7 @@
 #include <windows.h>
 
 #include "base/process/process_info.h"
+#include "remoting/base/crash/crash_reporting_breakpad.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace remoting {
@@ -60,10 +66,15 @@ constexpr char kRedirectUrlSwitchName[] = "redirect-url";
 // who generated the OAuth authorization code.
 constexpr char kHostOwnerSwitchName[] = "host-owner";
 
-// Specifies the account email to be used when configuring a machine using the
-// Corp or Cloud registration process.
+// Specifies the username for the account to associate with this instance when
+// using the Corp registration process.
 constexpr char kCorpUserSwitchName[] = "corp-user";
+
+// Specifies the account email to be used when configuring a machine using the
+// Cloud registration process.
 constexpr char kCloudUserSwitchName[] = "cloud-user";
+// Specifies the API_KEY to use when registering the cloud host instance.
+constexpr char kCloudApiKeySwitchName[] = "cloud-api-key";
 
 // TODO: joedow - switch to using `display-name` for consistency. Remove `name`
 // after we no longer need to support start_host for Pre-M125 packages.
@@ -72,6 +83,9 @@ constexpr char kDisplayNameSwitchName[] = "display-name";
 
 // Used to disable crash reporting.
 constexpr char kDisableCrashReportingSwitchName[] = "disable-crash-reporting";
+
+constexpr char kInvalidPinErrorMessage[] =
+    "Please provide a numeric PIN consisting of at least six digits.\n";
 
 // True if the host was started successfully.
 bool g_started = false;
@@ -85,34 +99,43 @@ void PrintDefaultHelpMessage(const char* process_name) {
   // Optional args are shown first as the most common issue is needing to
   // generate the auth-code again and this ordering makes it easy to fix the
   // command line to rerun the tool.
-  fprintf(stderr,
-          "Please visit https://remotedesktop.google.com/headless for "
-          "instructions on running this tool and help generating the command "
-          "line arguments.\n"
-          "\n"
-          "Example usage:\n%s --%s=<auth code> --%s=<redirect url> "
-          "[--%s=<host display name>] [--%s=<6+ digit PIN>] [--%s]\n",
-          process_name, kAuthCodeSwitchName, kRedirectUrlSwitchName,
-          kDisplayNameSwitchName, kPinSwitchName,
-          kDisableCrashReportingSwitchName);
+  UNSAFE_TODO(fprintf(
+      stderr,
+      "Please visit https://remotedesktop.google.com/headless for "
+      "instructions on running this tool and help generating the command "
+      "line arguments.\n"
+      "\n"
+      "Example usage:\n%s --%s=<auth code> --%s=<redirect url> "
+      "[--%s=<host display name>] [--%s=<6+ digit PIN>] [--%s]\n",
+      process_name, kAuthCodeSwitchName, kRedirectUrlSwitchName,
+      kDisplayNameSwitchName, kPinSwitchName,
+      kDisableCrashReportingSwitchName));
 }
 
 void PrintCorpUserHelpMessage(const char* process_name) {
-  fprintf(stdout,
-          "Setting up a machine for a corp user requires the email address of "
-          "that user and an optional display name.\n\nExample usage:\n"
-          "%s --%s=<user_email_address> [--%s=corp-machine-name]\n",
-          process_name, kCorpUserSwitchName, kDisplayNameSwitchName);
+  UNSAFE_TODO(fprintf(
+      stdout,
+      "Setting up a machine for a corp user requires the username of that "
+      "user and an optional display name.\n\nExample usage:\n"
+      "%s --%s=<username> [--%s=corp-machine-name]\n",
+      process_name, kCorpUserSwitchName, kDisplayNameSwitchName));
 }
 
 void PrintCloudUserHelpMessage(const char* process_name) {
-  fprintf(stdout,
-          "Setting up a machine for a cloud user requires the email address of "
-          "that user, a 6+ digit numeric PIN, and an optional display name.\n"
-          "Example usage:\n%s --%s=<user_email_address> --%s=<6+ digit pin> "
-          "[--%s=cloud-instance-name] [--%s]\n",
-          process_name, kCloudUserSwitchName, kPinSwitchName,
-          kDisplayNameSwitchName, kDisableCrashReportingSwitchName);
+  // TODO: joedow - Add a link to public documentation and/or samples when they
+  // are available.
+  UNSAFE_TODO(fprintf(
+      stdout,
+      "Setting up a Compute Engine Instance requires the email address of "
+      "the user.\n\nAn optional API_KEY, created for the project the "
+      "Compute Engine Instance is in, can be provided. Otherwise an access "
+      "token will be retrieved for the default service account.\n\nAn "
+      "optional display name can also be provided, otherwise the hostname, "
+      "or FQDN, of the instance will be used.\n\n"
+      "Example usage:\n%s --%s=<user_email_address> [--%s=<API_KEY>] "
+      "[--%s=cloud-instance-display-name] [--%s]\n",
+      process_name, kCloudUserSwitchName, kCloudApiKeySwitchName,
+      kDisplayNameSwitchName, kDisableCrashReportingSwitchName));
 }
 
 // Lets us hide the PIN that a user types.
@@ -145,7 +168,7 @@ std::string ReadString(bool no_echo) {
   }
   const int kMaxLen = 1024;
   std::string str(kMaxLen, 0);
-  char* result = fgets(&str[0], kMaxLen, stdin);
+  char* result = UNSAFE_TODO(fgets(&str[0], kMaxLen, stdin));
   if (no_echo) {
     printf("\n");
     SetEcho(true);
@@ -233,8 +256,7 @@ bool InitializeParamsForOAuthFlow(HostStarter::Params& params,
       fflush(stdout);
       params.pin = ReadString(true);
       if (!remoting::IsPinValid(params.pin)) {
-        fprintf(stdout,
-                "Please use a PIN consisting of at least six digits.\n");
+        UNSAFE_TODO(fprintf(stdout, kInvalidPinErrorMessage));
         fflush(stdout);
         continue;
       }
@@ -251,7 +273,7 @@ bool InitializeParamsForOAuthFlow(HostStarter::Params& params,
     }
   } else {
     if (!remoting::IsPinValid(params.pin)) {
-      fprintf(stderr, "Please use a PIN consisting of at least six digits.\n");
+      UNSAFE_TODO(fprintf(stderr, kInvalidPinErrorMessage));
       return false;
     }
   }
@@ -267,8 +289,19 @@ bool InitializeCorpMachineParams(HostStarter::Params& params,
   // Count the number of args provided so we can show a helpful error message
   // if the user provides an unexpected value.
   size_t corp_arg_count = 1;
-  params.owner_email = base::ToLowerASCII(
+
+  // Some legacy scripts may still provide an email domain for this parameter
+  // however the username is the preferred value when calling the Directory
+  // service. If we are given an email, strip the domain and treat it like a
+  // username.
+  std::string corp_user_value = base::ToLowerASCII(
       command_line->GetSwitchValueASCII(kCorpUserSwitchName));
+  auto parts = base::SplitStringOnce(corp_user_value, '@');
+  if (!parts) {
+    params.username = std::move(corp_user_value);
+  } else {
+    params.username = std::move(parts->first);
+  }
 
   // Allow user to specify a display name.
   if (command_line->HasSwitch(kDisplayNameSwitchName)) {
@@ -305,14 +338,12 @@ bool InitializeCloudMachineParams(HostStarter::Params& params,
     params.name = command_line->GetSwitchValueASCII(kDisplayNameSwitchName);
   }
 
-  // Require a PIN when setting an instance up for a cloud user since the
-  // session authorization service is not available to them.
-  params.pin = command_line->GetSwitchValueASCII(kPinSwitchName);
-  if (!remoting::IsPinValid(params.pin)) {
-    fprintf(stdout, "Please provide a numeric PIN consisting of at least six digits.\n");
-    return false;
+  if (command_line->HasSwitch(kCloudApiKeySwitchName)) {
+    // Using a cloud API_KEY means start-host will not attempt to retrieve an
+    // access token for the default service-account.
+    params.api_key = command_line->GetSwitchValueASCII(kCloudApiKeySwitchName);
+    cloud_arg_count++;
   }
-  cloud_arg_count++;
 
   bool has_disable_crash_reporting_switch =
       command_line->HasSwitch(kDisableCrashReportingSwitchName);
@@ -381,7 +412,8 @@ int StartHostMain(int argc, char** argv) {
   // The tool must be run elevated on Windows so the host has access to the
   // directories used to store the configuration JSON files.
   if (!base::IsCurrentProcessElevated()) {
-    fprintf(stderr, "Error: %s must be run as an elevated process.", argv[0]);
+    UNSAFE_TODO(fprintf(stderr, "Error: %s must be run as an elevated process.",
+                        argv[0]));
     return 1;
   }
 #endif  // BUILDFLAG(IS_WIN)
@@ -410,13 +442,17 @@ int StartHostMain(int argc, char** argv) {
     return 1;
   }
 
-#if defined(REMOTING_ENABLE_BREAKPAD)
+#if defined(REMOTING_ENABLE_CRASH_REPORTING)
   // We don't have a config file yet so we can't use IsUsageStatsAllowed(),
   // instead we can just check the command line parameter.
   if (params.enable_crash_reporting) {
-    InitializeCrashReporting();
+#if BUILDFLAG(IS_LINUX)
+    InitializeCrashpadReporting();
+#elif BUILDFLAG(IS_WIN)
+    InitializeBreakpadReporting();
+#endif  // BUILDFLAG(IS_LINUX)
   }
-#endif  // defined(REMOTING_ENABLE_BREAKPAD)
+#endif  // defined(REMOTING_ENABLE_CRASH_REPORTING)
 
   // Provide SingleThreadTaskExecutor and threads for the
   // URLRequestContextGetter.
@@ -435,7 +471,8 @@ int StartHostMain(int argc, char** argv) {
   std::unique_ptr<HostStarter> host_starter;
   if (use_corp_machine_flow) {
     host_starter =
-        ProvisionCorpMachine(url_loader_factory_owner.GetURLLoaderFactory());
+        ProvisionCorpMachine(url_loader_factory_owner.GetURLLoaderFactory(),
+                             CreateClientCertStoreInstance());
   } else if (use_cloud_machine_flow) {
     fprintf(stdout,
             "*** Warning: This workflow is experimental and not fully "

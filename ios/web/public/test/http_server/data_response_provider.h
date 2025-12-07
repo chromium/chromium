@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #import "ios/web/public/test/http_server/response_provider.h"
 #include "net/http/http_response_headers.h"
 

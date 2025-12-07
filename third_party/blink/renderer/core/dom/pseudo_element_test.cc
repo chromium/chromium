@@ -12,7 +12,7 @@ namespace blink {
 class PseudoElementTest : public RenderingTest {};
 
 TEST_F(PseudoElementTest, AttachLayoutTree) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
     #marker1 { display: list-item; }
     #marker2 { display: flow-root list-item; }

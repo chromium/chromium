@@ -6,9 +6,8 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_COMMON_SIGNALS_TYPE_H_
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/dbus/attestation/attestation_ca.pb.h"
 
 namespace enterprise_connectors {
@@ -28,6 +27,6 @@ using SignalsType = DeviceTrustSignals;
 
 }  // namespace enterprise_connectors
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_COMMON_SIGNALS_TYPE_H_

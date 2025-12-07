@@ -44,7 +44,7 @@ class COMPONENT_EXPORT(QUICK_PAIR_COMMON) ScopedDisableLoggingForTesting {
 // directly.
 class COMPONENT_EXPORT(QUICK_PAIR_COMMON) ScopedLogMessage {
  public:
-  ScopedLogMessage(const std::string_view file,
+  ScopedLogMessage(std::string_view file,
                    int line,
                    logging::LogSeverity severity);
   ScopedLogMessage(const ScopedLogMessage&) = delete;

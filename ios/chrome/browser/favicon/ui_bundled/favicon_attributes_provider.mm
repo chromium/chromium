@@ -18,6 +18,23 @@
 #import "skia/ext/skia_utils_ios.h"
 #import "url/gurl.h"
 
+namespace {
+
+// Called when processing the large icon is completed.
+void OnLargeIconResultAndCache(
+    const GURL& url,
+    base::WeakPtr<LargeIconCache> cache,
+    void (^favicon_block)(const favicon_base::LargeIconResult&),
+    const favicon_base::LargeIconResult& result) {
+  favicon_block(result);
+
+  if (cache && (result.bitmap.is_valid() || result.fallback_icon_style)) {
+    cache->SetCachedResult(url, result);
+  }
+}
+
+}  // namespace
+
 @interface FaviconAttributesProvider () {
   // Used to cancel tasks for the LargeIconService.
   base::CancelableTaskTracker _faviconTaskTracker;
@@ -79,23 +96,13 @@
         completion(attributes);
       };
 
-  __weak FaviconAttributesProvider* weakSelf = self;
-  void (^faviconBlockSaveToCache)(const favicon_base::LargeIconResult&) =
-      ^(const favicon_base::LargeIconResult& result) {
-        faviconBlock(result);
-
-        FaviconAttributesProvider* strongSelf = weakSelf;
-        if (strongSelf.cache &&
-            (result.bitmap.is_valid() || result.fallback_icon_style)) {
-          strongSelf.cache->SetCachedResult(blockURL, result);
-        }
-      };
-
+  base::WeakPtr<LargeIconCache> cacheWeakPtr;
   if (self.cache) {
-    std::unique_ptr<favicon_base::LargeIconResult> cached_result =
+    std::unique_ptr<favicon_base::LargeIconResult> cachedResult =
         self.cache->GetCachedResult(URL);
-    if (cached_result) {
-      faviconBlock(*cached_result);
+    cacheWeakPtr = self.cache->GetWeakPtr();
+    if (cachedResult) {
+      faviconBlock(*cachedResult);
     }
   }
 
@@ -104,6 +111,8 @@
   CGFloat minFaviconSize = [UIScreen mainScreen].scale * self.minSize;
   self.largeIconService->GetLargeIconRawBitmapOrFallbackStyleForPageUrl(
       URL, minFaviconSize, faviconSize,
-      base::BindRepeating(faviconBlockSaveToCache), &_faviconTaskTracker);
+      base::BindRepeating(&OnLargeIconResultAndCache, URL, cacheWeakPtr,
+                          faviconBlock),
+      &_faviconTaskTracker);
 }
 @end

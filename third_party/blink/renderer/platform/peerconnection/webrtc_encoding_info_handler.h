@@ -27,7 +27,7 @@ class PLATFORM_EXPORT WebrtcEncodingInfoHandler {
   // instances.
   WebrtcEncodingInfoHandler(
       std::unique_ptr<webrtc::VideoEncoderFactory> video_encoder_factory,
-      rtc::scoped_refptr<webrtc::AudioEncoderFactory> audio_encoder_factory);
+      webrtc::scoped_refptr<webrtc::AudioEncoderFactory> audio_encoder_factory);
   // Not copyable or movable.
   WebrtcEncodingInfoHandler(const WebrtcEncodingInfoHandler&) = delete;
   WebrtcEncodingInfoHandler& operator=(const WebrtcEncodingInfoHandler&) =
@@ -44,12 +44,12 @@ class PLATFORM_EXPORT WebrtcEncodingInfoHandler {
   void EncodingInfo(
       const std::optional<webrtc::SdpAudioFormat> sdp_audio_format,
       const std::optional<webrtc::SdpVideoFormat> sdp_video_format,
-      const std::optional<String> video_scalability_mode,
+      const String video_scalability_mode,
       OnMediaCapabilitiesEncodingInfoCallback callback) const;
 
  private:
   std::unique_ptr<webrtc::VideoEncoderFactory> video_encoder_factory_;
-  rtc::scoped_refptr<webrtc::AudioEncoderFactory> audio_encoder_factory_;
+  webrtc::scoped_refptr<webrtc::AudioEncoderFactory> audio_encoder_factory_;
   // List of supported audio codecs.
   HashSet<String> supported_audio_codecs_;
 };

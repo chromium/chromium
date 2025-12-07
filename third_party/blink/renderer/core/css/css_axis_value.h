@@ -9,10 +9,6 @@
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
-namespace WTF {
-class String;
-}  // namespace WTF
-
 namespace blink {
 
 class CSSLengthResolver;
@@ -29,7 +25,7 @@ class CSSAxisValue : public CSSValueList {
                const CSSPrimitiveValue* y,
                const CSSPrimitiveValue* z);
 
-  WTF::String CustomCSSText() const;
+  String CustomCSSText() const;
 
   Axis ComputeAxis(const CSSLengthResolver&) const;
   CSSValueID AxisName() const { return axis_name_; }

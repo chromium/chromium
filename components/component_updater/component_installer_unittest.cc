@@ -32,6 +32,7 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "build/branding_buildflags.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/component_updater_service_internal.h"
@@ -48,16 +49,16 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using Configurator = update_client::Configurator;
-using CrxUpdateItem = update_client::CrxUpdateItem;
-using TestConfigurator = update_client::TestConfigurator;
-using UpdateClient = update_client::UpdateClient;
+namespace component_updater {
+namespace {
+
+using Configurator = ::update_client::Configurator;
+using CrxUpdateItem = ::update_client::CrxUpdateItem;
+using TestConfigurator = ::update_client::TestConfigurator;
+using UpdateClient = ::update_client::UpdateClient;
 
 using ::testing::_;
 using ::testing::Invoke;
-
-namespace component_updater {
-namespace {
 
 // This hash corresponds to jebgalgnebhfojomionfpkfelancnnkf.crx.
 constexpr uint8_t kSha256Hash[] = {
@@ -185,8 +186,8 @@ class MockInstallerPolicy : public ComponentInstallerPolicy {
 class MockUpdateScheduler : public UpdateScheduler {
  public:
   MOCK_METHOD4(Schedule,
-               void(const base::TimeDelta& initial_delay,
-                    const base::TimeDelta& delay,
+               void(base::TimeDelta initial_delay,
+                    base::TimeDelta delay,
                     const UserTask& user_task,
                     const OnStopTaskCallback& on_stop));
   MOCK_METHOD0(Stop, void());
@@ -214,8 +215,8 @@ class ComponentInstallerTest : public testing::Test {
 
  private:
   void UnpackComplete(const update_client::Unpacker::Result& result);
-  void Schedule(const base::TimeDelta& initial_delay,
-                const base::TimeDelta& delay,
+  void Schedule(base::TimeDelta initial_delay,
+                base::TimeDelta delay,
                 const UpdateScheduler::UserTask& user_task,
                 const UpdateScheduler::OnStopTaskCallback& on_stop);
 
@@ -235,7 +236,7 @@ class ComponentInstallerTest : public testing::Test {
 };
 
 ComponentInstallerTest::ComponentInstallerTest() {
-  EXPECT_CALL(update_client(), AddObserver(_)).Times(1);
+  EXPECT_CALL(update_client(), AddObserver(_));
   auto scheduler = std::make_unique<MockUpdateScheduler>();
   scheduler_ = scheduler.get();
   ON_CALL(*scheduler_, Schedule(_, _, _, _))
@@ -248,7 +249,7 @@ ComponentInstallerTest::ComponentInstallerTest() {
 }
 
 ComponentInstallerTest::~ComponentInstallerTest() {
-  EXPECT_CALL(update_client(), RemoveObserver(_)).Times(1);
+  EXPECT_CALL(update_client(), RemoveObserver(_));
 }
 
 void ComponentInstallerTest::RunThreads() {
@@ -257,6 +258,7 @@ void ComponentInstallerTest::RunThreads() {
 
 void ComponentInstallerTest::Unpack(const base::FilePath& crx_path) {
   update_client::Unpacker::Unpack(
+      "jebgalgnebhfojomionfpkfelancnnkf", "ComponentInstallerTest",
       std::vector<uint8_t>(std::begin(kSha256Hash), std::end(kSha256Hash)),
       crx_path, config_->GetUnzipperFactory()->Create(),
       crx_file::VerifierFormat::CRX3,
@@ -276,8 +278,8 @@ void ComponentInstallerTest::UnpackComplete(
 }
 
 void ComponentInstallerTest::Schedule(
-    const base::TimeDelta& initial_delay,
-    const base::TimeDelta& delay,
+    base::TimeDelta initial_delay,
+    base::TimeDelta delay,
     const UpdateScheduler::UserTask& user_task,
     const UpdateScheduler::OnStopTaskCallback& on_stop) {
   user_task.Run(base::DoNothing());
@@ -328,10 +330,10 @@ TEST_F(ComponentInstallerTest, RegisterComponent) {
             barrier_callback.Run();
           });
 
-  EXPECT_CALL(update_client(), GetCrxUpdateState(id, _)).Times(1);
-  EXPECT_CALL(update_client(), Stop()).Times(1);
-  EXPECT_CALL(scheduler(), Schedule(_, _, _, _)).Times(1);
-  EXPECT_CALL(scheduler(), Stop()).Times(1);
+  EXPECT_CALL(update_client(), GetCrxUpdateState(id, _));
+  EXPECT_CALL(update_client(), Stop());
+  EXPECT_CALL(scheduler(), Schedule(_, _, _, _));
+  EXPECT_CALL(scheduler(), Stop());
 
   auto installer = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<MockInstallerPolicy>());
@@ -356,7 +358,13 @@ TEST_F(ComponentInstallerTest, RegisterComponent) {
   EXPECT_STREQ("fake name", component.name.c_str());
   EXPECT_EQ(expected_attrs, component.installer_attributes);
   EXPECT_TRUE(component.requires_network_encryption);
+
+#if BUILDFLAG(CHROME_FOR_TESTING)
+  // In Chrome for Testing component updates are disabled.
+  EXPECT_FALSE(component.updates_enabled);
+#else
   EXPECT_TRUE(component.updates_enabled);
+#endif  // BUILDFLAG(CHROME_FOR_TESTING)
 }
 
 // Tests that `ComponentInstallerPolicy::ComponentReady` and the completion
@@ -409,28 +417,29 @@ TEST_F(ComponentInstallerTest, InstallerRegister_CheckSequence) {
         base::DoNothing(),
         base::BindLambdaForTesting(
             [&run_loop](const update_client::CrxInstaller::Result& result) {
-              ASSERT_EQ(result.error, 0);
+              ASSERT_EQ(result.result.category,
+                        update_client::ErrorCategory::kNone);
               run_loop.QuitClosure().Run();
             }));
     run_loop.Run();
   }
 
   base::RunLoop run_loop;
-  EXPECT_CALL(update_client(), DoUpdate(_, _)).WillOnce(Invoke([&run_loop] {
+  EXPECT_CALL(update_client(), DoUpdate(_, _)).WillOnce([&run_loop] {
     run_loop.QuitClosure().Run();
-  }));
+  });
 
   // Set up expectations for uninteresting calls on the mocks due to component
   // updater waking up after the component is registered.
-  EXPECT_CALL(scheduler(), Schedule(_, _, _, _)).Times(1);
-  EXPECT_CALL(scheduler(), Stop()).Times(1);
-  EXPECT_CALL(update_client(), Stop()).Times(1);
+  EXPECT_CALL(scheduler(), Schedule(_, _, _, _));
+  EXPECT_CALL(scheduler(), Stop());
+  EXPECT_CALL(update_client(), Stop());
 
   MockRegisterHandler mock_register_handler;
   {
     ::testing::InSequence seq;
-    EXPECT_CALL(mock_register_handler, ComponentReady()).Times(1);
-    EXPECT_CALL(mock_register_handler, RegisterComplete()).Times(1);
+    EXPECT_CALL(mock_register_handler, ComponentReady());
+    EXPECT_CALL(mock_register_handler, RegisterComplete());
   }
 
   auto installer_policy =
@@ -470,14 +479,14 @@ TEST_F(ComponentInstallerTest, UnpackPathInstallSuccess) {
   installer->Install(
       unpack_path, update_client::jebg_public_key, nullptr, base::DoNothing(),
       base::BindOnce([](const update_client::CrxInstaller::Result& result) {
-        EXPECT_EQ(0, result.error);
+        EXPECT_EQ(result.result.category, update_client::ErrorCategory::kNone);
       }));
 
   task_environment_.RunUntilIdle();
 
   EXPECT_FALSE(base::PathExists(unpack_path));
-  EXPECT_CALL(update_client(), Stop()).Times(1);
-  EXPECT_CALL(scheduler(), Stop()).Times(1);
+  EXPECT_CALL(update_client(), Stop());
+  EXPECT_CALL(scheduler(), Stop());
 }
 
 // Tests that the unpack path is removed when the install failed.
@@ -500,16 +509,53 @@ TEST_F(ComponentInstallerTest, UnpackPathInstallError) {
   installer->Install(
       unpack_path, update_client::jebg_public_key, nullptr, base::DoNothing(),
       base::BindOnce([](const update_client::CrxInstaller::Result& result) {
-        EXPECT_EQ(static_cast<int>(
-                      update_client::InstallError::NO_DIR_COMPONENT_USER),
-                  result.error);
+        EXPECT_EQ(result.result.category,
+                  update_client::ErrorCategory::kInstall);
+        EXPECT_EQ(result.result.code,
+                  static_cast<int>(
+                      update_client::InstallError::NO_DIR_COMPONENT_USER));
       }));
 
   task_environment_.RunUntilIdle();
 
   EXPECT_FALSE(base::PathExists(unpack_path));
-  EXPECT_CALL(update_client(), Stop()).Times(1);
-  EXPECT_CALL(scheduler(), Stop()).Times(1);
+  EXPECT_CALL(update_client(), Stop());
+  EXPECT_CALL(scheduler(), Stop());
+}
+
+TEST_F(ComponentInstallerTest, GetInstalledFile) {
+  auto installer = base::MakeRefCounted<ComponentInstaller>(
+      std::make_unique<MockInstallerPolicy>());
+
+  Unpack(
+      update_client::GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"));
+
+  const auto unpack_path = result().unpack_path;
+  EXPECT_TRUE(base::DirectoryExists(unpack_path));
+  EXPECT_EQ(update_client::jebg_public_key, result().public_key);
+
+  base::ScopedPathOverride scoped_path_override(DIR_COMPONENT_USER);
+  base::FilePath base_dir;
+  EXPECT_TRUE(base::PathService::Get(DIR_COMPONENT_USER, &base_dir));
+  base_dir = base_dir.Append(relative_install_dir);
+  EXPECT_TRUE(base::CreateDirectory(base_dir));
+  base::RunLoop runloop;
+  installer->Install(
+      unpack_path, update_client::jebg_public_key, nullptr, base::DoNothing(),
+      base::BindLambdaForTesting(
+          [&](const update_client::CrxInstaller::Result& result) {
+            EXPECT_EQ(result.result.category,
+                      update_client::ErrorCategory::kNone);
+            runloop.Quit();
+          }));
+  runloop.Run();
+
+  EXPECT_EQ(installer->GetInstalledFile("a"),
+            base_dir.AppendASCII("1.0").AppendASCII("a"));
+  EXPECT_EQ(installer->GetInstalledFile("../a"), std::nullopt);
+
+  EXPECT_CALL(update_client(), Stop());
+  EXPECT_CALL(scheduler(), Stop());
 }
 
 TEST_F(ComponentInstallerTest, SelectComponentVersion) {
@@ -521,7 +567,7 @@ TEST_F(ComponentInstallerTest, SelectComponentVersion) {
   ASSERT_TRUE(base::PathService::Get(DIR_COMPONENT_USER, &base_dir));
   base_dir = base_dir.AppendASCII("select_component_version_test");
 
-  for (const auto* n : {"1", "2", "3", "4", "5", "6", "7"}) {
+  for (const auto& n : {"1", "2", "3", "4", "5", "6", "7"}) {
     CreateComponentDirectory(base_dir, "test_component",
                              base::StrCat({n, ".0.0.0"}), "0.0.1");
   }
@@ -624,7 +670,8 @@ TEST_F(ComponentInstallerTest, Uninstall) {
             base::DoNothing(),
             base::BindLambdaForTesting(
                 [&](const update_client::CrxInstaller::Result& result) {
-                  EXPECT_EQ(0, result.error);
+                  EXPECT_EQ(result.result.category,
+                            update_client::ErrorCategory::kNone);
                   installer->Uninstall();
                 }));
       }));

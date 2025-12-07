@@ -21,6 +21,9 @@ inline constexpr char kEditDeleteMenuFunctionTriggeredHistogram[] =
 inline constexpr char kToggleWithMappingSourceHistogram[] =
     "ToggleWithMappingSource";
 
+inline constexpr char kPlayGameWithGameControlsHistogram[] =
+    "PlayGameWithGameControls";
+
 inline constexpr char kToggleOnHistogramName[] = "On";
 inline constexpr char kToggleOffHistogramName[] = "Off";
 
@@ -132,6 +135,15 @@ void RecordToggleWithMappingSource(const std::string& package_name,
                                    bool is_feature,
                                    bool is_on,
                                    MappingSource source);
+
+// Records whether the game was played with the Game Controls feature. This
+// event is logged once per game session.
+// - If the user uses Game Controls for the first time in a session,
+// `played_with_game_controls` is set to true.
+// - Otherwise, the event is logged when the game shuts down, with
+// `played_with_game_controls` set to false.
+void RecordPlayGameWithGameControls(const std::string& package_name,
+                                    bool played_with_game_controls);
 
 }  // namespace arc::input_overlay
 

@@ -164,17 +164,14 @@ class ComponentInstaller final : public update_client::CrxInstaller {
       const base::Version& max_previous_product_version =
           base::Version(kNullVersion));
 
-  // Overrides from update_client::CrxInstaller.
-  void OnUpdateError(int error) override;
-
   void Install(const base::FilePath& unpack_path,
                const std::string& public_key,
                std::unique_ptr<InstallParams> install_params,
                ProgressCallback progress_callback,
                Callback callback) override;
 
-  bool GetInstalledFile(const std::string& file,
-                        base::FilePath* installed_file) override;
+  std::optional<base::FilePath> GetInstalledFile(
+      const std::string& file) override;
   // Components bundled with installations of Chrome cannot be uninstalled.
   bool Uninstall() override;
 
@@ -225,7 +222,7 @@ class ComponentInstaller final : public update_client::CrxInstaller {
 
   void DeleteUnselectedComponentVersions(
       const base::FilePath& base_dir,
-      const std::optional<base::Version>& selected_version);
+      std::optional<base::Version> selected_version);
   std::optional<base::FilePath> GetComponentDirectory();
   void ComponentReady(base::Value::Dict manifest);
   void UninstallOnTaskRunner();

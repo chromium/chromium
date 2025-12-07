@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include "ios/chrome/browser/browsing_data/model/cache_counter.h"
+
 #include "base/functional/bind.h"
 #include "components/browsing_data/core/pref_names.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#include "ios/web/public/browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "net/base/completion_repeating_callback.h"
@@ -114,8 +114,8 @@ class IOThreadCacheCounter {
 
 }  // namespace
 
-CacheCounter::CacheCounter(ChromeBrowserState* browser_state)
-    : browser_state_(browser_state), weak_ptr_factory_(this) {}
+CacheCounter::CacheCounter(ProfileIOS* profile)
+    : profile_(profile), weak_ptr_factory_(this) {}
 
 CacheCounter::~CacheCounter() = default;
 
@@ -133,7 +133,7 @@ void CacheCounter::Count() {
   // UI to interpret the results for finite time intervals as upper estimates.
   // IOThreadCacheCounter deletes itself when done.
   (new IOThreadCacheCounter(
-       browser_state_->GetRequestContext(),
+       profile_->GetRequestContext(),
        base::BindRepeating(&CacheCounter::OnCacheSizeCalculated,
                            weak_ptr_factory_.GetWeakPtr())))
       ->Count();

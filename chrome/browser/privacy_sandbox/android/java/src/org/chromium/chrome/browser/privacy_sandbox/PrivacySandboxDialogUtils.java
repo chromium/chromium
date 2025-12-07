@@ -17,6 +17,7 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.drawable.StateListDrawableBuilder;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.ChromeBulletSpan;
@@ -25,11 +26,11 @@ import org.chromium.ui.widget.ChromeBulletSpan;
  * Privacy Sandbox Dialog utility class: collects some common UI utils for Notice and Consent
  * dialogs.
  */
+@NullMarked
 public class PrivacySandboxDialogUtils {
     /**
      * Create an expand Drawable with its own animation.
      *
-     * @param context
      * @return an expandable/collapsible Drawable icon.
      */
     public static Drawable createExpandDrawable(Context context) {
@@ -66,21 +67,19 @@ public class PrivacySandboxDialogUtils {
             View dropdownElement,
             boolean isDropdownExpanded,
             @StringRes int stringRes) {
-        String dropdownButtonText = context.getResources().getString(stringRes);
+        String dropdownButtonText = context.getString(stringRes);
 
         String collapseOrExpandedText =
-                context.getResources()
-                        .getString(
-                                isDropdownExpanded
-                                        ? R.string.accessibility_expanded_group
-                                        : R.string.accessibility_collapsed_group);
+                context.getString(
+                        isDropdownExpanded
+                                ? R.string.accessibility_expanded_group
+                                : R.string.accessibility_collapsed_group);
 
         String description =
-                context.getResources()
-                        .getString(
-                                R.string.concat_two_strings_with_periods,
-                                dropdownButtonText,
-                                collapseOrExpandedText);
+                context.getString(
+                        R.string.concat_two_strings_with_comma,
+                        dropdownButtonText,
+                        collapseOrExpandedText);
         dropdownElement.setContentDescription(description);
     }
 
@@ -95,7 +94,7 @@ public class PrivacySandboxDialogUtils {
     public static void setBulletText(
             Context context, View targetLayout, @IdRes int bulletViewId, @StringRes int stringRes) {
         TextView bulletView = targetLayout.findViewById(bulletViewId);
-        SpannableString bullet = new SpannableString(context.getResources().getString(stringRes));
+        SpannableString bullet = new SpannableString(context.getString(stringRes));
 
         bullet.setSpan(new ChromeBulletSpan(context), 0, bullet.length(), 0);
         bulletView.setText(bullet);
@@ -117,7 +116,7 @@ public class PrivacySandboxDialogUtils {
         TextView view = targetLayout.findViewById(bulletViewId);
         SpannableString spannableString =
                 SpanApplier.applySpans(
-                        context.getResources().getString(stringRes),
+                        context.getString(stringRes),
                         new SpanApplier.SpanInfo(
                                 "<b>",
                                 "</b>",
@@ -126,5 +125,23 @@ public class PrivacySandboxDialogUtils {
                                         R.style.TextAppearance_TextMediumThick_Secondary)));
         spannableString.setSpan(new ChromeBulletSpan(context), 0, spannableString.length(), 0);
         view.setText(spannableString);
+    }
+
+    /**
+     * Returns the correct SurfaceType as a string. Mainly used for histogram recording purposes.
+     *
+     * @param int SurfaceType surface type enum.
+     * @throws IllegalArgumentException if it receives invalid surfaceType.
+     */
+    public static String getSurfaceTypeAsString(@SurfaceType int surfaceType) {
+
+        switch (surfaceType) {
+            case SurfaceType.BR_APP:
+                return "ClankBrApp";
+            case SurfaceType.AGACCT:
+                return "ClankCCT";
+            default:
+                throw new IllegalArgumentException("Invalid surfaceType: " + surfaceType);
+        }
     }
 }

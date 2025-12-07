@@ -1,0 +1,19 @@
+Name: LeakCanary Core
+Short Name: leakcanary-core
+URL: https://repo.maven.apache.org/maven2/com/squareup/leakcanary/leakcanary-core/3.0-alpha-8/leakcanary-core-3.0-alpha-8.jar
+Version: 3.0-alpha-8
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+LeakCanary
+
+See also: https://github.com/square/leakcanary/
+
+
+Local Modifications:
+No modifications.

@@ -4,9 +4,9 @@
 #import "base/containers/flat_set.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/optimization_guide/core/hints/fake_hints_fetcher.h"
 #import "components/optimization_guide/core/optimization_guide_enums.h"
 #import "components/optimization_guide/core/optimization_guide_switches.h"
-#import "components/optimization_guide/core/optimization_guide_test_util.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_test_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -31,13 +31,16 @@ std::unique_ptr<net::test_server::HttpResponse> HandleGetHintsRequest(
     size_t& count_hints_requests_received,
     const net::test_server::HttpRequest& request) {
   // Fail the response if it does not have the expected attributes.
-  if (request.method != net::test_server::METHOD_POST)
+  if (request.method != net::test_server::METHOD_POST) {
     return nullptr;
+  }
   optimization_guide::proto::GetHintsRequest hints_request;
-  if (!hints_request.ParseFromString(request.content))
+  if (!hints_request.ParseFromString(request.content)) {
     return nullptr;
-  if (hints_request.hosts().empty() && hints_request.urls().empty())
+  }
+  if (hints_request.hosts().empty() && hints_request.urls().empty()) {
     return nullptr;
+  }
   // TODO(crbug.com/40103566): Verify that hosts count in the hint does not
   // exceed MaxHostsForOptimizationGuideServiceHintsFetch()
 
@@ -75,7 +78,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleGetHintsRequest(
              optimization_guide::HintsFetcherRemoteResponseType::kHung) {
     return std::make_unique<net::test_server::HungResponse>();
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   return std::move(response);
@@ -138,12 +141,12 @@ std::unique_ptr<net::test_server::HttpResponse> HandleGetHintsRequest(
 
   // The tests use `self.testServer` as the optimization guide hints server.
   self.testServer->RegisterRequestHandler(base::BindRepeating(
-      &HandleGetHintsRequest, origin_server->base_url().host(),
+      &HandleGetHintsRequest, origin_server->base_url().GetHost(),
       std::cref(_response_type), std::ref(_count_hints_requests_received)));
   GREYAssertTrue(self.testServer->Start(), @"Hints server failed to start.");
 
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Failed to set up histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
   [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
 
   NSString* hints_server_host =
@@ -152,17 +155,17 @@ std::unique_ptr<net::test_server::HttpResponse> HandleGetHintsRequest(
   [OptimizationGuideTestAppInterface setGetHintsURL:hints_server_host];
   [OptimizationGuideTestAppInterface
       setComponentUpdateHints:base::SysUTF8ToNSString(
-                                  origin_server->base_url().host())];
+                                  origin_server->base_url().GetHost())];
   [OptimizationGuideTestAppInterface
       registerOptimizationType:optimization_guide::proto::OptimizationType::
                                    NOSCRIPT];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
-  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                @"Failed to release histogram tester.");
-  [super tearDown];
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseHistogramTester]);
+  [super tearDownHelper];
 }
 
 #pragma mark - Tests
@@ -173,8 +176,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleGetHintsRequest(
 // optimization guide hints fetching are integration tested. This includes tests
 // that verify hints fetcher failure cases, fetching of hints for multiple open
 // tabs at startup, hints are cleared when browsing history is cleared, etc.
-
-- (void)testHintsFetchBasic {
+// TODO(crbug.com/366045251): Re-enable once fixed.
+- (void)DISABLED_testHintsFetchBasic {
   [ChromeEarlGrey loadURL:GURL("https://foo.com/test")];
   // Wait for the hints to be served.
   GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(

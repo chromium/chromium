@@ -30,7 +30,6 @@
 
 #include "third_party/blink/renderer/core/html/forms/week_input_type.h"
 
-#include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/date_time_fields_state.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
@@ -39,6 +38,7 @@
 #include "third_party/blink/renderer/platform/text/date_components.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/strings/grit/ax_strings.h"
 
 namespace blink {
 

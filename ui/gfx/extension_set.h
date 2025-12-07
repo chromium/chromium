@@ -7,17 +7,19 @@
 
 #include <string_view>
 
+#include "base/component_export.h"
 #include "base/containers/flat_set.h"
-#include "ui/gfx/gfx_export.h"
 
 namespace gfx {
 
 using ExtensionSet = base::flat_set<std::string_view>;
 
-GFX_EXPORT ExtensionSet MakeExtensionSet(std::string_view extensions_string);
+COMPONENT_EXPORT(GFX)
+ExtensionSet MakeExtensionSet(std::string_view extensions_string);
 
-GFX_EXPORT bool HasExtension(const ExtensionSet& extension_set,
-                             std::string_view extension);
+COMPONENT_EXPORT(GFX)
+bool HasExtension(const ExtensionSet& extension_set,
+                  std::string_view extension);
 
 template <size_t N>
 inline bool HasExtension(const ExtensionSet& extension_set,
@@ -25,7 +27,8 @@ inline bool HasExtension(const ExtensionSet& extension_set,
   return HasExtension(extension_set, std::string_view(extension, N - 1));
 }
 
-GFX_EXPORT std::string MakeExtensionString(const ExtensionSet& extension_set);
+COMPONENT_EXPORT(GFX)
+std::string MakeExtensionString(const ExtensionSet& extension_set);
 
 }  // namespace gfx
 

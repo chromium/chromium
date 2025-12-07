@@ -34,9 +34,10 @@ struct SupportedVersion {
   bool enabled;
 };
 
-constexpr std::array<SupportedVersion, 2> kSupportedCdmInterfaceVersions = {{
+constexpr std::array<SupportedVersion, 3> kSupportedCdmInterfaceVersions = {{
     {10, true},
-    {11, false},
+    {11, true},
+    {12, false},
 }};
 
 // In most cases CdmInterface::kVersion == CdmInterface::Host::kVersion. However
@@ -45,7 +46,7 @@ constexpr std::array<SupportedVersion, 2> kSupportedCdmInterfaceVersions = {{
 // support. In CdmInterfaceTraits we also static assert that for supported CDM
 // interface, CdmInterface::Host::kVersion must also be supported.
 constexpr int kMinSupportedCdmHostVersion = 10;
-constexpr int kMaxSupportedCdmHostVersion = 11;
+constexpr int kMaxSupportedCdmHostVersion = 12;
 
 constexpr bool IsSupportedCdmModuleVersion(int version) {
   return version == CDM_MODULE_VERSION;
@@ -139,6 +140,18 @@ template <>
 struct CdmInterfaceTraits<11> {
   using CdmInterface = cdm::ContentDecryptionModule_11;
   static_assert(CdmInterface::kVersion == 11, "CDM interface version mismatch");
+  static_assert(IsSupportedCdmHostVersion(CdmInterface::Host::kVersion),
+                "Host not supported");
+  static_assert(
+      CdmInterface::kIsStable ||
+          !IsCdmInterfaceVersionEnabledByDefault(CdmInterface::kVersion),
+      "Experimental CDM interface should not be enabled by default");
+};
+
+template <>
+struct CdmInterfaceTraits<12> {
+  using CdmInterface = cdm::ContentDecryptionModule_12;
+  static_assert(CdmInterface::kVersion == 12, "CDM interface version mismatch");
   static_assert(IsSupportedCdmHostVersion(CdmInterface::Host::kVersion),
                 "Host not supported");
   static_assert(

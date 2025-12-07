@@ -9,6 +9,10 @@
 #include "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #include "url/gurl.h"
 
+namespace gfx {
+struct VectorIcon;
+}
+
 class TabSwitchAction : public OmniboxAction {
  public:
   explicit TabSwitchAction(GURL url);

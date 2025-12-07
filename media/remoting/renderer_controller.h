@@ -25,7 +25,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING_RPC)
-#include "third_party/openscreen/src/cast/streaming/rpc_messenger.h"  // nogncheck
+#include "third_party/openscreen/src/cast/streaming/public/rpc_messenger.h"  // nogncheck
 #include "third_party/openscreen/src/util/weak_ptr.h"  // nogncheck
 #endif
 

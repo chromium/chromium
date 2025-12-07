@@ -12,6 +12,8 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "components/facilitated_payments/android/secure_payload_android.h"
+#include "components/facilitated_payments/core/utils/facilitated_payments_utils.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
@@ -36,8 +38,8 @@ LazyInitFacilitatedPaymentsApiClient(
 // `facilitated_payments_api_client_factory.h`.
 FacilitatedPaymentsApiClientCreator GetFacilitatedPaymentsApiClientCreator(
     content::GlobalRenderFrameHostId render_frame_host_id) {
-  return base::BindOnce(&LazyInitFacilitatedPaymentsApiClient,
-                        render_frame_host_id);
+  return base::BindRepeating(&LazyInitFacilitatedPaymentsApiClient,
+                             render_frame_host_id);
 }
 
 FacilitatedPaymentsApiClientAndroid::FacilitatedPaymentsApiClientAndroid(
@@ -61,6 +63,11 @@ void FacilitatedPaymentsApiClientAndroid::IsAvailable(
       base::android::AttachCurrentThread(), java_bridge_);
 }
 
+bool FacilitatedPaymentsApiClientAndroid::IsAvailableSync() {
+  return Java_FacilitatedPaymentsApiClientBridge_isAvailableSync(
+      base::android::AttachCurrentThread(), java_bridge_);
+}
+
 void FacilitatedPaymentsApiClientAndroid::GetClientToken(
     base::OnceCallback<void(std::vector<uint8_t>)> callback) {
   DCHECK(!IsAnyCallbackPending());
@@ -72,15 +79,15 @@ void FacilitatedPaymentsApiClientAndroid::GetClientToken(
 
 void FacilitatedPaymentsApiClientAndroid::InvokePurchaseAction(
     CoreAccountInfo primary_account,
-    base::span<const uint8_t> action_token,
+    const SecurePayload& secure_payload,
     base::OnceCallback<void(PurchaseActionResult)> callback) {
   DCHECK(!IsAnyCallbackPending());
 
   purchase_action_callback_ = std::move(callback);
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_FacilitatedPaymentsApiClientBridge_invokePurchaseAction(
-      env, java_bridge_, ConvertToJavaCoreAccountInfo(env, primary_account),
-      base::android::ToJavaByteArray(env, action_token));
+      env, java_bridge_, primary_account,
+      ConvertSecurePayloadToJavaObject(secure_payload));
 }
 
 void FacilitatedPaymentsApiClientAndroid::OnIsAvailable(
@@ -126,3 +133,5 @@ bool FacilitatedPaymentsApiClientAndroid::IsAnyCallbackPending() const {
 }
 
 }  // namespace payments::facilitated
+
+DEFINE_JNI(FacilitatedPaymentsApiClientBridge)

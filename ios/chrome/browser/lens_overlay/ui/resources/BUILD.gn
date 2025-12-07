@@ -1,0 +1,27 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/rules.gni")
+
+bundle_data("animation_files") {
+  sources = [
+    "lens_usered_darkmode.json",
+    "lens_usered_lightmode.json",
+  ]
+  outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+}
+
+bundle_data_xcassets("resources") {
+  catalog = "Assets.xcassets"
+  sources = [
+    "Assets.xcassets/Contents.json",
+    "Assets.xcassets/lens_translate_error.imageset/Contents.json",
+    "Assets.xcassets/lens_translate_error.imageset/lens_translate_error@1x.png",
+    "Assets.xcassets/lens_translate_error.imageset/lens_translate_error@2x.png",
+    "Assets.xcassets/lens_translate_error.imageset/lens_translate_error@3x.png",
+    "Assets.xcassets/lens_translate_error.imageset/lens_translate_error_dark@1x.png",
+    "Assets.xcassets/lens_translate_error.imageset/lens_translate_error_dark@2x.png",
+    "Assets.xcassets/lens_translate_error.imageset/lens_translate_error_dark@3x.png",
+  ]
+}

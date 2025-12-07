@@ -20,10 +20,10 @@
 #include "extensions/renderer/console.h"
 #include "extensions/renderer/script_context_set.h"
 #include "gin/arguments.h"
-#include "gin/converter.h"
-#include "gin/handle.h"
 #include "gin/object_template_builder.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
+#include "v8/include/cppgc/allocation.h"
+#include "v8/include/v8-cppgc.h"
 #include "v8/include/v8-object.h"
 
 namespace extensions {
@@ -67,10 +67,10 @@ v8::Local<v8::Object> ContentSetting::Create(
   const std::string& pref_name = (*property_values)[0].GetString();
   const base::Value::Dict& value_spec = (*property_values)[1u].GetDict();
 
-  gin::Handle<ContentSetting> handle = gin::CreateHandle(
-      isolate, new ContentSetting(request_handler, type_refs, access_checker,
-                                  pref_name, value_spec));
-  return handle.ToV8().As<v8::Object>();
+  auto* setting = cppgc::MakeGarbageCollected<ContentSetting>(
+      isolate->GetCppHeap()->GetAllocationHandle(), request_handler, type_refs,
+      access_checker, pref_name, value_spec);
+  return setting->GetWrapper(isolate).ToLocalChecked();
 }
 
 ContentSetting::ContentSetting(APIRequestHandler* request_handler,
@@ -113,8 +113,6 @@ ContentSetting::ContentSetting(APIRequestHandler* request_handler,
 
 ContentSetting::~ContentSetting() = default;
 
-gin::WrapperInfo ContentSetting::kWrapperInfo = {gin::kEmbedderNativeGin};
-
 gin::ObjectTemplateBuilder ContentSetting::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   return Wrappable<ContentSetting>::GetObjectTemplateBuilder(isolate)
@@ -125,10 +123,13 @@ gin::ObjectTemplateBuilder ContentSetting::GetObjectTemplateBuilder(
                  &ContentSetting::GetResourceIdentifiers);
 }
 
-const char* ContentSetting::GetTypeName() {
+const char* ContentSetting::GetHumanReadableName() const {
   return "ContentSetting";
 }
 
+const gin::WrapperInfo* ContentSetting::wrapper_info() const {
+  return &kWrapperInfo;
+}
 void ContentSetting::Get(gin::Arguments* arguments) {
   HandleFunction("get", arguments);
 }
@@ -191,7 +192,7 @@ void ContentSetting::HandleFunction(const std::string& method_name,
         args.push_back(object);
       }
       JSRunner::Get(context)->RunJSFunction(parse_result.callback, context,
-                                            args.size(), args.data());
+                                            args);
     }
     return;
   }

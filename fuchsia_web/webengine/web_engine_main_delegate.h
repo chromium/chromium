@@ -11,6 +11,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "content/public/app/content_main_delegate.h"
 #include "fuchsia_web/webengine/web_engine_export.h"
@@ -40,7 +41,7 @@ class WEB_ENGINE_EXPORT WebEngineMainDelegate
   std::optional<int> BasicStartupComplete() override;
   void PreSandboxStartup() override;
   std::optional<int> PreBrowserMain() override;
-  absl::variant<int, content::MainFunctionParams> RunProcess(
+  std::variant<int, content::MainFunctionParams> RunProcess(
       const std::string& process_type,
       content::MainFunctionParams main_function_params) override;
   content::ContentClient* CreateContentClient() override;

@@ -52,6 +52,9 @@ struct NotificationData {
   // property of this structure, in bytes.
   const uint64 kMaximumDeveloperDataSize = 1048576; // 1024 * 1024 (= 1 MB)
 
+  // The maximum number of developer-provided actions on a notification.
+  const uint64 kMaximumActions = 2;
+
   // Title to be displayed with the Web Notification.
   mojo_base.mojom.String16 title;
 

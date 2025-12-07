@@ -39,6 +39,7 @@ class SharedWorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
   BrowserContext* GetBrowserContext() override;
   std::string GetType() override;
   std::string GetTitle() override;
+  std::string GetDescription() override;
   GURL GetURL() override;
   bool Activate() override;
   void Reload() override;
@@ -67,7 +68,7 @@ class SharedWorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
   ~SharedWorkerDevToolsAgentHost() override;
 
   // DevToolsAgentHostImpl overrides.
-  bool AttachSession(DevToolsSession* session, bool acquire_wake_lock) override;
+  bool AttachSession(DevToolsSession* session) override;
   void DetachSession(DevToolsSession* session) override;
 
   std::unique_ptr<protocol::TargetAutoAttacher> auto_attacher_;

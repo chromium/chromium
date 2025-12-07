@@ -29,8 +29,9 @@ SkipAdLabelButton::SkipAdLabelButton(PressedCallback callback)
   SetSize(gfx::Size(kSkipAdButtonWidth, kSkipAdButtonHeight));
 
   // Accessibility.
-  GetViewAccessibility().SetName(label()->GetText());
-  SetTooltipText(label()->GetText());
+  std::u16string label_text(label()->GetText());
+  GetViewAccessibility().SetName(label_text);
+  SetTooltipText(label_text);
   SetInstallFocusRingOnFocus(true);
 }
 
@@ -56,8 +57,8 @@ void SkipAdLabelButton::OnThemeChanged() {
       views::Painter::CreateRoundRectWith1PxBorderPainter(
           color_provider->GetColor(kColorPipWindowSkipAdButtonBackground),
           color_provider->GetColor(kColorPipWindowSkipAdButtonBorder), 1.f)));
-  SetEnabledTextColorIds(kColorPipWindowForeground);
-  SetTextColorId(views::Button::STATE_DISABLED, kColorPipWindowForeground);
+  SetEnabledTextColors(kColorPipWindowForeground);
+  SetTextColor(views::Button::STATE_DISABLED, kColorPipWindowForeground);
 }
 
 BEGIN_METADATA(SkipAdLabelButton)

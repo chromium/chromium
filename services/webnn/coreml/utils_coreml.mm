@@ -13,9 +13,10 @@
 #include "base/containers/span_reader.h"
 #include "base/containers/span_writer.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
-#include "base/task/sequenced_task_runner.h"
+#include "base/task/bind_post_task.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 
 namespace webnn::coreml {
@@ -23,15 +24,15 @@ namespace webnn::coreml {
 namespace {
 
 uint32_t GetDataTypeByteSize(MLMultiArrayDataType data_type) {
-  switch (data_type) {
-    case MLMultiArrayDataTypeDouble:
-      return 8;
-    case MLMultiArrayDataTypeFloat32:
-    case MLMultiArrayDataTypeInt32:
-      return 4;
-    case MLMultiArrayDataTypeFloat16:
-      return 2;
-  }
+  // MLMultiArrayDataType values encode a format in the high bits (float =
+  // 0x10000, int = 0x20000) and the size (in bits) in the lower 16 bits.
+  //
+  // To determine the byte size of the type, mask off the format and divide. For
+  // example:
+  //
+  // MLMultiArrayDataTypeFloat64 (0x10040) -> 0x40 (64 bits) / 8 = 8 bytes.
+  // MLMultiArrayDataTypeInt32 (0x20020) -> 0x20 (32 bits) / 8 = 4 bytes.
+  return (data_type & 0xFFFF) / 8;
 }
 
 std::vector<uint32_t> ToStdVector(NSArray<NSNumber*>* ns_array) {
@@ -124,81 +125,57 @@ void RecursivelyWriteToMLMultiArray(
 
 }  // namespace
 
-void ReadFromMLMultiArray(MLMultiArray* multi_array,
-                          base::span<uint8_t> buffer) {
-  scoped_refptr<base::SequencedTaskRunner> runner =
-      base::SequencedTaskRunner::GetCurrentDefault();
+void ReadFromMLMultiArray(
+    MLMultiArray* multi_array,
+    base::OnceCallback<void(mojo_base::BigBuffer)> result_callback) {
+  __block auto wrapped_callback =
+      base::BindPostTaskToCurrentDefault(std::move(result_callback));
+  __block size_t packed_size = static_cast<size_t>(multi_array.count) *
+                               GetDataTypeByteSize(multi_array.dataType);
 
-  [multi_array
-      getBytesWithHandler:base::CallbackToBlock(base::BindOnce(
-                              [](MLMultiArray* multi_array,
-                                 base::span<uint8_t> buffer,
-                                 scoped_refptr<base::SequencedTaskRunner>
-                                     runner,
-                                 const void* bytes, NSInteger size) {
-                                // TODO(crbug.com/333392274): Refactor this
-                                // method to assume the handler may be invoked
-                                // on some other thread. We should not assume
-                                // that this method will always run
-                                // synchronously.
-                                CHECK(runner->RunsTasksInCurrentSequence());
+  [multi_array getBytesWithHandler:^(const void* bytes, NSInteger size) {
+    std::vector<uint32_t> shape = ToStdVector(multi_array.shape);
+    std::vector<uint32_t> strides = ToStdVector(multi_array.strides);
+    CHECK_EQ(shape.size(), strides.size());
 
-                                std::vector<uint32_t> shape =
-                                    ToStdVector(multi_array.shape);
-                                std::vector<uint32_t> strides =
-                                    ToStdVector(multi_array.strides);
-                                CHECK_EQ(shape.size(), strides.size());
+    // SAFETY: -[MLMultiArray getBytesWithHandler:] guarantees that `bytes`
+    // points to at least `size` valid bytes.
+    auto multi_array_data = UNSAFE_BUFFERS(base::span(
+        static_cast<const uint8_t*>(bytes), base::checked_cast<size_t>(size)));
 
-                                // SAFETY: -[MLMultiArray getBytesWithHandler:]
-                                // guarantees that `bytes` points to at least
-                                // `size` valid bytes.
-                                auto multi_array_data =
-                                    UNSAFE_BUFFERS(base::span(
-                                        static_cast<const uint8_t*>(bytes),
-                                        base::checked_cast<size_t>(size)));
-                                RecursivelyReadFromMLMultiArray(
-                                    multi_array_data,
+    mojo_base::BigBuffer output_buffer(packed_size);
+
+    RecursivelyReadFromMLMultiArray(multi_array_data,
                                     GetDataTypeByteSize(multi_array.dataType),
-                                    shape, strides, buffer);
-                              },
-                              multi_array, buffer, std::move(runner)))];
+                                    shape, strides, output_buffer);
+
+    std::move(wrapped_callback).Run(std::move(output_buffer));
+  }];
 }
 
 void WriteToMLMultiArray(MLMultiArray* multi_array,
-                         base::span<const uint8_t> bytes_to_write) {
-  scoped_refptr<base::SequencedTaskRunner> runner =
-      base::SequencedTaskRunner::GetCurrentDefault();
+                         base::span<const uint8_t> bytes_to_write,
+                         base::OnceClosure done_closure) {
+  __block auto wrapped_closure =
+      base::BindPostTaskToCurrentDefault(std::move(done_closure));
 
-  [multi_array
-      getMutableBytesWithHandler:
-          base::CallbackToBlock(base::BindOnce(
-              [](MLMultiArray* multi_array,
-                 base::span<const uint8_t> bytes_to_write,
-                 scoped_refptr<base::SequencedTaskRunner> runner,
-                 void* mutable_bytes, NSInteger size,
-                 NSArray<NSNumber*>* strides) {
-                // TODO(crbug.com/333392274): Refactor this
-                // method to assume the handler may be invoked
-                // on some other thread. We should not assume
-                // that this method will always run
-                // synchronously.
-                CHECK(runner->RunsTasksInCurrentSequence());
+  [multi_array getMutableBytesWithHandler:^(void* mutable_bytes, NSInteger size,
+                                            NSArray<NSNumber*>* strides) {
+    std::vector<uint32_t> shape = ToStdVector(multi_array.shape);
+    std::vector<uint32_t> std_strides = ToStdVector(strides);
+    CHECK_EQ(shape.size(), std_strides.size());
 
-                std::vector<uint32_t> shape = ToStdVector(multi_array.shape);
-                std::vector<uint32_t> std_strides = ToStdVector(strides);
-                CHECK_EQ(shape.size(), std_strides.size());
+    // SAFETY: -[MLMultiArray getMutableBytesWithHandler:] guarantees that
+    // `mutable_bytes` points to at least `size` valid bytes.
+    auto mutable_multi_array_data =
+        UNSAFE_BUFFERS(base::span(static_cast<uint8_t*>(mutable_bytes),
+                                  base::checked_cast<size_t>(size)));
+    RecursivelyWriteToMLMultiArray(
+        bytes_to_write, GetDataTypeByteSize(multi_array.dataType), shape,
+        std_strides, mutable_multi_array_data);
 
-                // SAFETY: -[MLMultiArray getMutableBytesWithHandler:]
-                // guarantees that `mutable_bytes` points to at least `size`
-                // valid bytes.
-                auto mutable_multi_array_data = UNSAFE_BUFFERS(
-                    base::span(static_cast<uint8_t*>(mutable_bytes),
-                               base::checked_cast<size_t>(size)));
-                RecursivelyWriteToMLMultiArray(
-                    bytes_to_write, GetDataTypeByteSize(multi_array.dataType),
-                    shape, std_strides, mutable_multi_array_data);
-              },
-              multi_array, bytes_to_write, std::move(runner)))];
+    std::move(wrapped_closure).Run();
+  }];
 }
 
 }  // namespace webnn::coreml

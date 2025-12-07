@@ -18,6 +18,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/policy_invalidation_scope.h"
 #include "components/policy/core/common/remote_commands/remote_commands_factory.h"
+#include "components/policy/core/common/remote_commands/remote_commands_fetch_reason.h"
 #include "components/policy/core/common/remote_commands/remote_commands_service.h"
 #include "components/prefs/pref_service.h"
 
@@ -80,7 +81,8 @@ void CloudPolicyCore::StartRemoteCommandsService(
       std::move(factory), client_.get(), store_, scope);
 
   // Do an initial remote commands fetch immediately.
-  remote_commands_service_->FetchRemoteCommands();
+  remote_commands_service_->FetchRemoteCommands(
+      RemoteCommandsFetchReason::kStartup);
 
   for (auto& observer : observers_)
     observer.OnRemoteCommandsServiceStarted(this);

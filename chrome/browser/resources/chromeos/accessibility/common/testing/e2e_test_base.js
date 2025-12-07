@@ -31,7 +31,6 @@ E2ETestBase = class extends AccessibilityTestBase {
   #include "base/functional/callback.h"
   #include "base/containers/flat_set.h"
   #include "chrome/browser/ash/accessibility/accessibility_manager.h"
-  #include "chrome/browser/ash/crosapi/browser_manager.h"
   #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
   #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
   #include "chrome/browser/ui/browser.h"
@@ -48,14 +47,6 @@ E2ETestBase = class extends AccessibilityTestBase {
   testGenPreamble() {
     GEN(`
     TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
-    if (ash_starter()->HasLacrosArgument()) {
-      crosapi::BrowserManager::Get()->NewTab();
-      ASSERT_TRUE(crosapi::BrowserManager::Get()->IsRunning());
-    }
-    // For ChromeVoxBackgroundTest.NewWindowWebSpeech:
-    // chrome.runtime.openOptionsPage opens a SWA when Lacros is enabled.
-    ash::SystemWebAppManager::GetForTest(GetProfile())
-      ->InstallSystemAppsForTesting();
       `);
   }
 
@@ -150,47 +141,6 @@ E2ETestBase = class extends AccessibilityTestBase {
   }
 
   /**
-   * @param {!chrome.automation.AutomationNode} app
-   * @return {boolean}
-   */
-  isInLacrosWindow(app) {
-    // We validate we're actually within a Lacros window by scanning upward
-    // until we see the presence of an app id, which indicates an app subtree.
-    // See go/lacros-accessibility for details.
-    while (app && !app.appId) {
-      app = app.parent;
-    }
-    return Boolean(app);
-  }
-
-  /**
-   * @param {string} url
-   * @param {!chrome.automation.AutomationNode} addressBar
-   */
-  async navigateToUrlForLacros(url, addressBar) {
-    // This populates the address bar as if we typed the url.
-    addressBar.setValue(url);
-
-    // We have two choices to confirm navigation.
-    if (!this.navigateLacrosWithAutoComplete) {
-      // 1. (default), hit enter.
-      await this.waitForEvent(addressBar, 'valueChanged');
-      console.log('Sending key press');
-      EventGenerator.sendKeyPress(KeyCode.RETURN);
-    } else {
-      // 2. use the auto completion.
-      await this.waitForEvent(addressBar, 'controlsChanged');
-      // The text field relates to the auto complete list box via controlledBy.
-      // The |controls| node structure here nests several levels until the
-      // listBoxOption we want.
-      const autoCompleteListBoxOption =
-          addressBar.controls[0].firstChild.firstChild;
-      assertEquals('listBoxOption', autoCompleteListBoxOption.role);
-      autoCompleteListBoxOption.doDefault();
-    }
-  }
-
-  /**
    * Creates a callback that optionally calls {@code opt_callback} when
    * called.  If this method is called one or more times, then
    * {@code testDone()} will be called when all callbacks have been called.
@@ -235,45 +185,11 @@ E2ETestBase = class extends AccessibilityTestBase {
       this.desktop_ = await AsyncUtil.getDesktop();
       const url = opt_params.url || DocUtils.createUrlForDoc(doc);
 
-      const hasLacrosChromePath = await new Promise(
-          r => chrome.commandLinePrivate.hasSwitch('lacros-chrome-path', r));
-      // The below block handles opening a url either in a Lacros tab or Ash
-      // tab. For Lacros, we re-use an already open Lacros tab. For Ash, we use
-      // the chrome.tabs api.
-
-      // This flag controls whether we've requested navigation to |url| within
-      // the open Lacros tab.
-      let didNavigateForLacros = false;
+      // The below block handles opening a url via the chrome.tabs api.
 
       // Listener for both load complete and focus events that eventually
       // triggers the test.
       const listener = async event => {
-        if (hasLacrosChromePath && !didNavigateForLacros) {
-          // We have yet to request navigation in the Lacros tab. Do so now by
-          // getting the default focus (the address bar), setting the value to
-          // the url and then performing do default on the auto completion node.
-          const focus = await AsyncUtil.getFocus();
-          // It's possible focus is elsewhere; ensure it lands on the
-          // address bar text field.
-          if (!focus || focus.role !== chrome.automation.RoleType.TEXT_FIELD) {
-            // Focus the address bar.
-            const textField = this.desktop_.find({
-              role: 'textField',
-              attributes: {className: 'OmniboxViewViews'},
-            });
-            if (textField) {
-              textField.focus();
-            }
-            return;
-          }
-
-          if (this.isInLacrosWindow(focus)) {
-            didNavigateForLacros = true;
-            await this.navigateToUrlForLacros(url, focus);
-          }
-          return;  // exit listener.
-        }
-
         // Navigation has occurred, but we need to ensure the url we want has
         // loaded.
         if (event.target.root.url !== url || !event.target.root.docLoaded) {
@@ -281,7 +197,7 @@ E2ETestBase = class extends AccessibilityTestBase {
         }
 
         // Finally, when we get here, we've successfully navigated to
-        // the |url| in either Lacros or Ash.
+        // the |url|.
         this.desktop_.removeEventListener('focus', listener, true);
         this.desktop_.removeEventListener('loadComplete', listener, true);
 
@@ -296,13 +212,8 @@ E2ETestBase = class extends AccessibilityTestBase {
       this.desktop_.addEventListener('focus', listener, true);
       this.desktop_.addEventListener('loadComplete', listener, true);
 
-      // The easy case -- just open the Ash tab.
-      if (!hasLacrosChromePath) {
-        const createParams = {active: true, url};
-        chrome.tabs.create(createParams);
-      } else {
-        chrome.automation.getFocus(f => listener({target: f}));
-      }
+      const createParams = {active: true, url};
+      chrome.tabs.create(createParams);
     }));
   }
 
@@ -314,20 +225,8 @@ E2ETestBase = class extends AccessibilityTestBase {
    */
   async runWithLoadedTabs(urls) {
     console.assert(urls.length !== 0);
-    const hasLacrosChromePath = await new Promise(
-        r => chrome.commandLinePrivate.hasSwitch('lacros-chrome-path', r));
-    if (!hasLacrosChromePath) {
-      for (const url of urls) {
-        await this.runWithLoadedTree(url);
-      }
-      return;
-    }
-    await this.runWithLoadedTree(urls[0]);
-    for (let i = 1; i < urls.length; i++) {
-      // Open a new tab with ctrl+t.
-      EventGenerator.sendKeyPress(KeyCode.T, {ctrl: true});
-      // Open the URL in the new tab.
-      await this.runWithLoadedTree(urls[i]);
+    for (const url of urls) {
+      await this.runWithLoadedTree(url);
     }
   }
 
@@ -396,12 +295,77 @@ E2ETestBase = class extends AccessibilityTestBase {
   }
 
   /**
-   * Async function to set a preference value in Settings.
+   * A simple deep equality test of two values by comparing their JSON
+   * representation.
+   */
+  deepEqual_(val1, val2) {
+    return JSON.stringify(val1) === JSON.stringify(val2);
+  }
+
+  /**
+   * Async function to set a preference value in Settings. It ensures that the
+   * new pref value is persisted and `settingsPrivate.onPrefsChanged` event is
+   * fired if the value is changed.
+   *
+   * Waiting for `settingsPrivate.onPrefsChanged` event is needed because the
+   * event is not guaranteed to happen after a `settingsPrivate.setPref` call
+   * and a `settingsPrivate.getPref` call. When it happens, it breaks the test
+   * code like the following pattern:
+   *
+   * ```
+   *   await this.setPref(somePref, someValue);
+   *   assertEquals(class.memberBoundToPref, someValue);
+   * ```
+   *
+   * `assertEquals` depends on `settingsPrivate.onPrefsChanged` event to update
+   *  `class.memberBoundToPref` to pass. If the event does not happen, it fails.
+   *
+   *
+   * See https://crbug.com/439995191#comment7
+   *
    * @param {string} name
    * @return {!Promise}
    */
   async setPref(name, value) {
-    return new Promise(resolve => {
+    return new Promise(async resolve => {
+      // If the pref value is not changed, early out.
+      const existing = await (this.getPref(name));
+      if (this.deepEqual_(existing.value, value)) {
+        assertEquals(existing.key, name);
+        if (typeof (value) === 'object') {
+          assertObjectEquals(value, existing.value);
+        } else {
+          assertEquals(value, existing.value);
+        }
+        resolve();
+        return;
+      }
+
+      // Otherwise, `resolve()` after `onPrefsChanged` event has fired and
+      // setPref callback has been invoked.
+      let onPrefsChangedFired = false;
+      let setPrefCallbackCalled = false;
+
+      const maybeResolve = function() {
+        if (!onPrefsChangedFired || !setPrefCallbackCalled) {
+          return;
+        }
+
+        resolve();
+      };
+
+      const onPrefChanged = function(prefs) {
+        prefs.forEach(pref => {
+          if (pref.key === name) {
+            onPrefsChangedFired = true;
+            chrome.settingsPrivate.onPrefsChanged.removeListener(onPrefChanged);
+            maybeResolve();
+            return;
+          }
+        });
+      };
+      chrome.settingsPrivate.onPrefsChanged.addListener(onPrefChanged);
+
       chrome.settingsPrivate.setPref(name, value, undefined, async () => {
         // Wait for changes to fully propagate.
         const result = await (this.getPref(name));
@@ -411,7 +375,9 @@ E2ETestBase = class extends AccessibilityTestBase {
         } else {
           assertEquals(value, result.value);
         }
-        resolve();
+
+        setPrefCallbackCalled = true;
+        maybeResolve();
       });
     });
   }

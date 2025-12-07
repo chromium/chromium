@@ -137,6 +137,7 @@ SyncStatusCode ApiErrorCodeToSyncStatusCode(google_apis::ApiErrorCode error) {
     case google_apis::PARSE_ERROR:
     case google_apis::DRIVE_RESPONSE_TOO_LARGE:
     case google_apis::OTHER_ERROR:
+    case google_apis::YOUTUBE_MUSIC_UPDATE_REQUIRED:
       return SYNC_STATUS_FAILED;
   }
 

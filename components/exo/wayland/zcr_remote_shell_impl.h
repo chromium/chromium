@@ -212,8 +212,8 @@ class WaylandRemoteSurfaceDelegate
                       chromeos::WindowStateType new_state_type) override;
   void OnBoundsChanged(chromeos::WindowStateType current_state,
                        chromeos::WindowStateType requested_state,
-                       int64_t display_id,
-                       const gfx::Rect& bounds_in_display,
+                       int64_t requested_display_id,
+                       const gfx::Rect& requested_bounds_in_display,
                        bool is_resize,
                        int bounds_change,
                        bool is_adjusted_bounds) override;

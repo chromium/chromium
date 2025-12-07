@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/tiles/tiling_set_raster_queue_all.h"
 
 #include <stddef.h>
@@ -30,24 +25,27 @@ TilingSetRasterQueueAll::IterationStage::IterationStage(
 // static
 std::unique_ptr<TilingSetRasterQueueAll> TilingSetRasterQueueAll::Create(
     PictureLayerTilingSet* tiling_set,
-    bool prioritize_low_res,
     bool is_drawing_layer) {
   DCHECK(tiling_set);
 
   // Early out if the tiling set has no tiles needing raster.
-  bool done = features::IsCCSlimmingEnabled() ? tiling_set->all_tiles_done()
-                                              : !tiling_set->num_tilings();
-  if (done) {
-    return nullptr;
+  if (features::IsCCSlimmingEnabled()) {
+    if (tiling_set->all_tiles_done()) {
+      return nullptr;
+    }
+  } else {
+    if (!tiling_set->num_tilings()) {
+      return base::WrapUnique(
+          new TilingSetRasterQueueAll(nullptr, nullptr, is_drawing_layer));
+    }
   }
 
   const PictureLayerTilingClient* client = tiling_set->client();
   WhichTree tree = tiling_set->tree();
-  // Find high and low res tilings and initialize the iterators.
+  // Find high res tiling and initialize the iterator.
   PictureLayerTiling* high_res_tiling = nullptr;
-  PictureLayerTiling* low_res_tiling = nullptr;
-  // This variable would point to a tiling that has a NON_IDEAL_RESOLUTION or
-  // LOW_RESOLUTION on the active tree, but HIGH_RESOLUTION on the pending tree.
+  // This variable would point to a tiling that has a NON_IDEAL_RESOLUTION on
+  // the active tree, but HIGH_RESOLUTION on the pending tree.
   // These tilings are the only non-high res tilings that could have required
   // for activation tiles, so they need to be considered for rasterization.
   PictureLayerTiling* active_non_ideal_pending_high_res_tiling = nullptr;
@@ -55,8 +53,6 @@ std::unique_ptr<TilingSetRasterQueueAll> TilingSetRasterQueueAll::Create(
     PictureLayerTiling* tiling = tiling_set->tiling_at(i);
     if (tiling->resolution() == HIGH_RESOLUTION)
       high_res_tiling = tiling;
-    if (prioritize_low_res && tiling->resolution() == LOW_RESOLUTION)
-      low_res_tiling = tiling;
     if (tree == ACTIVE_TREE && tiling->resolution() != HIGH_RESOLUTION) {
       const PictureLayerTiling* twin =
           client->GetPendingOrActiveTwinTiling(tiling);
@@ -65,8 +61,6 @@ std::unique_ptr<TilingSetRasterQueueAll> TilingSetRasterQueueAll::Create(
     }
   }
 
-  bool use_low_res_tiling = low_res_tiling && low_res_tiling->has_tiles() &&
-                            !low_res_tiling->all_tiles_done();
   bool use_high_res_tiling = high_res_tiling && high_res_tiling->has_tiles() &&
                              !high_res_tiling->all_tiles_done();
   bool use_active_non_ideal_pending_high_res_tiling =
@@ -74,14 +68,13 @@ std::unique_ptr<TilingSetRasterQueueAll> TilingSetRasterQueueAll::Create(
       active_non_ideal_pending_high_res_tiling->has_tiles() &&
       !active_non_ideal_pending_high_res_tiling->all_tiles_done();
 
-  if (!use_low_res_tiling && !use_high_res_tiling &&
-      !use_active_non_ideal_pending_high_res_tiling) {
+  if (!use_high_res_tiling && !use_active_non_ideal_pending_high_res_tiling &&
+      features::IsCCSlimmingEnabled()) {
     return nullptr;
   }
 
   return base::WrapUnique(new TilingSetRasterQueueAll(
       use_high_res_tiling ? high_res_tiling : nullptr,
-      use_low_res_tiling ? low_res_tiling : nullptr,
       use_active_non_ideal_pending_high_res_tiling
           ? active_non_ideal_pending_high_res_tiling
           : nullptr,
@@ -90,27 +83,28 @@ std::unique_ptr<TilingSetRasterQueueAll> TilingSetRasterQueueAll::Create(
 
 TilingSetRasterQueueAll::TilingSetRasterQueueAll(
     PictureLayerTiling* high_res_tiling,
-    PictureLayerTiling* low_res_tiling,
     PictureLayerTiling* active_non_ideal_pending_high_res_tiling,
     bool is_drawing_layer)
     : current_stage_(0), is_drawing_layer_(is_drawing_layer) {
-  // Make the tiling iterators.
-  if (low_res_tiling) {
-    MakeTilingIterator(LOW_RES, low_res_tiling);
+  if (!high_res_tiling && !active_non_ideal_pending_high_res_tiling) {
+    DCHECK(!features::IsCCSlimmingEnabled());
+    return;
   }
+
+  // Make the tiling iterators.
   if (high_res_tiling) {
     MakeTilingIterator(HIGH_RES, high_res_tiling);
+  } else if (!features::IsCCSlimmingEnabled()) {
+    iterators_[HIGH_RES].emplace();
   }
   if (active_non_ideal_pending_high_res_tiling) {
     MakeTilingIterator(ACTIVE_NON_IDEAL_PENDING_HIGH_RES,
                        active_non_ideal_pending_high_res_tiling);
+  } else if (!features::IsCCSlimmingEnabled()) {
+    iterators_[ACTIVE_NON_IDEAL_PENDING_HIGH_RES].emplace();
   }
 
   // Set up the stages.
-  if (low_res_tiling) {
-    stages_.push_back(IterationStage(LOW_RES, TilePriority::NOW));
-  }
-
   if (high_res_tiling) {
     stages_.push_back(IterationStage(HIGH_RES, TilePriority::NOW));
   }
@@ -131,16 +125,18 @@ TilingSetRasterQueueAll::TilingSetRasterQueueAll(
 
   IteratorType index = stages_[current_stage_].iterator_type;
   TilePriority::PriorityBin tile_type = stages_[current_stage_].tile_type;
-  if (iterators_[index].done() || iterators_[index].type() != tile_type)
+  if (!iterators_[index] || iterators_[index]->done() ||
+      iterators_[index]->type() != tile_type) {
     AdvanceToNextStage();
+  }
 }
 
 TilingSetRasterQueueAll::~TilingSetRasterQueueAll() = default;
 
 void TilingSetRasterQueueAll::MakeTilingIterator(IteratorType type,
                                                  PictureLayerTiling* tiling) {
-  iterators_[type] = TilingIterator(tiling, &tiling->tiling_data_);
-  if (iterators_[type].done()) {
+  iterators_[type].emplace(tiling, &tiling->tiling_data_);
+  if (iterators_[type]->done()) {
     tiling->set_all_tiles_done(true);
     // If we've marked the tiling as done, make sure we're actually done.
     tiling->VerifyNoTileNeedsRaster();
@@ -156,22 +152,26 @@ void TilingSetRasterQueueAll::Pop() {
   TilePriority::PriorityBin tile_type = stages_[current_stage_].tile_type;
 
   // First advance the iterator.
-  DCHECK(!iterators_[index].done());
-  DCHECK(iterators_[index].type() == tile_type);
-  ++iterators_[index];
+  DCHECK(iterators_[index]);
+  DCHECK(!iterators_[index]->done());
+  DCHECK(iterators_[index]->type() == tile_type);
+  ++(*iterators_[index]);
 
-  if (iterators_[index].done() || iterators_[index].type() != tile_type)
+  if (!iterators_[index] || iterators_[index]->done() ||
+      iterators_[index]->type() != tile_type) {
     AdvanceToNextStage();
+  }
 }
 
 const PrioritizedTile& TilingSetRasterQueueAll::Top() const {
   DCHECK(!IsEmpty());
 
   IteratorType index = stages_[current_stage_].iterator_type;
-  DCHECK(!iterators_[index].done());
-  DCHECK(iterators_[index].type() == stages_[current_stage_].tile_type);
+  DCHECK(iterators_[index]);
+  DCHECK(!iterators_[index]->done());
+  DCHECK(iterators_[index]->type() == stages_[current_stage_].tile_type);
 
-  return *iterators_[index];
+  return **iterators_[index];
 }
 
 void TilingSetRasterQueueAll::AdvanceToNextStage() {
@@ -181,8 +181,10 @@ void TilingSetRasterQueueAll::AdvanceToNextStage() {
     IteratorType index = stages_[current_stage_].iterator_type;
     TilePriority::PriorityBin tile_type = stages_[current_stage_].tile_type;
 
-    if (!iterators_[index].done() && iterators_[index].type() == tile_type)
+    if (iterators_[index] && !iterators_[index]->done() &&
+        iterators_[index]->type() == tile_type) {
       break;
+    }
     ++current_stage_;
   }
 }
@@ -430,8 +432,7 @@ void TilingSetRasterQueueAll::TilingIterator::AdvancePhase() {
     phase_ = static_cast<Phase>(phase_ + 1);
     switch (phase_) {
       case Phase::VISIBLE_RECT:
-        NOTREACHED_IN_MIGRATION();
-        return;
+        NOTREACHED();
       case Phase::PENDING_VISIBLE_RECT:
         pending_visible_iterator_ =
             PendingVisibleTilingIterator(tiling_, tiling_data_);

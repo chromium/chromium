@@ -12,6 +12,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/cast/message_port/message_port.h"
 #include "components/cast/named_message_port_connector/named_message_port_connector.h"
@@ -63,8 +64,8 @@ class ApiBindingsClient {
   void CallOnErrorCallback(base::OnceClosure on_error_callback);
 
   std::optional<std::vector<chromium::cast::ApiBinding>> bindings_;
-  fuchsia::web::Frame* frame_ = nullptr;
-  cast_api_bindings::NamedMessagePortConnector* connector_ = nullptr;
+  raw_ptr<fuchsia::web::Frame> frame_ = nullptr;
+  raw_ptr<cast_api_bindings::NamedMessagePortConnector> connector_ = nullptr;
   chromium::cast::ApiBindingsPtr bindings_service_;
   base::OnceClosure on_initialization_complete_;
 

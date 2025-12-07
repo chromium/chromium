@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
@@ -15,9 +14,8 @@ class DevicePosture;
 
 class NavigatorDevicePosture final
     : public GarbageCollected<NavigatorDevicePosture>,
-      public Supplement<Navigator> {
+      public GarbageCollectedMixin {
  public:
-  static const char kSupplementName[];
   static DevicePosture* devicePosture(Navigator&);
 
   explicit NavigatorDevicePosture(Navigator&);

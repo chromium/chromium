@@ -23,45 +23,37 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/network/form_data_encoder.h"
 
+#include <array>
 #include <limits>
+#include <string_view>
+
 #include "base/rand_util.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 
 namespace blink {
 
+namespace {
+
 // Helper functions
-static inline void Append(Vector<char>& buffer, char string) {
-  buffer.push_back(string);
+inline void Append(Vector<char>& buffer, std::string_view string) {
+  buffer.AppendSpan(base::span(string));
 }
 
-static inline void Append(Vector<char>& buffer, const char* string) {
-  buffer.Append(string, static_cast<wtf_size_t>(strlen(string)));
-}
-
-static inline void Append(Vector<char>& buffer, const std::string& string) {
-  buffer.Append(string.data(), base::checked_cast<wtf_size_t>(string.length()));
-}
-
-static inline void AppendPercentEncoded(Vector<char>& buffer, unsigned char c) {
-  const char kHexChars[] = "0123456789ABCDEF";
+inline void AppendPercentEncoded(Vector<char>& buffer, unsigned char c) {
+  constexpr auto kHexChars = base::span_from_cstring("0123456789ABCDEF");
   const char tmp[] = {'%', kHexChars[c / 16], kHexChars[c % 16]};
-  buffer.Append(tmp, sizeof(tmp));
+  buffer.AppendSpan(base::span(tmp));
 }
 
-static void AppendQuotedString(Vector<char>& buffer,
-                               const std::string& string,
-                               FormDataEncoder::Mode mode) {
+void AppendQuotedString(Vector<char>& buffer,
+                        const std::string& string,
+                        FormDataEncoder::Mode mode) {
   // Append a string as a quoted value, escaping quotes and line breaks.
-  size_t length = string.length();
+  const size_t length = string.length();
   for (size_t i = 0; i < length; ++i) {
-    char c = string.data()[i];
+    const char c = string[i];
 
     switch (c) {
       case 0x0a:
@@ -74,7 +66,7 @@ static void AppendQuotedString(Vector<char>& buffer,
       case 0x0d:
         if (mode == FormDataEncoder::kNormalizeCRLF) {
           Append(buffer, "%0D%0A");
-          if (i + 1 < length && string.data()[i + 1] == 0x0a) {
+          if (i + 1 < length && string[i + 1] == 0x0a) {
             ++i;
           }
         } else {
@@ -85,31 +77,29 @@ static void AppendQuotedString(Vector<char>& buffer,
         Append(buffer, "%22");
         break;
       default:
-        Append(buffer, c);
+        buffer.push_back(c);
     }
   }
 }
 
-namespace {
-
 inline void AppendNormalized(Vector<char>& buffer, const std::string& string) {
-  size_t length = string.length();
+  const size_t length = string.length();
   for (size_t i = 0; i < length; ++i) {
-    char c = string.data()[i];
+    const char c = string[i];
     if (c == '\n' ||
-        (c == '\r' && (i + 1 >= length || string.data()[i + 1] != '\n'))) {
+        (c == '\r' && (i + 1 >= length || string[i + 1] != '\n'))) {
       Append(buffer, "\r\n");
     } else if (c != '\r') {
-      Append(buffer, c);
+      buffer.push_back(c);
     }
   }
 }
 
 }  // namespace
 
-WTF::TextEncoding FormDataEncoder::EncodingFromAcceptCharset(
+TextEncoding FormDataEncoder::EncodingFromAcceptCharset(
     const String& accept_charset,
-    const WTF::TextEncoding& fallback_encoding) {
+    const TextEncoding& fallback_encoding) {
   DCHECK(fallback_encoding.IsValid());
 
   String normalized_accept_charset = accept_charset;
@@ -119,7 +109,7 @@ WTF::TextEncoding FormDataEncoder::EncodingFromAcceptCharset(
   normalized_accept_charset.Split(' ', charsets);
 
   for (const String& name : charsets) {
-    WTF::TextEncoding encoding(name);
+    TextEncoding encoding(name);
     if (encoding.IsValid())
       return encoding;
   }
@@ -139,7 +129,7 @@ Vector<char> FormDataEncoder::GenerateUniqueBoundaryString() {
   // Note that our algorithm makes it twice as much likely for 'A' or 'B'
   // to appear in the boundary string, because 0x41 and 0x42 are present in
   // the below array twice.
-  static const char kAlphaNumericEncodingMap[64] = {
+  static const std::array<char, 64> kAlphaNumericEncodingMap = {
       0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4A, 0x4B,
       0x4C, 0x4D, 0x4E, 0x4F, 0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56,
       0x57, 0x58, 0x59, 0x5A, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67,
@@ -155,7 +145,7 @@ Vector<char> FormDataEncoder::GenerateUniqueBoundaryString() {
   base::RandBytes(base::as_writable_byte_span(random_bytes));
   for (char& c : random_bytes)
     c = kAlphaNumericEncodingMap[c & 0x3F];
-  boundary.Append(random_bytes, sizeof(random_bytes));
+  boundary.AppendSpan(base::span(random_bytes));
 
   boundary.push_back(
       0);  // Add a 0 at the end so we can use this as a C-style string.
@@ -171,7 +161,7 @@ void FormDataEncoder::BeginMultiPartHeader(Vector<char>& buffer,
   // you can't encode in the website's character set.
   Append(buffer, "Content-Disposition: form-data; name=\"");
   AppendQuotedString(buffer, name, kNormalizeCRLF);
-  Append(buffer, '"');
+  buffer.push_back('"');
 }
 
 void FormDataEncoder::AddBoundaryToMultiPartHeader(Vector<char>& buffer,
@@ -186,10 +176,9 @@ void FormDataEncoder::AddBoundaryToMultiPartHeader(Vector<char>& buffer,
   Append(buffer, "\r\n");
 }
 
-void FormDataEncoder::AddFilenameToMultiPartHeader(
-    Vector<char>& buffer,
-    const WTF::TextEncoding& encoding,
-    const String& filename) {
+void FormDataEncoder::AddFilenameToMultiPartHeader(Vector<char>& buffer,
+                                                   const TextEncoding& encoding,
+                                                   const String& filename) {
   // Characters that cannot be encoded using the form's encoding will
   // be escaped using numeric character references, e.g. &#128514; for
   // 😂.
@@ -218,10 +207,11 @@ void FormDataEncoder::AddFilenameToMultiPartHeader(
   // https://tools.ietf.org/html/rfc7578#section-4.2
   // https://tools.ietf.org/html/rfc5987#section-3.2
   Append(buffer, "; filename=\"");
-  AppendQuotedString(buffer,
-                     encoding.Encode(filename, WTF::kEntitiesForUnencodables),
-                     kDoNotNormalizeCRLF);
-  Append(buffer, '"');
+  AppendQuotedString(
+      buffer,
+      encoding.Encode(filename, UnencodableHandling::kEntitiesForUnencodables),
+      kDoNotNormalizeCRLF);
+  buffer.push_back('"');
 }
 
 void FormDataEncoder::AddContentTypeToMultiPartHeader(Vector<char>& buffer,
@@ -243,14 +233,14 @@ void FormDataEncoder::AddKeyValuePairAsFormData(
   if (encoding_type == EncodedFormData::kTextPlain) {
     DCHECK_EQ(mode, kNormalizeCRLF);
     AppendNormalized(buffer, key);
-    Append(buffer, '=');
+    buffer.push_back('=');
     AppendNormalized(buffer, value);
     Append(buffer, "\r\n");
   } else {
     if (!buffer.empty())
-      Append(buffer, '&');
+      buffer.push_back('&');
     EncodeStringAsFormData(buffer, key, mode);
-    Append(buffer, '=');
+    buffer.push_back('=');
     EncodeStringAsFormData(buffer, value, mode);
   }
 }
@@ -259,22 +249,23 @@ void FormDataEncoder::EncodeStringAsFormData(Vector<char>& buffer,
                                              const std::string& string,
                                              Mode mode) {
   // Same safe characters as Netscape for compatibility.
-  static const char kSafeCharacters[] = "-._*";
+  static constexpr std::string_view kSafeCharacters = "-._*";
 
   // http://www.w3.org/TR/html4/interact/forms.html#h-17.13.4.1
-  size_t length = string.length();
+  const size_t length = string.length();
   for (size_t i = 0; i < length; ++i) {
-    unsigned char c = string.data()[i];
+    const unsigned char c = string[i];
 
     if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') ||
-        (c >= '0' && c <= '9') || (c != '\0' && strchr(kSafeCharacters, c))) {
-      Append(buffer, c);
+        (c >= '0' && c <= '9') ||
+        (c != '\0' && kSafeCharacters.find(c) != std::string_view::npos)) {
+      buffer.push_back(c);
     } else if (c == ' ') {
-      Append(buffer, '+');
+      buffer.push_back('+');
     } else {
       if (mode == kNormalizeCRLF) {
         if (c == '\n' ||
-            (c == '\r' && (i + 1 >= length || string.data()[i + 1] != '\n'))) {
+            (c == '\r' && (i + 1 >= length || string[i + 1] != '\n'))) {
           Append(buffer, "%0D%0A");
         } else if (c != '\r') {
           AppendPercentEncoded(buffer, c);

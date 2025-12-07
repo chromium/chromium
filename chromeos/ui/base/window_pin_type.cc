@@ -14,12 +14,11 @@ std::ostream& operator<<(std::ostream& out, WindowPinType pin_type) {
       return out << "kNone";
     case WindowPinType::kPinned:
       return out << "kPinned";
-    case WindowPinType::kTrustedPinned:
-      return out << "kTrustedPinned";
+    case WindowPinType::kLockedFullscreen:
+      return out << "kLockedFullscreen";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return out;
+  NOTREACHED();
 }
 
 }  // namespace chromeos

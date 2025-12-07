@@ -42,6 +42,8 @@ def DoPresubmit(argv,
   presubmit = ('--presubmit' in argv)
   # diff: Print diff to stdout rather than modifying files.
   diff = ('--diff' in argv)
+  # cleanup: Remove the backup file after at the end, if created.
+  cleanup = ('--cleanup' in argv)
 
   if interactive:
     logging.basicConfig(level=logging.INFO)
@@ -98,13 +100,20 @@ def DoPresubmit(argv,
     return 0
 
   logging.info('Creating backup file: %s', backup_filename)
-  shutil.move(xml_path, os.path.join(xml_dir, backup_filename))
+  backup_path = os.path.join(xml_dir, backup_filename)
+  shutil.move(xml_path, backup_path)
 
   pretty = pretty.encode('utf-8')
   with open(xml_path, 'wb') as f:
     f.write(pretty)
   logging.info('Updated %s. Don\'t forget to add it to your changelist',
                xml_path)
+
+  # Remove backup file if created, if prompted by user.
+  if cleanup and backup_path:
+    logging.info('Cleaning up backup file: %s' % backup_filename)
+    os.remove(backup_path)
+
   return 0
 
 
@@ -114,30 +123,41 @@ def DoPresubmitMain(*args, **kwargs):
 
 def CheckChange(xml_file, input_api, output_api):
   """Checks that xml is pretty-printed and well-formatted."""
-  for f in input_api.AffectedTextFiles():
-    p = f.AbsoluteLocalPath()
-    if (input_api.basename(p) == xml_file
-        and input_api.os_path.dirname(p) == input_api.PresubmitLocalPath()):
-      cwd = input_api.os_path.dirname(p)
+  absolute_paths_of_affected_files = [
+      f.AbsoluteLocalPath() for f in input_api.AffectedFiles()
+  ]
+  xml_file_changed = any([
+      input_api.basename(p) == xml_file
+      and input_api.os_path.dirname(p) == input_api.PresubmitLocalPath()
+      for p in absolute_paths_of_affected_files
+  ])
 
-      exit_code = input_api.subprocess.call(
-          [input_api.python3_executable, 'pretty_print.py', '--presubmit'],
-          cwd=cwd)
-      if exit_code != 0:
-        return [
-            output_api.PresubmitError(
-                '%s is not prettified; run `git cl format` to fix.' % xml_file),
-        ]
+  if not xml_file_changed:
+    return []
 
-      exit_code = input_api.subprocess.call(
-          [input_api.python3_executable, 'validate_format.py', '--presubmit'],
-          cwd=cwd)
-      if exit_code != 0:
-        return [
-            output_api.PresubmitError(
-                '%s does not pass format validation; run %s/validate_format.py '
-                'and fix the reported error(s) or warning(s).' %
-                (xml_file, input_api.PresubmitLocalPath())),
-        ]
+  cwd = input_api.PresubmitLocalPath()
+  pretty_print_args = [
+      input_api.python3_executable, 'pretty_print.py', '--presubmit', xml_file
+  ]
+
+  exit_code = input_api.subprocess.call(pretty_print_args, cwd=cwd)
+  if exit_code != 0:
+    return [
+        output_api.PresubmitError(
+            '%s is not prettified; run `git cl format` to fix.' % xml_file),
+    ]
+
+  validate_format_args = [
+      input_api.python3_executable, 'validate_format.py', '--presubmit',
+      xml_file
+  ]
+  exit_code = input_api.subprocess.call(validate_format_args, cwd=cwd)
+  if exit_code != 0:
+    return [
+        output_api.PresubmitError(
+            '%s does not pass format validation; run %s/validate_format.py '
+            'and fix the reported error(s) or warning(s).' %
+            (xml_file, input_api.PresubmitLocalPath())),
+    ]
 
   return []

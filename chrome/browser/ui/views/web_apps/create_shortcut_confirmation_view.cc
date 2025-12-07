@@ -13,9 +13,10 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/web_apps/web_app_info_image_source.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
+#include "chrome/browser/ui/web_applications/web_app_info_image_source.h"
+#include "chrome/browser/web_applications/icons/icon_masker.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/common/chrome_features.h"
@@ -29,6 +30,8 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/checkbox.h"
@@ -36,6 +39,7 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/table_layout.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -93,24 +97,25 @@ CreateShortcutConfirmationView::CreateShortcutConfirmationView(
                  views::TableLayout::kFixedSize,
                  views::TableLayout::ColumnSize::kFixed, textfield_width, 0)
       .AddRows(1, views::TableLayout::kFixedSize)
-      .AddPaddingRow(
-          views::TableLayout::kFixedSize,
-          layout_provider->GetDistanceMetric(DISTANCE_CONTROL_LIST_VERTICAL))
+      .AddPaddingRow(views::TableLayout::kFixedSize,
+                     layout_provider->GetDistanceMetric(
+                         views::DISTANCE_CONTROL_LIST_VERTICAL))
       .AddRows(ShowRadioButtons() ? 3 : 1, views::TableLayout::kFixedSize);
 
+  auto dialog_model_info = web_app_info_->GetIconBitmapsForSecureSurfaces();
   gfx::Size image_size(web_app::kWebAppIconSmall, web_app::kWebAppIconSmall);
   gfx::ImageSkia image(
-      std::make_unique<WebAppInfoImageSource>(web_app::kWebAppIconSmall,
-                                              web_app_info_->icon_bitmaps.any),
+      std::make_unique<WebAppInfoImageSource>(
+          web_app::kWebAppIconSmall, std::move(dialog_model_info.bitmaps)),
       image_size);
 
   // Builds the header row child views.
   auto builder =
       views::Builder<CreateShortcutConfirmationView>(this)
           .SetButtonLabel(
-              ui::DIALOG_BUTTON_OK,
+              ui::mojom::DialogButton::kOk,
               l10n_util::GetStringUTF16(IDS_CREATE_SHORTCUTS_BUTTON_LABEL))
-          .SetModalType(ui::MODAL_TYPE_CHILD)
+          .SetModalType(ui::mojom::ModalType::kChild)
           .SetTitle(IDS_ADD_TO_OS_LAUNCH_SURFACE_BUBBLE_TITLE)
           .SetAcceptCallback(
               base::BindOnce(&CreateShortcutConfirmationView::OnAccept,
@@ -125,6 +130,7 @@ CreateShortcutConfirmationView::CreateShortcutConfirmationView(
               views::DialogContentType::kControl,
               views::DialogContentType::kText))
           .AddChildren(views::Builder<views::ImageView>()
+                           .CopyAddressTo(&icon_view_)
                            .SetImageSize(image_size)
                            .SetImage(ui::ImageModel::FromImageSkia(image)),
                        views::Builder<views::Textfield>()
@@ -132,10 +138,18 @@ CreateShortcutConfirmationView::CreateShortcutConfirmationView(
                            .SetText(web_app::NormalizeSuggestedAppTitle(
                                g_title_to_use_for_app != nullptr
                                    ? base::ASCIIToUTF16(g_title_to_use_for_app)
-                                   : web_app_info_->title))
+                                   : web_app_info_->title.value()))
                            .SetAccessibleName(l10n_util::GetStringUTF16(
                                IDS_BOOKMARK_APP_AX_BUBBLE_NAME_LABEL))
                            .SetController(this));
+
+  if (dialog_model_info.is_maskable) {
+    web_app::MaskIconOnOs(
+        *image.bitmap(),
+        base::BindOnce(
+            &CreateShortcutConfirmationView::OnIconMaskedShowOnDialog,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
 
   const auto display_mode = web_app_info_->user_display_mode;
 
@@ -200,8 +214,9 @@ bool CreateShortcutConfirmationView::ShouldShowCloseButton() const {
 }
 
 bool CreateShortcutConfirmationView::IsDialogButtonEnabled(
-    ui::DialogButton button) const {
-  return button == ui::DIALOG_BUTTON_OK ? !GetTrimmedTitle().empty() : true;
+    ui::mojom::DialogButton button) const {
+  return button == ui::mojom::DialogButton::kOk ? !GetTrimmedTitle().empty()
+                                                : true;
 }
 
 void CreateShortcutConfirmationView::ContentsChanged(
@@ -236,6 +251,11 @@ void CreateShortcutConfirmationView::OnAccept() {
             ? web_app::mojom::UserDisplayMode::kStandalone
             : web_app::mojom::UserDisplayMode::kBrowser;
   }
+
+  if (base::FeatureList::IsEnabled(features::kDisableShortcutsEnableDiy)) {
+    web_app_info_->is_diy_app = true;
+  }
+
   install_tracker_->ReportResult(webapps::MlInstallUserResponse::kAccepted);
   // Some tests repeatedly create this class, and it's not guaranteed this class
   // is destroyed for subsequent calls. So reset the tracker manually here.
@@ -260,6 +280,14 @@ void CreateShortcutConfirmationView::RunCloseCallbackIfExists() {
     CHECK(web_app_info_);
     std::move(callback_).Run(false, std::move(web_app_info_));
   }
+}
+
+void CreateShortcutConfirmationView::OnIconMaskedShowOnDialog(
+    SkBitmap masked_bitmap) {
+  CHECK(icon_view_);
+  gfx::Image masked_image =
+      gfx::Image::CreateFrom1xBitmap(std::move(masked_bitmap));
+  icon_view_->SetImage(ui::ImageModel::FromImage(masked_image));
 }
 
 BEGIN_METADATA(CreateShortcutConfirmationView)

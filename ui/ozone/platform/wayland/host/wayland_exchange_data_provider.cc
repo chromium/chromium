@@ -16,7 +16,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/chromeos_buildflags.h"
 #include "net/base/mime_util.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
@@ -28,10 +27,6 @@
 #include "url/gurl.h"
 #include "url/url_canon.h"
 #include "url/url_util.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "ui/base/data_transfer_policy/data_transfer_endpoint_serializer.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace ui {
 
@@ -58,13 +53,17 @@ std::string GetApplicationOctetStreamName(const std::string& mime_type) {
 // Converts mime type string to OSExchangeData::Format, if supported, otherwise
 // 0 is returned.
 int MimeTypeToFormat(const std::string& mime_type) {
-  if (mime_type == ui::kMimeTypeText || mime_type == ui::kMimeTypeTextUtf8)
+  if (mime_type == ui::kMimeTypePlainText ||
+      mime_type == ui::kMimeTypeUtf8PlainText) {
     return OSExchangeData::STRING;
-  if (mime_type == ui::kMimeTypeURIList)
+  }
+  if (mime_type == ui::kMimeTypeUriList) {
     return OSExchangeData::FILE_NAME;
-  if (mime_type == ui::kMimeTypeMozillaURL)
+  }
+  if (mime_type == ui::kMimeTypeMozillaUrl) {
     return OSExchangeData::URL;
-  if (mime_type == ui::kMimeTypeHTML || mime_type == ui::kMimeTypeHTMLUtf8) {
+  }
+  if (mime_type == ui::kMimeTypeHtml || mime_type == ui::kMimeTypeUtf8Html) {
     return OSExchangeData::HTML;
   }
   if (!GetApplicationOctetStreamName(mime_type).empty()) {
@@ -73,10 +72,6 @@ int MimeTypeToFormat(const std::string& mime_type) {
   if (mime_type == ui::kMimeTypeDataTransferCustomData) {
     return OSExchangeData::PICKLED_DATA;
   }
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (mime_type == ui::kMimeTypeDataTransferEndpoint)
-    return OSExchangeData::DATA_TRANSFER_ENDPOINT;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   return 0;
 }
 
@@ -144,7 +139,7 @@ void AddFiles(PlatformClipboard::Data data, OSExchangeDataProvider* provider) {
 
     url::RawCanonOutputT<char16_t> unescaped;
     url::DecodeURLEscapeSequences(
-        url.path_piece(), url::DecodeURLMode::kUTF8OrIsomorphic, &unescaped);
+        url.path(), url::DecodeURLMode::kUTF8OrIsomorphic, &unescaped);
 
     const base::FilePath path(base::UTF16ToUTF8(unescaped.view()));
     filenames.emplace_back(path, path.BaseName());
@@ -199,21 +194,6 @@ void AddUrl(PlatformClipboard::Data data, OSExchangeDataProvider* provider) {
   provider->SetURL(url, lines[1]);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// Parses |data| as if it was an encoded custom mime type DataTransferEndpoint.
-// Used to synchronize the drag source metadata between Ash and Lacros.
-void AddSource(PlatformClipboard::Data data, OSExchangeDataProvider* provider) {
-  DCHECK(provider);
-
-  if (data->as_vector().empty()) {
-    return;
-  }
-
-  std::string source_dte = BytesTo<std::string>(data);
-  provider->SetSource(ConvertJsonToDataTransferEndpoint(source_dte));
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 }  // namespace
 
 WaylandExchangeDataProvider::WaylandExchangeDataProvider() = default;
@@ -235,18 +215,18 @@ std::vector<std::string> WaylandExchangeDataProvider::BuildMimeTypesList()
   // practice: begin with URIs and end with plain text.  Just in case.
   std::vector<std::string> mime_types;
   if (HasFile())
-    mime_types.push_back(ui::kMimeTypeURIList);
+    mime_types.push_back(ui::kMimeTypeUriList);
 
   if (HasURL(kFilenameToURLPolicy))
-    mime_types.push_back(ui::kMimeTypeMozillaURL);
+    mime_types.push_back(ui::kMimeTypeMozillaUrl);
 
   if (HasHtml()) {
-    mime_types.push_back(ui::kMimeTypeHTML);
+    mime_types.push_back(ui::kMimeTypeHtml);
   }
 
   if (HasString()) {
-    mime_types.push_back(ui::kMimeTypeTextUtf8);
-    mime_types.push_back(ui::kMimeTypeText);
+    mime_types.push_back(ui::kMimeTypeUtf8PlainText);
+    mime_types.push_back(ui::kMimeTypePlainText);
   }
 
   if (HasFileContents()) {
@@ -259,12 +239,6 @@ std::vector<std::string> WaylandExchangeDataProvider::BuildMimeTypesList()
         base::StrCat({ui::kMimeTypeOctetStream, ";name=\"", filename, "\""});
     mime_types.push_back(mime_type);
   }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (GetSource() != nullptr) {
-    mime_types.push_back(ui::kMimeTypeDataTransferEndpoint);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   for (auto item : pickle_data())
     mime_types.push_back(item.first.GetName());
@@ -294,11 +268,6 @@ void WaylandExchangeDataProvider::AddData(PlatformClipboard::Data data,
     case OSExchangeData::FILE_CONTENTS:
       AddFileContents(GetApplicationOctetStreamName(mime_type), data, this);
       break;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    case OSExchangeData::DATA_TRANSFER_ENDPOINT:
-      AddSource(data, this);
-      break;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 }
 
@@ -307,20 +276,20 @@ bool WaylandExchangeDataProvider::ExtractData(const std::string& mime_type,
                                               std::string* out_content) const {
   DCHECK(out_content);
   DCHECK(IsMimeTypeSupported(mime_type));
-  if (std::optional<ui::OSExchangeData::UrlInfo> url_info;
-      mime_type == ui::kMimeTypeMozillaURL &&
+  if (std::optional<ui::OSExchangeDataProvider::UrlInfo> url_info;
+      (mime_type == ui::kMimeTypeMozillaUrl ||
+       mime_type == ui::kMimeTypeUriList) &&
       (url_info = GetURLAndTitle(kFilenameToURLPolicy)).has_value()) {
     out_content->append(url_info->url.spec());
     return true;
   }
-  if ((mime_type == ui::kMimeTypeHTML || mime_type == ui::kMimeTypeHTMLUtf8) &&
+  if ((mime_type == ui::kMimeTypeHtml || mime_type == ui::kMimeTypeUtf8Html) &&
       HasHtml()) {
     const std::optional<ui::OSExchangeData::HtmlInfo>& html_content = GetHtml();
     out_content->append(base::UTF16ToUTF8(html_content->html));
     return true;
   }
-  if (base::StartsWith(mime_type, ui::kMimeTypeOctetStream) &&
-      HasFileContents()) {
+  if (mime_type.starts_with(ui::kMimeTypeOctetStream) && HasFileContents()) {
     std::optional<FileContentsInfo> file_contents = GetFileContents();
     out_content->append(file_contents->file_contents);
     return true;
@@ -333,14 +302,6 @@ bool WaylandExchangeDataProvider::ExtractData(const std::string& mime_type,
                                pickle->size());
     return true;
   }
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (mime_type == ui::kMimeTypeDataTransferEndpoint &&
-      GetSource() != nullptr) {
-    DataTransferEndpoint* data_src = GetSource();
-    out_content->append(ConvertDataTransferEndpointToJson(*data_src));
-    return true;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   // Lastly, attempt to extract string data. Note: Keep this as the last
   // condition otherwise, for data maps that contain both string and custom
   // data, for example, it may result in subtle issues, such as,

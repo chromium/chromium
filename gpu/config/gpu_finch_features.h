@@ -11,129 +11,173 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
-#include "gpu/gpu_export.h"
+#include "gpu/config/gpu_config_export.h"
 
 namespace base {
 class CommandLine;
 }  // namespace base
 
-namespace features {
+namespace gpu {
+struct GpuFeatureInfo;
+}  // namespace gpu
 
-GPU_EXPORT BASE_DECLARE_FEATURE(kUseGles2ForOopR);
+namespace features {
 
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kAggressiveShaderCacheLimits);
+
 #if BUILDFLAG(IS_ANDROID)
-GPU_EXPORT BASE_DECLARE_FEATURE(kAndroidSurfaceControl);
-GPU_EXPORT BASE_DECLARE_FEATURE(kEnableGpuMemoryBufferImplAHB);
-GPU_EXPORT BASE_DECLARE_FEATURE(kWebViewSurfaceControl);
-GPU_EXPORT BASE_DECLARE_FEATURE(kWebViewSurfaceControlForTV);
-GPU_EXPORT BASE_DECLARE_FEATURE(kAImageReader);
-GPU_EXPORT BASE_DECLARE_FEATURE(kLimitAImageReaderMaxSizeToOne);
-GPU_EXPORT BASE_DECLARE_FEATURE(kWebViewThreadSafeMediaDefault);
-GPU_EXPORT BASE_DECLARE_FEATURE(kIncreaseBufferCountForHighFrameRate);
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kAndroidSurfaceControl);
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kWebViewSurfaceControl);
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kWebViewSurfaceControlForTV);
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kLimitAImageReaderMaxSizeToOne);
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kWebViewThreadSafeMediaDefault);
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kUseHardwareBufferUsageFlagsFromVulkan);
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(
+    kAllowHardwareBufferUsageFlagsFromVulkanForScanout);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-GPU_EXPORT BASE_DECLARE_FEATURE(kDefaultEnableGpuRasterization);
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kDefaultEnableGpuRasterization);
 
-#if !BUILDFLAG(IS_ANDROID)
-GPU_EXPORT BASE_DECLARE_FEATURE(kCanvasOopRasterization);
-#endif
-
-GPU_EXPORT BASE_DECLARE_FEATURE(kCanvasOopWithoutGpuTileRaster);
-
-GPU_EXPORT BASE_DECLARE_FEATURE(kEnableMSAAOnNewIntelGPUs);
-
-GPU_EXPORT BASE_DECLARE_FEATURE(kDawnSIRepsUseClientProvidedInternalUsages);
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kEnableMSAAOnNewIntelGPUs);
 
 #if BUILDFLAG(IS_WIN)
-GPU_EXPORT BASE_DECLARE_FEATURE(kDisableVideoOverlayIfMoving);
-
-GPU_EXPORT BASE_DECLARE_FEATURE(kNoUndamagedOverlayPromotion);
-
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kNoUndamagedOverlayPromotion);
 #endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_IOS)
-GPU_EXPORT BASE_DECLARE_FEATURE(kAdjustGpuProcessPriority);
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kAdjustGpuProcessPriority);
 #endif
 
-GPU_EXPORT BASE_DECLARE_FEATURE(kClearGrShaderDiskCacheOnInvalidPrefix);
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kClearGrShaderDiskCacheOnInvalidPrefix);
 
-GPU_EXPORT BASE_DECLARE_FEATURE(kVaapiJpegImageDecodeAcceleration);
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kGpuShaderDiskCache);
+GPU_CONFIG_EXPORT bool IsShaderDiskCacheEnabled(
+    const base::CommandLine* command_line);
 
-GPU_EXPORT BASE_DECLARE_FEATURE(kVaapiWebPImageDecodeAcceleration);
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kVulkan);
 
-GPU_EXPORT BASE_DECLARE_FEATURE(kVulkan);
-
-GPU_EXPORT BASE_DECLARE_FEATURE(kSkiaGraphite);
-GPU_EXPORT extern const base::FeatureParam<bool>
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kSkiaGraphite);
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kSkiaGraphitePrecompilation);
+GPU_CONFIG_EXPORT extern const base::FeatureParam<bool>
     kSkiaGraphiteDawnSkipValidation;
-GPU_EXPORT extern const base::FeatureParam<bool>
+GPU_CONFIG_EXPORT extern const base::FeatureParam<bool>
     kSkiaGraphiteDawnBackendValidation;
+GPU_CONFIG_EXPORT extern const base::FeatureParam<bool>
+    kSkiaGraphiteDawnBackendDebugLabels;
+GPU_CONFIG_EXPORT extern const base::FeatureParam<bool>
+    kSkiaGraphiteDawnUsePersistentCache;
+GPU_CONFIG_EXPORT extern const base::FeatureParam<int>
+    kSkiaGraphiteMaxPendingRecordings;
+GPU_CONFIG_EXPORT extern const base::FeatureParam<bool>
+    kSkiaGraphiteEnableDeferredSubmit;
+GPU_CONFIG_EXPORT extern const base::FeatureParam<bool>
+    kSkiaGraphiteEnableMSAAOnNewerIntel;
 
 #if BUILDFLAG(IS_WIN)
-GPU_EXPORT BASE_DECLARE_FEATURE(kSkiaGraphiteDawnUseD3D12);
+GPU_CONFIG_EXPORT extern const base::FeatureParam<bool>
+    kSkiaGraphiteDawnDumpWCOnD3DError;
+GPU_CONFIG_EXPORT extern const base::FeatureParam<bool>
+    kSkiaGraphiteDawnDisableD3DShaderOptimizations;
+GPU_CONFIG_EXPORT extern const base::FeatureParam<bool>
+    kSkiaGraphiteDawnD3D11DelayFlush;
+
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kSkiaGraphiteDawnUseD3D12);
 #endif
-GPU_EXPORT BASE_DECLARE_FEATURE(kConditionallySkipGpuChannelFlush);
 
-GPU_EXPORT BASE_DECLARE_FEATURE(kEnableWatchdogReportOnlyModeOnGpuInit);
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kSkiaGraphiteSmallPathAtlas);
+GPU_CONFIG_EXPORT extern const base::FeatureParam<int>
+    kSkiaGraphiteMinPathSizeForMsaa;
 
-GPU_EXPORT BASE_DECLARE_FEATURE(kEnableVkPipelineCache);
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kGpuPersistentCache);
 
-GPU_EXPORT BASE_DECLARE_FEATURE(kNoDiscardableMemoryForGpuDecodePath);
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kConditionallySkipGpuChannelFlush);
 
-GPU_EXPORT BASE_DECLARE_FEATURE(kEnableDrDc);
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kNoDiscardableMemoryForGpuDecodePath);
 
-GPU_EXPORT BASE_DECLARE_FEATURE(kPruneOldTransferCacheEntries);
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kEnableDrDc);
 
-GPU_EXPORT BASE_DECLARE_FEATURE(kUseGpuSchedulerDfs);
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kPruneOldTransferCacheEntries);
 
 #if BUILDFLAG(IS_ANDROID)
 // This flag is use additionally with kEnableDrDc to enable the feature for
 // vulkan enabled android devices.
-GPU_EXPORT BASE_DECLARE_FEATURE(kEnableDrDcVulkan);
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kEnableDrDcVulkan);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-GPU_EXPORT BASE_DECLARE_FEATURE(kWebGPUService);
-GPU_EXPORT BASE_DECLARE_FEATURE(kWebGPUBlobCache);
-GPU_EXPORT BASE_DECLARE_FEATURE(kWebGPUUseDXC);
-GPU_EXPORT BASE_DECLARE_FEATURE(kWebGPUUseTintIR);
-GPU_EXPORT extern const base::FeatureParam<std::string> kWebGPUUnsafeFeatures;
-GPU_EXPORT extern const base::FeatureParam<std::string> kWGSLUnsafeFeatures;
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kWebGPUService);
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kWebGPUBlobCache);
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kWebGPUEnableRangeAnalysisForRobustness);
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kWebGPUAndroidOpenGLES);
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kWebGPUUseSpirv14);
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kWebGPUDecomposeUniformBuffers);
+#if BUILDFLAG(IS_WIN)
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kWebGPUQualcommWindows);
+#endif
+GPU_CONFIG_EXPORT extern const base::FeatureParam<std::string>
+    kWebGPUDisabledToggles;
+GPU_CONFIG_EXPORT extern const base::FeatureParam<std::string>
+    kWebGPUEnabledToggles;
+GPU_CONFIG_EXPORT extern const base::FeatureParam<std::string>
+    kWebGPUUnsafeFeatures;
+GPU_CONFIG_EXPORT extern const base::FeatureParam<bool>
+    kWebGPUSpontaneousWireServer;
+GPU_CONFIG_EXPORT extern const base::FeatureParam<std::string>
+    kWGSLUnsafeFeatures;
 
-GPU_EXPORT BASE_DECLARE_FEATURE(kIncreasedCmdBufferParseSlice);
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kIncreasedCmdBufferParseSlice);
 
-GPU_EXPORT BASE_DECLARE_FEATURE(kDeferredOverlaysRelease);
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kDeferredOverlaysRelease);
 
 #if BUILDFLAG(IS_WIN)
-GPU_EXPORT BASE_DECLARE_FEATURE(kD3DBackingUploadWithUpdateSubresource);
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kD3DBackingUploadWithUpdateSubresource);
 #endif
 
-GPU_EXPORT BASE_DECLARE_FEATURE(kHandleOverlaysSwapFailure);
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kHandleOverlaysSwapFailure);
 
-GPU_EXPORT bool UseGles2ForOopR();
-GPU_EXPORT bool IsUsingVulkan();
-GPU_EXPORT bool IsDrDcEnabled();
-GPU_EXPORT bool NeedThreadSafeAndroidMedia();
-GPU_EXPORT bool IsSkiaGraphiteEnabled(const base::CommandLine* command_line);
-GPU_EXPORT bool EnablePurgeGpuImageDecodeCache();
-GPU_EXPORT bool EnablePruneOldTransferCacheEntries();
-GPU_EXPORT bool IsCanvasOopRasterizationEnabled();
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kGPUBlockListTestGroup);
+GPU_CONFIG_EXPORT extern const base::FeatureParam<int> kGPUBlockListTestGroupId;
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kGPUDriverBugListTestGroup);
+GPU_CONFIG_EXPORT extern const base::FeatureParam<int>
+    kGPUDriverBugListTestGroupId;
+
+GPU_CONFIG_EXPORT bool IsUsingVulkan();
+GPU_CONFIG_EXPORT bool IsDrDcEnabled(
+    const gpu::GpuFeatureInfo& gpu_feature_info);
+GPU_CONFIG_EXPORT bool ShouldEnableDrDc();
+GPU_CONFIG_EXPORT bool NeedThreadSafeAndroidMedia();
+GPU_CONFIG_EXPORT bool IsSkiaGraphiteEnabled(
+    const base::CommandLine* command_line);
+GPU_CONFIG_EXPORT bool IsSkiaGraphitePrecompilationEnabled(
+    const base::CommandLine* command_line);
+GPU_CONFIG_EXPORT bool EnablePurgeGpuImageDecodeCache();
+GPU_CONFIG_EXPORT bool EnablePruneOldTransferCacheEntries();
 
 #if BUILDFLAG(IS_ANDROID)
-GPU_EXPORT bool IsAImageReaderEnabled();
-GPU_EXPORT bool IsAndroidSurfaceControlEnabled();
-GPU_EXPORT bool LimitAImageReaderMaxSizeToOne();
-GPU_EXPORT bool IncreaseBufferCountForHighFrameRate();
-GPU_EXPORT bool IncreaseBufferCountForWebViewOverlays();
+GPU_CONFIG_EXPORT bool IsAndroidSurfaceControlEnabled();
+GPU_CONFIG_EXPORT bool LimitAImageReaderMaxSizeToOne();
+GPU_CONFIG_EXPORT bool IncreaseBufferCountForHighFrameRate();
+GPU_CONFIG_EXPORT bool IncreaseBufferCountForWebViewOverlays();
 #endif
 
-// Don't directly check this flag. Instead, please call
-// IsSyncPointGraphValidationEnabled().
-GPU_EXPORT BASE_DECLARE_FEATURE(kSyncPointGraphValidation);
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kSyncPointGraphValidation);
 
-GPU_EXPORT bool IsSyncPointGraphValidationEnabled();
+GPU_CONFIG_EXPORT bool IsSyncPointGraphValidationEnabled();
 
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kANGLEPerContextBlobCache);
+
+#if BUILDFLAG(IS_APPLE)
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kIOSurfaceMultiThreading);
+#endif
+
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kConfigurableGPUWatchdogTimeout);
+GPU_CONFIG_EXPORT extern const base::FeatureParam<int>
+    kConfigurableGPUWatchdogTimeoutSeconds;
+
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kWebGPUCompatibilityMode);
+
+GPU_CONFIG_EXPORT bool IsGraphiteContextThreadSafe();
 }  // namespace features
 
 #endif  // GPU_CONFIG_GPU_FINCH_FEATURES_H_

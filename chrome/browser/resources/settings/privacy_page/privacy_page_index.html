@@ -1,0 +1,621 @@
+<style include="settings-shared">
+  cr-view-manager [hidden-by-search],
+  cr-view-manager[show-all] [slot=view][data-parent-view-id] {
+    display: none;
+  }
+
+  /* Necessary to display multiple cr-view-manager views (in this case "cards")
+     at the same time. */
+  cr-view-manager [slot=view]:not(.closing) {
+    position: initial;
+  }
+</style>
+
+<cr-view-manager id="viewManager" class="cr-centered-card-container"
+    show-all$="[[shouldShowAll]]">
+
+  <template is="dom-if" if="[[isPrivacyGuideAvailable]]" restamp>
+    <settings-section slot="view" id="privacyGuidePromo" page-title=""
+        hidden$="[[!showPrivacyGuidePromo_]]">
+      <settings-privacy-guide-promo prefs="{{prefs}}">
+      </settings-privacy-guide-promo>
+    </settings-section>
+  </template>
+
+  <template is="dom-if" if="[[showPage_(pageVisibility_.safetyHub)]]">
+    <template is="dom-if" if="[[renderView_(
+        routes_.PRIVACY, currentRoute, inSearchMode)]]" update-when-false>
+      <settings-safety-hub-entry-point slot="view" id="safetyHubEntryPoint">
+      </settings-safety-hub-entry-point>
+    </template>
+
+    <template is="dom-if" if="[[renderView_(
+        routes_.SAFETY_HUB, currentRoute, inSearchMode)]]"
+        update-when-false>
+      <!-- TODO(crbug.com/40267370): Make the page searchable.-->
+      <settings-safety-hub-page slot="view" id="safetyHub" no-search
+          data-parent-view-id="safetyHubEntryPoint" prefs="{{prefs}}"
+          route-path$="[[routes_.SAFETY_HUB.path]]">
+      </settings-safety-hub-page>
+    </template>
+  </template>
+
+  <template is="dom-if" if="[[renderPrivacyView_(currentRoute, inSearchMode)]]"
+      update-when-false>
+    <settings-privacy-page slot="view" id="privacy" prefs="{{prefs}}"
+        route-path$="[[routes_.PRIVACY.path]]">
+    </settings-privacy-page>
+  </template>
+
+  <template is="dom-if" if="[[isAdPrivacyAvailable_]]" restamp>
+    <template is="dom-if" if="[[renderView_(
+        routes_.PRIVACY_SANDBOX, currentRoute, inSearchMode)]]"
+        update-when-false>
+      <settings-privacy-sandbox-page slot="view" id="privacySandbox"
+          data-parent-view-id="privacy" prefs="{{prefs}}"
+          route-path$="[[routes_.PRIVACY_SANDBOX.path]]">
+      </settings-privacy-sandbox-page>
+    </template>
+
+    <template is="dom-if" if="[[renderView_(
+        routes_.PRIVACY_SANDBOX_AD_MEASUREMENT, currentRoute, inSearchMode)]]"
+        update-when-false>
+      <settings-privacy-sandbox-ad-measurement-subpage slot="view"
+          id="privacySandboxAdMeasurement" data-parent-view-id="privacy"
+          prefs="{{prefs}}"
+          route-path$="[[routes_.PRIVACY_SANDBOX_AD_MEASUREMENT.path]]">
+      </settings-privacy-sandbox-ad-measurement-subpage>
+    </template>
+  </template>
+
+  <template is="dom-if" if="[[!isPrivacySandboxRestricted_]]" restamp>
+    <template is="dom-if" if="[[renderView_(
+        routes_.PRIVACY_SANDBOX_FLEDGE, currentRoute, inSearchMode)]]"
+        update-when-false>
+      <settings-privacy-sandbox-fledge-subpage slot="view"
+          id="privacySandboxFledge" data-parent-view-id="privacy"
+          prefs="{{prefs}}"
+          route-path$="[[routes_.PRIVACY_SANDBOX_FLEDGE.path]]">
+      </settings-privacy-sandbox-fledge-subpage>
+    </template>
+
+    <template is="dom-if" if="[[renderView_(
+          routes_.PRIVACY_SANDBOX_TOPICS, currentRoute, inSearchMode)]]"
+          update-when-false>
+      <settings-privacy-sandbox-topics-subpage slot="view"
+          id="privacySandboxTopics" data-parent-view-id="privacy"
+          prefs="{{prefs}}"
+          route-path$="[[routes_.PRIVACY_SANDBOX_TOPICS.path]]">
+      </settings-privacy-sandbox-topics-subpage>
+    </template>
+
+    <template is="dom-if" if="[[renderView_(
+          routes_.PRIVACY_SANDBOX_MANAGE_TOPICS, currentRoute, inSearchMode)]]"
+          update-when-false>
+      <settings-privacy-sandbox-manage-topics-subpage slot="view"
+          id="privacySandboxManageTopics" data-parent-view-id="privacy"
+          prefs="{{prefs}}"
+          route-path$="[[routes_.PRIVACY_SANDBOX_MANAGE_TOPICS.path]]">
+      </settings-privacy-sandbox-manage-topics-subpage>
+    </template>
+  </template>
+
+  <!-- Keep entries below sorted based on the route name. -->
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.COOKIES, currentRoute, inSearchMode)]]"
+      update-when-false>
+    <settings-cookies-page slot="view" id="cookies"
+        data-parent-view-id="privacy" prefs="{{prefs}}"
+        route-path$="[[routes_.COOKIES.path]]">
+    </settings-cookies-page>
+  </template>
+
+  <template is="dom-if" if="[[!enableBundledSecuritySettings_]]">
+    <template is="dom-if" if="[[renderView_(
+        routes_.SECURITY, currentRoute, inSearchMode)]]" update-when-false>
+      <settings-security-page slot="view"
+          id="security" data-parent-view-id="privacy" prefs="{{prefs}}"
+          route-path$="[[routes_.SECURITY.path]]">
+      </settings-security-page>
+    </template>
+  </template>
+
+  <template is="dom-if" if="[[enableBundledSecuritySettings_]]">
+    <template is="dom-if" if="[[renderView_(
+        routes_.SECURITY, currentRoute, inSearchMode)]]" update-when-false>
+      <settings-security-page-v2 slot="view"
+          id="security" data-parent-view-id="privacy" prefs="{{prefs}}"
+          route-path$="[[routes_.SECURITY.path]]">
+      </settings-security-page-v2>
+    </template>
+  </template>
+
+  <template is="dom-if" if="[[enableSecurityKeysSubpage_]]">
+    <template is="dom-if" if="[[renderView_(
+        routes_.SECURITY_KEYS, currentRoute, inSearchMode)]]"
+        update-when-false>
+      <security-keys-subpage slot="view" id="securityKeys"
+        data-parent-view-id="privacy"
+        route-path$="[[routes_.SECURITY_KEYS.path]]">
+      </security-keys-subpage>
+    </template>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS, currentRoute, inSearchMode)]]"
+      update-when-false>
+    <settings-site-settings-page slot="view" id="siteSettings"
+        data-parent-view-id="privacy" prefs="{{prefs}}"
+        route-path$="[[routes_.SITE_SETTINGS.path]]">
+    </settings-site-settings-page>
+  </template>
+
+  <template is="dom-if" if="[[enableSafeBrowsingSubresourceFilter_]]">
+    <template is="dom-if" if="[[renderView_(
+        routes_.SITE_SETTINGS_ADS, currentRoute, inSearchMode)]]"
+        update-when-false>
+      <settings-ads-page slot="view" id="siteSettingsAds"
+          data-parent-view-id="privacy"
+          route-path$="[[routes_.SITE_SETTINGS_ADS.path]]">
+      </settings-ads-page>
+    </template>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_ALL, currentRoute, inSearchMode)]]"
+      update-when-false>
+    <all-sites slot="view" id="siteSettingsAll" data-parent-view-id="privacy"
+        route-path$="[[routes_.SITE_SETTINGS_ALL.path]]">
+    </all-sites>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_AR, currentRoute, inSearchMode)]]"
+      update-when-false>
+    <settings-ar-page slot="view" id="siteSettingsAr"
+        data-parent-view-id="privacy"
+        route-path$="[[routes_.SITE_SETTINGS_AR.path]]">
+    </settings-ar-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_AUTO_VERIFY, currentRoute, inSearchMode)]]"
+      update-when-false>
+    <settings-anti-abuse-page slot="view" id="siteSettingsAutoVerify"
+        data-parent-view-id="privacy"
+        route-path$="[[routes_.SITE_SETTINGS_AUTO_VERIFY.path]]">
+    </settings-anti-abuse-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE, currentRoute,
+      inSearchMode)]]" update-when-false>
+    <settings-auto-picture-in-picture-page slot="view"
+        id="siteSettingsAutoPictureInPicture" data-parent-view-id="privacy"
+        route-path$="[[routes_.SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE.path]]">
+    </settings-auto-picture-in-picture-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_AUTOMATIC_DOWNLOADS, currentRoute, inSearchMode)]]"
+      update-when-false>
+    <settings-automatic-downloads-page slot="view"
+        id="siteSettingsAutomaticDownloads" data-parent-view-id="privacy"
+        route-path$="[[routes_.SITE_SETTINGS_AUTOMATIC_DOWNLOADS.path]]">
+    </settings-automatic-downloads-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_AUTOMATIC_FULLSCREEN, currentRoute,
+      inSearchMode)]]" update-when-false>
+    <settings-automatic-full-screen-page slot="view"
+        id="siteSettingsAutomaticFullscreen" data-parent-view-id="privacy"
+        route-path$="[[routes_.SITE_SETTINGS_AUTOMATIC_FULLSCREEN.path]]">
+    </settings-automatic-full-screen-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_BACKGROUND_SYNC, currentRoute, inSearchMode)]]"
+      update-when-false>
+    <settings-background-sync-page slot="view"
+        id="siteSettingsBackgroundSync" data-parent-view-id="privacy"
+        route-path$="[[routes_.SITE_SETTINGS_BACKGROUND_SYNC.path]]">
+    </settings-background-sync-page>
+  </template>
+
+  <template is="dom-if" if="[[enableWebBluetoothNewPermissionsBackend_]]">
+    <template is="dom-if" if="[[renderView_(
+        routes_.SITE_SETTINGS_BLUETOOTH_DEVICES, currentRoute, inSearchMode)]]"
+        update-when-false>
+      <settings-bluetooth-devices-page slot="view"
+          id="siteSettingsBluetoothDevices"
+          route-path$="[[routes_.SITE_SETTINGS_BLUETOOTH_DEVICES.path]]"
+          data-parent-view-id="privacy">
+      </settings-bluetooth-devices-page>
+    </template>
+  </template>
+
+  <template is="dom-if" if="[[enableExperimentalWebPlatformFeatures_]]">
+    <template is="dom-if" if="[[renderView_(
+        routes_.SITE_SETTINGS_BLUETOOTH_SCANNING, currentRoute,
+        inSearchMode)]]" update-when-false>
+      <settings-bluetooth-scanning-page slot="view"
+          id="siteSettingsBluetoothScanning" data-parent-view-id="privacy"
+          route-path$="[[routes_.SITE_SETTINGS_BLUETOOTH_SCANNING.path]]">
+      </settings-bluetooth-scanning-page>
+    </template>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_CAMERA, currentRoute, inSearchMode)]]"
+      update-when-false>
+    <settings-camera-page slot="view" id="siteSettingsCamera"
+        data-parent-view-id="privacy"
+        route-path$="[[routes_.SITE_SETTINGS_CAMERA.path]]">
+    </settings-camera-page>
+  </template>
+
+  <template is="dom-if" if="[[enableCapturedSurfaceControl_]]">
+    <template is="dom-if" if="[[renderView_(
+        routes_.SITE_SETTINGS_CAPTURED_SURFACE_CONTROL, currentRoute,
+        inSearchMode)]]" update-when-false>
+      <settings-captured-surface-control-page slot="view"
+          id="siteSettingsCapturedSurfaceControl" data-parent-view-id="privacy"
+          route-path$="[[routes_.SITE_SETTINGS_CAPTURED_SURFACE_CONTROL.path]]">
+      </settings-captured-surface-control-page>
+    </template>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_CLIPBOARD, currentRoute, inSearchMode)]]"
+      update-when-false>
+    <settings-clipboard-page slot="view"
+        id="siteSettingsClipboard" data-parent-view-id="privacy"
+        route-path$="[[routes_.SITE_SETTINGS_CLIPBOARD.path]]">
+    </settings-clipboard-page>
+  </template>
+
+  <template is="dom-if" if="[[enableFederatedIdentityApiContentSetting_]]">
+    <template is="dom-if" if="[[renderView_(
+        routes_.SITE_SETTINGS_FEDERATED_IDENTITY_API, currentRoute,
+        inSearchMode)]]"
+        update-when-false>
+      <settings-federated-identity-api-page slot="view"
+          id="siteSettingsFederatedIdentityApi"
+          route-path$="[[routes_.SITE_SETTINGS_FEDERATED_IDENTITY_API.path]]"
+          data-parent-view-id="privacy">
+      </settings-federated-identity-api-page>
+    </template>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_FILE_SYSTEM_WRITE, currentRoute, inSearchMode)]]"
+      update-when-false>
+    <settings-filesystem-page slot="view"
+        id="siteSettingsFilesystemWrite"
+        route-path$="[[routes_.SITE_SETTINGS_FILE_SYSTEM_WRITE.path]]"
+        data-parent-view-id="privacy">
+    </settings-filesystem-page>
+  </template>
+
+  <template is="dom-if" if="[[enablePersistentPermissions_]]">
+    <template is="dom-if" if="[[renderView_(
+        routes_.SITE_SETTINGS_FILE_SYSTEM_WRITE_DETAILS, currentRoute,
+        inSearchMode)]]" update-when-false>
+      <file-system-site-details slot="view"
+          id="siteSettingsFilesystemWriteDetails"
+          route-path$="[[routes_.SITE_SETTINGS_FILE_SYSTEM_WRITE_DETAILS.path]]"
+          data-parent-view-id="privacy">
+      </file-system-site-details>
+    </template>
+  </template>
+
+  <template is="dom-if" if="[[enableHandTrackingContentSetting_]]">
+    <template is="dom-if" if="[[renderView_(
+        routes_.SITE_SETTINGS_HAND_TRACKING, currentRoute, inSearchMode)]]"
+        update-when-false>
+      <settings-hand-tracking-page slot="view" id="siteSettingsHandTracking"
+          route-path$="[[routes_.SITE_SETTINGS_HAND_TRACKING.path]]"
+          data-parent-view-id="privacy">
+      </settings-hand-tracking-page>
+    </template>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_HANDLERS, currentRoute, inSearchMode)]]"
+      update-when-false>
+    <protocol-handlers slot="view" id="siteSettingsHandlers"
+        data-parent-view-id="privacy"
+        route-path$="[[routes_.SITE_SETTINGS_HANDLERS.path]]"
+        toggle-off-label="$i18n{siteSettingsHandlersBlocked}"
+        toggle-on-label="$i18n{siteSettingsHandlersAskRecommended}">
+    </protocol-handlers>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_HID_DEVICES, currentRoute, inSearchMode)]]"
+      update-when-false>
+    <settings-hid-devices-page slot="view" id="siteSettingsHidDevices"
+        route-path$="[[routes_.SITE_SETTINGS_HID_DEVICES.path]]"
+        data-parent-view-id="privacy">
+    </settings-hid-devices-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_IDLE_DETECTION, currentRoute, inSearchMode)]]"
+      update-when-false>
+    <settings-idle-detection-page slot="view" id="siteSettingsIdleDetection"
+        route-path$="[[routes_.SITE_SETTINGS_IDLE_DETECTION.path]]"
+        data-parent-view-id="privacy">
+    </settings-idle-detection-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_IMAGES, currentRoute, inSearchMode)]]"
+      update-when-false>
+    <settings-images-page slot="view" id="siteSettingsImages"
+        route-path$="[[routes_.SITE_SETTINGS_IMAGES.path]]"
+        data-parent-view-id="privacy">
+    </settings-images-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_MIXEDSCRIPT, currentRoute, inSearchMode)]]"
+      update-when-false>
+    <settings-insecure-content-page slot="view"
+        id="siteSettingsMixedscript"
+        route-path$="[[routes_.SITE_SETTINGS_MIXEDSCRIPT.path]]"
+        data-parent-view-id="privacy">
+    </settings-insecure-content-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_JAVASCRIPT, currentRoute, inSearchMode)]]"
+      update-when-false>
+    <settings-javascript-page slot="view"
+        id="siteSettingsJavascript" data-parent-view-id="privacy"
+        route-path$="[[routes_.SITE_SETTINGS_JAVASCRIPT.path]]">
+    </settings-javascript-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_JAVASCRIPT_OPTIMIZER, currentRoute, inSearchMode)]]"
+      update-when-false>
+    <settings-v8-page slot="view" id="siteSettingsJavascriptOptimizer"
+      data-parent-view-id="privacy" prefs="{{prefs}}"
+      route-path$="[[routes_.SITE_SETTINGS_JAVASCRIPT_OPTIMIZER.path]]">
+    </settings-v8-page>
+  </template>
+
+  <template is="dom-if" if="[[enableKeyboardLockPrompt_]]">
+    <template is="dom-if" if="[[renderView_(
+        routes_.SITE_SETTINGS_KEYBOARD_LOCK, currentRoute, inSearchMode)]]"
+        update-when-false>
+      <settings-keyboard-lock-page slot="view" id="siteSettingsKeyboardLock"
+          data-parent-view-id="privacy"
+          route-path$="[[routes_.SITE_SETTINGS_KEYBOARD_LOCK.path]]">
+      </settings-keyboard-lock-page>
+    </template>
+  </template>
+
+  <template is="dom-if" if="[[enableLocalNetworkAccessSetting_]]">
+    <template is="dom-if" if="[[renderView_(
+        routes_.SITE_SETTINGS_LOCAL_NETWORK_ACCESS, currentRoute,
+        inSearchMode)]]" update-when-false>
+      <settings-local-network-access-page slot="view"
+          id="siteSettingsLocalNetworkAccess" data-parent-view-id="privacy"
+          route-path$="[[routes_.SITE_SETTINGS_LOCAL_NETWORK_ACCESS.path]]">
+      </settings-local-network-access-page>
+    </template>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_LOCAL_FONTS, currentRoute, inSearchMode)]]"
+      update-when-false>
+    <settings-local-fonts-page slot="view" id="siteSettingsLocalFonts"
+        data-parent-view-id="privacy"
+        route-path$="[[routes_.SITE_SETTINGS_LOCAL_FONTS.path]]">
+    </settings-local-fonts-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_LOCATION, currentRoute, inSearchMode)]]"
+      update-when-false>
+    <settings-geolocation-page slot="view" id="siteSettingsLocation"
+        data-parent-view-id="privacy" prefs="{{prefs}}"
+        route-path$="[[routes_.SITE_SETTINGS_LOCATION.path]]">
+    </settings-geolocation-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_MICROPHONE, currentRoute, inSearchMode)]]"
+      update-when-false>
+    <settings-microphone-page slot="view"
+        id="siteSettingsMicrophone" data-parent-view-id="privacy"
+        route-path$="[[routes_.SITE_SETTINGS_MICROPHONE.path]]">
+    </settings-microphone-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_MIDI_DEVICES, currentRoute, inSearchMode)]]"
+      update-when-false>
+    <settings-midi-devices-page slot="view"
+        id="siteSettingsMidiDevices" data-parent-view-id="privacy"
+        route-path$="[[routes_.SITE_SETTINGS_MIDI_DEVICES.path]]">
+    </settings-midi-devices-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_NOTIFICATIONS, currentRoute, inSearchMode)]]"
+      update-when-false>
+    <settings-notifications-page slot="view" id="siteSettingsNotifications"
+        route-path$="[[routes_.SITE_SETTINGS_NOTIFICATIONS.path]]"
+        data-parent-view-id="privacy" prefs="{{prefs}}">
+    </settings-notifications-page>
+  </template>
+
+  <template is="dom-if" if="[[enablePaymentHandlerContentSetting_]]">
+    <template is="dom-if" if="[[renderView_(
+        routes_.SITE_SETTINGS_PAYMENT_HANDLER, currentRoute, inSearchMode)]]"
+        update-when-false>
+      <settings-payment-handler-page slot="view"
+          id="siteSettingsPaymentHandler" data-parent-view-id="privacy"
+          route-path$="[[routes_.SITE_SETTINGS_PAYMENT_HANDLER.path]]">
+      </settings-payment-handler-page>
+    </template>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_PDF_DOCUMENTS, currentRoute, inSearchMode)]]"
+      update-when-false>
+    <settings-pdf-documents-page slot="view" id="siteSettingsPdfDocuments"
+        data-parent-view-id="privacy" prefs="{{prefs}}"
+        route-path$="[[routes_.SITE_SETTINGS_PDF_DOCUMENTS.path]]">
+    </settings-pdf-documents-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_POPUPS, currentRoute, inSearchMode)]]"
+      update-when-false>
+    <settings-popups-page slot="view"
+        id="siteSettingsPopups" data-parent-view-id="privacy"
+        route-path$="[[routes_.SITE_SETTINGS_POPUPS.path]]">
+    </settings-popups-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_PROTECTED_CONTENT, currentRoute, inSearchMode)]]"
+      update-when-false>
+    <settings-protected-content-page slot="view"
+        id="siteSettingsProtectedContent" data-parent-view-id="privacy"
+        prefs="{{prefs}}"
+        route-path$="[[routes_.SITE_SETTINGS_PROTECTED_CONTENT.path]]">
+    </settings-protected-content-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_SENSORS, currentRoute, inSearchMode)]]"
+      update-when-false>
+    <settings-sensors-page slot="view"
+        id="siteSettingsSensors" data-parent-view-id="privacy"
+        route-path$="[[routes_.SITE_SETTINGS_SENSORS.path]]">
+    </settings-sensors-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_SERIAL_PORTS, currentRoute, inSearchMode)]]"
+      update-when-false>
+    <settings-serial-ports-page slot="view"
+        id="siteSettingsSerialPorts" data-parent-view-id="privacy"
+        route-path$="[[routes_.SITE_SETTINGS_SERIAL_PORTS.path]]">
+    </settings-serial-ports-page>
+  </template>
+
+<if expr="is_chromeos">
+  <template is="dom-if" if="[[enableSmartCardReadersContentSetting_]]">
+    <template is="dom-if" if="[[renderView_(
+        routes_.SITE_SETTINGS_SMART_CARD_READERS, currentRoute, inSearchMode)]]"
+        update-when-false>
+      <settings-smart-card-readers-page slot="view"
+          id="siteSettingsSmartCardReaders" data-parent-view-id="privacy"
+          route-path$="[[routes_.SITE_SETTINGS_SMART_CARD_READERS.path]]">
+      </settings-smart-card-readers-page>
+    </template>
+  </template>
+</if>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_SOUND, currentRoute, inSearchMode)]]"
+      update-when-false>
+    <settings-sound-page slot="view"
+        id="siteSettingsSound" data-parent-view-id="privacy"
+        prefs="{{prefs}}" route-path$="[[routes_.SITE_SETTINGS_SOUND.path]]">
+    </settings-sound-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_SITE_DATA, currentRoute, inSearchMode)]]"
+      update-when-false>
+    <settings-site-data slot="view" id="siteSettingsSiteData"
+        data-parent-view-id="privacy" prefs="{{prefs}}"
+        route-path$="[[routes_.SITE_SETTINGS_SITE_DATA.path]]">
+    </settings-site-data>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_SITE_DETAILS, currentRoute, inSearchMode)]]"
+      update-when-false>
+    <site-details slot="view" id="siteSettingsSiteDetails"
+        data-parent-view-id="privacy" prefs="{{prefs}}"
+        route-path$="[[routes_.SITE_SETTINGS_SITE_DETAILS.path]]">
+    </site-details>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_STORAGE_ACCESS, currentRoute, inSearchMode)]]"
+      update-when-false>
+    <settings-storage-access-page slot="view" id="siteSettingsStorageAccess"
+        data-parent-view-id="privacy"
+        route-path$="[[routes_.SITE_SETTINGS_STORAGE_ACCESS.path]]">
+    </settings-storage-access-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_USB_DEVICES, currentRoute, inSearchMode)]]"
+      update-when-false>
+    <settings-usb-devices-page slot="view" id="siteSettingsUsbDevices"
+        route-path$="[[routes_.SITE_SETTINGS_USB_DEVICES.path]]"
+        data-parent-view-id="privacy">
+    </settings-usb-devices-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_VR, currentRoute, inSearchMode)]]"
+      update-when-false>
+    <settings-vr-page slot="view" id="siteSettingsVr" data-parent-view-id="privacy"
+      route-path$="[[routes_.SITE_SETTINGS_VR.path]]">
+    </settings-vr-page>
+  </template>
+
+  <template is="dom-if" if="[[enableWebAppInstallation_]]">
+    <template is="dom-if" if="[[renderView_(
+        routes_.SITE_SETTINGS_WEB_APP_INSTALLATION, currentRoute,
+        inSearchMode)]]" update-when-false>
+      <settings-web-applications-page slot="view"
+          id="siteSettingsWebAppInstallation" data-parent-view-id="privacy"
+          route-path$="[[routes_.SITE_SETTINGS_WEB_APP_INSTALLATION.path]]">
+      </settings-web-applications-page>
+    </template>
+  </template>
+
+  <template is="dom-if" if="[[enableWebPrintingContentSetting_]]">
+    <template is="dom-if" if="[[renderView_(
+        routes_.SITE_SETTINGS_WEB_PRINTING, currentRoute, inSearchMode)]]"
+        update-when-false>
+      <settings-web-printing-page slot="view"
+          id="siteSettingsWebPrinting" data-parent-view-id="privacy"
+          route-path$="[[routes_.SITE_SETTINGS_WEB_PRINTING.path]]">
+      </settings-web-printing-page>
+    </template>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_WINDOW_MANAGEMENT, currentRoute, inSearchMode)]]"
+      update-when-false>
+    <settings-window-management-page slot="view"
+        id="siteSettingsWindowManagement" data-parent-view-id="privacy"
+        route-path$="[[routes_.SITE_SETTINGS_WINDOW_MANAGEMENT.path]]">
+    </settings-window-management-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_ZOOM_LEVELS, currentRoute, inSearchMode)]]"
+      update-when-false>
+    <zoom-levels slot="view" id="siteSettingsZoomLevels"
+        data-parent-view-id="privacy"
+        route-path$="[[routes_.SITE_SETTINGS_ZOOM_LEVELS.path]]">
+    </zoom-levels>
+  </template>
+
+</cr-view-manager>

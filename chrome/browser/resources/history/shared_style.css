@@ -3,11 +3,11 @@
  * found in the LICENSE file. */
 
 /* #css_wrapper_metadata_start
- * #type=style
+ * #type=style-lit
  * #import=./shared_vars.css.js
- * #import=chrome://resources/cr_elements/cr_hidden_style.css.js
+ * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
- * #include=cr-hidden-style
+ * #include=cr-hidden-style-lit
  * #css_wrapper_metadata_end */
 
 a {

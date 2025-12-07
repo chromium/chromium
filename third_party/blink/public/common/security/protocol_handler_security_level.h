@@ -22,6 +22,10 @@ enum class ProtocolHandlerSecurityLevel {
 
   // Allow extension features: ext+foo schemes and chrome-extension:// URLs.
   kExtensionFeatures,
+
+  // Allow Isolated Web App features: unrestricted ascii schemes and
+  // isolated-app:// URLs.
+  kIsolatedAppFeatures,
 };
 
 inline ProtocolHandlerSecurityLevel ProtocolHandlerSecurityLevelFrom(
@@ -29,7 +33,7 @@ inline ProtocolHandlerSecurityLevel ProtocolHandlerSecurityLevelFrom(
   return security_level < 0 ||
                  security_level >
                      static_cast<int>(
-                         ProtocolHandlerSecurityLevel::kExtensionFeatures)
+                         ProtocolHandlerSecurityLevel::kIsolatedAppFeatures)
              ? ProtocolHandlerSecurityLevel::kStrict
              : static_cast<ProtocolHandlerSecurityLevel>(security_level);
 }

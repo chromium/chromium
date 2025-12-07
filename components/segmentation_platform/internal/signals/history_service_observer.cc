@@ -4,11 +4,13 @@
 
 #include "components/segmentation_platform/internal/signals/history_service_observer.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/user_metrics.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/storage_service.h"
 #include "components/segmentation_platform/internal/signals/history_delegate_impl.h"
@@ -40,8 +42,8 @@ HistoryServiceObserver::~HistoryServiceObserver() = default;
 
 void HistoryServiceObserver::OnURLVisited(
     history::HistoryService* history_service,
-    const history::URLRow& url_row,
-    const history::VisitRow& new_visit) {
+    const history::VisitedURLInfo& visited_url_info) {
+  const history::URLRow& url_row = visited_url_info.url_row;
   url_signal_handler_->OnHistoryVisit(url_row.url(), profile_id_);
   history_delegate_->OnUrlAdded(url_row.url());
 }

@@ -5,6 +5,7 @@
 #include "chromecast/media/audio/interleaved_channel_mixer.h"
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "media/base/channel_mixing_matrix.h"
 
 namespace chromecast {
@@ -59,14 +60,14 @@ float* InterleavedChannelMixer::Transform(const float* input, int num_frames) {
       // the input frame.
       float result = 0;
       for (int in_c = 0; in_c < input_channel_count_; ++in_c) {
-        result += *t * input[in_c];
-        ++t;
+        result += *t * UNSAFE_TODO(input[in_c]);
+        UNSAFE_TODO(++t);
       }
       *output = result;
-      ++output;
+      UNSAFE_TODO(++output);
     }
     // Move to next input frame.
-    input += input_channel_count_;
+    UNSAFE_TODO(input += input_channel_count_);
   }
 
   return buffer_.data();

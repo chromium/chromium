@@ -31,6 +31,7 @@
 
 #include "third_party/blink/renderer/core/loader/link_loader.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-shared.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -43,7 +44,7 @@
 #include "third_party/blink/renderer/core/loader/preload_helper.h"
 #include "third_party/blink/renderer/core/loader/prerender_handle.h"
 #include "third_party/blink/renderer/core/loader/resource/css_style_sheet_resource.h"
-#include "third_party/blink/renderer/core/loader/subresource_integrity_helper.h"
+#include "third_party/blink/renderer/core/loader/shared_dictionary_hint_type.h"
 #include "third_party/blink/renderer/core/page/viewport_description.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -84,10 +85,8 @@ LinkLoader::LinkLoader(LinkLoaderClient* client) : client_(client) {
 }
 
 void LinkLoader::NotifyFinished(Resource* resource) {
-  if (resource->ErrorOccurred() ||
-      (resource->IsLinkPreload() &&
-       resource->IntegrityDisposition() ==
-           ResourceIntegrityDisposition::kFailed)) {
+  if (resource->ErrorOccurred() || (resource->ForceIntegrityChecks() &&
+                                    !resource->PassedIntegrityChecks())) {
     client_->LinkLoadingErrored();
   } else {
     client_->LinkLoaded();
@@ -140,6 +139,10 @@ bool LinkLoader::LoadLink(const LinkLoadParameters& params,
     PreloadHelper::PrefetchIfNeeded(params, document, pending_preload_);
   PreloadHelper::ModulePreloadIfNeeded(
       params, document, nullptr /* viewport_description */, pending_preload_);
+  if (params.rel.IsCompressionDictionary()) {
+    base::UmaHistogramEnumeration("Blink.SharedDictionary.Hint.Discovery",
+                                  SharedDictionaryHintType::kHtmlLinkTag);
+  }
   PreloadHelper::FetchCompressionDictionaryIfNeeded(params, document,
                                                     pending_preload_);
 
@@ -156,7 +159,7 @@ bool LinkLoader::LoadLink(const LinkLoadParameters& params,
 void LinkLoader::LoadStylesheet(
     const LinkLoadParameters& params,
     const AtomicString& local_name,
-    const WTF::TextEncoding& charset,
+    const TextEncoding& charset,
     FetchParameters::DeferOption defer_option,
     Document& document,
     ResourceClient* link_client,
@@ -187,12 +190,11 @@ void LinkLoader::LoadStylesheet(
   String integrity_attr = params.integrity;
   if (!integrity_attr.empty()) {
     IntegrityMetadataSet metadata_set;
-    SubresourceIntegrity::ParseIntegrityAttribute(
-        integrity_attr, SubresourceIntegrityHelper::GetFeatures(context),
-        metadata_set);
+    SubresourceIntegrity::ParseIntegrityAttribute(integrity_attr, metadata_set,
+                                                  context);
     link_fetch_params.SetIntegrityMetadata(metadata_set);
-    link_fetch_params.MutableResourceRequest().SetFetchIntegrity(
-        integrity_attr);
+    link_fetch_params.MutableResourceRequest().SetFetchIntegrity(integrity_attr,
+                                                                 context);
   }
 
   CSSStyleSheetResource::Fetch(link_fetch_params, context->Fetcher(),

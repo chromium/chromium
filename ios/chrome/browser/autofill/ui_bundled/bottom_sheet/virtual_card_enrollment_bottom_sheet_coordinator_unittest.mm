@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/autofill/model/bottom_sheet/virtual_card_enrollment_callbacks.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -27,17 +27,18 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 // Tests the SetUpListView and subviews.
 class VirtualCardEnrollmentBottomSheetCoordinatorTest : public PlatformTest {
  public:
   VirtualCardEnrollmentBottomSheetCoordinatorTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
 
     // Create a FakeWebState.
     auto fake_web_state = std::make_unique<web::FakeWebState>();
-    fake_web_state->SetBrowserState(browser_state_.get());
+    fake_web_state->SetBrowserState(profile_.get());
 
     // Create a FakeWebFramesmanager with AutofillBottomSheetJavaScriptFeature.
     auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
@@ -86,16 +87,19 @@ class VirtualCardEnrollmentBottomSheetCoordinatorTest : public PlatformTest {
         startDispatchingToTarget:application_handler_
                      forProtocol:@protocol(ApplicationCommands)];
 
-    id<BrowserCoordinatorCommands> browserCoordinatorCommands =
-        OCMProtocolMock(@protocol(BrowserCoordinatorCommands));
     [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:browserCoordinatorCommands
+        startDispatchingToTarget:browser_coordinator_commands_
                      forProtocol:@protocol(BrowserCoordinatorCommands)];
 
     coordinator_ = [[VirtualCardEnrollmentBottomSheetCoordinator alloc]
            initWithUIModel:std::move(model)
         baseViewController:window_.rootViewController
                    browser:browser_.get()];
+  }
+
+  ~VirtualCardEnrollmentBottomSheetCoordinatorTest() override {
+    EXPECT_OCMOCK_VERIFY((id)browser_coordinator_commands_);
+    EXPECT_OCMOCK_VERIFY((id)application_handler_);
   }
 
  protected:
@@ -107,10 +111,12 @@ class VirtualCardEnrollmentBottomSheetCoordinatorTest : public PlatformTest {
   base::HistogramTester histogram_tester_;
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   id<ApplicationCommands> application_handler_;
   UIWindow* window_;
+  id<BrowserCoordinatorCommands> browser_coordinator_commands_ =
+      OCMProtocolMock(@protocol(BrowserCoordinatorCommands));
   VirtualCardEnrollmentBottomSheetCoordinator* coordinator_;
   base::WeakPtrFactory<VirtualCardEnrollmentBottomSheetCoordinatorTest>
       weak_factory_{this};

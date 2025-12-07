@@ -6,15 +6,21 @@
 
 #include <optional>
 #include <string_view>
+#include <vector>
 
 #include "base/base64url.h"
 #include "base/containers/span.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/signin/public/base/hybrid_encryption_key.h"
+#include "crypto/ecdsa_utils.h"
+#include "crypto/keypair.h"
 #include "crypto/sha2.h"
 #include "crypto/signature_verifier.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
@@ -49,8 +55,10 @@ std::string Base64UrlEncode(std::string_view data) {
 }
 
 std::string Base64UrlEncode(base::span<const uint8_t> data) {
-  return Base64UrlEncode(std::string_view(
-      reinterpret_cast<const char*>(data.data()), data.size()));
+  std::string output;
+  base::Base64UrlEncode(data, base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &output);
+  return output;
 }
 
 base::Value::Dict CreatePublicKeyInfo(base::span<const uint8_t> pubkey) {
@@ -61,11 +69,12 @@ base::Value::Dict CreatePublicKeyInfo(base::span<const uint8_t> pubkey) {
       .Set("SubjectPublicKeyInfo", Base64UrlEncode(pubkey));
 }
 
-base::Value::Dict CreateHybridPublicKeyInfo(const HybridEncryptionKey& key) {
+base::Value::Dict CreateHybridPublicKeyInfo(
+    std::string_view ephemeral_public_key) {
   return base::Value::Dict()
       .Set("kty",
            "type.googleapis.com/google.crypto.tink.EciesAeadHkdfPublicKey")
-      .Set("TinkKeysetPublicKeyInfo", Base64UrlEncode(key.ExportPublicKey()));
+      .Set("TinkKeysetPublicKeyInfo", Base64UrlEncode(ephemeral_public_key));
 }
 
 std::optional<std::string> CreateHeaderAndPayloadWithCustomPayload(
@@ -97,31 +106,35 @@ std::optional<std::string> CreateHeaderAndPayloadWithCustomPayload(
                        Base64UrlEncode(*payload_serialized)});
 }
 
-std::optional<std::vector<uint8_t>> ConvertDERSignatureToRaw(
-    base::span<const uint8_t> der_signature) {
-  bssl::UniquePtr<ECDSA_SIG> ecdsa_sig(
-      ECDSA_SIG_from_bytes(der_signature.data(), der_signature.size()));
-  if (!ecdsa_sig) {
-    DVLOG(1) << "Failed to create ECDSA_SIG";
-    return {};
+}  // namespace
+
+std::optional<crypto::SignatureVerifier::SignatureAlgorithm>
+SignatureAlgorithmFromString(std::string_view algorithm) {
+  if (base::EqualsCaseInsensitiveASCII(algorithm, "ES256")) {
+    return crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256;
   }
 
-  // TODO(b/301888680): this implicitly depends on a curve used by
-  // `crypto::UnexportableKey`. Make this dependency more explicit.
-  const size_t kMaxBytesPerBN = 32;
-  std::vector<uint8_t> jwt_signature(2 * kMaxBytesPerBN);
-
-  if (!BN_bn2bin_padded(&jwt_signature[0], kMaxBytesPerBN, ecdsa_sig->r) ||
-      !BN_bn2bin_padded(&jwt_signature[kMaxBytesPerBN], kMaxBytesPerBN,
-                        ecdsa_sig->s)) {
-    DVLOG(1) << "Failed to serialize R and S to " << kMaxBytesPerBN << " bytes";
-    return {};
+  if (base::EqualsCaseInsensitiveASCII(algorithm, "RS256")) {
+    return crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256;
   }
 
-  return jwt_signature;
+  return std::nullopt;
 }
 
-}  // namespace
+std::vector<crypto::SignatureVerifier::SignatureAlgorithm>
+ParseSignatureAlgorithmList(std::string_view algorithm_list) {
+  std::vector<crypto::SignatureVerifier::SignatureAlgorithm> result;
+  for (const auto& algorithm_str : base::SplitStringPiece(
+           algorithm_list, " ", base::WhitespaceHandling::TRIM_WHITESPACE,
+           base::SplitResult::SPLIT_WANT_NONEMPTY)) {
+    std::optional<crypto::SignatureVerifier::SignatureAlgorithm> algorithm =
+        signin::SignatureAlgorithmFromString(algorithm_str);
+    if (algorithm) {
+      result.push_back(*algorithm);
+    }
+  }
+  return result;
+}
 
 std::optional<std::string> CreateKeyRegistrationHeaderAndPayloadForTokenBinding(
     std::string_view client_id,
@@ -173,15 +186,16 @@ std::optional<std::string> CreateKeyAssertionHeaderAndPayload(
     std::string_view challenge,
     const GURL& destination_url,
     std::string_view name_space,
-    HybridEncryptionKey* ephemeral_key) {
+    std::string_view ephemeral_public_key) {
   auto payload = base::Value::Dict()
                      .Set("sub", client_id)
                      .Set("aud", destination_url.spec())
                      .Set("jti", challenge)
                      .Set("iss", Base64UrlEncode(crypto::SHA256Hash(pubkey)))
                      .Set("namespace", name_space);
-  if (ephemeral_key) {
-    payload.Set("ephemeral_key", CreateHybridPublicKeyInfo(*ephemeral_key));
+  if (!ephemeral_public_key.empty()) {
+    payload.Set("ephemeral_key",
+                CreateHybridPublicKeyInfo(ephemeral_public_key));
   }
   return CreateHeaderAndPayloadWithCustomPayload(
       algorithm, "DEVICE_BOUND_SESSION_CREDENTIALS_ASSERTION", payload);
@@ -190,17 +204,42 @@ std::optional<std::string> CreateKeyAssertionHeaderAndPayload(
 std::optional<std::string> AppendSignatureToHeaderAndPayload(
     std::string_view header_and_payload,
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
+    base::span<const uint8_t> pubkey_spki,
     base::span<const uint8_t> signature) {
   std::optional<std::vector<uint8_t>> signature_holder;
   if (algorithm == crypto::SignatureVerifier::ECDSA_SHA256) {
-    signature_holder = ConvertDERSignatureToRaw(signature);
+    std::optional<crypto::keypair::PublicKey> public_key =
+        crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(pubkey_spki);
+    if (!public_key.has_value()) {
+      return std::nullopt;
+    }
+    signature_holder =
+        crypto::ConvertEcdsaDerSignatureToRaw(*public_key, signature);
     if (!signature_holder.has_value()) {
       return std::nullopt;
     }
-    signature = base::make_span(*signature_holder);
+    signature = base::span(*signature_holder);
   }
 
   return base::StrCat({header_and_payload, ".", Base64UrlEncode(signature)});
+}
+
+std::string DecryptValueWithEphemeralKey(
+    const HybridEncryptionKey& ephemeral_key,
+    std::string_view base64_encrypted_value) {
+  std::optional<std::vector<uint8_t>> encrypted_value = base::Base64UrlDecode(
+      base64_encrypted_value, base::Base64UrlDecodePolicy::IGNORE_PADDING);
+  if (!encrypted_value.has_value()) {
+    return std::string();
+  }
+
+  std::optional<std::vector<uint8_t>> decryption_result =
+      ephemeral_key.Decrypt(*encrypted_value);
+  if (!decryption_result.has_value()) {
+    return std::string();
+  }
+
+  return std::string(decryption_result->begin(), decryption_result->end());
 }
 
 }  // namespace signin

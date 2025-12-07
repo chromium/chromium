@@ -6,43 +6,21 @@ package org.chromium.chrome.modules.stack_unwinder;
 
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Provides access to the stack unwinder native code functions within the dynamic feature module.
  */
+@NullMarked
 public class StackUnwinderModuleContentsImpl implements StackUnwinderModuleContents {
-    /**
-     * Returns the pointer to the CreateMemoryRegionsMap native function within the module, encoded
-     * as a long.
-     */
-    @Override
-    public long getCreateMemoryRegionsMapFunction() {
-        return StackUnwinderModuleContentsImplJni.get().getCreateMemoryRegionsMapFunction();
-    }
 
-    /**
-     * Returns the pointer to the CreateNativeUnwinder native function within the module, encoded as
-     * a long.
-     */
     @Override
-    public long getCreateNativeUnwinderFunction() {
-        return StackUnwinderModuleContentsImplJni.get().getCreateNativeUnwinderFunction();
-    }
-
-    /**
-     * Returns the pointer to the CreateLibunwindstackUnwinder native function within the module,
-     * encoded as a long.
-     */
-    @Override
-    public long getCreateLibunwindstackUnwinderFunction() {
-        return StackUnwinderModuleContentsImplJni.get().getCreateLibunwindstackUnwinderFunction();
+    public long getDoNothingFunction() {
+        return StackUnwinderModuleContentsImplJni.get().getDoNothingFunction();
     }
 
     @NativeMethods("stack_unwinder")
     interface Natives {
-        long getCreateMemoryRegionsMapFunction();
-
-        long getCreateNativeUnwinderFunction();
-
-        long getCreateLibunwindstackUnwinderFunction();
+        long getDoNothingFunction();
     }
 }

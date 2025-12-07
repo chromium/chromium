@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "media/mojo/mojom/cdm_service.mojom.h"
 #include "media/mojo/services/cdm_service.h"
@@ -44,9 +45,15 @@ class MEDIA_MOJO_EXPORT CdmServiceBroker final
 #endif  // BUILDFLAG(IS_MAC)
       const base::FilePath& cdm_path);
 
+  // Terminates the service.
+  void TerminateService();
+
   std::unique_ptr<CdmService::Client> client_;
   mojo::Receiver<mojom::CdmServiceBroker> receiver_;
   std::unique_ptr<CdmService> cdm_service_;
+
+  // NOTE: Weak pointers must be invalidated before all other member variables.
+  base::WeakPtrFactory<CdmServiceBroker> weak_factory_{this};
 };
 
 }  // namespace media

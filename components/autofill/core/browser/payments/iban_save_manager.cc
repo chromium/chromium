@@ -4,20 +4,23 @@
 
 #include "components/autofill/core/browser/payments/iban_save_manager.h"
 
+#include <algorithm>
+
 #include "base/check_deref.h"
-#include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_experiments.h"
-#include "components/autofill/core/browser/data_model/iban.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_model/payments/iban.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/strike_databases/payments/iban_save_strike_database.h"
+#include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/sync/service/sync_user_settings.h"
 
@@ -138,15 +141,15 @@ IbanSaveManager::TypeOfOfferToSave IbanSaveManager::DetermineHowToSaveIban(
 
   // Trigger server save if available, otherwise local save as long as the IBAN
   // isn't already saved locally.
-  if (base::FeatureList::IsEnabled(features::kAutofillEnableServerIban) &&
-      IsIbanUploadEnabled(
+  if (IsIbanUploadEnabled(
           client_->GetSyncService(),
           payments_data_manager().GetPaymentsSigninStateForMetrics()) &&
       payments_data_manager().GetServerIbans().size() <= kMaxNumServerIbans) {
     autofill_metrics::LogIbanSaveOfferedCountry(
         import_candidate.GetCountryCode());
     return TypeOfOfferToSave::kOfferServerSave;
-  } else if (import_candidate.record_type() != Iban::kLocalIban) {
+  }
+  if (import_candidate.record_type() != Iban::kLocalIban) {
     autofill_metrics::LogIbanSaveOfferedCountry(
         import_candidate.GetCountryCode());
     return TypeOfOfferToSave::kOfferLocalSave;
@@ -156,10 +159,10 @@ IbanSaveManager::TypeOfOfferToSave IbanSaveManager::DetermineHowToSaveIban(
 
 bool IbanSaveManager::MatchesExistingLocalIban(
     const Iban& import_candidate) const {
-  return base::ranges::any_of(
-      payments_data_manager().GetLocalIbans(), [&](const Iban* iban) {
-        return iban->value() == import_candidate.value();
-      });
+  return std::ranges::any_of(payments_data_manager().GetLocalIbans(),
+                             [&](const Iban* iban) {
+                               return iban->value() == import_candidate.value();
+                             });
 }
 
 bool IbanSaveManager::MatchesExistingServerIban(
@@ -202,9 +205,8 @@ bool IbanSaveManager::AttemptToOfferUploadSave(Iban& import_candidate) {
   client_->GetPaymentsAutofillClient()
       ->GetPaymentsNetworkInterface()
       ->GetIbanUploadDetails(
-          client_->GetPersonalDataManager()->app_locale(),
-          payments::GetBillingCustomerId(&payments_data_manager()),
-          payments::kUploadPaymentMethodBillableServiceNumber,
+          payments_data_manager().app_locale(),
+          payments::GetBillingCustomerId(payments_data_manager()),
           import_candidate.GetCountryCode(),
           base::BindOnce(&IbanSaveManager::OnDidGetUploadDetails,
                          weak_ptr_factory_.GetWeakPtr(), show_save_prompt,
@@ -278,7 +280,12 @@ void IbanSaveManager::OnUserDidDecideOnUploadSave(
       action_metric = autofill_metrics::UploadIbanActionMetric::kAccepted;
       autofill_metrics::LogIbanSaveAcceptedCountry(
           import_candidate.GetCountryCode());
-      SendUploadRequest(import_candidate, show_save_prompt);
+      user_did_accept_upload_prompt_ = true;
+      if (!upload_request_details_.risk_data.empty()) {
+        // Risk data has already been gathered, so the server request can be
+        // sent.
+        SendUploadRequest(import_candidate, show_save_prompt);
+      }
       break;
     case payments::PaymentsAutofillClient::SaveIbanOfferUserDecision::kIgnored:
       action_metric = autofill_metrics::UploadIbanActionMetric::kIgnored;
@@ -321,6 +328,16 @@ void IbanSaveManager::OnDidGetUploadDetails(
     LegalMessageLines parsed_legal_message_lines;
     if (LegalMessageLine::Parse(*legal_message, &parsed_legal_message_lines,
                                 /*escape_apostrophes=*/true)) {
+      // Reset `risk_data` and `user_did_accept_upload_prompt_` so that the risk
+      // data and prompt acceptance state from a previous upload IBAN flow are
+      // not re-used, which could potentially result in saves without the user's
+      // consent.
+      upload_request_details_.risk_data.clear();
+      upload_request_details_.app_locale.clear();
+      upload_request_details_.context_token.clear();
+      upload_request_details_.value.clear();
+      upload_request_details_.nickname.clear();
+      user_did_accept_upload_prompt_ = false;
       context_token_ = context_token;
       client_->GetPaymentsAutofillClient()->ConfirmUploadIbanToCloud(
           import_candidate, std::move(parsed_legal_message_lines),
@@ -328,6 +345,9 @@ void IbanSaveManager::OnDidGetUploadDetails(
           base::BindOnce(&IbanSaveManager::OnUserDidDecideOnUploadSave,
                          weak_ptr_factory_.GetWeakPtr(), import_candidate,
                          show_save_prompt));
+      client_->GetPaymentsAutofillClient()->LoadRiskData(base::BindOnce(
+          &IbanSaveManager::OnDidGetUploadRiskData,
+          weak_ptr_factory_.GetWeakPtr(), show_save_prompt, import_candidate));
       // If `show_save_prompt`'s value is false, desktop builds will still offer
       // save in the omnibox without popping-up the bubble.
       if (observer_for_testing_) {
@@ -343,25 +363,35 @@ void IbanSaveManager::OnDidGetUploadDetails(
   }
 }
 
+void IbanSaveManager::OnDidGetUploadRiskData(bool show_save_prompt,
+                                             const Iban& import_candidate,
+                                             const std::string& risk_data) {
+  upload_request_details_.risk_data = risk_data;
+  // Populating risk data and offering upload occur asynchronously.
+  // If the dialog has already been accepted, send the upload IBAN request.
+  // Otherwise, continue to wait for the user to accept the save dialog.
+  if (user_did_accept_upload_prompt_) {
+    SendUploadRequest(import_candidate, show_save_prompt);
+  }
+}
+
 void IbanSaveManager::SendUploadRequest(const Iban& import_candidate,
                                         bool show_save_prompt) {
   if (observer_for_testing_) {
     observer_for_testing_->OnSentUploadRequest();
   }
-  payments::PaymentsNetworkInterface::UploadIbanRequestDetails details;
-  details.app_locale = client_->GetPersonalDataManager()->app_locale();
-  details.billable_service_number =
-      payments::kUploadPaymentMethodBillableServiceNumber;
-  details.billing_customer_number =
-      payments::GetBillingCustomerId(&payments_data_manager());
-  details.context_token = context_token_;
-  details.value = import_candidate.value();
-  details.nickname = import_candidate.nickname();
+  upload_request_details_.app_locale = payments_data_manager().app_locale();
+  upload_request_details_.billing_customer_number =
+      payments::GetBillingCustomerId(payments_data_manager());
+  upload_request_details_.context_token = context_token_;
+  upload_request_details_.value = import_candidate.value();
+  upload_request_details_.nickname = import_candidate.nickname();
   client_->GetPaymentsAutofillClient()
       ->GetPaymentsNetworkInterface()
-      ->UploadIban(details, base::BindOnce(&IbanSaveManager::OnDidUploadIban,
-                                           weak_ptr_factory_.GetWeakPtr(),
-                                           import_candidate, show_save_prompt));
+      ->UploadIban(upload_request_details_,
+                   base::BindOnce(&IbanSaveManager::OnDidUploadIban,
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  import_candidate, show_save_prompt));
 }
 
 void IbanSaveManager::OnDidUploadIban(const Iban& import_candidate,
@@ -392,6 +422,11 @@ void IbanSaveManager::OnDidUploadIban(const Iban& import_candidate,
       GetIbanSaveStrikeDatabase()->AddStrike(partial_iban_hash);
     }
   }
+
+  // Display the IBAN upload save confirmation dialog based on the result.
+  client_->GetPaymentsAutofillClient()->IbanUploadCompleted(
+      result == PaymentsRpcResult::kSuccess,
+      GetIbanSaveStrikeDatabase()->ShouldBlockFeature(partial_iban_hash));
   if (observer_for_testing_) {
     if (result == PaymentsRpcResult::kSuccess) {
       observer_for_testing_->OnAcceptUploadSaveIbanComplete();
@@ -407,7 +442,7 @@ PaymentsDataManager& IbanSaveManager::payments_data_manager() {
 }
 
 const PaymentsDataManager& IbanSaveManager::payments_data_manager() const {
-  return client_->GetPersonalDataManager()->payments_data_manager();
+  return client_->GetPersonalDataManager().payments_data_manager();
 }
 
 }  // namespace autofill

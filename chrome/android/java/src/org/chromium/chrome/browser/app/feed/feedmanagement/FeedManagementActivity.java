@@ -4,25 +4,30 @@
 
 package org.chromium.chrome.browser.app.feed.feedmanagement;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.os.Bundle;
 import android.view.MenuItem;
 
 import androidx.appcompat.widget.Toolbar;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.SnackbarActivity;
 import org.chromium.chrome.browser.feed.StreamKind;
 import org.chromium.chrome.browser.feed.feedmanagement.FeedManagementCoordinator;
 
 /** Activity for managing feed and webfeed settings on the new tab page. */
+@NullMarked
 public class FeedManagementActivity extends SnackbarActivity {
     private static final String TAG = "FeedMActivity";
     public static final String INITIATING_STREAM_TYPE_EXTRA =
             "feed_management_initiating_stream_type_extra";
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreateInternal(@Nullable Bundle savedInstanceState) {
+        super.onCreateInternal(savedInstanceState);
 
         @StreamKind
         int streamKind = getIntent().getIntExtra(INITIATING_STREAM_TYPE_EXTRA, StreamKind.UNKNOWN);
@@ -33,7 +38,7 @@ public class FeedManagementActivity extends SnackbarActivity {
         // Set up the toolbar and back button.
         Toolbar toolbar = findViewById(R.id.action_bar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        assumeNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
     }
 
     @Override

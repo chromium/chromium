@@ -40,7 +40,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 
-import org.chromium.base.supplier.Supplier;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -51,11 +51,11 @@ import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialC
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.ui.base.LocalizationUtils;
 
+import java.util.function.Supplier;
+
 /** Tests for {@link PartialCustomTabDisplayManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {PartialCustomTabTestRule.ShadowSemanticColorUtils.class})
+@Config(manifest = Config.NONE)
 @LooperMode(Mode.PAUSED)
 public class PartialCustomTabDisplayManagerTest {
     private static final int BOTTOM_SHEET_MAX_WIDTH_DP = 900;
@@ -97,6 +97,7 @@ public class PartialCustomTabDisplayManagerTest {
                         mPCCTTestRule.mOnActivityLayoutCallback,
                         mPCCTTestRule.mActivityLifecycleDispatcher,
                         mPCCTTestRule.mFullscreenManager,
+                        /* isEnteringPip= */ () -> false,
                         /* isTablet= */ false);
         var sizeStrategyCreator = displayManager.getSizeStrategyCreatorForTesting();
         SizeStrategyCreator testSizeStrategyCreator =
@@ -115,6 +116,11 @@ public class PartialCustomTabDisplayManagerTest {
                 mPCCTTestRule.mToolbarCoordinator,
                 mPCCTTestRule.mHandleStrategyFactory,
                 testSizeStrategyCreator);
+        displayManager.onToolbarInitialized(
+                mPCCTTestRule.mToolbarCoordinator,
+                mPCCTTestRule.mToolbarView,
+                /* toolbarCornerRadius= */ 5,
+                mPCCTTestRule.mToolbarButtonsCoordinator);
         return displayManager;
     }
 
@@ -297,7 +303,6 @@ public class PartialCustomTabDisplayManagerTest {
     }
 
     @Test
-    @DisabledTest(message = "b/354141061")
     public void transitionFromBottomSheetToSideSheetWhileSoftkeyboardIsOn() {
         mPCCTTestRule.configPortraitMode();
         PartialCustomTabDisplayManager displayManager = createPcctDisplayManager();
@@ -314,7 +319,7 @@ public class PartialCustomTabDisplayManagerTest {
                 "Bottom-Sheet should be the active strategy",
                 PartialCustomTabType.BOTTOM_SHEET,
                 displayManager.getActiveStrategyType());
-        displayManager.onShowSoftInput(() -> {});
+        displayManager.onShowSoftInput(CallbackUtils.emptyRunnable());
         PartialCustomTabTestRule.waitForAnimationToFinish();
         assertTrue(displayManager.getSizeStrategyForTesting().isMaximized());
 
@@ -444,8 +449,6 @@ public class PartialCustomTabDisplayManagerTest {
         PartialCustomTabDisplayManager displayManager =
                 createPcctDisplayManager(
                         850, 2000, 1850, ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER);
-        displayManager.onToolbarInitialized(
-                mPCCTTestRule.mToolbarCoordinator, mPCCTTestRule.mToolbarView, 5);
         assertEquals(
                 "Side-Sheet should be the active strategy",
                 PartialCustomTabType.SIDE_SHEET,

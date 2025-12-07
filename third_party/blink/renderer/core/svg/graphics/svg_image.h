@@ -33,7 +33,7 @@
 #include "base/memory/weak_ptr.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
+#include "third_party/blink/renderer/platform/geometry/physical_size.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -57,7 +57,7 @@ class SVGImageChromeClient;
 class SVGImageForContainer;
 class SVGSVGElement;
 class SVGViewSpec;
-struct IntrinsicSizingInfo;
+struct NaturalSizingInfo;
 
 // A collection of "viewport defining" parameters for an SVGImage.
 class SVGImageViewInfo final : public GarbageCollected<SVGImageViewInfo> {
@@ -99,7 +99,7 @@ class CORE_EXPORT SVGImage final : public Image {
   gfx::Size SizeWithConfig(SizeConfig) const override;
 
   void CheckLoaded() const;
-  bool CurrentFrameHasSingleSecurityOrigin() const override;
+  bool HasSingleSecurityOrigin() const override;
 
   void StartAnimation() override;
   void ResetAnimation() override;
@@ -119,7 +119,9 @@ class CORE_EXPORT SVGImage final : public Image {
   // Service CSS and SMIL animations.
   void ServiceAnimations(base::TimeTicks monotonic_animation_start_time);
 
-  void UpdateUseCounters(const Document&) const;
+  // Update use counters for the given document after an image finishes loading
+  // in that document.
+  void UpdateUseCountersAfterLoad(const Document&) const;
 
   void MaybeRecordSvgImageProcessingTime(const Document&);
 
@@ -156,7 +158,8 @@ class CORE_EXPORT SVGImage final : public Image {
 
   // Get the intrinsic dimensions (width, height and aspect ratio) from this
   // SVGImage. Returns true if successful.
-  bool GetIntrinsicSizingInfo(const SVGViewSpec*, IntrinsicSizingInfo&) const;
+  std::optional<NaturalSizingInfo> GetNaturalDimensions(
+      const SVGViewSpec*) const;
 
   String FilenameExtension() const override;
 
@@ -168,8 +171,7 @@ class CORE_EXPORT SVGImage final : public Image {
   // to prune because these functions are not implemented yet.
   void DestroyDecodedData() override {}
 
-  // FIXME: Implement this to be less conservative.
-  bool CurrentFrameKnownToBeOpaque() override { return false; }
+  bool IsOpaque() override { return false; }
 
   class DrawInfo {
     STACK_ALLOCATED();
@@ -253,12 +255,8 @@ class CORE_EXPORT SVGImage final : public Image {
 
   Persistent<SVGImageChromeClient> chrome_client_;
   Persistent<IsolatedSVGDocumentHost> document_host_;
+  Persistent<AgentGroupScheduler> agent_group_scheduler_;
 
-  // When an SVG image has no intrinsic size, the size depends on the default
-  // object size, which in turn depends on the container. One SVGImage may
-  // belong to multiple containers so the final image size can't be known in
-  // SVGImage. SVGImageForContainer carries the final image size, also called
-  // the "concrete object size". For more, see: SVGImageForContainer.h
   PhysicalSize intrinsic_size_;
   bool has_pending_timeline_rewind_;
 

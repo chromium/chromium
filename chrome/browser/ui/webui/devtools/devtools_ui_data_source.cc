@@ -5,14 +5,18 @@
 #include "chrome/browser/ui/webui/devtools/devtools_ui_data_source.h"
 
 #include <list>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/devtools/devtools_ui_bindings.h"
 #include "chrome/browser/devtools/url_constants.h"
@@ -36,14 +40,14 @@ std::string PathWithoutParams(const std::string& path) {
                             url::kStandardSchemeSeparator,
                             chrome::kChromeUIDevToolsHost}))
       .Resolve(path)
-      .path()
+      .GetPath()
       .substr(1);
 }
 
 scoped_refptr<base::RefCountedMemory> CreateNotFoundResponse() {
   const char kHttpNotFound[] = "HTTP/1.1 404 Not Found\n\n";
   return base::MakeRefCounted<base::RefCountedStaticMemory>(
-      kHttpNotFound, strlen(kHttpNotFound));
+      base::byte_span_from_cstring(kHttpNotFound));
 }
 
 // DevToolsDataSource ---------------------------------------------------------
@@ -103,7 +107,7 @@ DevToolsDataSource::DevToolsDataSource(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : url_loader_factory_(std::move(url_loader_factory)) {}
 
-DevToolsDataSource::~DevToolsDataSource() {}
+DevToolsDataSource::~DevToolsDataSource() = default;
 
 std::string DevToolsDataSource::GetSource() {
   return chrome::kChromeUIDevToolsHost;
@@ -122,8 +126,9 @@ GURL GetCustomDevToolsFrontendURL() {
 bool DevToolsDataSource::MaybeHandleCustomRequest(const std::string& path,
                                                   GotDataCallback* callback) {
   GURL custom_devtools_frontend = GetCustomDevToolsFrontendURL();
-  if (!custom_devtools_frontend.is_valid())
+  if (!custom_devtools_frontend.is_valid()) {
     return false;
+  }
   std::string stripped_path =
       StripDevToolsRevisionWithPrefix(path, "serve_rev/");
   stripped_path = StripDevToolsRevisionWithPrefix(stripped_path, "serve_file/");
@@ -185,7 +190,7 @@ void DevToolsDataSource::StartDataRequest(
     GURL remote_url(kRemoteFrontendBase +
                     path.substr(remote_path_prefix.length()));
 
-    CHECK_EQ(remote_url.host(), kRemoteFrontendDomain);
+    CHECK_EQ(remote_url.GetHost(), kRemoteFrontendDomain);
     if (remote_url.is_valid() &&
         DevToolsUIBindings::IsValidRemoteFrontendURL(remote_url)) {
       StartRemoteDataRequest(remote_url, std::move(callback));
@@ -218,8 +223,16 @@ std::string DevToolsDataSource::GetMimeType(const GURL& url) {
   return GetMimeTypeForUrl(url);
 }
 
-bool DevToolsDataSource::ShouldAddContentSecurityPolicy() {
-  return false;
+std::string DevToolsDataSource::GetContentSecurityPolicy(
+    network::mojom::CSPDirectiveName directive) {
+  switch (directive) {
+    case network::mojom::CSPDirectiveName::ObjectSrc:
+      return "object-src 'none';";
+    case network::mojom::CSPDirectiveName::ScriptSrc:
+      return "script-src 'self' https://chrome-devtools-frontend.appspot.com;";
+    default:
+      return std::string();
+  }
 }
 
 bool DevToolsDataSource::ShouldDenyXFrameOptions() {
@@ -365,7 +378,7 @@ void DevToolsDataSource::StartFileRequest(const std::string& path,
 
 void DevToolsDataSource::OnLoadComplete(
     std::list<PendingRequest>::iterator request_iter,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   GotDataCallback callback = std::move(request_iter->callback);
   pending_requests_.erase(request_iter);
   std::move(callback).Run(response_body
@@ -381,6 +394,7 @@ DevToolsDataSource::PendingRequest::PendingRequest(PendingRequest&& other) =
     default;
 
 DevToolsDataSource::PendingRequest::~PendingRequest() {
-  if (callback)
+  if (callback) {
     std::move(callback).Run(CreateNotFoundResponse());
+  }
 }

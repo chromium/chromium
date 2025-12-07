@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/component_updater/real_time_url_checks_allowlist_component_installer.h"
 
 #include <memory>
@@ -24,8 +19,6 @@
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "components/safe_browsing/android/real_time_url_checks_allowlist.h"
-
-using component_updater::ComponentUpdateService;
 
 namespace {
 
@@ -114,9 +107,8 @@ RealTimeUrlChecksAllowlistComponentInstallerPolicy::GetRelativeInstallDir()
 
 void RealTimeUrlChecksAllowlistComponentInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
-  hash->assign(kRealTimeUrlChecksAllowlistPublicKeySHA256,
-               kRealTimeUrlChecksAllowlistPublicKeySHA256 +
-                   std::size(kRealTimeUrlChecksAllowlistPublicKeySHA256));
+  hash->assign(std::begin(kRealTimeUrlChecksAllowlistPublicKeySHA256),
+               std::end(kRealTimeUrlChecksAllowlistPublicKeySHA256));
 }
 
 std::string RealTimeUrlChecksAllowlistComponentInstallerPolicy::GetName()

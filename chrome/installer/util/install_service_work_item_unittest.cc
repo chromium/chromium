@@ -10,8 +10,10 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/strings/strcat_win.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "chrome/install_static/install_util.h"
@@ -19,6 +21,7 @@
 #include "chrome/installer/util/install_service_work_item_impl.h"
 #include "chrome/installer/util/registry_util.h"
 #include "chrome/installer/util/work_item.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace installer {
@@ -27,6 +30,8 @@ namespace {
 
 constexpr wchar_t kServiceName[] = L"InstallServiceWorkItemService";
 constexpr wchar_t kServiceDisplayName[] = L"InstallServiceWorkItemService";
+constexpr wchar_t kServiceDescription[] =
+    L"InstallServiceWorkItemService is a test service";
 constexpr uint32_t kServiceStartType = SERVICE_DEMAND_START;
 constexpr base::FilePath::CharType kServiceProgramPath[] =
     FILE_PATH_LITERAL("c:\\windows\\SysWow64\\cmd.exe");
@@ -203,7 +208,8 @@ TEST_F(InstallServiceWorkItemTest, Do_MultiSzToVector) {
   constexpr wchar_t kZeroMultiSz[] = L"";
   std::vector<wchar_t> vec =
       InstallServiceWorkItemImpl::MultiSzToVector(kZeroMultiSz);
-  EXPECT_TRUE(!memcmp(vec.data(), &kZeroMultiSz, sizeof(kZeroMultiSz)));
+  EXPECT_TRUE(
+      !UNSAFE_TODO(memcmp(vec.data(), &kZeroMultiSz, sizeof(kZeroMultiSz))));
   EXPECT_EQ(vec.size(), std::size(kZeroMultiSz));
 
   vec = InstallServiceWorkItemImpl::MultiSzToVector(nullptr);
@@ -211,12 +217,13 @@ TEST_F(InstallServiceWorkItemTest, Do_MultiSzToVector) {
 
   constexpr wchar_t kRpcMultiSz[] = L"RPCSS\0";
   vec = InstallServiceWorkItemImpl::MultiSzToVector(kRpcMultiSz);
-  EXPECT_TRUE(!memcmp(vec.data(), &kRpcMultiSz, sizeof(kRpcMultiSz)));
+  EXPECT_TRUE(
+      !UNSAFE_TODO(memcmp(vec.data(), &kRpcMultiSz, sizeof(kRpcMultiSz))));
   EXPECT_EQ(vec.size(), std::size(kRpcMultiSz));
 
   constexpr wchar_t kMultiSz[] = L"RPCSS\0LSASS\0";
   vec = InstallServiceWorkItemImpl::MultiSzToVector(kMultiSz);
-  EXPECT_TRUE(!memcmp(vec.data(), &kMultiSz, sizeof(kMultiSz)));
+  EXPECT_TRUE(!UNSAFE_TODO(memcmp(vec.data(), &kMultiSz, sizeof(kMultiSz))));
   EXPECT_EQ(vec.size(), std::size(kMultiSz));
 }
 
@@ -225,15 +232,18 @@ TEST_F(InstallServiceWorkItemTest, Do_FreshInstall) {
     // Calling ::OpenSCManager requires an admin user.
     GTEST_SKIP() << "This test must be run by an admin user";
   }
+  base::HistogramTester histogram_tester;
   base::CommandLine com_service_cmd_line_args(base::CommandLine::NO_PROGRAM);
   com_service_cmd_line_args.AppendArgNative(kComServiceCmdLineArgs);
 
   auto item = std::make_unique<InstallServiceWorkItem>(
-      kServiceName, kServiceDisplayName, kServiceStartType,
+      kServiceName, kServiceDisplayName, kServiceDescription, kServiceStartType,
       base::CommandLine(base::FilePath(kServiceProgramPath)),
       com_service_cmd_line_args, kProductRegPath, kClsids, kIids);
 
+  ASSERT_FALSE(InstallServiceWorkItem::IsComServiceInstalled(kClsid));
   ASSERT_TRUE(item->Do());
+  EXPECT_TRUE(InstallServiceWorkItem::IsComServiceInstalled(kClsid));
   EXPECT_TRUE(GetImpl(item.get())->OpenService());
   EXPECT_TRUE(IsServiceCorrectlyConfigured(item.get()));
 
@@ -244,6 +254,10 @@ TEST_F(InstallServiceWorkItemTest, Do_FreshInstall) {
 
   EXPECT_TRUE(IsServiceGone(item.get()));
   ExpectServiceCOMRegistrationAbsent();
+  EXPECT_FALSE(InstallServiceWorkItem::IsComServiceInstalled(kClsid));
+
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix("Setup.Install.SCM."),
+              testing::Not(testing::IsEmpty()));
 }
 
 TEST_F(InstallServiceWorkItemTest, Do_FreshInstallThenDeleteService) {
@@ -252,7 +266,7 @@ TEST_F(InstallServiceWorkItemTest, Do_FreshInstallThenDeleteService) {
     GTEST_SKIP() << "This test must be run by an admin user";
   }
   auto item = std::make_unique<InstallServiceWorkItem>(
-      kServiceName, kServiceDisplayName, kServiceStartType,
+      kServiceName, kServiceDisplayName, kServiceDescription, kServiceStartType,
       base::CommandLine(base::FilePath(kServiceProgramPath)),
       base::CommandLine(base::CommandLine::NO_PROGRAM), kProductRegPath,
       kClsids, kIids);
@@ -274,7 +288,7 @@ TEST_F(InstallServiceWorkItemTest, Do_UpgradeNoChanges) {
     GTEST_SKIP() << "This test must be run by an admin user";
   }
   auto item = std::make_unique<InstallServiceWorkItem>(
-      kServiceName, kServiceDisplayName, kServiceStartType,
+      kServiceName, kServiceDisplayName, kServiceDescription, kServiceStartType,
       base::CommandLine(base::FilePath(kServiceProgramPath)),
       base::CommandLine(base::CommandLine::NO_PROGRAM), kProductRegPath,
       kClsids, kIids);
@@ -284,7 +298,7 @@ TEST_F(InstallServiceWorkItemTest, Do_UpgradeNoChanges) {
 
   // Same command line:
   auto item_upgrade = std::make_unique<InstallServiceWorkItem>(
-      kServiceName, kServiceDisplayName, kServiceStartType,
+      kServiceName, kServiceDisplayName, kServiceDescription, kServiceStartType,
       base::CommandLine(base::FilePath(kServiceProgramPath)),
       base::CommandLine(base::CommandLine::NO_PROGRAM), kProductRegPath,
       kClsids, kIids);
@@ -320,7 +334,7 @@ TEST_F(InstallServiceWorkItemTest, Do_UpgradeChangedCmdLineStartTypeCOMArgs) {
   com_service_cmd_line_args.AppendArgNative(kComServiceCmdLineArgs);
 
   auto item = std::make_unique<InstallServiceWorkItem>(
-      kServiceName, kServiceDisplayName, kServiceStartType,
+      kServiceName, kServiceDisplayName, kServiceDescription, kServiceStartType,
       base::CommandLine(base::FilePath(kServiceProgramPath)),
       com_service_cmd_line_args, kProductRegPath, kClsids, kIids);
   ASSERT_TRUE(item->Do());
@@ -328,10 +342,13 @@ TEST_F(InstallServiceWorkItemTest, Do_UpgradeChangedCmdLineStartTypeCOMArgs) {
   EXPECT_TRUE(IsServiceCorrectlyConfigured(item.get()));
   ExpectServiceCOMRegistrationCorrect(com_service_cmd_line_args,
                                       kServiceProgramPath);
+  EXPECT_EQ(GetImpl(item.get())->GetCurrentServiceDescription(),
+            kServiceDescription);
 
   // New command line and start type.
   auto item_upgrade = std::make_unique<InstallServiceWorkItem>(
-      kServiceName, kServiceDisplayName, SERVICE_AUTO_START,
+      kServiceName, kServiceDisplayName, kServiceDescription,
+      SERVICE_AUTO_START,
       base::CommandLine::FromString(L"NewCmd.exe arg1 arg2"),
       base::CommandLine(base::CommandLine::NO_PROGRAM), kProductRegPath,
       kClsids, kIids);
@@ -341,6 +358,8 @@ TEST_F(InstallServiceWorkItemTest, Do_UpgradeChangedCmdLineStartTypeCOMArgs) {
   // service is correctly configured, while the old item shows that the service
   // is not correctly configured.
   EXPECT_TRUE(IsServiceCorrectlyConfigured(item_upgrade.get()));
+  EXPECT_EQ(GetImpl(item_upgrade.get())->GetCurrentServiceDescription(),
+            kServiceDescription);
   ExpectServiceCOMRegistrationCorrect(
       base::CommandLine(base::CommandLine::NO_PROGRAM), L"NewCmd.exe");
   EXPECT_FALSE(IsServiceCorrectlyConfigured(item.get()));
@@ -369,7 +388,7 @@ TEST_F(InstallServiceWorkItemTest, Do_ServiceName) {
     GTEST_SKIP() << "This test must be run by an admin user";
   }
   auto item = std::make_unique<InstallServiceWorkItem>(
-      kServiceName, kServiceDisplayName, kServiceStartType,
+      kServiceName, kServiceDisplayName, kServiceDescription, kServiceStartType,
       base::CommandLine(base::CommandLine::NO_PROGRAM),
       base::CommandLine(base::FilePath(kServiceProgramPath)), kProductRegPath,
       kClsids, kIids);

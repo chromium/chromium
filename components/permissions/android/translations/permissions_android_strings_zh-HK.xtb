@@ -11,6 +11,7 @@
 <translation id="2987449669841041897">此網站無法要求您的權限</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />取得說明<ph name="END_LINK" /></translation>
 <translation id="3773755127849930740">請<ph name="BEGIN_LINK" />開啟藍牙功能<ph name="END_LINK" />以允許配對</translation>
+<translation id="3878792656892132392"><ph name="APP_NAME" /> 需要相關權限才能追蹤手勢。</translation>
 <translation id="4915549754973153784">正在掃描裝置…<ph name="BEGIN_LINK" />查看說明<ph name="END_LINK" /></translation>
 <translation id="4925793601605263825"><ph name="APP_NAME" /> 需要取得權限，才能讓這個網站存取您的麥克風。</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> 要求掃瞄附近的藍牙裝置，並已找到以下裝置：</translation>

@@ -93,14 +93,16 @@ base::TimeTicks RequestQueue<T>::NextReleaseTime() const {
 
 template <typename T>
 void RequestQueue<T>::StartNextRequest() {
-  if (active_request_)
+  if (active_request_) {
     // Already running a request, assume this method will be called again when
     // the request is done.
     return;
+  }
 
-  if (empty())
+  if (empty()) {
     // No requests in the queue, so we're done.
     return;
+  }
 
   base::TimeTicks next_release = NextReleaseTime();
   base::TimeTicks now = base::TimeTicks::Now();

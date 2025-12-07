@@ -2,20 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/framebuffer_manager.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/heap_array.h"
-#include "base/not_fatal_until.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/service/framebuffer_completeness_cache.h"
@@ -61,10 +57,7 @@ class RenderbufferAttachment
 
   GLuint object_name() const override { return renderbuffer_->client_id(); }
 
-  GLint level() const override {
-    NOTREACHED_IN_MIGRATION();
-    return -1;
-  }
+  GLint level() const override { NOTREACHED(); }
 
   bool cleared() const override { return renderbuffer_->cleared(); }
 
@@ -397,8 +390,8 @@ Framebuffer::Framebuffer(FramebufferManager* manager, GLuint service_id)
   draw_buffers_[0] = GL_COLOR_ATTACHMENT0;
   adjusted_draw_buffers_[0] = GL_COLOR_ATTACHMENT0;
   for (uint32_t ii = 1; ii < manager->max_draw_buffers_; ++ii) {
-    draw_buffers_[ii] = GL_NONE;
-    adjusted_draw_buffers_[ii] = GL_NONE;
+    UNSAFE_TODO(draw_buffers_[ii]) = GL_NONE;
+    UNSAFE_TODO(adjusted_draw_buffers_[ii]) = GL_NONE;
   }
 }
 
@@ -526,7 +519,7 @@ bool Framebuffer::PrepareDrawBuffersForClearingUninitializedAttachments(
   }
   bool different = false;
   for (uint32_t i = 0; i < manager_->max_draw_buffers_; ++i) {
-    if (buffers[i] != adjusted_draw_buffers_[i]) {
+    if (buffers[i] != UNSAFE_TODO(adjusted_draw_buffers_[i])) {
       different = true;
       break;
     }
@@ -562,14 +555,14 @@ void Framebuffer::AdjustDrawBuffersImpl(uint32_t desired_mask) {
   // This won't be reached in every clear call - only when framebuffer has
   // changed.
   for (uint32_t ii = 0; ii < manager_->max_draw_buffers_; ++ii) {
-    adjusted_draw_buffers_[ii] = draw_buffers_[ii];
-    if (adjusted_draw_buffers_[ii] == GL_NONE) {
+    UNSAFE_TODO(adjusted_draw_buffers_[ii] = draw_buffers_[ii]);
+    if (UNSAFE_TODO(adjusted_draw_buffers_[ii]) == GL_NONE) {
       continue;
     }
     uint32_t shift_bits = ii * 2;
     uint32_t buffer_mask = 0x3 << shift_bits;
     if ((buffer_mask & desired_mask) == 0u) {
-      adjusted_draw_buffers_[ii] = GL_NONE;
+      UNSAFE_TODO(adjusted_draw_buffers_[ii]) = GL_NONE;
     }
   }
   adjusted_draw_buffer_bound_mask_ = desired_mask;
@@ -733,7 +726,7 @@ GLenum Framebuffer::IsPossiblyComplete(const FeatureInfo* feature_info) const {
       // even though ES3 allows it, it is still forbidden to ensure consistent
       // behaviors across platforms.
       // Note: Framebuffer::GetFramebufferValidSize relies on this behavior.
-      return GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT;
+      return GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS;
     }
 
     if (samples < 0) {
@@ -871,22 +864,22 @@ bool Framebuffer::IsCleared() const {
 }
 
 GLenum Framebuffer::GetDrawBuffer(GLenum draw_buffer) const {
-  GLsizei index = static_cast<GLsizei>(
-      draw_buffer - GL_DRAW_BUFFER0_ARB);
+  GLsizei index = static_cast<GLsizei>(draw_buffer - GL_DRAW_BUFFER0);
   CHECK(index >= 0 &&
         index < static_cast<GLsizei>(manager_->max_draw_buffers_));
-  return draw_buffers_[index];
+  return UNSAFE_TODO(draw_buffers_[index]);
 }
 
-void Framebuffer::SetDrawBuffers(GLsizei n, const GLenum* bufs) {
-  DCHECK(n <= static_cast<GLsizei>(manager_->max_draw_buffers_));
-  for (GLsizei ii = 0; ii < n; ++ii) {
-    draw_buffers_[ii] = bufs[ii];
-    adjusted_draw_buffers_[ii] = bufs[ii];
+void Framebuffer::SetDrawBuffers(base::span<const GLenum> bufs) {
+  DCHECK(static_cast<GLsizei>(bufs.size()) <=
+         static_cast<GLsizei>(manager_->max_draw_buffers_));
+  for (size_t ii = 0; ii < bufs.size(); ++ii) {
+    UNSAFE_TODO(draw_buffers_[ii]) = bufs[ii];
+    UNSAFE_TODO(adjusted_draw_buffers_[ii]) = bufs[ii];
   }
-  for (uint32_t ii = n; ii < manager_->max_draw_buffers_; ++ii) {
-    draw_buffers_[ii] = GL_NONE;
-    adjusted_draw_buffers_[ii] = GL_NONE;
+  for (uint32_t ii = bufs.size(); ii < manager_->max_draw_buffers_; ++ii) {
+    UNSAFE_TODO(draw_buffers_[ii]) = GL_NONE;
+    UNSAFE_TODO(adjusted_draw_buffers_[ii]) = GL_NONE;
   }
   UpdateDrawBufferMasks();
   adjusted_draw_buffer_bound_mask_ = draw_buffer_bound_mask_;
@@ -894,8 +887,9 @@ void Framebuffer::SetDrawBuffers(GLsizei n, const GLenum* bufs) {
 
 bool Framebuffer::HasAlphaMRT() const {
   for (uint32_t i = 0; i < manager_->max_draw_buffers_; ++i) {
-    if (draw_buffers_[i] != GL_NONE) {
-      const Attachment* attachment = GetAttachment(draw_buffers_[i]);
+    if (UNSAFE_TODO(draw_buffers_[i]) != GL_NONE) {
+      const Attachment* attachment =
+          GetAttachment(UNSAFE_TODO(draw_buffers_[i]));
       if (!attachment)
         continue;
       if ((GLES2Util::GetChannelsForFormat(attachment->internal_format()) &
@@ -909,8 +903,9 @@ bool Framebuffer::HasAlphaMRT() const {
 bool Framebuffer::HasSameInternalFormatsMRT() const {
   GLenum internal_format = 0;
   for (uint32_t i = 0; i < manager_->max_draw_buffers_; ++i) {
-    if (draw_buffers_[i] != GL_NONE) {
-      const Attachment* attachment = GetAttachment(draw_buffers_[i]);
+    if (UNSAFE_TODO(draw_buffers_[i]) != GL_NONE) {
+      const Attachment* attachment =
+          GetAttachment(UNSAFE_TODO(draw_buffers_[i]));
       if (!attachment)
         continue;
       if (!internal_format) {
@@ -966,7 +961,7 @@ void Framebuffer::UpdateDrawBufferMasks() {
   draw_buffer_float32_mask_ = 0u;
   draw_buffer_bound_mask_ = 0u;
   for (uint32_t index = 0; index < manager_->max_color_attachments_; ++index) {
-    GLenum draw_buffer = draw_buffers_[index];
+    GLenum draw_buffer = UNSAFE_TODO(draw_buffers_[index]);
     if (draw_buffer == GL_NONE)
       continue;
     auto iter = attachments_.find(draw_buffer);
@@ -1117,7 +1112,7 @@ gfx::Size Framebuffer::GetFramebufferValidSize() const {
   // all of the attachments have the same dimensions. So it's okay to just pick
   // any arbitrary attachment and return it as the min size.
   auto it = attachments_.begin();
-  CHECK(it != attachments_.end(), base::NotFatalUntil::M130);
+  CHECK(it != attachments_.end());
   const auto& attachment = it->second;
   return gfx::Size(attachment->width(), attachment->height());
 }

@@ -7,14 +7,23 @@
 
 #include <string>
 
+#include "components/autofill/core/browser/payments/legal_message_line.h"
+
 namespace autofill {
 
 // Holds resources for save IBAN bottom sheet UI.
 struct AutofillSaveIbanUiInfo {
-  std::u16string iban_label;
+  bool is_server_save;
+  // Initialized in CreateForUploadSave.
+  int logo_icon_id;
+  std::u16string iban_value;
   std::u16string title_text;
+  // Initialized in CreateForUploadSave.
+  std::u16string description_text;
   std::u16string accept_text;
   std::u16string cancel_text;
+  // Initialized in CreateForUploadSave.
+  LegalMessageLines legal_message_lines;
 
   AutofillSaveIbanUiInfo();
 
@@ -30,9 +39,12 @@ struct AutofillSaveIbanUiInfo {
 
   // Create the ui info for a local save prompt.
   static AutofillSaveIbanUiInfo CreateForLocalSave(
-      const std::u16string& iban_label);
-};
+      const std::u16string& iban_value);
 
+  static AutofillSaveIbanUiInfo CreateForUploadSave(
+      const std::u16string& iban_value,
+      const LegalMessageLines& legal_message_lines);
+};
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_AUTOFILL_SAVE_IBAN_UI_INFO_H_

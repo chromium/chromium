@@ -10,7 +10,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/views/window/non_client_view.h"
+#include "ui/views/window/frame_view.h"
 
 namespace extensions {
 class NativeAppWindow;
@@ -28,19 +28,17 @@ class Widget;
 
 namespace apps {
 
-// A frameless or non-Ash, non-panel NonClientFrameView for app windows.
-class AppWindowFrameView : public views::NonClientFrameView {
-  METADATA_HEADER(AppWindowFrameView, views::NonClientFrameView)
+// A frameless or non-Ash, non-panel FrameView for app windows.
+class AppWindowFrameView : public views::FrameView {
+  METADATA_HEADER(AppWindowFrameView, views::FrameView)
 
  public:
   // AppWindowFrameView is used to draw frames for app windows when a non
   // standard frame is needed. This occurs if there is no frame needed, or if
   // there is a frame color.
-  // If |draw_frame| is true, the view draws its own window title area and
-  // controls, using |frame_color|. If |draw_frame| is not true, no frame is
-  // drawn.
-  // TODO(benwells): Refactor this to split out frameless and colored frame
-  // views. See http://crbug.com/359432.
+  // If `draw_frame` is true, the view draws its own window title area and
+  // controls, using `active_frame_color`/`inactive_frame_color`. Otherwise, no
+  // frame is drawn.
   AppWindowFrameView(views::Widget* widget,
                      extensions::NativeAppWindow* window,
                      bool draw_frame,
@@ -62,7 +60,7 @@ class AppWindowFrameView : public views::NonClientFrameView {
   bool draw_frame() const { return draw_frame_; }
 
  private:
-  // views::NonClientFrameView implementation.
+  // views::FrameView implementation.
   gfx::Rect GetBoundsForClientView() const override;
   gfx::Rect GetWindowBoundsForClientBounds(
       const gfx::Rect& client_bounds) const override;

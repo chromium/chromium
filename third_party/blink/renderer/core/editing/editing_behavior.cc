@@ -138,6 +138,9 @@ const KeyboardCodeKeyDownEntry kKeyboardCodeKeyDownEntries[] = {
     {VKEY_DELETE, 0, "DeleteForward"},
     {VKEY_BACK, OPTION_OR_CTRL_KEY, "DeleteWordBackward"},
     {VKEY_DELETE, OPTION_OR_CTRL_KEY, "DeleteWordForward"},
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    {VKEY_BACK, kCtrlKey | kShiftKey, "DeleteToBeginningOfLine"},
+#endif
 #if BUILDFLAG(IS_MAC)
     {'B', kCommandKey, "ToggleBold"},
     {'I', kCommandKey, "ToggleItalic"},

@@ -45,6 +45,7 @@ class DateInputType final : public BaseTemporalInputType {
   bool ParseToDateComponentsInternal(const String&,
                                      DateComponents*) const override;
   bool SetMillisecondToDateComponents(double, DateComponents*) const override;
+  bool CanSetSuggestedValue() override;
   void WarnIfValueIsInvalid(const String&) const override;
 
   // BaseTemporalInputType functions

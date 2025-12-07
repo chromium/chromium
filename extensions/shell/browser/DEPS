@@ -1,10 +1,10 @@
 include_rules = [
   "+apps",
   "+chromeos",
+  "+components/custom_handlers/simple_protocol_handler_registry_factory.h",
+  "+components/embedder_support/user_agent_utils.h",
   "+components/keep_alive_registry",
   "+components/keyed_service",
-  "+components/nacl/browser",
-  "+components/nacl/common",
   "+components/network_session_configurator/common",
   "+components/origin_trials",
   "+components/pref_registry",
@@ -28,7 +28,6 @@ include_rules = [
 
   "+net",
 
-  "+ppapi",
   "+services/metrics/public/cpp/ukm_source_id.h",
   "+services/network/public/cpp/session_cookie_delete_predicate.h",
   "+services/network/public/mojom/cors_origin_pattern.mojom.h",

@@ -43,8 +43,9 @@ using ::testing::Eq;
 using ::testing::Ne;
 
 using fuchsia::feedback::RebootReason;
+using fuchsia::hardware::power::statecontrol::RebootOptions;
 using StateControlRebootReason =
-    fuchsia::hardware::power::statecontrol::RebootReason;
+    fuchsia::hardware::power::statecontrol::RebootReason2;
 
 struct RebootReasonParam {
   RebootReason reason;
@@ -103,8 +104,12 @@ class FakeAdmin
   }
 
  private:
-  void Reboot(StateControlRebootReason reason, RebootCallback callback) final {
-    last_reboot_reason_ = reason;
+  void PerformReboot(RebootOptions options,
+                     PerformRebootCallback callback) final {
+    if (options.has_reasons() && !options.reasons().empty()) {
+      last_reboot_reason_ = options.reasons()[0];
+    }
+
     callback(fpromise::ok());
   }
 
@@ -233,9 +238,8 @@ class RebootFuchsiaTest : public ::testing::Test {
       fidl::InterfaceRequest<fuchsia::io::Directory> channel) {
     outgoing_directory_ = std::make_unique<sys::OutgoingDirectory>();
     outgoing_directory_->GetOrCreateDirectory("svc")->Serve(
-        fuchsia::io::OpenFlags::RIGHT_READABLE |
-            fuchsia::io::OpenFlags::RIGHT_WRITABLE,
-        channel.TakeChannel());
+        fuchsia_io::wire::kPermReadable,
+        fidl::ServerEnd<fuchsia_io::Directory>(channel.TakeChannel()));
   }
 
   const base::test::SingleThreadTaskEnvironment task_environment_;

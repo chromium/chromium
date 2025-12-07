@@ -1,0 +1,109 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
+}
+
+source_set("page_content_annotations") {
+  sources = [
+    "page_content_annotations_service_factory.h",
+    "page_content_annotations_web_contents_observer.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/continuous_search/browser",
+    "//components/continuous_search/common",
+    "//components/page_content_annotations/core",
+    "//content/public/browser",
+  ]
+}
+
+source_set("extraction_service") {
+  sources = [
+    "page_content_extraction_service.h",
+    "page_content_extraction_service_factory.h",
+    "page_content_extraction_types.cc",
+    "page_content_extraction_types.h",
+  ]
+  deps = [ ":fetcher" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/page_content_annotations/core",
+    "//content/public/browser",
+  ]
+
+  if (is_android) {
+    sources += [
+      "android/page_content_extraction_service_android.cc",
+      "android/page_content_extraction_service_android.h",
+    ]
+
+    deps += [
+      ":factory_jni_headers",
+      ":service_jni_headers",
+      "//chrome/browser/tabwindow",
+    ]
+  }
+}
+
+source_set("fetcher") {
+  sources = [ "multi_source_page_context_fetcher.h" ]
+  deps = []
+  public_deps = [
+    "//base",
+    "//components/content_extraction/content/browser",
+    "//components/optimization_guide/content/browser",
+    "//ui/gfx/geometry",
+  ]
+}
+
+if (is_android) {
+  android_library("java") {
+    visibility = [
+      ":*",
+      "//chrome/android:chrome_java",
+    ]
+    srcjar_deps = [ ":service_jni_headers" ]
+    sources = [ "android/java/src/org/chromium/chrome/browser/page_content_annotations/PageContentExtractionService.java" ]
+    deps = [
+      "//base:base_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
+
+  generate_jni("service_jni_headers") {
+    visibility = [
+      ":*",
+      "//chrome/browser",
+    ]
+
+    sources = [ "android/java/src/org/chromium/chrome/browser/page_content_annotations/PageContentExtractionService.java" ]
+  }
+
+  android_library("factory_java") {
+    srcjar_deps = [ ":factory_jni_headers" ]
+    sources = [ "android/java/src/org/chromium/chrome/browser/page_content_annotations/PageContentExtractionServiceFactory.java" ]
+    deps = [
+      ":java",
+      "//base:base_java",
+      "//chrome/browser/profiles/android:java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
+
+  generate_jni("factory_jni_headers") {
+    visibility = [
+      ":*",
+      "//chrome/browser",
+    ]
+    sources = [ "android/java/src/org/chromium/chrome/browser/page_content_annotations/PageContentExtractionServiceFactory.java" ]
+  }
+}

@@ -7,16 +7,16 @@
 #include <memory>
 
 #include "ash/constants/ash_switches.h"
-#include "ash/public/cpp/external_arc/keyboard/arc_input_method_surface_manager.h"
-#include "ash/public/cpp/external_arc/message_center/arc_notification_surface_manager_impl.h"
-#include "ash/public/cpp/external_arc/overlay/arc_overlay_manager.h"
-#include "ash/public/cpp/external_arc/toast/arc_toast_surface_manager.h"
 #include "ash/public/cpp/keyboard/arc/arc_input_method_bounds_tracker.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ash/exo/chrome_data_exchange_delegate.h"
 #include "chrome/browser/ash/exo/chrome_security_delegate.h"
+#include "chromeos/ash/experiences/arc/keyboard/arc_input_method_surface_manager.h"
+#include "chromeos/ash/experiences/arc/message_center/arc_notification_surface_manager_impl.h"
+#include "chromeos/ash/experiences/arc/overlay/arc_overlay_manager.h"
+#include "chromeos/ash/experiences/arc/toast/arc_toast_surface_manager.h"
 #include "components/exo/server/wayland_server_controller.h"
 
 // static

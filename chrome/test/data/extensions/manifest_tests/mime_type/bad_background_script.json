@@ -1,0 +1,8 @@
+{
+  "name": "background script with bad mime type",
+  "manifest_version": 2,
+  "version": "1",
+  "background": {
+    "scripts": ["files/bad_script.json"]
+  }
+}

@@ -1,0 +1,20 @@
+Name: collections
+Short Name: collection-jvm
+URL: https://androidx.dev/snapshots/builds/14500233/artifacts/repository/androidx/collection/collection-jvm/1.6.0-SNAPSHOT/collection-jvm-1.6.0-20251126.133552-1.jar
+Version: 1.6.0-SNAPSHOT
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+Standalone efficient collections.
+
+See also: https://developer.android.com/jetpack/androidx/releases/collection#1.6.0-SNAPSHOT
+
+
+Local Modifications:
+No modifications.

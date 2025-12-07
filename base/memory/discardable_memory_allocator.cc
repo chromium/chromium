@@ -29,14 +29,19 @@ DiscardableMemoryAllocator* DiscardableMemoryAllocator::GetInstance() {
   return g_discardable_allocator;
 }
 
+bool DiscardableMemoryAllocator::HasInstance() {
+  return g_discardable_allocator != nullptr;
+}
+
 std::unique_ptr<base::DiscardableMemory>
 DiscardableMemoryAllocator::AllocateLockedDiscardableMemoryWithRetryOrDie(
     size_t size,
     OnceClosure on_no_memory) {
   auto* allocator = GetInstance();
   auto memory = allocator->AllocateLockedDiscardableMemory(size);
-  if (memory)
+  if (memory) {
     return memory;
+  }
 
   std::move(on_no_memory).Run();
   // The call above will likely have freed some memory, which will end up in the
@@ -45,8 +50,9 @@ DiscardableMemoryAllocator::AllocateLockedDiscardableMemoryWithRetryOrDie(
   ReleaseFreeMemory();
 
   memory = allocator->AllocateLockedDiscardableMemory(size);
-  if (!memory)
+  if (!memory) {
     TerminateBecauseOutOfMemory(size);
+  }
 
   return memory;
 }

@@ -5,30 +5,37 @@
 #ifndef CONTENT_SERVICES_AUCTION_WORKLET_PUBLIC_CPP_PRIVATE_AGGREGATION_REPORTING_H_
 #define CONTENT_SERVICES_AUCTION_WORKLET_PUBLIC_CPP_PRIVATE_AGGREGATION_REPORTING_H_
 
-#include <optional>
 #include <string>
-#include <string_view>
 
-#include "base/containers/fixed_flat_map.h"
+#include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 
 namespace auction_worklet {
 
-inline constexpr auto kReservedEventTypes =
-    base::MakeFixedFlatMap<std::string_view,
-                           auction_worklet::mojom::ReservedEventType>(
-        {{"reserved.always",
-          auction_worklet::mojom::ReservedEventType::kReservedAlways},
-         {"reserved.win",
-          auction_worklet::mojom::ReservedEventType::kReservedWin},
-         {"reserved.loss",
-          auction_worklet::mojom::ReservedEventType::kReservedLoss}});
+// Returns nullptr on unrecognized reserved name.
+CONTENT_EXPORT auction_worklet::mojom::EventTypePtr
+ParsePrivateAggregationEventType(const std::string& event_type_str,
+                                 bool additional_extensions_allowed,
+                                 bool error_reporting_allowed);
 
-std::optional<auction_worklet::mojom::ReservedEventType> ParseReservedEventType(
-    const std::string& type);
+// Returns true if `value` requires the feature
+// kPrivateAggregationApiProtectedAudienceAdditionalExtensions to be used.
+CONTENT_EXPORT inline bool RequiresAdditionalExtensions(
+    mojom::BaseValue value) {
+  return value > mojom::BaseValue::kBidRejectReason;
+}
 
-std::optional<auction_worklet::mojom::EventTypePtr>
-ParsePrivateAggregationEventType(const std::string& event_type_str);
+// Returns whether the request is valid or not, checking whether it uses
+// features enabled based on `additional_extensions_allowed`.
+CONTENT_EXPORT bool IsValidPrivateAggregationRequestForAdditionalExtensions(
+    const auction_worklet::mojom::PrivateAggregationRequest& request,
+    bool additional_extensions_allowed);
+
+// Returns true if `request` is asking to record reject-reason, and therefore
+// can be used to report kBelowKAnonThreshold for the bid that would have
+// won if not for k-anonymity.
+CONTENT_EXPORT bool HasKAnonFailureComponent(
+    const mojom::PrivateAggregationRequest& request);
 
 }  // namespace auction_worklet
 

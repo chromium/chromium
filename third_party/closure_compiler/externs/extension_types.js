@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,20 @@
 chrome.extensionTypes = {};
 
 /**
+ * @type {!Array<number>}
+ * @see https://developer.chrome.com/extensions/extensionTypes#type-ColorArray
+ */
+chrome.extensionTypes.ColorArray;
+
+/**
+ * Pixel data for an image. Must be an ImageData object; for example, from a
+ * <code>canvas</code> element.
+ * @typedef {Object}
+ * @see https://developer.chrome.com/extensions/extensionTypes#type-ImageDataType
+ */
+chrome.extensionTypes.ImageDataType;
+
+/**
  * @enum {string}
  * @see https://developer.chrome.com/extensions/extensionTypes#type-ImageFormat
  */
@@ -27,10 +41,25 @@ chrome.extensionTypes.ImageFormat = {
 };
 
 /**
- * Details about the format and quality of an image.
+ * An object specifying the area of the document to capture, in CSS pixels,
+ * relative to the page. All properties default to 0.
+ * @typedef {{
+ *   x: number,
+ *   y: number,
+ *   width: number,
+ *   height: number
+ * }}
+ * @see https://developer.chrome.com/extensions/extensionTypes#type-Rect
+ */
+chrome.extensionTypes.Rect;
+
+/**
+ * Details about the format, quality, and area of an image.
  * @typedef {{
  *   format: (!chrome.extensionTypes.ImageFormat|undefined),
- *   quality: (number|undefined)
+ *   quality: (number|undefined),
+ *   rect: (!chrome.extensionTypes.Rect|undefined),
+ *   scale: (number|undefined)
  * }}
  * @see https://developer.chrome.com/extensions/extensionTypes#type-ImageDetails
  */

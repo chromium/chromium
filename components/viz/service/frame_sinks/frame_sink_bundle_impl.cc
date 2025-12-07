@@ -109,10 +109,9 @@ class FrameSinkBundleImpl::SinkGroup : public BeginFrameObserver {
       uint32_t sink_id,
       const BeginFrameArgs& args,
       const base::flat_map<uint32_t, FrameTimingDetails>& details,
-      bool frame_ack,
       std::vector<ReturnedResource> resources) {
     pending_on_begin_frames_.push_back(mojom::BeginFrameInfo::New(
-        sink_id, args, details, frame_ack, std::move(resources)));
+        sink_id, args, details, std::move(resources)));
     if (!defer_on_begin_frames_) {
       FlushMessages();
     }
@@ -268,24 +267,10 @@ void FrameSinkBundleImpl::RemoveFrameSink(CompositorFrameSinkSupport* support) {
   RemoveFrameSinkImpl(source, sink_id);
 }
 
-void FrameSinkBundleImpl::InitializeCompositorFrameSinkType(
-    uint32_t sink_id,
-    mojom::CompositorFrameSinkType type) {
-  if (auto* sink = GetFrameSink(sink_id)) {
-    sink->InitializeCompositorFrameSinkType(type);
-  }
-}
-
 void FrameSinkBundleImpl::SetNeedsBeginFrame(uint32_t sink_id,
                                              bool needs_begin_frame) {
   if (auto* sink = GetFrameSink(sink_id)) {
     sink->SetNeedsBeginFrame(needs_begin_frame);
-  }
-}
-
-void FrameSinkBundleImpl::SetWantsBeginFrameAcks(uint32_t sink_id) {
-  if (auto* sink = GetFrameSink(sink_id)) {
-    sink->SetWantsBeginFrameAcks();
   }
 }
 
@@ -328,11 +313,6 @@ void FrameSinkBundleImpl::Submit(
           sink->DidNotProduceFrame(
               submission->data->get_did_not_produce_frame());
           break;
-
-        case mojom::BundledFrameSubmissionData::Tag::kDidDeleteSharedBitmap:
-          sink->DidDeleteSharedBitmap(
-              submission->data->get_did_delete_shared_bitmap());
-          break;
       }
     }
   }
@@ -350,20 +330,11 @@ void FrameSinkBundleImpl::Submit(
   }
 }
 
-void FrameSinkBundleImpl::DidAllocateSharedBitmap(
-    uint32_t sink_id,
-    base::ReadOnlySharedMemoryRegion region,
-    const SharedBitmapId& id) {
-  if (auto* sink = GetFrameSink(sink_id)) {
-    sink->DidAllocateSharedBitmap(std::move(region), id);
-  }
-}
-
 #if BUILDFLAG(IS_ANDROID)
-void FrameSinkBundleImpl::SetThreadIds(uint32_t sink_id,
-                                       const std::vector<int32_t>& thread_ids) {
+void FrameSinkBundleImpl::SetThreads(uint32_t sink_id,
+                                     const std::vector<Thread>& threads) {
   if (auto* sink = GetFrameSink(sink_id)) {
-    sink->SetThreadIds(thread_ids);
+    sink->SetThreads(threads);
   }
 }
 #endif
@@ -387,17 +358,15 @@ void FrameSinkBundleImpl::EnqueueOnBeginFrame(
     uint32_t sink_id,
     const BeginFrameArgs& args,
     const base::flat_map<uint32_t, FrameTimingDetails>& details,
-    bool frame_ack,
     std::vector<ReturnedResource> resources) {
   if (auto* group = GetSinkGroup(sink_id)) {
-    group->EnqueueOnBeginFrame(sink_id, args, details, frame_ack,
-                               std::move(resources));
+    group->EnqueueOnBeginFrame(sink_id, args, details, std::move(resources));
   } else {
     // The sink has no BeginFrameSource at the moment and therefore does not
     // belong to a SinkGroup. Forward directly without batching.
     std::vector<mojom::BeginFrameInfoPtr> begin_frames;
-    begin_frames.push_back(mojom::BeginFrameInfo::New(
-        sink_id, args, details, frame_ack, std::move(resources)));
+    begin_frames.push_back(mojom::BeginFrameInfo::New(sink_id, args, details,
+                                                      std::move(resources)));
     client_->FlushNotifications({}, std::move(begin_frames), {});
   }
 }

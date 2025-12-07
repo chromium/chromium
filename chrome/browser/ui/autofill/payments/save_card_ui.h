@@ -8,50 +8,34 @@
 namespace autofill {
 
 // The type of save card bubble to show.
-enum class BubbleType {
+enum class PaymentsBubbleType {
   // Save prompt when the user is saving locally.
-  LOCAL_SAVE,
+  kLocalSave,
 
   // Save prompt for saving CVC locally to an existing local card.
-  LOCAL_CVC_SAVE,
+  kLocalCvcSave,
 
   // Save prompt when uploading a card to Google Payments.
-  UPLOAD_SAVE,
+  kUploadSave,
 
   // Save prompt for uploading CVC to the Sync server for an existing server
   // card.
-  UPLOAD_CVC_SAVE,
+  kUploadCvcSave,
 
   // Credit card upload is in progress.
-  UPLOAD_IN_PROGRESS,
+  kUploadInProgress,
 
   // Credit card upload is completed.
-  UPLOAD_COMPLETED,
+  kUploadComplete,
 
   // The manage cards bubble when bubble is reshown after
   // icon is clicked.
-  MANAGE_CARDS,
+  kManageCards,
 
   // There is no bubble to show anymore. This also
   // indicates that the icon should not be visible.
-  INACTIVE
+  kInactive
 };
-
-// The active treatment arm of the AutofillUpstreamUpdatedUi feature.
-enum class UpdatedDesktopUiTreatmentArm {
-  // Experiment not active.
-  kDefault,
-  // Security-focused messaging and imagery.
-  kSecurityFocus,
-  // Convenience-focused messaging and imagery.
-  kConvenienceFocus,
-  // Education-focused messaging and imagery.
-  kEducationFocus
-};
-
-// Returns the active UpdatedDesktopUiTreatmentArm based on the user's current
-// Finch configuration.
-UpdatedDesktopUiTreatmentArm GetUpdatedDesktopUiTreatmentArm();
 
 }  // namespace autofill
 

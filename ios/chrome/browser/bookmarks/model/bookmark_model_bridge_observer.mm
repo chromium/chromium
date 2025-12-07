@@ -14,8 +14,8 @@ BookmarkModelBridge::BookmarkModelBridge(
     id<BookmarkModelBridgeObserver> observer,
     bookmarks::BookmarkModel* model)
     : observer_(observer) {
-  DCHECK(observer_);
-  DCHECK(model);
+  CHECK(observer_, base::NotFatalUntil::M152);
+  CHECK(model, base::NotFatalUntil::M152);
   model_observation_.Observe(model);
 }
 
@@ -121,4 +121,18 @@ void BookmarkModelBridge::BookmarkAllUserNodesRemoved(
     const std::set<GURL>& removed_urls,
     const base::Location& location) {
   [observer_ bookmarkModelRemovedAllNodes];
+}
+
+void BookmarkModelBridge::ExtensiveBookmarkChangesBeginning() {
+  SEL selector = @selector(extensiveBookmarkChangesBeginning);
+  if ([observer_ respondsToSelector:selector]) {
+    [observer_ extensiveBookmarkChangesBeginning];
+  }
+}
+
+void BookmarkModelBridge::ExtensiveBookmarkChangesEnded() {
+  SEL selector = @selector(extensiveBookmarkChangesEnded);
+  if ([observer_ respondsToSelector:selector]) {
+    [observer_ extensiveBookmarkChangesEnded];
+  }
 }

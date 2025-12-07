@@ -14,12 +14,13 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "base/json/string_escape.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/webui/ash/bluetooth_pairing_dialog.h"
+#include "chrome/browser/ui/webui/ash/bluetooth/bluetooth_pairing_dialog.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ash/interactive/bluetooth/bluetooth_power_state_observer.h"
 #include "chrome/test/base/ash/interactive/bluetooth/bluetooth_util.h"
@@ -32,6 +33,7 @@
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/dbus/fake_bluetooth_device_client.h"
 #include "device/bluetooth/floss/fake_floss_adapter_client.h"
+#include "device/bluetooth/floss/fake_floss_battery_manager_client.h"
 #include "device/bluetooth/floss/floss_dbus_manager.h"
 #include "device/bluetooth/floss/floss_features.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -188,7 +190,7 @@ class PairWithUiInteractiveUiTest : public InteractiveAshTest {
   }
 
   ui::test::internal::InteractiveTestPrivate::MultiStep
-  PerformDeviceForgetSteps(const std::string device_name) {
+  PerformDeviceForgetSteps(const std::string& device_name) {
     return Steps(
         Log("Navigating to the Bluetooth device details page"),
 
@@ -218,6 +220,25 @@ class PairWithUiInteractiveUiTest : public InteractiveAshTest {
                              ash::settings::bluetooth::BluetoothDeviceList()),
 
         CheckBluetoothDevicePairedState(device_name, /*paired=*/false));
+  }
+
+  ui::test::internal::InteractiveTestPrivate::MultiStep
+  PerformCheckDeviceBattery(const std::string& device_name) {
+    return Steps(
+        Log("Navigating to the Bluetooth device details page"),
+
+        NavigateToBluetoothDeviceDetailsPage(kOSSettingsId, device_name),
+        WaitForElementExists(
+            kOSSettingsId,
+            ash::settings::bluetooth::BluetoothForgetDeviceButton()),
+
+        Log("Checking battery percentage"),
+
+        WaitForElementTextContains(
+            kOSSettingsId,
+            ash::settings::bluetooth::BluetoothBatteryPercentage(),
+            base::NumberToString(floss::FakeFlossBatteryManagerClient::
+                                     kDefaultBatteryPercentage)));
   }
 
   ui::test::internal::InteractiveTestPrivate::MultiStep
@@ -272,8 +293,7 @@ class FlossPairWithUiInteractiveUiTest : public PairWithUiInteractiveUiTest {
   FlossPairWithUiInteractiveUiTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{floss::features::kFlossEnabled},
-        /*disabled_features=*/{
-            floss::features::kFlossIsAvailabilityCheckNeeded});
+        /*disabled_features=*/{});
   }
 };
 
@@ -285,7 +305,7 @@ class BluezPairWithUiInteractiveUiTest : public PairWithUiInteractiveUiTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(FlossPairWithUiInteractiveUiTest, SimplePairAndForget) {
+IN_PROC_BROWSER_TEST_F(FlossPairWithUiInteractiveUiTest, PairAndForget) {
   RunTestSequence(
       OpenDialogAndClickDevice(floss::FakeFlossAdapterClient::kJustWorksName),
 
@@ -298,7 +318,15 @@ IN_PROC_BROWSER_TEST_F(FlossPairWithUiInteractiveUiTest, SimplePairAndForget) {
   RunTestSequenceInContext(
       context,
 
+      PerformCheckDeviceBattery(floss::FakeFlossAdapterClient::kJustWorksName),
+
       PerformDeviceForgetSteps(floss::FakeFlossAdapterClient::kJustWorksName),
+
+      Log("Battery percentage should not exist after forgetting devcei"),
+
+      WaitForElementDoesNotExist(
+          kOSSettingsId,
+          ash::settings::bluetooth::BluetoothBatteryPercentage()),
 
       Log("Test complete"));
 }

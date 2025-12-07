@@ -32,18 +32,20 @@ class PreloadingModelExecutorTest : public testing::Test {
                            .AppendASCII("navigation_predictor")
                            .AppendASCII("test")
                            .AppendASCII("preloading_heuristics.tflite");
-    execution_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+    task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
         {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
     model_executor_ = std::make_unique<PreloadingModelExecutor>();
     model_executor_->InitializeAndMoveToExecutionThread(
         /*model_inference_timeout=*/std::nullopt,
         optimization_guide::proto::OPTIMIZATION_TARGET_OMNIBOX_URL_SCORING,
-        execution_task_runner_, base::SequencedTaskRunner::GetCurrentDefault());
+        /*model_loading_task_runner=*/task_runner_,
+        /*execution_task_runner=*/task_runner_,
+        base::SequencedTaskRunner::GetCurrentDefault());
   }
 
   void TearDown() override {
     // Destroy model executor.
-    execution_task_runner_->DeleteSoon(FROM_HERE, std::move(model_executor_));
+    task_runner_->DeleteSoon(FROM_HERE, std::move(model_executor_));
     RunUntilIdle();
   }
 
@@ -53,13 +55,13 @@ class PreloadingModelExecutorTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
   base::FilePath model_file_path_;
-  scoped_refptr<base::SequencedTaskRunner> execution_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   std::unique_ptr<PreloadingModelExecutor> model_executor_;
 };
 
 TEST_F(PreloadingModelExecutorTest, ExecuteModel) {
   // Update model file.
-  execution_task_runner_->PostTask(
+  task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           &optimization_guide::ModelExecutor<ModelOutput,
@@ -80,7 +82,7 @@ TEST_F(PreloadingModelExecutorTest, ExecuteModel) {
           run_loop.get());
   base::TimeTicks now = base::TimeTicks::Now();
   ModelInput input = std::vector<float>(/*count=*/17, /*value=*/0.0);
-  execution_task_runner_->PostTask(
+  task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&optimization_guide::ModelExecutor<
                                     ModelOutput, ModelInput>::SendForExecution,
                                 model_executor_->GetWeakPtrForExecutionThread(),

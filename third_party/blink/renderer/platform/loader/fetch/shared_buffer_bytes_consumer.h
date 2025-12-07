@@ -21,16 +21,13 @@ class PLATFORM_EXPORT SharedBufferBytesConsumer final : public BytesConsumer {
       delete;
 
   // Implements BytesConsumer.
-  Result BeginRead(const char** buffer, size_t* available) override;
+  Result BeginRead(base::span<const char>& buffer) override;
   Result EndRead(size_t read_size) override;
   void SetClient(Client* client) override {}
   void ClearClient() override {}
   void Cancel() override;
   PublicState GetPublicState() const override;
-  Error GetError() const override {
-    NOTREACHED_IN_MIGRATION();
-    return Error();
-  }
+  Error GetError() const override { NOTREACHED(); }
   String DebugName() const override;
 
  private:

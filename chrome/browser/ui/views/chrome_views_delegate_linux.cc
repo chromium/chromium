@@ -16,6 +16,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/linux/linux_ui.h"
 #include "ui/ozone/public/ozone_platform.h"
+#include "ui/views/widget/widget_delegate.h"
 
 namespace {
 
@@ -48,7 +49,7 @@ NativeWidgetType GetNativeWidgetTypeForInitParams(
   // otherwise it's possible for things like menus to obscure the view.
   if (params.z_order &&
       params.z_order.value() == ui::ZOrderLevel::kSecuritySurface) {
-    return NativeWidgetType::DESKTOP_NATIVE_WIDGET_AURA;
+    return NativeWidgetType::kDesktopNativeWidgetAura;
   }
 
   const bool default_desktop_bubble =
@@ -61,14 +62,18 @@ NativeWidgetType GetNativeWidgetTypeForInitParams(
 
   if (!params.child &&
       params.use_accelerated_widget_override.value_or(default_desktop_bubble)) {
-    return NativeWidgetType::DESKTOP_NATIVE_WIDGET_AURA;
+    return NativeWidgetType::kDesktopNativeWidgetAura;
+  }
+
+  if (params.delegate && params.delegate->use_desktop_widget_override()) {
+    return NativeWidgetType::kDesktopNativeWidgetAura;
   }
 
   return (params.parent &&
           params.type != views::Widget::InitParams::TYPE_MENU &&
           params.type != views::Widget::InitParams::TYPE_TOOLTIP)
-             ? NativeWidgetType::NATIVE_WIDGET_AURA
-             : NativeWidgetType::DESKTOP_NATIVE_WIDGET_AURA;
+             ? NativeWidgetType::kNativeWidgetAura
+             : NativeWidgetType::kDesktopNativeWidgetAura;
 }
 
 }  // namespace
@@ -93,8 +98,9 @@ bool ChromeViewsDelegate::WindowManagerProvidesTitleBar(bool maximized) {
   //
   // TODO(thomasanderson,crbug.com/784010): Consider using the
   // _UNITY_SHELL wm hint when support for Ubuntu Trusty is dropped.
-  if (!maximized)
+  if (!maximized) {
     return false;
+  }
   static bool is_desktop_environment_unity = IsDesktopEnvironmentUnity();
   return is_desktop_environment_unity;
 }

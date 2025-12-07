@@ -11,11 +11,8 @@
 #include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/sequence_id.h"
+#include "gpu/command_buffer/service/task_graph.h"
 #include "gpu/gpu_gles2_export.h"
-
-namespace base {
-class TimeTicks;
-}
 
 namespace viz {
 class DisplayCompositorMemoryAndTaskController;
@@ -58,23 +55,26 @@ class GPU_GLES2_EXPORT GpuTaskSchedulerHelper {
   // buffer, thus no need to be called when using SkiaRenderer.
   void Initialize(CommandBufferHelper* command_buffer_helper);
 
-  using ReportingCallback =
-      base::OnceCallback<void(base::TimeTicks task_ready)>;
-
   // This is called outside of CommandBuffer and would need to flush the command
   // buffer if the CommandBufferHelper is present. CommandBuffer is a friend of
   // this class and gets a direct pointer to the internal
   // |gpu::SingleTaskSequence|.
   void ScheduleGpuTask(base::OnceClosure task,
-                       std::vector<SyncToken> sync_tokens,
+                       std::vector<SyncToken> sync_token_fences,
+                       const SyncToken& release,
                        ReportingCallback report_callback = ReportingCallback());
 
   // This is only called with SkiaOutputSurface, no need to flush command buffer
   // here.
   void ScheduleOrRetainGpuTask(base::OnceClosure task,
-                               std::vector<SyncToken> sync_tokens);
+                               std::vector<SyncToken> sync_token_fences);
   // This is only called with SkiaOutputSurface.
   SequenceId GetSequenceId();
+
+  // Creates a SyncPointClientState associated with the sequence.
+  [[nodiscard]] ScopedSyncPointClientState CreateSyncPointClientState(
+      CommandBufferNamespace namespace_id,
+      CommandBufferId command_buffer_id);
 
  private:
   // If |using_command_buffer_| is true, we are using this class with

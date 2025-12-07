@@ -6,21 +6,24 @@
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_CHOOSER_H_
 
 #include <string>
+#include <vector>
 
-#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
+#include "base/sequence_checker.h"
 #include "base/task/task_runner.h"
 #include "base/thread_annotations.h"
+#include "build/build_config.h"
+#include "content/browser/web_contents_based_canceller.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/file_system_access_entry_factory.h"
-#include "storage/browser/file_system/isolated_context.h"
+#include "content/public/browser/file_system_access_permission_context.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
 namespace content {
 
-class WebContents;
+class WebContentsBasedCanceller;
+class RenderFrameHost;
 
 // This is a ui::SelectFileDialog::Listener implementation that grants access to
 // the selected files to a specific renderer process on success, and then calls
@@ -29,17 +32,9 @@ class WebContents;
 // All of this class has to be called on the UI thread.
 class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener {
  public:
-  // TODO: crbug.com/326462071 - Consider making ResultEntry an alias of
-  // FileSystemAccessPermissionContext::PathInfo.
-  using PathType = FileSystemAccessEntryFactory::PathType;
-  struct ResultEntry {
-    PathType type;
-    base::FilePath path;
-  };
-
   using ResultCallback =
       base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr,
-                              std::vector<ResultEntry>)>;
+                              std::vector<content::PathInfo>)>;
 
   class CONTENT_EXPORT Options {
    public:
@@ -49,11 +44,17 @@ class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener {
             base::FilePath default_directory,
             base::FilePath suggested_name);
     Options(const Options&);
+    ~Options();
 
     ui::SelectFileDialog::Type type() const { return type_; }
     const ui::SelectFileDialog::FileTypeInfo& file_type_info() const {
       return file_types_;
     }
+#if BUILDFLAG(IS_ANDROID)
+    const std::vector<std::u16string>& mime_types() const {
+      return mime_types_;
+    }
+#endif
     const std::u16string& title() const { return title_; }
     const base::FilePath& default_path() const { return default_path_; }
     int default_file_type_index() const { return default_file_type_index_; }
@@ -66,14 +67,35 @@ class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener {
     ui::SelectFileDialog::Type type_;
     ui::SelectFileDialog::FileTypeInfo file_types_;
     int default_file_type_index_ = 0;
+#if BUILDFLAG(IS_ANDROID)
+    std::vector<std::u16string> mime_types_;
+#endif
     std::u16string title_;
+    // Combination of optional default_directory and optional suggested_name.
+    // Wiill end with a trailing separator if suggested_name is empty.
     base::FilePath default_path_;
   };
 
-  static void CreateAndShow(WebContents* web_contents,
+  // Struct to hold objects that should be kept alive for the lifetime of the
+  // chooser.
+  struct CONTENT_EXPORT ScopedObjects {
+    ScopedObjects();
+    ~ScopedObjects();
+    ScopedObjects(ScopedObjects&&);
+    ScopedObjects& operator=(ScopedObjects&&);
+    ScopedObjects(const ScopedObjects&) = delete;
+    ScopedObjects& operator=(const ScopedObjects&) = delete;
+    ScopedObjects(base::ScopedClosureRunner&& fullscreen_block,
+                  base::ScopedClosureRunner&& pip_tucker);
+
+    base::ScopedClosureRunner fullscreen_block;
+    base::ScopedClosureRunner pip_tucker;
+  };
+
+  static void CreateAndShow(RenderFrameHost* render_frame_host,
                             const Options& options,
                             ResultCallback callback,
-                            base::ScopedClosureRunner fullscreen_block);
+                            ScopedObjects scoped_objects);
 
   // Returns whether the specified extension receives special handling by the
   // Windows shell. These extensions should be sanitized before being shown in
@@ -83,7 +105,8 @@ class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener {
 
   FileSystemChooser(ui::SelectFileDialog::Type type,
                     ResultCallback callback,
-                    base::ScopedClosureRunner fullscreen_block);
+                    ScopedObjects scoped_objects,
+                    std::unique_ptr<WebContentsBasedCanceller> canceller);
 
  private:
   ~FileSystemChooser() override;
@@ -96,12 +119,12 @@ class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
+  const ui::SelectFileDialog::Type type_;
   ResultCallback callback_ GUARDED_BY_CONTEXT(sequence_checker_);
-  ui::SelectFileDialog::Type type_ GUARDED_BY_CONTEXT(sequence_checker_);
-  base::ScopedClosureRunner fullscreen_block_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  ScopedObjects scoped_objects_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   scoped_refptr<ui::SelectFileDialog> dialog_;
+  std::unique_ptr<WebContentsBasedCanceller> canceller_;
 };
 
 }  // namespace content

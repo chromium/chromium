@@ -5,10 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_ENTERPRISE_MODEL_IDLE_ACTION_RUNNER_IMPL_H_
 #define IOS_CHROME_BROWSER_ENTERPRISE_MODEL_IDLE_ACTION_RUNNER_IMPL_H_
 
-#import "ios/chrome/browser/enterprise/model/idle/action_runner.h"
-
 #import "ios/chrome/browser/enterprise/model/idle/action.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/enterprise/model/idle/action_runner.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace enterprise_idle {
 
@@ -16,7 +15,7 @@ class ActionRunnerImpl : public ActionRunner {
  public:
   using ActionQueue = ActionFactory::ActionQueue;
 
-  ActionRunnerImpl(ChromeBrowserState* browser_state);
+  ActionRunnerImpl(ProfileIOS* profile);
   ~ActionRunnerImpl() override;
 
   ActionRunnerImpl(const ActionRunnerImpl&) = delete;
@@ -46,7 +45,7 @@ class ActionRunnerImpl : public ActionRunner {
 
   base::TimeTicks actions_start_time_;
   ActionsCompletedCallback actions_completed_callback_;
-  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<ProfileIOS> profile_;
   std::unique_ptr<ActionFactory> action_factory_;
   base::WeakPtrFactory<ActionRunnerImpl> weak_ptr_factory_{this};
 };

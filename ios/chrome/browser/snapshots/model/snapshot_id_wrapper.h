@@ -12,7 +12,7 @@
 #endif
 
 // A Objective-C wrapper for SnapshotID to make it usable from Swift.
-@interface SnapshotIDWrapper : NSObject
+@interface SnapshotIDWrapper : NSObject <NSCopying>
 
 #ifdef __cplusplus
 - (instancetype)initWithSnapshotID:(SnapshotID)snapshot_id

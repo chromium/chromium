@@ -37,6 +37,9 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/render_blocking_resource_manager.h"
+#include "third_party/blink/renderer/core/probe/async_task_context.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/scheduler/task_attribution_util.h"
 #include "third_party/blink/renderer/core/script/ignore_destructive_write_count_incrementer.h"
 #include "third_party/blink/renderer/core/script/script_element_base.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -63,7 +66,7 @@ WebScopedVirtualTimePauser CreateWebScopedVirtualTimePauser(
 // about IsInDocumentWrite() use here.
 PendingScript::PendingScript(ScriptElementBase* element,
                              const TextPosition& starting_position,
-                             scheduler::TaskAttributionInfo* parent_task)
+                             scheduler::TaskAttributionInfo* task_state)
     : element_(element),
       starting_position_(starting_position),
       virtual_time_pauser_(CreateWebScopedVirtualTimePauser(element)),
@@ -72,7 +75,9 @@ PendingScript::PendingScript(ScriptElementBase* element,
       original_execution_context_(element->GetExecutionContext()),
       created_during_document_write_(
           element->GetDocument().IsInDocumentWrite()),
-      parent_task_(parent_task) {}
+      task_state_(task_state) {
+  async_task_context_.Schedule(original_execution_context_, "PendingScript");
+}
 
 PendingScript::~PendingScript() {}
 
@@ -138,6 +143,9 @@ void PendingScript::MarkParserBlockingLoadStartTime() {
 // <specdef href="https://html.spec.whatwg.org/C/#execute-the-script-block">
 void PendingScript::ExecuteScriptBlock() {
   TRACE_EVENT0("blink", "PendingScript::ExecuteScriptBlock");
+  probe::AsyncTask async_task(original_execution_context_,
+                              &async_task_context_);
+
   ExecutionContext* context = element_->GetExecutionContext();
   if (!context) {
     Dispose();
@@ -164,15 +172,8 @@ void PendingScript::ExecuteScriptBlock() {
   }
 
   std::optional<scheduler::TaskAttributionTracker::TaskScope>
-      task_attribution_scope;
-  if (ScriptState* script_state = ToScriptStateForMainWorld(frame)) {
-    if (auto* tracker = scheduler::TaskAttributionTracker::From(
-            script_state->GetIsolate())) {
-      task_attribution_scope = tracker->CreateTaskScope(
-          script_state, parent_task_,
-          scheduler::TaskAttributionTracker::TaskScopeType::kScriptExecution);
-    }
-  }
+      task_attribution_scope(SetCurrentTaskStateIfTopLevel(
+          task_state_, context, TaskScopeType::kScriptExecution));
 
   Script* script = GetSource();
 
@@ -302,11 +303,11 @@ void PendingScript::ExecuteScriptBlockInternal(
     // Implemented as the scope out of IgnoreDestructiveWriteCountIncrementer.
   }
 
-  // NOTE: we do not check m_willBeParserExecuted here, since
-  // m_willBeParserExecuted is false for inline scripts, and we want to
-  // include inline script execution time as part of parser blocked script
-  // execution time.
-  if (!is_controlled_by_script_runner) {
+  // We want to record the time spent executing scripts which is blocking the
+  // parser. If the script is nested, we only want to count the outermost
+  // script execution time.
+  if (context_document->IsCurrentScriptStackEmpty() &&
+      !is_controlled_by_script_runner) {
     DocumentParserTiming::From(element_document)
         .RecordParserBlockedOnScriptExecutionDuration(
             base::TimeTicks::Now() - script_exec_start_time,
@@ -324,14 +325,13 @@ void PendingScript::Trace(Visitor* visitor) const {
   visitor->Trace(client_);
   visitor->Trace(original_execution_context_);
   visitor->Trace(original_element_document_);
-  visitor->Trace(parent_task_);
+  visitor->Trace(task_state_);
 }
 
 bool PendingScript::IsControlledByScriptRunner() const {
   switch (scheduling_type_) {
     case ScriptSchedulingType::kNotSet:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
 
     case ScriptSchedulingType::kDefer:
     case ScriptSchedulingType::kParserBlocking:
@@ -340,12 +340,11 @@ bool PendingScript::IsControlledByScriptRunner() const {
       return false;
 
     case ScriptSchedulingType::kDeprecatedForceDefer:
-      NOTREACHED_NORETURN()
+      NOTREACHED()
           << "kDeprecatedForceDefer is deprecated and should not be in use";
 
     case ScriptSchedulingType::kInOrder:
     case ScriptSchedulingType::kAsync:
-    case ScriptSchedulingType::kForceInOrder:
       return true;
   }
 }

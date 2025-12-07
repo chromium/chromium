@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<title>Script Tools: register/unregister tool with schema</title>
+<link rel="author" href="mailto:khushalsagar@chromium.org">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+promise_test(async () => {
+  async function echo(obj) {
+    return obj.text;
+  }
+
+  const modelContext = navigator.modelContext;
+
+  modelContext.registerTool({
+    execute: echo,
+    name: "echo",
+    description: "echo input",
+    inputSchema: {
+        type: "object",
+        properties: {
+            "text": {
+                description: "Value to echo",
+                type: "string",
+            }
+        },
+        required: ["text"]
+    },
+    annotations: {
+      readOnlyHint: "true"
+    },
+  });
+
+  modelContext.unregisterTool("echo");
+}, "register and unregister script tool");
+</script>

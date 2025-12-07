@@ -80,7 +80,7 @@ source_set("main") {
     "//base:i18n",
     "//mojo/core/embedder",
     "//remoting/base",
-    "//remoting/base:breakpad",
+    "//remoting/base/crash",
     "//remoting/host",
     "//remoting/host:chromoting_host_services_client",
     "//remoting/host:resources",

@@ -6,28 +6,26 @@
 
 #include <string>
 
+#include "base/debug/crash_logging.h"
+#include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/lib/validation_context.h"
 #include "mojo/public/cpp/bindings/message.h"
 
-#if !BUILDFLAG(IS_NACL)
-#include "base/debug/crash_logging.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
-#endif  // !BUILDFLAG(IS_NACL)
-
 namespace mojo {
 namespace internal {
 namespace {
 
-ValidationErrorObserverForTesting* g_validation_error_observer = nullptr;
-SerializationWarningObserverForTesting* g_serialization_warning_observer =
+base::RepeatingCallback<void(ValidationError)>* g_validation_error_callback =
     nullptr;
+base::RepeatingCallback<void(ValidationError, SendValidation)>*
+    g_serialization_warning_callback = nullptr;
 bool g_suppress_logging = false;
 
-#if !BUILDFLAG(IS_NACL)
 std::string MessageHeaderAsHexString(Message* message) {
   if (!message) {
     return "<null>";
@@ -39,7 +37,6 @@ std::string MessageHeaderAsHexString(Message* message) {
   }
   return base::HexEncode(message->header(), sizeof(*message->header()));
 }
-#endif  // !BUILDFLAG(IS_NACL)
 
 }  // namespace
 
@@ -91,13 +88,11 @@ const char* ValidationErrorToString(ValidationError error) {
 void ReportValidationError(ValidationContext* context,
                            ValidationError error,
                            const char* description) {
-#if !BUILDFLAG(IS_NACL)
   SCOPED_CRASH_KEY_STRING64("mojo-message", "header-bytes",
                             MessageHeaderAsHexString(context->message()));
-#endif  // !BUILDFLAG(IS_NACL)
 
-  if (g_validation_error_observer) {
-    g_validation_error_observer->set_last_error(error);
+  if (g_validation_error_callback) {
+    (*g_validation_error_callback).Run(error);
     return;
   }
 
@@ -137,52 +132,32 @@ void ReportValidationErrorForMessage(mojo::Message* message,
   ReportValidationError(&validation_context, error);
 }
 
-ScopedSuppressValidationErrorLoggingForTests
-    ::ScopedSuppressValidationErrorLoggingForTests()
-    : was_suppressed_(g_suppress_logging) {
-  g_suppress_logging = true;
+bool GetIsValidationErrorLoggingSuppressedForTesting() {
+  return g_suppress_logging;
 }
 
-ScopedSuppressValidationErrorLoggingForTests
-    ::~ScopedSuppressValidationErrorLoggingForTests() {
-  g_suppress_logging = was_suppressed_;
+void SetIsValidationErrorLoggingSuppressedForTesting(bool suppress_logging) {
+  g_suppress_logging = suppress_logging;
 }
 
-ValidationErrorObserverForTesting::ValidationErrorObserverForTesting(
-    base::RepeatingClosure callback)
-    : last_error_(VALIDATION_ERROR_NONE), callback_(std::move(callback)) {
-  DCHECK(!g_validation_error_observer);
-  g_validation_error_observer = this;
+void SetSerializationWarningCallbackForTesting(
+    base::RepeatingCallback<void(ValidationError, SendValidation)>* callback) {
+  g_serialization_warning_callback = callback;
 }
 
-ValidationErrorObserverForTesting::~ValidationErrorObserverForTesting() {
-  DCHECK(g_validation_error_observer == this);
-  g_validation_error_observer = nullptr;
+void SetValidationErrorCallbackForTesting(
+    base::RepeatingCallback<void(ValidationError)>* callback) {
+  g_validation_error_callback = callback;
 }
 
-bool ReportSerializationWarning(ValidationError error) {
-  if (g_serialization_warning_observer) {
-    g_serialization_warning_observer->set_last_warning(error);
+bool ReportSerializationWarning(ValidationError error,
+                                SendValidation validation_type) {
+  if (g_serialization_warning_callback) {
+    (*g_serialization_warning_callback).Run(error, validation_type);
     return true;
   }
 
   return false;
-}
-
-SerializationWarningObserverForTesting::SerializationWarningObserverForTesting()
-    : last_warning_(VALIDATION_ERROR_NONE) {
-  DCHECK(!g_serialization_warning_observer);
-  g_serialization_warning_observer = this;
-}
-
-SerializationWarningObserverForTesting::
-    ~SerializationWarningObserverForTesting() {
-  DCHECK(g_serialization_warning_observer == this);
-  g_serialization_warning_observer = nullptr;
-}
-
-void RecordInvalidStringDeserialization() {
-  base::UmaHistogramBoolean("Mojo.InvalidUTF8String", false);
 }
 
 }  // namespace internal

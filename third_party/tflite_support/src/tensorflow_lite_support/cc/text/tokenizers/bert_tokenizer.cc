@@ -15,7 +15,7 @@ limitations under the License.
 
 #include "tensorflow_lite_support/cc/text/tokenizers/bert_tokenizer.h"
 
-#include "tensorflow_lite_support/cc/port/integral_types.h"
+#include <cstdint>
 
 namespace tflite {
 namespace support {
@@ -67,8 +67,8 @@ WordpieceTokenizerResult BertTokenizer::TokenizeWordpiece(
   std::vector<int>& wp_absolute_end_offset = result.wp_end_offset;
 
   std::vector<absl::string_view> tokens;
-  std::vector<int64> begin_offsets;
-  std::vector<int64> end_offsets;
+  std::vector<int64_t> begin_offsets;
+  std::vector<int64_t> end_offsets;
 
   // Run through tokenize function
   tensorflow::text::RegexSplit(input, delim_re_, true, include_delim_re_,

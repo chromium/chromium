@@ -1,0 +1,23 @@
+include_rules = [
+  "+components/country_codes",
+  "+components/keyed_service/core",
+  "+components/prefs",
+  "+components/pref_registry",
+  "+components/strings",
+  "+ui/base/device_form_factor.h",
+  "+third_party/jni_zero",
+  "+components/regional_capabilities/access",
+  "+third_party/search_engines_data",
+]
+
+specific_include_rules = {
+  ".*test\.cc": [
+    "+components/sync_preferences",
+  ],
+  ".*regional_capabilities_prefs\.cc": [
+    "+components/search_engines/search_engines_pref_names.h",
+  ],
+  ".*regional_capabilities_internals_data_holder\.cc": [
+    "+components/webui/regional_capabilities_internals/constants.h",
+  ]
+}

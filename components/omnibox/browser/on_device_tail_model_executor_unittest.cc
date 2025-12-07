@@ -391,8 +391,9 @@ TEST_F(OnDeviceTailModelExecutorTest, TestGenerateSuggestionsForPrefix) {
   }
 }
 
+// TODO(crbug.com/429254571): Fix and re-enable the test.
 TEST_F(OnDeviceTailModelExecutorTest,
-       TestGenerateSuggestionsWithBadwordFilter) {
+       DISABLED_TestGenerateSuggestionsWithBadwordFilter) {
   std::vector<OnDeviceTailModelExecutor::Prediction> predictions;
 
   {

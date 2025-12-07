@@ -4,6 +4,7 @@ desc: |-
   Setting the policy to Enabled or leaving it unset has enrolled devices report time periods when a user is active on the device.
 
         Setting the policy to Disabled means enrolled devices don't record or report activity times.
+default: true
 device_only: true
 example_value: false
 features:

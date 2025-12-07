@@ -6,13 +6,16 @@ package org.chromium.components.embedder_support.contextmenu;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** An object that contains the required fields to generate the context menu chip. */
+@NullMarked
 public class ChipRenderParams {
     // The resource id for the chip title.
     public @StringRes int titleResourceId;
@@ -22,7 +25,7 @@ public class ChipRenderParams {
 
     // The callback to be called when the chip clicked.
     // A non-null ChipRenderParams will always have a non-null onClickCallback.
-    public Runnable onClickCallback;
+    public @Nullable Runnable onClickCallback;
 
     // A callback to be called when the chip shown.
     public @Nullable Runnable onShowCallback;

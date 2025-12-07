@@ -15,15 +15,6 @@ header("Link: <image_invalid>; rel=preload; as=script; fetchpriority=invalid", f
         testRunner.dumpAsText();
         testRunner.waitUntilDone();
     }
-    if (window.internals) {
-        internals.settings.setLogPreload(true);
-    }
-    if (!localStorage.getItem("reloaded")) {
-        localStorage.setItem("reloaded",  true);
-        location.reload();
-    } else {
-        localStorage.removeItem("reloaded");
-    }
 </script>
 This test checks if a Link header triggered preloads with the correct fetchpriority hint value.
 <script>

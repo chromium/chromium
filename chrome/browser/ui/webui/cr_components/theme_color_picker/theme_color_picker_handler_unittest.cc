@@ -11,6 +11,7 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/new_tab_page/chrome_colors/generated_colors_info.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
@@ -36,6 +37,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/color/dynamic_color/palette_factory.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/native_theme/native_theme.h"
 
 namespace content {
@@ -45,6 +47,7 @@ class BrowserContext;
 namespace {
 
 using testing::_;
+using testing::Mock;
 
 ui::ColorProviderKey::SchemeVariant GetSchemeVariant(
     ui::mojom::BrowserColorVariant color_variant) {
@@ -179,9 +182,7 @@ TEST_F(ThemeColorPickerHandlerTest, GetChromeColors) {
   base::MockCallback<ThemeColorPickerHandler::GetChromeColorsCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(2)
-      .WillRepeatedly(testing::Invoke(
-          [&colors](std::vector<theme_color_picker::mojom::ChromeColorPtr>
-                        colors_arg) { colors = std::move(colors_arg); }));
+      .WillRepeatedly(MoveArg(&colors));
 
   // Test with Dark Mode on.
   handler().GetChromeColors(true, callback.Get());
@@ -228,8 +229,20 @@ enum class ThemeUpdateSource {
 class ThemeColorPickerHandlerSetThemeTest
     : public ThemeColorPickerHandlerTest,
       public ::testing::WithParamInterface<ThemeUpdateSource> {
- public:
-  void UpdateTheme() {
+ protected:
+  ui::MockOsSettingsProvider& os_settings_provider() {
+    return os_settings_provider_;
+  }
+
+  theme_color_picker::mojom::ThemePtr UpdateTheme() {
+    // Flush any existing updates so the flush below only sees what results from
+    // the update below.
+    mock_client_.FlushForTesting();
+
+    theme_color_picker::mojom::ThemePtr theme;
+    EXPECT_CALL(mock_client_, SetTheme).Times(1).WillOnce(MoveArg(&theme));
+
+    // Update.
     switch (GetParam()) {
       case ThemeUpdateSource::kMojo:
         handler().UpdateTheme();
@@ -245,17 +258,18 @@ class ThemeColorPickerHandlerSetThemeTest
             .OnCustomBackgroundImageUpdated();
         break;
     }
+    mock_client_.FlushForTesting();
+
+    // Should have seen exactly one attempt to set the theme.
+    Mock::VerifyAndClearExpectations(&mock_client_);
+    return theme;
   }
+
+ private:
+  ui::MockOsSettingsProvider os_settings_provider_;
 };
 
 TEST_P(ThemeColorPickerHandlerSetThemeTest, SetTheme) {
-  theme_color_picker::mojom::ThemePtr theme;
-  EXPECT_CALL(mock_client_, SetTheme)
-      .Times(1)
-      .WillOnce(
-          testing::Invoke([&theme](theme_color_picker::mojom::ThemePtr arg) {
-            theme = std::move(arg);
-          }));
   CustomBackground custom_background;
   custom_background.custom_background_url = GURL("https://foo.com/img.png");
   custom_background.custom_background_attribution_line_1 = "foo line";
@@ -281,13 +295,12 @@ TEST_P(ThemeColorPickerHandlerSetThemeTest, SetTheme) {
       .WillByDefault(testing::Return(false));
   ON_CALL(mock_theme_service(), GetBrowserColorVariant())
       .WillByDefault(testing::Return(ui::mojom::BrowserColorVariant::kNeutral));
-  ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(true);
+  os_settings_provider().SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
 
-  UpdateTheme();
-  mock_client_.FlushForTesting();
-
+  theme_color_picker::mojom::ThemePtr theme = UpdateTheme();
   ASSERT_TRUE(theme);
-  ASSERT_TRUE(theme->has_background_image);
+  EXPECT_TRUE(theme->has_background_image);
   EXPECT_EQ(SK_ColorGREEN,
             theme->background_image_main_color.value_or(SK_ColorWHITE));
   EXPECT_TRUE(theme->is_dark_mode);
@@ -307,14 +320,6 @@ TEST_P(ThemeColorPickerHandlerSetThemeTest, SetTheme) {
 }
 
 TEST_P(ThemeColorPickerHandlerSetThemeTest, SetThemeColorSchemeGM3) {
-  theme_color_picker::mojom::ThemePtr theme;
-  EXPECT_CALL(mock_client_, SetTheme)
-      .Times(2)
-      .WillRepeatedly(
-          testing::Invoke([&theme](theme_color_picker::mojom::ThemePtr arg) {
-            theme = std::move(arg);
-          }));
-
   // Set mocks needed for UpdateTheme.
   CustomBackground custom_background;
   custom_background.custom_background_url = GURL("https://foo.com/img.png");
@@ -342,39 +347,33 @@ TEST_P(ThemeColorPickerHandlerSetThemeTest, SetThemeColorSchemeGM3) {
   ON_CALL(mock_theme_service(), GetBrowserColorScheme())
       .WillByDefault(
           testing::Return(ThemeService::BrowserColorScheme::kSystem));
-  ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(true);
+  os_settings_provider().SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
 
-  UpdateTheme();
-  mock_client_.FlushForTesting();
-
-  // // Theme should be dark to match the system.
+  // Theme should be dark to match the system.
+  theme_color_picker::mojom::ThemePtr theme = UpdateTheme();
+  ASSERT_TRUE(theme);
   EXPECT_TRUE(theme->is_dark_mode);
 
   // Set BrowserColorScheme to Light and leave system still on dark mode.
   ON_CALL(mock_theme_service(), GetBrowserColorScheme())
       .WillByDefault(testing::Return(ThemeService::BrowserColorScheme::kLight));
 
-  UpdateTheme();
-  mock_client_.FlushForTesting();
-
+  theme = UpdateTheme();
+  ASSERT_TRUE(theme);
   EXPECT_FALSE(theme->is_dark_mode);
 }
 
 TEST_P(ThemeColorPickerHandlerSetThemeTest, UsingDeviceThemeGM3) {
-  theme_color_picker::mojom::ThemePtr theme;
-  EXPECT_CALL(mock_client_, SetTheme)
-      .Times(1)
-      .WillRepeatedly(
-          testing::Invoke([&theme](theme_color_picker::mojom::ThemePtr arg) {
-            theme = std::move(arg);
-          }));
+  static constexpr SkColor kUnusedColor = SK_ColorGREEN;
+  static constexpr SkColor kUsedColor = SK_ColorBLUE;
 
   // Set mocks needed for UpdateTheme.
   CustomBackground custom_background;
   custom_background.custom_background_url = GURL("https://foo.com/img.png");
   custom_background.custom_background_attribution_line_1 = "foo line";
   custom_background.is_uploaded_image = false;
-  custom_background.custom_background_main_color = SK_ColorGREEN;
+  custom_background.custom_background_main_color = kUnusedColor;
   custom_background.collection_id = "test_collection";
   custom_background.daily_refresh_enabled = false;
   ON_CALL(mock_ntp_custom_background_service_, GetCustomBackground())
@@ -392,25 +391,17 @@ TEST_P(ThemeColorPickerHandlerSetThemeTest, UsingDeviceThemeGM3) {
 
   // User color should be ignored as UsingDeviceTheme() will override it.
   ON_CALL(mock_theme_service(), GetUserColor())
-      .WillByDefault(testing::Return(SK_ColorGREEN));
+      .WillByDefault(testing::Return(kUnusedColor));
   ON_CALL(mock_theme_service(), UsingDeviceTheme())
       .WillByDefault(testing::Return(true));
-  ui::NativeTheme::GetInstanceForNativeUi()->set_user_color(SK_ColorBLUE);
+  os_settings_provider().SetAccentColor(kUsedColor);
 
-  UpdateTheme();
-  mock_client_.FlushForTesting();
-
-  EXPECT_EQ(SK_ColorBLUE, theme->seed_color);
+  theme_color_picker::mojom::ThemePtr theme = UpdateTheme();
+  ASSERT_TRUE(theme);
+  EXPECT_EQ(kUsedColor, theme->seed_color);
 }
 
 TEST_P(ThemeColorPickerHandlerSetThemeTest, SetThemeWithDailyRefresh) {
-  theme_color_picker::mojom::ThemePtr theme;
-  EXPECT_CALL(mock_client_, SetTheme)
-      .Times(1)
-      .WillOnce(
-          testing::Invoke([&theme](theme_color_picker::mojom::ThemePtr arg) {
-            theme = std::move(arg);
-          }));
   CustomBackground custom_background;
   custom_background.custom_background_url = GURL("https://foo.com/img.png");
   custom_background.daily_refresh_enabled = true;
@@ -418,21 +409,12 @@ TEST_P(ThemeColorPickerHandlerSetThemeTest, SetThemeWithDailyRefresh) {
   ON_CALL(mock_ntp_custom_background_service_, GetCustomBackground())
       .WillByDefault(testing::Return(std::make_optional(custom_background)));
 
-  UpdateTheme();
-  mock_client_.FlushForTesting();
-
+  theme_color_picker::mojom::ThemePtr theme = UpdateTheme();
   ASSERT_TRUE(theme);
-  ASSERT_TRUE(theme->has_background_image);
+  EXPECT_TRUE(theme->has_background_image);
 }
 
 TEST_P(ThemeColorPickerHandlerSetThemeTest, SetUploadedImage) {
-  theme_color_picker::mojom::ThemePtr theme;
-  EXPECT_CALL(mock_client_, SetTheme)
-      .Times(1)
-      .WillOnce(
-          testing::Invoke([&theme](theme_color_picker::mojom::ThemePtr arg) {
-            theme = std::move(arg);
-          }));
   CustomBackground custom_background;
   custom_background.custom_background_url = GURL("https://foo.com/img.png");
   custom_background.is_uploaded_image = true;
@@ -443,21 +425,12 @@ TEST_P(ThemeColorPickerHandlerSetThemeTest, SetUploadedImage) {
   ON_CALL(mock_theme_service(), UsingSystemTheme())
       .WillByDefault(testing::Return(false));
 
-  UpdateTheme();
-  mock_client_.FlushForTesting();
-
+  theme_color_picker::mojom::ThemePtr theme = UpdateTheme();
   ASSERT_TRUE(theme);
-  ASSERT_TRUE(theme->has_background_image);
+  EXPECT_TRUE(theme->has_background_image);
 }
 
 TEST_P(ThemeColorPickerHandlerSetThemeTest, SetThirdPartyTheme) {
-  theme_color_picker::mojom::ThemePtr theme;
-  EXPECT_CALL(mock_client_, SetTheme)
-      .Times(1)
-      .WillOnce(
-          testing::Invoke([&theme](theme_color_picker::mojom::ThemePtr arg) {
-            theme = std::move(arg);
-          }));
   CustomBackground custom_background;
   custom_background.custom_background_url = GURL("https://foo.com/img.png");
 
@@ -483,9 +456,7 @@ TEST_P(ThemeColorPickerHandlerSetThemeTest, SetThirdPartyTheme) {
   ON_CALL(mock_theme_service(), GetThemeID())
       .WillByDefault(testing::Return("foo"));
 
-  UpdateTheme();
-  mock_client_.FlushForTesting();
-
+  theme_color_picker::mojom::ThemePtr theme = UpdateTheme();
   ASSERT_TRUE(theme);
   ASSERT_TRUE(theme->has_background_image);
 }

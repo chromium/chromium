@@ -8,7 +8,7 @@
 #include "components/commerce/core/account_checker.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/proto/price_tracking.pb.h"
-#include "components/optimization_guide/core/optimization_guide_decision.h"
+#include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_guide_permissions_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -138,7 +138,8 @@ void RecordShoppingListIneligibilityReasons(
                                   ShoppingFeatureIneligibilityReason::kSignin);
   }
 
-  if (!account_checker->IsSyncingBookmarks()) {
+  if (!account_checker->IsSyncTypeEnabled(
+          syncer::UserSelectableType::kBookmarks)) {
     base::UmaHistogramEnumeration(kShoppingListIneligibleHistogramName,
                                   ShoppingFeatureIneligibilityReason::kSync);
   }
@@ -172,8 +173,7 @@ void RecordShoppingActionUKM(ukm::SourceId ukm_source_id,
       ukm_builder.SetPriceTracked(true);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   ukm_builder.Record(ukm::UkmRecorder::Get());
 }

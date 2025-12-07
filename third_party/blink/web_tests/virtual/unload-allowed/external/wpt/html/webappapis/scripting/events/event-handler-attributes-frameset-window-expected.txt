@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 18 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 22 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] shadowed pagereveal (document.body)
   assert_equals: alternative body should reflect expected (function) function "() => 0" but got (undefined) undefined
 [FAIL] shadowed pageswap (document.body)
@@ -14,6 +14,14 @@ Found 18 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: body should reflect changes to itself expected (object) null but got (undefined) undefined
 [FAIL] shadowed pageswap removal (document.body)
   assert_equals: body should reflect changes to itself expected (object) null but got (undefined) undefined
+[FAIL] shadowed messageerror on body fires when event dispatched on window
+  assert_true: expected true got undefined
+[FAIL] shadowed pagereveal on body fires when event dispatched on window
+  assert_true: expected true got undefined
+[FAIL] shadowed pageswap on body fires when event dispatched on window
+  assert_true: expected true got undefined
+[FAIL] shadowed rejectionhandled on body fires when event dispatched on window
+  assert_true: expected true got undefined
 [FAIL] shadowed pagereveal (document.createElement("frameset"))
   assert_equals: body should reflect expected (function) function "() => 0" but got (undefined) undefined
 [FAIL] shadowed pageswap (document.createElement("frameset"))

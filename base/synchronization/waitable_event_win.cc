@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/synchronization/waitable_event.h"
 
 #include <windows.h>
@@ -9,14 +14,14 @@
 #include <stddef.h>
 
 #include <algorithm>
-#include <array>
 #include <optional>
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/debug/alias.h"
+#include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
@@ -26,12 +31,20 @@
 namespace base {
 
 namespace {
-NOINLINE void ReportInvalidWaitableEventResult(DWORD result) {
-  const auto last_error = ::GetLastError();
-  base::debug::Alias(&last_error);
-  base::debug::Alias(&result);
+
+[[nodiscard]] debug::ScopedCrashKeyString SetLastErrorCrashKey(
+    DWORD last_error) {
+  static auto* const key = debug::AllocateCrashKeyString(
+      "WaitableEvent-last_error", debug::CrashKeySize::Size32);
+  return debug::ScopedCrashKeyString(key, NumberToString(last_error));
+}
+
+NOINLINE void ReportInvalidWaitableEventResult(DWORD result, DWORD last_error) {
+  SCOPED_CRASH_KEY_NUMBER("WaitableEvent", "result", result);
+  debug::ScopedCrashKeyString last_error_key = SetLastErrorCrashKey(last_error);
   base::debug::DumpWithoutCrashing();  // https://crbug.com/1478972.
 }
+
 }  // namespace
 
 WaitableEvent::WaitableEvent(ResetPolicy reset_policy,
@@ -61,7 +74,7 @@ void WaitableEvent::SignalImpl() {
 bool WaitableEvent::IsSignaled() const {
   DWORD result = WaitForSingleObject(handle_.get(), 0);
   if (result != WAIT_OBJECT_0 && result != WAIT_TIMEOUT) {
-    ReportInvalidWaitableEventResult(result);
+    ReportInvalidWaitableEventResult(result, ::GetLastError());
   }
   return result == WAIT_OBJECT_0;
 }
@@ -97,36 +110,42 @@ bool WaitableEvent::TimedWaitImpl(TimeDelta wait_delta) {
       continue;
     }
 
-    // The only other documented result values are `WAIT_ABANDONED` and
-    // `WAIT_FAILED`. Neither of these nor any other result should ever be
-    // emitted unless there is a double free or another entity is tampering
-    // with this instance's event handle. Only fails if the timeout was
-    // INFINITE.
+    // Failures are likely due to ERROR_INVALID_HANDLE. This unrecoverable
+    // error likely means that the waited-on object has been closed elsewhere,
+    // possibly due to a double-close on an unrelated HANDLE. Crash
+    // immediately since it is not possible to reason about the state of the
+    // process in this case.
+    if (result == WAIT_FAILED) {
+      debug::ScopedCrashKeyString last_error_key =
+          SetLastErrorCrashKey(::GetLastError());
+      NOTREACHED();
+    }
+
     if (wait_delta.is_max()) {
-      ReportInvalidWaitableEventResult(result);
-      // The code may infinite loop and then hang if the returned value
-      // continues being `WAIT_FAILED`.
+      // The only other documented result value is `WAIT_ABANDONED`. This nor
+      // any other result should ever be emitted.
+      ReportInvalidWaitableEventResult(result, ::GetLastError());
     }
   }
   return false;
 }
 
 // static
-size_t WaitableEvent::WaitManyImpl(base::span<WaitableEvent*> raw_waitables) {
-  std::array<HANDLE, MAXIMUM_WAIT_OBJECTS> handles;
-  CHECK_LE(raw_waitables.size(), handles.size())
+size_t WaitableEvent::WaitManyImpl(base::span<WaitableEvent*> events) {
+  HANDLE handles[MAXIMUM_WAIT_OBJECTS];
+  CHECK_LE(events.size(), static_cast<size_t>(MAXIMUM_WAIT_OBJECTS))
       << "Can only wait on " << MAXIMUM_WAIT_OBJECTS << " with WaitMany";
 
-  for (size_t i = 0; i < raw_waitables.size(); ++i) {
-    handles[i] = raw_waitables[i]->handle();
+  for (size_t i = 0; i < events.size(); ++i) {
+    handles[i] = events[i]->handle();
   }
 
-  // The cast is safe because size is small - see the CHECK above.
-  DWORD result = WaitForMultipleObjects(
-      static_cast<DWORD>(raw_waitables.size()), handles.data(),
-      FALSE,      // don't wait for all the objects
-      INFINITE);  // no timeout
-  if (result >= WAIT_OBJECT_0 + raw_waitables.size()) {
+  // The cast is safe because count is small - see the CHECK above.
+  DWORD result =
+      WaitForMultipleObjects(static_cast<DWORD>(events.size()), handles,
+                             FALSE,      // don't wait for all the objects
+                             INFINITE);  // no timeout
+  if (result >= WAIT_OBJECT_0 + events.size()) {
     DPLOG(FATAL) << "WaitForMultipleObjects failed";
     return 0;
   }

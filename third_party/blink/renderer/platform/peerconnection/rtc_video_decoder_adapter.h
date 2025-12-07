@@ -9,10 +9,10 @@
 #include <memory>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
 #include "media/base/decoder.h"
 #include "media/base/video_decoder_config.h"
@@ -112,6 +112,7 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
                          const media::VideoDecoderConfig& config,
                          std::unique_ptr<ResolutionMonitor> resolution_monitor);
 
+  void FinishAsyncInit(bool result);
   bool InitializeSync(const media::VideoDecoderConfig& config);
   std::optional<DecodeResult> DecodeInternal(
       const webrtc::EncodedImage& input_image,
@@ -145,6 +146,13 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
 
   media::VideoDecoderType decoder_type_ GUARDED_BY_CONTEXT(
       decoding_sequence_checker_){media::VideoDecoderType::kUnknown};
+
+  // The `Initialize` method synchronously wraps an async Impl::Initialize
+  // implementation, and blocks with a timeout until it is completed. Because
+  // the synchronous wait can time out and the method can exit, we can't keep
+  // any of the flags or events on the stack, and they must be kept here.
+  bool async_init_result_ = false;
+  std::unique_ptr<base::WaitableEvent> async_init_waiter_;
 
   // Thread management.
   SEQUENCE_CHECKER(decoding_sequence_checker_);

@@ -12,6 +12,7 @@
 #include "clang/Analysis/FlowSensitive/AdornedCFG.h"
 #include "clang/Analysis/FlowSensitive/DataflowAnalysis.h"
 #include "clang/Analysis/FlowSensitive/DataflowLattice.h"
+#include "clang/Analysis/FlowSensitive/Models/ChromiumCheckModel.h"
 #include "clang/Analysis/FlowSensitive/NoopLattice.h"
 #include "clang/Analysis/FlowSensitive/Value.h"
 #include "clang/Analysis/FlowSensitive/WatchedLiteralsSolver.h"
@@ -34,6 +35,9 @@ const char kInvalidIteratorUsage[] =
 const char kInvalidIteratorComparison[] =
     "[iterator-checker] Potentially invalid iterator comparison.";
 
+const char kIteratorMismatch[] =
+    "[iterator-checker] Potentially iterator mismatch.";
+
 // To understand C++ code, we need a way to encode what is an iterator and what
 // are the functions that might invalidate them.
 enum AnnotationType : uint8_t {
@@ -54,7 +58,6 @@ enum AnnotationType : uint8_t {
 
   // Annotate functions and argument types specifying
   // which container or iterator values to swap.
-  // TODO(crbug.com/40272746) Not yet implemented.
   kSwap = 1 << 4,
 };
 
@@ -69,7 +72,7 @@ struct Annotation {
   Annotation(AnnotationType type) : type(type) {}
 
   AnnotationType type;
-  llvm::StringRef identifier;
+  std::string identifier;
 };
 
 // TODO(crbug.com/40272746): Use a set instead, because having duplicated
@@ -157,6 +160,7 @@ static llvm::DenseMap<llvm::StringRef, AnnotationType> g_annotations = {
 // Hardcoded types annotations.
 static llvm::DenseMap<llvm::StringRef, Annotations> g_types_annotations = {
     {"__normal_iterator", {Annotation(AnnotationType::kContainer)}},
+    {"__wrap_iter", {Annotation(AnnotationType::kContainer)}},
     {"reverse_iterator", {Annotation(AnnotationType::kContainer)}},
 };
 
@@ -292,20 +296,21 @@ static llvm::DenseMap<
                     GroupedFunctionAnnotation().Return(
                         Annotation(AnnotationType::kEndContainer)),
                 },
-                {
-                    "erase",
-                    GroupedFunctionAnnotation()
-                        .Function(Annotation(AnnotationType::kInvalidate))
-                        .Return(Annotation(AnnotationType::kEndContainer)),
-                },
+                {"erase",
+                 GroupedFunctionAnnotation()
+                     .Function(Annotation(AnnotationType::kInvalidate))
+                     .Function(Annotation(AnnotationType::kContainer, "a"))
+                     .Arg({Annotation(AnnotationType::kContainer, "a")})
+                     .Return(Annotation(AnnotationType::kEndContainer))},
                 {
                     "front",
                     {},
                 },
                 {
                     "insert",
-                    GroupedFunctionAnnotation().Function(
-                        Annotation(AnnotationType::kInvalidate)),
+                    GroupedFunctionAnnotation()
+                        .Function(Annotation(AnnotationType::kInvalidate))
+                        .Function(Annotation(AnnotationType::kContainer)),
                 },
                 {
                     "insert_range",
@@ -423,7 +428,7 @@ static llvm::DenseMap<
             },
         },
         {
-            "WTF::Vector",
+            "blink::Vector",
             {
                 {
                     "begin",
@@ -650,16 +655,40 @@ void SetSyntheticFieldWithName(
   env.setValue(loc.getSyntheticField(name), res);
 }
 
+void SwapSyntheticFieldWithName(
+    llvm::StringRef name,
+    clang::dataflow::Environment& env,
+    const clang::dataflow::RecordStorageLocation& loc_a,
+    const clang::dataflow::RecordStorageLocation& loc_b) {
+  auto* prev_value = env.getValue(loc_a.getSyntheticField(name));
+
+  env.setValue(loc_a.getSyntheticField(name),
+               *env.getValue(loc_b.getSyntheticField(name)));
+  env.setValue(loc_b.getSyntheticField(name), *prev_value);
+}
+
 void SetIsValid(clang::dataflow::Environment& env,
                 const clang::dataflow::RecordStorageLocation& loc,
                 clang::dataflow::BoolValue& res) {
   SetSyntheticFieldWithName("is_valid", env, loc, res);
 }
 
+void SwapIsValid(clang::dataflow::Environment& env,
+                 const clang::dataflow::RecordStorageLocation& loc_a,
+                 const clang::dataflow::RecordStorageLocation& loc_b) {
+  SwapSyntheticFieldWithName("is_valid", env, loc_a, loc_b);
+}
+
 void SetIsEnd(clang::dataflow::Environment& env,
               const clang::dataflow::RecordStorageLocation& loc,
               clang::dataflow::BoolValue& res) {
   SetSyntheticFieldWithName("is_end", env, loc, res);
+}
+
+void SwapIsEnd(clang::dataflow::Environment& env,
+               const clang::dataflow::RecordStorageLocation& loc_a,
+               const clang::dataflow::RecordStorageLocation& loc_b) {
+  SwapSyntheticFieldWithName("is_end", env, loc_a, loc_b);
 }
 
 const clang::dataflow::Formula& ForceBoolValue(
@@ -698,6 +727,8 @@ class InvalidIteratorAnalysis
   void transfer(const clang::CFGElement& elt,
                 clang::dataflow::NoopLattice& state,
                 clang::dataflow::Environment& env) {
+    check_model_.transfer(elt, env);
+
     if (auto cfg_stmt = elt.getAs<clang::CFGStmt>()) {
       Transfer(*cfg_stmt->getStmt(), env);
     }
@@ -779,11 +810,12 @@ class InvalidIteratorAnalysis
     const clang::CXXConstructorDecl* ctor = expr.getConstructor();
     assert(ctor != nullptr);
 
-    if (ctor->isCopyOrMoveConstructor()) {
+    if (ctor->isCopyOrMoveConstructor() ||
+        ctor->isConvertingConstructor(false)) {
       auto* it = UnwrapAsIterator(expr.getArg(0), env);
       assert(it);
 
-      // TODO(crbug.com/40272746): Add support for copy and move constructor
+      CloneIterator(&expr, *it, env);
     }
   }
 
@@ -810,8 +842,9 @@ class InvalidIteratorAnalysis
 
     ProcessAnnotationInvalidate(expr, grouped_annotation.value(), env);
     ProcessAnnotationReturnIterator(expr, grouped_annotation.value(), env);
-    // TODO(crbug.com/40272746): Add support to "swap" and "require same
-    // container" operations.
+    ProcessAnnotationSwap(expr, grouped_annotation.value(), env);
+    ProcessAnnotationRequireSameContainer(expr, grouped_annotation.value(),
+                                          env);
   }
 
   void ProcessAnnotationInvalidate(
@@ -949,6 +982,110 @@ class InvalidIteratorAnalysis
     }
   }
 
+  void ProcessAnnotationSwap(
+      const clang::CallExpr& expr,
+      const GroupedFunctionAnnotation& grouped_annotation,
+      clang::dataflow::Environment& env) {
+    llvm::DenseMap<llvm::StringRef,
+                   std::vector<clang::dataflow::RecordStorageLocation*>>
+        id_to_locations;
+
+    // Looking inside function annotations.
+    auto swap_function_annotation = FindAnnotation(
+        grouped_annotation.function_annotations, AnnotationType::kSwap);
+
+    if (swap_function_annotation !=
+        grouped_annotation.function_annotations.end()) {
+      assert(clang::isa<clang::CXXMemberCallExpr>(&expr));
+      auto* member_call = clang::cast<clang::CXXMemberCallExpr>(&expr);
+
+      id_to_locations[swap_function_annotation->identifier].push_back(
+          clang::dyn_cast_or_null<clang::dataflow::RecordStorageLocation>(
+              env.getStorageLocation(
+                  *member_call->getImplicitObjectArgument())));
+    }
+
+    // Looking inside arguments types annotations.
+    for (size_t i = 0; i < grouped_annotation.args_annotations.size(); i++) {
+      Annotations args_annotation = grouped_annotation.args_annotations[i];
+
+      auto swap_arg_annotation =
+          FindAnnotation(args_annotation, AnnotationType::kSwap);
+
+      if (swap_arg_annotation != args_annotation.end()) {
+        id_to_locations[swap_arg_annotation->identifier].push_back(
+            clang::dyn_cast_or_null<clang::dataflow::RecordStorageLocation>(
+                env.getStorageLocation(*expr.getArg(i))));
+      }
+    }
+
+    for (const auto& [id, locations] : id_to_locations) {
+      assert(locations.size() == 2);
+
+      if (!locations[0] || !locations[1]) {
+        continue;
+      }
+
+      if (IsIterator(locations[0]->getType().getCanonicalType()) &&
+          IsIterator(locations[1]->getType().getCanonicalType())) {
+        SwapIterators(env, locations[0], locations[1]);
+      } else {
+        SwapContainers(env, GetContainerValue(env, *locations[0]),
+                       GetContainerValue(env, *locations[1]));
+      }
+    }
+  }
+
+  void ProcessAnnotationRequireSameContainer(
+      const clang::CallExpr& expr,
+      const GroupedFunctionAnnotation& grouped_annotation,
+      clang::dataflow::Environment& env) {
+    // In order to compare container values and eventually report an error, we
+    // need to save both `clang::Expr` and its related `clang::dataflow::Value`.
+    llvm::DenseMap<
+        llvm::StringRef,
+        std::vector<std::pair<const clang::Expr*, clang::dataflow::Value*>>>
+        id_to_containers;
+
+    // Looking inside function annotations.
+    auto container_annotation = FindAnnotation(
+        grouped_annotation.function_annotations, AnnotationType::kContainer);
+
+    if (container_annotation != grouped_annotation.function_annotations.end()) {
+      id_to_containers[container_annotation->identifier].emplace_back(
+          &expr, GetContainerFromImplicitArg(env, expr));
+    }
+
+    // Looking inside arguments types annotations.
+    for (size_t i = 0; i < grouped_annotation.args_annotations.size(); i++) {
+      Annotations args_annotation = grouped_annotation.args_annotations[i];
+
+      auto container_arg_annotation =
+          FindAnnotation(args_annotation, AnnotationType::kContainer);
+
+      if (container_arg_annotation != args_annotation.end()) {
+        id_to_containers[container_arg_annotation->identifier].emplace_back(
+            expr.getArg(i), GetContainerFromArg(env, *expr.getArg(i)));
+      }
+    }
+
+    for (const auto& [id, values] : id_to_containers) {
+      // We want to perform this kind of check just for group of iterators that
+      // have explicit identifiers.
+      if (id == "") {
+        continue;
+      }
+
+      const clang::dataflow::Value* baseline = values[0].second;
+
+      for (size_t i = 1; i < values.size(); i++) {
+        if (values[i].second != baseline) {
+          Report(kIteratorMismatch, *values[i].first);
+        }
+      }
+    }
+  }
+
   clang::dataflow::Value* GetContainerFromImplicitArg(
       const clang::dataflow::Environment& env,
       const clang::CallExpr& expr) {
@@ -1019,8 +1156,12 @@ class InvalidIteratorAnalysis
         GetHardcodedFunctionAnnotation(
             *callee, clang::isa<clang::CXXMemberCallExpr>(expr));
 
-    return MergeGroupedFunctionAnnotations(annotated_grouped_annotation,
-                                           hardcoded_grouped_annotation);
+    auto merged_grouped_annotation = MergeGroupedFunctionAnnotations(
+        annotated_grouped_annotation, hardcoded_grouped_annotation);
+
+    ApplyIdentifiersFromTemplate(merged_grouped_annotation, callee);
+
+    return merged_grouped_annotation;
   }
 
   GroupedFunctionAnnotation GetHardcodedFunctionAnnotation(
@@ -1123,6 +1264,47 @@ class InvalidIteratorAnalysis
 
     return GroupedFunctionAnnotation{function_annotations, return_annotations,
                                      arguments_annotations};
+  }
+
+  void ApplyIdentifiersFromTemplate(
+      GroupedFunctionAnnotation& grouped_annotation,
+      const clang::FunctionDecl* callee) {
+    clang::FunctionTemplateDecl* templ = callee->getPrimaryTemplate();
+
+    if (!templ) {
+      return;
+    }
+
+    const clang::FunctionDecl* callee_decl = templ->getTemplatedDecl();
+
+    for (size_t i = 0; i < callee_decl->getNumParams(); i++) {
+      auto* param = callee_decl->getParamDecl(i);
+
+      // We are only interested to parameters that actually belong to the
+      // template.
+      if (!clang::isa<clang::TemplateTypeParmType>(param->getType())) {
+        continue;
+      }
+
+      // We want to apply template identifiers just for annotations that already
+      // exist.
+      if (grouped_annotation.args_annotations.size() <= i) {
+        break;
+      }
+
+      std::string identifier = param->getType().getAsString();
+
+      for (auto& annotation : grouped_annotation.args_annotations[i]) {
+        // The template identifier is applied only if the annotation is of type
+        // `kContainer` and if it doesn't have an identifier yet.
+        if (annotation.type != AnnotationType::kContainer ||
+            annotation.identifier != "") {
+          continue;
+        }
+
+        annotation.identifier = identifier;
+      }
+    }
   }
 
   // Retrieve types annotations from the context and save them in
@@ -1280,7 +1462,7 @@ class InvalidIteratorAnalysis
     return attrs;
   }
 
-  void TransferCallReturningIterator(const clang::CallExpr* expr,
+  void TransferCallReturningIterator(const clang::Expr* expr,
                                      clang::dataflow::Value& container,
                                      clang::dataflow::BoolValue& is_valid,
                                      clang::dataflow::BoolValue& is_end,
@@ -1296,8 +1478,58 @@ class InvalidIteratorAnalysis
         env.setStorageLocation(*expr, *loc);
       }
     }
+
+    // We need to traverse the AST backwards to catch if the returning iterator
+    // belongs to a `VarDecl`. It is necessary because, in case of implicit
+    // casts, we need to keep track of the declared target type.
+    const clang::VarDecl* var_decl = nullptr;
+    auto parents = getASTContext().getParents(*expr);
+    while (!parents.empty() && !var_decl) {
+      if (auto* decl = parents[0].get<clang::VarDecl>()) {
+        var_decl = decl;
+      }
+
+      parents = getASTContext().getParents(parents[0]);
+    }
+
+    if (var_decl) {
+      iterator_types_mapping_.insert(var_decl->getType().getCanonicalType());
+    }
+
     assert(loc);
     PopulateIteratorValue(loc, container, is_valid, is_end, env);
+  }
+
+  void SwapContainers(clang::dataflow::Environment& env,
+                      clang::dataflow::Value* container_a,
+                      clang::dataflow::Value* container_b) {
+    // In order to update container values, we need to find the right
+    // `RecordStorageLocation`s by iterating over the `iterator_to_container_`
+    // map.
+    // Updating container values, which is performed by `SetContainerValue`,
+    // changes the values in the map.
+    // To avoid changing the values in the same map we are iterating over, a
+    // copy of it is used instead.
+    llvm::DenseMap<clang::dataflow::RecordStorageLocation*,
+                   clang::dataflow::Value*>
+        map = iterator_to_container_;
+
+    for (auto& [iterator_location, container] : map) {
+      if (container == container_a) {
+        SetContainerValue(env, *iterator_location, *container_b);
+      }
+      if (container == container_b) {
+        SetContainerValue(env, *iterator_location, *container_a);
+      }
+    }
+  }
+
+  void SwapIterators(clang::dataflow::Environment& env,
+                     clang::dataflow::RecordStorageLocation* iterator_a,
+                     clang::dataflow::RecordStorageLocation* iterator_b) {
+    SwapContainerValue(env, *iterator_a, *iterator_b);
+    SwapIsEnd(env, *iterator_a, *iterator_b);
+    SwapIsValid(env, *iterator_a, *iterator_b);
   }
 
   // CXXOperatorCallExpr:
@@ -1326,8 +1558,12 @@ class InvalidIteratorAnalysis
       // would be too high as for now.
       TransferExpressionAccessForCheck(expr.getArg(0), env);
 
-      // The result of this operation is another iterator.
+      // The result of this operation "resets" the current iterator state and
+      // returns another one.
       if (auto* iterator = UnwrapAsIterator(expr.getArg(0), env)) {
+        SetIsValid(env, *iterator, env.makeAtomicBoolValue());
+        SetIsEnd(env, *iterator, env.makeAtomicBoolValue());
+
         CloneIterator(&expr, *iterator, env);
       }
       return;
@@ -1426,8 +1662,12 @@ class InvalidIteratorAnalysis
       assert(expr.getNumArgs());
       TransferExpressionAccessForDeref(expr.getArg(0), env);
 
-      // The result of this operation is another iterator.
+      // The result of this operation "resets" the current iterator state and
+      // returns another one.
       if (auto* iterator = UnwrapAsIterator(expr.getArg(0), env)) {
+        SetIsValid(env, *iterator, env.makeAtomicBoolValue());
+        SetIsEnd(env, *iterator, env.makeAtomicBoolValue());
+
         CloneIterator(&expr, *iterator, env);
       }
 
@@ -1573,7 +1813,7 @@ class InvalidIteratorAnalysis
     SetIsEnd(env, *iterator, is_end);
   }
 
-  void CloneIterator(const clang::CallExpr* expr,
+  void CloneIterator(const clang::Expr* expr,
                      clang::dataflow::RecordStorageLocation& iterator,
                      clang::dataflow::Environment& env) {
     auto* container = GetContainerValue(env, iterator);
@@ -1640,6 +1880,14 @@ class InvalidIteratorAnalysis
     SetSyntheticFieldWithName("container", env, loc, res);
   }
 
+  void SwapContainerValue(clang::dataflow::Environment& env,
+                          clang::dataflow::RecordStorageLocation& loc_a,
+                          clang::dataflow::RecordStorageLocation& loc_b) {
+    iterator_to_container_[&loc_a] = GetContainerValue(env, loc_b);
+    iterator_to_container_[&loc_b] = GetContainerValue(env, loc_a);
+    SwapSyntheticFieldWithName("container", env, loc_a, loc_b);
+  }
+
   // Returns whether the currently handled value is an iterator.
   bool IsIterator(clang::QualType type) {
     return iterator_types_mapping_.count(type.getCanonicalType()) != 0;
@@ -1678,6 +1926,9 @@ class InvalidIteratorAnalysis
         location, diagnostic_.getCustomDiagID(
                       clang::DiagnosticsEngine::Level::Error, error_message));
   }
+
+  // The check model that will handle Chromium's `CHECK` macros.
+  clang::dataflow::ChromiumCheckModel check_model_;
 
   // The diagnostic engine that will issue potential errors.
   clang::DiagnosticsEngine& diagnostic_;

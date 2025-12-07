@@ -21,7 +21,6 @@ class TickClock;
 }
 
 namespace content {
-class NavigationHandle;
 class WebContents;
 }  // namespace content
 
@@ -38,7 +37,8 @@ class ChromeOsLinkCapturingDelegate
   // Returns the app id to launch for a navigation, if any. Exposed for testing.
   static std::optional<std::string> GetLaunchAppId(
       const AppIdsToLaunchForUrl& app_ids_to_launch,
-      bool is_navigation_from_link);
+      bool is_navigation_from_link,
+      int redirection_chain_size);
 
   // Method intended for testing purposes only.
   // Set clock used for timing to enable manipulation during tests.
@@ -46,12 +46,14 @@ class ChromeOsLinkCapturingDelegate
       const base::TickClock* tick_clock);
 
   // apps::LinkCapturingNavigationThrottle::Delegate:
-  bool ShouldCancelThrottleCreation(content::NavigationHandle* handle) override;
+  bool ShouldCancelThrottleCreation(
+      content::NavigationThrottleRegistry& registry) override;
   std::optional<apps::LinkCapturingNavigationThrottle::LaunchCallback>
   CreateLinkCaptureLaunchClosure(Profile* profile,
                                  content::WebContents* web_contents,
                                  const GURL& url,
-                                 bool is_navigation_from_link) final;
+                                 bool is_navigation_from_link,
+                                 int redirection_chain_size) final;
 
  private:
   base::WeakPtrFactory<ChromeOsLinkCapturingDelegate> weak_factory_{this};

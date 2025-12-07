@@ -18,12 +18,13 @@ from typing import Sequence
 
 
 @contextlib.contextmanager
-def atomic_output(path, mode='w+b', only_if_changed=True):
+def atomic_output(path, mode='w+b', encoding=None, only_if_changed=True):
   """Prevent half-written files and dirty mtimes for unchanged files.
 
   Args:
     path: Path to the final output file, which will be written atomically.
     mode: The mode to open the file in (str).
+    encoding: Encoding to use if using non-binary mode.
     only_if_changed: Whether to maintain the mtime if the file has not changed.
   Returns:
     A Context Manager that yields a NamedTemporaryFile instance. On exit, the
@@ -37,8 +38,12 @@ def atomic_output(path, mode='w+b', only_if_changed=True):
   # Create in same directory to ensure same filesystem when moving.
   dirname = os.path.dirname(path) or '.'
   os.makedirs(dirname, exist_ok=True)
+  if encoding is not None and mode == 'w+b':
+    mode = 'w+'
   with tempfile.NamedTemporaryFile(mode,
-                                   suffix=os.path.basename(path),
+                                   encoding=encoding,
+                                   prefix=".tempfile.",
+                                   suffix="." + os.path.basename(path),
                                    dir=dirname,
                                    delete=False) as f:
     try:
@@ -98,7 +103,8 @@ def write_depfile(depfile_path: str,
 
   path = pathlib.Path(depfile_path)
   path.parent.mkdir(parents=True, exist_ok=True)
-  path.write_text(''.join(sb))
+  with atomic_output(str(path), mode='w', encoding='utf-8') as w:
+    w.write(''.join(sb))
 
 
 def parse_gn_list(value):

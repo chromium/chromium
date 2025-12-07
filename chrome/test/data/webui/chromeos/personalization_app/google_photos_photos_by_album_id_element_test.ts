@@ -4,13 +4,14 @@
 
 import 'chrome://personalization/strings.m.js';
 
-import {fetchGooglePhotosAlbum, fetchGooglePhotosAlbums, fetchGooglePhotosEnabled, fetchGooglePhotosPhotos, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, GooglePhotosPhotosByAlbumIdElement, PersonalizationActionName, SetErrorAction, WallpaperGridItemElement, WallpaperLayout, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
+import type {GooglePhotosAlbum, GooglePhotosPhoto, SetErrorAction, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
+import {fetchGooglePhotosAlbum, fetchGooglePhotosAlbums, fetchGooglePhotosEnabled, fetchGooglePhotosPhotos, GooglePhotosEnablementState, GooglePhotosPhotosByAlbumIdElement, PersonalizationActionName, WallpaperLayout, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
 import {assertDeepEquals, assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, createSvgDataUrl, initElement, teardownElement} from './personalization_app_test_utils.js';
-import {TestPersonalizationStore} from './test_personalization_store.js';
-import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
+import type {TestPersonalizationStore} from './test_personalization_store.js';
+import type {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
 suite('GooglePhotosPhotosByAlbumIdElementTest', function() {
   let googlePhotosPhotosByAlbumIdElement: GooglePhotosPhotosByAlbumIdElement|
@@ -142,7 +143,7 @@ suite('GooglePhotosPhotosByAlbumIdElementTest', function() {
           id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
           dedupKey: '2d0d1595-14af-4471-b2db-b9c8eae3a491',
           name: 'foo',
-          date: {data: []},
+          date: '',
           url: {url: createSvgDataUrl('svg-3')},
           location: 'home1',
         },
@@ -150,7 +151,7 @@ suite('GooglePhotosPhotosByAlbumIdElementTest', function() {
           id: '0ec40478-9712-42e1-b5bf-3e75870ca042',
           dedupKey: '2cb1b955-0b7e-4f59-b9d0-802227aeeb28',
           name: 'bar',
-          date: {data: []},
+          date: '',
           url: {url: createSvgDataUrl('svg-4')},
           location: 'home2',
         },
@@ -160,7 +161,7 @@ suite('GooglePhotosPhotosByAlbumIdElementTest', function() {
           id: '0a268a37-877a-4936-81d4-38cc84b0f596',
           dedupKey: 'd99eedfa-43e5-4bca-8882-b881222b8db9',
           name: 'baz',
-          date: {data: []},
+          date: '',
           url: {url: createSvgDataUrl('svg-5')},
           location: 'home3',
         },
@@ -286,7 +287,7 @@ suite('GooglePhotosPhotosByAlbumIdElementTest', function() {
       id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
       dedupKey: '2d0d1595-14af-4471-b2db-b9c8eae3a491',
       name: 'foo',
-      date: {data: []},
+      date: '',
       url: {url: 'foo.com'},
       location: 'home1',
     };
@@ -295,7 +296,7 @@ suite('GooglePhotosPhotosByAlbumIdElementTest', function() {
       id: '0ec40478-9712-42e1-b5bf-3e75870ca042',
       dedupKey: '2cb1b955-0b7e-4f59-b9d0-802227aeeb28',
       name: 'bar',
-      date: {data: []},
+      date: '',
       url: {url: 'bar.com'},
       location: 'home2',
     };
@@ -304,7 +305,7 @@ suite('GooglePhotosPhotosByAlbumIdElementTest', function() {
       id: '0a268a37-877a-4936-81d4-38cc84b0f596',
       dedupKey: photo.dedupKey,
       name: 'baz',
-      date: {data: []},
+      date: '',
       url: {url: 'baz.com'},
       location: 'home3',
     };
@@ -357,6 +358,7 @@ suite('GooglePhotosPhotosByAlbumIdElementTest', function() {
     personalizationStore.data.wallpaper.currentSelected = {
       descriptionContent: '',
       descriptionTitle: '',
+      actionUrl: null,
       key: photo.id,
       layout: WallpaperLayout.kCenter,
       type: WallpaperType.kOnceGooglePhotos,
@@ -382,6 +384,7 @@ suite('GooglePhotosPhotosByAlbumIdElementTest', function() {
     personalizationStore.data.wallpaper.currentSelected = {
       descriptionContent: '',
       descriptionTitle: '',
+      actionUrl: null,
       key: anotherPhoto.id,
       layout: WallpaperLayout.kCenter,
       type: WallpaperType.kOnceGooglePhotos,
@@ -407,6 +410,7 @@ suite('GooglePhotosPhotosByAlbumIdElementTest', function() {
     personalizationStore.data.wallpaper.currentSelected = {
       descriptionContent: '',
       descriptionTitle: '',
+      actionUrl: null,
       key: yetAnotherPhoto.dedupKey!,
       layout: WallpaperLayout.kCenter,
       type: WallpaperType.kOnceGooglePhotos,
@@ -432,6 +436,7 @@ suite('GooglePhotosPhotosByAlbumIdElementTest', function() {
     personalizationStore.data.wallpaper.currentSelected = {
       descriptionContent: '',
       descriptionTitle: '',
+      actionUrl: null,
       key: '//foo',
       layout: WallpaperLayout.kCenter,
       type: WallpaperType.kCustomized,
@@ -460,7 +465,7 @@ suite('GooglePhotosPhotosByAlbumIdElementTest', function() {
                                  id: `id-${i}`,
                                  dedupKey: `dedupKey-${i}`,
                                  name: `name-${i}`,
-                                 date: {data: []},
+                                 date: '',
                                  url: {url: createSvgDataUrl(`svg-${i}`)},
                                  location: `location-${i}`,
                                }));
@@ -566,7 +571,7 @@ suite('GooglePhotosPhotosByAlbumIdElementTest', function() {
             id: `id-${nextPhotoId}`,
             dedupKey: `dedupKey-${nextPhotoId}`,
             name: `name-${nextPhotoId}`,
-            date: {data: []},
+            date: '',
             url: {url: `url-${nextPhotoId}`},
             location: `location-${nextPhotoId++}`,
           };
@@ -606,7 +611,7 @@ suite('GooglePhotosPhotosByAlbumIdElementTest', function() {
             id: `id-${nextPhotoId}`,
             dedupKey: `dedupKey-${nextPhotoId}`,
             name: `name-${nextPhotoId}`,
-            date: {data: []},
+            date: '',
             url: {url: `url-${nextPhotoId}`},
             location: `location-${nextPhotoId++}`,
           };
@@ -715,7 +720,7 @@ suite('GooglePhotosPhotosByAlbumIdElementTest', function() {
       id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
       dedupKey: '2d0d1595-14af-4471-b2db-b9c8eae3a491',
       name: 'foo',
-      date: {data: []},
+      date: '',
       url: {url: 'foo.com'},
       location: 'home',
     };

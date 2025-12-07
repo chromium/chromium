@@ -29,6 +29,8 @@ class PLATFORM_EXPORT BigInt final {
     words_.resize(word_count);
     bigint->ToWordsArray(&sign_bit_, &word_count, words_.data());
   }
+  explicit BigInt(absl::uint128 bigint)
+      : words_{absl::Uint128Low64(bigint), absl::Uint128High64(bigint)} {}
 
   bool IsNegative() const { return sign_bit_ != 0; }
   bool FitsIn128Bits() const { return words_.size() <= 2; }
@@ -52,6 +54,11 @@ class PLATFORM_EXPORT BigInt final {
     }
     return absl::MakeUint128(words_[1], words_[0]);
   }
+
+  // Will return nullopt if this will not fit in 64 bits.
+  std::optional<int64_t> ToInt64() const;
+  // Will return nullopt if this is negative or will not fit 64 bits.
+  std::optional<uint64_t> ToUInt64() const;
 
  private:
   Vector<uint64_t> words_;  // least significant at the front

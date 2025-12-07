@@ -9,6 +9,7 @@ typedef (double or ConstrainDoubleRange) ConstrainDouble;
 typedef (boolean or ConstrainBooleanParameters) ConstrainBoolean;
 typedef (DOMString or sequence<DOMString> or ConstrainDOMStringParameters) ConstrainDOMString;
 typedef (sequence<Point2D> or ConstrainPoint2DParameters) ConstrainPoint2D;
+typedef (boolean or DOMString or ConstrainBooleanOrDOMStringParameters) ConstrainBooleanOrDOMString;
 
 dictionary MediaTrackConstraintSet {
     ConstrainLong width;
@@ -19,7 +20,7 @@ dictionary MediaTrackConstraintSet {
     ConstrainDOMString resizeMode;
     ConstrainLong sampleRate;
     ConstrainLong sampleSize;
-    ConstrainBoolean echoCancellation;
+    ConstrainBooleanOrDOMString echoCancellation;
     ConstrainBoolean autoGainControl;
     ConstrainBoolean noiseSuppression;
     ConstrainBoolean voiceIsolation;
@@ -51,6 +52,7 @@ dictionary MediaTrackConstraintSet {
 
     // W3C Media Capture Extensions
     [RuntimeEnabled=MediaCaptureBackgroundBlur] ConstrainBoolean backgroundBlur;
+    [RuntimeEnabled=MediaCaptureCameraControls] ConstrainBoolean backgroundSegmentationMask;
     [RuntimeEnabled=MediaCaptureCameraControls] ConstrainBoolean eyeGazeCorrection;
     [RuntimeEnabled=MediaCaptureCameraControls] ConstrainBoolean faceFraming;
 
@@ -58,6 +60,7 @@ dictionary MediaTrackConstraintSet {
     // https://w3c.github.io/mediacapture-screen-share/#extensions-to-mediatrackconstraintset
     ConstrainDOMString displaySurface;
     ConstrainBoolean suppressLocalAudioPlayback;
+    [RuntimeEnabled=RestrictOwnAudio] ConstrainBoolean restrictOwnAudio;
 
     // The "mandatory" and "_optional" members are retained for conformance
     // with https://www.w3.org/TR/2013/WD-mediacapture-streams-20130903/

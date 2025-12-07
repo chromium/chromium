@@ -2,6 +2,7 @@
 <!--
 @BLINK-ALLOW:inputType=*
 @BLINK-ALLOW:textSel*
+@BLINK-ALLOW:maxLength*
 @MAC-ALLOW:AXEditableAncestor
 @MAC-ALLOW:AXHighestEditableAncestor
 @MAC-ALLOW:AXRoleDescription
@@ -13,6 +14,7 @@
 @WIN-ALLOW:selection_start*
 @WIN-ALLOW:selection_end*
 @WIN-ALLOW:text-input-type*
+@WIN-ALLOW:maxlength*
 @AURALINUX-ALLOW:text-input-type*
 @AURALINUX-ALLOW:editable
 @AURALINUX-ALLOW:focus*
@@ -20,9 +22,10 @@
 @AURALINUX-ALLOW:caret_offset*
 @AURALINUX-ALLOW:selection_start*
 @AURALINUX-ALLOW:selection_end*
+@AURALINUX-ALLOW:maxlength*
 -->
 <html>
   <body>
-    <input type="text" placeholder="Name" autofocus>
+    <input type="text" placeholder="Name" autofocus maxlength="20">
   </body>
 </html>

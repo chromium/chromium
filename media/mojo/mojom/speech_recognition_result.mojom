@@ -8,7 +8,6 @@ import "mojo/public/mojom/base/string16.mojom";
 
 // A single hypothesis indicating what the recognition service thinks a
 // particular speech segment means.
-[Stable]
 struct SpeechRecognitionHypothesis {
   // Transcript of spoken text.
   mojo_base.mojom.String16 utterance;
@@ -19,7 +18,6 @@ struct SpeechRecognitionHypothesis {
 };
 
 // Group of recognition hypotheses for a particular speech segment.
-[Stable]
 struct WebSpeechRecognitionResult {
   // An N-best list of hypotheses.
   array<media.mojom.SpeechRecognitionHypothesis> hypotheses;

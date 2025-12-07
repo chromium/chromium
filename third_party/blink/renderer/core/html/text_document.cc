@@ -24,6 +24,8 @@
 
 #include "third_party/blink/renderer/core/html/text_document.h"
 
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/html/parser/text_document_parser.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -34,6 +36,13 @@ TextDocument::TextDocument(const DocumentInit& initializer)
     : HTMLDocument(initializer, {DocumentClass::kText}) {
   SetCompatibilityMode(kNoQuirksMode);
   LockCompatibilityMode();
+  // Text documents are rendered using a UA-inserted <pre> tag with a style
+  // attribute. This style attribute should be allowed regardless of the CSP
+  // headers sent with the text file. This is safe since all non-text
+  // rendered content, that would have been blocked, is inserted by the UA.
+  GetExecutionContext()
+      ->GetContentSecurityPolicy()
+      ->SetOverrideAllowInlineStyle(true);
 }
 
 DocumentParser* TextDocument::CreateParser() {

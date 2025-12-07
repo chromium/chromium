@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/fido/mac/util.h"
 
 #import <Foundation/Foundation.h>
@@ -24,10 +19,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "build/branding_buildflags.h"
 #include "components/cbor/writer.h"
-#include "crypto/apple_keychain_v2.h"
-#include "device/fido/fido_constants.h"
-#include "device/fido/fido_parsing_utils.h"
+#include "crypto/apple/keychain_v2.h"
+#include "crypto/hash.h"
 #include "device/fido/p256_public_key.h"
+#include "device/fido/public/fido_constants.h"
 #include "device/fido/public_key.h"
 
 namespace device::fido::mac {
@@ -109,7 +104,7 @@ AuthenticatorData MakeAuthenticatorData(
   if (attested_credential_data) {
     flags |= static_cast<uint8_t>(AuthenticatorData::Flag::kAttestation);
   }
-  return AuthenticatorData(fido_parsing_utils::CreateSHA256Hash(rp_id), flags,
+  return AuthenticatorData(crypto::hash::Sha256(rp_id), flags,
                            MakeSignatureCounter(counter_type),
                            std::move(attested_credential_data));
 }
@@ -130,16 +125,15 @@ std::optional<std::vector<uint8_t>> GenerateSignature(
                     client_data_hash.size());
   ScopedCFTypeRef<CFErrorRef> err;
   ScopedCFTypeRef<CFDataRef> sig_data(
-      crypto::AppleKeychainV2::GetInstance().KeyCreateSignature(
+      crypto::apple::KeychainV2::GetInstance().KeyCreateSignature(
           private_key, kSecKeyAlgorithmECDSASignatureMessageX962SHA256,
           sig_input.get(), err.InitializeInto()));
   if (!sig_data) {
     LOG(ERROR) << "SecKeyCreateSignature failed: " << err.get();
     return std::nullopt;
   }
-  return std::vector<uint8_t>(
-      CFDataGetBytePtr(sig_data.get()),
-      CFDataGetBytePtr(sig_data.get()) + CFDataGetLength(sig_data.get()));
+  auto sig_data_span = base::apple::CFDataToSpan(sig_data.get());
+  return std::vector<uint8_t>(sig_data_span.begin(), sig_data_span.end());
 }
 
 // SecKeyRefToECPublicKey converts a SecKeyRef for a public key into an
@@ -154,9 +148,7 @@ std::unique_ptr<PublicKey> SecKeyRefToECPublicKey(SecKeyRef public_key_ref) {
     LOG(ERROR) << "SecCopyExternalRepresentation failed: " << err.get();
     return nullptr;
   }
-  base::span<const uint8_t> key_data = base::make_span(
-      CFDataGetBytePtr(data_ref.get()),
-      base::checked_cast<size_t>(CFDataGetLength(data_ref.get())));
+  auto key_data = base::apple::CFDataToSpan(data_ref.get());
   auto key = P256PublicKey::ParseX962Uncompressed(
       static_cast<int32_t>(CoseAlgorithmIdentifier::kEs256), key_data);
   if (!key) {
@@ -232,7 +224,7 @@ bool DeviceHasBiometricsAvailable() {
     return *flag;
   }
 
-  return crypto::AppleKeychainV2::GetInstance().LAContextCanEvaluatePolicy(
+  return crypto::apple::KeychainV2::GetInstance().LAContextCanEvaluatePolicy(
       LAPolicyDeviceOwnerAuthenticationWithBiometrics, /*error=*/nil);
 }
 

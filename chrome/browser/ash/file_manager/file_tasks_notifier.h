@@ -58,8 +58,6 @@ class FileTasksNotifier : public KeyedService,
 
   ~FileTasksNotifier() override;
 
-  static FileTasksNotifier* GetForProfile(Profile* profile);
-
   void AddObserver(FileTasksObserver*);
   void RemoveObserver(FileTasksObserver*);
 

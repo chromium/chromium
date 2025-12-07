@@ -20,7 +20,10 @@ namespace ui {
 
 struct COMPONENT_EXPORT(VELOCITY_TRACKER) PointerProperties {
   PointerProperties();
-  PointerProperties(float x, float y, float touch_major);
+  PointerProperties(float x,
+                    float y,
+                    float touch_major,
+                    bool has_native_touch_major = true);
   PointerProperties(const MotionEvent& event, size_t pointer_index);
   PointerProperties(const PointerProperties& other);
   PointerProperties& operator=(const PointerProperties& other);
@@ -47,6 +50,7 @@ struct COMPONENT_EXPORT(VELOCITY_TRACKER) PointerProperties {
   float tangential_pressure;
   // source_device_id is only used on Aura.
   int source_device_id;
+  bool has_native_touch_major = true;
 };
 
 // A generic MotionEvent implementation.
@@ -72,6 +76,7 @@ class COMPONENT_EXPORT(VELOCITY_TRACKER) MotionEventGeneric
   float GetRawY(size_t pointer_index) const override;
   float GetTouchMajor(size_t pointer_index) const override;
   float GetTouchMinor(size_t pointer_index) const override;
+  bool HasNativeTouchMajor(size_t pointer_index) const override;
   float GetOrientation(size_t pointer_index) const override;
   float GetPressure(size_t pointer_index) const override;
   float GetTiltX(size_t pointer_index) const override;
@@ -87,6 +92,8 @@ class COMPONENT_EXPORT(VELOCITY_TRACKER) MotionEventGeneric
       size_t historical_index) const override;
   float GetHistoricalTouchMajor(size_t pointer_index,
                                 size_t historical_index) const override;
+  bool GetHistoricalHasNativeTouchMajor(size_t pointer_index,
+                                        size_t historical_index) const override;
   float GetHistoricalX(size_t pointer_index,
                        size_t historical_index) const override;
   float GetHistoricalY(size_t pointer_index,
@@ -119,7 +126,8 @@ class COMPONENT_EXPORT(VELOCITY_TRACKER) MotionEventGeneric
   void set_flags(int flags) { flags_ = flags; }
 
   static std::unique_ptr<MotionEventGeneric> CloneEvent(
-      const MotionEvent& event);
+      const MotionEvent& event,
+      bool with_history);
   static std::unique_ptr<MotionEventGeneric> CancelEvent(
       const MotionEvent& event);
 

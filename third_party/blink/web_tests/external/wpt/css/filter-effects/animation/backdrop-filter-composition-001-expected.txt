@@ -1,0 +1,60 @@
+This is a testharness.js-based test.
+Found 28 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Compositing CSS Animations: property <backdrop-filter> underlying [url(#a)] from add [grayscale(50%) blur(30px)] to add [grayscale(25%) blur(40px)] at (-0.5) should be [url("#a") grayscale(0.5) blur(30px)]
+  assert_equals: expected "url ( \\" # a \\" ) grayscale ( 0.5 ) blur ( 30px ) " but got "grayscale ( 0.5 ) blur ( 30px ) "
+[FAIL] Compositing CSS Animations: property <backdrop-filter> underlying [url(#a)] from add [grayscale(50%) blur(30px)] to add [grayscale(25%) blur(40px)] at (0) should be [url("#a") grayscale(0.5) blur(30px)]
+  assert_equals: expected "url ( \\" # a \\" ) grayscale ( 0.5 ) blur ( 30px ) " but got "grayscale ( 0.5 ) blur ( 30px ) "
+[FAIL] Compositing CSS Animations: property <backdrop-filter> underlying [url(#a)] from add [grayscale(50%) blur(30px)] to add [grayscale(25%) blur(40px)] at (0.25) should be [url("#a") grayscale(0.5) blur(30px)]
+  assert_equals: expected "url ( \\" # a \\" ) grayscale ( 0.5 ) blur ( 30px ) " but got "grayscale ( 0.5 ) blur ( 30px ) "
+[FAIL] Compositing CSS Animations: property <backdrop-filter> underlying [url(#a)] from add [grayscale(50%) blur(30px)] to add [grayscale(25%) blur(40px)] at (0.5) should be [url("#a") grayscale(0.25) blur(40px)]
+  assert_equals: expected "url ( \\" # a \\" ) grayscale ( 0.25 ) blur ( 40px ) " but got "grayscale ( 0.25 ) blur ( 40px ) "
+[FAIL] Compositing CSS Animations: property <backdrop-filter> underlying [url(#a)] from add [grayscale(50%) blur(30px)] to add [grayscale(25%) blur(40px)] at (0.75) should be [url("#a") grayscale(0.25) blur(40px)]
+  assert_equals: expected "url ( \\" # a \\" ) grayscale ( 0.25 ) blur ( 40px ) " but got "grayscale ( 0.25 ) blur ( 40px ) "
+[FAIL] Compositing CSS Animations: property <backdrop-filter> underlying [url(#a)] from add [grayscale(50%) blur(30px)] to add [grayscale(25%) blur(40px)] at (1) should be [url("#a") grayscale(0.25) blur(40px)]
+  assert_equals: expected "url ( \\" # a \\" ) grayscale ( 0.25 ) blur ( 40px ) " but got "grayscale ( 0.25 ) blur ( 40px ) "
+[FAIL] Compositing CSS Animations: property <backdrop-filter> underlying [url(#a)] from add [grayscale(50%) blur(30px)] to add [grayscale(25%) blur(40px)] at (1.5) should be [url("#a") grayscale(0.25) blur(40px)]
+  assert_equals: expected "url ( \\" # a \\" ) grayscale ( 0.25 ) blur ( 40px ) " but got "grayscale ( 0.25 ) blur ( 40px ) "
+[FAIL] Compositing Web Animations: property <backdrop-filter> underlying [url(#a)] from add [grayscale(50%) blur(30px)] to add [grayscale(25%) blur(40px)] at (-0.5) should be [url("#a") grayscale(0.5) blur(30px)]
+  assert_equals: expected "url ( \\" # a \\" ) grayscale ( 0.5 ) blur ( 30px ) " but got "grayscale ( 0.5 ) blur ( 30px ) "
+[FAIL] Compositing Web Animations: property <backdrop-filter> underlying [url(#a)] from add [grayscale(50%) blur(30px)] to add [grayscale(25%) blur(40px)] at (0) should be [url("#a") grayscale(0.5) blur(30px)]
+  assert_equals: expected "url ( \\" # a \\" ) grayscale ( 0.5 ) blur ( 30px ) " but got "grayscale ( 0.5 ) blur ( 30px ) "
+[FAIL] Compositing Web Animations: property <backdrop-filter> underlying [url(#a)] from add [grayscale(50%) blur(30px)] to add [grayscale(25%) blur(40px)] at (0.25) should be [url("#a") grayscale(0.5) blur(30px)]
+  assert_equals: expected "url ( \\" # a \\" ) grayscale ( 0.5 ) blur ( 30px ) " but got "grayscale ( 0.5 ) blur ( 30px ) "
+[FAIL] Compositing Web Animations: property <backdrop-filter> underlying [url(#a)] from add [grayscale(50%) blur(30px)] to add [grayscale(25%) blur(40px)] at (0.5) should be [url("#a") grayscale(0.25) blur(40px)]
+  assert_equals: expected "url ( \\" # a \\" ) grayscale ( 0.25 ) blur ( 40px ) " but got "grayscale ( 0.25 ) blur ( 40px ) "
+[FAIL] Compositing Web Animations: property <backdrop-filter> underlying [url(#a)] from add [grayscale(50%) blur(30px)] to add [grayscale(25%) blur(40px)] at (0.75) should be [url("#a") grayscale(0.25) blur(40px)]
+  assert_equals: expected "url ( \\" # a \\" ) grayscale ( 0.25 ) blur ( 40px ) " but got "grayscale ( 0.25 ) blur ( 40px ) "
+[FAIL] Compositing Web Animations: property <backdrop-filter> underlying [url(#a)] from add [grayscale(50%) blur(30px)] to add [grayscale(25%) blur(40px)] at (1) should be [url("#a") grayscale(0.25) blur(40px)]
+  assert_equals: expected "url ( \\" # a \\" ) grayscale ( 0.25 ) blur ( 40px ) " but got "grayscale ( 0.25 ) blur ( 40px ) "
+[FAIL] Compositing Web Animations: property <backdrop-filter> underlying [url(#a)] from add [grayscale(50%) blur(30px)] to add [grayscale(25%) blur(40px)] at (1.5) should be [url("#a") grayscale(0.25) blur(40px)]
+  assert_equals: expected "url ( \\" # a \\" ) grayscale ( 0.25 ) blur ( 40px ) " but got "grayscale ( 0.25 ) blur ( 40px ) "
+[FAIL] Compositing CSS Animations: property <backdrop-filter> underlying [blur(10px)] from add [url(#a) brightness(1)] to add [url(#b) brightness(0)] at (-0.5) should be [blur(10px) url(#a) brightness(1)]
+  assert_equals: expected "blur ( 10px ) url ( \\" # a \\" ) brightness ( 1 ) " but got "url ( \\" # a \\" ) brightness ( 1 ) "
+[FAIL] Compositing CSS Animations: property <backdrop-filter> underlying [blur(10px)] from add [url(#a) brightness(1)] to add [url(#b) brightness(0)] at (0) should be [blur(10px) url(#a) brightness(1)]
+  assert_equals: expected "blur ( 10px ) url ( \\" # a \\" ) brightness ( 1 ) " but got "url ( \\" # a \\" ) brightness ( 1 ) "
+[FAIL] Compositing CSS Animations: property <backdrop-filter> underlying [blur(10px)] from add [url(#a) brightness(1)] to add [url(#b) brightness(0)] at (0.25) should be [blur(10px) url(#a) brightness(1)]
+  assert_equals: expected "blur ( 10px ) url ( \\" # a \\" ) brightness ( 1 ) " but got "url ( \\" # a \\" ) brightness ( 1 ) "
+[FAIL] Compositing CSS Animations: property <backdrop-filter> underlying [blur(10px)] from add [url(#a) brightness(1)] to add [url(#b) brightness(0)] at (0.5) should be [blur(10px) url(#b) brightness(0)]
+  assert_equals: expected "blur ( 10px ) url ( \\" # b \\" ) brightness ( 0 ) " but got "url ( \\" # b \\" ) brightness ( 0 ) "
+[FAIL] Compositing CSS Animations: property <backdrop-filter> underlying [blur(10px)] from add [url(#a) brightness(1)] to add [url(#b) brightness(0)] at (0.75) should be [blur(10px) url(#b) brightness(0)]
+  assert_equals: expected "blur ( 10px ) url ( \\" # b \\" ) brightness ( 0 ) " but got "url ( \\" # b \\" ) brightness ( 0 ) "
+[FAIL] Compositing CSS Animations: property <backdrop-filter> underlying [blur(10px)] from add [url(#a) brightness(1)] to add [url(#b) brightness(0)] at (1) should be [blur(10px) url(#b) brightness(0)]
+  assert_equals: expected "blur ( 10px ) url ( \\" # b \\" ) brightness ( 0 ) " but got "url ( \\" # b \\" ) brightness ( 0 ) "
+[FAIL] Compositing CSS Animations: property <backdrop-filter> underlying [blur(10px)] from add [url(#a) brightness(1)] to add [url(#b) brightness(0)] at (1.5) should be [blur(10px) url(#b) brightness(0)]
+  assert_equals: expected "blur ( 10px ) url ( \\" # b \\" ) brightness ( 0 ) " but got "url ( \\" # b \\" ) brightness ( 0 ) "
+[FAIL] Compositing Web Animations: property <backdrop-filter> underlying [blur(10px)] from add [url(#a) brightness(1)] to add [url(#b) brightness(0)] at (-0.5) should be [blur(10px) url(#a) brightness(1)]
+  assert_equals: expected "blur ( 10px ) url ( \\" # a \\" ) brightness ( 1 ) " but got "url ( \\" # a \\" ) brightness ( 1 ) "
+[FAIL] Compositing Web Animations: property <backdrop-filter> underlying [blur(10px)] from add [url(#a) brightness(1)] to add [url(#b) brightness(0)] at (0) should be [blur(10px) url(#a) brightness(1)]
+  assert_equals: expected "blur ( 10px ) url ( \\" # a \\" ) brightness ( 1 ) " but got "url ( \\" # a \\" ) brightness ( 1 ) "
+[FAIL] Compositing Web Animations: property <backdrop-filter> underlying [blur(10px)] from add [url(#a) brightness(1)] to add [url(#b) brightness(0)] at (0.25) should be [blur(10px) url(#a) brightness(1)]
+  assert_equals: expected "blur ( 10px ) url ( \\" # a \\" ) brightness ( 1 ) " but got "url ( \\" # a \\" ) brightness ( 1 ) "
+[FAIL] Compositing Web Animations: property <backdrop-filter> underlying [blur(10px)] from add [url(#a) brightness(1)] to add [url(#b) brightness(0)] at (0.5) should be [blur(10px) url(#b) brightness(0)]
+  assert_equals: expected "blur ( 10px ) url ( \\" # b \\" ) brightness ( 0 ) " but got "url ( \\" # b \\" ) brightness ( 0 ) "
+[FAIL] Compositing Web Animations: property <backdrop-filter> underlying [blur(10px)] from add [url(#a) brightness(1)] to add [url(#b) brightness(0)] at (0.75) should be [blur(10px) url(#b) brightness(0)]
+  assert_equals: expected "blur ( 10px ) url ( \\" # b \\" ) brightness ( 0 ) " but got "url ( \\" # b \\" ) brightness ( 0 ) "
+[FAIL] Compositing Web Animations: property <backdrop-filter> underlying [blur(10px)] from add [url(#a) brightness(1)] to add [url(#b) brightness(0)] at (1) should be [blur(10px) url(#b) brightness(0)]
+  assert_equals: expected "blur ( 10px ) url ( \\" # b \\" ) brightness ( 0 ) " but got "url ( \\" # b \\" ) brightness ( 0 ) "
+[FAIL] Compositing Web Animations: property <backdrop-filter> underlying [blur(10px)] from add [url(#a) brightness(1)] to add [url(#b) brightness(0)] at (1.5) should be [blur(10px) url(#b) brightness(0)]
+  assert_equals: expected "blur ( 10px ) url ( \\" # b \\" ) brightness ( 0 ) " but got "url ( \\" # b \\" ) brightness ( 0 ) "
+Harness: the test ran to completion.
+

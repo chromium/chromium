@@ -14,7 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/net/delay_network_call.h"
-#include "chrome/browser/ash/preferences.h"
+#include "chrome/browser/ash/preferences/preferences.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
 #include "chrome/browser/ash/system/timezone_util.h"
@@ -22,7 +22,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -68,8 +68,7 @@ ServiceConfiguration GetServiceConfigurationFromAutomaticDetectionPolicy() {
       return SHOULD_START;
   }
   // Default for unknown policy value.
-  NOTREACHED_IN_MIGRATION() << "Unrecognized policy value: " << policy_value;
-  return SHOULD_STOP;
+  NOTREACHED() << "Unrecognized policy value: " << policy_value;
 }
 
 // Stops TimezoneResolver if SystemTimezonePolicy is applied.
@@ -142,7 +141,7 @@ ServiceConfiguration GetServiceConfigurationForSigninScreen() {
 }  // anonymous namespace.
 
 TimeZoneResolverManager::TimeZoneResolverManager(
-    SimpleGeolocationProvider* geolocation_provider,
+    SystemLocationProvider* geolocation_provider,
     session_manager::SessionManager* session_manager)
     : geolocation_provider_(geolocation_provider) {
   switch (g_browser_process->local_state()->GetInitializationStatus()) {
@@ -425,8 +424,7 @@ TimeZoneResolverManager::GetEffectiveUserTimeZoneResolveMethod(
       case enterprise_management::SystemTimezoneProto::SEND_ALL_LOCATION_INFO:
         return TimeZoneResolveMethod::SEND_ALL_LOCATION_INFO;
       default:
-        NOTREACHED_IN_MIGRATION();
-        return TimeZoneResolveMethod::DISABLED;
+        NOTREACHED();
     }
   }
   if (user_prefs->GetBoolean(

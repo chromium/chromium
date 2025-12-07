@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
+#include "chromecast/base/bitstream_audio_codecs.h"
 #include "chromecast/base/cast_features.h"
 #include "chromecast/media/audio/cast_audio_output_device.h"
 #include "content/public/renderer/render_frame.h"
@@ -19,6 +20,8 @@
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_renderer_sink.h"
 #include "media/base/output_device_info.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/web/modules/media/audio/audio_output_ipc_factory.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -58,8 +61,13 @@ class NonSwitchableAudioRendererSink
  public:
   explicit NonSwitchableAudioRendererSink(
       const blink::LocalFrameToken& frame_token,
-      const ::media::AudioSinkParameters& params)
-      : frame_token_(frame_token), sink_params_(params) {
+      const ::media::AudioSinkParameters& params,
+      ::chromecast::BitstreamAudioCodecsInfo
+          supported_bitstream_audio_codecs_info)
+      : frame_token_(frame_token),
+        sink_params_(params),
+        supported_bitstream_audio_codecs_info_(
+            std::move(supported_bitstream_audio_codecs_info)) {
     auto* render_frame = GetRenderFrameForToken(frame_token);
     DCHECK(render_frame);
     render_frame->GetBrowserInterfaceBroker().GetInterface(
@@ -72,11 +80,12 @@ class NonSwitchableAudioRendererSink
                   RenderCallback* callback) override {
     // NonSwitchableAudioRendererSink derives from RestartableRenderSink which
     // does allow calling Initialize and Play again after stopping.
-    if (is_initialized_)
+    if (is_initialized_) {
       return;
+    }
     is_initialized_ = true;
 
-    if (!(base::android::BundleUtils::IsBundle() ||
+    if (!(base::android::BundleUtils::HasAnyInstalledSplits() ||
           base::FeatureList::IsEnabled(kEnableCastAudioOutputDevice)) ||
         params.IsBitstreamFormat()) {
       output_device_ =
@@ -134,6 +143,20 @@ class NonSwitchableAudioRendererSink
     if (output_device_) {
       return output_device_->GetOutputDeviceInfo();
     }
+
+    int bitstream_formats = 0;
+    if (supported_bitstream_audio_codecs_info_.codecs &
+        kBitstreamAudioCodecAc3) {
+      bitstream_formats |= ::media::AudioParameters::AUDIO_BITSTREAM_AC3;
+    }
+    if (supported_bitstream_audio_codecs_info_.codecs &
+        kBitstreamAudioCodecEac3) {
+      bitstream_formats |= ::media::AudioParameters::AUDIO_BITSTREAM_EAC3;
+    }
+    ::media::AudioParameters::HardwareCapabilities hardware_capabilities(
+        bitstream_formats,
+        /*require_encapsulation=*/false);
+
     // GetOutputDeviceInfo() may be called when the underlying `output_device_`
     // hasn't been constructed. Return the default set of parameters in this
     // case.
@@ -141,7 +164,8 @@ class NonSwitchableAudioRendererSink
         std::string(), ::media::OUTPUT_DEVICE_STATUS_OK,
         ::media::AudioParameters(
             ::media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-            ::media::ChannelLayoutConfig::Stereo(), 48000, 480));
+            ::media::ChannelLayoutConfig::Stereo(), 48000, 480,
+            hardware_capabilities));
   }
 
   void GetOutputDeviceInfoAsync(OutputDeviceInfoCB info_cb) override {
@@ -180,8 +204,9 @@ class NonSwitchableAudioRendererSink
 
  protected:
   ~NonSwitchableAudioRendererSink() override {
-    if (output_device_)
+    if (output_device_) {
       output_device_->Stop();
+    }
   }
 
  private:
@@ -232,6 +257,8 @@ class NonSwitchableAudioRendererSink
 
   const blink::LocalFrameToken frame_token_;
   const ::media::AudioSinkParameters sink_params_;
+  const ::chromecast::BitstreamAudioCodecsInfo
+      supported_bitstream_audio_codecs_info_;
 
   mojo::PendingRemote<mojom::AudioSocketBroker> pending_audio_socket_broker_;
   mojo::PendingRemote<::media::mojom::CastApplicationMediaInfoManager>
@@ -259,8 +286,13 @@ CastAudioDeviceFactory::NewMixableSink(
     const blink::LocalFrameToken& frame_token,
     const blink::FrameToken& main_frame_token,
     const ::media::AudioSinkParameters& params) {
-  return base::MakeRefCounted<NonSwitchableAudioRendererSink>(frame_token,
-                                                              params);
+  return base::MakeRefCounted<NonSwitchableAudioRendererSink>(
+      frame_token, params, supported_bitstream_audio_codecs_info_);
+}
+
+void CastAudioDeviceFactory::SetSupportedBitstreamAudioCodec(
+    BitstreamAudioCodecsInfo info) {
+  supported_bitstream_audio_codecs_info_ = info;
 }
 
 }  // namespace media

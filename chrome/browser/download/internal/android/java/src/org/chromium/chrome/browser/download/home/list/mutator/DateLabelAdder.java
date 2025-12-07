@@ -4,9 +4,8 @@
 
 package org.chromium.chrome.browser.download.home.list.mutator;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
 import org.chromium.chrome.browser.download.home.JustNowProvider;
 import org.chromium.chrome.browser.download.home.list.ListItem;
@@ -20,18 +19,17 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Given a list of {@link ListItem}, returns a list that has date headers for each date.
- * Also adds Just Now header for recently completed items. Note that this class must be called on
- * the list before adding any other labels such as card header/footer/pagination etc.
+ * Given a list of {@link ListItem}, returns a list that has date headers for each date. Also adds
+ * Just Now header for recently completed items. Note that this class must be called on the list
+ * before adding any other labels such as card header/footer/pagination etc.
  */
+@NullMarked
 public class DateLabelAdder implements ListConsumer {
-    private final DownloadManagerUiConfig mConfig;
-    @Nullable private final JustNowProvider mJustNowProvider;
-    private ListConsumer mListConsumer;
+    private final @Nullable JustNowProvider mJustNowProvider;
+    private @Nullable ListConsumer mListConsumer;
 
     public DateLabelAdder(
             DownloadManagerUiConfig config, @Nullable JustNowProvider justNowProvider) {
-        mConfig = config;
         mJustNowProvider = justNowProvider;
     }
 
@@ -67,7 +65,7 @@ public class DateLabelAdder implements ListConsumer {
 
     private void maybeAddSectionHeader(
             List<ListItem> listWithHeaders,
-            @NonNull OfflineItem currentItem,
+            OfflineItem currentItem,
             @Nullable OfflineItem previousItem) {
         @SectionHeaderType int currentHeaderType = getSectionHeaderType(currentItem);
         @SectionHeaderType int previousHeaderType = getSectionHeaderType(previousItem);
@@ -86,8 +84,7 @@ public class DateLabelAdder implements ListConsumer {
         }
     }
 
-    private void addSectionHeader(
-            List<ListItem> listWithHeaders, @NonNull OfflineItem currentItem) {
+    private void addSectionHeader(List<ListItem> listWithHeaders, OfflineItem currentItem) {
         Date day = CalendarUtils.getStartOfDay(currentItem.creationTimeMs).getTime();
         ListItem.SectionHeaderListItem sectionHeaderItem =
                 new ListItem.SectionHeaderListItem(

@@ -77,7 +77,7 @@ class that encapsulates that logic is the
 
 `SubresourceFilterSafeBrowsingActivationThrottle`=>`SubresourceFilterSafeBrowsingClient`=>`SubresourceFilterSafeBrowsingClientRequest`
 The Safe Browsing client owns multiple Safe Browsing requests, and lives on the
-IO thread.
+UI thread.
 
 Currently, the `SubresourceFilterSafeBrowsingActivationThrottle` checks every
 redirect URL speculatively, but makes an activation decision based on the last

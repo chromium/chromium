@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -30,22 +31,23 @@ const int kTimeOutMilliseconds = 2000;
 const char kChromePipeNamePrefix[] = "\\\\.\\pipe\\chrome_remote_desktop.";
 
 uint32_t CreateNamedPipe(const std::string& pipe_name,
-                         const remoting::ScopedSd& security_descriptor,
+                         remoting::ScopedSd& security_descriptor,
                          uint32_t open_mode,
                          base::win::ScopedHandle* file_handle) {
   DCHECK(file_handle);
 
-  SECURITY_ATTRIBUTES security_attributes = {0};
-  security_attributes.nLength = sizeof(security_attributes);
-  security_attributes.lpSecurityDescriptor = security_descriptor.get();
-  security_attributes.bInheritHandle = FALSE;
+  SECURITY_ATTRIBUTES security_attributes = {
+      .nLength = sizeof(security_attributes),
+      .lpSecurityDescriptor = security_descriptor.get(),
+      .bInheritHandle = FALSE,
+  };
 
   base::win::ScopedHandle temp_handle(::CreateNamedPipe(
       base::ASCIIToWide(pipe_name).c_str(), open_mode,
       PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_REJECT_REMOTE_CLIENTS, 1,
       kBufferSize, kBufferSize, kTimeOutMilliseconds, &security_attributes));
 
-  if (!temp_handle.IsValid()) {
+  if (!temp_handle.is_valid()) {
     uint32_t error = GetLastError();
     PLOG(ERROR) << "Failed to create named pipe '" << pipe_name << "'";
     return error;
@@ -99,7 +101,7 @@ ProcessLaunchResult LaunchNativeMessagingHostProcess(
   base::win::ScopedHandle temp_write_handle;
   CreateNamedPipe(input_pipe_name, sd, PIPE_ACCESS_OUTBOUND,
                   &temp_write_handle);
-  if (!temp_write_handle.IsValid()) {
+  if (!temp_write_handle.is_valid()) {
     return PROCESS_LAUNCH_RESULT_FAILED;
   }
 
@@ -107,7 +109,7 @@ ProcessLaunchResult LaunchNativeMessagingHostProcess(
   output_pipe_name.append(IPC::Channel::GenerateUniqueRandomChannelID());
   base::win::ScopedHandle temp_read_handle;
   CreateNamedPipe(output_pipe_name, sd, PIPE_ACCESS_INBOUND, &temp_read_handle);
-  if (!temp_read_handle.IsValid()) {
+  if (!temp_read_handle.is_valid()) {
     return PROCESS_LAUNCH_RESULT_FAILED;
   }
 
@@ -135,8 +137,7 @@ ProcessLaunchResult LaunchNativeMessagingHostProcess(
   base::CommandLine::StringType params = command_line.GetCommandLineString();
 
   // Launch the child process, requesting elevation if needed.
-  SHELLEXECUTEINFO info;
-  memset(&info, 0, sizeof(info));
+  SHELLEXECUTEINFO info = {};
   info.cbSize = sizeof(info);
   info.hwnd = reinterpret_cast<HWND>(parent_window_handle);
   info.lpFile = binary_path.value().c_str();

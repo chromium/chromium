@@ -25,8 +25,8 @@ const ClientId kClientId1("download", "1234");
 
 class MarkAttemptCompletedTaskTest : public RequestQueueTaskTestBase {
  public:
-  MarkAttemptCompletedTaskTest() {}
-  ~MarkAttemptCompletedTaskTest() override {}
+  MarkAttemptCompletedTaskTest() = default;
+  ~MarkAttemptCompletedTaskTest() override = default;
 
   void AddStartedItemToStore();
   void ChangeRequestsStateCallback(UpdateRequestsResult result);

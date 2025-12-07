@@ -10,6 +10,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/services/sharing/nearby/platform/wifi_direct_server_socket.h"
 #include "chromeos/ash/services/nearby/public/cpp/fake_firewall_hole_factory.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -85,9 +86,9 @@ class FakeWifiDirectConnection
 class FakeWifiDirectManager
     : public ash::wifi_direct::mojom::WifiDirectManager {
  public:
-  FakeWifiDirectManager() {}
+  FakeWifiDirectManager() = default;
 
-  ~FakeWifiDirectManager() override {}
+  ~FakeWifiDirectManager() override = default;
 
   void CreateWifiDirectGroup(
       ash::wifi_direct::mojom::WifiCredentialsPtr credentials,
@@ -429,7 +430,7 @@ TEST_F(WifiDirectMediumTest,
         WifiDirectCredentials credentials;
         credentials.SetSSID(kTestSSID);
         credentials.SetPassword(kTestPassword);
-        credentials.SetFrequency(0);
+        credentials.SetFrequency(-1);
         EXPECT_TRUE(medium->ConnectWifiDirect(&credentials));
       },
       medium()));

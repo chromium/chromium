@@ -118,21 +118,21 @@ public class PartnerBrowserCustomizationsRoboUnitTest {
 
         public ShadowCustomizationProviderDelegate() {}
 
+        /** Returns the homepage string or null if none is available. */
         @Implementation
         @Nullable
-        /** Returns the homepage string or null if none is available. */
         protected String getHomepage() {
             return sHomepage;
         }
 
-        @Implementation
         /** Returns whether incognito mode is disabled. */
+        @Implementation
         protected boolean isIncognitoModeDisabled() {
             return false;
         }
 
-        @Implementation
         /** Returns whether bookmark editing is disabled. */
+        @Implementation
         protected boolean isBookmarksEditingDisabled() {
             return false;
         }

@@ -22,20 +22,25 @@ a[is=action-link] {
 /* Use <h2> as the "sub-header" mentioned in the UX design docs. */
 h2 {
   align-items: center;
+  /* TODO(crbug.com/454617005): consider changing to auto */
   align-self: flex-start;
   color: var(--cr-secondary-text-color);
   display: flex;
   font-size: inherit;
   font-weight: 500;
   margin: 0;
+  /* TODO(crbug.com/454617005): consider changing to 0 */
   padding-bottom: 12px;
+  /* TODO(crbug.com/454617005): consider changing to 12px */
   padding-top: 32px;
 }
 
+cr-icon,
 iron-icon {
   flex-shrink: 0;  /* Prevent distortion of icons in cramped UI. */
 }
 
+cr-icon.policy,
 iron-icon.policy {
   margin-inline-end: var(--cr-controlled-by-spacing);
 }
@@ -345,9 +350,13 @@ iron-list,
   unicode-bidi: embed;
 }
 
-<if expr='chromeos_ash'>
+<if expr='is_chromeos'>
 /* Override dialog title font specified in cros_color_overrides.css */
 :host-context(body.jelly-enabled) cr-dialog>[slot='title'] {
   font: var(--cros-title-1-font);
 }
 </if>
+
+.flex {
+  flex: 1;
+}

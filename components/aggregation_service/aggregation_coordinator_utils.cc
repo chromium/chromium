@@ -4,7 +4,7 @@
 
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
 
-#include <string>
+#include <algorithm>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -12,7 +12,6 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "components/aggregation_service/features.h"
 #include "components/attribution_reporting/is_origin_suitable.h"
@@ -28,7 +27,7 @@ std::vector<url::Origin> DefaultOrigins() {
           url::Origin::Create(GURL(kDefaultAggregationCoordinatorGcpCloud))};
 }
 
-std::vector<url::Origin> Parse(const std::string& unparsed) {
+std::vector<url::Origin> Parse(std::string_view unparsed) {
   std::vector<url::Origin> parsed;
 
   std::vector<std::string_view> tokens = base::SplitStringPiece(
@@ -53,7 +52,7 @@ class CoordinatorOrigins {
   CoordinatorOrigins() = default;
   ~CoordinatorOrigins() = default;
 
-  explicit CoordinatorOrigins(const std::string& unparsed)
+  explicit CoordinatorOrigins(std::string_view unparsed)
       : CoordinatorOrigins(Parse(unparsed)) {}
 
   explicit CoordinatorOrigins(std::vector<url::Origin> origins)
@@ -83,8 +82,8 @@ class CoordinatorOrigins {
     if (origins_.empty()) {
       return false;
     }
-    return base::ranges::all_of(origins_,
-                                &attribution_reporting::IsOriginSuitable);
+    return std::ranges::all_of(origins_,
+                               &attribution_reporting::IsOriginSuitable);
   }
 
  private:

@@ -15,8 +15,8 @@ example_value:
 features:
   dynamic_refresh: true
   per_profile: false
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:131-
 owners:
 - cros-networking@google.com
 - jasongustaman@chromium.org

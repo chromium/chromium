@@ -6,17 +6,12 @@
 #define COMPONENTS_TRANSLATE_CORE_COMMON_TRANSLATE_UTIL_H_
 
 #include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
 #include "url/gurl.h"
 
 namespace translate {
 
-// Controls whether the TFLite-based language detection is enabled.
-BASE_DECLARE_FEATURE(kTFLiteLanguageDetectionEnabled);
-
-// Controls whether the TFLite-based language detection is computed, but ignored
-// and the CLD3 version is used instead.
-BASE_DECLARE_FEATURE(kTFLiteLanguageDetectionIgnoreEnabled);
+// The minimum score for the TFLite model prediction to be considered reliable.
+inline constexpr double kTFLiteReliabilityThreshold = 0.7;
 
 // Isolated world sets following security-origin by default.
 extern const char kSecurityOrigin[];
@@ -25,15 +20,8 @@ extern const char kSecurityOrigin[];
 // language checks and to obtain the list of available languages.
 GURL GetTranslateSecurityOrigin();
 
-// Return whether sub frame language detection is enabled.
-bool IsSubFrameLanguageDetectionEnabled();
-
 // Return whether TFLite-based language detection is enabled.
 bool IsTFLiteLanguageDetectionEnabled();
-
-// Return whether TFLite-based language detection is enabled, but the result is
-// ignored.
-bool IsTFLiteLanguageDetectionIgnoreEnabled();
 
 // Return the threshold used to determine if TFLite language detection model's
 // prediction is reliable.

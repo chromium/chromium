@@ -2,6 +2,16 @@ features:
 - name: check-visibility
   files:
   - checkVisibility.html
+- name: element-from-point
+  files:
+  - elementFromPoint*
+  - elementsFromPoint*
+  - negativeMargins.html
+- name: screen
+  files:
+  - Screen-pixelDepth-Screen-colorDepth001.html
+  - cssom-view-window-screen-interface.html
+  - window-screen*
 - name: scroll-into-view
   files:
   - scrollIntoView-*

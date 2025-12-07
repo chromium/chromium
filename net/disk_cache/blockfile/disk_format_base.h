@@ -22,6 +22,10 @@
 
 #include <stdint.h>
 
+#include <array>
+
+#include "net/base/net_export.h"
+
 namespace disk_cache {
 
 typedef uint32_t CacheAddr;
@@ -34,7 +38,7 @@ const int kMaxBlocks = (kBlockHeaderSize - 80) * 8;
 const int kNumExtraBlocks = 1024;  // How fast files grow.
 
 // Bitmap to track used blocks on a block-file.
-typedef uint32_t AllocBitmap[kMaxBlocks / 32];
+typedef std::array<uint32_t, kMaxBlocks / 32> AllocBitmap;
 
 // A block-file is the file used to store information in blocks (could be
 // EntryStore blocks, RankingsNode blocks or user-data blocks).
@@ -44,19 +48,22 @@ typedef uint32_t AllocBitmap[kMaxBlocks / 32];
 // where did we find the last entry of that type (to avoid searching the bitmap
 // from the beginning every time).
 // This Structure is the header of a block-file:
-struct BlockFileHeader {
-  uint32_t magic;
-  uint32_t version;
-  int16_t this_file;          // Index of this file.
-  int16_t next_file;          // Next file when this one is full.
-  int32_t entry_size;         // Size of the blocks of this file.
-  int32_t num_entries;        // Number of stored entries.
-  int32_t max_entries;        // Current maximum number of entries.
-  int32_t empty[4];           // Counters of empty entries for each type.
-  int32_t hints[4];           // Last used position for each entry type.
-  volatile int32_t updating;  // Keep track of updates to the header.
-  int32_t user[5];
-  AllocBitmap     allocation_map;
+struct NET_EXPORT_PRIVATE BlockFileHeader {
+  BlockFileHeader();
+  uint32_t magic = 0;
+  uint32_t version = 0;
+  int16_t this_file = 0;    // Index of this file.
+  int16_t next_file = 0;    // Next file when this one is full.
+  int32_t entry_size = 0;   // Size of the blocks of this file.
+  int32_t num_entries = 0;  // Number of stored entries.
+  int32_t max_entries = 0;  // Current maximum number of entries.
+  std::array<int32_t, 4> empty = {
+      0};  // Counters of empty entries for each type.
+  std::array<int32_t, 4> hints = {
+      0};                         // Last used position for each entry type.
+  volatile int32_t updating = 0;  // Keep track of updates to the header.
+  int32_t user[5] = {0};
+  AllocBitmap allocation_map = {0};
 };
 
 static_assert(sizeof(BlockFileHeader) == kBlockHeaderSize, "bad header");
@@ -101,23 +108,23 @@ static_assert(sizeof(BlockFileHeader) == kBlockHeaderSize, "bad header");
 // to be only partialy filled. In that case, last_block and last_block_len will
 // keep track of that block.
 struct SparseHeader {
-  int64_t signature;       // The parent and children signature.
-  uint32_t magic;          // Structure identifier (equal to kIndexMagic).
-  int32_t parent_key_len;  // Key length for the parent entry.
-  int32_t last_block;      // Index of the last written block.
-  int32_t last_block_len;  // Length of the last written block.
-  int32_t dummy[10];
+  int64_t signature = 0;       // The parent and children signature.
+  uint32_t magic = 0;          // Structure identifier (equal to kIndexMagic).
+  int32_t parent_key_len = 0;  // Key length for the parent entry.
+  int32_t last_block = 0;      // Index of the last written block.
+  int32_t last_block_len = 0;  // Length of the last written block.
+  int32_t dummy[10] = {0};
 };
 
 // The SparseHeader will be followed by a bitmap, as described by this
 // structure.
 struct SparseData {
   SparseHeader header;
-  uint32_t bitmap[32];  // Bitmap representation of known children (if this
-                        // is a parent entry), or used blocks (for child
-                        // entries. The size is fixed for child entries but
-                        // not for parents; it can be as small as 4 bytes
-                        // and as large as 8 KB.
+
+  // Bitmap representation of known children (if this is a parent entry), or
+  // used blocks (for child entries. The size is fixed for child entries but
+  // not for parents; it can be as small as 4 bytes and as large as 8 KB.
+  uint32_t bitmap[32] = {0};
 };
 
 // The number of blocks stored by a child entry.

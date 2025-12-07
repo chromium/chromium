@@ -7,13 +7,12 @@
 
 #include <optional>
 
-#include "base/containers/span.h"
 #include "base/values.h"
 #include "media/base/decoder_status.h"
 #include "media/base/encoder_status.h"
 #include "media/base/ipc/media_param_traits.h"
 #include "media/base/status.h"
-#include "media/mojo/mojom/media_types.mojom.h"
+#include "media/mojo/mojom/media_types.mojom-shared.h"
 #include "mojo/public/cpp/bindings/optional_as_pointer.h"
 
 namespace mojo {
@@ -46,11 +45,6 @@ struct StructTraits<media::mojom::StatusDataDataView,
 
   static const base::Value& data(const media::internal::StatusData& input) {
     return input.data;
-  }
-
-  static media::UKMPackedType packed_root_cause(
-      const media::internal::StatusData& input) {
-    return input.packed_root_cause;
   }
 
   static bool Read(media::mojom::StatusDataDataView data,

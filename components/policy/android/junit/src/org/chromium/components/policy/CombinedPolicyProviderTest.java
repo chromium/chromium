@@ -19,7 +19,6 @@ import android.os.Bundle;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -27,15 +26,12 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 
 /** Robolectric tests for CombinedPolicyProvider */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class CombinedPolicyProviderTest {
     private static final int NATIVE_POINTER = 1234;
-
-    @Rule public JniMocker mocker = new JniMocker();
     @Mock private PolicyConverter mPolicyConverter;
     @Mock private CombinedPolicyProvider.Natives mCombinedPolicyConverterJniMock;
     @Mock private PolicyMap mPolicyMap;
@@ -43,7 +39,7 @@ public class CombinedPolicyProviderTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        mocker.mock(CombinedPolicyProviderJni.TEST_HOOKS, mCombinedPolicyConverterJniMock);
+        CombinedPolicyProviderJni.setInstanceForTesting(mCombinedPolicyConverterJniMock);
         CombinedPolicyProvider.setForTesting(new CombinedPolicyProvider());
     }
 
@@ -51,7 +47,7 @@ public class CombinedPolicyProviderTest {
      * Dummy concrete class. Needed because PolicyProvider has final functions that cannot be
      * stubbed and is abstract so can't be directly instantiated to be spied upon.
      */
-    class DummyPolicyProvider extends PolicyProvider {
+    static class DummyPolicyProvider extends PolicyProvider {
         public DummyPolicyProvider() {}
 
         @Override
@@ -89,14 +85,13 @@ public class CombinedPolicyProviderTest {
         b.putBoolean("BoolPolicy", true);
         CombinedPolicyProvider.get().onSettingsAvailable(0, b);
         verify(mPolicyConverter, never()).setPolicy(anyString(), any());
-        verify(mCombinedPolicyConverterJniMock, never()).flushPolicies(anyInt(), any());
+        verify(mCombinedPolicyConverterJniMock, never()).flushPolicies(anyInt());
     }
 
     @Test
     public void testOnSettingsAvailable_oneProvider() {
         CombinedPolicyProvider.linkNative(NATIVE_POINTER, mPolicyConverter);
-        verify(mCombinedPolicyConverterJniMock, never())
-                .flushPolicies(NATIVE_POINTER, CombinedPolicyProvider.get());
+        verify(mCombinedPolicyConverterJniMock, never()).flushPolicies(NATIVE_POINTER);
 
         PolicyProvider provider = new DummyPolicyProvider();
         CombinedPolicyProvider.get().registerProvider(provider);
@@ -111,22 +106,19 @@ public class CombinedPolicyProviderTest {
         verify(mPolicyConverter).setPolicy("StringPolicy", "A string");
         verify(mPolicyConverter)
                 .setPolicy("StringArrayPolicy", new String[] {"String1", "String2"});
-        verify(mCombinedPolicyConverterJniMock, times(1))
-                .flushPolicies(NATIVE_POINTER, CombinedPolicyProvider.get());
+        verify(mCombinedPolicyConverterJniMock, times(1)).flushPolicies(NATIVE_POINTER);
     }
 
     @Test
     public void testOnSettingsAvailable_secondProvider() {
         CombinedPolicyProvider.linkNative(NATIVE_POINTER, mPolicyConverter);
-        verify(mCombinedPolicyConverterJniMock, never())
-                .flushPolicies(NATIVE_POINTER, CombinedPolicyProvider.get());
+        verify(mCombinedPolicyConverterJniMock, never()).flushPolicies(NATIVE_POINTER);
 
         PolicyProvider provider = new DummyPolicyProvider();
         CombinedPolicyProvider.get().registerProvider(provider);
         Bundle b = new Bundle();
         CombinedPolicyProvider.get().onSettingsAvailable(0, b);
-        verify(mCombinedPolicyConverterJniMock, times(1))
-                .flushPolicies(NATIVE_POINTER, CombinedPolicyProvider.get());
+        verify(mCombinedPolicyConverterJniMock, times(1)).flushPolicies(NATIVE_POINTER);
 
         // Second policy provider registered but no settings.
         PolicyProvider provider2 = new DummyPolicyProvider();
@@ -138,16 +130,14 @@ public class CombinedPolicyProviderTest {
         // Second call should have been ignored, so nothing should have been set
         verify(mPolicyConverter, never()).setPolicy(anyString(), anyBoolean());
         // and flush should have been called precisely once.
-        verify(mCombinedPolicyConverterJniMock, times(1))
-                .flushPolicies(NATIVE_POINTER, CombinedPolicyProvider.get());
+        verify(mCombinedPolicyConverterJniMock, times(1)).flushPolicies(NATIVE_POINTER);
 
         // Empty but valid bundle from second policy provider should set the policy and push it
         // to the native code
         b = new Bundle();
         CombinedPolicyProvider.get().onSettingsAvailable(1, b);
         verify(mPolicyConverter).setPolicy("BoolPolicy", true);
-        verify(mCombinedPolicyConverterJniMock, times(2))
-                .flushPolicies(NATIVE_POINTER, CombinedPolicyProvider.get());
+        verify(mCombinedPolicyConverterJniMock, times(2)).flushPolicies(NATIVE_POINTER);
     }
 
     @Test
@@ -158,8 +148,7 @@ public class CombinedPolicyProviderTest {
         CombinedPolicyProvider.linkNative(NATIVE_POINTER, mPolicyConverter);
         Assert.assertEquals(0, CombinedPolicyProvider.get().getPolicyProvidersForTesting().size());
         Assert.assertTrue(CombinedPolicyProvider.get().isPolicyCacheEnabled());
-        verify(mCombinedPolicyConverterJniMock)
-                .flushPolicies(NATIVE_POINTER, CombinedPolicyProvider.get());
+        verify(mCombinedPolicyConverterJniMock).flushPolicies(NATIVE_POINTER);
 
         CombinedPolicyProvider.get().registerProvider(new DummyPolicyProvider());
         Assert.assertEquals(1, CombinedPolicyProvider.get().getPolicyProvidersForTesting().size());
@@ -172,15 +161,13 @@ public class CombinedPolicyProviderTest {
         Bundle b = new Bundle();
         CombinedPolicyProvider.get().onSettingsAvailable(0, b);
         CombinedPolicyProvider.get().onSettingsAvailable(1, b);
-        verify(mCombinedPolicyConverterJniMock, times(2))
-                .flushPolicies(NATIVE_POINTER, CombinedPolicyProvider.get());
+        verify(mCombinedPolicyConverterJniMock, times(2)).flushPolicies(NATIVE_POINTER);
     }
 
     @Test
     public void testRefreshPolicies() {
         CombinedPolicyProvider.linkNative(NATIVE_POINTER, mPolicyConverter);
-        verify(mCombinedPolicyConverterJniMock, never())
-                .flushPolicies(NATIVE_POINTER, CombinedPolicyProvider.get());
+        verify(mCombinedPolicyConverterJniMock, never()).flushPolicies(NATIVE_POINTER);
 
         PolicyProvider provider = new DummyPolicyProvider();
         PolicyProvider provider2 = new DummyPolicyProvider();
@@ -190,22 +177,19 @@ public class CombinedPolicyProviderTest {
         b.putBoolean("BoolPolicy", true);
         CombinedPolicyProvider.get().onSettingsAvailable(0, b);
         CombinedPolicyProvider.get().onSettingsAvailable(1, b);
-        verify(mCombinedPolicyConverterJniMock, times(1))
-                .flushPolicies(NATIVE_POINTER, CombinedPolicyProvider.get());
+        verify(mCombinedPolicyConverterJniMock, times(1)).flushPolicies(NATIVE_POINTER);
 
         CombinedPolicyProvider.get().refreshPolicies();
         // This should have cleared the cached policies, so onSettingsAvailable should now do
         // nothing until both providers have settings.
         CombinedPolicyProvider.get().onSettingsAvailable(0, b);
         // Still only one call.
-        verify(mCombinedPolicyConverterJniMock, times(1))
-                .flushPolicies(NATIVE_POINTER, CombinedPolicyProvider.get());
+        verify(mCombinedPolicyConverterJniMock, times(1)).flushPolicies(NATIVE_POINTER);
         b = new Bundle();
         b.putBoolean("BoolPolicy", false);
         CombinedPolicyProvider.get().onSettingsAvailable(1, b);
         // That should have caused the second flush.
-        verify(mCombinedPolicyConverterJniMock, times(2))
-                .flushPolicies(NATIVE_POINTER, CombinedPolicyProvider.get());
+        verify(mCombinedPolicyConverterJniMock, times(2)).flushPolicies(NATIVE_POINTER);
         // And the policy should have been set to the new value.
         verify(mPolicyConverter).setPolicy("BoolPolicy", false);
     }

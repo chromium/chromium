@@ -19,8 +19,8 @@
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/api/preference/preference_helpers.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/preference/preference_helpers.h"
 #include "chrome/browser/font_pref_change_notifier.h"
 #include "chrome/browser/font_pref_change_notifier_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -37,6 +37,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/api/types.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/mojom/api_permission_id.mojom.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/gfx/win/direct_write.h"
@@ -174,7 +175,7 @@ FontSettingsEventRouter::FontSettingsEventRouter(Profile* profile)
                    fonts::OnMinimumFontSizeChanged::kEventName, kPixelSizeKey);
 }
 
-FontSettingsEventRouter::~FontSettingsEventRouter() {}
+FontSettingsEventRouter::~FontSettingsEventRouter() = default;
 
 void FontSettingsEventRouter::AddPrefToObserve(
     const char* pref_name,
@@ -197,7 +198,7 @@ void FontSettingsEventRouter::OnFontFamilyMapPrefChanged(
     return;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FontSettingsEventRouter::OnFontNamePrefChanged(
@@ -209,8 +210,7 @@ void FontSettingsEventRouter::OnFontNamePrefChanged(
   CHECK(pref);
 
   if (!pref->GetValue()->is_string()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   std::string font_name = pref->GetValue()->GetString();
   base::Value::List args;
@@ -249,8 +249,7 @@ FontSettingsAPI::FontSettingsAPI(content::BrowserContext* context)
     : font_settings_event_router_(
           new FontSettingsEventRouter(Profile::FromBrowserContext(context))) {}
 
-FontSettingsAPI::~FontSettingsAPI() {
-}
+FontSettingsAPI::~FontSettingsAPI() = default;
 
 static base::LazyInstance<BrowserContextKeyedAPIFactory<FontSettingsAPI>>::
     DestructorAtExit g_font_settings_api_factory = LAZY_INSTANCE_INITIALIZER;
@@ -337,9 +336,15 @@ ExtensionFunction::ResponseAction FontSettingsSetFontFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction FontSettingsGetFontListFunction::Run() {
+#if BUILDFLAG(IS_ANDROID)
+  // Android does not support a mechanism to get "all installed fonts" like
+  // Windows/Mac/Linux.
+  return RespondNow(WithArguments(base::Value::List()));
+#else
   content::GetFontListAsync(
       BindOnce(&FontSettingsGetFontListFunction::FontListHasLoaded, this));
   return RespondLater();
+#endif
 }
 
 void FontSettingsGetFontListFunction::FontListHasLoaded(
@@ -354,15 +359,13 @@ FontSettingsGetFontListFunction::CopyFontsToResult(
   base::Value::List result;
   for (const auto& entry : fonts) {
     if (!entry.is_list()) {
-      NOTREACHED_IN_MIGRATION();
-      return Error("");
+      NOTREACHED();
     }
     const base::Value::List& font_list_value = entry.GetList();
 
     if (font_list_value.size() < 2 || !font_list_value[0].is_string() ||
         !font_list_value[1].is_string()) {
-      NOTREACHED_IN_MIGRATION();
-      return Error("");
+      NOTREACHED();
     }
     const std::string& name = font_list_value[0].GetString();
     const std::string& localized_name = font_list_value[1].GetString();

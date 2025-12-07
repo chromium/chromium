@@ -1,0 +1,7 @@
+{
+  "Android arm64 Builder All Targets (dbg)": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  }
+}

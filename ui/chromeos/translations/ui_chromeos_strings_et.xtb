@@ -19,6 +19,7 @@
 <translation id="115443833402798225">Hanguli ahnmatae</translation>
 <translation id="1155759005174418845">katalaani keel</translation>
 <translation id="1168100932582989117">Google'i nimeserverid</translation>
+<translation id="1170788066030116158">Jäädvustamiskuupäev</translation>
 <translation id="1172970565351728681">Jäänud on ligikaudu <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Muuda nime</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%, telefoni aku: <ph name="BATTERY_STATUS" />%, üksikasjad</translation>
@@ -34,6 +35,7 @@
 <translation id="1249250836236328755">Žanr</translation>
 <translation id="1254593899333212300">Otsene Interneti-ühendus</translation>
 <translation id="1272293450992660632">PIN-koodide väärtused ei ühti.</translation>
+<translation id="1279040297980392566">Skannimise lõpuleviimise ootamine, proovige hiljem uuesti.</translation>
 <translation id="1280820357415527819">Mobiilsidevõrkude otsimine</translation>
 <translation id="1293556467332435079">Failid</translation>
 <translation id="1297922636971898492">Google Drive pole praegu saadaval. Kui Google Drive on tagasi, algab üleslaadimine automaatselt uuesti.</translation>
@@ -43,7 +45,7 @@
 <translation id="134645005685694099">Teie seadmes pole piisavalt salvestusruumi, et hoida failide sünkroonimine sisselülitatuna. Uusi faile ei sünkroonita enam automaatselt.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Fail või kataloog ei ole kasutatav.</translation>
-<translation id="1363028406613469049">Rada</translation>
+<translation id="1363028406613469049">Jälgi</translation>
 <translation id="1378727793141957596">Tere tulemast Google Drive'i!</translation>
 <translation id="1379911846207762492">Teil on võimalik muuta failid võrguühenduseta kättesaadavaks ka siis, kui puudub internetiühendus.</translation>
 <translation id="1383876407941801731">Otsi</translation>
@@ -72,6 +74,7 @@
 <translation id="1577977504532381335">Vaadake administraatori reegel üle</translation>
 <translation id="158849752021629804">Vajalik koduvõrk</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1601786938618212857">ZIP</translation>
 <translation id="1620510694547887537">Kaamera</translation>
 <translation id="162175252992296058">portugali USA, rahvusvahelise klaviatuuriga</translation>
 <translation id="1629521517399325891">Kasutaja sertifikaat pole võrgu autentimiseks saadaval.</translation>
@@ -105,6 +108,7 @@
 <translation id="1810764548349082891">Eelvaade pole saadaval</translation>
 <translation id="1812302367230252929">amhara, transliteratsioon</translation>
 <translation id="1813278315230285598">Teenused</translation>
+<translation id="181434555916624618">Praegu inimestega seotud tulemusi ei kuvata. Proovige muud päringut.</translation>
 <translation id="1829129547161959350">Pingviin</translation>
 <translation id="183183971458492120">Teabe laadimine …</translation>
 <translation id="1832073788765803750">Poollaiusega katakana</translation>
@@ -135,7 +139,6 @@
 <translation id="2084809735218147718">Tänamisviibe</translation>
 <translation id="2088690981887365033">VPN-võrk</translation>
 <translation id="209653272837065803">Failide sünkroonimise jätkamiseks pole piisavalt salvestusruumi</translation>
-<translation id="2111134541987263231">Lülitage sisse valik <ph name="BEGIN_BOLD" />Luba inkognito režiimis<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> üksust kustutatakse ja te ei saa neid taastada.</translation>
 <translation id="2122305276694332719">Automaatne ühendamine peidetud võrguga võimaldab teistel näha teie seadet ja teatud võrguseadeid, seepärast ei soovita me seda kasutada.</translation>
 <translation id="2125607626296734455">khmeeri</translation>
@@ -160,13 +163,12 @@
 <translation id="2278133026967558505">Failidele pääsevad juurde kõik veebisaidid ja URL-id</translation>
 <translation id="2282155092769082568">Automaatse konfigureerimise URL:</translation>
 <translation id="2284767815536050991">eemaldatav salvestusruum</translation>
-<translation id="2288278176040912387">Grammofon</translation>
+<translation id="2288278176040912387">Plaadimängija</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> faili avamine.</translation>
 <translation id="2303301624314357662">Faili <ph name="FILE_NAME" /> avamine.</translation>
 <translation id="2304820083631266885">Planeet</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> on väljutatud.</translation>
 <translation id="2307462900900812319">Seadista võrk</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{Laiendust ID-ga <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ei ole võimalik leida. Võtke ühendust administraatoriga.}other{Laiendusi ID-ga <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ei ole võimalik leida. Võtke ühendust administraatoriga.}}</translation>
 <translation id="2325650632570794183">Seda failitüüpi ei toetata. Külastage Chrome'i veebipoodi, et leida rakendus, mis avaks seda tüüpi faili.</translation>
 <translation id="2326539130272988168">bulgaaria</translation>
 <translation id="233822363739146957">Kõigi failide sünkroonimiseks pole piisavalt salvestusruumi</translation>
@@ -238,7 +240,6 @@
 <translation id="290843123675549676">marathi</translation>
 <translation id="2923240520113693977">eesti keel</translation>
 <translation id="2938685643439809023">mongoolia keel</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{Laiendust ei leita}other{Laiendusi ei leita}}</translation>
 <translation id="2943503720238418293">Kasutage lühemat nime</translation>
 <translation id="2949781154072577687">Ketta <ph name="DRIVE_NAME" /> vormindamine …</translation>
 <translation id="2951236788251446349">Millimallikas</translation>
@@ -295,7 +296,6 @@
 <translation id="3356580349448036450">Lõpetatud</translation>
 <translation id="3358452157379365236">Kitarr</translation>
 <translation id="3368922792935385530">Ühendatud</translation>
-<translation id="3372635229069101468">Klõpsake valikul <ph name="BEGIN_BOLD" />Üksikasjad<ph name="END_BOLD" /></translation>
 <translation id="3382143449143186018">nepaali, InScript-klaviatuuriga</translation>
 <translation id="338691029516748599"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%, võrku haldab teie administraator, ühenda</translation>
 <translation id="3408072735282270043">Aktiveerimine, <ph name="NETWORK_NAME" /></translation>
@@ -354,7 +354,6 @@
 <translation id="3811494700605067549">1 fail on valitud</translation>
 <translation id="3817579325494460411">Puudub</translation>
 <translation id="3819448694985509187">Vale PIN-kood. Teil on veel 1 katse.</translation>
-<translation id="3822559385185038546">Selle puhverserveri jõustas teie administraator</translation>
 <translation id="3830674330436234648">Taasesitus ei ole saadaval</translation>
 <translation id="383652340667548381">serbia keel</translation>
 <translation id="3839045880592694915">Operaator ei ole lubanud teie modemil ühendust luua. Lisateabe saamiseks võtke ühendust operaatoriga.</translation>
@@ -385,7 +384,6 @@
 <translation id="4124935795427217608">Ükssarvik</translation>
 <translation id="4131235941541910880">Teisaldage ebavajalikud üksused prügikasti</translation>
 <translation id="4134804435730168042">Võrk <ph name="NETWORK_INDEX" />, võrke kokku <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktiveerige pärast seadme seadistust</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{Lülitage inkognito režiimis sisse järgmine laiendus:}other{Lülitage inkognito režiimis sisse järgmised laiendused:}}</translation>
 <translation id="4153015322587141338">Paremklõpsake failil ja tehke valik „<ph name="PIN_COMMAND" />“, et riiulil olevatele failidele kiirelt juurde pääseda.</translation>
 <translation id="4157569377477607576">Administraatori reegel ei soovita:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> on teisaldatud.</translation>
@@ -393,7 +391,6 @@
 <translation id="4179621117429069925">See üksus on prügikastis</translation>
 <translation id="4186579485882418952">Luba võrguühenduseta</translation>
 <translation id="4193154014135846272">Google'i dokument</translation>
-<translation id="4197674956721858839">Valiku pakkimine</translation>
 <translation id="4202378258276439759">hispaania (Ladina-Ameerika)</translation>
 <translation id="4202977638116331303">gruusia</translation>
 <translation id="421017592316736757">Faili juurde pääsemiseks on vaja võrguühendust.</translation>
@@ -421,6 +418,7 @@
 <translation id="4387004326333427325">Autentimissertifikaat lükati kaugühenduse kaudu tagasi</translation>
 <translation id="4394214039309501350">Väline link</translation>
 <translation id="4394980935660306080">Varem sellel nädalal</translation>
+<translation id="4397435965699247285">OneDrive pole ilma võrguühenduseta saadaval</translation>
 <translation id="4398096759193130964">Taastage üksused või lohistage need prügikastist välja uude kausta</translation>
 <translation id="4401287888955153199">Ekstrakti kõik</translation>
 <translation id="4410695710508688828">Ekstraktimistoiming nurjus. <ph name="ERROR_MESSAGE" /></translation>
@@ -483,9 +481,7 @@
 <translation id="4801956050125744859">Säilita mõlemad</translation>
 <translation id="4804827417948292437">Avokaado</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> üksuse taastamine</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{Inkognito režiimi kasutamiseks vajab teie organisatsioon laiendust}other{Inkognito režiimi kasutamiseks vajab teie organisatsioon mõningaid laiendusi}}</translation>
 <translation id="4826849268470072925">tamili, ITRANS</translation>
-<translation id="482932175346970750">Tippige brauseris <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /></translation>
 <translation id="4843566743023903107">Chromebase'id</translation>
 <translation id="4850886885716139402">Kuva</translation>
 <translation id="485316830061041779">saksa keel</translation>
@@ -558,7 +554,6 @@
     ühes kohas.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google Drive'ist taastatud failid</translation>
 <translation id="5278111733643988471">Selle üksuse taastamiseks lohistage see uude kausta, prügikastist välja. Selle üksuse algne kaust „<ph name="PARENT_FOLDER_NAME" />“ on kustutatud.</translation>
-<translation id="5283101102242354279">Lülitage inkognito režiimis sisse laiendus:</translation>
 <translation id="5288441970121584418">Burger</translation>
 <translation id="5293615890992542006">Selle faili teisaldamine on administraatori reegliga blokeeritud</translation>
 <translation id="5305688511332277257">Pole ühtegi installitud</translation>
@@ -601,6 +596,7 @@
 <translation id="5596627076506792578">Rohkem valikuid</translation>
 <translation id="5602622065581044566">bulgaaria, foneetilise klaviatuuriga</translation>
 <translation id="5605830556594064952">USA Dvorak</translation>
+<translation id="560739212255190568">Teie administraator määras lisaks järgmise puhverserveri jõustamisele ka puhverserveri alistamise reeglid.</translation>
 <translation id="5618330573454123917">See fail on mõeldud Macintoshi tarkvara kasutavale arvutile. See ei ühildu teie seadmega, mis käitab Chrome OS-i. <ph name="BEGIN_LINK_HELP" />Vaadake lisateavet<ph name="END_LINK_HELP" /> Chrome OS-is failide avamise kohta.</translation>
 <translation id="5625294776298156701">tamili, Tamil99-klaviatuuriga</translation>
 <translation id="5633226425545095130">Selle üksuse teisaldamisel jagatakse seda kõigiga, kes jagatud kausta „<ph name="DESTINATION_NAME" />“ näevad.</translation>
@@ -662,7 +658,7 @@
 <translation id="6096979789310008754">Otsingutekst on kustutatud, kuvatud on kõik failid ja kaustad.</translation>
 <translation id="610101264611565198">Fail <ph name="FILE_NAME" /> teisaldatakse kausta <ph name="FOLDER_NAME" /></translation>
 <translation id="61118516107968648">CSV-tekstifail</translation>
-<translation id="6129953537138746214">Tühik</translation>
+<translation id="6129953537138746214">Tühikuklahv</translation>
 <translation id="6133173853026656527">Faili <ph name="FILE_NAME" /> teisaldamine ...</translation>
 <translation id="6133877453787250710">Administraator jälgib:</translation>
 <translation id="613750717151263950">jaapani, USA klaviatuuriga</translation>
@@ -792,7 +788,7 @@
 <translation id="7075931588889865715">tai, klaviatuuriga TIS 820-2531</translation>
 <translation id="708278670402572152">Skannimise lubamiseks katkestage ühendus</translation>
 <translation id="7086590977277044826">tamili, InScript-klaviatuuriga</translation>
-<translation id="7088615885725309056">Vanemad</translation>
+<translation id="7088615885725309056">Vanem</translation>
 <translation id="7103992300314999525">makedoonia</translation>
 <translation id="7104338189998813914">Teie OneDrive'i kontole ei saa juurdepääsu</translation>
 <translation id="7106346894903675391">Ostke rohkem salvestusruumi ...</translation>
@@ -812,7 +808,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, üksikasjad</translation>
 <translation id="7246947237293279874">FTP-puhverserver</translation>
 <translation id="7248671827512403053">Rakendus</translation>
-<translation id="7252604552361840748">Leidke ülalt laiendus</translation>
 <translation id="7256405249507348194">Tundmatu viga: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Saadaolevad teenused</translation>
 <translation id="7291818353625820805">Kas soovite, et klahvisisestust korrataks? Lülitage klaviatuuri seadetes rõhumärgid välja.</translation>
@@ -1001,6 +996,7 @@
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%, üksikasjad</translation>
 <translation id="8545476925160229291">inglise (USA)</translation>
 <translation id="854655314928502177">Veebipõhise puhverserveri automaattuvastamise URL:</translation>
+<translation id="8547747809824590510">Teie administraator määras puhverserveri alistamise reeglid.</translation>
 <translation id="8549186985808798022">itaalia</translation>
 <translation id="8551494947769799688">läti keel</translation>
 <translation id="8560515948038859357">kantoni</translation>
@@ -1061,6 +1057,7 @@
 <translation id="9038620279323455325">Fail nimega „<ph name="FILE_NAME" />” on juba olemas? Valige muu nimi.</translation>
 <translation id="9046895021617826162">Ühendamine nurjus</translation>
 <translation id="9065512565307033593">Kui kinnitamine ebaõnnestub, keelatakse juurdepääs võrgule.</translation>
+<translation id="9079844694307518094">Teie administraator jõustab järgmise puhverserveri.</translation>
 <translation id="908378762078012445">vene, foneetilise AATSEEL-klaviatuuriga</translation>
 <translation id="9086302186042011942">Sünkroonimine</translation>
 <translation id="9099674669267916096">Lehtede arv</translation>
@@ -1084,6 +1081,7 @@
 <translation id="9213073329713032541">Installimise alustamine õnnestus.</translation>
 <translation id="9219103736887031265">Pildid</translation>
 <translation id="9219908252191632183">Kuu</translation>
+<translation id="931652069802536959">Võrk on reegli tõttu blokeeritud.</translation>
 <translation id="938470336146445890">Installige kasutaja sertifikaat.</translation>
 <translation id="939736085109172342">Uus kaust</translation>
 <translation id="943972244133411984">Muutja:</translation>

@@ -52,7 +52,7 @@ class _CommonSystemHealthBenchmark(perf_benchmark.PerfBenchmark):
 
   def CreateCoreTimelineBasedMeasurementOptions(self):
     cat_filter = chrome_trace_category_filter.ChromeTraceCategoryFilter(
-        filter_string='rail,toplevel,uma')
+        filter_string='rail,toplevel,uma,disabled-by-default-histogram_samples')
     cat_filter.AddIncludedCategory('accessibility')
     # Needed for the metric reported by page.
     cat_filter.AddIncludedCategory('blink.user_timing')
@@ -78,6 +78,7 @@ class _CommonSystemHealthBenchmark(perf_benchmark.PerfBenchmark):
         # Unless --experimentatil-tbmv3-metric flag is used, the following tbmv3
         # metrics do nothing.
         'tbmv3:accessibility_metric',
+        'tbmv3:uma_metrics',
         'tbmv3:cpu_time_metric',
     ])
     loading_metrics_category.AugmentOptionsForLoadingMetrics(options)

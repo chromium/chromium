@@ -11,7 +11,7 @@ class Extension;
 class UpdateObserver {
  public:
   // Invoked when an app update is available.
-  virtual void OnAppUpdateAvailable(const Extension* extension) = 0;
+  virtual void OnAppUpdateAvailable(const Extension& extension) = 0;
 
   // Invoked when Chrome update is available.
   virtual void OnChromeUpdateAvailable() = 0;

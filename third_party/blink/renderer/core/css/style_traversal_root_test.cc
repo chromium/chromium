@@ -68,7 +68,7 @@ class StyleTraversalRootTest : public testing::Test {
   void SetUp() final {
     document_ =
         Document::CreateForTest(execution_context_.GetExecutionContext());
-    elements_ = MakeGarbageCollected<HeapVector<Member<Element>, 7>>();
+    elements_ = MakeGarbageCollected<GCedHeapVector<Member<Element>, 7>>();
     for (size_t i = 0; i < kElementCount; i++) {
       elements_->push_back(GetDocument().CreateRawElement(html_names::kDivTag));
     }
@@ -96,7 +96,7 @@ class StyleTraversalRootTest : public testing::Test {
   test::TaskEnvironment task_environment_;
   ScopedNullExecutionContext execution_context_;
   Persistent<Document> document_;
-  Persistent<HeapVector<Member<Element>, 7>> elements_;
+  Persistent<GCedHeapVector<Member<Element>, 7>> elements_;
 };
 
 TEST_F(StyleTraversalRootTest, Update_SingleRoot) {

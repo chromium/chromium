@@ -15,6 +15,7 @@ py_test(
     ],
     tags = ["not_run:arm"],
     deps = [
+        # build rule placeholder: google/protobuf:use_fast_cpp_protos dep,  # Automatically added go/proto_python_upb_flip
         # build rule placeholder: numpy dep,
         # build rule placeholder: tensorflow dep,
         "//tensorflow_lite_support/python/task/core:base_options",
@@ -37,6 +38,7 @@ py_test(
     ],
     tags = ["not_run:arm"],
     deps = [
+        # build rule placeholder: google/protobuf:use_fast_cpp_protos dep,  # Automatically added go/proto_python_upb_flip
         # build rule placeholder: tensorflow dep,
         "//tensorflow_lite_support/python/task/core:base_options",
         "//tensorflow_lite_support/python/task/processor/proto:embedding_options_pb2",
@@ -55,6 +57,7 @@ py_test(
         "//tensorflow_lite_support/cc/test/testdata/task/text:nl_classifier_models",
     ],
     deps = [
+        # build rule placeholder: google/protobuf:use_fast_cpp_protos dep,  # Automatically added go/proto_python_upb_flip
         # build rule placeholder: tensorflow dep,
         "//tensorflow_lite_support/python/task/core:base_options",
         "//tensorflow_lite_support/python/task/processor/proto:class_pb2",
@@ -74,6 +77,7 @@ py_test(
     ],
     tags = ["not_run:arm"],
     deps = [
+        # build rule placeholder: google/protobuf:use_fast_cpp_protos dep,  # Automatically added go/proto_python_upb_flip
         # build rule placeholder: tensorflow dep,
         "//tensorflow_lite_support/python/task/core:base_options",
         "//tensorflow_lite_support/python/task/processor/proto:class_pb2",
@@ -92,6 +96,7 @@ py_test(
         "//tensorflow_lite_support/cc/test/testdata/task/text:mobile_bert_model",
     ],
     deps = [
+        # build rule placeholder: google/protobuf:use_fast_cpp_protos dep,  # Automatically added go/proto_python_upb_flip
         # build rule placeholder: tensorflow dep,
         "//tensorflow_lite_support/python/task/core:base_options",
         "//tensorflow_lite_support/python/task/processor/proto:qa_answers_pb2",
@@ -109,6 +114,7 @@ py_test(
     ],
     tags = ["not_run:arm"],
     deps = [
+        # build rule placeholder: google/protobuf:use_fast_cpp_protos dep,  # Automatically added go/proto_python_upb_flip
         # build rule placeholder: tensorflow dep,
         "//tensorflow_lite_support/python/task/core:base_options",
         "//tensorflow_lite_support/python/task/processor/proto:class_pb2",

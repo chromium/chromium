@@ -71,6 +71,13 @@ class MockAccessibilityPrivate {
       COPY: 'copy',
     };
 
+    this.ScrollDirection = {
+      UP: 'up',
+      DOWN: 'down',
+      LEFT: 'left',
+      RIGHT: 'right',
+    };
+
     this.SelectToSpeakPanelAction = {
       PREVIOUS_PARAGRAPH: 'previousParagraph',
       PREVIOUS_SENTENCE: 'previousSentence',
@@ -115,6 +122,15 @@ class MockAccessibilityPrivate {
     /** @private {?FaceGazeAssets} */
     this.faceGazeAssets_ = null;
 
+    /** @private {function<boolean>} */
+    this.faceGazeGestureInfoToggleListener_ = null;
+
+    /** @private {number} */
+    this.sendGestureInfoToSettingsCount_ = 0;
+
+    /** @private {!Array<!chrome.accessibilityPrivate.GestureInfo>} */
+    this.faceGazeGestureInfo_ = null;
+
     /**
      * @private {function(!chrome.accessibilityPrivate.SelectToSpeakPanelAction,
      *     number=)}
@@ -155,6 +171,12 @@ class MockAccessibilityPrivate {
      */
     this.dictationBubbleProps_ = null;
 
+    /** @private {?string} */
+    this.faceGazeBubbleText_ = null;
+
+    /** @private {boolean} */
+    this.faceGazeBubbleIsWarning_ = false;
+
     /** @private {Function} */
     this.onUpdateDictationBubble_ = null;
 
@@ -166,6 +188,16 @@ class MockAccessibilityPrivate {
 
     /** @private {!Object<chrome.accessibilityPrivate.ToastType, number} */
     this.showToastData_ = {};
+
+    /**
+     * @type {!{count: number, target: ScreenPoint, direction: ScrollDirection}}
+     * @private
+     */
+    this.scrollAtPointData_ = {
+      count: 0,
+      target: undefined,
+      direction: undefined,
+    };
 
     /** @private {?chrome.accessibilityPrivate.ScreenPoint} */
     this.latestCursorPosition_ = null;
@@ -256,6 +288,41 @@ class MockAccessibilityPrivate {
         this.selectToSpeakStateChangeListener_ = listener;
       },
     };
+
+    this.onToggleGestureInfoForSettings = {
+      /**
+       * Adds a listener to onToggleGestureInfoForSettings.
+       * @param {function<boolean>} listener
+       */
+      addListener: listener => {
+        this.faceGazeGestureInfoToggleListener_ = listener;
+      },
+
+      /**
+       * Removes the listener.
+       * @param {function<boolean>} listener
+       */
+      removeListener: listener => {
+        if (this.faceGazeGestureInfoToggleListener_ === listener) {
+          this.faceGazeGestureInfoToggleListener_ = null;
+        }
+      },
+    };
+
+    this.onSelectToSpeakKeysPressedChanged = {
+      addListener: listener => {},
+      removeListener: listener => {},
+    };
+
+    this.onSelectToSpeakMouseChanged = {
+      addListener: listener => {},
+      removeListener: listener => {},
+    };
+
+    this.onSelectToSpeakContextMenuClicked = {
+      addListener: listener => {},
+      removeListener: listener => {},
+    };
   }
 
   /**
@@ -334,28 +401,57 @@ class MockAccessibilityPrivate {
    * Whether a feature is enabled. This doesn't look at command line flags; set
    * enabled state with MockAccessibilityPrivate::enableFeatureForTest.
    * @param {AccessibilityFeature} feature
-   * @param {function(boolean): void} callback
+   * @param {function(boolean): void} [callback]
    */
   isFeatureEnabled(feature, callback) {
-    callback(this.enabledFeatures_.has(feature));
+    if (callback) {
+      callback(this.enabledFeatures_.has(feature));
+      return;
+    }
+
+    return Promise.resolve(this.enabledFeatures_.has(feature));
   }
 
   /**
    * Creates a synthetic keyboard event.
    * @param {chrome.accessibilityPrivate.SyntheticKeyboardEvent} event
+   * @param {boolean} useRewriters
+   * @param {boolean} isRepeat
    */
-  sendSyntheticKeyEvent(event) {
+  sendSyntheticKeyEvent(event, useRewriters, isRepeat) {
+    event.useRewriters = useRewriters;
+    event.repeat = isRepeat;
+
     this.syntheticKeyEvents_.push(event);
   }
 
   /** @return {?PumpkinData} */
   installPumpkinForDictation(callback) {
-    callback(MockAccessibilityPrivate.pumpkinData_);
+    if (callback) {
+      callback(MockAccessibilityPrivate.pumpkinData_);
+      return;
+    }
+
+    return Promise.resolve(MockAccessibilityPrivate.pumpkinData_);
   }
 
   /** @return {?FaceGazeAssets} */
   installFaceGazeAssets(callback) {
-    callback(this.faceGazeAssets_);
+    if (callback) {
+      callback(this.faceGazeAssets_);
+      return;
+    }
+
+    return Promise.resolve(this.faceGazeAssets_);
+  }
+
+  /** Called in order to toggle FaceGaze gesture info for settings. */
+  toggleGestureInfoForSettings(enabled) {
+    this.callOnToggleGestureInfoForSettings(enabled);
+  }
+
+  sendGestureInfoToSettings(gestureInfo) {
+    this.callSendGestureInfoToSettings(gestureInfo);
   }
 
   /** @param {!chrome.accessibilityPrivate.ScreenPoint} point */
@@ -477,10 +573,10 @@ class MockAccessibilityPrivate {
    * occur when the user or a chrome extension toggles Dictation active state.
    * @param {boolean} activated
    */
-  callOnToggleDictation(activated) {
+  async callOnToggleDictation(activated) {
     this.dictationActivated_ = activated;
     if (this.dictationToggleListener_) {
-      this.dictationToggleListener_(activated);
+      await this.dictationToggleListener_(activated);
     }
   }
 
@@ -511,9 +607,60 @@ class MockAccessibilityPrivate {
     }
   }
 
+  /** @param {string} text */
+  updateFaceGazeBubble(text, isWarning) {
+    this.faceGazeBubbleText_ = text;
+    this.faceGazeBubbleIsWarning_ = isWarning;
+  }
+
+  /** @param {boolean} enabled */
+  enableDragEventRewriter(enabled) {}
+
   /** @return {!chrome.accessibilityPrivate.DictationBubbleProperties|null} */
   getDictationBubbleProps() {
     return this.dictationBubbleProps_;
+  }
+
+  /** @return {?string} */
+  getFaceGazeBubbleText() {
+    return this.faceGazeBubbleText_;
+  }
+
+  /** @return {boolean} */
+  getFaceGazeBubbleIsWarning() {
+    return this.faceGazeBubbleIsWarning_;
+  }
+
+  /**
+   * Simulates toggling gesture info for FaceGaze Settings from
+   * AccessibilityManager, which occurs when the user activates or deactivates
+   * the page for FaceGaze gesture configuration settings.
+   * @param {boolean} enabled
+   */
+  callOnToggleGestureInfoForSettings(enabled) {
+    if (this.faceGazeGestureInfoToggleListener_) {
+      this.faceGazeGestureInfoToggleListener_(enabled);
+    }
+  }
+
+  /**
+   * Simulates sending gesture info from FaceGaze to Settings.
+   * @param {!Array<!chrome.accessibilityPrivate.GestureInfo>} gestureInfo
+   *     Facial gestures.
+   */
+  callSendGestureInfoToSettings(gestureInfo) {
+    this.sendGestureInfoToSettingsCount_++;
+    this.faceGazeGestureInfo_ = gestureInfo;
+  }
+
+  /** @return {number} */
+  getSendGestureInfoToSettingsCount() {
+    return this.sendGestureInfoToSettingsCount_;
+  }
+
+  /** @return {!Array<!chrome.accessibilityPrivate.GestureInfo>} */
+  getFaceGazeGestureInfo() {
+    return this.faceGazeGestureInfo_;
   }
 
   /** Simulates silencing ChromeVox */
@@ -528,7 +675,12 @@ class MockAccessibilityPrivate {
 
   /** @return {!Array<!chrome.accessibilityPrivate.ScreenRect>} */
   getDisplayBounds(callback) {
-    callback(this.displayBounds_);
+    if (callback) {
+      callback(this.displayBounds_);
+      return;
+    }
+
+    return Promise.resolve(this.displayBounds_);
   }
 
   /**
@@ -546,6 +698,18 @@ class MockAccessibilityPrivate {
   /** @return {?chrome.accessibilityPrivate.ScreenPoint} */
   getLatestCursorPosition() {
     return this.latestCursorPosition_;
+  }
+
+  getScrollAtPointCount() {
+    return this.scrollAtPointData_.count;
+  }
+
+  getScrollAtPointTarget() {
+    return this.scrollAtPointData_.target;
+  }
+
+  getScrollAtPointDirection() {
+    return this.scrollAtPointData_.direction;
   }
 
   clearCursorPosition() {
@@ -587,7 +751,10 @@ class MockAccessibilityPrivate {
     };
 
     const data = {};
-    const pumpkinDir = '../../accessibility_common/third_party/pumpkin';
+    const manifestPath =
+        chrome.runtime.getManifest().manifest_version == 2 ? 'mv2' : 'mv3';
+    const pumpkinDir =
+        `../../accessibility_common/${manifestPath}/third_party/pumpkin`;
     data.js_pumpkin_tagger_bin_js =
         await getFileBytes(`${pumpkinDir}/js_pumpkin_tagger_bin.js`);
     data.tagger_wasm_main_js =
@@ -641,11 +808,46 @@ class MockAccessibilityPrivate {
     };
 
     const assets = {};
-    const mediapipeDir =
-        '../../accessibility_common/third_party/mediapipe_task_vision';
+    const manifestPath =
+        chrome.runtime.getManifest().manifest_version == 2 ? 'mv2' : 'mv3';
+    const mediapipeDir = `../../accessibility_common/${
+        manifestPath}/third_party/mediapipe_task_vision`;
     assets.model = await getFileBytes(`${mediapipeDir}/face_landmarker.task`);
     assets.wasm =
         await getFileBytes(`${mediapipeDir}/vision_wasm_internal.wasm`);
     this.faceGazeAssets_ = assets;
   }
+
+  /**
+   * @param {string} title
+   * @param {string} description
+   * @param {?string|undefined} cancelName
+   * @param {function(boolean): void} callback
+   * @return {!Promise<boolean>} if `callback` is not provided.
+   */
+  showConfirmationDialog(title, description, cancelName, callback) {
+    if (callback) {
+      // Do not invoke `callback` because tests do not run WebCamFaceLandmarker
+      // init.
+      return;
+    }
+
+    // Similarly, returns a promise that never resolves.
+    return new Promise(resolve => {});
+  }
+
+  /**
+   * @param {!chrome.accessibilityPrivate.ScreenPoint} target
+   * @param {!chrome.accessibilityPrivate.ScrollDirection} direction
+   */
+  scrollAtPoint(target, direction) {
+    this.scrollAtPointData_.count += 1;
+    this.scrollAtPointData_.target = target;
+    this.scrollAtPointData_.direction = direction;
+  }
+
+  /**
+   * No-op to prevent error in testing.
+   */
+  setSelectToSpeakState(state) {}
 }

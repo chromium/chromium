@@ -1,5 +1,4 @@
-#!special-case-list-v1
-# TODO(crbug.com/41488956): update to glob patterns
+#!special-case-list-v2
 
 # This file defines which warnings should be ignored while running clang's
 # control flow integrity sanitizer, as run by the cfi_flags build target.
@@ -16,9 +15,9 @@
 # with guards against non-Clang compilers; see the definition of NO_SANITIZE in
 # Chromium), e.g.
 #
-# __attribute__((no_sanitize("cfi-unrelated-cast")))
+# [[clang::no_sanitize("cfi-unrelated-cast")]]
 
-[cfi-unrelated-cast|cfi-derived-cast]
+[cfi-{unrelated,derived}-cast]
 
 # e.g. RolloverProtectedTickClock
 fun:*MutableInstance*
@@ -49,8 +48,13 @@ fun:*internal_default_instance*
 # CAtlArray<T> casts to uninitialized T*.
 src:*atlcoll.h
 
+# Temporarily disable CFI check in std::__allocate_unique_temporary_buffer
+# until upstream adds an annotation, crbug.com/367439556
+fun:*__allocate_unique_temporary_buffer*
+
 # https://github.com/grpc/grpc/issues/19375
 src:*third_party/grpc/src/src/core/lib/gprpp/inlined_vector.h
+src:*third_party/grpc/source/src/core/lib/gprpp/inlined_vector.h
 
 # https://crbug.com/994752
 src:*third_party/spirv-cross/spirv-cross/spirv_cross_containers.hpp
@@ -133,7 +137,7 @@ fun:*traceImpl*
 #############################################################################
 # Cross-DSO vcalls
 
-[cfi-vcall|cfi-unrelated-cast|cfi-derived-cast]
+[cfi-{vcall,unrelated-cast,derived-cast}]
 
 # These classes are used to communicate between chrome.exe and
 # chrome_child.dll (see src/sandbox/win/src/sandbox.h,
@@ -191,7 +195,6 @@ src:*media/gpu/vaapi/va_stubs.cc
 
 # Calls to auto-generated stubs by generate_library_loader.py
 src:*content/browser/speech/tts_linux.cc
-src:*device/udev_linux/udev1_loader.cc
 
 # Calls to auto-generated stubs by ui/gl/generate_bindings.py
 src:*ui/gl/gl_bindings_autogen_*
@@ -203,9 +206,15 @@ src:*third_party/vulkan-loader/src/loader*
 src:*third_party/vulkan-validation-layers/src/layers/*
 src:*third_party/angle/src/common/vulkan/vulkan_icd.cpp
 
+# Calls to TFLiteDelegate functions in a shared library.
+src:*services/webnn/tflite/graph_impl_tflite.cc
+src:*third_party/tflite/src/tensorflow/lite/c/common_internal.cc
+src:*third_party/tflite/src/tensorflow/lite/core/subgraph.cc
+src:*third_party/tflite/src/tensorflow/lite/delegates/utils.cc
+
 src:*components/os_crypt/sync/*
 
-src:*content/browser/accessibility/browser_accessibility_auralinux.cc
+src:*ui/accessibility/platform/browser_accessibility_auralinux.cc
 src:*ui/accessibility/platform/ax_platform_node_auralinux.cc
 src:*ui/accessibility/platform/ax_platform_atk_hyperlink.cc
 src:*ui/accessibility/platform/ax_platform_node_auralinux_unittest.cc
@@ -250,8 +259,16 @@ src:*third_party/crashpad/crashpad/snapshot/crashpad_info_client_options_test.cc
 src:*third_party/skia/src/ports/SkFontHost_FreeType.cpp
 
 # WebRTC / PipeWire
-fun:*pw_registry_bind*
+fun:*pw_core_add_listener*
 fun:*pw_core_get_registry*
+fun:*pw_core_sync*
+fun:*pw_node_add_listener*
+fun:*pw_node_enum_params*
+fun:*pw_loop_add_event*
+fun:*pw_loop_signal_event*
+fun:*pw_registry_add_listener*
+fun:*pw_registry_bind*
+fun:*spa_loop_utils*
 
 ######### Function pointers cast to incorrect type signatures
 

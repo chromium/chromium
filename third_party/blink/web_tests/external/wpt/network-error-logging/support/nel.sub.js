@@ -18,6 +18,7 @@ function releaseNELLock() {
 function nel_test(callback, name, properties) {
   promise_test(async t => {
     await obtainNELLock();
+    await assertNELIsImplemented();
     await clearReportingAndNELConfigurations();
     await callback(t);
     await releaseNELLock();
@@ -27,6 +28,7 @@ function nel_test(callback, name, properties) {
 function nel_iframe_test(callback, name, properties) {
   promise_test(async t => {
     await obtainNELLock();
+    await assertNELIsImplemented();
     await clearReportingAndNELConfigurationsInIframe();
     await callback(t);
     await releaseNELLock();
@@ -50,9 +52,9 @@ function _monitoredDomain(subdomain) {
   }
 }
 
-function _getNELResourceURL(subdomain, suffix) {
-  return "https://" + _monitoredDomain(subdomain) +
-    ":{{ports[https][0]}}/network-error-logging/support/" + suffix;
+function _getNELResourceURL(subdomain, suffix, options = {}) {
+  return `https://${_monitoredDomain(subdomain)}:{{ports[https][0]}}/` +
+    (options.sanitize ? "" : `network-error-logging/support/${suffix}`);
 }
 
 /*
@@ -65,6 +67,10 @@ function _getNELResourceURL(subdomain, suffix) {
 
 function getURLForResourceWithBasicPolicy(subdomain) {
   return _getNELResourceURL(subdomain, "pass.png?id="+reportID+"&success_fraction=1.0");
+}
+
+function getSanitizedURLForResourceWithNoPolicy(subdomain) {
+  return _getNELResourceURL(subdomain, "no-policy-pass.png", { sanitize: true });
 }
 
 function fetchResourceWithBasicPolicy(subdomain) {
@@ -247,9 +253,10 @@ function _isSubsetOf(obj1, obj2) {
  * expected.
  */
 
-async function reportExists(expected, retain_reports) {
-  var timeout =
-    document.querySelector("meta[name=timeout][content=long]") ? 50 : 1;
+async function reportExists(expected, retain_reports, timeout) {
+  if (!timeout) {
+    timeout = document.querySelector("meta[name=timeout][content=long]") ? 50 : 1;
+  }
   var reportLocation =
     "/reporting/resources/report.py?op=retrieve_report&timeout=" +
     timeout + "&reportID=" + reportID;
@@ -290,4 +297,14 @@ async function reportsExist(expected_reports, retain_reports) {
       return false;
   }
   return true;
+}
+
+// this runs first to avoid testing on browsers not implementing NEL
+async function assertNELIsImplemented() {
+  await fetchResourceWithBasicPolicy();
+  // Assert that the report was generated
+  assert_implements(await reportExists({
+    url: getURLForResourceWithBasicPolicy(),
+    type: "network-error"
+  }, false, 1), "'Basic NEL support: missing network-error report'");
 }

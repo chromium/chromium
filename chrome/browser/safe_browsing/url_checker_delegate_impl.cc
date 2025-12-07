@@ -4,9 +4,10 @@
 
 #include "chrome/browser/safe_browsing/url_checker_delegate_impl.h"
 
+#include <algorithm>
+
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
@@ -16,9 +17,9 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
 #include "components/safe_browsing/content/browser/triggers/suspicious_site_trigger.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
-#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -85,7 +86,6 @@ UrlCheckerDelegateImpl::UrlCheckerDelegateImpl(
     : database_manager_(std::move(database_manager)),
       ui_manager_(std::move(ui_manager)),
       threat_types_(CreateSBThreatTypeSet({
-// TODO(crbug.com/41385006): Enable on Android when list is available.
 #if BUILDFLAG(SAFE_BROWSING_DB_LOCAL)
           safe_browsing::SBThreatType::SB_THREAT_TYPE_SUSPICIOUS_SITE,
 #endif
@@ -148,10 +148,10 @@ bool UrlCheckerDelegateImpl::ShouldSkipRequestCheck(
     bool originated_from_service_worker) {
   // Check for whether the URL matches the Safe Browsing allowlist domains
   // (a.k. a prefs::kSafeBrowsingAllowlistDomains).
-  return base::ranges::any_of(allowlist_domains_,
-                              [&original_url](const std::string& domain) {
-                                return original_url.DomainIs(domain);
-                              });
+  return std::ranges::any_of(allowlist_domains_,
+                             [&original_url](const std::string& domain) {
+                               return original_url.DomainIs(domain);
+                             });
 }
 
 void UrlCheckerDelegateImpl::NotifySuspiciousSiteDetected(
@@ -162,6 +162,22 @@ void UrlCheckerDelegateImpl::NotifySuspiciousSiteDetected(
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&NotifySuspiciousSiteTriggerDetected,
                                 web_contents_getter));
+}
+
+void UrlCheckerDelegateImpl::SendUrlRealTimeAndHashRealTimeDiscrepancyReport(
+    std::unique_ptr<ClientSafeBrowsingReportRequest> report,
+    const base::RepeatingCallback<content::WebContents*()>&
+        web_contents_getter) {
+  ui_manager_->SendThreatDetails(web_contents_getter.Run()->GetBrowserContext(),
+                                 std::move(report));
+}
+
+bool UrlCheckerDelegateImpl::AreBackgroundHashRealTimeSampleLookupsAllowed(
+    const base::RepeatingCallback<content::WebContents*()>&
+        web_contents_getter) {
+  Profile* profile = Profile::FromBrowserContext(
+      web_contents_getter.Run()->GetBrowserContext());
+  return safe_browsing::IsEnhancedProtectionEnabled(*profile->GetPrefs());
 }
 
 const SBThreatTypeSet& UrlCheckerDelegateImpl::GetThreatTypes() {

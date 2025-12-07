@@ -24,8 +24,7 @@
   _index = index;
 }
 
-- (void)userDismissedFindNavigatorForManager:
-    (web::AbstractFindInPageManager*)manager {
+- (void)userDismissedFindNavigatorForManager:(web::FindInPageManager*)manager {
   _userDismissedFindNavigator = YES;
 }
 

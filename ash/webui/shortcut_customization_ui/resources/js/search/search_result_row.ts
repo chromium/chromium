@@ -11,13 +11,13 @@ import {getInstance as getAnnouncerInstance} from 'chrome://resources/ash/common
 import {FocusRowMixin} from 'chrome://resources/ash/common/cr_elements/focus_row_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
-import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AcceleratorLookupManager} from '../accelerator_lookup_manager.js';
 import {Router} from '../router.js';
-import {LayoutStyle, MetaKey, MojoAcceleratorInfo, MojoSearchResult, StandardAcceleratorInfo, TextAcceleratorInfo, TextAcceleratorPart} from '../shortcut_types.js';
+import type {MojoAcceleratorInfo, MojoSearchResult, StandardAcceleratorInfo, TextAcceleratorInfo, TextAcceleratorPart} from '../shortcut_types.js';
+import {LayoutStyle, MetaKey} from '../shortcut_types.js';
 import {getAriaLabelForStandardAccelerators, getAriaLabelForTextAccelerators, getModifiersForAcceleratorInfo, getTextAcceleratorParts, getURLForSearchResult, isStandardAcceleratorInfo, isTextAcceleratorInfo} from '../shortcut_utils.js';
 
 import {getBoldedDescription} from './search_result_bolding.js';
@@ -121,9 +121,8 @@ export class SearchResultRowElement extends SearchResultRowElementBase {
               ...acceleratorInfo.layoutProperties,
               standardAccelerator: {
                 ...acceleratorInfo.layoutProperties.standardAccelerator,
-                keyDisplay:
-                    mojoString16ToString(acceleratorInfo.layoutProperties
-                                             .standardAccelerator.keyDisplay),
+                keyDisplay: acceleratorInfo.layoutProperties.standardAccelerator
+                                .keyDisplay,
               },
             },
             // Cast to StandardAcceleratorInfo here since that type uses strings
@@ -171,17 +170,14 @@ export class SearchResultRowElement extends SearchResultRowElementBase {
 
   private getSearchResultDescriptionInnerHtml(): TrustedHTML {
     return getBoldedDescription(
-        mojoString16ToString(
-            this.searchResult.acceleratorLayoutInfo.description),
-        this.searchQuery);
+        this.searchResult.acceleratorLayoutInfo.description, this.searchQuery);
   }
 
   /**
    * @return Aria label string for ChromeVox to verbalize.
    */
   private computeAriaLabel(): string {
-    const description = mojoString16ToString(
-        this.searchResult.acceleratorLayoutInfo.description);
+    const description = this.searchResult.acceleratorLayoutInfo.description;
     let searchResultText;
 
     if (this.isNoShortcutAssigned()) {

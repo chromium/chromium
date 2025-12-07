@@ -9,16 +9,12 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_test_helper.h"
 
-namespace WTF {
+namespace blink {
 
-static_assert(!WTF::IsTraceable<LinkedHashSet<int>>::value,
+static_assert(!IsTraceableV<LinkedHashSet<int>>,
               "LinkedHashSet must not be traceable.");
-static_assert(!WTF::IsTraceable<LinkedHashSet<String>>::value,
+static_assert(!IsTraceableV<LinkedHashSet<String>>,
               "LinkedHashSet must not be traceable.");
-
-template <typename T>
-int* const ValueInstanceCount<T>::kDeletedValue =
-    reinterpret_cast<int*>(static_cast<uintptr_t>(-1));
 
 TEST(LinkedHashSetTest, CopyConstructAndAssignInt) {
   using Set = LinkedHashSet<ValueInstanceCount<int>>;
@@ -223,7 +219,8 @@ TEST(LinkedHashSetTest, MoveConstructAndAssignString) {
   EXPECT_EQ(counter3, 4);
 }
 
-struct CustomHashTraitsForInt : public IntHashTraits<int, INT_MAX, INT_MIN> {};
+struct CustomHashTraitsForInt
+    : public blink::IntHashTraits<int, INT_MAX, INT_MIN> {};
 
 TEST(LinkedHashSetTest, BeginEnd) {
   using Set = LinkedHashSet<int, CustomHashTraitsForInt>;
@@ -857,7 +854,7 @@ TEST(LinkedHashSetTest, Clear) {
 // A unit type that has empty std::string value.
 struct EmptyString {
   EmptyString() = default;
-  explicit EmptyString(WTF::HashTableDeletedValueType) : deleted_(true) {}
+  explicit EmptyString(HashTableDeletedValueType) : deleted_(true) {}
   ~EmptyString() { CHECK(ok_); }
 
   bool operator==(const EmptyString& other) const {
@@ -1036,7 +1033,7 @@ struct Complicated {
   }
 };
 
-struct ComplicatedHashTraits : GenericHashTraits<Complicated> {
+struct ComplicatedHashTraits : blink::GenericHashTraits<Complicated> {
   static unsigned GetHash(const Complicated& key) { return key.simple_.value_; }
   static bool Equal(const Complicated& a, const Complicated& b) {
     return a.simple_.value_ == b.simple_.value_;
@@ -1131,4 +1128,4 @@ TEST(LinkedHashSetEmptyTest, EmptyString) {
   set.insert(EmptyString());
 }
 
-}  // namespace WTF
+}  // namespace blink

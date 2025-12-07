@@ -28,7 +28,7 @@ blink_modules_sources("background_fetch") {
   ]
 
   deps = [
-    "//third_party/blink/renderer/modules/cache_storage:cache_storage",
-    "//third_party/blink/renderer/modules/manifest:manifest",
+    "//third_party/blink/renderer/modules/cache_storage",
+    "//third_party/blink/renderer/modules/manifest",
   ]
 }

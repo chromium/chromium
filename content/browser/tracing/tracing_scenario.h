@@ -11,6 +11,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/token.h"
 #include "base/trace_event/trace_config.h"
+#include "base/unguessable_token.h"
 #include "content/browser/tracing/background_tracing_rule.h"
 #include "content/common/content_export.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
@@ -31,7 +32,7 @@ class CONTENT_EXPORT TracingScenarioBase {
   const std::string& scenario_name() const { return scenario_name_; }
 
  protected:
-  explicit TracingScenarioBase(const std::string scenario_name);
+  explicit TracingScenarioBase(std::string scenario_name);
 
   virtual bool OnStartTrigger(const BackgroundTracingRule* rule) = 0;
   virtual bool OnStopTrigger(const BackgroundTracingRule* rule) = 0;
@@ -97,9 +98,6 @@ class CONTENT_EXPORT NestedTracingScenario : public TracingScenarioBase {
   // Enables a disabled scenario. Cannot be called after the scenario is
   // enabled.
   void Enable() override;
-  // Request to stop an active scenario. Upload rules are still active until
-  // Disable() is called.
-  void Stop();
 
   State current_state() const { return current_state_; }
 
@@ -137,12 +135,17 @@ class CONTENT_EXPORT TracingScenario : public TracingScenarioBase,
     kEnabled,
     // The tracing session was setup and the scenario is ready to start.
     kSetup,
+    // The tracing session is starting.
+    kStarting,
     // The tracing session is recording.
     kRecording,
     // A stop rule was triggered and the tracing session is stopping.
     kStopping,
     // An upload rule was triggered and the tracing session is finalizing.
-    kFinalizing
+    kFinalizing,
+    // A nested upload rule was triggered and the tracing session is being
+    // cloned.
+    kCloning
   };
 
   // The delegate gets notified of state transitions and receives traces.
@@ -152,10 +155,16 @@ class CONTENT_EXPORT TracingScenario : public TracingScenarioBase,
     // true if tracing is allowed to begin.
     virtual bool OnScenarioActive(TracingScenario* scenario) = 0;
     // Called when |scenario| becomes idle again. Returns true if tracing is
-    // allowed to finalize.
+    // allowed to save.
     virtual bool OnScenarioIdle(TracingScenario* scenario) = 0;
+    // Called when a trace from |scenario| is cloned,  returns true if tracing
+    // is allowed to save.
+    virtual bool OnScenarioCloned(TracingScenario* scenario) = 0;
     // Called when |scenario| starts recording a trace.
     virtual void OnScenarioRecording(TracingScenario* scenario) = 0;
+    // Called when |scenario| has an error.
+    virtual void OnScenarioError(TracingScenario* scenario,
+                                 perfetto::TracingError error) = 0;
     // Called when a trace was collected.
     virtual void SaveTrace(TracingScenario* scenario,
                            base::Token trace_uuid,
@@ -169,6 +178,7 @@ class CONTENT_EXPORT TracingScenario : public TracingScenarioBase,
   static std::unique_ptr<TracingScenario> Create(
       const perfetto::protos::gen::ScenarioConfig& config,
       bool enable_privacy_filter,
+      bool is_local_scenario,
       bool enable_package_name_filter,
       bool request_startup_tracing,
       Delegate* scenario_delegate);
@@ -187,9 +197,11 @@ class CONTENT_EXPORT TracingScenario : public TracingScenarioBase,
   void GenerateMetadataProto(
       perfetto::protos::pbzero::ChromeMetadataPacket* metadata);
 
+  std::string description() const { return description_; }
+
   State current_state() const { return current_state_; }
   bool privacy_filter_enabled() const { return privacy_filtering_enabled_; }
-  std::string config_hash() const { return config_hash_; }
+  bool is_local_scenario() const { return is_local_scenario_; }
 
   base::Token GetSessionID() const { return session_id_; }
 
@@ -197,6 +209,7 @@ class CONTENT_EXPORT TracingScenario : public TracingScenarioBase,
   TracingScenario(const perfetto::protos::gen::ScenarioConfig& config,
                   Delegate* scenario_delegate,
                   bool enable_privacy_filter,
+                  bool is_local_scenario,
                   bool request_startup_tracing);
 
   bool Initialize(const perfetto::protos::gen::ScenarioConfig& config,
@@ -222,6 +235,7 @@ class CONTENT_EXPORT TracingScenario : public TracingScenarioBase,
   void OnTracingError(perfetto::TracingError error);
   void OnTracingStop();
   void OnTracingStart();
+  void OnTracingCloned();
   void OnFinalizingDone(base::Token trace_uuid,
                         std::string&& serialized_trace,
                         TracingSession tracing_session,
@@ -249,9 +263,11 @@ class CONTENT_EXPORT TracingScenario : public TracingScenarioBase,
   base::WeakPtr<TracingScenario> GetWeakPtr();
   void SetState(State new_state);
 
-  const std::string config_hash_;
+  const std::string description_;
   const bool privacy_filtering_enabled_;
+  const bool is_local_scenario_;
   const bool request_startup_tracing_;
+  const bool use_system_backend_ = false;
   State current_state_ = State::kDisabled;
   std::vector<std::unique_ptr<BackgroundTracingRule>> setup_rules_;
 
@@ -263,6 +279,7 @@ class CONTENT_EXPORT TracingScenario : public TracingScenarioBase,
   raw_ptr<Delegate> scenario_delegate_;
   TracingSession tracing_session_;
   base::Token session_id_;
+  base::UnguessableToken session_unguessable_name_;
   raw_ptr<const BackgroundTracingRule> triggered_rule_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.

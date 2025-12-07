@@ -44,23 +44,23 @@ enum SourceRegistrationError {
 
   kTriggerDataMatchingValueInvalid = 27,
 
-  kTriggerSpecsWrongType = 28,
-  kTriggerSpecTriggerDataMissing = 29,
-  kTriggerSpecTriggerDataListInvalid = 30,
+  // Deprecated: kTriggerSpecsWrongType = 28,
+  // Deprecated: kTriggerSpecTriggerDataMissing = 29,
+  // Deprecated: kTriggerSpecTriggerDataListInvalid = 30,
   kTriggerDataListInvalid = 31,
   kDuplicateTriggerData = 32,
-  kTriggerSpecDuplicateTriggerData = 33,
+  // Deprecated: kTriggerSpecDuplicateTriggerData = 33,
 
   kExcessiveTriggerData = 34,
-  kTriggerSpecExcessiveTriggerData = 35,
+  // Deprecated: kTriggerSpecExcessiveTriggerData = 35,
   kInvalidTriggerDataForMatchingMode = 36,
 
-  kTopLevelTriggerDataAndTriggerSpecs = 37,
+  // Deprecated: kTopLevelTriggerDataAndTriggerSpecs = 37,
 
-  kSummaryOperatorValueInvalid = 38,
+  // Deprecated: kSummaryOperatorValueInvalid = 38,
 
-  kSummaryBucketsListInvalid = 39,
-  kSummaryBucketsValueInvalid = 40,
+  // Deprecated: kSummaryBucketsListInvalid = 39,
+  // Deprecated: kSummaryBucketsValueInvalid = 40,
 
   kEventLevelEpsilonValueInvalid = 41,
 
@@ -70,6 +70,11 @@ enum SourceRegistrationError {
   kAttributionScopeLimitRequired = 44,
   kMaxEventStatesInvalid = 45,
   kAttributionScopesInvalid = 46,
-  kAttributionScopesValueInvalid = 47,
+  kAttributionScopesListInvalid = 47,
+  kAttributionScopesListValueInvalid = 48,
+
+  kAggregatableNamedBudgetsDictInvalid = 49,
+  kAggregatableNamedBudgetsKeyTooLong = 50,
+  kAggregatableNamedBudgetsValueInvalid = 51,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionSourceRegistrationError)

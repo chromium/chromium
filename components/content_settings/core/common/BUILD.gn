@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
@@ -16,8 +15,6 @@ static_library("common") {
     "content_settings_metadata.h",
     "content_settings_param_traits.cc",
     "content_settings_param_traits.h",
-    "content_settings_partition_key.cc",
-    "content_settings_partition_key.h",
     "content_settings_pattern.cc",
     "content_settings_pattern.h",
     "content_settings_pattern_parser.cc",
@@ -29,13 +26,13 @@ static_library("common") {
     "content_settings_utils.h",
     "cookie_blocking_3pcd_status.h",
     "cookie_controls_enforcement.h",
+    "cookie_controls_state.h",
     "cookie_settings_base.cc",
     "cookie_settings_base.h",
     "host_indexed_content_settings.cc",
     "host_indexed_content_settings.h",
     "pref_names.h",
     "third_party_site_data_access_type.h",
-    "tracking_protection_feature.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
@@ -45,6 +42,7 @@ static_library("common") {
     ":content_settings_types",
     ":features",
     "//base",
+    "//services/network/public/cpp:web_platform",
   ]
 
   deps = [
@@ -64,10 +62,8 @@ source_set("unit_tests") {
     "content_settings_constraints_unittest.cc",
     "content_settings_metadata_unittest.cc",
     "content_settings_mojom_traits_unittest.cc",
-    "content_settings_partition_key_unittest.cc",
     "content_settings_pattern_parser_unittest.cc",
     "content_settings_pattern_unittest.cc",
-    "content_settings_utils_unittest.cc",
     "cookie_settings_base_unittest.cc",
     "host_indexed_content_settings_unittest.cc",
   ]
@@ -144,6 +140,7 @@ mojom("mojo_bindings") {
         {
           mojom = "content_settings.mojom.RuleMetaData"
           cpp = "::content_settings::RuleMetaData"
+          move_only = true
         },
       ]
       traits_headers = [ "content_settings_mojom_traits.h" ]

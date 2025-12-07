@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/device_posture/device_posture.h"
 
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_device_posture_type.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
@@ -13,13 +14,15 @@ namespace blink {
 
 namespace {
 
-String PostureToString(mojom::blink::DevicePostureType posture) {
+V8DevicePostureType::Enum PostureToV8Enum(
+    mojom::blink::DevicePostureType posture) {
   switch (posture) {
     case mojom::blink::DevicePostureType::kContinuous:
-      return "continuous";
+      return V8DevicePostureType::Enum::kContinuous;
     case mojom::blink::DevicePostureType::kFolded:
-      return "folded";
+      return V8DevicePostureType::Enum::kFolded;
   }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -29,9 +32,9 @@ DevicePosture::DevicePosture(LocalDOMWindow* window)
 
 DevicePosture::~DevicePosture() = default;
 
-String DevicePosture::type() {
+V8DevicePostureType DevicePosture::type() {
   EnsureServiceConnection();
-  return PostureToString(posture_);
+  return V8DevicePostureType(PostureToV8Enum(posture_));
 }
 
 void DevicePosture::OnPostureChanged(mojom::blink::DevicePostureType posture) {
@@ -58,7 +61,7 @@ void DevicePosture::EnsureServiceConnection() {
       GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI);
   service->AddListenerAndGetCurrentPosture(
       receiver_.BindNewPipeAndPassRemote(task_runner),
-      WTF::BindOnce(&DevicePosture::OnPostureChanged, WrapPersistent(this)));
+      BindOnce(&DevicePosture::OnPostureChanged, WrapPersistent(this)));
 }
 
 void DevicePosture::AddedEventListener(const AtomicString& event_type,

@@ -15,6 +15,7 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/views/message_view.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -121,7 +122,7 @@ NotificationCenterController::GetOngoingProcessMessageViewContainerById(
   // and ongoing process lists when they're all created by this controller.
   auto* list_view = ongoing_process_list_view_.get();
 
-  const auto i = base::ranges::find(
+  const auto i = std::ranges::find(
       list_view->children(), id,
       [](const views::View* v) { return AsMVC(v)->GetNotificationId(); });
   return (i == list_view->children().cend()) ? nullptr : AsMVC(*i);

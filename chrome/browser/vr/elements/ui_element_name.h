@@ -12,6 +12,7 @@
 namespace vr {
 
 // These identifiers serve as stable, semantic identifiers for UI elements.
+// LINT.IfChange(UiElementName)
 enum UiElementName {
   kNone = 0,
   kRoot,
@@ -48,6 +49,7 @@ enum UiElementName {
   // This must be last.
   kNumUiElementNames,
 };
+// LINT.ThenChange(//chrome/browser/vr/elements/ui_element_name.cc:UiElementName)
 
 VR_UI_EXPORT std::string UiElementNameToString(UiElementName name);
 

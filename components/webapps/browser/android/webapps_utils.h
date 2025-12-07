@@ -24,8 +24,7 @@ class WebappsUtils {
   WebappsUtils(const WebappsUtils&) = delete;
 
   // Returns true if there is an installed WebAPK which can handle |url|.
-  static bool IsWebApkInstalled(content::BrowserContext* browser_context,
-                                const GURL& url);
+  static bool IsWebApkInstalled(const GURL& url);
 
   // Returns whether the format of the URLs in the Web Manifest is WebAPK
   // compatible.
@@ -35,6 +34,9 @@ class WebappsUtils {
   // Shows toast notifying user of the result of a WebAPK install if the
   // installation was not successful.
   static void ShowWebApkInstallResultToast(webapps::WebApkInstallResult result);
+
+  // Returns whether installation of auto-minted TWA is enabled.
+  static bool IsAutoMintedTwaEnabled();
 };
 
 }  // namespace webapps

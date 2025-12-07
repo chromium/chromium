@@ -11,8 +11,11 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
+#include "base/values.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
@@ -79,8 +82,11 @@ fuzztest::Domain<MaxEventLevelReports> AnyMaxEventLevelReports() {
 
 fuzztest::Domain<FilterData> AnyFilterData() {
   return fuzztest::Map(
-      [](FilterValues&& filter_values) {
-        return *FilterData::Create(std::move(filter_values));
+      [](const FilterValues& filter_values) {
+        auto result = FilterData::CreateForTesting(filter_values);
+        CHECK(result.has_value()) << static_cast<int>(result.error()) << ": "
+                                  << FilterValuesToJson(filter_values);
+        return *std::move(result);
       },
       AnyFilterValues(
           AnyFilterString(kMaxBytesPerFilterString),

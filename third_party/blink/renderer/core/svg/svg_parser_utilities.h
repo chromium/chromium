@@ -19,14 +19,10 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PARSER_UTILITIES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PARSER_UTILITIES_H_
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 
 namespace blink {
@@ -39,39 +35,78 @@ enum WhitespaceMode {
       kAllowLeadingWhitespace | kAllowTrailingWhitespace
 };
 
-bool ParseNumber(const LChar*& ptr,
-                 const LChar* end,
+bool ParseNumber(base::span<const LChar>& span,
                  float& number,
                  WhitespaceMode = kAllowLeadingAndTrailingWhitespace);
-bool ParseNumber(const UChar*& ptr,
-                 const UChar* end,
+bool ParseNumber(base::span<const UChar>& span,
                  float& number,
                  WhitespaceMode = kAllowLeadingAndTrailingWhitespace);
+
 bool ParseNumberOptionalNumber(const String& s, float& h, float& v);
-bool ParseArcFlag(const LChar*& ptr, const LChar* end, bool& flag);
-bool ParseArcFlag(const UChar*& ptr, const UChar* end, bool& flag);
 
 template <typename CharType>
-inline bool SkipOptionalSVGSpaces(const CharType*& ptr, const CharType* end) {
-  while (ptr < end && IsHTMLSpace<CharType>(*ptr))
-    ptr++;
-  return ptr < end;
+inline bool SkipOptionalSVGSpaces(const base::span<const CharType> chars,
+                                  size_t& position) {
+  while (position < chars.size() && IsHTMLSpace<CharType>(chars[position])) {
+    ++position;
+  }
+  return position < chars.size();
 }
 
 template <typename CharType>
-inline bool SkipOptionalSVGSpacesOrDelimiter(const CharType*& ptr,
-                                             const CharType* end,
-                                             char delimiter = ',') {
-  if (ptr < end && !IsHTMLSpace<CharType>(*ptr) && *ptr != delimiter)
-    return false;
-  if (SkipOptionalSVGSpaces(ptr, end)) {
-    if (*ptr == delimiter) {
-      ptr++;
-      SkipOptionalSVGSpaces(ptr, end);
+constexpr inline bool SkipOptionalSVGSpaces(base::span<const CharType>& span) {
+  size_t position = 0;
+  const bool result = SkipOptionalSVGSpaces(span, position);
+  span = span.subspan(position);
+  return result;
+}
+
+// Skips optional spaces and an optional delimiter (a comma, by default).
+// This is used for parsing separators in lists of values in SVG attributes.
+//
+// This function starts scanning `chars` at `position`, and returns the new
+// position after skipping characters.  If nothing can be skipped, `position`
+// is returned.
+template <typename CharType>
+[[nodiscard]] size_t SkipOptionalSVGSpacesOrDelimiter(
+    const base::span<const CharType> chars,
+    size_t position,
+    char delimiter = ',') {
+  if (position < chars.size() && !IsHTMLSpace<CharType>(chars[position]) &&
+      chars[position] != delimiter) {
+    return position;
+  }
+  if (SkipOptionalSVGSpaces(chars, position)) {
+    if (chars[position] == delimiter) {
+      ++position;
+      SkipOptionalSVGSpaces(chars, position);
     }
   }
-  return ptr < end;
+  return position;
 }
+
+template <typename CharType>
+constexpr inline bool SkipOptionalSVGSpacesOrDelimiter(
+    base::span<const CharType>& span,
+    char delimiter = ',') {
+  const size_t position = SkipOptionalSVGSpacesOrDelimiter(span, 0, delimiter);
+  span = span.subspan(position);
+  return !span.empty();
+}
+
+// Scans `chars` from `position` until it finds a space or `delimiter`, and
+// returns a span of the characters scanned. This is used for tokenizing lists
+// of values in SVG attributes.
+//
+// Callers typically should do `position += span.size()` after calling this.
+[[nodiscard]] base::span<const LChar> TokenUntilSvgSpaceOrDelimiter(
+    const base::span<const LChar> chars,
+    size_t position,
+    char delimiter);
+[[nodiscard]] base::span<const UChar> TokenUntilSvgSpaceOrDelimiter(
+    const base::span<const UChar> chars,
+    size_t position,
+    char delimiter);
 
 }  // namespace blink
 

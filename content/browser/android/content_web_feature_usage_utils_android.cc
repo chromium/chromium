@@ -15,7 +15,7 @@ namespace content {
 
 static void JNI_ContentWebFeatureUsageUtils_LogWebFeatureForCurrentPage(
     JNIEnv* env,
-    const jni_zero::JavaParamRef<jobject>& jweb_contents,
+    const jni_zero::JavaRef<jobject>& jweb_contents,
     jint web_feature) {
   WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
   CHECK(web_contents);
@@ -25,3 +25,5 @@ static void JNI_ContentWebFeatureUsageUtils_LogWebFeatureForCurrentPage(
 }
 
 }  // namespace content
+
+DEFINE_JNI(ContentWebFeatureUsageUtils)

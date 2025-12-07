@@ -5,16 +5,11 @@
 #include <map>
 #include <string>
 
-#include "base/test/scoped_feature_list.h"
-#include "build/buildflag.h"
-#include "content/public/browser/visibility.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
-#include "content/shell/browser/shell.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "services/network/public/cpp/features.h"
 #include "url/gurl.h"
 
 namespace content {

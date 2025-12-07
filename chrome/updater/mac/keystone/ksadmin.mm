@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 
+#include <algorithm>
 #include <map>
 #include <optional>
 #include <string>
@@ -20,7 +21,6 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/at_exit.h"
-#include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
@@ -35,18 +35,19 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/ipc/ipc_support.h"
 #include "chrome/updater/mac/setup/ks_tickets.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/service_proxy_factory.h"
+#include "chrome/updater/tag.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
@@ -125,6 +126,7 @@ constexpr char kCommandVersion[] = "version";
 constexpr char kCommandVersionKey[] = "version-key";
 constexpr char kCommandVersionPath[] = "version-path";
 constexpr char kCommandXCPath[] = "xcpath";
+constexpr char kCommandXattrTagBrand[] = "print-xattr-tag-brand";
 
 bool HasSwitch(const std::string& arg,
                const std::map<std::string, std::string>& switches) {
@@ -258,6 +260,7 @@ class KSAdminApp : public App {
   void PrintUsage(const std::string& error_message);
   void PrintVersion();
   void PrintTickets();
+  void PrintXattrTagBrand();
 
   void DoUpdateApp(UpdaterScope scope);
   void DoListAppUpdate(UpdaterScope scope);
@@ -291,13 +294,13 @@ class KSAdminApp : public App {
 
 KSTicket* KSAdminApp::TicketFromAppState(
     const updater::UpdateService::AppState& state) {
-  return [[KSTicket alloc]
-      initWithAppId:base::SysUTF8ToNSString(state.app_id)
-            version:base::SysUTF8ToNSString(state.version.GetString())
-                ecp:state.ecp
-                tag:base::SysUTF8ToNSString(state.ap)
-          brandCode:base::SysUTF8ToNSString(state.brand_code)
-          brandPath:state.brand_path];
+  return
+      [[KSTicket alloc] initWithAppId:base::SysUTF8ToNSString(state.app_id)
+                              version:base::SysUTF8ToNSString(state.version)
+                                  ecp:state.ecp
+                                  tag:base::SysUTF8ToNSString(state.ap)
+                            brandCode:base::SysUTF8ToNSString(state.brand_code)
+                            brandPath:state.brand_path];
 }
 
 scoped_refptr<UpdateService> KSAdminApp::ServiceProxy(
@@ -338,7 +341,8 @@ void KSAdminApp::MaybeInstallUpdater(UpdaterScope scope) const {
     install_command.AppendSwitch(kSystemSwitch);
   }
   int exit_code = -1;
-  if (base::LaunchProcess(install_command, {}).WaitForExit(&exit_code)) {
+  const base::Process process = base::LaunchProcess(install_command, {});
+  if (process.IsValid() && process.WaitForExit(&exit_code)) {
     VLOG(0) << "Installer returned " << exit_code << ".";
   } else {
     VLOG(0) << "Failed to wait for the installer to exit.";
@@ -486,7 +490,11 @@ void KSAdminApp::PrintUsage(const std::string& error_message) {
       "  --version,-v VERS   Set the version. Use with -P.\n"
       "  --version-key,-e    Set the version path key. Use with -P and -a.\n"
       "  --version-path,-a   Set the version path. Use with -P and -e.\n"
-      "  --xcpath,-x PATH    Set a path to use as an existence checker.\n";
+      "  --xcpath,-x PATH    Set a path to use as an existence checker.\n"
+      "\n"
+      "If neither -S nor -U are provided, ksadmin will try to deduce the\n"
+      "correct store, but may return a ticket with a mismatching xcpath if\n"
+      "tickets are present in both stores.\n";
   printf("%s\n", usage_message.c_str());
   Shutdown(error_message.empty() ? 0 : 1);
 }
@@ -496,7 +504,7 @@ void KSAdminApp::Register() {
   registration.app_id = SwitchValue(kCommandProductId);
   registration.ap = SwitchValue(kCommandTag);
   registration.brand_path = base::FilePath(SwitchValue(kCommandBrandPath));
-  registration.version = base::Version(SwitchValue(kCommandVersion));
+  registration.version = SwitchValue(kCommandVersion);
   registration.existence_checker_path =
       base::FilePath(SwitchValue(kCommandXCPath));
   const std::string brand_key = SwitchValue(kCommandBrandKey);
@@ -563,7 +571,7 @@ void KSAdminApp::DoUpdateApp(UpdaterScope scope) {
       app_id, GetInstallDataIndexFromAppArgs(app_id),
       HasSwitch(kCommandUserInitiated) ? UpdateService::Priority::kForeground
                                        : UpdateService::Priority::kBackground,
-      UpdateService::PolicySameVersionUpdate::kNotAllowed,
+      UpdateService::PolicySameVersionUpdate::kNotAllowed, /*language=*/{},
       base::BindRepeating([](const UpdateService::UpdateState& update_state) {
         if (update_state.state == UpdateService::UpdateState::State::kUpdated) {
           printf("Finished updating (errors=%d reboot=%s)\n", 0, "YES");
@@ -598,14 +606,13 @@ void KSAdminApp::DoListAppUpdate(UpdaterScope scope) {
       app_id,
       HasSwitch(kCommandUserInitiated) ? UpdateService::Priority::kForeground
                                        : UpdateService::Priority::kBackground,
-      UpdateService::PolicySameVersionUpdate::kNotAllowed,
+      UpdateService::PolicySameVersionUpdate::kNotAllowed, /*language=*/{},
       base::BindRepeating(
           [](scoped_refptr<UpdateCheckResult> update_check_result,
              const UpdateService::UpdateState& update_state) {
             if (update_state.state ==
                 UpdateService::UpdateState::State::kUpdateAvailable) {
-              update_check_result->set_next_version(
-                  update_state.next_version.GetString());
+              update_check_result->set_next_version(update_state.next_version);
             }
           },
           update_check_result),
@@ -702,7 +709,7 @@ void KSAdminApp::DoPrintTag(UpdaterScope scope) {
         int exit_code = 0;
 
         std::vector<updater::UpdateService::AppState>::const_iterator it =
-            base::ranges::find_if(
+            std::ranges::find_if(
                 states,
                 [&app_id](const updater::UpdateService::AppState& state) {
                   return base::EqualsCaseInsensitiveASCII(state.app_id, app_id);
@@ -790,6 +797,27 @@ void KSAdminApp::DoPrintTickets(UpdaterScope scope) {
       base::BindOnce(&KSAdminApp::Shutdown, this)));
 }
 
+void KSAdminApp::PrintXattrTagBrand() {
+  const std::string path_str = SwitchValue(kCommandXattrTagBrand);
+  if (path_str.empty()) {
+    LOG(ERROR) << kCommandXattrTagBrand << " requires a path.";
+    Shutdown(1);
+    return;
+  }
+  const base::FilePath path = base::FilePath(path_str);
+  base::expected<tagging::TagArgs, tagging::ErrorCode> tag_result =
+      tagging::ReadTagFromApplicationInstanceXattr(path);
+  if (!tag_result.has_value()) {
+    LOG(ERROR) << "Can't read tag: " << tag_result.error();
+    Shutdown(1);
+    return;
+  }
+
+  // Empty brand code is not an error.
+  printf("%s\n", tag_result->brand_code.c_str());
+  Shutdown(0);
+}
+
 void KSAdminApp::FirstTaskRun() {
   if ((geteuid() == 0) && (getuid() != 0)) {
     if (setuid(0) || setgid(0)) {
@@ -806,10 +834,11 @@ void KSAdminApp::FirstTaskRun() {
       {kCommandPrintTag, &KSAdminApp::PrintTag},
       {kCommandPrintTickets, &KSAdminApp::PrintTickets},
       {kCommandRegister, &KSAdminApp::Register},
+      {kCommandXattrTagBrand, &KSAdminApp::PrintXattrTagBrand},
   };
-  for (const auto& entry : commands) {
-    if (HasSwitch(entry.first)) {
-      (this->*entry.second)();
+  for (const auto& [command, method] : commands) {
+    if (HasSwitch(command)) {
+      (this->*method)();
       return;
     }
   }
@@ -839,7 +868,8 @@ int KSAdminAppMain(int argc, const char* argv[]) {
   InitializeThreadPool("keystone");
   const base::ScopedClosureRunner shutdown_thread_pool(
       base::BindOnce([] { base::ThreadPoolInstance::Get()->Shutdown(); }));
-  base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
+  base::SingleThreadTaskExecutor main_task_executor(
+      base::MessagePumpType::DEFAULT, true);
 
   // base::CommandLine may reorder arguments and switches, this is not the exact
   // command line.

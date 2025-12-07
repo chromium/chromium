@@ -26,6 +26,8 @@ class StubBirchClient : public BirchClient {
       return did_request_birch_data_fetch_;
     }
 
+    void RunDataProviderChangedCallback();
+
     // BirchDataProvider:
     void RequestBirchDataFetch() override;
 
@@ -47,6 +49,9 @@ class StubBirchClient : public BirchClient {
   // Installs a stub weather provider to birch model and returns the weather
   // data provider pointer.
   StubDataProvider* InstallStubWeatherDataProvider();
+  // Installs a stub coral provider to birch model and returns the coral
+  // data provider pointer.
+  StubDataProvider* InstallStubCoralDataProvider();
 
   bool DidRequestCalendarDataFetch() const;
   bool DidRequestFileSuggestDataFetch() const;
@@ -73,6 +78,7 @@ class StubBirchClient : public BirchClient {
       const GURL& url,
       const bool is_page_url,
       base::OnceCallback<void(const ui::ImageModel&)> callback) override;
+  ui::ImageModel GetChromeBackupIcon() override;
 
  private:
   std::unique_ptr<StubDataProvider> calendar_provider_;

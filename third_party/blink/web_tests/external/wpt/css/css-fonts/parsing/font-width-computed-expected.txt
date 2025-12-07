@@ -1,0 +1,33 @@
+This is a testharness.js-based test.
+[FAIL] Property font-width value 'ultra-condensed'
+  assert_true: font-width doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property font-width value 'extra-condensed'
+  assert_true: font-width doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property font-width value 'condensed'
+  assert_true: font-width doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property font-width value 'semi-condensed'
+  assert_true: font-width doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property font-width value 'normal'
+  assert_true: font-width doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property font-width value 'semi-expanded'
+  assert_true: font-width doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property font-width value 'expanded'
+  assert_true: font-width doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property font-width value 'extra-expanded'
+  assert_true: font-width doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property font-width value 'ultra-expanded'
+  assert_true: font-width doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property font-width value '234.5%'
+  assert_true: font-width doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property font-width value 'calc(100%)'
+  assert_true: font-width doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property font-width value 'calc(0%)'
+  assert_true: font-width doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property font-width value 'calc(-100%)'
+  assert_true: font-width doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property font-width value 'calc(100% + 100%)'
+  assert_true: font-width doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property font-width value 'calc(100% + (sign(20cqw - 10px) * 5%))'
+  assert_true: font-width doesn't seem to be supported in the computed style expected true got false
+Harness: the test ran to completion.
+

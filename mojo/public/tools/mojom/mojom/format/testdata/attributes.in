@@ -9,3 +9,9 @@ struct Struct {
   // Another field.
   [ShouldWeEscapeQuotes="did you say\"yes?\""] string c@3; // End comment.
 };
+
+[EnableIf=is_one|is_two]
+struct Struct {
+  [EnableIfNot=is_one&is_blue]
+  string field;
+};

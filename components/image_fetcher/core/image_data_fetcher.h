@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/image_fetcher/core/image_fetcher_types.h"
@@ -30,7 +30,7 @@ namespace image_fetcher {
 class ImageDataFetcher {
  public:
   // Note that this must be used consistently on the thread that owns
-  // |url_loader_factory|. See SharedURLLoaderFactory::Clone() if changing
+  // `url_loader_factory`. See SharedURLLoaderFactory::Clone() if changing
   // thread is required.
   explicit ImageDataFetcher(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
@@ -44,8 +44,8 @@ class ImageDataFetcher {
   // Already running downloads are not affected.
   void SetImageDownloadLimit(std::optional<int64_t> max_download_bytes);
 
-  // Fetches the raw image bytes from the given |image_url| and calls the given
-  // |callback|. The callback is run even if fetching the URL fails. In case
+  // Fetches the raw image bytes from the given `image_url` and calls the given
+  // `callback`. The callback is run even if fetching the URL fails. In case
   // of an error an empty string is passed to the callback. May return
   // synchronously.
   void FetchImageData(const GURL& image_url,
@@ -88,7 +88,7 @@ class ImageDataFetcher {
 
   void OnURLLoaderComplete(const network::SimpleURLLoader* source,
                            ImageFetcherParams params,
-                           std::unique_ptr<std::string> response_body);
+                           std::optional<std::string> response_body);
 
   void FinishRequest(const network::SimpleURLLoader* source,
                      const RequestMetadata& metadata,

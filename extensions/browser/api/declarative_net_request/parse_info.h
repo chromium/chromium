@@ -74,11 +74,11 @@ class ParseInfo {
  private:
   bool has_error_ = false;
 
-  // Only valid iff |has_error_| is true.
+  // Only valid iff `has_error_` is true.
   std::string error_;
   ParseResult error_reason_ = ParseResult::NONE;
 
-  // Only valid iff |has_error_| is false.
+  // Only valid iff `has_error_` is false.
   size_t rules_count_ = 0;
   size_t regex_rules_count_ = 0;
   flatbuffers::DetachedBuffer buffer_;

@@ -83,7 +83,6 @@ class ASH_EXPORT SizeRangeLayout : public views::View {
   // views::View:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
-  int GetHeightForWidth(int w) const override;
   void ChildPreferredSizeChanged(View* child) override;
 
  private:

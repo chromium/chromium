@@ -95,12 +95,14 @@ bool LoadablePluginPlaceholder::IsErrorPlaceholder() {
   return !allow_loading_;
 }
 
-void LoadablePluginPlaceholder::OnSetIsPrerendering(bool is_prerendering) {
-  // Prerendering can only be enabled prior to a RenderView's first navigation,
-  // so no BlockedPlugin should see the notification that enables prerendering.
-  DCHECK(!is_prerendering);
-  if (is_blocked_for_prerendering_) {
-    is_blocked_for_prerendering_ = false;
+void LoadablePluginPlaceholder::OnSetIsNoStatePrefetching(
+    bool is_no_state_prefetching) {
+  // NoStatePrefetching can only be enabled prior to a RenderView's first
+  // navigation, so no BlockedPlugin should see the notification that enables
+  // NoStatePrefetching.
+  DCHECK(!is_no_state_prefetching);
+  if (is_blocked_for_no_state_prefetching_) {
+    is_blocked_for_no_state_prefetching_ = false;
     if (!LoadingBlocked())
       LoadPlugin();
   }
@@ -114,8 +116,7 @@ void LoadablePluginPlaceholder::LoadPlugin() {
   if (!plugin())
     return;
   if (!allow_loading_) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   ReplacePlugin(CreatePlugin());
@@ -156,7 +157,7 @@ void LoadablePluginPlaceholder::SetIdentifier(const std::string& identifier) {
 
 bool LoadablePluginPlaceholder::LoadingBlocked() const {
   DCHECK(allow_loading_);
-  return is_blocked_for_prerendering_;
+  return is_blocked_for_no_state_prefetching_;
 }
 
 }  // namespace plugins

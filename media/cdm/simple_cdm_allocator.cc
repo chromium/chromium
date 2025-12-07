@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/cdm/simple_cdm_allocator.h"
 
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/not_fatal_until.h"
 #include "media/base/video_frame.h"
 #include "media/cdm/cdm_helpers.h"
 #include "media/cdm/simple_cdm_buffer.h"
@@ -34,17 +31,24 @@ class SimpleCdmVideoFrame final : public VideoFrameImpl {
   // VideoFrameImpl implementation.
   scoped_refptr<media::VideoFrame> TransformToVideoFrame(
       gfx::Size natural_size) override {
-    DCHECK(FrameBuffer());
+    CHECK(FrameBuffer());
 
     cdm::Buffer* buffer = FrameBuffer();
+    // SAFETY: cdm::Buffer is like `span` from CDM stable interface.
+    auto buffer_span =
+        UNSAFE_BUFFERS(base::span(buffer->Data(), buffer->Size()));
     gfx::Size frame_size(Size().width, Size().height);
     scoped_refptr<media::VideoFrame> frame =
         media::VideoFrame::WrapExternalYuvData(
             PIXEL_FORMAT_I420, frame_size, gfx::Rect(frame_size), natural_size,
             Stride(cdm::kYPlane), Stride(cdm::kUPlane), Stride(cdm::kVPlane),
-            buffer->Data() + PlaneOffset(cdm::kYPlane),
-            buffer->Data() + PlaneOffset(cdm::kUPlane),
-            buffer->Data() + PlaneOffset(cdm::kVPlane),
+            buffer_span.subspan(
+                PlaneOffset(cdm::kYPlane),
+                PlaneOffset(cdm::kUPlane) - PlaneOffset(cdm::kYPlane)),
+            buffer_span.subspan(
+                PlaneOffset(cdm::kUPlane),
+                PlaneOffset(cdm::kVPlane) - PlaneOffset(cdm::kUPlane)),
+            buffer_span.subspan(PlaneOffset(cdm::kVPlane)),
             base::Microseconds(Timestamp()));
 
     frame->metadata().power_efficient = false;

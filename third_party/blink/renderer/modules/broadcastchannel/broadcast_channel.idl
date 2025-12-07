@@ -8,7 +8,7 @@
     Exposed=(Window,Worker),
     ActiveScriptWrappable
 ] interface BroadcastChannel : EventTarget {
-    [CallWith=ExecutionContext, RaisesException, Measure] constructor(DOMString name);
+    [CallWith=ExecutionContext, Measure] constructor(DOMString name);
     readonly attribute DOMString name;
 
     [RaisesException, Measure] void postMessage(any message);

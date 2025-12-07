@@ -4,17 +4,21 @@
 
 #include "components/browsing_topics/browsing_topics_state.h"
 
+#include <algorithm>
+
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/values_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/browsing_topics/util.h"
+#include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -73,6 +77,15 @@ class BrowsingTopicsStateTest : public testing::Test {
   BrowsingTopicsStateTest()
       : task_environment_(new base::test::TaskEnvironment(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME)) {
+    // Configure a long epoch_retention_duration to prevent epochs from expiring
+    // during tests where expiration is irrelevant.
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{network::features::kBrowsingTopics, {}},
+         {blink::features::kBrowsingTopicsParameters,
+          {{"epoch_retention_duration", "3650000d"}}}},
+        /*disabled_features=*/{});
+
     OverrideHmacKeyForTesting(kTestKey);
 
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -147,7 +160,7 @@ TEST_F(BrowsingTopicsStateTest, InitFromNoFile_SaveToDiskAfterDelay) {
 
   EXPECT_TRUE(state.epochs().empty());
   EXPECT_TRUE(state.next_scheduled_calculation_time().is_null());
-  EXPECT_TRUE(base::ranges::equal(state.hmac_key(), kTestKey));
+  EXPECT_TRUE(std::ranges::equal(state.hmac_key(), kTestKey));
 
   EXPECT_TRUE(state.HasScheduledSaveForTesting());
   EXPECT_TRUE(observed_state_loaded());
@@ -180,7 +193,7 @@ TEST_F(BrowsingTopicsStateTest,
   EXPECT_TRUE(state.epochs().empty());
   EXPECT_EQ(state.next_scheduled_calculation_time(),
             base::Time::Now() + kNextScheduledCalculationDelay);
-  EXPECT_TRUE(base::ranges::equal(state.hmac_key(), kTestKey));
+  EXPECT_TRUE(std::ranges::equal(state.hmac_key(), kTestKey));
 
   EXPECT_TRUE(state.HasScheduledSaveForTesting());
 
@@ -271,7 +284,7 @@ TEST_F(BrowsingTopicsStateTest, AddEpoch) {
 
   // The `next_scheduled_calculation_time` and `hmac_key` are unaffected.
   EXPECT_EQ(state.next_scheduled_calculation_time(), base::Time());
-  EXPECT_TRUE(base::ranges::equal(state.hmac_key(), kTestKey));
+  EXPECT_TRUE(std::ranges::equal(state.hmac_key(), kTestKey));
 }
 
 TEST_F(BrowsingTopicsStateTest, EpochsForSite_Empty) {
@@ -281,7 +294,7 @@ TEST_F(BrowsingTopicsStateTest, EpochsForSite_Empty) {
   EXPECT_TRUE(state.EpochsForSite(/*top_domain=*/"foo.com").empty());
 }
 
-TEST_F(BrowsingTopicsStateTest, EpochsForSite_OneEpoch_SwitchTimeNotArrived) {
+TEST_F(BrowsingTopicsStateTest, EpochsForSite_OneEpoch_IntroductionTime) {
   BrowsingTopicsState state(temp_dir_.GetPath(), base::DoNothing());
   task_environment_->RunUntilIdle();
 
@@ -289,28 +302,40 @@ TEST_F(BrowsingTopicsStateTest, EpochsForSite_OneEpoch_SwitchTimeNotArrived) {
       kTime1, /*from_manually_triggered_calculation=*/false));
   state.UpdateNextScheduledCalculationTime(kNextScheduledCalculationDelay);
 
-  // The random per-site delay happens to be between (one hour, one day).
-  ASSERT_GT(state.CalculateSiteStickyTimeDelta("foo.com"), base::Hours(1));
-  ASSERT_LT(state.CalculateSiteStickyTimeDelta("foo.com"), base::Days(1));
+  ASSERT_EQ(state.CalculateSiteStickyIntroductionDelay("foo.com"),
+            base::Seconds(96673));
 
-  task_environment_->FastForwardBy(base::Hours(1));
+  // Advance time to just before the epoch introduction.
+  task_environment_->FastForwardBy(base::Seconds(96673));
   EXPECT_TRUE(state.EpochsForSite(/*top_domain=*/"foo.com").empty());
+
+  // Advance time to the epoch introduction time.
+  task_environment_->FastForwardBy(base::Seconds(1));
+  std::vector<const EpochTopics*> epochs_for_site =
+      state.EpochsForSite(/*top_domain=*/"foo.com");
+  EXPECT_EQ(epochs_for_site.size(), 1u);
+  EXPECT_EQ(epochs_for_site[0], &state.epochs()[0]);
 }
 
-TEST_F(BrowsingTopicsStateTest, EpochsForSite_OneEpoch_SwitchTimeArrived) {
+// Together with EpochsForSite_OneEpoch_IntroductionTime, this shows that the
+// epoch introduction time is influenced by the specific epoch.
+TEST_F(BrowsingTopicsStateTest, EpochsForSite_OneEpoch_IntroductionTime2) {
   BrowsingTopicsState state(temp_dir_.GetPath(), base::DoNothing());
   task_environment_->RunUntilIdle();
 
   state.AddEpoch(CreateTestEpochTopics(
-      kTime1, /*from_manually_triggered_calculation=*/false));
+      kTime2, /*from_manually_triggered_calculation=*/false));
   state.UpdateNextScheduledCalculationTime(kNextScheduledCalculationDelay);
 
-  // The random per-site delay happens to be between (one hour, one day).
-  ASSERT_GT(state.CalculateSiteStickyTimeDelta("foo.com"), base::Hours(1));
-  ASSERT_LT(state.CalculateSiteStickyTimeDelta("foo.com"), base::Days(1));
+  ASSERT_EQ(state.CalculateSiteStickyIntroductionDelay("foo.com"),
+            base::Seconds(151685));
 
-  task_environment_->FastForwardBy(base::Days(1));
+  // Advance time to just before the epoch introduction.
+  task_environment_->FastForwardBy(base::Seconds(151685));
+  EXPECT_TRUE(state.EpochsForSite(/*top_domain=*/"foo.com").empty());
 
+  // Advance time to the epoch introduction time.
+  task_environment_->FastForwardBy(base::Seconds(1));
   std::vector<const EpochTopics*> epochs_for_site =
       state.EpochsForSite(/*top_domain=*/"foo.com");
   EXPECT_EQ(epochs_for_site.size(), 1u);
@@ -326,7 +351,7 @@ TEST_F(BrowsingTopicsStateTest, EpochsForSite_OneEpoch_ManuallyTriggered) {
   state.UpdateNextScheduledCalculationTime(kNextScheduledCalculationDelay);
 
   // There shouldn't be a delay when the latest epoch is manually triggered.
-  ASSERT_EQ(state.CalculateSiteStickyTimeDelta("foo.com"),
+  ASSERT_EQ(state.CalculateSiteStickyIntroductionDelay("foo.com"),
             base::Microseconds(0));
   task_environment_->FastForwardBy(base::Microseconds(10));
 
@@ -336,8 +361,7 @@ TEST_F(BrowsingTopicsStateTest, EpochsForSite_OneEpoch_ManuallyTriggered) {
   EXPECT_EQ(epochs_for_site[0], &state.epochs()[0]);
 }
 
-TEST_F(BrowsingTopicsStateTest,
-       EpochsForSite_ThreeEpochs_SwitchTimeNotArrived) {
+TEST_F(BrowsingTopicsStateTest, EpochsForSite_ThreeEpochs_IntroductionTime) {
   BrowsingTopicsState state(temp_dir_.GetPath(), base::DoNothing());
   task_environment_->RunUntilIdle();
 
@@ -349,35 +373,65 @@ TEST_F(BrowsingTopicsStateTest,
       kTime3, /*from_manually_triggered_calculation=*/false));
   state.UpdateNextScheduledCalculationTime(kNextScheduledCalculationDelay);
 
-  task_environment_->FastForwardBy(base::Hours(1));
+  ASSERT_EQ(state.CalculateSiteStickyIntroductionDelay("foo.com"),
+            base::Seconds(136778));
 
+  // Advance time to just before the epoch introduction.
+  task_environment_->FastForwardBy(base::Seconds(136778));
   std::vector<const EpochTopics*> epochs_for_site =
       state.EpochsForSite(/*top_domain=*/"foo.com");
   EXPECT_EQ(epochs_for_site.size(), 2u);
   EXPECT_EQ(epochs_for_site[0], &state.epochs()[0]);
   EXPECT_EQ(epochs_for_site[1], &state.epochs()[1]);
-}
 
-TEST_F(BrowsingTopicsStateTest, EpochsForSite_ThreeEpochs_SwitchTimeArrived) {
-  BrowsingTopicsState state(temp_dir_.GetPath(), base::DoNothing());
-  task_environment_->RunUntilIdle();
+  // Advance time to the epoch introduction time.
+  task_environment_->FastForwardBy(base::Seconds(1));
 
-  state.AddEpoch(CreateTestEpochTopics(
-      kTime1, /*from_manually_triggered_calculation=*/false));
-  state.AddEpoch(CreateTestEpochTopics(
-      kTime2, /*from_manually_triggered_calculation=*/false));
-  state.AddEpoch(CreateTestEpochTopics(
-      kTime3, /*from_manually_triggered_calculation=*/false));
-  state.UpdateNextScheduledCalculationTime(kNextScheduledCalculationDelay);
-
-  task_environment_->FastForwardBy(base::Days(1));
-
-  std::vector<const EpochTopics*> epochs_for_site =
-      state.EpochsForSite(/*top_domain=*/"foo.com");
+  epochs_for_site = state.EpochsForSite(/*top_domain=*/"foo.com");
   EXPECT_EQ(epochs_for_site.size(), 3u);
   EXPECT_EQ(epochs_for_site[0], &state.epochs()[0]);
   EXPECT_EQ(epochs_for_site[1], &state.epochs()[1]);
   EXPECT_EQ(epochs_for_site[2], &state.epochs()[2]);
+}
+
+TEST_F(BrowsingTopicsStateTest, EpochsForSite_PhaseOutTime) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{network::features::kBrowsingTopics, {}},
+       {blink::features::kBrowsingTopicsParameters,
+        {{"epoch_retention_duration", "28d"}}}},
+      /*disabled_features=*/{});
+
+  BrowsingTopicsState state(temp_dir_.GetPath(), base::DoNothing());
+  task_environment_->RunUntilIdle();
+
+  base::Time now = base::Time::Now();
+
+  state.AddEpoch(CreateTestEpochTopics(
+      now, /*from_manually_triggered_calculation=*/false));
+  state.UpdateNextScheduledCalculationTime(kNextScheduledCalculationDelay);
+
+  base::TimeDelta phase_out_time_offset =
+      state.CalculateSiteStickyPhaseOutTimeOffset("foo.com", state.epochs()[0]);
+
+  ASSERT_GT(phase_out_time_offset, base::Seconds(0));
+  ASSERT_LT(phase_out_time_offset, base::Days(2));
+
+  // Advance time to just before the epoch phase out.
+  task_environment_->FastForwardBy(base::Days(28) - phase_out_time_offset -
+                                   base::Seconds(1));
+
+  std::vector<const EpochTopics*> epochs_for_site =
+      state.EpochsForSite(/*top_domain=*/"foo.com");
+  EXPECT_EQ(epochs_for_site.size(), 1u);
+  EXPECT_EQ(epochs_for_site[0], &state.epochs()[0]);
+
+  // Advance time to the epoch phase out time.
+  task_environment_->FastForwardBy(base::Seconds(1));
+
+  epochs_for_site = state.EpochsForSite(/*top_domain=*/"foo.com");
+  EXPECT_EQ(epochs_for_site.size(), 0u);
 }
 
 TEST_F(BrowsingTopicsStateTest,
@@ -427,7 +481,8 @@ TEST_F(BrowsingTopicsStateTest,
   EXPECT_EQ(epochs_for_site[1], &state.epochs()[1]);
 }
 
-TEST_F(BrowsingTopicsStateTest, EpochsForSite_FourEpochs_SwitchTimeNotArrived) {
+TEST_F(BrowsingTopicsStateTest,
+       EpochsForSite_FourEpochs_IntroductionTimeNotArrived) {
   BrowsingTopicsState state(temp_dir_.GetPath(), base::DoNothing());
   task_environment_->RunUntilIdle();
 
@@ -451,7 +506,8 @@ TEST_F(BrowsingTopicsStateTest, EpochsForSite_FourEpochs_SwitchTimeNotArrived) {
   EXPECT_EQ(epochs_for_site[2], &state.epochs()[2]);
 }
 
-TEST_F(BrowsingTopicsStateTest, EpochsForSite_FourEpochs_SwitchTimeArrived) {
+TEST_F(BrowsingTopicsStateTest,
+       EpochsForSite_FourEpochs_IntroductionTimeArrived) {
   BrowsingTopicsState state(temp_dir_.GetPath(), base::DoNothing());
   task_environment_->RunUntilIdle();
 
@@ -544,7 +600,7 @@ TEST_F(BrowsingTopicsStateTest, InitFromPreexistingFile_CorruptedHmacKey) {
 
   EXPECT_EQ(state.epochs().size(), 0u);
   EXPECT_TRUE(state.next_scheduled_calculation_time().is_null());
-  EXPECT_TRUE(base::ranges::equal(state.hmac_key(), kZeroKey));
+  EXPECT_TRUE(std::ranges::equal(state.hmac_key(), kZeroKey));
 
   histograms.ExpectUniqueSample(
       "BrowsingTopics.BrowsingTopicsState.LoadFinishStatus", false,
@@ -569,7 +625,7 @@ TEST_F(BrowsingTopicsStateTest, InitFromPreexistingFile_SameConfigVersion) {
   EXPECT_FALSE(state.epochs()[0].empty());
   EXPECT_EQ(state.epochs()[0].model_version(), kModelVersion);
   EXPECT_EQ(state.next_scheduled_calculation_time(), kTime2);
-  EXPECT_TRUE(base::ranges::equal(state.hmac_key(), kTestKey2));
+  EXPECT_TRUE(std::ranges::equal(state.hmac_key(), kTestKey2));
 
   histograms.ExpectUniqueSample(
       "BrowsingTopics.BrowsingTopicsState.LoadFinishStatus", true,
@@ -602,7 +658,7 @@ TEST_F(BrowsingTopicsStateTest,
   EXPECT_FALSE(state.epochs()[0].empty());
   EXPECT_EQ(state.epochs()[0].model_version(), kModelVersion);
   EXPECT_EQ(state.next_scheduled_calculation_time(), kTime2);
-  EXPECT_TRUE(base::ranges::equal(state.hmac_key(), kTestKey2));
+  EXPECT_TRUE(std::ranges::equal(state.hmac_key(), kTestKey2));
 
   histograms.ExpectUniqueSample(
       "BrowsingTopics.BrowsingTopicsState.LoadFinishStatus", true,
@@ -635,7 +691,7 @@ TEST_F(BrowsingTopicsStateTest,
   EXPECT_FALSE(state.epochs()[0].empty());
   EXPECT_EQ(state.epochs()[0].model_version(), kModelVersion);
   EXPECT_EQ(state.next_scheduled_calculation_time(), kTime2);
-  EXPECT_TRUE(base::ranges::equal(state.hmac_key(), kTestKey2));
+  EXPECT_TRUE(std::ranges::equal(state.hmac_key(), kTestKey2));
 
   histograms.ExpectUniqueSample(
       "BrowsingTopics.BrowsingTopicsState.LoadFinishStatus", true,
@@ -660,7 +716,7 @@ TEST_F(BrowsingTopicsStateTest,
 
   EXPECT_TRUE(state.epochs().empty());
   EXPECT_TRUE(state.next_scheduled_calculation_time().is_null());
-  EXPECT_TRUE(base::ranges::equal(state.hmac_key(), kTestKey2));
+  EXPECT_TRUE(std::ranges::equal(state.hmac_key(), kTestKey2));
 
   histograms.ExpectUniqueSample(
       "BrowsingTopics.BrowsingTopicsState.LoadFinishStatus", true,
@@ -696,7 +752,7 @@ TEST_F(BrowsingTopicsStateTest, ClearOneEpoch) {
 
   EXPECT_EQ(state.next_scheduled_calculation_time(),
             base::Time::Now() + kNextScheduledCalculationDelay);
-  EXPECT_TRUE(base::ranges::equal(state.hmac_key(), kTestKey));
+  EXPECT_TRUE(std::ranges::equal(state.hmac_key(), kTestKey));
 }
 
 TEST_F(BrowsingTopicsStateTest, ClearAllTopics) {
@@ -725,7 +781,7 @@ TEST_F(BrowsingTopicsStateTest, ClearAllTopics) {
 
   EXPECT_EQ(state.next_scheduled_calculation_time(),
             base::Time::Now() + kNextScheduledCalculationDelay);
-  EXPECT_TRUE(base::ranges::equal(state.hmac_key(), kTestKey));
+  EXPECT_TRUE(std::ranges::equal(state.hmac_key(), kTestKey));
 }
 
 TEST_F(BrowsingTopicsStateTest, ClearTopic) {
@@ -829,6 +885,103 @@ TEST_F(BrowsingTopicsStateTest, ShouldSaveFileDespiteShutdownWhileScheduled) {
       "{\"epochs\": [ ],\"hex_encoded_hmac_key\": "
       "\"0100000000000000000000000000000000000000000000000000000000000000\","
       "\"next_scheduled_calculation_time\": \"0\"}");
+}
+
+TEST_F(BrowsingTopicsStateTest, ScheduleEpochsExpiration) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{network::features::kBrowsingTopics, {}},
+       {blink::features::kBrowsingTopicsParameters,
+        {{"epoch_retention_duration", "28s"}}}},
+      /*disabled_features=*/{});
+
+  base::Time start_time = base::Time::Now();
+
+  std::vector<EpochTopics> epochs;
+  epochs.emplace_back(
+      CreateTestEpochTopics(start_time - base::Seconds(29),
+                            /*from_manually_triggered_calculation=*/false));
+  epochs.emplace_back(
+      CreateTestEpochTopics(start_time - base::Seconds(28),
+                            /*from_manually_triggered_calculation=*/false));
+  epochs.emplace_back(
+      CreateTestEpochTopics(start_time - base::Seconds(27),
+                            /*from_manually_triggered_calculation=*/false));
+  epochs.emplace_back(
+      CreateTestEpochTopics(start_time - base::Seconds(26),
+                            /*from_manually_triggered_calculation=*/false));
+
+  CreateOrOverrideTestFile(std::move(epochs),
+                           /*next_scheduled_calculation_time=*/kTime2,
+                           /*hex_encoded_hmac_key=*/base::HexEncode(kTestKey));
+
+  BrowsingTopicsState state(temp_dir_.GetPath(), base::DoNothing());
+  task_environment_->RunUntilIdle();
+
+  EXPECT_EQ(state.epochs().size(), 4u);
+
+  state.ScheduleEpochsExpiration();
+
+  // Verify that two epochs have been removed immediately due to expiration.
+  EXPECT_EQ(state.epochs().size(), 2u);
+  EXPECT_EQ(state.epochs()[0].calculation_time(),
+            start_time - base::Seconds(27));
+  EXPECT_EQ(state.epochs()[1].calculation_time(),
+            start_time - base::Seconds(26));
+
+  // Process any pending tasks to ensure any asynchronous expirations are
+  // handled.
+  task_environment_->RunUntilIdle();
+  EXPECT_EQ(state.epochs().size(), 2u);
+
+  // Trigger another epoch expiration.
+  task_environment_->FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(state.epochs().size(), 1u);
+  EXPECT_EQ(state.epochs()[0].calculation_time(),
+            start_time - base::Seconds(26));
+
+  // Trigger the final epoch expiration.
+  task_environment_->FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(state.epochs().size(), 0u);
+}
+
+TEST_F(BrowsingTopicsStateTest, AddEpochAndVerifyExpiration) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{network::features::kBrowsingTopics, {}},
+       {blink::features::kBrowsingTopicsParameters,
+        {{"epoch_retention_duration", "28s"}}}},
+      /*disabled_features=*/{});
+
+  base::Time start_time = base::Time::Now();
+
+  BrowsingTopicsState state(temp_dir_.GetPath(), base::DoNothing());
+  task_environment_->RunUntilIdle();
+
+  state.AddEpoch(CreateTestEpochTopics(
+      base::Time::Now(), /*from_manually_triggered_calculation=*/false));
+
+  task_environment_->FastForwardBy(base::Seconds(1));
+  state.AddEpoch(CreateTestEpochTopics(
+      base::Time::Now(), /*from_manually_triggered_calculation=*/false));
+
+  EXPECT_EQ(state.epochs().size(), 2u);
+
+  // Verify epochs haven't expired prematurely.
+  task_environment_->FastForwardBy(base::Seconds(26));
+  EXPECT_EQ(state.epochs().size(), 2u);
+
+  // Verify the first epoch expired at the expected expiration time.
+  task_environment_->FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(state.epochs().size(), 1u);
+  EXPECT_EQ(state.epochs()[0].calculation_time(),
+            start_time + base::Seconds(1));
+
+  // Verify the second epoch has also expired at the expected expiration time.
+  task_environment_->FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(state.epochs().size(), 0u);
 }
 
 }  // namespace browsing_topics

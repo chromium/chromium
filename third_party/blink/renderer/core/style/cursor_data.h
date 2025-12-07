@@ -46,8 +46,6 @@ class CursorData {
     return hot_spot_ == o.hot_spot_ && base::ValuesEquivalent(image_, o.image_);
   }
 
-  bool operator!=(const CursorData& o) const { return !(*this == o); }
-
   StyleImage* GetImage() const { return image_.Get(); }
   void SetImage(StyleImage* image) { image_ = image; }
 

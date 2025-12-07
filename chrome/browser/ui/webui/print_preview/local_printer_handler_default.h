@@ -19,7 +19,7 @@
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chrome/services/printing/public/mojom/print_backend_service.mojom-forward.h"
+#include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #endif
 
 namespace base {
@@ -68,18 +68,18 @@ class LocalPrinterHandlerDefault : public PrinterHandler {
   void OnDidGetDefaultPrinterNameFromPrintBackendService(
       base::TimeTicks query_start_time,
       DefaultPrinterCallback callback,
-      mojom::DefaultPrinterNameResultPtr result);
+      mojom::PrintBackendService::GetDefaultPrinterNameResult result);
   void OnDidEnumeratePrintersFromPrintBackendService(
       base::TimeTicks query_start_time,
       AddedPrintersCallback added_printers_callback,
       GetPrintersDoneCallback done_callback,
-      mojom::PrinterListResultPtr result);
+      mojom::PrintBackendService::EnumeratePrintersResult result);
   void OnDidFetchCapabilitiesFromPrintBackendService(
       const std::string& device_name,
       bool elevated_privileges,
       base::TimeTicks query_start_time,
       GetCapabilityCallback callback,
-      mojom::PrinterCapsAndInfoResultPtr result);
+      mojom::PrintBackendService::FetchCapabilitiesResult result);
 #endif
 
   const raw_ptr<content::WebContents> preview_web_contents_;

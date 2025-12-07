@@ -7,28 +7,29 @@
 #import "base/check.h"
 #import "base/memory/ptr_util.h"
 #import "ios/chrome/browser/main/model/browser_agent_util.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_service.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 
-BrowserImpl::BrowserImpl(ChromeBrowserState* browser_state,
+BrowserImpl::BrowserImpl(ProfileIOS* profile,
                          SceneState* scene_state,
                          CommandDispatcher* command_dispatcher,
                          BrowserImpl* active_browser,
                          InsertionPolicy insertion_policy,
                          ActivationPolicy activation_policy,
                          Type type)
-    : BrowserWebStateListDelegate(insertion_policy, activation_policy),
+    : BrowserWebStateListDelegate(profile, insertion_policy, activation_policy),
       type_(type),
-      browser_state_(browser_state),
-      web_state_list_(this),
+      web_state_list_(this, TabGroupServiceFactory::GetForProfile(profile)),
       scene_state_(scene_state),
       command_dispatcher_(command_dispatcher),
       active_browser_(active_browser ?: this) {
-  DCHECK(browser_state_);
+  DCHECK(profile);
   DCHECK(active_browser_);
 
   CHECK((type == Type::kInactive) == (active_browser != nullptr));
@@ -40,14 +41,20 @@ BrowserImpl::~BrowserImpl() {
   for (auto& observer : observers_) {
     observer.BrowserDestroyed(this);
   }
+
+  // Destroy all attached UserData before invalidating the instance vtable.
+  // As most of them have a pointer back to the Browser, this ensures they
+  // are destroyed while the pointer is still valid (i.e. they can use the
+  // pointer in their destructor, even if they don't observe the Browser).
+  ClearAllUserData();
 }
 
 Browser::Type BrowserImpl::type() const {
   return type_;
 }
 
-ChromeBrowserState* BrowserImpl::GetBrowserState() {
-  return browser_state_;
+ProfileIOS* BrowserImpl::GetProfile() {
+  return profile();
 }
 
 WebStateList* BrowserImpl::GetWebStateList() {
@@ -91,7 +98,7 @@ Browser* BrowserImpl::CreateInactiveBrowser() {
   CHECK(!inactive_browser_.get())
       << "This browser already links to its inactive counterpart.";
   inactive_browser_ = std::make_unique<BrowserImpl>(
-      browser_state_, scene_state_, [[CommandDispatcher alloc] init],
+      profile(), scene_state_, [[CommandDispatcher alloc] init],
       /*active_browser=*/this, BrowserImpl::InsertionPolicy::kAttachTabHelpers,
       BrowserImpl::ActivationPolicy::kDoNothing, Type::kInactive);
   return inactive_browser_.get();
@@ -104,22 +111,21 @@ void BrowserImpl::DestroyInactiveBrowser() {
 }
 
 // static
-std::unique_ptr<Browser> Browser::Create(ChromeBrowserState* browser_state,
+std::unique_ptr<Browser> Browser::Create(ProfileIOS* profile,
                                          SceneState* scene_state) {
   const Type type =
-      browser_state->IsOffTheRecord() ? Type::kIncognito : Type::kRegular;
+      profile->IsOffTheRecord() ? Type::kIncognito : Type::kRegular;
   return std::make_unique<BrowserImpl>(
-      browser_state, scene_state, [[CommandDispatcher alloc] init],
+      profile, scene_state, [[CommandDispatcher alloc] init],
       /*active_browser=*/nullptr,
       BrowserImpl::InsertionPolicy::kAttachTabHelpers,
       BrowserImpl::ActivationPolicy::kForceRealization, type);
 }
 
 // static
-std::unique_ptr<Browser> Browser::CreateTemporary(
-    ChromeBrowserState* browser_state) {
+std::unique_ptr<Browser> Browser::CreateTemporary(ProfileIOS* profile) {
   return std::make_unique<BrowserImpl>(
-      browser_state, /*scene_state=*/nil, /*command_dispatcher=*/nil,
+      profile, /*scene_state=*/nil, /*command_dispatcher=*/nil,
       /*active_browser=*/nullptr, BrowserImpl::InsertionPolicy::kDoNothing,
       BrowserImpl::ActivationPolicy::kDoNothing, Type::kTemporary);
 }

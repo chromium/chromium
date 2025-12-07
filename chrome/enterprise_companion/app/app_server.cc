@@ -10,6 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "chrome/enterprise_companion/app/app.h"
 #include "chrome/enterprise_companion/dm_client.h"
@@ -26,9 +27,38 @@
 #include "base/threading/thread.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include <atlsecurity.h>
+
+#include "base/win/scoped_com_initializer.h"
+#include "chrome/updater/util/win_util.h"
+#include "chrome/updater/win/scoped_handle.h"
+#endif
+
 namespace enterprise_companion {
 
 namespace {
+
+#if BUILDFLAG(IS_WIN)
+bool IsSystemProcess() {
+  CAccessToken current_process_token;
+  if (!current_process_token.GetProcessToken(TOKEN_QUERY,
+                                             ::GetCurrentProcess())) {
+    VPLOG(1) << "CAccessToken::GetProcessToken failed";
+    return false;
+  }
+
+  CSid logon_sid;
+  if (!current_process_token.GetUser(&logon_sid)) {
+    VPLOG(1) << "CAccessToken::GetUser failed";
+    return false;
+  }
+
+  return logon_sid == Sids::System();
+}
+#endif
 
 // AppServer runs the EnterpriseCompanion Mojo IPC server process.
 class AppServer : public App {
@@ -44,6 +74,15 @@ class AppServer : public App {
  protected:
   void FirstTaskRun() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+#if BUILDFLAG(IS_WIN)
+    if (!com_initializer_.Succeeded()) {
+      VLOG(1) << "Failed to initialize COM";
+      Shutdown(EnterpriseCompanionStatus(
+          ApplicationError::kCOMInitializationFailed));
+      return;
+    }
+#endif
 
     lock_ = CreateScopedLock();
     if (!lock_) {
@@ -61,8 +100,14 @@ class AppServer : public App {
       return;
     }
 #else
-    url_loader_factory_provider_ =
-        CreateInProcessUrlLoaderFactoryProvider(net_thread_.task_runner());
+    base::SequenceBound<EventLoggerCookieHandler> event_logger_cookie_handler =
+        CreateEventLoggerCookieHandler();
+    if (!event_logger_cookie_handler) {
+      LOG(WARNING) << "Failed to create EventLoggerCookieHandler, logging "
+                      "cookies will not be transmitted or persisted.";
+    }
+    url_loader_factory_provider_ = CreateInProcessUrlLoaderFactoryProvider(
+        net_thread_.task_runner(), std::move(event_logger_cookie_handler));
 #endif
 
     url_loader_factory_provider_
@@ -72,16 +117,6 @@ class AppServer : public App {
   }
 
  private:
-  SEQUENCE_CHECKER(sequence_checker_);
-
-#if !BUILDFLAG(IS_MAC)
-  base::Thread net_thread_{"Network"};
-#endif
-
-  base::SequenceBound<URLLoaderFactoryProvider> url_loader_factory_provider_;
-  std::unique_ptr<ScopedLock> lock_;
-  std::unique_ptr<mojom::EnterpriseCompanion> stub_;
-
   void OnUrlLoaderFactoryReceived(
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           pending_url_loader_factory) {
@@ -91,16 +126,71 @@ class AppServer : public App {
         network::SharedURLLoaderFactory::Create(
             std::move(pending_url_loader_factory));
 
+#if BUILDFLAG(IS_WIN)
+    base::RepeatingClosure before_each_request = base::BindRepeating(
+        [](scoped_refptr<base::SequencedTaskRunner> net_thread_task_runner) {
+          // Try to impersonate the logged-in user. Impersonation is attempted
+          // on every request and lasts for the lifetime of the net thread, or
+          // until a new request is received. Skip impersonation if the process
+          // is not running as the SYSTEM user, which should only be true in
+          // tests.
+          if (!IsSystemProcess()) {
+            return;
+          }
+          net_thread_task_runner->PostTask(
+              FROM_HERE, base::BindOnce([] {
+                // If the thread is already impersonating it is necessary to
+                // terminate impersonation before impersonating again, as the
+                // logged-in user could be different across attempts.
+                // Additionally, if the thread is impersonating a user that has
+                // logged off it is preferable to terminate the impersonation
+                // even if there is no other logged-in user to impersonate;
+                // else, the security context may be disconnected from
+                // environmental resources (including network credentials).
+                if (!::RevertToSelf()) {
+                  VPLOG(1) << "Failed to revert net thread impersonation";
+                }
+                updater::HResultOr<updater::ScopedKernelHANDLE> token =
+                    updater::GetLoggedOnUserToken();
+                VLOG_IF(2, !token.has_value())
+                    << __func__ << ": GetLoggedOnUserToken failed: " << std::hex
+                    << token.error();
+                if (token.has_value()) {
+                  if (!::ImpersonateLoggedOnUser(token->get())) {
+                    VPLOG(1)
+                        << "Failed to impersonate logged on user. Networking "
+                           "may fail.";
+                  }
+                }
+              }));
+        },
+        net_thread_.task_runner());
+#else
+    base::RepeatingClosure before_each_request = base::DoNothing();
+#endif
+
     VLOG(1) << "Launching Chrome Enterprise Companion App";
     stub_ =
         CreateEnterpriseCompanionServiceStub(CreateEnterpriseCompanionService(
             CreateDMClient(
                 GetDefaultCloudPolicyClientProvider(url_loader_factory)),
-            CreateEventLoggerManager(
-                CreateEventLogUploader(url_loader_factory)),
+            before_each_request,
+            EnterpriseCompanionEventLogger::Create(url_loader_factory),
             base::BindOnce(&AppServer::Shutdown, weak_ptr_factory_.GetWeakPtr(),
                            EnterpriseCompanionStatus::Success())));
   }
+
+  SEQUENCE_CHECKER(sequence_checker_);
+#if !BUILDFLAG(IS_MAC)
+  base::Thread net_thread_{"Network"};
+#endif
+#if BUILDFLAG(IS_WIN)
+  base::win::ScopedCOMInitializer com_initializer_{
+      base::win::ScopedCOMInitializer::kMTA};
+#endif
+  base::SequenceBound<URLLoaderFactoryProvider> url_loader_factory_provider_;
+  std::unique_ptr<ScopedLock> lock_;
+  std::unique_ptr<mojom::EnterpriseCompanion> stub_;
 
   base::WeakPtrFactory<AppServer> weak_ptr_factory_{this};
 };

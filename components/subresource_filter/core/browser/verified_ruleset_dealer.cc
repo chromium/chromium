@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -84,8 +83,7 @@ scoped_refptr<const MemoryMappedRuleset> VerifiedRulesetDealer::GetRuleset() {
     case RulesetVerificationStatus::kInvalidFile:
       return nullptr;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -142,7 +140,7 @@ VerifiedRuleset::~VerifiedRuleset() {
 
 void VerifiedRuleset::Initialize(VerifiedRulesetDealer* dealer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(dealer, base::NotFatalUntil::M129);
+  CHECK(dealer);
   ruleset_ = dealer->GetRuleset();
 }
 

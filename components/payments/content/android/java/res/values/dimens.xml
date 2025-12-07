@@ -19,6 +19,8 @@ found in the LICENSE file.
     <dimen name="payments_ui_max_dialog_width">0dp</dimen>
     <dimen name="payments_ui_translation">100dp</dimen>
     <dimen name="payments_favicon_size">24dp</dimen>
+    <dimen name="payments_item_width">32dp</dimen>
+    <dimen name="payments_item_height">20dp</dimen>
     <dimen name="payments_request_bottom_bar_vertical_padding">10dp</dimen>
     <dimen name="payments_request_bottom_bar_horizontal_padding">16dp</dimen>
 
@@ -29,6 +31,8 @@ found in the LICENSE file.
     <dimen name="secure_payment_confirmation_ui_drag_handle_spacing">6dp</dimen>
     <dimen name="secure_payment_confirmation_ui_icon_width">20dp</dimen>
     <dimen name="secure_payment_confirmation_ui_icon_height">32dp</dimen>
+    <dimen name="secure_payment_confirmation_ui_header_logo_width">104dp</dimen>
+    <dimen name="secure_payment_confirmation_ui_header_logo_height">24dp</dimen>
     <dimen name="secure_payment_confirmation_authn_ui_label_size">60dp</dimen>
     <dimen name="secure_payment_confirmation_authn_ui_amount_currency_spacing">4dp</dimen>
 </resources>

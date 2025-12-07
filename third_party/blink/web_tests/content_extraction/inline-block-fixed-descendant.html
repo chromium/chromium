@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Anchor inline-block with fixed positioned child</title>
+  <link href="./resources/consistent-rendering.css" rel="stylesheet">
+  <script src="../resources/testharness.js"></script>
+  <script src="../resources/testharnessreport.js"></script>
+  <script src="./resources/content-extraction-test-helpers.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font: 10px/1 Ahem;
+    }
+
+    .content {
+      padding: 60px 0 0 40px;
+    }
+
+    a.inline-block-anchor {
+      display: inline-block;
+      width: 100px;
+      height: 100px;
+      border: 1px solid black;
+    }
+
+    .fixed-box {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 200px;
+      height: 25px;
+      background: lightblue;
+    }
+  </style>
+</head>
+<body onload="runTest()">
+  <div class="content">
+    <a class="inline-block-anchor" href="#test">
+      <div class="fixed-box">a</div>
+    </a>
+  </div>
+  <script>
+    function runTest() {
+      finishTest(dumpContentNodeTree(document));
+    }
+  </script>
+</body>
+</html>

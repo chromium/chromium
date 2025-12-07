@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("personalization_app") {
   sources = [
@@ -59,10 +59,12 @@ static_library("personalization_app") {
     "//base",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/hats",
-    "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/ash/wallpaper_handlers",
     "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/camera_presence_notifier",
     "//chromeos/ash/components/settings",
+    "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/system_web_apps/types",
     "//components/account_id",
     "//components/keyed_service/core",
     "//components/language/core/common",
@@ -97,10 +99,12 @@ static_library("personalization_app") {
     "//chrome/browser/ash/system_web_apps/apps",
     "//chrome/browser/ash/wallpaper",
     "//chrome/browser/feedback",
+    "//chrome/browser/ui/ash/thumbnail_loader",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum_shared",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum_shared_cpp_sources",
     "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/demo_mode",
     "//chromeos/ash/components/geolocation",
     "//chromeos/ash/components/local_search_service/public/cpp",
     "//chromeos/constants",
@@ -154,7 +158,7 @@ static_library("test_support") {
     "//chrome/browser/ash/wallpaper_handlers:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
-    "//chrome/browser/ui/ash",
+    "//chrome/browser/ui/ash/wallpaper",
     "//components/manta",
   ]
 }
@@ -191,7 +195,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/wallpaper_handlers:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
-    "//chrome/browser/ui/ash",
+    "//chrome/browser/ui/ash/wallpaper",
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/geolocation",
     "//chromeos/constants",
@@ -245,18 +249,18 @@ source_set("unit_tests") {
     "//base:i18n",
     "//base/test:test_support",
     "//chrome/browser",
-    "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/login/demo_mode:test_support",
+    "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/login/users/avatar",
     "//chrome/browser/ash/login/users/avatar:test_support",
     "//chrome/browser/ash/login/users/default_user_image",
-    "//chrome/browser/ash/policy/external_data/handlers",
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/ash/wallpaper_handlers:test_support",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/ash",
-    "//chrome/browser/ui/ash:test_support",
+    "//chrome/browser/signin",
+    "//chrome/browser/ui/ash/wallpaper",
+    "//chrome/browser/ui/ash/wallpaper:test_support",
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//chrome/test:test_support_unit",
@@ -293,4 +297,8 @@ source_set("unit_tests") {
     "//ui/gfx/codec",
     "//url",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

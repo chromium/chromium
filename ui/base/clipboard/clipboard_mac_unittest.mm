@@ -18,6 +18,8 @@
 #include "base/mac/mac_util.h"
 #include "base/memory/free_deleter.h"
 #include "base/memory/ref_counted.h"
+#include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "testing/platform_test.h"
@@ -27,6 +29,7 @@
 #include "ui/base/clipboard/clipboard_observer.h"
 #include "ui/base/clipboard/clipboard_util_mac.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/skia_util.h"
 
@@ -120,9 +123,19 @@ class ClipboardMacTest : public PlatformTest {
       std::unique_ptr<DataTransferEndpoint> data_src,
       NSPasteboard* pasteboard) {
     clipboard_mac->WritePortableAndPlatformRepresentationsInternal(
-        ClipboardBuffer::kCopyPaste, /*objects=*/{},
+        ClipboardBuffer::kCopyPaste, /*objects=*/{}, /*raw_objects=*/{},
         /*platform_representations=*/{}, std::move(data_src), pasteboard,
         /*privacy_types=*/0);
+  }
+
+  // Helper method to run assertion with given count value
+  void AssertClipboardObserverCount(TestClipboardObserver& observer,
+                                    int expected_count) {
+    ASSERT_TRUE(base::test::RunUntil([&observer, expected_count]() {
+      return observer.data_changed_count() == expected_count;
+    })) << "Timeout waiting for the clipboardMonitor to be notified. Expected "
+           "count: "
+        << expected_count << " but got " << observer.data_changed_count();
   }
 
  private:
@@ -139,8 +152,8 @@ TEST_F(ClipboardMacTest, ReadImageRetina) {
   ClipboardMac* clipboard_mac = static_cast<ClipboardMac*>(clipboard);
 
   std::vector<uint8_t> png_data = ReadPngSync(clipboard_mac, pasteboard->get());
-  SkBitmap bitmap;
-  gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &bitmap);
+  SkBitmap bitmap = gfx::PNGCodec::Decode(png_data);
+  ASSERT_FALSE(bitmap.isNull());
   EXPECT_EQ(2 * width, bitmap.width());
   EXPECT_EQ(2 * height, bitmap.height());
 }
@@ -155,8 +168,8 @@ TEST_F(ClipboardMacTest, ReadImageNonRetina) {
   ClipboardMac* clipboard_mac = static_cast<ClipboardMac*>(clipboard);
 
   std::vector<uint8_t> png_data = ReadPngSync(clipboard_mac, pasteboard->get());
-  SkBitmap bitmap;
-  gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &bitmap);
+  SkBitmap bitmap = gfx::PNGCodec::Decode(png_data);
+  ASSERT_FALSE(bitmap.isNull());
   EXPECT_EQ(width, bitmap.width());
   EXPECT_EQ(height, bitmap.height());
 }
@@ -170,10 +183,8 @@ TEST_F(ClipboardMacTest, EmptyImage) {
   ClipboardMac* clipboard_mac = static_cast<ClipboardMac*>(clipboard);
 
   std::vector<uint8_t> png_data = ReadPngSync(clipboard_mac, pasteboard->get());
-  SkBitmap bitmap;
-  gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &bitmap);
-  EXPECT_EQ(0, bitmap.width());
-  EXPECT_EQ(0, bitmap.height());
+  SkBitmap bitmap = gfx::PNGCodec::Decode(png_data);
+  ASSERT_TRUE(bitmap.isNull());
 }
 
 TEST_F(ClipboardMacTest, PDFImage) {
@@ -193,8 +204,8 @@ TEST_F(ClipboardMacTest, PDFImage) {
   ClipboardMac* clipboard_mac = static_cast<ClipboardMac*>(clipboard);
 
   std::vector<uint8_t> png_data = ReadPngSync(clipboard_mac, pasteboard->get());
-  SkBitmap bitmap;
-  gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &bitmap);
+  SkBitmap bitmap = gfx::PNGCodec::Decode(png_data);
+  ASSERT_FALSE(bitmap.isNull());
   EXPECT_EQ(width, bitmap.width());
   EXPECT_EQ(height, bitmap.height());
 }
@@ -217,8 +228,8 @@ TEST_F(ClipboardMacTest, WriteBitmapAddsPNGToClipboard) {
   const uint8_t* bytes = static_cast<const uint8_t*>(data.bytes);
   std::vector<uint8_t> png_data(bytes, bytes + data.length);
 
-  SkBitmap result_bitmap;
-  gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &result_bitmap);
+  SkBitmap result_bitmap = gfx::PNGCodec::Decode(png_data);
+  ASSERT_FALSE(result_bitmap.isNull());
   EXPECT_TRUE(gfx::BitmapsAreEqual(bitmap, result_bitmap));
 }
 
@@ -233,7 +244,8 @@ TEST_F(ClipboardMacTest, SourceTracking) {
   WritePortableAndPlatformRepresentations(
       clipboard_mac, std::make_unique<DataTransferEndpoint>(google_url),
       pasteboard->get());
-  ASSERT_EQ(observer.data_changed_count(), 1);
+
+  AssertClipboardObserverCount(observer, 1);
 
   auto source = GetSource(clipboard_mac, pasteboard->get());
   ASSERT_TRUE(source);
@@ -244,7 +256,6 @@ TEST_F(ClipboardMacTest, SourceTracking) {
   WritePortableAndPlatformRepresentations(
       clipboard_mac, std::make_unique<DataTransferEndpoint>(chromium_url),
       pasteboard->get());
-  ASSERT_EQ(observer.data_changed_count(), 2);
 
   source = GetSource(clipboard_mac, pasteboard->get());
   ASSERT_TRUE(source);
@@ -253,6 +264,54 @@ TEST_F(ClipboardMacTest, SourceTracking) {
 
   Clear(clipboard_mac, pasteboard->get());
   ASSERT_FALSE(GetSource(clipboard_mac, pasteboard->get()));
+}
+
+TEST_F(ClipboardMacTest, ClipboardChangeAPI_BrowserTriggered) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kPlatformClipboardMonitor);
+
+  TestClipboardObserver observer;
+
+  // Note that general pasteboard is used since the clipboard monitoring
+  // is performed on the general pasteboard in ClipboardMac.
+  NSPasteboard* nspasteboard = NSPasteboard.generalPasteboard;
+
+  Clipboard* clipboard = Clipboard::GetForCurrentThread();
+  ClipboardMac* clipboard_mac = static_cast<ClipboardMac*>(clipboard);
+
+  ASSERT_EQ(observer.data_changed_count(), 0);
+
+  GURL google_url = GURL("https://www.google.com");
+  WritePortableAndPlatformRepresentations(
+      clipboard_mac, std::make_unique<DataTransferEndpoint>(google_url),
+      nspasteboard);
+
+  AssertClipboardObserverCount(observer, 1);
+
+  Clear(clipboard_mac, nspasteboard);
+}
+
+TEST_F(ClipboardMacTest, ClipboardChangeAPI_ExternallyTriggered) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kPlatformClipboardMonitor);
+
+  TestClipboardObserver observer;
+
+  Clipboard* clipboard = Clipboard::GetForCurrentThread();
+  ClipboardMac* clipboard_mac = static_cast<ClipboardMac*>(clipboard);
+
+  ASSERT_EQ(observer.data_changed_count(), 0);
+
+  NSPasteboard* nspasteboard = NSPasteboard.generalPasteboard;
+  NSString* text = @"Hello, Clipboard!";
+  [nspasteboard clearContents];
+  [nspasteboard setString:text forType:NSPasteboardTypeString];
+
+  AssertClipboardObserverCount(observer, 1);
+
+  Clear(clipboard_mac, nspasteboard);
 }
 
 }  // namespace ui

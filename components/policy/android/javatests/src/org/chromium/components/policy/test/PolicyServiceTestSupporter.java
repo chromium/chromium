@@ -27,8 +27,8 @@ import java.util.List;
  */
 @JNINamespace("policy::android")
 public class PolicyServiceTestSupporter {
-    private List<PolicyService.Observer> mObservers = new ArrayList<>();
-    private List<Boolean> mPolicyUpdated = new ArrayList<>();
+    private final List<PolicyService.Observer> mObservers = new ArrayList<>();
+    private final List<Boolean> mPolicyUpdated = new ArrayList<>();
 
     PolicyService mPolicyService;
 

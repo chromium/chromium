@@ -6,15 +6,13 @@
 
 #include <string>
 
+#include "base/byte_count.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_chip_tab_helper.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_utils.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
@@ -25,15 +23,8 @@
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/performance_controls/memory_saver_bubble_view.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/feature_engagement/public/event_constants.h"
-#include "components/feature_engagement/public/feature_constants.h"
-#include "components/performance_manager/public/features.h"
-#include "components/performance_manager/public/user_tuning/prefs.h"
-#include "components/prefs/pref_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/text/bytes_formatting.h"
@@ -62,11 +53,6 @@ MemorySaverChipView::MemorySaverChipView(
           l10n_util::GetStringUTF16(IDS_MEMORY_SAVER_CHIP_ACCNAME)) {
   DCHECK(browser_);
 
-  auto* manager = performance_manager::user_tuning::
-      UserPerformanceTuningManager::GetInstance();
-  user_performance_tuning_manager_observation_.Observe(manager);
-  OnMemorySaverModeChanged();
-
   SetUpForInOutAnimation(kChipAnimationDuration);
   SetBackgroundVisibility(BackgroundVisibility::kWithLabel);
   SetProperty(views::kElementIdentifierKey, kMemorySaverChipElementId);
@@ -89,13 +75,18 @@ void MemorySaverChipView::UpdateImpl() {
     return;
   }
 
+  auto* const tab = tabs::TabInterface::GetFromContents(web_contents);
+  if (!tab) {
+    return;
+  }
   MemorySaverChipTabHelper* const tab_helper =
-      MemorySaverChipTabHelper::FromWebContents(web_contents);
+      tab->GetTabFeatures()->memory_saver_chip_helper();
+  CHECK(tab_helper);
   auto chip_state = tab_helper->chip_state();
 
-  if (chip_state != memory_saver::ChipState::HIDDEN &&
-      is_memory_saver_mode_enabled_) {
+  if (chip_state != memory_saver::ChipState::HIDDEN) {
     if (!tab_helper->ShouldChipAnimate()) {
+      SetVisible(true);
       return;
     }
 
@@ -108,8 +99,8 @@ void MemorySaverChipView::UpdateImpl() {
       }
       case memory_saver::ChipState::EXPANDED_WITH_SAVINGS: {
         SetVisible(true);
-        int64_t const memory_savings =
-            memory_saver::GetDiscardedMemorySavingsInBytes(web_contents);
+        const base::ByteCount memory_savings =
+            memory_saver::GetDiscardedMemorySavings(web_contents);
         std::u16string memory_savings_string = ui::FormatBytes(memory_savings);
         SetLabel(l10n_util::GetStringFUTF16(IDS_MEMORY_SAVER_CHIP_SAVINGS_LABEL,
                                             {memory_savings_string}),
@@ -134,7 +125,7 @@ void MemorySaverChipView::UpdateImpl() {
         break;
       }
       default: {
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       }
     }
   } else {
@@ -155,13 +146,11 @@ void MemorySaverChipView::OnExecuting(
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
 
   // Open the dialog bubble.
-  View* anchor_view = browser_view->toolbar_button_provider()->GetAnchorView(
-      PageActionIconType::kMemorySaver);
+  // TODO(crbug.com/376283619): An action ID should be created and used here
+  // when Memory Saver is migrated to the new page actions framework.
+  View* anchor_view =
+      browser_view->toolbar_button_provider()->GetAnchorView(std::nullopt);
   bubble_ = MemorySaverBubbleView::ShowBubble(browser_, anchor_view, this);
-  if (browser_->window() != nullptr) {
-    browser_->window()->NotifyFeatureEngagementEvent(
-        feature_engagement::events::kMemorySaverDialogShown);
-  }
 }
 
 const gfx::VectorIcon& MemorySaverChipView::GetVectorIcon() const {
@@ -170,12 +159,6 @@ const gfx::VectorIcon& MemorySaverChipView::GetVectorIcon() const {
 
 views::BubbleDialogDelegate* MemorySaverChipView::GetBubble() const {
   return bubble_;
-}
-
-void MemorySaverChipView::OnMemorySaverModeChanged() {
-  auto* manager = performance_manager::user_tuning::
-      UserPerformanceTuningManager::GetInstance();
-  is_memory_saver_mode_enabled_ = manager->IsMemorySaverModeActive();
 }
 
 BEGIN_METADATA(MemorySaverChipView)

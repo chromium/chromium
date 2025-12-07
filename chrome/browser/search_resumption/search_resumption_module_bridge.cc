@@ -16,29 +16,27 @@
 #include "chrome/browser/search_resumption/jni_headers/SearchResumptionModuleBridge_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
-using base::android::JavaParamRef;
-using base::android::JavaRef;
+using jni_zero::JavaRef;
 using RequestSource = SearchTermsData::RequestSource;
 
 namespace search_resumption_module {
-SearchResumptionModuleBridge::SearchResumptionModuleBridge(JNIEnv* env,
-                                                           jobject jobj,
-                                                           Profile* profile)
-    : java_object_(env, env->NewWeakGlobalRef(jobj)) {
+SearchResumptionModuleBridge::SearchResumptionModuleBridge(
+    JNIEnv* env,
+    const JavaRef<jobject>& jobj,
+    Profile* profile)
+    : java_object_(env, jobj) {
   CHECK(!profile->IsOffTheRecord());
   start_suggest_service_ =
       StartSuggestServiceFactory::GetInstance()->GetForBrowserContext(profile);
 }
 
-void SearchResumptionModuleBridge::Destroy(JNIEnv* env,
-                                           const JavaParamRef<jobject>& obj) {
+void SearchResumptionModuleBridge::Destroy(JNIEnv* env) {
   delete this;
 }
 
 void SearchResumptionModuleBridge::FetchSuggestions(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jstring>& j_page_url) {
+    const JavaRef<jstring>& j_page_url) {
   if (start_suggest_service_ == nullptr) {
     return;
   }
@@ -57,7 +55,7 @@ SearchResumptionModuleBridge::~SearchResumptionModuleBridge() = default;
 
 void SearchResumptionModuleBridge::OnSuggestionsReceived(
     std::vector<QuerySuggestion> suggestions) {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   std::vector<const std::u16string*> titles;
   titles.reserve(suggestions.size());
   std::vector<const GURL*> urls;
@@ -72,7 +70,7 @@ void SearchResumptionModuleBridge::OnSuggestionsReceived(
 
 static jlong JNI_SearchResumptionModuleBridge_Create(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
+    const JavaRef<jobject>& obj,
     Profile* profile) {
   SearchResumptionModuleBridge* native_bridge =
       new SearchResumptionModuleBridge(env, obj, profile);
@@ -80,3 +78,5 @@ static jlong JNI_SearchResumptionModuleBridge_Create(
 }
 
 }  // namespace search_resumption_module
+
+DEFINE_JNI(SearchResumptionModuleBridge)

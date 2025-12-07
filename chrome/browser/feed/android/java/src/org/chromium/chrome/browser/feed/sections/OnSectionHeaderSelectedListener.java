@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.feed.sections;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Callback for when a section header is selected. */
+@NullMarked
 public interface OnSectionHeaderSelectedListener {
     /**
      * Callback for when a header tab is selected.

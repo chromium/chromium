@@ -10,6 +10,7 @@ desc: |-
         * Moderate, the user may only pick Moderate Restricted mode and Strict Restricted mode on YouTube, but can't turn off Restricted mode.
 
         * Off or if no value is set, Restricted mode on YouTube isn't enforced by Chrome. External policies such as YouTube policies might still enforce Restricted mode.
+default: 0
 example_value: 0
 features:
   can_be_recommended: false

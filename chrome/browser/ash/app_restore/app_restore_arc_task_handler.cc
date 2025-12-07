@@ -4,15 +4,16 @@
 
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
 
-#include "ash/components/arc/arc_features.h"
 #include "ash/constants/ash_features.h"
-#include "chrome/browser/ash/app_restore/app_restore_arc_task_handler_factory.h"
+#include "base/check_is_test.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ash/app_restore/arc_app_queue_restore_handler.h"
 #include "chrome/browser/ash/app_restore/arc_app_single_restore_handler.h"
 #include "chrome/browser/ash/app_restore/arc_ghost_window_handler.h"
 #include "chrome/browser/ash/app_restore/arc_window_utils.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
 #include "components/app_restore/app_restore_arc_info.h"
 #include "components/app_restore/features.h"
 
@@ -29,13 +30,14 @@ constexpr LauncherTag kFullRestoreLaunchHandlerTag = {
 
 }  // namespace
 
-// static
-AppRestoreArcTaskHandler* AppRestoreArcTaskHandler::GetForProfile(
-    Profile* profile) {
-  return AppRestoreArcTaskHandlerFactory::GetForProfile(profile);
-}
+AppRestoreArcTaskHandler::AppRestoreArcTaskHandler(
+    Profile* profile,
+    SchedulerConfigurationManager* scheduler_configuration_manager)
+    : scheduler_configuration_manager_(scheduler_configuration_manager) {
+  if (!scheduler_configuration_manager_) {
+    CHECK_IS_TEST();
+  }
 
-AppRestoreArcTaskHandler::AppRestoreArcTaskHandler(Profile* profile) {
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile);
   if (!prefs)
     return;
@@ -185,7 +187,8 @@ AppRestoreArcTaskHandler::CreateOrGetArcAppQueueRestoreHandler(
     LauncherTag launcher_tag,
     bool call_init_callback) {
   if (!arc_app_queue_restore_handlers_.count(launcher_tag)) {
-    auto handler = std::make_unique<ArcAppQueueRestoreHandler>();
+    auto handler = std::make_unique<ArcAppQueueRestoreHandler>(
+        scheduler_configuration_manager_.get());
     if (call_init_callback) {
       handler->OnArcPlayStoreEnabledChanged(arc_play_store_enabled_);
       if (app_connection_ready_)

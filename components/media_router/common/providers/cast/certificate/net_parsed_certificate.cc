@@ -4,26 +4,29 @@
 
 #include "components/media_router/common/providers/cast/certificate/net_parsed_certificate.h"
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
+#include "base/strings/string_view_util.h"
+#include "crypto/evp.h"
 #include "net/cert/time_conversions.h"
 #include "net/cert/x509_util.h"
-#include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/digest.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/pki/input.h"
 #include "third_party/boringssl/src/pki/parse_name.h"
 #include "third_party/boringssl/src/pki/parse_values.h"
+#include "third_party/openscreen/src/platform/base/span.h"
 
 namespace openscreen::cast {
 
 // static
 ErrorOr<std::unique_ptr<ParsedCertificate>> ParsedCertificate::ParseFromDER(
-    const std::vector<uint8_t>& der_cert) {
+    openscreen::ByteView der_cert) {
   std::shared_ptr<const bssl::ParsedCertificate> cert =
-      bssl::ParsedCertificate::Create(net::x509_util::CreateCryptoBuffer(
-                                          base::span<const uint8_t>(der_cert)),
-                                      cast_certificate::GetCertParsingOptions(),
-                                      nullptr);
+      bssl::ParsedCertificate::Create(
+          net::x509_util::CreateCryptoBuffer(UNSAFE_TODO(
+              base::span<const uint8_t>(der_cert.cbegin(), der_cert.cend()))),
+          cast_certificate::GetCertParsingOptions(), nullptr);
   if (!cert) {
     return Error::Code::kErrCertsParse;
   }
@@ -133,7 +136,7 @@ std::string NetParsedCertificate::GetCommonName() const {
 }
 
 std::string NetParsedCertificate::GetSpkiTlv() const {
-  return cert_->tbs().spki_tlv.AsString();
+  return std::string(base::as_string_view(cert_->tbs().spki_tlv));
 }
 
 ErrorOr<uint64_t> NetParsedCertificate::GetSerialNumber() const {
@@ -151,10 +154,9 @@ bool NetParsedCertificate::VerifySignedData(
   // TODO(davidben): This function only uses BoringSSL functions and the SPKI,
   // which is already exported as GetSpkiTlv(). Remove this method altogether
   // and move this into openscreen.
-  CBS spki;
-  CBS_init(&spki, cert_->tbs().spki_tlv.data(), cert_->tbs().spki_tlv.size());
-  bssl::UniquePtr<EVP_PKEY> pubkey(EVP_parse_public_key(&spki));
-  if (!pubkey || CBS_len(&spki) != 0) {
+  bssl::UniquePtr<EVP_PKEY> pubkey =
+      crypto::evp::PublicKeyFromBytes(cert_->tbs().spki_tlv);
+  if (!pubkey) {
     return false;
   }
 

@@ -111,8 +111,7 @@ std::string GetBackdropWallpaperSuffix() {
   // FIFE url is used for Backdrop wallpapers and the desired image size should
   // be specified. Currently we are using two times the display size. This is
   // determined by trial and error and is subject to change.
-  gfx::Size display_size =
-      display::Screen::GetScreen()->GetPrimaryDisplay().size();
+  gfx::Size display_size = display::Screen::Get()->GetPrimaryDisplay().size();
   return "=w" + base::NumberToString(
                     2 * std::max(display_size.width(), display_size.height()));
 }

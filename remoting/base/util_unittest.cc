@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <stddef.h>
+#include "remoting/base/util.h"
 
 #include <algorithm>
+#include <cstddef>
+#include <string>
+#include <string_view>
 
-#include "remoting/base/util.h"
+#include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
 namespace remoting {
 
@@ -23,26 +25,31 @@ TEST(ReplaceLfByCrLfTest, Basic) {
 }
 
 TEST(ReplaceLfByCrLfTest, Speed) {
-  int kLineSize = 128;
+  constexpr size_t kLineSize = 128;
   std::string line(kLineSize, 'a');
-  line[kLineSize - 1] = '\n';
+  line.back() = '\n';
   // Make a 10M string.
-  int kLineNum = 10 * 1024 * 1024 / kLineSize;
-  std::string buffer;
-  buffer.resize(kLineNum * kLineSize);
-  for (int i = 0; i < kLineNum; ++i) {
-    memcpy(&buffer[i * kLineSize], &line[0], kLineSize);
+  constexpr size_t kLineNum = 10 * 1024 * 1024 / kLineSize;
+  std::string buffer(kLineNum * kLineSize, '\0');
+  auto buffer_span = base::as_writable_byte_span(buffer);
+  const auto line_span = base::as_bytes(base::span(line));
+  for (size_t i = 0; i < kLineNum; ++i) {
+    buffer_span.subspan(i * kLineSize, kLineSize).copy_from(line_span);
   }
   // Convert the string.
   buffer = ReplaceLfByCrLf(buffer);
   // Check the converted string.
-  EXPECT_EQ(static_cast<size_t>((kLineSize + 1) * kLineNum), buffer.size());
-  const char* p = &buffer[0];
-  for (int i = 0; i < kLineNum; ++i) {
-    EXPECT_EQ(0, memcmp(&line[0], p, kLineSize - 1));
-    p += kLineSize - 1;
-    EXPECT_EQ('\r', *p++);
-    EXPECT_EQ('\n', *p++);
+  EXPECT_EQ(buffer.size(), (kLineSize + 1) * kLineNum);
+  std::string_view view(buffer);
+  for (size_t i = 0; i < kLineNum; ++i) {
+    auto line_content = view.substr(0, kLineSize - 1);
+    for (char c : line_content) {
+      EXPECT_EQ('a', c);
+    }
+    view.remove_prefix(kLineSize - 1);
+    EXPECT_EQ('\r', view[0]);
+    EXPECT_EQ('\n', view[1]);
+    view.remove_prefix(2);
   }
 }
 
@@ -58,26 +65,31 @@ TEST(ReplaceCrLfByLfTest, Basic) {
 }
 
 TEST(ReplaceCrLfByLfTest, Speed) {
-  int kLineSize = 128;
+  constexpr size_t kLineSize = 128;
   std::string line(kLineSize, 'a');
   line[kLineSize - 2] = '\r';
   line[kLineSize - 1] = '\n';
   // Make a 10M string.
-  int kLineNum = 10 * 1024 * 1024 / kLineSize;
-  std::string buffer;
-  buffer.resize(kLineNum * kLineSize);
-  for (int i = 0; i < kLineNum; ++i) {
-    memcpy(&buffer[i * kLineSize], &line[0], kLineSize);
+  constexpr size_t kLineNum = 10 * 1024 * 1024 / kLineSize;
+  std::string buffer(kLineNum * kLineSize, '\0');
+  auto buffer_span = base::as_writable_byte_span(buffer);
+  const auto line_span = base::as_bytes(base::span(line));
+  for (size_t i = 0; i < kLineNum; ++i) {
+    buffer_span.subspan(i * kLineSize, kLineSize).copy_from(line_span);
   }
   // Convert the string.
   buffer = ReplaceCrLfByLf(buffer);
   // Check the converted string.
-  EXPECT_EQ(static_cast<size_t>((kLineSize - 1) * kLineNum), buffer.size());
-  const char* p = &buffer[0];
-  for (int i = 0; i < kLineNum; ++i) {
-    EXPECT_EQ(0, memcmp(&line[0], p, kLineSize - 2));
-    p += kLineSize - 2;
-    EXPECT_EQ('\n', *p++);
+  EXPECT_EQ(buffer.size(), (kLineSize - 1) * kLineNum);
+  std::string_view view(buffer);
+  for (size_t i = 0; i < kLineNum; ++i) {
+    auto line_content = view.substr(0, kLineSize - 2);
+    for (char c : line_content) {
+      EXPECT_EQ('a', c);
+    }
+    view.remove_prefix(kLineSize - 2);
+    EXPECT_EQ('\n', view[0]);
+    view.remove_prefix(1);
   }
 }
 

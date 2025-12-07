@@ -40,8 +40,8 @@ class InspectorCacheStorageAgent;
 class InspectorDOMAgent;
 class InspectorDOMDebuggerAgent;
 class InspectorDOMSnapshotAgent;
-class InspectorDatabaseAgent;
 class InspectorEmulationAgent;
+class InspectorInspectorAgent;
 class InspectorIOAgent;
 class InspectorLogAgent;
 class InspectorNetworkAgent;
@@ -63,6 +63,7 @@ class CORE_EXPORT DevToolsSession : public GarbageCollected<DevToolsSession>,
           main_receiver,
       mojo::PendingReceiver<mojom::blink::DevToolsSession> io_receiver,
       mojom::blink::DevToolsSessionStatePtr reattach_session_state,
+      const String& script_to_evaluate_on_load,
       bool client_expects_binary_responses,
       bool client_is_trusted,
       const String& session_id,
@@ -98,6 +99,10 @@ class CORE_EXPORT DevToolsSession : public GarbageCollected<DevToolsSession>,
   void PaintTiming(Document* document, const char* name, double timestamp);
   void DomContentLoadedEventFired(LocalFrame*);
 
+  const String& script_to_evaluate_on_load() const {
+    return script_to_evaluate_on_load_;
+  }
+
  private:
   class IOSession;
 
@@ -105,6 +110,8 @@ class CORE_EXPORT DevToolsSession : public GarbageCollected<DevToolsSession>,
   void DispatchProtocolCommand(int call_id,
                                const String& method,
                                base::span<const uint8_t> message) override;
+  void UnpauseAndTerminate() override;
+
   void DispatchProtocolCommandImpl(int call_id,
                                    const String& method,
                                    base::span<const uint8_t> message);
@@ -132,7 +139,8 @@ class CORE_EXPORT DevToolsSession : public GarbageCollected<DevToolsSession>,
 
   // Converts to JSON if requested by the client.
   blink::mojom::blink::DevToolsMessagePtr FinalizeMessage(
-      std::vector<uint8_t> message) const;
+      std::vector<uint8_t> message,
+      std::optional<int> call_id) const;
 
   template <typename T>
   bool IsDomainAvailableToUntrustedClient() {
@@ -143,8 +151,8 @@ class CORE_EXPORT DevToolsSession : public GarbageCollected<DevToolsSession>,
                               std::is_same<T, InspectorDOMAgent>,
                               std::is_same<T, InspectorDOMDebuggerAgent>,
                               std::is_same<T, InspectorDOMSnapshotAgent>,
-                              std::is_same<T, InspectorDatabaseAgent>,
                               std::is_same<T, InspectorEmulationAgent>,
+                              std::is_same<T, InspectorInspectorAgent>,
                               std::is_same<T, InspectorIOAgent>,
                               std::is_same<T, InspectorLogAgent>,
                               std::is_same<T, InspectorNetworkAgent>,
@@ -175,6 +183,7 @@ class CORE_EXPORT DevToolsSession : public GarbageCollected<DevToolsSession>,
   const bool client_is_trusted_;
   InspectorAgentState v8_session_state_;
   InspectorAgentState::Bytes v8_session_state_cbor_;
+  String script_to_evaluate_on_load_;
   const String session_id_;
   // This is only relevant until the initial attach to v8 and is never reset
   // once the session stops waiting.

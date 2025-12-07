@@ -47,7 +47,7 @@ namespace blink {
 
 static const StylePropertyShorthand* {{function_prefix}}Shorthand{{expansion.index}}() {
     {% for flag in expansion.flags %}
-  if ({{flag.enabled and '!' or ''}}RuntimeEnabledFeatures::{{flag.name}}Enabled())
+  if ({{flag.enabled and '!' or ''}}RuntimeEnabledFeatures::{{flag.name}}Enabled(/*No way to get the ExecutionContext here*/nullptr))
     return nullptr;
     {% endfor %}
 
@@ -66,7 +66,7 @@ const StylePropertyShorthand& {{function_prefix}}Shorthand() {
   {% endif %}
   {% if property.expansions[0].flags %}
     {% for flag in property.expansions[0].flags %}
-  DCHECK({{not flag.enabled and '!' or ''}}RuntimeEnabledFeatures::{{flag.name}}Enabled());
+  DCHECK({{not flag.enabled and '!' or ''}}RuntimeEnabledFeatures::{{flag.name}}Enabled(/*No way to get the ExecutionContext here*/nullptr));
     {% endfor %}
 
   {% endif %}

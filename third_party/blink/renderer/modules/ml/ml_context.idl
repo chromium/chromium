@@ -12,54 +12,197 @@
 // In the future, this interface may be extended when WebNN is implemented so
 // a dictionary may be insufficient.
 
-typedef record<DOMString, ArrayBufferView> MLNamedArrayBufferViews;
-
-dictionary MLComputeResult {
-  MLNamedArrayBufferViews inputs;
-  MLNamedArrayBufferViews outputs;
-};
-
 dictionary MLContextLostInfo {
   DOMString message;
 };
 
-dictionary MLSupportLimits {
-  sequence<DOMString> dataTypes;
+dictionary MLRankRange {
+  unsigned long min;
+  unsigned long max;
 };
 
-dictionary MLArgMinMaxSupportLimits {
-  MLSupportLimits input;
-  MLSupportLimits output;
+dictionary MLTensorLimits {
+  sequence<DOMString> dataTypes;
+  MLRankRange rankRange;
+};
+
+dictionary MLBinarySupportLimits {
+  MLTensorLimits a;
+  MLTensorLimits b;
+  MLTensorLimits output;
+};
+
+dictionary MLBatchNormalizationSupportLimits {
+  MLTensorLimits input;
+  MLTensorLimits mean;
+  MLTensorLimits variance;
+  MLTensorLimits scale;
+  MLTensorLimits bias;
+  MLTensorLimits output;
 };
 
 dictionary MLConcatSupportLimits {
-  MLSupportLimits inputs;
+  MLTensorLimits inputs;
+  MLTensorLimits output;
+};
+
+dictionary MLConv2dSupportLimits {
+  MLTensorLimits input;
+  MLTensorLimits filter;
+  MLTensorLimits bias;
+  MLTensorLimits output;
 };
 
 dictionary MLGatherSupportLimits {
-  MLSupportLimits input;
-  MLSupportLimits indices;
+  MLTensorLimits input;
+  MLTensorLimits indices;
+  MLTensorLimits output;
+};
+
+dictionary MLGemmSupportLimits {
+  MLTensorLimits a;
+  MLTensorLimits b;
+  MLTensorLimits c;
+  MLTensorLimits output;
+};
+
+dictionary MLGruSupportLimits {
+  MLTensorLimits input;
+  MLTensorLimits weight;
+  MLTensorLimits recurrentWeight;
+  MLTensorLimits bias;
+  MLTensorLimits recurrentBias;
+  MLTensorLimits initialHiddenState;
+  MLTensorLimits output0;
+  MLTensorLimits output1;
+};
+
+dictionary MLGruCellSupportLimits {
+  MLTensorLimits input;
+  MLTensorLimits weight;
+  MLTensorLimits recurrentWeight;
+  MLTensorLimits hiddenState;
+  MLTensorLimits bias;
+  MLTensorLimits recurrentBias;
+  MLTensorLimits output;
+};
+
+dictionary MLLstmSupportLimits {
+  MLTensorLimits input;
+  MLTensorLimits weight;
+  MLTensorLimits recurrentWeight;
+  MLTensorLimits bias;
+  MLTensorLimits recurrentBias;
+  MLTensorLimits peepholeWeight;
+  MLTensorLimits initialHiddenState;
+  MLTensorLimits initialCellState;
+  MLTensorLimits output0;
+  MLTensorLimits output1;
+  MLTensorLimits output2;
+};
+
+dictionary MLLstmCellSupportLimits {
+  MLTensorLimits input;
+  MLTensorLimits weight;
+  MLTensorLimits recurrentWeight;
+  MLTensorLimits hiddenState;
+  MLTensorLimits cellState;
+  MLTensorLimits bias;
+  MLTensorLimits recurrentBias;
+  MLTensorLimits peepholeWeight;
+  MLTensorLimits output0;
+  MLTensorLimits output1;
+};
+
+dictionary MLNormalizationSupportLimits {
+  MLTensorLimits input;
+  MLTensorLimits scale;
+  MLTensorLimits bias;
+  MLTensorLimits output;
+};
+
+dictionary MLPreluSupportLimits {
+  MLTensorLimits input;
+  MLTensorLimits slope;
+  MLTensorLimits output;
+};
+
+dictionary MLQuantizeDequantizeLinearSupportLimits {
+  MLTensorLimits input;
+  MLTensorLimits scale;
+  MLTensorLimits zeroPoint;
+  MLTensorLimits output;
+};
+
+dictionary MLLogicalNotSupportLimits {
+  MLTensorLimits a;
+  MLTensorLimits output;
 };
 
 dictionary MLSingleInputSupportLimits {
-  MLSupportLimits input;
-  MLSupportLimits output;
+  MLTensorLimits input;
+  MLTensorLimits output;
+};
+
+dictionary MLScatterSupportLimits {
+  MLTensorLimits input;
+  MLTensorLimits indices;
+  MLTensorLimits updates;
+  MLTensorLimits output;
+};
+
+dictionary MLSplitSupportLimits {
+  MLTensorLimits input;
+  MLTensorLimits outputs;
 };
 
 dictionary MLWhereSupportLimits {
-  MLSupportLimits condition;
-  MLSupportLimits trueValue;
-  MLSupportLimits falseValue;
+  MLTensorLimits condition;
+  MLTensorLimits trueValue;
+  MLTensorLimits falseValue;
+  MLTensorLimits output;
 };
 
 dictionary MLOpSupportLimits {
-  MLSupportLimits input;
-  MLSupportLimits constant;
-  MLSupportLimits output;
+  MLInputOperandLayout preferredInputLayout;
+  [EnforceRange] unsigned long long maxTensorByteLength;
+  MLTensorLimits input;
+  MLTensorLimits constant;
+  MLTensorLimits output;
 
-  MLArgMinMaxSupportLimits argMin;
-  MLArgMinMaxSupportLimits argMax;
+  MLSingleInputSupportLimits argMin;
+  MLSingleInputSupportLimits argMax;
+  MLBatchNormalizationSupportLimits batchNormalization;
+  MLSingleInputSupportLimits cast;
+  MLSingleInputSupportLimits clamp;
   MLConcatSupportLimits concat;
+  MLConv2dSupportLimits conv2d;
+  MLConv2dSupportLimits convTranspose2d;
+  MLSingleInputSupportLimits cumulativeSum;
+  MLQuantizeDequantizeLinearSupportLimits dequantizeLinear;
+
+  // Element-wise binary ops.
+  MLBinarySupportLimits add;
+  MLBinarySupportLimits sub;
+  MLBinarySupportLimits mul;
+  MLBinarySupportLimits div;
+  MLBinarySupportLimits max;
+  MLBinarySupportLimits min;
+  MLBinarySupportLimits pow;
+
+  // Element-wise logical ops.
+  MLBinarySupportLimits equal;
+  MLBinarySupportLimits greater;
+  MLBinarySupportLimits greaterOrEqual;
+  MLBinarySupportLimits lesser;
+  MLBinarySupportLimits lesserOrEqual;
+  MLBinarySupportLimits notEqual;
+  MLBinarySupportLimits logicalAnd;
+  MLBinarySupportLimits logicalOr;
+  MLBinarySupportLimits logicalXor;
+  MLLogicalNotSupportLimits logicalNot;
+  MLLogicalNotSupportLimits isNaN;
+  MLLogicalNotSupportLimits isInfinite;
 
   // Element-wise unary ops.
   MLSingleInputSupportLimits abs;
@@ -72,30 +215,76 @@ dictionary MLOpSupportLimits {
   MLSingleInputSupportLimits log;
   MLSingleInputSupportLimits neg;
   MLSingleInputSupportLimits reciprocal;
+  MLSingleInputSupportLimits roundEven;
+  MLSingleInputSupportLimits sign;
   MLSingleInputSupportLimits sin;
   MLSingleInputSupportLimits sqrt;
   MLSingleInputSupportLimits tan;
 
   MLSingleInputSupportLimits elu;
+  MLSingleInputSupportLimits expand;
   MLGatherSupportLimits gather;
+  MLGatherSupportLimits gatherElements;
+  MLGatherSupportLimits gatherND;
   MLSingleInputSupportLimits gelu;
+  MLGemmSupportLimits gemm;
+  MLGruSupportLimits gru;
+  MLGruCellSupportLimits gruCell;
+  MLSingleInputSupportLimits hardSigmoid;
+  MLSingleInputSupportLimits hardSwish;
+  MLNormalizationSupportLimits instanceNormalization;
+  MLNormalizationSupportLimits layerNormalization;
   MLSingleInputSupportLimits leakyRelu;
+  MLSingleInputSupportLimits linear;
+  MLLstmSupportLimits lstm;
+  MLLstmCellSupportLimits lstmCell;
+  MLBinarySupportLimits matmul;
+  MLSingleInputSupportLimits pad;
+  MLPreluSupportLimits prelu;
+  MLQuantizeDequantizeLinearSupportLimits quantizeLinear;
+
+  // Pool2d.
+  MLSingleInputSupportLimits averagePool2d;
+  MLSingleInputSupportLimits l2Pool2d;
+  MLSingleInputSupportLimits maxPool2d;
+
+  // Reduction ops.
+  MLSingleInputSupportLimits reduceL1;
+  MLSingleInputSupportLimits reduceL2;
+  MLSingleInputSupportLimits reduceLogSum;
+  MLSingleInputSupportLimits reduceLogSumExp;
+  MLSingleInputSupportLimits reduceMax;
+  MLSingleInputSupportLimits reduceMean;
+  MLSingleInputSupportLimits reduceMin;
+  MLSingleInputSupportLimits reduceProduct;
+  MLSingleInputSupportLimits reduceSum;
+  MLSingleInputSupportLimits reduceSumSquare;
+
   MLSingleInputSupportLimits relu;
+  MLSingleInputSupportLimits resample2d;
+  MLSingleInputSupportLimits reshape;
+  MLSingleInputSupportLimits reverse;
+  MLScatterSupportLimits scatterElements;
+  MLScatterSupportLimits scatterND;
   MLSingleInputSupportLimits sigmoid;
   MLSingleInputSupportLimits slice;
   MLSingleInputSupportLimits softmax;
   MLSingleInputSupportLimits softplus;
   MLSingleInputSupportLimits softsign;
-  MLSingleInputSupportLimits split;
+  MLSplitSupportLimits split;
+  MLSingleInputSupportLimits tanh;
+  MLSingleInputSupportLimits tile;
+  MLSingleInputSupportLimits transpose;
+  MLSingleInputSupportLimits triangular;
   MLWhereSupportLimits where;
 };
 
-typedef record<DOMString, MLBuffer> MLNamedBuffers;
+typedef record<USVString, MLTensor> MLNamedTensors;
 
 [
   RuntimeEnabled=MachineLearningNeuralNetwork,
   SecureContext,
-  Exposed=(Window, DedicatedWorker)
+  Exposed=(Window, Worker)
 ] interface MLContext {
   [
     RuntimeEnabled=MachineLearningNeuralNetwork,
@@ -105,59 +294,65 @@ typedef record<DOMString, MLBuffer> MLNamedBuffers;
   [
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState,
-    RaisesException,
-    Measure
-  ] Promise<MLComputeResult> compute(
-      MLGraph graph, MLNamedArrayBufferViews inputs, MLNamedArrayBufferViews outputs);
+    RaisesException
+  ] void destroy();
 
   [
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState,
     RaisesException
-  ] Promise<MLBuffer> createBuffer(MLBufferDescriptor descriptor);
-
-  // TODO(crbug.com/328105506): enable partial MLBuffer reads/writes.
-  // TODO(crbug.com/40278771): consider moving arguments into a dictonary 
-  // per W3C recommendations:
-  // https://w3ctag.github.io/design-principles/#prefer-dictionaries
-  [
-    RuntimeEnabled=MachineLearningNeuralNetwork,
-    CallWith=ScriptState,
-    RaisesException
-  ] void writeBuffer(
-        MLBuffer dstBuffer,
-        [AllowShared] ArrayBufferView srcData,
-        optional MLSize64 srcElementOffset = 0,
-        optional MLSize64 srcElementSize);
+  ] Promise<MLTensor> createTensor(MLTensorDescriptor descriptor);
 
   [
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState,
     RaisesException
-  ] void writeBuffer(
-        MLBuffer dstBuffer,
-        ArrayBuffer srcData,
-        optional MLSize64 srcByteOffset = 0,
-        optional MLSize64 srcByteSize);
+  ] Promise<MLTensor> createConstantTensor(
+        MLOperandDescriptor descriptor,
+        AllowSharedBufferSource sourceData);
 
-  // TODO(crbug.com/328102504): enable transferable view to avoid copy.
   [
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState,
     RaisesException
-  ] Promise<ArrayBuffer> readBuffer(
-        MLBuffer srcBuffer);
+  ] Promise<MLTensor> createExportableTensor(MLTensorDescriptor descriptor, GPUDevice device);
 
-  // TODO(crbug.com/1273291): enable partial buffer dispatches.
+  [
+    RuntimeEnabled=MachineLearningNeuralNetwork,
+    CallWith=ScriptState,
+    RaisesException
+  ] void writeTensor(MLTensor dstTensor, AllowSharedBufferSource srcData);
+
+  [
+    RuntimeEnabled=MachineLearningNeuralNetwork,
+    CallWith=ScriptState,
+    RaisesException
+  ] Promise<ArrayBuffer> readTensor(
+        MLTensor sourceTensor);
+
+  [
+    RuntimeEnabled=MachineLearningNeuralNetwork,
+    CallWith=ScriptState,
+    RaisesException
+  ] Promise<undefined> readTensor(
+        MLTensor sourceTensor,
+        AllowSharedBufferSource destinationData);
+
   [
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState,
     RaisesException,
     Measure
   ] void dispatch(
-      MLGraph graph, MLNamedBuffers inputs, MLNamedBuffers outputs);
+      MLGraph graph, MLNamedTensors inputs, MLNamedTensors outputs);
   [
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState
   ] MLOpSupportLimits opSupportLimits();
+
+  [
+    RuntimeEnabled=MachineLearningNeuralNetwork,
+    CallWith=ScriptState,
+    RaisesException
+  ] Promise<GPUBuffer> exportToGPU(MLTensor tensor);
 };

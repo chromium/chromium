@@ -27,3 +27,5 @@ base::android::ScopedJavaLocalRef<jobject> MediaMetadata::CreateJavaObject(
 }
 
 }  // namespace media_session
+
+DEFINE_JNI(MediaMetadata)

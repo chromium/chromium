@@ -5,9 +5,12 @@
 #ifndef UI_BASE_INTERACTION_INTERACTIVE_TEST_INTERNAL_H_
 #define UI_BASE_INTERACTION_INTERACTIVE_TEST_INTERNAL_H_
 
+#include <algorithm>
 #include <concepts>
 #include <functional>
 #include <memory>
+#include <optional>
+#include <sstream>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -16,24 +19,32 @@
 
 #include "base/callback_list.h"
 #include "base/containers/contains.h"
-#include "base/functional/callback_helpers.h"
 #include "base/gtest_prod_util.h"
 #include "base/logging.h"
+#include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/rectify_callback.h"
 #include "base/types/is_instantiation.h"
+#include "base/types/pass_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/framework_specific_registration_list.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interaction_test_util.h"
+#include "ui/base/interaction/interactive_test_definitions.h"
+#include "ui/base/interaction/polling_state_observer.h"
 #include "ui/base/interaction/state_observer.h"
+#include "ui/gfx/geometry/rect.h"
+
+class ChromeOSTestLauncherDelegate;
+class InteractiveUITestSuite;
 
 namespace ui::test {
 
@@ -47,16 +58,95 @@ namespace internal {
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kInteractiveTestPivotElementId);
 DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kInteractiveTestPivotEventType);
 
-extern const char kInteractiveTestFailedMessagePrefix[];
-extern const char kNoCheckDescriptionSpecified[];
+// Used by `PollUntil()`.
+DECLARE_STATE_IDENTIFIER_VALUE(PollingStateObserver<bool>,
+                               kInteractiveTestPollUntilState);
 
+inline constexpr char kInteractiveTestFailedMessagePrefix[] =
+    "Interactive test failed ";
+inline constexpr char kNoCheckDescriptionSpecified[] =
+    "[no description specified]";
+
+class InteractiveTestPrivate;
 class StateObserverElement;
+
+// Represents a private test implementation for a particular framework or
+// platform.
+class InteractiveTestPrivateFrameworkBase
+    : public FrameworkSpecificImplementation {
+ public:
+  explicit InteractiveTestPrivateFrameworkBase(
+      InteractiveTestPrivate& test_impl);
+  ~InteractiveTestPrivateFrameworkBase() override;
+
+  // Represents a node in a debug tree of UI elements that can be pretty-
+  // printed.
+  struct DebugTreeNode {
+    DebugTreeNode();
+    explicit DebugTreeNode(std::string initial_text);
+    DebugTreeNode(DebugTreeNode&& other) noexcept;
+    DebugTreeNode& operator=(DebugTreeNode&& other) noexcept;
+    ~DebugTreeNode();
+
+    std::string text;
+    std::vector<DebugTreeNode> children;
+
+    void PrintTo(std::ostream& stream) const;
+  };
+
+  // Gets a verbose string representation of a set of `bounds` for debug
+  // purposes.
+  static std::string DebugDumpBounds(const gfx::Rect& bounds);
+
+  // Called to populate any simulators required for this platform.
+  virtual void PopulateSimulators(InteractionTestUtil& test_util) {}
+
+  // Call this method during test SetUp(), or SetUpOnMainThread() for browser
+  // tests.
+  virtual void DoTestSetUp() {}
+
+  // Call this method during test TearDown(), or TearDownOnMainThread() for
+  // browser tests.
+  virtual void DoTestTearDown() {}
+
+  // Called when the sequence ends, but before we break out of the run loop
+  // in RunTestSequenceImpl().
+  virtual void OnSequenceComplete() {}
+  virtual void OnSequenceAborted(const InteractionSequence::AbortedData& data) {
+  }
+
+  // Retrieves the native window from `el`. If this particular implementation
+  // does not know how to do this, or there is no window, returns a null/falsy
+  // value.
+  virtual gfx::NativeWindow GetNativeWindowFromElement(
+      const TrackedElement* el) const;
+
+  // Retrieves the native window from `context`. If this particular
+  // implementation does not know how to do this, or there is no window, returns
+  // a null/falsy value.
+  virtual gfx::NativeWindow GetNativeWindowFromContext(
+      ElementContext context) const;
+
+  // Convert some or all of `elements` to debug tree nodes; removing elements
+  // that are processed from the set.
+  virtual std::vector<DebugTreeNode> DebugDumpElements(
+      std::set<const ui::TrackedElement*>& elements) const;
+
+  // Provides the top-level description for a context, or null if none.
+  virtual std::string DebugDescribeContext(ui::ElementContext context) const;
+
+ protected:
+  InteractiveTestPrivate& test_impl() { return test_impl_.get(); }
+
+ private:
+  const raw_ref<InteractiveTestPrivate> test_impl_;
+};
 
 // Class that implements functionality for InteractiveTest* that should be
 // hidden from tests that inherit the API.
 class InteractiveTestPrivate {
  public:
-  using MultiStep = std::vector<InteractionSequence::StepBuilder>;
+  using MultiStep = internal::MultiStep;
 
   // Describes what should happen when an action isn't compatible with the
   // current build, platform, or environment. For example, not all tests are set
@@ -87,19 +177,83 @@ class InteractiveTestPrivate {
     kIgnoreAndContinue,
   };
 
-  explicit InteractiveTestPrivate(
-      std::unique_ptr<InteractionTestUtil> test_util);
+  // Provides a copyable handle to some test state that can be output in the
+  // event of a test failure. The context will persist until `End()` is called
+  // or the test ends.
+  //
+  // Example:
+  // ```
+  //   auto MyVerb() {
+  //     AdditionalContext context = CreateAdditionalContext();
+  //     return Steps(
+  //
+  //       // Set the context. Note the use of the `mutable` keyword:
+  //       AfterShow(..., [context]() mutable {
+  //         context.Set(...);
+  //       }),
+  //
+  //       // Context is still valid here, even if it's not modified.
+  //       WithElement(..., [](ui::TrackedElement*) {
+  //         ...
+  //       }),
+  //
+  //       Do([context]() { context.End(); })
+  //
+  //       // Since no more steps reference `context` it is no longer valid
+  //       // here; if the test were to fail, no additional information would
+  //       // be printed.
+  //       PressButton(...));
+  //   }
+  // ```
+  class AdditionalContext {
+   public:
+    AdditionalContext();
+    AdditionalContext(const AdditionalContext& other);
+    AdditionalContext& operator=(const AdditionalContext& other);
+    ~AdditionalContext();
+
+    // Adds or replaces the existing value with `additional_context`. Until this
+    // is called, nothing will be stored or output.
+    void Set(const std::string_view& additional_context);
+
+    // Fetches the current value of the context.
+    std::string Get() const;
+
+    // Removes the context.
+    void Clear();
+
+   private:
+    friend InteractiveTestPrivate;
+
+    // Creates a new context with the given `owner` and `handle`.
+    AdditionalContext(InteractiveTestPrivate& owner, intptr_t handle);
+
+    base::WeakPtr<InteractiveTestPrivate> owner_;
+    intptr_t handle_ = 0;
+  };
+
+  InteractiveTestPrivate();
   virtual ~InteractiveTestPrivate();
   InteractiveTestPrivate(const InteractiveTestPrivate&) = delete;
   void operator=(const InteractiveTestPrivate&) = delete;
 
-  InteractionTestUtil& test_util() { return *test_util_; }
+  InteractionTestUtil& test_util() { return test_util_; }
 
   OnIncompatibleAction on_incompatible_action() const {
     return on_incompatible_action_;
   }
 
   bool sequence_skipped() const { return sequence_skipped_; }
+
+  base::WeakPtr<InteractiveTestPrivate> GetAsWeakPtr();
+
+  void set_default_context(ElementContext default_context) {
+    default_context_ = default_context;
+  }
+  ElementContext default_context() const { return default_context_; }
+
+  // Fetch the native window for the given element.
+  gfx::NativeWindow GetNativeWindowFor(const ui::TrackedElement* el) const;
 
   // Possibly fails or skips a sequence based on the result of an action
   // simulation.
@@ -124,6 +278,14 @@ class InteractiveTestPrivate {
   // Returns true on success.
   bool RemoveStateObserver(ElementIdentifier id, ElementContext context);
 
+  // Creates an additional context that will persist as long as copies of the
+  // context exist.
+  [[nodiscard]] AdditionalContext CreateAdditionalContext();
+
+  // Gets a string representation of the current additional context for this
+  // test.
+  std::vector<std::string> GetAdditionalContext() const;
+
   // Call this method during test SetUp(), or SetUpOnMainThread() for browser
   // tests.
   virtual void DoTestSetUp();
@@ -145,10 +307,39 @@ class InteractiveTestPrivate {
     aborted_callback_for_testing_ = std::move(aborted_callback_for_testing);
   }
 
-  // Places a callback in the message queue to bounce an event off of the pivot
-  // element, then responds by executing `task`.
+  // The following are the classes allowed to set the "allow interactive test
+  // verbs" flag.
   template <typename T>
-  static MultiStep PostTask(std::string_view description, T&& task);
+    requires std::same_as<T, ui::test::InteractiveTestTest> ||
+             std::same_as<T, ChromeOSTestLauncherDelegate> ||
+             std::same_as<T, InteractiveUITestSuite>
+  static void set_interactive_test_verbs_allowed(base::PassKey<T>) {
+    allow_interactive_test_verbs_ = true;
+  }
+
+  using DebugTreeNode = InteractiveTestPrivateFrameworkBase::DebugTreeNode;
+
+  template <typename T, typename... Args>
+    requires std::derived_from<T, InteractiveTestPrivateFrameworkBase>
+  T* MaybeRegisterFrameworkImpl(Args&&... args) {
+    T* const result = framework_implementations_.MaybeRegister<T>(
+        *this, std::forward<Args>(args)...);
+    if (result) {
+      result->PopulateSimulators(test_util_);
+    }
+    return result;
+  }
+
+ protected:
+  // Dumps the entire tree of named elements. Default implementation organizes
+  // all elements by context. This is the entry point when printing test failure
+  // information. The `current_context` is the current context in the test, if
+  // known.
+  DebugTreeNode DebugDumpElements(ui::ElementContext current_context) const;
+
+  // Dumps the contents of a particular context.
+  virtual DebugTreeNode DebugDumpContext(
+      const ui::ElementContext context) const;
 
  private:
   friend class ui::test::InteractiveTestTest;
@@ -179,7 +370,10 @@ class InteractiveTestPrivate {
   bool sequence_skipped_ = false;
 
   // Used to simulate input to UI elements.
-  std::unique_ptr<InteractionTestUtil> test_util_;
+  InteractionTestUtil test_util_;
+
+  // The default context for running test sequences.
+  ElementContext default_context_;
 
   // Used to keep track of valid contexts.
   base::CallbackListSubscription context_subscription_;
@@ -192,10 +386,19 @@ class InteractiveTestPrivate {
 
   // Overrides the default test failure behavior to test the API itself.
   InteractionSequence::AbortedCallback aborted_callback_for_testing_;
-};
 
-// Specifies an element either by ID or by name.
-using ElementSpecifier = std::variant<ElementIdentifier, std::string_view>;
+  intptr_t next_additional_context_handle_ = 1U;
+  std::map<intptr_t, std::string> additional_context_data_;
+
+  FrameworkSpecificRegistrationList<InteractiveTestPrivateFrameworkBase>
+      framework_implementations_;
+
+  base::WeakPtrFactory<InteractiveTestPrivate> weak_ptr_factory_{this};
+
+  // Whether interactive test verbs are allowed. See
+  // `InteractiveTestApi::RequireInteractiveTest()` for more info.
+  static bool allow_interactive_test_verbs_;
+};
 
 class StateObserverElement : public TestElementBase {
  public:
@@ -213,13 +416,16 @@ class StateObserverElementT : public StateObserverElement {
   // A lookup table is provided per value of `T`.
   using LookupTable = std::map<std::pair<ElementIdentifier, ElementContext>,
                                StateObserverElementT<T>*>;
+  using TestContext = InteractiveTestPrivate::AdditionalContext;
 
   // Specify the `id` and `context` of the element to be created, as well as the
   // associated `observer` which will be linked to this element.
   StateObserverElementT(ElementIdentifier id,
                         ElementContext context,
-                        std::unique_ptr<StateObserver<T>> observer)
+                        std::unique_ptr<StateObserver<T>> observer,
+                        TestContext test_context)
       : StateObserverElement(id, context),
+        test_context_(test_context),
         current_value_(observer->GetStateObserverInitialState()),
         observer_(std::move(observer)) {
     auto& table = GetLookupTable();
@@ -263,6 +469,8 @@ class StateObserverElementT : public StateObserverElement {
     return nullptr;
   }
 
+  const T& current_value() const { return current_value_; }
+
  private:
   void OnStateChanged(T new_state) {
     current_value_ = new_state;
@@ -270,9 +478,15 @@ class StateObserverElementT : public StateObserverElement {
   }
 
   void UpdateVisibility() {
-    if (target_value_ && target_value_->Matches(current_value_)) {
+    testing::StringMatchResultListener listener;
+    if (target_value_ &&
+        target_value_->MatchAndExplain(current_value_, &listener)) {
+      test_context_.Clear();
       Show();
     } else {
+      std::ostringstream oss;
+      oss << "Waiting for state " << identifier() << " " << listener.str();
+      test_context_.Set(oss.str());
       Hide();
     }
   }
@@ -288,6 +502,9 @@ class StateObserverElementT : public StateObserverElement {
   }
 
  private:
+  // Since the context can be updated on observer shutdown and needs access to
+  // the current value, it needs to be destructed last.
+  TestContext test_context_;
   T current_value_;
   std::optional<testing::Matcher<T>> target_value_;
   std::unique_ptr<StateObserver<T>> observer_;
@@ -331,266 +548,27 @@ bool InteractiveTestPrivate::AddStateObserver(
     }
   }
   state_observer_elements_.emplace_back(
-      std::make_unique<StateObserverElementT<V>>(id, context,
-                                                 std::move(state_observer)));
+      std::make_unique<StateObserverElementT<V>>(
+          id, context, std::move(state_observer), CreateAdditionalContext()));
   return true;
-}
-
-// static
-template <typename T>
-InteractiveTestPrivate::MultiStep InteractiveTestPrivate::PostTask(
-    std::string_view description,
-    T&& task) {
-  MultiStep result;
-  result.emplace_back(std::move(
-      InteractionSequence::StepBuilder()
-          .SetDescription(base::StrCat({description, ": PostTask()"}))
-          .SetElementID(kInteractiveTestPivotElementId)
-          .SetStartCallback(base::BindOnce([](ui::TrackedElement* el) {
-            base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-                FROM_HERE,
-                base::BindOnce(
-                    [](ElementIdentifier id, ElementContext context) {
-                      auto* const el =
-                          ui::ElementTracker::GetElementTracker()
-                              ->GetFirstMatchingElement(id, context);
-                      if (el) {
-                        ui::ElementTracker::GetFrameworkDelegate()
-                            ->NotifyCustomEvent(el,
-                                                kInteractiveTestPivotEventType);
-                      }
-                      // If there is no pivot element, the test sequence has
-                      // been aborted and there's no need to send an additional
-                      // error.
-                    },
-                    el->identifier(), el->context()));
-          }))));
-  result.emplace_back(std::move(
-      InteractionSequence::StepBuilder()
-          .SetDescription(base::StrCat({description, ": WaitForComplete()"}))
-          .SetElementID(kInteractiveTestPivotElementId)
-          .SetContext(InteractionSequence::ContextMode::kFromPreviousStep)
-          .SetType(InteractionSequence::StepType::kCustomEvent,
-                   kInteractiveTestPivotEventType)
-          .SetStartCallback(
-              base::RectifyCallback<InteractionSequence::StepStartCallback>(
-                  std::move(task)))));
-  return result;
-}
-
-// Similar to `std::invocable<T, Args...>`, but does not put constraints on the
-// parameters passed to the invocation method.
-template <typename T>
-concept IsCallable = requires { &std::decay_t<T>::operator(); };
-
-// Applies if `T` has bound state (such as a lambda expression with captures).
-template <typename T>
-concept HasState = !std::is_empty_v<std::remove_reference_t<T>>;
-
-// Helper for matching a function pointer.
-template <typename T>
-inline constexpr bool IsFunctionPointerValue = false;
-
-template <typename R, typename... Args>
-inline constexpr bool IsFunctionPointerValue<R (*)(Args...)> = true;
-
-// Applies if `T` is a function pointer (but not a pointer to an instance
-// member function).
-template <typename T>
-concept IsFunctionPointer = IsFunctionPointerValue<T>;
-
-// Optionally converts `function` to something that is compatible with a
-// base::OnceCallback.
-template <typename F>
-auto MaybeBind(F&& function) {
-  if constexpr (base::IsBaseCallback<F>) {
-    // Callbacks are already callbacks, so can be returned as-is.
-    return std::forward<F>(function);
-  } else if constexpr (IsCallable<F> && HasState<F>) {
-    // Callable objects with state can only be bound with
-    // `base::BindLambdaForTesting`.
-    return base::BindLambdaForTesting(std::forward<F>(function));
-  } else if constexpr ((IsCallable<F> && !HasState<F>) ||
-                       IsFunctionPointer<F>) {
-    // Function pointers and empty callable objects can be bound using
-    // `base::BindOnce`.
-    return base::BindOnce(std::forward<F>(function));
-  } else if constexpr (std::same_as<F, decltype(base::DoNothing())>) {
-    // base::DoNothing() is compatible with callbacks, so return it as-is.
-    return function;
-  } else {
-    static_assert(base::AlwaysFalse<F>, "Can only bind callable objects.");
-  }
-}
-
-// Helper struct that captures information about what signature a function-like
-// object would have if it were bound.
-template <typename F>
-struct MaybeBindTypeHelper {
-  using CallbackType = std::invoke_result_t<decltype(&MaybeBind<F>), F>;
-  using ReturnType = typename CallbackType::ResultType;
-  using Signature = typename CallbackType::RunType;
-};
-
-// DoNothing always has a void return type but no defined signature.
-template <>
-struct MaybeBindTypeHelper<decltype(base::DoNothing())> {
-  using ReturnType = void;
-};
-
-// Optionally converts `function` to something that is compatible with a
-// base::RepeatingCallback, or returns it as-is if it's already a callback.
-template <typename F>
-base::RepeatingCallback<typename MaybeBindTypeHelper<F>::Signature>
-MaybeBindRepeating(F&& function) {
-  if constexpr (IsCallable<F> && !HasState<F> &&
-                std::copy_constructible<std::decay_t<F>>) {
-    return base::BindRepeating(std::forward<F>(function));
-  } else {
-    return MaybeBind(std::forward<F>(function));
-  }
-}
-
-template <typename T>
-struct ArgsExtractor;
-
-template <typename R, typename... Args>
-struct ArgsExtractor<R(Args...)> {
-  using Holder = std::tuple<Args...>;
-};
-
-template <typename F>
-using ReturnTypeOf = MaybeBindTypeHelper<F>::ReturnType;
-
-template <size_t N, typename F>
-using NthArgumentOf = std::tuple_element_t<
-    N,
-    typename ArgsExtractor<typename MaybeBindTypeHelper<F>::Signature>::Holder>;
-
-// Requires that `F` resolves to some kind of callable object with call
-// signature `S`.
-template <typename F, typename S>
-concept HasSignature =
-    std::same_as<typename MaybeBindTypeHelper<F>::Signature, S> ||
-    std::same_as<F, decltype(base::DoNothing())>;
-
-// Helper for `HasCompatibleSignature`; see recursive implementation below.
-template <typename F, typename S>
-inline constexpr bool HasCompatibleSignatureValue = false;
-
-// Requires that `F` resolves to some kind of callable object whose signature
-// can be rectified to `S`; see `base::RectifyCallback` for more information.
-// (Basically, `F` can omit arguments from the left of `S`; these arguments
-// will be ignored.)
-template <typename F, typename S>
-concept HasCompatibleSignature = HasCompatibleSignatureValue<F, S>;
-
-// This is the leaf state for the recursive compatibility computation; see
-// below.
-template <typename F, typename R>
-  requires HasSignature<F, R()>
-inline constexpr bool HasCompatibleSignatureValue<F, R()> = true;
-
-// Implementation for `HasCompatibleSignature`.
-//
-// This removes arguments one by one from the left of the target signature `S`
-// to see if `F` has that signature. The recursion stops when one matches, or
-// when the arg list is empty (in which case the leaf state is hit, above).
-template <typename F, typename R, typename A, typename... Args>
-  requires HasSignature<F, R(A, Args...)> ||
-               HasCompatibleSignature<F, R(Args...)>
-inline constexpr bool HasCompatibleSignatureValue<F, R(A, Args...)> = true;
-
-// Checks that `T` is a reference wrapper around any type.
-template <typename T>
-concept IsReferenceWrapper = base::is_instantiation<std::reference_wrapper, T>;
-
-// Helper to determine the type used to match a value. The default is to just
-// use the decayed value type.
-template <typename T>
-struct MatcherTypeHelper {
-  using ActualType = T;
-};
-
-// Specialization for string types used in Chrome. For any representation of a
-// string using character type, the type used for matching is the corresponding
-// `std::basic_string`.
-//
-// Add to this template if different character formats become supported (e.g.
-// char8_t, char32_t, wchar_t, etc.)
-template <typename C>
-  requires(std::same_as<std::remove_const_t<C>, char> ||
-           std::same_as<std::remove_const_t<C>, char16_t>)
-struct MatcherTypeHelper<C*> {
-  using ActualType = std::basic_string<std::remove_const_t<C>>;
-};
-
-// Gets the appropriate matchable type for `T`. This affects string-like types
-// (e.g. `const char*`) as the corresponding `Matcher` should match a
-// `std::string` or `std::u16string`.
-template <typename T>
-using MatcherTypeFor = MatcherTypeHelper<std::decay_t<T>>::ActualType;
-
-// Determines if `T` is a valid type to be used in a matcher. This precludes
-// string-like types (const char*, constexpr char16_t[], etc.) in favor of
-// `std::string` and `std::u16string`.
-template <typename T>
-concept IsValidMatcherType = std::same_as<T, MatcherTypeFor<T>>;
-
-template <typename T>
-concept IsGtestMatcher = requires { typename T::is_gtest_matcher; };
-
-template <typename T>
-concept HasMatchAndExplain = requires { &T::MatchAndExplain; };
-
-template <typename T>
-concept IsMatcher = IsGtestMatcher<T> || HasMatchAndExplain<T> ||
-                    base::is_instantiation<testing::PolymorphicMatcher, T>;
-
-// Accepts any function-like object that is compatible with
-// `InteractionSequence::StepCallback`.
-template <typename F>
-concept IsStepCallback = internal::
-    HasCompatibleSignature<F, void(InteractionSequence*, TrackedElement*)>;
-
-// Accepts any function-like object that can be used with `Check()` and
-// `CheckResult()`.
-template <typename F, typename R>
-concept IsCheckCallback =
-    internal::HasCompatibleSignature<F,
-                                     R(const InteractionSequence*,
-                                       const TrackedElement*)>;
-
-// Converts an ElementSpecifier to an element ID or name and sets it onto
-// `builder`.
-void SpecifyElement(ui::InteractionSequence::StepBuilder& builder,
-                    ElementSpecifier element);
-
-std::string DescribeElement(ElementSpecifier spec);
-
-InteractionSequence::Builder BuildSubsequence(
-    InteractiveTestPrivate::MultiStep steps);
-
-// Takes an argument expected to be a literal value and retrieves the literal
-// value by either calling the object (if it's callable), unwrapping it (if it's
-// a `std::reference_wrapper`) or just returning it otherwise.
-//
-// This allows e.g. passing deferred or computed values to the `Log()` verb.
-template <typename Arg>
-auto UnwrapArgument(Arg arg) {
-  if constexpr (base::IsBaseCallback<Arg>) {
-    return std::move(arg).Run();
-  } else if constexpr (internal::IsFunctionPointer<Arg>) {
-    return (*arg)();
-  } else if constexpr (internal::IsCallable<Arg>) {
-    return arg();
-  } else {
-    return arg;
-  }
 }
 
 }  // namespace internal
 
 }  // namespace ui::test
+
+inline ui::test::internal::MultiStep& operator+=(
+    ui::test::internal::MultiStep& steps,
+    ui::InteractionSequence::StepBuilder&& step) {
+  steps.push_back(std::move(step));
+  return steps;
+}
+
+inline ui::test::internal::MultiStep& operator+=(
+    ui::test::internal::MultiStep& steps,
+    ui::test::internal::MultiStep&& other) {
+  std::ranges::move(other, std::back_inserter(steps));
+  return steps;
+}
 
 #endif  // UI_BASE_INTERACTION_INTERACTIVE_TEST_INTERNAL_H_

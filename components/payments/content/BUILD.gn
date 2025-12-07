@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
 static_library("content") {
   sources = [
     "android_app_communication.cc",
@@ -22,10 +20,6 @@ static_library("content") {
     "payment_app_factory.h",
     "payment_app_service.cc",
     "payment_app_service.h",
-    "payment_credential.cc",
-    "payment_credential.h",
-    "payment_credential_factory.cc",
-    "payment_credential_factory.h",
     "payment_details_converter.cc",
     "payment_details_converter.h",
     "payment_event_response_util.cc",
@@ -47,6 +41,8 @@ static_library("content") {
     "secure_payment_confirmation_app.h",
     "secure_payment_confirmation_app_factory.cc",
     "secure_payment_confirmation_app_factory.h",
+    "secure_payment_confirmation_credential_finder.cc",
+    "secure_payment_confirmation_credential_finder.h",
     "secure_payment_confirmation_model.cc",
     "secure_payment_confirmation_model.h",
     "secure_payment_confirmation_no_creds.cc",
@@ -55,6 +51,11 @@ static_library("content") {
     "secure_payment_confirmation_no_creds_model.h",
     "secure_payment_confirmation_no_creds_view.cc",
     "secure_payment_confirmation_no_creds_view.h",
+    "secure_payment_confirmation_service.cc",
+    "secure_payment_confirmation_service.h",
+    "secure_payment_confirmation_service_factory.cc",
+    "secure_payment_confirmation_service_factory.h",
+    "secure_payment_confirmation_transaction_mode.h",
     "secure_payment_confirmation_view.h",
     "service_worker_payment_app.cc",
     "service_worker_payment_app.h",
@@ -66,11 +67,12 @@ static_library("content") {
     ":content_common",
     ":utils",
     "//base",
-    "//build:chromeos_buildflags",
     "//components/autofill/core/browser",
     "//components/keyed_service/content",
+    "//components/payments/content/browser_binding",
     "//components/payments/content/utility",
     "//components/payments/core",
+    "//components/payments/core:currency_formatter",
     "//components/payments/core:error_strings",
     "//components/payments/core:method_strings",
     "//components/payments/mojom",
@@ -78,9 +80,10 @@ static_library("content") {
     "//components/strings:components_strings_grit",
     "//components/ukm/content",
     "//components/url_formatter",
+    "//components/webauthn/content/browser",
     "//components/webauthn/core/browser",
     "//components/webdata/common",
-    "//components/webdata_services:webdata_services",
+    "//components/webdata_services",
     "//content/public/browser",
     "//crypto",
     "//device/fido",
@@ -91,29 +94,16 @@ static_library("content") {
 
   if (is_chromeos) {
     sources += [
+      "android_app_communication_ash.cc",
       "android_app_communication_helpers.cc",
       "android_app_communication_helpers.h",
     ]
 
-    deps += [ "//chromeos/components/payments/mojom" ]
-  }
-
-  if (is_chromeos_ash) {
-    sources += [ "android_app_communication_ash.cc" ]
-
     deps += [
-      "//ash/components/arc",
-      "//ash/public/cpp/external_arc",
+      "//chromeos/ash/experiences/arc",
+      "//chromeos/components/payments/mojom",
     ]
-  }
-
-  if (is_chromeos_lacros) {
-    sources += [ "android_app_communication_lacros.cc" ]
-
-    deps += [ "//chromeos/lacros" ]
-  }
-
-  if (!is_chromeos) {
+  } else {
     sources += [ "android_app_communication_stub.cc" ]
   }
 
@@ -121,6 +111,10 @@ static_library("content") {
     sources += [
       "secure_payment_confirmation_no_creds_view_stub.cc",
       "secure_payment_confirmation_view_stub.cc",
+    ]
+    deps += [
+      "//components/payments/content/android/spc:browser_binding_jni",
+      "//components/webauthn/android",
     ]
   } else {
     sources += [
@@ -138,6 +132,7 @@ static_library("content") {
       "secure_payment_confirmation_controller.cc",
       "secure_payment_confirmation_controller.h",
     ]
+    deps += [ "//components/webauthn/content/browser" ]
   }
 }
 
@@ -162,16 +157,16 @@ static_library("utils") {
     "installable_payment_app_crawler.h",
     "manifest_verifier.cc",
     "manifest_verifier.h",
-    "payment_manifest_web_data_service.cc",
-    "payment_manifest_web_data_service.h",
-    "payment_method_manifest_table.cc",
-    "payment_method_manifest_table.h",
     "service_worker_payment_app_finder.cc",
     "service_worker_payment_app_finder.h",
     "ssl_validity_checker.cc",
     "ssl_validity_checker.h",
     "web_app_manifest_section_table.cc",
     "web_app_manifest_section_table.h",
+    "web_payments_table.cc",
+    "web_payments_table.h",
+    "web_payments_web_data_service.cc",
+    "web_payments_web_data_service.h",
   ]
 
   deps = [
@@ -179,6 +174,7 @@ static_library("utils") {
     "//base",
     "//components/autofill/core/browser",
     "//components/network_session_configurator/common",
+    "//components/payments/content/browser_binding:browser_bound_key_metadata",
     "//components/payments/content/icon",
     "//components/payments/content/utility",
     "//components/payments/core",
@@ -204,12 +200,15 @@ static_library("utils") {
 static_library("test_support") {
   testonly = true
   sources = [
-    "mock_payment_manifest_web_data_service.cc",
-    "mock_payment_manifest_web_data_service.h",
+    "mock_web_payments_web_data_service.cc",
+    "mock_web_payments_web_data_service.h",
   ]
+  public_deps = [ "//components/payments/content/browser_binding:test_support" ]
   deps = [
     ":utils",
     "//base/test:test_support",
+    "//components/os_crypt/async/browser:test_support",
+    "//components/payments/content/browser_binding:browser_bound_key_metadata",
     "//components/webdata/common",
     "//components/webdata_services",
     "//testing/gmock",
@@ -218,7 +217,23 @@ static_library("test_support") {
   ]
 }
 
-source_set("unit_tests") {
+group("unit_tests") {
+  testonly = true
+  deps = [
+    ":payment_content_unit_tests",
+    "//components/payments/content/browser_binding:passkey_browser_binder_unittests",
+  ]
+  if (is_android) {
+    deps +=
+        [ "//components/payments/content/browser_binding:android_unittests" ]
+  }
+  if (is_mac || is_win || is_linux || is_chromeos) {
+    deps +=
+        [ "//components/payments/content/browser_binding:desktop_unittests" ]
+  }
+}
+
+source_set("payment_content_unit_tests") {
   testonly = true
   sources = [
     "android_app_communication_test_support.h",
@@ -229,23 +244,33 @@ source_set("unit_tests") {
     "mock_android_app_communication.h",
     "mock_payment_app_factory_delegate.cc",
     "mock_payment_app_factory_delegate.h",
+    "mock_secure_payment_confirmation_credential_finder.cc",
+    "mock_secure_payment_confirmation_credential_finder.h",
     "payment_event_response_util_unittest.cc",
-    "payment_method_manifest_table_unittest.cc",
+    "secure_payment_confirmation_app_factory_unittest.cc",
+    "secure_payment_confirmation_app_unittest.cc",
+    "secure_payment_confirmation_credential_finder_unittest.cc",
     "secure_payment_confirmation_model_unittest.cc",
     "secure_payment_confirmation_no_creds_model_unittest.cc",
+    "secure_payment_confirmation_service_unittest.cc",
     "service_worker_payment_app_finder_unittest.cc",
     "web_app_manifest_section_table_unittest.cc",
+    "web_payments_table_unittest.cc",
+    "web_payments_web_data_service_unittest.cc",
   ]
 
   if (!is_android) {
     sources += [
+      "mock_content_payment_request_delegate.cc",
+      "mock_content_payment_request_delegate.h",
       "payment_app_unittest.cc",
+      "payment_request_display_manager_unittest.cc",
       "payment_request_spec_unittest.cc",
       "payment_request_state_unittest.cc",
       "payment_request_web_contents_manager_unittest.cc",
       "payment_response_helper_unittest.cc",
-      "secure_payment_confirmation_app_factory_unittest.cc",
-      "secure_payment_confirmation_app_unittest.cc",
+      "secure_payment_confirmation_controller_unittest.cc",
+      "secure_payment_confirmation_view_stub.cc",
       "service_worker_payment_app_unittest.cc",
       "test_content_payment_request_delegate.cc",
       "test_content_payment_request_delegate.h",
@@ -262,6 +287,9 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
+    "//components/os_crypt/async/browser:test_support",
+    "//components/payments/content/browser_binding",
+    "//components/payments/content/browser_binding:fake_browser_bound_key_store",
     "//components/payments/core",
     "//components/payments/core:error_strings",
     "//components/payments/core:method_strings",
@@ -271,6 +299,7 @@ source_set("unit_tests") {
     "//components/webauthn/core/browser:test_support",
     "//components/webdata/common",
     "//content/test:test_support",
+    "//crypto:test_support",
     "//net:test_support",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/network:test_support",
@@ -283,10 +312,15 @@ source_set("unit_tests") {
 
   if (is_chromeos) {
     sources += [
+      "android_app_communication_test_support_ash.cc",
       "android_app_communication_test_support_chrome_os.cc",
       "android_app_communication_test_support_chrome_os.h",
     ]
     deps += [
+      "//chromeos/ash/experiences/arc",
+      "//chromeos/ash/experiences/arc:arc_test_support",
+      "//chromeos/ash/experiences/arc/intent_helper",
+      "//chromeos/ash/experiences/arc/mojom",
       "//chromeos/components/payments:test_support",
       "//chromeos/components/payments/mojom",
     ]
@@ -294,23 +328,7 @@ source_set("unit_tests") {
     sources += [ "android_app_communication_test_support_stub.cc" ]
   }
 
-  if (is_chromeos_ash) {
-    sources += [ "android_app_communication_test_support_ash.cc" ]
-
-    deps += [
-      "//ash/components/arc",
-      "//ash/components/arc:arc_test_support",
-      "//ash/components/arc/mojom",
-      "//ash/public/cpp/external_arc:test_support",
-      "//components/arc",
-    ]
-  }
-
-  if (is_chromeos_lacros) {
-    sources += [ "android_app_communication_test_support_lacros.cc" ]
-    deps += [
-      "//chromeos/lacros",
-      "//chromeos/lacros:test_support",
-    ]
-  }
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

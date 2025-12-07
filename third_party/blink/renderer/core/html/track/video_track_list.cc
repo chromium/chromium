@@ -30,7 +30,7 @@ int VideoTrackList::selectedIndex() const {
   return -1;
 }
 
-void VideoTrackList::TrackSelected(WebMediaPlayer::TrackId selected_track_id) {
+void VideoTrackList::TrackSelected(const String& selected_track_id) {
   // Clear the selected flag on the previously selected track, if any.
   for (unsigned i = 0; i < length(); ++i) {
     VideoTrack* track = AnonymousIndexedGetter(i);

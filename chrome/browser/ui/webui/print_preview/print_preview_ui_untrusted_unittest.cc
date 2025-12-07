@@ -34,8 +34,7 @@ namespace {
 scoped_refptr<base::RefCountedStaticMemory> CreateTestData() {
   const unsigned char kPreviewData[] =
       "%PDF-1.4123461023561203947516345165913487104781236491654192345192345";
-  return base::MakeRefCounted<base::RefCountedStaticMemory>(
-      kPreviewData, sizeof(kPreviewData));
+  return base::MakeRefCounted<base::RefCountedStaticMemory>(kPreviewData);
 }
 
 }  // namespace

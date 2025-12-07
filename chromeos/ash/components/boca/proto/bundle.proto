@@ -5,10 +5,14 @@ syntax = "proto3";
 
 package boca;
 
+option optimize_for = LITE_RUNTIME;
+
 message Bundle {
   repeated ContentConfig content_configs = 1;
 
   bool locked = 2;
+
+  bool lock_to_app_home = 3;
 }
 
 message ContentConfig {
@@ -41,6 +45,10 @@ message LockedNavigationOptions {
     DOMAIN_NAVIGATION = 3;
 
     LIMITED_NAVIGATION = 4;
+
+    SAME_DOMAIN_OPEN_OTHER_DOMAIN_LIMITED_NAVIGATION = 5;
+
+    WORKSPACE_NAVIGATION = 6;
   }
 
   NavigationType navigation_type = 1;

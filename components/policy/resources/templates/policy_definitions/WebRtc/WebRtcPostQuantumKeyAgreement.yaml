@@ -1,0 +1,48 @@
+caption: Enable post-quantum key agreement for WebRTC
+default: null
+desc: |-
+  This policy allows controlling post-quantum key agreement for WebRTC.
+
+  If this policy is set to Enabled, post-quantum key agreement would be offered for
+  WebRTC.
+
+  If this policy is set to Disabled, post-quantum key agreement would not be offered
+  for WebRTC.
+
+  If this policy is not set, the value would be set by the default rollout process
+  for post-quantum key agreement offered for WebRTC.
+
+  Offering a post-quantum key agreement is backwards-compatible. Existing DTLS
+  peers and networking middleware are expected to ignore the new option and
+  continue selecting previous options.
+
+  However, devices that do not correctly implement DTLS may malfunction when
+  offered the new option. For example, they may disconnect in response to
+  unrecognized options or the resulting larger messages. Such devices are not
+  post-quantum-ready and will interfere with an enterprise's post-quantum
+  transition. If encountered, administrators should contact the vendor for a fix.
+
+  This policy is a temporary measure and will be removed after some milestones.
+
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+owners:
+- file://third_party/blink/renderer/modules/peerconnection/OWNERS
+- agpalak@chromium.org
+- guidou@chromium.org
+schema:
+  type: boolean
+items:
+- caption: Use default value for post-quantum key agreement for WebRTC
+  value: null
+- caption: Enable post-quantum key agreement for WebRTC
+  value: true
+- caption: Disable post-quantum key agreement for WebRTC
+  value: false
+supported_on:
+- chrome.*:140-
+- chrome_os:140-
+tags: []
+type: main

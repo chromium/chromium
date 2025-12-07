@@ -9,11 +9,13 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/splitview/split_view_controller.h"
+#include "ash/wm/window_pin_util.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "ash/wm/workspace/multi_window_resize_controller.h"
 #include "base/metrics/user_metrics.h"
+#include "chromeos/ui/base/window_pin_type.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/base/hit_test.h"
@@ -99,7 +101,12 @@ void WorkspaceEventHandler::OnGestureEvent(ui::GestureEvent* event) {
     return;
   }
 
-  aura::Window* target = static_cast<aura::Window*>(event->target());
+  aura::Window* const target = static_cast<aura::Window*>(event->target());
+  if (GetWindowPinType(target) == chromeos::WindowPinType::kLockedFullscreen) {
+    // Do not attempt to resize or update locked fullscreen windows.
+    return;
+  }
+
   int previous_target_component = click_component_;
   click_component_ =
       window_util::GetNonClientComponent(target, event->location());
@@ -151,7 +158,9 @@ void WorkspaceEventHandler::HandleResizeDoubleClick(WindowState* target_state,
         // it would be rather inappropriate to end overview as below, and of
         // course it would be blatantly inappropriate to make the following call
         // to |OverviewSession::SetWindowListNotAnimatedWhenExiting|.
-        DCHECK_EQ(gfx::Size(), target->delegate()->GetMaximumSize());
+        std::optional<gfx::Size> max_size =
+            target->delegate()->GetMaximumSize();
+        DCHECK(!max_size.has_value() || max_size.value() == gfx::Size());
         overview_controller->overview_session()
             ->SetWindowListNotAnimatedWhenExiting(target->GetRootWindow());
         overview_controller->EndOverview(OverviewEndAction::kSplitView);

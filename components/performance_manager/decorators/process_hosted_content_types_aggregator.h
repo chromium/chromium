@@ -14,11 +14,10 @@ namespace performance_manager {
 
 // Aggregates the type of content hosted inside a process and populates the
 // |hosted_content_types()| property.
-class ProcessHostedContentTypesAggregator
-    : public GraphOwnedDefaultImpl,
-      public PageNode::ObserverDefaultImpl,
-      public FrameNode::ObserverDefaultImpl,
-      public WorkerNode::ObserverDefaultImpl {
+class ProcessHostedContentTypesAggregator : public GraphOwnedDefaultImpl,
+                                            public PageNodeObserver,
+                                            public FrameNodeObserver,
+                                            public WorkerNodeObserver {
  public:
   ProcessHostedContentTypesAggregator();
   ~ProcessHostedContentTypesAggregator() override;

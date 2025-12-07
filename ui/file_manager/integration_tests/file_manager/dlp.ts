@@ -6,6 +6,7 @@ import {DialogType} from '../prod/file_manager/shared_types.js';
 import {addEntries, ENTRIES, EntryType, RootPath, sendBrowserTestCommand, sendTestMessage, TestEntryInfo} from '../test_util.js';
 
 import {remoteCall} from './background.js';
+import {NO_ENTRIES_CHOSEN} from './choose_entry_const.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {BASIC_ANDROID_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, FakeTask} from './test_data.js';
 
@@ -333,7 +334,7 @@ export async function saveAsDlpRestrictedAndroid() {
   };
 
   chrome.test.assertEq(
-      undefined,
+      NO_ENTRIES_CHOSEN,
       await remoteCall.openAndWaitForClosingDialog(
           {type: 'saveFile'}, 'downloads', [], closer));
 }
@@ -409,7 +410,7 @@ export async function saveAsDlpRestrictedVm() {
   };
 
   chrome.test.assertEq(
-      undefined,
+      NO_ENTRIES_CHOSEN,
       await remoteCall.openAndWaitForClosingDialog(
           {type: 'saveFile'}, 'downloads', [], closer));
 }
@@ -470,7 +471,7 @@ export async function saveAsDlpRestrictedCrostini() {
   };
 
   chrome.test.assertEq(
-      undefined,
+      NO_ENTRIES_CHOSEN,
       await remoteCall.openAndWaitForClosingDialog(
           {type: 'saveFile'}, 'downloads', [ENTRIES.hello], closer));
 }
@@ -509,7 +510,7 @@ export async function saveAsDlpRestrictedUsb() {
   };
 
   chrome.test.assertEq(
-      undefined,
+      NO_ENTRIES_CHOSEN,
       await remoteCall.openAndWaitForClosingDialog(
           {type: 'saveFile'}, 'downloads', [], closer));
 }
@@ -535,7 +536,7 @@ export async function saveAsDlpRestrictedDrive() {
   };
 
   chrome.test.assertEq(
-      undefined,
+      NO_ENTRIES_CHOSEN,
       await remoteCall.openAndWaitForClosingDialog(
           {type: 'saveFile'}, 'downloads', [], closer));
 }
@@ -561,7 +562,7 @@ export async function saveAsNonDlpRestricted() {
 
   // Open a save dialog in Play Files.
   chrome.test.assertEq(
-      undefined,
+      NO_ENTRIES_CHOSEN,
       await remoteCall.openAndWaitForClosingDialog(
           {type: 'saveFile'}, 'android_files', BASIC_ANDROID_ENTRY_SET,
           allowedCloser));
@@ -592,7 +593,7 @@ export async function saveAsDlpRestrictedRedirectsToMyFiles() {
   // Try to open a save dialog in Play Files. Since ARC is blocked by DLP, the
   // dialog should open in the default root instead.
   chrome.test.assertEq(
-      undefined,
+      NO_ENTRIES_CHOSEN,
       await remoteCall.openAndWaitForClosingDialog(
           {type: 'saveFile'}, 'android_files', [ENTRIES.hello], blockedCloser));
 }
@@ -648,7 +649,7 @@ export async function openDlpRestrictedFile() {
   };
 
   chrome.test.assertEq(
-      undefined,
+      NO_ENTRIES_CHOSEN,
       await remoteCall.openAndWaitForClosingDialog(
           {type: 'openFile'}, 'downloads', BASIC_LOCAL_ENTRY_SET, closer));
 }
@@ -717,7 +718,7 @@ export async function openFolderDlpRestricted() {
   };
 
   chrome.test.assertEq(
-      undefined,
+      NO_ENTRIES_CHOSEN,
       await remoteCall.openAndWaitForClosingDialog(
           {type: 'openFile'}, 'downloads', [ENTRIES.directoryA], closer));
 

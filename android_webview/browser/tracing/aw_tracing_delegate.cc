@@ -7,34 +7,15 @@
 #include <memory>
 
 #include "android_webview/browser/aw_browser_process.h"
-#include "base/notreached.h"
-#include "base/values.h"
+#include "components/tracing/common/background_tracing_metrics_provider.h"
 #include "components/tracing/common/background_tracing_state_manager.h"
 #include "components/tracing/common/background_tracing_utils.h"
 #include "components/tracing/common/pref_names.h"
-#include "components/version_info/version_info.h"
-#include "content/public/browser/background_tracing_config.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "components/tracing/common/system_profile_metadata_recorder.h"
 
 namespace android_webview {
 
-bool IsBackgroundTracingCommandLine() {
-  auto tracing_mode = tracing::GetBackgroundTracingSetupMode();
-  if (tracing_mode ==
-          tracing::BackgroundTracingSetupMode::kFromJsonConfigFile ||
-      tracing_mode ==
-          tracing::BackgroundTracingSetupMode::kFromProtoConfigFile) {
-    return true;
-  }
-  return false;
-}
-
-AwTracingDelegate::AwTracingDelegate()
-    : state_manager_(tracing::BackgroundTracingStateManager::CreateInstance(
-          AwBrowserProcess::GetInstance()->local_state())) {}
-AwTracingDelegate::AwTracingDelegate(
-    std::unique_ptr<tracing::BackgroundTracingStateManager> state_manager)
-    : state_manager_(std::move(state_manager)) {}
+AwTracingDelegate::AwTracingDelegate() = default;
 AwTracingDelegate::~AwTracingDelegate() = default;
 
 // static
@@ -42,45 +23,34 @@ void AwTracingDelegate::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(tracing::kBackgroundTracingSessionState);
 }
 
-bool AwTracingDelegate::IsAllowedToStartScenario() const {
-  // If the background tracing is specified on the command-line, we allow
-  // any scenario to be traced and uploaded.
-  if (IsBackgroundTracingCommandLine()) {
-    return true;
-  }
-
-  tracing::BackgroundTracingStateManager& state =
-      tracing::BackgroundTracingStateManager::GetInstance();
-
-  // Don't start a new trace if the previous trace did not end.
-  if (state.DidLastSessionEndUnexpectedly()) {
-    tracing::RecordDisallowedMetric(
-        tracing::TracingFinalizationDisallowedReason::
-            kLastTracingSessionDidNotEnd);
-    return false;
-  }
-
+bool AwTracingDelegate::IsRecordingAllowed(
+    bool requires_anonymized_data,
+    base::TimeTicks session_start) const {
   return true;
 }
 
-bool AwTracingDelegate::OnBackgroundTracingActive(
-    bool requires_anonymized_data) {
-  tracing::BackgroundTracingStateManager& state =
-      tracing::BackgroundTracingStateManager::GetInstance();
-
-  if (!IsAllowedToStartScenario()) {
-    return false;
-  }
-
-  state.OnTracingStarted();
-  return true;
+std::unique_ptr<tracing::BackgroundTracingStateManager>
+AwTracingDelegate::CreateStateManager() {
+  return tracing::BackgroundTracingStateManager::CreateInstance(
+      AwBrowserProcess::GetInstance()->local_state());
 }
 
-bool AwTracingDelegate::OnBackgroundTracingIdle(bool requires_anonymized_data) {
-  tracing::BackgroundTracingStateManager& state =
-      tracing::BackgroundTracingStateManager::GetInstance();
-  state.OnTracingStopped();
-  return true;
+std::string AwTracingDelegate::RecordSerializedSystemProfileMetrics() const {
+  metrics::SystemProfileProto system_profile_proto;
+  auto recorder = tracing::BackgroundTracingMetricsProvider::
+      GetSystemProfileMetricsRecorder();
+  if (!recorder) {
+    return std::string();
+  }
+  recorder.Run(system_profile_proto);
+  std::string serialized_system_profile;
+  system_profile_proto.SerializeToString(&serialized_system_profile);
+  return serialized_system_profile;
+}
+
+tracing::MetadataDataSource::BundleRecorder
+AwTracingDelegate::CreateSystemProfileMetadataRecorder() const {
+  return base::BindRepeating(&tracing::RecordSystemProfileMetadata);
 }
 
 }  // namespace android_webview

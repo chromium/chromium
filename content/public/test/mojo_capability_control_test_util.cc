@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "mojo/public/cpp/bindings/binder_map.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
 
 namespace content::test {

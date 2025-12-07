@@ -1,0 +1,38 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+
+# These form the public interface of the `fido` component and are separate so
+# the blink mojo typemaps can depend on them.
+component("public") {
+  sources = [
+    "authenticator_selection_criteria.cc",
+    "authenticator_selection_criteria.h",
+    "cable_discovery_data.cc",
+    "cable_discovery_data.h",
+    "features.cc",
+    "features.h",
+    "fido_constants.cc",
+    "fido_constants.h",
+    "fido_transport_protocol.cc",
+    "fido_transport_protocol.h",
+    "fido_types.h",
+    "public_key_credential_descriptor.cc",
+    "public_key_credential_descriptor.h",
+    "public_key_credential_params.cc",
+    "public_key_credential_params.h",
+    "public_key_credential_rp_entity.cc",
+    "public_key_credential_rp_entity.h",
+    "public_key_credential_user_entity.cc",
+    "public_key_credential_user_entity.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/cbor",
+  ]
+
+  defines = [ "IS_FIDO_PUBLIC_IMPL" ]
+}

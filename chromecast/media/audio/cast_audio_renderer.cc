@@ -9,7 +9,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/numerics/ranges.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -208,8 +208,8 @@ void CastAudioRenderer::SetPreservesPitch(bool preverves_pitch) {
   NOTIMPLEMENTED();
 }
 
-void CastAudioRenderer::SetWasPlayedWithUserActivation(
-    bool was_played_with_user_activation) {
+void CastAudioRenderer::SetWasPlayedWithUserActivationAndHighMediaEngagement(
+    bool was_played_with_user_activation_and_high_media_engagement) {
   NOTIMPLEMENTED();
 }
 
@@ -252,7 +252,7 @@ void CastAudioRenderer::SetPlaybackRate(double playback_rate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(output_connection_);
 
-  playback_rate = base::ranges::clamp(playback_rate, 0.0, 2.0);
+  playback_rate = std::ranges::clamp(playback_rate, 0.0, 2.0);
   {
     base::AutoLock lock(timeline_lock_);
     if (playback_rate == 0.0) {
@@ -486,9 +486,9 @@ void CastAudioRenderer::OnNewBuffer(
   }
 
   last_pushed_timestamp_ = buffer->timestamp() + buffer->duration();
-  memcpy(io_buffer->data() +
-             audio_output_service::OutputSocket::kAudioMessageHeaderSize,
-         buffer->data(), buffer->size());
+  io_buffer->span()
+      .subspan(audio_output_service::OutputSocket::kAudioMessageHeaderSize)
+      .copy_from(*buffer);
 
   output_connection_
       .AsyncCall(&audio_output_service::OutputStreamConnection::SendAudioBuffer)

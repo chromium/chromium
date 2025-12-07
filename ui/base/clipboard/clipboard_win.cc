@@ -159,6 +159,9 @@ bool ClipboardOwnerWndProc(UINT message,
     break;
   case WM_CHANGECBCHAIN:
     break;
+  case WM_CLIPBOARDUPDATE:
+    ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+    break;
   default:
     return false;
   }
@@ -233,9 +236,19 @@ Clipboard* Clipboard::Create() {
 ClipboardWin::ClipboardWin() {
   if (base::CurrentUIThread::IsSet())
     clipboard_owner_ = std::make_unique<base::win::MessageWindow>();
+
+  if (base::FeatureList::IsEnabled(features::kPlatformClipboardMonitor)) {
+    ui::ClipboardMonitor::GetInstance()->SetNotifier(this);
+  }
 }
 
 ClipboardWin::~ClipboardWin() {
+  if (ui::ClipboardMonitor::GetInstance()->GetNotifier() == this) {
+    ui::ClipboardMonitor::GetInstance()->SetNotifier(nullptr);
+  }
+  if (monitoring_clipboard_changes_) {
+    StopNotifying();
+  }
 }
 
 void ClipboardWin::OnPreShutdown() {}
@@ -314,9 +327,15 @@ void ClipboardWin::Clear(ClipboardBuffer buffer) {
 
     ::EmptyClipboard();
   }
-  // This call must happen after `clipboard`'s destructor so that observers are
-  // notified after the seqno has changed.
-  ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+
+  // When monitoring clipboard from OS, upon clipboard change, the platform
+  // sends WM_CLIPBOARDUPDATE message during which we already notify
+  // the ClipboardMonitor of the clipboard data change.
+  if (!monitoring_clipboard_changes_) {
+    // This call must happen after `clipboard`'s destructor so that observers
+    // are notified after the seqno has changed.
+    ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+  }
 }
 
 std::vector<std::u16string> ClipboardWin::GetStandardFormats(
@@ -324,21 +343,27 @@ std::vector<std::u16string> ClipboardWin::GetStandardFormats(
     const DataTransferEndpoint* data_dst) const {
   std::vector<std::u16string> types;
   if (::IsClipboardFormatAvailable(
-          ClipboardFormatType::PlainTextAType().ToFormatEtc().cfFormat))
-    types.push_back(base::UTF8ToUTF16(kMimeTypeText));
+          ClipboardFormatType::PlainTextAType().ToFormatEtc().cfFormat)) {
+    types.push_back(kMimeTypePlainText16);
+  }
   if (::IsClipboardFormatAvailable(
-          ClipboardFormatType::HtmlType().ToFormatEtc().cfFormat))
-    types.push_back(base::UTF8ToUTF16(kMimeTypeHTML));
+          ClipboardFormatType::HtmlType().ToFormatEtc().cfFormat)) {
+    types.push_back(kMimeTypeHtml16);
+  }
   if (::IsClipboardFormatAvailable(
-          ClipboardFormatType::SvgType().ToFormatEtc().cfFormat))
-    types.push_back(base::UTF8ToUTF16(kMimeTypeSvg));
+          ClipboardFormatType::SvgType().ToFormatEtc().cfFormat)) {
+    types.push_back(kMimeTypeSvg16);
+  }
   if (::IsClipboardFormatAvailable(
-          ClipboardFormatType::RtfType().ToFormatEtc().cfFormat))
-    types.push_back(base::UTF8ToUTF16(kMimeTypeRTF));
-  if (::IsClipboardFormatAvailable(CF_DIB))
-    types.push_back(base::UTF8ToUTF16(kMimeTypePNG));
-  if (ReadFilenamesAvailable())
-    types.push_back(base::UTF8ToUTF16(kMimeTypeURIList));
+          ClipboardFormatType::RtfType().ToFormatEtc().cfFormat)) {
+    types.push_back(kMimeTypeRtf16);
+  }
+  if (::IsClipboardFormatAvailable(CF_DIB)) {
+    types.push_back(kMimeTypePng16);
+  }
+  if (ReadFilenamesAvailable()) {
+    types.push_back(kMimeTypeUriList16);
+  }
   return types;
 }
 
@@ -690,6 +715,7 @@ void ClipboardWin::ReadData(const ClipboardFormatType& format,
 void ClipboardWin::WritePortableAndPlatformRepresentations(
     ClipboardBuffer buffer,
     const ObjectMap& objects,
+    const std::vector<RawData>& raw_objects,
     std::vector<Clipboard::PlatformRepresentation> platform_representations,
     std::unique_ptr<DataTransferEndpoint> data_src,
     uint32_t privacy_types) {
@@ -703,6 +729,9 @@ void ClipboardWin::WritePortableAndPlatformRepresentations(
     DispatchPlatformRepresentations(std::move(platform_representations));
     for (const auto& object : objects) {
       DispatchPortableRepresentation(object.second);
+    }
+    for (const auto& raw_object : raw_objects) {
+      DispatchPortableRepresentation(raw_object);
     }
 
     if (data_src && data_src->IsUrlType()) {
@@ -723,9 +752,15 @@ void ClipboardWin::WritePortableAndPlatformRepresentations(
       }
     }
   }
-  // This call must happen after `clipboard`'s destructor so that observers are
-  // notified after the seqno has changed.
-  ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+
+  // When monitoring clipboard from OS, upon clipboard change, the platform
+  // sends WM_CLIPBOARDUPDATE message during which we already notify
+  // the ClipboardMonitor of the clipboard data change.
+  if (!monitoring_clipboard_changes_) {
+    // This call must happen after `clipboard`'s destructor so that observers
+    // are notified after the seqno has changed.
+    ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+  }
 }
 
 void ClipboardWin::WriteText(std::string_view text) {
@@ -757,8 +792,7 @@ void ClipboardWin::WriteSvg(std::string_view markup) {
 }
 
 void ClipboardWin::WriteRTF(std::string_view rtf) {
-  WriteData(ClipboardFormatType::RtfType(),
-            base::as_bytes(base::make_span(rtf)));
+  WriteData(ClipboardFormatType::RtfType(), base::as_byte_span(rtf));
 }
 
 void ClipboardWin::WriteFilenames(std::vector<ui::FileInfo> filenames) {
@@ -830,7 +864,7 @@ void ClipboardWin::WriteClipboardHistory() {
   DWORD value = 0;
   WriteData(
       ClipboardFormatType::ClipboardHistoryType(),
-      base::make_span(reinterpret_cast<const uint8_t*>(&value), sizeof(value)));
+      base::span(reinterpret_cast<const uint8_t*>(&value), sizeof(value)));
 }
 
 void ClipboardWin::WriteUploadCloudClipboard() {
@@ -839,7 +873,7 @@ void ClipboardWin::WriteUploadCloudClipboard() {
   DWORD value = 0;
   WriteData(
       ClipboardFormatType::UploadCloudClipboardType(),
-      base::make_span(reinterpret_cast<const uint8_t*>(&value), sizeof(value)));
+      base::span(reinterpret_cast<const uint8_t*>(&value), sizeof(value)));
 }
 
 void ClipboardWin::WriteConfidentialDataForPassword() {
@@ -848,10 +882,10 @@ void ClipboardWin::WriteConfidentialDataForPassword() {
   DWORD value = 0;
   WriteData(
       ClipboardFormatType::ClipboardHistoryType(),
-      base::make_span(reinterpret_cast<const uint8_t*>(&value), sizeof(value)));
+      base::span(reinterpret_cast<const uint8_t*>(&value), sizeof(value)));
   WriteData(
       ClipboardFormatType::UploadCloudClipboardType(),
-      base::make_span(reinterpret_cast<const uint8_t*>(&value), sizeof(value)));
+      base::span(reinterpret_cast<const uint8_t*>(&value), sizeof(value)));
 }
 
 std::vector<uint8_t> ClipboardWin::ReadPngInternal(
@@ -886,7 +920,12 @@ SkBitmap ClipboardWin::ReadBitmapInternal(ClipboardBuffer buffer) const {
   // We use a DIB rather than a DDB here since ::GetObject() with the
   // HBITMAP returned from ::GetClipboardData(CF_BITMAP) always reports a color
   // depth of 32bpp.
-  BITMAPINFO* bitmap = static_cast<BITMAPINFO*>(::GetClipboardData(CF_DIB));
+  HANDLE hdata = ::GetClipboardData(CF_DIB);
+  if (!hdata) {
+    return SkBitmap();
+  }
+  base::win::ScopedHGlobal<BITMAPINFO*> locked(hdata);
+  BITMAPINFO* bitmap = locked.data();
   if (!bitmap)
     return SkBitmap();
   int color_table_length = 0;
@@ -934,7 +973,8 @@ SkBitmap ClipboardWin::ReadBitmapInternal(ClipboardBuffer buffer) const {
     case 24:
       break;
     default:
-      NOTREACHED();
+      // Return an empty image for unsupported bit depths.
+      return SkBitmap();
   }
   const void* bitmap_bits = reinterpret_cast<const char*>(bitmap) +
                             bitmap->bmiHeader.biSize +
@@ -942,7 +982,7 @@ SkBitmap ClipboardWin::ReadBitmapInternal(ClipboardBuffer buffer) const {
 
   void* dst_bits;
   // dst_hbitmap is freed by the release_proc in skia_bitmap (below)
-  base::win::ScopedBitmap dst_hbitmap = skia::CreateHBitmapXRGB8888(
+  base::win::ScopedGDIObject<HBITMAP> dst_hbitmap = skia::CreateHBitmapXRGB8888(
       bitmap->bmiHeader.biWidth, bitmap->bmiHeader.biHeight, 0, &dst_bits);
 
   {
@@ -995,6 +1035,16 @@ void ClipboardWin::WriteToClipboard(ClipboardFormatType format, HANDLE handle) {
               static_cast<unsigned long>(ERROR_CLIPBOARD_NOT_OPEN));
     ::GlobalFree(handle);
   }
+}
+
+void ClipboardWin::StartNotifying() {
+  ::AddClipboardFormatListener(GetClipboardWindow());
+  monitoring_clipboard_changes_ = true;
+}
+
+void ClipboardWin::StopNotifying() {
+  ::RemoveClipboardFormatListener(GetClipboardWindow());
+  monitoring_clipboard_changes_ = false;
 }
 
 HWND ClipboardWin::GetClipboardWindow() const {

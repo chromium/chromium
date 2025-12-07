@@ -6,13 +6,17 @@
 
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "build/chromecast_buildflags.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/embedder_support/user_agent_utils.h"
+#include "components/policy/content/safe_search_service.h"
 #include "components/policy/content/safe_sites_navigation_throttle.h"
 #include "components/site_isolation/features.h"
 #include "components/site_isolation/preloaded_isolated_origins.h"
@@ -23,6 +27,7 @@
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/content_switches.h"
 #include "fuchsia_web/common/fuchsia_dir_scheme.h"
@@ -32,6 +37,7 @@
 #include "fuchsia_web/webengine/browser/web_engine_browser_context.h"
 #include "fuchsia_web/webengine/browser/web_engine_browser_interface_binders.h"
 #include "fuchsia_web/webengine/browser/web_engine_browser_main_parts.h"
+#include "fuchsia_web/webengine/browser/web_engine_config.h"
 #include "fuchsia_web/webengine/browser/web_engine_devtools_controller.h"
 #include "fuchsia_web/webengine/common/cors_exempt_headers.h"
 #include "fuchsia_web/webengine/common/web_engine_content_client.h"
@@ -44,7 +50,6 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
-#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
 #include "third_party/widevine/cdm/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -104,7 +109,7 @@ class DevToolsManagerDelegate final : public content::DevToolsManagerDelegate {
   }
 
  private:
-  WebEngineBrowserMainParts* const main_parts_;
+  const raw_ptr<WebEngineBrowserMainParts> main_parts_;
 };
 
 std::vector<std::string> GetCorsExemptHeaders() {
@@ -115,7 +120,6 @@ std::vector<std::string> GetCorsExemptHeaders() {
 }
 
 static constexpr char const* kRendererSwitchesToCopy[] = {
-    blink::switches::kSharedArrayBufferAllowedOrigins,
     switches::kCorsExemptHeaders,
     switches::kEnableCastStreamingReceiver,
     switches::kEnableProtectedVideoBuffers,
@@ -189,13 +193,10 @@ blink::UserAgentMetadata WebEngineContentBrowserClient::GetUserAgentMetadata() {
   return embedder_support::GetUserAgentMetadata();
 }
 
-void WebEngineContentBrowserClient::OverrideWebkitPrefs(
+void WebEngineContentBrowserClient::OverrideWebPreferences(
     content::WebContents* web_contents,
+    content::SiteInstance& main_frame_site,
     blink::web_pref::WebPreferences* web_prefs) {
-  // Disable WebSQL support since it is being removed from the web platform
-  // and does not work. See crbug.com/1317431.
-  web_prefs->databases_enabled = false;
-
   // TODO(crbug.com/40245916): Remove once supported in WebEngine.
   web_prefs->disable_webauthn = true;
 
@@ -225,7 +226,7 @@ void WebEngineContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
 mojo::PendingRemote<network::mojom::URLLoaderFactory>
 WebEngineContentBrowserClient::CreateNonNetworkNavigationURLLoaderFactory(
     const std::string& scheme,
-    int frame_tree_node_id) {
+    content::FrameTreeNodeId frame_tree_node_id) {
   if (scheme == kFuchsiaDirScheme) {
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kEnableContentDirectories)) {
@@ -295,6 +296,16 @@ std::string WebEngineContentBrowserClient::GetAcceptLangs(
   return l10n_util::GetStringUTF8(IDS_ACCEPT_LANGUAGES);
 }
 
+bool WebEngineContentBrowserClient::MayDeleteServiceWorkerRegistration(
+    const GURL& scope,
+    content::BrowserContext*) {
+  // TODO(crbug.com/434764000): May revise if service workers should be allowed
+  // in incognito mode at all.
+  // Service workers are not persisted in incognito mode, so very likely there
+  // isn't a need to consider the scenario in this function.
+  return !IsProtectedServiceWorker(scope);
+}
+
 base::OnceClosure WebEngineContentBrowserClient::SelectClientCertificate(
     content::BrowserContext* browser_context,
     int process_id,
@@ -307,32 +318,30 @@ base::OnceClosure WebEngineContentBrowserClient::SelectClientCertificate(
   return base::OnceClosure();
 }
 
-std::vector<std::unique_ptr<content::NavigationThrottle>>
-WebEngineContentBrowserClient::CreateThrottlesForNavigation(
-    content::NavigationHandle* navigation_handle) {
-  std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
+void WebEngineContentBrowserClient::CreateThrottlesForNavigation(
+    content::NavigationThrottleRegistry& registry) {
+  auto& navigation_handle = registry.GetNavigationHandle();
   auto* frame_impl =
-      FrameImpl::FromWebContents(navigation_handle->GetWebContents());
+      FrameImpl::FromWebContents(navigation_handle.GetWebContents());
   DCHECK(frame_impl);
 
   // Only create throttle if FrameImpl has a NavigationPolicyProvider,
   // indicating an interest in navigations.
   if (frame_impl->navigation_policy_handler()) {
-    throttles.push_back(std::make_unique<NavigationPolicyThrottle>(
-        navigation_handle, frame_impl->navigation_policy_handler()));
+    registry.AddThrottle(std::make_unique<NavigationPolicyThrottle>(
+        registry, frame_impl->navigation_policy_handler()));
   }
 
   const std::optional<std::string>& explicit_sites_filter_error_page =
       frame_impl->explicit_sites_filter_error_page();
 
   if (explicit_sites_filter_error_page) {
-    throttles.push_back(std::make_unique<SafeSitesNavigationThrottle>(
-        navigation_handle,
-        navigation_handle->GetWebContents()->GetBrowserContext(),
+    content::BrowserContext* context =
+        navigation_handle.GetWebContents()->GetBrowserContext();
+    registry.AddThrottle(std::make_unique<SafeSitesNavigationThrottle>(
+        registry, SafeSearchFactory::GetForBrowserContext(context),
         *explicit_sites_filter_error_page));
   }
-
-  return throttles;
 }
 
 std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
@@ -341,16 +350,19 @@ WebEngineContentBrowserClient::CreateURLLoaderThrottles(
     content::BrowserContext* browser_context,
     const base::RepeatingCallback<content::WebContents*()>& wc_getter,
     content::NavigationUIData* navigation_ui_data,
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     std::optional<int64_t> navigation_id) {
-  if (frame_tree_node_id == content::RenderFrameHost::kNoFrameTreeNodeId) {
+  if (frame_tree_node_id.is_null()) {
     // TODO(crbug.com/40244093): Add support for Shared and Service Workers.
     return {};
   }
 
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
   auto* frame_impl = FrameImpl::FromWebContents(wc_getter.Run());
-  DCHECK(frame_impl);
+  if (!frame_impl) {
+    // `wc_getter` may access stale data, and may return nullptr.
+    return {};
+  }
   auto rules =
       frame_impl->url_request_rewrite_rules_manager()->GetCachedRules();
   if (rules) {

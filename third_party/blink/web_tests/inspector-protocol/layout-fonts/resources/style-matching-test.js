@@ -249,7 +249,7 @@ precedence: stretch, style, weight.`);
 
   function logPassFailResult(selector, usedFontName) {
     var actualStretchStyleWeight =
-      /CSSMatchingTest (\w*) (\w*) (.*)/.exec(usedFontName);
+      /CSSMatchingTest (\w*) (\w*) (\w*)/.exec(usedFontName);
     var actualStretch, actualStyle, actualWeight;
     if (actualStretchStyleWeight && actualStretchStyleWeight.length > 3) {
       actualStretch = actualStretchStyleWeight[1].toLowerCase();

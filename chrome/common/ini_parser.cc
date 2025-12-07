@@ -15,7 +15,7 @@
 
 INIParser::INIParser() : used_(false) {}
 
-INIParser::~INIParser() {}
+INIParser::~INIParser() = default;
 
 void INIParser::Parse(const std::string& content) {
   DCHECK(!used_);
@@ -51,9 +51,9 @@ void INIParser::Parse(const std::string& content) {
   }
 }
 
-DictionaryValueINIParser::DictionaryValueINIParser() {}
+DictionaryValueINIParser::DictionaryValueINIParser() = default;
 
-DictionaryValueINIParser::~DictionaryValueINIParser() {}
+DictionaryValueINIParser::~DictionaryValueINIParser() = default;
 
 void DictionaryValueINIParser::HandleTriplet(std::string_view section,
                                              std::string_view key,
@@ -62,6 +62,10 @@ void DictionaryValueINIParser::HandleTriplet(std::string_view section,
   // Those sections and keys break `base::Value::Dict`'s path format when not
   // using the *WithoutPathExpansion methods.
   if (section.find('.') == std::string::npos &&
-      key.find('.') == std::string::npos)
+      key.find('.') == std::string::npos &&
+      base::IsStringUTF8AllowingNoncharacters(section) &&
+      base::IsStringUTF8AllowingNoncharacters(key) &&
+      base::IsStringUTF8AllowingNoncharacters(value)) {
     root_.SetByDottedPath(base::StrCat({section, ".", key}), value);
+  }
 }

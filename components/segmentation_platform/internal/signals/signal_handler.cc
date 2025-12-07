@@ -18,7 +18,6 @@ namespace segmentation_platform {
 
 namespace {
 BASE_FEATURE(kSegmentationPlatformWriteUmaToSqlDb,
-             "SegmentationPlatformWriteUmaToSqlDb",
              base::FEATURE_ENABLED_BY_DEFAULT);
 }
 

@@ -1,0 +1,40 @@
+Name: NullAway
+Short Name: NullAway
+Version: 0.12.12
+Update Mechanism: Autoroll
+License: MIT
+License File: LICENSE
+Security Critical: No
+Shipped: no
+URL: https://github.com/uber/NullAway/
+
+Description:
+Error Prone plugin for checking @Nullable annotations.
+
+Local Modifications:
+None
+
+What version is this:
+  * Run print_version.sh to find out the version.
+  * New instances are uploaded by the packager bot:
+    https://ci.chromium.org/p/chromium/builders/ci/3pp-linux-amd64-packager
+  * The bot autoruns every 6 hours. Ping a trooper or a clank-build-core@ dev to
+    trigger it if you need it sooner:
+    https://luci-scheduler.appspot.com/jobs/chromium/3pp-linux-amd64-packager
+  * New versions are packaged automatically, but rolled manually.
+
+Tips on Rolling:
+If there are a lot of new warnings, suppress them by:
+
+1) Create a copy / paste of NullAway.assumeNonNull() (e.g. "suppressNullAway")
+2) Update errorprone.py:
+   -ERRORPRONE_CHECKS_TO_APPLY = []
+   +ERRORPRONE_CHECKS_TO_APPLY = ['NullAway']
+   ...
+   +    errorprone_flags += ['-XepOpt:NullAway:SuggestSuppressions=true']
+   ..
+   -                          'org.chromium.build.NullUtil.assumeNonNull')]
+   +                          'org.chromium.build.NullUtil.suppressNullAway')]
+3) Update build/config/siso/android.star (for "android/errorprone" block):
+   +            "remote": False,
+4) Build all targets: cd out/Debug && autoninja

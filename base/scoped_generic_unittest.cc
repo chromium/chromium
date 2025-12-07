@@ -20,14 +20,10 @@ namespace base {
 namespace {
 
 struct IntTraits {
-  IntTraits(std::vector<int>* freed) : freed_ints(freed) {}
+  explicit IntTraits(std::vector<int>* freed) : freed_ints(freed) {}
 
-  static int InvalidValue() {
-    return -1;
-  }
-  void Free(int value) {
-    freed_ints->push_back(value);
-  }
+  static int InvalidValue() { return -1; }
+  void Free(int value) { freed_ints->push_back(value); }
 
   raw_ptr<std::vector<int>> freed_ints;
 };
@@ -41,16 +37,12 @@ TEST(ScopedGenericTest, ScopedGeneric) {
   IntTraits traits(&values_freed);
 
   // Invalid case, delete should not be called.
-  {
-    ScopedInt a(IntTraits::InvalidValue(), traits);
-  }
+  { ScopedInt a(IntTraits::InvalidValue(), traits); }
   EXPECT_TRUE(values_freed.empty());
 
   // Simple deleting case.
   static const int kFirst = 0;
-  {
-    ScopedInt a(kFirst, traits);
-  }
+  { ScopedInt a(kFirst, traits); }
   ASSERT_EQ(1u, values_freed.size());
   ASSERT_EQ(kFirst, values_freed[0]);
   values_freed.clear();
@@ -83,7 +75,8 @@ TEST(ScopedGenericTest, ScopedGeneric) {
     ScopedInt a(kFirst, traits);
     ScopedInt b(std::move(a));
     EXPECT_TRUE(values_freed.empty());  // Nothing should be freed.
-    ASSERT_EQ(IntTraits::InvalidValue(), a.get());
+    ASSERT_EQ(IntTraits::InvalidValue(),
+              a.get());  // NOLINT(bugprone-use-after-move)
     ASSERT_EQ(kFirst, b.get());
   }
 
@@ -98,7 +91,8 @@ TEST(ScopedGenericTest, ScopedGeneric) {
     b = std::move(a);
     ASSERT_EQ(1u, values_freed.size());
     EXPECT_EQ(kSecond, values_freed[0]);
-    ASSERT_EQ(IntTraits::InvalidValue(), a.get());
+    ASSERT_EQ(IntTraits::InvalidValue(),
+              a.get());  // NOLINT(bugprone-use-after-move)
     ASSERT_EQ(kFirst, b.get());
   }
 
@@ -161,8 +155,9 @@ TEST(ScopedGenericTest, Receive) {
 namespace {
 
 struct TrackedIntTraits : public ScopedGenericOwnershipTracking {
-  using OwnerMap =
-      std::unordered_map<int, const ScopedGeneric<int, TrackedIntTraits>*>;
+  using OwnerMap = std::unordered_map<
+      int,
+      raw_ptr<const ScopedGeneric<int, TrackedIntTraits>, CtnExperimental>>;
   TrackedIntTraits(std::unordered_set<int>* freed, OwnerMap* owners)
       : freed(freed), owners(owners) {}
 

@@ -5,12 +5,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLL_INTO_VIEW_UTIL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLL_INTO_VIEW_UTIL_H_
 
+#include "cc/input/scroll_snap_data.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
+#include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 
 namespace gfx {
 class RectF;
@@ -18,12 +20,12 @@ class RectF;
 
 namespace blink {
 
-class LayoutBox;
 class LayoutObject;
 class LayoutView;
-class ComputedStyle;
+class LayoutBox;
 struct PhysicalRect;
 class ScrollableArea;
+class ComputedStyle;
 class ScrollIntoViewOptions;
 
 namespace scroll_into_view_util {
@@ -32,12 +34,15 @@ namespace scroll_into_view_util {
 // LayoutObject, and scrolls the LayoutObject and all its containers such that
 // the child content of the LayoutObject at that rect is visible in the
 // viewport.
+// Returns true if scrolling occurred.
 // TODO(bokan): `from_remote_frame` is temporary, to track cross-origin
 // scroll-into-view prevalence. https://crbug.com/1339003.
-void CORE_EXPORT ScrollRectToVisible(const LayoutObject&,
+bool CORE_EXPORT ScrollRectToVisible(const LayoutObject& target,
                                      const PhysicalRect&,
                                      mojom::blink::ScrollIntoViewParamsPtr,
-                                     bool from_remote_frame = false);
+                                     const LayoutObject* container = nullptr,
+                                     bool from_remote_frame = false,
+                                     bool include_self = true);
 
 // ScrollFocusedEditableIntoView uses the caret rect for ScrollIntoView but
 // stores enough information in `params` so that the editable element's bounds
@@ -56,15 +61,27 @@ void ConvertParamsToParentFrame(mojom::blink::ScrollIntoViewParamsPtr& params,
                                 const LayoutView& dest_frame);
 
 // Returns the scroll offset the scroller needs to scroll to in order to put
-// |expose_rect| (relative to the scroll origin of the scrollable area) into
-// |scrollable_area|'s visible scroll snapport rect aligned by |align_x| and
-// |align_y|.
+// |local_expose_rect| into |scrollable_area|'s visible scroll snapport rect
+// aligned by |align_x| and |align_y|.
 ScrollOffset GetScrollOffsetToExpose(
     const ScrollableArea& scrollable_area,
-    const PhysicalRect& expose_rect,
+    const PhysicalRect& local_expose_rect,
     const PhysicalBoxStrut& expose_scroll_margin,
     const mojom::blink::ScrollAlignment& align_x,
     const mojom::blink::ScrollAlignment& align_y);
+
+ScrollableArea* GetScrollableAreaForLayoutBox(
+    const LayoutBox& box,
+    bool make_visible_in_visual_viewport);
+
+mojom::blink::ScrollAlignment ResolveToPhysicalAlignment(
+    V8ScrollLogicalPosition::Enum inline_alignment,
+    V8ScrollLogicalPosition::Enum block_alignment,
+    ScrollOrientation axis,
+    const ComputedStyle& computed_style);
+
+V8ScrollLogicalPosition::Enum SnapAlignmentToV8ScrollLogicalPosition(
+    cc::SnapAlignment);
 
 CORE_EXPORT mojom::blink::ScrollIntoViewParamsPtr CreateScrollIntoViewParams(
     const mojom::blink::ScrollAlignment& align_x =
@@ -87,7 +104,7 @@ mojom::blink::ScrollIntoViewParamsPtr CreateScrollIntoViewParams(
     const ComputedStyle& computed_style);
 
 mojom::blink::ScrollAlignment PhysicalAlignmentFromSnapAlignStyle(
-    const LayoutBox& box,
+    const LayoutObject&,
     ScrollOrientation axis);
 
 }  // namespace scroll_into_view_util

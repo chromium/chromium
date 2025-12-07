@@ -1,0 +1,141 @@
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+Address form that can prevent default on form submission.
+
+The page can be adapted to different scenarios based on the following URL query
+parameters:
+ * preventDefault: When set, will use the form submission variant that prevents
+     default for form submission. You only need to put the key, no value needed.
+ * redirectWhenSubmissionPrevented: When set, will redirect to another page when
+     the form submission is prevented via the available methods.
+ * stopImmediatePropagation: When set, will stop the propagation of the form
+     submit event in any direction.
+ * triggerMultipleSubmissions: When set, will trigger multiple submissions when
+     clicking on the form submission button. Triggers 3 extra submissions via
+     clicking on the submit button and 1 extra submission via `form.submit()`.
+     Only work if (1) `preventDefault` is set and (2)
+     redirectWhenSubmissionPrevented` isn't set.
+ * triggerMultipleSubmissionsNoProgrammatic: Similar to
+     triggerMultipleSubmissions but do not trigger a programmatic submission as
+     the last submission. 4 regular submissions are triggered in total.
+-->
+
+<!DOCTYPE html>
+
+<html>
+
+<head></head>
+
+<body>
+  <h1>Full Address Form Test Page</h1>
+  <form method="get" action="destination.html">
+    <label for="fullname">Name:</label><br>
+    <input type="text" autocomplete="name" name="fullname" /><br>
+
+    <label for="address-line1">Street Address:</label><br>
+    <input type="text" name="address-line1" /><br>
+
+    <label for="city">City:</label><br>
+    <input type="text" name="city" /><br>
+
+    <label for="state">State:</label><br>
+    <input type="text" name="state" /><br>
+
+    <label for="postal-code">Postal Code:</label><br>
+    <input type="text" autocomplete="postal-code" name="postal-code" /><br>
+
+    <label for="country">Country:</label><br>
+    <input type="text" autocomplete="country" name="country" /><br>
+
+    <button type="submit" id="submit-button">Submit!</button>
+  </form>
+
+  <script>
+    const queryParams = Object.fromEntries(
+      new URLSearchParams(window.location.search));
+
+    const preventDefault = queryParams.hasOwnProperty('preventDefault');
+    const stopImmediatePropagation = queryParams.hasOwnProperty('stopImmediatePropagation');
+    const redirectWhenSubmissionPrevented = queryParams.hasOwnProperty('redirectWhenSubmissionPrevented');
+    const triggerMultipleSubmissions = queryParams.hasOwnProperty('triggerMultipleSubmissions');
+    const triggerMultipleSubmissionsNoProgrammatic = queryParams.hasOwnProperty('triggerMultipleSubmissionsNoProgrammatic');
+
+    let submitCount = 0;
+
+    // Use the variant that prevents default submission if specified in the
+    // URL query.
+    if (preventDefault || stopImmediatePropagation) {
+      // Add a "submit" event listener that takes over submission and could
+      // prevent the browser from handling submission through the regular flow.
+      const form = document.forms[0];
+      form.addEventListener('submit', (e) => {
+        ++submitCount;
+
+        if (preventDefault) {
+          // Prevent default for other listeners so the the Autofill listener
+          // will read the event with the defaultPrevented bit set to true.
+          e.preventDefault();
+        }
+        if (stopImmediatePropagation) {
+          // Stop propagation for any other listener that follows up this one,
+          // regardless of how they are situated in the DOM which defacto
+          // includes the Autofill listener if it is not set in capture mode.
+          e.stopImmediatePropagation();
+        }
+        if (redirectWhenSubmissionPrevented) {
+          // Emulate a post-submit navigation that happens slightly after
+          // propagating the "submit" event, when enabled.
+          setTimeout(() => window.location = '/destination.html', 10);
+        }
+        if (triggerMultipleSubmissions || triggerMultipleSubmissionsNoProgrammatic) {
+          // Trigger multiple submissions following the schedule described in
+          // the parameters documentation.
+
+          if (redirectWhenSubmissionPrevented || !preventDefault) {
+            // Put the page in an error state if the parameters aren't set
+            // correctly.
+            document.body.innerHTML = `<h1>ERROR:
+redirectWhenSubmissionPrevented OR preventDefault parameters aren't set
+correctly for supporting the triggerMultipleSubmissions parameter</h1>`;
+            return;
+          }
+
+          let submitFn = null;
+          if (submitCount < 4) {
+            submitFn = () =>
+              document.body.querySelector('button[type="submit"]').click();
+          } else if (!triggerMultipleSubmissionsNoProgrammatic) {
+            // Do the last submit programmatically which will reload the page
+            // content and end the submission loop.
+            submitFn = () => document.forms[0].submit();
+          }
+          // Dispatch the resubmission to avoid re-entry.
+          if (submitFn) {
+            setTimeout(submitFn, 10);
+          }
+        }
+      });
+    }
+
+    // Fills the form with precanned content.
+    function FillForm() {
+      const form = document.forms[0];
+      form['fullname'].value = 'Test User';
+      form['address-line1'].value = '123 Test St';
+      form['city'].value = 'TestCity';
+      form['state'].value = 'CA';
+      form['postal-code'].value = '12345';
+      form['country'].value = 'TestCountry';
+    }
+
+  </script>
+
+</body>
+
+</html>
+<html>

@@ -4,7 +4,9 @@
 
 #include "ui/events/event_dispatcher.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
+#include "base/auto_reset.h"
 #include "ui/events/event_target.h"
 #include "ui/events/event_targeter.h"
 
@@ -105,7 +107,7 @@ EventDispatcher::~EventDispatcher() {
 }
 
 void EventDispatcher::OnHandlerDestroyed(EventHandler* handler) {
-  handler_list_.erase(base::ranges::find(handler_list_, handler));
+  handler_list_.erase(std::ranges::find(handler_list_, handler));
 }
 
 void EventDispatcher::ProcessEvent(EventTarget* target, Event* event) {
@@ -183,7 +185,7 @@ void EventDispatcher::DispatchEvent(EventHandler* handler, Event* event) {
     return;
   }
 
-  base::AutoReset<Event*> event_reset(&current_event_, event);
+  base::AutoReset<raw_ptr<Event>> event_reset(&current_event_, event);
   handler->OnEvent(event);
   if (!delegate_ && event->cancelable())
     event->StopPropagation();

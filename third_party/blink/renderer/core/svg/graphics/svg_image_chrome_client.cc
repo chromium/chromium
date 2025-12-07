@@ -44,7 +44,8 @@ bool IsolatedSVGChromeClient::IsIsolatedSVGChromeClient() const {
   return true;
 }
 
-SVGImageChromeClient::SVGImageChromeClient() : timeline_state_(kRunning) {}
+SVGImageChromeClient::SVGImageChromeClient(SVGImage* image)
+    : image_(image), timeline_state_(kRunning) {}
 
 void SVGImageChromeClient::InitAnimationTimer(
     scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner) {
@@ -84,7 +85,7 @@ void SVGImageChromeClient::ResumeAnimation() {
   // suspended, schedule a new animation frame.
   if (!have_pending_animation)
     return;
-  ScheduleAnimation(nullptr);
+  ChromeClient::ScheduleAnimation(nullptr);
 }
 
 void SVGImageChromeClient::RestoreAnimationIfNeeded() {
@@ -95,12 +96,9 @@ void SVGImageChromeClient::RestoreAnimationIfNeeded() {
 }
 
 void SVGImageChromeClient::ScheduleAnimation(const LocalFrameView*,
-                                             base::TimeDelta fire_time) {
+                                             base::TimeDelta fire_time,
+                                             bool urgent) {
   DCHECK(animation_timer_);
-  // If `image_` is null, nothing to do.
-  if (!image_) {
-    return;
-  }
   // Because a single SVGImage can be shared by multiple pages, we can't key
   // our svg image layout on the page's real animation frame. Therefore, we
   // run this fake animation timer to trigger layout in SVGImages. The name,

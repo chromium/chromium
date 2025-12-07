@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -17,16 +16,21 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_manager_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -50,18 +54,16 @@ namespace apps {
 class AppPreloadServiceTest : public testing::Test {
  protected:
   AppPreloadServiceTest()
-      : scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
-        startup_check_resetter_(
+      : startup_check_resetter_(
             AppPreloadService::DisablePreloadsOnStartupForTesting()) {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kAppPreloadService, kAppPreloadServiceEnableShelfPin}, {});
-    AppPreloadServiceFactory::SkipApiKeyCheckForTesting(true);
+    scoped_feature_list_.InitWithFeatures({kAppPreloadServiceEnableShelfPin},
+                                          {});
   }
 
   void SetUp() override {
-    testing::Test::SetUp();
+    AppPreloadServiceFactory::SkipApiKeyCheckForTesting(true);
 
-    GetFakeUserManager()->SetIsCurrentUserNew(true);
+    user_manager::UserManager::Get()->SetIsCurrentUserNew(true);
 
     TestingProfile::Builder profile_builder;
     profile_builder.SetSharedURLLoaderFactory(
@@ -77,19 +79,20 @@ class AppPreloadServiceTest : public testing::Test {
 
   Profile* GetProfile() { return profile_.get(); }
 
-  ash::FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<ash::FakeChromeUserManager*>(
-        user_manager::UserManager::Get());
-  }
-
   network::TestURLLoaderFactory url_loader_factory_;
 
  private:
   // BrowserTaskEnvironment has to be the first member or test will break.
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  ash::ScopedStubInstallAttributes installed_attributes_;
+  ash::ScopedTestingCrosSettings testing_cros_settings_;
+  user_manager::ScopedUserManager scoped_user_manager_{
+      std::make_unique<user_manager::UserManagerImpl>(
+          std::make_unique<user_manager::FakeUserManagerDelegate>(),
+          TestingBrowserProcess::GetGlobal()->local_state(),
+          ash::CrosSettings::Get())};
   std::unique_ptr<TestingProfile> profile_;
-  user_manager::ScopedUserManager scoped_user_manager_;
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   base::AutoReset<bool> startup_check_resetter_;
 };
@@ -180,7 +183,7 @@ TEST_F(AppPreloadServiceTest, FirstLoginCompletedPrefSetAfterSuccess) {
 }
 
 TEST_F(AppPreloadServiceTest, FirstLoginExistingUserNotStarted) {
-  GetFakeUserManager()->SetIsCurrentUserNew(false);
+  user_manager::UserManager::Get()->SetIsCurrentUserNew(false);
   TestingProfile existing_user_profile;
 
   auto* service = AppPreloadService::Get(&existing_user_profile);

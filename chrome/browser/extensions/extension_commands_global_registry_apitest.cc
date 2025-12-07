@@ -7,7 +7,7 @@
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -26,7 +26,7 @@ using GlobalCommandsApiTest = ExtensionApiTest;
 // extension.
 //
 // Doesn't work in CrOS builds, http://crbug.com/619784
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_GlobalCommand DISABLED_GlobalCommand
 #else
 #define MAYBE_GlobalCommand GlobalCommand
@@ -88,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(GlobalCommandsApiTest, MAYBE_GlobalDuplicatedMediaKey) {
 
   Browser* incognito_browser = CreateIncognitoBrowser();  // Ditto.
   BrowserExtensionWindowController* controller =
-      incognito_browser->extension_window_controller();
+      BrowserExtensionWindowController::From(incognito_browser);
 
   ui_controls::SendKeyPress(controller->window()->GetNativeWindow(),
                             ui::VKEY_MEDIA_NEXT_TRACK,

@@ -4,7 +4,7 @@
 
 module quick_answers.mojom;
 
-import "mojo/public/mojom/base/read_only_file.mojom";
+import "mojo/public/mojom/base/file.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 
 // Provides a way to query hunspell in a sandboxed utility process, since

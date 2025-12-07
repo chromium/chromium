@@ -1,0 +1,150 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #import=//resources/cr_elements/cr_hidden_style_lit.css.js
+ * #include=cr-hidden-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --cr-searchbox-icon-border-radius: 8px;
+  align-items: center;
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  width: var(--cr-searchbox-icon-container-size, 32px);
+}
+
+:host(:not([is-lens-searchbox_])) {
+  --cr-searchbox-icon-border-radius: 4px;
+}
+
+#container {
+  align-items: center;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--cr-searchbox-icon-border-radius);
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+/* Entities may feature a dominant color background until image loads. */
+:host([has-image_]:not([in-searchbox]):not([is-weather-answer])) #container {
+  background-color: var(--color-searchbox-results-icon-container-background,
+      var(--container-bg-color));
+}
+
+/* If icon is for a pedal or AiS, and it is not in the search box, apply background. */
+:host([has-icon-container-background]:not([in-searchbox])) #container {
+  background-color: var(--color-searchbox-answer-icon-background);
+}
+
+:host([is-weather-answer]:not([in-searchbox])) #container {
+  background-color: var(--color-searchbox-results-background);
+}
+
+#image {
+  display: none;
+  height: 100%;
+  object-fit: contain;
+  width: 100%;
+}
+
+:host([has-image_]:not([in-searchbox])) #image {
+  display: initial;
+}
+
+:host([is-answer]) #image {
+  max-height: 24px;
+  max-width: 24px;
+}
+
+#icon {
+  height: 24px;
+  width: 24px;
+}
+
+#faviconImageContainer {
+  width: 24px;
+  height: 24px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#faviconImage {
+  height: 16px;
+  width: 16px;
+}
+
+#icon {
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: var(--cr-searchbox-results-search-icon-size, 16px);
+  background-color: var(--color-searchbox-search-icon-background);
+}
+
+:host([in-searchbox][is-lens-searchbox_]) #icon {
+  background-color: var(--color-searchbox-google-g-background);
+  height: var(--cr-searchbox-icon-size-in-searchbox);
+  width: var(--cr-searchbox-icon-size-in-searchbox);
+}
+
+/* Set styles for high contrast mode in Windows. */
+@media (forced-colors: active) {
+  :host([in-searchbox][is-lens-searchbox_]) #icon {
+    /* Set the icon color to hcm (high contrast mode) value. */
+    background-color: ButtonText;
+  }
+}
+
+:host([in-searchbox][favicon-image_*='//resources/cr_components/omnibox/icons/google_g.svg']) #faviconImage {
+  width: 24px;
+  height: 24px;
+}
+
+:host([in-searchbox]) #icon {
+  -webkit-mask-size: var(--cr-searchbox-icon-size-in-searchbox);
+}
+
+:host([in-searchbox]) #faviconImage {
+  width: var(--cr-searchbox-icon-size-in-searchbox);
+  height: var(--cr-searchbox-icon-size-in-searchbox);
+}
+
+:host([has-icon-container-background]:not([in-searchbox])) #icon {
+  background-color: var(--color-searchbox-answer-icon-foreground);
+}
+
+:host([has-icon-container-background][is-starter-pack]:not([in-searchbox])) #icon,
+:host([has-icon-container-background][is-featured-enterprise-search]:not([in-searchbox])) #icon {
+  background-color: var(--color-searchbox-results-starter-pack-icon,
+      var(--color-searchbox-answer-icon-foreground));
+}
+
+#iconImg {
+  height: var(--cr-searchbox-results-search-icon-size, 16px);
+  width: var(--cr-searchbox-results-search-icon-size, 16px);
+}
+
+:host([in-searchbox]) #iconImg {
+  height: var(--cr-searchbox-icon-size-in-searchbox);
+  width: var(--cr-searchbox-icon-size-in-searchbox);
+}
+
+:host([has-image_]:not([in-searchbox])) #icon,
+:host([has-image_]:not([in-searchbox])) #iconImg,
+:host([has-image_]:not([in-searchbox])) #faviconImageContainer {
+  display: none;
+}
+
+:host(:not([in-searchbox])[is-lens-searchbox_]) #container {
+  background-color: var(--color-searchbox-results-icon-container-background);
+  border-radius: 4000px;
+}

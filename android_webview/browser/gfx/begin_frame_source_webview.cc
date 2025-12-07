@@ -136,7 +136,6 @@ RootBeginFrameSourceWebView::~RootBeginFrameSourceWebView() = default;
 
 void RootBeginFrameSourceWebView::OnUpdateRefreshRate(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     float refresh_rate) {
   begin_frame_source_.UpdateRefreshRate(refresh_rate);
 }
@@ -154,3 +153,5 @@ void RootBeginFrameSourceWebView::AddBeginFrameCompletionCallback(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(RootBeginFrameSourceWebView)

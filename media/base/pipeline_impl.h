@@ -111,8 +111,9 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
   void SetVolume(float volume) override;
   void SetLatencyHint(std::optional<base::TimeDelta> latency_hint) override;
   void SetPreservesPitch(bool preserves_pitch) override;
-  void SetWasPlayedWithUserActivation(
-      bool was_played_with_user_activation) override;
+  void SetRenderMutedAudio(bool render_muted_audio) override;
+  void SetWasPlayedWithUserActivationAndHighMediaEngagement(
+      bool was_played_with_user_activation_and_high_media_engagement) override;
   base::TimeDelta GetMediaTime() const override;
   Ranges<base::TimeDelta> GetBufferedTimeRanges() const override;
   base::TimeDelta GetMediaDuration() const override;
@@ -120,9 +121,10 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
   PipelineStatistics GetStatistics() const override;
   void SetCdm(CdmContext* cdm_context, CdmAttachedCB cdm_attached_cb) override;
 
-  // |enabled_track_ids| contains track ids of enabled audio tracks.
+  // |enabled_track_id| is either empty, which means no audio track is
+  // enabled, or contains the selected audio track id.
   void OnEnabledAudioTracksChanged(
-      const std::vector<MediaTrack::Id>& enabled_track_ids,
+      std::optional<MediaTrack::Id> enabled_track_id,
       base::OnceClosure change_completed_cb) override;
 
   // |selected_track_id| is either empty, which means no video track is

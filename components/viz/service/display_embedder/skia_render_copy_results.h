@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_EMBEDDER_SKIA_RENDER_COPY_RESULTS_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_EMBEDDER_SKIA_RENDER_COPY_RESULTS_H_
 
+#include <array>
 #include <memory>
 #include <vector>
 
@@ -16,7 +17,7 @@
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/skia/include/core/SkPixelRef.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "ui/gfx/color_space.h"
 
 namespace viz {
@@ -29,12 +30,12 @@ class SkiaOutputSurfaceImplOnGpu;
 class AsyncReadResultLock
     : public base::RefCountedThreadSafe<AsyncReadResultLock> {
  public:
-  AsyncReadResultLock() = default;
+  AsyncReadResultLock();
   base::Lock& lock() { return lock_; }
 
  private:
   friend class base::RefCountedThreadSafe<AsyncReadResultLock>;
-  ~AsyncReadResultLock() = default;
+  ~AsyncReadResultLock();
 
   base::Lock lock_;
 };
@@ -147,11 +148,11 @@ class CopyOutputResultSkiaYUV : public CopyOutputResult {
       std::unique_ptr<const SkSurface::AsyncReadResult> async_result);
 
   // CopyOutputResult implementation:
-  bool ReadI420Planes(uint8_t* y_out,
+  bool ReadI420Planes(base::span<uint8_t> y_out,
                       int y_out_stride,
-                      uint8_t* u_out,
+                      base::span<uint8_t> u_out,
                       int u_out_stride,
-                      uint8_t* v_out,
+                      base::span<uint8_t> v_out,
                       int v_out_stride) const override;
 
  private:
@@ -218,9 +219,9 @@ class CopyOutputResultSkiaNV12 : public CopyOutputResult {
   ~CopyOutputResultSkiaNV12() override;
 
   // CopyOutputResult implementation:
-  bool ReadNV12Planes(uint8_t* y_out,
+  bool ReadNV12Planes(base::span<uint8_t> y_out,
                       int y_out_stride,
-                      uint8_t* uv_out,
+                      base::span<uint8_t> uv_out,
                       int uv_out_stride) const override;
 
   static void OnNV12PlaneReadbackDone(

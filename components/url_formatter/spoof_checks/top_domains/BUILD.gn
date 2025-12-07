@@ -30,7 +30,7 @@ executable("top_domain_generator") {
     "//base",
     "//base:i18n",
     "//net/tools/huffman_trie:huffman_trie_generator_sources",
-    "//url:url",
+    "//url",
   ]
   if (is_ios) {
     frameworks = [ "UIKit.framework" ]
@@ -43,9 +43,9 @@ compiled_action("generate_top_domains_trie") {
   # Inputs in order expected by the command line of the tool.
   inputs = [
     "//components/url_formatter/spoof_checks/top_domains/domains.skeletons",
-    "//components/url_formatter/spoof_checks/top_domains/top_domains_trie.template",
+    "//components/url_formatter/spoof_checks/top_domains/top_domains_trie_header.template",
   ]
-  outputs = [ "$target_gen_dir/domains-trie-inc.cc" ]
+  outputs = [ "$target_gen_dir/domains-trie.h" ]
   args =
       rebase_path(inputs, root_build_dir) + rebase_path(outputs, root_build_dir)
 }
@@ -58,9 +58,9 @@ compiled_action("generate_idn_top_domains_test_trie") {
   # Inputs in order expected by the command line of the tool.
   inputs = [
     "//components/url_formatter/spoof_checks/top_domains/idn_test_domains.skeletons",
-    "//components/url_formatter/spoof_checks/top_domains/top_domains_trie.template",
+    "//components/url_formatter/spoof_checks/top_domains/idn_test_top_domains_trie_header.template",
   ]
-  outputs = [ "$target_gen_dir/idn_test_domains-trie-inc.cc" ]
+  outputs = [ "$target_gen_dir/idn_test_domains_trie.h" ]
 
   args =
       rebase_path(inputs, root_build_dir) + rebase_path(outputs, root_build_dir)
@@ -74,9 +74,9 @@ compiled_action("generate_top_domains_test_trie") {
   # Inputs in order expected by the command line of the tool.
   inputs = [
     "//components/url_formatter/spoof_checks/top_domains/test_domains.skeletons",
-    "//components/url_formatter/spoof_checks/top_domains/top_domains_trie.template",
+    "//components/url_formatter/spoof_checks/top_domains/test_top_domains_trie_header.template",
   ]
-  outputs = [ "$target_gen_dir/test_domains-trie-inc.cc" ]
+  outputs = [ "$target_gen_dir/test_domains_trie.h" ]
 
   args =
       rebase_path(inputs, root_build_dir) + rebase_path(outputs, root_build_dir)

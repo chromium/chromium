@@ -23,7 +23,6 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
-#include "components/manta/features.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/url_data_source.h"
@@ -79,7 +78,6 @@ void VcBackgroundUISeaPenProviderImpl::BindInterface(
     mojo::PendingReceiver<ash::personalization_app::mojom::SeaPenProvider>
         receiver) {
   CHECK(::ash::features::IsVcBackgroundReplaceEnabled());
-  CHECK(::manta::features::IsMantaServiceEnabled());
   ::ash::personalization_app::PersonalizationAppSeaPenProviderBase::
       BindInterface(std::move(receiver));
 }
@@ -104,6 +102,17 @@ void VcBackgroundUISeaPenProviderImpl::SelectRecentSeaPenImageInternal(
   }
   GetCameraEffectsController()->SetBackgroundImage(
       CameraEffectsController::SeaPenIdToRelativePath(id), std::move(callback));
+}
+
+bool VcBackgroundUISeaPenProviderImpl::IsManagedSeaPenEnabledInternal() {
+  return ::ash::personalization_app::IsManagedSeaPenVcBackgroundEnabled(
+      profile_);
+}
+
+bool VcBackgroundUISeaPenProviderImpl::
+    IsManagedSeaPenFeedbackEnabledInternal() {
+  return ::ash::personalization_app::IsManagedSeaPenVcBackgroundFeedbackEnabled(
+      profile_);
 }
 
 void VcBackgroundUISeaPenProviderImpl::GetRecentSeaPenImageIdsInternal(
@@ -131,6 +140,22 @@ void VcBackgroundUISeaPenProviderImpl::
 
 void VcBackgroundUISeaPenProviderImpl::
     HandleSeaPenIntroductionDialogClosedInternal() {
+  contextual_tooltip::HandleGesturePerformed(
+      profile_->GetPrefs(),
+      contextual_tooltip::TooltipType::kSeaPenVcBackgroundIntroDialog);
+}
+
+void VcBackgroundUISeaPenProviderImpl::
+    ShouldShowSeaPenFreeformIntroductionDialogInternal(
+        ShouldShowSeaPenIntroductionDialogCallback callback) {
+  std::move(callback).Run(contextual_tooltip::ShouldShowNudge(
+      profile_->GetPrefs(),
+      contextual_tooltip::TooltipType::kSeaPenVcBackgroundIntroDialog,
+      /*recheck_delay=*/nullptr));
+}
+
+void VcBackgroundUISeaPenProviderImpl::
+    HandleSeaPenFreeformIntroductionDialogClosedInternal() {
   contextual_tooltip::HandleGesturePerformed(
       profile_->GetPrefs(),
       contextual_tooltip::TooltipType::kSeaPenVcBackgroundIntroDialog);
@@ -173,7 +198,13 @@ void VcBackgroundUISeaPenProviderImpl::OnCameraEffectChanged(
 void VcBackgroundUISeaPenProviderImpl::OnFetchWallpaperDoneInternal(
     const SeaPenImage& sea_pen_image,
     const ash::personalization_app::mojom::SeaPenQueryPtr& query,
+    const bool preview_mode,
     base::OnceCallback<void(bool success)> callback) {
+  if (preview_mode) {
+    sea_pen_receiver_.ReportBadMessage(
+        "Preview mode is only used for wallpaper");
+    return;
+  }
   const std::optional<std::string> metadata =
       base::WriteJson(SeaPenQueryToDict(query));
   if (!metadata.has_value()) {

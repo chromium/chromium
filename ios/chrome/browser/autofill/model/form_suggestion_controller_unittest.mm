@@ -11,21 +11,21 @@
 #import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
-#import "components/autofill/core/browser/filling_product.h"
+#import "components/autofill/core/browser/filling/filling_product.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/autofill/ios/form_util/test_form_activity_tab_helper.h"
 #import "components/feature_engagement/public/feature_constants.h"
-#import "components/plus_addresses/features.h"
+#import "components/plus_addresses/core/common/features.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_consumer.h"
 #import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_mediator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_mediator_handler.h"
 #import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_suggestion_view.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
@@ -43,9 +43,10 @@ using autofill::FillingProduct;
 using autofill::FormRendererId;
 
 // Test provider that records invocations of its interface methods.
-@interface TestSuggestionProvider : NSObject<FormSuggestionProvider>
+@interface TestSuggestionProvider : NSObject <FormSuggestionProvider>
 
 @property(weak, nonatomic, readonly) FormSuggestion* suggestion;
+@property(nonatomic, assign) NSInteger index;
 @property(weak, nonatomic, readonly) NSString* formName;
 @property(weak, nonatomic, readonly) NSString* fieldIdentifier;
 @property(weak, nonatomic, readonly) NSString* frameID;
@@ -54,6 +55,9 @@ using autofill::FormRendererId;
 @property(nonatomic, assign) BOOL askedForSuggestions;
 @property(nonatomic, assign) SuggestionProviderType type;
 @property(nonatomic, readonly) FillingProduct mainFillingProduct;
+// The number of times the selected provider was asked for suggestions when
+// handling a request.
+@property(nonatomic, assign) int askForSuggestionsCount;
 
 // Creates a test provider with default suggesstions.
 + (instancetype)providerWithSuggestions;
@@ -83,13 +87,13 @@ using autofill::FormRendererId;
          displayDescription:nil
                        icon:nil
                        type:autofill::SuggestionType::kAutocompleteEntry
-          backendIdentifier:nil
+                    payload:autofill::Suggestion::Payload()
              requiresReauth:NO],
     [FormSuggestion suggestionWithValue:@"bar"
                      displayDescription:nil
                                    icon:nil
                                    type:autofill::SuggestionType::kAddressEntry
-                      backendIdentifier:nil
+                                payload:autofill::Suggestion::Payload()
                          requiresReauth:NO]
   ];
   return [[TestSuggestionProvider alloc] initWithSuggestions:suggestions];
@@ -120,6 +124,10 @@ using autofill::FormRendererId;
   return _suggestion;
 }
 
+- (void)setSuggestions:(NSArray*)suggestions {
+  _suggestions = [suggestions copy];
+}
+
 - (void)checkIfSuggestionsAvailableForForm:
             (FormSuggestionProviderQuery*)formQuery
                             hasUserGesture:(BOOL)hasUserGesture
@@ -134,10 +142,12 @@ using autofill::FormRendererId;
                           webState:(web::WebState*)webState
                  completionHandler:(SuggestionsReadyCompletion)completion {
   self.askedForSuggestions = YES;
+  ++_askForSuggestionsCount;
   completion(_suggestions, self);
 }
 
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
+                    atIndex:(NSInteger)index
                        form:(NSString*)formName
              formRendererID:(FormRendererId)formRendererID
             fieldIdentifier:(NSString*)fieldIdentifier
@@ -146,6 +156,7 @@ using autofill::FormRendererId;
           completionHandler:(SuggestionHandledCompletion)completion {
   self.selected = YES;
   _suggestion = suggestion;
+  _index = index;
   _formName = [formName copy];
   _formRendererID = formRendererID;
   _fieldIdentifier = [fieldIdentifier copy];
@@ -156,10 +167,88 @@ using autofill::FormRendererId;
 
 @end
 
+@interface AsyncTestSuggestionProvider : TestSuggestionProvider
+
+// Returns the number of concurrent requests that are currently pending.
+@property(nonatomic, assign) int pendingRequestsCount;
+
++ (instancetype)providerWithSuggestions;
+
+@end
+
+@implementation AsyncTestSuggestionProvider
+
++ (instancetype)providerWithSuggestions {
+  NSArray* suggestions = @[
+    [FormSuggestion
+        suggestionWithValue:@"foo"
+         displayDescription:nil
+                       icon:nil
+                       type:autofill::SuggestionType::kAutocompleteEntry
+                    payload:autofill::Suggestion::Payload()
+             requiresReauth:NO],
+    [FormSuggestion suggestionWithValue:@"bar"
+                     displayDescription:nil
+                                   icon:nil
+                                   type:autofill::SuggestionType::kAddressEntry
+                                payload:autofill::Suggestion::Payload()
+                         requiresReauth:NO]
+  ];
+  return [[AsyncTestSuggestionProvider alloc] initWithSuggestions:suggestions];
+}
+
+#pragma mark - TestSuggestionProvider
+
+- (instancetype)initWithSuggestions:(NSArray*)suggestions {
+  self = [super initWithSuggestions:suggestions];
+  if (self) {
+    _pendingRequestsCount = 0;
+  }
+  return self;
+}
+
+- (void)checkIfSuggestionsAvailableForForm:
+            (FormSuggestionProviderQuery*)formQuery
+                            hasUserGesture:(BOOL)hasUserGesture
+                                  webState:(web::WebState*)webState
+                         completionHandler:
+                             (SuggestionsAvailableCompletion)completion {
+  ++self.pendingRequestsCount;
+  __weak __typeof(self) weakSelf = self;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(^{
+        [weakSelf checkIfSuggestionsAvailableForFormSuper:formQuery
+                                           hasUserGesture:hasUserGesture
+                                                 webState:webState
+                                        completionHandler:completion];
+        --weakSelf.pendingRequestsCount;
+      }));
+}
+
+#pragma mark - Private
+
+// Wrapper around -checkIfSuggestionsAvailableForForm to call the -check
+// from super when done from a completion block.
+- (void)checkIfSuggestionsAvailableForFormSuper:
+            (FormSuggestionProviderQuery*)formQuery
+                                 hasUserGesture:(BOOL)hasUserGesture
+                                       webState:(web::WebState*)webState
+                              completionHandler:
+                                  (SuggestionsAvailableCompletion)completion {
+  [super checkIfSuggestionsAvailableForForm:formQuery
+                             hasUserGesture:hasUserGesture
+                                   webState:webState
+                          completionHandler:completion];
+}
+
+@end
+
 namespace {
 
 // Test fixture for FormSuggestionController testing.
-class FormSuggestionControllerTest : public PlatformTest {
+class FormSuggestionControllerTest
+    : public PlatformTest,
+      public ::testing::WithParamInterface<bool> {
  public:
   FormSuggestionControllerTest()
       : test_form_activity_tab_helper_(&fake_web_state_) {}
@@ -170,6 +259,12 @@ class FormSuggestionControllerTest : public PlatformTest {
 
   void SetUp() override {
     PlatformTest::SetUp();
+
+    if (!IsStateless()) {
+      scoped_feature_list_.InitAndDisableFeature(
+
+          kStatelessFormSuggestionController);
+    }
 
     fake_web_state_.SetWebViewProxy(mock_web_view_proxy_);
   }
@@ -225,6 +320,11 @@ class FormSuggestionControllerTest : public PlatformTest {
     [accessory_mediator_ injectProvider:suggestion_controller_];
   }
 
+  bool IsStateless() { return GetParam(); }
+
+  // Returns true if suggestions were actually received by the consumer.
+  bool SuggestionsReceived() { return received_suggestions_; }
+
   // The scoped feature list to enable/disable features. This needs to be placed
   // before task_environment_, as per
   // https://source.chromium.org/chromium/chromium/src/+/main:base/test/scoped_feature_list.h;l=37-41;drc=fe05104cfedb627fa99f218d7d1af6862871566c.
@@ -240,7 +340,7 @@ class FormSuggestionControllerTest : public PlatformTest {
   FormSuggestionController* suggestion_controller_;
 
   // The suggestions the controller sent to the client, if any.
-  NSArray* received_suggestions_;
+  NSArray* received_suggestions_ = nil;
 
   // Mock CRWWebViewProxy for verifying interactions.
   id mock_web_view_proxy_;
@@ -258,16 +358,20 @@ class FormSuggestionControllerTest : public PlatformTest {
   id mock_handler_;
 };
 
+// TODO(crbug.com/396159046): Move this test to another test module as it
+// doesn't directly concern the FormSuggestionController.
 // Tests that pages whose URLs don't have a web scheme aren't processed.
-TEST_F(FormSuggestionControllerTest, PageLoadShouldBeIgnoredWhenNotWebScheme) {
+TEST_P(FormSuggestionControllerTest, PageLoadShouldBeIgnoredWhenNotWebScheme) {
   SetUpController(@[ [TestSuggestionProvider providerWithSuggestions] ]);
   fake_web_state_.SetCurrentURL(GURL("data:text/html;charset=utf8;base64,"));
   fake_web_state_.OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
   EXPECT_FALSE(received_suggestions_.count);
 }
 
+// TODO(crbug.com/396159046): Move this test to another test module as it
+// doesn't directly concern the FormSuggestionController.
 // Tests that pages whose content isn't HTML aren't processed.
-TEST_F(FormSuggestionControllerTest, PageLoadShouldBeIgnoredWhenNotHtml) {
+TEST_P(FormSuggestionControllerTest, PageLoadShouldBeIgnoredWhenNotHtml) {
   SetUpController(@[ [TestSuggestionProvider providerWithSuggestions] ]);
   // Load PDF file URL.
   fake_web_state_.SetContentIsHTML(false);
@@ -275,8 +379,10 @@ TEST_F(FormSuggestionControllerTest, PageLoadShouldBeIgnoredWhenNotHtml) {
   EXPECT_FALSE(received_suggestions_.count);
 }
 
+// TODO(crbug.com/396159046): Move this test to another test module as it
+// doesn't directly concern the FormSuggestionController.
 // Tests that the suggestions are reset when a navigation is finished.
-TEST_F(FormSuggestionControllerTest,
+TEST_P(FormSuggestionControllerTest,
        PageLoadShouldRestoreKeyboardAccessoryViewAndInjectJavaScript) {
   SetUpController(@[ [TestSuggestionProvider providerWithSuggestions] ]);
   GURL url("http://foo.com");
@@ -301,8 +407,42 @@ TEST_F(FormSuggestionControllerTest,
   EXPECT_FALSE(received_suggestions_.count);
 }
 
+// TODO(crbug.com/396159046): Move this test to another test module as it
+// doesn't directly concern the FormSuggestionController.
+// Tests that the suggestions are not reset when a finished navigation happened
+// within the same document.
+TEST_P(FormSuggestionControllerTest,
+       PageLoadOnSameDocumentShouldntResetKeyboardAccessorySuggestions) {
+  SetUpController(@[ [TestSuggestionProvider providerWithSuggestions] ]);
+  GURL url("http://foo.com");
+  fake_web_state_.SetCurrentURL(url);
+  auto main_frame = web::FakeWebFrame::CreateMainWebFrame(url);
+
+  // Trigger form activity, which should set up the suggestions view.
+  autofill::FormActivityParams params;
+  params.form_name = "form";
+  params.field_identifier = "field_id";
+  params.field_type = "text";
+  params.type = "type";
+  params.value = "value";
+  params.input_missing = false;
+  test_form_activity_tab_helper_.FormActivityRegistered(main_frame.get(),
+                                                        params);
+  NSUInteger initial_suggestion_count = received_suggestions_.count;
+  EXPECT_TRUE(initial_suggestion_count);
+
+    // Trigger another navigation, but within the same document. The suggestions
+    // should still be present.
+    web::FakeNavigationContext navigation_context;
+    navigation_context.SetIsSameDocument(true);
+    fake_web_state_.OnNavigationFinished(&navigation_context);
+    EXPECT_EQ(received_suggestions_.count, initial_suggestion_count);
+}
+
+// TODO(crbug.com/396159046): Move this test to another test module as it
+// doesn't directly concern the FormSuggestionController.
 // Tests that "blur" events are ignored.
-TEST_F(FormSuggestionControllerTest, FormActivityBlurShouldBeIgnored) {
+TEST_P(FormSuggestionControllerTest, FormActivityBlurShouldBeIgnored) {
   SetUpController(@[ [TestSuggestionProvider providerWithSuggestions] ]);
   GURL url("http://foo.com");
   fake_web_state_.SetCurrentURL(url);
@@ -321,7 +461,7 @@ TEST_F(FormSuggestionControllerTest, FormActivityBlurShouldBeIgnored) {
 }
 
 // Tests that no suggestions are displayed when no providers are registered.
-TEST_F(FormSuggestionControllerTest,
+TEST_P(FormSuggestionControllerTest,
        FormActivityShouldRetrieveSuggestions_NoProvidersAvailable) {
   // Set up the controller without any providers.
   SetUpController(@[]);
@@ -346,7 +486,7 @@ TEST_F(FormSuggestionControllerTest,
 
 // Tests that, when no providers have suggestions to offer for a form/field,
 // they aren't asked and no suggestions are displayed.
-TEST_F(FormSuggestionControllerTest,
+TEST_P(FormSuggestionControllerTest,
        FormActivityShouldRetrieveSuggestions_NoSuggestionsAvailable) {
   // Set up the controller with some providers, but none of them will
   // have suggestions available.
@@ -379,37 +519,27 @@ TEST_F(FormSuggestionControllerTest,
   EXPECT_FALSE([provider1 askedForSuggestions]);
   EXPECT_FALSE([provider2 askedForSuggestions]);
 
+  // Verify that the suggestions were set from the completion block call, even
+  // if no suggestions are available.
+  ASSERT_TRUE(SuggestionsReceived());
+
   // The suggestions should be empty.
   EXPECT_FALSE(received_suggestions_.count);
   EXPECT_EQ(0U, received_suggestions_.count);
 }
 
-// Tests that, once a provider is asked if it has suggestions for a form/field,
-// it and only it is asked to provide them, and that suggestions are then sent.
-TEST_F(FormSuggestionControllerTest,
-       FormActivityShouldRetrieveSuggestions_SuggestionsAddedToAccessoryView) {
-  // Set up the controller with some providers, one of which can provide
-  // suggestions.
-  NSArray* suggestions = @[
-    [FormSuggestion
-        suggestionWithValue:@"foo"
-         displayDescription:nil
-                       icon:nil
-                       type:autofill::SuggestionType::kAutocompleteEntry
-          backendIdentifier:nil
-             requiresReauth:NO],
-    [FormSuggestion suggestionWithValue:@"bar"
-                     displayDescription:nil
-                                   icon:nil
-                                   type:autofill::SuggestionType::kAddressEntry
-                      backendIdentifier:nil
-                         requiresReauth:NO]
-  ];
-  TestSuggestionProvider* provider1 =
-      [[TestSuggestionProvider alloc] initWithSuggestions:suggestions];
-  TestSuggestionProvider* provider2 =
-      [[TestSuggestionProvider alloc] initWithSuggestions:@[]];
-  SetUpController(@[ provider1, provider2 ]);
+// TODO(crbug.com/396159046): Make a variant of this test for the KA mediator
+// which also has its own logic for handling concurrent requests.
+// Tests that concurrent requests can be handled when no suggestions are
+// offered.
+TEST_P(
+    FormSuggestionControllerTest,
+    FormActivityShouldRetrieveSuggestions_NoSuggestionsAvailable_Concurrency) {
+  // Set up the controller with some providers, but none of them will
+  // have suggestions available.
+  AsyncTestSuggestionProvider* provider =
+      [[AsyncTestSuggestionProvider alloc] initWithSuggestions:@[]];
+  SetUpController(@[ provider ]);
   GURL url("http://foo.com");
   fake_web_state_.SetCurrentURL(url);
   auto main_frame = web::FakeWebFrame::CreateMainWebFrame(url);
@@ -421,6 +551,77 @@ TEST_F(FormSuggestionControllerTest,
   params.type = "type";
   params.value = "value";
   params.input_missing = false;
+
+  // Register 2 subsequent form activities so there are 2 concurrent requests.
+  test_form_activity_tab_helper_.FormActivityRegistered(main_frame.get(),
+                                                        params);
+  test_form_activity_tab_helper_.FormActivityRegistered(main_frame.get(),
+                                                        params);
+
+  ASSERT_EQ(2, provider.pendingRequestsCount);
+
+  // Run the async requests that were dispatched.
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(0, provider.pendingRequestsCount);
+
+  // Verify that the suggestions were set from the completion block call, even
+  // if no suggestions are available.
+  ASSERT_TRUE(SuggestionsReceived());
+
+  // The suggestions should be empty.
+  EXPECT_FALSE(received_suggestions_.count);
+  EXPECT_EQ(0U, received_suggestions_.count);
+}
+
+// Tests that, once a provider is asked if it has suggestions for a form/field,
+// it and only it is asked to provide them, and that suggestions are then sent.
+TEST_P(FormSuggestionControllerTest,
+       FormActivityShouldRetrieveSuggestions_SuggestionsAddedToAccessoryView) {
+  autofill::FormActivityParams params;
+  params.form_name = "form";
+  params.field_identifier = "field_id";
+  params.field_type = "text";
+  params.type = "type";
+  params.value = "value";
+  params.input_missing = false;
+
+  TestSuggestionProvider* provider1 =
+      [[TestSuggestionProvider alloc] initWithSuggestions:@[]];
+
+  // Set up the controller with some providers, one of which can provide
+  // suggestions.
+  NSArray* provider1Suggestions = @[
+    [FormSuggestion copy:[FormSuggestion
+                             suggestionWithValue:@"foo"
+                              displayDescription:nil
+                                            icon:nil
+                                            type:autofill::SuggestionType::
+                                                     kAutocompleteEntry
+                                         payload:autofill::Suggestion::Payload()
+                                  requiresReauth:NO]
+            andSetParams:params
+                provider:provider1],
+    [FormSuggestion copy:[FormSuggestion
+                             suggestionWithValue:@"bar"
+                              displayDescription:nil
+                                            icon:nil
+                                            type:autofill::SuggestionType::
+                                                     kAddressEntry
+                                         payload:autofill::Suggestion::Payload()
+                                  requiresReauth:NO]
+            andSetParams:params
+                provider:provider1]
+  ];
+  [provider1 setSuggestions:provider1Suggestions];
+
+  TestSuggestionProvider* provider2 =
+      [[TestSuggestionProvider alloc] initWithSuggestions:@[]];
+  SetUpController(@[ provider1, provider2 ]);
+  GURL url("http://foo.com");
+  fake_web_state_.SetCurrentURL(url);
+  auto main_frame = web::FakeWebFrame::CreateMainWebFrame(url);
+
   test_form_activity_tab_helper_.FormActivityRegistered(main_frame.get(),
                                                         params);
 
@@ -435,26 +636,143 @@ TEST_F(FormSuggestionControllerTest,
   EXPECT_FALSE([provider2 askedForSuggestions]);
 
   // The controller should have provided suggestions.
-  EXPECT_TRUE(received_suggestions_.count);
-  EXPECT_NSEQ(suggestions, received_suggestions_);
+  EXPECT_EQ(2u, received_suggestions_.count);
+
+  // Verify that the controller provided the suggestions.
+  FormSuggestion* suggestion = [received_suggestions_ objectAtIndex:0];
+  EXPECT_NSEQ(@"foo", suggestion.value);
+  suggestion = [received_suggestions_ objectAtIndex:1];
+  EXPECT_NSEQ(@"bar", suggestion.value);
+}
+
+// TODO(crbug.com/396159046): Make a variant of this test for the KA mediator
+// which also has its own logic for handling concurrent requests.
+// Tests that concurrent requests can be handled when suggestions are offered.
+TEST_P(
+    FormSuggestionControllerTest,
+    FormActivityShouldRetrieveSuggestions_SuggestionsAddedToAccessoryView_Concurrency) {
+  autofill::FormActivityParams params;
+  params.form_name = "form";
+  params.field_identifier = "field_id";
+  params.field_type = "text";
+  params.type = "type";
+  params.value = "value";
+  params.input_missing = false;
+
+  AsyncTestSuggestionProvider* provider =
+      [[AsyncTestSuggestionProvider alloc] initWithSuggestions:@[]];
+
+  NSArray* suggestions = @[ [FormSuggestion
+              copy:[FormSuggestion
+                       suggestionWithValue:@"foo"
+                        displayDescription:nil
+                                      icon:nil
+                                      type:autofill::SuggestionType::
+                                               kAutocompleteEntry
+                                   payload:autofill::Suggestion::Payload()
+                            requiresReauth:NO]
+      andSetParams:params
+          provider:provider] ];
+  [provider setSuggestions:suggestions];
+
+  SetUpController(@[ provider ]);
+  GURL url("http://foo.com");
+  fake_web_state_.SetCurrentURL(url);
+  auto main_frame = web::FakeWebFrame::CreateMainWebFrame(url);
+
+  // Start 2 concurrent suggestions retrieval requests.
+  test_form_activity_tab_helper_.FormActivityRegistered(main_frame.get(),
+                                                        params);
+  test_form_activity_tab_helper_.FormActivityRegistered(main_frame.get(),
+                                                        params);
+  ASSERT_EQ(2, provider.pendingRequestsCount);
+
+  // Run the async requests that were dispatched.
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(0, provider.pendingRequestsCount);
+  ASSERT_EQ(1u, received_suggestions_.count);
+
+  // Verify that only the latest concurrent request is
+  // handled, so one request.
+  EXPECT_EQ(1, provider.askForSuggestionsCount);
+
+  // Briefly verify that the returned suggestion corresponds to what the
+  // provider provides.
+  FormSuggestion* suggestion = [received_suggestions_ objectAtIndex:0];
+  EXPECT_NSEQ(@"foo", suggestion.value);
+}
+
+// TODO(crbug.com/396159046): Make a variant of this test for the KA mediator
+// which also has its own logic for handling concurrent requests.
+// Tests that with dedupping disabled, concurrent requests can be handled when
+// suggestions are offered.
+TEST_P(
+    FormSuggestionControllerTest,
+    FormActivityShouldRetrieveSuggestions_SuggestionsAddedToAccessoryView_Concurrency_WithoutDedupping) {
+  base::test::ScopedFeatureList scoped_featurelist;
+  scoped_featurelist.InitAndDisableFeature(
+      kStatelessFormSuggestionControllerWithRequestDeduping);
+
+  autofill::FormActivityParams params;
+  params.form_name = "form";
+  params.field_identifier = "field_id";
+  params.field_type = "text";
+  params.type = "type";
+  params.value = "value";
+  params.input_missing = false;
+
+  AsyncTestSuggestionProvider* provider =
+      [[AsyncTestSuggestionProvider alloc] initWithSuggestions:@[]];
+
+  NSArray* suggestions = @[ [FormSuggestion
+              copy:[FormSuggestion
+                       suggestionWithValue:@"foo"
+                        displayDescription:nil
+                                      icon:nil
+                                      type:autofill::SuggestionType::
+                                               kAutocompleteEntry
+                                   payload:autofill::Suggestion::Payload()
+                            requiresReauth:NO]
+      andSetParams:params
+          provider:provider] ];
+  [provider setSuggestions:suggestions];
+
+  SetUpController(@[ provider ]);
+  GURL url("http://foo.com");
+  fake_web_state_.SetCurrentURL(url);
+  auto main_frame = web::FakeWebFrame::CreateMainWebFrame(url);
+
+  // Start 2 concurrent suggestions retrieval requests.
+  test_form_activity_tab_helper_.FormActivityRegistered(main_frame.get(),
+                                                        params);
+  test_form_activity_tab_helper_.FormActivityRegistered(main_frame.get(),
+                                                        params);
+  ASSERT_EQ(2, provider.pendingRequestsCount);
+
+  // Run the async requests that were dispatched.
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(0, provider.pendingRequestsCount);
+  ASSERT_EQ(1u, received_suggestions_.count);
+
+  if (IsStateless()) {
+    EXPECT_EQ(2, provider.askForSuggestionsCount);
+  } else {
+    // Verify that when not stateless, only the latest concurrent request is
+    // handled, so one request.
+    EXPECT_EQ(1, provider.askForSuggestionsCount);
+  }
+
+  // Briefly verify that the returned suggestion corresponds to what the
+  // provider provides.
+  FormSuggestion* suggestion = [received_suggestions_ objectAtIndex:0];
+  EXPECT_NSEQ(@"foo", suggestion.value);
 }
 
 // Tests that selecting a suggestion informs the specified delegate for that
 // suggestion.
-TEST_F(FormSuggestionControllerTest, SelectingSuggestionShouldNotifyDelegate) {
-  // Send some suggestions to the controller and then tap one.
-  NSArray* suggestions = @[
-    [FormSuggestion
-        suggestionWithValue:@"foo"
-         displayDescription:nil
-                       icon:nil
-                       type:autofill::SuggestionType::kAutocompleteEntry
-          backendIdentifier:nil
-             requiresReauth:NO],
-  ];
-  TestSuggestionProvider* provider =
-      [[TestSuggestionProvider alloc] initWithSuggestions:suggestions];
-  SetUpController(@[ provider ]);
+TEST_P(FormSuggestionControllerTest, SelectingSuggestionShouldNotifyDelegate) {
   GURL url("http://foo.com");
   fake_web_state_.SetCurrentURL(url);
   auto main_frame = web::FakeWebFrame::CreateMainWebFrame(url);
@@ -467,11 +785,32 @@ TEST_F(FormSuggestionControllerTest, SelectingSuggestionShouldNotifyDelegate) {
   params.value = "value";
   params.frame_id = "frame_id";
   params.input_missing = false;
+
+  TestSuggestionProvider* provider =
+      [[TestSuggestionProvider alloc] initWithSuggestions:@[]];
+
+  // Send some suggestions to the controller and then tap one.
+  NSArray* suggestions = @[
+    [FormSuggestion copy:[FormSuggestion
+                             suggestionWithValue:@"foo"
+                              displayDescription:nil
+                                            icon:nil
+                                            type:autofill::SuggestionType::
+                                                     kAutocompleteEntry
+                                         payload:autofill::Suggestion::Payload()
+                                  requiresReauth:NO]
+            andSetParams:params
+                provider:provider],
+  ];
+  [provider setSuggestions:suggestions];
+
+  SetUpController(@[ provider ]);
+
   test_form_activity_tab_helper_.FormActivityRegistered(main_frame.get(),
                                                         params);
 
   // Selecting a suggestion should notify the delegate.
-  [suggestion_controller_ didSelectSuggestion:suggestions[0]];
+  [suggestion_controller_ didSelectSuggestion:suggestions[0] atIndex:0];
   EXPECT_TRUE([provider selected]);
   EXPECT_NSEQ(@"form", [provider formName]);
   EXPECT_NSEQ(@"field_id", [provider fieldIdentifier]);
@@ -481,40 +820,38 @@ TEST_F(FormSuggestionControllerTest, SelectingSuggestionShouldNotifyDelegate) {
 
 // Tests that the autofill suggestion IPH is triggered when suggesting an
 // address if the suggestion's `featureForiPH` property is set.
-TEST_F(FormSuggestionControllerTest, AutofillSuggestionIPH) {
+TEST_P(FormSuggestionControllerTest, AutofillSuggestionIPH) {
+  TestSuggestionProvider* provider =
+      [[TestSuggestionProvider alloc] initWithSuggestions:@[]];
+  provider.type = SuggestionProviderTypeAutofill;
+  autofill::FormActivityParams params;
+
   FormSuggestion* suggestion = [FormSuggestion
       suggestionWithValue:@"foo"
        displayDescription:nil
                      icon:nil
                      type:autofill::SuggestionType::kAutocompleteEntry
-        backendIdentifier:nil
+                  payload:autofill::Suggestion::Payload()
            requiresReauth:NO];
   suggestion.featureForIPH =
       SuggestionFeatureForIPH::kAutofillExternalAccountProfile;
-  NSArray* suggestions = @[ suggestion ];
-  TestSuggestionProvider* provider =
-      [[TestSuggestionProvider alloc] initWithSuggestions:suggestions];
-  provider.type = SuggestionProviderTypeAutofill;
+  [provider setSuggestions:@[ [FormSuggestion copy:suggestion
+                                      andSetParams:params
+                                          provider:provider] ]];
   SetUpController(@[ provider ]);
   GURL url("http://foo.com");
   fake_web_state_.SetCurrentURL(url);
   auto main_frame = web::FakeWebFrame::CreateMainWebFrame(url);
-  autofill::FormActivityParams params;
 
   OCMExpect([mock_handler_
       showAutofillSuggestionIPHIfNeededFor:suggestion.featureForIPH]);
   test_form_activity_tab_helper_.FormActivityRegistered(main_frame.get(),
                                                         params);
-  [mock_handler_ verify];
+  EXPECT_OCMOCK_VERIFY(mock_handler_);
 }
 
 // Tests that password generation suggestions always have an icon.
-TEST_F(FormSuggestionControllerTest, CopyAndAdjustSuggestions) {
-  base::test::ScopedFeatureList feature_list(kIOSKeyboardAccessoryUpgrade);
-  if (!IsKeyboardAccessoryUpgradeEnabled()) {
-    return;
-  }
-
+TEST_P(FormSuggestionControllerTest, CopyAndAdjustSuggestions) {
   SetUpController(@[ [TestSuggestionProvider providerWithSuggestions] ]);
 
   NSMutableArray<FormSuggestion*>* suggestions = [NSMutableArray array];
@@ -523,7 +860,7 @@ TEST_F(FormSuggestionControllerTest, CopyAndAdjustSuggestions) {
        displayDescription:nil
                      icon:nil
                      type:autofill::SuggestionType::kGeneratePasswordEntry
-        backendIdentifier:nil
+                  payload:autofill::Suggestion::Payload()
            requiresReauth:NO];
   [suggestions addObject:suggestion];
 
@@ -535,7 +872,7 @@ TEST_F(FormSuggestionControllerTest, CopyAndAdjustSuggestions) {
 
 // Tests that plus address suggestions always have an icon when the features are
 // enabled.
-TEST_F(FormSuggestionControllerTest, CopyAndAdjustPlusAddressSuggestions) {
+TEST_P(FormSuggestionControllerTest, CopyAndAdjustPlusAddressSuggestions) {
   base::test::ScopedFeatureList feature_list{
       plus_addresses::features::kPlusAddressesEnabled};
 
@@ -546,17 +883,8 @@ TEST_F(FormSuggestionControllerTest, CopyAndAdjustPlusAddressSuggestions) {
       suggestionWithValue:@""
        displayDescription:nil
                      icon:nil
-                     type:autofill::SuggestionType::kCreateNewPlusAddress
-        backendIdentifier:nil
-           requiresReauth:NO];
-  [suggestions addObject:suggestion];
-
-  suggestion = [FormSuggestion
-      suggestionWithValue:@""
-       displayDescription:nil
-                     icon:nil
                      type:autofill::SuggestionType::kFillExistingPlusAddress
-        backendIdentifier:nil
+                  payload:autofill::Suggestion::Payload()
            requiresReauth:NO];
   [suggestions addObject:suggestion];
 
@@ -564,7 +892,15 @@ TEST_F(FormSuggestionControllerTest, CopyAndAdjustPlusAddressSuggestions) {
       [suggestion_controller_ copyAndAdjustSuggestions:suggestions];
   EXPECT_EQ(adjusted_suggestions.count, suggestions.count);
   EXPECT_TRUE(adjusted_suggestions[0].icon);
-  EXPECT_TRUE(adjusted_suggestions[1].icon);
 }
+
+std::string ParamToString(const testing::TestParamInfo<bool>& params_info) {
+  return params_info.param ? "Stateless" : "Stateful";
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         FormSuggestionControllerTest,
+                         ::testing::Bool(),
+                         ParamToString);
 
 }  // namespace

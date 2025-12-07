@@ -5,9 +5,11 @@
 #include "chrome/browser/feed/rss_links_fetcher.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/feed/core/v2/public/types.h"
 #include "components/feed/core/v2/test/callback_receiver.h"
+#include "components/feed/feed_feature_list.h"
 #include "components/feed/mojom/rss_link_reader.mojom.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "content/public/test/browser_test.h"
@@ -30,12 +32,18 @@ class RssLinksFetcherTest : public AndroidBrowserTest {
 class RssLinksFetcherTest : public InProcessBrowserTest {
 #endif
  public:
-  RssLinksFetcherTest() = default;
+  RssLinksFetcherTest() {
+    scoped_feature_list_.InitAndDisableFeature(feed::kWebFeedKillSwitch);
+  }
+
   // AndroidBrowserTest:
   void SetUpOnMainThread() override {
     embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
     ASSERT_TRUE(embedded_test_server()->Start());
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(RssLinksFetcherTest, FetchSuccessfulFromHead) {
@@ -52,8 +60,8 @@ IN_PROC_BROWSER_TEST_F(RssLinksFetcherTest, FetchSuccessfulFromHead) {
   // Just check path on URLs relative to the local server, since its port
   // changes.
   ASSERT_EQ(3u, result.size());
-  EXPECT_EQ("/rss.xml", result[0].path());
-  EXPECT_EQ("/atom.xml", result[1].path());
+  EXPECT_EQ("/rss.xml", result[0].GetPath());
+  EXPECT_EQ("/atom.xml", result[1].GetPath());
   EXPECT_EQ(GURL("https://some/path.xml"), result[2]);
 
   ASSERT_TRUE(base::TimeTicks::IsHighResolution())
@@ -80,8 +88,8 @@ IN_PROC_BROWSER_TEST_F(RssLinksFetcherTest, FetchSuccessfulFromBody) {
   // Just check path on URLs relative to the local server, since its port
   // changes.
   ASSERT_EQ(3u, result.size());
-  EXPECT_EQ("/rss-in-body.xml", result[0].path());
-  EXPECT_EQ("/atom-in-body.xml", result[1].path());
+  EXPECT_EQ("/rss-in-body.xml", result[0].GetPath());
+  EXPECT_EQ("/atom-in-body.xml", result[1].GetPath());
   EXPECT_EQ(GURL("https://some/path-in-body.xml"), result[2]);
 
   ASSERT_TRUE(base::TimeTicks::IsHighResolution())

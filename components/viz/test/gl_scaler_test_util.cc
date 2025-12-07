@@ -2,18 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/test/gl_scaler_test_util.h"
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <ostream>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
+#include "base/containers/auto_spanification_helper.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -74,10 +73,8 @@ SkBitmap GLScalerTestUtil::CreateSMPTETestImage(const gfx::Size& size) {
   for (int y = 0; y < result.height(); ++y) {
     for (int x = 0; x < result.width(); ++x) {
       if (result.getColor4f(x, y) == kDeadColor) {
-        NOTREACHED_IN_MIGRATION()
-            << "TEST BUG: Error creating SMPTE test image. Bad size ("
-            << size.ToString() << ")?";
-        return result;
+        NOTREACHED() << "TEST BUG: Error creating SMPTE test image. Bad size ("
+                     << size.ToString() << ")?";
       }
     }
   }
@@ -156,7 +153,8 @@ SkBitmap GLScalerTestUtil::CreateCyclicalTestImage(
   switch (pattern) {
     case HORIZONTAL_STRIPES:
       for (int y = 0; y < size.height(); ++y) {
-        uint32_t* const pixels = result.getAddr32(0, y);
+        const base::span<uint32_t> pixels =
+            UNSAFE_SKBITMAP_GETADDR32(result, 0, y);
         const uint32_t stripe_rgba = cycle_as_rgba[y % cycle_as_rgba.size()];
         for (int x = 0; x < size.width(); ++x) {
           pixels[x] = stripe_rgba;
@@ -166,7 +164,8 @@ SkBitmap GLScalerTestUtil::CreateCyclicalTestImage(
 
     case VERTICAL_STRIPES:
       for (int y = 0; y < size.height(); ++y) {
-        uint32_t* const pixels = result.getAddr32(0, y);
+        const base::span<uint32_t> pixels =
+            UNSAFE_SKBITMAP_GETADDR32(result, 0, y);
         for (int x = 0; x < size.width(); ++x) {
           pixels[x] = cycle_as_rgba[x % cycle_as_rgba.size()];
         }
@@ -175,7 +174,8 @@ SkBitmap GLScalerTestUtil::CreateCyclicalTestImage(
 
     case STAGGERED:
       for (int y = 0; y < size.height(); ++y) {
-        uint32_t* const pixels = result.getAddr32(0, y);
+        const base::span<uint32_t> pixels =
+            UNSAFE_SKBITMAP_GETADDR32(result, 0, y);
         for (int x = 0; x < size.width(); ++x) {
           pixels[x] = cycle_as_rgba[(x + y) % cycle_as_rgba.size()];
         }
@@ -206,7 +206,7 @@ void GLScalerTestUtil::ConvertRGBABitmapToYUV(SkBitmap* image) {
   // Loop, transforming one row of pixels at a time.
   std::vector<gfx::ColorTransform::TriStim> stims(image->width());
   for (int y = 0; y < image->height(); ++y) {
-    uint32_t* const pixels = image->getAddr32(0, y);
+    const base::span<uint32_t> pixels = UNSAFE_SKBITMAP_GETADDR32(image, 0, y);
     for (int x = 0; x < image->width(); ++x) {
       stims[x].set_x(((pixels[x] >> kRedShift) & 0xff) / 255.0f);
       stims[x].set_y(((pixels[x] >> kGreenShift) & 0xff) / 255.0f);
@@ -238,7 +238,7 @@ SkBitmap GLScalerTestUtil::CopyAndConvertToRGBA(const SkBitmap& bitmap) {
 // static
 void GLScalerTestUtil::SwizzleBitmap(SkBitmap* image) {
   for (int y = 0; y < image->height(); ++y) {
-    uint32_t* const pixels = image->getAddr32(0, y);
+    const base::span<uint32_t> pixels = UNSAFE_SKBITMAP_GETADDR32(image, 0, y);
     for (int x = 0; x < image->width(); ++x) {
       pixels[x] = ((((pixels[x] >> kBlueShift) & 0xff) << kRedShift) |
                    (((pixels[x] >> kGreenShift) & 0xff) << kGreenShift) |
@@ -255,12 +255,17 @@ SkBitmap GLScalerTestUtil::CreatePackedPlanarBitmap(const SkBitmap& source,
   SkBitmap result =
       AllocateRGBABitmap(gfx::Size(source.width() / 4, source.height()));
 
-  constexpr int kShiftForChannel[4] = {kRedShift, kGreenShift, kBlueShift,
-                                       kAlphaShift};
+  constexpr std::array<int, 4> kShiftForChannel = {
+      kRedShift,
+      kGreenShift,
+      kBlueShift,
+      kAlphaShift,
+  };
   const int shift = kShiftForChannel[channel];
   for (int y = 0; y < result.height(); ++y) {
-    const uint32_t* const src = source.getAddr32(0, y);
-    uint32_t* const dst = result.getAddr32(0, y);
+    const base::span<const uint32_t> src =
+        UNSAFE_SKBITMAP_GETADDR32(source, 0, y);
+    const base::span<uint32_t> dst = UNSAFE_SKBITMAP_GETADDR32(result, 0, y);
     for (int x = 0; x < result.width(); ++x) {
       //     (src[0..3])         (dst)
       // RGBA RGBA RGBA RGBA --> RRRR   (if channel is 0)
@@ -295,16 +300,21 @@ void GLScalerTestUtil::UnpackPlanarBitmap(const SkBitmap& plane,
 
   // These determine which single byte in each of |out|'s uint32_t-valued pixels
   // will be modified.
-  constexpr int kShiftForChannel[4] = {kRedShift, kGreenShift, kBlueShift,
-                                       kAlphaShift};
+  constexpr std::array<int, 4> kShiftForChannel = {
+      kRedShift,
+      kGreenShift,
+      kBlueShift,
+      kAlphaShift,
+  };
   const int output_shift = kShiftForChannel[channel];
   const uint32_t output_retain_mask = ~(UINT32_C(0xff) << output_shift);
 
   // Iterate over the pixels of |out|, sampling each of the 4 components of each
   // of |plane|'s pixels.
   for (int y = 0; y < out->height(); ++y) {
-    const uint32_t* const src = plane.getAddr32(0, y / row_sampling_ratio);
-    uint32_t* const dst = out->getAddr32(0, y);
+    const base::span<const uint32_t> src =
+        UNSAFE_SKBITMAP_GETADDR32(plane, 0, y / row_sampling_ratio);
+    const base::span<uint32_t> dst = UNSAFE_SKBITMAP_GETADDR32(out, 0, y);
     for (int x = 0; x < out->width(); ++x) {
       // Zero-out the existing byte (e.g., if channel==1, then "RGBA" → "R0BA").
       dst[x] &= output_retain_mask;
@@ -350,8 +360,12 @@ void GLScalerTestUtil::UnpackUVBitmap(const SkBitmap& plane, SkBitmap* out) {
 
   // These determine which single byte in each of |out|'s uint32_t-valued pixels
   // will be modified.
-  constexpr int kShiftForChannel[4] = {kRedShift, kGreenShift, kBlueShift,
-                                       kAlphaShift};
+  constexpr std::array<int, 4> kShiftForChannel = {
+      kRedShift,
+      kGreenShift,
+      kBlueShift,
+      kAlphaShift,
+  };
   constexpr uint32_t zero_green_mask = ~(UINT32_C(0xff) << kGreenShift);
   constexpr uint32_t zero_blue_mask = ~(UINT32_C(0xff) << kBlueShift);
   constexpr uint32_t zero_green_blue_mask = zero_green_mask & zero_blue_mask;
@@ -359,8 +373,9 @@ void GLScalerTestUtil::UnpackUVBitmap(const SkBitmap& plane, SkBitmap* out) {
   // Iterate over all the pixels of |out|, calculate where the data for that
   // said pixel is.
   for (int y = 0; y < out->height(); ++y) {
-    const uint32_t* const src = plane.getAddr32(0, y / row_sampling_ratio);
-    uint32_t* const dst = out->getAddr32(0, y);
+    const base::span<const uint32_t> src =
+        UNSAFE_SKBITMAP_GETADDR32(plane, 0, y / row_sampling_ratio);
+    const base::span<uint32_t> dst = UNSAFE_SKBITMAP_GETADDR32(out, 0, y);
     for (int x = 0; x < out->width(); ++x) {
       // Zero-out the existing byte (e.g., "RGBA" → "R00A").
       dst[x] &= zero_green_blue_mask;
@@ -389,8 +404,8 @@ SkBitmap GLScalerTestUtil::CreateVerticallyFlippedBitmap(
   CHECK_EQ(bitmap.rowBytes(), source.rowBytes());
   for (int y = 0; y < bitmap.height(); ++y) {
     const int src_y = bitmap.height() - y - 1;
-    memcpy(bitmap.getAddr32(0, y), source.getAddr32(0, src_y),
-           bitmap.rowBytes());
+    UNSAFE_TODO(memcpy(bitmap.getAddr32(0, y), source.getAddr32(0, src_y),
+                       bitmap.rowBytes()));
   }
   return bitmap;
 }

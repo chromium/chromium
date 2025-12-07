@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/clipboard/clipboard_api.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -41,9 +42,9 @@ void ClipboardAPI::OnClipboardDataChanged() {
   EventRouter* router = EventRouter::Get(browser_context_);
   if (router &&
       router->HasEventListener(clipboard::OnClipboardDataChanged::kEventName)) {
-    std::unique_ptr<Event> event(new Event(
+    auto event = std::make_unique<Event>(
         events::CLIPBOARD_ON_CLIPBOARD_DATA_CHANGED,
-        clipboard::OnClipboardDataChanged::kEventName, base::Value::List()));
+        clipboard::OnClipboardDataChanged::kEventName, base::Value::List());
     router->BroadcastEvent(std::move(event));
   }
 }
@@ -102,7 +103,7 @@ bool ClipboardSetImageDataFunction::IsAdditionalItemsParamValid(
         has_text_html = true;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     // Check maximum length of the string data.
     if (item.data.length() > max_item_data_bytes)

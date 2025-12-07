@@ -9,12 +9,12 @@
 #import "base/notreached.h"
 #import "components/translate/core/browser/translate_infobar_delegate.h"
 #import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_util.h"
+#import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_consumer.h"
 #import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/model/public/infobar_banner/infobar_banner_overlay_responses.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/ui/infobars/banners/infobar_banner_consumer.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/infobar_banner_overlay_mediator+consumer_support.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_mediator+subclassing.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -82,8 +82,7 @@
     case translate::TranslateStep::TRANSLATE_STEP_TRANSLATING:
       break;
     case translate::TranslateStep::TRANSLATE_STEP_NEVER_TRANSLATE:
-      NOTREACHED_NORETURN()
-          << "Should not be presenting Banner in this TranslateStep";
+      NOTREACHED() << "Should not be presenting Banner in this TranslateStep";
   }
   [self dismissOverlay];
 }
@@ -124,8 +123,7 @@
       return l10n_util::GetNSString(
           IDS_IOS_TRANSLATE_INFOBAR_ON_ERROR_BANNER_TITLE);
     case translate::TranslateStep::TRANSLATE_STEP_NEVER_TRANSLATE:
-      NOTREACHED_NORETURN()
-          << "Should not be presenting Banner in this TranslateStep";
+      NOTREACHED() << "Should not be presenting Banner in this TranslateStep";
   }
 }
 
@@ -152,10 +150,8 @@
       return l10n_util::GetNSString(
           IDS_IOS_TRANSLATE_INFOBAR_TRANSLATE_TRY_AGAIN_ACTION);
     case translate::TranslateStep::TRANSLATE_STEP_NEVER_TRANSLATE:
-      NOTREACHED_IN_MIGRATION()
-          << "Translate infobar should not be presenting anything in "
-             "this state.";
-      return nil;
+      NOTREACHED() << "Translate infobar should not be presenting anything in "
+                      "this state.";
   }
 }
 

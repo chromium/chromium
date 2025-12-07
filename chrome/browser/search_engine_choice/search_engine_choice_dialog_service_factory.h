@@ -33,9 +33,9 @@ class SearchEngineChoiceDialogServiceFactory
   static base::AutoReset<bool> ScopedChromeBuildOverrideForTesting(
       bool force_chrome_build);
 
-  // Checks static conditions for the profile and logs them to histograms.
-  // Exposes an internal helper and should only be used for testing purposes.
-  static bool IsProfileEligibleForChoiceScreenForTesting(Profile& profile);
+  // Computes static eligibility for the profile.
+  static search_engines::SearchEngineChoiceScreenConditions
+  ComputeProfileEligibilityForTesting(Profile& profile);
 
  private:
   friend class base::NoDestructor<SearchEngineChoiceDialogServiceFactory>;

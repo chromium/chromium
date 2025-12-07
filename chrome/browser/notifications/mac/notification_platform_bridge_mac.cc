@@ -19,6 +19,7 @@
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/mac/app_shim_registry.h"
+#include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -76,7 +77,7 @@ void NotificationPlatformBridgeMac::Display(
     std::unique_ptr<NotificationCommon::Metadata> metadata) {
   NotificationDispatcherMac* dispatcher = nullptr;
 
-  if (base::FeatureList::IsEnabled(features::kAppShimNotificationAttribution) &&
+  if (web_app::UseNotificationAttributionForWebAppShims() &&
       notification.notifier_id().web_app_id.has_value() &&
       AppShimRegistry::Get()->IsAppInstalledInProfile(
           *notification.notifier_id().web_app_id, profile->GetPath())) {
@@ -124,7 +125,7 @@ void NotificationPlatformBridgeMac::CloseImpl(
 void NotificationPlatformBridgeMac::GetDisplayed(
     Profile* profile,
     GetDisplayedNotificationsCallback callback) const {
-  if (base::FeatureList::IsEnabled(features::kAppShimNotificationAttribution)) {
+  if (web_app::UseNotificationAttributionForWebAppShims()) {
     // We can't get all displayed notifications for all origins, since that
     // would involve starting up any app shim that might currently show
     // notifications. Fortunately we don't really need to implement this method
@@ -174,7 +175,7 @@ void NotificationPlatformBridgeMac::GetDisplayedForOrigin(
   bool incognito = profile->IsOffTheRecord();
 
   std::vector<webapps::AppId> web_app_ids;
-  if (base::FeatureList::IsEnabled(features::kAppShimNotificationAttribution)) {
+  if (web_app::UseNotificationAttributionForWebAppShims()) {
     if (auto* web_app_provider =
             web_app::WebAppProvider::GetForWebApps(profile)) {
       web_app::WebAppRegistrar& registrar =

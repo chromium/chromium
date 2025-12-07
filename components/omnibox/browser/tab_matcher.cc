@@ -12,8 +12,8 @@ void TabMatcher::FindMatchingTabs(GURLToTabInfoMap* map,
   }
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-std::vector<content::WebContents*> TabMatcher::GetOpenTabs() const {
-  return std::vector<content::WebContents*>();
+std::vector<TabMatcher::TabWrapper> TabMatcher::GetOpenTabs(
+    const AutocompleteInput* input,
+    bool exclude_active_tab) const {
+  return std::vector<TabMatcher::TabWrapper>();
 }
-#endif

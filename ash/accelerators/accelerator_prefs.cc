@@ -48,6 +48,10 @@ AcceleratorPrefs::~AcceleratorPrefs() {
 // static:
 void AcceleratorPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kShortcutCustomizationAllowed, true);
+  registry->RegisterDictionaryPref(
+      prefs::kDeprecatedAcceleratorNotificationsShownCounts);
+  registry->RegisterDictionaryPref(
+      prefs::kDeprecatedAcceleratorNotificationsLastShown);
 }
 
 void AcceleratorPrefs::OnActiveUserPrefServiceChanged(PrefService* prefs) {
@@ -97,9 +101,7 @@ bool AcceleratorPrefs::IsCustomizationAllowed() {
   if (IsUserEnterpriseManaged() && IsCustomizationPolicySet()) {
     return IsCustomizationAllowedByPolicy();
   }
-
-  // If user is not managed or the policy is unset, check the flag.
-  return ::features::IsShortcutCustomizationEnabled();
+  return true;
 }
 
 }  // namespace ash

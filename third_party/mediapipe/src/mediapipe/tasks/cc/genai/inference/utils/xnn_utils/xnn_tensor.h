@@ -19,6 +19,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <cstring>
 #include <functional>
 #include <memory>
 #include <numeric>
@@ -146,6 +147,9 @@ struct Tensor {
   // Transpose the tensor.
   virtual std::shared_ptr<Tensor> Transpose();
 
+  // Print the tensor values. Tensors with dims > 4 unsupported.
+  void PrintSpan();
+
   // Convert the tensor to f32 format.
   virtual absl::StatusOr<std::shared_ptr<Tensor>> ConvertToF32();
 
@@ -175,6 +179,9 @@ struct Tensor {
   // the tensor is loaded from.
   std::string tag;
 
+  // Actually allocate buffer unless necessary.
+  virtual void AllocateBufferIfNeeded();
+
  protected:
   friend class XnnGraphBuilder;
   friend class XnnGraph;
@@ -182,9 +189,6 @@ struct Tensor {
 
   // Invoke xnn_define_*tensor_value to add this tensor to the `subgraph`.
   virtual absl::Status DefineInSubgraph(xnn_subgraph& subgraph, uint32_t flags);
-
-  // Actually allocate buffer unless necessary.
-  virtual void AllocateBufferIfNeeded();
 
   virtual size_t ElementSize(size_t num_elements) const {
     return num_elements * 4;

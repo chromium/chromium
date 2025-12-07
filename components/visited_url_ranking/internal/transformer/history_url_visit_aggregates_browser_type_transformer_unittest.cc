@@ -72,6 +72,6 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         TestParams(VisitContextAnnotations::BrowserType::kTabbed, 1),
         TestParams(VisitContextAnnotations::BrowserType::kCustomTab, 1),
-        TestParams(VisitContextAnnotations::BrowserType::kAuthView, 0)));
+        TestParams(VisitContextAnnotations::BrowserType::kAuthTab, 0)));
 
 }  // namespace visited_url_ranking

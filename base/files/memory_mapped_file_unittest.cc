@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "base/files/memory_mapped_file.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <utility>
 
 #include "base/containers/heap_array.h"
@@ -31,8 +28,9 @@ namespace {
 // Create a temporary buffer and fill it with a watermark sequence.
 base::HeapArray<uint8_t> CreateTestBuffer(size_t size, size_t offset) {
   auto buf = base::HeapArray<uint8_t>::Uninit(size);
-  for (size_t i = 0; i < size; ++i)
+  for (size_t i = 0; i < size; ++i) {
     buf[i] = static_cast<uint8_t>((offset + i) % 253);
+  }
   return buf;
 }
 
@@ -128,7 +126,7 @@ TEST_F(MemoryMappedFileTest, MapPartialRegionAtBeginning) {
   ASSERT_EQ(kPartialSize, map.length());
   ASSERT_TRUE(map.data() != nullptr);
   EXPECT_TRUE(map.IsValid());
-  ASSERT_TRUE(CheckBufferContents(map.bytes().first(kPartialSize), 0));
+  ASSERT_TRUE(CheckBufferContents(map.bytes().first<kPartialSize>(), 0));
 }
 
 TEST_F(MemoryMappedFileTest, MapPartialRegionAtEnd) {
@@ -144,7 +142,7 @@ TEST_F(MemoryMappedFileTest, MapPartialRegionAtEnd) {
   ASSERT_EQ(kPartialSize, map.length());
   ASSERT_TRUE(map.data() != nullptr);
   EXPECT_TRUE(map.IsValid());
-  ASSERT_TRUE(CheckBufferContents(map.bytes().first(kPartialSize), kOffset));
+  ASSERT_TRUE(CheckBufferContents(map.bytes().first<kPartialSize>(), kOffset));
 }
 
 TEST_F(MemoryMappedFileTest, MapSmallPartialRegionInTheMiddle) {
@@ -161,7 +159,7 @@ TEST_F(MemoryMappedFileTest, MapSmallPartialRegionInTheMiddle) {
   ASSERT_EQ(kPartialSize, map.length());
   ASSERT_TRUE(map.data() != nullptr);
   EXPECT_TRUE(map.IsValid());
-  ASSERT_TRUE(CheckBufferContents(map.bytes().first(kPartialSize), kOffset));
+  ASSERT_TRUE(CheckBufferContents(map.bytes().first<kPartialSize>(), kOffset));
 }
 
 TEST_F(MemoryMappedFileTest, MapLargePartialRegionInTheMiddle) {
@@ -178,7 +176,7 @@ TEST_F(MemoryMappedFileTest, MapLargePartialRegionInTheMiddle) {
   ASSERT_EQ(kPartialSize, map.length());
   ASSERT_TRUE(map.data() != nullptr);
   EXPECT_TRUE(map.IsValid());
-  ASSERT_TRUE(CheckBufferContents(map.bytes().first(kPartialSize), kOffset));
+  ASSERT_TRUE(CheckBufferContents(map.bytes().first<kPartialSize>(), kOffset));
 }
 
 TEST_F(MemoryMappedFileTest, WriteableFile) {
@@ -199,13 +197,13 @@ TEST_F(MemoryMappedFileTest, WriteableFile) {
     bytes[2] = 'r';
     bytes[kFileSize - 1] = '!';
     EXPECT_FALSE(CheckBufferContents(map.bytes(), 0));
-    EXPECT_TRUE(
-        CheckBufferContents(map.bytes().first(kFileSize - 1).subspan(3), 3));
+    EXPECT_TRUE(CheckBufferContents(
+        map.bytes().first<kFileSize - 1>().subspan<3>(), 3));
   }
 
-  int64_t file_size;
-  ASSERT_TRUE(GetFileSize(temp_file_path(), &file_size));
-  EXPECT_EQ(static_cast<int64_t>(kFileSize), file_size);
+  std::optional<int64_t> file_size = GetFileSize(temp_file_path());
+  ASSERT_TRUE(file_size.has_value());
+  EXPECT_EQ(static_cast<int64_t>(kFileSize), file_size.value());
 
   std::string contents;
   ASSERT_TRUE(ReadFileToString(temp_file_path(), &contents));
@@ -232,13 +230,13 @@ TEST_F(MemoryMappedFileTest, CopyOnWrite) {
     bytes[2] = 'r';
     bytes[kFileSize - 1] = '!';
     EXPECT_FALSE(CheckBufferContents(map.bytes(), 0));
-    EXPECT_TRUE(
-        CheckBufferContents(map.bytes().first(kFileSize - 1).subspan(3), 3));
+    EXPECT_TRUE(CheckBufferContents(
+        map.bytes().first<kFileSize - 1>().subspan<3>(), 3));
   }
 
-  int64_t file_size;
-  ASSERT_TRUE(GetFileSize(temp_file_path(), &file_size));
-  EXPECT_EQ(static_cast<int64_t>(kFileSize), file_size);
+  std::optional<int64_t> file_size = GetFileSize(temp_file_path());
+  ASSERT_TRUE(file_size.has_value());
+  EXPECT_EQ(static_cast<int64_t>(kFileSize), file_size.value());
 
   // Although the buffer has been modified in memory, the file is unchanged.
   std::string contents;
@@ -261,7 +259,7 @@ TEST_F(MemoryMappedFileTest, ExtendableFile) {
     EXPECT_EQ(kFileSize + kFileExtend, map.length());
     ASSERT_TRUE(map.data() != nullptr);
     EXPECT_TRUE(map.IsValid());
-    ASSERT_TRUE(CheckBufferContents(map.bytes().first(kFileSize), 0));
+    ASSERT_TRUE(CheckBufferContents(map.bytes().first<kFileSize>(), 0));
 
     span<uint8_t> bytes = map.mutable_bytes();
     EXPECT_EQ(0, bytes[kFileSize + 0]);
@@ -270,13 +268,13 @@ TEST_F(MemoryMappedFileTest, ExtendableFile) {
     bytes[kFileSize + 0] = 'B';
     bytes[kFileSize + 1] = 'A';
     bytes[kFileSize + 2] = 'Z';
-    EXPECT_TRUE(CheckBufferContents(map.bytes().first(kFileSize), 0));
+    EXPECT_TRUE(CheckBufferContents(map.bytes().first<kFileSize>(), 0));
   }
 
-  int64_t file_size;
-  ASSERT_TRUE(GetFileSize(temp_file_path(), &file_size));
-  EXPECT_LE(static_cast<int64_t>(kFileSize + 3), file_size);
-  EXPECT_GE(static_cast<int64_t>(kFileSize + kFileExtend), file_size);
+  std::optional<int64_t> file_size = GetFileSize(temp_file_path());
+  ASSERT_TRUE(file_size.has_value());
+  EXPECT_LE(static_cast<int64_t>(kFileSize + 3), file_size.value());
+  EXPECT_GE(static_cast<int64_t>(kFileSize + kFileExtend), file_size.value());
 
   std::string contents;
   ASSERT_TRUE(ReadFileToString(temp_file_path(), &contents));

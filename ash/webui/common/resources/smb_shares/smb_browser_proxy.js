@@ -65,11 +65,10 @@ export class SmbBrowserProxy {
 
   /**
    * Updates the credentials for a mounted share.
-   * @param {string} mountId
    * @param {string} username
    * @param {string} password
    */
-  updateCredentials(mountId, username, password) {}
+  updateCredentials(username, password) {}
 
   /**
    * Returns true if any SMB has been configured or saved before. Called when
@@ -105,8 +104,8 @@ export class SmbBrowserProxyImpl {
     chrome.send('startDiscovery');
   }
 
-  updateCredentials(mountId, username, password) {
-    chrome.send('updateCredentials', [mountId, username, password]);
+  updateCredentials(username, password) {
+    chrome.send('updateCredentials', [username, password]);
   }
 
   hasAnySmbMountedBefore() {

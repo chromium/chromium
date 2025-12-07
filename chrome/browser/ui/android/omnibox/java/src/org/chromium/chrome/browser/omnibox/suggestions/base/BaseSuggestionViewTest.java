@@ -18,10 +18,12 @@ import android.view.ViewGroup;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -35,11 +37,13 @@ import org.chromium.chrome.browser.omnibox.test.R;
 public class BaseSuggestionViewTest {
     private static final int CONTENT_VIEW_REPORTED_HEIGHT_PX = 10;
     // Used as a (fixed) width of a refine icon.
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private int mActionIconWidthPx;
     private int mSemicompactSuggestionViewHeight;
     private int mCompactSuggestionViewHeight;
     private int mDecorationIconWidthPx;
     private int mLargeDecorationIconWidthPx;
+    private int mSuggestionEndPaddingNoActionButtonPx;
 
     private BaseSuggestionViewForTest mView;
     private Activity mActivity;
@@ -84,8 +88,6 @@ public class BaseSuggestionViewTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mContentView = new View(mActivity);
         mContentView.setMinimumHeight(CONTENT_VIEW_REPORTED_HEIGHT_PX);
@@ -115,6 +117,12 @@ public class BaseSuggestionViewTest {
                 mActivity
                         .getResources()
                         .getDimensionPixelSize(R.dimen.omnibox_suggestion_icon_area_size_large);
+
+        mSuggestionEndPaddingNoActionButtonPx =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.omnibox_suggestion_end_padding_no_action_button);
     }
 
     /**
@@ -373,7 +381,8 @@ public class BaseSuggestionViewTest {
         final int paddingEnd = 22;
 
         final int expectedContentLeft = paddingStart + mDecorationIconWidthPx;
-        final int expectedContentRight = giveSuggestionWidth - paddingEnd;
+        final int expectedContentRight =
+                giveSuggestionWidth - paddingEnd - mSuggestionEndPaddingNoActionButtonPx;
 
         mView.setPaddingRelative(paddingStart, 0, paddingEnd, 0);
         executeLayoutTest(giveSuggestionWidth, giveContentHeight, View.LAYOUT_DIRECTION_LTR);
@@ -401,7 +410,7 @@ public class BaseSuggestionViewTest {
         final int paddingStart = 57;
         final int paddingEnd = 31;
 
-        final int expectedContentLeft = paddingEnd;
+        final int expectedContentLeft = paddingEnd + mSuggestionEndPaddingNoActionButtonPx;
         final int expectedContentRight =
                 giveSuggestionWidth - paddingStart - mDecorationIconWidthPx;
 

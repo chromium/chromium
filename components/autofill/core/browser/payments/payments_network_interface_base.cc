@@ -4,22 +4,30 @@
 
 #include "components/autofill/core/browser/payments/payments_network_interface_base.h"
 
+#include <optional>
+#include <string>
+#include <utility>
+
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "components/autofill/core/browser/payments/account_info_getter.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 #include "components/autofill/core/browser/payments/payments_service_url.h"
+#include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "net/base/load_flags.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
@@ -27,10 +35,6 @@ namespace autofill::payments {
 namespace {
 
 using PaymentsRpcResult = PaymentsAutofillClient::PaymentsRpcResult;
-
-const char kTokenFetchId[] = "wallet_client";
-const char kPaymentsOAuth2Scope[] =
-    "https://www.googleapis.com/auth/wallet.chrome";
 
 GURL GetRequestUrl(const std::string& path) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch("sync-url")) {
@@ -116,7 +120,7 @@ void PaymentsNetworkInterfaceBase::InitializeResourceRequest() {
 }
 
 void PaymentsNetworkInterfaceBase::OnSimpleLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   int response_code = -1;
   if (simple_url_loader_->ResponseInfo() &&
       simple_url_loader_->ResponseInfo()->headers) {
@@ -126,18 +130,14 @@ void PaymentsNetworkInterfaceBase::OnSimpleLoaderComplete(
     response_code = net::ERR_TIMED_OUT;
   }
 
-  std::string data;
-  if (response_body) {
-    data = std::move(*response_body);
-  }
-
-  OnSimpleLoaderCompleteInternal(response_code, data);
+  OnSimpleLoaderCompleteInternal(response_code,
+                                 std::move(response_body).value_or(""));
 }
 
 void PaymentsNetworkInterfaceBase::OnSimpleLoaderCompleteInternal(
     int response_code,
     const std::string& data) {
-  VLOG(2) << "Got data: " << data;
+  DVLOG(2) << "Got data: " << data;
 
   PaymentsRpcResult result = PaymentsRpcResult::kSuccess;
 
@@ -165,7 +165,8 @@ void PaymentsNetworkInterfaceBase::OnSimpleLoaderCompleteInternal(
     case net::HTTP_OK: {
       std::string error_code;
       std::string error_api_error_reason;
-      std::optional<base::Value> message_value = base::JSONReader::Read(data);
+      std::optional<base::Value> message_value =
+          base::JSONReader::Read(data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       if (message_value && message_value->is_dict()) {
         const auto* found_error_code =
             message_value->GetDict().FindStringByDottedPath("error.code");
@@ -183,15 +184,25 @@ void PaymentsNetworkInterfaceBase::OnSimpleLoaderCompleteInternal(
         request_->ParseResponse(message_value->GetDict());
       }
 
+      // Note that `error_api_error_reason` for virtual cards are mapped with
+      // virtual card specific PaymentsRpcResults while those for card from
+      // vendor(runtime retrieval) are mapped with generic temporary and
+      // permanent PaymentsRpcResults.
       if (base::EqualsCaseInsensitiveASCII(error_api_error_reason,
                                            "virtual_card_temporary_error")) {
         result = PaymentsRpcResult::kVcnRetrievalTryAgainFailure;
       } else if (base::EqualsCaseInsensitiveASCII(
                      error_api_error_reason, "virtual_card_permanent_error")) {
         result = PaymentsRpcResult::kVcnRetrievalPermanentFailure;
-      } else if (request_->IsRetryableFailure(error_code)) {
+      } else if (request_->IsRetryableFailure(error_code) ||
+                 base::EqualsCaseInsensitiveASCII(
+                     error_api_error_reason,
+                     "card_from_vendor_temporary_error")) {
         result = PaymentsRpcResult::kTryAgainFailure;
-      } else if (!error_code.empty() || !request_->IsResponseComplete()) {
+      } else if (!error_code.empty() || !request_->IsResponseComplete() ||
+                 base::EqualsCaseInsensitiveASCII(
+                     error_api_error_reason,
+                     "card_from_vendor_permanent_error")) {
         result = PaymentsRpcResult::kPermanentFailure;
       }
 
@@ -219,14 +230,9 @@ void PaymentsNetworkInterfaceBase::OnSimpleLoaderCompleteInternal(
 
     // This case occurs when the request hits the client-side timeout. This is
     // quite complex as the call could still complete on the server side, but we
-    // were not willing to wait any longer for the server. The best
-    // representation is `kTryAgainFailure`, but it may not be correct for the
-    // UX to *immediately* try again in all cases.
-    //
-    // TODO(crbug.com/40287257): Consider whether it makes more sense to add a
-    // new PaymentsRpcResult::kClientSideTimeout and return that here.
+    // were not willing to wait any longer for the server.
     case net::ERR_TIMED_OUT: {
-      result = PaymentsRpcResult::kTryAgainFailure;
+      result = PaymentsRpcResult::kClientSideTimeout;
       break;
     }
 
@@ -238,8 +244,8 @@ void PaymentsNetworkInterfaceBase::OnSimpleLoaderCompleteInternal(
   }
 
   if (result != PaymentsRpcResult::kSuccess) {
-    VLOG(1) << "Payments returned error: " << response_code
-            << " with data: " << data;
+    DVLOG(1) << "Payments returned error: " << response_code
+             << " with data: " << data;
   }
 
   request_->RespondToDelegate(result);
@@ -264,7 +270,7 @@ void PaymentsNetworkInterfaceBase::AccessTokenFetchFinished(
 
 void PaymentsNetworkInterfaceBase::AccessTokenError(
     const GoogleServiceAuthError& error) {
-  VLOG(1) << "Unhandled OAuth2 error: " << error.ToString();
+  DVLOG(1) << "Unhandled OAuth2 error: " << error.ToString();
   if (simple_url_loader_) {
     simple_url_loader_.reset();
   }
@@ -281,18 +287,16 @@ void PaymentsNetworkInterfaceBase::StartTokenFetch(bool invalidate_old) {
 
   DCHECK(account_info_getter_);
 
-  signin::ScopeSet payments_scopes;
-  payments_scopes.insert(kPaymentsOAuth2Scope);
   CoreAccountId account_id =
       account_info_getter_->GetAccountInfoForPaymentsServer().account_id;
   if (invalidate_old) {
     DCHECK(!access_token_.empty());
-    identity_manager_->RemoveAccessTokenFromCache(account_id, payments_scopes,
-                                                  access_token_);
+    identity_manager_->RemoveAccessTokenFromCache(
+        account_id, signin::OAuthConsumerId::kAutofillPayments, access_token_);
   }
   access_token_.clear();
   token_fetcher_ = identity_manager_->CreateAccessTokenFetcherForAccount(
-      account_id, kTokenFetchId, payments_scopes,
+      account_id, signin::OAuthConsumerId::kAutofillPayments,
       base::BindOnce(&PaymentsNetworkInterfaceBase::AccessTokenFetchFinished,
                      base::Unretained(this)),
       signin::AccessTokenFetcher::Mode::kImmediate);

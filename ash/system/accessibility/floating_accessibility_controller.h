@@ -59,6 +59,8 @@ class ASH_EXPORT FloatingAccessibilityController
   // FloatingAccessibilityView::Delegate:
   void OnDetailedMenuEnabled(bool enabled) override;
   void OnLayoutChanged() override;
+  void OnFocused() override;
+  void OnBlurred() override;
   // FloatingAccessibilityDetailedController::Delegate:
   void OnDetailedMenuClosed() override;
   views::Widget* GetBubbleWidget() override;
@@ -66,9 +68,13 @@ class ASH_EXPORT FloatingAccessibilityController
   void BubbleViewDestroyed() override;
   std::u16string GetAccessibleNameForBubble() override;
   void HideBubble(const TrayBubbleView* bubble_view) override;
+  void OnMouseEnteredView() override;
+  void OnMouseExitedView() override;
 
   // LocaleChangeObserver:
   void OnLocaleChanged() override;
+
+  void UpdateOpacity();
 
   raw_ptr<FloatingAccessibilityView> menu_view_ = nullptr;
   raw_ptr<FloatingAccessibilityBubbleView> bubble_view_ = nullptr;

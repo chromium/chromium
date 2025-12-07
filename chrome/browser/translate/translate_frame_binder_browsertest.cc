@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/translate/translate_frame_binder.h"
+
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_content_browser_client.h"
-#include "chrome/browser/translate/translate_frame_binder.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/translate/content/common/translate.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_test.h"
@@ -136,7 +138,8 @@ IN_PROC_BROWSER_TEST_F(TranslateFrameBinderPrerenderBrowserTest,
   // Navigate to an initial page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
 
-  int host_id = prerender_helper()->AddPrerender(kPrerenderingUrl);
+  content::FrameTreeNodeId host_id =
+      prerender_helper()->AddPrerender(kPrerenderingUrl);
   content::RenderFrameHost* prerendered_frame_host =
       prerender_helper()->GetPrerenderedMainFrameHost(host_id);
   content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);

@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/modules/credentialmanagement/authenticator_response.h"
 
-#include "base/notreached.h"
+#include <variant>
+
+#include "base/notimplemented.h"
 
 namespace blink {
 
@@ -13,8 +15,8 @@ AuthenticatorResponse::AuthenticatorResponse(DOMArrayBuffer* client_data_json)
 
 AuthenticatorResponse::~AuthenticatorResponse() = default;
 
-absl::variant<AuthenticatorAssertionResponseJSON*,
-              AuthenticatorAttestationResponseJSON*>
+std::variant<AuthenticatorAssertionResponseJSON*,
+             AuthenticatorAttestationResponseJSON*>
 AuthenticatorResponse::toJSON() const {
   NOTIMPLEMENTED();
   return static_cast<AuthenticatorAssertionResponseJSON*>(nullptr);

@@ -162,7 +162,7 @@ TEST_F(ScreenUtilTest, ShelfDisplayBoundsInUnifiedDesktopGrid) {
   matrix[2].emplace_back(list[4]);
   matrix[2].emplace_back(list[5]);
   display_manager()->SetUnifiedDesktopMatrix(matrix);
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   EXPECT_EQ(gfx::Size(766, 1254), screen->GetPrimaryDisplay().size());
 
   Shelf* shelf = Shell::GetPrimaryRootWindowController()->shelf();
@@ -226,7 +226,7 @@ TEST_F(ScreenUtilTest, SnapBoundsToDisplayEdge) {
 
   UpdateDisplay("2400x1800*1.8/r");
   EXPECT_EQ(gfx::Size(1000, 1333),
-            display::Screen::GetScreen()->GetPrimaryDisplay().size());
+            display::Screen::Get()->GetPrimaryDisplay().size());
   bounds = gfx::Rect(950, 0, 50, 1333);
   snapped_bounds = screen_util::SnapBoundsToDisplayEdge(bounds, window);
   EXPECT_EQ(snapped_bounds, gfx::Rect(950, 0, 50, 1334));

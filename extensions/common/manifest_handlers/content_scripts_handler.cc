@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/lazy_instance.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_util.h"
 #include "extensions/common/api/content_scripts.h"
@@ -19,9 +20,9 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
 #include "extensions/common/mojom/host_id.mojom.h"
+#include "extensions/common/mojom/match_origin_as_fallback.mojom-shared.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "extensions/common/script_constants.h"
 #include "extensions/common/url_pattern.h"
 #include "extensions/common/url_pattern_set.h"
 #include "extensions/common/utils/content_script_utils.h"
@@ -76,12 +77,12 @@ std::unique_ptr<UserScript> CreateUserScript(
   // Manifest content scripts support `match_about_blank` (unlike
   // `SerializedUserScript`). If `match_about_blank` is specified, we'll
   // override the `match_origin_as_fallback` behavior on the user script later.
-  std::optional<MatchOriginAsFallbackBehavior>
+  std::optional<mojom::MatchOriginAsFallbackBehavior>
       match_origin_as_fallback_override;
   if (!serialized_script.match_origin_as_fallback.has_value() &&
       content_script.match_about_blank && *content_script.match_about_blank) {
     match_origin_as_fallback_override =
-        MatchOriginAsFallbackBehavior::kMatchForAboutSchemeAndClimbTree;
+        mojom::MatchOriginAsFallbackBehavior::kMatchForAboutSchemeAndClimbTree;
   }
 
   serialized_script.include_globs = std::move(content_script.include_globs);
@@ -164,8 +165,9 @@ bool ContentScriptsInfo::ExtensionHasScriptAtURL(const Extension* extension,
                                                  const GURL& url) {
   for (const std::unique_ptr<UserScript>& script :
        GetContentScripts(extension)) {
-    if (script->MatchesURL(url))
+    if (script->MatchesURL(url)) {
       return true;
+    }
   }
   return false;
 }
@@ -176,8 +178,9 @@ URLPatternSet ContentScriptsInfo::GetScriptableHosts(
   URLPatternSet scriptable_hosts;
   for (const std::unique_ptr<UserScript>& script :
        GetContentScripts(extension)) {
-    for (const URLPattern& pattern : script->url_patterns())
+    for (const URLPattern& pattern : script->url_patterns()) {
       scriptable_hosts.AddPattern(pattern);
+    }
   }
   return scriptable_hosts;
 }
@@ -210,8 +213,22 @@ bool ContentScriptsHandler::Parse(Extension* extension, std::u16string* error) {
         CreateUserScript(std::move(manifest_keys.content_scripts[i]), i,
                          can_execute_script_everywhere,
                          all_urls_includes_chrome_urls, extension, error);
-    if (!user_script)
+    if (!user_script) {
       return false;  // Failed to parse script context definition.
+    }
+
+    std::string mime_type_error;
+    if (!script_parsing::ValidateUserScriptMimeTypesFromFileExtensions(
+            *user_script, &mime_type_error)) {
+      // Issue a warning and ignore this file. This is a warning and not a
+      // hard-error to preserve both backwards compatibility and potential
+      // future-compatibility if mime types change.
+      extension->AddInstallWarning(InstallWarning(
+          base::StringPrintf(manifest_errors::kInvalidUserScriptMimeType,
+                             mime_type_error.c_str()),
+          ContentScriptsKeys::kContentScripts));
+      continue;
+    }
 
     user_script->set_host_id(
         mojom::HostID(mojom::HostID::HostType::kExtensions, extension->id()));
@@ -231,14 +248,14 @@ bool ContentScriptsHandler::Parse(Extension* extension, std::u16string* error) {
 }
 
 bool ContentScriptsHandler::Validate(
-    const Extension* extension,
+    const Extension& extension,
     std::string* error,
     std::vector<InstallWarning>* warnings) const {
   // Validate that claimed script resources actually exist,
   // and are UTF-8 encoded.
   return script_parsing::ValidateFileSources(
-      ContentScriptsInfo::GetContentScripts(extension),
-      script_parsing::GetSymlinkPolicy(extension), error, warnings);
+      ContentScriptsInfo::GetContentScripts(&extension),
+      script_parsing::GetSymlinkPolicy(&extension), error, warnings);
 }
 
 }  // namespace extensions

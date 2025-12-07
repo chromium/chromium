@@ -9,10 +9,6 @@
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
-namespace WTF {
-class String;
-}  // namespace WTF
-
 namespace blink {
 
 class CSSFunctionValue : public CSSValueList {
@@ -20,7 +16,13 @@ class CSSFunctionValue : public CSSValueList {
   CSSFunctionValue(CSSValueID id)
       : CSSValueList(kFunctionClass, kCommaSeparator), value_id_(id) {}
 
-  WTF::String CustomCSSText() const;
+  CSSFunctionValue(CSSValueID id,
+                   ValueListSeparator argument_separator,
+                   HeapVector<Member<const CSSValue>, 4> values)
+      : CSSValueList(kFunctionClass, argument_separator, std::move(values)),
+        value_id_(id) {}
+
+  String CustomCSSText() const;
 
   bool Equals(const CSSFunctionValue& other) const {
     return value_id_ == other.value_id_ && CSSValueList::Equals(other);

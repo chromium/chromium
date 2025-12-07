@@ -10,7 +10,7 @@ import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -20,10 +20,12 @@ import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.Googl
 
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * Coordinator for GoogleBottomBar module. Provides the view, and initializes various components.
  */
+@NullMarked
 public class GoogleBottomBarCoordinator {
 
     private static final String TAG = "GBBCoordinator";

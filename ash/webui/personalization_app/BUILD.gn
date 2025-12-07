@@ -2,10 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/test/base/ash/js2gtest.gni")
 
-assert(is_chromeos_ash, "Personalization App is ash-chrome only")
+assert(is_chromeos, "Personalization App is ChromeOS only")
 
 static_library("personalization_app") {
   sources = [
@@ -28,20 +27,19 @@ static_library("personalization_app") {
   deps = [
     "search:mojo_bindings",
     "//ash",
-    "//ash/constants:constants",
+    "//ash/constants",
     "//ash/public/cpp",
     "//ash/webui/common:sea_pen",
     "//ash/webui/common:trusted_types_util",
     "//ash/webui/common/mojom:sea_pen",
     "//ash/webui/personalization_app/mojom",
     "//ash/webui/personalization_app/proto",
-    "//ash/webui/personalization_app/resources:resources",
+    "//ash/webui/personalization_app/resources",
     "//ash/webui/system_apps/public:system_web_app_config",
     "//ash/webui/system_apps/public:system_web_app_type",
     "//chromeos/ash/components/local_search_service",
     "//chromeos/ash/components/local_search_service/public/cpp",
     "//chromeos/ash/components/local_search_service/public/mojom",
-    "//chromeos/crosapi/cpp:cpp",
     "//chromeos/strings",
     "//components/keyed_service/content",
     "//components/keyed_service/core",
@@ -49,8 +47,8 @@ static_library("personalization_app") {
     "//content/public/browser",
     "//ui/chromeos",
     "//ui/chromeos/styles:cros_styles_views",
-    "//ui/resources:webui_resources_grd_grit",
     "//ui/webui",
+    "//ui/webui/resources:resources_grit",
   ]
 }
 
@@ -98,8 +96,8 @@ source_set("unit_tests") {
     "//chromeos/ash/components/local_search_service/public/mojom",
     "//chromeos/strings:strings_grit",
     "//components/prefs:test_support",
-    "//mojo/public/cpp/bindings:bindings",
+    "//mojo/public/cpp/bindings",
     "//testing/gtest",
-    "//ui/base:base",
+    "//ui/base",
   ]
 }

@@ -14,7 +14,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/AutofillNameFixFlowBridge_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace autofill {
@@ -25,7 +25,6 @@ CardNameFixFlowViewAndroid::CardNameFixFlowViewAndroid(
     : controller_(controller), web_contents_(web_contents) {}
 
 void CardNameFixFlowViewAndroid::OnUserAccept(JNIEnv* env,
-                                              const JavaParamRef<jobject>& obj,
                                               const std::u16string& name) {
   controller_->OnNameAccepted(name);
 }
@@ -34,16 +33,15 @@ void CardNameFixFlowViewAndroid::OnUserDismiss(JNIEnv* env) {
   controller_->OnDismissed();
 }
 
-void CardNameFixFlowViewAndroid::PromptDismissed(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+void CardNameFixFlowViewAndroid::PromptDismissed(JNIEnv* env) {
   delete this;
 }
 
 void CardNameFixFlowViewAndroid::Show() {
   auto java_object = GetOrCreateJavaObject();
-  if (!java_object)
+  if (!java_object) {
     return;
+  }
 
   java_object_.Reset(java_object);
 
@@ -64,18 +62,21 @@ void CardNameFixFlowViewAndroid::ControllerGone() {
 }
 
 CardNameFixFlowViewAndroid::~CardNameFixFlowViewAndroid() {
-  if (controller_)
+  if (controller_) {
     controller_->OnConfirmNameDialogClosed();
+  }
 }
 
 base::android::ScopedJavaGlobalRef<jobject>
 CardNameFixFlowViewAndroid::GetOrCreateJavaObject() {
-  if (java_object_internal_)
+  if (java_object_internal_) {
     return java_object_internal_;
+  }
 
   if (web_contents_->GetNativeView() == nullptr ||
-      web_contents_->GetNativeView()->GetWindowAndroid() == nullptr)
+      web_contents_->GetNativeView()->GetWindowAndroid() == nullptr) {
     return nullptr;  // No window attached (yet or anymore).
+  }
 
   JNIEnv* env = base::android::AttachCurrentThread();
   ui::ViewAndroid* view_android = web_contents_->GetNativeView();
@@ -89,3 +90,5 @@ CardNameFixFlowViewAndroid::GetOrCreateJavaObject() {
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(AutofillNameFixFlowBridge)

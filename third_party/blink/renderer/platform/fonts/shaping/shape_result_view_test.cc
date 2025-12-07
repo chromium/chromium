@@ -6,6 +6,8 @@
 
 #include <unicode/uscript.h>
 
+#include <array>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
@@ -23,9 +25,7 @@ namespace blink {
 
 class ShapeResultViewTest : public FontTestBase {
  protected:
-  void SetUp() override {
-    font_description.SetComputedSize(12.0);
-  }
+  void SetUp() override { font_description.SetComputedSize(12.0); }
 
   void TearDown() override {}
 
@@ -38,14 +38,14 @@ TEST_F(ShapeResultViewTest, ExpandRange) {
                              unsigned to) -> Vector<unsigned> {
     FontDescription::VariantLigatures ligatures(
         FontDescription::kEnabledLigaturesState);
-    Font font = test::CreateTestFont(
+    Font* font = test::CreateTestFont(
         AtomicString("roboto"),
         test::PlatformTestDataPath("third_party/Roboto/roboto-regular.woff2"),
         100, &ligatures);
 
     HarfBuzzShaper shaper(text);
     const ShapeResultView* shape_result = ShapeResultView::Create(
-        shaper.Shape(&font, ltr ? TextDirection::kLtr : TextDirection::kRtl));
+        shaper.Shape(font, ltr ? TextDirection::kLtr : TextDirection::kRtl));
     shape_result->ExpandRangeToIncludePartialGlyphs(&from, &to);
     return Vector<unsigned>({from, to});
   };
@@ -70,11 +70,11 @@ TEST_F(ShapeResultViewTest, ExpandRange) {
 // http://crbug.com/1221008
 TEST_F(ShapeResultViewTest,
        ExpandRangeToIncludePartialGlyphsWithCombiningCharacter) {
-  Font font(font_description);
+  Font* font = MakeGarbageCollected<Font>(font_description);
 
   String string(u"abc\u0E35\u0E35\u0E35\u0E35");
   HarfBuzzShaper shaper(string);
-  const ShapeResult* result = shaper.Shape(&font, TextDirection::kLtr);
+  const ShapeResult* result = shaper.Shape(font, TextDirection::kLtr);
   const ShapeResultView* view =
       ShapeResultView::Create(result, result->StartIndex(), result->EndIndex());
   unsigned from = 0;
@@ -85,19 +85,19 @@ TEST_F(ShapeResultViewTest,
 }
 
 TEST_F(ShapeResultViewTest, LatinSingleView) {
-  Font font(font_description);
+  Font* font = MakeGarbageCollected<Font>(font_description);
 
   String string =
-      To16Bit("Test run with multiple words and breaking opportunities.", 56);
+      To16Bit("Test run with multiple words and breaking opportunities.");
   TextDirection direction = TextDirection::kLtr;
 
   HarfBuzzShaper shaper(string);
-  const ShapeResult* result = shaper.Shape(&font, direction);
+  const ShapeResult* result = shaper.Shape(font, direction);
   Vector<ShapeResultTestGlyphInfo> glyphs;
   result->ForEachGlyph(0, AddGlyphInfo, static_cast<void*>(&glyphs));
 
   // Test view at the start of the result: "Test run with multiple"
-  ShapeResultView::Segment segments[] = {{result, 0, 22}};
+  auto segments = std::to_array<ShapeResultView::Segment>({{result, 0, 22}});
   auto* first4 = ShapeResultView::Create(segments);
 
   EXPECT_EQ(first4->StartIndex(), 0u);
@@ -137,18 +137,18 @@ TEST_F(ShapeResultViewTest, LatinSingleView) {
 }
 
 TEST_F(ShapeResultViewTest, ArabicSingleView) {
-  Font font(font_description);
+  Font* font = MakeGarbageCollected<Font>(font_description);
 
-  String string = To16Bit("عربى نص", 7);
+  String string = To16Bit("عربى نص");
   TextDirection direction = TextDirection::kRtl;
 
   HarfBuzzShaper shaper(string);
-  const ShapeResult* result = shaper.Shape(&font, direction);
+  const ShapeResult* result = shaper.Shape(font, direction);
   Vector<ShapeResultTestGlyphInfo> glyphs;
   result->ForEachGlyph(0, AddGlyphInfo, static_cast<void*>(&glyphs));
 
   // Test view at the start of the result: "عربى"
-  ShapeResultView::Segment segments[] = {{result, 0, 4}};
+  auto segments = std::to_array<ShapeResultView::Segment>({{result, 0, 4}});
   auto* first_word = ShapeResultView::Create(segments);
   Vector<ShapeResultTestGlyphInfo> first_glyphs;
   first_word->ForEachGlyph(0, AddGlyphInfo, static_cast<void*>(&first_glyphs));
@@ -158,10 +158,10 @@ TEST_F(ShapeResultViewTest, ArabicSingleView) {
   EXPECT_EQ(first_word->NumGlyphs(), 4u);
   EXPECT_EQ(first_glyphs.size(), 4u);
 
-  String first_reference_string = To16Bit("عربى", 4);
+  String first_reference_string = To16Bit("عربى");
   HarfBuzzShaper first_reference_shaper(first_reference_string);
   const ShapeResult* first_wortd_reference =
-      first_reference_shaper.Shape(&font, direction);
+      first_reference_shaper.Shape(font, direction);
   Vector<ShapeResultTestGlyphInfo> first_reference_glyphs;
   first_wortd_reference->ForEachGlyph(
       0, AddGlyphInfo, static_cast<void*>(&first_reference_glyphs));
@@ -184,7 +184,7 @@ TEST_F(ShapeResultViewTest, ArabicSingleView) {
 }
 
 TEST_F(ShapeResultViewTest, PreviousSafeToBreak) {
-  Font font(font_description);
+  Font* font = MakeGarbageCollected<Font>(font_description);
 
   String string =
       u"\u0028\u05D1\u0029\u0020\u05D4\u05D1\u05DC\u0020\u05D0\u05DE\u05E8"
@@ -210,7 +210,7 @@ TEST_F(ShapeResultViewTest, PreviousSafeToBreak) {
       51, 131, USCRIPT_HEBREW, blink::OrientationIterator::kOrientationKeep,
       blink::FontFallbackPriority::kText};
   const ShapeResult* shape_result =
-      shaper.Shape(&font, direction, 51, 131, range);
+      shaper.Shape(font, direction, 51, 131, range);
 
   unsigned start_offset = 59;
   unsigned end_offset = 118;
@@ -227,22 +227,21 @@ TEST_F(ShapeResultViewTest, PreviousSafeToBreak) {
 }
 
 TEST_F(ShapeResultViewTest, LatinMultiRun) {
-  Font font(font_description);
+  Font* font = MakeGarbageCollected<Font>(font_description);
 
   TextDirection direction = TextDirection::kLtr;
-  HarfBuzzShaper shaper_a(To16Bit("hello", 5));
-  HarfBuzzShaper shaper_b(To16Bit(" w", 2));
-  HarfBuzzShaper shaper_c(To16Bit("orld", 4));
-  HarfBuzzShaper shaper_d(To16Bit("!", 1));
+  HarfBuzzShaper shaper_a(To16Bit("hello"));
+  HarfBuzzShaper shaper_b(To16Bit(" w"));
+  HarfBuzzShaper shaper_c(To16Bit("orld"));
+  HarfBuzzShaper shaper_d(To16Bit("!"));
 
   // Combine four separate results into a single one to ensure we have a result
   // with multiple runs: "hello world!"
-  ShapeResult* result =
-      MakeGarbageCollected<ShapeResult>(&font, 0, 0, direction);
-  shaper_a.Shape(&font, direction)->CopyRange(0u, 5u, result);
-  shaper_b.Shape(&font, direction)->CopyRange(0u, 2u, result);
-  shaper_c.Shape(&font, direction)->CopyRange(0u, 4u, result);
-  shaper_d.Shape(&font, direction)->CopyRange(0u, 1u, result);
+  ShapeResult* result = MakeGarbageCollected<ShapeResult>(0, 0, direction);
+  shaper_a.Shape(font, direction)->CopyRange(0u, 5u, result);
+  shaper_b.Shape(font, direction)->CopyRange(0u, 2u, result);
+  shaper_c.Shape(font, direction)->CopyRange(0u, 4u, result);
+  shaper_d.Shape(font, direction)->CopyRange(0u, 1u, result);
 
   Vector<ShapeResultTestGlyphInfo> result_glyphs;
   result->ForEachGlyph(0, AddGlyphInfo, static_cast<void*>(&result_glyphs));
@@ -266,21 +265,20 @@ TEST_F(ShapeResultViewTest, LatinMultiRun) {
   EXPECT_EQ(composite_view->NumGlyphs(), 16u);
   EXPECT_EQ(view_glyphs.size(), 16u);
 
-  HarfBuzzShaper shaper2(To16Bit("hello world!", 12));
-  const ShapeResult* result2 = shaper2.Shape(&font, direction);
+  HarfBuzzShaper shaper2(To16Bit("hello world!"));
+  const ShapeResult* result2 = shaper2.Shape(font, direction);
   Vector<ShapeResultTestGlyphInfo> glyphs2;
   result2->ForEachGlyph(0, AddGlyphInfo, static_cast<void*>(&glyphs2));
   EXPECT_TRUE(CompareResultGlyphs(result_glyphs, glyphs2, 0u, 12u));
 
-  HarfBuzzShaper reference_shaper(To16Bit("hello wood wold!", 16));
-  const ShapeResult* reference_result =
-      reference_shaper.Shape(&font, direction);
+  HarfBuzzShaper reference_shaper(To16Bit("hello wood wold!"));
+  const ShapeResult* reference_result = reference_shaper.Shape(font, direction);
   Vector<ShapeResultTestGlyphInfo> reference_glyphs;
   reference_result->ForEachGlyph(0, AddGlyphInfo,
                                  static_cast<void*>(&reference_glyphs));
 
   ShapeResult* composite_copy =
-      MakeGarbageCollected<ShapeResult>(&font, 0, 0, direction);
+      MakeGarbageCollected<ShapeResult>(0, 0, direction);
   result->CopyRange(0, 8, composite_copy);
   result->CopyRange(7, 8, composite_copy);
   result->CopyRange(10, 11, composite_copy);
@@ -298,21 +296,20 @@ TEST_F(ShapeResultViewTest, LatinMultiRun) {
 }
 
 TEST_F(ShapeResultViewTest, LatinCompositeView) {
-  Font font(font_description);
+  Font* font = MakeGarbageCollected<Font>(font_description);
 
   String string =
-      To16Bit("Test run with multiple words and breaking opportunities.", 56);
+      To16Bit("Test run with multiple words and breaking opportunities.");
   TextDirection direction = TextDirection::kLtr;
 
   HarfBuzzShaper shaper(string);
-  const ShapeResult* result = shaper.Shape(&font, direction);
+  const ShapeResult* result = shaper.Shape(font, direction);
   Vector<ShapeResultTestGlyphInfo> glyphs;
   result->ForEachGlyph(0, AddGlyphInfo, static_cast<void*>(&glyphs));
 
-  String reference_string = To16Bit("multiple breaking opportunities Test", 36);
+  String reference_string = To16Bit("multiple breaking opportunities Test");
   HarfBuzzShaper reference_shaper(reference_string);
-  const ShapeResult* reference_result =
-      reference_shaper.Shape(&font, direction);
+  const ShapeResult* reference_result = reference_shaper.Shape(font, direction);
   Vector<ShapeResultTestGlyphInfo> reference_glyphs;
 
   // Match the character index logic of ShapeResult::CopyRange where the the
@@ -321,7 +318,7 @@ TEST_F(ShapeResultViewTest, LatinCompositeView) {
   // TODO(layout-dev): Arguably both should be updated to renumber the first
   // result as well but some callers depend on the existing behavior.
   ShapeResult* composite_copy =
-      MakeGarbageCollected<ShapeResult>(&font, 0, 0, direction);
+      MakeGarbageCollected<ShapeResult>(0, 0, direction);
   result->CopyRange(14, 23, composite_copy);
   result->CopyRange(33, 55, composite_copy);
   result->CopyRange(4, 5, composite_copy);
@@ -353,28 +350,27 @@ TEST_F(ShapeResultViewTest, LatinCompositeView) {
 }
 
 TEST_F(ShapeResultViewTest, MixedScriptsCompositeView) {
-  Font font(font_description);
+  Font* font = MakeGarbageCollected<Font>(font_description);
 
-  String string_a = To16Bit("Test with multiple 字体 ", 22);
-  String string_b = To16Bit("and 本書.", 7);
+  String string_a = To16Bit("Test with multiple 字体 ");
+  String string_b = To16Bit("and 本書.");
   TextDirection direction = TextDirection::kLtr;
 
   HarfBuzzShaper shaper_a(string_a);
-  const ShapeResult* result_a = shaper_a.Shape(&font, direction);
+  const ShapeResult* result_a = shaper_a.Shape(font, direction);
   HarfBuzzShaper shaper_b(string_b);
-  const ShapeResult* result_b = shaper_b.Shape(&font, direction);
+  const ShapeResult* result_b = shaper_b.Shape(font, direction);
 
-  String reference_string = To16Bit("Test with multiple 字体 and 本書.", 29);
+  String reference_string = To16Bit("Test with multiple 字体 and 本書.");
   HarfBuzzShaper reference_shaper(reference_string);
-  const ShapeResult* reference_result =
-      reference_shaper.Shape(&font, direction);
+  const ShapeResult* reference_result = reference_shaper.Shape(font, direction);
 
   // Create a copy using CopyRange and compare with that to ensure that the same
   // fonts are used for both the composite and the reference. The combined
   // reference_result data might use different fonts, resulting in different
   // glyph ids and metrics.
   ShapeResult* composite_copy =
-      MakeGarbageCollected<ShapeResult>(&font, 0, 0, direction);
+      MakeGarbageCollected<ShapeResult>(0, 0, direction);
   result_a->CopyRange(0, 22, composite_copy);
   result_b->CopyRange(0, 7, composite_copy);
   EXPECT_EQ(composite_copy->NumCharacters(), reference_result->NumCharacters());
@@ -399,12 +395,12 @@ TEST_F(ShapeResultViewTest, MixedScriptsCompositeView) {
 }
 
 TEST_F(ShapeResultViewTest, TrimEndOfView) {
-  Font font(font_description);
+  Font* font = MakeGarbageCollected<Font>(font_description);
 
-  String string = To16Bit("12345678901234567890", 20);
+  String string = To16Bit("12345678901234567890");
   TextDirection direction = TextDirection::kLtr;
   HarfBuzzShaper shaper(string);
-  const ShapeResult* result = shaper.Shape(&font, direction);
+  const ShapeResult* result = shaper.Shape(font, direction);
 
   // Create a view from 5 to 20.
   const ShapeResultView* view1 = ShapeResultView::Create(result, 5, 20);
@@ -418,13 +414,13 @@ TEST_F(ShapeResultViewTest, TrimEndOfView) {
 }
 
 TEST_F(ShapeResultViewTest, MarkerAndTrailingSpace) {
-  Font font(font_description);
+  Font* font = MakeGarbageCollected<Font>(font_description);
 
   String string = u"\u2067\u2022\u0020";
   TextDirection direction = TextDirection::kRtl;
   LayoutUnit symbol_width = LayoutUnit(7);
   const ShapeResult* result =
-      ShapeResult::CreateForSpaces(&font, direction, 1, 2, symbol_width);
+      ShapeResult::CreateForSpaces(font, direction, 1, 2, symbol_width);
 
   ShapeResultView::Segment segments[] = {{result, 1, 2}};
   auto* shape_result_view = ShapeResultView::Create(segments);
@@ -435,13 +431,13 @@ TEST_F(ShapeResultViewTest, MarkerAndTrailingSpace) {
 }
 
 TEST_F(ShapeResultViewTest, SpacesInLTR) {
-  Font font(font_description);
+  Font* font = MakeGarbageCollected<Font>(font_description);
 
   constexpr unsigned kStartIndex = 0;
   constexpr unsigned kLength = 2;
   constexpr float kWidth = 8;
   const auto* result = ShapeResult::CreateForSpaces(
-      &font, TextDirection::kLtr, kStartIndex, kLength, kWidth);
+      font, TextDirection::kLtr, kStartIndex, kLength, kWidth);
 
   const auto* view0 = ShapeResultView::Create(result, 0, 2);
   EXPECT_EQ(view0->NumCharacters(), 2u);
@@ -458,13 +454,13 @@ TEST_F(ShapeResultViewTest, SpacesInLTR) {
 
 // http://crbug.com/1160582
 TEST_F(ShapeResultViewTest, SpacesInRTL) {
-  Font font(font_description);
+  Font* font = MakeGarbageCollected<Font>(font_description);
 
   constexpr unsigned kStartIndex = 0;
   constexpr unsigned kLength = 2;
   constexpr float kWidth = 8;
   const auto* result = ShapeResult::CreateForSpaces(
-      &font, TextDirection::kRtl, kStartIndex, kLength, kWidth);
+      font, TextDirection::kRtl, kStartIndex, kLength, kWidth);
 
   const auto* view0 = ShapeResultView::Create(result, 0, 2);
   EXPECT_EQ(view0->NumCharacters(), 2u);
@@ -480,13 +476,13 @@ TEST_F(ShapeResultViewTest, SpacesInRTL) {
 }
 
 TEST_F(ShapeResultViewTest, TabulationCharactersInLTR) {
-  Font font(font_description);
+  Font* font = MakeGarbageCollected<Font>(font_description);
 
   constexpr float kPosition = 0;
   constexpr unsigned kStartIndex = 0;
   constexpr unsigned kLength = 2;
   const auto* result = ShapeResult::CreateForTabulationCharacters(
-      &font, TextDirection::kLtr, TabSize(8), kPosition, kStartIndex, kLength);
+      font, TextDirection::kLtr, TabSize(8), kPosition, kStartIndex, kLength);
 
   const auto* view0 = ShapeResultView::Create(result, 0, 2);
   EXPECT_EQ(view0->NumCharacters(), 2u);
@@ -503,13 +499,13 @@ TEST_F(ShapeResultViewTest, TabulationCharactersInLTR) {
 
 // http://crbug.com/1255310
 TEST_F(ShapeResultViewTest, TabulationCharactersInRTL) {
-  Font font(font_description);
+  Font* font = MakeGarbageCollected<Font>(font_description);
 
   constexpr float kPosition = 0;
   constexpr unsigned kStartIndex = 0;
   constexpr unsigned kLength = 2;
   const auto* result = ShapeResult::CreateForTabulationCharacters(
-      &font, TextDirection::kRtl, TabSize(8), kPosition, kStartIndex, kLength);
+      font, TextDirection::kRtl, TabSize(8), kPosition, kStartIndex, kLength);
 
   const auto* view0 = ShapeResultView::Create(result, 0, 2);
   EXPECT_EQ(view0->NumCharacters(), 2u);
@@ -530,10 +526,10 @@ TEST_F(ShapeResultViewTest, TabulationCharactersInRTL) {
 // some cases used to return the length of the view, rather than a position into
 // the view.
 TEST_F(ShapeResultViewTest, PreviousSafeOffsetInsideView) {
-  Font font(font_description);
+  Font* font = MakeGarbageCollected<Font>(font_description);
 
   HarfBuzzShaper shaper("Blah bla test something. ");
-  const ShapeResult* result = shaper.Shape(&font, TextDirection::kLtr);
+  const ShapeResult* result = shaper.Shape(font, TextDirection::kLtr);
 
   // Used to be 14 - 9 = 5, which is before the start of the view.
   auto* view1 = ShapeResultView::Create(result, 9, 14);

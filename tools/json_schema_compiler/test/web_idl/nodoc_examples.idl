@@ -1,0 +1,56 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+dictionary NormalDictionary {
+  DOMString normalMember;
+};
+
+[nodoc] dictionary DictionaryWithNoDoc {
+  DOMString memberOnNoDocDict;
+};
+
+dictionary DictionaryWithNoDocMember {
+  [nodoc] DOMString nodocMember;
+  DOMString normalMember;
+};
+
+enum NormalEnum {
+  "name1",
+  "name2"
+};
+
+[nodoc] enum EnumWithNoDoc {
+  "name1",
+  "name2"
+};
+
+callback SharedEventListener = undefined ();
+interface NoDocEvent : ExtensionEvent {
+  static void addListener(SharedEventListener listener);
+  static void removeListener(SharedEventListener listener);
+  static void hasListener(SharedEventListener listener);
+};
+interface NormalEvent : ExtensionEvent {
+  static void addListener(SharedEventListener listener);
+  static void removeListener(SharedEventListener listener);
+  static void hasListener(SharedEventListener listener);
+};
+
+// The nodoc API. This exists to demonstrate a variety of nodoc extended
+// attribute usage.
+[nodoc] interface NoDocAPI {
+
+  [nodoc] static undefined functionWithNoDoc();
+  static undefined normalFunction();
+
+  [nodoc] static attribute NoDocEvent noDocEvent;
+  static attribute NormalEvent normalEvent;
+
+  [nodoc] const long PROPERTY_WITH_NODOC = 6;
+  const long NORMAL_PROPERTY = 6;
+};
+
+partial interface Browser {
+  static attribute NoDocAPI nodocAPI;
+};

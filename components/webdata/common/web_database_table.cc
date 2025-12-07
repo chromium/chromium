@@ -5,9 +5,18 @@
 #include "components/webdata/common/web_database_table.h"
 
 WebDatabaseTable::WebDatabaseTable() : db_(nullptr), meta_table_(nullptr) {}
-WebDatabaseTable::~WebDatabaseTable() {}
+WebDatabaseTable::~WebDatabaseTable() = default;
 
-void WebDatabaseTable::Init(sql::Database* db, sql::MetaTable* meta_table) {
+void WebDatabaseTable::Init(sql::Database* db,
+                            sql::MetaTable* meta_table,
+                            const os_crypt_async::Encryptor* encryptor) {
   db_ = db;
   meta_table_ = meta_table;
+  encryptor_ = encryptor;
+}
+
+void WebDatabaseTable::Shutdown() {
+  db_ = nullptr;
+  meta_table_ = nullptr;
+  encryptor_ = nullptr;
 }

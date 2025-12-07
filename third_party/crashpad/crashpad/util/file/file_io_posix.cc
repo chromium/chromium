@@ -276,8 +276,7 @@ FileHandle StdioFileHandle(StdioStream stdio_stream) {
       return STDERR_FILENO;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return kInvalidFileHandle;
+  NOTREACHED();
 }
 
 }  // namespace crashpad

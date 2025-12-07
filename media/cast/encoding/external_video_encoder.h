@@ -11,6 +11,7 @@
 #include <memory>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -125,7 +126,6 @@ class SizeAdaptableExternalVideoEncoder final
 // value is related to the complexity of the content of the frame.
 class QuantizerEstimator {
  public:
-  static constexpr int NO_RESULT = -1;
   static constexpr int MIN_VPX_QUANTIZER = 4;
   static constexpr int MAX_VPX_QUANTIZER = 63;
 
@@ -142,9 +142,9 @@ class QuantizerEstimator {
   // Examine |frame| and estimate and return the quantizer value the software
   // VP8 encoder would have used when encoding the frame, in the range
   // [4.0,63.0].  If |frame| is not in planar YUV format, or its size is empty,
-  // this returns |NO_RESULT|.
-  double EstimateForKeyFrame(const VideoFrame& frame);
-  double EstimateForDeltaFrame(const VideoFrame& frame);
+  // this returns std::nullopt.
+  std::optional<double> EstimateForKeyFrame(const VideoFrame& frame);
+  std::optional<double> EstimateForDeltaFrame(const VideoFrame& frame);
 
  private:
   // Returns true if the frame is in planar YUV format.
@@ -153,9 +153,9 @@ class QuantizerEstimator {
   // Returns a value in the range [0,log2(num_buckets)], the Shannon Entropy
   // based on the probabilities of values falling within each of the buckets of
   // the given |histogram|.
-  static double ComputeEntropyFromHistogram(const int* histogram,
-                                            size_t histogram_size,
-                                            int num_samples);
+  static double ComputeEntropyFromHistogram(
+      base::span<const int> histogram,
+      int num_samples);
 
   // Map the |shannon_entropy| to its corresponding software VP8 quantizer.
   static double ToQuantizerEstimate(double shannon_entropy);

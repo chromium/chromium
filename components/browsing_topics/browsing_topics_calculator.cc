@@ -4,10 +4,11 @@
 
 #include "components/browsing_topics/browsing_topics_calculator.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/browsing_topics/annotator.h"
 #include "components/browsing_topics/common/semantic_tree.h"
@@ -306,8 +307,8 @@ void BrowsingTopicsCalculator::DeriveTopTopics(
                                    left.second.second > right.second.second);
                          });
 
-  base::ranges::transform(top_topics_count, std::back_inserter(top_topics),
-                          &TopicsCountValue::first);
+  std::ranges::transform(top_topics_count, std::back_inserter(top_topics),
+                         &TopicsCountValue::first);
 
   padded_top_topics_start_index = top_topics.size();
 
@@ -385,6 +386,7 @@ void BrowsingTopicsCalculator::OnGetRecentBrowsingTopicsApiUsagesCompleted(
   history::QueryOptions options;
   options.begin_time = api_usage_context_data_start_time_;
   options.end_time = calculation_time_;
+  options.policy_for_404_visits = history::VisitQuery404sPolicy::kExclude404s;
   options.duplicate_policy = history::QueryOptions::KEEP_ALL_DUPLICATES;
 
   progress_ = Progress::kHistoryRequested;
@@ -414,7 +416,7 @@ void BrowsingTopicsCalculator::OnGetRecentlyVisitedURLsCompleted(
       continue;
     }
 
-    std::string raw_host = url_result.url().host();
+    std::string raw_host = url_result.url().GetHost();
     raw_hosts.insert(raw_host);
 
     if (url_result.visit_time() >= history_data_start_time_) {
@@ -600,7 +602,7 @@ void BrowsingTopicsCalculator::OnCalculationHanging() {
       status = CalculatorResultStatus::kHangingAfterAnnotationRequested;
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   OnCalculateCompleted(EpochTopics(calculation_time_, status));

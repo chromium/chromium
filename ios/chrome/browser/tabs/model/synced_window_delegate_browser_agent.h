@@ -8,11 +8,8 @@
 #import "base/memory/raw_ptr.h"
 #import "components/sessions/core/session_id.h"
 #import "components/sync_sessions/synced_window_delegate.h"
-#import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
-
-class WebStateList;
+#import "ios/chrome/browser/tabs/model/tabs_dependency_installer.h"
 
 namespace browser_sync {
 class SyncedTabDelegate;
@@ -22,9 +19,8 @@ class SyncedTabDelegate;
 // SyncedWindowDelegate.
 class SyncedWindowDelegateBrowserAgent
     : public sync_sessions::SyncedWindowDelegate,
-      public BrowserObserver,
       public BrowserUserData<SyncedWindowDelegateBrowserAgent>,
-      public WebStateListObserver {
+      public TabsDependencyInstaller {
  public:
   // Not copyable or moveable
   SyncedWindowDelegateBrowserAgent(const SyncedWindowDelegateBrowserAgent&) =
@@ -35,6 +31,7 @@ class SyncedWindowDelegateBrowserAgent
 
   // Return the tab id for the tab at `index`.
   SessionID GetTabIdAt(int index) const override;
+  bool IsPlaceholderTabAt(int index) const override;
   bool IsSessionRestoreInProgress() const override;
   bool ShouldSync() const override;
 
@@ -47,25 +44,22 @@ class SyncedWindowDelegateBrowserAgent
   bool IsTabPinned(const sync_sessions::SyncedTabDelegate* tab) const override;
   sync_sessions::SyncedTabDelegate* GetTabAt(int index) const override;
 
-  // WebStateListObserver:
-  void WebStateListDidChange(WebStateList* web_state_list,
-                             const WebStateListChange& change,
-                             const WebStateListStatus& status) override;
+  // TabsDependencyInstaller:
+  void OnWebStateInserted(web::WebState* web_state) override;
+  void OnWebStateRemoved(web::WebState* web_state) override;
+  void OnWebStateDeleted(web::WebState* web_state) override;
+  void OnActiveWebStateChanged(web::WebState* old_active,
+                               web::WebState* new_active) override;
 
  private:
   friend class BrowserUserData<SyncedWindowDelegateBrowserAgent>;
-  BROWSER_USER_DATA_KEY_DECL();
 
   explicit SyncedWindowDelegateBrowserAgent(Browser* browser);
 
-  // BrowserObserver
-  void BrowserDestroyed(Browser* browser) override;
+  // Returns the WebState at index.
+  web::WebState* GetWebStateAt(int index) const;
 
-  // Sets the window id of `web_state` to `session_id_`.
-  void SetWindowIdForWebState(web::WebState* web_state);
-
-  raw_ptr<WebStateList> web_state_list_;
-  SessionID session_id_;
+  const SessionID session_id_;
 };
 
 #endif  // IOS_CHROME_BROWSER_TABS_MODEL_SYNCED_WINDOW_DELEGATE_BROWSER_AGENT_H_

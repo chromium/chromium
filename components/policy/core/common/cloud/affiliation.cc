@@ -7,8 +7,11 @@
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
-#include "components/policy/core/common/device_local_account_type.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
+#endif
 
 namespace policy {
 
@@ -31,9 +34,11 @@ bool IsUserAffiliated(const base::flat_set<std::string>& user_affiliation_ids,
     return false;
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
   if (IsDeviceLocalAccountUser(email)) {
     return true;
   }
+#endif
 
   return IsAffiliated(user_affiliation_ids, device_affiliation_ids);
 }

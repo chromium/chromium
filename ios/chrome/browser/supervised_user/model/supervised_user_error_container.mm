@@ -6,18 +6,18 @@
 
 #import <string>
 
+#import "base/functional/callback_helpers.h"
 #import "base/memory/ptr_util.h"
 #import "base/notreached.h"
 #import "components/supervised_user/core/browser/supervised_user_service.h"
 #import "components/supervised_user/core/browser/supervised_user_url_filter.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/parent_access_commands.h"
 #import "ios/chrome/browser/supervised_user/model/ios_web_content_handler_impl.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
-
-WEB_STATE_USER_DATA_KEY_IMPL(SupervisedUserErrorContainer)
 
 namespace {
 
@@ -29,9 +29,9 @@ const char* BoolToString(bool value) {
 // a permission request.
 // The method is invoked as a callback, so it is recommended to
 // bind a weak pointer to the webstate, in case it has been invalidated.
-void OnRequestUrlAccessRemote(base::WeakPtr<web::WebState> weak_web_state,
-                              bool is_main_frame,
-                              bool is_request_successful) {
+void OnRequestUrlAccess(base::WeakPtr<web::WebState> weak_web_state,
+                        bool is_main_frame,
+                        bool is_request_successful) {
   web::WebState* web_state = weak_web_state.get();
   if (!web_state) {
     return;
@@ -50,13 +50,11 @@ const char kSupervisedUserInterstitialType[] = "kSupervisedUserInterstitial";
 
 SupervisedUserErrorContainer::SupervisedUserErrorContainer(
     web::WebState* web_state)
-    : supervised_user_service_(
-          *SupervisedUserServiceFactory::GetForBrowserState(
-              ChromeBrowserState::FromBrowserState(
-                  web_state->GetBrowserState()))),
+    : supervised_user_service_(*SupervisedUserServiceFactory::GetForProfile(
+          ProfileIOS::FromBrowserState(web_state->GetBrowserState()))),
       web_state_(web_state) {
-  CHECK(SupervisedUserServiceFactory::GetForBrowserState(
-      ChromeBrowserState::FromBrowserState(web_state->GetBrowserState())));
+  CHECK(SupervisedUserServiceFactory::GetForProfile(
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState())));
   supervised_user_service_->AddObserver(this);
 }
 
@@ -81,7 +79,7 @@ std::unique_ptr<supervised_user::SupervisedUserInterstitial>
 SupervisedUserErrorContainer::CreateSupervisedUserInterstitial(
     SupervisedUserErrorInfo& error_info) {
   std::unique_ptr<IOSWebContentHandlerImpl> web_content_handler =
-      std::make_unique<IOSWebContentHandlerImpl>(web_state_,
+      std::make_unique<IOSWebContentHandlerImpl>(web_state_, commands_handler_,
                                                  error_info.is_main_frame());
 
   std::unique_ptr<supervised_user::SupervisedUserInterstitial> interstitial =
@@ -101,12 +99,15 @@ void SupervisedUserErrorContainer::HandleCommand(
   if (command == security_interstitials::SecurityInterstitialCommand::
                      CMD_REQUEST_SITE_ACCESS_PERMISSION) {
     RequestUrlAccessRemoteCallback callback =
-        base::BindOnce(&OnRequestUrlAccessRemote, web_state_->GetWeakPtr(),
+        base::BindOnce(&OnRequestUrlAccess, web_state_->GetWeakPtr(),
                        interstitial.web_content_handler()->IsMainFrame());
     interstitial.RequestUrlAccessRemote(
         base::BindOnce(&SupervisedUserErrorContainer::OnRequestCreated,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                        interstitial.url()));
+  } else if (command ==
+             security_interstitials::SecurityInterstitialCommand::CMD_PROCEED) {
+    interstitial.RequestUrlAccessLocal(base::DoNothing());
   } else if (command == security_interstitials::SecurityInterstitialCommand::
                             CMD_DONT_PROCEED) {
     interstitial.GoBack();
@@ -115,14 +116,11 @@ void SupervisedUserErrorContainer::HandleCommand(
 
 bool SupervisedUserErrorContainer::IsRemoteApprovalPendingForUrl(
     const GURL& url) {
-  return base::Contains(requested_hosts_, url.host());
+  return base::Contains(requested_hosts_, url.GetHost());
 }
 
 void SupervisedUserErrorContainer::URLFilterCheckCallback(
-    const GURL& url,
-    supervised_user::FilteringBehavior behavior,
-    supervised_user::FilteringBehaviorReason reason,
-    bool uncertain) {
+    supervised_user::SupervisedUserURLFilter::Result result) {
   auto* blocking_tab_helper =
       security_interstitials::IOSBlockingPageTabHelper::FromWebState(
           web_state_);
@@ -144,14 +142,13 @@ void SupervisedUserErrorContainer::URLFilterCheckCallback(
     SupervisedUserInterstitialBlockingPage* supervised_user_blocking_page =
         static_cast<SupervisedUserInterstitialBlockingPage*>(blocking_page);
     is_showing_supervised_user_interstitial_for_url =
-        supervised_user_blocking_page->interstitial().url() == url;
+        supervised_user_blocking_page->interstitial().url() == result.url;
     is_main_frame = supervised_user_blocking_page->interstitial()
                         .web_content_handler()
                         ->IsMainFrame();
   }
 
-  bool should_show_interstitial =
-      behavior == supervised_user::FilteringBehavior::kBlock;
+  bool should_show_interstitial = result.IsBlocked();
 
   if (is_showing_supervised_user_interstitial_for_url !=
       should_show_interstitial) {
@@ -165,13 +162,11 @@ void SupervisedUserErrorContainer::URLFilterCheckCallback(
 }
 
 void SupervisedUserErrorContainer::OnURLFilterChanged() {
-  supervised_user_service_->GetURLFilter()
-      ->GetFilteringBehaviorForURLWithAsyncChecks(
-          web_state_->GetLastCommittedURL(),
-          base::BindOnce(&SupervisedUserErrorContainer::URLFilterCheckCallback,
-                         weak_ptr_factory_.GetWeakPtr(),
-                         web_state_->GetLastCommittedURL()),
-          /*skip_manual_parent_filter=*/false);
+  supervised_user_service_->GetURLFilter()->GetFilteringBehaviorWithAsyncChecks(
+      web_state_->GetLastCommittedURL(),
+      base::BindOnce(&SupervisedUserErrorContainer::URLFilterCheckCallback,
+                     weak_ptr_factory_.GetWeakPtr()),
+      /*skip_manual_parent_filter=*/false);
 
   MaybeUpdatePendingApprovals();
 }
@@ -181,27 +176,35 @@ void SupervisedUserErrorContainer::OnRequestCreated(
     const GURL& url,
     bool successfully_created_request) {
   if (successfully_created_request) {
-    requested_hosts_.insert(url.host());
+    requested_hosts_.insert(url.GetHost());
   }
   std::move(callback).Run(successfully_created_request);
 }
 
 void SupervisedUserErrorContainer::MaybeUpdatePendingApprovals() {
-  supervised_user::FilteringBehavior filtering_behavior;
   supervised_user::SupervisedUserURLFilter* url_filter =
       supervised_user_service_->GetURLFilter();
 
   for (auto iter = requested_hosts_.begin(); iter != requested_hosts_.end();) {
-    bool is_manual = url_filter->GetManualFilteringBehaviorForURL(
-        GURL(*iter), &filtering_behavior);
+    supervised_user::SupervisedUserURLFilter::Result result =
+        url_filter->GetFilteringBehavior(GURL(*iter));
 
-    if (is_manual &&
-        filtering_behavior == supervised_user::FilteringBehavior::kAllow) {
+    if (result.IsFromManualList() && result.IsAllowed()) {
       iter = requested_hosts_.erase(iter);
     } else {
       iter++;
     }
   }
+}
+
+void SupervisedUserErrorContainer::SetParentAccessBottomSheetHandler(
+    id<ParentAccessCommands> commands_handler) {
+  if (!commands_handler) {
+    // Means that the web state has been destroyed therefore dismiss the
+    // bottom sheet if it's shown.
+    [commands_handler_ hideParentAccessBottomSheet];
+  }
+  commands_handler_ = commands_handler;
 }
 
 SupervisedUserInterstitialBlockingPage::SupervisedUserInterstitialBlockingPage(
@@ -229,19 +232,15 @@ void SupervisedUserInterstitialBlockingPage::HandleCommand(
     security_interstitials::SecurityInterstitialCommand command) {
   CHECK(error_container_);
   error_container_->HandleCommand(*interstitial_, command);
-
-  // If the page was pre-rendered, the first time banner was not marked
-  // on page loading.
-  MaybeUpdateFirstTimeInterstitialBanner();
 }
 
 bool SupervisedUserInterstitialBlockingPage::ShouldCreateNewNavigation() const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void SupervisedUserInterstitialBlockingPage::PopulateInterstitialStrings(
     base::Value::Dict& load_time_data) const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::string_view SupervisedUserInterstitialBlockingPage::GetInterstitialType()
@@ -259,31 +258,4 @@ void SupervisedUserInterstitialBlockingPage::WebStateDestroyed(
   DCHECK(scoped_observation_.IsObservingSource(web_state));
   error_container_ = nullptr;
   scoped_observation_.Reset();
-}
-
-void SupervisedUserInterstitialBlockingPage::PageLoaded(
-    web::WebState* web_state,
-    web::PageLoadCompletionStatus load_completion_status) {
-  MaybeUpdateFirstTimeInterstitialBanner();
-}
-
-void SupervisedUserInterstitialBlockingPage::
-    MaybeUpdateFirstTimeInterstitialBanner() {
-  if (!interstitial_->web_content_handler()->IsMainFrame()) {
-    return;
-  }
-  if (!web_state_->IsVisible()) {
-    // Only mark the banner if the loaded page is visible (it might be
-    // pre-rendered).
-    return;
-  }
-
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
-  CHECK(chrome_browser_state);
-  supervised_user::SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForBrowserState(chrome_browser_state);
-
-  CHECK(supervised_user_service);
-  supervised_user_service->MarkFirstTimeInterstitialBannerShown();
 }

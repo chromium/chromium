@@ -249,7 +249,10 @@ def parse_chunks_from_diff(diff):
   it = iter(diff)
   for line in it:
     while not line.startswith('@@'):
-      line = next(it)
+      try:
+        line = next(it)
+      except StopIteration:
+        return
     parts = line.split(' ')
     previous_start, previous_end = parse_chunk_header_file_range(
         parts[1].lstrip('-'))

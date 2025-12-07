@@ -32,6 +32,9 @@ class DEVICE_VR_EXPORT OpenXrPlatformHelperWindows
   device::mojom::XRDeviceData GetXRDeviceData() override;
   bool Initialize() override;
 
+  void PrepareForSessionShutdown(
+      base::OnceClosure shutdown_ready_callback) override;
+
   // Note that we treat the XrInstance as a singleton on Windows, so we must
   // override CreateInstance/DestroyInstance. See `OpenXrInstanceWrapper` for
   // more context.

@@ -10,6 +10,7 @@
 #include "base/test/test_future.h"
 #include "content/browser/service_worker/embedded_worker_instance.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
+#include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_hid_delegate_observer.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
 #include "content/browser/service_worker/service_worker_usb_delegate_observer.h"
@@ -73,7 +74,7 @@ void EmbeddedWorkerInstanceTestHarness::CreateAndStartWorker(
 
   // Make the registration findable via storage functions.
   base::test::TestFuture<blink::ServiceWorkerStatusCode> status;
-  helper_->context()->registry()->StoreRegistration(
+  helper_->context()->registry().StoreRegistration(
       pair.first.get(), pair.second.get(), status.GetCallback());
   ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk, status.Get());
 

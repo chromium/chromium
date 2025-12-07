@@ -8,6 +8,7 @@ import android.util.ArraySet;
 
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.Set;
 
@@ -15,6 +16,7 @@ import java.util.Set;
  * Tracks navigations on that were started from sync. These navigations will be ignored to prevent
  * looping notifications back to sync.
  */
+@NullMarked
 public class NavigationTracker {
     /** A counter to generate unique IDs to track navigations within a chrome session. */
     private int mRequestIdCounter;
@@ -57,7 +59,7 @@ public class NavigationTracker {
      */
     private static class SyncNavigationUserData implements UserData {
         /** An ID that can be used to track the navigation. */
-        private int mRequestID;
+        private final int mRequestID;
 
         /** Constructor. */
         public SyncNavigationUserData(int requestID) {

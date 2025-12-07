@@ -4,10 +4,13 @@
 
 package org.chromium.mojo.bindings;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * A {@link MessageReceiver} that can also handle the handle the response message generated from the
  * given message.
  */
+@NullMarked
 public interface MessageReceiverWithResponder extends MessageReceiver {
 
     /**

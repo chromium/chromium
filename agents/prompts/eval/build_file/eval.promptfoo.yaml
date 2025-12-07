@@ -1,0 +1,20 @@
+description: >
+  Verify that the correct target is found and built for
+  the given file.
+owner: dmurph@
+prompts:
+  - Can you build the file base/strings/strcat_unittest.cc locally?
+providers:
+  - id: python:../../../testing/gemini_provider.py
+    config:
+      timeoutSeconds: 1200
+tests:
+  - assert:
+    - type: python
+      value: file://../../../testing/asserts/check_changes.py:check_files_exist
+      config:
+        files:
+        - out/Default/obj/base/base_unittests/strcat_unittest.o
+    metadata:
+      tags:
+      - stable

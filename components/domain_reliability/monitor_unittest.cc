@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/domain_reliability/monitor.h"
 
 #include <stddef.h>
@@ -18,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -28,7 +24,6 @@
 #include "components/domain_reliability/baked_in_configs.h"
 #include "components/domain_reliability/beacon.h"
 #include "components/domain_reliability/config.h"
-#include "components/domain_reliability/features.h"
 #include "components/domain_reliability/google_configs.h"
 #include "components/domain_reliability/test_util.h"
 #include "net/base/isolation_info.h"
@@ -295,41 +290,52 @@ TEST_F(DomainReliabilityMonitorTest, Upload) {
   EXPECT_EQ(1u, CountQueuedBeacons(context));
 }
 
-// Make sure NetworkAnonymizationKey is populated in the beacon, or not,
-// depending on features::kPartitionDomainReliabilityByNetworkIsolationKey.
-TEST_F(DomainReliabilityMonitorTest, NetworkAnonymizationKey) {
-  const net::NetworkAnonymizationKey kNetworkAnonymizationKey =
-      net::NetworkAnonymizationKey::CreateTransient();
+// Make sure IsolationInfo is populated in the beacon, or not, depending on
+// whether cache partitioning is enabled.
+TEST_F(DomainReliabilityMonitorTest, IsolationInfo) {
+  const auto kReportOrigin =
+      url::Origin::Create(GURL("https://www.example.com/"));
+  const auto kReportIsolationInfo = net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kMainFrame, kReportOrigin, kReportOrigin,
+      net::SiteForCookies::FromOrigin(kReportOrigin));
+
+  // The IsolationInfo used for the upload should be derived from the request
+  // but should reflect that the upload is not a navigation and should not be
+  // sent with credentials.
+  const auto kExpectedIsolationInfo = net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kOther, kReportOrigin, kReportOrigin,
+      net::SiteForCookies());
 
   const DomainReliabilityContext* context = CreateAndAddContext();
 
   size_t index = 0;
   for (bool partitioning_enabled : {false, true}) {
+    SCOPED_TRACE(partitioning_enabled);
+
     base::test::ScopedFeatureList feature_list;
     if (partitioning_enabled) {
       feature_list.InitAndEnableFeature(
-          features::kPartitionDomainReliabilityByNetworkIsolationKey);
+          net::features::kSplitCacheByNetworkIsolationKey);
     } else {
       feature_list.InitAndDisableFeature(
-          features::kPartitionDomainReliabilityByNetworkIsolationKey);
+          net::features::kSplitCacheByNetworkIsolationKey);
     }
     RequestInfo request = MakeRequestInfo();
     request.url = GURL("http://example/");
     request.allow_credentials = false;
     request.net_error = net::ERR_CONNECTION_RESET;
     request.upload_depth = 1;
-    request.network_anonymization_key = kNetworkAnonymizationKey;
+    request.isolation_info = kReportIsolationInfo;
     OnRequestLegComplete(request);
 
     BeaconVector beacons;
     context->GetQueuedBeaconsForTesting(&beacons);
     ASSERT_EQ(index + 1, beacons.size());
     if (partitioning_enabled) {
-      EXPECT_EQ(kNetworkAnonymizationKey,
-                beacons[index]->network_anonymization_key);
+      EXPECT_TRUE(kExpectedIsolationInfo.IsEqualForTesting(
+          beacons[index]->isolation_info));
     } else {
-      EXPECT_EQ(net::NetworkAnonymizationKey(),
-                beacons[index]->network_anonymization_key);
+      EXPECT_TRUE(beacons[index]->isolation_info.IsEmpty());
     }
 
     ++index;
@@ -346,7 +352,7 @@ TEST_F(DomainReliabilityMonitorTest, BakedInAndGoogleConfigs) {
 
   // Count the number of baked-in configs.
   size_t num_baked_in_configs = 0u;
-  for (const char* const* p = kBakedInJsonConfigs; *p; ++p) {
+  for (const char* const* p = kBakedInJsonConfigs; *p; UNSAFE_TODO(++p)) {
     ++num_baked_in_configs;
   }
   EXPECT_GT(num_baked_in_configs, 0u);
@@ -592,11 +598,11 @@ TEST_F(DomainReliabilityMonitorTest,
 // expected.
 TEST_F(DomainReliabilityMonitorTest, RealRequest) {
   const net::IsolationInfo kIsolationInfo =
-      net::IsolationInfo::CreateTransient();
+      net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      features::kPartitionDomainReliabilityByNetworkIsolationKey);
+      net::features::kSplitCacheByNetworkIsolationKey);
 
   net::test_server::EmbeddedTestServer test_server;
   test_server.AddDefaultHandlers();
@@ -633,13 +639,13 @@ TEST_F(DomainReliabilityMonitorTest, RealRequest) {
   context->GetQueuedBeaconsForTesting(&beacons);
   ASSERT_EQ(1u, beacons.size());
   EXPECT_EQ(url_request->url(), beacons[0]->url);
-  EXPECT_EQ(kIsolationInfo.network_anonymization_key(),
-            beacons[0]->network_anonymization_key);
+  EXPECT_TRUE(kIsolationInfo.IsEqualForTesting(beacons[0]->isolation_info));
   EXPECT_EQ("http.response.empty", beacons[0]->status);
   EXPECT_EQ("", beacons[0]->quic_error);
   EXPECT_EQ(net::ERR_EMPTY_RESPONSE, beacons[0]->chrome_error);
-  EXPECT_EQ(test_server.base_url().host() + ":" + test_server.base_url().port(),
-            beacons[0]->server_ip);
+  EXPECT_EQ(
+      test_server.base_url().GetHost() + ":" + test_server.base_url().GetPort(),
+      beacons[0]->server_ip);
   EXPECT_FALSE(beacons[0]->was_proxied);
   EXPECT_EQ("HTTP", beacons[0]->protocol);
   EXPECT_FALSE(beacons[0]->details.quic_broken);

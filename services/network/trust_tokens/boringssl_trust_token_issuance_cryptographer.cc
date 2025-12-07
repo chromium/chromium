@@ -46,8 +46,7 @@ bool BoringsslTrustTokenIssuanceCryptographer::AddKey(std::string_view key) {
 
   size_t key_index;
   if (!TRUST_TOKEN_CLIENT_add_key(state_->Get(), &key_index,
-                                  base::as_bytes(base::make_span(key)).data(),
-                                  key.size())) {
+                                  base::as_byte_span(key).data(), key.size())) {
     return false;
   }
 
@@ -64,7 +63,8 @@ BoringsslTrustTokenIssuanceCryptographer::BeginIssuance(size_t num_tokens) {
 
   ScopedBoringsslBytes raw_issuance_request;
   if (!TRUST_TOKEN_CLIENT_begin_issuance(
-          state_->Get(), raw_issuance_request.mutable_ptr(),
+          state_->Get(),
+          &raw_issuance_request.mutable_ptr()->AsEphemeralRawAddr(),
           raw_issuance_request.mutable_len(), num_tokens)) {
     return std::nullopt;
   }
@@ -88,7 +88,7 @@ BoringsslTrustTokenIssuanceCryptographer::ConfirmIssuance(
   bssl::UniquePtr<STACK_OF(TRUST_TOKEN)> tokens(
       TRUST_TOKEN_CLIENT_finish_issuance(
           state_->Get(), &key_index,
-          base::as_bytes(base::make_span(decoded_response)).data(),
+          base::as_byte_span(decoded_response).data(),
           decoded_response.size()));
 
   if (!tokens) {

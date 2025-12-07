@@ -57,21 +57,22 @@ class PLATFORM_EXPORT ThreadScheduler {
                                    base::TimeDelta delay,
                                    Thread::IdleTask) = 0;
 
-  // Like postIdleTask but guarantees that the posted task will not run
-  // nested within an already-running task. Posting an idle task as
-  // non-nestable may not affect when the task gets run, or it could
-  // make it run later than it normally would, but it won't make it
-  // run earlier than it normally would.
-  virtual void PostNonNestableIdleTask(const base::Location&,
-                                       Thread::IdleTask) = 0;
+  // Releases memory associated with cancelled idle tasks (best effort).
+  virtual void RemoveCancelledIdleTasks() = 0;
 
   // Returns a task runner for kV8 tasks. Can be called from any thread.
   virtual scoped_refptr<base::SingleThreadTaskRunner> V8TaskRunner() = 0;
 
-  // Returns a task runner for kV8LowPriority tasks. Can be called from any
+  // Returns a task runner for V8 user visible tasks. Can be called from any
   // thread.
   virtual scoped_refptr<base::SingleThreadTaskRunner>
-  V8LowPriorityTaskRunner() {
+  V8UserVisibleTaskRunner() {
+    return nullptr;
+  }
+
+  // Returns a task runner for V8 best effort tasks. Can be called from any
+  // thread.
+  virtual scoped_refptr<base::SingleThreadTaskRunner> V8BestEffortTaskRunner() {
     return nullptr;
   }
 

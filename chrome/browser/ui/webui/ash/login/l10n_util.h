@@ -38,6 +38,7 @@ extern const char kMostRelevantLanguagesDivider[];
 // from initial_locale in VPD. If `selected` matches the locale code of any
 // entry in the resulting list, that entry will be marked as selected.
 base::Value::List GetUILanguageList(
+    const std::string& app_locale,
     const std::vector<std::string>* most_relevant_language_codes,
     const std::string& selected,
     input_method::InputMethodManager* input_method_manager);
@@ -64,16 +65,16 @@ std::string FindMostRelevantLocale(
     const base::Value::List& available_locales,
     const std::string& fallback_locale);
 
-// Return a list of keyboard layouts that can be used for `locale` on the login
+// Return a list of input methods that can be used for `locale` on the welcome
 // screen. Each list entry is a dictionary that contains data such as an ID and
 // a display name. The list will consist of the device's hardware layouts,
-// followed by a divider and locale-specific keyboard layouts, if any. The list
-// will also always contain the US keyboard layout. If `selected` matches the ID
+// followed by a divider and locale-specific input method IDs, if any. The list
+// will also always contain the US keyboard ID. If `selected` matches the ID
 // of any entry in the resulting list, that entry will be marked as selected.
-// In addition to returning the list of keyboard layouts, this function also
-// activates them, so that they can be selected by the user (e.g. by cycling
-// through keyboard layouts via keyboard shortcuts).
-base::Value::List GetAndActivateLoginKeyboardLayouts(
+// In addition to returning the list of IDs, this function also activates them,
+// so that they can be selected by the user (e.g. by cycling through input
+// methods via keyboard shortcuts).
+base::Value::List GetAndActivateOobeInputMethods(
     const std::string& locale,
     const std::string& selected,
     input_method::InputMethodManager* input_method_manager);

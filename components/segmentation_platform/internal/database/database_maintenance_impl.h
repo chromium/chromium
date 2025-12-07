@@ -18,6 +18,7 @@
 #include "components/segmentation_platform/internal/database/database_maintenance.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
+#include "components/segmentation_platform/internal/database/storage_service.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
 
@@ -43,9 +44,7 @@ class DatabaseMaintenanceImpl : public DatabaseMaintenance {
 
   explicit DatabaseMaintenanceImpl(const base::flat_set<SegmentId>& segment_ids,
                                    base::Clock* clock,
-                                   SegmentInfoDatabase* segment_info_database,
-                                   SignalDatabase* signal_database,
-                                   SignalStorageConfig* signal_storage_config,
+                                   StorageService* storage_service,
                                    PrefService* profile_prefs);
   ~DatabaseMaintenanceImpl() override;
 
@@ -93,9 +92,7 @@ class DatabaseMaintenanceImpl : public DatabaseMaintenance {
   raw_ptr<base::Clock> clock_;
 
   // Databases.
-  raw_ptr<SegmentInfoDatabase> segment_info_database_;
-  raw_ptr<SignalDatabase> signal_database_;
-  raw_ptr<SignalStorageConfig> signal_storage_config_;
+  raw_ptr<StorageService> storage_service_;
 
   // PrefService from profile.
   raw_ptr<PrefService> profile_prefs_;

@@ -58,9 +58,12 @@ enum DistanceMetric {
   // two types have not been interchanged.
   VIEWS_DISTANCE_START = VIEWS_INSETS_MAX,
 
+  // Width and height of a vector icon in a bubble's header (i.e. the one
+  // returned from GetWindowIcon).
+  DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE = VIEWS_DISTANCE_START,
   // Width of a bubble unless the content is too wide to make that
   // feasible.
-  DISTANCE_BUBBLE_PREFERRED_WIDTH = VIEWS_DISTANCE_START,
+  DISTANCE_BUBBLE_PREFERRED_WIDTH,
   // The default padding to add on each side of a button's label.
   DISTANCE_BUTTON_HORIZONTAL_PADDING,
   // The maximum width a button can have and still influence the sizes of
@@ -70,8 +73,12 @@ enum DistanceMetric {
   // The distance between a dialog's edge and the close button in the upper
   // trailing corner.
   DISTANCE_CLOSE_BUTTON_MARGIN,
+  // Vertical spacing between a list of multiple controls in one column.
+  DISTANCE_CONTROL_LIST_VERTICAL,
   // The vertical padding applied to text in a control.
   DISTANCE_CONTROL_VERTICAL_TEXT_PADDING,
+  // The vertical padding applied to text in a table.
+  DISTANCE_TABLE_VERTICAL_TEXT_PADDING,
   // The default minimum width of a dialog button.
   DISTANCE_DIALOG_BUTTON_MINIMUM_WIDTH,
   // The distance between the bottom of a dialog's content, when the final
@@ -86,9 +93,19 @@ enum DistanceMetric {
   // The distance between the bottom of a dialog's title and the top of the
   // dialog's content, when the first content element is text.
   DISTANCE_DIALOG_CONTENT_MARGIN_TOP_TEXT,
+  // Width of the space in a dropdown button between its label and down arrow.
+  DISTANCE_DROPDOWN_BUTTON_LABEL_ARROW_SPACING,
+  // Width of the horizontal padding in a dropdown button between the down arrow
+  // and the button's border.
+  DISTANCE_DROPDOWN_BUTTON_RIGHT_MARGIN,
+  // Width of the horizontal padding in a dropdown button between the button's
+  // left border and the label.
+  DISTANCE_DROPDOWN_BUTTON_LEFT_MARGIN,
   // Width of modal dialogs unless the content is too wide to make that
   // feasible.
   DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH,
+  // Width of larger modal dialogs that require extra width.
+  DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH,
   // The spacing between a pair of related horizontal buttons, used for
   // dialog layout.
   DISTANCE_RELATED_BUTTON_HORIZONTAL,
@@ -112,6 +129,8 @@ enum DistanceMetric {
   DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING,
   // Horizontal spacing between controls that are logically unrelated.
   DISTANCE_UNRELATED_CONTROL_HORIZONTAL,
+  // Horizontal padding for the infobar container.
+  DISTANCE_UNRELATED_INFOBAR_CONTAINER_HORIZONTAL,
   // Vertical spacing between controls that are logically unrelated.
   DISTANCE_UNRELATED_CONTROL_VERTICAL,
   // Padding in vector icons. This is a general number for more vector icons.
@@ -151,6 +170,7 @@ enum class ShapeContextTokens {
   kButtonRadius,
   kComboboxRadius,
   kDialogRadius,
+  kExtensionsMenuButtonRadius,
   kFindBarViewRadius,
   kMenuRadius,
   kMenuAuxRadius,
@@ -158,7 +178,7 @@ enum class ShapeContextTokens {
   kOmniboxExpandedRadius,
   kTextfieldRadius,
   kSidePanelContentRadius,
-  kSidePanelPageContentRadius,
+  kContentSeparatorRadius,
 };
 
 // ShapeSysTokens are tokens that map to a fixed value that aligns with UX/UI.
@@ -223,7 +243,10 @@ class VIEWS_EXPORT LayoutProvider {
 
   // Returns the corner radius specific to the given emphasis.
   virtual int GetCornerRadiusMetric(Emphasis emphasis,
-                                    const gfx::Size& size = gfx::Size()) const;
+                                    const gfx::Size& size) const;
+  int GetCornerRadiusMetric(Emphasis emphasis) const {
+    return GetCornerRadiusMetric(emphasis, gfx::Size());
+  }
 
   // Returns the shadow elevation metric for the given emphasis.
   virtual int GetShadowElevationMetric(Emphasis emphasis) const;

@@ -21,15 +21,7 @@ namespace favicon {
 class HistoryUiFaviconRequestHandler;
 }  // namespace favicon
 
-namespace gfx {
-class ImageSkia;
-}  // namespace gfx
-namespace ash {
-
-struct ForeignSyncedSessionAsh;
-class SyncedSessionClientAsh;
-
-namespace phonehub {
+namespace ash::phonehub {
 
 // BrowserTabsMetadataFetcher implementation. First, a vector containing
 // metadata of the most recently visited tab to least recently visited is
@@ -49,24 +41,13 @@ class BrowserTabsMetadataFetcherImpl : public BrowserTabsMetadataFetcher {
   void Fetch(
       const sync_sessions::SyncedSession* session,
       base::OnceCallback<void(BrowserTabsMetadataResponse)> callback) override;
-  void FetchForeignSyncedPhoneSessionMetadata(
-      const ForeignSyncedSessionAsh& session,
-      SyncedSessionClientAsh* synced_session_client_ash,
-      base::OnceCallback<void(BrowserTabsMetadataResponse)> callback) override;
 
  private:
   void OnAllFaviconsFetched();
-  void OnAllForeignSyncedSessionFaviconsFetched(
-      std::vector<BrowserTabsModel::BrowserTabMetadata> results,
-      base::OnceCallback<void(BrowserTabsMetadataResponse)> callback);
   void OnFaviconReady(
       size_t index_in_results,
       base::OnceClosure done_closure,
       const favicon_base::FaviconImageResult& favicon_image_result);
-  void OnForeignSyncedSessionFaviconReady(
-      BrowserTabsModel::BrowserTabMetadata* tab,
-      base::OnceClosure done_closure,
-      const gfx::ImageSkia& favicon);
 
   const raw_ptr<favicon::HistoryUiFaviconRequestHandler>
       favicon_request_handler_;
@@ -76,7 +57,6 @@ class BrowserTabsMetadataFetcherImpl : public BrowserTabsMetadataFetcher {
   base::WeakPtrFactory<BrowserTabsMetadataFetcherImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROME_BROWSER_ASH_PHONEHUB_BROWSER_TABS_METADATA_FETCHER_IMPL_H_

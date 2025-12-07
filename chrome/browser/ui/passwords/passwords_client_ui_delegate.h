@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_PASSWORDS_PASSWORDS_CLIENT_UI_DELEGATE_H_
 #define CHROME_BROWSER_UI_PASSWORDS_PASSWORDS_CLIENT_UI_DELEGATE_H_
 
-#include <map>
 #include <memory>
 #include <vector>
 
@@ -104,9 +103,8 @@ class PasswordsClientUIDelegate {
 
   // Called when user credentials were leaked. This triggers the UI to prompt
   // the user whether they would like to check their passwords.
-  virtual void OnCredentialLeak(password_manager::CredentialLeakType leak_type,
-                                const GURL& url,
-                                const std::u16string& username) = 0;
+  virtual void OnCredentialLeak(
+      password_manager::LeakedPasswordDetails details) = 0;
 
   // Called after a form was submitted. This triggers a bubble that allows to
   // move the just used profile credential in |form| to the user's account.
@@ -123,15 +121,27 @@ class PasswordsClientUIDelegate {
   // available.
   virtual void OnKeychainError() = 0;
 
-  // Called when a passkey with `username` has just been saved to display a
-  // confirmation of that to the user. If GPM pin was created in the same flow,
-  // then the confirmation of that is also displayed in the title.
-  virtual void OnPasskeySaved(const std::u16string& username,
-                              bool gpm_pin_created) = 0;
+  // Called when a passkey has just been saved to display a confirmation of that
+  // to the user. If GPM pin was created in the same flow, then the confirmation
+  // of that is also displayed in the title.
+  virtual void OnPasskeySaved(bool gpm_pin_created,
+                              std::string passkey_rp_id) = 0;
 
-  // Called when a passkey has just been deleted to display a confirmation of
-  // that to the user.
+  // Called when a passkey has just been hidden or deleted to display a
+  // confirmation of to the user. The UI does not distinguish between both.
   virtual void OnPasskeyDeleted() = 0;
+
+  // Called when a passkey has just been updated to display a confirmation of
+  // that to the user.
+  virtual void OnPasskeyUpdated(std::string passkey_rp_id) = 0;
+
+  // Called when a passkey has just been deleted because it was not present on
+  // an all accepted credentials report.
+  virtual void OnPasskeyNotAccepted(std::string passkey_rp_id) = 0;
+
+  // Called when a passkey has been created automatically by "upgrading" a
+  // password for the same website and username.
+  virtual void OnPasskeyUpgrade(std::string passkey_rp_id) = 0;
 
  protected:
   virtual ~PasswordsClientUIDelegate() = default;

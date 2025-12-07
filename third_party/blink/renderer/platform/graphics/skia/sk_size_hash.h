@@ -29,7 +29,7 @@
 #include "third_party/skia/include/core/SkScalar.h"
 #include "third_party/skia/include/core/SkSize.h"
 
-namespace WTF {
+namespace blink {
 
 template <>
 struct HashTraits<SkSize> : GenericHashTraits<SkSize> {
@@ -51,6 +51,6 @@ struct HashTraits<SkISize> : GenericHashTraits<SkISize> {
   static SkISize DeletedValue() { return SkISize::Make(-1, -1); }
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_SKIA_SK_SIZE_HASH_H_

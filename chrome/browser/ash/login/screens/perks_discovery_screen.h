@@ -43,6 +43,7 @@ struct SinglePerkDiscoveryPayload {
   std::string id;
   std::string title;
   std::string subtitle;
+  std::optional<std::string> additional_text;
   std::string icon_url;
   Content content;
 
@@ -56,6 +57,21 @@ class PerksDiscoveryScreen : public BaseScreen {
   using TView = PerksDiscoveryScreenView;
 
   enum class Result { kNext, kError, kTimeout, kNotApplicable };
+
+  // This enum is tied directly to a UMA enum defined in
+  // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
+  // change one without changing the other).  Entries should be never modified
+  // or deleted. Only additions are possible.
+  enum class PerksDiscoveryErrorReason {
+    kNoCampaignManager = 0,
+    kNoCampaign = 1,
+    kNoCampaignID = 2,
+    kNoPayload = 3,
+    kMalformedPayload = 4,
+    kNoUserProfile = 5,
+    kNoActionFound = 6,
+    kMaxValue = kNoActionFound
+  };
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 

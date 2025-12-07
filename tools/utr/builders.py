@@ -6,6 +6,7 @@
 import json
 import logging
 import pathlib
+import subprocess
 
 _THIS_DIR = pathlib.Path(__file__).resolve().parent
 _SRC_DIR = _THIS_DIR.parents[1]
@@ -51,21 +52,37 @@ def find_builder_props(builder_name, bucket_name=None, project_name=None):
     return matches
 
   possible_matches = []
-  if not project_name or project_name == 'chrome':
+  if not project_name or project_name.startswith('chrome'):
     matches = _walk_props_dir(_INTERNAL_BUILDER_PROP_DIRS)
     if matches:
-      project_name = 'chrome'
+      project_name = project_name or 'chrome'
       possible_matches += matches
 
-  if not project_name or project_name == 'chromium':
+  if not project_name or project_name.startswith('chromium'):
     matches = _walk_props_dir(_BUILDER_PROP_DIRS)
     if matches:
-      project_name = 'chromium'
+      project_name = project_name or 'chromium'
       possible_matches += matches
 
   if not possible_matches:
+    if (project_name and project_name.startswith('chrome')
+        and not _INTERNAL_BUILDER_PROP_DIRS.exists()):
+      logging.warning(
+          '[red]%s looks like an internal builder, but src-internal is not '
+          'present in this checkout. Make sure checkout_src_internal is set to '
+          'True in your .gclient file and run `gclient sync`.[/]', builder_name)
+    # Try also fetching the props from buildbucket. This will give us needed
+    # vals like recipe and builder-group name for builders that aren't
+    # bootstrapped.
+    if bucket_name and project_name:
+      logging.info(
+          'Prop file not found, attempting to fetch props from buildbucket.')
+      props = fetch_props_from_buildbucket(builder_name, bucket_name,
+                                           project_name)
+      if props:
+        return props, project_name
     logging.error(
-        '[red]No prop file found. Are you sure you have the correct project '
+        '[red]No props found. Are you sure you have the correct project '
         '("%s"), bucket ("%s"), and builder name ("%s")?[/]', project_name,
         bucket_name, builder_name)
     if not _INTERNAL_BUILDER_PROP_DIRS.exists():
@@ -88,3 +105,49 @@ def find_builder_props(builder_name, bucket_name=None, project_name=None):
     props = json.load(f)
 
   return props, project_name
+
+
+def fetch_props_from_buildbucket(builder_name, bucket_name, project_name):
+  """Calls out to buildbucket for the input props for the given builder
+
+  Args:
+    builder_name: Builder name of the builder
+    bucket_name: Bucket name of the builder
+    project_name: Project name of the builder
+
+  Returns:
+    Dict of the builder's input props
+  """
+  input_json = {
+      'id': {
+          'project': project_name,
+          'bucket': bucket_name,
+          'builder': builder_name,
+      }
+  }
+  cmd = [
+      'luci-auth',
+      'context',
+      '--',
+      'prpc',
+      'call',
+      'cr-buildbucket.appspot.com',
+      'buildbucket.v2.Builders.GetBuilder',
+  ]
+  logging.debug('Running prpc:')
+  logging.debug(' '.join(cmd))
+  p = subprocess.run(cmd,
+                     input=json.dumps(input_json),
+                     text=True,
+                     stdout=subprocess.PIPE,
+                     stderr=subprocess.STDOUT,
+                     check=False)
+  if p.returncode:
+    logging.warning('Error fetching the build template from buildbucket')
+    # Use the "basic_logger" here (and below) to avoid rich from coloring random
+    # bits of the printed error.
+    logging.getLogger('basic_logger').warning(p.stdout.strip())
+    return None
+  builder_info = json.loads(p.stdout)
+  props_s = builder_info.get('config', {}).get('properties', '{}')
+  return json.loads(props_s)

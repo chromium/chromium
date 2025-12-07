@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <optional>
@@ -16,30 +17,28 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "crypto/keypair.h"
 #include "device/fido/ctap_get_assertion_request.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_device.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/large_blob.h"
-#include "device/fido/public_key_credential_descriptor.h"
-#include "device/fido/public_key_credential_rp_entity.h"
-#include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/public_key_credential_descriptor.h"
+#include "device/fido/public/public_key_credential_rp_entity.h"
+#include "device/fido/public/public_key_credential_user_entity.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
-
-namespace crypto {
-class ECPrivateKey;
-}
 
 namespace device {
 
 struct PublicKey;
 
-constexpr size_t kMaxPinRetries = 8;
+inline constexpr size_t kMaxPinRetries = 8;
 
-constexpr size_t kMaxUvRetries = 5;
+inline constexpr size_t kMaxUvRetries = 5;
 
 class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
  public:
@@ -70,18 +69,23 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
     virtual ~PrivateKey();
 
     // Sign returns a signature over |message|.
-    virtual std::vector<uint8_t> Sign(base::span<const uint8_t> message) = 0;
+    virtual std::vector<uint8_t> Sign(base::span<const uint8_t> message);
 
     // GetX962PublicKey returns the elliptic-curve public key encoded in X9.62
     // format. Only elliptic-curve based private keys can be represented in this
     // format and calling this function on other types of keys will crash.
-    virtual std::vector<uint8_t> GetX962PublicKey() const;
+    std::vector<uint8_t> GetX962PublicKey() const;
 
     // GetPKCS8PrivateKey returns the private key encoded in ASN.1, DER, PKCS#8
     // format.
-    virtual std::vector<uint8_t> GetPKCS8PrivateKey() const = 0;
+    std::vector<uint8_t> GetPKCS8PrivateKey() const;
 
     virtual std::unique_ptr<PublicKey> GetPublicKey() const = 0;
+
+   protected:
+    explicit PrivateKey(crypto::keypair::PrivateKey key);
+
+    crypto::keypair::PrivateKey key_;
   };
 
   // Encapsulates information corresponding to one registered key on the virtual
@@ -129,6 +133,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
     std::optional<LargeBlob> large_blob;
     std::optional<std::array<uint8_t, 32>> large_blob_key;
     std::optional<std::vector<uint8_t>> cred_blob;
+
+    // The custom provider name for this credential.
+    std::optional<std::string> provider_name;
   };
 
   using Credential = std::pair<base::span<const uint8_t>, RegistrationData*>;
@@ -136,6 +143,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
   class COMPONENT_EXPORT(DEVICE_FIDO) Observer : public base::CheckedObserver {
    public:
     virtual void OnCredentialCreated(const Credential& credential) = 0;
+    virtual void OnCredentialDeleted(
+        base::span<const uint8_t> credential_id) = 0;
+    virtual void OnCredentialUpdated(const Credential& credential) = 0;
     virtual void OnAssertion(const Credential& credential) = 0;
   };
 
@@ -301,6 +311,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
     void NotifyCredentialCreated(
         const std::pair<base::span<const uint8_t>, RegistrationData*>&
             credential);
+    void NotifyCredentialDeleted(base::span<const uint8_t> credential_id);
+    void NotifyCredentialUpdated(
+        const std::pair<base::span<const uint8_t>, RegistrationData*>&
+            credential);
     void NotifyAssertion(const std::pair<base::span<const uint8_t>,
                                          RegistrationData*>& credential);
 
@@ -393,10 +407,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
   static std::vector<uint8_t> GetAttestationKey();
 
   scoped_refptr<State> NewReferenceToState() const { return state_; }
-
-  static bool Sign(crypto::ECPrivateKey* private_key,
-                   base::span<const uint8_t> sign_buffer,
-                   std::vector<uint8_t>* signature);
 
   // Constructs certificate encoded in X.509 format to be used for packed
   // attestation statement and FIDO-U2F attestation statement.

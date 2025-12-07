@@ -20,11 +20,11 @@ void PowerMonitorTestImpl::MakeSelfOwnedReceiver(
 }
 
 PowerMonitorTestImpl::PowerMonitorTestImpl() {
-  base::PowerMonitor::AddPowerStateObserver(this);
+  base::PowerMonitor::GetInstance()->AddPowerStateObserver(this);
 }
 
 PowerMonitorTestImpl::~PowerMonitorTestImpl() {
-  base::PowerMonitor::RemovePowerStateObserver(this);
+  base::PowerMonitor::GetInstance()->RemovePowerStateObserver(this);
 }
 
 void PowerMonitorTestImpl::QueryNextState(QueryNextStateCallback callback) {
@@ -36,8 +36,9 @@ void PowerMonitorTestImpl::QueryNextState(QueryNextStateCallback callback) {
     ReportState();
 }
 
-void PowerMonitorTestImpl::OnPowerStateChange(bool on_battery_power) {
-  on_battery_power_ = on_battery_power;
+void PowerMonitorTestImpl::OnBatteryPowerStatusChange(
+    base::PowerStateObserver::BatteryPowerStatus battery_power_status) {
+  battery_power_status_ = battery_power_status;
   need_to_report_ = true;
 
   if (!callback_.is_null())
@@ -45,7 +46,7 @@ void PowerMonitorTestImpl::OnPowerStateChange(bool on_battery_power) {
 }
 
 void PowerMonitorTestImpl::ReportState() {
-  std::move(callback_).Run(on_battery_power_);
+  std::move(callback_).Run(battery_power_status_);
   need_to_report_ = false;
 }
 

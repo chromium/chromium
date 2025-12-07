@@ -7,7 +7,6 @@
 #import <WebKit/WebKit.h>
 
 #import "base/check.h"
-#import "ios/chrome/browser/shared/public/commands/tos_commands.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -15,19 +14,16 @@
 @interface TOSViewController ()
 
 @property(nonatomic, strong) UIView* TOSView;
-@property(nonatomic, weak) id<TOSCommands> handler;
 
 @end
 
 @implementation TOSViewController
 
-- (instancetype)initWithContentView:(UIView*)TOSView
-                            handler:(id<TOSCommands>)handler {
+- (instancetype)initWithContentView:(UIView*)TOSView {
   DCHECK(TOSView);
   self = [super init];
   if (self) {
     _TOSView = TOSView;
-    _handler = handler;
   }
   return self;
 }
@@ -54,7 +50,7 @@
 
 // Called by the Done button from the navigation bar.
 - (void)close {
-  [self.handler closeTOSPage];
+  [_delegate TOSViewControllerWantsToBeClosed:self];
 }
 
 #pragma mark - Private

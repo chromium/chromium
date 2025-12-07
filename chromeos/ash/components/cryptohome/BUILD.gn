@@ -2,11 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 component("cryptohome") {
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_CRYPTOHOME_IMPL" ]
@@ -15,13 +13,14 @@ component("cryptohome") {
     "//chromeos/ash/components/dbus/constants",
     "//chromeos/ash/components/dbus/cryptohome",
     "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
-    "//chromeos/ash/components/dbus/userdataauth:userdataauth",
+    "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
     "//chromeos/ash/components/login/auth/public:challenge_response_key",
     "//components/account_id",
     "//components/device_event_log",
     "//components/user_manager",
     "//components/version_info",
+    "//google_apis",
   ]
   public_deps = [ ":public" ]
   sources = [
@@ -45,10 +44,13 @@ component("public") {
   deps = [
     "//base",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
+    "//components/account_id",
   ]
   sources = [
     "common_types.h",
     "constants.h",
+    "cryptohome_util.cc",
+    "cryptohome_util.h",
     "error_types.cc",
     "error_types.h",
     "error_util.cc",
@@ -65,13 +67,15 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chromeos/ash/components/dbus:test_support",
     "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
-    "//chromeos/ash/components/dbus/userdataauth:userdataauth",
+    "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
     "//chromeos/ash/components/login/auth/public:challenge_response_key",
-    "//testing/gtest:gtest",
+    "//google_apis",
+    "//testing/gtest",
   ]
   sources = [
     "auth_factor_conversions_unittest.cc",
+    "cryptohome_util_unittest.cc",
     "system_salt_getter_unittest.cc",
     "userdataauth_util_unittest.cc",
   ]

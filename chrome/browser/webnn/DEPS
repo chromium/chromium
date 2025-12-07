@@ -1,0 +1,9 @@
+include_rules = [
+  "+chrome/browser/browser_process.h",
+  "+chrome/common/chrome_paths.h",
+  "+components/prefs",
+  "+content/public/browser/browser_thread.h",
+  "+services/webnn/public/cpp",
+  "+services/webnn/public/mojom",
+  "+third_party/windows_app_sdk_headers",
+]

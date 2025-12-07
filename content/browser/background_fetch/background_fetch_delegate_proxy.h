@@ -28,8 +28,10 @@ class SkBitmap;
 
 namespace content {
 
+class BrowserContext;
 class PermissionController;
 class RenderFrameHostImpl;
+class RenderProcessHost;
 class StoragePartitionImpl;
 
 // This class was previously responsible for passing messages between

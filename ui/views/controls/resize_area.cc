@@ -14,7 +14,7 @@
 namespace views {
 
 ResizeArea::ResizeArea(ResizeAreaDelegate* delegate) : delegate_(delegate) {
-  GetViewAccessibility().SetProperties(ax::mojom::Role::kSplitter);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kSplitter);
 }
 
 ResizeArea::~ResizeArea() = default;
@@ -33,29 +33,35 @@ void ResizeArea::OnGestureEvent(ui::GestureEvent* event) {
     ReportResizeAmount(event->x(), false);
     event->SetHandled();
   } else if (event->type() == ui::EventType::kGestureEnd) {
-    ReportResizeAmount(event->x(), true);
+    if (is_resizing_) {
+      ReportResizeAmount(event->x(), true);
+    }
     event->SetHandled();
   }
 }
 
 bool ResizeArea::OnMousePressed(const ui::MouseEvent& event) {
-  if (!event.IsOnlyLeftMouseButton())
+  if (!event.IsOnlyLeftMouseButton()) {
     return false;
+  }
 
   SetInitialPosition(event.x());
   return true;
 }
 
 bool ResizeArea::OnMouseDragged(const ui::MouseEvent& event) {
-  if (!event.IsLeftMouseButton())
+  if (!event.IsLeftMouseButton()) {
     return false;
+  }
 
   ReportResizeAmount(event.x(), false);
   return true;
 }
 
 void ResizeArea::OnMouseReleased(const ui::MouseEvent& event) {
-  ReportResizeAmount(event.x(), true);
+  if (is_resizing_) {
+    ReportResizeAmount(event.x(), true);
+  }
 }
 
 void ResizeArea::OnMouseCaptureLost() {
@@ -66,6 +72,7 @@ void ResizeArea::ReportResizeAmount(int resize_amount, bool last_update) {
   gfx::Point point(resize_amount, 0);
   View::ConvertPointToScreen(this, &point);
   resize_amount = point.x() - initial_position_;
+  is_resizing_ = !last_update;
   delegate_->OnResize(base::i18n::IsRTL() ? -resize_amount : resize_amount,
                       last_update);
 }

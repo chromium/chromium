@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "services/video_capture/public/cpp/mock_video_capture_service.h"
-#include "build/chromeos_buildflags.h"
 
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
@@ -18,7 +17,7 @@ void MockVideoCaptureService::ConnectToVideoSourceProvider(
   DoConnectToVideoSourceProvider(std::move(receiver));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void MockVideoCaptureService::InjectGpuDependencies(
     mojo::PendingRemote<video_capture::mojom::AcceleratorFactory>
         accelerator_factory) {
@@ -29,6 +28,6 @@ void MockVideoCaptureService::BindVideoCaptureDeviceFactory(
     mojo::PendingReceiver<crosapi::mojom::VideoCaptureDeviceFactory> receiver) {
   DoBindVideoCaptureDeviceFactory(std::move(receiver));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace video_capture

@@ -7,21 +7,23 @@ package org.chromium.chrome.browser.incognito.reauth;
 import android.app.Activity;
 import android.os.Build;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.device_reauth.BiometricStatus;
 import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.user_prefs.UserPrefs;
 
 /** This class is responsible for managing the Incognito re-authentication flow. */
+@NullMarked
 public class IncognitoReauthManager {
-    private static Boolean sIsIncognitoReauthFeatureAvailableForTesting;
-    private ReauthenticatorBridge mReauthenticatorBridge;
+    private static @Nullable Boolean sIsIncognitoReauthFeatureAvailableForTesting;
+    private final ReauthenticatorBridge mReauthenticatorBridge;
 
     /**
      * A callback interface which is used for re-authentication in {@link
@@ -52,12 +54,11 @@ public class IncognitoReauthManager {
      * Starts the authentication flow. This is an asynchronous method call which would invoke the
      * passed {@link IncognitoReauthCallback} parameter once executed.
      *
-     * @param incognitoReauthCallback A {@link IncognitoReauthCallback} callback that
-     *         would be run once the authentication is executed.
+     * @param incognitoReauthCallback A {@link IncognitoReauthCallback} callback that would be run
+     *     once the authentication is executed.
      */
-    public void startReauthenticationFlow(
-            @NonNull IncognitoReauthCallback incognitoReauthCallback) {
-        if (!mReauthenticatorBridge.canUseAuthenticationWithBiometricOrScreenLock()
+    public void startReauthenticationFlow(IncognitoReauthCallback incognitoReauthCallback) {
+        if (mReauthenticatorBridge.getBiometricAvailabilityStatus() == BiometricStatus.UNAVAILABLE
                 || !isIncognitoReauthFeatureAvailable()) {
             incognitoReauthCallback.onIncognitoReauthNotPossible();
             return;
@@ -86,8 +87,6 @@ public class IncognitoReauthManager {
      *     corresponding Chrome feature flag is on;
      *     <p>For a more complete check, rely on the method {@link
      *     IncognitoReauthManager#isIncognitoReauthEnabled(Profile)} instead.
-     *     <p>TODO(crbug.com/40056462): Remove the check on accessibility once the GTS is fully
-     *     rolled out to accessibility users.
      */
     public static boolean isIncognitoReauthFeatureAvailable() {
         if (sIsIncognitoReauthFeatureAvailableForTesting != null) {
@@ -95,17 +94,15 @@ public class IncognitoReauthManager {
         }
         // The implementation relies on {@link BiometricManager} which was introduced in API
         // level 29. Android Q is not supported due to a potential bug in BiometricPrompt.
-        return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-                && ChromeFeatureList.sIncognitoReauthenticationForAndroid.isEnabled();
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R;
     }
 
     /**
      * @param profile The {@link Profile} which is used to query the preference value of the
-     *         Incognito lock setting.
-     *
+     *     Incognito lock setting.
      * @return A boolean indicating if Incognito re-authentication is possible or not.
      */
-    public static boolean isIncognitoReauthEnabled(@NonNull Profile profile) {
+    public static boolean isIncognitoReauthEnabled(Profile profile) {
         return isIncognitoReauthFeatureAvailable()
                 && IncognitoReauthSettingUtils.isDeviceScreenLockEnabled()
                 && isIncognitoReauthSettingEnabled(profile);

@@ -6,7 +6,7 @@
 
 #include "ash/public/cpp/login_accelerators.h"
 #include "base/time/default_tick_clock.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/os_install_screen_handler.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 

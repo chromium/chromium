@@ -6,24 +6,22 @@
 
 #include "base/strings/utf_string_conversions.h"
 
-namespace content {
+namespace content::indexed_db {
 
-IndexedDBDatabaseError::IndexedDBDatabaseError() = default;
+DatabaseError::DatabaseError() = default;
 
-IndexedDBDatabaseError::IndexedDBDatabaseError(blink::mojom::IDBException code)
-    : code_(code) {}
+DatabaseError::DatabaseError(blink::mojom::IDBException code) : code_(code) {}
 
-IndexedDBDatabaseError::IndexedDBDatabaseError(blink::mojom::IDBException code,
-                                               const std::string& message)
+DatabaseError::DatabaseError(blink::mojom::IDBException code,
+                             const std::string& message)
     : code_(code), message_(base::UTF8ToUTF16(message)) {}
 
-IndexedDBDatabaseError::IndexedDBDatabaseError(blink::mojom::IDBException code,
-                                               const std::u16string& message)
+DatabaseError::DatabaseError(blink::mojom::IDBException code,
+                             const std::u16string& message)
     : code_(code), message_(message) {}
 
-IndexedDBDatabaseError::~IndexedDBDatabaseError() = default;
+DatabaseError::~DatabaseError() = default;
 
-IndexedDBDatabaseError& IndexedDBDatabaseError::operator=(
-    const IndexedDBDatabaseError& rhs) = default;
+DatabaseError& DatabaseError::operator=(const DatabaseError& rhs) = default;
 
-}  // namespace content
+}  // namespace content::indexed_db

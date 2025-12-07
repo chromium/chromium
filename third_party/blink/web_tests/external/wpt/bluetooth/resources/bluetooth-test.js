@@ -1,5 +1,9 @@
 'use strict';
 
+// A flag indicating whether to use Web Bluetooth BiDi commands for Bluetooth
+// emulation.
+let useBidi = false;
+
 /**
  * Test Setup Helpers
  */
@@ -89,22 +93,38 @@ function bluetooth_test(
   }, name, properties);
 }
 
-function bluetooth_test_crbug1430625(
+/**
+ * These tests rely on the User Agent providing an implementation of the
+ * WebDriver-Bidi for testing Web Bluetooth
+ * https://webbluetoothcg.github.io/web-bluetooth/#automated-testing
+ * @param {function{*}: Promise<*>} test_function The Web Bluetooth test to run.
+ * @param {string} name The name or description of the test.
+ * @param {object} properties An object containing extra options for the test.
+ * @param {Boolean} validate_response_consumed Whether to validate all response
+ *     consumed or not.
+ * @returns {Promise<void>} Resolves if Web Bluetooth test ran successfully, or
+ *     rejects if the test failed.
+ */
+function bluetooth_bidi_test(
   test_function, name, properties, validate_response_consumed = true) {
 return promise_test(async (t) => {
   assert_implements(navigator.bluetooth, 'missing navigator.bluetooth');
-  // Trigger Chromium-specific setup.
-  await performChromiumSetup();
+
+  // Necessary setup for Bluetooth emulation using WebDriver Bidi commands.
+  useBidi = true;
+  await loadScript('/resources/web-bluetooth-bidi-test.js');
+  await initializeBluetoothBidiResources();
   assert_implements(
       navigator.bluetooth.test, 'missing navigator.bluetooth.test');
-  console.log('[crbug.com/1430625] To test_function');
-  await test_function(t);
-  if (validate_response_consumed) {
-    console.log('[crbug.com/1430625] To wait allResponsesConsumed');
-    let consumed = await navigator.bluetooth.test.allResponsesConsumed();
-    assert_true(consumed);
+  await test_driver.bidi.bluetooth.request_device_prompt_updated.subscribe();
+  await test_driver.bidi.bluetooth.gatt_connection_attempted.subscribe();
+  await test_driver.bidi.bluetooth.characteristic_event_generated.subscribe();
+  await test_driver.bidi.bluetooth.descriptor_event_generated.subscribe();
+  try {
+    await test_function(t);
+  } finally {
+    await test_driver.bidi.bluetooth.disable_simulation();
   }
-  console.log('[crbug.com/1430625] End');
 }, name, properties);
 }
 
@@ -153,11 +173,34 @@ async function callWithTrustedClick(callback) {
 }
 
 /**
+ * Registers a one-time handler that selects the first device in the device
+ * prompt upon a device prompt updated event.
+ * @returns {Promise<void>} Fulfilled after the Bluetooth device prompt
+ * is handled, or rejected if the operation fails.
+ */
+function selectFirstDeviceOnDevicePromptUpdated() {
+  if (!useBidi) {
+    // Return a resolved promise when there is no bidi support.
+    return Promise.resolve();
+  }
+  test_driver.bidi.bluetooth.request_device_prompt_updated.once().then(
+      (promptEvent) => {
+        assert_greater_than(promptEvent.devices.length, 0);
+        return test_driver.bidi.bluetooth.handle_request_device_prompt({
+          prompt: promptEvent.prompt,
+          accept: true,
+          device: promptEvent.devices[0].id
+        });
+      });
+}
+
+/**
  * Calls requestDevice() in a context that's 'allowed to show a popup'.
  * @returns {Promise<BluetoothDevice>} Resolves with a Bluetooth device if
  *     successful or rejects with an error.
  */
 function requestDeviceWithTrustedClick() {
+  selectFirstDeviceOnDevicePromptUpdated();
   let args = arguments;
   return callWithTrustedClick(
       () => navigator.bluetooth.requestDevice.apply(navigator.bluetooth, args));
@@ -334,7 +377,7 @@ function assert_promise_resolves_after_event(
 }
 
 /**
- * Returns a promise that resolves after 100ms unless the the event is fired on
+ * Returns a promise that resolves after 100ms unless the event is fired on
  * the object in which case the promise rejects.
  * @param {EventTarget} object The target object to listen for events.
  * @param {string} event_name The event type to listen for.

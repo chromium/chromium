@@ -8,7 +8,7 @@
 #include <string>
 
 #include "content/common/content_export.h"
-#include "ipc/ipc_message.h"
+#include "ipc/constants.mojom.h"
 
 namespace content {
 
@@ -28,8 +28,10 @@ struct CONTENT_EXPORT WebContentsMediaCaptureId {
         main_render_frame_id(main_render_frame_id),
         disable_local_echo(disable_local_echo) {}
 
-  bool operator<(const WebContentsMediaCaptureId& other) const;
-  bool operator==(const WebContentsMediaCaptureId& other) const;
+  friend bool operator==(const WebContentsMediaCaptureId&,
+                         const WebContentsMediaCaptureId&) = default;
+  friend auto operator<=>(const WebContentsMediaCaptureId&,
+                          const WebContentsMediaCaptureId&) = default;
 
   // Return true if render_process_id or main_render_frame_id is invalid.
   bool is_null() const;
@@ -37,8 +39,8 @@ struct CONTENT_EXPORT WebContentsMediaCaptureId {
   std::string ToString() const;
 
   // Tab video and audio capture need render process id and render frame id.
-  int render_process_id = MSG_ROUTING_NONE;
-  int main_render_frame_id = MSG_ROUTING_NONE;
+  int render_process_id = IPC::mojom::kRoutingIdNone;
+  int main_render_frame_id = IPC::mojom::kRoutingIdNone;
 
   bool disable_local_echo = false;
 

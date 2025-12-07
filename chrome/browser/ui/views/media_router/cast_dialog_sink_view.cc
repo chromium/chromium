@@ -116,7 +116,7 @@ std::unique_ptr<views::View> CastDialogSinkView::CreateLabelView(
   const int icon_label_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);
   const int vertical_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                   DISTANCE_CONTROL_LIST_VERTICAL) /
+                                   views::DISTANCE_CONTROL_LIST_VERTICAL) /
                                2;
 
   auto label_container = std::make_unique<views::View>();
@@ -172,7 +172,7 @@ std::unique_ptr<views::View> CastDialogSinkView::CreateButtonsView(
   button_container->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(-ChromeLayoutProvider::Get()->GetDistanceMetric(
-                            DISTANCE_CONTROL_LIST_VERTICAL) /
+                            views::DISTANCE_CONTROL_LIST_VERTICAL) /
                             2,
                         0, 0, button_spacing));
 
@@ -230,8 +230,7 @@ std::u16string CastDialogSinkView::GetFreezeButtonAccessibleName() const {
   // If there is no route for the sink or the route may not be frozen, no freeze
   // button should be displayed.
   if (!sink_.route || !sink_.freeze_info.can_freeze) {
-    NOTREACHED_IN_MIGRATION();
-    return std::u16string();
+    NOTREACHED();
   }
 
   const MediaSource& source = sink_.route->media_source();
@@ -262,8 +261,7 @@ std::u16string CastDialogSinkView::GetFreezeButtonAccessibleName() const {
 
 std::u16string CastDialogSinkView::GetStopButtonAccessibleName() const {
   if (!sink_.route) {
-    NOTREACHED_IN_MIGRATION();
-    return std::u16string();
+    NOTREACHED();
   }
 
   const MediaSource& source = sink_.route->media_source();

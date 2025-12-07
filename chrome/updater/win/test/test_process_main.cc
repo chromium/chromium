@@ -33,7 +33,7 @@ base::WaitableEvent EventForSwitch(const base::CommandLine& command_line,
   VLOG(1) << __func__ << " event name '" << event_name << "'";
   base::win::ScopedHandle handle(
       ::OpenEvent(EVENT_ALL_ACCESS, TRUE, event_name.c_str()));
-  PLOG_IF(ERROR, !handle.IsValid())
+  PLOG_IF(ERROR, !handle.is_valid())
       << __func__ << " cannot open event '" << event_name << "'";
   return base::WaitableEvent(std::move(handle));
 }
@@ -44,16 +44,16 @@ int DoMain(const base::CommandLine* command_line) {
 
   if (command_line->HasSwitch(updater::kTestName)) {
     VLOG(1) << "Running for test: "
-            << command_line->GetSwitchValueASCII(updater::kTestName);
+            << command_line->GetSwitchValueUTF8(updater::kTestName);
   }
 
   if (command_line->HasSwitch(updater::kTestSleepSecondsSwitch)) {
     std::string value =
-        command_line->GetSwitchValueASCII(updater::kTestSleepSecondsSwitch);
+        command_line->GetSwitchValueUTF8(updater::kTestSleepSecondsSwitch);
     int sleep_seconds = 0;
     if (!base::StringToInt(value, &sleep_seconds) || sleep_seconds <= 0) {
       LOG(ERROR) << "Invalid sleep delay value " << value;
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
 
     VLOG(1) << "Process is sleeping for " << sleep_seconds << " seconds";
@@ -82,7 +82,7 @@ int DoMain(const base::CommandLine* command_line) {
   if (command_line->HasSwitch(updater::kTestExitCode)) {
     int exit_code = 0;
     CHECK(base::StringToInt(
-        command_line->GetSwitchValueASCII(updater::kTestExitCode), &exit_code));
+        command_line->GetSwitchValueUTF8(updater::kTestExitCode), &exit_code));
     VLOG(1) << "Process ending with exit code: " << exit_code;
     return exit_code;
   }

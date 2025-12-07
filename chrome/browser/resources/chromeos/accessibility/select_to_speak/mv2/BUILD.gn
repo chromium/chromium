@@ -1,0 +1,126 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import(
+    "//chrome/browser/resources/chromeos/accessibility/tools/run_jsbundler.gni")
+import("//chrome/common/features.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/bundle_js.gni")
+import("//ui/webui/resources/tools/minify_js.gni")
+
+assert(is_chromeos)
+
+group("build") {
+  deps = [
+    ":copy_misc_files",
+    ":minify_js",
+  ]
+}
+
+select_to_speak_out_dir =
+    "$root_out_dir/resources/chromeos/accessibility/select_to_speak/mv2"
+
+# Directory where typescript build will occur.
+ts_build_staging_dir = "$target_gen_dir/ts_build_staging"
+
+tsc_out_dir = "$target_gen_dir/tsc"
+
+common_tsc_dir =
+    "$root_gen_dir/chrome/browser/resources/chromeos/accessibility/common/tsc"
+
+# Add typescript files to compile here.
+ts_modules = [
+  "select_to_speak_main.ts",
+  "metrics_utils.ts",
+  "select_to_speak_constants.ts",
+  "tts_manager.ts",
+  "input_handler.ts",
+  "ui_manager.ts",
+  "prefs_manager.ts",
+  "select_to_speak.ts",
+]
+
+# Root dir must be the parent directory so it can reach common.
+ts_library("ts_build") {
+  root_dir = "$ts_build_staging_dir"
+  out_dir = tsc_out_dir
+
+  composite = true
+
+  deps = [ "../../common:ts_build" ]
+
+  extra_deps = [ ":stage_ts_build" ]
+
+  path_mappings =
+      [ "/common/*|" + rebase_path("$common_tsc_dir/*", target_gen_dir) ]
+
+  definitions = [
+    "../../definitions/accessibility_private_mv2.d.ts",
+    "../../definitions/automation.d.ts",
+    "../../definitions/clipboard_mv2.d.ts",
+    "../../definitions/extensions.d.ts",
+    "../../definitions/extension_types.d.ts",
+    "../../definitions/i18n.d.ts",
+    "../../definitions/runtime.d.ts",
+    "../../definitions/settings_private_mv2.d.ts",
+    "../../definitions/storage_mv2.d.ts",
+    "../../definitions/tabs.d.ts",
+    "../../definitions/tts.d.ts",
+    "../../definitions/windows.d.ts",
+    "//tools/typescript/definitions/chrome_event.d.ts",
+    "//tools/typescript/definitions/context_menus.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
+  ]
+
+  in_files = ts_modules
+
+  tsconfig_base = "../../tsconfig.base.json"
+}
+
+bundle_js("bundle_js") {
+  visibility = [ ":minify_js" ]
+
+  host = "_ignored_"
+  input = rebase_path("$tsc_out_dir", root_build_dir)
+  js_module_in_files = [ "select_to_speak_main.js" ]
+  out_folder = "$target_gen_dir/bundle"
+
+  deps = [
+    ":ts_build",
+    "../../common:copied_files",
+  ]
+}
+
+minify_js("minify_js") {
+  visibility = [ ":build" ]
+
+  deps = [ ":bundle_js" ]
+  in_folder = "$target_gen_dir/bundle"
+  in_files = [ "select_to_speak_main.rollup.js" ]
+  out_folder = "$select_to_speak_out_dir"
+}
+
+copy("copy_misc_files") {
+  sources = [
+    "background.html",
+    "checked.png",
+    "earcons/null_selection.ogg",
+    "select_to_speak-2x.svg",
+    "sts-icon-128.png",
+    "sts-icon-16.png",
+    "sts-icon-48.png",
+    "unchecked.png",
+  ]
+
+  outputs = [ "$select_to_speak_out_dir/{{source_target_relative}}" ]
+}
+
+# Copy all JS and TS sources to a staging folder. All generated TS/JS files
+# will also be copied into this folder, which will allow us to support a TS
+# build that uses both checked-in and generated files.
+copy("stage_ts_build") {
+  sources = ts_modules
+  outputs = [ "$ts_build_staging_dir/{{source_target_relative}}" ]
+}

@@ -15,6 +15,8 @@
 package(default_visibility = [
     "//mediapipe/tasks/ios:__subpackages__",
     "//mediapipe/tasks/java/com/google/mediapipe/tasks:__subpackages__",
+    "//mediapipe/tasks/web/genai:__subpackages__",
+    "//third_party/odml/litert:__subpackages__",
 ])
 
 cc_library(
@@ -24,16 +26,23 @@ cc_library(
 
 cc_library(
     name = "libllm_inference_engine_cpu",
-    srcs = ["llm_inference_engine_cpu.cc"],
-    hdrs = ["llm_inference_engine.h"],
+    srcs = ["llm_inference_engine_cpu.cc"] + select({
+        "@org_tensorflow//tensorflow:ios": ["llm_inference_engine_ios.cc"],
+        "//conditions:default": [],
+    }),
+    hdrs = ["llm_inference_engine.h"] + select({
+        "@org_tensorflow//tensorflow:ios": ["llm_inference_engine_ios.h"],
+        "//conditions:default": [],
+    }),
     tags = ["swift_module=MediaPipeTasksGenAIC"],
     deps = [
+        "//mediapipe/framework/deps:file_path",
         "//mediapipe/framework/port:file_helpers",
         "//mediapipe/framework/port:ret_check",
         "//mediapipe/framework/port:status",
+        "//mediapipe/tasks/cc/core:model_asset_bundle_resources",
         "//mediapipe/tasks/cc/genai/inference/proto:llm_params_cc_proto",
         "//mediapipe/tasks/cc/genai/inference/proto:transformer_params_cc_proto",
-        "//mediapipe/tasks/cc/genai/inference/utils/llm_utils:memory_mapped_file",
         "//mediapipe/tasks/cc/genai/inference/utils/llm_utils:metadata_utils",
         "//mediapipe/tasks/cc/genai/inference/utils/llm_utils:model_data",
         "//mediapipe/tasks/cc/genai/inference/utils/llm_utils:scoped_file",
@@ -41,6 +50,9 @@ cc_library(
         "//mediapipe/tasks/cc/genai/inference/utils/xnn_utils:llm",
         "//mediapipe/tasks/cc/genai/inference/utils/xnn_utils:llm_builder_factory",
         "//mediapipe/tasks/cc/genai/inference/utils/xnn_utils:llm_weights",
+        "@com_google_absl//absl/container:flat_hash_map",
+        "@com_google_absl//absl/container:flat_hash_set",
+        "@com_google_absl//absl/log:absl_check",
         "@com_google_absl//absl/log:absl_log",
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/status:statusor",
@@ -48,7 +60,17 @@ cc_library(
         "@com_google_absl//absl/strings:string_view",
         "@com_google_sentencepiece//:sentencepiece_processor",
         "@org_tensorflow//tensorflow/lite:framework_stable",
-    ],
+        "@org_tensorflow//tensorflow/lite/c:common",
+        "@org_tensorflow//tensorflow/lite/delegates/xnnpack:xnnpack_delegate_hdrs_only",
+        "@org_tensorflow//tensorflow/lite/experimental/genai:genai_ops",
+        "@org_tensorflow//tensorflow/lite/kernels:builtin_ops",
+    ] + select({
+        "@org_tensorflow//tensorflow:ios": [
+            "//third_party/apple_frameworks:CoreGraphics",
+            "@skia//:mac_utils",
+        ],
+        "//conditions:default": [],
+    }),
 )
 
 cc_binary(

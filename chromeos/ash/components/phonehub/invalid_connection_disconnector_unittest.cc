@@ -12,8 +12,7 @@
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 class InvalidConnectionDisconnectorTest : public testing::Test {
  public:
@@ -103,5 +102,4 @@ TEST_F(InvalidConnectionDisconnectorTest, DisconnectFlows) {
   EXPECT_FALSE(IsTimerRunning());
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

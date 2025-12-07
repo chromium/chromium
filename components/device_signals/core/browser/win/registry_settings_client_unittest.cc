@@ -5,7 +5,9 @@
 #include "components/device_signals/core/browser/win/registry_settings_client.h"
 
 #include "base/strings/string_number_conversions_win.h"
+#include "base/strings/string_util_win.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/test/test_reg_util_win.h"
@@ -18,7 +20,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::Return;
 using testing::StrictMock;
 

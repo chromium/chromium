@@ -18,7 +18,11 @@ import android.widget.ScrollView;
 import org.chromium.base.Callback;
 import org.chromium.base.DiscardableReferencePool;
 import org.chromium.base.Log;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.download.dialogs.DownloadWarningBypassDialog;
+import org.chromium.chrome.browser.download.home.DownloadHelpPageLauncher;
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
 import org.chromium.chrome.browser.download.home.FaviconProvider;
 import org.chromium.chrome.browser.download.home.StableIds;
@@ -27,6 +31,7 @@ import org.chromium.chrome.browser.download.home.filter.FilterCoordinator;
 import org.chromium.chrome.browser.download.home.filter.Filters.FilterType;
 import org.chromium.chrome.browser.download.home.list.ListItem.ViewListItem;
 import org.chromium.chrome.browser.download.home.rename.RenameDialogManager;
+import org.chromium.chrome.browser.download.home.search.SearchBarCoordinator;
 import org.chromium.chrome.browser.download.home.storage.StorageCoordinator;
 import org.chromium.chrome.browser.download.home.toolbar.ToolbarCoordinator;
 import org.chromium.chrome.browser.download.internal.R;
@@ -38,11 +43,10 @@ import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.List;
+import java.util.function.Supplier;
 
-/**
- * The top level coordinator for the download home UI.  This is currently an in progress class and
- * is not fully fleshed out yet.
- */
+/** The top level coordinator for the download home UI. */
+@NullMarked
 public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarListActionDelegate {
     /**
      * A helper interface for exposing the decision for whether or not to delete
@@ -89,30 +93,35 @@ public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarLis
     private final EmptyCoordinator mEmptyCoordinator;
     private final DateOrderedListMediator mMediator;
     private final DateOrderedListView mListView;
+    private final ModalDialogManager mModalDialogManager;
+    private final DownloadHelpPageLauncher mHelpPageLauncher;
     private final RenameDialogManager mRenameDialogManager;
+    private final @Nullable SearchBarCoordinator mSearchBarCoordinator;
+    private final @Nullable BackPressHandler mSearchBackPressHandler;
     private ViewGroup mMainView;
     private View mEmptyView;
     private int mWindowHeight;
-    private int mDownloadStorageSummaryHeightPx;
-    private int mSelectableListToolbarHeightPx;
+    private final int mDownloadStorageSummaryHeightPx;
+    private final int mSelectableListToolbarHeightPx;
 
     /**
-     * Creates an instance of a DateOrderedListCoordinator, which will visually represent
-     * {@code provider} as a list of items.
-     * @param context                   The {@link Context} to use to build the views.
-     * @param config                    The {@link DownloadManagerUiConfig} to provide UI
-     *                                  configuration params.
+     * Creates an instance of a DateOrderedListCoordinator, which will visually represent {@code
+     * provider} as a list of items.
+     *
+     * @param context The {@link Context} to use to build the views.
+     * @param config The {@link DownloadManagerUiConfig} to provide UI configuration params.
      * @param exploreOfflineTabVisiblitySupplier A supplier that indicates whether or not explore
-     *         offline tab should be shown.
-     * @param provider                  The {@link OfflineContentProvider} to visually represent.
-     * @param deleteController          A class to manage whether or not items can be deleted.
-     * @param filterObserver            A {@link FilterCoordinator.Observer} that should be notified
-     *                                  of filter changes.  This is meant to be used for external
-     *                                  components that need to take action based on the visual
-     *                                  state of the list.
-     * @param dateOrderedListObserver   A {@link DateOrderedListObserver}.
-     * @param discardableReferencePool  A {@linK DiscardableReferencePool} reference to use for
-     *                                  large objects (e.g. bitmaps) in the UI.
+     *     offline tab should be shown.
+     * @param provider The {@link OfflineContentProvider} to visually represent.
+     * @param deleteController A class to manage whether or not items can be deleted.
+     * @param filterObserver A {@link FilterCoordinator.Observer} that should be notified of filter
+     *     changes. This is meant to be used for external components that need to take action based
+     *     on the visual state of the list.
+     * @param dateOrderedListObserver A {@link DateOrderedListObserver}.
+     * @param modalDialogManager A {@link ModalDialogManager}.
+     * @param helpPageLauncher A helper to launch a URL in a CCT for the appropriate Profile.
+     * @param discardableReferencePool A {@linK DiscardableReferencePool} reference to use for large
+     *     objects (e.g. bitmaps) in the UI.
      */
     public DateOrderedListCoordinator(
             Context context,
@@ -124,6 +133,7 @@ public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarLis
             FilterCoordinator.Observer filterObserver,
             DateOrderedListObserver dateOrderedListObserver,
             ModalDialogManager modalDialogManager,
+            DownloadHelpPageLauncher helpPageLauncher,
             FaviconProvider faviconProvider,
             DiscardableReferencePool discardableReferencePool) {
         mContext = context;
@@ -137,6 +147,8 @@ public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarLis
                         decoratedModel,
                         dateOrderedListObserver,
                         this::onConfigurationChangedCallback);
+        mModalDialogManager = modalDialogManager;
+        mHelpPageLauncher = helpPageLauncher;
         mRenameDialogManager = new RenameDialogManager(context, modalDialogManager);
         mMediator =
                 new DateOrderedListMediator(
@@ -145,6 +157,7 @@ public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarLis
                         this::startShareIntent,
                         deleteController,
                         this::startRename,
+                        this::startShowWarningBypassDialog,
                         selectionDelegate,
                         config,
                         dateOrderedListObserver,
@@ -157,10 +170,46 @@ public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarLis
 
         mFilterCoordinator =
                 new FilterCoordinator(
-                        context, mMediator.getFilterSource(), exploreOfflineTabVisibilitySupplier);
+                        context,
+                        mMediator.getFilterSource(),
+                        exploreOfflineTabVisibilitySupplier,
+                        config);
         mFilterCoordinator.addObserver(mMediator::onFilterTypeSelected);
         mFilterCoordinator.addObserver(filterObserver);
         mFilterCoordinator.addObserver(mEmptyCoordinator);
+        mFilterCoordinator.setShowDivider(!config.inlineSearchBar);
+
+        if (config.inlineSearchBar) {
+            mSearchBarCoordinator =
+                    new SearchBarCoordinator(
+                            context, this::setSearchQuery, config.autoFocusSearchBox);
+            decoratedModel.addHeader(
+                    new ViewListItem(StableIds.SEARCH_HEADER, mSearchBarCoordinator.getView()));
+        } else {
+            mSearchBarCoordinator = null;
+        }
+
+        if (mSearchBarCoordinator != null) {
+            mSearchBackPressHandler =
+                    new BackPressHandler() {
+                        @Override
+                        public int handleBackPress() {
+                            if (mSearchBarCoordinator.hasText()) {
+                                mSearchBarCoordinator.clearText();
+                                return BackPressResult.SUCCESS;
+                            }
+                            return BackPressResult.FAILURE;
+                        }
+
+                        @Override
+                        public NonNullObservableSupplier<Boolean>
+                                getHandleBackPressChangedSupplier() {
+                            return mSearchBarCoordinator.getHasTextSupplier();
+                        }
+                    };
+        } else {
+            mSearchBackPressHandler = null;
+        }
 
         decoratedModel.addHeader(
                 new ViewListItem(StableIds.STORAGE_HEADER, mStorageCoordinator.getView()));
@@ -170,8 +219,8 @@ public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarLis
 
         mDownloadStorageSummaryHeightPx =
                 (int)
-                        (mContext.getResources()
-                                .getDimensionPixelSize(R.dimen.download_storage_summary_height));
+                        mContext.getResources()
+                                .getDimensionPixelSize(R.dimen.download_storage_summary_height);
         mSelectableListToolbarHeightPx =
                 mContext.getResources()
                         .getDimensionPixelSize(R.dimen.selectable_list_toolbar_height);
@@ -273,6 +322,7 @@ public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarLis
         mFilterCoordinator.destroy();
         mMediator.destroy();
         mRenameDialogManager.destroy();
+        mListView.destroy();
     }
 
     /** @return The {@link View} representing downloads home. */
@@ -304,7 +354,7 @@ public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarLis
     }
 
     @Override
-    public void setSearchQuery(String query) {
+    public void setSearchQuery(@Nullable String query) {
         mMediator.onFilterStringChanged(query);
     }
 
@@ -332,5 +382,20 @@ public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarLis
 
     private void startRename(String name, DateOrderedListMediator.RenameCallback callback) {
         mRenameDialogManager.startRename(name, callback::tryToRename);
+    }
+
+    private void startShowWarningBypassDialog(String fileName, Callback<Boolean> callback) {
+        new DownloadWarningBypassDialog()
+                .show(mContext, mModalDialogManager, mHelpPageLauncher, fileName, callback);
+    }
+
+    /** Returns the {@link DateOrderedListView}. */
+    public ViewGroup getListViewForTesting() {
+        return (ViewGroup) mListView.getView();
+    }
+
+    @Nullable
+    public BackPressHandler getSearchBackPressHandler() {
+        return mSearchBackPressHandler;
     }
 }

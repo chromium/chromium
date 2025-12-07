@@ -1,0 +1,45 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {HistoryEmbeddingsPromoElement} from './history_embeddings_promo.js';
+
+export function getHtml(this: HistoryEmbeddingsPromoElement) {
+  // clang-format off
+  return html`<!--_html_template_start_-->
+<div id="promo" role="dialog" aria-label="$i18n{historyEmbeddingsPromoLabel}"
+    ?hidden="${!this.shown_}">
+  <cr-icon-button id="close" iron-icon="cr:close"
+      aria-label="$i18n{historyEmbeddingsPromoClose}"
+      @click="${this.onCloseClick_}">
+  </cr-icon-button>
+
+  <div id="illustration" aria-hidden="true"></div>
+  <div id="text">
+    <h2 id="title" ?hidden="${this.isAnswersEnabled_}">
+      $i18n{historyEmbeddingsPromoHeading}
+    </h2>
+    <h2 id="title" ?hidden="${!this.isAnswersEnabled_}">
+      $i18n{historyEmbeddingsAnswersPromoHeading}
+    </h2>
+    <div id="description">
+      <div id="description-first-block" ?hidden="${this.isAnswersEnabled_}">
+        $i18n{historyEmbeddingsPromoBody}
+      </div>
+      <div id="description-first-block" ?hidden="${!this.isAnswersEnabled_}">
+        $i18n{historyEmbeddingsAnswersPromoBody}
+      </div>
+      <div>
+        $i18n{historyEmbeddingsDisclaimer}
+        <a href="$i18n{historyEmbeddingsSettingsUrl}" target="_blank">
+          $i18n{historyEmbeddingsPromoSettingsLinkText}
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+<!--_html_template_end_-->`;
+  // clang-format on
+}

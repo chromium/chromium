@@ -4,6 +4,7 @@
 
 #include "device/fido/fido_device_authenticator.h"
 
+#include <algorithm>
 #include <array>
 #include <cstddef>
 #include <cstdint>
@@ -19,17 +20,16 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/ctap_get_assertion_request.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_test_data.h"
-#include "device/fido/fido_types.h"
 #include "device/fido/large_blob.h"
 #include "device/fido/pin.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_types.h"
 #include "device/fido/virtual_ctap2_device.h"
 #include "device/fido/virtual_fido_device.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -276,13 +276,13 @@ TEST_F(FidoDeviceAuthenticatorTest, TestUpdateLargeBlob) {
       GetAssertionForRead(/*credential_ids=*/{});
 
   ASSERT_EQ(read.size(), 2u);
-  auto first = base::ranges::find_if(read, [&](const auto& response) {
+  auto first = std::ranges::find_if(read, [&](const auto& response) {
     return response.credential->id == kCredentialId1;
   });
   ASSERT_NE(first, read.end());
   EXPECT_EQ(first->large_blob, kSmallBlob3);
 
-  auto second = base::ranges::find_if(read, [&](const auto& response) {
+  auto second = std::ranges::find_if(read, [&](const auto& response) {
     return response.credential->id == kCredentialId2;
   });
   ASSERT_NE(second, read.end());
@@ -335,7 +335,8 @@ TEST_F(FidoDeviceAuthenticatorTest, TestWriteLargeBlobCtapError) {
   config.pin_uv_auth_token_support = true;
   config.ctap2_versions = {Ctap2Version::kCtap2_1};
   config.override_response_map[CtapRequestCommand::kAuthenticatorLargeBlobs] =
-      CtapDeviceResponseCode::kCtap1ErrInvalidParameter;
+      std::make_pair(device::CtapDeviceResponseCode::kCtap1ErrInvalidParameter,
+                     std::nullopt);
   SetUpAuthenticator(std::move(config));
 
   AuthenticatorGetAssertionResponse write = GetAssertionForWrite(kSmallBlob1);

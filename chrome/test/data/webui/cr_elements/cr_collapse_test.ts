@@ -102,11 +102,14 @@ suite('cr-collapse', function() {
 
       static get properties() {
         return {
-          parentOpened: Boolean,
+          parentOpened: {
+            type: Boolean,
+            value: false,
+          },
         };
       }
 
-      parentOpened: boolean = false;
+      declare parentOpened: boolean;
     }
 
     customElements.define(TestPolymerElement.is, TestPolymerElement);

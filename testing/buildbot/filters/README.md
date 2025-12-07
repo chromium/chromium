@@ -3,9 +3,9 @@
 ## Summary
 
 This directory contains files that list tests that are not yet ready to run in a
-particular mode. For example - the `cast-linux.content_browsertests.filter` file
-lists tests that should be excluded when running `content_browsertests` on the
-Cast device or bot (e.g. on 'Cast Linux).
+particular mode. For example - the `trees_in_viz.content_browsertests.filter`
+file lists tests that should be excluded when running `content_browsertests` on
+the "linux-trees-in-viz-rel" builder.
 
 ## File syntax
 

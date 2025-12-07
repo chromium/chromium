@@ -33,9 +33,9 @@ MojoWatcher* MojoWatcher::Create(mojo::Handle handle,
   // is scheduled.
   if (result != MOJO_RESULT_OK) {
     watcher->task_runner_->PostTask(
-        FROM_HERE, WTF::BindOnce(&V8MojoWatchCallback::InvokeAndReportException,
-                                 WrapPersistent(callback),
-                                 WrapPersistent(watcher), result));
+        FROM_HERE,
+        BindOnce(&V8MojoWatchCallback::InvokeAndReportException,
+                 WrapPersistent(callback), WrapPersistent(watcher), result));
   }
   return watcher;
 }
@@ -107,8 +107,8 @@ MojoResult MojoWatcher::Watch(mojo::Handle handle,
     // We couldn't arm the watcher because the handle is already ready to
     // trigger a success notification. Post a notification manually.
     task_runner_->PostTask(FROM_HERE,
-                           WTF::BindOnce(&MojoWatcher::RunReadyCallback,
-                                         WrapPersistent(this), ready_result));
+                           BindOnce(&MojoWatcher::RunReadyCallback,
+                                    WrapPersistent(this), ready_result));
     return MOJO_RESULT_OK;
   }
 
@@ -192,9 +192,9 @@ void MojoWatcher::RunReadyCallback(MojoResult result) {
     return;
 
   if (arm_result == MOJO_RESULT_FAILED_PRECONDITION) {
-    task_runner_->PostTask(
-        FROM_HERE, WTF::BindOnce(&MojoWatcher::RunReadyCallback,
-                                 WrapWeakPersistent(this), ready_result));
+    task_runner_->PostTask(FROM_HERE,
+                           BindOnce(&MojoWatcher::RunReadyCallback,
+                                    WrapWeakPersistent(this), ready_result));
     return;
   }
 }

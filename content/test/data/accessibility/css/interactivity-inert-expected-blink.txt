@@ -1,0 +1,6 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++button name='Visible'
+++++++++staticText name='Visible'
+++++++++++inlineTextBox name='Visible'

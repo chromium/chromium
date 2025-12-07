@@ -4,6 +4,7 @@
 
 #include "components/cast_receiver/browser/streaming_runtime_application.h"
 
+#include "base/strings/stringprintf.h"
 #include "components/cast/message_port/platform_message_port.h"
 #include "components/cast_receiver/browser/application_client.h"
 #include "components/cast_receiver/browser/public/embedder_application.h"
@@ -51,13 +52,6 @@ void StreamingRuntimeApplication::OnError() {
   LOG(WARNING) << "Streaming session for " << *this << " has hit an error!";
   StopApplication(EmbedderApplication::ApplicationStopReason::kRuntimeError,
                   net::ERR_FAILED);
-}
-
-void StreamingRuntimeApplication::OnResolutionChanged(
-    const gfx::Rect& size,
-    const media::VideoTransformation& transformation) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  application_client().OnStreamingResolutionChanged(size, transformation);
 }
 
 void StreamingRuntimeApplication::Launch(StatusCallback callback) {

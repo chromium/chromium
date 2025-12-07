@@ -7,8 +7,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "ui/compositor/layer.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace aura {
 class Window;
@@ -16,6 +18,7 @@ class Window;
 
 namespace views {
 class View;
+class Widget;
 }  // namespace views
 
 namespace ash {
@@ -24,17 +27,15 @@ class CaptureModeSession;
 
 // Controls the user nudge animation and toast widget which are used to draw the
 // user's attention towards the given `view_to_be_highlighted`. In the current
-// iteration, this view is the settings button on the capture mode bar, and the
-// desire to inform the users about the newly added ability to change where
-// captured images and videos are saved. In upcoming iteration, the camera nudge
-// will be shown instead once the selfie camera feature is enabled.
-class UserNudgeController {
+// iteration, this view is the partial button on the capture mode bar, and the
+// desire is to inform users about the newly added sunfish feature.
+class UserNudgeController : public views::WidgetObserver {
  public:
-  explicit UserNudgeController(CaptureModeSession* session,
-                               views::View* view_to_be_highlighted);
+  UserNudgeController(CaptureModeSession* session,
+                      views::View* view_to_be_highlighted);
   UserNudgeController(const UserNudgeController&) = delete;
   UserNudgeController& operator=(const UserNudgeController&) = delete;
-  ~UserNudgeController();
+  ~UserNudgeController() override;
 
   bool is_visible() const { return is_visible_; }
   void set_should_dismiss_nudge_forever(bool value) {
@@ -50,6 +51,9 @@ class UserNudgeController {
 
   // Animates the animation layers towards the given visibility state `visible`.
   void SetVisible(bool visible);
+
+  // views::WidgetObserver:
+  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 
  private:
   // Triggers all the nudge animations performed by the below functions.
@@ -73,7 +77,7 @@ class UserNudgeController {
 
   // This is the window that will be used to as the parent of our animation
   // layers (`base_ring_` and `ripple_ring_`).
-  aura::Window* GetParentWindow() const;
+  aura::Window* GetParentWindow();
 
   // The session that owns `this`. Guaranteed to be non null for the lifetime of
   // `this`.
@@ -96,6 +100,9 @@ class UserNudgeController {
   // If set to true, we will set a user pref to disable this nudge forever at
   // the time when `this` is destroyed.
   bool should_dismiss_nudge_forever_ = false;
+
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observation_{this};
 
   base::WeakPtrFactory<UserNudgeController> weak_ptr_factory_{this};
 };

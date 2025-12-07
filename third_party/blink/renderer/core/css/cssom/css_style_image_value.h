@@ -30,7 +30,6 @@ class CORE_EXPORT CSSStyleImageValue : public CSSResourceValue,
   double intrinsicRatio(bool& is_null) const;
 
   // CanvasImageSource
-  bool IsCSSImageValue() const final { return true; }
   bool WouldTaintOrigin() const final { return true; }
   gfx::SizeF ElementSize(const gfx::SizeF& default_object_size,
                          const RespectImageOrientationEnum) const final;

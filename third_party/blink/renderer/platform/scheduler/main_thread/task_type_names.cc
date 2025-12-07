@@ -10,7 +10,7 @@ namespace blink {
 namespace scheduler {
 
 // static
-const char* TaskTypeNames::TaskTypeToString(TaskType task_type) {
+perfetto::StaticString TaskTypeNames::TaskTypeToString(TaskType task_type) {
   // These names are used in finch trials and should not be changed.
   switch (task_type) {
     case TaskType::kDeprecatedNone:
@@ -51,6 +51,8 @@ const char* TaskTypeNames::TaskTypeToString(TaskType task_type) {
       return "WebSocket";
     case TaskType::kPostedMessage:
       return "PostedMessage";
+    case TaskType::kBackForwardCachePostedMessage:
+      return "BackForwardCachePostedMessage";
     case TaskType::kUnshippedPortMessage:
       return "UnshippedPortMessage";
     case TaskType::kFileReading:
@@ -105,8 +107,10 @@ const char* TaskTypeNames::TaskTypeToString(TaskType task_type) {
       return "InternalInspector";
     case TaskType::kMainThreadTaskQueueV8:
       return "MainThreadTaskQueueV8";
-    case TaskType::kMainThreadTaskQueueV8LowPriority:
-      return "MainThreadTaskQueueV8LowPriority";
+    case TaskType::kMainThreadTaskQueueV8UserVisible:
+      return "MainThreadTaskQueueV8UserVisible";
+    case TaskType::kMainThreadTaskQueueV8BestEffort:
+      return "MainThreadTaskQueueV8BestEffort";
     case TaskType::kMainThreadTaskQueueCompositor:
       return "MainThreadTaskQueueCompositor";
     case TaskType::kMainThreadTaskQueueDefault:
@@ -165,10 +169,11 @@ const char* TaskTypeNames::TaskTypeToString(TaskType task_type) {
       return "WebGPU";
     case TaskType::kInternalPostMessageForwarding:
       return "InternalPostMessageForwarding";
+    case TaskType::kInternalAutofill:
+      return "InternalAutofill";
   }
   // FrameSchedulerImpl should not call this for invalid TaskTypes.
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 }  // namespace scheduler

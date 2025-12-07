@@ -12,7 +12,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/ime_controller_client_impl.h"
+#include "chrome/browser/ui/ash/input_method/ime_controller_client_impl.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/account_id/account_id.h"
@@ -70,7 +70,7 @@ void SetUserInputMethod(const AccountId& account_id,
     DVLOG(0) << "SetUserInputMethod: failed to set user layout. Switching to "
                 "default.";
 
-    ime_state->SetInputMethodLoginDefault();
+    ime_state->SetInputMethodLoginDefault(false /* is_in_oobe_context */);
   }
 }
 
@@ -134,7 +134,7 @@ void StopEnforcingPolicyInputMethods() {
   imm_state->SetAllowedInputMethods(std::vector<std::string>());
   if (ImeControllerClientImpl::Get())  // Can be null in tests.
     ImeControllerClientImpl::Get()->SetImesManagedByPolicy(false);
-  imm_state->SetInputMethodLoginDefault();
+  imm_state->SetInputMethodLoginDefault(false /* is_in_oobe_context */);
 }
 
 void SetKeyboardSettings(const AccountId& account_id) {

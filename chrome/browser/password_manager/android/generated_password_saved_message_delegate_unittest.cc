@@ -9,7 +9,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/test/with_feature_override.h"
@@ -51,7 +50,7 @@ class MockJniDelegate : public AddUsernameDialogBridge::JniDelegate {
 
   MOCK_METHOD((void),
               Create,
-              (const gfx::NativeWindow, AddUsernameDialogBridge*),
+              (ui::WindowAndroid&, AddUsernameDialogBridge*),
               (override));
   MOCK_METHOD((void),
               ShowAddUsernameDialog,
@@ -91,6 +90,7 @@ class GeneratedPasswordSavedMessageDelegateTest
  private:
   password_manager::PasswordForm form_;
   GURL password_form_url_;
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window_;
 };
 
 GeneratedPasswordSavedMessageDelegateTest::
@@ -105,6 +105,11 @@ void GeneratedPasswordSavedMessageDelegateTest::SetUp() {
   NavigateAndCommit(GURL(kDefaultUrl));
   messages::MessageDispatcherBridge::SetInstanceForTesting(
       &message_dispatcher_bridge_);
+
+  // Create a scoped window so that
+  // WebContents::GetNativeView()->GetWindowAndroid() does not return null.
+  window_ = ui::WindowAndroid::CreateForTesting();
+  window_.get()->get()->AddChild(web_contents()->GetNativeView());
 }
 
 void GeneratedPasswordSavedMessageDelegateTest::TearDown() {
@@ -167,15 +172,13 @@ TEST_F(GeneratedPasswordSavedMessageDelegateTest, TestUsernameAddedCallback) {
 
   const std::u16string username = u"test username";
   JNIEnv* env = base::android::AttachCurrentThread();
-  auto j_string = base::android::ConvertUTF16ToJavaString(env, username);
 
   {
     testing::InSequence s;
     EXPECT_CALL(*form_manager_raw_ptr, OnUpdateUsernameFromPrompt(username));
     EXPECT_CALL(*form_manager_raw_ptr, Save);
   }
-  username_bridge_raw_ptr->OnDialogAccepted(
-      env, base::android::JavaParamRef<jstring>(env, j_string.obj()));
+  username_bridge_raw_ptr->OnDialogAccepted(env, username);
 }
 
 // Tests that message properties (title, description, icon, button text) are

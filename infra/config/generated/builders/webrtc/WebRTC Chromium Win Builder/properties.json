@@ -13,7 +13,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-webrtc",
               "builder_group": "chromium.webrtc",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
@@ -23,7 +22,7 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium",
-                "target_bits": 32,
+                "target_bits": 64,
                 "target_platform": "win"
               },
               "legacy_gclient_config": {
@@ -37,11 +36,10 @@
           {
             "builder_id": {
               "bucket": "webrtc",
-              "builder": "WebRTC Chromium Win10 Tester",
+              "builder": "WebRTC Chromium Win Tester",
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-webrtc",
               "builder_group": "chromium.webrtc",
               "execution_mode": "TEST",
               "legacy_chromium_config": {
@@ -51,7 +49,7 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium",
-                "target_bits": 32,
+                "target_bits": 64,
                 "target_platform": "win"
               },
               "legacy_gclient_config": {
@@ -76,24 +74,22 @@
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "webrtc",
-          "builder": "WebRTC Chromium Win10 Tester",
+          "builder": "WebRTC Chromium Win Tester",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/webrtc/WebRTC Chromium Win Builder/targets"
     }
-  },
-  "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "metrics_project": "chromium-reclient-metrics",
-    "scandeps_server": true
   },
   "$build/siso": {
     "configs": [
       "builder"
     ],
+    "enable_cloud_monitoring": true,
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
+    "metrics_project": "chromium-reclient-metrics",
     "project": "rbe-chromium-trusted",
     "remote_jobs": 250
   },

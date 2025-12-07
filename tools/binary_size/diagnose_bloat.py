@@ -100,8 +100,8 @@ class NativeDiff(BaseDiff):
   def summary_stat(self):
     m = NativeDiff._RE_SUMMARY_STAT.search(self._diff)
     if m:
-      return _DiffResult(
-          NativeDiff._SUMMARY_STAT_NAME, m.group('value'), m.group('units'))
+      return _DiffResult(NativeDiff._SUMMARY_STAT_NAME,
+                         float(m.group('value')), m.group('units'))
     raise Exception('Could not extract total from:\n' + self._diff)
 
   def DetailedResults(self):
@@ -343,7 +343,7 @@ class _BuildHelper:
         self.target = 'chrome'
       elif self.enable_chrome_android_internal:
         if 'target_cpu="arm64"' in self.extra_gn_args_str:
-          self.target = 'trichrome_google_64_32_minimal_apks'
+          self.target = 'trichrome_google_64_minimal_apks'
         else:
           self.target = 'trichrome_google_32_minimal_apks'
       else:
@@ -409,8 +409,6 @@ class _BuildHelper:
       ret += '6432'
     elif '64' in self.target:
       ret += '64'
-    elif '32' in self.target:
-      ret += '32'
     return ret
 
   def IsLinux(self):
@@ -606,12 +604,13 @@ class _DiffArchiveManager:
     path = os.path.join(self.archive_dir, 'last_diff_summary.txt')
     if self._summary_stats:
       with open(path, 'w') as f:
-        stats = sorted(
-            self._summary_stats, key=lambda x: x[0].value, reverse=True)
+        stats = sorted(self._summary_stats,
+                       key=lambda x: x[0].value,
+                       reverse=True)
         _WriteToFile(f, '\nDiff Summary')
         for s, before, after in stats:
           _WriteToFile(f, '{:>+10} {} {} for range: {}..{}',
-                               s.value, s.units, s.name, before, after)
+                       s.value, s.units, s.name, before, after)
 
     # Print cached file if all builds were cached.
     num_archives = len(self.build_archives)

@@ -1,0 +1,40 @@
+<!--
+@MAC-ALLOW:AXRoleDescription
+@WIN-ALLOW:xml-roles*
+@WIN-ALLOW:IA2_STATE_VERTICAL
+@WIN-ALLOW:SELECTABLE
+@WIN-ALLOW:*popup*
+@UIA-WIN-ALLOW:Value.IsReadOnly*
+@BLINK-ALLOW:setSize*
+@BLINK-ALLOW:posInSet*
+@AURALINUX-ALLOW:xml-roles*
+@AURALINUX-ALLOW:posinset*
+@AURALINUX-ALLOW:setsize*
+@AURALINUX-ALLOW:enabled
+@AURALINUX-ALLOW:*popup*
+@DEFAULT-ACTION-ON:Transformer
+-->
+<!DOCTYPE html>
+<html>
+<style>
+select, select::picker(select) {
+  appearance: base-select;
+}
+</style>
+<body>
+<select id="menulist" aria-label="Transformer">
+  <option>Random Transformer</option>
+  <optgroup label="group 1">
+    <option>Optimus Prime</option>
+    <option>Bumblebee</option>
+    <option>Jazz</option>
+  </optgroup>
+  <optgroup>
+    <legend>group <mark>2</mark></legend>
+    <option>Megatron</option>
+    <option>Starscream</option>
+    <option>Brawl</option>
+  </optgroup>
+</select>
+</body>
+</html>

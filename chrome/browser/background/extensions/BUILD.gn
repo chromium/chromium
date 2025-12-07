@@ -1,0 +1,111 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+
+assert(enable_background_mode)
+assert(enable_extensions_core)
+
+source_set("extensions") {
+  sources = [
+    "background_application_list_model.h",
+    "background_mode_manager.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/background",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile_util",
+    "//chrome/browser/status_icons",
+    "//chrome/browser/ui:browser_list",
+    "//components/prefs",
+    "//extensions/browser",
+  ]
+
+  if (!is_android) {
+    deps += [ "//components/keep_alive_registry" ]
+  }
+}
+
+source_set("impl") {
+  sources = [
+    "background_application_list_model.cc",
+    "background_mode_manager.cc",
+  ]
+  if (is_win) {
+    sources += [ "background_mode_manager_win.cc" ]
+  }
+  if (is_mac) {
+    sources += [ "background_mode_manager_mac.cc" ]
+  }
+  if (is_chromeos) {
+    sources += [ "background_mode_manager_chromeos.cc" ]
+  }
+  if (use_aura && !is_win && !is_chromeos) {
+    sources += [ "background_mode_manager_aura.cc" ]
+  }
+
+  deps = [
+    ":extensions",
+    "//base",
+    "//chrome/app/theme:chrome_unscaled_resources_grit",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/apps/app_service:constants",
+    "//chrome/browser/background",
+    "//chrome/browser/extensions",
+    "//chrome/browser/lifetime:termination_notification",
+    "//chrome/browser/profiles/keep_alive",
+    "//chrome/browser/startup",
+    "//chrome/browser/status_icons",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/extensions",
+    "//chrome/browser/ui/profiles",
+    "//components/crx_file",
+    "//components/prefs",
+    "//components/startup_metric_utils",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//extensions/common",
+  ]
+
+  if (!is_android) {
+    deps += [ "//components/keep_alive_registry" ]
+  }
+
+  if (enable_glic) {
+    deps += [ "//chrome/browser/glic" ]
+  }
+
+  if (!is_chromeos) {
+    deps += [ "//chrome/browser/web_applications/extensions" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "background_application_list_model_unittest.cc",
+    "background_mode_manager_unittest.cc",
+  ]
+
+  deps = [
+    ":extensions",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/background",
+    "//chrome/browser/startup",
+    "//chrome/browser/status_icons",
+    "//chrome/test:test_support",
+    "//components/policy/core/common:test_support",
+    "//components/sync_preferences",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//extensions:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/message_center/public/cpp",
+  ]
+}

@@ -9,7 +9,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "content/browser/web_contents/web_contents_android.h"
@@ -54,29 +53,24 @@ class MediaSessionAndroid final
       const std::optional<media_session::MediaPosition>& position) override;
 
   // MediaSession method wrappers.
-  void Resume(JNIEnv* env, const base::android::JavaParamRef<jobject>& j_obj);
-  void Suspend(JNIEnv* env, const base::android::JavaParamRef<jobject>& j_obj);
-  void Stop(JNIEnv* env, const base::android::JavaParamRef<jobject>& j_obj);
+  void Resume(JNIEnv* env);
+  void Suspend(JNIEnv* env);
+  void Stop(JNIEnv* env);
   void Seek(JNIEnv* env,
-            const base::android::JavaParamRef<jobject>& j_obj,
             const jlong millis);
   void SeekTo(JNIEnv* env,
-              const base::android::JavaParamRef<jobject>& j_obj,
               const jlong millis);
   void DidReceiveAction(JNIEnv* env,
-                        const base::android::JavaParamRef<jobject>& j_obj,
                         jint action);
-  void RequestSystemAudioFocus(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_obj);
+  void RequestSystemAudioFocus(JNIEnv* env);
 
  private:
   friend class WebContentsObserverProxy;
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
-  // The linked Java object. The strong reference is hold by Java WebContensImpl
-  // to avoid introducing a new GC root.
-  JavaObjectWeakGlobalRef j_media_session_;
+  // The linked Java object.
+  base::android::ScopedJavaGlobalRef<jobject> j_media_session_;
+
   // WebContentsAndroid corresponding to the Java WebContentsImpl that holds a
   // strong reference to |j_media_session_|.
   raw_ptr<WebContentsAndroid, DanglingUntriaged> web_contents_android_;

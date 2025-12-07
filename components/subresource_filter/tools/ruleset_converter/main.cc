@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "components/subresource_filter/tools/ruleset_converter/ruleset_converter.h"
 
 namespace {
@@ -51,7 +52,7 @@ const char kHelpMsg[] = R"(
 )";
 
 void PrintHelp() {
-  printf("%s\n\n", kHelpMsg);
+  UNSAFE_TODO(printf("%s\n\n", kHelpMsg));
 }
 
 }  // namespace
@@ -111,7 +112,8 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  if (!converter.Convert())
+  if (!converter.Convert()) {
     return 1;
+  }
   return 0;
 }

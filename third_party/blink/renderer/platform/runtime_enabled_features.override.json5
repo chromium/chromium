@@ -1,0 +1,50 @@
+{
+  // See third_party/blink/renderer/platform/RuntimeEnabledFeatures.md
+  //
+  // This file should not be changed upstream.
+  //
+  // This file provides a way for downstream forks to customize
+  // runtime_enabled_features.json5. Downstream forks are able to modify
+  // this file to add new feature flags or modify existing ones.
+  // This file inherits parameters from runtime_enabled_features.json5,
+  // and they can not be changed in this file.
+  //
+  // Examples:
+  //
+  // Adding a new feature flag enabled by default:
+  // data: [
+  //   {
+  //     name: "NewFeature",
+  //     status: "stable",
+  //     base_feature: "none",
+  //   },
+  // ]
+  //
+  // Marking an existing feature as experimental:
+  // data: [
+  //   {
+  //     name: "ExistingFeature",
+  //     status: "experimental",
+  //   },
+  // ]
+  //
+  // Marking an existing feature as available on certain platforms:
+  // data: [
+  //   {
+  //     name: "ExistingFeature",
+  //     origin_trial_feature_name: "ExistingFeature",
+  //     origin_trial_os: ["win", "mac"],
+  //     origin_trial_allows_third_party: true,
+  //     status: {
+  //       "Win": "experimental",
+  //       "Mac": "experimental",
+  //       "Linux": "",
+  //       "Android":"stable"
+  //     },
+  //   },
+  // ]
+
+  data: [
+    // Entries go here.
+  ]
+}

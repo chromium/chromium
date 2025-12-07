@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -43,11 +44,15 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequestBody
   ResourceRequestBody& operator=(const ResourceRequestBody&) = delete;
 
   // Creates ResourceRequestBody that holds a copy of |bytes|.
-  static scoped_refptr<ResourceRequestBody> CreateFromBytes(const char* bytes,
-                                                            size_t length);
+  static scoped_refptr<ResourceRequestBody> CreateFromCopyOfBytes(
+      base::span<const uint8_t> bytes);
 
-  void AppendBytes(std::vector<uint8_t> bytes);
-  void AppendBytes(const char* bytes, int bytes_len);
+  // Move version of above, that avoid a copy.
+  static scoped_refptr<ResourceRequestBody> CreateFromBytes(
+      std::vector<uint8_t>&& bytes);
+
+  void AppendBytes(std::vector<uint8_t>&& bytes);
+  void AppendCopyOfBytes(base::span<const uint8_t> bytes);
   void AppendFileRange(const base::FilePath& file_path,
                        uint64_t offset,
                        uint64_t length,
@@ -118,7 +123,7 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequestBody
 
   bool contains_sensitive_info_;
 
-  bool allow_http1_for_streaming_upload_ = true;
+  bool allow_http1_for_streaming_upload_ = false;
 };
 
 }  // namespace network

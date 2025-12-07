@@ -1,0 +1,46 @@
+caption: Prefer specific key exchange algorithms for TLS
+desc: |-
+  This policy configures <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to order its preferred key agreement algorithms (supported groups) in TLS 1.3 to reflect a preference for algorithms that have been approved by a specific compliance regime.
+
+  Setting this policy does not guarantee that any specific algorithms will be negotiated.
+
+  This policy exists to allow server operators who wish to support clients with and without compliance requirements to differentiate between those clients, and only use certain non-default algorithms with increased cryptographic strength for those explicitly configured to prefer them.
+
+  Setting the policy to '<ph name="CNSA2_NAME">cnsa2</ph>' configures <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to prefer key exchange methods required for compliance with the Commercial National Security Algorithm Suite 2.0 (CNSA 2.0).
+
+  Not setting the policy, or setting it to '<ph name="DEFAULT_NAME">default</ph>', configures <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to use its default key exchange methods.
+
+  If this policy is set to a value that would configure <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to prefer a post-quantum key agreement algorithm but <ph name="POST_QUANTUM_KEY_AGREEMENT_ENABLED_POLICY_NAME">PostQuantumKeyAgreementEnabled</ph> is Disabled, the setting of <ph name="POST_QUANTUM_KEY_AGREEMENT_ENABLED_POLICY_NAME">PostQuantumKeyAgreementEnabled</ph> takes precedence.
+
+  Setting this policy is not required for security. The default cryptography used by <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> is strong enough to withstand a brute force attack using the entire power of the Sun.
+
+  Setting this policy will cause <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to be slower when accessing websites.
+
+  This policy only affects TLS 1.3 and QUIC; it does not affect earlier versions of TLS.
+
+example_value: cnsa2
+features:
+  dynamic_refresh: true
+  per_profile: false
+items:
+- caption: Prefer key exchange methods satisfying the requirements of CNSA 2.0
+  name: CNSA2.0
+  value: cnsa2
+- caption: Use <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s default supported groups
+  name: Default
+  value: default
+owners:
+- file://crypto/OWNERS
+- trusty-transport@chromium.org
+future_on:
+- android
+- chrome.*
+- chrome_os
+schema:
+  enum:
+  - cnsa2
+  - default
+  type: string
+tags:
+- system-security
+type: string-enum

@@ -10,12 +10,14 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "components/cronet/cronet_context.h"
 #include "net/base/idempotency.h"
 #include "net/base/io_buffer.h"
 #include "net/base/load_flags.h"
 #include "net/base/load_states.h"
+#include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
@@ -32,6 +34,7 @@
 #include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/redirect_info.h"
+#include "net/url_request/referrer_policy.h"
 #include "net/url_request/url_request_context.h"
 
 namespace cronet {
@@ -60,18 +63,20 @@ int CalculateLoadFlags(int load_flags,
 
 }  // namespace
 
-CronetURLRequest::CronetURLRequest(CronetContext* context,
-                                   std::unique_ptr<Callback> callback,
-                                   const GURL& url,
-                                   net::RequestPriority priority,
-                                   bool disable_cache,
-                                   bool disable_connection_migration,
-                                   bool traffic_stats_tag_set,
-                                   int32_t traffic_stats_tag,
-                                   bool traffic_stats_uid_set,
-                                   int32_t traffic_stats_uid,
-                                   net::Idempotency idempotency,
-                                   net::handles::NetworkHandle network)
+CronetURLRequest::CronetURLRequest(
+    CronetContext* context,
+    std::unique_ptr<Callback> callback,
+    const GURL& url,
+    net::RequestPriority priority,
+    bool disable_cache,
+    bool disable_connection_migration,
+    bool traffic_stats_tag_set,
+    int32_t traffic_stats_tag,
+    bool traffic_stats_uid_set,
+    int32_t traffic_stats_uid,
+    net::Idempotency idempotency,
+    scoped_refptr<net::SharedDictionary> shared_dictionary,
+    net::handles::NetworkHandle network)
     : context_(context),
       network_tasks_(std::move(callback),
                      url,
@@ -84,6 +89,7 @@ CronetURLRequest::CronetURLRequest(CronetContext* context,
                      traffic_stats_uid_set,
                      traffic_stats_uid,
                      idempotency,
+                     shared_dictionary,
                      network),
       initial_method_("GET"),
       initial_request_headers_(std::make_unique<net::HttpRequestHeaders>()) {
@@ -190,6 +196,7 @@ CronetURLRequest::NetworkTasks::NetworkTasks(
     bool traffic_stats_uid_set,
     int32_t traffic_stats_uid,
     net::Idempotency idempotency,
+    scoped_refptr<net::SharedDictionary> shared_dictionary,
     net::handles::NetworkHandle network)
     : callback_(std::move(callback)),
       initial_url_(url),
@@ -203,6 +210,7 @@ CronetURLRequest::NetworkTasks::NetworkTasks(
       traffic_stats_uid_set_(traffic_stats_uid_set),
       traffic_stats_uid_(traffic_stats_uid),
       idempotency_(idempotency),
+      shared_dictionary_(shared_dictionary),
       network_(network) {
   DETACH_FROM_THREAD(network_thread_checker_);
 }
@@ -301,10 +309,36 @@ void CronetURLRequest::NetworkTasks::Start(
   url_request_->SetExtraRequestHeaders(*request_headers);
   url_request_->SetPriority(initial_priority_);
   url_request_->SetIdempotency(idempotency_);
-  if (std::optional<std::string> referer =
-          request_headers->GetHeader(net::HttpRequestHeaders::kReferer);
-      referer) {
-    url_request_->SetReferrer(*referer);
+  url_request_->SetReferrer(
+      request_headers->GetHeader(net::HttpRequestHeaders::kReferer)
+          .value_or(url_request_->referrer()));
+  url_request_->set_referrer_policy(net::ReferrerPolicy::NEVER_CLEAR);
+  if (shared_dictionary_) {
+    if (!context->GetURLRequestContext(network_)->enable_brotli()) {
+      // Ideally this would be impossible. Unfortunately, due to Cronet's API
+      // structure, it is impossible to know within UrlRequest.Builder's API
+      // code whether the associated CronetEngine has Brotli enabled or not.
+      // So, since we cannot throw there, the best we can do is log error here.
+      LOG(WARNING) << "Compression dictionary will be ignored: the "
+                      "CronetEngine being used disables Brotli, which is a "
+                      "requirement for compression dictionaries.";
+    } else {
+      url_request_->SetSharedDictionaryGetter(base::BindRepeating(
+          [](scoped_refptr<net::SharedDictionary> dict,
+             const std::optional<net::SharedDictionaryIsolationKey>&
+                 isolation_key,
+             const GURL& request_url) {
+            // Cronet currently does not implement the retrieval of compression
+            // dictionaries, it instead relies on the embedder to provide them
+            // for a specific URLRequest. As such, Cronet doesn't handle
+            // matching dictionaries with isolation keys & URLs, but relies on
+            // the embedder to do the right thing.
+            return dict;
+          },
+          shared_dictionary_));
+      url_request_->SetIsSharedDictionaryReadAllowedCallback(
+          base::BindRepeating([] { return true; }));
+    }
   }
   if (upload)
     url_request_->set_upload(std::move(upload));
@@ -315,7 +349,7 @@ void CronetURLRequest::NetworkTasks::Start(
         traffic_stats_tag_set_ ? traffic_stats_tag_
                                : net::SocketTag::UNSET_TAG));
 #else
-    CHECK(false);
+    NOTREACHED();
 #endif
   }
   url_request_->Start();

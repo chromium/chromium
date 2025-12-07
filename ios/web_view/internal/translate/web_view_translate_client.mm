@@ -14,6 +14,7 @@
 #import "components/translate/core/browser/page_translated_details.h"
 #import "components/translate/core/browser/translate_infobar_delegate.h"
 #import "components/translate/core/browser/translate_step.h"
+#import "components/translate/core/common/language_detection_details.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web_view/internal/language/web_view_accept_languages_service_factory.h"
 #import "ios/web_view/internal/language/web_view_language_model_manager_factory.h"
@@ -47,12 +48,13 @@ WebViewTranslateClient::WebViewTranslateClient(
     language::AcceptLanguagesService* accept_languages)
     : pref_service_(pref_service),
       translate_driver_(web_state,
-                        /*translate_model_service=*/nullptr),
+                        /*language_detection_model_service=*/nullptr),
       translate_manager_(this, translate_ranker, language_model),
       accept_languages_(accept_languages) {
   DCHECK(pref_service_);
   DCHECK(accept_languages_);
   translate_driver_.Initialize(url_language_histogram, &translate_manager_);
+  translate_observation_.Observe(&translate_driver_);
 }
 
 WebViewTranslateClient::~WebViewTranslateClient() = default;
@@ -77,12 +79,23 @@ bool WebViewTranslateClient::RequestTranslationOffer() {
   }
 }
 
+// LanguageDetectionObserver implementation:
+
+void WebViewTranslateClient::OnTranslateDriverDestroyed(
+    translate::TranslateDriver* driver) {
+  translate_observation_.Reset();
+}
+
+void WebViewTranslateClient::OnLanguageDetermined(
+    const translate::LanguageDetectionDetails& details) {
+  [translation_controller_ onLanguageDetermined:details];
+}
+
 // TranslateClient implementation:
 
 std::unique_ptr<infobars::InfoBar> WebViewTranslateClient::CreateInfoBar(
     std::unique_ptr<translate::TranslateInfoBarDelegate> delegate) const {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 bool WebViewTranslateClient::ShowTranslateUI(
@@ -115,11 +128,6 @@ WebViewTranslateClient::GetTranslatePrefs() {
 language::AcceptLanguagesService*
 WebViewTranslateClient::GetAcceptLanguagesService() {
   return accept_languages_;
-}
-
-int WebViewTranslateClient::GetInfobarIconID() const {
-  NOTREACHED_IN_MIGRATION();
-  return 0;
 }
 
 bool WebViewTranslateClient::IsTranslatableURL(const GURL& url) {

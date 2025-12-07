@@ -5,6 +5,7 @@
 #include "remoting/base/passthrough_oauth_token_getter.h"
 
 #include "base/functional/bind.h"
+#include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
 
 namespace remoting {
@@ -12,22 +13,28 @@ namespace remoting {
 PassthroughOAuthTokenGetter::PassthroughOAuthTokenGetter() = default;
 
 PassthroughOAuthTokenGetter::PassthroughOAuthTokenGetter(
-    const std::string& username,
-    const std::string& access_token)
-    : username_(username), access_token_(access_token) {}
+    const OAuthTokenInfo& token_info)
+    : token_info_(token_info) {}
 
-PassthroughOAuthTokenGetter::~PassthroughOAuthTokenGetter() = default;
+PassthroughOAuthTokenGetter::~PassthroughOAuthTokenGetter() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 void PassthroughOAuthTokenGetter::CallWithToken(
     OAuthTokenGetter::TokenCallback on_access_token) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(on_access_token),
-                                OAuthTokenGetter::Status::SUCCESS, username_,
-                                access_token_));
+                                OAuthTokenGetter::Status::SUCCESS,
+                                OAuthTokenInfo(token_info_)));
 }
 
 void PassthroughOAuthTokenGetter::InvalidateCache() {
   NOTIMPLEMENTED();
+}
+
+base::WeakPtr<OAuthTokenGetter> PassthroughOAuthTokenGetter::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 }  // namespace remoting

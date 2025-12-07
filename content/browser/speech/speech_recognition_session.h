@@ -35,6 +35,9 @@ class SpeechRecognitionSession : public media::mojom::SpeechRecognitionSession,
   // media::mojom::SpeechRecognitionSession implementation.
   void Abort() override;
   void StopCapture() override;
+  void UpdateRecognitionContext(
+      const media::SpeechRecognitionRecognitionContext& recognition_context)
+      override;
 
   // SpeechRecognitionEventListener methods.
   void OnRecognitionStart(int session_id) override;

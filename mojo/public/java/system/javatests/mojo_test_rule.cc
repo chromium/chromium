@@ -18,7 +18,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "mojo/public/java/system/test_support_jni/MojoTestRule_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace {
 
@@ -76,3 +76,5 @@ static void JNI_MojoTestRule_RunLoop(JNIEnv* env,
 
 }  // namespace android
 }  // namespace mojo
+
+DEFINE_JNI(MojoTestRule)

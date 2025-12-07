@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<title>A crash test for crbug.com/439682405 and crbug.com/440833172</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<style>
+input {
+  line-clamp: auto;
+  max-height: 1.5em;
+}
+::-webkit-input-placeholder {
+  overflow: visible;
+}
+</style>
+<input placeholder="BOOM">
+<script>
+test(() => {
+}, 'Pass if no crash');
+</script>

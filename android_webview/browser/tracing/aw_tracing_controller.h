@@ -12,18 +12,16 @@ namespace android_webview {
 
 class AwTracingController {
  public:
-  AwTracingController(JNIEnv* env, jobject obj);
+  AwTracingController(JNIEnv* env, const jni_zero::JavaRef<jobject>& obj);
 
   AwTracingController(const AwTracingController&) = delete;
   AwTracingController& operator=(const AwTracingController&) = delete;
 
   bool Start(JNIEnv* env,
-             const base::android::JavaParamRef<jobject>& obj,
-             const base::android::JavaParamRef<jstring>& categories,
+             std::string& jcategories,
              jint mode);
-  bool StopAndFlush(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& obj);
-  bool IsTracing(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  bool StopAndFlush(JNIEnv* env);
+  bool IsTracing(JNIEnv* env);
 
  private:
   ~AwTracingController();

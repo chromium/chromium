@@ -4,12 +4,15 @@
 
 package org.chromium.chrome.browser.autofill;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.text.Editable;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.ErrorType;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -22,6 +25,7 @@ import org.chromium.ui.text.EmptyTextWatcher;
  * TODO(crbug.com/40579040) - Confirm if the month and year needs to be pre-populated in case
  * partial data is available.
  */
+@NullMarked
 public class AutofillExpirationDateFixFlowPrompt extends AutofillSaveCardPromptBase
         implements EmptyTextWatcher {
     /**
@@ -117,6 +121,7 @@ public class AutofillExpirationDateFixFlowPrompt extends AutofillSaveCardPromptB
 
     @Override
     public void onClick(PropertyModel model, int buttonType) {
+        assumeNonNull(mModalDialogManager);
         if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
             String monthString = mMonthInput.getText().toString().trim();
             String yearString = mYearInput.getText().toString().trim();

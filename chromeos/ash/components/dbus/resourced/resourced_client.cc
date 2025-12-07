@@ -4,7 +4,9 @@
 
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
 
+#include "base/byte_count.h"
 #include "base/check_op.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -63,12 +65,9 @@ class ResourcedClientImpl : public ResourcedClient {
       uint32_t refresh_seconds,
       chromeos::DBusMethodCallback<GameMode> callback) override;
 
-  void SetMemoryMarginsBps(uint32_t critical_margin,
-                           uint32_t moderate_margin,
-                           SetMemoryMarginsBpsCallback callback) override;
+  void SetMemoryMargins(MemoryMargins margins) override;
 
-  void ReportBrowserProcesses(Component component,
-                              const std::vector<Process>& processes) override;
+  void ReportBrowserProcesses(const std::vector<Process>& processes) override;
 
   void SetProcessState(base::ProcessId process_id,
                        resource_manager::ProcessState state,
@@ -96,11 +95,6 @@ class ResourcedClientImpl : public ResourcedClient {
       chromeos::DBusMethodCallback<GameMode> callback,
       dbus::Response* response);
 
-  void HandleSetMemoryMarginBps(uint32_t critical_margin,
-                                uint32_t moderate_margin,
-                                SetMemoryMarginsBpsCallback callback,
-                                dbus::Response* response);
-
   // D-Bus signal handlers.
   void MemoryPressureReceived(dbus::Signal* signal);
   void MemoryPressureConnected(const std::string& interface_name,
@@ -125,7 +119,7 @@ class ResourcedClientImpl : public ResourcedClient {
 
   // Caches the total memory for reclaim_target_kb sanity check. The default
   // value is 32 GiB in case reading total memory failed.
-  uint64_t total_memory_kb_ = 32 * 1024 * 1024;
+  base::ByteCount total_memory_ = base::GiB(32);
 
   // A list of observers that are listening on state changes, etc.
   base::ObserverList<Observer> observers_;
@@ -137,9 +131,9 @@ class ResourcedClientImpl : public ResourcedClient {
 };
 
 ResourcedClientImpl::ResourcedClientImpl() {
-  base::SystemMemoryInfoKB info;
+  base::SystemMemoryInfo info;
   if (base::GetSystemMemoryInfo(&info)) {
-    total_memory_kb_ = static_cast<uint64_t>(info.total);
+    total_memory_ = info.total;
   } else {
     PLOG(ERROR) << "Error reading total memory.";
   }
@@ -151,12 +145,14 @@ void ResourcedClientImpl::MemoryPressureReceived(dbus::Signal* signal) {
   memory_pressure::ReclaimTarget reclaim_target;
   uint8_t pressure_level_byte;
   PressureLevel pressure_level;
+  uint64_t reclaim_target_kb;
 
   if (!signal_reader.PopByte(&pressure_level_byte) ||
-      !signal_reader.PopUint64(&reclaim_target.target_kb)) {
+      !signal_reader.PopUint64(&reclaim_target_kb)) {
     LOG(ERROR) << "Error reading signal from resourced: " << signal->ToString();
     return;
   }
+  reclaim_target.target = base::KiB(reclaim_target_kb);
 
   int64_t signal_origin_timestamp_ms = -1;
   // The signal origin timestamp may not be included by resourced, and if it is,
@@ -166,6 +162,17 @@ void ResourcedClientImpl::MemoryPressureReceived(dbus::Signal* signal) {
     // Signal origin timestamp is received as a ms value from CLOCK_MONOTONIC.
     reclaim_target.origin_time =
         base::TimeTicks::FromUptimeMillis(signal_origin_timestamp_ms);
+  }
+
+  uint8_t discard_type;
+  if (signal_reader.PopByte(&discard_type)) {
+    if (discard_type == resource_manager::DiscardType::UNPROTECTED) {
+      reclaim_target.discard_protected = false;
+    } else if (discard_type == resource_manager::DiscardType::PROTECTED) {
+      reclaim_target.discard_protected = true;
+    } else {
+      LOG(ERROR) << "Unknown discard type: " << discard_type;
+    }
   }
 
   if (pressure_level_byte == resource_manager::PressureLevelChrome::NONE) {
@@ -181,9 +188,8 @@ void ResourcedClientImpl::MemoryPressureReceived(dbus::Signal* signal) {
     return;
   }
 
-  if (reclaim_target.target_kb > total_memory_kb_) {
-    LOG(ERROR) << "reclaim_target_kb is too large: "
-               << reclaim_target.target_kb;
+  if (reclaim_target.target > total_memory_) {
+    LOG(ERROR) << "reclaim_target is too large: " << reclaim_target.target;
     return;
   }
 
@@ -228,7 +234,7 @@ void ResourcedClientImpl::MemoryPressureArcContainerReceived(
       return;
   }
 
-  if (reclaim_target_kb > total_memory_kb_) {
+  if (base::KiB(reclaim_target_kb) > total_memory_) {
     LOG(ERROR) << "reclaim_target_kb is too large: " << reclaim_target_kb;
     return;
   }
@@ -298,71 +304,29 @@ void ResourcedClientImpl::SetGameModeWithTimeout(
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void ResourcedClientImpl::HandleSetMemoryMarginBps(
-    uint32_t critical_margin,
-    uint32_t moderate_margin,
-    SetMemoryMarginsBpsCallback callback,
-    dbus::Response* response) {
-  if (callback.is_null()) {
-    return;
-  }
+void ResourcedClientImpl::SetMemoryMargins(MemoryMargins margins) {
+  resource_manager::MemoryMargins request;
+  request.set_moderate_bps(margins.moderate_bps);
+  request.set_critical_bps(margins.critical_bps);
+  request.set_critical_protected_bps(margins.critical_protected_bps);
 
-  if (!response) {
-    LOG(ERROR) << "Null response object received: try again in 30 seconds.";
-
-    // If Chrome startup was racing with resourced startup it's possible
-    // that the message was not delivered because resourced was not up yet.
-    // Let's redispatch the message in 30 seconds.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&ResourcedClientImpl::SetMemoryMarginsBps,
-                       weak_factory_.GetWeakPtr(), critical_margin,
-                       moderate_margin, std::move(callback)),
-        base::Seconds(30));
-    return;
-  }
-
-  uint64_t critical = 0;
-  uint64_t moderate = 0;
-  dbus::MessageReader reader(response);
-  if (!reader.PopUint64(&critical) || !reader.PopUint64(&moderate)) {
-    LOG(ERROR) << "Unable to read back uint64s from resourced";
-    std::move(callback).Run(false, 0, 0);
-    return;
-  }
-
-  std::move(callback).Run(true, critical, moderate);
-}
-
-void ResourcedClientImpl::SetMemoryMarginsBps(
-    uint32_t critical_margin,
-    uint32_t moderate_margin,
-    SetMemoryMarginsBpsCallback callback) {
   dbus::MethodCall method_call(resource_manager::kResourceManagerInterface,
-                               resource_manager::kSetMemoryMarginsBps);
-  dbus::MessageWriter writer(&method_call);
-  writer.AppendUint32(critical_margin);
-  writer.AppendUint32(moderate_margin);
+                               resource_manager::kSetMemoryMarginsMethod);
+  if (!dbus::MessageWriter(&method_call).AppendProtoAsArrayOfBytes(request)) {
+    LOG(ERROR) << "Error serializing "
+               << resource_manager::kSetMemoryMarginsMethod << " request";
+    return;
+  }
 
-  proxy_->CallMethod(
-      &method_call, kResourcedDBusTimeoutMilliseconds,
-      base::BindOnce(&ResourcedClientImpl::HandleSetMemoryMarginBps,
-                     weak_factory_.GetWeakPtr(), critical_margin,
-                     moderate_margin, std::move(callback)));
+  proxy_->CallMethod(&method_call, kResourcedDBusTimeoutMilliseconds,
+                     base::DoNothing());
 }
 
 void ResourcedClientImpl::ReportBrowserProcesses(
-    Component component,
     const std::vector<Process>& processes) {
   resource_manager::ReportBrowserProcesses request;
 
-  if (component == ResourcedClient::Component::kAsh) {
-    request.set_browser_type(resource_manager::BrowserType::ASH);
-  } else if (component == ResourcedClient::Component::kLacros) {
-    request.set_browser_type(resource_manager::BrowserType::LACROS);
-  } else {
-    NOTREACHED_IN_MIGRATION();
-  }
+  request.set_browser_type(resource_manager::BrowserType::ASH);
 
   for (auto it = processes.begin(); it != processes.end(); ++it) {
     auto* process = request.add_processes();
@@ -412,7 +376,7 @@ void ResourcedClientImpl::SetThreadState(base::ProcessId process_id,
   dbus::MessageWriter writer(&method_call);
 
   writer.AppendUint32(process_id);
-  writer.AppendUint32(thread_id);
+  writer.AppendUint32(thread_id.raw());
   writer.AppendByte(static_cast<uint8_t>(state));
 
   proxy_->CallMethodWithErrorResponse(

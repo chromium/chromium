@@ -60,8 +60,6 @@ class MockExtensionSystem : public ExtensionSystem {
   void PerformActionBasedOnOmahaAttributes(
       const ExtensionId& extension_id,
       const base::Value::Dict& attributes) override;
-  bool FinishDelayedInstallationIfReady(const ExtensionId& extension_id,
-                                        bool install_immediately) override;
 
  private:
   raw_ptr<content::BrowserContext> browser_context_;

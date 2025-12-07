@@ -4,13 +4,12 @@
 
 #include "chrome/browser/performance_manager/policies/working_set_trimmer_policy.h"
 
-#include "base/time/time.h"
-#include "build/build_config.h"
-
 #include "base/metrics/histogram_macros.h"
+#include "base/notimplemented.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "build/chromeos_buildflags.h"
+#include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/performance_manager/mechanisms/working_set_trimmer.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
@@ -18,7 +17,8 @@
 #include "components/performance_manager/public/graph/node_attached_data.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/performance_manager/public/graph/process_node.h"
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/performance_manager/policies/working_set_trimmer_policy_chromeos.h"
 #endif
 
@@ -27,8 +27,7 @@ namespace policies {
 
 namespace {
 
-class WorkingSetTrimData
-    : public ExternalNodeAttachedDataImpl<WorkingSetTrimData> {
+class WorkingSetTrimData : public NodeAttachedDataImpl<WorkingSetTrimData> {
  public:
   explicit WorkingSetTrimData(const ProcessNode* node) {}
   ~WorkingSetTrimData() override = default;
@@ -113,7 +112,7 @@ base::Value::Dict WorkingSetTrimmerPolicy::DescribeProcessNodeData(
 
 // static
 bool WorkingSetTrimmerPolicy::PlatformSupportsWorkingSetTrim() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return WorkingSetTrimmerPolicyChromeOS::PlatformSupportsWorkingSetTrim();
 #else
   return false;
@@ -123,7 +122,7 @@ bool WorkingSetTrimmerPolicy::PlatformSupportsWorkingSetTrim() {
 // static
 std::unique_ptr<WorkingSetTrimmerPolicy>
 WorkingSetTrimmerPolicy::CreatePolicyForPlatform() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return std::make_unique<WorkingSetTrimmerPolicyChromeOS>();
 #else
   NOTIMPLEMENTED() << "Platform does not support WorkingSetTrim.";

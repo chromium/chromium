@@ -11,6 +11,7 @@
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
+#include "base/functional/callback_helpers.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/view.h"
 

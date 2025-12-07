@@ -1,8 +1,10 @@
 include_rules = [
   "+components/tracing/common",
+  "+components/system_cpu",
   "+third_party/perfetto/include",
   "+third_party/perfetto/protos/perfetto",
   "+third_party/protobuf/src/google/protobuf/io/zero_copy_stream.h",
+  "+third_party/snappy"
 ]
 
 specific_include_rules = {
@@ -11,5 +13,8 @@ specific_include_rules = {
   ],
   'perfetto_traced_process.cc': [
     "+chromeos/dbus/constants",
+  ],
+  'metadata_data_source.cc': [
+    "+components/variations/active_field_trials.h",
   ]
 }

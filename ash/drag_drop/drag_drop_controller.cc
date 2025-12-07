@@ -127,6 +127,9 @@ DragDropController::~DragDropController() {
   if (cancel_animation_)
     cancel_animation_->End();
   drag_image_widget_.reset();
+  for (aura::client::DragDropClientObserver& observer : observers_) {
+    observer.OnDragDropClientDestroying();
+  }
 }
 
 bool DragDropController::IsDragDropCompleted() {
@@ -314,7 +317,7 @@ void DragDropController::SetDragImage(const gfx::ImageSkia& image,
 
   DragImageView* drag_image =
       static_cast<DragImageView*>(drag_image_widget_->GetContentsView());
-  drag_image->SetImage(image);
+  drag_image->SetImage(ui::ImageModel::FromImageSkia(image));
   drag_image_offset_ = image_offset;
   gfx::Rect drag_image_bounds(current_location_,
                               drag_image->GetPreferredSize());
@@ -378,9 +381,11 @@ void DragDropController::OnMouseEvent(ui::MouseEvent* event) {
   if (!IsDragDropInProgress())
     return;
 
-  // If current drag session was not started by mouse, dont process this mouse
-  // event, but consume it so it does not interfere with current drag session.
-  if (current_drag_event_source_ != ui::mojom::DragEventSource::kMouse) {
+  // If current drag session was not started by mouse or mouse wheel event, dont
+  // process this mouse event, but consume it so it does not interfere with
+  // current drag session.
+  if (current_drag_event_source_ != ui::mojom::DragEventSource::kMouse ||
+      event->IsMouseWheelEvent()) {
     event->StopPropagation();
     return;
   }

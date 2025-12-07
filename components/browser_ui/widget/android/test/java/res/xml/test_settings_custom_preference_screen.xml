@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        android:key="preference_category"
+        android:title="Preference Category" />
+
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="text_message_preference"
+        android:summary="Text message preference"
+        app:allowDividerBelow="false" />
+
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="preference_top"
+        android:title="Preference at the top" />
+
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="preference_middle"
+        android:title="Preference in the middle" />
+
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="preference_bottom"
+        android:title="Preference at the bottom" />
+
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="preference_card"
+        android:title="Preference Card"
+        app:backgroundStyle="card" />
+
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="preference_color"
+        android:title="Preference Custom Color"
+        app:backgroundStyle="card"
+        app:backgroundColor="@android:color/holo_blue_light" />
+
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="preference_standard"
+        android:title="Preference Standard"
+        app:backgroundStyle="standard" />
+
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="preference_none"
+        android:title="Preference None"
+        app:backgroundStyle="none" />
+
+</PreferenceScreen>

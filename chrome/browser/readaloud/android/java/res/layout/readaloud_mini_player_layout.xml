@@ -50,7 +50,7 @@ found in the LICENSE file.
 
                 <!-- Loading spinner -->
                 <ProgressBar
-                    android:id="@+id/spinner"
+                    android:id="@+id/readaloud_spinner"
                     style="?android:attr/progressBarStyleLarge"
                     android:layout_width="@dimen/readaloud_mini_player_play_button_diameter"
                     android:layout_height="@dimen/readaloud_mini_player_play_button_diameter"
@@ -154,7 +154,7 @@ found in the LICENSE file.
                         android:ellipsize="end"
                         android:maxLines="1"/>
                     <TextView
-                        android:id="@+id/publisher"
+                        android:id="@+id/subtitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="@style/TextAppearance.TextSmall"
@@ -166,10 +166,11 @@ found in the LICENSE file.
             <!-- Close button -->
             <ImageView
                 android:id="@+id/close_button"
-                android:src="@drawable/baseline_close_24"
+                android:src="@drawable/material_ic_close_24dp"
                 android:contentDescription="@string/readaloud_close_player_button_content_description"
-                android:layout_width="@dimen/readaloud_close_button_size"
-                android:layout_height="@dimen/readaloud_close_button_size"
+                android:layout_width="@dimen/button_size"
+                android:layout_height="@dimen/button_size"
+                android:padding="12dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:background="@drawable/rounded_ripple"
@@ -184,7 +185,7 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:layout_height="4dp"
             android:layout_gravity="bottom"
-            android:background="?attr/colorSurfaceVariant"
+            android:background="@macro/progress_bar_bg_color"
             android:max="1000"
             android:progress="0"
             android:progressTint="@macro/default_icon_color"

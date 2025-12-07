@@ -11,6 +11,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_observer.h"
+#include "chrome/browser/picture_in_picture/scoped_picture_in_picture_occlusion_observation.h"
 #include "chrome/browser/ui/views/payments/view_stack.h"
 #include "components/payments/content/initialization_task.h"
 #include "components/payments/content/payment_request_dialog.h"
@@ -48,7 +50,8 @@ enum class BackNavigationType {
 class PaymentRequestDialogView : public views::DialogDelegateView,
                                  public PaymentRequestDialog,
                                  public PaymentRequestSpec::Observer,
-                                 public InitializationTask::Observer {
+                                 public InitializationTask::Observer,
+                                 public PictureInPictureOcclusionObserver {
   METADATA_HEADER(PaymentRequestDialogView, views::DialogDelegateView)
 
  public:
@@ -204,6 +207,9 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
   void ViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details) override;
 
+  // PictureInPictureOcclusionObserver
+  void OnOcclusionStateChanged(bool occluded) override;
+
   // The PaymentRequest object that initiated this dialog.
   base::WeakPtr<PaymentRequest> request_;
   ControllerMap controller_map_;
@@ -230,6 +236,8 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
   // Calculated based on the browser content size at the time of opening payment
   // handler window.
   int payment_handler_window_height_ = 0;
+
+  ScopedPictureInPictureOcclusionObservation occlusion_observation_{this};
 
   base::WeakPtrFactory<PaymentRequestDialogView> weak_ptr_factory_{this};
 };

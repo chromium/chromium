@@ -9,18 +9,18 @@
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_pref_names.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/authentication/test/signin_matchers.h"
+#import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey_ui.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_ui_constants.h"
+#import "ios/chrome/browser/bookmarks/public/bookmarks_ui_constants.h"
+#import "ios/chrome/browser/bookmarks/test/bookmark_earl_grey.h"
+#import "ios/chrome/browser/bookmarks/test/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_egtest_util.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
-#import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -33,7 +33,6 @@ using chrome_test_util::BookmarksHomeDoneButton;
 using chrome_test_util::BookmarksNavigationBarBackButton;
 using chrome_test_util::IdentityCellMatcherForEmail;
 using chrome_test_util::PrimarySignInButton;
-using chrome_test_util::SecondarySignInButton;
 
 // Bookmark promo integration tests.
 @interface BookmarksAccountStoragePromoTestCase : WebHttpServerChromeTestCase
@@ -48,8 +47,8 @@ using chrome_test_util::SecondarySignInButton;
 }
 
 // Tear down called once per test.
-- (void)tearDown {
-  [super tearDown];
+- (void)tearDownHelper {
+  [super tearDownHelper];
   [BookmarkEarlGrey clearBookmarks];
   [BookmarkEarlGrey clearBookmarksPositionCache];
 }
@@ -71,8 +70,7 @@ using chrome_test_util::SecondarySignInButton;
                                           grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   // Verify that identity1 is signed-in and the promo is hidden.
-  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity1.userEmail
-                                        consent:signin::ConsentLevel::kSignin];
+  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity1.userEmail];
   [SigninEarlGreyUI verifySigninPromoNotVisible];
   // Sign-out and verify that the promo is shown without the spinner.
   [SigninEarlGrey signOut];
@@ -104,8 +102,7 @@ using chrome_test_util::SecondarySignInButton;
                                           grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   // Result: the sign-in is successful without any issue.
-  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity2.userEmail
-                                        consent:signin::ConsentLevel::kSignin];
+  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity2.userEmail];
 }
 
 // Tests that signin promo is shown even if local data exists.
@@ -114,7 +111,7 @@ using chrome_test_util::SecondarySignInButton;
   // kGoogleServicesLastSyncingGaiaId.
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
-  [ChromeEarlGrey setStringValue:fakeIdentity1.gaiaID
+  [ChromeEarlGrey setStringValue:fakeIdentity1.gaiaId.ToNSString()
                      forUserPref:prefs::kGoogleServicesLastSyncingGaiaId];
 
   [BookmarkEarlGrey
@@ -130,8 +127,7 @@ using chrome_test_util::SecondarySignInButton;
                                           grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   // Result: the sign-in is successful without any issue.
-  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity1.userEmail
-                                        consent:signin::ConsentLevel::kSignin];
+  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity1.userEmail];
   // Verify that the batch upload dialog is visible.
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:
@@ -155,8 +151,7 @@ using chrome_test_util::SecondarySignInButton;
                                           grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   // Result: the sign-in is successful without any issue.
-  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity1.userEmail
-                                        consent:signin::ConsentLevel::kSignin];
+  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity1.userEmail];
 }
 
 // Tests that account bookmarks are not shown on sign-out.
@@ -172,15 +167,15 @@ using chrome_test_util::SecondarySignInButton;
 
   // Verify account section shows for a signed-in account.
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(@"Mobile Bookmarks")]
+      selectElementWithMatcher:grey_accessibilityLabel(@"Mobile bookmarks")]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Sign-out.
   [SigninEarlGrey signOut];
 
-  // Verify that the acocunt model is not shown.
+  // Verify that the account model is not shown.
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(@"Mobile Bookmarks")]
+      selectElementWithMatcher:grey_accessibilityLabel(@"Mobile bookmarks")]
       assertWithMatcher:grey_notVisible()];
 
   // Verify the sign in promo is shown.
@@ -222,7 +217,7 @@ using chrome_test_util::SecondarySignInButton;
                                    IDS_IOS_BOOKMARKS_PROFILE_SECTION_TITLE))]
       assertWithMatcher:grey_notVisible()];
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(@"Mobile Bookmarks")]
+      selectElementWithMatcher:grey_accessibilityLabel(@"Mobile bookmarks")]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Verify that account bookmarks are not shown.

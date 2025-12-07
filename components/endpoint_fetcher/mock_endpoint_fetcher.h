@@ -10,10 +10,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+namespace endpoint_fetcher {
 
 // Used to mock endpoint fetcher in tests.
 class MockEndpointFetcher : public EndpointFetcher {
@@ -35,5 +36,7 @@ class MockEndpointFetcher : public EndpointFetcher {
       int http_status_code = net::HTTP_OK,
       std::optional<FetchErrorType> error_type = std::nullopt);
 };
+
+}  // namespace endpoint_fetcher
 
 #endif  // COMPONENTS_ENDPOINT_FETCHER_MOCK_ENDPOINT_FETCHER_H_

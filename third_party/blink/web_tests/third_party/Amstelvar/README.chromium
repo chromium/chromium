@@ -1,9 +1,11 @@
 Name: Amstelvar
 Short Name: amstelvar
 URL: https://github.com/TypeNetwork/Amstelvar
-Version: 0
-Revision: https://github.com/TypeNetwork/Amstelvar
-License: SIL Open Font License 1.1
+Version: N/A
+Revision: db434d2cefa322a129ac48ccb3d821fc3289427d
+Date: 2020-07-25
+Update Mechanism: Static (https://crbug.com/422061658)
+License: OFL-1.1
 License File: LICENSE
 Security Critical: no
 Shipped: no

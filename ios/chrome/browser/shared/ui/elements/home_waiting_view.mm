@@ -4,20 +4,12 @@
 
 #import "ios/chrome/browser/shared/ui/elements/home_waiting_view.h"
 
-#import <MaterialComponents/MaterialActivityIndicator.h>
-
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
-@interface HomeWaitingView () <MDCActivityIndicatorDelegate>
-@property(nonatomic, retain) MDCActivityIndicator* activityIndicator;
-@property(nonatomic, copy) ProceduralBlock animateOutCompletionBlock;
-@end
-
-@implementation HomeWaitingView
-
-@synthesize activityIndicator = _activityIndicator;
-@synthesize animateOutCompletionBlock = _animateOutCompletionBlock;
+@implementation HomeWaitingView {
+  UIActivityIndicatorView* _activityIndicator;
+}
 
 - (instancetype)initWithFrame:(CGRect)frame backgroundColor:(UIColor*)color {
   self = [super initWithFrame:frame];
@@ -32,43 +24,29 @@
 - (void)startWaiting {
   dispatch_time_t delayForIndicatorAppearance =
       dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));
+  __weak __typeof(self) weakSelf = self;
   dispatch_after(delayForIndicatorAppearance, dispatch_get_main_queue(), ^{
-    MDCActivityIndicator* activityIndicator =
-        [[MDCActivityIndicator alloc] initWithFrame:CGRectMake(0, 0, 24, 24)];
-    self.activityIndicator = activityIndicator;
-    self.activityIndicator.delegate = self;
-    self.activityIndicator.autoresizingMask =
-        UIViewAutoresizingFlexibleLeadingMargin() |
-        UIViewAutoresizingFlexibleTopMargin |
-        UIViewAutoresizingFlexibleTrailingMargin() |
-        UIViewAutoresizingFlexibleBottomMargin;
-    self.activityIndicator.center = CGPointMake(
-        CGRectGetWidth(self.bounds) / 2, CGRectGetHeight(self.bounds) / 2);
-    self.activityIndicator.cycleColors = @[ [UIColor colorNamed:kBlueColor] ];
-    [self addSubview:self.activityIndicator];
-    [self.activityIndicator startAnimating];
+    [weakSelf startActivityIndiactor];
   });
 }
 
 - (void)stopWaitingWithCompletion:(ProceduralBlock)completion {
-  if (self.activityIndicator) {
-    self.animateOutCompletionBlock = completion;
-    [self.activityIndicator stopAnimating];
-  } else if (completion) {
+  [_activityIndicator stopAnimating];
+  if (completion) {
     completion();
   }
 }
 
-#pragma mark - MDCActivityIndicatorDelegate
+#pragma mark - Private
 
-- (void)activityIndicatorAnimationDidFinish:
-    (MDCActivityIndicator*)activityIndicator {
-  [self.activityIndicator removeFromSuperview];
-  self.activityIndicator = nil;
-  if (self.animateOutCompletionBlock) {
-    self.animateOutCompletionBlock();
-  }
-  self.animateOutCompletionBlock = nil;
+// Configures and starts the activity indicator.
+- (void)startActivityIndiactor {
+  _activityIndicator = [[UIActivityIndicatorView alloc] init];
+  _activityIndicator.color = [UIColor colorNamed:kBlueColor];
+  _activityIndicator.autoresizingMask =
+      UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+  [self addSubview:_activityIndicator];
+  [_activityIndicator startAnimating];
 }
 
 @end

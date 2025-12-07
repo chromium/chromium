@@ -8,6 +8,7 @@
 #include "base/auto_reset.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
@@ -20,7 +21,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/chromeos/test_util.h"
+#include "chrome/browser/ui/ash/test_util.h"
 #endif
 
 class Profile;
@@ -49,12 +50,12 @@ class WebAppBrowserTestBase : public WebAppBrowserTestBaseParent {
  public:
   WebAppBrowserTestBase();
   WebAppBrowserTestBase(const WebAppBrowserTestBase&) = delete;
-  WebAppBrowserTestBase& operator=(const WebAppBrowserTestBase&) =
-      delete;
+  WebAppBrowserTestBase& operator=(const WebAppBrowserTestBase&) = delete;
   ~WebAppBrowserTestBase() override = 0;
 
   WebAppProvider& provider();
 
+  // Returns the profile from the browser() object, during test set up.
   Profile* profile();
 
   webapps::AppId InstallPWA(const GURL& app_url);
@@ -75,11 +76,6 @@ class WebAppBrowserTestBase : public WebAppBrowserTestBaseParent {
 
   // Launches the app as a tab and returns the browser.
   Browser* LaunchBrowserForWebAppInTab(const webapps::AppId&);
-
-  // Simulates a page calling window.open on an URL and waits for the
-  // navigation.
-  content::WebContents* OpenWindow(content::WebContents* contents,
-                                   const GURL& url);
 
   // Simulates a page navigating itself to an URL and waits for the
   // navigation.
@@ -114,6 +110,7 @@ class WebAppBrowserTestBase : public WebAppBrowserTestBaseParent {
       content::BrowserContext* context) {}
 
   GURL GetInstallableAppURL();
+  GURL GetAppURLWithManifest(const std::string& manifest_url);
   static const char* GetInstallableAppName();
 
   // InProcessBrowserTest:
@@ -123,9 +120,15 @@ class WebAppBrowserTestBase : public WebAppBrowserTestBaseParent {
   void TearDownInProcessBrowserTestFixture() override;
   void TearDownOnMainThread() override;
   void SetUpCommandLine(base::CommandLine* command_line) override;
+  void PreRunTestOnMainThread() override;
   void SetUpOnMainThread() override;
 
  private:
+  // TODO(https://crbug.com/423465927): Explore a better approach to make the
+  // existing tests run with the prewarm feature enabled.
+  ::test::ScopedPrewarmFeatureList prewarm_feature_list_{
+      ::test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
+
   OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
   base::TimeTicks start_time_ = base::TimeTicks::Now();
 
@@ -136,6 +139,9 @@ class WebAppBrowserTestBase : public WebAppBrowserTestBaseParent {
   // Similar to net::MockCertVerifier, but also updates the CertVerifier
   // used by the NetworkService.
   content::ContentMockCertVerifier cert_verifier_;
+  // Store separately instead of accessing directly from `browser()`, as some
+  // tests close that browser (and thus make it a UAF).
+  base::WeakPtr<Profile> browser_profile_;
   base::AutoReset<std::optional<AppIdentityUpdate>> update_dialog_scope_;
 };
 

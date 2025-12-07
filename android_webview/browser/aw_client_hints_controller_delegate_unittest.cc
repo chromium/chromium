@@ -103,18 +103,11 @@ TEST_F(AwClientHintsControllerDelegateTest, IsJavaScriptAllowed) {
       GURL("https://example.com/"), nullptr));
 }
 
-TEST_F(AwClientHintsControllerDelegateTest, AreThirdPartyCookiesBlocked) {
-  EXPECT_FALSE(client_hints_controller_delegate_->AreThirdPartyCookiesBlocked(
-      GURL(""), nullptr));
-  EXPECT_FALSE(client_hints_controller_delegate_->AreThirdPartyCookiesBlocked(
-      GURL("https://example.com"), nullptr));
-}
-
 TEST_F(AwClientHintsControllerDelegateTest, GetUserAgentMetadata) {
   auto metadata = client_hints_controller_delegate_->GetUserAgentMetadata();
 
   // Most fields should match those from the embedder_support util function.
-  auto from_embedder = embedder_support::GetUserAgentMetadata(prefs_.get());
+  auto from_embedder = embedder_support::GetUserAgentMetadata();
 
   EXPECT_EQ(metadata.architecture, from_embedder.architecture);
   EXPECT_EQ(metadata.bitness, from_embedder.bitness);

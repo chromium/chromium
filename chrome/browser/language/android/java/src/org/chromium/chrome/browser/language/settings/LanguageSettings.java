@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.language.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,21 +15,27 @@ import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.ApkInfo;
 import org.chromium.base.Log;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.AppLocaleUtils;
 import org.chromium.chrome.browser.language.GlobalAppLocaleController;
 import org.chromium.chrome.browser.language.LanguageSplitInstaller;
 import org.chromium.chrome.browser.language.R;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
+import org.chromium.chrome.browser.preferences.PrefServiceUtil;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 
@@ -35,6 +43,7 @@ import org.chromium.components.user_prefs.UserPrefs;
  * Settings fragment that displays information about Chrome languages, which allow users to
  * seamlessly find and manage their languages preferences across platforms.
  */
+@NullMarked
 public class LanguageSettings extends ChromeBaseSettingsFragment
         implements SelectLanguageFragment.Launcher {
     // Return codes from launching Intents on preferences.
@@ -56,38 +65,45 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
 
     private static final String TAG = "LanguageSettings";
 
-    private AppLanguagePreferenceDelegate mAppLanguageDelegate =
+    private final AppLanguagePreferenceDelegate mAppLanguageDelegate =
             new AppLanguagePreferenceDelegate();
     private PrefChangeRegistrar mPrefChangeRegistrar;
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
-    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        getActivity().setTitle(R.string.language_settings);
-        mPrefChangeRegistrar = new PrefChangeRegistrar();
+    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
+        mPageTitle.set(getString(R.string.language_settings));
+        mPrefChangeRegistrar = PrefServiceUtil.createFor(getProfile());
 
         // Create the correct version of language settings.
         if (shouldShowDetailedPreferences()) {
-            createDetailedPreferences(savedInstanceState, rootKey);
+            createDetailedPreferences();
         } else {
-            createBasicPreferences(savedInstanceState, rootKey);
+            createBasicPreferences();
         }
 
         LanguagesManager.recordImpression(LanguagesManager.LanguageSettingsPageType.PAGE_MAIN);
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     /**
      * The detailed language preferences should be shown if the flag to enable them or the app
      * language prompt is enabled. If neither flag is enabled, but an override language is set the
      * detailed language preferences should still be shown.
+     *
      * @return Whether or not to show the detailed language preferences.
      */
-    private boolean shouldShowDetailedPreferences() {
+    private static boolean shouldShowDetailedPreferences() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.DETAILED_LANGUAGE_SETTINGS)
                 || GlobalAppLocaleController.getInstance().isOverridden();
     }
 
     /** Create the old language and translate settings page. Delete once no longer used. */
-    private void createBasicPreferences(Bundle savedInstanceState, String rootKey) {
+    private void createBasicPreferences() {
         SettingsUtils.addPreferencesFromResource(this, R.xml.languages_preferences);
 
         ContentLanguagesPreference mLanguageListPref =
@@ -128,7 +144,7 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
      * Create the new language and translate settings page. With options to change the app language,
      * translate target language, and detailed translate preferences.
      */
-    private void createDetailedPreferences(Bundle savedInstanceState, String rootKey) {
+    private void createDetailedPreferences() {
         // Log currently installed language splits.
         String installedLanguages =
                 TextUtils.join(",", LanguageSplitInstaller.getInstance().getInstalledLanguages());
@@ -150,7 +166,7 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
         // Set title to include current app name.
         PreferenceCategory mAppLanguageTitle =
                 (PreferenceCategory) findPreference(APP_LANGUAGE_SECTION_KEY);
-        String appName = BuildInfo.getInstance().hostPackageLabel;
+        String appName = ApkInfo.getHostPackageLabel();
         mAppLanguageTitle.setTitle(getResources().getString(R.string.app_language_title, appName));
 
         LanguageItemPickerPreference appLanguagePreference =
@@ -267,36 +283,56 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != Activity.RESULT_OK) return;
 
-        String code = data.getStringExtra(SelectLanguageFragment.INTENT_SELECTED_LANGUAGE);
-        if (requestCode == REQUEST_CODE_ADD_ACCEPT_LANGUAGE) {
-            LanguagesManager.getForProfile(getProfile()).addToAcceptLanguages(code);
-            LanguagesManager.recordAction(
-                    LanguagesManager.LanguageSettingsActionType.LANGUAGE_ADDED);
-        } else if (requestCode == REQUEST_CODE_CHANGE_APP_LANGUAGE) {
-            LanguagesManager.recordAction(
-                    LanguagesManager.LanguageSettingsActionType.CHANGE_CHROME_LANGUAGE);
-            mAppLanguageDelegate.startLanguageSplitDownload(code);
-            if (AppLocaleUtils.isFollowSystemLanguage(code)) {
-                // Get the actual default system language to set as target language.
-                code =
-                        GlobalAppLocaleController.getInstance()
-                                .getOriginalSystemLocale()
-                                .getLanguage();
-            }
-            // Set the default target language to match the new app language.
-            TranslateBridge.setDefaultTargetLanguage(getProfile(), code);
-        } else if (requestCode == REQUEST_CODE_CHANGE_TARGET_LANGUAGE) {
-            LanguageItemPickerPreference targetLanguagePreference =
-                    (LanguageItemPickerPreference) findPreference(TARGET_LANGUAGE_KEY);
-            targetLanguagePreference.setLanguageItem(getProfile(), code);
-            TranslateBridge.setDefaultTargetLanguage(getProfile(), code);
-            LanguagesManager.recordAction(
-                    LanguagesManager.LanguageSettingsActionType.CHANGE_TARGET_LANGUAGE);
+        assumeNonNull(data);
+        String code = data.getStringExtra(SelectLanguageFragment.KEY_SELECTED_LANGUAGE);
+        assumeNonNull(code);
+        onSelectLanguageResult(requestCode, code);
+    }
+
+    private void onSelectLanguageResult(int requestCode, String code) {
+        switch (requestCode) {
+            case REQUEST_CODE_ADD_ACCEPT_LANGUAGE:
+                onAddAcceptLanguage(code);
+                break;
+            case REQUEST_CODE_CHANGE_APP_LANGUAGE:
+                onChangeAppLanguage(code);
+                break;
+            case REQUEST_CODE_CHANGE_TARGET_LANGUAGE:
+                onChangeTargetLanguage(code);
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown requestCode: " + requestCode);
         }
+    }
+
+    private void onAddAcceptLanguage(String code) {
+        LanguagesManager.getForProfile(getProfile()).addToAcceptLanguages(code);
+        LanguagesManager.recordAction(LanguagesManager.LanguageSettingsActionType.LANGUAGE_ADDED);
+    }
+
+    private void onChangeAppLanguage(String code) {
+        LanguagesManager.recordAction(
+                LanguagesManager.LanguageSettingsActionType.CHANGE_CHROME_LANGUAGE);
+        mAppLanguageDelegate.startLanguageSplitDownload(code);
+        if (AppLocaleUtils.isFollowSystemLanguage(code)) {
+            // Get the actual default system language to set as target language.
+            code = GlobalAppLocaleController.getInstance().getOriginalSystemLocale().getLanguage();
+        }
+        // Set the default target language to match the new app language.
+        TranslateBridge.setDefaultTargetLanguage(getProfile(), code);
+    }
+
+    private void onChangeTargetLanguage(String code) {
+        LanguageItemPickerPreference targetLanguagePreference =
+                (LanguageItemPickerPreference) findPreference(TARGET_LANGUAGE_KEY);
+        targetLanguagePreference.setLanguageItem(getProfile(), code);
+        TranslateBridge.setDefaultTargetLanguage(getProfile(), code);
+        LanguagesManager.recordAction(
+                LanguagesManager.LanguageSettingsActionType.CHANGE_TARGET_LANGUAGE);
     }
 
     /**
@@ -325,10 +361,11 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
 
     /**
      * Set preference's OnPreferenceClickListener to launch the Select Language Fragment.
-     * @param Preference preference The Preference to set listener on.
-     * @param int launchCode The language options code to filter selectable languages.
-     * @param int requestCode The code to return from the select language fragment with.
-     * @param int pageType The LanguageSettingsPageType to record impression for.
+     *
+     * @param preference The Preference to set listener on.
+     * @param languageListType The language options code to filter selectable languages.
+     * @param requestCode The code to return from the select language fragment with.
+     * @param pageType The LanguageSettingsPageType to record impression for.
      */
     private void setSelectLanguageLauncher(
             Preference preference,
@@ -349,16 +386,41 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
     /**
      * Launch the SelectLanguageFragment with launch and request codes to select a single language.
      *
-     * @param int launchCode The language options code to filter selectable languages.
-     * @param int requestCode The code to return from the select language fragment with.
+     * @param languageListType The language options code to filter selectable languages.
+     * @param requestCode The code to return from the select language fragment with.
      */
     private void launchSelectLanguage(
-            @LanguagesManager.LanguageListType int languageListType, int requestCode) {
-        Intent intent =
-                SettingsLauncherFactory.createSettingsLauncher()
-                        .createSettingsActivityIntent(getActivity(), SelectLanguageFragment.class);
-        intent.putExtra(SelectLanguageFragment.INTENT_POTENTIAL_LANGUAGES, languageListType);
-        startActivityForResult(intent, requestCode);
+            @LanguagesManager.LanguageListType int languageListType, final int requestCode) {
+        Bundle args = new Bundle();
+        args.putShort(SelectLanguageFragment.KEY_POTENTIAL_LANGUAGES, (short) languageListType);
+
+        if (!ChromeFeatureList.sSettingsSingleActivity.isEnabled()) {
+            // Use an Intent with extra. Return value is received via onActivityResult.
+            Intent intent =
+                    SettingsNavigationFactory.createSettingsNavigation()
+                            .createSettingsIntent(
+                                    getActivity(), SelectLanguageFragment.class, args);
+            startActivityForResult(intent, requestCode);
+            return;
+        }
+
+        // On using fragment, the result is received via this result listener.
+        var fragmentManager = getFragmentManager();
+        assumeNonNull(fragmentManager);
+        fragmentManager.setFragmentResultListener(
+                SelectLanguageFragment.FRAGMENT_RESULT_TAG,
+                this,
+                (String requestKey, Bundle result) -> {
+                    String code = result.getString(SelectLanguageFragment.KEY_SELECTED_LANGUAGE);
+                    assumeNonNull(code);
+                    onSelectLanguageResult(requestCode, code);
+                });
+        SettingsNavigationFactory.createSettingsNavigation()
+                .startSettings(
+                        getActivity(),
+                        SelectLanguageFragment.class,
+                        args,
+                        /* addToBackStack= */ true);
     }
 
     /**
@@ -369,11 +431,12 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
     private void setLanguageListPreferenceClickListener(LanguageItemListPreference listPreference) {
         listPreference.setOnPreferenceClickListener(
                 preference -> {
-                    Intent intent =
-                            SettingsLauncherFactory.createSettingsLauncher()
-                                    .createSettingsActivityIntent(
-                                            getActivity(), listPreference.getFragmentClass());
-                    startActivity(intent);
+                    SettingsNavigationFactory.createSettingsNavigation()
+                            .startSettings(
+                                    getActivity(),
+                                    listPreference.getFragmentClass(),
+                                    /* fragmentArgs= */ null,
+                                    /* addToBackStack= */ true);
                     return true;
                 });
     }
@@ -382,4 +445,23 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
     PrefService getPrefService() {
         return UserPrefs.get(getProfile());
     }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
+    }
+
+    @Override
+    public @Nullable String getMainMenuKey() {
+        return "languages";
+    }
+
+    // TODO(crbug.com/444470792): Verify if these are the prefs to be removed and if dynamic ones
+    // need to be handled.
+    public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
+            new ChromeBaseSearchIndexProvider(
+                    LanguageSettings.class.getName(),
+                    shouldShowDetailedPreferences()
+                            ? R.xml.languages_preferences
+                            : R.xml.languages_detailed_preferences);
 }

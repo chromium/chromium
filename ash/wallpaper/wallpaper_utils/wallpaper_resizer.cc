@@ -8,7 +8,6 @@
 
 #include "ash/utility/cropping_util.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -109,8 +108,7 @@ gfx::ImageSkia Resize(const gfx::ImageSkia image,
         }
         break;
       case NUM_WALLPAPER_LAYOUT:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
   // Generating the bitmap right now is both acceptable and desirable since it's

@@ -8,9 +8,9 @@ import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,10 +18,13 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
+import org.chromium.base.test.util.Features;
+import org.chromium.content_public.browser.ContactsDialogHost;
+import org.chromium.content_public.browser.ContactsFetcher;
+import org.chromium.content_public.browser.ContactsPermissionProvider;
 import org.chromium.content_public.browser.ContactsPicker;
 import org.chromium.content_public.browser.ContactsPickerListener;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -60,17 +63,25 @@ public class ContactsProviderTest {
     @Rule
     public ContentShellActivityTestRule mActivityTestRule = new ContentShellActivityTestRule();
 
+    @BeforeClass
+    public static void setUpClass() {
+        ContactsDialogHost.setPermissionProvider(
+                new ContactsPermissionProvider() {
+                    @Override
+                    public void run(WebContents webContents, Callback callback) {
+                        callback.onAllowed(null);
+                    }
+                });
+    }
+
     @Before
     public void setUp() {
         try {
             mActivityTestRule.launchContentShellWithUrlSync(TEST_URL);
         } catch (Throwable t) {
-            Assert.fail("Couldn't load test page.");
+            throw new AssertionError("Couldn't load test page.", t);
         }
     }
-
-    @After
-    public void tearDown() {}
 
     private static String executeJavaScript(
             final RenderFrameHost frame, String js, boolean userGesture) {
@@ -137,7 +148,8 @@ public class ContactsProviderTest {
                                     boolean tels,
                                     boolean addresses,
                                     boolean icons,
-                                    String formattedOrigin) -> {
+                                    String formattedOrigin,
+                                    ContactsFetcher contactsFetcher) -> {
                                 List<ContactsPickerListener.Contact> contacts = new ArrayList();
                                 List<String> contactsNames = new ArrayList();
                                 contactsNames.add("test");
@@ -188,10 +200,11 @@ public class ContactsProviderTest {
     /** Tests that Contacts API fails to get contacts with the user gesture in the fenced frame. */
     @Test
     @SmallTest
-    @CommandLineFlags.Add({
-        "enable-features=FencedFrames<Study,PrivacySandboxAdsAPIsOverride,FencedFramesAPIChanges,FencedFramesDefaultMode",
-        "force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:implementation_type/mparch"
+    @Features.EnableFeatures({
+        "FencedFrames:implementation_type/mparch",
+        "PrivacySandboxAdsAPIsOverride",
+        "FencedFramesAPIChanges",
+        "FencedFramesDefaultMode"
     })
     public void testDontGetContactsInFencedFrame() throws TimeoutException {
         EmbeddedTestServer testServer =

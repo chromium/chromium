@@ -7,7 +7,10 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("call_stack_mojo_bindings") {
   sources = [ "call_stack_profile_collector.mojom" ]
 
-  deps = [ "//mojo/public/mojom/base" ]
+  deps = [
+    "//mojo/public/mojom/base",
+    "//mojo/public/mojom/base:protobuf_support",
+  ]
 }
 
 mojom("call_stack_mojo_test_bindings") {

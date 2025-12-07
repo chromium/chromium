@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "partition_alloc/address_pool_manager.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_constants.h"
@@ -111,7 +116,7 @@ class PkeyTest : public testing::Test {
     }
     isolated_globals.pkey = pkey;
 
-    isolated_globals.allocator->init([]() {
+    isolated_globals.allocator->init([] {
       partition_alloc::PartitionOptions opts;
       opts.thread_isolation = ThreadIsolationOption(isolated_globals.pkey);
       return opts;

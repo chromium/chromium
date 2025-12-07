@@ -1,0 +1,242 @@
+Test css.resolveValue method
+
+Running test: testNotExistentNode
+Test non existent node
+{"input": [invalid,1em,1rem,calc(3px + 3px),calc(1em + 1px)]}
+{"code":-32000,"message":"Could not find node with given id"}
+
+Running test: testInvalidProperty
+Test invalid property name
+{"input": [invalid,1em,1rem,calc(3px + 3px),calc(1em + 1px)]}
+{"code":-32000,"message":"Could not resolve property name."}
+
+Running test: testShorthandProperty
+Test shorthand property
+{"input": [calc(1em + 10px),calc(1em + 3em),calc(3px + 2.54cm),clamp(10px, calc(10rem + 10rex), 30px),max(100px, 30em),calc(100px * cos(60deg))]}
+{"code":-32000,"message":"Property name should not be a shorthand."}
+
+Running test: testResolveValuesSimple
+Test resolveValues for width property
+{"input": [invalid,1em,1rem,calc(3px + 3px),calc(1em + 1px)]}
+{"results":["invalid","5px","30px","6px","6px"]}
+
+Running test: testResolveValuesSimpleNoProperty
+Test resolveValues no property specified
+{"input": [invalid,1em,1rem,calc(3px + 3px),calc(1em + 1px)]}
+{"results":["invalid","5px","30px","6px","6px"]}
+
+Running test: testRelativeUnits
+Relative length units to absolute test
+{"input": [1em,1ex,1cap,1ch,1ic,1lh,1rcap,1rch,1rem,1rex,1ric,1rlh,1vw,1vh ,1vi,1vb,1vmin,1vmax]}
+{"results":["5px","4px","4px","5px","5px","5px","24px","30px","30px","24px","30px","30px","8px","6px","8px","6px","6px","8px"]}
+
+Running test: testResolveValuesRelativeUnitsNoProperty
+Test resolveValues on relative units no property specified
+{"input": [1em,1ex,1cap,1ch,1ic,1lh,1rcap,1rch,1rem,1rex,1ric,1rlh,1vw,1vh ,1vi,1vb,1vmin,1vmax]}
+{"results":["5px","4px","4px","5px","5px","5px","24px","30px","30px","24px","30px","30px","8px","6px","8px","6px","6px","8px"]}
+
+Running test: testRelativeUnitsNoProperty
+Relative length units to absolute no property specified test
+{"input": [1em,1ex,1cap,1ch,1ic,1lh,1rcap,1rch,1rem,1rex,1ric,1rlh,1vw,1vh ,1vi,1vb,1vmin,1vmax]}
+{"results":["5px","4px","4px","5px","5px","5px","24px","30px","30px","24px","30px","30px","8px","6px","8px","6px","6px","8px"]}
+
+Running test: testRelativeUnitsOuter
+Relative length units to absolute for parent element test
+{"input": [1em,1ex,1cap,1ch,1ic,1lh,1rcap,1rch,1rem,1rex,1ric,1rlh,1vw,1vh ,1vi,1vb,1vmin,1vmax]}
+{"results":["10px","8px","8px","10px","10px","10px","24px","30px","30px","24px","30px","30px","8px","6px","8px","6px","6px","8px"]}
+
+Running test: testRelativeUnitsOuterNoProperty
+Relative length units to absolute for parent element no property specified test
+{"input": [1em,1ex,1cap,1ch,1ic,1lh,1rcap,1rch,1rem,1rex,1ric,1rlh,1vw,1vh ,1vi,1vb,1vmin,1vmax]}
+{"results":["10px","8px","8px","10px","10px","10px","24px","30px","30px","24px","30px","30px","8px","6px","8px","6px","6px","8px"]}
+
+Running test: testRelativeUnitsFontSize
+Relative length units to absolute font-size property test
+{"input": [1em,1ex,1cap,1ch,1ic,1lh,1rcap,1rch,1rem,1rex,1ric,1rlh,1vw,1vh ,1vi,1vb,1vmin,1vmax]}
+{"results":["10px","8px","8px","10px","10px","10px","24px","30px","30px","24px","30px","30px","8px","6px","8px","6px","6px","8px"]}
+
+Running test: testExpressionsEvaluation
+Evaluate expression test
+{"input": [calc(1em + 10px),calc(1em + 3em),calc(3px + 2.54cm),clamp(10px, calc(10rem + 10rex), 30px),max(100px, 30em),calc(100px * cos(60deg))]}
+{"results":["15px","20px","99px","30px","150px","50px"]}
+
+Running test: testExpressionsEvaluationNoProperty
+Evaluate expression with no property specified test
+{"input": [calc(1em + 10px),calc(1em + 3em),calc(3px + 2.54cm),clamp(10px, calc(10rem + 10rex), 30px),max(100px, 30em),calc(100px * cos(60deg))]}
+{"results":["15px","20px","99px","30px","150px","50px"]}
+
+Running test: testCSSWideKeywords
+Test CSS-wide keywords
+{"input": [initial,inherit,unset]}
+{"results":["16px","10px","10px"]}
+
+Running test: testCSSWideKeywordsNoProperty
+Test CSS-wide keywords with no property specified
+{"input": [initial,inherit,unset]}
+{"results":["initial","inherit","unset"]}
+
+Running test: testColorValues
+Test <color> values
+{"input": [aqua,peachpuff,blanchedalmond,rgb(255, 0, 0),#0f5ffe,color-mix(in srgb, plum, #f00)]}
+{"results":["rgb(0, 255, 255)","rgb(255, 218, 185)","rgb(255, 235, 205)","rgb(255, 0, 0)","rgb(15, 95, 254)","color(srgb 0.933333 0.313726 0.433333)"]}
+
+Running test: testColorValuesNoProperty
+Test <color> values with no property specified
+{"input": [aqua,peachpuff,blanchedalmond,rgb(255, 0, 0),#0f5ffe,color-mix(in srgb, plum, #f00)]}
+{"results":["rgb(0, 255, 255)","rgb(255, 218, 185)","rgb(255, 235, 205)","rgb(255, 0, 0)","rgb(15, 95, 254)","color(srgb 0.933333 0.313726 0.433333)"]}
+
+Running test: testInvalidLengthValues
+Invalid length values test
+{"input": [calc(,em,calc(10 + 20),red,calc(10ms + 5s)]}
+{"results":["calc(","em","30","rgb(255, 0, 0)","5.01s"]}
+
+Running test: testCustomProperty
+Test resolveValues on custom property
+{"input": [invalid,1em,1rem,calc(3px + 3px),calc(1em + 1px)]}
+{"results":["invalid","10px","30px","6px","11px"]}
+
+Running test: testCustomProperty
+Test resolveValues on custom property with cycle should ignore custom property
+{"input": [var(--prop)]}
+{"results":["13px"]}
+
+Running test: testRegisterCustomProperty
+Test resolveValues on register custom property
+{"input": [invalid,1em,1rem,calc(3px + 3px),calc(1em + 1px)]}
+{"results":["invalid","10px","30px","6px","11px"]}
+
+Running test: testPseudoElement
+Pseudo element test
+{"input": [invalid,1em,1rem,calc(3px + 3px),calc(1em + 1px)]}
+{"results":["invalid","3px","30px","6px","4px"]}
+
+Running test: testPseudoElementNoProperty
+Pseudo element with no property specified test
+{"input": [invalid,1em,1rem,calc(3px + 3px),calc(1em + 1px)]}
+{"results":["invalid","3px","30px","6px","4px"]}
+
+Running test: testNonExistentPseudoElement
+Non existent pseudo element test
+{"input": [invalid,1em,1rem,calc(3px + 3px),calc(1em + 1px)]}
+{"code":-32000,"message":"Could not retrieve pseudo element."}
+
+Running test: testPseudoElementsNoElement
+Pseudo element with no content
+{"input": [invalid,1em,1rem,calc(3px + 3px),calc(1em + 1px)]}
+{"code":-32000,"message":"Could not retrieve pseudo element."}
+
+Running test: testElementDisplayNone
+Test on element without computed style
+{"input": [invalid,1em,1rem,calc(3px + 3px),calc(1em + 1px)]}
+{"code":-32000,"message":"Computed style of element is null."}
+
+Running test: testResolveValuesIgnoreProperty
+Test resolveValues should ignore property
+{"input": [100,log(1000, 10),calc(10 + 30)]}
+{"results":["100","3","40"]}
+
+Running test: testResolveValuesValidInnerHeight
+Test resolveValues for height property of inner element
+{"input": [10%,50%,calc(10% + 10%),calc(10% - 10%),calc(10px + 10% - 10%),calc(10px + 10px),calc(10px + 0%),calc(10px + 10%),calc(1em + 10%)]}
+{"results":["30px","150px","60px","0px","10px","20px","10px","40px","35px"]}
+
+Running test: testResolveValuesValidOuterWidth
+Test resolveValues for width property of outer element
+{"input": [10%,50%,calc(10% + 10%),calc(10% - 10%),calc(10px + 10% - 10%),calc(10px + 10px),calc(10px + 0%),calc(10px + 10%),calc(1em + 10%)]}
+{"results":["100px","500px","200px","0px","10px","20px","10px","110px","110px"]}
+
+Running test: testResolveValuesValidInnerMinHeight
+Test resolveValues for min-height property of inner element
+{"input": [10%,50%,calc(10% + 10%),calc(10% - 10%),calc(10px + 10% - 10%),calc(10px + 10px),calc(10px + 0%),calc(10px + 10%),calc(1em + 10%)]}
+{"results":["30px","150px","60px","0px","10px","20px","10px","40px","35px"]}
+
+Running test: testResolveValuesValidOuterMinWidth
+Test resolveValues for min-width property of outer element
+{"input": [10%,50%,calc(10% + 10%),calc(10% - 10%),calc(10px + 10% - 10%),calc(10px + 10px),calc(10px + 0%),calc(10px + 10%),calc(1em + 10%)]}
+{"results":["100px","500px","200px","0px","10px","20px","10px","110px","110px"]}
+
+Running test: testResolveValuesValidInnerMaxWidth
+Test resolveValues for max-width property of outer element
+{"input": [10%,50%,calc(10% + 10%),calc(10% - 10%),calc(10px + 10% - 10%),calc(10px + 10px),calc(10px + 0%),calc(10px + 10%),calc(1em + 10%)]}
+{"results":["60px","300px","120px","0px","10px","20px","10px","70px","65px"]}
+
+Running test: testResolveValuesValidOuterMaxHeight
+Test resolveValues for max-height property of inner element
+{"input": [10%,50%,calc(10% + 10%),calc(10% - 10%),calc(10px + 10% - 10%),calc(10px + 10px),calc(10px + 0%),calc(10px + 10%),calc(1em + 10%)]}
+{"results":["600px","3000px","1200px","0px","10px","20px","10px","610px","610px"]}
+
+Running test: testResolveValuesValidInnerLeft
+Test resolveValues for left property of inner element
+{"input": [10%,50%,calc(10% + 10%),calc(10% - 10%),calc(10px + 10% - 10%),calc(10px + 10px),calc(10px + 0%),calc(10px + 10%),calc(1em + 10%)]}
+{"results":["60px","300px","120px","0px","10px","20px","10px","70px","65px"]}
+
+Running test: testResolveValuesValidInnerTop
+Test resolveValues for top property of inner element
+{"input": [10%,50%,calc(10% + 10%),calc(10% - 10%),calc(10px + 10% - 10%),calc(10px + 10px),calc(10px + 0%),calc(10px + 10%),calc(1em + 10%)]}
+{"results":["30px","150px","60px","0px","10px","20px","10px","40px","35px"]}
+
+Running test: testResolveValuesValidOuterRight
+Test resolveValues for right property of outer element
+{"input": [10%,50%,calc(10% + 10%),calc(10% - 10%),calc(10px + 10% - 10%),calc(10px + 10px),calc(10px + 0%),calc(10px + 10%),calc(1em + 10%)]}
+{"results":["100px","500px","200px","0px","10px","20px","10px","110px","110px"]}
+
+Running test: testResolveValuesValidOuterBottom
+Test resolveValues for bottom property of outer element
+{"input": [10%,50%,calc(10% + 10%),calc(10% - 10%),calc(10px + 10% - 10%),calc(10px + 10px),calc(10px + 0%),calc(10px + 10%),calc(1em + 10%)]}
+{"results":["600px","3000px","1200px","0px","10px","20px","10px","610px","610px"]}
+
+Running test: testResolveValuesValidInnerMarginLeft
+Test resolveValues for margin-left property of inner element
+{"input": [10%,50%,calc(10% + 10%),calc(10% - 10%),calc(10px + 10% - 10%),calc(10px + 10px),calc(10px + 0%),calc(10px + 10%),calc(1em + 10%)]}
+{"results":["60px","300px","120px","0px","10px","20px","10px","70px","65px"]}
+
+Running test: testResolveValuesValidInnerMarginBottom
+Test resolveValues for margin-bottom property of inner element
+{"input": [10%,50%,calc(10% + 10%),calc(10% - 10%),calc(10px + 10% - 10%),calc(10px + 10px),calc(10px + 0%),calc(10px + 10%),calc(1em + 10%)]}
+{"results":["60px","300px","120px","0px","10px","20px","10px","70px","65px"]}
+
+Running test: testResolveValuesValidOuterMarginTop
+Test resolveValues for margin-top property of outer element
+{"input": [10%,50%,calc(10% + 10%),calc(10% - 10%),calc(10px + 10% - 10%),calc(10px + 10px),calc(10px + 0%),calc(10px + 10%),calc(1em + 10%)]}
+{"results":["100px","500px","200px","0px","10px","20px","10px","110px","110px"]}
+
+Running test: testResolveValuesValidOuterMarginRight
+Test resolveValues for margin-right property of outer element
+{"input": [10%,50%,calc(10% + 10%),calc(10% - 10%),calc(10px + 10% - 10%),calc(10px + 10px),calc(10px + 0%),calc(10px + 10%),calc(1em + 10%)]}
+{"results":["100px","500px","200px","0px","10px","20px","10px","110px","110px"]}
+
+Running test: testResolveValuesValidInnerPaddingLeft
+Test resolveValues for padding-left property of inner element
+{"input": [10%,50%,calc(10% + 10%),calc(10% - 10%),calc(10px + 10% - 10%),calc(10px + 10px),calc(10px + 0%),calc(10px + 10%),calc(1em + 10%)]}
+{"results":["60px","300px","120px","0px","10px","20px","10px","70px","65px"]}
+
+Running test: testResolveValuesValidInnerPAddingTop
+Test resolveValues for padding-top property of inner element
+{"input": [10%,50%,calc(10% + 10%),calc(10% - 10%),calc(10px + 10% - 10%),calc(10px + 10px),calc(10px + 0%),calc(10px + 10%),calc(1em + 10%)]}
+{"results":["60px","300px","120px","0px","10px","20px","10px","70px","65px"]}
+
+Running test: testResolveValuesValidOuterPaddingRight
+Test resolveValues for padding-right property of outer element
+{"input": [10%,50%,calc(10% + 10%),calc(10% - 10%),calc(10px + 10% - 10%),calc(10px + 10px),calc(10px + 0%),calc(10px + 10%),calc(1em + 10%)]}
+{"results":["100px","500px","200px","0px","10px","20px","10px","110px","110px"]}
+
+Running test: testResolveValuesValidOuterPaddingBottom
+Test resolveValues for padding-bottom property of outer element
+{"input": [10%,50%,calc(10% + 10%),calc(10% - 10%),calc(10px + 10% - 10%),calc(10px + 10px),calc(10px + 0%),calc(10px + 10%),calc(1em + 10%)]}
+{"results":["100px","500px","200px","0px","10px","20px","10px","110px","110px"]}
+
+Running test: testResolvePercentageValuesNoProperty
+Test resolveValues with invalid percentage expressions
+{"input": [10%,50%,calc(10% + 10%),calc(10% - 10%),calc(10px + 10% - 10%),calc(10px + 10px),calc(10px + 0%),calc(10px + 10%),calc(1em + 10%)]}
+{"results":["10%","50%","20%","0%","calc(10px + 10% - 10%)","20px","calc(10px + 0%)","calc(10px + 10%)","calc(1em + 10%)"]}
+
+Running test: testResolveInvalidPercentageValues
+Test resolveValues with invalid percentage expressions
+{"input": [calc(,%,calc(10 + 20)%,calc(10 + 30%]}
+{"results":["calc(","%","calc(10 + 20)%","calc(10 + 30%"]}
+
+Running test: testResolveValuesWithVar
+Test resolveValues with var() for width property
+{"input": [var(--x),attr(data-foo type(<length>)),attr(invalid, 3px),var(--invalid, 3px),var(--cycle1)]}
+{"results":["165px","13px","3px","3px","var(--cycle1)"]}
+

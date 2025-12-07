@@ -5,11 +5,13 @@
 #include "chrome/browser/ui/ash/projector/pending_screencast_manager.h"
 
 #include <memory>
+#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/projector_app/projector_app_client.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "ash/webui/projector_app/test/mock_xhr_sender.h"
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -22,14 +24,16 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
-#include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/login/user_adding_screen.h"
 #include "chrome/browser/ui/ash/projector/projector_app_client_impl.h"
 #include "chrome/browser/ui/ash/projector/projector_drivefs_provider.h"
 #include "chrome/browser/ui/browser.h"
@@ -38,7 +42,6 @@
 #include "content/public/test/browser_test.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 namespace ash {
 namespace {
@@ -94,10 +97,7 @@ class ScreencastsPendingStatusChangedObserver
 
 class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
  public:
-  PendingScreencastMangerBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kProjectorUpdateIndexableText}, {});
-  }
+  PendingScreencastMangerBrowserTest() = default;
   PendingScreencastMangerBrowserTest(
       const PendingScreencastMangerBrowserTest&) = delete;
   PendingScreencastMangerBrowserTest& operator=(
@@ -142,7 +142,7 @@ class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
     fake_drivefs_helper_ =
         std::make_unique<drive::FakeDriveFsHelper>(profile, mount_path);
     auto* integration_service = new drive::DriveIntegrationService(
-        profile, std::string(), mount_path,
+        g_browser_process->local_state(), profile, std::string(), mount_path,
         fake_drivefs_helper_->CreateFakeDriveFsListenerFactory());
     return integration_service;
   }
@@ -173,9 +173,9 @@ class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
 
     base::File file(folder_path.Append(relative_file_path.BaseName()),
                     base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-    EXPECT_EQ(static_cast<int>(file_content.size()),
-              file.Write(/*offset=*/0, file_content.data(),
-                         /*size=*/file_content.size()));
+    UNSAFE_TODO(EXPECT_EQ(static_cast<int>(file_content.size()),
+                          file.Write(/*offset=*/0, file_content.data(),
+                                     /*size=*/file_content.size())));
     EXPECT_TRUE(file.IsValid());
     file.Close();
   }

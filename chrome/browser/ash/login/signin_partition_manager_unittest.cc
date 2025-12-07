@@ -83,8 +83,8 @@ class SigninPartitionManagerTest : public ChromeRenderViewHostTestHarness {
       delete;
 
  protected:
-  SigninPartitionManagerTest() {}
-  ~SigninPartitionManagerTest() override {}
+  SigninPartitionManagerTest() = default;
+  ~SigninPartitionManagerTest() override = default;
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();

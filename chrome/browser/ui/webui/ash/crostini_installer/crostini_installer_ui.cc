@@ -7,31 +7,35 @@
 #include <string>
 #include <utility>
 
+#include "base/byte_count.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/crostini/crostini_disk.h"
 #include "chrome/browser/ash/crostini/crostini_installer.h"
+#include "chrome/browser/ash/crostini/crostini_installer_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer_page_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
+#include "chrome/grit/crostini_installer_resources.h"
+#include "chrome/grit/crostini_installer_resources_map.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/devicetype_utils.h"
-#include "ui/resources/grit/webui_resources.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 #include "ui/webui/mojo_web_ui_controller.h"
+#include "ui/webui/webui_util.h"
 
 namespace {
 void AddStringResources(content::WebUIDataSource* source) {
@@ -95,8 +99,8 @@ void AddStringResources(content::WebUIDataSource* source) {
                     l10n_util::GetStringFUTF8(
                         IDS_CROSTINI_INSTALLER_BODY,
                         ui::FormatBytesWithUnits(
-                            crostini::disk::kDownloadSizeBytes,
-                            ui::DATA_UNITS_MEBIBYTE, /*show_units=*/true)));
+                            base::ByteCount(crostini::disk::kDownloadSizeBytes),
+                            ui::DataUnits::kMebibyte, /*show_units=*/true)));
   source->AddString("learnMoreUrl",
                     std::string{chrome::kLinuxAppsLearnMoreURL} +
                         "&b=" + base::SysInfo::GetLsbReleaseBoard());
@@ -105,24 +109,27 @@ void AddStringResources(content::WebUIDataSource* source) {
       "minimumFreeSpaceUnmetError",
       l10n_util::GetStringFUTF8(
           IDS_CROSTINI_INSTALLER_MINIMUM_FREE_SPACE_UNMET_ERROR,
-          ui::FormatBytesWithUnits(crostini::disk::kMinimumDiskSizeBytes +
-                                       crostini::disk::kDiskHeadroomBytes,
-                                   ui::DATA_UNITS_GIBIBYTE,
-                                   /*show_units=*/true)));
+          ui::FormatBytesWithUnits(
+              base::ByteCount(crostini::disk::kMinimumDiskSizeBytes +
+                              crostini::disk::kDiskHeadroomBytes),
+              ui::DataUnits::kGibibyte,
+              /*show_units=*/true)));
   source->AddString(
       "lowSpaceAvailableWarning",
       l10n_util::GetStringFUTF8(
           IDS_CROSTINI_INSTALLER_DISK_RESIZE_RECOMMENDED_WARNING,
-          ui::FormatBytesWithUnits(crostini::disk::kRecommendedDiskSizeBytes,
-                                   ui::DATA_UNITS_GIBIBYTE,
-                                   /*show_units=*/true)));
+          ui::FormatBytesWithUnits(
+              base::ByteCount(crostini::disk::kRecommendedDiskSizeBytes),
+              ui::DataUnits::kGibibyte,
+              /*show_units=*/true)));
   source->AddString(
       "recommendedDiskSizeLabel",
       l10n_util::GetStringFUTF8(
           IDS_CROSTINI_INSTALLER_RECOMMENDED_DISK_SIZE_LABEL,
-          ui::FormatBytesWithUnits(crostini::disk::kRecommendedDiskSizeBytes,
-                                   ui::DATA_UNITS_GIBIBYTE,
-                                   /*show_units=*/true)));
+          ui::FormatBytesWithUnits(
+              base::ByteCount(crostini::disk::kRecommendedDiskSizeBytes),
+              ui::DataUnits::kGibibyte,
+              /*show_units=*/true)));
   source->AddString("offlineError",
                     l10n_util::GetStringFUTF8(
                         IDS_CROSTINI_INSTALLER_OFFLINE_ERROR, device_name));
@@ -136,24 +143,15 @@ CrostiniInstallerUI::CrostiniInstallerUI(content::WebUI* web_ui)
   auto* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUICrostiniInstallerHost);
-  webui::EnableTrustedTypesCSP(source);
-  webui::SetJSModuleDefaults(source);
   AddStringResources(source);
   source->AddString("defaultContainerUsername",
                     crostini::DefaultContainerUserNameForProfile(profile));
 
-  source->AddResourcePath("app.js", IDR_CROSTINI_INSTALLER_APP_JS);
-  source->AddResourcePath("app.html.js", IDR_CROSTINI_INSTALLER_APP_HTML_JS);
-  source->AddResourcePath("browser_proxy.js",
-                          IDR_CROSTINI_INSTALLER_BROWSER_PROXY_JS);
-  source->AddResourcePath("crostini_installer.mojom-lite.js",
-                          IDR_CROSTINI_INSTALLER_MOJO_LITE_JS);
-  source->AddResourcePath("crostini_types.mojom-lite.js",
-                          IDR_CROSTINI_INSTALLER_TYPES_MOJO_LITE_JS);
+  webui::SetupWebUIDataSource(source, kCrostiniInstallerResources,
+                              IDR_CROSTINI_INSTALLER_INDEX_HTML);
   source->AddResourcePath("images/linux_illustration.png",
                           IDR_LINUX_ILLUSTRATION);
   source->AddResourcePath("images/crostini_icon.svg", IDR_CROSTINI_ICON);
-  source->SetDefaultResource(IDR_CROSTINI_INSTALLER_INDEX_HTML);
 }
 
 CrostiniInstallerUI::~CrostiniInstallerUI() = default;
@@ -175,7 +173,7 @@ void CrostiniInstallerUI::ClickInstallForTesting() {
       // before clicking "install" button.
       u"app.$$('#next:not([hidden])')?.click();"
       u"app.$.install.click();",
-      base::NullCallback());
+      base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
 }
 
 void CrostiniInstallerUI::BindInterface(
@@ -195,7 +193,8 @@ void CrostiniInstallerUI::CreatePageHandler(
   DCHECK(pending_page.is_valid());
 
   page_handler_ = std::make_unique<CrostiniInstallerPageHandler>(
-      crostini::CrostiniInstaller::GetForProfile(Profile::FromWebUI(web_ui())),
+      crostini::CrostiniInstallerFactory::GetForProfile(
+          Profile::FromWebUI(web_ui())),
       std::move(pending_page_handler), std::move(pending_page),
       // Using Unretained(this) because |page_handler_| will not out-live
       // |this|.

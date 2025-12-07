@@ -34,8 +34,30 @@ ViewTransitionContentLayer::ViewTransitionResourceId() const {
 
 std::unique_ptr<LayerImpl> ViewTransitionContentLayer::CreateLayerImpl(
     LayerTreeImpl* tree_impl) const {
-  return ViewTransitionContentLayerImpl::Create(tree_impl, id(), resource_id_,
-                                                is_live_content_layer_);
+  return ViewTransitionContentLayerImpl::Create(
+      tree_impl, id(), resource_id_, is_live_content_layer_, gfx::RectF());
+}
+
+void ViewTransitionContentLayer::SetMaxExtentsRectInOriginatingLayerSpace(
+    const gfx::RectF& max_extents_rect) {
+  if (max_extents_rect == max_extents_rect_.Read(*this)) {
+    return;
+  }
+
+  max_extents_rect_.Write(*this) = max_extents_rect;
+  SetNeedsCommit();
+}
+
+void ViewTransitionContentLayer::PushDirtyPropertiesTo(
+    LayerImpl* layer,
+    uint8_t dirty_flag,
+    const CommitState& commit_state,
+    const ThreadUnsafeCommitState& unsafe_state) {
+  Layer::PushDirtyPropertiesTo(layer, dirty_flag, commit_state, unsafe_state);
+  if (dirty_flag & kChangedGeneralProperty) {
+    static_cast<ViewTransitionContentLayerImpl*>(layer)->SetMaxExtentsRect(
+        max_extents_rect_.Read(*this));
+  }
 }
 
 }  // namespace cc

@@ -10,9 +10,14 @@
 #include <type_traits>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/test/gtest_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
 
 namespace base {
 
@@ -66,13 +71,51 @@ TEST(HeapArray, FromOwningPointer) {
   EXPECT_NE(vec.data(), nullptr);
 }
 
+TEST(HeapArray, FromOwningPointerWithDeleter) {
+  struct Deleter {
+    explicit Deleter(bool* flag) : was_called_flag_(flag) {}
+    Deleter(Deleter&&) = default;
+    Deleter& operator=(Deleter&& other) = default;
+    Deleter(const Deleter&) = delete;
+    Deleter& operator=(const Deleter&) = delete;
+
+    void operator()(uint32_t* buffer) {
+      if (was_called_flag_) {
+        *was_called_flag_ = true;
+      };
+      delete[] buffer;
+    }
+    raw_ptr<bool> was_called_flag_ = nullptr;
+  };
+
+  bool deleter_was_called = false;
+  {
+    auto vec = UNSAFE_BUFFERS(HeapArray<uint32_t, Deleter>::FromOwningPointer(
+        new uint32_t[3], 3u, Deleter(&deleter_was_called)));
+    EXPECT_EQ(vec.size(), 3u);
+    EXPECT_NE(vec.data(), nullptr);
+    EXPECT_FALSE(deleter_was_called);
+  }
+  EXPECT_TRUE(deleter_was_called);
+
+  deleter_was_called = false;
+  {
+    auto vec = UNSAFE_BUFFERS(HeapArray<uint32_t, Deleter>::FromOwningPointer(
+        nullptr, 0, Deleter(&deleter_was_called)));
+    EXPECT_EQ(vec.size(), 0);
+    EXPECT_EQ(vec.data(), nullptr);
+    EXPECT_FALSE(deleter_was_called);
+  }
+  EXPECT_FALSE(deleter_was_called);
+}
+
 TEST(HeapArray, MoveConstructor) {
   auto that = HeapArray<uint32_t>::WithSize(2u);
   base::HeapArray<uint32_t> vec(std::move(that));
   EXPECT_EQ(vec.size(), 2u);
   EXPECT_NE(vec.data(), nullptr);
-  EXPECT_EQ(that.size(), 0u);
-  EXPECT_EQ(that.data(), nullptr);
+  EXPECT_EQ(that.size(), 0u);       // NOLINT(bugprone-use-after-move)
+  EXPECT_EQ(that.data(), nullptr);  // NOLINT(bugprone-use-after-move)
 }
 
 TEST(HeapArray, MoveAssign) {
@@ -81,8 +124,8 @@ TEST(HeapArray, MoveAssign) {
   vec = std::move(that);
   EXPECT_EQ(vec.size(), 2u);
   EXPECT_NE(vec.data(), nullptr);
-  EXPECT_EQ(that.size(), 0u);
-  EXPECT_EQ(that.data(), nullptr);
+  EXPECT_EQ(that.size(), 0u);       // NOLINT(bugprone-use-after-move)
+  EXPECT_EQ(that.data(), nullptr);  // NOLINT(bugprone-use-after-move)
 }
 
 TEST(HeapArray, DataAndIndex) {
@@ -94,8 +137,7 @@ TEST(HeapArray, DataAndIndex) {
   vec[1] = 101u;
   auto span = vec.as_span();
   EXPECT_EQ(span.data(), vec.data());
-  EXPECT_EQ(span[0], 100u);
-  EXPECT_EQ(span[1], 101u);
+  EXPECT_THAT(span, ElementsAre(100u, 101u));
 }
 
 TEST(HeapArray, IteratorAndIndex) {
@@ -149,20 +191,16 @@ TEST(HeapArray, Subspan) {
     vec[i] = i;
   }
   span<uint32_t> empty = vec.subspan(2, 0);
-  EXPECT_TRUE(empty.empty());
+  EXPECT_THAT(empty, IsEmpty());
 
   span<uint32_t> first = vec.subspan(0, 1);
-  EXPECT_EQ(first.size(), 1u);
-  EXPECT_EQ(first[0], 0u);
+  EXPECT_THAT(first, ElementsAre(0u));
 
   span<uint32_t> mids = vec.subspan(1, 2);
-  EXPECT_EQ(mids.size(), 2u);
-  EXPECT_EQ(mids[0], 1u);
-  EXPECT_EQ(mids[1], 2u);
+  EXPECT_THAT(mids, ElementsAre(1u, 2u));
 
   span<uint32_t> rest = vec.subspan(3);
-  EXPECT_EQ(rest.size(), 1u);
-  EXPECT_EQ(rest[0], 3u);
+  EXPECT_THAT(rest, ElementsAre(3u));
 }
 
 TEST(HeapArray, First) {
@@ -171,12 +209,10 @@ TEST(HeapArray, First) {
     vec[i] = i;
   }
   span<uint32_t> empty = vec.first(0u);
-  EXPECT_TRUE(empty.empty());
+  EXPECT_THAT(empty, IsEmpty());
 
   span<uint32_t> some = vec.first(2u);
-  EXPECT_EQ(some.size(), 2u);
-  EXPECT_EQ(some[0], 0u);
-  EXPECT_EQ(some[1], 1u);
+  EXPECT_THAT(some, ElementsAre(0u, 1u));
 }
 
 TEST(HeapArray, Last) {
@@ -185,12 +221,10 @@ TEST(HeapArray, Last) {
     vec[i] = i;
   }
   span<uint32_t> empty = vec.first(0u);
-  EXPECT_TRUE(empty.empty());
+  EXPECT_THAT(empty, IsEmpty());
 
   span<uint32_t> some = vec.first(2u);
-  EXPECT_EQ(some.size(), 2u);
-  EXPECT_EQ(some[0], 0u);
-  EXPECT_EQ(some[1], 1u);
+  EXPECT_THAT(some, ElementsAre(0u, 1u));
 }
 
 TEST(HeapArray, Init) {
@@ -266,6 +300,43 @@ TEST(HeapArray, CopyFrom) {
   EXPECT_EQ(1001u, other[1]);
 }
 
+TEST(HeapArrayDeathTest, CopyFrom) {
+  HeapArray<uint32_t> empty;
+  HeapArray<uint32_t> something = HeapArray<uint32_t>::WithSize(2);
+  HeapArray<uint32_t> other = HeapArray<uint32_t>::WithSize(3);
+
+  EXPECT_DEATH_IF_SUPPORTED(empty.copy_from(something), "");
+  EXPECT_DEATH_IF_SUPPORTED(something.copy_from(empty), "");
+  EXPECT_DEATH_IF_SUPPORTED(other.copy_from(something), "");
+  EXPECT_DEATH_IF_SUPPORTED(something.copy_from(other), "");
+}
+
+TEST(HeapArray, CopyPrefixFrom) {
+  HeapArray<uint32_t> empty;
+  HeapArray<uint32_t> something = HeapArray<uint32_t>::WithSize(3);
+  const uint32_t kStuff[] = {1000u, 1001u};
+
+  something.copy_prefix_from(kStuff);
+  EXPECT_EQ(1000u, something[0]);
+  EXPECT_EQ(1001u, something[1]);
+  EXPECT_EQ(0u, something[2]);
+
+  empty.copy_prefix_from(span<uint32_t>());  // Should not check.
+  something.copy_prefix_from(empty);
+  EXPECT_EQ(1000u, something[0]);
+  EXPECT_EQ(1001u, something[1]);
+  EXPECT_EQ(0u, something[2]);
+}
+
+TEST(HeapArrayDeathTest, CopyPrefixFrom) {
+  HeapArray<uint32_t> empty;
+  HeapArray<uint32_t> something = HeapArray<uint32_t>::WithSize(2);
+  HeapArray<uint32_t> other = HeapArray<uint32_t>::WithSize(3);
+
+  EXPECT_DEATH_IF_SUPPORTED(empty.copy_prefix_from(something), "");
+  EXPECT_DEATH_IF_SUPPORTED(something.copy_prefix_from(other), "");
+}
+
 TEST(HeapArray, Leak) {
   size_t count = 0;
   span<DestructCounter> leaked;
@@ -290,8 +361,8 @@ TEST(HeapArray, TakeFirst) {
   auto smaller_that = std::move(that).take_first(1u);
   EXPECT_EQ(smaller_that.size(), 1u);
   EXPECT_EQ(that_data, smaller_that.data());
-  EXPECT_EQ(that.size(), 0u);
-  EXPECT_EQ(that.data(), nullptr);
+  EXPECT_EQ(that.size(), 0u);       // NOLINT(bugprone-use-after-move)
+  EXPECT_EQ(that.data(), nullptr);  // NOLINT(bugprone-use-after-move)
 }
 
 TEST(HeapArray, TakeFirstWithZeroSize) {
@@ -299,8 +370,8 @@ TEST(HeapArray, TakeFirstWithZeroSize) {
   auto smaller_that = std::move(that).take_first(0u);
   EXPECT_EQ(smaller_that.size(), 0u);
   EXPECT_EQ(smaller_that.data(), nullptr);
-  EXPECT_EQ(that.size(), 0u);
-  EXPECT_EQ(that.data(), nullptr);
+  EXPECT_EQ(that.size(), 0u);       // NOLINT(bugprone-use-after-move)
+  EXPECT_EQ(that.data(), nullptr);  // NOLINT(bugprone-use-after-move)
 }
 
 TEST(HeapArrayDeathTest, TakeFirstWithOverSize) {

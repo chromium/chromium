@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
+import android.text.TextUtils;
+
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.tab_group_sync.ClosingSource;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -18,12 +20,15 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TriggerSource;
 
+import java.util.function.Supplier;
+
 /**
  * Observes {@link TabGroupSyncService} for any incoming tab group updates from sync for the current
  * window. Forwards the updates to {@link LocalTabGroupMutationHelper} which does the actual updates
  * to the tab model. Additionally manages disabling and enabling local observers to avoid looping
  * updates back to sync. Updates for other windows are ignored.
  */
+@NullMarked
 public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Observer {
     private static final String TAG = "TG.RemoteObserver";
     private final TabGroupModelFilter mTabGroupModelFilter;
@@ -74,12 +79,23 @@ public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Obs
     public void onTabGroupAdded(SavedTabGroup tabGroup, @TriggerSource int source) {
         if (source != TriggerSource.REMOTE) return;
         if (!mIsActiveWindowSupplier.get()) return;
+        if (tabGroup.syncId == null) return;
+        if (mTabGroupSyncService.wasTabGroupClosedLocally(tabGroup.syncId)) return;
 
         LogUtils.log(TAG, "onTabGroupAdded, tabGroup = " + tabGroup);
+        boolean isCollaboration = !TextUtils.isEmpty(tabGroup.collaborationId);
+        if (tabGroup.localId != null && isCollaboration) {
+            // For shared tab groups join flow, it could happen that the tab group has been already
+            // opened locally and the posted onTabGroupAdded event from TabGroupSyncService arrives
+            // later. Ignore it quietly.
+            return;
+        }
+
         assert tabGroup.localId == null;
+
+        // Shared tab groups should always auto-open if supported.
         boolean isAutoOpenEnabled =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH)
-                        && mPrefService.getBoolean(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS);
+                mPrefService.getBoolean(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS) || isCollaboration;
         if (!isAutoOpenEnabled) return;
 
         mEnableLocalObserverCallback.onResult(false);
@@ -121,13 +137,19 @@ public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Obs
 
         mEnableLocalObserverCallback.onResult(false);
         mLocalTabGroupMutationHelper.closeTabGroup(localId, ClosingSource.DELETED_FROM_SYNC);
+        RecordHistogram.recordCount1000Histogram("TabGroups.CloseTabGroupsDeletedRemotely", 1);
         mEnableLocalObserverCallback.onResult(true);
     }
 
     @Override
     public void onTabGroupRemoved(String syncId, @TriggerSource int source) {}
 
-    private TabModel getTabModel() {
-        return mTabGroupModelFilter.getTabModel();
+    @Override
+    public void onTabGroupLocalIdChanged(
+            String syncTabGroupId, @Nullable LocalTabGroupId localTabGroupId) {}
+
+    @Override
+    public void onLocalObservationModeChanged(boolean observeLocalChanges) {
+        mEnableLocalObserverCallback.onResult(observeLocalChanges);
     }
 }

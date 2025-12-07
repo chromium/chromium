@@ -2,12 +2,87 @@ Tests that XSL-transformed documents in the main frame are rendered correctly in
       https://bugs.webkit.org/show_bug.cgi?id=111313
 - <html>
     - <head>
-          <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        - <style id="xml-viewer-style">
+              /* Copyright 2014 The Chromium Authors\n * Use of this source code is governed by a BSD-style license that can be\n * found in the LICENSE file.\n */\n\n:root {\n  color-scheme: light dark;\n}\n\ndiv.header {\n    border-bottom: 2px solid black;\n    padding-bottom: 5px;\n    margin: 10px;\n}\n\n@media (prefers-color-scheme: dark) {\n  div.header {\n    border-bottom: 2px solid white;\n  }\n}\n\ndiv.folder > div.hidden {\n    display:none;\n}\n\ndiv.folder > span.hidden {\n    display:none;\n}\n\n.pretty-print {\n    margin-top: 1em;\n    margin-left: 20px;\n    font-family: monospace;\n    font-size: 13px;\n}\n\n#webkit-xml-viewer-source-xml {\n    display: none;\n}\n\n.opened {\n    margin-left: 1em;\n}\n\n.comment {\n    white-space: pre;\n}\n\n.folder-button {\n    user-select: none;\n    cursor: pointer;\n    display: inline-block;\n    margin-left: -10px;\n    width: 10px;\n    background-repeat: no-repeat;\n    background-position: left top;\n    vertical-align: bottom;\n}\n\n.fold {\n    background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' fill='%23909090' width='10' height='10'><path d='M0 0 L8 0 L4 7 Z'/></svg>");\n    height: 10px;\n}\n\n.open {\n    background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' fill='%23909090' width='10' height='10'><path d='M0 0 L0 8 L7 4 Z'/></svg>");\n    height: 10px;\n}
+          </style>
       </head>
     - <body>
-          <span>One</span>
-          <span>Two</span>
-          <span>Three</span>
+        - <div id="webkit-xml-viewer-source-xml">
+              xml-stylesheet
+            - <items>
+                  <item>One</item>
+                  <item>Two</item>
+                  <item>Three</item>
+              </items>
+          </div>
+        - <div class="header">
+            - <span>
+                  "This document cannot be formatted as intended. It uses XSLT, which the browser does not support. You might be able to "
+                  <a target="_blank" rel="noopener noreferrer" href="https://chromewebstore.google.com/search/XSLT%20Polyfill">install a browser extension</a>
+                  " that allows you to view it."
+              </span>
+              <br></br>
+          </div>
+        - <div class="pretty-print">
+            - <div class="line">
+                  <span class="comment html-comment"><?xml-stylesheet type="text/xsl" href="xsl-transformed.xsl"?></span>
+              </div>
+            - <div class="folder" id="folder0">
+                - <div class="line">
+                      <span class="folder-button fold"></span>
+                    - <span class="html-tag">
+                          "<items"
+                          ">"
+                      </span>
+                  </div>
+                - <div class="opened">
+                      <span> </span>
+                    - <div class="line">
+                        - <span class="html-tag">
+                              "<item"
+                              ">"
+                          </span>
+                          <span>One</span>
+                        - <span class="html-tag">
+                              "</item"
+                              ">"
+                          </span>
+                      </div>
+                      <span> </span>
+                    - <div class="line">
+                        - <span class="html-tag">
+                              "<item"
+                              ">"
+                          </span>
+                          <span>Two</span>
+                        - <span class="html-tag">
+                              "</item"
+                              ">"
+                          </span>
+                      </div>
+                      <span> </span>
+                    - <div class="line">
+                        - <span class="html-tag">
+                              "<item"
+                              ">"
+                          </span>
+                          <span>Three</span>
+                        - <span class="html-tag">
+                              "</item"
+                              ">"
+                          </span>
+                      </div>
+                      <span> </span>
+                  </div>
+                  <span class="folded hidden">...</span>
+                - <div class="line">
+                    - <span class="html-tag">
+                          "</items"
+                          ">"
+                      </span>
+                  </div>
+              </div>
+          </div>
       </body>
   </html>
 

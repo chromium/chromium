@@ -8,6 +8,7 @@ include_rules = [
   "+components/safe_browsing/buildflags.h",
   "+components/safe_browsing/content/common",
   "+components/services/quarantine/quarantine.h",
+  "+components/services/quarantine/public",
   "+components/ukm/test_ukm_recorder.h",
   "+crypto",
   "+mojo/public/c/system",

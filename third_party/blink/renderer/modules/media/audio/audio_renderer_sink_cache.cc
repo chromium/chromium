@@ -4,13 +4,13 @@
 
 #include "third_party/blink/renderer/modules/media/audio/audio_renderer_sink_cache.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -22,31 +22,27 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
 
 AudioRendererSinkCache* AudioRendererSinkCache::instance_ = nullptr;
 
-class AudioRendererSinkCache::WindowObserver final
-    : public GarbageCollected<AudioRendererSinkCache::WindowObserver>,
-      public Supplement<LocalDOMWindow>,
+class AudioRendererSinkCacheWindowObserver final
+    : public GarbageCollected<AudioRendererSinkCacheWindowObserver>,
       public ExecutionContextLifecycleObserver {
  public:
-  static const char kSupplementName[];
+  explicit AudioRendererSinkCacheWindowObserver(LocalDOMWindow& window)
+      : ExecutionContextLifecycleObserver(&window) {}
 
-  explicit WindowObserver(LocalDOMWindow& window)
-      : Supplement<LocalDOMWindow>(window),
-        ExecutionContextLifecycleObserver(&window) {}
+  AudioRendererSinkCacheWindowObserver(
+      const AudioRendererSinkCacheWindowObserver&) = delete;
+  AudioRendererSinkCacheWindowObserver& operator=(
+      const AudioRendererSinkCacheWindowObserver&) = delete;
 
-  WindowObserver(const WindowObserver&) = delete;
-  WindowObserver& operator=(const WindowObserver&) = delete;
-
-  ~WindowObserver() override = default;
+  ~AudioRendererSinkCacheWindowObserver() override = default;
 
   void Trace(Visitor* visitor) const final {
-    Supplement<LocalDOMWindow>::Trace(visitor);
     ExecutionContextLifecycleObserver::Trace(visitor);
   }
 
@@ -56,9 +52,6 @@ class AudioRendererSinkCache::WindowObserver final
       cache_instance->DropSinksForFrame(DomWindow()->GetLocalFrameToken());
   }
 };
-
-const char AudioRendererSinkCache::WindowObserver::kSupplementName[] =
-    "AudioRendererSinkCache::WindowObserver";
 
 namespace {
 
@@ -78,10 +71,11 @@ struct AudioRendererSinkCache::CacheEntry {
 
 // static
 void AudioRendererSinkCache::InstallWindowObserver(LocalDOMWindow& window) {
-  if (Supplement<LocalDOMWindow>::From<WindowObserver>(window))
+  if (window.GetAudioRendererSinkCacheWindowObserver()) {
     return;
-  Supplement<LocalDOMWindow>::ProvideTo(
-      window, MakeGarbageCollected<WindowObserver>(window));
+  }
+  window.SetAudioRendererSinkCacheWindowObserver(
+      MakeGarbageCollected<AudioRendererSinkCacheWindowObserver>(window));
 }
 
 AudioRendererSinkCache::AudioRendererSinkCache(
@@ -145,7 +139,7 @@ void AudioRendererSinkCache::DeleteLater(
           &AudioRendererSinkCache::DeleteSink,
           // Unretained is safe here since this is a process-wide
           // singleton and tests will ensure lifetime.
-          CrossThreadUnretained(this), WTF::RetainedRef(std::move(sink))),
+          CrossThreadUnretained(this), blink::RetainedRef(std::move(sink))),
       delete_timeout_);
 }
 
@@ -159,7 +153,7 @@ void AudioRendererSinkCache::DeleteSink(
     base::AutoLock auto_lock(cache_lock_);
 
     // Looking up the sink by its pointer.
-    auto cache_iter = base::ranges::find(
+    auto cache_iter = std::ranges::find(
         cache_, sink_ptr, [](const CacheEntry& val) { return val.sink.get(); });
 
     if (cache_iter == cache_.end())
@@ -181,7 +175,7 @@ AudioRendererSinkCache::FindCacheEntry_Locked(
     const LocalFrameToken& source_frame_token,
     const std::string& device_id) {
   cache_lock_.AssertAcquired();
-  return base::ranges::find_if(
+  return std::ranges::find_if(
       cache_, [source_frame_token, &device_id](const CacheEntry& val) {
         if (val.source_frame_token != source_frame_token)
           return false;
@@ -220,7 +214,7 @@ void AudioRendererSinkCache::MaybeCacheSink(
 void AudioRendererSinkCache::DropSinksForFrame(
     const LocalFrameToken& source_frame_token) {
   base::AutoLock auto_lock(cache_lock_);
-  WTF::EraseIf(cache_, [source_frame_token](const CacheEntry& val) {
+  EraseIf(cache_, [source_frame_token](const CacheEntry& val) {
     if (val.source_frame_token == source_frame_token) {
       val.sink->Stop();
       return true;

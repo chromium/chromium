@@ -16,6 +16,10 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
+namespace viz {
+struct CopyOutputBitmapWithMetadata;
+}  // namespace viz
+
 class BackgroundThumbnailCapturer;
 class ThumbnailScheduler;
 
@@ -56,8 +60,9 @@ class ThumbnailTabHelper
   void StartVideoCapture();
   void StopVideoCapture();
 
-  void StoreThumbnailForTabSwitch(base::TimeTicks start_time,
-                                  const SkBitmap& bitmap);
+  void StoreThumbnailForTabSwitch(
+      base::TimeTicks start_time,
+      const viz::CopyOutputBitmapWithMetadata& result);
   void StoreThumbnailForBackgroundCapture(const SkBitmap& bitmap,
                                           uint64_t frame_id);
   void StoreThumbnail(CaptureType type,

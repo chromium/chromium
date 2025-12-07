@@ -10,9 +10,9 @@
 #include "base/logging.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/webauthn/local_authentication_token.h"
 #include "components/device_event_log/device_event_log.h"
 #include "content/public/browser/browser_thread.h"
-#include "crypto/scoped_lacontext.h"
 #include "device/fido/mac/util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
@@ -30,7 +30,7 @@ constexpr float kErrorAnimationLength = 1;
 // with the animation.
 constexpr float kSuccessAnimationLength = 1.6;
 
-struct API_AVAILABLE(macos(12.0)) MacAuthenticationView::ObjCStorage {
+struct MacAuthenticationView::ObjCStorage {
   LAContext* __strong context;
   LAAuthenticationView* __strong auth_view;
 };
@@ -155,12 +155,12 @@ void MacAuthenticationView::OnAuthenticationComplete(bool success) {
 }
 
 void MacAuthenticationView::OnTouchIDAnimationComplete(bool success) {
-  std::optional<crypto::ScopedLAContext> lacontext;
+  std::optional<webauthn::LocalAuthenticationToken> local_auth_token;
   if (success) {
-    lacontext.emplace(storage_->context);
+    local_auth_token.emplace(storage_->context);
   }
   storage_->context = nil;
-  std::move(callback_).Run(std::move(lacontext));
+  std::move(callback_).Run(std::move(local_auth_token));
 }
 
 BEGIN_METADATA(MacAuthenticationView)

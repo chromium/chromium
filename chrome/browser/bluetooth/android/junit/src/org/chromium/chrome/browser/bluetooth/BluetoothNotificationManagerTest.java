@@ -13,12 +13,17 @@ import android.content.Context;
 import android.content.Intent;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.NotificationFeatureMap;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.url.GURL;
@@ -28,14 +33,16 @@ import java.util.List;
 
 /** Tests BluetoothNotificationManager behaviour and its delegate. */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures({NotificationFeatureMap.CACHE_NOTIIFICATIONS_ENABLED})
 public class BluetoothNotificationManagerTest {
     private static final int NOTIFICATION_ID = 0;
     private static final GURL TEST_URL = JUnitTestGURLs.EXAMPLE_URL;
     private static final String TEST_URL_FORMATTED =
             UrlFormatter.formatUrlForSecurityDisplay(TEST_URL, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private MockNotificationManagerProxy mMockNotificationManager;
-    private BluetoothNotificationManagerDelegate mDelegate =
+    private final BluetoothNotificationManagerDelegate mDelegate =
             new BluetoothNotificationManagerDelegate() {
                 @Override
                 public Intent createTrustedBringTabToFrontIntent(int tabId) {
@@ -55,7 +62,7 @@ public class BluetoothNotificationManagerTest {
                 }
             };
 
-    private class FakeService {}
+    private static class FakeService {}
 
     private BluetoothNotificationManager mManager;
     private boolean mServiceStopped;
@@ -92,10 +99,9 @@ public class BluetoothNotificationManagerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         mMockNotificationManager = new MockNotificationManagerProxy();
-        mManager = new BluetoothNotificationManager(mMockNotificationManager, mDelegate);
+        BaseNotificationManagerProxyFactory.setInstanceForTesting(mMockNotificationManager);
+        mManager = new BluetoothNotificationManager(mDelegate);
     }
 
     @Test

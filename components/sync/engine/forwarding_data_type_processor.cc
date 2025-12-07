@@ -5,8 +5,10 @@
 #include "components/sync/engine/forwarding_data_type_processor.h"
 
 #include <utility>
+
 #include "base/functional/callback.h"
 #include "components/sync/engine/commit_queue.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 
 namespace syncer {
 
@@ -41,8 +43,7 @@ void ForwardingDataTypeProcessor::OnCommitCompleted(
                                 error_response_list);
 }
 
-void ForwardingDataTypeProcessor::OnCommitFailed(
-    SyncCommitError commit_error) {
+void ForwardingDataTypeProcessor::OnCommitFailed(SyncCommitError commit_error) {
   processor_->OnCommitFailed(commit_error);
 }
 

@@ -65,6 +65,8 @@ source_set("unit_tests") {
     ":unit_tests_bundle_data",
     "//base",
     "//crypto",
+    "//crypto:test_support",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }

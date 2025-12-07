@@ -9,7 +9,6 @@ android_resources("chromedriver_webview_shell_resources") {
     "java/res/layout/main_layout.xml",
     "java/res/mipmap/icon.png",
   ]
-  android_manifest = "java/AndroidManifest.xml"
 }
 android_apk("chromedriver_webview_shell_apk") {
   apk_name = "ChromeDriverWebViewShell"

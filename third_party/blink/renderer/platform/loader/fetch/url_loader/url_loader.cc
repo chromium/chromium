@@ -17,9 +17,11 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -36,8 +38,8 @@
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/encoded_body_length.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
-#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/common/loader/mime_sniffing_throttle.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
@@ -443,6 +445,12 @@ void URLLoader::LoadSynchronously(
     return;
   }
 
+  base::ElapsedTimer timer;
+  absl::Cleanup record_time = [&]() {
+    base::UmaHistogramMediumTimes("Blink.LoadURLSynchronouslyDuration",
+                                  timer.Elapsed());
+  };
+
   TRACE_EVENT0("loading", "URLLoader::loadSynchronously");
   SyncLoadResponse sync_load_response;
 
@@ -568,7 +576,7 @@ void URLLoader::Context::SetResourceRequestSenderForTesting(
 void URLLoader::SetBackgroundResponseProcessorFactory(
     std::unique_ptr<BackgroundResponseProcessorFactory>
         background_response_processor_factory) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace blink

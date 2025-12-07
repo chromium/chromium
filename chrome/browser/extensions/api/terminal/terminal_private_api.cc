@@ -2,24 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/extensions/api/terminal/terminal_private_api.h"
 
 #include <cstdlib>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_map.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -38,24 +35,27 @@
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_terminal_provider.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_terminal_provider_registry.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
-#include "chrome/browser/ash/guest_os/virtual_machines/virtual_machines_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/terminal/startup_status.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/profile_util.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/api/terminal_private.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
+#include "chromeos/ash/experiences/guest_os/virtual_machines/virtual_machines_util.h"
 #include "chromeos/process_proxy/process_proxy_registry.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
@@ -217,8 +217,7 @@ void NotifyProcessOutput(content::BrowserContext* browser_context,
   base::Value::List args;
   args.Append(terminal_id);
   args.Append(output_type);
-  args.Append(base::Value(base::make_span(
-      reinterpret_cast<const uint8_t*>(&output[0]), output.size())));
+  args.Append(base::Value(base::as_byte_span(output)));
 
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(browser_context);
@@ -362,15 +361,17 @@ TerminalPrivateOpenTerminalProcessFunction::OpenProcess(
             << ", cmdline=" << cmdline.GetCommandLineString();
 
     Profile* profile = Profile::FromBrowserContext(browser_context());
-    auto* service = guest_os::GuestOsService::GetForProfile(profile);
+    auto* service = guest_os::GuestOsServiceFactory::GetForProfile(profile);
     guest_os::GuestOsTerminalProvider* provider = nullptr;
     if (service) {
       provider = service->TerminalProviderRegistry()->Get(*guest_id_);
     }
-    auto* tracker = guest_os::GuestOsSessionTracker::GetForProfile(profile);
+    auto* tracker =
+        guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile);
     bool verbose = !(tracker && tracker->GetInfo(*guest_id_).has_value());
     auto status_printer = std::make_unique<StartupStatusPrinter>(
-        base::BindRepeating(&NotifyProcessOutput, browser_context(), startup_id,
+        base::BindRepeating(&NotifyProcessOutput, browser_context(),
+                            std::move(startup_id),
                             api::terminal_private::ToString(
                                 api::terminal_private::OutputType::kStdout)),
         verbose);
@@ -736,20 +737,15 @@ TerminalPrivateOpenSettingsSubpageFunction::
 
 ExtensionFunction::ResponseAction
 TerminalPrivateOpenSettingsSubpageFunction::Run() {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
+  Profile* profile = profile_util::GetActiveUserProfile();
   // Ignore params->subpage for now, and always open crostini.
-  if (ash::features::IsOsSettingsRevampWayfindingEnabled()) {
-    if (crostini::CrostiniFeatures::Get()->IsEnabled(profile)) {
-      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-          profile, chromeos::settings::mojom::kCrostiniDetailsSubpagePath);
-    } else {
-      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-          profile, chromeos::settings::mojom::kAboutChromeOsSectionPath,
-          chromeos::settings::mojom::Setting::kSetUpCrostini);
-    }
+  if (crostini::CrostiniFeatures::Get()->IsEnabled(profile)) {
+    chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+        profile, chromeos::settings::mojom::kCrostiniDetailsSubpagePath);
   } else {
     chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-        profile, chromeos::settings::mojom::kCrostiniSectionPath);
+        profile, chromeos::settings::mojom::kAboutChromeOsSectionPath,
+        chromeos::settings::mojom::Setting::kSetUpCrostini);
   }
   return RespondNow(NoArguments());
 }
@@ -797,15 +793,15 @@ ExtensionFunction::ResponseAction TerminalPrivateSetPrefsFunction::Run() {
   PrefService* service =
       Profile::FromBrowserContext(browser_context())->GetPrefs();
 
-  static const base::NoDestructor<
-      base::flat_map<std::string, base::Value::Type>>
-      kAllowList{{{guest_os::prefs::kGuestOsTerminalSettings,
-                   base::Value::Type::DICT}}};
+  static constexpr auto kAllowList =
+      base::MakeFixedFlatMap<std::string_view, base::Value::Type>(
+          {{guest_os::prefs::kGuestOsTerminalSettings,
+            base::Value::Type::DICT}});
 
   for (const auto item : params->prefs.additional_properties) {
     // Write prefs if they are allowed, and match expected type, else ignore.
-    auto allow_it = kAllowList->find(item.first);
-    if (allow_it == kAllowList->end() ||
+    auto allow_it = kAllowList.find(item.first);
+    if (allow_it == kAllowList.end() ||
         allow_it->second != item.second.type()) {
       LOG(WARNING) << "Ignoring non-allowed SetPrefs path=" << item.first
                    << ", type=" << item.second.type();

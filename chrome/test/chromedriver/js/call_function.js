@@ -10,7 +10,7 @@ const StatusCode = {
   STALE_ELEMENT_REFERENCE: 10,
   JAVA_SCRIPT_ERROR: 17,
   NO_SUCH_SHADOW_ROOT: 65,
-  DETACHED_SHADOW_ROOT: 66
+  DETACHED_SHADOW_ROOT: 66,
 };
 
 /**
@@ -36,6 +36,16 @@ var ELEMENT_KEY = 'ELEMENT';
  */
 const SHADOW_ROOT_KEY = 'shadow-6066-11e4-a52e-4f735466cecf';
 const W3C_ELEMENT_KEY = 'element-6066-11e4-a52e-4f735466cecf';
+const FRAME_KEY = 'frame-075b-4da1-b6ba-e579c2d3230a';
+const WINDOW_KEY = 'window-fcc6-11e5-b4f8-330a88ab9d7f';
+
+const REF_KEYS = [
+    W3C_ELEMENT_KEY,
+    SHADOW_ROOT_KEY,
+    FRAME_KEY,
+    WINDOW_KEY,
+    ELEMENT_KEY,
+];
 
 /**
  * True if using W3C Element references.
@@ -64,8 +74,10 @@ function newError(message, code) {
 }
 
 function isNodeReachable(node) {
+  const Window = window.cdc_adoQpoasnfa76pfcZLmcfl_Window || window.Window;
   const nodeRoot = getNodeRootThroughAnyShadows(node);
-  return (nodeRoot == document.documentElement.parentNode);
+  return (nodeRoot == document.documentElement.parentNode)
+      || (nodeRoot instanceof Window);
 }
 
 /**
@@ -106,12 +118,17 @@ function isElement(value) {
   // since this does not work with frames/iframes, for example
   // frames[0].document.body instanceof Object == false even though
   // typeof(frames[0].document.body) == 'object'.
-  return ((typeof(value) == 'object' && value != null) ||
-            (typeof(value) == 'function' && value.nodeName &&
-            value.nodeType == NodeType.ELEMENT)) &&
-          (value.nodeType == NodeType.ELEMENT   ||
-           value.nodeType == NodeType.DOCUMENT  ||
-           (SHADOW_DOM_ENABLED && value instanceof ShadowRoot));
+  try {
+    return ((typeof(value) == 'object' && value != null) ||
+              (typeof(value) == 'function' && value.nodeName &&
+              value.nodeType == NodeType.ELEMENT)) &&
+            (value.nodeType == NodeType.ELEMENT   ||
+             value.nodeType == NodeType.DOCUMENT  ||
+             (SHADOW_DOM_ENABLED && value instanceof ShadowRoot));
+  } catch {
+    // OOPIF content window
+    return false;
+  }
 }
 
 /**
@@ -131,7 +148,7 @@ function isCollection(value) {
  * Deep-clones item, given object references in seen, using cloning algorithm
  * algo. Implements "clone an object" from W3C-spec (#dfn-clone-an-object).
  * @param {*} item Object or collection to deep clone.
- * @param {!Set<*>} seen Object references that have already been seen.
+ * @param {!Array<*>} seen Object references that have already been seen.
  * @param {function(*, Array<*>) : *} algo Cloning algorithm to use to
  *     deep clone properties of item.
  * @param {!Array<*>} nodes List of serialized nodes
@@ -165,18 +182,18 @@ function cloneWithAlgorithm(item, seen, algo, nodes) {
 /**
  * Wrapper to cloneWithAlgorithm, with circular reference detection logic.
  * @param {*} item Object or collection to deep clone.
- * @param {!Set<*>} seen Object references that have already been seen.
+ * @param {!Array<*>} seen Object references that have already been seen.
  * @param {function(*, Array<*>) : *} algo Cloning algorithm to use to
  *     deep clone properties of item.
  * @param {!Array<*>} nodes List of serialized nodes
  * @return {*} Clone of item with status of cloning.
  */
 function cloneWithCircularCheck(item, seen, algo, nodes) {
-  if (seen.has(item))
+  if (seen.includes(item))
     throw newError('circular reference', StatusCode.JAVA_SCRIPT_ERROR);
-  seen.add(item);
+  seen.push(item);
   const result = cloneWithAlgorithm(item, seen, algo, nodes);
-  seen.delete(item);
+  seen.pop();
   return result;
 }
 
@@ -207,7 +224,7 @@ function serializationGuard(object) {
  * Returns deep clone of given value, replacing element references with a
  * serialized string representing that element.
  * @param {*} item Object or collection to deep clone.
- * @param {!Set<*>} seen Set of references that have already been seen.
+ * @param {!Array<*>} seen Object references that have already been seen.
  * @param {!Array<*>} nodes List of serialized nodes
  * @return {*} Clone of item with status of cloning.
  */
@@ -245,7 +262,21 @@ function preprocessResult(item, seen, nodes) {
     return serializationGuard(ret);
   }
 
-  // TODO(crbug.com/40229283): Implement WindowProxy serialization.
+  let WindowProxy = window.cdc_adoQpoasnfa76pfcZLmcfl_Window || window.Window;
+  let is_oopif = false;
+  try {
+    WindowProxy = item.cdc_adoQpoasnfa76pfcZLmcfl_Window || item.Window
+        || WindowProxy;
+  } catch {
+    is_oopif = true;
+  }
+
+  if (is_oopif || item instanceof WindowProxy) {
+    const ret = {};
+    ret[WINDOW_KEY] = nodes.length;
+    nodes.push(item);
+    return serializationGuard(ret);
+  }
 
   if (Object.hasOwn(item, 'toJSON') && typeof item.toJSON === 'function') {
       // Not guarded because we want item.toJSON to be invoked by
@@ -262,7 +293,7 @@ function preprocessResult(item, seen, nodes) {
  * Returns deserialized deep clone of given value, replacing serialized string
  * references to elements with a element reference, if found.
  * @param {*} item Object or collection to deep clone.
- * @param {!Set<*>} seen Set of references that have already been seen.
+ * @param {!Array<*>} seen Object references that have already been seen.
  * @param {!Array<*>} nodes List of referred nodes
  * @return {*} Clone of item with status of cloning.
  */
@@ -274,15 +305,16 @@ function resolveReferencesRecursive(item, seen, nodes) {
       typeof item === 'string' ||
       typeof item === 'function')
     return item;
-  if (item.hasOwnProperty(ELEMENT_KEY) ||
-      item.hasOwnProperty(SHADOW_ROOT_KEY)) {
-    let idx = item[ELEMENT_KEY];
-    if (item.hasOwnProperty(SHADOW_ROOT_KEY))
-      idx = item[SHADOW_ROOT_KEY];
+  for (const key of REF_KEYS) {
+    if (!item.hasOwnProperty(key))
+      continue;
+    let idx = item[key];
     if (idx < 0 || idx >= nodes.length) {
       throw newError('unable to resove node reference. '
           + 'Node index is out of range.', StatusCode.JAVA_SCRIPT_ERROR);
     }
+    if (key == FRAME_KEY)
+      return nodes[idx].contentWindow;
     return nodes[idx];
   }
   if (isCollection(item) || typeof item === 'object')
@@ -307,8 +339,7 @@ function resolveReferences(args, nodes) {
                      StatusCode.STALE_ELEMENT_REFERENCE);
     }
   }
-  const Set = window.cdc_adoQpoasnfa76pfcZLmcfl_Set || window.Set;
-  return resolveReferencesRecursive(args, new Set(), nodes);
+  return resolveReferencesRecursive(args, [], nodes);
 }
 
 /**
@@ -332,7 +363,6 @@ function callFunction(func, args, w3c, nodes) {
   if (w3c) {
     w3cEnabled = true;
     ELEMENT_KEY = W3C_ELEMENT_KEY;
-
   }
 
   function buildError(error) {
@@ -342,17 +372,6 @@ function callFunction(func, args, w3c, nodes) {
     });
     const JSON = window.cdc_adoQpoasnfa76pfcZLmcfl_JSON || window.JSON;
     return [JSON.stringify(errorResponse)];
-  }
-
-  function wrapErrorAsJavascriptError(error) {
-    originalResponse = buildError(error);
-    originalStatus = error.code || StatusCode.JAVA_SCRIPT_ERROR;
-    if (originalStatus === StatusCode.JAVA_SCRIPT_ERROR) {
-      return originalResponse;
-    }
-    return buildError({
-      code: StatusCode.JAVA_SCRIPT_ERROR,
-      message: originalResponse[0]});
   }
 
   const Promise = window.cdc_adoQpoasnfa76pfcZLmcfl_Promise || window.Promise;
@@ -366,16 +385,15 @@ function callFunction(func, args, w3c, nodes) {
   try {
     const tmp = func.apply(null, unwrappedArgs);
     return Promise.resolve(tmp).then((result) => {
-      const Set = window.cdc_adoQpoasnfa76pfcZLmcfl_Set || window.Set;
       ret_nodes = [];
       const response = {
         status: 0,
-        value: preprocessResult(result, new Set(), ret_nodes)
+        value: preprocessResult(result, [], ret_nodes)
       };
       const JSON = window.cdc_adoQpoasnfa76pfcZLmcfl_JSON || window.JSON;
       return [JSON.stringify(response), ...ret_nodes];
-    }).catch(wrapErrorAsJavascriptError);
+    }).catch(buildError);
   } catch (error) {
-    return Promise.resolve(wrapErrorAsJavascriptError(error));
+    return Promise.resolve(buildError(error));
   }
 }

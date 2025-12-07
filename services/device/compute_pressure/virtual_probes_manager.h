@@ -6,6 +6,7 @@
 #define SERVICES_DEVICE_COMPUTE_PRESSURE_VIRTUAL_PROBES_MANAGER_H_
 
 #include "base/containers/enum_set.h"
+#include "base/sequence_checker.h"
 #include "services/device/compute_pressure/probes_manager.h"
 #include "services/device/public/mojom/pressure_manager.mojom-forward.h"
 #include "services/device/public/mojom/pressure_update.mojom-shared.h"
@@ -30,10 +31,12 @@ class VirtualProbesManager final : public ProbesManager {
   // is not being overridden.
   void RemoveOverrideForSource(mojom::PressureSource source);
 
-  // Adds a new sample for the given |source| and updates any
-  // mojom::PressureClient instances waiting for updates.
+  // Adds a new sample and own contribution estimate for the given |source| and
+  // updates any mojom::PressureClient instances waiting for updates.
   // Does nothing if |source| is not being overridden.
-  void AddUpdate(mojom::PressureSource source, mojom::PressureState state);
+  void AddDataUpdate(mojom::PressureSource source,
+                     mojom::PressureState state,
+                     double own_contribution_estimate);
 
   // Returns true if |source| has a corresponding VirtualProbe instance, and
   // false otherwise.

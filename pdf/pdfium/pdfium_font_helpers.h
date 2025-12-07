@@ -6,6 +6,7 @@
 #define PDF_PDFIUM_PDFIUM_FONT_HELPERS_H_
 
 #include <optional>
+#include <string_view>
 
 #include "third_party/blink/public/platform/web_font_description.h"
 
@@ -19,7 +20,7 @@ std::optional<blink::WebFontDescription> PdfFontToBlinkFontMapping(
     int italic,
     int charset,
     int pitch_family,
-    const char* face);
+    std::string_view face);
 
 }  // namespace chrome_pdf
 

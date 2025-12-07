@@ -43,8 +43,8 @@ export class StepIndicator extends StepIndicatorBase {
     };
   }
 
-  model: StepIndicatorModel;
-  private dots_: void[];
+  declare model: StepIndicatorModel;
+  declare private dots_: void[];
 
   /**
    * @return the screenreader label for this element.

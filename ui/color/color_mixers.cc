@@ -13,7 +13,7 @@
 #include "ui/color/ref_color_mixer.h"
 #include "ui/color/sys_color_mixer.h"
 #include "ui/color/ui_color_mixer.h"
-#include "ui/native_theme/native_theme_features.h"
+#include "ui/native_theme/features/native_theme_features.h"
 
 namespace ui {
 

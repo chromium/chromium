@@ -9,17 +9,16 @@
 
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/common/referrer.h"
 #include "net/base/isolation_info.h"
-#include "net/filter/source_stream.h"
-#include "net/http/http_request_headers.h"
+#include "net/filter/source_stream_type.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
-#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {
@@ -39,16 +38,15 @@ struct CONTENT_EXPORT NavigationRequestInfo {
       bool is_outermost_main_frame,
       bool is_main_frame,
       bool are_ancestors_secure,
-      int frame_tree_node_id,
+      FrameTreeNodeId frame_tree_node_id,
       bool report_raw_headers,
       bool upgrade_if_insecure,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           blob_url_loader_factory,
       const base::UnguessableToken& devtools_navigation_token,
       const base::UnguessableToken& devtools_frame_token,
-      net::HttpRequestHeaders cors_exempt_headers,
       network::mojom::ClientSecurityStatePtr client_security_state,
-      const std::optional<std::vector<net::SourceStream::SourceType>>&
+      const std::optional<std::vector<net::SourceStreamType>>&
           devtools_accepted_stream_types,
       bool is_pdf,
       int initiator_process_id,
@@ -107,7 +105,7 @@ struct CONTENT_EXPORT NavigationRequestInfo {
   // origin. True for main frames.
   const bool are_ancestors_secure;
 
-  const int frame_tree_node_id;
+  const FrameTreeNodeId frame_tree_node_id;
 
   const bool report_raw_headers;
 
@@ -123,8 +121,6 @@ struct CONTENT_EXPORT NavigationRequestInfo {
 
   const base::UnguessableToken devtools_frame_token;
 
-  const net::HttpRequestHeaders cors_exempt_headers;
-
   // Specifies the security state applying to the navigation. For iframes, this
   // is the security state of their parent. Nullptr otherwise.
   //
@@ -135,7 +131,7 @@ struct CONTENT_EXPORT NavigationRequestInfo {
   // If not null, the network service will not advertise any stream types
   // (via Accept-Encoding) that are not listed. Also, it will not attempt
   // decoding any non-listed stream types.
-  std::optional<std::vector<net::SourceStream::SourceType>>
+  std::optional<std::vector<net::SourceStreamType>>
       devtools_accepted_stream_types;
 
   // Indicates that this navigation is for PDF content in a renderer.

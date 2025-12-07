@@ -9,13 +9,15 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.common.Lifetime;
+import org.chromium.build.annotations.NullMarked;
 
 /**
- * Java-side representation of the renderer process.
- * Managed and owned by android_webview/browser/aw_render_process.cc
+ * Java-side representation of the renderer process. Managed and owned by
+ * android_webview/browser/aw_render_process.cc
  */
 @Lifetime.Renderer
 @JNINamespace("android_webview")
+@NullMarked
 public final class AwRenderProcess extends AwSupportLibIsomorphic {
     private long mNativeRenderProcess;
 
@@ -24,15 +26,13 @@ public final class AwRenderProcess extends AwSupportLibIsomorphic {
     public boolean terminate() {
         if (mNativeRenderProcess == 0) return false;
 
-        return AwRenderProcessJni.get()
-                .terminateChildProcess(mNativeRenderProcess, AwRenderProcess.this);
+        return AwRenderProcessJni.get().terminateChildProcess(mNativeRenderProcess);
     }
 
     public boolean isProcessLockedToSiteForTesting() {
         if (mNativeRenderProcess == 0) return false;
 
-        return AwRenderProcessJni.get()
-                .isProcessLockedToSiteForTesting(mNativeRenderProcess, AwRenderProcess.this);
+        return AwRenderProcessJni.get().isProcessLockedToSiteForTesting(mNativeRenderProcess);
     }
 
     public boolean isReadyForTesting() {
@@ -51,8 +51,8 @@ public final class AwRenderProcess extends AwSupportLibIsomorphic {
 
     @NativeMethods
     interface Natives {
-        boolean terminateChildProcess(long nativeAwRenderProcess, AwRenderProcess caller);
+        boolean terminateChildProcess(long nativeAwRenderProcess);
 
-        boolean isProcessLockedToSiteForTesting(long nativeAwRenderProcess, AwRenderProcess caller);
+        boolean isProcessLockedToSiteForTesting(long nativeAwRenderProcess);
     }
 }

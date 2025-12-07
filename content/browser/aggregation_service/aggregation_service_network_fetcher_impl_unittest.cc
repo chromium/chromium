@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/barrier_closure.h"
@@ -56,10 +57,10 @@ const std::string kExampleValidJson = base::ReplaceStringPlaceholders(
 const std::vector<PublicKey> kExamplePublicKeys = {
     kExampleHpkeKey.GetPublicKey()};
 
-constexpr char kKeyFetcherStatusHistogramName[] =
+constexpr std::string_view kKeyFetcherStatusHistogramName =
     "PrivacySandbox.AggregationService.KeyFetcher.Status2";
 
-constexpr char kKeyFetcherHttpResponseOrNetErrorCodeHistogramName[] =
+constexpr std::string_view kKeyFetcherHttpResponseOrNetErrorCodeHistogramName =
     "PrivacySandbox.AggregationService.KeyFetcher.HttpResponseOrNetErrorCode";
 
 }  // namespace

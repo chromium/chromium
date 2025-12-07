@@ -107,7 +107,7 @@ bool ChangeMemoryTaggingModeForAllThreadsPerProcess(
   // int mallopt(int param, int value);
   using MalloptSignature = int (*)(int, int);
 
-  static MalloptSignature mallopt_fnptr = []() {
+  static MalloptSignature mallopt_fnptr = [] {
     base::FilePath module_path;
     base::NativeLibraryLoadError load_error;
     base::FilePath library_path = module_path.Append("libc.so");
@@ -160,8 +160,8 @@ void* TagRegionRandomlyForMTE(void* ptr, size_t sz, uint64_t mask) {
   char* nptr = reinterpret_cast<char*>(__arm_mte_create_random_tag(ptr, mask));
   for (size_t i = 0; i < sz; i += kMemTagGranuleSize) {
     // Next, tag the first and all subsequent granules with the randomly tag.
-    __arm_mte_set_tag(nptr +
-                      i);  // Tag is taken from the top bits of the argument.
+    PA_UNSAFE_TODO(__arm_mte_set_tag(
+        nptr + i));  // Tag is taken from the top bits of the argument.
   }
   return nptr;
 }
@@ -176,7 +176,7 @@ void* TagRegionIncrementForMTE(void* ptr, size_t sz) {
   char* nptr = reinterpret_cast<char*>(__arm_mte_increment_tag(ptr, 1u));
   for (size_t i = 0; i < sz; i += kMemTagGranuleSize) {
     // Apply the tag to the first granule, and all subsequent granules.
-    __arm_mte_set_tag(nptr + i);
+    PA_UNSAFE_TODO(__arm_mte_set_tag(nptr + i));
   }
   return nptr;
 }

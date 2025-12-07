@@ -12,8 +12,10 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -42,11 +44,11 @@ class InstallFromInfoCommandTest : public WebAppBrowserTestBase {
                                              const SortedSizesPx& sizes_px) {
     std::map<SquareSizePx, SkBitmap> result;
     base::RunLoop run_loop;
-    provider().icon_manager().ReadIcons(
-        app_id, purpose, sizes_px,
+    provider().icon_manager().ReadTrustedIconsWithFallbackToManifestIcons(
+        app_id, sizes_px, purpose,
         base::BindLambdaForTesting(
-            [&](std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
-              result = std::move(icon_bitmaps);
+            [&](IconMetadataFromDisk icon_metadata_from_disk) {
+              result = std::move(icon_metadata_from_disk.icons_map);
               run_loop.Quit();
             }));
     run_loop.Run();
@@ -61,7 +63,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest, SuccessInstall) {
   info->title = u"Test name";
 
   const webapps::WebappInstallSource install_source =
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       webapps::WebappInstallSource::SYSTEM_DEFAULT;
 #else
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON;
@@ -81,7 +83,8 @@ IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest, SuccessInstall) {
       WebAppInstallParams());
   loop.Run();
 
-  EXPECT_TRUE(provider().registrar_unsafe().IsActivelyInstalled(result_app_id));
+  EXPECT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+            provider().registrar_unsafe().GetInstallState(result_app_id));
 
   // Ensure histogram is only measured once.
 
@@ -120,20 +123,20 @@ IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest, InstallWithParams) {
       base::BindLambdaForTesting(
           [&](const webapps::AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
-            EXPECT_TRUE(
-                provider().registrar_unsafe().IsActivelyInstalled(app_id));
+            EXPECT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                      provider().registrar_unsafe().GetInstallState(app_id));
             result_app_id = app_id;
             loop.Quit();
           }),
       install_params);
   loop.Run();
-  std::optional<proto::WebAppOsIntegrationState> os_state =
+  std::optional<proto::os_state::WebAppOsIntegration> os_state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
           result_app_id);
   ASSERT_TRUE(os_state.has_value());
   EXPECT_TRUE(os_state->has_shortcut());
   EXPECT_EQ(os_state->run_on_os_login().run_on_os_login_mode(),
-            proto::RunOnOsLoginMode::NOT_RUN);
+            proto::os_state::RunOnOsLogin::MODE_NOT_RUN);
 }
 
 }  // namespace web_app

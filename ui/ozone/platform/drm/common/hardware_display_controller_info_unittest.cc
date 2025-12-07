@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/ozone/platform/drm/common/hardware_display_controller_info.h"
 
 #include <xf86drm.h>
@@ -14,6 +9,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -106,7 +102,7 @@ TEST_F(HardwareDisplayControllerInfoTest, HasEdidParser) {
   fake_drm_->InitializeState(/*use_atomic=*/true);
 
   display::EdidParser edid_parser(std::vector<uint8_t>(
-      kNormalDisplay, kNormalDisplay + kNormalDisplayLength));
+      kNormalDisplay, UNSAFE_TODO(kNormalDisplay + kNormalDisplayLength)));
   HardwareDisplayControllerInfo info(fake_drm_->GetConnector(connector_id),
                                      fake_drm_->GetCrtc(crtc_id),
                                      /*index=*/1, std::move(edid_parser));

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -34,8 +35,8 @@ class BackendMigrator {
     IDLE,
     WAITING_TO_START,  // Waiting for previous configuration to finish.
     DISABLING_TYPES,   // Exit criteria: OnConfigureDone for enabled types
-                       // _excluding_ |to_migrate_| and empty download progress
-                       // markers for types in |to_migrate_|.
+                       // _excluding_ `to_migrate_` and empty download progress
+                       // markers for types in `to_migrate_`.
     REENABLING_TYPES,  // Exit criteria: OnConfigureDone for enabled types.
   };
 
@@ -49,7 +50,7 @@ class BackendMigrator {
 
   virtual ~BackendMigrator();
 
-  // Starts a sequence of events that will disable and reenable |types|.
+  // Starts a sequence of events that will disable and reenable `types`.
   void MigrateTypes(DataTypeSet types);
 
   void AddMigrationObserver(MigrationObserver* observer);

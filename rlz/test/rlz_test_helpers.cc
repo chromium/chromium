@@ -4,11 +4,6 @@
 //
 // Main entry point for all unit tests.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "rlz_test_helpers.h"
 
 #include <stddef.h>
@@ -18,9 +13,9 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "rlz/lib/rlz_lib.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -66,7 +61,7 @@ void ReadRegistryTree(const base::win::RegKey& src, RegistryKeyData* data) {
       const uint8_t* value_bytes = reinterpret_cast<const uint8_t*>(i.Value());
       value.name.assign(i.Name());
       value.type = i.Type();
-      value.data.assign(value_bytes, value_bytes + i.ValueSize());
+      value.data.assign(value_bytes, UNSAFE_TODO(value_bytes + i.ValueSize()));
     }
   }
 
@@ -158,7 +153,7 @@ void RlzLibTestNoMachineStateHelper::Reset() {
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   rlz_lib::testing::SetRlzStoreDirectory(temp_dir_.GetPath());
 #else
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif  // BUILDFLAG(IS_POSIX)
 }
 
@@ -187,15 +182,15 @@ void RlzLibTestBase::SetUp() {
   EXPECT_TRUE(rlz_lib::SetAccessPointRlz(rlz_lib::IE_HOME_PAGE, ""));
 #endif  // BUILDFLAG(IS_POSIX)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   statistics_provider_ =
       std::make_unique<ash::system::FakeStatisticsProvider>();
   ash::system::StatisticsProvider::SetTestProvider(statistics_provider_.get());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void RlzLibTestBase::TearDown() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::system::StatisticsProvider::SetTestProvider(nullptr);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }

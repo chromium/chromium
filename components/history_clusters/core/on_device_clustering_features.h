@@ -7,7 +7,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
 
 namespace history_clusters {
 namespace features {
@@ -16,9 +15,6 @@ namespace features {
 
 // Enables configuring the on-device clustering backend.
 BASE_DECLARE_FEATURE(kOnDeviceClustering);
-
-// Uses an in-memory cache that stores engagement score.
-BASE_DECLARE_FEATURE(kUseEngagementScoreCache);
 
 // Specifies various blocklists for on-device clustering backend.
 BASE_DECLARE_FEATURE(kOnDeviceClusteringBlocklists);

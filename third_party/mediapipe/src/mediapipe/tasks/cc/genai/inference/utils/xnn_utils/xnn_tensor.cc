@@ -16,6 +16,7 @@
 
 #include <fcntl.h>
 
+#include <algorithm>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
@@ -44,6 +45,7 @@
 #include "mediapipe/framework/port/file_helpers.h"
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/framework/port/status_macros.h"
+#include "mediapipe/tasks/cc/genai/inference/common/mdspan.h"
 #include "mediapipe/tasks/cc/genai/inference/utils/xnn_utils/utils.h"
 #include "xnnpack.h"  // from @XNNPACK
 
@@ -156,6 +158,21 @@ std::shared_ptr<Tensor> Tensor::Slice(DimsType offset) {
   return Slice(index_k, offset[index_k]);
 }
 
+void Tensor::PrintSpan() {
+  if (dims.size() == 1) {
+    ABSL_LOG(INFO) << MakeMdSpan(DataAs<float>(), dims[0]);
+  } else if (dims.size() == 2) {
+    ABSL_LOG(INFO) << MakeMdSpan(DataAs<float>(), dims[0], dims[1]);
+  } else if (dims.size() == 3) {
+    ABSL_LOG(INFO) << MakeMdSpan(DataAs<float>(), dims[0], dims[1], dims[2]);
+  } else if (dims.size() == 4) {
+    ABSL_LOG(INFO) << MakeMdSpan(DataAs<float>(), dims[0], dims[1], dims[2],
+                                 dims[3]);
+  } else {
+    ABSL_LOG(FATAL) << "Unsupported dims size: " << dims.size();
+  }
+}
+
 std::shared_ptr<Tensor> Tensor::Slice(size_t index, size_t offset) {
   size_t num_elements_offset = 1;
   DimsType new_dim = dims;
@@ -163,7 +180,7 @@ std::shared_ptr<Tensor> Tensor::Slice(size_t index, size_t offset) {
     if (i < index) {
       ABSL_DCHECK_EQ(dims[i], 1);
     } else if (i == index) {
-      ABSL_DCHECK_LT(offset, dims[i]);
+      ABSL_DCHECK_LT(offset, dims[i]) << "i = " << i;
       num_elements_offset *= offset;
       new_dim[i] = 1;
     } else {
@@ -313,11 +330,14 @@ absl::Status Tensor::LoadFromBuffer(const void* buffer) {
 absl::Status Tensor::LoadFromVec(const std::vector<float>& data,
                                  bool exact_match) {
   AllocateBufferIfNeeded();
+  size_t load_size = data.size();
   if (exact_match) {
     RET_CHECK_EQ(ElementSize(num_elements), data.size() * sizeof(float));
+  } else {
+    load_size = std::min(data.size(), num_elements);
   }
 
-  memcpy(Data(), data.data(), data.size() * sizeof(float));
+  memcpy(Data(), data.data(), load_size * sizeof(float));
 
   return absl::OkStatus();
 }
@@ -367,6 +387,7 @@ std::shared_ptr<Tensor> Tensor::Transpose() {
   DimsType out_dims{dims.rbegin(), dims.rend()};
   auto result =
       std::make_shared<Tensor>(std::move(out_dims), datatype, is_sparse());
+  result->tag = tag;
   result->AllocateBufferIfNeeded();
   xnn_status s;
   const DimsType perm{1, 0};
@@ -497,6 +518,7 @@ std::shared_ptr<Tensor> QCTensor::Transpose() {
   DimsType out_dims{dims.rbegin(), dims.rend()};
   auto result = std::make_shared<QCTensor>(std::move(out_dims), 1 - dim_scale,
                                            datatype, is_sparse());
+  result->tag = tag;
   result->zero_point = zero_point;
   result->AllocateBufferIfNeeded();
   memcpy(result->scale_data.get(), scale_data.get(),

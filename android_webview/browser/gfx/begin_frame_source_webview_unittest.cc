@@ -205,12 +205,12 @@ TEST_F(BeginFrameSourceWebViewTest, Reentrancy) {
 
   // Re-Add observer inside OnBeginFrame so it will trigger missed BeginFrame
   EXPECT_CALL(observer_, OnBeginFrame(testing::_))
-      .WillRepeatedly(testing::Invoke([&](const viz::BeginFrameArgs& args) {
+      .WillRepeatedly([&](const viz::BeginFrameArgs& args) {
         if (args.type == viz::BeginFrameArgs::MISSED)
           return;
         begin_frame_source_.RemoveObserver(&observer_);
         begin_frame_source_.AddObserver(&observer_);
-      }));
+      });
 
   test_begin_frame_source_.OnBeginFrame(BeginFrameArgsForTesting(1));
 

@@ -17,6 +17,7 @@
 class HostContentSettingsMap;
 
 namespace content_settings {
+class PermissionSettingsInfo;
 
 typedef std::pair<ContentSettingsPattern, ContentSettingsPattern> PatternPair;
 
@@ -26,9 +27,8 @@ class MapValueIterator {
  public:
   explicit MapValueIterator(IteratorType iterator) : iterator_(iterator) {}
 
-  bool operator!=(const MapValueIterator& other) const {
-    return iterator_ != other.iterator_;
-  }
+  friend bool operator==(const MapValueIterator&,
+                         const MapValueIterator&) = default;
 
   MapValueIterator& operator++() {
     ++iterator_;
@@ -68,6 +68,10 @@ void GetRendererContentSettingRules(const HostContentSettingsMap* map,
 // Returns true if setting |a| is more permissive than setting |b|.
 bool IsMorePermissive(ContentSetting a, ContentSetting b);
 
+// Returns true if permission option |a| is more permissive than permission
+// option |b|.
+bool IsMorePermissive(PermissionOption a, PermissionOption b);
+
 // Returns whether or not the supplied constraint should be persistently stored.
 bool IsConstraintPersistent(const ContentSettingConstraints& constraints);
 
@@ -81,13 +85,15 @@ base::Time GetCoarseVisitedTime(base::Time time);
 base::TimeDelta GetCoarseVisitedTimePrecision();
 
 // Returns whether ContentSettingsType is an eligible permission for
-// auto-revocation.
-bool CanBeAutoRevoked(ContentSettingsType type,
-                      ContentSetting setting,
-                      bool is_one_time = false);
-bool CanBeAutoRevoked(ContentSettingsType type,
-                      const base::Value& value,
-                      bool is_one_time = false);
+// auto-revocation as unused permission.
+bool IsPermissionEligibleForAutoRevocation(ContentSettingsType type);
+
+// Returns whether ContentSettingsType with the provided value can be
+// auto-revoked as unused permission. If this returns true, then
+// IsPermissionElibigleForAutoRevocation(type) should also return true.
+bool CanBeAutoRevokedAsUnusedPermission(ContentSettingsType type,
+                                        const base::Value& value,
+                                        bool is_one_time = false);
 
 // Returns whether the chooser permission is allowlisted for auto-revoking.
 bool IsChooserPermissionEligibleForAutoRevocation(ContentSettingsType type);
@@ -111,6 +117,21 @@ const std::vector<ContentSettingsType>& GetTypesWithTemporaryGrants();
 // OneTimePermissionProvider in HostContentSettingsMap. Other types not stored
 // in the provider have their own custom grant expiry logic.
 const std::vector<ContentSettingsType>& GetTypesWithTemporaryGrantsInHcsm();
+
+// Returns the list of ContentSettingsTypes which should be actively expired
+// upon their expiration. All other expired content settings will only be
+// expired upon the first reload after the expiration date.
+bool ShouldTypeExpireActively(ContentSettingsType type);
+
+// Convert a base::Value to a permission setting for a permission represented by
+// |info|. Expects that the value represents a valid setting.
+PermissionSetting ValueToPermissionSetting(const PermissionSettingsInfo* info,
+                                           const base::Value& value);
+
+// Convert a permission setting to a base::Value for a permission represented by
+// |info|. Expects that the setting is valid.
+base::Value PermissionSettingToValue(const PermissionSettingsInfo* info,
+                                     const PermissionSetting& setting);
 
 }  // namespace content_settings
 

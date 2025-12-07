@@ -19,19 +19,12 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "components/account_id/account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
 namespace {
-
-AccountId GetActiveUser() {
-  return Shell::Get()
-      ->session_controller()
-      ->GetUserSession(/*user_index=*/0)
-      ->user_info.account_id;
-}
 
 class UserChooserDetailedViewControllerTest : public AshTestBase {
  public:
@@ -48,8 +41,8 @@ class UserChooserDetailedViewControllerTest : public AshTestBase {
     AshTestBase::SetUp();
     tray_test_api_ = std::make_unique<SystemTrayTestApi>();
     disable_animations_ =
-        std::make_unique<ui::ScopedAnimationDurationScaleMode>(
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+        std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   }
 
   bool IsBubbleViewVisible(ViewID view_id) const {
@@ -78,7 +71,7 @@ class UserChooserDetailedViewControllerTest : public AshTestBase {
   SystemTrayTestApi* tray_test_api() { return tray_test_api_.get(); }
 
  private:
-  std::unique_ptr<ui::ScopedAnimationDurationScaleMode> disable_animations_;
+  std::unique_ptr<gfx::ScopedAnimationDurationScaleMode> disable_animations_;
   std::unique_ptr<SystemTrayTestApi> tray_test_api_;
 };
 
@@ -102,11 +95,13 @@ TEST_F(UserChooserDetailedViewControllerTest,
 }
 
 TEST_F(UserChooserDetailedViewControllerTest, SwitchUserWithOverview) {
-  // Add a secondary user.
-  const AccountId secondary_user =
-      AccountId::FromUserEmail("secondary@gmail.com");
-  GetSessionControllerClient()->AddUserSession(secondary_user.GetUserEmail());
-  ASSERT_NE(GetActiveUser(), secondary_user);
+  auto* session_controller = Shell::Get()->session_controller();
+  auto first_user = session_controller->GetActiveAccountId();
+
+  // Add a secondary user then switch back to first user.
+  auto secondary_user = SimulateUserLogin({"secondary@gmail.com"});
+  SwitchActiveUser(first_user);
+  ASSERT_NE(session_controller->GetActiveAccountId(), secondary_user);
 
   // Create an activatable widget.
   std::unique_ptr<views::Widget> widget =
@@ -129,17 +124,17 @@ TEST_F(UserChooserDetailedViewControllerTest, SwitchUserWithOverview) {
   tray_test_api()->ClickBubbleView(secondary_user_button_id);
 
   // Active user is switched.
-  EXPECT_EQ(GetActiveUser(), secondary_user);
+  EXPECT_EQ(session_controller->GetActiveAccountId(), secondary_user);
 }
 
 TEST_F(UserChooserDetailedViewControllerTest,
        MultiProfileLoginDisabledForFamilyLinkUsers) {
   EXPECT_TRUE(UserChooserDetailedViewController::IsUserChooserEnabled());
 
-  GetSessionControllerClient()->Reset();
+  ClearLogin();
 
   // Log in as a child user.
-  SimulateUserLogin("child@gmail.com", user_manager::UserType::kChild);
+  SimulateUserLogin({"child@gmail.com", user_manager::UserType::kChild});
 
   EXPECT_FALSE(UserChooserDetailedViewController::IsUserChooserEnabled());
 }

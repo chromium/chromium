@@ -1,0 +1,47 @@
+Tests navigationId in performance entries.
+Recording started
+Tracing complete
+Trace events and performance entries can be joined by navigationId.
+-> id_0 hard-navigation (entry for text-lcp.html)
+-> id_0 hard-lcp (entry)
+-> id_0 LCP candidate (trace)
+
+-> id_1 hard-navigation (entry for empty.html)
+
+-> id_2 hard-navigation (entry for soft-navigations.html)
+-> id_2 hard-lcp (entry) after soft-navigations.html
+-> id_2 LCP candidate (trace)
+
+-> id_3 soft-navigation (entry after 1st user click)
+-> id_3 soft-lcp (entry)
+-> id_3 LCP candidate for soft navigation (trace)
+-> id_3 Soft navigation (trace)
+
+-> id_4 soft-navigation (entry after 2nd user click)
+-> id_4 soft-lcp (entry)
+-> id_4 LCP candidate for soft navigation (trace)
+-> id_4 Soft navigation (trace)
+
+-> id_5 soft-navigation (entry after 3rd user click)
+-> id_5 soft-lcp (entry)
+-> id_5 LCP candidate for soft navigation (trace)
+-> id_5 Soft navigation (trace)
+
+-> id_6 back-forward-cache-restoration (entry for text-lcp.html)
+-> id_6 hard-lcp (entry)
+-> id_6 LCP candidate (trace)
+
+Soft navigations and bfcache restores cause small positive navigationId increments:
+between id_2 and id_3:
+-> increment is positive
+-> increment is small
+between id_3 and id_4:
+-> increment is positive
+-> increment is small
+between id_4 and id_5:
+-> increment is positive
+-> increment is small
+between id_0 and id_6:
+-> increment is positive
+-> increment is small
+

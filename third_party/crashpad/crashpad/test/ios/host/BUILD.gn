@@ -44,6 +44,7 @@ static_library("app_host_sources") {
     ":app_shared_sources",
     "../../../build:apple_enable_arc",
     "../../../client",
+    "../../../minidump:test_support",
     "../../../snapshot",
     "../../../test",
     "../../../third_party/edo",

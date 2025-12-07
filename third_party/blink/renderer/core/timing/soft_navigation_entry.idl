@@ -6,3 +6,4 @@
 interface SoftNavigationEntry : PerformanceEntry {
 };
 
+SoftNavigationEntry includes PaintTimingMixin;

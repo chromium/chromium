@@ -18,7 +18,6 @@ function repaintTest() {
   highlightRange('svg2', 0, 6, 'kInactive');
   highlightRange('svg3', 0, 6, 'kInactive');
   highlightRange('svg3', 26, 32, 'kInactive');
-  internals.setMarkedTextMatchesAreHighlighted(document, true);
 }
 if (window.internals)
   onload = runRepaintAndPixelTest;

@@ -1,0 +1,12 @@
+third_party {
+  security {
+    # These 3 CVEs have an overly broad 'Known Affected' list.
+
+    # Fixed in v3.0.0-212-gd2a6356c57
+    mitigated_security_patch: "CVE-2021-30474"
+    # Fixed in v3.0.0-255-gd0cac70b54
+    mitigated_security_patch: "CVE-2021-30473"
+    # Fixed in v3.0.0-372-g12adc723ac
+    mitigated_security_patch: "CVE-2021-30475"
+  }
+}

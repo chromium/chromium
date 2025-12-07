@@ -20,6 +20,7 @@
 #include "components/variations/synthetic_trial_registry.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_switches.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/google/compression_utils.h"
 
 namespace variations {
@@ -49,6 +50,19 @@ const char kTestSeed_Base64UncompressedData[] =
 const char kTestSeed_Base64CompressedData[] =
     "H4sIAAAAAAAA/+JiKUktLhGy45IP9XXUDc3LTMsvys0sqdQNKcpMzNE1NdANSC1KTs0rsWD04u"
     "ZiT0lNSyzNKRFg9OLh4kgvyi8tiDcwFGAEBAAA//90/JgERgAAAA==";
+
+// The compressed data is the result of decoding the base64 encoded compressed
+// data above and showing the data as hex:
+// echo -n base64_compressed_data | base64 -d | hexdump -e '8 1 ", 0x%x"'
+const uint8_t kTestSeed_CompressedData[] = {
+    0x1f, 0x8b, 0x8,  0x0,  0x0,  0x0,  0x0,  0x0,  0x0,  0xff, 0xe2, 0x62,
+    0x29, 0x49, 0x2d, 0x2e, 0x11, 0xb2, 0xe3, 0x92, 0xf,  0xf5, 0x75, 0xd4,
+    0xd,  0xcd, 0xcb, 0x4c, 0xcb, 0x2f, 0xca, 0xcd, 0x2c, 0xa9, 0xd4, 0xd,
+    0x29, 0xca, 0x4c, 0xcc, 0xd1, 0x35, 0x35, 0xd0, 0xd,  0x48, 0x2d, 0x4a,
+    0x4e, 0xcd, 0x2b, 0xb1, 0x60, 0xf4, 0xe2, 0xe6, 0x62, 0x4f, 0x49, 0x4d,
+    0x4b, 0x2c, 0xcd, 0x29, 0x11, 0x60, 0xf4, 0xe2, 0xe1, 0xe2, 0x48, 0x2f,
+    0xca, 0x2f, 0x2d, 0x88, 0x37, 0x30, 0x14, 0x60, 0x4,  0x4,  0x0,  0x0,
+    0xff, 0xff, 0x74, 0xfc, 0x98, 0x4,  0x46, 0x0,  0x0,  0x0};
 
 const char kTestSeed_Base64Signature[] =
     "MEUCIQD5AEAzk5qEuE3xOZl+xSZR15Ac1RJpsXMiou7i5W0sMAIgRn++ngh03HaMGC+Pjl9NOu"
@@ -116,6 +130,31 @@ const char kCrashingSeed_Base64CompressedData[] =
     "3P5HA5HPHUDsH8nD5cMXpvPEf0icuubUfAH2fzDIYyVV2Pkt9vl1PDH+zRK4zRJJ3RKr+"
     "g1jWhMEzqhs9WmHPonaW2uLAcvGARfqELxPJMaVEDMjBbDotplhfoDs9NLbnoBAAA=";
 
+// The compressed data is the result of decoding the base64 encoded compressed
+// data above and showing the data as hex:
+// echo -n base64_compressed_data | base64 -d | hexdump -e '8 1 ", 0x%x"'
+const uint8_t kCrashingSeed_CompressedData[] = {
+    0x1f, 0x8b, 0x8,  0x0,  0x0,  0x0,  0x0,  0x0,  0x0,  0x0,  0x8d, 0xd0,
+    0xc1, 0x4b, 0xc3, 0x30, 0x14, 0xc7, 0xf1, 0xb6, 0x9b, 0xc2, 0x2,  0x83,
+    0xb1, 0xa3, 0x7,  0x29, 0x93, 0x41, 0x10, 0xa7, 0x49, 0x93, 0xa6, 0xc9,
+    0x59, 0xb6, 0xc3, 0x10, 0x4,  0x37, 0xd0, 0x9b, 0x24, 0x79, 0x2f, 0xb6,
+    0x50, 0xaa, 0x74, 0xed, 0xc1, 0x7f, 0x66, 0x7f, 0xab, 0x65, 0xf8, 0x7,
+    0xf4, 0xfc, 0xbe, 0xef, 0x73, 0xf8, 0x11, 0x2a, 0x72, 0x84, 0xc,  0xc,
+    0x8a, 0x5c, 0x3a, 0xc9, 0xa5, 0xc3, 0x0,  0xc1, 0x8,  0x66, 0xb,  0x21,
+    0x99, 0x91, 0x8c, 0x1b, 0xcf, 0xb8, 0xca, 0x2,  0x5f, 0x9e, 0x13, 0x32,
+    0x7f, 0x6e, 0xed, 0xa9, 0xac, 0x9a, 0xaf, 0x43, 0xd7, 0xc3, 0xaf, 0x8e,
+    0xf7, 0x9a, 0xcc, 0xb7, 0x8d, 0x75, 0x35, 0xc2, 0x8b, 0xed, 0x1b, 0x5f,
+    0x2e, 0xc0, 0xad, 0xc9, 0xdd, 0xee, 0xbb, 0xf5, 0xb8, 0xab, 0xb0, 0x86,
+    0x63, 0x5b, 0xd9, 0xfa, 0x80, 0x5d, 0xff, 0x73, 0xf9, 0x1c, 0xe,  0x47,
+    0x3c, 0x75, 0x3,  0xb0, 0x7f, 0x27, 0xf,  0x97, 0xc,  0x5e, 0x9b, 0xcf,
+    0x11, 0xfd, 0x22, 0x72, 0xeb, 0x9b, 0x51, 0xf0, 0x7,  0xd9, 0xfc, 0xc3,
+    0x21, 0x8c, 0x95, 0x57, 0x63, 0xe4, 0xb7, 0xdb, 0xe5, 0xd4, 0xf0, 0xc7,
+    0xfb, 0x34, 0x4a, 0xe3, 0x34, 0x49, 0x27, 0x74, 0x4a, 0xaf, 0xe8, 0x35,
+    0x8d, 0x68, 0x4c, 0x13, 0x3a, 0xa1, 0xb3, 0xd5, 0xa6, 0x1c, 0xfa, 0x27,
+    0x69, 0x6d, 0xae, 0x2c, 0x7,  0x2f, 0x18, 0x4,  0x5f, 0xa8, 0x42, 0xf1,
+    0x3c, 0x93, 0x1a, 0x54, 0x40, 0xcc, 0x8c, 0x16, 0xc3, 0xa2, 0xda, 0x65,
+    0x85, 0xfa, 0x3,  0xb3, 0xd3, 0x4b, 0x6e, 0x7a, 0x1,  0x0,  0x0};
+
 const char kCrashingSeed_Base64Signature[] =
     "MEQCIEn1+VsBfNA93dxzpk+BLhdO91kMQnofxfTK5Uo8vDi8AiAnTCFCIPgEGWNOKzuKfNWn6"
     "emB6pnGWjSTbI/pvfxHnw==";
@@ -175,37 +214,33 @@ const FieldTrialTestingExperimentParams array_kFieldTrialConfig_params_0[] = {
 const FieldTrialTestingExperiment array_kFieldTrialConfig_experiments_0[] = {
     {/*name=*/"Enabled",
      /*platforms=*/array_kFieldTrialConfig_platforms_0,
-     /*platforms_size=*/10,
      /*form_factors=*/{},
-     /*form_factors_size=*/0,
      /*is_low_end_device=*/std::nullopt,
+     /*disable_benchmarking=*/std::nullopt,
      /*min_os_version=*/nullptr,
      /*params=*/array_kFieldTrialConfig_params_0,
-     /*params_size=*/1,
      /*enable_features=*/enable_features_0,
-     /*enable_features_size=*/1,
-     /*disable_features=*/nullptr,
-     /*disable_features_size=*/0,
+     /*disable_features=*/{},
      /*forcing_flag=*/nullptr,
-     /*override_ui_string=*/nullptr,
-     /*override_ui_string_size=*/0},
+     /*override_ui_string=*/{}},
 };
 
 const FieldTrialTestingStudy array_kFieldTrialConfig_studies[] = {
     {/*name=*/"UnitTest",
-     /*experiments=*/array_kFieldTrialConfig_experiments_0,
-     /*experiments_size=*/1},
+     /*experiments=*/array_kFieldTrialConfig_experiments_0},
 };
 
 }  // namespace
 
 const SignedSeedData kTestSeedData{
-    kTestSeed_StudyNames, kTestSeed_Base64UncompressedData,
-    kTestSeed_Base64CompressedData, kTestSeed_Base64Signature};
+    kTestSeed_StudyNames,           kTestSeed_Base64UncompressedData,
+    kTestSeed_Base64CompressedData, kTestSeed_Base64Signature,
+    kTestSeed_CompressedData,       sizeof(kTestSeed_CompressedData)};
 
 const SignedSeedData kCrashingSeedData{
-    kCrashingSeed_StudyNames, kCrashingSeed_Base64UncompressedData,
-    kCrashingSeed_Base64CompressedData, kCrashingSeed_Base64Signature};
+    kCrashingSeed_StudyNames,           kCrashingSeed_Base64UncompressedData,
+    kCrashingSeed_Base64CompressedData, kCrashingSeed_Base64Signature,
+    kCrashingSeed_CompressedData,       sizeof(kCrashingSeed_CompressedData)};
 
 const SignedSeedPrefKeys kSafeSeedPrefKeys{prefs::kVariationsSafeCompressedSeed,
                                            prefs::kVariationsSafeSeedSignature};
@@ -216,11 +251,15 @@ const SignedSeedPrefKeys kRegularSeedPrefKeys{prefs::kVariationsCompressedSeed,
 SignedSeedData::SignedSeedData(base::span<const char*> in_study_names,
                                const char* in_base64_uncompressed_data,
                                const char* in_base64_compressed_data,
-                               const char* in_base64_signature)
+                               const char* in_base64_signature,
+                               const uint8_t* in_compressed_data,
+                               size_t in_compressed_data_size)
     : study_names(std::move(in_study_names)),
       base64_uncompressed_data(in_base64_uncompressed_data),
       base64_compressed_data(in_base64_compressed_data),
-      base64_signature(in_base64_signature) {}
+      base64_signature(in_base64_signature),
+      compressed_data(in_compressed_data),
+      compressed_data_size(in_compressed_data_size) {}
 
 SignedSeedData::~SignedSeedData() = default;
 
@@ -228,6 +267,11 @@ SignedSeedData::SignedSeedData(const SignedSeedData&) = default;
 SignedSeedData::SignedSeedData(SignedSeedData&&) = default;
 SignedSeedData& SignedSeedData::operator=(const SignedSeedData&) = default;
 SignedSeedData& SignedSeedData::operator=(SignedSeedData&&) = default;
+
+std::string_view SignedSeedData::GetCompressedData() const {
+  return std::string_view(reinterpret_cast<const char*>(compressed_data),
+                     compressed_data_size);
+}
 
 void DisableTestingConfig() {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -243,28 +287,48 @@ bool ExtractVariationIds(const std::string& variations,
                          std::set<VariationID>* variation_ids,
                          std::set<VariationID>* trigger_ids) {
   std::string serialized_proto;
-  if (!base::Base64Decode(variations, &serialized_proto))
+  if (!base::Base64Decode(variations, &serialized_proto)) {
     return false;
+  }
   ClientVariations proto;
-  if (!proto.ParseFromString(serialized_proto))
+  if (!proto.ParseFromString(serialized_proto)) {
     return false;
-  for (int i = 0; i < proto.variation_id_size(); ++i)
+  }
+
+  EXPECT_TRUE(IsSortedAndUnique(proto.variation_id()));
+  EXPECT_TRUE(IsSortedAndUnique(proto.trigger_variation_id()));
+
+  for (int i = 0; i < proto.variation_id_size(); ++i) {
     variation_ids->insert(proto.variation_id(i));
-  for (int i = 0; i < proto.trigger_variation_id_size(); ++i)
+  }
+  for (int i = 0; i < proto.trigger_variation_id_size(); ++i) {
     trigger_ids->insert(proto.trigger_variation_id(i));
+  }
   return true;
+}
+
+scoped_refptr<base::FieldTrial> CreateInactiveTrialAndAssociateId(
+    const std::string& trial_name,
+    const std::string& group_name,
+    IDCollectionKey key,
+    VariationID id,
+    TimeWindow time_window) {
+  AssociateGoogleVariationIDForTesting(key, trial_name, group_name, id,
+                                       time_window);
+  scoped_refptr<base::FieldTrial> trial(
+      base::FieldTrialList::CreateFieldTrial(trial_name, group_name));
+  CHECK(trial);
+  return trial;
 }
 
 scoped_refptr<base::FieldTrial> CreateTrialAndAssociateId(
     const std::string& trial_name,
-    const std::string& default_group_name,
+    const std::string& group_name,
     IDCollectionKey key,
-    VariationID id) {
-  AssociateGoogleVariationID(key, trial_name, default_group_name, id);
-  scoped_refptr<base::FieldTrial> trial(
-      base::FieldTrialList::CreateFieldTrial(trial_name, default_group_name));
-  DCHECK(trial);
-
+    VariationID id,
+    TimeWindow time_window) {
+  auto trial = CreateInactiveTrialAndAssociateId(trial_name, group_name, key,
+                                                 id, time_window);
   if (trial) {
     // Ensure the trial is registered under the correct key so we can look it
     // up.
@@ -290,20 +354,18 @@ void WriteSeedData(PrefService* local_state,
 }
 
 bool FieldTrialListHasAllStudiesFrom(const SignedSeedData& seed_data) {
-  return base::ranges::all_of(seed_data.study_names, [](const char* study) {
+  return std::ranges::all_of(seed_data.study_names, [](const char* study) {
     return base::FieldTrialList::TrialExists(study);
   });
 }
 
 void ResetVariations() {
-  testing::ClearAllVariationIDs();
-  testing::ClearAllVariationParams();
+  test::ClearAllVariationIDs();
+  test::ClearAllVariationParams();
 }
 
 const FieldTrialTestingConfig kTestingConfig = {
-    array_kFieldTrialConfig_studies,
-    1,
-};
+    array_kFieldTrialConfig_studies};
 
 std::unique_ptr<ClientFilterableState> CreateDummyClientFilterableState() {
   auto client_state = std::make_unique<ClientFilterableState>(
@@ -382,6 +444,20 @@ bool ContainsTrialAndGroupName(
     }
   }
   return false;
+}
+
+void SetUpSeedFileTrial(std::string group_name) {
+  if (group_name.empty()) {
+    return;
+  }
+  base::MockEntropyProvider entropy_provider(0.9);
+  scoped_refptr<base::FieldTrial> trial(
+      base::FieldTrialList::FactoryGetFieldTrial(
+          kSeedFileTrial, /*total_probability=*/100, kDefaultGroup,
+          entropy_provider));
+
+  trial->AppendGroup(group_name, /*group_probability=*/100);
+  trial->SetForced();
 }
 
 }  // namespace variations

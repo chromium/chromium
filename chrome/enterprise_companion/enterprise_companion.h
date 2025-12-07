@@ -8,21 +8,8 @@
 #include <optional>
 
 #include "base/files/file_path.h"
-#include "build/build_config.h"
 
 namespace enterprise_companion {
-
-// Specifies the logging module filter.
-extern const char kLoggingModuleSwitch[];
-// Runs as the embedded Crashpad handler.
-extern const char kCrashHandlerSwitch[];
-// Crash the program for testing purposes.
-extern const char kCrashMeSwitch[];
-
-#if BUILDFLAG(IS_MAC)
-// Runs the network worker.
-extern const char kNetWorkerSwitch[];
-#endif
 
 int EnterpriseCompanionMain(int argc, const char* const* argv);
 

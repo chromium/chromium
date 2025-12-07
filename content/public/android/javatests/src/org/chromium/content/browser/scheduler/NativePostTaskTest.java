@@ -7,6 +7,8 @@ package org.chromium.content.browser.scheduler;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -27,6 +29,8 @@ import org.chromium.base.test.task.ThreadPoolTestHelpers;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.RequiresRestart;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content.app.ContentMain;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
@@ -44,12 +48,13 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
+@NullMarked
 public class NativePostTaskTest {
     private static class BlockedTask extends BackgroundOnlyAsyncTask<Integer> {
-        private Object mStartLock = new Object();
-        private AtomicInteger mValue = new AtomicInteger(0);
-        private AtomicBoolean mStarted = new AtomicBoolean(false);
-        private Thread mBackgroundThread;
+        private final Object mStartLock = new Object();
+        private final AtomicInteger mValue = new AtomicInteger(0);
+        private final AtomicBoolean mStarted = new AtomicBoolean(false);
+        private @Nullable Thread mBackgroundThread;
 
         @Override
         protected Integer doInBackground() {
@@ -78,7 +83,7 @@ public class NativePostTaskTest {
         }
 
         public Thread getBackgroundThread() {
-            return mBackgroundThread;
+            return assertNonNull(mBackgroundThread);
         }
     }
 
@@ -150,9 +155,9 @@ public class NativePostTaskTest {
 
     @Test
     @MediumTest
-    public void testCreateTaskRunner() {
+    public void testGetTaskRunner() {
         startNativeScheduler();
-        TaskRunner taskQueue = PostTask.createTaskRunner(TaskTraits.USER_BLOCKING);
+        TaskRunner taskQueue = PostTask.getTaskRunner(TaskTraits.USER_BLOCKING);
         // This should not time out.
         SchedulerTestHelpers.postDelayedTaskAndBlockUntilRun(taskQueue, 1);
     }
@@ -180,14 +185,6 @@ public class NativePostTaskTest {
         testRunningTasksInSequence(taskQueue);
     }
 
-    @Test
-    @MediumTest
-    public void testCreateSingleThreadSequencedTaskRunner() {
-        startNativeScheduler();
-        TaskRunner taskQueue = PostTask.createSingleThreadTaskRunner(TaskTraits.USER_BLOCKING);
-        testRunningTasksInSequence(taskQueue);
-    }
-
     private void performSequencedTestSchedulerMigration(
             TaskRunner taskQueue, List<Integer> orderListImmediate, List<Integer> orderListDelayed)
             throws Exception {
@@ -209,10 +206,10 @@ public class NativePostTaskTest {
     @Test
     @MediumTest
     @DisabledTest(message = "https://crbug.com/938316")
-    public void testCreateTaskRunnerMigrationToNative() throws Exception {
+    public void testGetTaskRunnerMigrationToNative() throws Exception {
         final Object lock = new Object();
         final AtomicBoolean taskExecuted = new AtomicBoolean();
-        TaskRunner taskQueue = PostTask.createTaskRunner(TaskTraits.USER_BLOCKING);
+        TaskRunner taskQueue = PostTask.getTaskRunner(TaskTraits.USER_BLOCKING);
 
         postRepeatingTaskAndStartNativeSchedulerThenWaitForTaskToRun(
                 taskQueue,
@@ -248,19 +245,6 @@ public class NativePostTaskTest {
         assertThat(orderListDelayed, contains(1, 2, 3));
     }
 
-    @Test
-    @MediumTest
-    @RequiresRestart
-    public void testCreateSingleThreadSequencedTaskRunnerMigrationToNative() throws Exception {
-        List<Integer> orderListImmediate = new ArrayList<>();
-        List<Integer> orderListDelayed = new ArrayList<>();
-        TaskRunner taskQueue = PostTask.createSingleThreadTaskRunner(TaskTraits.USER_BLOCKING);
-        performSequencedTestSchedulerMigration(taskQueue, orderListImmediate, orderListDelayed);
-
-        assertThat(orderListImmediate, contains(1, 2, 3, 4));
-        assertThat(orderListDelayed, contains(1, 2, 3));
-    }
-
     private void postRepeatingTaskAndStartNativeSchedulerThenWaitForTaskToRun(
             TaskRunner taskQueue, Runnable taskToRunAfterNativeSchedulerLoaded) throws Exception {
         final Object lock = new Object();
@@ -269,7 +253,7 @@ public class NativePostTaskTest {
 
         // Post a task that reposts itself until nativeSchedulerStarted is set to true.  This tests
         // that tasks posted before the native library is loaded still run afterwards.
-        taskQueue.postTask(
+        taskQueue.execute(
                 new Runnable() {
                     @Override
                     public void run() {
@@ -280,7 +264,7 @@ public class NativePostTaskTest {
                                 lock.notify();
                             }
                         } else {
-                            taskQueue.postTask(this);
+                            taskQueue.execute(this);
                         }
                     }
                 });

@@ -12,7 +12,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
-#include "third_party/blink/public/platform/modules/remoteplayback/web_remote_playback_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_pointer_event_init.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
@@ -23,7 +22,6 @@
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -44,6 +42,7 @@
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_mute_button_element.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_overflow_menu_button_element.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_overflow_menu_list_element.h"
+#include "third_party/blink/renderer/modules/media_controls/elements/media_control_overlay_play_button_element.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_play_button_element.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_playback_speed_button_element.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_remaining_time_display_element.h"
@@ -52,6 +51,7 @@
 #include "third_party/blink/renderer/modules/remoteplayback/remote_playback.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/media/remote_playback_client.h"
 #include "third_party/blink/renderer/platform/testing/empty_web_media_player.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -103,7 +103,7 @@ class StubLocalFrameClientForImpl : public EmptyLocalFrameClient {
     return std::make_unique<MockWebMediaPlayerForImpl>();
   }
 
-  WebRemotePlaybackClient* CreateWebRemotePlaybackClient(
+  RemotePlaybackClient* CreateRemotePlaybackClient(
       HTMLMediaElement& element) override {
     return &RemotePlayback::From(element);
   }
@@ -155,13 +155,15 @@ enum DownloadActionMetrics {
 
 }  // namespace
 
-class MediaControlsImplTest : public PageTestBase,
-                              private ScopedMediaCastOverlayButtonForTest {
+class MediaControlsImplTest
+    : public PageTestBase,
+      private ScopedMediaControlsOverlayPlayButtonForTest {
  public:
   explicit MediaControlsImplTest(
       base::test::TaskEnvironment::TimeSource time_source)
-      : PageTestBase(time_source), ScopedMediaCastOverlayButtonForTest(true) {}
-  MediaControlsImplTest() : ScopedMediaCastOverlayButtonForTest(true) {}
+      : PageTestBase(time_source),
+        ScopedMediaControlsOverlayPlayButtonForTest(true) {}
+  MediaControlsImplTest() : ScopedMediaControlsOverlayPlayButtonForTest(true) {}
 
  protected:
   void SetUp() override {
@@ -195,6 +197,13 @@ class MediaControlsImplTest : public PageTestBase,
     // been properly notified of the video size.
     media_controls_->NotifyElementSizeChanged(
         media_controls_->MediaElement().GetBoundingClientRect());
+  }
+
+  void SetElementHeight(int height) {
+    auto* size = media_controls_->MediaElement().GetBoundingClientRect();
+    media_controls_->NotifyElementSizeChanged(DOMRectReadOnly::FromRect(
+        gfx::Rect(size->left(), size->top(), size->width(), height)));
+    test::RunPendingTasks();
   }
 
   void SimulateHideMediaControlsTimerFired() {
@@ -272,6 +281,9 @@ class MediaControlsImplTest : public PageTestBase,
   MediaControlOverflowMenuListElement* OverflowMenuListElement() const {
     return media_controls_->overflow_list_.Get();
   }
+  MediaControlOverlayPlayButtonElement* OverlayPlayButtonElement() const {
+    return media_controls_->overlay_play_button_.Get();
+  }
 
   MockWebMediaPlayerForImpl* WebMediaPlayer() {
     return static_cast<MockWebMediaPlayerForImpl*>(
@@ -284,8 +296,7 @@ class MediaControlsImplTest : public PageTestBase,
     MediaControls().MediaElement().SetSrc(
         AtomicString("https://example.com/foo.mp4"));
     test::RunPendingTasks();
-    WebTimeRange time_range(0.0, duration);
-    WebMediaPlayer()->seekable_.Assign(&time_range, 1);
+    WebMediaPlayer()->seekable_ = WebTimeRanges(0.0, duration);
     MediaControls().MediaElement().DurationChanged(duration,
                                                    false /* requestSeek */);
     SimulateLoadedMetadata();
@@ -302,6 +313,29 @@ class MediaControlsImplTest : public PageTestBase,
   void SetReady() {
     MediaControls().MediaElement().SetReadyState(
         HTMLMediaElement::kHaveEnoughData);
+  }
+
+  // Set the focus .
+  void FocusElement(
+      Element* element,
+      mojom::blink::FocusType focus_type = blink::mojom::FocusType::kMouse) {
+    // GetDocument().SetLastFocusType(focus_type);
+    FocusParams params(SelectionBehaviorOnFocus::kNone, focus_type, nullptr);
+    GetDocument().SetFocusedElement(element, params);
+    // element->SetFocused(true, focus_type);
+    //  Doesn't matter what, but we want some event to trigger the show / hide
+    //  logic in the controls.
+    // MediaControls().DispatchEvent(*Event::Create(event_type_names::kPointerout));
+  }
+
+  // Clear the focus from `element`, as if some other element was focused.
+  void UnfocusElement(
+      Element* element,
+      mojom::blink::FocusType focus_type = blink::mojom::FocusType::kMouse) {
+    GetDocument().SetLastFocusType(focus_type);
+    element->SetFocused(false, focus_type);
+    MediaControls().DispatchEvent(
+        *Event::Create(event_type_names::kPointerout));
   }
 
   void MouseDownAt(gfx::PointF pos);
@@ -489,20 +523,6 @@ TEST_F(MediaControlsImplTest, CastOverlayDefault) {
   ASSERT_TRUE(IsElementVisible(*cast_overlay_button));
 }
 
-TEST_F(MediaControlsImplTest, CastOverlayDisabled) {
-  MediaControls().MediaElement().SetBooleanAttribute(html_names::kControlsAttr,
-                                                     false);
-
-  ScopedMediaCastOverlayButtonForTest media_cast_overlay_button(false);
-
-  Element* cast_overlay_button = GetElementByShadowPseudoId(
-      MediaControls(), "-internal-media-controls-overlay-cast-button");
-  ASSERT_NE(nullptr, cast_overlay_button);
-
-  SimulateRemotePlaybackAvailable();
-  ASSERT_FALSE(IsElementVisible(*cast_overlay_button));
-}
-
 TEST_F(MediaControlsImplTest, CastOverlayDisableRemotePlaybackAttr) {
   MediaControls().MediaElement().SetBooleanAttribute(html_names::kControlsAttr,
                                                      false);
@@ -543,27 +563,6 @@ TEST_F(MediaControlsImplTest, CastOverlayMediaControlsDisabled) {
 
   GetDocument().GetSettings()->SetMediaControlsEnabled(true);
   EXPECT_TRUE(IsElementVisible(*cast_overlay_button));
-}
-
-TEST_F(MediaControlsImplTest, CastOverlayDisabledMediaControlsDisabled) {
-  MediaControls().MediaElement().SetBooleanAttribute(html_names::kControlsAttr,
-                                                     false);
-
-  ScopedMediaCastOverlayButtonForTest media_cast_overlay_button(false);
-
-  Element* cast_overlay_button = GetElementByShadowPseudoId(
-      MediaControls(), "-internal-media-controls-overlay-cast-button");
-  ASSERT_NE(nullptr, cast_overlay_button);
-
-  EXPECT_FALSE(IsElementVisible(*cast_overlay_button));
-  SimulateRemotePlaybackAvailable();
-  EXPECT_FALSE(IsElementVisible(*cast_overlay_button));
-
-  GetDocument().GetSettings()->SetMediaControlsEnabled(false);
-  EXPECT_FALSE(IsElementVisible(*cast_overlay_button));
-
-  GetDocument().GetSettings()->SetMediaControlsEnabled(true);
-  EXPECT_FALSE(IsElementVisible(*cast_overlay_button));
 }
 
 TEST_F(MediaControlsImplTest, CastOverlayDisabledAutoplayMuted) {
@@ -1005,8 +1004,8 @@ TEST_F(MediaControlsImplTestWithMockScheduler,
 
   // Mouse move while focused
   MediaControls().DispatchEvent(*Event::Create(event_type_names::kFocusin));
-  MediaControls().MediaElement().SetFocused(true,
-                                            mojom::blink::FocusType::kNone);
+
+  FocusElement(&MediaControls().MediaElement());
   MediaControls().DispatchEvent(
       *CreatePointerEvent(event_type_names::kPointermove));
 
@@ -1033,10 +1032,66 @@ TEST_F(MediaControlsImplTestWithMockScheduler,
 
   // Mouse move out while focused, controls should hide
   MediaControls().DispatchEvent(*Event::Create(event_type_names::kFocusin));
-  MediaControls().MediaElement().SetFocused(true,
-                                            mojom::blink::FocusType::kNone);
+  FocusElement(&MediaControls().MediaElement());
   MediaControls().DispatchEvent(*Event::Create(event_type_names::kPointerout));
   EXPECT_FALSE(IsElementVisible(*panel));
+}
+
+TEST_F(MediaControlsImplTestWithMockScheduler,
+       ControlsDoNotHideOnKeyboardFocus) {
+  EnsureSizing();
+
+  Element* panel = MediaControls().PanelElement();
+  auto* player = &MediaControls().MediaElement();
+  player->SetSrc(AtomicString("http://example.com"));
+  player->Play();
+
+  // Controls start out visible
+  EXPECT_TRUE(IsElementVisible(*panel));
+  EXPECT_TRUE(IsElementVisible(*player));
+  FastForwardBy(base::Seconds(1));
+
+  // Focus via keyboard.
+  EXPECT_TRUE(player->IsFocusable());
+  FocusElement(player, mojom::blink::FocusType::kNone);
+  EXPECT_TRUE(player->IsFocused());
+
+  // Controls should remain visible.
+  FastForwardBy(base::Seconds(5));
+  EXPECT_TRUE(IsElementVisible(*panel));
+
+  // Unfocus the element.  Controls should hide, even if the unfocus was via
+  // keyboard.  They will re-show when the user refocuses the video player.
+  // This behavior was tested above.
+  EXPECT_TRUE(player->IsFocused());
+  UnfocusElement(player, mojom::blink::FocusType::kNone);
+
+  EXPECT_FALSE(player->IsFocused());
+  FastForwardBy(base::Seconds(5));
+  EXPECT_FALSE(IsElementVisible(*panel));
+}
+
+TEST_F(MediaControlsImplTestWithMockScheduler,
+       ControlsDoNotHideIfPlaybackSpeedWanted) {
+  EnsureSizing();
+
+  Element* panel = MediaControls().PanelElement();
+  auto* player = &MediaControls().MediaElement();
+  player->SetSrc(AtomicString("http://example.com"));
+  player->Play();
+
+  // Controls start out visible
+  EXPECT_TRUE(IsElementVisible(*panel));
+  FastForwardBy(base::Seconds(1));
+
+  // Pretend that the user has the playback speed button pressed, and then
+  // unfocuses the panel.
+  MediaControls().TogglePlaybackSpeedList();
+  UnfocusElement(player);
+
+  // Controls should remain visible.
+  FastForwardBy(base::Seconds(5));
+  EXPECT_TRUE(IsElementVisible(*panel));
 }
 
 TEST_F(MediaControlsImplTestWithMockScheduler, CursorHidesWhenControlsHide) {
@@ -1109,7 +1164,7 @@ TEST_F(MediaControlsImplTest,
   WeakPersistent<HTMLMediaElement> weak_persistent_video = element;
   {
     Persistent<HTMLMediaElement> persistent_video = element;
-    page_holder->GetDocument().body()->setInnerHTML("");
+    page_holder->GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("");
 
     // When removed from the document, the event listeners should have been
     // dropped.
@@ -1623,6 +1678,32 @@ TEST_F(MediaControlsImplTest, OverflowMenuInPaintContainment) {
   MediaControls().ToggleOverflowMenu();
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(overflow_list->IsInTopLayer());
+}
+
+TEST_F(MediaControlsImplTest, OverlayPlayButtonHidesWhenTooShort) {
+  EnsureSizing();
+
+  auto* overlay_play_button = OverlayPlayButtonElement();
+  ASSERT_NE(nullptr, overlay_play_button);
+
+  // The overflow button must fit with enough vertical space for itself, the
+  // timeline, and the row of buttons.
+  const int min_height = TimelineElement()->GetSizeOrDefault().height() +
+                         PlayButtonElement()->GetSizeOrDefault().height() +
+                         overlay_play_button->GetSizeOrDefault().height();
+
+  MediaControls().MediaElement().SetSrc(
+      AtomicString("https://example.com/foo.mp4"));
+  test::RunPendingTasks();
+  SimulateLoadedMetadata();
+
+  // Set the size to be too small.
+  SetElementHeight(min_height - 1);
+  EXPECT_FALSE(overlay_play_button->DoesFit());
+
+  // Set the size to be large enough.
+  SetElementHeight(min_height);
+  EXPECT_TRUE(overlay_play_button->DoesFit());
 }
 
 }  // namespace blink

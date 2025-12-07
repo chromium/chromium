@@ -12,7 +12,7 @@ build_webui("build") {
     "histograms_internals.html",
   ]
 
-  non_web_component_files = [ "histograms_internals.ts" ]
+  ts_files = [ "histograms_internals.ts" ]
 
   ts_composite = true
   ts_deps = [ "//ui/webui/resources/js:build_ts" ]

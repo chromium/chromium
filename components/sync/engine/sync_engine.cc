@@ -4,6 +4,7 @@
 
 #include "components/sync/engine/sync_engine.h"
 
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/sync/engine/engine_components_factory.h"
 
 namespace syncer {

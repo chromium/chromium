@@ -9,6 +9,8 @@ import android.app.Activity;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.device.nfc.NfcDelegate;
 
 /**
@@ -16,6 +18,7 @@ import org.chromium.device.nfc.NfcDelegate;
  * corresponding NfcHost objects, allowing the NFC implementation to access the Activity of the
  * WebContents with which its requesting frame is associated.
  */
+@NullMarked
 public class ContentNfcDelegate implements NfcDelegate {
     @CalledByNative
     private static ContentNfcDelegate create() {
@@ -23,7 +26,7 @@ public class ContentNfcDelegate implements NfcDelegate {
     }
 
     @Override
-    public void trackActivityForHost(int hostId, Callback<Activity> callback) {
+    public void trackActivityForHost(int hostId, Callback<@Nullable Activity> callback) {
         NfcHost host = NfcHost.fromContextId(hostId);
         assert host != null : "The corresponding host should have been ready before NfcImpl starts";
         host.trackActivityChanges(callback);

@@ -28,7 +28,7 @@ class DeployToFuchsiaTest(unittest.TestCase):
         ]):
             deploy_to_fuchsia.main()
             self.assertEqual(mock_read.call_args_list[0][0][1], test_package)
-            self.assertEqual(mock_publish.call_args_list[0][0][1],
+            self.assertEqual(mock_publish.call_args_list[0][0][1].repo,
                              os.path.join(fuchsia_out_dir, 'amber-files'))
             self.assertEqual(mock_install.call_args_list[0][0][1],
                              fuchsia_out_dir)

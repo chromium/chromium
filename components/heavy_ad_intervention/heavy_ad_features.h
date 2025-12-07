@@ -20,6 +20,7 @@ extern const char kHeavyAdReportingOnlyParamName[];
 extern const char kHeavyAdReportingEnabledParamName[];
 
 BASE_DECLARE_FEATURE(kHeavyAdIntervention);
+BASE_DECLARE_FEATURE(kHeavyAdInterventionSendReportToEmbedder);
 BASE_DECLARE_FEATURE(kHeavyAdInterventionWarning);
 BASE_DECLARE_FEATURE(kHeavyAdPrivacyMitigations);
 

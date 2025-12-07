@@ -13,6 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
@@ -21,8 +22,9 @@
 #include "chrome/browser/media/router/providers/cast/cast_session_tracker.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/media_router/common/media_sink.h"
-#include "components/media_router/common/mojom/logger.mojom.h"
-#include "components/media_router/common/mojom/media_router.mojom.h"
+#include "components/media_router/common/mojom/debugger.mojom-forward.h"
+#include "components/media_router/common/mojom/logger.mojom-forward.h"
+#include "components/media_router/common/mojom/media_router.mojom-forward.h"
 #include "components/media_router/common/providers/cast/cast_media_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -70,7 +72,8 @@ class CastActivityManager : public CastActivityManagerBase,
                       CastSessionTracker* session_tracker,
                       cast_channel::CastMessageHandler* message_handler,
                       mojom::MediaRouter* media_router,
-                      mojom::Logger* logger,
+                      mojo::Remote<mojom::Logger>& logger,
+                      mojo::Remote<mojom::Debugger>& debugger,
                       const std::string& hash_token);
   ~CastActivityManager() override;
 
@@ -80,13 +83,13 @@ class CastActivityManager : public CastActivityManagerBase,
                      const MediaSinkInternal& sink,
                      const std::string& presentation_id,
                      const url::Origin& origin,
-                     int frame_tree_node_id,
+                     content::FrameTreeNodeId frame_tree_node_id,
                      mojom::MediaRouteProvider::CreateRouteCallback callback);
 
   void JoinSession(const CastMediaSource& cast_source,
                    const std::string& presentation_id,
                    const url::Origin& origin,
-                   int frame_tree_node_id,
+                   content::FrameTreeNodeId frame_tree_node_id,
                    mojom::MediaRouteProvider::JoinRouteCallback callback);
 
   // Terminates a Cast session represented by |route_id|.
@@ -110,6 +113,9 @@ class CastActivityManager : public CastActivityManagerBase,
       const openscreen::cast::proto::CastMessage& message) override;
   void OnInternalMessage(int channel_id,
                          const cast_channel::InternalMessage& message) override;
+  void OnMessageSent(
+      int channel_id,
+      const openscreen::cast::proto::CastMessage& message) override;
 
   // CastSessionTracker::Observer implementation.
   void OnSessionAddedOrUpdated(const MediaSinkInternal& sink,
@@ -120,8 +126,8 @@ class CastActivityManager : public CastActivityManagerBase,
                             std::optional<int> request_id) override;
 
   void OnSourceChanged(const std::string& media_route_id,
-                       int old_frame_tree_node_id,
-                       int frame_tree_node_id);
+                       content::FrameTreeNodeId old_frame_tree_node_id,
+                       content::FrameTreeNodeId frame_tree_node_id);
 
   static void SetActitityFactoryForTest(CastActivityFactoryForTest* factory) {
     cast_activity_factory_for_test_ = factory;
@@ -166,7 +172,7 @@ class CastActivityManager : public CastActivityManagerBase,
       const MediaSinkInternal& sink,
       const std::string& presentation_id,
       const url::Origin& origin,
-      int frame_tree_node_id,
+      content::FrameTreeNodeId frame_tree_node_id,
       mojom::MediaRouteProvider::CreateRouteCallback callback,
       data_decoder::DataDecoder::ValueOrError result);
 
@@ -180,7 +186,7 @@ class CastActivityManager : public CastActivityManagerBase,
         const CastMediaSource& cast_source,
         const MediaSinkInternal& sink,
         const url::Origin& origin,
-        int frame_tree_node_id,
+        content::FrameTreeNodeId frame_tree_node_id,
         const std::optional<base::Value> app_params,
         mojom::MediaRouteProvider::CreateRouteCallback callback);
     DoLaunchSessionParams(const DoLaunchSessionParams& other) = delete;
@@ -203,7 +209,7 @@ class CastActivityManager : public CastActivityManagerBase,
 
     // The FrameTreeNodeId of the WebContents of the Cast SDK client. Used for
     // Mirroring and auto-join.
-    int frame_tree_node_id;
+    content::FrameTreeNodeId frame_tree_node_id;
 
     // Time launch session parameters were created. Used to compute time passed
     // till the receiver device responds
@@ -259,9 +265,10 @@ class CastActivityManager : public CastActivityManagerBase,
                         const std::string& destination_id,
                         const CastMediaSource& cast_source);
 
-  AppActivity* FindActivityForAutoJoin(const CastMediaSource& cast_source,
-                                       const url::Origin& origin,
-                                       int frame_tree_node_id);
+  AppActivity* FindActivityForAutoJoin(
+      const CastMediaSource& cast_source,
+      const url::Origin& origin,
+      content::FrameTreeNodeId frame_tree_node_id);
   bool CanJoinSession(const AppActivity& activity,
                       const CastMediaSource& cast_source) const;
   AppActivity* FindActivityForSessionJoin(const CastMediaSource& cast_source,
@@ -284,15 +291,16 @@ class CastActivityManager : public CastActivityManagerBase,
 
   AppActivity* AddAppActivity(const MediaRoute& route,
                               const std::string& app_id);
-  CastActivity* AddMirroringActivity(const MediaRoute& route,
-                                     const std::string& app_id,
-                                     const int frame_tree_node_id,
-                                     const CastSinkExtraData& cast_data);
+  CastActivity* AddMirroringActivity(
+      const MediaRoute& route,
+      const std::string& app_id,
+      const content::FrameTreeNodeId frame_tree_node_id,
+      const CastSinkExtraData& cast_data);
 
   // Returns a sink used to convert a mirroring activity to a cast activity.
   // If no conversion should occur, returns std::nullopt.
   std::optional<MediaSinkInternal> GetSinkForMirroringActivity(
-      int frame_tree_node_id) const;
+      content::FrameTreeNodeId frame_tree_node_id) const;
 
   std::string ChooseAppId(const CastMediaSource& source,
                           const MediaSinkInternal& sink) const;
@@ -331,7 +339,7 @@ class CastActivityManager : public CastActivityManagerBase,
   // main frame to be cast to multiple receivers, but there may be unintended
   // consequences, such as confusing users or causing performance problems on
   // low-end devices.
-  base::flat_map<int, MediaRoute::Id> routes_by_frame_;
+  base::flat_map<content::FrameTreeNodeId, MediaRoute::Id> routes_by_frame_;
 
   // Used only when the feature `kStartCastSessionWithoutTerminating` is
   // enabled.
@@ -343,7 +351,8 @@ class CastActivityManager : public CastActivityManagerBase,
   const raw_ptr<CastSessionTracker> session_tracker_;
   const raw_ptr<cast_channel::CastMessageHandler> message_handler_;
   const raw_ptr<mojom::MediaRouter> media_router_;
-  const raw_ptr<mojom::Logger> logger_;
+  const raw_ref<mojo::Remote<mojom::Logger>> logger_;
+  const raw_ref<mojo::Remote<mojom::Debugger>> debugger_;
 
   const std::string hash_token_;
 

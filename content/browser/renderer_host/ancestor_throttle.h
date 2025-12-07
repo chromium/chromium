@@ -20,14 +20,12 @@ class HttpResponseHeaders;
 }
 
 namespace content {
-class NavigationHandle;
 
 // An AncestorThrottle is responsible for enforcing a resource's embedding
 // rules, and blocking requests which violate them.
 class CONTENT_EXPORT AncestorThrottle : public NavigationThrottle {
  public:
-  static std::unique_ptr<NavigationThrottle> MaybeCreateThrottleFor(
-      NavigationHandle* handle);
+  static void CreateAndAdd(NavigationThrottleRegistry& registry);
 
   AncestorThrottle(const AncestorThrottle&) = delete;
   AncestorThrottle& operator=(const AncestorThrottle&) = delete;
@@ -47,7 +45,7 @@ class CONTENT_EXPORT AncestorThrottle : public NavigationThrottle {
   FRIEND_TEST_ALL_PREFIXES(AncestorThrottleTest,
                            IgnoreWhenFrameAncestorsPresent);
 
-  explicit AncestorThrottle(NavigationHandle* handle);
+  explicit AncestorThrottle(NavigationThrottleRegistry& registry);
   NavigationThrottle::ThrottleCheckResult ProcessResponseImpl(
       LoggingDisposition logging,
       bool is_response_check);

@@ -67,6 +67,10 @@ class NearbyPerSessionDiscoveryManager
   // Used for metrics. These values are persisted to logs, and the entries are
   // ordered based on how far along they are in the discovery flow. Entries
   // should not be renumbered and numeric values should never be reused.
+  // Keep in sync with the NearbyShareDiscoveryProgress UMA enum defined in
+  // //tools/metrics/histograms/metadata/nearby/enums.xml.
+  //
+  // LINT.IfChange(NearbyShareDiscoveryProgress)
   enum class DiscoveryProgress {
     kDiscoveryNotAttempted = 0,
     kFailedToStartDiscovery = 1,
@@ -77,6 +81,7 @@ class NearbyPerSessionDiscoveryManager
     kStartedSend = 6,
     kMaxValue = kStartedSend
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/nearby/enums.xml:NearbyShareDiscoveryProgress)
 
   // Used for metrics. Changes |furthest_progress_| to |progress| if |progress|
   // is further along in the discovery flow than |furthest_progress_|.

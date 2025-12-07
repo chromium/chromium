@@ -6,19 +6,40 @@
 #define SERVICES_DEVICE_PUBLIC_CPP_GEOLOCATION_SYSTEM_GEOLOCATION_SOURCE_APPLE_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
+#include "net/base/network_change_notifier.h"
 #include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
 #include "services/device/public/cpp/geolocation/system_geolocation_source.h"
 
-@class GeolocationSystemPermissionManagerDelegate;
 @class CLLocationManager;
+@class LocationManagerDelegate;
 
 namespace device {
 
+// As a workaround for https://crbug.com/40155239, this class owns a global
+// CLLocationManager instance which is created at startup and used for all
+// geolocation requests. It was observed that macOS would revoke location
+// permission if there was a pending update (and therefore the signing state was
+// corrupt) if a CLLocationManager instance was created on demand.
 class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSourceApple
-    : public SystemGeolocationSource {
+    : public SystemGeolocationSource,
+      public net::NetworkChangeNotifier::NetworkChangeObserver {
  public:
   static std::unique_ptr<GeolocationSystemPermissionManager>
   CreateGeolocationSystemPermissionManager();
+
+  // Checks if Wi-Fi is currently enabled on the device.
+  static bool IsWifiEnabled();
+
+  // Sets the `mock_wifi_status_` for testing purposes.
+  static void SetWifiStatusForTesting(bool mock_wifi_status) {
+    mock_wifi_status_ = mock_wifi_status;
+  }
+
+  // The maximum time to wait for a network status change event before
+  // triggering a timeout.
+  static constexpr unsigned int kNetworkChangeTimeoutMs = 1000;
 
   SystemGeolocationSourceApple();
   ~SystemGeolocationSourceApple() override;
@@ -38,19 +59,89 @@ class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSourceApple
 
   void AddPositionUpdateObserver(PositionObserver* observer) override;
   void RemovePositionUpdateObserver(PositionObserver* observer) override;
+
+  // `StartWatchingPosition` and `StopWatchingPosition` will be called from
+  // `CoreLocationProvider` on geolocation thread to start / stop watching
+  // position.
   void StartWatchingPosition(bool high_accuracy) override;
   void StopWatchingPosition() override;
+
   void RequestPermission() override;
 
   void OpenSystemPermissionSetting() override;
 
+  // Actual implementations for Start/Stop-WatchingPosition.
+  // These methods are called on the main thread to ensure thread-safety.
+  void StartWatchingPositionInternal(bool high_accuracy);
+  void StopWatchingPositionInternal();
+
+  // net::NetworkChangeNotifier::NetworkChangeObserver implementation.
+  void OnNetworkChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
+
+  // Indicates whether Wi-Fi was enabled when the last position watch was
+  // started.
+  bool WasWifiEnabled() { return was_wifi_enabled_; }
+
+  // Start the timer that wait for network status change event with a connection
+  // type other than `net::NetworkChangeNotifier::CONNECTION_NONE`.
+  void StartNetworkChangedTimer();
+
+  // Invoked when the `network_changed_timer_` expires, indicating a timeout
+  // while waiting for a network status change event.
+  void OnNetworkChangedTimeout();
+
+  // Sets the `location_manager_` for testing purposes.
+  void SetLocationManagerForTesting(CLLocationManager* manager) {
+    location_manager_ = manager;
+  }
+
+  // Gets the location manager delegate for testing.
+  LocationManagerDelegate* GetDelegateForTesting() { return delegate_; }
+
+#if BUILDFLAG(IS_IOS_TVOS)
+  // Calls requestLocation for the one-time delivery of the location.
+  void OnRequestLocationThrottleTimerFiring();
+#endif
+
  private:
+  friend class SystemGeolocationSourceAppleTest;
+  // The enum represents the possible outcomes of a session (from starting to
+  // stopping provider).
+  enum class CoreLocationSessionResult {
+    kSuccess = 0,
+    kCoreLocationError = 1,
+    kWifiDisabled = 2,
+  };
+
+  // Mock wifi status only used for testing.
+  static std::optional<bool> mock_wifi_status_;
   LocationSystemPermissionStatus GetSystemPermission() const;
-  GeolocationSystemPermissionManagerDelegate* __strong delegate_;
+  LocationManagerDelegate* __strong delegate_;
   CLLocationManager* __strong location_manager_;
-  SEQUENCE_CHECKER(sequence_checker_);
   PermissionUpdateCallback permission_update_callback_;
   scoped_refptr<PositionObserverList> position_observers_;
+  // A reusable timer to detect timeouts when waiting for network status change
+  // events. When the timer expires, `OnNetworkChangedTimeout` is invoked.
+  base::RetainingOneShotTimer network_changed_timer_;
+  const scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
+  // Caches the initial Wi-Fi status at the beginning of watching position.
+  bool was_wifi_enabled_ = false;
+  // Indicates whether any position updates have been received.
+  bool position_received_ = false;
+  // Stores the result of the CoreLocation session. This will hold the first
+  // error encountered, or be empty to indicate a successful session with no
+  // errors.
+  std::optional<CoreLocationSessionResult> session_result_;
+  // Time when position watching started. Used to calculate the time to first
+  // position is updated.
+  base::TimeTicks watch_start_time_;
+#if BUILDFLAG(IS_IOS_TVOS)
+  // This timer is used to throttle location requests to mitigate a client
+  // control. Once the timer fires, OnRequestLocationThrottleTimerFiring() will
+  // be called.
+  base::OneShotTimer request_throttle_timer_;
+#endif
   base::WeakPtrFactory<SystemGeolocationSourceApple> weak_ptr_factory_{this};
 };
 

@@ -55,7 +55,7 @@ static constexpr char kUpdateAccessedTimeByIdSql[] =
 }  // namespace
 
 ContextDatabase::ContextDatabase(const base::FilePath& db_path)
-    : db_path_(db_path), db_({sql::DatabaseOptions{}}) {
+    : db_path_(db_path), db_(/*tag=*/"FSPContextDatabase") {
   // Can be constructed on any sequence, the first call to `Initialize` should
   // be made on the blocking task runner.
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -78,7 +78,6 @@ ContextDatabase::Item::Item(int64_t id,
 
 bool ContextDatabase::Initialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  db_.set_histogram_tag("FSPContextDatabase");
 
   // TODO(b/332636364): Once the logic for the database has landed, let's stop
   // removing the database on every `Initialize` call.
@@ -131,10 +130,6 @@ bool ContextDatabase::AddItem(const base::FilePath& fsp_path,
 
   std::unique_ptr<sql::Statement> statement = std::make_unique<sql::Statement>(
       db_.GetCachedStatement(SQL_FROM_HERE, kInsertItemSql));
-  if (!statement) {
-    LOG(ERROR) << "Couldn't create SQL statement";
-    return false;
-  }
 
   statement->BindString(0, fsp_path.value());
   statement->BindString(1, version_tag);

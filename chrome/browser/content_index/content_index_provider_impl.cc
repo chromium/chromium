@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/barrier_closure.h"
+#include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/task/single_thread_task_runner.h"
@@ -231,15 +232,19 @@ void ContentIndexProviderImpl::RemoveItem(const ContentId& id) {
 }
 
 void ContentIndexProviderImpl::CancelDownload(const ContentId& id) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ContentIndexProviderImpl::PauseDownload(const ContentId& id) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ContentIndexProviderImpl::ResumeDownload(const ContentId& id) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
+}
+
+void ContentIndexProviderImpl::ValidateDangerousDownload(const ContentId& id) {
+  NOTREACHED();
 }
 
 void ContentIndexProviderImpl::GetItemById(const ContentId& id,
@@ -396,5 +401,5 @@ void ContentIndexProviderImpl::GetShareInfoForItem(const ContentId& id,
 void ContentIndexProviderImpl::RenameItem(const ContentId& id,
                                           const std::string& name,
                                           RenameCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }

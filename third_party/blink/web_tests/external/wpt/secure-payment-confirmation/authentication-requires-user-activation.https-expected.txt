@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] SPC authentication not allowed without a user activation
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+Harness: the test ran to completion.

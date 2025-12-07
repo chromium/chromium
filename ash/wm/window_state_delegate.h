@@ -5,10 +5,7 @@
 #ifndef ASH_WM_WINDOW_STATE_DELEGATE_H_
 #define ASH_WM_WINDOW_STATE_DELEGATE_H_
 
-#include <memory>
-
 #include "ash/ash_export.h"
-#include "ash/public/cpp/presentation_time_recorder.h"
 
 namespace gfx {
 class PointF;
@@ -43,14 +40,15 @@ class ASH_EXPORT WindowStateDelegate {
   // Invoked when the user started drag operation. |component| must be
   // a member of ui::HitTestCompat enum and specifies which part of
   // the window the pointer device was on when the user started drag
-  // operation. Returns a presentation time recorder that could be used to
-  // track resize latency.
-  virtual std::unique_ptr<PresentationTimeRecorder> OnDragStarted(
-      int component);
+  // operation.
+  virtual void OnDragStarted(int component) {}
 
   // Invoked when the user finished drag operation. |cancel| is true
   // if the drag operation was canceled.
   virtual void OnDragFinished(bool cancel, const gfx::PointF& location) {}
+
+  // Invoked when the window is being destroyed.
+  virtual void OnWindowDestroying() {}
 };
 
 }  // namespace ash

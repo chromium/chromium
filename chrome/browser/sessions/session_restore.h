@@ -14,7 +14,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/observer_list.h"
 #include "chrome/browser/sessions/session_restore_observer.h"
-#include "components/history/core/browser/history_service.h"
 #include "components/sessions/core/session_types.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -121,9 +120,6 @@ class SessionRestore {
   // Get called when the tab loader finishes loading tabs in tab restore even
   // without session restore started.
   static void OnTabLoaderFinishedLoadingTabs();
-
-  // Is called when session restore is going to restore a tab.
-  static void OnWillRestoreTab(content::WebContents* web_contents);
 
   // Is called when windows are read from the last session restore file.
   static void OnGotSession(Profile* profile, bool for_apps, int window_count);

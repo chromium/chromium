@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client_impl.h"
+
+#include <algorithm>
+#include <iterator>
 
 #include "ash/constants/ash_features.h"
 #include "ash/quick_pair/common/constants.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_data_encryptor.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "components/cross_device/logging/logging.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -93,8 +90,7 @@ constexpr const char* ErrorCodeToString(
     case device::BluetoothGattService::GattErrorCode::kNotSupported:
       return "GATT_ERROR_NOT_SUPPORTED";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -118,7 +114,7 @@ constexpr ash::quick_pair::AccountKeyFailure GattErrorCodeToAccountKeyFailure(
     case device::BluetoothGattService::GattErrorCode::kNotSupported:
       return ash::quick_pair::AccountKeyFailure::kGattErrorNotSupported;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -142,8 +138,7 @@ constexpr const char* ErrorCodeToString(
     case device::BluetoothDevice::ConnectErrorCode::ERROR_UNSUPPORTED_DEVICE:
       return "ERROR_UNSUPPORTED_DEVICE";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -170,9 +165,8 @@ const std::array<uint8_t, kBlockByteSize> CreateActionRequest(
   // Copy provider address bytes.
   std::array<uint8_t, 6> provider_address_bytes;
   device::ParseBluetoothAddress(provider_address, provider_address_bytes);
-  base::ranges::copy(
-      provider_address_bytes,
-      std::next(std::begin(request), kProviderAddressStartIndex));
+  std::ranges::copy(provider_address_bytes,
+                    std::next(std::begin(request), kProviderAddressStartIndex));
 
   // Construct `request` based on `flags`. Optional values CHECKed for are
   // required based on the flag case.
@@ -190,33 +184,37 @@ const std::array<uint8_t, kBlockByteSize> CreateActionRequest(
       if (additional_data.has_value()) {
         CHECK(additional_data.value().size() <= kAdditionalDataMaxSizeBytes);
         CHECK(data_id_or_size.value() == additional_data.value().size());
-        base::ranges::copy(
+        std::ranges::copy(
             additional_data.value(),
             std::next(std::begin(request), kAdditionalDataStartIndex));
       } else {
         CHECK(data_id_or_size.value() == 0);
       }
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     case kActionRequestAdditionalDataFlags:
       CHECK(data_id_or_size.has_value());
 
       request[kDataIdOrSizeIndex] = data_id_or_size.value();
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   // Fill unused trailing bytes with random (salt) values.
   if (flags == kActionRequestDeviceActionFlags) {
     // `data_id_or_size` will contain the additional data size in this case.
     if (data_id_or_size.value() < kAdditionalDataMaxSizeBytes) {
-      RAND_bytes(request.data() + kAdditionalDataStartIndex +
-                     additional_data.value().size(),
-                 kAdditionalDataMaxSizeBytes - data_id_or_size.value());
+      auto start_it =
+          std::next(std::begin(request),
+                    kAdditionalDataStartIndex + additional_data.value().size());
+      auto end_it = std::next(
+          start_it, kAdditionalDataMaxSizeBytes - data_id_or_size.value());
+      RAND_bytes(&(*start_it), std::distance(start_it, end_it));
     }
   } else {
-    RAND_bytes(request.data() + kAdditionalDataStartIndex,
-               kAdditionalDataMaxSizeBytes);
+    auto start_it = std::next(std::begin(request), kAdditionalDataStartIndex);
+    auto end_it = std::next(start_it, kAdditionalDataMaxSizeBytes);
+    RAND_bytes(&(*start_it), std::distance(start_it, end_it));
   }
 
   return request;
@@ -693,7 +691,7 @@ void FastPairGattServiceClientImpl::OnNotifySessionError(
         << ": for passkey characteristic: " << ErrorCodeToString(error);
     NotifyWritePasskeyError(failure);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -716,16 +714,16 @@ FastPairGattServiceClientImpl::CreateRequest(
 
   std::array<uint8_t, 6> provider_address_bytes;
   device::ParseBluetoothAddress(provider_address, provider_address_bytes);
-  base::ranges::copy(provider_address_bytes,
-                     std::begin(data_to_write) + kProviderAddressStartIndex);
+  std::ranges::copy(provider_address_bytes,
+                    std::begin(data_to_write) + kProviderAddressStartIndex);
 
   // Seekers address can be empty, in which we would just have the bytes be
   // the salt.
   if (!seekers_address.empty()) {
     std::array<uint8_t, 6> seeker_address_bytes;
     device::ParseBluetoothAddress(seekers_address, seeker_address_bytes);
-    base::ranges::copy(seeker_address_bytes,
-                       std::begin(data_to_write) + kSeekerAddressStartIndex);
+    std::ranges::copy(seeker_address_bytes,
+                      std::begin(data_to_write) + kSeekerAddressStartIndex);
   }
 
   return data_to_write;

@@ -4,6 +4,11 @@
 
 package org.chromium.chrome.browser.multiwindow;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
+
 import android.app.Activity;
 import android.app.ActivityManager.AppTask;
 import android.app.ActivityManager.RecentTaskInfo;
@@ -11,13 +16,10 @@ import android.content.ComponentName;
 import android.text.TextUtils;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -30,25 +32,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/** Unit tests for MultiInstanceState. */
+/** Unit tests for {@link MultiInstanceState}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {MultiInstanceStateUnitTest.ShadowAndroidTaskUtils.class})
+@Config(manifest = Config.NONE)
 public class MultiInstanceStateUnitTest {
-    @Implements(AndroidTaskUtils.class)
-    static class ShadowAndroidTaskUtils {
-        @Implementation
-        public static RecentTaskInfo getTaskInfoFromTask(AppTask task) {
-            return sTasks.get(task);
-        }
-    }
-
-    private static Map<AppTask, RecentTaskInfo> sTasks = new HashMap<>();
+    private static final Map<AppTask, RecentTaskInfo> sTasks = new HashMap<>();
 
     private MultiInstanceState mMultiInstanceState;
 
-    private String mBaseActivityClassName = BrowserActivity.class.getName();
+    private final String mBaseActivityClassName = BrowserActivity.class.getName();
 
     private static class BaseActivity extends Activity {
         private int mTaskId;
@@ -97,9 +89,9 @@ public class MultiInstanceStateUnitTest {
         private void assertObserver(boolean called, String message) {
             try {
                 if (called) {
-                    Assert.assertTrue(message, getCallCount() == mCount + 1);
+                    assertEquals(message, getCallCount(), mCount + 1);
                 } else {
-                    Assert.assertFalse(message, getCallCount() == mCount + 1);
+                    assertNotEquals(message, getCallCount(), mCount + 1);
                 }
             } finally {
                 mCount = getCallCount();
@@ -109,6 +101,7 @@ public class MultiInstanceStateUnitTest {
 
     @Before
     public void setUp() {
+        AndroidTaskUtils.setTaskInfosForTesting(sTasks);
         MultiInstanceState.maybeCreate(this::getChromeTasks, this::matchesBaseActivity);
         mMultiInstanceState = MultiInstanceState.getInstanceForTesting();
     }
@@ -118,7 +111,6 @@ public class MultiInstanceStateUnitTest {
         ApplicationStatus.destroyForJUnitTests();
         sTasks.clear();
         mMultiInstanceState.clear();
-        mMultiInstanceState = null;
     }
 
     private BaseActivity createTaskAndLaunchActivity(int taskId, BaseActivity activity) {
@@ -135,7 +127,7 @@ public class MultiInstanceStateUnitTest {
     }
 
     private List<AppTask> getChromeTasks() {
-        return new ArrayList<AppTask>(sTasks.keySet());
+        return new ArrayList<>(sTasks.keySet());
     }
 
     private boolean matchesBaseActivity(String name) {
@@ -147,7 +139,7 @@ public class MultiInstanceStateUnitTest {
         ObserverHelper helper = new ObserverHelper();
         mMultiInstanceState.addObserver((visible) -> helper.notifyCalled());
 
-        BaseActivity baseActivity1 = createTaskAndLaunchActivity(29, new BrowserActivity());
+        createTaskAndLaunchActivity(29, new BrowserActivity());
         assertInSingleInstanceMode("initial state");
 
         BaseActivity baseActivity2 = createTaskAndLaunchActivity(31, new BrowserActivity());
@@ -171,18 +163,18 @@ public class MultiInstanceStateUnitTest {
     @Test
     public void testRuleOutOtherBaseActivityTasks() {
         BaseActivity baseActivity1 = createTaskAndLaunchActivity(29, new CustomTabActivity());
-        BaseActivity baseActivity2 = createTaskAndLaunchActivity(31, new CustomTabActivity());
+        createTaskAndLaunchActivity(31, new CustomTabActivity());
         assertInSingleInstanceMode("Base activity is not legit: " + baseActivity1);
     }
 
     private void assertInMultiInstanceMode(String msg) {
-        Assert.assertTrue(
+        assertTrue(
                 "Should be in multi-instance mode: " + msg,
                 mMultiInstanceState.isInMultiInstanceMode());
     }
 
     private void assertInSingleInstanceMode(String msg) {
-        Assert.assertFalse(
+        assertFalse(
                 "Should be in single-instance mode: " + msg,
                 mMultiInstanceState.isInMultiInstanceMode());
     }

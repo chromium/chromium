@@ -25,6 +25,5 @@ include_rules = [
   "+chrome/test/base",
 
   # Dependencies outside of //chrome:
-  "+third_party/perfetto/include",
   "+third_party/perfetto/protos",
 ]

@@ -1,0 +1,30 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//remoting/remoting_options.gni")
+
+source_set("common") {
+  sources = [
+    "client_status_observer.h",
+    "frame_consumer_wrapper.cc",
+    "frame_consumer_wrapper.h",
+    "logging.h",
+    "remoting_client.cc",
+    "remoting_client.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/webrtc:thread_wrapper",
+    "//net",
+    "//remoting/base",
+    "//remoting/base:authorization",
+    "//remoting/proto/remoting/v1:host_info_proto",
+    "//remoting/proto/remoting/v1:remote_support_host_messages",
+    "//remoting/protocol",
+    "//remoting/signaling",
+    "//third_party/protobuf:protobuf_lite",
+    "//third_party/webrtc_overrides:webrtc_component",
+  ]
+}

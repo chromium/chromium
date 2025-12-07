@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/feedback/redaction_tool/redaction_tool.h"
 
 #include <gtest/gtest.h>
 
+#include <array>
 #include <set>
 #include <string_view>
 #include <utility>
@@ -20,7 +16,6 @@
 #include "base/location.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
-#include "build/chromeos_buildflags.h"
 #include "components/feedback/redaction_tool/metrics_tester.h"
 #include "components/feedback/redaction_tool/pii_types.h"
 
@@ -259,7 +254,7 @@ const StringWithRedaction kStringsWithRedactions[] = {
     {"with prefixCrash report receipt ID 153C963587D8D8D4b with trailing text",
      "with prefixCrash report receipt ID (Crash ID: 2) with trailing text",
      PIIType::kCrashId},
-#if BUILDFLAG(IS_CHROMEOS_ASH)  // We only redact Android paths on Chrome OS.
+#if BUILDFLAG(IS_CHROMEOS)  // We only redact Android paths on Chrome OS.
     // Allowed android storage path.
     {"112K\t/home/root/deadbeef1234/android-data/data/system_de",
      "112K\t/home/root/deadbeef1234/android-data/data/system_de",
@@ -268,7 +263,7 @@ const StringWithRedaction kStringsWithRedactions[] = {
     {"8.0K\t/home/root/deadbeef1234/android-data/data/data/pa.ckage2/de",
      "8.0K\t/home/root/deadbeef1234/android-data/data/data/pa.ckage2/d_",
      PIIType::kAndroidAppStoragePath},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 class RedactionToolTest : public testing::Test {
@@ -311,7 +306,7 @@ class RedactionToolTest : public testing::Test {
 
   template <typename T>
   void ExpectBucketCount(
-      const std::string_view histogram_name,
+      std::string_view histogram_name,
       const T enum_value,
       const size_t expected_count,
       const base::Location location = base::Location::Current()) {
@@ -581,18 +576,6 @@ TEST_F(RedactionToolTest, RedactCustomPatterns) {
   EXPECT_EQ("[(IPv6: 4)]", RedactCustomPatterns("[aa::bb]"));
   EXPECT_EQ("State::Abort", RedactCustomPatterns("State::Abort"));
 
-  // Real IPv4 address
-  EXPECT_EQ("(IPv4: 1)", RedactCustomPatterns("192.160.0.1"));
-
-  // Non-PII IPv4 address (see MaybeScrubIPAddress)
-  EXPECT_EQ("255.255.255.255", RedactCustomPatterns("255.255.255.255"));
-
-  // Not an actual IPv4 address
-  EXPECT_EQ("75.748.86.91", RedactCustomPatterns("75.748.86.91"));
-
-  // USB Path - not an actual IPv4 Address
-  EXPECT_EQ("4-3.3.3.3", RedactCustomPatterns("4-3.3.3.3"));
-
   // ModemManager modem firmware revisions - not actual IPv4 Addresses
   EXPECT_EQ("Revision: 81600.0000.00.29.19.16_DO",
             RedactCustomPatterns("Revision: 81600.0000.00.29.19.16_DO"));
@@ -616,7 +599,7 @@ TEST_F(RedactionToolTest, RedactCustomPatterns) {
   EXPECT_EQ("(URL: 1)", RedactCustomPatterns("http://example.com/foo?test=1"));
   EXPECT_EQ("Foo (URL: 2) Bar",
             RedactCustomPatterns("Foo http://192.168.0.1/foo?test=1#123 Bar"));
-  const char* kURLs[] = {
+  auto kURLs = std::to_array<const char*>({
       "http://example.com/foo?test=1",
       "http://userid:password@example.com:8080",
       "http://userid:password@example.com:8080/",
@@ -634,7 +617,7 @@ TEST_F(RedactionToolTest, RedactCustomPatterns) {
       "https://aaaaaaaaaaaaaaaa.com",
       "file:///var/log/messages",
       "file:///usr/local/home/iby/web%20page%20test.html",
-  };
+  });
   for (size_t i = 0; i < std::size(kURLs); ++i) {
     SCOPED_TRACE(kURLs[i]);
     std::string got = RedactCustomPatterns(kURLs[i]);
@@ -689,6 +672,30 @@ TEST_F(RedactionToolTest, RedactCustomPatternWithContext) {
             RedactCustomPatternWithContext("idg='1234'", kPattern3));
   EXPECT_EQ("x(FOO: 1)z",
             RedactCustomPatternWithContext("xyz", {"FOO", "()(y+)()"}));
+
+  // Real IPv4 address
+  EXPECT_EQ("(IPv4: 1)", RedactCustomPatterns("192.160.0.1"));
+  EXPECT_EQ("[(IPv4: 1)]", RedactCustomPatterns("[192.160.0.1]"));
+  EXPECT_EQ("aaaa(IPv4: 2)aaa", RedactCustomPatterns("aaaa123.123.45.4aaa"));
+  EXPECT_EQ("IP: (IPv4: 3)", RedactCustomPatterns("IP: 111.222.3.4"));
+  EXPECT_EQ("(email: 1) (IPv4: 3)",
+            RedactCustomPatterns("test@email.com 111.222.3.4"));
+  EXPECT_EQ(
+      "(URL: 1) (email: 1) (IPv4: 3)",
+      RedactCustomPatterns("http://www.google.com test@email.com 111.222.3.4"));
+  EXPECT_EQ("addresses=(IPv4: 4)/30,x",
+            RedactCustomPatterns("addresses=100.100.1.10/30,x"));
+
+  // Non-PII IPv4 address (see MaybeScrubIPAddress)
+  EXPECT_EQ("255.255.255.255", RedactCustomPatterns("255.255.255.255"));
+
+  // Not an actual IPv4 address
+  EXPECT_EQ("75.748.86.91", RedactCustomPatterns("75.748.86.91"));
+  EXPECT_EQ("1.2.3.4.5", RedactCustomPatterns("1.2.3.4.5"));
+  EXPECT_EQ("1.2.3.4.5.6.7.8", RedactCustomPatterns("1.2.3.4.5.6.7.8"));
+
+  // USB Path - not an actual IPv4 Address
+  EXPECT_EQ("4-3.3.3.3", RedactCustomPatterns("4-3.3.3.3"));
 }
 
 TEST_F(RedactionToolTest, RedactCustomPatternWithoutContext) {
@@ -755,7 +762,7 @@ TEST_F(RedactionToolTest, RedactChunk) {
   for (int enum_int = static_cast<int>(PIIType::kNone) + 1;
        enum_int <= static_cast<int>(PIIType::kMaxValue); ++enum_int) {
     const PIIType enum_value = static_cast<PIIType>(enum_int);
-    const size_t expected_count = base::ranges::count_if(
+    const size_t expected_count = std::ranges::count_if(
         kStringsWithRedactions,
         [enum_value](const StringWithRedaction& string_with_redaction) {
           return string_with_redaction.pii_type == enum_value;
@@ -862,25 +869,29 @@ TEST_F(RedactionToolTest, RedactAndKeepSelectedHashes) {
   // URLs and Android app storage paths but redact hashes. URLs and Android app
   // storage paths that contain hashes will be partially redacted.
   const std::pair<std::string, std::string> redaction_strings_with_hashes[] = {
-    {"chrome://resources/"
-     "f?user="
-     "99887766554433221100ffeeddccbbaaaabbccddeeff00112233445566778899",
-     "chrome://resources/f?user=(HASH:9988 1)"},  // URL that contains a hash.
-    {"/root/27540283740a0897ab7c8de0f809add2bacde78f/foo",
-     "/root/(HASH:2754 2)/foo"},  // String that contains a hash.
-    {"this is the user hash that we need to redact "
-     "aabbccddeeff00112233445566778899",
-     "this is the user hash that we need to redact (HASH:aabb 3)"},  // String
-                                                                     // that
-                                                                     // contains
-                                                                     // a hash.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"8.0K\t/home/root/aabbccddeeff00112233445566778899/"
-     "android-data/data/data/pa.ckage2/de",  // Android app storage
-                                             // path that contains a
-                                             // hash.
-     "8.0K\t/home/root/(HASH:aabb 3)/android-data/data/data/pa.ckage2/de"}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+      {"chrome://resources/"
+       "f?user="
+       "99887766554433221100ffeeddccbbaaaabbccddeeff001122334455667788"
+       "99",
+       "chrome://resources/f?user=(HASH:9988 1)"},  // URL that
+                                                    // contains a hash.
+      {"/root/27540283740a0897ab7c8de0f809add2bacde78f/foo",
+       "/root/(HASH:2754 2)/foo"},  // String that contains a hash.
+      {"this is the user hash that we need to redact "
+       "aabbccddeeff00112233445566778899",
+       "this is the user hash that we need to redact (HASH:aabb "
+       "3)"},  // String
+               // that
+               // contains
+               // a hash.
+#if BUILDFLAG(IS_CHROMEOS)
+      {"8.0K\t/home/root/aabbccddeeff00112233445566778899/"
+       "android-data/data/data/pa.ckage2/de",  // Android app storage
+                                               // path that contains a
+                                               // hash.
+       "8.0K\t/home/root/(HASH:aabb "
+       "3)/android-data/data/data/pa.ckage2/de"}
+#endif  // BUILDFLAG(IS_CHROMEOS)
   };
   std::string redaction_input;
   std::string redaction_output;
@@ -899,83 +910,78 @@ TEST_F(RedactionToolTest, DetectPII) {
   for (const auto& s : kStringsWithRedactions) {
     redaction_input.append(s.pre_redaction).append("\n");
   }
-  std::map<PIIType, std::set<std::string>> pii_in_data {
-#if BUILDFLAG(IS_CHROMEOS_ASH)  // We only detect Android paths on Chrome OS.
-    {PIIType::kAndroidAppStoragePath, {"/de"}},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-        {PIIType::kSSID, {"123aaaaaa"}},
-        {PIIType::kURL,
-         {"http://tets.comaaaaaaa",
-          "isolated-app://"
-          "airugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaac/",
-          "chrome://resources/f?user=bar",
-          "chrome-extension://nkoccljplnhpfnfiajclkommnmllphnl/"
-          "foobar.js?bar=x"}},
-        {PIIType::kEmail, {"aaaaaemail@example.comaaa"}},
-        {PIIType::kIPAddress,
-         {
-             "255.255.155.2",
-             "255.255.155.255",
-             "127.0.0.1",
-             "127.255.0.1",
-             "0.0.0.0",
-             "0.255.255.255",
-             "10.10.10.100",
-             "10.10.10.101",
-             "10.255.255.255",
-             "172.16.0.0",
-             "172.31.255.255",
-             "172.11.5.5",
-             "172.111.5.5",
-             "192.168.0.0",
-             "192.168.255.255",
-             "192.169.2.120",
-             "169.254.0.1",
-             "169.200.0.1",
-             "224.0.0.24",
-             "240.0.0.0",
-             "100.115.91.92",
-             "8.8.8.4",
-             "123.123.45.4",
-             "fe80::",
-             "fe80::ffff",
-             "febf:ffff::ffff",
-             "fecc::1111",
-             "11::11",
-             "ff01::3",
-             "ff02::3",
-             "ff02::fb",
-             "ff08::fb",
-             "ff0f::101",
-             "::ffff:cb0c:10ea",
-             "::ffff:a0a:a0a",
-             "::ffff:ac1e:1e1e",
-             "::ffff:c0a8:640a",
-             "::ffff:6473:5c01",
-             "64:ff9b::a0a:a0a",
-             "64:ff9b::6473:5c01",
-             "::0101:ffff:c0a8:640a",
-         }},
-        {PIIType::kMACAddress, {"aa:aa:aa:aa:aa:aa"}},
-        {PIIType::kStableIdentifier,
-         {
-             "27540283740a0897ab7c8de0f809add2bacde78f",
-             "B3mcFTkQAHofv94DDTUuVJGGEI/BbzsyDncplMCR2P4=",
-         }},
-        {PIIType::kCreditCard,
-         {"4012888888881881", "5019717010103742", "5019717010103742787"}},
-        {PIIType::kIBAN, {"GB82WEST12345698765432", "GB33BUKB20201555555555"}},
-    {
-      PIIType::kCrashId, {
-        "153c963587d8d8d4", "153C963587D8D8D4b"
-      }
-    }
-  };
+  std::map<PIIType, std::set<std::string>> pii_in_data{
+#if BUILDFLAG(IS_CHROMEOS)  // We only detect Android paths on Chrome OS.
+      {PIIType::kAndroidAppStoragePath, {"/de"}},
+#endif  // BUILDFLAG(IS_CHROMEOS)
+      {PIIType::kSSID, {"123aaaaaa"}},
+      {PIIType::kURL,
+       {"http://tets.comaaaaaaa",
+        "isolated-app://"
+        "airugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaac/",
+        "chrome://resources/f?user=bar",
+        "chrome-extension://nkoccljplnhpfnfiajclkommnmllphnl/"
+        "foobar.js?bar=x"}},
+      {PIIType::kEmail, {"aaaaaemail@example.comaaa"}},
+      {PIIType::kIPAddress,
+       {
+           "255.255.155.2",
+           "255.255.155.255",
+           "127.0.0.1",
+           "127.255.0.1",
+           "0.0.0.0",
+           "0.255.255.255",
+           "10.10.10.100",
+           "10.10.10.101",
+           "10.255.255.255",
+           "172.16.0.0",
+           "172.31.255.255",
+           "172.11.5.5",
+           "172.111.5.5",
+           "192.168.0.0",
+           "192.168.255.255",
+           "192.169.2.120",
+           "169.254.0.1",
+           "169.200.0.1",
+           "224.0.0.24",
+           "240.0.0.0",
+           "100.115.91.92",
+           "8.8.8.4",
+           "123.123.45.4",
+           "fe80::",
+           "fe80::ffff",
+           "febf:ffff::ffff",
+           "fecc::1111",
+           "11::11",
+           "ff01::3",
+           "ff02::3",
+           "ff02::fb",
+           "ff08::fb",
+           "ff0f::101",
+           "::ffff:cb0c:10ea",
+           "::ffff:a0a:a0a",
+           "::ffff:ac1e:1e1e",
+           "::ffff:c0a8:640a",
+           "::ffff:6473:5c01",
+           "64:ff9b::a0a:a0a",
+           "64:ff9b::6473:5c01",
+           "::0101:ffff:c0a8:640a",
+       }},
+      {PIIType::kMACAddress, {"aa:aa:aa:aa:aa:aa"}},
+      {PIIType::kStableIdentifier,
+       {
+           "27540283740a0897ab7c8de0f809add2bacde78f",
+           "B3mcFTkQAHofv94DDTUuVJGGEI/BbzsyDncplMCR2P4=",
+       }},
+      {PIIType::kCreditCard,
+       {"4012888888881881", "5019717010103742", "5019717010103742787"}},
+      {PIIType::kIBAN, {"GB82WEST12345698765432", "GB33BUKB20201555555555"}},
+      {PIIType::kCrashId, {"153c963587d8d8d4", "153C963587D8D8D4b"}}};
 
   EXPECT_EQ(pii_in_data, redactor_.Detect(redaction_input));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)  // We only redact Android paths on Chrome OS.
+#if BUILDFLAG(IS_CHROMEOS)  // We only redact Android paths on Chrome OS.
 TEST_F(RedactionToolTest, RedactAndroidAppStoragePaths) {
   EXPECT_EQ("", RedactAndroidAppStoragePaths(""));
   EXPECT_EQ("foo\nbar\n", RedactAndroidAppStoragePaths("foo\nbar\n"));
@@ -1027,7 +1033,7 @@ TEST_F(RedactionToolTest, RedactAndroidAppStoragePaths) {
   EXPECT_EQ(kDuOutputRedacted, RedactAndroidAppStoragePaths(kDuOutput));
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_IOS)
 // TODO(xiangdongkong): Make the test work on IOS builds. Current issue: the
@@ -1087,6 +1093,30 @@ TEST_F(RedactionToolTest, RedactBlockDevices) {
   for (const auto& p : test_cases) {
     EXPECT_EQ(redactor_.Redact(p.first), p.second);
   }
+}
+
+TEST_F(RedactionToolTest, RedactBluetoothDeviceName) {
+  // Test cases for user-defined Bluetooth device names.
+  const std::string bluetooth_log_with_pii = R"(
+[    7.494529] input: sof-rt5682 Headset Jack as /devices/pci0000:00/0000:00:1f.3/tgl_mx98373_rt5682/sound/card0/input12
+[   11.390985] input: MX 2S Keyboard as /devices/virtual/misc/uhid/0005:046D:B019.0004/input/input18
+[   11.391455] input: MX 2S Mouse as /devices/virtual/misc/uhid/0005:046D:B019.0004/input/input19
+[   11.929997] input: Edman Paes dos Anjos’s Keyboard as /devices/virtual/misc/uhid/0005:05AC:0255.000B/input/input29
+[   11.930845] apple 0005:05AC:0255.000B: input,hidraw8: BLUETOOTH HID v0.50 Keyboard [Edman Paes dos Anjos’s Keyboard] on (MAC OUI=c4:75:ab IFACE=24)
+[   12.345678] some_device: input,hidraw0: BLUETOOTH HID v1.11 Mouse [Jane Doe's Mouse] on (MAC OUI=12:34:56 IFACE=78)
+)";
+
+  // Expected output after redaction.
+  const std::string expected_redacted_log = R"(
+[    7.494529] input: sof-rt5682 Headset Jack as /devices/pci0000:00/0000:00:1f.3/tgl_mx98373_rt5682/sound/card0/input12
+[   11.390985] input: (Bluetooth HID Device: 1) as /devices/virtual/misc/uhid/0005:046D:B019.0004/input/input18
+[   11.391455] input: (Bluetooth HID Device: 2) as /devices/virtual/misc/uhid/0005:046D:B019.0004/input/input19
+[   11.929997] input: (Bluetooth HID Device: 3) as /devices/virtual/misc/uhid/0005:05AC:0255.000B/input/input29
+[   11.930845] apple 0005:05AC:0255.000B: input,hidraw8: BLUETOOTH HID v0.50 Keyboard [(Bluetooth HID Device: 3)] on (MAC OUI=c4:75:ab IFACE=24)
+[   12.345678] some_device: input,hidraw0: BLUETOOTH HID v1.11 Mouse [(Bluetooth HID Device: 4)] on (MAC OUI=12:34:56 IFACE=78)
+)";
+
+  EXPECT_EQ(redactor_.Redact(bluetooth_log_with_pii), expected_redacted_log);
 }
 
 }  // namespace redaction

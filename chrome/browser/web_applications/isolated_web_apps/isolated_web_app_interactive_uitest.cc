@@ -6,10 +6,12 @@
 #include <string_view>
 
 #include "base/files/file_path.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -21,28 +23,19 @@ namespace web_app {
 
 namespace {
 
-class IsolatedWebAppBrowserTest : public IsolatedWebAppBrowserTestHarness {
- public:
-  IsolatedWebAppBrowserTest()
-      : isolated_web_app_dev_server_(CreateAndStartServer(
-            FILE_PATH_LITERAL("web_apps/simple_isolated_app"))) {}
-
-  IsolatedWebAppBrowserTest(const IsolatedWebAppBrowserTest&) = delete;
-  IsolatedWebAppBrowserTest& operator=(const IsolatedWebAppBrowserTest&) =
-      delete;
-
- protected:
-  const net::EmbeddedTestServer& isolated_web_app_dev_server() {
-    return *isolated_web_app_dev_server_.get();
-  }
-
- private:
-  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server_;
-};
+using IsolatedWebAppBrowserTest = IsolatedWebAppBrowserTestHarness;
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, ClipboardReadWrite) {
-  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
-      isolated_web_app_dev_server().GetOrigin());
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      IsolatedWebAppBuilder(
+          ManifestBuilder()
+              .AddPermissionsPolicyWildcard(
+                  network::mojom::PermissionsPolicyFeature::kClipboardRead)
+              .AddPermissionsPolicyWildcard(
+                  network::mojom::PermissionsPolicyFeature::kClipboardWrite))
+          .BuildBundle();
+  ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
+                       app->Install(profile()));
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
   content::WebContents* app_web_contents =
       content::WebContents::FromRenderFrameHost(app_frame);

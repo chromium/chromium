@@ -45,7 +45,7 @@
 }
 
 .level,
-.messages,
+.status,
 .name,
 .scope,
 .source,
@@ -111,7 +111,7 @@ a {
 <if expr="is_android or is_ios">
 .value,
 .level,
-.messages,
+.status,
 .scope {
   display: none;
 }
@@ -122,7 +122,7 @@ a {
 
 .toggle,
 .source,
-.messages.row .name,
+.status.row .name,
 .value.row .name {
   flex: 0 0 25%;
 }
@@ -131,20 +131,37 @@ a {
   flex-wrap: wrap;
 }
 
-.messages.row .value,
+.status.row .value,
 .value.row .value {
   display: block;
   flex: 1;
 }
+
+.sort-up-arrow,
+.sort-down-arrow {
+  width: 48px;
+  height: 48px;
+}
+
+.policy-table .main {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.policy-table .main .row > * {
+  overflow: visible;
+}
+
 </if>
 </style>
 <div class="policy-table" role="table" aria-labelledby="policy-header">
-  <h3 class="header" id="policy-header"></h3>
+  <h2 class="header" id="policy-header"></h2>
   <p class="id"></p>
   <div class="main">
     <div class="header row" role="row">
-      <div class="name" role="columnheader">$i18n{headerName}
-        <div class="sort-arrows" aria-hidden="true">
+      <div class="name" role="columnheader" aria-sort="none" aria-label="$i18n{headerName}">
+        $i18n{headerName}
+        <div class="sort-arrows">
           <button
             class="sort-up-arrow"
             id="name-sort-up" role="button"
@@ -160,9 +177,12 @@ a {
           </button>
         </div>
       </div>
-      <div class="value" role="columnheader">$i18n{headerValue}</div>
-      <div class="source" role="columnheader">$i18n{headerSource}
-        <div class="sort-arrows" aria-hidden="true">
+      <div class="value" role="columnheader" aria-label="$i18n{headerValue}">
+        $i18n{headerValue}
+      </div>
+      <div class="source" role="columnheader" aria-sort="none" aria-label="$i18n{headerSource}">
+        $i18n{headerSource}
+        <div class="sort-arrows">
           <button
             class="sort-up-arrow"
             id="source-sort-up"
@@ -179,8 +199,9 @@ a {
           </button>
         </div>
       </div>
-      <div class="scope" role="columnheader">$i18n{headerScope}
-        <div class="sort-arrows" aria-hidden="true">
+      <div class="scope" role="columnheader" aria-sort="none" aria-label="$i18n{headerScope}">
+        $i18n{headerScope}
+        <div class="sort-arrows">
           <button
             class="sort-up-arrow"
             id="scope-sort-up"
@@ -197,8 +218,9 @@ a {
           </button>
         </div>
       </div>
-      <div class="level" role="columnheader">$i18n{headerLevel}
-        <div class="sort-arrows" aria-hidden="true">
+      <div class="level" role="columnheader" aria-sort="none" aria-label="$i18n{headerLevel}">
+        $i18n{headerLevel}
+        <div class="sort-arrows">
           <button
             class="sort-up-arrow"
             id="level-sort-up"
@@ -215,8 +237,9 @@ a {
           </button>
         </div>
       </div>
-      <div class="messages" role="columnheader">$i18n{headerStatus}
-        <div class="sort-arrows" aria-hidden="true">
+      <div class="status" role="columnheader" aria-sort="none" aria-label="$i18n{headerStatus}">
+        $i18n{headerStatus}
+        <div class="sort-arrows">
           <button
             class="sort-up-arrow"
             id="status-sort-up"

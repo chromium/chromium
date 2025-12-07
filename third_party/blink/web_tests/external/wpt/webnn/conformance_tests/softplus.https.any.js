@@ -1,5 +1,5 @@
 // META: title=test WebNN API softplus operation
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -13,14 +13,6 @@
 // the expression ln(1 + exp(x)).
 //
 // MLOperand softplus(MLOperand input);
-
-
-const getSoftplusPrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {float32: 18, float16: 18};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
 
 const softplusTests = [
   {
@@ -38,7 +30,7 @@ const softplusTests = [
             5.517927169799805,   7.192322254180908, 8.764925003051758,
             1.373470425605774,   8.930668830871582, 8.660283088684082
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'},
+          'descriptor': {shape: [24], dataType: 'float32'},
           'constant': true
         }
       },
@@ -59,7 +51,29 @@ const softplusTests = [
             5.521933078765869,  7.1930742263793945, 8.765081405639648,
             1.5991919040679932, 8.930801391601562,  8.660456657409668
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'softplus float32 0D tensor',
+    'graph': {
+      'inputs': {
+        'softplusInput': {
+          'data': [5.626614570617676],
+          'descriptor': {shape: [], dataType: 'float32'}
+        }
+      },
+      'operators': [{
+        'name': 'softplus',
+        'arguments': [{'input': 'softplusInput'}],
+        'outputs': 'softplusOutput'
+      }],
+      'expectedOutputs': {
+        'softplusOutput': {
+          'data': [5.630208969116211],
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       }
     }
@@ -79,7 +93,7 @@ const softplusTests = [
             5.517927169799805,   7.192322254180908, 8.764925003051758,
             1.373470425605774,   8.930668830871582, 8.660283088684082
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -99,7 +113,7 @@ const softplusTests = [
             5.521933078765869,  7.1930742263793945, 8.765081405639648,
             1.5991919040679932, 8.930801391601562,  8.660456657409668
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -119,7 +133,7 @@ const softplusTests = [
             5.517927169799805,   7.192322254180908, 8.764925003051758,
             1.373470425605774,   8.930668830871582, 8.660283088684082
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -139,7 +153,7 @@ const softplusTests = [
             5.521933078765869,  7.1930742263793945, 8.765081405639648,
             1.5991919040679932, 8.930801391601562,  8.660456657409668
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       }
     }
@@ -159,7 +173,7 @@ const softplusTests = [
             5.517927169799805,   7.192322254180908, 8.764925003051758,
             1.373470425605774,   8.930668830871582, 8.660283088684082
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -179,7 +193,7 @@ const softplusTests = [
             5.521933078765869,  7.1930742263793945, 8.765081405639648,
             1.5991919040679932, 8.930801391601562,  8.660456657409668
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -199,7 +213,7 @@ const softplusTests = [
             5.517927169799805,   7.192322254180908, 8.764925003051758,
             1.373470425605774,   8.930668830871582, 8.660283088684082
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -219,7 +233,7 @@ const softplusTests = [
             5.521933078765869,  7.1930742263793945, 8.765081405639648,
             1.5991919040679932, 8.930801391601562,  8.660456657409668
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -239,7 +253,7 @@ const softplusTests = [
             5.517927169799805,   7.192322254180908, 8.764925003051758,
             1.373470425605774,   8.930668830871582, 8.660283088684082
           ],
-          'descriptor': {'dimensions': [1, 2, 1, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 1, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -259,18 +273,239 @@ const softplusTests = [
             5.521933078765869,  7.1930742263793945, 8.765081405639648,
             1.5991919040679932, 8.930801391601562,  8.660456657409668
           ],
-          'descriptor': {'dimensions': [1, 2, 1, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 1, 3, 4], dataType: 'float32'}
+        }
+      }
+    }
+  },
+
+  // float16 tests
+  {
+    'name': 'softplus float16 1D constant tensor',
+    'graph': {
+      'inputs': {
+        'softplusInput': {
+          'data': [
+            5.625,        5.16796875,  4.015625,    9.4765625,  9.9921875,
+            7.06640625,   2.1328125,   8.1875,      5.171875,   2.10546875,
+            3.5234375,    4.13671875,  1.7421875,   5.14453125, 5.015625,
+            0.0458984375, 2.95703125,  3.958984375, 5.51953125, 7.19140625,
+            8.765625,     1.373046875, 8.9296875,   8.6640625
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'softplus',
+        'arguments': [{'input': 'softplusInput'}],
+        'outputs': 'softplusOutput'
+      }],
+      'expectedOutputs': {
+        'softplusOutput': {
+          'data': [
+            5.62890625,    5.171875,     4.03515625,   9.4765625,  9.9921875,
+            7.06640625,    2.244140625,  8.1875,       5.17578125, 2.220703125,
+            3.552734375,   4.15234375,   1.9033203125, 5.1484375,  5.0234375,
+            0.71630859375, 3.0078125,    3.978515625,  5.5234375,  7.19140625,
+            8.765625,      1.5986328125, 8.9296875,    8.6640625
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'softplus float16 0D tensor',
+    'graph': {
+      'inputs': {
+        'softplusInput':
+            {'data': [5.625], 'descriptor': {shape: [], dataType: 'float16'}}
+      },
+      'operators': [{
+        'name': 'softplus',
+        'arguments': [{'input': 'softplusInput'}],
+        'outputs': 'softplusOutput'
+      }],
+      'expectedOutputs': {
+        'softplusOutput': {
+          'data': [5.62890625],
+          'descriptor': {shape: [], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'softplus float16 1D tensor',
+    'graph': {
+      'inputs': {
+        'softplusInput': {
+          'data': [
+            5.625,        5.16796875,  4.015625,    9.4765625,  9.9921875,
+            7.06640625,   2.1328125,   8.1875,      5.171875,   2.10546875,
+            3.5234375,    4.13671875,  1.7421875,   5.14453125, 5.015625,
+            0.0458984375, 2.95703125,  3.958984375, 5.51953125, 7.19140625,
+            8.765625,     1.373046875, 8.9296875,   8.6640625
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'softplus',
+        'arguments': [{'input': 'softplusInput'}],
+        'outputs': 'softplusOutput'
+      }],
+      'expectedOutputs': {
+        'softplusOutput': {
+          'data': [
+            5.62890625,    5.171875,     4.03515625,   9.4765625,  9.9921875,
+            7.06640625,    2.244140625,  8.1875,       5.17578125, 2.220703125,
+            3.552734375,   4.15234375,   1.9033203125, 5.1484375,  5.0234375,
+            0.71630859375, 3.0078125,    3.978515625,  5.5234375,  7.19140625,
+            8.765625,      1.5986328125, 8.9296875,    8.6640625
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'softplus float16 2D tensor',
+    'graph': {
+      'inputs': {
+        'softplusInput': {
+          'data': [
+            5.625,        5.16796875,  4.015625,    9.4765625,  9.9921875,
+            7.06640625,   2.1328125,   8.1875,      5.171875,   2.10546875,
+            3.5234375,    4.13671875,  1.7421875,   5.14453125, 5.015625,
+            0.0458984375, 2.95703125,  3.958984375, 5.51953125, 7.19140625,
+            8.765625,     1.373046875, 8.9296875,   8.6640625
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'softplus',
+        'arguments': [{'input': 'softplusInput'}],
+        'outputs': 'softplusOutput'
+      }],
+      'expectedOutputs': {
+        'softplusOutput': {
+          'data': [
+            5.62890625,    5.171875,     4.03515625,   9.4765625,  9.9921875,
+            7.06640625,    2.244140625,  8.1875,       5.17578125, 2.220703125,
+            3.552734375,   4.15234375,   1.9033203125, 5.1484375,  5.0234375,
+            0.71630859375, 3.0078125,    3.978515625,  5.5234375,  7.19140625,
+            8.765625,      1.5986328125, 8.9296875,    8.6640625
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'softplus float16 3D tensor',
+    'graph': {
+      'inputs': {
+        'softplusInput': {
+          'data': [
+            5.625,        5.16796875,  4.015625,    9.4765625,  9.9921875,
+            7.06640625,   2.1328125,   8.1875,      5.171875,   2.10546875,
+            3.5234375,    4.13671875,  1.7421875,   5.14453125, 5.015625,
+            0.0458984375, 2.95703125,  3.958984375, 5.51953125, 7.19140625,
+            8.765625,     1.373046875, 8.9296875,   8.6640625
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'softplus',
+        'arguments': [{'input': 'softplusInput'}],
+        'outputs': 'softplusOutput'
+      }],
+      'expectedOutputs': {
+        'softplusOutput': {
+          'data': [
+            5.62890625,    5.171875,     4.03515625,   9.4765625,  9.9921875,
+            7.06640625,    2.244140625,  8.1875,       5.17578125, 2.220703125,
+            3.552734375,   4.15234375,   1.9033203125, 5.1484375,  5.0234375,
+            0.71630859375, 3.0078125,    3.978515625,  5.5234375,  7.19140625,
+            8.765625,      1.5986328125, 8.9296875,    8.6640625
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'softplus float16 4D tensor',
+    'graph': {
+      'inputs': {
+        'softplusInput': {
+          'data': [
+            5.625,        5.16796875,  4.015625,    9.4765625,  9.9921875,
+            7.06640625,   2.1328125,   8.1875,      5.171875,   2.10546875,
+            3.5234375,    4.13671875,  1.7421875,   5.14453125, 5.015625,
+            0.0458984375, 2.95703125,  3.958984375, 5.51953125, 7.19140625,
+            8.765625,     1.373046875, 8.9296875,   8.6640625
+          ],
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'softplus',
+        'arguments': [{'input': 'softplusInput'}],
+        'outputs': 'softplusOutput'
+      }],
+      'expectedOutputs': {
+        'softplusOutput': {
+          'data': [
+            5.62890625,    5.171875,     4.03515625,   9.4765625,  9.9921875,
+            7.06640625,    2.244140625,  8.1875,       5.17578125, 2.220703125,
+            3.552734375,   4.15234375,   1.9033203125, 5.1484375,  5.0234375,
+            0.71630859375, 3.0078125,    3.978515625,  5.5234375,  7.19140625,
+            8.765625,      1.5986328125, 8.9296875,    8.6640625
+          ],
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'softplus float16 5D tensor',
+    'graph': {
+      'inputs': {
+        'softplusInput': {
+          'data': [
+            5.625,        5.16796875,  4.015625,    9.4765625,  9.9921875,
+            7.06640625,   2.1328125,   8.1875,      5.171875,   2.10546875,
+            3.5234375,    4.13671875,  1.7421875,   5.14453125, 5.015625,
+            0.0458984375, 2.95703125,  3.958984375, 5.51953125, 7.19140625,
+            8.765625,     1.373046875, 8.9296875,   8.6640625
+          ],
+          'descriptor': {shape: [1, 2, 1, 3, 4], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'softplus',
+        'arguments': [{'input': 'softplusInput'}],
+        'outputs': 'softplusOutput'
+      }],
+      'expectedOutputs': {
+        'softplusOutput': {
+          'data': [
+            5.62890625,    5.171875,     4.03515625,   9.4765625,  9.9921875,
+            7.06640625,    2.244140625,  8.1875,       5.17578125, 2.220703125,
+            3.552734375,   4.15234375,   1.9033203125, 5.1484375,  5.0234375,
+            0.71630859375, 3.0078125,    3.978515625,  5.5234375,  7.19140625,
+            8.765625,      1.5986328125, 8.9296875,    8.6640625
+          ],
+          'descriptor': {shape: [1, 2, 1, 3, 4], dataType: 'float16'}
         }
       }
     }
   }
 ];
 
-if (navigator.ml) {
-  softplusTests.forEach((test) => {
-    webnn_conformance_test(
-        buildGraphAndCompute, getSoftplusPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(
+    softplusTests, buildAndExecuteGraph, getPrecisionTolerance);

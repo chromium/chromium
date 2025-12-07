@@ -1,0 +1,51 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("page_info") {
+  public = [
+    "page_info_bubble_view.h",
+    "page_info_bubble_view_base.h",
+    "page_info_navigation_handler.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/page_info",
+    "//components/content_settings/core/common",
+    "//components/page_info/core",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/base/metadata",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "page_info_bubble_view.cc",
+    "page_info_bubble_view_base.cc",
+  ]
+
+  deps = [
+    ":page_info",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser:primitives",
+    "//chrome/browser/page_info",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/page_info",
+    "//components/dom_distiller/core",
+    "//components/page_info/core",
+    "//components/privacy_sandbox:features",
+    "//components/strings:components_branded_strings_grit",
+    "//components/strings:components_strings_grit",
+    "//components/strings:privacy_sandbox_strings_grit",
+    "//content/public/browser",
+    "//extensions/common:common_constants",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}

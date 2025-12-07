@@ -78,6 +78,15 @@ id<GREYMatcher> OtpNewCodeLink() {
                     grey_accessibilityTrait(UIAccessibilityTraitLink), nil);
 }
 
+// Matcher for the activity indicator.
+id<GREYMatcher> ActivityIndicatorMatcher() {
+  return grey_allOf(
+      grey_kindOfClassName(@"UIActivityIndicatorView"),
+      grey_accessibilityID(
+          kOtpInputNavigationBarPendingButtonAccessibilityIdentifier),
+      nil);
+}
+
 }  // namespace
 
 @interface OtpInputDialogEgtest : ChromeTestCase
@@ -88,13 +97,6 @@ id<GREYMatcher> OtpNewCodeLink() {
 }
 
 #pragma mark - Setup
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_enabled.push_back(
-      autofill::features::kAutofillEnableVirtualCards);
-  return config;
-}
 
 - (void)setUp {
   [super setUp];
@@ -117,10 +119,10 @@ id<GREYMatcher> OtpNewCodeLink() {
   [AutofillAppInterface considerCreditCardFormSecureForTesting];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [AutofillAppInterface clearAllServerDataForTesting];
   [AutofillAppInterface tearDownFakeCreditCardServer];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (void)showOtpInputDialog {
@@ -136,6 +138,11 @@ id<GREYMatcher> OtpNewCodeLink() {
       waitForUIElementToAppearWithMatcher:paymentsBottomSheetVirtualCard];
   [[EarlGrey selectElementWithMatcher:paymentsBottomSheetVirtualCard]
       performAction:grey_tap()];
+
+  // Wait enough time so the min delay is past before being allowed to fill
+  // credit card information from the sheet.
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
+
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::StaticTextWithAccessibilityLabelId(
                      IDS_IOS_PAYMENT_BOTTOM_SHEET_CONTINUE)]
@@ -188,6 +195,10 @@ id<GREYMatcher> OtpNewCodeLink() {
                      IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_TITLE)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+    StaticTextWithAccessibilityLabel(@"Enter 6-digit verification code")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
   [[EarlGrey selectElementWithMatcher:OtpTextfield()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
@@ -204,7 +215,8 @@ id<GREYMatcher> OtpNewCodeLink() {
 }
 
 // Test to ensure the dialog goes away once the cancel button is clicked.
-- (void)testOtpInputDialogCancel {
+// TODO(crbug.com/444093961): Test is flaky.
+- (void)FLAKY_testOtpInputDialogCancel {
   [self showOtpInputDialog];
 
   // Tap the cancel button.
@@ -216,7 +228,8 @@ id<GREYMatcher> OtpNewCodeLink() {
 }
 
 // Test to ensure the dialog's confirm button works correctly.
-- (void)testOtpInputDialogConfirm {
+// TODO(crbug.com/444045960): Test is flaky.
+- (void)DISABLED_testOtpInputDialogConfirm {
   [self showOtpInputDialog];
 
   [[EarlGrey selectElementWithMatcher:OtpInputDialogConfirmButton()]
@@ -242,8 +255,7 @@ id<GREYMatcher> OtpNewCodeLink() {
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
   [[EarlGrey selectElementWithMatcher:OtpInputDialogPendingButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_kindOfClassName(@"UIActivityIndicatorView")]
+  [[EarlGrey selectElementWithMatcher:ActivityIndicatorMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

@@ -4,21 +4,31 @@
 
 #include "components/autofill/core/browser/payments/test_virtual_card_enrollment_manager.h"
 
+#include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
-#include "components/autofill/core/browser/test_personal_data_manager.h"
 
 namespace autofill {
 
 TestVirtualCardEnrollmentManager::TestVirtualCardEnrollmentManager(
-    TestPersonalDataManager* personal_data_manager,
-    payments::TestPaymentsNetworkInterface* payments_network_interface,
+    PaymentsDataManager* payments_data_manager,
+    PaymentsNetworkInterfaceVariation payments_network_interface,
     TestAutofillClient* autofill_client = nullptr)
-    : VirtualCardEnrollmentManager(personal_data_manager,
+    : VirtualCardEnrollmentManager(payments_data_manager,
                                    payments_network_interface,
                                    autofill_client) {}
 
 TestVirtualCardEnrollmentManager::~TestVirtualCardEnrollmentManager() = default;
+
+bool TestVirtualCardEnrollmentManager::ShouldBlockVirtualCardEnrollment(
+    const std::string& instrument_id,
+    VirtualCardEnrollmentSource virtual_card_enrollment_source) const {
+  if (ignore_strike_database_) {
+    return false;
+  }
+  return VirtualCardEnrollmentManager::ShouldBlockVirtualCardEnrollment(
+      instrument_id, virtual_card_enrollment_source);
+}
 
 void TestVirtualCardEnrollmentManager::LoadRiskDataAndContinueFlow(
     PrefService* user_prefs,
@@ -37,11 +47,14 @@ void TestVirtualCardEnrollmentManager::
 
 void TestVirtualCardEnrollmentManager::Reset() {
   reset_called_ = true;
+  VirtualCardEnrollmentManager::Reset();
 }
 
-void TestVirtualCardEnrollmentManager::ShowVirtualCardEnrollBubble() {
+void TestVirtualCardEnrollmentManager::ShowVirtualCardEnrollBubble(
+    VirtualCardEnrollmentFields* virtual_card_enrollment_fields) {
   bubble_shown_ = true;
-  VirtualCardEnrollmentManager::ShowVirtualCardEnrollBubble();
+  VirtualCardEnrollmentManager::ShowVirtualCardEnrollBubble(
+      virtual_card_enrollment_fields);
 }
 
 void TestVirtualCardEnrollmentManager::

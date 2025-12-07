@@ -9,10 +9,8 @@
 #include "base/command_line.h"
 #include "base/strings/strcat.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
@@ -21,11 +19,14 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/update_user_activation_state_interceptor.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/events/event.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -45,13 +46,17 @@ class PixelTestUi : public TestBrowserUi {
  public:
   PixelTestUi(views::View* view,
               const std::string& screenshot_name,
-              const std::string& baseline)
-      : view_(view), screenshot_name_(screenshot_name), baseline_(baseline) {}
+              const std::string& baseline,
+              const ScreenshotOptions& options)
+      : view_(view),
+        screenshot_name_(screenshot_name),
+        baseline_(baseline),
+        options_(options) {}
   ~PixelTestUi() override = default;
 
   // TestBrowserUi:
-  void ShowUi(const std::string& name) override { NOTREACHED_IN_MIGRATION(); }
-  void WaitForUserDismissal() override { NOTREACHED_IN_MIGRATION(); }
+  void ShowUi(const std::string& name) override { NOTREACHED(); }
+  void WaitForUserDismissal() override { NOTREACHED(); }
 
   bool VerifyUi() override {
     return VerifyUiWithResult() != ui::test::ActionResult::kFailed;
@@ -66,13 +71,14 @@ class PixelTestUi : public TestBrowserUi {
         screenshot_name_.empty()
             ? baseline_
             : base::StrCat({screenshot_name_, "_", baseline_});
-    return VerifyPixelUi(view_, test_name, screenshot_name);
+    return VerifyPixelUi(view_, options_, test_name, screenshot_name);
   }
 
  private:
   raw_ptr<views::View> view_ = nullptr;
   std::string screenshot_name_;
   std::string baseline_;
+  ScreenshotOptions options_;
 };
 
 views::View* GetScreenshotTargetView(ui::TrackedElement* element) {
@@ -86,6 +92,7 @@ views::View* GetScreenshotTargetView(ui::TrackedElement* element) {
 
 ui::test::ActionResult CompareScreenshotCommon(
     views::View* view,
+    const ScreenshotOptions& options,
     const std::string& screenshot_name,
     const std::string& baseline_cl) {
   // pixel_browser_tests and pixel_interactive_ui_tests specify this command
@@ -99,7 +106,7 @@ ui::test::ActionResult CompareScreenshotCommon(
     return ui::test::ActionResult::kKnownIncompatible;
   }
 
-  PixelTestUi pixel_test_ui(view, screenshot_name, baseline_cl);
+  PixelTestUi pixel_test_ui(view, screenshot_name, baseline_cl, options);
   ui::test::ActionResult result = pixel_test_ui.VerifyUiWithResult();
   if (result == ui::test::ActionResult::kKnownIncompatible) {
     LOG(WARNING) << "Current platform does not support pixel tests.";
@@ -120,13 +127,13 @@ class InteractionTestUtilSimulatorBrowser
     // Browser accelerators must be sent via key events to the window on Mac or
     // they don't work properly. Dialog accelerators still appear to work the
     // same as on other platforms.
-    if (Browser* const browser =
-            InteractionTestUtilBrowser::GetBrowserFromContext(
-                element->context())) {
+    if (auto* const bwi = InteractionTestUtilBrowser::GetBrowserFromContext(
+            element->context())) {
       if (!ui_controls::SendKeyPress(
-              browser->window()->GetNativeWindow(), accelerator.key_code(),
-              accelerator.IsCtrlDown(), accelerator.IsShiftDown(),
-              accelerator.IsAltDown(), accelerator.IsCmdDown())) {
+              BrowserView::GetBrowserViewForBrowser(bwi)->GetNativeWindow(),
+              accelerator.key_code(), accelerator.IsCtrlDown(),
+              accelerator.IsShiftDown(), accelerator.IsAltDown(),
+              accelerator.IsCmdDown())) {
         LOG(ERROR) << "Failed to send accelerator"
                    << accelerator.GetShortcutText() << " to " << *element;
         return ui::test::ActionResult::kFailed;
@@ -160,6 +167,26 @@ class InteractionTestUtilSimulatorBrowser
         LOG(ERROR) << "No associated view to send accelerators to.";
         return ui::test::ActionResult::kFailed;
       }
+    }
+
+    return ui::test::ActionResult::kNotAttempted;
+  }
+
+  // Handle sending key presses to web contents. All other cases are handled by
+  // the Views simulator.
+  ui::test::ActionResult SendKeyPress(ui::TrackedElement* element,
+                                      ui::KeyboardCode key,
+                                      int flags) override {
+    if (auto* const tracked_contents =
+            element->AsA<TrackedElementWebContents>()) {
+      auto native_window =
+          tracked_contents->owner()->web_contents()->GetTopLevelNativeWindow();
+      const bool result = ui_test_utils::SendKeyPressToWindowSync(
+          native_window, key, flags & ui::EF_CONTROL_DOWN,
+          flags & ui::EF_SHIFT_DOWN, flags & ui::EF_ALT_DOWN,
+          flags & ui::EF_COMMAND_DOWN);
+      return result ? ui::test::ActionResult::kSucceeded
+                    : ui::test::ActionResult::kFailed;
     }
 
     return ui::test::ActionResult::kNotAttempted;
@@ -221,10 +248,54 @@ class InteractionTestUtilSimulatorBrowser
     return ui::test::ActionResult::kNotAttempted;
   }
 
-  ui::test::ActionResult SelectTab(ui::TrackedElement* tab_collection,
-                                   size_t index,
-                                   InputType input_type) override {
-    // This handler *explicitly* only handles Browser and TabStrip; it will
+  ui::test::ActionResult FocusElement(ui::TrackedElement* element) override {
+    auto* const instrumented = element->AsA<TrackedElementWebContents>();
+    if (!instrumented) {
+      return ui::test::ActionResult::kNotAttempted;
+    }
+
+    auto* const contents = instrumented->owner()->web_contents();
+    if (!contents) {
+      LOG(ERROR) << "WebContents not present.";
+      return ui::test::ActionResult::kFailed;
+    }
+
+    // Focus the renderer.
+    if (!contents->GetRenderWidgetHostView()) {
+      LOG(ERROR) << "No render widget host.";
+      return ui::test::ActionResult::kFailed;
+    }
+    contents->GetRenderWidgetHostView()->Focus();
+
+    // Prepare the renderer for input.
+    if (!contents->GetPrimaryMainFrame()) {
+      LOG(ERROR) << "No main frame.";
+      return ui::test::ActionResult::kFailed;
+    }
+    content::UpdateUserActivationStateInterceptor user_activation_interceptor(
+        contents->GetPrimaryMainFrame());
+    user_activation_interceptor.UpdateUserActivationState(
+        blink::mojom::UserActivationUpdateType::kNotifyActivation,
+        blink::mojom::UserActivationNotificationType::kTest);
+
+    // Ensure the correct WebView is focused before returning.
+    auto* web_view = instrumented->owner()->GetWebView();
+    if (!web_view) {
+      LOG(ERROR) << "No web view.";
+      return ui::test::ActionResult::kFailed;
+    }
+    views::test::ViewFocusedWaiter focus_waiter(*web_view);
+    focus_waiter.Wait();
+
+    return ui::test::ActionResult::kSucceeded;
+  }
+
+  ui::test::ActionResult SelectTab(
+      ui::TrackedElement* tab_collection,
+      size_t index,
+      InputType input_type,
+      std::optional<size_t> expected_index_after_selection) override {
+    // This handler *explicitly* only handles browser and TabStrip; it will
     // reject any other element or View type.
     if (!tab_collection->IsA<views::TrackedElementViews>())
       return ui::test::ActionResult::kNotAttempted;
@@ -253,7 +324,10 @@ class InteractionTestUtilSimulatorBrowser
     Tab* const tab = tab_strip->tab_at(index);
     views::test::InteractionTestUtilSimulatorViews::DoDefaultAction(tab,
                                                                     input_type);
-    if (static_cast<int>(index) != tab_strip->GetActiveIndex()) {
+
+    const int expected =
+        static_cast<int>(expected_index_after_selection.value_or(index));
+    if (expected != tab_strip->GetActiveIndex()) {
       LOG(ERROR) << "Failed to select tabstrip tab " << index;
       return ui::test::ActionResult::kFailed;
     }
@@ -281,38 +355,40 @@ class InteractionTestUtilSimulatorBrowser
 
 }  // namespace
 
-InteractionTestUtilBrowser::InteractionTestUtilBrowser() {
-  AddSimulator(std::make_unique<InteractionTestUtilSimulatorBrowser>());
-  AddSimulator(
-      std::make_unique<views::test::InteractionTestUtilSimulatorViews>());
-#if BUILDFLAG(IS_MAC)
-  AddSimulator(std::make_unique<ui::test::InteractionTestUtilSimulatorMac>());
-#endif
+// static
+void InteractionTestUtilBrowser::PopulateSimulators(
+    ui::test::InteractionTestUtil& test_util) {
+  test_util.AddSimulator(
+      std::make_unique<InteractionTestUtilSimulatorBrowser>());
 }
 
-InteractionTestUtilBrowser::~InteractionTestUtilBrowser() = default;
-
 // static
-Browser* InteractionTestUtilBrowser::GetBrowserFromContext(
+BrowserWindowInterface* InteractionTestUtilBrowser::GetBrowserFromContext(
     ui::ElementContext context) {
-  BrowserList* const browsers = BrowserList::GetInstance();
-  for (Browser* const browser : *browsers) {
-    if (browser->window()->GetElementContext() == context)
-      return browser;
-  }
-  return nullptr;
+  BrowserWindowInterface* result = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        if (auto* elements = BrowserElements::From(browser)) {
+          if (elements->GetContext() == context) {
+            result = browser;
+          }
+        }
+        return !result;
+      });
+  return result;
 }
 
 // static
 ui::test::ActionResult InteractionTestUtilBrowser::CompareScreenshot(
     ui::TrackedElement* element,
     const std::string& screenshot_name,
-    const std::string& baseline_cl) {
+    const std::string& baseline_cl,
+    const ScreenshotOptions& options) {
   views::View* const view = GetScreenshotTargetView(element);
   if (!view) {
     return ui::test::ActionResult::kNotAttempted;
   }
-  return CompareScreenshotCommon(view, screenshot_name, baseline_cl);
+  return CompareScreenshotCommon(view, options, screenshot_name, baseline_cl);
 }
 
 // static
@@ -324,6 +400,6 @@ ui::test::ActionResult InteractionTestUtilBrowser::CompareSurfaceScreenshot(
   if (!view || !view->GetWidget()) {
     return ui::test::ActionResult::kNotAttempted;
   }
-  return CompareScreenshotCommon(view->GetWidget()->GetRootView(),
+  return CompareScreenshotCommon(view->GetWidget()->GetRootView(), {},
                                  screenshot_name, baseline_cl);
 }

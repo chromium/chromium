@@ -20,8 +20,8 @@
 @property(nonatomic, readonly)
     NSMutableDictionary<NSString*, ArchivableCredential*>* memoryStorage;
 
-// Working queue used to sync the mutable set operations. Meant for use when
-// subclassing.
+// Working queue used to sync the mutable set and offload expensive get
+// operations. Meant for use when subclassing.
 @property(nonatomic, readonly) dispatch_queue_t workingQueue;
 
 // The first time the storage is used, this method will be called to populate

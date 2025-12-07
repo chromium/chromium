@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/net/model/retryable_url_fetcher.h"
 
 #import <memory>
+#import <optional>
+#import <string>
 
 #import "base/check.h"
 #import "base/functional/bind.h"
@@ -15,7 +17,7 @@
 #import "url/gurl.h"
 
 @interface RetryableURLFetcher ()
-- (void)urlFetchDidComplete:(std::unique_ptr<std::string>)response_body;
+- (void)urlFetchDidComplete:(std::optional<std::string>)response_body;
 @end
 
 @implementation RetryableURLFetcher {
@@ -27,18 +29,19 @@
 }
 
 - (instancetype)
-initWithURLLoaderFactory:
-    (scoped_refptr<network::SharedURLLoaderFactory>)shared_url_loader_factory
-                delegate:(id<RetryableURLFetcherDelegate>)delegate
-           backoffPolicy:(const net::BackoffEntry::Policy*)policy {
+    initWithURLLoaderFactory:(scoped_refptr<network::SharedURLLoaderFactory>)
+                                 shared_url_loader_factory
+                    delegate:(id<RetryableURLFetcherDelegate>)delegate
+               backoffPolicy:(const net::BackoffEntry::Policy*)policy {
   self = [super init];
   if (self) {
     DCHECK(shared_url_loader_factory);
     DCHECK(delegate);
     _shared_url_loader_factory = shared_url_loader_factory;
     _delegate = delegate;
-    if (policy)
+    if (policy) {
       _backoffEntry.reset(new net::BackoffEntry(policy));
+    }
   }
   return self;
 }
@@ -54,8 +57,8 @@ initWithURLLoaderFactory:
 
     _simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
         _shared_url_loader_factory.get(),
-        base::BindOnce(^(std::unique_ptr<std::string> response) {
-          [self urlFetchDidComplete:std::forward<std::unique_ptr<std::string>>(
+        base::BindOnce(^(std::optional<std::string> response) {
+          [self urlFetchDidComplete:std::forward<std::optional<std::string>>(
                                         response)];
         }));
   } else {
@@ -69,7 +72,7 @@ initWithURLLoaderFactory:
   return _backoffEntry ? _backoffEntry->failure_count() : 0;
 }
 
-- (void)urlFetchDidComplete:(std::unique_ptr<std::string>)response_body {
+- (void)urlFetchDidComplete:(std::optional<std::string>)response_body {
   if (!response_body && _backoffEntry) {
     _backoffEntry->InformOfRequest(false);
     double nextRetry = _backoffEntry->GetTimeUntilRelease().InSecondsF();
@@ -80,8 +83,9 @@ initWithURLLoaderFactory:
     return;
   }
   NSString* response = nil;
-  if (response_body)
+  if (response_body) {
     response = base::SysUTF8ToNSString(*response_body);
+  }
   [_delegate processSuccessResponse:response];
 }
 

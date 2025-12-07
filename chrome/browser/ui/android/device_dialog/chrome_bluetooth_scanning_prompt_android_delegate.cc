@@ -35,3 +35,5 @@ ChromeBluetoothScanningPromptAndroidDelegate::GetSecurityLevel(
   DCHECK(helper);
   return helper->GetSecurityLevel();
 }
+
+DEFINE_JNI(ChromeBluetoothScanningPromptAndroidDelegate)

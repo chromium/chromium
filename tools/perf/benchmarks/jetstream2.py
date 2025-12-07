@@ -30,7 +30,7 @@ from benchmarks import press
 class _JetStream2Base(press._PressBenchmark):  # pylint:disable=protected-access
   """JetStream2, a combination of JavaScript and Web Assembly benchmarks.
 
-  Run all the JetStream 2 benchmarks by default.
+  Run all the JetStream 2.x benchmarks by default.
   """
   @classmethod
   def AddBenchmarkCommandLineArgs(cls, parser):
@@ -69,9 +69,24 @@ class JetStream21(_JetStream2Base):
 @benchmark.Info(
     emails=['vahl@chromium.org', 'cbruni@chromium.org'],
     component='Blink>JavaScript',
+    documentation_url='https://browserbench.org/JetStream2.2/in-depth.html')
+class JetStream22(_JetStream2Base):
+  """JetStream 2.2"""
+
+  @classmethod
+  def Name(cls):
+    return 'UNSCHEDULED_jetstream22'
+
+  def CreateStorySet(self, options):
+    return page_sets.JetStream22StorySet(options.test_list)
+
+
+@benchmark.Info(
+    emails=['vahl@chromium.org', 'cbruni@chromium.org'],
+    component='Blink>JavaScript',
     documentation_url='https://browserbench.org/JetStream2.0/in-depth.html')
 class JetStream2(_JetStream2Base):
-  """Latest JetStream2 """
+  """Latest JetStream 2.x """
   @classmethod
   def Name(cls):
     return 'jetstream2'
@@ -85,9 +100,9 @@ class JetStream2(_JetStream2Base):
     component='Blink>JavaScript>GarbageCollection',
     documentation_url='https://browserbench.org/JetStream2.0/in-depth.html')
 class JetStream2MinorMS(JetStream2):
-  """Latest JetStream2 without the MinorMS flag.
+  """Latest JetStream 2.x with the MinorMS flag.
 
-  Shows the performance with Scavenger young generation GC in V8.
+  Shows the performance with MinorMS young generation GC in V8.
   """
   @classmethod
   def Name(cls):
@@ -95,3 +110,22 @@ class JetStream2MinorMS(JetStream2):
 
   def SetExtraBrowserOptions(self, options):
     options.AppendExtraBrowserArgs('--js-flags=--minor-ms')
+
+
+@benchmark.Info(
+    emails=['vahl@chromium.org', 'cbruni@chromium.org'],
+    component='Blink>JavaScript',
+    documentation_url='https://browserbench.org/JetStream2.0/in-depth.html')
+class JetStream2NoFieldTrial(JetStream2):
+  """Latest JetStream 2.x without field-trials
+  """
+
+  SCHEDULED = False
+
+  @classmethod
+  def Name(cls):
+    return 'jetstream2-no-field-trials'
+
+  def SetExtraBrowserOptions(self, options):
+    options.AppendExtraBrowserArgs('--disable-field-trial-config')
+    options.RemoveExtraBrowserArg('--enable-field-trial-config')

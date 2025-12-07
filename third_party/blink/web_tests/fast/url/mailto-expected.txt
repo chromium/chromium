@@ -7,8 +7,8 @@ PASS canonicalize('mailto:addr1@foo.com') is 'mailto:addr1@foo.com'
 PASS canonicalize('mailto:addr1 	 ') is 'mailto:addr1'
 PASS canonicalize('mailto:addr1?to=jon') is 'mailto:addr1?to=jon'
 PASS canonicalize('mailto:addr1,addr2') is 'mailto:addr1,addr2'
-FAIL canonicalize('mailto:addr1, addr2') should be mailto:addr1, addr2. Was mailto:addr1,%20addr2.
-FAIL canonicalize('mailto:addr1,"addr2"') should be mailto:addr1,"addr2". Was mailto:addr1,%22addr2%22.
+PASS canonicalize('mailto:addr1, addr2') is 'mailto:addr1, addr2'
+PASS canonicalize('mailto:addr1,"addr2"') is 'mailto:addr1,"addr2"'
 PASS canonicalize('mailto:addr1%2caddr2') is 'mailto:addr1%2caddr2'
 PASS canonicalize('mailto:𐌀') is 'mailto:%F0%90%8C%80'
 PASS canonicalize('mailto:addr1?') is 'mailto:addr1?'

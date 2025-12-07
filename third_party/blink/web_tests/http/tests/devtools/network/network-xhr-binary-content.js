@@ -17,11 +17,11 @@ import {NetworkTestRunner} from 'network_test_runner';
     TestRunner.addResult('request.type: ' + request.resourceType());
     TestRunner.addResult('request.mimeType: ' + request.mimeType);
 
-    var contentData = await request.contentData();
+    var contentData = await request.requestContentData();
 
-    TestRunner.addResult('request.contentEncoded: ' + contentData.encoded);
-    TestRunner.addResult('request.content: ' + contentData.content);
-    var raw = window.atob(contentData.content);
+    TestRunner.addResult('request.isTextContent: ' + contentData.isTextContent);
+    TestRunner.addResult('request.base64: ' + contentData.base64);
+    var raw = window.atob(contentData.base64);
     var bytes = [];
     for (var i = 0; i < raw.length; ++i)
       bytes.push(raw.charCodeAt(i));

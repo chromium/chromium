@@ -12,8 +12,9 @@
 #include "content/common/content_export.h"
 #include "content/common/content_param_traits.h"
 #include "content/common/navigation_gesture.h"
-#include "ipc/ipc_message_macros.h"
-#include "ui/native_theme/native_theme.h"
+#include "ipc/param_traits.h"
+#include "ipc/param_traits_macros.h"
+#include "ipc/param_traits_utils.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "third_party/blink/public/platform/mac/web_scrollbar_theme.h"
@@ -28,8 +29,5 @@ IPC_ENUM_TRAITS_MAX_VALUE(content::NavigationGesture,
 #if BUILDFLAG(IS_MAC)
 IPC_ENUM_TRAITS_MAX_VALUE(blink::ScrollerStyle, blink::kScrollerStyleOverlay)
 #endif
-
-IPC_ENUM_TRAITS_MAX_VALUE(ui::NativeTheme::SystemThemeColor,
-                          ui::NativeTheme::SystemThemeColor::kMaxValue)
 
 #endif  // CONTENT_COMMON_CONTENT_PARAM_TRAITS_MACROS_H_

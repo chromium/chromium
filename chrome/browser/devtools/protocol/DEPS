@@ -9,4 +9,10 @@ specific_include_rules = {
   "page_handler.*": [
     "+components/printing/browser/print_to_pdf",
   ],
+  "pwa_handler\.cc": [
+    "+components/web_package/signed_web_bundles"
+  ],
+  "devtools_iwa_browsertest\.cc": [
+    "+components/web_package/signed_web_bundles"
+  ]
 }

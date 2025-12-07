@@ -31,15 +31,15 @@ import * as ProtocolClient from 'devtools/core/protocol_client/protocol_client.j
   var backendCallCount = 0;
   var nodeId;
 
-  function onBackendCall(sessionId, domain, method, params) {
-    if (method === 'CSS.getComputedStyleForNode' && params.nodeId === nodeId)
+  function onBackendCall(params) {
+    if (params.nodeId === nodeId)
       ++backendCallCount;
   }
 
   function step1(node) {
     var callsLeft = 2;
     nodeId = node.id;
-    TestRunner.addSniffer(ProtocolClient.InspectorBackend.SessionRouter.prototype, 'sendMessage', onBackendCall, true);
+    TestRunner.addSniffer(TestRunner.CSSAgent, 'invoke_getComputedStyleForNode', onBackendCall, true);
     TestRunner.cssModel.getComputedStyle(nodeId).then(styleCallback);
     TestRunner.cssModel.getComputedStyle(nodeId).then(styleCallback);
     function styleCallback() {

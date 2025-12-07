@@ -53,8 +53,7 @@ class RecentAppButtonsViewTest : public AshTestBase {
     AshTestBase::SetUp();
 
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kEcheLauncher, features::kEcheSWA,
-                              features::kEcheLauncherIconsInMoreAppsButton,
+        /*enabled_features=*/{features::kEcheSWA,
                               features::kEcheNetworkConnectionState},
         /*disabled_features=*/{});
 
@@ -161,8 +160,7 @@ TEST_F(RecentAppButtonsViewTest,
        TaskViewVisibility_NetworkConnectionFlagDisabled) {
   feature_list_.Reset();
   feature_list_.InitWithFeatures(
-      /*enabled_features=*/{features::kEcheLauncher, features::kEcheSWA,
-                            features::kEcheLauncherIconsInMoreAppsButton},
+      /*enabled_features=*/{features::kEcheSWA},
       /*disabled_features=*/{features::kEcheNetworkConnectionState});
 
   EXPECT_FALSE(recent_apps_view()->GetVisible());

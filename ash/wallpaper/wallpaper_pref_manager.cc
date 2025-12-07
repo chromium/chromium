@@ -21,9 +21,11 @@
 #include "ash/wallpaper/wallpaper_utils/wallpaper_ephemeral_user.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_online_variant_utils.h"
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/containers/adapters.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -67,10 +69,6 @@ bool SetWallpaperInfo(const AccountId& account_id,
                       const WallpaperInfo& info,
                       PrefService* const pref_service,
                       const std::string& pref_name) {
-  if (features::IsVersionWallpaperInfoEnabled()) {
-    CHECK(info.version.IsValid());
-  }
-
   if (!pref_service) {
     return false;
   }
@@ -146,12 +144,30 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
       : local_state_(local_state), profile_helper_(std::move(profile_helper)) {
     // local_state is null for tests under AshTestHelper
     DCHECK(profile_helper_);
+    if (local_state_) {
+      local_state_change_registrar_.Init(local_state_.get());
+      local_state_change_registrar_.Add(
+          prefs::kDeviceWallpaperImageFilePath,
+          base::BindRepeating(
+              &WallpaperPrefManagerImpl::OnDeviceWallpaperImageFilePathUpdated,
+              base::Unretained(this)));
+    } else {
+      CHECK_IS_TEST();
+    }
   }
 
   ~WallpaperPrefManagerImpl() override = default;
 
   void SetClient(WallpaperControllerClient* client) override {
     profile_helper_->SetClient(client);
+  }
+
+  void AddObserver(Observer* observer) override {
+    observer_list_.AddObserver(observer);
+  }
+
+  void RemoveObserver(Observer* observer) override {
+    observer_list_.RemoveObserver(observer);
   }
 
   bool GetUserWallpaperInfo(const AccountId& account_id,
@@ -206,10 +222,15 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
   }
 
   void RemoveUserWallpaperInfo(const AccountId& account_id) override {
+    if (profile_helper_->IsEphemeral(account_id)) {
+      ephemeral_users_wallpaper_info_.erase(account_id);
+      return;
+    }
+
     RemoveWallpaperInfo(account_id, local_state_, prefs::kUserWallpaperInfo);
     RemoveWallpaperInfo(account_id,
                         profile_helper_->GetUserPrefServiceSyncable(account_id),
-                        GetSyncPrefName());
+                        prefs::kSyncableWallpaperInfo);
   }
 
   std::optional<WallpaperCalculatedColors> GetCachedWallpaperColors(
@@ -242,7 +263,7 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
   }
 
   std::optional<SkColor> GetCachedKMeanColor(
-      const std::string_view location) const override {
+      std::string_view location) const override {
     return GetSingleCachedColor(prefs::kWallpaperMeanColors, location);
   }
 
@@ -255,7 +276,7 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
     CacheSingleColor(prefs::kWallpaperCelebiColors, location, celebi_color);
   }
   std::optional<SkColor> GetCelebiColor(
-      const std::string_view location) const override {
+      std::string_view location) const override {
     return GetSingleCachedColor(prefs::kWallpaperCelebiColors, location);
   }
   void RemoveCelebiColor(const AccountId& account_id) override {
@@ -326,7 +347,8 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
     if (!pref_service)
       return false;
 
-    return GetWallpaperInfo(account_id, pref_service, GetSyncPrefName(), info);
+    return GetWallpaperInfo(account_id, pref_service,
+                            prefs::kSyncableWallpaperInfo, info);
   }
 
   // Store |info| into the syncable pref service for |account_id|.
@@ -339,27 +361,8 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
 
     DCHECK(IsWallpaperTypeSyncable(info.type));
 
-    return SetWallpaperInfo(account_id, info, pref_service, GetSyncPrefName());
-  }
-
-  bool GetSyncedWallpaperInfoFromDeprecatedPref(
-      const AccountId& account_id,
-      WallpaperInfo* info) const override {
-    CHECK(features::IsVersionWallpaperInfoEnabled());
-    PrefService* pref_service =
-        profile_helper_->GetUserPrefServiceSyncable(account_id);
-    if (!pref_service) {
-      return false;
-    }
-
-    return GetWallpaperInfo(account_id, pref_service,
-                            prefs::kSyncableWallpaperInfo, info);
-  }
-
-  void ClearDeprecatedPref(const AccountId& account_id) override {
-    RemoveWallpaperInfo(account_id,
-                        profile_helper_->GetUserPrefServiceSyncable(account_id),
-                        prefs::kSyncableWallpaperInfo);
+    return SetWallpaperInfo(account_id, info, pref_service,
+                            prefs::kSyncableWallpaperInfo);
   }
 
   base::TimeDelta GetTimeToNextDailyRefreshUpdate(
@@ -372,6 +375,14 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
     base::TimeDelta delta = (info.date + base::Days(1)) - base::Time::Now();
     // Guarantee the delta is always 0 or positive.
     return delta.is_positive() ? delta : base::TimeDelta();
+  }
+
+  base::FilePath GetDeviceWallpaperImageFilePath() const override {
+    if (!local_state_) {
+      return base::FilePath();
+    }
+    return base::FilePath(
+        local_state_->GetString(prefs::kDeviceWallpaperImageFilePath));
   }
 
  private:
@@ -418,28 +429,26 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
     color_dict->Remove(old_info.location);
   }
 
-  raw_ptr<PrefService> local_state_ = nullptr;
+  // Called when kDeviceWallpaperImageFilePath in local_state is updated.
+  void OnDeviceWallpaperImageFilePathUpdated() {
+    observer_list_.Notify(&Observer::OnDeviceWallpaperImageFilePathUpdated,
+                          GetDeviceWallpaperImageFilePath());
+  }
+
+  const raw_ptr<PrefService> local_state_ = nullptr;
+  PrefChangeRegistrar local_state_change_registrar_;
   std::unique_ptr<WallpaperProfileHelper> profile_helper_;
 
   // Cache of wallpapers for ephemeral users.
   base::flat_map<AccountId, WallpaperInfo> ephemeral_users_wallpaper_info_;
+
+  base::ObserverList<Observer> observer_list_;
 };
 
 }  // namespace
 
 // static
-const char* WallpaperPrefManager::GetSyncPrefName() {
-  return features::IsVersionWallpaperInfoEnabled()
-             ? prefs::kSyncableVersionedWallpaperInfo
-             : prefs::kSyncableWallpaperInfo;
-}
-
-// static
 bool WallpaperPrefManager::ShouldSyncOut(const WallpaperInfo& local_info) {
-  if (features::IsVersionWallpaperInfoEnabled() &&
-      !local_info.version.IsValid()) {
-    return false;
-  }
   if (IsTimeOfDayWallpaper(local_info.collection_id)) {
     // Time Of Day wallpapers are not syncable.
     return false;
@@ -455,22 +464,6 @@ bool WallpaperPrefManager::ShouldSyncIn(const WallpaperInfo& synced_info,
     LOG(ERROR) << " wallpaper type " << static_cast<int>(synced_info.type)
                << " from remote prefs is not syncable.";
     return false;
-  }
-
-  if (features::IsVersionWallpaperInfoEnabled()) {
-    base::Version sync_version = synced_info.version;
-    base::Version local_version = GetSupportedVersion(synced_info.type);
-    if (!sync_version.IsValid()) {
-      LOG(WARNING) << __func__ << " invalid sync version";
-      return false;
-    }
-    if (sync_version.IsValid() && local_version.IsValid()) {
-      const int remote_major_version = sync_version.components()[0];
-      const int local_major_version = local_version.components()[0];
-      if (remote_major_version > local_major_version) {
-        return false;
-      }
-    }
   }
 
   if (synced_info.MatchesSelection(local_info)) {
@@ -516,6 +509,8 @@ std::unique_ptr<WallpaperPrefManager> WallpaperPrefManager::CreateForTesting(
 // static
 void WallpaperPrefManager::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
+  registry->RegisterStringPref(prefs::kDeviceWallpaperImageFilePath,
+                               std::string());
   registry->RegisterDictionaryPref(prefs::kUserWallpaperInfo);
   registry->RegisterDictionaryPref(prefs::kWallpaperColors);
   registry->RegisterDictionaryPref(prefs::kWallpaperMeanColors);
@@ -528,8 +523,6 @@ void WallpaperPrefManager::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   using user_prefs::PrefRegistrySyncable;
 
   registry->RegisterDictionaryPref(prefs::kSyncableWallpaperInfo,
-                                   PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  registry->RegisterDictionaryPref(prefs::kSyncableVersionedWallpaperInfo,
                                    PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 

@@ -2,23 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-#include "content/browser/media/session/media_session_impl.h"
-
 #include <map>
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "content/browser/media/session/media_session_impl.h"
 #include "content/browser/media/session/media_session_player_observer.h"
 #include "content/browser/media/session/mock_media_session_service_impl.h"
 #include "content/public/test/test_media_session_client.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "media/base/media_content_type.h"
+#include "media/base/picture_in_picture_events_info.h"
 #include "services/media_session/public/cpp/media_metadata.h"
 #include "services/media_session/public/cpp/test/mock_media_session.h"
 #include "services/media_session/public/mojom/constants.mojom.h"
@@ -79,6 +79,12 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
               OnRequestVisibility,
               (int player_id,
                RequestVisibilityCallback request_visibility_callback),
+              (override));
+  MOCK_METHOD(void,
+              OnAutoPictureInPictureInfoChanged,
+              (int player_id,
+               const media::PictureInPictureEventsInfo::AutoPipInfo&
+                   auto_picture_in_picture_info),
               (override));
 
   std::optional<media_session::MediaPosition> GetPosition(
@@ -141,9 +147,6 @@ class MediaSessionImplServiceRoutingTest
     : public RenderViewHostImplTestHarness {
  public:
   MediaSessionImplServiceRoutingTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kMediaSessionEnterPictureInPicture);
-
     actions_.insert(MediaSessionAction::kPlay);
     actions_.insert(MediaSessionAction::kPause);
     actions_.insert(MediaSessionAction::kStop);
@@ -237,7 +240,11 @@ class MediaSessionImplServiceRoutingTest
   }
 
   MediaSessionServiceImpl* ComputeServiceForRouting() {
-    return MediaSessionImpl::Get(contents())->ComputeServiceForRouting();
+    auto* frame = static_cast<TestRenderFrameHost*>(
+        MediaSessionImpl::Get(contents())
+            ->ComputeFrameForRouting(/*ensure_service=*/true));
+    return services_.find(frame) != services_.end() ? services_[frame].get()
+                                                    : nullptr;
   }
 
   MediaSessionImpl* GetMediaSession() {
@@ -280,8 +287,6 @@ class MediaSessionImplServiceRoutingTest
   media_session::MediaMetadata empty_metadata_;
 
   std::set<MediaSessionAction> actions_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(MediaSessionImplServiceRoutingTest, NoFrameProducesAudio) {
@@ -1369,6 +1374,28 @@ TEST_F(MediaSessionImplServiceRoutingTest,
 
     observer.WaitForExpectedMetadata(expected_metadata);
   }
+}
+
+TEST_F(MediaSessionImplServiceRoutingTest, GetRoutedFrameForPlayers) {
+  StartPlayerForFrame(main_frame_);
+  ASSERT_EQ(main_frame_, GetMediaSession()->GetRoutedFrame());
+  StartPlayerForFrame(sub_frame_);
+  ASSERT_EQ(main_frame_, GetMediaSession()->GetRoutedFrame());
+  ClearPlayersForFrame(main_frame_);
+  ASSERT_EQ(sub_frame_, GetMediaSession()->GetRoutedFrame());
+  ClearPlayersForFrame(sub_frame_);
+  ASSERT_EQ(nullptr, GetMediaSession()->GetRoutedFrame());
+}
+
+TEST_F(MediaSessionImplServiceRoutingTest, GetRoutedFrameForServices) {
+  CreateServiceForFrame(main_frame_);
+  ASSERT_EQ(main_frame_, GetMediaSession()->GetRoutedFrame());
+  CreateServiceForFrame(sub_frame_);
+  ASSERT_EQ(main_frame_, GetMediaSession()->GetRoutedFrame());
+  DestroyServiceForFrame(main_frame_);
+  ASSERT_EQ(sub_frame_, GetMediaSession()->GetRoutedFrame());
+  DestroyServiceForFrame(sub_frame_);
+  ASSERT_EQ(nullptr, GetMediaSession()->GetRoutedFrame());
 }
 
 // Test duration duration update throttle behavior for routed service.

@@ -25,10 +25,14 @@ cc_library(
         "//mediapipe/framework:stream_handler_cc_proto",
         "//mediapipe/framework/port:any_proto",
         "//mediapipe/framework/port:ret_check",
+        "//mediapipe/framework/port:source_location",
+        "//mediapipe/framework/port:status",
         "@com_google_absl//absl/container:btree",
         "@com_google_absl//absl/log:absl_check",
         "@com_google_absl//absl/memory",
+        "@com_google_absl//absl/status",
         "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/strings:str_format",
         "@com_google_protobuf//:protobuf",
     ],
 )
@@ -99,7 +103,7 @@ cc_library(
 
 cc_library(
     name = "test_contracts",
-    testonly = 1,
+    testonly = True,
     hdrs = ["test_contracts.h"],
     deps = [
         ":node",
@@ -139,15 +143,19 @@ cc_library(
     hdrs = ["packet.h"],
     deps = [
         ":tuple",
+        "//mediapipe/framework:legacy_calculator_support",
         "//mediapipe/framework:packet",
+        "//mediapipe/framework:port",
         "//mediapipe/framework:timestamp",
         "//mediapipe/framework/port:logging",
         "//mediapipe/framework/port:status",
         "@com_google_absl//absl/base:core_headers",
         "@com_google_absl//absl/log:absl_check",
+        "@com_google_absl//absl/log:absl_log",
         "@com_google_absl//absl/meta:type_traits",
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/strings",
     ],
 )
 
@@ -161,7 +169,6 @@ cc_test(
         ":packet",
         "//mediapipe/framework:calculator_framework",
         "//mediapipe/framework/port:gtest_main",
-        "@com_google_absl//absl/memory",
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/strings",
     ],
@@ -190,8 +197,13 @@ cc_test(
         "port_test.cc",
     ],
     deps = [
+        ":builder",
+        ":node",
+        ":packet",
         ":port",
+        "//mediapipe/framework:calculator_framework",
         "//mediapipe/framework/port:gtest_main",
+        "@com_google_absl//absl/status",
         "@com_google_absl//absl/strings",
     ],
 )

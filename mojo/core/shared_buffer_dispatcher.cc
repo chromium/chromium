@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/core/shared_buffer_dispatcher.h"
 
 #include <stddef.h>
@@ -16,6 +11,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
@@ -157,7 +153,7 @@ scoped_refptr<SharedBufferDispatcher> SharedBufferDispatcher::Deserialize(
       MOJO_PLATFORM_SHARED_MEMORY_REGION_ACCESS_MODE_WRITABLE) {
     if (num_platform_handles != 2)
       return nullptr;
-    handles[1] = std::move(platform_handles[1]);
+    handles[1] = std::move(UNSAFE_TODO(platform_handles[1]));
   } else {
     if (num_platform_handles != 1)
       return nullptr;
@@ -195,18 +191,24 @@ scoped_refptr<SharedBufferDispatcher> SharedBufferDispatcher::Deserialize(
       return nullptr;
   }
 
-  auto region = base::subtle::PlatformSharedMemoryRegion::Take(
+  auto maybe_region = base::subtle::PlatformSharedMemoryRegion::TakeOrFail(
       CreateSharedMemoryRegionHandleFromPlatformHandles(std::move(handles[0]),
                                                         std::move(handles[1])),
       mode, static_cast<size_t>(serialized_state->num_bytes), guid.value());
-  if (!region.IsValid()) {
+  if (!maybe_region.has_value()) {
+    AssertNotExtractingHandlesFromMessage();
+    LOG(ERROR) << "Failed to deserialize platform shared memory region: "
+               << static_cast<int>(maybe_region.error());
+    return nullptr;
+  }
+  if (!maybe_region->IsValid()) {
     AssertNotExtractingHandlesFromMessage();
     LOG(ERROR)
         << "Invalid serialized shared buffer dispatcher (invalid num_bytes?)";
     return nullptr;
   }
 
-  return CreateInternal(std::move(region));
+  return CreateInternal(*std::move(maybe_region));
 }
 
 base::subtle::PlatformSharedMemoryRegion
@@ -360,8 +362,7 @@ bool SharedBufferDispatcher::EndSerialize(void* destination,
           MOJO_PLATFORM_SHARED_MEMORY_REGION_ACCESS_MODE_UNSAFE;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 
   const base::UnguessableToken& guid = region_.GetGUID();
@@ -379,7 +380,7 @@ bool SharedBufferDispatcher::EndSerialize(void* destination,
         region.PassPlatformHandle(), &platform_handles[0],
         &platform_handles[1]);
     handles[0] = std::move(platform_handles[0]);
-    handles[1] = std::move(platform_handles[1]);
+    UNSAFE_TODO(handles[1]) = std::move(platform_handles[1]);
     return true;
   }
 #endif

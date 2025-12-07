@@ -24,25 +24,32 @@
       }));
       const main = document.getElementById("main");
       const div = document.createElement("div");
-      const text = document.createTextNode("Lorem Ipsum");
+      const text = document.createTextNode(
+          'Lorem ipsum dolor sit amet, consectetur adipiscing elit, ' +
+          'sed do eiusmod tempor incididunt ut labore et dolore magna ' +
+          'aliqua. Ut enim ad minim veniam, quis nostrud exercitation ' +
+          'ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis ' +
+          'aute irure dolor in reprehenderit in voluptate velit esse ' +
+          'cillum dolore eu fugiat nulla pariatur. Excepteur sint ' +
+          'occaecat cupidatat non proident, sunt in culpa qui officia ' +
+          'deserunt mollit anim id est laborum.');
       div.appendChild(text);
       main.appendChild(div);
     }
-    const link = document.getElementById("link");
     testSoftNavigation({
+      testName: "Test that a visited link doesn't trigger LCP after a soft " +
+            "navigation is detected",
       addContent: async () => {
         await visitFakeURLAndAddInvisibleText();
       },
-      link: link,
-      validate: async () => {
+      extraValidations: async (t) => {
         await new Promise(r => step_timeout(r, 100));
-        const postVisitedLcp = await getLcpEntries();
-        assert_not_equals(postVisitedLcp[postVisitedLcp.length - 1].id,
+        const icps = await getBufferedEntries('interaction-contentful-paint');
+        assert_not_equals(icps[icps.length - 1].id,
                           "visited",
-                          "Soft Nav LCP ID should not be visited");
+                          "Soft Nav ICP ID should not be visited");
       },
-      test: "Test that a visited link doesn't trigger LCP after a soft " +
-            "navigation is detected"});
+          });
   </script>
 </body>
 </html>

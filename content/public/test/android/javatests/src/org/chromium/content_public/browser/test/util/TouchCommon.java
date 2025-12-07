@@ -289,7 +289,7 @@ public class TouchCommon {
     /**
      * Starts (synchronously) a drag motion. Normally followed by dragTo() and dragEnd().
      *
-     * @activity activity The activity where the touch action is being performed.
+     * @param activity activity The activity where the touch action is being performed.
      * @param x X coordinate, in screen coordinates.
      * @param y Y coordinate, in screen coordinates.
      * @param downTime When the drag was started, in millis since the epoch.
@@ -310,7 +310,7 @@ public class TouchCommon {
      * Drags / moves (synchronously) to the specified coordinates. Normally preceded by dragStart()
      * and followed by dragEnd()
      *
-     * @activity activity The activity where the touch action is being performed.
+     * @param activity activity The activity where the touch action is being performed.
      * @param fromX X coordinate of the initial touch, in screen coordinates.
      * @param toX X coordinate of the drag destination, in screen coordinates.
      * @param fromY X coordinate of the initial touch, in screen coordinates.
@@ -347,10 +347,10 @@ public class TouchCommon {
     }
 
     /**
-     * Finishes (synchronously) a drag / move at the specified coordinate.
-     * Normally preceded by dragStart() and dragTo().
+     * Finishes (synchronously) a drag / move at the specified coordinate. Normally preceded by
+     * dragStart() and dragTo().
      *
-     * @activity activity The activity where the touch action is being performed.
+     * @param activity activity The activity where the touch action is being performed.
      * @param x X coordinate, in screen coordinates.
      * @param y Y coordinate, in screen coordinates.
      * @param downTime When the drag was started, in millis since the epoch.
@@ -375,13 +375,25 @@ public class TouchCommon {
      * @param y Y coordinate, relative to v.
      */
     public static boolean singleClickView(View v, int x, int y) {
-        return singleClickViewThroughTarget(v, v.getRootView(), x, y);
+        return singleClickView(v, x, y, /* metaState= */ 0);
+    }
+
+    /**
+     * Sends (synchronously) a single click to the View at the specified view-relative coordinates.
+     *
+     * @param v The view to be clicked.
+     * @param x X coordinate, relative to v.
+     * @param y Y coordinate, relative to v.
+     * @param metaState The state of the meta keys.
+     */
+    public static boolean singleClickView(View v, int x, int y, int metaState) {
+        return singleClickViewThroughTarget(v, v.getRootView(), x, y, metaState);
     }
 
     /**
      * Sends a click event to the specified view, not going through the root view.
      *
-     * This is mostly useful for tests in VR, where inputs to the root view are (in a sense)
+     * <p>This is mostly useful for tests in VR, where inputs to the root view are (in a sense)
      * consumed by the platform, but the java test still wants to interact with, say, WebContents.
      *
      * @param view The view to be clicked.
@@ -391,14 +403,36 @@ public class TouchCommon {
      */
     /* package */ static boolean singleClickViewThroughTarget(
             View view, View target, int x, int y) {
+        return singleClickViewThroughTarget(view, target, x, y, /* metaState= */ 0);
+    }
+
+    /**
+     * Sends a click event to the specified view, not going through the root view.
+     *
+     * <p>This is mostly useful for tests in VR, where inputs to the root view are (in a sense)
+     * consumed by the platform, but the java test still wants to interact with, say, WebContents.
+     *
+     * @param view The view to be clicked.
+     * @param target The view to inject the input into.
+     * @param x X coordinate, relative to view.
+     * @param y Y coordinate, relative to view.
+     * @param metaState The state of the meta keys.
+     */
+    /* package */ static boolean singleClickViewThroughTarget(
+            View view, View target, int x, int y, int metaState) {
         int[] windowXY = viewToWindowCoordinates(view, x, y);
         int windowX = windowXY[0];
         int windowY = windowXY[1];
-        return singleClickInternal(target, windowX, windowY);
+        return singleClickInternal(target, windowX, windowY, metaState);
     }
 
     /** Sends (synchronously) a single click to the center of the View. */
     public static void singleClickView(View v) {
+        singleClickView(v, /* metaState= */ 0);
+    }
+
+    /** Sends (synchronously) a single click to the center of the View. */
+    public static void singleClickView(View v, int metaState) {
         int width = v.getWidth();
         int height = v.getHeight();
         if (width <= 0 || height <= 0) {
@@ -407,20 +441,23 @@ public class TouchCommon {
                             "Cannot click view with dimensions w%d x h%d, view=%s",
                             width, height, v));
         }
-        singleClickView(v, width / 2, height / 2);
+        singleClickView(v, width / 2, height / 2, metaState);
     }
 
-    private static boolean singleClickInternal(View view, float windowX, float windowY) {
+    private static boolean singleClickInternal(
+            View view, float windowX, float windowY, int metaState) {
         long downTime = SystemClock.uptimeMillis();
         long eventTime = SystemClock.uptimeMillis();
 
         MotionEvent event =
                 MotionEvent.obtain(
-                        downTime, eventTime, MotionEvent.ACTION_DOWN, windowX, windowY, 0);
+                        downTime, eventTime, MotionEvent.ACTION_DOWN, windowX, windowY, metaState);
         if (!dispatchTouchEvent(view, event)) return false;
 
         eventTime = SystemClock.uptimeMillis();
-        event = MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_UP, windowX, windowY, 0);
+        event =
+                MotionEvent.obtain(
+                        downTime, eventTime, MotionEvent.ACTION_UP, windowX, windowY, metaState);
         return dispatchTouchEvent(view, event);
     }
 
@@ -476,7 +513,7 @@ public class TouchCommon {
         int longPressTimeout = ViewConfiguration.getLongPressTimeout();
 
         // Long press is flaky with just longPressTimeout. Doubling the time to be safe.
-        SystemClock.sleep(longPressTimeout * 2);
+        SystemClock.sleep(longPressTimeout * 2L);
     }
 
     private static void longPressInternal(View view, float windowX, float windowY) {

@@ -8,6 +8,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/map_util.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/printing/local_printer_utils_chromeos.h"
 
 namespace printing {
@@ -65,7 +66,7 @@ void InProgressJobsStorageChromeOS::OnPrintJobUpdateDeprecated(
     const std::string& printer_id,
     uint32_t job_id,
     crosapi::mojom::PrintJobStatus status) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void InProgressJobsStorageChromeOS::OnPrintJobUpdate(

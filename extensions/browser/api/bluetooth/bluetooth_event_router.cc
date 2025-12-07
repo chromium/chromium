@@ -48,7 +48,7 @@ void IgnoreAdapterResultAndThen(
 
 std::string GetListenerId(const extensions::EventListenerInfo& details) {
   return !details.extension_id.empty() ? details.extension_id
-                                       : details.listener_url.host();
+                                       : details.listener_url.GetHost();
 }
 
 }  // namespace

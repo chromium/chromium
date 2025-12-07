@@ -4,6 +4,7 @@
 
 #include "ui/base/x/x11_workspace_handler.h"
 
+#include "base/compiler_specific.h"
 #include "base/strings/string_number_conversions.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/x/atom_cache.h"
@@ -65,7 +66,7 @@ void X11WorkspaceHandler::OnWorkspaceResponse(
   DCHECK_EQ(response->type, static_cast<x11::Atom>(x11::Atom::CARDINAL));
 
   uint32_t workspace;
-  memcpy(&workspace, response->value->bytes(), 4);
+  UNSAFE_TODO(memcpy(&workspace, response->value->bytes(), 4));
   workspace_ = base::NumberToString(workspace);
   delegate_->OnCurrentWorkspaceChanged(workspace_);
 }

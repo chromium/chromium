@@ -13,6 +13,7 @@ import static org.chromium.chrome.browser.browserservices.TrustedWebActivityTest
 import static org.chromium.chrome.browser.browserservices.TrustedWebActivityTestUtil.isTrustedWebActivity;
 import static org.chromium.chrome.browser.browserservices.TrustedWebActivityTestUtil.spoofVerification;
 
+import android.os.Build;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -37,14 +38,17 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
@@ -53,7 +57,7 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.ThemeTestUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServerRule;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
@@ -65,6 +69,7 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Features.DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
 @DoNotBatch(reason = "https://crbug.com/1454648")
 public class TrustedWebActivityTest {
     // TODO(peconn): Add test for navigating away from the trusted origin.
@@ -152,7 +157,11 @@ public class TrustedWebActivityTest {
     @Test
     @MediumTest
     @Feature({"StatusBar"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
+    // TODO(crbug.com/428056054): Do not read color from system window bars on B+.
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
+            message = "crbug.com/428056054")
     // Customizing status bar color is disallowed for tablets.
     public void testStatusBarColorHasPageThemeColor() throws ExecutionException, TimeoutException {
         final String pageWithThemeColor =
@@ -175,7 +184,11 @@ public class TrustedWebActivityTest {
     @Test
     @MediumTest
     @Feature({"StatusBar"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
+    // TODO(crbug.com/428056054): Do not read color from system window bars on B+.
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
+            message = "crbug.com/428056054")
     public void testStatusBarColorNoPageThemeColor() throws ExecutionException, TimeoutException {
         final String pageWithThemeColor =
                 mEmbeddedTestServerRule
@@ -207,8 +220,12 @@ public class TrustedWebActivityTest {
     @Test
     @MediumTest
     @Feature({"StatusBar"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
     @DisabledTest(message = "b/352624584")
+    // TODO(crbug.com/428056054): Do not read color from system window bars on B+.
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
+            message = "crbug.com/428056054")
     public void testStatusBarColorCertificateError() throws ExecutionException, TimeoutException {
         final String pageWithThemeColor =
                 mEmbeddedTestServerRule

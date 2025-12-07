@@ -2,36 +2,43 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "components/optimization_guide/core/delivery/prediction_manager.h"
+
 #import "base/containers/contains.h"
 #import "base/files/file_util.h"
+#import "base/task/thread_pool.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_command_line.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/component_updater/pref_names.h"
 #import "components/download/internal/background_service/ios/background_download_task_helper.h"
+#import "components/optimization_guide/core/delivery/optimization_target_model_observer.h"
 #import "components/optimization_guide/core/optimization_guide_constants.h"
 #import "components/optimization_guide/core/optimization_guide_enums.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "components/optimization_guide/core/optimization_guide_prefs.h"
 #import "components/optimization_guide/core/optimization_guide_switches.h"
-#import "components/optimization_guide/core/optimization_target_model_observer.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "components/variations/hashing.h"
 #import "components/variations/scoped_variations_ids_provider.h"
-#import "ios/chrome/browser/optimization_guide/model/ios_chrome_prediction_model_store.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_test_utils.h"
+#import "ios/chrome/browser/profile/model/test_with_profile.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
+#import "ios/chrome/browser/shared/model/profile/scoped_profile_keep_alive_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "net/test/embedded_test_server/default_handlers.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
+#import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#import "services/network/test/test_url_loader_factory.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -79,8 +86,9 @@ class ModelFileObserver
       optimization_guide::proto::OptimizationTarget optimization_target,
       base::optional_ref<const optimization_guide::ModelInfo> model_info)
       override {
-    if (file_received_callback_)
+    if (file_received_callback_) {
       std::move(file_received_callback_).Run(optimization_target, model_info);
+    }
   }
 
  private:
@@ -97,13 +105,12 @@ enum class PredictionModelsFetcherRemoteResponseType {
 
 }  // namespace
 
-class PredictionManagerTestBase : public PlatformTest {
+class PredictionManagerTestBase : public TestWithProfile {
  public:
   void SetUp() override {
-    PlatformTest::SetUp();
+    TestWithProfile::SetUp();
 
     InitializeFeatureList();
-    OptimizationGuideServiceFactory::InitializePredictionModelStore();
 
     download::BackgroundDownloadTaskHelper::SetIgnoreLocalSSLErrorForTesting(
         true);
@@ -133,39 +140,19 @@ class PredictionManagerTestBase : public PlatformTest {
         models_server_->GetURL("/additional_file_doesnt_exist.crx3");
     SetUpCommandLine(scoped_command_line_.GetProcessCommandLine());
 
-    auto testing_prefs =
-        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
-    RegisterBrowserStatePrefs(testing_prefs->registry());
-    TestChromeBrowserState::Builder builder;
-    builder.AddTestingFactory(
-        OptimizationGuideServiceFactory::GetInstance(),
-        OptimizationGuideServiceFactory::GetDefaultFactory());
-    builder.SetPrefService(std::move(testing_prefs));
-    browser_state_ = std::move(builder).Build();
-
-    OptimizationGuideServiceFactory::GetForBrowserState(browser_state_.get())
-        ->DoFinalInit(BackgroundDownloadServiceFactory::GetForBrowserState(
-            browser_state_.get()));
-  }
-
-  void CreateOffTheRecordBrowserState() {
-    ChromeBrowserState* otr_browser_state =
-        browser_state_->CreateOffTheRecordBrowserStateWithTestingFactories(
-            {TestChromeBrowserState::TestingFactory{
-                OptimizationGuideServiceFactory::GetInstance(),
-                OptimizationGuideServiceFactory::GetDefaultFactory()}});
-    OptimizationGuideServiceFactory::GetForBrowserState(otr_browser_state)
-        ->DoFinalInit();
+    scoped_profile_ = CreateProfile("foo");
+    TestingApplicationContext::GetGlobal()
+        ->GetOptimizationGuideGlobalState()
+        ->prediction_manager()
+        .SetUrlLoaderFactoryForTesting(
+            scoped_profile_.profile()->GetSharedURLLoaderFactory());
   }
 
   void TearDown() override {
     download::BackgroundDownloadTaskHelper::SetIgnoreLocalSSLErrorForTesting(
         false);
-    // Reinitialize the store, so that tests do not use state from the
-    // previous test.
-    optimization_guide::IOSChromePredictionModelStore::GetInstance()
-        ->ResetForTesting();
-    PlatformTest::TearDown();
+    scoped_profile_.Reset();
+    TestWithProfile::TearDown();
   }
 
   void SetResponseType(
@@ -174,10 +161,13 @@ class PredictionManagerTestBase : public PlatformTest {
   }
 
   void RegisterWithKeyedService(ModelFileObserver* model_file_observer) {
-    OptimizationGuideServiceFactory::GetForBrowserState(browser_state_.get())
+    OptimizationGuideServiceFactory::GetForProfile(scoped_profile_.profile())
         ->AddObserverForOptimizationTargetModel(
             optimization_guide::proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-            std::nullopt, model_file_observer);
+            std::nullopt,
+            base::ThreadPool::CreateSequencedTaskRunner(
+                {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
+            model_file_observer);
   }
 
   void SetComponentUpdatesEnabled(bool enabled) {
@@ -191,10 +181,8 @@ class PredictionManagerTestBase : public PlatformTest {
   virtual void SetUpCommandLine(base::CommandLine* cmd) {
     cmd->AppendSwitch("enable-spdy-proxy-auth");
 
-    cmd->AppendSwitch(optimization_guide::switches::
-                          kDisableCheckingUserPermissionsForTesting);
-    cmd->AppendSwitchASCII(optimization_guide::switches::kFetchHintsOverride,
-                           "whatever.com,somehost.com");
+    cmd->AppendSwitch(
+        optimization_guide::switches::kGoogleApiKeyConfigurationCheckOverride);
     cmd->AppendSwitchASCII(
         optimization_guide::switches::kOptimizationGuideServiceGetModelsURL,
         models_server_->GetURL("/").spec());
@@ -203,7 +191,7 @@ class PredictionManagerTestBase : public PlatformTest {
     auto* variations_ids_provider =
         variations::VariationsIdsProvider::GetInstance();
     ASSERT_TRUE(variations_ids_provider != nullptr);
-    variations_ids_provider->ForceVariationIds({}, {"4"});
+    variations_ids_provider->ForceVariationIdsForTesting({}, {"4"});
     cmd->AppendSwitch("append-variations-headers-to-localhost");
   }
 
@@ -211,12 +199,15 @@ class PredictionManagerTestBase : public PlatformTest {
       const net::test_server::HttpRequest& request) {
     // Returning nullptr will cause the test server to fallback to serving the
     // file from the test data directory.
-    if (request.GetURL() == model_file_url_)
+    if (request.GetURL() == model_file_url_) {
       return nullptr;
-    if (request.GetURL() == model_file_with_good_additional_file_url_)
+    }
+    if (request.GetURL() == model_file_with_good_additional_file_url_) {
       return nullptr;
-    if (request.GetURL() == model_file_with_nonexistent_additional_file_url_)
+    }
+    if (request.GetURL() == model_file_with_nonexistent_additional_file_url_) {
       return nullptr;
+    }
 
     std::unique_ptr<net::test_server::BasicHttpResponse> response;
 
@@ -267,17 +258,15 @@ class PredictionManagerTestBase : public PlatformTest {
   GURL https_url_with_content_;
   GURL https_url_without_content_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  web::WebTaskEnvironment task_environment_{
-      web::WebTaskEnvironment::MainThreadType::IO};
-  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  ScopedProfileKeepAliveIOS scoped_profile_;
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   base::test::ScopedCommandLine scoped_command_line_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   std::unique_ptr<net::EmbeddedTestServer> models_server_;
   PredictionModelsFetcherRemoteResponseType response_type_ =
       PredictionModelsFetcherRemoteResponseType::kSuccessfulWithValidModelFile;
+  network::TestURLLoaderFactory test_loader_factory_;
 };
 
 class PredictionManagerTest : public PredictionManagerTestBase {
@@ -285,10 +274,8 @@ class PredictionManagerTest : public PredictionManagerTestBase {
   void InitializeFeatureList() override {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {optimization_guide::features::kOptimizationHints, {}},
-        {optimization_guide::features::kRemoteOptimizationGuideFetching, {}},
         {optimization_guide::features::kOptimizationTargetPrediction,
          {{"fetch_startup_delay_ms", "2000"}}},
-        {optimization_guide::features::kOptimizationGuideModelDownloading, {}},
     };
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
   }
@@ -300,7 +287,7 @@ TEST_F(PredictionManagerTest, ComponentUpdatesEnabledPrefDisabled) {
   SetComponentUpdatesEnabled(false);
   base::HistogramTester histogram_tester;
   RegisterWithKeyedService(&model_file_observer);
-  task_environment_.RunUntilIdle();
+  base::RunLoop().RunUntilIdle();
 
   // Should not have made fetch request.
   histogram_tester.ExpectTotalCount(
@@ -370,13 +357,15 @@ class PredictionManagerModelDownloadingBrowserTest
     return model_file_observer_.get();
   }
 
-  void RegisterModelFileObserverWithBrowserState(
-      ChromeBrowserState* browser_state = nullptr) {
-    OptimizationGuideServiceFactory::GetForBrowserState(
-        browser_state ? browser_state : browser_state_.get())
+  void RegisterModelFileObserverWithProfile(ProfileIOS* profile = nullptr) {
+    OptimizationGuideServiceFactory::GetForProfile(
+        profile ? profile : scoped_profile_.profile())
         ->AddObserverForOptimizationTargetModel(
             optimization_guide::proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-            /*model_metadata=*/std::nullopt, model_file_observer_.get());
+            /*model_metadata=*/std::nullopt,
+            base::ThreadPool::CreateSequencedTaskRunner(
+                {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
+            model_file_observer_.get());
   }
 
   // Sets up the model observer to receive valid ModelInfo.
@@ -427,11 +416,8 @@ class PredictionManagerModelDownloadingBrowserTest
   void InitializeFeatureList() override {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {optimization_guide::features::kOptimizationHints, {}},
-        {optimization_guide::features::kRemoteOptimizationGuideFetching, {}},
         {optimization_guide::features::kOptimizationTargetPrediction,
          {{"fetch_startup_delay_ms", "2000"}}},
-        {optimization_guide::features::kOptimizationGuideModelDownloading,
-         {{"unrestricted_model_downloading", "true"}}},
     };
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
   }
@@ -439,81 +425,6 @@ class PredictionManagerModelDownloadingBrowserTest
  protected:
   std::unique_ptr<ModelFileObserver> model_file_observer_;
 };
-
-TEST_F(PredictionManagerModelDownloadingBrowserTest,
-       TestIncognitoUsesModelFromRegularProfile) {
-  SetResponseType(
-      PredictionModelsFetcherRemoteResponseType::kSuccessfulWithValidModelFile);
-
-  // Set up model download with regular profile.
-  {
-    base::HistogramTester histogram_tester;
-
-    std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
-    SetUpValidModelInfoReceival(run_loop.get());
-    RegisterModelFileObserverWithBrowserState();
-
-    // Wait until the observer receives the file. We increase the timeout to 60
-    // seconds here since the file is on the larger side.
-    {
-      base::test::ScopedRunLoopTimeout file_download_timeout(FROM_HERE,
-                                                             base::Seconds(60));
-      run_loop->Run();
-    }
-    task_environment_.RunUntilIdle();
-
-    histogram_tester.ExpectUniqueSample(
-        "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus",
-        optimization_guide::PredictionModelDownloadStatus::kSuccess, 1);
-
-    histogram_tester.ExpectUniqueSample(
-        "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad",
-        kSuccessfulModelVersion, 1);
-    histogram_tester.ExpectUniqueSample(
-        "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad",
-        kSuccessfulModelVersion, 1);
-  }
-
-  // Now set up model download with incognito profile. Download should not
-  // happen, but the OnModelUpdated callback should be triggered.
-  {
-    base::HistogramTester otr_histogram_tester;
-    CreateOffTheRecordBrowserState();
-    std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
-    SetUpValidModelInfoReceival(run_loop.get());
-    RegisterModelFileObserverWithBrowserState(
-        browser_state_->GetOffTheRecordChromeBrowserState());
-    task_environment_.RunUntilIdle();
-    otr_histogram_tester.ExpectTotalCount(
-        "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus", 0);
-    otr_histogram_tester.ExpectTotalCount(
-        "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad", 0);
-  }
-}
-
-TEST_F(PredictionManagerModelDownloadingBrowserTest,
-       TestIncognitoDoesntFetchModels) {
-  base::HistogramTester histogram_tester;
-  CreateOffTheRecordBrowserState();
-
-  SetResponseType(PredictionModelsFetcherRemoteResponseType::
-                      kSuccessfulWithInvalidModelFile);
-
-  // Registering should not initiate the fetch and the model updated callback
-  // should not be triggered too.
-  SetUpNoModelInfoReceival();
-  RegisterModelFileObserverWithBrowserState(
-      browser_state_->GetOffTheRecordChromeBrowserState());
-
-  RetryForHistogramUntilCountReached(
-      &histogram_tester, "OptimizationGuide.PredictionManager.StoreInitialized",
-      1);
-
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus", 0);
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad", 0);
-}
 
 TEST_F(PredictionManagerModelDownloadingBrowserTest,
        TestDownloadUrlAcceptedByDownloadServiceButInvalid) {
@@ -524,7 +435,7 @@ TEST_F(PredictionManagerModelDownloadingBrowserTest,
 
   // Registering should initiate the fetch and receive a response with a model
   // containing a download URL and then subsequently downloaded.
-  RegisterModelFileObserverWithBrowserState();
+  RegisterModelFileObserverWithProfile();
 
   RetryForHistogramUntilCountReached(
       &histogram_tester,
@@ -551,7 +462,7 @@ TEST_F(PredictionManagerModelDownloadingBrowserTest,
 
   // Registering should initiate the fetch and receive a response with a model
   // containing a download URL and then subsequently downloaded.
-  RegisterModelFileObserverWithBrowserState();
+  RegisterModelFileObserverWithProfile();
 
   // Wait until the observer receives the file. We increase the timeout to 60
   // seconds here since the file is on the larger side.
@@ -589,7 +500,7 @@ TEST_F(PredictionManagerModelDownloadingBrowserTest,
 
   // Registering should initiate the fetch and receive a response with a model
   // containing a download URL and then subsequently downloaded.
-  RegisterModelFileObserverWithBrowserState();
+  RegisterModelFileObserverWithProfile();
 
   // Wait until the observer receives the file. We increase the timeout to 60
   // seconds here since the file is on the larger side.
@@ -625,12 +536,12 @@ TEST_F(PredictionManagerModelDownloadingBrowserTest,
   // Registering should initiate the fetch and receive a response with a model
   // containing a download URL and then subsequently downloaded. But the model
   // with invalid additional file, will not be delivered to observers.
-  RegisterModelFileObserverWithBrowserState();
+  RegisterModelFileObserverWithProfile();
 
   RetryForHistogramUntilCountReached(
       &histogram_tester,
       "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus", 1);
-  task_environment_.RunUntilIdle();
+  base::RunLoop().RunUntilIdle();
 
   // The additional file does not exist.
   histogram_tester.ExpectUniqueSample(

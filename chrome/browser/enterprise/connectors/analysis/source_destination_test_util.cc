@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/connectors/analysis/source_destination_test_util.h"
 
 #include "base/files/file_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"

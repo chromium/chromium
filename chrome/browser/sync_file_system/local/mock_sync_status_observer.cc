@@ -6,10 +6,8 @@
 
 namespace sync_file_system {
 
-MockSyncStatusObserver::MockSyncStatusObserver() {
-}
+MockSyncStatusObserver::MockSyncStatusObserver() = default;
 
-MockSyncStatusObserver::~MockSyncStatusObserver() {
-}
+MockSyncStatusObserver::~MockSyncStatusObserver() = default;
 
 }  // namespace sync_file_system

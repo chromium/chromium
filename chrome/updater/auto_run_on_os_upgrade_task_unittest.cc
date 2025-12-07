@@ -18,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "chrome/updater/activity.h"
 #include "chrome/updater/persisted_data.h"
@@ -47,9 +48,6 @@ constexpr char kLastOSVersion[] = "last_os_version";
 
 class AutoRunOnOsUpgradeTaskTest : public testing::Test {
  protected:
-  AutoRunOnOsUpgradeTaskTest() = default;
-  ~AutoRunOnOsUpgradeTaskTest() override = default;
-
   void SetUp() override {
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     update_client::RegisterPrefs(pref_service_->registry());
@@ -77,6 +75,7 @@ class AutoRunOnOsUpgradeTaskTest : public testing::Test {
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   base::CommandLine cmd_exe_command_line_{base::CommandLine::NO_PROGRAM};
   base::ScopedTempDir temp_programfiles_dir_;
+  base::test::TaskEnvironment environment_;
 };
 
 TEST_F(AutoRunOnOsUpgradeTaskTest, RunOnOsUpgradeForApp) {
@@ -102,7 +101,7 @@ TEST_F(AutoRunOnOsUpgradeTaskTest, RunOnOsUpgradeForApp) {
       base::StrCat({cmd_exe_command_line_.GetCommandLineString(), L" ",
                     kCmdLineCreateHardcodedFile}));
 
-  ASSERT_EQ(os_upgrade_task->RunOnOsUpgradeForApp(base::WideToASCII(kAppId)),
+  ASSERT_EQ(os_upgrade_task->RunOnOsUpgradeForApp(base::WideToUTF8(kAppId)),
             2U);
 
   const std::wstring os_upgrade_string = [&] {
@@ -113,7 +112,7 @@ TEST_F(AutoRunOnOsUpgradeTaskTest, RunOnOsUpgradeForApp) {
           version.dwBuildNumber, version.wServicePackMajor,
           version.wServicePackMinor, versions.empty() ? "-" : "");
     }
-    return base::ASCIIToWide(versions);
+    return base::UTF8ToWide(versions);
   }();
 
   base::FilePath current_directory;

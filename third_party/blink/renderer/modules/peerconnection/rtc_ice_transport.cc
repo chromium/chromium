@@ -10,8 +10,11 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_ice_gathering_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_ice_parameters.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_ice_role.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_ice_server.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_ice_transport_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_peer_connection_ice_event_init.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -29,7 +32,6 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/webrtc/api/ice_transport_factory.h"
 #include "third_party/webrtc/api/ice_transport_interface.h"
-#include "third_party/webrtc/api/jsep_ice_candidate.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
 #include "third_party/webrtc/p2p/base/port_allocator.h"
 #include "third_party/webrtc/p2p/base/transport_description.h"
@@ -38,26 +40,19 @@
 namespace blink {
 namespace {
 
-const char* kIceRoleControllingStr = "controlling";
-const char* kIceRoleControlledStr = "controlled";
-
-RTCIceCandidate* ConvertToRtcIceCandidate(const cricket::Candidate& candidate) {
-  std::string url = candidate.url();
-  std::optional<String> optional_url;
-  if (!url.empty()) {
-    optional_url = String(url);
-  }
+RTCIceCandidate* ConvertToRtcIceCandidate(const webrtc::Candidate& candidate) {
   // The "" mid and sdpMLineIndex 0 are wrong, see https://crbug.com/1385446
+  const bool kIncludeUfrag = true;
   return RTCIceCandidate::Create(MakeGarbageCollected<RTCIceCandidatePlatform>(
-      String::FromUTF8(webrtc::SdpSerializeCandidate(candidate)), "", 0,
-      String(candidate.username()), optional_url));
+      String::FromUTF8(candidate.ToCandidateAttribute(kIncludeUfrag)), "", 0,
+      String(candidate.username()), String(candidate.url())));
 }
 
 class DtlsIceTransportAdapterCrossThreadFactory
     : public IceTransportAdapterCrossThreadFactory {
  public:
   explicit DtlsIceTransportAdapterCrossThreadFactory(
-      rtc::scoped_refptr<webrtc::IceTransportInterface> ice_transport)
+      webrtc::scoped_refptr<webrtc::IceTransportInterface> ice_transport)
       : ice_transport_(ice_transport) {}
   void InitializeOnMainThread(LocalFrame& frame) override {
   }
@@ -70,14 +65,14 @@ class DtlsIceTransportAdapterCrossThreadFactory
   }
 
  private:
-  rtc::scoped_refptr<webrtc::IceTransportInterface> ice_transport_;
+  webrtc::scoped_refptr<webrtc::IceTransportInterface> ice_transport_;
 };
 
 }  // namespace
 
 RTCIceTransport* RTCIceTransport::Create(
     ExecutionContext* context,
-    rtc::scoped_refptr<webrtc::IceTransportInterface> ice_transport,
+    webrtc::scoped_refptr<webrtc::IceTransportInterface> ice_transport,
     RTCPeerConnection* peer_connection) {
   scoped_refptr<base::SingleThreadTaskRunner> proxy_thread =
       context->GetTaskRunner(TaskType::kNetworking);
@@ -119,52 +114,49 @@ RTCIceTransport::~RTCIceTransport() {
   DCHECK(!proxy_);
 }
 
-String RTCIceTransport::role() const {
+std::optional<V8RTCIceRole> RTCIceTransport::role() const {
   switch (role_) {
-    case cricket::ICEROLE_CONTROLLING:
-      return kIceRoleControllingStr;
-    case cricket::ICEROLE_CONTROLLED:
-      return kIceRoleControlledStr;
-    case cricket::ICEROLE_UNKNOWN:
-      return String();
+    case webrtc::ICEROLE_CONTROLLING:
+      return V8RTCIceRole(V8RTCIceRole::Enum::kControlling);
+    case webrtc::ICEROLE_CONTROLLED:
+      return V8RTCIceRole(V8RTCIceRole::Enum::kControlled);
+    case webrtc::ICEROLE_UNKNOWN:
+      return std::nullopt;
   }
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
-String RTCIceTransport::state() const {
+V8RTCIceTransportState RTCIceTransport::state() const {
   switch (state_) {
     case webrtc::IceTransportState::kNew:
-      return "new";
+      return V8RTCIceTransportState(V8RTCIceTransportState::Enum::kNew);
     case webrtc::IceTransportState::kChecking:
-      return "checking";
+      return V8RTCIceTransportState(V8RTCIceTransportState::Enum::kChecking);
     case webrtc::IceTransportState::kConnected:
-      return "connected";
+      return V8RTCIceTransportState(V8RTCIceTransportState::Enum::kConnected);
     case webrtc::IceTransportState::kCompleted:
-      return "completed";
+      return V8RTCIceTransportState(V8RTCIceTransportState::Enum::kCompleted);
     case webrtc::IceTransportState::kDisconnected:
-      return "disconnected";
+      return V8RTCIceTransportState(
+          V8RTCIceTransportState::Enum::kDisconnected);
     case webrtc::IceTransportState::kFailed:
-      return "failed";
+      return V8RTCIceTransportState(V8RTCIceTransportState::Enum::kFailed);
     case webrtc::IceTransportState::kClosed:
-      return "closed";
+      return V8RTCIceTransportState(V8RTCIceTransportState::Enum::kClosed);
   }
-  NOTREACHED_IN_MIGRATION();
-  return g_empty_string;
+  NOTREACHED();
 }
 
-String RTCIceTransport::gatheringState() const {
+V8RTCIceGatheringState RTCIceTransport::gatheringState() const {
   switch (gathering_state_) {
-    case cricket::kIceGatheringNew:
-      return "new";
-    case cricket::kIceGatheringGathering:
-      return "gathering";
-    case cricket::kIceGatheringComplete:
-      return "complete";
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return g_empty_string;
+    case webrtc::kIceGatheringNew:
+      return V8RTCIceGatheringState(V8RTCIceGatheringState::Enum::kNew);
+    case webrtc::kIceGatheringGathering:
+      return V8RTCIceGatheringState(V8RTCIceGatheringState::Enum::kGathering);
+    case webrtc::kIceGatheringComplete:
+      return V8RTCIceGatheringState(V8RTCIceGatheringState::Enum::kComplete);
   }
+  NOTREACHED();
 }
 
 const HeapVector<Member<RTCIceCandidate>>& RTCIceTransport::getLocalCandidates()
@@ -190,11 +182,11 @@ RTCIceParameters* RTCIceTransport::getRemoteParameters() const {
 }
 
 void RTCIceTransport::OnGatheringStateChanged(
-    cricket::IceGatheringState new_state) {
+    webrtc::IceGatheringState new_state) {
   if (new_state == gathering_state_) {
     return;
   }
-  if (new_state == cricket::kIceGatheringComplete) {
+  if (new_state == webrtc::kIceGatheringComplete) {
     // Generate a null ICE candidate to signal the end of candidates.
     DispatchEvent(*RTCPeerConnectionIceEvent::Create(nullptr));
   }
@@ -202,7 +194,7 @@ void RTCIceTransport::OnGatheringStateChanged(
   DispatchEvent(*Event::Create(event_type_names::kGatheringstatechange));
 }
 void RTCIceTransport::OnCandidateGathered(
-    const cricket::Candidate& parsed_candidate) {
+    const webrtc::Candidate& parsed_candidate) {
   RTCIceCandidate* candidate = ConvertToRtcIceCandidate(parsed_candidate);
   local_candidates_.push_back(candidate);
 }
@@ -234,7 +226,7 @@ void RTCIceTransport::OnStateChanged(webrtc::IceTransportState new_state) {
 }
 
 void RTCIceTransport::OnSelectedCandidatePairChanged(
-    const std::pair<cricket::Candidate, cricket::Candidate>&
+    const std::pair<webrtc::Candidate, webrtc::Candidate>&
         selected_candidate_pair) {
   RTCIceCandidate* local =
       ConvertToRtcIceCandidate(selected_candidate_pair.first);

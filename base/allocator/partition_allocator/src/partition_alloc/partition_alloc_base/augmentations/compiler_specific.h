@@ -9,6 +9,18 @@
 
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 
+// Indicate whether `operator<=>()` is supported by both language and library.
+// This can be removed once the minimum C++ version is C++20.
+#if __has_include(<version>)
+#include <version>
+#endif
+#if defined(__cpp_lib_three_way_comparison) && \
+    __cpp_lib_three_way_comparison >= 201907L
+#define PA_HAVE_SPACESHIP_OPERATOR 1
+#else
+#define PA_HAVE_SPACESHIP_OPERATOR 0
+#endif
+
 // PA_ATTRIBUTE_RETURNS_NONNULL
 //
 // Tells the compiler that a function never returns a null pointer.

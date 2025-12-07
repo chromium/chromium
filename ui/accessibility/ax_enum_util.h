@@ -136,6 +136,9 @@ AX_BASE_EXPORT const char* ToString(ax::mojom::NameFrom name_from);
 AX_BASE_EXPORT const char* ToString(
     ax::mojom::DescriptionFrom description_from);
 
+// ax::mojom::DetailsFrom
+AX_BASE_EXPORT const char* ToString(ax::mojom::DetailsFrom details_from);
+
 // ax::mojom::EventFrom
 AX_BASE_EXPORT const char* ToString(ax::mojom::EventFrom event_from);
 
@@ -173,7 +176,7 @@ std::optional<T> MaybeParseAXEnum(const char* attribute) {
     for (auto i = base::to_underlying(T::kMinValue);
          i <= base::to_underlying(T::kMaxValue); ++i) {
       T attr = T{i};
-      std::string str = ui::ToString(attr);
+      std::string str = ToString(attr);
       entries.push_back({std::move(str), attr});
     }
     return base::flat_map(std::move(entries));
@@ -187,7 +190,7 @@ std::optional<T> MaybeParseAXEnum(const char* attribute) {
 
 // Convert from the string representation of an enum defined in ax_enums.mojom
 // into the enum value. The first time this is called, builds up a map.
-// Relies on the existence of ui::ToString(enum).
+// Relies on the existence of ToString(enum).
 template <typename T>
 T ParseAXEnum(const char* attribute) {
   auto result = MaybeParseAXEnum<T>(attribute);
@@ -195,9 +198,7 @@ T ParseAXEnum(const char* attribute) {
     return result.value();
   }
 
-  LOG(ERROR) << "Could not parse: " << attribute;
-  NOTREACHED_IN_MIGRATION();
-  return T::kNone;
+  NOTREACHED() << "Could not parse: " << attribute;
 }
 
 }  // namespace ui

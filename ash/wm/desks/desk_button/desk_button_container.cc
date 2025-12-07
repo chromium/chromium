@@ -6,8 +6,6 @@
 
 #include <vector>
 
-#include "ash/public/cpp/desk_profiles_delegate.h"
-#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/desk_button_widget.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -20,11 +18,13 @@
 #include "base/notreached.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/background.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -33,44 +33,11 @@ DeskButtonContainer::DeskButtonContainer() = default;
 DeskButtonContainer::~DeskButtonContainer() = default;
 
 // static
-bool DeskButtonContainer::ShouldShowDeskProfilesUi() {
-  if (!chromeos::features::IsDeskProfilesEnabled()) {
-    return false;
-  }
-  auto* desk_profiles_delegate = Shell::Get()->GetDeskProfilesDelegate();
-  if (!desk_profiles_delegate ||
-      desk_profiles_delegate->GetProfilesSnapshot().size() < 2u) {
-    return false;
-  }
-  return true;
-}
-
-// static
 int DeskButtonContainer::GetMaxLength(bool zero_state) {
   if (zero_state) {
     return kDeskButtonContainerHeightVertical;
   }
-  if (ShouldShowDeskProfilesUi()) {
-    return kDeskButtonContainerWidthHorizontalExpandedWithAvatar;
-  }
   return kDeskButtonContainerWidthHorizontalExpandedNoAvatar;
-}
-
-void DeskButtonContainer::OnProfileUpsert(const LacrosProfileSummary& summary) {
-  UpdateUiAndLayoutIfNeeded(DesksController::Get()->active_desk());
-}
-
-void DeskButtonContainer::OnProfileRemoved(uint64_t profile_id) {
-  UpdateUiAndLayoutIfNeeded(DesksController::Get()->active_desk());
-}
-
-void DeskButtonContainer::OnFirstSessionStarted() {
-  // The desk profiles delegate will be available if lacros and desk profiles
-  // are both enabled.
-  desk_profiles_observer_.Reset();
-  if (auto* delegate = Shell::Get()->GetDeskProfilesDelegate()) {
-    desk_profiles_observer_.Observe(delegate);
-  }
 }
 
 gfx::Size DeskButtonContainer::CalculatePreferredSize(
@@ -108,7 +75,7 @@ void DeskButtonContainer::Layout(PassKey) {
     }
 
     if (base::i18n::IsRTL()) {
-      std::reverse(views_to_layout.begin(), views_to_layout.end());
+      std::ranges::reverse(views_to_layout);
     }
 
     int x = kDeskButtonContainerInsetsHorizontal.left();
@@ -203,7 +170,7 @@ std::u16string DeskButtonContainer::GetTitleForView(
   } else if (view == next_desk_button_) {
     return next_desk_button_->GetTitle();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void DeskButtonContainer::Init(DeskButtonWidget* desk_button_widget) {
@@ -237,12 +204,11 @@ void DeskButtonContainer::Init(DeskButtonWidget* desk_button_widget) {
           .Build());
 
   desks_observation_.Observe(DesksController::Get());
-  session_observer_.Observe(SessionController::Get());
 }
 
 void DeskButtonContainer::UpdateUi(const Desk* active_desk) {
   SetBackground(zero_state_ ? nullptr
-                            : views::CreateThemedRoundedRectBackground(
+                            : views::CreateRoundedRectBackground(
                                   cros_tokens::kCrosSysSystemOnBase,
                                   kDeskButtonContainerCornerRadius));
   desk_button_->SetZeroState(zero_state_);
@@ -269,11 +235,11 @@ void DeskButtonContainer::HandleLocaleChange() {
 void DeskButtonContainer::MaybeShowContextMenu(views::View* source,
                                                ui::LocatedEvent* event) {
   if (!desk_button_->is_activated()) {
-    ui::MenuSourceType source_type = ui::MenuSourceType::MENU_SOURCE_MOUSE;
+    ui::mojom::MenuSourceType source_type = ui::mojom::MenuSourceType::kMouse;
     if (event->type() == ui::EventType::kGestureLongPress) {
-      source_type = ui::MenuSourceType::MENU_SOURCE_LONG_PRESS;
+      source_type = ui::mojom::MenuSourceType::kLongPress;
     } else if (event->type() == ui::EventType::kGestureLongTap) {
-      source_type = ui::MenuSourceType::MENU_SOURCE_LONG_TAP;
+      source_type = ui::mojom::MenuSourceType::kLongTap;
     }
     gfx::Point location_in_screen(event->location());
     View::ConvertPointToScreen(source, &location_in_screen);
@@ -282,6 +248,10 @@ void DeskButtonContainer::MaybeShowContextMenu(views::View* source,
 
   event->SetHandled();
   event->StopPropagation();
+}
+
+void DeskButtonContainer::InitializeAccessibleProperties() {
+  desk_button()->UpdateAccessiblePreviousAndNextFocus();
 }
 
 BEGIN_METADATA(DeskButtonContainer)

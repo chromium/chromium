@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
@@ -19,12 +19,13 @@
 #include "chrome/browser/sync_file_system/remote_file_sync_service.h"
 #include "chrome/browser/sync_file_system/sync_action.h"
 #include "chrome/browser/sync_file_system/sync_direction.h"
-#include "components/drive/drive_notification_observer.h"
 #include "components/drive/service/drive_service_interface.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+
+class Profile;
 
 namespace base {
 class SequencedTaskRunner;
@@ -32,13 +33,7 @@ class SequencedTaskRunner;
 
 namespace drive {
 class DriveServiceInterface;
-class DriveNotificationManager;
 class DriveUploaderInterface;
-}
-
-namespace extensions {
-class ExtensionRegistry;
-class ExtensionServiceInterface;
 }
 
 namespace leveldb {
@@ -65,7 +60,6 @@ class SyncWorkerInterface;
 class SyncEngine
     : public RemoteFileSyncService,
       public LocalChangeProcessor,
-      public drive::DriveNotificationObserver,
       public drive::DriveServiceObserver,
       public signin::IdentityManager::Observer,
       public network::NetworkConnectionTracker::NetworkConnectionObserver {
@@ -74,12 +68,12 @@ class SyncEngine
 
   class DriveServiceFactory {
    public:
-    DriveServiceFactory() {}
+    DriveServiceFactory() = default;
 
     DriveServiceFactory(const DriveServiceFactory&) = delete;
     DriveServiceFactory& operator=(const DriveServiceFactory&) = delete;
 
-    virtual ~DriveServiceFactory() {}
+    virtual ~DriveServiceFactory() = default;
     virtual std::unique_ptr<drive::DriveServiceInterface> CreateDriveService(
         signin::IdentityManager* identity_manager,
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -112,7 +106,6 @@ class SyncEngine
 
   // RemoteFileSyncService overrides.
   void AddServiceObserver(SyncServiceObserver* observer) override;
-  void AddFileStatusObserver(FileStatusObserver* observer) override;
   void RegisterOrigin(const GURL& origin, SyncStatusCallback callback) override;
   void EnableOrigin(const GURL& origin, SyncStatusCallback callback) override;
   void DisableOrigin(const GURL& origin, SyncStatusCallback callback) override;
@@ -123,9 +116,6 @@ class SyncEngine
   void SetRemoteChangeProcessor(RemoteChangeProcessor* processor) override;
   LocalChangeProcessor* GetLocalChangeProcessor() override;
   RemoteServiceState GetCurrentState() const override;
-  void GetOriginStatusMap(StatusMapCallback callback) override;
-  void DumpFiles(const GURL& origin, ListCallback callback) override;
-  void DumpDatabase(ListCallback callback) override;
   void SetSyncEnabled(bool enabled) override;
   void PromoteDemotedChanges(base::OnceClosure callback) override;
 
@@ -135,12 +125,6 @@ class SyncEngine
                         const SyncFileMetadata& local_metadata,
                         const storage::FileSystemURL& url,
                         SyncStatusCallback callback) override;
-
-  // drive::DriveNotificationObserver overrides.
-  void OnNotificationReceived(
-      const std::map<std::string, int64_t>& invalidations) override;
-  void OnNotificationTimerFired() override;
-  void OnPushNotificationEnabled(bool enabled) override;
 
   // drive::DriveServiceObserver overrides.
   void OnReadyToSendRequests() override;
@@ -165,9 +149,7 @@ class SyncEngine
              const scoped_refptr<base::SequencedTaskRunner>& drive_task_runner,
              const base::FilePath& sync_file_system_dir,
              TaskLogger* task_logger,
-             drive::DriveNotificationManager* notification_manager,
-             extensions::ExtensionServiceInterface* extension_service,
-             extensions::ExtensionRegistry* extension_registry,
+             Profile* profile,
              signin::IdentityManager* identity_manager,
              scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
              std::unique_ptr<DriveServiceFactory> drive_service_factory,
@@ -192,15 +174,12 @@ class SyncEngine
   const base::FilePath sync_file_system_dir_;
   raw_ptr<TaskLogger> task_logger_;
 
+  base::WeakPtr<Profile> profile_;
+
   // These external services are not owned by SyncEngine.
   // The owner of the SyncEngine is responsible for their lifetime.
   // I.e. the owner should declare the dependency explicitly by calling
   // KeyedService::DependsOn().
-  raw_ptr<drive::DriveNotificationManager, DanglingUntriaged>
-      notification_manager_;
-  raw_ptr<extensions::ExtensionServiceInterface, DanglingUntriaged>
-      extension_service_;
-  raw_ptr<extensions::ExtensionRegistry, DanglingUntriaged> extension_registry_;
   raw_ptr<signin::IdentityManager> identity_manager_;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
@@ -231,8 +210,6 @@ class SyncEngine
 
   base::ObserverList<SyncServiceObserver>::UncheckedAndDanglingUntriaged
       service_observers_;
-  base::ObserverList<FileStatusObserver>::UncheckedAndDanglingUntriaged
-      file_status_observers_;
   raw_ptr<leveldb::Env> env_override_;
 
   CallbackTracker callback_tracker_;

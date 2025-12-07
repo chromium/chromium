@@ -7,8 +7,10 @@
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/path_service.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/trace_event_analyzer.h"
+#include "base/trace_event/trace_config.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
@@ -186,13 +188,8 @@ class PerformanceTimelineLCPStartTimePrecisionBrowserTest
   int32_t precision_ = 10;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_LCPStartTimePrecision DISABLED_LCPStartTimePrecision
-#else
-#define MAYBE_LCPStartTimePrecision LCPStartTimePrecision
-#endif
 IN_PROC_BROWSER_TEST_F(PerformanceTimelineLCPStartTimePrecisionBrowserTest,
-                       MAYBE_LCPStartTimePrecision) {
+                       LCPStartTimePrecision) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url1(embedded_test_server()->GetURL(
       "a.com", "/performance_timeline/lcp-start-time-precision.html"));
@@ -221,14 +218,13 @@ IN_PROC_BROWSER_TEST_F(PerformanceTimelineNavigationIdBrowserTest,
 
   EXPECT_TRUE(NavigateToURL(shell(), url1));
 
-  const std::string initial_navigation_id =
-      GetNavigationId("first_nav").ExtractString();
+  const int initial_navigation_id = GetNavigationId("first_nav").ExtractInt();
   // Navigate away and back 3 times. The 1st time is to verify the
   // navigation id is incremented. The 2nd time is to verify that the id is
   // incremented on the same restored document. The 3rd time is to
   // verify the increment does not stop at 2.
   RenderFrameHostImplWrapper rfh_a(current_frame_host());
-  std::string prev_navigation_id = initial_navigation_id;
+  int prev_navigation_id = initial_navigation_id;
 
   for (int i = 1; i <= 3; i++) {
     // Navigate away
@@ -250,9 +246,9 @@ IN_PROC_BROWSER_TEST_F(PerformanceTimelineNavigationIdBrowserTest,
     // Verify navigation id is re-generated each time in case back/forward
     // cache feature is enabled. Verify navigation id is not changed in case
     // back/forward cache feature is not enabled.
-    std::string curr_navigation_id =
+    int curr_navigation_id =
         GetNavigationId("subsequent_nav" + base::NumberToString(i))
-            .ExtractString();
+            .ExtractInt();
     EXPECT_NE(curr_navigation_id, prev_navigation_id);
     EXPECT_NE(curr_navigation_id, initial_navigation_id);
 
@@ -286,15 +282,15 @@ IN_PROC_BROWSER_TEST_F(PerformanceTimelinePrefetchTransferSizeBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   const GURL prefetch_url(
-      embedded_test_server()->GetURL("a.com", "/title1.html"));
+      embedded_test_server()->GetURL("a.com", "/cacheable.html"));
   const GURL landing_url(embedded_test_server()->GetURL(
       "a.com", "/performance_timeline/prefetch.html"));
 
   EXPECT_TRUE(NavigateToURL(shell(), landing_url));
   Prefetch();
   EXPECT_TRUE(NavigateToURL(shell(), prefetch_url));
-  // Navigate to a prefetched url should result in a navigation timing entry
-  // with 0 transfer size.
+  // Navigate to a HTTP-cached prefetched url should result in a navigation
+  // timing entry with 0 transfer size since the HTTP cache gets used.
   EXPECT_EQ(0, GetTransferSize());
 }
 
@@ -382,8 +378,8 @@ class PerformanceTimelineBackForwardCacheRestorationBrowserTest
   // back-forward-cache-restoration type. Each entry is created when there is
   // a back/forward cache restoration.
   void CheckEntries(const base::Value::List lst,
-                    const std::string& initial_navigation_id) const {
-    std::string prev_navigation_id = initial_navigation_id;
+                    int initial_navigation_id) const {
+    int prev_navigation_id = initial_navigation_id;
 
     for (const auto& i : lst) {
       auto* dict = i.GetIfDict();
@@ -392,7 +388,7 @@ class PerformanceTimelineBackForwardCacheRestorationBrowserTest
       EXPECT_EQ("back-forward-cache-restoration",
                 *dict->FindString("entryType"));
 
-      const std::string* curr_navigation_id = dict->FindString("navigationId");
+      std::optional<int> curr_navigation_id = dict->FindInt("navigationId");
       // This verifies the navigation id changes each time a back/forward
       // restoration happens.
       EXPECT_NE(prev_navigation_id, *curr_navigation_id);
@@ -424,8 +420,8 @@ IN_PROC_BROWSER_TEST_F(
   SetBackForwardCacheRestorationBufferSize(buffer_size);
   RegisterPerformanceObservers(num_of_loops);
 
-  std::string initial_navigation_id =
-      GetNavigationId("initial_navigation_id").ExtractString();
+  int initial_navigation_id =
+      GetNavigationId("initial_navigation_id").ExtractInt();
   for (int i = 0; i < num_of_loops; i++) {
     // Navigate away
     ASSERT_TRUE(NavigateToURL(shell(), url2));
@@ -436,9 +432,8 @@ IN_PROC_BROWSER_TEST_F(
     // Navigate back.
     ASSERT_TRUE(HistoryGoBack(web_contents()));
   }
-  auto result = std::move(GetBackForwardCacheRestorationEntriesByObserver()
-                              .ExtractList()
-                              .GetList());
+  auto result =
+      GetBackForwardCacheRestorationEntriesByObserver().TakeValue().TakeList();
   CheckEntries(std::move(result[0]).TakeList(), initial_navigation_id);
   CheckEntries(std::move(result[1]).TakeList(), initial_navigation_id);
 
@@ -508,13 +503,13 @@ IN_PROC_BROWSER_TEST_F(PerformanceEventTimingBrowserTest,
   // entries should be the size of the buffer.
   auto entry_cnt_and_dropped_entry_cnt =
       EvalJs(web_contents(), " getEntriesCntAndDroppedEntriesCnt()")
-          .ExtractList();
+          .TakeValue()
+          .TakeList();
 
-  int num_event_entres = entry_cnt_and_dropped_entry_cnt.GetList()[0].GetInt();
+  int num_event_entres = entry_cnt_and_dropped_entry_cnt[0].GetInt();
   EXPECT_EQ(num_event_entres, buffer_size);
 
-  int num_dropped_entries =
-      entry_cnt_and_dropped_entry_cnt.GetList()[1].GetInt();
+  int num_dropped_entries = entry_cnt_and_dropped_entry_cnt[1].GetInt();
   EXPECT_GE(num_dropped_entries, 1);
 
   // Verify that at least buffer_size+1 events are emitted to tracing.

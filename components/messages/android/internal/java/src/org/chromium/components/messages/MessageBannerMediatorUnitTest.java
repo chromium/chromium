@@ -32,21 +32,24 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.MathUtils;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.components.messages.MessageStateHandler.Position;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.function.Supplier;
 
 /** Unit tests for {@link MessageBannerMediator}. */
 @SmallTest
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(PAUSED)
+@Features.EnableFeatures({MessageFeatureList.MESSAGES_CLOSE_BUTTON})
 public class MessageBannerMediatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private static final int PEEKING_LAYER_HEIGHT = 20;
-    private static final int DEFAULT_MARGIN = 18;
+    private static final int DEFAULT_MARGIN = 0;
     private static final int PEEKING_MARGIN = PEEKING_LAYER_HEIGHT + DEFAULT_MARGIN;
 
     @Mock private Resources mResources;

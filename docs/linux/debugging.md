@@ -332,6 +332,10 @@ You can use [rr](https://rr-project.org) for time travel debugging, so you
 can also step or execute backwards. This works by first recording a trace
 and then debugging based on that.
 
+For Googlers, if you have a remote cloud machine, please follow this
+[instruction](https://engdoc.corp.google.com/eng/doc/devguide/debugging/rr.md#setting-up-rr)
+to set up the machine in order to use the rr tool.
+
 You need an up-to-date version of rr, since rr is frequently updated to support
 new parts of the Linux system call API surface that Chromium uses. If you have
 any issues with the latest release version, try compiling rr
@@ -537,21 +541,6 @@ Default log level hides `LOG(INFO)`. Run with `--log-level=0` and
 
 Newer versions of Chromium with VLOG may need --v=1 too. For more VLOG tips, see
 [the chromium-dev thread](https://groups.google.com/a/chromium.org/group/chromium-dev/browse_thread/thread/dcd0cd7752b35de6?pli=1).
-
-### Seeing IPC debug messages
-
-Run with `CHROME_IPC_LOGGING=1` eg.
-
-    CHROME_IPC_LOGGING=1 out/Debug/chrome
-
-or within gdb:
-
-    set environment CHROME_IPC_LOGGING 1
-
-If some messages show as unknown, check if the list of IPC message headers in
-[chrome/common/logging_chrome.cc](/chrome/common/logging_chrome.cc) is
-up to date. In case this file reference goes out of date, try looking for usage
-of macros like `IPC_MESSAGE_LOG_ENABLED` or `IPC_MESSAGE_MACROS_LOG_ENABLED`.
 
 ## Profiling
 

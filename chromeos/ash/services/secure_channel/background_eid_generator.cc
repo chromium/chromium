@@ -4,11 +4,11 @@
 
 #include "chromeos/ash/services/secure_channel/background_eid_generator.h"
 
+#include <algorithm>
 #include <cstring>
 #include <memory>
 
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/clock.h"
@@ -108,7 +108,7 @@ std::string BackgroundEidGenerator::IdentifyRemoteDeviceByAdvertisement(
   std::string service_data_without_flags = advertisement_service_data;
   service_data_without_flags.resize(RawEidGenerator::kNumBytesInEidValue);
 
-  const auto remote_device_it = base::ranges::find_if(
+  const auto remote_device_it = std::ranges::find_if(
       remote_devices,
       [this, &service_data_without_flags](const auto& remote_device) {
         std::vector<DataWithTimestamp> eids = GenerateNearestEids(

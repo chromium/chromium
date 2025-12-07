@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //ash")
 
 static_library("connectivity_diagnostics") {
   sources = [
@@ -22,7 +20,7 @@ static_library("connectivity_diagnostics") {
   deps = [
     "//ash/webui/common:chrome_os_webui_config",
     "//ash/webui/common:trusted_types_util",
-    "//ash/webui/connectivity_diagnostics/resources:resources",
+    "//ash/webui/connectivity_diagnostics/resources",
     "//ash/webui/network_ui:network_diagnostics_resource_provider",
     "//ash/webui/network_ui:network_health_resource_provider",
     "//ash/webui/web_applications",
@@ -30,6 +28,6 @@ static_library("connectivity_diagnostics") {
     "//chromeos/strings/",
     "//content/public/browser",
     "//ui/base",
-    "//ui/resources",
+    "//ui/webui/resources",
   ]
 }

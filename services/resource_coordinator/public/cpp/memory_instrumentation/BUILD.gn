@@ -17,8 +17,6 @@ component("memory_instrumentation") {
     "tracing_observer.h",
     "tracing_observer_proto.cc",
     "tracing_observer_proto.h",
-    "tracing_observer_traced_value.cc",
-    "tracing_observer_traced_value.h",
   ]
 
   if (is_apple) {

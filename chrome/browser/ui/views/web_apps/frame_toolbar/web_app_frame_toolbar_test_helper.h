@@ -15,7 +15,7 @@
 #include "content/public/browser/web_contents.h"
 
 class Browser;
-class BrowserNonClientFrameView;
+class BrowserFrameView;
 class BrowserView;
 class Profile;
 class GURL;
@@ -35,6 +35,8 @@ class View;
 }  // namespace views
 
 namespace web_app {
+class BundledIsolatedWebApp;
+class IsolatedWebAppUrlInfo;
 struct WebAppInstallInfo;
 }  // namespace web_app
 
@@ -62,6 +64,9 @@ class WebAppFrameToolbarTestHelper {
       Browser* browser,
       std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
       const GURL& start_url);
+  web_app::IsolatedWebAppUrlInfo InstallAndLaunchIsolatedWebApp(
+      Profile* profile,
+      web_app::BundledIsolatedWebApp* iwa);
 
   GURL LoadTestPageWithDataAndGetURL(
       net::test_server::EmbeddedTestServer* embedded_test_server,
@@ -104,18 +109,20 @@ class WebAppFrameToolbarTestHelper {
 
   Browser* app_browser() { return app_browser_; }
   BrowserView* browser_view() { return browser_view_; }
-  BrowserNonClientFrameView* frame_view() { return frame_view_; }
+  BrowserFrameView* frame_view() { return frame_view_; }
   views::View* root_view() { return root_view_; }
   WebAppFrameToolbarView* web_app_frame_toolbar() {
     return web_app_frame_toolbar_;
   }
   WebAppOriginText* origin_text_view();
+  void SetOriginTextLabelForTesting(const std::u16string& label_text);
 
  private:
+  void SetViews(Browser* app_browser);
+
   raw_ptr<Browser, AcrossTasksDanglingUntriaged> app_browser_ = nullptr;
   raw_ptr<BrowserView, AcrossTasksDanglingUntriaged> browser_view_ = nullptr;
-  raw_ptr<BrowserNonClientFrameView, AcrossTasksDanglingUntriaged> frame_view_ =
-      nullptr;
+  raw_ptr<BrowserFrameView, AcrossTasksDanglingUntriaged> frame_view_ = nullptr;
   raw_ptr<views::View, AcrossTasksDanglingUntriaged> root_view_ = nullptr;
   raw_ptr<WebAppFrameToolbarView, AcrossTasksDanglingUntriaged>
       web_app_frame_toolbar_ = nullptr;

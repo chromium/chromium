@@ -25,7 +25,9 @@ class MidiInputPortAndroid final {
                                 size_t size,
                                 base::TimeTicks time) = 0;
   };
-  MidiInputPortAndroid(JNIEnv* env, jobject raw, Delegate* delegate);
+  MidiInputPortAndroid(JNIEnv* env,
+                       const base::android::JavaRef<jobject>& raw,
+                       Delegate* delegate);
   ~MidiInputPortAndroid();
 
   // Returns true when the operation succeeds.
@@ -34,7 +36,7 @@ class MidiInputPortAndroid final {
 
   // Called by the Java world.
   void OnData(JNIEnv* env,
-              const base::android::JavaParamRef<jbyteArray>& data,
+              const base::android::JavaRef<jbyteArray>& data,
               jint offset,
               jint size,
               jlong timestamp);

@@ -61,6 +61,35 @@ PRETTY_XML = """
 </histogram-configuration>
 """.strip()
 
+PRETTY_XML_COMMENTS = """
+<histogram-configuration>
+
+<enums>
+
+<enum name="Enum1">
+<!-- Comment 1 -->
+
+  <obsolete>
+    Obsolete text
+  </obsolete>
+  <summary>Summary text</summary>
+  <int value="0" label="Label1">Int text</int>
+  <int value="1" label="Label2"/>
+<!-- Comment 2 -->
+
+</enum>
+
+<!-- Comment 3 -->
+
+</enums>
+
+<!-- Comment 4 -->
+
+<!-- Comment 5 -->
+
+</histogram-configuration>
+""".strip()
+
 XML_WRONG_ATTRIBUTE_ORDER = """
 <histogram-configuration>
 
@@ -327,6 +356,213 @@ PRETTY_XML_WITH_IFTTT_COMMENTS_MIDDLE = """
 </histogram-configuration>
 """.strip()
 
+XML_IFTTT_COMMENTS_FOR_ENUM_VALUES = """
+<histogram-configuration>
+<enums>
+<enum name="TestEnum">
+  <!-- LINT.IfChange(//path/to/some/file) -->
+  <int value="0" label="A"/>
+  <!-- LINT.ThenChange(//path/to/other/file) -->
+  <int value="2" label="C"/>
+  <int value="1" label="B"/>
+</enum>
+</enums>
+</histogram-configuration>
+""".strip()
+
+PRETTY_XML_IFTTT_COMMENTS_FOR_ENUM_VALUES = """
+<histogram-configuration>
+
+<enums>
+
+<enum name="TestEnum">
+<!-- LINT.IfChange(//path/to/some/file) -->
+
+  <int value="0" label="A"/>
+<!-- LINT.ThenChange(//path/to/other/file) -->
+
+  <int value="1" label="B"/>
+  <int value="2" label="C"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>
+""".strip()
+
+XML_IFTTT_COMMENTS_FOR_ENUM_VALUES_UNORDERED = """
+<histogram-configuration>
+<enums>
+<enum name="TestEnum">
+  <int value="1" label="B"/>
+
+  <!-- LINT.IfChange(//path/to/some/file) -->
+  <int value="0" label="A"/>
+  <int value="2" label="C"/>
+  <!-- LINT.ThenChange(//path/to/other/file) -->
+</enum>
+</enums>
+</histogram-configuration>
+""".strip()
+
+PRETTY_XML_IFTTT_COMMENTS_FOR_ENUM_VALUES_UNORDERED = """
+<histogram-configuration>
+
+<enums>
+
+<enum name="TestEnum">
+<!-- LINT.IfChange(//path/to/some/file) -->
+
+  <int value="0" label="A"/>
+  <int value="2" label="C"/>
+<!-- LINT.ThenChange(//path/to/other/file) -->
+
+  <int value="1" label="B"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>
+""".strip()
+
+XML_IFTTT_INSIDE_ENUM_MULTIPLE_BLOCKS = """
+<histogram-configuration>
+<enums>
+<enum name="num">
+<!-- LINT.IfChange(B) -->
+<int value="1" label="B"/>
+<int value="3" label="D"/>
+<!-- LINT.ThenChange(B) -->
+
+<!-- LINT.IfChange(C) -->
+<int value="5" label="F"/>
+<int value="4" label="E"/>
+<!-- LINT.ThenChange(C) -->
+
+<!-- LINT.IfChange(A) -->
+<int value="0" label="A"/>
+<int value="2" label="C"/>
+<!-- LINT.ThenChange(A) -->
+</enum>
+</enums>
+</histogram-configuration>
+""".strip()
+
+PRETTY_IFTTT_INSIDE_ENUM_MULTIPLE_BLOCKS = """
+<histogram-configuration>
+
+<enums>
+
+<enum name="num">
+<!-- LINT.IfChange(A) -->
+
+  <int value="0" label="A"/>
+  <int value="2" label="C"/>
+<!-- LINT.ThenChange(A) -->
+
+<!-- LINT.IfChange(B) -->
+
+  <int value="1" label="B"/>
+  <int value="3" label="D"/>
+<!-- LINT.ThenChange(B) -->
+
+<!-- LINT.IfChange(C) -->
+
+  <int value="4" label="E"/>
+  <int value="5" label="F"/>
+<!-- LINT.ThenChange(C) -->
+
+</enum>
+
+</enums>
+
+</histogram-configuration>
+""".strip()
+
+XML_NESTED_IFTTT_OUTSIDE_ENUM = """
+<histogram-configuration>
+<enums>
+<!-- LINT.IfChange(B) -->
+<!-- LINT.IfChange(A) -->
+<enum name="num">
+<int value="1" label="B"/>
+<int value="3" label="D"/>
+<!-- LINT.ThenChange(A) -->
+
+<int value="5" label="F"/>
+<int value="4" label="E"/>
+<!-- LINT.ThenChange(B) -->
+
+
+<!-- LINT.IfChange(C) -->
+<int value="0" label="A"/>
+<int value="2" label="C"/>
+<!-- LINT.ThenChange(C) -->
+</enum>
+</enums>
+</histogram-configuration>
+""".strip()
+
+PRETTY_XML_NESTED_IFTTT_OUTSIDE_ENUM = """
+<histogram-configuration>
+
+<enums>
+
+<!-- LINT.IfChange(B) -->
+
+<!-- LINT.IfChange(A) -->
+
+<enum name="num">
+  <int value="1" label="B"/>
+  <int value="3" label="D"/>
+<!-- LINT.ThenChange(A) -->
+
+  <int value="4" label="E"/>
+  <int value="5" label="F"/>
+<!-- LINT.ThenChange(B) -->
+
+<!-- LINT.IfChange(C) -->
+
+  <int value="0" label="A"/>
+  <int value="2" label="C"/>
+<!-- LINT.ThenChange(C) -->
+
+</enum>
+
+</enums>
+
+</histogram-configuration>
+""".strip()
+
+
+PRETTY_XML_IFTTT_AND_REGULAR_COMMENTS = """
+<histogram-configuration>
+
+<enums>
+
+<!-- NOTE: Important note -->
+
+<!-- Regular comment -->
+
+<!-- LINT.IfChange(Enum1) -->
+
+<!-- Some other comment -->
+
+<enum name="Enum1">
+  <int value="0" label="Label1">Int text</int>
+</enum>
+
+<!-- Another comment -->
+
+<!-- LINT.ThenChange(//path/to/file.cpp:CppEnum1) -->
+
+<!-- Comment after lint -->
+
+</enums>
+
+</histogram-configuration>
+""".strip()
+
 
 class EnumXmlTest(unittest.TestCase):
 
@@ -334,6 +570,7 @@ class EnumXmlTest(unittest.TestCase):
       # Test prettify already pretty XML to verify the pretty-printed version
       # is the same.
       ('AlreadyPrettyXml', PRETTY_XML, PRETTY_XML),
+      ('PrettyXmlWithComments', PRETTY_XML_COMMENTS, PRETTY_XML_COMMENTS),
       ('AttributeOrder', XML_WRONG_ATTRIBUTE_ORDER, PRETTY_XML),
       ('Indent', XML_WRONG_INDENT, PRETTY_XML),
       ('SingleLine', XML_WRONG_SINGLELINE, PRETTY_XML),
@@ -364,6 +601,19 @@ class EnumXmlTest(unittest.TestCase):
        PRETTY_XML_WITH_IFTTT_COMMENTS),
       ('AlreadyPrettyIftttMiddle', PRETTY_XML_WITH_IFTTT_COMMENTS_MIDDLE,
        PRETTY_XML_WITH_IFTTT_COMMENTS_MIDDLE),
+      ('IFTTTCommentsForEnumValues', XML_IFTTT_COMMENTS_FOR_ENUM_VALUES,
+       PRETTY_XML_IFTTT_COMMENTS_FOR_ENUM_VALUES),
+      ('IFTTTCommentsForEnumValuesUnordered',
+       XML_IFTTT_COMMENTS_FOR_ENUM_VALUES_UNORDERED,
+       PRETTY_XML_IFTTT_COMMENTS_FOR_ENUM_VALUES_UNORDERED),
+      ('IFTTTCommentsForEnumValuesMultipleBlocks',
+       XML_IFTTT_INSIDE_ENUM_MULTIPLE_BLOCKS,
+       PRETTY_IFTTT_INSIDE_ENUM_MULTIPLE_BLOCKS),
+      ('NestedIFTTTCommentsOutsideEnum', XML_NESTED_IFTTT_OUTSIDE_ENUM,
+       PRETTY_XML_NESTED_IFTTT_OUTSIDE_ENUM),
+      ('IFTTTCommentsAndRegularCommentsOnTheSameLevel',
+       PRETTY_XML_IFTTT_AND_REGULAR_COMMENTS,
+       PRETTY_XML_IFTTT_AND_REGULAR_COMMENTS),
   ])
   def testPrettify(self, _, input_xml, expected_xml):
     result = histogram_configuration_model.PrettifyTree(

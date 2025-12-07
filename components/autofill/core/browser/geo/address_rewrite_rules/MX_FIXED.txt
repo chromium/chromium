@@ -1,0 +1,252 @@
+\bfrancisco\s+ignacio\s+madero\s+gonzalez\b	madero
+\bvenustiano\s+carranza\s+de\s+la\s+garza\b	carranza
+\bvicente\s+ramon\s+guerrero\s+saldana\b	v guerrero
+\bvictor\s+manuel\s+martinez\s+montano\b	victor manuel
+\bbenito\s+pablo\s+juarez\s+garcia\b	juarez
+\bcarretera\s+estatal\s+de\s+cuota\b	tolled state highway
+\bcarretera\s+federal\s+de\s+cuota\b	tolled federal highway
+\bjose\s+maria\s+morelos\s+y\s+pavon\b	mor
+\bemilio\s+carranza\s+rodríguez\b	e carranza
+\bmiguel\s+hidalgo\s+y\s+costilla\b	hg
+\bignacio\s+allende\s+y\s+unzaga\b	allende
+\bjose\s+maria\s+morelos\s+pavon\b	mor
+\bvicente\s+guerrero\s+saldana\b	v guerrero
+\bcarretera\s+estatal\s+libre\b	state highway
+\bcarretera\s+federal\s+libre\b	federal highway
+\bemiliano\s+zapata\s+salazar\b	zapata
+\bignacio\s+zaragoza\s+seguín\b	zaragoza
+\bingeniero\s+victor\s+manuel\b	victor manuel
+\blazaro\s+cardenas\s+del\s+rio\b	cardenas
+\bnorberto\s+trevino\s+zapata\b	n trevino zapata
+\bdon\s+francisco\s+i\s+madero\b	madero
+\bfelipe\s+carrillo\s+puerto\b	f carrillo puerto
+\bjose\s+maria\s+pino\s+suarez\b	pinosuarez
+\bmaria\s+guadalupe\s+escoto\b	maria guadalupe
+\botilio\s+montano\s+sanchez\b	o montano
+\bjose\s+maria\s+pinosuarez\b	pinosuarez
+\bmorelos\s+perez\s+y\s+pavon\b	mor
+\bprofra\s+rosaura\s+zapata\b	rosaura zapata
+\bvictor\s+manuel\s+montano\b	victor manuel
+\bbenito\s+juarez\s+garcia\b	juarez
+\bcoahuila\s+de\s+zaragoza\b	coa
+\bjesus\s+carranza\s+neira\b	j carranza
+\bjose\s+morelos\s+y\s+pavon\b	mor
+\badolfo\s+lopez\s+mateos\b	adolfo lopez
+\bbaja\s+california\s+sur\b	bcs
+\bj\s+maria\s+pino\s+suarez\b	pinosuarez
+\bjose\s+ma\s+pino\s+suarez\b	pinosuarez
+\bvenustiano\s+carranza\b	carranza
+\bfrancisco\s+i\s+madero\b	madero
+\bguadalupe\s+victoria\b	gpe victoria
+\bjose\s+maria\s+morelos\b	mor
+\bantigua\s+carretera\b	antigua
+\bcarretera\s+antigua\b	antigua
+\bcarretera\s+federal\b	carr federal
+\blicenciado\s+juarez\b	juarez
+\bmariano\s+matamoros\b	matamoros
+\bpunto\s+kilometrico\b	pk
+\bdistrito\s+federal\b	df
+\bestado\s+de\s+mexico\b	me
+\bguerrero\s+saldana\b	v guerrero
+\bignacio\s+zaragoza\b	zaragoza
+\bj\s+ma\s+pino\s+suarez\b	pinosuarez
+\bpunto\s+de\s+interes\b	poi
+\bvicente\s+guerrero\b	v guerrero
+\bapartado\s+postal\b	apdo
+\bbaja\s+california\b	bc
+\bemiliano\s+zapata\b	zapata
+\bignacio\s+allende\b	allende
+\bj\s+m\s+morelos\s+y\s+p\b	mor
+\blazaro\s+cardenas\b	cardenas
+\bsan\s+luis\s+potosi\b	slp
+\ba\s+lopez\s+mateos\b	adolfo lopez
+\baguascalientes\b	ag
+\bjesus\s+carranza\b	j carranza
+\bmelchor\s+ocampo\b	ocampo
+\botilio\s+montano\b	o montano
+\bveracruz\s+llave\b	ver
+\bbenito\s+juarez\b	juarez
+\bnicolas\s+bravo\b	bravo
+\bsin\s+refrencia\b	sn
+\burban\s+highway\b	eje urbano
+\bcamino\s+rural\b	rural road
+\bcura\s+hidalgo\b	hg
+\bdepartamento\b	dept
+\blopez\s+mateos\b	adolfo lopez
+\bprolongacion\b	prol
+\bquintana\s+roo\b	qr
+\bc\s+m\s+hidalgo\b	hg
+\bcarretera\s+a\b	carr
+\bm\s+matamoros\b	matamoros
+\bpino\s+suarez\b	pinosuarez
+\btata\s+lazaro\b	cardenas
+\bgobernador\b	gob
+\bguanajuato\b	gt
+\bi\s+zaragoza\b	zaragoza
+\bjuan\s+tuzco\b	juantusco
+\blicenciado\b	lic
+\bnuevo\s+leon\b	nl
+\bperiferico\b	perif
+\bpresbitero\b	pbro
+\bsanta\s+anna\b	anna
+\bseptiembre\b	sep
+\bsin\s+numero\b	sn
+\btamaulipas\b	tam
+\bv\s+carranza\b	carranza
+\bboulevard\b	blvd
+\bcalletano\b	cayetano
+\bcarretera\b	carr
+\bchihuahua\b	chh
+\bfrancisco\b	fco
+\bgertrudiz\b	gertrudis
+\bi\s+allende\b	allende
+\bildefonso\b	idelfonso
+\bingeniero\b	ing
+\blocalidad\b	loc
+\bm\s+hidalgo\b	hg
+\bmichoacan\b	mic
+\bmunicipio\b	mun
+\bnoviembre\b	nov
+\bprovincia\b	prov
+\bqueretaro\b	qro
+\brepublica\b	rep
+\bsebastian\b	cebastian
+\bzacatecas\b	zac
+\barticulo\b	art
+\batencion\b	at
+\bb\s+juarez\b	juarez
+\bbaltazar\b	baltasar
+\bboulevar\b	blvd
+\bcallejon\b	cjon
+\bcampeche\b	cam
+\bcircuito\b	cto
+\bcoahuila\b	coa
+\bcorredor\b	crdr
+\be\s+zapata\b	zapata
+\bedificio\b	edif
+\beduviges\b	edubijes
+\bescalera\b	esc
+\bguerrero\b	gr
+\bhacienda\b	hda
+\bjeronimo\b	geronimo
+\bm\s+ocampo\b	ocampo
+\bpascasio\b	pascacio
+\bpeatonal\b	ptnl
+\bponiente\b	pte
+\bprofesor\b	prof
+\btlaxcala\b	tla
+\bveracruz\b	ver
+\balberto\b	alto
+\bandador\b	anador
+\bangelin\b	angel
+\bantonio\b	atonio
+\bavenida\b	av
+\bbrijida\b	brigida
+\bbulevar\b	blvd
+\bcaptain\b	cap
+\bcerrada\b	cda
+\bchiapas\b	chp
+\bdurango\b	dgo
+\besquina\b	esq
+\bfebrero\b	feb
+\bgeneral\b	gral
+\bhidalgo\b	hg
+\bjalisco\b	ja
+\bjoaquin\b	joachin
+\bjuaquin\b	joachin
+\bmanzana\b	manz
+\bmorelos\b	mor
+\bn\s+bravo\b	bravo
+\bnayarit\b	nay
+\boctubre\b	oct
+\boriente\b	ote
+\bprivada\b	priv
+\bprivate\b	priv
+\bretorno\b	rtno
+\bsinaloa\b	si
+\btabasco\b	tab
+\byucatan\b	yuc
+\bacceso\b	acc
+\bbarrio\b	bo
+\bcamino\b	co
+\bciudad\b	cd
+\bcolima\b	col
+\bdoctor\b	dr
+\bmarcos\b	marco
+\bmexico\b	me
+\bnumber\b	#
+\bnumero\b	#
+\boaxaca\b	oa
+\bpancho\b	pacho
+\bpasaje\b	pje
+\bportal\b	ptal
+\bpuebla\b	pu
+\bpuerta\b	pta
+\bpuerto\b	pto
+\brambla\b	rbla
+\bsenora\b	sra
+\bsonora\b	son
+\bb\s+c\s+s\b	bcs
+\bcalle\b	c
+\benero\b	ene
+\bjulio\b	jul
+\bjunio\b	jun
+\bmaria\b	ma
+\bmarzo\b	mar
+\bnorte\b	#
+\boeste\b	pte
+\bplaza\b	pl
+\bq\s+roo\b	qr
+\bs\s+l\s+p\b	slp
+\bsanta\b	sta
+\bsanto\b	sto
+\bsenor\b	sr
+\btamps\b	tam
+\btramo\b	tmo
+\bavda\b	av
+\bcamp\b	cam
+\bchih\b	chh
+\bchis\b	chp
+\bcoah\b	coa
+\bctra\b	carr
+\beste\b	ote
+\bfray\b	fr
+\blote\b	l
+\bmich\b	mic
+\bpiso\b	p
+\bqroo\b	qr
+\bsept\b	sep
+\btlax\b	tla
+\bags\b	ag
+\bagu\b	ag
+\bavd\b	av
+\bave\b	av
+\bb\s+c\b	bc
+\bcmx\b	df
+\bd\s+f\b	df
+\bdur\b	dgo
+\bgro\b	gr
+\bgto\b	gt
+\bgua\b	gt
+\bhgo\b	hg
+\bhid\b	hg
+\bjal\b	ja
+\blot\b	l
+\blte\b	l
+\bmex\b	me
+\bn\s+l\b	nl
+\bnle\b	nl
+\bnte\b	#
+\bnum\b	#
+\boax\b	oa
+\bpue\b	pu
+\bpza\b	pl
+\bq\s+r\b	qr
+\bque\b	qro
+\bs/n\b	sn
+\bsin\b	si
+\blt\b	l
+\bmx\b	me
+\bno\b	#
+\bnº\b	#
+\bo\b	#

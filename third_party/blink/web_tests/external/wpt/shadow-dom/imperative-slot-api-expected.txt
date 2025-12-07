@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Previously assigned node should not be assigned if slot moved to a new shadow root. The node is re-assigned when moved back.
-  assert_array_equals: lengths differ, expected array [Element node <div id="c1"></div>] length 1, got [] length 0
-Harness: the test ran to completion.
-

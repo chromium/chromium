@@ -12,6 +12,7 @@
 #include "base/base64.h"
 #include "base/containers/circular_deque.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/k_anonymity_service/k_anonymity_service_storage.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/k_anonymity_service/remote_trust_token_query_answerer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/k_anonymity_service_delegate.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "net/base/isolation_info.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -116,7 +116,7 @@ class KAnonymityServiceClient : public content::KAnonymityServiceDelegate,
   // the OHTTP key for the JoinSet endpoint. The key is cached and then
   // JoinSetCheckTrustTokens is called to continue processing the current
   // request.
-  void OnGotJoinSetOHTTPKey(std::unique_ptr<std::string> response);
+  void OnGotJoinSetOHTTPKey(std::optional<std::string> response);
 
   // Calls the token_getter_ to ensure there is a trust token for the request.
   void JoinSetCheckTrustTokens(OHTTPKeyAndExpiration ohttp_key);
@@ -154,7 +154,7 @@ class KAnonymityServiceClient : public content::KAnonymityServiceDelegate,
   // Asynchronous response containing the OHTTP key for the QuerySet endpoint.
   // The key is cached and then QuerySetsSendRequests is called to continue
   // processing the current request.
-  void OnGotQuerySetOHTTPKey(std::unique_ptr<std::string> response);
+  void OnGotQuerySetOHTTPKey(std::optional<std::string> response);
   // Handles failures in fetching the OHTTP key. Schedules callbacks indicating
   // failure for all requests on the query_queue_.
   void FailFetchingQueryOHTTPKey();

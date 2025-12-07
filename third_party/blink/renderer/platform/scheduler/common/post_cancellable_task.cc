@@ -11,7 +11,7 @@
 
 namespace blink {
 
-class TaskHandle::Runner : public WTF::ThreadSafeRefCounted<Runner> {
+class TaskHandle::Runner : public ThreadSafeRefCounted<Runner> {
  public:
   explicit Runner(base::OnceClosure task) : task_(std::move(task)) {}
   Runner(const Runner&) = delete;
@@ -38,10 +38,10 @@ class TaskHandle::Runner : public WTF::ThreadSafeRefCounted<Runner> {
   //   };
   //
   //   foo.m_handle = taskRunner->postCancellableTask(
-  //       FROM_HERE, WTF::bind(&Foo::bar, wrapPersistent(foo)));
+  //       FROM_HERE, BindOnce(&Foo::bar, wrapPersistent(foo)));
   //
   // There is a circular reference in the example above as:
-  //   foo -> m_handle -> m_runner -> m_task -> Persistent<Foo> in WTF::bind.
+  //   foo -> m_handle -> m_runner -> m_task -> Persistent<Foo> in BindOnce.
   // The TaskHandle parameter on run() is needed to break the circle by clearing
   // |m_task| when the wrapped base::OnceClosure is deleted.
   void Run(const TaskHandle&) {
@@ -124,8 +124,8 @@ TaskHandle PostCancellableTask(base::SequencedTaskRunner& task_runner,
   scoped_refptr<TaskHandle::Runner> runner =
       base::AdoptRef(new TaskHandle::Runner(std::move(task)));
   task_runner.PostTask(
-      location, WTF::BindOnce(&TaskHandle::Runner::Run, runner->AsWeakPtr(),
-                              TaskHandle(runner)));
+      location, blink::BindOnce(&TaskHandle::Runner::Run, runner->AsWeakPtr(),
+                                TaskHandle(runner)));
   return TaskHandle(runner);
 }
 
@@ -138,8 +138,8 @@ TaskHandle PostDelayedCancellableTask(base::SequencedTaskRunner& task_runner,
       base::AdoptRef(new TaskHandle::Runner(std::move(task)));
   task_runner.PostDelayedTask(
       location,
-      WTF::BindOnce(&TaskHandle::Runner::Run, runner->AsWeakPtr(),
-                    TaskHandle(runner)),
+      blink::BindOnce(&TaskHandle::Runner::Run, runner->AsWeakPtr(),
+                      TaskHandle(runner)),
       delay);
   return TaskHandle(runner);
 }
@@ -152,8 +152,8 @@ TaskHandle PostNonNestableCancellableTask(
   scoped_refptr<TaskHandle::Runner> runner =
       base::AdoptRef(new TaskHandle::Runner(std::move(task)));
   task_runner.PostNonNestableTask(
-      location, WTF::BindOnce(&TaskHandle::Runner::Run, runner->AsWeakPtr(),
-                              TaskHandle(runner)));
+      location, blink::BindOnce(&TaskHandle::Runner::Run, runner->AsWeakPtr(),
+                                TaskHandle(runner)));
   return TaskHandle(runner);
 }
 
@@ -167,8 +167,8 @@ TaskHandle PostNonNestableDelayedCancellableTask(
       base::AdoptRef(new TaskHandle::Runner(std::move(task)));
   task_runner.PostNonNestableDelayedTask(
       location,
-      WTF::BindOnce(&TaskHandle::Runner::Run, runner->AsWeakPtr(),
-                    TaskHandle(runner)),
+      blink::BindOnce(&TaskHandle::Runner::Run, runner->AsWeakPtr(),
+                      TaskHandle(runner)),
       delay);
   return TaskHandle(runner);
 }

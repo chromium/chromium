@@ -1,0 +1,12 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++textField description='Your username should be your email id' descriptionFrom=relatedElement describedbyIds=tooltip
+++++++++genericContainer
+++++++tooltip name='Your username should be your email id'
+++++++++staticText name='Your username should be your email id'
+++++++++++inlineTextBox name='Your username should be your email id'
+++++++none ignored invisible
+++++++++genericContainer ignored invisible
+++++++textField description='mmddyy' descriptionFrom=relatedElement
+++++++++genericContainer

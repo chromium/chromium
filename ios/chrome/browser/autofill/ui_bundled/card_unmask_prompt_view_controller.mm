@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/autofill/ui_bundled/card_unmask_prompt_view_controller.h"
-#import "ios/chrome/browser/autofill/ui_bundled/card_unmask_prompt_view_controller+Testing.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/memory/raw_ptr.h"
@@ -12,6 +11,11 @@
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/credit_card/credit_card_data.h"
+#import "ios/chrome/browser/autofill/ui_bundled/card_unmask_prompt_view_bridge.h"
+#import "ios/chrome/browser/autofill/ui_bundled/card_unmask_prompt_view_controller+Testing.h"
+#import "ios/chrome/browser/autofill/ui_bundled/cells/card_unmask_header_item.h"
+#import "ios/chrome/browser/autofill/ui_bundled/cells/expiration_date_edit_item.h"
+#import "ios/chrome/browser/autofill/ui_bundled/cells/expiration_date_edit_item_delegate.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
@@ -19,10 +23,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item_delegate.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/autofill/ui_bundled/card_unmask_prompt_view_bridge.h"
-#import "ios/chrome/browser/autofill/ui_bundled/cells/card_unmask_header_item.h"
-#import "ios/chrome/browser/autofill/ui_bundled/cells/expiration_date_edit_item.h"
-#import "ios/chrome/browser/autofill/ui_bundled/cells/expiration_date_edit_item_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -32,11 +32,6 @@ NSString* const kCardUnmaskPromptTableViewAccessibilityID =
     @"CardUnmaskPromptTableViewAccessibilityID";
 
 namespace {
-
-BOOL VirtualCardFeatureEnabled() {
-  return base::FeatureList::IsEnabled(
-      autofill::features::kAutofillEnableVirtualCards);
-}
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierHeader = kSectionIdentifierEnumZero,
@@ -173,12 +168,10 @@ const char kFooterDummyLinkTarget[] = "about:blank";
   [model setHeader:_headerItem
       forSectionWithIdentifier:SectionIdentifierHeader];
 
-  if (VirtualCardFeatureEnabled()) {
-    _cardInfoItem = [self createCardInfoItem];
-    if (_cardInfoItem != nil) {
-      [self.tableViewModel addItem:_cardInfoItem
-           toSectionWithIdentifier:SectionIdentifierHeader];
-    }
+  _cardInfoItem = [self createCardInfoItem];
+  if (_cardInfoItem != nil) {
+    [self.tableViewModel addItem:_cardInfoItem
+         toSectionWithIdentifier:SectionIdentifierHeader];
   }
 
   [model addSectionWithIdentifier:SectionIdentifierInputs];
@@ -419,6 +412,10 @@ const char kFooterDummyLinkTarget[] = "about:blank";
   cardInfoItem.text = data.cardNameAndLastFourDigits;
   cardInfoItem.iconBackgroundColor = UIColor.clearColor;
   cardInfoItem.iconImage = data.icon;
+  cardInfoItem.detailTextNumberOfLines = 1;
+  cardInfoItem.textLineBreakMode = NSLineBreakByTruncatingMiddle;
+  cardInfoItem.detailTextLineBreakMode = NSLineBreakByTruncatingMiddle;
+
   return cardInfoItem;
 }
 
@@ -433,6 +430,7 @@ const char kFooterDummyLinkTarget[] = "about:blank";
   TableViewTextEditItem* CVCInputItem =
       [[TableViewTextEditItem alloc] initWithType:ItemTypeCVCInput];
   CVCInputItem.delegate = self;
+  CVCInputItem.textFieldDelegate = self;
   CVCInputItem.fieldNameLabelText =
       l10n_util::GetNSString(IDS_AUTOFILL_CARD_UNMASK_PROMPT_CVC_FIELD_TITLE);
   CVCInputItem.keyboardType = UIKeyboardTypeNumberPad;
@@ -649,22 +647,8 @@ const char kFooterDummyLinkTarget[] = "about:blank";
   ItemType rowItemType = static_cast<ItemType>(
       [self.tableViewModel itemTypeForIndexPath:indexPath]);
 
-  if (rowItemType == ItemTypeCVCInput) {
-    TableViewTextEditCell* rowCell =
-        base::apple::ObjCCastStrict<TableViewTextEditCell>(cell);
-    rowCell.textField.delegate = self;
-    // Hide the icon from Voice Over.
-    rowCell.identifyingIconButton.isAccessibilityElement = NO;
-  }
-
   if (rowItemType == ItemTypeCardInfo) {
-    TableViewDetailIconCell* rowCell =
-        base::apple::ObjCCastStrict<TableViewDetailIconCell>(cell);
-    rowCell.backgroundColor = [UIColor colorNamed:kGrey200Color];
-    rowCell.textLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
-    rowCell.textLabel.numberOfLines = 1;
-    rowCell.detailTextLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
-    rowCell.detailTextLabel.numberOfLines = 1;
+    cell.backgroundColor = [UIColor colorNamed:kGrey200Color];
   }
 
   return cell;

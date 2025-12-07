@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/services/device_sync/public/cpp/device_sync_client_impl.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
@@ -12,7 +13,6 @@
 #include "base/base64url.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "chromeos/ash/components/multidevice/expiring_remote_device_cache.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/multidevice/remote_device.h"
@@ -140,16 +140,14 @@ DeviceSyncClientImpl::GetLocalDeviceMetadata() {
   // Because we expect the the client to be ready when this function is called,
   // we also expect the local device to be non-null.
   std::optional<multidevice::RemoteDeviceRef> local_device =
-      expiring_device_cache_->GetRemoteDevice(local_instance_id_,
-                                              local_legacy_device_id_);
+      expiring_device_cache_->GetRemoteDevice(local_instance_id_, std::nullopt);
   base::UmaHistogramBoolean("CryptAuth.GetLocalDeviceMetadata.Result",
                             local_device.has_value());
   if (!local_device) {
     PA_LOG(ERROR)
         << "DeviceSyncClientImpl::" << __func__
         << ": Could not retrieve local device metadata. local_instance_id="
-        << local_instance_id_.value_or("[null]") << ", local_legacy_device_id="
-        << local_legacy_device_id_.value_or("[null]")
+        << local_instance_id_.value_or("[null]")
         << ", is_ready=" << (is_ready() ? "yes" : "no");
   }
 
@@ -285,23 +283,12 @@ void DeviceSyncClientImpl::OnGetLocalDeviceMetadataCompleted(
     return;
   }
 
-  if (features::ShouldUseV1DeviceSync()) {
-    local_instance_id_ = local_device_metadata->instance_id.empty()
-                             ? std::nullopt
-                             : std::make_optional<std::string>(
-                                   local_device_metadata->instance_id);
-    local_legacy_device_id_ = local_device_metadata->GetDeviceId().empty()
-                                  ? std::nullopt
-                                  : std::make_optional<std::string>(
-                                        local_device_metadata->GetDeviceId());
-  } else {
-    local_instance_id_ = local_device_metadata->instance_id.empty()
-                             ? std::nullopt
-                             : std::make_optional<std::string>(
-                                   local_device_metadata->instance_id);
-  }
+  local_instance_id_ =
+      local_device_metadata->instance_id.empty()
+          ? std::nullopt
+          : std::make_optional<std::string>(local_device_metadata->instance_id);
 
-  bool has_id = local_instance_id_ || local_legacy_device_id_;
+  bool has_id = local_instance_id_.has_value();
   base::UmaHistogramBoolean("CryptAuth.GetLocalDeviceMetadata.HasId", has_id);
   if (!has_id) {
     PA_LOG(ERROR) << "DeviceSyncClientImpl::" << __func__
@@ -334,18 +321,18 @@ void DeviceSyncClientImpl::OnFindEligibleDevicesCompleted(
   multidevice::RemoteDeviceRefList ineligible_devices;
 
   if (result_code == mojom::NetworkRequestResult::kSuccess) {
-    base::ranges::transform(
+    std::ranges::transform(
         response->eligible_devices, std::back_inserter(eligible_devices),
         [this](const auto& device) {
           return *expiring_device_cache_->GetRemoteDevice(device.instance_id,
                                                           device.GetDeviceId());
         });
-    base::ranges::transform(response->ineligible_devices,
-                            std::back_inserter(ineligible_devices),
-                            [this](const auto& device) {
-                              return *expiring_device_cache_->GetRemoteDevice(
-                                  device.instance_id, device.GetDeviceId());
-                            });
+    std::ranges::transform(response->ineligible_devices,
+                           std::back_inserter(ineligible_devices),
+                           [this](const auto& device) {
+                             return *expiring_device_cache_->GetRemoteDevice(
+                                 device.instance_id, device.GetDeviceId());
+                           });
   }
 
   std::move(callback).Run(result_code, eligible_devices, ineligible_devices);

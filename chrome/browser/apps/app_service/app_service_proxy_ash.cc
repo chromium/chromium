@@ -12,27 +12,26 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/not_fatal_until.h"
+#include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_service.h"
-#include "chrome/browser/apps/app_service/instance_registry_updater.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_service.h"
-#include "chrome/browser/apps/app_service/publishers/app_publisher.h"
-#include "chrome/browser/apps/app_service/publishers/standalone_browser_apps.h"
+#include "chrome/browser/apps/app_service/publisher.h"
+#include "chrome/browser/apps/app_service/publisher_host_factory.h"
 #include "chrome/browser/apps/app_service/uninstall_dialog.h"
-#include "chrome/browser/apps/browser_instance/browser_app_instance_registry.h"
-#include "chrome/browser/apps/browser_instance/browser_app_instance_tracker.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
+#include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
+#include "chrome/browser/ash/child_accounts/child_user_service.h"
+#include "chrome/browser/ash/child_accounts/child_user_service_factory.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limit_interface.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -50,14 +49,20 @@
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/icon_effects.h"
+#include "components/services/app_service/public/cpp/intent_filter.h"
+#include "components/services/app_service/public/cpp/intent_filter_util.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "components/services/app_service/public/cpp/preferred_apps_impl.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "components/webapps/isolated_web_apps/scheme.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/grit/extensions_browser_resources.h"
+#include "third_party/blink/public/common/custom_handlers/protocol_handler_utils.h"
+#include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 
 namespace {
 constexpr int32_t kAppDialogIconSize = 48;
@@ -74,21 +79,12 @@ AppServiceProxyAsh::OnAppsRequest::OnAppsRequest(std::vector<AppPtr> deltas,
 
 AppServiceProxyAsh::OnAppsRequest::~OnAppsRequest() = default;
 
-AppServiceProxyAsh::AppServiceProxyAsh(Profile* profile)
-    : AppServiceProxyBase(profile),
+AppServiceProxyAsh::AppServiceProxyAsh(
+    Profile* profile,
+    PublisherHostFactory* publisher_host_factory)
+    : AppServiceProxyBase(profile, publisher_host_factory),
       icon_reader_(profile),
       icon_writer_(profile) {
-  if (crosapi::browser_util::IsLacrosEnabled()) {
-    browser_app_instance_tracker_ =
-        std::make_unique<apps::BrowserAppInstanceTracker>(profile_,
-                                                          app_registry_cache_);
-    browser_app_instance_registry_ =
-        std::make_unique<apps::BrowserAppInstanceRegistry>(
-            *browser_app_instance_tracker_);
-    browser_app_instance_app_service_updater_ =
-        std::make_unique<apps::InstanceRegistryUpdater>(
-            *browser_app_instance_registry_, instance_registry_);
-  }
   instance_registry_observer_.Observe(&instance_registry_);
 }
 
@@ -152,17 +148,8 @@ void AppServiceProxyAsh::Initialize() {
     app_registry_cache_observer_.Observe(cache);
   }
 
-  publisher_host_ = std::make_unique<PublisherHost>(this);
+  publisher_host_ = publisher_host_factory_->CreatePublisherHost(this);
 
-  if (crosapi::browser_util::IsLacrosEnabled() &&
-      ash::ProfileHelper::IsPrimaryProfile(profile_)) {
-    auto* browser_manager = crosapi::BrowserManager::Get();
-    // In unit tests, it is possible that the browser manager is not created.
-    if (browser_manager) {
-      keep_alive_ = browser_manager->KeepAlive(
-          crosapi::BrowserManager::Feature::kAppService);
-    }
-  }
   if (!profile_->AsTestingProfile() &&
       (!::ash::features::IsShimlessRMA3pDiagnosticsEnabled() ||
        !::ash::IsShimlessRmaAppBrowserContext(profile_))) {
@@ -172,10 +159,8 @@ void AppServiceProxyAsh::Initialize() {
         FROM_HERE, base::BindOnce(&AppServiceProxyAsh::InitAppPlatformMetrics,
                                   weak_ptr_factory_.GetWeakPtr()));
   }
-  if (ash::features::ArePromiseIconsEnabled()) {
-    promise_app_service_ = std::make_unique<apps::PromiseAppService>(
-        profile_, app_registry_cache_);
-  }
+  promise_app_service_ =
+      std::make_unique<apps::PromiseAppService>(profile_, app_registry_cache_);
   app_install_service_ = AppInstallService::Create(*profile_);
 }
 
@@ -195,36 +180,8 @@ AppServiceProxyAsh::AppPlatformMetricsService() {
                                        : nullptr;
 }
 
-apps::BrowserAppInstanceTracker*
-AppServiceProxyAsh::BrowserAppInstanceTracker() {
-  return browser_app_instance_tracker_.get();
-}
-
-apps::BrowserAppInstanceRegistry*
-AppServiceProxyAsh::BrowserAppInstanceRegistry() {
-  return browser_app_instance_registry_.get();
-}
-
-apps::StandaloneBrowserApps* AppServiceProxyAsh::StandaloneBrowserApps() {
-  return publisher_host_ ? publisher_host_->StandaloneBrowserApps() : nullptr;
-}
-
 apps::AppInstallService& AppServiceProxyAsh::AppInstallService() {
   return *app_install_service_;
-}
-
-void AppServiceProxyAsh::RegisterCrosApiSubScriber(
-    SubscriberCrosapi* subscriber) {
-  crosapi_subscriber_ = subscriber;
-
-  crosapi_subscriber_->InitializeApps();
-
-  // Initialise the Preferred Apps in the `crosapi_subscriber_` on register.
-  if (preferred_apps_impl_ &&
-      preferred_apps_impl_->preferred_apps_list().IsInitialized()) {
-    crosapi_subscriber_->InitializePreferredApps(
-        preferred_apps_impl_->preferred_apps_list().GetValue());
-  }
 }
 
 void AppServiceProxyAsh::SetPublisherUnavailable(AppType app_type) {
@@ -275,10 +232,6 @@ void AppServiceProxyAsh::OnApps(std::vector<AppPtr> deltas,
     }
   }
 
-  if (crosapi_subscriber_) {
-    crosapi_subscriber_->OnApps(deltas, app_type, should_notify_initialized);
-  }
-
   AppServiceProxyBase::OnApps(std::move(deltas), app_type,
                               should_notify_initialized);
 }
@@ -305,7 +258,8 @@ void AppServiceProxyAsh::PauseApps(
         });
 
     // The app pause dialog can't be loaded for unit tests.
-    if (!data.second.should_show_pause_dialog || is_using_testing_profile_) {
+    if (skip_pause_dialog_for_testing_ ||
+        !data.second.should_show_pause_dialog) {
       auto* publisher = GetPublisher(app_type);
       if (publisher) {
         publisher->PauseApp(data.first);
@@ -429,7 +383,7 @@ base::WeakPtr<AppServiceProxyAsh> AppServiceProxyAsh::GetWeakPtr() {
 
 void AppServiceProxyAsh::ReInitializeCrostiniForTesting() {
   if (publisher_host_) {
-    publisher_host_->ReInitializeCrostiniForTesting(this);  // IN-TEST
+    publisher_host_->ReInitializeCrostiniForTesting();  // IN-TEST
   }
 }
 
@@ -520,9 +474,38 @@ void AppServiceProxyAsh::SetAppLocale(const std::string& app_id,
   }
 }
 
-void AppServiceProxyAsh::Shutdown() {
-  crosapi_subscriber_ = nullptr;
+void AppServiceProxyAsh::SetProtocolLinkPreference(
+    std::string_view app_id,
+    std::string_view protocol_scheme) {
+  CHECK(!app_id.empty());
+  CHECK(protocol_scheme != url::kHttpScheme &&
+        protocol_scheme != url::kHttpsScheme);
 
+  AppRegistryCache().ForOneApp(app_id, [&](const AppUpdate& app) {
+    if (!apps_util::IsInstalled(app.Readiness()) ||
+        app.AppType() != AppType::kWeb) {
+      return;
+    }
+    CHECK(blink::IsValidCustomHandlerScheme(
+        protocol_scheme,
+        (app.PublisherId().starts_with(webapps::kIsolatedAppScheme)
+             ? blink::ProtocolHandlerSecurityLevel::kIsolatedAppFeatures
+             : blink::ProtocolHandlerSecurityLevel::kStrict)));
+    auto intent = std::make_unique<apps::Intent>(
+        apps_util::kIntentActionView,
+        GURL(base::StrCat({protocol_scheme, url::kStandardSchemeSeparator})));
+    // Web apps are generally supposed to only have one matching filter for the
+    // protocol scheme (scheme + kIntentActionView).
+    for (auto& filter : app.IntentFilters()) {
+      if (intent->MatchFilter(filter)) {
+        preferred_apps_impl_->SetProtocolLinkPreference(app.AppId(),
+                                                        std::move(filter));
+      }
+    }
+  });
+}
+
+void AppServiceProxyAsh::Shutdown() {
   app_platform_metrics_service_.reset();
 
   uninstall_dialogs_.clear();
@@ -588,28 +571,8 @@ void AppServiceProxyAsh::OnUninstallDialogClosed(
 
   DCHECK(uninstall_dialog);
   auto it = uninstall_dialogs_.find(app_id);
-  CHECK(it != uninstall_dialogs_.end(), base::NotFatalUntil::M130);
+  CHECK(it != uninstall_dialogs_.end());
   uninstall_dialogs_.erase(it);
-}
-
-void AppServiceProxyAsh::InitializePreferredAppsForAllSubscribers() {
-  AppServiceProxyBase::InitializePreferredAppsForAllSubscribers();
-  if (crosapi_subscriber_ && preferred_apps_impl_) {
-    crosapi_subscriber_->InitializePreferredApps(
-        preferred_apps_impl_->preferred_apps_list().GetValue());
-  }
-}
-
-void AppServiceProxyAsh::OnPreferredAppsChanged(
-    PreferredAppChangesPtr changes) {
-  if (!crosapi_subscriber_) {
-    AppServiceProxyBase::OnPreferredAppsChanged(std::move(changes));
-    return;
-  }
-
-  DCHECK(changes);
-  AppServiceProxyBase::OnPreferredAppsChanged(changes->Clone());
-  crosapi_subscriber_->OnPreferredAppsChanged(std::move(changes));
 }
 
 bool AppServiceProxyAsh::MaybeShowLaunchPreventionDialog(
@@ -647,13 +610,12 @@ bool AppServiceProxyAsh::MaybeShowLaunchPreventionDialog(
   if (update.Paused().value_or(false) ||
       pending_pause_requests_.IsPaused(update.AppId())) {
     ash::app_time::AppTimeLimitInterface* app_limit =
-        ash::app_time::AppTimeLimitInterface::Get(profile_);
+        ash::ChildUserServiceFactory::GetForBrowserContext(profile_);
     DCHECK(app_limit);
     auto time_limit =
         app_limit->GetTimeLimitForApp(update.AppId(), update.AppType());
     if (!time_limit.has_value()) {
-      NOTREACHED_IN_MIGRATION();
-      return true;
+      NOTREACHED();
     }
     PauseData pause_data;
     pause_data.hours = time_limit.value().InHours();
@@ -775,6 +737,25 @@ void AppServiceProxyAsh::OnAppUpdate(const apps::AppUpdate& update) {
        !apps_util::IsInstalled(update.Readiness()))) {
     pending_pause_requests_.MaybeRemoveApp(update.AppId());
   }
+
+  // Remove protocol links preferences that are no longer handled by this app
+  // (if any); we do this by comparing the negative delta between intents
+  // handled by `update.State()` and `update.Delta()`.
+  if (update.State() && update.Delta() && update.IntentFiltersChanged() &&
+      update.State()->intent_filters && update.Delta()->intent_filters) {
+    IntentFilters removed_protocol_link_filters;
+    for (const auto& filter : *update.State()->intent_filters) {
+      if (!apps_util::IsSupportedLinkForApp(update.AppId(), filter) &&
+          !Contains(*update.Delta()->intent_filters, filter)) {
+        removed_protocol_link_filters.push_back(filter->Clone());
+      }
+    }
+
+    if (!removed_protocol_link_filters.empty()) {
+      preferred_apps_impl_->RemoveProtocolLinkFilters(
+          update.AppId(), std::move(removed_protocol_link_filters));
+    }
+  }
 }
 
 void AppServiceProxyAsh::OnAppRegistryCacheWillBeDestroyed(
@@ -811,8 +792,14 @@ void AppServiceProxyAsh::PerformPostUninstallTasks(
 
 void AppServiceProxyAsh::PerformPostLaunchTasks(
     apps::LaunchSource launch_source) {
-  if (apps_util::IsHumanLaunch(launch_source)) {
-    ash::full_restore::FullRestoreService::MaybeCloseNotification(profile_);
+  if (!apps_util::IsHumanLaunch(launch_source)) {
+    return;
+  }
+
+  if (auto* full_restore_service =
+          ash::full_restore::FullRestoreServiceFactory::GetForProfile(
+              profile_)) {
+    full_restore_service->MaybeCloseNotification();
   }
 }
 

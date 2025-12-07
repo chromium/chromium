@@ -1,0 +1,28 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=./pdf_shared.css.js
+ * #import=./bottom_toolbar_shared.css.js
+ * #include=pdf-shared bottom-toolbar-shared
+ * #css_wrapper_metadata_end */
+
+:host {
+  --cr-icon-button-margin-end: 0;
+  --cr-icon-button-margin-start: 0;
+}
+
+#vertical-separator {
+  background: rgba(255, 255, 255, 0.3);
+  height: 20px;
+  margin-inline: var(--toolbar-item-gap);
+  width: 1px;
+}
+
+ink-brush-selector {
+  --ink-brush-button-gap: 8px;
+  --ink-brush-button-size: 32px;
+}

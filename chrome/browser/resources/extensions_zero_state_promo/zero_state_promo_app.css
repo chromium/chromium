@@ -1,0 +1,119 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=chrome://resources/cr_elements/action_link_lit.css.js
+ * #include=cr-hidden-style-lit cr-shared-style-lit cr-icons-lit action-link-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --zero-state-promo-background-color: var(--color-button-foreground);
+  --zero-state-promo-foreground-color: var(--color-button-background);
+  --zero-state-promo-chip-border-radius: 8px;
+  --container-gap: 8px;
+
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--container-gap);
+  padding: 20px;
+  width: 290px;
+  background-color: var(--zero-state-promo-background-color);
+  color: var(--zero-state-promo-foreground-color);
+}
+
+#headerContainer {
+  align-items: flex-start;
+  display: flex;
+  justify-content: space-between;
+  padding: 0px;
+}
+
+#title {
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 24px;
+  margin: 0px;
+  width: 260px;
+}
+
+#dismissButton {
+  --cr-icon-button-icon-size: 18px;
+  --cr-icon-button-margin-end: 0px;
+  --cr-icon-button-size: 20px;
+  flex-shrink:0;
+}
+
+#sectionHeaderContainer {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  padding-bottom: 4px;
+  width: 272px;
+}
+
+#labelContainer, #buttonContainer {
+  display: flex;
+  flex-direction: row;
+  gap: var(--container-gap);
+}
+
+#labelContainer {
+  flex-wrap: wrap;
+  padding: 0;
+}
+
+.v1Chip, .v2Chip, .v3Chip {
+  border-radius: var(--zero-state-promo-chip-border-radius);
+  padding: 0px;
+  gap: 0px;
+  --cr-chip-border-radius: var(--zero-state-promo-chip-border-radius);
+}
+
+.v1Chip {
+  background-color: var(--zero-state-promo-background-color);
+  --color-chip-foreground: var(--zero-state-promo-foreground-color);
+  --color-chip-icon: var(--color-sys-inverse-primary);
+}
+
+.v2Chip, .v3Chip  {
+  background-color: var(--zero-state-promo-foreground-color);
+  --color-chip-foreground: var(--zero-state-promo-background-color);
+  --color-chip-icon: var(--zero-state-promo-background-color);
+}
+
+.extensionIphLink {
+  color: inherit;
+}
+
+#anchorContainer {
+  display: block;
+  font-size: 14px;
+  line-height: 20px;
+  width: 267px;
+}
+
+#anchorContainer a {
+  --cr-link-color: var(--zero-state-promo-foreground-color);
+}
+
+#buttonContainer {
+  justify-content: flex-end;
+  padding-top: 8px;
+}
+
+#closeButton {
+  --cr-button-text-color: var(--zero-state-promo-foreground-color);
+}
+
+#customActionButton {
+  --cr-button-background-color: var(--zero-state-promo-foreground-color);
+  --cr-button-text-color: var(--zero-state-promo-background-color);
+}

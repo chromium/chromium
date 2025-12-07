@@ -1,0 +1,151 @@
+# Copyright 2025 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+
+source_set("geometry_change_handler") {
+  public = [ "geometry_change_handler.h" ]
+  sources = [ "geometry_change_handler.cc" ]
+  public_deps = [
+    "//base",
+    "//chromecast/media/service/mojom",
+    "//chromecast/starboard/media/media:starboard_api_wrapper",
+    "//ui/gfx:memory_buffer",
+    "//ui/gfx/geometry",
+  ]
+  deps = [
+    "//chromecast/media/service:video_geometry_setter_service",
+    "//mojo/public/cpp/bindings",
+    "//ui/display",
+  ]
+}
+
+source_set("starboard_player_manager") {
+  public = [ "starboard_player_manager.h" ]
+  sources = [ "starboard_player_manager.cc" ]
+  public_deps = [
+    ":client_stats_tracker",
+    ":demuxer_stream_reader",
+    ":starboard_buffering_tracker",
+    "//base",
+    "//chromecast/starboard/media/cdm:starboard_drm_wrapper",
+    "//chromecast/starboard/media/media:starboard_api_wrapper",
+    "//media",
+  ]
+  deps = [
+    ":chromium_starboard_conversions",
+    "//chromecast/base/metrics",
+  ]
+}
+
+source_set("starboard_renderer") {
+  public = [ "starboard_renderer.h" ]
+  sources = [ "starboard_renderer.cc" ]
+  public_deps = [
+    ":geometry_change_handler",
+    ":starboard_player_manager",
+    "//base",
+    "//chromecast/media/service:video_geometry_setter_service",
+    "//chromecast/starboard/media/media:starboard_api_wrapper",
+    "//media",
+  ]
+  deps = [ "//chromecast/base/metrics" ]
+}
+
+source_set("demuxer_stream_reader") {
+  public = [ "demuxer_stream_reader.h" ]
+  sources = [ "demuxer_stream_reader.cc" ]
+  public_deps = [
+    "//base",
+    "//chromecast/starboard/media/media:drm_util",
+    "//chromecast/starboard/media/media:starboard_api_wrapper",
+    "//media",
+  ]
+  deps = [
+    ":chromium_starboard_conversions",
+    "//chromecast/base/metrics",
+    "//chromecast/starboard/chromecast/starboard_cast_api:cast_starboard_api_types",
+    "//chromecast/starboard/media/cdm:starboard_drm_key_tracker",
+    "//chromecast/starboard/media/media:starboard_resampler",
+    "//ui/gfx/geometry",
+  ]
+}
+
+source_set("chromium_starboard_conversions") {
+  public = [ "chromium_starboard_conversions.h" ]
+  sources = [ "chromium_starboard_conversions.cc" ]
+  public_deps = [
+    "//chromecast/starboard/media/media:starboard_api_wrapper",
+    "//media",
+  ]
+  deps = [
+    "//base",
+    "//chromecast/starboard/media/media:mime_utils",
+    "//third_party/abseil-cpp:absl",
+    "//ui/gfx:color_space",
+    "//ui/gfx/geometry",
+  ]
+}
+
+source_set("client_stats_tracker") {
+  public = [ "client_stats_tracker.h" ]
+  sources = [ "client_stats_tracker.cc" ]
+  public_deps = [
+    "//base",
+    "//chromecast/starboard/media/media:starboard_api_wrapper",
+    "//media",
+  ]
+  deps = [ "//chromecast/base/metrics" ]
+}
+
+source_set("starboard_buffering_tracker") {
+  public = [ "starboard_buffering_tracker.h" ]
+  sources = [ "starboard_buffering_tracker.cc" ]
+  public_deps = [
+    "//base",
+    "//chromecast/starboard/media/media:starboard_api_wrapper",
+  ]
+  deps = [ "//chromecast/base/metrics" ]
+}
+
+test("starboard_renderer_unittests") {
+  sources = [
+    "chromium_starboard_conversions_test.cc",
+    "client_stats_tracker_test.cc",
+    "demuxer_stream_reader_test.cc",
+    "geometry_change_handler_test.cc",
+    "starboard_buffering_tracker_test.cc",
+    "starboard_player_manager_test.cc",
+    "starboard_renderer_test.cc",
+  ]
+  deps = [
+    ":chromium_starboard_conversions",
+    ":client_stats_tracker",
+    ":demuxer_stream_reader",
+    ":geometry_change_handler",
+    ":starboard_player_manager",
+    ":starboard_renderer",
+    "//base",
+    "//base/test:run_all_unittests",
+    "//base/test:test_support",
+    "//chromecast/base/metrics",
+    "//chromecast/base/metrics:test_support",
+    "//chromecast/media/service:video_geometry_setter_service",
+    "//chromecast/media/service/mojom",
+    "//chromecast/starboard/media/cdm:mocks",
+    "//chromecast/starboard/media/cdm:starboard_drm_key_tracker",
+    "//chromecast/starboard/media/cdm:starboard_drm_wrapper",
+    "//chromecast/starboard/media/media:mock_starboard_api_wrapper",
+    "//chromecast/starboard/media/media:starboard_api_wrapper",
+    "//chromecast/starboard/media/media:test_matchers",
+    "//media",
+    "//media:test_support",
+    "//mojo/core/embedder",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/display:test_support",
+    "//ui/gfx:memory_buffer",
+    "//ui/gfx/geometry",
+  ]
+}

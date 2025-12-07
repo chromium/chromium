@@ -23,10 +23,10 @@ class TransitionPseudoElementData final
 
   void SetPseudoElement(PseudoId,
                         PseudoElement*,
-                        const AtomicString& view_transition_name = g_null_atom);
+                        const AtomicString& pseudo_argument = g_null_atom);
   PseudoElement* GetPseudoElement(
       PseudoId,
-      const AtomicString& view_transition_name = g_null_atom) const;
+      const AtomicString& pseudo_argument = g_null_atom) const;
 
   void AddPseudoElements(HeapVector<Member<PseudoElement>, 2>* result) const;
 
@@ -37,6 +37,7 @@ class TransitionPseudoElementData final
     visitor->Trace(transition_outgoing_image_);
     visitor->Trace(transition_incoming_image_);
     visitor->Trace(transition_image_wrapper_);
+    visitor->Trace(transition_nested_groups_);
     visitor->Trace(transition_containers_);
   }
 
@@ -45,28 +46,33 @@ class TransitionPseudoElementData final
   Member<PseudoElement> transition_outgoing_image_;
   Member<PseudoElement> transition_incoming_image_;
   Member<PseudoElement> transition_image_wrapper_;
+  Member<PseudoElement> transition_nested_groups_;
   HeapHashMap<AtomicString, Member<PseudoElement>> transition_containers_;
 };
 
 inline bool TransitionPseudoElementData::HasPseudoElements() const {
   return transition_ || transition_outgoing_image_ ||
          transition_incoming_image_ || transition_image_wrapper_ ||
-         !transition_containers_.empty();
+         transition_nested_groups_ || !transition_containers_.empty();
 }
 
 inline void TransitionPseudoElementData::ClearPseudoElements() {
   SetPseudoElement(kPseudoIdViewTransition, nullptr);
+  SetPseudoElement(kPseudoIdViewTransitionGroupChildren, nullptr,
+                   transition_nested_groups_
+                       ? transition_nested_groups_->GetPseudoArgument()
+                       : g_null_atom);
   SetPseudoElement(kPseudoIdViewTransitionImagePair, nullptr,
                    transition_image_wrapper_
-                       ? transition_image_wrapper_->view_transition_name()
+                       ? transition_image_wrapper_->GetPseudoArgument()
                        : g_null_atom);
   SetPseudoElement(kPseudoIdViewTransitionOld, nullptr,
                    transition_outgoing_image_
-                       ? transition_outgoing_image_->view_transition_name()
+                       ? transition_outgoing_image_->GetPseudoArgument()
                        : g_null_atom);
   SetPseudoElement(kPseudoIdViewTransitionNew, nullptr,
                    transition_incoming_image_
-                       ? transition_incoming_image_->view_transition_name()
+                       ? transition_incoming_image_->GetPseudoArgument()
                        : g_null_atom);
 
   for (auto& entry : transition_containers_)
@@ -85,24 +91,25 @@ inline void TransitionPseudoElementData::SetPseudoElement(
       transition_ = element;
       break;
     case kPseudoIdViewTransitionImagePair:
-      DCHECK(!element ||
-             element->view_transition_name() == view_transition_name);
+      DCHECK(!element || element->GetPseudoArgument() == view_transition_name);
       transition_image_wrapper_ = element;
       break;
+    case kPseudoIdViewTransitionGroupChildren:
+      DCHECK(!element || element->GetPseudoArgument() == view_transition_name);
+      transition_nested_groups_ = element;
+      break;
     case kPseudoIdViewTransitionOld:
-      DCHECK(!element ||
-             element->view_transition_name() == view_transition_name);
+      DCHECK(!element || element->GetPseudoArgument() == view_transition_name);
       transition_outgoing_image_ = element;
       break;
     case kPseudoIdViewTransitionNew:
-      DCHECK(!element ||
-             element->view_transition_name() == view_transition_name);
+      DCHECK(!element || element->GetPseudoArgument() == view_transition_name);
       transition_incoming_image_ = element;
       break;
     case kPseudoIdViewTransitionGroup: {
       DCHECK(view_transition_name);
       if (element) {
-        DCHECK_EQ(element->view_transition_name(), view_transition_name);
+        DCHECK_EQ(element->GetPseudoArgument(), view_transition_name);
         transition_containers_.Set(view_transition_name, element);
       } else {
         transition_containers_.erase(view_transition_name);
@@ -110,7 +117,7 @@ inline void TransitionPseudoElementData::SetPseudoElement(
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   if (previous_element)
@@ -125,17 +132,22 @@ inline PseudoElement* TransitionPseudoElementData::GetPseudoElement(
       return transition_.Get();
     case kPseudoIdViewTransitionImagePair:
       DCHECK(!transition_image_wrapper_ || !view_transition_name ||
-             transition_image_wrapper_->view_transition_name() ==
+             transition_image_wrapper_->GetPseudoArgument() ==
                  view_transition_name);
       return transition_image_wrapper_.Get();
+    case kPseudoIdViewTransitionGroupChildren:
+      DCHECK(!transition_nested_groups_ || !view_transition_name ||
+             transition_nested_groups_->GetPseudoArgument() ==
+                 view_transition_name);
+      return transition_nested_groups_.Get();
     case kPseudoIdViewTransitionOld:
       DCHECK(!transition_outgoing_image_ || !view_transition_name ||
-             transition_outgoing_image_->view_transition_name() ==
+             transition_outgoing_image_->GetPseudoArgument() ==
                  view_transition_name);
       return transition_outgoing_image_.Get();
     case kPseudoIdViewTransitionNew:
       DCHECK(!transition_incoming_image_ || !view_transition_name ||
-             transition_incoming_image_->view_transition_name() ==
+             transition_incoming_image_->GetPseudoArgument() ==
                  view_transition_name);
       return transition_incoming_image_.Get();
     case kPseudoIdViewTransitionGroup: {
@@ -144,23 +156,31 @@ inline PseudoElement* TransitionPseudoElementData::GetPseudoElement(
       return it == transition_containers_.end() ? nullptr : it->value.Get();
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return nullptr;
 }
 
 inline void TransitionPseudoElementData::AddPseudoElements(
     HeapVector<Member<PseudoElement>, 2>* result) const {
-  if (transition_)
+  if (transition_) {
     result->push_back(transition_);
-  if (transition_image_wrapper_)
+  }
+  if (transition_image_wrapper_) {
     result->push_back(transition_image_wrapper_);
-  if (transition_outgoing_image_)
+  }
+  if (transition_nested_groups_) {
+    result->push_back(transition_nested_groups_);
+  }
+  if (transition_outgoing_image_) {
     result->push_back(transition_outgoing_image_);
-  if (transition_incoming_image_)
+  }
+  if (transition_incoming_image_) {
     result->push_back(transition_incoming_image_);
-  for (const auto& entry : transition_containers_)
+  }
+  for (const auto& entry : transition_containers_) {
     result->push_back(entry.value);
+  }
 }
 
 }  // namespace blink

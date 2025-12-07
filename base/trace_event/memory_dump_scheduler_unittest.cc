@@ -10,15 +10,14 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using ::testing::AtMost;
-using ::testing::Invoke;
 using ::testing::_;
+using ::testing::AtMost;
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 namespace {
 
@@ -32,8 +31,7 @@ struct CallbackWrapper {
 class MemoryDumpSchedulerTest : public testing::Test {
  public:
   MemoryDumpSchedulerTest()
-      : testing::Test(),
-        evt_(WaitableEvent::ResetPolicy::MANUAL,
+      : evt_(WaitableEvent::ResetPolicy::MANUAL,
              WaitableEvent::InitialState::NOT_SIGNALED),
         bg_thread_("MemoryDumpSchedulerTest Thread") {
     bg_thread_.Start();
@@ -58,11 +56,11 @@ TEST_F(MemoryDumpSchedulerTest, SingleTrigger) {
   testing::InSequence sequence;
   EXPECT_CALL(on_tick_, OnTick(_)).Times(kTicks - 1);
   EXPECT_CALL(on_tick_, OnTick(_))
-      .WillRepeatedly(Invoke(
+      .WillRepeatedly(
           [this, kLevelOfDetail](MemoryDumpLevelOfDetail level_of_detail) {
             EXPECT_EQ(kLevelOfDetail, level_of_detail);
             this->evt_.Signal();
-          }));
+          });
 
   // Check that Stop() before Start() doesn't cause any error.
   scheduler_.Stop();
@@ -95,23 +93,19 @@ TEST_F(MemoryDumpSchedulerTest, MultipleTriggers) {
 
   testing::InSequence sequence;
   EXPECT_CALL(on_tick_, OnTick(kDetailed))
-      .WillOnce(
-          Invoke([&t1](MemoryDumpLevelOfDetail) { t1 = TimeTicks::Now(); }));
+      .WillOnce([&t1](MemoryDumpLevelOfDetail) { t1 = TimeTicks::Now(); });
   EXPECT_CALL(on_tick_, OnTick(kLight)).Times(1);
   EXPECT_CALL(on_tick_, OnTick(kLight)).Times(1);
   EXPECT_CALL(on_tick_, OnTick(kDetailed))
-      .WillOnce(
-          Invoke([&t2](MemoryDumpLevelOfDetail) { t2 = TimeTicks::Now(); }));
+      .WillOnce([&t2](MemoryDumpLevelOfDetail) { t2 = TimeTicks::Now(); });
   EXPECT_CALL(on_tick_, OnTick(kLight))
-      .WillOnce(
-          Invoke([&t3](MemoryDumpLevelOfDetail) { t3 = TimeTicks::Now(); }));
+      .WillOnce([&t3](MemoryDumpLevelOfDetail) { t3 = TimeTicks::Now(); });
 
   // Rationale for WillRepeatedly and not just WillOnce: Extra ticks might
   // happen if the Stop() takes time. Not an interesting case, but we need to
   // avoid gmock to shout in that case.
   EXPECT_CALL(on_tick_, OnTick(_))
-      .WillRepeatedly(
-          Invoke([this](MemoryDumpLevelOfDetail) { this->evt_.Signal(); }));
+      .WillRepeatedly([this](MemoryDumpLevelOfDetail) { this->evt_.Signal(); });
 
   scheduler_.Start(config, bg_thread_.task_runner());
   evt_.Wait();
@@ -142,8 +136,7 @@ TEST_F(MemoryDumpSchedulerTest, StartStopQuickly) {
   EXPECT_CALL(on_tick_, OnTick(MemoryDumpLevelOfDetail::kDetailed))
       .Times(kDetailedTicks - 1);
   EXPECT_CALL(on_tick_, OnTick(MemoryDumpLevelOfDetail::kDetailed))
-      .WillRepeatedly(
-          Invoke([this](MemoryDumpLevelOfDetail) { this->evt_.Signal(); }));
+      .WillRepeatedly([this](MemoryDumpLevelOfDetail) { this->evt_.Signal(); });
 
   const TimeTicks tstart = TimeTicks::Now();
   for (unsigned int i = 0; i < kQuickIterations; i++) {
@@ -173,11 +166,10 @@ TEST_F(MemoryDumpSchedulerTest, StopAndStartOnAnotherThread) {
   testing::InSequence sequence;
   EXPECT_CALL(on_tick_, OnTick(_)).Times(kTicks - 1);
   EXPECT_CALL(on_tick_, OnTick(_))
-      .WillRepeatedly(
-          Invoke([this, expected_task_runner](MemoryDumpLevelOfDetail) {
-            EXPECT_TRUE(expected_task_runner->RunsTasksInCurrentSequence());
-            this->evt_.Signal();
-          }));
+      .WillRepeatedly([this, expected_task_runner](MemoryDumpLevelOfDetail) {
+        EXPECT_TRUE(expected_task_runner->RunsTasksInCurrentSequence());
+        this->evt_.Signal();
+      });
 
   scheduler_.Start(config, bg_thread_.task_runner());
   evt_.Wait();
@@ -190,15 +182,13 @@ TEST_F(MemoryDumpSchedulerTest, StopAndStartOnAnotherThread) {
   expected_task_runner = bg_thread_2.task_runner();
   EXPECT_CALL(on_tick_, OnTick(_)).Times(kTicks - 1);
   EXPECT_CALL(on_tick_, OnTick(_))
-      .WillRepeatedly(
-          Invoke([this, expected_task_runner](MemoryDumpLevelOfDetail) {
-            EXPECT_TRUE(expected_task_runner->RunsTasksInCurrentSequence());
-            this->evt_.Signal();
-          }));
+      .WillRepeatedly([this, expected_task_runner](MemoryDumpLevelOfDetail) {
+        EXPECT_TRUE(expected_task_runner->RunsTasksInCurrentSequence());
+        this->evt_.Signal();
+      });
   scheduler_.Start(config, bg_thread_2.task_runner());
   evt_.Wait();
   scheduler_.Stop();
 }
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event

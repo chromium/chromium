@@ -1,0 +1,36 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #import=//resources/cr_elements/cr_hidden_style_lit.css.js
+ * #include=cr-hidden-style-lit
+ * #css_wrapper_metadata_end */
+
+ #container {
+  display: flex;
+  flex-flow: row wrap;
+  gap: var(--container-gap);
+  justify-content: center;
+  margin-block-start: 30px;
+  max-width: var(--container-max-width, inherit);
+}
+
+#moduleElement {
+  align-items: center;
+  background: var(--color-new-tab-page-module-background);
+  border: none;
+  border-radius: var(--ntp-module-border-radius);
+  box-sizing: border-box;
+  display: flex;
+  height: fit-content;
+  justify-content: center;
+  overflow: visible;
+  position: relative;
+}
+
+#undoToastMessage {
+  flex-grow: 1;
+}

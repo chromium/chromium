@@ -11,9 +11,9 @@
 #include "chrome/browser/ash/attestation/soft_bind_attestation_flow_impl.h"
 #include "chrome/browser/ash/cryptauth/client_app_metadata_provider_service.h"
 #include "chrome/browser/ash/cryptauth/client_app_metadata_provider_service_factory.h"
-#include "chrome/browser/ash/cryptauth/gcm_device_info_provider_impl.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
+#include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/ash/components/multidevice/stub_multidevice_util.h"
@@ -24,6 +24,7 @@
 #include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "components/account_id/account_id.h"
 #include "components/gcm_driver/gcm_profile_service.h"
+#include "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
@@ -80,7 +81,9 @@ class DeviceSyncClientHolder : public KeyedService {
     return DeviceSyncImpl::Factory::Create(
         IdentityManagerFactory::GetForProfile(profile),
         gcm::GCMProfileServiceFactory::GetForProfile(profile)->driver(),
-        profile->GetPrefs(), GcmDeviceInfoProviderImpl::GetInstance(),
+        instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile)
+            ->driver(),
+        profile->GetPrefs(),
         ClientAppMetadataProviderServiceFactory::GetForProfile(profile),
         profile->GetURLLoaderFactory(), std::make_unique<base::OneShotTimer>(),
         base::BindRepeating(&DeviceSyncClientHolder::GetAttestationCertificates,
@@ -119,7 +122,7 @@ DeviceSyncClientFactory::DeviceSyncClientFactory()
               .Build()) {
   DependsOn(ClientAppMetadataProviderServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
-  DependsOn(gcm::GCMProfileServiceFactory::GetInstance());
+  DependsOn(instance_id::InstanceIDProfileServiceFactory::GetInstance());
 
   // If ShouldUseMultideviceStubs() is true, set a stub factory to facilitate
   // fake devices for testing in the Linux Chrome OS build. Note that this is

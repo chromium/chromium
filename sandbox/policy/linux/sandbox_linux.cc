@@ -22,6 +22,7 @@
 #include "base/feature_list.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_macros.h"
@@ -32,8 +33,6 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_id_name_manager.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "sandbox/constants.h"
 #include "sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.h"
 #include "sandbox/linux/services/credentials.h"
@@ -48,7 +47,7 @@
 #include "sandbox/linux/syscall_broker/broker_client.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
 #include "sandbox/linux/syscall_broker/broker_process.h"
-#include "sandbox/linux/system_headers/landlock.h"
+#include "sandbox/linux/system_headers/linux_landlock.h"
 #include "sandbox/linux/system_headers/linux_stat.h"
 #include "sandbox/policy/features.h"
 #include "sandbox/policy/linux/bpf_broker_policy_linux.h"
@@ -64,24 +63,10 @@
 #include <sanitizer/common_interface_defs.h>
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/ash/components/assistant/buildflags.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 namespace sandbox {
 namespace policy {
 
 namespace {
-
-// The state of Landlock support on the system.
-// Used to report through UMA.
-enum LandlockState {
-  kEnabled = 0,
-  kDisabled = 1,
-  kNotSupported = 2,
-  kUnknown = 3,
-  kMaxValue = kUnknown,
-};
 
 void LogSandboxStarted(const std::string& sandbox_name) {
   const std::string process_type =
@@ -276,8 +261,8 @@ int SandboxLinux::GetStatus() {
         sandbox_status_flags_ |= kNetNS;
     }
 
-    // We report whether the sandbox will be activated when renderers, workers
-    // and PPAPI plugins go through sandbox initialization.
+    // We report whether the sandbox will be activated when renderers and
+    // workers go through sandbox initialization.
     if (seccomp_bpf_supported()) {
       sandbox_status_flags_ |= kSeccompBPF;
     }
@@ -342,18 +327,12 @@ bool SandboxLinux::StartSeccompBPF(sandbox::mojom::Sandbox sandbox_type,
           ? SandboxBPF::SeccompLevel::MULTI_THREADED
           : SandboxBPF::SeccompLevel::SINGLE_THREADED;
 
-  bool force_disable_spectre_variant2_mitigation =
-      base::FeatureList::IsEnabled(
-          features::kForceDisableSpectreVariant2MitigationInNetworkService) &&
-      sandbox_type == sandbox::mojom::Sandbox::kNetwork;
-
   // If the kernel supports the sandbox, and if the command line says we
   // should enable it, enable it or die.
   std::unique_ptr<BPFBasePolicy> policy =
       SandboxSeccompBPF::PolicyForSandboxType(sandbox_type, options);
   SandboxSeccompBPF::StartSandboxWithExternalPolicy(
-      std::move(policy), OpenProc(proc_fd_), seccomp_level,
-      force_disable_spectre_variant2_mitigation);
+      std::move(policy), OpenProc(proc_fd_), seccomp_level);
   SandboxSeccompBPF::RunSandboxSanityChecks(sandbox_type, options);
   seccomp_bpf_started_ = true;
   LogSandboxStarted("seccomp-bpf");
@@ -409,10 +388,6 @@ bool SandboxLinux::InitializeSandbox(sandbox::mojom::Sandbox sandbox_type,
           command_line->GetSwitchValueASCII(switches::kGpuSandboxFailuresFatal);
       sandbox_failure_fatal = switch_value != "no";
     }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    CHECK(process_type != switches::kGpuProcess || sandbox_failure_fatal);
-#endif
 
     if (sandbox_failure_fatal && !IsUnsandboxedSandboxType(sandbox_type)) {
       error_message += " Try waiting for /proc to be updated.";
@@ -501,20 +476,22 @@ bool SandboxLinux::seccomp_bpf_with_tsync_supported() const {
 rlim_t GetProcessDataSizeLimit(sandbox::mojom::Sandbox sandbox_type) {
 #if defined(ARCH_CPU_64_BITS)
   if (sandbox_type == sandbox::mojom::Sandbox::kGpu ||
+      sandbox_type == sandbox::mojom::Sandbox::kOnDeviceModelExecution ||
       sandbox_type == sandbox::mojom::Sandbox::kRenderer) {
-    // Allow the GPU/RENDERER process's sandbox to access more physical memory
-    // if it's available on the system.
+    // Allow the GPU/ODML/RENDERER process's sandbox to access more physical
+    // memory if it's available on the system.
     //
-    // Renderer processes are allowed to access 16 GB; the GPU process, up
-    // to 64 GB.
+    // Renderer processes are allowed to access 32 GB; the GPU/ODML processes,
+    // up to 64 GB.
     constexpr rlim_t GB = 1024 * 1024 * 1024;
-    const rlim_t physical_memory = base::SysInfo::AmountOfPhysicalMemory();
+    const rlim_t physical_memory =
+        base::SysInfo::AmountOfPhysicalMemory().InBytes();
     rlim_t limit;
-    if (sandbox_type == sandbox::mojom::Sandbox::kGpu &&
+    if ((sandbox_type == sandbox::mojom::Sandbox::kGpu ||
+         sandbox_type == sandbox::mojom::Sandbox::kOnDeviceModelExecution) &&
         physical_memory > 64 * GB) {
       limit = 64 * GB;
-    } else if (sandbox_type == sandbox::mojom::Sandbox::kGpu &&
-               physical_memory > 32 * GB) {
+    } else if (physical_memory > 32 * GB) {
       limit = 32 * GB;
     } else if (physical_memory > 16 * GB) {
       limit = 16 * GB;
@@ -624,11 +601,7 @@ void SandboxLinux::SealSandbox() {
 
 void SandboxLinux::CheckForBrokenPromises(
     sandbox::mojom::Sandbox sandbox_type) {
-  if (sandbox_type != sandbox::mojom::Sandbox::kRenderer
-#if BUILDFLAG(ENABLE_PPAPI)
-      && sandbox_type != sandbox::mojom::Sandbox::kPpapi
-#endif
-  ) {
+  if (sandbox_type != sandbox::mojom::Sandbox::kRenderer) {
     return;
   }
   // Make sure that any promise made with GetStatus() wasn't broken.
@@ -678,36 +651,6 @@ bool SandboxLinux::EngageNamespaceSandboxInternal(bool from_zygote) {
   }
   CHECK(Credentials::SetCapabilities(proc_fd_, caps));
   return true;
-}
-
-void SandboxLinux::ReportLandlockStatus() {
-  LandlockState landlock_state = LandlockState::kUnknown;
-  const int landlock_version =
-      landlock_create_ruleset(nullptr, 0, LANDLOCK_CREATE_RULESET_VERSION);
-  if (landlock_version <= 0) {
-    const int err = errno;
-    switch (err) {
-      case ENOSYS: {
-        DVLOG(1) << "Landlock not supported by the kernel.";
-        landlock_state = LandlockState::kNotSupported;
-        break;
-      }
-      case EOPNOTSUPP: {
-        DVLOG(1) << "Landlock supported by the kernel but disabled.";
-        landlock_state = LandlockState::kDisabled;
-        break;
-      }
-      default: {
-        DVLOG(1) << "Could not determine Landlock state.";
-        landlock_state = LandlockState::kUnknown;
-      }
-    }
-  } else {
-    DVLOG(1) << "Landlock enabled; Version " << landlock_version;
-    landlock_state = LandlockState::kEnabled;
-  }
-
-  UMA_HISTOGRAM_ENUMERATION("Security.Sandbox.LandlockState", landlock_state);
 }
 
 }  // namespace policy

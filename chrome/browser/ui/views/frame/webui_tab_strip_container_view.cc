@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
@@ -58,6 +59,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/accessibility/ax_mode.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/aura/window.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/custom_data_helper.h"
@@ -65,6 +67,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/theme_provider.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -169,10 +172,12 @@ WebUITabStripDragDirection DragDirectionFromDelta(float delta) {
 // up nor down.
 std::optional<WebUITabStripDragDirection> DragDirectionFromSwipe(
     const ui::GestureEvent* event) {
-  if (event->details().swipe_down())
+  if (event->details().swipe_down()) {
     return WebUITabStripDragDirection::kDown;
-  if (event->details().swipe_up())
+  }
+  if (event->details().swipe_up()) {
     return WebUITabStripDragDirection::kUp;
+  }
   return std::nullopt;
 }
 
@@ -240,27 +245,34 @@ class WebUITabStripContainerView::AutoCloser : public ui::EventHandler,
 
   // ui::EventHandler:
   void OnEvent(ui::Event* event) override {
-    if (!enabled_)
+    if (!enabled_) {
       return;
-    if (!event->IsLocatedEvent())
+    }
+    if (!event->IsLocatedEvent()) {
       return;
+    }
     ui::LocatedEvent* located_event = event->AsLocatedEvent();
 
-    if (!EventTypeCanCloseTabStrip(located_event->type()))
+    if (!EventTypeCanCloseTabStrip(located_event->type())) {
       return;
+    }
 
     const gfx::Point event_location_in_screen =
         located_event->target()->GetScreenLocation(*located_event);
-    if (!content_area_->GetBoundsInScreen().Contains(event_location_in_screen))
+    if (!content_area_->GetBoundsInScreen().Contains(
+            event_location_in_screen)) {
       return;
+    }
 
     // The event may intersect both the content area's bounds and the
     // top container's bounds. In this case, the top container is
     // occluding the web content so we shouldn't close. This happens in
     // immersive mode while the top container is revealed. For more info see
     // https://crbug.com/1112028
-    if (top_container_->GetBoundsInScreen().Contains(event_location_in_screen))
+    if (top_container_->GetBoundsInScreen().Contains(
+            event_location_in_screen)) {
       return;
+    }
 
     located_event->StopPropagation();
     close_callback_.Run(TabStripUICloseAction::kTapInTabContent);
@@ -268,10 +280,12 @@ class WebUITabStripContainerView::AutoCloser : public ui::EventHandler,
 
   // views::ViewObserver:
   void OnViewFocused(views::View* observed_view) override {
-    if (observed_view != omnibox_)
+    if (observed_view != omnibox_) {
       return;
-    if (!enabled_)
+    }
+    if (!enabled_) {
       return;
+    }
 
     close_callback_.Run(TabStripUICloseAction::kOmniboxFocusedOrNewTabOpened);
   }
@@ -289,23 +303,28 @@ class WebUITabStripContainerView::AutoCloser : public ui::EventHandler,
   }
 
   void OnViewAddedToWidget(views::View* observed_view) override {
-    if (observed_view != content_area_)
+    if (observed_view != content_area_) {
       return;
-    if (pretarget_handler_added_)
+    }
+    if (pretarget_handler_added_) {
       return;
+    }
     aura::Window* const native_view =
         content_area_->GetWidget()->GetNativeView();
-    if (native_view)
+    if (native_view) {
       native_view->RemovePreTargetHandler(this);
+    }
   }
 
   void OnViewRemovedFromWidget(views::View* observed_view) override {
-    if (observed_view != content_area_)
+    if (observed_view != content_area_) {
       return;
+    }
     aura::Window* const native_view =
         content_area_->GetWidget()->GetNativeView();
-    if (native_view)
+    if (native_view) {
       native_view->RemovePreTargetHandler(this);
+    }
     pretarget_handler_added_ = false;
   }
 
@@ -484,9 +503,7 @@ bool WebUITabStripContainerView::UseTouchableTabStrip(const Browser* browser) {
   // TODO(crbug.com/1136185, crbug.com/1136236): We currently do not switch to
   // touchable tabstrip in Screen Reader mode due to the touchable tabstrip
   // being less accessible than the traditional tabstrip.
-  if (content::BrowserAccessibilityState::GetInstance()
-          ->GetAccessibilityMode()
-          .has_mode(ui::AXMode::kScreenReader)) {
+  if (ui::AXPlatform::GetInstance().IsScreenReaderActive()) {
     return false;
   }
 
@@ -532,8 +549,9 @@ bool WebUITabStripContainerView::IsDraggedTab(const ui::OSExchangeData& data) {
 }
 
 void WebUITabStripContainerView::OpenForTabDrag() {
-  if (GetVisible() && !animation_.IsClosing())
+  if (GetVisible() && !animation_.IsClosing()) {
     return;
+  }
 
   RecordTabStripUIOpenHistogram(TabStripUIOpenAction::kTabDraggedIntoWindow);
   SetContainerTargetVisibility(true, WebUITabStripOpenCloseReason::kOther);
@@ -563,8 +581,9 @@ void WebUITabStripContainerView::SetVisibleForTesting(bool visible) {
 }
 
 void WebUITabStripContainerView::FinishAnimationForTesting() {
-  if (!animation_.is_animating())
+  if (!animation_.is_animating()) {
     return;
+  }
   const bool target = animation_.IsShowing();
   animation_.SetCurrentValue(target ? 1.0 : 0.0);
   animation_.End();
@@ -578,15 +597,14 @@ WebUITabStripContainerView::GetAcceleratorProvider() const {
 
 void WebUITabStripContainerView::CloseContainer() {
   SetContainerTargetVisibility(false, WebUITabStripOpenCloseReason::kOther);
-  browser_view_->NotifyFeatureEngagementEvent(
-      feature_engagement::events::kWebUITabStripClosed);
 }
 
 bool WebUITabStripContainerView::CanStartDragToOpen(
     WebUITabStripDragDirection direction) const {
   // If we're already in a drag, then we can always continue dragging.
-  if (current_drag_height_)
+  if (current_drag_height_) {
     return true;
+  }
   return direction == (GetVisible() ? WebUITabStripDragDirection::kUp
                                     : WebUITabStripDragDirection::kDown);
 }
@@ -604,14 +622,15 @@ void WebUITabStripContainerView::UpdateHeightForDragToOpen(float height_delta) {
 
   current_drag_height_ =
       std::clamp(*current_drag_height_ + height_delta, 0.0f,
-                  static_cast<float>(GetPreferredSize().height()));
+                 static_cast<float>(GetPreferredSize().height()));
   PreferredSizeChanged();
 }
 
 void WebUITabStripContainerView::EndDragToOpen(
     std::optional<WebUITabStripDragDirection> fling_direction) {
-  if (!current_drag_height_)
+  if (!current_drag_height_) {
     return;
+  }
 
   const int final_drag_height = *current_drag_height_;
   current_drag_height_ = std::nullopt;
@@ -629,11 +648,6 @@ void WebUITabStripContainerView::EndDragToOpen(
 
   if (opening) {
     RecordTabStripUIOpenHistogram(TabStripUIOpenAction::kToolbarDrag);
-    browser_view_->NotifyFeatureEngagementEvent(
-        feature_engagement::events::kWebUITabStripOpened);
-  } else {
-    browser_view_->NotifyFeatureEngagementEvent(
-        feature_engagement::events::kWebUITabStripClosed);
   }
 
   animation_.Reset(open_proportion);
@@ -647,12 +661,8 @@ void WebUITabStripContainerView::TabCounterPressed(const ui::Event& event) {
   const bool new_visibility = !GetVisible();
   if (new_visibility) {
     RecordTabStripUIOpenHistogram(TabStripUIOpenAction::kTapOnTabCounter);
-    browser_view_->NotifyFeatureEngagementEvent(
-        feature_engagement::events::kWebUITabStripOpened);
   } else {
     RecordTabStripUICloseHistogram(TabStripUICloseAction::kTapOnTabCounter);
-    browser_view_->NotifyFeatureEngagementEvent(
-        feature_engagement::events::kWebUITabStripClosed);
   }
 
   SetContainerTargetVisibility(new_visibility,
@@ -669,12 +679,13 @@ void WebUITabStripContainerView::SetContainerTargetVisibility(
     bool target_visible,
     WebUITabStripOpenCloseReason reason) {
   if (target_visible) {
-    if (web_view_->GetWebContents()->IsCrashed())
+    if (web_view_->GetWebContents()->IsCrashed()) {
       InitializeWebView();
+    }
 
     immersive_revealed_lock_ =
-        browser_view_->immersive_mode_controller()->GetRevealedLock(
-            ImmersiveModeController::ANIMATE_REVEAL_YES);
+        ImmersiveModeController::From(browser_view_->browser())
+            ->GetRevealedLock(ImmersiveModeController::ANIMATE_REVEAL_YES);
 
     SetVisible(true);
     PreferredSizeChanged();
@@ -694,10 +705,6 @@ void WebUITabStripContainerView::SetContainerTargetVisibility(
     web_view_->RequestFocus();
 
     time_at_open_ = base::TimeTicks::Now();
-
-    browser_view_->CloseFeaturePromo(
-        feature_engagement::kIPHWebUITabStripFeature,
-        user_education::EndFeaturePromoReason::kFeatureEngaged);
   } else {
     if (time_at_open_) {
       RecordTabStripUIOpenDurationHistogram(base::TimeTicks::Now() -
@@ -734,8 +741,9 @@ void WebUITabStripContainerView::AnimationEnded(
     const gfx::Animation* animation) {
   DCHECK_EQ(&animation_, animation);
   PreferredSizeChanged();
-  if (animation_.GetCurrentValue() == 0.0)
+  if (animation_.GetCurrentValue() == 0.0) {
     SetVisible(false);
+  }
 }
 
 void WebUITabStripContainerView::AnimationProgressed(
@@ -747,8 +755,9 @@ void WebUITabStripContainerView::ShowContextMenuAtPoint(
     gfx::Point point,
     std::unique_ptr<ui::MenuModel> menu_model,
     base::RepeatingClosure on_menu_closed_callback) {
-  if (!web_view_->GetWebContents())
+  if (!web_view_->GetWebContents()) {
     return;
+  }
   ConvertPointToScreen(this, &point);
   context_menu_model_ = std::move(menu_model);
   int menu_runner_flags =
@@ -761,13 +770,14 @@ void WebUITabStripContainerView::ShowContextMenuAtPoint(
       context_menu_model_.get(), menu_runner_flags, on_menu_closed_callback);
   context_menu_runner_->RunMenuAt(
       GetWidget(), nullptr, gfx::Rect(point, gfx::Size()),
-      views::MenuAnchorPosition::kTopLeft, ui::MENU_SOURCE_MOUSE,
+      views::MenuAnchorPosition::kTopLeft, ui::mojom::MenuSourceType::kMouse,
       web_view_->GetWebContents()->GetContentNativeView());
 }
 
 void WebUITabStripContainerView::CloseContextMenu() {
-  if (!context_menu_runner_)
+  if (!context_menu_runner_) {
     return;
+  }
   context_menu_runner_->Cancel();
 }
 
@@ -778,14 +788,16 @@ void WebUITabStripContainerView::ShowEditDialogForGroupAtPoint(
   ConvertPointToScreen(this, &point);
   rect.set_origin(point);
   editor_bubble_widget_ = TabGroupEditorBubbleView::Show(
-      browser_view_->browser(), group, nullptr, rect, this);
+      browser_view_->browser(), group, /*anchor_view=*/this,
+      /*anchor_rect=*/rect, /*stop_context_menu_propagation=*/false);
   scoped_widget_observation_.Observe(editor_bubble_widget_.get());
 }
 
 void WebUITabStripContainerView::HideEditDialogForGroup() {
-  if (editor_bubble_widget_)
+  if (editor_bubble_widget_) {
     editor_bubble_widget_->CloseWithReason(
-        BrowserFrame::ClosedReason::kUnspecified);
+        BrowserWidget::ClosedReason::kUnspecified);
+  }
 }
 
 TabStripUILayout WebUITabStripContainerView::GetLayout() {
@@ -818,18 +830,25 @@ SkColor WebUITabStripContainerView::GetColorProviderColor(
   return GetColorProvider()->GetColor(id);
 }
 
-int WebUITabStripContainerView::GetHeightForWidth(int w) const {
+gfx::Size WebUITabStripContainerView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   DCHECK(!(animation_.is_animating() && current_drag_height_));
+  gfx::Size preferred_size =
+      GetLayoutManager()->GetPreferredSize(this, available_size);
 
   // Note that preferred size is automatically calculated by the layout.
   if (animation_.is_animating()) {
-    return gfx::Tween::LinearIntValueBetween(animation_.GetCurrentValue(), 0,
-                                             GetPreferredSize().height());
+    preferred_size.set_height(gfx::Tween::LinearIntValueBetween(
+        animation_.GetCurrentValue(), 0, preferred_size.height()));
+    return preferred_size;
   }
-  if (current_drag_height_)
-    return std::round(*current_drag_height_);
 
-  return GetVisible() ? GetPreferredSize().height() : 0;
+  if (current_drag_height_) {
+    preferred_size.set_height(std::round(*current_drag_height_));
+    return preferred_size;
+  }
+
+  return GetVisible() ? preferred_size : gfx::Size();
 }
 
 gfx::Size WebUITabStripContainerView::FlexRule(
@@ -863,8 +882,9 @@ void WebUITabStripContainerView::OnViewBoundsChanged(View* observed_view) {
     // replaceable with PreferredSizeChanged.
     InvalidateLayout();
 
-    if (TabStripUI* tab_strip_ui = GetTabStripUI(web_view_->GetWebContents()))
+    if (TabStripUI* tab_strip_ui = GetTabStripUI(web_view_->GetWebContents())) {
       tab_strip_ui->LayoutChanged();
+    }
   }
 }
 
@@ -879,8 +899,9 @@ void WebUITabStripContainerView::OnViewIsDeleting(View* observed_view) {
 }
 
 void WebUITabStripContainerView::OnWidgetDestroying(views::Widget* widget) {
-  if (widget != editor_bubble_widget_)
+  if (widget != editor_bubble_widget_) {
     return;
+  }
 
   scoped_widget_observation_.Reset();
   editor_bubble_widget_ = nullptr;
@@ -891,8 +912,9 @@ bool WebUITabStripContainerView::SetPaneFocusAndFocusDefault() {
   // front-end so the correct HTML element receives focus.
   bool received_focus = AccessiblePaneView::SetPaneFocusAndFocusDefault();
   TabStripUI* tab_strip_ui = GetTabStripUI(web_view_->GetWebContents());
-  if (received_focus && tab_strip_ui)
+  if (received_focus && tab_strip_ui) {
     tab_strip_ui->ReceivedKeyboardFocus();
+  }
   return received_focus;
 }
 

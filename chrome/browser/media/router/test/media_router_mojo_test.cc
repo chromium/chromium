@@ -2,21 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/media/router/test/media_router_mojo_test.h"
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 
 using testing::_;
 using testing::ByRef;
-using testing::Invoke;
 using testing::NiceMock;
 using testing::Not;
 using testing::Pointee;
@@ -61,9 +56,9 @@ class SinkResponseCallbackHandler {
 
 }  // namespace
 
-MockMediaRouteProvider::MockMediaRouteProvider() {}
+MockMediaRouteProvider::MockMediaRouteProvider() = default;
 
-MockMediaRouteProvider::~MockMediaRouteProvider() {}
+MockMediaRouteProvider::~MockMediaRouteProvider() = default;
 
 void MockMediaRouteProvider::RouteRequestSuccess(RouteCallback& cb) const {
   DCHECK(route_);
@@ -94,7 +89,7 @@ MockMediaStatusObserver::MockMediaStatusObserver(
     mojo::PendingReceiver<mojom::MediaStatusObserver> receiver)
     : receiver_(this, std::move(receiver)) {}
 
-MockMediaStatusObserver::~MockMediaStatusObserver() {}
+MockMediaStatusObserver::~MockMediaStatusObserver() = default;
 
 MockMediaController::MockMediaController() = default;
 
@@ -185,11 +180,11 @@ void MediaRouterMojoTest::TestCreateRoute() {
               CreateRouteInternal(kSource, kSinkId, _,
                                   url::Origin::Create(GURL(kOrigin)),
                                   kInvalidFrameTreeNodeId, _, _))
-      .WillOnce(WithArg<6>(
-          Invoke([](mojom::MediaRouteProvider::CreateRouteCallback& cb) {
+      .WillOnce(
+          WithArg<6>([](mojom::MediaRouteProvider::CreateRouteCallback& cb) {
             std::move(cb).Run(CreateMediaRoute(), nullptr, std::string(),
                               mojom::RouteRequestResultCode::OK);
-          })));
+          }));
 
   RouteResponseCallbackHandler handler;
   EXPECT_CALL(handler, DoInvoke(Pointee(expected_route), Not(""), "",
@@ -226,10 +221,10 @@ void MediaRouterMojoTest::TestJoinRoute(const std::string& presentation_id) {
                                 kInvalidFrameTreeNodeId,
                                 base::Milliseconds(kTimeoutMillis), _))
       .WillOnce(WithArg<5>(
-          Invoke([&route](mojom::MediaRouteProvider::JoinRouteCallback& cb) {
+          [&route](mojom::MediaRouteProvider::JoinRouteCallback& cb) {
             std::move(cb).Run(route, nullptr, std::string(),
                               mojom::RouteRequestResultCode::OK);
-          })));
+          }));
 
   RouteResponseCallbackHandler handler;
   EXPECT_CALL(handler, DoInvoke(Pointee(expected_route), Not(""), "",
@@ -245,11 +240,10 @@ void MediaRouterMojoTest::TestJoinRoute(const std::string& presentation_id) {
 void MediaRouterMojoTest::TestTerminateRoute() {
   ProvideTestRoute(mojom::MediaRouteProviderId::CAST, kRouteId);
   EXPECT_CALL(mock_cast_provider_, TerminateRouteInternal(kRouteId, _))
-      .WillOnce(
-          Invoke([](const std::string& route_id,
-                    mojom::MediaRouteProvider::TerminateRouteCallback& cb) {
-            std::move(cb).Run(std::nullopt, mojom::RouteRequestResultCode::OK);
-          }));
+      .WillOnce([](const std::string& route_id,
+                   mojom::MediaRouteProvider::TerminateRouteCallback& cb) {
+        std::move(cb).Run(std::nullopt, mojom::RouteRequestResultCode::OK);
+      });
   router()->TerminateRoute(kRouteId);
   base::RunLoop().RunUntilIdle();
 }
@@ -264,12 +258,12 @@ void MediaRouterMojoTest::TestSendRouteMessage() {
 void MediaRouterMojoTest::TestSendRouteBinaryMessage() {
   ProvideTestRoute(mojom::MediaRouteProviderId::CAST, kRouteId);
   auto expected_binary_data = std::make_unique<std::vector<uint8_t>>(
-      kBinaryMessage, kBinaryMessage + std::size(kBinaryMessage));
+      std::begin(kBinaryMessage), std::end(kBinaryMessage));
   EXPECT_CALL(mock_cast_provider_, SendRouteBinaryMessage(kRouteId, _))
       .WillOnce([](const MediaRoute::Id& route_id,
                    const std::vector<uint8_t>& data) {
-        EXPECT_EQ(
-            0, memcmp(kBinaryMessage, &(data[0]), std::size(kBinaryMessage)));
+        UNSAFE_TODO(EXPECT_EQ(
+            0, memcmp(kBinaryMessage, &(data[0]), std::size(kBinaryMessage))));
       });
 
   router()->SendRouteBinaryMessage(kRouteId, std::move(expected_binary_data));

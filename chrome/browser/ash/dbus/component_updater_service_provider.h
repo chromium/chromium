@@ -10,7 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "chromeos/ash/components/dbus/services/cros_dbus_service.h"
@@ -51,12 +51,12 @@ class ComponentUpdaterServiceProvider
    public:
     using LoadCallback = base::OnceCallback<void(const base::FilePath&)>;
 
-    Delegate() {}
+    Delegate() = default;
 
     Delegate(const Delegate&) = delete;
     Delegate& operator=(const Delegate&) = delete;
 
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     virtual void LoadComponent(const std::string& name,
                                bool mount,

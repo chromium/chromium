@@ -20,6 +20,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/gfx/geometry/rect.h"
@@ -149,8 +150,6 @@ class ASH_EXPORT AppListItemView : public views::Button,
 
   void SetHostBadgeIcon(const gfx::ImageSkia& host_badge_icon);
 
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
   void CancelContextMenu();
 
   void SetAsAttemptedFolderTarget(bool is_target_folder);
@@ -217,9 +216,6 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // views::Button overrides:
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnThemeChanged() override;
-
-  // views::View overrides:
-  std::u16string GetTooltipText(const gfx::Point& p) const override;
 
   // When a dragged view enters this view, a preview circle is shown for
   // non-folder item while the icon is enlarged for folder item. When a
@@ -363,13 +359,14 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // |AppListViewDelegate::GetContextMenuModel|.
   void OnContextMenuModelReceived(
       const gfx::Point& point,
-      ui::MenuSourceType source_type,
+      ui::mojom::MenuSourceType source_type,
       std::unique_ptr<ui::SimpleMenuModel> menu_model);
 
   // views::ContextMenuController overrides:
-  void ShowContextMenuForViewImpl(views::View* source,
-                                  const gfx::Point& point,
-                                  ui::MenuSourceType source_type) override;
+  void ShowContextMenuForViewImpl(
+      views::View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override;
 
   // views::Button overrides:
   bool ShouldEnterPushedState(const ui::Event& event) override;
@@ -382,7 +379,6 @@ class ASH_EXPORT AppListItemView : public views::Button,
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnMouseCaptureLost() override;
-  bool OnMouseDragged(const ui::MouseEvent& event) override;
   bool SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) override;
   void OnFocus() override;
   void OnBlur() override;
@@ -411,6 +407,7 @@ class ASH_EXPORT AppListItemView : public views::Button,
   void ItemBeingDestroyed() override;
   void ItemProgressUpdated() override;
   void ItemAppStatusUpdated() override;
+  void ItemAppCollectionIdChanged() override;
 
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override;
@@ -467,6 +464,10 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // `GetPreferredIconSizeForProgressRing()` is used to adjust padding for the
   // promise ring.
   gfx::Size GetPreferredIconSizeForProgressRing() const;
+
+  void UpdateAccessibleDescription();
+
+  void UpdateTooltipText();
 
   // The app list config used to layout this view. The initial values is set
   // during view construction, but can be changed by calling
@@ -623,6 +624,8 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // progress value. Used when animating the view in from a promise app state to
   // simulate promise icon UI.
   std::optional<float> forced_progress_indicator_value_;
+
+  base::CallbackListSubscription new_install_dot_visibility_changed_callback_;
 
   base::WeakPtrFactory<AppListItemView> weak_ptr_factory_{this};
 };

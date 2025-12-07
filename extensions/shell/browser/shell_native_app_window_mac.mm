@@ -8,7 +8,7 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/memory/raw_ptr_exclusion.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/strings/sys_string_conversions.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/display/display.h"
@@ -16,6 +16,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
+#include "ui/gfx/native_ui_types.h"
 
 @implementation ShellNativeAppWindowController {
   // This field is not a raw_ptr<> because it is a pointer to Objective-C
@@ -74,7 +75,7 @@ bool ShellNativeAppWindowMac::IsActive() const {
 }
 
 gfx::NativeWindow ShellNativeAppWindowMac::GetNativeWindow() const {
-  return window();
+  return gfx::NativeWindow(window());
 }
 
 gfx::Rect ShellNativeAppWindowMac::GetBounds() const {
@@ -110,7 +111,7 @@ void ShellNativeAppWindowMac::SetBounds(const gfx::Rect& bounds) {
 
 gfx::Size ShellNativeAppWindowMac::GetContentMinimumSize() const {
   // Content fills the display and cannot be resized.
-  return display::Screen::GetScreen()->GetPrimaryDisplay().bounds().size();
+  return display::Screen::Get()->GetPrimaryDisplay().bounds().size();
 }
 
 gfx::Size ShellNativeAppWindowMac::GetContentMaximumSize() const {

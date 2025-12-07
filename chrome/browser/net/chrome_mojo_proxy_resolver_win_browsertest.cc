@@ -7,14 +7,13 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/proxy_resolution/proxy_list.h"
 #include "net/proxy_resolution/win/winhttp_status.h"
-#include "services/proxy_resolver_win/public/mojom/proxy_resolver_win.mojom.h"
+#include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -46,8 +45,7 @@ class ProxyResolverProcessObserver
   // content::ServiceProcessHost::Observer:
   void OnServiceProcessLaunched(
       const content::ServiceProcessInfo& info) override {
-    if (!info.IsService<
-            proxy_resolver_win::mojom::WindowsSystemProxyResolver>()) {
+    if (!info.IsService<proxy_resolver::mojom::SystemProxyResolver>()) {
       return;
     }
 
@@ -58,8 +56,7 @@ class ProxyResolverProcessObserver
 
   void OnServiceProcessTerminatedNormally(
       const content::ServiceProcessInfo& info) override {
-    if (!info.IsService<
-            proxy_resolver_win::mojom::WindowsSystemProxyResolver>()) {
+    if (!info.IsService<proxy_resolver::mojom::SystemProxyResolver>()) {
       return;
     }
 
@@ -78,19 +75,12 @@ using ChromeMojoProxyResolverWinBrowserTest = InProcessBrowserTest;
 
 // Ensures the proxy resolver service is started correctly and stopped when no
 // resolvers are open.
-// TODO(crbug.com/349437220): Flaky on win11-arm64
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
-#define MAYBE_ServiceLifecycle DISABLED_ServiceLifecycle
-#else
-#define MAYBE_ServiceLifecycle ServiceLifecycle
-#endif
 IN_PROC_BROWSER_TEST_F(ChromeMojoProxyResolverWinBrowserTest,
-                       MAYBE_ServiceLifecycle) {
+                       ServiceLifecycle) {
   // Set up the ProxyResolverFactory.
-  mojo::Remote<proxy_resolver_win::mojom::WindowsSystemProxyResolver>
-      proxy_resolver_win(
-          ChromeMojoProxyResolverWin::CreateWithSelfOwnedReceiverForTesting(
-              base::TimeDelta()));
+  mojo::Remote<proxy_resolver::mojom::SystemProxyResolver> proxy_resolver_win(
+      ChromeMojoProxyResolverWin::CreateWithSelfOwnedReceiverForTesting(
+          base::TimeDelta()));
 
   ProxyResolverProcessObserver observer;
 
@@ -100,8 +90,9 @@ IN_PROC_BROWSER_TEST_F(ChromeMojoProxyResolverWinBrowserTest,
       GURL(kTestUrl),
       base::BindLambdaForTesting(
           [&](const net::ProxyList& proxy_list,
-              net::WinHttpStatus winhttp_status,
-              int windows_error) { proxy_resolution_1.Quit(); }));
+              proxy_resolver::mojom::SystemProxyResolutionStatusPtr status) {
+            proxy_resolution_1.Quit();
+          }));
   observer.WaitForLaunch();
 
   // Resolve another proxy. No new service should be created (the listener will
@@ -111,8 +102,9 @@ IN_PROC_BROWSER_TEST_F(ChromeMojoProxyResolverWinBrowserTest,
       GURL(kTestUrl),
       base::BindLambdaForTesting(
           [&](const net::ProxyList& proxy_list,
-              net::WinHttpStatus winhttp_status,
-              int windows_error) { proxy_resolution_2.Quit(); }));
+              proxy_resolver::mojom::SystemProxyResolutionStatusPtr status) {
+            proxy_resolution_2.Quit();
+          }));
   EXPECT_TRUE(observer.is_service_running());
 
   // Wait for proxy resolution to complete. Once that's done, the service should
@@ -122,31 +114,23 @@ IN_PROC_BROWSER_TEST_F(ChromeMojoProxyResolverWinBrowserTest,
   observer.WaitForDeath();
 }
 
-// Same as above, but destroys the WindowsSystemProxyResolver, which should have
+// Same as above, but destroys the system proxy resolver, which should have
 // no impact on service lifetime.
-// TODO(crbug.com/349437220): Flaky on win11-arm64
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
-#define MAYBE_DestroyResolver DISABLED_DestroyResolver
-#else
-#define MAYBE_DestroyResolver DestroyResolver
-#endif
-IN_PROC_BROWSER_TEST_F(ChromeMojoProxyResolverWinBrowserTest,
-                       MAYBE_DestroyResolver) {
-  mojo::Remote<proxy_resolver_win::mojom::WindowsSystemProxyResolver>
-      proxy_resolver_win(
-          ChromeMojoProxyResolverWin::CreateWithSelfOwnedReceiverForTesting(
-              base::TimeDelta()));
+IN_PROC_BROWSER_TEST_F(ChromeMojoProxyResolverWinBrowserTest, DestroyResolver) {
+  mojo::Remote<proxy_resolver::mojom::SystemProxyResolver> proxy_resolver_win(
+      ChromeMojoProxyResolverWin::CreateWithSelfOwnedReceiverForTesting(
+          base::TimeDelta()));
 
   ProxyResolverProcessObserver observer;
 
   // Attempt to resolve a proxy. This should create and start the service.
   proxy_resolver_win->GetProxyForUrl(
       GURL(kTestUrl),
-      base::BindLambdaForTesting([&](const net::ProxyList& proxy_list,
-                                     net::WinHttpStatus winhttp_status,
-                                     int windows_error) {
-        ADD_FAILURE() << "The GetProxyForURL callback should be dropped";
-      }));
+      base::BindLambdaForTesting(
+          [&](const net::ProxyList& proxy_list,
+              proxy_resolver::mojom::SystemProxyResolutionStatusPtr status) {
+            ADD_FAILURE() << "The GetProxyForURL callback should be dropped";
+          }));
   observer.WaitForLaunch();
 
   // Destroy the resolver. The callback will never hit and the service should
@@ -157,18 +141,11 @@ IN_PROC_BROWSER_TEST_F(ChromeMojoProxyResolverWinBrowserTest,
 }
 
 // Make sure the service can be started again after it's been stopped.
-// TODO(crbug.com/349437220): Flaky on win11-arm64
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
-#define MAYBE_DestroyAndCreateService DISABLED_DestroyAndCreateService
-#else
-#define MAYBE_DestroyAndCreateService DestroyAndCreateService
-#endif
 IN_PROC_BROWSER_TEST_F(ChromeMojoProxyResolverWinBrowserTest,
-                       MAYBE_DestroyAndCreateService) {
-  mojo::Remote<proxy_resolver_win::mojom::WindowsSystemProxyResolver>
-      proxy_resolver_win(
-          ChromeMojoProxyResolverWin::CreateWithSelfOwnedReceiverForTesting(
-              base::TimeDelta()));
+                       DestroyAndCreateService) {
+  mojo::Remote<proxy_resolver::mojom::SystemProxyResolver> proxy_resolver_win(
+      ChromeMojoProxyResolverWin::CreateWithSelfOwnedReceiverForTesting(
+          base::TimeDelta()));
 
   ProxyResolverProcessObserver observer;
 
@@ -178,8 +155,9 @@ IN_PROC_BROWSER_TEST_F(ChromeMojoProxyResolverWinBrowserTest,
       GURL(kTestUrl),
       base::BindLambdaForTesting(
           [&](const net::ProxyList& proxy_list,
-              net::WinHttpStatus winhttp_status,
-              int windows_error) { proxy_resolution_1.Quit(); }));
+              proxy_resolver::mojom::SystemProxyResolutionStatusPtr status) {
+            proxy_resolution_1.Quit();
+          }));
   observer.WaitForLaunch();
 
   // Wait for proxy resolution to complete. Once that's done, the service should
@@ -195,8 +173,9 @@ IN_PROC_BROWSER_TEST_F(ChromeMojoProxyResolverWinBrowserTest,
       GURL(kTestUrl),
       base::BindLambdaForTesting(
           [&](const net::ProxyList& proxy_list,
-              net::WinHttpStatus winhttp_status,
-              int windows_error) { proxy_resolution_2.Quit(); }));
+              proxy_resolver::mojom::SystemProxyResolutionStatusPtr status) {
+            proxy_resolution_2.Quit();
+          }));
   observer2.WaitForLaunch();
 
   // Wait for proxy resolution to complete again. Once that's done, the service

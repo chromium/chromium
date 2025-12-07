@@ -32,6 +32,9 @@ group("orchestrator_all") {
     # Used if the orchestrator needs to run recipe_module.chromium.get_version()
     # to get the Chrome milestone being tested.
     "//chrome/VERSION",
+
+    # Test specs the Orchestrator needs to trigger swarming tests
+    "//testing/buildbot/*.json",
   ]
 
   # Orchestrator will run this script to curl for the coverage tool, which
@@ -41,7 +44,7 @@ group("orchestrator_all") {
   }
 
   if (use_jacoco_coverage) {
-    data += [ "//third_party/jacoco/lib/jacococli.jar" ]
+    data += [ "//third_party/jacoco/cipd/lib/jacococli.jar" ]
     data_deps += [ "//third_party/jdk:java_data" ]
   }
 
@@ -49,6 +52,8 @@ group("orchestrator_all") {
     data += [
       "//third_party/chromite/",
       "//chromeos/CHROMEOS_LKGM",
+      "//chromeos/tast_control_disabled_tests.txt",
+      "//chromeos/tast_control_disabled_tests_public_builders.txt",
     ]
   }
 
@@ -91,6 +96,7 @@ python_library("process_perf_results_py") {
     # them, build/print_python_deps.py doesn't detect them. So to appease
     # telemetry, just add the needed dirs directly.
     "//third_party/catapult/telemetry/third_party/",
+    "//third_party/catapult/third_party/gsutil/",
     "//third_party/catapult/third_party/polymer/",
     "//third_party/catapult/third_party/six/",
     "//third_party/catapult/third_party/vinn/",
@@ -100,5 +106,6 @@ python_library("process_perf_results_py") {
 
     # This file is read at script run-time.
     "//tools/perf/core/perf_dashboard_machine_group_mapping.json",
+    "//tools/perf/public_builders.json",
   ]
 }

@@ -16,8 +16,6 @@ class MockDevToolsAgentHost : public content::DevToolsAgentHost {
   std::string CreateIOStreamFromData(
       scoped_refptr<base::RefCountedMemory>) override;
   bool AttachClient(content::DevToolsAgentHostClient* client) override;
-  bool AttachClientWithoutWakeLock(
-      content::DevToolsAgentHostClient* client) override;
   bool DetachClient(content::DevToolsAgentHostClient* client) override;
   bool IsAttached() override;
   void DispatchProtocolMessage(content::DevToolsAgentHostClient* client,
@@ -30,6 +28,7 @@ class MockDevToolsAgentHost : public content::DevToolsAgentHost {
   std::string GetOpenerId() override;
   bool CanAccessOpener() override;
   std::string GetOpenerFrameId() override;
+  std::string GetParentFrameId() override;
   content::WebContents* GetWebContents() override;
   content::BrowserContext* GetBrowserContext() override;
   void DisconnectWebContents() override {}

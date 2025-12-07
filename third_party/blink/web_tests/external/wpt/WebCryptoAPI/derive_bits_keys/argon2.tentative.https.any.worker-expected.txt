@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] setup - define tests
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument"
+Harness: the test ran to completion.
+

@@ -5,19 +5,19 @@
 import logging
 import os
 import sys
-from typing import Any, Dict, List
+from typing import Any
 import unittest
-
-import gpu_path_util
-
-from gpu_tests import common_typing as ct
-from gpu_tests import expected_color_test_cases
-from gpu_tests import gpu_integration_test
-from gpu_tests import skia_gold_heartbeat_integration_test_base as sghitb
 
 from py_utils import cloud_storage
 from telemetry.util import image_util
 from telemetry.util import rgba_color
+
+import gpu_path_util
+from gpu_tests import common_typing as ct
+from gpu_tests import expected_color_test_cases
+from gpu_tests import gpu_integration_test
+from gpu_tests import skia_gold_heartbeat_integration_test_base as sghitb
+from gpu_tests.util import screenshot_utils
 
 _MAPS_PERF_TEST_PATH = os.path.join(gpu_path_util.TOOLS_PERF_DIR, 'page_sets',
                                     'maps_perf_test')
@@ -44,7 +44,7 @@ class ExpectedColorTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
     super().SetUpProcess()
 
   @classmethod
-  def _GetStaticServerDirs(cls) -> List[str]:
+  def _GetStaticServerDirs(cls) -> list[str]:
     static_dirs = super()._GetStaticServerDirs()
     static_dirs.append(_MAPS_PERF_TEST_PATH)
     return static_dirs
@@ -57,7 +57,7 @@ class ExpectedColorTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
       yield (tc.name, tc.url, [tc])
 
   @classmethod
-  def ExpectationsFiles(cls) -> List[str]:
+  def ExpectationsFiles(cls) -> list[str]:
     return [
         os.path.join(os.path.dirname(os.path.abspath(__file__)),
                      'test_expectations', 'expected_color_expectations.txt')
@@ -86,17 +86,16 @@ class ExpectedColorTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
     if screenshot is None:
       self.fail('Could not capture screenshot')
 
-    dpr = self.tab.EvaluateJavaScript('window.devicePixelRatio')
-    logging.info('devicePixelRatio is %s', dpr)
+    dpr = screenshot_utils.GetEffectiveDpr(self.tab)
+    logging.info('Effective devicePixelRatio is %s', dpr)
 
     screenshot = test_case.crop_action.CropScreenshot(
         screenshot, dpr, self.browser.platform.GetDeviceTypeName(),
         self.browser.platform.GetOSName())
 
-    self._ValidateScreenshotSamplesWithSkiaGold(self.tab, test_case, screenshot,
-                                                dpr)
+    self._ValidateScreenshotSamplesWithSkiaGold(test_case, screenshot, dpr)
 
-  def GetGoldOptionalKeys(self) -> Dict[str, str]:
+  def GetGoldOptionalKeys(self) -> dict[str, str]:
     keys = super().GetGoldOptionalKeys()
     keys['expected_color_comment'] = (
         'This is an expected color test. Triaging in Gold will not affect test '
@@ -104,8 +103,7 @@ class ExpectedColorTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
     return keys
 
   def _ValidateScreenshotSamplesWithSkiaGold(
-      self, tab: ct.Tab,
-      test_case: expected_color_test_cases.ExpectedColorTestCase,
+      self, test_case: expected_color_test_cases.ExpectedColorTestCase,
       screenshot: ct.Screenshot, device_pixel_ratio: float) -> None:
     """Samples the given screenshot and verifies pixel color values.
 
@@ -113,14 +111,12 @@ class ExpectedColorTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
     a Failure and uploads the image to Gold.
 
     Args:
-      tab: the Telemetry Tab object that the test was run in.
       test_case: the GPU ExpectedColorTestCase object for the test.
       screenshot: the screenshot of the test page as a Telemetry Bitmap.
       device_pixel_ratio: the device pixel ratio for the test device as a float.
     """
     try:
-      self._CompareScreenshotSamples(tab, screenshot, test_case,
-                                     device_pixel_ratio)
+      self._CompareScreenshotSamples(screenshot, test_case, device_pixel_ratio)
     except Exception:
       # An exception raised from self.fail() indicates a failure.
       image_name = self._UrlToImageName(test_case.name)
@@ -133,13 +129,12 @@ class ExpectedColorTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
       raise
 
   def _CompareScreenshotSamples(
-      self, tab: ct.Tab, screenshot: ct.Screenshot,
+      self, screenshot: ct.Screenshot,
       test_case: expected_color_test_cases.ExpectedColorTestCase,
       device_pixel_ratio: float) -> None:
     """Checks a screenshot for expected colors.
 
     Args:
-      tab: the Telemetry Tab object that the test was run in.
       screenshot: the screenshot of the test page as a Telemetry Bitmap.
       test_case: the GPU ExpectedColorTestCase object for the test.
       device_pixel_ratio: the device pixel ratio for the test device as a float.
@@ -167,11 +162,11 @@ class ExpectedColorTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
       y1 = int((location.y + size.height) * device_pixel_ratio)
       for x in range(x0, x1):
         for y in range(y0, y1):
-          if (x < 0 or y < 0 or x >= image_util.Width(screenshot)
-              or y >= image_util.Height(screenshot)):
-            self.fail(('Expected pixel location [%d, %d] is out of range on ' +
-                       '[%d, %d] image') % (x, y, image_util.Width(screenshot),
-                                            image_util.Height(screenshot)))
+          image_width = image_util.Width(screenshot)
+          image_height = image_util.Height(screenshot)
+          if x < 0 or y < 0 or x >= image_width or y >= image_height:
+            self.fail(f'Expected pixel location [{x}, {y}] is out of range on '
+                      f'[{image_width}, {image_height}] image')
 
           actual_color = image_util.GetPixelColor(screenshot, x, y)
           expected_color = rgba_color.RgbaColor(expectation.color.r,
@@ -179,27 +174,11 @@ class ExpectedColorTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
                                                 expectation.color.b,
                                                 expectation.color.a)
           if not actual_color.IsEqual(expected_color, tolerance):
-            self.fail('Expected pixel at %s (actual pixel (%s, %s)) to be %s '
-                      'but got [%s, %s, %s, %s]' %
-                      (location, x, y, expectation.color, actual_color.r,
-                       actual_color.g, actual_color.b, actual_color.a))
+            self.fail(f'Expected pixel at {location} (actual pixel ({x}, {y})) '
+                      f'to be {expectation.color} but got [{actual_color.r}, '
+                      f'{actual_color.g}, {actual_color.b}, {actual_color.a}]')
 
     expected_colors = test_case.expected_colors
-
-    # First scan through the expected_colors and see if there are any scale
-    # factor overrides that would preempt the device pixel ratio. This
-    # is mainly a workaround for complex tests like the Maps test.
-    for device_type, scale_factor in test_case.scale_factor_overrides.items():
-      # Require exact matches to avoid confusion, because some
-      # machine models and names might be subsets of others
-      # (e.g. Nexus 5 vs Nexus 5X).
-      if tab.browser.platform.GetDeviceTypeName() == device_type:
-        logging.warning(
-            'Overriding device_pixel_ration %s with scale '
-            'factor %s for device type %s', device_pixel_ratio, scale_factor,
-            device_type)
-        device_pixel_ratio = scale_factor
-        break
     for color_expectation in expected_colors:
       tolerance = (test_case.base_tolerance
                    if color_expectation.tolerance is None else

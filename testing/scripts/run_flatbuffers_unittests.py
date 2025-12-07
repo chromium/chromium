@@ -52,7 +52,7 @@ def main():
     # a non positive number).
     with open(tempfile_path) as f:
       output = f.read()
-      if "ALL TESTS PASSED\n" not in output:
+      if 'ALL TESTS PASSED\n' not in output:
         failures = [output]
 
   if args.isolated_script_test_output:

@@ -13,13 +13,14 @@
     "help": "Output a hosts file to stdout",
     "virtualenv": false
   },
-  "macos-color-profile": {
-    "path": "macos_color_profile.py",
+  "macos-display-configuration": {
+    "path": "macos_display_configuration.py",
     "script": "run",
-    "help": "Change the macOS color profile to sRGB",
+    "parser": "create_parser",
+    "help": "Configure macOS displays (scale, color profile)",
     "virtualenv": true,
     "requirements": [
-      "requirements_macos_color_profile.txt"
+      "requirements_macos_display_configuration.txt"
     ]
   },
   "regen-certs": {
@@ -77,6 +78,16 @@
     "virtualenv": true,
     "requirements": [
       "requirements_tc.txt"
+    ]
+  },
+  "update-codeowners": {
+    "path": "update_codeowners.py",
+    "parser": "get_parser",
+    "script": "run_update_codeowners",
+    "help": "Update CODEOWNERS file",
+    "virtualenv": true,
+    "requirements": [
+      "../wpt/requirements_metadata.txt"
     ]
   }
 }

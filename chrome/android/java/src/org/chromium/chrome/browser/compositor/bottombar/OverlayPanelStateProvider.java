@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.compositor.bottombar;
 
 import androidx.annotation.ColorInt;
 
+import org.chromium.build.annotations.NullMarked;
+
+@NullMarked
 public interface OverlayPanelStateProvider {
     /** An observer to be notified of changes to the overlay panel. */
     interface Observer {

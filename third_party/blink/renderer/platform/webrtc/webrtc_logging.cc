@@ -28,7 +28,7 @@ void InitWebRtcLoggingDelegate(WebRtcLogMessageDelegate* delegate) {
 
 void InitWebRtcLogging() {
   // Log messages from Libjingle should not have timestamps.
-  rtc::InitDiagnosticLoggingDelegateFunction(&WebRtcLogMessage);
+  webrtc::InitDiagnosticLoggingDelegateFunction(&WebRtcLogMessage);
 }
 
 void WebRtcLogMessage(const std::string& message) {

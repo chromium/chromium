@@ -41,6 +41,7 @@ class SecurePaymentConfirmationNoCreds {
                   OptOutCallback opt_out_callback);
   void CloseDialog();
   bool ClickOptOutForTesting();
+  bool AcceptDialogForTesting();
 
  private:
   // On desktop, the SecurePaymentConfirmationNoCredsView object is memory

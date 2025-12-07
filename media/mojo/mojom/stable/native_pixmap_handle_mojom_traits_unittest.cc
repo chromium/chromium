@@ -11,7 +11,7 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/process.h"
 #include "base/test/gtest_util.h"
-#include "media/mojo/mojom/stable/mojom_traits_test_util.h"
+#include "media/mojo/mojom/buffer_handle_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {

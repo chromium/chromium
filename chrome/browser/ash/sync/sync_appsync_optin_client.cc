@@ -158,4 +158,10 @@ void SyncAppsyncOptinClient::OnStateChanged(syncer::SyncService* sync_service) {
   }
 }
 
+void SyncAppsyncOptinClient::OnSyncShutdown(syncer::SyncService* sync_service) {
+  // Unreachable, since `this` must be destroyed before SyncService shutdown,
+  // per precondition specified in the constructor.
+  NOTREACHED();
+}
+
 }  // namespace ash

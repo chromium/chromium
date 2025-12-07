@@ -8,7 +8,6 @@
 #include <optional>
 #include <utility>
 
-#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
@@ -23,9 +22,9 @@ namespace performance_manager {
 
 TEST(SiteDataCacheFactoryTest, EndToEnd) {
   content::BrowserTaskEnvironment task_environment;
-  auto performance_manager = PerformanceManagerImpl::Create(base::DoNothing());
+  auto performance_manager = PerformanceManagerImpl::Create();
   base::SequenceBound<SiteDataCacheFactory> cache_factory(
-      PerformanceManager::GetTaskRunner());
+      base::SequencedTaskRunner::GetCurrentDefault());
 
   content::TestBrowserContext browser_context;
   cache_factory.AsyncCall(&SiteDataCacheFactory::OnBrowserContextCreated)

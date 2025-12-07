@@ -21,14 +21,15 @@ void QuicChromiumClientSessionPeer::SetHostname(
     QuicChromiumClientSession* session,
     const std::string& hostname) {
   quic::QuicServerId server_id(hostname,
-                               session->session_key_.server_id().port(),
-                               session->session_key_.privacy_mode());
+                               session->session_key_.server_id().port());
   session->session_key_ = QuicSessionKey(
-      server_id, session->session_key_.proxy_chain(),
+      server_id, session->session_key_.privacy_mode(),
+      session->session_key_.proxy_chain(),
       session->session_key_.session_usage(), session->session_key_.socket_tag(),
       session->session_key_.network_anonymization_key(),
       session->session_key_.secure_dns_policy(),
-      session->session_key_.require_dns_https_alpn());
+      session->session_key_.require_dns_https_alpn(),
+      session->session_key_.disable_cert_verification_network_fetches());
 }
 
 // static

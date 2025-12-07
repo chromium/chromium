@@ -7,13 +7,13 @@
 
 #import "ios/chrome/app/spotlight/base_spotlight_manager.h"
 
+@class CSSearchableItem;
+class ProfileIOS;
+class ReadingListModel;
+
 namespace favicon {
 class LargeIconService;
 }
-
-class ChromeBrowserState;
-class ReadingListModel;
-@class CSSearchableItem;
 
 /// Manages Reading List items in Spotlight search.
 @interface ReadingListSpotlightManager : BaseSpotlightManager
@@ -21,11 +21,11 @@ class ReadingListModel;
 /// Model observed by this instance.
 @property(nonatomic, assign, readonly) ReadingListModel* model;
 
-/// Convenience initializer with browser state.
+/// Convenience initializer with profile.
 /// Returns a new instance of ReadingListSpotlightManager and retrieves all
-/// dependencies from `browserState`.
-+ (ReadingListSpotlightManager*)readingListSpotlightManagerWithBrowserState:
-    (ChromeBrowserState*)browserState;
+/// dependencies from `profile`.
++ (ReadingListSpotlightManager*)readingListSpotlightManagerWithProfile:
+    (ProfileIOS*)profile;
 
 - (instancetype)
     initWithLargeIconService:(favicon::LargeIconService*)largeIconService

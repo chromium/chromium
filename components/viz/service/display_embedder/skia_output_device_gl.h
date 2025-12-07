@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/viz/service/display_embedder/skia_output_device.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
@@ -34,7 +34,7 @@ class SkiaOutputDeviceGL final : public SkiaOutputDevice {
       gpu::SharedContextState* context_state,
       scoped_refptr<gl::GLSurface> gl_surface,
       scoped_refptr<gpu::gles2::FeatureInfo> feature_info,
-      gpu::MemoryTracker* memory_tracker,
+      scoped_refptr<gpu::MemoryTracker> memory_tracker,
       DidSwapBufferCompleteCallback did_swap_buffer_complete_callback);
 
   SkiaOutputDeviceGL(const SkiaOutputDeviceGL&) = delete;

@@ -15,9 +15,12 @@ include_rules = [
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/app_mode",
-  "+chrome/browser/ash/login/app_mode/test",
-  "+chrome/browser/ash/policy/scheduled_task_handler",
-  "+chrome/browser/browser_process.h",
   "+chrome/common/pref_names.h",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  ".*browsertest\\.cc": [
+    "+chrome/browser/browser_process.h",
+  ]
+}

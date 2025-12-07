@@ -7,8 +7,8 @@
 
 #import "ios/chrome/app/spotlight/base_spotlight_manager.h"
 
-class ChromeBrowserState;
 class PrefService;
+class ProfileIOS;
 
 namespace favicon {
 class LargeIconService;
@@ -38,8 +38,8 @@ class BookmarkNode;
 /// Number of pending large icon tasks.
 @property(nonatomic, assign) NSUInteger pendingLargeIconTasksCount;
 
-+ (BookmarksSpotlightManager*)bookmarksSpotlightManagerWithBrowserState:
-    (ChromeBrowserState*)browserState;
++ (BookmarksSpotlightManager*)bookmarksSpotlightManagerWithProfile:
+    (ProfileIOS*)profile;
 
 /// Checks the date of the latest global indexation and reindex all bookmarks if
 /// needed.

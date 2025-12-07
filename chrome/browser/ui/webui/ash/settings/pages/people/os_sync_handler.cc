@@ -75,6 +75,12 @@ void OSSyncHandler::OnStateChanged(syncer::SyncService* service) {
   PushSyncPrefs();
 }
 
+void OSSyncHandler::OnSyncShutdown(syncer::SyncService* service) {
+  // Unreachable, since this class is tied to UI which gets destroyed before the
+  // Profile and its KeyedServices.
+  NOTREACHED();
+}
+
 void OSSyncHandler::HandleDidNavigateToOsSyncPage(
     const base::Value::List& args) {
   HandleOsSyncPrefsDispatch(args);
@@ -93,7 +99,7 @@ void OSSyncHandler::HandleDidNavigateAwayFromOsSyncPage(
 
 void OSSyncHandler::HandleOpenBrowserSyncSettings(
     const base::Value::List& args) {
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(chrome::kChromeUISettingsURL).Resolve(chrome::kSyncSetupSubPage),
       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kSwitchToTab);

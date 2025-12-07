@@ -7,8 +7,7 @@
 
 #include "base/feature_list.h"
 
-namespace web {
-namespace features {
+namespace web::features {
 
 // Used to crash the browser if unexpected URL change is detected.
 // https://crbug.com/841105.
@@ -33,21 +32,8 @@ BASE_DECLARE_FEATURE(kEnablePersistentDownloads);
 // WKWebView is set as NSURLRequestAttributionUser on iOS 15.
 BASE_DECLARE_FEATURE(kSetRequestAttribution);
 
-// Feature flag that enable Shared Highlighting color change in iOS.
-BASE_DECLARE_FEATURE(kIOSSharedHighlightingColorChange);
-
 // Feature flag to enable Measurements detection.
 BASE_DECLARE_FEATURE(kEnableMeasurements);
-
-// Feature param under kOneTapForMaps to select consent behavior.
-extern const char kOneTapForMapsConsentModeParamTitle[];
-extern const char kOneTapForMapsConsentModeDefaultParam[];
-extern const char kOneTapForMapsConsentModeForcedParam[];
-extern const char kOneTapForMapsConsentModeDisabledParam[];
-extern const char kOneTapForMapsConsentModeIPHParam[];
-extern const char kOneTapForMapsConsentModeIPHForcedParam[];
-// Feature flag to enable One tap experience for Maps.
-BASE_DECLARE_FEATURE(kOneTapForMaps);
 
 // When enabled, CRWWebViewScrollViewProxy's `scrollEnabled` state is not
 // restored if the new instance already has the same `scrollEnabled` state as
@@ -69,26 +55,18 @@ BASE_DECLARE_FEATURE(kEnableWebInspector);
 // viewport adjustment experiment is selected via command line switches.
 BASE_DECLARE_FEATURE(kSmoothScrollingDefault);
 
+// Feature flag to enable a scroll threshold before entering or exiting
+// fullscreen.
+BASE_DECLARE_FEATURE(kFullscreenScrollThreshold);
+
 // Feature flag that force the use of the synthesized native WKWebView
 // session instead of the (maybe inexistent) saved native session. The
 // purpose of this flag it to allow to testing this code path.
 BASE_DECLARE_FEATURE(kForceSynthesizedRestoreSession);
 
-// Feature flag to remove the UnsafeRestore code path.
-BASE_DECLARE_FEATURE(kRemoveOldWebStateRestoration);
-
 // Feature flag to enable detecting destroyed NavigationContexts. This is
 // intended to be used as a kill switch.
 BASE_DECLARE_FEATURE(kDetectDestroyedNavigationContexts);
-
-// Feature flag to enable intent detection in viewport only.
-BASE_DECLARE_FEATURE(kEnableViewportIntents);
-
-// Feature flag to enable improve tracking number detection.
-BASE_DECLARE_FEATURE(kEnableNewParcelTrackingNumberDetection);
-
-// When true, an option to enable Web Inspector should be present in Settings.
-bool IsWebInspectorSupportEnabled();
 
 // Feature flag to disable the raccoon.
 BASE_DECLARE_FEATURE(kDisableRaccoon);
@@ -96,7 +74,45 @@ BASE_DECLARE_FEATURE(kDisableRaccoon);
 // Feature flag adds bugfix numbers to the iOS User-Agent header for Chrome
 BASE_DECLARE_FEATURE(kUserAgentBugFixVersion);
 
-}  // namespace features
-}  // namespace web
+// Enables logging JavaScript errors.
+BASE_DECLARE_FEATURE(kLogJavaScriptErrors);
+
+// Feature flag to let WebKit handle MarketplaceKit links. This is intended to
+// be used as a kill switch.
+BASE_DECLARE_FEATURE(kWebKitHandlesMarketplaceKitLinks);
+
+// Feature flag to restore the WKWebView edit menu customization.
+BASE_DECLARE_FEATURE(kRestoreWKWebViewEditMenuHandler);
+
+// Enables logging CrWeb Javascript errors.
+BASE_DECLARE_FEATURE(kLogCrWebJavaScriptErrors);
+
+// When enabled, JavaScript errors will crash the application.
+BASE_DECLARE_FEATURE(kAssertOnJavaScriptErrors);
+
+// Feature controlling when to create TabHelpers.
+BASE_DECLARE_FEATURE(kCreateTabHelperOnlyForRealizedWebStates);
+
+// A flag parameter to set the number of pixels to use as the threshold.
+inline constexpr char kFullscreenScrollThresholdAmount[] =
+    "fullscreen_scroll_threshold_amount";
+
+// Returns true if SmoothScrollingDefault is disabled and
+// FullscreenScrollThreshold is enabled.
+bool IsFullscreenScrollThresholdEnabled();
+
+// When true, an option to enable Web Inspector should be present in Settings.
+bool IsWebInspectorSupportEnabled();
+
+// Returns whether the TabHelpers should only be created for realized WebStates.
+bool CreateTabHelperOnlyForRealizedWebStates();
+
+// TODO(crbug.com/449156290): Clean up the kill switch for updating SSL status
+// on navigation item creation.
+// When enabled, trigger an update of the SSL status on navigation item
+// lazy creation. This is intended to be used as a kill switch.
+BASE_DECLARE_FEATURE(kUpdateSSLStatusOnNavigationItemLazyCreation);
+
+}  // namespace web::features
 
 #endif  // IOS_WEB_COMMON_FEATURES_H_

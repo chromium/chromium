@@ -35,10 +35,15 @@ enum class PasswordStoreBackendErrorType {
   // key is missing. Used on Android.
   kKeyRetrievalRequired = 4,
   // Saving new credentials is disabled due to an outdated GMSCore version.
-  kGMSCoreOutdatedSavingDisabled = 5,
+  // Deprecated: kGMSCoreOutdatedSavingDisabled = 5,
   // Credentials are saved only on device due to an outdated GMSCore version.
-  kGMSCoreOutdatedSavingPossible = 6,
-  kMaxValue = kGMSCoreOutdatedSavingPossible,
+  // Deprecated: kGMSCoreOutdatedSavingPossible = 6,
+  // Used on Android.
+  kEmptySecurityDomain = 7,
+  // Used on Android.
+  kIrretrievableSecurityDomain = 8,
+
+  kMaxValue = kIrretrievableSecurityDomain,
 };
 
 struct PasswordStoreBackendError {

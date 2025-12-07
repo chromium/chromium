@@ -26,7 +26,6 @@
 #include "base/apple/bundle_locations.h"
 #include "base/apple/osstatus_logging.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/mac/launch_application.h"
@@ -269,15 +268,13 @@ int RelauncherMain(content::MainFunctionParams main_parameters) {
     // because of http://crbug.com/139902.
     const int* argcp = _NSGetArgc();
     if (!argcp) {
-      NOTREACHED_IN_MIGRATION();
-      return 1;
+      NOTREACHED();
     }
     int argc = *argcp;
 
     const char* const* const* argvp = _NSGetArgv();
     if (!argvp) {
-      NOTREACHED_IN_MIGRATION();
-      return 1;
+      NOTREACHED();
     }
     const char* const* argv = *argvp;
 

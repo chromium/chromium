@@ -13,10 +13,8 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/cbor/values.h"
 #include "device/fido/appid_exclude_probe_task.h"
 #include "device/fido/authenticator_get_assertion_response.h"
@@ -26,15 +24,15 @@
 #include "device/fido/ctap_authenticator_selection_request.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_device.h"
 #include "device/fido/fido_parsing_utils.h"
-#include "device/fido/fido_transport_protocol.h"
-#include "device/fido/fido_types.h"
 #include "device/fido/get_assertion_task.h"
 #include "device/fido/large_blob.h"
 #include "device/fido/make_credential_task.h"
 #include "device/fido/pin.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
+#include "device/fido/public/fido_types.h"
 #include "device/fido/u2f_command_constructor.h"
 
 namespace device {
@@ -190,7 +188,7 @@ void FidoDeviceAuthenticator::InitializeAuthenticatorDone(
       options_.supports_hmac_secret &= chosen_pin_uv_auth_protocol_.has_value();
       break;
     case ProtocolVersion::kUnknown:
-      NOTREACHED_IN_MIGRATION() << "uninitialized device";
+      NOTREACHED() << "uninitialized device";
   }
   std::move(callback).Run();
 }
@@ -872,7 +870,9 @@ void FidoDeviceAuthenticator::RunOperation(
       base::BindOnce(&FidoDeviceAuthenticator::OperationClearProxy<
                          CtapDeviceResponseCode, std::optional<Response>>,
                      weak_factory_.GetWeakPtr(), std::move(callback)),
-      std::move(parser), string_fixup_predicate);
+      std::move(parser), string_fixup_predicate,
+      /*cbor_response_redacter=*/
+      base::BindOnce([](const cbor::Value& cbor) { return cbor.Clone(); }));
   operation_->Start();
 }
 
@@ -1261,7 +1261,7 @@ void FidoDeviceAuthenticator::OnHaveLargeBlobArrayForWrite(
     large_blob_array.emplace();
   }
 
-  auto existing_large_blob = base::ranges::find_if(
+  auto existing_large_blob = std::ranges::find_if(
       *large_blob_array, [&large_blob_key](const cbor::Value& blob_cbor) {
         std::optional<LargeBlobData> blob = LargeBlobData::Parse(blob_cbor);
         return blob && blob->Decrypt(large_blob_key).has_value();
@@ -1421,11 +1421,11 @@ void FidoDeviceAuthenticator::OnHaveLargeBlobArrayForGarbageCollect(
       *large_blob_array, [&large_blob_keys](const cbor::Value& blob_cbor) {
         std::optional<LargeBlobData> blob = LargeBlobData::Parse(blob_cbor);
         return blob &&
-               base::ranges::none_of(
+               std::ranges::none_of(
                    large_blob_keys,
                    [&blob](
                        const std::array<uint8_t, kLargeBlobKeyLength>& key) {
-                     return blob->Decrypt(key);
+                     return blob->Decrypt(key).has_value();
                    });
       });
 

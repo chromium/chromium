@@ -12,9 +12,15 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "devtools_server_unittest\.cc": [
+  "devtools_server_unittest\\.cc": [
     "+services/network/network_context.h",
     "+services/network/network_service.h",
     "+services/network/test/fake_test_cert_verifier_params_factory.h",
+  ],
+  "devtools_process_observer\\.(cc|h)": [
+    "+content/public/browser/child_process_data.h",
+    "+content/public/browser/child_process_termination_info.h",
+    "+content/public/common/process_type.h",
+    "+content/public/browser/browser_child_process_observer.h",
   ]
 }

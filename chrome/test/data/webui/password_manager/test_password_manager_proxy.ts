@@ -4,9 +4,10 @@
 
 /** @fileoverview Test implementation of PasswordManagerProxy. */
 
-import type {AccountStorageOptInStateChangedListener, BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener, PasswordCheckInteraction, PasswordCheckStatusChangedListener, PasswordManagerAuthTimeoutListener, PasswordManagerProxy, PasswordsFileExportProgressListener, PasswordViewPageInteractions} from 'chrome://password-manager/password_manager.js';
+import type {AccountStorageEnabledStateChangedListener, BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener, PasswordCheckInteraction, PasswordCheckStatusChangedListener, PasswordManagerAuthTimeoutListener, PasswordManagerProxy, PasswordsFileExportProgressListener, PasswordViewPageInteractions, ShouldShowAccountStorageToggleChangedListener} from 'chrome://password-manager/password_manager.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
+import type {ActorLoginPermission} from './password_manager.mojom-webui.js';
 import {makeFamilyFetchResults, makePasswordCheckStatus} from './test_util.js';
 
 /**
@@ -16,13 +17,14 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     PasswordManagerProxy {
   data: {
     blockedSites: BlockedSite[],
+    actorLoginPermissions: ActorLoginPermission[],
     checkStatus: chrome.passwordsPrivate.PasswordCheckStatus,
     credentialWithReusedPassword: chrome.passwordsPrivate.PasswordUiEntryList[],
     familyFetchResults: chrome.passwordsPrivate.FamilyFetchResults,
     groups: chrome.passwordsPrivate.CredentialGroup[],
     insecureCredentials: chrome.passwordsPrivate.PasswordUiEntry[],
-    isOptedInAccountStorage: boolean,
-    isAccountStorageDefault: boolean,
+    isAccountStorageEnabled: boolean,
+    shouldShowAccountStorageSettingToggle: boolean,
     passwords: chrome.passwordsPrivate.PasswordUiEntry[],
     isPasswordManagerPinAvailable: boolean,
     isCloudAuthenticatorConnected: boolean,
@@ -33,8 +35,10 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   };
 
   listeners: {
-    accountStorageOptInStateListener: AccountStorageOptInStateChangedListener|
-    null,
+    accountStorageEnabledStateListener:
+        AccountStorageEnabledStateChangedListener|null,
+    shouldShowAccountStorageToggleListener:
+        ShouldShowAccountStorageToggleChangedListener|null,
     blockedSitesListChangedListener: BlockedSitesListChangedListener|null,
     savedPasswordListChangedListener: CredentialsChangedListener|null,
     passwordCheckStatusListener: PasswordCheckStatusChangedListener|null,
@@ -63,12 +67,14 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'changeCredential',
       'changePasswordManagerPin',
       'continueImport',
+      'copyPlaintextBackupPassword',
       'deleteAllPasswordManagerData',
       'disconnectCloudAuthenticator',
       'dismissSafetyHubPasswordMenuNotification',
       'exportPasswords',
       'extendAuthValidity',
       'fetchFamilyMembers',
+      'getActorLoginPermissions',
       'getBlockedSitesList',
       'getCredentialGroups',
       'getCredentialsWithReusedPassword',
@@ -77,21 +83,23 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'getSavedPasswordList',
       'getUrlCollection',
       'importPasswords',
-      'isAccountStoreDefault',
       'isConnectedToCloudAuthenticator',
-      'isOptedInForAccountStorage',
+      'isAccountStorageEnabled',
+      'shouldShowAccountStorageSettingToggle',
       'isPasswordManagerPinAvailable',
       'movePasswordsToAccount',
       'muteInsecureCredential',
-      'optInForAccountStorage',
+      'setAccountStorageEnabled',
       'recordPasswordCheckInteraction',
       'recordPasswordViewInteraction',
       'removeBlockedSite',
       'removeCredential',
+      'removeBackupPassword',
       'requestCredentialsDetails',
       'requestExportProgressStatus',
       'requestPlaintextPassword',
       'resetImporter',
+      'revokeActorLoginPermission',
       'sharePassword',
       'showAddShortcutDialog',
       'showExportedFileInShell',
@@ -104,13 +112,14 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     // Set these to have non-empty data.
     this.data = {
       blockedSites: [],
+      actorLoginPermissions: [],
       checkStatus: makePasswordCheckStatus({}),
       credentialWithReusedPassword: [],
       familyFetchResults: makeFamilyFetchResults(),
       groups: [],
       insecureCredentials: [],
-      isOptedInAccountStorage: false,
-      isAccountStorageDefault: false,
+      isAccountStorageEnabled: false,
+      shouldShowAccountStorageSettingToggle: false,
       passwords: [],
       isPasswordManagerPinAvailable: false,
       isCloudAuthenticatorConnected: false,
@@ -122,7 +131,8 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
 
     // Holds listeners so they can be called when needed.
     this.listeners = {
-      accountStorageOptInStateListener: null,
+      accountStorageEnabledStateListener: null,
+      shouldShowAccountStorageToggleListener: null,
       blockedSitesListChangedListener: null,
       insecureCredentialsListener: null,
       passwordCheckStatusListener: null,
@@ -248,6 +258,11 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     return Promise.resolve('plainTextPassword');
   }
 
+  copyPlaintextBackupPassword(id: number) {
+    this.methodCalled('copyPlaintextBackupPassword', {id});
+    return Promise.resolve(true);
+  }
+
   addPassword(options: chrome.passwordsPrivate.AddPasswordOptions) {
     this.methodCalled('addPassword', options);
     return Promise.resolve();
@@ -261,6 +276,10 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   removeCredential(
       id: number, fromStores: chrome.passwordsPrivate.PasswordStoreSet) {
     this.methodCalled('removeCredential', {id, fromStores});
+  }
+
+  removeBackupPassword(id: number) {
+    this.methodCalled('removeBackupPassword', {id});
   }
 
   removeBlockedSite(id: number) {
@@ -336,14 +355,24 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     this.methodCalled('extendAuthValidity');
   }
 
-  addAccountStorageOptInStateListener(
-      listener: AccountStorageOptInStateChangedListener) {
-    this.listeners.accountStorageOptInStateListener = listener;
+  addAccountStorageEnabledStateListener(
+      listener: AccountStorageEnabledStateChangedListener) {
+    this.listeners.accountStorageEnabledStateListener = listener;
   }
 
-  removeAccountStorageOptInStateListener(
-      _listener: AccountStorageOptInStateChangedListener) {
-    this.listeners.accountStorageOptInStateListener = null;
+  removeAccountStorageEnabledStateListener(
+      _listener: AccountStorageEnabledStateChangedListener) {
+    this.listeners.accountStorageEnabledStateListener = null;
+  }
+
+  addShouldShowAccountStorageSettingToggleListener(
+      listener: ShouldShowAccountStorageToggleChangedListener) {
+    this.listeners.shouldShowAccountStorageToggleListener = listener;
+  }
+
+  removeShouldShowAccountStorageSettingToggleListener(
+      _listener: ShouldShowAccountStorageToggleChangedListener) {
+    this.listeners.shouldShowAccountStorageToggleListener = null;
   }
 
   fetchFamilyMembers() {
@@ -378,20 +407,21 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     return Promise.resolve();
   }
 
-  isOptedInForAccountStorage() {
-    this.methodCalled('isOptedInForAccountStorage');
-    return Promise.resolve(this.data.isOptedInAccountStorage);
+  isAccountStorageEnabled() {
+    this.methodCalled('isAccountStorageEnabled');
+    return Promise.resolve(this.data.isAccountStorageEnabled);
   }
 
-  optInForAccountStorage(optIn: boolean) {
-    this.methodCalled('optInForAccountStorage');
-    this.data.isOptedInAccountStorage = optIn;
+  setAccountStorageEnabled(enabled: boolean) {
+    this.methodCalled('setAccountStorageEnabled');
+    this.data.isAccountStorageEnabled = enabled;
   }
 
-  isAccountStoreDefault() {
-    this.methodCalled('isAccountStoreDefault');
-    return Promise.resolve(this.data.isAccountStorageDefault);
+  shouldShowAccountStorageSettingToggle() {
+    this.methodCalled('shouldShowAccountStorageSettingToggle');
+    return Promise.resolve(this.data.shouldShowAccountStorageSettingToggle);
   }
+
 
   movePasswordsToAccount(ids: number[]) {
     this.methodCalled('movePasswordsToAccount', ids);
@@ -439,5 +469,18 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     }
 
     return Promise.reject(new Error());
+  }
+
+  getActorLoginPermissions() {
+    this.methodCalled('getActorLoginPermissions');
+    return Promise.resolve(this.data.actorLoginPermissions.slice());
+  }
+
+  revokeActorLoginPermission(site: ActorLoginPermission) {
+    this.methodCalled('revokeActorLoginPermission', site);
+    this.data.actorLoginPermissions = this.data.actorLoginPermissions.filter(
+        s =>
+            !(s.domainInfo.signonRealm === site.domainInfo.signonRealm &&
+              s.username === site.username));
   }
 }

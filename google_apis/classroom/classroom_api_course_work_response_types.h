@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "google_apis/classroom/classroom_api_material_response_types.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -30,6 +31,14 @@ class CourseWorkItem {
   enum class State {
     kPublished,
     kOther,
+  };
+
+  // Course work item type.
+  enum class Type {
+    kAssignment,
+    kShortAnswerQuestion,
+    kMultipleChoiceQuestion,
+    kUnspecified,
   };
 
   // Joined due date and due time of the course work item.
@@ -67,12 +76,16 @@ class CourseWorkItem {
   const std::string& id() const { return id_; }
   const std::string& title() const { return title_; }
   State state() const { return state_; }
+  Type type() const { return type_; }
   const GURL& alternate_link() const { return alternate_link_; }
   const std::optional<DueDateTime>& due_date_time() const {
     return due_date_time_;
   }
   const base::Time& creation_time() const { return creation_time_; }
   const base::Time& last_update() const { return last_update_; }
+  const std::vector<std::unique_ptr<Material>>& materials() const {
+    return materials_;
+  }
 
  private:
   // Classroom-assigned identifier of this course work, unique per course.
@@ -83,6 +96,9 @@ class CourseWorkItem {
 
   // Status of this course work item.
   State state_ = State::kOther;
+
+  // Type of this course work item.
+  Type type_ = Type::kUnspecified;
 
   // Absolute link to this course work in the Classroom web UI.
   GURL alternate_link_;
@@ -100,6 +116,9 @@ class CourseWorkItem {
 
   // The timestamp of the last course work item update.
   base::Time last_update_;
+
+  // The materials of a course work item.
+  std::vector<std::unique_ptr<Material>> materials_;
 };
 
 // Container for multiple `CourseWorkItem`s.

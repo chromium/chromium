@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "base/system/sys_info.h"
 #include "base/version.h"
-#include "build/chromeos_buildflags.h"
 #include "services/device/generic_sensor/generic_sensor_consts.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
 #include "services/device/public/cpp/generic_sensor/sensor_traits.h"

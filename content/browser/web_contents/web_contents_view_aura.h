@@ -18,11 +18,11 @@
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
 #include "content/browser/web_contents/web_contents_view.h"
 #include "content/browser/web_contents/web_contents_view_drag_security_info.h"
-#include "content/common/buildflags.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_view_delegate.h"
+#include "content/public/common/buildflags.h"
 #include "content/public/common/drop_data.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
@@ -107,7 +107,7 @@ class CONTENT_EXPORT WebContentsViewAura
                             std::unique_ptr<DropData> drop_data,
                             DropMetadata drop_metadata,
                             std::unique_ptr<ui::OSExchangeData> data,
-                            base::ScopedClosureRunner end_drag_runner,
+                            base::ScopedClosureRunner drop_exit_cleanup,
                             std::optional<gfx::PointF> transformed_pt,
                             gfx::PointF screen_pt);
     OnPerformingDropContext(const OnPerformingDropContext& other) = delete;
@@ -120,7 +120,7 @@ class CONTENT_EXPORT WebContentsViewAura
     std::unique_ptr<DropData> drop_data;
     DropMetadata drop_metadata;
     std::unique_ptr<ui::OSExchangeData> data;
-    base::ScopedClosureRunner end_drag_runner;
+    base::ScopedClosureRunner drop_exit_cleanup;
     std::optional<gfx::PointF> transformed_pt;
     gfx::PointF screen_pt;
   };
@@ -135,6 +135,8 @@ class CONTENT_EXPORT WebContentsViewAura
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, DragDropVirtualFiles);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
                            DragDropVirtualFilesOriginateFromRenderer);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
+                           DragDropVirtualFileGetsNonEmptyContents);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, DragDropUrlData);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, DragDropOnOopif);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
@@ -147,6 +149,10 @@ class CONTENT_EXPORT WebContentsViewAura
                            Drop_DropZone_DelegateBlocks);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, StartDragging);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, GetDropCallback_Run);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
+                           DragInProgressFinishesAfterDrop);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
+                           DragInProgressFinishesAfterNoDrop);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, GetDropCallback_Cancelled);
   FRIEND_TEST_ALL_PREFIXES(
       WebContentsViewAuraTest,
@@ -165,7 +171,14 @@ class CONTENT_EXPORT WebContentsViewAura
       WebContentsViewAuraTest,
       EmptyTextWithUrlInDropDataIsEmptyInOSExchangeDataGetString);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
+                           RejectDragFromHiddenWebContents);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, RejectDragFromOutsideView);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
                            UrlInDropDataReturnsUrlInOSExchangeDataGetString);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
+                           IgnoreInputs_OngoingDropGetsCleared);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
+                           EndDragIsCalledAfterAsyncDrop);
 
   class WindowObserver;
 
@@ -205,6 +218,8 @@ class CONTENT_EXPORT WebContentsViewAura
   void FocusThroughTabTraversal(bool reverse) override;
   DropData* GetDropData() const override;
   gfx::Rect GetViewBounds() const override;
+  void Resize(const gfx::Rect& new_bounds) override;
+  gfx::Size GetSize() const override;
   void CreateView(gfx::NativeView context) override;
   RenderWidgetHostViewBase* CreateViewForWidget(
       RenderWidgetHost* render_widget_host) override;
@@ -217,9 +232,9 @@ class CONTENT_EXPORT WebContentsViewAura
   void SetOverscrollControllerEnabled(bool enabled) override;
   void OnCapturerCountChanged() override;
   void FullscreenStateChanged(bool is_fullscreen) override;
-  void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect) override;
   BackForwardTransitionAnimationManager*
   GetBackForwardTransitionAnimationManager() override;
+  void DestroyBackForwardTransitionAnimationManager() override;
 
   // Overridden from RenderViewHostDelegateView:
   void ShowContextMenu(RenderFrameHost& render_frame_host,
@@ -245,7 +260,6 @@ class CONTENT_EXPORT WebContentsViewAura
       RenderFrameHost* render_frame_host,
       mojo::PendingRemote<blink::mojom::PopupMenuClient> popup_client,
       const gfx::Rect& bounds,
-      int item_height,
       double item_font_size,
       int selected_item,
       std::vector<blink::mojom::MenuItemPtr> menu_items,
@@ -255,7 +269,7 @@ class CONTENT_EXPORT WebContentsViewAura
 
   // Overridden from aura::WindowDelegate:
   gfx::Size GetMinimumSize() const override;
-  gfx::Size GetMaximumSize() const override;
+  std::optional<gfx::Size> GetMaximumSize() const override;
   void OnBoundsChanged(const gfx::Rect& old_bounds,
                        const gfx::Rect& new_bounds) override;
   gfx::NativeCursor GetCursor(const gfx::Point& point) override;
@@ -323,6 +337,10 @@ class CONTENT_EXPORT WebContentsViewAura
       std::unique_ptr<ui::OSExchangeData> data,
       ui::mojom::DragOperation& output_drag_op,
       std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner);
+
+  // Run when drop callback completes to ensure |drag_in_progess_| is
+  // flipped to false before EndDrag runs.
+  void OnDropExit();
 
   // For unit testing, registers a callback for when a drop operation
   // completes.

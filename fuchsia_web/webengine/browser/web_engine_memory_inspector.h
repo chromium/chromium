@@ -39,7 +39,7 @@ class WebEngineMemoryInspector {
   void OnMemoryDumpComplete(
       base::TimeTicks requested_at,
       fpromise::suspended_task task,
-      bool success,
+      memory_instrumentation::mojom::RequestOutcome outcome,
       memory_instrumentation::mojom::GlobalMemoryDumpPtr raw_dump);
 
   // Node holding memory usage information.

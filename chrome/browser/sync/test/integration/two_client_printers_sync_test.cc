@@ -55,6 +55,11 @@ class TwoClientPrintersSyncTest : public SyncTest {
     printers_helper::WaitForPrinterStoreToLoad(GetProfile(1));
     return true;
   }
+
+  // This test suite is ChromeOS specific, where there's only Sync-the-feature.
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTheFeature;
+  }
 };
 
 }  // namespace

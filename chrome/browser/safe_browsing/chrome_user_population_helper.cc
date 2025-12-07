@@ -7,7 +7,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -87,49 +86,22 @@ ChromeUserPopulation GetUserPopulationForProfile(Profile* profile) {
 
   std::optional<size_t> num_profiles;
   std::optional<size_t> num_loaded_profiles;
-  std::optional<size_t> num_open_profiles;
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   // |profile_manager| may be null in tests.
   if (profile_manager) {
     num_profiles = profile_manager->GetNumberOfProfiles();
     num_loaded_profiles = profile_manager->GetLoadedProfiles().size();
-
-    // On ChromeOS multiple profiles doesn't apply, and GetLastOpenedProfiles
-    // causes crashes on ChromeOS. See https://crbug.com/1211793.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-    num_open_profiles = profile_manager->GetLastOpenedProfiles().size();
-#endif
   }
 
   ChromeUserPopulation population = GetUserPopulation(
       profile->GetPrefs(), profile->IsOffTheRecord(), is_history_sync_active,
       is_signed_in, is_under_advanced_protection,
       g_browser_process->browser_policy_connector(), std::move(num_profiles),
-      std::move(num_loaded_profiles), std::move(num_open_profiles));
+      std::move(num_loaded_profiles));
 
   ComparePopulationWithCache(profile, population);
   GetCachedUserPopulation(profile) = population;
-
-  return population;
-}
-
-ChromeUserPopulation GetUserPopulationForProfileWithCookieTheftExperiments(
-    Profile* profile) {
-  ChromeUserPopulation population = GetUserPopulationForProfile(profile);
-
-  if (population.user_population() ==
-      ChromeUserPopulation::ENHANCED_PROTECTION) {
-    static const base::NoDestructor<std::vector<const base::Feature*>>
-        kCookieTheftExperiments{{
-#if BUILDFLAG(IS_WIN)
-            &features::kLockProfileCookieDatabase,
-            &features::kUseAppBoundEncryptionProviderForEncryption
-#endif
-        }};
-
-    GetExperimentStatus(*kCookieTheftExperiments, &population);
-  }
 
   return population;
 }

@@ -5,11 +5,11 @@
 #include "pdf/parsed_params.h"
 
 #include <string>
+#include <vector>
 
 #include "base/strings/string_number_conversions.h"
 #include "pdf/pdfium/pdfium_form_filler.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
 
 namespace chrome_pdf {
@@ -42,10 +42,19 @@ std::optional<ParsedParams> ParseWebPluginParams(
         return std::nullopt;
       }
     } else if (params.attribute_names[i] == "javascript") {
-      if (params.attribute_values[i] != "allow")
+      if (params.attribute_values[i] != "allow") {
+        // Can safely override both the default and `kJavaScriptAndXFA` if
+        // JavaScript isn't allowed.
         result.script_option = PDFiumFormFiller::ScriptOption::kNoJavaScript;
-    } else if (params.attribute_names[i] == "has-edits") {
-      result.has_edits = true;
+      }
+    } else if (params.attribute_names[i] == "allow-xfa-forms") {
+      // Only override to allow XFA forms if JavaScript is allowed. If it isn't,
+      // enabling XFA forms doesn't have effect.
+      if (result.script_option !=
+          PDFiumFormFiller::ScriptOption::kNoJavaScript) {
+        result.script_option =
+            PDFiumFormFiller::ScriptOption::kJavaScriptAndXFA;
+      }
     } else if (params.attribute_names[i] == "use-skia") {
       result.use_skia = true;
     }

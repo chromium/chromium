@@ -4,51 +4,46 @@
 
 package org.chromium.chrome.browser.customtabs;
 
-import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.APP_CONTEXT;
-
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.WorkerThread;
 import androidx.browser.customtabs.CustomTabsService;
-import androidx.browser.customtabs.CustomTabsSessionToken;
 
-import dagger.Lazy;
-
+import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.trustedwebactivity.SplashImageHolder;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-
 /** Processes the files received via Custom Tab connection from client apps. */
-@Singleton
+@NullMarked
 public class CustomTabsClientFileProcessor {
 
     private static final String TAG = "CustomTabFiles";
 
-    private final Context mContext;
-    private final Lazy<SplashImageHolder> mTwaSplashImageHolder;
     private boolean mTwaSplashImageHolderCreated;
 
-    @Inject
-    public CustomTabsClientFileProcessor(
-            @Named(APP_CONTEXT) Context context, Lazy<SplashImageHolder> twaSplashImageHolder) {
-        mTwaSplashImageHolder = twaSplashImageHolder;
-        mContext = context;
+    private static @Nullable CustomTabsClientFileProcessor sInstance;
+
+    public static CustomTabsClientFileProcessor getInstance() {
+        if (sInstance == null) sInstance = new CustomTabsClientFileProcessor();
+        return sInstance;
     }
+
+    private CustomTabsClientFileProcessor() {}
 
     /**
      * Processes the file located at given URI.
+     *
      * @return {@code true} if successful.
      */
     @WorkerThread
     public boolean processFile(
-            CustomTabsSessionToken session, Uri uri, int purpose, Bundle extras) {
+            SessionHolder<?> session, Uri uri, int purpose, @Nullable Bundle extras) {
         if (uri == null) {
             Log.w(TAG, "Received a null uri");
             return false;
@@ -61,20 +56,21 @@ public class CustomTabsClientFileProcessor {
         return false;
     }
 
-    private boolean receiveTwaSplashImage(CustomTabsSessionToken sessionToken, Uri uri) {
-        Bitmap bitmap = FileUtils.queryBitmapFromContentProvider(mContext, uri);
+    private boolean receiveTwaSplashImage(SessionHolder<?> sessionToken, Uri uri) {
+        Bitmap bitmap =
+                FileUtils.queryBitmapFromContentProvider(ContextUtils.getApplicationContext(), uri);
         if (bitmap == null) return false;
 
-        mTwaSplashImageHolder.get().putImage(sessionToken, bitmap);
+        SplashImageHolder.getInstance().putImage(sessionToken, bitmap);
         mTwaSplashImageHolderCreated = true;
         return true;
     }
 
     /** Cleans up files associated with the session that has been disconnected. */
-    public void onSessionDisconnected(CustomTabsSessionToken session) {
-        if (mTwaSplashImageHolderCreated) {
+    public void onSessionDisconnected(SessionHolder<?> session) {
+        if (mTwaSplashImageHolderCreated && session.isCustomTab()) {
             // If the image still hasn't been claimed, delete it.
-            mTwaSplashImageHolder.get().takeImage(session);
+            SplashImageHolder.getInstance().takeImage(session);
         }
     }
 }

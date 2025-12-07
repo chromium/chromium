@@ -5,13 +5,15 @@
 #ifndef BASE_TYPES_OPTIONAL_REF_H_
 #define BASE_TYPES_OPTIONAL_REF_H_
 
+#include <compare>
+#include <concepts>
 #include <memory>
 #include <optional>
 #include <type_traits>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace base {
 
@@ -65,13 +67,22 @@ namespace base {
 //
 // `optional_ref<T>` is lightweight and should be passed by value. It is copy
 // constructible but not copy assignable, to reduce the risk of lifetime bugs.
-template <typename T>
+template <typename T,
+          // TODO(crbug.com/444482512): Decide how to update optional_ref and
+          // disallow optional_ref from being optionally marked as dangling.
+          base::RawPtrTraits kRawPtrTraits = base::RawPtrTraits::kEmpty>
 class optional_ref {
  private:
-  // Disallowed because `std::optional` (and `std::optional`) do not allow
-  // their template argument to be a reference type.
+  // Disallowed because `std::optional` does not allow its template argument to
+  // be a reference type.
   static_assert(!std::is_reference_v<T>,
                 "T must not be a reference type (use a pointer?)");
+
+  // DanglingUntriaged is really just base::RawPtrTraits::kMayDangle, but
+  // ideally no one should be intentionally dangling pointers and then disabling
+  // detection...
+  static_assert(kRawPtrTraits == base::RawPtrTraits::kEmpty ||
+                kRawPtrTraits == DanglingUntriaged);
 
   // Both checks are important here, as:
   // - optional_ref does not allow silent implicit conversions between types,
@@ -100,13 +111,12 @@ class optional_ref {
   template <typename U>
     requires(std::is_const_v<T> && IsCompatibleV<U>)
   // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr optional_ref(
-      const std::optional<U>& o ABSL_ATTRIBUTE_LIFETIME_BOUND)
+  constexpr optional_ref(const std::optional<U>& o LIFETIME_BOUND)
       : ptr_(o ? &*o : nullptr) {}
   template <typename U>
     requires(IsCompatibleV<U>)
   // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr optional_ref(std::optional<U>& o ABSL_ATTRIBUTE_LIFETIME_BOUND)
+  constexpr optional_ref(std::optional<U>& o LIFETIME_BOUND)
       : ptr_(o ? &*o : nullptr) {}
 
   // Constructs an `optional_ref` from a pointer; the resulting `optional_ref`
@@ -118,7 +128,7 @@ class optional_ref {
   template <typename U>
     requires(IsCompatibleV<U>)
   // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr optional_ref(U* p ABSL_ATTRIBUTE_LIFETIME_BOUND) : ptr_(p) {}
+  constexpr optional_ref(U* p LIFETIME_BOUND) : ptr_(p) {}
 
   // Constructs an `optional_ref` from a reference; the resulting `optional_ref`
   // is never empty.
@@ -129,13 +139,11 @@ class optional_ref {
   template <typename U>
     requires(IsCompatibleV<const U>)
   // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr optional_ref(const U& r ABSL_ATTRIBUTE_LIFETIME_BOUND)
-      : ptr_(std::addressof(r)) {}
+  constexpr optional_ref(const U& r LIFETIME_BOUND) : ptr_(std::addressof(r)) {}
   template <typename U>
     requires(IsCompatibleV<U>)
   // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr optional_ref(U& r ABSL_ATTRIBUTE_LIFETIME_BOUND)
-      : ptr_(std::addressof(r)) {}
+  constexpr optional_ref(U& r LIFETIME_BOUND) : ptr_(std::addressof(r)) {}
 
   // An empty `optional_ref` must be constructed with `std::nullopt`, not
   // `nullptr`. Otherwise, `optional_ref<T*>` constructed with `nullptr` would
@@ -190,8 +198,29 @@ class optional_ref {
     return ptr_ ? std::optional<U>(*ptr_) : std::nullopt;
   }
 
+  // Equality comparison operator against `optional_ref<U>`.
+  template <typename U>
+    requires std::equality_comparable_with<T, U>
+  constexpr bool operator==(optional_ref<U> u) const {
+    return has_value() == u.has_value() && (!has_value() || value() == *u);
+  }
+
+  // Equality comparison operator against `T`.
+  constexpr bool operator==(const T& t) const
+    requires(std::equality_comparable<T>)
+  {
+    return has_value() && value() == t;
+  }
+
+  // Three-way comparison (homogeneous). Mirrors that of std::optional<T>.
+  friend constexpr auto operator<=>(optional_ref<T> x, optional_ref<T> y)
+    requires std::three_way_comparable<T>
+  {
+    return x && y ? *x <=> *y : x.has_value() <=> y.has_value();
+  }
+
  private:
-  raw_ptr<T> const ptr_ = nullptr;
+  raw_ptr<T, kRawPtrTraits> const ptr_ = nullptr;
 };
 
 template <typename T>

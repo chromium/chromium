@@ -7,9 +7,8 @@
 
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 
-namespace chrome {
-
 extern const char kNonTabWebUIRequestToFCPHistogramName[];
+extern const char kNonTabWebUIRequestToLCPHistogramName[];
 
 // Records Page Load Metrics for non-tab chrome:// pages such as side-panel
 // content and webUI based bubbles. This covers any webUI that goes through
@@ -17,7 +16,7 @@ extern const char kNonTabWebUIRequestToFCPHistogramName[];
 class NonTabPageLoadMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
-  explicit NonTabPageLoadMetricsObserver(const std::string& webui_name);
+  explicit NonTabPageLoadMetricsObserver(std::string webui_name);
 
   // page_load_metrics::PageLoadMetricsObserver:
   void OnFirstContentfulPaintInPage(
@@ -38,7 +37,5 @@ class NonTabPageLoadMetricsObserver
  private:
   std::string webui_name_;
 };
-
-}  // namespace chrome
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_NON_TAB_WEBUI_PAGE_LOAD_METRICS_OBSERVER_H_

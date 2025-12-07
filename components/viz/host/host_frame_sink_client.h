@@ -24,7 +24,7 @@ class HostFrameSinkClient {
                                    base::TimeTicks activation_time) = 0;
 
  protected:
-  virtual ~HostFrameSinkClient() {}
+  virtual ~HostFrameSinkClient() = default;
 };
 
 }  // namespace viz

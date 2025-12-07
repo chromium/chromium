@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/frame/windows_caption_button.h"
+
 #include <memory>
 
 #include "base/numerics/safe_conversions.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_win.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/grit/theme_resources.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
@@ -58,11 +58,11 @@ gfx::Size WindowsCaptionButton::CalculatePreferredSize(
   // TODO(bsep): The sizes in this function are for 1x device scale and don't
   // match Windows button sizes at hidpi.
   int height = WindowFrameUtil::kWindowsCaptionButtonHeightRestored;
-  if (!frame_view_->browser_view()->webui_tab_strip() &&
+  if (!frame_view_->GetBrowserView()->webui_tab_strip() &&
       frame_view_->IsMaximized()) {
     int maximized_height =
-        frame_view_->browser_view()->ShouldDrawTabStrip()
-            ? frame_view_->browser_view()->GetTabStripHeight()
+        frame_view_->GetBrowserView()->ShouldDrawTabStrip()
+            ? frame_view_->GetBrowserView()->GetTabStripHeight()
             : frame_view_->TitlebarMaximizedVisualHeight();
     constexpr int kMaximizedBottomMargin = 2;
     maximized_height -= kMaximizedBottomMargin;
@@ -73,7 +73,7 @@ gfx::Size WindowsCaptionButton::CalculatePreferredSize(
 
 SkColor WindowsCaptionButton::GetBaseForegroundColor() const {
   return GetColorProvider()->GetColor(
-      frame_view_->ShouldPaintAsActive()
+      GetWidget()->ShouldPaintAsActive()
           ? kColorCaptionButtonForegroundActive
           : kColorCaptionButtonForegroundInactive);
 }
@@ -134,11 +134,12 @@ void WindowsCaptionButton::OnPaintBackground(gfx::Canvas* canvas) {
   }
 
   SkAlpha alpha;
-  if (GetState() == STATE_PRESSED)
+  if (GetState() == STATE_PRESSED) {
     alpha = pressed_alpha;
-  else
+  } else {
     alpha = gfx::Tween::IntValueBetween(hover_animation().GetCurrentValue(),
                                         SK_AlphaTRANSPARENT, hovered_alpha);
+  }
   canvas->FillRect(bounds, SkColorSetA(base_color, alpha));
 }
 
@@ -167,7 +168,7 @@ int WindowsCaptionButton::GetButtonDisplayOrderIndex() const {
       button_display_order = 2;
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   // Reverse the ordering if we're in RTL mode
@@ -184,7 +185,7 @@ void WindowsCaptionButton::PaintSymbol(gfx::Canvas* canvas) {
   const SkColor hovered_color =
       GetColorProvider()->GetColor(kColorCaptionCloseButtonForegroundHovered);
   if (!GetEnabled() ||
-      (!frame_view_->ShouldPaintAsActive() && GetState() != STATE_HOVERED &&
+      (!GetWidget()->ShouldPaintAsActive() && GetState() != STATE_HOVERED &&
        GetState() != STATE_PRESSED)) {
     symbol_color =
         SkColorSetA(symbol_color, SkColorGetA(GetColorProvider()->GetColor(
@@ -241,7 +242,7 @@ void WindowsCaptionButton::PaintSymbol(gfx::Canvas* canvas) {
     }
 
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

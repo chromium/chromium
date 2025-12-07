@@ -7,6 +7,7 @@
 
 #include <set>
 
+#include "base/containers/lru_cache.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -17,9 +18,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
-#include "components/content_settings/core/common/tracking_protection_feature.h"
-#include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_observer.h"
-#include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
+#include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -41,8 +40,8 @@ class CookieControlsController final
       scoped_refptr<content_settings::CookieSettings> cookie_settings,
       scoped_refptr<content_settings::CookieSettings> original_cookie_settings,
       HostContentSettingsMap* settings_map,
-      privacy_sandbox::TrackingProtectionSettings*
-          tracking_protection_settings);
+      privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
+      bool is_incognito_profile);
   CookieControlsController(const CookieControlsController& other) = delete;
   CookieControlsController& operator=(const CookieControlsController& other) =
       delete;
@@ -51,29 +50,30 @@ class CookieControlsController final
   // Called when the web_contents has changed.
   void Update(content::WebContents* web_contents);
 
-  // Called when the fingerprinting protection filter has blocked a subresource.
-  void OnSubresourceBlocked();
+  // Updates user bypass visibility and/or highlighting.
+  void UpdateUserBypass();
 
   // Called when the UI is closing.
   void OnUiClosing();
 
-  // Called when the user clicks on the button to enable/disable cookie
+  // Called when the bubble should be closed.
+  void OnBubbleCloseTriggered();
+
+  // Called when the user clicks on the toggle to enable/disable cookie
   // blocking.
   void OnCookieBlockingEnabledForSite(bool block_third_party_cookies);
+
+  // Called when the user clicks on the button to change their tracking
+  // protections state for the current site.
+  void OnTrackingProtectionsChangedForSite();
 
   // Called when the entry point for cookie controls was animated.
   void OnEntryPointAnimated();
 
-  // Returns whether first-party cookies are blocked.
-  bool FirstPartyCookiesBlocked();
-
-  // Returns whether any ACT features should be shown.
-  bool ShowActFeatures();
-
-  // Returns whether the cookie blocking setting for the current site was
-  // changed by the user via user bypass.
-  bool HasUserChangedCookieBlockingForSite();
-  void SetUserChangedCookieBlockingForSite(bool changed);
+  // Returns whether the user has changed their protections state via user
+  // bypass.
+  bool StateChangedViaBypass();
+  void SetStateChangedViaBypass(bool changed);
 
   void AddObserver(CookieControlsObserver* obs);
   void RemoveObserver(CookieControlsObserver* obs);
@@ -84,19 +84,15 @@ class CookieControlsController final
 
  private:
   struct Status {
-    Status(bool controls_visible,
-           bool protections_on,
+    Status(CookieControlsState controls_state,
            CookieControlsEnforcement enforcement,
            CookieBlocking3pcdStatus blocking_status,
-           base::Time expiration,
-           std::vector<TrackingProtectionFeature> features);
+           base::Time expiration);
     ~Status();
-    bool controls_visible;
-    bool protections_on;
+    CookieControlsState controls_state;
     CookieControlsEnforcement enforcement;
     CookieBlocking3pcdStatus blocking_status;
     base::Time expiration;
-    std::vector<TrackingProtectionFeature> features;
   };
 
   // The observed WebContents changes during the lifetime of the
@@ -106,9 +102,7 @@ class CookieControlsController final
   // convert SiteDataObserver to a pure virtual interface.
   class TabObserver
       : public content_settings::PageSpecificContentSettings::SiteDataObserver,
-        public content::WebContentsObserver,
-        public fingerprinting_protection_filter::
-            FingerprintingProtectionObserver {
+        public content::WebContentsObserver {
    public:
     TabObserver(CookieControlsController* cookie_controls,
                 content::WebContents* web_contents);
@@ -117,8 +111,6 @@ class CookieControlsController final
     TabObserver& operator=(const TabObserver&) = delete;
     ~TabObserver() override;
 
-    void WebContentsDestroyed() override;
-
     // PageSpecificContentSettings::SiteDataObserver:
     void OnSiteDataAccessed(const AccessDetails& access_details) override;
     void OnStatefulBounceDetected() override;
@@ -126,9 +118,7 @@ class CookieControlsController final
     // content::WebContentsObserver:
     void PrimaryPageChanged(content::Page& page) override;
     void DidStopLoading() override;
-
-    // fingerprinting_protection_filter::FingerprintingProtectionObserver:
-    void OnSubresourceBlocked() override;
+    void BeforeFormRepostWarningShow() override;
 
    private:
     raw_ptr<CookieControlsController> cookie_controls_;
@@ -143,15 +133,9 @@ class CookieControlsController final
 
     // Cache of cookie access details that have been already reported for the
     // current page load.
-    std::set<AccessDetails> cookie_accessed_set_;
+    base::LRUCacheSet<AccessDetails> cookie_accessed_set_;
 
     void ResetReloadCounter();
-
-    base::ScopedObservation<
-        fingerprinting_protection_filter::
-            FingerprintingProtectionWebContentsHelper,
-        fingerprinting_protection_filter::FingerprintingProtectionObserver>
-        fpf_observation_{this};
   };
 
   void OnThirdPartyCookieBlockingChanged(
@@ -160,24 +144,13 @@ class CookieControlsController final
 
   Status GetStatus(content::WebContents* web_contents);
 
-  std::vector<TrackingProtectionFeature> CreateTrackingProtectionFeatureList(
-      CookieControlsEnforcement enforcement,
-      bool cookies_allowed,
-      bool protections_on);
-
   CookieControlsEnforcement GetEnforcementForThirdPartyCookieBlocking(
       CookieBlocking3pcdStatus status,
       const GURL url,
-      SettingInfo info,
+      const SettingInfo& info,
       bool cookies_allowed);
 
-  bool ShowIpProtection() const;
-  bool ShowFingerprintingProtection() const;
-
   bool HasOriginSandboxedTopLevelDocument() const;
-
-  // Updates user bypass visibility and/or highlighting.
-  void UpdateUserBypass();
 
   void UpdateLastVisitedSitesMap();
 
@@ -187,9 +160,6 @@ class CookieControlsController final
 
   // Returns the number of stateful bounces leading to this page.
   int GetStatefulBounceCount() const;
-
-  // Returns whether at least one subresource has been blocked on this page.
-  bool GetIsSubresourceBlocked() const;
 
   // Returns the number of allowed third-party sites with cookies.
   int GetAllowedThirdPartyCookiesSitesCount() const;
@@ -205,11 +175,9 @@ class CookieControlsController final
   bool SiteDataAccessed(int third_party_allowed_sites,
                         int third_party_blocked_sites);
 
-  bool ShouldHighlightUserBypass();
-  bool ShouldUserBypassIconBeVisible(
-      std::vector<TrackingProtectionFeature> features,
-      bool protections_on,
-      bool controls_visible);
+  bool ShouldHighlightUserBypass(CookieControlsState controls_state);
+  bool ShouldUserBypassIconBeVisible(CookieControlsState controls_state);
+  bool SiteDataAccessAttempted();
   content::WebContents* GetWebContents() const;
 
   std::unique_ptr<TabObserver> tab_observer_;
@@ -230,7 +198,7 @@ class CookieControlsController final
       cookie_observation_{this};
 
   bool should_reload_ = false;
-  bool user_changed_cookie_blocking_ = false;
+  bool user_changed_ub_state_ = false;
 
   // The number of page reloads in last 30 seconds.
   int recent_reloads_count_ = 0;
@@ -238,6 +206,10 @@ class CookieControlsController final
   bool has_exception_expired_since_last_visit_ = false;
 
   bool waiting_for_page_load_finish_ = false;
+
+  // If we should show the UB icon as confirmation of a change in the user's
+  // protection state on the current site.
+  bool show_icon_as_confirmation_ = false;
 
   base::ObserverList<CookieControlsObserver> observers_;
 

@@ -37,14 +37,15 @@ struct TypeConverter<std::unique_ptr<media::DecryptConfig>,
 
 template <>
 struct TypeConverter<media::mojom::DecoderBufferSideDataPtr,
-                     std::optional<media::DecoderBufferSideData>> {
+                     media::DecoderBufferSideData> {
   static media::mojom::DecoderBufferSideDataPtr Convert(
-      const std::optional<media::DecoderBufferSideData>& input);
+      const media::DecoderBufferSideData& input);
 };
+
 template <>
-struct TypeConverter<std::optional<media::DecoderBufferSideData>,
+struct TypeConverter<std::unique_ptr<media::DecoderBufferSideData>,
                      media::mojom::DecoderBufferSideDataPtr> {
-  static std::optional<media::DecoderBufferSideData> Convert(
+  static std::unique_ptr<media::DecoderBufferSideData> Convert(
       const media::mojom::DecoderBufferSideDataPtr& input);
 };
 

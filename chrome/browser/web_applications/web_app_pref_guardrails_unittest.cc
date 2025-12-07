@@ -18,6 +18,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/common/web_app_id.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -553,7 +554,7 @@ class WebAppPrefsLinkCapturingIPHGuardrailsTest : public WebAppTest {
     base::FieldTrialParams params;
     params["link_capturing_guardrail_storage_duration"] = "2";
     feature_list_.InitAndEnableFeatureWithParameters(
-        features::kDesktopPWAsLinkCapturing, std::move(params));
+        features::kPwaNavigationCapturing, std::move(params));
   }
 
   void SetUp() override { WebAppTest::SetUp(); }
@@ -561,21 +562,22 @@ class WebAppPrefsLinkCapturingIPHGuardrailsTest : public WebAppTest {
   bool IsDesktopIphBlockedTimeSet() {
     const auto& dict =
         prefs()->GetDict(prefs::kWebAppsAppAgnosticIPHLinkCapturingState);
-    return dict.contains(kIPHLinkCapturingPrefNames.all_blocked_time_name);
+    return dict.contains(
+        kIPHNavigationCapturingPrefNames.all_blocked_time_name);
   }
 
   std::optional<base::Time> GetIphBlockedTime() {
     const auto& dict =
         prefs()->GetDict(prefs::kWebAppsAppAgnosticIPHLinkCapturingState);
-    auto* value =
-        dict.FindByDottedPath(kIPHLinkCapturingPrefNames.all_blocked_time_name);
+    auto* value = dict.FindByDottedPath(
+        kIPHNavigationCapturingPrefNames.all_blocked_time_name);
     EXPECT_NE(value, nullptr) << " ";
     return base::ValueToTime(value);
   }
 
   void FastForwardTimeForMaxDaysToStoreGuardrails() {
-    task_environment()->FastForwardBy(
-        base::Days(features::kLinkCapturingIPHGuardrailStorageDuration.Get()));
+    task_environment()->FastForwardBy(base::Days(
+        features::kNavigationCapturingIPHGuardrailStorageDuration.Get()));
   }
 
   bool IsDesktopLinkCapturingIphBlocked(const webapps::AppId& app) {
@@ -595,7 +597,7 @@ class WebAppPrefsLinkCapturingIPHGuardrailsTest : public WebAppTest {
 
  protected:
   WebAppPrefGuardrails guardrails() {
-    return WebAppPrefGuardrails::GetForLinkCapturingIph(prefs());
+    return WebAppPrefGuardrails::GetForNavigationCapturingIph(prefs());
   }
   sync_preferences::TestingPrefServiceSyncable* prefs() { return &prefs_; }
 
@@ -610,11 +612,12 @@ TEST_F(WebAppPrefsLinkCapturingIPHGuardrailsTest, Dismiss) {
   {
     const auto& dict =
         prefs()->GetDict(prefs::kWebAppsAppAgnosticIPHLinkCapturingState);
-    EXPECT_EQ(dict.FindInt(kIPHLinkCapturingPrefNames.not_accepted_count_name)
-                  .value_or(0),
-              1);
-    EXPECT_EQ(base::ValueToTime(
-                  dict.Find(kIPHLinkCapturingPrefNames.last_dismiss_time_name)),
+    EXPECT_EQ(
+        dict.FindInt(kIPHNavigationCapturingPrefNames.not_accepted_count_name)
+            .value_or(0),
+        1);
+    EXPECT_EQ(base::ValueToTime(dict.Find(
+                  kIPHNavigationCapturingPrefNames.last_dismiss_time_name)),
               dismiss_time);
   }
 }
@@ -624,17 +627,19 @@ TEST_F(WebAppPrefsLinkCapturingIPHGuardrailsTest, Accept) {
   {
     const auto& dict =
         prefs()->GetDict(prefs::kWebAppsAppAgnosticIPHLinkCapturingState);
-    EXPECT_EQ(dict.FindInt(kIPHLinkCapturingPrefNames.not_accepted_count_name)
-                  .value_or(0),
-              1);
+    EXPECT_EQ(
+        dict.FindInt(kIPHNavigationCapturingPrefNames.not_accepted_count_name)
+            .value_or(0),
+        1);
   }
   guardrails().RecordAccept(app_id);
   {
     const auto& dict =
         prefs()->GetDict(prefs::kWebAppsAppAgnosticIPHLinkCapturingState);
-    EXPECT_EQ(dict.FindInt(kIPHLinkCapturingPrefNames.not_accepted_count_name)
-                  .value_or(0),
-              0);
+    EXPECT_EQ(
+        dict.FindInt(kIPHNavigationCapturingPrefNames.not_accepted_count_name)
+            .value_or(0),
+        0);
   }
 }
 
@@ -659,7 +664,7 @@ TEST_F(WebAppPrefsLinkCapturingIPHGuardrailsTest, ClearAndResetGuardrails) {
   const base::Value::Dict& dict =
       prefs()->GetDict(prefs::kWebAppsAppAgnosticIPHLinkCapturingState);
   std::optional<int> agnostic_not_installed_count =
-      dict.FindInt(kIPHLinkCapturingPrefNames.not_accepted_count_name);
+      dict.FindInt(kIPHNavigationCapturingPrefNames.not_accepted_count_name);
   EXPECT_TRUE(agnostic_not_installed_count.has_value());
   EXPECT_EQ(*agnostic_not_installed_count, 0);
 }

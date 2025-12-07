@@ -4,6 +4,7 @@
 
 #include "media/mojo/services/gpu_mojo_media_client.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_factory.h"
@@ -13,6 +14,7 @@
 #include "media/base/media_switches.h"
 #include "media/gpu/chromeos/mailbox_video_frame_converter.h"
 #include "media/gpu/chromeos/platform_video_frame_pool.h"
+#include "media/gpu/chromeos/simple_video_frame_converter.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
 
 namespace media {
@@ -34,15 +36,8 @@ VideoDecoderType GetActualPlatformDecoderImplementation(
     return VideoDecoderType::kUnknown;
   }
 
-  switch (media::GetOutOfProcessVideoDecodingMode()) {
-    case media::OOPVDMode::kEnabledWithGpuProcessAsProxy:
-      return VideoDecoderType::kOutOfProcess;
-    case media::OOPVDMode::kEnabledWithoutGpuProcessAsProxy:
-      // The browser process ensures that this path is never reached for this
-      // OOP-VD mode.
-      NOTREACHED_NORETURN();
-    case media::OOPVDMode::kDisabled:
-      break;
+  if (IsOutOfProcessVideoDecodingEnabled()) {
+    return VideoDecoderType::kOutOfProcess;
   }
 
 #if BUILDFLAG(USE_VAAPI)
@@ -50,7 +45,7 @@ VideoDecoderType GetActualPlatformDecoderImplementation(
 #elif BUILDFLAG(USE_V4L2_CODEC)
   return VideoDecoderType::kV4L2;
 #endif
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -72,15 +67,13 @@ class GpuMojoMediaClientCrOS final : public GpuMojoMediaClient {
 
     switch (decoder_type) {
       case VideoDecoderType::kOutOfProcess: {
-        // TODO(b/195769334): for out-of-process video decoding, we don't need a
-        // |frame_pool| because the buffers will be allocated and managed
-        // out-of-process.
-        auto frame_pool = std::make_unique<PlatformVideoFramePool>();
-
-        auto frame_converter = MailboxVideoFrameConverter::Create(
-            gpu_task_runner_, traits.get_command_buffer_stub_cb);
+        auto frame_converter =
+            base::FeatureList::IsEnabled(kUseSharedImageInOOPVDProcess)
+                ? SimpleVideoFrameConverter::Create()
+                : MailboxVideoFrameConverter::Create(
+                      gpu_task_runner_, traits.get_command_buffer_stub_cb);
         return VideoDecoderPipeline::Create(
-            gpu_workarounds_, traits.task_runner, std::move(frame_pool),
+            gpu_workarounds_, traits.task_runner, /*frame_pool=*/nullptr,
             std::move(frame_converter),
             GetPreferredRenderableFourccs(gpu_preferences_),
             traits.media_log->Clone(), std::move(traits.oop_video_decoder),
@@ -99,7 +92,7 @@ class GpuMojoMediaClientCrOS final : public GpuMojoMediaClient {
             /*in_video_decoder_process=*/false);
       }
       case VideoDecoderType::kVda: {
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       }
       default: {
         return nullptr;
@@ -108,9 +101,9 @@ class GpuMojoMediaClientCrOS final : public GpuMojoMediaClient {
   }
 
   void NotifyPlatformDecoderSupport(
-      mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder,
-      base::OnceCallback<void(
-          mojo::PendingRemote<stable::mojom::StableVideoDecoder>)> cb) final {
+      mojo::PendingRemote<mojom::VideoDecoder> oop_video_decoder,
+      base::OnceCallback<void(mojo::PendingRemote<mojom::VideoDecoder>)> cb)
+      final {
     switch (GetActualPlatformDecoderImplementation(gpu_preferences_)) {
       case VideoDecoderType::kOutOfProcess:
       case VideoDecoderType::kVaapi:
@@ -129,7 +122,7 @@ class GpuMojoMediaClientCrOS final : public GpuMojoMediaClient {
         GetActualPlatformDecoderImplementation(gpu_preferences_);
     switch (decoder_implementation) {
       case VideoDecoderType::kVda:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       case VideoDecoderType::kOutOfProcess:
       case VideoDecoderType::kVaapi:
       case VideoDecoderType::kV4L2:

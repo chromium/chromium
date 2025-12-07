@@ -5,6 +5,9 @@
 #ifndef SERVICES_NETWORK_OBLIVIOUS_HTTP_REQUEST_HANDLER_H_
 #define SERVICES_NETWORK_OBLIVIOUS_HTTP_REQUEST_HANDLER_H_
 
+#include <optional>
+#include <string>
+
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/network/public/mojom/oblivious_http_request.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -86,7 +89,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ObliviousHttpRequestHandler {
   // Called by the SimpleURLLoader when the outer request has completed.
   // Performs steps 5 and 6 of the OHTTP request procedure above.
   void OnRequestComplete(mojo::RemoteSetElementId id,
-                         std::unique_ptr<std::string> response);
+                         std::optional<std::string> response);
 
   // Callback from TrustTokenRequestHelper::Finalize. Checks that the trust
   // token operation completed successfully and calls the client with the

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
@@ -25,17 +25,17 @@ function getSelectedText() {
  */
 function getSelectedTextWithOffset(offsetX: number, offsetY: number) {
   const selection = window.getSelection();
-  let selectionRect = {x: 0, y: 0, width: 0, height: 0};
+  const selectionRect = {x: 0, y: 0, width: 0, height: 0};
 
   if (!selection || !selection.rangeCount) {
     const iframes = document.getElementsByTagName('iframe');
-    for (var iframe of iframes) {
+    for (const iframe of iframes) {
       const domRect = iframe.getBoundingClientRect();
       iframe.contentWindow?.postMessage(
           {
             type: 'org.chromium.getSelection',
             'offsetX': domRect.x,
-            'offsetY': domRect.y
+            'offsetY': domRect.y,
           },
           '*');
     }
@@ -58,8 +58,6 @@ function getSelectedTextWithOffset(offsetX: number, offsetY: number) {
   });
 }
 
-gCrWeb.webSelection =  { getSelectedText };
-
 window.addEventListener('message', function(message) {
   const payload = message.data;
   if (!payload ||
@@ -74,3 +72,9 @@ window.addEventListener('message', function(message) {
   const y = payload.offsetY;
   getSelectedTextWithOffset(x, y);
 });
+
+const webSelection = new CrWebApi();
+
+webSelection.addFunction('getSelectedText', getSelectedText);
+
+gCrWeb.registerApi('webSelection', webSelection);

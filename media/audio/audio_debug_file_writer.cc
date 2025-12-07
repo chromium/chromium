@@ -174,8 +174,7 @@ void AudioDebugFileWriter::DoWrite(std::unique_ptr<AudioBus> data) {
   // to write to the file.
   static_assert(ARCH_CPU_LITTLE_ENDIAN);
 
-  auto span = base::as_chars(interleaved_data_->as_span());
-  file_.WriteAtCurrentPos(span.data(), span.size_bytes());
+  file_.WriteAtCurrentPos(base::as_bytes(interleaved_data_->as_span()));
 
   // Cache the AudioBus for later use.
   audio_bus_pool_->InsertAudioBus(std::move(data));
@@ -187,7 +186,7 @@ void AudioDebugFileWriter::WriteHeader() {
     return;
   WavHeaderBuffer buf;
   WriteWavHeader(&buf, params_.channels(), params_.sample_rate(), samples_);
-  file_.Write(0, &buf[0], kWavHeaderSize);
+  file_.Write(0, base::as_byte_span(buf));
 
   // Write() does not move the cursor if file is not in APPEND mode; Seek() so
   // that the header is not overwritten by the following writes.

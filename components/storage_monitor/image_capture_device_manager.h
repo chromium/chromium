@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/component_export.h"
 #include "components/storage_monitor/storage_monitor.h"
 
 class MTPDeviceDelegateImplMacTest;
@@ -24,7 +25,7 @@ namespace storage_monitor {
 // ImageCapture API. Notifies clients of the presence of such devices
 // (i.e. cameras,  USB cards) using the SystemMonitor and makes them
 // available using |deviceForUUID|.
-class ImageCaptureDeviceManager {
+class COMPONENT_EXPORT(STORAGE_MONITOR) ImageCaptureDeviceManager {
  public:
   ImageCaptureDeviceManager();
   ~ImageCaptureDeviceManager();

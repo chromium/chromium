@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/network/cookie_manager.h"
 
 #include <optional>
 #include <utility>
 
+#include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -24,6 +20,7 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
+#include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/cookie_options.h"
 #include "net/cookies/cookie_partition_key.h"
@@ -150,16 +147,22 @@ void CookieManager::SetCanonicalCookie(const net::CanonicalCookie& cookie,
         cookie.CreationDate(), adjusted_expiry_date, cookie.LastAccessDate(),
         cookie.LastUpdateDate(), cookie.SecureAttribute(), cookie.IsHttpOnly(),
         cookie.SameSite(), cookie.Priority(), cookie_partition_key,
-        cookie.SourceScheme(), cookie.SourcePort(), cookie.SourceType());
+        cookie.SourceScheme(), cookie.SourcePort(), cookie.SourceType(),
+        net::CanonicalCookieFromStorageCallSite::kCookieManager);
     if (!cookie_ptr) {
-      std::move(callback).Run(
-          net::CookieAccessResult(net::CookieInclusionStatus(
-              net::CookieInclusionStatus::ExclusionReason::
-                  EXCLUDE_FAILURE_TO_STORE)));
+      net::CookieInclusionStatus cookie_inclusion_status;
+      cookie_inclusion_status.AddExclusionReason(
+          net::CookieInclusionStatus::ExclusionReason::
+              EXCLUDE_FAILURE_TO_STORE);
+      std::move(callback).Run(net::CookieAccessResult(cookie_inclusion_status));
       return;
     }
   }
-  DCHECK(cookie_ptr->IsCanonical());
+  if constexpr (DCHECK_IS_ON()) {
+    net::CanonicalCookie::CanonicalizationResult result =
+        cookie_ptr->IsCanonical();
+    DCHECK(result) << result;
+  }
   cookie_store_->SetCanonicalCookieAsync(std::move(cookie_ptr), source_url,
                                          cookie_options, std::move(callback));
 }
@@ -321,7 +324,7 @@ void CookieManager::RemoveChangeListener(ListenerRegistration* registration) {
     }
   }
   // A broken connection error should never be raised for an unknown pipe.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void CookieManager::CloneInterface(
@@ -345,14 +348,13 @@ void CookieManager::AllowFileSchemeCookies(
     AllowFileSchemeCookiesCallback callback) {
   OnSettingsWillChange();
 
-  std::vector<std::string> cookieable_schemes(
-      net::CookieMonster::kDefaultCookieableSchemes,
-      net::CookieMonster::kDefaultCookieableSchemes +
-          net::CookieMonster::kDefaultCookieableSchemesCount);
+  std::vector<std::string> cookieable_schemes =
+      net::CookieMonster::GetDefaultCookieableSchemes();
   if (allow) {
-    cookieable_schemes.push_back(url::kFileScheme);
+    cookieable_schemes.emplace_back(url::kFileScheme);
   }
-  cookie_store_->SetCookieableSchemes(cookieable_schemes, std::move(callback));
+  cookie_store_->SetCookieableSchemes(std::move(cookieable_schemes),
+                                      std::move(callback));
 }
 
 void CookieManager::SetForceKeepSessionState() {

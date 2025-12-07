@@ -292,14 +292,14 @@ class TestSSLErrorHandlerDelegate : public SSLErrorHandler::Delegate {
 class SSLErrorHandlerNameMismatchTest
     : public content::RenderViewHostTestHarness {
  public:
-  SSLErrorHandlerNameMismatchTest() {}
+  SSLErrorHandlerNameMismatchTest() = default;
 
   SSLErrorHandlerNameMismatchTest(const SSLErrorHandlerNameMismatchTest&) =
       delete;
   SSLErrorHandlerNameMismatchTest& operator=(
       const SSLErrorHandlerNameMismatchTest&) = delete;
 
-  ~SSLErrorHandlerNameMismatchTest() override {}
+  ~SSLErrorHandlerNameMismatchTest() override = default;
 
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
@@ -307,8 +307,7 @@ class SSLErrorHandlerNameMismatchTest
     SSLErrorHandler::SetInterstitialDelayForTesting(base::TimeDelta());
     ssl_info_.cert = GetCertificate();
     ssl_info_.cert_status = net::CERT_STATUS_COMMON_NAME_INVALID;
-    ssl_info_.public_key_hashes.push_back(
-        net::HashValue(kCertPublicKeyHashValue));
+    ssl_info_.public_key_hashes.push_back(kCertPublicKeyHashValue);
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
     pref_service_.registry()->RegisterBooleanPref(
@@ -359,7 +358,7 @@ class SSLErrorHandlerNameMismatchTest
 class SSLErrorHandlerNameMismatchNoSANTest
     : public SSLErrorHandlerNameMismatchTest {
  public:
-  SSLErrorHandlerNameMismatchNoSANTest() {}
+  SSLErrorHandlerNameMismatchNoSANTest() = default;
 
   SSLErrorHandlerNameMismatchNoSANTest(
       const SSLErrorHandlerNameMismatchNoSANTest&) = delete;
@@ -418,8 +417,7 @@ class SSLErrorAssistantProtoTest : public content::RenderViewHostTestHarness {
                                    net::CertStatus cert_status) {
     net::CertificateList certs =
         net::X509Certificate::CreateCertificateListFromBytes(
-            base::as_bytes(base::make_span(cert_data)),
-            net::X509Certificate::FORMAT_AUTO);
+            base::as_byte_span(cert_data), net::X509Certificate::FORMAT_AUTO);
     ASSERT_FALSE(certs.empty());
     ResetErrorHandler(certs[0], cert_status);
   }
@@ -444,7 +442,7 @@ class SSLErrorAssistantProtoTest : public content::RenderViewHostTestHarness {
     config_proto->add_captive_portal_cert()->set_sha256_hash(
         "sha256/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
     config_proto->add_captive_portal_cert()->set_sha256_hash(
-        ssl_info().public_key_hashes[0].ToString());
+        net::HashValue(ssl_info().public_key_hashes[0]).ToString());
     config_proto->add_captive_portal_cert()->set_sha256_hash(
         "sha256/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
     SSLErrorHandler::SetErrorAssistantProto(std::move(config_proto));
@@ -572,11 +570,10 @@ class SSLErrorAssistantProtoTest : public content::RenderViewHostTestHarness {
  private:
   void ResetErrorHandler(scoped_refptr<net::X509Certificate> cert,
                          net::CertStatus cert_status) {
-    ssl_info_.Reset();
+    ssl_info_ = net::SSLInfo();
     ssl_info_.cert = cert;
     ssl_info_.cert_status = cert_status;
-    ssl_info_.public_key_hashes.push_back(
-        net::HashValue(kCertPublicKeyHashValue));
+    ssl_info_.public_key_hashes.push_back(kCertPublicKeyHashValue);
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
     captive_portal_service_ =
@@ -597,32 +594,6 @@ class SSLErrorAssistantProtoTest : public content::RenderViewHostTestHarness {
   std::unique_ptr<captive_portal::CaptivePortalService> captive_portal_service_;
   std::unique_ptr<TestSSLErrorHandler> error_handler_;
   raw_ptr<TestSSLErrorHandlerDelegate, DanglingUntriaged> delegate_;
-};
-
-class SSLErrorAssistantProtoCaptivePortalEnabledTest
-    : public SSLErrorAssistantProtoTest {
- public:
-  SSLErrorAssistantProtoCaptivePortalEnabledTest() {
-    scoped_feature_list_.InitAndEnableFeature(kCaptivePortalCertificateList);
-  }
-
- private:
-  // This should only be accessed from a test's constructor, to avoid tsan data
-  // races with threads kicked off by RenderViewHostTestHarness::SetUp().
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-class SSLErrorAssistantProtoCaptivePortalDisabledTest
-    : public SSLErrorAssistantProtoTest {
- public:
-  SSLErrorAssistantProtoCaptivePortalDisabledTest() {
-    scoped_feature_list_.InitAndDisableFeature(kCaptivePortalCertificateList);
-  }
-
- private:
-  // This should only be accessed from a test's constructor, to avoid tsan data
-  // races with threads kicked off by RenderViewHostTestHarness::SetUp().
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class SSLErrorAssistantProtoMITMSoftwareEnabledTest
@@ -982,41 +953,16 @@ TEST_F(SSLErrorHandlerNameMismatchTest, OSReportsCaptivePortal) {
                                SSLErrorHandler::OS_REPORTS_CAPTIVE_PORTAL, 1);
 }
 
-class SSLErrorHandlerNameMismatchCaptivePortalInterstitialDisabledTest
-    : public SSLErrorHandlerNameMismatchTest {
- public:
-  SSLErrorHandlerNameMismatchCaptivePortalInterstitialDisabledTest() {
-    scoped_feature_list_.InitAndDisableFeature(kCaptivePortalInterstitial);
-  }
-
- private:
-  // This should only be accessed from a test's constructor, to avoid tsan data
-  // races with threads kicked off by RenderViewHostTestHarness::SetUp().
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Test that a captive portal interstitial isn't shown if the OS reports a
-// portal but CaptivePortalInterstitial feature is disabled.
-TEST_F(SSLErrorHandlerNameMismatchCaptivePortalInterstitialDisabledTest,
-       OSReportsCaptivePortal_FeatureDisabled) {
-  base::HistogramTester histograms;
+// Test that SSL interstitial is shown if OS reports captive portal AND
+// multi-network CCT workflow is detected.
+TEST_F(SSLErrorHandlerNameMismatchTest,
+       OSReportsCaptivePortalAndMultiNetworkCCT) {
   delegate()->set_os_reports_captive_portal();
-
-  EXPECT_FALSE(error_handler()->IsTimerRunningForTesting());
+  SSLErrorHandler::SetIsMultiNetworkCCTWorkflowForTesting(true);
   error_handler()->StartHandlingError();
-  EXPECT_FALSE(error_handler()->IsTimerRunningForTesting());
   EXPECT_FALSE(delegate()->captive_portal_checked());
   EXPECT_TRUE(delegate()->ssl_interstitial_shown());
   EXPECT_FALSE(delegate()->captive_portal_interstitial_shown());
-
-  histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(), 2);
-  histograms.ExpectBucketCount(SSLErrorHandler::GetHistogramNameForTesting(),
-                               SSLErrorHandler::HANDLE_ALL, 1);
-  histograms.ExpectBucketCount(
-      SSLErrorHandler::GetHistogramNameForTesting(),
-      SSLErrorHandler::SHOW_SSL_INTERSTITIAL_OVERRIDABLE, 1);
-  histograms.ExpectBucketCount(SSLErrorHandler::GetHistogramNameForTesting(),
-                               SSLErrorHandler::OS_REPORTS_CAPTIVE_PORTAL, 0);
 }
 
 TEST_F(SSLErrorHandlerNameMismatchTest,
@@ -1234,92 +1180,6 @@ TEST_F(SSLErrorHandlerDateInvalidTest, MAYBE_TimeQueryHangs) {
 
   // Shut down the server to cancel the pending request.
   ASSERT_TRUE(test_server()->ShutdownAndWaitUntilComplete());
-}
-
-// Tests that a certificate marked as a known captive portal certificate causes
-// the captive portal interstitial to be shown.
-TEST_F(SSLErrorAssistantProtoCaptivePortalEnabledTest,
-       CaptivePortal_FeatureEnabled) {
-  base::HistogramTester histograms;
-
-  RunCaptivePortalTest();
-
-  // Timer shouldn't start for a known captive portal certificate.
-  EXPECT_FALSE(error_handler()->IsTimerRunningForTesting());
-  EXPECT_FALSE(delegate()->captive_portal_checked());
-  EXPECT_FALSE(delegate()->ssl_interstitial_shown());
-  EXPECT_TRUE(delegate()->captive_portal_interstitial_shown());
-  EXPECT_FALSE(delegate()->suggested_url_checked());
-
-  // A buggy SSL error handler might have incorrectly started the timer. Run
-  // to completion to ensure the timer is expired.
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_FALSE(error_handler()->IsTimerRunningForTesting());
-  EXPECT_FALSE(delegate()->captive_portal_checked());
-  EXPECT_FALSE(delegate()->ssl_interstitial_shown());
-  EXPECT_TRUE(delegate()->captive_portal_interstitial_shown());
-  EXPECT_FALSE(delegate()->suggested_url_checked());
-
-  // Check that the histogram for the captive portal cert was recorded.
-  histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(), 3);
-  histograms.ExpectBucketCount(SSLErrorHandler::GetHistogramNameForTesting(),
-                               SSLErrorHandler::HANDLE_ALL, 1);
-  histograms.ExpectBucketCount(
-      SSLErrorHandler::GetHistogramNameForTesting(),
-      SSLErrorHandler::SHOW_CAPTIVE_PORTAL_INTERSTITIAL_OVERRIDABLE, 1);
-  histograms.ExpectBucketCount(SSLErrorHandler::GetHistogramNameForTesting(),
-                               SSLErrorHandler::CAPTIVE_PORTAL_CERT_FOUND, 1);
-}
-
-// Tests that a certificate marked as a known captive portal certificate does
-// not cause the captive portal interstitial to be shown, if the feature is
-// disabled.
-TEST_F(SSLErrorAssistantProtoCaptivePortalDisabledTest,
-       CaptivePortal_FeatureDisabled) {
-  // Default error for SSLErrorHandlerNameMismatchTest tests is name mismatch.
-  TestNoCaptivePortalInterstitial();
-}
-
-// Tests that an error other than name mismatch does not cause a captive portal
-// interstitial to be shown, even if the certificate is marked as a known
-// captive portal certificate.
-TEST_F(SSLErrorAssistantProtoCaptivePortalEnabledTest,
-       CaptivePortal_AuthorityInvalidError_NoInterstitial) {
-  ResetErrorHandlerFromFile(kOkayCertName, net::CERT_STATUS_AUTHORITY_INVALID);
-  TestNoCaptivePortalInterstitial();
-}
-
-// Tests that an authority invalid error in addition to name mismatch error does
-// not cause a captive portal interstitial to be shown, even if the certificate
-// is marked as a known captive portal certificate. The resulting error is
-// authority-invalid.
-TEST_F(SSLErrorAssistantProtoCaptivePortalEnabledTest,
-       CaptivePortal_TwoErrors_NoInterstitial) {
-  const net::CertStatus cert_status =
-      net::CERT_STATUS_COMMON_NAME_INVALID | net::CERT_STATUS_AUTHORITY_INVALID;
-  // Sanity check that AUTHORITY_INVALID is seen as the net error.
-  ASSERT_EQ(net::ERR_CERT_AUTHORITY_INVALID,
-            net::MapCertStatusToNetError(cert_status));
-  ResetErrorHandlerFromFile(kOkayCertName, cert_status);
-  TestNoCaptivePortalInterstitial();
-}
-
-// Tests that another error in addition to name mismatch error does not cause a
-// captive portal interstitial to be shown, even if the certificate is marked as
-// a known captive portal certificate. Similar to
-// NameMismatchAndAuthorityInvalid, except the resulting error is name mismatch.
-TEST_F(SSLErrorAssistantProtoCaptivePortalEnabledTest,
-       CaptivePortal_TwoErrorsIncludingNameMismatch_NoInterstitial) {
-  const net::CertStatus cert_status =
-      net::CERT_STATUS_COMMON_NAME_INVALID | net::CERT_STATUS_WEAK_KEY;
-  // Sanity check that COMMON_NAME_INVALID is seen as the net error, since the
-  // test is designed to verify that SSLErrorHandler notices other errors in the
-  // CertStatus even when COMMON_NAME_INVALID is the net error.
-  ASSERT_EQ(net::ERR_CERT_COMMON_NAME_INVALID,
-            net::MapCertStatusToNetError(cert_status));
-  ResetErrorHandlerFromFile(kOkayCertName, cert_status);
-  TestNoCaptivePortalInterstitial();
 }
 
 // Tests that if a certificate matches the issuer common name regex of a MITM
@@ -1549,7 +1409,7 @@ TEST_F(SSLErrorHandlerTest, BlockedInterceptionInterstitial) {
   ssl_info.cert =
       net::ImportCertFromFile(net::GetTestCertsDirectory(), kOkayCertName);
   ssl_info.cert_status = net::CERT_STATUS_COMMON_NAME_INVALID;
-  ssl_info.public_key_hashes.push_back(net::HashValue(kCertPublicKeyHashValue));
+  ssl_info.public_key_hashes.push_back(kCertPublicKeyHashValue);
 
   std::unique_ptr<TestSSLErrorHandlerDelegate> delegate(
       new TestSSLErrorHandlerDelegate(web_contents(), ssl_info));
@@ -1587,7 +1447,7 @@ TEST_F(SSLErrorHandlerTest, NonPrimaryMainframeShouldNotAffectSSLErrorHandler) {
   ssl_info.cert =
       net::ImportCertFromFile(net::GetTestCertsDirectory(), kOkayCertName);
   ssl_info.cert_status = net::CERT_STATUS_AUTHORITY_INVALID;
-  ssl_info.public_key_hashes.push_back(net::HashValue(kCertPublicKeyHashValue));
+  ssl_info.public_key_hashes.push_back(kCertPublicKeyHashValue);
 
   std::unique_ptr<TestSSLErrorHandlerDelegate> delegate(
       new TestSSLErrorHandlerDelegate(web_contents(), ssl_info));

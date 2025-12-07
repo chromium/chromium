@@ -20,7 +20,6 @@
 
 #include "third_party/blink/renderer/core/html/forms/radio_button_group_scope.h"
 
-#include "base/not_fatal_until.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
@@ -37,8 +36,12 @@ class RadioButtonGroup : public GarbageCollected<RadioButtonGroup> {
   bool IsEmpty() const { return members_.empty(); }
   bool IsRequired() const { return required_count_; }
   HTMLInputElement* CheckedButton() const { return checked_button_.Get(); }
+  HTMLInputElement* LastFocusedButton() const {
+    return last_focused_button_.Get();
+  }
   void Add(HTMLInputElement*);
   void UpdateCheckedState(HTMLInputElement*);
+  void UpdateLastFocusedState(HTMLInputElement*);
   void RequiredAttributeChanged(HTMLInputElement*);
   void Remove(HTMLInputElement*);
   bool Contains(HTMLInputElement*) const;
@@ -54,17 +57,17 @@ class RadioButtonGroup : public GarbageCollected<RadioButtonGroup> {
   // The map records the 'required' state of each (button) element.
   using Members = HeapHashMap<Member<HTMLInputElement>, bool>;
 
-  using MemberKeyValue = WTF::KeyValuePair<Member<HTMLInputElement>, bool>;
+  using MemberKeyValue = KeyValuePair<Member<HTMLInputElement>, bool>;
 
   void UpdateRequiredButton(MemberKeyValue&, bool is_required);
 
   Members members_;
-  Member<HTMLInputElement> checked_button_;
-  size_t required_count_;
+  Member<HTMLInputElement> checked_button_ = nullptr;
+  Member<HTMLInputElement> last_focused_button_ = nullptr;
+  size_t required_count_ = 0;
 };
 
-RadioButtonGroup::RadioButtonGroup()
-    : checked_button_(nullptr), required_count_(0) {}
+RadioButtonGroup::RadioButtonGroup() = default;
 
 inline bool RadioButtonGroup::IsValid() const {
   return !IsRequired() || checked_button_;
@@ -119,9 +122,14 @@ void RadioButtonGroup::UpdateCheckedState(HTMLInputElement* button) {
   bool was_valid = IsValid();
   if (button->Checked()) {
     SetCheckedButton(button);
+    last_focused_button_ = nullptr;
   } else {
-    if (checked_button_ == button)
+    if (checked_button_ == button) {
       checked_button_ = nullptr;
+    }
+    if (last_focused_button_ == button) {
+      last_focused_button_ = nullptr;
+    }
   }
   if (was_valid != IsValid())
     SetNeedsValidityCheckForAllButtons();
@@ -131,10 +139,18 @@ void RadioButtonGroup::UpdateCheckedState(HTMLInputElement* button) {
   }
 }
 
+void RadioButtonGroup::UpdateLastFocusedState(HTMLInputElement* button) {
+  DCHECK_EQ(button->FormControlType(), FormControlType::kInputRadio);
+  DCHECK(members_.Contains(button));
+  if (button->IsFocused()) {
+    last_focused_button_ = button;
+  }
+}
+
 void RadioButtonGroup::RequiredAttributeChanged(HTMLInputElement* button) {
   DCHECK_EQ(button->FormControlType(), FormControlType::kInputRadio);
   auto it = members_.find(button);
-  CHECK_NE(it, members_.end(), base::NotFatalUntil::M130);
+  CHECK_NE(it, members_.end());
   bool was_valid = IsValid();
   // Synchronize the 'required' flag for the button, along with
   // updating the overall count.
@@ -154,10 +170,14 @@ void RadioButtonGroup::Remove(HTMLInputElement* button) {
   members_.erase(it);
   if (checked_button_ == button)
     checked_button_ = nullptr;
+  if (last_focused_button_ == button) {
+    last_focused_button_ = nullptr;
+  }
 
   if (members_.empty()) {
     DCHECK(!required_count_);
     DCHECK(!checked_button_);
+    DCHECK(!last_focused_button_);
   } else if (was_valid != IsValid()) {
     SetNeedsValidityCheckForAllButtons();
   }
@@ -187,6 +207,7 @@ unsigned RadioButtonGroup::size() const {
 void RadioButtonGroup::Trace(Visitor* visitor) const {
   visitor->Trace(members_);
   visitor->Trace(checked_button_);
+  visitor->Trace(last_focused_button_);
 }
 
 // ----------------------------------------------------------------
@@ -194,8 +215,6 @@ void RadioButtonGroup::Trace(Visitor* visitor) const {
 // Explicity define empty constructor and destructor in order to prevent the
 // compiler from generating them as inlines. So we don't need to to define
 // RadioButtonGroup in the header.
-RadioButtonGroupScope::RadioButtonGroupScope() = default;
-
 void RadioButtonGroupScope::AddButton(HTMLInputElement* element) {
   DCHECK_EQ(element->FormControlType(), FormControlType::kInputRadio);
   if (element->GetName().empty())
@@ -222,6 +241,14 @@ void RadioButtonGroupScope::UpdateCheckedState(HTMLInputElement* element) {
   group->UpdateCheckedState(element);
 }
 
+void RadioButtonGroupScope::UpdateLastFocusedState(HTMLInputElement* element) {
+  DCHECK_EQ(element->FormControlType(), FormControlType::kInputRadio);
+  RadioButtonGroup* group = FindGroupByName(element->GetName());
+  if (group) {
+    group->UpdateLastFocusedState(element);
+  }
+}
+
 void RadioButtonGroupScope::RequiredAttributeChanged(
     HTMLInputElement* element) {
   DCHECK_EQ(element->FormControlType(), FormControlType::kInputRadio);
@@ -238,6 +265,12 @@ HTMLInputElement* RadioButtonGroupScope::CheckedButtonForGroup(
     const AtomicString& name) const {
   RadioButtonGroup* group = FindGroupByName(name);
   return group ? group->CheckedButton() : nullptr;
+}
+
+HTMLInputElement* RadioButtonGroupScope::LastFocusedButtonForGroup(
+    const AtomicString& name) const {
+  RadioButtonGroup* group = FindGroupByName(name);
+  return group ? group->LastFocusedButton() : nullptr;
 }
 
 bool RadioButtonGroupScope::IsInRequiredGroup(HTMLInputElement* element) const {

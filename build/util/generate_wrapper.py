@@ -27,7 +27,7 @@ BASH_TEMPLATE = textwrap.dedent("""\
 # directly.
 BATCH_TEMPLATE = textwrap.dedent("""\
     @SETLOCAL ENABLEDELAYEDEXPANSION \
-      & vpython3.bat -x "%~f0" %* \
+      & CMD /C vpython3.bat -x "%~f0" %* \
       & EXIT /B !ERRORLEVEL!
     _SCRIPT_LOCATION = __file__
     {script}

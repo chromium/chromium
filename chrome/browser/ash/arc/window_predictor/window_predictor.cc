@@ -8,6 +8,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/app_restore/app_launch_handler.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
+#include "chrome/browser/ash/app_restore/app_restore_arc_task_handler_factory.h"
 #include "chrome/browser/ash/app_restore/arc_app_single_restore_handler.h"
 #include "chrome/browser/ash/app_restore/arc_ghost_window_handler.h"
 #include "chromeos/ui/base/window_state_type.h"
@@ -100,7 +101,7 @@ bool WindowPredictor::LaunchArcAppWithGhostWindow(
   if (!ash::full_restore::ArcGhostWindowHandler::Get())
     return false;
   auto* arc_task_handler =
-      ash::app_restore::AppRestoreArcTaskHandler::GetForProfile(profile);
+      ash::app_restore::AppRestoreArcTaskHandlerFactory::GetForProfile(profile);
   if (!arc_task_handler) {
     base::UmaHistogramEnumeration(
         kWindowPredictorLaunchHistogram,
@@ -143,13 +144,13 @@ arc::mojom::WindowInfoPtr WindowPredictor::PredictAppWindowInfo(
   // TODO(sstan): Consider multi display case.
   if (!window_info)
     return nullptr;
-  auto disp = display::Screen::GetScreen()->GetPrimaryDisplay();
+  auto disp = display::Screen::Get()->GetPrimaryDisplay();
   if (window_info->display_id != display::kInvalidDisplayId) {
-    display::Screen::GetScreen()->GetDisplayWithDisplayId(
-        window_info->display_id, &disp);
+    display::Screen::Get()->GetDisplayWithDisplayId(window_info->display_id,
+                                                    &disp);
   }
 
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     // TODO: Figure out why setting kMaximized doesn't work.
     // Note that the ghost window state type is default, but the ARC app
     // window state will be assigned by ARC and not be affected by this state.
@@ -197,7 +198,7 @@ arc::mojom::WindowInfoPtr WindowPredictor::PredictAppWindowInfo(
 bool WindowPredictor::IsAppPendingLaunch(Profile* profile,
                                          const std::string& app_id) {
   auto* arc_task_handler =
-      ash::app_restore::AppRestoreArcTaskHandler::GetForProfile(profile);
+      ash::app_restore::AppRestoreArcTaskHandlerFactory::GetForProfile(profile);
 
   return arc_task_handler && arc_task_handler->IsAppPendingRestore(app_id);
 }

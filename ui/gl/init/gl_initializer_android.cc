@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/native_library.h"
+#include "base/trace_event/trace_event.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_display.h"
 #include "ui/gl/gl_egl_api_implementation.h"
@@ -22,10 +23,18 @@ namespace init {
 namespace {
 
 bool InitializeStaticNativeEGLInternal() {
-  base::NativeLibrary gles_library = LoadLibraryAndPrintError("libGLESv2.so");
+  base::NativeLibrary gles_library;
+  {
+    TRACE_EVENT("gpu,startup", "Load gles_library");
+    gles_library = LoadLibraryAndPrintError("libGLESv2.so");
+  }
   if (!gles_library)
     return false;
-  base::NativeLibrary egl_library = LoadLibraryAndPrintError("libEGL.so");
+  base::NativeLibrary egl_library;
+  {
+    TRACE_EVENT("gpu,startup", "Load egl_library");
+    egl_library = LoadLibraryAndPrintError("libEGL.so");
+  }
   if (!egl_library) {
     base::UnloadNativeLibrary(gles_library);
     return false;
@@ -110,10 +119,8 @@ bool InitializeStaticGLBindings(GLImplementationParts implementation) {
       InitializeStaticGLBindingsGL();
       return true;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-
-  return false;
 }
 
 void ShutdownGLPlatform(GLDisplay* display) {

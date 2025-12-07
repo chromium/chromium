@@ -5,7 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_COMMON_CONTEXT_RESULT_H_
 #define GPU_COMMAND_BUFFER_COMMON_CONTEXT_RESULT_H_
 
-#include "gpu/gpu_export.h"
+#include "gpu/command_buffer/common/gpu_command_buffer_common_export.h"
 
 namespace gpu {
 
@@ -30,7 +30,8 @@ enum class ContextResult {
   kMaxValue = kSurfaceFailure
 };
 
-GPU_EXPORT bool IsFatalOrSurfaceFailure(ContextResult result);
+GPU_COMMAND_BUFFER_COMMON_EXPORT bool IsFatalOrSurfaceFailure(
+    ContextResult result);
 
 }  // namespace gpu
 

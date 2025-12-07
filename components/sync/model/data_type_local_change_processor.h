@@ -15,7 +15,12 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/protocol/unique_position.pb.h"
+#include "google_apis/gaia/gaia_id.h"
+
+namespace sync_pb {
+class EntitySpecifics;
+class UniquePosition;
+}  // namespace sync_pb
 
 namespace syncer {
 
@@ -110,9 +115,9 @@ class DataTypeLocalChangeProcessor {
   // then Put() and Delete() will no-op and can be omitted by bridge.
   virtual bool IsTrackingMetadata() const = 0;
 
-  // Returns the account ID for which metadata is being tracked, or empty if not
+  // Returns the Gaia ID for which metadata is being tracked, or empty if not
   // tracking metadata.
-  virtual std::string TrackedAccountId() const = 0;
+  virtual GaiaId TrackedGaiaId() const = 0;
 
   // Returns the cache guid for which metadata is being tracked, or empty if not
   // tracking metadata.

@@ -26,7 +26,7 @@ std::optional<std::tuple<T>> Wrap(base::optional_ref<const T> maybe_value) {
 
 auto ArbitraryValueNull() {
   return fuzztest::ReversibleMap(
-      []() { return base::Value(); },
+      [] { return base::Value(); },
       [](const base::Value& value) { return std::optional<std::tuple<>>{}; });
 }
 
@@ -55,16 +55,16 @@ auto ArbitraryValueDouble() {
 
 auto ArbitraryValueString() {
   return fuzztest::ReversibleMap(
-      [](std::string string) { return base::Value(string); },
+      [](std::string string) { return base::Value(std::move(string)); },
       [](const base::Value& value) {
         return Wrap<std::string>(value.GetIfString());
       },
-      fuzztest::String());
+      fuzztest::Utf8String());
 }
 
 auto ArbitraryValueBlob() {
   return fuzztest::ReversibleMap(
-      [](std::vector<uint8_t> blob) { return base::Value(blob); },
+      [](std::vector<uint8_t> blob) { return base::Value(std::move(blob)); },
       [](const base::Value& value) {
         return Wrap<std::vector<uint8_t>>(value.GetIfBlob());
       },
@@ -74,7 +74,7 @@ auto ArbitraryValueBlob() {
 auto ArbitraryValueList(fuzztest::Domain<base::Value> entry_domain) {
   return fuzztest::ReversibleMap(
       [](std::vector<base::Value> values) {
-        base::Value::List list;
+        auto list = base::Value::List::with_capacity(values.size());
         for (auto& value : values) {
           list.Append(std::move(value));
         }
@@ -108,7 +108,7 @@ auto ArbitraryValueDict(fuzztest::Domain<base::Value> value_domain) {
                    : std::nullopt;
       },
       fuzztest::ContainerOf<std::vector<std::pair<std::string, base::Value>>>(
-          fuzztest::PairOf(fuzztest::String(), value_domain)));
+          fuzztest::PairOf(fuzztest::Utf8String(), value_domain)));
 }
 
 fuzztest::Domain<base::Value> ArbitraryValue() {

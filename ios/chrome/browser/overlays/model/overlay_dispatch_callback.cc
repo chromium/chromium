@@ -23,6 +23,7 @@ OverlayDispatchCallback::OverlayDispatchCallback(
 OverlayDispatchCallback::~OverlayDispatchCallback() = default;
 
 void OverlayDispatchCallback::Run(OverlayResponse* response) {
-  if (response_support_->IsResponseSupported(response))
+  if (response_support_->IsResponseSupported(response)) {
     callback_.Run(response);
+  }
 }

@@ -15,10 +15,13 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "device/udev_linux/fake_udev_loader.h"
@@ -31,6 +34,7 @@
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/keyboard_device.h"
 #include "ui/events/devices/touchpad_device.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
 
 namespace ash {
@@ -113,13 +117,10 @@ class DeviceSettingsInteractiveUiTest : public InteractiveAshTest {
     DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOsSettingsWebContentsId);
     webcontents_id_ = kOsSettingsWebContentsId;
 
-    feature_list_.InitWithFeatures(
-        {features::kInputDeviceSettingsSplit,
-         features::kAltClickAndSixPackCustomization,
-         features::kPeripheralCustomization,
-         features::kEnableKeyboardBacklightControlInSettings,
-         ::features::kSupportF11AndF12KeyShortcuts},
-        {});
+    feature_list_.InitWithFeatures({features::kAltClickAndSixPackCustomization,
+                                    features::kPeripheralCustomization,
+                                    ::features::kSupportF11AndF12KeyShortcuts},
+                                   {});
   }
 
   DeviceSettingsInteractiveUiTest(const DeviceSettingsInteractiveUiTest&) =
@@ -193,6 +194,15 @@ class DeviceSettingsInteractiveUiTest : public InteractiveAshTest {
   const DeepQuery kMouseRowQuery{
       "os-settings-ui",       "os-settings-main",   "main-page-container",
       "settings-device-page", "#perDeviceMouseRow",
+  };
+
+  const DeepQuery kCustomizeButtonsSubsectionQuery{
+      "os-settings-ui",
+      "os-settings-main",
+      "main-page-container",
+      "settings-device-page",
+      "#customizeMouseButtonsRow > settings-customize-mouse-buttons-subpage",
+      "#buttonsSection > customize-buttons-subsection",
   };
 
   auto WaitForSearchboxContainsText(const std::string& text) {
@@ -373,7 +383,12 @@ IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest, AddNewMouse) {
       WaitForElementTextContains(webcontents_id_, kMouseNameQuery, "mouse"));
 }
 
-IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest, SixPackKeys) {
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_SixPackKeys DISABLED_SixPackKeys
+#else
+#define MAYBE_SixPackKeys SixPackKeys
+#endif  // BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest, MAYBE_SixPackKeys) {
   const DeepQuery kDeleteDropdownQuery{
       "os-settings-ui",      "os-settings-main",
       "main-page-container", "settings-device-page",
@@ -435,6 +450,8 @@ IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest, TopRow) {
       LaunchSettingsApp(
           webcontents_id_,
           chromeos::settings::mojom::kPerDeviceKeyboardSubpagePath),
+      Log("Waiting for Keyboard subpage to exist"),
+      WaitForElementExists(webcontents_id_, kTopRowAreFkeysToggleQuery),
       Log("Enabling 'Treat top-row keys as function keys' setting"),
       ClickElement(webcontents_id_, kTopRowAreFkeysToggleQuery),
       WaitForStateChange(webcontents_id_, top_row_are_fkeys),
@@ -483,8 +500,7 @@ class DeviceSettingsSwapPrimaryMouseButtonInteractiveUiTest
  public:
   DeviceSettingsSwapPrimaryMouseButtonInteractiveUiTest() {
     feature_list_.Reset();
-    feature_list_.InitWithFeatures({features::kInputDeviceSettingsSplit},
-                                   {features::kPeripheralCustomization});
+    feature_list_.InitWithFeatures({}, {features::kPeripheralCustomization});
   }
   // Query to pierce through Shadow DOM to find the mouse row.
   const DeepQuery kMouseRowQuery{
@@ -584,17 +600,20 @@ IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest,
 
   RunTestSequence(
       Log("Adding a fake internal keyboard"), SetupInternalKeyboard(),
-      LaunchSettingsApp(webcontents_id_,
-                        chromeos::settings::mojom::kDeviceSectionPath),
-      WaitForElementExists(webcontents_id_, kKeyboardRowQuery),
-      ClickElement(webcontents_id_, kKeyboardRowQuery),
+      LaunchSettingsApp(
+          webcontents_id_,
+          chromeos::settings::mojom::kPerDeviceKeyboardSubpagePath),
+      Log("Waiting for internal keyboard to exist"),
       WaitForElementTextContains(webcontents_id_, kKeyboardNameQuery,
                                  "Built-in Keyboard"),
+      Log("Navigating to 'Customize keyboard keys' subpage"),
       ClickElement(webcontents_id_, kCustomizeKeyboardKeysInternalQuery),
       Log("Remapping the 'Ctrl' key to 'Backspace'"),
+      ScrollIntoView(webcontents_id_, kCtrlDropdownQuery),
       ExecuteJsAt(webcontents_id_, kCtrlDropdownQuery,
                   "(el) => {el.selectedIndex = 5; el.dispatchEvent(new "
                   "Event('change'));}"),
+      WaitForDropdownContainsValue(kCtrlDropdownQuery, /*value=*/5),
       ExecuteJsAt(webcontents_id_, kSearchboxQuery,
                   "(el) => { el.focus(); el.select(); }"),
       Log("Entering 'redo' into the Settings search box"),
@@ -604,6 +623,92 @@ IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest,
       Log("Verifying that the 'Backspace' action was performed and the search "
           "box now contains the text 'red'"),
       WaitForSearchboxContainsText("red"));
+}
+
+IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest,
+                       MouseActionCustomization) {
+  const DeepQuery kCustomizeMouseButtonsRowQuery{
+      "os-settings-ui",
+      "os-settings-main",
+      "main-page-container",
+      "settings-device-page",
+      "settings-per-device-mouse",
+      "settings-per-device-mouse-subsection",
+      "#customizeMouseButtons",
+  };
+
+  const DeepQuery kCustomizeMouseButtonsSubsectionIconQuery{
+      "os-settings-ui",
+      "os-settings-main",
+      "main-page-container",
+      "settings-device-page",
+      "settings-per-device-mouse",
+      "settings-per-device-mouse-subsection",
+      "#subsectionHeader",
+      "#deviceIcon",
+  };
+
+  const DeepQuery kCustomizeMouseButtonsHelpSectionQuery{
+      "os-settings-ui",
+      "os-settings-main",
+      "main-page-container",
+      "settings-device-page",
+      "settings-customize-mouse-buttons-subpage",
+      "#helpSection",
+  };
+
+  const DeepQuery kRemappingActionDropdownQuery =
+      kCustomizeButtonsSubsectionQuery +
+      "div > customize-button-row:nth-child(1)" + "#remappingActionDropdown";
+  const DeepQuery kRemappingDropdownContainerQuery =
+      kRemappingActionDropdownQuery + "#remappingContainer";
+  SetMouseDevices({kFiveKeyMouse});
+
+  RunTestSequence(
+      SetupInternalKeyboard(),
+      LaunchSettingsApp(webcontents_id_,
+                        chromeos::settings::mojom::kPerDeviceMouseSubpagePath),
+      WaitForElementExists(webcontents_id_,
+                           kCustomizeMouseButtonsSubsectionIconQuery),
+      Log("Clicking customize mouse buttons row"),
+      ScrollIntoView(webcontents_id_, kCustomizeMouseButtonsRowQuery),
+      ClickElement(webcontents_id_, kCustomizeMouseButtonsRowQuery),
+      Log("Waiting for customize mouse buttons page"),
+      WaitForElementExists(webcontents_id_,
+                           kCustomizeMouseButtonsHelpSectionQuery),
+      Log("Registering a new button for the mouse"), Do([&]() {
+        ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
+        generator.PressAndReleaseKey(ui::VKEY_A, ui::EF_NONE, kFiveKeyMouse.id);
+      }),
+      Log("Opening Remapping Action Dropdown"),
+      ClickElement(webcontents_id_, kRemappingActionDropdownQuery),
+      Log("Selecting overview action"), Do([&]() {
+        ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
+        // Select the 5th option in the dropdown menu (overview)
+        for (int i = 0; i < 4; i++) {
+          generator.PressAndReleaseKey(ui::VKEY_DOWN, ui::EF_NONE, kDeviceId1);
+        }
+        generator.PressAndReleaseKey(ui::VKEY_RETURN, ui::EF_NONE, kDeviceId1);
+      }),
+      WaitForElementTextContains(webcontents_id_,
+                                 kRemappingDropdownContainerQuery, "Overview"),
+      SendAccelerator(webcontents_id_,
+                      {ui::VKEY_W, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN}),
+      WaitForHide(webcontents_id_, /*transition_only_on_event=*/true),
+      Log("Check to make sure overview is already not visible"),
+      EnsureNotPresent(kOverviewDeskBarElementId),
+      Log("Activating remapped button to open overview"), Do([&]() {
+        ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
+        generator.PressAndReleaseKey(ui::VKEY_F5, ui::EF_NONE, kDeviceId1);
+      }),
+      WaitForShow(kOverviewDeskBarElementId),
+      Log("Overview opened with mouse button"), Do([&]() {
+        ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
+        generator.PressAndReleaseKey(ui::VKEY_A, ui::EF_NONE, kFiveKeyMouse.id);
+        generator.PressAndReleaseKey(ui::VKEY_A, ui::EF_NONE, kFiveKeyMouse.id);
+      }),
+      WaitForShow(kOverviewDeskBarElementId),
+      Log("Overview closed with mouse button"));
 }
 
 // Disabled for crbug.com/325543031.
@@ -627,15 +732,6 @@ IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest,
       "settings-device-page",
       "settings-customize-mouse-buttons-subpage",
       "#helpSection",
-  };
-
-  const DeepQuery kCustomizeButtonsSubsectionQuery{
-      "os-settings-ui",
-      "os-settings-main",
-      "main-page-container",
-      "settings-device-page",
-      "#customizeMouseButtonsRow > settings-customize-mouse-buttons-subpage",
-      "#buttonsSection > customize-buttons-subsection",
   };
 
   const DeepQuery kRemappingActionDropdownQuery =
@@ -702,9 +798,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest,
       Log("Calendar closed with mouse button"));
 }
 
-// Disabled for crbug.com/325543031.
-IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest,
-                       DISABLED_MouseButtonRenaming) {
+IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest, MouseButtonRenaming) {
   const DeepQuery kCustomizeMouseButtonsRowQuery{
       "os-settings-ui",
       "os-settings-main",
@@ -713,16 +807,15 @@ IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest,
       "settings-per-device-mouse",
       "settings-per-device-mouse-subsection",
       "#customizeMouseButtons",
-      "#icon",
   };
 
-  const DeepQuery kCustomizeButtonsSubsectionQuery{
+  const DeepQuery kCustomizeMouseButtonsHelpSectionQuery{
       "os-settings-ui",
       "os-settings-main",
       "main-page-container",
       "settings-device-page",
-      "#customizeMouseButtonsRow > settings-customize-mouse-buttons-subpage",
-      "#buttonsSection > customize-buttons-subsection",
+      "settings-customize-mouse-buttons-subpage",
+      "#helpSection",
   };
 
   const DeepQuery kMiddleButtonEditButtonQuery =
@@ -738,40 +831,35 @@ IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest,
       "div > customize-button-row:nth-child(1)" + "#buttonLabel";
 
   SetMouseDevices({kFiveKeyMouse});
-  // Used to relaunch the settings app after the customizable mouse button
-  // has been edited.
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewSettingsAppWebContentsId);
 
   RunTestSequence(
       SetupInternalKeyboard(),
       LaunchSettingsApp(webcontents_id_,
                         chromeos::settings::mojom::kPerDeviceMouseSubpagePath),
       Log("Clicking customize mouse buttons row"),
+      ScrollIntoView(webcontents_id_, kCustomizeMouseButtonsRowQuery),
       ClickElement(webcontents_id_, kCustomizeMouseButtonsRowQuery),
+      WaitForElementExists(webcontents_id_,
+                           kCustomizeMouseButtonsHelpSectionQuery),
+      Log("Registering a new button for the mouse"), Do([&]() {
+        ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
+        generator.PressAndReleaseKey(ui::VKEY_A, ui::EF_NONE, kFiveKeyMouse.id);
+      }),
       Log("Clicking edit icon for mouse 'Middle Button'"),
       ClickElement(webcontents_id_, kMiddleButtonEditButtonQuery),
-      Log("Clearing existing mouse button name"),
-      SendKeyPressEvent(ui::KeyboardCode::VKEY_A, ui::EF_CONTROL_DOWN),
-      SendKeyPressEvent(ui::KeyboardCode::VKEY_BACK),
+      WaitForElementExists(webcontents_id_, kSaveButtonQuery),
+      Log("Clearing existing mouse button name"), Do([&]() {
+        ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
+        generator.PressAndReleaseKey(ui::VKEY_A, ui::EF_CONTROL_DOWN,
+                                     kDeviceId1);
+        generator.PressAndReleaseKey(ui::VKEY_BACK, ui::EF_NONE, kDeviceId1);
+      }),
       Log("Renaming mouse button to 'custom'"), EnterLowerCaseText("custom"),
       ClickElement(webcontents_id_, kSaveButtonQuery),
       Log("Verifying that the custom mouse button has been renamed to "
           "'custom'"),
       WaitForElementTextContains(webcontents_id_, kCustomizeableButtonNameQuery,
-                                 "custom"),
-      Log("Closing the Settings app"),
-      SendAccelerator(webcontents_id_,
-                      {ui::VKEY_W, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN}),
-      WaitForHide(webcontents_id_, /*transition_only_on_event=*/true),
-      LaunchSettingsApp(kNewSettingsAppWebContentsId,
-                        chromeos::settings::mojom::kPerDeviceMouseSubpagePath),
-      ClickElement(kNewSettingsAppWebContentsId,
-                   kCustomizeMouseButtonsRowQuery),
-      Log("Confirming the updated mouse button name is saved correctly"),
-      WaitForElementTextContains(kNewSettingsAppWebContentsId,
-                                 kCustomizeableButtonNameQuery, "custom")
-
-  );
+                                 "custom"));
 }
 
 IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest,
@@ -867,14 +955,17 @@ IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest, KeyboardFkeys) {
                   "Event('change'));}"),
       Log("Verifying 'F12' action contains the shift shortcut"),
       WaitForDropdownContainsValue(kF12DropdownQuery, /*value=*/1),
+      InstrumentNextTab(kDevToolsId, AnyBrowser()),
       SendKeyPressAndReleaseEvent(ui::VKEY_F2,
                                   ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN),
-      InstrumentNextTab(kDevToolsId, AnyBrowser()),
       Log("Verifying that 'F12' shortcut opens the developer console"),
-      WaitForShow(kDevToolsId));
+      InAnyContext(WaitForShow(kDevToolsId)));
   // Get settings browser and verify that the window is maximized.
-  Browser* browser = BrowserList::GetInstance()->get(0);
-  EXPECT_TRUE(browser->window()->IsFullscreen());
+  BrowserWindowInterface* const settings_app_browser =
+      ui_test_utils::FindMatchingBrowsers([](BrowserWindowInterface* browser) {
+        return browser->GetType() == BrowserWindowInterface::Type::TYPE_APP;
+      }).front();
+  EXPECT_TRUE(settings_app_browser->GetWindow()->IsFullscreen());
 }
 
 class KeyboardAmbientLightSensorStateObserver
@@ -951,9 +1042,7 @@ class DeviceSettingsBrightnessInteractiveUiTest
   DeviceSettingsBrightnessInteractiveUiTest() {
     feature_list_.Reset();
     feature_list_.InitWithFeatures(
-        {features::kInputDeviceSettingsSplit,
-         features::kPeripheralCustomization,
-         features::kEnableKeyboardBacklightControlInSettings,
+        {features::kPeripheralCustomization,
          features::kEnableBrightnessControlInSettings},
         {});
   }

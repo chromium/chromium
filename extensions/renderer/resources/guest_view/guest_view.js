@@ -26,12 +26,14 @@ var PROPERTY_ON_RESIZE = 'onresize';
 
 var getIframeContentWindow = function(viewInstanceId) {
   var view = GuestViewInternalNatives.GetViewFromID(viewInstanceId);
-  if (!view)
+  if (!view) {
     return null;
+  }
 
   var internalIframeElement = view.internalElement;
-  if (internalIframeElement)
+  if (internalIframeElement) {
     return $HTMLIFrameElement.contentWindow.get(internalIframeElement);
+  }
 
   return null;
 };

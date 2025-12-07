@@ -6,11 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_CALCULATION_EXPRESSION_NODE_H_
 
 #include "base/check_op.h"
+#include "third_party/blink/renderer/platform/geometry/color_channel_keyword.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -18,6 +20,7 @@ enum class CalculationOperator {
   kAdd,
   kSubtract,
   kMultiply,  // Division is converted to multiplication and use this value too.
+  kInvert,
   kMin,
   kMax,
   kClamp,
@@ -27,6 +30,9 @@ enum class CalculationOperator {
   kRoundToZero,
   kMod,
   kRem,
+  kLog,
+  kExp,
+  kSqrt,
   kHypot,
   kAbs,
   kSign,
@@ -34,22 +40,28 @@ enum class CalculationOperator {
   kContainerProgress,
   kCalcSize,
   kMediaProgress,
-  kInvalid
+  kPow,
+  kSin,
+  kCos,
+  kTan,
+  kAsin,
+  kAcos,
+  kAtan,
+  kAtan2,
+  kRandom,
 };
 
 // Represents an expression composed of numbers, |PixelsAndPercent| and multiple
 // types of operators. To be consumed by |Length| values that involve
 // non-trivial math functions like min() and max().
 class PLATFORM_EXPORT CalculationExpressionNode
-    : public RefCounted<CalculationExpressionNode> {
+    : public GarbageCollected<CalculationExpressionNode> {
  public:
-  virtual float Evaluate(float max_value,
-                         const Length::EvaluationInput&) const = 0;
+  virtual void Trace(Visitor*) const {}
+
+  virtual float Evaluate(float max_value, const EvaluationInput&) const = 0;
   bool operator==(const CalculationExpressionNode& other) const {
     return Equals(other);
-  }
-  bool operator!=(const CalculationExpressionNode& other) const {
-    return !operator==(other);
   }
 
   bool HasAuto() const { return has_auto_; }
@@ -64,6 +76,7 @@ class PLATFORM_EXPORT CalculationExpressionNode
   // calc-size() act as though it has a percent.
   bool HasPercent() const { return has_percent_; }
   bool HasPercentOrStretch() const { return has_percent_ || has_stretch_; }
+  bool HasColorChannelKeyword() const { return has_color_channel_keyword_; }
 
   virtual bool HasMinContent() const { return false; }
   virtual bool HasMaxContent() const { return false; }
@@ -72,22 +85,13 @@ class PLATFORM_EXPORT CalculationExpressionNode
   virtual bool IsNumber() const { return false; }
   virtual bool IsIdentifier() const { return false; }
   virtual bool IsSizingKeyword() const { return false; }
+  virtual bool IsColorChannelKeyword() const { return false; }
   virtual bool IsPixelsAndPercent() const { return false; }
   virtual bool IsOperation() const { return false; }
 
-  virtual scoped_refptr<const CalculationExpressionNode> Zoom(
-      double factor) const = 0;
+  virtual const CalculationExpressionNode* Zoom(double factor) const = 0;
 
   virtual ~CalculationExpressionNode() = default;
-
-#if DCHECK_IS_ON()
-  enum class ResultType { kInvalid, kNumber, kPixelsAndPercent, kIdent };
-
-  virtual ResultType ResolvedResultType() const = 0;
-
- protected:
-  ResultType result_type_;
-#endif
 
  protected:
   virtual bool Equals(const CalculationExpressionNode& other) const = 0;
@@ -96,30 +100,22 @@ class PLATFORM_EXPORT CalculationExpressionNode
   bool has_auto_ = false;
   bool has_percent_ = false;
   bool has_stretch_ = false;
+  bool has_color_channel_keyword_ = false;
 };
 
 class PLATFORM_EXPORT CalculationExpressionNumberNode final
     : public CalculationExpressionNode {
  public:
-  CalculationExpressionNumberNode(float value) : value_(value) {
-#if DCHECK_IS_ON()
-    result_type_ = ResultType::kNumber;
-#endif
-  }
+  explicit CalculationExpressionNumberNode(float value) : value_(value) {}
 
   float Value() const { return value_; }
 
   // Implement |CalculationExpressionNode|:
-  float Evaluate(float max_value, const Length::EvaluationInput&) const final;
+  float Evaluate(float max_value, const EvaluationInput&) const final;
   bool Equals(const CalculationExpressionNode& other) const final;
-  scoped_refptr<const CalculationExpressionNode> Zoom(
-      double factor) const final;
+  const CalculationExpressionNode* Zoom(double factor) const final;
   bool IsNumber() const final { return true; }
   ~CalculationExpressionNumberNode() final = default;
-
-#if DCHECK_IS_ON()
-  ResultType ResolvedResultType() const final;
-#endif
 
  private:
   float value_;
@@ -136,32 +132,23 @@ class PLATFORM_EXPORT CalculationExpressionIdentifierNode final
     : public CalculationExpressionNode {
  public:
   explicit CalculationExpressionIdentifierNode(AtomicString identifier)
-      : identifier_(std::move(identifier)) {
-#if DCHECK_IS_ON()
-    result_type_ = ResultType::kIdent;
-#endif
-  }
+      : identifier_(std::move(identifier)) {}
 
   const AtomicString& Value() const { return identifier_; }
 
   // Implement |CalculationExpressionNode|:
-  float Evaluate(float max_value, const Length::EvaluationInput&) const final {
+  float Evaluate(float max_value, const EvaluationInput&) const final {
     return 0.0f;
   }
   bool Equals(const CalculationExpressionNode& other) const final {
-    return other.IsIdentifier() &&
-           DynamicTo<CalculationExpressionIdentifierNode>(other)->Value() ==
-               Value();
+    auto* other_identifier =
+        DynamicTo<CalculationExpressionIdentifierNode>(other);
+    return other_identifier && other_identifier->Value() == Value();
   }
-  scoped_refptr<const CalculationExpressionNode> Zoom(
-      double factor) const final {
+  const CalculationExpressionNode* Zoom(double factor) const final {
     return this;
   }
   bool IsIdentifier() const final { return true; }
-
-#if DCHECK_IS_ON()
-  ResultType ResolvedResultType() const final { return ResultType::kIdent; }
-#endif
 
  private:
   AtomicString identifier_;
@@ -191,6 +178,7 @@ class PLATFORM_EXPORT CalculationExpressionSizingKeywordNode final
     kWebkitMaxContent,
     kFitContent,
     kWebkitFitContent,
+    kStretch,
     kWebkitFillAvailable,
   };
 
@@ -199,14 +187,13 @@ class PLATFORM_EXPORT CalculationExpressionSizingKeywordNode final
   Keyword Value() const { return keyword_; }
 
   // Implement |CalculationExpressionNode|:
-  float Evaluate(float max_value, const Length::EvaluationInput&) const final;
+  float Evaluate(float max_value, const EvaluationInput&) const final;
   bool Equals(const CalculationExpressionNode& other) const final {
-    return other.IsSizingKeyword() &&
-           DynamicTo<CalculationExpressionSizingKeywordNode>(other)->Value() ==
-               Value();
+    auto* other_sizing_keyword =
+        DynamicTo<CalculationExpressionSizingKeywordNode>(other);
+    return other_sizing_keyword && other_sizing_keyword->Value() == Value();
   }
-  scoped_refptr<const CalculationExpressionNode> Zoom(
-      double factor) const final {
+  const CalculationExpressionNode* Zoom(double factor) const final {
     // TODO(https://crbug.com/313072): Is this correct, or do we need to
     // adjust for zoom?
     return this;
@@ -226,12 +213,6 @@ class PLATFORM_EXPORT CalculationExpressionSizingKeywordNode final
            keyword_ == Keyword::kWebkitFitContent;
   }
 
-#if DCHECK_IS_ON()
-  ResultType ResolvedResultType() const final {
-    return ResultType::kPixelsAndPercent;
-  }
-#endif
-
  private:
   Keyword keyword_;
 };
@@ -243,14 +224,43 @@ struct DowncastTraits<CalculationExpressionSizingKeywordNode> {
   }
 };
 
+class PLATFORM_EXPORT CalculationExpressionColorChannelKeywordNode final
+    : public CalculationExpressionNode {
+ public:
+  explicit CalculationExpressionColorChannelKeywordNode(
+      ColorChannelKeyword channel);
+
+  ColorChannelKeyword Value() const { return channel_; }
+
+  // Implement |CalculationExpressionNode|:
+  float Evaluate(float max_value, const EvaluationInput&) const final;
+  bool Equals(const CalculationExpressionNode& other) const final {
+    auto* other_color_channel_keyword =
+        DynamicTo<CalculationExpressionColorChannelKeywordNode>(other);
+    return other_color_channel_keyword &&
+           other_color_channel_keyword->Value() == Value();
+  }
+  const CalculationExpressionNode* Zoom(double factor) const final {
+    return this;
+  }
+  bool IsColorChannelKeyword() const final { return true; }
+
+ private:
+  ColorChannelKeyword channel_;
+};
+
+template <>
+struct DowncastTraits<CalculationExpressionColorChannelKeywordNode> {
+  static bool AllowFrom(const CalculationExpressionNode& node) {
+    return node.IsColorChannelKeyword();
+  }
+};
+
 class PLATFORM_EXPORT CalculationExpressionPixelsAndPercentNode final
     : public CalculationExpressionNode {
  public:
-  CalculationExpressionPixelsAndPercentNode(PixelsAndPercent value)
+  explicit CalculationExpressionPixelsAndPercentNode(PixelsAndPercent value)
       : value_(value) {
-#if DCHECK_IS_ON()
-    result_type_ = ResultType::kPixelsAndPercent;
-#endif
     if (value.has_explicit_percent) {
       has_percent_ = true;
     }
@@ -263,16 +273,11 @@ class PLATFORM_EXPORT CalculationExpressionPixelsAndPercentNode final
   bool HasExplicitPercent() const { return value_.has_explicit_percent; }
 
   // Implement |CalculationExpressionNode|:
-  float Evaluate(float max_value, const Length::EvaluationInput&) const final;
+  float Evaluate(float max_value, const EvaluationInput&) const final;
   bool Equals(const CalculationExpressionNode& other) const final;
-  scoped_refptr<const CalculationExpressionNode> Zoom(
-      double factor) const final;
+  const CalculationExpressionNode* Zoom(double factor) const final;
   bool IsPixelsAndPercent() const final { return true; }
   ~CalculationExpressionPixelsAndPercentNode() final = default;
-
-#if DCHECK_IS_ON()
-  ResultType ResolvedResultType() const final;
-#endif
 
  private:
   PixelsAndPercent value_;
@@ -288,9 +293,14 @@ struct DowncastTraits<CalculationExpressionPixelsAndPercentNode> {
 class PLATFORM_EXPORT CalculationExpressionOperationNode final
     : public CalculationExpressionNode {
  public:
-  using Children = Vector<scoped_refptr<const CalculationExpressionNode>>;
+  using Children = HeapVector<Member<const CalculationExpressionNode>>;
 
-  static scoped_refptr<const CalculationExpressionNode> CreateSimplified(
+  void Trace(Visitor* visitor) const final {
+    CalculationExpressionNode::Trace(visitor);
+    visitor->Trace(children_);
+  }
+
+  static const CalculationExpressionNode* CreateSimplified(
       Children&& children,
       CalculationOperator op);
 
@@ -301,19 +311,14 @@ class PLATFORM_EXPORT CalculationExpressionOperationNode final
   CalculationOperator GetOperator() const { return operator_; }
 
   // Implement |CalculationExpressionNode|:
-  float Evaluate(float max_value, const Length::EvaluationInput&) const final;
+  float Evaluate(float max_value, const EvaluationInput&) const final;
   bool Equals(const CalculationExpressionNode& other) const final;
-  scoped_refptr<const CalculationExpressionNode> Zoom(
-      double factor) const final;
+  const CalculationExpressionNode* Zoom(double factor) const final;
   bool IsOperation() const final { return true; }
   bool HasMinContent() const final;
   bool HasMaxContent() const final;
   bool HasFitContent() const final;
   ~CalculationExpressionOperationNode() final = default;
-
-#if DCHECK_IS_ON()
-  ResultType ResolvedResultType() const final;
-#endif
 
  private:
   Children children_;

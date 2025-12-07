@@ -13,23 +13,24 @@ namespace updater {
 
 // The switch to activate the sleeping action for specified delay in seconds
 // before killing the process.
-extern const char kTestSleepSecondsSwitch[];
+inline constexpr char kTestSleepSecondsSwitch[] = "test-sleep-seconds";
 
 // The switch to signal the event with the name given as a switch value.
-extern const char kTestEventToSignal[];
+inline constexpr char kTestEventToSignal[] = "test-event-to-signal";
 
 // Checks if running at medium integrity, and if so, signals the event given as
 // the switch value.
-extern const char kTestEventToSignalIfMediumIntegrity[];
+inline constexpr char kTestEventToSignalIfMediumIntegrity[] =
+    "test-event-to-signal-if-medium-integrity";
 
 // The switch to wait on the event with the name given as a switch value.
-extern const char kTestEventToWaitOn[];
+inline constexpr char kTestEventToWaitOn[] = "test-event-to-wait-on";
 
 // Specifies an exit code that the test process exits with.
-extern const char kTestExitCode[];
+inline constexpr char kTestExitCode[] = "test-exit-code";
 
 // Specifies the test name invoking the executable.
-extern const char kTestName[];
+inline constexpr char kTestName[] = "test-name";
 
 }  // namespace updater
 

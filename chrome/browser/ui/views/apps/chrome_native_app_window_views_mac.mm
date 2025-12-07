@@ -2,16 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "chrome/browser/ui/views/apps/chrome_native_app_window_views_mac.h"
+#include "chrome/browser/ui/views/apps/chrome_native_app_window_views_mac.h"
 
 #import <Cocoa/Cocoa.h>
+
+#include <memory>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
 #include "chrome/browser/profiles/profile.h"
 #import "chrome/browser/ui/views/apps/app_window_native_widget_mac.h"
-#import "chrome/browser/ui/views/apps/native_app_window_frame_view_mac.h"
+#include "chrome/browser/ui/views/apps/native_app_window_frame_view_mac_client.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
+#include "ui/views/window/frame_view.h"
+#include "ui/views/window/native_frame_view_mac.h"
 
 // This observer is used to get NSWindow notifications. We need to monitor
 // zoom and full screen events to store the correct bounds to Restore() to.
@@ -86,8 +90,9 @@ namespace {
 
 bool NSWindowIsMaximized(NSWindow* window) {
   // -[NSWindow isZoomed] only works if the zoom button is enabled.
-  if ([[window standardWindowButton:NSWindowZoomButton] isEnabled])
+  if ([[window standardWindowButton:NSWindowZoomButton] isEnabled]) {
     return [window isZoomed];
+  }
 
   // We don't attempt to distinguish between a window that has been explicitly
   // maximized versus one that has just been dragged by the user to fill the
@@ -97,7 +102,7 @@ bool NSWindowIsMaximized(NSWindow* window) {
 
 }  // namespace
 
-ChromeNativeAppWindowViewsMac::ChromeNativeAppWindowViewsMac() {}
+ChromeNativeAppWindowViewsMac::ChromeNativeAppWindowViewsMac() = default;
 
 ChromeNativeAppWindowViewsMac::~ChromeNativeAppWindowViewsMac() {
   [nswindow_observer_ stopObserving];
@@ -129,14 +134,14 @@ void ChromeNativeAppWindowViewsMac::OnBeforeWidgetInit(
                                                  widget);
 }
 
-std::unique_ptr<views::NonClientFrameView>
+std::unique_ptr<views::FrameView>
 ChromeNativeAppWindowViewsMac::CreateStandardDesktopAppFrame() {
-  return std::make_unique<NativeAppWindowFrameViewMac>(widget(), this);
+  return CreateFrameViewImpl();
 }
 
-std::unique_ptr<views::NonClientFrameView>
+std::unique_ptr<views::FrameView>
 ChromeNativeAppWindowViewsMac::CreateNonStandardAppFrame() {
-  return std::make_unique<NativeAppWindowFrameViewMac>(widget(), this);
+  return CreateFrameViewImpl();
 }
 
 bool ChromeNativeAppWindowViewsMac::IsMaximized() const {
@@ -145,28 +150,33 @@ bool ChromeNativeAppWindowViewsMac::IsMaximized() const {
 }
 
 gfx::Rect ChromeNativeAppWindowViewsMac::GetRestoredBounds() const {
-  if (NSWindowIsMaximized(GetNativeWindow().GetNativeNSWindow()))
+  if (NSWindowIsMaximized(GetNativeWindow().GetNativeNSWindow())) {
     return gfx::ScreenRectFromNSRect(bounds_before_maximize_);
+  }
 
   return ChromeNativeAppWindowViews::GetRestoredBounds();
 }
 
 void ChromeNativeAppWindowViewsMac::Maximize() {
-  if (IsFullscreen())
+  if (IsFullscreen()) {
     return;
+  }
 
   NSWindow* window = GetNativeWindow().GetNativeNSWindow();
-  if (!NSWindowIsMaximized(window))
+  if (!NSWindowIsMaximized(window)) {
     [window setFrame:[[window screen] visibleFrame] display:YES animate:YES];
+  }
 
-  if (IsMinimized())
+  if (IsMinimized()) {
     [window deminiaturize:nil];
+  }
 }
 
 void ChromeNativeAppWindowViewsMac::Restore() {
   NSWindow* window = GetNativeWindow().GetNativeNSWindow();
-  if (NSWindowIsMaximized(window))
+  if (NSWindowIsMaximized(window)) {
     [window setFrame:bounds_before_maximize_ display:YES animate:YES];
+  }
 
   ChromeNativeAppWindowViews::Restore();
 }
@@ -176,8 +186,9 @@ void ChromeNativeAppWindowViewsMac::FlashFrame(bool flash) {
       Profile::FromBrowserContext(app_window()->browser_context());
   AppShimHost* shim_host = apps::AppShimManager::Get()->FindHost(
       profile, app_window()->extension_id());
-  if (!shim_host)
+  if (!shim_host) {
     return;
+  }
   shim_host->GetAppShim()->SetUserAttention(
       flash ? chrome::mojom::AppShimAttentionType::kCritical
             : chrome::mojom::AppShimAttentionType::kCancel);
@@ -186,4 +197,13 @@ void ChromeNativeAppWindowViewsMac::FlashFrame(bool flash) {
 void ChromeNativeAppWindowViewsMac::OnWidgetCreated(views::Widget* widget) {
   nswindow_observer_ =
       [[ResizeNotificationObserver alloc] initForNativeAppWindow:this];
+}
+
+std::unique_ptr<views::FrameView>
+ChromeNativeAppWindowViewsMac::CreateFrameViewImpl() {
+  CHECK(!frame_view_client_);
+  frame_view_client_ =
+      std::make_unique<NativeAppWindowFrameViewMacClient>(widget(), this);
+  return std::make_unique<views::NativeFrameViewMac>(widget(),
+                                                     frame_view_client_.get());
 }

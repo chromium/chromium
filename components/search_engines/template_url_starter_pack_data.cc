@@ -4,17 +4,20 @@
 
 #include "components/search_engines/template_url_starter_pack_data.h"
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "base/strings/utf_string_conversions.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_data_util.h"
 #include "components/strings/grit/components_strings.h"
-#include "ui/base/l10n/l10n_util.h"
 
-namespace TemplateURLStarterPackData {
+namespace template_url_starter_pack_data {
 
 // Update this whenever a change is made to any starter pack data.
-const int kCurrentDataVersion = 10;
+const int kCurrentDataVersion = 13;
 
 // Only update this if there's an incompatible change that requires force
 // updating the user's starter pack data. This will overwrite any of the
@@ -27,7 +30,7 @@ const StarterPackEngine bookmarks = {
     .favicon_url = nullptr,
     .search_url = "chrome://bookmarks/?q={searchTerms}",
     .destination_url = "chrome://bookmarks",
-    .id = StarterPackID::kBookmarks,
+    .id = StarterPackId::kBookmarks,
     .type = SEARCH_ENGINE_STARTER_PACK_BOOKMARKS,
 };
 
@@ -37,7 +40,7 @@ const StarterPackEngine history = {
     .favicon_url = nullptr,
     .search_url = "chrome://history/?q={searchTerms}",
     .destination_url = "chrome://history",
-    .id = StarterPackID::kHistory,
+    .id = StarterPackId::kHistory,
     .type = SEARCH_ENGINE_STARTER_PACK_HISTORY,
 };
 
@@ -50,25 +53,47 @@ const StarterPackEngine tabs = {
     // only provide suggestions from the OpenTabProvider.
     .search_url = "chrome://tabs/?q={searchTerms}",
     .destination_url = "http://support.google.com/chrome/?p=tab_search",
-    .id = StarterPackID::kTabs,
+    .id = StarterPackId::kTabs,
     .type = SEARCH_ENGINE_STARTER_PACK_TABS,
 };
 
-const StarterPackEngine AskGoogle = {
+const StarterPackEngine gemini = {
     .name_message_id = IDS_SEARCH_ENGINES_STARTER_PACK_GEMINI_NAME,
     .keyword_message_id = IDS_SEARCH_ENGINES_STARTER_PACK_GEMINI_KEYWORD,
     .favicon_url = nullptr,
     .search_url = "https://gemini.google.com/app?q={searchTerms}",
     .destination_url = "https://gemini.google.com",
-    .id = StarterPackID::kAskGoogle,
-    .type = SEARCH_ENGINE_STARTER_PACK_ASK_GOOGLE,
+    .id = StarterPackId::kGemini,
+    .type = SEARCH_ENGINE_STARTER_PACK_GEMINI,
+};
+
+const StarterPackEngine page = {
+    .name_message_id = IDS_SEARCH_ENGINES_STARTER_PACK_PAGE_NAME,
+    .keyword_message_id = IDS_SEARCH_ENGINES_STARTER_PACK_PAGE_KEYWORD,
+    .favicon_url = nullptr,
+    .search_url = "chrome://page/?q={searchTerms}",
+    .destination_url = "chrome://page",
+    .id = StarterPackId::kPage,
+    .type = SEARCH_ENGINE_STARTER_PACK_PAGE,
+};
+
+const StarterPackEngine ai_mode = {
+    .name_message_id = IDS_SEARCH_ENGINES_STARTER_PACK_AI_MODE_NAME,
+    .keyword_message_id = IDS_SEARCH_ENGINES_STARTER_PACK_AI_MODE_KEYWORD,
+    .favicon_url = nullptr,
+    // - `udm=50` triggers AI mode as opposed to traditional search.
+    // - `aep=48` identifies source of the request as the omnibox as opposed to
+    //    e.g. the NTP realbox.
+    .search_url =
+        "https://www.google.com/"
+        "search?sourceid=chrome&udm=50&aep=48&q={searchTerms}",
+    .destination_url = "https://www.google.com",
+    .id = StarterPackId::kAiMode,
+    .type = SEARCH_ENGINE_STARTER_PACK_AI_MODE,
 };
 
 const StarterPackEngine* engines[] = {
-    &bookmarks,
-    &history,
-    &tabs,
-    &AskGoogle,
+    &bookmarks, &history, &tabs, &gemini, &page, &ai_mode,
 };
 
 int GetDataVersion() {
@@ -88,7 +113,7 @@ std::vector<std::unique_ptr<TemplateURLData>> GetStarterPackEngines() {
   return t_urls;
 }
 
-std::u16string GetDestinationUrlForStarterPackID(int id) {
+std::u16string GetDestinationUrlForStarterPackId(int id) {
   for (auto* engine : engines) {
     if (engine->id == id) {
       return base::UTF8ToUTF16(engine->destination_url);
@@ -98,4 +123,4 @@ std::u16string GetDestinationUrlForStarterPackID(int id) {
   return u"";
 }
 
-}  // namespace TemplateURLStarterPackData
+}  // namespace template_url_starter_pack_data

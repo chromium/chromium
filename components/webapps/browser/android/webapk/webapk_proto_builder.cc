@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "base/android/build_info.h"
+#include "base/android/apk_info.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -72,8 +72,6 @@ webapk::WebApk_UpdateReason ConvertUpdateReasonToProtoEnum(
       return webapk::WebApk::DARK_THEME_COLOR_DIFFERS;
     case WebApkUpdateReason::PRIMARY_ICON_CHANGE_BELOW_THRESHOLD:
       return webapk::WebApk::PRIMARY_ICON_CHANGE_BELOW_THRESHOLD;
-    case WebApkUpdateReason::PRIMARY_ICON_CHANGE_SHELL_UPDATE:
-      return webapk::WebApk::PRIMARY_ICON_CHANGE_SHELL_UPDATE;
   }
 }
 
@@ -168,7 +166,7 @@ std::unique_ptr<std::string> BuildProtoInBackground(
   std::unique_ptr<webapk::WebApk> webapk(new webapk::WebApk);
   webapk->set_manifest_url(shortcut_info.manifest_url.spec());
   webapk->set_requester_application_package(
-      base::android::BuildInfo::GetInstance()->package_name());
+      base::android::apk_info::package_name());
   webapk->set_requester_application_version(
       std::string(version_info::GetVersionNumber()));
   webapk->set_android_abi(getCurrentAbi());

@@ -11,11 +11,12 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/themes/theme_service_observer.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
-#include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/ui/thumbnails/thumbnail_tracker.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_before_unload_tracker.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip.mojom.h"
-#include "chrome/browser/ui/webui/tab_strip/thumbnail_tracker.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/tabs/public/tab_group.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -25,6 +26,10 @@
 
 class Browser;
 class TabStripUIEmbedder;
+
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
 
 class TabStripPageHandler : public tab_strip::mojom::PageHandler,
                             public TabStripModelObserver,
@@ -48,8 +53,10 @@ class TabStripPageHandler : public tab_strip::mojom::PageHandler,
 
   // TabStripModelObserver:
   void OnTabGroupChanged(const TabGroupChange& change) override;
-  void TabGroupedStateChanged(std::optional<tab_groups::TabGroupId> group,
-                              content::WebContents* contents,
+  void TabGroupedStateChanged(TabStripModel* tab_strip_model,
+                              std::optional<tab_groups::TabGroupId> old_group,
+                              std::optional<tab_groups::TabGroupId> new_group,
+                              tabs::TabInterface* tab,
                               int index) override;
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,
@@ -87,9 +94,14 @@ class TabStripPageHandler : public tab_strip::mojom::PageHandler,
                            RemoveTabIfInvalidContextMenu);
   FRIEND_TEST_ALL_PREFIXES(TabStripPageHandlerTest, SwitchTab);
   FRIEND_TEST_ALL_PREFIXES(TabStripPageHandlerTest, UngroupTab);
+  FRIEND_TEST_ALL_PREFIXES(TabStripPageHandlerTest,
+                           NoopMoveGroupAcrossWindowsBreaksContiguity);
+  FRIEND_TEST_ALL_PREFIXES(TabStripPageHandlerTest,
+                           MoveTabAcrossWindowsInBetweenGroup);
 
   void OnLongPressTimer();
   tab_strip::mojom::TabPtr GetTabData(content::WebContents* contents,
+                                      const tabs::TabInterface* tab,
                                       int index);
   tab_strip::mojom::TabGroupVisualDataPtr GetTabGroupData(TabGroup* group);
   void HandleThumbnailUpdate(content::WebContents* tab,

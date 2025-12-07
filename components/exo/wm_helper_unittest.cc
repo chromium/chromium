@@ -80,7 +80,7 @@ TEST_F(WMHelperTest, DockedModeShouldUseInternalAsDefault) {
   UpdateDisplay("1920x1080*2, 600x400");
   display::test::DisplayManagerTestApi(display_manager())
       .SetFirstDisplayAsInternalDisplay();
-  auto display_list = display::Screen::GetScreen()->GetAllDisplays();
+  auto display_list = display::Screen::Get()->GetAllDisplays();
   auto first_info = display_manager()->GetDisplayInfo(display_list[0].id());
   auto second_info = display_manager()->GetDisplayInfo(display_list[1].id());
   ASSERT_EQ(gfx::Size(1920, 1080), first_info.size_in_pixel());
@@ -88,8 +88,7 @@ TEST_F(WMHelperTest, DockedModeShouldUseInternalAsDefault) {
 
   std::vector<display::ManagedDisplayInfo> display_info_list{second_info};
   display_manager()->OnNativeDisplaysChanged(display_info_list);
-  ASSERT_EQ(display::Screen::GetScreen()->GetPrimaryDisplay().id(),
-            second_info.id());
+  ASSERT_EQ(display::Screen::Get()->GetPrimaryDisplay().id(), second_info.id());
 
   EXPECT_EQ(2.0f, GetDefaultDeviceScaleFactor());
 }

@@ -40,7 +40,7 @@
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
-namespace WTF {
+namespace blink {
 
 template <typename T>
 class ThreadSpecific {
@@ -85,8 +85,9 @@ inline void ThreadSpecific<T>::Destroy(void* ptr) {
   // longer has a graceful shutdown sequence. Be careful to call this function
   // (which can be re-entrant) while the pointer is still set, to avoid lazily
   // allocating Threading after it is destroyed.
-  if (IsMainThread())
+  if (blink::IsMainThread()) {
     return;
+  }
 
   // The memory was allocated via Partitions::FastZeroedMalloc, and then the
   // object was placement-newed. To destroy, we must call the delete expression,
@@ -133,7 +134,7 @@ inline ThreadSpecific<T>::operator T*() {
     }
 
     Set(*ptr);
-    ::new (NotNullTag::kNotNull, *ptr) T;
+    ::new (base::NotNullTag::kNotNull, *ptr) T;
   }
   return *ptr;
 }
@@ -148,8 +149,6 @@ inline T& ThreadSpecific<T>::operator*() {
   return *operator T*();
 }
 
-}  // namespace WTF
-
-using WTF::ThreadSpecific;
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_THREAD_SPECIFIC_H_

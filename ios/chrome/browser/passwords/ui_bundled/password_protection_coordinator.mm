@@ -7,11 +7,11 @@
 #import "base/check.h"
 #import "base/notreached.h"
 #import "components/safe_browsing/core/browser/password_protection/metrics_util.h"
+#import "ios/chrome/browser/passwords/ui_bundled/password_protection_coordinator_delegate.h"
+#import "ios/chrome/browser/passwords/ui_bundled/password_protection_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
-#import "ios/chrome/browser/passwords/ui_bundled/password_protection_coordinator_delegate.h"
-#import "ios/chrome/browser/passwords/ui_bundled/password_protection_view_controller.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
 @interface PasswordProtectionCoordinator () <ConfirmationAlertActionHandler>
@@ -27,7 +27,10 @@
 
 @end
 
-@implementation PasswordProtectionCoordinator
+@implementation PasswordProtectionCoordinator {
+  // Navigation controller for the view controller.
+  UINavigationController* _navigationController;
+}
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser
@@ -45,26 +48,32 @@
   self.viewController = [[PasswordProtectionViewController alloc] init];
   self.viewController.subtitleString = self.warningText;
   self.viewController.actionHandler = self;
-  self.viewController.modalPresentationStyle = UIModalPresentationFormSheet;
-  self.viewController.modalInPresentation = YES;
-  [self.baseViewController presentViewController:self.viewController
+
+  self.viewController.navigationItem.rightBarButtonItem =
+      [[UIBarButtonItem alloc]
+          initWithBarButtonSystemItem:UIBarButtonSystemItemClose
+                               target:self
+                               action:@selector(dismiss)];
+
+  _navigationController = [[UINavigationController alloc]
+      initWithRootViewController:self.viewController];
+
+  _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+  _navigationController.modalInPresentation = YES;
+  [self.baseViewController presentViewController:_navigationController
                                         animated:YES
                                       completion:nil];
 }
 
 - (void)stop {
-  [self.viewController.presentingViewController
+  [_navigationController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:nil];
   self.viewController = nil;
+  _navigationController = nil;
 }
 
 #pragma mark - ConfirmationAlertActionHandler
-
-- (void)confirmationAlertDismissAction {
-  self.completion(safe_browsing::WarningAction::CLOSE);
-  [self.delegate passwordProtectionCoordinatorWantsToBeStopped:self];
-}
 
 - (void)confirmationAlertPrimaryAction {
   self.completion(safe_browsing::WarningAction::CHANGE_PASSWORD);
@@ -78,8 +87,14 @@
   id<SettingsCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SettingsCommands);
 
-  [handler showSavedPasswordsSettingsFromViewController:self.baseViewController
-                                       showCancelButton:NO];
+  [handler
+      showSavedPasswordsSettingsFromViewController:self.baseViewController];
+}
+
+// Dismisses the sheet.
+- (void)dismiss {
+  self.completion(safe_browsing::WarningAction::CLOSE);
+  [self.delegate passwordProtectionCoordinatorWantsToBeStopped:self];
 }
 
 @end

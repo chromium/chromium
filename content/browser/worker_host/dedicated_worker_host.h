@@ -10,11 +10,12 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/supports_user_data.h"
 #include "build/build_config.h"
 #include "content/browser/browser_interface_broker_impl.h"
 #include "content/browser/buckets/bucket_context.h"
-#include "content/browser/compute_pressure/pressure_service_for_worker.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
+#include "content/browser/security/dip/document_isolation_policy_reporter.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/dedicated_worker_creator.h"
 #include "content/public/browser/global_routing_id.h"
@@ -27,6 +28,7 @@
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "net/base/isolation_info.h"
 #include "net/storage_access_api/status.h"
+#include "services/device/public/cpp/compute_pressure/buildflags.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
@@ -35,11 +37,11 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-forward.h"
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
-#include "third_party/blink/public/mojom/compute_pressure/web_pressure_manager.mojom.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom.h"
 #include "third_party/blink/public/mojom/idle/idle_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 #include "third_party/blink/public/mojom/loader/content_security_notifier.mojom.h"
+#include "third_party/blink/public/mojom/serial/serial.mojom-forward.h"
 #include "third_party/blink/public/mojom/usb/web_usb_service.mojom-forward.h"
 #include "third_party/blink/public/mojom/wake_lock/wake_lock.mojom-forward.h"
 #include "third_party/blink/public/mojom/websockets/websocket_connector.mojom-forward.h"
@@ -51,8 +53,13 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom-forward.h"
-#include "third_party/blink/public/mojom/serial/serial.mojom-forward.h"
+#include "third_party/blink/public/mojom/hid/hid.mojom-forward.h"
 #endif
+
+#if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
+#include "content/browser/compute_pressure/pressure_service_for_dedicated_worker.h"
+#include "third_party/blink/public/mojom/compute_pressure/web_pressure_manager.mojom.h"
+#endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 
 namespace network {
 
@@ -66,7 +73,6 @@ class CrossOriginEmbedderPolicyReporter;
 class DedicatedWorkerServiceImpl;
 class ServiceWorkerClient;
 class ServiceWorkerMainResourceHandle;
-class ServiceWorkerRegistration;
 class StoragePartitionImpl;
 struct WorkerScriptFetcherResult;
 
@@ -79,7 +85,8 @@ class CONTENT_EXPORT DedicatedWorkerHost final
     : public blink::mojom::DedicatedWorkerHost,
       public blink::mojom::BackForwardCacheControllerHost,
       public RenderProcessHostObserver,
-      public BucketContext {
+      public BucketContext,
+      public base::SupportsUserData {
  public:
   // Creates a new browser-side host for a single dedicated worker.
   //
@@ -100,11 +107,12 @@ class CONTENT_EXPORT DedicatedWorkerHost final
       DedicatedWorkerCreator creator,
       GlobalRenderFrameHostId ancestor_render_frame_host_id,
       const blink::StorageKey& creator_storage_key,
+      const url::Origin& renderer_origin,
       const net::IsolationInfo& isolation_info,
       network::mojom::ClientSecurityStatePtr creator_client_security_state,
       base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter,
-      base::WeakPtr<CrossOriginEmbedderPolicyReporter> ancestor_coep_reporter,
-      mojo::PendingReceiver<blink::mojom::DedicatedWorkerHost> host);
+      mojo::PendingReceiver<blink::mojom::DedicatedWorkerHost> host,
+      net::StorageAccessApiStatus storage_access_api_status);
 
   DedicatedWorkerHost(const DedicatedWorkerHost&) = delete;
   DedicatedWorkerHost& operator=(const DedicatedWorkerHost&) = delete;
@@ -152,21 +160,25 @@ class CONTENT_EXPORT DedicatedWorkerHost final
       mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver);
   void CreateBroadcastChannelProvider(
       mojo::PendingReceiver<blink::mojom::BroadcastChannelProvider> receiver);
+  bool WasStorageAccessGranted();
   void CreateBlobUrlStoreProvider(
       mojo::PendingReceiver<blink::mojom::BlobURLStore> receiver);
   void CreateBucketManagerHost(
       mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver);
   void GetFileSystemAccessManager(
       mojo::PendingReceiver<blink::mojom::FileSystemAccessManager> receiver);
+
+#if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
   void BindPressureService(
       mojo::PendingReceiver<blink::mojom::WebPressureManager> receiver);
+#endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 
-#if !BUILDFLAG(IS_ANDROID)
   void BindSerialService(
       mojo::PendingReceiver<blink::mojom::SerialService> receiver);
+#if !BUILDFLAG(IS_ANDROID)
+  void BindHidService(mojo::PendingReceiver<blink::mojom::HidService> receiver);
 #endif
 
-  // PlzDedicatedWorker:
   void StartScriptLoad(
       const GURL& script_url,
       network::mojom::CredentialsMode credentials_mode,
@@ -177,18 +189,6 @@ class CONTENT_EXPORT DedicatedWorkerHost final
       net::StorageAccessApiStatus storage_access_api_status);
 
   void ReportNoBinderForInterface(const std::string& error);
-
-  // TODO(crbug.com/40093136): Remove this method once PlzDedicatedWorker is
-  // enabled by default.
-  void MaybeCountWebFeature(const GURL& script_url);
-  // TODO(crbug.com/40093136): Remove this method once PlzDedicatedWorker is
-  // enabled by default.
-  void ContinueOnMaybeCountWebFeature(
-      const GURL& script_url,
-      base::WeakPtr<ServiceWorkerClient> service_worker_client,
-      blink::ServiceWorkerStatusCode status,
-      const std::vector<scoped_refptr<ServiceWorkerRegistration>>&
-          registrations);
 
   const net::NetworkIsolationKey& GetNetworkIsolationKey() const {
     return isolation_info_.network_isolation_key();
@@ -218,9 +218,11 @@ class CONTENT_EXPORT DedicatedWorkerHost final
     return service_worker_handle_.get();
   }
 
-  PressureServiceForWorker<DedicatedWorkerHost>* pressure_service() {
+#if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
+  PressureServiceForDedicatedWorker* pressure_service() {
     return pressure_service_.get();
   }
+#endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 
   // Exposed so that tests can swap the implementation and intercept calls.
   mojo::Receiver<blink::mojom::BrowserInterfaceBroker>&
@@ -249,8 +251,7 @@ class CONTENT_EXPORT DedicatedWorkerHost final
       const std::vector<std::string>& directory_path_components,
       blink::mojom::FileSystemAccessManager::GetSandboxedFileSystemCallback
           callback) override;
-  GlobalRenderFrameHostId GetAssociatedRenderFrameHostId() const override;
-  base::UnguessableToken GetDevToolsToken() const override;
+  storage::BucketClientInfo GetBucketClientInfo() const override;
 
   // Returns the features set that disable back-forward cache.
   blink::scheduler::WebSchedulerTrackedFeatures
@@ -258,6 +259,10 @@ class CONTENT_EXPORT DedicatedWorkerHost final
 
   const BackForwardCacheBlockingDetails& GetBackForwardCacheBlockingDetails()
       const;
+
+  // This is called when out-of-process Network Service crashes,
+  // or when DevTools updates its network interception.
+  void UpdateSubresourceLoaderFactories();
 
   base::WeakPtr<ServiceWorkerClient> GetServiceWorkerClient();
 
@@ -291,14 +296,12 @@ class CONTENT_EXPORT DedicatedWorkerHost final
       RenderFrameHostImpl* ancestor_render_frame_host,
       bool* bypass_redirect_checks);
 
-  // Updates subresource loader factories. This is supposed to be called when
-  // out-of-process Network Service crashes.
-  void UpdateSubresourceLoaderFactories();
+  void OnNetworkServiceCrash();
 
   void OnMojoDisconnect();
 
   // Returns whether creator and worker's COEP values are compatible.
-  bool CheckCrossOriginEmbedderPolicy();
+  bool CheckCOEP();
 
   base::WeakPtr<CrossOriginEmbedderPolicyReporter> GetWorkerCoepReporter();
 
@@ -331,6 +334,13 @@ class CONTENT_EXPORT DedicatedWorkerHost final
   // The origin of the frame or dedicated worker that starts this worker.
   const url::Origin creator_origin_;
 
+  // The origin used by this dedicated worker on the renderer side. This will
+  // almost always be the same as `storage_key_`'s origin, except in the case of
+  // data: URL workers, as described in the linked bug.
+  // TODO(crbug.com/40051700): Make the storage key's origin always match this,
+  // so that we can stop tracking this separately.
+  const url::Origin renderer_origin_;
+
   // The storage key of this worker. This is used for storage partitioning and
   // for retrieving the origin of this worker
   // (https://html.spec.whatwg.org/C/#concept-settings-object-origin).
@@ -350,15 +360,11 @@ class CONTENT_EXPORT DedicatedWorkerHost final
   // creator's client security state lazily instead of eagerly.
   const network::mojom::ClientSecurityStatePtr creator_client_security_state_;
 
-  // The client security state of this worker, used for subresource fetches.
-  //
-  // If PlzDedicatedWorker is disabled, it is cloned from
-  // `creator_client_security_state_` at construction time.
-  //
-  // Otherwise, it is nullptr until the script's response head is loaded, at
-  // which point it is calculated based on the response info. If the response is
-  // loaded from a URL with a local scheme, then the worker inherits its
-  // creator's client security state.
+  // The client security state of this worker, used for subresource fetches. It
+  // is nullptr until the script's response head is loaded, at which point it is
+  // calculated based on the response info. If the response is loaded from a URL
+  // with a local scheme, then the worker inherits its creator's client security
+  // state.
   network::mojom::ClientSecurityStatePtr worker_client_security_state_;
 
   // This is kept alive during the lifetime of the dedicated worker, since it's
@@ -369,11 +375,12 @@ class CONTENT_EXPORT DedicatedWorkerHost final
 
   std::unique_ptr<ServiceWorkerMainResourceHandle> service_worker_handle_;
 
-  std::unique_ptr<PressureServiceForWorker<DedicatedWorkerHost>>
-      pressure_service_;
+#if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
+  std::unique_ptr<PressureServiceForDedicatedWorker> pressure_service_;
+#endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 
   // Script request URL used, only for DevTools and tracing. Only set after
-  // `StartScriptLoad()`. Only set and used if PlzDedicatedWorker is enabled.
+  // `StartScriptLoad()`.
   GURL script_request_url_;
 
   // BrowserInterfaceBroker implementation through which this
@@ -400,19 +407,16 @@ class CONTENT_EXPORT DedicatedWorkerHost final
   mojo::Remote<blink::mojom::SubresourceLoaderUpdater>
       subresource_loader_updater_;
 
-  // For the PlzDedicatedWorker case. `coep_reporter_` is valid after
-  // DidStartScriptLoad() and remains non-null for the lifetime of `this`.
+  // `coep_reporter_` is valid after DidStartScriptLoad() and remains non-null
+  // for the lifetime of `this`.
   std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter_;
   // TODO(crbug.com/40054797): Remove `creator_coep_reporter_` after this
   // class's lifetime is aligned with the associated frame.
   base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter_;
 
-  // For the non-PlzDedicatedWorker case. Sending reports to the ancestor frame
-  // is not the behavior defined in the spec, but keep the current behavior and
-  // not to lose reports.
-  // TODO(crbug.com/40093136): Remove `ancestor_coep_reporter_` once
-  // PlzDedicatedWorker is enabled by default.
-  base::WeakPtr<CrossOriginEmbedderPolicyReporter> ancestor_coep_reporter_;
+  // This is valid after DidStartScriptLoad() and remains non-null for the
+  // lifetime of `this`.
+  std::unique_ptr<DocumentIsolationPolicyReporter> dip_reporter_;
 
   // Will be set once the worker script started loading.
   std::optional<GURL> final_response_url_;
@@ -422,6 +426,11 @@ class CONTENT_EXPORT DedicatedWorkerHost final
   CodeCacheHostImpl::ReceiverSet code_cache_host_receivers_;
 
   BackForwardCacheBlockingDetails bfcache_blocking_details_;
+
+  // This tracks whether the document that created this dedicated worker had
+  // been granted storage access when the dedicated worker was created, which
+  // also grants storage access to the dedicated worker.
+  net::StorageAccessApiStatus storage_access_api_status_;
 
   base::WeakPtrFactory<DedicatedWorkerHost> weak_factory_{this};
 };

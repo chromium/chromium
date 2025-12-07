@@ -8,9 +8,6 @@
 #include <jni.h>
 
 #include "base/base_export.h"
-#include "base/command_line.h"
-#include "base/functional/callback.h"
-#include "base/metrics/field_trial.h"
 
 namespace base {
 
@@ -36,12 +33,6 @@ enum LibraryProcessType {
 // Returns the library process type this library was loaded for.
 BASE_EXPORT LibraryProcessType GetLibraryProcessType();
 
-// Whether fewer code should be prefetched, and no-readahead should be set.
-// Returns true on low-end devices, where this speeds up startup, and false
-// elsewhere, where it slows it down. See
-// https://bugs.chromium.org/p/chromium/issues/detail?id=758566#c71 for details.
-BASE_EXPORT bool IsUsingOrderfileOptimization();
-
 typedef bool NativeInitializationHook(LibraryProcessType library_process_type);
 
 BASE_EXPORT void SetNativeInitializationHook(
@@ -59,9 +50,7 @@ BASE_EXPORT void RecordLibraryLoaderRendererHistograms();
 // Note: this can't use base::{Once, Repeating}Callback because there is no
 // way of initializing the default callback without using static objects, which
 // we forbid.
-typedef bool LibraryLoadedHook(JNIEnv* env,
-                               jclass clazz,
-                               LibraryProcessType library_process_type);
+typedef bool LibraryLoadedHook(LibraryProcessType library_process_type);
 
 // Set the hook function to be called (from Java) once the libraries are loaded.
 // SetLibraryLoadedHook may only be called from JNI_OnLoad. The hook function
@@ -77,7 +66,16 @@ BASE_EXPORT void LibraryLoaderExitHook();
 // shared library.
 void InitAtExitManager();
 
+// First symbol called after library is done loading, and our OnLoad has
+// finished. Sets and calls global initializer delegates.
+BASE_EXPORT bool LibraryLoaded(LibraryProcessType library_process_type);
+
 }  // namespace android
 }  // namespace base
+
+// The JNI_OnLoad in //base cannot depend on any specific process type's init
+// function, so we have this hook that we compile different implementations
+// for depending on what shared library we are building.
+bool NativeInitializationHook(base::android::LibraryProcessType value);
 
 #endif  // BASE_ANDROID_LIBRARY_LOADER_LIBRARY_LOADER_HOOKS_H_

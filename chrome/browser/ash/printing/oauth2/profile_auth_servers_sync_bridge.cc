@@ -16,7 +16,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/common/channel_info.h"
+#include "chromeos/ash/components/channel/channel_info.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/data_type_local_change_processor.h"
@@ -75,7 +75,7 @@ ProfileAuthServersSyncBridge::Create(
       std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::PRINTERS_AUTHORIZATION_SERVERS,
           base::BindRepeating(&syncer::ReportUnrecoverableError,
-                              chrome::GetChannel())),
+                              ash::GetChannel())),
       std::move(store_factory), observer));
 }
 
@@ -147,7 +147,8 @@ void ProfileAuthServersSyncBridge::OnReadAllData(
     sync_pb::PrintersAuthorizationServerSpecifics specifics;
     if (!specifics.ParseFromString(r.value)) {
       change_processor()->ReportError(
-          {FROM_HERE, "Failed to deserialize all specifics."});
+          {FROM_HERE, syncer::ModelError::Type::
+                          kProfileAuthServersFailedToDeserializeSpecifics});
       return;
     }
     servers_uris_.insert(specifics.uri());
@@ -274,14 +275,20 @@ ProfileAuthServersSyncBridge::GetAllDataForDebugging() {
 }
 
 std::string ProfileAuthServersSyncBridge::GetClientTag(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   return GetStorageKey(entity_data);
 }
 
 std::string ProfileAuthServersSyncBridge::GetStorageKey(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   DCHECK(entity_data.specifics.has_printers_authorization_server());
   return entity_data.specifics.printers_authorization_server().uri();
+}
+
+bool ProfileAuthServersSyncBridge::IsEntityDataValid(
+    const syncer::EntityData& entity_data) const {
+  DCHECK(entity_data.specifics.has_printers_authorization_server());
+  return !entity_data.specifics.printers_authorization_server().uri().empty();
 }
 
 void ProfileAuthServersSyncBridge::OnCommit(

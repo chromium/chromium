@@ -252,7 +252,7 @@ public class WebApkIconNameUpdateDialogTest {
                 new WebApkUpdateReportAbuseDialog(
                         context,
                         mDialogManager,
-                        /* packageName= */ "",
+                        /* appPackageName= */ "",
                         shortAppName,
                         /* showAbuseCheckbox= */ true,
                         this::onAbuseDialogResult);

@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 #include "components/media_router/common/discovery/media_sink_service_base.h"
+
+#include <vector>
+
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "components/media_router/common/media_route.h"
-
-#include <vector>
 
 namespace {
 // Timeout amount for |discovery_timer_|.
@@ -59,8 +60,9 @@ const MediaSinkInternal* MediaSinkServiceBase::GetSinkByRoute(
 void MediaSinkServiceBase::AddOrUpdateSink(const MediaSinkInternal& sink) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sinks_.insert_or_assign(sink.sink().id(), sink);
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnSinkAddedOrUpdated(sink);
+  }
 
   StartTimer();
 }
@@ -73,13 +75,15 @@ void MediaSinkServiceBase::RemoveSink(const MediaSinkInternal& sink) {
 void MediaSinkServiceBase::RemoveSinkById(const MediaSink::Id& sink_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = sinks_.find(sink_id);
-  if (it == sinks_.end())
+  if (it == sinks_.end()) {
     return;
+  }
 
   MediaSinkInternal sink = std::move(it->second);
   sinks_.erase(it);
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnSinkRemoved(sink);
+  }
 
   StartTimer();
 }
@@ -95,8 +99,9 @@ void MediaSinkServiceBase::AddSinkForTest(const MediaSinkInternal& sink) {
 
 void MediaSinkServiceBase::StartTimer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (discovery_timer_->IsRunning())
+  if (discovery_timer_->IsRunning()) {
     return;
+  }
 
   discovery_timer_->Start(
       FROM_HERE, kDiscoveryTimeout,
@@ -118,11 +123,13 @@ void MediaSinkServiceBase::OnDiscoveryComplete() {
   DVLOG(2) << "Send sinks to media router, [size]: " << sinks_.size();
 
   std::vector<MediaSinkInternal> sinks;
-  for (const auto& sink_it : sinks_)
+  for (const auto& sink_it : sinks_) {
     sinks.push_back(sink_it.second);
+  }
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnSinksDiscovered(sinks);
+  }
   on_sinks_discovered_cb_.Run(std::move(sinks));
   previous_sinks_ = sinks_;
 }

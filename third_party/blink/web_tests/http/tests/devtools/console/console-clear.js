@@ -20,7 +20,7 @@ import * as Console from 'devtools/panels/console/console.js';
   TestRunner.addResult("=== Before clear ===");
   await ConsoleTestRunner.dumpConsoleMessages();
 
-  Console.ConsoleView.ConsoleView.clearConsole();
+  Console.ConsoleView.ConsoleView.instance().clearConsole();
   TestRunner.deprecatedRunAfterPendingDispatches(callback);
   async function callback() {
     TestRunner.addResult("=== After clear ===");

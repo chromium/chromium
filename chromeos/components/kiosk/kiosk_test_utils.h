@@ -5,17 +5,22 @@
 #ifndef CHROMEOS_COMPONENTS_KIOSK_KIOSK_TEST_UTILS_H_
 #define CHROMEOS_COMPONENTS_KIOSK_KIOSK_TEST_UTILS_H_
 
-#include <string>
+#include <string_view>
 
 namespace chromeos {
 
 // Sets up a fake kiosk session for unit tests.
-// Make sure to enable `UserManagerBase` to be returned from
+// Make sure to enable `UserManagerImpl` to be returned from
 // `UserManager::Get()` prior to calling this function.
-// TODO(b/40286020): remove the default parameter. That is only for transition
-// purpose.
-extern void SetUpFakeKioskSession(
-    const std::string& email = "example@example.com");
+extern void SetUpFakeChromeAppKioskSession(
+    std::string_view email = "example@kiosk-apps.device-local.localhost");
+
+extern void SetUpFakeWebKioskSession(
+    std::string_view email = "example@web-kiosk-apps.device-local.localhost");
+
+extern void SetUpFakeIwaKioskSession(
+    std::string_view email =
+        "example@isolated-kiosk-apps.device-local.localhost");
 
 }  // namespace chromeos
 

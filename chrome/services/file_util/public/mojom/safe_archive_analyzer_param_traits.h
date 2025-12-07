@@ -10,12 +10,15 @@
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "chrome/common/safe_browsing/ipc_protobuf_message_macros.h"
 #include "components/safe_browsing/buildflags.h"
-#include "ipc/ipc_message_macros.h"
-#include "ipc/ipc_message_protobuf_utils.h"
+#include "ipc/param_traits_macros.h"
+#include "ipc/param_traits_protobuf_utils.h"
 
-#if !BUILDFLAG(FULL_SAFE_BROWSING)
-#error BUILDFLAG(FULL_SAFE_BROWSING) should be set.
+#if !BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
+#error BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) should be set.
 #endif
+
+#undef IPC_MESSAGE_EXPORT
+#define IPC_MESSAGE_EXPORT
 
 IPC_ENUM_TRAITS_VALIDATE(
     safe_browsing::ClientDownloadRequest_DownloadType,
@@ -107,6 +110,7 @@ IPC_ENUM_TRAITS_MAX_VALUE(
 
 IPC_STRUCT_TRAITS_BEGIN(safe_browsing::EncryptionInfo)
   IPC_STRUCT_TRAITS_MEMBER(is_encrypted)
+  IPC_STRUCT_TRAITS_MEMBER(is_top_level_encrypted)
   IPC_STRUCT_TRAITS_MEMBER(password_status)
 IPC_STRUCT_TRAITS_END()
 

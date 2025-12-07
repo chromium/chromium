@@ -2,20 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "extensions/common/extension_resource.h"
+
 #include <stddef.h>
+
+#include <algorithm>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
+#include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_paths.h"
-#include "extensions/common/extension_resource.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/test/file_path_reparse_point_win.h"
+#endif
 
 namespace extensions {
 
@@ -30,7 +37,7 @@ TEST(ExtensionResourceTest, CreateEmptyResource) {
 const base::FilePath::StringType ToLower(
     const base::FilePath::StringType& in_str) {
   base::FilePath::StringType str(in_str);
-  base::ranges::transform(str, str.begin(), tolower);
+  std::ranges::transform(str, str.begin(), tolower);
   return str;
 }
 
@@ -67,6 +74,14 @@ TEST(ExtensionResourceTest, ResourcesOutsideOfPath) {
   base::CreateSymbolicLink(
       base::FilePath().AppendASCII("..").AppendASCII("outer"),
       symlink_file);
+#endif
+
+#if BUILDFLAG(IS_WIN)
+  base::FilePath reparse_dir = inner_dir.AppendASCII("reparse");
+  ASSERT_TRUE(base::CreateDirectory(reparse_dir));
+  auto reparse_point =
+      base::test::FilePathReparsePoint::Create(reparse_dir, temp.GetPath());
+  ASSERT_TRUE(reparse_point.has_value());
 #endif
 
   // A non-packing extension should be able to access the file within the
@@ -116,6 +131,43 @@ TEST(ExtensionResourceTest, ResourcesOutsideOfPath) {
   r6.set_follow_symlinks_anywhere();
   EXPECT_FALSE(r6.GetFilePath().empty());
 #endif
+
+#if BUILDFLAG(IS_WIN)
+  base::FilePath outer_via_reparse =
+      base::FilePath().AppendASCII("reparse").AppendASCII("outer");
+
+  // The non-packing extension should also not be able to access a resource that
+  // points out of the directory via a reparse point.
+  ExtensionResource r7(extension_id, inner_dir, outer_via_reparse);
+  EXPECT_TRUE(r7.GetFilePath().empty());
+
+  // ... but a packing extension can.
+  ExtensionResource r8(extension_id, inner_dir, outer_via_reparse);
+  r8.set_follow_symlinks_anywhere();
+  EXPECT_FALSE(r8.GetFilePath().empty());
+
+  // Make sure that a non-normalized extension root path is supported.
+  base::FilePath inner_dir_non_normalized =
+      temp.GetPath().AppendASCII("dIrEcToRy");
+  ExtensionResource r9(extension_id, inner_dir_non_normalized,
+                       base::FilePath().AppendASCII("inner"));
+  EXPECT_FALSE(r9.GetFilePath().empty());
+
+  // Make sure that a network root path is supported by converting a path such
+  // as C:\temp to \\localhost\c$\temp. Regression test for crbug.com/410059474.
+  base::FilePath::CharType drive_letter =
+      base::ToLowerASCII(inner_dir.value().at(0));
+  EXPECT_GE(drive_letter, 'a');
+  EXPECT_LE(drive_letter, 'z');
+  EXPECT_EQ(inner_dir.value().at(1), ':');
+  EXPECT_EQ(inner_dir.value().at(2), '\\');
+  base::FilePath inner_dir_network(
+      base::FilePath::StringType(FILE_PATH_LITERAL("\\\\localhost\\")) +
+      drive_letter + FILE_PATH_LITERAL("$\\") + inner_dir.value().substr(3));
+  ExtensionResource r10(extension_id, inner_dir_network,
+                        base::FilePath().AppendASCII("inner"));
+  EXPECT_FALSE(r10.GetFilePath().empty());
+#endif
 }
 
 TEST(ExtensionResourceTest, CreateWithAllResourcesOnDisk) {
@@ -132,13 +184,12 @@ TEST(ExtensionResourceTest, CreateWithAllResourcesOnDisk) {
   base::FilePath l10n_path = temp.GetPath().Append(kLocaleFolder);
   ASSERT_TRUE(base::CreateDirectory(l10n_path));
 
-  std::vector<std::string> locales;
-  l10n_util::GetParentLocales(l10n_util::GetApplicationLocale(std::string()),
-                              &locales);
+  std::vector<std::string> locales = l10n_util::GetParentLocales(
+      l10n_util::GetApplicationLocale(std::string()));
   ASSERT_FALSE(locales.empty());
-  for (size_t i = 0; i < locales.size(); i++) {
+  for (const std::string& locale : locales) {
     base::FilePath make_path;
-    make_path = l10n_path.AppendASCII(locales[i]);
+    make_path = l10n_path.AppendASCII(locale);
     ASSERT_TRUE(base::CreateDirectory(make_path));
     ASSERT_TRUE(base::WriteFile(make_path.AppendASCII(filename), data));
   }

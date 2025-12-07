@@ -8,8 +8,6 @@
  * allow users to configure their keyboard remapped keys for each keyboard.
  */
 
-import '/shared/settings/prefs/prefs.js';
-import '../icons.html.js';
 import '../settings_shared.css.js';
 import '../controls/settings_dropdown_menu.js';
 import './input_device_settings_shared.css.js';
@@ -17,17 +15,21 @@ import './fkey_row.js';
 import './keyboard_remap_modifier_key_row.js';
 import './keyboard_six_pack_key_row.js';
 
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import type {I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../common/route_observer_mixin.js';
-import {Route, Router, routes} from '../router.js';
+import type {RouteObserverMixinInterface} from '../common/route_observer_mixin.js';
+import {RouteObserverMixin} from '../common/route_observer_mixin.js';
+import type {Route} from '../router.js';
+import {Router, routes} from '../router.js';
 
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
-import {ExtendedFkeysModifier, InputDeviceSettingsFkeyPolicy, InputDeviceSettingsProviderInterface, InputDeviceSettingsSixPackKeyPolicy, Keyboard, KeyboardPolicies, MetaKey, ModifierKey, PolicyStatus, SixPackKey, SixPackKeyInfo, SixPackShortcutModifier} from './input_device_settings_types.js';
+import type {InputDeviceSettingsFkeyPolicy, InputDeviceSettingsProviderInterface, InputDeviceSettingsSixPackKeyPolicy, Keyboard, KeyboardPolicies, SixPackKeyInfo} from './input_device_settings_types.js';
+import {ExtendedFkeysModifier, MetaKey, ModifierKey, PolicyStatus, SixPackKey, SixPackShortcutModifier} from './input_device_settings_types.js';
 import {getTemplate} from './per_device_keyboard_remap_keys.html.js';
 
 interface PrefPolicyFields {
@@ -152,13 +154,13 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
         },
       },
 
-      fakeRightAltPref: {
+      fakeQuickInsertPref: {
         type: Object,
         value() {
           return {
-            key: 'fakeRightAltKeyRemapPref',
+            key: 'fakeQuickInsertKeyRemapPref',
             type: chrome.settingsPrivate.PrefType.NUMBER,
-            value: ModifierKey.kRightAlt,
+            value: ModifierKey.kQuickInsert,
           };
         },
       },
@@ -272,7 +274,7 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
         value: false,
       },
 
-      hasRightAltKey: {
+      hasQuickInsertKey: {
         type: Boolean,
         value: false,
       },
@@ -357,7 +359,7 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
           'homePref.value,' +
           'f11KeyPref.value,' +
           'f12KeyPref.value,' +
-          'fakeRightAltPref.value,' +
+          'fakeQuickInsertPref.value,' +
           'fakeFunctionPref.value,' +
           'fakeCapsLockPref.value)',
       'onKeyboardListUpdated(keyboards.*)',
@@ -383,7 +385,7 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
     [ModifierKey.kBackspace]: ModifierKey.kBackspace,
     [ModifierKey.kAssistant]: ModifierKey.kAssistant,
     [ModifierKey.kCapsLock]: ModifierKey.kCapsLock,
-    [ModifierKey.kRightAlt]: ModifierKey.kRightAlt,
+    [ModifierKey.kQuickInsert]: ModifierKey.kQuickInsert,
     [ModifierKey.kFunction]: ModifierKey.kFunction,
   };
   private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface =
@@ -394,7 +396,7 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
   private fakeCtrlPref: chrome.settingsPrivate.PrefObject;
   private fakeCapsLockPref: chrome.settingsPrivate.PrefObject;
   private fakeEscPref: chrome.settingsPrivate.PrefObject;
-  private fakeRightAltPref: chrome.settingsPrivate.PrefObject;
+  private fakeQuickInsertPref: chrome.settingsPrivate.PrefObject;
   private fakeFunctionPref: chrome.settingsPrivate.PrefObject;
   private fakeMetaPref: chrome.settingsPrivate.PrefObject;
   private insertPref: chrome.settingsPrivate.PrefObject;
@@ -407,7 +409,7 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
   private f12KeyPref: chrome.settingsPrivate.PrefObject;
   private hasAssistantKey: boolean;
   private hasCapsLockKey: boolean;
-  private hasRightAltKey: boolean;
+  private hasQuickInsertKey: boolean;
   private hasFunctionKey: boolean;
   private metaKeyLabel: string;
   private isInitialized: boolean;
@@ -460,8 +462,8 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
         searchedKeyboard.modifierKeys.includes(ModifierKey.kAssistant);
     this.hasCapsLockKey =
         searchedKeyboard.modifierKeys.includes(ModifierKey.kCapsLock);
-    this.hasRightAltKey =
-        searchedKeyboard.modifierKeys.includes(ModifierKey.kRightAlt);
+    this.hasQuickInsertKey =
+        searchedKeyboard.modifierKeys.includes(ModifierKey.kQuickInsert);
     this.hasFunctionKey =
         searchedKeyboard.modifierKeys.includes(ModifierKey.kFunction);
 
@@ -552,7 +554,7 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
     this.set('fakeEscPref.value', ModifierKey.kEscape);
     this.set('fakeMetaPref.value', ModifierKey.kMeta);
     if (loadTimeData.getBoolean('enableModifierSplit')) {
-      this.set('fakeRightAltPref.value', ModifierKey.kRightAlt);
+      this.set('fakeQuickInsertPref.value', ModifierKey.kQuickInsert);
     }
     if (this.hasFunctionKey) {
       this.set('fakeFunctionPref.value', ModifierKey.kFunction);
@@ -595,14 +597,16 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
         this.set('fakeMetaPref.value', targetKey);
         break;
       }
-      case ModifierKey.kRightAlt: {
-        this.set('fakeRightAltPref.value', targetKey);
+      case ModifierKey.kQuickInsert: {
+        this.set('fakeQuickInsertPref.value', targetKey);
         break;
       }
       case ModifierKey.kFunction: {
         this.set('fakeFunctionPref.value', targetKey);
         break;
       }
+      default:
+        break;
     }
   }
 
@@ -667,8 +671,9 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
     }
 
     if (loadTimeData.getBoolean('enableModifierSplit')) {
-      if (ModifierKey.kRightAlt !== this.fakeRightAltPref.value) {
-        updatedRemappings[ModifierKey.kRightAlt] = this.fakeRightAltPref.value;
+      if (ModifierKey.kQuickInsert !== this.fakeQuickInsertPref.value) {
+        updatedRemappings[ModifierKey.kQuickInsert] =
+            this.fakeQuickInsertPref.value;
       }
     }
 
@@ -742,6 +747,8 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
         case SixPackKey.PAGE_DOWN:
           this.set('pageDownPref.value', modifier);
           break;
+        default:
+          break;
       }
     });
   }
@@ -762,6 +769,14 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
         (this.keyboard?.settings?.f11 != null &&
          this.keyboard?.settings?.f12 != null) &&
         !this.hasFunctionKey;
+  }
+
+  private getShortcutRowLabel(name: string): string {
+    return this.i18n('keyboardShortcutRowDescription', this.i18n(name));
+  }
+
+  private getActionRowLabel(name: string): string {
+    return this.i18n('keyboardActionRowDescription', this.i18n(name));
   }
 
   private onPoliciesChanged(): void {

@@ -12,10 +12,16 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "crypto/ecdsa_utils.h"
+#include "crypto/keypair.h"
 #include "crypto/sha2.h"
 #include "crypto/signature_verifier.h"
+#include "net/base/features.h"
+#include "net/base/url_util.h"
+#include "net/device_bound_sessions/jwk_utils.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/ecdsa.h"
 #include "url/gurl.h"
@@ -47,21 +53,9 @@ std::string Base64UrlEncode(std::string_view data) {
   return output;
 }
 
-base::Value::Dict CreatePublicKeyInfo(base::span<const uint8_t> pubkey) {
-  return base::Value::Dict().Set("SubjectPublicKeyInfo",
-                                 Base64UrlEncode(base::as_string_view(pubkey)));
-}
-
-std::optional<std::string> CreateHeaderAndPayloadWithCustomPayload(
-    crypto::SignatureVerifier::SignatureAlgorithm algorithm,
-    std::string_view schema,
+std::optional<std::string> CombineHeaderAndPayload(
+    const base::Value::Dict& header,
     const base::Value::Dict& payload) {
-  auto header = base::Value::Dict()
-                    .Set("alg", SignatureAlgorithmToString(algorithm))
-                    .Set("typ", "jwt");
-  if (!schema.empty()) {
-    header.Set("schema", schema);
-  }
   std::optional<std::string> header_serialized = base::WriteJson(header);
   if (!header_serialized) {
     DVLOG(1) << "Unexpected JSONWriter error while serializing a registration "
@@ -81,85 +75,86 @@ std::optional<std::string> CreateHeaderAndPayloadWithCustomPayload(
                        Base64UrlEncode(*payload_serialized)});
 }
 
-std::optional<std::vector<uint8_t>> ConvertDERSignatureToRaw(
-    base::span<const uint8_t> der_signature) {
-  bssl::UniquePtr<ECDSA_SIG> ecdsa_sig(
-      ECDSA_SIG_from_bytes(der_signature.data(), der_signature.size()));
-  if (!ecdsa_sig) {
-    DVLOG(1) << "Failed to create ECDSA_SIG";
-    return std::nullopt;
+// Helper function for the shared functionality of refresh and
+// registration JWTs.
+std::optional<std::string> CreateHeaderAndPayload(
+    std::string_view challenge,
+    crypto::SignatureVerifier::SignatureAlgorithm algorithm,
+    std::optional<base::Value::Dict> jwk,
+    const std::optional<std::string>& authorization,
+    const GURL& registration_url) {
+  auto header = base::Value::Dict()
+                    .Set("alg", SignatureAlgorithmToString(algorithm))
+                    .Set("typ", "dbsc+jwt");
+  if (jwk.has_value()) {
+    header.Set("jwk", std::move(*jwk));
   }
 
-  // TODO(b/301888680): this implicitly depends on a curve used by
-  // `crypto::UnexportableKey`. Make this dependency more explicit.
-  const size_t kMaxBytesPerBN = 32;
-  std::vector<uint8_t> jwt_signature(2 * kMaxBytesPerBN);
-
-  if (!BN_bn2bin_padded(&jwt_signature[0], kMaxBytesPerBN, ecdsa_sig->r) ||
-      !BN_bn2bin_padded(&jwt_signature[kMaxBytesPerBN], kMaxBytesPerBN,
-                        ecdsa_sig->s)) {
-    DVLOG(1) << "Failed to serialize R and S to " << kMaxBytesPerBN << " bytes";
-    return std::nullopt;
+  auto payload = base::Value::Dict().Set("jti", challenge);
+  if (authorization.has_value()) {
+    payload.Set("authorization", authorization.value());
   }
 
-  return jwt_signature;
+  if (features::kDeviceBoundSessionsIncludeAudFieldInJwt.Get()) {
+    payload.Set("aud", registration_url.spec());
+  }
+
+  return CombineHeaderAndPayload(header, payload);
 }
 
 }  // namespace
 
 std::optional<std::string> CreateKeyRegistrationHeaderAndPayload(
     std::string_view challenge,
-    const GURL& registration_url,
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
-    base::span<const uint8_t> pubkey,
-    base::Time timestamp) {
-  auto payload =
-      base::Value::Dict()
-          .Set("aud", registration_url.spec())
-          .Set("jti", challenge)
-          // Write out int64_t variable as a double.
-          // Note: this may discard some precision, but for `base::Value`
-          // there's no other option.
-          .Set("iat", static_cast<double>(
-                          (timestamp - base::Time::UnixEpoch()).InSeconds()))
-          .Set("key", CreatePublicKeyInfo(pubkey));
-  return CreateHeaderAndPayloadWithCustomPayload(algorithm, /*schema=*/"",
-                                                 payload);
+    base::span<const uint8_t> pubkey_spki,
+    std::optional<std::string> authorization,
+    const GURL& registration_url) {
+  base::Value::Dict jwk = ConvertPkeySpkiToJwk(algorithm, pubkey_spki);
+  if (jwk.empty()) {
+    DVLOG(1) << "Unexpected error when converting the SPKI to a JWK";
+    return std::nullopt;
+  }
+
+  return CreateHeaderAndPayload(challenge, algorithm, std::move(jwk),
+                                std::move(authorization), registration_url);
 }
 
-std::optional<std::string> CreateKeyAssertionHeaderAndPayload(
-    crypto::SignatureVerifier::SignatureAlgorithm algorithm,
-    base::span<const uint8_t> pubkey,
-    std::string_view client_id,
+std::optional<std::string> CreateKeyRefreshHeaderAndPayload(
     std::string_view challenge,
-    const GURL& destination_url,
-    std::string_view name_space) {
-  auto payload = base::Value::Dict()
-                     .Set("sub", client_id)
-                     .Set("aud", destination_url.spec())
-                     .Set("jti", challenge)
-                     .Set("iss", Base64UrlEncode(base::as_string_view(
-                                     crypto::SHA256Hash(pubkey))))
-                     .Set("namespace", name_space);
-  return CreateHeaderAndPayloadWithCustomPayload(
-      algorithm, "DEVICE_BOUND_SESSION_CREDENTIALS_ASSERTION", payload);
+    crypto::SignatureVerifier::SignatureAlgorithm algorithm,
+    const GURL& registration_url) {
+  return CreateHeaderAndPayload(challenge, algorithm, /*jwk=*/std::nullopt,
+                                /*authorization=*/std::nullopt,
+                                registration_url);
 }
 
 std::optional<std::string> AppendSignatureToHeaderAndPayload(
     std::string_view header_and_payload,
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
+    base::span<const uint8_t> pubkey_spki,
     base::span<const uint8_t> signature) {
   std::optional<std::vector<uint8_t>> signature_holder;
   if (algorithm == crypto::SignatureVerifier::ECDSA_SHA256) {
-    signature_holder = ConvertDERSignatureToRaw(signature);
+    std::optional<crypto::keypair::PublicKey> public_key =
+        crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(pubkey_spki);
+    if (!public_key.has_value()) {
+      return std::nullopt;
+    }
+    signature_holder =
+        crypto::ConvertEcdsaDerSignatureToRaw(*public_key, signature);
     if (!signature_holder.has_value()) {
       return std::nullopt;
     }
-    signature = base::make_span(*signature_holder);
+    signature = base::span(*signature_holder);
   }
 
   return base::StrCat(
       {header_and_payload, ".", Base64UrlEncode(as_string_view(signature))});
+}
+
+bool IsSecure(const GURL& url) {
+  return url.SchemeIsCryptographic() || IsLocalhost(url);
 }
 
 }  // namespace net::device_bound_sessions

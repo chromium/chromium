@@ -4,23 +4,20 @@
 
 package org.chromium.chrome.browser.safety_check;
 
-import androidx.annotation.NonNull;
-
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
-/**
- * Provides access to the C++ multi-platform Safety check code in
- * //components/safety_check.
- */
+/** Provides access to the C++ multi-platform Safety check code in //components/safety_check. */
+@NullMarked
 public class SafetyCheckBridge {
 
     private final Profile mProfile;
 
     /** Constructs a SafetyCheckBridge for a given {@link Profile}. */
-    public SafetyCheckBridge(@NonNull Profile profile) {
+    public SafetyCheckBridge(Profile profile) {
         mProfile = profile;
     }
 

@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 // https://wicg.github.io/navigation-api/
-callback NavigationInterceptHandler = Promise<void>();
+callback NavigationInterceptHandler = Promise<undefined>();
+callback NavigationInterceptPrecommitHandler = Promise<undefined>(NavigationPrecommitController controller);
 
 dictionary NavigationInterceptOptions {
   NavigationInterceptHandler handler;
+  [RuntimeEnabled=NavigateEventCommitBehavior] NavigationInterceptPrecommitHandler precommitHandler;
   NavigationFocusReset focusReset;
   NavigationScrollBehavior scroll;
-  NavigationCommitBehavior commit;
 };
 
 enum NavigationFocusReset {
@@ -20,9 +21,4 @@ enum NavigationFocusReset {
 enum NavigationScrollBehavior {
   "after-transition",
   "manual"
-};
-
-enum NavigationCommitBehavior {
-  "after-transition",
-  "immediate"
 };

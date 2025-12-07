@@ -1,0 +1,19 @@
+Name: utils
+Short Name: utils
+URL: https://repo.maven.apache.org/maven2/org/robolectric/utils/4.16/utils-4.16.jar
+Version: 4.16
+Update Mechanism: Autoroll
+License: Apache-2.0, MIT
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: no
+Shipped: no
+
+Description:
+An alternative Android testing framework.
+
+See also: https://robolectric.org
+
+
+Local Modifications:
+No modifications.

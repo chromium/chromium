@@ -27,6 +27,7 @@ class TestDevToolsProtocolClient : public DevToolsAgentHostClient {
   TestDevToolsProtocolClient();
   ~TestDevToolsProtocolClient() override;
 
+  void AttachToFrameTreeHost(RenderFrameHost* frame);
   void AttachToWebContents(WebContents* web_contents);
   void AttachToTabTarget(WebContents* web_contents);
   void AttachToBrowserTarget();
@@ -64,18 +65,7 @@ class TestDevToolsProtocolClient : public DevToolsAgentHostClient {
     }
   }
 
- protected:
-  bool HasExistingNotification() const { return !notifications_.empty(); }
-  bool HasExistingNotification(const std::string& notification) const;
-  bool HasExistingNotificationMatching(
-      base::FunctionRef<bool(const base::Value::Dict&)> pred) const;
-
-  base::Value::Dict WaitForNotification(const std::string& notification,
-                                        bool allow_existing);
-
-  base::Value::Dict WaitForNotification(const std::string& notification) {
-    return WaitForNotification(notification, false);
-  }
+  void ClearNotifications() { notifications_.clear(); }
 
   // Waits for a notification whose params, when passed to |matcher|, returns
   // true. Existing notifications are allowed.
@@ -83,7 +73,22 @@ class TestDevToolsProtocolClient : public DevToolsAgentHostClient {
       const std::string& notification,
       const NotificationMatcher& matcher);
 
-  void ClearNotifications() { notifications_.clear(); }
+  base::Value::Dict WaitForNotification(const std::string& notification,
+                                        bool allow_existing);
+
+ protected:
+  void DispatchProtocolMessage(DevToolsAgentHost* agent_host,
+                               base::span<const uint8_t> message) override;
+
+  bool HasExistingNotification() const { return !notifications_.empty(); }
+  bool HasExistingNotification(const std::string& notification) const;
+  bool HasExistingNotificationMatching(
+      base::FunctionRef<bool(const base::Value::Dict&)> pred) const;
+
+
+  base::Value::Dict WaitForNotification(const std::string& notification) {
+    return WaitForNotification(notification, false);
+  }
 
   void set_agent_host_can_close() { agent_host_can_close_ = true; }
 
@@ -121,8 +126,6 @@ class TestDevToolsProtocolClient : public DevToolsAgentHostClient {
   void WaitForResponse();
   void RunLoopUpdatingQuitClosure();
 
-  void DispatchProtocolMessage(DevToolsAgentHost* agent_host,
-                               base::span<const uint8_t> message) override;
   void AgentHostClosed(DevToolsAgentHost* agent_host) override;
   std::optional<url::Origin> GetNavigationInitiatorOrigin() override;
   bool AllowUnsafeOperations() override;

@@ -13,6 +13,7 @@
 #include "chrome/install_static/install_modes.h"
 #include "chrome/installer/util/install_service_work_item.h"
 #include "chrome/installer/util/util_constants.h"
+#include "chrome/windows_services/service_program/test_support/scoped_log_grabber.h"
 
 namespace os_crypt {
 
@@ -40,7 +41,7 @@ const char kAppBoundTestOutputFilename[] = "output-filename";
 
 }  // namespace switches
 
-FakeInstallDetails::FakeInstallDetails()
+FakeInstallDetails::FakeInstallDetails(bool use_old_elevator_interface)
     : constants_(install_static::kInstallModes[0]) {
   // AppGuid determines registry locations, so use a test one.
 #if BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
@@ -52,15 +53,25 @@ FakeInstallDetails::FakeInstallDetails()
   // elevation service.
   constants_.elevator_clsid = {elevation_service::kTestElevatorClsid};
 
-  // This is the IID of the non-channel specific IElevator Interface. See
-  // chrome/elevation_service/elevation_service_idl.idl.
-  constants_.elevator_iid = {0xA949CB4E,
-                             0xC4F9,
-                             0x44C4,
-                             {0xB2, 0x13, 0x6B, 0xF8, 0xAA, 0x9A, 0xC6,
-                              0x9C}};  // IElevator IID and TypeLib
-                                       // {A949CB4E-C4F9-44C4-B213-6BF8AA9AC69C}
-
+  if (use_old_elevator_interface) {
+    // This is the IID of the non-channel specific IElevator Interface. See
+    // chrome/elevation_service/elevation_service_idl.idl.
+    // {A949CB4E-C4F9-44C4-B213-6BF8AA9AC69C}
+    constants_.elevator_iid = {0xA949CB4E,
+                               0xC4F9,
+                               0x44C4,
+                               {0xB2, 0x13, 0x6B, 0xF8, 0xAA, 0x9A, 0xC6,
+                                0x9C}};  // IElevator IID and TypeLib
+  } else {
+    // This is the IID of the non-channel specific IElevator2 Interface. See
+    // chrome/elevation_service/elevation_service_idl.idl.
+    // {8F7B6792-784D-4047-845D-1782EFBEF205}
+    constants_.elevator_iid = {0x8F7B6792,
+                               0x784D,
+                               0x4047,
+                               {0x84, 0x5D, 0x17, 0x82, 0xEF, 0xBE, 0xF2,
+                                0x05}};  // IElevator2 IID and TypeLib
+  }
   // These are used to generate the name of the service, so keep them
   // different from any real installs.
   constants_.base_app_name = L"testapp";
@@ -75,17 +86,25 @@ FakeInstallDetails::FakeInstallDetails()
   set_system_level(true);
 }
 
-std::optional<base::ScopedClosureRunner> InstallService() {
+std::optional<base::ScopedClosureRunner> InstallService(
+    const ScopedLogGrabber& log_grabber,
+    bool fake_reencrypt) {
   base::FilePath exe_dir;
   base::PathService::Get(base::DIR_EXE, &exe_dir);
   base::CommandLine service_cmd(
       exe_dir.Append(installer::kElevationServiceExe));
   service_cmd.AppendSwitch(
       elevation_service::switches::kElevatorClsIdForTestingSwitch);
+  log_grabber.AddLoggingSwitches(service_cmd);
+  if (fake_reencrypt) {
+    service_cmd.AppendSwitch(
+        elevation_service::switches::kFakeReencryptForTestingSwitch);
+  }
   installer::InstallServiceWorkItem install_service_work_item(
       install_static::GetElevationServiceName(),
-      install_static::GetElevationServiceDisplayName(), SERVICE_DEMAND_START,
-      service_cmd, base::CommandLine(base::CommandLine::NO_PROGRAM),
+      install_static::GetElevationServiceDisplayName(), /*description=*/{},
+      SERVICE_DEMAND_START, service_cmd,
+      base::CommandLine(base::CommandLine::NO_PROGRAM),
       install_static::GetClientStateKeyPath(),
       {install_static::GetElevatorClsid()}, {install_static::GetElevatorIid()});
   install_service_work_item.set_best_effort(true);

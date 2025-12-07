@@ -5,7 +5,7 @@
 #include "extensions/renderer/safe_builtins.h"
 
 #include "base/check.h"
-#include "base/notreached.h"
+#include "base/compiler_specific.h"
 #include "base/strings/stringprintf.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/v8_helpers.h"
@@ -77,19 +77,20 @@ const char kScript[] =
     "// Save only what is needed by the extension modules.\n"
     "saveBuiltin(Object,\n"
     "            ['hasOwnProperty'],\n"
-    "            ['create', 'defineProperty', 'freeze',\n"
+    "            ['assign', 'create', 'defineProperty', 'entries', 'freeze',\n"
     "             'getOwnPropertyDescriptor', 'getPrototypeOf', 'keys',\n"
-    "             'assign', 'setPrototypeOf']);\n"
+    "             'setPrototypeOf']);\n"
     "saveBuiltin(Function,\n"
     "            ['apply', 'bind', 'call']);\n"
     "saveBuiltin(Array,\n"
-    "            ['concat', 'forEach', 'indexOf', 'join', 'push', 'slice',\n"
-    "             'splice', 'map', 'filter', 'shift', 'unshift', 'pop',\n"
-    "             'reverse'],\n"
+    "            ['concat', 'forEach', 'includes', 'indexOf', 'join', 'push',\n"
+    "             'slice', 'splice', 'map', 'filter', 'shift', 'unshift',\n"
+    "             'pop', 'push', 'reverse', 'find'],\n"
     "            ['from', 'isArray']);\n"
     "saveBuiltin(String,\n"
     "            ['indexOf', 'slice', 'split', 'substr', 'toLowerCase',\n"
-    "             'toUpperCase', 'replace']);\n"
+    "             'toUpperCase', 'replace'],\n"
+    "            ['fromCharCode']);\n"
     "// Use exec rather than test to defend against clobbering in the\n"
     "// presence of ES2015 semantics, which read RegExp.prototype.exec.\n"
     "saveBuiltin(RegExp,\n"
@@ -98,7 +99,8 @@ const char kScript[] =
     "            [],\n"
     "            ['captureStackTrace']);\n"
     "saveBuiltin(Promise,\n"
-    "            ['then', 'catch']);\n"
+    "            ['then', 'catch'],\n"
+    "            ['race', 'resolve']);\n"
     "\n"
     "// JSON is trickier because extensions can override toJSON in\n"
     "// incompatible ways, and we need to prevent that.\n"
@@ -151,14 +153,14 @@ void SaveImpl(const char* name,
               v8::Local<v8::Context> context) {
   CHECK(!value.IsEmpty() && value->IsObject()) << name;
   context->Global()
-      ->SetPrivate(context, MakeKey(name, context->GetIsolate()), value)
+      ->SetPrivate(context, MakeKey(name, v8::Isolate::GetCurrent()), value)
       .FromJust();
 }
 
 v8::Local<v8::Object> Load(const char* name, v8::Local<v8::Context> context) {
   v8::Local<v8::Value> value =
       context->Global()
-          ->GetPrivate(context, MakeKey(name, context->GetIsolate()))
+          ->GetPrivate(context, MakeKey(name, v8::Isolate::GetCurrent()))
           .ToLocalChecked();
   CHECK(value->IsObject()) << name;
   return v8::Local<v8::Object>::Cast(value);
@@ -176,8 +178,7 @@ class ExtensionImpl : public v8::Extension {
       return v8::FunctionTemplate::New(isolate, Apply);
     if (name->StringEquals(v8_helpers::ToV8StringUnsafe(isolate, "Save")))
       return v8::FunctionTemplate::New(isolate, Save);
-    NOTREACHED_IN_MIGRATION() << *v8::String::Utf8Value(isolate, name);
-    return v8::Local<v8::FunctionTemplate>();
+    NOTREACHED() << *v8::String::Utf8Value(isolate, name);
   }
 
   static void Apply(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -216,8 +217,9 @@ class ExtensionImpl : public v8::Extension {
       CHECK(v8_helpers::IsTrue(args->Has(context, i + first_arg_index)));
       // Getting a property value could throw an exception.
       if (!v8_helpers::GetProperty(context, args, i + first_arg_index,
-                                   &argv[i]))
+                                   UNSAFE_TODO(&argv[i]))) {
         return;
+      }
     }
 
     v8::Local<v8::Value> return_value;

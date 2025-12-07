@@ -25,6 +25,7 @@
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace user_manager {
 namespace {
@@ -62,9 +63,10 @@ const char kMinimalMigrationAttemptedObsolete[] = "minimal_migration_attempted";
 // Key of the boolean flag telling if user session requires policy.
 const char kProfileRequiresPolicy[] = "profile_requires_policy";
 
-// Key of the boolean flag telling if user is ephemeral and should be removed
-// from the local state on logout.
-const char kIsEphemeral[] = "is_ephemeral";
+// Key for the obsolete boolean flag telling if the user is ephemeral and should
+// be removed from the local state on logout. This flag was only set for
+// accounts with the deprecated Active Directory type.
+const char kIsEphemeralObsolete[] = "is_ephemeral";
 
 // Key of the list value that stores challenge-response authentication keys.
 const char kChallengeResponseKeys[] = "challenge_response_keys";
@@ -105,49 +107,47 @@ const char kTokenHandleRotatedObsolete[] = "TokenHandleRotated";
 // Cache of the auth factors configured for the user.
 const char kAuthFactorPresenceCache[] = "AuthFactorsPresenceCache";
 
-// Records for each user whether Lacros is enabled.
-const char kLacrosEnabled[] = "lacros_enabled";
+// Key for the obsolete object guid used for accounts with the deprecated Active
+// Directory type.
+const char kObjGuidKeyObsolete[] = "obj_guid";
 
 // List containing all the known user preferences keys.
-const char* kReservedKeys[] = {kCanonicalEmail,
-                               kGAIAIdKey,
-                               kObjGuidKey,
-                               kAccountTypeKey,
-                               kUsingSAMLKey,
-                               kIsUsingSAMLPrincipalsAPI,
-                               kDeviceId,
-                               kGAPSCookie,
-                               kReauthReasonKey,
-                               kProfileRequiresPolicy,
-                               kIsEphemeral,
-                               kChallengeResponseKeys,
-                               kLastOnlineSignin,
-                               kOfflineSigninLimit,
-                               kIsEnterpriseManaged,
-                               kAccountManager,
-                               kLastInputMethod,
-                               kPinAutosubmitLength,
-                               kPinAutosubmitBackfillNeeded,
-                               kPasswordSyncToken,
-                               kOnboardingCompletedVersion,
-                               kPendingOnboardingScreen,
-                               kAuthFactorPresenceCache,
-                               kLacrosEnabled};
+constexpr const char* kReservedKeys[] = {kCanonicalEmail,
+                                         kGAIAIdKey,
+                                         kAccountTypeKey,
+                                         kUsingSAMLKey,
+                                         kIsUsingSAMLPrincipalsAPI,
+                                         kDeviceId,
+                                         kGAPSCookie,
+                                         kReauthReasonKey,
+                                         kProfileRequiresPolicy,
+                                         kChallengeResponseKeys,
+                                         kLastOnlineSignin,
+                                         kOfflineSigninLimit,
+                                         kIsEnterpriseManaged,
+                                         kAccountManager,
+                                         kLastInputMethod,
+                                         kPinAutosubmitLength,
+                                         kPinAutosubmitBackfillNeeded,
+                                         kPasswordSyncToken,
+                                         kOnboardingCompletedVersion,
+                                         kPendingOnboardingScreen,
+                                         kAuthFactorPresenceCache};
 
 // List containing all known user preference keys that used to be reserved and
 // are now obsolete.
-const char* kObsoleteKeys[] = {
+constexpr const char* kObsoleteKeys[] = {
     kMinimalMigrationAttemptedObsolete,
     kGaiaIdMigrationObsolete,
     kOfflineSigninLimitObsolete,
     kTokenHandleRotatedObsolete,
+    kObjGuidKeyObsolete,
+    kIsEphemeralObsolete,
 };
-
 
 // Checks for platform-specific known users matching given |user_email|. If
 // data matches a known account, returns it.
-std::optional<AccountId> GetPlatformKnownUserId(
-    const std::string_view user_email) {
+std::optional<AccountId> GetPlatformKnownUserId(std::string_view user_email) {
   if (user_email == kStubUserEmail) {
     return StubAccountId();
   }
@@ -168,19 +168,20 @@ KnownUser::~KnownUser() = default;
 const base::Value::Dict* KnownUser::FindPrefs(
     const AccountId& account_id) const {
   // UserManager is usually NULL in unit tests.
-  if (account_id.GetAccountType() != AccountType::ACTIVE_DIRECTORY &&
-      UserManager::IsInitialized() &&
+  if (UserManager::IsInitialized() &&
       UserManager::Get()->IsUserNonCryptohomeDataEphemeral(account_id)) {
     return nullptr;
   }
 
-  if (!account_id.is_valid())
+  if (!account_id.is_valid()) {
     return nullptr;
+  }
 
   const base::Value::List& known_users = local_state_->GetList(kKnownUsers);
   for (const base::Value& element_value : known_users) {
-    if (!element_value.is_dict())
+    if (!element_value.is_dict()) {
       continue;
+    }
     const base::Value::Dict& dict = element_value.GetDict();
     if (!AccountIdMatches(account_id, dict)) {
       continue;
@@ -194,19 +195,20 @@ void KnownUser::SetPath(const AccountId& account_id,
                         const std::string& path,
                         std::optional<base::Value> opt_value) {
   // UserManager is usually NULL in unit tests.
-  if (account_id.GetAccountType() != AccountType::ACTIVE_DIRECTORY &&
-      UserManager::IsInitialized() &&
+  if (UserManager::IsInitialized() &&
       UserManager::Get()->IsUserNonCryptohomeDataEphemeral(account_id)) {
     return;
   }
 
-  if (!account_id.is_valid())
+  if (!account_id.is_valid()) {
     return;
+  }
 
   ScopedListPrefUpdate update(local_state_, kKnownUsers);
   for (base::Value& element_value : *update) {
-    if (!element_value.is_dict())
+    if (!element_value.is_dict()) {
       continue;
+    }
     base::Value::Dict& dict = element_value.GetDict();
     if (!AccountIdMatches(account_id, dict)) {
       continue;
@@ -220,8 +222,9 @@ void KnownUser::SetPath(const AccountId& account_id,
     StoreAccountId(account_id, dict);
     return;
   }
-  if (!opt_value.has_value())
+  if (!opt_value.has_value()) {
     return;
+  }
 
   base::Value::Dict new_dict;
   new_dict.SetByDottedPath(path, std::move(opt_value).value());
@@ -232,8 +235,9 @@ void KnownUser::SetPath(const AccountId& account_id,
 const std::string* KnownUser::FindStringPath(const AccountId& account_id,
                                              std::string_view path) const {
   const base::Value::Dict* user_pref_dict = FindPrefs(account_id);
-  if (!user_pref_dict)
+  if (!user_pref_dict) {
     return nullptr;
+  }
 
   return user_pref_dict->FindStringByDottedPath(path);
 }
@@ -242,8 +246,9 @@ bool KnownUser::GetStringPrefForTest(const AccountId& account_id,
                                      const std::string& path,
                                      std::string* out_value) {
   const std::string* res = FindStringPath(account_id, path);
-  if (out_value && res)
+  if (out_value && res) {
     *out_value = *res;
+  }
   return res;
 }
 
@@ -256,8 +261,9 @@ void KnownUser::SetStringPref(const AccountId& account_id,
 std::optional<bool> KnownUser::FindBoolPath(const AccountId& account_id,
                                             std::string_view path) const {
   const base::Value::Dict* user_pref_dict = FindPrefs(account_id);
-  if (!user_pref_dict)
+  if (!user_pref_dict) {
     return std::nullopt;
+  }
 
   return user_pref_dict->FindBoolByDottedPath(path);
 }
@@ -266,8 +272,9 @@ bool KnownUser::GetBooleanPrefForTest(const AccountId& account_id,
                                       const std::string& path,
                                       bool* out_value) {
   auto opt_val = FindBoolPath(account_id, path);
-  if (out_value && opt_val.has_value())
+  if (out_value && opt_val.has_value()) {
     *out_value = opt_val.value();
+  }
 
   return opt_val.has_value();
 }
@@ -281,8 +288,9 @@ void KnownUser::SetBooleanPref(const AccountId& account_id,
 std::optional<int> KnownUser::FindIntPath(const AccountId& account_id,
                                           std::string_view path) const {
   const base::Value::Dict* user_pref_dict = FindPrefs(account_id);
-  if (!user_pref_dict)
+  if (!user_pref_dict) {
     return std::nullopt;
+  }
 
   return user_pref_dict->FindIntByDottedPath(path);
 }
@@ -291,8 +299,9 @@ bool KnownUser::GetIntegerPrefForTest(const AccountId& account_id,
                                       const std::string& path,
                                       int* out_value) {
   auto opt_val = FindIntPath(account_id, path);
-  if (out_value && opt_val.has_value())
+  if (out_value && opt_val.has_value()) {
     *out_value = opt_val.value();
+  }
 
   return opt_val.has_value();
 }
@@ -300,6 +309,33 @@ bool KnownUser::GetIntegerPrefForTest(const AccountId& account_id,
 void KnownUser::SetIntegerPref(const AccountId& account_id,
                                const std::string& path,
                                const int in_value) {
+  SetPath(account_id, path, base::Value(in_value));
+}
+
+std::optional<double> KnownUser::FindDoublePath(const AccountId& account_id,
+                                                std::string_view path) const {
+  const base::Value::Dict* user_pref_dict = FindPrefs(account_id);
+  if (!user_pref_dict) {
+    return std::nullopt;
+  }
+
+  return user_pref_dict->FindDoubleByDottedPath(path);
+}
+
+bool KnownUser::GetDoublePrefForTest(const AccountId& account_id,
+                                     const std::string& path,
+                                     double* out_value) {
+  auto opt_val = FindDoublePath(account_id, path);
+  if (out_value && opt_val.has_value()) {
+    *out_value = opt_val.value();
+  }
+
+  return opt_val.has_value();
+}
+
+void KnownUser::SetDoublePref(const AccountId& account_id,
+                              const std::string& path,
+                              const double in_value) {
   SetPath(account_id, path, base::Value(in_value));
 }
 
@@ -313,8 +349,9 @@ bool KnownUser::GetPrefForTest(const AccountId& account_id,
 const base::Value* KnownUser::FindPath(const AccountId& account_id,
                                        const std::string& path) const {
   const base::Value::Dict* user_pref_dict = FindPrefs(account_id);
-  if (!user_pref_dict)
+  if (!user_pref_dict) {
     return nullptr;
+  }
 
   return user_pref_dict->FindByDottedPath(path);
 }
@@ -322,8 +359,9 @@ const base::Value* KnownUser::FindPath(const AccountId& account_id,
 void KnownUser::RemovePref(const AccountId& account_id,
                            const std::string& path) {
   // Prevent removing keys that are used internally.
-  for (const std::string& key : kReservedKeys)
+  for (const std::string& key : kReservedKeys) {
     CHECK_NE(path, key);
+  }
 
   SetPath(account_id, path, std::nullopt);
 }
@@ -358,44 +396,31 @@ AccountId KnownUser::GetAccountId(const std::string& user_email,
             FindStringPath(account_id, kGAIAIdKey)) {
       if (!id.empty()) {
         DCHECK(account_type == AccountType::GOOGLE);
-        if (id != *stored_gaia_id)
+        if (id != *stored_gaia_id) {
           LOG(ERROR) << "User gaia id has changed. Sync will not work.";
+        }
       }
 
       // gaia_id is associated with cryptohome.
-      return AccountId::FromUserEmailGaiaId(sanitized_email, *stored_gaia_id);
-    }
-
-    if (const std::string* stored_obj_guid =
-            FindStringPath(account_id, kObjGuidKey)) {
-      if (!id.empty()) {
-        DCHECK(account_type == AccountType::ACTIVE_DIRECTORY);
-        if (id != *stored_obj_guid)
-          LOG(ERROR) << "User object guid has changed. Sync will not work.";
-      }
-
-      // obj_guid is associated with cryptohome.
-      return AccountId::AdFromUserEmailObjGuid(sanitized_email,
-                                               *stored_obj_guid);
+      return AccountId::FromUserEmailGaiaId(sanitized_email,
+                                            GaiaId(*stored_gaia_id));
     }
   }
 
   switch (account_type) {
     case AccountType::GOOGLE:
-      return AccountId::FromUserEmailGaiaId(sanitized_email, id);
-    case AccountType::ACTIVE_DIRECTORY:
-      return AccountId::AdFromUserEmailObjGuid(sanitized_email, id);
+      return AccountId::FromUserEmailGaiaId(sanitized_email, GaiaId(id));
     case AccountType::UNKNOWN:
       return AccountId::FromUserEmail(sanitized_email);
   }
-  NOTREACHED_IN_MIGRATION();
-  return EmptyAccountId();
+  NOTREACHED();
 }
 
 AccountId KnownUser::GetAccountIdByCryptohomeId(
     const CryptohomeId& cryptohome_id) {
-  if (cryptohome_id->empty())
+  if (cryptohome_id->empty()) {
     return EmptyAccountId();
+  }
 
   const std::vector<AccountId> known_account_ids = GetKnownAccountIds();
 
@@ -419,7 +444,7 @@ AccountId KnownUser::GetAccountIdByCryptohomeId(
       result.has_value()) {
     return result.value();
   }
-  return AccountId::FromNonCanonicalEmail(cryptohome_id.value(), std::string(),
+  return AccountId::FromNonCanonicalEmail(cryptohome_id.value(), GaiaId(),
                                           AccountType::UNKNOWN);
 }
 
@@ -428,8 +453,9 @@ std::vector<AccountId> KnownUser::GetKnownAccountIds() {
 
   const base::Value::List& known_users = local_state_->GetList(kKnownUsers);
   for (const base::Value& element_value : known_users) {
-    if (!element_value.is_dict())
+    if (!element_value.is_dict()) {
       continue;
+    }
     const base::Value::Dict& dict = element_value.GetDict();
     if (std::optional<AccountId> account_id = LoadAccountId(dict)) {
       result.push_back(*account_id);
@@ -439,31 +465,19 @@ std::vector<AccountId> KnownUser::GetKnownAccountIds() {
 }
 
 void KnownUser::SaveKnownUser(const AccountId& account_id) {
-  const bool is_ephemeral =
-      UserManager::IsInitialized() &&
-      UserManager::Get()->IsUserNonCryptohomeDataEphemeral(account_id);
-  if (is_ephemeral &&
-      account_id.GetAccountType() != AccountType::ACTIVE_DIRECTORY) {
+  // UserManager is usually NULL in unit tests.
+  if (UserManager::IsInitialized() &&
+      UserManager::Get()->IsUserNonCryptohomeDataEphemeral(account_id)) {
     return;
   }
   UpdateId(account_id);
   local_state_->CommitPendingWrite();
 }
 
-void KnownUser::SetIsEphemeralUser(const AccountId& account_id,
-                                   bool is_ephemeral) {
-  if (account_id.GetAccountType() != AccountType::ACTIVE_DIRECTORY)
-    return;
-  SetBooleanPref(account_id, kIsEphemeral, is_ephemeral);
-}
-
 void KnownUser::UpdateId(const AccountId& account_id) {
   switch (account_id.GetAccountType()) {
     case AccountType::GOOGLE:
-      SetStringPref(account_id, kGAIAIdKey, account_id.GetGaiaId());
-      break;
-    case AccountType::ACTIVE_DIRECTORY:
-      SetStringPref(account_id, kObjGuidKey, account_id.GetObjGuid());
+      SetStringPref(account_id, kGAIAIdKey, account_id.GetGaiaId().ToString());
       break;
     case AccountType::UNKNOWN:
       return;
@@ -480,15 +494,16 @@ void KnownUser::SetDeviceId(const AccountId& account_id,
                             const std::string& device_id) {
   const std::string known_device_id = GetDeviceId(account_id);
   if (!known_device_id.empty() && device_id != known_device_id) {
-    NOTREACHED_IN_MIGRATION() << "Trying to change device ID for known user.";
+    NOTREACHED() << "Trying to change device ID for known user.";
   }
   SetStringPref(account_id, kDeviceId, device_id);
 }
 
 std::string KnownUser::GetDeviceId(const AccountId& account_id) const {
   const std::string* device_id = FindStringPath(account_id, kDeviceId);
-  if (device_id)
+  if (device_id) {
     return *device_id;
+  }
   return std::string();
 }
 
@@ -499,8 +514,9 @@ void KnownUser::SetGAPSCookie(const AccountId& account_id,
 
 std::string KnownUser::GetGAPSCookie(const AccountId& account_id) {
   const std::string* gaps_cookie = FindStringPath(account_id, kGAPSCookie);
-  if (gaps_cookie)
+  if (gaps_cookie) {
     return *gaps_cookie;
+  }
   return std::string();
 }
 
@@ -564,8 +580,9 @@ void KnownUser::SetChallengeResponseKeys(const AccountId& account_id,
 base::Value::List KnownUser::GetChallengeResponseKeys(
     const AccountId& account_id) {
   const base::Value* value = FindPath(account_id, kChallengeResponseKeys);
-  if (!value || !value->is_list())
+  if (!value || !value->is_list()) {
     return base::Value::List();
+  }
   return value->GetList().Clone();
 }
 
@@ -576,11 +593,13 @@ void KnownUser::SetLastOnlineSignin(const AccountId& account_id,
 
 base::Time KnownUser::GetLastOnlineSignin(const AccountId& account_id) {
   const base::Value* value = FindPath(account_id, kLastOnlineSignin);
-  if (!value)
+  if (!value) {
     return base::Time();
+  }
   std::optional<base::Time> time = base::ValueToTime(value);
-  if (!time)
+  if (!time) {
     return base::Time();
+  }
   return *time;
 }
 
@@ -694,12 +713,14 @@ std::optional<base::Version> KnownUser::GetOnboardingCompletedVersion(
   const std::string* str_version =
       FindStringPath(account_id, kOnboardingCompletedVersion);
 
-  if (!str_version)
+  if (!str_version) {
     return std::nullopt;
+  }
 
   base::Version version = base::Version(*str_version);
-  if (!version.IsValid())
+  if (!version.IsValid()) {
     return std::nullopt;
+  }
   return version;
 }
 
@@ -726,24 +747,14 @@ std::string KnownUser::GetPendingOnboardingScreen(const AccountId& account_id) {
   return std::string();
 }
 
-void KnownUser::SetLacrosEnabled(const AccountId& account_id, bool enabled) {
-  SetBooleanPref(account_id, kLacrosEnabled, enabled);
-}
-
-bool KnownUser::GetLacrosEnabledForAnyUser() {
-  const std::vector<AccountId> account_ids = GetKnownAccountIds();
-  return base::ranges::any_of(account_ids, [this](const AccountId& account_id) {
-    return FindBoolPath(account_id, kLacrosEnabled).value_or(false);
-  });
-}
-
 bool KnownUser::UserExists(const AccountId& account_id) {
   return FindPrefs(account_id);
 }
 
 void KnownUser::RemovePrefs(const AccountId& account_id) {
-  if (!account_id.is_valid())
+  if (!account_id.is_valid()) {
     return;
+  }
 
   ScopedListPrefUpdate update(local_state_, kKnownUsers);
   base::Value::List& update_list = update.Get();
@@ -755,24 +766,15 @@ void KnownUser::RemovePrefs(const AccountId& account_id) {
   }
 }
 
-void KnownUser::CleanEphemeralUsers() {
-  ScopedListPrefUpdate update(local_state_, kKnownUsers);
-  update->EraseIf([](const auto& value) {
-    if (!value.is_dict())
-      return false;
-
-    std::optional<bool> is_ephemeral = value.GetDict().FindBool(kIsEphemeral);
-    return is_ephemeral && *is_ephemeral;
-  });
-}
-
 void KnownUser::CleanObsoletePrefs() {
   ScopedListPrefUpdate update(local_state_, kKnownUsers);
   for (base::Value& user_entry : *update) {
-    if (!user_entry.is_dict())
+    if (!user_entry.is_dict()) {
       continue;
-    for (const std::string& key : kObsoleteKeys)
+    }
+    for (const std::string& key : kObsoleteKeys) {
       user_entry.GetDict().Remove(key);
+    }
   }
 }
 

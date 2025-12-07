@@ -15,7 +15,7 @@
   DCHECK(title);
   DCHECK(selectedText);
   DCHECK(sourceView);
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _URL = URL;
     _title = title;
     _selectedText = selectedText;

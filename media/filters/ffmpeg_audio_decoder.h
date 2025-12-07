@@ -6,10 +6,12 @@
 #define MEDIA_FILTERS_FFMPEG_AUDIO_DECODER_H_
 
 #include <memory>
+#include <type_traits>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/task/bind_post_task.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/demuxer_stream.h"
@@ -32,14 +34,16 @@ class FFmpegDecodingLoop;
 
 class MEDIA_EXPORT FFmpegAudioDecoder : public AudioDecoder {
  public:
-  FFmpegAudioDecoder() = delete;
+  enum class ExecutionMode { kAsynchronous, kSynchronous };
 
   FFmpegAudioDecoder(
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
-      MediaLog* media_log);
+      MediaLog* media_log,
+      ExecutionMode mode = ExecutionMode::kAsynchronous);
 
   FFmpegAudioDecoder(const FFmpegAudioDecoder&) = delete;
   FFmpegAudioDecoder& operator=(const FFmpegAudioDecoder&) = delete;
+  FFmpegAudioDecoder() = delete;
 
   ~FFmpegAudioDecoder() override;
 
@@ -99,12 +103,32 @@ class MEDIA_EXPORT FFmpegAudioDecoder : public AudioDecoder {
 
   void ResetTimestampState(const AudioDecoderConfig& config);
 
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  SEQUENCE_CHECKER(sequence_checker_);
+  // If the execution mode is set to asynchronous, wraps the `callback` in a
+  // bind post task on the current default task runner. Otherwise, a noop.
+  template <typename T>
+  std::decay_t<T> BindCallbackIfNeeded(T&& callback) {
+    return mode_ == ExecutionMode::kAsynchronous
+               ? base::BindPostTask(task_runner_, std::forward<T>(callback))
+               : std::forward<T>(callback);
+  }
 
+  // NOTE: the `task_runner_` is allowed to be nullptr only if the execution
+  // mode is synchronous.
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  // The media log is a required field. A NullMediaLog may be passed but
+  // not nullptr.
+  raw_ptr<MediaLog, DanglingUntriaged> media_log_ = nullptr;
+
+  // The threading mode that this decoder should operate in.
+  const ExecutionMode mode_ = ExecutionMode::kAsynchronous;
+
+  // Callback used to deliver frames, set on initialization.
   OutputCB output_cb_;
 
-  DecoderState state_;
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  DecoderState state_ = DecoderState::kUninitialized;
 
   // FFmpeg structures owned by this object.
   std::unique_ptr<AVCodecContext, ScopedPtrAVFreeContext> codec_context_;
@@ -112,11 +136,9 @@ class MEDIA_EXPORT FFmpegAudioDecoder : public AudioDecoder {
   AudioDecoderConfig config_;
 
   // AVSampleFormat initially requested; not Chrome's SampleFormat.
-  int av_sample_format_;
+  int av_sample_format_ = 0;
 
   std::unique_ptr<AudioDiscardHelper> discard_helper_;
-
-  raw_ptr<MediaLog, DanglingUntriaged> media_log_;
 
   scoped_refptr<AudioBufferMemoryPool> pool_;
 

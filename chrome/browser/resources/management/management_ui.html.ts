@@ -5,6 +5,7 @@
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {ManagementUiElement} from './management_ui.js';
+import {getPromotionBannerHtml} from './promotion_banner.html.js';
 
 export function getHtml(this: ManagementUiElement) {
   // clang-format off
@@ -16,7 +17,7 @@ export function getHtml(this: ManagementUiElement) {
 <div id="cr-container-shadow-top"
     class="cr-container-shadow has-shadow"></div>
 <main id="mainContent">
-  <div class="cr-centered-card-container">
+   <div class="cr-centered-card-container">
     <div class="card">
       <section ?hidden="${!this.managed_}" class="page-subtitle">
         <cr-icon-button class="icon-arrow-back" id="closeButton"
@@ -24,7 +25,8 @@ export function getHtml(this: ManagementUiElement) {
         </cr-icon-button>
         <h2 class="cr-title-text">${this.subtitle_}</h2>
       </section>
-<if expr="chromeos_ash">
+      ${getPromotionBannerHtml.call(this)}
+<if expr="is_chromeos">
       <section class="eol-section" ?hidden="${!this.eolMessage_}">
         <div class="eol-warning-icon">
           <cr-icon icon="cr20:banner-warning"></cr-icon>
@@ -41,13 +43,13 @@ export function getHtml(this: ManagementUiElement) {
       </section>
 </if>
 
-<if expr="not chromeos_ash">
+<if expr="not is_chromeos">
       <section class="overview-section">
         <div .innerHTML="${this.managementNoticeHtml_}"></div>
       </section>
 </if>
 
-<if expr="chromeos_ash">
+<if expr="is_chromeos">
       <section class="overview-section" ?hidden="${!this.managementOverview_}">
         <div class="overview-container">
           <img .src="${this.customerLogo_}" alt="" aria-hidden="true"
@@ -59,7 +61,7 @@ export function getHtml(this: ManagementUiElement) {
 
       ${this.showThreatProtectionInfo_() ? html`
         <section>
-          <h2 class="cr-title-text">$i18n{threatProtectionTitle}</h2>
+          <h3 class="cr-title-text">$i18n{threatProtectionTitle}</h3>
           <div class="subtitle">${this.threatProtectionInfo_!.description}</div>
           <table class="content-indented">
             <tr>
@@ -83,22 +85,44 @@ export function getHtml(this: ManagementUiElement) {
 <if expr="is_chromeos">
       <div ?hidden="${!this.localTrustRoots_}">
         <section>
-          <h2 class="cr-title-text">$i18n{localTrustRoots}</h2>
+          <h3 class="cr-title-text">$i18n{localTrustRoots}</h3>
           <div class="subtitle" id="trust-roots-configuration">
             ${this.localTrustRoots_}</div>
         </section>
       </div>
       <div ?hidden="${!this.filesUploadToCloud_}">
          <section>
-           <h2 class="cr-title-text">$i18n{filesCloudUpload}</h2>
+           <h3 class="cr-title-text">$i18n{filesCloudUpload}</h3>
            <div class="subtitle" id="files-upload-to-cloud-configuration">
              ${this.filesUploadToCloud_}
            </div>
          </section>
       </div>
+      ${this.showDeskSyncSection_() ? html`
+        <section class="desk-sync">
+          <h3 class="cr-title-text">$i18n{deskSync}</h3>
+          <div class="subtitle">
+            $i18n{deskSyncDescription}
+          </div>
+          <ul>
+            <li ?hidden="${!this.showWindowsNoticeForDeskSync_}">
+              $i18n{windowSync}
+            </li>
+            <li ?hidden="${!this.showCookiesNoticeForDeskSync_}">
+              $i18n{cookieSync}
+            </li>
+          </ul>
+          <div class="subtitle"
+          .innerHTML="${this.i18nAdvanced('deskSyncOptOut')}">
+          </div>
+          <div class="subtitle"
+          .innerHTML="${this.i18nAdvanced('deskSyncLearnMore')}">
+          </div>
+        </section>
+      ` : ''}
       ${this.showDeviceReportingInfo_() ? html`
         <section>
-          <h2 class="cr-title-text">$i18n{deviceReporting}</h2>
+          <h3 class="cr-title-text">$i18n{deviceReporting}</h3>
           <div class="subtitle"
               ?hidden="${!this.showMonitoredNetworkPrivacyDisclosure_}">
             $i18n{proxyServerPrivacyDisclosure}
@@ -125,7 +149,7 @@ export function getHtml(this: ManagementUiElement) {
 <if expr="not is_chromeos">
       ${this.showBrowserReportingInfo_() ? html`
         <section>
-          <h2 class="cr-title-text">$i18n{browserReporting}</h2>
+          <h3 class="cr-title-text">$i18n{browserReporting}</h3>
           <div class="subtitle">$i18n{browserReportingExplanation}</div>
           <div>
             ${this.browserReportingInfo_!.map(item => html`
@@ -144,7 +168,7 @@ export function getHtml(this: ManagementUiElement) {
 
       ${this.showProfileReportingInfo_() ? html`
         <section>
-          <h2 class="cr-title-text">$i18n{browserReporting}</h2>
+          <h3 class="cr-title-text">$i18n{browserReporting}</h3>
           <div class="subtitle">$i18n{profileReportingExplanation}</div>
           <div>
             <div class="report">
@@ -161,7 +185,7 @@ export function getHtml(this: ManagementUiElement) {
 </if>
       ${this.showExtensionReportingInfo_() ? html`
         <section class="extension-reporting">
-          <h2 class="cr-title-text">$i18n{extensionReporting}</h2>
+          <h3 class="cr-title-text">$i18n{extensionReporting}</h3>
           <div class="subtitle">${this.extensionReportingSubtitle_}</div>
           <table class="content-indented">
             <tr>
@@ -193,7 +217,7 @@ export function getHtml(this: ManagementUiElement) {
 
       ${this.showManagedWebsitesInfo_() ? html`
         <section class="managed-webistes">
-          <h2 class="cr-title-text">$i18n{managedWebsites}</h2>
+          <h3 class="cr-title-text">$i18n{managedWebsites}</h3>
           <div class="subtitle">${this.managedWebsitesSubtitle_}</div>
           <div class="content-indented">
             ${this.managedWebsites_!.map(item => html`
@@ -205,7 +229,7 @@ export function getHtml(this: ManagementUiElement) {
 
       ${this.showApplicationReportingInfo_() ? html`
         <section class="application-reporting">
-          <h2 class="cr-title-text">$i18n{applicationReporting}</h2>
+          <h3 class="cr-title-text">$i18n{applicationReporting}</h3>
           <div class="subtitle">${this.applicationReportingSubtitle_}</div>
           <table class="content-indented">
             <tr>

@@ -12,15 +12,15 @@
 namespace mojo {
 
 template <>
-struct PLATFORM_EXPORT
-    StructTraits<bluetooth::mojom::UUIDDataView, WTF::String> {
-  static const WTF::String& uuid(const WTF::String& input) { return input; }
+struct PLATFORM_EXPORT StructTraits<bluetooth::mojom::UUIDDataView,
+                                    blink::String> {
+  static const blink::String& uuid(const blink::String& input) { return input; }
 
-  static bool Read(bluetooth::mojom::UUIDDataView, WTF::String* output);
+  static bool Read(bluetooth::mojom::UUIDDataView, blink::String* output);
 
-  static bool IsNull(const WTF::String& input) { return input.IsNull(); }
+  static bool IsNull(const blink::String& input) { return input.IsNull(); }
 
-  static void SetToNull(WTF::String* output);
+  static void SetToNull(blink::String* output);
 };
 
 }  // namespace mojo

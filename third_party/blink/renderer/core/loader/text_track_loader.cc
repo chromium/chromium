@@ -87,7 +87,7 @@ void TextTrackLoader::DataReceived(Resource* resource,
         this, GetDocument());
   }
 
-  cue_parser_->ParseBytes(data.data(), data.size());
+  cue_parser_->ParseBytes(data);
 }
 
 void TextTrackLoader::NotifyFinished(Resource* resource) {

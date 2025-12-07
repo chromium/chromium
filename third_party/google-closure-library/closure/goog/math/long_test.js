@@ -1294,169 +1294,241 @@ const TEST_STRINGS = [
   '9223372036854775807',
 ];
 
-// Make sure we are not leaking longs by incorrect caching of decimal numbers
-// and failing-fast in debug mode.
-
-function createTestComparisons(i) {
-  return () => {
-    const vi = Long.fromBits(TEST_BITS[i + 1], TEST_BITS[i]);
-    for (let j = 0; j < TEST_BITS.length; j += 2) {
-      const vj = Long.fromBits(TEST_BITS[j + 1], TEST_BITS[j]);
-      assertEquals(i == j, vi.equals(vj));
-      assertEquals(i != j, vi.notEquals(vj));
-      assertEquals(i < j, vi.lessThan(vj));
-      assertEquals(i <= j, vi.lessThanOrEqual(vj));
-      assertEquals(i > j, vi.greaterThan(vj));
-      assertEquals(i >= j, vi.greaterThanOrEqual(vj));
-    }
-  };
-}
-
-// Here and below, we translate one conceptual test (e.g., "testComparisons")
-// into a number of test functions that will be run separately by jsunit. This
-// is necessary because, in some testing configurations, the full combined test
-// can take so long that it times out. These smaller tests run much faster.
-for (let i = 0; i < TEST_BITS.length; i += 2) {
-  globalThis[`testComparisons${i}`] = createTestComparisons(i);
-}
-
-function createTestBitOperations(i) {
-  return () => {
-    const vi = Long.fromBits(TEST_BITS[i + 1], TEST_BITS[i]);
-    assertEquals(~TEST_BITS[i], vi.not().getHighBits());
-    assertEquals(~TEST_BITS[i + 1], vi.not().getLowBits());
-
-    for (let j = 0; j < TEST_BITS.length; j += 2) {
-      const vj = Long.fromBits(TEST_BITS[j + 1], TEST_BITS[j]);
-      assertEquals(TEST_BITS[i] & TEST_BITS[j], vi.and(vj).getHighBits());
-      assertEquals(
-          TEST_BITS[i + 1] & TEST_BITS[j + 1], vi.and(vj).getLowBits());
-      assertEquals(TEST_BITS[i] | TEST_BITS[j], vi.or(vj).getHighBits());
-      assertEquals(TEST_BITS[i + 1] | TEST_BITS[j + 1], vi.or(vj).getLowBits());
-      assertEquals(TEST_BITS[i] ^ TEST_BITS[j], vi.xor(vj).getHighBits());
-      assertEquals(
-          TEST_BITS[i + 1] ^ TEST_BITS[j + 1], vi.xor(vj).getLowBits());
-    }
-
-    assertEquals(TEST_BITS[i], vi.shiftLeft(0).getHighBits());
-    assertEquals(TEST_BITS[i + 1], vi.shiftLeft(0).getLowBits());
-    assertEquals(TEST_BITS[i], vi.shiftRight(0).getHighBits());
-    assertEquals(TEST_BITS[i + 1], vi.shiftRight(0).getLowBits());
-    assertEquals(TEST_BITS[i], vi.shiftRightUnsigned(0).getHighBits());
-    assertEquals(TEST_BITS[i + 1], vi.shiftRightUnsigned(0).getLowBits());
-
-    for (let len = 1; len < 64; ++len) {
-      if (len < 32) {
-        assertEquals(
-            (TEST_BITS[i] << len) | (TEST_BITS[i + 1] >>> (32 - len)),
-            vi.shiftLeft(len).getHighBits());
-        assertEquals(TEST_BITS[i + 1] << len, vi.shiftLeft(len).getLowBits());
-
-        assertEquals(TEST_BITS[i] >> len, vi.shiftRight(len).getHighBits());
-        assertEquals(
-            (TEST_BITS[i + 1] >>> len) | (TEST_BITS[i] << (32 - len)),
-            vi.shiftRight(len).getLowBits());
-
-        assertEquals(
-            TEST_BITS[i] >>> len, vi.shiftRightUnsigned(len).getHighBits());
-        assertEquals(
-            (TEST_BITS[i + 1] >>> len) | (TEST_BITS[i] << (32 - len)),
-            vi.shiftRightUnsigned(len).getLowBits());
-      } else {
-        assertEquals(
-            TEST_BITS[i + 1] << (len - 32), vi.shiftLeft(len).getHighBits());
-        assertEquals(0, vi.shiftLeft(len).getLowBits());
-
-        assertEquals(
-            TEST_BITS[i] >= 0 ? 0 : -1, vi.shiftRight(len).getHighBits());
-        assertEquals(
-            TEST_BITS[i] >> (len - 32), vi.shiftRight(len).getLowBits());
-
-        assertEquals(0, vi.shiftRightUnsigned(len).getHighBits());
-        if (len == 32) {
-          assertEquals(TEST_BITS[i], vi.shiftRightUnsigned(len).getLowBits());
-        } else {
-          assertEquals(
-              TEST_BITS[i] >>> (len - 32),
-              vi.shiftRightUnsigned(len).getLowBits());
-        }
-      }
-    }
-
-    assertEquals(TEST_BITS[i], vi.shiftLeft(64).getHighBits());
-    assertEquals(TEST_BITS[i + 1], vi.shiftLeft(64).getLowBits());
-    assertEquals(TEST_BITS[i], vi.shiftRight(64).getHighBits());
-    assertEquals(TEST_BITS[i + 1], vi.shiftRight(64).getLowBits());
-    assertEquals(TEST_BITS[i], vi.shiftRightUnsigned(64).getHighBits());
-    assertEquals(TEST_BITS[i + 1], vi.shiftRightUnsigned(64).getLowBits());
-  };
-}
-
-for (let i = 0; i < TEST_BITS.length; i += 2) {
-  globalThis[`testBitOperations${i}`] = createTestBitOperations(i);
-}
-
-function createTestDivMod(i, count) {
-  return () => {
-    const vi = Long.fromBits(TEST_BITS[i + 1], TEST_BITS[i]);
-    for (let j = 0; j < TEST_BITS.length; j += 2) {
-      const vj = Long.fromBits(TEST_BITS[j + 1], TEST_BITS[j]);
-      if (!vj.isZero()) {
-        const divResult = vi.div(vj);
-        assertEquals(TEST_DIV_BITS[count++], divResult.getHighBits());
-        assertEquals(TEST_DIV_BITS[count++], divResult.getLowBits());
-
-        const modResult = vi.modulo(vj);
-        const combinedResult = divResult.multiply(vj).add(modResult);
-        assertTrue(vi.equals(combinedResult));
-      }
-    }
-  };
-}
-
-let countPerDivModCall = 0;
-for (let j = 0; j < TEST_BITS.length; j += 2) {
-  const vj = Long.fromBits(TEST_BITS[j + 1], TEST_BITS[j]);
-  if (!vj.isZero()) {
-    countPerDivModCall += 2;
-  }
-}
-
-let countDivMod = 0;
-for (let i = 0; i < TEST_BITS.length; i += 2) {
-  globalThis[`testDivMod${i}`] = createTestDivMod(i, countDivMod);
-  countDivMod += countPerDivModCall;
-}
-
-function createTestToFromString(i) {
-  return () => {
-    const vi = Long.fromBits(TEST_BITS[i + 1], TEST_BITS[i]);
-    const str = vi.toString(10);
-    assertEquals(TEST_STRINGS[i / 2], str);
-    assertEquals(TEST_BITS[i], Long.fromString(str, 10).getHighBits());
-    assertEquals(TEST_BITS[i + 1], Long.fromString(str, 10).getLowBits());
-
-    for (let radix = 2; radix <= 36; ++radix) {
-      const result = vi.toString(radix);
-      assertEquals(TEST_BITS[i], Long.fromString(result, radix).getHighBits());
-      assertEquals(
-          TEST_BITS[i + 1], Long.fromString(result, radix).getLowBits());
-    }
-  };
-}
-
-for (let i = 0; i < TEST_BITS.length; i += 2) {
-  globalThis[`testToFromString${i}`] = createTestToFromString(i);
-}
-
-// Regression test for
-// https://github.com/google/closure-library/pull/498
+const TEST_UNSIGNED_STRINGS = [
+  '9223372036854775808',
+  '13219989005882680027',
+  '18442240474082181119',
+  '18442240474082181120',
+  '18446462598732840959',
+  '18446462598732840960',
+  '18446744069414584319',
+  '18446744069414584320',
+  '18446744073692774399',
+  '18446744073692774400',
+  '18446744073709486079',
+  '18446744073709486080',
+  '18446744073709518847',
+  '18446744073709518848',
+  '18446744073709551614',
+  '18446744073709551615',
+  '0',
+  '1',
+  '2',
+  '32767',
+  '32768',
+  '65535',
+  '65536',
+  '16777215',
+  '16777216',
+  '1446306523',
+  '3078018549',
+  '4294967295',
+  '4294967296',
+  '281474976710655',
+  '281474976710656',
+  '4503599627370495',
+  '4503599627370496',
+  '6211839219354490357',
+  '9223372036854775807',
+];
 
 testSuite({
   setUp() {
     if (Object.seal) {
       Object.seal(Long);
     }
+  },
+
+  /** Nested test suite for comparison operations. */
+  get testComparisons() {
+    const /** !Object<string, function()> */ testCases = {};
+    for (let i = 0; i < TEST_BITS.length; i += 2) {
+      testCases[`test${i}`] = () => {
+        const vi = Long.fromBits(TEST_BITS[i + 1], TEST_BITS[i]);
+        for (let j = 0; j < TEST_BITS.length; j += 2) {
+          const vj = Long.fromBits(TEST_BITS[j + 1], TEST_BITS[j]);
+          assertEquals(i == j, vi.equals(vj));
+          assertEquals(i != j, vi.notEquals(vj));
+          assertEquals(i < j, vi.lessThan(vj));
+          assertEquals(i <= j, vi.lessThanOrEqual(vj));
+          assertEquals(i > j, vi.greaterThan(vj));
+          assertEquals(i >= j, vi.greaterThanOrEqual(vj));
+        }
+      };
+    }
+    return testCases;
+  },
+
+  /** Nested test suite for bitwise operations. */
+  get testBitOperations() {
+    const /** !Object<string, function()> */ testCases = {};
+
+    for (let i = 0; i < TEST_BITS.length; i += 2) {
+      testCases[`test${i}`] = () => {
+        const vi = Long.fromBits(TEST_BITS[i + 1], TEST_BITS[i]);
+        assertEquals(~TEST_BITS[i], vi.not().getHighBits());
+        assertEquals(~TEST_BITS[i + 1], vi.not().getLowBits());
+
+        for (let j = 0; j < TEST_BITS.length; j += 2) {
+          const vj = Long.fromBits(TEST_BITS[j + 1], TEST_BITS[j]);
+          assertEquals(TEST_BITS[i] & TEST_BITS[j], vi.and(vj).getHighBits());
+          assertEquals(
+              TEST_BITS[i + 1] & TEST_BITS[j + 1], vi.and(vj).getLowBits());
+          assertEquals(TEST_BITS[i] | TEST_BITS[j], vi.or(vj).getHighBits());
+          assertEquals(
+              TEST_BITS[i + 1] | TEST_BITS[j + 1], vi.or(vj).getLowBits());
+          assertEquals(TEST_BITS[i] ^ TEST_BITS[j], vi.xor(vj).getHighBits());
+          assertEquals(
+              TEST_BITS[i + 1] ^ TEST_BITS[j + 1], vi.xor(vj).getLowBits());
+        }
+
+        assertEquals(TEST_BITS[i], vi.shiftLeft(0).getHighBits());
+        assertEquals(TEST_BITS[i + 1], vi.shiftLeft(0).getLowBits());
+        assertEquals(TEST_BITS[i], vi.shiftRight(0).getHighBits());
+        assertEquals(TEST_BITS[i + 1], vi.shiftRight(0).getLowBits());
+        assertEquals(TEST_BITS[i], vi.shiftRightUnsigned(0).getHighBits());
+        assertEquals(TEST_BITS[i + 1], vi.shiftRightUnsigned(0).getLowBits());
+
+        for (let len = 1; len < 64; ++len) {
+          if (len < 32) {
+            assertEquals(
+                (TEST_BITS[i] << len) | (TEST_BITS[i + 1] >>> (32 - len)),
+                vi.shiftLeft(len).getHighBits());
+            assertEquals(
+                TEST_BITS[i + 1] << len, vi.shiftLeft(len).getLowBits());
+
+            assertEquals(TEST_BITS[i] >> len, vi.shiftRight(len).getHighBits());
+            assertEquals(
+                (TEST_BITS[i + 1] >>> len) | (TEST_BITS[i] << (32 - len)),
+                vi.shiftRight(len).getLowBits());
+
+            assertEquals(
+                TEST_BITS[i] >>> len, vi.shiftRightUnsigned(len).getHighBits());
+            assertEquals(
+                (TEST_BITS[i + 1] >>> len) | (TEST_BITS[i] << (32 - len)),
+                vi.shiftRightUnsigned(len).getLowBits());
+          } else {
+            assertEquals(
+                TEST_BITS[i + 1] << (len - 32),
+                vi.shiftLeft(len).getHighBits());
+            assertEquals(0, vi.shiftLeft(len).getLowBits());
+
+            assertEquals(
+                TEST_BITS[i] >= 0 ? 0 : -1, vi.shiftRight(len).getHighBits());
+            assertEquals(
+                TEST_BITS[i] >> (len - 32), vi.shiftRight(len).getLowBits());
+
+            assertEquals(0, vi.shiftRightUnsigned(len).getHighBits());
+            if (len == 32) {
+              assertEquals(
+                  TEST_BITS[i], vi.shiftRightUnsigned(len).getLowBits());
+            } else {
+              assertEquals(
+                  TEST_BITS[i] >>> (len - 32),
+                  vi.shiftRightUnsigned(len).getLowBits());
+            }
+          }
+        }
+
+        assertEquals(TEST_BITS[i], vi.shiftLeft(64).getHighBits());
+        assertEquals(TEST_BITS[i + 1], vi.shiftLeft(64).getLowBits());
+        assertEquals(TEST_BITS[i], vi.shiftRight(64).getHighBits());
+        assertEquals(TEST_BITS[i + 1], vi.shiftRight(64).getLowBits());
+        assertEquals(TEST_BITS[i], vi.shiftRightUnsigned(64).getHighBits());
+        assertEquals(TEST_BITS[i + 1], vi.shiftRightUnsigned(64).getLowBits());
+      };
+    }
+    return testCases;
+  },
+
+  /** Nested test suite for division operations. */
+  get testDivMod() {
+    const /** !Object<string, function()> */ testCases = {};
+
+    /** @return {function()} */
+    const createTestDivMod = (/** number */ i, /** number */ count) => {
+      return () => {
+        const vi = Long.fromBits(TEST_BITS[i + 1], TEST_BITS[i]);
+        for (let j = 0; j < TEST_BITS.length; j += 2) {
+          const vj = Long.fromBits(TEST_BITS[j + 1], TEST_BITS[j]);
+          if (!vj.isZero()) {
+            const divResult = vi.div(vj);
+            assertEquals(TEST_DIV_BITS[count++], divResult.getHighBits());
+            assertEquals(TEST_DIV_BITS[count++], divResult.getLowBits());
+
+            const modResult = vi.modulo(vj);
+            const combinedResult = divResult.multiply(vj).add(modResult);
+            assertTrue(vi.equals(combinedResult));
+          }
+        }
+      };
+    };
+
+    let countPerDivModCall = 0;
+    for (let j = 0; j < TEST_BITS.length; j += 2) {
+      const vj = Long.fromBits(TEST_BITS[j + 1], TEST_BITS[j]);
+      if (!vj.isZero()) {
+        countPerDivModCall += 2;
+      }
+    }
+
+    let countDivMod = 0;
+    for (let i = 0; i < TEST_BITS.length; i += 2) {
+      testCases[`test${i}`] = createTestDivMod(i, countDivMod);
+      countDivMod += countPerDivModCall;
+    }
+
+    return testCases;
+  },
+
+  /** Nested test suite for string conversions. */
+  get testToFromString() {
+    const /** !Object<string, function()> */ testCases = {};
+
+    for (let i = 0; i < TEST_BITS.length; i += 2) {
+      testCases[`test${i}`] = () => {
+        const vi = Long.fromBits(TEST_BITS[i + 1], TEST_BITS[i]);
+        const str = vi.toString(10);
+        assertEquals(TEST_STRINGS[i / 2], str);
+        assertEquals(TEST_BITS[i], Long.fromString(str, 10).getHighBits());
+        assertEquals(TEST_BITS[i + 1], Long.fromString(str, 10).getLowBits());
+
+        for (let radix = 2; radix <= 36; ++radix) {
+          const result = vi.toString(radix);
+          assertEquals(
+              TEST_BITS[i], Long.fromString(result, radix).getHighBits());
+          assertEquals(
+              TEST_BITS[i + 1], Long.fromString(result, radix).getLowBits());
+        }
+      };
+    }
+
+    return testCases;
+  },
+
+  /** Nested test suite for unsigned string conversions. */
+  get testToFromUnsignedString() {
+    const /** !Object<string, function()> */ testCases = {};
+
+    for (let i = 0; i < TEST_BITS.length; i += 2) {
+      testCases[`test${i}`] = () => {
+        const vi = Long.fromBits(TEST_BITS[i + 1], TEST_BITS[i]);
+        const str = vi.toUnsignedString(10);
+        assertEquals(TEST_UNSIGNED_STRINGS[i / 2], str);
+        assertEquals(TEST_BITS[i], Long.fromString(str, 10).getHighBits());
+        assertEquals(TEST_BITS[i + 1], Long.fromString(str, 10).getLowBits());
+
+        for (let radix = 2; radix <= 36; ++radix) {
+          const result = vi.toUnsignedString(radix);
+          assertEquals(
+            TEST_BITS[i], Long.fromString(result, radix).getHighBits());
+          assertEquals(
+              TEST_BITS[i + 1], Long.fromString(result, radix).getLowBits());
+        }
+      };
+    }
+
+    return testCases;
   },
 
   testSealingDoesntMakeLazyInitializersUndefined() {
@@ -1498,6 +1570,8 @@ testSuite({
   },
 
   testFromDecimalCachedValues() {
+    // Make sure we are not leaking longs by incorrect caching of decimal
+    // numbers and failing-fast in debug mode.
     try {
       let handledException;
       asserts.setErrorHandler((e) => {
@@ -1608,6 +1682,8 @@ testSuite({
   },
 
   testBase36ToString() {
+    // Regression test for
+    // https://github.com/google/closure-library/pull/498
     assertEquals('zzzzzz', Long.fromString('zzzzzz', 36).toString(36));
   },
 

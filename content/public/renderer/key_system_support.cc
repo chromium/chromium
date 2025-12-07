@@ -8,6 +8,7 @@
 #include "content/public/renderer/render_thread.h"
 #include "content/renderer/render_frame_impl.h"
 #include "media/base/key_systems_support_registration.h"
+#include "media/mojo/mojom/key_system_support.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
@@ -60,7 +61,7 @@ ObserveKeySystemSupportUpdate(content::RenderFrame* render_frame,
       key_system_support_registration =
           std::make_unique<KeySystemSupportObserverImpl>(
               std::move(cb), observer_remote.InitWithNewPipeAndPassReceiver());
-  key_system_support->AddObserver(std::move(observer_remote));
+  key_system_support->SetObserver(std::move(observer_remote));
 
   return key_system_support_registration;
 }

@@ -39,8 +39,13 @@ namespace blink {
 
 namespace {
 
-void RunEntriesCallback(V8EntriesCallback* callback, EntryHeapVector* entries) {
-  callback->InvokeAndReportException(nullptr, *entries);
+void RunEntriesCallback(V8EntriesCallback* callback,
+                        GCedEntryHeapVector* entries) {
+  // TODO(https://crbug.com/392817527): Ideally bindings would take a ref to the
+  // GCed vector directly. Since we an move here this should not be a
+  // performance problem.
+  callback->InvokeAndReportException(nullptr,
+                                     EntryHeapVector(std::move(*entries)));
 }
 
 }  // namespace
@@ -54,44 +59,49 @@ void DirectoryReader::readEntries(V8EntriesCallback* entries_callback,
   if (entries_callback_) {
     // Non-null entries_callback_ means multiple readEntries() calls are made
     // concurrently. We don't allow doing it.
-    Filesystem()->ReportError(
-        WTF::BindOnce(
-            [](V8ErrorCallback* error_callback, base::File::Error error) {
-              error_callback->InvokeAndReportException(
-                  nullptr, file_error::CreateDOMException(error));
-            },
-            WrapPersistent(error_callback)),
-        base::File::FILE_ERROR_FAILED);
+
+    // The error_callback argument is optional. If it was set, let's notify
+    // the caller with an error.
+    if (error_callback) {
+      Filesystem()->ReportError(
+          BindOnce(
+              [](V8ErrorCallback* error_callback, base::File::Error error) {
+                error_callback->InvokeAndReportException(
+                    nullptr, file_error::CreateDOMException(error));
+              },
+              WrapPersistent(error_callback)),
+          base::File::FILE_ERROR_FAILED);
+    }
     return;
   }
 
-  auto success_callback_wrapper = WTF::BindRepeating(
-      [](DirectoryReader* persistent_reader, EntryHeapVector* entries) {
-        persistent_reader->AddEntries(*entries);
+  auto success_callback_wrapper = BindRepeating(
+      [](DirectoryReader* persistent_reader, GCedEntryHeapVector* entries) {
+        persistent_reader->AddEntries(EntryHeapVector(std::move(*entries)));
       },
       WrapPersistentIfNeeded(this));
 
   if (!is_reading_) {
     is_reading_ = true;
-    Filesystem()->ReadDirectory(
-        this, full_path_, success_callback_wrapper,
-        WTF::BindOnce(&DirectoryReader::OnError, WrapPersistentIfNeeded(this)));
+    Filesystem()->ReadDirectory(this, full_path_, success_callback_wrapper,
+                                blink::BindOnce(&DirectoryReader::OnError,
+                                                WrapPersistentIfNeeded(this)));
   }
 
   if (error_ != base::File::FILE_OK) {
-    Filesystem()->ReportError(
-        WTF::BindOnce(&DirectoryReader::OnError, WrapPersistentIfNeeded(this)),
-        error_);
+    Filesystem()->ReportError(blink::BindOnce(&DirectoryReader::OnError,
+                                              WrapPersistentIfNeeded(this)),
+                              error_);
     return;
   }
 
   if (!has_more_entries_ || !entries_.empty()) {
-    EntryHeapVector* entries =
-        MakeGarbageCollected<EntryHeapVector>(std::move(entries_));
+    GCedEntryHeapVector* entries =
+        MakeGarbageCollected<GCedEntryHeapVector>(std::move(entries_));
     DOMFileSystem::ScheduleCallback(
         Filesystem()->GetExecutionContext(),
-        WTF::BindOnce(&RunEntriesCallback, WrapPersistent(entries_callback),
-                      WrapPersistent(entries)));
+        BindOnce(&RunEntriesCallback, WrapPersistent(entries_callback),
+                 WrapPersistent(entries)));
     return;
   }
 

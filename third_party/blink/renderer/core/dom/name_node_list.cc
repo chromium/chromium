@@ -24,6 +24,7 @@
 
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node_rare_data.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -41,7 +42,11 @@ NameNodeList::NameNodeList(ContainerNode& root_node,
 NameNodeList::~NameNodeList() = default;
 
 bool NameNodeList::ElementMatches(const Element& element) const {
-  return element.GetNameAttribute() == name_;
+  if (RuntimeEnabledFeatures::GetElementsByNameOnlyHTMLElementsEnabled()) {
+    return element.IsHTMLElement() && element.GetNameAttribute() == name_;
+  } else {
+    return element.GetNameAttribute() == name_;
+  }
 }
 
 }  // namespace blink

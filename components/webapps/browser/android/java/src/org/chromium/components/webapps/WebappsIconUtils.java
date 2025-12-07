@@ -4,6 +4,8 @@
 
 package org.chromium.components.webapps;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.ActivityManager;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -15,15 +17,14 @@ import android.graphics.drawable.AdaptiveIconDrawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
 
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.url.GURL;
@@ -32,6 +33,7 @@ import org.chromium.url.GURL;
  * This class contains functions related to adding shortcuts to the Android Home screen. These
  * shortcuts are used to either open a page in the main browser or open a web app.
  */
+@NullMarked
 public class WebappsIconUtils {
     private static final String TAG = "WebappsIconUtils";
 
@@ -69,7 +71,6 @@ public class WebappsIconUtils {
 
     private static final float SHORTCUT_ICON_IDEAL_SIZE_DP = 48;
 
-    @RequiresApi(Build.VERSION_CODES.O)
     @CalledByNative
     public static Bitmap generateAdaptiveIconBitmap(Bitmap bitmap) {
         Bitmap padded = createHomeScreenIconFromWebIcon(bitmap, true);
@@ -77,6 +78,7 @@ public class WebappsIconUtils {
         AdaptiveIconDrawable adaptiveIconDrawable =
                 (AdaptiveIconDrawable)
                         adaptiveIcon.loadDrawable(ContextUtils.getApplicationContext());
+        assumeNonNull(adaptiveIconDrawable);
 
         Bitmap result =
                 Bitmap.createBitmap(
@@ -211,14 +213,9 @@ public class WebappsIconUtils {
      * @return the dimensions in pixels which the prompt UI should use as the corner radius.
      */
     @CalledByNative
-    public static int getIdealIconCornerRadiusPxForPromptUI() {
+    public static int getIdealIconCornerRadiusPxForPromptUi() {
         Context context = ContextUtils.getApplicationContext();
         return context.getResources().getDimensionPixelSize(R.dimen.webapk_prompt_ui_icon_radius);
-    }
-
-    /** Check the running Android version supports adaptive icon (i.e. API level >= 26) */
-    public static boolean doesAndroidSupportMaskableIcons() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
     }
 
     /**
@@ -247,7 +244,7 @@ public class WebappsIconUtils {
      * @return Bitmap Either the touch-icon or the newly created favicon.
      */
     @CalledByNative
-    public static Bitmap generateHomeScreenIcon(GURL url, int red, int green, int blue) {
+    public static @Nullable Bitmap generateHomeScreenIcon(GURL url, int red, int green, int blue) {
         Context context = ContextUtils.getApplicationContext();
         ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         final int outerSize = am.getLauncherLargeIconSize();
@@ -335,6 +332,6 @@ public class WebappsIconUtils {
             return bd.getBitmap();
         }
         assert false : "The drawable was not a bitmap drawable as expected";
-        return null;
+        return assumeNonNull(null);
     }
 }

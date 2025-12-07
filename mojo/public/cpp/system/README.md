@@ -72,7 +72,7 @@ void *buffer;
 mojo::GetMessageBuffer(message.get(), &buffer);
 
 constexpr std::string_view kMessage = "hello";
-base::ranges::copy(kMessage, static_cast<char*>(buffer));
+std::ranges::copy(kMessage, static_cast<char*>(buffer));
 
 mojo::WriteMessageNew(client.get(), std::move(message),
                       MOJO_WRITE_MESSAGE_FLAG_NONE);

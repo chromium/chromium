@@ -65,10 +65,6 @@ class AppEventsObserver : public MetricEventObserver,
   // of the unified app storage setup in the app service once it is implemented.
   class AppInstallTracker {
    public:
-    // Disk consumption metrics name.
-    static constexpr char kDiskConsumptionMetricsName[] =
-        "Browser.ERP.AppInstallTrackerDiskConsumption";
-
     explicit AppInstallTracker(base::WeakPtr<Profile> profile);
     AppInstallTracker(const AppInstallTracker& other) = delete;
     AppInstallTracker& operator=(const AppInstallTracker& other) = delete;

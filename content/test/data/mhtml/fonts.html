@@ -1,0 +1,15 @@
+<style>
+    @font-face {
+        font-family: ahem;
+        src: url(Ahem.woff) format("woff");
+    }
+    @font-face {
+        font-family: notexist;
+        src: url(notexist.woff) format("woff");
+    }
+</style>
+
+<p>This test tries to render the following text with Ahem, loaded from a WOFF file. The text below should be a series of black boxes.</p>
+
+<p style="font-family: ahem; font-size: 4em;">This should not be legible</p>
+<p style="font-family: notexist; font-size: 4em;">This font won't load</p>

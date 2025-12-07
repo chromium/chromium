@@ -35,10 +35,10 @@ class WebGPUDecoderTest : public ::testing::Test {
     decoder_client_ = std::make_unique<FakeDecoderClient>();
     command_buffer_service_ = std::make_unique<FakeCommandBufferServiceBase>();
 
-    decoder_.reset(WebGPUDecoder::Create(
+    decoder_ = WebGPUDecoder::Create(
         decoder_client_.get(), command_buffer_service_.get(), nullptr, nullptr,
         &outputter_, {}, nullptr, DawnCacheOptions(),
-        &mock_isolation_key_provider_));
+        &mock_isolation_key_provider_);
     ASSERT_EQ(decoder_->Initialize(GpuFeatureInfo()), ContextResult::kSuccess);
   }
 

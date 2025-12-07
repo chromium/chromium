@@ -364,7 +364,7 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
 
   // Intercepts all requests.
   std::unique_ptr<HttpResponse> HandleRequest(const HttpRequest& request) {
-    if (request.GetURL().path() == "/background_fetch/upload") {
+    if (request.GetURL().GetPath() == "/background_fetch/upload") {
       DCHECK(!request.content.empty());
       DCHECK(request_body_.empty());
       request_body_ = request.content;
@@ -374,8 +374,9 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
       return response;
     }
 
-    if (request.GetURL().query() == "clickevent")
+    if (request.GetURL().GetQuery() == "clickevent") {
       std::move(click_event_closure_).Run();
+    }
 
     // The default handlers will take care of this request.
     return nullptr;

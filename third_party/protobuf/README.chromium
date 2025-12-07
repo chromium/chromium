@@ -1,15 +1,17 @@
 Name: Protocol Buffers
 Short Name: protobuf
 URL: https://github.com/google/protobuf
-License: BSD
+License: BSD-3-Clause
 License File: LICENSE
-Version: 21.12
-CPEPrefix: cpe:/a:google:protobuf:21.12
-Revision: f0dc78d7e6e331b8c6bb2d5283e06aa26883ca7c
+Version: 33.0
+CPEPrefix: cpe:/a:google:protobuf:33.0
+Revision: a79f2d2e9fadd75e94f3fe40a0399bf0a5d90551
+Update Mechanism: Manual
 Security Critical: yes
 Shipped: yes
 
 Steps used to create the current version (or roll a newer one):
+
 0. Nuke third_party/protobuf from orbit (rm -rf `third_party/protobuf`). Note
    that this removes this README.chromium so you may want it open in code search
    or remember the steps up until 2. where you get it back.
@@ -18,11 +20,15 @@ Steps used to create the current version (or roll a newer one):
    code .tar.gz). Extract to `third_party/protobuf` (without version suffix),
    i.e. you may `$ mv protobuf-21.12 third_party/protobuf` or similar.
 
-2. Add back chromium's non-upstream files (from this directory):
+2. Add back chromium's on-upstream files (from this directory):
 
-   $ git checkout main BUILD.gn DEPS DIR_METADATA OWNERS README.chromium \
-     gen_chromium_file_lists.py gen_extra_chromium_files.py proto_library.gni \
-     patches/
+   $ git checkout origin/main -- BUILD.gn DEPS DIR_METADATA OWNERS \
+     README.chromium gen_extra_chromium_files.py proto_library.gni \
+     proto_sources.gni patches/
+
+   Note: The `patches/` directory is already a part of the protobuf repository,
+   but it uses subdirectories for its content, while in Chromium we store our
+   patches directly in the `patches/` directory.
 
    Note: Ideally we wouldn't do this but instead have a
    `third_party/protobuf/src/` subdirectory where upstream code goes directly
@@ -33,13 +39,14 @@ Steps used to create the current version (or roll a newer one):
    Here be dragons. Probably.
 
    Probably worth making a local `git commit` here before applying patches (next
-   step).
+   step), however, as we still apply 0053-ignore-compatibility-dir.patch you can
+   simplify your roll by `rm -r compatibility` before comitting.
 
 3. Apply patches in patches/ (see the description below):
 
-   $ for patch in patches/*; do patch -s -p1 < $patch; done
+   $ for patch in patches/*.patch; do patch -s -p1 < $patch; done
 
-   When a patch fails, it's probably best to check out previous state (from 3)
+   When a patch fails, it's probably best to check out previous state (from 2)
    for any changes not inside the patches/ folder, fix the patch and then try to
    reapply everything. It's not a good idea to fix the error, forget to generate
    a patch and leave patches/ in a bad state.
@@ -49,58 +56,73 @@ Steps used to create the current version (or roll a newer one):
    upstream any patches out of band from unblocking the roll so we can
    eventually remove it here as well.
 
+   Run `git add src/google/protobuf/compiler/csharp/csharp_names.h` to pick up
+   the file added by 0048-csharp-names-redirect.patch
+
    Probably worth committing locally here too.
 
-4. Generate `proto_sources.gni` using the script `./gen_chromium_file_lists.py`.
-
-   Add and commit `proto_sources.gni`,
-
-5. Generate descriptor_pb2.py using the script "gen_extra_chromium_files.py" in
+4. Generate descriptor_pb2.py using the script "gen_extra_chromium_files.py" in
    the same directory as this file.
 
    $ ./gen_extra_chromium_files.py -C ../../out/Default
 
    Add and commit `python/google/protobuf/descriptor_pb2.py` and
-   `python/google/protobuf/compiler/plugin_pb2.py` as well.
+   `python/google/protobuf/compiler/plugin_pb2.py` as well. Because *_pb2.py is
+   in the .gitignore file for this directory, you need to add the files with
+   `-f`.
+
+   $ git add -f python/google/protobuf/descriptor_pb2.py \
+     python/google/protobuf/compiler/plugin_pb2.py
+
+5. This step requires `bazel`, and not the one from depot_tools, and it is not
+   part of build/install-build-deps.sh in Chromium, so you need to manually
+   install it:
+
+   $ apt install bazel
+
+   Run:
+
+   $ cd python/
+   $ /usr/bin/bazel build embedded_python_edition_defaults_generate --enable_bzlmod
+   $ cp ../bazel-bin/python/google/protobuf/internal/python_edition_defaults.py google/protobuf/internal/
+   $ git add google/protobuf/internal/python_edition_defaults.py
+
+   TODO: generalize this and add it to gen_extra_chromium_files.py
 
 6. Update Version, CPEPrefix and Revision in this file.
 
+   The revision should be set to the SHA1 of the commit that the release tag
+   points to at the time of the roll.
+
+7. Address breakages.
+
+   The CQ will help you identify problems that need fixing.
+
+   Manually update BUILD.gn and proto_sources.gni as necessary. Hopefully this
+   means just adding or moving around some source files, but might also include
+   tweaks like modifying compiler flags or macro defines.
+
+   You may need to add new code modifications and diffs in patches/ as well.
+   To do this, make the necessary changes in your current local branch, and then
+   run the following command to create a patch file with the correct paths:
+
+   $ git diff --relative=third_party/protobuf > patches/your.patch
+
+   In the case of multiple unrelated changes which should have their own
+   indivudal patches, you can also add `-- path/to/file` to your `git` command.
+
+   Remember to also update the patch description below.
+
+
 Notes (hints) for the next roll(er):
 
-* This is probably harder to roll than most things you've rolled in the past.
-  Good luck! Also please reach out for help proactively. The current roll as of
-  writing this required help from multiple very-senior people to even figure out
-  what was broken in the first place. `protobuf` rolling is not in a good place.
 * Update README.chromium as you go so you don't forget (after step 2. above, so
   you don't nuke those changes).
-* Rolling one version of protobuf likely introduces a large amount of changes.
-  We should possibly figure out if it's reasonable to stay close to tip of tree
-  and roll frequently rather than use released versions. Sharp corners here
-  likely include that the version is encoded in protobuf output and I (pbos@)
-  don't know if that version tag changes immediately on format incompatibilities
-  or get bumped every time something format incompatible is introduced.
-* After v3.20 protobuf-javascript/ split out from upstream protobuf/. You may
-  need to be aware of both repositories. Also upstream protobuf/ seems to move
-  faster / out of sync with protobuf-javascript/. Hopefully that doesn't cause
-  format incompatibilities in the future (protobuf/ supports something we need
-  that protobuf-javascript/ doesn't).
 * Any argument changes to `protoc_wrapper` in `third_party/protobuf/BUILD.gn`
   may require updating `build/config/siso/protoc_wrapper.star` as well.
-* We've seen instances where instead of rolling protobuf a local copy of a new
-  built-in type has been checked in. When that happens you may see ODR
-  violations as your built-in type is defined in multiple files. If that happens
-  you may want to move the copy that should never have been checked in into its
-  own namespace, complete the roll and then cleanup the local copy.
-* third_party/mediapipe checks in a weird modified copy of
-  `third_party/protobuf/src/google/protobuf/any.pb.cc` called `any_lite.pb.cc`.
-  This precompiled protobuf will get invalidated on any protobuf version bumps
-  and you'll need to either painstakingly generated a new one (do a diff of the
-  checked-in `any_lite.pb.{cc,h}` and current `any.pb.{cc,h}` to aid you in the
-  process.
-  WARNING: This item is a lot larger than it looks. We should really
-  either fix mediapipe upstream to build with `MEDIAPIPE_PROTO_LITE` and
-  `MEDIAPIPE_PROTO_THIRD_PARTY` both set, but it looks like that configuration
-  has bit rotted.
+* The protobuf wheel for vpython3 needs to stay in sync with this protobuf, at
+  least if there are breaking changes in protobuf's python bindings. See
+  https://chromium.googlesource.com/infra/infra/+/refs/heads/main/infra/tools/dockerbuild/README.wheels.md
 
 Note about vpython:
 
@@ -122,28 +144,13 @@ Description of the patches:
   These patches uninline some functions, resulting in a significant reduction
   (somewhere between 500 KB and 1 MB) of binary size.
 
-- 0021-Fix-protobuf-s-library-.gitinore-file.patch
-
-  Un-ignores python/google/protobuf/descriptor_pb2.py and
-  python/google/protobuf/compiler/plugin_pb2.py
-
 - 0022-Allow-deprecated-fields.patch
 
   Allows deprecated fields to be used without extra C++ compiler warnings.
 
-- 0026-remove-sprintf.patch
-
-  Imports
-  https://github.com/protocolbuffers/protobuf/commit/c0fc2e881bc36aafb0bf539bf41889611370f60c
-  to remove use of sprintf.
-
-- 0027-no-noreturn.patch
-
-  Removes an instance of [[noreturn]]. The attribute is correct, but the way
-  protobuf's GOOGLE_LOG(FATAL) is defined, the compiler can't see this and it
-  trips -Winvalid-noreturn. See https://github.com/protocolbuffers/protobuf/issues/9817
-
 - 0029-make-initializers-optimizable.patch
+
+  Removes a static initializer from Linux and Android builds.
 
   Makes the InitProtobufDefaults() static initializer optimizable by Clang when
   built with libc++. It patches out the OnShutdownDestroyString call, which we
@@ -152,6 +159,9 @@ Description of the patches:
   InitProtobufDefaults() without synchronizing with the start of main().
   (Anything which happens after main() starts can rely on the initializer
   running.)
+
+  Later updated to patch out PROTOBUF_DESCRIPTOR_WEAK_MESSAGES_ALLOWED code
+  which was not optimizable.
 
 - 0030-workaround-window-constinit.patch
 
@@ -164,6 +174,12 @@ Description of the patches:
 
   See https://github.com/protocolbuffers/protobuf/issues/10159.
 
+  Feb-2025: this patch was updated to address an issue where code internal to
+  PB assumed that the default instances it was acting on were const inited,
+  when they were not constinit due to the Chromium workaround. See related
+  PB commit:
+  https://github.com/protocolbuffers/protobuf/commit/f5c53ac4605aa5a276e9786952d467fe1fda5420
+
 - 0031-workaround-cfi-unrelated-cast.patch
 
   A workaround for Clang's Control Flow Integrity check for casting pointers to
@@ -174,51 +190,6 @@ Description of the patches:
   See https://github.com/protocolbuffers/protobuf/issues/10186.
   See https://bugs.chromium.org/p/chromium/issues/detail?id=1294200#c26.
 
-- 0032-cxx20.patch
-
-  Fixes necessary to build in --std=c++20 mode.
-
-  Imports https://critique.corp.google.com/cl/451177197 (a portion of
-  https://github.com/protocolbuffers/protobuf/commit/6dd8af4ecfa7987bddb309862932886b84f1e4ef
-  ).
-
-- 0033-no-enum-conversion-warn.patch
-
-  Avoid hitting the clang error -Wenum-constexpr-conversion by specifying width
-  of the enum.
-
-  Imports https://critique.corp.google.com/cl/466986872.
-
-- 0034-change-macro-to-avoid-pedantic-warning.patch
-
-  Avoid hitting -Wextra-semi.
-
-  Imports (rebased):
-  https://github.com/protocolbuffers/protobuf/commit/def602dd07b7eae1cac6823705975317b5607fc3
-
-- 0035-fix-shared-library-constants
-
-  Fixes for component build when building with MediaPipe. AnyMetadata::PackFrom
-  is called which require string constants to be exported.
-
-- 0036-fix-undefined-memcpy-call.patch
-
-  Fixes an undefined call to memcpy which may be passed NULL, 0. NULL, 0 is
-  forbidden in C, due to a mistake in the C language specification. This
-  partially integrates
-  https://github.com/protocolbuffers/protobuf/commit/b2e1d7d8a1b1959c782595cd815c22fb690ac8e2
-  from upstream and may be removed when protobuf is updated past that commit.
-
-- 0037-fix-wextra-semi.patch
-
-  Removes an extra semicolon, fixed in upstream
-  https://github.com/protocolbuffers/protobuf/commit/3e6f8ee152db71ae49cc95649feab50d2faacdfa
-
-- 0038-silence-implicit-precision-loss.patch
-
-  Silences -Wshorten-64-to-32 for now. Fixed in upstream
-  https://github.com/protocolbuffers/protobuf/commit/d85c9944c55fb38f4eae149979a0f680ea125ecb
-
 - 0039-generate-mediapipe-anylite.patch
 
   Workaround to allow generating protobuf code compatible with
@@ -226,7 +197,79 @@ Description of the patches:
   https://crbug.com/332939935, which when/if resolved should make this patch
   obsolete.
 
-- 0040-fix-ndk-major.patch
+- 0042-fix-undefined-protobuf-custom-vtable.patch
 
-  Fix Android compile error that affects webrtc. Fixed in upstream
-  https://github.com/protocolbuffers/protobuf/commit/9471a882256eaf01027524e8b6c15cbb5e42bef6
+  Fixes the build when PROTOBUF_CUSTOM_VTABLE is not defined.
+
+- 0043-unreachable-code-return.patch
+
+  Fix unreachable code warning via `if constexpr`.
+
+- 0044-trim-protoc-main.patch
+
+  Remove parts of protoc's main.cc that aren't necessary for Chromium (languages
+  such as C#, PHP, Ruby, etc.).
+
+- 0045-string-resize.patch
+
+  Replaces usage of absl internal string routines with std::string::resize().
+
+- 0048-csharp-names-redirect.patch
+
+  A header file moved and this is added to redirect code that hasn't been
+  updated for newer protobuf to the new location. This code isn't actually
+  linked. This can be removed after GRPC is rolled. NB this has to be manually
+  added with `git add` if you are following the instructions above.
+
+- 0049-deprecated-declarations-pragma.patch
+
+  Modify a compiler diagnostic pragma to work on Windows.
+
+- 0051-export-template-define.patch
+
+  Adds some missing export defines to fix Windows component build.
+
+- 0052-remove-dynanmic-annotations.patch
+
+  This removes dynamic annotations (for containers; an ASAN tool). The use of
+  absl's dynamic_annotations is banned in Chromium (see
+  //third_party/abseil-cpp/BUILD.gn), on top of which, Protobuf's usage is
+  buggy. PlacementNew copies RepeatedFields wholesale via memcp, which triggers
+  false positive out-of-bounds reads. See
+  https://github.com/google/sanitizers/wiki/AddressSanitizerContainerOverflow
+
+- 0053-ignore-compatibility-dir.patch
+
+  Add the compatability dir to .gitignore as it's unnecessary and contains files
+  that trip CheckForTooLargeFiles presubmit.
+
+  Note that if you commit locally before applying the patches, you might need to
+  manually remove this directory again from git.
+
+- 0055-fix-deprecated-weak-accessor-in-descriptor.patch
+
+  Removes a single [[deprecated]] attribute from the FieldOptions::weak()
+  accessor in the pre-generated descriptor.pb.h file. This fixes a build
+  warning without the noise of regenerating the entire file.
+
+- 0056-fix-use-of-deprecated-has_optional_keyword.patch
+
+  Updates the implementation of the deprecated
+  FieldDescriptor::has_optional_keyword() to use the recommended has_presence()
+  method, fixing a deprecation error.
+
+- 0057-rm-extraneous-utf8-import.patch
+
+  Removes an extraneous utf8 import in parse_context.h. This has already been
+  upstreamed.
+
+- 0058-fix-messagelite-clear-declaration.patch
+
+   Fix a compile error in how a function parameter is declared.
+
+- 0059-rm-repeatedptrfield-deprecated-declaration.patch
+
+   Remove deprecated declaration on repeatedptrfield constructor. This
+   constructor is removed in the next roll post-v33, but this patch is added
+   to allow for rolling proto first without touching the 100s of places to
+   patch in Chromium.

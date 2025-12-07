@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<!-- Typical details element included to ensure it doesn't trigger the use
+     counter via UA style sheet or other internal use. -->
+
+<details>
+  <summary>Summary</summary>
+  Content
+</details>
+
+<script type=module>
+  import {WebDXFeature} from '/gen/third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom.m.js';
+
+  test(() => {
+    assert_false(internals.isWebDXFeatureUseCounted(document, WebDXFeature.kDetailsContent));
+    const sheet = new CSSStyleSheet();
+    sheet.replaceSync('details::details-content { color: hotpink }');
+    assert_true(internals.isWebDXFeatureUseCounted(document, WebDXFeature.kDetailsContent));
+  });
+</script>

@@ -35,9 +35,8 @@ constexpr int kMakoRewriteHeightThreshold = 400;
 gfx::Rect ComputeInitialWidgetBounds(gfx::Rect caret_bounds,
                                      gfx::Insets inset,
                                      bool can_fallback_to_center_position) {
-  gfx::Rect screen_work_area = display::Screen::GetScreen()
-                                   ->GetDisplayMatching(caret_bounds)
-                                   .work_area();
+  gfx::Rect screen_work_area =
+      display::Screen::Get()->GetDisplayMatching(caret_bounds).work_area();
   screen_work_area.Inset(kMakoScreenEdgePadding);
 
   gfx::Size initial_size = gfx::Size(kMakoInitialWidth, kMakoInitialHeight);
@@ -47,7 +46,9 @@ gfx::Rect ComputeInitialWidgetBounds(gfx::Rect caret_bounds,
   anchor.Outset(gfx::Outsets::VH(kMakoAnchorVerticalPadding, 0));
 
   gfx::Rect mako_contents_bounds =
-      can_fallback_to_center_position && caret_bounds == gfx::Rect()
+      can_fallback_to_center_position &&
+              (caret_bounds == gfx::Rect() ||
+               !screen_work_area.Contains(caret_bounds))
           ? gfx::Rect(screen_work_area.x() + screen_work_area.width() / 2 -
                           initial_size.width() / 2,
                       screen_work_area.y() + screen_work_area.height() / 2 -
@@ -85,19 +86,13 @@ gfx::Rect ComputeInitialWidgetBounds(gfx::Rect caret_bounds,
 MakoRewriteView::MakoRewriteView(WebUIContentsWrapper* contents_wrapper,
                                  const gfx::Rect& caret_bounds,
                                  bool can_fallback_to_center_position)
-    : WebUIBubbleDialogView(nullptr,
-                            contents_wrapper->GetWeakPtr(),
-                            std::nullopt,
-                            views::BubbleBorder::TOP_RIGHT,
-                            false),
+    : DraggableBubbleDialogView(contents_wrapper),
       caret_bounds_(caret_bounds),
       can_fallback_to_center_position_(can_fallback_to_center_position) {
   set_has_parent(false);
   set_corner_radius(kMakoRewriteCornerRadius);
   // Disable the default offscreen adjustment so that we can customise it.
   set_adjust_if_offscreen(false);
-  event_handler_ = std::make_unique<MakoBubbleEventHandler>(this);
-  dragging_initialized_ = false;
   resizing_initialized_ = false;
 }
 
@@ -114,9 +109,8 @@ void MakoRewriteView::ResizeDueToAutoResize(content::WebContents* source,
   }
 
   WebUIBubbleDialogView::ResizeDueToAutoResize(source, new_size);
-  gfx::Rect screen_work_area = display::Screen::GetScreen()
-                                   ->GetDisplayMatching(caret_bounds_)
-                                   .work_area();
+  gfx::Rect screen_work_area =
+      display::Screen::Get()->GetDisplayMatching(caret_bounds_).work_area();
   screen_work_area.Inset(kMakoScreenEdgePadding);
 
   // If the contents is very tall, just place it at the center of the screen.
@@ -131,7 +125,9 @@ void MakoRewriteView::ResizeDueToAutoResize(content::WebContents* source,
   anchor.Outset(gfx::Outsets::VH(kMakoAnchorVerticalPadding, 0));
 
   gfx::Rect mako_contents_bounds =
-      can_fallback_to_center_position_ && caret_bounds_ == gfx::Rect()
+      can_fallback_to_center_position_ &&
+              (caret_bounds_ == gfx::Rect() ||
+               !screen_work_area.Contains(caret_bounds_))
           ? gfx::Rect(screen_work_area.x() + screen_work_area.width() / 2 -
                           new_size.width() / 2,
                       screen_work_area.y() + screen_work_area.height() / 2 -
@@ -183,47 +179,6 @@ void MakoRewriteView::ShowUI() {
   content_bounds_updated_by_webui_ = false;
 }
 
-void MakoRewriteView::DraggableRegionsChanged(
-    const std::vector<blink::mojom::DraggableRegionPtr>& regions,
-    content::WebContents* contents) {
-  SkRegion sk_region;
-  for (const blink::mojom::DraggableRegionPtr& region : regions) {
-    sk_region.op(
-        SkIRect::MakeLTRB(region->bounds.x(), region->bounds.y(),
-                          region->bounds.x() + region->bounds.width(),
-                          region->bounds.y() + region->bounds.height()),
-        region->draggable ? SkRegion::kUnion_Op : SkRegion::kDifference_Op);
-  }
-  draggable_region_ = sk_region;
-}
-
-const std::optional<SkRegion> MakoRewriteView::GetDraggableRegion() {
-  return draggable_region_;
-}
-
-const gfx::Rect MakoRewriteView::GetWidgetBoundsInScreen() {
-  views::Widget* widget = GetWidget();
-  if (!widget) {
-    return gfx::Rect();
-  }
-  return widget->GetWindowBoundsInScreen();
-}
-
-void MakoRewriteView::SetWidgetBoundsConstrained(const gfx::Rect bounds) {
-  if (views::WebView* web_view_ptr = web_view()) {
-    web_view_ptr->SetPreferredSize(bounds.size());
-  }
-  if (views::Widget* widget = GetWidget()) {
-    widget->SetBoundsConstrained(bounds);
-  }
-}
-
-void MakoRewriteView::SetCursor(const ui::Cursor& cursor) {
-  if (views::Widget* widget = GetWidget()) {
-    widget->SetCursor(cursor);
-  }
-}
-
 bool MakoRewriteView::IsDraggingEnabled() {
   // Once the content bounds is updated by Web UI, we should stop resizing
   // support. This is currently used by Feedback UI.
@@ -251,33 +206,6 @@ bool MakoRewriteView::HandleKeyboardEvent(
   }
 
   return WebUIBubbleDialogView::HandleKeyboardEvent(source, event);
-}
-
-void MakoRewriteView::SetupDraggingSupport() {
-  // This avoids binding event handler twice.
-  if (dragging_initialized_) {
-    return;
-  }
-  dragging_initialized_ = true;
-  views::WebView* web_view_ptr = web_view();
-  if (!web_view_ptr) {
-    return;
-  }
-  content::WebContents* web_contents = web_view_ptr->GetWebContents();
-  if (!web_contents) {
-    return;
-  }
-
-  // Tell Blink that we support draggable region.
-  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
-  if (rfh) {
-    mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> client;
-    rfh->GetRemoteAssociatedInterfaces()->GetInterface(&client);
-    client->SetSupportsDraggableRegions(true);
-  }
-
-  // Bind event handlers for dragging support.
-  GetWidget()->GetNativeView()->AddPreTargetHandler(event_handler_.get());
 }
 
 void MakoRewriteView::SetupResizingSupport() {

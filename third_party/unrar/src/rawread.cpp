@@ -74,6 +74,17 @@ void RawRead::Read(byte *SrcData,size_t Size)
 }
 
 
+// Move unread data to beginning of buffer and adjust buffer size.
+void RawRead::Compact()
+{
+  if (ReadPos<DataSize) // We would access beyond the vector end otherwise.
+    memmove(&Data[0],&Data[ReadPos],DataSize-ReadPos);
+  DataSize-=ReadPos;
+  ReadPos=0;
+  Data.resize(DataSize);
+}
+
+
 byte RawRead::Get1()
 {
   return ReadPos<DataSize ? Data[ReadPos++]:0;

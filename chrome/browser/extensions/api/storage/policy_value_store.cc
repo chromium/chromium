@@ -14,7 +14,10 @@
 #include "components/value_store/value_store_change.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
 #include "extensions/browser/api/storage/storage_area_namespace.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using value_store::ValueStore;
 
@@ -37,7 +40,7 @@ PolicyValueStore::PolicyValueStore(
       observer_(std::move(observer)),
       delegate_(std::move(delegate)) {}
 
-PolicyValueStore::~PolicyValueStore() {}
+PolicyValueStore::~PolicyValueStore() = default;
 
 void PolicyValueStore::SetCurrentPolicy(const policy::PolicyMap& policy) {
   DCHECK(IsOnBackendSequence());
@@ -128,6 +131,10 @@ size_t PolicyValueStore::GetBytesInUse(const std::vector<std::string>& keys) {
 size_t PolicyValueStore::GetBytesInUse() {
   // See note above.
   return 0;
+}
+
+ValueStore::ReadResult PolicyValueStore::GetKeys() {
+  return delegate_->GetKeys();
 }
 
 ValueStore::ReadResult PolicyValueStore::Get(const std::string& key) {

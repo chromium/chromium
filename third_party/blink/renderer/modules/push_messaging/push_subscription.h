@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -26,6 +25,7 @@ namespace blink {
 class PushSubscriptionOptions;
 class ServiceWorkerRegistration;
 class ScriptState;
+class V8PushEncryptionKeyName;
 
 class MODULES_EXPORT PushSubscription final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -37,9 +37,9 @@ class MODULES_EXPORT PushSubscription final : public ScriptWrappable {
 
   PushSubscription(const KURL& endpoint,
                    bool user_visible_only,
-                   const WTF::Vector<uint8_t>& application_server_key,
-                   const WTF::Vector<unsigned char>& p256dh,
-                   const WTF::Vector<unsigned char>& auth,
+                   const Vector<uint8_t>& application_server_key,
+                   const Vector<unsigned char>& p256dh,
+                   const Vector<unsigned char>& auth,
                    const std::optional<DOMTimeStamp>& expiration_time,
                    ServiceWorkerRegistration* service_worker_registration);
 
@@ -50,10 +50,10 @@ class MODULES_EXPORT PushSubscription final : public ScriptWrappable {
 
   PushSubscriptionOptions* options() const { return options_.Get(); }
 
-  DOMArrayBuffer* getKey(const AtomicString& name) const;
+  DOMArrayBuffer* getKey(const V8PushEncryptionKeyName& name) const;
   ScriptPromise<IDLBoolean> unsubscribe(ScriptState* script_state);
 
-  ScriptValue toJSONForBinding(ScriptState* script_state);
+  ScriptObject toJSONForBinding(ScriptState* script_state);
 
   void Trace(Visitor* visitor) const override;
 

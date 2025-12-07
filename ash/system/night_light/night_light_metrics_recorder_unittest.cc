@@ -22,7 +22,7 @@ constexpr char kUserEmail[] = "user@example.com";
 class NightLightMetricsRecorderTest : public NoSessionAshTestBase {
  public:
   void SetUp() override {
-    AshTestBase::SetUp();
+    NoSessionAshTestBase::SetUp();
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
@@ -37,7 +37,7 @@ class NightLightMetricsRecorderTest : public NoSessionAshTestBase {
 TEST_F(NightLightMetricsRecorderTest, DoNotRecordTemperature) {
   histogram_tester_->ExpectTotalCount("Ash.NightLight.Temperature.Initial", 0);
 
-  SimulateUserLogin(kUserEmail);
+  SimulateUserLogin({kUserEmail});
 
   night_light_controller()->SetEnabled(false);
   night_light_controller()->SetScheduleType(ScheduleType::kNone);
@@ -52,7 +52,7 @@ TEST_F(NightLightMetricsRecorderTest, DoNotRecordTemperature) {
 TEST_F(NightLightMetricsRecorderTest,
        RecordTemperatureIfNightLightIsEnabledButScheduleTypeIsNone) {
   // Login so that prefs can be saved.
-  SimulateUserLogin(kUserEmail);
+  SimulateUserLogin({kUserEmail});
 
   // No histograms should have been recorded yet.
   histogram_tester_->ExpectTotalCount("Ash.NightLight.Temperature.Initial", 0);
@@ -64,10 +64,10 @@ TEST_F(NightLightMetricsRecorderTest,
   night_light_controller()->SetColorTemperature(temperature);
 
   // Simulate a sign out.
-  Shell::Get()->session_controller()->RequestSignOut();
+  ClearLogin();
 
   // Now that prefs have been saved, login again.
-  SimulateUserLogin(kUserEmail);
+  SimulateUserLogin({kUserEmail});
 
   // Temperature should be recorded if the Night Light is enabled, even though
   // the ScheduleType is None.
@@ -79,7 +79,7 @@ TEST_F(NightLightMetricsRecorderTest,
 TEST_F(NightLightMetricsRecorderTest,
        RecordTemperatureIfHasCustomScheduleButNightLightIsNotEnabled) {
   // Login so that prefs can be saved.
-  SimulateUserLogin(kUserEmail);
+  SimulateUserLogin({kUserEmail});
 
   // No histograms should have been recorded yet.
   histogram_tester_->ExpectTotalCount("Ash.NightLight.Temperature.Initial", 0);
@@ -91,10 +91,10 @@ TEST_F(NightLightMetricsRecorderTest,
   night_light_controller()->SetColorTemperature(temperature);
 
   // Simulate a sign out.
-  Shell::Get()->session_controller()->RequestSignOut();
+  ClearLogin();
 
   // Now that prefs have been saved, login again.
-  SimulateUserLogin(kUserEmail);
+  SimulateUserLogin({kUserEmail});
 
   // Temperature should be recorded if the ScheduleType is Custom, even though
   // the Night Light is not enabled.
@@ -106,7 +106,7 @@ TEST_F(NightLightMetricsRecorderTest,
 TEST_F(NightLightMetricsRecorderTest,
        RecordTemperatureIfHasSunScheduleButNightLightIsNotEnabled) {
   // Login so that prefs can be saved.
-  SimulateUserLogin(kUserEmail);
+  SimulateUserLogin({kUserEmail});
 
   // No histograms should have been recorded yet.
   histogram_tester_->ExpectTotalCount("Ash.NightLight.Temperature.Initial", 0);
@@ -118,10 +118,10 @@ TEST_F(NightLightMetricsRecorderTest,
   night_light_controller()->SetColorTemperature(temperature);
 
   // Simulate a sign out.
-  Shell::Get()->session_controller()->RequestSignOut();
+  ClearLogin();
 
   // Now that prefs have been saved, login again.
-  SimulateUserLogin(kUserEmail);
+  SimulateUserLogin({kUserEmail});
 
   // Temperature should be recorded if the ScheduleType is SunsetToSunrise,
   // even though the Night Light is not enabled.
@@ -148,7 +148,7 @@ TEST_P(NightLightMetricsRecorderTest_RecordScheduleType, RecordScheduleType) {
   histogram_tester_->ExpectTotalCount("Ash.NightLight.ScheduleType.Initial", 0);
 
   // Login so that prefs can be saved.
-  SimulateUserLogin(kUserEmail);
+  SimulateUserLogin({kUserEmail});
 
   // After first login, since the default ScheduleType is None, a histogram
   // should be recorded with that value.
@@ -159,10 +159,10 @@ TEST_P(NightLightMetricsRecorderTest_RecordScheduleType, RecordScheduleType) {
   night_light_controller()->SetScheduleType(GetParam());
 
   // Simulate a sign out.
-  Shell::Get()->session_controller()->RequestSignOut();
+  ClearLogin();
 
   // Now that prefs have been saved, login again.
-  SimulateUserLogin(kUserEmail);
+  SimulateUserLogin({kUserEmail});
 
   histogram_tester_->ExpectTotalCount("Ash.NightLight.ScheduleType.Initial", 2);
   // When the ScheduleType is None, an additional sample is expected since it

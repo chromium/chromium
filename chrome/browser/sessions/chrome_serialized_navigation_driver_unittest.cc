@@ -12,14 +12,14 @@
 
 class ChromeSerializedNavigationDriverTest : public ::testing::Test {
  public:
-  ChromeSerializedNavigationDriverTest() {}
+  ChromeSerializedNavigationDriverTest() = default;
 
   ChromeSerializedNavigationDriverTest(
       const ChromeSerializedNavigationDriverTest&) = delete;
   ChromeSerializedNavigationDriverTest& operator=(
       const ChromeSerializedNavigationDriverTest&) = delete;
 
-  ~ChromeSerializedNavigationDriverTest() override {}
+  ~ChromeSerializedNavigationDriverTest() override = default;
 
   void SetUp() override {
     sessions::ContentSerializedNavigationDriver::SetInstance(

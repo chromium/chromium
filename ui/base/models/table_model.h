@@ -6,6 +6,7 @@
 #define UI_BASE_MODELS_TABLE_MODEL_H_
 
 #include <string>
+#include <vector>
 
 #include "base/component_export.h"
 #include "third_party/icu/source/common/unicode/uversion.h"
@@ -43,6 +44,36 @@ class COMPONENT_EXPORT(UI_BASE) TableModel {
   // column zero.
   virtual std::u16string GetTooltip(size_t row);
 
+  // Returns the accessibility name and sort status for the header.
+  // If there are multiple columns in the table, the AX name will be combined
+  // names from all visible columns' titles and sort status.
+  // For example: The table has 3 visible columns with title as `col1`, `col2`
+  // and `col3` correspondingly. Their sortable status is `unsorted`,`sorted in
+  // ascending order`,`sorted in descending order`.The accessibility name for
+  // the `header` would be `col1 unsorted col2 sorted in ascending order col3
+  // sorted in descending order`.
+  virtual std::u16string GetAXNameForHeader(
+      const std::vector<std::u16string>& visible_column_titles,
+      const std::vector<std::u16string>& visible_column_sortable);
+
+  // Returns the accessibility name and sort status for the header cell.
+  // For example:  `col1` has sortable status as `sorted in ascending
+  // order`. The accessibility name for the `header` cell would be `col1 sorted
+  // in ascending order`.
+  virtual std::u16string GetAXNameForHeaderCell(
+      const std::u16string& visible_column_title,
+      const std::u16string& visible_column_sortable);
+
+  // Returns the accessibility name for the row.
+  // If there are multiple columns in the `row`, the AX name will be
+  // combined names from all visible columns. For example: The indexed `row`
+  // has 3 visible columns with value as `col1`, `col2` and `col3`
+  // correspondingly. The accessibility name for the `row` would be `col1
+  // col2 col3`.
+  virtual std::u16string GetAXNameForRow(
+      size_t row,
+      const std::vector<int>& visible_column_ids);
+
   // Sets the observer for the model. The TableView should NOT take ownership
   // of the observer.
   virtual void SetObserver(TableModelObserver* observer) = 0;
@@ -67,23 +98,21 @@ class COMPONENT_EXPORT(UI_BASE) TableModel {
 
 // TableColumn specifies the title, alignment and size of a particular column.
 struct COMPONENT_EXPORT(UI_BASE) TableColumn {
-  enum Alignment {
-    LEFT, RIGHT, CENTER
-  };
+  enum Alignment : uint8_t { LEFT, RIGHT, CENTER };
 
   TableColumn();
   TableColumn(int id, Alignment alignment, int width, float percent);
   TableColumn(const TableColumn& other);
   TableColumn& operator=(const TableColumn& other);
 
-  // A unique identifier for the column.
-  int id;
+  // Note: Please be mindful of ordering when adding, modifying, or removing
+  //       fields. The struct should be as tightly packed together as possible.
 
   // The title for the column.
   std::u16string title;
 
-  // Alignment for the content.
-  Alignment alignment;
+  // A unique identifier for the column.
+  int id;
 
   // The size of a column may be specified in two ways:
   // 1. A fixed width. Set the width field to a positive number and the
@@ -104,6 +133,9 @@ struct COMPONENT_EXPORT(UI_BASE) TableColumn {
   // The minimum width required for all items in this column
   // (including the header) to be visible.
   int min_visible_width;
+
+  // Alignment for the content.
+  Alignment alignment;
 
   // Is this column sortable? Default is false.
   bool sortable;

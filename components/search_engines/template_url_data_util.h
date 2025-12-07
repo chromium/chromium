@@ -12,7 +12,7 @@
 namespace TemplateURLPrepopulateData {
 struct PrepopulatedEngine;
 }
-namespace TemplateURLStarterPackData {
+namespace template_url_starter_pack_data {
 struct StarterPackEngine;
 }
 
@@ -38,6 +38,6 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(
 
 // Creates a TemplateURLData structure from a StarterPackEngine struct.
 std::unique_ptr<TemplateURLData> TemplateURLDataFromStarterPackEngine(
-    const TemplateURLStarterPackData::StarterPackEngine& engine);
+    const template_url_starter_pack_data::StarterPackEngine& engine);
 
 #endif  // COMPONENTS_SEARCH_ENGINES_TEMPLATE_URL_DATA_UTIL_H_

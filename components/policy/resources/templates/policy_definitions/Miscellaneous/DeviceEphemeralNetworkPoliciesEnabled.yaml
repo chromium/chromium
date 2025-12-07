@@ -18,7 +18,8 @@ items:
 - caption: Don't enable the EphemeralNetworkPolicies feature.
   value: false
 owners:
-- pmarko@google.com
+- acostinas@google.com
+- miersh@google.com
 - suprnet@google.com
 schema:
   type: boolean

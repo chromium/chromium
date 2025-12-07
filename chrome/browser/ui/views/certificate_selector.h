@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "net/ssl/client_cert_identity.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/table/table_view_observer.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -22,13 +23,11 @@ namespace views {
 class LabelButton;
 class TableView;
 class View;
-}
+}  // namespace views
 
 namespace ui {
 class TableModel;
 }
-
-namespace chrome {
 
 // A base class for dialogs that show a given list of certificates to the user.
 // The user can select a single certificate and look at details of each
@@ -69,7 +68,7 @@ class CertificateSelector : public views::DialogDelegateView,
   // DialogDelegateView:
   bool Accept() override;
   std::u16string GetWindowTitle() const override;
-  bool IsDialogButtonEnabled(ui::DialogButton button) const override;
+  bool IsDialogButtonEnabled(ui::mojom::DialogButton button) const override;
   views::View* GetInitiallyFocusedView() override;
 
   // views::TableViewObserver:
@@ -108,7 +107,5 @@ class CertificateSelector : public views::DialogDelegateView,
   raw_ptr<views::TableView, DanglingUntriaged> table_ = nullptr;
   raw_ptr<views::LabelButton, DanglingUntriaged> view_cert_button_ = nullptr;
 };
-
-}  // namespace chrome
 
 #endif  // CHROME_BROWSER_UI_VIEWS_CERTIFICATE_SELECTOR_H_

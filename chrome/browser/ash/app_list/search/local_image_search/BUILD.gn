@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("local_image_search") {
   sources = [
@@ -34,6 +34,8 @@ static_library("local_image_search") {
     "sql_database.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/public/cpp",
     "//base",
@@ -42,6 +44,7 @@ static_library("local_image_search") {
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/screen_ai/public:optical_character_recognizer",
+    "//chrome/browser/ui/ash/thumbnail_loader",
     "//chromeos/ash/components/string_matching",
     "//chromeos/services/machine_learning/public/cpp",
     "//chromeos/services/machine_learning/public/mojom",
@@ -71,7 +74,9 @@ source_set("unit_tests") {
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ui",
     "//chromeos/dbus/machine_learning",
+    "//content/test:test_support",
     "//sql",
+    "//sql:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

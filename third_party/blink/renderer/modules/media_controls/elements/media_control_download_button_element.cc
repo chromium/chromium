@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
+#include "ui/strings/grit/ax_strings.h"
 
 namespace blink {
 
@@ -29,7 +30,7 @@ MediaControlDownloadButtonElement::MediaControlDownloadButtonElement(
   setType(input_type_names::kButton);
   setAttribute(
       html_names::kAriaLabelAttr,
-      WTF::AtomicString(GetLocale().QueryString(IDS_AX_MEDIA_DOWNLOAD_BUTTON)));
+      AtomicString(GetLocale().QueryString(IDS_AX_MEDIA_DOWNLOAD_BUTTON)));
 
   SetShadowPseudoId(AtomicString("-internal-media-controls-download-button"));
   SetIsWanted(false);

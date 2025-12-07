@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "crypto/nss_key_util.h"
 #include "crypto/nss_util.h"
-#include "crypto/rsa_private_key.h"
 
 namespace ownership {
 
@@ -75,12 +74,12 @@ void MockOwnerKeyUtil::SetPublicKey(const std::vector<uint8_t>& key) {
 }
 
 void MockOwnerKeyUtil::SetPublicKeyFromPrivateKey(
-    const crypto::RSAPrivateKey& key) {
-  CHECK(key.ExportPublicKey(&public_key_));
+    crypto::keypair::PrivateKey key) {
+  public_key_ = key.ToSubjectPublicKeyInfo();
 }
 
 void MockOwnerKeyUtil::ImportPrivateKeyAndSetPublicKey(
-    std::unique_ptr<crypto::RSAPrivateKey> key) {
+    crypto::keypair::PrivateKey key) {
   crypto::EnsureNSSInit();
 
   crypto::ScopedPK11Slot slot(PK11_GetInternalSlot());
@@ -89,15 +88,14 @@ void MockOwnerKeyUtil::ImportPrivateKeyAndSetPublicKey(
 }
 
 void MockOwnerKeyUtil::ImportPrivateKeyAndSetPublicKeyImpl(
-    std::unique_ptr<crypto::RSAPrivateKey> key,
+    crypto::keypair::PrivateKey key,
     PK11SlotInfo* slot) {
   CHECK(slot);
   crypto::EnsureNSSInit();
 
-  CHECK(key->ExportPublicKey(&public_key_));
+  public_key_ = key.ToSubjectPublicKeyInfo();
 
-  std::vector<uint8_t> key_exported;
-  CHECK(key->ExportPrivateKey(&key_exported));
+  std::vector<uint8_t> key_exported = key.ToPrivateKeyInfo();
 
   private_key_ = crypto::ImportNSSKeyFromPrivateKeyInfo(
       slot, key_exported, false /* not permanent */);
@@ -105,7 +103,7 @@ void MockOwnerKeyUtil::ImportPrivateKeyAndSetPublicKeyImpl(
 }
 
 void MockOwnerKeyUtil::ImportPrivateKeyInSlotAndSetPublicKey(
-    std::unique_ptr<crypto::RSAPrivateKey> key,
+    crypto::keypair::PrivateKey key,
     PK11SlotInfo* slot) {
   private_key_slot_id_ = PK11_GetSlotID(slot);
   ImportPrivateKeyAndSetPublicKeyImpl(std::move(key), slot);

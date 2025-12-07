@@ -1,0 +1,43 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
+source_set("bluetooth") {
+  sources = [ "bluetooth_dialogs.h" ]
+
+  public_deps = [
+    "//components/permissions",
+    "//content/public/browser",
+  ]
+
+  deps = []
+  if (!is_android) {
+    sources += [ "chrome_bluetooth_chooser_controller.h" ]
+  }
+}
+
+source_set("impl") {
+  deps = []
+  sources = []
+
+  if (!is_android) {
+    sources += [ "chrome_bluetooth_chooser_controller.cc" ]
+
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+    deps += [
+      ":bluetooth",
+      "//chrome/app:generated_resources",
+      "//chrome/browser/chooser_controller",
+      "//chrome/common",
+      "//components/permissions:permissions_common",
+      "//components/strings:components_strings_grit",
+    ]
+
+    if (is_chromeos) {
+      deps += [ "//ash/webui/settings/public/constants:mojom" ]
+    }
+  }
+}

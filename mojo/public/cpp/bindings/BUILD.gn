@@ -6,10 +6,11 @@ import("//base/trace_event/tracing.gni")
 import("//build/buildflag_header.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/features.gni")
-import("//build/config/nacl/config.gni")
 import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
 
 declare_args() {
+  # Note that even when set to false, there still exists minimal trace events
+  # for sync calls. See https://crrev.com/952184
   enable_mojo_tracing = extended_tracing_enabled
 
   # enable_random_mojo_delays starts a task runner that periodically pauses
@@ -48,18 +49,19 @@ component("bindings_base") {
     "clone_traits.h",
     "connection_group.cc",
     "connection_group.h",
+    "connection_group_ref.cc",
+    "connection_group_ref.h",
     "deprecated_interface_types_forward.h",
     "disconnect_reason.h",
     "enum_traits.h",
     "enum_utils.h",
     "equals_traits.h",
-    "features.cc",
-    "features.h",
     "interface_data_view.h",
     "interface_id.h",
     "lib/array_internal.cc",
     "lib/array_internal.h",
     "lib/array_serialization.h",
+    "lib/array_serialization_send_validation.h",
     "lib/associated_group.cc",
     "lib/associated_group_controller.cc",
     "lib/bindings_internal.h",
@@ -68,9 +70,12 @@ component("bindings_base") {
     "lib/default_construct_tag_internal.h",
     "lib/handle_serialization.cc",
     "lib/handle_serialization.h",
+    "lib/handle_serialization_send_validation.h",
+    "lib/has_send_validation_helper.h",
     "lib/hash_util.h",
     "lib/map_data_internal.h",
     "lib/map_serialization.h",
+    "lib/map_serialization_send_validation.h",
     "lib/may_auto_lock.h",
     "lib/message.cc",
     "lib/message_fragment.h",
@@ -88,10 +93,14 @@ component("bindings_base") {
     "lib/scoped_interface_endpoint_handle.cc",
     "lib/send_message_helper.cc",
     "lib/send_message_helper.h",
+    "lib/send_validation.h",
+    "lib/send_validation_serialization.h",
+    "lib/send_validation_type.h",
     "lib/serialization.h",
     "lib/serialization_forward.h",
     "lib/serialization_util.h",
     "lib/string_serialization.h",
+    "lib/string_serialization_send_validation.h",
     "lib/template_util.h",
     "lib/unserialized_message_context.cc",
     "lib/unserialized_message_context.h",
@@ -185,11 +194,14 @@ component("bindings") {
     "lib/interface_ptr_state.cc",
     "lib/interface_ptr_state.h",
     "lib/interface_serialization.h",
+    "lib/interface_serialization_send_validation.h",
     "lib/message_dispatcher.cc",
     "lib/multiplex_router.cc",
     "lib/multiplex_router.h",
     "lib/native_enum_data.h",
     "lib/native_enum_serialization.h",
+    "lib/native_handle_type_converters.cc",
+    "lib/native_handle_type_converters.h",
     "lib/native_struct_serialization.cc",
     "lib/native_struct_serialization.h",
     "lib/pipe_control_message_handler.cc",
@@ -263,10 +275,7 @@ component("bindings") {
     "//mojo/public/interfaces/bindings",
   ]
 
-  deps = [
-    "//ipc:native_handle_type_converters",
-    "//mojo/core/embedder",
-  ]
+  deps = [ "//mojo/core/embedder" ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 

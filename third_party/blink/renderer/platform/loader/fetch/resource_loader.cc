@@ -27,16 +27,12 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
 
 #include <algorithm>
 #include <optional>
 #include <utility>
+#include <variant>
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -60,12 +56,10 @@
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_data.h"
@@ -85,6 +79,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/console_logger.h"
 #include "third_party/blink/renderer/platform/loader/fetch/detachable_use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_context.h"
+#include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_utils.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
@@ -107,7 +102,8 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "url/url_constants.h"
 
 namespace blink {
@@ -141,39 +137,6 @@ bool IsThrottlableRequestContext(mojom::blink::RequestContextType context) {
          context != mojom::blink::RequestContextType::AUDIO;
 }
 
-void LogMixedAutoupgradeMetrics(blink::MixedContentAutoupgradeStatus status,
-                                std::optional<int> response_or_error_code,
-                                ukm::SourceId source_id,
-                                ukm::UkmRecorder* recorder,
-                                Resource* resource) {
-  UMA_HISTOGRAM_ENUMERATION("MixedAutoupgrade.ResourceRequest.Status", status);
-  switch (status) {
-    case MixedContentAutoupgradeStatus::kStarted:
-      UMA_HISTOGRAM_ENUMERATION("MixedAutoupgrade.ResourceRequest.Start.Type",
-                                resource->GetType());
-      break;
-    case MixedContentAutoupgradeStatus::kFailed:
-      UMA_HISTOGRAM_ENUMERATION("MixedAutoupgrade.ResourceRequest.Failure.Type",
-                                resource->GetType());
-      UMA_HISTOGRAM_BOOLEAN("MixedAutoupgrade.ResourceRequest.Failure.IsAd",
-                            resource->GetResourceRequest().IsAdResource());
-      break;
-    case MixedContentAutoupgradeStatus::kResponseReceived:
-      UMA_HISTOGRAM_ENUMERATION(
-          "MixedAutoupgrade.ResourceRequest.Response.Type",
-          resource->GetType());
-  };
-  ukm::builders::MixedContentAutoupgrade_ResourceRequest builder(source_id);
-  builder.SetStatus(static_cast<int64_t>(status));
-  if (response_or_error_code.has_value()) {
-    base::UmaHistogramSparse(
-        "MixedAutoupgrade.ResourceRequest.ErrorOrResponseCode",
-        response_or_error_code.value());
-    builder.SetCode(response_or_error_code.value());
-  }
-  builder.Record(recorder);
-}
-
 bool RequestContextObserveResponse(mojom::blink::RequestContextType type) {
   switch (type) {
     case mojom::blink::RequestContextType::PING:
@@ -195,22 +158,6 @@ SchedulingPolicy::Feature GetFeatureFromRequestContextType(
       return SchedulingPolicy::Feature::kOutstandingNetworkRequestXHR;
     default:
       return SchedulingPolicy::Feature::kOutstandingNetworkRequestOthers;
-  }
-}
-
-std::optional<mojom::WebFeature> PreflightResultToWebFeature(
-    network::mojom::PrivateNetworkAccessPreflightResult result) {
-  using Result = network::mojom::PrivateNetworkAccessPreflightResult;
-
-  switch (result) {
-    case Result::kNone:
-      return std::nullopt;
-    case Result::kError:
-      return mojom::WebFeature::kPrivateNetworkAccessPreflightError;
-    case Result::kSuccess:
-      return mojom::WebFeature::kPrivateNetworkAccessPreflightSuccess;
-    case Result::kWarning:
-      return mojom::WebFeature::kPrivateNetworkAccessPreflightWarning;
   }
 }
 
@@ -275,7 +222,7 @@ ResourceLoader::ResourceLoader(ResourceFetcher* fetcher,
       is_cache_aware_loading_activated_(
           ShouldActivateCacheAwareLoading(fetcher, resource)),
       progress_receiver_(this, context),
-      cancel_timer_(fetcher_->GetTaskRunner(),
+      cancel_timer_(fetcher_->GetUnfreezableTaskRunner(),
                     this,
                     &ResourceLoader::CancelTimerFired) {
   DCHECK(resource_);
@@ -288,13 +235,7 @@ ResourceLoader::ResourceLoader(ResourceFetcher* fetcher,
   const auto& request = resource_->GetResourceRequest();
   auto request_context = request.GetRequestContext();
   if (auto* frame_or_worker_scheduler = fetcher->GetFrameOrWorkerScheduler()) {
-    if (!base::FeatureList::IsEnabled(
-            features::kBackForwardCacheWithKeepaliveRequest) &&
-        request.GetKeepalive()) {
-      frame_or_worker_scheduler->RegisterStickyFeature(
-          SchedulingPolicy::Feature::kKeepaliveRequest,
-          {SchedulingPolicy::DisableBackForwardCache()});
-    } else if (!RequestContextObserveResponse(request_context)) {
+    if (!RequestContextObserveResponse(request_context)) {
       // Only when this feature is turned on and the loading tasks keep being
       // processed and the data is queued up on the renderer, a page can stay in
       // BackForwardCache with network requests.
@@ -335,6 +276,8 @@ void ResourceLoader::Start() {
 
   if (!resource_->Url().ProtocolIsData()) {
     network_resource_request_ = CreateNetworkRequest(request, request_body_);
+    fetcher_->PopulateResourceRequestPermissionsPolicy(
+        network_resource_request_.get());
     if (is_cache_aware_loading_activated_) {
       // Override cache policy for cache-aware loading. If this request fails, a
       // reload with original request will be triggered in DidFail().
@@ -374,11 +317,6 @@ void ResourceLoader::Start() {
     throttle_option = ResourceLoadScheduler::ThrottleOption::kStoppable;
   }
 
-  if (request.IsAutomaticUpgrade()) {
-    LogMixedAutoupgradeMetrics(MixedContentAutoupgradeStatus::kStarted,
-                               std::nullopt, request.GetUkmSourceId(),
-                               fetcher_->UkmRecorder(), resource_);
-  }
   if (resource_->GetResourceRequest().IsDownloadToNetworkCacheOnly()) {
     // The download-to-cache requests are throttled in net/, they are fire-and
     // forget, and cannot unregister properly from the scheduler once they are
@@ -506,8 +444,8 @@ void ResourceLoader::SetDefersLoading(LoaderFreezeMode mode) {
     if (freeze_mode_ == LoaderFreezeMode::kNone) {
       defers_handling_data_url_ = false;
       GetLoadingTaskRunner()->PostTask(
-          FROM_HERE, WTF::BindOnce(&ResourceLoader::HandleDataUrl,
-                                   WrapWeakPersistent(this)));
+          FROM_HERE,
+          BindOnce(&ResourceLoader::HandleDataUrl, WrapWeakPersistent(this)));
     }
   }
 
@@ -591,9 +529,6 @@ bool ResourceLoader::WillFollowRedirect(
         mojom::WebFeature::kAuthorizationCoveredByWildcard);
   }
 
-  CountPrivateNetworkAccessPreflightResult(
-      passed_redirect_response.PrivateNetworkAccessPreflightResult());
-
   if (resource_->GetResourceRequest().HttpHeaderFields().Contains(
           http_names::kAuthorization) &&
       !SecurityOrigin::AreSameOrigin(resource_->LastResourceRequest().Url(),
@@ -606,9 +541,7 @@ bool ResourceLoader::WillFollowRedirect(
   // the placement of this code, together with the //net counterpart.
   if (removed_headers) {
     // Step 13 of https://fetch.spec.whatwg.org/#http-redirect-fetch
-    if (base::FeatureList::IsEnabled(
-            features::kRemoveAuthroizationOnCrossOriginRedirect) &&
-        !SecurityOrigin::AreSameOrigin(resource_->LastResourceRequest().Url(),
+    if (!SecurityOrigin::AreSameOrigin(resource_->LastResourceRequest().Url(),
                                        new_url)) {
       removed_headers->push_back(net::HttpRequestHeaders::kAuthorization);
     }
@@ -675,9 +608,11 @@ bool ResourceLoader::WillFollowRedirect(
 
     // CanRequest() checks only enforced CSP, so check report-only here to
     // ensure that violations are sent.
+    // CanRequest() will also perform IntegrityPolicy verifications if needed.
     Context().CheckCSPForRequest(
-        request_context, request_destination, new_url_prior_upgrade, options,
-        reporting_disposition, url_before_redirects,
+        request_context, request_destination, request_mode,
+        new_url_prior_upgrade, options, reporting_disposition,
+        url_before_redirects,
         ResourceRequest::RedirectStatus::kFollowedRedirect);
 
     std::optional<ResourceRequestBlockedReason> blocked_reason =
@@ -686,8 +621,8 @@ bool ResourceLoader::WillFollowRedirect(
                              new_request->GetRedirectInfo());
 
     if (Context().CalculateIfAdSubresource(
-            *new_request, std::nullopt /* alias_url */, resource_type,
-            options.initiator_info)) {
+            *new_request, /*alias_url=*/std::nullopt, resource_type,
+            options.initiator_info, /*out_rule=*/nullptr)) {
       new_request->SetIsAdResource();
     }
 
@@ -779,7 +714,7 @@ FetchContext& ResourceLoader::Context() const {
 
 void ResourceLoader::DidReceiveResponse(
     const WebURLResponse& response,
-    absl::variant<mojo::ScopedDataPipeConsumerHandle, SegmentedBuffer> body,
+    std::variant<mojo::ScopedDataPipeConsumerHandle, SegmentedBuffer> body,
     std::optional<mojo_base::BigBuffer> cached_metadata) {
   DCHECK(!response.IsNull());
 
@@ -807,16 +742,24 @@ void ResourceLoader::DidReceiveResponse(
     // the body of 304 Not Modified response. And Blink don't fetch the
     // revalidating request when the page is controlled by a service worker.
     // So, We don't need to handle the body for 304 Not Modified responses.
-    CHECK(!absl::holds_alternative<SegmentedBuffer>(body) ||
-          absl::get<SegmentedBuffer>(body).empty());
+    if (std::holds_alternative<SegmentedBuffer>(body)) {
+      CHECK(std::get<SegmentedBuffer>(body).empty());
+    } else {
+      CHECK(std::holds_alternative<mojo::ScopedDataPipeConsumerHandle>(body));
+      // If the `body` is released here, the network service will treat the
+      // disconnection of the `body` handle as if the request was cancelled. So
+      // we keeps the `body` handle.
+      empty_body_handle_for_revalidation_ =
+          std::move(std::get<mojo::ScopedDataPipeConsumerHandle>(body));
+    }
     return;
   }
-  if (absl::holds_alternative<SegmentedBuffer>(body)) {
-    DidReceiveDataImpl(std::move(absl::get<SegmentedBuffer>(body)));
+  if (std::holds_alternative<SegmentedBuffer>(body)) {
+    DidReceiveDataImpl(std::move(std::get<SegmentedBuffer>(body)));
     return;
   }
   mojo::ScopedDataPipeConsumerHandle body_handle =
-      std::move(absl::get<mojo::ScopedDataPipeConsumerHandle>(body));
+      std::move(std::get<mojo::ScopedDataPipeConsumerHandle>(body));
   if (!body_handle) {
     return;
   }
@@ -833,8 +776,8 @@ void ResourceLoader::DidReceiveResponse(
         std::max(static_cast<int64_t>(0), response.ExpectedContentLength()),
         std::move(body_handle),
         progress_receiver_.BindNewEndpointAndPassRemote(GetLoadingTaskRunner()),
-        WTF::BindOnce(&ResourceLoader::FinishedCreatingBlob,
-                      WrapWeakPersistent(this)));
+        blink::BindOnce(&ResourceLoader::FinishedCreatingBlob,
+                        WrapWeakPersistent(this)));
     return;
   }
 
@@ -894,14 +837,24 @@ void ResourceLoader::DidReceiveResponseInternal(
         mojom::WebFeature::kAuthorizationCoveredByWildcard);
   }
 
-  CountPrivateNetworkAccessPreflightResult(
-      response.PrivateNetworkAccessPreflightResult());
+  if (response.HttpHeaderField(http_names::kSecSessionRegistration) ||
+      response.HttpHeaderField(http_names::kSecureSessionRegistration)) {
+    fetcher_->GetUseCounter().CountUse(
+        WebFeature::kDeviceBoundSessionRegistered);
+  }
 
-  if (request.IsAutomaticUpgrade()) {
-    LogMixedAutoupgradeMetrics(MixedContentAutoupgradeStatus::kResponseReceived,
-                               response.HttpStatusCode(),
-                               request.GetUkmSourceId(),
-                               fetcher_->UkmRecorder(), resource_);
+  switch (response.DeviceBoundSessionUsage()) {
+    case network::mojom::DeviceBoundSessionUsage::kDeferred:
+      fetcher_->GetUseCounter().CountUse(
+          WebFeature::kDeviceBoundSessionRequestDeferral);
+      [[fallthrough]];
+    case network::mojom::DeviceBoundSessionUsage::kInScopeNotDeferred:
+      fetcher_->GetUseCounter().CountUse(
+          WebFeature::kDeviceBoundSessionRequestInScope);
+      break;
+    case network::mojom::DeviceBoundSessionUsage::kNoUsage:
+    case network::mojom::DeviceBoundSessionUsage::kUnknown:
+      break;
   }
 
   ResourceType resource_type = resource_->GetType();
@@ -912,6 +865,7 @@ void ResourceLoader::DidReceiveResponseInternal(
       initial_request.GetRequestContext();
   network::mojom::RequestDestination request_destination =
       initial_request.GetRequestDestination();
+  network::mojom::RequestMode request_mode = initial_request.GetMode();
 
   const ResourceLoaderOptions& options = resource_->Options();
 
@@ -929,20 +883,6 @@ void ResourceLoader::DidReceiveResponseInternal(
     return;
   }
 
-  // https://wicg.github.io/cross-origin-embedder-policy/#integration-html
-  // TODO(crbug.com/1064920): Remove this once PlzDedicatedWorker ships.
-  if (options.reject_coep_unsafe_none &&
-      !network::CompatibleWithCrossOriginIsolated(
-          response.GetCrossOriginEmbedderPolicy()) &&
-      !response.CurrentRequestUrl().ProtocolIsData() &&
-      !response.CurrentRequestUrl().ProtocolIs("blob")) {
-    DCHECK(!base::FeatureList::IsEnabled(features::kPlzDedicatedWorker));
-    HandleError(ResourceError::BlockedByResponse(
-        response.CurrentRequestUrl(), network::mojom::BlockedByResponseReason::
-                                          kCoepFrameResourceNeedsCoepHeader));
-    return;
-  }
-
   // Redirect information for possible post-request checks below.
   const std::optional<ResourceRequest::RedirectInfo>& previous_redirect_info =
       request.GetRedirectInfo();
@@ -951,6 +891,9 @@ void ResourceLoader::DidReceiveResponseInternal(
                                  : request.Url();
   const ResourceRequest::RedirectInfo redirect_info(original_url,
                                                     request.Url());
+
+  Context().CheckGuardrailsPolicyForRequest(resource_type, request_context,
+                                            response, request.Url());
 
   if (response.WasFetchedViaServiceWorker()) {
     // Run post-request CSP checks. This is the "Should response to request be
@@ -974,10 +917,11 @@ void ResourceLoader::DidReceiveResponseInternal(
     //
     // CanRequest() below only checks enforced policies: check report-only
     // here to ensure violations are sent.
+    // CanRequest() will also perform IntegrityPolicy verifications if needed.
     const KURL& response_url = response.ResponseUrl();
     Context().CheckCSPForRequest(
-        request_context, request_destination, response_url, options,
-        ReportingDisposition::kReport, original_url,
+        request_context, request_destination, request_mode, response_url,
+        options, ReportingDisposition::kReport, original_url,
         ResourceRequest::RedirectStatus::kFollowedRedirect);
 
     std::optional<ResourceRequestBlockedReason> blocked_reason =
@@ -1001,9 +945,6 @@ void ResourceLoader::DidReceiveResponseInternal(
       return;
     }
   }
-
-  scheduler_->SetConnectionInfo(scheduler_client_id_,
-                                response.ConnectionInfo());
 
   // A response should not serve partial content if it was not requested via a
   // Range header: https://fetch.spec.whatwg.org/#main-fetch
@@ -1076,22 +1017,22 @@ void ResourceLoader::DidReceiveData(base::span<const char> data) {
 }
 
 void ResourceLoader::DidReceiveDataImpl(
-    absl::variant<SegmentedBuffer, base::span<const char>> data) {
+    std::variant<SegmentedBuffer, base::span<const char>> data) {
   size_t data_size = 0;
   // If a BackgroundResponseProcessor consumed the body data on the background
   // thread, this method is called with a SegmentedBuffer data. Otherwise, it is
   // called with a span<const char> data several times.
-  if (absl::holds_alternative<SegmentedBuffer>(data)) {
-    data_size = absl::get<SegmentedBuffer>(data).size();
+  if (std::holds_alternative<SegmentedBuffer>(data)) {
+    data_size = std::get<SegmentedBuffer>(data).size();
     if (auto* observer = fetcher_->GetResourceLoadObserver()) {
-      for (const auto& span : absl::get<SegmentedBuffer>(data)) {
+      for (const auto& span : std::get<SegmentedBuffer>(data)) {
         observer->DidReceiveData(resource_->InspectorId(),
                                  base::SpanOrSize(span));
       }
     }
   } else {
-    CHECK(absl::holds_alternative<base::span<const char>>(data));
-    base::span<const char> span = absl::get<base::span<const char>>(data);
+    CHECK(std::holds_alternative<base::span<const char>>(data));
+    base::span<const char> span = std::get<base::span<const char>>(data);
     data_size = span.size();
     if (auto* observer = fetcher_->GetResourceLoadObserver()) {
       observer->DidReceiveData(resource_->InspectorId(),
@@ -1124,10 +1065,9 @@ void ResourceLoader::DidReceiveTransferSizeUpdate(int transfer_size_diff) {
 }
 
 void ResourceLoader::DidFinishLoadingFirstPartInMultipart() {
-  TRACE_EVENT_NESTABLE_ASYNC_END1(
-      TRACE_DISABLED_BY_DEFAULT("network"), "ResourceLoad",
-      TRACE_ID_WITH_SCOPE("BlinkResourceID",
-                          TRACE_ID_LOCAL(resource_->InspectorId())),
+  TRACE_EVENT_END(
+      TRACE_DISABLED_BY_DEFAULT("network"),
+      perfetto::NamedTrack("BlinkResourceID", resource_->InspectorId()),
       "outcome", RequestOutcomeToString(RequestOutcome::kSuccess));
 
   fetcher_->HandleLoaderFinish(resource_.Get(), base::TimeTicks(),
@@ -1174,10 +1114,9 @@ void ResourceLoader::DidFinishLoading(base::TimeTicks response_end_time,
   deferred_finish_loading_info_ = std::nullopt;
   finished_ = true;
 
-  TRACE_EVENT_NESTABLE_ASYNC_END1(
-      TRACE_DISABLED_BY_DEFAULT("network"), "ResourceLoad",
-      TRACE_ID_WITH_SCOPE("BlinkResourceID",
-                          TRACE_ID_LOCAL(resource_->InspectorId())),
+  TRACE_EVENT_END(
+      TRACE_DISABLED_BY_DEFAULT("network"),
+      perfetto::NamedTrack("BlinkResourceID", resource_->InspectorId()),
       "outcome", RequestOutcomeToString(RequestOutcome::kSuccess));
 
   fetcher_->HandleLoaderFinish(resource_.Get(), response_end_time,
@@ -1190,17 +1129,7 @@ void ResourceLoader::DidFail(const WebURLError& error,
                              int64_t encoded_data_length,
                              uint64_t encoded_body_length,
                              int64_t decoded_body_length) {
-  const ResourceRequestHead& request = resource_->GetResourceRequest();
   response_end_time_for_error_cases_ = response_end_time;
-
-  if (request.IsAutomaticUpgrade()) {
-    LogMixedAutoupgradeMetrics(MixedContentAutoupgradeStatus::kFailed,
-                               error.reason(), request.GetUkmSourceId(),
-                               fetcher_->UkmRecorder(), resource_);
-  }
-
-  CountPrivateNetworkAccessPreflightResult(
-      error.private_network_access_preflight_result());
 
   resource_->SetEncodedDataLength(encoded_data_length);
   resource_->SetEncodedBodyLength(encoded_body_length);
@@ -1241,17 +1170,23 @@ void ResourceLoader::HandleError(const ResourceError& error) {
     Restart();
     return;
   }
-  if (error.CorsErrorStatus() &&
-      !base::FeatureList::IsEnabled(blink::features::kCORSErrorsIssueOnly)) {
+  if (error.CorsErrorStatus()) {
     // CORS issues are reported via network service instrumentation.
-    fetcher_->GetConsoleLogger().AddConsoleMessage(
-        mojom::ConsoleMessageSource::kJavaScript,
-        mojom::ConsoleMessageLevel::kError,
-        cors::GetErrorString(
-            *error.CorsErrorStatus(), resource_->GetResourceRequest().Url(),
-            resource_->LastResourceRequest().Url(), *resource_->GetOrigin(),
-            resource_->GetType(), resource_->Options().initiator_info.name),
-        false /* discard_duplicates */, mojom::ConsoleMessageCategory::Cors);
+    const AtomicString& initiator_name =
+        resource_->Options().initiator_info.name;
+    if (initiator_name != fetch_initiator_type_names::kFetch ||
+        !base::FeatureList::IsEnabled(
+            features::kDevToolsImprovedNetworkError)) {
+      fetcher_->GetConsoleLogger().AddConsoleMessage(
+          mojom::blink::ConsoleMessageSource::kJavaScript,
+          mojom::blink::ConsoleMessageLevel::kError,
+          cors::GetErrorStringForConsoleMessage(
+              *error.CorsErrorStatus(), resource_->GetResourceRequest().Url(),
+              resource_->LastResourceRequest().Url(), *resource_->GetOrigin(),
+              resource_->GetType(), initiator_name),
+          false /* discard_duplicates */,
+          mojom::blink::ConsoleMessageCategory::Cors);
+    }
   }
 
   Release(ResourceLoadScheduler::ReleaseOption::kReleaseAndSchedule,
@@ -1262,10 +1197,9 @@ void ResourceLoader::HandleError(const ResourceError& error) {
   deferred_finish_loading_info_ = std::nullopt;
   finished_ = true;
 
-  TRACE_EVENT_NESTABLE_ASYNC_END1(
-      TRACE_DISABLED_BY_DEFAULT("network"), "ResourceLoad",
-      TRACE_ID_WITH_SCOPE("BlinkResourceID",
-                          TRACE_ID_LOCAL(resource_->InspectorId())),
+  TRACE_EVENT_END(
+      TRACE_DISABLED_BY_DEFAULT("network"),
+      perfetto::NamedTrack("BlinkResourceID", resource_->InspectorId()),
       "outcome", RequestOutcomeToString(RequestOutcome::kFail));
 
   // Set Now() as the response time, in case a more accurate one wasn't set in
@@ -1366,8 +1300,8 @@ void ResourceLoader::RequestAsynchronously() {
     CHECK(!loader_);
     // Handle DataURL in another task instead of using |loader_|.
     GetLoadingTaskRunner()->PostTask(
-        FROM_HERE, WTF::BindOnce(&ResourceLoader::HandleDataUrl,
-                                 WrapWeakPersistent(this)));
+        FROM_HERE,
+        BindOnce(&ResourceLoader::HandleDataUrl, WrapWeakPersistent(this)));
     return;
   }
   CHECK(loader_);
@@ -1420,18 +1354,7 @@ bool ResourceLoader::ShouldBeKeptAliveWhenDetached() const {
   if (base::FeatureList::IsEnabled(
           blink::features::kKeepAliveInBrowserMigration) &&
       resource_->GetResourceRequest().GetKeepalive()) {
-    if (resource_->GetResourceRequest().GetAttributionReportingEligibility() ==
-        network::mojom::AttributionReportingEligibility::kUnset) {
-      // When enabled, non-attribution reporting Fetch keepalive requests should
-      // not be kept alive by renderer.
-      return false;
-    }
-    if (base::FeatureList::IsEnabled(
-            blink::features::kAttributionReportingInBrowserMigration)) {
-      // Attribution reporting keepalive requests with its owned migration
-      // enabled should not be kept alive by renderer.
-      return false;
-    }
+    return false;
   }
 
   return resource_->GetResourceRequest().GetKeepalive() &&
@@ -1503,11 +1426,11 @@ ResourceLoader::CheckResponseNosniff(
     fetcher_->GetConsoleLogger().AddConsoleMessage(
         mojom::ConsoleMessageSource::kSecurity,
         mojom::ConsoleMessageLevel::kError,
-        "Refused to apply style from '" +
-            response.CurrentRequestUrl().ElidedString() +
-            "' because its MIME type ('" + mime_type + "') " +
-            "is not a supported stylesheet MIME type, and strict MIME checking "
-            "is enabled.");
+        StrCat({"Refused to apply style from '",
+                response.CurrentRequestUrl().ElidedString(),
+                "' because its MIME type ('", mime_type,
+                "') is not a supported stylesheet MIME type, and strict "
+                "MIME checking is enabled."}));
     return ResourceRequestBlockedReason::kContentType;
   }
   // TODO(mkwst): Move the 'nosniff' bit of 'AllowedByNosniff::MimeTypeAsScript'
@@ -1614,31 +1537,15 @@ bool ResourceLoader::ShouldBlockRequestBasedOnSubresourceFilterDnsAliasCheck(
     }
 
     if (!resource_->GetResourceRequest().IsAdResource() &&
-        Context().CalculateIfAdSubresource(resource_->GetResourceRequest(),
-                                           alias_url, resource_type,
-                                           options.initiator_info)) {
+        Context().CalculateIfAdSubresource(
+            resource_->GetResourceRequest(), alias_url, resource_type,
+            options.initiator_info, /*out_rule=*/nullptr)) {
       resource_->SetIsAdResource();
       cname_alias_info_for_testing_.was_ad_tagged_based_on_alias = true;
     }
   }
 
   return false;
-}
-
-void ResourceLoader::CountPrivateNetworkAccessPreflightResult(
-    network::mojom::PrivateNetworkAccessPreflightResult result) {
-  std::optional<mojom::WebFeature> feature =
-      PreflightResultToWebFeature(result);
-  if (!feature.has_value()) {
-    return;
-  }
-
-  // We do not call `CountDeprecation()` because sending a deprecation report
-  // would leak cross-origin information about the target of the fetch. Already,
-  // the presence of this information in the renderer process is suboptimal, but
-  // as of writing this is the best way to count a feature use detected in the
-  // network service.
-  fetcher_->GetUseCounter().CountUse(*feature);
 }
 
 void ResourceLoader::CancelIfWebBundleTokenMatches(

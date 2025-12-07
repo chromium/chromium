@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("auth") {
   sources = [
@@ -24,16 +24,21 @@ static_library("auth") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    "//ash/components/arc",
     "//ash/constants",
     "//ash/webui/settings/public/constants",
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
     "//chrome/common",
+    "//chromeos/ash/components/account_manager",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/settings_ui",
     "//components/account_manager_core",
     "//components/prefs",
     "//components/user_manager",
@@ -55,26 +60,31 @@ source_set("browser_tests") {
 
   deps = [
     ":auth",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser:browser_process",
-    "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/account_manager",
+    "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/arc/session:service_launcher",
     "//chrome/browser/ash/arc/test:arc_test_support",
+    "//chrome/browser/ash/certificate_provider",
     "//chrome/browser/ash/login/demo_mode:test_support",
+    "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/test:test_support",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/multi_user",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/cryptohome",
-    "//chromeos/ash/components/standalone_browser",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/account_id",
     "//components/policy/core/common",
     "//components/prefs",

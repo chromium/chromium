@@ -148,15 +148,18 @@ bool IsRangeResponseWithMiddleOfResource(
   if (!IsHttpStatus(response, 206))
     return false;
 
-  std::string range;
-  if (!response.headers->GetNormalizedHeader("content-range", &range))
+  std::optional<std::string> range =
+      response.headers->GetNormalizedHeader("content-range");
+  if (!range) {
     return false;
+  }
 
   int64_t first_byte_position = -1;
   int64_t last_byte_position = -1;
   int64_t instance_length = -1;
   if (!net::HttpUtil::ParseContentRangeHeaderFor206(
-          range, &first_byte_position, &last_byte_position, &instance_length)) {
+          *range, &first_byte_position, &last_byte_position,
+          &instance_length)) {
     return false;
   }
 
@@ -209,9 +212,9 @@ bool HasNoSniff(
   if (!response.headers) {
     return false;
   }
-  std::string nosniff_header;
-  response.headers->GetNormalizedHeader("x-content-type-options",
-                                        &nosniff_header);
+  std::string nosniff_header =
+      response.headers->GetNormalizedHeader("x-content-type-options")
+          .value_or(std::string());
   return base::EqualsCaseInsensitiveASCII(nosniff_header, "nosniff");
 }
 

@@ -9,8 +9,9 @@
 #import <memory>
 
 #import "base/test/ios/wait_util.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -25,9 +26,9 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 class PagePlaceholderTabHelperTest : public PlatformTest {
  protected:
   PagePlaceholderTabHelperTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
     web_state_ = std::make_unique<web::FakeWebState>();
-    web_state_->SetBrowserState(browser_state_.get());
+    web_state_->SetBrowserState(profile_.get());
 
     CGRect frame = {CGPointZero, CGSizeMake(400, 300)};
     web_state_view_ = [[UIView alloc] initWithFrame:frame];
@@ -43,6 +44,7 @@ class PagePlaceholderTabHelperTest : public PlatformTest {
     // PagePlaceholderTabHelper uses SnapshotTabHelper, so ensure it has been
     // created.
     SnapshotTabHelper::CreateForWebState(web_state_.get());
+    SnapshotSourceTabHelper::CreateForWebState(web_state_.get());
     PagePlaceholderTabHelper::CreateForWebState(web_state_.get());
   }
 
@@ -52,7 +54,7 @@ class PagePlaceholderTabHelperTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   ScopedKeyWindow scoped_key_window_;
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<ProfileIOS> profile_;
   std::unique_ptr<web::FakeWebState> web_state_;
   UIView* web_state_view_ = nil;
 };

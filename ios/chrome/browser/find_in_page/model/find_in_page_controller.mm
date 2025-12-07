@@ -12,12 +12,12 @@
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/find_in_page/model/find_in_page_model.h"
 #import "ios/chrome/browser/find_in_page/model/find_in_page_response_delegate.h"
-#import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
 #import "ios/web/public/find_in_page/find_in_page_manager.h"
 #import "ios/web/public/find_in_page/find_in_page_manager_delegate_bridge.h"
 #import "ios/web/public/web_state.h"
@@ -88,13 +88,21 @@ NSString* gSearchTerm;
 }
 
 - (void)disableFindInPage {
+  CHECK(self.fullscreenController);
   _findInPageManager->StopFinding();
+
+  // When pulling to refresh the webpage during FIP,
+  // `userDismissedFindNavigatorForManager` will not be called. We need to
+  // handle the fullscreen exit here in this case.
+  self.fullscreenController->ExitForceFullscreenMode();
 }
 
 - (BOOL)canFindInPage {
-  NewTabPageTabHelper* ntpHelper = NewTabPageTabHelper::FromWebState(_webState);
-  BOOL isNTPActive = ntpHelper->IsActive();
-  return !isNTPActive && _findInPageManager->CanSearchContent();
+  // There is nothing to search on New Tab Page.
+  if (IsVisibleURLNewTabPage(_webState)) {
+    return NO;
+  }
+  return _findInPageManager->CanSearchContent();
 }
 
 - (void)saveSearchTerm {
@@ -118,7 +126,7 @@ NSString* gSearchTerm;
 
 #pragma mark - CRWFindInPageManagerDelegate
 
-- (void)findInPageManager:(web::AbstractFindInPageManager*)manager
+- (void)findInPageManager:(web::FindInPageManager*)manager
     didHighlightMatchesOfQuery:(NSString*)query
                 withMatchCount:(NSInteger)matchCount
                    forWebState:(web::WebState*)webState {
@@ -132,7 +140,7 @@ NSString* gSearchTerm;
   [self.responseDelegate findDidFinishWithUpdatedModel:self.findInPageModel];
 }
 
-- (void)findInPageManager:(web::AbstractFindInPageManager*)manager
+- (void)findInPageManager:(web::FindInPageManager*)manager
     didSelectMatchAtIndex:(NSInteger)index
         withContextString:(NSString*)contextString
               forWebState:(web::WebState*)webState {
@@ -141,24 +149,11 @@ NSString* gSearchTerm;
   [self.responseDelegate findDidFinishWithUpdatedModel:self.findInPageModel];
 }
 
-- (void)userDismissedFindNavigatorForManager:
-    (web::AbstractFindInPageManager*)manager {
+- (void)userDismissedFindNavigatorForManager:(web::FindInPageManager*)manager {
+  CHECK(self.fullscreenController);
   // User dismissed the Find panel so mark the Find UI as inactive.
   self.findInPageModel.enabled = NO;
-
-  if (base::FeatureList::IsEnabled(kDisableFullscreenScrolling)) {
-    ChromeBrowserState* browserState =
-        ChromeBrowserState::FromBrowserState(_webState->GetBrowserState());
-    BOOL incognito = browserState->IsOffTheRecord();
-    BrowserList* browserList =
-        BrowserListFactory::GetForBrowserState(browserState);
-
-    Browser* browser = GetBrowserForTabWithId(
-        browserList, _webState->GetUniqueIdentifier(), incognito);
-    FullscreenController* fullscreenController =
-        FullscreenController::FromBrowser(browser);
-    fullscreenController->ExitFullscreen();
-  }
+  self.fullscreenController->ExitForceFullscreenMode();
 }
 
 - (void)detachFromWebState {
@@ -168,6 +163,7 @@ NSString* gSearchTerm;
   // Remove Find in Page manager from web state.
   web::FindInPageManager::RemoveFromWebState(_webState);
   _webState = nullptr;
+  _fullscreenController = nullptr;
 }
 
 - (void)dealloc {

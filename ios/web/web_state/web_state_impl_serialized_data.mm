@@ -6,9 +6,11 @@
 
 #import "base/strings/string_util.h"
 #import "base/strings/utf_string_conversions.h"
+#import "ios/web/public/navigation/navigation_util.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/session/proto/metadata.pb.h"
 #import "ios/web/public/session/proto/proto_util.h"
+#import "ios/web/public/session/proto/storage.pb.h"
 #import "ios/web/public/web_state_observer.h"
 
 namespace web {
@@ -16,14 +18,12 @@ namespace web {
 WebStateImpl::SerializedData::SerializedData(
     WebStateImpl* owner,
     BrowserState* browser_state,
-    NSString* stable_identifier,
     WebStateID unique_identifier,
     proto::WebStateMetadataStorage metadata,
     WebStateStorageLoader storage_loader,
     NativeSessionFetcher session_fetcher)
     : owner_(owner),
       browser_state_(browser_state),
-      stable_identifier_(stable_identifier),
       unique_identifier_(unique_identifier),
       creation_time_(TimeFromProto(metadata.creation_time())),
       last_active_time_(TimeFromProto(metadata.last_active_time())),
@@ -39,23 +39,15 @@ WebStateImpl::SerializedData::SerializedData(
 WebStateImpl::SerializedData::~SerializedData() = default;
 
 void WebStateImpl::SerializedData::TearDown() {
-  for (auto& observer : observers())
+  for (auto& observer : observers()) {
     observer.WebStateDestroyed(owner_);
-  for (auto& observer : policy_deciders())
+  }
+  for (auto& observer : policy_deciders()) {
     observer.WebStateDestroyed();
-  for (auto& observer : policy_deciders())
+  }
+  for (auto& observer : policy_deciders()) {
     observer.ResetWebState();
-}
-
-CRWSessionStorage* WebStateImpl::SerializedData::GetSessionStorage() const {
-  DCHECK(session_storage_);
-  return session_storage_;
-}
-
-void WebStateImpl::SerializedData::SetSessionStorage(
-    CRWSessionStorage* storage) {
-  session_storage_ = storage;
-  DCHECK(session_storage_);
+  }
 }
 
 void WebStateImpl::SerializedData::SerializeMetadataToProto(
@@ -75,9 +67,28 @@ void WebStateImpl::SerializedData::SerializeMetadataToProto(
   }
 }
 
-WebState::WebStateStorageLoader
-WebStateImpl::SerializedData::TakeStorageLoader() {
-  return std::move(storage_loader_);
+proto::WebStateStorage WebStateImpl::SerializedData::LoadStorage() {
+  if (std::optional<proto::WebStateStorage> storage =
+          std::move(storage_loader_).Run()) {
+    return std::move(storage).value();
+  }
+
+  // If the visible URL is valid but the data cannot be loade from disk,
+  // create a WebStateStorage as if it contained a single navigation to
+  // that URL. The full navigation history will be lost, but at least
+  // the tab won't be fully lost.
+  if (page_visible_url_.is_valid()) {
+    const bool created_with_opener = false;
+    return CreateWebStateStorage(
+        NavigationManager::WebLoadParams(page_visible_url_), page_title_,
+        created_with_opener, UserAgentType::AUTOMATIC, creation_time_);
+  }
+
+  // Return an empty WebStateStorage. This will leave the tab blank,
+  // which will be weird, but there is not much that can be done if
+  // the data cannot be loaded and the visible URL from the metadata
+  // is invalid.
+  return proto::WebStateStorage();
 }
 
 WebState::NativeSessionFetcher
@@ -95,10 +106,6 @@ base::Time WebStateImpl::SerializedData::GetCreationTime() const {
 
 BrowserState* WebStateImpl::SerializedData::GetBrowserState() const {
   return browser_state_;
-}
-
-NSString* WebStateImpl::SerializedData::GetStableIdentifier() const {
-  return stable_identifier_;
 }
 
 WebStateID WebStateImpl::SerializedData::GetUniqueIdentifier() const {

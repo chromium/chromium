@@ -36,8 +36,8 @@ FilePath ResolvePath(const FilePath& path) {
   const unsigned kMaxLinksToResolve = 255;
 
   std::vector<FilePath::StringType> component_vector = path.GetComponents();
-  std::list<FilePath::StringType>
-      components(component_vector.begin(), component_vector.end());
+  std::list<FilePath::StringType> components(component_vector.begin(),
+                                             component_vector.end());
 
   FilePath result;
   unsigned resolve_count = 0;
@@ -54,8 +54,9 @@ FilePath ResolvePath(const FilePath& path) {
 
     FilePath target;
     if (ReadSymbolicLink(current, &target)) {
-      if (target.IsAbsolute())
+      if (target.IsAbsolute()) {
         result.clear();
+      }
       std::vector<FilePath::StringType> target_components =
           target.GetComponents();
       components.insert(components.begin(), target_components.begin(),
@@ -66,8 +67,9 @@ FilePath ResolvePath(const FilePath& path) {
     }
   }
 
-  if (resolve_count >= kMaxLinksToResolve)
+  if (resolve_count >= kMaxLinksToResolve) {
     result.clear();
+  }
   return result;
 }
 
@@ -93,8 +95,9 @@ bool FilePathWatcherFSEvents::Watch(const FilePath& path,
 
   // This class could support non-recursive watches, but that is currently
   // left to FilePathWatcherKQueue.
-  if (type != Type::kRecursive)
+  if (type != Type::kRecursive) {
     return false;
+  }
 
   set_task_runner(SequencedTaskRunner::GetCurrentDefault());
   callback_ = callback;
@@ -142,12 +145,14 @@ void FilePathWatcherFSEvents::FSEventsCallback(
   std::vector<FilePath> paths;
   FSEventStreamEventId root_change_at = FSEventStreamGetLatestEventId(stream);
   for (size_t i = 0; i < num_events; i++) {
-    if (flags[i] & kFSEventStreamEventFlagRootChanged)
+    if (flags[i] & kFSEventStreamEventFlagRootChanged) {
       root_changed = true;
-    if (event_ids[i])
+    }
+    if (event_ids[i]) {
       root_change_at = std::min(root_change_at, event_ids[i]);
-    paths.push_back(FilePath(
-        reinterpret_cast<char**>(event_paths)[i]).StripTrailingSeparators());
+    }
+    paths.push_back(FilePath(reinterpret_cast<char**>(event_paths)[i])
+                        .StripTrailingSeparators());
   }
 
   // Reinitialize the event stream if we find changes to the root. This is
@@ -169,8 +174,9 @@ void FilePathWatcherFSEvents::FSEventsCallback(
         FROM_HERE, BindOnce(
                        [](WeakPtr<FilePathWatcherFSEvents> weak_watcher,
                           FSEventStreamEventId root_change_at) {
-                         if (!weak_watcher)
+                         if (!weak_watcher) {
                            return;
+                         }
                          FilePathWatcherFSEvents* watcher = weak_watcher.get();
                          dispatch_async(watcher->queue_.get(), ^{
                            watcher->UpdateEventStream(root_change_at);

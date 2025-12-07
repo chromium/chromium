@@ -13,12 +13,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 
-#include <optional>
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/win/pe_image.h"
+#include "base/win/win_util.h"
 #include "sandbox/win/src/internal_types.h"
 #include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/sandbox_factory.h"
@@ -32,6 +33,10 @@ SANDBOX_INTERCEPT NtExports g_nt;
 }  // namespace sandbox
 
 namespace {
+
+// Uses value of FILE_INFORMATION_CLASS defined in Wdm.h but not in user-mode.
+// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ne-wdm-_file_information_class
+constexpr uint32_t FileRenameInformation = 10;
 
 #if defined(_WIN64)
 // Align a pointer to the next allocation granularity boundary.
@@ -257,9 +262,8 @@ std::optional<base::span<const uint8_t>> GetGlobalDelegateData() {
   if (!MapGlobalMemory()) {
     return std::nullopt;
   }
-  return base::make_span(
-      reinterpret_cast<const uint8_t*>(g_shared_delegate_data),
-      g_delegate_data_size);
+  return base::span(reinterpret_cast<const uint8_t*>(g_shared_delegate_data),
+                    g_delegate_data_size);
 }
 
 const NtExports* GetNtExports() {
@@ -325,53 +329,6 @@ NTSTATUS CopyData(void* destination, const void* source, size_t bytes) {
   } __except (EXCEPTION_EXECUTE_HANDLER) {
     ret = (NTSTATUS)GetExceptionCode();
   }
-  return ret;
-}
-
-NTSTATUS CopyNameAndAttributes(
-    const OBJECT_ATTRIBUTES* in_object,
-    std::unique_ptr<wchar_t, NtAllocDeleter>* out_name,
-    size_t* out_name_len,
-    uint32_t* attributes) {
-  if (!InitHeap())
-    return STATUS_NO_MEMORY;
-
-  DCHECK_NT(out_name);
-  DCHECK_NT(out_name_len);
-  NTSTATUS ret = STATUS_UNSUCCESSFUL;
-  __try {
-    do {
-      if (in_object->RootDirectory != nullptr)
-        break;
-      if (!in_object->ObjectName)
-        break;
-      if (!in_object->ObjectName->Buffer)
-        break;
-
-      size_t size = in_object->ObjectName->Length / sizeof(wchar_t);
-      out_name->reset(new (NT_ALLOC) wchar_t[size + 1]);
-      if (!*out_name)
-        break;
-
-      ret = CopyData(out_name->get(), in_object->ObjectName->Buffer,
-                     size * sizeof(wchar_t));
-      if (!NT_SUCCESS(ret))
-        break;
-
-      *out_name_len = size;
-      out_name->get()[size] = L'\0';
-      if (attributes)
-        *attributes = in_object->Attributes;
-
-      ret = STATUS_SUCCESS;
-    } while (false);
-  } __except (EXCEPTION_EXECUTE_HANDLER) {
-    ret = (NTSTATUS)GetExceptionCode();
-  }
-
-  if (!NT_SUCCESS(ret) && *out_name)
-    out_name->reset(nullptr);
-
   return ret;
 }
 
@@ -625,6 +582,19 @@ UNICODE_STRING* ExtractModuleName(const UNICODE_STRING* module_path) {
 
   out_string->Buffer[out_string->Length / sizeof(wchar_t)] = L'\0';
   return out_string;
+}
+
+std::optional<bool> EqualUnicodeString(std::wstring_view left,
+                                       std::wstring_view right) {
+  UNICODE_STRING left_ustr;
+  UNICODE_STRING right_ustr;
+  if (!base::win::ViewToUnicodeString(left, left_ustr) ||
+      !base::win::ViewToUnicodeString(right, right_ustr)) {
+    return std::nullopt;
+  }
+
+  return GetNtExports()->RtlCompareUnicodeString(&left_ustr, &right_ustr,
+                                                 TRUE) == 0;
 }
 
 NTSTATUS AutoProtectMemory::ChangeProtection(void* address,

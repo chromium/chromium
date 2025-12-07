@@ -32,7 +32,7 @@ class MetricsServiceAccessor {
  protected:
   // Constructor declared as protected to enable inheritance. Descendants should
   // disallow instantiation.
-  MetricsServiceAccessor() {}
+  MetricsServiceAccessor() = default;
 
   // Returns whether metrics reporting is enabled, using the value of the
   // kMetricsReportingEnabled pref in |local_state| to determine whether user

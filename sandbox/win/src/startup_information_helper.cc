@@ -2,21 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "sandbox/win/src/startup_information_helper.h"
 
 #include <Windows.h>
 
+#include <algorithm>
 #include <vector>
 
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/win/startup_information.h"
+#include "base/win/windows_handle_util.h"
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/app_container.h"
 #include "sandbox/win/src/nt_internals.h"
@@ -64,8 +61,12 @@ void StartupInformationHelper::SetStdHandles(HANDLE stdout_handle,
 }
 
 void StartupInformationHelper::AddInheritedHandle(HANDLE handle) {
-  if (handle != INVALID_HANDLE_VALUE) {
-    auto it = base::ranges::find(inherited_handle_list_, handle);
+  // https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-updateprocthreadattribute
+  // "These handles must be created as inheritable handles and must not include
+  // pseudo handles such as those returned by the GetCurrentProcess or
+  // GetCurrentThread function."
+  if (handle && !base::win::IsPseudoHandle(handle)) {
+    auto it = std::ranges::find(inherited_handle_list_, handle);
     if (it == inherited_handle_list_.end())
       inherited_handle_list_.push_back(handle);
   }
@@ -161,7 +162,7 @@ bool StartupInformationHelper::BuildStartupInformation() {
       return false;
     }
     startup_info_.startup_info()->dwFlags |= STARTF_USESTDHANDLES;
-    startup_info_.startup_info()->hStdInput = INVALID_HANDLE_VALUE;
+    startup_info_.startup_info()->hStdInput = nullptr;
     startup_info_.startup_info()->hStdOutput = stdout_handle_;
     startup_info_.startup_info()->hStdError = stderr_handle_;
     // Allowing inheritance of handles is only secure now that we

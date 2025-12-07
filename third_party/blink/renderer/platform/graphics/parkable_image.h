@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PARKABLE_IMAGE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PARKABLE_IMAGE_H_
 
-#include "base/debug/stack_trace.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
@@ -68,15 +68,11 @@ class PLATFORM_EXPORT ParkableImageImpl final
 
   // Implementations of the methods of the same name from ParkableImage.
   void Freeze() LOCKS_EXCLUDED(lock_);
-  void Append(WTF::SharedBuffer* buffer, size_t offset = 0)
-      LOCKS_EXCLUDED(lock_);
+  void Append(SharedBuffer* buffer, size_t offset = 0) LOCKS_EXCLUDED(lock_);
   scoped_refptr<SharedBuffer> Data() LOCKS_EXCLUDED(lock_);
   void LockData() EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void UnlockData() EXCLUSIVE_LOCKS_REQUIRED(lock_);
   size_t size() const;
-
-  // Returns a ROBufferSegmentReader, wrapping the internal RWBuffer.
-  scoped_refptr<SegmentReader> GetROBufferSegmentReader() LOCKS_EXCLUDED(lock_);
 
   bool is_frozen() const { return !frozen_time_.is_null(); }
 
@@ -103,10 +99,9 @@ class PLATFORM_EXPORT ParkableImageImpl final
       LOCKS_EXCLUDED(lock_);
 
   // Writes the data referred to by |on_disk_metadata| from disk into the
-  // provided |buffer|. |capacity| is the size of the provided buffer.
+  // provided |buffer|.
   static size_t ReadFromDiskIntoBuffer(DiskDataMetadata* on_disk_metadata,
-                                       void* buffer,
-                                       size_t capacity);
+                                       base::span<uint8_t> buffer);
 
   // Attempt to discard the data. This should only be called after we've written
   // the data to disk. Fails if the image can not be parked at the time this is
@@ -175,7 +170,7 @@ class PLATFORM_EXPORT ParkableImage final
 
   // Appends data to the ParkableImage. Cannot be called after the ParkableImage
   // has been frozen. (see: Freeze())
-  void Append(WTF::SharedBuffer* buffer, size_t offset = 0)
+  void Append(SharedBuffer* buffer, size_t offset = 0)
       LOCKS_EXCLUDED(impl_->lock_);
 
   // Returns a copy of the data stored in ParkableImage. Calling this will

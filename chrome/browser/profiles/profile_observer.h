@@ -21,11 +21,13 @@ class ProfileObserver : public base::CheckedObserver {
 
   // The observed profile will be destroyed soon. All KeyedServices are still
   // valid. The shutdown sequence for a profile is:
-  //   1. BrowserContext related shutdown occurs via
-  //      BrowserContext::NotifyWillBeDestroyed()
+  //   1. Profile destruction is scheduled via ProfileDestroyer
   //   2. OnProfileWillBeDestroyed called for |profile|
-  //   3. OTR profile (if any) goes through shutdown in same sequence
-  //   4. KeyedServices are shut down for |profile|
+  //   3. If there are dangling RPHs, wait for them to be deleted. This has a
+  //      1-2s timeout depending on the platform.
+  //   4. OTR profile (if any) goes through shutdown in same sequence, skipping
+  //      step 3
+  //   5. KeyedServices are shut down for |profile|
   virtual void OnProfileWillBeDestroyed(Profile* profile) {}
 
   // The observed profile has now finished being initialized. This is called

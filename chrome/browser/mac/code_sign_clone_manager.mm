@@ -5,10 +5,14 @@
 #include "chrome/browser/mac/code_sign_clone_manager.h"
 
 #import <Foundation/Foundation.h>
+#include <errno.h>
+#include <fcntl.h>
 #include <paths.h>
+#include <stdint.h>
 #include <sys/attr.h>
 #include <sys/clonefile.h>
 #include <sys/fcntl.h>
+#include <sys/ioccom.h>
 #include <sys/stat.h>
 #include <sys/syslimits.h>
 #include <unistd.h>
@@ -38,6 +42,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "build/branding_buildflags.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/browser/browser_thread.h"
@@ -493,7 +498,7 @@ MacCloneExists CloneExists(const base::FilePath& clone_app_path,
   } else if (!main_executable_exists && !info_plist_exists) {
     return MacCloneExists::kMissingMainExecutableAndInfoPlist;
   } else {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 }
 
@@ -505,9 +510,10 @@ void RecordCloneExists(MacCloneExists exists) {
 
 namespace code_sign_clone_manager {
 
-BASE_FEATURE(kMacAppCodeSignClone,
-             "MacAppCodeSignClone",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMacAppCodeSignClone, base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kMacAppCodeSignCloneRenameAsBundle,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 CodeSignCloneManager::CodeSignCloneManager(
     const base::FilePath& src_path,
@@ -519,7 +525,11 @@ CodeSignCloneManager::CodeSignCloneManager(
       main_executable_name.empty()) {
     return;
   }
-
+// Chrome for Testing does not support auto-updates and
+// this feature is specific to the update functionality,
+// therefore, we disable this feature for Chrome for Testing.
+// See crbug.com/379125944.
+#if !BUILDFLAG(CHROME_FOR_TESTING)
   // Post a background task to perform the clone. If the task has not yet
   // started and Chrome is shutdown, the `SKIP_ON_SHUTDOWN` behavior will drop
   // the task. This is okay. If Chrome is shutting down, there is no need for a
@@ -534,6 +544,7 @@ CodeSignCloneManager::CodeSignCloneManager(
       FROM_HERE,
       base::BindOnce(&CodeSignCloneManager::Clone, base::Unretained(this),
                      src_path, main_executable_name, std::move(callback)));
+#endif  // !BUILDFLAG(CHROME_FOR_TESTING)
 }
 
 CodeSignCloneManager::~CodeSignCloneManager() {
@@ -590,6 +601,18 @@ void CodeSignCloneManager::Clone(const base::FilePath& src_path,
     return;
   }
 
+  // Give the clone a ".bundle" extension. Launch Services aggressively tracks
+  // the existence of applications, and creating a duplicate copy of the
+  // Chromium app leads to trouble when it comes to Launch Services tracking the
+  // default browser (see https://crbug.com/381199182 for gory details).
+  // Labeling the clone a "bundle" is good enough to solve the problem of code
+  // signature validation, but avoids issues.
+  base::FilePath app_name = src_path.BaseName();
+  if (base::FeatureList::IsEnabled(kMacAppCodeSignCloneRenameAsBundle)) {
+    app_name = app_name.AddExtension(".bundle");
+  }
+  base::FilePath clone_app_path = unique_temp_dir_path.Append(app_name);
+
   // Ignore any errors from creating the clone. There are many scenarios where
   // these operations could fail (different filesystems for the source and
   // destination, no clone filesystem support, read only disk, full disk,
@@ -597,8 +620,6 @@ void CodeSignCloneManager::Clone(const base::FilePath& src_path,
   // keep running. Instances of Chrome in this situation will be susceptible to
   // code signature validation errors when an update is staged on disk. This is
   // being tracked via the Mac.AppUpgradeCodeSignatureValidationStatus metric.
-  base::FilePath clone_app_path =
-      unique_temp_dir_path.Append(src_path.BaseName());
   if (!CloneApp(src_path, clone_app_path, main_executable_name)) {
     base::DeletePathRecursively(unique_temp_dir_path);
     std::move(callback).Run(base::FilePath());
@@ -743,6 +764,35 @@ int ChromeCodeSignCloneCleanupMain(
 
   base::DeletePathRecursively(unique_temp_dir_path);
   return 0;
+}
+
+// `FSIOC_FD_ONLY_OPEN_ONCE` is not a part of the SDK. The definition was
+// introduced in XNU 6153.11.26 (macOS 10.15). It may have existed earlier in
+// another location, but for Chrome's purposes macOS 10.15+ is just fine.
+// https://github.com/apple-oss-distributions/xnu/blob/xnu-6153.11.26/bsd/sys/fsctl.h#L327
+#ifndef FSIOC_FD_ONLY_OPEN_ONCE
+#define FSIOC_FD_ONLY_OPEN_ONCE _IOWR('A', 21, uint32_t)
+#endif
+
+FileOpenMoreThanOnce IsFileOpenMoreThanOnce(int file_descriptor) {
+  uint32_t val;
+  int result = ffsctl(file_descriptor, FSIOC_FD_ONLY_OPEN_ONCE, &val, 0);
+  if (result == -1) {
+    if (errno == EBUSY) {
+      return FileOpenMoreThanOnce::kYes;
+    }
+    return FileOpenMoreThanOnce::kError;
+  }
+  return FileOpenMoreThanOnce::kNo;
+}
+
+FileOpenMoreThanOnce IsFileOpenMoreThanOnce(const base::FilePath& path) {
+  base::ScopedFD fd(HANDLE_EINTR(open(path.value().c_str(), O_RDONLY)));
+  if (fd == -1) {
+    DPLOG(ERROR) << "open " << std::quoted(path.value());
+    return FileOpenMoreThanOnce::kError;
+  }
+  return IsFileOpenMoreThanOnce(fd.get());
 }
 
 }  // namespace internal

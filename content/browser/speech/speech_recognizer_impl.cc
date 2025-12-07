@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/speech/speech_recognizer_impl.h"
 
 #include <stdint.h>
@@ -14,6 +9,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -29,6 +25,7 @@
 #include "media/base/audio_bus.h"
 #include "media/base/audio_converter.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/audio_sample_types.h"
 #include "media/mojo/mojom/audio_logging.mojom.h"
 #include "services/audio/public/cpp/device_factory.h"
 
@@ -109,7 +106,7 @@ bool DetectClipping(const AudioChunk& chunk) {
   int clipping_samples = 0;
 
   for (int i = 0; i < num_samples; ++i) {
-    if (samples[i] <= -32767 || samples[i] >= 32767) {
+    if (UNSAFE_TODO(samples[i] <= -32767 || samples[i] >= 32767)) {
       if (++clipping_samples > kThreshold)
         return true;
     }
@@ -249,6 +246,15 @@ void SpeechRecognizerImpl::StartRecognition(const std::string& device_id) {
                                 FSMEventArgs(EVENT_PREPARE)));
 }
 
+void SpeechRecognizerImpl::UpdateRecognitionContext(
+    const media::SpeechRecognitionRecognitionContext& recognition_context) {
+  FSMEventArgs event_args(EVENT_UPDATE_RECOGNITION_CONTEXT);
+  event_args.recognition_context = recognition_context;
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&SpeechRecognizerImpl::DispatchEvent,
+                                weak_ptr_factory_.GetWeakPtr(), event_args));
+}
+
 void SpeechRecognizerImpl::AbortRecognition() {
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&SpeechRecognizerImpl::DispatchEvent,
@@ -294,8 +300,7 @@ SpeechRecognizerImpl::~SpeechRecognizerImpl() {
 void SpeechRecognizerImpl::Capture(const AudioBus* data,
                                    base::TimeTicks audio_capture_time,
                                    const AudioGlitchInfo& glitch_info,
-                                   double volume,
-                                   bool key_pressed) {
+                                   double volume) {
   // Convert audio from native format to fixed format used by WebSpeech.
   FSMEventArgs event_args(EVENT_AUDIO_DATA);
   event_args.audio_chunk = audio_converter_->Convert(data);
@@ -486,9 +491,6 @@ SpeechRecognizerImpl::StartRecording(const FSMEventArgs&) {
   int chunk_duration_ms = recognition_engine_->GetDesiredAudioChunkDurationMs();
 
   if (!audio_parameters_.IsValid()) {
-    DLOG(WARNING) << "Audio input device not found, but one should exist -- "
-                     "using fake audio input parameters.";
-
     // It's okay to try with fake parameters since we've already been given
     // permission from SpeechRecognitionManagerImpl. If no device exists, this
     // will just result in an OnCaptureError().
@@ -600,6 +602,13 @@ SpeechRecognizerImpl::DetectEndOfSpeech(const FSMEventArgs& event_args) {
   if (end_of_utterance_ || endpointer_.speech_input_complete())
     return StopCaptureAndWaitForResult(event_args);
   return STATE_RECOGNIZING;
+}
+
+SpeechRecognizerImpl::FSMState SpeechRecognizerImpl::UpdateRecognitionContext(
+    const FSMEventArgs& event_args) {
+  CHECK(recognition_engine_.get() != nullptr);
+  recognition_engine_->UpdateRecognitionContext(event_args.recognition_context);
+  return state_;
 }
 
 SpeechRecognizerImpl::FSMState
@@ -746,9 +755,8 @@ SpeechRecognizerImpl::DoNothing(const FSMEventArgs&) const {
 
 SpeechRecognizerImpl::FSMState
 SpeechRecognizerImpl::NotFeasible(const FSMEventArgs& event_args) {
-  NOTREACHED_IN_MIGRATION()
-      << "Unfeasible event " << event_args.event << " in state " << state_;
-  return state_;
+  NOTREACHED() << "Unfeasible event " << event_args.event << " in state "
+               << state_;
 }
 
 void SpeechRecognizerImpl::CloseAudioCapturerSource() {

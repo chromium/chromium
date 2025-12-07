@@ -1,0 +1,63 @@
+<!--
+Tests alert events when a shadow DOM element's own visibility and role change simultaneously.
+
+Key steps:
+- Shadow content element exists as IGNORED (visibility:hidden on itself)
+- Element's visibility changes to visible AND gains role="alert" (same element, same update)
+- Change type: NODE_CHANGED (element updates in place)
+- NotifyNodeAttributesHaveBeenChanged returns early for ignored transitions
+- OnIgnoredChanged fires Event::ALERT
+
+@UIA-WIN-DENY:*
+@UIA-WIN-ALLOW:SystemAlert*
+@UIA-WIN-ALLOW:LiveRegion*
+-->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Alert on Property Change Test</title>
+</head>
+<body>
+  <!-- Custom element with shadow DOM, mimicking cr-toast -->
+  <test-alert id="alert"></test-alert>
+
+  <script>
+    class TestAlert extends HTMLElement {
+      constructor() {
+        super();
+        // Create shadow DOM with content that's initially hidden
+        this.attachShadow({ mode: 'open' });
+        this.shadowRoot.innerHTML = `
+          <style>
+            #container {
+              visibility: hidden;
+            }
+            #container.visible {
+              visibility: visible;
+            }
+          </style>
+          <div id="container">
+            Settings saved successfully!
+          </div>
+        `;
+      }
+
+      show() {
+        const container = this.shadowRoot.getElementById('container');
+        // Simultaneously make visible and add alert role
+        // This triggers NODE_CHANGED with ignored→unignored transition
+        container.classList.add('visible');
+        container.setAttribute('role', 'alert');
+      }
+    }
+
+    customElements.define('test-alert', TestAlert);
+
+    function go() {
+      const alert = document.getElementById('alert');
+      alert.show();
+      return false;
+    }
+  </script>
+</body>
+</html>

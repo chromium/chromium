@@ -42,8 +42,8 @@ TEST(SignedExchangePrologueTest, Parse3BytesEncodedLength) {
 TEST(SignedExchangePrologueTest, BeforeFallbackUrl_Success) {
   uint8_t bytes[] = {'s', 'x', 'g', '1', '-', 'b', '3', '\0', 0x12, 0x34};
 
-  BeforeFallbackUrl before_fallback_url = BeforeFallbackUrl::Parse(
-      base::make_span(bytes), nullptr /* devtools_proxy */);
+  BeforeFallbackUrl before_fallback_url =
+      BeforeFallbackUrl::Parse(base::span(bytes), nullptr /* devtools_proxy */);
   EXPECT_TRUE(before_fallback_url.is_valid());
   EXPECT_EQ(0x1234u, before_fallback_url.fallback_url_length());
 }
@@ -51,8 +51,8 @@ TEST(SignedExchangePrologueTest, BeforeFallbackUrl_Success) {
 TEST(SignedExchangePrologueTest, BeforeFallbackUrl_B2) {
   uint8_t bytes[] = {'s', 'x', 'g', '1', '-', 'b', '2', '\0', 0x12, 0x34};
 
-  BeforeFallbackUrl before_fallback_url = BeforeFallbackUrl::Parse(
-      base::make_span(bytes), nullptr /* devtools_proxy */);
+  BeforeFallbackUrl before_fallback_url =
+      BeforeFallbackUrl::Parse(base::span(bytes), nullptr /* devtools_proxy */);
   EXPECT_FALSE(before_fallback_url.is_valid());
   EXPECT_EQ(0x1234u, before_fallback_url.fallback_url_length());
 }
@@ -60,8 +60,8 @@ TEST(SignedExchangePrologueTest, BeforeFallbackUrl_B2) {
 TEST(SignedExchangePrologueTest, BeforeFallbackUrl_WrongMagic) {
   uint8_t bytes[] = {'s', 'x', 'g', '!', '-', 'b', '3', '\0', 0x12, 0x34};
 
-  BeforeFallbackUrl before_fallback_url = BeforeFallbackUrl::Parse(
-      base::make_span(bytes), nullptr /* devtools_proxy */);
+  BeforeFallbackUrl before_fallback_url =
+      BeforeFallbackUrl::Parse(base::span(bytes), nullptr /* devtools_proxy */);
   EXPECT_FALSE(before_fallback_url.is_valid());
   EXPECT_EQ(0x1234u, before_fallback_url.fallback_url_length());
 }
@@ -75,9 +75,8 @@ TEST(SignedExchangePrologueTest, FallbackUrlAndAfter_Success) {
                                         sizeof("https://example.com/") - 1);
   EXPECT_TRUE(before_fallback_url.is_valid());
 
-  FallbackUrlAndAfter fallback_url_and_after =
-      FallbackUrlAndAfter::Parse(base::make_span(bytes), before_fallback_url,
-                                 nullptr /* devtools_proxy */);
+  FallbackUrlAndAfter fallback_url_and_after = FallbackUrlAndAfter::Parse(
+      base::span(bytes), before_fallback_url, nullptr /* devtools_proxy */);
 
   EXPECT_TRUE(fallback_url_and_after.is_valid());
   EXPECT_EQ("https://example.com/",
@@ -93,9 +92,8 @@ TEST(SignedExchangePrologueTest, FallbackUrlAndAfter_NonHttpsUrl) {
 
   BeforeFallbackUrl before_fallback_url(true,
                                         sizeof("http://example.com/") - 1);
-  FallbackUrlAndAfter fallback_url_and_after =
-      FallbackUrlAndAfter::Parse(base::make_span(bytes), before_fallback_url,
-                                 nullptr /* devtools_proxy */);
+  FallbackUrlAndAfter fallback_url_and_after = FallbackUrlAndAfter::Parse(
+      base::span(bytes), before_fallback_url, nullptr /* devtools_proxy */);
 
   EXPECT_FALSE(fallback_url_and_after.is_valid());
   EXPECT_FALSE(fallback_url_and_after.fallback_url().url.is_valid());
@@ -108,9 +106,8 @@ TEST(SignedExchangePrologueTest, FallbackUrlAndAfter_UrlWithFragment) {
 
   BeforeFallbackUrl before_fallback_url(true,
                                         sizeof("https://example.com/#foo") - 1);
-  FallbackUrlAndAfter fallback_url_and_after =
-      FallbackUrlAndAfter::Parse(base::make_span(bytes), before_fallback_url,
-                                 nullptr /* devtools_proxy */);
+  FallbackUrlAndAfter fallback_url_and_after = FallbackUrlAndAfter::Parse(
+      base::span(bytes), before_fallback_url, nullptr /* devtools_proxy */);
 
   EXPECT_FALSE(fallback_url_and_after.is_valid());
   EXPECT_FALSE(fallback_url_and_after.fallback_url().url.is_valid());
@@ -123,9 +120,8 @@ TEST(SignedExchangePrologueTest, FallbackUrlAndAfter_LongSignatureHeader) {
 
   BeforeFallbackUrl before_fallback_url(true,
                                         sizeof("https://example.com/") - 1);
-  FallbackUrlAndAfter fallback_url_and_after =
-      FallbackUrlAndAfter::Parse(base::make_span(bytes), before_fallback_url,
-                                 nullptr /* devtools_proxy */);
+  FallbackUrlAndAfter fallback_url_and_after = FallbackUrlAndAfter::Parse(
+      base::span(bytes), before_fallback_url, nullptr /* devtools_proxy */);
 
   EXPECT_FALSE(fallback_url_and_after.is_valid());
   EXPECT_EQ("https://example.com/",
@@ -139,9 +135,8 @@ TEST(SignedExchangePrologueTest, FallbackUrlAndAfter_LongCBORHeader) {
 
   BeforeFallbackUrl before_fallback_url(true,
                                         sizeof("https://example.com/") - 1);
-  FallbackUrlAndAfter fallback_url_and_after =
-      FallbackUrlAndAfter::Parse(base::make_span(bytes), before_fallback_url,
-                                 nullptr /* devtools_proxy */);
+  FallbackUrlAndAfter fallback_url_and_after = FallbackUrlAndAfter::Parse(
+      base::span(bytes), before_fallback_url, nullptr /* devtools_proxy */);
 
   EXPECT_FALSE(fallback_url_and_after.is_valid());
   EXPECT_EQ("https://example.com/",

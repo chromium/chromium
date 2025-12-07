@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/indexeddb/idb_value_wrapping.h"
 
 #include <algorithm>
 #include <limits>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -37,22 +34,22 @@ TEST(IDBValueWrapperTest, WriteVarIntOneByte) {
 
   IDBValueWrapper::WriteVarInt(0, output);
   ASSERT_EQ(1U, output.size());
-  EXPECT_EQ('\x00', output.data()[0]);
+  EXPECT_EQ('\x00', output[0]);
   output.clear();
 
   IDBValueWrapper::WriteVarInt(1, output);
   ASSERT_EQ(1U, output.size());
-  EXPECT_EQ('\x01', output.data()[0]);
+  EXPECT_EQ('\x01', output[0]);
   output.clear();
 
   IDBValueWrapper::WriteVarInt(0x34, output);
   ASSERT_EQ(1U, output.size());
-  EXPECT_EQ('\x34', output.data()[0]);
+  EXPECT_EQ('\x34', output[0]);
   output.clear();
 
   IDBValueWrapper::WriteVarInt(0x7f, output);
   ASSERT_EQ(1U, output.size());
-  EXPECT_EQ('\x7f', output.data()[0]);
+  EXPECT_EQ('\x7f', output[0]);
 }
 
 TEST(IDBValueWrapperTest, WriteVarIntMultiByte) {
@@ -60,42 +57,42 @@ TEST(IDBValueWrapperTest, WriteVarIntMultiByte) {
 
   IDBValueWrapper::WriteVarInt(0xff, output);
   ASSERT_EQ(2U, output.size());
-  EXPECT_EQ('\xff', output.data()[0]);
-  EXPECT_EQ('\x01', output.data()[1]);
+  EXPECT_EQ('\xff', output[0]);
+  EXPECT_EQ('\x01', output[1]);
   output.clear();
 
   IDBValueWrapper::WriteVarInt(0x100, output);
   ASSERT_EQ(2U, output.size());
-  EXPECT_EQ('\x80', output.data()[0]);
-  EXPECT_EQ('\x02', output.data()[1]);
+  EXPECT_EQ('\x80', output[0]);
+  EXPECT_EQ('\x02', output[1]);
   output.clear();
 
   IDBValueWrapper::WriteVarInt(0x1234, output);
   ASSERT_EQ(2U, output.size());
-  EXPECT_EQ('\xb4', output.data()[0]);
-  EXPECT_EQ('\x24', output.data()[1]);
+  EXPECT_EQ('\xb4', output[0]);
+  EXPECT_EQ('\x24', output[1]);
   output.clear();
 
   IDBValueWrapper::WriteVarInt(0xabcd, output);
   ASSERT_EQ(3U, output.size());
-  EXPECT_EQ('\xcd', output.data()[0]);
-  EXPECT_EQ('\xd7', output.data()[1]);
-  EXPECT_EQ('\x2', output.data()[2]);
+  EXPECT_EQ('\xcd', output[0]);
+  EXPECT_EQ('\xd7', output[1]);
+  EXPECT_EQ('\x2', output[2]);
   output.clear();
 
   IDBValueWrapper::WriteVarInt(0x123456, output);
   ASSERT_EQ(3U, output.size());
-  EXPECT_EQ('\xd6', output.data()[0]);
-  EXPECT_EQ('\xe8', output.data()[1]);
-  EXPECT_EQ('\x48', output.data()[2]);
+  EXPECT_EQ('\xd6', output[0]);
+  EXPECT_EQ('\xe8', output[1]);
+  EXPECT_EQ('\x48', output[2]);
   output.clear();
 
   IDBValueWrapper::WriteVarInt(0xabcdef, output);
   ASSERT_EQ(4U, output.size());
-  EXPECT_EQ('\xef', output.data()[0]);
-  EXPECT_EQ('\x9b', output.data()[1]);
-  EXPECT_EQ('\xaf', output.data()[2]);
-  EXPECT_EQ('\x05', output.data()[3]);
+  EXPECT_EQ('\xef', output[0]);
+  EXPECT_EQ('\x9b', output[1]);
+  EXPECT_EQ('\xaf', output[2]);
+  EXPECT_EQ('\x05', output[3]);
   output.clear();
 }
 
@@ -104,63 +101,63 @@ TEST(IDBValueWrapperTest, WriteVarIntMultiByteEdgeCases) {
 
   IDBValueWrapper::WriteVarInt(0x80, output);
   ASSERT_EQ(2U, output.size());
-  EXPECT_EQ('\x80', output.data()[0]);
-  EXPECT_EQ('\x01', output.data()[1]);
+  EXPECT_EQ('\x80', output[0]);
+  EXPECT_EQ('\x01', output[1]);
   output.clear();
 
   IDBValueWrapper::WriteVarInt(0x3fff, output);
   ASSERT_EQ(2U, output.size());
-  EXPECT_EQ('\xff', output.data()[0]);
-  EXPECT_EQ('\x7f', output.data()[1]);
+  EXPECT_EQ('\xff', output[0]);
+  EXPECT_EQ('\x7f', output[1]);
   output.clear();
 
   IDBValueWrapper::WriteVarInt(0x4000, output);
   ASSERT_EQ(3U, output.size());
-  EXPECT_EQ('\x80', output.data()[0]);
-  EXPECT_EQ('\x80', output.data()[1]);
-  EXPECT_EQ('\x01', output.data()[2]);
+  EXPECT_EQ('\x80', output[0]);
+  EXPECT_EQ('\x80', output[1]);
+  EXPECT_EQ('\x01', output[2]);
   output.clear();
 
   IDBValueWrapper::WriteVarInt(0x1fffff, output);
   ASSERT_EQ(3U, output.size());
-  EXPECT_EQ('\xff', output.data()[0]);
-  EXPECT_EQ('\xff', output.data()[1]);
-  EXPECT_EQ('\x7f', output.data()[2]);
+  EXPECT_EQ('\xff', output[0]);
+  EXPECT_EQ('\xff', output[1]);
+  EXPECT_EQ('\x7f', output[2]);
   output.clear();
 
   IDBValueWrapper::WriteVarInt(0x200000, output);
   ASSERT_EQ(4U, output.size());
-  EXPECT_EQ('\x80', output.data()[0]);
-  EXPECT_EQ('\x80', output.data()[1]);
-  EXPECT_EQ('\x80', output.data()[2]);
-  EXPECT_EQ('\x01', output.data()[3]);
+  EXPECT_EQ('\x80', output[0]);
+  EXPECT_EQ('\x80', output[1]);
+  EXPECT_EQ('\x80', output[2]);
+  EXPECT_EQ('\x01', output[3]);
   output.clear();
 
   IDBValueWrapper::WriteVarInt(0xfffffff, output);
   ASSERT_EQ(4U, output.size());
-  EXPECT_EQ('\xff', output.data()[0]);
-  EXPECT_EQ('\xff', output.data()[1]);
-  EXPECT_EQ('\xff', output.data()[2]);
-  EXPECT_EQ('\x7f', output.data()[3]);
+  EXPECT_EQ('\xff', output[0]);
+  EXPECT_EQ('\xff', output[1]);
+  EXPECT_EQ('\xff', output[2]);
+  EXPECT_EQ('\x7f', output[3]);
   output.clear();
 
   IDBValueWrapper::WriteVarInt(0x10000000, output);
   ASSERT_EQ(5U, output.size());
-  EXPECT_EQ('\x80', output.data()[0]);
-  EXPECT_EQ('\x80', output.data()[1]);
-  EXPECT_EQ('\x80', output.data()[2]);
-  EXPECT_EQ('\x80', output.data()[3]);
-  EXPECT_EQ('\x01', output.data()[4]);
+  EXPECT_EQ('\x80', output[0]);
+  EXPECT_EQ('\x80', output[1]);
+  EXPECT_EQ('\x80', output[2]);
+  EXPECT_EQ('\x80', output[3]);
+  EXPECT_EQ('\x01', output[4]);
   output.clear();
 
   // Maximum value of unsigned on 32-bit platforms.
   IDBValueWrapper::WriteVarInt(0xffffffff, output);
   ASSERT_EQ(5U, output.size());
-  EXPECT_EQ('\xff', output.data()[0]);
-  EXPECT_EQ('\xff', output.data()[1]);
-  EXPECT_EQ('\xff', output.data()[2]);
-  EXPECT_EQ('\xff', output.data()[3]);
-  EXPECT_EQ('\x0f', output.data()[4]);
+  EXPECT_EQ('\xff', output[0]);
+  EXPECT_EQ('\xff', output[1]);
+  EXPECT_EQ('\xff', output[2]);
+  EXPECT_EQ('\xff', output[3]);
+  EXPECT_EQ('\x0f', output[4]);
   output.clear();
 }
 
@@ -169,35 +166,30 @@ class IDBValueUnwrapperReadTestHelper {
   STACK_ALLOCATED();
 
  public:
-  void ReadVarInt(const char* start, uint32_t buffer_size) {
+  void ReadVarInt(base::span<const uint8_t> parse_span) {
     IDBValueUnwrapper unwrapper;
 
-    const uint8_t* buffer_start = reinterpret_cast<const uint8_t*>(start);
-    const uint8_t* buffer_end = buffer_start + buffer_size;
-    unwrapper.current_ = buffer_start;
-    unwrapper.end_ = buffer_end;
+    unwrapper.parse_span_ = parse_span;
     success_ = unwrapper.ReadVarInt(read_varint_);
 
-    ASSERT_EQ(unwrapper.end_, buffer_end)
-        << "ReadVarInt should not change end_";
-    ASSERT_LE(unwrapper.current_, unwrapper.end_)
-        << "ReadVarInt should not move current_ past end_";
-    consumed_bytes_ = static_cast<uint32_t>(unwrapper.current_ - buffer_start);
+    if (!unwrapper.parse_span_.empty()) {
+      ASSERT_EQ(&unwrapper.parse_span_.back(), &parse_span.back())
+          << "ReadVarInt should not change end of buffer";
+    }
+    consumed_bytes_ = parse_span.size() - unwrapper.parse_span_.size();
   }
 
-  void ReadBytes(const char* start, uint32_t buffer_size) {
+  void ReadBytes(base::span<const uint8_t> parse_span) {
     IDBValueUnwrapper unwrapper;
 
-    const uint8_t* buffer_start = reinterpret_cast<const uint8_t*>(start);
-    const uint8_t* buffer_end = buffer_start + buffer_size;
-    unwrapper.current_ = buffer_start;
-    unwrapper.end_ = buffer_end;
+    unwrapper.parse_span_ = parse_span;
     success_ = unwrapper.ReadBytes(read_bytes_);
 
-    ASSERT_EQ(unwrapper.end_, buffer_end) << "ReadBytes should not change end_";
-    ASSERT_LE(unwrapper.current_, unwrapper.end_)
-        << "ReadBytes should not move current_ past end_";
-    consumed_bytes_ = static_cast<uint32_t>(unwrapper.current_ - buffer_start);
+    if (!unwrapper.parse_span_.empty()) {
+      ASSERT_EQ(&unwrapper.parse_span_.back(), &parse_span.back())
+          << "ReadBytes should not change end of buffer";
+    }
+    consumed_bytes_ = parse_span.size() - unwrapper.parse_span_.size();
   }
 
   bool success() { return success_; }
@@ -218,22 +210,22 @@ TEST(IDBValueUnwrapperTest, ReadVarIntOneByte) {
   // Most test cases have an extra byte at the end of the input to verify that
   // the parser doesn't consume too much data.
 
-  helper.ReadVarInt("\x00\x01", 2);
+  helper.ReadVarInt({0x00, 0x01});
   EXPECT_TRUE(helper.success());
   EXPECT_EQ(0U, helper.read_varint());
   EXPECT_EQ(1U, helper.consumed_bytes());
 
-  helper.ReadVarInt("\x01\x01", 2);
+  helper.ReadVarInt({0x01, 0x01});
   EXPECT_TRUE(helper.success());
   EXPECT_EQ(1U, helper.read_varint());
   EXPECT_EQ(1U, helper.consumed_bytes());
 
-  helper.ReadVarInt("\x7f\x01", 2);
+  helper.ReadVarInt({0x7f, 0x01});
   EXPECT_TRUE(helper.success());
   EXPECT_EQ(0x7fU, helper.read_varint());
   EXPECT_EQ(1U, helper.consumed_bytes());
 
-  helper.ReadVarInt("\x7f\x01", 1);
+  helper.ReadVarInt({0x7f});
   EXPECT_TRUE(helper.success());
   EXPECT_EQ(0x7fU, helper.read_varint());
   EXPECT_EQ(1U, helper.consumed_bytes());
@@ -242,42 +234,42 @@ TEST(IDBValueUnwrapperTest, ReadVarIntOneByte) {
 TEST(IDBValueUnwrapperTest, ReadVarIntMultiBytes) {
   IDBValueUnwrapperReadTestHelper helper;
 
-  helper.ReadVarInt("\xff\x01\x01", 3);
+  helper.ReadVarInt({0xff, 0x01, 0x01});
   EXPECT_TRUE(helper.success());
   EXPECT_EQ(0xffU, helper.read_varint());
   EXPECT_EQ(2U, helper.consumed_bytes());
 
-  helper.ReadVarInt("\x80\x02\x01", 3);
+  helper.ReadVarInt({0x80, 0x02, 0x01});
   EXPECT_TRUE(helper.success());
   EXPECT_EQ(0x100U, helper.read_varint());
   EXPECT_EQ(2U, helper.consumed_bytes());
 
-  helper.ReadVarInt("\xb4\x24\x01", 3);
+  helper.ReadVarInt({0xb4, 0x24, 0x01});
   EXPECT_TRUE(helper.success());
   EXPECT_EQ(0x1234U, helper.read_varint());
   EXPECT_EQ(2U, helper.consumed_bytes());
 
-  helper.ReadVarInt("\xcd\xd7\x02\x01", 4);
+  helper.ReadVarInt({0xcd, 0xd7, 0x02, 0x01});
   EXPECT_TRUE(helper.success());
   EXPECT_EQ(0xabcdU, helper.read_varint());
   EXPECT_EQ(3U, helper.consumed_bytes());
 
-  helper.ReadVarInt("\xd6\xe8\x48\x01", 4);
+  helper.ReadVarInt({0xd6, 0xe8, 0x48, 0x01});
   EXPECT_TRUE(helper.success());
   EXPECT_EQ(0x123456U, helper.read_varint());
   EXPECT_EQ(3U, helper.consumed_bytes());
 
-  helper.ReadVarInt("\xd6\xe8\x48\x01", 3);
+  helper.ReadVarInt({0xd6, 0xe8, 0x48});
   EXPECT_TRUE(helper.success());
   EXPECT_EQ(0x123456U, helper.read_varint());
   EXPECT_EQ(3U, helper.consumed_bytes());
 
-  helper.ReadVarInt("\xef\x9b\xaf\x05\x01", 5);
+  helper.ReadVarInt({0xef, 0x9b, 0xaf, 0x05, 0x01});
   EXPECT_TRUE(helper.success());
   EXPECT_EQ(0xabcdefU, helper.read_varint());
   EXPECT_EQ(4U, helper.consumed_bytes());
 
-  helper.ReadVarInt("\xef\x9b\xaf\x05\x01", 4);
+  helper.ReadVarInt({0xef, 0x9b, 0xaf, 0x05});
   EXPECT_TRUE(helper.success());
   EXPECT_EQ(0xabcdefU, helper.read_varint());
   EXPECT_EQ(4U, helper.consumed_bytes());
@@ -286,42 +278,42 @@ TEST(IDBValueUnwrapperTest, ReadVarIntMultiBytes) {
 TEST(IDBValueUnwrapperTest, ReadVarIntMultiByteEdgeCases) {
   IDBValueUnwrapperReadTestHelper helper;
 
-  helper.ReadVarInt("\x80\x01\x01", 3);
+  helper.ReadVarInt({0x80, 0x01, 0x01});
   EXPECT_TRUE(helper.success());
   EXPECT_EQ(0x80U, helper.read_varint());
   EXPECT_EQ(2U, helper.consumed_bytes());
 
-  helper.ReadVarInt("\xff\x7f\x01", 3);
+  helper.ReadVarInt({0xff, 0x7f, 0x01});
   EXPECT_TRUE(helper.success());
   EXPECT_EQ(0x3fffU, helper.read_varint());
   EXPECT_EQ(2U, helper.consumed_bytes());
 
-  helper.ReadVarInt("\x80\x80\x01\x01", 4);
+  helper.ReadVarInt({0x80, 0x80, 0x01, 0x01});
   EXPECT_TRUE(helper.success());
   EXPECT_EQ(0x4000U, helper.read_varint());
   EXPECT_EQ(3U, helper.consumed_bytes());
 
-  helper.ReadVarInt("\xff\xff\x7f\x01", 4);
+  helper.ReadVarInt({0xff, 0xff, 0x7f, 0x01});
   EXPECT_TRUE(helper.success());
   EXPECT_EQ(0x1fffffU, helper.read_varint());
   EXPECT_EQ(3U, helper.consumed_bytes());
 
-  helper.ReadVarInt("\x80\x80\x80\x01\x01", 5);
+  helper.ReadVarInt({0x80, 0x80, 0x80, 0x01, 0x01});
   EXPECT_TRUE(helper.success());
   EXPECT_EQ(0x200000U, helper.read_varint());
   EXPECT_EQ(4U, helper.consumed_bytes());
 
-  helper.ReadVarInt("\xff\xff\xff\x7f\x01", 5);
+  helper.ReadVarInt({0xff, 0xff, 0xff, 0x7f, 0x01});
   EXPECT_TRUE(helper.success());
   EXPECT_EQ(0xfffffffU, helper.read_varint());
   EXPECT_EQ(4U, helper.consumed_bytes());
 
-  helper.ReadVarInt("\x80\x80\x80\x80\x01\x01", 6);
+  helper.ReadVarInt({0x80, 0x80, 0x80, 0x80, 0x01, 0x01});
   EXPECT_TRUE(helper.success());
   EXPECT_EQ(0x10000000U, helper.read_varint());
   EXPECT_EQ(5U, helper.consumed_bytes());
 
-  helper.ReadVarInt("\xff\xff\xff\xff\x0f\x01", 6);
+  helper.ReadVarInt({0xff, 0xff, 0xff, 0xff, 0x0f, 0x01});
   EXPECT_TRUE(helper.success());
   EXPECT_EQ(0xffffffffU, helper.read_varint());
   EXPECT_EQ(5U, helper.consumed_bytes());
@@ -330,52 +322,52 @@ TEST(IDBValueUnwrapperTest, ReadVarIntMultiByteEdgeCases) {
 TEST(IDBValueUnwrapperTest, ReadVarIntTruncatedInput) {
   IDBValueUnwrapperReadTestHelper helper;
 
-  helper.ReadVarInt("\x01", 0);
+  helper.ReadVarInt({});
   EXPECT_FALSE(helper.success());
 
-  helper.ReadVarInt("\x80\x01", 1);
+  helper.ReadVarInt({0x80});
   EXPECT_FALSE(helper.success());
 
-  helper.ReadVarInt("\xff\x01", 1);
+  helper.ReadVarInt({0xff});
   EXPECT_FALSE(helper.success());
 
-  helper.ReadVarInt("\x80\x80\x01", 2);
+  helper.ReadVarInt({0x80, 0x80});
   EXPECT_FALSE(helper.success());
 
-  helper.ReadVarInt("\xff\xff\x01", 2);
+  helper.ReadVarInt({0xff, 0xff});
   EXPECT_FALSE(helper.success());
 
-  helper.ReadVarInt("\x80\x80\x80\x80\x01", 4);
+  helper.ReadVarInt({0x80, 0x80, 0x80, 0x80});
   EXPECT_FALSE(helper.success());
 
-  helper.ReadVarInt("\xff\xff\xff\xff\x01", 4);
+  helper.ReadVarInt({0xff, 0xff, 0xff, 0xff});
   EXPECT_FALSE(helper.success());
 }
 
 TEST(IDBValueUnwrapperTest, ReadVarIntDenormalizedInput) {
   IDBValueUnwrapperReadTestHelper helper;
 
-  helper.ReadVarInt("\x80\x00\x01", 3);
+  helper.ReadVarInt({0x80, 0x00, 0x01});
   EXPECT_TRUE(helper.success());
   EXPECT_EQ(0U, helper.read_varint());
   EXPECT_EQ(2U, helper.consumed_bytes());
 
-  helper.ReadVarInt("\xff\x00\x01", 3);
+  helper.ReadVarInt({0xff, 0x00, 0x01});
   EXPECT_TRUE(helper.success());
   EXPECT_EQ(0x7fU, helper.read_varint());
   EXPECT_EQ(2U, helper.consumed_bytes());
 
-  helper.ReadVarInt("\x80\x80\x00\x01", 4);
+  helper.ReadVarInt({0x80, 0x80, 0x00, 0x01});
   EXPECT_TRUE(helper.success());
   EXPECT_EQ(0U, helper.read_varint());
   EXPECT_EQ(3U, helper.consumed_bytes());
 
-  helper.ReadVarInt("\x80\xff\x00\x01", 4);
+  helper.ReadVarInt({0x80, 0xff, 0x00, 0x01});
   EXPECT_TRUE(helper.success());
   EXPECT_EQ(0x3f80U, helper.read_varint());
   EXPECT_EQ(3U, helper.consumed_bytes());
 
-  helper.ReadVarInt("\x80\xff\x80\xff\x00\x01", 6);
+  helper.ReadVarInt({0x80, 0xff, 0x80, 0xff, 0x00, 0x01});
   EXPECT_TRUE(helper.success());
   EXPECT_EQ(0x0fe03f80U, helper.read_varint());
   EXPECT_EQ(5U, helper.consumed_bytes());
@@ -387,7 +379,7 @@ TEST(IDBValueUnwrapperTest, WriteVarIntMaxUnsignedRoundtrip) {
   IDBValueWrapper::WriteVarInt(max_value, output);
 
   IDBValueUnwrapperReadTestHelper helper;
-  helper.ReadVarInt(output.data(), output.size());
+  helper.ReadVarInt(base::as_bytes(base::span(output)));
   EXPECT_TRUE(helper.success());
   EXPECT_EQ(max_value, helper.read_varint());
   EXPECT_EQ(output.size(), helper.consumed_bytes());
@@ -399,15 +391,15 @@ TEST(IDBValueUnwrapperTest, ReadBytes) {
   // Most test cases have an extra byte at the end of the input to verify that
   // the parser doesn't consume too much data.
 
-  helper.ReadBytes("\x00\x01", 2);
+  helper.ReadBytes({0x00, 0x01});
   EXPECT_TRUE(helper.success());
   EXPECT_EQ(0U, helper.read_bytes().size());
   EXPECT_EQ(1U, helper.consumed_bytes());
 
-  helper.ReadBytes("\x01\x42\x01", 3);
+  helper.ReadBytes({0x01, 0x42, 0x01});
   EXPECT_TRUE(helper.success());
   ASSERT_EQ(1U, helper.read_bytes().size());
-  EXPECT_EQ('\x42', helper.read_bytes().data()[0]);
+  EXPECT_EQ('\x42', helper.read_bytes()[0]);
   EXPECT_EQ(2U, helper.consumed_bytes());
 
   Vector<uint8_t> long_output;
@@ -416,38 +408,37 @@ TEST(IDBValueUnwrapperTest, ReadBytes) {
   for (int i = 0; i < 256; ++i)
     long_output.push_back(static_cast<unsigned char>(i));
   long_output.push_back(0x01);
-  helper.ReadBytes(reinterpret_cast<char*>(long_output.data()),
-                   long_output.size());
+  helper.ReadBytes(long_output);
   EXPECT_TRUE(helper.success());
   ASSERT_EQ(256U, helper.read_bytes().size());
   ASSERT_EQ(long_output.size() - 1, helper.consumed_bytes());
-  EXPECT_TRUE(std::equal(helper.read_bytes().begin(), helper.read_bytes().end(),
-                         long_output.data() + 2));
+  EXPECT_EQ(base::span(helper.read_bytes()),
+            (base::span(long_output).subspan<2, 256>()));
 
-  helper.ReadBytes("\x01\x42\x01", 2);
+  helper.ReadBytes({0x01, 0x42});
   EXPECT_TRUE(helper.success());
   ASSERT_EQ(1U, helper.read_bytes().size());
-  EXPECT_EQ('\x42', helper.read_bytes().data()[0]);
+  EXPECT_EQ('\x42', helper.read_bytes()[0]);
   EXPECT_EQ(2U, helper.consumed_bytes());
 }
 
 TEST(IDBValueUnwrapperTest, ReadBytesTruncatedInput) {
   IDBValueUnwrapperReadTestHelper helper;
 
-  helper.ReadBytes("\x01\x42", 0);
+  helper.ReadBytes({});
   EXPECT_FALSE(helper.success());
 
-  helper.ReadBytes("\x01\x42", 1);
+  helper.ReadBytes({0x01});
   EXPECT_FALSE(helper.success());
 
-  helper.ReadBytes("\x03\x42\x42\x42", 3);
+  helper.ReadBytes({0x03, 0x42, 0x42});
   EXPECT_FALSE(helper.success());
 }
 
 TEST(IDBValueUnwrapperTest, ReadBytesDenormalizedInput) {
   IDBValueUnwrapperReadTestHelper helper;
 
-  helper.ReadBytes("\x80\x00\x01", 3);
+  helper.ReadBytes({0x80, 0x00, 0x01});
   EXPECT_TRUE(helper.success());
   EXPECT_EQ(0U, helper.read_bytes().size());
   EXPECT_EQ(2U, helper.consumed_bytes());
@@ -460,19 +451,15 @@ TEST(IDBValueUnwrapperTest, IsWrapped) {
   v8::Local<v8::Value> v8_true = v8::True(scope.GetIsolate());
   IDBValueWrapper wrapper(scope.GetIsolate(), v8_true,
                           SerializedScriptValue::SerializeOptions::kSerialize,
-                          non_throwable_exception_state);
+                          non_throwable_exception_state,
+                          /*backend_uses_sqlite=*/false);
   wrapper.set_wrapping_threshold_for_test(0);
   wrapper.DoneCloning();
-  Vector<scoped_refptr<BlobDataHandle>> blob_data_handles =
-      wrapper.TakeBlobDataHandles();
-  Vector<WebBlobInfo> blob_infos = wrapper.TakeBlobInfo();
-  Vector<char> wrapped_marker_buffer = wrapper.TakeWireBytes();
-  IDBKeyPath key_path(String("primaryKey"));
 
-  const Vector<char> wrapped_marker_bytes = wrapped_marker_buffer;
+  std::unique_ptr<IDBValue> wrapped_value = std::move(wrapper).Build();
 
-  auto wrapped_value = std::make_unique<IDBValue>(
-      std::move(wrapped_marker_buffer), std::move(blob_infos));
+  const Vector<char> wrapped_marker_bytes(wrapped_value->Data());
+
   wrapped_value->SetIsolate(scope.GetIsolate());
   EXPECT_TRUE(IDBValueUnwrapper::IsWrapped(wrapped_value.get()));
 
@@ -481,12 +468,12 @@ TEST(IDBValueUnwrapperTest, IsWrapped) {
   // return false.
   ASSERT_LT(3U, wrapped_marker_bytes.size());
   for (wtf_size_t i = 0; i < 3; ++i) {
-    auto mutant_value = std::make_unique<IDBValue>(
-        Vector<char>(base::span(wrapped_marker_bytes).subspan(0, i)),
-        std::move(blob_infos));
-    mutant_value->SetIsolate(scope.GetIsolate());
+    IDBValue mutant_value;
+    mutant_value.SetData(
+        Vector<char>(base::span(wrapped_marker_bytes).first(i)));
+    mutant_value.SetIsolate(scope.GetIsolate());
 
-    EXPECT_FALSE(IDBValueUnwrapper::IsWrapped(mutant_value.get()));
+    EXPECT_FALSE(IDBValueUnwrapper::IsWrapped(&mutant_value));
   }
 
   // IsWrapped() looks at the first 3 bytes in the value. Flipping any bit in
@@ -497,30 +484,79 @@ TEST(IDBValueUnwrapperTest, IsWrapped) {
       char mask = 1 << j;
       Vector<char> copy = wrapped_marker_bytes;
       copy[i] ^= mask;
-      auto mutant_value =
-          std::make_unique<IDBValue>(std::move(copy), std::move(blob_infos));
-      mutant_value->SetIsolate(scope.GetIsolate());
-      EXPECT_FALSE(IDBValueUnwrapper::IsWrapped(mutant_value.get()));
+      IDBValue mutant_value;
+      mutant_value.SetData(std::move(copy));
+      mutant_value.SetIsolate(scope.GetIsolate());
+      EXPECT_FALSE(IDBValueUnwrapper::IsWrapped(&mutant_value));
     }
+  }
+}
+
+TEST(IDBValueUnwrapperTest, SqliteDoesntWrapOrCompress) {
+  for (const bool use_sqlite : {true, false}) {
+    test::TaskEnvironment task_environment;
+    V8TestingScope scope;
+    NonThrowableExceptionState non_throwable_exception_state;
+    v8::Local<v8::Value> v8_value =
+        v8::String::NewFromUtf8(
+            scope.GetIsolate(),
+            base::StrCat(std::vector<std::string>(500, "abcd")).c_str(),
+            v8::NewStringType::kNormal)
+            .ToLocalChecked();
+    IDBValueWrapper wrapper(scope.GetIsolate(), v8_value,
+                            SerializedScriptValue::SerializeOptions::kSerialize,
+                            non_throwable_exception_state, use_sqlite);
+    wrapper.set_wrapping_threshold_for_test(0);
+    wrapper.set_compression_threshold_for_test(0);
+    wrapper.DoneCloning();
+
+    std::unique_ptr<IDBValue> wrapped_value = std::move(wrapper).Build();
+
+    wrapped_value->SetIsolate(scope.GetIsolate());
+    EXPECT_NE(use_sqlite, IDBValueUnwrapper::IsWrapped(wrapped_value.get()));
+
+    auto is_compressed = [](base::span<const uint8_t> data) {
+      return data.size() >= 3 && data[0] == kVersionTag && data[1] == 0x11 &&
+             data[2] == 2;
+    };
+    // Even with compression enabled, the data won't look compressed if it's
+    // wrapped.
+    EXPECT_FALSE(is_compressed(wrapped_value->Data()));
   }
 }
 
 TEST(IDBValueUnwrapperTest, Compression) {
   test::TaskEnvironment task_environment;
-  base::test::ScopedFeatureList enable_feature_list{
-      features::kIndexedDBCompressValuesWithSnappy};
 
   struct {
     bool should_compress;
     std::string bytes;
+    int32_t compression_threshold;
+    // Wrapping threshold is tested here to ensure it does not interfere
+    // with the compression threshold.
+    int32_t wrapping_threshold;
   } test_cases[] = {
       {false,
        "abcdefghijcklmnopqrstuvwxyz123456789?/"
-       ".,'[]!@#$%^&*(&)asjdflkajnwefkajwneflkacoiw93lkm"},
-      {true, base::StrCat(std::vector<std::string>(100u, "abcd"))}};
+       ".,'[]!@#$%^&*(&)asjdflkajnwefkajwneflkacoiw93lkm",
+       /* compression_threshold = */ 0, /*wrapping_threshold = */ 500},
+      {false, base::StrCat(std::vector<std::string>(100u, "abcd")),
+       /* compression_threshold = */ 500, /*wrapping_threshold = */ 500},
+      {true, base::StrCat(std::vector<std::string>(500, "abcd")),
+       /* compression_threshold = */ 500, /*wrapping_threshold = */ 500},
+      {true, base::StrCat(std::vector<std::string>(500, "abcd")),
+       /* compression_threshold = */ 500, /*wrapping_threshold = */ 400},
+      {true, base::StrCat(std::vector<std::string>(500, "abcd")),
+       /* compression_threshold = */ 500, /*wrapping_threshold = */ 600}};
 
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(testing::Message() << "Testing string " << test_case.bytes);
+
+    base::test::ScopedFeatureList enable_feature_list;
+    enable_feature_list.InitAndEnableFeatureWithParameters(
+        features::kIndexedDBCompressValuesWithSnappy,
+        {{"compression-threshold",
+          base::StringPrintf("%i", test_case.compression_threshold)}});
 
     V8TestingScope scope;
     NonThrowableExceptionState non_throwable_exception_state;
@@ -530,35 +566,46 @@ TEST(IDBValueUnwrapperTest, Compression) {
             .ToLocalChecked();
     IDBValueWrapper wrapper(scope.GetIsolate(), v8_value,
                             SerializedScriptValue::SerializeOptions::kSerialize,
-                            non_throwable_exception_state);
+                            non_throwable_exception_state,
+                            /*backend_uses_sqlite=*/false);
+    wrapper.set_wrapping_threshold_for_test(test_case.wrapping_threshold);
+    wrapper.set_compression_threshold_for_test(test_case.compression_threshold);
     wrapper.DoneCloning();
-    Vector<scoped_refptr<BlobDataHandle>> blob_data_handles =
-        wrapper.TakeBlobDataHandles();
-    Vector<WebBlobInfo> blob_infos = wrapper.TakeBlobInfo();
-    Vector<char> buffer = wrapper.TakeWireBytes();
+
+    std::unique_ptr<IDBValue> value = std::move(wrapper).Build();
 
     // Verify whether the serialized bytes show the compression marker.
-    base::span<const char> serialized_bytes = base::span(buffer);
+    base::span<const uint8_t> serialized_bytes = value->Data();
     ASSERT_GT(serialized_bytes.size(), 3u);
     if (test_case.should_compress) {
-      EXPECT_EQ(serialized_bytes[0], static_cast<char>(kVersionTag));
+      EXPECT_EQ(serialized_bytes[0], kVersionTag);
       EXPECT_EQ(serialized_bytes[1], 0x11);
       EXPECT_EQ(serialized_bytes[2], 2);
     }
 
-    // Verify whether the decompressed bytes show the standard serialization
-    // marker.
-    Vector<char> decompressed;
-    ASSERT_EQ(test_case.should_compress,
-              IDBValueUnwrapper::Decompress(buffer, &decompressed));
+    {
+      // Verify whether the decompressed bytes show the standard serialization
+      // marker.
+      SerializedScriptValue::DataBufferPtr decompressed;
+      ASSERT_EQ(
+          test_case.should_compress,
+          IDBValueUnwrapper::Decompress(value->Data(), nullptr, &decompressed));
+    }
 
     // Round trip to v8 value.
-    auto value =
-        std::make_unique<IDBValue>(std::move(buffer), std::move(blob_infos));
     value->SetIsolate(scope.GetIsolate());
     auto serialized_string = value->CreateSerializedValue();
     EXPECT_TRUE(serialized_string->Deserialize(scope.GetIsolate())
                     ->StrictEquals(v8_value));
+
+    {
+      // The data in `value` is still compressed after
+      // `CreateSerializedValue()`.
+      SerializedScriptValue::DataBufferPtr decompressed;
+      ASSERT_EQ(
+          test_case.should_compress,
+          IDBValueUnwrapper::Decompress(value->Data(), nullptr, &decompressed));
+    }
   }
 }
 
@@ -570,6 +617,7 @@ TEST(IDBValueUnwrapperTest, Decompression) {
   test::TaskEnvironment task_environment;
   Vector<WebBlobInfo> blob_infos;
   Vector<char> buffer;
+  std::unique_ptr<IDBValue> value;
   V8TestingScope scope;
   v8::Local<v8::Value> v8_value;
   {
@@ -582,12 +630,10 @@ TEST(IDBValueUnwrapperTest, Decompression) {
                    .ToLocalChecked();
     IDBValueWrapper wrapper(scope.GetIsolate(), v8_value,
                             SerializedScriptValue::SerializeOptions::kSerialize,
-                            non_throwable_exception_state);
+                            non_throwable_exception_state,
+                            /*backend_uses_sqlite=*/false);
     wrapper.DoneCloning();
-    Vector<scoped_refptr<BlobDataHandle>> blob_data_handles =
-        wrapper.TakeBlobDataHandles();
-    blob_infos = wrapper.TakeBlobInfo();
-    buffer = wrapper.TakeWireBytes();
+    value = std::move(wrapper).Build();
   }
 
   {
@@ -598,8 +644,6 @@ TEST(IDBValueUnwrapperTest, Decompression) {
         features::kIndexedDBCompressValuesWithSnappy));
 
     // Complete round trip to v8 value with compression disabled.
-    auto value =
-        std::make_unique<IDBValue>(std::move(buffer), std::move(blob_infos));
     value->SetIsolate(scope.GetIsolate());
     auto serialized_string = value->CreateSerializedValue();
     EXPECT_TRUE(serialized_string->Deserialize(scope.GetIsolate())

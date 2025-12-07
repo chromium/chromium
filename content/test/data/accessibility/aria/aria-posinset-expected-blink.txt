@@ -21,7 +21,7 @@ rootWebArea
 ++++++++listBoxOption name='Item 2' setSize=2 posInSet=2 selected=false
 ++++++++++staticText name='Item 2'
 ++++++++++++inlineTextBox name='Item 2'
-++++++section
+++++++sectionWithoutName
 ++++++++radioButton setSize=4 posInSet=3 checkedState=false
 ++++++++staticText name='1'
 ++++++++++inlineTextBox name='1'
@@ -44,15 +44,15 @@ rootWebArea
 ++++++++++++inlineTextBox name='Cake'
 ++++++++labelText ignored
 ++++++++++radioButton name='Chiffon cakes' setSize=2 posInSet=1 checkedState=true
-++++++++++staticText ignored name='Chiffon cakes'
+++++++++++staticText ignored
 ++++++++lineBreak name='<newline>'
 ++++++++++inlineTextBox name='<newline>'
 ++++++++labelText ignored
 ++++++++++radioButton name='Chocolate cakes' setSize=2 posInSet=2 checkedState=false
-++++++++++staticText ignored name='Chocolate cakes'
-++++++section
+++++++++++staticText ignored
+++++++sectionWithoutName
 ++++++++paragraph
-++++++++++button name='changedFromRadio'
+++++++++++button name='changedFromRadio' nameFrom=value
 ++++++++++++staticText name='changedFromRadio'
 ++++++++++++++inlineTextBox name='changedFromRadio'
 ++++++++++labelText
@@ -62,20 +62,20 @@ rootWebArea
 ++++++++++++inlineTextBox name='<newline>'
 ++++++++++labelText ignored
 ++++++++++++radioButton name='blue' setSize=1 posInSet=1 checkedState=false
-++++++++++++staticText ignored name='blue'
+++++++++++++staticText ignored
 ++++++treeGrid
 ++++++++row name='content' setSize=100 posInSet=2
-++++++++++cell name='content'
+++++++++++gridCell name='content'
 ++++++++++++staticText name='content'
 ++++++++++++++inlineTextBox name='content'
 ++++++grid
-++++++++row
-++++++++++cell name='content'
+++++++++row name='content'
+++++++++++gridCell name='content'
 ++++++++++++staticText name='content'
 ++++++++++++++inlineTextBox name='content'
 ++++++table
 ++++++++row
-++++++++++cell name='content'
+++++++++++gridCell name='content'
 ++++++++++++staticText name='content'
 ++++++++++++++inlineTextBox name='content'
 ++++++staticText name='Done'

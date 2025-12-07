@@ -21,14 +21,14 @@ DOMPointReadOnly* DOMPointReadOnly::Create(double x,
   return MakeGarbageCollected<DOMPointReadOnly>(x, y, z, w);
 }
 
-ScriptValue DOMPointReadOnly::toJSONForBinding(
+ScriptObject DOMPointReadOnly::toJSONForBinding(
     ScriptState* script_state) const {
   V8ObjectBuilder result(script_state);
   result.AddNumber("x", x());
   result.AddNumber("y", y());
   result.AddNumber("z", z());
   result.AddNumber("w", w());
-  return result.GetScriptValue();
+  return result.ToScriptObject();
 }
 
 DOMPointReadOnly* DOMPointReadOnly::fromPoint(const DOMPointInit* other) {

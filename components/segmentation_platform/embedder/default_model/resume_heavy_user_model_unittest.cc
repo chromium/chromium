@@ -8,6 +8,8 @@
 
 namespace segmentation_platform {
 
+using Feature = ResumeHeavyUserModel::Feature;
+
 class ResumeHeavyUserModelTest : public DefaultModelTestBase {
  public:
   ResumeHeavyUserModelTest()
@@ -26,16 +28,20 @@ TEST_F(ResumeHeavyUserModelTest, ExecuteModelWithInput) {
 
   EXPECT_FALSE(ExecuteWithInput(/*inputs=*/{}));
 
-  ModelProvider::Request input = {};
+  ModelProvider::Request input(Feature::kFeatureCount, 0);
   // Input arguments in order: bookmarks_opened, mv_tiles_clicked,
   // opened_ntp_from_tab_groups, opened_item_from_history
-  ExpectClassifierResults(/*input=*/{0, 0, 0, 0, 0}, {kLegacyNegativeLabel});
-  ExpectClassifierResults(/*input=*/{1, 0, 0, 0, 0}, {kLegacyNegativeLabel});
+  ExpectClassifierResults(input, {kLegacyNegativeLabel});
+  input[Feature::kFeatureMobileBookmarkManagerOpen] = 1;
+  ExpectClassifierResults(input, {kLegacyNegativeLabel});
+  input[Feature::kFeatureMobileBookmarkManagerOpen] = 2;
   ExpectClassifierResults(
-      /*input=*/{2, 0, 0, 0, 0},
+      input,
       {SegmentIdToHistogramVariant(SegmentId::RESUME_HEAVY_USER_SEGMENT)});
+  input[Feature::kFeatureMobileBookmarkManagerOpen] = 0;
+  input[Feature::kFeatureNewTabPageMostVisitedClicked] = 3;
   ExpectClassifierResults(
-      /*input=*/{0, 3, 0, 0, 0},
+      input,
       {SegmentIdToHistogramVariant(SegmentId::RESUME_HEAVY_USER_SEGMENT)});
 }
 

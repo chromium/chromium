@@ -45,6 +45,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_LAYER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_LAYER_H_
 
+#include <concepts>
 #include <memory>
 
 #include "base/auto_reset.h"
@@ -113,16 +114,10 @@ enum class LayerPositionVisibility : uint8_t {
 // The class is central to painting and hit-testing. That's because it handles
 // a lot of tasks (we included ones done by associated satellite objects for
 // historical reasons):
+// - Stacking management (with PaintLayerStackingNode),
 // - Complex painting operations (opacity, clipping, filters, reflections, ...).
-// - hardware acceleration (through PaintLayerCompositor).
 // - scrolling (through PaintLayerScrollableArea).
-// - some performance optimizations.
-//
-// The compositing code is also based on PaintLayer. The entry to it is the
-// PaintLayerCompositor, which fills |composited_layer_mapping| for hardware
-// accelerated layers.
-//
-// TODO(jchaffraix): Expand the documentation about hardware acceleration.
+// - etc. (see LayoutBoxModelObject::LayerTypeRequired() implementations).
 //
 //
 // ***** SELF-PAINTING LAYER *****
@@ -183,7 +178,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   // DisplayItemClient methods
   String DebugName() const final;
-  DOMNodeId OwnerNodeId() const final;
+  DOMNodeId OwnerNodeId(bool is_internal_content = false) const final;
 
   LayoutBoxModelObject& GetLayoutObject() const { return *layout_object_; }
   LayoutBox* GetLayoutBox() const {
@@ -198,10 +193,10 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   PaintLayer* FirstChild() const { return first_.Get(); }
   PaintLayer* LastChild() const { return last_.Get(); }
 
-  // TODO(wangxianzhu): Find a better name for it. 'paintContainer' might be
-  // good but we can't use it for now because it conflicts with
-  // PaintInfo::paintContainer.
-  PaintLayer* CompositingContainer() const;
+  // Returns the parent layer in paint order. The layer will iterate this layer
+  // as a child in PaintLayerPaintOrderIterator.
+  PaintLayer* PaintingContainer() const;
+
   PaintLayer* AncestorStackingContext() const;
 
   void AddChild(PaintLayer* new_child, PaintLayer* before_child = nullptr);
@@ -260,7 +255,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // containing layer might be an ancestor of the parent layer.
   PaintLayer* ContainingLayer() const;
 
-  // The hitTest() method looks for mouse events by walking layers that
+  // The `HitTest()` method looks for mouse events by walking layers that
   // intersect the point from front to back.
   // |hit_test_area| is the rect in the space of this PaintLayer's
   // LayoutObject to consider for hit testing.
@@ -268,20 +263,18 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
                HitTestResult&,
                const PhysicalRect& hit_test_area);
 
-  // Static position is set in parent's coordinate space.
-  LayoutUnit StaticBlockPosition() const { return static_block_position_; }
-
-  void SetStaticBlockPosition(LayoutUnit position) {
-    static_block_position_ = position;
-  }
-
   using InlineEdge = LogicalStaticPosition::InlineEdge;
   using BlockEdge = LogicalStaticPosition::BlockEdge;
+  using LogicalAlignmentDirection =
+      LogicalStaticPosition::LogicalAlignmentDirection;
   InlineEdge StaticInlineEdge() const {
     return static_cast<InlineEdge>(static_inline_edge_);
   }
   BlockEdge StaticBlockEdge() const {
     return static_cast<BlockEdge>(static_block_edge_);
+  }
+  LogicalAlignmentDirection StaticAlignSelfDirection() const {
+    return static_cast<LogicalAlignmentDirection>(static_align_self_direction_);
   }
 
   void SetStaticPositionFromNG(const LogicalStaticPosition& position) {
@@ -289,6 +282,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     static_block_position_ = position.offset.block_offset;
     static_inline_edge_ = position.inline_edge;
     static_block_edge_ = position.block_edge;
+    static_align_self_direction_ = position.align_self_direction;
   }
 
   LogicalStaticPosition GetStaticPosition() const {
@@ -297,6 +291,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     position.offset.block_offset = static_block_position_;
     position.inline_edge = StaticInlineEdge();
     position.block_edge = StaticBlockEdge();
+    position.align_self_direction = StaticAlignSelfDirection();
     return position;
   }
 
@@ -341,7 +336,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // |backdrop_filter_on_effect_node_dirty_| will be cleared.
   void UpdateCompositorFilterOperationsForBackdropFilter(
       CompositorFilterOperations& operations,
-      gfx::RRectF& backdrop_filter_bounds);
+      SkPath& backdrop_filter_bounds);
   void SetBackdropFilterOnEffectNodeDirty() {
     backdrop_filter_on_effect_node_dirty_ = true;
   }
@@ -375,7 +370,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   gfx::RectF FilterReferenceBox() const;
   std::optional<gfx::SizeF> FilterViewport() const;
   gfx::RectF BackdropFilterReferenceBox() const;
-  gfx::RRectF BackdropFilterBounds() const;
+  SkPath BackdropFilterBounds() const;
 
   void UpdateFilterReferenceBox();
   void UpdateFilters(StyleDifference,
@@ -399,8 +394,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   }
 
   PaintLayerClipper Clipper() const;
-
-  bool ScrollsOverflow() const;
 
   bool NeedsVisualOverflowRecalc() const {
     return needs_visual_overflow_recalc_;
@@ -429,6 +422,10 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     DCHECK(!needs_descendant_dependent_flags_update_);
     return has_self_painting_layer_descendant_;
   }
+  bool HasBackdropFilterDescendant() const {
+    DCHECK(!needs_descendant_dependent_flags_update_);
+    return has_backdrop_filter_descendant_;
+  }
 
   // See
   // PaintLayerStackingNode::layer_to_overlay_overflow_controls_painting_after_.
@@ -445,11 +442,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // stacking contexts.
   bool HasNonIsolatedDescendantWithBlendMode() const;
 
-  CompositingReasons GetCompositingReasons() const {
-    // TODO(pdr): Remove this.
-    return CompositingReason::kNone;
-  }
-
   void UpdateDescendantDependentFlags();
 
   void UpdateSelfPaintingLayer();
@@ -460,6 +452,8 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   void DidUpdateScrollsOverflow();
 
   bool SelfNeedsRepaint() const { return self_needs_repaint_; }
+  // Whether any descendant in paint order (not including descendants across
+  // paint-blocking display locks) has SelfNeedsRepaint().
   bool DescendantNeedsRepaint() const { return descendant_needs_repaint_; }
   bool SelfOrDescendantNeedsRepaint() const {
     return self_needs_repaint_ || descendant_needs_repaint_;
@@ -517,7 +511,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   bool Has3DTransformedDescendant() const {
     DCHECK(!needs_descendant_dependent_flags_update_);
-    return has3d_transformed_descendant_;
+    return has_3d_transformed_descendant_;
   }
 
   // See
@@ -526,11 +520,12 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   bool IsReplacedNormalFlowStacking() const;
 
 #if DCHECK_IS_ON()
-  bool IsInStackingParentZOrderLists() const;
   bool LayerListMutationAllowed() const { return layer_list_mutation_allowed_; }
 #endif
 
   void DirtyStackingContextZOrderLists();
+
+  bool IsZOrderListVisible() const;
 
   bool KnownToClipSubtreeToPaddingBox() const;
 
@@ -548,8 +543,11 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     return invisible_for_position_visibility_;
   }
   bool HasAncestorInvisibleForPositionVisibility() const;
+  bool HasViewTransitionName() const { return has_view_transition_name_; }
 
  private:
+  void UpdateHasVisibleContent();
+  void SetHasVisibleSelfPaintingDescendant(bool);
   void Update3DTransformedDescendantStatus();
 
   // Bounding box in the coordinates of this layer.
@@ -559,8 +557,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   void SetPreviousSibling(PaintLayer* prev) { previous_ = prev; }
   void SetFirstChild(PaintLayer* first) { first_ = first; }
   void SetLastChild(PaintLayer* last) { last_ = last; }
-
-  void UpdateHasSelfPaintingLayerDescendant() const;
 
   void AppendSingleFragmentForHitTesting(
       PaintLayerFragments&,
@@ -614,7 +610,8 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
       double* z_offset_for_descendants,
       double* z_offset,
       HitTestingTransformState* local_transform_state,
-      bool depth_sort_descendants);
+      bool depth_sort_descendants,
+      bool transition_pseudo_pass = false);
 
   HitTestingTransformState CreateLocalTransformState(
       const PaintLayer& transform_container,
@@ -628,15 +625,20 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
                                 const PhysicalOffset& fragment_offset,
                                 const HitTestLocation&,
                                 HitTestPhase phase) const;
-  bool HitTestFragmentsWithPhase(const PaintLayerFragments&,
+  bool HitTestFragmentsWithPhase(const PaintLayer& transform_container,
+                                 const PaintLayerFragment* container_fragment,
+                                 const PaintLayerFragments&,
                                  HitTestResult&,
                                  const HitTestLocation&,
                                  HitTestPhase,
                                  bool& inside_clip_rect) const;
-  bool HitTestForegroundForFragments(const PaintLayerFragments&,
-                                     HitTestResult&,
-                                     const HitTestLocation&,
-                                     bool& inside_clip_rect) const;
+  bool HitTestForegroundForFragments(
+      const PaintLayer& transform_container,
+      const PaintLayerFragment* container_fragment,
+      const PaintLayerFragments&,
+      HitTestResult&,
+      const HitTestLocation&,
+      bool& inside_clip_rect) const;
   PaintLayer* HitTestTransformedLayerInFragments(
       const PaintLayer& transform_container,
       const PaintLayerFragment* container_fragment,
@@ -648,6 +650,11 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
       ShouldRespectOverflowClipType);
   bool HitTestClippedOutByClipPath(const PaintLayer& root_layer,
                                    const HitTestLocation&) const;
+  bool HitTestClippedOutByBorderRadius(
+      const PaintLayer& transform_container,
+      const PaintLayerFragment* container_fragment,
+      const HitTestLocation&,
+      const ClipRect&) const;
 
   bool ShouldBeSelfPaintingLayer() const;
 
@@ -676,7 +683,10 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
                                        const ComputedStyle* old_style,
                                        const ComputedStyle& new_style);
 
-  void MarkCompositingContainerChainForNeedsRepaint();
+  enum class PaintingContainerType { kParent, kStackingContext };
+  PaintingContainerType GetPaintingContainerType() const;
+
+  void MarkPaintingContainerChainForNeedsRepaint();
 
   void MergeNeedsPaintPhaseFlagsFrom(const PaintLayer& layer) {
     needs_paint_phase_descendant_outlines_ |=
@@ -712,10 +722,15 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   // Set on a stacking context layer that has 3D descendants anywhere
   // in a preserves3D hierarchy. Hint to do 3D-aware hit testing.
-  unsigned has3d_transformed_descendant_ : 1;
+  unsigned has_3d_transformed_descendant_ : 1 = false;
 
-  unsigned self_needs_repaint_ : 1;
-  unsigned descendant_needs_repaint_ : 1;
+  unsigned self_needs_repaint_ : 1 = false;
+  // This is marked along the PaintingContainer() chain, i.e. the 'descendant'
+  // here is in paint order.
+  unsigned descendant_needs_repaint_ : 1 = false;
+  // This is marked for the layer itself and along the Parent() chain, i.e.
+  // the 'subtree' here is in PaintLayer tree order.
+  unsigned subtree_needs_clear_repaint_flags_ : 1 = false;
 
   unsigned needs_cull_rect_update_ : 1;
   unsigned forces_children_cull_rect_update_ : 1;
@@ -752,12 +767,17 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   unsigned has_self_painting_layer_descendant_ : 1;
 
+  unsigned has_backdrop_filter_descendant_ : 1;
+
   unsigned needs_reorder_overlay_overflow_controls_ : 1;
   unsigned static_inline_edge_ : 2;
   unsigned static_block_edge_ : 2;
+  unsigned static_align_self_direction_ : 1;
 
   unsigned invisible_for_position_visibility_ : 4 = 0;
   unsigned descendant_needs_check_position_visibility_ : 1 = false;
+
+  unsigned has_view_transition_name_ : 1 = false;
 
 #if DCHECK_IS_ON()
   mutable unsigned layer_list_mutation_allowed_ : 1;
@@ -871,9 +891,8 @@ CORE_EXPORT void ShowLayerTree(const blink::LayoutObject*);
 namespace cppgc {
 // Assign PaintLayer to be allocated on custom LayoutObjectSpace.
 template <typename T>
-struct SpaceTrait<
-    T,
-    std::enable_if_t<std::is_base_of<blink::PaintLayer, T>::value>> {
+  requires(std::derived_from<T, blink::PaintLayer>)
+struct SpaceTrait<T> {
   using Space = blink::LayoutObjectSpace;
 };
 }  // namespace cppgc

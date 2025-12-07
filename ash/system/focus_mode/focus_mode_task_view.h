@@ -49,6 +49,9 @@ class ASH_EXPORT FocusModeTaskView : public views::BoxLayoutView,
   views::ImageButton* deselect_button_for_testing() { return deselect_button_; }
   FocusModeChipCarousel* chip_carousel_for_testing() { return chip_carousel_; }
   SystemTextfield* GetTaskTextfieldForTesting();
+  views::BoxLayoutView* textfield_container_for_testing() {
+    return textfield_container_;
+  }
 
   void CommitTextfieldContents(const std::u16string& contents);
 
@@ -86,8 +89,6 @@ class ASH_EXPORT FocusModeTaskView : public views::BoxLayoutView,
   // button and disable it as well.
   void UpdateStyle(bool show_selected_state, bool is_network_connected);
 
-  // TODO(b/306272008): Update the image of `complete_button_` to a check icon
-  // if it was clicked by the user.
   raw_ptr<views::ImageButton> complete_button_ = nullptr;
   raw_ptr<views::ImageButton> deselect_button_ = nullptr;
   // Shows up on the left side of `textfield_` when there is no selected task.

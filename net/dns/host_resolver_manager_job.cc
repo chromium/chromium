@@ -7,6 +7,8 @@
 #include <deque>
 #include <memory>
 #include <optional>
+#include <set>
+#include <variant>
 #include <vector>
 
 #include "base/containers/linked_list.h"
@@ -15,7 +17,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "net/base/address_family.h"
@@ -29,6 +30,7 @@
 #include "net/dns/host_cache.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_dns_task.h"
+#include "net/dns/host_resolver_internal_result.h"
 #include "net/dns/host_resolver_manager.h"
 #include "net/dns/host_resolver_manager_request_impl.h"
 #include "net/dns/host_resolver_manager_service_endpoint_request_impl.h"
@@ -38,7 +40,6 @@
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/log/net_log_with_source.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/url_constants.h"
 
 namespace net {
@@ -84,14 +85,6 @@ base::Value::Dict NetLogJobAttachParams(const NetLogSource& source,
   return dict;
 }
 
-bool IsSchemeHttpsOrWss(const HostResolver::Host& host) {
-  if (!host.HasScheme()) {
-    return false;
-  }
-  const std::string& scheme = host.GetScheme();
-  return scheme == url::kHttpsScheme || scheme == url::kWssScheme;
-}
-
 }  // namespace
 
 HostResolverManager::JobKey::JobKey(HostResolver::Host host,
@@ -131,7 +124,7 @@ HostCache::Key HostResolverManager::JobKey::ToCacheKey(bool secure) const {
   const DnsQueryType query_type_for_key = query_types.size() == 1
                                               ? *query_types.begin()
                                               : DnsQueryType::UNSPECIFIED;
-  absl::variant<url::SchemeHostPort, std::string> host_for_cache;
+  std::variant<url::SchemeHostPort, std::string> host_for_cache;
   if (host.HasScheme()) {
     host_for_cache = host.AsSchemeHostPort();
   } else {
@@ -290,6 +283,7 @@ void HostResolverManager::Job::AddServiceEndpointRequest(
 
 void HostResolverManager::Job::CancelServiceEndpointRequest(
     ServiceEndpointRequestImpl* request) {
+  CHECK(!service_endpoint_requests_.empty());
   CancelRequestCommon(request->priority(), request->net_log());
 
   if (num_active_requests() > 0) {
@@ -367,12 +361,18 @@ void HostResolverManager::Job::OnEvicted() {
 
 bool HostResolverManager::Job::ServeFromHosts() {
   DCHECK_GT(num_active_requests(), 0u);
-  std::optional<HostCache::Entry> results = resolver_->ServeFromHosts(
-      key_.host.GetHostnameWithoutBrackets(), key_.query_types,
-      key_.flags & HOST_RESOLVER_DEFAULT_FAMILY_SET_DUE_TO_NO_IPV6, tasks_);
-  if (results) {
+  std::set<std::unique_ptr<HostResolverInternalResult>> results =
+      resolver_->ServeFromHosts(
+          key_.host.GetHostnameWithoutBrackets(), key_.query_types,
+          key_.flags & HOST_RESOLVER_DEFAULT_FAMILY_SET_DUE_TO_NO_IPV6, tasks_);
+  if (!results.empty() && std::ranges::any_of(results, [](const auto& result) {
+        return result->type() == HostResolverInternalResult::Type::kData;
+      })) {
+    HostCache::Entry legacy_results(results, base::Time::Now(),
+                                    tick_clock_->NowTicks(),
+                                    HostCache::Entry::SOURCE_HOSTS);
     // This will destroy the Job.
-    CompleteRequests(results.value(), base::TimeDelta(), true /* allow_cache */,
+    CompleteRequests(legacy_results, base::TimeDelta(), true /* allow_cache */,
                      true /* secure */, TaskType::HOSTS);
     return true;
   }
@@ -380,13 +380,13 @@ bool HostResolverManager::Job::ServeFromHosts() {
 }
 
 void HostResolverManager::Job::OnAddedToJobMap(JobMap::iterator iterator) {
-  DCHECK(!self_iterator_);
-  CHECK(iterator != resolver_->jobs_.end(), base::NotFatalUntil::M130);
+  CHECK(!self_iterator_);
+  CHECK(iterator != resolver_->jobs_.end());
   self_iterator_ = iterator;
 }
 
 void HostResolverManager::Job::OnRemovedFromJobMap() {
-  DCHECK(self_iterator_);
+  CHECK(self_iterator_);
   self_iterator_ = std::nullopt;
 }
 
@@ -471,8 +471,7 @@ void HostResolverManager::Job::RunNextTask() {
     case TaskType::HOSTS:
       // These task types should have been handled synchronously in
       // ResolveLocally() prior to Job creation.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -486,6 +485,11 @@ base::Value::Dict HostResolverManager::Job::NetLogJobCreationParams(
     query_types_list.Append(kDnsQueryTypes.at(query_type));
   }
   dict.Set("dns_query_types", std::move(query_types_list));
+  base::Value::List tasks_list;
+  for (TaskType task : tasks_) {
+    tasks_list.Append(static_cast<int>(task));
+  }
+  dict.Set("tasks", std::move(tasks_list));
   dict.Set("secure_dns_mode", base::strict_cast<int>(key_.secure_dns_mode));
   dict.Set("network_anonymization_key",
            key_.network_anonymization_key.ToDebugString());
@@ -546,7 +550,7 @@ void HostResolverManager::Job::ReduceByOneJobSlot() {
     }
     --num_occupied_job_slots_;
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -648,6 +652,7 @@ void HostResolverManager::Job::OnSystemTaskComplete(
     // This HostResolverSystemTask was a fallback resolution after a failed
     // insecure DnsTask.
     resolver_->OnFallbackResolve(dns_task_error_);
+    fallback_to_system_task_after_dns_task_ = true;
   }
 
   if (ContainsIcannNameCollisionIp(addr_list.endpoints())) {
@@ -697,12 +702,6 @@ void HostResolverManager::Job::StartDnsTask(bool secure) {
   DCHECK_EQ(dispatched_ ? 1 : 0, num_occupied_job_slots_);
   DCHECK(!resolver_->ShouldForceSystemResolverDueToTestOverride());
 
-  CHECK(!dns_task_results_manager_);
-  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
-    dns_task_results_manager_ = std::make_unique<DnsTaskResultsManager>(
-        this, key_.host, key_.query_types, net_log_);
-  }
-
   // Need to create the task even if we're going to post a failure instead of
   // running it, as a "started" job needs a task to be properly cleaned up.
   dns_task_ = std::make_unique<HostResolverDnsTask>(
@@ -710,6 +709,11 @@ void HostResolverManager::Job::StartDnsTask(bool secure) {
       key_.query_types, &*key_.resolve_context, secure, key_.secure_dns_mode,
       this, net_log_, tick_clock_, !tasks_.empty() /* fallback_available */,
       https_svcb_options_);
+  dns_task_executed_ = true;
+  if (resolver_->IsHappyEyeballsV3Enabled()) {
+    dns_task_results_manager_ = std::make_unique<DnsTaskResultsManager>(
+        this, key_.host, key_.query_types, net_log_);
+  }
   dns_task_->StartNextTransaction();
   // Schedule a second transaction, if needed. DoH queries can bypass the
   // dispatcher and start all of their transactions immediately.
@@ -740,24 +744,23 @@ void HostResolverManager::Job::OnDnsTaskFailure(
     bool secure) {
   DCHECK_NE(OK, failure_results.error());
 
-  if (!secure) {
-    DCHECK_NE(key_.secure_dns_mode, SecureDnsMode::kSecure);
-    UMA_HISTOGRAM_LONG_TIMES_100("Net.DNS.InsecureDnsTask.FailureTime",
-                                 duration);
-  }
+  base::UmaHistogramLongTimes100(
+      base::StrCat(
+          {"Net.DNS.DnsTask.", secure ? "Secure" : "Insecure", ".FailureTime"}),
+      duration);
 
   if (!dns_task) {
     return;
   }
 
-  UMA_HISTOGRAM_LONG_TIMES_100("Net.DNS.JobQueueTime.Failure",
-                               total_transaction_time_queued_);
+  base::UmaHistogramLongTimes100("Net.DNS.JobQueueTime.Failure",
+                                 total_transaction_time_queued_);
 
   // If one of the fallback tasks doesn't complete the request, store a result
   // to use during request completion.
   base::TimeDelta ttl =
       failure_results.has_ttl() ? failure_results.ttl() : base::Seconds(0);
-  completion_results_.push_back({failure_results, ttl, secure});
+  completion_results_.emplace_back(failure_results, ttl, secure);
 
   dns_task_error_ = failure_results.error();
   KillDnsTask();
@@ -769,32 +772,42 @@ void HostResolverManager::Job::OnDnsTaskFailure(
   RunNextTask();
 }
 
-void HostResolverManager::Job::OnDnsTaskComplete(base::TimeTicks start_time,
-                                                 bool allow_fallback,
-                                                 HostCache::Entry results,
-                                                 bool secure) {
+void HostResolverManager::Job::OnDnsTaskComplete(
+    base::TimeTicks start_time,
+    bool allow_fallback,
+    HostResolverDnsTask::Results results,
+    bool secure) {
   DCHECK(dns_task_);
+
+  HostCache::Entry legacy_results(results, base::Time::Now(),
+                                  tick_clock_->NowTicks(),
+                                  HostCache::Entry::SOURCE_DNS);
 
   // Tasks containing address queries are only considered successful overall
   // if they find address results. However, DnsTask may claim success if any
   // transaction, e.g. a supplemental HTTPS transaction, finds results.
   DCHECK(!key_.query_types.Has(DnsQueryType::UNSPECIFIED));
-  if (HasAddressType(key_.query_types) && results.error() == OK &&
-      results.ip_endpoints().empty()) {
-    results.set_error(ERR_NAME_NOT_RESOLVED);
+  if (HasAddressType(key_.query_types) && legacy_results.error() == OK &&
+      legacy_results.ip_endpoints().empty()) {
+    legacy_results.set_error(ERR_NAME_NOT_RESOLVED);
   }
 
   base::TimeDelta duration = tick_clock_->NowTicks() - start_time;
-  if (results.error() != OK) {
-    OnDnsTaskFailure(dns_task_->AsWeakPtr(), duration, allow_fallback, results,
-                     secure);
+  if (legacy_results.error() != OK) {
+    OnDnsTaskFailure(dns_task_->AsWeakPtr(), duration, allow_fallback,
+                     legacy_results, secure);
     return;
   }
 
-  UMA_HISTOGRAM_LONG_TIMES_100("Net.DNS.DnsTask.SuccessTime", duration);
+  dns_task_https_disabled_ = dns_task_->https_disabled();
 
-  UMA_HISTOGRAM_LONG_TIMES_100("Net.DNS.JobQueueTime.Success",
-                               total_transaction_time_queued_);
+  base::UmaHistogramLongTimes100(
+      base::StrCat(
+          {"Net.DNS.DnsTask.", secure ? "Secure" : "Insecure", ".SuccessTime"}),
+      duration);
+
+  base::UmaHistogramLongTimes100("Net.DNS.JobQueueTime.Success",
+                                 total_transaction_time_queued_);
 
   // Reset the insecure DNS failure counter if an insecure DnsTask completed
   // successfully.
@@ -803,15 +816,15 @@ void HostResolverManager::Job::OnDnsTaskComplete(base::TimeTicks start_time,
   }
 
   base::TimeDelta bounded_ttl =
-      std::max(results.ttl(), base::Seconds(kMinimumTTLSeconds));
+      std::max(legacy_results.ttl(), base::Seconds(kMinimumTTLSeconds));
 
-  if (ContainsIcannNameCollisionIp(results.ip_endpoints())) {
+  if (ContainsIcannNameCollisionIp(legacy_results.ip_endpoints())) {
     CompleteRequestsWithError(ERR_ICANN_NAME_COLLISION,
                               secure ? TaskType::SECURE_DNS : TaskType::DNS);
     return;
   }
 
-  CompleteRequests(results, bounded_ttl, true /* allow_cache */, secure,
+  CompleteRequests(legacy_results, bounded_ttl, true /* allow_cache */, secure,
                    secure ? TaskType::SECURE_DNS : TaskType::DNS);
 }
 
@@ -850,9 +863,13 @@ void HostResolverManager::Job::OnIntermediateTransactionsComplete(
   if (dns_task_results_manager_ && single_transaction_results.has_value()) {
     dns_task_results_manager_->ProcessDnsTransactionResults(
         single_transaction_results->query_type,
-        single_transaction_results->results);
+        std::move(single_transaction_results->results));
     // `this` may be deleted. Do not add code below.
   }
+}
+
+bool HostResolverManager::Job::IsHappyEyeballsV3Enabled() const {
+  return resolver_->IsHappyEyeballsV3Enabled();
 }
 
 void HostResolverManager::Job::AddTransactionTimeQueued(
@@ -901,15 +918,19 @@ void HostResolverManager::Job::OnMdnsTaskComplete() {
   DCHECK(mdns_task_);
   // TODO(crbug.com/40577881): Consider adding MDNS-specific logging.
 
-  HostCache::Entry results = mdns_task_->GetResults();
+  std::set<std::unique_ptr<HostResolverInternalResult>> results =
+      mdns_task_->GetResults();
+  HostCache::Entry legacy_results(results, base::Time::Now(),
+                                  tick_clock_->NowTicks(),
+                                  HostCache::Entry::SOURCE_UNKNOWN);
 
-  if (ContainsIcannNameCollisionIp(results.ip_endpoints())) {
+  if (ContainsIcannNameCollisionIp(legacy_results.ip_endpoints())) {
     CompleteRequestsWithError(ERR_ICANN_NAME_COLLISION, TaskType::MDNS);
     return;
   }
   // MDNS uses a separate cache, so skip saving result to cache.
   // TODO(crbug.com/40611558): Consider merging caches.
-  CompleteRequestsWithoutCache(results, std::nullopt /* stale_info */,
+  CompleteRequestsWithoutCache(legacy_results, /*stale_info=*/std::nullopt,
                                TaskType::MDNS);
 }
 
@@ -929,10 +950,18 @@ void HostResolverManager::Job::StartNat64Task() {
                                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void HostResolverManager::Job::OnNat64TaskComplete() {
-  DCHECK(nat64_task_);
-  HostCache::Entry results = nat64_task_->GetResults();
-  CompleteRequestsWithoutCache(results, std::nullopt /* stale_info */,
+void HostResolverManager::Job::OnNat64TaskComplete(
+    std::unique_ptr<HostResolverInternalResult> result) {
+  CHECK(nat64_task_);
+  CHECK(result);
+
+  std::set<std::unique_ptr<HostResolverInternalResult>> results;
+  results.insert(std::move(result));
+  HostCache::Entry legacy_results(results, base::Time::Now(),
+                                  tick_clock_->NowTicks(),
+                                  HostCache::Entry::SOURCE_UNKNOWN);
+
+  CompleteRequestsWithoutCache(legacy_results, /*stale_info=*/std::nullopt,
                                TaskType::NAT64);
 }
 
@@ -985,23 +1014,39 @@ void HostResolverManager::Job::RecordJobHistograms(
       base::UmaHistogramSparse("Net.DNS.ResolveError.Slow", std::abs(error));
     }
   }
+}
 
-  if (error == OK) {
-    DCHECK(task_type.has_value());
-    // Record, for HTTPS-capable queries to a host known to serve HTTPS
-    // records, whether the HTTPS record was successfully received.
-    if (key_.query_types.Has(DnsQueryType::HTTPS) &&
-        // Skip http- and ws-schemed hosts. Although they query HTTPS records,
-        // successful queries are reported as errors, which would skew the
-        // metrics.
-        IsSchemeHttpsOrWss(key_.host) &&
-        IsGoogleHostWithAlpnH3(key_.host.GetHostnameWithoutBrackets())) {
-      bool has_metadata = !results.GetMetadatas().empty();
-      base::UmaHistogramExactLinear(
-          "Net.DNS.H3SupportedGoogleHost.TaskTypeMetadataAvailability2",
-          static_cast<int>(task_type.value()) * 2 + (has_metadata ? 1 : 0),
-          (static_cast<int>(TaskType::kMaxValue) + 1) * 2);
-    }
+void HostResolverManager::Job::RecordJobHttpsHistograms() {
+  const bool https_attempted = key_.query_types.Has(DnsQueryType::HTTPS) &&
+                               dns_task_executed_ && !dns_task_https_disabled_;
+  base::UmaHistogramBoolean("Net.DNS.JobAttemptedHttps", https_attempted);
+
+  if (!https_attempted) {
+    auto calculate_reason = [&]() {
+      if (!base::FeatureList::IsEnabled(features::kUseDnsHttpsSvcb)) {
+        return HttpsNotAttemptedReason::kQueryingHttpsDisabled;
+      }
+      if (!base::FeatureList::IsEnabled(features::kAsyncDns)) {
+        return HttpsNotAttemptedReason::kBuiltInResolverDisabled;
+      }
+      if (!resolver_->dns_client_) {
+        return HttpsNotAttemptedReason::kNoDnsClient;
+      }
+      if (resolver_->dns_client_->FallbackFromInsecureTransactionPreferred()) {
+        return HttpsNotAttemptedReason::
+            kFallbackFromInsecureTransactionPreferred;
+      }
+      if (dns_task_https_disabled_) {
+        return HttpsNotAttemptedReason::kInsecureDnsTaskDisabled;
+      }
+      if (fallback_to_system_task_after_dns_task_) {
+        return HttpsNotAttemptedReason::kFallbackToSystemTaskAfterDnsTask;
+      }
+      return HttpsNotAttemptedReason::kUnknown;
+    };
+
+    base::UmaHistogramEnumeration("Net.DNS.JobHttpsNotAttemptedReason",
+                                  calculate_reason());
   }
 }
 
@@ -1051,6 +1096,10 @@ void HostResolverManager::Job::CompleteRequests(
   }
 
   RecordJobHistograms(results, task_type);
+  if (results.error() == OK && had_non_speculative_request_ &&
+      key_.source == HostResolverSource::ANY) {
+    RecordJobHttpsHistograms();
+  }
 
   // Complete all of the requests that were attached to the job and
   // detach them.

@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.payments.handler;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** PaymentHandler UI properties, which fully describe the state of the UI. */
+@NullMarked
 /* package */ class PaymentHandlerProperties {
     /** The visible height of the PaymentHandler UI's content area in pixels. */
     /* package */ static final WritableIntPropertyKey CONTENT_VISIBLE_HEIGHT_PX =

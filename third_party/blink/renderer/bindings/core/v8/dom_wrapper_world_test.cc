@@ -26,19 +26,20 @@ namespace blink {
 namespace {
 
 // Collects the worlds present and the last used isolated world id.
-std::pair<Persistent<HeapVector<Member<DOMWrapperWorld>>>, int32_t>
+std::pair<Persistent<GCedHeapVector<Member<DOMWrapperWorld>>>, int32_t>
 CollectInitialWorlds(v8::Isolate* isolate) {
-  auto* initial_worlds =
-      MakeGarbageCollected<HeapVector<Member<DOMWrapperWorld>>>();
   int32_t used_isolated_world_id = DOMWrapperWorld::kMainWorldId;
-  DOMWrapperWorld::AllWorldsInIsolate(isolate, *initial_worlds);
-  for (const auto& world : *initial_worlds) {
+  HeapVector<Member<DOMWrapperWorld>> initial_worlds;
+  DOMWrapperWorld::AllWorldsInIsolate(isolate, initial_worlds);
+  for (const auto& world : initial_worlds) {
     if (world->IsIsolatedWorld()) {
       used_isolated_world_id =
           std::max(used_isolated_world_id, world->GetWorldId());
     }
   }
-  return {initial_worlds, used_isolated_world_id};
+  return {MakeGarbageCollected<GCedHeapVector<Member<DOMWrapperWorld>>>(
+              std::move(initial_worlds)),
+          used_isolated_world_id};
 }
 
 auto NumberOfWorlds(v8::Isolate* isolate) {

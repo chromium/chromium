@@ -12,6 +12,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/image_downloader.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
+#include "ash/system/focus_mode/sounds/focus_mode_api_error.h"
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_delegate.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -42,8 +43,6 @@ class ASH_EXPORT FocusModeSoundsController
     : public media_session::mojom::AudioFocusObserver,
       public media_session::mojom::MediaControllerObserver {
  public:
-  using UpdateSoundsViewCallback = base::OnceCallback<void(bool)>;
-
   // The data used to display on the focus panel. It will include a playlist id,
   // a string of its title, and the downloaded thumbnail for the playlist cover
   // currently. We will add the stream info in future.
@@ -64,9 +63,11 @@ class ASH_EXPORT FocusModeSoundsController
     virtual void OnSelectedPlaylistChanged() = 0;
     // Called when the state of `selected_playlist_` has been changed.
     virtual void OnPlaylistStateChanged() {}
+    // Called when the media player encounters an error.
+    virtual void OnPlayerError() {}
   };
 
-  FocusModeSoundsController();
+  FocusModeSoundsController(const std::string& locale);
   FocusModeSoundsController(const FocusModeSoundsController&) = delete;
   FocusModeSoundsController& operator=(const FocusModeSoundsController&) =
       delete;
@@ -83,13 +84,8 @@ class ASH_EXPORT FocusModeSoundsController
       const std::optional<FocusModeSoundsDelegate::Track>&)>;
   void GetNextTrack(GetNextTrackCallback callback);
 
-  const std::vector<std::unique_ptr<Playlist>>& soundscape_playlists() const {
-    return soundscape_playlists_;
-  }
-  const std::vector<std::unique_ptr<Playlist>>& youtube_music_playlists()
-      const {
-    return youtube_music_playlists_;
-  }
+  // Called by `FocusModeTrackProvider::ReportPlayerError`.
+  void ReportPlayerError();
 
   const focus_mode_util::SelectedPlaylist& selected_playlist() const {
     return selected_playlist_;
@@ -133,11 +129,17 @@ class ASH_EXPORT FocusModeSoundsController
   // deselect based on its previous state.
   void TogglePlaylist(const focus_mode_util::SelectedPlaylist& playlist_data);
 
+  void PausePlayback();
+  void ResumePlayingPlayback();
+
   // Download images by providing urls. `update_sounds_view_callback` will be
   // called only when finishing downloading all non-empty thumbnails for the
   // Soundscape type or the YouTube Music type of playlists; however, if
   // `ImageDownloader` doesn't exists or if there is an empty thumbnail
   // downloaded, `update_sounds_view_callback` will be not triggered.
+  using UpdateSoundsViewCallback =
+      base::OnceCallback<void(bool,
+                              const std::vector<std::unique_ptr<Playlist>>&)>;
   void DownloadPlaylistsForType(
       const bool is_soundscape_type,
       UpdateSoundsViewCallback update_sounds_view_callback);
@@ -149,23 +151,38 @@ class ASH_EXPORT FocusModeSoundsController
   // account premium status.
   void SetYouTubeMusicNoPremiumCallback(base::RepeatingClosure callback);
 
+  // Sets a callback to receive errors from the chosen API backend. If
+  // `is_soundscape` is false, connects to YouTube Music. True is currently
+  // unimplemented.
+  void SetErrorCallback(bool is_soundscape, ApiErrorCallback error_callback);
+
+  const std::optional<FocusModeApiError>& last_youtube_music_error() const;
+
   // Reports playback to the media server. It's only used for YouTube Music at
   // the moment.
   void ReportYouTubeMusicPlayback(
       const youtube_music::PlaybackData& playback_data);
 
-  void set_soundscape_playlists_for_testing(
-      std::vector<std::unique_ptr<Playlist>> soundscape_playlists) {
-    soundscape_playlists_.swap(soundscape_playlists);
-  }
-  void set_youtube_music_playlists_for_testing(
-      std::vector<std::unique_ptr<Playlist>> youtube_music_playlists) {
-    youtube_music_playlists_.swap(youtube_music_playlists);
-  }
+  bool ShouldDisplayYouTubeMusicOAuth() const;
+  void SavePrefForDisplayYouTubeMusicOAuth();
+  bool ShouldDisplayYouTubeMusicFreeTrial() const;
+  void SavePrefForDisplayYouTubeMusicFreeTrial();
+
   void set_selected_playlist_for_testing(
       const focus_mode_util::SelectedPlaylist& playlist) {
     selected_playlist_ = playlist;
   }
+  void update_selected_playlist_state_for_testing(
+      focus_mode_util::SoundState new_state) {
+    selected_playlist_.state = new_state;
+  }
+  void set_simulate_playback_for_testing() {
+    simulate_playback_for_testing_ = true;
+  }
+  bool has_audio_focus_for_testing() { return has_audio_focus_; }
+
+  bool IsMinorUser();
+  void SetIsMinorUserForTesting(bool is_minor_user);
 
  private:
   bool IsPlaylistAllowed(
@@ -186,9 +203,6 @@ class ASH_EXPORT FocusModeSoundsController
   std::unique_ptr<FocusModeSoundsDelegate> soundscape_delegate_;
   std::unique_ptr<FocusModeYouTubeMusicDelegate> youtube_music_delegate_;
 
-  std::vector<std::unique_ptr<Playlist>> soundscape_playlists_;
-  std::vector<std::unique_ptr<Playlist>> youtube_music_playlists_;
-
   focus_mode_util::SelectedPlaylist selected_playlist_;
   focus_mode_util::SoundType sound_type_ =
       focus_mode_util::SoundType::kSoundscape;
@@ -208,6 +222,11 @@ class ASH_EXPORT FocusModeSoundsController
   bool has_audio_focus_ = false;
   base::UnguessableToken media_session_request_id_ =
       base::UnguessableToken::Null();
+
+  bool simulate_playback_for_testing_ = false;
+
+  // Sets the value to true or false in browertest.
+  std::optional<bool> is_minor_user_for_testing_;
 
   base::ObserverList<Observer> observers_;
 

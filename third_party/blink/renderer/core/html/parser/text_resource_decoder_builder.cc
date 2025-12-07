@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder_builder.h"
 
 #include <memory>
@@ -60,36 +55,37 @@ struct LegacyEncoding {
   const char* encoding;
 };
 
-static const LegacyEncoding kEncodings[] = {
-    {"au", "windows-1252"}, {"az", "ISO-8859-9"},   {"bd", "windows-1252"},
-    {"bg", "windows-1251"}, {"br", "windows-1252"}, {"ca", "windows-1252"},
-    {"ch", "windows-1252"}, {"cn", "GBK"},          {"cz", "windows-1250"},
-    {"de", "windows-1252"}, {"dk", "windows-1252"}, {"ee", "windows-1256"},
-    {"eg", "windows-1257"}, {"et", "windows-1252"}, {"fi", "windows-1252"},
-    {"fr", "windows-1252"}, {"gb", "windows-1252"}, {"gr", "ISO-8859-7"},
-    {"hk", "Big5"},         {"hr", "windows-1250"}, {"hu", "ISO-8859-2"},
-    {"il", "windows-1255"}, {"ir", "windows-1257"}, {"is", "windows-1252"},
-    {"it", "windows-1252"}, {"jp", "Shift_JIS"},    {"kr", "windows-949"},
-    {"lt", "windows-1256"}, {"lv", "windows-1256"}, {"mk", "windows-1251"},
-    {"nl", "windows-1252"}, {"no", "windows-1252"}, {"pl", "ISO-8859-2"},
-    {"pt", "windows-1252"}, {"ro", "ISO-8859-2"},   {"rs", "windows-1251"},
-    {"ru", "windows-1251"}, {"se", "windows-1252"}, {"si", "ISO-8859-2"},
-    {"sk", "windows-1250"}, {"th", "windows-874"},  {"tr", "ISO-8859-9"},
-    {"tw", "Big5"},         {"tz", "windows-1252"}, {"ua", "windows-1251"},
-    {"us", "windows-1252"}, {"vn", "windows-1258"}, {"xa", "windows-1252"},
-    {"xb", "windows-1257"}};
+static const auto kEncodings = std::to_array<LegacyEncoding>(
+    {{"au", "windows-1252"}, {"az", "ISO-8859-9"},   {"bd", "windows-1252"},
+     {"bg", "windows-1251"}, {"br", "windows-1252"}, {"ca", "windows-1252"},
+     {"ch", "windows-1252"}, {"cn", "GBK"},          {"cz", "windows-1250"},
+     {"de", "windows-1252"}, {"dk", "windows-1252"}, {"ee", "windows-1256"},
+     {"eg", "windows-1257"}, {"et", "windows-1252"}, {"fi", "windows-1252"},
+     {"fr", "windows-1252"}, {"gb", "windows-1252"}, {"gr", "ISO-8859-7"},
+     {"hk", "Big5"},         {"hr", "windows-1250"}, {"hu", "ISO-8859-2"},
+     {"il", "windows-1255"}, {"ir", "windows-1257"}, {"is", "windows-1252"},
+     {"it", "windows-1252"}, {"jp", "Shift_JIS"},    {"kr", "windows-949"},
+     {"lt", "windows-1256"}, {"lv", "windows-1256"}, {"mk", "windows-1251"},
+     {"nl", "windows-1252"}, {"no", "windows-1252"}, {"pl", "ISO-8859-2"},
+     {"pt", "windows-1252"}, {"ro", "ISO-8859-2"},   {"rs", "windows-1251"},
+     {"ru", "windows-1251"}, {"se", "windows-1252"}, {"si", "ISO-8859-2"},
+     {"sk", "windows-1250"}, {"th", "windows-874"},  {"tr", "ISO-8859-9"},
+     {"tw", "Big5"},         {"tz", "windows-1252"}, {"ua", "windows-1251"},
+     {"us", "windows-1252"}, {"vn", "windows-1258"}, {"xa", "windows-1252"},
+     {"xb", "windows-1257"}});
 
-static const WTF::TextEncoding GetEncodingFromDomain(const KURL& url) {
+static const TextEncoding GetEncodingFromDomain(const KURL& url) {
   Vector<String> tokens;
-  url.Host().Split(".", tokens);
+  url.Host().ToString().Split(".", tokens);
   if (!tokens.empty()) {
     auto tld = tokens.back();
-    for (size_t i = 0; i < std::size(kEncodings); i++) {
-      if (tld == kEncodings[i].domain)
-        return WTF::TextEncoding(kEncodings[i].encoding);
+    for (const auto& encoding : kEncodings) {
+      if (tld == encoding.domain) {
+        return TextEncoding(encoding.encoding);
+      }
     }
   }
-  return WTF::TextEncoding();
+  return TextEncoding();
 }
 
 TextResourceDecoderOptions::ContentType DetermineContentType(
@@ -110,7 +106,7 @@ std::unique_ptr<TextResourceDecoder> BuildTextResourceDecoder(
     const KURL& url,
     const AtomicString& mime_type,
     const AtomicString& encoding) {
-  const WTF::TextEncoding encoding_from_domain = GetEncodingFromDomain(url);
+  const TextEncoding encoding_from_domain = GetEncodingFromDomain(url);
 
   LocalFrame* parent_frame = nullptr;
   if (frame)
@@ -129,11 +125,10 @@ std::unique_ptr<TextResourceDecoder> BuildTextResourceDecoder(
 
   std::unique_ptr<TextResourceDecoder> decoder;
   if (frame && frame->GetSettings()) {
-    const WTF::TextEncoding default_encoding =
+    const TextEncoding default_encoding =
         encoding_from_domain.IsValid()
             ? encoding_from_domain
-            : WTF::TextEncoding(
-                  frame->GetSettings()->GetDefaultTextEncodingName());
+            : TextEncoding(frame->GetSettings()->GetDefaultTextEncodingName());
     // Disable autodetection for XML/JSON to honor the default encoding (UTF-8)
     // for unlabelled documents.
     if (MIMETypeRegistry::IsXMLMIMEType(mime_type)) {
@@ -147,7 +142,7 @@ std::unique_ptr<TextResourceDecoder> BuildTextResourceDecoder(
               TextResourceDecoderOptions::kJSONContent, default_encoding));
       use_hint_encoding = false;
     } else {
-      WTF::TextEncoding hint_encoding;
+      TextEncoding hint_encoding;
       if (use_hint_encoding &&
           parent_frame->GetDocument()->EncodingWasDetectedHeuristically())
         hint_encoding = parent_frame->GetDocument()->Encoding();
@@ -163,7 +158,7 @@ std::unique_ptr<TextResourceDecoder> BuildTextResourceDecoder(
   DCHECK(decoder);
 
   if (!encoding.empty()) {
-    decoder->SetEncoding(WTF::TextEncoding(encoding.GetString()),
+    decoder->SetEncoding(TextEncoding(encoding.GetString()),
                          TextResourceDecoder::kEncodingFromHTTPHeader);
   } else if (use_hint_encoding) {
     decoder->SetEncoding(parent_frame->GetDocument()->Encoding(),

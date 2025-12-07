@@ -32,9 +32,7 @@ bool IsMobileOptimized(float min_page_scale_factor,
       content_width_css <= window_width_dip + kMobileViewportWidthEpsilon;
 
   return has_mobile_viewport || has_fixed_page_scale ||
-         (base::FeatureList::IsEnabled(
-              ::features::kRemoveMobileViewportDoubleTap) &&
-          viewport_meta_mobile_optimized);
+         viewport_meta_mobile_optimized;
 }
 
 }  // namespace util

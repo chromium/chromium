@@ -8,13 +8,18 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /** The mediator controller for the virtual card number (VCN) enrollment bottom sheet. */
+@NullMarked
 /*package*/ class AutofillVcnEnrollBottomSheetMediator {
     @VisibleForTesting
     static final String LOADING_SHOWN_HISTOGRAM = "Autofill.VirtualCardEnrollBubble.LoadingShown";
@@ -24,7 +29,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
     private final AutofillVcnEnrollBottomSheetContent mContent;
     private final AutofillVcnEnrollBottomSheetLifecycle mLifecycle;
-    private BottomSheetController mBottomSheetController;
+    private @Nullable BottomSheetController mBottomSheetController;
     private final PropertyModel mModel;
     private @VirtualCardEnrollmentBubbleResult int mLoadingResult;
 
@@ -40,6 +45,7 @@ import org.chromium.ui.modelutil.PropertyModel;
         VirtualCardEnrollmentBubbleResult.CANCELLED,
         VirtualCardEnrollmentBubbleResult.COUNT
     })
+    @Retention(RetentionPolicy.SOURCE)
     @VisibleForTesting
     @interface VirtualCardEnrollmentBubbleResult {
         int UNKNOWN = 0;
@@ -87,14 +93,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 
     /** Callback for when the user hits the [accept] button. */
     void onAccept() {
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.AUTOFILL_ENABLE_VCN_ENROLL_LOADING_AND_CONFIRMATION)) {
-            mModel.set(AutofillVcnEnrollBottomSheetProperties.SHOW_LOADING_STATE, true);
-            mLoadingResult = VirtualCardEnrollmentBubbleResult.ACCEPTED;
-            RecordHistogram.recordBooleanHistogram(LOADING_SHOWN_HISTOGRAM, true);
-        } else {
-            hide();
-        }
+        mModel.set(AutofillVcnEnrollBottomSheetProperties.SHOW_LOADING_STATE, true);
+        mLoadingResult = VirtualCardEnrollmentBubbleResult.ACCEPTED;
+        RecordHistogram.recordBooleanHistogram(LOADING_SHOWN_HISTOGRAM, true);
     }
 
     /** Callback for when the user hits the [cancel] button. */

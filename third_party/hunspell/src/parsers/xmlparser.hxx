@@ -1,13 +1,7 @@
-/*
- * HTML parser class for MySpell
- *
- * implemented: text, HTML, TeX
- *
- * Copyright (C) 2014, Laszlo Nemeth
- *
- */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * Copyright (C) 2002-2022 Németh László
  *
  * The contents of this file are subject to the Mozilla Public License Version
  * 1.1 (the "License"); you may not use this file except in compliance with
@@ -19,12 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is Hunspell, based on MySpell.
- *
- * The Initial Developers of the Original Code are
- * Kevin Hendricks (MySpell) and Németh László (Hunspell).
- * Portions created by the Initial Developers are Copyright (C) 2002-2005
- * the Initial Developers. All Rights Reserved.
+ * Hunspell is based on MySpell which is Copyright (C) 2002 Kevin Hendricks.
  *
  * Contributor(s): David Einstein, Davide Prina, Giuseppe Modugno,
  * Gianluca Turconi, Simon Brouwer, Noll János, Bíró Árpád,
@@ -64,8 +53,13 @@ class XMLParser : public TextParser {
                   unsigned int len,
                   const char* p2[][2],
                   unsigned int len2,
+                  const char* p3[][2],
+                  unsigned int len3,
                   std::string&);
   virtual bool next_token(std::string&);
+  std::string get_word2(const char* p2[][2],
+                  unsigned int len2,
+                  const std::string &tok);
   int change_token(const char* word);
   virtual ~XMLParser();
 
@@ -73,6 +67,7 @@ class XMLParser : public TextParser {
   int look_pattern(const char* p[][2], unsigned int len, int column);
   int pattern_num;
   int pattern2_num;
+  int pattern3_num;
   int prevstate;
   int checkattr;
   char quotmark;

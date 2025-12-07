@@ -5,6 +5,7 @@
 #include "extensions/browser/api/power/power_api.h"
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "content/public/browser/device_service.h"
 #include "extensions/browser/api/power/activity_reporter_delegate.h"
@@ -28,9 +29,7 @@ device::mojom::WakeLockType LevelToWakeLockType(api::power::Level level) {
     case api::power::Level::kNone:
       return device::mojom::WakeLockType::kPreventDisplaySleep;
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Unhandled power level: " << api::power::ToString(level);
-  return device::mojom::WakeLockType::kPreventDisplaySleep;
+  NOTREACHED() << "Unhandled power level: " << api::power::ToString(level);
 }
 
 base::LazyInstance<BrowserContextKeyedAPIFactory<PowerAPI>>::DestructorAtExit

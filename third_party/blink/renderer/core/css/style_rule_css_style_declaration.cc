@@ -21,9 +21,11 @@
  */
 
 #include "third_party/blink/renderer/core/css/style_rule_css_style_declaration.h"
+
 #include "third_party/blink/renderer/core/css/css_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
+#include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -53,10 +55,8 @@ void StyleRuleCSSStyleDeclaration::WillMutate() {
 
 void StyleRuleCSSStyleDeclaration::DidMutate(MutationType type) {
   // Style sheet mutation needs to be signaled even if the change failed.
-  // willMutateRules/didMutateRules must pair.
+  // WillMutate/DidMutate must pair.
   if (parent_rule_ && parent_rule_->parentStyleSheet()) {
-    parent_rule_->parentStyleSheet()->DidMutate(
-        CSSStyleSheet::Mutation::kRules);
     StyleSheetContents* parent_contents =
         parent_rule_->parentStyleSheet()->Contents();
     if (parent_rule_->GetType() == CSSRule::kStyleRule) {
@@ -65,6 +65,8 @@ void StyleRuleCSSStyleDeclaration::DidMutate(MutationType type) {
     } else {
       parent_contents->NotifyDiffUnrepresentable();
     }
+    parent_rule_->parentStyleSheet()->DidMutate(
+        CSSStyleSheet::Mutation::kRules);
   }
 }
 

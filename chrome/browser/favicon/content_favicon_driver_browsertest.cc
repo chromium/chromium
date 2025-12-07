@@ -30,7 +30,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/favicon/core/favicon_handler.h"
 #include "components/favicon/core/favicon_service.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -127,7 +126,7 @@ class PendingTaskWaiter : public content::WebContentsObserver {
   PendingTaskWaiter(const PendingTaskWaiter&) = delete;
   PendingTaskWaiter& operator=(const PendingTaskWaiter&) = delete;
 
-  ~PendingTaskWaiter() override {}
+  ~PendingTaskWaiter() override = default;
 
   void AlsoRequireUrl(const GURL& url) { required_url_ = url; }
 
@@ -203,7 +202,7 @@ class PageLoadStopper : public content::WebContentsObserver {
   PageLoadStopper(const PageLoadStopper&) = delete;
   PageLoadStopper& operator=(const PageLoadStopper&) = delete;
 
-  ~PageLoadStopper() override {}
+  ~PageLoadStopper() override = default;
 
   void StopOnDidFinishNavigation() { stop_on_finish_ = true; }
 
@@ -254,10 +253,6 @@ class ContentFaviconDriverTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
   content::WebContents* web_contents() {
@@ -323,7 +318,8 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
   prerender_helper().WaitForRequest(prerender_url, 1);
   EXPECT_EQ(prerender_helper().GetRequestCount(icon_url), 0);
 
-  int host_id = prerender_helper().GetHostForUrl(prerender_url);
+  content::FrameTreeNodeId host_id =
+      prerender_helper().GetHostForUrl(prerender_url);
   auto* prerendered = prerender_helper().GetPrerenderedMainFrameHost(host_id);
   EXPECT_CALL(observer, DidUpdateFaviconURL(prerendered, testing::_));
   prerender_helper().NavigatePrimaryPage(prerender_url);
@@ -583,7 +579,9 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest, RemoveTouchIconViaJavascript) {
 // have been processed in the HTML, because this is an example where Content
 // reports an incomplete favicon list (or, like in this test, falls back to the
 // default favicon.ico).
-IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest, DoNotRemoveMappingIfStopped) {
+// TODO: https://crbug.com/434752631 - Re-enable this test.
+IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
+                       DISABLED_DoNotRemoveMappingIfStopped) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url =
       embedded_test_server()->GetURL("/favicon/slow_page_with_favicon.html");
@@ -940,6 +938,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTestWithAutoupgradesDisabled,
                        MixedContentInsecureFaviconBlocked) {
   net::EmbeddedTestServer ssl_server(net::EmbeddedTestServer::TYPE_HTTPS);
   ssl_server.AddDefaultHandlers(GetChromeTestDataDir());
+  ssl_server.SetCertHostnames({"example.test"});
   ASSERT_TRUE(ssl_server.Start());
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -973,6 +972,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTestWithAutoupgradesDisabled,
                        MixedContentSecureFaviconAllowed) {
   net::EmbeddedTestServer ssl_server(net::EmbeddedTestServer::TYPE_HTTPS);
   ssl_server.AddDefaultHandlers(GetChromeTestDataDir());
+  ssl_server.SetCertHostnames({"example.test"});
   ASSERT_TRUE(ssl_server.Start());
 
   const GURL favicon_url =
@@ -1161,6 +1161,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest, CrossOriginCacheHTTP) {
 IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest, CrossOriginCacheHTTPS) {
   net::EmbeddedTestServer ssl_server(net::EmbeddedTestServer::TYPE_HTTPS);
   ssl_server.AddDefaultHandlers(GetChromeTestDataDir());
+  ssl_server.SetCertHostnames({"a.com", "b.com"});
   ASSERT_TRUE(ssl_server.Start());
   TestURLLoaderInterceptor url_loader_interceptor;
   GURL icon_url = ssl_server.GetURL("a.com", "/favicon/icon.png");

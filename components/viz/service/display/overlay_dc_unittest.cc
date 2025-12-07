@@ -4,13 +4,16 @@
 
 #include <stddef.h>
 
+#include <functional>
 #include <memory>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "cc/paint/filter_operation.h"
@@ -31,9 +34,11 @@
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/overlay_candidate.h"
 #include "components/viz/service/display/overlay_processor_win.h"
+#include "components/viz/test/draw_quad_matchers.h"
 #include "components/viz/test/fake_skia_output_surface.h"
 #include "components/viz/test/overlay_candidate_matchers.h"
 #include "components/viz/test/test_context_provider.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,6 +48,7 @@
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/video_types.h"
+#include "ui/gl/gl_switches.h"
 
 using testing::_;
 using testing::Mock;
@@ -57,45 +63,26 @@ const gfx::Rect kOverlayBottomRightRect(128, 128, 128, 128);
 // by the test suites and helper functions.
 const AggregatedRenderPassId kDefaultRootPassId{1};
 
-class MockDCLayerOutputSurface : public FakeSkiaOutputSurface {
- public:
-  static std::unique_ptr<MockDCLayerOutputSurface> Create() {
-    auto provider = TestContextProvider::Create();
-    provider->BindToCurrentSequence();
-    return std::make_unique<MockDCLayerOutputSurface>(std::move(provider));
-  }
-
-  explicit MockDCLayerOutputSurface(scoped_refptr<ContextProvider> provider)
-      : FakeSkiaOutputSurface(std::move(provider)) {}
-
-  // OutputSurface implementation.
-  MOCK_METHOD1(SetEnableDCLayers, void(bool));
-};
-
-std::unique_ptr<AggregatedRenderPass> CreateRenderPass(
-    AggregatedRenderPassId render_pass_id = kDefaultRootPassId) {
-  gfx::Rect output_rect(0, 0, 256, 256);
-
-  auto pass = std::make_unique<AggregatedRenderPass>();
-  pass->SetNew(render_pass_id, output_rect, output_rect, gfx::Transform());
-
-  SharedQuadState* shared_state = pass->CreateAndAppendSharedQuadState();
-  shared_state->opacity = 1.f;
-  return pass;
-}
-
 static ResourceId CreateResourceInLayerTree(
     ClientResourceProvider* child_resource_provider,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     const gfx::HDRMetadata& hdr_metadata,
     SharedImageFormat format,
-    bool is_overlay_candidate) {
-  auto resource = TransferableResource::MakeGpu(
-      gpu::Mailbox::Generate(), GL_TEXTURE_2D, gpu::SyncToken(), size, format,
-      is_overlay_candidate);
-  resource.color_space = color_space;
+    bool is_overlay_candidate,
+    bool is_low_latency) {
+  gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+  if (is_overlay_candidate) {
+    usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
+  }
+  auto resource = TransferableResource::Make(
+      gpu::ClientSharedImage::CreateForTesting(
+          {format, size, color_space, kTopLeft_GrSurfaceOrigin,
+           kPremul_SkAlphaType, usage},
+          GL_TEXTURE_2D),
+      TransferableResource::ResourceSource::kTest, gpu::SyncToken());
   resource.hdr_metadata = hdr_metadata;
+  resource.is_low_latency_rendering = is_low_latency;
 
   ResourceId resource_id =
       child_resource_provider->ImportResource(resource, base::DoNothing());
@@ -110,10 +97,11 @@ ResourceId CreateResource(DisplayResourceProvider* parent_resource_provider,
                           const gfx::ColorSpace& color_space,
                           const gfx::HDRMetadata& hdr_metadata,
                           SharedImageFormat format,
-                          bool is_overlay_candidate) {
-  ResourceId resource_id =
-      CreateResourceInLayerTree(child_resource_provider, size, color_space,
-                                hdr_metadata, format, is_overlay_candidate);
+                          bool is_overlay_candidate,
+                          bool is_low_latency) {
+  ResourceId resource_id = CreateResourceInLayerTree(
+      child_resource_provider, size, color_space, hdr_metadata, format,
+      is_overlay_candidate, is_low_latency);
 
   int child_id =
       parent_resource_provider->CreateChild(base::DoNothing(), SurfaceId());
@@ -122,8 +110,11 @@ ResourceId CreateResource(DisplayResourceProvider* parent_resource_provider,
   std::vector<ResourceId> resource_ids_to_transfer;
   resource_ids_to_transfer.push_back(resource_id);
   std::vector<TransferableResource> list;
-  child_resource_provider->PrepareSendToParent(resource_ids_to_transfer, &list,
-                                               child_context_provider);
+
+  CHECK(child_context_provider);
+  child_resource_provider->PrepareSendToParent(
+      resource_ids_to_transfer, &list,
+      child_context_provider->SharedImageInterface());
   parent_resource_provider->ReceiveFromChild(child_id, list);
 
   // Delete it in the child so it won't be leaked, and will be released once
@@ -154,17 +145,41 @@ TextureDrawQuad* CreateTextureQuadAt(
     const SharedQuadState* shared_quad_state,
     AggregatedRenderPass* render_pass,
     const gfx::Rect& rect,
-    bool is_overlay_candidate = true) {
-  ResourceId resource_id = CreateResource(
-      parent_resource_provider, child_resource_provider, child_context_provider,
-      rect.size(), gfx::ColorSpace(), gfx::HDRMetadata(),
-      SinglePlaneFormat::kRGBA_8888, is_overlay_candidate);
+    bool is_overlay_candidate) {
+  ResourceId resource_id =
+      CreateResource(parent_resource_provider, child_resource_provider,
+                     child_context_provider, rect.size(), gfx::ColorSpace(),
+                     gfx::HDRMetadata(), SinglePlaneFormat::kRGBA_8888,
+                     is_overlay_candidate, /*is_low_latency=*/false);
   auto* quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   quad->SetNew(shared_quad_state, rect, /*visible_rect=*/rect,
-               /*needs_blending=*/false, resource_id, /*premultiplied=*/true,
+               /*needs_blending=*/false, resource_id,
                /*top_left=*/gfx::PointF(0, 0),
                /*bottom_right=*/gfx::PointF(1, 1),
-               /*background=*/SkColors::kBlack, /*flipped=*/false,
+               /*background=*/SkColors::kBlack,
+               /*nearest=*/false, /*secure_output=*/false,
+               gfx::ProtectedVideoType::kClear);
+  return quad;
+}
+
+TextureDrawQuad* CreateLowLatencyTextureQuadAt(
+    DisplayResourceProvider* parent_resource_provider,
+    ClientResourceProvider* child_resource_provider,
+    RasterContextProvider* child_context_provider,
+    const SharedQuadState* shared_quad_state,
+    AggregatedRenderPass* render_pass,
+    const gfx::Rect& rect) {
+  ResourceId resource_id =
+      CreateResource(parent_resource_provider, child_resource_provider,
+                     child_context_provider, rect.size(), gfx::ColorSpace(),
+                     gfx::HDRMetadata(), SinglePlaneFormat::kRGBA_8888,
+                     /*is_overlay_candidate=*/true, /*is_low_latency=*/true);
+  auto* quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
+  quad->SetNew(shared_quad_state, rect, /*visible_rect=*/rect,
+               /*needs_blending=*/false, resource_id,
+               /*top_left=*/gfx::PointF(0, 0),
+               /*bottom_right=*/gfx::PointF(1, 1),
+               /*background=*/SkColors::kBlack,
                /*nearest=*/false, /*secure_output=*/false,
                gfx::ProtectedVideoType::kClear);
   return quad;
@@ -180,6 +195,39 @@ void CreateOpaqueQuadAt(DisplayResourceProvider* resource_provider,
   color_quad->SetNew(shared_quad_state, rect, rect, color, false);
 }
 
+TextureDrawQuad* CreateYUVTextureQuadAt(
+    DisplayResourceProvider* parent_resource_provider,
+    ClientResourceProvider* child_resource_provider,
+    RasterContextProvider* child_context_provider,
+    const SharedQuadState* shared_quad_state,
+    AggregatedRenderPass* render_pass,
+    const gfx::Rect& quad_rect,
+    const gfx::ColorSpace& color_space = gfx::ColorSpace(),
+    const gfx::HDRMetadata& hdr_metadata = gfx::HDRMetadata(),
+    SharedImageFormat format = SinglePlaneFormat::kRGBA_8888) {
+  gfx::Size resource_size_in_pixels = render_pass->output_rect.size();
+  bool is_overlay_candidate = true;
+  ResourceId resource_id = CreateResource(
+      parent_resource_provider, child_resource_provider, child_context_provider,
+      resource_size_in_pixels, color_space, hdr_metadata, format,
+      is_overlay_candidate, /*is_low_latency=*/false);
+
+  auto* overlay_quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
+  overlay_quad->SetNew(shared_quad_state,
+                       /*rect=*/quad_rect,
+                       /*visible_rect=*/quad_rect,
+                       /*needs_blending=*/false, resource_id,
+                       /*top_left=*/gfx::PointF(0, 0),
+                       /*bottom_right=*/gfx::PointF(1, 1),
+                       /*background=*/SkColors::kBlack,
+                       /*nearest=*/false, /*secure_output=*/false,
+                       gfx::ProtectedVideoType::kClear);
+  // Content is video frame type.
+  overlay_quad->is_video_frame = true;
+
+  return overlay_quad;
+}
+
 TextureDrawQuad* CreateFullscreenCandidateYUVTextureQuad(
     DisplayResourceProvider* parent_resource_provider,
     ClientResourceProvider* child_resource_provider,
@@ -188,28 +236,16 @@ TextureDrawQuad* CreateFullscreenCandidateYUVTextureQuad(
     AggregatedRenderPass* render_pass,
     const gfx::ColorSpace& color_space = gfx::ColorSpace(),
     const gfx::HDRMetadata& hdr_metadata = gfx::HDRMetadata(),
-    SharedImageFormat format = SinglePlaneFormat::kRGBA_8888) {
-  gfx::Rect rect = render_pass->output_rect;
-  gfx::Size resource_size_in_pixels = rect.size();
-  bool is_overlay_candidate = true;
-  ResourceId resource_id =
-      CreateResource(parent_resource_provider, child_resource_provider,
-                     child_context_provider, resource_size_in_pixels,
-                     color_space, hdr_metadata, format, is_overlay_candidate);
+    SharedImageFormat format = SinglePlaneFormat::kRGBA_8888,
+    const gfx::Rect& quad_rect = gfx::Rect()) {
+  // If `quad_rect` is empty, use `render_pass->output_rect`.
+  const gfx::Rect& final_quad_rect =
+      quad_rect.IsEmpty() ? render_pass->output_rect : quad_rect;
 
-  auto* overlay_quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
-  overlay_quad->SetNew(shared_quad_state, rect, /*visible_rect=*/rect,
-                       /*needs_blending=*/false, resource_id,
-                       /*premultiplied=*/true,
-                       /*top_left=*/gfx::PointF(0, 0),
-                       /*bottom_right=*/gfx::PointF(1, 1),
-                       /*background=*/SkColors::kBlack, /*flipped=*/false,
-                       /*nearest=*/false, /*secure_output=*/false,
-                       gfx::ProtectedVideoType::kClear);
-  // Content is video frame type.
-  overlay_quad->is_video_frame = true;
-
-  return overlay_quad;
+  return CreateYUVTextureQuadAt(parent_resource_provider,
+                                child_resource_provider, child_context_provider,
+                                shared_quad_state, render_pass, final_quad_rect,
+                                color_space, hdr_metadata, format);
 }
 
 AggregatedRenderPassDrawQuad* CreateRenderPassDrawQuadAt(
@@ -220,13 +256,58 @@ AggregatedRenderPassDrawQuad* CreateRenderPassDrawQuadAt(
   AggregatedRenderPassDrawQuad* quad =
       render_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   quad->SetNew(shared_quad_state, rect, rect, render_pass_id, ResourceId(2),
-               gfx::RectF(), gfx::Size(), gfx::Vector2dF(1, 1), gfx::PointF(),
-               gfx::RectF(), false, 1.f);
+               gfx::RectF(), gfx::Size(), gfx::RectF(), false);
   return quad;
 }
 
 SkM44 GetIdentityColorMatrix() {
   return SkM44();
+}
+
+MATCHER(ResourceIdEq, "") {
+  return std::get<0>(arg).resource_id == ResourceId(std::get<1>(arg));
+}
+
+MATCHER(PlaneZOrdersAreUnique, "") {
+  const OverlayCandidateList& candidates = arg;
+  base::flat_set<int> z_orders;
+  for (const auto& candidate : candidates) {
+    z_orders.insert(candidate.plane_z_order);
+  }
+  return candidates.size() == z_orders.size();
+}
+
+// Checks that an `OverlayCandidate` has a `OverlayLayerId` with a layer and
+// namespace id that matches the output of
+// `CreateSharedQuadStateWithLayerNamespaceId`.
+MATCHER(OverlayHasLayerId, "") {
+  return arg.layer_id == gfx::OverlayLayerId(std::make_pair(1, 1), 0);
+}
+
+MATCHER(OverlayIsPrimaryPlane, "") {
+  return arg.is_root_render_pass;
+}
+
+MATCHER(IsSortedByPlaneZOrder, "") {
+  return std::ranges::is_sorted(arg, {}, &OverlayCandidate::plane_z_order);
+}
+
+testing::Matcher<const OverlayCandidateList&> CandidatesAreSortedAndElementsAre(
+    std::vector<testing::Matcher<const OverlayCandidate&>> element_matchers) {
+  return testing::AllOf(PlaneZOrdersAreUnique(), IsSortedByPlaneZOrder(),
+                        testing::ElementsAreArray(element_matchers));
+}
+
+// Checks that, when the overlay candidates list is sorted by z-order, the
+// resource IDs of the candidates matches |expected_resource_ids|. Note these
+// resource IDs are not real and a just used to identify overlay candidates in
+// tests.
+testing::Matcher<const OverlayCandidateList&>
+CandidatesAreSortedAndResourceIdsAre(
+    const std::vector<int>& expected_resource_ids) {
+  return testing::AllOf(
+      PlaneZOrdersAreUnique(), IsSortedByPlaneZOrder(),
+      testing::Pointwise(ResourceIdEq(), expected_resource_ids));
 }
 
 class OverlayProcessorTestBase : public testing::Test {
@@ -235,24 +316,18 @@ class OverlayProcessorTestBase : public testing::Test {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
-    // With DisableVideoOverlayIfMoving, videos are required to be stable for a
-    // certain number of frames to be considered for overlay promotion. This
-    // complicates tests since it adds behavior dependent on the number of times
-    // |Process| is called.
-    disabled_features.push_back(features::kDisableVideoOverlayIfMoving);
-
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   void SetUp() override {
-    output_surface_ = MockDCLayerOutputSurface::Create();
+    output_surface_ = FakeSkiaOutputSurface::Create3d();
     output_surface_->BindToClient(&output_surface_client_);
 
     resource_provider_ = std::make_unique<DisplayResourceProviderSkia>();
     lock_set_for_external_use_.emplace(resource_provider_.get(),
                                        output_surface_.get());
 
-    child_provider_ = TestContextProvider::Create();
+    child_provider_ = TestContextProvider::CreateGLES();
     child_provider_->BindToCurrentSequence();
     child_resource_provider_ = std::make_unique<ClientResourceProvider>();
   }
@@ -266,8 +341,31 @@ class OverlayProcessorTestBase : public testing::Test {
     output_surface_ = nullptr;
   }
 
+  std::unique_ptr<AggregatedRenderPass> CreateRenderPass(
+      AggregatedRenderPassId render_pass_id = kDefaultRootPassId) {
+    gfx::Rect output_rect(0, 0, 256, 256);
+
+    auto pass = std::make_unique<AggregatedRenderPass>();
+    pass->SetNew(render_pass_id, output_rect, output_rect, gfx::Transform());
+
+    SharedQuadState* shared_state =
+        CreateSharedQuadStateWithLayerNamespaceId(pass.get());
+    shared_state->opacity = 1.f;
+    return pass;
+  }
+
+  // Create a `SharedQuadState` with a valid layer and namespace id
+  // pre-populated. This simulates the part of `SurfaceAggregator` that assigns
+  // the `layer_namespace_id`.
+  SharedQuadState* CreateSharedQuadStateWithLayerNamespaceId(
+      AggregatedRenderPass* pass) {
+    SharedQuadState* sqs = pass->CreateAndAppendSharedQuadState();
+    sqs->layer_namespace_id = std::make_pair(1, 1);
+    return sqs;
+  }
+
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<MockDCLayerOutputSurface> output_surface_;
+  std::unique_ptr<FakeSkiaOutputSurface> output_surface_;
   cc::FakeOutputSurfaceClient output_surface_client_;
   std::unique_ptr<DisplayResourceProviderSkia> resource_provider_;
   std::optional<DisplayResourceProviderSkia::LockSetForExternalUse>
@@ -280,8 +378,14 @@ class DCLayerOverlayProcessorTest : public OverlayProcessorTestBase {
  protected:
   void InitializeDCLayerOverlayProcessor(int allowed_yuv_overlay_count = 1) {
     CHECK(!dc_layer_overlay_processor_);
+
+    // With disable_video_overlay_if_moving enabled, videos are required to be
+    // stable for a certain number of frames to be considered for overlay
+    // promotion. This complicates tests since it adds behavior dependent on
+    // the number of times |Process| is called.
     dc_layer_overlay_processor_ = std::make_unique<DCLayerOverlayProcessor>(
         allowed_yuv_overlay_count,
+        /*disable_video_overlay_if_moving=*/false,
         /*skip_initialization_for_testing=*/true);
 
     dc_layer_overlay_processor_
@@ -293,6 +397,8 @@ class DCLayerOverlayProcessorTest : public OverlayProcessorTestBase {
     OverlayProcessorTestBase::TearDown();
   }
 
+  // TODO(crbug.com/444264038): Merge this overload with one without filter data
+  // when the RPDQ refactor is finished so that it does not need filter data.
   DCLayerOverlayProcessor::RenderPassOverlayData ProcessRootPassForOverlays(
       const AggregatedRenderPassList* render_passes,
       const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
@@ -318,11 +424,19 @@ class DCLayerOverlayProcessorTest : public OverlayProcessorTestBase {
     // |DCLayerOverlayProcessor::Process| doesn't guarantee a specific ordering
     // for its overlays so we sort front-to-back so tests can make expectations
     // with the same ordering as the input draw quads.
-    base::ranges::sort(root_render_pass_overlay_data.promoted_overlays,
-                       base::ranges::greater(),
-                       &OverlayCandidate::plane_z_order);
+    std::ranges::sort(root_render_pass_overlay_data.promoted_overlays,
+                      std::ranges::greater(), &OverlayCandidate::plane_z_order);
 
     return std::move(root_render_pass_overlay_data);
+  }
+
+  DCLayerOverlayProcessor::RenderPassOverlayData ProcessRootPassForOverlays(
+      const AggregatedRenderPassList* render_passes,
+      SurfaceDamageRectList surface_damage_rect_list_in_root_space) {
+    return ProcessRootPassForOverlays(
+        render_passes, OverlayProcessorInterface::FilterOperationsMap(),
+        OverlayProcessorInterface::FilterOperationsMap(),
+        surface_damage_rect_list_in_root_space);
   }
 
   void TestRenderPassRootTransform(bool is_overlay);
@@ -330,7 +444,7 @@ class DCLayerOverlayProcessorTest : public OverlayProcessorTestBase {
   std::unique_ptr<DCLayerOverlayProcessor> dc_layer_overlay_processor_;
 };
 
-TEST_F(DCLayerOverlayProcessorTest, DisableVideoOverlayIfMovingFeature) {
+TEST_F(DCLayerOverlayProcessorTest, DisableVideoOverlayIfMovingWorkaround) {
   InitializeDCLayerOverlayProcessor();
   auto ProcessForOverlaysSingleVideoRectWithOffset =
       [&](gfx::Vector2d video_rect_offset, bool is_hdr = false,
@@ -350,7 +464,7 @@ TEST_F(DCLayerOverlayProcessorTest, DisableVideoOverlayIfMovingFeature) {
           // Content has valid HDR metadata.
           hdr_metadata.cta_861_3 = gfx::HdrMetadataCta861_3(1000, 400);
           hdr_metadata.smpte_st_2086 = gfx::HdrMetadataSmpteSt2086(
-              SkNamedPrimariesExt::kRec2020, 1000, 0.0001);
+              SkNamedPrimaries::kRec2020, 1000, 0.0001);
 
           // Render Pass has HDR content usage.
           pass->content_color_usage = gfx::ContentColorUsage::kHDR;
@@ -387,41 +501,33 @@ TEST_F(DCLayerOverlayProcessorTest, DisableVideoOverlayIfMovingFeature) {
               ->set_has_auto_hdr_video_processor_support_for_testing(true);
         }
 
-        auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
+        CreateYUVTextureQuadAt(
             resource_provider_.get(), child_resource_provider_.get(),
             child_provider_.get(), pass->shared_quad_state_list.back(),
-            pass.get(), color_space, hdr_metadata, format);
-        video_quad->rect = gfx::Rect(0, 0, 10, 10) + video_rect_offset;
-        video_quad->visible_rect = gfx::Rect(0, 0, 10, 10) + video_rect_offset;
-
-        OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-        OverlayProcessorInterface::FilterOperationsMap
-            render_pass_backdrop_filters;
+            pass.get(), gfx::Rect(0, 0, 10, 10) + video_rect_offset,
+            color_space, hdr_metadata, format);
 
         AggregatedRenderPassList pass_list;
         pass_list.push_back(std::move(pass));
 
-        auto overlay_data = ProcessRootPassForOverlays(
-            &pass_list, render_pass_filters, render_pass_backdrop_filters, {});
+        auto overlay_data = ProcessRootPassForOverlays(&pass_list, {});
 
         return std::move(overlay_data.promoted_overlays);
       };
 
   {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndDisableFeature(
-        features::kDisableVideoOverlayIfMoving);
+    dc_layer_overlay_processor_
+        ->set_disable_video_overlay_if_moving_for_testing(false);
     EXPECT_EQ(1U, ProcessForOverlaysSingleVideoRectWithOffset({0, 0}).size());
     EXPECT_EQ(1U, ProcessForOverlaysSingleVideoRectWithOffset({1, 0}).size());
   }
 
   {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeature(
-        features::kDisableVideoOverlayIfMoving);
+    dc_layer_overlay_processor_
+        ->set_disable_video_overlay_if_moving_for_testing(true);
     // We expect an overlay promotion after a couple frames of no movement
     for (int i = 0; i < 10; i++) {
-      ProcessForOverlaysSingleVideoRectWithOffset({0, 0}).size();
+      ProcessForOverlaysSingleVideoRectWithOffset({0, 0});
     }
     EXPECT_EQ(1U, ProcessForOverlaysSingleVideoRectWithOffset({0, 0}).size());
 
@@ -430,20 +536,18 @@ TEST_F(DCLayerOverlayProcessorTest, DisableVideoOverlayIfMovingFeature) {
 
     // After some number of frames with no movement, we expect an overlay again
     for (int i = 0; i < 10; i++) {
-      ProcessForOverlaysSingleVideoRectWithOffset({1, 0}).size();
+      ProcessForOverlaysSingleVideoRectWithOffset({1, 0});
     }
     EXPECT_EQ(1U, ProcessForOverlaysSingleVideoRectWithOffset({1, 0}).size());
   }
 
   {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeature(
-        features::kDisableVideoOverlayIfMoving);
+    dc_layer_overlay_processor_
+        ->set_disable_video_overlay_if_moving_for_testing(true);
     // We expect an overlay promotion after a couple frames of no movement
     for (int i = 0; i < 10; i++) {
       ProcessForOverlaysSingleVideoRectWithOffset({0, 0}, /*is_hdr=*/false,
-                                                  /*is_sdr_to_hdr*/ true)
-          .size();
+                                                  /*is_sdr_to_hdr*/ true);
     }
     EXPECT_EQ(1U, ProcessForOverlaysSingleVideoRectWithOffset(
                       {0, 0}, /*is_hdr=*/false, /*is_sdr_to_hdr*/ true)
@@ -457,13 +561,11 @@ TEST_F(DCLayerOverlayProcessorTest, DisableVideoOverlayIfMovingFeature) {
   }
 
   {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeature(
-        features::kDisableVideoOverlayIfMoving);
+    dc_layer_overlay_processor_
+        ->set_disable_video_overlay_if_moving_for_testing(true);
     // We expect an overlay promotion after a couple frames of no movement
     for (int i = 0; i < 10; i++) {
-      ProcessForOverlaysSingleVideoRectWithOffset({0, 0}, /*is_hdr=*/true)
-          .size();
+      ProcessForOverlaysSingleVideoRectWithOffset({0, 0}, /*is_hdr=*/true);
     }
     EXPECT_EQ(
         1U, ProcessForOverlaysSingleVideoRectWithOffset({0, 0}, /*is_hdr=*/true)
@@ -487,7 +589,7 @@ TEST_F(DCLayerOverlayProcessorTest, Occluded) {
                        gfx::Rect(0, 3, 100, 100), SkColors::kWhite);
 
     SharedQuadState* second_shared_state =
-        pass->CreateAndAppendSharedQuadState();
+        CreateSharedQuadStateWithLayerNamespaceId(pass.get());
     second_shared_state->overlay_damage_index = 1;
     auto* first_video_quad = CreateFullscreenCandidateYUVTextureQuad(
         resource_provider_.get(), child_resource_provider_.get(),
@@ -497,7 +599,7 @@ TEST_F(DCLayerOverlayProcessorTest, Occluded) {
         gfx::ProtectedVideoType::kHardwareProtected;
 
     SharedQuadState* third_shared_state =
-        pass->CreateAndAppendSharedQuadState();
+        CreateSharedQuadStateWithLayerNamespaceId(pass.get());
     third_shared_state->overlay_damage_index = 2;
     auto* second_video_quad = CreateFullscreenCandidateYUVTextureQuad(
         resource_provider_.get(), child_resource_provider_.get(),
@@ -508,8 +610,6 @@ TEST_F(DCLayerOverlayProcessorTest, Occluded) {
     second_video_quad->rect.set_origin(gfx::Point(2, 2));
     second_video_quad->visible_rect.set_origin(gfx::Point(2, 2));
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(1, 1, 10, 10);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
@@ -517,8 +617,7 @@ TEST_F(DCLayerOverlayProcessorTest, Occluded) {
         gfx::Rect(1, 1, 10, 10), gfx::Rect(0, 0, 0, 0), gfx::Rect(0, 0, 0, 0)};
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     EXPECT_EQ(2U, overlay_data.promoted_overlays.size());
     EXPECT_EQ(-1, overlay_data.promoted_overlays.front().plane_z_order);
@@ -535,7 +634,7 @@ TEST_F(DCLayerOverlayProcessorTest, Occluded) {
                        gfx::Rect(3, 3, 100, 100), SkColors::kWhite);
 
     SharedQuadState* second_shared_state =
-        pass->CreateAndAppendSharedQuadState();
+        CreateSharedQuadStateWithLayerNamespaceId(pass.get());
     second_shared_state->overlay_damage_index = 1;
     auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
         resource_provider_.get(), child_resource_provider_.get(),
@@ -545,7 +644,7 @@ TEST_F(DCLayerOverlayProcessorTest, Occluded) {
         gfx::ProtectedVideoType::kHardwareProtected;
 
     SharedQuadState* third_shared_state =
-        pass->CreateAndAppendSharedQuadState();
+        CreateSharedQuadStateWithLayerNamespaceId(pass.get());
     third_shared_state->overlay_damage_index = 2;
     auto* second_video_quad = CreateFullscreenCandidateYUVTextureQuad(
         resource_provider_.get(), child_resource_provider_.get(),
@@ -555,8 +654,6 @@ TEST_F(DCLayerOverlayProcessorTest, Occluded) {
     second_video_quad->rect.set_origin(gfx::Point(2, 2));
     second_video_quad->visible_rect.set_origin(gfx::Point(2, 2));
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(1, 1, 10, 10);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
@@ -564,8 +661,7 @@ TEST_F(DCLayerOverlayProcessorTest, Occluded) {
         gfx::Rect(1, 1, 10, 10), gfx::Rect(0, 0, 0, 0), gfx::Rect(0, 0, 0, 0)};
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     EXPECT_EQ(2U, overlay_data.promoted_overlays.size());
     EXPECT_EQ(-1, overlay_data.promoted_overlays.front().plane_z_order);
@@ -595,16 +691,13 @@ TEST_F(DCLayerOverlayProcessorTest, DamageRectWithoutVideoDamage) {
 
     // Underlay video quad
     SharedQuadState* second_shared_state =
-        pass->CreateAndAppendSharedQuadState();
+        CreateSharedQuadStateWithLayerNamespaceId(pass.get());
     second_shared_state->overlay_damage_index = 1;
-    auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
+    CreateYUVTextureQuadAt(
         resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-    video_quad->rect = gfx::Rect(0, 0, 200, 200);
-    video_quad->visible_rect = video_quad->rect;
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        gfx::Rect(0, 0, 200, 200));
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     // Damage rect fully outside video quad
     pass->damage_rect = gfx::Rect(210, 210, 20, 20);
     AggregatedRenderPassList pass_list;
@@ -613,8 +706,7 @@ TEST_F(DCLayerOverlayProcessorTest, DamageRectWithoutVideoDamage) {
         gfx::Rect(210, 210, 20, 20), gfx::Rect(0, 0, 0, 0)};
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
     EXPECT_EQ(1U, overlay_data.promoted_overlays.size());
     EXPECT_EQ(-1, overlay_data.promoted_overlays.back().plane_z_order);
     // All rects must be redrawn at the first frame.
@@ -635,16 +727,13 @@ TEST_F(DCLayerOverlayProcessorTest, DamageRectWithoutVideoDamage) {
 
     // Underlay video quad
     SharedQuadState* second_shared_state =
-        pass->CreateAndAppendSharedQuadState();
+        CreateSharedQuadStateWithLayerNamespaceId(pass.get());
     second_shared_state->overlay_damage_index = 1;
-    auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
+    CreateYUVTextureQuadAt(
         resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-    video_quad->rect = gfx::Rect(0, 0, 200, 200);
-    video_quad->visible_rect = video_quad->rect;
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        gfx::Rect(0, 0, 200, 200));
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     // Damage rect fully outside video quad
     pass->damage_rect = gfx::Rect(210, 210, 20, 20);
     AggregatedRenderPassList pass_list;
@@ -653,8 +742,7 @@ TEST_F(DCLayerOverlayProcessorTest, DamageRectWithoutVideoDamage) {
         gfx::Rect(210, 210, 20, 20), gfx::Rect(0, 0, 0, 0)};
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
     EXPECT_EQ(1U, overlay_data.promoted_overlays.size());
     EXPECT_EQ(-1, overlay_data.promoted_overlays.back().plane_z_order);
     // Only the non-overlay damaged rect need to be drawn by the gl compositor
@@ -673,16 +761,13 @@ TEST_F(DCLayerOverlayProcessorTest, DamageRect) {
         resource_provider_.get(), child_resource_provider_.get(),
         child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(1, 1, 10, 10);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
     SurfaceDamageRectList surface_damage_rect_list = {gfx::Rect(1, 1, 10, 10)};
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
     EXPECT_EQ(1U, overlay_data.promoted_overlays.size());
     EXPECT_EQ(1, overlay_data.promoted_overlays.back().plane_z_order);
     // Damage rect should be unchanged on initial frame because of resize, but
@@ -708,7 +793,8 @@ TEST_F(DCLayerOverlayProcessorTest, ClipRect) {
                        gfx::Rect(0, 2, 100, 100), SkColors::kWhite);
     pass->shared_quad_state_list.back()->clip_rect = gfx::Rect(0, 3, 100, 100);
 
-    SharedQuadState* shared_state = pass->CreateAndAppendSharedQuadState();
+    SharedQuadState* shared_state =
+        CreateSharedQuadStateWithLayerNamespaceId(pass.get());
     shared_state->opacity = 1.f;
     shared_state->overlay_damage_index = 1;
     CreateFullscreenCandidateYUVTextureQuad(
@@ -717,8 +803,6 @@ TEST_F(DCLayerOverlayProcessorTest, ClipRect) {
     // Clipped rect shouldn't be overlapped by clipped opaque quad rect.
     shared_state->clip_rect = gfx::Rect(0, 0, 100, 3);
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(1, 1, 10, 10);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
@@ -726,8 +810,7 @@ TEST_F(DCLayerOverlayProcessorTest, ClipRect) {
                                                       gfx::Rect(1, 1, 10, 2)};
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
     EXPECT_EQ(1U, overlay_data.promoted_overlays.size());
     // Because of clip rects the overlay isn't occluded and shouldn't be an
     // underlay.
@@ -755,16 +838,13 @@ TEST_F(DCLayerOverlayProcessorTest, TransparentOnTop) {
         child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
     pass->shared_quad_state_list.back()->opacity = 0.5f;
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(1, 1, 10, 10);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
     SurfaceDamageRectList surface_damage_rect_list = {gfx::Rect(1, 1, 10, 10)};
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
     EXPECT_EQ(1U, overlay_data.promoted_overlays.size());
     EXPECT_EQ(1, overlay_data.promoted_overlays.back().plane_z_order);
     // Quad isn't opaque, so underlying damage must remain the same.
@@ -781,14 +861,13 @@ TEST_F(DCLayerOverlayProcessorTest, UnderlayDamageRectWithQuadOnTopUnchanged) {
     CreateSolidColorQuadAt(shared_state_on_top, SkColors::kRed, pass.get(),
                            kOverlayBottomRightRect);
 
-    SharedQuadState* shared_state = pass->CreateAndAppendSharedQuadState();
+    SharedQuadState* shared_state =
+        CreateSharedQuadStateWithLayerNamespaceId(pass.get());
     shared_state->opacity = 1.f;
     CreateFullscreenCandidateYUVTextureQuad(
         resource_provider_.get(), child_resource_provider_.get(),
         child_provider_.get(), shared_state, pass.get());
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = kOverlayRect;
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
@@ -802,8 +881,7 @@ TEST_F(DCLayerOverlayProcessorTest, UnderlayDamageRectWithQuadOnTopUnchanged) {
     }
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
     EXPECT_EQ(1U, overlay_data.promoted_overlays.size());
     EXPECT_EQ(-1, overlay_data.promoted_overlays.back().plane_z_order);
     // Damage rect should be unchanged on initial frame, but should be reduced
@@ -825,19 +903,15 @@ TEST_F(DCLayerOverlayProcessorTest, RoundedCorners) {
     auto pass = CreateRenderPass();
 
     // Create a video YUV quad with rounded corner, nothing on top.
-    auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
+    CreateYUVTextureQuadAt(
         resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-    gfx::Rect rect(0, 0, 256, 256);
-    video_quad->rect = rect;
-    video_quad->visible_rect = rect;
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        gfx::Rect(0, 0, 256, 256));
     pass->shared_quad_state_list.back()->overlay_damage_index = 0;
     // Rounded corners
     pass->shared_quad_state_list.back()->mask_filter_info =
         gfx::MaskFilterInfo(gfx::RRectF(gfx::RectF(0.f, 0.f, 20.f, 30.f), 5.f));
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(0, 0, 256, 256);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
@@ -845,8 +919,7 @@ TEST_F(DCLayerOverlayProcessorTest, RoundedCorners) {
         gfx::Rect(0, 0, 256, 256)};
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     auto* root_pass = pass_list.back().get();
     auto* replaced_quad = root_pass->quad_list.back();
@@ -880,19 +953,15 @@ TEST_F(DCLayerOverlayProcessorTest, RoundedCorners) {
                        gfx::Rect(0, 0, 32, 32), SkColors::kRed);
 
     // Create a video YUV quad with rounded corners below the red solid quad.
-    auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
+    CreateYUVTextureQuadAt(
         resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-    gfx::Rect rect(0, 0, 256, 256);
-    video_quad->rect = rect;
-    video_quad->visible_rect = rect;
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        gfx::Rect(0, 0, 256, 256));
     pass->shared_quad_state_list.back()->overlay_damage_index = 1;
     // Rounded corners
     pass->shared_quad_state_list.back()->mask_filter_info =
         gfx::MaskFilterInfo(gfx::RRectF(gfx::RectF(0.f, 0.f, 20.f, 30.f), 5.f));
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(0, 0, 256, 256);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
@@ -900,8 +969,7 @@ TEST_F(DCLayerOverlayProcessorTest, RoundedCorners) {
         gfx::Rect(0, 0, 32, 32), gfx::Rect(0, 0, 256, 256)};
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     auto* root_pass = pass_list.back().get();
     auto* replaced_quad = root_pass->quad_list.back();
@@ -935,19 +1003,15 @@ TEST_F(DCLayerOverlayProcessorTest, RoundedCorners) {
                        gfx::Rect(0, 0, 32, 32), SkColors::kRed);
 
     // Create a video YUV quad with rounded corners below the red solid quad.
-    auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
+    CreateYUVTextureQuadAt(
         resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-    gfx::Rect rect(0, 0, 256, 256);
-    video_quad->rect = rect;
-    video_quad->visible_rect = rect;
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        gfx::Rect(0, 0, 256, 256));
     pass->shared_quad_state_list.back()->overlay_damage_index = 0;
     // Rounded corners
     pass->shared_quad_state_list.back()->mask_filter_info =
         gfx::MaskFilterInfo(gfx::RRectF(gfx::RectF(0.f, 0.f, 20.f, 30.f), 5.f));
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(0, 0, 256, 256);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
@@ -955,8 +1019,7 @@ TEST_F(DCLayerOverlayProcessorTest, RoundedCorners) {
         gfx::Rect(0, 0, 256, 256)};
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     auto* root_pass = pass_list.back().get();
     auto* replaced_quad = root_pass->quad_list.back();
@@ -995,24 +1058,18 @@ TEST_F(DCLayerOverlayProcessorTest, MultipleYUVOverlays) {
                        pass->shared_quad_state_list.back(), pass.get(),
                        gfx::Rect(0, 0, 256, 256), SkColors::kWhite);
 
-    auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
+    auto* video_quad = CreateYUVTextureQuadAt(
         resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-    gfx::Rect rect(10, 10, 80, 80);
-    video_quad->rect = rect;
-    video_quad->visible_rect = rect;
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        gfx::Rect(10, 10, 80, 80));
     pass->shared_quad_state_list.back()->overlay_damage_index = 1;
 
-    auto* second_video_quad = CreateFullscreenCandidateYUVTextureQuad(
+    auto* second_video_quad = CreateYUVTextureQuadAt(
         resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-    gfx::Rect second_rect(100, 100, 120, 120);
-    second_video_quad->rect = second_rect;
-    second_video_quad->visible_rect = second_rect;
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        gfx::Rect(100, 100, 120, 120));
     pass->shared_quad_state_list.back()->overlay_damage_index = 2;
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(0, 0, 220, 220);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
@@ -1022,8 +1079,7 @@ TEST_F(DCLayerOverlayProcessorTest, MultipleYUVOverlays) {
     surface_damage_rect_list.push_back(second_video_quad->rect);
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     // Skip overlay.
     EXPECT_EQ(0U, overlay_data.promoted_overlays.size());
@@ -1055,7 +1111,7 @@ TEST_F(DCLayerOverlayProcessorTest, PixelMovingForegroundFilter) {
 
   // Add a solid quad to the non-root pass.
   SharedQuadState* shared_state_filter =
-      filter_pass->CreateAndAppendSharedQuadState();
+      CreateSharedQuadStateWithLayerNamespaceId(filter_pass.get());
   CreateSolidColorQuadAt(shared_state_filter, SkColors::kRed, filter_pass.get(),
                          filter_rect);
   shared_state_filter->opacity = 1.f;
@@ -1074,7 +1130,8 @@ TEST_F(DCLayerOverlayProcessorTest, PixelMovingForegroundFilter) {
                              filter_render_pass_id);
 
   // Add a video quad to the root render pass.
-  SharedQuadState* shared_state = pass->CreateAndAppendSharedQuadState();
+  SharedQuadState* shared_state =
+      CreateSharedQuadStateWithLayerNamespaceId(pass.get());
   shared_state->opacity = 1.f;
   CreateFullscreenCandidateYUVTextureQuad(
       resource_provider_.get(), child_resource_provider_.get(),
@@ -1124,7 +1181,7 @@ TEST_F(DCLayerOverlayProcessorTest, BackdropFilter) {
 
   // Add a transparent solid quad to the non-root pass.
   SharedQuadState* shared_state_backdrop_filter =
-      backdrop_filter_pass->CreateAndAppendSharedQuadState();
+      CreateSharedQuadStateWithLayerNamespaceId(backdrop_filter_pass.get());
   CreateSolidColorQuadAt(shared_state_backdrop_filter, SkColors::kGreen,
                          backdrop_filter_pass.get(), backdrop_filter_rect);
   shared_state_backdrop_filter->opacity = 0.1f;
@@ -1142,7 +1199,8 @@ TEST_F(DCLayerOverlayProcessorTest, BackdropFilter) {
                              backdrop_filter_render_pass_id);
 
   // Add a video quad to the root render pass.
-  SharedQuadState* shared_state = pass->CreateAndAppendSharedQuadState();
+  SharedQuadState* shared_state =
+      CreateSharedQuadStateWithLayerNamespaceId(pass.get());
   shared_state->opacity = 1.f;
   CreateFullscreenCandidateYUVTextureQuad(
       resource_provider_.get(), child_resource_provider_.get(),
@@ -1188,16 +1246,12 @@ TEST_F(DCLayerOverlayProcessorTest, VideoCapture) {
                        gfx::Rect(0, 0, 32, 32), SkColors::kRed);
 
     // Create a video YUV quad below the red solid quad.
-    auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
+    CreateYUVTextureQuadAt(
         resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-    gfx::Rect rect(0, 0, 256, 256);
-    video_quad->rect = rect;
-    video_quad->visible_rect = rect;
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        gfx::Rect(0, 0, 256, 256));
     pass->shared_quad_state_list.back()->overlay_damage_index = 1;
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(0, 0, 256, 256);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
@@ -1205,8 +1259,7 @@ TEST_F(DCLayerOverlayProcessorTest, VideoCapture) {
         gfx::Rect(0, 0, 32, 32), gfx::Rect(0, 0, 256, 256)};
     // No video capture in this frame.
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     // Use overlay for the video quad.
     EXPECT_EQ(1U, overlay_data.promoted_overlays.size());
@@ -1222,16 +1275,12 @@ TEST_F(DCLayerOverlayProcessorTest, VideoCapture) {
                        gfx::Rect(0, 0, 32, 32), SkColors::kRed);
 
     // Create a video YUV quad below the red solid quad.
-    auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
+    CreateYUVTextureQuadAt(
         resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-    gfx::Rect rect(0, 0, 256, 256);
-    video_quad->rect = rect;
-    video_quad->visible_rect = rect;
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        gfx::Rect(0, 0, 256, 256));
     pass->shared_quad_state_list.back()->overlay_damage_index = 0;
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(0, 0, 256, 256);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
@@ -1241,8 +1290,7 @@ TEST_F(DCLayerOverlayProcessorTest, VideoCapture) {
     // Now video capture is enabled.
     pass_list.back()->video_capture_enabled = true;
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     // Should not use overlay for the video when video capture is on.
     EXPECT_EQ(0U, overlay_data.promoted_overlays.size());
@@ -1253,6 +1301,49 @@ TEST_F(DCLayerOverlayProcessorTest, VideoCapture) {
     int quad_count = root_pass->quad_list.size();
     EXPECT_EQ(2, quad_count);
   }
+}
+
+// Check that a protected video can be promoted to overlay even if there is a
+// video capture on the root render pass.
+TEST_F(DCLayerOverlayProcessorTest, VideoCaptureOnRootPassWithProtectedQuad) {
+  InitializeDCLayerOverlayProcessor();
+
+  // Create a pass with video capture enabled.
+  auto pass = CreateRenderPass();
+  pass->damage_rect = gfx::Rect(0, 0, 256, 256);
+  pass->video_capture_enabled = true;
+  pass->shared_quad_state_list.back()->overlay_damage_index = 0;
+
+  CreateOpaqueQuadAt(resource_provider_.get(),
+                     pass->shared_quad_state_list.back(), pass.get(),
+                     gfx::Rect(0, 0, 32, 32), SkColors::kRed);
+
+  // Create a protected video YUV quad below the red solid quad.
+  auto* quad = CreateFullscreenCandidateYUVTextureQuad(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
+  quad->protected_video_type = gfx::ProtectedVideoType::kHardwareProtected;
+
+  AggregatedRenderPassList pass_list;
+  pass_list.push_back(std::move(pass));
+
+  SurfaceDamageRectList surface_damage_rect_list = {gfx::Rect(0, 0, 256, 256)};
+  auto overlay_data = ProcessRootPassForOverlays(
+      &pass_list, std::move(surface_damage_rect_list));
+
+  // Expect the protected video is promoted to overlay.
+  EXPECT_EQ(1U, overlay_data.promoted_overlays.size());
+
+  // Check that we still have the red solid color quad, but the YUV quad has
+  // been replaced with a placeholder.
+  auto* root_pass = pass_list.back().get();
+  EXPECT_THAT(root_pass->quad_list,
+              testing::ElementsAreArray({
+                  // Red quad from input
+                  IsSolidColorQuad(SkColors::kRed),
+                  // Protected video is replaced by a video hole.
+                  IsSolidColorQuad(SkColors::kTransparent),
+              }));
 }
 
 // Check that video capture on a non-root pass does not affect overlay promotion
@@ -1283,26 +1374,20 @@ TEST_F(DCLayerOverlayProcessorTest, VideoCaptureOnIsolatedRenderPass) {
         root_pass.get(), gfx::Rect(0, 0, 32, 32), SkColors::kRed);
 
     // Create a video YUV quad below the red solid quad.
-    auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
+    CreateYUVTextureQuadAt(
         resource_provider_.get(), child_resource_provider_.get(),
         child_provider_.get(), root_pass->shared_quad_state_list.back(),
-        root_pass.get());
-    gfx::Rect rect(0, 0, 256, 256);
-    video_quad->rect = rect;
-    video_quad->visible_rect = rect;
+        root_pass.get(), gfx::Rect(0, 0, 256, 256));
     root_pass->shared_quad_state_list.back()->overlay_damage_index = 0;
     root_pass->damage_rect = gfx::Rect(0, 0, 256, 256);
     pass_list.push_back(std::move(root_pass));
   }
 
-  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
 
   SurfaceDamageRectList surface_damage_rect_list = {gfx::Rect(0, 0, 256, 256)};
 
   auto overlay_data = ProcessRootPassForOverlays(
-      &pass_list, render_pass_filters, render_pass_backdrop_filters,
-      std::move(surface_damage_rect_list));
+      &pass_list, std::move(surface_damage_rect_list));
 
   EXPECT_EQ(1U, overlay_data.promoted_overlays.size());
 }
@@ -1349,30 +1434,26 @@ void DCLayerOverlayProcessorTest::TestRenderPassRootTransform(bool is_overlay) {
                          kOpaqueRect, SkColors::kWhite);
     }
 
-    auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
+    CreateYUVTextureQuadAt(
         resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-    video_quad->rect = gfx::Rect(kVideoRect);
-    video_quad->visible_rect = video_quad->rect;
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        gfx::Rect(kVideoRect));
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = kOutputRect;
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
     SurfaceDamageRectList surface_damage_rect_list = kSurfaceDamageRectList;
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
     LOG(INFO) << "frame " << frame
               << " damage rect: " << overlay_data.damage_rect.ToString();
 
     EXPECT_EQ(overlay_data.promoted_overlays.size(), 1u);
-    EXPECT_TRUE(absl::holds_alternative<gfx::Transform>(
+    EXPECT_TRUE(std::holds_alternative<gfx::Transform>(
         overlay_data.promoted_overlays[0].transform));
     EXPECT_EQ(
-        absl::get<gfx::Transform>(overlay_data.promoted_overlays[0].transform),
+        std::get<gfx::Transform>(overlay_data.promoted_overlays[0].transform),
         kRenderPassToRootTransform);
     if (is_overlay) {
       EXPECT_GT(overlay_data.promoted_overlays[0].plane_z_order, 0);
@@ -1408,8 +1489,6 @@ TEST_F(DCLayerOverlayProcessorTest, MultipleRenderPassesOneOverlay) {
     DCLayerOverlayProcessor::RenderPassOverlayDataMap
         render_pass_overlay_data_map;
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     SurfaceDamageRectList surface_damage_rect_list;
 
     // Create 3 render passes, with only one containing an overlay candidate.
@@ -1422,16 +1501,14 @@ TEST_F(DCLayerOverlayProcessorTest, MultipleRenderPassesOneOverlay) {
 
       if (id == 1) {
         // Create an overlay quad in the first render pass.
-        auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
-            resource_provider_.get(), child_resource_provider_.get(),
-            child_provider_.get(), pass->shared_quad_state_list.back(),
-            pass.get());
         gfx::Rect quad_rect_in_quad_space =
             pass->transform_to_root_target
                 .InverseMapRect(quad_rect_in_root_space)
                 .value();
-        video_quad->rect = quad_rect_in_quad_space;
-        video_quad->visible_rect = quad_rect_in_quad_space;
+        CreateYUVTextureQuadAt(
+            resource_provider_.get(), child_resource_provider_.get(),
+            child_provider_.get(), pass->shared_quad_state_list.back(),
+            pass.get(), quad_rect_in_quad_space);
         pass->shared_quad_state_list.back()->overlay_damage_index = id - 1;
       } else {
         // Create a quad that's not an overlay.
@@ -1450,8 +1527,7 @@ TEST_F(DCLayerOverlayProcessorTest, MultipleRenderPassesOneOverlay) {
     surface_damage_rect_list.emplace_back(0, 0, 256, 256);
 
     dc_layer_overlay_processor_->Process(
-        resource_provider_.get(), render_pass_filters,
-        render_pass_backdrop_filters, std::move(surface_damage_rect_list),
+        resource_provider_.get(), std::move(surface_damage_rect_list),
         /*is_page_fullscreen_mode=*/false, render_pass_overlay_data_map);
 
     for (auto& [render_pass, overlay_data] : render_pass_overlay_data_map) {
@@ -1464,7 +1540,7 @@ TEST_F(DCLayerOverlayProcessorTest, MultipleRenderPassesOneOverlay) {
       if (render_pass->id == AggregatedRenderPassId(1)) {
         // The render pass that contains an overlay.
         EXPECT_EQ(overlay_data.promoted_overlays.size(), 1u);
-        EXPECT_EQ(absl::get<gfx::Transform>(
+        EXPECT_EQ(std::get<gfx::Transform>(
                       overlay_data.promoted_overlays[0].transform),
                   gfx::Transform::MakeTranslation(1, 0));
         EXPECT_GT(overlay_data.promoted_overlays[0].plane_z_order, 0);
@@ -1514,8 +1590,6 @@ TEST_F(DCLayerOverlayProcessorTest,
     DCLayerOverlayProcessor::RenderPassOverlayDataMap
         render_pass_overlay_data_map;
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     SurfaceDamageRectList surface_damage_rect_list;
 
     // Create 3 render passes that all have a video overlay candidate. Start
@@ -1534,12 +1608,10 @@ TEST_F(DCLayerOverlayProcessorTest,
           pass->transform_to_root_target
               .InverseMapRect(video_rect_in_root_space)
               .value();
-      auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
+      CreateYUVTextureQuadAt(
           resource_provider_.get(), child_resource_provider_.get(),
           child_provider_.get(), pass->shared_quad_state_list.back(),
-          pass.get());
-      video_quad->rect = video_rect_in_render_pass_space;
-      video_quad->visible_rect = video_rect_in_render_pass_space;
+          pass.get(), video_rect_in_render_pass_space);
 
       surface_damage_rect_list.emplace_back(video_rect_in_root_space);
       render_pass_overlay_data_map[pass.get()].damage_rect = output_rect;
@@ -1549,8 +1621,7 @@ TEST_F(DCLayerOverlayProcessorTest,
     surface_damage_rect_list.emplace_back(0, 0, 256, 256);
 
     dc_layer_overlay_processor_->Process(
-        resource_provider_.get(), render_pass_filters,
-        render_pass_backdrop_filters, std::move(surface_damage_rect_list),
+        resource_provider_.get(), std::move(surface_damage_rect_list),
         /*is_page_fullscreen_mode=*/false, render_pass_overlay_data_map);
 
     // Verify that the previous frame states contain only 3 render passes and
@@ -1594,21 +1665,17 @@ TEST_F(DCLayerOverlayProcessorTest, MultipleYUVOverlaysIntersected) {
     auto pass = CreateRenderPass();
 
     // Video 1: Topmost video.
-    auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
+    auto* video_quad = CreateYUVTextureQuadAt(
         resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-    gfx::Rect rect(150, 150, 50, 50);
-    video_quad->rect = rect;
-    video_quad->visible_rect = rect;
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        gfx::Rect(150, 150, 50, 50));
     pass->shared_quad_state_list.back()->overlay_damage_index = 1;
 
     // Video 2: Intersected with and under the 1st video.
-    auto* second_video_quad = CreateFullscreenCandidateYUVTextureQuad(
+    auto* second_video_quad = CreateYUVTextureQuadAt(
         resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-    gfx::Rect second_rect(100, 100, 120, 120);
-    second_video_quad->rect = second_rect;
-    second_video_quad->visible_rect = second_rect;
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        gfx::Rect(100, 100, 120, 120));
     pass->shared_quad_state_list.back()->overlay_damage_index = 2;
 
     // Background.
@@ -1616,8 +1683,6 @@ TEST_F(DCLayerOverlayProcessorTest, MultipleYUVOverlaysIntersected) {
                        pass->shared_quad_state_list.back(), pass.get(),
                        gfx::Rect(0, 0, 256, 256), SkColors::kWhite);
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(0, 0, 220, 220);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
@@ -1628,8 +1693,7 @@ TEST_F(DCLayerOverlayProcessorTest, MultipleYUVOverlaysIntersected) {
     surface_damage_rect_list.push_back(gfx::Rect(0, 0, 256, 256));
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     int overlay_cnt = 0;
     for (auto& dc : overlay_data.promoted_overlays) {
@@ -1651,7 +1715,7 @@ TEST_F(DCLayerOverlayProcessorTest, HDR10VideoOverlay) {
   gfx::HDRMetadata valid_hdr_metadata;
   valid_hdr_metadata.cta_861_3 = gfx::HdrMetadataCta861_3(1000, 400);
   valid_hdr_metadata.smpte_st_2086 =
-      gfx::HdrMetadataSmpteSt2086(SkNamedPrimariesExt::kRec2020, 1000, 0.0001);
+      gfx::HdrMetadataSmpteSt2086(SkNamedPrimaries::kRec2020, 1000, 0.0001);
 
   // Device has RGB10A2 overlay support.
   gl::SetDirectCompositionScaledOverlaysSupportedForTesting(true);
@@ -1676,16 +1740,13 @@ TEST_F(DCLayerOverlayProcessorTest, HDR10VideoOverlay) {
         gfx::ColorSpace::CreateHDR10(), valid_hdr_metadata,
         MultiPlaneFormat::kP010);
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(0, 0, 220, 220);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
     SurfaceDamageRectList surface_damage_rect_list;
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     // Should promote overlay.
     EXPECT_EQ(1U, overlay_data.promoted_overlays.size());
@@ -1703,22 +1764,19 @@ TEST_F(DCLayerOverlayProcessorTest, HDR10VideoOverlay) {
         gfx::ColorSpace::CreateHDR10(), valid_hdr_metadata,
         MultiPlaneFormat::kNV12);
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(0, 0, 220, 220);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
     SurfaceDamageRectList surface_damage_rect_list;
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     // Should skip overlay.
     EXPECT_EQ(0U, overlay_data.promoted_overlays.size());
   }
 
-  // Frame 3 should skip overlay as hdr metadata is invalid.
+  // Frame 3 should promote overlay even if hdr metadata is invalid.
   {
     auto pass = CreateRenderPass();
     pass->content_color_usage = gfx::ContentColorUsage::kHDR;
@@ -1730,19 +1788,17 @@ TEST_F(DCLayerOverlayProcessorTest, HDR10VideoOverlay) {
         gfx::ColorSpace::CreateHDR10(), gfx::HDRMetadata(),
         MultiPlaneFormat::kP010);
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(0, 0, 220, 220);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
     SurfaceDamageRectList surface_damage_rect_list;
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
-    // Should skip overlay.
-    EXPECT_EQ(0U, overlay_data.promoted_overlays.size());
+    // Should promote overlay as we allow HDR 10 overlays with BT.2020 and
+    // transfer function PQ without hdr_metadata.
+    EXPECT_EQ(1U, overlay_data.promoted_overlays.size());
   }
 
   // Frame 4 should promote overlay as hdr metadata contains cta_861_3.
@@ -1760,16 +1816,13 @@ TEST_F(DCLayerOverlayProcessorTest, HDR10VideoOverlay) {
         gfx::ColorSpace::CreateHDR10(), cta_861_3_hdr_metadata,
         MultiPlaneFormat::kP010);
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(0, 0, 220, 220);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
     SurfaceDamageRectList surface_damage_rect_list;
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     // Should promote overlay.
     EXPECT_EQ(1U, overlay_data.promoted_overlays.size());
@@ -1782,8 +1835,8 @@ TEST_F(DCLayerOverlayProcessorTest, HDR10VideoOverlay) {
 
     // Content has HDR metadata which contains smpte_st_2086.
     gfx::HDRMetadata smpte_st_2086_hdr_metadata;
-    smpte_st_2086_hdr_metadata.smpte_st_2086 = gfx::HdrMetadataSmpteSt2086(
-        SkNamedPrimariesExt::kRec2020, 1000, 0.0001);
+    smpte_st_2086_hdr_metadata.smpte_st_2086 =
+        gfx::HdrMetadataSmpteSt2086(SkNamedPrimaries::kRec2020, 1000, 0.0001);
     // Content is 10bit P010 content with HDR10 colorspace.
     CreateFullscreenCandidateYUVTextureQuad(
         resource_provider_.get(), child_resource_provider_.get(),
@@ -1791,16 +1844,13 @@ TEST_F(DCLayerOverlayProcessorTest, HDR10VideoOverlay) {
         gfx::ColorSpace::CreateHDR10(), smpte_st_2086_hdr_metadata,
         MultiPlaneFormat::kP010);
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(0, 0, 220, 220);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
     SurfaceDamageRectList surface_damage_rect_list;
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     // Should promote overlay.
     EXPECT_EQ(1U, overlay_data.promoted_overlays.size());
@@ -1819,16 +1869,13 @@ TEST_F(DCLayerOverlayProcessorTest, HDR10VideoOverlay) {
         gfx::ColorSpace::CreateHLG(), valid_hdr_metadata,
         MultiPlaneFormat::kP010);
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(0, 0, 220, 220);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
     SurfaceDamageRectList surface_damage_rect_list;
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     // Should skip overlay.
     EXPECT_EQ(0U, overlay_data.promoted_overlays.size());
@@ -1849,16 +1896,13 @@ TEST_F(DCLayerOverlayProcessorTest, HDR10VideoOverlay) {
         gfx::ColorSpace::CreateHDR10(), valid_hdr_metadata,
         MultiPlaneFormat::kP010);
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(0, 0, 220, 220);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
     SurfaceDamageRectList surface_damage_rect_list;
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     // Should skip overlay.
     EXPECT_EQ(0U, overlay_data.promoted_overlays.size());
@@ -1883,16 +1927,13 @@ TEST_F(DCLayerOverlayProcessorTest, HDR10VideoOverlay) {
         gfx::ColorSpace::CreateHDR10(), valid_hdr_metadata,
         MultiPlaneFormat::kP010);
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(0, 0, 220, 220);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
     SurfaceDamageRectList surface_damage_rect_list;
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     // Should skip overlay.
     EXPECT_EQ(0U, overlay_data.promoted_overlays.size());
@@ -1916,16 +1957,13 @@ TEST_F(DCLayerOverlayProcessorTest, HDR10VideoOverlay) {
         gfx::ColorSpace::CreateHDR10(), valid_hdr_metadata,
         MultiPlaneFormat::kP010);
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(0, 0, 220, 220);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
     SurfaceDamageRectList surface_damage_rect_list;
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     // Should skip overlay.
     EXPECT_EQ(0U, overlay_data.promoted_overlays.size());
@@ -1933,36 +1971,295 @@ TEST_F(DCLayerOverlayProcessorTest, HDR10VideoOverlay) {
     // Recover config.
     gl::SetDirectCompositionScaledOverlaysSupportedForTesting(true);
   }
-}
 
-class OverlayProcessorWinStaticTest : public testing::Test {};
+  // Frame 10 should skip overlay as AMD platform without HW HDR support.
+  {
+    // Device has RGB10A2 overlay support.
+    gl::SetDirectCompositionScaledOverlaysSupportedForTesting(true);
 
-MATCHER(ResourceIdEq, "") {
-  return std::get<0>(arg).resource_id == ResourceId(std::get<1>(arg));
-}
+    // Device has HDR-enabled display and no non-HDR-enabled display.
+    dc_layer_overlay_processor_
+        ->set_system_hdr_disabled_on_any_display_for_testing(false);
 
-MATCHER(PlaneZOrdersAreUnique, "") {
-  const OverlayCandidateList& candidates = arg;
-  base::flat_set<int> z_orders;
-  for (const auto& candidate : candidates) {
-    z_orders.insert(candidate.plane_z_order);
+    // Device has video processor support.
+    dc_layer_overlay_processor_
+        ->set_has_p010_video_processor_support_for_testing(true);
+
+    gl::SetSupportsAMDHwOffloadHDRCapsForTesting(
+        /*amd_hdr_hw_offload_supported=*/false,
+        /*amd_platform_detected=*/true,
+        /*amd_hdr_hw_offload_max_width=*/0,
+        /*amd_hdr_hw_offload_max_height=*/0);
+
+    auto pass = CreateRenderPass();
+    pass->content_color_usage = gfx::ContentColorUsage::kHDR;
+
+    // Content is 10bit P010 content with HDR10 colorspace.
+    CreateFullscreenCandidateYUVTextureQuad(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        gfx::ColorSpace::CreateHDR10(), valid_hdr_metadata,
+        MultiPlaneFormat::kP010);
+
+    pass->damage_rect = gfx::Rect(0, 0, 220, 220);
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(std::move(pass));
+    SurfaceDamageRectList surface_damage_rect_list;
+
+    auto overlay_data = ProcessRootPassForOverlays(
+        &pass_list, std::move(surface_damage_rect_list));
+
+    // Should not promote overlay.
+    EXPECT_EQ(0U, overlay_data.promoted_overlays.size());
   }
-  return candidates.size() == z_orders.size();
+
+  // Landscape - Following cases are not promoted.
+  // Frame 11 - limit(220,210),resource_rect(256,254),quad_rect(200,190)
+  // resource_rect > limit.
+  // Frame 12 - limit(280,270),resource_rect(256,254),quad_rect(320,300)
+  // quad_rect > limit.
+
+  // Landscape - Following cases are promoted.
+  // Frame 13 - limit(256,254),resource_rect(256,254),quad_rect(256,254).
+
+  // Portrait - Following cases are promoted.
+  // Frame 14 - limit(256,254),resource_rect(254,256),quad_rect(256,254).
+  // Frame 15 - limit(256,254),resource_rect(256,254),quad_rect(254,256).
+
+  // Frame 11 should not promote overlay.
+  {
+    gl::SetSupportsAMDHwOffloadHDRCapsForTesting(
+        /*amd_hdr_hw_offload_supported=*/true,
+        /*amd_platform_detected=*/true,
+        /*amd_hdr_hw_offload_max_width=*/220,
+        /*amd_hdr_hw_offload_max_height=*/210);
+
+    auto pass = CreateRenderPass();
+    pass->content_color_usage = gfx::ContentColorUsage::kHDR;
+    pass->output_rect = gfx::Rect(0, 0, 256, 254);
+    gfx::Rect quad_rect(200, 190);
+    // Content is 10bit P010 content with HDR10 colorspace.
+    CreateFullscreenCandidateYUVTextureQuad(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        gfx::ColorSpace::CreateHDR10(), valid_hdr_metadata,
+        MultiPlaneFormat::kP010, quad_rect);
+
+    pass->damage_rect = gfx::Rect(0, 0, 220, 220);
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(std::move(pass));
+    SurfaceDamageRectList surface_damage_rect_list;
+
+    auto overlay_data = ProcessRootPassForOverlays(
+        &pass_list, std::move(surface_damage_rect_list));
+
+    // Should not promote overlay.
+    EXPECT_EQ(0U, overlay_data.promoted_overlays.size());
+  }
+
+  // Frame 12 should not promote the overlay.
+  {
+    gl::SetSupportsAMDHwOffloadHDRCapsForTesting(
+        /*amd_hdr_hw_offload_supported=*/true,
+        /*amd_platform_detected=*/true,
+        /*amd_hdr_hw_offload_max_width=*/280,
+        /*amd_hdr_hw_offload_max_height=*/270);
+
+    auto pass = CreateRenderPass();
+    pass->content_color_usage = gfx::ContentColorUsage::kHDR;
+    pass->output_rect = gfx::Rect(0, 0, 256, 254);
+    gfx::Rect quad_rect(320, 300);
+    // Content is 10bit P010 content with HDR10 colorspace.
+    CreateFullscreenCandidateYUVTextureQuad(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        gfx::ColorSpace::CreateHDR10(), valid_hdr_metadata,
+        MultiPlaneFormat::kP010, quad_rect);
+
+    pass->damage_rect = gfx::Rect(0, 0, 220, 220);
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(std::move(pass));
+    SurfaceDamageRectList surface_damage_rect_list;
+
+    auto overlay_data = ProcessRootPassForOverlays(
+        &pass_list, std::move(surface_damage_rect_list));
+
+    // Should not promote overlay.
+    EXPECT_EQ(0U, overlay_data.promoted_overlays.size());
+  }
+
+  // Frame 13 should promote the overlay.
+  {
+    gl::SetSupportsAMDHwOffloadHDRCapsForTesting(
+        /*amd_hdr_hw_offload_supported=*/true,
+        /*amd_platform_detected=*/true,
+        /*amd_hdr_hw_offload_max_width=*/256,
+        /*amd_hdr_hw_offload_max_height=*/254);
+
+    auto pass = CreateRenderPass();
+    pass->content_color_usage = gfx::ContentColorUsage::kHDR;
+    pass->output_rect = gfx::Rect(0, 0, 256, 254);
+    gfx::Rect quad_rect(256, 254);
+    // Content is 10bit P010 content with HDR10 colorspace.
+    CreateFullscreenCandidateYUVTextureQuad(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        gfx::ColorSpace::CreateHDR10(), valid_hdr_metadata,
+        MultiPlaneFormat::kP010, quad_rect);
+
+    pass->damage_rect = gfx::Rect(0, 0, 220, 220);
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(std::move(pass));
+    SurfaceDamageRectList surface_damage_rect_list;
+
+    auto overlay_data = ProcessRootPassForOverlays(
+        &pass_list, std::move(surface_damage_rect_list));
+
+    // Should promote overlay.
+    EXPECT_EQ(1U, overlay_data.promoted_overlays.size());
+  }
+
+  // Frame 14 should promote the overlay.
+  {
+    gl::SetSupportsAMDHwOffloadHDRCapsForTesting(
+        /*amd_hdr_hw_offload_supported=*/true,
+        /*amd_platform_detected=*/true,
+        /*amd_hdr_hw_offload_max_width=*/256,
+        /*amd_hdr_hw_offload_max_height=*/254);
+
+    auto pass = CreateRenderPass();
+    pass->content_color_usage = gfx::ContentColorUsage::kHDR;
+    pass->output_rect = gfx::Rect(0, 0, 254, 256);
+    gfx::Rect quad_rect(256, 254);
+    // Content is 10bit P010 content with HDR10 colorspace.
+    CreateFullscreenCandidateYUVTextureQuad(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        gfx::ColorSpace::CreateHDR10(), valid_hdr_metadata,
+        MultiPlaneFormat::kP010, quad_rect);
+
+    pass->damage_rect = gfx::Rect(0, 0, 220, 220);
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(std::move(pass));
+    SurfaceDamageRectList surface_damage_rect_list;
+
+    auto overlay_data = ProcessRootPassForOverlays(
+        &pass_list, std::move(surface_damage_rect_list));
+
+    // Should promote overlay.
+    EXPECT_EQ(1U, overlay_data.promoted_overlays.size());
+  }
+
+  // Frame 15 should promote the overlay.
+  {
+    gl::SetSupportsAMDHwOffloadHDRCapsForTesting(
+        /*amd_hdr_hw_offload_supported=*/true,
+        /*amd_platform_detected=*/true,
+        /*amd_hdr_hw_offload_max_width=*/256,
+        /*amd_hdr_hw_offload_max_height=*/254);
+
+    auto pass = CreateRenderPass();
+    pass->content_color_usage = gfx::ContentColorUsage::kHDR;
+    pass->output_rect = gfx::Rect(0, 0, 256, 254);
+    gfx::Rect quad_rect(254, 256);
+    // Content is 10bit P010 content with HDR10 colorspace.
+    CreateFullscreenCandidateYUVTextureQuad(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        gfx::ColorSpace::CreateHDR10(), valid_hdr_metadata,
+        MultiPlaneFormat::kP010, quad_rect);
+
+    pass->damage_rect = gfx::Rect(0, 0, 256, 256);
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(std::move(pass));
+    SurfaceDamageRectList surface_damage_rect_list;
+
+    auto overlay_data = ProcessRootPassForOverlays(
+        &pass_list, std::move(surface_damage_rect_list));
+
+    // Should promote overlay.
+    EXPECT_EQ(1U, overlay_data.promoted_overlays.size());
+  }
 }
 
-// Checks that, when the overlay candidates list is sorted by z-order, the
-// resource IDs of the candidates matches |expected_resource_ids|. Note these
-// resource IDs are not real and a just used to identify overlay candidates in
-// tests.
-testing::Matcher<const OverlayCandidateList&>
-WhenCandidatesAreSortedResourceIdsAre(
-    const std::vector<int>& expected_resource_ids) {
-  return testing::AllOf(
-      PlaneZOrdersAreUnique(),
-      testing::WhenSortedBy(
-          test::PlaneZOrderAscendingComparator(),
-          testing::Pointwise(ResourceIdEq(), expected_resource_ids)));
+TEST_F(DCLayerOverlayProcessorTest, LowLatencyTexture) {
+  InitializeDCLayerOverlayProcessor();
+
+  auto pass = CreateRenderPass();
+  pass->damage_rect = pass->output_rect;
+
+  CreateLowLatencyTextureQuadAt(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+      pass->output_rect);
+
+  AggregatedRenderPassList pass_list;
+  pass_list.push_back(std::move(pass));
+
+  SurfaceDamageRectList surface_damage_rect_list;
+  auto overlay_data = ProcessRootPassForOverlays(
+      &pass_list, std::move(surface_damage_rect_list));
+
+  // Should promote overlay.
+  EXPECT_EQ(1U, overlay_data.promoted_overlays.size());
 }
+
+TEST_F(DCLayerOverlayProcessorTest, DoesNotPromoteNonVideoOrLowLatencyTexture) {
+  InitializeDCLayerOverlayProcessor();
+
+  auto pass = CreateRenderPass();
+  pass->damage_rect = pass->output_rect;
+
+  // Add an offset to the quads to they do not fully occlude each other.
+  int offset = 0;
+
+  const auto* low_latency_texture_quad_at = CreateLowLatencyTextureQuadAt(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+      gfx::Rect(offset++, 0, 10, 10));
+  const ResourceId low_latency_resource_id =
+      low_latency_texture_quad_at->resource_id;
+
+  const auto* yuv_texture_quad_at = CreateYUVTextureQuadAt(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+      gfx::Rect(offset++, 0, 10, 10));
+  const ResourceId yuv_resource_id = yuv_texture_quad_at->resource_id;
+
+  // Create an overlay candidate quad that we do not expect to be promoted.
+  CreateTextureQuadAt(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+      gfx::Rect(offset++, 0, 10, 10), /*is_overlay_candidate=*/true);
+
+  AggregatedRenderPassList pass_list;
+  pass_list.push_back(std::move(pass));
+
+  SurfaceDamageRectList surface_damage_rect_list;
+  auto overlay_data = ProcessRootPassForOverlays(
+      &pass_list, std::move(surface_damage_rect_list));
+
+  EXPECT_THAT(overlay_data.promoted_overlays,
+              testing::UnorderedElementsAreArray({
+                  test::OverlayHasResource(low_latency_resource_id),
+                  test::OverlayHasResource(yuv_resource_id),
+              }));
+}
+
+class OverlayProcessorWinStaticTest : public testing::Test {
+ protected:
+  void InsertSurfaceContentOverlaysAndSetPlaneZOrderAndSort(
+      DCLayerOverlayProcessor::RenderPassOverlayDataMap
+          surface_content_render_passes,
+      OverlayCandidateList& candidates) {
+    std::ignore = OverlayProcessorWin::
+        InsertSurfaceContentOverlaysAndSetPlaneZOrderForTesting(
+            std::move(surface_content_render_passes), candidates);
+
+    std::ranges::sort(candidates, std::ranges::less(),
+                      &OverlayCandidate::plane_z_order);
+  }
+};
 
 TEST_F(OverlayProcessorWinStaticTest, InsertSurfaceContentOverlay) {
   // Set up a dummy render pass and RPDQ
@@ -1984,7 +2281,7 @@ TEST_F(OverlayProcessorWinStaticTest, InsertSurfaceContentOverlay) {
   OverlayCandidateList candidates;
   {
     candidates.emplace_back();
-    candidates.back().resource_id = ResourceId(4);
+    candidates.back().resource_id = ResourceId(1);
 
     // Pretend this candidate is a RPDQ that we've pulled overlays from.
     candidates.emplace_back();
@@ -1992,14 +2289,13 @@ TEST_F(OverlayProcessorWinStaticTest, InsertSurfaceContentOverlay) {
     candidates.back().rpdq = &rpdq;
 
     candidates.emplace_back();
-    candidates.back().resource_id = ResourceId(1);
+    candidates.back().resource_id = ResourceId(4);
   }
 
-  std::ignore = OverlayProcessorWin::
-      InsertSurfaceContentOverlaysAndSetPlaneZOrderForTesting(
-          std::move(surface_content_render_passes), candidates);
+  InsertSurfaceContentOverlaysAndSetPlaneZOrderAndSort(
+      std::move(surface_content_render_passes), candidates);
 
-  EXPECT_THAT(candidates, WhenCandidatesAreSortedResourceIdsAre({1, 2, 3, 4}));
+  EXPECT_THAT(candidates, CandidatesAreSortedAndResourceIdsAre({1, 2, 3, 4}));
 }
 
 TEST_F(OverlayProcessorWinStaticTest, InsertSurfaceContentUnderlay) {
@@ -2022,7 +2318,7 @@ TEST_F(OverlayProcessorWinStaticTest, InsertSurfaceContentUnderlay) {
   OverlayCandidateList candidates;
   {
     candidates.emplace_back();
-    candidates.back().resource_id = ResourceId(4);
+    candidates.back().resource_id = ResourceId(1);
 
     // Pretend this candidate is a RPDQ that we've pulled overlays from.
     candidates.emplace_back();
@@ -2030,14 +2326,13 @@ TEST_F(OverlayProcessorWinStaticTest, InsertSurfaceContentUnderlay) {
     candidates.back().rpdq = &rpdq;
 
     candidates.emplace_back();
-    candidates.back().resource_id = ResourceId(1);
+    candidates.back().resource_id = ResourceId(4);
   }
 
-  std::ignore = OverlayProcessorWin::
-      InsertSurfaceContentOverlaysAndSetPlaneZOrderForTesting(
-          std::move(surface_content_render_passes), candidates);
+  InsertSurfaceContentOverlaysAndSetPlaneZOrderAndSort(
+      std::move(surface_content_render_passes), candidates);
 
-  EXPECT_THAT(candidates, WhenCandidatesAreSortedResourceIdsAre({1, 3, 2, 4}));
+  EXPECT_THAT(candidates, CandidatesAreSortedAndResourceIdsAre({1, 3, 2, 4}));
 }
 
 // Check that |InsertSurfaceContentOverlaysAndSetPlaneZOrder| supports promoted
@@ -2067,7 +2362,7 @@ TEST_F(OverlayProcessorWinStaticTest,
   OverlayCandidateList candidates;
   {
     candidates.emplace_back();
-    candidates.back().resource_id = ResourceId(5);
+    candidates.back().resource_id = ResourceId(1);
 
     // Pretend this candidate is a RPDQ that we've pulled overlays from.
     candidates.emplace_back();
@@ -2075,15 +2370,14 @@ TEST_F(OverlayProcessorWinStaticTest,
     candidates.back().rpdq = &rpdq;
 
     candidates.emplace_back();
-    candidates.back().resource_id = ResourceId(1);
+    candidates.back().resource_id = ResourceId(5);
   }
 
-  std::ignore = OverlayProcessorWin::
-      InsertSurfaceContentOverlaysAndSetPlaneZOrderForTesting(
-          std::move(surface_content_render_passes), candidates);
+  InsertSurfaceContentOverlaysAndSetPlaneZOrderAndSort(
+      std::move(surface_content_render_passes), candidates);
 
   EXPECT_THAT(candidates,
-              WhenCandidatesAreSortedResourceIdsAre({1, 2, 3, 4, 5}));
+              CandidatesAreSortedAndResourceIdsAre({1, 2, 3, 4, 5}));
 }
 
 TEST_F(OverlayProcessorWinStaticTest,
@@ -2102,20 +2396,19 @@ TEST_F(OverlayProcessorWinStaticTest,
 
   OverlayCandidateList candidates;
   {
+    candidates.emplace_back();
+    candidates.back().resource_id = ResourceId(1);
+
     // Pretend this candidate is a RPDQ that we've pulled overlays from.
     candidates.emplace_back();
     candidates.back().resource_id = ResourceId(2);
     candidates.back().rpdq = &rpdq;
-
-    candidates.emplace_back();
-    candidates.back().resource_id = ResourceId(1);
   }
 
-  std::ignore = OverlayProcessorWin::
-      InsertSurfaceContentOverlaysAndSetPlaneZOrderForTesting(
-          std::move(surface_content_render_passes), candidates);
+  InsertSurfaceContentOverlaysAndSetPlaneZOrderAndSort(
+      std::move(surface_content_render_passes), candidates);
 
-  EXPECT_THAT(candidates, WhenCandidatesAreSortedResourceIdsAre({1, 2}));
+  EXPECT_THAT(candidates, CandidatesAreSortedAndResourceIdsAre({1, 2}));
 }
 
 TEST_F(OverlayProcessorWinStaticTest,
@@ -2151,10 +2444,7 @@ TEST_F(OverlayProcessorWinStaticTest,
   OverlayCandidateList candidates;
   {
     candidates.emplace_back();
-    candidates.back().resource_id = ResourceId(8);
-
-    candidates.emplace_back();
-    candidates.back().resource_id = ResourceId(7);
+    candidates.back().resource_id = ResourceId(1);
 
     // Pretend this candidate is a RPDQ that we've pulled overlays from.
     candidates.emplace_back();
@@ -2162,15 +2452,17 @@ TEST_F(OverlayProcessorWinStaticTest,
     candidates.back().rpdq = &rpdq;
 
     candidates.emplace_back();
-    candidates.back().resource_id = ResourceId(1);
+    candidates.back().resource_id = ResourceId(7);
+
+    candidates.emplace_back();
+    candidates.back().resource_id = ResourceId(8);
   }
 
-  std::ignore = OverlayProcessorWin::
-      InsertSurfaceContentOverlaysAndSetPlaneZOrderForTesting(
-          std::move(surface_content_render_passes), candidates);
+  InsertSurfaceContentOverlaysAndSetPlaneZOrderAndSort(
+      std::move(surface_content_render_passes), candidates);
 
   EXPECT_THAT(candidates,
-              WhenCandidatesAreSortedResourceIdsAre({1, 2, 3, 4, 5, 6, 7, 8}));
+              CandidatesAreSortedAndResourceIdsAre({1, 2, 3, 4, 5, 6, 7, 8}));
 }
 
 TEST_F(OverlayProcessorWinStaticTest,
@@ -2204,26 +2496,25 @@ TEST_F(OverlayProcessorWinStaticTest,
 
   OverlayCandidateList candidates;
   {
+    // Pretend this candidate is a RPDQ that we've pulled overlays from.
     candidates.emplace_back();
-    candidates.back().resource_id = ResourceId(5);
+    candidates.back().resource_id = ResourceId(1);
+    candidates.back().rpdq = &rpdq1;
 
     // Pretend this candidate is a RPDQ that we've pulled overlays from.
     candidates.emplace_back();
     candidates.back().resource_id = ResourceId(3);
     candidates.back().rpdq = &rpdq2;
 
-    // Pretend this candidate is a RPDQ that we've pulled overlays from.
     candidates.emplace_back();
-    candidates.back().resource_id = ResourceId(1);
-    candidates.back().rpdq = &rpdq1;
+    candidates.back().resource_id = ResourceId(5);
   }
 
-  std::ignore = OverlayProcessorWin::
-      InsertSurfaceContentOverlaysAndSetPlaneZOrderForTesting(
-          std::move(surface_content_render_passes), candidates);
+  InsertSurfaceContentOverlaysAndSetPlaneZOrderAndSort(
+      std::move(surface_content_render_passes), candidates);
 
   EXPECT_THAT(candidates,
-              WhenCandidatesAreSortedResourceIdsAre({1, 2, 3, 4, 5}));
+              CandidatesAreSortedAndResourceIdsAre({1, 2, 3, 4, 5}));
 }
 
 TEST_F(OverlayProcessorWinStaticTest,
@@ -2247,27 +2538,26 @@ TEST_F(OverlayProcessorWinStaticTest,
   OverlayCandidateList candidates;
   {
     candidates.emplace_back();
-    candidates.back().resource_id = ResourceId(6);
-
-    // Pretend this candidate is a RPDQ that we've pulled overlays from.
-    candidates.emplace_back();
-    candidates.back().resource_id = ResourceId(4);
-    candidates.back().rpdq = &rpdq;
+    candidates.back().resource_id = ResourceId(1);
 
     // Pretend this candidate is a RPDQ that we've pulled overlays from.
     candidates.emplace_back();
     candidates.back().resource_id = ResourceId(2);
     candidates.back().rpdq = &rpdq;
 
+    // Pretend this candidate is a RPDQ that we've pulled overlays from.
     candidates.emplace_back();
-    candidates.back().resource_id = ResourceId(1);
+    candidates.back().resource_id = ResourceId(4);
+    candidates.back().rpdq = &rpdq;
+
+    candidates.emplace_back();
+    candidates.back().resource_id = ResourceId(6);
   }
 
-  std::ignore = OverlayProcessorWin::
-      InsertSurfaceContentOverlaysAndSetPlaneZOrderForTesting(
-          std::move(surface_content_render_passes), candidates);
+  InsertSurfaceContentOverlaysAndSetPlaneZOrderAndSort(
+      std::move(surface_content_render_passes), candidates);
 
-  EXPECT_THAT(candidates, WhenCandidatesAreSortedResourceIdsAre(
+  EXPECT_THAT(candidates, CandidatesAreSortedAndResourceIdsAre(
                               {1, 2, 3, 4,
                                3,  // We've embedded this overlay twice
                                6}));
@@ -2275,12 +2565,16 @@ TEST_F(OverlayProcessorWinStaticTest,
 
 class TestOverlayProcessorWin : public OverlayProcessorWin {
  public:
-  explicit TestOverlayProcessorWin(int allowed_yuv_overlay_count)
-      : OverlayProcessorWin(OutputSurface::DCSupportLevel::kDCompTexture,
-                            &debug_settings_,
-                            std::make_unique<DCLayerOverlayProcessor>(
-                                allowed_yuv_overlay_count,
-                                /*skip_initialization_for_testing=*/true)) {}
+  explicit TestOverlayProcessorWin(int allowed_yuv_overlay_count,
+                                   bool disable_video_overlay_if_moving)
+      : OverlayProcessorWin(
+            OutputSurface::DCSupportLevel::kDCompTexture,
+            /*disable_direct_composition_letterbox_video_optimization=*/false,
+            &debug_settings_,
+            std::make_unique<DCLayerOverlayProcessor>(
+                allowed_yuv_overlay_count,
+                disable_video_overlay_if_moving,
+                /*skip_initialization_for_testing=*/true)) {}
   DebugRendererSettings debug_settings_;
 };
 
@@ -2289,15 +2583,19 @@ class OverlayProcessorWinTest : public OverlayProcessorTestBase {
   void SetUp() override {
     OverlayProcessorTestBase::SetUp();
 
+    // With disable_video_overlay_if_moving enabled, videos are required to be
+    // stable for a certain number of frames to be considered for overlay
+    // promotion. This complicates tests since it adds behavior dependent on
+    // the number of times |Process| is called.
     overlay_processor_ = std::make_unique<TestOverlayProcessorWin>(
-        /*allowed_yuv_overlay_count=*/1);
+        /*allowed_yuv_overlay_count=*/1,
+        /*disable_video_overlay_if_moving=*/false);
     overlay_processor_->SetUsingDCLayersForTesting(kDefaultRootPassId, true);
     overlay_processor_->SetViewportSize(gfx::Size(256, 256));
 
     EXPECT_TRUE(overlay_processor_->IsOverlaySupported());
 
-    output_surface_plane_ =
-        OverlayProcessorInterface::OutputSurfaceOverlayPlane();
+    output_surface_plane_ = GetDefaultPrimaryPlane(gfx::Size(256, 256));
   }
 
   void TearDown() override {
@@ -2305,14 +2603,14 @@ class OverlayProcessorWinTest : public OverlayProcessorTestBase {
     OverlayProcessorTestBase::TearDown();
   }
 
-  OverlayProcessorInterface::OutputSurfaceOverlayPlane*
-  GetOutputSurfacePlane() {
-    EXPECT_TRUE(output_surface_plane_.has_value());
-    return &output_surface_plane_.value();
+  std::optional<OverlayCandidate> GetDefaultPrimaryPlane(
+      const gfx::Size& primary_plane_size) {
+    return overlay_processor_->ProcessOutputSurfaceAsOverlay(
+        primary_plane_size, primary_plane_size, SinglePlaneFormat::kBGRA_8888,
+        gfx::ColorSpace::CreateSRGB(), false, 1.0, gpu::Mailbox());
   }
 
-  std::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>
-      output_surface_plane_;
+  std::optional<OverlayCandidate> output_surface_plane_;
   std::unique_ptr<OverlayProcessorWin> overlay_processor_;
   gfx::Rect damage_rect_;
   std::vector<gfx::Rect> content_bounds_;
@@ -2356,9 +2654,6 @@ class OverlayProcessorWinSurfacePlaneTest
 
   void ProcessForOverlays(
       AggregatedRenderPassList* render_passes,
-      const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
-      const OverlayProcessorInterface::FilterOperationsMap&
-          render_pass_backdrop_filters,
       SurfaceDamageRectList surface_damage_rect_list_in_root_space,
       OverlayCandidateList* candidates) {
     // Wraps the root pass of |pass_list| in a RPDQ to simulate the
@@ -2385,8 +2680,8 @@ class OverlayProcessorWinSurfacePlaneTest
         pass_list_->back()->damage_rect.Intersect(*damage_rect_);
 
         const AggregatedRenderPassId max_pass_id =
-            base::ranges::max_element(*pass_list_, base::ranges::less(),
-                                      &AggregatedRenderPass::id)
+            std::ranges::max_element(*pass_list_, std::ranges::less(),
+                                     &AggregatedRenderPass::id)
                 ->get()
                 ->id;
         const AggregatedRenderPassId unused_pass_id(max_pass_id.value() + 1);
@@ -2405,6 +2700,7 @@ class OverlayProcessorWinSurfacePlaneTest
             /*opacity_f=*/1.f, SkBlendMode::kSrc, /*sorting_context=*/0,
             /*layer_id=*/0u,
             /*fast_rounded_corner=*/false);
+        shared_quad_state->layer_namespace_id = std::make_pair(1, 1);
 
         auto* quad =
             pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
@@ -2415,11 +2711,8 @@ class OverlayProcessorWinSurfacePlaneTest
             /*mask_resource_id=*/kInvalidResourceId,
             /*mask_uv_rect=*/gfx::RectF(),
             /*mask_texture_size=*/gfx::Size(),
-            /*filters_scale=*/gfx::Vector2dF(1.0f, 1.0f),
-            /*filters_origin=*/gfx::PointF(),
             /*tex_coord_rect=*/gfx::RectF(pass_list_->back()->output_rect),
-            /*force_anti_aliasing_off=*/false,
-            /*backdrop_filter_quality=*/1.0f);
+            /*force_anti_aliasing_off=*/false);
 
         // Pretend that our old root pass is actually the root pass of a
         // surface.
@@ -2430,7 +2723,7 @@ class OverlayProcessorWinSurfacePlaneTest
 
       ~ScopedSimulateUnmergedWebContentsSurface() {
         auto it =
-            base::ranges::find_if(*candidates_, [](const auto& candidate) {
+            std::ranges::find_if(*candidates_, [](const auto& candidate) {
               return candidate.rpdq &&
                      candidate.rpdq->render_pass_id == kDefaultRootPassId;
             });
@@ -2460,19 +2753,11 @@ class OverlayProcessorWinSurfacePlaneTest
     }
 
     output_surface_plane_ =
-        OverlayProcessorInterface::OutputSurfaceOverlayPlane();
+        GetDefaultPrimaryPlane(render_passes->back()->output_rect.size());
     overlay_processor_->ProcessForOverlays(
-        resource_provider_.get(), render_passes, SkM44(), render_pass_filters,
-        render_pass_backdrop_filters,
+        resource_provider_.get(), render_passes, SkM44(),
         std::move(surface_damage_rect_list_in_root_space),
-        &output_surface_plane_.value(), candidates, &damage_rect_,
-        &content_bounds_);
-    overlay_processor_->AdjustOutputSurfaceOverlay(&output_surface_plane_);
-
-    // Sort candidates front-to-back so tests can assume they appear in the same
-    // order as the input draw quads.
-    base::ranges::sort(*candidates, base::ranges::greater(),
-                       &OverlayCandidate::plane_z_order);
+        output_surface_plane_, candidates, &damage_rect_, &content_bounds_);
   }
 
  private:
@@ -2483,24 +2768,29 @@ class OverlayProcessorWinSurfacePlaneTest
 TEST_P(OverlayProcessorWinSurfacePlaneTest, PromoteOverlayFromSurface) {
   AggregatedRenderPassList pass_list;
   auto pass = CreateRenderPass();
-  CreateTextureQuadAt(resource_provider_.get(), child_resource_provider_.get(),
-                      child_provider_.get(),
-                      pass->CreateAndAppendSharedQuadState(), pass.get(),
-                      gfx::Rect(0, 0, 50, 50),
-                      /*is_overlay_candidate=*/true);
+  CreateYUVTextureQuadAt(resource_provider_.get(),
+                         child_resource_provider_.get(), child_provider_.get(),
+                         CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+                         pass.get(), gfx::Rect(0, 0, 50, 50));
   pass_list.push_back(std::move(pass));
 
   damage_rect_ = pass_list.back()->output_rect;
 
   OverlayCandidateList dc_layer_list;
-  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
-  ProcessForOverlays(&pass_list, render_pass_filters,
-                     render_pass_backdrop_filters, SurfaceDamageRectList(),
-                     &dc_layer_list);
+  ProcessForOverlays(&pass_list, SurfaceDamageRectList(), &dc_layer_list);
 
   EXPECT_TRUE(pass_list.back()->needs_synchronous_dcomp_commit);
-  EXPECT_EQ(1U, dc_layer_list.size());
+  if (GetParam() == SurfaceTestMode::SimulatePartiallyDelegated) {
+    // During partial delegation, the primary plane is not promoted.
+    EXPECT_THAT(dc_layer_list, CandidatesAreSortedAndElementsAre({
+                                   OverlayHasLayerId(),
+                               }));
+  } else {
+    EXPECT_THAT(dc_layer_list, CandidatesAreSortedAndElementsAre({
+                                   OverlayIsPrimaryPlane(),
+                                   OverlayHasLayerId(),
+                               }));
+  }
 }
 
 // Check that we don't accidentally end up in a case where we try to read back a
@@ -2516,11 +2806,7 @@ TEST_P(OverlayProcessorWinSurfacePlaneTest, ForceSwapChainForCapture) {
     damage_rect_ = pass_list.back()->output_rect;
 
     OverlayCandidateList dc_layer_list;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
-    ProcessForOverlays(&pass_list, render_pass_filters,
-                       render_pass_backdrop_filters, SurfaceDamageRectList(),
-                       &dc_layer_list);
+    ProcessForOverlays(&pass_list, SurfaceDamageRectList(), &dc_layer_list);
 
     EXPECT_TRUE(pass_list.back()->needs_synchronous_dcomp_commit);
   }
@@ -2538,17 +2824,13 @@ TEST_P(OverlayProcessorWinSurfacePlaneTest, ForceSwapChainForCapture) {
     damage_rect_ = pass_list.back()->output_rect;
 
     OverlayCandidateList dc_layer_list;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
-    ProcessForOverlays(&pass_list, render_pass_filters,
-                       render_pass_backdrop_filters, SurfaceDamageRectList(),
-                       &dc_layer_list);
+    ProcessForOverlays(&pass_list, SurfaceDamageRectList(), &dc_layer_list);
 
     EXPECT_FALSE(pass_list.back()->needs_synchronous_dcomp_commit);
   }
 }
 
-TEST_P(OverlayProcessorWinSurfacePlaneTest, SetEnableDCLayers) {
+TEST_P(OverlayProcessorWinSurfacePlaneTest, UseDCompSurfaceWithVideo) {
   overlay_processor_->SetUsingDCLayersForTesting(kDefaultRootPassId, false);
   // Draw 60 frames with overlay video quads.
   for (int i = 0; i < 60; i++) {
@@ -2566,34 +2848,32 @@ TEST_P(OverlayProcessorWinSurfacePlaneTest, SetEnableDCLayers) {
     pass_list.push_back(std::move(pass));
 
     OverlayCandidateList dc_layer_list;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     SurfaceDamageRectList surface_damage_rect_list;
     damage_rect_ = gfx::Rect(1, 1, 10, 10);
 
-    // There will be full damage and SetEnableDCLayers(true) will be called on
-    // the first frame.
+    // Full damage on the first frame.
     const gfx::Rect expected_damage =
         (i == 0) ? pass_list.back()->output_rect : gfx::Rect();
 
-    EXPECT_CALL(*output_surface_.get(), SetEnableDCLayers(_)).Times(0);
-
-    ProcessForOverlays(&pass_list, render_pass_filters,
-                       render_pass_backdrop_filters, SurfaceDamageRectList(),
-                       &dc_layer_list);
+    ProcessForOverlays(&pass_list, SurfaceDamageRectList(), &dc_layer_list);
 
     EXPECT_TRUE(pass_list.back()->needs_synchronous_dcomp_commit);
     EXPECT_TRUE(pass_list.back()->has_transparent_background);
     if (GetParam() == SurfaceTestMode::RootSurface) {
-      EXPECT_TRUE(output_surface_plane_);
-      EXPECT_EQ(output_surface_plane_->enable_blending,
-                pass_list.back()->has_transparent_background);
+      EXPECT_THAT(dc_layer_list,
+                  test::HasPrimaryPlaneWithOpaqueness(
+                      !pass_list.back()->has_transparent_background));
+      EXPECT_THAT(dc_layer_list, CandidatesAreSortedAndElementsAre({
+                                     OverlayIsPrimaryPlane(),
+                                     OverlayHasLayerId(),
+                                 }));
     } else {
       // Delegated compositing removes the output surface plane.
+      EXPECT_THAT(dc_layer_list, CandidatesAreSortedAndElementsAre({
+                                     OverlayHasLayerId(),
+                                 }));
     }
 
-    EXPECT_EQ(1U, dc_layer_list.size());
-    EXPECT_EQ(1, dc_layer_list.back().plane_z_order);
     EXPECT_EQ(damage_rect_, expected_damage);
 
     Mock::VerifyAndClearExpectations(output_surface_.get());
@@ -2607,12 +2887,10 @@ TEST_P(OverlayProcessorWinSurfacePlaneTest, SetEnableDCLayers) {
 
     damage_rect_ = gfx::Rect(1, 1, 10, 10);
     auto* quad = pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
-    quad->SetNew(pass->CreateAndAppendSharedQuadState(), damage_rect_,
-                 damage_rect_, SkColors::kRed, false);
+    quad->SetNew(CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+                 damage_rect_, damage_rect_, SkColors::kRed, false);
 
     OverlayCandidateList dc_layer_list;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
 
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
@@ -2620,34 +2898,34 @@ TEST_P(OverlayProcessorWinSurfacePlaneTest, SetEnableDCLayers) {
 
     damage_rect_ = gfx::Rect(1, 1, 10, 10);
 
-    // There will be full damage and SetEnableDCLayers(false) will be called
-    // after 60 consecutive frames with no overlays. The first frame without
-    // overlays will also have full damage, but no call to SetEnableDCLayers.
+    // There will be full damage and needs_synchronous_dcomp_commit will be
+    // false after 60 consecutive frames with no overlays. The first frame
+    // without overlays will also have full damage.
     const gfx::Rect expected_damage = (i == 0 || (i + 1) == 60)
                                           ? pass_list.back()->output_rect
                                           : damage_rect_;
 
     const bool in_dc_layer_hysteresis = i + 1 < 60;
 
-    EXPECT_CALL(*output_surface_.get(), SetEnableDCLayers(_)).Times(0);
-
-    ProcessForOverlays(&pass_list, render_pass_filters,
-                       render_pass_backdrop_filters, SurfaceDamageRectList(),
-                       &dc_layer_list);
+    ProcessForOverlays(&pass_list, SurfaceDamageRectList(), &dc_layer_list);
 
     EXPECT_EQ(pass_list.back()->needs_synchronous_dcomp_commit,
               in_dc_layer_hysteresis);
     EXPECT_EQ(pass_list.back()->has_transparent_background,
               in_dc_layer_hysteresis);
     if (GetParam() == SurfaceTestMode::RootSurface) {
-      EXPECT_TRUE(output_surface_plane_);
-      EXPECT_EQ(output_surface_plane_->enable_blending,
-                pass_list.back()->has_transparent_background);
+      EXPECT_THAT(dc_layer_list,
+                  test::HasPrimaryPlaneWithOpaqueness(
+                      !pass_list.back()->has_transparent_background));
+      // Primary plane only.
+      EXPECT_THAT(dc_layer_list, CandidatesAreSortedAndElementsAre({
+                                     OverlayIsPrimaryPlane(),
+                                 }));
     } else {
       // Delegated compositing removes the output surface plane.
+      EXPECT_EQ(0u, dc_layer_list.size());
     }
 
-    EXPECT_EQ(0u, dc_layer_list.size());
     EXPECT_EQ(damage_rect_, expected_damage);
 
     Mock::VerifyAndClearExpectations(output_surface_.get());
@@ -2657,26 +2935,19 @@ TEST_P(OverlayProcessorWinSurfacePlaneTest, SetEnableDCLayers) {
 // Tests that Delegated Ink in the frame correctly sets
 // needs_synchronous_dcomp_commit on the render pass.
 TEST_P(OverlayProcessorWinSurfacePlaneTest, FrameHasDelegatedInk) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kUseDCompSurfacesForDelegatedInk);
   overlay_processor_->SetUsingDCLayersForTesting(kDefaultRootPassId, false);
   // Test that needs_synchronous_dcomp_commit on the render pass gets set to
   // false as default.
   {
     auto pass = CreateRenderPass();
     OverlayCandidateList dc_layer_list;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     damage_rect_ = gfx::Rect(1, 1, 10, 10);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
     SurfaceDamageRectList surface_damage_rect_list = {gfx::Rect(1, 1, 10, 10)};
 
     EXPECT_FALSE(pass_list[0]->needs_synchronous_dcomp_commit);
-    ProcessForOverlays(&pass_list, render_pass_filters,
-                       render_pass_backdrop_filters, SurfaceDamageRectList(),
-                       &dc_layer_list);
+    ProcessForOverlays(&pass_list, SurfaceDamageRectList(), &dc_layer_list);
     EXPECT_FALSE(pass_list[0]->needs_synchronous_dcomp_commit);
   }
 
@@ -2685,19 +2956,16 @@ TEST_P(OverlayProcessorWinSurfacePlaneTest, FrameHasDelegatedInk) {
   overlay_processor_->SetFrameHasDelegatedInk();
   auto pass = CreateRenderPass();
   OverlayCandidateList dc_layer_list;
-  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
   damage_rect_ = gfx::Rect(1, 1, 10, 10);
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(pass));
   SurfaceDamageRectList surface_damage_rect_list = {gfx::Rect(1, 1, 10, 10)};
 
   EXPECT_FALSE(pass_list[0]->needs_synchronous_dcomp_commit);
-  ProcessForOverlays(&pass_list, render_pass_filters,
-                     render_pass_backdrop_filters, SurfaceDamageRectList(),
-                     &dc_layer_list);
+  ProcessForOverlays(&pass_list, SurfaceDamageRectList(), &dc_layer_list);
   // Make sure |frame_has_delegated_ink_| has been set to false.
-  EXPECT_FALSE(overlay_processor_->frame_has_delegated_ink_for_testing());
+  EXPECT_FALSE(
+      overlay_processor_->frame_has_forced_dcomp_surface_for_testing());
   EXPECT_TRUE(pass_list[0]->needs_synchronous_dcomp_commit);
 }
 
@@ -2706,28 +2974,22 @@ TEST_P(OverlayProcessorWinSurfacePlaneTest, FrameHasDelegatedInk) {
 // kNumberOfFramesBeforeDisablingDCLayers in
 // components/viz/service/display/overlay_processor_win.cc.
 TEST_P(OverlayProcessorWinSurfacePlaneTest, DelegatedInkSurfaceHysteresis) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kUseDCompSurfacesForDelegatedInk);
   overlay_processor_->SetUsingDCLayersForTesting(kDefaultRootPassId, false);
 
   overlay_processor_->SetFrameHasDelegatedInk();
   for (int frame = 1; frame <= 61; frame++) {
     auto pass = CreateRenderPass();
     OverlayCandidateList dc_layer_list;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     damage_rect_ = gfx::Rect(1, 1, 10, 10);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
     SurfaceDamageRectList surface_damage_rect_list = {gfx::Rect(1, 1, 10, 10)};
 
     EXPECT_FALSE(pass_list[0]->needs_synchronous_dcomp_commit);
-    ProcessForOverlays(&pass_list, render_pass_filters,
-                       render_pass_backdrop_filters, SurfaceDamageRectList(),
-                       &dc_layer_list);
+    ProcessForOverlays(&pass_list, SurfaceDamageRectList(), &dc_layer_list);
     // Make sure |frame_has_delegated_ink_| has been set to false.
-    EXPECT_FALSE(overlay_processor_->frame_has_delegated_ink_for_testing());
+    EXPECT_FALSE(
+        overlay_processor_->frame_has_forced_dcomp_surface_for_testing());
     if (frame <= 60) {
       EXPECT_TRUE(pass_list[0]->needs_synchronous_dcomp_commit);
     } else {
@@ -2742,6 +3004,89 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(SurfaceTestMode::RootSurface,
                     SurfaceTestMode::SimulatePartiallyDelegated),
     &OverlayProcessorWinSurfacePlaneTest::GetParamName);
+
+class OverlayProcessorWinSurfacePlaneFullScreenTest
+    : public OverlayProcessorWinSurfacePlaneTest {
+ public:
+  OverlayProcessorWinSurfacePlaneFullScreenTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kEarlyFullScreenVideoOptimization);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Check that we can correctly mark a full screen video (that has a background
+// mat) as "full screen".
+TEST_P(OverlayProcessorWinSurfacePlaneFullScreenTest,
+       FullScreenVideoAsUnderlay) {
+  overlay_processor_->SetIsPageFullscreen(true);
+
+  AggregatedRenderPassList pass_list;
+  auto pass = CreateRenderPass();
+
+  // Add something to make the video be an underlay.
+  CreateSolidColorQuadAt(CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+                         SkColors::kBlue, pass.get(), gfx::Rect(10, 10));
+
+  CreateYUVTextureQuadAt(resource_provider_.get(),
+                         child_resource_provider_.get(), child_provider_.get(),
+                         CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+                         pass.get(), pass->output_rect);
+  CreateSolidColorQuadAt(CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+                         SkColors::kBlack, pass.get(), pass->output_rect);
+  pass_list.push_back(std::move(pass));
+
+  damage_rect_ = pass_list.back()->output_rect;
+
+  OverlayCandidateList overlays;
+  ProcessForOverlays(&pass_list, SurfaceDamageRectList(), &overlays);
+
+  EXPECT_THAT(overlays, CandidatesAreSortedAndElementsAre({
+                            test::OverlayIsFullScreen(),
+
+                            // We expect the primary plane to still exist, since
+                            // there's something above the video.
+                            OverlayIsPrimaryPlane(),
+                        }));
+}
+
+// Check that marking a full screen video that with nothing else that occludes
+// it will remove the primary plane overlay.
+TEST_P(OverlayProcessorWinSurfacePlaneFullScreenTest,
+       FullScreenVideoOnTopRemovesPrimaryPlane) {
+  overlay_processor_->SetIsPageFullscreen(true);
+
+  AggregatedRenderPassList pass_list;
+  auto pass = CreateRenderPass();
+  CreateYUVTextureQuadAt(resource_provider_.get(),
+                         child_resource_provider_.get(), child_provider_.get(),
+                         CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+                         pass.get(), pass->output_rect);
+  CreateSolidColorQuadAt(CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+                         SkColors::kBlack, pass.get(), pass->output_rect);
+  pass_list.push_back(std::move(pass));
+
+  damage_rect_ = pass_list.back()->output_rect;
+
+  OverlayCandidateList overlays;
+  ProcessForOverlays(&pass_list, SurfaceDamageRectList(), &overlays);
+
+  EXPECT_THAT(overlays, testing::ElementsAreArray({
+                            test::OverlayIsFullScreen(),
+                        }));
+
+  // Check that the next call to `AdjustOutputSurfaceOverlay` clears the primary
+  // plane.
+  EXPECT_FALSE(output_surface_plane_.has_value());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    OverlayProcessorWinSurfacePlaneFullScreenTest,
+    testing::Values(SurfaceTestMode::RootSurface),
+    &OverlayProcessorWinSurfacePlaneFullScreenTest::GetParamName);
 
 class OverlayProcessorWinDelegatedCompositingTest
     : public OverlayProcessorWinTest {
@@ -2765,6 +3110,12 @@ class OverlayProcessorWinDelegatedCompositingTest
     void ExpectDelegationSuccess() const {
       EXPECT_TRUE(delegation_succeeded_);
       EXPECT_EQ(gfx::Rect(), root_surface_damage_);
+
+      // We don't expect a z-index of 0, which indicates the primary plane.
+      EXPECT_THAT(candidates_,
+                  testing::Each(testing::Field("plane_z_order",
+                                               &OverlayCandidate::plane_z_order,
+                                               testing::Ne(0))));
     }
 
     void ExpectDelegationFailure() const {
@@ -2787,8 +3138,7 @@ class OverlayProcessorWinDelegatedCompositingTest
     if (!output_surface_plane_) {
       // Reset the output surface plane in case we're calling
       // |TryProcessForDelegatedOverlays| multiple times.
-      output_surface_plane_ =
-          OverlayProcessorInterface::OutputSurfaceOverlayPlane();
+      output_surface_plane_ = OverlayCandidate();
     }
 
     const gfx::Rect original_root_surface_damage =
@@ -2811,23 +3161,15 @@ class OverlayProcessorWinDelegatedCompositingTest
     overlay_processor_->ProcessForOverlays(
         resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
         render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list), GetOutputSurfacePlane(),
-        &candidates, &damage_rect_, &content_bounds_);
+        std::move(surface_damage_rect_list), output_surface_plane_, &candidates,
+        &damage_rect_, &content_bounds_);
 
-    overlay_processor_->AdjustOutputSurfaceOverlay(&output_surface_plane_);
-    const bool delegation_succeeded = !output_surface_plane_.has_value();
+    const bool delegation_succeeded = std::ranges::none_of(
+        candidates,
+        [](const auto& overlay) { return overlay.is_root_render_pass; });
 
     return DelegationResult(candidates, delegation_succeeded,
                             original_root_surface_damage, damage_rect_);
-  }
-
-  testing::Matcher<const OverlayCandidateList&>
-  WhenCandidatesAreSortedElementsAre(
-      std::vector<testing::Matcher<const OverlayCandidate&>> element_matchers) {
-    return testing::AllOf(
-        PlaneZOrdersAreUnique(),
-        testing::WhenSortedBy(test::PlaneZOrderAscendingComparator(),
-                              testing::ElementsAreArray(element_matchers)));
   }
 
  private:
@@ -2839,16 +3181,57 @@ TEST_F(OverlayProcessorWinDelegatedCompositingTest, SingleQuad) {
   AggregatedRenderPassList pass_list;
 
   auto pass = CreateRenderPass();
-  CreateSolidColorQuadAt(pass->CreateAndAppendSharedQuadState(), SkColors::kRed,
-                         pass.get(), gfx::Rect(0, 0, 50, 50));
+  CreateSolidColorQuadAt(CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+                         SkColors::kRed, pass.get(), gfx::Rect(0, 0, 50, 50));
   pass_list.push_back(std::move(pass));
 
   auto result = TryProcessForDelegatedOverlays(pass_list);
   result.ExpectDelegationSuccess();
   EXPECT_THAT(result.candidates(),
-              WhenCandidatesAreSortedElementsAre({
+              CandidatesAreSortedAndElementsAre({
                   test::IsSolidColorOverlay(SkColors::kRed),
               }));
+}
+
+// Check that we don't try delegated compositing when there are too many quads.
+TEST_F(OverlayProcessorWinDelegatedCompositingTest, TooManyQuads) {
+  AggregatedRenderPassList pass_list;
+
+  auto pass = CreateRenderPass();
+  auto* sqs = CreateSharedQuadStateWithLayerNamespaceId(pass.get());
+  for (int i = 0; i < 2049; i++) {
+    CreateSolidColorQuadAt(sqs, SkColors::kRed, pass.get(),
+                           gfx::Rect(i, 0, 50, 50));
+  }
+  pass_list.push_back(std::move(pass));
+
+  auto result = TryProcessForDelegatedOverlays(pass_list);
+  result.ExpectDelegationFailure();
+  EXPECT_THAT(result.candidates(), CandidatesAreSortedAndElementsAre({
+                                       OverlayIsPrimaryPlane(),
+                                   }));
+}
+
+// Check that we don't try delegated compositing when there are too many complex
+// quads. This limit is lower since they have a larger performance hit in DWM.
+TEST_F(OverlayProcessorWinDelegatedCompositingTest, TooManyComplexQuads) {
+  AggregatedRenderPassList pass_list;
+
+  auto pass = CreateRenderPass();
+  auto* sqs = CreateSharedQuadStateWithLayerNamespaceId(pass.get());
+  sqs->mask_filter_info =
+      gfx::MaskFilterInfo(gfx::RRectF(gfx::RectF(0, 0, 50, 50), 50));
+  for (int i = 0; i < 257; i++) {
+    CreateSolidColorQuadAt(sqs, SkColors::kRed, pass.get(),
+                           gfx::Rect(i, 0, 50, 50));
+  }
+  pass_list.push_back(std::move(pass));
+
+  auto result = TryProcessForDelegatedOverlays(pass_list);
+  result.ExpectDelegationFailure();
+  EXPECT_THAT(result.candidates(), CandidatesAreSortedAndElementsAre({
+                                       OverlayIsPrimaryPlane(),
+                                   }));
 }
 
 // Check that, when delegated compositing fails, we still successfully promote
@@ -2863,7 +3246,7 @@ TEST_F(OverlayProcessorWinDelegatedCompositingTest,
   auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
       resource_provider_.get(), child_resource_provider_.get(),
       child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-  ResourceId video_resource_id = video_quad->resource_id();
+  ResourceId video_resource_id = video_quad->resource_id;
 
   {
     // A RPDQ with a backdrop filter occluding another quad will cause delegated
@@ -2885,7 +3268,8 @@ TEST_F(OverlayProcessorWinDelegatedCompositingTest,
   auto result = TryProcessForDelegatedOverlays(pass_list);
   result.ExpectDelegationFailure();
   EXPECT_THAT(result.candidates(),
-              WhenCandidatesAreSortedElementsAre({
+              CandidatesAreSortedAndElementsAre({
+                  OverlayIsPrimaryPlane(),
                   test::OverlayHasResource(video_resource_id),
               }))
       << "The overlay processor fall back to using DCLayerOverlayProcessor on "
@@ -2898,29 +3282,13 @@ TEST_F(OverlayProcessorWinDelegatedCompositingTest, SkipNonVisibleOverlays) {
   AggregatedRenderPassList pass_list;
 
   auto pass = CreateRenderPass();
-  CreateSolidColorQuadAt(pass->CreateAndAppendSharedQuadState(), SkColors::kRed,
-                         pass.get(), gfx::Rect(0, 0, 0, 0));
+  CreateSolidColorQuadAt(CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+                         SkColors::kRed, pass.get(), gfx::Rect(0, 0, 0, 0));
   pass_list.push_back(std::move(pass));
 
   auto result = TryProcessForDelegatedOverlays(pass_list);
   result.ExpectDelegationSuccess();
   EXPECT_THAT(result.candidates(), testing::IsEmpty());
-}
-
-// Check that delegated compositing fails when there is a color conversion pass.
-TEST_F(OverlayProcessorWinDelegatedCompositingTest, HdrNotSupported) {
-  AggregatedRenderPassList pass_list;
-
-  pass_list.push_back(CreateRenderPass(AggregatedRenderPassId{2}));
-
-  auto pass = CreateRenderPass();
-  pass->is_color_conversion_pass = true;
-  pass_list.push_back(std::move(pass));
-
-  damage_rect_ = pass_list.back()->damage_rect;
-
-  auto result = TryProcessForDelegatedOverlays(pass_list);
-  result.ExpectDelegationFailure();
 }
 
 // Check that delegated compositing fails when the root is being captured.
@@ -2957,13 +3325,14 @@ TEST_F(OverlayProcessorWinDelegatedCompositingTest,
 
     const gfx::Rect rect(0, 0, 50, 50);
 
-    CreateRenderPassDrawQuadAt(pass.get(),
-                               pass->CreateAndAppendSharedQuadState(), rect,
-                               child_pass_id);
+    CreateRenderPassDrawQuadAt(
+        pass.get(), CreateSharedQuadStateWithLayerNamespaceId(pass.get()), rect,
+        child_pass_id);
 
     // Create a quad that will be occluded by the backdrop-filtered RPDQ above.
-    CreateSolidColorQuadAt(pass->CreateAndAppendSharedQuadState(),
-                           SkColors::kRed, pass.get(), rect);
+    CreateSolidColorQuadAt(
+        CreateSharedQuadStateWithLayerNamespaceId(pass.get()), SkColors::kRed,
+        pass.get(), rect);
 
     pass_list.push_back(std::move(pass));
   }
@@ -2972,9 +3341,823 @@ TEST_F(OverlayProcessorWinDelegatedCompositingTest,
   result.ExpectDelegationFailure();
 }
 
+class OverlayProcessorWinFullScreenTest
+    : public OverlayProcessorWinDelegatedCompositingTest {
+ public:
+  OverlayProcessorWinFullScreenTest() {
+    feature_list_.InitWithFeatures(
+        {features::kEarlyFullScreenVideoOptimization},
+        {features::kDirectCompositionLetterboxVideoOptimization});
+  }
+
+  void SetUp() override {
+    OverlayProcessorWinDelegatedCompositingTest::SetUp();
+    overlay_processor_->SetIsPageFullscreen(true);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(OverlayProcessorWinFullScreenTest, FullScreenTrivial) {
+  AggregatedRenderPassList pass_list;
+  auto pass = CreateRenderPass();
+  CreateYUVTextureQuadAt(resource_provider_.get(),
+                         child_resource_provider_.get(), child_provider_.get(),
+                         CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+                         pass.get(), pass->output_rect);
+  CreateSolidColorQuadAt(CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+                         SkColors::kBlack, pass.get(), pass->output_rect);
+  pass_list.push_back(std::move(pass));
+
+  auto result = TryProcessForDelegatedOverlays(pass_list);
+  result.ExpectDelegationSuccess();
+
+  EXPECT_THAT(result.candidates(), CandidatesAreSortedAndElementsAre({
+                                       test::OverlayIsFullScreen(),
+                                   }));
+}
+
+// Check that we still mark videos as "full screen" even if they are occluded by
+// something. This ensures that we stay stable across frames, e.g. when the
+// video controls or subtitles appear.
+TEST_F(OverlayProcessorWinFullScreenTest, FullScreenUnderlay) {
+  AggregatedRenderPassList pass_list;
+  auto pass = CreateRenderPass();
+
+  // Add a quad above the video to force it into underlay.
+  CreateSolidColorQuadAt(CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+                         SkColors::kBlue, pass.get(), gfx::Rect(10, 10));
+
+  CreateYUVTextureQuadAt(resource_provider_.get(),
+                         child_resource_provider_.get(), child_provider_.get(),
+                         CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+                         pass.get(), pass->output_rect);
+  CreateSolidColorQuadAt(CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+                         SkColors::kBlack, pass.get(), pass->output_rect);
+  pass_list.push_back(std::move(pass));
+
+  auto result = TryProcessForDelegatedOverlays(pass_list);
+  result.ExpectDelegationSuccess();
+
+  EXPECT_THAT(result.candidates(),
+              CandidatesAreSortedAndElementsAre({
+                  test::OverlayIsFullScreen(),
+                  test::IsSolidColorOverlay(SkColors::kBlue),
+              }));
+}
+
+// Check that the video must truly be full screen.
+TEST_F(OverlayProcessorWinFullScreenTest, NotFullScreenWrongSize) {
+  AggregatedRenderPassList pass_list;
+  auto pass = CreateRenderPass();
+  CreateYUVTextureQuadAt(resource_provider_.get(),
+                         child_resource_provider_.get(), child_provider_.get(),
+                         CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+                         pass.get(), gfx::Rect(10, 10));
+  CreateSolidColorQuadAt(CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+                         SkColors::kBlack, pass.get(), pass->output_rect);
+  pass_list.push_back(std::move(pass));
+
+  auto result = TryProcessForDelegatedOverlays(pass_list);
+  result.ExpectDelegationSuccess();
+
+  EXPECT_THAT(result.candidates(),
+              CandidatesAreSortedAndElementsAre({
+                  test::IsSolidColorOverlay(SkColors::kBlack),
+                  testing::Not(test::OverlayIsFullScreen()),
+              }));
+}
+
+// Check that the background mat color must be black.
+TEST_F(OverlayProcessorWinFullScreenTest, NotFullScreenWrongBackgroundColor) {
+  AggregatedRenderPassList pass_list;
+  auto pass = CreateRenderPass();
+  CreateYUVTextureQuadAt(resource_provider_.get(),
+                         child_resource_provider_.get(), child_provider_.get(),
+                         CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+                         pass.get(), gfx::Rect(10, 10));
+  CreateSolidColorQuadAt(CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+                         SkColors::kBlue, pass.get(), pass->output_rect);
+  pass_list.push_back(std::move(pass));
+
+  auto result = TryProcessForDelegatedOverlays(pass_list);
+  result.ExpectDelegationSuccess();
+
+  EXPECT_THAT(result.candidates(),
+              CandidatesAreSortedAndElementsAre({
+                  test::IsSolidColorOverlay(SkColors::kBlue),
+                  testing::Not(test::OverlayIsFullScreen()),
+              }));
+}
+
+// Check that we remove quads behind the video background mat when we mark it as
+// "full screen". This reduces the number of overlay layers that we must process
+// in DComp.
+TEST_F(OverlayProcessorWinFullScreenTest, RemovesOccludedQuads) {
+  AggregatedRenderPassList pass_list;
+  auto pass = CreateRenderPass();
+  CreateYUVTextureQuadAt(resource_provider_.get(),
+                         child_resource_provider_.get(), child_provider_.get(),
+                         CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+                         pass.get(), pass->output_rect);
+  CreateSolidColorQuadAt(CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+                         SkColors::kBlack, pass.get(), pass->output_rect);
+
+  // This quad is occluded by the background mat and will not appear in the
+  // final overlay candidates list.
+  CreateSolidColorQuadAt(CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+                         SkColors::kBlue, pass.get(), gfx::Rect(10, 10));
+
+  pass_list.push_back(std::move(pass));
+
+  damage_rect_ = pass_list.back()->output_rect;
+
+  auto result = TryProcessForDelegatedOverlays(pass_list);
+  result.ExpectDelegationSuccess();
+
+  EXPECT_THAT(result.candidates(), CandidatesAreSortedAndElementsAre({
+                                       test::OverlayIsFullScreen(),
+                                   }));
+}
+
+// Check that the trivial letterboxing case works.
+TEST_F(OverlayProcessorWinFullScreenTest, LetterboxingTrivial) {
+  AggregatedRenderPassList pass_list;
+  auto pass = CreateRenderPass();
+  pass->output_rect = gfx::Rect(256, 256);
+  CreateYUVTextureQuadAt(resource_provider_.get(),
+                         child_resource_provider_.get(), child_provider_.get(),
+                         CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+                         pass.get(), gfx::Rect(0, 96, 256, 64));
+  CreateSolidColorQuadAt(CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+                         SkColors::kBlack, pass.get(), pass->output_rect);
+  pass_list.push_back(std::move(pass));
+
+  auto result = TryProcessForDelegatedOverlays(pass_list);
+  result.ExpectDelegationSuccess();
+
+  EXPECT_THAT(result.candidates(), CandidatesAreSortedAndElementsAre({
+                                       test::OverlayIsFullScreen(),
+                                   }));
+}
+
+// We allow up to half a pixel off of "ideal" to support odd screen sizes.
+TEST_F(OverlayProcessorWinFullScreenTest, LetterboxingOddScreenSize) {
+  AggregatedRenderPassList pass_list;
+  auto pass = CreateRenderPass();
+  pass->output_rect = gfx::Rect(256, 255);
+  CreateYUVTextureQuadAt(resource_provider_.get(),
+                         child_resource_provider_.get(), child_provider_.get(),
+                         CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+                         pass.get(), gfx::Rect(0, 96, 256, 64));
+  CreateSolidColorQuadAt(CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+                         SkColors::kBlack, pass.get(), pass->output_rect);
+  pass_list.push_back(std::move(pass));
+
+  auto result = TryProcessForDelegatedOverlays(pass_list);
+  result.ExpectDelegationSuccess();
+
+  EXPECT_THAT(result.candidates(), CandidatesAreSortedAndElementsAre({
+                                       test::OverlayIsFullScreen(),
+                                   }));
+}
+
+// Check that the trivial pillarboxing case works.
+TEST_F(OverlayProcessorWinFullScreenTest, PillarboxingTrivial) {
+  AggregatedRenderPassList pass_list;
+  auto pass = CreateRenderPass();
+  pass->output_rect = gfx::Rect(256, 256);
+  CreateYUVTextureQuadAt(resource_provider_.get(),
+                         child_resource_provider_.get(), child_provider_.get(),
+                         CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+                         pass.get(), gfx::Rect(96, 0, 64, 256));
+  CreateSolidColorQuadAt(CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+                         SkColors::kBlack, pass.get(), pass->output_rect);
+  pass_list.push_back(std::move(pass));
+
+  auto result = TryProcessForDelegatedOverlays(pass_list);
+  result.ExpectDelegationSuccess();
+
+  EXPECT_THAT(result.candidates(), CandidatesAreSortedAndElementsAre({
+                                       test::OverlayIsFullScreen(),
+                                   }));
+}
+
+// See: LetterboxingOddScreenSize
+TEST_F(OverlayProcessorWinFullScreenTest, PillarboxingOddScreenSize) {
+  AggregatedRenderPassList pass_list;
+  auto pass = CreateRenderPass();
+  pass->output_rect = gfx::Rect(255, 256);
+  CreateYUVTextureQuadAt(resource_provider_.get(),
+                         child_resource_provider_.get(), child_provider_.get(),
+                         CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+                         pass.get(), gfx::Rect(96, 0, 64, 256));
+  CreateSolidColorQuadAt(CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+                         SkColors::kBlack, pass.get(), pass->output_rect);
+  pass_list.push_back(std::move(pass));
+
+  auto result = TryProcessForDelegatedOverlays(pass_list);
+  result.ExpectDelegationSuccess();
+
+  EXPECT_THAT(result.candidates(), CandidatesAreSortedAndElementsAre({
+                                       test::OverlayIsFullScreen(),
+                                   }));
+}
+
+// If a video is correctly letterboxed due to its clip rect, do not mark it as
+// "full screen" since we currently do not map the clip rect to the video
+// frame's source rect in `SwapChainPresenter`. The video would appear unclipped
+// if we mark it as "full screen".
+TEST_F(OverlayProcessorWinFullScreenTest, VideoIsLetterboxedDueToClipping) {
+  AggregatedRenderPassList pass_list;
+  auto pass = CreateRenderPass();
+
+  pass->output_rect = gfx::Rect(256, 256);
+  auto* sqs = CreateSharedQuadStateWithLayerNamespaceId(pass.get());
+  sqs->clip_rect = gfx::Rect(0, 96, 255, 64);
+
+  CreateYUVTextureQuadAt(resource_provider_.get(),
+                         child_resource_provider_.get(), child_provider_.get(),
+                         sqs, pass.get(), pass->output_rect);
+
+  CreateSolidColorQuadAt(CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+                         SkColors::kBlack, pass.get(), pass->output_rect);
+  pass_list.push_back(std::move(pass));
+
+  auto result = TryProcessForDelegatedOverlays(pass_list);
+  result.ExpectDelegationSuccess();
+
+  EXPECT_THAT(result.candidates(),
+              CandidatesAreSortedAndElementsAre({
+                  test::IsSolidColorOverlay(SkColors::kBlack),
+                  testing::Not(test::OverlayIsFullScreen()),
+              }));
+}
+
+class OverlayProcessorWinFullScreenWithAdjustmentTest
+    : public OverlayProcessorWinDelegatedCompositingTest {
+ public:
+  OverlayProcessorWinFullScreenWithAdjustmentTest() {
+    feature_list_.InitWithFeatures(
+        {features::kEarlyFullScreenVideoOptimization,
+         features::kDirectCompositionLetterboxVideoOptimization},
+        {});
+  }
+
+  void SetUp() override {
+    OverlayProcessorWinDelegatedCompositingTest::SetUp();
+    overlay_processor_->SetIsPageFullscreen(true);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(OverlayProcessorWinFullScreenWithAdjustmentTest, AdjustToFullScreen) {
+  AggregatedRenderPassList pass_list;
+  auto pass = CreateRenderPass();
+
+  const gfx::RectF expected_rect = gfx::RectF(pass->output_rect);
+
+  gfx::Rect almost_full_screen = pass->output_rect;
+  almost_full_screen.Inset(5);
+  CreateYUVTextureQuadAt(resource_provider_.get(),
+                         child_resource_provider_.get(), child_provider_.get(),
+                         CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+                         pass.get(), almost_full_screen);
+  CreateSolidColorQuadAt(CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+                         SkColors::kBlack, pass.get(), pass->output_rect);
+  pass_list.push_back(std::move(pass));
+
+  auto result = TryProcessForDelegatedOverlays(pass_list);
+  result.ExpectDelegationSuccess();
+
+  EXPECT_THAT(result.candidates(),
+              CandidatesAreSortedAndElementsAre({
+                  testing::AllOf(test::OverlayIsFullScreen(),
+                                 test::OverlayTargetRectIs(expected_rect)),
+              }));
+}
+
+TEST_F(OverlayProcessorWinFullScreenWithAdjustmentTest, AdjustToLetterbox) {
+  AggregatedRenderPassList pass_list;
+  auto pass = CreateRenderPass();
+  pass->output_rect = gfx::Rect(256, 256);
+  CreateYUVTextureQuadAt(resource_provider_.get(),
+                         child_resource_provider_.get(), child_provider_.get(),
+                         CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+                         pass.get(), gfx::Rect(0, 90, 255, 64));
+
+  CreateSolidColorQuadAt(CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+                         SkColors::kBlack, pass.get(), pass->output_rect);
+  pass_list.push_back(std::move(pass));
+
+  auto result = TryProcessForDelegatedOverlays(pass_list);
+  result.ExpectDelegationSuccess();
+
+  EXPECT_THAT(
+      result.candidates(),
+      CandidatesAreSortedAndElementsAre({
+          testing::AllOf(test::OverlayIsFullScreen(),
+                         test::OverlayTargetRectIs(gfx::RectF(0, 96, 255, 64))),
+      }));
+}
+
+TEST_F(OverlayProcessorWinFullScreenWithAdjustmentTest,
+       FullScreenRoundingWithHalfPixelTranslation) {
+  AggregatedRenderPassList pass_list;
+  auto pass = CreateRenderPass();
+
+  const gfx::RectF expected_rect = gfx::RectF(pass->output_rect);
+
+  auto* sqs = CreateSharedQuadStateWithLayerNamespaceId(pass.get());
+  sqs->quad_to_target_transform = gfx::Transform::MakeTranslation(0.5, 0.5);
+  CreateYUVTextureQuadAt(resource_provider_.get(),
+                         child_resource_provider_.get(), child_provider_.get(),
+                         sqs, pass.get(), pass->output_rect);
+
+  CreateSolidColorQuadAt(CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+                         SkColors::kBlack, pass.get(), pass->output_rect);
+  pass_list.push_back(std::move(pass));
+
+  auto result = TryProcessForDelegatedOverlays(pass_list);
+  result.ExpectDelegationSuccess();
+
+  EXPECT_THAT(result.candidates(),
+              CandidatesAreSortedAndElementsAre({
+                  testing::AllOf(test::OverlayIsFullScreen(),
+                                 test::OverlayTargetRectIs(expected_rect)),
+              }));
+}
+
+// Tests that check that overlay promotion is supported from non-root render
+// passes in the partially delegated case.
+class OverlayProcessorWinPartiallyDelegatedCompositingTest
+    : public OverlayProcessorWinDelegatedCompositingTest {
+ protected:
+  OverlayProcessorWinPartiallyDelegatedCompositingTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kDelegatedCompositing, {{"mode", "limit_to_ui"}});
+  }
+
+  TextureDrawQuad* CreateOverlayQuadWithSurfaceDamageAt(
+      AggregatedRenderPass* pass,
+      SurfaceDamageRectList& surface_damage_rect_list,
+      const gfx::Rect& rect) {
+    SharedQuadState* sqs = CreateSharedQuadStateWithLayerNamespaceId(pass);
+    auto* quad = CreateLowLatencyTextureQuadAt(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(), sqs, pass, rect);
+
+    pass->damage_rect.Union(
+        sqs->quad_to_target_transform.MapRect(quad->visible_rect));
+
+    gfx::Transform quad_to_root_transform(sqs->quad_to_target_transform);
+    quad_to_root_transform.PostConcat(pass->transform_to_root_target);
+
+    sqs->overlay_damage_index = surface_damage_rect_list.size();
+    surface_damage_rect_list.push_back(
+        quad_to_root_transform.MapRect(quad->visible_rect));
+
+    return quad;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Check that an overlay candidate can be promoted from a non-root pass
+// representing a surface.
+TEST_F(OverlayProcessorWinPartiallyDelegatedCompositingTest,
+       CandidatePromotedFromNonRootSurface) {
+  AggregatedRenderPassList pass_list;
+
+  const AggregatedRenderPassId child_pass_id{2};
+  ResourceId child_pass_texture_id;
+
+  // Create a pass with just an overlay quad.
+  {
+    auto child_pass = CreateRenderPass(child_pass_id);
+    child_pass->is_from_surface_root_pass = true;
+    auto* texture_quad = CreateYUVTextureQuadAt(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(),
+        CreateSharedQuadStateWithLayerNamespaceId(child_pass.get()),
+        child_pass.get(), gfx::Rect(0, 0, 50, 50));
+    child_pass_texture_id = texture_quad->resource_id;
+    pass_list.push_back(std::move(child_pass));
+  }
+
+  {
+    auto pass = CreateRenderPass();
+    CreateRenderPassDrawQuadAt(
+        pass.get(), CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+        gfx::Rect(0, 0, 50, 50), child_pass_id);
+    pass_list.push_back(std::move(pass));
+  }
+
+  auto result = TryProcessForDelegatedOverlays(pass_list);
+  result.ExpectDelegationSuccess();
+
+  // We expect both the RPDQ and the inner video to be promoted.
+  EXPECT_THAT(
+      result.candidates(),
+      CandidatesAreSortedAndElementsAre({
+          test::IsRenderPassOverlay(child_pass_id),
+          testing::AllOf(test::OverlayHasResource(child_pass_texture_id),
+                         OverlayHasLayerId()),
+      }));
+}
+
+// Check that an overlay candidate can be promoted from a non-root pass
+// representing a surface, but will be placed behind the output surface plane if
+// it is occluded by something in the surface.
+TEST_F(OverlayProcessorWinPartiallyDelegatedCompositingTest,
+       CandidatePromotedFromNonRootSurfaceAsUnderlay) {
+  AggregatedRenderPassList pass_list;
+
+  const AggregatedRenderPassId child_pass_id{2};
+  ResourceId child_pass_texture_id;
+
+  // Create a pass with an overlay quad that is occluded by some other quad.
+  // This forces the overlay candidate to appear as an underlay to the surface.
+  {
+    auto child_pass = CreateRenderPass(child_pass_id);
+    child_pass->is_from_surface_root_pass = true;
+    CreateSolidColorQuadAt(
+        CreateSharedQuadStateWithLayerNamespaceId(child_pass.get()),
+        SkColors::kRed, child_pass.get(), gfx::Rect(5, 5, 10, 10));
+    auto* texture_quad = CreateYUVTextureQuadAt(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(),
+        CreateSharedQuadStateWithLayerNamespaceId(child_pass.get()),
+        child_pass.get(), gfx::Rect(0, 0, 50, 50));
+    child_pass_texture_id = texture_quad->resource_id;
+    pass_list.push_back(std::move(child_pass));
+  }
+
+  {
+    auto pass = CreateRenderPass();
+    CreateRenderPassDrawQuadAt(
+        pass.get(), CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+        gfx::Rect(0, 0, 50, 50), child_pass_id);
+    CreateSolidColorQuadAt(
+        CreateSharedQuadStateWithLayerNamespaceId(pass.get()), SkColors::kBlue,
+        pass.get(), pass->output_rect);
+    pass_list.push_back(std::move(pass));
+  }
+
+  auto result = TryProcessForDelegatedOverlays(pass_list);
+  result.ExpectDelegationSuccess();
+
+  // We expect both the RPDQ and the inner video to be promoted and in front of
+  // the solid color background in the root pass.
+  EXPECT_THAT(
+      result.candidates(),
+      CandidatesAreSortedAndElementsAre({
+          test::IsSolidColorOverlay(SkColors::kBlue),
+          testing::AllOf(test::OverlayHasResource(child_pass_texture_id),
+                         OverlayHasLayerId()),
+          test::IsRenderPassOverlay(child_pass_id),
+      }));
+}
+
+TEST_F(OverlayProcessorWinPartiallyDelegatedCompositingTest,
+       CandidatesPromotedFromMultipleSurfaces) {
+  AggregatedRenderPassList pass_list;
+
+  const AggregatedRenderPassId child_pass_id{2};
+  ResourceId child_pass_video_id;
+  {
+    auto child_pass = CreateRenderPass(child_pass_id);
+    child_pass->is_from_surface_root_pass = true;
+    // NB: we use low latency overlay resources in this test so we are not
+    // limited by maximum number of YUV quads.
+    auto* texture_quad = CreateLowLatencyTextureQuadAt(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(),
+        CreateSharedQuadStateWithLayerNamespaceId(child_pass.get()),
+        child_pass.get(), gfx::Rect(0, 0, 50, 50));
+    child_pass_video_id = texture_quad->resource_id;
+    pass_list.push_back(std::move(child_pass));
+  }
+
+  const AggregatedRenderPassId other_child_pass_id{3};
+  ResourceId other_child_pass_video_id;
+  ResourceId other_child_pass_video_2_id;
+  {
+    auto other_child_pass = CreateRenderPass(other_child_pass_id);
+    other_child_pass->is_from_surface_root_pass = true;
+    // Make this first quad partially occlude the next.
+    auto* texture_quad = CreateLowLatencyTextureQuadAt(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(),
+        CreateSharedQuadStateWithLayerNamespaceId(other_child_pass.get()),
+        other_child_pass.get(), gfx::Rect(10, 0, 50, 50));
+    other_child_pass_video_id = texture_quad->resource_id;
+    auto* texture_quad_2 = CreateLowLatencyTextureQuadAt(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(),
+        CreateSharedQuadStateWithLayerNamespaceId(other_child_pass.get()),
+        other_child_pass.get(), gfx::Rect(0, 0, 50, 50));
+    other_child_pass_video_2_id = texture_quad_2->resource_id;
+    pass_list.push_back(std::move(other_child_pass));
+  }
+
+  {
+    auto pass = CreateRenderPass();
+    CreateRenderPassDrawQuadAt(
+        pass.get(), CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+        gfx::Rect(0, 0, 50, 50), child_pass_id);
+    CreateSolidColorQuadAt(
+        CreateSharedQuadStateWithLayerNamespaceId(pass.get()), SkColors::kBlue,
+        pass.get(), pass->output_rect);
+    CreateRenderPassDrawQuadAt(
+        pass.get(), CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+        gfx::Rect(50, 0, 50, 50), other_child_pass_id);
+    pass_list.push_back(std::move(pass));
+  }
+
+  auto result = TryProcessForDelegatedOverlays(pass_list);
+  result.ExpectDelegationSuccess();
+
+  // We expect both the RPDQ and the inner video(s) to be promoted for both
+  // RPDQs.
+  EXPECT_THAT(
+      result.candidates(),
+      CandidatesAreSortedAndElementsAre({
+          testing::AllOf(test::OverlayHasResource(other_child_pass_video_2_id),
+                         OverlayHasLayerId()),
+          test::IsRenderPassOverlay(other_child_pass_id),
+          testing::AllOf(test::OverlayHasResource(other_child_pass_video_id),
+                         OverlayHasLayerId()),
+          test::IsSolidColorOverlay(SkColors::kBlue),
+          test::IsRenderPassOverlay(child_pass_id),
+          testing::AllOf(test::OverlayHasResource(child_pass_video_id),
+                         OverlayHasLayerId()),
+      }));
+}
+
+TEST_F(OverlayProcessorWinPartiallyDelegatedCompositingTest,
+       CandidatePromotionRespectsAllowedYuvOverlayCount) {
+  AggregatedRenderPassList pass_list;
+
+  const AggregatedRenderPassId child_pass_id{2};
+  {
+    auto child_pass = CreateRenderPass(child_pass_id);
+    child_pass->is_from_surface_root_pass = true;
+    CreateYUVTextureQuadAt(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(),
+        CreateSharedQuadStateWithLayerNamespaceId(child_pass.get()),
+        child_pass.get(), gfx::Rect(0, 0, 50, 50));
+    pass_list.push_back(std::move(child_pass));
+  }
+
+  const AggregatedRenderPassId other_child_pass_id{3};
+  {
+    auto other_child_pass = CreateRenderPass(other_child_pass_id);
+    other_child_pass->is_from_surface_root_pass = true;
+    CreateYUVTextureQuadAt(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(),
+        CreateSharedQuadStateWithLayerNamespaceId(other_child_pass.get()),
+        other_child_pass.get(), gfx::Rect(0, 0, 50, 50));
+    pass_list.push_back(std::move(other_child_pass));
+  }
+
+  {
+    auto pass = CreateRenderPass();
+    CreateRenderPassDrawQuadAt(
+        pass.get(), CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+        gfx::Rect(0, 0, 50, 50), child_pass_id);
+    CreateRenderPassDrawQuadAt(
+        pass.get(), CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+        gfx::Rect(50, 0, 50, 50), other_child_pass_id);
+    pass_list.push_back(std::move(pass));
+  }
+
+  auto result = TryProcessForDelegatedOverlays(pass_list);
+  result.ExpectDelegationSuccess();
+
+  // We expect both the RPDQs to be promoted, but neither of the videos.
+  EXPECT_THAT(result.candidates(),
+              CandidatesAreSortedAndElementsAre({
+                  test::IsRenderPassOverlay(other_child_pass_id),
+                  test::IsRenderPassOverlay(child_pass_id),
+              }));
+}
+
+TEST_F(OverlayProcessorWinPartiallyDelegatedCompositingTest,
+       CandidatesInheritSurfaceEmbeddersBounds) {
+  AggregatedRenderPassList pass_list;
+
+  const AggregatedRenderPassId child_pass_id{2};
+  ResourceId child_pass_texture_id;
+
+  {
+    auto child_pass = CreateRenderPass(child_pass_id);
+    child_pass->is_from_surface_root_pass = true;
+    auto* texture_quad = CreateYUVTextureQuadAt(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(),
+        CreateSharedQuadStateWithLayerNamespaceId(child_pass.get()),
+        child_pass.get(), gfx::Rect(0, 0, 50, 50));
+    child_pass_texture_id = texture_quad->resource_id;
+    pass_list.push_back(std::move(child_pass));
+  }
+
+  const gfx::Rect rpdq_bounds = gfx::Rect(0, 0, 20, 30);
+  gfx::Rect expected_overlay_clip;
+
+  {
+    auto pass = CreateRenderPass();
+    SharedQuadState* sqs =
+        CreateSharedQuadStateWithLayerNamespaceId(pass.get());
+    sqs->quad_to_target_transform.Translate(1, 2);
+    CreateRenderPassDrawQuadAt(pass.get(), sqs, rpdq_bounds, child_pass_id);
+
+    expected_overlay_clip = sqs->quad_to_target_transform.MapRect(rpdq_bounds);
+
+    pass_list.push_back(std::move(pass));
+  }
+
+  auto result = TryProcessForDelegatedOverlays(pass_list);
+  result.ExpectDelegationSuccess();
+
+  EXPECT_THAT(
+      result.candidates(),
+      CandidatesAreSortedAndElementsAre({
+          test::IsRenderPassOverlay(child_pass_id),
+          testing::AllOf(test::OverlayHasResource(child_pass_texture_id),
+                         OverlayHasLayerId(),
+                         test::OverlayHasClip(expected_overlay_clip)),
+      }));
+}
+
+TEST_F(OverlayProcessorWinPartiallyDelegatedCompositingTest,
+       CandidatesInheritSurfaceEmbeddersClip) {
+  AggregatedRenderPassList pass_list;
+
+  const AggregatedRenderPassId child_pass_id{2};
+  ResourceId child_pass_texture_id;
+
+  const gfx::Transform child_to_root = gfx::Transform::MakeTranslation(1, 2);
+
+  {
+    auto child_pass = CreateRenderPass(child_pass_id);
+    child_pass->is_from_surface_root_pass = true;
+    child_pass->transform_to_root_target = child_to_root;
+    auto* texture_quad = CreateYUVTextureQuadAt(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(),
+        CreateSharedQuadStateWithLayerNamespaceId(child_pass.get()),
+        child_pass.get(), gfx::Rect(0, 0, 50, 50));
+    child_pass_texture_id = texture_quad->resource_id;
+    pass_list.push_back(std::move(child_pass));
+  }
+
+  const gfx::Rect rpdq_clip_rect = gfx::Rect(10, 20, 5, 15);
+  const gfx::Rect rpdq_bounds = gfx::Rect(0, 0, 20, 30);
+  gfx::Rect expected_overlay_clip;
+
+  {
+    auto pass = CreateRenderPass();
+    SharedQuadState* sqs =
+        CreateSharedQuadStateWithLayerNamespaceId(pass.get());
+    sqs->quad_to_target_transform = child_to_root;
+    sqs->clip_rect = rpdq_clip_rect;
+    CreateRenderPassDrawQuadAt(pass.get(), sqs, rpdq_bounds, child_pass_id);
+
+    expected_overlay_clip = sqs->quad_to_target_transform.MapRect(rpdq_bounds);
+    expected_overlay_clip.Intersect(rpdq_clip_rect);
+
+    pass_list.push_back(std::move(pass));
+  }
+  auto result = TryProcessForDelegatedOverlays(pass_list);
+  result.ExpectDelegationSuccess();
+
+  EXPECT_THAT(
+      result.candidates(),
+      CandidatesAreSortedAndElementsAre({
+          testing::AllOf(test::IsRenderPassOverlay(child_pass_id),
+                         test::OverlayHasClip(rpdq_clip_rect)),
+          testing::AllOf(test::OverlayHasResource(child_pass_texture_id),
+                         OverlayHasLayerId(),
+                         test::OverlayHasClip(expected_overlay_clip)),
+      }));
+}
+
+TEST_F(OverlayProcessorWinPartiallyDelegatedCompositingTest,
+       CandidatesInheritSurfaceEmbeddersClipAndIntersect) {
+  AggregatedRenderPassList pass_list;
+
+  const AggregatedRenderPassId child_pass_id{2};
+  ResourceId child_pass_texture_id;
+
+  const gfx::Rect inner_quad_clip = gfx::Rect(10, 15, 1, 2);
+  const gfx::Transform child_to_root = gfx::Transform::MakeTranslation(1, 2);
+
+  {
+    auto child_pass = CreateRenderPass(child_pass_id);
+    child_pass->is_from_surface_root_pass = true;
+    child_pass->transform_to_root_target = child_to_root;
+    SharedQuadState* sqs =
+        CreateSharedQuadStateWithLayerNamespaceId(child_pass.get());
+    sqs->clip_rect = inner_quad_clip;
+    auto* texture_quad = CreateYUVTextureQuadAt(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(), sqs, child_pass.get(), gfx::Rect(0, 0, 50, 50));
+    child_pass_texture_id = texture_quad->resource_id;
+    pass_list.push_back(std::move(child_pass));
+  }
+
+  const gfx::Rect rpdq_bounds = gfx::Rect(0, 0, 20, 30);
+  gfx::Rect expected_overlay_clip;
+
+  {
+    auto pass = CreateRenderPass();
+    SharedQuadState* sqs =
+        CreateSharedQuadStateWithLayerNamespaceId(pass.get());
+    sqs->quad_to_target_transform = child_to_root;
+    CreateRenderPassDrawQuadAt(pass.get(), sqs, rpdq_bounds, child_pass_id);
+
+    expected_overlay_clip =
+        sqs->quad_to_target_transform.MapRect(inner_quad_clip);
+    expected_overlay_clip.Intersect(rpdq_bounds);
+
+    pass_list.push_back(std::move(pass));
+  }
+  auto result = TryProcessForDelegatedOverlays(pass_list);
+  result.ExpectDelegationSuccess();
+
+  EXPECT_THAT(
+      result.candidates(),
+      CandidatesAreSortedAndElementsAre({
+          test::IsRenderPassOverlay(child_pass_id),
+          testing::AllOf(test::OverlayHasResource(child_pass_texture_id),
+                         OverlayHasLayerId(),
+                         test::OverlayHasClip(expected_overlay_clip)),
+      }));
+}
+
+TEST_F(OverlayProcessorWinPartiallyDelegatedCompositingTest,
+       CandidatesInheritSurfaceEmbeddersClipAndRoundedCorners) {
+  AggregatedRenderPassList pass_list;
+
+  const AggregatedRenderPassId child_pass_id{2};
+  ResourceId child_pass_texture_id;
+
+  {
+    auto child_pass = CreateRenderPass(child_pass_id);
+    child_pass->is_from_surface_root_pass = true;
+    SharedQuadState* sqs =
+        CreateSharedQuadStateWithLayerNamespaceId(child_pass.get());
+    // We expect this rounded corner to be painted into the |child_pass|
+    // surface.
+    sqs->mask_filter_info =
+        gfx::MaskFilterInfo(gfx::RRectF(gfx::RectF(10, 10), 1));
+    auto* texture_quad = CreateYUVTextureQuadAt(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(), sqs, child_pass.get(), gfx::Rect(0, 0, 50, 50));
+    child_pass_texture_id = texture_quad->resource_id;
+    pass_list.push_back(std::move(child_pass));
+  }
+
+  const gfx::RRectF rpdq_rounded_corners = gfx::RRectF(gfx::RectF(10, 10), 1);
+
+  {
+    auto pass = CreateRenderPass();
+    SharedQuadState* sqs =
+        CreateSharedQuadStateWithLayerNamespaceId(pass.get());
+    sqs->mask_filter_info = gfx::MaskFilterInfo(rpdq_rounded_corners);
+    CreateRenderPassDrawQuadAt(pass.get(), sqs, gfx::Rect(0, 0, 50, 50),
+                               child_pass_id);
+
+    pass_list.push_back(std::move(pass));
+  }
+  auto result = TryProcessForDelegatedOverlays(pass_list);
+  result.ExpectDelegationSuccess();
+
+  // Our texture quad is behind the surface, due to having its own rounded
+  // corners.
+  EXPECT_THAT(
+      result.candidates(),
+      CandidatesAreSortedAndElementsAre({
+          testing::AllOf(test::OverlayHasResource(child_pass_texture_id),
+                         OverlayHasLayerId(),
+                         test::OverlayHasClip(gfx::Rect(0, 0, 50, 50)),
+                         test::OverlayHasRoundedCorners(rpdq_rounded_corners)),
+          testing::AllOf(test::IsRenderPassOverlay(child_pass_id),
+                         test::OverlayHasRoundedCorners(rpdq_rounded_corners)),
+      }));
+}
+
 // Check that the various ways we can set |will_backing_be_read_by_viz| work as
 // expected.
-TEST_F(OverlayProcessorWinDelegatedCompositingTest, BackingWillBeReadInViz) {
+TEST_F(OverlayProcessorWinPartiallyDelegatedCompositingTest,
+       BackingWillBeReadInViz) {
   AggregatedRenderPassList pass_list;
 
   AggregatedRenderPassId::Generator id_generator;
@@ -3019,7 +4202,7 @@ TEST_F(OverlayProcessorWinDelegatedCompositingTest, BackingWillBeReadInViz) {
   CreateNamedPass("non-overlay embedder", false,
                   base::BindLambdaForTesting([&](AggregatedRenderPass* pass) {
                     CreateRenderPassDrawQuadAt(
-                        pass, pass->CreateAndAppendSharedQuadState(),
+                        pass, CreateSharedQuadStateWithLayerNamespaceId(pass),
                         pass->output_rect, non_overlay_embeddee_id);
                   }));
 
@@ -3027,7 +4210,7 @@ TEST_F(OverlayProcessorWinDelegatedCompositingTest, BackingWillBeReadInViz) {
       "normal pass with gradient mask embedder", true, base::DoNothing());
   CreateNamedPass("gradient mask embedder", false,
                   base::BindLambdaForTesting([&](AggregatedRenderPass* pass) {
-                    auto* sqs = pass->CreateAndAppendSharedQuadState();
+                    auto* sqs = CreateSharedQuadStateWithLayerNamespaceId(pass);
                     CreateRenderPassDrawQuadAt(pass, sqs, pass->output_rect,
                                                complex_mask_embeddee_id);
 
@@ -3045,7 +4228,7 @@ TEST_F(OverlayProcessorWinDelegatedCompositingTest, BackingWillBeReadInViz) {
                   base::BindLambdaForTesting([&](AggregatedRenderPass* pass) {
                     for (auto id : passes_to_embed_in_root) {
                       CreateRenderPassDrawQuadAt(
-                          pass, pass->CreateAndAppendSharedQuadState(),
+                          pass, CreateSharedQuadStateWithLayerNamespaceId(pass),
                           pass->output_rect, id);
                     }
                   }));
@@ -3065,454 +4248,6 @@ TEST_F(OverlayProcessorWinDelegatedCompositingTest, BackingWillBeReadInViz) {
       EXPECT_TRUE(pass_list[i]->will_backing_be_read_by_viz);
     }
   }
-}
-
-// Tests that check that overlay promotion is supported from non-root render
-// passes in the partially delegated case.
-class OverlayProcessorWinPartiallyDelegatedCompositingTest
-    : public OverlayProcessorWinDelegatedCompositingTest {
- protected:
-  OverlayProcessorWinPartiallyDelegatedCompositingTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        features::kDelegatedCompositing, {{"mode", "limit_to_ui"}});
-  }
-
-  TextureDrawQuad* CreateOverlayQuadWithSurfaceDamageAt(
-      AggregatedRenderPass* pass,
-      SurfaceDamageRectList& surface_damage_rect_list,
-      const gfx::Rect& rect) {
-    SharedQuadState* sqs = pass->CreateAndAppendSharedQuadState();
-    auto* quad = CreateTextureQuadAt(resource_provider_.get(),
-                                     child_resource_provider_.get(),
-                                     child_provider_.get(), sqs, pass, rect,
-                                     /*is_overlay_candidate=*/true);
-
-    pass->damage_rect.Union(
-        sqs->quad_to_target_transform.MapRect(quad->visible_rect));
-
-    gfx::Transform quad_to_root_transform(sqs->quad_to_target_transform);
-    quad_to_root_transform.PostConcat(pass->transform_to_root_target);
-
-    sqs->overlay_damage_index = surface_damage_rect_list.size();
-    surface_damage_rect_list.push_back(
-        quad_to_root_transform.MapRect(quad->visible_rect));
-
-    return quad;
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Check that an overlay candidate can be promoted from a non-root pass
-// representing a surface.
-TEST_F(OverlayProcessorWinPartiallyDelegatedCompositingTest,
-       CandidatePromotedFromNonRootSurface) {
-  AggregatedRenderPassList pass_list;
-
-  const AggregatedRenderPassId child_pass_id{2};
-  ResourceId child_pass_texture_id;
-
-  // Create a pass with just an overlay quad.
-  {
-    auto child_pass = CreateRenderPass(child_pass_id);
-    child_pass->is_from_surface_root_pass = true;
-    auto* texture_quad = CreateTextureQuadAt(
-        resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), child_pass->CreateAndAppendSharedQuadState(),
-        child_pass.get(), gfx::Rect(0, 0, 50, 50),
-        /*is_overlay_candidate=*/true);
-    child_pass_texture_id = texture_quad->resource_id();
-    pass_list.push_back(std::move(child_pass));
-  }
-
-  {
-    auto pass = CreateRenderPass();
-    CreateRenderPassDrawQuadAt(pass.get(),
-                               pass->CreateAndAppendSharedQuadState(),
-                               gfx::Rect(0, 0, 50, 50), child_pass_id);
-    pass_list.push_back(std::move(pass));
-  }
-
-  auto result = TryProcessForDelegatedOverlays(pass_list);
-  result.ExpectDelegationSuccess();
-
-  // We expect both the RPDQ and the inner video to be promoted.
-  EXPECT_THAT(result.candidates(),
-              WhenCandidatesAreSortedElementsAre({
-                  test::IsRenderPassOverlay(child_pass_id),
-                  test::OverlayHasResource(child_pass_texture_id),
-              }));
-}
-
-// Check that an overlay candidate can be promoted from a non-root pass
-// representing a surface, but will be placed behind the output surface plane if
-// it is occluded by something in the surface.
-TEST_F(OverlayProcessorWinPartiallyDelegatedCompositingTest,
-       CandidatePromotedFromNonRootSurfaceAsUnderlay) {
-  AggregatedRenderPassList pass_list;
-
-  const AggregatedRenderPassId child_pass_id{2};
-  ResourceId child_pass_texture_id;
-
-  // Create a pass with an overlay quad that is occluded by some other quad.
-  // This forces the overlay candidate to appear as an underlay to the surface.
-  {
-    auto child_pass = CreateRenderPass(child_pass_id);
-    child_pass->is_from_surface_root_pass = true;
-    CreateSolidColorQuadAt(child_pass->CreateAndAppendSharedQuadState(),
-                           SkColors::kRed, child_pass.get(),
-                           gfx::Rect(5, 5, 10, 10));
-    auto* texture_quad = CreateTextureQuadAt(
-        resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), child_pass->CreateAndAppendSharedQuadState(),
-        child_pass.get(), gfx::Rect(0, 0, 50, 50),
-        /*is_overlay_candidate=*/true);
-    child_pass_texture_id = texture_quad->resource_id();
-    pass_list.push_back(std::move(child_pass));
-  }
-
-  {
-    auto pass = CreateRenderPass();
-    CreateRenderPassDrawQuadAt(pass.get(),
-                               pass->CreateAndAppendSharedQuadState(),
-                               gfx::Rect(0, 0, 50, 50), child_pass_id);
-    CreateSolidColorQuadAt(pass->CreateAndAppendSharedQuadState(),
-                           SkColors::kBlue, pass.get(), pass->output_rect);
-    pass_list.push_back(std::move(pass));
-  }
-
-  auto result = TryProcessForDelegatedOverlays(pass_list);
-  result.ExpectDelegationSuccess();
-
-  // We expect both the RPDQ and the inner video to be promoted and in front of
-  // the solid color background in the root pass.
-  EXPECT_THAT(result.candidates(),
-              WhenCandidatesAreSortedElementsAre({
-                  test::IsSolidColorOverlay(SkColors::kBlue),
-                  test::OverlayHasResource(child_pass_texture_id),
-                  test::IsRenderPassOverlay(child_pass_id),
-              }));
-}
-
-TEST_F(OverlayProcessorWinPartiallyDelegatedCompositingTest,
-       CandidatesPromotedFromMultipleSurfaces) {
-  AggregatedRenderPassList pass_list;
-
-  const AggregatedRenderPassId child_pass_id{2};
-  ResourceId child_pass_video_id;
-  {
-    auto child_pass = CreateRenderPass(child_pass_id);
-    child_pass->is_from_surface_root_pass = true;
-    auto* texture_quad = CreateTextureQuadAt(
-        resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), child_pass->CreateAndAppendSharedQuadState(),
-        child_pass.get(), gfx::Rect(0, 0, 50, 50),
-        /*is_overlay_candidate=*/true);
-    child_pass_video_id = texture_quad->resource_id();
-    pass_list.push_back(std::move(child_pass));
-  }
-
-  const AggregatedRenderPassId other_child_pass_id{3};
-  ResourceId other_child_pass_video_id;
-  ResourceId other_child_pass_video_2_id;
-  {
-    auto other_child_pass = CreateRenderPass(other_child_pass_id);
-    other_child_pass->is_from_surface_root_pass = true;
-    // Make this first quad partially occlude the next.
-    auto* texture_quad = CreateTextureQuadAt(
-        resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(),
-        other_child_pass->CreateAndAppendSharedQuadState(),
-        other_child_pass.get(), gfx::Rect(10, 0, 50, 50),
-        /*is_overlay_candidate=*/true);
-    other_child_pass_video_id = texture_quad->resource_id();
-    auto* texture_quad_2 = CreateTextureQuadAt(
-        resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(),
-        other_child_pass->CreateAndAppendSharedQuadState(),
-        other_child_pass.get(), gfx::Rect(0, 0, 50, 50),
-        /*is_overlay_candidate=*/true);
-    other_child_pass_video_2_id = texture_quad_2->resource_id();
-    pass_list.push_back(std::move(other_child_pass));
-  }
-
-  {
-    auto pass = CreateRenderPass();
-    CreateRenderPassDrawQuadAt(pass.get(),
-                               pass->CreateAndAppendSharedQuadState(),
-                               gfx::Rect(0, 0, 50, 50), child_pass_id);
-    CreateSolidColorQuadAt(pass->CreateAndAppendSharedQuadState(),
-                           SkColors::kBlue, pass.get(), pass->output_rect);
-    CreateRenderPassDrawQuadAt(pass.get(),
-                               pass->CreateAndAppendSharedQuadState(),
-                               gfx::Rect(50, 0, 50, 50), other_child_pass_id);
-    pass_list.push_back(std::move(pass));
-  }
-
-  auto result = TryProcessForDelegatedOverlays(pass_list);
-  result.ExpectDelegationSuccess();
-
-  // We expect both the RPDQ and the inner video(s) to be promoted for both
-  // RPDQs.
-  EXPECT_THAT(result.candidates(),
-              WhenCandidatesAreSortedElementsAre({
-                  test::OverlayHasResource(other_child_pass_video_2_id),
-                  test::IsRenderPassOverlay(other_child_pass_id),
-                  test::OverlayHasResource(other_child_pass_video_id),
-                  test::IsSolidColorOverlay(SkColors::kBlue),
-                  test::IsRenderPassOverlay(child_pass_id),
-                  test::OverlayHasResource(child_pass_video_id),
-              }));
-}
-
-TEST_F(OverlayProcessorWinPartiallyDelegatedCompositingTest,
-       CandidatePromotionRespectsAllowedYuvOverlayCount) {
-  AggregatedRenderPassList pass_list;
-
-  const AggregatedRenderPassId child_pass_id{2};
-  {
-    auto child_pass = CreateRenderPass(child_pass_id);
-    child_pass->is_from_surface_root_pass = true;
-    auto* texture_quad = CreateTextureQuadAt(
-        resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), child_pass->CreateAndAppendSharedQuadState(),
-        child_pass.get(), gfx::Rect(0, 0, 50, 50),
-        /*is_overlay_candidate=*/true);
-    texture_quad->is_video_frame = true;
-    pass_list.push_back(std::move(child_pass));
-  }
-
-  const AggregatedRenderPassId other_child_pass_id{3};
-  {
-    auto other_child_pass = CreateRenderPass(other_child_pass_id);
-    other_child_pass->is_from_surface_root_pass = true;
-    auto* texture_quad = CreateTextureQuadAt(
-        resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(),
-        other_child_pass->CreateAndAppendSharedQuadState(),
-        other_child_pass.get(), gfx::Rect(0, 0, 50, 50));
-    texture_quad->is_video_frame = true;
-    pass_list.push_back(std::move(other_child_pass));
-  }
-
-  {
-    auto pass = CreateRenderPass();
-    CreateRenderPassDrawQuadAt(pass.get(),
-                               pass->CreateAndAppendSharedQuadState(),
-                               gfx::Rect(0, 0, 50, 50), child_pass_id);
-    CreateRenderPassDrawQuadAt(pass.get(),
-                               pass->CreateAndAppendSharedQuadState(),
-                               gfx::Rect(50, 0, 50, 50), other_child_pass_id);
-    pass_list.push_back(std::move(pass));
-  }
-
-  auto result = TryProcessForDelegatedOverlays(pass_list);
-  result.ExpectDelegationSuccess();
-
-  // We expect both the RPDQs to be promoted, but neither of the videos.
-  EXPECT_THAT(result.candidates(),
-              WhenCandidatesAreSortedElementsAre({
-                  test::IsRenderPassOverlay(other_child_pass_id),
-                  test::IsRenderPassOverlay(child_pass_id),
-              }));
-}
-
-TEST_F(OverlayProcessorWinPartiallyDelegatedCompositingTest,
-       CandidatesInheritSurfaceEmbeddersBounds) {
-  AggregatedRenderPassList pass_list;
-
-  const AggregatedRenderPassId child_pass_id{2};
-  ResourceId child_pass_texture_id;
-
-  {
-    auto child_pass = CreateRenderPass(child_pass_id);
-    child_pass->is_from_surface_root_pass = true;
-    auto* texture_quad = CreateTextureQuadAt(
-        resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), child_pass->CreateAndAppendSharedQuadState(),
-        child_pass.get(), gfx::Rect(0, 0, 50, 50),
-        /*is_overlay_candidate=*/true);
-    child_pass_texture_id = texture_quad->resource_id();
-    pass_list.push_back(std::move(child_pass));
-  }
-
-  const gfx::Rect rpdq_bounds = gfx::Rect(0, 0, 20, 30);
-  gfx::Rect expected_overlay_clip;
-
-  {
-    auto pass = CreateRenderPass();
-    SharedQuadState* sqs = pass->CreateAndAppendSharedQuadState();
-    sqs->quad_to_target_transform.Translate(1, 2);
-    CreateRenderPassDrawQuadAt(pass.get(), sqs, rpdq_bounds, child_pass_id);
-
-    expected_overlay_clip = sqs->quad_to_target_transform.MapRect(rpdq_bounds);
-
-    pass_list.push_back(std::move(pass));
-  }
-
-  auto result = TryProcessForDelegatedOverlays(pass_list);
-  result.ExpectDelegationSuccess();
-
-  EXPECT_THAT(
-      result.candidates(),
-      WhenCandidatesAreSortedElementsAre({
-          test::IsRenderPassOverlay(child_pass_id),
-          testing::AllOf(test::OverlayHasResource(child_pass_texture_id),
-                         test::OverlayHasClip(expected_overlay_clip)),
-      }));
-}
-
-TEST_F(OverlayProcessorWinPartiallyDelegatedCompositingTest,
-       CandidatesInheritSurfaceEmbeddersClip) {
-  AggregatedRenderPassList pass_list;
-
-  const AggregatedRenderPassId child_pass_id{2};
-  ResourceId child_pass_texture_id;
-
-  const gfx::Transform child_to_root = gfx::Transform::MakeTranslation(1, 2);
-
-  {
-    auto child_pass = CreateRenderPass(child_pass_id);
-    child_pass->is_from_surface_root_pass = true;
-    child_pass->transform_to_root_target = child_to_root;
-    auto* texture_quad = CreateTextureQuadAt(
-        resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), child_pass->CreateAndAppendSharedQuadState(),
-        child_pass.get(), gfx::Rect(0, 0, 50, 50),
-        /*is_overlay_candidate=*/true);
-    child_pass_texture_id = texture_quad->resource_id();
-    pass_list.push_back(std::move(child_pass));
-  }
-
-  const gfx::Rect rpdq_clip_rect = gfx::Rect(10, 20, 5, 15);
-  const gfx::Rect rpdq_bounds = gfx::Rect(0, 0, 20, 30);
-  gfx::Rect expected_overlay_clip;
-
-  {
-    auto pass = CreateRenderPass();
-    SharedQuadState* sqs = pass->CreateAndAppendSharedQuadState();
-    sqs->quad_to_target_transform = child_to_root;
-    sqs->clip_rect = rpdq_clip_rect;
-    CreateRenderPassDrawQuadAt(pass.get(), sqs, rpdq_bounds, child_pass_id);
-
-    expected_overlay_clip = sqs->quad_to_target_transform.MapRect(rpdq_bounds);
-    expected_overlay_clip.Intersect(rpdq_clip_rect);
-
-    pass_list.push_back(std::move(pass));
-  }
-  auto result = TryProcessForDelegatedOverlays(pass_list);
-  result.ExpectDelegationSuccess();
-
-  EXPECT_THAT(
-      result.candidates(),
-      WhenCandidatesAreSortedElementsAre({
-          testing::AllOf(test::IsRenderPassOverlay(child_pass_id),
-                         test::OverlayHasClip(rpdq_clip_rect)),
-          testing::AllOf(test::OverlayHasResource(child_pass_texture_id),
-                         test::OverlayHasClip(expected_overlay_clip)),
-      }));
-}
-
-TEST_F(OverlayProcessorWinPartiallyDelegatedCompositingTest,
-       CandidatesInheritSurfaceEmbeddersClipAndIntersect) {
-  AggregatedRenderPassList pass_list;
-
-  const AggregatedRenderPassId child_pass_id{2};
-  ResourceId child_pass_texture_id;
-
-  const gfx::Rect inner_quad_clip = gfx::Rect(10, 15, 1, 2);
-  const gfx::Transform child_to_root = gfx::Transform::MakeTranslation(1, 2);
-
-  {
-    auto child_pass = CreateRenderPass(child_pass_id);
-    child_pass->is_from_surface_root_pass = true;
-    child_pass->transform_to_root_target = child_to_root;
-    SharedQuadState* sqs = child_pass->CreateAndAppendSharedQuadState();
-    sqs->clip_rect = inner_quad_clip;
-    auto* texture_quad = CreateTextureQuadAt(
-        resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), sqs, child_pass.get(), gfx::Rect(0, 0, 50, 50),
-        /*is_overlay_candidate=*/true);
-    child_pass_texture_id = texture_quad->resource_id();
-    pass_list.push_back(std::move(child_pass));
-  }
-
-  const gfx::Rect rpdq_bounds = gfx::Rect(0, 0, 20, 30);
-  gfx::Rect expected_overlay_clip;
-
-  {
-    auto pass = CreateRenderPass();
-    SharedQuadState* sqs = pass->CreateAndAppendSharedQuadState();
-    sqs->quad_to_target_transform = child_to_root;
-    CreateRenderPassDrawQuadAt(pass.get(), sqs, rpdq_bounds, child_pass_id);
-
-    expected_overlay_clip =
-        sqs->quad_to_target_transform.MapRect(inner_quad_clip);
-    expected_overlay_clip.Intersect(rpdq_bounds);
-
-    pass_list.push_back(std::move(pass));
-  }
-  auto result = TryProcessForDelegatedOverlays(pass_list);
-  result.ExpectDelegationSuccess();
-
-  EXPECT_THAT(
-      result.candidates(),
-      WhenCandidatesAreSortedElementsAre({
-          test::IsRenderPassOverlay(child_pass_id),
-          testing::AllOf(test::OverlayHasResource(child_pass_texture_id),
-                         test::OverlayHasClip(expected_overlay_clip)),
-      }));
-}
-
-TEST_F(OverlayProcessorWinPartiallyDelegatedCompositingTest,
-       CandidatesInheritSurfaceEmbeddersClipAndRoundedCorners) {
-  AggregatedRenderPassList pass_list;
-
-  const AggregatedRenderPassId child_pass_id{2};
-  ResourceId child_pass_texture_id;
-
-  {
-    auto child_pass = CreateRenderPass(child_pass_id);
-    child_pass->is_from_surface_root_pass = true;
-    SharedQuadState* sqs = child_pass->CreateAndAppendSharedQuadState();
-    // We expect this rounded corner to be painted into the |child_pass|
-    // surface.
-    sqs->mask_filter_info =
-        gfx::MaskFilterInfo(gfx::RRectF(gfx::RectF(10, 10), 1));
-    auto* texture_quad = CreateTextureQuadAt(
-        resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), sqs, child_pass.get(), gfx::Rect(0, 0, 50, 50),
-        /*is_overlay_candidate=*/true);
-    child_pass_texture_id = texture_quad->resource_id();
-    pass_list.push_back(std::move(child_pass));
-  }
-
-  const gfx::RRectF rpdq_rounded_corners = gfx::RRectF(gfx::RectF(10, 10), 1);
-
-  {
-    auto pass = CreateRenderPass();
-    SharedQuadState* sqs = pass->CreateAndAppendSharedQuadState();
-    sqs->mask_filter_info = gfx::MaskFilterInfo(rpdq_rounded_corners);
-    CreateRenderPassDrawQuadAt(pass.get(), sqs, gfx::Rect(0, 0, 50, 50),
-                               child_pass_id);
-
-    pass_list.push_back(std::move(pass));
-  }
-  auto result = TryProcessForDelegatedOverlays(pass_list);
-  result.ExpectDelegationSuccess();
-
-  // Our texture quad is behind the surface, due to having its own rounded
-  // corners.
-  EXPECT_THAT(
-      result.candidates(),
-      WhenCandidatesAreSortedElementsAre({
-          testing::AllOf(test::OverlayHasResource(child_pass_texture_id),
-                         test::OverlayHasClip(gfx::Rect(0, 0, 50, 50)),
-                         test::OverlayHasRoundedCorners(rpdq_rounded_corners)),
-          testing::AllOf(test::IsRenderPassOverlay(child_pass_id),
-                         test::OverlayHasRoundedCorners(rpdq_rounded_corners)),
-      }));
 }
 
 TEST_F(OverlayProcessorWinPartiallyDelegatedCompositingTest,
@@ -3539,19 +4274,19 @@ TEST_F(OverlayProcessorWinPartiallyDelegatedCompositingTest,
         is_overlay_candidate_with_damage
             ? CreateOverlayQuadWithSurfaceDamageAt(
                   child_pass.get(), surface_damage_rect_list, texture_quad_rect)
-            : CreateTextureQuadAt(resource_provider_.get(),
-                                  child_resource_provider_.get(),
-                                  child_provider_.get(),
-                                  child_pass->CreateAndAppendSharedQuadState(),
-                                  child_pass.get(), texture_quad_rect,
-                                  /*is_overlay_candidate=*/false);
-    ResourceId child_pass_texture_id = texture_quad->resource_id();
+            : CreateTextureQuadAt(
+                  resource_provider_.get(), child_resource_provider_.get(),
+                  child_provider_.get(),
+                  CreateSharedQuadStateWithLayerNamespaceId(child_pass.get()),
+                  child_pass.get(), texture_quad_rect,
+                  /*is_overlay_candidate=*/false);
+    ResourceId child_pass_texture_id = texture_quad->resource_id;
     pass_list.push_back(std::move(child_pass));
 
     auto pass = CreateRenderPass();
-    CreateRenderPassDrawQuadAt(pass.get(),
-                               pass->CreateAndAppendSharedQuadState(),
-                               rpdq_quad, child_pass_id);
+    CreateRenderPassDrawQuadAt(
+        pass.get(), CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+        rpdq_quad, child_pass_id);
     pass_list.push_back(std::move(pass));
 
     switch (frame) {
@@ -3575,28 +4310,32 @@ TEST_F(OverlayProcessorWinPartiallyDelegatedCompositingTest,
       case 0:
         EXPECT_EQ(pass_list[0]->damage_rect, pass_list[0]->output_rect)
             << "Full damage is forced on the first frame";
-        EXPECT_THAT(result.candidates(),
-                    WhenCandidatesAreSortedElementsAre({
-                        test::IsRenderPassOverlay(child_pass_id),
-                        test::OverlayHasResource(child_pass_texture_id),
-                    }));
+        EXPECT_THAT(
+            result.candidates(),
+            CandidatesAreSortedAndElementsAre({
+                test::IsRenderPassOverlay(child_pass_id),
+                testing::AllOf(test::OverlayHasResource(child_pass_texture_id),
+                               OverlayHasLayerId()),
+            }));
         break;
 
       case 1:
         EXPECT_EQ(pass_list[0]->damage_rect, gfx::Rect())
             << "Damage is removed when only from overlays";
-        EXPECT_THAT(result.candidates(),
-                    WhenCandidatesAreSortedElementsAre({
-                        test::IsRenderPassOverlay(child_pass_id),
-                        test::OverlayHasResource(child_pass_texture_id),
-                    }));
+        EXPECT_THAT(
+            result.candidates(),
+            CandidatesAreSortedAndElementsAre({
+                test::IsRenderPassOverlay(child_pass_id),
+                testing::AllOf(test::OverlayHasResource(child_pass_texture_id),
+                               OverlayHasLayerId()),
+            }));
         break;
 
       case 2:
         EXPECT_EQ(pass_list[0]->damage_rect, texture_quad_rect)
             << "Damage removed in frame 1 is re-added";
         EXPECT_THAT(result.candidates(),
-                    WhenCandidatesAreSortedElementsAre({
+                    CandidatesAreSortedAndElementsAre({
                         test::IsRenderPassOverlay(child_pass_id),
                     }));
         break;
@@ -3639,13 +4378,14 @@ TEST_F(OverlayProcessorWinPartiallyDelegatedCompositingTest,
             ? CreateOverlayQuadWithSurfaceDamageAt(left_child_pass.get(),
                                                    surface_damage_rect_list,
                                                    left_texture_quad_rect)
-            : CreateTextureQuadAt(
-                  resource_provider_.get(), child_resource_provider_.get(),
-                  child_provider_.get(),
-                  left_child_pass->CreateAndAppendSharedQuadState(),
-                  left_child_pass.get(), left_texture_quad_rect,
-                  /*is_overlay_candidate=*/false);
-    ResourceId left_child_pass_texture_id = left_texture_quad->resource_id();
+            : CreateTextureQuadAt(resource_provider_.get(),
+                                  child_resource_provider_.get(),
+                                  child_provider_.get(),
+                                  CreateSharedQuadStateWithLayerNamespaceId(
+                                      left_child_pass.get()),
+                                  left_child_pass.get(), left_texture_quad_rect,
+                                  /*is_overlay_candidate=*/false);
+    ResourceId left_child_pass_texture_id = left_texture_quad->resource_id;
     pass_list.push_back(std::move(left_child_pass));
 
     auto right_child_pass = CreateRenderPass(right_child_pass_id);
@@ -3662,18 +4402,19 @@ TEST_F(OverlayProcessorWinPartiallyDelegatedCompositingTest,
             : CreateTextureQuadAt(
                   resource_provider_.get(), child_resource_provider_.get(),
                   child_provider_.get(),
-                  right_child_pass->CreateAndAppendSharedQuadState(),
+                  CreateSharedQuadStateWithLayerNamespaceId(
+                      right_child_pass.get()),
                   right_child_pass.get(), right_texture_quad_rect,
                   /*is_overlay_candidate=*/false);
-    ResourceId right_child_pass_texture_id = right_texture_quad->resource_id();
+    ResourceId right_child_pass_texture_id = right_texture_quad->resource_id;
     pass_list.push_back(std::move(right_child_pass));
 
-    CreateRenderPassDrawQuadAt(pass.get(),
-                               pass->CreateAndAppendSharedQuadState(),
-                               left_rpdq_quad, left_child_pass_id);
-    CreateRenderPassDrawQuadAt(pass.get(),
-                               pass->CreateAndAppendSharedQuadState(),
-                               right_rpdq_quad, right_child_pass_id);
+    CreateRenderPassDrawQuadAt(
+        pass.get(), CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+        left_rpdq_quad, left_child_pass_id);
+    CreateRenderPassDrawQuadAt(
+        pass.get(), CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+        right_rpdq_quad, right_child_pass_id);
     pass_list.push_back(std::move(pass));
 
     switch (frame) {
@@ -3710,13 +4451,18 @@ TEST_F(OverlayProcessorWinPartiallyDelegatedCompositingTest,
             << "Full damage is forced on the first frame";
         EXPECT_EQ(pass_list[1]->damage_rect, pass_list[1]->output_rect)
             << "Full damage is forced on the first frame";
-        EXPECT_THAT(result.candidates(),
-                    WhenCandidatesAreSortedElementsAre({
-                        test::IsRenderPassOverlay(right_child_pass_id),
-                        test::OverlayHasResource(right_child_pass_texture_id),
-                        test::IsRenderPassOverlay(left_child_pass_id),
-                        test::OverlayHasResource(left_child_pass_texture_id),
-                    }));
+        EXPECT_THAT(
+            result.candidates(),
+            CandidatesAreSortedAndElementsAre({
+                test::IsRenderPassOverlay(right_child_pass_id),
+                testing::AllOf(
+                    test::OverlayHasResource(right_child_pass_texture_id),
+                    OverlayHasLayerId()),
+                test::IsRenderPassOverlay(left_child_pass_id),
+                testing::AllOf(
+                    test::OverlayHasResource(left_child_pass_texture_id),
+                    OverlayHasLayerId()),
+            }));
         break;
 
       case 1:
@@ -3724,13 +4470,18 @@ TEST_F(OverlayProcessorWinPartiallyDelegatedCompositingTest,
             << "Damage is removed when only from overlays";
         EXPECT_EQ(pass_list[1]->damage_rect, gfx::Rect())
             << "Damage is removed when only from overlays";
-        EXPECT_THAT(result.candidates(),
-                    WhenCandidatesAreSortedElementsAre({
-                        test::IsRenderPassOverlay(right_child_pass_id),
-                        test::OverlayHasResource(right_child_pass_texture_id),
-                        test::IsRenderPassOverlay(left_child_pass_id),
-                        test::OverlayHasResource(left_child_pass_texture_id),
-                    }));
+        EXPECT_THAT(
+            result.candidates(),
+            CandidatesAreSortedAndElementsAre({
+                test::IsRenderPassOverlay(right_child_pass_id),
+                testing::AllOf(
+                    test::OverlayHasResource(right_child_pass_texture_id),
+                    OverlayHasLayerId()),
+                test::IsRenderPassOverlay(left_child_pass_id),
+                testing::AllOf(
+                    test::OverlayHasResource(left_child_pass_texture_id),
+                    OverlayHasLayerId()),
+            }));
         break;
 
       case 2:
@@ -3739,10 +4490,12 @@ TEST_F(OverlayProcessorWinPartiallyDelegatedCompositingTest,
         EXPECT_EQ(pass_list[1]->damage_rect, right_texture_quad_rect)
             << "Damage removed in frame 1 is re-added";
         EXPECT_THAT(result.candidates(),
-                    WhenCandidatesAreSortedElementsAre({
+                    CandidatesAreSortedAndElementsAre({
                         test::IsRenderPassOverlay(right_child_pass_id),
                         test::IsRenderPassOverlay(left_child_pass_id),
-                        test::OverlayHasResource(left_child_pass_texture_id),
+                        testing::AllOf(test::OverlayHasResource(
+                                           left_child_pass_texture_id),
+                                       OverlayHasLayerId()),
                     }));
         break;
 
@@ -3751,7 +4504,7 @@ TEST_F(OverlayProcessorWinPartiallyDelegatedCompositingTest,
             << "Damage removed in frame 2 is re-added";
         EXPECT_EQ(pass_list[1]->damage_rect, gfx::Rect());
         EXPECT_THAT(result.candidates(),
-                    WhenCandidatesAreSortedElementsAre({
+                    CandidatesAreSortedAndElementsAre({
                         test::IsRenderPassOverlay(right_child_pass_id),
                         test::IsRenderPassOverlay(left_child_pass_id),
                     }));

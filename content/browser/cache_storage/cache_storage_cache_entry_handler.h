@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/types/pass_key.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/cache_storage/blob_storage_context_wrapper.h"
@@ -86,7 +87,7 @@ class CacheStorageCacheEntryHandler {
              int bytes_to_read,
              base::OnceCallback<void(int)> callback);
 
-    int GetSize(CacheStorageCache::EntryIndex disk_cache_index) const;
+    int64_t GetSize(CacheStorageCache::EntryIndex disk_cache_index) const;
 
     void Invalidate();
 

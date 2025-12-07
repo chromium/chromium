@@ -81,8 +81,9 @@ void FakeEnrollmentLauncher::EnrollUsingEnrollmentToken() {
   mock_->EnrollUsingEnrollmentToken();
 }
 
-void FakeEnrollmentLauncher::ClearAuth(base::OnceClosure callback) {
-  mock_->ClearAuth(std::move(callback));
+void FakeEnrollmentLauncher::ClearAuth(base::OnceClosure callback,
+                                       bool revoke_oauth2_tokens) {
+  mock_->ClearAuth(std::move(callback), revoke_oauth2_tokens);
 }
 
 void FakeEnrollmentLauncher::GetDeviceAttributeUpdatePermission() {
@@ -103,6 +104,10 @@ void FakeEnrollmentLauncher::Setup(
 
 bool FakeEnrollmentLauncher::InProgress() const {
   return mock_->InProgress();
+}
+
+std::string FakeEnrollmentLauncher::GetOAuth2RefreshToken() const {
+  return mock_->GetOAuth2RefreshToken();
 }
 
 }  // namespace ash

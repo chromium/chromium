@@ -42,13 +42,14 @@ class SyncMetadataStoreChangeList : public MetadataChangeList {
   void UpdateMetadata(const std::string& storage_key,
                       const sync_pb::EntityMetadata& metadata) override;
   void ClearMetadata(const std::string& storage_key) override;
+  void TransferChangesTo(MetadataChangeList* other) override;
 
   const SyncMetadataStore* GetMetadataStoreForTesting() const;
 
  private:
   void SetError(ModelError error);
 
-  // The metadata store to store metadata in; always outlives |this|.
+  // The metadata store to store metadata in; always outlives `this`.
   const raw_ptr<SyncMetadataStore> store_;
 
   // The sync data type for this metadata.

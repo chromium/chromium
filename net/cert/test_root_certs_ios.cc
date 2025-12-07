@@ -36,7 +36,9 @@ void TestRootCerts::ClearImpl() {
 }
 
 OSStatus TestRootCerts::FixupSecTrustRef(SecTrustRef trust_ref) const {
-  if (IsEmpty()) {
+  base::AutoLock lock(lock_);
+
+  if (CFArrayGetCount(temporary_roots_.get()) == 0) {
     return noErr;
   }
 

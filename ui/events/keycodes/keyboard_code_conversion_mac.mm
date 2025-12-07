@@ -48,11 +48,6 @@ inline bool IsDomKeyUnicodeCharacter(char32_t c) {
   return base::IsValidCodepoint(c) && !base::IsUnicodeControl(c);
 }
 
-// This value is not defined but shows up as 0x36.
-constexpr int kVK_RightCommand = 0x36;
-// Context menu is not defined but shows up as 0x6E.
-constexpr int kVK_ContextMenu = 0x6E;
-
 bool IsKeypadOrNumericKeyEvent(NSEvent* event) {
   // Check that this is the type of event that has a keyCode.
   switch (event.type) {
@@ -152,7 +147,7 @@ DomKey DomKeyFromKeyCode(unsigned short key_code) {
       {kVK_RightArrow, DomKey::ARROW_RIGHT},
       {kVK_DownArrow, DomKey::ARROW_DOWN},
       {kVK_UpArrow, DomKey::ARROW_UP},
-      {kVK_ContextMenu, DomKey::CONTEXT_MENU},
+      {kVK_ContextualMenu, DomKey::CONTEXT_MENU},
       {kVK_JIS_Eisu, DomKey::EISU},
       {kVK_JIS_Kana, DomKey::KANJI_MODE},
   });
@@ -269,14 +264,15 @@ char32_t ReadLastUnicodeCharacter(NSString* characters) {
   if (characters.length == 0) {
     return 0;
   }
-  char16_t trail = [characters characterAtIndex:characters.length - 1];
+  // Use uint16_t instead of char16_t to suppress a compiler warning.
+  uint16_t trail = [characters characterAtIndex:characters.length - 1];
   if (CBU16_IS_SINGLE(trail)) {
     return trail;
   }
   if (characters.length == 1 || !CBU16_IS_TRAIL(trail)) {
     return 0;
   }
-  char16_t lead = [characters characterAtIndex:characters.length - 2];
+  uint16_t lead = [characters characterAtIndex:characters.length - 2];
   if (!CBU16_IS_LEAD(lead)) {
     return 0;
   }
@@ -900,7 +896,7 @@ DomKey DomKeyFromNSEvent(NSEvent* event) {
       return DomKeyFromKeyCode(event.keyCode);
     }
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

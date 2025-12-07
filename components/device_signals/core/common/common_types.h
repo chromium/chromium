@@ -18,6 +18,17 @@ namespace device_signals {
 // indicate a reason for not being able to find it.
 enum class PresenceValue { kUnspecified, kAccessDenied, kNotFound, kFound };
 
+enum class SettingValue {
+  UNKNOWN,
+  DISABLED,
+  ENABLED,
+};
+
+enum class Agents {
+  kCrowdStrikeFalcon = 0,
+  kMaxValue = 0,
+};
+
 struct ExecutableMetadata {
   ExecutableMetadata();
 
@@ -95,6 +106,9 @@ struct GetFileSystemInfoOptions {
 struct CrowdStrikeSignals {
   std::string customer_id{};
   std::string agent_id{};
+
+  // Returns true if all properties are empty.
+  bool IsEmpty() const;
 
   // Returns a Value with the non-empty values. Returns std::nullopt if neither
   // values are set.

@@ -6,7 +6,7 @@
 
 #include "chrome/test/chromedriver/chrome/status.h"
 
-DevToolsEventListener::~DevToolsEventListener() {}
+DevToolsEventListener::~DevToolsEventListener() = default;
 
 bool DevToolsEventListener::ListensToConnections() const {
   return true;

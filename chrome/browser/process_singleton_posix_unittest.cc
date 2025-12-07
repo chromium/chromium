@@ -138,8 +138,8 @@ class ProcessSingletonPosixTest : public testing::Test {
     ASSERT_TRUE(helper->Run());
   }
 
-  TestableProcessSingleton* CreateProcessSingleton() {
-    return new TestableProcessSingleton(user_data_path_);
+  std::unique_ptr<TestableProcessSingleton> CreateProcessSingleton() {
+    return std::make_unique<TestableProcessSingleton>(user_data_path_);
   }
 
   void VerifyFiles() {
@@ -248,7 +248,7 @@ class ProcessSingletonPosixTest : public testing::Test {
 
   void DestructProcessSingleton() {
     ASSERT_TRUE(process_singleton_on_thread_);
-    delete process_singleton_on_thread_;
+    process_singleton_on_thread_.reset();
   }
 
   void KillCallback(int pid) {
@@ -261,8 +261,7 @@ class ProcessSingletonPosixTest : public testing::Test {
   base::WaitableEvent signal_event_;
 
   std::unique_ptr<base::Thread> worker_thread_;
-  raw_ptr<TestableProcessSingleton, DanglingUntriaged>
-      process_singleton_on_thread_;
+  std::unique_ptr<TestableProcessSingleton> process_singleton_on_thread_;
 };
 
 }  // namespace

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PROFILES_PROFILE_DOWNLOADER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/gtest_prod_util.h"
@@ -87,7 +88,7 @@ class ProfileDownloader : public ImageDecoder::ImageRequest,
 
   void FetchImageData();
 
-  void OnURLLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnURLLoaderComplete(std::optional<std::string> response_body);
 
   // Overridden from ImageDecoder::ImageRequest:
   void OnImageDecoded(const SkBitmap& decoded_image) override;

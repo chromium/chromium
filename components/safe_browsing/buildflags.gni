@@ -6,6 +6,7 @@ import("//build/config/cast.gni")
 if (is_android) {
   import("//build/config/android/config.gni")
 }
+import("//build/config/chrome_build.gni")
 
 declare_args() {
   # Variable safe_browsing is used to control the build time configuration for
@@ -22,4 +23,8 @@ declare_args() {
 
   # Allows building without //third_party/unrar included, for license reasons
   safe_browsing_use_unrar = true
+
+  # Variable used to control whether to use the internal notifications global cache for gating notification protections.
+  safe_browsing_use_internal_notifications_global_cache_origins =
+      is_internal_chrome_branded
 }

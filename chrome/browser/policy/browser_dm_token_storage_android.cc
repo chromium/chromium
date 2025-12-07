@@ -37,7 +37,7 @@ bool DeleteDmTokenFromSharedPreferences() {
 BrowserDMTokenStorageAndroid::BrowserDMTokenStorageAndroid()
     : task_runner_(base::ThreadPool::CreateTaskRunner({base::MayBlock()})) {}
 
-BrowserDMTokenStorageAndroid::~BrowserDMTokenStorageAndroid() {}
+BrowserDMTokenStorageAndroid::~BrowserDMTokenStorageAndroid() = default;
 
 std::string BrowserDMTokenStorageAndroid::InitClientId() {
   return android::GetClientId();

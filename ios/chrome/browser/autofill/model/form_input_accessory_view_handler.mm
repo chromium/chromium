@@ -8,10 +8,10 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/metrics/histogram_macros.h"
+#import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/suggestion_controller_java_script_feature.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
@@ -36,8 +36,9 @@ NSArray* SubviewsWithClass(UIView* root, Class aClass) {
 
   while ([viewsToExamine count]) {
     UIView* view = [viewsToExamine lastObject];
-    if ([view isKindOfClass:aClass])
+    if ([view isKindOfClass:aClass]) {
       [subviews addObject:view];
+    }
 
     [viewsToExamine removeLastObject];
     [viewsToExamine addObjectsFromArray:[view subviews]];
@@ -49,8 +50,9 @@ NSArray* SubviewsWithClass(UIView* root, Class aClass) {
 // Returns true if `item`'s action name contains `actionName`.
 BOOL ItemActionMatchesName(UIBarButtonItem* item, NSString* actionName) {
   SEL itemAction = [item action];
-  if (!itemAction)
+  if (!itemAction) {
     return false;
+  }
   NSString* itemActionName = NSStringFromSelector(itemAction);
 
   // This doesn't do a strict string match for the action name.
@@ -65,8 +67,9 @@ NSArray* FindToolbarItemsForActionName(UIToolbar* toolbar,
   NSMutableArray* toolbarItems = [NSMutableArray array];
 
   for (UIBarButtonItem* item in [toolbar items]) {
-    if (ItemActionMatchesName(item, actionName))
+    if (ItemActionMatchesName(item, actionName)) {
       [toolbarItems addObject:item];
+    }
   }
 
   return toolbarItems;
@@ -95,16 +98,19 @@ NSArray* FindDescendantToolbarItemsForActionName(
   NSMutableArray* toolbarItems = [NSMutableArray array];
 
   NSMutableArray* buttonGroupsGroup = [[NSMutableArray alloc] init];
-  if (inputAssistantItem.leadingBarButtonGroups)
+  if (inputAssistantItem.leadingBarButtonGroups) {
     [buttonGroupsGroup addObject:inputAssistantItem.leadingBarButtonGroups];
-  if (inputAssistantItem.trailingBarButtonGroups)
+  }
+  if (inputAssistantItem.trailingBarButtonGroups) {
     [buttonGroupsGroup addObject:inputAssistantItem.trailingBarButtonGroups];
+  }
   for (NSArray* buttonGroups in buttonGroupsGroup) {
     for (UIBarButtonItemGroup* group in buttonGroups) {
       NSArray* items = group.barButtonItems;
       for (UIBarButtonItem* item in items) {
-        if (ItemActionMatchesName(item, actionName))
+        if (ItemActionMatchesName(item, actionName)) {
           [toolbarItems addObject:item];
+        }
       }
     }
   }
@@ -149,21 +155,24 @@ NSArray* FindDescendantToolbarItemsForActionName(
     UIResponder* firstResponder = GetFirstResponder();
     UITextInputAssistantItem* inputAssistantItem =
         firstResponder.inputAssistantItem;
-    if (!inputAssistantItem)
+    if (!inputAssistantItem) {
       return NO;
+    }
     descendants =
         FindDescendantToolbarItemsForActionName(inputAssistantItem, actionName);
   } else {
     UIResponder* firstResponder = GetFirstResponder();
     UIView* inputAccessoryView = firstResponder.inputAccessoryView;
-    if (!inputAccessoryView)
+    if (!inputAccessoryView) {
       return NO;
+    }
     descendants =
         FindDescendantToolbarItemsForActionName(inputAccessoryView, actionName);
   }
 
-  if (![descendants count])
+  if (![descendants count]) {
     return NO;
+  }
 
   UIBarButtonItem* item = descendants.firstObject;
   if (!item.enabled) {
@@ -181,8 +190,7 @@ NSArray* FindDescendantToolbarItemsForActionName(
     // can only catch the exceptions initiated here.
     [[item target] performSelector:[item action] withObject:item];
   } @catch (NSException* exception) {
-    NOTREACHED_IN_MIGRATION() << exception.debugDescription;
-    return NO;
+    NOTREACHED() << exception.debugDescription;
   }
 #pragma clang diagnostic pop
   return YES;
@@ -191,6 +199,8 @@ NSArray* FindDescendantToolbarItemsForActionName(
 #pragma mark - FormInputNavigator
 
 - (void)closeKeyboardWithButtonPress {
+  base::RecordAction(
+      base::UserMetricsAction("KeyboardAccessory_CloseButtonPressed"));
   [self closeKeyboardLoggingButtonPressed];
 }
 
@@ -220,27 +230,6 @@ NSArray* FindDescendantToolbarItemsForActionName(
 
 - (void)selectNextElementWithoutButtonPress {
   [self selectNextElementLoggingButtonPressed];
-}
-
-- (void)fetchPreviousAndNextElementsPresenceWithCompletionHandler:
-    (void (^)(bool, bool))completionHandler {
-  DCHECK(completionHandler);
-
-  if (!_webState || IsKeyboardAccessoryUpgradeEnabled()) {
-    completionHandler(false, false);
-    return;
-  }
-
-  web::WebFrame* frame = [self webFrame];
-
-  if (!frame) {
-    completionHandler(false, false);
-    return;
-  }
-
-  autofill::SuggestionControllerJavaScriptFeature::GetInstance()
-      ->FetchPreviousAndNextElementsPresenceInFrame(
-          frame, base::BindOnce(completionHandler));
 }
 
 #pragma mark - Private

@@ -8,25 +8,28 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
 class Navigator;
 class V8LoginStatus;
+class LoginStatusOptions;
 
 // Methods to let websites tell the browser about their login status.
 class MODULES_EXPORT NavigatorLogin : public ScriptWrappable,
-                                      public Supplement<Navigator> {
+                                      public GarbageCollectedMixin {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
   static NavigatorLogin* login(Navigator&);
-  explicit NavigatorLogin(Navigator&);
+  NavigatorLogin() = default;
 
   ScriptPromise<IDLUndefined> setStatus(ScriptState* script_state,
                                         const V8LoginStatus& status);
+
+  ScriptPromise<IDLUndefined> setStatus(ScriptState* script_state,
+                                        const V8LoginStatus& status,
+                                        const LoginStatusOptions* options);
 
   void Trace(Visitor*) const override;
 };

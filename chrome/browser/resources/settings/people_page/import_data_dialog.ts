@@ -8,12 +8,12 @@
  */
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import 'chrome://resources/cr_elements/cr_spinner_style.css.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/md_select.css.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import '../controls/settings_checkbox.js';
 import '../controls/settings_toggle_button.js';
-import '../icons.html.js';
 import '../settings_vars.css.js';
 import '../i18n_setup.js';
 
@@ -87,10 +87,10 @@ export class SettingsImportDataDialogElement extends
     };
   }
 
-  private browserProfiles_: BrowserProfile[];
-  private selected_: BrowserProfile;
-  private noImportDataTypeSelected_: boolean;
-  private importStatus_: ImportDataStatus;
+  declare private browserProfiles_: BrowserProfile[];
+  declare private selected_: BrowserProfile;
+  declare private noImportDataTypeSelected_: boolean;
+  declare private importStatus_: ImportDataStatus;
   private browserProxy_: ImportDataBrowserProxy =
       ImportDataBrowserProxyImpl.getInstance();
 
@@ -104,6 +104,12 @@ export class SettingsImportDataDialogElement extends
     super.connectedCallback();
 
     this.browserProxy_.initializeImportDialog().then(data => {
+      if (!this.isConnected) {
+        // Element was disconnected while waiting for the backend call to
+        // return. Do nothing.
+        return;
+      }
+
       this.browserProfiles_ = data;
       this.selected_ = this.browserProfiles_[0];
 

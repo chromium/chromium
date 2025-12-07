@@ -7,13 +7,14 @@
 
 #include "base/notreached.h"
 #include "gpu/command_buffer/common/context_result.h"
-#include "gpu/gpu_export.h"
 #include "gpu/ipc/common/context_result.mojom-shared.h"
+#include "gpu/ipc/common/gpu_ipc_common_export.h"
 
 namespace mojo {
 
 template <>
-struct GPU_EXPORT EnumTraits<gpu::mojom::ContextResult, gpu::ContextResult> {
+struct GPU_IPC_COMMON_EXPORT EnumTraits<gpu::mojom::ContextResult,
+                                        gpu::ContextResult> {
   static gpu::mojom::ContextResult ToMojom(gpu::ContextResult context_result) {
     switch (context_result) {
       case gpu::ContextResult::kSuccess:
@@ -25,8 +26,7 @@ struct GPU_EXPORT EnumTraits<gpu::mojom::ContextResult, gpu::ContextResult> {
       case gpu::ContextResult::kSurfaceFailure:
         return gpu::mojom::ContextResult::SurfaceFailure;
     }
-    NOTREACHED_IN_MIGRATION();
-    return gpu::mojom::ContextResult::FatalFailure;
+    NOTREACHED();
   }
 
   static bool FromMojom(gpu::mojom::ContextResult input,

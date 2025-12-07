@@ -16,7 +16,7 @@
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "device/fido/fido_discovery_base.h"
-#include "device/fido/fido_transport_protocol.h"
+#include "device/fido/public/fido_transport_protocol.h"
 
 namespace device {
 

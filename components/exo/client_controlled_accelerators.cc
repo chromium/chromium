@@ -6,7 +6,6 @@
 
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/not_fatal_until.h"
 
 namespace exo {
 
@@ -32,7 +31,7 @@ void ClientControlledAcceleratorTarget::RegisterAccelerator(
 bool ClientControlledAcceleratorTarget::AcceleratorPressed(
     const ui::Accelerator& accelerator) {
   auto it = accelerators_.find(accelerator);
-  CHECK(it != accelerators_.end(), base::NotFatalUntil::M130);
+  CHECK(it != accelerators_.end());
   ClientControlledAcceleratorAction action = it->second;
 
   switch (action) {

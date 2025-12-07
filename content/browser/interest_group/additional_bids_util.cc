@@ -15,6 +15,7 @@
 
 #include "base/base64.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/json/json_writer.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
@@ -27,6 +28,8 @@
 #include "content/browser/interest_group/interest_group_auction.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
+#include "crypto/sha2.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
@@ -66,6 +69,12 @@ bool AdditionalBidKeyHasMatchingValidSignature(
   return false;
 }
 
+std::string ComputeBidNonce(std::string_view auction_nonce_from_header,
+                            std::string_view seller_nonce_from_header) {
+  return base::Base64Encode(crypto::SHA256HashString(
+      base::StrCat({auction_nonce_from_header, seller_nonce_from_header})));
+}
+
 }  // namespace
 
 AdditionalBidDecodeResult::AdditionalBidDecodeResult() = default;
@@ -79,7 +88,8 @@ AdditionalBidDecodeResult& AdditionalBidDecodeResult::operator=(
 base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
     InterestGroupAuction* auction,
     const base::Value& bid_in,
-    const base::Uuid& auction_nonce,
+    const base::Uuid& auction_nonce_from_header,
+    base::optional_ref<const std::string> seller_nonce_from_header,
     const base::flat_set<url::Origin>& interest_group_buyers,
     const url::Origin& seller,
     base::optional_ref<const url::Origin> top_level_seller) {
@@ -90,11 +100,71 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
                       seller.Serialize(), "' is not a dictionary."}));
   }
 
-  const std::string* nonce = result_dict->FindString("auctionNonce");
-  if (!nonce || *nonce != auction_nonce.AsLowercaseString()) {
-    return base::unexpected(base::StrCat(
-        {"Additional bid on auction with seller '", seller.Serialize(),
-         "' rejected due to missing or incorrect nonce."}));
+  const std::string* auction_nonce_from_bid =
+      result_dict->FindString("auctionNonce");
+  if (!base::FeatureList::IsEnabled(blink::features::kFledgeSellerNonce)) {
+    if (!auction_nonce_from_bid ||
+        *auction_nonce_from_bid !=
+            auction_nonce_from_header.AsLowercaseString()) {
+      return base::unexpected(base::StrCat(
+          {"Additional bid on auction with seller '", seller.Serialize(),
+           "' rejected due to missing or incorrect nonce."}));
+    }
+  } else {
+    const std::string* bid_nonce_from_bid = result_dict->FindString("bidNonce");
+
+    if (!auction_nonce_from_bid && !bid_nonce_from_bid) {
+      return base::unexpected(base::StrCat(
+          {"Additional bid on auction with seller '", seller.Serialize(),
+           "' rejected due to no auctionNonce or bidNonce in bid -- exactly "
+           "one is required."}));
+    }
+
+    if (auction_nonce_from_bid && bid_nonce_from_bid) {
+      return base::unexpected(base::StrCat(
+          {"Additional bid on auction with seller '", seller.Serialize(),
+           "' rejected due to both auctionNonce and bidNonce in bid -- exactly "
+           "one is required."}));
+    }
+
+    if (seller_nonce_from_header) {
+      if (!bid_nonce_from_bid) {
+        return base::unexpected(base::StrCat(
+            {"Additional bid on auction with seller '", seller.Serialize(),
+             "' rejected due to missing bidNonce on a bid returned with a "
+             "seller nonce."}));
+      }
+
+      const std::string bid_nonce_expected =
+          ComputeBidNonce(auction_nonce_from_header.AsLowercaseString(),
+                          *seller_nonce_from_header);
+      if (*bid_nonce_from_bid != bid_nonce_expected) {
+        return base::unexpected(base::StrCat(
+            {"Additional bid on auction with seller '", seller.Serialize(),
+             "' rejected due to bidNonce from bid (", *bid_nonce_from_bid,
+             ") not matching its expectation (", bid_nonce_expected,
+             ") as calculated from the header auctionNonce (",
+             auction_nonce_from_header.AsLowercaseString(),
+             ") and sellerNonce (", *seller_nonce_from_header, ")."}));
+      }
+    } else {
+      if (!auction_nonce_from_bid) {
+        return base::unexpected(base::StrCat(
+            {"Additional bid on auction with seller '", seller.Serialize(),
+             "' rejected due to missing auctionNonce on a bid returned without "
+             "a seller nonce."}));
+      }
+
+      if (*auction_nonce_from_bid !=
+          auction_nonce_from_header.AsLowercaseString()) {
+        return base::unexpected(base::StrCat(
+            {"Additional bid on auction with seller '", seller.Serialize(),
+             "' rejected due to auctionNonce from bid (",
+             *auction_nonce_from_bid,
+             ") not matching the header auctionNonce (",
+             auction_nonce_from_header.AsLowercaseString(), ")."}));
+      }
+    }
   }
 
   const std::string* bid_seller = result_dict->FindString("seller");
@@ -266,8 +336,23 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
     }
   }
 
-  std::vector<blink::AdDescriptor> ad_components;
+  std::optional<std::string> aggregate_win_signals;
+  const base::Value* aggregate_win_signals_val =
+      bid_dict->Find("aggregateWinSignals");
+  if (aggregate_win_signals_val) {
+    std::optional<std::string> serialized_aggregate_win_signals =
+        base::WriteJson(*aggregate_win_signals_val);
+    if (serialized_aggregate_win_signals) {
+      aggregate_win_signals =
+          std::move(serialized_aggregate_win_signals).value();
+    } else {
+      return base::unexpected(base::StrCat(
+          {"Additional bid on auction with seller '", seller.Serialize(),
+           "' rejected due to invalid aggregateWinSignals."}));
+    }
+  }
   const base::Value* ad_components_val = bid_dict->Find("adComponents");
+  std::vector<InterestGroupAuction::Bid::ComponentAdInfo> ad_components;
   if (ad_components_val) {
     const base::Value::List* ad_components_list =
         ad_components_val->GetIfList();
@@ -294,10 +379,18 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
             {"Additional bid on auction with seller '", seller.Serialize(),
              "' rejected due to invalid entry in adComponents."}));
       }
-      ad_components.emplace_back(ad_component_url);
-      // TODO(http://crbug.com/1464874): What's the story with dimensions?
+
       synth_interest_group.interest_group.ad_components->emplace_back(
-          std::move(ad_component_url), /*metadata=*/std::nullopt);
+          ad_component_url, /*metadata=*/std::nullopt);
+
+      InterestGroupAuction::Bid::ComponentAdInfo component_ad_info;
+      // TODO(http://crbug.com/40275797): What's the story with dimensions?
+      component_ad_info.ad_descriptor =
+          blink::AdDescriptor(std::move(ad_component_url));
+      // The pointer to InterestGroup::Ad will be filled in below once the IG
+      // is in its final place.
+      component_ad_info.ad = nullptr;
+      ad_components.push_back(std::move(component_ad_info));
     }
   }
 
@@ -377,6 +470,12 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
 
   const blink::InterestGroup::Ad* bid_ad =
       &result.bid_state->bidder->interest_group.ads.value()[0];
+
+  for (size_t i = 0; i < ad_components.size(); ++i) {
+    ad_components[i].ad =
+        &result.bid_state->bidder->interest_group.ad_components.value()[i];
+  }
+
   result.bid = std::make_unique<InterestGroupAuction::Bid>(
       auction_worklet::mojom::BidRole::kBothKAnonModes, ad_metadata, *bid_val,
       /*bid_currency=*/bid_currency,
@@ -385,8 +484,10 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
       /*ad_component_descriptors=*/std::move(ad_components),
       /*modeling_signals=*/
       static_cast<std::optional<uint16_t>>(modeling_signals),
+      /*aggregate_wins_signals=*/std::move(aggregate_win_signals),
       /*bid_duration=*/base::TimeDelta(),
       /*bidding_signals_data_version=*/std::nullopt, bid_ad,
+      /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
       result.bid_state.get(), auction);
 
   // TODO(http://crbug.com/1464874): Do we need to fill in any k-anon info?

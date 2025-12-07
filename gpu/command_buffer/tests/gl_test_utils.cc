@@ -2,23 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/tests/gl_test_utils.h"
 
 #include <GLES2/gl2extchromium.h>
 #include <stdint.h>
 #include <stdio.h>
 
+#include <array>
 #include <memory>
 #include <string>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
@@ -28,6 +26,7 @@
 #include "gpu/config/gpu_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/init/gl_factory.h"
 
@@ -39,6 +38,10 @@ const uint8_t GLTestHelper::kCheckClearValue;
 #endif
 
 gl::GLDisplay* GLTestHelper::InitializeGL(gl::GLImplementation gl_impl) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  gpu::TrySetNonSoftwareDevicePreferenceForTesting(gl::GpuPreference::kDefault);
+#endif
+
   gl::GLDisplay* display = nullptr;
   if (gl_impl == gl::GLImplementation::kGLImplementationNone) {
     display = gl::init::InitializeGLNoExtensionsOneOff(
@@ -204,13 +207,15 @@ GLuint GLTestHelper::SetupColorsForUnitQuad(
   GLuint vbo = 0;
   glGenBuffers(1, &vbo);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  GLfloat vertices[6 * 4];
+  std::array<GLfloat, 6 * 4> vertices;
   for (int ii = 0; ii < 6; ++ii) {
     for (int jj = 0; jj < 4; ++jj) {
-      vertices[ii * 4 + jj] = color[jj];
+      vertices[ii * 4 + jj] = UNSAFE_TODO(color[jj]);
     }
   }
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, usage);
+  glBufferData(GL_ARRAY_BUFFER,
+               (vertices.size() * sizeof(decltype(vertices)::value_type)),
+               vertices.data(), usage);
   glEnableVertexAttribArray(location);
   glVertexAttribPointer(location, 4, GL_FLOAT, GL_FALSE, 0, 0);
 
@@ -226,7 +231,7 @@ bool GLTestHelper::CheckPixels(GLint x,
                                const uint8_t* mask) {
   std::vector<uint8_t> colors(width * height * 4);
   for (int i = 0; i < width * height * 4; i += 4)
-    memcpy(&colors[i], color, 4);
+    UNSAFE_TODO(memcpy(&colors[i], color, 4));
   return CheckPixels(x, y, width, height, tolerance, colors, mask);
 }
 
@@ -250,7 +255,7 @@ bool GLTestHelper::CheckPixels(GLint x,
         uint8_t expected_component = expected[offset + jj];
         int diff = actual - expected_component;
         diff = diff < 0 ? -diff: diff;
-        if ((!mask || mask[jj]) && diff > tolerance) {
+        if ((!mask || UNSAFE_TODO(mask[jj])) && diff > tolerance) {
           EXPECT_EQ(static_cast<int>(expected_component),
                     static_cast<int>(actual))
               << " at " << (xx + x) << ", " << (yy + y) << " channel " << jj;
@@ -269,12 +274,12 @@ bool GLTestHelper::CheckPixels(GLint x,
 
 namespace {
 
-void Set16BitValue(uint8_t dest[2], uint16_t value) {
+void Set16BitValue(base::span<uint8_t, 2> dest, uint16_t value) {
   dest[0] = value & 0xFFu;
   dest[1] = value >> 8;
 }
 
-void Set32BitValue(uint8_t dest[4], uint32_t value) {
+void Set32BitValue(base::span<uint8_t, 4> dest, uint32_t value) {
   dest[0] = (value >> 0) & 0xFFu;
   dest[1] = (value >> 8) & 0xFFu;
   dest[2] = (value >> 16) & 0xFFu;
@@ -342,9 +347,9 @@ bool GLTestHelper::SaveBackbufferAsBMP(
   Set32BitValue(bih.clr_used, 0);
   Set32BitValue(bih.clr_important, 0);
 
-  fwrite(&bhf, sizeof(bhf), 1, fp);
-  fwrite(&bih, sizeof(bih), 1, fp);
-  fwrite(data.data(), size, 1, fp);
+  UNSAFE_TODO(fwrite(&bhf, sizeof(bhf), 1, fp));
+  UNSAFE_TODO(fwrite(&bih, sizeof(bih), 1, fp));
+  UNSAFE_TODO(fwrite(data.data(), size, 1, fp));
   fclose(fp);
   return true;
 }

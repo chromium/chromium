@@ -1,0 +1,1 @@
+AXFocusedUIElementChanged on AXPopUpButton AXValue='Apple'

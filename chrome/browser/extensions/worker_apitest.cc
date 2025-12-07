@@ -18,7 +18,13 @@ class WorkerTest : public ExtensionApiTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(WorkerTest, WorkerInBackgroundPage) {
+// TODO(crbug.com/431290255): Flaky on Windows with ASAN.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_WorkerInBackgroundPage DISABLED_WorkerInBackgroundPage
+#else
+#define MAYBE_WorkerInBackgroundPage WorkerInBackgroundPage
+#endif
+IN_PROC_BROWSER_TEST_F(WorkerTest, MAYBE_WorkerInBackgroundPage) {
   embedded_test_server()->ServeFilesFromDirectory(test_data_dir_);
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("worker")) << message_;

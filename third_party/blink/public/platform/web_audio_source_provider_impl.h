@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -18,7 +19,6 @@
 #include "media/base/audio_renderer_sink.h"
 #include "third_party/blink/public/platform/web_audio_source_provider.h"
 #include "third_party/blink/public/platform/web_common.h"
-#include "third_party/blink/public/platform/web_vector.h"
 
 namespace media {
 class MediaLog;
@@ -67,7 +67,7 @@ class BLINK_PLATFORM_EXPORT WebAudioSourceProviderImpl
 
   // WebAudioSourceProvider implementation.
   void SetClient(WebAudioSourceProviderClient* client) override;
-  void ProvideInput(const WebVector<float*>& audio_data,
+  void ProvideInput(const std::vector<float*>& audio_data,
                     int number_of_frames) override;
 
   // RestartableAudioRendererSink implementation.
@@ -95,10 +95,11 @@ class BLINK_PLATFORM_EXPORT WebAudioSourceProviderImpl
 
   bool IsAudioBeingCaptured() const;
 
- protected:
-  ~WebAudioSourceProviderImpl() override;
+  void ConnectToDestinationReady();
 
  private:
+  ~WebAudioSourceProviderImpl() override;
+
   friend class WebAudioSourceProviderImplTest;
 
   // Calls setFormat() on |client_| from the Blink renderer thread.
@@ -128,7 +129,7 @@ class BLINK_PLATFORM_EXPORT WebAudioSourceProviderImpl
   const std::unique_ptr<TeeFilter> tee_filter_;
 
   // This dangling raw_ptr occurred in:
-  // webkit_unit_tests: WebMediaPlayerImplTest.MediaPositionState_Playing
+  // blink_unittests: WebMediaPlayerImplTest.MediaPositionState_Playing
   // https://ci.chromium.org/ui/p/chromium/builders/try/win-rel/237451/test-results?q=ExactID%3Aninja%3A%2F%2Fthird_party%2Fblink%2Frenderer%2Fcontroller%3Ablink_unittests%2FWebMediaPlayerImplTest.MediaPositionState_Playing+VHash%3Abfecf1e29c759a1c
   const raw_ptr<media::MediaLog, FlakyDanglingUntriaged> media_log_;
 

@@ -4,128 +4,360 @@
 
 package org.chromium.chrome.browser.search_engines.choice_screen;
 
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SEARCH_ENGINE_CHOICE_PENDING_OS_CHOICE_DIALOG_SHOWN_ATTEMPTS;
+
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.accessibility.AccessibilityEvent;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.Nullable;
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Callback;
-import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelper;
-import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
+import org.chromium.base.CommandLine;
+import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.search_engines.R;
+import org.chromium.chrome.browser.search_engines.choice_screen.ChoiceDialogMediator.DialogType;
+import org.chromium.components.search_engines.SearchEngineChoiceService;
+import org.chromium.components.search_engines.SearchEnginesFeatureUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
-import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.function.Function;
+
 /**
- * Entry point to show the choice screen associated with {@link SearchEnginePromoType#SHOW_WAFFLE}
- * as a modal dialog.
+ * Entry point to show a blocking choice dialog inviting users to finish their default app & search
+ * engine choice in Android settings.
  */
-public class ChoiceDialogCoordinator {
+@NullMarked
+public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
+    private static final String TAG = "ChoiceDialogCoordntr";
+
+    // Number of blocked Chrome sessions after which we suppress the blocking dialog. This is
+    // intended as an escape hatch to mitigate potential bugs.
     @VisibleForTesting
-    static final @DialogDismissalCause int SUCCESS_DISMISSAL_CAUSE =
-            DialogDismissalCause.ACTION_ON_CONTENT;
+    public static final int ESCAPE_HATCH_BLOCK_LIMIT = 10;
 
-    private final ChoiceScreenCoordinator mContentCoordinator;
-    private final ModalDialogManager mModalDialogManager;
-    private final @Nullable Callback<Boolean> mOnClosedCallback;
-    private final ChoiceScreenDelegate mDelegate;
+    interface ViewHolder {
+        View getView();
 
-    private @Nullable PropertyModel mDialogModel;
+        void updateViewForType(@DialogType int dialogType);
 
-    /**
-     * Creates the coordinator that will show a search engine choice dialog.
-     * Shows a promotion dialog about search engines depending on Locale and other conditions.
-     * See {@link org.chromium.chrome.browser.locale.LocaleManager#getSearchEnginePromoShowType} for
-     * possible types and logic.
-     *
-     * @param activity Activity that will show through its {@link ModalDialogManager}.
-     * @param delegate Object providing access to the data to display and callbacks to run to act on
-     *         the user choice.
-     * @param onClosedCallback If provided, should be notified when the search engine choice has
-     *         been finalized and the dialog closed.  It should be called with {@code true} if a
-     *         search engine was selected, or {@code false} if the dialog was dismissed without a
-     *         selection.
-     */
-    public ChoiceDialogCoordinator(
-            Activity activity,
-            DefaultSearchEngineDialogHelper.Delegate delegate,
-            @Nullable Callback<Boolean> onClosedCallback) {
-        mModalDialogManager = ((ModalDialogManagerHolder) activity).getModalDialogManager();
-        mOnClosedCallback = onClosedCallback;
-        mDelegate =
-                new ChoiceScreenDelegate(delegate, onClosedCallback) {
-                    @Override
-                    void onChoiceMade(String keyword) {
-                        super.onChoiceMade(keyword);
-                        ChoiceDialogCoordinator.this.dismissDialog();
-                    }
-                };
-        mContentCoordinator = buildContentCoordinator(activity, mDelegate);
+        void destroy();
     }
 
-    /** Constructs and shows the dialog. */
-    public void show() {
-        assert mDialogModel == null;
-        mDialogModel = createDialogPropertyModel(mContentCoordinator.getContentView());
+    private final Context mContext;
+    private final ViewHolder mViewHolder;
+    private final ChoiceDialogMediator mMediator;
+    private final PropertyModel mModel;
+    private final ModalDialogManager mModalDialogManager;
+
+    private final ModalDialogManagerObserver mDialogAddedObserver =
+            new ModalDialogManagerObserver() {
+                @Override
+                public void onDialogAdded(PropertyModel model) {
+                    if (model != mModel) return;
+
+                    mMediator.onDialogAdded();
+                    RecordUserAction.record("OsDefaultsChoiceDialogShown");
+                }
+
+                @Override
+                public void onDialogDismissed(PropertyModel model) {
+                    if (model != mModel) return;
+
+                    mMediator.onDialogDismissed();
+                    RecordUserAction.record("OsDefaultsChoiceDialogClosed");
+                }
+            };
+
+    private final OnBackPressedCallback mEmptyBackPressedCallback =
+            new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {}
+            };
+
+    /**
+     * Attempts to show the device defaults apps choice dialog.
+     *
+     * @return {@code true} if the dialog will be shown, {@code false} otherwise.
+     */
+    public static boolean maybeShow(
+            Activity activity,
+            ModalDialogManager modalDialogManager,
+            ActivityLifecycleDispatcher lifecycleDispatcher) {
+        return maybeShowInternal(
+                searchEngineChoiceService ->
+                        new ChoiceDialogCoordinator(
+                                activity,
+                                new ViewHolderImpl(activity),
+                                modalDialogManager,
+                                lifecycleDispatcher,
+                                searchEngineChoiceService));
+    }
+
+    @VisibleForTesting
+    static boolean maybeShowInternal(
+            Function<SearchEngineChoiceService, ChoiceDialogCoordinator> coordinatorFactory) {
+        var searchEngineChoiceService = SearchEngineChoiceService.getInstance();
+        final boolean canShow =
+                searchEngineChoiceService != null
+                        && searchEngineChoiceService.isDeviceChoiceDialogEligible()
+                        && !CommandLine.getInstance().hasSwitch(ChromeSwitches.NO_FIRST_RUN);
+
+        if (SearchEnginesFeatureUtils.getInstance().isChoiceApisDebugEnabled()) {
+            Log.i(TAG, "maybeShow() - Client eligible for the device choice dialog: %b", canShow);
+        }
+
+        if (!canShow) {
+            clearDialogShownCount();
+            return false;
+        }
+
+        var unused = coordinatorFactory.apply(searchEngineChoiceService);
+
+        // If the dialog is suppressed, we won't show the UI regardless of the backend response, so
+        // we can let other promos get triggered after this one.
+        return computeDialogSuppressionStatus() == DialogSuppressionStatus.CAN_SHOW;
+    }
+
+    @VisibleForTesting
+    ChoiceDialogCoordinator(
+            Context context,
+            ViewHolder viewHolder,
+            ModalDialogManager modalDialogManager,
+            ActivityLifecycleDispatcher lifecycleDispatcher,
+            SearchEngineChoiceService searchEngineChoiceService) {
+        mContext = context;
+        mViewHolder = viewHolder;
+        mModel =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(ModalDialogProperties.CUSTOM_VIEW, mViewHolder.getView())
+                        .with(
+                                ModalDialogProperties.BUTTON_STYLES,
+                                ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NO_NEGATIVE)
+                        .with(
+                                ModalDialogProperties.CONTROLLER,
+                                new ModalDialogProperties.Controller() {
+                                    @Override
+                                    public void onClick(PropertyModel model, int buttonType) {
+                                        mMediator.onActionButtonClick();
+                                    }
+
+                                    @Override
+                                    public void onDismiss(
+                                            PropertyModel model, int dismissalCause) {}
+                                })
+                        .build();
+        mModalDialogManager = modalDialogManager;
+        mMediator = new ChoiceDialogMediator(lifecycleDispatcher, searchEngineChoiceService);
+
+        mMediator.startObserving(/* delegate= */ this);
+    }
+
+    @Override
+    public void updateDialogType(@DialogType int dialogType) {
+        if (SearchEnginesFeatureUtils.getInstance().isChoiceApisDebugEnabled()) {
+            Log.i(TAG, "updateDialogType(%d)", dialogType);
+        }
+
+        mViewHolder.updateViewForType(dialogType);
+
+        switch (dialogType) {
+            case DialogType.CHOICE_LAUNCH -> {
+                mModel.set(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false);
+                mModel.set(
+                        ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
+                        // Capture back navigation and suppress it. The user must complete the
+                        // screen by interacting with the options presented.
+                        mEmptyBackPressedCallback);
+                mModel.set(
+                        ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                        mContext.getString(R.string.next));
+            }
+            case DialogType.CHOICE_CONFIRM -> {
+                mModel.set(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true);
+                mModel.set(
+                        ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                        mContext.getString(R.string.done));
+                mEmptyBackPressedCallback.remove();
+                RecordUserAction.record("OsDefaultsChoiceDialogUnblocked");
+            }
+            case DialogType.UNKNOWN -> throw new IllegalStateException();
+        }
+    }
+
+    @Override
+    public void showDialog() {
+        @DialogSuppressionStatus int suppressionStatus = computeDialogSuppressionStatus();
+        recordShowDialogStatus(suppressionStatus);
+        if (suppressionStatus != DialogSuppressionStatus.CAN_SHOW) {
+            return; // Suppress the dialog.
+        }
+
+        mModalDialogManager.addObserver(mDialogAddedObserver);
         mModalDialogManager.showDialog(
-                mDialogModel,
+                mModel,
                 ModalDialogManager.ModalDialogType.APP,
                 ModalDialogManager.ModalDialogPriority.VERY_HIGH);
     }
 
+    @Override
+    public void dismissDialog() {
+        mModalDialogManager.dismissDialog(mModel, DialogDismissalCause.UNKNOWN);
+        mViewHolder.destroy();
+    }
+
+    @Override
+    public void onMediatorDestroyed() {
+        mModalDialogManager.removeObserver(mDialogAddedObserver);
+    }
+
+    @IntDef({
+        DialogSuppressionStatus.CAN_SHOW,
+        DialogSuppressionStatus.SUPPRESSED_ESCAPE_HATCH,
+    })
+    @Retention(RetentionPolicy.SOURCE)
     @VisibleForTesting
-    ChoiceScreenCoordinator buildContentCoordinator(
-            Activity activity, ChoiceScreenDelegate delegate) {
-        return new ChoiceScreenCoordinator(activity, delegate);
+    @interface DialogSuppressionStatus {
+        // These values are persisted to logs. Entries should not be renumbered and numeric values
+        // should never be reused.
+        // LINT.IfChange(DialogSuppressionStatus)
+        int CAN_SHOW = 0;
+        // int SUPPRESSED_DARK_LAUNCH = 1; // Deprecated.
+        int SUPPRESSED_ESCAPE_HATCH = 2;
+        int COUNT = 3;
+        // LINT.ThenChange(//tools/metrics/histograms/metadata/search/enums.xml:OsDefaultsChoiceDialogSuppressionStatus)
     }
 
-    private void dismissDialog() {
-        assert mDialogModel != null;
+    @DialogSuppressionStatus
+    private static int computeDialogSuppressionStatus() {
+        int blockCount =
+                ChromeSharedPreferences.getInstance()
+                        .readInt(SEARCH_ENGINE_CHOICE_PENDING_OS_CHOICE_DIALOG_SHOWN_ATTEMPTS);
+        if (blockCount >= ESCAPE_HATCH_BLOCK_LIMIT) {
+            if (SearchEnginesFeatureUtils.getInstance().isChoiceApisDebugEnabled()) {
+                Log.i(
+                        TAG,
+                        "The dialog is suppressed: Escape Hatch triggered, blocked %d times"
+                                + " (limit=%d).",
+                        blockCount,
+                        ESCAPE_HATCH_BLOCK_LIMIT);
+            }
+            return DialogSuppressionStatus.SUPPRESSED_ESCAPE_HATCH;
+        }
 
-        // For non-reentry verification.
-        PropertyModel model = mDialogModel;
-        mDialogModel = null;
-
-        // Will no-op if the dialog was already dismissed.
-        mModalDialogManager.dismissDialog(model, SUCCESS_DISMISSAL_CAUSE);
+        return DialogSuppressionStatus.CAN_SHOW;
     }
 
-    private PropertyModel createDialogPropertyModel(View contentView) {
-        return new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                .with(ModalDialogProperties.CUSTOM_VIEW, contentView)
-                .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false)
-                .with(
-                        ModalDialogProperties.DIALOG_STYLES,
-                        ModalDialogProperties.DialogStyles.FULLSCREEN_DIALOG)
-                .with(
-                        ModalDialogProperties.CONTROLLER,
-                        new ModalDialogProperties.Controller() {
-                            @Override
-                            public void onClick(PropertyModel model, @ButtonType int buttonType) {}
+    private static void recordShowDialogStatus(@DialogSuppressionStatus int suppressionStatus) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Search.OsDefaultsChoice.DialogSuppressionStatus",
+                suppressionStatus,
+                DialogSuppressionStatus.COUNT);
 
-                            @Override
-                            public void onDismiss(
-                                    PropertyModel model, @DialogDismissalCause int dismissalCause) {
-                                if (dismissalCause != SUCCESS_DISMISSAL_CAUSE) {
-                                    mDelegate.onExitWithoutChoice();
-                                }
-                            }
-                        })
-                .with(
-                        ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
-                        // Capture back navigations and suppress them. The user must complete the
-                        // screen by interacting with the options presented.
-                        // TODO(b/280753530): Instead of fully suppressing it, maybe perform back
-                        // from Chrome's highest level to go back to the caller?
-                        new OnBackPressedCallback(true) {
-                            @Override
-                            public void handleOnBackPressed() {}
-                        })
-                .build();
+        if (suppressionStatus == DialogSuppressionStatus.CAN_SHOW) {
+            int newCount =
+                    ChromeSharedPreferences.getInstance()
+                            .incrementInt(
+                                    SEARCH_ENGINE_CHOICE_PENDING_OS_CHOICE_DIALOG_SHOWN_ATTEMPTS);
+            RecordHistogram.recordLinearCountHistogram(
+                    "Search.OsDefaultsChoice.DialogShownAttempt",
+                    newCount,
+                    /* min= */ 1,
+                    /* max= */ 50,
+                    /* numBuckets= */ 51);
+        }
+    }
+
+    private static void clearDialogShownCount() {
+        ChromeSharedPreferences.getInstance()
+                .removeKey(SEARCH_ENGINE_CHOICE_PENDING_OS_CHOICE_DIALOG_SHOWN_ATTEMPTS);
+    }
+
+    private static class ViewHolderImpl implements ViewHolder, View.OnLayoutChangeListener {
+        private final View mContentView;
+        private final View mView;
+
+        @SuppressLint("InflateParams")
+        ViewHolderImpl(Activity activity) {
+            mContentView = activity.findViewById(android.R.id.content);
+            mView = LayoutInflater.from(activity).inflate(R.layout.blocking_choice_dialog, null);
+            mContentView.addOnLayoutChangeListener(this);
+        }
+
+        @Override
+        public View getView() {
+            return mView;
+        }
+
+        @Override
+        public void updateViewForType(@DialogType int dialogType) {
+            ImageView illustration = mView.findViewById(R.id.illustration);
+            TextView title = mView.findViewById(R.id.choice_dialog_title);
+            TextView message = mView.findViewById(R.id.choice_dialog_message);
+
+            switch (dialogType) {
+                case DialogType.CHOICE_LAUNCH -> {
+                    illustration.setImageResource(R.drawable.blocking_choice_dialog_illustration);
+                    title.setText(R.string.blocking_choice_dialog_first_title);
+                    message.setText(R.string.blocking_choice_dialog_first_message);
+                }
+                case DialogType.CHOICE_CONFIRM -> {
+                    illustration.setImageResource(
+                            R.drawable.blocking_choice_confirmation_illustration);
+                    title.setText(R.string.blocking_choice_dialog_second_title);
+                    message.setText(R.string.blocking_choice_dialog_second_message);
+                }
+                case DialogType.UNKNOWN -> throw new IllegalStateException();
+            }
+            // As the dialog states change the text, focus accessibility every time the state
+            // changes.
+            title.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+        }
+
+        @Override
+        public void destroy() {
+            mContentView.removeOnLayoutChangeListener(this);
+        }
+
+        @Override
+        public void onLayoutChange(
+                View view,
+                int left,
+                int top,
+                int right,
+                int bottom,
+                int oldLeft,
+                int oldTop,
+                int oldRight,
+                int oldBottom) {
+            int oldHeight = oldBottom - oldTop;
+            int newHeight = bottom - top;
+            if (newHeight == oldHeight) return;
+
+            int requiredHeight =
+                    mView.getResources()
+                            .getDimensionPixelSize(
+                                    R.dimen.blocking_dialog_required_height_for_illustration);
+            View illustration = mView.findViewById(R.id.illustration);
+            illustration.setVisibility(newHeight < requiredHeight ? View.GONE : View.VISIBLE);
+        }
     }
 }

@@ -5,6 +5,9 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_CARRIER_LOCK_PSM_CLAIM_VERIFIER_IMPL_H_
 #define CHROMEOS_ASH_COMPONENTS_CARRIER_LOCK_PSM_CLAIM_VERIFIER_IMPL_H_
 
+#include <optional>
+#include <string>
+
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ash/components/carrier_lock/psm_claim_verifier.h"
@@ -39,8 +42,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CARRIER_LOCK)
  private:
   void SetupUrlLoader(std::string& request, const char* url);
   void SendOprfRequest();
-  void OnCheckMembershipQueryDone(std::unique_ptr<std::string> response_body);
-  void OnCheckMembershipOprfDone(std::unique_ptr<std::string> response_body);
+  void OnCheckMembershipQueryDone(std::optional<std::string> response_body);
+  void OnCheckMembershipOprfDone(std::optional<std::string> response_body);
 
   void ReturnError(Result error);
   void ReturnSuccess();

@@ -20,7 +20,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/BackgroundSchedulerBridge_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -33,7 +33,7 @@ static jboolean JNI_BackgroundSchedulerBridge_StartScheduledProcessing(
     const jboolean j_power_connected,
     const jint j_battery_percentage,
     const jint j_net_connection_type,
-    const JavaParamRef<jobject>& j_callback_obj) {
+    const JavaRef<jobject>& j_callback_obj) {
   ScopedJavaGlobalRef<jobject> j_callback_ref;
   j_callback_ref.Reset(env, j_callback_obj);
 
@@ -140,3 +140,5 @@ BackgroundSchedulerBridge::GetCurrentDeviceConditions() {
 
 }  // namespace android
 }  // namespace offline_pages
+
+DEFINE_JNI(BackgroundSchedulerBridge)

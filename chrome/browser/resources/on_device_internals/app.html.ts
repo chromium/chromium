@@ -7,20 +7,17 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {OnDeviceInternalsAppElement} from './app.js';
 
 export function getHtml(this: OnDeviceInternalsAppElement) {
-  // clang-format off
-  return html`<!--_html_template_start_-->
+  return html`
 <h1>On-Device Internals</h1>
-<cr-tab-box id="tabbox" hidden
-    @selected-index-change="${this.onSelectedIndexChange_}">
-  <div slot="tab">Event Logs</div>
-  <div slot="tab">Tools</div>
-  <div slot="panel" id="event-log">
-    <on-device-internals-event-log></on-device-internals-event-log>
-  </div>
-  <div slot="panel" id="tools">
-    <on-device-internals-tools></on-device-internals-tools>
-  </div>
-</cr-tab-box>
-<!--_html_template_end_-->`;
-  // clang-format on
+<cr-tabs id="tabs" .tabNames="${['Tools', 'Event Logs', 'Model Status']}"
+    .selected="${this.selectedTabIndex_}"
+    @selected-changed="${this.onSelectedIndexChange_}">
+</cr-tabs>
+<cr-page-selector .selected="${this.selectedTabIndex_}">
+  <on-device-internals-tools class="tab-contents"></on-device-internals-tools>
+  <on-device-internals-event-log class="tab-contents">
+  </on-device-internals-event-log>
+  <on-device-internals-model-status class="tab-contents">
+  </on-device-internals-model-status>
+</cr-page-selector>`;
 }

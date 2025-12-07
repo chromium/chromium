@@ -6,7 +6,10 @@ package org.chromium.components.page_info;
 
 import android.content.Intent;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Extracted to allow testing of PermissionParamsListBuilder. */
+@NullMarked
 public interface SystemSettingsActivityRequiredListener {
     void onSystemSettingsActivityRequired(Intent intentOverride);
 }

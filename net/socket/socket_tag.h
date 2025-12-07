@@ -5,6 +5,8 @@
 #ifndef NET_SOCKET_SOCKET_TAG_H_
 #define NET_SOCKET_SOCKET_TAG_H_
 
+#include <iosfwd>
+
 #include "build/build_config.h"
 #include "net/base/net_export.h"
 #include "net/socket/socket_descriptor.h"
@@ -12,7 +14,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include <stdint.h>
 #include <sys/types.h>
-#include <unistd.h>
 #endif
 
 namespace net {
@@ -39,7 +40,6 @@ class NET_EXPORT SocketTag {
 
   bool operator<(const SocketTag& other) const;
   bool operator==(const SocketTag& other) const;
-  bool operator!=(const SocketTag& other) const { return !(*this == other); }
 
   // Apply this tag to |socket|.
   void Apply(SocketDescriptor socket) const;
@@ -52,6 +52,9 @@ class NET_EXPORT SocketTag {
   static const uid_t UNSET_UID = -1;
   static const int32_t UNSET_TAG = -1;
 
+  uid_t uid() const { return uid_; }
+  int32_t traffic_stats_tag() const { return traffic_stats_tag_; }
+
  private:
   // UID to tag with.
   uid_t uid_;
@@ -60,6 +63,9 @@ class NET_EXPORT SocketTag {
 #endif  // BUILDFLAG(IS_ANDROID)
   // Copying and assignment are allowed.
 };
+
+// Allows for logging of SocketTag.
+NET_EXPORT std::ostream& operator<<(std::ostream& os, const SocketTag& tag);
 
 }  // namespace net
 

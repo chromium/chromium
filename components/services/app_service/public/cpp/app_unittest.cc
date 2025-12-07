@@ -336,7 +336,7 @@ TEST_F(AppTest, VerifyAppsIsEqualForIntentFilters) {
   // Verify the app is equal with the same `intent_filter`.
   {
     AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
-    app1->intent_filters.push_back(intent_filter1->Clone());
+    app1->intent_filters.emplace().push_back(intent_filter1->Clone());
     AppPtr app2 = app1->Clone();
     EXPECT_TRUE(IsEqual(std::move(app1), std::move(app2)));
   }
@@ -345,9 +345,24 @@ TEST_F(AppTest, VerifyAppsIsEqualForIntentFilters) {
   {
     AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
     AppPtr app2 = app1->Clone();
-    app1->intent_filters.push_back(intent_filter1->Clone());
-    app2->intent_filters.push_back(intent_filter2->Clone());
+    app1->intent_filters.emplace().push_back(intent_filter1->Clone());
+    app2->intent_filters.emplace().push_back(intent_filter2->Clone());
     EXPECT_FALSE(IsEqual(std::move(app1), std::move(app2)));
+  }
+
+  // Verify the app is equal with null intent filters.
+  {
+    AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
+    AppPtr app2 = app1->Clone();
+    EXPECT_TRUE(IsEqual(std::move(app1), std::move(app2)));
+  }
+
+  // Verify the app is equal with zero and null intent filters.
+  {
+    AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
+    AppPtr app2 = app1->Clone();
+    app2->intent_filters.emplace();
+    EXPECT_TRUE(IsEqual(std::move(app1), std::move(app2)));
   }
 }
 

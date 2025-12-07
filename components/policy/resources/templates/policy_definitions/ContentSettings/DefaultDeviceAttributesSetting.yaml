@@ -1,0 +1,33 @@
+caption: Control use of the Device Attributes API
+default: null
+desc: |-
+  Setting the policy specifies whether a force-installed Isolated Web App or kiosk application has access to the Device Attributes API by default.
+  Please see https://wicg.github.io/WebApiDevice/device_attributes for details.
+
+  Setting the policy to 1 or leaving it unset allows force-installed Isolated Web Apps and kiosk applications to use the API.
+
+  Setting the policy to 2 blocks force-installed Isolated Web Apps and kiosk applications from using the API.
+
+example_value: 1
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Allow force-installed Isolated Web Apps and kiosk applications to use the Device Attributes API
+  name: AllowDeviceAttributes
+  value: 1
+- caption: Do not allow force-installed Isolated Web Apps and kiosk applications to use the Device Attributes API
+  name: BlockDeviceAttributes
+  value: 2
+owners:
+- file://chrome/browser/device_api/OWNERS
+- iwa-team@google.com
+schema:
+  enum:
+  - 1
+  - 2
+  type: integer
+supported_on:
+- chrome_os:140-
+tags: []
+type: int-enum

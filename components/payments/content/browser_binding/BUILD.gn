@@ -1,0 +1,180 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+is_desktop = is_mac || is_win || is_linux || is_chromeos || is_fuchsia
+
+source_set("browser_binding") {
+  visibility = [
+    "//chrome/browser/payments/browser_binding/*",
+    "//components/payments/content/*",
+  ]
+  public_deps = [
+    ":interface",
+    ":passkey_browser_binder",
+  ]
+  if (is_android) {
+    deps = [ ":android" ]
+  }
+  if (is_desktop) {
+    deps = [ ":desktop" ]
+  }
+}
+
+source_set("interface") {
+  sources = [
+    "browser_bound_key.h",
+    "browser_bound_key_store.h",
+  ]
+  public_deps = [
+    "//base",
+    "//device/fido",
+  ]
+}
+
+source_set("passkey_browser_binder") {
+  visibility = [ "//components/payments/content/*" ]
+  sources = [
+    "passkey_browser_binder.cc",
+    "passkey_browser_binder.h",
+  ]
+  public_deps = [ ":interface" ]
+  deps = [
+    ":browser_bound_key_metadata",
+    "//base",
+    "//components/payments/content:utils",
+    "//components/payments/core",
+    "//components/webdata/common",
+  ]
+}
+
+source_set("passkey_browser_binder_unittests") {
+  testonly = true
+  visibility = [ "//components/payments/*" ]
+  sources = [ "passkey_browser_binder_unittest.cc" ]
+  deps = [
+    ":browser_bound_key_metadata",
+    ":fake_browser_bound_key_store",
+    ":interface",
+    ":passkey_browser_binder",
+    "//base",
+    "//base/test:test_support",
+    "//components/payments/content:test_support",
+    "//components/payments/core",
+    "//content/test:test_support",
+    "//device/fido",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+if (is_android) {
+  source_set("android") {
+    visibility = [ ":*" ]
+    sources = [
+      "browser_bound_key_android.cc",
+      "browser_bound_key_android.h",
+      "browser_bound_key_store_android.cc",
+      "browser_bound_key_store_android.h",
+    ]
+    public_deps = [
+      "//components/keyed_service/content",
+      "//components/payments/content:utils",
+    ]
+    deps = [
+      ":interface",
+      "//base",
+      "//components/payments/content/android/spc:browser_binding_jni",
+      "//device/fido",
+      "//third_party/jni_zero",
+    ]
+  }
+
+  source_set("android_unittests") {
+    testonly = true
+    sources = [ "browser_bound_key_store_android_unittest.cc" ]
+    deps = [
+      ":android",
+      ":interface",
+      "//base",
+      "//components/payments/content/android/spc:browser_binding_jni",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+}
+
+if (is_desktop) {
+  source_set("desktop") {
+    visibility = [ ":*" ]
+    sources = [
+      "browser_bound_key_desktop.cc",
+      "browser_bound_key_desktop.h",
+      "browser_bound_key_store_desktop.cc",
+      "browser_bound_key_store_desktop.h",
+    ]
+    deps = [
+      ":interface",
+      "//base",
+      "//crypto",
+    ]
+  }
+
+  source_set("desktop_unittests") {
+    testonly = true
+    sources = [
+      "browser_bound_key_desktop_unittest.cc",
+      "browser_bound_key_store_desktop_unittest.cc",
+    ]
+    deps = [
+      ":desktop",
+      ":interface",
+      "//base",
+      "//base/test:test_support",
+      "//components/unexportable_keys:test_support",
+      "//content/test:test_support",
+      "//crypto",
+      "//crypto:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+}
+
+source_set("fake_browser_bound_key_store") {
+  testonly = true
+  sources = [
+    "fake_browser_bound_key.cc",
+    "fake_browser_bound_key.h",
+    "fake_browser_bound_key_store.cc",
+    "fake_browser_bound_key_store.h",
+  ]
+  deps = [
+    ":interface",
+    "//base",
+    "//device/fido",
+  ]
+}
+
+source_set("browser_bound_key_metadata") {
+  sources = [
+    "browser_bound_key_metadata.cc",
+    "browser_bound_key_metadata.h",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_browser_bound_key_store.cc",
+    "mock_browser_bound_key_store.h",
+    "mock_passkey_browser_binder.cc",
+    "mock_passkey_browser_binder.h",
+  ]
+  public_deps = [
+    ":interface",
+    ":passkey_browser_binder",
+    "//testing/gmock",
+  ]
+}

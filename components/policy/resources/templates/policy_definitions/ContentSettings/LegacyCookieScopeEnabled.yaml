@@ -1,0 +1,47 @@
+caption: Revert to legacy cookie scope behavior
+default: 0
+desc: |-
+  This policy allows to revert back to the legacy behavior for cookie scoping.
+
+  It means cookies set on a specific protocol (e.g. HTTPS) or port can be accessed from another.
+
+  Setting the policy to Enabled, cookies will not be bound to their originating scheme and port.
+
+  Setting the policy to Disabled or not set, cookies will behave with origin-bound scope.
+
+  This configuration will only apply to top-level domains (e.g. example.com) and not to
+  subdomains (e.g. sub.example.com).
+
+  This policy will be removed in the future.
+
+
+example_value: 1
+
+features:
+  dynamic_refresh: true
+  per_profile: true
+
+future_on:
+ - chrome.*
+ - chrome_os
+ - android
+
+items:
+- caption: Cookies have origin-bound scope
+  value: 0
+- caption: Revert back to legacy cookie scope behavior
+  value: 1
+
+owners:
+- amarjotgill@chromium.org
+- bingler@chromium.org
+
+schema:
+  enum:
+  - 0
+  - 1
+  type: integer
+
+tags: []
+
+type: int

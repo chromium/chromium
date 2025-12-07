@@ -1,0 +1,19 @@
+Name: libpfm4
+Short Name: libpfm4
+URL: https://sourceforge.net/p/perfmon2/libpfm4/ci/master/tree/
+Date: 2025-09-09
+Revision: 964baf9d35d5f88d8422f96d8a82c672042e7064
+Version: N/A
+Update Mechanism: Autoroll
+License: MIT
+License File: src/COPYING
+Shipped: no
+Security Critical: no
+
+Description:
+perfmon2 - used as a dependency of Google Benchmark for reading hardware performance counters
+
+No security concerns, this library is testonly and not linked into released binaries.
+
+Local Modifications:
+None

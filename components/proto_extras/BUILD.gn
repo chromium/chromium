@@ -1,0 +1,83 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/libfuzzer/fuzzer_test.gni")
+
+if (current_toolchain == host_toolchain) {
+  executable("proto_extras_plugin") {
+    sources = [ "proto_extras_plugin.cc" ]
+    deps = [
+      "//base",
+      "//third_party/protobuf:protoc_cpp",
+      "//third_party/protobuf:protoc_lib",
+    ]
+  }
+
+  executable("proto_test_extras_plugin") {
+    sources = [ "proto_test_extras_plugin.cc" ]
+    deps = [
+      "//base",
+      "//third_party/protobuf:protoc_cpp",
+      "//third_party/protobuf:protoc_lib",
+    ]
+  }
+}
+
+source_set("proto_extras_lib") {
+  public = [ "proto_extras_lib.h" ]
+  sources = [ "proto_extras_lib.cc" ]
+  public_deps = [
+    "//base",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+}
+
+source_set("proto_matchers") {
+  testonly = true
+  public = [ "proto_matchers.h" ]
+  public_deps = [
+    "//base",
+    "//testing/gmock",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+}
+
+if (use_fuzzing_engine_with_lpm) {
+  # Component for protobuf_full support of our serialization, which is required
+  # by proto fuzzers.
+  source_set("protobuf_full_support") {
+    public = [ "protobuf_full_support.h" ]
+    sources = [ "protobuf_full_support.cc" ]
+    public_deps = [
+      ":proto_extras_lib",
+      "//base",
+      "//third_party/protobuf:protobuf_full",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "proto_extras_unittest.cc",
+    "proto_test_extras_unittest.cc",
+  ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/proto_extras/test_proto",
+    "//components/proto_extras/test_proto:test_proto_extras",
+    "//components/proto_extras/test_proto:test_proto_test_extras",
+    "//components/proto_extras/test_proto2",
+    "//components/proto_extras/test_proto2:test_proto2_extras",
+    "//components/proto_extras/test_proto2:test_proto2_test_extras",
+    "//components/proto_extras/test_proto_edition",
+    "//components/proto_extras/test_proto_edition:test_proto_edition_extras",
+    "//components/proto_extras/test_proto_edition:test_proto_edition_test_extras",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+}

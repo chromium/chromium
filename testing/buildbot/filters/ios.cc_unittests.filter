@@ -16,6 +16,12 @@
 -All/LayerTreeHostFiltersPixelTest.EnlargedTextureWithAlphaThresholdFilter/SkiaGraphiteMetal
 -All/LayerTreeHostFiltersPixelTest.EnlargedTextureWithCropOffsetFilter/SkiaGraphiteMetal
 -MixedFilterZoomAndOffsetTest.StandardDpi/SkiaGraphiteMetal
+-All/LayerTreeHostFiltersPixelTest.BackdropFilterQuality_0_33/SkiaGL
+-All/LayerTreeHostFiltersPixelTest.BackdropFilterQuality_0_33/SkiaGraphiteDawn
+-All/LayerTreeHostFiltersPixelTest.BackdropFilterQuality_0_33/SkiaGraphiteMetal
+-All/LayerTreeHostFiltersPixelTest.BackdropFilterQuality_1_0/SkiaGL
+-All/LayerTreeHostFiltersPixelTest.BackdropFilterQuality_1_0/SkiaGraphiteDawn
+-All/LayerTreeHostFiltersPixelTest.BackdropFilterQuality_1_0/SkiaGraphiteMetal
 
 # Spot checking seems to show that the following tests fail with errors like
 # the following:

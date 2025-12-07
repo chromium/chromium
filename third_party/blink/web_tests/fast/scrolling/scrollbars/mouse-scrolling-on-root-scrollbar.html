@@ -16,12 +16,10 @@ window.onload = () => {
   const TRACK_WIDTH = calculateScrollbarThickness();
   const BUTTON_WIDTH = TRACK_WIDTH;
   const SCROLL_CORNER = TRACK_WIDTH;
-  let SCROLL_AMOUNT_Y = internals.runtimeFlags.percentBasedScrollingEnabled ?
-    document.scrollingElement.clientHeight * SCROLLBAR_SCROLL_PERCENTAGE : SCROLLBAR_SCROLL_PIXELS;
+  let SCROLL_AMOUNT_Y = SCROLLBAR_SCROLL_PIXELS;
   if (!internals.runtimeFlags.fractionalScrollOffsetsEnabled)
     SCROLL_AMOUNT_Y = Math.floor(SCROLL_AMOUNT_Y);
-  let SCROLL_AMOUNT_X = internals.runtimeFlags.percentBasedScrollingEnabled ?
-    document.scrollingElement.clientWidth * SCROLLBAR_SCROLL_PERCENTAGE : SCROLLBAR_SCROLL_PIXELS;
+  let SCROLL_AMOUNT_X = SCROLLBAR_SCROLL_PIXELS;
   if (!internals.runtimeFlags.fractionalScrollOffsetsEnabled)
     SCROLL_AMOUNT_X = Math.floor(SCROLL_AMOUNT_X);
 

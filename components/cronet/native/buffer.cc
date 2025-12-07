@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cronet/native/generated/cronet.idl_impl_interface.h"
+#include <cstdlib>
 
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
+#include "components/cronet/native/generated/cronet.idl_impl_interface.h"
 
 namespace {
 

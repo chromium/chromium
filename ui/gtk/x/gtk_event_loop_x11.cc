@@ -2,20 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gtk/x/gtk_event_loop_x11.h"
 
 #include <xcb/xcb.h>
 #include <xcb/xproto.h>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gtk/gtk_compat.h"
+#include "ui/gtk/gtk_util.h"
 
 namespace gtk {
 
@@ -31,8 +28,9 @@ x11::Event ConvertGdkEventToKeyEvent(GdkEvent* gdk_event) {
     auto* key = reinterpret_cast<GdkEventKey*>(gdk_event);
     DCHECK(key->type == GdkKeyPress() || key->type == GdkKeyRelease());
     x11::Window window = x11::Window::None;
-    if (key->window)
+    if (key->window) {
       window = static_cast<x11::Window>(gdk_x11_window_get_xid(key->window));
+    }
 
     x11::KeyEvent key_event{
         .opcode = key->type == GdkKeyPress() ? x11::KeyEvent::Press
@@ -57,8 +55,8 @@ x11::Event ConvertGdkEventToKeyEvent(GdkEvent* gdk_event) {
   GdkKeymapKey keymap_key{0, 0, 0};
   if (keys) {
     for (gint i = 0; i < n_entries; i++) {
-      if (keyvals[i] == keyval) {
-        keymap_key = keys[i];
+      if (UNSAFE_TODO(keyvals[i]) == keyval) {
+        keymap_key = UNSAFE_TODO(keys[i]);
         break;
       }
     }
@@ -100,8 +98,9 @@ void ProcessGdkEvent(GdkEvent* gdk_event) {
   auto event_type = gtk::GtkCheckVersion(4)
                         ? gtk::GdkEventGetEventType(gdk_event)
                         : *reinterpret_cast<GdkEventType*>(gdk_event);
-  if (event_type != GdkKeyPress() && event_type != GdkKeyRelease())
+  if (event_type != GdkKeyPress() && event_type != GdkKeyRelease()) {
     return;
+  }
 
   // We want to process the gtk event; mapped to an X11 event immediately
   // otherwise if we put it back on the queue we may get items out of order.
@@ -110,11 +109,12 @@ void ProcessGdkEvent(GdkEvent* gdk_event) {
 
 }  // namespace
 
-GtkEventLoopX11::GtkEventLoopX11(GtkWidget* widget) {
+GtkEventLoopX11::GtkEventLoopX11() {
   if (gtk::GtkCheckVersion(4)) {
-    surface_ = gtk_native_get_surface(gtk_widget_get_native(widget));
+    auto* surface =
+        gtk_native_get_surface(gtk_widget_get_native(GetDummyWindow()));
     signal_ = ScopedGSignal(
-        surface_, "event",
+        surface, "event",
         base::BindRepeating(&GtkEventLoopX11::OnEvent, base::Unretained(this)));
   } else {
     gdk_event_handler_set(DispatchGdkEvent, nullptr, nullptr);

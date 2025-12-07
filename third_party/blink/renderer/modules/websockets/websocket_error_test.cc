@@ -90,7 +90,7 @@ TEST_F(WebSocketErrorTest, ConstructWithEmptyReason) {
 
 TEST_F(WebSocketErrorTest, ConstructWithInvalidCloseCode) {
   V8TestingScope scope;
-  ExceptionState& exception_state = scope.GetExceptionState();
+  DummyExceptionStateForTesting& exception_state = scope.GetExceptionState();
   auto* error = CreateError(1005, String(), exception_state);
   EXPECT_FALSE(error);
   ASSERT_TRUE(exception_state.HadException());
@@ -104,7 +104,7 @@ TEST_F(WebSocketErrorTest, ConstructWithInvalidCloseCode) {
 
 TEST_F(WebSocketErrorTest, ConstructWithOverlongReason) {
   V8TestingScope scope;
-  ExceptionState& exception_state = scope.GetExceptionState();
+  DummyExceptionStateForTesting& exception_state = scope.GetExceptionState();
   StringBuilder builder;
   for (int i = 0; i < 32; ++i) {
     // Sparkling Heart emoji. Takes 4 bytes when encoded as unicode.

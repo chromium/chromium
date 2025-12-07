@@ -18,6 +18,9 @@ found in the LICENSE file.
     <color name="empty_state_icon_bg_color">@color/material_primary_20</color>
     <color name="empty_state_icon_bg_background_color">@color/material_primary_10</color>
     <color name="empty_state_icon_bg_foreground_color">@color/material_primary_20</color>
-    <color name="empty_state_icon_tabswitcher_bg_color">@macro/default_bg_color_elev_0</color>
-    <color name="empty_state_tab_group_border_color">@color/material_primary_80</color>
+    <color name="empty_state_asset_bg_color">@color/material_primary_30</color>
+    <color name="empty_state_asset_bg_color_tab_group">@color/material_primary_40</color>
+    <color name="empty_state_asset_bg_color_tab_container">@color/material_primary_20</color>
+    <color name="empty_state_asset_bg_color_tab_outline">@color/material_primary_80</color>
+    <color name="empty_state_asset_bg_color_empty_tab_fill">@color/material_secondary_50</color>
 </resources>

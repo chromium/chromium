@@ -11,18 +11,20 @@
 namespace blink {
 
 class Internals;
+class V8EffectiveConnectionType;
 
 class InternalsNetInfo {
   STATIC_ONLY(InternalsNetInfo);
 
  public:
-  static void setNetworkConnectionInfoOverride(Internals& internals,
-                                               bool on_line,
-                                               const String& type,
-                                               const String& effective_type,
-                                               uint32_t http_rtt_msec,
-                                               double downlink_max_mbps,
-                                               ExceptionState& exception_state);
+  static void setNetworkConnectionInfoOverride(
+      Internals& internals,
+      bool on_line,
+      const String& type,
+      const V8EffectiveConnectionType& effective_type,
+      uint32_t http_rtt_msec,
+      double downlink_max_mbps,
+      ExceptionState& exception_state);
   static void setSaveDataEnabled(Internals&, bool enabled);
 
   static void clearNetworkConnectionInfoOverride(Internals&);

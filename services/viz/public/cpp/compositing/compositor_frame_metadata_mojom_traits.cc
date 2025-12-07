@@ -10,6 +10,7 @@
 #include "services/viz/public/cpp/compositing/compositor_frame_transition_directive_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/selection_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/surface_id_mojom_traits.h"
+#include "services/viz/public/cpp/compositing/trees_in_viz_timing_mojom_traits.h"
 #include "services/viz/public/cpp/crash_keys.h"
 #include "skia/public/mojom/skcolor4f_mojom_traits.h"
 #include "third_party/blink/public/common/tokens/tokens_mojom_traits.h"
@@ -37,6 +38,9 @@ bool StructTraits<viz::mojom::CompositorFrameMetadataDataView,
   out->page_scale_factor = data.page_scale_factor();
   if (!data.ReadScrollableViewportSize(&out->scrollable_viewport_size))
     return false;
+  if (!data.ReadVisibleViewportSize(&out->visible_viewport_size)) {
+    return false;
+  }
 
   if (data.frame_token() == 0u)
     return false;
@@ -52,8 +56,10 @@ bool StructTraits<viz::mojom::CompositorFrameMetadataDataView,
   out->may_throttle_if_undrawn_frames = data.may_throttle_if_undrawn_frames();
   out->has_shared_element_resources = data.has_shared_element_resources();
   out->is_handling_interaction = data.is_handling_interaction();
+  out->is_handling_animation = data.is_handling_animation();
   out->send_frame_token_to_embedder = data.send_frame_token_to_embedder();
   out->min_page_scale_factor = data.min_page_scale_factor();
+  out->is_mobile_optimized = data.is_mobile_optimized();
   out->is_software = data.is_software();
   if (data.top_controls_visible_height_set()) {
     out->top_controls_visible_height.emplace(
@@ -75,7 +81,8 @@ bool StructTraits<viz::mojom::CompositorFrameMetadataDataView,
         data.ReadCaptureBounds(&out->capture_bounds) &&
         data.ReadOffsetTagDefinitions(&out->offset_tag_definitions) &&
         data.ReadOffsetTagValues(&out->offset_tag_values) &&
-        data.ReadFrameIntervalInputs(&out->frame_interval_inputs))) {
+        data.ReadFrameIntervalInputs(&out->frame_interval_inputs) &&
+        data.ReadTreesInVizTiming(&out->trees_in_viz_timing_details))) {
     return false;
   }
 

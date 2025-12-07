@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/metrics/histogram_macros.h"
 #include "base/time/default_tick_clock.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/render_frame_host.h"
@@ -58,11 +59,19 @@ AudioContextManagerImpl::~AudioContextManagerImpl() {
       RecordAudibleTime(now - entry.second);
   }
   pending_audible_durations_.clear();
+  UMA_HISTOGRAM_EXACT_LINEAR("WebAudio.AudioContext.ConcurrentAudioContexts",
+                             max_concurrent_audio_contexts_,
+                             /*exclusive_max=*/101);
 }
 
 void AudioContextManagerImpl::AudioContextAudiblePlaybackStarted(
-    int32_t audio_context_id) {
-  DCHECK(pending_audible_durations_[audio_context_id].is_null());
+    uint32_t audio_context_id) {
+  if (!pending_audible_durations_[audio_context_id].is_null()) {
+    mojo::ReportBadMessage(
+        "AudioContextAudiblePlaybackStarted() called more than once with the "
+        "same audio_context_id");
+    return;
+  }
 
   // Keeps track of the start audible time for this context.
   pending_audible_durations_[audio_context_id] = clock_->NowTicks();
@@ -72,7 +81,7 @@ void AudioContextManagerImpl::AudioContextAudiblePlaybackStarted(
 }
 
 void AudioContextManagerImpl::AudioContextAudiblePlaybackStopped(
-    int32_t audio_context_id) {
+    uint32_t audio_context_id) {
   base::TimeTicks then = pending_audible_durations_[audio_context_id];
   DCHECK(!then.is_null());
 
@@ -103,6 +112,16 @@ void AudioContextManagerImpl::RecordAudibleTime(base::TimeDelta audible_time) {
       .SetIsMainFrame(render_frame_host().IsInPrimaryMainFrame())
       .SetAudibleTime(GetBucketedTimeInMilliseconds(audible_time))
       .Record(ukm_recorder);
+}
+
+void AudioContextManagerImpl::AudioContextCreated(uint32_t audio_context_id) {
+  concurrent_audio_context_ids_.insert(audio_context_id);
+  max_concurrent_audio_contexts_ = std::max(
+      max_concurrent_audio_contexts_, concurrent_audio_context_ids_.size());
+}
+
+void AudioContextManagerImpl::AudioContextClosed(uint32_t audio_context_id) {
+  concurrent_audio_context_ids_.erase(audio_context_id);
 }
 
 }  // namespace content

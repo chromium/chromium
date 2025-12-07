@@ -1,0 +1,15 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("core") {
+  sources = [
+    "search_strings_update_listener.cc",
+    "search_strings_update_listener.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+  ]
+}

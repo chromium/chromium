@@ -52,9 +52,9 @@ Internal Notes
   to poll for data much faster than the Fetch() cadence to ensure that (a)
   we trigger watchdog callbacks close to when the event occurs, and (b) we
   don't miss a pattern match altogether.
-- If internal buffer is filled to its max limit, oldest entries will be
-  purged to make room for new ones. This should only happen on repeated
-  failures.
+- If internal buffer is filled to its max limit, buffer fills will temporarily
+  be halted to give the aggregator a chance to consume the data. This should
+  only happen on repeated failures.
 
 **LocalDataSource**
 
@@ -76,8 +76,3 @@ Internal Notes
 - Internal buffer will collect a chunk (N lines) from the file on each
   iteration
 - Due to the nature of the data, LogSources only support REGEX watchdogs
-
-Helpful Links
--------------
-
-- Latest design doc: go/cfm-lacros-feedback

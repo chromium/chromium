@@ -8,6 +8,10 @@
 #include "device/gamepad/gamepad_export.h"
 #include "device/gamepad/public/mojom/gamepad.mojom.h"
 
+namespace content {
+class RenderFrameHost;
+}  // namespace content
+
 namespace device {
 
 class DEVICE_GAMEPAD_EXPORT GamepadHapticsManager
@@ -21,6 +25,7 @@ class DEVICE_GAMEPAD_EXPORT GamepadHapticsManager
   ~GamepadHapticsManager() override;
 
   static void Create(
+      content::RenderFrameHost* host,
       mojo::PendingReceiver<mojom::GamepadHapticsManager> receiver);
 
   // mojom::GamepadHapticsManager implementation.

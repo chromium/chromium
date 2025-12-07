@@ -72,13 +72,13 @@ export class CrPolicyPrefIndicatorElement extends PolymerElement {
     };
   }
 
-  iconAriaLabel: string;
-  indicatorIcon: string;
-  indicatorType: CrPolicyIndicatorType;
-  indicatorTooltip: string;
-  indicatorVisible: boolean;
-  pref?: chrome.settingsPrivate.PrefObject;
-  associatedValue?: any;
+  declare iconAriaLabel: string;
+  declare indicatorIcon: string;
+  declare indicatorType: CrPolicyIndicatorType;
+  declare indicatorTooltip: string;
+  declare indicatorVisible: boolean;
+  declare pref?: chrome.settingsPrivate.PrefObject;
+  declare associatedValue?: any;
 
   /**
    * @return True if the indicator should be shown.
@@ -88,7 +88,7 @@ export class CrPolicyPrefIndicatorElement extends PolymerElement {
   }
 
   /**
-   * @return {string} The iron-icon icon name.
+   * @return {string} The cr-icon icon name.
    */
   private getIndicatorIcon_(type: CrPolicyIndicatorType): string {
     switch (type) {
@@ -131,7 +131,7 @@ export class CrPolicyPrefIndicatorElement extends PolymerElement {
         return name.length > 0 ?
             CrPolicyStrings.controlledSettingExtension!.replace('$1', name) :
             CrPolicyStrings.controlledSettingExtensionWithoutName!;
-      // <if expr="chromeos_ash">
+      // <if expr="is_chromeos">
       case CrPolicyIndicatorType.PRIMARY_USER:
         return CrPolicyStrings.controlledSettingShared!.replace('$1', name);
       case CrPolicyIndicatorType.OWNER:
@@ -149,6 +149,8 @@ export class CrPolicyPrefIndicatorElement extends PolymerElement {
         return CrPolicyStrings.controlledSettingParent!;
       case CrPolicyIndicatorType.CHILD_RESTRICTION:
         return CrPolicyStrings.controlledSettingChildRestriction!;
+      default:
+        break;
     }
     return '';
   }
@@ -192,6 +194,8 @@ export class CrPolicyPrefIndicatorElement extends PolymerElement {
           return CrPolicyIndicatorType.PARENT;
         case chrome.settingsPrivate.ControlledBy.CHILD_RESTRICTION:
           return CrPolicyIndicatorType.CHILD_RESTRICTION;
+        default:
+          break;
       }
     }
     if (enforcement === chrome.settingsPrivate.Enforcement.PARENT_SUPERVISED) {

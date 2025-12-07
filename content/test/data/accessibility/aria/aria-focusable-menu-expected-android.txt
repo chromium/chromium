@@ -1,0 +1,7 @@
+android.webkit.WebView focusable focused
+++android.widget.Button role_description='menu pop up button' clickable expanded focusable interesting name='Actions' expanded_state=3
+++android.view.View role_description='menu' collection focusable name='Actions' item_count=4 row_count=4 column_count=1
+++++android.view.MenuItem role_description='menu item' clickable collection_item focusable interesting name='New'
+++++android.view.MenuItem role_description='menu item' clickable collection_item focusable interesting name='Open' item_index=1 row_index=1
+++++android.view.MenuItem role_description='menu item' clickable collection_item focusable interesting name='Save' item_index=2 row_index=2
+++++android.view.MenuItem role_description='menu item' clickable collection_item focusable interesting name='Quit' item_index=3 row_index=3

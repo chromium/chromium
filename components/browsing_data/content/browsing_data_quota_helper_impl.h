@@ -13,7 +13,6 @@
 #include <utility>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/browsing_data/content/browsing_data_quota_helper.h"
@@ -33,10 +32,7 @@ class QuotaManager;
 class BrowsingDataQuotaHelperImpl : public BrowsingDataQuotaHelper {
  public:
   void StartFetching(FetchResultCallback callback) override;
-  void DeleteHostData(const std::string& host,
-                      blink::mojom::StorageType type) override;
   void DeleteStorageKeyData(const blink::StorageKey& storage_key,
-                            blink::mojom::StorageType type,
                             base::OnceClosure completed) override;
 
   explicit BrowsingDataQuotaHelperImpl(storage::QuotaManager* quota_manager);
@@ -46,8 +42,6 @@ class BrowsingDataQuotaHelperImpl : public BrowsingDataQuotaHelper {
       delete;
 
  private:
-  using PendingHosts =
-      std::set<std::pair<std::string, blink::mojom::StorageType>>;
   using QuotaInfoMap = std::map<blink::StorageKey, QuotaInfo>;
 
   ~BrowsingDataQuotaHelperImpl() override;
@@ -56,15 +50,12 @@ class BrowsingDataQuotaHelperImpl : public BrowsingDataQuotaHelper {
   void FetchQuotaInfoOnIOThread(FetchResultCallback callback);
 
   // Callback function for QuotaManager::GetStorageKeysForType.
-  void GotStorageKeys(QuotaInfoMap* quota_info,
-                      base::OnceClosure completion,
-                      blink::mojom::StorageType type,
+  void GotStorageKeys(FetchResultCallback callback,
                       const std::set<blink::StorageKey>& storage_keys);
 
   // Callback function for QuotaManager::GetStorageKeyUsage.
   void GotStorageKeyUsage(QuotaInfoMap* quota_info,
                           const blink::StorageKey& storage_key,
-                          blink::mojom::StorageType type,
                           int64_t usage,
                           blink::mojom::UsageBreakdownPtr usage_breakdown);
 
@@ -72,11 +63,7 @@ class BrowsingDataQuotaHelperImpl : public BrowsingDataQuotaHelper {
   void OnGetHostsUsageComplete(FetchResultCallback callback,
                                QuotaInfoMap* quota_info);
 
-  void DeleteHostDataOnIOThread(const std::string& host,
-                                blink::mojom::StorageType type);
-
   void DeleteStorageKeyDataOnIOThread(const blink::StorageKey& storage_key,
-                                      blink::mojom::StorageType type,
                                       base::OnceClosure completed);
 
   void OnStorageKeyDeletionCompleted(base::OnceClosure completed,

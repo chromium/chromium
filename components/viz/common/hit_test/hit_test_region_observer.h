@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/observer_list_types.h"
 #include "components/viz/common/hit_test/aggregated_hit_test_region.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 
@@ -15,14 +16,14 @@ namespace viz {
 // An observer to be used within a Viz Host. Allows for notifications of when
 // updated hit test regions have been provided. See HostFrameSinkManager for
 // usage.
-class HitTestRegionObserver {
+class HitTestRegionObserver : public base::CheckedObserver {
  public:
   HitTestRegionObserver() = default;
 
   HitTestRegionObserver(const HitTestRegionObserver&) = delete;
   HitTestRegionObserver& operator=(const HitTestRegionObserver&) = delete;
 
-  virtual ~HitTestRegionObserver() = default;
+  ~HitTestRegionObserver() override = default;
 
   virtual void OnAggregatedHitTestRegionListUpdated(
       const FrameSinkId& frame_sink_id,

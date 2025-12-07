@@ -22,6 +22,7 @@ class FakeDesktopMediaList : public DesktopMediaList {
 
   void AddSource(int id);
   void AddSourceByFullMediaID(content::DesktopMediaID media_id);
+  void AddChromiumWindowSource(int id);
   void RemoveSource(int index);
   void MoveSource(int old_index, int new_index);
   void SetSourceThumbnail(int index);
@@ -50,6 +51,7 @@ class FakeDesktopMediaList : public DesktopMediaList {
   void ClearDelegatedSourceListSelection() override;
   void FocusList() override;
   void HideList() override;
+  void ShowDelegatedList() override;
 
  private:
   std::vector<Source> sources_;

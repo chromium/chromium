@@ -6,7 +6,7 @@
 #define IOS_WEB_PUBLIC_SESSION_SESSION_CERTIFICATE_POLICY_CACHE_H_
 
 #import "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "net/cert/cert_status_flags.h"
 
 namespace net {
@@ -51,7 +51,7 @@ class SessionCertificatePolicyCache {
 
  private:
   // The WebState's BrowserState used for retrieving the CertificatePolicyCache.
-  raw_ptr<BrowserState> browser_state_;
+  raw_ptr<BrowserState, DanglingUntriaged> browser_state_;
 };
 
 }  // namespace web

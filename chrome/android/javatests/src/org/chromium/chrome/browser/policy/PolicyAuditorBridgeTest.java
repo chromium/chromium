@@ -8,7 +8,6 @@ import android.content.Context;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -16,20 +15,20 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.chrome.browser.AppHooks;
-import org.chromium.chrome.browser.AppHooksImpl;
 import org.chromium.chrome.browser.policy.PolicyAuditor.AuditEvent;
-import org.chromium.chrome.browser.policy.PolicyAuditorBridgeTest.FakePolicyAuditor.Entry;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.Page;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.url.GURL;
 
@@ -39,29 +38,18 @@ import java.util.ArrayList;
 @RunWith(ChromeJUnit4ClassRunner.class)
 // TODO(crbug.com/344672097): Failing when batched, batch this again.
 public class PolicyAuditorBridgeTest {
-    static class FakePolicyAuditor extends PolicyAuditor {
-        private static FakePolicyAuditor sInstance;
+    private static class Entry {
+        final int mEvent;
+        final String mUrl;
 
-        private FakePolicyAuditor() {
-            mEntries = new ArrayList<>();
+        public Entry(int event, String url) {
+            mEvent = event;
+            mUrl = url;
         }
+    }
 
-        static class Entry {
-            int mEvent;
-            String mUrl;
-
-            public Entry(int event, String url) {
-                mEvent = event;
-                mUrl = url;
-            }
-        }
-
-        private ArrayList<Entry> mEntries;
-
-        public static FakePolicyAuditor get() {
-            if (sInstance == null) sInstance = new FakePolicyAuditor();
-            return sInstance;
-        }
+    private static class FakePolicyAuditor extends PolicyAuditor {
+        final ArrayList<Entry> mEntries = new ArrayList<>();
 
         public Entry getEntry(int index) {
             return mEntries.get(index);
@@ -71,10 +59,6 @@ public class PolicyAuditorBridgeTest {
             return mEntries.size();
         }
 
-        public void clearEntries() {
-            mEntries.clear();
-        }
-
         @Override
         public void notifyAuditEvent(
                 Context context, @AuditEvent int event, String url, String message) {
@@ -82,50 +66,28 @@ public class PolicyAuditorBridgeTest {
         }
     }
 
-    @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    private static final FakePolicyAuditor sFakePolicyAuditor = new FakePolicyAuditor();
 
     @Rule
-    public final BlankCTATabInitialStateRule mInitialStateRule =
-            new BlankCTATabInitialStateRule(mActivityTestRule, false);
+    public final AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     @BeforeClass
-    public static void beforeClass() {
-        AppHooks.setInstanceForTesting(
-                new AppHooksImpl() {
-                    @Override
-                    public PolicyAuditor getPolicyAuditor() {
-                        return FakePolicyAuditor.get();
-                    }
-                });
+    public static void setUpClass() {
+        ServiceLoaderUtil.setInstanceForTesting(PolicyAuditor.class, sFakePolicyAuditor);
     }
 
     @Before
     public void setUp() {
-        clearFakePolicyAuditor();
-    }
-
-    @After
-    public void tearDown() {
-        clearFakePolicyAuditor();
-    }
-
-    public FakePolicyAuditor getFakePolicyAuditor() {
-        PolicyAuditor policyAuditor = AppHooks.get().getPolicyAuditor();
-        Assert.assertTrue(policyAuditor instanceof FakePolicyAuditor);
-        return (FakePolicyAuditor) policyAuditor;
-    }
-
-    public void clearFakePolicyAuditor() {
-        getFakePolicyAuditor().clearEntries();
+        sFakePolicyAuditor.mEntries.clear();
     }
 
     @Test
     @SmallTest
     public void testSuccessfulNavigation() {
-        mActivityTestRule.loadUrl(UrlConstants.VERSION_URL);
+        mActivityTestRule.startOnWebPage(UrlConstants.VERSION_URL);
 
-        FakePolicyAuditor fakePolicyAuditor = getFakePolicyAuditor();
+        FakePolicyAuditor fakePolicyAuditor = sFakePolicyAuditor;
         Assert.assertEquals(1, fakePolicyAuditor.getEntriesSize());
         Entry entry = fakePolicyAuditor.getEntry(0);
         Assert.assertEquals(AuditEvent.OPEN_URL_SUCCESS, entry.mEvent);
@@ -135,17 +97,20 @@ public class PolicyAuditorBridgeTest {
     @Test
     @SmallTest
     public void testUnsuccessfulNavigation() throws Exception {
+        WebPageStation page = mActivityTestRule.startOnBlankPage();
+
         String invalidUrl = "https://invalid/";
 
         // Can't use the activity test rule to navigate to invalid urls, the rule has an assert that
         // fails the testcase upon unsuccessful navigations. So, use the tab directly to navigate to
         // the invalid url.
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = page.getTab();
         final CallbackHelper loadFinishCallback = new CallbackHelper();
         WebContentsObserver observer =
                 new WebContentsObserver() {
                     @Override
                     public void didFinishLoadInPrimaryMainFrame(
+                            Page page,
                             GlobalRenderFrameHostId rfhId,
                             GURL url,
                             boolean isKnownValid,
@@ -155,7 +120,7 @@ public class PolicyAuditorBridgeTest {
                 };
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    tab.getWebContents().addObserver(observer);
+                    observer.observe(tab.getWebContents());
                     tab.loadUrl(new LoadUrlParams(invalidUrl));
                 });
 
@@ -164,11 +129,11 @@ public class PolicyAuditorBridgeTest {
         } finally {
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
-                        tab.getWebContents().removeObserver(observer);
+                        observer.observe(null);
                     });
         }
 
-        FakePolicyAuditor fakePolicyAuditor = (FakePolicyAuditor) AppHooks.get().getPolicyAuditor();
+        FakePolicyAuditor fakePolicyAuditor = (FakePolicyAuditor) PolicyAuditor.maybeCreate();
 
         // After a failed navigation that is not caused by the url being blocked by an
         // administrator, we expect an OPEN_URL_FAILURE entry from didFinishNavigation, followed by

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gl/shader_tracking.h"
 
 #include "base/check.h"
@@ -34,14 +29,14 @@ ShaderTracking* ShaderTracking::GetInstance() {
 void ShaderTracking::GetShaders(std::string* shader0, std::string* shader1) {
   DCHECK(shader0 && shader1);
   base::AutoLock auto_lock(lock_);
-  *shader0 = shaders_[0];
-  *shader1 = shaders_[1];
+  *shader0 = shader0_;
+  *shader1 = shader1_;
 }
 
 void ShaderTracking::SetShaders(const char* shader0, const char* shader1) {
   base::AutoLock auto_lock(lock_);
-  shaders_[0] = shader0 ? shader0 : "";
-  shaders_[1] = shader1 ? shader1 : "";
+  shader0_ = shader0 ? shader0 : "";
+  shader1_ = shader1 ? shader1 : "";
 }
 
 }  // namespace gl

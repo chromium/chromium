@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
+
+#include "base/compiler_specific.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -133,11 +131,11 @@ TEST_F(DepthTextureTest, RenderTo) {
   glUseProgram(program);
   glUniform2f(resolution_loc, kResolution, kResolution);
 
-  static const FormatType format_types[] = {
-    { GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT },
-    { GL_DEPTH_COMPONENT, GL_UNSIGNED_INT },
-    { GL_DEPTH_STENCIL_OES, GL_UNSIGNED_INT_24_8_OES },
-  };
+  static const auto format_types = std::to_array<FormatType>({
+      {GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT},
+      {GL_DEPTH_COMPONENT, GL_UNSIGNED_INT},
+      {GL_DEPTH_STENCIL_OES, GL_UNSIGNED_INT_24_8_OES},
+  });
   for (size_t ii = 0; ii < std::size(format_types); ++ii) {
     const FormatType& format_type = format_types[ii];
     GLenum format = format_type.format;
@@ -186,12 +184,9 @@ TEST_F(DepthTextureTest, RenderTo) {
       continue;
     }
 
-    uint8_t actual_pixels[kResolution * kResolution * 4] = {
-        0,
-    };
-    glReadPixels(
-        0, 0, kResolution, kResolution, GL_RGBA, GL_UNSIGNED_BYTE,
-        actual_pixels);
+    std::array<uint8_t, kResolution * kResolution * 4> actual_pixels = {};
+    glReadPixels(0, 0, kResolution, kResolution, GL_RGBA, GL_UNSIGNED_BYTE,
+                 actual_pixels.data());
 
     if (!GLTestHelper::CheckGLError("no errors after readpixels", __LINE__)) {
       continue;
@@ -206,8 +201,8 @@ TEST_F(DepthTextureTest, RenderTo) {
     for (GLint yy = 0; bad_count < 16 && yy < kResolution; ++yy) {
       for (GLint xx = 0; bad_count < 16 && xx < kResolution; ++xx) {
         const uint8_t* actual = &actual_pixels[(yy * kResolution + xx) * 4];
-        const uint8_t* left = actual - 4;
-        const uint8_t* down = actual - kResolution * 4;
+        const uint8_t* left = UNSAFE_TODO(actual - 4);
+        const uint8_t* down = UNSAFE_TODO(actual - kResolution * 4);
 
         // NOTE: Qualcomm on Nexus 4 the right most column has the same
         // values as the next to right most column. (bad interpolator?)

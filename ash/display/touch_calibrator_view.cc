@@ -20,6 +20,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/label.h"
@@ -39,6 +40,10 @@ constexpr auto kPointMoveDurationLong = base::Milliseconds(500);
 const SkColor kExitLabelColor = SkColorSetARGB(255, 138, 138, 138);
 constexpr int kExitLabelWidth = 300;
 constexpr int kExitLabelHeight = 20;
+
+const SkColor kSkipLabelColor = SkColorSetARGB(255, 138, 138, 138);
+constexpr int kSkipLabelWidth = 500;
+constexpr int kSkipLabelHeight = 30;
 
 const SkColor kTapHereLabelColor = SK_ColorWHITE;
 
@@ -291,12 +296,14 @@ class HintBox : public views::View {
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
+  void OnAccessibilityInitializing(ui::AXNodeData* data) override;
 
   void SetLabel(const std::u16string& text, const SkColor& color);
   void SetSubLabel(const std::u16string& text, const SkColor& color);
 
  private:
   void UpdateWidth(int updated_width);
+  void UpdateAccessibleName();
 
   std::u16string label_text_;
   std::u16string sublabel_text_;
@@ -361,6 +368,7 @@ HintBox::HintBox(const gfx::Rect& bounds, int border_radius)
 
   sublabel_text_bounds_.SetRect(horizontal_offset_, top_offset, 0,
                                 label_height);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kTooltip);
 }
 
 HintBox::~HintBox() = default;
@@ -388,6 +396,8 @@ void HintBox::SetLabel(const std::u16string& text, const SkColor& color) {
       size.width() + 2 * horizontal_offset_ - arrow_width_;
   if (minimum_expected_width > rounded_rect_bounds_.width())
     UpdateWidth(minimum_expected_width);
+
+  UpdateAccessibleName();
 }
 
 void HintBox::SetSubLabel(const std::u16string& text, const SkColor& color) {
@@ -408,6 +418,8 @@ void HintBox::SetSubLabel(const std::u16string& text, const SkColor& color) {
       size.width() + 2 * horizontal_offset_ - arrow_width_;
   if (minimum_expected_width > rounded_rect_bounds_.width())
     UpdateWidth(minimum_expected_width);
+
+  UpdateAccessibleName();
 }
 
 void HintBox::OnPaint(gfx::Canvas* canvas) {
@@ -418,6 +430,19 @@ void HintBox::OnPaint(gfx::Canvas* canvas) {
   canvas->DrawStringRectWithFlags(sublabel_text_, sublabel_font_list_,
                                   sublabel_color_, sublabel_text_bounds_,
                                   gfx::Canvas::NO_ELLIPSIS);
+}
+void HintBox::OnAccessibilityInitializing(ui::AXNodeData* ax_data) {
+  views::View::OnAccessibilityInitializing(ax_data);
+  UpdateAccessibleName();
+}
+
+void HintBox::UpdateAccessibleName() {
+  // Combine the two text fields into one accessible name for Chromevox to read.
+  std::u16string accessible_name = label_text_;
+  if (!sublabel_text_.empty()) {
+    accessible_name += u" " + sublabel_text_;
+  }
+  GetViewAccessibility().SetName(accessible_name);
 }
 
 BEGIN_METADATA(HintBox)
@@ -465,6 +490,8 @@ CompletionMessageView::CompletionMessageView(const gfx::Rect& bounds,
   flags_.setColor(SK_ColorWHITE);
   flags_.setStyle(cc::PaintFlags::kFill_Style);
   flags_.setAntiAlias(true);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kTooltip);
+  GetViewAccessibility().SetName(message);
 }
 
 CompletionMessageView::~CompletionMessageView() = default;
@@ -484,26 +511,28 @@ END_METADATA
 // static
 views::UniqueWidgetPtr TouchCalibratorView::Create(
     const display::Display& target_display,
-    bool is_primary_view) {
+    bool is_primary_view,
+    bool is_for_touchscreen_mapping) {
   aura::Window* root = Shell::GetRootWindowForDisplayId(target_display.id());
   views::UniqueWidgetPtr widget(
       std::make_unique<views::Widget>(GetWidgetParams(root)));
-  widget->SetContentsView(base::WrapUnique(
-      new TouchCalibratorView(target_display, is_primary_view)));
+  widget->SetContentsView(base::WrapUnique(new TouchCalibratorView(
+      target_display, is_primary_view, is_for_touchscreen_mapping)));
   widget->SetBounds(target_display.bounds());
   widget->Show();
   return widget;
 }
 
 TouchCalibratorView::TouchCalibratorView(const display::Display& target_display,
-                                         bool is_primary_view)
+                                         bool is_primary_view,
+                                         bool is_for_touchscreen_mapping)
     : views::AnimationDelegateViews(this),
       display_(target_display),
       is_primary_view_(is_primary_view),
       animator_(std::make_unique<gfx::LinearAnimation>(kFadeDuration,
                                                        kAnimationFrameRate,
                                                        this)) {
-  InitViewContents();
+  InitViewContents(is_for_touchscreen_mapping);
   AdvanceToNextState();
 }
 
@@ -512,7 +541,7 @@ TouchCalibratorView::~TouchCalibratorView() {
   animator_->End();
 }
 
-void TouchCalibratorView::InitViewContents() {
+void TouchCalibratorView::InitViewContents(bool is_for_touchscreen_mapping) {
   // Initialize the background rect.
   background_rect_ =
       gfx::RectF(0, 0, display_.bounds().width(), display_.bounds().height());
@@ -520,14 +549,27 @@ void TouchCalibratorView::InitViewContents() {
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   // Initialize exit label that informs the user how to exit the touch
   // calibration setup.
-  exit_label_ = AddChildView(std::make_unique<views::Label>(
-      rb.GetLocalizedString(IDS_DISPLAY_TOUCH_CALIBRATION_EXIT_LABEL),
-      views::Label::CustomFont{rb.GetFontListWithDelta(8)}));
-  exit_label_->SetBounds((display_.bounds().width() - kExitLabelWidth) / 2,
-                         display_.bounds().height() * 3.f / 4, kExitLabelWidth,
-                         kExitLabelHeight);
+  if (!is_for_touchscreen_mapping) {
+    exit_label_ = AddChildView(std::make_unique<views::Label>(
+        rb.GetLocalizedString(IDS_DISPLAY_TOUCH_CALIBRATION_EXIT_LABEL),
+        views::Label::CustomFont{rb.GetFontListWithDelta(8)}));
+    exit_label_->SetBounds((display_.bounds().width() - kExitLabelWidth) / 2,
+                           display_.bounds().height() * 3.f / 4,
+                           kExitLabelWidth, kExitLabelHeight);
+    exit_label_->SetEnabledColor(kExitLabelColor);
+  } else {
+    exit_label_ = AddChildView(std::make_unique<views::Label>(
+        rb.GetLocalizedString(
+            is_primary_view_
+                ? IDS_DISPLAY_TOUCH_CALIBRATION_PRIMARY_SKIP_LABEL
+                : IDS_DISPLAY_TOUCH_CALIBRATION_SECONDARY_SKIP_LABEL),
+        views::Label::CustomFont{rb.GetFontListWithDelta(8)}));
+    exit_label_->SetBounds((display_.bounds().width() - kSkipLabelWidth) / 2,
+                           display_.bounds().height() * 3.f / 4,
+                           kSkipLabelWidth, kSkipLabelHeight);
+    exit_label_->SetEnabledColor(kSkipLabelColor);
+  }
   exit_label_->SetAutoColorReadabilityEnabled(false);
-  exit_label_->SetEnabledColor(kExitLabelColor);
   exit_label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   exit_label_->SetSubpixelRenderingEnabled(false);
   exit_label_->SetVisible(false);
@@ -564,8 +606,11 @@ void TouchCalibratorView::InitViewContents() {
   tap_label_ = touch_point_view_->AddChildView(std::make_unique<views::Label>(
       rb.GetLocalizedString(IDS_DISPLAY_TOUCH_CALIBRATION_TAP_HERE_LABEL),
       views::Label::CustomFont{rb.GetFontListWithDelta(6)}));
-  tap_label_->SetBounds(0, kThrobberCircleViewWidth, kTapLabelWidth,
-                        kTapLabelHeight);
+  gfx::Size preferred_label_size = tap_label_->GetPreferredSize();
+  const int x = std::max(
+      (touch_point_view_->width() - preferred_label_size.width()) / 2, 0);
+  tap_label_->SetBounds(x, kThrobberCircleViewWidth,
+                        preferred_label_size.width(), kTapLabelHeight);
   tap_label_->SetEnabledColor(kTapHereLabelColor);
   tap_label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   tap_label_->SetAutoColorReadabilityEnabled(false);
@@ -664,6 +709,11 @@ void TouchCalibratorView::AnimationEnded(const gfx::Animation* animation) {
       if (is_primary_view_) {
         touch_point_view_->SetVisible(true);
         hint_box_view_->SetVisible(true);
+        // Notify about both new messages, but only once on primary view.
+        exit_label_->GetViewAccessibility().NotifyEvent(
+          ax::mojom::Event::kAlert, true);
+        hint_box_view_->GetViewAccessibility().NotifyEvent(
+            ax::mojom::Event::kAlert, true);
       }
       break;
     case BACKGROUND_FADING_OUT:
@@ -682,16 +732,29 @@ void TouchCalibratorView::OnLayerAnimationStarted(
 
 void TouchCalibratorView::OnLayerAnimationEnded(
     ui::LayerAnimationSequence* sequence) {
+  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   switch (state_) {
     case ANIMATING_1_TO_2:
       state_ = DISPLAY_POINT_2;
       tap_label_->SetVisible(true);
+      tap_label_->GetViewAccessibility().SetName(rb.GetLocalizedString(
+          IDS_DISPLAY_TOUCH_CALIBRATION_A11Y_TARGET_MOVED_TOP_RIGHT));
+      tap_label_->GetViewAccessibility().NotifyEvent(ax::mojom::Event::kAlert,
+                                                     true);
       break;
     case ANIMATING_2_TO_3:
       state_ = DISPLAY_POINT_3;
+      tap_label_->GetViewAccessibility().SetName(rb.GetLocalizedString(
+          IDS_DISPLAY_TOUCH_CALIBRATION_A11Y_TARGET_MOVED_BOTTOM_LEFT));
+      tap_label_->GetViewAccessibility().NotifyEvent(ax::mojom::Event::kAlert,
+                                                     true);
       break;
     case ANIMATING_3_TO_4:
       state_ = DISPLAY_POINT_4;
+      tap_label_->GetViewAccessibility().SetName(rb.GetLocalizedString(
+          IDS_DISPLAY_TOUCH_CALIBRATION_A11Y_TARGET_MOVED_BOTTOM_RIGHT));
+      tap_label_->GetViewAccessibility().NotifyEvent(ax::mojom::Event::kAlert,
+                                                     true);
       break;
     case ANIMATING_FINAL_MESSAGE:
       state_ = CALIBRATION_COMPLETE;
@@ -762,6 +825,11 @@ void TouchCalibratorView::AdvanceToNextState() {
       state_ = ANIMATING_FINAL_MESSAGE;
       completion_message_view_->layer()->SetOpacity(0.0f);
       completion_message_view_->SetVisible(true);
+      completion_message_view_->GetViewAccessibility().NotifyEvent(
+          ax::mojom::Event::kAlert, true);
+
+      exit_label_->GetViewAccessibility().NotifyEvent(ax::mojom::Event::kAlert,
+                                                      true);
 
       touch_point_view_->SetVisible(false);
 

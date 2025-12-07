@@ -5,6 +5,7 @@
 #include "components/viz/service/display/overlay_strategy_underlay_cast.h"
 
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/containers/adapters.h"
@@ -39,7 +40,7 @@ OverlayStrategyUnderlayCast::OverlayStrategyUnderlayCast(
     OverlayProcessorUsingStrategy* capability_checker)
     : OverlayStrategyUnderlay(capability_checker) {}
 
-OverlayStrategyUnderlayCast::~OverlayStrategyUnderlayCast() {}
+OverlayStrategyUnderlayCast::~OverlayStrategyUnderlayCast() = default;
 
 void OverlayStrategyUnderlayCast::Propose(
     const SkM44& output_color_matrix,
@@ -49,7 +50,7 @@ void OverlayStrategyUnderlayCast::Propose(
     const DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_pass_list,
     SurfaceDamageRectList* surface_damage_rect_list,
-    const PrimaryPlane* primary_plane,
+    const std::optional<OverlayCandidate>& primary_plane,
     std::vector<OverlayProposedCandidate>* candidates,
     std::vector<gfx::Rect>* content_bounds) {
   auto* render_pass = render_pass_list->back().get();
@@ -99,7 +100,7 @@ bool OverlayStrategyUnderlayCast::Attempt(
     const DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_pass_list,
     SurfaceDamageRectList* surface_damage_rect_list,
-    const PrimaryPlane* primary_plane,
+    const std::optional<OverlayCandidate>& primary_plane,
     OverlayCandidateList* candidate_list,
     std::vector<gfx::Rect>* content_bounds,
     const OverlayProposedCandidate& proposed_candidate) {
@@ -189,7 +190,7 @@ void OverlayStrategyUnderlayCast::CommitCandidate(
   DCHECK(GetVideoGeometrySetter());
   GetVideoGeometrySetter()->SetVideoGeometry(
       proposed_candidate.candidate.display_rect,
-      absl::get<gfx::OverlayTransform>(proposed_candidate.candidate.transform),
+      std::get<gfx::OverlayTransform>(proposed_candidate.candidate.transform),
       VideoHoleDrawQuad::MaterialCast(*proposed_candidate.quad_iter)
           ->overlay_plane_id);
 

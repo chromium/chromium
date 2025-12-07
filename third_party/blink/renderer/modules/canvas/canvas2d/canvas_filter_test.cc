@@ -23,15 +23,10 @@ namespace {
 
 using ::blink_testing::GarbageCollectedIs;
 using ::blink_testing::ParseFilter;
-using ::testing::ByRef;
-using ::testing::Combine;
 using ::testing::ElementsAreArray;
-using ::testing::Eq;
 using ::testing::Matcher;
-using ::testing::SizeIs;
 using ::testing::TestParamInfo;
 using ::testing::TestWithParam;
-using ::testing::Values;
 using ::testing::ValuesIn;
 
 struct CanvasFilterTestParams {
@@ -47,7 +42,8 @@ TEST_P(CanvasFilterTest, CreatesFilterOperations) {
   V8TestingScope scope;
   EXPECT_THAT(
       CanvasFilter::CreateFilterOperations(
-          CHECK_DEREF(ParseFilter(scope, GetParam().filter)), Font(),
+          CHECK_DEREF(ParseFilter(scope, GetParam().filter)),
+          MakeGarbageCollected<Font>(),
           /*style_resolution_host=*/nullptr,
           CHECK_DEREF(scope.GetExecutionContext()), scope.GetExceptionState())
           .Operations(),

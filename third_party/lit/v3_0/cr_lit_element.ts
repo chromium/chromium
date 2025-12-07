@@ -8,10 +8,15 @@ type ElementCache = Record<string, HTMLElement|SVGElement>;
 
 // Converts a 'nameLikeThis' to 'name-like-this'.
 function toDashCase(name: string): string {
-  return name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+  return name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
 }
 
 export class CrLitElement extends LitElement {
+  // Change default ShadowRoot|null type to ShadowRoot to avoid forcing all
+  // client code having to use `this.shadowRoot!` given that CrLitElement is
+  // used with a ShadowRoot in the vast majority of cases (possibly all).
+  declare readonly shadowRoot: ShadowRoot;
+
   $: ElementCache;
   private willUpdatePending_: boolean = false;
 
@@ -34,8 +39,9 @@ export class CrLitElement extends LitElement {
     this.$ = new Proxy({}, {
       get(cache: ElementCache, id: string): HTMLElement|SVGElement {
         if (!self.hasUpdated && !self.isConnected) {
-          throw new Error(`CrLitElement ${
-              self.tagName} $ dictionary accessed before element is connected at least once.`);
+          const description = self.tagName + (self.id ? `#${self.id}` : '');
+          throw new Error(`CrLitElement ${description} accessed '$.${
+              id}' before connected at least once.`);
         }
 
         if (!self.hasUpdated) {
@@ -43,8 +49,9 @@ export class CrLitElement extends LitElement {
           // performUpdate() call below will cause an endless recursion. Local
           // DOM nodes should not be accessed within willUpdate() anyway.
           if (self.willUpdatePending_) {
-            throw new Error(`CrLitElement ${
-                self.tagName} tried to access this.$ within willUpdate().`);
+            const description = self.tagName + (self.id ? `#${self.id}` : '');
+            throw new Error(`CrLitElement ${description} accessed '$.${
+                id}' within willUpdate().`);
           }
 
           // See Case3 in `ensureInitialRender` docs.
@@ -57,7 +64,7 @@ export class CrLitElement extends LitElement {
         }
 
         // Otherwise query the shadow DOM and cache the reference for later use.
-        const element = self.shadowRoot!.querySelector<HTMLElement>(`#${id}`);
+        const element = self.shadowRoot.querySelector<HTMLElement>(`#${id}`);
         if (element === null) {
           throw new Error(`CrLitElement ${
               self.tagName}: Failed to find child with id ${id}`);
@@ -132,18 +139,19 @@ export class CrLitElement extends LitElement {
             // 'undefined'.
             continue;
           }
-          this.fire(
+          this.dispatchEvent(new CustomEvent(
               `${toDashCase(key.toString())}-changed`,
-              {value: indexableThis[key]});
+              {detail: {value: indexableThis[key]}}));
         }
       }
     }
   }
 
-  override focus() {
+  override focus(
+      options?: {preventScroll?: boolean, focusVisible?: boolean}) {
     // See Case2 in `ensureInitialRender` docs.
     this.ensureInitialRender();
-    super.focus();
+    super.focus(options);
   }
 
   fire(eventName: string, detail?: any) {
@@ -151,12 +159,13 @@ export class CrLitElement extends LitElement {
         new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
   }
 
-  // Modifies the 'properties' object by automatically specifying
-  // "attribute: <attr_name>" for each reactive property where attr_name is a
-  // dash-case equivalent of the property's name. For example a 'fooBar'
-  // property will be mapped to a 'foo-bar' attribute, matching Polymer's
-  // behavior, instead of Lit's default behavior (which would map to 'foobar').
-  // This is done to make it easier to migrate Polymer elements to Lit.
+  // Modifies the 'properties' object by:
+  //  -  automatically specifying "attribute: <attr_name>" for each reactive
+  //     property where attr_name is a dash-case equivalent of the property's
+  //     name. For example a 'fooBar' property will be mapped to a 'foo-bar'
+  //     attribute, matching Polymer's behavior, instead of Lit's default
+  //     behavior (which would map to 'foobar'). This is done to make it easier
+  //     to migrate Polymer elements to Lit.
   private static patchPropertiesObject() {
     if (!this.hasOwnProperty('properties')) {
       // Return early if there's no `properties` block on the element.
@@ -167,16 +176,13 @@ export class CrLitElement extends LitElement {
 
     const properties = this.properties;
     for (const [key, value] of Object.entries(properties)) {
-      // Skip properties that explicitly specify the attribute name.
-      if (value.attribute != null) {
-        continue;
+      // Skip properties that explicitly specify 'attribute'.
+      if (value.attribute == null) {
+        type Mutable<T> = { -readonly[P in keyof T]: T[P]; };
+        // Specify a dash-case attribute name, derived from the property name,
+        // similar to what Polymer did.
+        (value as Mutable<typeof value>).attribute = toDashCase(key);
       }
-
-      type Mutable<T> = { -readonly[P in keyof T]: T[P]; };
-
-      // Specify a dash-case attribute name, derived from the property name,
-      // similar to what Polymer did.
-      (value as Mutable<typeof value>).attribute = toDashCase(key);
     }
 
     // Mutating the properties object alone isn't enough, in the case where

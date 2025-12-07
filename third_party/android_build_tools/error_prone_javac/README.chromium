@@ -1,7 +1,8 @@
 Name: Error Prone Javac
 Short Name: Error Prone Javac
 Version: 9+181-r4173-1
-License: GPLv2
+Update Mechanism: Autoroll
+License: GPL-2.0-with-classpath-exception
 License File: LICENSE
 Security Critical: No
 Shipped: no

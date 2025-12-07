@@ -28,7 +28,10 @@ InkDropEventHandler::InkDropEventHandler(View* host_view, Delegate* delegate)
           std::make_unique<ui::ScopedTargetHandler>(host_view, this)),
       host_view_(host_view),
       delegate_(delegate) {
-  observation_.Observe(host_view_.get());
+  view_observation_.Observe(host_view_.get());
+  if (Widget* widget = host_view_->GetWidget()) {
+    widget_observation_.Observe(widget);
+  }
 }
 
 InkDropEventHandler::~InkDropEventHandler() = default;
@@ -55,8 +58,9 @@ void InkDropEventHandler::AnimateToState(InkDropState state,
   // state the transition have no visual effect. The call to GetInkDrop() will
   // lazily create the ink drop when called. Avoid creating the ink drop in
   // these cases to prevent the creation of unnecessary layers.
-  if (delegate_->HasInkDrop() || InkDropStateIsVisible(state))
+  if (delegate_->HasInkDrop() || InkDropStateIsVisible(state)) {
     delegate_->GetInkDrop()->AnimateToState(state);
+  }
 }
 
 ui::LocatedEvent* InkDropEventHandler::GetLastRippleTriggeringEvent() const {
@@ -64,8 +68,9 @@ ui::LocatedEvent* InkDropEventHandler::GetLastRippleTriggeringEvent() const {
 }
 
 void InkDropEventHandler::OnGestureEvent(ui::GestureEvent* event) {
-  if (!host_view_->GetEnabled() || !delegate_->SupportsGestureEvents())
+  if (!host_view_->GetEnabled() || !delegate_->SupportsGestureEvents()) {
     return;
+  }
 
   InkDropState current_ink_drop_state =
       delegate_->GetInkDrop()->GetTargetInkDropState();
@@ -73,13 +78,15 @@ void InkDropEventHandler::OnGestureEvent(ui::GestureEvent* event) {
   InkDropState ink_drop_state = InkDropState::HIDDEN;
   switch (event->type()) {
     case ui::EventType::kGestureTapDown:
-      if (current_ink_drop_state == InkDropState::ACTIVATED)
+      if (current_ink_drop_state == InkDropState::ACTIVATED) {
         return;
+      }
       ink_drop_state = InkDropState::ACTION_PENDING;
       break;
     case ui::EventType::kGestureLongPress:
-      if (current_ink_drop_state == InkDropState::ACTIVATED)
+      if (current_ink_drop_state == InkDropState::ACTIVATED) {
         return;
+      }
       ink_drop_state = InkDropState::ALTERNATE_ACTION_PENDING;
       break;
     case ui::EventType::kGestureLongTap:
@@ -88,8 +95,9 @@ void InkDropEventHandler::OnGestureEvent(ui::GestureEvent* event) {
     case ui::EventType::kGestureEnd:
     case ui::EventType::kGestureScrollBegin:
     case ui::EventType::kGestureTapCancel:
-      if (current_ink_drop_state == InkDropState::ACTIVATED)
+      if (current_ink_drop_state == InkDropState::ACTIVATED) {
         return;
+      }
       ink_drop_state = InkDropState::HIDDEN;
       break;
     default:
@@ -131,12 +139,14 @@ std::string_view InkDropEventHandler::GetLogContext() const {
 }
 
 void InkDropEventHandler::OnViewVisibilityChanged(View* observed_view,
-                                                  View* starting_view) {
+                                                  View* starting_view,
+                                                  bool visible) {
   DCHECK_EQ(host_view_, observed_view);
   // A View is *actually* visible if its visible flag is set, all its ancestors'
   // visible flags are set, it's in a Widget, and the Widget is
   // visible. |View::IsDrawn()| captures the first two conditions.
-  const bool is_visible = host_view_->IsDrawn() && host_view_->GetWidget() &&
+  const bool is_visible = visible && host_view_->IsDrawn() &&
+                          host_view_->GetWidget() &&
                           host_view_->GetWidget()->IsVisible();
   if (!is_visible && delegate_->HasInkDrop()) {
     delegate_->GetInkDrop()->AnimateToState(InkDropState::HIDDEN);
@@ -159,8 +169,9 @@ void InkDropEventHandler::OnViewHierarchyChanged(
 
 void InkDropEventHandler::OnViewBoundsChanged(View* observed_view) {
   DCHECK_EQ(host_view_, observed_view);
-  if (delegate_->HasInkDrop())
+  if (delegate_->HasInkDrop()) {
     delegate_->GetInkDrop()->HostSizeChanged(host_view_->size());
+  }
 }
 
 void InkDropEventHandler::OnViewFocused(View* observed_view) {
@@ -179,6 +190,39 @@ void InkDropEventHandler::OnViewThemeChanged(View* observed_view) {
   // not want to create the ink drop when view theme changed.
   if (delegate_->HasInkDrop()) {
     delegate_->GetInkDrop()->HostViewThemeChanged();
+  }
+}
+
+void InkDropEventHandler::OnViewAddedToWidget(View* observed_view) {
+  CHECK_EQ(host_view_, observed_view);
+  if (!widget_observation_.IsObserving()) {
+    widget_observation_.Observe(host_view_->GetWidget());
+  }
+}
+
+void InkDropEventHandler::OnViewRemovedFromWidget(View* observed_view) {
+  CHECK_EQ(host_view_, observed_view);
+  // Only clean up ink drop and widget observation. Keep observing the view
+  // since it may be added to another widget later.
+  CleanupInkDrop();
+  widget_observation_.Reset();
+}
+
+void InkDropEventHandler::OnWidgetDestroying(Widget* widget) {
+  // Clean up everything including both observations since the widget is being
+  // destroyed.
+  CleanupInkDrop();
+  widget_observation_.Reset();
+  view_observation_.Reset();
+}
+
+void InkDropEventHandler::CleanupInkDrop() {
+  // Clean up ink drop state before the widget completes destruction. This
+  // prevents crashes when observer callbacks try to access widget components
+  // (like frame views) that have already been destroyed.
+  if (delegate_->HasInkDrop()) {
+    delegate_->GetInkDrop()->SnapToHidden();
+    delegate_->GetInkDrop()->SetHovered(false);
   }
 }
 

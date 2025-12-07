@@ -6,6 +6,7 @@
 #define ASH_WEBUI_PROJECTOR_APP_PROJECTOR_XHR_SENDER_H_
 
 #include <map>
+#include <optional>
 #include <string>
 
 #include "ash/webui/projector_app/projector_oauth_token_fetcher.h"
@@ -16,9 +17,7 @@
 #include "base/values.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
-namespace base {
 class GURL;
-}  // namespace base
 
 namespace network {
 class SimpleURLLoader;
@@ -100,7 +99,7 @@ class ProjectorXhrSender {
   void OnSimpleURLLoaderComplete(int request_id,
                                  SendRequestCallback callback,
                                  const std::string& token,
-                                 std::unique_ptr<std::string> response_body);
+                                 std::optional<std::string> response_body);
 
   // Validate the email address provided with xhr request
   bool IsValidEmail(const std::optional<std::string>& email_check);

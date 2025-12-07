@@ -10,9 +10,10 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Pair;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.R;
 import org.chromium.components.permissions.AndroidPermissionRequester;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -24,9 +25,10 @@ import org.chromium.ui.permissions.PermissionCallback;
 import java.util.function.Consumer;
 
 /**
- * Handles file access permission requests.
- * TODO(shaktisahu): Move this to a generic location, preferably ui/android.
+ * Handles file access permission requests. TODO(shaktisahu): Move this to a generic location,
+ * preferably ui/android.
  */
+@NullMarked
 public class FileAccessPermissionHelper {
     /**
      * Requests the storage permission from Java.
@@ -35,7 +37,7 @@ public class FileAccessPermissionHelper {
      * @param callback Callback to notify if the permission is granted or not.
      */
     public static void requestFileAccessPermission(
-            @NonNull WindowAndroid windowAndroid, final Callback<Boolean> callback) {
+            WindowAndroid windowAndroid, final Callback<Boolean> callback) {
         requestFileAccessPermissionHelper(
                 windowAndroid,
                 result -> {
@@ -54,7 +56,7 @@ public class FileAccessPermissionHelper {
     }
 
     static void requestFileAccessPermissionHelper(
-            @NonNull WindowAndroid windowAndroid, final Callback<Pair<Boolean, String>> callback) {
+            WindowAndroid windowAndroid, final Callback<Pair<Boolean, String>> callback) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
                 || windowAndroid.hasPermission(permission.WRITE_EXTERNAL_STORAGE)) {
             callback.onResult(Pair.create(true, null));
@@ -80,7 +82,7 @@ public class FileAccessPermissionHelper {
             return;
         }
 
-        Consumer<PropertyModel> requestPermissions =
+        Consumer<@Nullable PropertyModel> requestPermissions =
                 (model) -> {
                     PermissionCallback permissionCallback =
                             (permissions, grantResults) -> {
@@ -107,9 +109,7 @@ public class FileAccessPermissionHelper {
         if (windowAndroid.getModalDialogManager() != null) {
             AndroidPermissionRequester.showMissingPermissionDialog(
                     windowAndroid,
-                    context.getString(
-                            org.chromium.chrome.R.string
-                                    .missing_storage_permission_download_education_text),
+                    context.getString(R.string.missing_storage_permission_download_education_text),
                     requestPermissions,
                     callback.bind(Pair.create(false, null)));
         } else {

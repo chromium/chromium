@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0">
+  <title>Page with obscured element</title>
+  <style>
+    #target {
+      position: absolute;
+      left: 100px;
+      top: 100px;
+      width: 200px;
+      height: 100px;
+      z-index: 1;
+    }
+    #obstruction {
+      position: absolute;
+      left: 100px;
+      top: 100px;
+      width: 200px;
+      height: 100px;
+      z-index: 2;
+    }
+  </style>
+</head>
+<body>
+  <button id="target" aria-label="target">Target</button>
+  <button id="obstruction">Obstruction</button>
+</body>
+<script>
+  let target_button_clicked = false;
+  let obstruction_button_clicked = false;
+
+  const target_button = document.getElementById('target');
+  target_button.addEventListener('click', () => {
+    target_button_clicked = true;
+  });
+
+  const obstruction_button = document.getElementById('obstruction');
+  obstruction_button.addEventListener('click', () => {
+    obstruction_button_clicked = true;
+  });
+</script>
+</html>

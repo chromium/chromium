@@ -2,22 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/accessibility/platform/inspect/ax_tree_formatter_auralinux.h"
 
 #include <dbus/dbus.h>
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "ui/accessibility/platform/ax_platform_node_auralinux.h"
@@ -107,7 +104,11 @@ AtkObject* GetAtkObject(AXPlatformNodeDelegate* node) {
 base::Value::Dict AXTreeFormatterAuraLinux::BuildTree(
     AXPlatformNodeDelegate* root) const {
   base::Value::Dict dict;
-  RecursiveBuildTree(GetAtkObject(root), &dict);
+  AtkObject* atk_root = GetAtkObject(root);
+  if (!atk_root) {
+    return dict;
+  }
+  RecursiveBuildTree(atk_root, &dict);
   return dict;
 }
 
@@ -121,12 +122,15 @@ base::Value::Dict AXTreeFormatterAuraLinux::BuildNode(
 void AXTreeFormatterAuraLinux::RecursiveBuildTree(
     AtkObject* atk_node,
     base::Value::Dict* dict) const {
+  if (!atk_node || !dict) {
+    return;
+  }
+
   AXPlatformNodeAuraLinux* platform_node =
       AXPlatformNodeAuraLinux::FromAtkObject(atk_node);
   DCHECK(platform_node);
 
   AXPlatformNodeDelegate* node = platform_node->GetDelegate();
-  DCHECK(node);
 
   if (!ShouldDumpNode(*node))
     return;
@@ -158,6 +162,10 @@ void AXTreeFormatterAuraLinux::RecursiveBuildTree(
 void AXTreeFormatterAuraLinux::RecursiveBuildTree(
     AtspiAccessible* node,
     base::Value::Dict* dict) const {
+  if (!node || !dict) {
+    return;
+  }
+
   AddProperties(node, dict);
 
   GError* error = nullptr;
@@ -348,8 +356,8 @@ std::string AXTreeFormatterAuraLinux::ToString(AtkRelation* relation) {
 
   std::vector<std::string> target_roles(relation_targets->len);
   for (guint i = 0; i < relation_targets->len; i++) {
-    AtkObject* atk_target =
-        static_cast<AtkObject*>(g_ptr_array_index(relation_targets, i));
+    AtkObject* atk_target = static_cast<AtkObject*>(
+        UNSAFE_TODO(g_ptr_array_index(relation_targets, i)));
     DCHECK(atk_target);
     target_roles[i] = atk_role_get_name(atk_object_get_role(atk_target));
   }
@@ -439,7 +447,7 @@ void AXTreeFormatterAuraLinux::AddTableProperties(
   // Caption details.
   AtkObject* caption = atk_table_get_caption(table);
   table_properties.Append(
-      base::StringPrintf("caption=%s;", caption ? "true" : "false"));
+      base::StringPrintf("caption=%s;", base::ToString<bool>(caption)));
 
   // Summarize information about the cells from the table's perspective here.
   std::vector<std::string> span_info;
@@ -474,34 +482,18 @@ void AXTreeFormatterAuraLinux::AddTableCellProperties(
   int row = 0, col = 0, row_span = 0, col_span = 0;
   int n_row_headers = 0, n_column_headers = 0;
 
-  // Properties obtained via AtkTableCell, if possible. If we do not have at
-  // least ATK 2.12, use the same logic in our AtkTableCell implementation so
-  // that tests can still be run.
-  if (AtkTableCellInterface::Exists()) {
-    AtkTableCell* cell = G_TYPE_CHECK_INSTANCE_CAST(
-        (atk_object), AtkTableCellInterface::GetType(), AtkTableCell);
+  AtkTableCell* cell = G_TYPE_CHECK_INSTANCE_CAST(
+      (atk_object), atk_table_cell_get_type(), AtkTableCell);
 
-    AtkTableCellInterface::GetRowColumnSpan(cell, &row, &col, &row_span,
-                                            &col_span);
+  atk_table_cell_get_row_column_span(cell, &row, &col, &row_span, &col_span);
 
-    GPtrArray* column_headers =
-        AtkTableCellInterface::GetColumnHeaderCells(cell);
-    n_column_headers = column_headers->len;
-    g_ptr_array_unref(column_headers);
+  GPtrArray* column_headers = atk_table_cell_get_column_header_cells(cell);
+  n_column_headers = column_headers->len;
+  g_ptr_array_unref(column_headers);
 
-    GPtrArray* row_headers = AtkTableCellInterface::GetRowHeaderCells(cell);
-    n_row_headers = row_headers->len;
-    g_ptr_array_unref(row_headers);
-  } else {
-    row = node->GetTableRow().value_or(-1);
-    col = node->GetTableColumn().value_or(-1);
-    row_span = node->GetTableRowSpan().value_or(0);
-    col_span = node->GetTableColumnSpan().value_or(0);
-    if (role == ATK_ROLE_TABLE_CELL) {
-      n_column_headers = node->GetDelegate()->GetColHeaderNodeIds(col).size();
-      n_row_headers = node->GetDelegate()->GetRowHeaderNodeIds(row).size();
-    }
-  }
+  GPtrArray* row_headers = atk_table_cell_get_row_header_cells(cell);
+  n_row_headers = row_headers->len;
+  g_ptr_array_unref(row_headers);
 
   std::vector<std::string> cell_info;
   cell_info.push_back(base::StringPrintf("row=%i", row));
@@ -524,7 +516,6 @@ void AXTreeFormatterAuraLinux::AddProperties(AtkObject* atk_object,
   DCHECK(platform_node);
 
   AXPlatformNodeDelegate* node = platform_node->GetDelegate();
-  DCHECK(node);
 
   dict->Set("id", node->GetId());
 
@@ -608,7 +599,8 @@ void AXTreeFormatterAuraLinux::AddProperties(AtspiAccessible* node,
   GArray* state_array = atspi_state_set_get_states(atspi_states);
   base::Value::List states;
   for (unsigned i = 0; i < state_array->len; i++) {
-    AtspiStateType state_type = g_array_index(state_array, AtspiStateType, i);
+    AtspiStateType state_type =
+        UNSAFE_TODO(g_array_index(state_array, AtspiStateType, i));
     states.Append(ATSPIStateToString(state_type));
   }
   dict->Set("states", std::move(states));
@@ -628,31 +620,39 @@ const char* const ATK_OBJECT_ATTRIBUTES[] = {
     "colindex",
     "colspan",
     "coltext",
+    "colindextext",
     "container-atomic",
     "container-busy",
     "container-live",
     "container-relevant",
     "current",
+    "datetime",
     "description",
     "description-from",
+    "details-from",
     "details-roles",
     "display",
     "dropeffect",
     "explicit-name",
     "grabbed",
     "haspopup",
+    "has-interest-for",
     "hidden",
+    "html-input-name",
     "id",
     "keyshortcuts",
     "level",
     "link-target",
     "live",
+    "maxlength",
+    "name-from",
     "placeholder",
     "posinset",
     "relevant",
     "roledescription",
     "rowcount",
     "rowindex",
+    "rowindextext",
     "rowspan",
     "rowtext",
     "setsize",

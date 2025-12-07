@@ -9,8 +9,8 @@
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/graphics/gradient.h"
@@ -30,8 +30,7 @@ const CSSGradientValue* ParseSingleGradient(const char* text) {
     DCHECK_EQ(list->length(), 1u);
     return &To<CSSGradientValue>(list->Item(0));
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 bool CompareGradients(const char* gradient1, const char* gradient2) {
@@ -89,7 +88,7 @@ TEST(CSSGradientValueTest, RepeatingRadialGradientNan) {
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
       std::make_unique<DummyPageHolder>();
   Document& document = dummy_page_holder->GetDocument();
-  CSSToLengthConversionData conversion_data;
+  CSSToLengthConversionData conversion_data(/*element=*/nullptr);
 
   const CSSValue* value = CSSParser::ParseSingleValue(
       CSSPropertyID::kBackgroundImage,

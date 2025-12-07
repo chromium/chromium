@@ -21,6 +21,10 @@ class AccountPasswordStoreFactory
       Profile* profile,
       ServiceAccessType set);
 
+  // Returns whether a PasswordStore was created for `profile`. GetForProfile()
+  // can't be used because it creates the store if one doesn't exist yet.
+  static bool HasStore(Profile* profile);
+
   static AccountPasswordStoreFactory* GetInstance();
 
   AccountPasswordStoreFactory(const AccountPasswordStoreFactory&) = delete;

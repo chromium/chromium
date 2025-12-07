@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef SANDBOX_WIN_SRC_POLICY_ENGINE_PARAMS_H_
 #define SANDBOX_WIN_SRC_POLICY_ENGINE_PARAMS_H_
 
 #include <stdint.h>
 
+#include <string_view>
+
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "sandbox/win/src/internal_types.h"
 #include "sandbox/win/src/nt_internals.h"
@@ -82,12 +80,12 @@ class ParameterSet {
     return true;
   }
 
-  // Retrieve the stored parameter. If the type does not match wchar_t* fail.
-  bool Get(const wchar_t** destination) const {
+  // Retrieve the stored parameter. If the type does not match the call fails.
+  bool Get(std::wstring_view* destination) const {
     if (real_type_ != WCHAR_TYPE) {
       return false;
     }
-    *destination = Void2TypePointerCopy<const wchar_t*>();
+    *destination = Void2TypePointerCopy<std::wstring_view>();
     return true;
   }
 
@@ -142,14 +140,7 @@ class ParameterSetEx<void*> : public ParameterSet {
 };
 
 template <>
-class ParameterSetEx<wchar_t*> : public ParameterSet {
- public:
-  explicit ParameterSetEx(const void* address)
-      : ParameterSet(WCHAR_TYPE, address) {}
-};
-
-template <>
-class ParameterSetEx<wchar_t const*> : public ParameterSet {
+class ParameterSetEx<std::wstring_view> : public ParameterSet {
  public:
   explicit ParameterSetEx(const void* address)
       : ParameterSet(WCHAR_TYPE, address) {}
@@ -180,7 +171,9 @@ template <typename T>
 struct CountedParameterSet {
   CountedParameterSet() : count(T::PolParamLast) {}
 
-  ParameterSet& operator[](typename T::Args n) { return parameters[n]; }
+  ParameterSet& operator[](typename T::Args n) {
+    return UNSAFE_TODO(parameters[n]);
+  }
 
   CountedParameterSetBase* GetBase() {
     return reinterpret_cast<CountedParameterSetBase*>(this);

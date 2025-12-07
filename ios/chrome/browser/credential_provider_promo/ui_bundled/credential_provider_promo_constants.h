@@ -8,13 +8,16 @@
 // Persisted in local state and used as Enum for
 // IOS.CredentialProviderExtension.Promo.Impression histogram. Entries should
 // not be renumbered and numeric values should never be reused. Entries 1 and 2
-// have been depcrated.
+// have been deprecated.
 // LINT.IfChange
 enum class IOSCredentialProviderPromoSource {
   kUnknown = 0,
+  //  Removed: kPasswordCopied = 1,
+  //  Removed: kPasswordSaved = 2,
   kAutofillUsed = 3,
   kSetUpList = 4,
-  kMaxValue = kSetUpList,
+  kTipsNotification = 5,
+  kMaxValue = kTipsNotification,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 

@@ -2,27 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/growth/campaigns_model.h"
 
 #include <memory>
 #include <optional>
 
 #include "ash/constants/ash_features.h"
+#include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/webui/grit/ash_mall_cros_app_resources.h"
+#include "ash/webui/grit/ash_personalization_app_resources.h"
+#include "ash/webui/grit/ash_print_management_resources.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "build/branding_buildflags.h"
 #include "build/buildflag.h"
 #include "chromeos/ash/components/growth/action_performer.h"
+#include "chromeos/ash/components/growth/campaigns_logger.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
+#include "chromeos/ash/components/scalable_iph/buildflags.h"
 #include "chromeos/ash/grit/ash_resources.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/base/models/image_model.h"
@@ -59,6 +62,7 @@ inline constexpr char kMaxDemoModeAppVersion[] = "appVersion.max";
 // Device Targeting paths.
 inline constexpr char kDeviceTargeting[] = "device";
 inline constexpr char kApplicationLocales[] = "locales";
+inline constexpr char kBoards[] = "boards";
 inline constexpr char kUserLocales[] = "userLocales";
 inline constexpr char kIncludedCountries[] = "includedCountries";
 inline constexpr char kExcludedCountries[] = "excludedCountries";
@@ -69,6 +73,7 @@ inline constexpr char kMaxVersion[] = "version.max";
 inline constexpr char kFeatureAware[] = "isFeatureAwareDevice";
 inline constexpr char kRegisteredTime[] = "registeredTime";
 inline constexpr char kDeviceAgeInHours[] = "deviceAgeInHours";
+inline constexpr char kChannels[] = "channels";
 
 // Session Targeting paths.
 inline constexpr char kSessionTargeting[] = "session";
@@ -102,8 +107,11 @@ inline constexpr char kTriggerTargetings[] = "triggerList";
 inline constexpr char kTriggerType[] = "triggerType";
 inline constexpr char kTriggerEvents[] = "triggerEvents";
 
-// User Preference Targeting paths.
+// User Preference Targeting path.
 inline constexpr char kUserPrefTargetings[] = "userPrefs";
+
+// Shelf Hotseat Targeting path.
+inline constexpr char kHotseatAppIcon[] = "hotseat.appIcon";
 
 // Scheduling Targeting paths.
 inline constexpr char kSchedulingTargetings[] = "schedulings";
@@ -113,6 +121,10 @@ inline constexpr char kTimeWindowEnd[] = "end";
 // Number Range Targeting paths.
 inline constexpr char kNumberRangeStart[] = "start";
 inline constexpr char kNumberRangeEnd[] = "end";
+
+// String List Targeting paths.
+inline constexpr char kStringListIncludes[] = "includes";
+inline constexpr char kStringListExcludes[] = "excludes";
 
 // Opened App Targeting paths.
 inline constexpr char kAppsOpenedTargetings[] = "appsOpened";
@@ -127,6 +139,8 @@ inline constexpr char kDemoModePayloadPath[] = "demoModeApp";
 inline constexpr char kNudgePayloadPath[] = "nudge";
 inline constexpr char kNotificationPayloadPath[] = "notification";
 inline constexpr char kOobePerkDiscoveryPayloadPath[] = "oobePerkDiscovery";
+inline constexpr char kDemoModeSignInExperiencePath[] =
+    "demoModeSignInExperience";
 
 // Actions
 inline constexpr char kActionTypePath[] = "type";
@@ -199,8 +213,8 @@ std::optional<int> GetBuiltInImageResourceId(
   }
 
   switch (image_model_type.value()) {
-    case BuiltInImage::kContainerApp:
-      return IDR_GROWTH_FRAMEWORK_CONTAINER_APP_PNG;
+    case BuiltInImage::kGeminiApp:
+      return IDR_GROWTH_FRAMEWORK_GEMINI_APP_PNG;
     case BuiltInImage::kG1:
       return IDR_GROWTH_FRAMEWORK_G1_PNG;
     case BuiltInImage::kSparkRebuy:
@@ -211,7 +225,35 @@ std::optional<int> GetBuiltInImageResourceId(
       return IDR_GROWTH_FRAMEWORK_SPARK_V2_PNG;
     case BuiltInImage::kG1Notification:
       return IDR_GROWTH_FRAMEWORK_G1_NOTIFICATION_PNG;
+    case BuiltInImage::kMall:
+      return IDR_GROWTH_FRAMEWORK_MALL_PNG;
+#if BUILDFLAG(ENABLE_CROS_SCALABLE_IPH)
+    case BuiltInImage::kPrintJobsIcon:
+      return IDR_ASH_PRINT_MANAGEMENT_PRINT_MANAGEMENT_192_PNG;
+    case BuiltInImage::kGoogleDocsIcon:
+      return IDR_SCALABLE_IPH_GOOGLE_DOCS_ICON_120_PNG;
+    case BuiltInImage::kYouTubeIcon:
+      return IDR_SCALABLE_IPH_YOUTUBE_ICON_120_PNG;
+    case BuiltInImage::kPlayStoreIcon:
+      return IDR_SCALABLE_IPH_GOOGLE_PLAY_ICON_120_PNG;
+#else
+    // Sclable Iph images are included only if ash-build and Chrome branded.
+    // Returns a fall-back image for the other case.
+    case BuiltInImage::kPrintJobsIcon:
+    case BuiltInImage::kGoogleDocsIcon:
+    case BuiltInImage::kYouTubeIcon:
+    case BuiltInImage::kPlayStoreIcon:
+      return IDR_PRODUCT_LOGO_128;
+#endif  // BUILDFLAG(ENABLE_CROS_SCALABLE_IPH)
+    case BuiltInImage::kRNotification:
+      return IDR_GROWTH_FRAMEWORK_R_NOTIFICATION_PNG;
+    case growth::BuiltInImage::kMallAppIcon:
+      return IDR_ASH_MALL_CROS_APP_IMAGES_MALL_ICON_192_PNG;
+    case growth::BuiltInImage::kPersonalizationIcon:
+      return IDR_ASH_PERSONALIZATION_APP_HUB_ICON_192_PNG;
   }
+
+  return std::nullopt;
 }
 
 std::optional<BuiltInImage> GetBuiltInImageType(
@@ -262,16 +304,17 @@ const base::Feature* SelectFeatureByIndex(const base::Feature* features[],
                                           int size,
                                           int index) {
   if (index < 0 || index >= size) {
-    // TODO: b/344673533 - Record error metrics.
+    RecordCampaignsManagerError(CampaignsManagerError::kFeatureIndexOutOfRange);
     return nullptr;
   }
 
-  return features[index];
+  return UNSAFE_TODO(features[index]);
 }
 
 }  // namespace
 
 Trigger::Trigger(TriggerType type) : type(type) {}
+Trigger::~Trigger() = default;
 
 Campaigns* GetMutableCampaignsBySlot(CampaignsPerSlot* campaigns_per_slot,
                                      Slot slot) {
@@ -312,9 +355,12 @@ const Payload* GetPayloadBySlot(const Campaign* campaign, Slot slot) {
     case Slot::kOobePerkDiscovery:
       return campaign->FindDictByDottedPath(base::StringPrintf(
           kPayloadPathTemplate, kOobePerkDiscoveryPayloadPath));
+    case Slot::kDemoModeSignInExperience:
+      return campaign->FindDictByDottedPath(base::StringPrintf(
+          kPayloadPathTemplate, kDemoModeSignInExperiencePath));
     case Slot::kDemoModeFreePlayApps:
-      NOTREACHED_IN_MIGRATION();
-      break;
+    case Slot::kDryRun:
+      NOTREACHED();
   }
 
   return nullptr;
@@ -418,6 +464,15 @@ DeviceTargeting::DeviceTargeting(const Targeting* targeting_dict)
 
 DeviceTargeting::~DeviceTargeting() = default;
 
+const std::unique_ptr<StringListTargeting> DeviceTargeting::GetBoards() const {
+  auto* string_list_dict = GetDictCriteria(kBoards);
+  if (!string_list_dict) {
+    return nullptr;
+  }
+
+  return std::make_unique<StringListTargeting>(string_list_dict);
+}
+
 const base::Value::List* DeviceTargeting::GetLocales() const {
   return GetListCriteria(kApplicationLocales);
 }
@@ -466,12 +521,22 @@ std::unique_ptr<TimeWindowTargeting> DeviceTargeting::GetRegisteredTime()
 
 const std::unique_ptr<NumberRangeTargeting> DeviceTargeting::GetDeviceAge()
     const {
-  auto* number_rage_dict = GetDictCriteria(kDeviceAgeInHours);
-  if (!number_rage_dict) {
+  auto* number_range_dict = GetDictCriteria(kDeviceAgeInHours);
+  if (!number_range_dict) {
     return nullptr;
   }
 
-  return std::make_unique<NumberRangeTargeting>(number_rage_dict);
+  return std::make_unique<NumberRangeTargeting>(number_range_dict);
+}
+
+const std::unique_ptr<StringListTargeting> DeviceTargeting::GetChannels()
+    const {
+  auto* string_list_dict = GetDictCriteria(kChannels);
+  if (!string_list_dict) {
+    return nullptr;
+  }
+
+  return std::make_unique<StringListTargeting>(string_list_dict);
 }
 
 // Apps Targeting.
@@ -564,6 +629,21 @@ const std::optional<int> NumberRangeTargeting::GetStart() const {
 
 const std::optional<int> NumberRangeTargeting::GetEnd() const {
   return number_range_dict_->FindInt(kNumberRangeEnd);
+}
+
+// String List Targeting.
+StringListTargeting::StringListTargeting(
+    const base::Value::Dict* string_list_dict)
+    : string_list_dict_(string_list_dict) {}
+
+StringListTargeting::~StringListTargeting() = default;
+
+const base::Value::List* StringListTargeting::GetIncludes() const {
+  return string_list_dict_->FindList(kStringListIncludes);
+}
+
+const base::Value::List* StringListTargeting::GetExcludes() const {
+  return string_list_dict_->FindList(kStringListExcludes);
 }
 
 // Session Targeting.
@@ -660,9 +740,9 @@ const std::vector<std::string> RuntimeTargeting::GetActiveUrlRegexes() const {
   }
   for (const auto& active_url_regex_value : *active_url_regexes_value) {
     if (!active_url_regex_value.is_string()) {
-      // TODO(b/329124927): Record error.
-      LOG(ERROR) << "Invalid active url regex: "
-                 << active_url_regex_value.DebugString();
+      RecordCampaignsManagerError(CampaignsManagerError::kInvalidUrlRegrex);
+      CAMPAIGNS_LOG(ERROR) << "Invalid active url regex: "
+                           << active_url_regex_value.DebugString();
       continue;
     }
 
@@ -672,7 +752,7 @@ const std::vector<std::string> RuntimeTargeting::GetActiveUrlRegexes() const {
   return active_urls_regexs;
 }
 
-std::unique_ptr<EventsTargeting> RuntimeTargeting::GetEventsConfig() const {
+std::unique_ptr<EventsTargeting> RuntimeTargeting::GetEventsTargeting() const {
   auto* config = GetDictCriteria(kEventsTargetings);
   if (!config) {
     return nullptr;
@@ -705,6 +785,14 @@ const base::Value::List* RuntimeTargeting::GetUserPrefTargetings() const {
   return GetListCriteria(kUserPrefTargetings);
 }
 
+std::unique_ptr<AppTargeting> RuntimeTargeting::GetHotseatAppIcon() const {
+  auto* app = GetDictCriteria(kHotseatAppIcon);
+  if (!app) {
+    return nullptr;
+  }
+  return std::make_unique<AppTargeting>(app);
+}
+
 // Action.
 Action::Action(const base::Value::Dict* action_dict)
     : action_dict_(action_dict) {}
@@ -714,7 +802,7 @@ Action::~Action() = default;
 std::optional<growth::ActionType> Action::GetActionType() const {
   auto action_type_value = action_dict_->FindInt(kActionTypePath);
   if (!action_type_value) {
-    LOG(ERROR) << "Missing action type.";
+    CAMPAIGNS_LOG(ERROR) << "Missing action type.";
     RecordCampaignsManagerError(CampaignsManagerError::kMissingActionType);
     return std::nullopt;
   }
@@ -722,7 +810,7 @@ std::optional<growth::ActionType> Action::GetActionType() const {
   auto action_type = action_type_value.value();
   if (action_type < 0 ||
       action_type > static_cast<int>(growth::ActionType::kMaxValue)) {
-    LOG(ERROR) << "Unrecognized action type.";
+    CAMPAIGNS_LOG(ERROR) << "Unrecognized action type.";
     // TODO: b/330931877 - Record an error.
     return std::nullopt;
   }
@@ -749,7 +837,7 @@ const std::optional<WindowAnchorType> Anchor::GetActiveAppWindowAnchorType()
       anchor_dict_->FindInt(kActiveAppWindowAnchorType);
   if (!anchor_type_value) {
     // Invalid anchor type.
-    LOG(ERROR) << "Invalid anchor type";
+    CAMPAIGNS_LOG(ERROR) << "Invalid anchor type";
     RecordCampaignsManagerError(CampaignsManagerError::kInvalidAnchorType);
     return std::nullopt;
   }
@@ -795,8 +883,8 @@ const gfx::Image* Image::GetBuiltInImage() const {
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-  // TODO: b/340895798 - record error metric.
-  LOG(ERROR) << "Unrecognized built in image.";
+  RecordCampaignsManagerError(CampaignsManagerError::kUnrecognizedBuiltInImage);
+  CAMPAIGNS_LOG(ERROR) << "Unrecognized built in image.";
 
   return nullptr;
 }
@@ -817,14 +905,23 @@ const gfx::VectorIcon* VectorIcon::GetVectorIcon() const {
 
 const gfx::VectorIcon* VectorIcon::GetBuiltInVectorIcon() const {
   const auto icon = GetBuiltInVectorIconType(vector_icon_dict_);
-  if (!icon || icon.value() != BuiltInVectorIcon::kRedeem) {
-    // TODO: b/340895798 - record error metric.
-    LOG(ERROR) << "Unrecognized built in vector icon.";
+  if (!icon) {
+    RecordCampaignsManagerError(
+        CampaignsManagerError::kMissingBuiltInVectorIcon);
+    CAMPAIGNS_LOG(ERROR) << "Missing built in vector icon.";
 
     return nullptr;
   }
 
-  return &chromeos::kRedeemIcon;
+  switch (icon.value()) {
+    case BuiltInVectorIcon::kRedeem:
+      return &chromeos::kRedeemIcon;
+    case BuiltInVectorIcon::kHelpApp:
+      return &ash::kNotificationHelpAppIcon;
+  }
+
+  RecordCampaignsManagerError(CampaignsManagerError::kMissingBuiltInVectorIcon);
+  CAMPAIGNS_LOG(ERROR) << "Unrecognized built in vector icon.";
 }
 
 // Image Model.
@@ -863,7 +960,7 @@ const std::optional<ui::ImageModel> ImageModel::GetBuiltInImageModel() const {
   RecordCampaignsManagerError(CampaignsManagerError::kUnrecognizedBuiltInIcon);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-  LOG(ERROR) << "Unrecognized built in image model.";
+  CAMPAIGNS_LOG(ERROR) << "Unrecognized built in image model.";
   return std::nullopt;
 }
 

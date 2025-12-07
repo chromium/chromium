@@ -12,9 +12,9 @@
 
 namespace {
 
-std::string SessionIdJson(const std::string session_id) {
+std::string SessionIdJson(const std::string& session_id) {
   return session_id.empty() ? std::string()
-                            : ",\"session_id\":\"" + session_id + "\"";
+                            : ",\"sessionId\":\"" + session_id + "\"";
 }
 
 }  // namespace
@@ -22,7 +22,7 @@ std::string SessionIdJson(const std::string session_id) {
 LogReplaySocket::LogReplaySocket(const base::FilePath& log_path)
     : connected_(false), log_reader_(log_path) {}
 
-LogReplaySocket::~LogReplaySocket() {}
+LogReplaySocket::~LogReplaySocket() = default;
 
 void LogReplaySocket::SetId(const std::string& socket_id) {
   socket_id_ = socket_id;
@@ -38,7 +38,8 @@ bool LogReplaySocket::Connect(const GURL& url) {
 }
 
 bool LogReplaySocket::Send(const std::string& message) {
-  std::optional<base::Value> json = base::JSONReader::Read(message);
+  std::optional<base::Value> json =
+      base::JSONReader::Read(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   max_id_ = json->GetDict().FindInt("id").value();
   return true;
 }
@@ -72,9 +73,9 @@ SyncWebSocket::StatusCode LogReplaySocket::ReceiveNextMessage(
     return SyncWebSocket::StatusCode::kOk;
   }
   // it's an event
-  *message = "{\"method\":\"" + next->command_name +
-             SessionIdJson(next->session_id) +
-             "\",\"params\":" + next->payload + "}";
+  *message = "{\"method\":\"" + next->command_name + "\"" +
+             SessionIdJson(next->session_id) + ",\"params\":" + next->payload +
+             "}";
   return SyncWebSocket::StatusCode::kOk;
 }
 

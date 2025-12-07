@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "test_util.h"
 
 #include <array>
@@ -14,20 +9,28 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/strings/string_number_conversions.h"
-#include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/enclave/types.h"
-#include "device/fido/fido_constants.h"
+#include "device/fido/public/fido_constants.h"
 #include "net/base/port_util.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
+
+base::span<const uint8_t, 16> TestProtobufCredId() {
+  return base::span<const uint8_t>(kTestProtobuf).subspan<20, 16>();
+}
+
+base::span<const uint8_t, 1> TestProtobufUserId() {
+  return base::span<const uint8_t>(kTestProtobuf).subspan<55, 1>();
+}
 
 std::pair<base::Process, uint16_t> StartWebAuthnEnclave(base::FilePath cwd) {
   base::FilePath data_root;
@@ -79,7 +82,7 @@ std::pair<base::Process, uint16_t> StartWebAuthnEnclave(base::FilePath cwd) {
 #endif
 
     CHECK(read_bytes > 0);
-    port_str[read_bytes - 1] = 0;
+    UNSAFE_TODO(port_str[read_bytes - 1]) = 0;
     unsigned u_port;
     CHECK(base::StringToUint(port_str, &u_port)) << port_str;
     port = base::checked_cast<uint16_t>(u_port);
@@ -113,20 +116,4 @@ device::enclave::ScopedEnclaveOverride TestWebAuthnEnclaveIdentity(
   identity.public_key = kTestPublicKey;
 
   return device::enclave::ScopedEnclaveOverride(std::move(identity));
-}
-
-std::unique_ptr<device::cablev2::Pairing> TestPhone(const char* name,
-                                                    uint8_t public_key,
-                                                    base::Time last_updated,
-                                                    int channel_priority) {
-  auto phone = std::make_unique<device::cablev2::Pairing>();
-  phone->name = name;
-  phone->contact_id = {10, 11, 12};
-  phone->id = {4, 5, 6};
-  std::fill(phone->peer_public_key_x962.begin(),
-            phone->peer_public_key_x962.end(), public_key);
-  phone->last_updated = last_updated;
-  phone->channel_priority = channel_priority;
-  phone->from_sync_deviceinfo = true;
-  return phone;
 }

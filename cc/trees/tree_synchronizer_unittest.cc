@@ -80,10 +80,13 @@ class MockLayer : public Layer {
     return MockLayerImpl::Create(tree_impl, id());
   }
 
-  void PushPropertiesTo(LayerImpl* layer_impl,
-                        const CommitState& commit_state,
-                        const ThreadUnsafeCommitState& unsafe_state) override {
-    Layer::PushPropertiesTo(layer_impl, commit_state, unsafe_state);
+  void PushDirtyPropertiesTo(
+      LayerImpl* layer_impl,
+      uint8_t dirty_flag,
+      const CommitState& commit_state,
+      const ThreadUnsafeCommitState& unsafe_state) override {
+    Layer::PushDirtyPropertiesTo(layer_impl, dirty_flag, commit_state,
+                                 unsafe_state);
 
     MockLayerImpl* mock_layer_impl = static_cast<MockLayerImpl*>(layer_impl);
     mock_layer_impl->SetLayerImplDestructionList(layer_impl_destruction_list_);
@@ -112,8 +115,8 @@ void ExpectTreesAreIdentical(Layer* root_layer,
     EXPECT_EQ(layer->id(), layer_impl->id());
     EXPECT_EQ(layer_impl->layer_tree_impl(), tree_impl);
 
-    EXPECT_EQ(layer->non_fast_scrollable_region(),
-              layer_impl->non_fast_scrollable_region());
+    EXPECT_EQ(layer->main_thread_scroll_hit_test_region(),
+              layer_impl->main_thread_scroll_hit_test_region());
   }
 }
 

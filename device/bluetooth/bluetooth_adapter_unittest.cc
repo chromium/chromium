@@ -35,6 +35,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/android_info.h"
 #include "device/bluetooth/test/bluetooth_test_android.h"
 #elif BUILDFLAG(IS_APPLE)
 #include "device/bluetooth/test/bluetooth_test_mac.h"
@@ -149,6 +150,9 @@ class TestBluetoothAdapter final : public BluetoothAdapter {
   void SetServiceAllowList(const UUIDList& uuids,
                            base::OnceClosure callback,
                            ErrorCallback error_callback) override {}
+  void SetSimpleSecurePairingEnabled(bool enabled,
+                                     base::OnceClosure callback,
+                                     ErrorCallback error_callback) override {}
 
   LowEnergyScanSessionHardwareOffloadingStatus
   GetLowEnergyScanSessionHardwareOffloadingStatus() override {
@@ -165,11 +169,9 @@ class TestBluetoothAdapter final : public BluetoothAdapter {
   std::vector<BluetoothRole> GetSupportedRoles() override {
     return std::vector<BluetoothRole>{};
   }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetStandardChromeOSAdapterName() override {}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   void OnStartDiscoverySessionQuitLoop(
       base::OnceClosure run_loop_quit,
@@ -776,6 +778,10 @@ TEST_F(BluetoothTest, MAYBE_ConstructWithoutDefaultAdapter) {
 #endif
   EXPECT_FALSE(adapter_->IsDiscoverable());
   EXPECT_FALSE(adapter_->IsDiscovering());
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ(adapter_->GetOsPermissionStatus(),
+            BluetoothAdapter::PermissionStatus::kDenied);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // TODO(scheib): Enable BluetoothTest fixture tests on all platforms.
@@ -801,6 +807,10 @@ TEST_F(BluetoothTest, MAYBE_ConstructFakeAdapter) {
   EXPECT_TRUE(adapter_->CanPower());
   EXPECT_TRUE(adapter_->IsPresent());
   EXPECT_TRUE(adapter_->IsPowered());
+#if !BUILDFLAG(IS_APPLE)
+  EXPECT_EQ(BluetoothAdapter::PermissionStatus::kAllowed,
+            adapter_->GetOsPermissionStatus());
+#endif  //  !BUILDFLAG(IS_APPLE)
   EXPECT_TRUE(adapter_->IsPeripheralRoleSupported());
   EXPECT_FALSE(adapter_->IsDiscoverable());
   EXPECT_FALSE(adapter_->IsDiscovering());
@@ -916,6 +926,9 @@ TEST_F(BluetoothTest, MAYBE_NoPermissions) {
     return;
   }
 
+  EXPECT_EQ(BluetoothAdapter::PermissionStatus::kDenied,
+            adapter_->GetOsPermissionStatus());
+
   StartLowEnergyDiscoverySessionExpectedToFail();
 
   EXPECT_EQ(0, callback_count_);
@@ -931,10 +944,18 @@ TEST_F(BluetoothTest, NoLocationServices) {
   if (!PlatformSupportsLowEnergy()) {
     GTEST_SKIP() << "Low Energy Bluetooth unavailable, skipping unit test.";
   }
+  if (base::android::android_info::sdk_int() >=
+      base::android::android_info::SDK_VERSION_S) {
+    GTEST_SKIP() << "Android S+ doesn't require location services perform "
+                    "Bluetooth scanning, skipping unit test.";
+  }
   InitWithFakeAdapter();
   TestBluetoothAdapterObserver observer(adapter_);
 
   SimulateLocationServicesOff();
+
+  EXPECT_EQ(BluetoothAdapter::PermissionStatus::kDenied,
+            adapter_->GetOsPermissionStatus());
 
   StartLowEnergyDiscoverySessionExpectedToFail();
 

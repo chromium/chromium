@@ -16,7 +16,7 @@ namespace blink {
 class HighlightTest : public PageTestBase {};
 
 TEST_F(HighlightTest, Creation) {
-  GetDocument().body()->setInnerHTML("1234");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("1234");
   auto* text = To<Text>(GetDocument().body()->firstChild());
 
   auto* range04 = MakeGarbageCollected<Range>(GetDocument(), text, 0, text, 4);
@@ -37,7 +37,7 @@ TEST_F(HighlightTest, Creation) {
 }
 
 TEST_F(HighlightTest, Properties) {
-  GetDocument().body()->setInnerHTML("1234");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("1234");
   auto* text = To<Text>(GetDocument().body()->firstChild());
 
   auto* range04 = MakeGarbageCollected<Range>(GetDocument(), text, 0, text, 4);
@@ -47,11 +47,10 @@ TEST_F(HighlightTest, Properties) {
 
   auto* highlight = Highlight::Create(range_vector);
   highlight->setPriority(1);
-  AtomicString test_string("testType");
-  highlight->setType(test_string);
+  highlight->setType(V8HighlightType(V8HighlightType::Enum::kSpellingError));
 
   CHECK_EQ(1, highlight->priority());
-  CHECK_EQ(test_string, highlight->type());
+  CHECK_EQ("spelling-error", highlight->type().AsString());
 }
 
 }  // namespace blink

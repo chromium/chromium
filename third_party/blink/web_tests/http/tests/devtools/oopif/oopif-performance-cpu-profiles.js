@@ -5,10 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {PerformanceTestRunner} from 'performance_test_runner';
 
-import * as TimelineModel from 'devtools/models/timeline_model/timeline_model.js';
-
 (async function() {
-  TestRunner.addResult(`Test CPU profiles are recorded for OOPIFs.\n`);
+  TestRunner.addResult(`Test that OOPIF processes and threads are recorded.\n`);
 
   await TestRunner.showPanel('timeline');
 
@@ -16,16 +14,20 @@ import * as TimelineModel from 'devtools/models/timeline_model/timeline_model.js
   await TestRunner.navigatePromise('resources/page.html');
   await PerformanceTestRunner.stopTimeline();
 
-  const sortedTracks = PerformanceTestRunner.timelineModel().tracks().sort((a, b) => {
-    return a.url > b.url ? 1 : b.url > a.url ? -1 : 0;
-  })
+  const expectedProcesses = [
+    {url: 'http://127.0.0.1:8000/devtools/resources/inspected-page.html', isOnMainFrame: true},
+    {url: 'http://devtools.oopif.test:8000/devtools/oopif/resources/iframe.html?second', isOnMainFrame: false},
+  ];
 
-  for (const track of sortedTracks) {
-    if (track.type !== TimelineModel.TimelineModel.TrackType.MainThread)
-      continue;
-    TestRunner.addResult(`name: ${track.name}`);
-    TestRunner.addResult(`url: ${track.url}`);
-    TestRunner.addResult(`has CpuProfile: ${track.thread.events().some(e => e.name === 'CpuProfile')}\n`);
+  const parsedTrace = PerformanceTestRunner.traceEngineParsedTrace();
+  const processes = Array.from(parsedTrace.Renderer.processes.values());
+  for (const {url, isOnMainFrame} of expectedProcesses) {
+    const match = processes.find(p => p.url === url && p.isOnMainFrame === isOnMainFrame);
+    if(match) {
+      TestRunner.addResult(`MATCH FOUND: ${url} - isOnMainFrame: ${isOnMainFrame}`);
+    } else {
+      TestRunner.addResult(`ERROR: no match found for ${url} - isOnMainFrame: ${isOnMainFrame}`);
+    }
   }
 
   TestRunner.completeTest();

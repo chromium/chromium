@@ -1,28 +1,38 @@
-<html>
-<head>
-    <script>
-        if (window.testRunner)
-             testRunner.dumpAsText();
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
 
-        function test() {
-            var selection = window.getSelection();
-            selection.selectAllChildren(document.getElementById("contentDiv"));
-            document.execCommand("Outdent", false, "");
+// Note: The behavior here is different from Firefox which removes the
+// outermost blockquote leaving the editable div with two children (the
+// inner blockquotes).
 
-            console.log(document.getElementById("contentDiv").children.length == 3
-                ? "SUCCESS: Nodes stayed in order after outdent."
-                : "FAILED: Nodes became out of order after outdent.");
-        }
-    </script>
-</head>
-<body onload="test()">
-    <div id="description">This test uses the execCommand to Outdent the text below. <b>This test that nodes, with different relationships with blockquotes, stay in the correct order after an outdent.</b></div>
-    <br>
-    <div contenteditable="true" id="contentDiv">
-        <blockquote class="webkit-indent-blockquote" >
-            <blockquote class="webkit-indent-blockquote" id="a" >A</blockquote>
-            <blockquote class="webkit-indent-blockquote" id="cd">B<br>C</blockquote>
-        </blockquote>
-    </div>
-</body>
-</html>
+selection_test(
+    [
+        '<div contenteditable="true" id="contentDiv">',
+            '^<blockquote class="webkit-indent-blockquote">',
+                '<blockquote class="webkit-indent-blockquote" id="a">',
+                    'A',
+                '</blockquote>',
+                '<blockquote class="webkit-indent-blockquote" id="bc">',
+                    'B',
+                    '<br>',
+                    'C',
+                '</blockquote>',
+            '</blockquote>|',
+        '</div>',
+    ],
+    'outdent',
+    [
+        '<div contenteditable="true" id="contentDiv">',
+            '<blockquote class="webkit-indent-blockquote">',
+                '^A',
+                '<br>',
+                'B',
+                '<br>',
+                'C|',
+            '</blockquote>',
+        '</div>',
+    ]);
+</script>

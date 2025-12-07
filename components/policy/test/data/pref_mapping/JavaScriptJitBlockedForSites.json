@@ -1,30 +1,21 @@
 [
   {
-    "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "os": [
       "win",
       "linux",
       "mac",
-      "chromeos_ash",
-      "chromeos_lacros",
+      "chromeos",
       "android",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "JavaScriptJitBlockedForSites": [
-            "[*.]google.com"
-          ]
-        },
-        "prefs": {
-          "profile.managed_javascript_jit_blocked_for_sites": {
-            "value": [
-              "[*.]google.com"
-            ]
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "profile.managed_javascript_jit_blocked_for_sites",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "[*.]google.com"
+        ]
+      ]
+    }
   }
 ]

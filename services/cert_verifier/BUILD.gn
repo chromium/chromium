@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//net/features.gni")
+import("//services/network/public/cpp/features.gni")
 
 source_set("lib") {
   sources = [
@@ -17,8 +17,7 @@ source_set("lib") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
-    "//components/certificate_transparency",
+    "//components/network_time/time_tracker",
     "//mojo/public/cpp/base:protobuf_support",
     "//net",
     "//net/cert:root_store_proto_lite",
@@ -31,6 +30,10 @@ source_set("lib") {
     "//services/cert_verifier/public/mojom",
     "//services/network/public/mojom",
   ]
+
+  if (is_ct_supported) {
+    deps += [ "//components/certificate_transparency" ]
+  }
 }
 
 source_set("tests") {
@@ -47,14 +50,12 @@ source_set("tests") {
     ":lib",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
-    "//components/certificate_transparency",
     "//crypto:test_support",
     "//mojo/public/cpp/base:protobuf_support",
     "//net",
     "//net:test_support",
     "//net/cert:root_store_proto_lite",
-    "//services/cert_verifier/cert_net_url_loader:cert_net_url_loader",
+    "//services/cert_verifier/cert_net_url_loader",
     "//services/cert_verifier/public/mojom",
     "//services/network:network_service",
     "//services/network:test_support",
@@ -62,4 +63,8 @@ source_set("tests") {
     "//services/network/public/mojom",
     "//testing/gtest",
   ]
+
+  if (is_ct_supported) {
+    deps += [ "//components/certificate_transparency" ]
+  }
 }

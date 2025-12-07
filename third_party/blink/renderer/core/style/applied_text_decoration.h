@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/style/text_decoration_thickness.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -37,9 +38,6 @@ class CORE_EXPORT AppliedTextDecoration {
   Length UnderlineOffset() const { return underline_offset_; }
 
   bool operator==(const AppliedTextDecoration&) const;
-  bool operator!=(const AppliedTextDecoration& o) const {
-    return !(*this == o);
-  }
 
  private:
   unsigned lines_ : kTextDecorationLineBits;
@@ -49,6 +47,10 @@ class CORE_EXPORT AppliedTextDecoration {
   Length underline_offset_;
 };
 
+using AppliedTextDecorationVector = GCedHeapVector<AppliedTextDecoration, 1>;
+
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::AppliedTextDecoration)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_APPLIED_TEXT_DECORATION_H_

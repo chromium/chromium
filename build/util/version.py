@@ -57,7 +57,10 @@ def FetchValues(file_list, is_official_build=None):
     FetchValuesFromFile(values, file_name)
 
   script_dirname = os.path.dirname(os.path.realpath(__file__))
-  lastchange_filename = os.path.join(script_dirname, "LASTCHANGE")
+  if official_build == '1':
+    lastchange_filename = os.path.join(script_dirname, "LASTCHANGE")
+  else:
+    lastchange_filename = os.path.join(script_dirname, "LASTCHANGE.dummy")
   lastchange_values = {}
   FetchValuesFromFile(lastchange_values, lastchange_filename)
 
@@ -157,10 +160,6 @@ def BuildParser():
                       help='Whether the current build should be an official '
                            'build, used in addition to the environment '
                            'variable.')
-  parser.add_argument('--next',
-                      action='store_true',
-                      help='Whether the current build should be a "next" '
-                      'build, which targets pre-release versions of Android.')
   parser.add_argument('args', nargs=argparse.REMAINDER,
                       help='For compatibility: INPUT and OUTPUT can be '
                            'passed as positional arguments.')
@@ -212,7 +211,7 @@ def GenerateValues(options, evals):
 
   if options.os == 'android':
     android_chrome_version_codes = android_chrome_version.GenerateVersionCodes(
-        int(values['BUILD']), int(values['PATCH']), options.arch, options.next)
+        int(values['BUILD']), int(values['PATCH']), options.arch)
     values.update(android_chrome_version_codes)
 
   return values

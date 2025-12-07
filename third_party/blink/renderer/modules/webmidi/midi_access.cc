@@ -31,10 +31,6 @@
 #include "third_party/blink/renderer/modules/webmidi/midi_access.h"
 
 #include <memory>
-#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/loader/document_load_timing.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
@@ -46,7 +42,6 @@
 #include "third_party/blink/renderer/modules/webmidi/midi_output_map.h"
 #include "third_party/blink/renderer/modules/webmidi/midi_port.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 
 namespace blink {
 
@@ -85,22 +80,6 @@ MIDIAccess::MIDIAccess(
           this, outputs_.size(), port.id, port.manufacturer, port.name,
           port.version, ToDeviceState(port.state)));
     }
-  }
-  constexpr IdentifiableSurface surface = IdentifiableSurface::FromTypeAndToken(
-      IdentifiableSurface::Type::kWebFeature,
-      WebFeature::kRequestMIDIAccess_ObscuredByFootprinting);
-  if (IdentifiabilityStudySettings::Get()->ShouldSampleSurface(surface)) {
-    IdentifiableTokenBuilder builder;
-    for (const auto& port : ports) {
-      builder.AddToken(IdentifiabilityBenignStringToken(port.id));
-      builder.AddToken(IdentifiabilityBenignStringToken(port.name));
-      builder.AddToken(IdentifiabilityBenignStringToken(port.manufacturer));
-      builder.AddToken(IdentifiabilityBenignStringToken(port.version));
-      builder.AddToken(port.type);
-    }
-    IdentifiabilityMetricBuilder(execution_context->UkmSourceID())
-        .Add(surface, builder.GetToken())
-        .Record(execution_context->UkmRecorder());
   }
 }
 
@@ -198,26 +177,25 @@ void MIDIAccess::DidSetOutputPortState(unsigned port_index, PortState state) {
 }
 
 void MIDIAccess::DidReceiveMIDIData(unsigned port_index,
-                                    const unsigned char* data,
-                                    wtf_size_t length,
+                                    base::span<const uint8_t> data,
                                     base::TimeTicks time_stamp) {
   DCHECK(IsMainThread());
   if (port_index >= inputs_.size())
     return;
 
-  inputs_[port_index]->DidReceiveMIDIData(port_index, data, length, time_stamp);
+  inputs_[port_index]->DidReceiveMIDIData(port_index, data, time_stamp);
 }
 
 void MIDIAccess::SendMIDIData(unsigned port_index,
-                              const unsigned char* data,
-                              wtf_size_t length,
+                              base::span<const uint8_t> data,
                               base::TimeTicks time_stamp) {
   DCHECK(!time_stamp.is_null());
-  if (!GetExecutionContext() || !data || !length ||
-      port_index >= outputs_.size())
+  if (!GetExecutionContext() || !data.data() || data.empty() ||
+      port_index >= outputs_.size()) {
     return;
+  }
 
-  dispatcher_->SendMIDIData(port_index, data, length, time_stamp);
+  dispatcher_->SendMIDIData(port_index, data, time_stamp);
 }
 
 void MIDIAccess::Trace(Visitor* visitor) const {

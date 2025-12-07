@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread.h"
+#include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/common/in_process_child_thread_params.h"
 #include "gpu/config/gpu_preferences.h"
@@ -32,11 +33,18 @@ class InProcessGpuThread : public base::Thread {
   void CleanUp() override;
 
  private:
+#if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
+  class BELayerHierarchyTransportImpl;
+#endif
+
   InProcessChildThreadParams params_;
 
   // Deleted in CleanUp() on the gpu thread, so don't use smart pointers.
   std::unique_ptr<ChildProcess> gpu_process_;
   gpu::GpuPreferences gpu_preferences_;
+#if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
+  std::unique_ptr<BELayerHierarchyTransportImpl> be_layer_transport_;
+#endif
 };
 
 CONTENT_EXPORT base::Thread* CreateInProcessGpuThread(

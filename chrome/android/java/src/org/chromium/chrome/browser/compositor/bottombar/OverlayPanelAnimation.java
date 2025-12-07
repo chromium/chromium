@@ -4,21 +4,30 @@
 
 package org.chromium.chrome.browser.compositor.bottombar;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.animation.Animator;
 import android.content.Context;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.MathUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 
+import java.util.Objects;
+
 /** Base abstract class for animating the Overlay Panel. */
+@NullMarked
 public abstract class OverlayPanelAnimation extends OverlayPanelBase {
     /**
      * The base duration of animations in milliseconds. This value is based on
@@ -42,7 +51,7 @@ public abstract class OverlayPanelAnimation extends OverlayPanelBase {
     private @StateChangeReason int mAnimatingStateReason;
 
     /** The animator responsible for moving the sheet up and down. */
-    private CompositorAnimator mHeightAnimator;
+    private @Nullable CompositorAnimator mHeightAnimator;
 
     /** The {@link LayoutUpdateHost} used to request a new frame to be updated and rendered. */
     private final LayoutUpdateHost mUpdateHost;
@@ -55,10 +64,25 @@ public abstract class OverlayPanelAnimation extends OverlayPanelBase {
      * @param context The current Android {@link Context}.
      * @param updateHost The {@link LayoutUpdateHost} used to request updates in the Layout.
      * @param toolbarHeightDp The height of the toolbar in dp.
+     * @param desktopWindowStateManager Manager to get desktop window and app header state.
+     * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} for measuring
+     *     controls.
+     * @param bottomControlsStacker The {@link BottomControlsStacker} for observing and changing
+     *     browser controls heights.
      */
     public OverlayPanelAnimation(
-            Context context, LayoutUpdateHost updateHost, float toolbarHeightDp) {
-        super(context, toolbarHeightDp);
+            Context context,
+            LayoutUpdateHost updateHost,
+            float toolbarHeightDp,
+            @Nullable DesktopWindowStateManager desktopWindowStateManager,
+            BrowserControlsStateProvider browserControlsStateProvider,
+            BottomControlsStacker bottomControlsStacker) {
+        super(
+                context,
+                toolbarHeightDp,
+                desktopWindowStateManager,
+                browserControlsStateProvider,
+                bottomControlsStacker);
         mUpdateHost = updateHost;
     }
 
@@ -113,7 +137,7 @@ public abstract class OverlayPanelAnimation extends OverlayPanelBase {
     protected void closePanel(@StateChangeReason int reason, boolean animate) {
         if (animate) {
             // Only animates the closing action if not doing that already.
-            if (mAnimatingState != PanelState.CLOSED) {
+            if (!Objects.equals(mAnimatingState, PanelState.CLOSED)) {
                 animatePanelToState(PanelState.CLOSED, reason);
             }
         } else {
@@ -130,10 +154,10 @@ public abstract class OverlayPanelAnimation extends OverlayPanelBase {
         // We support resize from any full width to full width, or from narrow width to narrow width
         // when the width does not change (as when the keyboard is shown/hidden).
         boolean isPanelResizeSupported =
-                isFullWidthSizePanel && wasFullWidthSizePanel
-                        || !isFullWidthSizePanel
+                (isFullWidthSizePanel && wasFullWidthSizePanel)
+                        || (!isFullWidthSizePanel
                                 && !wasFullWidthSizePanel
-                                && width == previousWidth;
+                                && width == previousWidth);
 
         // TODO(pedrosimonetti): See crbug.com/568351.
         // We can't keep the panel opened after a viewport size change when the panel's
@@ -159,8 +183,8 @@ public abstract class OverlayPanelAnimation extends OverlayPanelBase {
             // has the effect of destroying the Views used by the Panel (which are
             // children of the CompositorViewHolder), and if we do that synchronously
             // it will cause a crash in {@link FrameLayout#layoutChildren()}.
-            mContainerView
-                    .getHandler()
+            assumeNonNull(mContainerView);
+            assumeNonNull(mContainerView.getHandler())
                     .post(
                             new Runnable() {
                                 @Override
@@ -199,7 +223,7 @@ public abstract class OverlayPanelAnimation extends OverlayPanelBase {
      * @param reason The reason for the change of panel state.
      */
     private void animatePanelToState(
-            @Nullable @PanelState Integer state, @StateChangeReason int reason) {
+            @PanelState @Nullable Integer state, @StateChangeReason int reason) {
         animatePanelToState(state, reason, BASE_ANIMATION_DURATION_MS);
     }
 
@@ -211,7 +235,7 @@ public abstract class OverlayPanelAnimation extends OverlayPanelBase {
      * @param duration The animation duration in milliseconds.
      */
     protected void animatePanelToState(
-            @Nullable @PanelState Integer state, @StateChangeReason int reason, long duration) {
+            @PanelState @Nullable Integer state, @StateChangeReason int reason, long duration) {
         mAnimatingState = state;
         mAnimatingStateReason = reason;
 
@@ -270,7 +294,8 @@ public abstract class OverlayPanelAnimation extends OverlayPanelBase {
      * @return The projected state the Panel will be if the given velocity is applied.
      */
     protected @PanelState int getProjectedState(float velocity) {
-        final float kickY = calculateAnimationDisplacement(velocity, BASE_ANIMATION_DURATION_MS);
+        final float kickY =
+                calculateAnimationDisplacement(velocity, (float) BASE_ANIMATION_DURATION_MS);
         final float projectedHeight = getHeight() - kickY;
 
         // Calculate the projected state the Panel will be at the end of the fling movement and the

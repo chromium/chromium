@@ -1,0 +1,69 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+// An enum which represents the possible network change event that may happen
+// in the underlying network connection. This mirrors `net::NetworkChangeEvent`.
+enum NetworkChangeEvent {
+    // The current network is soon to be disconnected.
+    kSoonToDisconnect,
+
+    // Disconnected from the previously connected network.
+    kDisconnected,
+
+    // Connected to a new network.
+    kConnected,
+
+    // The default network has been changed.
+   kDefaultNetworkChanged
+};
+
+// An observer to monitor whether a reconnect-emitting event has happened in a
+// connection. It primary use is to notify the browser process of the events
+// from the //net layer.
+interface ConnectionChangeObserverClient {
+    // Notify that the underlying network session has been closed. This means
+    // that a connection was established, but was later closed (e.g. because
+    // of idle timeout, GoAway from server, etc.).
+    OnSessionClosed();
+
+    // Notify on a network change event. This means that the status of
+    // underlying network (such as 4G or Wifi) has changed.
+    OnNetworkEvent(NetworkChangeEvent event);
+
+    // Notify that the network connection could not be established. This means
+    // that we attempted establishing the new connection, but could not
+    // establish new connection.
+    OnConnectionFailed();
+};
+
+// Keeps track of the configs to run the connection keep alive.
+// This represents `net::ConnectionKeepAliveConfig`.
+// Passed on `NetworkContext::PreconnectSockets()`.
+struct ConnectionKeepAliveConfig {
+  // Timeout for the session to be closed in seconds. Counted from the last
+  // successful PING. 32-bits is enough to hold a reasonable number of seconds
+  // for a connection to stay alive.
+  int32 idle_timeout_in_seconds = 0;
+
+  // Interval between two pings. Counted from the last ping. This should be
+  // reasonably shorter than `idle_timeout_sec` so that a PING frame can be
+  // exchanged before the idle timeout. We choose a reasonable time in seconds
+  // within the uint32 bounds.
+  int32 ping_interval_in_seconds = 0;
+
+  // Enables the connection keep alive mechanism to periodically send PING
+  // to the server.
+  bool enable_connection_keep_alive = false;
+
+  // The QUIC connection options which will be sent to the server in order to
+  // enable certain QUIC features. This should be set using `QuicTag`s (32-bit
+  // value represented in ASCII equivalent e.g. EXMP). If we want to set
+  // multiple features, then the values should be separated with a comma
+  // (e.g. "ABCD,EFGH"). Note that this is parsed inside the network layer later
+  // on, hence we intentionally send the raw string that is received from Finch
+  // as is.
+  string quic_connection_options = "";
+};

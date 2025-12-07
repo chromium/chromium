@@ -41,13 +41,14 @@ export class PrivateStateTokensSidebarElement extends CrLitElement {
     };
   }
 
-  protected menuItems: Array<{icon: string, name: string, path: string}> = [
-    {
-      icon: 'cr:settings_icon',
-      name: 'Settings',
-      path: 'chrome://settings',
-    },
-  ];
+  protected accessor menuItems:
+      Array<{icon: string, name: string, path: string}> = [
+        {
+          icon: 'cr:settings_icon',
+          name: 'Settings',
+          path: 'chrome://settings',
+        },
+      ];
 
   getMenuItemsForTesting(): MenuItem[] {
     return this.menuItems;

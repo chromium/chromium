@@ -16,6 +16,10 @@ declare_args() {
   # Java debug on Android. Having this on enables multidexing, and turning it
   # off will enable proguard.
   is_java_debug = is_debug || incremental_install
+
+  # Component build breaks javaless renderers - see
+  # go/javaless-renderers-component-build
+  enable_javaless_renderers = !is_component_build
 }
 
 # These two combinations could theoretically be made to work, but they are
@@ -24,16 +28,18 @@ assert(!(is_java_debug && is_official_build),
        "Cannot have is_official_build && is_java_debug")
 assert(!(incremental_install && !is_java_debug),
        "Cannot have incremental_install without is_java_debug")
+assert(!(enable_javaless_renderers && is_component_build),
+       "Javaless renderers do not support component build, see " +
+           "go/javaless-renderers-component-build.")
 
 # Toolchain used to create native libraries for robolectric_binary() targets.
 robolectric_toolchain = "//build/toolchain/android:robolectric_$host_cpu"
 
-# NOTE: Because Chrome OS builds may depend on targets built with the Android
-# toolchain, this GNI file may be read and processed from within Chrome OS
-# toolchains. Checking |is_android| here would therefore be too restrictive.
-if (is_android || is_chromeos) {
+if (is_android) {
   import("//build/config/android/channel.gni")
+  import("//build/config/chrome_build.gni")
   import("//build/config/clang/clang.gni")
+  import("//build/config/cronet/config.gni")
   import("//build/config/dcheck_always_on.gni")
   import("//build/config/sanitizers/sanitizers.gni")
   import("//build/toolchain/siso.gni")
@@ -45,14 +51,14 @@ if (is_android || is_chromeos) {
     # heavily but don't write gclient args files.
 
     import("//build/config/gclient_args.gni")
-    if (defined(checkout_android_native_support)) {
+    if (defined(checkout_android)) {
       n = "$0x0A"  # Newline
-      assert(checkout_android_native_support,
+      assert(checkout_android,
              "Missing native Android toolchain support. |target_os| in your " +
                  ".gclient configuration file (in the parent directory of " +
-                 "src) must include \"android\" and/or \"chromeos\". For " +
+                 "src) must include \"android\". For " +
                  "example:${n}${n}solutions = [${n}...${n}]${n}" +
-                 "target_os=[\"chromeos\"]${n}${n}" +
+                 "target_os=[\"android\"]${n}${n}" +
                  "After adding |target_os| please re-run \"gclient sync\".${n}")
     }
   }
@@ -65,40 +71,73 @@ if (is_android || is_chromeos) {
     # is set from gclient vars, with target_os needed for chromeos.
     # Can be set to false to disable all internal android things.
     enable_chrome_android_internal =
-        build_with_chromium && checkout_src_internal && target_os == "android"
-
-    # Experimental new flag for the build system to automatically attempt to
-    # fix missing java deps. This should always be false on bots so they do not
-    # succeed when there are build errors. Devs can override this in args.gn.
-    auto_add_missing_java_deps = false
+        build_with_chromium && enable_src_internal && target_os == "android"
 
     # The default to use for android:minSdkVersion for targets that do
     # not explicitly set it.
-    default_min_sdk_version = 26
-    if (is_asan) {
-      default_min_sdk_version = 27
+    default_min_sdk_version = 29
+    if (is_cronet_build) {
+      # Cronet's min sdk version support policy is different from the rest of
+      # Chromium; Cronet explicitly supports older devices.
+      default_min_sdk_version = 23
     }
 
     # Static analysis can be either "on" or "off" or "build_server". This
     # controls how android lint, error-prone, bytecode checks are run. This
     # needs to be in a separate declare_args as it determines some of the args
     # in the main declare_args block below.
-    # "on" is the default.
-    # "off" avoids running any static analysis. This is the default for
-    #     official builds to reduce build times. Failures in static analysis
-    #     would have been caught by other bots.
-    # "build_server" ensures that fast_local_dev_server.py is running and
-    #     offloads analysis tasks to it to be run after the build completes.
-    #     This is the recommended setting for local development.
+    # "build_server" (default)
+    #     Runs static analysis jobs via a daemon process and does not block
+    #     on the results. Does not work on bots (requires autoninja.py).
+    #     See: https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/static_analysis.md#autoninja-integration
+    # "on"
+    #     Runs static analysis as build steps, blocking until they complete.
+    #     This mode will fail builds when analysis steps fail, unless
+    #     treat_warnings_as_errors=false is set.
+    # "off"
+    #     Disables static analysis. Many bots set this so as to not duplicate
+    #     the same analysis steps as other bots.
+    android_static_analysis = "default"
+
+    # Embed a wrap.sh file within apks to set custom environment variables.
+    # Use a comma space-separated list.
+    # E.g.: LD_PRELOAD=foo:bar LD_DEBUG=statistics
+    android_custom_env = ""
+  }
+  enable_wrap_sh = is_hwasan || is_asan || android_custom_env != ""
+
+  # Make it such that is_official_build sets android_static_analysis="off", but
+  # leaves enable_r8_tracerefs=true.
+  declare_args() {
+    # Controls whether TraceReferences checks are done (for targets with
+    # proguard_enabled=true).
+    enable_r8_tracerefs = android_static_analysis != "off"
+  }
+
+  if (android_static_analysis == "default") {
     if (is_official_build) {
+      # Speed up official builds by disabling. Any failures should have already
+      # been caught by other bots.
       android_static_analysis = "off"
     } else {
-      android_static_analysis = "on"
+      android_static_analysis = "build_server"
     }
   }
 
+  if (android_static_analysis == "build_server" && enable_java_templates &&
+      getenv("SWARMING_TASK_ID") != "") {
+    # All android bots that can build java targets need to explicitly set
+    # android_static_analysis = "on" or "off" rather than rely on the default
+    # value, because the default value of "build_server" does not work on
+    # bots. This is an assert instead of a dynamic default so that copy
+    # pasting gn args reproduces bot behavior.
+    assert(
+        false,
+        "All android bots must explicitly set android_static_analysis gn arg.")
+  }
+
   # Our build system no longer supports legacy multidex.
-  min_supported_sdk_version = 21
+  min_supported_sdk_version = 23
 
   # ASAN requires O MR1.
   # https://github.com/google/sanitizers/wiki/AddressSanitizerOnAndroid/01f8df1ac1a447a8475cdfcb03e8b13140042dbd#running-with-wrapsh-recommended
@@ -114,10 +153,6 @@ if (is_android || is_chromeos) {
   assert(android_static_analysis == "on" || android_static_analysis == "off" ||
          android_static_analysis == "build_server")
 
-  # This configuration has not bot coverage and has broken multiple times.
-  # Warn against it.
-  assert(!(enable_chrome_android_internal && skip_secondary_abi_for_cq))
-
   if (enable_chrome_android_internal) {
     import("//clank/config.gni")
   } else {
@@ -130,32 +165,27 @@ if (is_android || is_chromeos) {
 
   if (!defined(default_android_ndk_root)) {
     default_android_ndk_root = "//third_party/android_toolchain/ndk"
-    default_android_ndk_version = "r27"
+    default_android_ndk_version = "r28"
   } else {
     assert(defined(default_android_ndk_version))
   }
 
   public_android_sdk_root = "//third_party/android_sdk/public"
-  public_android_sdk_build_tools =
-      "${public_android_sdk_root}/build-tools/35.0.0"
-  public_android_sdk_version = "35"
-  if (android_sdk_release == "v") {
+  public_android_sdk_platform_version = "36"
+  public_android_sdk_build_tools_version = "36.0.0"
+  if (android_sdk_release == "b") {
     default_android_sdk_root = public_android_sdk_root
-    default_android_sdk_version = public_android_sdk_version
-    default_android_sdk_build_tools_version = "35.0.0"
+    default_android_sdk_platform_version = public_android_sdk_platform_version
+    default_android_sdk_build_tools_version =
+        public_android_sdk_build_tools_version
     public_android_sdk = true
-  }
-
-  # For use downstream when we are building with preview Android SDK
-  if (!defined(final_android_sdk)) {
-    final_android_sdk = public_android_sdk
   }
 
   if (!defined(default_lint_android_sdk_root)) {
     # Purposefully repeated so that downstream can change
     # default_android_sdk_root without changing lint version.
     default_lint_android_sdk_root = public_android_sdk_root
-    default_lint_android_sdk_version = 35
+    default_lint_android_sdk_version = public_android_sdk_platform_version
   }
 
   if (!defined(default_extras_android_sdk_root)) {
@@ -178,7 +208,7 @@ if (is_android || is_chromeos) {
   }
 
   if (!defined(android_protoc_bin)) {
-    android_protoc_bin = "//third_party/android_protoc/protoc"
+    android_protoc_bin = "//third_party/android_build_tools/protoc/cipd/protoc"
   }
 
   webview_public_framework_dep =
@@ -194,24 +224,16 @@ if (is_android || is_chromeos) {
     android_ndk_root = default_android_ndk_root
     android_ndk_version = default_android_ndk_version
 
-    # Android API level for 32 bits platforms
-    android32_ndk_api_level = default_min_sdk_version
+    android_ndk_api_level = default_min_sdk_version
 
-    # Android API level for 64 bits platforms
-    android64_ndk_api_level = default_min_sdk_version
-
-    if (default_min_sdk_version < 21) {
-      # Android did not support 64 bit before API 21.
-      android64_ndk_api_level = 21
-    }
     if (current_cpu == "riscv64" && default_min_sdk_version < 35) {
       # Android did not support RISC-V64 before API 35.
-      android64_ndk_api_level = 35
+      android_ndk_api_level = 35
     }
 
     android_sdk_root = default_android_sdk_root
-    android_sdk_version = default_android_sdk_version
     android_sdk_build_tools_version = default_android_sdk_build_tools_version
+    android_sdk_platform_version = default_android_sdk_platform_version
 
     lint_android_sdk_root = default_lint_android_sdk_root
     lint_android_sdk_version = default_lint_android_sdk_version
@@ -256,7 +278,7 @@ if (is_android || is_chromeos) {
     # Location of aapt2 used for app bundles. For now, a more recent version
     # than the one distributed with the Android SDK is required.
     android_sdk_tools_bundle_aapt2_dir =
-        "//third_party/android_build_tools/aapt2"
+        "//third_party/android_build_tools/aapt2/cipd"
 
     # Causes expectation failures to break the build, otherwise, just warns on
     # stderr and writes a failure file to $android_configuration_failure_dir:
@@ -289,18 +311,21 @@ if (is_android || is_chromeos) {
     enable_startup_profiles = false
 
     # The target to use as the system WebView implementation.
-    if (android_64bit_target_cpu) {
-      if (skip_secondary_abi_for_cq) {
-        system_webview_apk_target = "//android_webview:system_webview_64_apk"
-      } else {
-        system_webview_apk_target = "//android_webview:system_webview_32_64_apk"
-      }
+    if (defined(android_app_secondary_abi)) {
+      system_webview_apk_target = "//android_webview:system_webview_32_64_apk"
+    } else if (android_64bit_target_cpu) {
+      system_webview_apk_target = "//android_webview:system_webview_64_apk"
     } else {
       system_webview_apk_target = "//android_webview:system_webview_apk"
     }
 
     # Where to write failed expectations for bots to read.
     expectations_failure_dir = "$root_build_dir/failed_expectations"
+
+    # Enables rewriting of certain method invocations with overloads that take an
+    # additional argument of type org.chromium.base.task.Location (see
+    # //build/android/location_rewriter)
+    enable_java_location_rewrite = false
   }
 
   if (is_asan) {
@@ -308,14 +333,21 @@ if (is_android || is_chromeos) {
     disable_android_lint = true
   }
 
+  if (is_cronet_build) {
+    # Disable Java bytecode rewriting for cronet to prevent pulling in bytecode
+    # rewriter's dependencies
+    enable_java_location_rewrite = false
+  }
+
+  assert(
+      android_ndk_api_level >= min_supported_sdk_version,
+      "android_ndk_api_level ($android_ndk_api_level) must be >= min_supported_sdk_version ($min_supported_sdk_version)")
+
   # We need a second declare_args block to make sure we are using the overridden
   # value of the arguments set above.
   declare_args() {
-    if (defined(default_android_sdk_platform_version)) {
-      android_sdk_platform_version = default_android_sdk_platform_version
-    } else {
-      android_sdk_platform_version = android_sdk_version
-    }
+    # Default value for targetSdkVersion for APK and bundle targets.
+    default_target_sdk_version = "36"
 
     # Whether java assertions and Preconditions checks are enabled.
     enable_java_asserts = dcheck_always_on || !is_official_build
@@ -345,7 +377,9 @@ if (is_android || is_chromeos) {
 
   # Defines the name the Android build gives to the current host CPU
   # architecture, which is different than the names GN uses.
-  if (host_cpu == "x64") {
+  if (host_cpu == "x64" || host_cpu == "arm64") {
+    # Android toolchain on Mac supports both ARM64 and x64 architectures
+    # despite the x86_64 tag in the Darwin name.
     android_host_arch = "x86_64"
   } else if (host_cpu == "x86") {
     android_host_arch = "x86"
@@ -369,13 +403,16 @@ if (is_android || is_chromeos) {
   # than just the current one) since these are needed by the Android toolchain
   # file to define toolchains for all possible targets in one pass.
 
-  android_sdk =
+  android_sdk_platform_root =
       "${android_sdk_root}/platforms/android-${android_sdk_platform_version}"
+  public_android_sdk_platform_root = "${public_android_sdk_root}/platforms/android-${public_android_sdk_platform_version}"
   android_sdk_build_tools =
       "${android_sdk_root}/build-tools/$android_sdk_build_tools_version"
+  public_android_sdk_build_tools = "${public_android_sdk_root}/build-tools/$public_android_sdk_build_tools_version"
 
   # Path to the SDK's android.jar
-  android_sdk_jar = "$android_sdk/android.jar"
+  android_sdk_jar = "$android_sdk_platform_root/android.jar"
+  public_android_sdk_jar = "$public_android_sdk_platform_root/android.jar"
 
   # Location of libgcc. This is only needed for the current GN toolchain, so we
   # only need to define the current one, rather than one for every platform
@@ -444,6 +481,22 @@ if (is_android || is_chromeos) {
   javac_paths_for_inputs =
       [ "//third_party/jdk/current/bin/javac" ] + _common_inputs_for_jre_jdk
 
-  # TODO(crbug.com/40261378): Remove.
-  use_upstream_errorprone_annotations_threadsafe = true
+  kotlinc_paths_for_inputs = [
+    "//third_party/kotlinc",
+    "//third_party/kotlinc/current/bin/kotlinc",
+    "//third_party/kotlinc/current/lib/jvm-abi-gen.jar",
+    "//third_party/kotlinc/current/lib/annotations-13.0.jar",
+    "//third_party/kotlinc/current/lib/kotlin-compiler.jar",
+    "//third_party/kotlinc/current/lib/kotlin-preloader.jar",
+    "//third_party/kotlinc/current/lib/kotlin-reflect.jar",
+    "//third_party/kotlinc/current/lib/kotlin-script-runtime.jar",
+    "//third_party/kotlinc/current/lib/kotlin-scripting-common.jar",
+    "//third_party/kotlinc/current/lib/kotlin-scripting-compiler-impl.jar",
+    "//third_party/kotlinc/current/lib/kotlin-scripting-compiler.jar",
+    "//third_party/kotlinc/current/lib/kotlin-scripting-jvm.jar",
+    "//third_party/kotlinc/current/lib/kotlin-stdlib.jar",
+    "//third_party/kotlinc/current/lib/kotlinx-coroutines-core-jvm.jar",
+  ]
+
+  android_logs = [ "android_ndk_api_level=${android_ndk_api_level}" ]
 }

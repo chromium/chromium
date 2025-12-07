@@ -90,8 +90,7 @@ DownloadSource DownloadDBConversions::DownloadSourceFromProto(
     case download_pb::DownloadSource::TOOLBAR_MENU:
       return DownloadSource::TOOLBAR_MENU;
   }
-  NOTREACHED_IN_MIGRATION();
-  return DownloadSource::UNKNOWN;
+  NOTREACHED();
 }
 
 // static
@@ -125,8 +124,7 @@ download_pb::DownloadSource DownloadDBConversions::DownloadSourceToProto(
     case DownloadSource::TOOLBAR_MENU:
       return download_pb::DownloadSource::TOOLBAR_MENU;
   }
-  NOTREACHED_IN_MIGRATION();
-  return download_pb::DownloadSource::UNKNOWN;
+  NOTREACHED();
 }
 
 std::vector<DownloadEntry> DownloadDBConversions::DownloadEntriesFromProto(

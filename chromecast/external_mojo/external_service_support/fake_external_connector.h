@@ -13,7 +13,6 @@
 #include "base/sequence_checker.h"
 #include "chromecast/external_mojo/external_service_support/external_connector.h"
 #include "chromecast/external_mojo/public/mojom/test_connector.mojom.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

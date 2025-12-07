@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <map>
 #include <optional>
 #include <string>
 
@@ -97,6 +98,9 @@ struct CONTENT_EXPORT NotificationDatabaseData {
   // Flag for notifications shown by the browser that should not be visible to
   // the origin when requesting a list of notifications.
   bool is_shown_by_browser = false;
+
+  // Serialized dictionary of notification metadata.
+  std::map<std::string, std::string> serialized_metadata;
 };
 
 }  // namespace content

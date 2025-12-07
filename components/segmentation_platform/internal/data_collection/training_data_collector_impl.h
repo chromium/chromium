@@ -64,12 +64,13 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
       bool decision_result_update_trigger = false) override;
   void CollectTrainingData(SegmentId segment_id,
                            TrainingRequestId request_id,
+                           ukm::SourceId ukm_source_id,
                            const TrainingLabels& param,
                            SuccessCallback callback) override;
 
   // HistogramSignalHandler::Observer implementation.
-  void OnHistogramSignalUpdated(const std::string& histogram_name,
-                                base::HistogramBase::Sample sample) override;
+  void OnHistogramSignalUpdated(std::string_view histogram_name,
+                                base::HistogramBase::Sample32 sample) override;
 
   // UserActionSignalHandler::Observer implementation.
   void OnUserAction(const std::string& user_action,

@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.xsurface;
 
+import org.jspecify.annotations.NullMarked;
+
 /** Moving to ./feed/ */
+@NullMarked
 public interface ReliabilityLoggingTestUtil
         extends org.chromium.chrome.browser.xsurface.feed.ReliabilityLoggingTestUtil {}

@@ -78,6 +78,9 @@ class TopSites : public RefcountedKeyedService {
   // Removes all blocked urls. Should be called from the UI thread.
   virtual void ClearBlockedUrls() = 0;
 
+  // Returns the number of blocked URLs.
+  virtual int NumBlockedSites() const = 0;
+
   // Returns true if the top sites list is full (i.e. we already have the
   // maximum number of top sites).  This function also returns false if TopSites
   // isn't loaded yet.

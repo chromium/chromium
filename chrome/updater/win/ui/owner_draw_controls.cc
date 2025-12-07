@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/updater/win/ui/owner_draw_controls.h"
 
 #include <algorithm>
 #include <cstdint>
 #include <vector>
 
-#include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
+#include "base/strings/utf_string_conversions.h"
+#include "chrome/updater/util/util.h"
 #include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
 #include "chrome/updater/win/ui/ui_util.h"
@@ -163,7 +160,9 @@ void CaptionButton::set_tool_tip_text(const CString& tool_tip_text) {
 }
 
 CloseButton::CloseButton() {
-  set_tool_tip_text(GetLocalizedString(IDS_CLOSE_BUTTON_BASE).c_str());
+  set_tool_tip_text(GetLocalizedString(IDS_CLOSE_BUTTON_BASE,
+                                       base::UTF8ToWide(GetTagLanguage()))
+                        .c_str());
 }
 
 HRGN CloseButton::GetButtonRgn(int rgn_width, int rgn_height) {
@@ -190,7 +189,9 @@ HRGN CloseButton::GetButtonRgn(int rgn_width, int rgn_height) {
 }
 
 MinimizeButton::MinimizeButton() {
-  set_tool_tip_text(GetLocalizedString(IDS_MINIMIZE_BUTTON_BASE).c_str());
+  set_tool_tip_text(GetLocalizedString(IDS_MINIMIZE_BUTTON_BASE,
+                                       base::UTF8ToWide(GetTagLanguage()))
+                        .c_str());
 }
 
 HRGN MinimizeButton::GetButtonRgn(int rgn_width, int rgn_height) {
@@ -558,7 +559,8 @@ LRESULT CustomProgressBarCtrl::OnPaint(UINT, WPARAM, LPARAM, BOOL& handled) {
 
   if (rgn.GetRegionData(&rgndata, rgndata_size)) {
     for (DWORD count = 0; count < rgndata.rdh.nCount; count++) {
-      CRect r = reinterpret_cast<RECT*>(rgndata.Buffer + count * sizeof(RECT));
+      CRect r = reinterpret_cast<RECT*>(
+          UNSAFE_TODO(rgndata.Buffer + count * sizeof(RECT)));
       CRect bottom_edge_rect = r;
 
       // Have a 2-pixel bottom edge.

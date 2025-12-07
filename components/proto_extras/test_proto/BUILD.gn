@@ -1,0 +1,32 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/proto_extras/proto_extras.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("test_proto") {
+  proto_in_dir = "//"
+  sources = [
+    "test_proto.proto",
+    "test_proto_dependency.proto",
+  ]
+}
+
+proto_extras("test_proto_extras") {
+  sources = [
+    "test_proto.proto",
+    "test_proto_dependency.proto",
+  ]
+
+  deps = [ ":test_proto" ]
+}
+
+proto_test_extras("test_proto_test_extras") {
+  sources = [
+    "test_proto.proto",
+    "test_proto_dependency.proto",
+  ]
+  deps = [ ":test_proto" ]
+  extras_deps = [ ":test_proto_extras" ]
+}

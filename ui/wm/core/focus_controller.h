@@ -55,6 +55,8 @@ class COMPONENT_EXPORT(UI_WM) FocusController : public ActivationClient,
 
   ~FocusController() override;
 
+  void SetFocusRules(std::unique_ptr<FocusRules> new_rules);
+
   // Overridden from ActivationClient:
   void AddObserver(ActivationChangeObserver* observer) override;
   void RemoveObserver(ActivationChangeObserver* observer) override;

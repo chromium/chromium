@@ -29,6 +29,11 @@ class LensOverlayPageActionIconView : public PageActionIconView {
     update_callback_for_testing_ = std::move(update_callback);
   }
 
+  void execute_with_keyboard_source_for_testing() {
+    CHECK(GetVisible());
+    OnExecuting(EXECUTE_SOURCE_KEYBOARD);
+  }
+
  protected:
   // PageActionIconView:
   bool ShouldShowLabel() const override;
@@ -36,19 +41,8 @@ class LensOverlayPageActionIconView : public PageActionIconView {
   void OnExecuting(PageActionIconView::ExecuteSource source) override;
   views::BubbleDialogDelegate* GetBubble() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
-  gfx::Size CalculatePreferredSize(
-      const views::SizeBounds& available_size) const override;
-  void Layout(PassKey) override;
-  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
  private:
-  // Preferred sizes for this view with and without the label set.
-  gfx::Size preferred_size_with_label_;
-  gfx::Size preferred_size_without_label_;
-
-  // Controls the `ShouldShowLabel` behavior.
-  bool should_show_label_ = true;
-
   raw_ptr<Browser> browser_;
   base::OnceClosure update_callback_for_testing_;
 };

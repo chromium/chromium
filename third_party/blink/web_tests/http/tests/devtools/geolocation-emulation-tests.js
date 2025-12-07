@@ -39,30 +39,30 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
   TestRunner.runTestSuite([
     async function testGeolocationUnavailable(next) {
-      TestRunner.EmulationAgent.setGeolocationOverride();
+      TestRunner.EmulationAgent.invoke_setGeolocationOverride({});
       TestRunner.addResult(await TestRunner.evaluateInPageAsync('getPositionPromise()'));
       next();
     },
 
     async function testOverridenGeolocation(next) {
-      TestRunner.EmulationAgent.setGeolocationOverride(50, 100, 95);
+      TestRunner.EmulationAgent.invoke_setGeolocationOverride({latitude: 50, longitude: 100, accuracy: 95});
       TestRunner.addResult(await TestRunner.evaluateInPageAsync('getPositionPromise()'));
       next();
     },
 
     async function testInvalidParam(next) {
-      TestRunner.EmulationAgent.setGeolocationOverride(true, 100, 95);
+      await TestRunner.EmulationAgent.invoke_setGeolocationOverride({latitude: true, longitude: 100, accuracy: 95});
       next();
     },
 
     async function testInvalidGeolocation(next) {
-      TestRunner.EmulationAgent.setGeolocationOverride(200, 300, 95);
+      await TestRunner.EmulationAgent.invoke_setGeolocationOverride({latitude: 200, longitude: 300, accuracy: 95});
       TestRunner.addResult(await TestRunner.evaluateInPageAsync('getPositionPromise()'));
       next();
     },
 
     async function testNoOverride(next) {
-      TestRunner.EmulationAgent.clearGeolocationOverride();
+      TestRunner.EmulationAgent.invoke_clearGeolocationOverride();
       var positionString = await TestRunner.evaluateInPageAsync('getPositionPromise()');
       if (positionString === positionBeforeOverride)
         TestRunner.addResult('Override was cleared correctly.');

@@ -25,6 +25,7 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -70,18 +71,22 @@ using ::chromeos::WindowStateType;
 
 constexpr char kMultitaskMenuBubbleWidgetName[] = "MultitaskMenuBubbleWidget";
 
-class TestWidgetDelegate : public views::WidgetDelegateView {
+}  // namespace
+
+class FrameSizeButtonTestWidgetDelegate : public views::WidgetDelegateView {
  public:
-  explicit TestWidgetDelegate(bool resizable) {
+  explicit FrameSizeButtonTestWidgetDelegate(bool resizable) {
     SetCanMaximize(true);
     SetCanMinimize(true);
     SetCanResize(resizable);
   }
 
-  TestWidgetDelegate(const TestWidgetDelegate&) = delete;
-  TestWidgetDelegate& operator=(const TestWidgetDelegate&) = delete;
+  FrameSizeButtonTestWidgetDelegate(const FrameSizeButtonTestWidgetDelegate&) =
+      delete;
+  FrameSizeButtonTestWidgetDelegate& operator=(
+      const FrameSizeButtonTestWidgetDelegate&) = delete;
 
-  ~TestWidgetDelegate() override = default;
+  ~FrameSizeButtonTestWidgetDelegate() override = default;
 
   FrameCaptionButtonContainerView* caption_button_container() {
     return caption_button_container_;
@@ -125,7 +130,7 @@ class TestWidgetDelegate : public views::WidgetDelegateView {
           views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE,
           views::kWindowControlMaximizeIcon);
 
-      AddChildView(caption_button_container_.get());
+      AddChildViewRaw(caption_button_container_.get());
     }
   }
 
@@ -135,12 +140,7 @@ class TestWidgetDelegate : public views::WidgetDelegateView {
 
 class FrameSizeButtonTest : public AshTestBase {
  public:
-  FrameSizeButtonTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kSnapGroup,
-                              features::kOsSettingsRevampWayfinding},
-        /*disabled_features=*/{});
-  }
+  FrameSizeButtonTest() = default;
   explicit FrameSizeButtonTest(bool resizable) : resizable_(resizable) {}
 
   FrameSizeButtonTest(const FrameSizeButtonTest&) = delete;
@@ -184,7 +184,7 @@ class FrameSizeButtonTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    widget_delegate_ = new TestWidgetDelegate(resizable_);
+    widget_delegate_ = new FrameSizeButtonTestWidgetDelegate(resizable_);
     widget_ = CreateWidget(widget_delegate_);
     widget_->GetNativeWindow()->SetProperty(chromeos::kAppTypeKey,
                                             chromeos::AppType::BROWSER);
@@ -207,22 +207,21 @@ class FrameSizeButtonTest : public AshTestBase {
   views::FrameCaptionButton* minimize_button() { return minimize_button_; }
   views::FrameCaptionButton* size_button() { return size_button_; }
   views::FrameCaptionButton* close_button() { return close_button_; }
-  TestWidgetDelegate* widget_delegate() { return widget_delegate_; }
+  FrameSizeButtonTestWidgetDelegate* widget_delegate() {
+    return widget_delegate_;
+  }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   // Not owned.
   raw_ptr<WindowState, DanglingUntriaged> window_state_;
   raw_ptr<views::Widget, DanglingUntriaged> widget_;
   raw_ptr<views::FrameCaptionButton, DanglingUntriaged> minimize_button_;
   raw_ptr<views::FrameCaptionButton, DanglingUntriaged> size_button_;
   raw_ptr<views::FrameCaptionButton, DanglingUntriaged> close_button_;
-  raw_ptr<TestWidgetDelegate, DanglingUntriaged> widget_delegate_;
+  raw_ptr<FrameSizeButtonTestWidgetDelegate, DanglingUntriaged>
+      widget_delegate_;
   bool resizable_ = true;
 };
-
-}  // namespace
 
 // Tests that pressing the left mouse button or tapping down on the size button
 // puts the button into the pressed state.
@@ -451,7 +450,7 @@ TEST_F(FrameSizeButtonTest, ResetButtonsAfterClick) {
             close_button()->GetIcon());
 
   const gfx::Rect work_area_bounds_in_screen =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
   generator->MoveMouseTo(work_area_bounds_in_screen.bottom_left());
 
   // None of the buttons should be pressed because we are really far away from
@@ -506,7 +505,7 @@ TEST_F(FrameSizeButtonTest, SizeButtonPressedWhenSnapButtonHovered) {
   // the close button (snap right button) should hover the close button and
   // keep the size button pressed.
   const gfx::Rect work_area_bounds_in_screen =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
   generator->MoveMouseTo(work_area_bounds_in_screen.bottom_left());
   EXPECT_TRUE(AllButtonsInNormalState());
   generator->MoveMouseTo(CenterPointInScreen(close_button()));
@@ -785,8 +784,7 @@ TEST_F(MultitaskMenuTest, HalfButtonRTL) {
 // left side button should snap it to the correct side.
 TEST_F(MultitaskMenuTest, HalfButtonSecondaryLayout) {
   // Rotate the display 180 degrees so its layout is not primary.
-  const int64_t display_id =
-      display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  const int64_t display_id = display::Screen::Get()->GetPrimaryDisplay().id();
   display::test::ScopedSetInternalDisplayId set_internal(
       Shell::Get()->display_manager(), display_id);
   ScreenOrientationControllerTestApi(
@@ -815,7 +813,7 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuPartialSplit) {
   window_state()->Deactivate();
   ASSERT_NE(activation_client()->GetActiveWindow(), window());
   const gfx::Rect work_area_bounds_in_screen =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
 
   // Verify the metrics initial states.
   base::UserActionTester user_action_tester;
@@ -896,7 +894,7 @@ TEST_F(MultitaskMenuTest, PartialSplitInNonPrimaryDisplay) {
   EXPECT_THAT(window_state()->snap_ratio(),
               testing::Optional(chromeos::kTwoThirdSnapRatio));
   const gfx::Rect work_area_bounds_in_screen =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
   EXPECT_NEAR(work_area_bounds_in_screen.width() * chromeos::kTwoThirdSnapRatio,
               window_state()->window()->bounds().width(), 1);
 }
@@ -1076,7 +1074,7 @@ TEST_F(MultitaskMenuTest, MinimizeWhenMenuShown) {
 // pressed while the menu is shown.
 TEST_F(MultitaskMenuTest, ReversePartialButton) {
   const gfx::Rect work_area_bounds_in_screen =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
 
   // Reverse the menu. Test that the left button snaps to 1/3.
   ShowMultitaskMenu();
@@ -1122,7 +1120,7 @@ TEST_F(MultitaskMenuTest, ReversePartialButton) {
 // pressed while the menu is shown.
 TEST_F(MultitaskMenuTest, ReverseFloatButton) {
   const gfx::Rect work_area_bounds_in_screen =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
   const gfx::Rect original_bounds = window_state()->window()->bounds();
 
   // Reverse the menu and press the float button. Test that the window is
@@ -1303,7 +1301,7 @@ TEST_F(MultitaskMenuTest, TabAndArrowKeyTraversal) {
 TEST_F(MultitaskMenuTest, AdjustedMenuBounds) {
   // Position the window so that the size button is slightly offscreen.
   const gfx::Rect work_area_bounds_in_screen =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
   GetWidget()->SetBounds(
       gfx::Rect(gfx::Point(work_area_bounds_in_screen.right() - 50, 0),
                 GetWidget()->GetWindowBoundsInScreen().size()));
@@ -1317,17 +1315,7 @@ TEST_F(MultitaskMenuTest, AdjustedMenuBounds) {
       GetMultitaskMenu()->GetBoundsInScreen()));
 }
 
-class SnapGroupFrameSizeButtonTest : public MultitaskMenuTest {
- public:
-  SnapGroupFrameSizeButtonTest() : scoped_feature_list_(features::kSnapGroup) {}
-  SnapGroupFrameSizeButtonTest(const SnapGroupFrameSizeButtonTest&) = delete;
-  SnapGroupFrameSizeButtonTest& operator=(const SnapGroupFrameSizeButtonTest&) =
-      delete;
-  ~SnapGroupFrameSizeButtonTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using SnapGroupFrameSizeButtonTest = MultitaskMenuTest;
 
 // Tests that long press caption button to show snap phantom bounds are updated.
 TEST_F(SnapGroupFrameSizeButtonTest, SnapCaptionButton) {
@@ -1356,7 +1344,7 @@ TEST_F(SnapGroupFrameSizeButtonTest, SnapCaptionButton) {
 
   // Test the phantom bounds reflect the opposite snapped `w1`.
   const gfx::Rect work_area =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
   gfx::Rect expected_bounds(work_area);
   expected_bounds.Subtract(w1->GetBoundsInScreen());
   EXPECT_TRUE(expected_bounds.ApproximatelyEqual(

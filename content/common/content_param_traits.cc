@@ -12,15 +12,13 @@
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/common/surfaces/surface_info.h"
-#include "ipc/ipc_mojo_message_helper.h"
-#include "ipc/ipc_mojo_param_traits.h"
+#include "ipc/mojo_param_traits.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/ip_endpoint.h"
 #include "services/network/public/cpp/net_ipc_param_traits.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/messaging/message_port_descriptor.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/permissions_policy/policy_value.mojom.h"
 #include "ui/accessibility/ax_mode.h"
@@ -43,27 +41,6 @@ bool ParamTraits<blink::MessagePortChannel>::Read(const base::Pickle* m,
   return true;
 }
 
-void ParamTraits<blink::MessagePortChannel>::Log(const param_type& p,
-                                                 std::string* l) {}
-
-void ParamTraits<blink::PolicyValue>::Write(base::Pickle* m,
-                                            const param_type& p) {
-  blink::mojom::PolicyValueType type = p.Type();
-  WriteParam(m, static_cast<int>(type));
-  switch (type) {
-    case blink::mojom::PolicyValueType::kBool:
-      WriteParam(m, p.BoolValue());
-      break;
-    case blink::mojom::PolicyValueType::kDecDouble:
-      WriteParam(m, p.DoubleValue());
-      break;
-    case blink::mojom::PolicyValueType::kEnum:
-      WriteParam(m, p.IntValue());
-      break;
-    case blink::mojom::PolicyValueType::kNull:
-      break;
-  }
-}
 
 void ParamTraits<blink::MessagePortDescriptor>::Write(
     base::Pickle* m,
@@ -93,8 +70,6 @@ bool ParamTraits<blink::MessagePortDescriptor>::Read(const base::Pickle* m,
   return true;
 }
 
-void ParamTraits<blink::MessagePortDescriptor>::Log(const param_type& p,
-                                                    std::string* l) {}
 
 bool ParamTraits<blink::PolicyValue>::Read(const base::Pickle* m,
                                            base::PickleIterator* iter,
@@ -133,9 +108,6 @@ bool ParamTraits<blink::PolicyValue>::Read(const base::Pickle* m,
   return true;
 }
 
-void ParamTraits<blink::PolicyValue>::Log(const param_type& p, std::string* l) {
-}
-
 void ParamTraits<ui::AXMode>::Write(base::Pickle* m, const param_type& p) {
   WriteParam(m, p.flags());
 }
@@ -149,8 +121,6 @@ bool ParamTraits<ui::AXMode>::Read(const base::Pickle* m,
   *r = ui::AXMode(value);
   return true;
 }
-
-void ParamTraits<ui::AXMode>::Log(const param_type& p, std::string* l) {}
 
 template <>
 struct ParamTraits<blink::mojom::SerializedBlobPtr> {
@@ -225,14 +195,6 @@ bool ParamTraits<viz::FrameSinkId>::Read(const base::Pickle* m,
   return p->is_valid();
 }
 
-void ParamTraits<viz::FrameSinkId>::Log(const param_type& p, std::string* l) {
-  l->append("viz::FrameSinkId(");
-  LogParam(p.client_id(), l);
-  l->append(", ");
-  LogParam(p.sink_id(), l);
-  l->append(")");
-}
-
 void ParamTraits<viz::LocalSurfaceId>::Write(base::Pickle* m,
                                              const param_type& p) {
   DCHECK(p.is_valid());
@@ -261,17 +223,6 @@ bool ParamTraits<viz::LocalSurfaceId>::Read(const base::Pickle* m,
   return p->is_valid();
 }
 
-void ParamTraits<viz::LocalSurfaceId>::Log(const param_type& p,
-                                           std::string* l) {
-  l->append("viz::LocalSurfaceId(");
-  LogParam(p.parent_sequence_number(), l);
-  l->append(", ");
-  LogParam(p.child_sequence_number(), l);
-  l->append(", ");
-  LogParam(p.embed_token(), l);
-  l->append(")");
-}
-
 void ParamTraits<viz::SurfaceId>::Write(base::Pickle* m, const param_type& p) {
   WriteParam(m, p.frame_sink_id());
   WriteParam(m, p.local_surface_id());
@@ -290,14 +241,6 @@ bool ParamTraits<viz::SurfaceId>::Read(const base::Pickle* m,
 
   *p = viz::SurfaceId(frame_sink_id, local_surface_id);
   return true;
-}
-
-void ParamTraits<viz::SurfaceId>::Log(const param_type& p, std::string* l) {
-  l->append("viz::SurfaceId(");
-  LogParam(p.frame_sink_id(), l);
-  l->append(", ");
-  LogParam(p.local_surface_id(), l);
-  l->append(")");
 }
 
 void ParamTraits<viz::SurfaceInfo>::Write(base::Pickle* m,
@@ -326,16 +269,6 @@ bool ParamTraits<viz::SurfaceInfo>::Read(const base::Pickle* m,
   return p->is_valid();
 }
 
-void ParamTraits<viz::SurfaceInfo>::Log(const param_type& p, std::string* l) {
-  l->append("viz::SurfaceInfo(");
-  LogParam(p.id(), l);
-  l->append(", ");
-  LogParam(p.device_scale_factor(), l);
-  l->append(", ");
-  LogParam(p.size_in_pixels(), l);
-  l->append(")");
-}
-
 }  // namespace IPC
 
 // Generate param traits write methods.
@@ -347,13 +280,6 @@ namespace IPC {
 
 // Generate param traits read methods.
 #include "ipc/param_traits_read_macros.h"
-namespace IPC {
-#undef CONTENT_COMMON_CONTENT_PARAM_TRAITS_MACROS_H_
-#include "content/common/content_param_traits_macros.h"
-}  // namespace IPC
-
-// Generate param traits log methods.
-#include "ipc/param_traits_log_macros.h"
 namespace IPC {
 #undef CONTENT_COMMON_CONTENT_PARAM_TRAITS_MACROS_H_
 #include "content/common/content_param_traits_macros.h"

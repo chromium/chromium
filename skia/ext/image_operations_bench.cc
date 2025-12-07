@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // This small program is used to measure the performance of the various
 // resize algorithms offered by the ImageOperations::Resize function.
 // It will generate an empty source bitmap, and rescale it to specified
@@ -23,9 +18,11 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include <array>
 #include <string_view>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/format_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -44,14 +41,14 @@ struct StringMethodPair {
   skia::ImageOperations::ResizeMethod method;
 };
 #define ADD_METHOD(x) { #x, skia::ImageOperations::RESIZE_##x }
-const StringMethodPair resize_methods[] = {
-  ADD_METHOD(GOOD),
-  ADD_METHOD(BETTER),
-  ADD_METHOD(BEST),
-  ADD_METHOD(BOX),
-  ADD_METHOD(HAMMING1),
-  ADD_METHOD(LANCZOS3),
-};
+constexpr auto resize_methods = std::to_array<StringMethodPair>({
+    ADD_METHOD(GOOD),
+    ADD_METHOD(BETTER),
+    ADD_METHOD(BEST),
+    ADD_METHOD(BOX),
+    ADD_METHOD(HAMMING1),
+    ADD_METHOD(LANCZOS3),
+});
 
 // converts a string into one of the image operation method to resize.
 // Returns true on success, false otherwise.
@@ -84,7 +81,7 @@ void PrintMethods() {
     } else {
       print_comma = true;
     }
-    printf(" %s", resize_methods[i].name);
+    UNSAFE_TODO(printf(" %s", resize_methods[i].name));
   }
 }
 
@@ -171,14 +168,15 @@ const skia::ImageOperations::ResizeMethod Benchmark::kDefaultResizeMethod =
 
 // argument management
 void Benchmark::Usage() {
-  printf("image_operations_bench -source wxh -destination wxh "
-         "[-iterations i] [-method m] [-help]\n"
-         "  -source wxh: specify source width and height\n"
-         "  -destination wxh: specify destination width and height\n"
-         "  -iter i: perform i iterations (default:%d)\n"
-         "  -method m: use method m (default:%s), which can be:",
-         Benchmark::kDefaultNumberIterations,
-         MethodToString(Benchmark::kDefaultResizeMethod));
+  UNSAFE_TODO(
+      printf("image_operations_bench -source wxh -destination wxh "
+             "[-iterations i] [-method m] [-help]\n"
+             "  -source wxh: specify source width and height\n"
+             "  -destination wxh: specify destination width and height\n"
+             "  -iter i: perform i iterations (default:%d)\n"
+             "  -method m: use method m (default:%s), which can be:",
+             Benchmark::kDefaultNumberIterations,
+             MethodToString(Benchmark::kDefaultResizeMethod)));
   PrintMethods();
   printf("\n  -help: prints this help and exits\n");
 }

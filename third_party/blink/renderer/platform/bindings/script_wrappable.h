@@ -32,7 +32,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_SCRIPT_WRAPPABLE_H_
 
 #include "build/build_config.h"
-#include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -51,9 +50,7 @@ class ScriptState;
 // a ScriptWrappable.  v8::Object as platform object is called "wrapper object".
 // The wrapper object for the main world is stored in ScriptWrappable.  Wrapper
 // objects for other worlds are stored in DOMDataStore.
-class PLATFORM_EXPORT ScriptWrappable
-    : public GarbageCollected<ScriptWrappable>,
-      public NameClient {
+class PLATFORM_EXPORT ScriptWrappable : public v8::Object::Wrappable {
  public:
   // This is a type dispatcher from ScriptWrappable* to a subtype, optimized for
   // use cases that perform downcasts multiple times.
@@ -64,7 +61,7 @@ class PLATFORM_EXPORT ScriptWrappable
     // The input parameter `script_wrappable` must not be null.
     explicit TypeDispatcher(ScriptWrappable* script_wrappable)
         : script_wrappable_(script_wrappable),
-          wrapper_type_info_(script_wrappable->GetWrapperTypeInfo()) {}
+          wrapper_type_info_(ToWrapperTypeInfo(script_wrappable)) {}
     ~TypeDispatcher() = default;
 
     TypeDispatcher(const TypeDispatcher&) = delete;
@@ -103,14 +100,9 @@ class PLATFORM_EXPORT ScriptWrappable
   ScriptWrappable& operator=(const ScriptWrappable&) = delete;
   ~ScriptWrappable() override = default;
 
-  const char* NameInHeapSnapshot() const override;
+  const char* GetHumanReadableName() const override;
 
-  virtual void Trace(Visitor*) const;
-
-  // Returns the WrapperTypeInfo of the instance.
-  //
-  // This method must be overridden by DEFINE_WRAPPERTYPEINFO macro.
-  virtual const WrapperTypeInfo* GetWrapperTypeInfo() const = 0;
+  void Trace(Visitor*) const override;
 
   // Returns a wrapper object, creating it if needed.
   v8::Local<v8::Value> ToV8(ScriptState*);

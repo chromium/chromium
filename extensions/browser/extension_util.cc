@@ -4,29 +4,38 @@
 
 #include "extensions/browser/extension_util.h"
 
+#include <algorithm>
+
 #include "base/barrier_closure.h"
 #include "base/command_line.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_util.h"
 #include "build/chromeos_buildflags.h"
 #include "components/crx_file/id_util.h"
-#include "components/guest_view/browser/guest_view_base.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/child_process_security_policy.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
+#include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/process_manager.h"
+#include "extensions/browser/process_map.h"
+#include "extensions/browser/script_injection_tracker.h"
 #include "extensions/browser/ui_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/extension_set.h"
+#include "extensions/common/feature_switch.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
-#include "extensions/common/mojom/host_id.mojom.h"
+#include "extensions/common/mojom/manifest.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
 #include "extensions/grit/extensions_browser_resources.h"
@@ -40,7 +49,7 @@
 #include "components/prefs/pref_service.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/system/sys_info.h"
 #endif
 
@@ -49,41 +58,24 @@ namespace util {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool IsSigninProfileTestExtensionOnTestImage(const Extension* extension) {
-  if (extension->id() != extension_misc::kSigninProfileTestExtensionId)
+  if (extension->id() != extension_misc::kSigninProfileTestExtensionId) {
     return false;
+  }
   base::SysInfo::CrashIfChromeOSNonTestImage();
   return true;
 }
 #endif
 
+// Returns `true` if `extension` was installed from the webstore, otherwise
+// false.
+bool ExtensionIsFromWebstore(const Extension& extension) {
+  return extension.from_webstore() && !extension.was_installed_by_default() &&
+         extension.location() == mojom::ManifestLocation::kInternal;
+}
+
 }  // namespace
-
-mojom::HostID::HostType HostIdTypeFromGuestView(
-    const guest_view::GuestViewBase& guest) {
-  if (guest.IsOwnedByWebUI()) {
-    return mojom::HostID::HostType::kWebUi;
-  }
-
-  if (guest.IsOwnedByControlledFrameEmbedder()) {
-    return mojom::HostID::HostType::kControlledFrameEmbedder;
-  }
-
-  // Note: We return a type of kExtensions for all cases where
-  // |guest.IsOwnedByExtension()| are true, as well as some additional cases
-  // where that call is false but also |guest.IsOwnedByWebUI()| and
-  // |guest.IsOwnedByControlledFrameEmbedder()| are false. Those appear to be
-  // when the provided extension identifier is blank. Future work in this area
-  // could improve the checks here so all the cases are declared relative to
-  // what the GuestView instance asserts itself to be.
-  return mojom::HostID::HostType::kExtensions;
-}
-
-mojom::HostID GenerateHostIdFromGuestView(
-    const guest_view::GuestViewBase& guest) {
-  return mojom::HostID(HostIdTypeFromGuestView(guest), guest.owner_host());
-}
 
 bool CanBeIncognitoEnabled(const Extension* extension) {
   return IncognitoInfo::IsIncognitoAllowed(extension) &&
@@ -97,34 +89,36 @@ bool IsIncognitoEnabled(const ExtensionId& extension_id,
       ExtensionRegistry::Get(context)->enabled_extensions().GetByID(
           extension_id);
   if (extension) {
-    if (!CanBeIncognitoEnabled(extension))
+    if (!CanBeIncognitoEnabled(extension)) {
       return false;
+    }
     // If this is an existing component extension we always allow it to
     // work in incognito mode.
-    if (Manifest::IsComponentLocation(extension->location()))
+    if (Manifest::IsComponentLocation(extension->location())) {
       return true;
-    if (extension->is_login_screen_extension())
+    }
+    if (extension->is_login_screen_extension()) {
       return true;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    if (IsSigninProfileTestExtensionOnTestImage(extension))
+    }
+#if BUILDFLAG(IS_CHROMEOS)
+    if (IsSigninProfileTestExtensionOnTestImage(extension)) {
       return true;
+    }
 #endif
   }
 #if BUILDFLAG(IS_CHROMEOS)
-  if (chromeos::features::IsCaptivePortalPopupWindowEnabled()) {
-    // An OTR Profile is used for captive portal signin to hide PII from
-    // captive portals (which require HTTP redirects to function).
-    // However, for captive portal signin we do not want want to disable
-    // extensions by default. (Proxies are explicitly disabled elsewhere).
-    // See b/261727502 for details.
-    PrefService* prefs =
-        ExtensionsBrowserClient::Get()->GetPrefServiceForContext(context);
-    if (prefs) {
-      const PrefService::Preference* captive_portal_pref =
-          prefs->FindPreference(chromeos::prefs::kCaptivePortalSignin);
-      if (captive_portal_pref && captive_portal_pref->GetValue()->GetBool()) {
-        return true;
-      }
+  // An OTR Profile is used for captive portal signin to hide PII from
+  // captive portals (which require HTTP redirects to function).
+  // However, for captive portal signin we do not want want to disable
+  // extensions by default. (Proxies are explicitly disabled elsewhere).
+  // See b/261727502 for details.
+  PrefService* prefs =
+      ExtensionsBrowserClient::Get()->GetPrefServiceForContext(context);
+  if (prefs) {
+    const PrefService::Preference* captive_portal_pref =
+        prefs->FindPreference(chromeos::prefs::kCaptivePortalSignin);
+    if (captive_portal_pref && captive_portal_pref->GetValue()->GetBool()) {
+      return true;
     }
   }
 #endif
@@ -139,6 +133,50 @@ bool CanCrossIncognito(const Extension* extension,
   CHECK(extension);
   return IsIncognitoEnabled(extension->id(), context) &&
          !IncognitoInfo::IsSplitMode(extension);
+}
+
+bool IsExtensionIdle(const std::string& extension_id,
+                     content::BrowserContext* context) {
+  std::vector<std::string> ids_to_check;
+  ids_to_check.push_back(extension_id);
+
+  const Extension* extension =
+      ExtensionRegistry::Get(context)->enabled_extensions().GetByID(
+          extension_id);
+  if (extension && extension->is_shared_module()) {
+    // We have to check all the extensions that use this shared module for idle
+    // to tell whether it is really 'idle'.
+    std::unique_ptr<ExtensionSet> dependents =
+        ExtensionSystem::Get(context)->GetDependentExtensions(extension);
+    for (const auto& dependent : *dependents) {
+      ids_to_check.push_back(dependent->id());
+    }
+  }
+
+  ProcessManager* process_manager = ProcessManager::Get(context);
+  ProcessMap* process_map = ProcessMap::Get(context);
+  for (const auto& id : ids_to_check) {
+    ExtensionHost* host = process_manager->GetBackgroundHostForExtension(id);
+    if (host) {
+      return false;
+    }
+
+    if (!process_manager->GetRenderFrameHostsForExtension(id).empty()) {
+      return false;
+    }
+
+    // TODO(devlin): We can probably remove the checks above (for background
+    // hosts and frame hosts). If an extension has any active frames, it should
+    // have a dedicated process.
+    if (process_map->ExtensionHasProcess(id)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool IsPromptingEnabled() {
+  return FeatureSwitch::prompt_for_external_extensions()->IsEnabled();
 }
 
 bool AllowFileAccess(const ExtensionId& extension_id,
@@ -197,15 +235,16 @@ bool MapUrlToLocalFilePath(const ExtensionSet* extensions,
                            base::FilePath* file_path) {
   // Check that the URL is recognized by the extension system.
   const Extension* extension = extensions->GetExtensionOrAppByURL(file_url);
-  if (!extension)
+  if (!extension) {
     return false;
+  }
 
   // This is a short-cut which avoids calling a blocking file operation
   // (GetFilePath()), so that this can be called on the non blocking threads. It
   // only handles a subset of the urls.
   if (!use_blocking_api) {
     if (file_url.SchemeIs(kExtensionScheme)) {
-      std::string path = file_url.path();
+      std::string path = file_url.GetPath();
       base::TrimString(path, "/", &path);  // Remove first slash
       *file_path = extension->path().AppendASCII(path);
       return true;
@@ -213,7 +252,7 @@ bool MapUrlToLocalFilePath(const ExtensionSet* extensions,
     return false;
   }
 
-  std::string path = file_url.path();
+  std::string path = file_url.GetPath();
   ExtensionResource resource;
 
   if (SharedModuleInfo::IsImportedPath(path)) {
@@ -223,11 +262,13 @@ bool MapUrlToLocalFilePath(const ExtensionSet* extensions,
     SharedModuleInfo::ParseImportedPath(path, &new_extension_id,
                                         &new_relative_path);
     const Extension* new_extension = extensions->GetByID(new_extension_id);
-    if (!new_extension)
+    if (!new_extension) {
       return false;
+    }
 
-    if (!SharedModuleInfo::ImportsExtensionById(extension, new_extension_id))
+    if (!SharedModuleInfo::ImportsExtensionById(extension, new_extension_id)) {
       return false;
+    }
 
     resource = new_extension->GetResource(new_relative_path);
   } else {
@@ -235,13 +276,15 @@ bool MapUrlToLocalFilePath(const ExtensionSet* extensions,
     resource = extension->GetResource(path);
   }
 
-  if (resource.empty())
+  if (resource.empty()) {
     return false;
+  }
 
   // GetFilePath is a blocking function call.
   const base::FilePath resource_file_path = resource.GetFilePath();
-  if (resource_file_path.empty())
+  if (resource_file_path.empty()) {
     return false;
+  }
 
   *file_path = resource_file_path;
   return true;
@@ -287,8 +330,9 @@ int GetBrowserContextId(content::BrowserContext* context) {
 bool IsExtensionVisibleToContext(const Extension& extension,
                                  content::BrowserContext* browser_context) {
   // Renderers don't need to know about themes.
-  if (extension.is_theme())
+  if (extension.is_theme()) {
     return false;
+  }
 
   // Only extensions enabled in incognito mode should be loaded in an incognito
   // renderer. However extensions which can't be enabled in the incognito mode
@@ -325,20 +369,23 @@ const gfx::ImageSkia& GetDefaultExtensionIcon() {
 ExtensionId GetExtensionIdForSiteInstance(
     content::SiteInstance& site_instance) {
   // <webview> guests always store the ExtensionId in the partition domain.
-  if (site_instance.IsGuest())
+  if (site_instance.IsGuest()) {
     return site_instance.GetStoragePartitionConfig().partition_domain();
+  }
 
   // This works for both apps and extensions because the site has been
   // normalized to the extension URL for hosted apps.
   const GURL& site_url = site_instance.GetSiteURL();
-  if (!site_url.SchemeIs(kExtensionScheme))
+  if (!site_url.SchemeIs(kExtensionScheme)) {
     return ExtensionId();
+  }
 
   // Navigating to a disabled (or uninstalled or not-yet-installed) extension
   // will set the site URL to chrome-extension://invalid.
-  ExtensionId maybe_extension_id = site_url.host();
-  if (maybe_extension_id == "invalid")
+  ExtensionId maybe_extension_id = site_url.GetHost();
+  if (maybe_extension_id == "invalid") {
     return ExtensionId();
+  }
 
   // Otherwise,`site_url.host()` should always be a valid extension id.  In
   // particular, navigations should never commit a URL that uses a dynamic,
@@ -352,10 +399,11 @@ ExtensionId GetExtensionIdForSiteInstance(
 std::string GetExtensionIdFromFrame(
     content::RenderFrameHost* render_frame_host) {
   const GURL& site = render_frame_host->GetSiteInstance()->GetSiteURL();
-  if (!site.SchemeIs(kExtensionScheme))
+  if (!site.SchemeIs(kExtensionScheme)) {
     return std::string();
+  }
 
-  return site.host();
+  return site.GetHost();
 }
 
 bool CanRendererHostExtensionOrigin(int render_process_id,
@@ -374,6 +422,95 @@ bool CanRendererHostExtensionOrigin(int render_process_id,
   return policy->HostsOrigin(render_process_id, extension_origin);
 }
 
+bool CanRendererActOnBehalfOfExtension(
+    const ExtensionId& extension_id,
+    content::RenderFrameHost* render_frame_host,
+    content::RenderProcessHost& render_process_host,
+    bool include_user_scripts) {
+  // TODO(lukasza): Some of the checks below can be restricted to specific
+  // context types (e.g. an empty `extension_id` should not happen in an
+  // extension context;  and the SiteInstance-based check should only be needed
+  // for hosted apps).  Consider leveraging ProcessMap::GetMostLikelyContextType
+  // to implement this kind of restrictions.  Note that
+  // ExtensionFunctionDispatcher::CreateExtensionFunction already calls
+  // GetMostLikelyContextType - some refactoring might be needed to avoid
+  // duplicating the work.
+
+  // Allow empty extension id (it seems okay to assume that no
+  // extension-specific special powers will be granted without an extension id).
+  // For instance, WebUI pages may call private APIs like developerPrivate,
+  // settingsPrivate, metricsPrivate, and others. In these cases, there is no
+  // associated extension ID.
+  //
+  // TODO(lukasza): Investigate if the exception below can be avoided if
+  // `render_process_host` hosts HTTP origins (i.e. if the exception can be
+  // restricted to NTP, and/or chrome://... cases.
+  if (extension_id.empty()) {
+    return true;
+  }
+
+  // Did `render_process_id` run a content script or user script from
+  // `extension_id`?
+  // TODO(crbug.com/40055126): Ideally, we'd only check content script/
+  // user script status if the renderer claimed to be acting on behalf of the
+  // corresponding type (e.g. mojom::ContextType::kContentScript). We evaluate
+  // this later in ProcessMap::CanProcessHostContextType(), but we could be
+  // stricter by including it here.
+  if (ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
+          render_process_host, extension_id) ||
+      (ScriptInjectionTracker::DidProcessRunUserScriptFromExtension(
+           render_process_host, extension_id) &&
+       include_user_scripts)) {
+    return true;
+  }
+
+  // CanRendererHostExtensionOrigin() needs to know if the extension is
+  // sandboxed, so check the sandbox flags if this request is for an extension
+  // frame. Note that extension workers cannot be sandboxed since workers aren't
+  // supported in opaque origins.
+  bool is_sandboxed =
+      render_frame_host &&
+      render_frame_host->IsSandboxed(network::mojom::WebSandboxFlags::kOrigin);
+
+  // Can `render_process_id` host a chrome-extension:// origin (frame, worker,
+  // etc.)?
+  if (CanRendererHostExtensionOrigin(render_process_host.GetDeprecatedID(),
+                                     extension_id, is_sandboxed)) {
+    return true;
+  }
+
+  if (render_frame_host) {
+    DCHECK_EQ(render_process_host.GetDeprecatedID(),
+              render_frame_host->GetProcess()->GetDeprecatedID());
+    content::SiteInstance& site_instance =
+        *render_frame_host->GetSiteInstance();
+
+    // Chrome Extension APIs can be accessed from some hosted apps.
+    //
+    // Today this is mostly needed by the Chrome Web Store's hosted app, but the
+    // code below doesn't make this assumption and allows *all* hosted apps
+    // based on the trustworthy, Browser-side information from the SiteInstance
+    // / SiteURL.  This way the code is resilient to future changes + there are
+    // concerns that `chrome.test.sendMessage` might already be exposed to
+    // hosted apps (but maybe not covered by tests).
+    //
+    // Note that the condition below allows all extensions (i.e. not just hosted
+    // apps), but hosted apps aren't covered by the
+    // `CanRendererHostExtensionOrigin` call above (because the process lock of
+    // hosted apps is based on a https://, rather than chrome-extension:// url).
+    //
+    // GuestView is explicitly excluded, because we don't want to allow
+    // GuestViews to spoof the extension id of their host.
+    if (!site_instance.IsGuest() &&
+        extension_id == util::GetExtensionIdForSiteInstance(site_instance)) {
+      return true;
+    }
+  }
+
+  // Disallow any other cases.
+  return false;
+}
+
 bool IsChromeApp(const ExtensionId& extension_id,
                  content::BrowserContext* context) {
   const Extension* extension =
@@ -384,15 +521,26 @@ bool IsChromeApp(const ExtensionId& extension_id,
 
 bool IsAppLaunchable(const ExtensionId& extension_id,
                      content::BrowserContext* context) {
-  int reason = ExtensionPrefs::Get(context)->GetDisableReasons(extension_id);
-  return !((reason & disable_reason::DISABLE_UNSUPPORTED_REQUIREMENT) ||
-           (reason & disable_reason::DISABLE_CORRUPTED));
+  DisableReasonSet reason =
+      ExtensionPrefs::Get(context)->GetDisableReasons(extension_id);
+  return !reason.contains(disable_reason::DISABLE_UNSUPPORTED_REQUIREMENT) &&
+         !reason.contains(disable_reason::DISABLE_CORRUPTED);
 }
 
 bool IsAppLaunchableWithoutEnabling(const ExtensionId& extension_id,
                                     content::BrowserContext* context) {
   return ExtensionRegistry::Get(context)->enabled_extensions().Contains(
       extension_id);
+}
+
+bool AnyCurrentlyInstalledExtensionIsFromWebstore(
+    content::BrowserContext* context) {
+  const ExtensionSet previously_installed_extensions =
+      ExtensionRegistry::Get(context)->GenerateInstalledExtensionsSet();
+  return std::ranges::any_of(previously_installed_extensions,
+                             [](const auto& extension_ptr) {
+                               return ExtensionIsFromWebstore(*extension_ptr);
+                             });
 }
 
 }  // namespace util

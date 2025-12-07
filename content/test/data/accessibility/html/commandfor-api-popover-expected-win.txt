@@ -1,0 +1,49 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_PUSHBUTTON name='d1 button - outside & next - show-popover' COLLAPSED FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d1 button - outside - hide-popover' COLLAPSED FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d1 button - outside - toggle-popover' COLLAPSED FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d1 button - outside - unrelated action' FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d1 button - outside - custom action' FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d2 button - outside & next - show-popover' EXPANDED FOCUSABLE details-from:command-for details-roles:popover
+++++ROLE_SYSTEM_PUSHBUTTON name='d2 button - outside - hide-popover' EXPANDED FOCUSABLE details-from:command-for details-roles:popover
+++++ROLE_SYSTEM_PUSHBUTTON name='d2 button - outside - toggle-popover' EXPANDED FOCUSABLE details-from:command-for details-roles:popover
+++++ROLE_SYSTEM_PUSHBUTTON name='d2 button - outside - unrelated action' FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d2 button - outside - custom action' FOCUSABLE
+++++ROLE_SYSTEM_GROUPING ispopup:auto
+++++++ROLE_SYSTEM_PUSHBUTTON name='d2 button - inside - show-popover' FOCUSABLE
+++++++ROLE_SYSTEM_PUSHBUTTON name='d2 button - inside - hide-popover' FOCUSABLE
+++++++ROLE_SYSTEM_PUSHBUTTON name='d2 button - inside - toggle-popover' FOCUSABLE
+++++++ROLE_SYSTEM_PUSHBUTTON name='d2 button - inside - related action' FOCUSABLE
+++++++ROLE_SYSTEM_PUSHBUTTON name='d2 button - inside - custom action' FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d3 button - outside & next - show-popover' EXPANDED FOCUSABLE details-from:command-for details-roles:popover
+++++ROLE_SYSTEM_PUSHBUTTON name='d3 button - outside - hide-popover' EXPANDED FOCUSABLE details-from:command-for details-roles:popover
+++++ROLE_SYSTEM_PUSHBUTTON name='d3 button - outside - toggle-popover' EXPANDED FOCUSABLE details-from:command-for details-roles:popover
+++++ROLE_SYSTEM_PUSHBUTTON name='d3 button - outside - unrelated action' FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d3 button - outside - custom action' FOCUSABLE
+++++ROLE_SYSTEM_GROUPING ispopup:manual
+++++++ROLE_SYSTEM_PUSHBUTTON name='d3 button - inside - show-popover' FOCUSABLE
+++++++ROLE_SYSTEM_PUSHBUTTON name='d3 button - inside - hide-popover' FOCUSABLE
+++++++ROLE_SYSTEM_PUSHBUTTON name='d3 button - inside - toggle-popover' FOCUSABLE
+++++++ROLE_SYSTEM_PUSHBUTTON name='d3 button - inside - related action' FOCUSABLE
+++++++ROLE_SYSTEM_PUSHBUTTON name='d3 button - inside - custom action' FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d4 button - outside & next - show-popover' FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d4 button - outside - hide-popover' FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d4 button - outside - toggle-popover' FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d4 button - outside - unrelated action' FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d4 button - outside - custom action' FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d5 button - outside & next - show-popover' COLLAPSED FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d5 button - outside - hide-popover' COLLAPSED FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d5 button - outside - toggle-popover' COLLAPSED FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d5 button - outside - unrelated action' FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d5 button - outside - custom action' FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d1 button - outside & next - show-popover' COLLAPSED FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d1 button - outside - hide-popover' COLLAPSED FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d1 button - outside - toggle-popover' COLLAPSED FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d1 button - outside - unrelated action' FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d1 button - outside - custom action' FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d1 button - outside & next - show-popover' COLLAPSED FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d1 button - outside - hide-popover' COLLAPSED FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d1 button - outside - toggle-popover' COLLAPSED FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d1 button - outside - unrelated action' FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d1 button - outside - custom action' FOCUSABLE

@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("ownership") {
   sources = [
@@ -33,6 +33,7 @@ static_library("ownership") {
     "//chrome/browser/ash/system",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/settings",
@@ -72,14 +73,14 @@ source_set("unit_tests") {
     "//ash/constants",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/settings:test_support",
     "//chrome/common",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/policy/device_policy:test_support",
     "//chromeos/ash/components/settings",
     "//components/ownership",
     "//components/prefs:test_support",

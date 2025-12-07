@@ -1,10 +1,11 @@
 Name: Node JS
 Short Name: node
 URL: https://github.com/nodejs/node
-Version: 12.14.1
-Revision: f098f8295c407e5a5126b501ed5f1aa80bd86106
-Date: 2016-12-06
-License: NodeJS
+Version: 22.11.0
+Revision: 4e0f2773ff9465148a654dd0a2c1668104c20fec
+Update Mechanism: Manual
+Date: 2024-10-29
+License: Unicode-DFS-2016, NAIST-2003, MIT, HPND, BSD-3-Clause, OpenSSL, Zlib, ISC, BSD-2-Clause, Artistic-2.0, ICU, SSLeay
 License File: LICENSE
 Security Critical: no
 Shipped: no
@@ -19,10 +20,12 @@ update NPM dependencies.
 Name: Mocha
 Short Name: mocha
 URL: https://github.com/mochajs/mocha
-Version: 10.0.0
-Revision: 0501b9a278ae40a01f989d70801f4886ee686445
+Version: 11.7.5
+Revision: 9a6a5db8401dec63ea81093dd862e9e9b13b44d0
+Update Mechanism: Manual
+Date: 2025-11-05
 License: MIT
-License File: LICENSE
+License File: node_modules/mocha/LICENSE
 Security Critical: no
 Shipped: no
 
@@ -39,11 +42,12 @@ Local Modifications:
 Name: Chai Assertion Library
 Short Name: chai
 URL: https://github.com/chaijs/chai
-Version: 4.2.0
-Revision: 26c8a794ec6da695f004bdbd6362a466dc3d098f
-Date: 2018-09-25
+Version: 6.2.1
+Revision: 110a1eab94060fc383b4c46efd0e8ce4f16dc788
+Update Mechanism: Manual
+Date: 2025-11-11
 License: MIT
-License File: LICENSE
+License File: node_modules/chai/LICENSE
 Security Critical: no
 Shipped: no
 
@@ -52,8 +56,7 @@ BDD / TDD assertion framework for node.js and the browser that can be
 paired with any testing framework.
 
 Local Modifications:
- - Applied patches/chai.patch so that chai.js can run within a d8 shell, which
-   is used in unit_tests
+(none)
 
 -------------------- DEPENDENCY DIVIDER --------------------
 
@@ -63,6 +66,7 @@ URL: https://www.npmjs.com/package/svgo
 Version: 1.2.0
 Date: 2019-02-24
 Revision: 0cc1d0a3d6d6ea38eb2f764d17fb097d9ffe6b31
+Update Mechanism: Manual
 License: MIT
 Security Critical: no
 Shipped: no
@@ -81,8 +85,9 @@ Local Modifications:
 Name: Typescript Compiler
 Short Name: typescript
 URL: https://www.npmjs.com/package/typescript
-Version: 4.6.3
-License: Apache 2.0
+Version: 5.7.2
+Update Mechanism: Manual
+License: Apache-2.0
 Security Critical: no
 Shipped: no
 
@@ -100,10 +105,30 @@ https://github.com/microsoft/TypeScript/issues/30024
 
 -------------------- DEPENDENCY DIVIDER --------------------
 
+Name: Type Definition for chai.js library
+Short Name: @types/chai
+URL: https://www.npmjs.com/package/@types/chai
+Version: 5.2.3
+Update Mechanism: Manual
+License: MIT
+Security Critical: no
+Shipped: no
+
+Description:
+This package contains type definitions for the chai.js library.
+The types are only used when type checking in Chrome.
+
+Local Modifications:
+Added patch to work around the lack of official TS definitions for v5, see
+https://github.com/chaijs/chai/issues/1554.
+
+-------------------- DEPENDENCY DIVIDER --------------------
+
 Name: Type Definition for D3 library
 Short Name: @types/d3
 URL: https://www.npmjs.com/package/@types/d3
 Version: 7.4.0
+Update Mechanism: Manual
 License: MIT
 Security Critical: no
 Shipped: no
@@ -123,6 +148,7 @@ Name: Type Definition for W3C MediaStream Recording
 Short Name: @types/dom-mediacapture-record
 URL: https://www.npmjs.com/package/@types/dom-mediacapture-record
 Version: 1.0.11
+Update Mechanism: Manual
 License: MIT
 Security Critical: no
 Shipped: no
@@ -141,7 +167,8 @@ Local Modifications:
 Name: Type Definition for W3C Image Capture
 Short Name: @types/w3c-image-capture
 URL: https://www.npmjs.com/package/@types/w3c-image-capture
-Version: 1.0.4
+Version: 1.0.10
+Update Mechanism: Manual
 License: MIT
 Security Critical: no
 Shipped: no
@@ -160,7 +187,8 @@ Local Modifications:
 Name: Type Definition for webrtc
 Short Name: @types/webrtc
 URL: https://www.npmjs.com/package/@types/webrtc
-Version: 0.0.31
+Version: 0.0.44
+Update Mechanism: Manual
 License: MIT
 Security Critical: no
 Shipped: no
@@ -179,6 +207,7 @@ Name: Type Definition for Google Analytics
 Short Name: @types/google.analytics
 URL: https://www.npmjs.com/package/@types/google.analytics
 Version: 0.0.42
+Update Mechanism: Manual
 License: MIT
 Security Critical: no
 Shipped: no
@@ -199,6 +228,7 @@ Name: Type Definition for OffscreenCanvas
 Short Name: @types/offscreencanvas
 URL: https://www.npmjs.com/package/@types/offscreencanvas
 Version: 2019.6.4
+Update Mechanism: Manual
 License: MIT
 Security Critical: no
 Shipped: no
@@ -217,8 +247,9 @@ Local Modifications:
 Name: ESLint JSDoc Plugin
 Short Name: eslint-plugin-jsdoc
 URL: https://www.npmjs.com/package/eslint-plugin-jsdoc
-Version: 37.5.1
-License: 3-Clause BSD
+Version: 50.2.2
+Update Mechanism: Manual
+License: BSD-3-Clause
 Security Critical: no
 Shipped: no
 
@@ -235,8 +266,9 @@ Local Modifications:
 Name: ESLint Plugin TypeScript
 Short Name: @typescript-eslint/eslint-plugin
 URL: https://www.npmjs.com/package/@typescript-eslint/eslint-plugin
-Version: 6.7.4
-License: 2-Clause BSD
+Version: 8.4.0
+Update Mechanism: Manual
+License: BSD-2-Clause
 Security Critical: no
 Shipped: no
 
@@ -253,8 +285,9 @@ Local Modifications:
 Name: TypeScript ESLint Parser
 Short Name: @typescript-eslint/parser
 URL: https://www.npmjs.com/package/@typescript-eslint/parser
-Version: 6.7.4
-License: 2-Clause BSD
+Version: 8.4.0
+Update Mechanism: Manual
+License: BSD-2-Clause
 Security Critical: no
 Shipped: no
 
@@ -272,7 +305,8 @@ Local Modifications:
 Name: Types for the TypeScript-ESTree AST spec
 Short Name: @typescript-eslint/parser
 URL: https://www.npmjs.com/package/@typescript-eslint/types
-Version: 6.7.4
+Version: 8.4.0
+Update Mechanism: Manual
 License: MIT
 Security Critical: no
 Shipped: no
@@ -292,7 +326,8 @@ Local Modifications:
 Name: TypeScript ESLint Utilities
 Short Name: @typescript-eslint/utils
 URL: https://npmjs.com/package/@typescript-eslint/utils
-Version: 6.7.4
+Version: 8.4.0
+Update Mechanism: Manual
 License: MIT
 Security Critical: no
 Shipped: no
@@ -310,7 +345,8 @@ Local Modifications:
 Name: Type Definition for Trusted Types
 Short Name: @types/trusted-types
 URL: https://www.npmjs.com/package/@types/trusted-types
-Version: 1.0.6
+Version: 2.0.7
+Update Mechanism: Manual
 License: MIT
 Security Critical: no
 Shipped: no
@@ -330,6 +366,7 @@ Name: Type Definition for FileSystem API
 Short Name: @types/filesystem
 URL: https://www.npmjs.com/package/@types/filesystem
 Version: 0.0.32
+Update Mechanism: Manual
 License: MIT
 Security Critical: no
 Shipped: no
@@ -349,6 +386,7 @@ Name: Type Definition for FileWriter API
 Short Name: @types/filewriter
 URL: https://www.npmjs.com/package/@types/filewriter
 Version: 0.0.29
+Update Mechanism: Manual
 License: MIT
 Security Critical: no
 Shipped: no
@@ -365,31 +403,11 @@ Local Modifications:
 
 -------------------- DEPENDENCY DIVIDER --------------------
 
-Name: HTML Minifier
-Short Name: html-minifier
-URL: https://www.npmjs.com/package/html-minifier
-Version: 4.0.0
-License: MIT
-Security Critical: no
-Shipped: no
-
-Description:
-HTMLMinifier is a highly configurable, well-tested, JavaScript-based HTML
-minifier.
-
-html-minifier itself is only used during build time. It does affect the contents
-of shipped HTML files though.
-
-Local Modifications:
-Removed uglify-js dependency since we don't plan to use the --minify-js flag in
-Chromium.
-
--------------------- DEPENDENCY DIVIDER --------------------
-
 Name: Type Definition for WebCodecs
 Short Name: @types/dom-webcodecs
 URL: https://www.npmjs.com/package/@types/dom-webcodecs
-Version: 0.1.5
+Version: 0.1.13
+Update Mechanism: Manual
 License: MIT
 Security Critical: no
 Shipped: no
@@ -408,7 +426,8 @@ Local Modifications:
 Name: Type Definition for MediaStreamTrack Processing
 Short Name: @types/dom-mediacapture-transform
 URL: https://www.npmjs.com/package/@types/dom-mediacapture-transform
-Version: 0.1.4
+Version: 0.1.10
+Update Mechanism: Manual
 License: MIT
 Security Critical: no
 Shipped: no
@@ -428,6 +447,7 @@ Name: Type Definition for Emscripten
 Short Name: @types/emscripten
 URL: https://www.npmjs.com/package/@types/emscripten
 Version: 1.39.6
+Update Mechanism: Manual
 License: MIT
 Security Critical: no
 Shipped: no
@@ -445,25 +465,30 @@ Local Modifications:
 Name: Lit
 Short Name: lit
 URL: https://lit.dev
-Version: 3.0.2
-Revision: N/A
-License: BSD 3-Clause
-License File: LICENSE
+Version: 3.2.1
+Update Mechanism: Manual
+License: BSD-3-Clause
+License File: node_modules/lit/LICENSE
 Security Critical: no
 Shipped: yes
+License Android Compatible: yes
 
 Description:
 A thin library around native web component APIs, to be used in WebUI development
 as an alternative to Polymer.
 
 Local Modifications:
-See patches/lit_html.patch, which renames 'lit-html' trusted type policy to
-'lit-html-desktop' to workaround the fact that some CrOS-only UIs already use
-Lit via a different Lit bundle in third_party/material_web_components, which in
-turn results in an error as follows
+- See patches/lit_html.patch, which renames 'lit-html' trusted type policy to
+  'lit-html-desktop' to workaround the fact that some CrOS-only UIs already use
+  Lit via a different Lit bundle in third_party/material_web_components, which in
+  turn results in an error as follows
 
 Uncaught TypeError: Failed to execute 'createPolicy' on
 'TrustedTypePolicyFactory': Policy with name "lit-html" already exists."
+
+- See patches/lit_reactive_element.patch which restricts the allowed values for
+  PropertyDeclaration 'type' field to be one of
+  [String, Number, Boolean, Array, Object].
 
 -------------------- DEPENDENCY DIVIDER --------------------
 
@@ -471,9 +496,9 @@ Name: Mediapipe Tasks Vision
 Short Name: @mediapipe/tasks-vision
 URL: https://www.npmjs.com/package/@mediapipe/tasks-vision
 Version: 0.10.9
-Revision: N/A
-License: Apache 2.0
-License File: LICENSE
+Update Mechanism: Manual
+License: Apache-2.0
+License File: Apache-LICENSE-2.0.txt
 Security Critical: no
 Shipped: yes
 License Android Compatible: Yes
@@ -490,21 +515,152 @@ separately via DLC)
 
 -------------------- DEPENDENCY DIVIDER --------------------
 
-Name: Type Definitions for Dom View Transitions API
-Short Name: @types/dom-view-transitions
-URL: https://www.npmjs.com/package/@types/dom-view-transitions
-Version: 1.0.4
-Revision: N/A
+Name: Stylistic rules for ESLint, works for both JavaScript and TypeScript.
+Short Name: @stylistic/eslint-plugin
+URL: https://www.npmjs.com/package/@stylistic/eslint-plugin
+Version: 2.8.0
+Update Mechanism: Manual
 License: MIT
-License File: LICENSE
 Security Critical: no
 Shipped: no
 
 Description:
-This package contains type definitions for dom-view-transitions
-(https://drafts.csswg.org/css-view-transitions-1/).
+Styling rules were deprecated from eslint and typescript-eslint and moved to
+stylistic. We use styling rules.
 
-The types are only used when type checking the Dom View Transitions API.
+https://eslint.style/guide/why
+
+Local Modifications:
+(none)
+
+-------------------- DEPENDENCY DIVIDER --------------------
+
+Name: An AST-based pattern checker for JavaScript.
+Short Name: eslint
+URL: https://www.npmjs.com/package/eslint
+Version: 9.10.0
+Update Mechanism: Manual
+License: MIT
+Security Critical: no
+Shipped: no
+
+Description:
+Linting for JS and TS.
+
+Local Modifications:
+(none)
+
+-------------------- DEPENDENCY DIVIDER --------------------
+
+Name: Microsoft Authentication Library for JavaScript (MSAL.js) for Browser-Based Single-Page Applications
+Short Name: msal-browser
+URL: https://www.npmjs.com/package/@azure/msal-browser
+Version: 4.2.1
+Update Mechanism: Manual
+License: MIT
+License File: node_modules/@azure/msal-browser/LICENSE
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+Authentication for Microsoft integrations within client-side JS.
+
+Local Modifications:
+(none)
+
+-------------------- DEPENDENCY DIVIDER --------------------
+
+Name: ts-proto
+Short Name: ts-proto
+URL: https://www.npmjs.com/package/ts-proto
+Version: 2.7.0
+Update Mechanism: Manual
+License: Apache-2.0
+License File: node_modules/ts-proto/LICENSE
+Security Critical: no
+Shipped: no
+License Android Compatible: yes
+
+Description:
+ts-proto generates TypeScript types from protobuf schemas.
+
+Local Modifications:
+Remove unused transitive import of dprint by ts-poet to reduce checkout size.
+
+-------------------- DEPENDENCY DIVIDER --------------------
+
+Name: @bufbuild/protobuf
+Short Name: bufbuild
+URL: https://www.npmjs.com/package/@bufbuild/protobuf
+Version: 2.2.5
+Update Mechanism: Manual
+License: Apache-2.0
+License File: Apache-LICENSE-2.0.txt
+Security Critical: no
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+This package provides the runtime library used by proto bindings that are generated by ts-proto plugin.
+
+Local Modifications:
+(none)
+
+-------------------- DEPENDENCY DIVIDER --------------------
+
+Name: messageformat
+Short Name: messageformat
+URL: https://www.npmjs.com/package/messageformat
+Version: 4.0.0-11
+Update Mechanism: Manual
+License: Apache-2.0
+License File: Apache-LICENSE-2.0.txt
+License Android Compatible: Yes
+Security Critical: no
+Shipped: yes
+
+Description:
+Provides a formatter and other tools for Unicode MessageFormat 2.0 (MF2), the
+new standard for localization developed by the MessageFormat Working Group.
+
+Local Modifications:
+(none)
+
+-------------------- DEPENDENCY DIVIDER --------------------
+
+Name: postcss
+Short Name: postcss
+URL: https://www.npmjs.com/package/postcss
+Version: 8.5.3
+Update Mechanism: Manual
+License: MIT
+License Android Compatible: Yes
+Security Critical: no
+Shipped: no
+
+Description:
+PostCSS is a tool for transforming styles with JS plugins, leveraged in the
+WebUI toolchain to minify CSS.
+
+Local Modifications:
+(none)
+
+-------------------- DEPENDENCY DIVIDER --------------------
+
+Name: postcss-minify
+Short Name: postcss-minify
+URL: https://www.npmjs.com/package/postcss-minify
+Version: 1.1.0
+Update Mechanism: Manual
+License: MIT
+License Android Compatible: Yes
+Security Critical: no
+Shipped: no
+
+Description:
+postcss-minify is a plugin for postcss, that removes comments and unnecessary
+whitespace in CSS files.
 
 Local Modifications:
 (none)

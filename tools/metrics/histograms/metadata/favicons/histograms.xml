@@ -1,0 +1,96 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Favicon histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Favicons.DefaultResponse" enum="BooleanSuccess"
+    expires_after="2026-05-17">
+  <owner>mfacey@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <summary>
+    Records whether for a requested favicon the default favicon is served. The
+    favicon service is called when a favicon is requested such as through a
+    navigation to chrome://favicon2.
+  </summary>
+</histogram>
+
+<histogram name="Favicons.FallbackToHostSuccess" enum="BooleanSuccess"
+    expires_after="2026-04-26">
+  <owner>mfacey@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <summary>
+    Records whether for a requested favicon that does not have an exact local
+    match, whether the fallback to host behavior finds a valid match. The
+    favicon service is called when a favicon is requested such as through a
+    navigation to chrome://favicon2.
+  </summary>
+</histogram>
+
+<histogram name="Favicons.IconSuccess.{IconSizes}" enum="BooleanSuccess"
+    expires_after="2026-04-26">
+  <owner>mastiz@chromium.org</owner>
+  <owner>pkotwicz@chromium.org</owner>
+  <summary>
+    Records whether for a given size the favicon service successfully returned a
+    favicon or not. The favicon service is called when a favicon is requested
+    through a navigation to chrome://favicon2. A request for &quot;largest
+    available size&quot; doesn't cause an emit to this histogram. If a request
+    indicates multiple sizes of favicons are appropriate, this histogram is
+    emitted multiple times (even though only one favicon is returned).
+  </summary>
+  <token key="IconSizes">
+    <variant name="16px"/>
+    <variant name="24px"/>
+    <variant name="48px"/>
+  </token>
+</histogram>
+
+<histogram name="Favicons.LargeIconService.DownloadedSize" units="pixels"
+    expires_after="never">
+<!-- expires-never: This metric is needed for informing future UX decisions on
+    mobile (how to display favicons / scrabble tiles). -->
+
+  <owner>jkrcal@chromium.org</owner>
+  <owner>mastiz@chromium.org</owner>
+  <summary>
+    Records the size (concretely the width) in pixel of the favicon downloaded
+    from Google favicon server (size 0 denotes that download has failed).
+  </summary>
+</histogram>
+
+<histogram name="Favicons.LargeIconService.FallbackSize" units="pixels"
+    expires_after="never">
+<!-- expires-never: This metric is needed for informing future UX decisions on
+    mobile (how to display favicons / scrabble tiles). -->
+
+  <owner>jkrcal@chromium.org</owner>
+  <owner>mastiz@chromium.org</owner>
+  <summary>
+    Records the size (concretely the width) in pixel of the favicon that is used
+    to generate a fallback style in the case when large enough favicon is not
+    available (size 0 denotes that no favicon is available at all).
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/test/allow_check_is_test_for_testing.h"
 #include "base/test/launcher/test_launcher.h"
 #include "build/build_config.h"
 #include "content/public/test/content_test_suite_base.h"
@@ -52,10 +53,12 @@ class HeadlessTestLauncherDelegate : public content::TestLauncherDelegate {
 }  // namespace headless
 
 int main(int argc, char** argv) {
+  base::test::AllowCheckIsTestForTesting();
   base::CommandLine::Init(argc, argv);
   size_t parallel_jobs = base::NumParallelJobs(/*cores_per_job=*/2);
-  if (parallel_jobs == 0U)
+  if (parallel_jobs == 0U) {
     return 1;
+  }
 
 #if BUILDFLAG(IS_WIN)
   // Load and pin user32.dll to avoid having to load it once tests start while

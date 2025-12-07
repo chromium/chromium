@@ -6,7 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/legacy_table_view_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_empty_table_view_background.h"
@@ -223,18 +223,14 @@ const CGFloat kTableViewSeparatorInsetWithIcon = 60;
 #pragma mark - LegacyChromeTableViewConsumer
 
 - (void)reconfigureCellsForItems:(NSArray*)items {
+  NSMutableArray<NSIndexPath*>* indexPaths = [NSMutableArray array];
   for (TableViewItem* item in items) {
     if ([self.tableViewModel hasItem:item]) {
-      NSIndexPath* indexPath = [self.tableViewModel indexPathForItem:item];
-      UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
-
-      // `cell` may be nil if the row is not currently on screen.
-      if (cell) {
-        TableViewCell* tableViewCell =
-            base::apple::ObjCCastStrict<TableViewCell>(cell);
-        [item configureCell:tableViewCell withStyler:self.styler];
-      }
+      [indexPaths addObject:[self.tableViewModel indexPathForItem:item]];
     }
+  }
+  if (indexPaths.count > 0) {
+    [self.tableView reconfigureRowsAtIndexPaths:indexPaths];
   }
 }
 
@@ -259,15 +255,19 @@ const CGFloat kTableViewSeparatorInsetWithIcon = 60;
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  Class cellClass = [item cellClass];
-  NSString* reuseIdentifier = NSStringFromClass(cellClass);
-  [self.tableView registerClass:cellClass
-         forCellReuseIdentifier:reuseIdentifier];
-  UITableViewCell* cell =
-      [self.tableView dequeueReusableCellWithIdentifier:reuseIdentifier
-                                           forIndexPath:indexPath];
-  TableViewCell* tableViewCell =
-      base::apple::ObjCCastStrict<TableViewCell>(cell);
+  LegacyTableViewCell* tableViewCell = [item cellForTableView:tableView];
+
+  if (!tableViewCell) {
+    Class cellClass = [item cellClass];
+    NSString* reuseIdentifier = NSStringFromClass(cellClass);
+    [self.tableView registerClass:cellClass
+           forCellReuseIdentifier:reuseIdentifier];
+    UITableViewCell* cell =
+        [self.tableView dequeueReusableCellWithIdentifier:reuseIdentifier
+                                             forIndexPath:indexPath];
+    tableViewCell = base::apple::ObjCCastStrict<LegacyTableViewCell>(cell);
+  }
+
   [item configureCell:tableViewCell withStyler:self.styler];
 
   // Enabling `exclusiveTouch` for all cells to prevent simultanoeus cell
@@ -279,9 +279,9 @@ const CGFloat kTableViewSeparatorInsetWithIcon = 60;
   // LegacyChromeTableViewController subclass that implments them.
   // TODO(crbug.com/40926228): Make Chrome Coordinators robust against the
   // launch of multiple child coordinators.
-  cell.exclusiveTouch = YES;
+  tableViewCell.exclusiveTouch = YES;
 
-  return cell;
+  return tableViewCell;
 }
 
 - (NSInteger)tableView:(UITableView*)tableView

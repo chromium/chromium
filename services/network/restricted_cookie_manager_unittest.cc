@@ -4,7 +4,6 @@
 
 #include "services/network/restricted_cookie_manager.h"
 
-#include <initializer_list>
 #include <set>
 
 #include "base/functional/bind.h"
@@ -13,7 +12,6 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -21,6 +19,7 @@
 #include "base/version.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "mojo/public/cpp/base/shared_memory_version.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -47,9 +46,10 @@
 #include "services/network/cookie_access_delegate_impl.h"
 #include "services/network/cookie_settings.h"
 #include "services/network/first_party_sets/first_party_sets_access_delegate.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
-#include "services/network/public/mojom/restricted_cookie_manager.mojom-shared.h"
+#include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
 #include "services/network/test/test_network_context_client.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -77,18 +77,6 @@ net::FirstPartySetMetadata ComputeFirstPartySetMetadataSync(
       origin, cookie_store, isolation_info, future.GetCallback());
   return future.Take();
 }
-
-constexpr char kCookieAccessDetailsSizeHistogramName[] =
-    "Net.RestrictedCookieManager."
-    "EstimatedCookieAccessDetailsSize";
-
-constexpr char kDeDupedCookieAccessDetailsSizeHistogramName[] =
-    "Net.RestrictedCookieManager."
-    "EstimatedDeDupedCookieAccessDetailsSize";
-
-constexpr char kDeDupedCookieAccessDetailsSizeReductionHistogramName[] =
-    "Net.RestrictedCookieManager."
-    "EstimatedDeDupedCookieAccessDetailsSizeReduction";
 
 }  // namespace
 
@@ -129,20 +117,6 @@ class RecordingCookieObserver : public network::mojom::CookieAccessObserver {
 
   std::vector<CookieOp>& recorded_activity() { return recorded_activity_; }
 
-  size_t deduplicated_cookie_access_details_count() const {
-    return deduplicated_cookie_access_details_count_;
-  }
-
-  size_t cookie_access_details_count() const {
-    return cookie_access_details_count_;
-  }
-
-  void ClearRecordedActivityAndCounts() {
-    recorded_activity_.clear();
-    deduplicated_cookie_access_details_count_ = 0;
-    cookie_access_details_count_ = 0;
-  }
-
   mojo::PendingRemote<mojom::CookieAccessObserver> GetRemote() {
     mojo::PendingRemote<mojom::CookieAccessObserver> remote;
     receivers_.Add(this, remote.InitWithNewPipeAndPassReceiver());
@@ -157,23 +131,18 @@ class RecordingCookieObserver : public network::mojom::CookieAccessObserver {
   void OnCookiesAccessed(std::vector<network::mojom::CookieAccessDetailsPtr>
                              details_vector) override {
     for (auto& details : details_vector) {
-      cookie_access_details_count_ += details->count;
-      for (size_t i = 0; i < details->count; ++i) {
-        for (const auto& cookie_and_access_result : details->cookie_list) {
-          CookieOp op;
-          op.type = details->type;
-          op.url = details->url;
-          op.site_for_cookies = details->site_for_cookies;
-          op.cookie_or_line =
-              std::move(cookie_and_access_result->cookie_or_line);
-          op.status = cookie_and_access_result->access_result.status;
-          op.is_ad_tagged = details->is_ad_tagged;
-          recorded_activity_.push_back(std::move(op));
-        }
+      for (const auto& cookie_and_access_result : details->cookie_list) {
+        CookieOp op;
+        op.type = details->type;
+        op.url = details->url;
+        op.site_for_cookies = details->site_for_cookies;
+        op.cookie_or_line = std::move(cookie_and_access_result->cookie_or_line);
+        op.status = cookie_and_access_result->access_result.status;
+        op.is_ad_tagged = details->is_ad_tagged;
+        recorded_activity_.push_back(std::move(op));
       }
     }
 
-    deduplicated_cookie_access_details_count_ += details_vector.size();
     run_loop_->QuitClosure().Run();
   }
 
@@ -183,8 +152,6 @@ class RecordingCookieObserver : public network::mojom::CookieAccessObserver {
   }
 
  private:
-  size_t deduplicated_cookie_access_details_count_ = 0;
-  size_t cookie_access_details_count_ = 0;
   std::vector<CookieOp> recorded_activity_;
   mojo::ReceiverSet<mojom::CookieAccessObserver> receivers_;
   std::unique_ptr<base::RunLoop> run_loop_;
@@ -213,13 +180,15 @@ class RestrictedCookieManagerSync {
       net::StorageAccessApiStatus storage_access_api_status,
       mojom::CookieManagerGetOptionsPtr options,
       bool is_ad_tagged = false,
-      bool force_disable_third_party_cookies = false) {
+      bool force_disable_third_party_cookies = false,
+      bool apply_devtools_overrides = false) {
     base::test::TestFuture<const std::vector<net::CookieWithAccessResult>&>
         future;
     cookie_service_->GetAllForUrl(
         url, site_for_cookies, top_frame_origin, storage_access_api_status,
-        std::move(options), is_ad_tagged, force_disable_third_party_cookies,
-        future.GetCallback());
+        std::move(options), is_ad_tagged,
+        /*apply_devtools_overrides=*/apply_devtools_overrides,
+        force_disable_third_party_cookies, future.GetCallback());
     return net::cookie_util::StripAccessResults(future.Take());
   }
 
@@ -229,28 +198,36 @@ class RestrictedCookieManagerSync {
                           const url::Origin& top_frame_origin,
                           net::StorageAccessApiStatus storage_access_api_status,
                           std::optional<net::CookieInclusionStatus>
-                              cookie_inclusion_status = std::nullopt) {
+                              cookie_inclusion_status = std::nullopt,
+                          bool apply_devtools_overrides = false) {
     net::CookieInclusionStatus status = cookie_inclusion_status.has_value()
                                             ? cookie_inclusion_status.value()
                                             : net::CookieInclusionStatus();
     base::test::TestFuture<bool> future;
     cookie_service_->SetCanonicalCookie(
         cookie, url, site_for_cookies, top_frame_origin,
-        storage_access_api_status, status, future.GetCallback());
+        storage_access_api_status, status,
+        /*is_ad_tagged=*/false,
+        /*apply_devtools_overrides=*/apply_devtools_overrides,
+        future.GetCallback());
     return future.Get();
   }
 
-  void SetCookieFromString(
+  mojom::CookiesResponsePtr SetCookieFromString(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
       const url::Origin& top_frame_origin,
       net::StorageAccessApiStatus storage_access_api_status,
+      bool get_version_shared_memory,
+      bool is_ad_tagged,
+      bool apply_devtools_overrides,
       const std::string& cookie) {
-    base::test::TestFuture<void> future;
+    base::test::TestFuture<mojom::CookiesResponsePtr> future;
     cookie_service_->SetCookieFromString(
         url, site_for_cookies, top_frame_origin, storage_access_api_status,
+        get_version_shared_memory, is_ad_tagged, apply_devtools_overrides,
         cookie, future.GetCallback());
-    ASSERT_TRUE(future.Wait());
+    return future.Take();
   }
 
   void AddChangeListener(
@@ -312,7 +289,10 @@ class TestCookieChangeListener : public network::mojom::CookieChangeListener {
 }  // namespace
 
 class RestrictedCookieManagerTest
-    : public testing::TestWithParam<mojom::RestrictedCookieManagerRole> {
+    : public testing::TestWithParam<
+          std::tuple<bool,
+                     mojom::RestrictedCookieManagerRole,
+                     net::CookieSettingOverrides>> {
  public:
   RestrictedCookieManagerTest()
       : cookie_monster_(/*store=*/nullptr,
@@ -324,13 +304,17 @@ class RestrictedCookieManagerTest
             cookie_settings_,
             kDefaultOrigin,
             isolation_info_,
-            CookieSettingOverrides(),
+            /*cookies_setting_overrides=*/CookieSettingOverrides(),
+            /*devtools_cookies_setting_overrides=*/
+            DevtoolsCookieSettingOverrides(),
             recording_client_.GetRemote(),
             ComputeFirstPartySetMetadataSync(kDefaultOrigin,
                                              &cookie_monster_,
                                              isolation_info_))),
         receiver_(service_.get(),
                   service_remote_.BindNewPipeAndPassReceiver()) {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kGetCookiesOnSet, GetCookiesOnSetEnabled()}});
     sync_service_ =
         std::make_unique<RestrictedCookieManagerSync>(service_remote_.get());
   }
@@ -345,12 +329,23 @@ class RestrictedCookieManagerTest
     mojo::SetDefaultProcessErrorHandler(base::NullCallback());
   }
 
+  bool GetCookiesOnSetEnabled() const { return std::get<0>(GetParam()); }
+
   mojom::RestrictedCookieManagerRole RestrictedCookieManagerRole() const {
-    return GetParam();
+    return std::get<1>(GetParam());
   }
 
   net::CookieSettingOverrides CookieSettingOverrides() const {
     return net::CookieSettingOverrides();
+  }
+
+  net::CookieSettingOverrides DevtoolsCookieSettingOverrides() const {
+    return std::get<2>(GetParam());
+  }
+
+  bool ThirdPartyCookieDisabledByDevtools() const {
+    return DevtoolsCookieSettingOverrides().Has(
+        net::CookieSettingOverride::kForceDisableThirdPartyCookies);
   }
 
   // Set a canonical cookie directly into the store.
@@ -442,18 +437,6 @@ class RestrictedCookieManagerTest
     return recording_client_.recorded_activity();
   }
 
-  size_t deduplicated_cookie_access_details_count() const {
-    return recording_client_.deduplicated_cookie_access_details_count();
-  }
-
-  size_t cookie_access_details_count() const {
-    return recording_client_.cookie_access_details_count();
-  }
-
-  void ClearRecordedActivityAndCounts() {
-    recording_client_.ClearRecordedActivityAndCounts();
-  }
-
   void WaitForCallback() { return recording_client_.WaitForCallback(); }
 
   const GURL kDefaultUrl{"https://example.com/"};
@@ -482,6 +465,7 @@ class RestrictedCookieManagerTest
                                  kDefaultOrigin,
                                  net::SiteForCookies());
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
   net::CookieMonster cookie_monster_;
@@ -550,7 +534,7 @@ TEST_P(RestrictedCookieManagerTest,
   // Override isolation_info to make it explicit that its frame_origin is
   // different from the origin.
   service_->OverrideIsolationInfoForTesting(kDefaultIsolationInfo);
-  SetSessionCookie("new-name", "new-value", kOtherUrl.host().c_str(), "/");
+  SetSessionCookie("new-name", "new-value", kOtherUrl.GetHost().c_str(), "/");
 
   // Fetch cookies from the wrong origin (IsolationInfo's frame_origin) should
   // result in a bad message.
@@ -592,8 +576,9 @@ TEST_P(RestrictedCookieManagerTest, CookieVersion) {
       kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
       net::StorageAccessApiStatus::kNone,
       /*get_version_shared_memory=*/false,
-      /*is_ad_tagged=*/false, /*force_disable_third_party_cookies=*/false,
-      &version, &mapped_region, &cookies_out));
+      /*is_ad_tagged=*/false, /*apply_devtools_overrides=*/false,
+      /*force_disable_third_party_cookies=*/false, &version, &mapped_region,
+      &cookies_out));
   // Version is at initial value on first query.
   EXPECT_EQ(version, mojom::kInitialCookieVersion);
 
@@ -601,23 +586,40 @@ TEST_P(RestrictedCookieManagerTest, CookieVersion) {
       kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
       net::StorageAccessApiStatus::kNone,
       /*get_version_shared_memory=*/false,
-      /*is_ad_tagged=*/false, /*force_disable_third_party_cookies=*/false,
-      &version, &mapped_region, &cookies_out));
+      /*is_ad_tagged=*/false, /*apply_devtools_overrides=*/false,
+      /*force_disable_third_party_cookies=*/false, &version, &mapped_region,
+      &cookies_out));
   // Version is still at initial value since nothing modified the cookie.
   EXPECT_EQ(version, mojom::kInitialCookieVersion);
 
-  EXPECT_TRUE(backend()->SetCookieFromString(
+  auto response = sync_service_->SetCookieFromString(
       kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
-      net::StorageAccessApiStatus::kNone, "new-name=new-value;path=/"));
+      net::StorageAccessApiStatus::kNone, /*get_version_shared_memory=*/false,
+      /*is_ad_tagged=*/false,
+      /*apply_devtools_overrides=*/false, "new-name=new-value;path=/");
+  if (GetCookiesOnSetEnabled()) {
+    ASSERT_TRUE(response);
+    // Version is incremented when setting a cookie.
+    EXPECT_NE(response->version, mojom::kInvalidCookieVersion);
+    EXPECT_NE(response->version, mojom::kInitialCookieVersion);
+  }
 
   EXPECT_TRUE(backend()->GetCookiesString(
       kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
       net::StorageAccessApiStatus::kNone,
       /*get_version_shared_memory=*/false,
-      /*is_ad_tagged=*/false, /*force_disable_third_party_cookies=*/false,
-      &version, &mapped_region, &cookies_out));
-  // Version has been incremented by the set operation.
-  EXPECT_NE(version, mojom::kInitialCookieVersion);
+      /*is_ad_tagged=*/false, /*apply_devtools_overrides=*/false,
+      /*force_disable_third_party_cookies=*/false, &version, &mapped_region,
+      &cookies_out));
+  if (GetCookiesOnSetEnabled()) {
+    // Output version and string is the same as last set operation.
+    EXPECT_EQ(version, response->version);
+    EXPECT_EQ(cookies_out, response->cookies);
+  } else {
+    EXPECT_NE(version, mojom::kInvalidCookieVersion);
+    // Version has been incremented by the set operation.
+    EXPECT_NE(version, mojom::kInitialCookieVersion);
+  }
 }
 
 TEST_P(RestrictedCookieManagerTest, GetAllForUrlBlankFilter) {
@@ -646,8 +648,9 @@ TEST_P(RestrictedCookieManagerTest, GetAllForUrlBlankFilter) {
       kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
       net::StorageAccessApiStatus::kNone,
       /*get_version_shared_memory=*/false,
-      /*is_ad_tagged=*/false, /*force_disable_third_party_cookies=*/false,
-      &version, &mapped_region, &cookies_out));
+      /*is_ad_tagged=*/false, /*apply_devtools_overrides=*/false,
+      /*force_disable_third_party_cookies=*/false, &version, &mapped_region,
+      &cookies_out));
   EXPECT_FALSE(mapped_region.IsValid());
   EXPECT_EQ("cookie-name=cookie-value; cookie-name-2=cookie-value-2",
             cookies_out);
@@ -657,8 +660,9 @@ TEST_P(RestrictedCookieManagerTest, GetAllForUrlBlankFilter) {
       kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
       net::StorageAccessApiStatus::kNone,
       /*get_version_shared_memory=*/true,
-      /*is_ad_tagged=*/false, /*force_disable_third_party_cookies=*/false,
-      &version, &mapped_region, &cookies_out));
+      /*is_ad_tagged=*/false, /*apply_devtools_overrides=*/false,
+      /*force_disable_third_party_cookies=*/false, &version, &mapped_region,
+      &cookies_out));
   EXPECT_TRUE(mapped_region.IsValid());
   EXPECT_EQ("cookie-name=cookie-value; cookie-name-2=cookie-value-2",
             cookies_out);
@@ -799,6 +803,81 @@ TEST_P(RestrictedCookieManagerTest, GetAllForUrlFromOpaqueOrigin) {
   EXPECT_TRUE(received_bad_message());
 }
 
+TEST_P(RestrictedCookieManagerTest, GetAllForUrlSkipAccessNotification) {
+  SetSessionCookie("cookie1", "value1", "example.com", "/");
+  SetSessionCookie("cookie2", "value2", "example.com", "/");
+  SetSessionCookie("cookie3", "value3", "example.com", "/");
+
+  auto options = mojom::CookieManagerGetOptions::New();
+  options->match_type = mojom::CookieMatchType::STARTS_WITH;
+  EXPECT_THAT(sync_service_->GetAllForUrl(
+                  kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
+                  net::StorageAccessApiStatus::kNone, std::move(options)),
+              testing::SizeIs(3));
+  WaitForCallback();
+  EXPECT_THAT(
+      recorded_activity(),
+      UnorderedElementsAre(
+          MatchesCookieOp(
+              mojom::CookieAccessDetails::Type::kRead, kDefaultUrlWithPath,
+              kDefaultSiteForCookies,
+              CookieOrLine("cookie1=value1", mojom::CookieOrLine::Tag::kCookie),
+              net::IsInclude()),
+          MatchesCookieOp(
+              mojom::CookieAccessDetails::Type::kRead, kDefaultUrlWithPath,
+              kDefaultSiteForCookies,
+              CookieOrLine("cookie2=value2", mojom::CookieOrLine::Tag::kCookie),
+              net::IsInclude()),
+          MatchesCookieOp(
+              mojom::CookieAccessDetails::Type::kRead, kDefaultUrlWithPath,
+              kDefaultSiteForCookies,
+              CookieOrLine("cookie3=value3", mojom::CookieOrLine::Tag::kCookie),
+              net::IsInclude())));
+  recorded_activity().clear();
+
+  // Modify one of the cookies and do another get.
+  SetSessionCookie("cookie2", "updated-value2", "example.com", "/");
+  options = mojom::CookieManagerGetOptions::New();
+  options->match_type = mojom::CookieMatchType::STARTS_WITH;
+  EXPECT_THAT(sync_service_->GetAllForUrl(
+                  kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
+                  net::StorageAccessApiStatus::kNone, std::move(options)),
+              testing::SizeIs(3));
+  WaitForCallback();
+
+  // There should only be an access notification for the modified cookie.
+  EXPECT_THAT(recorded_activity(),
+              UnorderedElementsAre(MatchesCookieOp(
+                  mojom::CookieAccessDetails::Type::kRead, kDefaultUrlWithPath,
+                  kDefaultSiteForCookies,
+                  CookieOrLine("cookie2=updated-value2",
+                               mojom::CookieOrLine::Tag::kCookie),
+                  net::IsInclude())));
+}
+
+TEST_P(RestrictedCookieManagerTest,
+       GetAllForUrlCantSkipAccessNotificationForTooManyCookies) {
+  for (int i = 0; i < 101; i++) {
+    SetSessionCookie(base::StringPrintf("cookie%d", i).c_str(), "value1",
+                     "example.com", "/");
+  }
+
+  // Even with no changes, every iteration reports the same cookie accesses,
+  // because the number of cookies surpases the maximum cookie access cache
+  // size.
+  for (int i = 0; i < 2; i++) {
+    auto options = mojom::CookieManagerGetOptions::New();
+    options->match_type = mojom::CookieMatchType::STARTS_WITH;
+    EXPECT_THAT(sync_service_->GetAllForUrl(
+                    kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
+                    net::StorageAccessApiStatus::kNone, std::move(options)),
+                testing::SizeIs(101));
+    WaitForCallback();
+    EXPECT_THAT(recorded_activity(), testing::SizeIs(101));
+    recorded_activity().clear();
+  }
+}
+
 TEST_P(RestrictedCookieManagerTest, GetCookieStringFromWrongOrigin) {
   SetSessionCookie("cookie-name", "cookie-value", "example.com", "/");
   SetSessionCookie("cookie-name-2", "cookie-value-2", "example.com", "/");
@@ -814,8 +893,9 @@ TEST_P(RestrictedCookieManagerTest, GetCookieStringFromWrongOrigin) {
       kOtherUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
       net::StorageAccessApiStatus::kNone,
       /*get_version_shared_memory=*/false,
-      /*is_ad_tagged=*/false, /*force_disable_third_party_cookies=*/false,
-      &version, &mapped_region, &cookies_out));
+      /*is_ad_tagged=*/false, /*apply_devtools_overrides=*/false,
+      /*force_disable_third_party_cookies=*/false, &version, &mapped_region,
+      &cookies_out));
   EXPECT_TRUE(received_bad_message());
   EXPECT_THAT(cookies_out, IsEmpty());
 
@@ -824,8 +904,9 @@ TEST_P(RestrictedCookieManagerTest, GetCookieStringFromWrongOrigin) {
       kOtherUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
       net::StorageAccessApiStatus::kNone,
       /*get_version_shared_memory=*/true,
-      /*is_ad_tagged=*/false, /*force_disable_third_party_cookies=*/false,
-      &version, &mapped_region, &cookies_out));
+      /*is_ad_tagged=*/false, /*apply_devtools_overrides=*/false,
+      /*force_disable_third_party_cookies=*/false, &version, &mapped_region,
+      &cookies_out));
   EXPECT_TRUE(received_bad_message());
   EXPECT_THAT(cookies_out, IsEmpty());
 }
@@ -857,32 +938,71 @@ TEST_P(RestrictedCookieManagerTest, GetAllAdTagged) {
   EXPECT_THAT(recorded_activity().back().is_ad_tagged, false);
 }
 
+TEST_P(RestrictedCookieManagerTest, SetCookieAdTagged) {
+  service_->OverrideIsolationInfoForTesting(kOtherIsolationInfo);
+  sync_service_->SetCookieFromString(
+      kDefaultUrlWithPath, net::SiteForCookies(), kDefaultOrigin,
+      net::StorageAccessApiStatus::kNone,
+      /*get_version_shared_memory=*/false, /*is_ad_tagged=*/true,
+      /*apply_devtools_overrides=*/false, "cookie-name=cookie-value;path=/");
+  WaitForCallback();
+  EXPECT_THAT(recorded_activity().back().is_ad_tagged, true);
+
+  sync_service_->SetCookieFromString(
+      kDefaultUrlWithPath, net::SiteForCookies(), kDefaultOrigin,
+      net::StorageAccessApiStatus::kNone,
+      /*get_version_shared_memory=*/false, /*is_ad_tagged=*/false,
+      /*apply_devtools_overrides=*/false, "cookie-name=cookie-value;path=/");
+  WaitForCallback();
+
+  EXPECT_THAT(recorded_activity().back().is_ad_tagged, false);
+}
+
 TEST_P(RestrictedCookieManagerTest, GetAllForUrlPolicy) {
   service_->OverrideIsolationInfoForTesting(kOtherIsolationInfo);
   SetSessionCookie("cookie-name", "cookie-value", "example.com", "/");
 
-  // With default policy, should be able to get all cookies, even third-party.
+  // With default policy, should be able to get all cookies, even third-party
+  // unless devtools overrides.
   {
     auto options = mojom::CookieManagerGetOptions::New();
     options->name = "cookie-name";
     options->match_type = mojom::CookieMatchType::STARTS_WITH;
 
-    EXPECT_THAT(sync_service_->GetAllForUrl(
-                    kDefaultUrlWithPath, net::SiteForCookies(), kDefaultOrigin,
-                    net::StorageAccessApiStatus::kNone, std::move(options)),
-                ElementsAre(net::MatchesCookieNameValue("cookie-name",
-                                                        "cookie-value")));
+    EXPECT_THAT(
+        sync_service_->GetAllForUrl(
+            kDefaultUrlWithPath, net::SiteForCookies(), kDefaultOrigin,
+            net::StorageAccessApiStatus::kNone, std::move(options),
+            /*is_ad_tagged=*/false, /*force_disable_third_party_cookies=*/false,
+            /*apply_devtools_overrides=*/ThirdPartyCookieDisabledByDevtools()),
+        ThirdPartyCookieDisabledByDevtools()
+            ? testing::ElementsAreArray<CanonicalCookieMatcher>({})
+            : ElementsAreArray({net::MatchesCookieNameValue("cookie-name",
+                                                            "cookie-value")}));
   }
 
   WaitForCallback();
 
-  EXPECT_THAT(recorded_activity(),
-              ElementsAre(MatchesCookieOp(
-                  mojom::CookieAccessDetails::Type::kRead,
-                  "https://example.com/test/", net::SiteForCookies(),
-                  CookieOrLine("cookie-name=cookie-value",
-                               mojom::CookieOrLine::Tag::kCookie),
-                  net::IsInclude())));
+  if (ThirdPartyCookieDisabledByDevtools()) {
+    EXPECT_THAT(recorded_activity(),
+                ElementsAre(MatchesCookieOp(
+                    mojom::CookieAccessDetails::Type::kRead,
+                    "https://example.com/test/", net::SiteForCookies(),
+                    CookieOrLine("cookie-name=cookie-value",
+                                 mojom::CookieOrLine::Tag::kCookie),
+                    net::CookieInclusionStatus::MakeFromReasonsForTesting(
+                        {net::CookieInclusionStatus::ExclusionReason::
+                             EXCLUDE_THIRD_PARTY_PHASEOUT}))));
+
+  } else {
+    EXPECT_THAT(recorded_activity(),
+                ElementsAre(MatchesCookieOp(
+                    mojom::CookieAccessDetails::Type::kRead,
+                    "https://example.com/test/", net::SiteForCookies(),
+                    CookieOrLine("cookie-name=cookie-value",
+                                 mojom::CookieOrLine::Tag::kCookie),
+                    net::IsInclude())));
+  }
 
   // Disabling getting third-party cookies works correctly.
   cookie_settings_.set_block_third_party_cookies(true);
@@ -891,24 +1011,33 @@ TEST_P(RestrictedCookieManagerTest, GetAllForUrlPolicy) {
     options->name = "cookie-name";
     options->match_type = mojom::CookieMatchType::STARTS_WITH;
 
-    EXPECT_THAT(sync_service_->GetAllForUrl(
-                    kDefaultUrlWithPath, net::SiteForCookies(), kDefaultOrigin,
-                    net::StorageAccessApiStatus::kNone, std::move(options)),
-                testing::ElementsAreArray<CanonicalCookieMatcher>({}));
+    EXPECT_THAT(
+        sync_service_->GetAllForUrl(
+            kDefaultUrlWithPath, net::SiteForCookies(), kDefaultOrigin,
+            net::StorageAccessApiStatus::kNone, std::move(options),
+            /*is_ad_tagged=*/false, /*force_disable_third_party_cookies=*/false,
+            /*apply_devtools_overrides=*/ThirdPartyCookieDisabledByDevtools()),
+        testing::ElementsAreArray<CanonicalCookieMatcher>({}));
   }
 
-  WaitForCallback();
-  EXPECT_THAT(
-      recorded_activity(),
-      ElementsAre(
-          testing::_,
-          MatchesCookieOp(
-              mojom::CookieAccessDetails::Type::kRead,
-              "https://example.com/test/", net::SiteForCookies(),
-              CookieOrLine("cookie-name=cookie-value",
-                           mojom::CookieOrLine::Tag::kCookie),
-              net::CookieInclusionStatus::MakeFromReasonsForTesting(
-                  {net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}))));
+  if (ThirdPartyCookieDisabledByDevtools()) {
+    // No additional activity when 3PCs are forced, because the second access
+    // was not a change in result.
+    EXPECT_THAT(recorded_activity(), testing::SizeIs(1));
+  } else {
+    WaitForCallback();
+    EXPECT_THAT(
+        recorded_activity(),
+        ElementsAre(testing::_,
+                    MatchesCookieOp(
+                        mojom::CookieAccessDetails::Type::kRead,
+                        "https://example.com/test/", net::SiteForCookies(),
+                        CookieOrLine("cookie-name=cookie-value",
+                                     mojom::CookieOrLine::Tag::kCookie),
+                        net::CookieInclusionStatus::MakeFromReasonsForTesting(
+                            {net::CookieInclusionStatus::ExclusionReason::
+                                 EXCLUDE_USER_PREFERENCES}))));
+  }
 }
 
 TEST_P(RestrictedCookieManagerTest, FilteredCookieAccessEvents) {
@@ -943,10 +1072,10 @@ TEST_P(RestrictedCookieManagerTest, FilteredCookieAccessEvents) {
             mojom::CookieAccessDetails::Type::kRead, kDefaultUrlWithPath,
             net::SiteForCookies(),
             CookieOrLine(cookie_name_field, mojom::CookieOrLine::Tag::kCookie),
-            AllOf(
-                net::IsInclude(),
-                net::HasWarningReason(
-                    net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT)))));
+            AllOf(net::IsInclude(),
+                  net::HasWarningReason(
+                      net::CookieInclusionStatus::WarningReason::
+                          WARN_THIRD_PARTY_PHASEOUT)))));
   }
 
   {
@@ -967,10 +1096,10 @@ TEST_P(RestrictedCookieManagerTest, FilteredCookieAccessEvents) {
             mojom::CookieAccessDetails::Type::kRead, kDefaultUrlWithPath,
             net::SiteForCookies(),
             CookieOrLine(cookie_name_field, mojom::CookieOrLine::Tag::kCookie),
-            AllOf(
-                net::IsInclude(),
-                net::HasWarningReason(
-                    net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT)))));
+            AllOf(net::IsInclude(),
+                  net::HasWarningReason(
+                      net::CookieInclusionStatus::WarningReason::
+                          WARN_THIRD_PARTY_PHASEOUT)))));
   }
 
   // Change the cookie with a new value so that a cookie access
@@ -1022,10 +1151,10 @@ TEST_P(RestrictedCookieManagerTest, FilteredCookieAccessEvents) {
             mojom::CookieAccessDetails::Type::kRead, kDefaultUrlWithPath,
             net::SiteForCookies(),
             CookieOrLine(cookie_name_field, mojom::CookieOrLine::Tag::kCookie),
-            AllOf(
-                net::IsInclude(),
-                net::HasWarningReason(
-                    net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT)))));
+            AllOf(net::IsInclude(),
+                  net::HasWarningReason(
+                      net::CookieInclusionStatus::WarningReason::
+                          WARN_THIRD_PARTY_PHASEOUT)))));
   }
 }
 
@@ -1065,9 +1194,8 @@ TEST_P(RestrictedCookieManagerTest, GetAllForUrlPolicyWarnActual) {
                   CookieOrLine("cookie-name=cookie-value",
                                mojom::CookieOrLine::Tag::kCookie),
                   net::HasExactlyExclusionReasonsForTesting(
-                      std::vector<net::CookieInclusionStatus::ExclusionReason>{
-                          net::CookieInclusionStatus::
-                              EXCLUDE_SAMESITE_NONE_INSECURE}))));
+                      {net::CookieInclusionStatus::ExclusionReason::
+                           EXCLUDE_SAMESITE_NONE_INSECURE}))));
 }
 
 TEST_P(RestrictedCookieManagerTest, SetCanonicalCookie) {
@@ -1153,9 +1281,24 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookieHttpOnly) {
 }
 
 TEST_P(RestrictedCookieManagerTest, SetCookieFromString) {
-  EXPECT_TRUE(backend()->SetCookieFromString(
+  auto response = sync_service_->SetCookieFromString(
       kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
-      net::StorageAccessApiStatus::kNone, "new-name=new-value;path=/"));
+      net::StorageAccessApiStatus::kNone, /*get_version_shared_memory=*/true,
+      /*is_ad_tagged=*/false,
+      /*apply_devtools_overrides=*/false, "new-name=new-value;path=/");
+  std::optional<mojo::SharedMemoryVersionClient> client;
+  if (GetCookiesOnSetEnabled()) {
+    ASSERT_TRUE(response);
+    EXPECT_NE(response->version, mojom::kInvalidCookieVersion);
+    EXPECT_NE(response->version, mojom::kInitialCookieVersion);
+    EXPECT_EQ(response->cookies, "new-name=new-value");
+    ASSERT_TRUE(response->version_buffer.IsValid());
+    client.emplace(std::move(response->version_buffer));
+    EXPECT_FALSE(client->CommittedWritesIsLessThan(1));
+    EXPECT_TRUE(client->CommittedWritesIsLessThan(2));
+  } else {
+    EXPECT_FALSE(response);
+  }
   auto options = mojom::CookieManagerGetOptions::New();
   options->name = "new-name";
   options->match_type = mojom::CookieMatchType::EQUALS;
@@ -1164,6 +1307,57 @@ TEST_P(RestrictedCookieManagerTest, SetCookieFromString) {
           kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
           net::StorageAccessApiStatus::kNone, std::move(options)),
       ElementsAre(net::MatchesCookieNameValue("new-name", "new-value")));
+
+  // Another call to SetCookieFromString updates the committed writes counter.
+  response = sync_service_->SetCookieFromString(
+      kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
+      net::StorageAccessApiStatus::kNone, /*get_version_shared_memory=*/false,
+      /*is_ad_tagged=*/false,
+      /*apply_devtools_overrides=*/false, "new-name=updated-value;path=/");
+  if (GetCookiesOnSetEnabled()) {
+    EXPECT_EQ(response->cookies, "new-name=updated-value");
+    EXPECT_FALSE(client->CommittedWritesIsLessThan(2));
+    EXPECT_TRUE(client->CommittedWritesIsLessThan(3));
+  }
+  options = mojom::CookieManagerGetOptions::New();
+  options->name = "new-name";
+  options->match_type = mojom::CookieMatchType::EQUALS;
+  EXPECT_THAT(
+      sync_service_->GetAllForUrl(
+          kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
+          net::StorageAccessApiStatus::kNone, std::move(options)),
+      ElementsAre(net::MatchesCookieNameValue("new-name", "updated-value")));
+}
+
+TEST_P(RestrictedCookieManagerTest, SetCookieFromStringCrossOrigin) {
+  service_->OverrideIsolationInfoForTesting(kOtherIsolationInfo);
+  auto response = sync_service_->SetCookieFromString(
+      kDefaultUrlWithPath, net::SiteForCookies(), kDefaultOrigin,
+      net::StorageAccessApiStatus::kNone, /*get_version_shared_memory=*/false,
+      /*is_ad_tagged=*/false,
+      /*apply_devtools_overrides=*/ThirdPartyCookieDisabledByDevtools(),
+      "new-name=new-value;path=/; SameSite=none; Secure");
+  if (GetCookiesOnSetEnabled() && !ThirdPartyCookieDisabledByDevtools()) {
+    ASSERT_TRUE(response);
+    EXPECT_NE(response->version, mojom::kInvalidCookieVersion);
+    EXPECT_NE(response->version, mojom::kInitialCookieVersion);
+    EXPECT_EQ(response->cookies, "new-name=new-value");
+  } else {
+    EXPECT_FALSE(response);
+  }
+  auto options = mojom::CookieManagerGetOptions::New();
+  options->name = "new-name";
+  options->match_type = mojom::CookieMatchType::EQUALS;
+  EXPECT_THAT(
+      sync_service_->GetAllForUrl(
+          kDefaultUrlWithPath, net::SiteForCookies(), kDefaultOrigin,
+          net::StorageAccessApiStatus::kNone, std::move(options),
+          /*is_ad_tagged=*/false, /*force_disable_third_party_cookies=*/false,
+          /*apply_devtools_overrides=*/ThirdPartyCookieDisabledByDevtools()),
+      ThirdPartyCookieDisabledByDevtools()
+          ? testing::ElementsAreArray<CanonicalCookieMatcher>({})
+          : ElementsAreArray(
+                {net::MatchesCookieNameValue("new-name", "new-value")}));
 }
 
 TEST_P(RestrictedCookieManagerTest, SetCanonicalCookieFromWrongOrigin) {
@@ -1211,33 +1405,51 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookieWithMismatchingDomain) {
 
 TEST_P(RestrictedCookieManagerTest, SetCookieFromStringWrongOrigin) {
   ExpectBadMessage();
-  EXPECT_TRUE(backend()->SetCookieFromString(
+  auto response = sync_service_->SetCookieFromString(
       kOtherUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
-      net::StorageAccessApiStatus::kNone, "new-name=new-value;path=/"));
+      net::StorageAccessApiStatus::kNone, /*get_version_shared_memory=*/false,
+      /*is_ad_tagged=*/false,
+      /*apply_devtools_overrides=*/false, "new-name=new-value;path=/");
+  EXPECT_FALSE(response);
   ASSERT_TRUE(received_bad_message());
 }
 
 TEST_P(RestrictedCookieManagerTest, SetCanonicalCookiePolicy) {
   service_->OverrideIsolationInfoForTesting(kOtherIsolationInfo);
   {
-    // With default settings object, setting a third-party cookie is OK.
+    // With default settings object, setting a third-party cookie is OK unless
+    // devtools overrides.
     auto cookie = net::CanonicalCookie::CreateForTesting(
         kDefaultUrl, "A=B; SameSite=none; Secure", base::Time::Now(),
         std::nullopt /* server_time */,
         std::nullopt /* cookie_partition_key */);
-    EXPECT_TRUE(sync_service_->SetCanonicalCookie(
-        *cookie, kDefaultUrl, net::SiteForCookies(), kDefaultOrigin,
-        net::StorageAccessApiStatus::kNone));
+    EXPECT_NE(
+        sync_service_->SetCanonicalCookie(
+            *cookie, kDefaultUrl, net::SiteForCookies(), kDefaultOrigin,
+            net::StorageAccessApiStatus::kNone,
+            /*cookie_inclusion_status=*/std::nullopt,
+            /*apply_devtools_overrides=*/ThirdPartyCookieDisabledByDevtools()),
+        ThirdPartyCookieDisabledByDevtools());
   }
 
   WaitForCallback();
-
-  EXPECT_THAT(recorded_activity(),
-              ElementsAre(MatchesCookieOp(
-                  mojom::CookieAccessDetails::Type::kChange,
-                  "https://example.com/", net::SiteForCookies(),
-                  CookieOrLine("A=B", mojom::CookieOrLine::Tag::kCookie),
-                  net::IsInclude())));
+  if (ThirdPartyCookieDisabledByDevtools()) {
+    EXPECT_THAT(recorded_activity(),
+                Contains(MatchesCookieOp(
+                    mojom::CookieAccessDetails::Type::kChange,
+                    "https://example.com/", net::SiteForCookies(),
+                    CookieOrLine("A=B", mojom::CookieOrLine::Tag::kCookie),
+                    net::HasExactlyExclusionReasonsForTesting(
+                        {net::CookieInclusionStatus::ExclusionReason::
+                             EXCLUDE_THIRD_PARTY_PHASEOUT}))));
+  } else {
+    EXPECT_THAT(recorded_activity(),
+                ElementsAre(MatchesCookieOp(
+                    mojom::CookieAccessDetails::Type::kChange,
+                    "https://example.com/", net::SiteForCookies(),
+                    CookieOrLine("A=B", mojom::CookieOrLine::Tag::kCookie),
+                    net::IsInclude())));
+  }
 
   {
     // Not if third-party cookies are disabled, though.
@@ -1248,19 +1460,23 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookiePolicy) {
         std::nullopt /* cookie_partition_key */);
     EXPECT_FALSE(sync_service_->SetCanonicalCookie(
         *cookie, kDefaultUrl, net::SiteForCookies(), kDefaultOrigin,
-        net::StorageAccessApiStatus::kNone));
+        net::StorageAccessApiStatus::kNone,
+        /*cookie_inclusion_status=*/std::nullopt,
+        /*apply_devtools_overrides=*/ThirdPartyCookieDisabledByDevtools()));
   }
 
   WaitForCallback();
-  EXPECT_THAT(
-      recorded_activity(),
-      Contains(MatchesCookieOp(
-          mojom::CookieAccessDetails::Type::kChange, "https://example.com/",
-          net::SiteForCookies(),
-          CookieOrLine("A2=B2", mojom::CookieOrLine::Tag::kCookie),
-          net::HasExactlyExclusionReasonsForTesting(
-              std::vector<net::CookieInclusionStatus::ExclusionReason>{
-                  net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}))));
+  EXPECT_THAT(recorded_activity(),
+              Contains(MatchesCookieOp(
+                  mojom::CookieAccessDetails::Type::kChange,
+                  "https://example.com/", net::SiteForCookies(),
+                  CookieOrLine("A2=B2", mojom::CookieOrLine::Tag::kCookie),
+                  net::HasExactlyExclusionReasonsForTesting(
+                      {ThirdPartyCookieDisabledByDevtools()
+                           ? net::CookieInclusionStatus::ExclusionReason::
+                                 EXCLUDE_THIRD_PARTY_PHASEOUT
+                           : net::CookieInclusionStatus::ExclusionReason::
+                                 EXCLUDE_USER_PREFERENCES}))));
 
   // Read back, in first-party context
   auto options = mojom::CookieManagerGetOptions::New();
@@ -1268,20 +1484,31 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookiePolicy) {
   options->match_type = mojom::CookieMatchType::STARTS_WITH;
 
   service_->OverrideIsolationInfoForTesting(kDefaultIsolationInfo);
-  EXPECT_THAT(sync_service_->GetAllForUrl(
-                  kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
-                  net::StorageAccessApiStatus::kNone, std::move(options)),
-              Contains(net::MatchesCookieNameValue("A", "B")));
-
-  WaitForCallback();
-
   EXPECT_THAT(
-      recorded_activity(),
-      Contains(MatchesCookieOp(
-          mojom::CookieAccessDetails::Type::kRead, "https://example.com/test/",
-          net::SiteForCookies::FromUrl(GURL("https://example.com/")),
-          CookieOrLine("A=B", mojom::CookieOrLine::Tag::kCookie),
-          net::IsInclude())));
+      sync_service_->GetAllForUrl(
+          kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
+          net::StorageAccessApiStatus::kNone, std::move(options),
+          /*is_ad_tagged=*/false, /*force_disable_third_party_cookies=*/false,
+          /*apply_devtools_overrides=*/ThirdPartyCookieDisabledByDevtools()),
+      ThirdPartyCookieDisabledByDevtools()
+          ? testing::ElementsAreArray<CanonicalCookieMatcher>({})
+          : ElementsAreArray({net::MatchesCookieNameValue("A", "B")}));
+
+  if (ThirdPartyCookieDisabledByDevtools()) {
+    // If third party cookies were force disabled, the cookie would never have
+    // been set and thus no operation added to read it
+    EXPECT_THAT(recorded_activity(), testing::SizeIs(2));
+
+  } else {
+    WaitForCallback();
+    EXPECT_THAT(recorded_activity(),
+                Contains(MatchesCookieOp(
+                    mojom::CookieAccessDetails::Type::kRead,
+                    "https://example.com/test/",
+                    net::SiteForCookies::FromUrl(GURL("https://example.com/")),
+                    CookieOrLine("A=B", mojom::CookieOrLine::Tag::kCookie),
+                    net::IsInclude())));
+  }
 }
 
 TEST_P(RestrictedCookieManagerTest, SetCanonicalCookiePolicyWarnActual) {
@@ -1302,15 +1529,16 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookiePolicyWarnActual) {
                   "https://example.com/", net::SiteForCookies(),
                   CookieOrLine("A=B", mojom::CookieOrLine::Tag::kCookie),
                   net::HasExactlyExclusionReasonsForTesting(
-                      std::vector<net::CookieInclusionStatus::ExclusionReason>{
-                          net::CookieInclusionStatus::
-                              EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX}))));
+                      {net::CookieInclusionStatus::ExclusionReason::
+                           EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX}))));
 }
 
 TEST_P(RestrictedCookieManagerTest, SetCanonicalCookieWithInclusionStatus) {
   ExpectBadMessage();
-  net::CookieInclusionStatus status_exclude(
-      net::CookieInclusionStatus::ExclusionReason::EXCLUDE_USER_PREFERENCES);
+  net::CookieInclusionStatus status_exclude =
+      net::CookieInclusionStatus::MakeFromReasonsForTesting(
+          /*exclusions=*/{net::CookieInclusionStatus::ExclusionReason::
+                              EXCLUDE_USER_PREFERENCES});
   // In this instance cookie should be OK but due to the status having
   // an exclusion reason, the result should be false and a BadMessage should
   // be received.
@@ -1326,8 +1554,11 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookieWithInclusionStatus) {
 
   // In this instance the cookie should be OK and the status only
   // has a warning so the result should be true.
-  net::CookieInclusionStatus status_warning(
-      net::CookieInclusionStatus::WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE);
+  net::CookieInclusionStatus status_warning =
+      net::CookieInclusionStatus::MakeFromReasonsForTesting(
+          /*exclusions=*/{},
+          /*warnings=*/{net::CookieInclusionStatus::WarningReason::
+                            WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE});
   EXPECT_TRUE(sync_service_->SetCanonicalCookie(
       *net::CanonicalCookie::CreateUnsafeCookieForTesting(
           "new-name", "new-value", "example.com", "/", base::Time(),
@@ -1345,31 +1576,37 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookieWithInclusionStatus) {
           kDefaultSiteForCookies,
           CookieOrLine("new-name=new-value", mojom::CookieOrLine::Tag::kCookie),
           net::CookieInclusionStatus::MakeFromReasonsForTesting(
-              {}, {net::CookieInclusionStatus::
+              {}, {net::CookieInclusionStatus::WarningReason::
                        WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE}))));
 }
 
 TEST_P(RestrictedCookieManagerTest, CookiesEnabledFor) {
   service_->OverrideIsolationInfoForTesting(kOtherIsolationInfo);
-  // Default, third-party access is OK.
+  // Default, third-party access is OK unless devtools overrides.
   bool result = false;
   EXPECT_TRUE(backend()->CookiesEnabledFor(
       kDefaultUrl, net::SiteForCookies(), kDefaultOrigin,
-      net::StorageAccessApiStatus::kNone, &result));
-  EXPECT_TRUE(result);
+      net::StorageAccessApiStatus::kNone,
+      /*apply_devtools_overrides=*/ThirdPartyCookieDisabledByDevtools(),
+      &result));
+  EXPECT_NE(result, ThirdPartyCookieDisabledByDevtools());
 
   // Third-party cookies disabled.
   cookie_settings_.set_block_third_party_cookies(true);
   EXPECT_TRUE(backend()->CookiesEnabledFor(
       kDefaultUrl, net::SiteForCookies(), kDefaultOrigin,
-      net::StorageAccessApiStatus::kNone, &result));
+      net::StorageAccessApiStatus::kNone,
+      /*apply_devtools_overrides=*/ThirdPartyCookieDisabledByDevtools(),
+      &result));
   EXPECT_FALSE(result);
 
   // First-party ones still OK.
   service_->OverrideIsolationInfoForTesting(kDefaultIsolationInfo);
   EXPECT_TRUE(backend()->CookiesEnabledFor(
       kDefaultUrl, kDefaultSiteForCookies, kDefaultOrigin,
-      net::StorageAccessApiStatus::kNone, &result));
+      net::StorageAccessApiStatus::kNone,
+      /*apply_devtools_overrides=*/ThirdPartyCookieDisabledByDevtools(),
+      &result));
   EXPECT_TRUE(result);
 }
 
@@ -1390,14 +1627,16 @@ TEST_P(RestrictedCookieManagerTest, CookiesEnabledFor_WithStorageAccess) {
   bool result;
   EXPECT_TRUE(backend()->CookiesEnabledFor(
       kDefaultUrl, net::SiteForCookies(), kOtherOrigin,
-      net::StorageAccessApiStatus::kNone, &result));
+      net::StorageAccessApiStatus::kNone, /*apply_devtools_overrides=*/false,
+      &result));
   EXPECT_FALSE(result);
 
   // When `storage_access_api_status` is not kNone, access is allowed since
   // there's a matching permission grant.
   EXPECT_TRUE(backend()->CookiesEnabledFor(
       kDefaultUrl, net::SiteForCookies(), kOtherOrigin,
-      net::StorageAccessApiStatus::kAccessViaAPI, &result));
+      net::StorageAccessApiStatus::kAccessViaAPI,
+      /*apply_devtools_overrides=*/false, &result));
   EXPECT_TRUE(result);
 }
 
@@ -1660,13 +1899,6 @@ TEST_P(RestrictedCookieManagerTest, NoChangeNotificationForNonlegacyCookie) {
 
 // Test Partitioned cookie behavior when feature is enabled.
 TEST_P(RestrictedCookieManagerTest, PartitionedCookies) {
-  // TODO crbug.com/328043119 remove code associated with
-  // kAncestorChainBitEnabledInPartitionedCookies
-  // after it's enabled by default.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      net::features::kAncestorChainBitEnabledInPartitionedCookies);
-
   const GURL kCookieURL("https://example.com");
   const GURL kTopFrameURL("https://sub.foo.com");
   const net::SiteForCookies kSiteForCookies =
@@ -1679,6 +1911,9 @@ TEST_P(RestrictedCookieManagerTest, PartitionedCookies) {
   sync_service_->SetCookieFromString(
       kCookieURL, kSiteForCookies, kTopFrameOrigin,
       net::StorageAccessApiStatus::kNone,
+      /*get_version_shared_memory=*/false,
+      /*is_ad_tagged=*/false,
+      /*apply_devtools_overrides=*/false,
       "__Host-foo=bar; Secure; SameSite=None; Path=/; Partitioned");
 
   {  // Test request from the same top-level site.
@@ -1823,13 +2058,6 @@ TEST_P(RestrictedCookieManagerTest, PartitionKeyFromScript) {
 }
 
 TEST_P(RestrictedCookieManagerTest, PartitionKeyWithNonce) {
-  // TODO crbug.com/328043119 remove code associated with
-  // kAncestorChainBitEnabledInPartitionedCookies
-  // after it's enabled by default.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      net::features::kAncestorChainBitEnabledInPartitionedCookies);
-
   const GURL kCookieURL("https://example.com");
   const GURL kTopFrameURL("https://foo.com");
   const net::SiteForCookies kSiteForCookies =
@@ -1979,59 +2207,30 @@ TEST_P(RestrictedCookieManagerTest, PartitionKeyWithNonce) {
   }
 }
 
-TEST_P(RestrictedCookieManagerTest, DeDuplicateAccesses) {
-  // Reduce the cache size in order to force duplicates. Alternatively, we could
-  // increase the cookie accesses timer delay and the number of cookies, but
-  // this approach avoids unduly increasing the test duration.
-  service_->SetMaxCookieCacheCountForTesting(5u);
-  constexpr int kNumberOfCookies = 10;
-  for (int i = 0; i < kNumberOfCookies; i++) {
-    std::string name = base::StringPrintf("cookie-name-%d", i);
-    SetSessionCookie(name.c_str(), "cookie-value", "example.com", "/");
-  }
-
-  for (bool should_dedup : {true, false}) {
-    ClearRecordedActivityAndCounts();
-    service_->SetShouldDeDupCookieAccessDetailsForTesting(should_dedup);
-    base::HistogramTester histogram_tester;
-    const int kNumberOfAccessesPerCookie = 2;
-    for (int i = 0; i < kNumberOfAccessesPerCookie; i++) {
-      for (int j = 0; j < kNumberOfCookies; j++) {
-        auto options = mojom::CookieManagerGetOptions::New();
-        options->name = base::StringPrintf("cookie-name-%d", j);
-        options->match_type = mojom::CookieMatchType::STARTS_WITH;
-        sync_service_->GetAllForUrl(
-            kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
-            net::StorageAccessApiStatus::kNone, std::move(options));
-      }
-    }
-    WaitForCallback();
-    size_t full_size =
-        histogram_tester.GetTotalSum(kCookieAccessDetailsSizeHistogramName);
-    size_t deduped_size = histogram_tester.GetTotalSum(
-        kDeDupedCookieAccessDetailsSizeHistogramName);
-    size_t size_reduction = histogram_tester.GetTotalSum(
-        kDeDupedCookieAccessDetailsSizeReductionHistogramName);
-    if (should_dedup) {
-      EXPECT_GT(deduped_size, 0u);
-      EXPECT_GT(full_size, deduped_size);
-      EXPECT_GT(size_reduction, 0u);
-      EXPECT_GT(cookie_access_details_count(),
-                deduplicated_cookie_access_details_count());
-    } else {
-      EXPECT_EQ(deduped_size, 0u);
-      EXPECT_EQ(full_size, 0u);
-      EXPECT_EQ(size_reduction, 0u);
-      EXPECT_EQ(cookie_access_details_count(),
-                deduplicated_cookie_access_details_count());
-    }
-  }
-}
-
 INSTANTIATE_TEST_SUITE_P(
     All,
     RestrictedCookieManagerTest,
-    testing::Values(mojom::RestrictedCookieManagerRole::SCRIPT,
-                    mojom::RestrictedCookieManagerRole::NETWORK));
+    testing::Combine(
+        testing::Bool(),
+        testing::Values(mojom::RestrictedCookieManagerRole::SCRIPT,
+                        mojom::RestrictedCookieManagerRole::NETWORK),
+        testing::Values(
+            net::CookieSettingOverrides(),
+            net::CookieSettingOverrides(
+                {net::CookieSettingOverride::kForceDisableThirdPartyCookies,
+                 net::CookieSettingOverride::
+                     kForceEnableThirdPartyCookieMitigations}))),
+    [](const testing::TestParamInfo<
+        std::tuple<bool,
+                   mojom::RestrictedCookieManagerRole,
+                   net::CookieSettingOverrides>>& info) {
+      const auto& param = info.param;
+      std::stringstream ss;
+      if (std::get<0>(param)) {
+        ss << "GetCookiesOnSet_";
+      }
+      ss << std::get<1>(param) << "_" << std::get<2>(param).ToString();
+      return ss.str();
+    });
 
 }  // namespace network

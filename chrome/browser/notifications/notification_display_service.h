@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_DISPLAY_SERVICE_H_
 #define CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_DISPLAY_SERVICE_H_
 
-#include <map>
 #include <memory>
 #include <set>
 #include <string>
@@ -64,9 +63,6 @@ class NotificationDisplayService : public KeyedService {
   using DisplayedNotificationsCallback =
       base::OnceCallback<void(std::set<std::string>,
                               bool /* supports_synchronization */)>;
-
-  // Returns an instance of the display service for the given |profile|.
-  static NotificationDisplayService* GetForProfile(Profile* profile);
 
   // Displays the |notification| of type |notification_type|. The |metadata|
   // may be provided for certain notification types that require additional

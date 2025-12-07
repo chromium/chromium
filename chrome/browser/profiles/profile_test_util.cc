@@ -19,13 +19,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/login/login_state/login_state.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_init_params.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace profiles::testing {
 
@@ -71,36 +67,21 @@ ScopedProfileSelectionsForFactoryTesting::
   factory_->profile_selections_ = old_selections_;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
 ScopedTestManagedGuestSession::ScopedTestManagedGuestSession() {
-  init_params_ = chromeos::BrowserInitParams::GetForTests()->Clone();
-  auto init_params = crosapi::mojom::BrowserInitParams::New();
-  init_params->session_type = crosapi::mojom::SessionType::kPublicSession;
-  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-}
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-ScopedTestManagedGuestSession::ScopedTestManagedGuestSession() {
+#if BUILDFLAG(IS_CHROMEOS)
   ash::LoginState::Initialize();
   ash::LoginState::Get()->SetLoggedInState(
       ash::LoginState::LOGGED_IN_ACTIVE,
       ash::LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
-#else
-ScopedTestManagedGuestSession::ScopedTestManagedGuestSession() = default;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
 ScopedTestManagedGuestSession::~ScopedTestManagedGuestSession() {
-  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params_));
-}
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-ScopedTestManagedGuestSession::~ScopedTestManagedGuestSession() {
+#if BUILDFLAG(IS_CHROMEOS)
   if (ash::LoginState::IsInitialized()) {
     ash::LoginState::Shutdown();
   }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
-#else
-ScopedTestManagedGuestSession::~ScopedTestManagedGuestSession() = default;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace profiles::testing

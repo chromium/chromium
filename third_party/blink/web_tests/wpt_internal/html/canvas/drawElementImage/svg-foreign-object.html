@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<title>Canvas.drawElementImage: SVG foreignObject green rect</title>
+<link rel="help" href="https://github.com/WICG/html-in-canvas">
+<link rel="author" href="mailto:schenney@chromium.org">
+<link rel="match" href="basic-rect-ref.html">
+<style>
+#canvas {
+  background: grey;
+}
+</style>
+
+<canvas id=canvas width="200" height="200" layoutsubtree>
+  <svg id=child width="200px" height="200px">
+    <foreignObject x="20" y="30" width="200" height="200">
+      <div style="width: 100px; height: 100px; background: green;"></div>
+    </foreignObject>
+  </svg>
+</canvas>
+
+<script>
+function runTest() {
+  canvas.getContext("2d").drawElementImage(child, 0, 0);
+}
+
+onload = () => runTest();
+
+</script>
+</html>

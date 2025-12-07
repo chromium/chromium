@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Ensure that a style without integrity did not run
+  assert_equals: Ran expected false but got true
+[FAIL] Ensure that a style with unknown integrity algorithm did not run
+  assert_equals: Ran expected false but got true
+[FAIL] Ensure that a no-cors style gets blocked
+  assert_equals: Ran expected false but got true
+[FAIL] Ensure that ReportingObserver gets called without endpoints
+  assert_equals: Ran expected false but got true
+Harness: the test ran to completion.
+

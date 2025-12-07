@@ -4,7 +4,10 @@ source_set("ui_util") {
     "dynamic_type_util.mm",
   ]
   frameworks = [ "UIKit.framework" ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//build/config/ios:buildflags",
+  ]
 }
 
 source_set("unit_tests") {

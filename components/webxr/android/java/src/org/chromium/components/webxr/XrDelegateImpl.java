@@ -4,23 +4,25 @@
 
 package org.chromium.components.webxr;
 
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.webxr.XrSessionCoordinator.SessionType;
 
 /**
- * This class provides methods to interact with and query the state of any Xr
- * specific runtimes. Notably, it serves as a "wrapper" to abstract and
- * coordinate any AR or VR specific states. It will only be compiled into Chrome
- * if either |enable_arcore| or |enable_cardboard| are set, and attempts to load
- * the relevant concrete implementations for the various XR Runtime Delegate
+ * This class provides methods to interact with and query the state of any Xr specific runtimes.
+ * Notably, it serves as a "wrapper" to abstract and coordinate any AR or VR specific states. It
+ * will only be compiled into Chrome if either |enable_arcore| or |enable_cardboard| are set, and
+ * attempts to load the relevant concrete implementations for the various XR Runtime Delegate
  * interfaces.
  */
+@NullMarked
 public class XrDelegateImpl implements XrDelegate {
     private @SessionType int mActiveSession = SessionType.NONE;
 
-    private ObservableSupplierImpl<Boolean> mHasActiveSessionSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mHasActiveSessionSupplier =
+            ObservableSuppliers.createNonNull(false);
 
     public XrDelegateImpl() {
         XrSessionCoordinator.getActiveSessionTypeSupplier().addObserver(this::setActiveSessionType);
@@ -46,7 +48,7 @@ public class XrDelegateImpl implements XrDelegate {
     }
 
     @Override
-    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return mHasActiveSessionSupplier;
     }
 

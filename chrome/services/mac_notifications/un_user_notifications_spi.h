@@ -10,12 +10,11 @@
 // Private SPIs exposed by UNUserNotifications.
 
 // Updates the content of an existing notification without triggering a
-// renotification. Since macOS 12 this can only be used to update existing
-// notifications, in older versions this can also be used to display a new
-// notifications.
-// This is used so that updated banners do not keep reappearing on
-// the screen, for example banners that are used to show progress would keep
-// reappearing on the screen without the usage of this private API.
+// renotification. This can only be used to update existing notifications.
+//
+// This is used so that updated banners do not keep reappearing on the screen,
+// for example banners that are used to show progress would keep reappearing on
+// the screen without the usage of this private API.
 @interface UNUserNotificationCenter (Private)
 - (void)replaceContentForRequestWithIdentifier:(NSString*)identifier
                             replacementContent:

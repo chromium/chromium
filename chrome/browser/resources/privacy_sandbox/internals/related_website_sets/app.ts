@@ -5,7 +5,7 @@
 import '//resources/cr_elements/cr_drawer/cr_drawer.js';
 import './sidebar.js';
 import './toolbar.js';
-import './related_website_sets_list_container.js';
+import './list_container.js';
 
 import type {CrDrawerElement} from '//resources/cr_elements/cr_drawer/cr_drawer.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -52,12 +52,12 @@ export class RelatedWebsiteSetsAppElement extends CrLitElement {
   }
 
   // TODO (b/330877132): Add Localization once UI stable
-  protected pageTitle_: string = 'Related Website Sets';
-  protected narrow_: boolean = true;
-  protected isDrawerOpen_: boolean = false;
-  protected relatedWebsiteSets_: RelatedWebsiteSet[] = [];
-  protected errorMessage_: string = '';
-  protected query_: string = '';
+  protected accessor pageTitle_: string = 'Related Website Sets';
+  protected accessor narrow_: boolean = true;
+  protected accessor isDrawerOpen_: boolean = false;
+  protected accessor relatedWebsiteSets_: RelatedWebsiteSet[] = [];
+  protected accessor errorMessage_: string = '';
+  protected accessor query_: string = '';
 
   private apiProxy_: RelatedWebsiteSetsApiBrowserProxy =
       RelatedWebsiteSetsApiBrowserProxyImpl.getInstance();

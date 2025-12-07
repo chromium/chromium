@@ -17,7 +17,7 @@ let kJPEGImageQuality: CGFloat = 1.0
 // Tasks for handling disk (reading an image, writing an image, deleting images, renaming an image,
 // etc.) are executed on a background thread. Callbacks to use UI APIs should be called on the main
 // thread.
-@objcMembers public class ImageFileManager: NSObject {
+@objcMembers public final class ImageFileManager: NSObject, Sendable {
   // Directory where the images are saved.
   private let storageDirectory: URL
   // Scale for snapshot images. It may be smaller than the screen scale in order
@@ -34,14 +34,7 @@ let kJPEGImageQuality: CGFloat = 1.0
   // Designated initializer. `storageDirectoryUrl` is the file path where all images managed by this
   // ImageFileManager are stored. `storageDirectoryUrl` is not guaranteed to exist. The contents of
   // `storageDirectoryUrl` are entirely managed by this ImageFileManager.
-  //
-  // To support renaming the directory where the snapshots are stored, it is possible to pass a
-  // non-empty path via `legacyDirectoryUrl`. If present, then it will be moved to
-  // `storageDirectoryUrl`.
-  //
-  // TODO(crbug.com/40942167): Remove `legacyDirectoryUrl` when the storage for all users has been
-  // migrated.
-  init(storageDirectoryUrl: URL, legacyDirectoryUrl: URL?) {
+  init(storageDirectoryUrl: URL) {
     self.storageDirectory = storageDirectoryUrl
     self.imageScale = SnapshotImageScale.imageScaleForDevice()
     self.mainTaskGroup = DispatchGroup()
@@ -50,7 +43,7 @@ let kJPEGImageQuality: CGFloat = 1.0
       label: "org.chromium.image_file_manager", qos: .default)
     super.init()
 
-    createStorageDirectory(directory: storageDirectoryUrl, legacyDirectory: legacyDirectoryUrl)
+    createStorageDirectory(directory: storageDirectoryUrl)
 
     // TODO(crbug.com/40279302): Delete this logic after a few milestones.
     deleteAllGreyImages(directory: storageDirectoryUrl)
@@ -67,7 +60,9 @@ let kJPEGImageQuality: CGFloat = 1.0
 
   // Reads a color image from disk. Reading data for UIImage is executed on the background thread
   // and `completion` is executed on the main thread.
-  func readImage(snapshotID: SnapshotIDWrapper, completion: @escaping (UIImage?) -> Void) {
+  @MainActor
+  func readImage(snapshotID: SnapshotIDWrapper, completion: @escaping @MainActor (UIImage?) -> Void)
+  {
     guard
       let imagePath = imagePath(
         snapshotID: snapshotID, imageType: ImageType.kImageTypeColor)
@@ -77,11 +72,13 @@ let kJPEGImageQuality: CGFloat = 1.0
     }
 
     backgroundTaskGroup.enter()
-    backgroundTaskQueue.async(group: backgroundTaskGroup) { [self] in
+    backgroundTaskQueue.async(group: backgroundTaskGroup) { [weak self] in
+      guard let self = self else { return }
       let image = UIImage(contentsOfFile: imagePath.path)
       // Call the callback on the main thread.
       mainTaskGroup.enter()
-      DispatchQueue.main.async { [self, image] in
+      DispatchQueue.main.async { [weak self, image] in
+        guard let self = self else { return }
         completion(image)
         // Do not call `backgroundTaskGroup.leave()` here. It causes a deadlock on the main thread
         // if we call `backgroundTaskGroup.wait()` before reaching here.
@@ -101,7 +98,8 @@ let kJPEGImageQuality: CGFloat = 1.0
     }
 
     backgroundTaskGroup.enter()
-    backgroundTaskQueue.async(group: backgroundTaskGroup) { [self] in
+    backgroundTaskQueue.async(group: backgroundTaskGroup) { [weak self] in
+      guard let self = self else { return }
       guard let data = image.jpegData(compressionQuality: kJPEGImageQuality) else {
         backgroundTaskGroup.leave()
         return
@@ -132,7 +130,8 @@ let kJPEGImageQuality: CGFloat = 1.0
     }
 
     backgroundTaskGroup.enter()
-    backgroundTaskQueue.async(group: backgroundTaskGroup) { [self] in
+    backgroundTaskQueue.async(group: backgroundTaskGroup) { [weak self] in
+      guard let self = self else { return }
       do {
         if FileManager.default.fileExists(atPath: imagePath.path) {
           try FileManager.default.removeItem(at: imagePath)
@@ -147,7 +146,8 @@ let kJPEGImageQuality: CGFloat = 1.0
   // Removes all images from disk.
   func removeAllImages() {
     backgroundTaskGroup.enter()
-    backgroundTaskQueue.async(group: backgroundTaskGroup) { [self] in
+    backgroundTaskQueue.async(group: backgroundTaskGroup) { [weak self] in
+      guard let self = self else { return }
       do {
         // Delete the directory storing all images and create a brand new directory with the same
         // storage path.
@@ -208,21 +208,11 @@ let kJPEGImageQuality: CGFloat = 1.0
     }
   }
 
-  // Renames snapshots with names in `oldIDs` to names in `newIDs`. It is a programmatic error if
-  // the two array do not have the same length.
-  func renameSnapshots(oldIDs: [String], newIDs: [SnapshotIDWrapper]) {
-    assert(
-      oldIDs.count == newIDs.count, "The number of old snapshot IDs and new IDs should be same")
-
-    for (oldID, newID) in zip(oldIDs, newIDs) {
-      renameSnapshot(oldID: oldID, newID: newID, imageType: ImageType.kImageTypeColor)
-    }
-  }
-
   // Moves the image in disk from `oldPath` to `newPath`
   func copyImage(oldPath: URL, newPath: URL) {
     backgroundTaskGroup.enter()
-    backgroundTaskQueue.async(group: backgroundTaskGroup) { [self] in
+    backgroundTaskQueue.async(group: backgroundTaskGroup) { [weak self] in
+      guard let self = self else { return }
       // Copy a file only it's necessary.
       guard FileManager.default.fileExists(atPath: oldPath.path),
         !FileManager.default.fileExists(atPath: newPath.path)
@@ -252,49 +242,16 @@ let kJPEGImageQuality: CGFloat = 1.0
     legacyImagePath(snapshotID: snapshotID, imageType: ImageType.kImageTypeColor)
   }
 
-  // Creates a directory that stores images and moves images from `legacyDirectory` to
-  // `directory`.
-  private func createStorageDirectory(directory: URL, legacyDirectory: URL?) {
+  // Creates a directory that stores images.
+  private func createStorageDirectory(directory: URL) {
     backgroundTaskGroup.enter()
-    backgroundTaskQueue.async(group: backgroundTaskGroup) { [self] in
+    backgroundTaskQueue.async(group: backgroundTaskGroup) { [weak self] in
+      guard let self = self else { return }
       do {
         try FileManager.default.createDirectory(
           at: directory, withIntermediateDirectories: true)
       } catch {
         print("Failed to create a snapshot storage: \(error)")
-        backgroundTaskGroup.leave()
-        return
-      }
-
-      guard let legacyDirectory = legacyDirectory,
-        FileManager.default.fileExists(atPath: legacyDirectory.path, isDirectory: nil)
-      else {
-        backgroundTaskGroup.leave()
-        return
-      }
-
-      guard
-        let enumerator = FileManager.default.enumerator(
-          at: legacyDirectory, includingPropertiesForKeys: nil)
-      else {
-        backgroundTaskGroup.leave()
-        return
-      }
-      for case let legacyUrl as URL in enumerator {
-        do {
-          let newUrl = directory.appendingPathComponent(legacyUrl.lastPathComponent)
-          try FileManager.default.moveItem(
-            at: legacyUrl, to: newUrl)
-        } catch {
-          print("Failed to move images from a legacy path to a new path: \(error)")
-        }
-      }
-
-      // Delete the `legacyDirectory` once the existing files have been moved.
-      do {
-        try FileManager.default.removeItem(at: legacyDirectory)
-      } catch {
-        print("Failed to delete the legacy directory: \(error)")
       }
 
       backgroundTaskGroup.leave()
@@ -307,7 +264,8 @@ let kJPEGImageQuality: CGFloat = 1.0
   // after `kGreySnapshotOptimization` feature is enabled by default.
   private func deleteAllGreyImages(directory: URL) {
     backgroundTaskGroup.enter()
-    backgroundTaskQueue.async(group: backgroundTaskGroup) { [self] in
+    backgroundTaskQueue.async(group: backgroundTaskGroup) { [weak self] in
+      guard let self = self else { return }
       guard FileManager.default.fileExists(atPath: storageDirectory.path) else {
         backgroundTaskGroup.leave()
         return
@@ -330,31 +288,6 @@ let kJPEGImageQuality: CGFloat = 1.0
         } catch {
           print("Failed to delete all grey images: \(error)")
         }
-      }
-      backgroundTaskGroup.leave()
-    }
-  }
-
-  // Renames the legacy path to the new path with `newID` and `imageType`.
-  private func renameSnapshot(oldID: String, newID: SnapshotIDWrapper, imageType: ImageType) {
-    guard let oldImagePath = legacyImagePath(snapshotID: oldID, imageType: imageType) else {
-      return
-    }
-    guard let newImagePath = imagePath(snapshotID: newID, imageType: imageType) else {
-      return
-    }
-
-    backgroundTaskGroup.enter()
-    backgroundTaskQueue.async(group: backgroundTaskGroup) { [self] in
-      do {
-        // Rename a file only when it's necessary.
-        if FileManager.default.fileExists(atPath: oldImagePath.path)
-          && !FileManager.default.fileExists(atPath: newImagePath.path)
-        {
-          try FileManager.default.moveItem(at: oldImagePath, to: newImagePath)
-        }
-      } catch {
-        print("Failed to rename a file: \(error)")
       }
       backgroundTaskGroup.leave()
     }

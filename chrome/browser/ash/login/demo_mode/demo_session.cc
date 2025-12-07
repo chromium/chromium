@@ -22,11 +22,11 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/hash/md5.h"
 #include "base/i18n/string_compare.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/syslog_logging.h"
@@ -50,16 +50,17 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/system_tray_client_impl.h"
+#include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
-#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/account_manager_core/pref_names.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -123,8 +124,6 @@ std::vector<std::string> GetIgnorePinPolicyApps() {
 }
 
 // Copies photos into the Downloads directory.
-// TODO(michaelpg): Test this behavior (requires overriding the Downloads
-// directory).
 void InstallDemoMedia(const base::FilePath& offline_resources_path,
                       const base::FilePath& dest_path) {
   if (offline_resources_path.empty()) {
@@ -133,8 +132,10 @@ void InstallDemoMedia(const base::FilePath& offline_resources_path,
   }
 
   base::FilePath src_path = offline_resources_path.Append(kPhotosPath);
-  if (!base::CopyDirectory(src_path, dest_path, false /* recursive */))
+
+  if (!base::CopyDirectory(src_path, dest_path, false /* recursive */)) {
     LOG(ERROR) << "Failed to install demo mode media.";
+  }
 }
 
 std::string GetSwitchOrDefault(std::string_view switch_string,
@@ -284,9 +285,6 @@ void TriggerLaunchDemoModeApp() {
 
 }  // namespace
 
-// static
-constexpr char DemoSession::kSupportedCountries[][3];
-
 constexpr char DemoSession::kCountryNotSelectedId[];
 
 // static
@@ -300,17 +298,7 @@ std::string DemoSession::DemoConfigToString(
     case DemoSession::DemoModeConfig::kOfflineDeprecated:
       return "offlineDeprecated";
   }
-  NOTREACHED_IN_MIGRATION() << "Unknown demo mode configuration";
-  return std::string();
-}
-
-// static
-bool DemoSession::IsDeviceInDemoMode() {
-  if (!InstallAttributes::IsInitialized()) {
-    return false;
-  }
-
-  return InstallAttributes::Get()->IsDeviceInDemoMode();
+  NOTREACHED() << "Unknown demo mode configuration";
 }
 
 // static
@@ -343,7 +331,7 @@ DemoSession::DemoModeConfig DemoSession::GetDemoConfig() {
     demo_config = static_cast<DemoModeConfig>(demo_config_pref);
   }
 
-  bool is_demo_mode = IsDeviceInDemoMode();
+  bool is_demo_mode = ash::demo_mode::IsDeviceInDemoMode();
   if (is_demo_mode && demo_config == DemoModeConfig::kNone) {
     LOG(WARNING) << "Device mode is demo, but no demo mode config set";
   } else if (!is_demo_mode && demo_config != DemoModeConfig::kNone) {
@@ -365,8 +353,9 @@ void DemoSession::ResetDemoConfigForTesting() {
 
 // static
 DemoSession* DemoSession::StartIfInDemoMode() {
-  if (!IsDeviceInDemoMode())
+  if (!ash::demo_mode::IsDeviceInDemoMode()) {
     return nullptr;
+  }
 
   if (g_demo_session && g_demo_session->started())
     return g_demo_session;
@@ -401,8 +390,9 @@ std::string DemoSession::GetScreensaverAppId() {
 
 // static
 bool DemoSession::ShouldShowExtensionInAppLauncher(const std::string& app_id) {
-  if (!IsDeviceInDemoMode())
+  if (!ash::demo_mode::IsDeviceInDemoMode()) {
     return true;
+  }
   return app_id != GetScreensaverAppId() &&
          app_id != extensions::kWebStoreAppId;
 }
@@ -425,7 +415,7 @@ static std::string GetDefaultRegion() {
 
 // static
 bool DemoSession::ShouldShowWebApp(const std::string& app_id) {
-  if (IsDeviceInDemoMode() &&
+  if (ash::demo_mode::IsDeviceInDemoMode() &&
       content::GetNetworkConnectionTracker()->IsOffline()) {
     GURL app_id_as_url(app_id);
     // When offline, return false for web apps that are HTTP(S), return true
@@ -502,16 +492,6 @@ base::Value::List DemoSession::GetCountryList() {
   return country_list;
 }
 
-// static
-void DemoSession::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterStringPref(prefs::kDemoModeDefaultLocale, std::string());
-  registry->RegisterStringPref(prefs::kDemoModeCountry, kSupportedCountries[0]);
-  registry->RegisterStringPref(prefs::kDemoModeRetailerId, std::string());
-  registry->RegisterStringPref(prefs::kDemoModeStoreId, std::string());
-  registry->RegisterStringPref(prefs::kDemoModeAppVersion, std::string());
-  registry->RegisterStringPref(prefs::kDemoModeResourcesVersion, std::string());
-}
-
 void DemoSession::EnsureResourcesLoaded(base::OnceClosure load_callback) {
   if (!components_)
     components_ = std::make_unique<DemoComponents>(GetDemoConfig());
@@ -521,11 +501,6 @@ void DemoSession::EnsureResourcesLoaded(base::OnceClosure load_callback) {
 // static
 void DemoSession::RecordAppLaunchSource(AppLaunchSource source) {
   UMA_HISTOGRAM_ENUMERATION("DemoMode.AppLaunchSource", source);
-}
-
-void DemoSession::SetExtensionsExternalLoader(
-    scoped_refptr<DemoExtensionsExternalLoader> extensions_external_loader) {
-  extensions_external_loader_ = extensions_external_loader;
 }
 
 void DemoSession::OverrideIgnorePinPolicyAppsForTesting(
@@ -553,7 +528,10 @@ void DemoSession::ActiveUserChanged(user_manager::User* active_user) {
 DemoSession::DemoSession()
     : ignore_pin_policy_offline_apps_(GetIgnorePinPolicyApps()),
       remove_splash_screen_fallback_timer_(
-          std::make_unique<base::OneShotTimer>()) {
+          std::make_unique<base::OneShotTimer>()),
+      blocking_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
   // SessionManager may be unset in unit tests.
   if (session_manager::SessionManager::Get()) {
     session_manager_observation_.Observe(
@@ -564,6 +542,9 @@ DemoSession::DemoSession()
 }
 
 DemoSession::~DemoSession() {
+  // Reset observation before destroying `idle_handler_`.
+  idle_handler_observation_.Reset();
+
   user_manager::UserManager::Get()->RemoveSessionStateObserver(this);
 }
 
@@ -571,7 +552,7 @@ std::vector<CountryCodeAndFullNamePair>
 DemoSession::GetSortedCountryCodeAndNamePairList() {
   const std::string current_locale = g_browser_process->GetApplicationLocale();
   std::vector<CountryCodeAndFullNamePair> result;
-  for (const std::string country : kSupportedCountries) {
+  for (const std::string country : demo_mode::kSupportedCountries) {
     result.push_back({country, l10n_util::GetDisplayNameForCountry(
                                    country, current_locale)});
   }
@@ -581,8 +562,8 @@ DemoSession::GetSortedCountryCodeAndNamePairList() {
   DCHECK(U_SUCCESS(error_code));
 
   std::sort(result.begin(), result.end(),
-            [&collator](CountryCodeAndFullNamePair pair1,
-                        CountryCodeAndFullNamePair pair2) {
+            [&collator](const CountryCodeAndFullNamePair& pair1,
+                        const CountryCodeAndFullNamePair& pair2) {
               return base::i18n::CompareString16WithCollator(
                          *collator, pair1.country_name, pair2.country_name) < 0;
             });
@@ -596,10 +577,10 @@ void DemoSession::InstallDemoResources() {
   DCHECK(profile);
   const base::FilePath downloads =
       file_manager::util::GetDownloadsFolderForProfile(profile);
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
-      base::BindOnce(&InstallDemoMedia, components_->resources_component_path(),
-                     downloads));
+  auto install_media = base::BindOnce(
+      &InstallDemoMedia, components_->resources_component_path(), downloads);
+
+  blocking_task_runner_->PostTask(FROM_HERE, std::move(install_media));
 }
 
 void DemoSession::SetKeyboardBrightnessToOneHundredPercentFromCurrentLevel(
@@ -619,35 +600,6 @@ void DemoSession::SetKeyboardBrightnessToOneHundredPercentFromCurrentLevel(
       for (int i = 0; i < timesToIncreaseKeyboardBrightness->second; i++) {
         chromeos::PowerManagerClient::Get()->IncreaseKeyboardBrightness();
       }
-    }
-  }
-}
-
-void DemoSession::RegisterDemoModeAAExperiment() {
-  if (demo_mode::Country() == std::string("US")) {
-    // The hashing salt for the AA experiment.
-    std::string demo_mode_aa_experiment_hashing_salt = "fae448044d545f9c";
-
-    std::vector<std::string> best_buy_retailer_names = {"bby", "bestbuy",
-                                                        "bbt"};
-    std::vector<std::string>::iterator it;
-
-    it = std::find(best_buy_retailer_names.begin(),
-                   best_buy_retailer_names.end(), demo_mode::RetailerName());
-    if (it != best_buy_retailer_names.end()) {
-      std::string store_number_and_hash_salt =
-          demo_mode::StoreNumber() + demo_mode_aa_experiment_hashing_salt;
-      std::string md5_store_number =
-          base::MD5String(store_number_and_hash_salt);
-
-      char& last_char = md5_store_number.back();
-      int md5_last_char_int =
-          (last_char >= 'a') ? (last_char - 'a' + 10) : (last_char - '0');
-
-      ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-          "DemoModeAAExperimentBasedOnStoreId",
-          md5_last_char_int % 2 ? "Experiment" : "Control",
-          variations::SyntheticTrialAnnotationMode::kCurrentLog);
     }
   }
 }
@@ -672,6 +624,13 @@ void DemoSession::OnSessionStateChanged() {
                      << current_locale_iso_code;
       }
 
+      if (features::IsDemoModeSecondaryGoogleAccountSigninAllowedFalse()) {
+        // Prevent users from signing in with their own account.
+        ProfileManager::GetActiveUserProfile()->GetPrefs()->SetBoolean(
+            account_manager::prefs::kSecondaryGoogleAccountSigninAllowed,
+            false);
+      }
+
       RestoreDefaultLocaleForNextSession();
 
       if (chromeos::PowerManagerClient::Get()) {
@@ -686,6 +645,11 @@ void DemoSession::OnSessionStateChanged() {
       if (!components_) {
         components_ = std::make_unique<DemoComponents>(GetDemoConfig());
       }
+
+      // Create the window closer.
+      window_closer_ = std::make_unique<DemoModeWindowCloser>(
+          base::BindRepeating(&TriggerLaunchDemoModeApp));
+
       if (features::IsGrowthCampaignsInDemoModeEnabled()) {
         auto* campaigns_manager = growth::CampaignsManager::Get();
         CHECK(campaigns_manager);
@@ -710,22 +674,9 @@ void DemoSession::OnSessionStateChanged() {
       EnsureResourcesLoaded(base::BindOnce(&DemoSession::InstallDemoResources,
                                            weak_ptr_factory_.GetWeakPtr()));
 
-      // Register the device with in the A/A experiment
-      RegisterDemoModeAAExperiment();
-
-      // Create the window closer.
-      // TODO(b/302583338) Remove this when the issue with GMSCore gets fixed.
-      if (ash::features::IsDemoModeGMSCoreWindowCloserEnabled()) {
-        window_closer_ = std::make_unique<DemoModeWindowCloser>();
-      }
-
-      // TODO(b/292454543): Remove this after issue is resolved.
-      if (InstallAttributes::IsInitialized()) {
-        LOG(WARNING) << "Demo Mode DeviceMode: "
-                     << InstallAttributes::Get()->GetMode();
-        LOG(WARNING) << "Demo Mode domain: "
-                     << InstallAttributes::Get()->GetDomain();
-      }
+      // When the session successfully starts, we record the action
+      // DemoMode.DemoSessionStarts.
+      base::RecordAction(base::UserMetricsAction("DemoMode.DemoSessionStarts"));
 
       break;
     default:
@@ -741,6 +692,19 @@ base::FilePath DemoSession::GetDemoAppComponentPath() {
   return base::FilePath(
       GetSwitchOrDefault(switches::kDemoModeSwaContentDirectory,
                          components_->default_app_component_path().value()));
+}
+
+DemoModeIdleHandler* DemoSession::GetIdleHandlerForTest() const {
+  return idle_handler_.get();
+}
+
+scoped_refptr<base::SequencedTaskRunner>
+DemoSession::GetBlockingTaskRunnerForTest() {
+  return blocking_task_runner_;
+}
+
+void DemoSession::OnLocalFilesCleanupCompleted() {
+  InstallDemoResources();
 }
 
 void DemoSession::OnDemoAppComponentLoaded() {
@@ -759,6 +723,13 @@ void DemoSession::OnDemoAppComponentLoaded() {
   }
 
   TriggerLaunchDemoModeApp();
+
+  if (demo_mode::IsDemoAccountSignInEnabled()) {
+    CHECK(window_closer_);
+    idle_handler_ = std::make_unique<DemoModeIdleHandler>(
+        window_closer_.get(), blocking_task_runner_);
+    idle_handler_observation_.Observe(idle_handler_.get());
+  }
 }
 
 base::FilePath GetSplashScreenImagePath(base::FilePath localized_image_path,

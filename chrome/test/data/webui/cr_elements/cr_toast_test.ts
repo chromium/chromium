@@ -8,6 +8,7 @@ import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
 suite('cr-toast', function() {
@@ -111,4 +112,51 @@ suite('cr-toast', function() {
     mockTimer.tick(1);
     assertFalse(toast.open);
   });
+
+  test('slotted items visibility with show/hide', async function() {
+    const slottedElement = document.createElement('p');
+    slottedElement.textContent = 'Test';
+    toast.appendChild(slottedElement);
+
+    assertFalse(isVisible(slottedElement));
+
+    await toast.show();
+    assertTrue(isVisible(slottedElement));
+
+    await toast.hide();
+    assertFalse(isVisible(slottedElement));
+  });
+
+  test(
+      'stop and restart auto-hide depending when toast focus changes',
+      async function() {
+        const duration = 100;
+        toast.duration = duration;
+
+        const button1 = document.createElement('button');
+        const button2 = document.createElement('button');
+        button1.textContent = 'Test 1';
+        button2.textContent = 'Test 2';
+        toast.appendChild(button1);
+        toast.appendChild(button2);
+
+        await toast.show();
+        button1.focus();
+        assertTrue(toast.open);
+
+        mockTimer.tick(duration);
+        assertTrue(toast.open);
+
+        button2.focus();
+        assertTrue(toast.open);
+
+        mockTimer.tick(duration);
+        assertTrue(toast.open);
+
+        button2.blur();
+        assertTrue(toast.open);
+
+        mockTimer.tick(duration);
+        assertFalse(toast.open);
+      });
 });

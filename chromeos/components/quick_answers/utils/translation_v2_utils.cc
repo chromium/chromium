@@ -4,7 +4,9 @@
 
 #include "chromeos/components/quick_answers/utils/translation_v2_utils.h"
 
-#include <set>
+#include <algorithm>
+#include <array>
+#include <string_view>
 
 #include "ui/base/l10n/l10n_util.h"
 
@@ -26,7 +28,7 @@ namespace {
 //
 // TODO(b/277757989): Add an optional automated test for translation v2 language
 // list
-const char* const kSupportedLocales[] = {
+constexpr auto kSupportedLocales = std::to_array<std::string_view>({
     "af", "ak",       "am",  "ar",    "as",    "ay",  "az", "be", "bg", "bho",
     "bm", "bn",       "bs",  "ca",    "ceb",   "ckb", "co", "cs", "cy", "da",
     "de", "doi",      "dv",  "ee",    "el",    "en",  "eo", "es", "et", "eu",
@@ -41,18 +43,15 @@ const char* const kSupportedLocales[] = {
     "sr", "st",       "su",  "sv",    "sw",    "ta",  "te", "tg", "th", "ti",
     "tk", "tl",       "tr",  "ts",    "tt",    "ug",  "uk", "ur", "uz", "vi",
     "xh", "yi",       "yo",  "zh-CN", "zh-TW", "zh",  "zu",
-};
+});
 
 }  // namespace
 
 // static
-bool TranslationV2Utils::IsSupported(const std::string& language) {
-  std::set<std::string> languages;
-  for (const std::string& locale : kSupportedLocales) {
-    languages.insert(l10n_util::GetLanguage(locale));
-  }
-
-  return languages.count(language) != 0;
+bool TranslationV2Utils::IsSupported(std::string_view language) {
+  return std::ranges::any_of(kSupportedLocales, [&](std::string_view locale) {
+    return language == l10n_util::GetLanguage(locale);
+  });
 }
 
 }  // namespace quick_answers

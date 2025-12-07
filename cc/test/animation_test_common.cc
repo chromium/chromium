@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/ptr_util.h"
 #include "cc/animation/animation.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_id_provider.h"
@@ -204,7 +203,7 @@ float FakeFloatAnimationCurve::GetTransformedValue(
 }
 
 std::unique_ptr<gfx::AnimationCurve> FakeFloatAnimationCurve::Clone() const {
-  return base::WrapUnique(new FakeFloatAnimationCurve);
+  return std::make_unique<FakeFloatAnimationCurve>();
 }
 
 FakeTransformTransition::FakeTransformTransition(double duration)
@@ -236,7 +235,7 @@ bool FakeTransformTransition::MaximumScale(float* max_scale) const {
 }
 
 std::unique_ptr<gfx::AnimationCurve> FakeTransformTransition::Clone() const {
-  return base::WrapUnique(new FakeTransformTransition(*this));
+  return std::make_unique<FakeTransformTransition>(*this);
 }
 
 FakeFloatTransition::FakeFloatTransition(double duration, float from, float to)
@@ -260,7 +259,7 @@ float FakeFloatTransition::GetTransformedValue(
 }
 
 std::unique_ptr<gfx::AnimationCurve> FakeFloatTransition::Clone() const {
-  return base::WrapUnique(new FakeFloatTransition(*this));
+  return std::make_unique<FakeFloatTransition>(*this);
 }
 
 int AddScrollOffsetAnimationToAnimation(Animation* animation,

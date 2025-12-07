@@ -18,7 +18,7 @@ class CONTENT_EXPORT CommonSourceInfo {
   CommonSourceInfo(attribution_reporting::SuitableOrigin source_origin,
                    attribution_reporting::SuitableOrigin reporting_origin,
                    attribution_reporting::mojom::SourceType,
-                   bool debug_cookie_set = false);
+                   bool cookie_based_debug_allowed = false);
 
   ~CommonSourceInfo();
 
@@ -42,9 +42,13 @@ class CONTENT_EXPORT CommonSourceInfo {
 
   const net::SchemefulSite& source_site() const { return source_site_; }
 
-  bool debug_cookie_set() const { return debug_cookie_set_; }
+  bool cookie_based_debug_allowed() const {
+    return cookie_based_debug_allowed_;
+  }
 
-  void set_debug_cookie_set(bool value) { debug_cookie_set_ = value; }
+  void set_cookie_based_debug_allowed(bool value) {
+    cookie_based_debug_allowed_ = value;
+  }
 
   friend bool operator==(const CommonSourceInfo&,
                          const CommonSourceInfo&) = default;
@@ -54,7 +58,7 @@ class CONTENT_EXPORT CommonSourceInfo {
   attribution_reporting::SuitableOrigin source_origin_;
   attribution_reporting::SuitableOrigin reporting_origin_;
   attribution_reporting::mojom::SourceType source_type_;
-  bool debug_cookie_set_;
+  bool cookie_based_debug_allowed_;
 };
 
 }  // namespace content

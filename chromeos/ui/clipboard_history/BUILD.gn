@@ -25,6 +25,7 @@ component("clipboard_history") {
     "//ui/base",
     "//ui/base:constants",
     "//ui/gfx",
+    "//ui/menus",
     "//ui/strings:ui_strings_grit",
   ]
 }

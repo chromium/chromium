@@ -11,6 +11,7 @@
 
 #include "base/check_op.h"
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "mojo/core/ports/name.h"
 #include "mojo/core/ports/user_message.h"
@@ -161,8 +162,8 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) UserMessageEvent : public Event {
   void set_sequence_num(uint64_t sequence_num) { sequence_num_ = sequence_num; }
 
   size_t num_ports() const { return ports_.size(); }
-  PortDescriptor* port_descriptors() { return port_descriptors_.data(); }
-  PortName* ports() { return ports_.data(); }
+  base::span<PortDescriptor> port_descriptors() { return port_descriptors_; }
+  base::span<PortName> ports() { return ports_; }
 
   static ScopedEvent Deserialize(const PortName& port_name,
                                  const PortName& from_port,

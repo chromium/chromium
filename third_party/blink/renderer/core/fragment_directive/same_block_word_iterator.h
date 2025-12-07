@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/platform/text/text_boundaries.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -45,7 +46,7 @@ class CORE_EXPORT ForwardDirection {
 
   // Returns the position of the next word.
   static int FindNextWordPos(const String& text, int position) {
-    return FindNextWordForward(text.Characters16(), text.length(), position);
+    return FindNextWordForward(text.Span16(), position);
   }
 
   // Returns substring of the given text for the given positions.
@@ -62,7 +63,9 @@ class CORE_EXPORT ForwardDirection {
   }
 
   // Returns concatenated string of the given strings.
-  static String Concat(const String& start, String end) { return start + end; }
+  static String Concat(const String& start, String end) {
+    return StrCat({start, end});
+  }
 };
 
 class CORE_EXPORT BackwardDirection {
@@ -93,7 +96,7 @@ class CORE_EXPORT BackwardDirection {
 
   // Returns the position of the previous word.
   static int FindNextWordPos(String text, int position) {
-    return FindNextWordBackward(text.Characters16(), text.length(), position);
+    return FindNextWordBackward(text.Span16(), position);
   }
 
   // Returns substring of the given text for the given positions.
@@ -111,7 +114,7 @@ class CORE_EXPORT BackwardDirection {
 
   // Returns concatenated string of the given strings.
   static String Concat(const String& start, const String& end) {
-    return end + start;
+    return StrCat({end, start});
   }
 };
 

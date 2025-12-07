@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 
 #include "base/process/memory.h"
@@ -23,6 +18,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_skia.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/skia/include/core/SkImage.h"
+#include "ui/gfx/skia_span_util.h"
 
 namespace blink {
 
@@ -77,7 +73,7 @@ UnacceleratedStaticBitmapImage::~UnacceleratedStaticBitmapImage() {
   }
 }
 
-bool UnacceleratedStaticBitmapImage::CurrentFrameKnownToBeOpaque() {
+bool UnacceleratedStaticBitmapImage::IsOpaque() {
   return paint_image_.IsOpaque();
 }
 
@@ -110,40 +106,10 @@ void UnacceleratedStaticBitmapImage::Transfer() {
       ThreadScheduler::Current()->CleanupTaskRunner();
 }
 
-scoped_refptr<StaticBitmapImage>
-UnacceleratedStaticBitmapImage::ConvertToColorSpace(
-    sk_sp<SkColorSpace> color_space,
-    SkColorType color_type) {
-  DCHECK(color_space);
-
-  sk_sp<SkImage> skia_image = PaintImageForCurrentFrame().GetSwSkImage();
-  // If we don't need to change the color type, use SkImage::makeColorSpace()
-  if (skia_image->colorType() == color_type) {
-    skia_image = skia_image->makeColorSpace(
-        static_cast<GrDirectContext*>(nullptr), color_space);
-  } else {
-    skia_image = skia_image->makeColorTypeAndColorSpace(
-        static_cast<GrDirectContext*>(nullptr), color_type, color_space);
-  }
-  if (!skia_image) [[unlikely]] {
-    // Null value indicates that skia failed to allocate the destination
-    // bitmap.
-    base::TerminateBecauseOutOfMemory(
-        skia_image->imageInfo().makeColorType(color_type).computeMinByteSize());
-  }
-  return UnacceleratedStaticBitmapImage::Create(skia_image, orientation_);
-}
-
 bool UnacceleratedStaticBitmapImage::CopyToResourceProvider(
-    CanvasResourceProvider* resource_provider) {
-  return CopyToResourceProvider(resource_provider, Rect());
-}
-
-bool UnacceleratedStaticBitmapImage::CopyToResourceProvider(
-    CanvasResourceProvider* resource_provider,
+    CanvasResourceProviderSharedImage* resource_provider,
     const gfx::Rect& copy_rect) {
   DCHECK(resource_provider);
-  DCHECK(IsOriginTopLeft());
 
   // Extract content to SkPixmap. Pixels are CPU backed resource and this
   // should be freed.
@@ -155,7 +121,7 @@ bool UnacceleratedStaticBitmapImage::CopyToResourceProvider(
   if (!image->peekPixels(&pixmap))
     return false;
 
-  const void* pixels = pixmap.addr();
+  base::span<const uint8_t> pixels = gfx::SkPixmapToSpan(pixmap);
   const size_t source_row_bytes = pixmap.rowBytes();
   const size_t source_height = pixmap.height();
 
@@ -165,31 +131,25 @@ bool UnacceleratedStaticBitmapImage::CopyToResourceProvider(
       copy_rect_info.bytesPerPixel() * static_cast<size_t>(copy_rect.width());
   const size_t dest_height = static_cast<size_t>(copy_rect.height());
 
-  // Source image has top left origin but destination resource provider doesn't.
-  // Usually it means resource provider has bottom left origin. Apply flip op
-  // on copy result to fix it.
-  bool dest_flipped = !resource_provider->IsOriginTopLeft();
-
   std::vector<uint8_t> dest_pixels;
-  if (dest_flipped || source_row_bytes != dest_row_bytes ||
-      source_height != dest_height) {
+  if (source_row_bytes != dest_row_bytes || source_height != dest_height) {
     dest_pixels.resize(dest_row_bytes * dest_height);
 
     const size_t x_offset_bytes =
         copy_rect_info.bytesPerPixel() * static_cast<size_t>(copy_rect.x());
-    const size_t y_offset = copy_rect.y();
+    size_t src_offset = copy_rect.y() * source_row_bytes + x_offset_bytes;
 
-    for (size_t dst_y = 0; dst_y < dest_height; ++dst_y) {
-      size_t src_y = dest_flipped ? dest_height - dst_y - 1 : dst_y;
-      memcpy(dest_pixels.data() + dst_y * dest_row_bytes,
-             static_cast<const uint8_t*>(pixels) +
-                 (y_offset + src_y) * source_row_bytes + x_offset_bytes,
-             dest_row_bytes);
+    base::span<uint8_t> dest_data(dest_pixels);
+    for (size_t dst_y = 0; dst_y < dest_height;
+         ++dst_y, src_offset += source_row_bytes) {
+      dest_data.take_first(dest_row_bytes)
+          .copy_from(pixels.subspan(src_offset, dest_row_bytes));
     }
-    pixels = dest_pixels.data();
+    pixels = dest_pixels;
   }
 
-  return resource_provider->WritePixels(copy_rect_info, pixels, dest_row_bytes,
+  return resource_provider->WritePixels(copy_rect_info, pixels.data(),
+                                        dest_row_bytes,
                                         /*x=*/0, /*y=*/0);
 }
 

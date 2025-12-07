@@ -17,9 +17,6 @@
 @synthesize activityOverlayViewController = _activityOverlayViewController;
 
 - (void)start {
-  if (self.activityOverlayViewController) {
-    return;
-  }
   self.activityOverlayViewController =
       [[ActivityOverlayViewController alloc] initWithNibName:nil bundle:nil];
   [self.baseViewController
@@ -40,9 +37,6 @@
 }
 
 - (void)stop {
-  if (!self.activityOverlayViewController) {
-    return;
-  }
   [self.activityOverlayViewController willMoveToParentViewController:nil];
   [self.activityOverlayViewController.view removeFromSuperview];
   [self.activityOverlayViewController removeFromParentViewController];

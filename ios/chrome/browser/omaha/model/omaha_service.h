@@ -5,16 +5,27 @@
 #ifndef IOS_CHROME_BROWSER_OMAHA_MODEL_OMAHA_SERVICE_H_
 #define IOS_CHROME_BROWSER_OMAHA_MODEL_OMAHA_SERVICE_H_
 
+#include <Foundation/Foundation.h>
+
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
+#include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "ios/chrome/browser/upgrade/model/upgrade_recommended_details.h"
+
+class OmahaService;
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -23,6 +34,24 @@ class SimpleURLLoader;
 }  // namespace network
 
 struct UpgradeRecommendedDetails;
+
+// All `OmahaServiceObserver` events will be evaluated on the same sequence the
+// `OmahaService` is created on.
+class OmahaServiceObserver : public base::CheckedObserver {
+ public:
+  // Called when the Omaha service has successfully started.
+  virtual void OnServiceStarted(OmahaService* omaha_service) {}
+
+  // Called whenever the Omaha Service determines a change in
+  // `UpgradeRecommendedDetails`.
+  virtual void UpgradeRecommendedDetailsChanged(
+      UpgradeRecommendedDetails details) {}
+
+  // Notifies the observer that `omaha_service` has begun shutting down.
+  // Observers should remove themselves from the service via
+  // `omaha_service->RemoveObserver(...)` when this happens.
+  virtual void ServiceWillShutdown(OmahaService* omaha_service) {}
+};
 
 // This service handles the communication with the Omaha server. It also
 // handles all the scheduling necessary to contact the server regularly.
@@ -44,12 +73,28 @@ class OmahaService {
                         pending_url_loader_factory,
                     const UpgradeRecommendedCallback& callback);
 
+  // Returns `true` if the Omaha service is available and has been
+  // successfully started for this build variant. Returns `false` if
+  // the Omaha service is unavailable or not started.
+  //
+  // Clients should always check if the Omaha service was started by
+  // calling this method before invoking `CheckNow()`. Calling methods on
+  // an unstarted or unavailable Omaha service may result in undefined behavior
+  // or crashes.
+  static bool HasStarted();
+
   OmahaService(const OmahaService&) = delete;
   OmahaService& operator=(const OmahaService&) = delete;
 
   // Posts to CheckNowOnIOThread on IO thread to perform an immediate check
   // if the device is up to date.
   static void CheckNow(OneOffCallback callback);
+
+  // Adds/removes an observer to be notified of `OmahaServiceObserver` events.
+  static void AddObserver(OmahaServiceObserver* observer);
+  static void RemoveObserver(OmahaServiceObserver* observer);
+  void RegisterObserver(OmahaServiceObserver* observer);
+  void UnregisterObserver(OmahaServiceObserver* observer);
 
   // Returns debug information about the omaha service.
   static void GetDebugInformation(
@@ -83,6 +128,7 @@ class OmahaService {
   FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, PingOutOfDateUpdatesUserDefaults);
   FRIEND_TEST_ALL_PREFIXES(OmahaServiceInternalTest,
                            PingMessageTestWithProfileData);
+  FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, ResyncTimerAfterSystemSuspend);
 
   // For the singleton:
   friend class base::NoDestructor<OmahaService>;
@@ -93,19 +139,23 @@ class OmahaService {
     USAGE_PING,
   };
 
-  // Starts the service. Called on startup.
-  void StartInternal();
+  // Starts the service. Called on startup. `task_runner` ensures responses from
+  // async Omaha requests are posted on the same sequence that `OmahaService`
+  // was created on.
+  void StartInternal(
+      const scoped_refptr<base::SequencedTaskRunner> task_runner);
 
-  // Stops the service in preparation for browser shutdown.
-  void StopInternal();
+  // Resyncs the timer if device sleep has caused it to get out of
+  // sync with `next_tries_time_`.
+  void ResyncTimerIfNeeded();
 
   // URL loader completion callback.
-  void OnURLLoadComplete(std::unique_ptr<std::string> response_body);
+  void OnURLLoadComplete(std::optional<std::string> response_body);
 
   // Returns whether Omaha is enabled for this build variant.
   static bool IsEnabled();
 
-  // Raw GetInstance method. Necessary for using singletons. This method must
+  // Raw `GetInstance` method. Necessary for using singletons. This method must
   // only be called if `IsEnabled()` returns true.
   static OmahaService* GetInstance();
 
@@ -122,6 +172,9 @@ class OmahaService {
       const UpgradeRecommendedCallback& callback) {
     upgrade_recommended_callback_ = callback;
   }
+
+  // Notifies all observers of the latest `details`.
+  void NotifyObservers(UpgradeRecommendedDetails details);
 
   // Sends a ping to the Omaha server.
   void SendPing();
@@ -228,11 +281,27 @@ class OmahaService {
   // If a scheduled ping was canceled.
   bool scheduled_ping_canceled_ = false;
 
+  // An opaque handle to the applicationWillEnterForeground
+  // notification registration. Used to cancel the registration and to
+  // prevent registering multiple times.
+  id foreground_notification_registration_handle_;
+
   // Called to notify that upgrade is recommended.
   UpgradeRecommendedCallback upgrade_recommended_callback_;
 
   // Stores the callback for one off Omaha checks.
   OneOffCallback one_off_check_callback_;
+
+  // Observers to listen to `OmahaService` changes.
+  base::ObserverList<OmahaServiceObserver, true> observers_;
+
+  // Validates `OmahaServiceObserver` events are evaluated on the same sequence
+  // that `OmahaService` was created on.
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  // Ensures responses from async Omaha requests are posted on the same sequence
+  // that `OmahaService` was created on.
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
 #endif  // IOS_CHROME_BROWSER_OMAHA_MODEL_OMAHA_SERVICE_H_

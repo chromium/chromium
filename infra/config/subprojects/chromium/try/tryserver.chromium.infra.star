@@ -3,16 +3,18 @@
 # found in the LICENSE file.
 """Definitions of builders in the tryserver.chromium.infra builder group."""
 
-load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "os", "siso")
-load("//lib/html.star", "linkify")
-load("//lib/try.star", "try_")
-load("//lib/consoles.star", "consoles")
+load("@chromium-luci//builder_config.star", "builder_config")
+load("@chromium-luci//builders.star", "cpu", "os")
+load("@chromium-luci//consoles.star", "consoles")
+load("@chromium-luci//html.star", "linkify")
+load("@chromium-luci//try.star", "try_")
+load("//lib/siso.star", "siso")
+load("//lib/try_constants.star", "try_constants")
 
 try_.defaults.set(
     builder_group = "tryserver.chromium.infra",
-    pool = try_.DEFAULT_POOL,
-    execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
+    pool = try_constants.DEFAULT_POOL,
+    execution_timeout = try_constants.DEFAULT_EXECUTION_TIMEOUT,
     service_account = "chromium-cipd-try-builder@chops-service-accounts.iam.gserviceaccount.com",
 )
 
@@ -26,6 +28,7 @@ try_.builder(
     builderless = False,
     cores = 8,
     os = os.LINUX_DEFAULT,
+    execution_timeout = 6 * time.hour,
     properties = {
         "$build/chromium_3pp": {
             "platform": "linux-amd64",
@@ -35,7 +38,6 @@ try_.builder(
                 "cmd": [
                     "{CHECKOUT}/src/third_party/android_deps/fetch_all.py",
                     "-v",
-                    "--ignore-vulnerabilities",
                 ],
             }],
             "gclient_config": "chromium",
@@ -70,6 +72,23 @@ try_.builder(
 )
 
 try_.builder(
+    name = "3pp-mac-arm64-packager",
+    description_html = "chromium 3pp packager on Mac ARM64 platform.",
+    executable = "recipe:chromium_3pp",
+    builderless = True,
+    os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
+    contact_team_email = "clank-engprod@google.com",
+    properties = {
+        "$build/chromium_3pp": {
+            "platform": "mac-arm64",
+            "package_prefix": "chromium_3pp",
+            "gclient_config": "chromium",
+        },
+    },
+)
+
+try_.builder(
     name = "3pp-windows-amd64-packager",
     description_html = "3PP Packager for Windows",
     executable = "recipe:chromium_3pp",
@@ -96,7 +115,7 @@ try_.builder(
     os = os.LINUX_DEFAULT,
     contact_team_email = "chrome-browser-infra-team@google.com",
     execution_timeout = 36 * time.hour,  # We expect it can take a while.
-    service_account = try_.DEFAULT_SERVICE_ACCOUNT,
+    service_account = try_constants.DEFAULT_SERVICE_ACCOUNT,
     tryjob = try_.job(
         custom_cq_run_modes = [try_.MEGA_CQ_DRY_RUN_NAME, try_.MEGA_CQ_FULL_RUN_NAME],
     ),
@@ -114,6 +133,9 @@ try_.builder(
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
+            apply_configs = [
+                "use_clang_coverage",
+            ],
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium",
@@ -150,10 +172,12 @@ try_.builder(
             },
         ],
     },
-    service_account = try_.DEFAULT_SERVICE_ACCOUNT,
+    service_account = try_constants.DEFAULT_SERVICE_ACCOUNT,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
     tryjob = try_.job(
         location_filters = [
+            # Run on depot_tools for testing telemetry
+            "third_party/depot_tools/.+",
             "tools/utr/.+",
             "tools/mb/.+",
         ],
@@ -172,6 +196,9 @@ try_.builder(
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
+            apply_configs = [
+                "use_clang_coverage",
+            ],
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium",
@@ -208,12 +235,61 @@ try_.builder(
             },
         ],
     },
-    service_account = try_.DEFAULT_SERVICE_ACCOUNT,
+    service_account = try_constants.DEFAULT_SERVICE_ACCOUNT,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
     tryjob = try_.job(
         location_filters = [
+            # Run on depot_tools for testing telemetry
+            "third_party/depot_tools/.+",
             "tools/utr/.+",
             "tools/mb/.+",
         ],
     ),
+)
+
+try_.builder(
+    name = "mac-utr-tester",
+    description_html = "Tests the {} against cli and recipe changes.".format(
+        linkify(
+            "https://chromium.googlesource.com/chromium/src/+/HEAD/tools/utr/README.md",
+            "Universal Test Runner",
+        ),
+    ),
+    executable = "recipe:chromium/universal_test_runner_test",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "use_clang_coverage",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+    ),
+    builderless = True,
+    cores = None,
+    os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
+    contact_team_email = "chrome-dev-infra-team@google.com",
+    execution_timeout = 2 * time.hour,
+    properties = {
+        "builder_suites": [
+            {
+                "bucket": "try",
+                "builder_name": "mac-rel",
+                "test_names": [
+                    "url_unittests",
+                ],
+            },
+        ],
+    },
+    service_account = try_constants.DEFAULT_SERVICE_ACCOUNT,
+    siso_project = siso.project.DEFAULT_UNTRUSTED,
 )

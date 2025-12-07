@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/error_page/common/error.h"
@@ -19,7 +18,6 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/renderer/net/available_offline_content_helper.h"
 #include "chrome/renderer/net/page_auto_fetcher_helper_android.h"
 #endif
 
@@ -104,11 +102,6 @@ class NetErrorHelperCore {
     // Inform that download button is being shown in the error page.
     virtual void SetIsShowingDownloadButton(bool show) = 0;
 
-    // Signals that offline content is available.
-    virtual void OfflineContentAvailable(
-        bool list_visible_by_prefs,
-        const std::string& offline_content_json) = 0;
-
     // Returns the render frame associated with NetErrorHelper.
     virtual content::RenderFrame* GetRenderFrame() = 0;
 
@@ -120,7 +113,7 @@ class NetErrorHelperCore {
 #endif
 
    protected:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
   };
 
   explicit NetErrorHelperCore(Delegate* delegate);
@@ -140,8 +133,6 @@ class NetErrorHelperCore {
   // These methods handle tracking the actual state of the page.
   void OnCommitLoad(FrameType frame_type, const GURL& url);
   void OnFinishLoad(FrameType frame_type);
-
-  void CancelPendingAutoReload();
 
   // Notifies |this| that network error information from the browser process
   // has been received.
@@ -166,18 +157,8 @@ class NetErrorHelperCore {
   // care of in JavaScript.
   void ExecuteButtonPress(Button button);
 
-  // Opens a suggested offline item.
-  void LaunchOfflineItem(const std::string& id, const std::string& name_space);
-
-  // Shows all available offline content.
-  void LaunchDownloadsPage();
-
   void CancelSavePage();
   void SavePageForLater();
-
-  // Signals the user changed the visibility of the offline content list in the
-  // dino page.
-  void ListVisibilityChanged(bool is_visible);
 
  private:
   struct ErrorPageInfo;
@@ -227,7 +208,6 @@ class NetErrorHelperCore {
   Button navigation_from_button_;
 
 #if BUILDFLAG(IS_ANDROID)
-  AvailableOfflineContentHelper available_content_helper_;
   std::unique_ptr<PageAutoFetcherHelper> page_auto_fetcher_helper_;
 #endif
 };

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/debug/debug_colors.h"
 
 #include "base/check_op.h"
@@ -78,27 +73,19 @@ int DebugColors::HighResTileBorderWidth(float device_scale_factor) {
   return Scale(1, device_scale_factor);
 }
 
-// Low-res tile borders are purple.
-SkColor4f DebugColors::LowResTileBorderColor() {
-  return {212.0f / 255.0f, 83.0f / 255.0f, 0.75f, 100.0f / 255.0f};
-}
-int DebugColors::LowResTileBorderWidth(float device_scale_factor) {
-  return Scale(2, device_scale_factor);
-}
-
-// Other high-resolution tile borders are yellow.
-SkColor4f DebugColors::ExtraHighResTileBorderColor() {
+// Above high-res tile borders are yellow.
+SkColor4f DebugColors::AboveHighResTileBorderColor() {
   return {239.0f / 255.0f, 231.0f / 255.0f, 20.0f / 255.0f, 100.0f / 255.0f};
 }
-int DebugColors::ExtraHighResTileBorderWidth(float device_scale_factor) {
+int DebugColors::AboveHighResTileBorderWidth(float device_scale_factor) {
   return Scale(2, device_scale_factor);
 }
 
-// Other low-resolution tile borders are green.
-SkColor4f DebugColors::ExtraLowResTileBorderColor() {
+// Below high-res tile borders are green.
+SkColor4f DebugColors::BelowHighResTileBorderColor() {
   return {93.0f / 255.0f, 186.0f / 255.0f, 18.0f / 255.0f, 100.0f / 255.0f};
 }
-int DebugColors::ExtraLowResTileBorderWidth(float device_scale_factor) {
+int DebugColors::BelowHighResTileBorderWidth(float device_scale_factor) {
   return Scale(2, device_scale_factor);
 }
 
@@ -142,12 +129,13 @@ DebugColors::TintCompositedContentColorTransformMatrix() {
   // new_G =     0.7 G
   // new_B =             0.7 B
   // clang-format off
-  static constexpr float kColorTransform[] = {1.0f, 0.0f, 0.0f, 0.0f,
+  static constexpr auto kColorTransform = std::to_array<float>({
+                                              1.0f, 0.0f, 0.0f, 0.0f,
                                               0.3f, 0.7f, 0.0f, 0.0f,
                                               0.3f, 0.0f, 0.7f, 0.0f,
-                                              0.0f, 0.0f, 0.0f, 1.0f};
+                                              0.0f, 0.0f, 0.0f, 1.0f});
   // clang-format on
-  return base::span<const float>(kColorTransform, sizeof(kColorTransform));
+  return base::span<const float>(kColorTransform);
 }
 
 // Compressed tile borders are blue.
@@ -265,24 +253,37 @@ SkColor4f DebugColors::ScrollEventHandlerRectFillColor() {
   return {24.0f / 255.0f, 167.0f / 255.0f, 181.0f / 255.0f, 30.0f / 255.0f};
 }
 
-// Non-fast-scrollable rects in orange.
-SkColor4f DebugColors::NonFastScrollableRectBorderColor() {
+// Main-thread scroll hit-test rects in orange.
+SkColor4f DebugColors::MainThreadScrollHitTestRectBorderColor() {
   return {238.0f / 255.0f, 163.0f / 255.0f, 59.0f / 255.0f, 1.0f};
 }
-int DebugColors::NonFastScrollableRectBorderWidth() { return 2; }
-SkColor4f DebugColors::NonFastScrollableRectFillColor() {
+int DebugColors::MainThreadScrollHitTestRectBorderWidth() {
+  return 2;
+}
+SkColor4f DebugColors::MainThreadScrollHitTestRectFillColor() {
   return {238.0f / 255.0f, 163.0f / 255.0f, 59.0f / 255.0f, 30.0f / 255.0f};
 }
 
-// Main-thread scrolling reason rects in yellow-orange.
-SkColor4f DebugColors::MainThreadScrollingReasonRectBorderColor() {
+// Main-thread scroll repaint rects in yellow-orange.
+SkColor4f DebugColors::MainThreadScrollRepaintRectBorderColor() {
   return {200.0f / 255.0f, 100.0f / 255.0f, 0.0f, 1.0f};
 }
-int DebugColors::MainThreadScrollingReasonRectBorderWidth() {
+int DebugColors::MainThreadScrollRepaintRectBorderWidth() {
   return 2;
 }
-SkColor4f DebugColors::MainThreadScrollingReasonRectFillColor() {
+SkColor4f DebugColors::MainThreadScrollRepaintRectFillColor() {
   return {200.0f / 255.0f, 100.0f / 255.0f, 0.0f, 30.0f / 255.0f};
+}
+
+// Raster-inducing scroll rects in light yellow-orange.
+SkColor4f DebugColors::RasterInducingScrollRectBorderColor() {
+  return {200.0f / 255.0f, 100.0f / 255.0f, 0.0f, 0.5f};
+}
+int DebugColors::RasterInducingScrollRectBorderWidth() {
+  return 2;
+}
+SkColor4f DebugColors::RasterInducingScrollRectFillColor() {
+  return {200.0f / 255.0f, 100.0f / 255.0f, 0.0f, 15.0f / 255.0f};
 }
 
 // Animation bounds are lime-green.
@@ -342,33 +343,6 @@ SkColor4f DebugColors::MemoryDisplayTextColor() {
 // Paint time display in green (similar to paint times in the WebInspector)
 SkColor4f DebugColors::PaintTimeDisplayTextAndGraphColor() {
   return {75.0f / 255.0f, 155.0f / 255.0f, 55.0f / 255.0f, 1.0f};
-}
-
-SkColor4f DebugColors::NonLCDTextHighlightColor(
-    LCDTextDisallowedReason reason) {
-  switch (reason) {
-    case LCDTextDisallowedReason::kNone:
-    case LCDTextDisallowedReason::kNoText:
-      return SkColors::kTransparent;
-    case LCDTextDisallowedReason::kSetting:
-      return {0.5f, 1.0f, 0.0f, 96.0f / 255.0f};
-    case LCDTextDisallowedReason::kBackgroundColorNotOpaque:
-      return {0.5f, 0.5f, 0.0f, 96.0f / 255.0f};
-    case LCDTextDisallowedReason::kContentsNotOpaque:
-      return {1.0f, 0.0f, 0.0f, 96.0f / 255.0f};
-    case LCDTextDisallowedReason::kNonIntegralTranslation:
-      return {1.0f, 0.5f, 0.0f, 96.0f / 255.0f};
-    case LCDTextDisallowedReason::kNonIntegralXOffset:
-    case LCDTextDisallowedReason::kNonIntegralYOffset:
-      return {1.0f, 0.0f, 0.5f, 96.0f / 255.0f};
-    case LCDTextDisallowedReason::kWillChangeTransform:
-    case LCDTextDisallowedReason::kTransformAnimation:
-      return {0.5f, 0.0f, 1.0f, 96.0f / 255.0f};
-    case LCDTextDisallowedReason::kPixelOrColorEffect:
-      return {0.0f, 0.5f, 0.0f, 96.0f / 255.0f};
-  }
-  NOTREACHED_IN_MIGRATION();
-  return SkColors::kTransparent;
 }
 
 }  // namespace cc

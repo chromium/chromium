@@ -1,5 +1,5 @@
 // META: title=test WebNN API hardSigmoid operation
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -20,15 +20,29 @@
 // MLOperand hardSigmoid(
 //     MLOperand input, optional MLHardSigmoidOptions options = {});
 
-
-const getHardSigmoidPrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {float32: 2, float16: 2};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
-
 const hardSigmoidTests = [
+  {
+    'name': 'hardSigmoid float32 positive 0D tensor default options',
+    'graph': {
+      'inputs': {
+        'hardSigmoidInput': {
+          'data': [0.05907066911458969],
+          'descriptor': {shape: [], dataType: 'float32'}
+        }
+      },
+      'operators': [{
+        'name': 'hardSigmoid',
+        'arguments': [{'input': 'hardSigmoidInput'}],
+        'outputs': 'hardSigmoidOutput'
+      }],
+      'expectedOutputs': {
+        'hardSigmoidOutput': {
+          'data': [0.5118141174316406],
+          'descriptor': {shape: [], dataType: 'float32'}
+        }
+      }
+    }
+  },
   {
     'name': 'hardSigmoid float32 positive 1D constant tensor default options',
     'graph': {
@@ -44,7 +58,7 @@ const hardSigmoidTests = [
             0.7311381697654724,  0.4880960285663605, 0.7766845226287842,
             0.8455570340156555,  0.555302083492279,  0.5603444576263428
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -64,7 +78,7 @@ const hardSigmoidTests = [
             0.6462276577949524, 0.5976191759109497, 0.6553369164466858,
             0.669111430644989,  0.6110604405403137, 0.6120688915252686
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -84,7 +98,7 @@ const hardSigmoidTests = [
             0.7311381697654724,  0.4880960285663605, 0.7766845226287842,
             0.8455570340156555,  0.555302083492279,  0.5603444576263428
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -104,7 +118,7 @@ const hardSigmoidTests = [
             0.6462276577949524, 0.5976191759109497, 0.6553369164466858,
             0.669111430644989,  0.6110604405403137, 0.6120688915252686
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -124,7 +138,7 @@ const hardSigmoidTests = [
             0.7311381697654724,  0.4880960285663605, 0.7766845226287842,
             0.8455570340156555,  0.555302083492279,  0.5603444576263428
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -144,7 +158,7 @@ const hardSigmoidTests = [
             0.6462276577949524, 0.5976191759109497, 0.6553369164466858,
             0.669111430644989,  0.6110604405403137, 0.6120688915252686
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       }
     }
@@ -164,7 +178,7 @@ const hardSigmoidTests = [
             0.7311381697654724,  0.4880960285663605, 0.7766845226287842,
             0.8455570340156555,  0.555302083492279,  0.5603444576263428
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -184,7 +198,7 @@ const hardSigmoidTests = [
             0.6462276577949524, 0.5976191759109497, 0.6553369164466858,
             0.669111430644989,  0.6110604405403137, 0.6120688915252686
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -204,7 +218,7 @@ const hardSigmoidTests = [
             0.7311381697654724,  0.4880960285663605, 0.7766845226287842,
             0.8455570340156555,  0.555302083492279,  0.5603444576263428
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -224,7 +238,7 @@ const hardSigmoidTests = [
             0.6462276577949524, 0.5976191759109497, 0.6553369164466858,
             0.669111430644989,  0.6110604405403137, 0.6120688915252686
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -244,7 +258,7 @@ const hardSigmoidTests = [
             0.7311381697654724,  0.4880960285663605, 0.7766845226287842,
             0.8455570340156555,  0.555302083492279,  0.5603444576263428
           ],
-          'descriptor': {'dimensions': [1, 2, 1, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 1, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -264,7 +278,7 @@ const hardSigmoidTests = [
             0.6462276577949524, 0.5976191759109497, 0.6553369164466858,
             0.669111430644989,  0.6110604405403137, 0.6120688915252686
           ],
-          'descriptor': {'dimensions': [1, 2, 1, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 1, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -285,7 +299,7 @@ const hardSigmoidTests = [
             0.7311381697654724,  0.4880960285663605, 0.7766845226287842,
             0.8455570340156555,  0.555302083492279,  0.5603444576263428
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -324,7 +338,7 @@ const hardSigmoidTests = [
             0.936147153377533,
             0.9401075839996338
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -345,7 +359,7 @@ const hardSigmoidTests = [
             -0.7311381697654724,  -0.4880960285663605, -0.7766845226287842,
             -0.8455570340156555,  -0.555302083492279,  -0.5603444576263428
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -384,7 +398,7 @@ const hardSigmoidTests = [
             0.936147153377533,
             0.9401075839996338
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -405,7 +419,7 @@ const hardSigmoidTests = [
             0.7311381697654724,  0.4880960285663605, 0.7766845226287842,
             0.8455570340156555,  0.555302083492279,  0.5603444576263428
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -428,7 +442,7 @@ const hardSigmoidTests = [
             0.5824136734008789, 0.533805251121521,  0.5915229320526123,
             0.6052974462509155, 0.5472464561462402, 0.5482549667358398
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -449,7 +463,7 @@ const hardSigmoidTests = [
             -0.7311381697654724,  -0.4880960285663605, -0.7766845226287842,
             -0.8455570340156555,  -0.555302083492279,  -0.5603444576263428
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -466,7 +480,7 @@ const hardSigmoidTests = [
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -487,7 +501,7 @@ const hardSigmoidTests = [
             0.7311381697654724,  0.4880960285663605, 0.7766845226287842,
             0.8455570340156555,  0.555302083492279,  0.5603444576263428
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -526,7 +540,7 @@ const hardSigmoidTests = [
             0.8723332285881042,
             0.8762935996055603
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -547,7 +561,7 @@ const hardSigmoidTests = [
             0.7311381697654724,  0.4880960285663605, 0.7766845226287842,
             0.8455570340156555,  0.555302083492279,  0.5603444576263428
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -566,7 +580,7 @@ const hardSigmoidTests = [
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -587,7 +601,7 @@ const hardSigmoidTests = [
             -0.7311381697654724,  -0.4880960285663605, -0.7766845226287842,
             -0.8455570340156555,  -0.555302083492279,  -0.5603444576263428
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -606,7 +620,7 @@ const hardSigmoidTests = [
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -627,7 +641,7 @@ const hardSigmoidTests = [
             -0.7311381697654724,  -0.4880960285663605, -0.7766845226287842,
             -0.8455570340156555,  -0.555302083492279,  -0.5603444576263428
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -668,18 +682,666 @@ const hardSigmoidTests = [
             0.8723332285881042,
             0.8762935996055603
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
+        }
+      }
+    }
+  },
+
+  // float16 tests
+  {
+    'name': 'hardSigmoid float16 positive 0D tensor default options',
+    'graph': {
+      'inputs': {
+        'hardSigmoidInput': {
+          'data': [0.05908203125],
+          'descriptor': {shape: [], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'hardSigmoid',
+        'arguments': [{'input': 'hardSigmoidInput'}],
+        'outputs': 'hardSigmoidOutput'
+      }],
+      'expectedOutputs': {
+        'hardSigmoidOutput': {
+          'data': [0.51171875],
+          'descriptor': {shape: [], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'hardSigmoid float16 positive 1D constant tensor default options',
+    'graph': {
+      'inputs': {
+        'hardSigmoidInput': {
+          'data': [
+            0.05908203125,    0.70751953125,       0.52294921875,
+            0.423095703125,   0.66455078125,       0.9501953125,
+            0.10919189453125, 0.01297760009765625, 0.4755859375,
+            0.5322265625,     0.68408203125,       0.46630859375,
+            0.304931640625,   0.802734375,         0.2486572265625,
+            0.66357421875,    0.5546875,           0.55419921875,
+            0.73095703125,    0.488037109375,      0.77685546875,
+            0.845703125,      0.55517578125,       0.560546875
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'hardSigmoid',
+        'arguments': [{'input': 'hardSigmoidInput'}],
+        'outputs': 'hardSigmoidOutput'
+      }],
+      'expectedOutputs': {
+        'hardSigmoidOutput': {
+          'data': [
+            0.51171875,    0.6416015625,  0.6044921875,  0.58447265625,
+            0.6328125,     0.68994140625, 0.52197265625, 0.50244140625,
+            0.59521484375, 0.6064453125,  0.63671875,    0.59326171875,
+            0.56103515625, 0.66064453125, 0.5498046875,  0.6328125,
+            0.61083984375, 0.61083984375, 0.64599609375, 0.59765625,
+            0.6552734375,  0.6689453125,  0.61083984375, 0.6123046875
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'hardSigmoid float16 positive 1D tensor default options',
+    'graph': {
+      'inputs': {
+        'hardSigmoidInput': {
+          'data': [
+            0.05908203125,    0.70751953125,       0.52294921875,
+            0.423095703125,   0.66455078125,       0.9501953125,
+            0.10919189453125, 0.01297760009765625, 0.4755859375,
+            0.5322265625,     0.68408203125,       0.46630859375,
+            0.304931640625,   0.802734375,         0.2486572265625,
+            0.66357421875,    0.5546875,           0.55419921875,
+            0.73095703125,    0.488037109375,      0.77685546875,
+            0.845703125,      0.55517578125,       0.560546875
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'hardSigmoid',
+        'arguments': [{'input': 'hardSigmoidInput'}],
+        'outputs': 'hardSigmoidOutput'
+      }],
+      'expectedOutputs': {
+        'hardSigmoidOutput': {
+          'data': [
+            0.51171875,    0.6416015625,  0.6044921875,  0.58447265625,
+            0.6328125,     0.68994140625, 0.52197265625, 0.50244140625,
+            0.59521484375, 0.6064453125,  0.63671875,    0.59326171875,
+            0.56103515625, 0.66064453125, 0.5498046875,  0.6328125,
+            0.61083984375, 0.61083984375, 0.64599609375, 0.59765625,
+            0.6552734375,  0.6689453125,  0.61083984375, 0.6123046875
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'hardSigmoid float16 positive 2D tensor default options',
+    'graph': {
+      'inputs': {
+        'hardSigmoidInput': {
+          'data': [
+            0.05908203125,    0.70751953125,       0.52294921875,
+            0.423095703125,   0.66455078125,       0.9501953125,
+            0.10919189453125, 0.01297760009765625, 0.4755859375,
+            0.5322265625,     0.68408203125,       0.46630859375,
+            0.304931640625,   0.802734375,         0.2486572265625,
+            0.66357421875,    0.5546875,           0.55419921875,
+            0.73095703125,    0.488037109375,      0.77685546875,
+            0.845703125,      0.55517578125,       0.560546875
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'hardSigmoid',
+        'arguments': [{'input': 'hardSigmoidInput'}],
+        'outputs': 'hardSigmoidOutput'
+      }],
+      'expectedOutputs': {
+        'hardSigmoidOutput': {
+          'data': [
+            0.51171875,    0.6416015625,  0.6044921875,  0.58447265625,
+            0.6328125,     0.68994140625, 0.52197265625, 0.50244140625,
+            0.59521484375, 0.6064453125,  0.63671875,    0.59326171875,
+            0.56103515625, 0.66064453125, 0.5498046875,  0.6328125,
+            0.61083984375, 0.61083984375, 0.64599609375, 0.59765625,
+            0.6552734375,  0.6689453125,  0.61083984375, 0.6123046875
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'hardSigmoid float16 positive 3D tensor default options',
+    'graph': {
+      'inputs': {
+        'hardSigmoidInput': {
+          'data': [
+            0.05908203125,    0.70751953125,       0.52294921875,
+            0.423095703125,   0.66455078125,       0.9501953125,
+            0.10919189453125, 0.01297760009765625, 0.4755859375,
+            0.5322265625,     0.68408203125,       0.46630859375,
+            0.304931640625,   0.802734375,         0.2486572265625,
+            0.66357421875,    0.5546875,           0.55419921875,
+            0.73095703125,    0.488037109375,      0.77685546875,
+            0.845703125,      0.55517578125,       0.560546875
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'hardSigmoid',
+        'arguments': [{'input': 'hardSigmoidInput'}],
+        'outputs': 'hardSigmoidOutput'
+      }],
+      'expectedOutputs': {
+        'hardSigmoidOutput': {
+          'data': [
+            0.51171875,    0.6416015625,  0.6044921875,  0.58447265625,
+            0.6328125,     0.68994140625, 0.52197265625, 0.50244140625,
+            0.59521484375, 0.6064453125,  0.63671875,    0.59326171875,
+            0.56103515625, 0.66064453125, 0.5498046875,  0.6328125,
+            0.61083984375, 0.61083984375, 0.64599609375, 0.59765625,
+            0.6552734375,  0.6689453125,  0.61083984375, 0.6123046875
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'hardSigmoid float16 positive 4D tensor default options',
+    'graph': {
+      'inputs': {
+        'hardSigmoidInput': {
+          'data': [
+            0.05908203125,    0.70751953125,       0.52294921875,
+            0.423095703125,   0.66455078125,       0.9501953125,
+            0.10919189453125, 0.01297760009765625, 0.4755859375,
+            0.5322265625,     0.68408203125,       0.46630859375,
+            0.304931640625,   0.802734375,         0.2486572265625,
+            0.66357421875,    0.5546875,           0.55419921875,
+            0.73095703125,    0.488037109375,      0.77685546875,
+            0.845703125,      0.55517578125,       0.560546875
+          ],
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'hardSigmoid',
+        'arguments': [{'input': 'hardSigmoidInput'}],
+        'outputs': 'hardSigmoidOutput'
+      }],
+      'expectedOutputs': {
+        'hardSigmoidOutput': {
+          'data': [
+            0.51171875,    0.6416015625,  0.6044921875,  0.58447265625,
+            0.6328125,     0.68994140625, 0.52197265625, 0.50244140625,
+            0.59521484375, 0.6064453125,  0.63671875,    0.59326171875,
+            0.56103515625, 0.66064453125, 0.5498046875,  0.6328125,
+            0.61083984375, 0.61083984375, 0.64599609375, 0.59765625,
+            0.6552734375,  0.6689453125,  0.61083984375, 0.6123046875
+          ],
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'hardSigmoid float16 positive 5D tensor default options',
+    'graph': {
+      'inputs': {
+        'hardSigmoidInput': {
+          'data': [
+            0.05908203125,    0.70751953125,       0.52294921875,
+            0.423095703125,   0.66455078125,       0.9501953125,
+            0.10919189453125, 0.01297760009765625, 0.4755859375,
+            0.5322265625,     0.68408203125,       0.46630859375,
+            0.304931640625,   0.802734375,         0.2486572265625,
+            0.66357421875,    0.5546875,           0.55419921875,
+            0.73095703125,    0.488037109375,      0.77685546875,
+            0.845703125,      0.55517578125,       0.560546875
+          ],
+          'descriptor': {shape: [1, 2, 1, 3, 4], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'hardSigmoid',
+        'arguments': [{'input': 'hardSigmoidInput'}],
+        'outputs': 'hardSigmoidOutput'
+      }],
+      'expectedOutputs': {
+        'hardSigmoidOutput': {
+          'data': [
+            0.51171875,    0.6416015625,  0.6044921875,  0.58447265625,
+            0.6328125,     0.68994140625, 0.52197265625, 0.50244140625,
+            0.59521484375, 0.6064453125,  0.63671875,    0.59326171875,
+            0.56103515625, 0.66064453125, 0.5498046875,  0.6328125,
+            0.61083984375, 0.61083984375, 0.64599609375, 0.59765625,
+            0.6552734375,  0.6689453125,  0.61083984375, 0.6123046875
+          ],
+          'descriptor': {shape: [1, 2, 1, 3, 4], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'hardSigmoid float16 positive 4D tensor specified positive options.alpha default options.beta',
+    'graph': {
+      'inputs': {
+        'hardSigmoidInput': {
+          'data': [
+            0.05908203125,    0.70751953125,       0.52294921875,
+            0.423095703125,   0.66455078125,       0.9501953125,
+            0.10919189453125, 0.01297760009765625, 0.4755859375,
+            0.5322265625,     0.68408203125,       0.46630859375,
+            0.304931640625,   0.802734375,         0.2486572265625,
+            0.66357421875,    0.5546875,           0.55419921875,
+            0.73095703125,    0.488037109375,      0.77685546875,
+            0.845703125,      0.55517578125,       0.560546875
+          ],
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'hardSigmoid',
+        'arguments': [
+          {'input': 'hardSigmoidInput'},
+          {'options': {'alpha': 0.7854232544278235}}
+        ],
+        'outputs': 'hardSigmoidOutput'
+      }],
+      'expectedOutputs': {
+        'hardSigmoidOutput': {
+          'data': [
+            0.54638671875,
+            1,
+            0.91064453125,
+            0.83251953125,
+            1,
+            1,
+            0.5859375,
+            0.51025390625,
+            0.87353515625,
+            0.91796875,
+            1,
+            0.8662109375,
+            0.7392578125,
+            1,
+            0.6953125,
+            1,
+            0.935546875,
+            0.93505859375,
+            1,
+            0.88330078125,
+            1,
+            1,
+            0.93603515625,
+            0.9404296875
+          ],
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'hardSigmoid float16 negative 4D tensor specified negative options.alpha default options.beta',
+    'graph': {
+      'inputs': {
+        'hardSigmoidInput': {
+          'data': [
+            -0.05908203125,    -0.70751953125,       -0.52294921875,
+            -0.423095703125,   -0.66455078125,       -0.9501953125,
+            -0.10919189453125, -0.01297760009765625, -0.4755859375,
+            -0.5322265625,     -0.68408203125,       -0.46630859375,
+            -0.304931640625,   -0.802734375,         -0.2486572265625,
+            -0.66357421875,    -0.5546875,           -0.55419921875,
+            -0.73095703125,    -0.488037109375,      -0.77685546875,
+            -0.845703125,      -0.55517578125,       -0.560546875
+          ],
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'hardSigmoid',
+        'arguments': [
+          {'input': 'hardSigmoidInput'},
+          {'options': {'alpha': -0.7854232544278235}}
+        ],
+        'outputs': 'hardSigmoidOutput'
+      }],
+      'expectedOutputs': {
+        'hardSigmoidOutput': {
+          'data': [
+            0.54638671875,
+            1,
+            0.91064453125,
+            0.83251953125,
+            1,
+            1,
+            0.5859375,
+            0.51025390625,
+            0.87353515625,
+            0.91796875,
+            1,
+            0.8662109375,
+            0.7392578125,
+            1,
+            0.6953125,
+            1,
+            0.935546875,
+            0.93505859375,
+            1,
+            0.88330078125,
+            1,
+            1,
+            0.93603515625,
+            0.9404296875
+          ],
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'hardSigmoid float16 positive 4D tensor specified positive options.beta default options.alpha',
+    'graph': {
+      'inputs': {
+        'hardSigmoidInput': {
+          'data': [
+            0.05908203125,    0.70751953125,       0.52294921875,
+            0.423095703125,   0.66455078125,       0.9501953125,
+            0.10919189453125, 0.01297760009765625, 0.4755859375,
+            0.5322265625,     0.68408203125,       0.46630859375,
+            0.304931640625,   0.802734375,         0.2486572265625,
+            0.66357421875,    0.5546875,           0.55419921875,
+            0.73095703125,    0.488037109375,      0.77685546875,
+            0.845703125,      0.55517578125,       0.560546875
+          ],
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'hardSigmoid',
+        'arguments': [
+          {'input': 'hardSigmoidInput'},
+          {'options': {'beta': 0.4361860418530341}}
+        ],
+        'outputs': 'hardSigmoidOutput'
+      }],
+      'expectedOutputs': {
+        'hardSigmoidOutput': {
+          'data': [
+            0.447998046875, 0.57763671875, 0.541015625,   0.52099609375,
+            0.5693359375,   0.62646484375, 0.4580078125,  0.438720703125,
+            0.53125,        0.54248046875, 0.5732421875,  0.529296875,
+            0.4970703125,   0.5966796875,  0.48583984375, 0.56884765625,
+            0.54736328125,  0.546875,      0.58251953125, 0.53369140625,
+            0.591796875,    0.60546875,    0.54736328125, 0.54833984375
+          ],
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'hardSigmoid float16 negative 4D tensor specified negative options.beta default options.alpha',
+    'graph': {
+      'inputs': {
+        'hardSigmoidInput': {
+          'data': [
+            -0.05908203125,    -0.70751953125,       -0.52294921875,
+            -0.423095703125,   -0.66455078125,       -0.9501953125,
+            -0.10919189453125, -0.01297760009765625, -0.4755859375,
+            -0.5322265625,     -0.68408203125,       -0.46630859375,
+            -0.304931640625,   -0.802734375,         -0.2486572265625,
+            -0.66357421875,    -0.5546875,           -0.55419921875,
+            -0.73095703125,    -0.488037109375,      -0.77685546875,
+            -0.845703125,      -0.55517578125,       -0.560546875
+          ],
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'hardSigmoid',
+        'arguments': [
+          {'input': 'hardSigmoidInput'},
+          {'options': {'beta': -0.436186041853034}}
+        ],
+        'outputs': 'hardSigmoidOutput'
+      }],
+      'expectedOutputs': {
+        'hardSigmoidOutput': {
+          'data': [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+          ],
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'hardSigmoid float16 positive 4D tensor specified all options (positive options.alpha and positive options.beta)',
+    'graph': {
+      'inputs': {
+        'hardSigmoidInput': {
+          'data': [
+            0.05908203125,    0.70751953125,       0.52294921875,
+            0.423095703125,   0.66455078125,       0.9501953125,
+            0.10919189453125, 0.01297760009765625, 0.4755859375,
+            0.5322265625,     0.68408203125,       0.46630859375,
+            0.304931640625,   0.802734375,         0.2486572265625,
+            0.66357421875,    0.5546875,           0.55419921875,
+            0.73095703125,    0.488037109375,      0.77685546875,
+            0.845703125,      0.55517578125,       0.560546875
+          ],
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'hardSigmoid',
+        'arguments': [
+          {'input': 'hardSigmoidInput'},
+          {'options': {'alpha': 0.7854232544278235, 'beta': 0.4361860418530341}}
+        ],
+        'outputs': 'hardSigmoidOutput'
+      }],
+      'expectedOutputs': {
+        'hardSigmoidOutput': {
+          'data': [
+            0.482666015625,
+            0.99169921875,
+            0.8466796875,
+            0.7685546875,
+            0.9580078125,
+            1,
+            0.52197265625,
+            0.4462890625,
+            0.8095703125,
+            0.85400390625,
+            0.9736328125,
+            0.80224609375,
+            0.67578125,
+            1,
+            0.63134765625,
+            0.95751953125,
+            0.8720703125,
+            0.87158203125,
+            1,
+            0.8193359375,
+            1,
+            1,
+            0.8720703125,
+            0.87646484375
+          ],
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'hardSigmoid float16 positive 4D tensor specified all options (negative options.alpha and negative options.beta)',
+    'graph': {
+      'inputs': {
+        'hardSigmoidInput': {
+          'data': [
+            0.05908203125,    0.70751953125,       0.52294921875,
+            0.423095703125,   0.66455078125,       0.9501953125,
+            0.10919189453125, 0.01297760009765625, 0.4755859375,
+            0.5322265625,     0.68408203125,       0.46630859375,
+            0.304931640625,   0.802734375,         0.2486572265625,
+            0.66357421875,    0.5546875,           0.55419921875,
+            0.73095703125,    0.488037109375,      0.77685546875,
+            0.845703125,      0.55517578125,       0.560546875
+          ],
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'hardSigmoid',
+        'arguments': [
+          {'input': 'hardSigmoidInput'}, {
+            'options':
+                {'alpha': -0.7854232544278235, 'beta': -0.4361860418530341}
+          }
+        ],
+        'outputs': 'hardSigmoidOutput'
+      }],
+      'expectedOutputs': {
+        'hardSigmoidOutput': {
+          'data': [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+          ],
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'hardSigmoid float16 negative 4D tensor all options (positive options.alpha and negative options.beta)',
+    'graph': {
+      'inputs': {
+        'hardSigmoidInput': {
+          'data': [
+            -0.05908203125,    -0.70751953125,       -0.52294921875,
+            -0.423095703125,   -0.66455078125,       -0.9501953125,
+            -0.10919189453125, -0.01297760009765625, -0.4755859375,
+            -0.5322265625,     -0.68408203125,       -0.46630859375,
+            -0.304931640625,   -0.802734375,         -0.2486572265625,
+            -0.66357421875,    -0.5546875,           -0.55419921875,
+            -0.73095703125,    -0.488037109375,      -0.77685546875,
+            -0.845703125,      -0.55517578125,       -0.560546875
+          ],
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'hardSigmoid',
+        'arguments': [
+          {'input': 'hardSigmoidInput'}, {
+            'options':
+                {'alpha': 0.7854232544278235, 'beta': -0.4361860418530341}
+          }
+        ],
+        'outputs': 'hardSigmoidOutput'
+      }],
+      'expectedOutputs': {
+        'hardSigmoidOutput': {
+          'data': [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+          ],
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'hardSigmoid float16 negative 4D tensor specified all options (negative options.alpha and positive options.beta)',
+    'graph': {
+      'inputs': {
+        'hardSigmoidInput': {
+          'data': [
+            -0.05908203125,    -0.70751953125,       -0.52294921875,
+            -0.423095703125,   -0.66455078125,       -0.9501953125,
+            -0.10919189453125, -0.01297760009765625, -0.4755859375,
+            -0.5322265625,     -0.68408203125,       -0.46630859375,
+            -0.304931640625,   -0.802734375,         -0.2486572265625,
+            -0.66357421875,    -0.5546875,           -0.55419921875,
+            -0.73095703125,    -0.488037109375,      -0.77685546875,
+            -0.845703125,      -0.55517578125,       -0.560546875
+          ],
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'hardSigmoid',
+        'arguments': [
+          {'input': 'hardSigmoidInput'}, {
+            'options':
+                {'alpha': -0.7854232544278235, 'beta': 0.4361860418530341}
+          }
+        ],
+        'outputs': 'hardSigmoidOutput'
+      }],
+      'expectedOutputs': {
+        'hardSigmoidOutput': {
+          'data': [
+            0.482666015625,
+            0.99169921875,
+            0.8466796875,
+            0.7685546875,
+            0.9580078125,
+            1,
+            0.52197265625,
+            0.4462890625,
+            0.8095703125,
+            0.85400390625,
+            0.9736328125,
+            0.80224609375,
+            0.67578125,
+            1,
+            0.63134765625,
+            0.95751953125,
+            0.8720703125,
+            0.87158203125,
+            1,
+            0.8193359375,
+            1,
+            1,
+            0.8720703125,
+            0.87646484375
+          ],
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float16'}
         }
       }
     }
   }
 ];
 
-if (navigator.ml) {
-  hardSigmoidTests.forEach((test) => {
-    webnn_conformance_test(
-        buildGraphAndCompute, getHardSigmoidPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(
+    hardSigmoidTests, buildAndExecuteGraph, getPrecisionTolerance);

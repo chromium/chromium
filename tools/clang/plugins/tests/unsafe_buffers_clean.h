@@ -13,6 +13,14 @@ int clean_guarded_bad_stuff(int* i, unsigned s) {
   return UNSAFE_BUFFERS(i[s]);  // Guarded so no warning.
 }
 
+int clean_bad_unique(std::unique_ptr<int[]>& i, unsigned s) {
+  return i[s];  // This is in a "clean" file, so it should make a warning.
+}
+
+int clean_guarded_bad_unique(std::unique_ptr<int[]>& i, unsigned s) {
+  return UNSAFE_BUFFERS(i[s]);  // Guarded so no warning.
+}
+
 UNSAFE_FN void unsafe_fn() {}
 
 inline void call_unsafe_stuff() {

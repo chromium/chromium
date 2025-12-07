@@ -16,6 +16,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "net/base/net_export.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
@@ -28,7 +29,7 @@ class IPEndPoint;
 class ServerSocket;
 class StreamSocket;
 
-class HttpServer {
+class NET_EXPORT HttpServer {
  public:
   // Delegate to handle http/websocket events. Beware that it is not safe to
   // destroy the HttpServer in any of these callbacks.
@@ -119,8 +120,7 @@ class HttpServer {
   // recv data. If all data has been consumed successfully, but the headers are
   // not fully parsed, *pos will be set to zero. Returns false if an error is
   // encountered while parsing, true otherwise.
-  bool ParseHeaders(const char* data,
-                    size_t data_len,
+  bool ParseHeaders(base::span<const uint8_t> data,
                     HttpServerRequestInfo* info,
                     size_t* pos);
 
@@ -149,4 +149,4 @@ class HttpServer {
 
 }  // namespace net
 
-#endif // NET_SERVER_HTTP_SERVER_H_
+#endif  // NET_SERVER_HTTP_SERVER_H_

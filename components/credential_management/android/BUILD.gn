@@ -1,0 +1,109 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+static_library("features") {
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
+generate_jni("jni_headers") {
+  visibility = [ ":*" ]
+  sources = [
+    "java/src/org/chromium/components/credential_management/PasswordCredentialResponse.java",
+    "java/src/org/chromium/components/credential_management/ThirdPartyCredentialManagerBridge.java",
+  ]
+}
+
+android_library("java") {
+  deps = [
+    "//base:base_java",
+    "//base:tasks_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_credentials_credentials_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//url:url_java",
+  ]
+
+  srcjar_deps = [ ":jni_headers" ]
+  sources = [
+    "java/src/org/chromium/components/credential_management/CredentialManagerAndroidGetResult.java",
+    "java/src/org/chromium/components/credential_management/CredentialManagerStoreResult.java",
+    "java/src/org/chromium/components/credential_management/PasswordCredentialResponse.java",
+    "java/src/org/chromium/components/credential_management/ThirdPartyCredentialManagerBridge.java",
+    "java/src/org/chromium/components/credential_management/ThirdPartyCredentialManagerMetricsRecorder.java",
+  ]
+
+  resources_package = "org.chromium.components.credential_management"
+}
+
+static_library("browser_sources") {
+  sources = [
+    "third_party_credential_manager_bridge.cc",
+    "third_party_credential_manager_bridge.h",
+    "third_party_credential_manager_impl.cc",
+    "third_party_credential_manager_impl.h",
+  ]
+
+  deps = [
+    ":jni_headers",
+    "//content/public/browser",
+    "//content/public/common",
+    "//net",
+  ]
+
+  if (is_android) {
+    sources += [
+      "password_credential_response.cc",
+      "password_credential_response.h",
+    ]
+
+    deps += [ "//third_party/jni_zero" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "third_party_credential_manager_bridge_unittest.cc",
+    "third_party_credential_manager_impl_unittest.cc",
+  ]
+  deps = [
+    ":browser_sources",
+    ":jni_headers",
+    "//base/test:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+  ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
+
+robolectric_library("junit_tests") {
+  sources = [
+    "java/src/org/chromium/components/credential_management/ThirdPartyCredentialManagerBridgeTest.java",
+    "java/src/org/chromium/components/credential_management/ThirdPartyCredentialManagerMetricsRecorderTest.java",
+  ]
+
+  deps = [
+    ":java",
+    ":jni_headers",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//third_party/androidx:androidx_credentials_credentials_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//url:gurl_java",
+  ]
+}

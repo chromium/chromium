@@ -24,10 +24,10 @@
   },
   "accessibilityServicePrivate": {
     "dependencies": ["permission:accessibilityServicePrivate"],
-    "channel": "stable",
     "contexts": ["privileged_extension"],
-    "platforms": ["chromeos", "lacros"]
+    "platforms": ["chromeos"]
   },
+  // NOTE: C++ source is under api/extension_action not api/action.
   "action": {
     "dependencies": ["manifest:action"],
     "contexts": ["privileged_extension"]
@@ -60,6 +60,14 @@
       "chrome://extensions/*"
     ]
   }],
+  "experimentalActor": {
+    "contexts": ["privileged_extension"],
+    "dependencies": ["permission:experimentalActor"]
+  },
+  "experimentalAiData": {
+    "contexts": ["privileged_extension"],
+    "dependencies": ["permission:experimentalAiData"]
+  },
   "app": {
     "blocklist": [
       "2FC374607C2DF285634B67C64A2E356C607091C3",  // Quickoffice
@@ -96,7 +104,9 @@
     "contexts": ["webui"],
     "matches": [
       "chrome://settings/*"
-    ]
+    ],
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "linux", "mac", "win"]
   }],
   "autotestPrivate": {
     "dependencies": ["permission:autotestPrivate"],
@@ -109,7 +119,9 @@
       "chrome://bookmarks/*",
       "chrome://bookmarks-side-panel.top-chrome/*",
       "chrome://read-later.top-chrome/*"
-    ]
+    ],
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "linux", "mac", "win"]
   },
   "bookmarks": [{
     "dependencies": ["permission:bookmarks"],
@@ -197,7 +209,7 @@
     "matches": [
       "chrome://version/*"
     ],
-    "platforms": ["chromeos", "lacros"]
+    "platforms": ["chromeos"]
   }],
   // This feature controls the availability of the <webview> tag itself. This
   // is separate from the chromeWebViewInternal API, which is needed by other
@@ -211,16 +223,28 @@
     "channel": "stable",
     "contexts": ["webui"],
     "matches": [
-      "chrome://assistant-optin/*",
       "chrome://add-supervision/*",
       "chrome://chrome-signin/*",
-      "chrome://discards/*",
+      "chrome://contextual-tasks/*",
+      "chrome://glic/*",
+      "chrome://glic-fre/*",
+      "chrome://graduation/*",
       "chrome://mobilesetup/*",
       "chrome://oobe/*",
       "chrome://os-settings/*",
       "chrome://parent-access/*",
       "chrome://password-change/*",
       "chrome://lock-reauth/*"
+    ]
+  }, {
+    "internal": true,
+    "channel": "stable",
+    "contexts": [
+      "webui_untrusted"
+    ],
+    "matches": [
+      "chrome-untrusted://boca-app/*",
+      "chrome-untrusted://lens/*"
     ]
   }],
   "chromeWebViewInternal": [{
@@ -235,6 +259,16 @@
     // to the specified set of URLs, so this could even be <all_urls>. Just to
     // be extra-cautious, we restrict to the chrome scheme.
     "matches": [ "chrome://*/*" ]
+  }, {
+    "internal": true,
+    "channel": "stable",
+    "contexts": [
+      "webui_untrusted"
+    ],
+    "matches": [
+      "chrome-untrusted://boca-app/*",
+      "chrome-untrusted://lens/*"
+    ]
   }, {
     // This feature is used by the Controlled Frame API and is specifically
     // enabled by //chrome.
@@ -256,10 +290,21 @@
     "dependencies": ["manifest:commands"],
     "contexts": ["privileged_extension"]
   },
-  "contentSettings": {
+  "contentSettings": [{
     "dependencies": ["permission:contentSettings"],
-    "contexts": ["privileged_extension"]
-  },
+    "contexts": [
+      "privileged_extension"
+    ],
+    "default_parent": true
+  },{
+    "channel": "stable",
+    "contexts": [
+      "webui_untrusted"
+    ],
+    "matches": [
+      "chrome-untrusted://boca-app/*"
+    ]
+  }],
   "contentSettings.clipboard": {
     "feature_flag": "ApiContentSettingsClipboard"
   },
@@ -283,7 +328,8 @@
     ],
     "matches": [
       "chrome://camera-app/*",
-      "chrome://media-app/*"
+      "chrome://media-app/*",
+      "chrome://recorder-app/*"
     ]
   },
   {
@@ -300,7 +346,10 @@
   }],
   "debugger": {
     "dependencies": ["permission:debugger"],
-    "contexts": ["privileged_extension"]
+    "contexts": ["privileged_extension"],
+    // This restriction is not true for production. It is only true when the
+    // extensions_features::kDebuggerAPIRestrictedToDevMode feature is enabled.
+    "developer_mode_only" : true
   },
   "declarativeContent": {
     "dependencies": ["permission:declarativeContent"],
@@ -342,31 +391,15 @@
     "channel": "stable",
     "contexts": ["privileged_extension", "content_script"]
   },
-  "downloads": [
-    {
-      "dependencies": ["permission:downloads"],
-      "contexts": ["privileged_extension"]
-    },
-    {
-      "channel": "stable",
-      "contexts": ["webui"],
-      "matches": ["chrome://download-shelf.top-chrome/*"]
-    }
-  ],
-  "downloadsInternal": [
-    {
-      "internal": true,
-      "channel": "stable",
-      "contexts": ["privileged_extension"],
-      "dependencies": ["permission:downloads"]
-    },
-    {
-      "internal": true,
-      "channel": "stable",
-      "contexts": ["webui"],
-      "matches": ["chrome://download-shelf.top-chrome/*"]
-    }
-  ],
+  "downloads": {
+    "dependencies": ["permission:downloads"],
+    "contexts": ["privileged_extension"]
+  },
+  "downloadsInternal": {
+    "internal": true,
+    "contexts": ["privileged_extension"],
+    "dependencies": ["permission:downloads"]
+  },
   "echoPrivate": {
     "dependencies": ["permission:echoPrivate"],
     "contexts": ["privileged_extension"]
@@ -381,6 +414,10 @@
   },
   "enterprise.kioskInput": {
     "dependencies": ["permission:enterprise.kioskInput"],
+    "contexts": ["privileged_extension"]
+  },
+  "enterprise.login": {
+    "dependencies": ["permission:enterprise.login"],
     "contexts": ["privileged_extension"]
   },
   "enterprise.networkingAttributes": {
@@ -415,6 +452,9 @@
   },
   "enterprise.reportingPrivate.getHotfixes": {
     "platforms": ["win"]
+  },
+  "enterprise.reportingPrivate.onDataMaskingRulesTriggered": {
+    "feature_flag": "ApiEnterpriseReportingPrivateOnDataMaskingRulesTriggered"
   },
   "experimental.devtools.audits": {
     "nocompile": true,
@@ -568,10 +608,6 @@
     "dependencies": ["permission:gcm"],
     "contexts": ["privileged_extension"]
   },
-  "sharedStoragePrivate": {
-    "dependencies": ["permission:sharedStoragePrivate"],
-    "contexts": ["privileged_extension"]
-  },
   "history": {
     "dependencies": ["permission:history"],
     "contexts": ["privileged_extension"]
@@ -627,6 +663,15 @@
       "chrome://os-settings/*",
       "chrome://settings/*"
     ]
+  },
+  {
+    "channel": "stable",
+    "contexts": [
+      "webui_untrusted"
+    ],
+    "matches": [
+      "chrome-untrusted://lens-overlay/*"
+    ]
   }],
   "login": [{
     "dependencies": ["behavior:imprivata_extension", "permission:login"],
@@ -638,7 +683,9 @@
     "allowlist": [
       "93B7178E8C275515C38D4F43D9DF4648F0EA9B03", // Identity Card Connector
       "7FE4A999359A456C4B0FB7B7AD85CEA29CA50519", // Login screen APIs test extension
-      "3F5995FE79A861F019C6F093BEF98D73FA9D3A5F"  // Login screen APIs in-session test extension
+      "3F5995FE79A861F019C6F093BEF98D73FA9D3A5F", // Login screen APIs in-session test extension
+      // https://crbug.com/433867146
+      "4B7E9789426EBD1BB3F99D72690DAE303FC042DF"  // AuthX Secure for ChromeOS
     ]
   }],
   "login.exitCurrentSession": [{
@@ -650,9 +697,19 @@
       "93B7178E8C275515C38D4F43D9DF4648F0EA9B03", // Identity Card Connector
       "7FE4A999359A456C4B0FB7B7AD85CEA29CA50519", // Login screen APIs test extension
       "3F5995FE79A861F019C6F093BEF98D73FA9D3A5F", // Login screen APIs in-session test extension
+      // https://crbug.com/433867146
+      "4B7E9789426EBD1BB3F99D72690DAE303FC042DF", // AuthX Secure for ChromeOS
       // Only has access to login.exitCurrentSession
       "8ECFC754A70BE499325FA4BB705E62EFEEC1BC80", // b/314208017
-      "ECD28F2B60BDB3B4E566D6C60BD88BE0774044C1"  // b/314208017
+      "ECD28F2B60BDB3B4E566D6C60BD88BE0774044C1",  // b/314208017
+      "C03440D5E6161ED58738ABA11586B1DB4B4DCA8A"  // b/379564028#comment27
+    ]
+  }, {
+    "channel": "stable",
+    "contexts": ["webui_untrusted"],
+    "dependencies": [],
+    "matches": [
+      "chrome-untrusted://class-tools-remote-display/*"
     ]
   }],
   "loginScreenStorage": {
@@ -729,13 +786,13 @@
     ],
     "contexts": ["privileged_extension"]
   },
-  "permissions.addSiteAccessRequest": {
+  "permissions.addHostAccessRequest": {
     "min_manifest_version": 3,
-    "feature_flag": "ApiPermissionsSiteAccessRequests"
+    "feature_flag": "ApiPermissionsHostAccessRequests"
   },
-  "permissions.removeSiteAccessRequest": {
+  "permissions.removeHostAccessRequest": {
     "min_manifest_version": 3,
-    "feature_flag": "ApiPermissionsSiteAccessRequests"
+    "feature_flag": "ApiPermissionsHostAccessRequests"
   },
   "platformKeys": {
     "dependencies": ["permission:platformKeys"],
@@ -789,7 +846,7 @@
       "chrome://settings/*",
       "chrome://oobe/*"
     ],
-    "platforms": ["chromeos", "lacros"]
+    "platforms": ["chromeos"]
   },
   "readingList": {
     "dependencies": ["permission:readingList"],
@@ -805,10 +862,6 @@
       "chrome://print/*"
     ]
   }],
-  "rtcPrivate": {
-    "dependencies": ["permission:rtcPrivate"],
-    "contexts": ["privileged_extension"]
-  },
   "safeBrowsingPrivate": {
     "dependencies": ["permission:safeBrowsingPrivate"],
     "contexts": ["privileged_extension"]
@@ -854,10 +907,6 @@
     "dependencies": ["permission:speechRecognitionPrivate"],
     "contexts": ["privileged_extension"]
   },
-  "systemIndicator": {
-    "dependencies": ["manifest:system_indicator"],
-    "contexts": ["privileged_extension"]
-  },
   "systemLog": {
     "dependencies": ["permission:systemLog"],
     "contexts": ["privileged_extension"]
@@ -896,7 +945,8 @@
     "contexts": ["webui_untrusted"],
     "matches": [
       "chrome-untrusted://crosh/*",
-      "chrome-untrusted://terminal/*"
+      "chrome-untrusted://terminal/*",
+      "chrome-untrusted://boca-app/*"
     ],
     "platforms": ["chromeos"]
   }],
@@ -1049,7 +1099,6 @@
   }],
   "webviewTag": {
     "internal": true,
-    "channel": "stable",
     "dependencies": ["permission:webview"],
     "contexts": ["privileged_extension"]
   },
@@ -1068,7 +1117,8 @@
     "contexts": ["webui_untrusted"],
     "matches": [
       "chrome-untrusted://crosh/*",
-      "chrome-untrusted://terminal/*"
+      "chrome-untrusted://terminal/*",
+      "chrome-untrusted://boca-app/*"
     ],
     "platforms": ["chromeos"]
   }],

@@ -139,14 +139,14 @@ AudioParameters AudioManagerFuchsia::GetPreferredOutputStreamParameters(
                              kMinPeriodFrames, kMaxPeriodFrames));
 }
 
-const char* AudioManagerFuchsia::GetName() {
+const std::string_view AudioManagerFuchsia::GetName() {
   return "Fuchsia";
 }
 
 AudioOutputStream* AudioManagerFuchsia::MakeLinearOutputStream(
     const AudioParameters& params,
     const LogCallback& log_callback) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 AudioOutputStream* AudioManagerFuchsia::MakeLowLatencyOutputStream(

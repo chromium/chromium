@@ -6,10 +6,6 @@
 #include <optional>
 #include <string_view>
 
-#include "ash/components/arc/session/arc_service_manager.h"
-#include "ash/components/arc/session/arc_session_runner.h"
-#include "ash/components/arc/test/arc_util_test_support.h"
-#include "ash/components/arc/test/fake_arc_session.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -19,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -46,7 +43,6 @@
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
@@ -57,9 +53,9 @@
 #include "chrome/browser/extensions/api/quick_unlock_private/quick_unlock_private_api.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/ai_intro_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/app_downloading_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/assistant_optin_flow_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/choobe_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/display_size_screen_handler.h"
@@ -78,12 +74,15 @@
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
-#include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/components/attestation/stub_attestation_features.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
+#include "chromeos/ash/experiences/arc/session/arc_session_runner.h"
+#include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
+#include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/policy/core/common/policy_switches.h"
@@ -312,35 +311,7 @@ void HandleGeminiIntroScreen() {
   LOG(INFO) << "OobeInteractiveUITest: 'gemini-intro' screen done.";
 }
 
-// Waits for AssistantOptInFlowScreen to be shown, skips the opt-in, and waits
-// for the flow to move away from the screen.
-// Note that due to test setup, the screen will fail to load assistant value
-// proposal error (as the URL is not faked in this test), and display an
-// error, This is good enough for this tests, whose goal is to verify the
-// screen is shown, and how the setup progresses after the screen. The actual
-// assistant opt-in flow is tested separately.
-void HandleAssistantOptInScreen() {
-#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-  OobeScreenWaiter(AssistantOptInFlowScreenView::kScreenId).Wait();
-  LOG(INFO) << "OobeInteractiveUITest: Switched to 'assistant-optin' screen.";
 
-  EXPECT_FALSE(LoginScreenTestApi::IsShutdownButtonShown());
-  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
-  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
-
-  test::OobeJS()
-      .CreateVisibilityWaiter(true, {"assistant-optin-flow", "card", "loading"})
-      ->Wait();
-
-  std::initializer_list<std::string_view> skip_button_path = {
-      "assistant-optin-flow", "card", "loading", "skip-button"};
-  test::OobeJS().CreateEnabledWaiter(true, skip_button_path)->Wait();
-  test::OobeJS().TapOnPath(skip_button_path);
-
-  OobeScreenExitWaiter(AssistantOptInFlowScreenView::kScreenId).Wait();
-  LOG(INFO) << "OobeInteractiveUITest: 'assistant-optin' screen done.";
-#endif
-}
 
 // Waits for gesture navigation to get shown, runs through all pages in the
 // screen, and waits for the screen to exit.
@@ -493,7 +464,7 @@ class FakeRecommendAppsFetcher : public apps::RecommendAppsFetcher {
     delegate_->OnLoadSuccess(base::Value(std::move(response_dict)));
   }
 
-  void Retry() override { NOTREACHED_IN_MIGRATION(); }
+  void Retry() override { NOTREACHED(); }
 
  private:
   const raw_ptr<apps::RecommendAppsFetcherDelegate> delegate_;
@@ -583,11 +554,11 @@ class OobeEndToEndTestSetupMixin : public InProcessBrowserTestMixin {
     ArcState arc_state;
 
     std::string ToString() const {
-      return std::string("{is_tablet: ") + (is_tablet ? "true" : "false") +
+      return std::string("{is_tablet: ") + base::ToString(is_tablet) +
              ", is_quick_unlock_enabled: " +
-             (is_quick_unlock_enabled ? "true" : "false") +
+             base::ToString(is_quick_unlock_enabled) +
              ", hide_shelf_controls_in_tablet_mode: " +
-             (hide_shelf_controls_in_tablet_mode ? "true" : "false") +
+             base::ToString(hide_shelf_controls_in_tablet_mode) +
              ", arc_state: " + ArcStateToString(arc_state) + "}";
     }
   };
@@ -714,6 +685,11 @@ class OobeInteractiveUITest : public OobeBaseTest,
   ~OobeInteractiveUITest() override = default;
 
   // OobeBaseTest:
+  void SetUpOnMainThread() override {
+    OobeBaseTest::SetUpOnMainThread();
+    fake_gaia_.SetupFakeGaiaForLoginWithDefaults();
+  }
+
   void TearDownOnMainThread() override {
     // If the login display is still showing, exit gracefully.
     if (LoginDisplayHost::default_host()) {
@@ -789,9 +765,7 @@ void OobeInteractiveUITest::PerformSessionSignInSteps() {
       test::TapUserCreationNext();
     }
 
-    if (features::IsOobeGaiaInfoScreenEnabled()) {
-      HandleGaiaInfoScreen();
-    }
+    HandleGaiaInfoScreen();
   }
 
   WaitForGaiaSignInScreen();
@@ -833,13 +807,7 @@ void OobeInteractiveUITest::PerformSessionSignInSteps() {
     HandleAiIntroScreen();
   }
 
-  if (ash::features::IsOobeGeminiIntroEnabled()) {
-    HandleGeminiIntroScreen();
-  }
-
-  if (!features::IsOobeSkipAssistantEnabled()) {
-    HandleAssistantOptInScreen();
-  }
+  HandleGeminiIntroScreen();
 
   if (test_setup()->is_tablet() &&
       test_setup()->hide_shelf_controls_in_tablet_mode()) {
@@ -872,10 +840,8 @@ void OobeInteractiveUITest::SimpleEndToEnd() {
 
 // Disabled on *San bots since they time out.
 // crbug.com/1260131: SimpleEndToEnd is flaky on builder "linux-chromeos-dbg"
-// crbug.com/337379954: SimpleEndToEnd is excessively flaky on
-// linux-chromeos-chrome.
 #if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || \
-    defined(LEAK_SANITIZER) || !defined(NDEBUG) || BUILDFLAG(IS_CHROMEOS_ASH)
+    defined(LEAK_SANITIZER) || !defined(NDEBUG)
 #define MAYBE_SimpleEndToEnd DISABLED_SimpleEndToEnd
 #else
 #define MAYBE_SimpleEndToEnd SimpleEndToEnd
@@ -925,8 +891,8 @@ class OobeZeroTouchInteractiveUITest : public OobeInteractiveUITest {
     OobeInteractiveUITest::SetUpCommandLine(command_line);
 
     command_line->AppendSwitchASCII(
-        switches::kEnterpriseEnableInitialEnrollment,
-        policy::AutoEnrollmentTypeChecker::kInitialEnrollmentAlways);
+        switches::kEnterpriseEnableUnifiedStateDetermination,
+        policy::AutoEnrollmentTypeChecker::kUnifiedStateDeterminationAlways);
   }
 
   void ZeroTouchEndToEnd();
@@ -939,6 +905,7 @@ class OobeZeroTouchInteractiveUITest : public OobeInteractiveUITest {
 };
 
 void OobeZeroTouchInteractiveUITest::ZeroTouchEndToEnd() {
+  base::ScopedAllowBlockingForTesting allow_io;
   test::SetFakeTouchpadDevice();
   policy_test_server_mixin_.SetupZeroTouchForcedEnrollment();
 
@@ -962,9 +929,8 @@ void OobeZeroTouchInteractiveUITest::ZeroTouchEndToEnd() {
 
 // crbug.com/997987. Disabled on MSAN since they time out.
 // crbug.com/1055853: EndToEnd is flaky on Linux Chromium OS ASan LSan
-// crbug.com/337379954: EndToEnd is excessively flaky on linux-chromeos-chrome.
 #if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || \
-    defined(LEAK_SANITIZER) || !defined(NDEBUG) || BUILDFLAG(IS_CHROMEOS_ASH)
+    defined(LEAK_SANITIZER) || !defined(NDEBUG)
 #define MAYBE_EndToEnd DISABLED_EndToEnd
 #else
 #define MAYBE_EndToEnd EndToEnd
@@ -1184,9 +1150,7 @@ IN_PROC_BROWSER_TEST_P(EphemeralUserOobeTest, RegularEphemeralUser) {
     HandleAiIntroScreen();
   }
 
-  if (ash::features::IsOobeGeminiIntroEnabled()) {
-    HandleGeminiIntroScreen();
-  }
+  HandleGeminiIntroScreen();
 
   HandleThemeSelectionScreen();
   WaitForActiveSession();

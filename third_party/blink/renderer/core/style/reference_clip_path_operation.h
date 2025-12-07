@@ -51,6 +51,8 @@ class ReferenceClipPathOperation final : public ClipPathOperation {
   void AddClient(SVGResourceClient&);
   void RemoveClient(SVGResourceClient&);
 
+  bool IsLoading() const;
+
   SVGResource* Resource() const { return resource_.Get(); }
   const AtomicString& Url() const { return url_; }
 

@@ -32,6 +32,7 @@ class SVGPolylineElement final : public SVGPolyElement {
   explicit SVGPolylineElement(Document&);
 
   Path AsPath() const override;
+  PathBuilder AsMutablePath() const override;
 };
 
 }  // namespace blink

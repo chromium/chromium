@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/web/test/fakes/fake_navigation_manager_delegate.h"
+
 #import "ios/web/web_state/ui/crw_web_view_navigation_proxy.h"
 #import "url/gurl.h"
 
@@ -39,6 +40,8 @@ NavigationItemImpl* FakeNavigationManagerDelegate::GetPendingItem() {
 GURL FakeNavigationManagerDelegate::GetCurrentURL() const {
   return GURL();
 }
+
+void FakeNavigationManagerDelegate::UpdateSSLStatusForCurrentNavigationItem() {}
 
 void FakeNavigationManagerDelegate::SetWebViewNavigationProxy(id web_view) {
   test_web_view_ = web_view;

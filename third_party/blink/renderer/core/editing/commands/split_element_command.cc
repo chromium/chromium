@@ -105,6 +105,10 @@ void SplitElementCommand::DoReapply() {
   ExecuteApply();
 }
 
+String SplitElementCommand::ToString() const {
+  return "SplitElementCommand";
+}
+
 void SplitElementCommand::Trace(Visitor* visitor) const {
   visitor->Trace(element1_);
   visitor->Trace(element2_);

@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("extensions") {
   sources = [
@@ -14,6 +14,7 @@ static_library("extensions") {
 
   deps = [
     "//base",
+    "//chrome/browser/ash/arc/session",
     "//content/public/browser",
     "//extensions/browser/api/messaging",
     "//extensions/browser/api/messaging:native_messaging",

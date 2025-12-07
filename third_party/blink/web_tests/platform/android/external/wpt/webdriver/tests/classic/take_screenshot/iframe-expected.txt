@@ -1,0 +1,9 @@
+This is a wdspec test.
+[FAIL] test_always_captures_top_browsing_context
+  assert (1080, 1848) == (2940, 4206)
+[FAIL] test_source_origin[same_origin]
+  assert (1080, 1848) == (2940, 4206)
+[FAIL] test_source_origin[cross_origin]
+  assert (1080, 1848) == (2940, 4206)
+Harness: the test ran to completion.
+

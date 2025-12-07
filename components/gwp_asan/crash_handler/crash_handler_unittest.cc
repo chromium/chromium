@@ -2,19 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/gwp_asan/crash_handler/crash_handler.h"
 
+#include <array>
 #include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
@@ -46,14 +44,15 @@
 #include "third_party/crashpad/crashpad/snapshot/sanitized/sanitization_information.h"
 #endif
 
-namespace gwp_asan {
-namespace internal {
+namespace gwp_asan::internal {
 
 namespace {
 
 constexpr size_t kAllocationSize = 902;
 constexpr int kSuccess = 0;
-constexpr size_t kTotalPages = AllocatorState::kMaxRequestedSlots;
+
+static constexpr size_t kMaxMetadata = 2048;
+static constexpr size_t kTotalPages = 8192;
 
 #if !BUILDFLAG(IS_ANDROID)
 int HandlerMainAdaptor(int argc, char* argv[]) {
@@ -117,14 +116,14 @@ MULTIPROCESS_TEST_MAIN(CrashingProcess) {
   }
 
   base::NoDestructor<GuardedPageAllocator> gpa;
-  gpa->Init(
+  CHECK(gpa->Init(
       AllocatorSettings{
-          .max_allocated_pages = AllocatorState::kMaxMetadata,
-          .num_metadata = AllocatorState::kMaxMetadata,
+          .max_allocated_pages = kMaxMetadata,
+          .num_metadata = kMaxMetadata,
           .total_pages = kTotalPages,
           .sampling_frequency = 0u,
       },
-      base::DoNothing(), allocator == "partitionalloc");
+      base::DoNothing(), allocator == "partitionalloc"));
 
   static crashpad::StringAnnotation<24> gpa_annotation(annotation_name);
   gpa_annotation.Set(gpa->GetCrashKey());
@@ -145,6 +144,9 @@ MULTIPROCESS_TEST_MAIN(CrashingProcess) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   static crashpad::SanitizationInformation sanitization_info = {};
   static crashpad::SanitizationAllowedMemoryRanges allowed_memory_ranges;
+  static base::NoDestructor<
+      std::vector<crashpad::SanitizationAllowedMemoryRanges::Range>>
+      ranges;
   if (cmd_line->HasSwitch("sanitize")) {
     auto memory_ranges = gpa->GetInternalMemoryRegions();
     if (cmd_line->HasSwitch("enable-lightweight-detector")) {
@@ -153,17 +155,15 @@ MULTIPROCESS_TEST_MAIN(CrashingProcess) {
       memory_ranges.insert(memory_ranges.end(), detector_memory_ranges.begin(),
                            detector_memory_ranges.end());
     }
-    auto* range_array =
-        new crashpad::SanitizationAllowedMemoryRanges::Range[memory_ranges
-                                                                 .size()];
-    for (size_t i = 0; i < memory_ranges.size(); i++) {
-      range_array[i].base =
-          reinterpret_cast<crashpad::VMAddress>(memory_ranges[i].first);
-      range_array[i].length = memory_ranges[i].second;
+    for (auto& memory_range : memory_ranges) {
+      ranges->push_back(crashpad::SanitizationAllowedMemoryRanges::Range{
+          .base = reinterpret_cast<crashpad::VMAddress>(memory_range.first),
+          .length = memory_range.second,
+      });
     }
     allowed_memory_ranges.size = memory_ranges.size();
     allowed_memory_ranges.entries =
-        reinterpret_cast<crashpad::VMAddress>(range_array);
+        reinterpret_cast<crashpad::VMAddress>(ranges->data());
     sanitization_info.allowed_memory_ranges_address =
         reinterpret_cast<crashpad::VMAddress>(&allowed_memory_ranges);
     arguments.push_back(base::StringPrintf("--sanitization-information=%p",
@@ -198,8 +198,7 @@ MULTIPROCESS_TEST_MAIN(CrashingProcess) {
       modules.AppendASCII("libchrome_crashpad_handler.so");
 
   std::unique_ptr<base::Environment> env(base::Environment::Create());
-  std::string library_path;
-  env->GetVar("LD_LIBRARY_PATH", &library_path);
+  std::string library_path = env->GetVar("LD_LIBRARY_PATH").value_or("");
   env->SetVar("LD_LIBRARY_PATH", library_path + ":" + modules.value());
 
   bool handler = client->StartHandlerAtCrash(
@@ -230,12 +229,27 @@ MULTIPROCESS_TEST_MAIN(CrashingProcess) {
     gpa->Deallocate(ptr);
   } else if (test_name == "Underflow") {
     void* ptr = gpa->Allocate(kAllocationSize);
-    for (size_t i = 0; i < base::GetPageSize(); i++)
-      ((unsigned char*)ptr)[-i] = 0;
+    for (size_t i = 0; i < base::GetPageSize(); i++) {
+      // Cast to `ptrdiff_t` so that the offset is actually negative, rather
+      // than a very large unsigned value. With a very large unsigned value,
+      // UBSan flags the error without any information about allocation sizes,
+      // which impacts the crash handling.
+      //
+      // The compiler could also, in principle, see that `ptr[-size_t{1}]` is
+      // always UB because no allocation can be that large, and then optimize
+      // this code to assume `base::GetPageSize()` returns one, suppressing the
+      // crash. (Though, as of writing, it does not do this.)
+      //
+      // Avoid these issues by underflowing with an actual negative value. This
+      // is still UB (thus the crash), but requires knowledge of `ptr` to
+      // observe, so a non-ASan compiler does not interfere with it in practice.
+      UNSAFE_TODO(((unsigned char*)ptr)[-static_cast<ptrdiff_t>(i)]) = 0;
+    }
   } else if (test_name == "Overflow") {
     void* ptr = gpa->Allocate(kAllocationSize);
-    for (size_t i = 0; i <= base::GetPageSize(); i++)
-      ((unsigned char*)ptr)[i] = 0;
+    for (size_t i = 0; i <= base::GetPageSize(); i++) {
+      UNSAFE_TODO(((unsigned char*)ptr)[i]) = 0;
+    }
   } else if (test_name == "UnrelatedException") {
     __builtin_trap();
   } else if (test_name == "FreeInvalidAddress") {
@@ -244,9 +258,10 @@ MULTIPROCESS_TEST_MAIN(CrashingProcess) {
     gpa->Deallocate(reinterpret_cast<void*>(bad_address));
   } else if (test_name == "MissingMetadata") {
     // Consume all allocations/metadata
-    void* ptrs[AllocatorState::kMaxMetadata];
-    for (size_t i = 0; i < AllocatorState::kMaxMetadata; i++)
+    std::array<void*, kMaxMetadata> ptrs;
+    for (size_t i = 0; i < kMaxMetadata; i++) {
       ptrs[i] = gpa->Allocate(1);
+    }
 
     gpa->Deallocate(ptrs[0]);
 
@@ -310,18 +325,18 @@ class BaseCrashHandlerTest : public base::MultiProcessTest,
     ASSERT_NE(separator, std::string::npos);
     test_name.erase(separator);
 
-    ASSERT_TRUE(runTestProcess(database_dir.GetPath(), test_name.c_str()));
+    ASSERT_TRUE(RunTestProcess(database_dir.GetPath(), test_name.c_str()));
 
     bool minidump_found;
-    readGwpAsanStreamFromCrash(database_dir.GetPath(), &minidump_found,
-                               &gwp_asan_found_, &proto_);
+    ReadGwpAsanStreamFromCrash(database_dir.GetPath(), minidump_found,
+                               gwp_asan_found_, proto_);
     ASSERT_TRUE(minidump_found);
   }
 
   // Launch a second process that installs a crashpad handler and causes an
   // exception of type test_name, then validate that it exited successfully.
   // crashpad is initialized to write to the given database directory.
-  bool runTestProcess(const base::FilePath& database_dir,
+  bool RunTestProcess(const base::FilePath& database_dir,
                       const char* test_name) {
     base::CommandLine cmd_line =
         base::GetMultiProcessTestChildBaseCommandLine();
@@ -366,14 +381,14 @@ class BaseCrashHandlerTest : public base::MultiProcessTest,
 
   // Given a directory with a single crashpad exception, read and parse the
   // minidump and identify whether it has a GWP-ASan stream. If it successfully
-  // found a minidump, it writes true to minidump_found. If it sucessfully found
-  // a GWP-ASan stream in the minidump, it writes true to gwp_asan_found and
-  // parses the protobuf into into proto_out.
-  void readGwpAsanStreamFromCrash(const base::FilePath& database_dir,
-                                  bool* minidump_found,
-                                  bool* gwp_asan_found,
-                                  gwp_asan::Crash* proto_out) {
-    *minidump_found = *gwp_asan_found = false;
+  // found a minidump, it writes true to minidump_found. If it successfully
+  // found a GWP-ASan stream in the minidump, it writes true to gwp_asan_found
+  // and parses the protobuf into into proto_out.
+  void ReadGwpAsanStreamFromCrash(const base::FilePath& database_dir,
+                                  bool& minidump_found,
+                                  bool& gwp_asan_found,
+                                  gwp_asan::Crash& proto_out) {
+    minidump_found = gwp_asan_found = false;
     auto database =
         crashpad::CrashReportDatabase::InitializeWithoutCreating(database_dir);
 
@@ -387,21 +402,22 @@ class BaseCrashHandlerTest : public base::MultiProcessTest,
 
     crashpad::ProcessSnapshotMinidump minidump_process_snapshot;
     ASSERT_TRUE(minidump_process_snapshot.Initialize(&minidump_file_reader));
-    *minidump_found = true;
+    minidump_found = true;
 
-    auto custom_streams = minidump_process_snapshot.CustomMinidumpStreams();
-    for (auto* stream : custom_streams) {
+    std::vector<const crashpad::MinidumpStream*> custom_streams =
+        minidump_process_snapshot.CustomMinidumpStreams();
+    for (const crashpad::MinidumpStream* stream : custom_streams) {
       if (stream->stream_type() == static_cast<crashpad::MinidumpStreamType>(
                                        kGwpAsanMinidumpStreamType)) {
-        ASSERT_TRUE(proto_out->ParseFromArray(stream->data().data(),
-                                              stream->data().size()));
-        *gwp_asan_found = true;
+        ASSERT_TRUE(proto_out.ParseFromArray(stream->data().data(),
+                                             stream->data().size()));
+        gwp_asan_found = true;
         return;
       }
     }
   }
 
-  void checkProto(Crash_Mode mode,
+  void CheckProto(Crash_Mode mode,
                   Crash_ErrorType error_type,
                   HasAllocation has_allocation,
                   HasDeallocation has_deallocation) {
@@ -446,21 +462,24 @@ class BaseCrashHandlerTest : public base::MultiProcessTest,
       // depends on the PartitionAlloc metadata layout.
       EXPECT_GE(proto_.region_size(),
                 base::GetPageSize() * (2 * kTotalPages + 1));
-      EXPECT_LE(
-          proto_.region_size(),
-          base::GetPageSize() * (2 * AllocatorState::kMaxReservedSlots + 1));
+      // Upper bound for number of pages reserved when requesting kTotalPages
+      // worth of allocatable slots.
+      constexpr size_t kTotalPagesReserved = 2 * kTotalPages;
+      EXPECT_LE(proto_.region_size(),
+                base::GetPageSize() * (2 * kTotalPagesReserved + 1));
     }
 
     EXPECT_TRUE(proto_.has_missing_metadata());
     EXPECT_FALSE(proto_.missing_metadata());
 
     EXPECT_TRUE(proto_.has_allocator());
-    if (!strcmp(params_.allocator, "malloc"))
+    if (absl::string_view(params_.allocator) == "malloc") {
       EXPECT_EQ(proto_.allocator(), Crash_Allocator_MALLOC);
-    else if (!strcmp(params_.allocator, "partitionalloc"))
+    } else if (absl::string_view(params_.allocator) == "partitionalloc") {
       EXPECT_EQ(proto_.allocator(), Crash_Allocator_PARTITIONALLOC);
-    else
+    } else {
       ASSERT_TRUE(false) << "Unknown allocator name";
+    }
   }
 
   gwp_asan::Crash proto_;
@@ -479,31 +498,31 @@ class CrashHandlerTest : public BaseCrashHandlerTest {};
 
 TEST_P(CrashHandlerTest, MAYBE_DISABLED(UseAfterFree)) {
   ASSERT_TRUE(gwp_asan_found_);
-  checkProto(Crash_Mode_CLASSIC, Crash_ErrorType_USE_AFTER_FREE,
+  CheckProto(Crash_Mode_CLASSIC, Crash_ErrorType_USE_AFTER_FREE,
              HasAllocation::kYes, HasDeallocation::kYes);
 }
 
 TEST_P(CrashHandlerTest, MAYBE_DISABLED(DoubleFree)) {
   ASSERT_TRUE(gwp_asan_found_);
-  checkProto(Crash_Mode_CLASSIC, Crash_ErrorType_DOUBLE_FREE,
+  CheckProto(Crash_Mode_CLASSIC, Crash_ErrorType_DOUBLE_FREE,
              HasAllocation::kYes, HasDeallocation::kYes);
 }
 
 TEST_P(CrashHandlerTest, MAYBE_DISABLED(Underflow)) {
   ASSERT_TRUE(gwp_asan_found_);
-  checkProto(Crash_Mode_CLASSIC, Crash_ErrorType_BUFFER_UNDERFLOW,
+  CheckProto(Crash_Mode_CLASSIC, Crash_ErrorType_BUFFER_UNDERFLOW,
              HasAllocation::kYes, HasDeallocation::kNo);
 }
 
 TEST_P(CrashHandlerTest, MAYBE_DISABLED(Overflow)) {
   ASSERT_TRUE(gwp_asan_found_);
-  checkProto(Crash_Mode_CLASSIC, Crash_ErrorType_BUFFER_OVERFLOW,
+  CheckProto(Crash_Mode_CLASSIC, Crash_ErrorType_BUFFER_OVERFLOW,
              HasAllocation::kYes, HasDeallocation::kNo);
 }
 
 TEST_P(CrashHandlerTest, MAYBE_DISABLED(FreeInvalidAddress)) {
   ASSERT_TRUE(gwp_asan_found_);
-  checkProto(Crash_Mode_CLASSIC, Crash_ErrorType_FREE_INVALID_ADDRESS,
+  CheckProto(Crash_Mode_CLASSIC, Crash_ErrorType_FREE_INVALID_ADDRESS,
              HasAllocation::kYes, HasDeallocation::kNo);
   EXPECT_TRUE(proto_.has_free_invalid_address());
 }
@@ -552,7 +571,7 @@ class LightweightDetectorCrashHandlerTest : public BaseCrashHandlerTest {};
 TEST_P(LightweightDetectorCrashHandlerTest, LightweightDetectorUseAfterFree) {
   ASSERT_TRUE(gwp_asan_found_);
 
-  checkProto(Crash_Mode_LIGHTWEIGHT_DETECTOR_BRP,
+  CheckProto(Crash_Mode_LIGHTWEIGHT_DETECTOR_BRP,
              Crash_ErrorType_USE_AFTER_FREE, HasAllocation::kNo,
              HasDeallocation::kYes);
 }
@@ -572,5 +591,4 @@ INSTANTIATE_TEST_SUITE_P(VarySanitization,
 
 }  // namespace
 
-}  // namespace internal
-}  // namespace gwp_asan
+}  // namespace gwp_asan::internal

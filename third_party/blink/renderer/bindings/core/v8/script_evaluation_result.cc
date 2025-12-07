@@ -146,7 +146,7 @@ ScriptPromise<IDLAny> ScriptEvaluationResult::GetPromise(
 
     case ResultType::kNotRun:
     case ResultType::kAborted:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

@@ -7,7 +7,6 @@
 #include "base/command_line.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -30,6 +29,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using endpoint_fetcher::EndpointFetcher;
+using endpoint_fetcher::EndpointFetcherCallback;
+using endpoint_fetcher::EndpointResponse;
+using endpoint_fetcher::FetchErrorType;
+
 using MockDiscoveryDeviceCallback = base::MockCallback<
     media_router::AccessCodeCastDiscoveryInterface::DiscoveryDeviceCallback>;
 
@@ -44,7 +48,6 @@ using AddSinkResultCode = access_code_cast::mojom::AddSinkResultCode;
 
 using ::testing::_;
 using ::testing::Eq;
-using ::testing::Invoke;
 using ::testing::InvokeArgument;
 using ::testing::Mock;
 using ::testing::NiceMock;
@@ -56,10 +59,9 @@ namespace {
 
 const char kMockPostData[] = "mock_post_data";
 constexpr base::TimeDelta kMockTimeout = base::Milliseconds(1000000);
-const char kMockOAuthConsumerName[] = "mock_oauth_consumer_name";
-const char kMockScope[] = "mock_scope";
 const char kMockEndpoint[] = "https://my-endpoint.com";
-const char kHttpMethod[] = "POST";
+constexpr endpoint_fetcher::HttpMethod kHttpMethod =
+    endpoint_fetcher::HttpMethod::kPost;
 const char kMockContentType[] = "mock_content_type";
 const char kEmail[] = "mock_email@gmail.com";
 const char kDefaultURL[] = "https://castedumessaging-pa.googleapis.com";
@@ -178,7 +180,7 @@ class AccessCodeCastDiscoveryInterfaceTest : public testing::Test {
       const AccessCodeCastDiscoveryInterfaceTest&
           access_code_cast_discovery_interface_test) = delete;
 
-  ~AccessCodeCastDiscoveryInterfaceTest() override {}
+  ~AccessCodeCastDiscoveryInterfaceTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(profile_manager_.SetUp());
@@ -200,11 +202,18 @@ class AccessCodeCastDiscoveryInterfaceTest : public testing::Test {
     //     removed. See ConsentLevel::kSync documentation for details.
     discovery_interface_->SetEndpointFetcherForTesting(
         std::make_unique<EndpointFetcher>(
-            kMockOAuthConsumerName, GURL(kMockEndpoint), kHttpMethod,
-            kMockContentType, std::vector<std::string>{kMockScope},
-            kMockTimeout, kMockPostData, TRAFFIC_ANNOTATION_FOR_TESTS,
             test_url_loader_factory, identity_test_env_.identity_manager(),
-            signin::ConsentLevel::kSync));
+            EndpointFetcher::RequestParams::Builder(
+                kHttpMethod, TRAFFIC_ANNOTATION_FOR_TESTS)
+                .SetAuthType(endpoint_fetcher::OAUTH)
+                .SetOAuthConsumerId(
+                    signin::OAuthConsumerId::kAccessCodeCastDiscovery)
+                .SetConsentLevel(signin::ConsentLevel::kSync)
+                .SetContentType(kMockContentType)
+                .SetTimeout(kMockTimeout)
+                .SetUrl(GURL(kMockEndpoint))
+                .SetPostData(kMockPostData)
+                .Build()));
 
     in_process_data_decoder_ =
         std::make_unique<data_decoder::test::InProcessDataDecoder>();
@@ -323,8 +332,8 @@ TEST_F(AccessCodeCastDiscoveryInterfaceTest, ServerError) {
   task_environment_.RunUntilIdle();
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-// Revoking Sync consent is not possible on Ash.
+#if !BUILDFLAG(IS_CHROMEOS)
+// Revoking Sync consent is not possible on ChromeOS.
 TEST_F(AccessCodeCastDiscoveryInterfaceTest, SyncError) {
   // Test to validate a fetch request without sync set for the account will
   // return a SYNC_ERROR.
@@ -336,7 +345,7 @@ TEST_F(AccessCodeCastDiscoveryInterfaceTest, SyncError) {
   stub_interface()->ValidateDiscoveryAccessCode(mock_callback.Get());
   task_environment_.RunUntilIdle();
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(AccessCodeCastDiscoveryInterfaceTest, HttpErrorMapping) {
   ErrorMappingTestHelper(net::HTTP_UNAUTHORIZED, AddSinkResultCode::AUTH_ERROR);

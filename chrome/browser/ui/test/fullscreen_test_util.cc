@@ -21,7 +21,7 @@ void WaitForHTMLFullscreen(WebContents* web_contents) {
             document.addEventListener(`fullscreenerror`, e => { reject(e); });
           }
         })))JS")
-                  .error.empty());
+                  .is_ok());
 }
 
 void WaitForHTMLFullscreenExit(WebContents* web_contents) {
@@ -37,7 +37,7 @@ void WaitForHTMLFullscreenExit(WebContents* web_contents) {
             document.addEventListener(`fullscreenerror`, e => { reject(e); });
           }
         })))JS")
-                  .error.empty());
+                  .is_ok());
 }
 
 }  // namespace content

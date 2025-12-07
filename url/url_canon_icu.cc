@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/350788890): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 // ICU-based character set converter.
 
 #include "url/url_canon_icu.h"
@@ -16,7 +11,9 @@
 #include <string.h>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/memory/stack_allocated.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/icu/source/common/unicode/ucnv.h"
 #include "third_party/icu/source/common/unicode/ucnv_cb.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
@@ -89,8 +86,7 @@ ICUCharsetConverter::ICUCharsetConverter(UConverter* converter)
 
 ICUCharsetConverter::~ICUCharsetConverter() = default;
 
-void ICUCharsetConverter::ConvertFromUTF16(const char16_t* input,
-                                           int input_len,
+void ICUCharsetConverter::ConvertFromUTF16(std::u16string_view input,
                                            CanonOutput* output) {
   // Install our error handler. It will be called for character that can not
   // be represented in the destination character set.
@@ -102,9 +98,10 @@ void ICUCharsetConverter::ConvertFromUTF16(const char16_t* input,
 
   do {
     UErrorCode err = U_ZERO_ERROR;
-    char* dest = &output->data()[begin_offset];
-    int required_capacity = ucnv_fromUChars(converter_, dest, dest_capacity,
-                                            input, input_len, &err);
+    char* dest = &UNSAFE_TODO(output->data()[begin_offset]);
+    int required_capacity =
+        ucnv_fromUChars(converter_, dest, dest_capacity, input.data(),
+                        base::checked_cast<int32_t>(input.size()), &err);
     if (err != U_BUFFER_OVERFLOW_ERROR) {
       output->set_length(begin_offset + required_capacity);
       return;

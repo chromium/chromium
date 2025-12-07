@@ -6,7 +6,6 @@ There are several test suites for verifying ChromeDriver's correctness:
 | ---------- | ------- | --------- |
 | Unit tests | Quick tests for verifying individual objects or functions | CQ |
 | Python integration tests | Verify important features work correctly with Chrome | CQ |
-| Java acceptance tests | Verify correct interaction with Chrome and Selenium Java API | Manual runs |
 | Web platform tests | Verify W3C standard complaince | CI waterfall |
 | JavaScript unit tests | Verify ChromeDriver's JavaScript functions | CQ |
 
@@ -120,47 +119,6 @@ option, where `package_name` can be one of the following values:
 
 There is future plan to [run these tests in the Chromium Commit
 Queue](https://crbug.com/813466).
-
-## WebDriver Java acceptance tests (`test/run_java_tests.py`)
-
-These are integration tests from the Selenium WebDriver open source project.
-They are not currently run on any bots, but we have plan to include these tests
-in the commit queue in the future.
-
-The source code for these tests are in the Selenium repository at
-<https://github.com/SeleniumHQ/selenium/tree/master/java/client/test/org/openqa/selenium>.
-We compile these tests, and store them in a special repository at
-<https://chromium.googlesource.com/chromium/deps/webdriver/>.
-We use a Python script
-[`test/run_java_tests.py`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/chromedriver/test/run_java_tests.py)
-to drive these tests.
-
-Before running these tests, you need to do a one-time setup with the following
-commands:
-
-```bash
-mkdir <CHROMEDRIVER_DIR>/third_party
-cd <CHROMEDRIVER_DIR>/third_party
-git clone https://chromium.googlesource.com/chromium/deps/webdriver java_tests
-```
-
-After the setup, the tests can be run with
-
-```bash
-python3 <CHROMEDRIVER_DIR>/test/run_java_tests.py --chromedriver=out/Default/chromedriver
-```
-
-The `run_py_tests.py` script has a number of options.
-Run it with `--help` for more information.
-The only require option is `--chromedriver` to specify the location of
-the ChromeDriver binary.
-
-### Disabling a Java acceptance test
-
-If there are any test cases that fail or are flaky, and you can't fix them
-quickly, please add the test names to one of the filters in
-[`test_expectations`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/chromedriver/test/test_expectations)
-file in the same directory as `run_java_tests.py`.
 
 ## Web Platform Tests (WPT)
 

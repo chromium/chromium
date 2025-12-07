@@ -48,7 +48,7 @@ PaintImage PaintImageBuilder::TakePaintImage() {
     DCHECK(!paint_image_.paint_record_);
     DCHECK(!paint_image_.paint_image_generator_);
     DCHECK(!paint_image_.sk_image_->isLazyGenerated());
-    DCHECK(!paint_image_.paint_worklet_input_);
+    DCHECK(!paint_image_.deferred_paint_record_);
     DCHECK(!paint_image_.gainmap_paint_image_generator_);
     if (paint_image_.gainmap_sk_image_) {
       DCHECK(!paint_image_.gainmap_sk_image_->isLazyGenerated());
@@ -63,7 +63,7 @@ PaintImage PaintImageBuilder::TakePaintImage() {
   } else if (paint_image_.paint_record_) {
     DCHECK(!paint_image_.sk_image_);
     DCHECK(!paint_image_.paint_image_generator_);
-    DCHECK(!paint_image_.paint_worklet_input_);
+    DCHECK(!paint_image_.deferred_paint_record_);
     DCHECK(!paint_image_.gainmap_paint_image_generator_);
     DCHECK(!paint_image_.gainmap_sk_image_);
     // TODO(khushalsagar): Assert that we don't have an animated image type
@@ -71,9 +71,9 @@ PaintImage PaintImageBuilder::TakePaintImage() {
   } else if (paint_image_.paint_image_generator_) {
     DCHECK(!paint_image_.sk_image_);
     DCHECK(!paint_image_.paint_record_);
-    DCHECK(!paint_image_.paint_worklet_input_);
+    DCHECK(!paint_image_.deferred_paint_record_);
     DCHECK(!paint_image_.gainmap_sk_image_);
-  } else if (paint_image_.paint_worklet_input_) {
+  } else if (paint_image_.deferred_paint_record_) {
     DCHECK(!paint_image_.sk_image_);
     DCHECK(!paint_image_.paint_record_);
     DCHECK(!paint_image_.paint_image_generator_);
@@ -81,13 +81,10 @@ PaintImage PaintImageBuilder::TakePaintImage() {
     DCHECK(!paint_image_.gainmap_paint_image_generator_);
   }
 
-  if (paint_image_.HasGainmap()) {
+  if (paint_image_.HasGainmapInfo()) {
     DCHECK(paint_image_.paint_image_generator_ ||
            paint_image_.gainmap_sk_image_);
   }
-
-  // Global tone mapping and gain maps are mutually exclusive.
-  DCHECK(!paint_image_.HasGainmap() || !paint_image_.use_global_tone_map_);
 
   if (paint_image_.ShouldAnimate()) {
     DCHECK(paint_image_.paint_image_generator_)
@@ -96,6 +93,17 @@ PaintImage PaintImageBuilder::TakePaintImage() {
       DCHECK_GT(frame.duration, base::TimeDelta());
   }
 #endif
+  if (paint_image_.reinterpret_as_srgb_) {
+    if (paint_image_.sk_image_) {
+      paint_image_.sk_image_ = paint_image_.sk_image_->reinterpretColorSpace(
+          SkColorSpace::MakeSRGB());
+    }
+    if (paint_image_.cached_sk_image_) {
+      paint_image_.cached_sk_image_ =
+          paint_image_.cached_sk_image_->reinterpretColorSpace(
+              SkColorSpace::MakeSRGB());
+    }
+  }
 
   // We may already have a cached_sk_image_ if this builder was created with a
   // copy.

@@ -133,7 +133,7 @@ bool Document::execCommand(const String& command_name,
   }
   base::AutoReset<bool> execute_scope(&is_running_exec_command_, true);
 
-  // Postpone DOM mutation events, which can execute scripts and change
+  // Postpone synchronous events, which can execute scripts and change
   // DOM tree against implementation assumption.
   EventQueueScope event_queue_scope;
   TidyUpHTMLStructure(*this);

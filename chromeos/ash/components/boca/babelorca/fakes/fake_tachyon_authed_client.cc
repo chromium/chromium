@@ -5,13 +5,14 @@
 #include "chromeos/ash/components/boca/babelorca/fakes/fake_tachyon_authed_client.h"
 
 #include <memory>
-#include <string_view>
+#include <string>
 #include <utility>
 
 #include "base/check.h"
+#include "base/run_loop.h"
 #include "base/types/expected.h"
-#include "chromeos/ash/components/boca/babelorca/response_callback_wrapper.h"
-#include "net/traffic_annotation/network_traffic_annotation.h"
+#include "chromeos/ash/components/boca/babelorca/request_data_wrapper.h"
+#include "chromeos/ash/components/boca/babelorca/tachyon_response.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 namespace ash::babelorca {
@@ -21,19 +22,44 @@ FakeTachyonAuthedClient::FakeTachyonAuthedClient() = default;
 FakeTachyonAuthedClient::~FakeTachyonAuthedClient() = default;
 
 void FakeTachyonAuthedClient::StartAuthedRequest(
-    const net::NetworkTrafficAnnotationTag& annotation_tag,
-    std::unique_ptr<google::protobuf::MessageLite> request_proto,
-    std::string_view url,
-    int max_retries,
-    std::unique_ptr<ResponseCallbackWrapper> response_cb) {
-  response_cb_ = std::move(response_cb);
+    std::unique_ptr<RequestDataWrapper> request_data,
+    std::unique_ptr<google::protobuf::MessageLite> request_proto) {
+  StartAuthedRequestString(std::move(request_data),
+                           request_proto->SerializeAsString());
+}
+
+void FakeTachyonAuthedClient::StartAuthedRequestString(
+    std::unique_ptr<RequestDataWrapper> request_data,
+    std::string request_string) {
+  has_new_request_ = true;
+  response_cb_ = std::move(request_data->response_cb);
+  request_string_ = std::move(request_string);
+  if (run_loop_) {
+    run_loop_->Quit();
+  }
 }
 
 void FakeTachyonAuthedClient::ExecuteResponseCallback(
-    base::expected<std::string, ResponseCallbackWrapper::TachyonRequestError>
-        response) {
+    TachyonResponse response) {
   CHECK(response_cb_);
-  response_cb_->Run(std::move(response));
+  std::move(response_cb_).Run(std::move(response));
+}
+
+RequestDataWrapper::ResponseCallback
+FakeTachyonAuthedClient::TakeResponseCallback() {
+  return std::move(response_cb_);
+}
+
+std::string FakeTachyonAuthedClient::GetRequestString() {
+  return request_string_;
+}
+
+void FakeTachyonAuthedClient::WaitForRequest() {
+  if (!has_new_request_) {
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
+  }
+  has_new_request_ = false;
 }
 
 }  // namespace ash::babelorca

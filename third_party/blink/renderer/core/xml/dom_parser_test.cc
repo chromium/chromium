@@ -7,9 +7,9 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_parse_from_string_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_supported_type.h"
+#include "third_party/blink/renderer/core/css/style_sheet_list.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/parser/html_construction_site.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/core/xml/dom_parser.h"
@@ -33,8 +34,8 @@ TEST(DOMParserTest, DomParserDocumentUsesQuirksMode) {
   V8TestingScope scope;
   auto* parser = DOMParser::Create(scope.GetScriptState());
   base::HistogramTester histogram_tester;
-  Document* document = parser->parseFromString(
-      "<div></div>", "text/html", ParseFromStringOptions::Create());
+  Document* document = parser->ParseFromStringWithoutTrustedTypes(
+      "<div></div>", V8SupportedType(V8SupportedType::Enum::kTextHtml));
   EXPECT_TRUE(document->InQuirksMode());
 }
 
@@ -43,9 +44,41 @@ TEST(DOMParserTest, DomParserDocumentUsesNoQuirksMode) {
   V8TestingScope scope;
   auto* parser = DOMParser::Create(scope.GetScriptState());
   base::HistogramTester histogram_tester;
-  Document* document = parser->parseFromString(
-      "<!doctype html>", "text/html", ParseFromStringOptions::Create());
+  Document* document = parser->ParseFromStringWithoutTrustedTypes(
+      "<!doctype html>", V8SupportedType(V8SupportedType::Enum::kTextHtml));
   EXPECT_TRUE(document->InNoQuirksMode());
+}
+
+// Regression test for https://crbug.com/1310198
+// DOMParser-created documents should have accessible styleSheets collections.
+TEST(DOMParserTest, DomParserDocumentStyleSheetsAccessible) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  auto* parser = DOMParser::Create(scope.GetScriptState());
+
+  // Test with a single style element
+  Document* document = parser->ParseFromStringWithoutTrustedTypes(
+      "<style>div { color: green; }</style>",
+      V8SupportedType(V8SupportedType::Enum::kTextHtml));
+  ASSERT_NE(document, nullptr);
+  StyleSheetList& style_sheets = document->StyleSheets();
+  EXPECT_EQ(style_sheets.length(), 1u);
+
+  // Test with multiple style elements
+  Document* document_multi = parser->ParseFromStringWithoutTrustedTypes(
+      "<style>div { color: green; }</style><style>p { color: red; }</style>",
+      V8SupportedType(V8SupportedType::Enum::kTextHtml));
+  ASSERT_NE(document_multi, nullptr);
+  StyleSheetList& style_sheets_multi = document_multi->StyleSheets();
+  EXPECT_EQ(style_sheets_multi.length(), 2u);
+
+  // Test with no style elements
+  Document* document_empty = parser->ParseFromStringWithoutTrustedTypes(
+      "<div>No styles</div>",
+      V8SupportedType(V8SupportedType::Enum::kTextHtml));
+  ASSERT_NE(document_empty, nullptr);
+  StyleSheetList& style_sheets_empty = document_empty->StyleSheets();
+  EXPECT_EQ(style_sheets_empty.length(), 0u);
 }
 
 }  // namespace

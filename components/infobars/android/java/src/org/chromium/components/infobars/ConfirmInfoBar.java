@@ -11,6 +11,8 @@ import androidx.annotation.ColorRes;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.infobar.ActionType;
 
 /**
@@ -19,24 +21,25 @@ import org.chromium.chrome.browser.infobar.ActionType;
  * TODO(newt): merge this into InfoBar.java.
  */
 @JNINamespace("infobars")
+@NullMarked
 public class ConfirmInfoBar extends InfoBar {
     /** Text shown on the primary button, e.g. "OK". */
     private final String mPrimaryButtonText;
 
-    /** Text shown on the secondary button, e.g. "Cancel".*/
-    private final String mSecondaryButtonText;
+    /** Text shown on the secondary button, e.g. "Cancel". */
+    private final @Nullable String mSecondaryButtonText;
 
     /** Text shown on the link, e.g. "Learn more". */
-    private final String mLinkText;
+    private final @Nullable String mLinkText;
 
     protected ConfirmInfoBar(
             int iconDrawableId,
             @ColorRes int iconTintId,
-            Bitmap iconBitmap,
+            @Nullable Bitmap iconBitmap,
             String message,
-            String linkText,
+            @Nullable String linkText,
             String primaryButtonText,
-            String secondaryButtonText) {
+            @Nullable String secondaryButtonText) {
         super(iconDrawableId, iconTintId, message, iconBitmap);
         mPrimaryButtonText = primaryButtonText;
         mSecondaryButtonText = secondaryButtonText;
@@ -52,14 +55,15 @@ public class ConfirmInfoBar extends InfoBar {
     /**
      * If your custom infobar overrides this function, YOU'RE PROBABLY DOING SOMETHING WRONG.
      *
-     * Adds buttons to the infobar.  This should only be overridden in cases where an infobar
+     * <p>Adds buttons to the infobar. This should only be overridden in cases where an infobar
      * requires adding something other than a button for its secondary View on the bottom row
      * (almost never).
      *
      * @param primaryText Text to display on the primary button.
-     * @param secondaryText Text to display on the secondary button.  May be null.
+     * @param secondaryText Text to display on the secondary button. May be null.
      */
-    protected void setButtons(InfoBarLayout layout, String primaryText, String secondaryText) {
+    protected void setButtons(
+            InfoBarLayout layout, String primaryText, @Nullable String secondaryText) {
         layout.setButtons(primaryText, secondaryText);
     }
 

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/ash_view_ids.h"
@@ -10,7 +11,6 @@
 #include "ash/system/tray/tray_detailed_view.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
@@ -19,7 +19,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/session_controller_client_impl.h"
+#include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
@@ -34,9 +34,8 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
-#include "media/base/media_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
@@ -79,11 +78,7 @@ void EnableSelectToSpeak(bool enabled) {
 }
 
 void EnableDictation(bool enabled) {
-  bool already_enabled = AccessibilityManager::Get()->IsDictationEnabled();
-  if (enabled == already_enabled) {
-    return;
-  }
-  AccessibilityManager::Get()->ToggleDictation();
+  AccessibilityManager::Get()->SetDictationEnabled(enabled);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -151,9 +146,7 @@ class TrayAccessibilityTest : public InProcessBrowserTest,
  public:
   TrayAccessibilityTest()
       : disable_animations_(
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
-    scoped_feature_list_.InitWithFeatures({media::kLiveCaption}, {});
-  }
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION) {}
   ~TrayAccessibilityTest() override = default;
 
   // The profile which should be used by these tests.
@@ -163,6 +156,8 @@ class TrayAccessibilityTest : public InProcessBrowserTest,
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     tray_test_api_ = ash::SystemTrayTestApi::Create();
+    ash::AccessibilityController::Get()
+        ->DisableSwitchAccessDisableConfirmationDialogTesting();
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -218,14 +213,13 @@ class TrayAccessibilityTest : public InProcessBrowserTest,
   }
 
   // Disable animations so that tray icons hide immediately.
-  ui::ScopedAnimationDurationScaleMode disable_animations_;
+  gfx::ScopedAnimationDurationScaleMode disable_animations_;
 
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
   std::unique_ptr<ash::SystemTrayTestApi> tray_test_api_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(TrayAccessibilityTest, DISABLED_ShowMenu) {
+IN_PROC_BROWSER_TEST_P(TrayAccessibilityTest, ShowMenu) {
   SetShowAccessibilityOptionsInSystemTrayMenu(false);
 
   // Confirms that the menu is hidden.
@@ -394,9 +388,7 @@ IN_PROC_BROWSER_TEST_P(TrayAccessibilityTest, DISABLED_ShowMenu) {
   EXPECT_FALSE(IsMenuButtonVisible());
 }
 
-// Fails on linux-chromeos-dbg see crbug/1027919.
-IN_PROC_BROWSER_TEST_P(TrayAccessibilityTest,
-                       DISABLED_ShowMenuWithShowMenuOption) {
+IN_PROC_BROWSER_TEST_P(TrayAccessibilityTest, ShowMenuWithShowMenuOption) {
   SetShowAccessibilityOptionsInSystemTrayMenu(true);
 
   // Confirms that the menu is visible.

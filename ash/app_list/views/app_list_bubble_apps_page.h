@@ -35,7 +35,6 @@ class Separator;
 
 namespace ash {
 
-class ApplicationDragAndDropHost;
 class AppListA11yAnnouncer;
 class AppListConfig;
 class AppListFolderController;
@@ -65,7 +64,6 @@ class ASH_EXPORT AppListBubbleAppsPage
 
  public:
   AppListBubbleAppsPage(AppListViewDelegate* view_delegate,
-                        ApplicationDragAndDropHost* drag_and_drop_host,
                         AppListConfig* app_list_config,
                         AppListA11yAnnouncer* a11y_announcer,
                         AppListFolderController* folder_controller,
@@ -119,7 +117,8 @@ class ASH_EXPORT AppListBubbleAppsPage
 
   // view::ViewObserver:
   void OnViewVisibilityChanged(views::View* observed_view,
-                               views::View* starting_view) override;
+                               views::View* starting_view,
+                               bool visible) override;
 
   // AppListModelProvider::Observer:
   void OnActiveAppListModelsChanged(AppListModel* model,

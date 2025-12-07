@@ -5,6 +5,7 @@
 #include "components/printing/browser/print_to_pdf/pdf_print_utils.h"
 
 #include <string_view>
+#include <variant>
 
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -36,7 +37,7 @@ static constexpr double kDefaultMarginInInches =
 
 }  // namespace
 
-absl::variant<printing::PageRanges, PdfPrintResult> TextPageRangesToPageRanges(
+std::variant<printing::PageRanges, PdfPrintResult> TextPageRangesToPageRanges(
     std::string_view page_range_text) {
   printing::PageRanges page_ranges;
   for (const auto& range_string :
@@ -84,7 +85,7 @@ absl::variant<printing::PageRanges, PdfPrintResult> TextPageRangesToPageRanges(
   return page_ranges;
 }
 
-absl::variant<printing::mojom::PrintPagesParamsPtr, std::string>
+std::variant<printing::mojom::PrintPagesParamsPtr, std::string>
 GetPrintPagesParams(const GURL& page_url,
                     std::optional<bool> landscape,
                     std::optional<bool> display_header_footer,
@@ -137,16 +138,21 @@ GetPrintPagesParams(const GURL& page_url,
   if (margin_bottom_in_inches < 0)
     return "bottom margin is negative";
 
-  printing::PageMargins margins_in_points;
-  margins_in_points.left =
-      base::ClampFloor(margin_left_in_inches * printing::kPointsPerInch);
-  margins_in_points.right =
-      base::ClampFloor(margin_right_in_inches * printing::kPointsPerInch);
-  margins_in_points.top =
-      base::ClampFloor(margin_top_in_inches * printing::kPointsPerInch);
-  margins_in_points.bottom =
-      base::ClampFloor(margin_bottom_in_inches * printing::kPointsPerInch);
-  print_settings.SetCustomMargins(margins_in_points);
+  printing::PageMargins margins_in_microns;
+  margins_in_microns.left = printing::ConvertUnit(
+      base::ClampFloor(margin_left_in_inches * printing::kPointsPerInch),
+      printing::kPointsPerInch, printing::kMicronsPerInch);
+  margins_in_microns.right = printing::ConvertUnit(
+      base::ClampFloor(margin_right_in_inches * printing::kPointsPerInch),
+      printing::kPointsPerInch, printing::kMicronsPerInch);
+  margins_in_microns.top = printing::ConvertUnit(
+      base::ClampFloor(margin_top_in_inches * printing::kPointsPerInch),
+      printing::kPointsPerInch, printing::kMicronsPerInch);
+  margins_in_microns.bottom = printing::ConvertUnit(
+      base::ClampFloor(margin_bottom_in_inches * printing::kPointsPerInch),
+      printing::kPointsPerInch, printing::kMicronsPerInch);
+
+  print_settings.SetCustomMargins(margins_in_microns);
 
   double paper_width_in_inches =
       paper_width.value_or(printing::kLetterWidthInch);

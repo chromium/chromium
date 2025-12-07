@@ -10,7 +10,6 @@
 #include "ui/compositor/layer.h"
 #include "ui/views/background.h"
 #include "ui/views/highlight_border.h"
-#include "ui/views/metadata/view_factory_internal.h"
 
 namespace ash {
 
@@ -18,6 +17,8 @@ namespace {
 
 constexpr int kRoundedCornerRadius = 20;
 constexpr ui::ColorId kBackgroundColorId = cros_tokens::kCrosSysSystemOnBase;
+constexpr ui::ColorId kCoralSelectionShownBackgroundColorId =
+    cros_tokens::kCrosSysSystemOnBaseOpaque;
 
 }  // namespace
 
@@ -25,19 +26,32 @@ BirchChipButtonBase::BirchChipButtonBase() {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
-  SetBorder(std::make_unique<views::HighlightBorder>(
-      kRoundedCornerRadius,
-      views::HighlightBorder::Type::kHighlightBorderNoShadow));
-  SetBackground(views::CreateThemedRoundedRectBackground(kBackgroundColorId,
-                                                         kRoundedCornerRadius));
-
-  // Install and stylize the focus ring.
-  StyleUtil::InstallRoundedCornerHighlightPathGenerator(
-      this, gfx::RoundedCornersF(kRoundedCornerRadius));
-  StyleUtil::SetUpFocusRingForView(this);
+  UpdateRoundedCorners(/*selection_widget_visible=*/false);
 }
 
 BirchChipButtonBase::~BirchChipButtonBase() = default;
+
+void BirchChipButtonBase::UpdateRoundedCorners(bool selection_widget_visible) {
+  const gfx::RoundedCornersF rounded_corners =
+      selection_widget_visible
+          ? gfx::RoundedCornersF(0, 0, kRoundedCornerRadius,
+                                 kRoundedCornerRadius)
+          : gfx::RoundedCornersF(kRoundedCornerRadius);
+  SetBorder(std::make_unique<views::HighlightBorder>(
+      rounded_corners, views::HighlightBorder::Type::kHighlightBorderNoShadow));
+  SetBackground(views::CreateRoundedRectBackground(
+      selection_widget_visible ? kCoralSelectionShownBackgroundColorId
+                               : kBackgroundColorId,
+      rounded_corners));
+
+  // Install and stylize the focus ring.
+  StyleUtil::InstallRoundedCornerHighlightPathGenerator(this, rounded_corners);
+  StyleUtil::SetUpFocusRingForView(this);
+}
+
+int BirchChipButtonBase::GetRoundedCornerRadius() const {
+  return kRoundedCornerRadius;
+}
 
 BEGIN_METADATA(BirchChipButtonBase)
 END_METADATA

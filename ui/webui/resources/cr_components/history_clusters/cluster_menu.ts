@@ -70,10 +70,11 @@ export class ClusterMenuElement extends ClusterMenuElementBase {
   // Properties
   //============================================================================
 
-  protected allowDeletingHistory_: boolean =
+  protected accessor allowDeletingHistory_: boolean =
       loadTimeData.getBoolean('allowDeletingHistory');
-  protected inSidePanel_: boolean = loadTimeData.getBoolean('inSidePanel');
-  protected renderActionMenu_: boolean = false;
+  protected accessor inSidePanel_: boolean =
+      loadTimeData.getBoolean('inSidePanel');
+  protected accessor renderActionMenu_: boolean = false;
 
   //============================================================================
   // Event handlers
@@ -85,7 +86,7 @@ export class ClusterMenuElement extends ClusterMenuElementBase {
       this.renderActionMenu_ = true;
       await this.updateComplete;
     }
-    const menu = this.shadowRoot!.querySelector('cr-action-menu');
+    const menu = this.shadowRoot.querySelector('cr-action-menu');
     assert(menu);
     menu.showAt(this.$.actionMenuButton);
   }
@@ -119,7 +120,7 @@ export class ClusterMenuElement extends ClusterMenuElementBase {
   //============================================================================
 
   private closeActionMenu_() {
-    const menu = this.shadowRoot!.querySelector('cr-action-menu');
+    const menu = this.shadowRoot.querySelector('cr-action-menu');
     assert(menu);
     menu.close();
   }

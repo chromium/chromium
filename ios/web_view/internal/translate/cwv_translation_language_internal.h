@@ -5,10 +5,9 @@
 #ifndef IOS_WEB_VIEW_INTERNAL_TRANSLATE_CWV_TRANSLATION_LANGUAGE_INTERNAL_H_
 #define IOS_WEB_VIEW_INTERNAL_TRANSLATE_CWV_TRANSLATION_LANGUAGE_INTERNAL_H_
 
-#import "ios/web_view/public/cwv_translation_language.h"
-
 #include <string>
 
+#import "ios/web_view/public/cwv_translation_language.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

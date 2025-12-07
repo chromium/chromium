@@ -2,25 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
+
 #include <algorithm>
 #include <iomanip>
 #include <ostream>
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/tests/bindings_test_base.h"
-#include "mojo/public/interfaces/bindings/tests/sample_service.mojom.h"
+#include "mojo/public/interfaces/bindings/tests/sample_service.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo {
@@ -239,7 +236,7 @@ void Print(int depth, const char* name, const FooPtr& foo) {
 void DumpHex(const uint8_t* bytes, size_t num_bytes) {
   for (size_t i = 0; i < num_bytes; ++i) {
     std::cout << std::setw(2) << std::setfill('0') << std::hex
-              << uint32_t(bytes[i]);
+              << uint32_t(UNSAFE_TODO(bytes[i]));
 
     if (i % 16 == 15) {
       std::cout << std::endl;

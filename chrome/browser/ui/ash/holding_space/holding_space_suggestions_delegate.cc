@@ -4,12 +4,13 @@
 
 #include "chrome/browser/ui/ash/holding_space/holding_space_suggestions_delegate.h"
 
-#include "ash/constants/ash_features.h"
+#include <algorithm>
+
 #include "ash/public/cpp/holding_space/holding_space_file.h"
 #include "base/containers/adapters.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 
 namespace ash {
 namespace {
@@ -31,8 +32,9 @@ bool ItemIsPinnedSuggestion(
     const HoldingSpaceItem* item,
     std::map<HoldingSpaceItem::Type, std::vector<base::FilePath>>&
         suggestions_by_type) {
-  if (item->type() != HoldingSpaceItem::Type::kPinnedFile)
+  if (item->type() != HoldingSpaceItem::Type::kPinnedFile) {
     return false;
+  }
 
   for (const auto& [_, suggested_file_paths] : suggestions_by_type) {
     if (base::Contains(suggested_file_paths, item->file().file_path)) {
@@ -48,9 +50,7 @@ bool ItemIsPinnedSuggestion(
 HoldingSpaceSuggestionsDelegate::HoldingSpaceSuggestionsDelegate(
     HoldingSpaceKeyedService* service,
     HoldingSpaceModel* model)
-    : HoldingSpaceKeyedServiceDelegate(service, model) {
-  DCHECK(features::IsHoldingSpaceSuggestionsEnabled());
-}
+    : HoldingSpaceKeyedServiceDelegate(service, model) {}
 
 HoldingSpaceSuggestionsDelegate::~HoldingSpaceSuggestionsDelegate() = default;
 
@@ -68,7 +68,7 @@ void HoldingSpaceSuggestionsDelegate::RemoveSuggestions(
 
 void HoldingSpaceSuggestionsDelegate::OnHoldingSpaceItemsAdded(
     const std::vector<const HoldingSpaceItem*>& items) {
-  if (base::ranges::any_of(items, [&](const HoldingSpaceItem* item) {
+  if (std::ranges::any_of(items, [&](const HoldingSpaceItem* item) {
         return item->IsInitialized() &&
                ItemIsPinnedSuggestion(item, suggestions_by_type_);
       })) {
@@ -80,7 +80,7 @@ void HoldingSpaceSuggestionsDelegate::OnHoldingSpaceItemsAdded(
 
 void HoldingSpaceSuggestionsDelegate::OnHoldingSpaceItemsRemoved(
     const std::vector<const HoldingSpaceItem*>& items) {
-  if (base::ranges::any_of(items, [&](const HoldingSpaceItem* item) {
+  if (std::ranges::any_of(items, [&](const HoldingSpaceItem* item) {
         return item->IsInitialized() &&
                ItemIsPinnedSuggestion(item, suggestions_by_type_);
       })) {
@@ -127,8 +127,9 @@ void HoldingSpaceSuggestionsDelegate::MaybeFetchSuggestions(
     FileSuggestionType type) {
   // A data query on `type` has been sent so it is unnecessary to send a request
   // again. Return early.
-  if (base::Contains(pending_fetches_, type))
+  if (base::Contains(pending_fetches_, type)) {
     return;
+  }
 
   // Mark that the query for suggestions of `type` has been sent.
   pending_fetches_.insert(type);
@@ -143,8 +144,9 @@ void HoldingSpaceSuggestionsDelegate::MaybeFetchSuggestions(
 
 void HoldingSpaceSuggestionsDelegate::MaybeScheduleUpdateSuggestionsInModel() {
   // Return early if the task of updating model suggestions has been scheduled.
-  if (suggestion_update_timer_.IsRunning())
+  if (suggestion_update_timer_.IsRunning()) {
     return;
+  }
 
   suggestion_update_timer_.Start(
       FROM_HERE, /*delay=*/base::TimeDelta(),
@@ -159,13 +161,14 @@ void HoldingSpaceSuggestionsDelegate::OnSuggestionsFetched(
   size_t deleted_size = pending_fetches_.erase(type);
   DCHECK_EQ(1u, deleted_size);
 
-  if (!suggestions)
+  if (!suggestions) {
     return;
+  }
 
   // Extract file paths from `suggestions`.
   std::vector<base::FilePath> updated_suggestions(suggestions->size());
-  base::ranges::transform(*suggestions, updated_suggestions.begin(),
-                          &FileSuggestData::file_path);
+  std::ranges::transform(*suggestions, updated_suggestions.begin(),
+                         &FileSuggestData::file_path);
 
   // No-op if `updated_suggestions` are unchanged.
   const HoldingSpaceItem::Type item_type = GetItemTypeFromSuggestionType(type);

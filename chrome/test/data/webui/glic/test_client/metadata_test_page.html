@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Metadata Test Page</title>
+  <meta name="author" content="Initial Author">
+  <meta name="description" content="Initial Description">
+</head>
+<body>
+  <h1>Metadata Test Page</h1>
+  <p>This page is for testing the retrieval and manipulation of meta tags.</p>
+
+  <button onclick="updateTags()">Update Meta Tags</button>
+  <button onclick="deleteTags()">Delete Meta Tags</button>
+
+  <hr>
+  <h2>Iframe</h2>
+  <iframe id="test-iframe" width="300" height="50"></iframe>
+  <button onclick="updateIframeTags()">Update Iframe Meta Tags</button>
+
+  <script>
+    const iframeSrcdoc = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Iframe Test Page</title>
+        <meta name="author" content="Initial Iframe Author">
+      </head>
+      <body>
+        <h3>Iframe Content</h3>
+      </body>
+      </html>`;
+
+    document.getElementById('test-iframe').srcdoc = iframeSrcdoc;
+
+    function updateIframeTags() {
+        const iframe = document.getElementById('test-iframe');
+        if (!iframe) {
+            console.log('Iframe not found.');
+            return;
+        }
+        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+        let authorTag = iframeDoc.querySelector('meta[name="author"]');
+        if (authorTag) {
+            authorTag.setAttribute('content', 'Updated Iframe Author');
+        } else {
+            authorTag = iframeDoc.createElement('meta');
+            authorTag.setAttribute('name', 'author');
+            authorTag.setAttribute('content', 'Updated Iframe Author');
+            iframeDoc.head.appendChild(authorTag);
+        }
+        console.log('Iframe meta tags updated.');
+    }
+
+    function updateTags() {
+      let authorTag = document.querySelector('meta[name="author"]');
+      if (authorTag) {
+        authorTag.setAttribute('content', 'Updated Author');
+      } else {
+        authorTag = document.createElement('meta');
+        authorTag.setAttribute('name', 'author');
+        authorTag.setAttribute('content', 'Updated Author');
+        document.head.appendChild(authorTag);
+      }
+
+      let descriptionTag = document.querySelector('meta[name="description"]');
+      if (descriptionTag) {
+        descriptionTag.setAttribute('content', 'Updated Description');
+      } else {
+        descriptionTag = document.createElement('meta');
+        descriptionTag.setAttribute('name', 'description');
+        descriptionTag.setAttribute('content', 'Updated Description');
+        document.head.appendChild(descriptionTag);
+      }
+      console.log('Meta tags updated.');
+    }
+
+    function deleteTags() {
+      const authorTag = document.querySelector('meta[name="author"]');
+      if (authorTag) {
+        authorTag.remove();
+      }
+
+      const descriptionTag = document.querySelector('meta[name="description"]');
+      if (descriptionTag) {
+        descriptionTag.remove();
+      }
+      console.log('Meta tags deleted.');
+    }
+  </script>
+</body>
+</html>

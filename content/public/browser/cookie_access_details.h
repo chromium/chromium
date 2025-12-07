@@ -16,18 +16,28 @@ namespace content {
 struct CONTENT_EXPORT CookieAccessDetails {
   using Type = network::mojom::CookieAccessDetails::Type;
 
+  enum class Source {
+    // Cookies were read to send in an HTTP request, or written because of an
+    // HTTP response, as part of a navigation. This includes subframe
+    // navigations.
+    kNavigation,
+    // Cookies were accessed for any other reason, including subresource
+    // requests, prefetches, and JavaScript.
+    kNonNavigation
+  };
+
   CookieAccessDetails();
   CookieAccessDetails(
       Type type,
       const GURL& url,
       const GURL& first_party_url,
       const net::CookieAccessResultList& cookie_access_result_list,
-      size_t count,
       bool blocked_by_policy = false,
       bool is_ad_tagged = false,
       const net::CookieSettingOverrides& cookie_setting_overrides =
           net::CookieSettingOverrides(),
-      const net::SiteForCookies& site_for_cookies = net::SiteForCookies());
+      const net::SiteForCookies& site_for_cookies = net::SiteForCookies(),
+      Source source = Source::kNonNavigation);
   ~CookieAccessDetails();
 
   CookieAccessDetails(const CookieAccessDetails&);
@@ -37,10 +47,6 @@ struct CONTENT_EXPORT CookieAccessDetails {
   GURL url;
   GURL first_party_url;
   net::CookieAccessResultList cookie_access_result_list;
-  // CookieAccessDetails may be deduplicated to reduce IPC costs. In this case,
-  // |count| refers to the number of instances that are duplicates of |this|
-  // that would have been sent (including |this|).
-  size_t count = 1u;
   bool blocked_by_policy;
   bool is_ad_tagged = false;
   net::CookieSettingOverrides cookie_setting_overrides;
@@ -50,6 +56,7 @@ struct CONTENT_EXPORT CookieAccessDetails {
   // with a cross-site ancestor (aka ABA embeds) are blocked due to third-party
   // cookie blocking.
   net::SiteForCookies site_for_cookies;
+  Source source = Source::kNonNavigation;
 };
 
 }  // namespace content

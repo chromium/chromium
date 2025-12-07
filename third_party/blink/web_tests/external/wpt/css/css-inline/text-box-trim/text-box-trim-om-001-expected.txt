@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] getBoundingClientRect.height
+  assert_equals: expected 20 but got 200
+[FAIL] elementFromPoint: 10px above the client rect
+  assert_equals: expected Element node <div id="target">A</div> but got Element node <div class="spacer"></div>
+Harness: the test ran to completion.
+

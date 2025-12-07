@@ -12,13 +12,14 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
@@ -37,10 +38,10 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/arc/arc_util.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -48,9 +49,9 @@ namespace {
 // https://github.com/w3c/manifest/wiki/Platforms
 const char kPlatformChromeWebStore[] = "chrome_web_store";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kPlatformPlay[] = "play";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -106,7 +107,6 @@ InstallableParams
 AppBannerManagerDesktop::ParamsToPerformInstallableWebAppCheck() {
   InstallableParams params;
   params.valid_primary_icon = true;
-  params.fetch_screenshots = true;
   params.installable_criteria = InstallableCriteria::kValidManifestWithIcons;
   return params;
 }
@@ -121,7 +121,7 @@ void AppBannerManagerDesktop::DoNativeAppInstallableCheck(
     const GURL& validated_url,
     const blink::mojom::Manifest& manifest,
     NativeCheckCallback callback) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void AppBannerManagerDesktop::OnWebAppInstallableCheckedNoErrors(
@@ -143,18 +143,20 @@ void AppBannerManagerDesktop::InvalidateWeakPtrsForThisNavigation() {
 }
 void AppBannerManagerDesktop::ResetCurrentPageData() {}
 
+void AppBannerManagerDesktop::InstallableWebAppStatusUpdate() {}
+
 bool AppBannerManagerDesktop::IsSupportedNonWebAppPlatform(
     const std::u16string& platform) const {
   if (base::EqualsASCII(platform, kPlatformChromeWebStore))
     return true;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (base::EqualsASCII(platform, kPlatformPlay) &&
       arc::IsArcAllowedForProfile(
           Profile::FromBrowserContext(web_contents()->GetBrowserContext()))) {
     return true;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   return false;
 }
@@ -173,13 +175,13 @@ bool AppBannerManagerDesktop::IsRelatedNonWebAppInstalled(
     return extension_registry_->enabled_extensions().Contains(id);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (base::EqualsASCII(platform, kPlatformPlay)) {
     ArcAppListPrefs* arc_app_list_prefs =
         ArcAppListPrefs::Get(web_contents()->GetBrowserContext());
     return arc_app_list_prefs && arc_app_list_prefs->GetPackage(id) != nullptr;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   return false;
 }
@@ -223,14 +225,13 @@ void AppBannerManagerDesktop::OnWebAppInstalledWithOsHooks(
   if (!validated_url()) {
     return;
   }
-  std::optional<webapps::AppId> app_id =
-      registrar().FindAppWithUrlInScope(validated_url().value());
-  if (app_id.has_value() && *app_id == installed_app_id &&
-      registrar().GetAppUserDisplayMode(*app_id) ==
-          web_app::mojom::UserDisplayMode::kStandalone) {
-    OnInstall(registrar().GetEffectiveDisplayModeFromManifest(*app_id),
-              /*set_current_web_app_not_installable=*/true);
+  std::optional<webapps::AppId> app_id = registrar().FindBestAppWithUrlInScope(
+      validated_url().value(), web_app::WebAppFilter::OpensInDedicatedWindow());
+  if (installed_app_id != app_id) {
+    return;
   }
+  OnInstall(registrar().GetEffectiveDisplayModeFromManifest(*app_id),
+            /*set_current_web_app_not_installable=*/true);
 }
 
 void AppBannerManagerDesktop::OnWebAppWillBeUninstalled(

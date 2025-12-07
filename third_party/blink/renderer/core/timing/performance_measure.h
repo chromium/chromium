@@ -50,7 +50,8 @@ class CORE_EXPORT PerformanceMeasure final : public PerformanceEntry {
                      double end_time,
                      scoped_refptr<SerializedScriptValue>,
                      ExceptionState&,
-                     DOMWindow* source);
+                     DOMWindow* source,
+                     uint32_t navigation_id);
   ~PerformanceMeasure() override = default;
 
   static PerformanceMeasure* Create(ScriptState*,
@@ -59,7 +60,8 @@ class CORE_EXPORT PerformanceMeasure final : public PerformanceEntry {
                                     double end_time,
                                     const ScriptValue& detail,
                                     ExceptionState&,
-                                    DOMWindow* source);
+                                    DOMWindow* source,
+                                    uint32_t navigation_id);
 
   ScriptValue detail(ScriptState*);
 

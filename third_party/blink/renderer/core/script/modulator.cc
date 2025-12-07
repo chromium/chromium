@@ -47,7 +47,7 @@ Modulator* Modulator::From(ScriptState* script_state) {
     modulator = MakeGarbageCollected<WorkerModulatorImpl>(script_state);
     Modulator::SetModulator(script_state, modulator);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   return modulator;
 }

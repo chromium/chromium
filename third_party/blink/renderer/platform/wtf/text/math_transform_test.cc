@@ -6,10 +6,9 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace WTF {
+namespace blink {
 
 namespace {
-
 // https://w3c.github.io/mathml-core/#italic-mappings
 TEST(MathTransform, Italics) {
   static struct ItalicsTestData {
@@ -55,9 +54,11 @@ TEST(MathTransform, Italics) {
       {0x03F0, 0x1D718}, {0x03F1, 0x1D71A}, {0x03F4, 0x1D6F3},
       {0x03F5, 0x1D716}};
 
-  for (auto& test_data : italics_test_data)
-    EXPECT_EQ(ItalicMathVariant(test_data.code_point), test_data.expected);
+  for (auto& test_data : italics_test_data) {
+    EXPECT_EQ(unicode::ItalicMathVariant(test_data.code_point),
+              test_data.expected);
+  }
 }
 
 }  // anonymous namespace
-}  // namespace WTF
+}  // namespace blink

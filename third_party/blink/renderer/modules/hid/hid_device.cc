@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/hid/hid_device.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_hid_collection_info.h"
@@ -106,26 +107,26 @@ uint32_t ConvertHidUsageAndPageToUint32(
   return (usage.usage_page) << 16 | usage.usage;
 }
 
-String UnitSystemToString(uint8_t unit) {
+V8HIDUnitSystem::Enum UnitSystemToV8Enum(uint8_t unit) {
   DCHECK_LE(unit, 0x0f);
   switch (unit) {
     case kUnitSystemNone:
-      return "none";
+      return V8HIDUnitSystem::Enum::kNone;
     case kUnitSystemSILinear:
-      return "si-linear";
+      return V8HIDUnitSystem::Enum::kSiLinear;
     case kUnitSystemSIRotation:
-      return "si-rotation";
+      return V8HIDUnitSystem::Enum::kSiRotation;
     case kUnitSystemEnglishLinear:
-      return "english-linear";
+      return V8HIDUnitSystem::Enum::kEnglishLinear;
     case kUnitSystemEnglishRotation:
-      return "english-rotation";
+      return V8HIDUnitSystem::Enum::kEnglishRotation;
     case kUnitSystemVendorDefined:
-      return "vendor-defined";
+      return V8HIDUnitSystem::Enum::kVendorDefined;
     default:
       break;
   }
   // Values other than those defined in HidUnitSystem are reserved by the spec.
-  return "reserved";
+  return V8HIDUnitSystem::Enum::kReserved;
 }
 
 // Convert |unit_factor_exponent| from its coded representation to a signed
@@ -142,14 +143,14 @@ int8_t UnitFactorExponentToInt(uint8_t unit_factor_exponent) {
 // The unit definition value includes the unit system as well as unit factor
 // exponents for each of the 6 units defined by the unit system.
 void UnpackUnitValues(uint32_t unit,
-                      String& unit_system,
+                      V8HIDUnitSystem::Enum& unit_system,
                       int8_t& length_exponent,
                       int8_t& mass_exponent,
                       int8_t& time_exponent,
                       int8_t& temperature_exponent,
                       int8_t& current_exponent,
                       int8_t& luminous_intensity_exponent) {
-  unit_system = UnitSystemToString(unit & 0x0f);
+  unit_system = UnitSystemToV8Enum(unit & 0x0f);
   length_exponent = UnitFactorExponentToInt((unit >> 4) & 0x0f);
   mass_exponent = UnitFactorExponentToInt((unit >> 8) & 0x0f);
   time_exponent = UnitFactorExponentToInt((unit >> 12) & 0x0f);
@@ -282,8 +283,8 @@ ScriptPromise<IDLUndefined> HIDDevice::open(ScriptState* script_state,
   device_state_change_in_progress_ = true;
   device_requests_.insert(resolver);
   parent_->Connect(device_info_->guid, std::move(client),
-                   WTF::BindOnce(&HIDDevice::FinishOpen, WrapPersistent(this),
-                                 WrapPersistent(resolver)));
+                   BindOnce(&HIDDevice::FinishOpen, WrapPersistent(this),
+                            WrapPersistent(resolver)));
   return promise;
 }
 
@@ -318,14 +319,15 @@ ScriptPromise<IDLUndefined> HIDDevice::forget(ScriptState* script_state,
 
   device_state_change_in_progress_ = true;
   parent_->Forget(device_info_.Clone(),
-                  WTF::BindOnce(&HIDDevice::FinishForget, WrapPersistent(this),
-                                WrapPersistent(resolver)));
+                  BindOnce(&HIDDevice::FinishForget, WrapPersistent(this),
+                           WrapPersistent(resolver)));
   return promise;
 }
 
-ScriptPromise<IDLUndefined> HIDDevice::sendReport(ScriptState* script_state,
-                                                  uint8_t report_id,
-                                                  const DOMArrayPiece& data) {
+ScriptPromise<IDLUndefined> HIDDevice::sendReport(
+    ScriptState* script_state,
+    uint8_t report_id,
+    base::span<const uint8_t> data) {
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
@@ -340,27 +342,26 @@ ScriptPromise<IDLUndefined> HIDDevice::sendReport(ScriptState* script_state,
     return promise;
   }
 
-  if (!base::CheckedNumeric<wtf_size_t>(data.ByteLength()).IsValid()) {
+  if (!base::CheckedNumeric<wtf_size_t>(data.size()).IsValid()) {
     resolver->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
                                      kArrayBufferTooBig);
     return promise;
   }
 
   Vector<uint8_t> vector;
-  vector.Append(data.Bytes(), static_cast<wtf_size_t>(data.ByteLength()));
+  vector.AppendSpan(data);
 
   device_requests_.insert(resolver);
-  connection_->Write(
-      report_id, vector,
-      WTF::BindOnce(&HIDDevice::FinishSendReport, WrapPersistent(this),
-                    WrapPersistent(resolver)));
+  connection_->Write(report_id, vector,
+                     BindOnce(&HIDDevice::FinishSendReport,
+                              WrapPersistent(this), WrapPersistent(resolver)));
   return promise;
 }
 
 ScriptPromise<IDLUndefined> HIDDevice::sendFeatureReport(
     ScriptState* script_state,
     uint8_t report_id,
-    const DOMArrayPiece& data) {
+    base::span<const uint8_t> data) {
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
@@ -375,20 +376,20 @@ ScriptPromise<IDLUndefined> HIDDevice::sendFeatureReport(
     return promise;
   }
 
-  if (!base::CheckedNumeric<wtf_size_t>(data.ByteLength()).IsValid()) {
+  if (!base::CheckedNumeric<wtf_size_t>(data.size()).IsValid()) {
     resolver->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
                                      kArrayBufferTooBig);
     return promise;
   }
 
   Vector<uint8_t> vector;
-  vector.Append(data.Bytes(), static_cast<wtf_size_t>(data.ByteLength()));
+  vector.AppendSpan(data);
 
   device_requests_.insert(resolver);
   connection_->SendFeatureReport(
       report_id, vector,
-      WTF::BindOnce(&HIDDevice::FinishSendFeatureReport, WrapPersistent(this),
-                    WrapPersistent(resolver)));
+      BindOnce(&HIDDevice::FinishSendFeatureReport, WrapPersistent(this),
+               WrapPersistent(resolver)));
   return promise;
 }
 
@@ -412,8 +413,8 @@ ScriptPromise<NotShared<DOMDataView>> HIDDevice::receiveFeatureReport(
 
   device_requests_.insert(resolver);
   connection_->GetFeatureReport(
-      report_id, WTF::BindOnce(&HIDDevice::FinishReceiveFeatureReport,
-                               WrapPersistent(this), WrapPersistent(resolver)));
+      report_id, BindOnce(&HIDDevice::FinishReceiveFeatureReport,
+                          WrapPersistent(this), WrapPersistent(resolver)));
   return promise;
 }
 
@@ -491,7 +492,7 @@ void HIDDevice::FinishOpen(
     connection_.Bind(
         std::move(connection),
         GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI));
-    connection_.set_disconnect_handler(WTF::BindOnce(
+    connection_.set_disconnect_handler(BindOnce(
         &HIDDevice::OnServiceConnectionError, WrapWeakPersistent(this)));
     resolver->Resolve();
   } else {
@@ -547,8 +548,7 @@ void HIDDevice::FinishReceiveFeatureReport(
     const std::optional<Vector<uint8_t>>& data) {
   MarkRequestComplete(resolver);
   if (success && data) {
-    DOMArrayBuffer* dom_buffer =
-        DOMArrayBuffer::Create(data->data(), data->size());
+    DOMArrayBuffer* dom_buffer = DOMArrayBuffer::Create(data.value());
     DOMDataView* data_view = DOMDataView::Create(dom_buffer, 0, data->size());
     resolver->Resolve(NotShared(data_view));
   } else {
@@ -598,7 +598,7 @@ HIDReportItem* HIDDevice::ToHIDReportItem(
     result->setUsages(usages);
   }
 
-  String unit_system;
+  V8HIDUnitSystem::Enum unit_system;
   int8_t unit_factor_length_exponent;
   int8_t unit_factor_mass_exponent;
   int8_t unit_factor_time_exponent;

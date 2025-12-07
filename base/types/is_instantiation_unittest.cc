@@ -18,17 +18,17 @@ namespace {
 template <typename T1>
 class SingleArg;
 
-static_assert(is_instantiation<SingleArg, SingleArg<int>>);
-static_assert(is_instantiation<SingleArg, SingleArg<char>>);
-static_assert(is_instantiation<SingleArg, SingleArg<std::string>>);
-static_assert(is_instantiation<SingleArg, SingleArg<std::vector<int>>>);
+static_assert(is_instantiation<SingleArg<int>, SingleArg>);
+static_assert(is_instantiation<SingleArg<char>, SingleArg>);
+static_assert(is_instantiation<SingleArg<std::string>, SingleArg>);
+static_assert(is_instantiation<SingleArg<std::vector<int>>, SingleArg>);
 
-static_assert(!is_instantiation<SingleArg, int>);
-static_assert(!is_instantiation<SingleArg, char>);
-static_assert(!is_instantiation<SingleArg, std::vector<int>>);
-static_assert(!is_instantiation<SingleArg, std::vector<SingleArg<int>>>);
+static_assert(!is_instantiation<int, SingleArg>);
+static_assert(!is_instantiation<char, SingleArg>);
+static_assert(!is_instantiation<std::vector<int>, SingleArg>);
+static_assert(!is_instantiation<std::vector<SingleArg<int>>, SingleArg>);
 
-static_assert(!is_instantiation<std::vector, SingleArg<int>>);
+static_assert(!is_instantiation<SingleArg<int>, std::vector>);
 
 /////////////////////////////
 // Variadic template
@@ -37,22 +37,22 @@ static_assert(!is_instantiation<std::vector, SingleArg<int>>);
 template <typename...>
 class Variadic;
 
-static_assert(is_instantiation<Variadic, Variadic<>>);
-static_assert(is_instantiation<Variadic, Variadic<int>>);
-static_assert(is_instantiation<Variadic, Variadic<int, char>>);
-static_assert(is_instantiation<Variadic, Variadic<int, char, Variadic<>>>);
+static_assert(is_instantiation<Variadic<>, Variadic>);
+static_assert(is_instantiation<Variadic<int>, Variadic>);
+static_assert(is_instantiation<Variadic<int, char>, Variadic>);
+static_assert(is_instantiation<Variadic<int, char, Variadic<>>, Variadic>);
 
-static_assert(!is_instantiation<Variadic, SingleArg<int>>);
-static_assert(!is_instantiation<SingleArg, Variadic<>>);
-static_assert(!is_instantiation<SingleArg, Variadic<int>>);
+static_assert(!is_instantiation<SingleArg<int>, Variadic>);
+static_assert(!is_instantiation<Variadic<>, SingleArg>);
+static_assert(!is_instantiation<Variadic<int>, SingleArg>);
 
 /////////////////////////////
 // Real types
 /////////////////////////////
 
-static_assert(is_instantiation<std::vector, std::vector<bool>>);
-static_assert(is_instantiation<std::vector, std::vector<int>>);
-static_assert(is_instantiation<std::map, std::map<int, char>>);
+static_assert(is_instantiation<std::vector<bool>, std::vector>);
+static_assert(is_instantiation<std::vector<int>, std::vector>);
+static_assert(is_instantiation<std::map<int, char>, std::map>);
 
 }  // namespace
 }  // namespace base

@@ -18,9 +18,9 @@ class CORE_EXPORT TextBoxEdge {
   DISALLOW_NEW();
 
  public:
-  // https://drafts.csswg.org/css-inline-3/#text-edges.
+  // https://drafts.csswg.org/css-inline-3/#text-edges
   enum class Type : uint8_t {
-    kLeading,
+    kAuto,
     kText,
     kCap,
     kEx,
@@ -38,10 +38,12 @@ class CORE_EXPORT TextBoxEdge {
   // The number of bits needed when storing `TextBoxEdge` as `unsigned`.
   static constexpr unsigned kBits = kTypeBits * 2;
 
-  constexpr TextBoxEdge() : TextBoxEdge(Type::kLeading, Type::kLeading) {}
+  constexpr TextBoxEdge() = default;
   explicit constexpr TextBoxEdge(Type over)
-      : TextBoxEdge(over, ComputeMissingUnderEdge(over)) {}
-  constexpr TextBoxEdge(Type over, Type under) : over_(over), under_(under) {}
+      : TextBoxEdge(over, UnderForOverChecked(over)) {}
+  constexpr TextBoxEdge(Type over, Type under) : over_(over), under_(under) {
+    DCHECK(over == Type::kAuto ? under == Type::kAuto : under != Type::kAuto);
+  }
 
   // Convert from/to `unsigned` to store in a bit field in `ComputedStyle`.
   explicit constexpr TextBoxEdge(unsigned value)
@@ -55,31 +57,51 @@ class CORE_EXPORT TextBoxEdge {
   bool operator==(const TextBoxEdge& other) const {
     return over_ == other.Over() && under_ == other.Under();
   }
-  bool operator!=(const TextBoxEdge& other) const { return !(*this == other); }
 
   const Type& Over() const { return over_; }
   const Type& Under() const { return under_; }
 
- private:
-  static constexpr Type ComputeMissingUnderEdge(Type over) {
-    switch (over) {
-      case Type::kText:
-      case Type::kLeading:
-        return over;
-      case Type::kCap:
-      case Type::kEx:
-        return Type::kText;
-      case Type::kAlphabetic:
-        NOTREACHED_NORETURN();
-    }
-  }
+  bool IsAuto() const { return Over() == Type::kAuto; }
 
-  Type over_;
-  Type under_;
+  // The default `under` value for the given `over` value. It can be omitted
+  // only for some `over` values. `nullopt` means that the `under` value is
+  // required for the `over` value.
+  static constexpr std::optional<Type> UnderForOver(Type over);
+  bool IsUnderDefault() const { return Under() == UnderForOver(Over()); }
+
+ private:
+  static constexpr Type UnderForOverChecked(Type over);
+
+  Type over_ = Type::kAuto;
+  Type under_ = Type::kAuto;
 };
 
 // The initial value being 0 is preferred for performance reasons.
 static_assert(static_cast<unsigned>(TextBoxEdge()) == 0);
+
+constexpr std::optional<TextBoxEdge::Type> TextBoxEdge::UnderForOver(
+    Type over) {
+  switch (over) {
+    case Type::kAuto:
+    case Type::kText:
+      return over;
+
+      // These values require authors to specify the `under` value.
+      // https://github.com/w3c/csswg-drafts/issues/10703
+    case Type::kCap:
+    case Type::kEx:
+      return std::nullopt;
+
+    case Type::kAlphabetic:
+      NOTREACHED();
+  }
+}
+
+constexpr TextBoxEdge::Type TextBoxEdge::UnderForOverChecked(Type over) {
+  const std::optional<TextBoxEdge::Type> under = UnderForOver(over);
+  CHECK(under);
+  return *under;
+}
 
 }  // namespace blink
 

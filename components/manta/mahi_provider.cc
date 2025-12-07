@@ -10,10 +10,12 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/version_info/channel.h"
+#include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/manta/base_provider.h"
 #include "components/manta/features.h"
@@ -28,7 +30,63 @@ namespace manta {
 
 namespace {
 
-constexpr char kOauthConsumerName[] = "manta_mahi";
+constexpr base::TimeDelta kTimeout = base::Seconds(30);
+
+const net::NetworkTrafficAnnotationTag kMahiTrafficAnnotationTag =
+    net::DefineNetworkTrafficAnnotation("help_me_read_request",
+                                        R"(
+        semantics {
+          sender: "Help Me Read"
+          description:
+            "ChromeOS can help you read articles on webpages or PDF files by "
+            "summarizing or answering questions by sending the content, along "
+            "with user input question if provided, to Google's servers. Google "
+            "returns summary or answers that will be displayed on the screen."
+          trigger: "User right clicks within a distillable surface, e.g. a "
+                   "webpage or a PDF file opened in the Gallery app with "
+                   "enough extractable text content, clicks 'Summarize' button "
+                   "or asks a question then clicks 'Send' icon."
+          internal {
+            contacts {
+                email: "cros-manta-team@google.com"
+            }
+          }
+          user_data {
+            type: ACCESS_TOKEN
+            type: USER_CONTENT
+            type: WEB_CONTENT
+          }
+          data: "The text content of the webpage or the PDF file where the "
+                "'Help Me Read' feature is triggered, along with user input "
+                "question if provided."
+          destination: GOOGLE_OWNED_SERVICE
+          last_reviewed: "2024-08-24"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "You can enable or disable this feature via 'Help me read' in "
+            "ChromeOS's settings under 'System preferences > Search engine > "
+            "Use Google AI to get help reading and writing'."
+          chrome_policy {
+            HelpMeReadSettings {
+                HelpMeReadSettings: 2
+            }
+          }
+        })");
+
+constexpr char kUsedHistogram[] = "ChromeOS.Mahi.Used";
+
+// Each feature within Mahi, logged with `kUsedHistogram`.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class MahiFeature {
+  kSummary = 0,
+  kQA = 1,
+  kElucidation = 2,
+  kMaxValue = kElucidation,
+};
 
 void OnServerResponseOrErrorReceived(
     MantaGenericCallback callback,
@@ -81,7 +139,12 @@ MahiProvider::MahiProvider(
 MahiProvider::~MahiProvider() = default;
 
 void MahiProvider::Summarize(const std::string& input,
+                             const std::string& title,
+                             const std::optional<std::string>& context,
+                             const std::optional<std::string>& url,
                              MantaGenericCallback done_callback) {
+  chromeos::MagicBoostState::AssertPreconditionsOfHelpMeReadOrCrash();
+
   proto::Request request;
   request.set_feature_name(proto::FeatureName::CHROMEOS_READER_SUMMARY);
 
@@ -89,17 +152,77 @@ void MahiProvider::Summarize(const std::string& input,
   input_data->set_tag("model_input");
   input_data->set_text(input);
 
-  // TODO(b:333459933): MISSING_TRAFFIC_ANNOTATION should be resolved before
-  // launch.
+  if (!title.empty()) {
+    input_data = request.add_input_data();
+    input_data->set_tag("title");
+    input_data->set_text(title);
+  }
+
+  if (context.has_value() && !context->empty()) {
+    input_data = request.add_input_data();
+    input_data->set_tag("context");
+    input_data->set_text(context.value());
+  }
+
+  if (url.has_value() && !url->empty()) {
+    input_data = request.add_input_data();
+    input_data->set_tag("url");
+    input_data->set_text(url.value());
+  }
+
   RequestInternal(
       GURL{GetProviderEndpoint(features::IsMahiUseProdServerEnabled())},
-      kOauthConsumerName, MISSING_TRAFFIC_ANNOTATION, request,
-      MantaMetricType::kMahiSummary,
+      kMahiTrafficAnnotationTag, request, MantaMetricType::kMahiSummary,
       base::BindOnce(&OnServerResponseOrErrorReceived,
-                     std::move(done_callback)));
+                     std::move(done_callback)),
+      kTimeout);
+
+  base::UmaHistogramEnumeration(kUsedHistogram, MahiFeature::kSummary);
+}
+
+void MahiProvider::Elucidate(const std::string& input,
+                             const std::string& context,
+                             const std::string& title,
+                             const std::optional<std::string>& url,
+                             MantaGenericCallback done_callback) {
+  chromeos::MagicBoostState::AssertPreconditionsOfHelpMeReadOrCrash();
+
+  proto::Request request;
+  request.set_feature_name(proto::FeatureName::CHROMEOS_READER_ELUCIDATION);
+
+  auto* input_data = request.add_input_data();
+  input_data->set_tag("model_input");
+  input_data->set_text(input);
+
+  input_data = request.add_input_data();
+  input_data->set_tag("context");
+  input_data->set_text(context);
+
+  if (!title.empty()) {
+    input_data = request.add_input_data();
+    input_data->set_tag("title");
+    input_data->set_text(title);
+  }
+
+  if (url.has_value() && !url->empty()) {
+    input_data = request.add_input_data();
+    input_data->set_tag("url");
+    input_data->set_text(url.value());
+  }
+
+  RequestInternal(
+      GURL{GetProviderEndpoint(features::IsMahiUseProdServerEnabled())},
+      kMahiTrafficAnnotationTag, request, MantaMetricType::kMahiElucidation,
+      base::BindOnce(&OnServerResponseOrErrorReceived,
+                     std::move(done_callback)),
+      kTimeout);
+
+  base::UmaHistogramEnumeration(kUsedHistogram, MahiFeature::kElucidation);
 }
 
 void MahiProvider::Outline(const std::string& input,
+                           const std::string& title,
+                           const std::optional<std::string>& url,
                            MantaGenericCallback done_callback) {
   std::move(done_callback)
       .Run(base::Value::Dict(),
@@ -107,15 +230,31 @@ void MahiProvider::Outline(const std::string& input,
 }
 
 void MahiProvider::QuestionAndAnswer(const std::string& original_content,
+                                     const std::string& title,
+                                     const std::optional<std::string>& url,
                                      const std::vector<MahiQAPair> QAHistory,
                                      const std::string& question,
                                      MantaGenericCallback done_callback) {
+  chromeos::MagicBoostState::AssertPreconditionsOfHelpMeReadOrCrash();
+
   proto::Request request;
   request.set_feature_name(proto::FeatureName::CHROMEOS_READER_Q_AND_A);
 
   auto* input_data = request.add_input_data();
   input_data->set_tag("original_content");
   input_data->set_text(original_content);
+
+  if (!title.empty()) {
+    input_data = request.add_input_data();
+    input_data->set_tag("title");
+    input_data->set_text(title);
+  }
+
+  if (url.has_value() && !url->empty()) {
+    input_data = request.add_input_data();
+    input_data->set_tag("url");
+    input_data->set_text(url.value());
+  }
 
   input_data = request.add_input_data();
   input_data->set_tag("new_question");
@@ -131,14 +270,14 @@ void MahiProvider::QuestionAndAnswer(const std::string& original_content,
     input_data->set_text(previous_answer);
   }
 
-  // TODO(b:288019728): MISSING_TRAFFIC_ANNOTATION should be resolved before
-  // launch.
   RequestInternal(
       GURL{GetProviderEndpoint(features::IsMahiUseProdServerEnabled())},
-      kOauthConsumerName, MISSING_TRAFFIC_ANNOTATION, request,
-      MantaMetricType::kMahiQA,
+      kMahiTrafficAnnotationTag, request, MantaMetricType::kMahiQA,
       base::BindOnce(&OnServerResponseOrErrorReceived,
-                     std::move(done_callback)));
+                     std::move(done_callback)),
+      kTimeout);
+
+  base::UmaHistogramEnumeration(kUsedHistogram, MahiFeature::kQA);
 }
 
 }  // namespace manta

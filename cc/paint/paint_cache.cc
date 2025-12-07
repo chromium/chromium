@@ -2,16 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/paint/paint_cache.h"
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/synchronization/lock.h"
 
@@ -21,7 +16,7 @@ namespace {
 template <typename T>
 void EraseFromMap(T* map, size_t n, const volatile PaintCacheId* ids) {
   for (size_t i = 0; i < n; ++i) {
-    auto id = ids[i];
+    auto id = UNSAFE_TODO(ids[i]);
     map->erase(id);
   }
 }
@@ -65,7 +60,7 @@ void ClientPaintCache::FinalizePendingEntries() {
 void ClientPaintCache::AbortPendingEntries() {
   for (const auto& entry : pending_entries_) {
     auto it = cache_map_.Peek(entry);
-    CHECK(it != cache_map_.end(), base::NotFatalUntil::M130);
+    CHECK(it != cache_map_.end());
     EraseFromMap(it);
   }
   pending_entries_.clear();
@@ -80,7 +75,7 @@ void ClientPaintCache::Purge(PurgedData* purged_data) {
     PaintCacheId id = it->first.second;
 
     EraseFromMap(it);
-    (*purged_data)[static_cast<uint32_t>(type)].push_back(id);
+    UNSAFE_TODO((*purged_data)[static_cast<uint32_t>(type)]).push_back(id);
   }
 }
 
@@ -100,11 +95,26 @@ void ServicePaintCache::PutPath(PaintCacheId id, SkPath path) {
   cached_paths_.emplace(id, std::move(path));
 }
 
+void ServicePaintCache::PutEffect(PaintCacheId id,
+                                  sk_sp<SkRuntimeEffect> effect) {
+  cached_effects_.emplace(id, std::move(effect));
+}
+
 bool ServicePaintCache::GetPath(PaintCacheId id, SkPath* path) const {
   auto it = cached_paths_.find(id);
   if (it == cached_paths_.end())
     return false;
   *path = it->second;
+  return true;
+}
+
+bool ServicePaintCache::GetEffect(PaintCacheId id,
+                                  sk_sp<SkRuntimeEffect>* effect) const {
+  auto it = cached_effects_.find(id);
+  if (it == cached_effects_.end()) {
+    return false;
+  }
+  *effect = it->second;
   return true;
 }
 
@@ -115,13 +125,21 @@ void ServicePaintCache::Purge(PaintCacheDataType type,
     case PaintCacheDataType::kPath:
       EraseFromMap(&cached_paths_, n, ids);
       return;
+    case PaintCacheDataType::kSkRuntimeEffect:
+      EraseFromMap(&cached_effects_, n, ids);
+      return;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ServicePaintCache::PurgeAll() {
   cached_paths_.clear();
+  cached_effects_.clear();
+}
+
+bool ServicePaintCache::IsEmpty() const {
+  return cached_paths_.empty() && cached_effects_.empty();
 }
 
 }  // namespace cc

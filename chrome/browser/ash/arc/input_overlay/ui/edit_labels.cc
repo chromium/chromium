@@ -54,7 +54,7 @@ void EditLabels::Init() {
       InitForActionMoveKeyboard();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   UpdateNameTag();
@@ -119,7 +119,7 @@ std::u16string EditLabels::CalculateActionName() {
       control_type_id = IDS_INPUT_OVERLAY_BUTTON_TYPE_JOYSTICK_BUTTON_LABEL;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   if (all_unassigned) {
@@ -136,7 +136,8 @@ std::u16string EditLabels::CalculateActionName() {
 std::u16string EditLabels::CalculateKeyListForA11yLabel() const {
   std::vector<std::u16string> keys;
   for (EditLabel* label : labels_) {
-    keys.push_back(GetDisplayTextAccessibleName(label->GetText()));
+    keys.push_back(
+        GetDisplayTextAccessibleName(std::u16string(label->GetText())));
   }
 
   return base::JoinString(keys, u", ");

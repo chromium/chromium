@@ -76,6 +76,8 @@ class VIEWS_EXPORT BaseScrollBarThumb : public View {
 
   bool IsHorizontal() const;
 
+  ui::NativeTheme::PreferredColorScheme GetColorScheme() const;
+
   ScrollBar* scroll_bar() { return scroll_bar_; }
 
  private:

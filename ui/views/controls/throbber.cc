@@ -20,6 +20,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_throbber.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/property_effects.h"
 
 namespace views {
 
@@ -41,19 +42,21 @@ Throbber::~Throbber() {
 }
 
 void Throbber::Start() {
-  if (IsRunning())
+  if (IsRunning()) {
     return;
+  }
 
   start_time_ = base::TimeTicks::Now();
-  timer_.Start(
-      FROM_HERE, base::Milliseconds(GetFrameDelay(diameter_)),
-      base::BindRepeating(&Throbber::SchedulePaint, base::Unretained(this)));
+  timer_.Start(FROM_HERE, base::Milliseconds(GetFrameDelay(diameter_)),
+               base::BindRepeating(&Throbber::SchedulePaint,
+                                   weak_ptr_factory_.GetWeakPtr()));
   SchedulePaint();  // paint right away
 }
 
 void Throbber::Stop() {
-  if (!IsRunning())
+  if (!IsRunning()) {
     return;
+  }
 
   timer_.Stop();
   SchedulePaint();
@@ -64,11 +67,12 @@ bool Throbber::GetChecked() const {
 }
 
 void Throbber::SetChecked(bool checked) {
-  if (checked == checked_)
+  if (checked == checked_) {
     return;
+  }
 
   checked_ = checked;
-  OnPropertyChanged(&checked_, kPropertyEffectsPaint);
+  OnPropertyChanged(&checked_, PropertyEffects::kPaint);
 }
 
 gfx::Size Throbber::CalculatePreferredSize(
@@ -77,7 +81,8 @@ gfx::Size Throbber::CalculatePreferredSize(
 }
 
 void Throbber::OnPaint(gfx::Canvas* canvas) {
-  SkColor color = GetColorProvider()->GetColor(ui::kColorThrobber);
+  SkColor color =
+      GetColorProvider()->GetColor(color_id_.value_or(ui::kColorThrobber));
 
   if (!IsRunning()) {
     if (checked_) {
@@ -127,8 +132,9 @@ void SmoothedThrobber::StartDelayOver() {
 }
 
 void SmoothedThrobber::Stop() {
-  if (!IsRunning())
+  if (!IsRunning()) {
     start_timer_.Stop();
+  }
 
   stop_timer_.Stop();
   stop_timer_.Start(FROM_HERE, stop_delay_, this,
@@ -140,10 +146,11 @@ base::TimeDelta SmoothedThrobber::GetStartDelay() const {
 }
 
 void SmoothedThrobber::SetStartDelay(const base::TimeDelta& start_delay) {
-  if (start_delay == start_delay_)
+  if (start_delay == start_delay_) {
     return;
+  }
   start_delay_ = start_delay;
-  OnPropertyChanged(&start_delay_, kPropertyEffectsNone);
+  OnPropertyChanged(&start_delay_, PropertyEffects::kNone);
 }
 
 base::TimeDelta SmoothedThrobber::GetStopDelay() const {
@@ -151,10 +158,11 @@ base::TimeDelta SmoothedThrobber::GetStopDelay() const {
 }
 
 void SmoothedThrobber::SetStopDelay(const base::TimeDelta& stop_delay) {
-  if (stop_delay == stop_delay_)
+  if (stop_delay == stop_delay_) {
     return;
+  }
   stop_delay_ = stop_delay;
-  OnPropertyChanged(&stop_delay_, kPropertyEffectsNone);
+  OnPropertyChanged(&stop_delay_, PropertyEffects::kNone);
 }
 
 void SmoothedThrobber::StopDelayOver() {

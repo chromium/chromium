@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -24,10 +23,8 @@ class ExecutionContext;
 // BarcodeDetector instances for this ExecutionContext.
 class BarcodeDetectorStatics final
     : public GarbageCollected<BarcodeDetectorStatics>,
-      public Supplement<ExecutionContext> {
+      public GarbageCollectedMixin {
  public:
-  static const char kSupplementName[];
-
   static BarcodeDetectorStatics* From(ExecutionContext*);
 
   explicit BarcodeDetectorStatics(ExecutionContext&);
@@ -47,6 +44,8 @@ class BarcodeDetectorStatics final
       ScriptPromiseResolver<IDLSequence<V8BarcodeFormat>>*,
       const Vector<shape_detection::mojom::blink::BarcodeFormat>&);
   void OnConnectionError();
+
+  Member<ExecutionContext> execution_context_;
 
   HeapMojoRemote<shape_detection::mojom::blink::BarcodeDetectionProvider>
       service_;

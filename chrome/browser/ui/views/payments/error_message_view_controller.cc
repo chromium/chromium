@@ -51,7 +51,7 @@ ErrorMessageViewController::ErrorMessageViewController(
     base::WeakPtr<PaymentRequestDialogView> dialog)
     : PaymentRequestSheetController(spec, state, dialog) {}
 
-ErrorMessageViewController::~ErrorMessageViewController() {}
+ErrorMessageViewController::~ErrorMessageViewController() = default;
 
 std::u16string ErrorMessageViewController::GetPrimaryButtonLabel() {
   return l10n_util::GetStringUTF16(IDS_CLOSE);

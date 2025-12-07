@@ -18,7 +18,7 @@
 namespace {
 
 float GetPrimaryDisplayScaleFactor() {
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   if (!screen) {
     return 1.0f;
   }

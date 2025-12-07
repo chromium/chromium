@@ -1,0 +1,10 @@
+{
+  "name": "chrome.system.network extension",
+  "manifest_version": 3,
+  "version": "0.1",
+  "description": "end-to-end browser test for chrome.system.network API",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": ["system.network"]
+}

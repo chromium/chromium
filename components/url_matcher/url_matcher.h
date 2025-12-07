@@ -61,8 +61,7 @@ class URL_MATCHER_EXPORT URLMatcherCondition {
   ~URLMatcherCondition();
   URLMatcherCondition(Criterion criterion,
                       const base::MatcherStringPattern* substring_pattern);
-  URLMatcherCondition(const URLMatcherCondition& rhs);
-  URLMatcherCondition& operator=(const URLMatcherCondition& rhs);
+
   bool operator<(const URLMatcherCondition& rhs) const;
 
   Criterion criterion() const { return criterion_; }
@@ -329,7 +328,7 @@ class URL_MATCHER_EXPORT URLMatcherCidrBlockFilter {
  public:
   // IP range in CIDR notation.
   using CidrBlock = std::pair<net::IPAddress, size_t>;
-  explicit URLMatcherCidrBlockFilter(const std::vector<CidrBlock>& cidr_blocks);
+  explicit URLMatcherCidrBlockFilter(std::vector<CidrBlock>&& cidr_blocks);
 
   URLMatcherCidrBlockFilter(const URLMatcherCidrBlockFilter&) = delete;
   URLMatcherCidrBlockFilter& operator=(const URLMatcherCidrBlockFilter&) =

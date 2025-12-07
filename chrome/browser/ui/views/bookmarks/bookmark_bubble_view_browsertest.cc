@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
+
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/ui/commerce/mock_commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
@@ -27,6 +27,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/unowned_user_data/user_data_factory.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 class BaseBookmarkBubbleViewBrowserTest : public DialogBrowserTest {
@@ -40,13 +41,6 @@ class BaseBookmarkBubbleViewBrowserTest : public DialogBrowserTest {
 
   ~BaseBookmarkBubbleViewBrowserTest() override = default;
 
-  void SetUpOnMainThread() override {
-    EXPECT_TRUE(is_browser_context_services_created);
-    mock_shopping_service_ = static_cast<commerce::MockShoppingService*>(
-        commerce::ShoppingServiceFactory::GetForBrowserContext(
-            browser()->profile()));
-  }
-
   void SetUpInProcessBrowserTestFixture() override {
     create_services_subscription_ =
         BrowserContextDependencyManager::GetInstance()
@@ -56,12 +50,7 @@ class BaseBookmarkBubbleViewBrowserTest : public DialogBrowserTest {
                                     weak_ptr_factory_.GetWeakPtr()));
   }
 
-  void TearDownInProcessBrowserTestFixture() override {
-    is_browser_context_services_created = false;
-  }
-
   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    is_browser_context_services_created = true;
     commerce::ShoppingServiceFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating([](content::BrowserContext* context) {
           return commerce::MockShoppingService::Build();
@@ -70,7 +59,7 @@ class BaseBookmarkBubbleViewBrowserTest : public DialogBrowserTest {
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(browser()->profile());
 
@@ -85,9 +74,13 @@ class BaseBookmarkBubbleViewBrowserTest : public DialogBrowserTest {
     if (name == "bookmark_details_on_trackable_product") {
       commerce::ProductInfo info;
       info.product_cluster_id.emplace(12345L);
-      mock_shopping_service_->SetIsShoppingListEligible(true);
-      mock_shopping_service_->SetResponseForGetProductInfoForUrl(info);
-      mock_shopping_service_->SetIsSubscribedCallbackValue(false);
+      commerce::MockShoppingService* mock_shopping_service =
+          static_cast<commerce::MockShoppingService*>(
+              commerce::ShoppingServiceFactory::GetForBrowserContext(
+                  browser()->profile()));
+      mock_shopping_service->SetIsShoppingListEligible(true);
+      mock_shopping_service->SetResponseForGetProductInfoForUrl(info);
+      mock_shopping_service->SetIsSubscribedCallbackValue(false);
     }
 
     const GURL url = GURL("https://www.google.com");
@@ -107,10 +100,7 @@ class BaseBookmarkBubbleViewBrowserTest : public DialogBrowserTest {
   base::test::ScopedFeatureList test_features_;
 
  private:
-  raw_ptr<commerce::MockShoppingService, DanglingUntriaged>
-      mock_shopping_service_;
   base::CallbackListSubscription create_services_subscription_;
-  bool is_browser_context_services_created{false};
   base::WeakPtrFactory<BaseBookmarkBubbleViewBrowserTest> weak_ptr_factory_{
       this};
 };
@@ -119,7 +109,7 @@ class PowerBookmarkBubbleViewBrowserTest
     : public BaseBookmarkBubbleViewBrowserTest {
  public:
   PowerBookmarkBubbleViewBrowserTest() {
-    MockCommerceUiTabHelper::ReplaceFactory();
+    commerce_ui_override_ = MockCommerceUiTabHelper::ReplaceFactory();
     test_features_.InitWithFeatures({commerce::kShoppingList}, {});
   }
 
@@ -129,6 +119,9 @@ class PowerBookmarkBubbleViewBrowserTest
       const PowerBookmarkBubbleViewBrowserTest&) = delete;
 
   ~PowerBookmarkBubbleViewBrowserTest() override = default;
+
+ private:
+  ui::UserDataFactory::ScopedOverride commerce_ui_override_;
 };
 
 IN_PROC_BROWSER_TEST_F(PowerBookmarkBubbleViewBrowserTest,

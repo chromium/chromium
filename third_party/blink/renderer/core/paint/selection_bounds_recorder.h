@@ -14,7 +14,6 @@
 namespace blink {
 
 class FrameSelection;
-class LayoutObject;
 class PaintController;
 
 // This class is used for recording painted selection bounds. Based on the
@@ -31,16 +30,11 @@ class SelectionBoundsRecorder {
                           PhysicalRect,
                           PaintController&,
                           TextDirection,
-                          WritingMode,
-                          const LayoutObject&);
+                          WritingMode);
 
   ~SelectionBoundsRecorder();
 
   static bool ShouldRecordSelection(const FrameSelection&, SelectionState);
-
-  static bool IsVisible(const LayoutObject& rect_layout_object,
-                        const PhysicalOffset& edge_start_in_layer,
-                        const PhysicalOffset& edge_end_in_layer);
 
  private:
   const SelectionState state_;
@@ -48,7 +42,6 @@ class SelectionBoundsRecorder {
   PaintController& paint_controller_;
   TextDirection text_direction_;
   WritingMode writing_mode_;
-  const LayoutObject& selection_layout_object_;
 };
 
 }  // namespace blink

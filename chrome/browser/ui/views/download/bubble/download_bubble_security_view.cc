@@ -19,9 +19,9 @@
 #include "chrome/browser/ui/download/download_bubble_security_view_info.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/download/bubble/download_bubble_navigation_handler.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_password_prompt_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_view.h"
-#include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/download/public/common/download_danger_type.h"
@@ -30,6 +30,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/color/color_id.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -268,7 +269,6 @@ void DownloadBubbleSecurityView::BackButtonPressed() {
         kSubpageActionHistogram,
         DownloadBubbleSubpageAction::kPressedBackButton);
   }
-  Reset();
   navigation_handler_->OpenPrimaryDialog();
 }
 
@@ -534,7 +534,6 @@ bool DownloadBubbleSecurityView::ProcessButtonClick(
   }
 
   // Record metrics only if we are actually processing the command.
-  RecordWarningActionTime(is_secondary_button);
   base::UmaHistogramEnumeration(
       kSubpageActionHistogram,
       is_secondary_button ? DownloadBubbleSubpageAction::kPressedSecondaryButton
@@ -564,19 +563,20 @@ DownloadBubbleSecurityView::content_id() const {
 void DownloadBubbleSecurityView::UpdateButton(
     DownloadBubbleSecurityViewInfo::SubpageButton button_info,
     bool is_secondary_button) {
-  ui::DialogButton button_type =
-      is_secondary_button ? ui::DIALOG_BUTTON_CANCEL : ui::DIALOG_BUTTON_OK;
+  ui::mojom::DialogButton button_type = is_secondary_button
+                                            ? ui::mojom::DialogButton::kCancel
+                                            : ui::mojom::DialogButton::kOk;
 
   base::RepeatingCallback<bool()> callback(base::BindRepeating(
       &HandleButtonClickWithDefaultClose, weak_factory_.GetWeakPtr(),
       button_info.command, is_secondary_button));
 
-  if (button_type == ui::DIALOG_BUTTON_CANCEL) {
+  if (button_type == ui::mojom::DialogButton::kCancel) {
     bubble_delegate_->SetCancelCallbackWithClose(callback);
     bubble_delegate_->SetButtonEnabled(button_type, true);
     views::LabelButton* button = bubble_delegate_->GetCancelButton();
     if (button_info.text_color) {
-      button->SetEnabledTextColorIds(*button_info.text_color);
+      button->SetEnabledTextColors(*button_info.text_color);
     }
   } else {
     bubble_delegate_->SetAcceptCallbackWithClose(callback);
@@ -584,7 +584,7 @@ void DownloadBubbleSecurityView::UpdateButton(
 
   bubble_delegate_->SetButtonLabel(button_type, button_info.label);
   if (button_info.is_prominent) {
-    bubble_delegate_->SetDefaultButton(button_type);
+    bubble_delegate_->SetDefaultButton(static_cast<int>(button_type));
   }
 
   base::UmaHistogramEnumeration(
@@ -594,17 +594,21 @@ void DownloadBubbleSecurityView::UpdateButton(
 }
 
 void DownloadBubbleSecurityView::UpdateButtons() {
-  bubble_delegate_->SetButtons(ui::DIALOG_BUTTON_NONE);
-  bubble_delegate_->SetDefaultButton(ui::DIALOG_BUTTON_NONE);
+  bubble_delegate_->SetButtons(
+      static_cast<int>(ui::mojom::DialogButton::kNone));
+  bubble_delegate_->SetDefaultButton(
+      static_cast<int>(ui::mojom::DialogButton::kNone));
 
   if (info_->has_primary_button()) {
-    bubble_delegate_->SetButtons(ui::DIALOG_BUTTON_OK);
+    bubble_delegate_->SetButtons(
+        static_cast<int>(ui::mojom::DialogButton::kOk));
     UpdateButton(info_->primary_button(), /*is_secondary_button=*/false);
   }
 
   if (info_->has_secondary_button()) {
-    bubble_delegate_->SetButtons(ui::DIALOG_BUTTON_OK |
-                                 ui::DIALOG_BUTTON_CANCEL);
+    bubble_delegate_->SetButtons(
+        static_cast<int>(ui::mojom::DialogButton::kCancel) |
+        static_cast<int>(ui::mojom::DialogButton::kOk));
     UpdateButton(info_->secondary_button(), /*is_secondary_button=*/true);
   }
   // After we have updated the buttons, set the minimum width to avoid the rest
@@ -647,8 +651,10 @@ void DownloadBubbleSecurityView::UpdatePasswordPrompt() {
 
 void DownloadBubbleSecurityView::ClearWideFields() {
   bubble_delegate_->set_fixed_width(0);
-  bubble_delegate_->SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, std::u16string());
-  bubble_delegate_->SetButtonLabel(ui::DIALOG_BUTTON_OK, std::u16string());
+  bubble_delegate_->SetButtonLabel(ui::mojom::DialogButton::kCancel,
+                                   std::u16string());
+  bubble_delegate_->SetButtonLabel(ui::mojom::DialogButton::kOk,
+                                   std::u16string());
   paragraphs_->SetText(std::u16string());
   // Setting an extremely low value here will force the labels to break text
   // into a large number of labels and lay them out, which is wasteful. We set a
@@ -664,23 +670,6 @@ void DownloadBubbleSecurityView::ClearWideFields() {
   secondary_styled_label_->PreferredSizeChanged();
 
   title_->SetText(std::u16string());
-}
-
-void DownloadBubbleSecurityView::RecordWarningActionTime(
-    bool is_secondary_button) {
-  DCHECK(warning_time_.has_value());
-  // Example Histogram
-  // Download.Bubble.Subpage.DangerousFile.SecondaryButtonActionTime
-  std::string histogram = base::StrCat(
-      {"Download.Bubble.Subpage.",
-       download::GetDownloadDangerTypeString(info_->danger_type()), ".",
-       is_secondary_button ? "Secondary" : "Primary", "ButtonActionTime"});
-  base::UmaHistogramMediumTimes(histogram,
-                                base::Time::Now() - (*warning_time_));
-}
-
-void DownloadBubbleSecurityView::Reset() {
-  warning_time_ = std::nullopt;
 }
 
 void DownloadBubbleSecurityView::UpdateViews() {
@@ -800,12 +789,11 @@ bool DownloadBubbleSecurityView::ProcessLocalPasswordDecryptionClick() {
 }
 
 void DownloadBubbleSecurityView::OnInfoChanged() {
-  warning_time_ = base::Time::Now();
   // If this represents a "terminal" state of a deep scan, or if the download
   // is otherwise no longer dangerous, we return to the primary dialog. Note
   // that we want this behavior even if this is a different download, e.g.
   // user clicks on a different download via entry point external to the
-  // download bubble (e.g. notification on Lacros).
+  // download bubble.
   if (ShouldReturnToPrimaryDialog(info_.get())) {
     navigation_handler_->OpenPrimaryDialog();
     // No need to update views here because we're resetting and returning to
@@ -817,7 +805,6 @@ void DownloadBubbleSecurityView::OnInfoChanged() {
 }
 
 void DownloadBubbleSecurityView::OnContentIdChanged() {
-  Reset();
   // Reset this to false because now this represents a different instance of
   // the security dialog. This should not be reset anywhere else. We only want
   // to consider it a different instance of the dialog (and potentially log a

@@ -9,7 +9,9 @@
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "v8/include/v8.h"
 
@@ -22,28 +24,32 @@ void UpdateDefaultLocaleInIsolate(v8::Isolate* isolate) {
   isolate->DateTimeConfigurationChangeNotification();
 }
 
+void UpdateDefaultLocaleInMainIsolates() {
+  Thread::MainThread()
+      ->Scheduler()
+      ->ToMainThreadScheduler()
+      ->ForEachMainThreadIsolate(&UpdateDefaultLocaleInIsolate);
+}
+
 void NotifyLocaleChangeOnWorkerThread(WorkerThread* worker_thread) {
   DCHECK(worker_thread->IsCurrentThread());
   UpdateDefaultLocaleInIsolate(worker_thread->GlobalScope()->GetIsolate());
 }
 
-void UpdateLocale(const String& locale) {
-  WebString web_locale(locale);
-  base::i18n::SetICUDefaultLocale(web_locale.Ascii());
-  Thread::MainThread()
-      ->Scheduler()
-      ->ToMainThreadScheduler()
-      ->ForEachMainThreadIsolate(
-          WTF::BindRepeating(&UpdateDefaultLocaleInIsolate));
-  WorkerThread::CallOnAllWorkerThreads(&NotifyLocaleChangeOnWorkerThread,
-                                       TaskType::kInternalDefault);
-}
 }  // namespace
 
 LocaleController::LocaleController()
     : embedder_locale_(String(icu::Locale::getDefault().getName())) {}
 
-String LocaleController::SetLocaleOverride(const String& locale) {
+String LocaleController::SetLocaleOverride(const String& locale,
+                                           bool is_claiming_override) {
+  base::AutoLock locker(lock_);
+
+  // Only allow resetting overrides set by the same agent.
+  if (is_claiming_override && !locale_override_.empty()) {
+    return "Another locale override is already in effect";
+  }
+
   if (locale_override_ == locale)
     return String();
   if (locale.empty()) {
@@ -59,13 +65,24 @@ String LocaleController::SetLocaleOverride(const String& locale) {
   return String();
 }
 
-bool LocaleController::has_locale_override() const {
-  return !locale_override_.empty();
+void LocaleController::UpdateLocale(const String& locale) {
+  WebString web_locale(locale);
+  base::i18n::SetICUDefaultLocale(web_locale.Ascii());
+  if (IsMainThread()) {
+    UpdateDefaultLocaleInMainIsolates();
+  } else {
+    Thread::MainThread()
+        ->GetTaskRunner(MainThreadTaskRunnerRestricted())
+        ->PostTask(FROM_HERE, ConvertToBaseOnceCallback(CrossThreadBindOnce(
+                                  &UpdateDefaultLocaleInMainIsolates)));
+  }
+  WorkerThread::CallOnAllWorkerThreads(&NotifyLocaleChangeOnWorkerThread,
+                                       TaskType::kInternalDefault);
 }
 
 // static
 LocaleController& LocaleController::instance() {
-  DEFINE_STATIC_LOCAL(LocaleController, instance, ());
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(LocaleController, instance, ());
   return instance;
 }
 

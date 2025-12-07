@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser.sms;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -18,16 +20,20 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Encapsulates logic to retrieve OTP code via SMS User Consent API. */
+@NullMarked
 public class SmsUserConsentReceiver extends BroadcastReceiver {
     private static final String TAG = "SmsUserConsentRcvr";
     private static final boolean DEBUG = false;
     private final SmsProviderGms mProvider;
     private boolean mDestroyed;
-    private Wrappers.WebOTPServiceContext mContext;
+    private final Wrappers.WebOTPServiceContext mContext;
 
     public SmsUserConsentReceiver(SmsProviderGms provider, Wrappers.WebOTPServiceContext context) {
         mDestroyed = false;
@@ -75,12 +81,8 @@ public class SmsUserConsentReceiver extends BroadcastReceiver {
             return;
         }
 
-        final Status status;
-
-        try {
-            status = (Status) intent.getParcelableExtra(SmsRetriever.EXTRA_STATUS);
-        } catch (Throwable e) {
-            if (DEBUG) Log.d(TAG, "Error getting parceable.");
+        final Status status = IntentUtils.safeGetParcelableExtra(intent, SmsRetriever.EXTRA_STATUS);
+        if (status == null) {
             return;
         }
 
@@ -91,12 +93,7 @@ public class SmsUserConsentReceiver extends BroadcastReceiver {
                 Intent consentIntent =
                         intent.getExtras().getParcelable(SmsRetriever.EXTRA_CONSENT_INTENT);
                 try {
-                    mProvider
-                            .getWindow()
-                            .showIntent(
-                                    consentIntent,
-                                    (resultCode, data) -> onConsentResult(resultCode, data),
-                                    null);
+                    mProvider.getWindow().showIntent(consentIntent, this::onConsentResult, null);
                 } catch (android.content.ActivityNotFoundException e) {
                     if (DEBUG) Log.d(TAG, "Error starting activity for result.");
                 }
@@ -108,8 +105,9 @@ public class SmsUserConsentReceiver extends BroadcastReceiver {
         }
     }
 
-    void onConsentResult(int resultCode, Intent data) {
+    void onConsentResult(int resultCode, @Nullable Intent data) {
         if (resultCode == Activity.RESULT_OK) {
+            assumeNonNull(data);
             String message = data.getStringExtra(SmsRetriever.EXTRA_SMS_MESSAGE);
             mProvider.onReceive(message, GmsBackend.USER_CONSENT);
         } else if (resultCode == Activity.RESULT_CANCELED) {

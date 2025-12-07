@@ -8,6 +8,11 @@ namespace base {
 namespace win {
 namespace internal {
 
+VectorChangedEventArgs::VectorChangedEventArgs(
+    ABI::Windows::Foundation::Collections::CollectionChange change,
+    unsigned int index)
+    : change_(change), index_(index) {}
+
 HRESULT VectorChangedEventArgs::get_CollectionChange(
     ABI::Windows::Foundation::Collections::CollectionChange* value) {
   *value = change_;

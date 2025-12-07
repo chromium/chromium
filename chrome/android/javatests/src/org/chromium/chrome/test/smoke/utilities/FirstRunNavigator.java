@@ -18,9 +18,6 @@ public class FirstRunNavigator {
     public FirstRunNavigator() {}
 
     public void navigateThroughFRE() {
-        // Used in SyncConsentFirstRunFragment FRE page.
-        IUi2Locator noAddAccountButton = Ui2Locators.withAnyResEntry(R.id.negative_button);
-
         // Used in SigninFirstRunFragment FRE page.
         IUi2Locator signinSkipButton = Ui2Locators.withAnyResEntry(R.id.signin_fre_dismiss_button);
         IUi2Locator signinContinueButton =
@@ -49,7 +46,6 @@ public class FirstRunNavigator {
                     signinSkipButton,
                     signinContinueButton,
                     signinProgressSpinner,
-                    noAddAccountButton,
                     defaultSearchEngineNextButton,
                     urlBar,
                 };
@@ -74,10 +70,6 @@ public class FirstRunNavigator {
                 } else {
                     Log.i(TAG, "Ignoring Play Services toast");
                 }
-            } else if (uiLocatorHelper.isOnScreen(noAddAccountButton)) {
-                // Do not add an account.
-                Log.i(TAG, "Clicking through add account dialog");
-                UiAutomatorUtils.getInstance().click(noAddAccountButton);
             } else if (uiLocatorHelper.isOnScreen(signinSkipButton)) {
                 // Do not sign in with an account.
                 Log.i(TAG, "Clicking through sign in dialog via \"skip\"");

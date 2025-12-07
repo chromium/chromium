@@ -8,11 +8,15 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
+#include "components/crx_file/id_util.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/renderer/extension_frame_helper.h"
+#include "extensions/renderer/renderer_extension_registry.h"
 #include "extensions/renderer/shared_l10n_map.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -32,6 +36,19 @@ namespace {
 
 const char kCancelReason[] = "ExtensionLocalizationThrottle";
 
+// Return the extension id in case it's guid was supplied in the host instead.
+ExtensionId GetExtensionIdForGurl(const GURL& gurl) {
+  if (crx_file::id_util::IdIsValid(gurl.GetHost())) {
+    return gurl.GetHost();
+  }
+
+  // Find an extension when expecting the host to be a guid.
+  const Extension* extension =
+      RendererExtensionRegistry::Get()->GetExtensionOrAppByURL(
+          gurl, /*include_guid=*/true);
+  return extension ? extension->id() : gurl.GetHost();
+}
+
 class ExtensionLocalizationURLLoader : public network::mojom::URLLoaderClient,
                                        public network::mojom::URLLoader,
                                        public mojo::DataPipeDrainer::Client {
@@ -44,7 +61,9 @@ class ExtensionLocalizationURLLoader : public network::mojom::URLLoaderClient,
       : frame_token_(frame_token),
         extension_id_(extension_id),
         destination_url_loader_client_(
-            std::move(destination_url_loader_client)) {}
+            std::move(destination_url_loader_client)) {
+    DCHECK(crx_file::id_util::IdIsValid(extension_id_));
+  }
   ~ExtensionLocalizationURLLoader() override = default;
 
   bool Start(
@@ -69,7 +88,7 @@ class ExtensionLocalizationURLLoader : public network::mojom::URLLoaderClient,
     // ExtensionLocalizationURLLoader is
     // created by ExtensionLocalizationThrottle::WillProcessResponse(), which is
     // equivalent to OnReceiveResponse().
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr response_head,
@@ -79,7 +98,7 @@ class ExtensionLocalizationURLLoader : public network::mojom::URLLoaderClient,
     // ExtensionLocalizationURLLoader is
     // created by ExtensionLocalizationThrottle::WillProcessResponse(), which is
     // equivalent to OnReceiveResponse().
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void OnReceiveRedirect(
       const net::RedirectInfo& redirect_info,
@@ -88,7 +107,7 @@ class ExtensionLocalizationURLLoader : public network::mojom::URLLoaderClient,
     // ExtensionLocalizationURLLoader is
     // created by ExtensionLocalizationThrottle::WillProcessResponse(), which is
     // equivalent to OnReceiveResponse().
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void OnUploadProgress(int64_t current_position,
                         int64_t total_size,
@@ -97,7 +116,7 @@ class ExtensionLocalizationURLLoader : public network::mojom::URLLoaderClient,
     // ExtensionLocalizationURLLoader is
     // created by ExtensionLocalizationThrottle::WillProcessResponse(), which is
     // equivalent to OnReceiveResponse().
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override {
     destination_url_loader_client_->OnTransferSizeUpdated(transfer_size_diff);
@@ -116,17 +135,11 @@ class ExtensionLocalizationURLLoader : public network::mojom::URLLoaderClient,
       const std::optional<GURL>& new_url) override {
     // ExtensionLocalizationURLLoader starts handling the request after
     // OnReceivedResponse(). A redirect response is not expected.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override {
     source_url_loader_->SetPriority(priority, intra_priority_value);
-  }
-  void PauseReadingBodyFromNet() override {
-    source_url_loader_->PauseReadingBodyFromNet();
-  }
-  void ResumeReadingBodyFromNet() override {
-    source_url_loader_->ResumeReadingBodyFromNet();
   }
 
   // mojo::DataPipeDrainer
@@ -243,9 +256,11 @@ void ExtensionLocalizationThrottle::WillProcessResponse(
     const GURL& response_url,
     network::mojom::URLResponseHead* response_head,
     bool* defer) {
-  // ExtensionURLLoader can only redirect requests within the
-  // chrome-extension:// scheme.
-  DCHECK(response_url.SchemeIs(extensions::kExtensionScheme));
+  if (!response_url.SchemeIs(extensions::kExtensionScheme)) {
+    // The chrome-extension:// URL resource request was redirected by
+    // webRequest API. In that case, we don't process the response.
+    return;
+  }
   if (!base::StartsWith(response_head->mime_type, "text/css",
                         base::CompareCase::INSENSITIVE_ASCII)) {
     return;
@@ -275,12 +290,20 @@ void ExtensionLocalizationThrottle::WillProcessResponse(
   mojo::PendingRemote<network::mojom::URLLoader> source_loader;
   mojo::PendingReceiver<network::mojom::URLLoaderClient> source_client_receiver;
 
+  // `response_url.host()` is expected to be the extension id. However, it could
+  // be a guid e.g. when a web service worker intercepts a guid fetch for css.
+  ExtensionId extension_id =
+      base::FeatureList::IsEnabled(
+          extensions_features::kExtensionLocalizationGuid)
+          ? GetExtensionIdForGurl(response_url)
+          : response_url.GetHost();
+
   auto loader = std::make_unique<ExtensionLocalizationURLLoader>(
-      frame_token_, response_url.host(), std::move(url_loader_client));
+      frame_token_, extension_id, std::move(url_loader_client));
 
   ExtensionLocalizationURLLoader* loader_rawptr = loader.get();
   // `loader` will be deleted when `new_remote` is disconnected.
-  // `new_remote` is binded to ThrottlingURLLoader::url_loader_. So when
+  // `new_remote` is bound to ThrottlingURLLoader::url_loader_. So when
   // ThrottlingURLLoader is deleted, `loader` will be deleted.
   mojo::MakeSelfOwnedReceiver(std::move(loader),
                               new_remote.InitWithNewPipeAndPassReceiver());

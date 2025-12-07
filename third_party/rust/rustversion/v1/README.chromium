@@ -1,9 +1,0 @@
-Name: rustversion
-URL: https://crates.io/crates/rustversion
-Description: Conditional compilation according to rustc compiler version
-Version: 1.0.17
-Security Critical: yes
-Shipped: yes
-License: Apache 2.0
-License File: //third_party/rust/chromium_crates_io/vendor/rustversion-1.0.17/LICENSE-APACHE
-Revision: adb11fa32295a5d3df7b742e545f4e9b776f9bb3

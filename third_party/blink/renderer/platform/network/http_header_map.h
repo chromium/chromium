@@ -86,12 +86,11 @@ class PLATFORM_EXPORT HTTPHeaderMap final {
     return headers_.insert(k, v);
   }
   void Remove(const AtomicString& k) { headers_.erase(k); }
-  bool operator!=(const HTTPHeaderMap& rhs) const {
-    return headers_ != rhs.headers_;
-  }
   bool operator==(const HTTPHeaderMap& rhs) const {
     return headers_ == rhs.headers_;
   }
+
+  String GetAsRawString(int status_code, String status_message) const;
 
  private:
   MapType headers_;

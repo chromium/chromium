@@ -6,15 +6,23 @@ package org.chromium.chrome.browser.download.home;
 
 import static org.chromium.components.browser_ui.util.ConversionUtils.BYTES_PER_MEGABYTE;
 
+import android.view.View;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.SysUtils;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
+
+import java.util.function.Function;
 
 /** Provides the configuration params required by the download home UI. */
+@NullMarked
 public class DownloadManagerUiConfig {
     /** If not null, which off the record items to show in the UI. */
-    public final OTRProfileID otrProfileID;
+    public final @Nullable OtrProfileId otrProfileId;
 
     /** Whether or not the UI should be shown as part of a separate activity. */
     public final boolean isSeparateActivity;
@@ -38,7 +46,7 @@ public class DownloadManagerUiConfig {
      * The time interval during which a download update is considered recent enough to show
      * in Just Now section.
      */
-    public final long justNowThresholdSeconds;
+    public final long justNowThresholdSeconds = 30 * 60;
 
     /** Whether or not grouping items into a single card is supported. */
     public final boolean supportsGrouping;
@@ -49,39 +57,68 @@ public class DownloadManagerUiConfig {
     /** Whether or not to start the UI focused on prefetched content. */
     public final boolean startWithPrefetchedContent;
 
+    /**
+     * Whether or not items with a Dangerous verdict from Safe Browsing should be shown with warning
+     * text/icon in the list.
+     */
+    public final boolean showDangerousItems;
+
+    /**
+     * Whether or not items with blocked sentive content verdict from Safe Browsing should be shown
+     * with warning text/icon in the list.
+     */
+    public final boolean showBlockedSensitiveItems;
+
+    /**
+     * A generator for the {@link EdgeToEdgePadAdjuster} to be used to adjust the padding for the
+     * download manager.
+     */
+    public final @Nullable Function<View, EdgeToEdgePadAdjuster> edgeToEdgePadAdjusterGenerator;
+
+    /** Whether to show the search bar inline with the content. */
+    public final boolean inlineSearchBar;
+
+    /** Whether to auto-focus the search box. */
+    public final boolean autoFocusSearchBox;
+
     /** Constructor. */
     private DownloadManagerUiConfig(Builder builder) {
-        otrProfileID = builder.mOtrProfileID;
+        otrProfileId = builder.mOtrProfileId;
         isSeparateActivity = builder.mIsSeparateActivity;
         useGenericViewTypes = builder.mUseGenericViewTypes;
         supportFullWidthImages = builder.mSupportFullWidthImages;
         inMemoryThumbnailCacheSizeBytes = builder.mInMemoryThumbnailCacheSizeBytes;
         maxThumbnailScaleFactor = builder.mMaxThumbnailScaleFactor;
-        justNowThresholdSeconds = builder.mJustNowThresholdSeconds;
         supportsGrouping = builder.mSupportsGrouping;
         showPaginationHeaders = builder.mShowPaginationHeaders;
         startWithPrefetchedContent = builder.mStartWithPrefetchedContent;
+        showDangerousItems = builder.mShowDangerousItems;
+        inlineSearchBar = builder.mInlineSearchBar;
+        autoFocusSearchBox = builder.mAutoFocusSearchBox;
+        edgeToEdgePadAdjusterGenerator = builder.mEdgeToEdgePadAdjusterGenerator;
+        showBlockedSensitiveItems = builder.mShowBlockedSensitiveItems;
     }
 
     /** Helper class for building a {@link DownloadManagerUiConfig}. */
     public static class Builder {
-        /** The threshold time interval to show up in Just Now section. */
-        private static final int JUST_NOW_THRESHOLD_SECONDS = 30 * 60;
-
         private static final int IN_MEMORY_THUMBNAIL_CACHE_SIZE_BYTES = 15 * BYTES_PER_MEGABYTE;
 
         private static final float MAX_THUMBNAIL_SCALE_FACTOR = 1.5f; /* hdpi scale factor. */
 
-        private OTRProfileID mOtrProfileID;
+        private @Nullable OtrProfileId mOtrProfileId;
         private boolean mIsSeparateActivity;
         private boolean mUseGenericViewTypes;
         private boolean mSupportFullWidthImages;
         private int mInMemoryThumbnailCacheSizeBytes = IN_MEMORY_THUMBNAIL_CACHE_SIZE_BYTES;
         private float mMaxThumbnailScaleFactor = MAX_THUMBNAIL_SCALE_FACTOR;
-        private long mJustNowThresholdSeconds = JUST_NOW_THRESHOLD_SECONDS;
         private boolean mSupportsGrouping;
         private boolean mShowPaginationHeaders;
         private boolean mStartWithPrefetchedContent;
+        private boolean mShowDangerousItems;
+        private boolean mShowBlockedSensitiveItems;
+        private @Nullable Function<View, EdgeToEdgePadAdjuster> mEdgeToEdgePadAdjusterGenerator;
+        private boolean mInlineSearchBar;
+        private boolean mAutoFocusSearchBox;
 
         public Builder() {
             mSupportFullWidthImages =
@@ -90,8 +127,8 @@ public class DownloadManagerUiConfig {
             mUseGenericViewTypes = SysUtils.isLowEndDevice();
         }
 
-        public Builder setOTRProfileID(OTRProfileID otrProfileID) {
-            mOtrProfileID = otrProfileID;
+        public Builder setOtrProfileId(@Nullable OtrProfileId otrProfileId) {
+            mOtrProfileId = otrProfileId;
             return this;
         }
 
@@ -132,6 +169,32 @@ public class DownloadManagerUiConfig {
 
         public Builder setStartWithPrefetchedContent(boolean startWithPrefetchedContent) {
             mStartWithPrefetchedContent = startWithPrefetchedContent;
+            return this;
+        }
+
+        public Builder setShowDangerousItems(boolean showDangerousItems) {
+            mShowDangerousItems = showDangerousItems;
+            return this;
+        }
+
+        public Builder setShowBlockedSensitiveItems(boolean showBlockedSensitiveItems) {
+            mShowBlockedSensitiveItems = showBlockedSensitiveItems;
+            return this;
+        }
+
+        public Builder setEdgeToEdgePadAdjusterGenerator(
+                Function<View, EdgeToEdgePadAdjuster> edgeToEdgePadAdjusterGenerator) {
+            mEdgeToEdgePadAdjusterGenerator = edgeToEdgePadAdjusterGenerator;
+            return this;
+        }
+
+        public Builder setInlineSearchBar(boolean inlineSearchBar) {
+            mInlineSearchBar = inlineSearchBar;
+            return this;
+        }
+
+        public Builder setAutoFocusSearchBox(boolean autoFocusSearchBox) {
+            mAutoFocusSearchBox = autoFocusSearchBox;
             return this;
         }
 

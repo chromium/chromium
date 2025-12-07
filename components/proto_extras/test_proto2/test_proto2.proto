@@ -1,0 +1,60 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package proto_extras;
+
+message EmptyProto2EmbeddedMessage {}
+
+message EmbeddedMessage {
+  optional string str_field = 1;
+}
+
+enum OuterEnum {
+  OUTER_ENUM_UNSPECIFIED = 0;
+  OUTER_ENUM_OPTION1 = 1;
+  OUTER_ENUM_OPTION2 = 2;
+}
+
+message TestMessageProto2 {
+  optional EmbeddedMessage embedded_message = 1;
+  repeated EmbeddedMessage repeated_embedded_message = 2;
+  optional int32 int32_field = 3;
+  optional int64 int64_field = 4;
+  optional bytes bytes_field = 5;
+  repeated int32 repeated_int32_field = 6;
+  optional OuterEnum outer_enum = 7;
+
+  oneof oneof_field {
+    int32 maybe_int = 8;
+    bool maybe_bool = 9;
+    EmbeddedMessage maybe_message = 14;
+    OuterEnum maybe_enum = 15;
+    bytes maybe_bytes = 16;
+  }
+
+  enum InnerEnum {
+    INNER_ENUM_UNSPECIFIED = 0;
+    INNER_ENUM_OPTION1 = 1;
+    INNER_ENUM_OPTION2 = 2;
+  }
+
+  optional InnerEnum inner_enum = 10;
+  repeated InnerEnum repeated_inner_enum = 11;
+
+  message InnerMessage {
+    optional int32 int_field = 1;
+  }
+
+  optional InnerMessage inner_message = 12;
+  optional bool bool_field = 13;
+  optional uint64 uint64_field = 17;
+
+  map<int32, string> primitive_map_field = 18;
+  map<string, EmbeddedMessage> message_map_field = 19;
+  optional EmptyProto2EmbeddedMessage empty_embedded_message = 20;
+}

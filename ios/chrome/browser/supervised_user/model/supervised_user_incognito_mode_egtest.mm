@@ -4,24 +4,27 @@
 
 #import "base/feature_list.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
-#import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_matchers.h"
+#import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
-#import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
-#import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_constants.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_metrics.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
-using chrome_test_util::ContainsPartialText;
 using chrome_test_util::ShowTabsButton;
 using chrome_test_util::TabGridIncognitoTabsPanelButton;
 using chrome_test_util::TabGridNewIncognitoTabButton;
@@ -35,13 +38,41 @@ NSString* const kTestSupervisedIncognitoMessage =
 // Label used to find the 'Learn more' link.
 NSString* const kTestLearnMoreLabel = @"Learn more";
 
+id<GREYMatcher> SupervisedIncognitoMessage() {
+  return chrome_test_util::ContainsPartialText(kTestSupervisedIncognitoMessage);
+}
+
 }  // namespace
 
 // Tests that supervised users have incognito mode disabled.
 @interface SupervisedUserIncognitoModeTestCase : ChromeTestCase
+
+@property BOOL histogramTesterCreated;
+
 @end
 
 @implementation SupervisedUserIncognitoModeTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.features_enabled.push_back(kEnableNTPViewHierarchyRepair);
+  return config;
+}
+
+- (void)setupAndRegisterHistogramTester {
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
+  self.histogramTesterCreated = YES;
+}
+
+- (void)tearDownHelper {
+  if (self.histogramTesterCreated) {
+    chrome_test_util::GREYAssertErrorNil(
+        [MetricsAppInterface releaseHistogramTester]);
+    self.histogramTesterCreated = NO;
+  }
+  [super tearDownHelper];
+}
 
 // Signs in with a supervised account.
 - (void)signInWithSupervisedAccount {
@@ -78,24 +109,27 @@ NSString* const kTestLearnMoreLabel = @"Learn more";
 
   [[EarlGrey selectElementWithMatcher:ShowTabsButton()]
       performAction:grey_longPress()];
+
   policy::AssertButtonInCollectionEnabled(IDS_IOS_TOOLS_MENU_NEW_TAB);
   policy::AssertButtonInCollectionDisabled(
       IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
 
   // Dismiss the popup menu by tapping anywhere.
-  [[EarlGrey selectElementWithMatcher:ShowTabsButton()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       performAction:grey_tap()];
 
   [SigninEarlGrey signOut];
 
   [[EarlGrey selectElementWithMatcher:ShowTabsButton()]
       performAction:grey_longPress()];
+
   policy::AssertButtonInCollectionEnabled(IDS_IOS_TOOLS_MENU_NEW_TAB);
   policy::AssertButtonInCollectionEnabled(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
 }
 
 // Tests that the disabled incognito tab grid shows a link to Family Link.
 - (void)testTabGridIncognitoDisabled {
+  [self setupAndRegisterHistogramTester];
   [self signInWithSupervisedAccount];
 
   // Open incognito tab grid.
@@ -103,15 +137,22 @@ NSString* const kTestLearnMoreLabel = @"Learn more";
   [[EarlGrey selectElementWithMatcher:TabGridIncognitoTabsPanelButton()]
       performAction:grey_tap()];
 
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:static_cast<int>(
+                                          IncognitoGridStatus::
+                                              kDisabledForSupervisedUser)
+                         forHistogram:@(kUMAIncognitoGridStatusHistogram)],
+      @"Should record incognito grid status metrics for supervised user");
+
   // New Incognito Tab button `(+)` should be disabled.
   [[EarlGrey selectElementWithMatcher:TabGridNewIncognitoTabButton()]
-      assertWithMatcher:grey_accessibilityTrait(
-                            UIAccessibilityTraitNotEnabled)];
+      assertWithMatcher:grey_not(grey_enabled())];
 
   // The disabled incognito tab grid should display a message for supervised
   // users.
-  [[EarlGrey selectElementWithMatcher:ContainsPartialText(
-                                          kTestSupervisedIncognitoMessage)]
+  [[EarlGrey selectElementWithMatcher:SupervisedIncognitoMessage()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Check that the "Learn more" link works.
@@ -121,21 +162,25 @@ NSString* const kTestLearnMoreLabel = @"Learn more";
                                    grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
 
-  // Wait for the Family Link page to finish loading.
-  [ChromeEarlGrey waitForPageToFinishLoading];
+  // The Family Link url will load in a new tab.
+  [ChromeEarlGrey waitForMainTabCount:2];
 
-  // For testing, there will be a redirect to the main Family Link website and
-  // thus we only compare the hostnames.
-  std::string expectedHostname =
-      GURL(supervised_user::kManagedByParentUiMoreInfoUrl).host();
-  GREYAssertEqual([ChromeEarlGrey webStateLastCommittedURL].host(),
-                  expectedHostname,
-                  @"Did not open the correct Learn more URL with hostname %s",
-                  expectedHostname.c_str());
+  GURL currentURL = [ChromeEarlGrey webStateVisibleURL];
+  GURL expectedURL = GURL(supervised_user::kManagedByParentUiMoreInfoUrl);
+  GREYAssertEqual(
+      expectedURL, currentURL,
+      @"Page navigated unexpectedly to %s, instead of the Family Link website",
+      currentURL.spec().c_str());
+
+  GREYAssertNil([MetricsAppInterface
+                    expectTotalCount:1
+                        forHistogram:@(kUMAIncognitoGridStatusHistogram)],
+                @"Incognito grid metrics have incorrect total count.");
 }
 
 // Tests that the incognito tab grid is available after signout.
 - (void)testTabGridIncognitoEnabledOnSignout {
+  [self setupAndRegisterHistogramTester];
   [self signInWithSupervisedAccount];
   [SigninEarlGrey signOut];
 
@@ -144,16 +189,82 @@ NSString* const kTestLearnMoreLabel = @"Learn more";
   [[EarlGrey selectElementWithMatcher:TabGridIncognitoTabsPanelButton()]
       performAction:grey_tap()];
 
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:static_cast<int>(
+                                          IncognitoGridStatus::
+                                              kEnabledForUnmanagedUser)
+                         forHistogram:@(kUMAIncognitoGridStatusHistogram)],
+      @"Should record incognito grid status metrics.");
+
   // New Incognito Tab button `(+)` should be re-enabled.
   [[EarlGrey selectElementWithMatcher:TabGridNewIncognitoTabButton()]
-      assertWithMatcher:grey_not(grey_accessibilityTrait(
-                            UIAccessibilityTraitNotEnabled))];
+      assertWithMatcher:grey_enabled()];
 
-  // The disabled incognito tab should not display any messages from the
-  // disabled incognito tab grid.
-  [[EarlGrey selectElementWithMatcher:ContainsPartialText(
-                                          kTestSupervisedIncognitoMessage)]
+  // Messages from the disabled incognito tab grid should not be displayed.
+  [[EarlGrey selectElementWithMatcher:SupervisedIncognitoMessage()]
       assertWithMatcher:grey_nil()];
+
+  GREYAssertNil([MetricsAppInterface
+                    expectTotalCount:1
+                        forHistogram:@(kUMAIncognitoGridStatusHistogram)],
+                @"Incognito grid metrics have incorrect total count.");
+}
+
+// Tests that the incognito tab grid is available after signout with restart.
+// Regression test for b/360787816.
+- (void)testTabGridIncognitoEnabledOnSignoutWithRestart {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity
+                 withCapabilities:@{
+                   @(kIsSubjectToParentalControlsCapabilityName) : @YES,
+                 }];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+
+  // Create the config to relaunch Chrome. Because fake identities are not
+  // added on startup, manually configure fake identity cache to include the
+  // supervised account.
+  AppLaunchConfiguration config;
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.additional_args.push_back(base::StrCat({
+    "-", test_switches::kAddFakeIdentitiesAtStartup, "=",
+        [FakeSystemIdentity encodeIdentitiesToBase64:@[ fakeIdentity ]]
+  }));
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Set up the histogram tester after restarting.
+  [self setupAndRegisterHistogramTester];
+
+  [SigninEarlGrey signOut];
+
+  // Open the incognito tab grid.
+  [ChromeEarlGrey showTabSwitcher];
+  [[EarlGrey selectElementWithMatcher:TabGridIncognitoTabsPanelButton()]
+      performAction:grey_tap()];
+
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:static_cast<int>(
+                                          IncognitoGridStatus::
+                                              kEnabledForUnmanagedUser)
+                         forHistogram:@(kUMAIncognitoGridStatusHistogram)],
+      @"Should record incognito grid status metrics.");
+
+  // New Incognito Tab button `(+)` should be re-enabled.
+  [[EarlGrey selectElementWithMatcher:TabGridNewIncognitoTabButton()]
+      assertWithMatcher:grey_enabled()];
+
+  // Messages from the disabled incognito tab grid should not be displayed.
+  [[EarlGrey selectElementWithMatcher:SupervisedIncognitoMessage()]
+      assertWithMatcher:grey_nil()];
+
+  GREYAssertNil([MetricsAppInterface
+                    expectTotalCount:1
+                        forHistogram:@(kUMAIncognitoGridStatusHistogram)],
+                @"Incognito grid metrics have incorrect total count.");
 }
 
 // Tests that incognito tabs are destroyed after supervised users sign in.
@@ -161,7 +272,7 @@ NSString* const kTestLearnMoreLabel = @"Learn more";
   // Create new incognito tabs.
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey openNewIncognitoTab];
-  GREYAssertEqual(2, [ChromeEarlGrey incognitoTabCount],
+  GREYAssertEqual(2UL, [ChromeEarlGrey incognitoTabCount],
                   @"Incognito tab count should be 2");
 
   // The latest incognito tab is displayed.
@@ -171,17 +282,18 @@ NSString* const kTestLearnMoreLabel = @"Learn more";
   [self signInWithSupervisedAccount];
 
   // All incognito tabs should be destroyed.
-  GREYAssertEqual(0, [ChromeEarlGrey incognitoTabCount],
+  GREYAssertEqual(0UL, [ChromeEarlGrey incognitoTabCount],
                   @"Incognito tab count should be 0");
 
   // If the supervised user was previously on an incognito tab, the disabled
   // incognito tab grid should be displayed.
-  [[EarlGrey selectElementWithMatcher:ContainsPartialText(
-                                          kTestSupervisedIncognitoMessage)]
+  [[EarlGrey selectElementWithMatcher:SupervisedIncognitoMessage()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Check that the edit button is disabled.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridEditButton()]
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(chrome_test_util::TabGridEditButton(),
+                                          grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_not(grey_enabled())];
 }
 
@@ -191,7 +303,7 @@ NSString* const kTestLearnMoreLabel = @"Learn more";
   // Create new incognito tabs.
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey openNewIncognitoTab];
-  GREYAssertEqual(2, [ChromeEarlGrey incognitoTabCount],
+  GREYAssertEqual(2UL, [ChromeEarlGrey incognitoTabCount],
                   @"Incognito tab count should be 2");
 
   // Open a new regular tab.
@@ -202,12 +314,12 @@ NSString* const kTestLearnMoreLabel = @"Learn more";
   [self signInWithSupervisedAccount];
 
   // All incognito tabs should be destroyed.
-  GREYAssertEqual(0, [ChromeEarlGrey incognitoTabCount],
+  GREYAssertEqual(0UL, [ChromeEarlGrey incognitoTabCount],
                   @"Incognito tab count should be 0");
 
   // The user should stay on the new tab page.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::NewTabPageOmnibox()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+      assertWithMatcher:grey_notNil()];
 }
 
 @end

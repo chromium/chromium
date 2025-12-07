@@ -54,7 +54,6 @@ class BackgroundLoaderContents : public content::WebContentsDelegate {
   content::WebContents* web_contents() { return web_contents_.get(); }
 
   // content::WebContentsDelegate implementation:
-  bool IsNeverComposited(content::WebContents* web_contents) override;
   void CloseContents(content::WebContents* source) override;
   bool ShouldSuppressDialogs(content::WebContents* source) override;
   bool ShouldFocusPageAfterCrash(content::WebContents* source) override;
@@ -63,19 +62,21 @@ class BackgroundLoaderContents : public content::WebContentsDelegate {
                    base::OnceCallback<void(bool)> callback) override;
 
   bool IsWebContentsCreationOverridden(
+      content::RenderFrameHost* opener,
       content::SiteInstance* source_site_instance,
       content::mojom::WindowContainerType window_container_type,
       const GURL& opener_url,
       const std::string& frame_name,
       const GURL& target_url) override;
 
-  void AddNewContents(content::WebContents* source,
-                      std::unique_ptr<content::WebContents> new_contents,
-                      const GURL& target_url,
-                      WindowOpenDisposition disposition,
-                      const blink::mojom::WindowFeatures& window_features,
-                      bool user_gesture,
-                      bool* was_blocked) override;
+  content::WebContents* AddNewContents(
+      content::WebContents* source,
+      std::unique_ptr<content::WebContents> new_contents,
+      const GURL& target_url,
+      WindowOpenDisposition disposition,
+      const blink::mojom::WindowFeatures& window_features,
+      bool user_gesture,
+      bool* was_blocked) override;
 
 #if BUILDFLAG(IS_ANDROID)
   bool ShouldBlockMediaRequest(const GURL& url) override;

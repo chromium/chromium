@@ -6,25 +6,24 @@
 
 #include <string>
 
+#include "base/command_line.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
-#include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile_attributes_entry.h"
-#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
-#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
-#include "chrome/browser/ui/ui_features.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/webui_url_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_switches.h"
 
 namespace {
 
-constexpr base::TimeDelta kActiveTimeThreshold = base::Days(28);
+bool g_open_command_line_urls_in_next_profile_opened = false;
 
 ProfilePicker::AvailabilityOnStartup GetAvailabilityOnStartup() {
   int availability_on_startup = g_browser_process->local_state()->GetInteger(
@@ -37,9 +36,8 @@ ProfilePicker::AvailabilityOnStartup GetAvailabilityOnStartup() {
     case 2:
       return ProfilePicker::AvailabilityOnStartup::kForced;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return ProfilePicker::AvailabilityOnStartup::kEnabled;
 }
 
 }  // namespace
@@ -47,12 +45,7 @@ ProfilePicker::AvailabilityOnStartup GetAvailabilityOnStartup() {
 const char ProfilePicker::kTaskManagerUrl[] =
     "chrome://profile-picker/task-manager";
 
-ProfilePicker::Params::~Params() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  NotifyAccountSelected(std::string());
-  NotifyFirstRunExited(FirstRunExitStatus::kQuitEarly);
-#endif
-}
+ProfilePicker::Params::~Params() = default;
 
 ProfilePicker::Params::Params(ProfilePicker::Params&&) = default;
 
@@ -63,10 +56,17 @@ ProfilePicker::Params& ProfilePicker::Params::operator=(
 ProfilePicker::Params ProfilePicker::Params::FromEntryPoint(
     EntryPoint entry_point) {
   // Use specialized constructors when available.
-  DCHECK_NE(entry_point, EntryPoint::kBackgroundModeManager);
-  DCHECK_NE(entry_point, EntryPoint::kLacrosSelectAvailableAccount);
-  DCHECK_NE(entry_point, EntryPoint::kLacrosPrimaryProfileFirstRun);
+  CHECK_NE(entry_point, EntryPoint::kBackgroundModeManager);
+  CHECK_NE(entry_point, EntryPoint::kGlicManager);
   return ProfilePicker::Params(entry_point, GetPickerProfilePath());
+}
+
+ProfilePicker::Params ProfilePicker::Params::FromStartupWithEmail(
+    const std::string& email) {
+  Params params = ProfilePicker::Params::FromEntryPoint(
+      EntryPoint::kOnStartupCreateProfileWithEmail);
+  params.initial_email_ = email;
+  return params;
 }
 
 // static
@@ -77,40 +77,20 @@ ProfilePicker::Params ProfilePicker::Params::ForBackgroundManager(
   return params;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// static
-ProfilePicker::Params ProfilePicker::Params::ForLacrosSelectAvailableAccount(
-    const base::FilePath& profile_path,
-    base::OnceCallback<void(const std::string&)> account_selected_callback) {
-  Params params(EntryPoint::kLacrosSelectAvailableAccount,
-                profile_path.empty() ? GetPickerProfilePath() : profile_path);
-  params.account_selected_callback_ = std::move(account_selected_callback);
-  return params;
-}
-
-void ProfilePicker::Params::NotifyAccountSelected(const std::string& gaia_id) {
-  if (account_selected_callback_) {
-    std::move(account_selected_callback_).Run(gaia_id);
-  }
-}
-#endif
-
 // static
 ProfilePicker::Params ProfilePicker::Params::ForFirstRun(
     const base::FilePath& profile_path,
     FirstRunExitedCallback first_run_exited_callback) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  DCHECK_EQ(profile_path, ProfileManager::GetPrimaryUserProfilePath());
-#endif
-
-  Params params(
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-      EntryPoint::kFirstRun,
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-      EntryPoint::kLacrosPrimaryProfileFirstRun,
-#endif
-      profile_path);
+  Params params(EntryPoint::kFirstRun, profile_path);
   params.first_run_exited_callback_ = std::move(first_run_exited_callback);
+  return params;
+}
+
+// static
+ProfilePicker::Params ProfilePicker::Params::ForGlicManager(
+    base::OnceCallback<void(Profile*)> picked_profile_callback) {
+  Params params(EntryPoint::kGlicManager, GetPickerProfilePath());
+  params.picked_profile_callback_ = std::move(picked_profile_callback);
   return params;
 }
 
@@ -122,6 +102,12 @@ void ProfilePicker::Params::NotifyFirstRunExited(
   std::move(first_run_exited_callback_).Run(exit_status);
 }
 
+void ProfilePicker::Params::NotifyProfilePicked(Profile* profile) {
+  CHECK(picked_profile_callback_);
+  CHECK_EQ(entry_point_, EntryPoint::kGlicManager);
+  std::move(picked_profile_callback_).Run(profile);
+}
+
 bool ProfilePicker::Params::CanReusePickerWindow(const Params& other) const {
   LOG(WARNING) << "Checking window reusability from entry point "
                << static_cast<int>(entry_point_) << " to "
@@ -130,8 +116,9 @@ bool ProfilePicker::Params::CanReusePickerWindow(const Params& other) const {
   // Some entry points have specific UIs that cannot be reused for other entry
   // points.
   base::flat_set<EntryPoint> exclusive_entry_points = {
-      EntryPoint::kLacrosPrimaryProfileFirstRun,
-      EntryPoint::kLacrosSelectAvailableAccount, EntryPoint::kFirstRun};
+      EntryPoint::kFirstRun,
+      EntryPoint::kGlicManager,
+  };
   if (entry_point_ != other.entry_point_ &&
       (exclusive_entry_points.contains(entry_point_) ||
        exclusive_entry_points.contains(other.entry_point_))) {
@@ -152,58 +139,68 @@ bool ProfilePicker::Shown() {
 }
 
 // static
-StartupProfileModeReason ProfilePicker::GetStartupModeReason() {
+StartupProfileMode ProfilePicker::GetStartupMode() {
   AvailabilityOnStartup availability_on_startup = GetAvailabilityOnStartup();
 
   if (availability_on_startup == AvailabilityOnStartup::kDisabled) {
-    return StartupProfileModeReason::kPickerDisabledByPolicy;
+    return StartupProfileMode::kBrowserWindow;
   }
 
   // TODO (crbug/1155158): Move this over the urls check (in
   // startup_browser_creator.cc) once the profile picker can forward urls
   // specified in command line.
   if (availability_on_startup == AvailabilityOnStartup::kForced) {
-    return StartupProfileModeReason::kPickerForcedByPolicy;
+    return StartupProfileMode::kProfilePicker;
   }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Don't show the profile picker if secondary profiles are not allowed.
-  bool lacros_secondary_profiles_allowed =
-      g_browser_process->local_state()->GetBoolean(
-          prefs::kLacrosSecondaryProfilesAllowed);
-
-  if (!lacros_secondary_profiles_allowed) {
-    return StartupProfileModeReason::kProfilesDisabledLacros;
-  }
-#endif
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
 
-  size_t number_of_profiles = profile_manager->GetNumberOfProfiles();
-  // Need to consider 0 profiles as this is what happens in some browser-tests.
-  if (number_of_profiles <= 1) {
-    return StartupProfileModeReason::kSingleProfile;
+  // Only launch the profile creation flow at startup if the user has specified
+  // both a profile email address and the switch to create a new profile. Only
+  // launch the profile creation flow if and a profile with this email does not
+  // already exist.
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kProfileEmail)) {
+    std::string switch_email =
+        command_line->GetSwitchValueASCII(switches::kProfileEmail);
+    if (!switch_email.empty()) {
+      if (!profile_manager->GetProfileDirForEmail(switch_email).empty()) {
+        return StartupProfileMode::kBrowserWindow;
+      } else if (command_line->HasSwitch(
+                     switches::kCreateProfileEmailIfNotExists) &&
+                 base::FeatureList::IsEnabled(
+                     features::kCreateProfileIfNoneExists)) {
+        return StartupProfileMode::kProfilePicker;
+      }
+    }
   }
 
-  std::vector<ProfileAttributesEntry*> profile_attributes =
-      profile_manager->GetProfileAttributesStorage().GetAllProfilesAttributes();
-  int number_of_active_profiles = base::ranges::count_if(
-      profile_attributes, [](ProfileAttributesEntry* entry) {
-        return (base::Time::Now() - entry->GetActiveTime() <
-                kActiveTimeThreshold);
-      });
-  // Don't show the profile picker at launch if the user has less than two
-  // active profiles. However, if the user has already seen the profile picker
-  // before, respect user's preference.
-  if (number_of_active_profiles < 2 && !Shown()) {
-    return StartupProfileModeReason::kInactiveProfiles;
+  size_t number_of_profiles = profile_manager->GetNumberOfProfiles();
+  // Need to consider 0 profiles as this is what happens in some browser-tests.
+  if (number_of_profiles == 0) {
+    return StartupProfileMode::kBrowserWindow;
+  }
+  if (number_of_profiles == 1 &&
+      !base::FeatureList::IsEnabled(
+          switches::kShowProfilePickerToAllUsersExperiment)) {
+    return StartupProfileMode::kBrowserWindow;
   }
 
   bool pref_enabled = g_browser_process->local_state()->GetBoolean(
       prefs::kBrowserShowProfilePickerOnStartup);
   base::UmaHistogramBoolean("ProfilePicker.AskOnStartup", pref_enabled);
   if (pref_enabled) {
-    return StartupProfileModeReason::kMultipleProfiles;
+    return StartupProfileMode::kProfilePicker;
   }
-  return StartupProfileModeReason::kUserOptedOut;
+  return StartupProfileMode::kBrowserWindow;
+}
+
+// static
+void ProfilePicker::SetOpenCommandLineUrlsInNextProfileOpened(bool value) {
+  g_open_command_line_urls_in_next_profile_opened = value;
+}
+
+// static
+bool ProfilePicker::GetOpenCommandLineUrlsInNextProfileOpened() {
+  return g_open_command_line_urls_in_next_profile_opened;
 }

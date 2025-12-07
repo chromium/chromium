@@ -72,12 +72,12 @@ class HttpAuthHandlerNtlmPortableTest : public PlatformTest {
 
   HttpAuth::AuthorizationResult HandleAnotherChallenge(
       const std::string& challenge) {
-    HttpAuthChallengeTokenizer tokenizer(challenge.begin(), challenge.end());
+    HttpAuthChallengeTokenizer tokenizer(challenge);
     return GetAuthHandler()->HandleAnotherChallenge(&tokenizer);
   }
 
   bool DecodeChallenge(const std::string& challenge, std::string* decoded) {
-    HttpAuthChallengeTokenizer tokenizer(challenge.begin(), challenge.end());
+    HttpAuthChallengeTokenizer tokenizer(challenge);
     return base::Base64Decode(tokenizer.base64_param(), decoded);
   }
 
@@ -86,50 +86,6 @@ class HttpAuthHandlerNtlmPortableTest : public PlatformTest {
     HttpRequestInfo request_info;
     return callback.GetResult(GetAuthHandler()->GenerateAuthToken(
         GetCreds(), &request_info, callback.callback(), token));
-  }
-
-  bool ReadBytesPayload(ntlm::NtlmBufferReader* reader,
-                        base::span<uint8_t> buffer) {
-    ntlm::SecurityBuffer sec_buf;
-    return reader->ReadSecurityBuffer(&sec_buf) &&
-           (sec_buf.length == buffer.size()) &&
-           reader->ReadBytesFrom(sec_buf, buffer);
-  }
-
-  // Reads bytes from a payload and assigns them to a string. This makes
-  // no assumptions about the underlying encoding.
-  bool ReadStringPayload(ntlm::NtlmBufferReader* reader, std::string* str) {
-    ntlm::SecurityBuffer sec_buf;
-    if (!reader->ReadSecurityBuffer(&sec_buf))
-      return false;
-
-    str->resize(sec_buf.length);
-    if (!reader->ReadBytesFrom(sec_buf, base::as_writable_byte_span(*str))) {
-      return false;
-    }
-
-    return true;
-  }
-
-  // Reads bytes from a payload and assigns them to a string16. This makes
-  // no assumptions about the underlying encoding. This will fail if there
-  // are an odd number of bytes in the payload.
-  void ReadString16Payload(ntlm::NtlmBufferReader* reader,
-                           std::u16string* str) {
-    ntlm::SecurityBuffer sec_buf;
-    EXPECT_TRUE(reader->ReadSecurityBuffer(&sec_buf));
-    EXPECT_EQ(0, sec_buf.length % 2);
-
-    std::vector<uint8_t> raw(sec_buf.length);
-    EXPECT_TRUE(reader->ReadBytesFrom(sec_buf, raw));
-
-#if defined(ARCH_CPU_BIG_ENDIAN)
-    for (size_t i = 0; i < raw.size(); i += 2) {
-      std::swap(raw[i], raw[i + 1]);
-    }
-#endif
-
-    str->assign(reinterpret_cast<const char16_t*>(raw.data()), raw.size() / 2);
   }
 
   int GetGenerateAuthTokenResult() {
@@ -233,9 +189,9 @@ TEST_F(HttpAuthHandlerNtlmPortableTest, NtlmV1AuthenticationSuccess) {
   ASSERT_TRUE(DecodeChallenge(token, &decoded));
   ASSERT_EQ(std::size(ntlm::test::kExpectedAuthenticateMsgSpecResponseV1),
             decoded.size());
-  ASSERT_EQ(0, memcmp(decoded.data(),
-                      ntlm::test::kExpectedAuthenticateMsgSpecResponseV1,
-                      decoded.size()));
+  ASSERT_EQ(
+      base::as_byte_span(decoded),
+      base::as_byte_span(ntlm::test::kExpectedAuthenticateMsgSpecResponseV1));
 }
 
 }  // namespace net

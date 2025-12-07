@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
+#include "components/prefs/pref_service.h"
+#include "components/webui/chrome_urls/pref_names.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 
@@ -25,6 +28,8 @@ class LocationInternalsTest : public WebUIMochaBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(LocationInternalsTest, All) {
   set_test_loader_host(chrome::kChromeUILocationInternalsHost);
+  g_browser_process->local_state()->SetBoolean(
+      chrome_urls::kInternalOnlyUisEnabled, true);
   RunTestWithoutTestLoader("location_internals/location_internals_test.js",
                            "mocha.run()");
 }

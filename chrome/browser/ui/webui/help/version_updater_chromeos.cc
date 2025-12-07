@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
@@ -56,8 +57,9 @@ const bool kDefaultAutoUpdateDisabled = false;
 NetworkStatus GetNetworkStatus(bool interactive,
                                const ash::NetworkState* network,
                                bool metered) {
-  if (!network || !network->IsConnectedState())  // Offline state.
+  if (!network || !network->IsConnectedState()) {  // Offline state.
     return NETWORK_STATUS_OFFLINE;
+  }
 
   if (metered &&
       !help_utils_chromeos::IsUpdateOverCellularAllowed(interactive)) {
@@ -70,8 +72,9 @@ NetworkStatus GetNetworkStatus(bool interactive,
 bool IsAutoUpdateDisabled() {
   bool update_disabled = kDefaultAutoUpdateDisabled;
   ash::CrosSettings* settings = ash::CrosSettings::Get();
-  if (!settings)
+  if (!settings) {
     return update_disabled;
+  }
   const base::Value* update_disabled_value =
       settings->GetPref(ash::kUpdateDisabled);
   if (update_disabled_value) {
@@ -85,18 +88,21 @@ std::u16string GetConnectionTypeAsUTF16(const ash::NetworkState* network,
                                         bool metered) {
   const std::string type = network->type();
   if (ash::NetworkTypePattern::WiFi().MatchesType(type)) {
-    if (metered)
+    if (metered) {
       return l10n_util::GetStringUTF16(IDS_NETWORK_TYPE_METERED_WIFI);
+    }
     return l10n_util::GetStringUTF16(IDS_NETWORK_TYPE_WIFI);
   }
-  if (ash::NetworkTypePattern::Ethernet().MatchesType(type))
+  if (ash::NetworkTypePattern::Ethernet().MatchesType(type)) {
     return l10n_util::GetStringUTF16(IDS_NETWORK_TYPE_ETHERNET);
-  if (ash::NetworkTypePattern::Mobile().MatchesType(type))
+  }
+  if (ash::NetworkTypePattern::Mobile().MatchesType(type)) {
     return l10n_util::GetStringUTF16(IDS_NETWORK_TYPE_MOBILE_DATA);
-  if (ash::NetworkTypePattern::VPN().MatchesType(type))
+  }
+  if (ash::NetworkTypePattern::VPN().MatchesType(type)) {
     return l10n_util::GetStringUTF16(IDS_NETWORK_TYPE_VPN);
-  NOTREACHED_IN_MIGRATION();
-  return std::u16string();
+  }
+  NOTREACHED();
 }
 
 // Returns whether an update is allowed. If not, it calls the callback with
@@ -144,24 +150,26 @@ void VersionUpdaterCros::GetUpdateStatus(StatusCallback callback) {
   callback_ = std::move(callback);
 
   // User is not actively checking for updates.
-  if (!EnsureCanUpdate(false /* interactive */, callback_))
+  if (!EnsureCanUpdate(false /* interactive */, callback_)) {
     return;
+  }
 
   UpdateEngineClient* update_engine_client = UpdateEngineClient::Get();
-  if (!update_engine_client->HasObserver(this))
+  if (!update_engine_client->HasObserver(this)) {
     update_engine_client->AddObserver(this);
+  }
 
   this->UpdateStatusChanged(update_engine_client->GetLastStatus());
 }
 
-void VersionUpdaterCros::ApplyDeferredUpdate() {
+void VersionUpdaterCros::ApplyDeferredUpdateAdvanced() {
   UpdateEngineClient* update_engine_client = UpdateEngineClient::Get();
 
   DCHECK(update_engine_client->GetLastStatus().current_operation() ==
          update_engine::Operation::UPDATED_BUT_DEFERRED);
 
-  update_engine_client->ApplyDeferredUpdate(/*shutdown_after_update=*/false,
-                                            base::DoNothing());
+  update_engine_client->ApplyDeferredUpdateAdvanced(
+      /*shutdown_after_update=*/false, base::DoNothing());
 }
 
 void VersionUpdaterCros::CheckForUpdate(StatusCallback callback,
@@ -169,12 +177,14 @@ void VersionUpdaterCros::CheckForUpdate(StatusCallback callback,
   callback_ = std::move(callback);
 
   // User is actively checking for updates.
-  if (!EnsureCanUpdate(true /* interactive */, callback_))
+  if (!EnsureCanUpdate(true /* interactive */, callback_)) {
     return;
+  }
 
   UpdateEngineClient* update_engine_client = UpdateEngineClient::Get();
-  if (!update_engine_client->HasObserver(this))
+  if (!update_engine_client->HasObserver(this)) {
     update_engine_client->AddObserver(this);
+  }
 
   if (update_engine_client->GetLastStatus().current_operation() !=
       update_engine::Operation::IDLE) {
@@ -199,8 +209,9 @@ void VersionUpdaterCros::SetChannel(const std::string& channel,
                 context_)
           : nullptr;
   // For local owner set the field in the policy blob.
-  if (service)
+  if (service) {
     service->SetString(ash::kReleaseChannel, channel);
+  }
   UpdateEngineClient::Get()->SetChannel(channel, is_powerwash_allowed);
 }
 
@@ -291,16 +302,26 @@ VersionUpdaterCros::~VersionUpdaterCros() {
 
 void VersionUpdaterCros::UpdateStatusChanged(
     const update_engine::StatusResult& status) {
+  // If the status change is for an installation (e.g. DLCs), then this status
+  // has nothing to with an OS update.
+  if (status.is_install()) {
+    // Invoke the callback to signal a terminal state when the update engine is
+    // handling non-OS update operations (e.g. installations) in flight. In this
+    // case, the device can be considered up-to-date.
+    // Note: It is safe to set the last operation to IDLE provided that the
+    // update engine actually returns to an idle state, allowing the user to
+    // check for updates again.
+    // TODO(crbug.com/393412165) Consider more robust approaches in this case.
+    last_operation_ = update_engine::Operation::IDLE;
+    callback_.Run(UPDATED, 0, false, false, std::string(), 0, std::u16string());
+    return;
+  }
+
   Status my_status = UPDATED;
   int progress = 0;
   std::string version = status.new_version();
   int64_t size = status.new_size();
   std::u16string message;
-
-  // If the status change is for an installation, this means that DLCs are being
-  // installed and has nothing to with the OS. Ignore this status change.
-  if (status.is_install())
-    return;
 
   // If the updater is currently idle, just show the last operation (unless it
   // was previously checking for an update -- in that case, the system is
@@ -373,7 +394,7 @@ void VersionUpdaterCros::UpdateStatusChanged(
       my_status = DEFERRED;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   // If the current auto update is non-interactive and will be deferred, ignore
@@ -400,6 +421,7 @@ void VersionUpdaterCros::OnUpdateCheck(
     UpdateEngineClient::UpdateCheckResult result) {
   // If version updating is not implemented, this binary is the most up-to-date
   // possible with respect to automatic updating.
-  if (result == UpdateEngineClient::UPDATE_RESULT_NOTIMPLEMENTED)
+  if (result == UpdateEngineClient::UPDATE_RESULT_NOTIMPLEMENTED) {
     callback_.Run(UPDATED, 0, false, false, std::string(), 0, std::u16string());
+  }
 }

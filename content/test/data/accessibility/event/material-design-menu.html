@@ -1,0 +1,101 @@
+<!--
+@WAIT-FOR:Ready
+@EVENTS-TREE-DUMP
+@BLINK-DENY:className*
+@AURALINUX-DENY:CHILDREN-CHANGED*
+@AURALINUX-DENY:PARENT-CHANGED*
+@AURALINUX-DENY:FOCUS-EVENT*
+@UIA-WIN-DENY:*StructureChanged*
+@WIN-DENY:EVENT_OBJECT_LOCATIONCHANGE*
+@WIN-DENY:EVENT_OBJECT_REORDER*
+-->
+<!doctype html>
+<html>
+<head>
+    <title>Material Web Menu Events</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+    <script type="module">
+        import { injectImportMap, loadAndWaitForReady, setupEventTestRunner, waitForStable } from "../material-design/resources/utils.js";
+        injectImportMap();
+
+        const components = [
+            "md-menu",
+            "md-menu-item",
+            "md-filled-button",
+            "md-icon"
+        ];
+
+        setupEventTestRunner();
+        window.waitForStable = waitForStable;
+        loadAndWaitForReady(components, () => {
+            const statusDiv = document.getElementById("status");
+            const menuContainer = document.createElement("div");
+            menuContainer.style.position = "relative";
+            menuContainer.style.display = "inline-block";
+
+            const button = document.createElement("md-filled-button");
+            button.id = "test-menu-button";
+            button.textContent = "Open Menu";
+            button.setAttribute("aria-label", "Open Menu");
+
+            const menu = document.createElement("md-menu");
+            menu.id = "test-menu";
+            menu.anchor = "test-menu-button";
+            menu.quick = true;
+            menu.stayOpenOnOutsideClick = true;
+            menu.stayOpenOnFocusout = true;
+
+            const menuItem1 = document.createElement("md-menu-item");
+            menuItem1.headline = "Menu Item 1";
+            menuItem1.setAttribute("aria-label", "Menu Item 1");
+            menu.appendChild(menuItem1);
+
+            const menuItem2 = document.createElement("md-menu-item");
+            menuItem2.headline = "Menu Item 2";
+            menuItem2.setAttribute("aria-label", "Menu Item 2");
+            menu.appendChild(menuItem2);
+
+            const menuItem3 = document.createElement("md-menu-item");
+            menuItem3.headline = "Menu Item 3";
+            menuItem3.setAttribute("aria-label", "Menu Item 3");
+            menu.appendChild(menuItem3);
+
+            menuContainer.appendChild(button);
+            menuContainer.appendChild(menu);
+            statusDiv.appendChild(menuContainer);
+            statusDiv.setAttribute("aria-label", "Ready");
+        });
+    </script>
+</head>
+<body>
+    <div id="status" aria-label="Loading">
+    </div>
+</body>
+<script>
+    window.go_passes = [
+        async () => {
+            const menu = document.getElementById("test-menu");
+            if (menu) {
+                menu.open = true;
+                await waitForStable(menu);
+            }
+        },
+
+        async () => {
+            const menu = document.getElementById("test-menu");
+            if (menu) {
+                // There's a race condition among three things:
+                // 1. focus being automatically restored to the anchor element
+                // 2. the menu being closed
+                // 3. the tree dump being generated
+                // The menu does correctly restore focus automatically, but
+                // the race condition makes obtaining non-flaky tree dumps hard.
+                // Therefore manually set the focus.
+                menu.anchorElement.focus({ preventScroll: true });
+                menu.open = false;
+                await waitForStable(menu);
+            }
+        }
+    ];
+</script>
+</html>

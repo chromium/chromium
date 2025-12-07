@@ -11,9 +11,9 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 
 class BrowserPolicyConnectorIOS;
-class BrowserStatePolicyConnector;
+class ProfilePolicyConnector;
 class PrefService;
-class TestChromeBrowserState;
+class TestProfileIOS;
 
 // Builds the boilerplate enterprise policy configuration and creates a browser
 // state configured with that policy.
@@ -25,11 +25,11 @@ class EnterprisePolicyTestHelper {
       const base::FilePath& state_directory_path);
   ~EnterprisePolicyTestHelper();
 
-  // Returns the browser state configured with `policy_provider_`.
-  TestChromeBrowserState* GetBrowserState() const;
+  // Returns the profile configured with `policy_provider_`.
+  TestProfileIOS* GetProfile() const;
   // Returns the backing local state.
   PrefService* GetLocalState();
-  // Returns the policy provider attached to `browser_state_`.
+  // Returns the policy provider attached to `profile_`.
   policy::MockConfigurationPolicyProvider* GetPolicyProvider();
   // Returns the browser policy connector.
   BrowserPolicyConnectorIOS* GetBrowserPolicyConnector();
@@ -41,10 +41,10 @@ class EnterprisePolicyTestHelper {
   std::unique_ptr<BrowserPolicyConnectorIOS> browser_policy_connector_;
   // The local state PrefService managed by policy.
   std::unique_ptr<PrefService> local_state_;
-  // The BrowserState-level policy connector. Must outlive `pref_service_`.
-  std::unique_ptr<BrowserStatePolicyConnector> browser_state_policy_connector_;
-  // The browser state configured with the `policy_provider_`.
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  // The Profile-level policy connector. Must outlive `pref_service_`.
+  std::unique_ptr<ProfilePolicyConnector> profile_policy_connector_;
+  // The profile configured with the `policy_provider_`.
+  std::unique_ptr<TestProfileIOS> profile_;
 
   EnterprisePolicyTestHelper& operator=(const EnterprisePolicyTestHelper&) =
       delete;

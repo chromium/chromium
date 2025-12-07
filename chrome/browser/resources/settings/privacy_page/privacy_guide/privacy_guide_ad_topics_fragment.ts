@@ -8,9 +8,9 @@
  * card that contains the ad topics setting and its description.
  */
 
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '../../controls/settings_toggle_button.js';
 import '../../icons.html.js';
-import './privacy_guide_description_item.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -32,18 +32,6 @@ export class PrivacyGuideAdTopicsFragmentElement extends
 
   static get template() {
     return getTemplate();
-  }
-
-  static get properties() {
-    return {
-      /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-    };
   }
 
   private startStateAdTopicsOn_: boolean;
@@ -87,7 +75,7 @@ export class PrivacyGuideAdTopicsFragmentElement extends
           PrivacyGuideSettingsStates.AD_TOPICS_OFF_TO_ON :
           PrivacyGuideSettingsStates.AD_TOPICS_OFF_TO_OFF;
     }
-    this.metricsBrowserProxy_.recordPrivacyGuideSettingsStatesHistogram(state!);
+    this.metricsBrowserProxy_.recordPrivacyGuideSettingsStatesHistogram(state);
   }
 
   private onToggleChange_(e: Event) {
@@ -97,6 +85,14 @@ export class PrivacyGuideAdTopicsFragmentElement extends
     this.metricsBrowserProxy_.recordAction(
         target.checked ? 'Settings.PrivacyGuide.ChangeAdTopicsOn' :
                          'Settings.PrivacyGuide.ChangeAdTopicsOff');
+  }
+
+  // Opens up a new tab when clicked. The on-click function and href for the
+  // link is all handled in
+  // settings_localized_strings_privacy_sandbox_provider.cc
+  private onPrivacyPolicyLinkClicked_() {
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.PrivacyGuide.AdTopicsPrivacyPolicyLinkClicked');
   }
 }
 

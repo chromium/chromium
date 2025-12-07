@@ -4,11 +4,13 @@
 
 #include "content/browser/preloading/preloading_decider.h"
 
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_data_impl.h"
+#include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -33,11 +35,8 @@ class PreloadingDeciderBrowserTest : public ContentBrowserTest {
   void SetUp() override {
     feature_list_.InitWithFeaturesAndParameters(
         {
-            {blink::features::kSpeculationRulesPointerDownHeuristics, {}},
-            {blink::features::kSpeculationRulesPointerHoverHeuristics, {}},
             {blink::features::kPreloadingHeuristicsMLModel,
              {{"enact_candidates", "true"}}},
-            {blink::features::kPrerender2InNewTab, {}},
         },
         {
             // Disable the memory requirement of Prerender2 so the test can run
@@ -107,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(PreloadingDeciderBrowserTest,
       PredictorConfusionMatrix::kFalseNegative, 1);
 }
 
-class PreloadingDeciderNonEagerBrowserTest
+class PreloadingDeciderNonImmediateBrowserTest
     : public PreloadingDeciderBrowserTest,
       public ::testing::WithParamInterface<
           ::testing::tuple<PreloadingPredictor, PreloadingType>> {
@@ -120,7 +119,7 @@ class PreloadingDeciderNonEagerBrowserTest
         std::string(PreloadingTypeToString(type)).c_str());
   }
 
-  static constexpr PreloadingPredictor kNonEagerPredictors[] = {
+  static constexpr PreloadingPredictor kNonImmediatePredictors[] = {
       preloading_predictor::kUrlPointerDownOnAnchor,
       preloading_predictor::kUrlPointerHoverOnAnchor,
       preloading_predictor::kPreloadingHeuristicsMLModel,
@@ -140,15 +139,15 @@ class PreloadingDeciderNonEagerBrowserTest
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    PreloadingDeciderNonEagerBrowserTest,
+    PreloadingDeciderNonImmediateBrowserTest,
     ::testing::Combine(
         ::testing::ValuesIn(
-            PreloadingDeciderNonEagerBrowserTest::kNonEagerPredictors),
+            PreloadingDeciderNonImmediateBrowserTest::kNonImmediatePredictors),
         ::testing::ValuesIn(
-            PreloadingDeciderNonEagerBrowserTest::kPreloadingTypes)),
-    PreloadingDeciderNonEagerBrowserTest::DescribeParams);
+            PreloadingDeciderNonImmediateBrowserTest::kPreloadingTypes)),
+    PreloadingDeciderNonImmediateBrowserTest::DescribeParams);
 
-IN_PROC_BROWSER_TEST_P(PreloadingDeciderNonEagerBrowserTest,
+IN_PROC_BROWSER_TEST_P(PreloadingDeciderNonImmediateBrowserTest,
                        EnactModerateCandidate) {
   base::ScopedMockElapsedTimersForTest mock_elapsed_timer;
   base::HistogramTester histogram_tester;
@@ -173,7 +172,7 @@ IN_PROC_BROWSER_TEST_P(PreloadingDeciderNonEagerBrowserTest,
       FAIL();
   }
 
-  // Trigger the non-eager predictor.
+  // Trigger the non-immediate predictor.
   auto* preloading_decider = PreloadingDecider::GetOrCreateForCurrentDocument(
       web_contents()->GetPrimaryMainFrame());
   ASSERT_TRUE(preloading_decider);
@@ -182,7 +181,8 @@ IN_PROC_BROWSER_TEST_P(PreloadingDeciderNonEagerBrowserTest,
   } else if (predictor() == preloading_predictor::kUrlPointerHoverOnAnchor) {
     preloading_decider->OnPointerHover(
         next_page_url,
-        blink::mojom::AnchorElementPointerData::New(true, 0.0, 0.0));
+        blink::mojom::AnchorElementPointerData::New(true, 0.0, 0.0),
+        blink::mojom::SpeculationEagerness::kModerate);
   } else if (predictor() ==
              preloading_predictor::kPreloadingHeuristicsMLModel) {
     preloading_decider->OnPreloadingHeuristicsModelDone(next_page_url,
@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_P(PreloadingDeciderNonEagerBrowserTest,
   const std::string type_str{PreloadingTypeToString(type())};
   const char* type_cstr = type_str.c_str();
 
-  // For non-eager predictors, there are two PreloadingPredictors that
+  // For non-immediate predictors, there are two PreloadingPredictors that
   // contribute to a preloading attempt. One creates a candidate, but does not
   // start the preloading attempt. The other starts the attempt. We assert below
   // that both predictors have appropriate attribution in the recorded metrics.
@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_P(PreloadingDeciderNonEagerBrowserTest,
         content_preloading_predictor::kSpeculationRules.name()};
     const char* rule_predictor_cstr = rule_predictor_str.c_str();
 
-    // We intentionally don't record a prediction for non-eager speculation
+    // We intentionally don't record a prediction for non-immediate speculation
     // rules. They aren't predictions per se, but a declaration to the browser
     // that preloading would be safe.
     histogram_tester.ExpectTotalCount(
@@ -254,10 +254,22 @@ IN_PROC_BROWSER_TEST_P(PreloadingDeciderNonEagerBrowserTest,
                  ukm::builders::Preloading_Attempt::kPreloadingPredictorName) !=
              content_preloading_predictor::kSpeculationRules.ukm_value();
     });
-    ASSERT_EQ(attempts.size(), 1u);
-    EXPECT_EQ(attempts[0], expected_attempt_entry)
-        << test::ActualVsExpectedUkmEntryToString(attempts[0],
-                                                  expected_attempt_entry);
+    if (base::FeatureList::IsEnabled(
+            features::kPrerender2FallbackPrefetchSpecRules) &&
+        type() == PreloadingType::kPrerender) {
+      // If type is prerender, `PrerendererImpl` triggers prefetch ahead
+      // prerender. Ignore the corresponding UKM as it is checkid in
+      // prerenderer_impl_browsertest.cc.
+      ASSERT_EQ(attempts.size(), 2u);
+      EXPECT_EQ(attempts[1], expected_attempt_entry)
+          << test::ActualVsExpectedUkmEntryToString(attempts[1],
+                                                    expected_attempt_entry);
+    } else {
+      ASSERT_EQ(attempts.size(), 1u);
+      EXPECT_EQ(attempts[0], expected_attempt_entry)
+          << test::ActualVsExpectedUkmEntryToString(attempts[0],
+                                                    expected_attempt_entry);
+    }
 
     std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> predictions =
         ukm_recorder.GetEntries(
@@ -314,10 +326,22 @@ IN_PROC_BROWSER_TEST_P(PreloadingDeciderNonEagerBrowserTest,
                  ukm::builders::Preloading_Attempt::kPreloadingPredictorName) !=
              predictor().ukm_value();
     });
-    ASSERT_EQ(attempts.size(), 1u);
-    EXPECT_EQ(attempts[0], expected_attempt_entry)
-        << test::ActualVsExpectedUkmEntryToString(attempts[0],
-                                                  expected_attempt_entry);
+    if (base::FeatureList::IsEnabled(
+            features::kPrerender2FallbackPrefetchSpecRules) &&
+        type() == PreloadingType::kPrerender) {
+      // If type is prerender, `PrerendererImpl` triggers prefetch ahead
+      // prerender. Ignore the corresponding UKM as it is checkid in
+      // prerenderer_impl_browsertest.cc.
+      ASSERT_EQ(attempts.size(), 2u);
+      EXPECT_EQ(attempts[1], expected_attempt_entry)
+          << test::ActualVsExpectedUkmEntryToString(attempts[1],
+                                                    expected_attempt_entry);
+    } else {
+      ASSERT_EQ(attempts.size(), 1u);
+      EXPECT_EQ(attempts[0], expected_attempt_entry)
+          << test::ActualVsExpectedUkmEntryToString(attempts[0],
+                                                    expected_attempt_entry);
+    }
 
     test::PreloadingPredictionUkmEntryBuilder prediction_entry_builder(
         predictor());
@@ -368,7 +392,7 @@ IN_PROC_BROWSER_TEST_F(PreloadingDeciderBrowserTest,
         content_preloading_predictor::kSpeculationRules.name()};
     const char* rule_predictor_cstr = rule_predictor_str.c_str();
 
-    // We intentionally don't record a prediction for non-eager speculation
+    // We intentionally don't record a prediction for non-immediate speculation
     // rules. They aren't predictions per se, but a declaration to the browser
     // that preloading would be safe.
     histogram_tester.ExpectTotalCount(

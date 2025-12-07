@@ -5,24 +5,21 @@
 #ifndef REMOTING_HOST_DESKTOP_SESSION_AGENT_H_
 #define REMOTING_HOST_DESKTOP_SESSION_AGENT_H_
 
-#include <stddef.h>
-#include <stdint.h>
-
-#include <map>
+#include <cstdint>
 #include <memory>
 #include <optional>
+#include <string>
 
-#include "base/compiler_specific.h"
-#include "base/functional/callback.h"
-#include "base/memory/read_only_shared_memory_region.h"
+#include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "ipc/ipc_listener.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+#include "remoting/base/errors.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/desktop_display_info.h"
@@ -31,10 +28,13 @@
 #include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/host/mojom/remoting_mojom_traits.h"
 #include "remoting/host/mouse_shape_pump.h"
+#include "remoting/proto/control.pb.h"
+#include "remoting/proto/coordinates.pb.h"
+#include "remoting/proto/event.pb.h"
 #include "remoting/proto/url_forwarder_control.pb.h"
 #include "remoting/protocol/clipboard_stub.h"
-#include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
-#include "ui/events/event.h"
+#include "remoting/protocol/mouse_cursor_monitor.h"
+#include "ui/events/types/event_type.h"
 
 namespace base {
 class Location;
@@ -42,7 +42,6 @@ class Location;
 
 namespace IPC {
 class ChannelProxy;
-class Message;
 }  // namespace IPC
 
 namespace remoting {
@@ -70,7 +69,7 @@ class InputEventTracker;
 class DesktopSessionAgent
     : public base::RefCountedThreadSafe<DesktopSessionAgent>,
       public IPC::Listener,
-      public webrtc::MouseCursorMonitor::Callback,
+      public protocol::MouseCursorMonitor::Callback,
       public ClientSessionControl,
       public mojom::DesktopSessionAgent,
       public mojom::DesktopSessionControl {
@@ -103,16 +102,17 @@ class DesktopSessionAgent
   DesktopSessionAgent& operator=(const DesktopSessionAgent&) = delete;
 
   // IPC::Listener implementation.
-  bool OnMessageReceived(const IPC::Message& message) override;
-  void OnChannelConnected(int32_t peer_pid) override;
+  void OnChannelConnected(std::int32_t peer_pid) override;
   void OnChannelError() override;
   void OnAssociatedInterfaceRequest(
       const std::string& interface_name,
       mojo::ScopedInterfaceEndpointHandle handle) override;
 
-  // webrtc::MouseCursorMonitor::Callback implementation.
-  void OnMouseCursor(webrtc::MouseCursor* cursor) override;
+  // MouseCursorMonitor::Callback implementation.
+  void OnMouseCursor(std::unique_ptr<webrtc::MouseCursor> cursor) override;
   void OnMouseCursorPosition(const webrtc::DesktopVector& position) override;
+  void OnMouseCursorFractionalPosition(
+      const protocol::FractionalCoordinate& position) override;
 
   // Forwards a local clipboard event to the network process over IPC.
   void OnClipboardEvent(const protocol::ClipboardEvent& event);
@@ -127,7 +127,7 @@ class DesktopSessionAgent
              StartCallback callback) override;
 
   // mojom::DesktopSessionControl implementation.
-  void CreateVideoCapturer(int64_t desktop_display_id,
+  void CreateVideoCapturer(std::int64_t desktop_display_id,
                            CreateVideoCapturerCallback callback) override;
   void SetScreenResolution(const ScreenResolution& resolution) override;
   void LockWorkstation() override;
@@ -142,6 +142,7 @@ class DesktopSessionAgent
   void BeginFileRead(BeginFileReadCallback callback) override;
   void BeginFileWrite(const base::FilePath& file_path,
                       BeginFileWriteCallback callback) override;
+  void SetHostCursorRenderedByClient() override;
 
   // Creates desktop integration components and a connected IPC channel to be
   // used to access them. The client end of the channel is returned.
@@ -158,8 +159,10 @@ class DesktopSessionAgent
 
   // ClientSessionControl interface.
   const std::string& client_jid() const override;
-  void DisconnectSession(protocol::ErrorCode error) override;
-  void OnLocalKeyPressed(uint32_t usb_keycode) override;
+  void DisconnectSession(ErrorCode error,
+                         std::string_view error_details,
+                         const SourceLocation& error_location) override;
+  void OnLocalKeyPressed(std::uint32_t usb_keycode) override;
   void OnLocalPointerMoved(const webrtc::DesktopVector& position,
                            ui::EventType type) override;
   void SetDisableInputs(bool disable_inputs) override;
@@ -176,6 +179,10 @@ class DesktopSessionAgent
   void StopAudioCapturer();
 
  private:
+  void OnDesktopEnvironmentCreated(
+      const ScreenResolution& resolution,
+      StartCallback callback,
+      std::unique_ptr<DesktopEnvironment> desktop_environment);
   void OnCheckUrlForwarderSetUpResult(bool is_set_up);
   void OnUrlForwarderSetUpStateChanged(
       protocol::UrlForwarderControl::SetUpUrlForwarderResponse::State state);
@@ -252,6 +259,11 @@ class DesktopSessionAgent
 
   std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
       webauthn_state_change_notifier_;
+
+  // Whether the host cursor is rendered by the client.
+  // TODO: crbug.com/455622961 - Remove this once the clientRenderedHostCursor
+  // experiment is fully rolled out, where this is always set to true.
+  bool host_cursor_rendered_by_client_ = false;
 
   // Used to disable callbacks to |this|.
   base::WeakPtrFactory<DesktopSessionAgent> weak_factory_{this};

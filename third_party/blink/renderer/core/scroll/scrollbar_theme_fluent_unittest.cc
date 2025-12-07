@@ -13,10 +13,9 @@
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_test_suite.h"
 #include "third_party/blink/renderer/core/testing/scoped_mock_overlay_scrollbars.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/native_theme/native_theme_features.h"
+#include "ui/native_theme/features/native_theme_features.h"
 
 namespace blink {
 
@@ -197,20 +196,23 @@ TEST_P(ScrollbarThemeFluentTest, ScrollbarBackgroundInvalidationTest) {
 
   // Verifies that when the thumb position changes from min offset, the
   // background invalidation is not triggered.
-  mock_scrollable_area()->SetScrollOffset(
-      ScrollOffset(0, 10), mojom::blink::ScrollType::kCompositor);
+  mock_scrollable_area()->SetScrollOffset(ScrollOffset(0, 10),
+                                          mojom::blink::ScrollType::kCompositor,
+                                          cc::ScrollSourceType::kNone);
   EXPECT_FALSE(scrollbar->TrackAndButtonsNeedRepaint());
 
   // Verifies that when the thumb position changes from a non-zero offset,
   // the background invalidation is not triggered.
-  mock_scrollable_area()->SetScrollOffset(
-      ScrollOffset(0, 20), mojom::blink::ScrollType::kCompositor);
+  mock_scrollable_area()->SetScrollOffset(ScrollOffset(0, 20),
+                                          mojom::blink::ScrollType::kCompositor,
+                                          cc::ScrollSourceType::kNone);
   EXPECT_FALSE(scrollbar->TrackAndButtonsNeedRepaint());
 
   // Verifies that when the thumb position changes back to 0 (min) offset,
   // the background invalidation is not triggered.
-  mock_scrollable_area()->SetScrollOffset(
-      ScrollOffset(0, 0), mojom::blink::ScrollType::kCompositor);
+  mock_scrollable_area()->SetScrollOffset(ScrollOffset(0, 0),
+                                          mojom::blink::ScrollType::kCompositor,
+                                          cc::ScrollSourceType::kNone);
   EXPECT_FALSE(scrollbar->TrackAndButtonsNeedRepaint());
 }
 
@@ -220,7 +222,6 @@ TEST_P(OverlayScrollbarThemeFluentTest, OverlaySetsCorrectTrackAndInsetSize) {
   // Some OSes keep fluent scrollbars disabled even if the feature flag is set
   // to enable them.
   if (!ui::IsFluentScrollbarEnabled()) {
-    EXPECT_FALSE(theme_->UsesOverlayScrollbars());
     return;
   }
 

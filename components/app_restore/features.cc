@@ -7,20 +7,10 @@
 namespace full_restore {
 namespace features {
 
-BASE_FEATURE(kArcWindowPredictor,
-             "ArcWindowPredictor",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kFullRestoreForLacros,
-             "FullRestoreForLacros",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kArcWindowPredictor, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsArcWindowPredictorEnabled() {
   return base::FeatureList::IsEnabled(kArcWindowPredictor);
-}
-
-bool IsFullRestoreForLacrosEnabled() {
-  return base::FeatureList::IsEnabled(kFullRestoreForLacros);
 }
 
 }  // namespace features

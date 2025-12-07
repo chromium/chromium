@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/fido/cable/v2_registration.h"
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "components/cbor/reader.h"
@@ -50,13 +47,13 @@ class FCMHandler : public gcm::GCMAppHandler, public Registration {
     // number of new registrations with the FCM service. Thus this code does not
     // compile on other platforms. Check with //components/gcm_driver owners
     // before changing this.
-#if !BUILDFLAG(IS_ANDROID)
-    CHECK(false) << "Do not use outside of Android.";
-#endif
-
+#if BUILDFLAG(IS_ANDROID)
     gcm::GCMDriver* const gcm_driver = instance_id_->gcm_driver();
     CHECK(gcm_driver->GetAppHandler(app_id()) == nullptr);
     instance_id_->gcm_driver()->AddAppHandler(app_id(), this);
+#else
+    NOTREACHED() << "Do not use outside of Android.";
+#endif
   }
 
   ~FCMHandler() override {
@@ -222,8 +219,8 @@ class FCMHandler : public gcm::GCMAppHandler, public Registration {
     if (pairing_id.size() != event->pairing_id.size()) {
       return std::nullopt;
     }
-    memcpy(event->pairing_id.data(), pairing_id.data(),
-           event->pairing_id.size());
+    UNSAFE_TODO(memcpy(event->pairing_id.data(), pairing_id.data(),
+                       event->pairing_id.size()));
 
     if (!fido_parsing_utils::CopyCBORBytestring(&event->client_nonce, map, 2)) {
       return std::nullopt;
@@ -310,7 +307,8 @@ std::unique_ptr<Registration::Event> Registration::Event::FromSerialized(
     if (e->source == Type::SYNC) {
       return nullptr;
     }
-    e->contact_id.emplace(CBS_data(&cbs), CBS_data(&cbs) + CBS_len(&cbs));
+    e->contact_id.emplace(CBS_data(&cbs),
+                          UNSAFE_TODO(CBS_data(&cbs) + CBS_len(&cbs)));
   }
 
   return e;
@@ -339,8 +337,8 @@ std::optional<std::vector<uint8_t>> Registration::Event::Serialize() {
   if (!CBB_finish(cbb.get(), &serialized_bytes, &serialized_bytes_len)) {
     return std::nullopt;
   }
-  const std::vector<uint8_t> ret(serialized_bytes,
-                                 serialized_bytes + serialized_bytes_len);
+  const std::vector<uint8_t> ret(
+      serialized_bytes, UNSAFE_TODO(serialized_bytes + serialized_bytes_len));
   OPENSSL_free(serialized_bytes);
 
   return ret;

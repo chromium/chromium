@@ -8,10 +8,14 @@
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/strings/string_view_util.h"
 #include "net/base/net_errors.h"
-#include "services/network/public/cpp/features.h"
 
 namespace network {
+
+namespace {
+constexpr size_t kMaxBufSize = 64 * 1024;
+}
 
 NetToMojoPendingBuffer::NetToMojoPendingBuffer(
     mojo::ScopedDataPipeProducerHandle handle,
@@ -29,7 +33,6 @@ MojoResult NetToMojoPendingBuffer::BeginWrite(
     mojo::ScopedDataPipeProducerHandle* handle,
     scoped_refptr<NetToMojoPendingBuffer>* pending) {
   base::span<uint8_t> buf;
-  const size_t kMaxBufSize = features::GetNetAdapterMaxBufSize();
   MojoResult result =
       (*handle)->BeginWriteData(kMaxBufSize, MOJO_WRITE_DATA_FLAG_NONE, buf);
   if (result != MOJO_RESULT_OK) {
@@ -53,14 +56,14 @@ mojo::ScopedDataPipeProducerHandle NetToMojoPendingBuffer::Complete(
 
 NetToMojoIOBuffer::NetToMojoIOBuffer(
     scoped_refptr<NetToMojoPendingBuffer> pending_buffer,
-    int offset)
-    : net::WrappedIOBuffer(base::make_span(*pending_buffer).subspan(offset)),
+    size_t offset)
+    : net::WrappedIOBuffer(base::span(*pending_buffer).subspan(offset)),
       pending_buffer_(std::move(pending_buffer)) {}
 
 NetToMojoIOBuffer::~NetToMojoIOBuffer() {
   // Avoid dangling ptr should this destructor remove the last reference
   // to `pending_buffer_`.
-  data_ = nullptr;
+  ClearSpan();
 }
 
 MojoToNetPendingBuffer::MojoToNetPendingBuffer(
@@ -116,7 +119,7 @@ MojoToNetIOBuffer::~MojoToNetIOBuffer() {
 
   // Prevent dangling ptr should this destructor remove the last reference
   // to `pending_buffer_`.
-  data_ = nullptr;
+  ClearSpan();
 }
 
 }  // namespace network

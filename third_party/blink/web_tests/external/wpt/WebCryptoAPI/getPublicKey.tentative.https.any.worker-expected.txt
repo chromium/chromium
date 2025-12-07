@@ -1,0 +1,45 @@
+This is a testharness.js-based test.
+[FAIL] getPublicKey works for ECDH
+  promise_test: Unhandled rejection with value: object "TypeError: crypto.subtle.getPublicKey is not a function"
+[FAIL] getPublicKey works for ECDSA
+  promise_test: Unhandled rejection with value: object "TypeError: crypto.subtle.getPublicKey is not a function"
+[FAIL] getPublicKey works for Ed25519
+  promise_test: Unhandled rejection with value: object "TypeError: crypto.subtle.getPublicKey is not a function"
+[FAIL] getPublicKey works for RSA-OAEP
+  promise_test: Unhandled rejection with value: object "TypeError: crypto.subtle.getPublicKey is not a function"
+[FAIL] getPublicKey works for RSA-PSS
+  promise_test: Unhandled rejection with value: object "TypeError: crypto.subtle.getPublicKey is not a function"
+[FAIL] getPublicKey works for RSASSA-PKCS1-v1_5
+  promise_test: Unhandled rejection with value: object "TypeError: crypto.subtle.getPublicKey is not a function"
+[FAIL] getPublicKey works for X25519
+  promise_test: Unhandled rejection with value: object "TypeError: crypto.subtle.getPublicKey is not a function"
+[FAIL] Derived public key is functionally equivalent to original public key
+  promise_test: Unhandled rejection with value: object "TypeError: crypto.subtle.getPublicKey is not a function"
+[FAIL] getPublicKey works with empty usages for ECDH
+  promise_test: Unhandled rejection with value: object "TypeError: crypto.subtle.getPublicKey is not a function"
+[FAIL] getPublicKey works with empty usages for ECDSA
+  promise_test: Unhandled rejection with value: object "TypeError: crypto.subtle.getPublicKey is not a function"
+[FAIL] getPublicKey works with empty usages for Ed25519
+  promise_test: Unhandled rejection with value: object "TypeError: crypto.subtle.getPublicKey is not a function"
+[FAIL] getPublicKey works with empty usages for RSA-OAEP
+  promise_test: Unhandled rejection with value: object "TypeError: crypto.subtle.getPublicKey is not a function"
+[FAIL] getPublicKey works with empty usages for RSA-PSS
+  promise_test: Unhandled rejection with value: object "TypeError: crypto.subtle.getPublicKey is not a function"
+[FAIL] getPublicKey works with empty usages for RSASSA-PKCS1-v1_5
+  promise_test: Unhandled rejection with value: object "TypeError: crypto.subtle.getPublicKey is not a function"
+[FAIL] getPublicKey works with empty usages for X25519
+  promise_test: Unhandled rejection with value: object "TypeError: crypto.subtle.getPublicKey is not a function"
+[FAIL] getPublicKey rejects with InvalidAccessError when given a public key
+  promise_test: Unhandled rejection with value: object "TypeError: crypto.subtle.getPublicKey is not a function"
+[FAIL] getPublicKey rejects with NotSupportedError for AES-GCM symmetric keys
+  promise_test: Unhandled rejection with value: object "TypeError: crypto.subtle.getPublicKey is not a function"
+[FAIL] getPublicKey rejects with NotSupportedError for HMAC symmetric keys
+  promise_test: Unhandled rejection with value: object "TypeError: crypto.subtle.getPublicKey is not a function"
+[FAIL] getPublicKey rejects with SyntaxError for invalid usages
+  promise_test: Unhandled rejection with value: object "TypeError: crypto.subtle.getPublicKey is not a function"
+[FAIL] getPublicKey rejects with SyntaxError when any usage is invalid for the algorithm
+  promise_test: Unhandled rejection with value: object "TypeError: crypto.subtle.getPublicKey is not a function"
+[FAIL] getPublicKey method is available
+  assert_true: getPublicKey method exists on SubtleCrypto expected true got false
+Harness: the test ran to completion.
+

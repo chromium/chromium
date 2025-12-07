@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/xr/xr_cube_map.h"
 
 #include <algorithm>
 #include <bit>
 #include <cstring>
 
+#include "base/bit_cast.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_texture.h"
@@ -23,9 +19,8 @@ namespace {
 
 // This is an inversion of FloatToHalfFloat in ui/gfx/half_float.cc
 float HalfFloatToFloat(const uint16_t input) {
-  uint32_t tmp = (input & 0x7fff) << 13 | (input & 0x8000) << 16;
-  float tmp2;
-  std::memcpy(&tmp2, &tmp, 4);
+  const uint32_t tmp = (input & 0x7fff) << 13 | (input & 0x8000) << 16;
+  const float tmp2 = base::bit_cast<float>(tmp);
   return tmp2 / 1.9259299444e-34f;
 }
 
@@ -38,17 +33,20 @@ uint8_t LinearToSrgb(float cl) {
   return static_cast<uint8_t>(255.0f * cs + 0.5f);
 }
 
-void Rgba16fToSrgba8(const uint16_t* input,
-                     uint8_t* output,
-                     WTF::wtf_size_t num) {
-  DCHECK_EQ(num % 4, 0ul);
+void Rgba16fToSrgba8(base::span<const uint16_t> input,
+                     base::span<uint8_t> output) {
+  CHECK_EQ(input.size(), output.size());
+  CHECK_EQ(input.size() % 4, 0u);
 
-  for (WTF::wtf_size_t i = 0; i < num; i += 4) {
-    output[i] = LinearToSrgb(HalfFloatToFloat(input[i]));
-    output[i + 1] = LinearToSrgb(HalfFloatToFloat(input[i + 1]));
-    output[i + 2] = LinearToSrgb(HalfFloatToFloat(input[i + 2]));
-    // We won't support non-opaque alpha to make the conversion a bit faster.
-    output[i + 3] = 255;
+  for (size_t i = 0; i < input.size(); ++i) {
+    // Every fourth input element is the alpha channel, which should remain in
+    // standard space.
+    if ((i + 1) % 4 == 0) {
+      // We won't support non-opaque alpha to make the conversion a bit faster.
+      output[i] = 255;
+    } else {
+      output[i] = LinearToSrgb(HalfFloatToFloat(input[i]));
+    }
   }
 }
 
@@ -62,17 +60,20 @@ XRCubeMap::XRCubeMap(const device::mojom::blink::XRCubeMap& cube_map) {
   static_assert(kNumComponentsPerPixel == 4,
                 "XRCubeMaps are expected to be in the RGBA16F format");
 
-  // Cube map sides must all be a power-of-two image
+  // Cube map sides must all be a power-of-two image. Note that we can skip the
+  // division by |kNumComponentsPerPixel| at this time, since it is *also* a
+  // power-of-two.
   bool valid = std::has_single_bit(cube_map.width_and_height);
-  const size_t expected_size =
-      cube_map.width_and_height * cube_map.width_and_height;
+  const size_t expected_size = cube_map.width_and_height *
+                               cube_map.width_and_height *
+                               kNumComponentsPerPixel;
   valid &= cube_map.positive_x.size() == expected_size;
   valid &= cube_map.negative_x.size() == expected_size;
   valid &= cube_map.positive_y.size() == expected_size;
   valid &= cube_map.negative_y.size() == expected_size;
   valid &= cube_map.positive_z.size() == expected_size;
   valid &= cube_map.negative_z.size() == expected_size;
-  DCHECK(valid);
+  CHECK(valid);
 
   width_and_height_ = cube_map.width_and_height;
   positive_x_ = cube_map.positive_x;
@@ -94,7 +95,6 @@ WebGLTexture* XRCubeMap::updateWebGLEnvironmentCube(
   DCHECK(texture);
   DCHECK(!texture->HasEverBeenBound() ||
          texture->GetTarget() == GL_TEXTURE_CUBE_MAP);
-  DCHECK(texture->ContextGroup() == context->ContextGroup());
 
   auto* gl = context->ContextGL();
   texture->SetTarget(GL_TEXTURE_CUBE_MAP);
@@ -104,12 +104,11 @@ WebGLTexture* XRCubeMap::updateWebGLEnvironmentCube(
   gl->TexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   gl->TexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-  uint16_t const* const cubemap_images[] = {
-      positive_x_.data()->components, negative_x_.data()->components,
-      positive_y_.data()->components, negative_y_.data()->components,
-      positive_z_.data()->components, negative_z_.data()->components,
+  const std::array<base::span<const uint16_t>, 6> cubemap_images = {
+      positive_x_, negative_x_, positive_y_,
+      negative_y_, positive_z_, negative_z_,
   };
-  GLenum const cubemap_targets[] = {
+  const std::array<GLenum, 6> cubemap_targets = {
       GL_TEXTURE_CUBE_MAP_POSITIVE_X, GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
       GL_TEXTURE_CUBE_MAP_POSITIVE_Y, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
       GL_TEXTURE_CUBE_MAP_POSITIVE_Z, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
@@ -123,10 +122,10 @@ WebGLTexture* XRCubeMap::updateWebGLEnvironmentCube(
     // Since ARCore provides texture as half float components, we need to do a
     // conversion first to support this path.
     // TODO(https://crbug.com/1148605): Do conversions off the main JS thread.
-    WTF::wtf_size_t component_count = width_and_height_ * width_and_height_ * 4;
-    WTF::Vector<uint8_t> sRGB(component_count);
+    wtf_size_t component_count = width_and_height_ * width_and_height_ * 4;
+    Vector<uint8_t> sRGB(component_count);
     for (int i = 0; i < 6; ++i) {
-      Rgba16fToSrgba8(cubemap_images[i], sRGB.data(), component_count);
+      Rgba16fToSrgba8(cubemap_images[i], sRGB);
       auto target = cubemap_targets[i];
 
       gl->TexImage2D(target, 0, internal_format, width_and_height_,
@@ -137,15 +136,15 @@ WebGLTexture* XRCubeMap::updateWebGLEnvironmentCube(
     // types it means the light probe was created with the "rgba16f" format.
     // This is ARCore's native format, so no conversion is needed.
     for (int i = 0; i < 6; ++i) {
-      auto* image = cubemap_images[i];
+      auto image = cubemap_images[i];
       auto target = cubemap_targets[i];
 
       gl->TexImage2D(target, 0, internal_format, width_and_height_,
-                     width_and_height_, 0, format, type, image);
+                     width_and_height_, 0, format, type, image.data());
     }
   } else {
     // No other formats are accepted.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   DrawingBuffer::Client* client = static_cast<DrawingBuffer::Client*>(context);

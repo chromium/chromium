@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.compositor.layouts;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.tab.Tab;
@@ -12,6 +13,7 @@ import org.chromium.chrome.browser.tab.Tab;
  * {@link LayoutRenderHost} is the minimal interface the layouts need to know about its host to
  * update.
  */
+@NullMarked
 public interface LayoutUpdateHost {
     /**
      * Requests a next update to refresh the transforms and changing properties. The update occurs
@@ -24,8 +26,9 @@ public interface LayoutUpdateHost {
      * Requests a next update to refresh the transforms and changing properties. The update occurs
      * once a frame. This is requesting a new frame to be updated and rendered (no need to call
      * {@link LayoutRenderHost#requestRender()}).
+     *
      * @param onUpdateEffective Callback that will be called when there is a buffer swap for the
-     *                          updated frame.
+     *     updated frame.
      */
     default void requestUpdate(Runnable onUpdateEffective) {}
 
@@ -45,42 +48,31 @@ public interface LayoutUpdateHost {
     void doneShowing();
 
     /**
-     * @param layout The {@link Layout} being evaluated.
-     * @return Whether the given {@link Layout} is being displayed.
-     */
-    boolean isActiveLayout(Layout layout);
-
-    /**
      * Initializes {@link org.chromium.chrome.browser.compositor.layouts.components.LayoutTab} with
-     * data accessible only from the {@link LayoutUpdateHost} such as data extracted out of a
-     * {@link Tab}.
+     * data accessible only from the {@link LayoutUpdateHost} such as data extracted out of a {@link
+     * Tab}.
      *
-     * @param tabId The id of the
-     *              {@link org.chromium.chrome.browser.compositor.layouts.components.LayoutTab}
-     *              to be initialized from a {@link Tab}.
+     * @param tabId The id of the {@link
+     *     org.chromium.chrome.browser.compositor.layouts.components.LayoutTab} to be initialized
+     *     from a {@link Tab}.
      */
     void initLayoutTabFromHost(final int tabId);
 
     /**
      * Creates or recycles a {@Link LayoutTab}.
      *
-     * @param id               The id of the reference tab in the
-     *                         {@link org.chromium.chrome.browser.tabmodel.TabModel}.
-     * @param incognito        Whether the new tab is incognito.
-     * @param maxContentWidth  The maximum layout width this tab can be.  Negative numbers will use
-     *                         the original content width.
-     * @param maxContentHeight The maximum layout height this tab can be.  Negative numbers will use
-     *                         the original content height.
-     * @return                 The created or recycled {@link LayoutTab}.
+     * @param id The id of the reference tab in the {@link
+     *     org.chromium.chrome.browser.tabmodel.TabModel}.
+     * @param incognito Whether the new tab is incognito.
+     * @return The created or recycled {@link LayoutTab}.
      */
-    LayoutTab createLayoutTab(
-            int id, boolean incognito, float maxContentWidth, float maxContentHeight);
+    LayoutTab createLayoutTab(int id, boolean incognito);
 
     /**
      * Notifies the host that the {@link LayoutTab} is no longer needed by the layout.
      *
-     * @param id The id of the reference tab in the
-     *           {@link org.chromium.chrome.browser.tabmodel.TabModel}.
+     * @param id The id of the reference tab in the {@link
+     *     org.chromium.chrome.browser.tabmodel.TabModel}.
      */
     void releaseTabLayout(int id);
 

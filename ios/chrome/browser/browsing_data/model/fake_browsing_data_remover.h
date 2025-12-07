@@ -16,11 +16,13 @@ class FakeBrowsingDataRemover : public BrowsingDataRemover {
   bool IsRemoving() const override;
   void Remove(browsing_data::TimePeriod time_period,
               BrowsingDataRemoveMask remove_mask,
-              base::OnceClosure callback) override;
+              base::OnceClosure callback,
+              RemovalParams params = RemovalParams::Default()) override;
   void RemoveInRange(base::Time start_time,
                      base::Time end_time,
                      BrowsingDataRemoveMask remove_mask,
-                     base::OnceClosure callback) override;
+                     base::OnceClosure callback,
+                     RemovalParams params = RemovalParams::Default()) override;
   void SetCachedTabsInfo(
       tabs_closure_util::WebStateIDToTime cached_tabs_info) override;
   BrowsingDataRemoveMask GetLastUsedRemovalMask();

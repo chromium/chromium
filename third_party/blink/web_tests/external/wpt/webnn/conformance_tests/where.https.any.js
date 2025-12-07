@@ -1,5 +1,5 @@
 // META: title=test WebNN API where operation
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -16,11 +16,8 @@
 //                 falseValue);
 
 
-const getWherePrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {float32: 0, float16: 0};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
+const getWherePrecisionTolerance = () => {
+  return {metricType: 'ULP', value: 0};
 };
 
 const whereTests = [
@@ -28,17 +25,15 @@ const whereTests = [
     'name': 'where float32 0D scalars',
     'graph': {
       'inputs': {
-        'inputCondition': {
-          'data': [247],
-          'descriptor': {'dimensions': [], 'dataType': 'uint8'}
-        },
+        'inputCondition':
+            {'data': [247], 'descriptor': {shape: [], dataType: 'uint8'}},
         'inputTrueValue': {
           'data': [-22.83924102783203],
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         },
         'inputFalseValue': {
           'data': [-50.02232360839844],
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -47,12 +42,12 @@ const whereTests = [
           {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
           {'falseValue': 'inputFalseValue'}
         ],
-        'outputs': 'output'
+        'outputs': 'whereOutput'
       }],
       'expectedOutputs': {
         'whereOutput': {
           'data': [-22.83924102783203],
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       }
     }
@@ -66,7 +61,7 @@ const whereTests = [
             241, 0,   85,  0,   227, 51, 202, 0,  104, 227, 129, 129,
             175, 134, 130, 140, 103, 46, 158, 17, 0,   41,  94,  0
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'uint8'},
+          'descriptor': {shape: [24], dataType: 'uint8'},
           'constant': true
         },
         'inputTrueValue': {
@@ -80,7 +75,7 @@ const whereTests = [
             -29.081029891967773, -12.19106674194336, -10.8577880859375,
             -23.302522659301758, 30.851404190063477, -58.82704544067383
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'},
+          'descriptor': {shape: [24], dataType: 'float32'},
           'constant': true
         },
         'inputFalseValue': {
@@ -94,7 +89,7 @@ const whereTests = [
             22.937334060668945,  74.97810363769531,   18.877336502075195,
             62.31299591064453,   48.867103576660156,  -75.41789245605469
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'},
+          'descriptor': {shape: [24], dataType: 'float32'},
           'constant': true
         }
       },
@@ -104,7 +99,7 @@ const whereTests = [
           {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
           {'falseValue': 'inputFalseValue'}
         ],
-        'outputs': 'output'
+        'outputs': 'whereOutput'
       }],
       'expectedOutputs': {
         'whereOutput': {
@@ -118,7 +113,7 @@ const whereTests = [
             -29.081029891967773, -12.19106674194336, 18.877336502075195,
             -23.302522659301758, 30.851404190063477, -75.41789245605469
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -132,7 +127,7 @@ const whereTests = [
             241, 0,   85,  0,   227, 51, 202, 0,  104, 227, 129, 129,
             175, 134, 130, 140, 103, 46, 158, 17, 0,   41,  94,  0
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'uint8'}
+          'descriptor': {shape: [24], dataType: 'uint8'}
         },
         'inputTrueValue': {
           'data': [
@@ -145,7 +140,7 @@ const whereTests = [
             -29.081029891967773, -12.19106674194336, -10.8577880859375,
             -23.302522659301758, 30.851404190063477, -58.82704544067383
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         },
         'inputFalseValue': {
           'data': [
@@ -158,7 +153,7 @@ const whereTests = [
             22.937334060668945,  74.97810363769531,   18.877336502075195,
             62.31299591064453,   48.867103576660156,  -75.41789245605469
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -167,7 +162,7 @@ const whereTests = [
           {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
           {'falseValue': 'inputFalseValue'}
         ],
-        'outputs': 'output'
+        'outputs': 'whereOutput'
       }],
       'expectedOutputs': {
         'whereOutput': {
@@ -181,7 +176,7 @@ const whereTests = [
             -29.081029891967773, -12.19106674194336, 18.877336502075195,
             -23.302522659301758, 30.851404190063477, -75.41789245605469
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -195,7 +190,7 @@ const whereTests = [
             241, 0,   85,  0,   227, 51, 202, 0,  104, 227, 129, 129,
             175, 134, 130, 140, 103, 46, 158, 17, 0,   41,  94,  0
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'uint8'}
+          'descriptor': {shape: [4, 6], dataType: 'uint8'}
         },
         'inputTrueValue': {
           'data': [
@@ -208,7 +203,7 @@ const whereTests = [
             -29.081029891967773, -12.19106674194336, -10.8577880859375,
             -23.302522659301758, 30.851404190063477, -58.82704544067383
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         },
         'inputFalseValue': {
           'data': [
@@ -221,7 +216,7 @@ const whereTests = [
             22.937334060668945,  74.97810363769531,   18.877336502075195,
             62.31299591064453,   48.867103576660156,  -75.41789245605469
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -230,7 +225,7 @@ const whereTests = [
           {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
           {'falseValue': 'inputFalseValue'}
         ],
-        'outputs': 'output'
+        'outputs': 'whereOutput'
       }],
       'expectedOutputs': {
         'whereOutput': {
@@ -244,7 +239,7 @@ const whereTests = [
             -29.081029891967773, -12.19106674194336, 18.877336502075195,
             -23.302522659301758, 30.851404190063477, -75.41789245605469
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       }
     }
@@ -258,7 +253,7 @@ const whereTests = [
             241, 0,   85,  0,   227, 51, 202, 0,  104, 227, 129, 129,
             175, 134, 130, 140, 103, 46, 158, 17, 0,   41,  94,  0
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'uint8'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'uint8'}
         },
         'inputTrueValue': {
           'data': [
@@ -271,7 +266,7 @@ const whereTests = [
             -29.081029891967773, -12.19106674194336, -10.8577880859375,
             -23.302522659301758, 30.851404190063477, -58.82704544067383
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         },
         'inputFalseValue': {
           'data': [
@@ -284,7 +279,7 @@ const whereTests = [
             22.937334060668945,  74.97810363769531,   18.877336502075195,
             62.31299591064453,   48.867103576660156,  -75.41789245605469
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -293,7 +288,7 @@ const whereTests = [
           {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
           {'falseValue': 'inputFalseValue'}
         ],
-        'outputs': 'output'
+        'outputs': 'whereOutput'
       }],
       'expectedOutputs': {
         'whereOutput': {
@@ -307,7 +302,7 @@ const whereTests = [
             -29.081029891967773, -12.19106674194336, 18.877336502075195,
             -23.302522659301758, 30.851404190063477, -75.41789245605469
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -321,7 +316,7 @@ const whereTests = [
             241, 0,   85,  0,   227, 51, 202, 0,  104, 227, 129, 129,
             175, 134, 130, 140, 103, 46, 158, 17, 0,   41,  94,  0
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'uint8'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'uint8'}
         },
         'inputTrueValue': {
           'data': [
@@ -334,7 +329,7 @@ const whereTests = [
             -29.081029891967773, -12.19106674194336, -10.8577880859375,
             -23.302522659301758, 30.851404190063477, -58.82704544067383
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         },
         'inputFalseValue': {
           'data': [
@@ -347,7 +342,7 @@ const whereTests = [
             22.937334060668945,  74.97810363769531,   18.877336502075195,
             62.31299591064453,   48.867103576660156,  -75.41789245605469
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -356,7 +351,7 @@ const whereTests = [
           {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
           {'falseValue': 'inputFalseValue'}
         ],
-        'outputs': 'output'
+        'outputs': 'whereOutput'
       }],
       'expectedOutputs': {
         'whereOutput': {
@@ -370,7 +365,7 @@ const whereTests = [
             -29.081029891967773, -12.19106674194336, 18.877336502075195,
             -23.302522659301758, 30.851404190063477, -75.41789245605469
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -384,7 +379,7 @@ const whereTests = [
             241, 0,   85,  0,   227, 51, 202, 0,  104, 227, 129, 129,
             175, 134, 130, 140, 103, 46, 158, 17, 0,   41,  94,  0
           ],
-          'descriptor': {'dimensions': [2, 2, 1, 2, 3], 'dataType': 'uint8'}
+          'descriptor': {shape: [2, 2, 1, 2, 3], dataType: 'uint8'}
         },
         'inputTrueValue': {
           'data': [
@@ -397,7 +392,7 @@ const whereTests = [
             -29.081029891967773, -12.19106674194336, -10.8577880859375,
             -23.302522659301758, 30.851404190063477, -58.82704544067383
           ],
-          'descriptor': {'dimensions': [2, 2, 1, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 1, 2, 3], dataType: 'float32'}
         },
         'inputFalseValue': {
           'data': [
@@ -410,7 +405,7 @@ const whereTests = [
             22.937334060668945,  74.97810363769531,   18.877336502075195,
             62.31299591064453,   48.867103576660156,  -75.41789245605469
           ],
-          'descriptor': {'dimensions': [2, 2, 1, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 1, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -419,7 +414,7 @@ const whereTests = [
           {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
           {'falseValue': 'inputFalseValue'}
         ],
-        'outputs': 'output'
+        'outputs': 'whereOutput'
       }],
       'expectedOutputs': {
         'whereOutput': {
@@ -433,7 +428,7 @@ const whereTests = [
             -29.081029891967773, -12.19106674194336, 18.877336502075195,
             -23.302522659301758, 30.851404190063477, -75.41789245605469
           ],
-          'descriptor': {'dimensions': [2, 2, 1, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 1, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -442,10 +437,8 @@ const whereTests = [
     'name': 'where float32 4D tensors only broadcast condition 0D to 4D',
     'graph': {
       'inputs': {
-        'inputCondition': {
-          'data': [247],
-          'descriptor': {'dimensions': [], 'dataType': 'uint8'}
-        },
+        'inputCondition':
+            {'data': [247], 'descriptor': {shape: [], dataType: 'uint8'}},
         'inputTrueValue': {
           'data': [
             70.27151489257812,   89.99047088623047,  -1.5351932048797607,
@@ -457,7 +450,7 @@ const whereTests = [
             -29.081029891967773, -12.19106674194336, -10.8577880859375,
             -23.302522659301758, 30.851404190063477, -58.82704544067383
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         },
         'inputFalseValue': {
           'data': [
@@ -470,7 +463,7 @@ const whereTests = [
             22.937334060668945,  74.97810363769531,   18.877336502075195,
             62.31299591064453,   48.867103576660156,  -75.41789245605469
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -479,7 +472,7 @@ const whereTests = [
           {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
           {'falseValue': 'inputFalseValue'}
         ],
-        'outputs': 'output'
+        'outputs': 'whereOutput'
       }],
       'expectedOutputs': {
         'whereOutput': {
@@ -493,7 +486,7 @@ const whereTests = [
             -29.081029891967773, -12.19106674194336, -10.8577880859375,
             -23.302522659301758, 30.851404190063477, -58.82704544067383
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -504,7 +497,7 @@ const whereTests = [
       'inputs': {
         'inputCondition': {
           'data': [253, 222, 0],
-          'descriptor': {'dimensions': [3], 'dataType': 'uint8'}
+          'descriptor': {shape: [3], dataType: 'uint8'}
         },
         'inputTrueValue': {
           'data': [
@@ -517,7 +510,7 @@ const whereTests = [
             -29.081029891967773, -12.19106674194336, -10.8577880859375,
             -23.302522659301758, 30.851404190063477, -58.82704544067383
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         },
         'inputFalseValue': {
           'data': [
@@ -530,7 +523,7 @@ const whereTests = [
             22.937334060668945,  74.97810363769531,   18.877336502075195,
             62.31299591064453,   48.867103576660156,  -75.41789245605469
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -539,7 +532,7 @@ const whereTests = [
           {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
           {'falseValue': 'inputFalseValue'}
         ],
-        'outputs': 'output'
+        'outputs': 'whereOutput'
       }],
       'expectedOutputs': {
         'whereOutput': {
@@ -553,7 +546,7 @@ const whereTests = [
             -29.081029891967773, -12.19106674194336, 18.877336502075195,
             -23.302522659301758, 30.851404190063477, -75.41789245605469
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -564,7 +557,7 @@ const whereTests = [
       'inputs': {
         'inputCondition': {
           'data': [103, 0],
-          'descriptor': {'dimensions': [2, 1], 'dataType': 'uint8'}
+          'descriptor': {shape: [2, 1], dataType: 'uint8'}
         },
         'inputTrueValue': {
           'data': [
@@ -577,7 +570,7 @@ const whereTests = [
             -29.081029891967773, -12.19106674194336, -10.8577880859375,
             -23.302522659301758, 30.851404190063477, -58.82704544067383
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         },
         'inputFalseValue': {
           'data': [
@@ -590,7 +583,7 @@ const whereTests = [
             22.937334060668945,  74.97810363769531,   18.877336502075195,
             62.31299591064453,   48.867103576660156,  -75.41789245605469
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -599,7 +592,7 @@ const whereTests = [
           {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
           {'falseValue': 'inputFalseValue'}
         ],
-        'outputs': 'output'
+        'outputs': 'whereOutput'
       }],
       'expectedOutputs': {
         'whereOutput': {
@@ -613,7 +606,7 @@ const whereTests = [
             -29.081029891967773, -12.19106674194336, -10.8577880859375,
             62.31299591064453,   48.867103576660156, -75.41789245605469
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -624,7 +617,7 @@ const whereTests = [
       'inputs': {
         'inputCondition': {
           'data': [235, 0, 93, 213, 0, 117],
-          'descriptor': {'dimensions': [1, 2, 3], 'dataType': 'uint8'}
+          'descriptor': {shape: [1, 2, 3], dataType: 'uint8'}
         },
         'inputTrueValue': {
           'data': [
@@ -637,7 +630,7 @@ const whereTests = [
             -29.081029891967773, -12.19106674194336, -10.8577880859375,
             -23.302522659301758, 30.851404190063477, -58.82704544067383
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         },
         'inputFalseValue': {
           'data': [
@@ -650,7 +643,7 @@ const whereTests = [
             22.937334060668945,  74.97810363769531,   18.877336502075195,
             62.31299591064453,   48.867103576660156,  -75.41789245605469
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -659,7 +652,7 @@ const whereTests = [
           {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
           {'falseValue': 'inputFalseValue'}
         ],
-        'outputs': 'output'
+        'outputs': 'whereOutput'
       }],
       'expectedOutputs': {
         'whereOutput': {
@@ -673,7 +666,7 @@ const whereTests = [
             -29.081029891967773, 74.97810363769531,   -10.8577880859375,
             -23.302522659301758, 48.867103576660156,  -58.82704544067383
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -684,7 +677,7 @@ const whereTests = [
       'inputs': {
         'inputCondition': {
           'data': [0, 165, 0, 90],
-          'descriptor': {'dimensions': [1, 2, 2, 1], 'dataType': 'uint8'}
+          'descriptor': {shape: [1, 2, 2, 1], dataType: 'uint8'}
         },
         'inputTrueValue': {
           'data': [
@@ -697,7 +690,7 @@ const whereTests = [
             -29.081029891967773, -12.19106674194336, -10.8577880859375,
             -23.302522659301758, 30.851404190063477, -58.82704544067383
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         },
         'inputFalseValue': {
           'data': [
@@ -710,7 +703,7 @@ const whereTests = [
             22.937334060668945,  74.97810363769531,   18.877336502075195,
             62.31299591064453,   48.867103576660156,  -75.41789245605469
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -719,7 +712,7 @@ const whereTests = [
           {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
           {'falseValue': 'inputFalseValue'}
         ],
-        'outputs': 'output'
+        'outputs': 'whereOutput'
       }],
       'expectedOutputs': {
         'whereOutput': {
@@ -733,7 +726,7 @@ const whereTests = [
             22.937334060668945,  74.97810363769531,   18.877336502075195,
             -23.302522659301758, 30.851404190063477,  -58.82704544067383
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -747,14 +740,14 @@ const whereTests = [
             241, 0,   85,  0,   227, 51, 202, 0,  104, 227, 129, 129,
             175, 134, 130, 140, 103, 46, 158, 17, 0,   41,  94,  0
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'uint8'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'uint8'}
         },
         'inputTrueValue': {
           'data': [
             38.77214050292969, 18.20477294921875, -11.542049407958984,
             -82.74693298339844, -18.61202621459961, -75.77534484863281
           ],
-          'descriptor': {'dimensions': [2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3], dataType: 'float32'}
         },
         'inputFalseValue': {
           'data': [
@@ -767,7 +760,7 @@ const whereTests = [
             22.937334060668945,  74.97810363769531,   18.877336502075195,
             62.31299591064453,   48.867103576660156,  -75.41789245605469
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -776,7 +769,7 @@ const whereTests = [
           {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
           {'falseValue': 'inputFalseValue'}
         ],
-        'outputs': 'output'
+        'outputs': 'whereOutput'
       }],
       'expectedOutputs': {
         'whereOutput': {
@@ -790,7 +783,7 @@ const whereTests = [
             38.77214050292969,   18.20477294921875,  18.877336502075195,
             -82.74693298339844,  -18.61202621459961, -75.41789245605469
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -804,14 +797,14 @@ const whereTests = [
             241, 0,   85,  0,   227, 51, 202, 0,  104, 227, 129, 129,
             175, 134, 130, 140, 103, 46, 158, 17, 0,   41,  94,  0
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'uint8'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'uint8'}
         },
         'inputTrueValue': {
           'data': [
             -29.164173126220703, 32.200286865234375, -6.146966457366943,
             -24.822790145874023
           ],
-          'descriptor': {'dimensions': [2, 2, 1, 1], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 1, 1], dataType: 'float32'}
         },
         'inputFalseValue': {
           'data': [
@@ -824,7 +817,7 @@ const whereTests = [
             22.937334060668945,  74.97810363769531,   18.877336502075195,
             62.31299591064453,   48.867103576660156,  -75.41789245605469
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -833,7 +826,7 @@ const whereTests = [
           {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
           {'falseValue': 'inputFalseValue'}
         ],
-        'outputs': 'output'
+        'outputs': 'whereOutput'
       }],
       'expectedOutputs': {
         'whereOutput': {
@@ -847,7 +840,7 @@ const whereTests = [
             -24.822790145874023, -24.822790145874023, 18.877336502075195,
             -24.822790145874023, -24.822790145874023, -75.41789245605469
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -861,7 +854,7 @@ const whereTests = [
             241, 0,   85,  0,   227, 51, 202, 0,  104, 227, 129, 129,
             175, 134, 130, 140, 103, 46, 158, 17, 0,   41,  94,  0
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'uint8'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'uint8'}
         },
         'inputTrueValue': {
           'data': [
@@ -874,14 +867,14 @@ const whereTests = [
             -29.081029891967773, -12.19106674194336, -10.8577880859375,
             -23.302522659301758, 30.851404190063477, -58.82704544067383
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         },
         'inputFalseValue': {
           'data': [
             -86.59848022460938, -67.72773742675781, -30.731334686279297,
             -93.49223327636719
           ],
-          'descriptor': {'dimensions': [2, 2, 1], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 1], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -890,7 +883,7 @@ const whereTests = [
           {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
           {'falseValue': 'inputFalseValue'}
         ],
-        'outputs': 'output'
+        'outputs': 'whereOutput'
       }],
       'expectedOutputs': {
         'whereOutput': {
@@ -904,7 +897,7 @@ const whereTests = [
             -29.081029891967773, -12.19106674194336,  -30.731334686279297,
             -23.302522659301758, 30.851404190063477,  -93.49223327636719
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -918,7 +911,7 @@ const whereTests = [
             241, 0,   85,  0,   227, 51, 202, 0,  104, 227, 129, 129,
             175, 134, 130, 140, 103, 46, 158, 17, 0,   41,  94,  0
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'uint8'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'uint8'}
         },
         'inputTrueValue': {
           'data': [
@@ -931,14 +924,14 @@ const whereTests = [
             -29.081029891967773, -12.19106674194336, -10.8577880859375,
             -23.302522659301758, 30.851404190063477, -58.82704544067383
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         },
         'inputFalseValue': {
           'data': [
             17.777414321899414, -1.9890096187591553, -57.28207015991211,
             -80.01390838623047, 66.87323760986328, -31.328258514404297
           ],
-          'descriptor': {'dimensions': [1, 2, 1, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 1, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -947,7 +940,7 @@ const whereTests = [
           {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
           {'falseValue': 'inputFalseValue'}
         ],
-        'outputs': 'output'
+        'outputs': 'whereOutput'
       }],
       'expectedOutputs': {
         'whereOutput': {
@@ -961,7 +954,7 @@ const whereTests = [
             -29.081029891967773, -12.19106674194336,  -31.328258514404297,
             -23.302522659301758, 30.851404190063477,  -31.328258514404297
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -972,21 +965,21 @@ const whereTests = [
       'inputs': {
         'inputCondition': {
           'data': [58, 217],
-          'descriptor': {'dimensions': [2, 1, 1, 1], 'dataType': 'uint8'}
+          'descriptor': {shape: [2, 1, 1, 1], dataType: 'uint8'}
         },
         'inputTrueValue': {
           'data': [
             38.77214050292969, 18.20477294921875, -11.542049407958984,
             -82.74693298339844, -18.61202621459961, -75.77534484863281
           ],
-          'descriptor': {'dimensions': [2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3], dataType: 'float32'}
         },
         'inputFalseValue': {
           'data': [
             -86.59848022460938, -67.72773742675781, -30.731334686279297,
             -93.49223327636719
           ],
-          'descriptor': {'dimensions': [2, 2, 1], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 1], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -995,7 +988,7 @@ const whereTests = [
           {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
           {'falseValue': 'inputFalseValue'}
         ],
-        'outputs': 'output'
+        'outputs': 'whereOutput'
       }],
       'expectedOutputs': {
         'whereOutput': {
@@ -1009,18 +1002,840 @@ const whereTests = [
             38.77214050292969,  18.20477294921875,  -11.542049407958984,
             -82.74693298339844, -18.61202621459961, -75.77534484863281
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
+        }
+      }
+    }
+  },
+
+  // float16 tests
+  {
+    'name': 'where float16 0D scalars',
+    'graph': {
+      'inputs': {
+        'inputCondition':
+            {'data': [247], 'descriptor': {shape: [], dataType: 'uint8'}},
+        'inputTrueValue': {
+          'data': [-22.84375],
+          'descriptor': {shape: [], dataType: 'float16'}
+        },
+        'inputFalseValue': {
+          'data': [-50.03125],
+          'descriptor': {shape: [], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'where',
+        'arguments': [
+          {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
+          {'falseValue': 'inputFalseValue'}
+        ],
+        'outputs': 'whereOutput'
+      }],
+      'expectedOutputs': {
+        'whereOutput': {
+          'data': [-22.84375],
+          'descriptor': {shape: [], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'where float16 1D constant tensors',
+    'graph': {
+      'inputs': {
+        'inputCondition': {
+          'data': [
+            241, 0,   85,  0,   227, 51, 202, 0,  104, 227, 129, 129,
+            175, 134, 130, 140, 103, 46, 158, 17, 0,   41,  94,  0
+          ],
+          'descriptor': {shape: [24], dataType: 'uint8'},
+          'constant': true
+        },
+        'inputTrueValue': {
+          'data': [
+            70.25,      90,         -1.53515625, -83.75,     29.59375,
+            -37.09375,  -6.6640625, -83.125,     -90.5,      -45.46875,
+            50.375,     46.5,       47.5,        -21.953125, 42.90625,
+            -76.8125,   67,         40.09375,    -29.078125, -12.1875,
+            -10.859375, -23.296875, 30.84375,    -58.8125
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'},
+          'constant': true
+        },
+        'inputFalseValue': {
+          'data': [
+            90.4375,   66.75,      -39.8125, -21.6875,   -67.375, -46.46875,
+            -55.90625, 65.5625,    35.15625, 11.9609375, 76.625,  60.75,
+            -93.9375,  -30.390625, 34.3125,  7.70703125, -82.25,  91.125,
+            22.9375,   75,         18.875,   62.3125,    48.875,  -75.4375
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'where',
+        'arguments': [
+          {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
+          {'falseValue': 'inputFalseValue'}
+        ],
+        'outputs': 'whereOutput'
+      }],
+      'expectedOutputs': {
+        'whereOutput': {
+          'data': [
+            70.25,     66.75,      -1.53515625, -21.6875,   29.59375,
+            -37.09375, -6.6640625, 65.5625,     -90.5,      -45.46875,
+            50.375,    46.5,       47.5,        -21.953125, 42.90625,
+            -76.8125,  67,         40.09375,    -29.078125, -12.1875,
+            18.875,    -23.296875, 30.84375,    -75.4375
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'where float16 1D tensors',
+    'graph': {
+      'inputs': {
+        'inputCondition': {
+          'data': [
+            241, 0,   85,  0,   227, 51, 202, 0,  104, 227, 129, 129,
+            175, 134, 130, 140, 103, 46, 158, 17, 0,   41,  94,  0
+          ],
+          'descriptor': {shape: [24], dataType: 'uint8'}
+        },
+        'inputTrueValue': {
+          'data': [
+            70.25,      90,         -1.53515625, -83.75,     29.59375,
+            -37.09375,  -6.6640625, -83.125,     -90.5,      -45.46875,
+            50.375,     46.5,       47.5,        -21.953125, 42.90625,
+            -76.8125,   67,         40.09375,    -29.078125, -12.1875,
+            -10.859375, -23.296875, 30.84375,    -58.8125
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        },
+        'inputFalseValue': {
+          'data': [
+            90.4375,   66.75,      -39.8125, -21.6875,   -67.375, -46.46875,
+            -55.90625, 65.5625,    35.15625, 11.9609375, 76.625,  60.75,
+            -93.9375,  -30.390625, 34.3125,  7.70703125, -82.25,  91.125,
+            22.9375,   75,         18.875,   62.3125,    48.875,  -75.4375
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'where',
+        'arguments': [
+          {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
+          {'falseValue': 'inputFalseValue'}
+        ],
+        'outputs': 'whereOutput'
+      }],
+      'expectedOutputs': {
+        'whereOutput': {
+          'data': [
+            70.25,     66.75,      -1.53515625, -21.6875,   29.59375,
+            -37.09375, -6.6640625, 65.5625,     -90.5,      -45.46875,
+            50.375,    46.5,       47.5,        -21.953125, 42.90625,
+            -76.8125,  67,         40.09375,    -29.078125, -12.1875,
+            18.875,    -23.296875, 30.84375,    -75.4375
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'where float16 2D tensors',
+    'graph': {
+      'inputs': {
+        'inputCondition': {
+          'data': [
+            241, 0,   85,  0,   227, 51, 202, 0,  104, 227, 129, 129,
+            175, 134, 130, 140, 103, 46, 158, 17, 0,   41,  94,  0
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'uint8'}
+        },
+        'inputTrueValue': {
+          'data': [
+            70.25,      90,         -1.53515625, -83.75,     29.59375,
+            -37.09375,  -6.6640625, -83.125,     -90.5,      -45.46875,
+            50.375,     46.5,       47.5,        -21.953125, 42.90625,
+            -76.8125,   67,         40.09375,    -29.078125, -12.1875,
+            -10.859375, -23.296875, 30.84375,    -58.8125
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        },
+        'inputFalseValue': {
+          'data': [
+            90.4375,   66.75,      -39.8125, -21.6875,   -67.375, -46.46875,
+            -55.90625, 65.5625,    35.15625, 11.9609375, 76.625,  60.75,
+            -93.9375,  -30.390625, 34.3125,  7.70703125, -82.25,  91.125,
+            22.9375,   75,         18.875,   62.3125,    48.875,  -75.4375
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'where',
+        'arguments': [
+          {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
+          {'falseValue': 'inputFalseValue'}
+        ],
+        'outputs': 'whereOutput'
+      }],
+      'expectedOutputs': {
+        'whereOutput': {
+          'data': [
+            70.25,     66.75,      -1.53515625, -21.6875,   29.59375,
+            -37.09375, -6.6640625, 65.5625,     -90.5,      -45.46875,
+            50.375,    46.5,       47.5,        -21.953125, 42.90625,
+            -76.8125,  67,         40.09375,    -29.078125, -12.1875,
+            18.875,    -23.296875, 30.84375,    -75.4375
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'where float16 3D tensors',
+    'graph': {
+      'inputs': {
+        'inputCondition': {
+          'data': [
+            241, 0,   85,  0,   227, 51, 202, 0,  104, 227, 129, 129,
+            175, 134, 130, 140, 103, 46, 158, 17, 0,   41,  94,  0
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'uint8'}
+        },
+        'inputTrueValue': {
+          'data': [
+            70.25,      90,         -1.53515625, -83.75,     29.59375,
+            -37.09375,  -6.6640625, -83.125,     -90.5,      -45.46875,
+            50.375,     46.5,       47.5,        -21.953125, 42.90625,
+            -76.8125,   67,         40.09375,    -29.078125, -12.1875,
+            -10.859375, -23.296875, 30.84375,    -58.8125
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'float16'}
+        },
+        'inputFalseValue': {
+          'data': [
+            90.4375,   66.75,      -39.8125, -21.6875,   -67.375, -46.46875,
+            -55.90625, 65.5625,    35.15625, 11.9609375, 76.625,  60.75,
+            -93.9375,  -30.390625, 34.3125,  7.70703125, -82.25,  91.125,
+            22.9375,   75,         18.875,   62.3125,    48.875,  -75.4375
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'where',
+        'arguments': [
+          {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
+          {'falseValue': 'inputFalseValue'}
+        ],
+        'outputs': 'whereOutput'
+      }],
+      'expectedOutputs': {
+        'whereOutput': {
+          'data': [
+            70.25,     66.75,      -1.53515625, -21.6875,   29.59375,
+            -37.09375, -6.6640625, 65.5625,     -90.5,      -45.46875,
+            50.375,    46.5,       47.5,        -21.953125, 42.90625,
+            -76.8125,  67,         40.09375,    -29.078125, -12.1875,
+            18.875,    -23.296875, 30.84375,    -75.4375
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'where float16 4D tensors',
+    'graph': {
+      'inputs': {
+        'inputCondition': {
+          'data': [
+            241, 0,   85,  0,   227, 51, 202, 0,  104, 227, 129, 129,
+            175, 134, 130, 140, 103, 46, 158, 17, 0,   41,  94,  0
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'uint8'}
+        },
+        'inputTrueValue': {
+          'data': [
+            70.25,      90,         -1.53515625, -83.75,     29.59375,
+            -37.09375,  -6.6640625, -83.125,     -90.5,      -45.46875,
+            50.375,     46.5,       47.5,        -21.953125, 42.90625,
+            -76.8125,   67,         40.09375,    -29.078125, -12.1875,
+            -10.859375, -23.296875, 30.84375,    -58.8125
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        },
+        'inputFalseValue': {
+          'data': [
+            90.4375,   66.75,      -39.8125, -21.6875,   -67.375, -46.46875,
+            -55.90625, 65.5625,    35.15625, 11.9609375, 76.625,  60.75,
+            -93.9375,  -30.390625, 34.3125,  7.70703125, -82.25,  91.125,
+            22.9375,   75,         18.875,   62.3125,    48.875,  -75.4375
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'where',
+        'arguments': [
+          {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
+          {'falseValue': 'inputFalseValue'}
+        ],
+        'outputs': 'whereOutput'
+      }],
+      'expectedOutputs': {
+        'whereOutput': {
+          'data': [
+            70.25,     66.75,      -1.53515625, -21.6875,   29.59375,
+            -37.09375, -6.6640625, 65.5625,     -90.5,      -45.46875,
+            50.375,    46.5,       47.5,        -21.953125, 42.90625,
+            -76.8125,  67,         40.09375,    -29.078125, -12.1875,
+            18.875,    -23.296875, 30.84375,    -75.4375
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'where float16 5D tensors',
+    'graph': {
+      'inputs': {
+        'inputCondition': {
+          'data': [
+            241, 0,   85,  0,   227, 51, 202, 0,  104, 227, 129, 129,
+            175, 134, 130, 140, 103, 46, 158, 17, 0,   41,  94,  0
+          ],
+          'descriptor': {shape: [2, 2, 1, 2, 3], dataType: 'uint8'}
+        },
+        'inputTrueValue': {
+          'data': [
+            70.25,      90,         -1.53515625, -83.75,     29.59375,
+            -37.09375,  -6.6640625, -83.125,     -90.5,      -45.46875,
+            50.375,     46.5,       47.5,        -21.953125, 42.90625,
+            -76.8125,   67,         40.09375,    -29.078125, -12.1875,
+            -10.859375, -23.296875, 30.84375,    -58.8125
+          ],
+          'descriptor': {shape: [2, 2, 1, 2, 3], dataType: 'float16'}
+        },
+        'inputFalseValue': {
+          'data': [
+            90.4375,   66.75,      -39.8125, -21.6875,   -67.375, -46.46875,
+            -55.90625, 65.5625,    35.15625, 11.9609375, 76.625,  60.75,
+            -93.9375,  -30.390625, 34.3125,  7.70703125, -82.25,  91.125,
+            22.9375,   75,         18.875,   62.3125,    48.875,  -75.4375
+          ],
+          'descriptor': {shape: [2, 2, 1, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'where',
+        'arguments': [
+          {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
+          {'falseValue': 'inputFalseValue'}
+        ],
+        'outputs': 'whereOutput'
+      }],
+      'expectedOutputs': {
+        'whereOutput': {
+          'data': [
+            70.25,     66.75,      -1.53515625, -21.6875,   29.59375,
+            -37.09375, -6.6640625, 65.5625,     -90.5,      -45.46875,
+            50.375,    46.5,       47.5,        -21.953125, 42.90625,
+            -76.8125,  67,         40.09375,    -29.078125, -12.1875,
+            18.875,    -23.296875, 30.84375,    -75.4375
+          ],
+          'descriptor': {shape: [2, 2, 1, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'where float16 4D tensors only broadcast condition 0D to 4D',
+    'graph': {
+      'inputs': {
+        'inputCondition':
+            {'data': [247], 'descriptor': {shape: [], dataType: 'uint8'}},
+        'inputTrueValue': {
+          'data': [
+            70.25,      90,         -1.53515625, -83.75,     29.59375,
+            -37.09375,  -6.6640625, -83.125,     -90.5,      -45.46875,
+            50.375,     46.5,       47.5,        -21.953125, 42.90625,
+            -76.8125,   67,         40.09375,    -29.078125, -12.1875,
+            -10.859375, -23.296875, 30.84375,    -58.8125
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        },
+        'inputFalseValue': {
+          'data': [
+            90.4375,   66.75,      -39.8125, -21.6875,   -67.375, -46.46875,
+            -55.90625, 65.5625,    35.15625, 11.9609375, 76.625,  60.75,
+            -93.9375,  -30.390625, 34.3125,  7.70703125, -82.25,  91.125,
+            22.9375,   75,         18.875,   62.3125,    48.875,  -75.4375
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'where',
+        'arguments': [
+          {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
+          {'falseValue': 'inputFalseValue'}
+        ],
+        'outputs': 'whereOutput'
+      }],
+      'expectedOutputs': {
+        'whereOutput': {
+          'data': [
+            70.25,      90,         -1.53515625, -83.75,     29.59375,
+            -37.09375,  -6.6640625, -83.125,     -90.5,      -45.46875,
+            50.375,     46.5,       47.5,        -21.953125, 42.90625,
+            -76.8125,   67,         40.09375,    -29.078125, -12.1875,
+            -10.859375, -23.296875, 30.84375,    -58.8125
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'where float16 4D tensors only broadcast condition 1D to 4D',
+    'graph': {
+      'inputs': {
+        'inputCondition': {
+          'data': [253, 222, 0],
+          'descriptor': {shape: [3], dataType: 'uint8'}
+        },
+        'inputTrueValue': {
+          'data': [
+            70.25,      90,         -1.53515625, -83.75,     29.59375,
+            -37.09375,  -6.6640625, -83.125,     -90.5,      -45.46875,
+            50.375,     46.5,       47.5,        -21.953125, 42.90625,
+            -76.8125,   67,         40.09375,    -29.078125, -12.1875,
+            -10.859375, -23.296875, 30.84375,    -58.8125
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        },
+        'inputFalseValue': {
+          'data': [
+            90.4375,   66.75,      -39.8125, -21.6875,   -67.375, -46.46875,
+            -55.90625, 65.5625,    35.15625, 11.9609375, 76.625,  60.75,
+            -93.9375,  -30.390625, 34.3125,  7.70703125, -82.25,  91.125,
+            22.9375,   75,         18.875,   62.3125,    48.875,  -75.4375
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'where',
+        'arguments': [
+          {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
+          {'falseValue': 'inputFalseValue'}
+        ],
+        'outputs': 'whereOutput'
+      }],
+      'expectedOutputs': {
+        'whereOutput': {
+          'data': [
+            70.25,      90,         -39.8125, -83.75,     29.59375, -46.46875,
+            -6.6640625, -83.125,    35.15625, -45.46875,  50.375,   60.75,
+            47.5,       -21.953125, 34.3125,  -76.8125,   67,       91.125,
+            -29.078125, -12.1875,   18.875,   -23.296875, 30.84375, -75.4375
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'where float16 4D tensors only broadcast condition 2D to 4D',
+    'graph': {
+      'inputs': {
+        'inputCondition': {
+          'data': [103, 0],
+          'descriptor': {shape: [2, 1], dataType: 'uint8'}
+        },
+        'inputTrueValue': {
+          'data': [
+            70.25,      90,         -1.53515625, -83.75,     29.59375,
+            -37.09375,  -6.6640625, -83.125,     -90.5,      -45.46875,
+            50.375,     46.5,       47.5,        -21.953125, 42.90625,
+            -76.8125,   67,         40.09375,    -29.078125, -12.1875,
+            -10.859375, -23.296875, 30.84375,    -58.8125
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        },
+        'inputFalseValue': {
+          'data': [
+            90.4375,   66.75,      -39.8125, -21.6875,   -67.375, -46.46875,
+            -55.90625, 65.5625,    35.15625, 11.9609375, 76.625,  60.75,
+            -93.9375,  -30.390625, 34.3125,  7.70703125, -82.25,  91.125,
+            22.9375,   75,         18.875,   62.3125,    48.875,  -75.4375
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'where',
+        'arguments': [
+          {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
+          {'falseValue': 'inputFalseValue'}
+        ],
+        'outputs': 'whereOutput'
+      }],
+      'expectedOutputs': {
+        'whereOutput': {
+          'data': [
+            70.25,      90,         -1.53515625, -21.6875,   -67.375, -46.46875,
+            -6.6640625, -83.125,    -90.5,       11.9609375, 76.625,  60.75,
+            47.5,       -21.953125, 42.90625,    7.70703125, -82.25,  91.125,
+            -29.078125, -12.1875,   -10.859375,  62.3125,    48.875,  -75.4375
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'where float16 4D tensors only broadcast condition 3D to 4D',
+    'graph': {
+      'inputs': {
+        'inputCondition': {
+          'data': [235, 0, 93, 213, 0, 117],
+          'descriptor': {shape: [1, 2, 3], dataType: 'uint8'}
+        },
+        'inputTrueValue': {
+          'data': [
+            70.25,      90,         -1.53515625, -83.75,     29.59375,
+            -37.09375,  -6.6640625, -83.125,     -90.5,      -45.46875,
+            50.375,     46.5,       47.5,        -21.953125, 42.90625,
+            -76.8125,   67,         40.09375,    -29.078125, -12.1875,
+            -10.859375, -23.296875, 30.84375,    -58.8125
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        },
+        'inputFalseValue': {
+          'data': [
+            90.4375,   66.75,      -39.8125, -21.6875,   -67.375, -46.46875,
+            -55.90625, 65.5625,    35.15625, 11.9609375, 76.625,  60.75,
+            -93.9375,  -30.390625, 34.3125,  7.70703125, -82.25,  91.125,
+            22.9375,   75,         18.875,   62.3125,    48.875,  -75.4375
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'where',
+        'arguments': [
+          {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
+          {'falseValue': 'inputFalseValue'}
+        ],
+        'outputs': 'whereOutput'
+      }],
+      'expectedOutputs': {
+        'whereOutput': {
+          'data': [
+            70.25,      66.75,      -1.53515625, -83.75,     -67.375, -37.09375,
+            -6.6640625, 65.5625,    -90.5,       -45.46875,  76.625,  46.5,
+            47.5,       -30.390625, 42.90625,    -76.8125,   -82.25,  40.09375,
+            -29.078125, 75,         -10.859375,  -23.296875, 48.875,  -58.8125
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'where float16 4D tensors only broadcast condition 4D to 4D',
+    'graph': {
+      'inputs': {
+        'inputCondition': {
+          'data': [0, 165, 0, 90],
+          'descriptor': {shape: [1, 2, 2, 1], dataType: 'uint8'}
+        },
+        'inputTrueValue': {
+          'data': [
+            70.25,      90,         -1.53515625, -83.75,     29.59375,
+            -37.09375,  -6.6640625, -83.125,     -90.5,      -45.46875,
+            50.375,     46.5,       47.5,        -21.953125, 42.90625,
+            -76.8125,   67,         40.09375,    -29.078125, -12.1875,
+            -10.859375, -23.296875, 30.84375,    -58.8125
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        },
+        'inputFalseValue': {
+          'data': [
+            90.4375,   66.75,      -39.8125, -21.6875,   -67.375, -46.46875,
+            -55.90625, 65.5625,    35.15625, 11.9609375, 76.625,  60.75,
+            -93.9375,  -30.390625, 34.3125,  7.70703125, -82.25,  91.125,
+            22.9375,   75,         18.875,   62.3125,    48.875,  -75.4375
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'where',
+        'arguments': [
+          {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
+          {'falseValue': 'inputFalseValue'}
+        ],
+        'outputs': 'whereOutput'
+      }],
+      'expectedOutputs': {
+        'whereOutput': {
+          'data': [
+            90.4375,   66.75,      -39.8125, -83.75,     29.59375, -37.09375,
+            -55.90625, 65.5625,    35.15625, -45.46875,  50.375,   46.5,
+            -93.9375,  -30.390625, 34.3125,  -76.8125,   67,       40.09375,
+            22.9375,   75,         18.875,   -23.296875, 30.84375, -58.8125
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'where float16 4D tensors only broadcast trueValues 2D to 4D',
+    'graph': {
+      'inputs': {
+        'inputCondition': {
+          'data': [
+            241, 0,   85,  0,   227, 51, 202, 0,  104, 227, 129, 129,
+            175, 134, 130, 140, 103, 46, 158, 17, 0,   41,  94,  0
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'uint8'}
+        },
+        'inputTrueValue': {
+          'data':
+              [38.78125, 18.203125, -11.5390625, -82.75, -18.609375, -75.75],
+          'descriptor': {shape: [2, 3], dataType: 'float16'}
+        },
+        'inputFalseValue': {
+          'data': [
+            90.4375,   66.75,      -39.8125, -21.6875,   -67.375, -46.46875,
+            -55.90625, 65.5625,    35.15625, 11.9609375, 76.625,  60.75,
+            -93.9375,  -30.390625, 34.3125,  7.70703125, -82.25,  91.125,
+            22.9375,   75,         18.875,   62.3125,    48.875,  -75.4375
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'where',
+        'arguments': [
+          {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
+          {'falseValue': 'inputFalseValue'}
+        ],
+        'outputs': 'whereOutput'
+      }],
+      'expectedOutputs': {
+        'whereOutput': {
+          'data': [
+            38.78125, 66.75,     -11.5390625, -21.6875, -18.609375, -75.75,
+            38.78125, 65.5625,   -11.5390625, -82.75,   -18.609375, -75.75,
+            38.78125, 18.203125, -11.5390625, -82.75,   -18.609375, -75.75,
+            38.78125, 18.203125, 18.875,      -82.75,   -18.609375, -75.4375
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'where float16 4D tensors only broadcast trueValues 4D to 4D',
+    'graph': {
+      'inputs': {
+        'inputCondition': {
+          'data': [
+            241, 0,   85,  0,   227, 51, 202, 0,  104, 227, 129, 129,
+            175, 134, 130, 140, 103, 46, 158, 17, 0,   41,  94,  0
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'uint8'}
+        },
+        'inputTrueValue': {
+          'data': [-29.171875, 32.1875, -6.1484375, -24.828125],
+          'descriptor': {shape: [2, 2, 1, 1], dataType: 'float16'}
+        },
+        'inputFalseValue': {
+          'data': [
+            90.4375,   66.75,      -39.8125, -21.6875,   -67.375, -46.46875,
+            -55.90625, 65.5625,    35.15625, 11.9609375, 76.625,  60.75,
+            -93.9375,  -30.390625, 34.3125,  7.70703125, -82.25,  91.125,
+            22.9375,   75,         18.875,   62.3125,    48.875,  -75.4375
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'where',
+        'arguments': [
+          {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
+          {'falseValue': 'inputFalseValue'}
+        ],
+        'outputs': 'whereOutput'
+      }],
+      'expectedOutputs': {
+        'whereOutput': {
+          'data': [
+            -29.171875, 66.75,      -29.171875, -21.6875,   -29.171875,
+            -29.171875, 32.1875,    65.5625,    32.1875,    32.1875,
+            32.1875,    32.1875,    -6.1484375, -6.1484375, -6.1484375,
+            -6.1484375, -6.1484375, -6.1484375, -24.828125, -24.828125,
+            18.875,     -24.828125, -24.828125, -75.4375
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'where float16 4D tensors only broadcast falseValues 3D to 4D',
+    'graph': {
+      'inputs': {
+        'inputCondition': {
+          'data': [
+            241, 0,   85,  0,   227, 51, 202, 0,  104, 227, 129, 129,
+            175, 134, 130, 140, 103, 46, 158, 17, 0,   41,  94,  0
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'uint8'}
+        },
+        'inputTrueValue': {
+          'data': [
+            70.25,      90,         -1.53515625, -83.75,     29.59375,
+            -37.09375,  -6.6640625, -83.125,     -90.5,      -45.46875,
+            50.375,     46.5,       47.5,        -21.953125, 42.90625,
+            -76.8125,   67,         40.09375,    -29.078125, -12.1875,
+            -10.859375, -23.296875, 30.84375,    -58.8125
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        },
+        'inputFalseValue': {
+          'data': [-86.625, -67.75, -30.734375, -93.5],
+          'descriptor': {shape: [2, 2, 1], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'where',
+        'arguments': [
+          {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
+          {'falseValue': 'inputFalseValue'}
+        ],
+        'outputs': 'whereOutput'
+      }],
+      'expectedOutputs': {
+        'whereOutput': {
+          'data': [
+            70.25,      -86.625,    -1.53515625, -67.75,     29.59375,
+            -37.09375,  -6.6640625, -30.734375,  -90.5,      -45.46875,
+            50.375,     46.5,       47.5,        -21.953125, 42.90625,
+            -76.8125,   67,         40.09375,    -29.078125, -12.1875,
+            -30.734375, -23.296875, 30.84375,    -93.5
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'where float16 4D tensors only broadcast falseValues 4D to 4D',
+    'graph': {
+      'inputs': {
+        'inputCondition': {
+          'data': [
+            241, 0,   85,  0,   227, 51, 202, 0,  104, 227, 129, 129,
+            175, 134, 130, 140, 103, 46, 158, 17, 0,   41,  94,  0
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'uint8'}
+        },
+        'inputTrueValue': {
+          'data': [
+            70.25,      90,         -1.53515625, -83.75,     29.59375,
+            -37.09375,  -6.6640625, -83.125,     -90.5,      -45.46875,
+            50.375,     46.5,       47.5,        -21.953125, 42.90625,
+            -76.8125,   67,         40.09375,    -29.078125, -12.1875,
+            -10.859375, -23.296875, 30.84375,    -58.8125
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        },
+        'inputFalseValue': {
+          'data': [17.78125, -1.9892578125, -57.28125, -80, 66.875, -31.328125],
+          'descriptor': {shape: [1, 2, 1, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'where',
+        'arguments': [
+          {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
+          {'falseValue': 'inputFalseValue'}
+        ],
+        'outputs': 'whereOutput'
+      }],
+      'expectedOutputs': {
+        'whereOutput': {
+          'data': [
+            70.25,      -1.9892578125, -1.53515625, 17.78125,
+            29.59375,   -37.09375,     -6.6640625,  66.875,
+            -90.5,      -45.46875,     50.375,      46.5,
+            47.5,       -21.953125,    42.90625,    -76.8125,
+            67,         40.09375,      -29.078125,  -12.1875,
+            -31.328125, -23.296875,    30.84375,    -31.328125
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'where float16 4D tensors all broadcast 4D',
+    'graph': {
+      'inputs': {
+        'inputCondition': {
+          'data': [58, 217],
+          'descriptor': {shape: [2, 1, 1, 1], dataType: 'uint8'}
+        },
+        'inputTrueValue': {
+          'data':
+              [38.78125, 18.203125, -11.5390625, -82.75, -18.609375, -75.75],
+          'descriptor': {shape: [2, 3], dataType: 'float16'}
+        },
+        'inputFalseValue': {
+          'data': [-86.625, -67.75, -30.734375, -93.5],
+          'descriptor': {shape: [2, 2, 1], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'where',
+        'arguments': [
+          {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
+          {'falseValue': 'inputFalseValue'}
+        ],
+        'outputs': 'whereOutput'
+      }],
+      'expectedOutputs': {
+        'whereOutput': {
+          'data': [
+            38.78125, 18.203125, -11.5390625, -82.75, -18.609375, -75.75,
+            38.78125, 18.203125, -11.5390625, -82.75, -18.609375, -75.75,
+            38.78125, 18.203125, -11.5390625, -82.75, -18.609375, -75.75,
+            38.78125, 18.203125, -11.5390625, -82.75, -18.609375, -75.75
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
         }
       }
     }
   }
 ];
 
-if (navigator.ml) {
-  whereTests.forEach((test) => {
-    webnn_conformance_test(
-        buildGraphAndCompute, getWherePrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(
+    whereTests, buildAndExecuteGraph, getWherePrecisionTolerance);

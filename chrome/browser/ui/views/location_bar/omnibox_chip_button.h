@@ -7,12 +7,14 @@
 
 #include "base/check_is_test.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_chip_theme.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/animation/slide_animation.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/button/md_text_button.h"
+
+DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kOmniboxChipButtonExpanded);
 
 // UI component for chip button located in the omnibox. A button with an icon
 // and text, with rounded corners.
@@ -21,7 +23,7 @@ class OmniboxChipButton : public views::MdTextButton {
 
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kChipElementId);
-  explicit OmniboxChipButton(PressedCallback callback);
+  explicit OmniboxChipButton(PressedCallback callback = PressedCallback());
   OmniboxChipButton(const OmniboxChipButton& button) = delete;
   OmniboxChipButton& operator=(const OmniboxChipButton& button) = delete;
   ~OmniboxChipButton() override;
@@ -50,7 +52,7 @@ class OmniboxChipButton : public views::MdTextButton {
 
   // Customize the button.
   void SetTheme(OmniboxChipTheme theme);
-  void SetMessage(std::u16string message);
+  void SetIcon(const gfx::VectorIcon& icon);
 
   OmniboxChipTheme GetOmniboxChipTheme() const { return theme_; }
 
@@ -63,9 +65,8 @@ class OmniboxChipButton : public views::MdTextButton {
   // chips (default/neutral states). For any other changes to the look and feel
   // of the chips, consider subclassing and overriding as needed.
   virtual ui::ImageModel GetIconImageModel() const;
-  virtual const gfx::VectorIcon& GetIcon() const;
-  virtual SkColor GetForegroundColor() const;
-  virtual SkColor GetBackgroundColor() const;
+  virtual ui::ColorId GetForegroundColorId() const;
+  virtual ui::ColorId GetBackgroundColorId() const;
 
   // Updates the icon, and then updates text, icon, and background colors from
   // the theme.
@@ -82,9 +83,9 @@ class OmniboxChipButton : public views::MdTextButton {
 
   void OnAnimationValueMaybeChanged();
 
-  int GetIconSize() const;
+  const gfx::VectorIcon& GetIcon() const;
 
-  int GetCornerRadius() const;
+  int GetIconSize() const;
 
   // An animation used for expanding and collapsing the chip.
   std::unique_ptr<gfx::SlideAnimation> animation_;
@@ -95,7 +96,7 @@ class OmniboxChipButton : public views::MdTextButton {
   // without text.
   bool fully_collapsed_ = false;
 
-  raw_ptr<const gfx::VectorIcon> icon_ = &gfx::kNoneIcon;
+  raw_ptr<const gfx::VectorIcon> icon_ = &gfx::VectorIcon::EmptyIcon();
 
   base::ObserverList<Observer> observers_;
 };

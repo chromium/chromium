@@ -11,16 +11,16 @@ import android.view.inputmethod.InputConnection;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import java.util.Optional;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** An abstraction of the text model to show, keep track of, and update autocomplete. */
+@NullMarked
 public interface AutocompleteEditTextModelBase {
     /** An embedder should implement this. */
-    public interface Delegate {
+    interface Delegate {
         /**
          * @see TextView#getText()
          */
@@ -72,9 +72,9 @@ public interface AutocompleteEditTextModelBase {
         boolean isFocused();
 
         /**
-         * @see TextView#sendAccessibilityEventUnchecked(AccessibilityEvent)
+         * @see TextView#sendAccessibilityEvent(AccessibilityEvent)
          */
-        void sendAccessibilityEventUnchecked(AccessibilityEvent event);
+        void sendAccessibilityEvent(AccessibilityEvent event);
 
         /**
          * Call super.dispatchKeyEvent(KeyEvent).
@@ -111,6 +111,9 @@ public interface AutocompleteEditTextModelBase {
          * @return The package name of the current keyboard app.
          */
         String getKeyboardPackageName();
+
+        /** Specifies whether the current user input should be shown as multi-line. */
+        void setInputIsMultilineEligible(boolean isMultilineEligible);
     }
 
     /**
@@ -119,7 +122,7 @@ public interface AutocompleteEditTextModelBase {
      * @param inputConnection An {@link InputConnection} created by EditText.
      * @return A wrapper @{link InputConnection} created by the model.
      */
-    InputConnection onCreateInputConnection(InputConnection inputConnection);
+    @Nullable InputConnection onCreateInputConnection(@Nullable InputConnection inputConnection);
 
     /**
      * Called when View#dispatchKeyEvent(KeyEvent event) is called.
@@ -185,7 +188,7 @@ public interface AutocompleteEditTextModelBase {
      *     default match.
      */
     @VisibleForTesting
-    Optional<String> getAdditionalText();
+    @Nullable String getAdditionalText();
 
     /**
      * Sets whether text changes should trigger autocomplete.
@@ -204,9 +207,9 @@ public interface AutocompleteEditTextModelBase {
      *     default. Will usually be URL when autocompleting a title, and empty otherwise.
      */
     void setAutocompleteText(
-            @NonNull CharSequence userText,
+            CharSequence userText,
             @Nullable CharSequence inlineAutocompleteText,
-            Optional<String> additionalText);
+            @Nullable String additionalText);
 
     /**
      * Whether we want to be showing inline autocomplete results. We don't want to show them as the
@@ -227,7 +230,7 @@ public interface AutocompleteEditTextModelBase {
      * @return The current {@link InputConnection} object.
      */
     @VisibleForTesting
-    InputConnection getInputConnection();
+    @Nullable InputConnection getInputConnection();
 
     /**
      * @return Whether accessibility event should be ignored.

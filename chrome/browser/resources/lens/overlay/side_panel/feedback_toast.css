@@ -1,0 +1,66 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+#closeFeedbackToastButton {
+  margin-block: 8px;
+  margin-inline: 6px;
+}
+
+#feedbackButtonContainer {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  margin-inline-start: auto;
+}
+
+#feedbackToast {
+  --color-toast-background: white;
+  --color-toast-button: #1558D6;
+  --color-toast-foreground: #474747;
+  --cr-icon-button-fill-color: #5E5E5E;
+  border-radius: 12px;
+  box-shadow: 0px 2px 6px 0px rgba(23, 23, 23, 0.32);
+  display: flex;
+  height: 48px;
+  left: 0;
+  margin: auto auto 12px;
+  min-height: 48px;
+  padding: 0;
+  right: 0;
+  width: 336px;
+  white-space: nowrap;
+}
+
+:host([updated-feedback-enabled]) #feedbackToast {
+  bottom: 95px;
+  max-width: calc(100% - 60px);
+  min-width: 312px;
+  width: 100%;
+  z-index: 3;
+}
+
+:host([dark-mode]) #feedbackToast {
+  --color-toast-background: #303134;
+  --color-toast-button: #99C3FF6;
+  --color-toast-foreground: #BFBFBF;
+  --cr-icon-button-fill-color: #9E9E9E;
+}
+
+#feedbackToastMessage {
+  margin-inline-start: 16px;
+}
+
+#sendFeedbackButton {
+  --cr-hover-background-color: transparent;
+  background-color: transparent;
+  border: none;
+  margin-block-end: 6px;
+  margin-block-start: 6px;
+  padding: 0;
+}

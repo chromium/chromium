@@ -2,31 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/vr/elements/draw_phase.h"
+
+#include <array>
+#include <string>
+
+#include "base/check_op.h"
 
 namespace vr {
 
 namespace {
 
-static const char* g_draw_phase_strings[] = {
+// LINT.IfChange(DrawPhaseType)
+static std::array<const char*, kNumDrawPhases + 1> g_draw_phase_strings = {
     "kPhaseNone",
     "kPhaseBackground",
     "kPhaseForeground",
     "kPhaseOverlayForeground",
 };
-
-static_assert(
-    kNumDrawPhases + 1 == std::size(g_draw_phase_strings),
-    "Mismatch between the DrawPhase enum and the corresponding strings");
-
+// LINT.ThenChange(//chrome/browser/vr/elements/draw_phase.h:DrawPhaseType)
 }  // namespace
 
 std::string DrawPhaseToString(DrawPhase phase) {
+  CHECK_GE(kNumDrawPhases, phase);
   return g_draw_phase_strings[phase];
 }
 

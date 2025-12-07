@@ -14,13 +14,17 @@ import android.text.style.ForegroundColorSpan;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.incognito.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.text.SpanApplier;
 
 /** A utility class to provide helper methods for the Incognito re-authentication lock setting. */
+@NullMarked
 public class IncognitoReauthSettingUtils {
-    private static Boolean sIsDeviceScreenLockEnabledForTesting;
+    private static @Nullable Boolean sIsDeviceScreenLockEnabledForTesting;
 
     /**
      * @return A boolean indicating if the screen lock is enabled in device or not.
@@ -47,10 +51,15 @@ public class IncognitoReauthSettingUtils {
      * @return A {@link CharSequence} containing the summary string for the Incognito lock setting.
      */
     public static CharSequence getSummaryString(Activity activity) {
-        return (isDeviceScreenLockEnabled())
-                ? activity.getString(
-                        R.string.settings_incognito_tab_lock_summary_android_setting_on)
-                : buildLinkToAndroidScreenLockSettings(activity);
+        if (isDeviceScreenLockEnabled()) {
+            return IncognitoUtils.shouldOpenIncognitoAsWindow()
+                    ? activity.getString(
+                            R.string.settings_incognito_window_lock_summary_android_setting_on)
+                    : activity.getString(
+                            R.string.settings_incognito_tab_lock_summary_android_setting_on);
+        } else {
+            return buildLinkToAndroidScreenLockSettings(activity);
+        }
     }
 
     /**
@@ -68,7 +77,7 @@ public class IncognitoReauthSettingUtils {
         ResettersForTesting.register(() -> sIsDeviceScreenLockEnabledForTesting = null);
     }
 
-    // TODO(crbug.com/40197623): Use NoUnderlineClickableSpan here to build the
+    // TODO(crbug.com/40197623): Use ChromeClickableSpan here to build the
     // summary string which takes the user to Android system settings. The summary
     // click behaviour is dependent on {@link IncognitoReauthSettingSwitchPreference} so
     // need to refactor that as well.

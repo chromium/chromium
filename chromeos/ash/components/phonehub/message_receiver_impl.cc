@@ -112,8 +112,7 @@ void MessageReceiverImpl::OnMessageReceived(const std::string& payload) {
     return;
   }
 
-  if (features::IsPhoneHubFeatureSetupErrorHandlingEnabled() &&
-      message_type == proto::MessageType::FEATURE_SETUP_RESPONSE) {
+  if (message_type == proto::MessageType::FEATURE_SETUP_RESPONSE) {
     proto::FeatureSetupResponse response;
     // Serialized proto is after the first two bytes of |payload|.
     if (!response.ParseFromString(payload.substr(2))) {

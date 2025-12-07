@@ -1,0 +1,112 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("utils") {
+  sources = [ "ios_promos_utils.h" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/promos:utils",
+    "//components/desktop_to_mobile_promos",
+  ]
+}
+
+if (!is_android) {
+  source_set("impl") {
+    sources = [ "ios_promos_utils.cc" ]
+
+    deps = [
+      ":utils",
+      "//chrome/browser/feature_engagement",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/promos:utils",
+      "//chrome/browser/segmentation_platform",
+      "//chrome/browser/sync",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/views/frame:toolbar_button_provider",
+      "//chrome/browser/ui/views/location_bar",
+      "//chrome/browser/ui/views/toolbar",
+      "//components/desktop_to_mobile_promos",
+      "//components/feature_engagement/public",
+      "//components/segmentation_platform/embedder/default_model",
+      "//components/segmentation_platform/public",
+      "//components/sync/service",
+      "//components/sync_preferences/cross_device_pref_tracker",
+      "//components/sync_preferences/cross_device_pref_tracker:timestamped_pref_value",
+      "//components/sync_preferences/cross_device_pref_tracker/prefs",
+    ]
+  }
+
+  source_set("controller") {
+    sources = [
+      "ios_promo_controller.cc",
+      "ios_promo_controller.h",
+    ]
+
+    deps = [
+      ":service",
+      ":utils",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/user_education",
+      "//chrome/browser/ui/views/frame",
+      "//components/desktop_to_mobile_promos",
+      "//components/sync_device_info",
+      "//ui/base/unowned_user_data",
+      "//ui/views",
+    ]
+
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  }
+
+  source_set("service") {
+    sources = [
+      "ios_promo_trigger_service.cc",
+      "ios_promo_trigger_service.h",
+      "ios_promo_trigger_service_factory.cc",
+      "ios_promo_trigger_service_factory.h",
+    ]
+
+    deps = [
+      "//base",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/promos:utils",
+      "//chrome/browser/sync",
+      "//components/desktop_to_mobile_promos",
+      "//components/keyed_service/core",
+      "//components/prefs",
+    ]
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources = [
+      "ios_promo_trigger_service_unittest.cc",
+      "ios_promos_utils_unittest.cc",
+    ]
+    deps = [
+      ":controller",
+      ":impl",
+      ":service",
+      ":utils",
+      "//base/test:test_support",
+      "//chrome/browser/promos:utils",
+      "//chrome/browser/sync",
+      "//chrome/browser/ui/user_education",
+      "//chrome/test:test_support",
+      "//components/segmentation_platform/public",
+      "//components/send_tab_to_self",
+      "//components/sync/base",
+      "//components/sync/protocol",
+      "//components/sync_device_info",
+      "//components/sync_device_info:test_support",
+      "//components/sync_preferences",
+      "//components/sync_preferences:features",
+      "//components/sync_preferences:test_support",
+      "//components/sync_preferences/cross_device_pref_tracker",
+      "//components/sync_preferences/cross_device_pref_tracker/prefs",
+      "//testing/gtest",
+    ]
+  }
+}

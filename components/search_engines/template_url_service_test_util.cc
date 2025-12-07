@@ -6,14 +6,23 @@
 
 #include <memory>
 
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "components/country_codes/country_codes.h"
 #include "components/metrics/metrics_pref_names.h"
+#include "components/os_crypt/async/browser/test_utils.h"
+#include "components/policy/core/common/management/management_service.h"
+#include "components/regional_capabilities/regional_capabilities_prefs.h"
+#include "components/regional_capabilities/regional_capabilities_service.h"
+#include "components/regional_capabilities/regional_capabilities_switches.h"
+#include "components/regional_capabilities/regional_capabilities_test_utils.h"
+#include "components/regional_capabilities/regional_capabilities_utils.h"
 #include "components/search_engines/keyword_table.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
-#include "components/search_engines/search_engines_switches.h"
+#include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
+#include "components/search_engines/template_url_prepopulate_data_resolver.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_client.h"
 #include "components/webdata/common/web_database_service.h"
@@ -22,7 +31,9 @@ void RegisterPrefsForTemplateURLService(
     user_prefs::PrefRegistrySyncable* registry) {
   TemplateURLService::RegisterProfilePrefs(registry);
   TemplateURLPrepopulateData::RegisterProfilePrefs(registry);
+  regional_capabilities::prefs::RegisterProfilePrefs(registry);
   DefaultSearchManager::RegisterProfilePrefs(registry);
+  search_engines::SearchEngineChoiceService::RegisterProfilePrefs(registry);
 }
 
 // -- TemplateURLServiceLoadWaiter --------------------------------------------
@@ -76,9 +87,23 @@ void TemplateURLServiceUnitTestBase::SetUp() {
       switches::kSearchEngineChoiceCountry,
       switches::kDefaultListCountryOverride);
 
+  regional_capabilities_service_ =
+      regional_capabilities::CreateServiceWithFakeClient(pref_service_);
+
+  prepopulate_data_resolver_ =
+      std::make_unique<TemplateURLPrepopulateData::Resolver>(
+          pref_service_, *regional_capabilities_service_.get());
+
+  management_service_ = std::make_unique<policy::ManagementService>(
+      std::vector<std::unique_ptr<policy::ManagementStatusProvider>>{});
+
   search_engine_choice_service_ =
       std::make_unique<search_engines::SearchEngineChoiceService>(
-          pref_service_, &local_state_, country_codes::kCountryIDUnknown);
+          std::make_unique<FakeSearchEngineChoiceServiceClient>(),
+          pref_service_, &local_state_, *regional_capabilities_service_,
+          *prepopulate_data_resolver_,
+          CHECK_DEREF(identity_test_env_.identity_manager()),
+          *management_service_);
 
   template_url_service_ = CreateService();
 }
@@ -87,19 +112,15 @@ std::unique_ptr<TemplateURLService>
 TemplateURLServiceUnitTestBase::CreateService() {
   return std::make_unique<TemplateURLService>(
       pref_service_, *search_engine_choice_service_,
-      std::make_unique<SearchTermsData>(), nullptr /* KeywordWebDataService */,
-      nullptr /* TemplateURLServiceClient */, base::RepeatingClosure()
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-                                                  ,
-      false
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  );
+      *prepopulate_data_resolver_.get(), std::make_unique<SearchTermsData>(),
+      nullptr /* KeywordWebDataService */,
+      nullptr /* TemplateURLServiceClient */, base::RepeatingClosure());
 }
 
 // -- LoadedTemplateURLServiceUnitTestBase ------------------------------------
 
-LoadedTemplateURLServiceUnitTestBase::LoadedTemplateURLServiceUnitTestBase() =
-    default;
+LoadedTemplateURLServiceUnitTestBase::LoadedTemplateURLServiceUnitTestBase()
+    : os_crypt_(os_crypt_async::GetTestOSCryptAsyncForTesting()) {}
 LoadedTemplateURLServiceUnitTestBase::~LoadedTemplateURLServiceUnitTestBase() =
     default;
 
@@ -115,7 +136,7 @@ LoadedTemplateURLServiceUnitTestBase::CreateService() {
       /*ui_task_runner=*/task_runner,
       /*db_task_runner=*/task_runner);
   database_->AddTable(std::make_unique<KeywordTable>());
-  database_->LoadDatabase();
+  database_->LoadDatabase(os_crypt_.get());
 
   keyword_data_service_ =
       base::MakeRefCounted<KeywordWebDataService>(database_, task_runner);
@@ -123,13 +144,9 @@ LoadedTemplateURLServiceUnitTestBase::CreateService() {
 
   auto template_url_service = std::make_unique<TemplateURLService>(
       pref_service(), search_engine_choice_service(),
-      std::make_unique<SearchTermsData>(), keyword_data_service_,
-      nullptr /* TemplateURLServiceClient */, base::RepeatingClosure()
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-                                                  ,
-      false
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  );
+      prepopulate_data_resolver(), std::make_unique<SearchTermsData>(),
+      keyword_data_service_, nullptr /* TemplateURLServiceClient */,
+      base::RepeatingClosure());
 
   return template_url_service;
 }
@@ -143,7 +160,7 @@ void LoadedTemplateURLServiceUnitTestBase::SetUp() {
   template_url_service_load_waiter_.WaitForLoadComplete(template_url_service());
 
   ASSERT_EQ(GetKeywordTemplateURLs().size(),
-            TemplateURLPrepopulateData::GetDefaultPrepopulatedEngines().size());
+            regional_capabilities::GetDefaultPrepopulatedEngines().size());
 }
 
 void LoadedTemplateURLServiceUnitTestBase::TearDown() {
@@ -159,11 +176,10 @@ TemplateURLService::TemplateURLVector
 LoadedTemplateURLServiceUnitTestBase::GetKeywordTemplateURLs() {
   TemplateURLService::TemplateURLVector turls =
       template_url_service().GetTemplateURLs();
-  turls.erase(base::ranges::remove_if(turls,
-                                      [](const TemplateURL* turl) {
-                                        return turl->starter_pack_id() != 0;
-                                      }),
-              turls.end());
+  auto to_remove = std::ranges::remove_if(turls, [](const TemplateURL* turl) {
+    return turl->starter_pack_id() != 0;
+  });
+  turls.erase(to_remove.begin(), to_remove.end());
   return turls;
 }
 

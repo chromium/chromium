@@ -40,7 +40,7 @@
     Check your microphone
   </message>
 
-  <message name="IDS_MEDIA_PREVIEW_SYSTEM_DEFAULT_MIC" desc="Text shown as a secondary label for the system default mic when shown in the device list (combobox menu)">
+  <message name="IDS_MEDIA_PREVIEW_SYSTEM_DEFAULT_MIC" desc="Text shown as a secondary label for the system default mic when shown in the device list (combobox menu)" meaning="default microphone">
     System default
   </message>
 

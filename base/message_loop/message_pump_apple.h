@@ -48,8 +48,8 @@
 #else
 #import <AppKit/AppKit.h>
 
-// Clients must subclass NSApplication and implement this protocol if they use
-// MessagePumpMac.
+// Clients must subclass NSApplication and implement this protocol if they want
+// message_pump_apple::Create() to return a MessagePumpCrApplication instance.
 @protocol CrAppProtocol
 // Must return true if -[NSApplication sendEvent:] is currently on the stack.
 // See the comment for |CreateAutoreleasePool()| in the cc file for why this is

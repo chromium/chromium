@@ -2,21 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "content/common/service_worker/race_network_request_write_buffer_manager.h"
 
 #include "base/containers/span.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
-#include "content/common/features.h"
 #include "content/common/service_worker/race_network_request_url_loader_client.h"
+#include "content/public/common/content_features.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
-#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/loading_params.h"
 
 namespace content {
 namespace {
@@ -56,8 +52,13 @@ uint32_t RaceNetworkRequestWriteBufferManager::GetDataPipeCapacityBytes() {
   // The feature param may override the buffer size.
   return base::GetFieldTrialParamByFeatureAsInt(
       features::kServiceWorkerAutoPreload, "data_pipe_capacity_num_bytes",
-      network::features::GetDataPipeDefaultAllocationSize(
-          network::features::DataPipeAllocationSize::kLargerSizeIfPossible));
+      network::GetDataPipeDefaultAllocationSize(
+          network::DataPipeAllocationSize::kLargerSizeIfPossible));
+}
+
+mojo::ScopedDataPipeProducerHandle
+RaceNetworkRequestWriteBufferManager::ReleaseProducerHandle() {
+  return std::move(producer_);
 }
 
 mojo::ScopedDataPipeConsumerHandle
@@ -136,9 +137,8 @@ size_t RaceNetworkRequestWriteBufferManager::CopyAndCompleteWriteDataWithSize(
   CHECK_GE(data_pipe_buffer_size_, num_bytes_to_consume);
   CHECK_GE(buffer_size(), num_bytes_to_consume);
   CHECK_GE(read_buffer.size(), num_bytes_to_consume);
-  base::as_writable_chars(buffer_)
-      .first(num_bytes_to_consume)
-      .copy_from(read_buffer.first(num_bytes_to_consume));
+  base::as_writable_chars(buffer_).copy_prefix_from(
+      read_buffer.first(num_bytes_to_consume));
   MojoResult result = EndWriteData(num_bytes_to_consume);
   CHECK_EQ(result, MOJO_RESULT_OK);
 

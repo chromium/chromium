@@ -8,14 +8,12 @@
 #include <memory>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/client/report_queue_provider.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/policy/messaging_layer/upload/upload_provider.h"
-#include "components/reporting/storage/storage_module_interface.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 namespace reporting {

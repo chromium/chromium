@@ -1,0 +1,39 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+source_set("features") {
+  public = [ "features.h" ]
+  sources = [ "features.cc" ]
+  public_deps = [ "//base" ]
+  deps = [ "//chrome/common:constants" ]
+}
+
+source_set("prefs") {
+  public = [ "prefs.h" ]
+  sources = [ "prefs.cc" ]
+  public_deps = [
+    ":features",
+    "//base",
+    "//components/prefs",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "features_unittest.cc",
+    "prefs_unittest.cc",
+  ]
+  deps = [
+    ":features",
+    ":prefs",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//testing/gtest",
+  ]
+}

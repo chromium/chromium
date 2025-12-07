@@ -27,40 +27,22 @@ class JniHdrMetadata {
 
   // Java HdrMetadata implementation.
 
-  jint Primaries(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
-  jint ColorTransfer(JNIEnv* env,
-                     const base::android::JavaParamRef<jobject>& obj);
-  jint Range(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  jint Primaries(JNIEnv* env);
+  jint ColorTransfer(JNIEnv* env);
+  jint Range(JNIEnv* env);
 
-  jfloat PrimaryRChromaticityX(JNIEnv* env,
-                               const base::android::JavaParamRef<jobject>& obj);
-  jfloat PrimaryRChromaticityY(JNIEnv* env,
-                               const base::android::JavaParamRef<jobject>& obj);
-  jfloat PrimaryGChromaticityX(JNIEnv* env,
-                               const base::android::JavaParamRef<jobject>& obj);
-  jfloat PrimaryGChromaticityY(JNIEnv* env,
-                               const base::android::JavaParamRef<jobject>& obj);
-  jfloat PrimaryBChromaticityX(JNIEnv* env,
-                               const base::android::JavaParamRef<jobject>& obj);
-  jfloat PrimaryBChromaticityY(JNIEnv* env,
-                               const base::android::JavaParamRef<jobject>& obj);
-  jfloat WhitePointChromaticityX(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
-  jfloat WhitePointChromaticityY(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
-  jfloat MaxColorVolumeLuminance(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
-  jfloat MinColorVolumeLuminance(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
-  jint MaxContentLuminance(JNIEnv* env,
-                           const base::android::JavaParamRef<jobject>& obj);
-  jint MaxFrameAverageLuminance(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  jfloat PrimaryRChromaticityX(JNIEnv* env);
+  jfloat PrimaryRChromaticityY(JNIEnv* env);
+  jfloat PrimaryGChromaticityX(JNIEnv* env);
+  jfloat PrimaryGChromaticityY(JNIEnv* env);
+  jfloat PrimaryBChromaticityX(JNIEnv* env);
+  jfloat PrimaryBChromaticityY(JNIEnv* env);
+  jfloat WhitePointChromaticityX(JNIEnv* env);
+  jfloat WhitePointChromaticityY(JNIEnv* env);
+  jfloat MaxColorVolumeLuminance(JNIEnv* env);
+  jfloat MinColorVolumeLuminance(JNIEnv* env);
+  jint MaxContentLuminance(JNIEnv* env);
+  jint MaxFrameAverageLuminance(JNIEnv* env);
 
  private:
   const raw_ref<const VideoColorSpace> color_space_;

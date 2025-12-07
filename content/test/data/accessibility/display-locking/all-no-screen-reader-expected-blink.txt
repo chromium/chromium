@@ -1,0 +1,16 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer ignored
+++++++++genericContainer
+++++++++++staticText name='spacer so that everything below will be offscreen (and won't get viewport-activated)'
+++++++++++++inlineTextBox name='spacer so that everything below will be offscreen (and won't get viewport-activated)'
+++++++++genericContainer offscreen
+++++++++staticText offscreen name='normal text 1'
+++++++++++inlineTextBox offscreen name='normal text 1'
+++++++++genericContainer offscreen
+++++++++staticText offscreen name='normal text 2'
+++++++++++inlineTextBox offscreen name='normal text 2'
+++++++++genericContainer offscreen
+++++++++staticText offscreen name='normal text 3'
+++++++++++inlineTextBox offscreen name='normal text 3'

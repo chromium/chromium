@@ -12,7 +12,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/AwPicture_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace android_webview {
 
@@ -26,17 +26,15 @@ void AwPicture::Destroy(JNIEnv* env) {
   delete this;
 }
 
-jint AwPicture::GetWidth(JNIEnv* env, const JavaParamRef<jobject>& obj) {
+jint AwPicture::GetWidth(JNIEnv* env) {
   return picture_->cullRect().roundOut().width();
 }
 
-jint AwPicture::GetHeight(JNIEnv* env, const JavaParamRef<jobject>& obj) {
+jint AwPicture::GetHeight(JNIEnv* env) {
   return picture_->cullRect().roundOut().height();
 }
 
-void AwPicture::Draw(JNIEnv* env,
-                     const JavaParamRef<jobject>& obj,
-                     const JavaParamRef<jobject>& canvas) {
+void AwPicture::Draw(JNIEnv* env, const JavaRef<jobject>& canvas) {
   const SkIRect bounds = picture_->cullRect().roundOut();
   if (bounds.isEmpty()) {
     return;
@@ -53,3 +51,5 @@ void AwPicture::Draw(JNIEnv* env,
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwPicture)

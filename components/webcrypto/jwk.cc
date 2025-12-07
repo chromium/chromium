@@ -208,12 +208,14 @@ Status JwkReader::Init(base::span<const uint8_t> bytes,
   {
     // Limit the visibility for |value| as it is moved to |dict_| (via
     // |dict_value|) once it has been loaded successfully.
-    std::optional<base::Value> dict = base::JSONReader::Read(json_string);
+    std::optional<base::Value::Dict> dict = base::JSONReader::ReadDict(
+        json_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
-    if (!dict.has_value() || !dict->is_dict())
+    if (!dict) {
       return Status::ErrorJwkNotDictionary();
+    }
 
-    dict_ = std::move(dict.value()).TakeDict();
+    dict_ = std::move(*dict);
   }
 
   // JWK "kty". Exit early if this required JWK parameter is missing.
@@ -400,8 +402,7 @@ void JwkWriter::SetBytes(std::string_view member_name,
 }
 
 void JwkWriter::ToJson(std::vector<uint8_t>* utf8_bytes) const {
-  std::string json;
-  base::JSONWriter::Write(dict_, &json);
+  std::string json = base::WriteJson(dict_).value_or("");
   utf8_bytes->assign(json.begin(), json.end());
 }
 

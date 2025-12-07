@@ -6,9 +6,6 @@
 
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
-#include "third_party/blink/renderer/core/layout/layout_ruby.h"
-#include "third_party/blink/renderer/core/layout/layout_ruby_column.h"
-#include "third_party/blink/renderer/core/layout/ruby_container.h"
 
 namespace blink {
 
@@ -25,11 +22,7 @@ void LayoutRubyAsBlock::AddChild(LayoutObject* child,
 
   LayoutObject* inline_ruby = FirstChild();
   if (!inline_ruby) {
-    if (RuntimeEnabledFeatures::RubyLineBreakableEnabled()) {
-      inline_ruby = MakeGarbageCollected<LayoutInline>(nullptr);
-    } else {
-      inline_ruby = MakeGarbageCollected<LayoutRuby>(nullptr);
-    }
+    inline_ruby = MakeGarbageCollected<LayoutInline>(nullptr);
     inline_ruby->SetDocumentForAnonymous(&GetDocument());
     ComputedStyleBuilder new_style_builder =
         GetDocument().GetStyleResolver().CreateAnonymousStyleBuilderWithDisplay(
@@ -43,10 +36,12 @@ void LayoutRubyAsBlock::AddChild(LayoutObject* child,
   inline_ruby->AddChild(child, before_child);
 }
 
-void LayoutRubyAsBlock::StyleDidChange(StyleDifference diff,
-                                       const ComputedStyle* old_style) {
+void LayoutRubyAsBlock::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutBlockFlow::StyleDidChange(diff, old_style);
+  LayoutBlockFlow::StyleDidChange(diff, old_style, style_change_context);
   PropagateStyleToAnonymousChildren();
 
   // Because LayoutInline::AnonymousHasStylePropagationOverride() returns
@@ -63,7 +58,7 @@ void LayoutRubyAsBlock::StyleDidChange(StyleDifference diff,
 
 void LayoutRubyAsBlock::RemoveLeftoverAnonymousBlock(LayoutBlock*) {
   NOT_DESTROYED();
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace blink

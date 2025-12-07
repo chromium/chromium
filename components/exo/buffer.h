@@ -10,9 +10,9 @@
 
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_map.h"
-#include "base/files/file_descriptor_watcher_posix.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/time/time.h"
 #include "components/exo/protected_native_pixmap_query_delegate.h"
 #include "components/viz/common/resources/transferable_resource.h"
@@ -23,7 +23,7 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_fence.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 
 namespace exo {
 
@@ -44,7 +44,7 @@ class Buffer {
   static std::unique_ptr<Buffer> CreateBufferFromGMBHandle(
       gfx::GpuMemoryBufferHandle buffer_handle,
       const gfx::Size& buffer_size,
-      gfx::BufferFormat buffer_format,
+      viz::SharedImageFormat format,
       gfx::BufferUsage buffer_usage,
       unsigned query_type,
       bool use_zero_copy,
@@ -53,7 +53,7 @@ class Buffer {
 
   static std::unique_ptr<Buffer> CreateBuffer(
       gfx::Size buffer_size,
-      gfx::BufferFormat buffer_format,
+      viz::SharedImageFormat format,
       gfx::BufferUsage buffer_usage,
       std::string_view debug_label,
       gpu::SurfaceHandle surface_handle,
@@ -78,14 +78,12 @@ class Buffer {
   // are no longer required.
   using PerCommitExplicitReleaseCallback =
       base::OnceCallback<void(gfx::GpuFenceHandle)>;
-  virtual bool ProduceTransferableResource(
+  virtual std::optional<viz::TransferableResource> ProduceTransferableResource(
       FrameSinkResourceManager* resource_manager,
       std::unique_ptr<gfx::GpuFence> acquire_fence,
       bool secure_output_only,
-      viz::TransferableResource* resource,
       gfx::ColorSpace color_space,
-      ProtectedNativePixmapQueryDelegate* protected_native_pixmap_query,
-      PerCommitExplicitReleaseCallback per_commit_explicit_release_callback);
+      ProtectedNativePixmapQueryDelegate* protected_native_pixmap_query);
 
   // This should be called when the buffer is attached to a Surface.
   void OnAttach();
@@ -97,7 +95,7 @@ class Buffer {
   virtual gfx::Size GetSize() const;
 
   // Returns the format of the buffer.
-  gfx::BufferFormat GetFormat() const;
+  viz::SharedImageFormat GetFormat() const;
 
   // Returns the |gpu_memory_buffer_| pointer to be used as id. It can also be
   // used as a bool to identify if |gpu_memory_buffer_| is null or not.
@@ -138,33 +136,13 @@ class Buffer {
   class Texture;
 
   Buffer(gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle,
-         gfx::BufferFormat buffer_format,
+         viz::SharedImageFormat buffer_format,
          gfx::Size size,
          gfx::BufferUsage buffer_usage,
          unsigned query_type,
          bool use_zero_copy,
          bool is_overlay_candidate,
          bool y_invert);
-
-  struct BufferRelease {
-    BufferRelease(
-        gfx::GpuFenceHandle release_fence,
-        std::unique_ptr<base::FileDescriptorWatcher::Controller> controller,
-        base::OnceClosure buffer_release_callback);
-    ~BufferRelease();
-
-    BufferRelease(const BufferRelease&) = delete;
-    BufferRelease& operator=(const BufferRelease&) = delete;
-
-    BufferRelease(BufferRelease&&);
-    BufferRelease& operator=(BufferRelease&&);
-
-    // |release_fence| must be kept above |controller| to keep the file
-    // descriptor valid during destruction.
-    gfx::GpuFenceHandle release_fence;
-    std::unique_ptr<base::FileDescriptorWatcher::Controller> controller;
-    base::OnceClosure buffer_release_callback;
-  };
 
 #if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
   // For ARC protected content support this tracks the state of the
@@ -179,26 +157,17 @@ class Buffer {
 
   // This is used by ProduceTransferableResource() to produce a release callback
   // that releases a texture so it can be destroyed or reused.
-  void ReleaseTexture(std::unique_ptr<Texture> texture,
-                      gfx::GpuFenceHandle release_fence);
+  void ReleaseTexture(std::unique_ptr<Texture> texture);
 
   // This is used by ProduceTransferableResource() to produce a release callback
   // that releases the buffer contents referenced by a texture before the
   // texture is destroyed or reused.
   void ReleaseContentsTexture(std::unique_ptr<Texture> texture,
-                              base::OnceClosure callback,
-                              uint64_t commit_id,
-                              gfx::GpuFenceHandle release_fence);
+                              base::OnceClosure callback);
 
   // Notifies the client that buffer has been released if no longer attached to
   // a surface.
   void ReleaseContents();
-
-  void MaybeRunPerCommitRelease(uint64_t commit_id,
-                                gfx::GpuFenceHandle release_fence,
-                                base::OnceClosure buffer_release_callback);
-
-  void FenceSignalled(uint64_t commit_id);
 
 #if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
   void OnIsProtectedNativePixmapHandle(bool is_protected);
@@ -207,7 +176,7 @@ class Buffer {
   // Contains the content of this buffer instead of |gpu_memory_buffer_| when
   // MappableSI is enabled.
   gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle_;
-  const gfx::BufferFormat buffer_format_;
+  const viz::SharedImageFormat format_;
   const gfx::Size size_;
   gfx::BufferUsage buffer_usage_;
 
@@ -244,20 +213,6 @@ class Buffer {
   // The amount of time to wait for buffer release.
   base::TimeDelta wait_for_release_delay_;
 
-  // Because viz can release buffers out of order, it's necessary to map
-  // releases to specific commits. Identify commits via a incrementing counter.
-  uint64_t next_commit_id_ = 0;
-
-  // Maps commit count to the callback to call when we receive a release from
-  // viz.
-  base::flat_map<uint64_t, PerCommitExplicitReleaseCallback>
-      pending_explicit_releases_;
-
-  // Maps commit count to information required to send regular buffer releases.
-  // Even if we send explicit synchronization release information, Wayland
-  // protocol requires us to send regular buffer release events.
-  base::flat_map<uint64_t, BufferRelease> buffer_releases_;
-
   bool legacy_release_skippable_ = false;
 
 #if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
@@ -276,14 +231,12 @@ class SolidColorBuffer : public Buffer {
 
   SkColor4f GetColor() const override;
   gfx::Size GetSize() const override;
-  bool ProduceTransferableResource(
+  std::optional<viz::TransferableResource> ProduceTransferableResource(
       FrameSinkResourceManager* resource_manager,
       std::unique_ptr<gfx::GpuFence> acquire_fence,
       bool secure_output_only,
-      viz::TransferableResource* resource,
       gfx::ColorSpace color_space,
-      ProtectedNativePixmapQueryDelegate* protected_native_pixmap_query,
-      PerCommitExplicitReleaseCallback per_commit_explicit_release_callback)
+      ProtectedNativePixmapQueryDelegate* protected_native_pixmap_query)
       override;
 
   base::WeakPtr<Buffer> AsWeakPtr() override;

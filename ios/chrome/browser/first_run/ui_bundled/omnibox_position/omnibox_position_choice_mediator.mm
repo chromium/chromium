@@ -4,12 +4,11 @@
 
 #import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/omnibox_position_choice_mediator.h"
 
+#import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/omnibox_position_choice_consumer.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/metrics.h"
-#import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/omnibox_position_choice_consumer.h"
-#import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/omnibox_position_choice_util.h"
 
 @interface OmniboxPositionChoiceMediator ()
 
@@ -18,48 +17,20 @@
 
 @end
 
-@implementation OmniboxPositionChoiceMediator {
-  /// Whether the screen is being shown in the FRE.
-  BOOL _isFirstRun;
-}
+@implementation OmniboxPositionChoiceMediator
 
-- (instancetype)initWithFirstRun:(BOOL)isFirstRun {
+- (instancetype)init {
   self = [super init];
   if (self) {
-    _selectedPosition = DefaultSelectedOmniboxPosition();
-    _isFirstRun = isFirstRun;
+    _selectedPosition = ToolbarType::kPrimary;
   }
   return self;
 }
 
 - (void)saveSelectedPosition {
   GetApplicationContext()->GetLocalState()->SetBoolean(
-      prefs::kBottomOmnibox, self.selectedPosition == ToolbarType::kSecondary);
-  RecordScreenEvent(OmniboxPositionChoiceScreenEvent::kPositionValidated,
-                    _isFirstRun);
-  RecordSelectedPosition(
-      self.selectedPosition,
-      self.selectedPosition == DefaultSelectedOmniboxPosition(), _isFirstRun,
-      self.deviceSwitcherResultDispatcher);
-}
-
-- (void)discardSelectedPosition {
-  CHECK(!_isFirstRun);  // Discard is not available on first run.
-  RecordScreenEvent(OmniboxPositionChoiceScreenEvent::kPositionDiscarded,
-                    _isFirstRun);
-}
-
-- (void)skipSelection {
-  CHECK(_isFirstRun);
-    const BOOL defaultPositionIsBottom =
-        DefaultSelectedOmniboxPosition() == ToolbarType::kSecondary;
-    PrefService* localState = GetApplicationContext()->GetLocalState();
-    localState->SetBoolean(prefs::kBottomOmniboxByDefault,
-                           defaultPositionIsBottom);
-    localState->SetDefaultPrefValue(prefs::kBottomOmnibox,
-                                    base::Value(defaultPositionIsBottom));
-    RecordScreenEvent(OmniboxPositionChoiceScreenEvent::kScreenSkipped,
-                      _isFirstRun);
+      omnibox::kIsOmniboxInBottomPosition,
+      self.selectedPosition == ToolbarType::kSecondary);
 }
 
 #pragma mark - Setters
@@ -78,14 +49,10 @@
 
 - (void)selectTopOmnibox {
   self.selectedPosition = ToolbarType::kPrimary;
-  RecordScreenEvent(OmniboxPositionChoiceScreenEvent::kTopOptionSelected,
-                    _isFirstRun);
 }
 
 - (void)selectBottomOmnibox {
   self.selectedPosition = ToolbarType::kSecondary;
-  RecordScreenEvent(OmniboxPositionChoiceScreenEvent::kBottomOptionSelected,
-                    _isFirstRun);
 }
 
 @end

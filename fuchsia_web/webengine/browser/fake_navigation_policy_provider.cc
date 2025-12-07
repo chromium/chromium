@@ -4,7 +4,7 @@
 
 #include "fuchsia_web/webengine/browser/fake_navigation_policy_provider.h"
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 FakeNavigationPolicyProvider::FakeNavigationPolicyProvider() = default;

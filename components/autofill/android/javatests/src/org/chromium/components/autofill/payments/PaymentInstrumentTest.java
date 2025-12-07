@@ -26,6 +26,7 @@ public class PaymentInstrumentTest {
                         .setNickname("nickname")
                         .setDisplayIconUrl(new GURL("http://www.example.com"))
                         .setSupportedPaymentRails(new int[] {1})
+                        .setIsFidoEnrolled(true)
                         .build();
 
         assertThat(paymentInstrument.getInstrumentId()).isEqualTo(100);
@@ -33,6 +34,7 @@ public class PaymentInstrumentTest {
         assertThat(paymentInstrument.getDisplayIconUrl())
                 .isEqualTo(new GURL("http://www.example.com"));
         assertThat(paymentInstrument.isSupported(1)).isTrue();
+        assertThat(paymentInstrument.getIsFidoEnrolled()).isTrue();
     }
 
     @Test
@@ -45,6 +47,7 @@ public class PaymentInstrumentTest {
                                         .setNickname("nickname")
                                         .setDisplayIconUrl(new GURL("http://www.example.com"))
                                         .setSupportedPaymentRails(new int[] {1})
+                                        .setIsFidoEnrolled(true)
                                         .build());
 
         assertThat(error.getMessage())
@@ -61,6 +64,7 @@ public class PaymentInstrumentTest {
                                         .setInstrumentId(100)
                                         .setNickname("nickname")
                                         .setDisplayIconUrl(new GURL("http://www.example.com"))
+                                        .setIsFidoEnrolled(true)
                                         .build());
 
         assertThat(error.getMessage())
@@ -78,6 +82,7 @@ public class PaymentInstrumentTest {
                                         .setNickname("nickname")
                                         .setDisplayIconUrl(new GURL("http://www.example.com"))
                                         .setSupportedPaymentRails(new int[] {})
+                                        .setIsFidoEnrolled(true)
                                         .build());
 
         assertThat(error.getMessage())
@@ -92,6 +97,7 @@ public class PaymentInstrumentTest {
                         .setNickname("nickname")
                         .setDisplayIconUrl(new GURL("http://www.example.com"))
                         .setSupportedPaymentRails(new int[] {1})
+                        .setIsFidoEnrolled(true)
                         .build();
 
         assertThat(paymentInstrument.isSupported(1)).isTrue();
@@ -106,6 +112,7 @@ public class PaymentInstrumentTest {
                         .setNickname("nickname")
                         .setDisplayIconUrl(new GURL("http://www.example.com"))
                         .setSupportedPaymentRails(new int[] {1})
+                        .setIsFidoEnrolled(true)
                         .build();
         PaymentInstrument paymentInstrument2 =
                 new PaymentInstrument.Builder()
@@ -113,6 +120,7 @@ public class PaymentInstrumentTest {
                         .setNickname("nickname")
                         .setDisplayIconUrl(new GURL("http://www.example.com"))
                         .setSupportedPaymentRails(new int[] {1})
+                        .setIsFidoEnrolled(true)
                         .build();
 
         assertThat(paymentInstrument1.equals(paymentInstrument2)).isFalse();
@@ -126,6 +134,7 @@ public class PaymentInstrumentTest {
                         .setNickname("nickname1")
                         .setDisplayIconUrl(new GURL("http://www.example.com"))
                         .setSupportedPaymentRails(new int[] {1})
+                        .setIsFidoEnrolled(true)
                         .build();
         PaymentInstrument paymentInstrument2 =
                 new PaymentInstrument.Builder()
@@ -133,6 +142,7 @@ public class PaymentInstrumentTest {
                         .setNickname("nickname2")
                         .setDisplayIconUrl(new GURL("http://www.example.com"))
                         .setSupportedPaymentRails(new int[] {1})
+                        .setIsFidoEnrolled(true)
                         .build();
 
         assertThat(paymentInstrument1.equals(paymentInstrument2)).isFalse();
@@ -146,6 +156,7 @@ public class PaymentInstrumentTest {
                         .setNickname("nickname")
                         .setDisplayIconUrl(new GURL("http://www.example1.com"))
                         .setSupportedPaymentRails(new int[] {1})
+                        .setIsFidoEnrolled(true)
                         .build();
         PaymentInstrument paymentInstrument2 =
                 new PaymentInstrument.Builder()
@@ -153,6 +164,7 @@ public class PaymentInstrumentTest {
                         .setNickname("nickname")
                         .setDisplayIconUrl(new GURL("http://www.example2.com"))
                         .setSupportedPaymentRails(new int[] {1})
+                        .setIsFidoEnrolled(true)
                         .build();
 
         assertThat(paymentInstrument1.equals(paymentInstrument2)).isFalse();
@@ -166,6 +178,7 @@ public class PaymentInstrumentTest {
                         .setNickname("nickname")
                         .setDisplayIconUrl(new GURL("http://www.example.com"))
                         .setSupportedPaymentRails(new int[] {2})
+                        .setIsFidoEnrolled(true)
                         .build();
         PaymentInstrument paymentInstrument2 =
                 new PaymentInstrument.Builder()
@@ -173,6 +186,29 @@ public class PaymentInstrumentTest {
                         .setNickname("nickname")
                         .setDisplayIconUrl(new GURL("http://www.example.com"))
                         .setSupportedPaymentRails(new int[] {1})
+                        .setIsFidoEnrolled(true)
+                        .build();
+
+        assertThat(paymentInstrument1.equals(paymentInstrument2)).isFalse();
+    }
+
+    @Test
+    public void testEquals_differentIsFidoEnrolled_returnsFalse() {
+        PaymentInstrument paymentInstrument1 =
+                new PaymentInstrument.Builder()
+                        .setInstrumentId(100)
+                        .setNickname("nickname")
+                        .setDisplayIconUrl(new GURL("http://www.example.com"))
+                        .setSupportedPaymentRails(new int[] {1})
+                        .setIsFidoEnrolled(true)
+                        .build();
+        PaymentInstrument paymentInstrument2 =
+                new PaymentInstrument.Builder()
+                        .setInstrumentId(100)
+                        .setNickname("nickname")
+                        .setDisplayIconUrl(new GURL("http://www.example.com"))
+                        .setSupportedPaymentRails(new int[] {1})
+                        .setIsFidoEnrolled(false)
                         .build();
 
         assertThat(paymentInstrument1.equals(paymentInstrument2)).isFalse();
@@ -186,6 +222,7 @@ public class PaymentInstrumentTest {
                         .setNickname("nickname")
                         .setDisplayIconUrl(new GURL("http://www.example.com"))
                         .setSupportedPaymentRails(new int[] {1})
+                        .setIsFidoEnrolled(true)
                         .build();
         PaymentInstrument paymentInstrument2 =
                 new PaymentInstrument.Builder()
@@ -193,6 +230,7 @@ public class PaymentInstrumentTest {
                         .setNickname("nickname")
                         .setDisplayIconUrl(new GURL("http://www.example.com"))
                         .setSupportedPaymentRails(new int[] {1})
+                        .setIsFidoEnrolled(true)
                         .build();
 
         assertThat(paymentInstrument1.equals(paymentInstrument2)).isTrue();
@@ -206,6 +244,7 @@ public class PaymentInstrumentTest {
                         .setNickname("nickname")
                         .setDisplayIconUrl(new GURL("http://www.example.com"))
                         .setSupportedPaymentRails(new int[] {1})
+                        .setIsFidoEnrolled(true)
                         .build();
 
         assertThat(paymentInstrument.equals(null)).isFalse();
@@ -219,6 +258,7 @@ public class PaymentInstrumentTest {
                         .setNickname("nickname")
                         .setDisplayIconUrl(new GURL("http://www.example.com"))
                         .setSupportedPaymentRails(new int[] {1})
+                        .setIsFidoEnrolled(true)
                         .build();
 
         // Create an object which is not a BankAccount.

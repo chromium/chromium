@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ios/chrome/browser/safe_mode/model/safe_mode_util.h"
+
 #include <mach-o/dyld.h>
 #include <stddef.h>
 #include <string.h>
 
 #include "base/files/file_path.h"
 #include "base/strings/string_util.h"
-#include "ios/chrome/browser/safe_mode/model/safe_mode_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -20,7 +21,7 @@ namespace {
 typedef PlatformTest SafeModeUtilTest;
 
 TEST_F(SafeModeUtilTest, GetAllImages) {
-  vector<string> images = safe_mode_util::GetLoadedImages(nullptr);
+  vector<string> images = safe_mode_util::GetLoadedImages({});
   // There should be loaded images.
   EXPECT_GT(images.size(), 0U);
 
@@ -40,7 +41,7 @@ TEST_F(SafeModeUtilTest, GetAllImages) {
 
 // Tests that safe_mode_util::GetLoadedImages filters by path.
 TEST_F(SafeModeUtilTest, GetSomeImages) {
-  vector<string> all_images = safe_mode_util::GetLoadedImages(nullptr);
+  vector<string> all_images = safe_mode_util::GetLoadedImages({});
   ASSERT_GT(all_images.size(), 0U);
 
   // Use the path of the first item to test filtering.

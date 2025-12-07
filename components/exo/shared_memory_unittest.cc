@@ -8,8 +8,9 @@
 
 #include "components/exo/buffer.h"
 #include "components/exo/test/exo_test_base.h"
+#include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/buffer_format_util.h"
 
 namespace exo {
 namespace {
@@ -25,33 +26,42 @@ std::unique_ptr<SharedMemory> CreateSharedMemory(size_t size) {
 
 TEST_F(SharedMemoryTest, CreateBuffer) {
   const gfx::Size buffer_size(256, 256);
-  const gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888;
+  const auto format = viz::SinglePlaneFormat::kRGBA_8888;
 
-  std::unique_ptr<SharedMemory> shared_memory =
-      CreateSharedMemory(gfx::BufferSizeForBufferFormat(buffer_size, format));
+  std::unique_ptr<SharedMemory> shared_memory = CreateSharedMemory(
+      viz::SharedMemorySizeForSharedImageFormat(format, buffer_size).value());
   ASSERT_TRUE(shared_memory);
 
   // Creating a full size buffer should succeed.
-  std::unique_ptr<Buffer> buffer = shared_memory->CreateBuffer(
-      buffer_size, format, 0,
-      gfx::RowSizeForBufferFormat(buffer_size.width(), format, 0));
+  uint32_t bytes_per_row = viz::SharedMemoryRowSizeForSharedImageFormat(
+                               format, 0, buffer_size.width())
+                               .value();
+  std::unique_ptr<Buffer> buffer =
+      shared_memory->CreateBuffer(buffer_size, format, 0, bytes_per_row);
   EXPECT_TRUE(buffer);
 
   // Creating a buffer for the top-left rectangle should succeed.
   const gfx::Size top_left_buffer_size(128, 128);
+  uint32_t top_left_buffer_size_width =
+      viz::SharedMemoryRowSizeForSharedImageFormat(format, 0,
+                                                   top_left_buffer_size.width())
+          .value();
   std::unique_ptr<Buffer> top_left_buffer = shared_memory->CreateBuffer(
-      top_left_buffer_size, format, 0,
-      gfx::RowSizeForBufferFormat(top_left_buffer_size.width(), format, 0));
+      top_left_buffer_size, format, 0, top_left_buffer_size_width);
   EXPECT_TRUE(top_left_buffer);
 
   // Creating a buffer for the bottom-right rectangle should succeed.
   const gfx::Size bottom_right_buffer_size(64, 64);
+  uint32_t bottom_right_buffer_size_width =
+      viz::SharedMemoryRowSizeForSharedImageFormat(
+          format, 0, bottom_right_buffer_size.width())
+          .value();
   std::unique_ptr<Buffer> bottom_right_buffer = shared_memory->CreateBuffer(
       bottom_right_buffer_size, format,
       (buffer_size.height() - bottom_right_buffer_size.height()) *
-              gfx::RowSizeForBufferFormat(buffer_size.width(), format, 0) +
+              bytes_per_row +
           (buffer_size.width() - bottom_right_buffer_size.width()) * 4,
-      gfx::RowSizeForBufferFormat(bottom_right_buffer_size.width(), format, 0));
+      bottom_right_buffer_size_width);
   EXPECT_TRUE(bottom_right_buffer);
 }
 

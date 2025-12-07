@@ -1,0 +1,45 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module omnibox_popup_aim.mojom;
+
+import "components/omnibox/browser/searchbox.mojom";
+import "mojo/public/mojom/base/work_in_progress.mojom";
+import "url/mojom/url.mojom";
+
+// The browser-side handler for the Omnibox AIM Popup.
+interface PageHandlerFactory {
+  // Creates and binds a new PageHandler to handle calls from the WebUI page.
+  CreatePageHandler(
+      pending_remote<Page> page, pending_receiver<PageHandler> handler);
+};
+
+// The browser-side handler for the Omnibox AIM Popup.
+interface PageHandler {
+  // Notifies the handler to close the popup, note that not every close action
+  // goes through this path as C++/Views code is responsible for presentation.
+  RequestClose();
+
+  // Called to open URLs in AIM such as the suggestion activity link.
+  NavigateCurrentTab(url.mojom.Url url);
+};
+
+// The WebUI page for the Omnibox AIM Popup.
+interface Page {
+  // The AI Mode popup is always rendered and hidden/shown by the
+  // `OmniboxPopupPresenter`. This means that we can't rely on standard
+  // visibility events to know when the popup is shown/hidden. The following
+  // methods are used to fill in the gap.
+
+  // Called when the widget in which the AIM popup view is embedded in appears.
+  // `context` is the searchbox context that should be set on the composebox.
+  OnWidgetShown(searchbox.mojom.SearchContextStub context);
+
+  // Called when searchbox context is added outside of a OnShow call.
+  AddContext(searchbox.mojom.SearchContextStub context);
+
+  // Called when the widget in which the AIM popup view is embedded in closes.
+  // The page is expected to return the input text via the callback.
+  OnWidgetClosed() => (string input);
+};

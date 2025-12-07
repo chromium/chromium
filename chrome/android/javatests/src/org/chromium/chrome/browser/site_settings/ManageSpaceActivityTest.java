@@ -36,8 +36,9 @@ import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.concurrent.TimeoutException;
@@ -45,9 +46,11 @@ import java.util.concurrent.TimeoutException;
 /** Tests for ManageSpaceActivity. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
 public class ManageSpaceActivityTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private EmbeddedTestServer mTestServer;
 
@@ -96,7 +99,7 @@ public class ManageSpaceActivityTest {
     @Test
     @SmallTest
     public void testLaunchActivity() {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         startManageSpaceActivity().finish();
     }
 
@@ -105,7 +108,7 @@ public class ManageSpaceActivityTest {
     @Feature({"SiteEngagement"})
     @EnableFeatures(ChromeFeatureList.BROWSING_DATA_MODEL)
     public void testClearUnimportantOnlyWithBDM() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         shouldClearUnimportantDomainDataOnly();
     }
 
@@ -114,7 +117,7 @@ public class ManageSpaceActivityTest {
     @Feature({"SiteEngagement"})
     @DisableFeatures(ChromeFeatureList.BROWSING_DATA_MODEL)
     public void testClearUnimportantOnlyWithoutBDM() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         shouldClearUnimportantDomainDataOnly();
     }
 
@@ -174,7 +177,7 @@ public class ManageSpaceActivityTest {
     @MediumTest
     @Feature({"SiteEngagement"})
     public void testManageSiteStorage() {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         ManageSpaceActivity manageSpaceActivity = startManageSpaceActivity();
         waitForClearButtonEnabled(manageSpaceActivity);
         onView(withId(R.id.manage_site_data_storage)).perform(click());

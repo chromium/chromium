@@ -10,6 +10,7 @@
 #include <cmath>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -21,6 +22,7 @@
 #include "chromecast/media/cma/backend/mixer/filter_group.h"
 #include "chromecast/media/cma/backend/mixer/post_processing_pipeline.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_sample_types.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/multi_channel_resampler.h"
 
@@ -32,6 +34,7 @@ namespace {
 const int64_t kMicrosecondsPerSecond = 1000 * 1000;
 const int kDefaultSlewTimeMs = 50;
 const int kDefaultFillBufferFrames = 2048;
+constexpr int kMaxChannels = 32;
 
 int RoundUpMultiple(int value, int multiple) {
   return multiple * ((value + (multiple - 1)) / multiple);
@@ -208,10 +211,7 @@ void MixerInput::RemoveAudioOutputRedirector(
                   << ")";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(redirector);
-  audio_output_redirectors_.erase(
-      std::remove(audio_output_redirectors_.begin(),
-                  audio_output_redirectors_.end(), redirector),
-      audio_output_redirectors_.end());
+  std::erase(audio_output_redirectors_, redirector);
 }
 
 bool MixerInput::Render(
@@ -274,7 +274,8 @@ void MixerInput::RenderInterleaved(int num_output_frames) {
     // Keep only the samples from the selected channel.
     float* dest = interleaved_.data();
     for (int f = 0; f < num_output_frames; ++f) {
-      dest[f] = data[f * num_channels_ + playout_channel_];
+      UNSAFE_TODO(dest[f]) =
+          UNSAFE_TODO(data[f * num_channels_ + playout_channel_]);
     }
     data = dest;
   }
@@ -308,9 +309,10 @@ int MixerInput::FillAudioData(int num_frames,
     redirected = true;
   }
 
-  float* channels[num_channels_];
+  CHECK_LE(num_channels_, kMaxChannels);
+  float* channels[kMaxChannels];
   for (int c = 0; c < num_channels_; ++c) {
-    channels[c] = dest->channel(c);
+    UNSAFE_TODO(channels[c]) = dest->channel_span(c).data();
   }
   if (first_buffer_ && redirected) {
     // If the first buffer is redirected, don't provide any data to the mixer

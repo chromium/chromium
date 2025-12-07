@@ -4,12 +4,11 @@
 
 package org.chromium.chrome.browser.hub;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
-import java.util.LinkedList;
-import java.util.Optional;
+import java.util.ArrayDeque;
 import java.util.Queue;
 
 /**
@@ -17,6 +16,7 @@ import java.util.Queue;
  * minimize jank if notifying of a {@link LoadHint} results in significant work for a Pane. This
  * class should only be interacted with on the UI thread.
  */
+@NullMarked
 public class PaneTransitionHelper {
     /** Information about a transition. */
     private static class TransitionData {
@@ -36,7 +36,7 @@ public class PaneTransitionHelper {
         public final @LoadHint int loadHint;
     }
 
-    private final Queue<TransitionData> mTransitions = new LinkedList<>();
+    private final Queue<TransitionData> mTransitions = new ArrayDeque<>();
     private final PaneLookup mPaneLookup;
 
     private boolean mIsRunning;
@@ -45,7 +45,7 @@ public class PaneTransitionHelper {
     /**
      * @param paneLookup The {@link PaneLookup} to operate on.
      */
-    public PaneTransitionHelper(@NonNull PaneLookup paneLookup) {
+    public PaneTransitionHelper(PaneLookup paneLookup) {
         ThreadUtils.assertOnUiThread();
         mPaneLookup = paneLookup;
     }
@@ -78,11 +78,11 @@ public class PaneTransitionHelper {
      */
     public void queueTransition(@PaneId int paneId, @LoadHint int loadHint) {
         ThreadUtils.assertOnUiThread();
-        Optional<TransitionData> transition = findTransitionForPaneId(paneId);
-        if (transition.isPresent()) {
-            if (transition.get().loadHint == loadHint) return;
+        TransitionData transition = findTransitionForPaneId(paneId);
+        if (transition != null) {
+            if (transition.loadHint == loadHint) return;
 
-            mTransitions.remove(transition.get());
+            mTransitions.remove(transition);
         }
 
         mTransitions.add(new TransitionData(paneId, loadHint));
@@ -100,14 +100,19 @@ public class PaneTransitionHelper {
      */
     public void removeTransition(@PaneId int paneId) {
         ThreadUtils.assertOnUiThread();
-        Optional<TransitionData> transition = findTransitionForPaneId(paneId);
-        if (transition.isPresent()) {
-            mTransitions.remove(transition.get());
+        TransitionData transition = findTransitionForPaneId(paneId);
+        if (transition != null) {
+            mTransitions.remove(transition);
         }
     }
 
-    private Optional<TransitionData> findTransitionForPaneId(@PaneId int paneId) {
-        return mTransitions.stream().filter(data -> data.paneId == paneId).findFirst();
+    private @Nullable TransitionData findTransitionForPaneId(@PaneId int paneId) {
+        for (TransitionData data : mTransitions) {
+            if (data.paneId == paneId) {
+                return data;
+            }
+        }
+        return null;
     }
 
     private void processNextTransition() {

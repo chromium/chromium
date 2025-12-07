@@ -10,6 +10,8 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -18,8 +20,8 @@
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
@@ -31,6 +33,7 @@
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -47,6 +50,7 @@
 #include "components/site_engagement/content/site_engagement_score.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/persistent_notification_status.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/base/filename_util.h"
@@ -72,9 +76,14 @@ constexpr int kIconHeight = 100;
 constexpr int kNotificationVibrationPattern[] = {100, 200, 300};
 constexpr double kNotificationTimestamp = 621046800000.;
 
-const char kTestFileName[] = "notifications/platform_notification_service.html";
-const char kTestNotificationOrigin[] = "https://example.com/";
-const char kTestNotificationId[] = "random#notification-id";
+constexpr const char kTestFileName[] =
+    "notifications/platform_notification_service.html";
+constexpr const char kTestNotificationOrigin[] = "https://example.com/";
+constexpr const char kTestNotificationId[] = "random#notification-id";
+
+#if BUILDFLAG(ENABLE_BACKGROUND_MODE)
+constexpr const char kTestNotificationTitle[] = "fake_notification_title";
+#endif
 
 }  // namespace
 
@@ -190,6 +199,40 @@ class PlatformNotificationServiceBrowserTest : public InProcessBrowserTest {
     return browser->tab_strip_model()->GetActiveWebContents();
   }
 
+  // Show a notification that sets `close_event_timeout` milliseconds in the
+  // notification options data.
+  void DisplayNotificationWithCloseEventTimeout(
+      std::string notification_title,
+      base::TimeDelta close_event_timeout,
+      std::unique_ptr<message_center::Notification>* displayed_notification) {
+    size_t notification_count_before_display =
+        GetDisplayedNotifications(true /* is_persistent */).size();
+
+    std::string display_notification_script = base::StringPrintf(
+        "DisplayPersistentNotification('%s', {data: { close_event_timeout: "
+        "%d}})",
+        notification_title, close_event_timeout.InMilliseconds());
+    EXPECT_EQ("ok", RunScript(display_notification_script));
+
+    std::vector<message_center::Notification> notifications =
+        GetDisplayedNotifications(true /* is_persistent */);
+    ASSERT_EQ(notifications.size(), notification_count_before_display + 1u);
+
+    *displayed_notification =
+        std::make_unique<message_center::Notification>(notifications.back());
+  }
+
+  // Waits for a message from the 'notificationclose' event handler.
+  void WaitForNotificationCloseEvent(std::string expected_notification_title) {
+    std::string actual_message_from_worker =
+        RunScript("GetMessageFromWorker()").ExtractString();
+
+    std::string expected_message_from_worker = base::StringPrintf(
+        "closing notification: %s", expected_notification_title);
+
+    EXPECT_EQ(actual_message_from_worker, expected_message_from_worker);
+  }
+
   const base::FilePath server_root_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
   base::HistogramTester histogram_tester_;
@@ -245,6 +288,11 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
   histogram_tester_.ExpectUniqueSample(
       "Notifications.PersistentWebNotificationClickResult",
       0 /* SERVICE_WORKER_OK */, 1);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Notifications.Engagement.Displayed.Volume0", 1, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Notifications.Engagement.Clicked.Volume0", 1, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
@@ -434,7 +482,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
 }
 
 // Chrome OS shows the notification settings inline.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
                        WebNotificationSiteSettingsButton) {
   GrantNotificationPermissionForTest();
@@ -463,7 +511,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
   // We see some timeouts in dbg tests, so increase the wait timeout to the
   // test launcher's timeout.
   const base::test::ScopedRunLoopTimeout specific_timeout(
-          FROM_HERE, TestTimeouts::test_launcher_timeout());
+      FROM_HERE, TestTimeouts::test_launcher_timeout());
   ASSERT_TRUE(content::WaitForLoadStop(web_contents));
 
   // No engagement should be granted for clicking on the settings link.
@@ -489,7 +537,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
   EXPECT_EQ("Contents", base::UTF16ToUTF8(notification.message()));
 
   EXPECT_THAT(notification.vibration_pattern(),
-      testing::ElementsAreArray(kNotificationVibrationPattern));
+              testing::ElementsAreArray(kNotificationVibrationPattern));
 }
 
 IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
@@ -875,8 +923,7 @@ IN_PROC_BROWSER_TEST_F(
 #if !BUILDFLAG(IS_MAC)
 
 // TODO(crbug.com/40132496) Test is flaky on Linux TSan.
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
-    defined(THREAD_SANITIZER)
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_TestShouldDisplayFullscreen DISABLED_TestShouldDisplayFullscreen
 #else
 #define MAYBE_TestShouldDisplayFullscreen TestShouldDisplayFullscreen
@@ -920,9 +967,15 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
   // Set the other browser fullscreen
   ui_test_utils::ToggleFullscreenModeAndWait(other_browser);
 
-  ASSERT_TRUE(browser()->exclusive_access_manager()->context()->IsFullscreen());
-  ASSERT_TRUE(
-      other_browser->exclusive_access_manager()->context()->IsFullscreen());
+  ASSERT_TRUE(browser()
+                  ->GetFeatures()
+                  .exclusive_access_manager()
+                  ->context()
+                  ->IsFullscreen());
+  ASSERT_TRUE(other_browser->GetFeatures()
+                  .exclusive_access_manager()
+                  ->context()
+                  ->IsFullscreen());
 
   ui_test_utils::BrowserActivationWaiter(other_browser).WaitForActivation();
   ASSERT_FALSE(browser()->window()->IsActive());
@@ -1010,55 +1063,302 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
   ASSERT_FALSE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
       KeepAliveOrigin::PENDING_NOTIFICATION_CLOSE_EVENT));
 }
+
+// TODO(crbug.com/430163317): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CloseBrowserDuringNotificationCloseEvent \
+  DISABLED_CloseBrowserDuringNotificationCloseEvent
+#else
+#define MAYBE_CloseBrowserDuringNotificationCloseEvent \
+  CloseBrowserDuringNotificationCloseEvent
+#endif
+IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
+                       MAYBE_CloseBrowserDuringNotificationCloseEvent) {
+  RequestAndAcceptPermission();
+
+  // Show a notification with a close event that will take 3 seconds to
+  // complete.
+  std::unique_ptr<message_center::Notification> notification;
+  ASSERT_NO_FATAL_FAILURE(DisplayNotificationWithCloseEventTimeout(
+      kTestNotificationTitle, /*close_event_timeout=*/base::Seconds(3),
+      &notification));
+
+  // Verify initial state with no in progress close events.
+  EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::PENDING_NOTIFICATION_CLOSE_EVENT));
+
+  histogram_tester_.ExpectTotalCount(
+      "Notifications.PersistentWebNotificationCloseResult", 0);
+
+  // Close the notification.
+  NotificationDisplayServiceImpl* display_service =
+      NotificationDisplayServiceImpl::GetForProfile(browser()->profile());
+  NotificationHandler* handler = display_service->GetNotificationHandler(
+      NotificationHandler::Type::WEB_PERSISTENT);
+  ASSERT_TRUE(handler);
+
+  base::RunLoop close_event_run_loop;
+  handler->OnClose(browser()->profile(), notification->origin_url(),
+                   notification->id(), /*by_user=*/true,
+                   close_event_run_loop.QuitClosure());
+
+  EXPECT_TRUE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::PENDING_NOTIFICATION_CLOSE_EVENT));
+
+  // Wait for the service worker to run the 'notificationclose' event.
+  WaitForNotificationCloseEvent(/*expected_title=*/kTestNotificationTitle);
+  EXPECT_TRUE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::PENDING_NOTIFICATION_CLOSE_EVENT));
+
+  // Close the browser before the 'notificationclose' event completes.
+  CloseBrowserSynchronously(browser());
+
+  // Wait for the 'notificationclose' event to complete.
+  close_event_run_loop.Run();
+  EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::PENDING_NOTIFICATION_CLOSE_EVENT));
+
+  histogram_tester_.ExpectUniqueSample(
+      "Notifications.PersistentWebNotificationCloseResult",
+      content::PersistentNotificationStatus::kSuccess, 1);
+}
+
+// TODO(crbug.com/430163317): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_NotificationCloseEventAfterBrowserClosed \
+  DISABLED_NotificationCloseEventAfterBrowserClosed
+#else
+#define MAYBE_NotificationCloseEventAfterBrowserClosed \
+  NotificationCloseEventAfterBrowserClosed
+#endif
+IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
+                       MAYBE_NotificationCloseEventAfterBrowserClosed) {
+  RequestAndAcceptPermission();
+
+  // Show two notifications.  The first one will have a close event that takes 3
+  // seconds to complete.  The second one will have a close event that completes
+  // immediately.
+  std::unique_ptr<message_center::Notification> first_notification;
+  ASSERT_NO_FATAL_FAILURE(DisplayNotificationWithCloseEventTimeout(
+      kTestNotificationTitle, /*close_event_timeout=*/base::Seconds(3),
+      &first_notification));
+
+  std::unique_ptr<message_center::Notification> second_notification;
+  ASSERT_NO_FATAL_FAILURE(DisplayNotificationWithCloseEventTimeout(
+      "fake_title_2", /*close_event_timeout=*/base::Seconds(0),
+      &second_notification));
+
+  // Verify initial state with no in progress close events.
+  EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::PENDING_NOTIFICATION_CLOSE_EVENT));
+
+  histogram_tester_.ExpectTotalCount(
+      "Notifications.PersistentWebNotificationCloseResult", 0);
+
+  // Close the first notification.
+  NotificationDisplayServiceImpl* display_service =
+      NotificationDisplayServiceImpl::GetForProfile(browser()->profile());
+  NotificationHandler* handler = display_service->GetNotificationHandler(
+      NotificationHandler::Type::WEB_PERSISTENT);
+  ASSERT_TRUE(handler);
+
+  base::RunLoop first_close_event_run_loop;
+  handler->OnClose(browser()->profile(), first_notification->origin_url(),
+                   first_notification->id(), /*by_user=*/true,
+                   first_close_event_run_loop.QuitClosure());
+  EXPECT_TRUE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::PENDING_NOTIFICATION_CLOSE_EVENT));
+
+  // Wait for the service worker to run the 'notificationclose' event for the
+  // first notification.
+  WaitForNotificationCloseEvent(/*expected_title=*/kTestNotificationTitle);
+  EXPECT_TRUE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::PENDING_NOTIFICATION_CLOSE_EVENT));
+
+  // Close the browser before the first 'notificationclose' event completes.
+  Profile* profile = browser()->profile();
+  CloseBrowserSynchronously(browser());
+
+  // Close the second notification.
+  base::RunLoop second_close_event_run_loop;
+  handler->OnClose(profile, second_notification->origin_url(),
+                   second_notification->id(), /*by_user=*/true,
+                   second_close_event_run_loop.QuitClosure());
+
+  // Wait for both 'notificationclose' events to complete.
+  first_close_event_run_loop.Run();
+  second_close_event_run_loop.Run();
+
+  EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::PENDING_NOTIFICATION_CLOSE_EVENT));
+
+  histogram_tester_.ExpectUniqueSample(
+      "Notifications.PersistentWebNotificationCloseResult",
+      content::PersistentNotificationStatus::kSuccess, 2);
+}
+
+IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
+                       NotificationCloseEventAfterShutdownStarting) {
+  base::HistogramTester histogram_tester_;
+  RequestAndAcceptPermission();
+
+  // Show a notification with a close event that will timeout unless canceled.
+  std::unique_ptr<message_center::Notification> notification;
+  ASSERT_NO_FATAL_FAILURE(DisplayNotificationWithCloseEventTimeout(
+      kTestNotificationTitle, /*close_event_timeout=*/base::Days(1),
+      &notification));
+
+  // Verify initial state with no in progress close events.
+  ASSERT_FALSE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::PENDING_NOTIFICATION_CLOSE_EVENT));
+
+  histogram_tester_.ExpectTotalCount(
+      "Notifications.PersistentWebNotificationCloseResult", 0);
+
+  // Simulate browser shutdown.
+  browser_shutdown::OnShutdownStarting(
+      browser_shutdown::ShutdownType::kEndSession);
+
+  // Close the notification.
+  NotificationDisplayServiceImpl* display_service =
+      NotificationDisplayServiceImpl::GetForProfile(browser()->profile());
+  NotificationHandler* handler = display_service->GetNotificationHandler(
+      NotificationHandler::Type::WEB_PERSISTENT);
+  ASSERT_TRUE(handler);
+
+  base::RunLoop close_event_run_loop;
+  handler->OnClose(browser()->profile(), notification->origin_url(),
+                   notification->id(), /*by_user=*/true,
+                   close_event_run_loop.QuitClosure());
+
+  // Wait for the close event to complete.  Starting browser shutdown must
+  // prevent the 'notificationclose' event from running.
+  EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::PENDING_NOTIFICATION_CLOSE_EVENT));
+  close_event_run_loop.Run();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Notifications.PersistentWebNotificationCloseResult",
+      content::PersistentNotificationStatus::kCanceledByAppTerminating, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
+                       OpenBrowserDuringNotificationCloseEvent) {
+  RequestAndAcceptPermission();
+
+  // Show a notification with a close event that will take 3 seconds to
+  // complete.
+  std::unique_ptr<message_center::Notification> notification;
+  ASSERT_NO_FATAL_FAILURE(DisplayNotificationWithCloseEventTimeout(
+      kTestNotificationTitle, /*close_event_timeout=*/base::Seconds(3),
+      &notification));
+
+  // Verify initial state with no in progress close events.
+  EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::PENDING_NOTIFICATION_CLOSE_EVENT));
+
+  histogram_tester_.ExpectTotalCount(
+      "Notifications.PersistentWebNotificationCloseResult", 0);
+
+  // Close the notification.
+  NotificationDisplayServiceImpl* display_service =
+      NotificationDisplayServiceImpl::GetForProfile(browser()->profile());
+  NotificationHandler* handler = display_service->GetNotificationHandler(
+      NotificationHandler::Type::WEB_PERSISTENT);
+  ASSERT_TRUE(handler);
+
+  base::RunLoop close_event_run_loop;
+  handler->OnClose(browser()->profile(), notification->origin_url(),
+                   notification->id(), /*by_user=*/true,
+                   close_event_run_loop.QuitClosure());
+
+  EXPECT_TRUE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::PENDING_NOTIFICATION_CLOSE_EVENT));
+
+  // Wait for the service worker to run the 'notificationclose' event.
+  WaitForNotificationCloseEvent(/*expected_title=*/kTestNotificationTitle);
+  EXPECT_TRUE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::PENDING_NOTIFICATION_CLOSE_EVENT));
+
+  // Close the browser before the 'notificationclose' event completes.
+  Profile* profile = browser()->profile();
+  CloseBrowserSynchronously(browser());
+
+  // Reopen the browser before the 'notificationclose' event completes.
+  Browser* second_browser = CreateBrowser(profile);
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(second_browser, TestPageUrl()));
+
+  // Wait for the 'notificationclose' event to complete.
+  close_event_run_loop.Run();
+  EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::PENDING_NOTIFICATION_CLOSE_EVENT));
+
+  histogram_tester_.ExpectUniqueSample(
+      "Notifications.PersistentWebNotificationCloseResult",
+      content::PersistentNotificationStatus::kSuccess, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
+                       TryToQuitDuringNotificationCloseEvent) {
+  RequestAndAcceptPermission();
+
+  // Show a notification with a close event that will timeout unless canceled.
+  std::unique_ptr<message_center::Notification> notification;
+  ASSERT_NO_FATAL_FAILURE(DisplayNotificationWithCloseEventTimeout(
+      kTestNotificationTitle, /*close_event_timeout=*/base::Days(1),
+      &notification));
+
+  // Verify initial state with no in progress close events.
+  EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::PENDING_NOTIFICATION_CLOSE_EVENT));
+
+  histogram_tester_.ExpectTotalCount(
+      "Notifications.PersistentWebNotificationCloseResult", 0);
+
+  // Close the notification.
+  NotificationDisplayServiceImpl* display_service =
+      NotificationDisplayServiceImpl::GetForProfile(browser()->profile());
+  NotificationHandler* handler = display_service->GetNotificationHandler(
+      NotificationHandler::Type::WEB_PERSISTENT);
+  ASSERT_TRUE(handler);
+
+  base::RunLoop close_event_run_loop;
+  handler->OnClose(browser()->profile(), notification->origin_url(),
+                   notification->id(), /*by_user=*/true,
+                   close_event_run_loop.QuitClosure());
+
+  EXPECT_TRUE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::PENDING_NOTIFICATION_CLOSE_EVENT));
+
+  // Wait for the service worker to run the 'notificationclose' event.
+  WaitForNotificationCloseEvent(/*expected_title=*/kTestNotificationTitle);
+  EXPECT_TRUE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::PENDING_NOTIFICATION_CLOSE_EVENT));
+
+  // Indicate that the browser should start shutdown after the browser window
+  // closes, ignoring any other type of keep alives like
+  // `PENDING_NOTIFICATION_CLOSE_EVENT`.
+  browser_shutdown::SetTryingToQuit(true);
+
+  // Close the browser before the 'notificationclose' event completes.
+  CloseBrowserSynchronously(browser());
+
+  // Wait for the close event to complete.  Closing the browser must run all app
+  // terminating callbacks, including `PushMessagingServiceImpl::Shutdown()`,
+  // which releases `PENDING_NOTIFICATION_CLOSE_EVENT` keep alives immediately
+  // without waiting for the service worker 'notificationclose' event to
+  // complete.
+  close_event_run_loop.Run();
+
+  EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::PENDING_NOTIFICATION_CLOSE_EVENT));
+
+  histogram_tester_.ExpectUniqueSample(
+      "Notifications.PersistentWebNotificationCloseResult",
+      content::PersistentNotificationStatus::kCanceledByAppTerminating, 1);
+}
+
 #endif  // BUILDFLAG(ENABLE_BACKGROUND_MODE)
-
-class PlatformNotificationServiceWithoutContentImageBrowserTest
-    : public PlatformNotificationServiceBrowserTest {
- public:
-  // InProcessBrowserTest overrides.
-  void SetUpInProcessBrowserTestFixture() override {
-    scoped_feature_list_.InitWithFeatures(
-        {}, {features::kNotificationContentImage});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    PlatformNotificationServiceWithoutContentImageBrowserTest,
-    KillSwitch) {
-  GrantNotificationPermissionForTest();
-
-  EXPECT_EQ("ok", RunScript("DisplayPersistentAllOptionsNotification()"));
-
-  std::vector<message_center::Notification> notifications =
-      GetDisplayedNotifications(true /* is_persistent */);
-  ASSERT_EQ(1u, notifications.size());
-
-  // Since the kNotificationContentImage kill switch has disabled images, the
-  // notification should be shown without an image.
-  EXPECT_TRUE(notifications[0].image().IsEmpty());
-}
-
-IN_PROC_BROWSER_TEST_F(
-    PlatformNotificationServiceWithoutContentImageBrowserTest,
-    KillSwitch_NonPersistentNotifications) {
-  GrantNotificationPermissionForTest();
-
-  EXPECT_EQ("ok", RunScript(
-                      R"(DisplayNonPersistentNotification('Title2', {
-          image: 'icon.png'
-        }))"));
-
-  std::vector<message_center::Notification> notifications =
-      GetDisplayedNotifications(false /* is_persistent */);
-  ASSERT_EQ(1u, notifications.size());
-
-  // Since the kNotificationContentImage kill switch has disabled images, the
-  // notification should be shown without an image.
-  EXPECT_TRUE(notifications[0].image().IsEmpty());
-}
 
 class PlatformNotificationServiceIncomingCallTest
     : public PlatformNotificationServiceBrowserTest {

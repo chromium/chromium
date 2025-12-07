@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] 'background-image: src("https://does-not-exist.test/404.png")' with data-foo="https://does-not-exist.test/404.png"
+  assert_equals: expected "src(url(\\"https://does-not-exist.test/404.png\\"))" but got "none"
+[FAIL] 'background-image: src(string("https://does-not-exist.test/""404.png"))' with data-foo="/404.png"
+  assert_equals: expected "src(url(\\"https://does-not-exist.test/404.png\\"))" but got "none"
+[FAIL] '--x: attr(data-foo type(<url>))' with data-foo="url(https://does-not-exist.test/404.png)"
+  assert_equals: expected "url(\\"https://does-not-exist.test/404.png\\")" but got ""
+[FAIL] 'background-image: image("https://does-not-exist.test/404.png")' with data-foo="https://does-not-exist.test/404.png"
+  assert_equals: expected "image(url(\\"https://does-not-exist.test/404.png\\"))" but got "none"
+Harness: the test ran to completion.
+

@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.browsing_data;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** A URL->boolean filter used in browsing data deletions. */
+@NullMarked
 public interface UrlFilter {
     /**
      * @param url The url to be matched.
      * @return Whether this filter matches |url|.
      */
-    public boolean matchesUrl(String url);
+    boolean matchesUrl(String url);
 }

@@ -5,13 +5,13 @@
 #ifndef NET_CERT_EV_ROOT_CA_METADATA_H_
 #define NET_CERT_EV_ROOT_CA_METADATA_H_
 
-#include "build/build_config.h"
-
 #include <map>
 #include <set>
 #include <string>
 #include <vector>
 
+#include "base/no_destructor.h"
+#include "build/build_config.h"
 #include "crypto/crypto_buildflags.h"
 #include "net/base/net_export.h"
 #include "net/cert/x509_certificate.h"
@@ -22,11 +22,6 @@
 // implementation that will fail all EV lookup operations.
 #define PLATFORM_USES_CHROMIUM_EV_METADATA
 #endif
-
-namespace base {
-template <typename T>
-struct LazyInstanceTraitsBase;
-}  // namespace base
 
 namespace bssl {
 namespace der {
@@ -63,7 +58,7 @@ class NET_EXPORT_PRIVATE EVRootCAMetadata {
   bool RemoveEVCA(const SHA256HashValue& fingerprint);
 
  private:
-  friend struct base::LazyInstanceTraitsBase<EVRootCAMetadata>;
+  friend class base::NoDestructor<EVRootCAMetadata>;
 
   EVRootCAMetadata();
   ~EVRootCAMetadata();

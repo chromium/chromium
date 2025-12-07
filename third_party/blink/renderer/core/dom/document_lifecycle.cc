@@ -197,7 +197,7 @@ bool DocumentLifecycle::CanRewindTo(LifecycleState next_state) const {
   case DocumentLifecycle::StateName: \
     return #StateName
 
-static WTF::String StateAsDebugString(
+static String StateAsDebugString(
     const DocumentLifecycle::LifecycleState& state) {
   switch (state) {
     DEBUG_STRING_CASE(kUninitialized);
@@ -218,11 +218,10 @@ static WTF::String StateAsDebugString(
     DEBUG_STRING_CASE(kStopped);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return "Unknown";
+  NOTREACHED();
 }
 
-WTF::String DocumentLifecycle::ToString() const {
+String DocumentLifecycle::ToString() const {
   return StateAsDebugString(state_);
 }
 #endif

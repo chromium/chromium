@@ -41,10 +41,13 @@
   <message name="IDS_AVATAR_BUTTON_SYNC_PAUSED" desc="Short label for the avatar button when sync is paused for the current profile." meaning="Sync is paused">
     Paused
   </message>
+  <message name="IDS_AVATAR_BUTTON_SYNC_ERROR_BOOKMARKS_LIMIT_EXCEEDED" desc="Short label for the avatar button when the user has too many bookmarks.">
+    Unsaved data
+  </message>
   <message name="IDS_AVATAR_BUTTON_SIGNIN_PAUSED" desc="Short label for the avatar button when the profile is in a Signin Paused state." meaning="The account is signed in on Chrome but signed out on the Web.">
     Verify it's you
   </message>
-  <message name="IDS_AVATAR_BUTTON_WORK" desc="Short label for the avatar button when the profile is a work profile." meaning="Using a work profile">
+  <message name="IDS_AVATAR_BUTTON_WORK" desc="Short label for the avatar button when the profile is a managed profile in an enterprise environment, such as a business, government organization, or other workplace." meaning="Using a managed profile, as for a workplace">
     Work
   </message>
   <message name="IDS_AVATAR_BUTTON_SCHOOL" desc="Short label for the avatar button when the profile is a school profile." meaning="Using a school profile">
@@ -53,6 +56,77 @@
   <message name="IDS_AVATAR_BUTTON_GREETING" desc="Greeting that appears at the top of Chrome after the user signs in. It becomes part of the entrypoint for the Chrome Profile Menu. The greeting is casual and friendly, and it invokes the user's name.">
     Hi, <ph name="PROFILE_NAME">$1<ex>User</ex></ph>
   </message>
+
+  <!-- Identity error message for passkey unlock experiment -->
+  <if expr="use_titlecase">
+    <message name="IDS_AVATAR_BUTTON_PASSKEYS_ERROR_UNLOCK" desc="A short label for the avatar button, shown when the user needs to verify their identity to unlock usage of their Google Password Manager passkeys on this device. Tapping the button will open the profile menu. The word 'passkey' is distinct from 'password', consult the glossary for a translation.">
+      Unlock Your Passkeys
+    </message>
+  </if>
+  <if expr="not use_titlecase">
+    <message name="IDS_AVATAR_BUTTON_PASSKEYS_ERROR_UNLOCK" desc="A short label for the avatar button, shown when the user needs to verify their identity to unlock usage of their Google Password Manager passkeys on this device. Tapping the button will open the profile menu. The word 'passkey' is distinct from 'password', consult the glossary for a translation.">
+      Unlock your passkeys
+    </message>
+  </if>
+  <if expr="use_titlecase">
+    <message name="IDS_AVATAR_BUTTON_PASSKEYS_ERROR_GET" desc="A short label for the avatar button, shown when the user needs to verify their identity to unlock usage of their Google Password Manager passkeys on this device. Tapping the button will open the profile menu. The word 'passkey' is distinct from 'password', consult the glossary for a translation.">
+      Get Your Passkeys
+    </message>
+  </if>
+  <if expr="not use_titlecase">
+    <message name="IDS_AVATAR_BUTTON_PASSKEYS_ERROR_GET" desc="A short label for the avatar button, shown when the user needs to verify their identity to unlock usage of their Google Password Manager passkeys on this device. Tapping the button will open the profile menu. The word 'passkey' is distinct from 'password', consult the glossary for a translation.">
+      Get your passkeys
+    </message>
+  </if>
+  <if expr="use_titlecase">
+    <message name="IDS_AVATAR_BUTTON_PASSKEYS_ERROR_VERIFY" desc="A short label for the avatar button, shown when the user needs to verify their identity to unlock usage of their Google Password Manager passkeys on this device. Tapping the button will open the profile menu. The word 'passkey' is distinct from 'password', consult the glossary for a translation.">
+      Verify It's You
+    </message>
+  </if>
+  <if expr="not use_titlecase">
+    <message name="IDS_AVATAR_BUTTON_PASSKEYS_ERROR_VERIFY" desc="A short label for the avatar button, shown when the user needs to verify their identity to unlock usage of their Google Password Manager passkeys on this device. Tapping the button will open the profile menu. The word 'passkey' is distinct from 'password', consult the glossary for a translation.">
+      Verify it's you
+    </message>
+  </if>
+  <message name="IDS_PROFILE_MENU_PASSKEYS_ERROR_DESCRIPTION_UNLOCK" desc="Subtitle in the profile menu, shown when the user needs to verify their identity to unlock usage of their Google Password Manager passkeys on this device, e.g. by presenting a PIN. The word 'passkey' is distinct from 'password', consult the glossary for a translation.">
+    Verify it’s you to save and use your passkeys on this device
+  </message>
+  <message name="IDS_PROFILE_MENU_PASSKEYS_ERROR_DESCRIPTION_GET" desc="Subtitle in the profile menu, shown when the user needs to verify their identity to unlock usage of their Google Password Manager passkeys on this device, e.g. by presenting a PIN. The word 'passkey' is distinct from 'password', consult the glossary for a translation.">
+    Get your passkeys on this device with Google Password Manager
+  </message>
+  <message name="IDS_PROFILE_MENU_PASSKEYS_ERROR_DESCRIPTION_VERIFY" desc="Subtitle in the profile menu, shown when the user needs to verify their identity to unlock usage of their Google Password Manager passkeys on this device, e.g. by presenting a PIN. The word 'passkey' is distinct from 'password', consult the glossary for a translation.">
+    Verify it’s you to get your passkeys on this device
+  </message>
+  <if expr="use_titlecase">
+    <message name="IDS_PROFILE_MENU_PASSKEYS_ERROR_BUTTON_UNLOCK" desc="Button in the profile menu, shown when the user needs to verify their identity to unlock usage of their Google Password Manager passkeys on this device, e.g. by presenting a PIN. Tapping the button will open a tab asking the user to verify their identity with a PIN or other challenge. The word 'passkey' is distinct from 'password', consult the glossary for a translation.">
+      Unlock Your Passkeys
+    </message>
+  </if>
+  <if expr="not use_titlecase">
+    <message name="IDS_PROFILE_MENU_PASSKEYS_ERROR_BUTTON_UNLOCK" desc="Button in the profile menu, shown when the user needs to verify their identity to unlock usage of their Google Password Manager passkeys on this device, e.g. by presenting a PIN. Tapping the button will open a tab asking the user to verify their identity with a PIN or other challenge. The word 'passkey' is distinct from 'password', consult the glossary for a translation.">
+      Unlock your passkeys
+    </message>
+  </if>
+  <if expr="use_titlecase">
+    <message name="IDS_PROFILE_MENU_PASSKEYS_ERROR_BUTTON_GET" desc="Button in the profile menu, shown when the user needs to verify their identity to unlock usage of their Google Password Manager passkeys on this device, e.g. by presenting a PIN. Tapping the button will open a tab asking the user to verify their identity with a PIN or other challenge. The word 'passkey' is distinct from 'password', consult the glossary for a translation.">
+      Get Passkeys
+    </message>
+  </if>
+  <if expr="not use_titlecase">
+    <message name="IDS_PROFILE_MENU_PASSKEYS_ERROR_BUTTON_GET" desc="Button in the profile menu, shown when the user needs to verify their identity to unlock usage of their Google Password Manager passkeys on this device, e.g. by presenting a PIN. Tapping the button will open a tab asking the user to verify their identity with a PIN or other challenge. The word 'passkey' is distinct from 'password', consult the glossary for a translation.">
+      Get passkeys
+    </message>
+  </if>
+  <if expr="use_titlecase">
+    <message name="IDS_PROFILE_MENU_PASSKEYS_ERROR_BUTTON_VERIFY" desc="Button in the profile menu, shown when the user needs to verify their identity to unlock usage of their Google Password Manager passkeys on this device, e.g. by presenting a PIN. Tapping the button will open a tab asking the user to verify their identity with a PIN or other challenge. The word 'passkey' is distinct from 'password', consult the glossary for a translation.">
+      Verify It's You
+    </message>
+  </if>
+  <if expr="not use_titlecase">
+    <message name="IDS_PROFILE_MENU_PASSKEYS_ERROR_BUTTON_VERIFY" desc="Button in the profile menu, shown when the user needs to verify their identity to unlock usage of their Google Password Manager passkeys on this device, e.g. by presenting a PIN. Tapping the button will open a tab asking the user to verify their identity with a PIN or other challenge. The word 'passkey' is distinct from 'password', consult the glossary for a translation.">
+      Verify it's you
+    </message>
+  </if>
 
   <!-- Multi-profile -->
   <message name="IDS_PROFILES_MENU_NAME" desc="The name of menu for profiles (Mac and linux) and name for the launcher menu section (Mac).">
@@ -77,9 +151,6 @@
   <message name="IDS_PROFILES_EXIT_PROFILE_BUTTON" desc="Button in the avatar menu bubble view to close all windows of the current profile when there is more than one profile.">
     Exit <ph name="PROFILE_NAME">$1<ex>User</ex></ph>
   </message>
-  <message name="IDS_PROFILES_GAIA_SIGNIN_TITLE" desc="Title of the account removal view in the avatar menu bubble.">
-    Sign in
-  </message>
   <message name="IDS_PROFILES_ACCOUNT_REMOVAL_TITLE" desc="Title of the account removal view in the avatar menu bubble.">
     Remove account
   </message>
@@ -89,11 +160,12 @@
   <message name="IDS_PROFILES_DICE_SIGNIN_BUTTON" desc="Button in the profile user menu to sign in and turn on Sync.">
     Turn on sync...
   </message>
+  <message name="IDS_EXTENSIONS_EXPLICIT_SIGNIN_BUTTON" desc="Button in the profile user menu to explicitly sign in.">
+    Sign in
+  </message>
+
   <message name="IDS_PROFILES_DICE_WEB_ONLY_SIGNIN_BUTTON" desc="Button in the profile menu to sign in on Chrome and turn on Sync for a specific web account that is signed in only on the web.">
     Continue as <ph name="ACCOUNT_NAME">$1<ex>John</ex></ph>
-  </message>
-  <message name="IDS_PROFILES_DICE_NOT_SYNCING_TITLE" desc="Title of the sync promo account card in the user menu.">
-    Sync is off
   </message>
   <message name="IDS_PROFILES_DICE_SIGNIN_FIRST_ACCOUNT_BUTTON" desc="Button to sign in and turn on Sync for a specific web account.">
     Sync as <ph name="ACCOUNT_FULL_NAME">$1<ex>John Doe</ex></ph>
@@ -104,41 +176,50 @@
   <message name="IDS_PROFILES_DICE_SYNC_DISABLED_TITLE" desc="Title of the profile user menu when sync is disabled.">
     Sync disabled
   </message>
+  <message name="IDS_PROFILES_DASHER_FEATURE_DISABLED_TITLE" desc="Description of the profile user menu when certain features are disabled for Dasherless profile.">
+    This isn't a Google Account. Items you save to Chrome won't be available on other devices.
+  </message>
    <message name="IDS_PROFILES_DICE_SYNC_PAUSED_TITLE" desc="Title of the profile user menu when sync is paused.">
     Sync is paused
-  </message>
-  <message name="IDS_PROFILES_CLOSE_X_WINDOWS_BUTTON" desc="Button in the profile menu to close all windows of the current profile. This is not used for zero windows.">
-    {0, plural,
-    =1 {Close # window}
-    other {Close # windows}
-    }
   </message>
   <message name="IDS_PROFILES_SIGNIN_PROMO" desc="Text describing the benefits of signing in.">
     Sign in to get your bookmarks, history, passwords, and other settings on all your devices.
   </message>
   <if expr="use_titlecase">
       <message name="IDS_PROFILES_VERIFY_ACCOUNT_BUTTON" desc="The label of the button that is shown when the user is in a Signin paused state. When the user clicks this button, they will be prompted to enter their Google Account credentials.">
-        Verify It’s You
+        Verify It's You
       </message>
     </if>
     <if expr="not use_titlecase">
       <message name="IDS_PROFILES_VERIFY_ACCOUNT_BUTTON" desc="The label of the button that is shown when the user is in a Signin paused state. When the user clicks this button, they will be prompted to enter their Google Account credentials.">
-        Verify it’s you
+        Verify it's you
       </message>
     </if>
-  <message name="IDS_PROFILES_CREDIT_CARDS_LINK" desc="Text of the menu item leading to the list of saved credit cards.">
-    Payment methods
-  </message>
-  <message name="IDS_PROFILES_ADDRESSES_LINK" desc="Text of the menu item leading to the list of autofill addresses.">
-    Addresses and more
-  </message>
   <message name="IDS_PROFILE_MENU_SIGNIN_PROMO_DESCRIPTION" desc="Text for the sign-in promo in the profile menu when the used is signed out, describing the benefits of signing in.">
     Sign in to get your passwords and more on all your devices
   </message>
+  <message name="IDS_PROFILE_MENU_SIGNIN_PROMO_DESCRIPTION_WITH_BOOKMARKS" desc="Text for the sign-in promo in the profile menu when the used is signed out, describing the benefits of signing in, mentioning bookmarks.">
+    Sign in to get your passwords, bookmarks, and more on all your devices
+  </message>
+  <message name="IDS_PROFILE_MENU_PROFILE_IDENTIFIER_WITH_SEPARATOR" desc="The user name and profile name are separated by a symbol, in this case bullet •, with a white space before it and a white space after it. If the bullet • resembles another symbol in the language, please translate the bullet • as a symbol (A) that is not easily mistaken for a number or letter in the language and (B) that is typically used to separate elements.">
+    <ph name="USER_NAME">$1<ex>John</ex></ph> • <ph name="PROFILE_NAME">$2<ex>Work</ex></ph>
+  </message>
+  <message name="IDS_PROFILE_MENU_PROFILE_MANAGED_HEADER" desc="Disclaimer indicating that the profile is managed">
+    This profile is managed
+  </message>
+  <message name="IDS_GUEST_PROFILE_MENU_CLOSE_X_WINDOWS_BUTTON" desc="The text of the button offering to close all guest windows. The number in ICU syntax represents the number of open guest windows, but it is not used in the English text and can be used to choose singular/plural in translation to other languages, if needed.[ICU Syntax]">
+    {0, plural,
+      =1 {Close Guest}
+      other {Close Guest (# windows)}
+    }
+  </message>
+  <message name="IDS_INCOGNITO_PROFILE_MENU_CLOSE_X_WINDOWS_BUTTON" desc="The text of the button offering to close all Incognito windows.">
+    {0, plural,
+      =1 {Close Incognito}
+      other {Close Incognito (# windows)}
+    }
+  </message>
   <if expr="not use_titlecase">
-    <message name="IDS_PROFILES_LIST_PROFILES_TITLE" desc="Title in the profile menu for the list of 'other profiles'.">
-      Other profiles
-    </message>
     <message name="IDS_PROFILES_PROFILE_MANAGE_ACCOUNTS_BUTTON" desc="Button in the avatar menu bubble view used to manage accounts for a profile.">
       Your accounts
     </message>
@@ -154,9 +235,6 @@
       other {Close this profile (# windows)}
       }
     </message>
-    <message name="IDS_PROFILE_MENU_ADD_NEW_PROFILE" desc="The text label of the add new profile item in the profile menu.">
-      Add new profile
-    </message>
     <message name="IDS_PROFILES_OPEN_SYNC_SETTINGS_BUTTON" desc="Button in the profile menu to open sync settings when sync is on.">
       Sync is on
     </message>
@@ -166,11 +244,17 @@
     <message name="IDS_PROFILE_MENU_OPEN_ACCOUNT_SETTINGS" desc="Button in the avatar menu bubble view for opening Chrome account settings.">
       Google services settings
     </message>
+    <message name="IDS_PROFILE_MENU_AUTOFILL_SETTINGS_BUTTON" desc="Button in the avatar menu bubble view for opening Chrome autofill settings.">
+      Passwords and autofill
+    </message>
+    <message name="IDS_PROFILE_MENU_BATCH_UPLOAD_BUTTON" desc="Button in the profile menu to open the Batch Upload dialog.">
+      {0, plural,
+      =1 {Save 1 item in account}
+      other {Save # items in account}
+      }
+    </message>
   </if>
   <if expr="use_titlecase">
-    <message name="IDS_PROFILES_LIST_PROFILES_TITLE" desc="Title in the profile menu for the list of 'other profiles'.">
-      Other Profiles
-    </message>
     <message name="IDS_PROFILES_PROFILE_MANAGE_ACCOUNTS_BUTTON" desc="Button in the avatar menu bubble view used to manage accounts for a profile.">
       Your Accounts
     </message>
@@ -186,9 +270,6 @@
       other {Close This Profile (# Windows)}
       }
     </message>
-    <message name="IDS_PROFILE_MENU_ADD_NEW_PROFILE" desc="The text label of the add new profile item in the profile menu.">
-      Add New Profile
-    </message>
     <message name="IDS_PROFILES_OPEN_SYNC_SETTINGS_BUTTON" desc="Button in the profile menu to open sync settings when sync is on.">
       Sync Is On
     </message>
@@ -198,15 +279,21 @@
     <message name="IDS_PROFILE_MENU_OPEN_ACCOUNT_SETTINGS" desc="Button in the avatar menu bubble view for opening Chrome account settings.">
       Google Services Settings
     </message>
+    <message name="IDS_PROFILE_MENU_AUTOFILL_SETTINGS_BUTTON" desc="Button in the avatar menu bubble view for opening Chrome autofill settings.">
+      Passwords and Autofill
+    </message>
+    <message name="IDS_PROFILE_MENU_BATCH_UPLOAD_BUTTON" desc="Button in the profile menu to open the Batch Upload dialog.">
+      {0, plural,
+      =1 {Save 1 Item in Account}
+      other {Save # Items in Account}
+      }
+    </message>
   </if>
   <message name="IDS_PROFILES_MANAGED_BY" desc="Label shown under the avatar in the avatar menu bubble view stating that the account is managed.">
-    managed by <ph name="VALUE">$1<ex>1</ex></ph>
+    Managed by <ph name="VALUE">$1<ex>1</ex></ph>
   </message>
   <message name="IDS_PROFILES_MANAGE_PROFILES_BUTTON_TOOLTIP" desc="Button in the avatar menu bubble view for launching the profile picker.">
     Manage profiles
-  </message>
-  <message name="IDS_PROFILES_MANAGE_PROFILES_MANAGED_TOOLTIP" desc="Icon in the avatar menu bubble view explaining why selecting other profiles is disabled.">
-    Your administrator has disabled other profiles
   </message>
   <message name="IDS_PROFILES_CUSTOMIZE_PROFILE_BUTTON_TOOLTIP" desc="Tooltip of the customize profile button in the avatar menu bubble view for editing the current profile. The button itself has no text, it is only the edit icon.">
     Customize profile
@@ -219,9 +306,6 @@
   </message>
   <message name="IDS_LEGACY_DEFAULT_PROFILE_NAME" desc="The legacy default name given to a new profile.">
     Default Profile
-  </message>
-  <message name="IDS_NUMBERED_PROFILE_NAME" desc="The name given to a newly created profile. Displayed in wrench menu and settings UI.">
-    User <ph name="VALUE">$1<ex>1</ex></ph>
   </message>
   <message name="IDS_NEW_NUMBERED_PROFILE_NAME" desc="The name given to a newly created profile. Displayed in wrench menu and settings UI using the --new-profile-management flag.">
     Person <ph name="VALUE">$1<ex>1</ex></ph>
@@ -513,7 +597,7 @@
     <!-- User manager web UI -->
     <if expr="use_titlecase">
       <message name="IDS_SCREEN_LOCK_SIGN_OUT">
-        Sign out
+        Sign Out
       </message>
     </if>
     <if expr="not use_titlecase">
@@ -521,7 +605,7 @@
         Sign out
       </message>
     </if>
-    <if expr="chromeos_ash">
+    <if expr="is_chromeos">
       <message name="IDS_LAUNCH_APP_BUTTON" desc="Text shown on the button that launches kiosk app from ChromeOS login UI">
         Launch app
       </message>
@@ -540,7 +624,7 @@
     </if>
   </if>
 
-  <if expr="not chromeos_ash and not is_android">
+  <if expr="not is_chromeos and not is_android">
     <!-- Profile Customization Web UI -->
     <message name="IDS_PROFILE_CUSTOMIZATION_DONE_BUTTON_LABEL" desc="Text for the Done button on the profile customization bubble">
       Done
@@ -550,6 +634,9 @@
     </message>
     <message name="IDS_PROFILE_CUSTOMIZATION_INPUT_LABEL" desc="Not displayed. Used by screen readers to describe the input used to rename the profile.">
       Rename your profile
+    </message>
+    <message name="IDS_PROFILE_CUSTOMIZATION_INPUT_TITLE" desc="Title text for the input used to rename the profile.">
+      Add a name or label for your profile
     </message>
     <message name="IDS_PROFILE_CUSTOMIZATION_INPUT_PLACEHOLDER" desc="Placeholder text for the input used to rename the profile.">
       Add a name or label, like Work or Personal
@@ -601,12 +688,6 @@
     <message name="IDS_ENTERPRISE_PROFILE_WELCOME_DEVICE_MANAGED" desc="Subtitle of the enterprise profile welcome screen, informing that the device is managed.">
       Your device is managed by your organization
     </message>
-    <message name="IDS_ENTERPRISE_PROFILE_WELCOME_MANAGED_DESCRIPTION_WITH_SYNC" desc="Disclaimer when creating a profile with a managed account (when sync is enabled by the administrator).">
-      You’re adding a managed profile to this browser. Your administrator has control over the profile and can access its data. Bookmarks, history, passwords, and other settings can be synced to your account and managed by your administrator.
-    </message>
-    <message name="IDS_ENTERPRISE_PROFILE_WELCOME_MANAGED_DESCRIPTION_WITHOUT_SYNC" desc="Disclaimer when creating a profile with a managed account (when sync is disabled by the administrator).">
-      You’re adding a managed profile to this browser. Your administrator has control over the profile and can access its data.
-    </message>
     <message name="IDS_ENTERPRISE_WELCOME_PROFILE_REQUIRED_TITLE" desc="Title of the enterprise profile welcome screen when a profile is required. It is shown after a user signs into a managed account outside of the profile creation flow.">
       Your organization requires a profile
     </message>
@@ -622,6 +703,30 @@
     <message name="IDS_ENTERPRISE_PROFILE_WELCOME_LINK_DATA_CHECKBOX" desc="Label of the checkbox on the enterprise profile welcome screen that allows a user to link existing data to the new profile. The label informs the user that a profile will be created.">
       Add existing browsing data to managed profile
     </message>
+    <message name="IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_SCHOOL_TITLE" desc="Title of the dialog disclaiming information about the school profile they are about to create.">
+      About school profiles
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_WORK_TITLE" desc="Title of the dialog disclaiming information about the work profile they are about to create.">
+      About work profiles
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_PROFILE_OIDC_DISCLOSURE_TITLE" desc="Title of the dialog disclaiming information about the profile they are about to create.">
+      Set up a new profile
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_ALREADY_SIGNED_IN_TITLE" desc="Title the dialog disclaiming information about the profile they are about to create, this is shown when the user was already signed into a profile.">
+      This profile will be managed
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_ALREADY_SIGNED_IN_ENFORCED_SUBTITLE" desc="Subtitle the dialog disclaiming information about the profile they are about to create, this is shown when the user was already signed into a profile.">
+      Your organization, <ph name="ACCOUNT_MANAGER">$1<ex>example.com</ex></ph>, requires a managed profile and will be able to view some information, including
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_ALREADY_SIGNED_IN_SUBTITLE" desc="Subtitle the dialog disclaiming information about the profile they are about to create, this is shown when the user was already signed into a profile.">
+      Your organization, <ph name="ACCOUNT_MANAGER">$1<ex>example.com</ex></ph>, will be able to view some information, including
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_SUBTITLE" desc="Subtitle of the dialog disclaiming information about the profile they are about to create.">
+      Your profile is managed by your organization, which can view some information, including
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_KNOWN_DOMAIN_SUBTITLE" desc="Subtitle of the dialog disclaiming information about the profile they are about to create.">
+      Your profile is managed by <ph name="PROFILE_MANAGER">$1<ex>example.com</ex></ph>, which can view some information, including
+    </message>
     <message name="IDS_ENTERPRISE_WELCOME_PROFILE_INFORMATION_TITLE" desc="Title of a section disclaiming to the user what their organization can do with their profile information.">
       Profile information
     </message>
@@ -629,10 +734,16 @@
       Device information
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_DEVICE_INFORMATION_DETAILS" desc="Paragraph section disclaiming to the user what their organization can do with their device information.">
-      To make sure this device can be used safely, your organization may need to see information about its operating system, browser, and settings, and what software is installed on the device.
+      To make sure this device can be used safely, your organization can see information about its operating system, browser, and settings, and what software is installed on the device
+    </message>
+    <message name="IDS_ENTERPRISE_PROFILE_WELCOME_BACK" desc="Label for the 'back' button to return to the previous screen.">
+      Back
     </message>
     <message name="IDS_ENTERPRISE_OIDC_WELCOME_PROCESSING_SUBTITLE" desc="Subtitle of a section telling the user that a work profile is being created for them.">
-      Setting up your work profile ...
+      Setting up your profile ...
+    </message>
+    <message name="IDS_ENTERPRISE_OIDC_WELCOME_LONG_PROCESSING_SUBTITLE" desc="Subtitle of a section telling the user that work profile creation is ongoing and taking longer than expected.">
+      Setup may take a little longer ...
     </message>
     <message name="IDS_ENTERPRISE_OIDC_WELCOME_SUCCESS_TITLE" desc="Title of a section telling the user that their work profile has been created..">
       You're all set!
@@ -641,13 +752,125 @@
       Now you can start browsing
     </message>
     <message name="IDS_ENTERPRISE_OIDC_WELCOME_TIMEOUT_TITLE" desc="Title of a section telling the user that their work profile was created but is not fully ready yet.">
-      Your work profile is almost ready
+      Your profile hasn't been set up
+    </message>
+    <message name="IDS_ENTERPRISE_OIDC_WELCOME_TIMEOUT_SUBTITLE" desc="Subtitle of a section telling the user that their work profile was created but is not fully ready yet.">
+      You can try again or contact your administrator for help
+    </message>
+    <message name="IDS_ENTERPRISE_OIDC_WELCOME_TIMEOUT_RETRY_LABEL" desc="Title of a section telling the user that their work profile was created but is not fully ready yet.">
+      Try again
     </message>
     <message name="IDS_ENTERPRISE_OIDC_WELCOME_ERROR_TITLE" desc="Title of a section telling the user that there was an error while creating their work profile.">
       Something went wrong
     </message>
     <message name="IDS_ENTERPRISE_OIDC_WELCOME_ERROR_SUBTITLE" desc="Subtitle of a section telling the user that there was an error while creating their work profile.">
       You can try again or contact your administrator for help
+    </message>
+    <message name="IDS_ENTERPRISE_OIDC_WELCOME_ERROR_NO_SIGNIN_TITLE" desc="Title of a section telling the user that there was an error while creating their work profile.">
+      Work profile setup is disabled by your organization
+    </message>
+    <message name="IDS_ENTERPRISE_OIDC_WELCOME_ERROR_NO_SIGNIN_SUBTITLE" desc="Subtitle of a section telling the user that there was an error while creating their work profile.">
+      Contact your administrator for more information
+    </message>
+    <message name="IDS_ENTERPRISE_VALUE_PROPOSITION_CONSUMER_SUBTITLE" desc="Subtitle the value proposition dialog for creating an enterprise profile.">
+      Sign in to get your passwords and more on all your devices
+    </message>
+    <message name="IDS_ENTERPRISE_VALUE_PROPOSITION_CONSUMER_SUBTITLE_WITH_BOOKMARKS" desc="Subtitle the value proposition dialog for creating an enterprise profile.">
+      Sign in to get your passwords, bookmarks, and more on all your devices
+    </message>
+    <message name="IDS_ENTERPRISE_VALUE_PROPOSITION_SCHOOL_SUBTITLE" desc="Subtitle the value proposition dialog for creating an enterprise profile for school.">
+      Set up a school profile to save and use your passwords and more in your account
+    </message>
+    <message name="IDS_ENTERPRISE_VALUE_PROPOSITION_WORK_SUBTITLE" desc="Subtitle the value proposition dialog for creating an enterprise profile for work.">
+      Set up a work profile to save and use your passwords and more in your account
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_WORK_TITLE" desc="Title of the dialog that asks the user to either keep their browsing data in the work profile they will create or keep it separate.">
+      Do you want to create a new profile for work?
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_SCHOOL_TITLE" desc="Title of the dialog that asks the user to either keep their browsing data in the school profile they will create or keep it separate.">
+      Do you want to create a new profile for school?
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_ALREADY_SIGNED_IN_TITLE" desc="Title of the dialog that asks the user to either keep their browsing data in the managed profile they will create or keep it separate, this is shown when the user was already signed into a profile.">
+      What would you like to do with your existing profile data?
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_CONSUMER_TITLE" desc="Title of the dialog that asks the user to either keep their browsing data in the new profile they will create or keep it separate.">
+      Keep existing browsing data separate from this new profile?
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_SCHOOL_CHOICE" desc="Label of a radio button option that lets the user separate their existing data from a newly created work profile.">
+      Yes, keep my data separate from school (recommended)
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_WORK_CHOICE" desc="Label of a radio button option that lets the user separate their existing data from a newly created work profile.">
+      Yes, keep my data separate from work (recommended)
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_ALREADY_SIGNED_IN_CHOICE" desc="Label of a radio button option that lets the user separate their existing data from a newly created work profile, this is shown when the user was already signed into a profile.">
+      Create a new profile for work without my existing data
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE_SCHOOL_NOT_RECOMMENDED" desc="Label of a radio button option that lets the user separate their existing data from a newly created work profile.">
+      Yes, keep my data separate from school
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE_WORK_NOT_RECOMMENDED" desc="Label of a radio button option that lets the user separate their existing data from a newly created work profile.">
+      Yes, keep my data separate from work
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE_DETAILS" desc="Additional information of a radio button option that lets the user separate their existing data from a newly created managed profile.">
+      Data that is saved only on this device will remain in the existing profile
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE_ALREADY_SIGNED_IN_DETAILS" desc="Additional information of a radio button option that lets the user separate their existing data from a newly created managed profile, this is shown when the user was already signed into a profile.">
+      Your organization, <ph name="ACCOUNT_MANAGER">$1<ex>example.com</ex></ph>, will not be able to see or manage your existing data. It will remain in the existing profile.
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_WORK_CHOICE" desc="Label of a radio button option that lets the user add their existing data from a newly created work profile.">
+      No, continue to work in this profile
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_SCHOOL_CHOICE" desc="Label of a radio button option that lets the user add their existing data from a newly created school profile.">
+      No, continue to use for school in this profile
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_ALREADY_SIGNED_IN_CHOICE" desc="Label of a radio button option that lets the user add their existing data from a newly created managed profile, this is shown when the user was already signed into a profile">
+      Continue to work in this profile
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_CHOICE_DETAILS" desc="Additional information of a radio button option that lets the user add their existing data from a newly created work profile.">
+      Your organization will be able to see and manage any existing browsing data, such as passwords and more
+    </message>
+    <message name="IDS_BROWSING_HISTORY_COUNT" desc="Text describing the number of browsing history entries">
+      {BROWSING_HISTORY_COUNT, plural,
+        =1 {your browsing history of # site}
+        other {your browsing history of # sites}}
+    </message>
+    <message name="IDS_BOOKMARKS_COUNT" desc="Text describing the number of bookmarks">
+      {EXTENSIONS_COUNT, plural,
+        =1 {# bookmark}
+        other {# bookmarks}}
+    </message>
+    <message name="IDS_EXTENSIONS_COUNT" desc="Text describing the number of extensions">
+      {BOOKMARKS_COUNT, plural,
+        =1 {# extension}
+        other {# extensions}}
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_WITH_THREE_COUNTS_CHOICE_DETAILS" desc="Additional information of a radio button option that lets the user add their existing data from a newly created work profile.">
+      You currently have <ph name="NUMBERED_ITEM_1">$1<ex>10 bookmarks</ex></ph>, <ph name="NUMBERED_ITEM_2">$2<ex>10 extensions</ex></ph>, <ph name="NUMBERED_ITEM_3">$3<ex>your browsing history of 5 sites</ex></ph>, and more. Your organization, <ph name="ACCOUNT_MANAGER">$4<ex>example.com</ex></ph>, will be able to see and manage this data.
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_WITH_TWO_COUNTS_CHOICE_DETAILS" desc="Additional information of a radio button option that lets the user add their existing data from a newly created work profile.">
+      You currently have <ph name="NUMBERED_ITEM_1">$1<ex>10 bookmarks</ex></ph>, <ph name="NUMBERED_ITEM_2">$2<ex>10 extensions</ex></ph>, and more. Your organization, <ph name="ACCOUNT_MANAGER">$3<ex>example.com</ex></ph>, will be able to see and manage this data.
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_WITH_ONE_COUNT_CHOICE_DETAILS" desc="Additional information of a radio button option that lets the user add their existing data from a newly created work profile.">
+      You currently have <ph name="NUMBERED_ITEM">$1<ex>10 bookmarks</ex></ph>, and more. Your organization, <ph name="ACCOUNT_MANAGER">$2<ex>example.com</ex></ph>, will be able to see and manage this data.
+    </message>
+
+    <!-- Supervised user profile signin IPH -->
+    <message name="IDS_SUPERVISED_USER_PROFILE_SIGNIN_IPH_TITLE" desc="Title of a reminder message, which is intended to help supervised users understand that they have been signed in to Chrome.">
+      Welcome, <ph name="CHILD_NAME">$1<ex>Charlie</ex></ph>
+    </message>
+
+    <message name="IDS_SUPERVISED_USER_PROFILE_SIGNIN_IPH_TEXT" desc="Body text of a reminder message, which is intended to help supervised users understand that they have been signed in to Chrome. This body text string comes after the 'Welcome back, USER_NAME' string. It motivates kids to get their parents' help to stay safer online.">
+      Your parent's choices will now keep you safer online
+    </message>
+
+    <!-- Supervised user profile avatar badge -->
+    <message name="IDS_MANAGED_BY_PARENT_A11Y" desc="Accessibility label that describes the information conveyed by the Google Family Link 'Kite' icon. When shown account profile photo or elsewhere in settings it indicates that the account is supervised.">
+      Managed by your parent
+    </message>
+
+    <!-- Signout from a supervised user profile -->
+    <message name="IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_KIDS_BODY" desc="This confirmation message is intended to help supervised users understand what will happen when they sign out of Chrome. It appears on a dialog after users click to sign out of Chrome. It motivates kids to get their parents' help to stay safer online.">
+      Your parent's choices won't apply after you sign out
     </message>
 
     <!-- Profile Picker -->
@@ -663,8 +886,29 @@
     <message name="IDS_PROFILE_PICKER_BACK_BUTTON_SIGN_IN_LABEL" desc="Label for a button that navigates user to the previous page from the 'Sign in' page">
       Back from sign in
     </message>
+    <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_KEEP_WORK_AND_LIFE_SEPARATE" desc="Profile picker main view title.">
+      Keep work and life separate
+    </message>
+    <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_GOT_ANOTHER_GOOGLE_ACCOUNT" desc="Profile picker main view title.">
+      Got another Google Account?
+    </message>
+    <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_KEEP_TASKS_SEPARATE" desc="Profile picker main view title.">
+      Keep school, side projects, and other tasks separate
+    </message>
+    <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_SHARING_A_COMPUTER" desc="Profile picker main view title.">
+      Sharing a computer?
+    </message>
+    <message name="IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_SHARING_A_COMPUTER" desc="Profile picker main view subtitle.">
+      Keep your bookmarks, passwords, and settings separate. Add a new profile now.
+    </message>
+    <message name="IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_KEEP_EVERYTHING_IN_CHROME" desc="Profile picker main view subtitle.">
+      Profiles let you separate work, personal, and play without switching to another browser. Add a new profile now.
+    </message>
     <message name="IDS_PROFILE_PICKER_PROFILE_CARD_NEEDS_SIGNIN_PROMPT" desc="Text on the profile card signaling that the user must sign-in in order to open a profile">
       Sign in
+    </message>
+    <message name="IDS_PROFILE_PICKER_PROFILE_CARD_LABEL_SUPERVISED" desc="Accessibility label that is used on the profile card button that opens an existing profile. It includes information conveyed by the Google Family Link 'Kite' icon, which indicates that the account is supervised.">
+      Open <ph name="PROFILE_NAME">$1<ex>User</ex></ph> profile. This profile is managed by your parent.
     </message>
     <message name="IDS_PROFILE_PICKER_PROFILE_CARD_LABEL" desc="Label for a profile card button that opens a new profile">
       Open <ph name="PROFILE_NAME">$1<ex>User</ex></ph> profile
@@ -690,6 +934,9 @@
     <message name="IDS_PROFILE_PICKER_ASK_ON_STARTUP" desc="Text for the checkbox on the profile picker main view">
       Show on startup
     </message>
+    <message name="IDS_PROFILE_PICKER_OPEN_ALL_PROFILES_BUTTON" desc="Text for the button on the profile picker main view that opens all profiles.">
+      Open all profiles
+    </message>
     <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_LOCAL_PROFILE_TITLE" desc="Title of the remove warning message shown for local profiles, shown when the user selects remove from the 3 dotted menu.">
       Delete this profile and its data?
     </message>
@@ -710,6 +957,9 @@
     </message>
     <message name="IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_TIMEOUT_BODY" desc="Body of the force sign in error dialog, the dialog is shown when the user attempts to reauth a profile, but the process timed out.">
       Couldn't sign you in, please try again
+    </message>
+    <message name="IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_DIALOG_NOT_SUPPORTED_BY_GLIC_FLOW_TITLE" desc="Title of the force sign in error dialog, the dialog is shown when the user attempts to reauth a profile while in the Glic version. This flow is not supported in this version of the picker. The overall purpose of the dialog is to redirect the user to the regular picker to finalize the reauth.">
+      Verify it's you
     </message>
     <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_HISTORY" desc="The title of a statistic (browsing history) shown inside a table below the warning text when attempting to remove an user. A number is displayed next to it.">
       Browsing history
@@ -732,6 +982,10 @@
     <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_NOT_NOW_BUTTON_LABEL" desc="Label for a button to decline a prompt to sign in">
       Continue without an account
     </message>
+    <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_STAY_SIGNED_OUT_BUTTON_LABEL" desc="Label for a button to decline a prompt to sign in">
+      Stay signed out
+    </message>
+
     <!-- TODO(crbug.com/40267173): Update the string ids for local profile
          creatiom since they are now used outside the Profile Picker, in
          Profile Customization UI instead. -->
@@ -765,125 +1019,93 @@
     <message name="IDS_PROFILE_PICKER_PROFILE_SWITCH_SWITCH_BUTTON_LABEL" desc="Label of a button that switches user browsing to existing profile">
       Switch
     </message>
-
-    <if expr="not chromeos_lacros">
-      <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_DEVICE_MANAGED_BY_DESCRIPTION" desc="Disclaimer on the first profile creation screen, informing that the device is managed by an administrator.">
-        Your device is managed by <ph name="PROFILE_NAME">$1<ex>example.com</ex></ph>. Administrators can access the data in any profile on this device.
-      </message>
-      <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_DEVICE_MANAGED_DESCRIPTION" desc="Disclaimer on the first profile creation screen, informing that the device is managed.">
-        Your device is managed by your organization. Administrators can access the data in any profile on this device.
-      </message>
-      <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_LOCAL_PROFILE" desc="Main text shown as a warning when attempting to remove an user.">
-        This will permanently delete your browsing data from this device.
-      </message>
-      <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_TITLE" desc="Title of the remove warning message shown for signed in profiles, shown when the user selects remove from the 3 dotted menu">
-        Delete this profile?
-      </message>
-      <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE" desc="Remove warning message shown for signed in profiles shown when the user selects remove from the 3 dotted menu">
-        This will permanently delete your browsing data from this device. To recover the data, turn on sync as
-      </message>
-      <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE_UNO"
-        desc="Profile picker profile type choice subtitle"> Sign in to get your passwords and more on all your devices
-      </message>
-    </if>
-
-    <if expr="chromeos_lacros">
-      <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SESSION_MANAGED_BY_DESCRIPTION" desc="Disclaimer on the first profile creation screen, informing that the session is managed by an administrator.">
-        Your session is managed by <ph name="MANAGER_NAME">$1<ex>example.com</ex></ph>. Administrators can delete your profile and also monitor your network traffic.
-      </message>
-      <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SESSION_MANAGED_DESCRIPTION" desc="Disclaimer on the first profile creation screen, informing that the session is managed.">
-        Your session is managed by your organization. Administrators can delete your profile and also monitor your network traffic.
-      </message>
-      <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_ACCOUNT_SELECTION_LACROS_TITLE" desc="Profile picker, account selection screen title">
-        Choose an account
-      </message>
-      <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_ACCOUNT_SELECTION_LACROS_OTHER_ACCOUNT_BUTTON_LABEL" desc="Label for a button to use another account for the new profile">
-        Use another account
-      </message>
-      <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_LACROS" desc="Profile picker main view title">
-        Choose a profile
-      </message>
-      <message name="IDS_PROFILE_PICKER_LACROS_PRIMARY_PROFILE_DELETION_WARNING_TITLE" desc="Title of a dialog which explains that the profile the user is trying to delete cannot be deleted, because it is the default profile.">
-        Can't delete this profile
-      </message>
-      <message name="IDS_PROFILE_PICKER_LACROS_PRIMARY_PROFILE_DELETION_WARNING" desc="Text of a dialog which explains that the profile the user is trying to delete cannot be deleted, because it is the default profile.">
-        <ph name="ACCOUNT_EMAIL">$1<ex>Jane.Doe@gmail.com</ex></ph> is the default account on your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>
-      </message>
-      <message name="IDS_PROFILE_PICKER_LACROS_PRIMARY_PROFILE_DELETION_WARNING_CONFIRMATION" desc="Text of a button below a dialog which explains that the profile the user is trying to delete cannot be deleted, because it is the default profile. By clicking the button, the user closes the this dialog.">
-        Got it
-      </message>
-      <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_TITLE_LACROS" desc="Title of the remove warning message shown for signed in profiles, shown when the user selects remove from the 3 dotted menu">
-        Delete this profile and browsing data?
-      </message>
-      <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_LACROS" desc="Remove warning message shown for signed in profiles shown when the user selects remove from the 3 dotted menu">
-        This will permanently delete browsing data and saved desks associated with this profile from this device. The Google Accounts in this profile may be used by other apps on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. You can remove these accounts in <ph name="BEGIN_LINK">&lt;a is="action-link" target="_blank"&gt;</ph><ph name="SETTING_SECTION">$2<ex>Settings</ex></ph> > <ph name="ACCOUNTS_SECTION">$3<ex>Accounts</ex></ph><ph name="END_LINK">&lt;/a&gt;</ph>.
-      </message>
-      <message name="IDS_PRIMARY_PROFILE_FIRST_RUN_NEXT_BUTTON_LABEL" desc="Label of the 'next' button of the landing screen in first run experience for the primary profile. The screen promotes Chrome sync.">
-        Let's go
-      </message>
-    </if>
+    <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_DEVICE_MANAGED_BY_DESCRIPTION" desc="Disclaimer on the first profile creation screen, informing that the device is managed by an administrator.">
+      Your device is managed by <ph name="PROFILE_NAME">$1<ex>example.com</ex></ph>. Administrators can access the data in any profile on this device.
+    </message>
+    <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_DEVICE_MANAGED_DESCRIPTION" desc="Disclaimer on the first profile creation screen, informing that the device is managed.">
+      Your device is managed by your organization. Administrators can access the data in any profile on this device.
+    </message>
+    <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_LOCAL_PROFILE" desc="Main text shown as a warning when attempting to remove an user.">
+      This will permanently delete your browsing data from this device.
+    </message>
+    <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_TITLE" desc="Title of the remove warning message shown for signed in profiles, shown when the user selects remove from the 3 dotted menu">
+      Delete this profile?
+    </message>
+    <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE" desc="Remove warning message shown for signed in profiles shown when the user selects remove from the 3 dotted menu">
+      This will permanently delete your browsing data from this device. To recover the data, turn on sync as
+    </message>
+    <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE_UNO"
+      desc="Profile picker profile type choice subtitle"> Sign in to get your passwords and more on all your devices
+    </message>
+    <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE_UNO_BOOKMARKS"
+      desc="Profile picker profile type choice subtitle"> Sign in to get your passwords, bookmarks, and more on all your devices
+    </message>
 
     <!-- First Run Experience strings -->
-    <if expr="not chromeos_lacros">
-      <message name="IDS_FRE_SIGN_IN_SUBTITLE_0"
-        desc="This is the subtitle on a full-page screen that asks the user to sign in to Chrome with their Google Account. It appears when the user launches Chrome for the first time. When they sign in, they can personalize and customize Chrome and remember their settings in their Google Account. These features are also described in the cards below as 'All your devices', 'Stronger security', and 'Back up data'. The tone should be inviting and alluring.">
-        Get additional features
+    <message name="IDS_FRE_SIGN_IN_SUBTITLE_0"
+      desc="This is the subtitle on a full-page screen that asks the user to sign in to Chrome with their Google Account. It appears when the user launches Chrome for the first time. When they sign in, they can personalize and customize Chrome and remember their settings in their Google Account. These features are also described in the cards below as 'All your devices', 'Stronger security', and 'Back up data'. The tone should be inviting and alluring.">
+      Get additional features
+    </message>
+    <message name="IDS_FRE_SIGN_IN_SUBTITLE_1"
+      desc="This is the subtitle on a full-page screen that asks the user to sign in to Chrome with their Google Account. It appears when the user launches Chrome for the first time. When they sign in, they can personalize and customize Chrome and remember their settings in their Google Account. These features are also described in the cards below as 'All your devices', 'Stronger security', and 'Back up data'. The tone should be inviting and alluring.">
+      Sign in for additional features
+    </message>
+    <message name="IDS_FRE_DEVICES_CARD_TITLE"
+      desc="This string is the headline in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. This card's headline means that users can get their data (like bookmarks, history) on all the devices where they're signed in. The headline is followed by the body text 'Easily pick up where you left off'. The tone should be informative.">
+      All your devices
+    </message>
+    <message name="IDS_FRE_DEVICES_CARD_DESCRIPTION"
+      desc="This is the body text in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. The body is preceded by the headline 'All your devices'. This card's body means that users can get their data (like bookmarks, history) on all the devices where they're signed in. The tone should be informative.">
+      Easily pick up where you left off
+    </message>
+    <message name="IDS_FRE_SECURITY_CARD_TITLE"
+      desc="This string is the headline in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. This card's headline means that users can get a higher level of security. The headline is followed by the body text 'Protect your passwords against phishing'. The tone should be informative.">
+      Stronger security
+    </message>
+    <message name="IDS_FRE_SECURITY_CARD_DESCRIPTION"
+      desc="This is the body text in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. The body is preceded by the headline 'Stronger security'. This card's body means that users can get a higher level of security. Translate 'phishing' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=60554f8 . The tone should be informative.">
+      Protect your passwords against phishing
+    </message>
+    <message name="IDS_FRE_BACKUP_CARD_TITLE"
+      desc="This string is the headline in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. This card's headline means that users can back up their data (like bookmarks, history, passwords, settings) so that the data can't get lost if a device malfunctions. The headline is followed by the body text 'Store your passwords, bookmarks, and more'. The tone should be informative.">
+      Back up your stuff
+    </message>
+    <message name="IDS_UNO_FRE_BACKUP_CARD_DESCRIPTION"
+      desc="This is the body text in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. The body is preceded by the headline 'Back up data'. This card's body means that users can back up their data (like bookmarks, history, settings) so that the data can't get lost if a device malfunctions. Translate 'bookmarks' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=59c31bb . Translate 'and more' so that it conveys that there are additional similar items that are not listed. The tone should be informative.">
+      Save your bookmarks and more with sync
+    </message>
+    <message name="IDS_UNO_FRE_BACKUP_CARD_DESCRIPTION_WITH_PASSWORDS"
+      desc="This is the body text in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. The body is preceded by the headline 'Back up data'. This card's body means that users can back up their data (like bookmarks, history, settings) so that the data can't get lost if a device malfunctions. Translate 'bookmarks' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=59c31bb . Translate 'and more' so that it conveys that there are additional similar items that are not listed. The tone should be informative.">
+      Store your passwords, bookmarks, and more
+    </message>
+    <if expr="not use_titlecase">
+      <message name="IDS_FRE_DECLINE_SIGN_IN_BUTTON_TITLE" desc="The title of the button giving the users the choice not to sign in to Chrome">
+        Don't sign in
       </message>
-      <message name="IDS_FRE_SIGN_IN_SUBTITLE_1"
-        desc="This is the subtitle on a full-page screen that asks the user to sign in to Chrome with their Google Account. It appears when the user launches Chrome for the first time. When they sign in, they can personalize and customize Chrome and remember their settings in their Google Account. These features are also described in the cards below as 'All your devices', 'Stronger security', and 'Back up data'. The tone should be inviting and alluring.">
-        Sign in for additional features
+      <message name="IDS_FRE_STAY_SIGNED_OUT_BUTTON_TITLE" desc="The title of the button giving the users the choice not to sign in to Chrome">
+        Stay signed out
       </message>
-      <message name="IDS_FRE_DEVICES_CARD_TITLE"
-        desc="This string is the headline in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. This card's headline means that users can get their data (like bookmarks, history) on all the devices where they're signed in. The headline is followed by the body text 'Easily pick up where you left off'. The tone should be informative.">
-        All your devices
-      </message>
-      <message name="IDS_FRE_DEVICES_CARD_DESCRIPTION"
-        desc="This is the body text in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. The body is preceded by the headline 'All your devices'. This card's body means that users can get their data (like bookmarks, history) on all the devices where they're signed in. The tone should be informative.">
-        Easily pick up where you left off
-      </message>
-      <message name="IDS_FRE_SECURITY_CARD_TITLE"
-        desc="This string is the headline in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. This card's headline means that users can get a higher level of security. The headline is followed by the body text 'Protect your passwords against phishing'. The tone should be informative.">
-        Stronger security
-      </message>
-      <message name="IDS_FRE_SECURITY_CARD_DESCRIPTION"
-        desc="This is the body text in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. The body is preceded by the headline 'Stronger security'. This card's body means that users can get a higher level of security. Translate 'phishing' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=60554f8 . The tone should be informative.">
-        Protect your passwords against phishing
-      </message>
-      <message name="IDS_FRE_BACKUP_CARD_TITLE"
-        desc="This string is the headline in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. This card's headline means that users can back up their data (like bookmarks, history, passwords, settings) so that the data can't get lost if a device malfunctions. The headline is followed by the body text 'Save your bookmarks, passwords, and more with sync'. The tone should be informative.">
-        Back up data
-      </message>
-      <message name="IDS_FRE_BACKUP_CARD_DESCRIPTION"
-        desc="This is the body text in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. The body is preceded by the headline 'Back up data'. This card's body means that users can back up their data (like bookmarks, history, passwords, settings) so that the data can't get lost if a device malfunctions. Translate 'bookmarks' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=59c31bb . Translate 'passwords' as the plural version of https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=281e09e1 . Translate 'and more' so that it conveys that there are additional similar items that are not listed. The tone should be informative.">
-        Save your bookmarks, passwords and more with sync
-      </message>
-      <message name="IDS_UNO_FRE_BACKUP_CARD_DESCRIPTION"
-        desc="This is the body text in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. The body is preceded by the headline 'Back up data'. This card's body means that users can back up their data (like bookmarks, history, settings) so that the data can't get lost if a device malfunctions. Translate 'bookmarks' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=59c31bb . Translate 'and more' so that it conveys that there are additional similar items that are not listed. The tone should be informative.">
-        Save your bookmarks and more with sync
-      </message>
-      <if expr="not use_titlecase">
-        <message name="IDS_FRE_DECLINE_SIGN_IN_BUTTON_TITLE" desc="The title of the button giving the users the choice not to sign in to Chrome">
-          Don't sign in
-        </message>
-        <message name="IDS_FRE_ACCEPT_SIGN_IN_BUTTON_TITLE" desc="The title of the button giving the users the choice to sign in to Chrome">
-          Sign in
-        </message>
-      </if>
-      <if expr="use_titlecase">
-        <message name="IDS_FRE_DECLINE_SIGN_IN_BUTTON_TITLE" desc="In Title Case. The title of the button giving the users the choice not to sign in to Chrome">
-          Don't Sign In
-        </message>
-        <message name="IDS_FRE_ACCEPT_SIGN_IN_BUTTON_TITLE" desc="In Title Case. The title of the button giving the users the choice to sign in to Chrome">
-          Sign In
-        </message>
-      </if>
-      <message name="IDS_FRE_MANAGED_DESCRIPTION" desc="The disclaimer explaining to the users that their device is managed by their organization">
-        Your device is managed by your organization. Administrators can access the data in any profile on this device.
-      </message>
-      <message name="IDS_FRE_MANAGED_BY_DESCRIPTION" desc="The disclaimer explaining to the users that their device is managed by an administrator">
-        Your device is managed by <ph name="DOMAIN">$1<ex>example.com</ex></ph>. Administrators can access the data in any profile on this device.
+      <message name="IDS_FRE_ACCEPT_SIGN_IN_BUTTON_TITLE" desc="The title of the button giving the users the choice to sign in to Chrome">
+        Sign in
       </message>
     </if>
+    <if expr="use_titlecase">
+      <message name="IDS_FRE_DECLINE_SIGN_IN_BUTTON_TITLE" desc="In Title Case. The title of the button giving the users the choice not to sign in to Chrome">
+        Don't Sign In
+      </message>
+      <message name="IDS_FRE_STAY_SIGNED_OUT_BUTTON_TITLE" desc="The title of the button giving the users the choice not to sign in to Chrome">
+        Stay Signed Out
+      </message>
+      <message name="IDS_FRE_ACCEPT_SIGN_IN_BUTTON_TITLE" desc="In Title Case. The title of the button giving the users the choice to sign in to Chrome">
+        Sign In
+      </message>
+    </if>
+    <message name="IDS_FRE_MANAGED_DESCRIPTION" desc="The disclaimer explaining to the users that their device is managed by their organization">
+      Your device is managed by your organization. Administrators can access the data in any profile on this device.
+    </message>
+    <message name="IDS_FRE_MANAGED_BY_DESCRIPTION" desc="The disclaimer explaining to the users that their device is managed by an administrator">
+      Your device is managed by <ph name="DOMAIN">$1<ex>example.com</ex></ph>. Administrators can access the data in any profile on this device.
+    </message>
 
     <!-- Default Browser Promo -->
     <message name="IDS_FRE_DEFAULT_BROWSER_TITLE_NEW" desc="Title for the page that prompts user to set Chrome as their default browser in the first run experience.">
@@ -899,5 +1121,264 @@
       Skip
     </message>
 
+    <!-- Batch Upload Desktop -->
+    <message name="IDS_BATCH_UPLOAD_TITLE" desc="Title of the Batch Upload dialog on Desktop. This dialog appears when the user clicks on an informational message about items saved to their device. This title precedes a list of items (passwords, bookmarks, and addresses), where the user can select the checkboxes for the items that they want to save in their Google Account. When items are saved in their Google Account, the user can access them on any device where they’re signed in to Chrome. The tone should be motivating.">
+      Save items in account
+    </message>
+    <message name="IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_ITEMS_WITH_DEDUPLICATION" desc="Subtitle of the Batch Upload dialog. This dialog appears when the user clicks on an informational message about items saved to their device. This subtitle variant is shown if no special type exists. This subtitle precedes a list of items (passwords, bookmarks, and addresses), where the user can select the checkboxes for the items that they want to save in their Google Account. This subtitle only mentions the total number of items that are shown. A special type will have its type name shown first instead of 'items' and potentially show 'and other items' if multiple sections exist, in different strings. When items are saved in their Google Account, the user can access them on any device where they’re signed in to Chrome. The tone should be motivating.">
+      {ITEM_COUNT, plural,
+      =1 {1 item is saved only to this device. To use it on your other devices, save it in your Google Account. This will also clean up any duplicates.}
+      other {{ITEM_COUNT} items are saved only to this device. To use them on your other devices, save them in your Google Account. This will also clean up any duplicates.}
+      }
+    </message>
+    <message name="IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_PASSWORDS_WITH_DEDUPLICATION" desc="Subtitle of the Batch Upload dialog. This dialog appears when the user clicks on an informational message about items saved to their device. This subtitle variant is shown if password type exists with no other types. This subtitle precedes a list of items (passwords, bookmarks, and addresses), where the user can select the checkboxes for the items that they want to save in their Google Account. This subtitle mentions the number of passwords items in the section. When items are saved in their Google Account, the user can access them on any device where they’re signed in to Chrome. The tone should be motivating.">
+      {PASSWORD_COUNT, plural,
+      =1 {1 password is saved only to this device. To use it on your other devices, save it in your Google Account. This will also clean up any duplicates.}
+      other {{PASSWORD_COUNT} passwords are saved only to this device. To use them on your other devices, save them in your Google Account. This will also clean up any duplicates.}
+      }
+    </message>
+    <message name="IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_PASSWORDS_COMBO_WITH_DEDUPLICATION" desc="Subtitle of the Batch Upload dialog. This dialog appears when the user clicks on an informational message about items saved only to their device. This subtitle variant is shown if password type is the first type and it is not the only one. This subtitle precedes a list of items (passwords, bookmarks, and addresses), where the user can select the checkboxes for the items that they want to save in their Google Account. This subtitle mentions the number of passwords items in the section as well as 'and other items' to reference the other types. When items are saved in their Google Account, the user can access them on any device where they’re signed in to Chrome. The tone should be motivating.">
+      {PASSWORD_COUNT, plural,
+      =1 {1 password and other items are saved only to this device. To use them on your other devices, save them in your Google Account. This will also clean up any duplicates.}
+      other {{PASSWORD_COUNT} passwords and other items are saved only to this device. To use them on your other devices, save them in your Google Account. This will also clean up any duplicates.}
+      }
+    </message>
+    <message name="IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_BOOKMARKS_WITH_DEDUPLICATION" desc="Subtitle of the Batch Upload dialog. This dialog appears when the user clicks on an informational message about items saved to their device. This subtitle variant is shown if bookmark type exists with no other types. This subtitle precedes a list of items (passwords, bookmarks, and addresses), where the user can select the checkboxes for the items that they want to save in their Google Account. This subtitle mentions the number of bookmarks in the section. When items are saved in their Google Account, the user can access them on any device where they’re signed in to Chrome. The tone should be motivating.">
+      {BOOKMARK_COUNT, plural,
+      =1 {1 bookmark is saved only to this device. To use it on your other devices, save it in your Google Account. This will also clean up any duplicates.}
+      other {{BOOKMARK_COUNT} bookmarks are saved only to this device. To use them on your other devices, save them in your Google Account. This will also clean up any duplicates.}
+      }
+    </message>
+    <message name="IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_BOOKMARKS_COMBO_WITH_DEDUPLICATION" desc="Subtitle of the Batch Upload dialog. This dialog appears when the user clicks on an informational message about items saved only to their device. This subtitle variant is shown if bookmark type is the first type and it is not the only one. This subtitle precedes a list of items (passwords, bookmarks, and addresses), where the user can select the checkboxes for the items that they want to save in their Google Account. This subtitle mentions the number of bookmarks in the section as well as 'and other items' to reference the other types. When items are saved in their Google Account, the user can access them on any device where they’re signed in to Chrome. The tone should be motivating.">
+      {BOOKMARK_COUNT, plural,
+      =1 {1 bookmark and other items are saved only to this device. To use them on your other devices, save them in your Google Account. This will also clean up any duplicates.}
+      other {{BOOKMARK_COUNT} bookmarks and other items are saved only to this device. To use them on your other devices, save them in your Google Account. This will also clean up any duplicates.}
+      }
+    </message>
+    <message name="IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_ITEMS" desc="Subtitle of the Batch Upload dialog. This dialog appears when the user clicks on an informational message about items saved to their device. This subtitle variant is shown if no special type exists. This subtitle precedes a list of items (passwords, bookmarks, and addresses), where the user can select the checkboxes for the items that they want to save in their Google Account. This subtitle only mentions the total number of items that are shown. A special type will have its type name shown first instead of 'items' and potentially show 'and other items' if multiple sections exist, in different strings. When items are saved in their Google Account, the user can access them on any device where they’re signed in to Chrome. The tone should be motivating.">
+      {ITEM_COUNT, plural,
+      =1 {1 item is saved only to this device. To use it on your other devices, save it in your Google Account.}
+      other {{ITEM_COUNT} items are saved only to this device. To use them on your other devices, save them in your Google Account.}
+      }
+    </message>
+    <message name="IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_PASSWORDS" desc="Subtitle of the Batch Upload dialog. This dialog appears when the user clicks on an informational message about items saved to their device. This subtitle variant is shown if password type exists with no other types. This subtitle precedes a list of items (passwords, bookmarks, and addresses), where the user can select the checkboxes for the items that they want to save in their Google Account. This subtitle mentions the number of passwords items in the section. When items are saved in their Google Account, the user can access them on any device where they’re signed in to Chrome. The tone should be motivating.">
+      {PASSWORD_COUNT, plural,
+      =1 {1 password is saved only to this device. To use it on your other devices, save it in your Google Account.}
+      other {{PASSWORD_COUNT} passwords are saved only to this device. To use them on your other devices, save them in your Google Account.}
+      }
+    </message>
+    <message name="IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_PASSWORDS_COMBO" desc="Subtitle of the Batch Upload dialog. This dialog appears when the user clicks on an informational message about items saved only to their device. This subtitle variant is shown if password type is the first type and it is not the only one. This subtitle precedes a list of items (passwords, bookmarks, and addresses), where the user can select the checkboxes for the items that they want to save in their Google Account. This subtitle mentions the number of passwords items in the section as well as 'and other items' to reference the other types. When items are saved in their Google Account, the user can access them on any device where they’re signed in to Chrome. The tone should be motivating.">
+      {PASSWORD_COUNT, plural,
+      =1 {1 password and other items are saved only to this device. To use them on your other devices, save them in your Google Account.}
+      other {{PASSWORD_COUNT} passwords and other items are saved only to this device. To use them on your other devices, save them in your Google Account.}
+      }
+    </message>
+    <message name="IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_BOOKMARKS" desc="Subtitle of the Batch Upload dialog. This dialog appears when the user clicks on an informational message about items saved to their device. This subtitle variant is shown if bookmark type exists with no other types. This subtitle precedes a list of items (passwords, bookmarks, and addresses), where the user can select the checkboxes for the items that they want to save in their Google Account. This subtitle mentions the number of bookmarks in the section. When items are saved in their Google Account, the user can access them on any device where they’re signed in to Chrome. The tone should be motivating.">
+      {BOOKMARK_COUNT, plural,
+      =1 {1 bookmark is saved only to this device. To use it on your other devices, save it in your Google Account.}
+      other {{BOOKMARK_COUNT} bookmarks are saved only to this device. To use them on your other devices, save them in your Google Account.}
+      }
+    </message>
+    <message name="IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_BOOKMARKS_COMBO" desc="Subtitle of the Batch Upload dialog. This dialog appears when the user clicks on an informational message about items saved only to their device. This subtitle variant is shown if bookmark type is the first type and it is not the only one. This subtitle precedes a list of items (passwords, bookmarks, and addresses), where the user can select the checkboxes for the items that they want to save in their Google Account. This subtitle mentions the number of bookmarks in the section as well as 'and other items' to reference the other types. When items are saved in their Google Account, the user can access them on any device where they’re signed in to Chrome. The tone should be motivating.">
+      {BOOKMARK_COUNT, plural,
+      =1 {1 bookmark and other items are saved only to this device. To use them on your other devices, save them in your Google Account.}
+      other {{BOOKMARK_COUNT} bookmarks and other items are saved only to this device. To use them on your other devices, save them in your Google Account.}
+      }
+    </message>
+    <message name="IDS_BATCH_UPLOAD_SECTION_TITLE_PASSWORDS" desc="Title of the Passwords section in the Batch Upload dialog. This dialog appears when the user clicks on an informational message about items saved only to their device. The title of the dialog is ‘Save items in account’. The list of items has sections for each applicable data type: Passwords, Bookmarks, and more. This section shows the number of selected items in the section of the dialog, if any.">
+      {SELECTED_ITEMS, plural,
+      =0 {Passwords}
+      =1 {Passwords ({SELECTED_ITEMS})}
+      other {Passwords ({SELECTED_ITEMS})}
+      }
+    </message>
+    <message name="IDS_BATCH_UPLOAD_SECTION_TITLE_BOOKMARKS" desc="Title of the Bookmarks section in the Batch Upload dialog. This dialog appears when the user clicks on an informational message about items saved only to their device. The title of the dialog is ‘Save items in account’. The list of items has sections for each applicable data type: Passwords, Bookmarks, and more. This section shows the number of selected items in the section of the dialog, if any.">
+      {SELECTED_ITEMS, plural,
+      =0 {Bookmarks}
+      =1 {Bookmarks ({SELECTED_ITEMS})}
+      other {Bookmarks ({SELECTED_ITEMS})}
+      }
+    </message>
+    <message name="IDS_BATCH_UPLOAD_SECTION_TITLE_READING_LIST" desc="Title of the Reading list section in the Batch Upload dialog. This dialog appears when the user clicks on an informational message about items saved only to their device. The title of the dialog is ‘Save items in account’. The list of items has sections for each applicable data type: Passwords, Bookmarks, and more. This section shows the number of selected items in the section of the dialog, if any.">
+      {SELECTED_ITEMS, plural,
+      =0 {Reading list}
+      =1 {Reading list ({SELECTED_ITEMS})}
+      other {Reading list ({SELECTED_ITEMS})}
+      }
+    </message>
+    <message name="IDS_BATCH_UPLOAD_SECTION_TITLE_ADDRESSES" desc="Title of the Addresses section in the Batch Upload dialog. This dialog appears when the user clicks on an informational message about items saved only to their device. The title of the dialog is ‘Save items in account’. The list of items has sections for each applicable data type: Passwords, Bookmarks, and more. This section shows the number of selected items in the section of the dialog, if any.">
+      {SELECTED_ITEMS, plural,
+      =0 {Addresses}
+      =1 {Addresses ({SELECTED_ITEMS})}
+      other {Addresses ({SELECTED_ITEMS})}
+      }
+    </message>
+    <message name="IDS_BATCH_UPLOAD_SECTION_TITLE_EXTENSIONS" desc="Title of the Extensions section in the Batch Upload dialog. This dialog appears when the user clicks on an informational message about items saved only to their device. The title of the dialog is ‘Save items in account’. The list of items has sections for each applicable data type: Passwords, Bookmarks, and more. This section shows the number of selected items in the section of the dialog, if any.">
+      {SELECTED_ITEMS, plural,
+      =0 {Extensions}
+      =1 {Extensions ({SELECTED_ITEMS})}
+      other {Extensions ({SELECTED_ITEMS})}
+      }
+    </message>
+    <message name="IDS_BATCH_UPLOAD_SECTION_TITLE_THEMES_WITH_DESCRIPTION" desc="Title of the Themes section in the Batch Upload dialog. It contains a fixed title in addition to its only item title description. This dialog appears when the user clicks on an informational message about items saved only to their device. The title of the dialog is ‘Save items in account’. This section title also acts as the item being selected (the section toggle dictates the state of the selection) since Themes will always have one item.">
+      Theme: <ph name="THEME_NAME">$1<ex>Green color</ex></ph>
+    </message>
+    <message name="IDS_BATCH_UPLOAD_SAVE_TO_ACCOUNT_OK_BUTTON_LABEL" desc="Text of the button that triggers the saving of the selected items in the Batch Upload dialog. This dialog appears when the user clicks on an informational message about items only saved to their device. The title of the dialog is ‘Save items in account’. The list of items has three sections: Passwords, Bookmarks, and Addresses. When pressing the button, selected items are moved to the account storage (Saved in account) and the dialog is then closed. The tone should be motivating.">
+      Save in account
+    </message>
+    <message name="IDS_BATCH_UPLOAD_AVATAR_BUTTON_SAVING_TO_ACCOUNT" desc="Text shown on the avatar button pill after the user has requested to save items in their account through the Batch Upload dialog. The text is shown for few seconds then disappears.">
+      Saving in your account...
+    </message>
+    <message name="IDS_BATCH_UPLOAD_LAST_ITEM_SELECTED_SCREEN_READER" desc="Text read by the screen reader after focusing the last selected item of a section of the Batch upload dialog. It will mention that it is the last item, and that unselecting it will disable the section,  given that this can be an uncommon behavior, esepcially for visually impaired users, it needs to be explicilty stated by the screen reader.">
+      Last item selected, unselecting it will exit selection mode
+    </message>
+    <message name="IDS_BATCH_UPLOAD_SCREEN_READER_ITEM_COUNT_SELECTED" desc="Text read by the screen reader after interacting with a checkbox in a section of the Batch Upload dialog. It will read the current number of selected items in the section after the user action on that checkbox.">
+      <ph name="NUMBER_OF_ITEMS_SELECTED">$1</ph> selected
+    </message>
+    <message name="IDS_BATCH_UPLOAD_SCREEN_READER_SELECT_ALL" desc="Text read by the screen reader when focusing the toggle button of a section in the Batch Upload dialog and that toggle is turned off. Notifies that the action on the toggle would select all items in this section.">
+      Select all
+    </message>
+    <message name="IDS_BATCH_UPLOAD_SCREEN_READER_SELECT_NONE" desc="Text read by the screen reader when focusing the toggle button of a section in the Batch Upload dialog and that toggle is turned on. Notifies that the action on the toggle would select no items in this section.">
+      Select none
+    </message>
+    <message name="IDS_BATCH_UPLOAD_PROMO_TITLE" desc="Title of the Batch Upload promo. This promo appears to inform the user that there are items saved only to their device. If the user chooses to save items in their Google Account, the user can access them on any device where they’re signed in to Chrome. This promo leads to the Batch Upload dialog, where the user can select the checkboxes for the items that they want to save in their Google Account. The tone should be motivating.">
+      Get your bookmarks and more on all your devices
+    </message>
+    <if expr="use_titlecase">
+      <message name="IDS_BATCH_UPLOAD_PROMO_TITLE_OK_BUTTON_LABEL" desc="Affirmative button of the Batch Upload promo. This promo appears to inform the user that there are items saved only to their device; this subtitle mentions how many bookmarks (and other items, if any) are on the device. If the user chooses to save items in their Google Account, the user can access them on any device where they’re signed in to Chrome. When the user clicks this button, the items aren’t saved yet: the user first sees the Batch Upload dialog, where the user can select the checkboxes for the items that they want to save in their Google Account. The tone should be motivating.">
+        Save in Account
+      </message>
+    </if>
+    <if expr="not use_titlecase">
+      <message name="IDS_BATCH_UPLOAD_PROMO_TITLE_OK_BUTTON_LABEL" desc="Affirmative button of the Batch Upload promo. This promo appears to inform the user that there are items saved only to their device; this subtitle mentions how many bookmarks (and other items, if any) are on the device. If the user chooses to save items in their Google Account, the user can access them on any device where they’re signed in to Chrome. When the user clicks this button, the items aren’t saved yet: the user first sees the Batch Upload dialog, where the user can select the checkboxes for the items that they want to save in their Google Account. The tone should be motivating.">
+        Save in account
+      </message>
+    </if>
+    <message name="IDS_BATCH_UPLOAD_PROMO_SUBTITLE_BOOKMARKS" desc="Subtitle of the Batch Upload promo. This promo appears to inform the user that there are items saved only to their device; this subtitle mentions how many bookmarks are on the device. If the user chooses to save items in their Google Account, the user can access them on any device where they’re signed in to Chrome. This promo leads to the Batch Upload dialog, where the user can select the checkboxes for the items that they want to save in their Google Account. The tone should be motivating.">
+      {BOOKMARK_COUNT, plural,
+      =1 {1 bookmark is saved only to this device. To use it on your other devices, save it in your Google Account.}
+      other {{BOOKMARK_COUNT} bookmarks are saved only to this device. To use them on your other devices, save them in your Google Account.}
+      }
+    </message>
+    <message name="IDS_BATCH_UPLOAD_PROMO_SUBTITLE_BOOKMARKS_COMBO" desc="Subtitle of the Batch Upload promo. This promo appears to inform the user that there are items saved only to their device; this subtitle mentions how many bookmarks and other items are on the device. If the user chooses to save items in their Google Account, the user can access them on any device where they’re signed in to Chrome. This promo leads to the Batch Upload dialog, where the user can select the checkboxes for the items that they want to save in their Google Account. The tone should be motivating.">
+      {BOOKMARK_COUNT, plural,
+      =1 {1 bookmark and other items are saved only to this device. To use them on your other devices, save them in your Google Account.}
+      other {{BOOKMARK_COUNT} bookmarks and other items are saved only to this device. To use them on your other devices, save them in your Google Account.}
+      }
+    </message>
+    <message name="IDS_BATCH_UPLOAD_PROMO_SUBTITLE_ITEMS_WITH_LINK" desc="The text for a promotional banner located on the Account Settings page. It informs the user how many items on their local device are waiting to be uploaded. The text contains a placeholder for the number of items (e.g., '5 items') and acts as a clickable link that takes the user to the Batch Upload screen. Please ensure the placeholder handles pluralization correctly.">
+      {ITEM_COUNT, plural,
+      =1 {1 item is saved only to this device. To use it on your other devices, <ph name="BEGIN_LINK">&lt;a href="'#'" id="openBatchUploadLink"&gt;</ph>save it in your Google Account<ph name="END_LINK">&lt;/a&gt;</ph>.}
+      other {{ITEM_COUNT} items are saved only to this device. To use them on your other devices, <ph name="BEGIN_LINK">&lt;a href="'#'" id="openBatchUploadLink"&gt;</ph>save them in your Google Account<ph name="END_LINK">&lt;/a&gt;</ph>.}
+      }
+    </message>
+
+    <!-- Signout Confirmation Dialog Desktop -->
+    <message name="IDS_SIGNOUT_CONFIRMATION_EXTENSIONS_SECTION_TITLE" desc="Title of the Extensions section in the Signout Confirmation dialog which allows users to remove extensions linked to their account when signing out.">
+      {ACCOUNT_EXTENSIONS_COUNT, plural,
+      =1 {Remove 1 extension and the data that it saved on this device}
+      other {Remove {ACCOUNT_EXTENSIONS_COUNT} extensions and the data that they saved on this device}
+      }
+    </message>
+    <message name="IDS_SIGNOUT_CONFIRMATION_EXTENSIONS_SECTION_TOOLTIP" desc="Mouse over tooltip for the Extensions section in the Signout Confirmation dialog which allows users to remove extensions linked to their account when signing out.">
+      {ACCOUNT_EXTENSIONS_COUNT, plural,
+      =1 {This extension is saved in your Google Account, but any data it saved only on this device may be deleted}
+      other {These extensions are saved in your Google Account, but any data they've saved only on this device may be deleted}
+      }
+    </message>
+    <message name="IDS_SIGNOUT_CONFIRMATION_UNSYNCED_DATA_WITH_ACCOUNT_EXTENSIONS" desc="An additional message shown in the Signout Confirmation dialog if the user initiates a signout with unsynced data and they have account extensions installed.">
+      You can also remove these extensions from this device:
+    </message>
+
+    <!-- History Sync Opt-in Desktop -->
+    <message name="IDS_HISTORY_SYNC_OPT_IN_TITLE" desc="Title of the history sync opt in screen which offers the user to turn on the data types history, tabs, and saved tab groups.">
+      Save time, type less
+    </message>
+    <message name="IDS_HISTORY_SYNC_OPT_IN_SUBTITLE" desc="Subtitle of the history sync opt in screen which offers the user to turn on the data types history, tabs, and saved tab groups.">
+      To quickly get back to sites you’ve visited, sync your history and tabs
+    </message>
+    <message name="IDS_HISTORY_SYNC_OPT_IN_SUBTITLE_WITH_EMAIL" desc="Subtitle of the history sync opt in screen which offers the user to turn on the data types history, tabs, and saved tab groups. Also includes the user's email.">
+      To quickly get back to sites you’ve visited, sync your history and tabs to <ph name="USER_EMAIL_ADDRESS">$2<ex>john.doe@example.com</ex></ph>
+    </message>
+    <message name="IDS_HISTORY_SYNC_OPT_IN_DESCRIPTION" desc="Description of the history sync opt in screen which offers the user to turn on the data types history, tabs, and saved tab groups.">
+      You can stop syncing anytime in settings. Google may personalize Search and other services based on your history.
+    </message>
+    <message name="IDS_HISTORY_SYNC_OPT_IN_ACCEPT_BUTTON" desc="Accept button of the history sync opt in screen which offers the user to turn on the data types history, tabs, and saved tab groups.">
+      Yes, I’m in
+    </message>
+    <message name="IDS_HISTORY_SYNC_OPT_IN_REJECT_BUTTON" desc="Decline button of the history sync opt in screen which offers the user to turn on the data types history, tabs, and saved tab groups.">
+      No thanks
+    </message>
+    <message name="IDS_TABS_DISABLED_ERROR_DESCRIPTION" desc="Message that is shown in an error dialog when a user tries to sign in to use a service that requires history sync opt in (e.g. sharing/joining tab groups), but sync is disabled.">
+      Your organization turned off saving tabs in your Google Account
+    </message>
+    <!-- Avatar Button Promos Desktop -->
+    <if expr="not use_titlecase">
+      <message name="IDS_AVATAR_BUTTON_SYNC_HISTORY" desc="The avatar button label for the history sync promo. When clicked, it opens the profile menu with the sync button.">
+        Sync history?
+      </message>
+      <message name="IDS_AVATAR_BUTTON_SYNC_PROMO" desc="The avatar button label for the sync promo. When clicked, it opens the profile menu with the sync button. This is also used to Batch Upload as well.">
+        Back up your stuff?
+      </message>
+      <message name="IDS_AVATAR_BUTTON_BATCH_UPLOAD_PROMO" desc="The avatar button label for the Batch Upload promo. When clicked, it opens the profile menu with a button that would open the Batch Upload.">
+        Save in account?
+      </message>
+      <message name="IDS_AVATAR_BUTTON_BATCH_UPLOAD_PROMO_WITH_BOOKMARK_CLEANUP_PROMO" desc="The avatar button label for the Batch Upload promo with an emphasis on Bookmarks. When clicked, it opens the profile menu with a button that would open the Batch Upload.">
+        Clean up bookmarks?
+      </message>
+    </if>
+    <if expr="use_titlecase">
+      <message name="IDS_AVATAR_BUTTON_SYNC_HISTORY" desc="The avatar button label for the history sync promo. When clicked, it opens the profile menu with the sync button.">
+        Sync History?
+      </message>
+      <message name="IDS_AVATAR_BUTTON_SYNC_PROMO" desc="The avatar button label for the sync promo. When clicked, it opens the profile menu with the sync button. This is also used to Batch Upload as well.">
+        Back Up Your Stuff?
+      </message>
+      <message name="IDS_AVATAR_BUTTON_BATCH_UPLOAD_PROMO" desc="The avatar button label for the Batch Upload promo. When clicked, it opens the profile menu with a button that would open the Batch Upload.">
+        Save in Account?
+      </message>
+      <message name="IDS_AVATAR_BUTTON_BATCH_UPLOAD_PROMO_WITH_BOOKMARK_CLEANUP_PROMO" desc="The avatar button label for the Batch Upload promo with an emphasis on Bookmarks. When clicked, it opens the profile menu with a button that would open the Batch Upload.">
+        Clean Up Bookmarks?
+      </message>
+    </if>
+    <!-- Profile Menu Promos Desktop -->
+    <message name="IDS_PROFILE_MENU_SYNC_PROMO_SYNC_HISTORY_DESCRIPTION" desc="The description for the sync promo in the profile menu opened from the 'Sync history?' history sync opt-in identity pill.">
+      To easily get back to sites you’ve visited, sync your history and tabs to <ph name="ACCOUNT_EMAIL">$1<ex>elisa.beckett@gmail.com</ex></ph>
+    </message>
+    <if expr="not use_titlecase">
+      <message name="IDS_PROFILE_MENU_SYNC_PROMO_BUTTON_LABEL" desc="The button label for the sync promo. When clicked, it opens the turn on sync dialog.">
+        Turn on
+      </message>
+    </if>
+    <if expr="use_titlecase">
+      <message name="IDS_PROFILE_MENU_SYNC_PROMO_BUTTON_LABEL" desc="The button label for the sync promo. When clicked, it opens the turn on sync dialog.">
+        Turn On
+      </message>
+    </if>
+    <message name="IDS_PROFILE_MENU_DESCRIPTION_WITH_SYNC_PROMO" desc="The description of the identity section in the Profile Menu for users that can see the Sync Promo in the Avatar button. This describes the action presented right below it in the button.">
+      Back up your passwords, bookmarks, and more, so you can easily get them on all your devices
+    </message>
+    <message name="IDS_PROFILE_MENU_BUTTON_LABEL_WITH_SYNC_PROMO" desc="The button label in the Profile Menu identity section for users that can see the Sync Promo in the Avatar button. When clicked, it opens the turn on sync dialog.">
+      Continue
+    </message>
+    <message name="IDS_PROFILE_MENU_PROMO_DESCRIPTION_WITH_BATCH_UPLOAD" desc="The description of the identity section in the Profile Menu for users that can see the Batch Upload promo in the Avatar button, when having local data. This describes the action presented right below it in the button.">
+      To get your passwords, bookmarks, and more on all your devices, save them in your Google Account
+    </message>
+    <if expr="not use_titlecase">
+      <message name="IDS_PROFILE_MENU_PROMO_BUTTON_WITH_BATCH_UPLOAD" desc="The button label in the Profile Menu identity section for users that can see the Batch Upload promo in the Avatar button, when having local data. When clicked, it opens the Batch Upload dialog.">
+        Save in account
+      </message>
+    </if>
+    <if expr="use_titlecase">
+      <message name="IDS_PROFILE_MENU_PROMO_BUTTON_WITH_BATCH_UPLOAD" desc="The button label in the Profile Menu identity section for users that can see the Batch Upload promo in the Avatar button, when having local data. When clicked, it opens the Batch Upload dialog.">
+        Save in Account
+      </message>
+    </if>
+    <message name="IDS_PROFILE_MENU_PROMO_DESCRIPTION_WITH_BATCH_UPLOAD_BOOKMARK_CLEANUP" desc="The description of the identity section in the Profile Menu for users that can see the Batch Upload promo in the Avatar button with the emphasis on Bookmarks cleanup, when having local data. This describes the action presented right below it in the button.">
+      To clean up any duplicate bookmarks, save them in your Google Account
+    </message>
   </if>
+    <message name="IDS_SIGN_IN_BENEFITS_IPH_TEXT" desc="Text of the IPH bubble announcing benefits for users who signed in before the sync-to-signin migration.">
+      While you're signed in, you can use the bookmarks, extensions, and more saved in your Google Account on all your devices
+    </message>
 </grit-part>

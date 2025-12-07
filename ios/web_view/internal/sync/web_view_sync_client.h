@@ -40,9 +40,6 @@ class WebViewSyncClient : public syncer::SyncClient {
   scoped_refptr<syncer::ExtensionsActivity> GetExtensionsActivity() override;
   syncer::SyncEngineFactory* GetSyncEngineFactory() override;
   bool IsCustomPassphraseAllowed() override;
-  bool IsPasswordSyncAllowed() override;
-  void SetPasswordSyncAllowedChangeCb(
-      const base::RepeatingClosure& cb) override;
   void RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial(
       const syncer::TrustedVaultAutoUpgradeSyntheticFieldTrialGroup& group)
       override;
@@ -52,7 +49,7 @@ class WebViewSyncClient : public syncer::SyncClient {
   const raw_ptr<signin::IdentityManager> identity_manager_;
   const raw_ptr<syncer::SyncInvalidationsService> sync_invalidations_service_;
 
-  std::unique_ptr<browser_sync::SyncEngineFactoryImpl> engine_factory_;
+  browser_sync::SyncEngineFactoryImpl engine_factory_;
   std::unique_ptr<trusted_vault::TrustedVaultClient> trusted_vault_client_;
 };
 

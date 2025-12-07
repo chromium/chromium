@@ -6,39 +6,74 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/check.h"
+#import "base/debug/crash_logging.h"
+#import "base/debug/dump_without_crashing.h"
+#import "base/feature_list.h"
 #import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/ios/ios_util.h"
 #import "base/json/json_writer.h"
 #import "base/logging.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/strings/string_split.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/values.h"
+#import "ios/web/common/features.h"
 #import "ios/web/js_messaging/java_script_content_world.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/js_messaging/web_view_js_utils.h"
 #import "ios/web/public/js_messaging/web_view_js_utils.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
+#import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 
 namespace {
-
-// Creates a JavaScript string for executing the function __gCrWeb.`name` with
-// `parameters`.
-NSString* CreateFunctionCallWithParamaters(
+// Creates a JavaScript string for executing the function
+// __gCrWeb.callFunctionInGcrWeb with parameters api_name, func_or_prop_name and
+// args.
+NSString* CreateFunctionCallWithParameters(
     const std::string& name,
     const base::Value::List& parameters) {
   NSMutableArray* parameter_strings = [[NSMutableArray alloc] init];
+
   for (const auto& value : parameters) {
-    std::string string_value;
-    base::JSONWriter::Write(value, &string_value);
+    std::string string_value = base::WriteJson(value).value_or("");
     [parameter_strings addObject:base::SysUTF8ToNSString(string_value)];
   }
 
+  // Assuming 'name' comes in the format "api.functionName" or
+  // "api.propertyName"
+  std::optional<std::pair<std::string_view, std::string_view>> name_parts =
+      base::SplitStringOnce(name, ".");
+
+  std::string_view api_name;
+  std::string_view function_name;
+
+  if (name_parts) {
+    api_name = name_parts->first;
+    function_name = name_parts->second;
+  } else {
+    api_name = "";
+    function_name = name;
+  }
+
   return [NSString
-      stringWithFormat:@"__gCrWeb.%s(%@)", name.c_str(),
+      stringWithFormat:@"__gCrWeb.callFunctionInGcrWeb(\"%s\", \"%s\", [%@])",
+                       std::string(api_name).c_str(),
+                       std::string(function_name).c_str(),
                        [parameter_strings componentsJoinedByString:@","]];
 }
+
+// The NSError message returned for frames which can not execute JavaScript.
+// This string is used to filter these errors because they share a more general
+// error code `WKErrorJavaScriptExceptionOccurred`.
+const NSString* kCannotExecuteJSInDocumentErrorMessage =
+    @"Cannot execute JavaScript in this document";
+
 }  // namespace
 
 namespace web {
@@ -48,13 +83,15 @@ const double kJavaScriptFunctionCallDefaultTimeout = 100.0;
 WebFrameImpl::WebFrameImpl(WKFrameInfo* frame_info,
                            const std::string& frame_id,
                            bool is_main_frame,
-                           GURL security_origin,
-                           web::WebState* web_state)
+                           url::Origin security_origin,
+                           web::WebState* web_state,
+                           ContentWorld content_world)
     : frame_info_(frame_info),
       frame_id_(base::ToLowerASCII(frame_id)),
       is_main_frame_(is_main_frame),
       security_origin_(security_origin),
-      web_state_(web_state) {
+      web_state_(web_state),
+      content_world_(content_world) {
   DCHECK(frame_info_);
   DCHECK(web_state_);
   web_state->AddObserver(this);
@@ -81,8 +118,12 @@ bool WebFrameImpl::IsMainFrame() const {
   return is_main_frame_;
 }
 
-GURL WebFrameImpl::GetSecurityOrigin() const {
+url::Origin WebFrameImpl::GetSecurityOrigin() const {
   return security_origin_;
+}
+
+GURL WebFrameImpl::GetUrl() const {
+  return net::GURLWithNSURL(frame_info_.request.URL);
 }
 
 BrowserState* WebFrameImpl::GetBrowserState() {
@@ -108,8 +149,8 @@ bool WebFrameImpl::CallJavaScriptFunctionInContentWorld(
 bool WebFrameImpl::CallJavaScriptFunction(const std::string& name,
                                           const base::Value::List& parameters) {
   JavaScriptContentWorld* content_world =
-      JavaScriptFeatureManager::GetPageContentWorldForBrowserState(
-          GetBrowserState());
+      JavaScriptFeatureManager::GetContentWorldForBrowserState(
+          content_world_, GetBrowserState());
 
   return CallJavaScriptFunctionInContentWorld(name, parameters, content_world,
                                               /*reply_with_result=*/false);
@@ -129,8 +170,8 @@ bool WebFrameImpl::CallJavaScriptFunction(
     base::OnceCallback<void(const base::Value*)> callback,
     base::TimeDelta timeout) {
   JavaScriptContentWorld* content_world =
-      JavaScriptFeatureManager::GetPageContentWorldForBrowserState(
-          GetBrowserState());
+      JavaScriptFeatureManager::GetContentWorldForBrowserState(
+          content_world_, GetBrowserState());
   return CallJavaScriptFunctionInContentWorld(name, parameters, content_world,
                                               std::move(callback), timeout);
 }
@@ -183,8 +224,8 @@ bool WebFrameImpl::ExecuteJavaScript(
     const std::u16string& script,
     ExecuteJavaScriptCallbackWithError callback) {
   JavaScriptContentWorld* content_world =
-      JavaScriptFeatureManager::GetPageContentWorldForBrowserState(
-          GetBrowserState());
+      JavaScriptFeatureManager::GetContentWorldForBrowserState(
+          content_world_, GetBrowserState());
 
   return ExecuteJavaScriptInContentWorld(script, content_world,
                                          std::move(callback));
@@ -234,13 +275,51 @@ WebFrameImpl::ExecuteJavaScriptCallbackAdapter(
 }
 
 void WebFrameImpl::LogScriptWarning(NSString* script, NSError* error) {
-  DLOG(WARNING) << "Script execution of:" << base::SysNSStringToUTF16(script)
-                << "\nfailed with error: "
-                << base::SysNSStringToUTF16(
-                       error.userInfo[NSLocalizedDescriptionKey])
-                << "\nand exception: "
-                << base::SysNSStringToUTF16(
-                       error.userInfo[@"WKJavaScriptExceptionMessage"]);
+  std::u16string executed_script = base::SysNSStringToUTF16(script);
+  std::u16string error_string =
+      base::SysNSStringToUTF16(error.userInfo[NSLocalizedDescriptionKey]);
+  NSString* ns_exception = error.userInfo[@"WKJavaScriptExceptionMessage"];
+  std::u16string exception = base::SysNSStringToUTF16(ns_exception);
+
+  DLOG(WARNING) << "Script execution of:" << executed_script
+                << "\nfailed with error: " << error_string
+                << "\nand exception: " << exception;
+
+  if (base::FeatureList::IsEnabled(features::kAssertOnJavaScriptErrors)) {
+    CHECK(false)
+        << "JavaScript error occurred with kAssertOnJavaScriptErrors enabled.";
+  }
+
+  UMA_HISTOGRAM_BOOLEAN("IOS.JavaScript.ScriptExecutionFailed", true);
+
+  if (!base::FeatureList::IsEnabled(features::kLogJavaScriptErrors) &&
+      !base::FeatureList::IsEnabled(features::kLogCrWebJavaScriptErrors)) {
+    return;
+  }
+
+  // Do not log invalid target frame errors. This error means that the frame is
+  // no longer valid. This is an expected failure state as native code only has
+  // an outdated view of the web frames (updated asyncronously via JS messages
+  // or navigation callbacks).
+  if (error.domain == WKErrorDomain &&
+      error.code == WKErrorJavaScriptInvalidFrameTarget) {
+    return;
+  }
+
+  // Some frames do not allow JavaScript execution, there is no need to report
+  // this as an error as it is an expected case.
+  if (error.domain == WKErrorDomain &&
+      [kCannotExecuteJSInDocumentErrorMessage isEqualToString:ns_exception]) {
+    return;
+  }
+
+  SCOPED_CRASH_KEY_STRING256("JavaScript", "script",
+                             base::UTF16ToUTF8(executed_script));
+  SCOPED_CRASH_KEY_STRING256("JavaScript", "error",
+                             base::UTF16ToUTF8(error_string));
+  SCOPED_CRASH_KEY_STRING256("JavaScript", "exception",
+                             base::UTF16ToUTF8(exception));
+  base::debug::DumpWithoutCrashing();
 }
 
 bool WebFrameImpl::ExecuteJavaScriptFunction(
@@ -252,7 +331,7 @@ bool WebFrameImpl::ExecuteJavaScriptFunction(
   DCHECK(content_world);
   DCHECK(frame_info_);
 
-  NSString* script = CreateFunctionCallWithParamaters(name, parameters);
+  NSString* script = CreateFunctionCallWithParameters(name, parameters);
 
   void (^completion_handler)(id, NSError*) = nil;
   if (reply_with_result) {

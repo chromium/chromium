@@ -7,6 +7,7 @@
 #include <array>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -44,7 +45,7 @@ class RawAnnexBBuffer : public AnnexBBuffer {
     return size <= annexb_buffer_size_;
   }
   void Append(const char* s, size_t n) override {
-    memcpy(annexb_buffer_ + annexb_buffer_offset_, s, n);
+    UNSAFE_TODO(memcpy(annexb_buffer_ + annexb_buffer_offset_, s, n));
     annexb_buffer_offset_ += n;
     DCHECK_GE(reserved_size_, annexb_buffer_offset_);
   }
@@ -84,21 +85,17 @@ template <typename NalSizeType>
 void CopyNalsToAnnexB(base::span<const char> buffer,
                       AnnexBBuffer* annexb_buffer) {
   while (!buffer.empty()) {
+    const auto nal_size_be =
+        base::as_bytes(buffer.take_first<sizeof(NalSizeType)>());
     NalSizeType nal_size;
     if constexpr (sizeof(NalSizeType) == 1u) {
-      nal_size =
-          base::U8FromBigEndian(base::as_bytes(buffer).template first<1u>());
+      nal_size = base::U8FromBigEndian(nal_size_be);
     } else if constexpr (sizeof(NalSizeType) == 2u) {
-      nal_size =
-          base::U16FromBigEndian(base::as_bytes(buffer).template first<2u>());
+      nal_size = base::U16FromBigEndian(nal_size_be);
     } else {
-      nal_size =
-          base::U32FromBigEndian(base::as_bytes(buffer).template first<4u>());
+      nal_size = base::U32FromBigEndian(nal_size_be);
     }
-
-    auto [nals_buf, remain] =
-        buffer.subspan(sizeof(NalSizeType)).split_at(nal_size);
-    buffer = remain;
+    auto nals_buf = buffer.take_first(nal_size);
 
     annexb_buffer->Append(kAnnexBHeaderBytes, sizeof(kAnnexBHeaderBytes));
     annexb_buffer->Append(nals_buf.data(), nals_buf.size());
@@ -124,7 +121,7 @@ OSStatus GetParameterSetAtIndex(VideoCodec codec,
           parameterSetSizeOut, parameterSetCountOut, NALUnitHeaderLengthOut);
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -236,7 +233,7 @@ bool CopySampleBufferToAnnexBBuffer(VideoCodec codec,
   } else if (nal_size_field_bytes == 4) {
     CopyNalsToAnnexB<uint32_t>(contiguous_bb_span, annexb_buffer);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   return true;
 }

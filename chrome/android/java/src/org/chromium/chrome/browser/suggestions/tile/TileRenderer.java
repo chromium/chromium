@@ -8,63 +8,71 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorStateListDrawable;
+import android.graphics.drawable.Drawable;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.ViewGroup;
+import android.view.View;
 
+import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.LayoutRes;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.SuggestTileType;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.suggestions.ImageFetcher;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig.TileStyle;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
+import org.chromium.components.browser_ui.widget.tile.TileView;
 import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.base.ViewUtils;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Utility class that renders {@link Tile}s into a provided {@link ViewGroup}, creating and
+ * Utility class that renders {@link Tile}s into a provided {@link TilesLinearLayout}, creating and
  * manipulating the views as needed.
  */
+@NullMarked
 public class TileRenderer {
     private final Context mContext;
-    private final Resources.Theme mTheme;
     private RoundedIconGenerator mIconGenerator;
-    private ImageFetcher mImageFetcher;
+    private @Nullable ImageFetcher mImageFetcher;
 
     @TileStyle private final int mStyle;
     private final int mDesiredIconSize;
     private final int mMinIconSize;
     private final float mIconCornerRadius;
+    private final String mPinnedShortcutString;
     private int mTitleLinesCount;
     private boolean mNativeInitializationComplete;
-    private Profile mProfile;
+    private @Nullable Profile mProfile;
 
-    @LayoutRes private final int mLayout;
-
-    @LayoutRes private final int mTopSitesLayout;
+    @LayoutRes private final int mTileLayoutResId;
+    private final float mTileWidth;
 
     private class LargeIconCallbackImpl implements LargeIconBridge.LargeIconCallback {
         private final WeakReference<Tile> mTile;
@@ -96,26 +104,56 @@ public class TileRenderer {
         }
     }
 
+    /** Simple multimap from SiteSuggestion to SuggestionsTileView. */
+    private static class SuggestionsTileViewCache {
+        private final Map<SiteSuggestion, ArrayDeque<SuggestionsTileView>> mStorage =
+                new HashMap<>();
+
+        void put(SiteSuggestion key, SuggestionsTileView value) {
+            ArrayDeque<SuggestionsTileView> bucket = mStorage.get(key);
+            if (bucket == null) {
+                bucket = new ArrayDeque<>();
+                mStorage.put(key, bucket);
+            }
+            bucket.addLast(value);
+        }
+
+        @Nullable SuggestionsTileView remove(SiteSuggestion key) {
+            SuggestionsTileView ret = null;
+            ArrayDeque<SuggestionsTileView> bucket = mStorage.get(key);
+            if (bucket != null) {
+                ret = bucket.removeFirst(); // FIFO, for consistecy.
+                if (bucket.isEmpty()) {
+                    mStorage.remove(key);
+                }
+            }
+            return ret;
+        }
+    }
+
     public TileRenderer(
-            Context context, @TileStyle int style, int titleLines, ImageFetcher imageFetcher) {
+            Context context,
+            @TileStyle int style,
+            int titleLines,
+            @Nullable ImageFetcher imageFetcher) {
         mImageFetcher = imageFetcher;
         mStyle = style;
         mTitleLinesCount = titleLines;
 
         mContext = context;
-        Resources res = context.getResources();
-        mTheme = context.getTheme();
+        Resources res = mContext.getResources();
         mDesiredIconSize = res.getDimensionPixelSize(R.dimen.tile_view_icon_size);
         mIconCornerRadius = res.getDimension(R.dimen.tile_view_icon_corner_radius);
         int minIconSize = res.getDimensionPixelSize(R.dimen.tile_view_icon_min_size);
+        mPinnedShortcutString = res.getString(R.string.accessibility_ntp_pinned_shortcut_badge);
 
         // On ldpi devices, mDesiredIconSize could be even smaller than the global limit.
         mMinIconSize = Math.min(mDesiredIconSize, minIconSize);
 
-        mLayout = getLayout();
-        mTopSitesLayout = getTopSitesLayout();
+        mTileLayoutResId = getTileLayoutResId();
+        mTileWidth = res.getDimension(getTileWidthDimenResId());
 
-        int iconColor = context.getColor(R.color.default_favicon_background_color);
+        int iconColor = mContext.getColor(R.color.default_favicon_background_color);
         int iconTextSize = res.getDimensionPixelSize(R.dimen.tile_view_icon_text_size);
         mIconGenerator =
                 new RoundedIconGenerator(
@@ -127,34 +165,70 @@ public class TileRenderer {
     }
 
     /**
-     * Renders tile views in the given {@link ViewGroup}, reusing existing tile views where
+     * Renders tile views in the given {@link TilesLinearLayout}, reusing existing tile views where
      * possible because view inflation and icon loading are slow.
+     *
      * @param parent The layout to render the tile views into.
      * @param sectionTiles Tiles to render.
      * @param setupDelegate Delegate used to setup callbacks and listeners for the new views.
      */
     public void renderTileSection(
-            List<Tile> sectionTiles, ViewGroup parent, TileGroup.TileSetupDelegate setupDelegate) {
+            List<Tile> sectionTiles,
+            TilesLinearLayout parent,
+            TileGroup.TileSetupDelegate setupDelegate) {
         try (TraceEvent e = TraceEvent.scoped("TileRenderer.renderTileSection")) {
             // Map the old tile views by url so they can be reused later.
-            Map<SiteSuggestion, SuggestionsTileView> oldTileViews = new HashMap<>();
-            int childCount = parent.getChildCount();
-            for (int i = 0; i < childCount; i++) {
-                SuggestionsTileView tileView = (SuggestionsTileView) parent.getChildAt(i);
+            SuggestionsTileViewCache oldTileViews = new SuggestionsTileViewCache();
+            int tileCount = parent.getTileCount();
+            String focusedUrl = null;
+            for (int i = 0; i < tileCount; i++) {
+                SuggestionsTileView tileView = (SuggestionsTileView) parent.getTileAt(i);
+                // Remember if a tile has focus, so focus can be reapplied.
+                if (tileView.hasFocus()) {
+                    focusedUrl = tileView.getUrl().getSpec();
+                }
                 oldTileViews.put(tileView.getData(), tileView);
+            }
+
+            // If a tile had focus, move focus to the parent to prevent it from wandering off
+            // during the view removal/re-addition process. This is important for accessibility.
+            boolean parentWasFocusable = parent.isFocusable();
+            if (focusedUrl != null) {
+                parent.setFocusable(true);
+                parent.requestFocus();
             }
 
             // Remove all views from the layout because even if they are reused later they'll have
             // to be added back in the correct order.
             parent.removeAllViews();
 
+            Tile prevTile = null;
             for (Tile tile : sectionTiles) {
-                SuggestionsTileView tileView = oldTileViews.get(tile.getData());
+                SuggestionsTileView tileView = oldTileViews.remove(tile.getData());
                 if (tileView == null) {
                     tileView = buildTileView(tile, parent, setupDelegate);
                 }
+                // Add divider if sources change between CUSTOM_LINKS and any other type.
+                if (prevTile != null
+                        && (prevTile.getData().source == TileSource.CUSTOM_LINKS)
+                                != (tile.getData().source == TileSource.CUSTOM_LINKS)) {
+                    parent.addDivider(buildDivider(parent));
+                }
+                parent.addTile(tileView);
+                if (focusedUrl != null && focusedUrl.equals(tile.getUrl().getSpec())) {
+                    tileView.requestFocus();
+                }
+                prevTile = tile;
+            }
 
-                parent.addView(tileView);
+            // Restore parent's original focusability.
+            if (focusedUrl != null) {
+                parent.setFocusable(parentWasFocusable);
+            }
+
+            if (shouldShowAddNewButton(sectionTiles)) {
+                TileView addCustomLinksButton = buildAddCustomLinksButton(parent, setupDelegate);
+                parent.addUiView(addCustomLinksButton, mTileWidth);
             }
         }
     }
@@ -165,6 +239,7 @@ public class TileRenderer {
 
     /**
      * Override currently set maximum number of title lines.
+     *
      * @param titleLines The new max number of title lines to be shown under the tile icon.
      */
     public void setTitleLines(int titleLines) {
@@ -172,7 +247,7 @@ public class TileRenderer {
     }
 
     /** Record that a tile was clicked for IPH reasons. */
-    private void recordTileClickedForIPH(String eventName) {
+    private void recordTileClickedForIph(String eventName) {
         assert mProfile != null;
         Tracker tracker = TrackerFactory.getTrackerForProfile(mProfile);
         tracker.notifyEvent(eventName);
@@ -180,20 +255,25 @@ public class TileRenderer {
 
     /**
      * Inflates a new tile view, initializes it, and loads an icon for it.
+     *
      * @param tile The tile that holds the data to populate the new tile view.
-     * @param parentView The parent of the new tile view.
+     * @param parent The parent of the new tile view.
      * @param setupDelegate The delegate used to setup callbacks and listeners for the new view.
      * @return The new tile view.
      */
     @VisibleForTesting
     SuggestionsTileView buildTileView(
-            Tile tile, ViewGroup parentView, TileGroup.TileSetupDelegate setupDelegate) {
+            Tile tile, TilesLinearLayout parent, TileGroup.TileSetupDelegate setupDelegate) {
         SuggestionsTileView tileView =
                 (SuggestionsTileView)
-                        LayoutInflater.from(parentView.getContext())
-                                .inflate(mLayout, parentView, false);
+                        LayoutInflater.from(parent.getContext())
+                                .inflate(mTileLayoutResId, parent, false);
 
         tileView.initialize(tile, mTitleLinesCount);
+        tileView.setBackground(
+                new ColorStateListDrawable(
+                        AppCompatResources.getColorStateList(
+                                parent.getContext(), R.color.tile_bg_color_list)));
 
         if (!mNativeInitializationComplete || setupDelegate == null) {
             return tileView;
@@ -209,7 +289,7 @@ public class TileRenderer {
         if (tile.getSource() == TileSource.HOMEPAGE) {
             delegate.setOnClickRunnable(
                     () -> {
-                        recordTileClickedForIPH(EventConstants.HOMEPAGE_TILE_CLICKED);
+                        recordTileClickedForIph(EventConstants.HOMEPAGE_TILE_CLICKED);
                         RecordHistogram.recordEnumeratedHistogram(
                                 "NewTabPage.SuggestTiles.SelectedTileType",
                                 SuggestTileType.OTHER,
@@ -247,20 +327,70 @@ public class TileRenderer {
                     });
         }
 
-        tileView.setOnClickListener(delegate);
-        tileView.setOnCreateContextMenuListener(delegate);
-
         return tileView;
     }
 
-    /**
-     * @return True, if the tile represents a Search query.
-     */
+    SuggestionsTileVerticalDivider buildDivider(TilesLinearLayout parent) {
+        return (SuggestionsTileVerticalDivider)
+                LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.suggestions_tile_vertical_divider, parent, false);
+    }
+
+    boolean shouldShowAddNewButton(List<Tile> sectionTiles) {
+        if (!ChromeFeatureList.sMostVisitedTilesCustomization.isEnabled()) {
+            return false;
+        }
+
+        if (sectionTiles.size() == 0) {
+            // Still show the Add Custom Link Button, even if no suggestions exist. We might make
+            // this configurable.
+            return true;
+        }
+
+        return TileUtils.customTileCountIsUnderLimit(sectionTiles);
+    }
+
+    TileView buildAddCustomLinksButton(
+            TilesLinearLayout parent, TileGroup.TileSetupDelegate setupDelegate) {
+        Resources res = mContext.getResources();
+        String title = res.getString(R.string.most_visited_add_new);
+        Drawable plusIcon =
+                ResourcesCompat.getDrawable(mContext.getResources(), R.drawable.plus, null);
+        TileView tileView =
+                (TileView)
+                        LayoutInflater.from(parent.getContext())
+                                .inflate(mTileLayoutResId, parent, false);
+        tileView.initialize(
+                title,
+                /* showOfflineBadge= */ false,
+                /* showPinnedShortcutBadge= */ false,
+                plusIcon,
+                mTitleLinesCount);
+        tileView.setIconTint(
+                ChromeColors.getSecondaryIconTint(mContext, /* forceLightIconTint= */ false));
+        tileView.setContentDescription(
+                mContext.getString(
+                        R.string.accessibility_omnibox_most_visited_tile_add_new_shortcut));
+        tileView.setOnClickListener(
+                (View v) -> {
+                    RecordUserAction.record("Suggestions.Button.AddItem");
+                    setupDelegate.getCustomTileModificationDelegate().add();
+                });
+        // Allow "Add new" title translation to wrap to second line. We change max lines instead of
+        // lines to avoid (clickable) blank line appearing at bottom if the title fits in one line.
+        tileView.setTitleMaxLines(2);
+        // Prevent Custom Tile swap key from  propagating (i.e., suppress scrolls) to make the
+        // button's behavior more similar to Custom Tiles.
+        tileView.setOnKeyListener(
+                (View view, int keyCode, KeyEvent event) ->
+                        TileUtils.isCustomTileSwapKeyCombo(keyCode, event));
+        return tileView;
+    }
+
+    /** Returns whether the tile represents a Search query. */
     private boolean isSearchTile(Tile tile) {
         assert mProfile != null;
-        TemplateUrlService searchService = TemplateUrlServiceFactory.getForProfile(mProfile);
-        return searchService != null
-                && searchService.isSearchResultsPageFromDefaultSearchProvider(tile.getUrl());
+        return TileUtils.isSearchTile(mProfile, tile);
     }
 
     /**
@@ -288,10 +418,14 @@ public class TileRenderer {
                             R.string.accessibility_omnibox_most_visited_tile_search,
                             tile.getTitle()));
         } else {
+            String title = tile.getTitle();
+            if (tile.getData().source == TileSource.CUSTOM_LINKS) {
+                title += ": " + mPinnedShortcutString;
+            }
             tileView.setContentDescription(
                     mContext.getString(
                             R.string.accessibility_omnibox_most_visited_tile_navigate,
-                            tile.getTitle(),
+                            title,
                             tile.getUrl().getHost()));
         }
     }
@@ -304,16 +438,8 @@ public class TileRenderer {
      */
     public void updateIcon(final Tile tile, TileGroup.TileSetupDelegate setupDelegate) {
         if (isSearchTile(tile)) {
-            // We already have an icon, and could trigger the update instantly.
-            // Problem is, the TileView is likely not attached yet and the update would not be
-            // properly reflected. Yield.
-            final Runnable iconCallback = setupDelegate.createIconLoadCallback(tile);
-            PostTask.postTask(
-                    TaskTraits.UI_DEFAULT,
-                    () -> {
-                        setTileIconFromRes(tile, R.drawable.ic_suggestion_magnifier);
-                        if (iconCallback != null) iconCallback.run();
-                    });
+            setTileIconFromResAsync(tile, setupDelegate, R.drawable.ic_suggestion_magnifier);
+
         } else if (mImageFetcher != null) {
             mImageFetcher.makeLargeIconRequest(
                     tile.getUrl(),
@@ -334,10 +460,22 @@ public class TileRenderer {
         tile.setType(TileVisualType.ICON_REAL);
     }
 
-    public void setTileIconFromRes(Tile tile, @DrawableRes int res) {
-        tile.setIcon(ResourcesCompat.getDrawable(mContext.getResources(), res, null));
-        tile.setIconTint(ChromeColors.getSecondaryIconTint(mContext, /* isIncognito= */ false));
-        tile.setType(TileVisualType.ICON_DEFAULT);
+    public void setTileIconFromResAsync(
+            Tile tile, TileGroup.TileSetupDelegate setupDelegate, @DrawableRes int res) {
+        // We already have an icon, and could trigger the update instantly.
+        // Problem is, the TileView is likely not attached yet and the update would not be
+        // properly reflected. Yield.
+        final Runnable iconCallback = setupDelegate.createIconLoadCallback(tile);
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    tile.setIcon(ResourcesCompat.getDrawable(mContext.getResources(), res, null));
+                    tile.setIconTint(
+                            ChromeColors.getSecondaryIconTint(
+                                    mContext, /* forceLightIconTint= */ false));
+                    tile.setType(TileVisualType.ICON_DEFAULT);
+                    if (iconCallback != null) iconCallback.run();
+                });
     }
 
     public void setTileIconFromColor(Tile tile, int fallbackColor, boolean isFallbackColorDefault) {
@@ -349,7 +487,7 @@ public class TileRenderer {
                 isFallbackColorDefault ? TileVisualType.ICON_DEFAULT : TileVisualType.ICON_COLOR);
     }
 
-    private @LayoutRes int getLayout() {
+    private @LayoutRes int getTileLayoutResId() {
         switch (mStyle) {
             case TileStyle.MODERN:
                 return R.layout.suggestions_tile_view;
@@ -360,12 +498,12 @@ public class TileRenderer {
         return 0;
     }
 
-    private @LayoutRes int getTopSitesLayout() {
+    private @DimenRes int getTileWidthDimenResId() {
         switch (mStyle) {
             case TileStyle.MODERN:
-                return R.layout.top_sites_tile_view;
+                return R.dimen.tile_view_width;
             case TileStyle.MODERN_CONDENSED:
-                return R.layout.top_sites_tile_view_condensed;
+                return R.dimen.tile_view_width_condensed;
         }
         assert false;
         return 0;

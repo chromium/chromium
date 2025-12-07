@@ -4,12 +4,10 @@
 
 #include "ash/system/unified/unified_system_tray_controller.h"
 
-#include <algorithm>
-#include <memory>
-
 #include "ash/capture_mode/capture_mode_feature_pod_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
+#include "ash/metrics/demo_session_metrics_recorder.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/pagination/pagination_controller.h"
@@ -21,6 +19,7 @@
 #include "ash/system/accessibility/unified_accessibility_detailed_view_controller.h"
 #include "ash/system/audio/unified_audio_detailed_view_controller.h"
 #include "ash/system/audio/unified_volume_slider_controller.h"
+#include "ash/system/audio/unified_volume_view.h"
 #include "ash/system/bluetooth/bluetooth_detailed_view_controller.h"
 #include "ash/system/bluetooth/bluetooth_feature_pod_controller.h"
 #include "ash/system/brightness/quick_settings_display_detailed_view_controller.h"
@@ -42,6 +41,7 @@
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/model/update_model.h"
+#include "ash/system/nearby_share/nearby_share_detailed_view_controller.h"
 #include "ash/system/nearby_share/nearby_share_feature_pod_controller.h"
 #include "ash/system/network/network_detailed_view_controller.h"
 #include "ash/system/network/network_feature_pod_controller.h"
@@ -66,7 +66,6 @@
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/system/unified/user_chooser_detailed_view_controller.h"
 #include "ash/wm/lock_state_controller.h"
-#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -78,8 +77,6 @@
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/views/widget/widget.h"
-
-using global_media_controls::GlobalMediaControlsEntryPoint;
 
 namespace ash {
 
@@ -97,9 +94,13 @@ UnifiedSystemTrayController::UnifiedSystemTrayController(
   pagination_controller_ = std::make_unique<PaginationController>(
       model_->pagination_model(), PaginationController::SCROLL_AXIS_HORIZONTAL,
       base::BindRepeating(&RecordPageSwitcherSourceByEventType));
+
+  display::Screen::Get()->AddObserver(this);
 }
 
-UnifiedSystemTrayController::~UnifiedSystemTrayController() = default;
+UnifiedSystemTrayController::~UnifiedSystemTrayController() {
+  display::Screen::Get()->RemoveObserver(this);
+}
 
 void UnifiedSystemTrayController::AddObserver(Observer* observer) {
   if (observer) {
@@ -121,22 +122,18 @@ UnifiedSystemTrayController::CreateQuickSettingsView(int max_height) {
 
   if (!Shell::Get()->session_controller()->IsScreenLocked() &&
       !MediaTray::IsPinnedToShelf()) {
-    if (base::FeatureList::IsEnabled(
-            media::kGlobalMediaControlsCrOSUpdatedUI)) {
-      media_view_controller_ =
-          std::make_unique<QuickSettingsMediaViewController>(this);
-      qs_view->AddMediaView(media_view_controller_->CreateView());
-    } else {
-      media_controls_controller_ =
-          std::make_unique<UnifiedMediaControlsController>(this);
-      qs_view->AddMediaControlsView(media_controls_controller_->CreateView());
-    }
+    media_view_controller_ =
+        std::make_unique<QuickSettingsMediaViewController>(this);
+    qs_view->AddMediaView(media_view_controller_->CreateView());
   }
 
   volume_slider_controller_ =
       std::make_unique<UnifiedVolumeSliderController>(this);
   unified_volume_view_ =
       qs_view->AddSliderView(volume_slider_controller_->CreateView());
+  views::AsViewClass<QuickSettingsSlider>(
+      views::AsViewClass<UnifiedVolumeView>(unified_volume_view_)->slider())
+      ->SetIsToggleableVolumeSlider(true);
 
   brightness_slider_controller_ =
       std::make_unique<UnifiedBrightnessSliderController>(
@@ -145,6 +142,7 @@ UnifiedSystemTrayController::CreateQuickSettingsView(int max_height) {
                       base::Unretained(this))));
   unified_brightness_view_ =
       qs_view->AddSliderView(brightness_slider_controller_->CreateView());
+  UpdateBrightnessSlider();
 
   qs_view->SetMaxHeight(max_height);
 
@@ -158,7 +156,8 @@ UnifiedSystemTrayController::CreateQuickSettingsView(int max_height) {
 void UnifiedSystemTrayController::HandleSignOutAction() {
   base::RecordAction(base::UserMetricsAction("StatusArea_SignOut"));
   if (Shell::Get()->session_controller()->IsDemoSession()) {
-    base::RecordAction(base::UserMetricsAction("DemoMode.ExitFromSystemTray"));
+    DemoSessionMetricsRecorder::RecordExitSessionAction(
+        DemoSessionMetricsRecorder::ExitSessionFrom::kSystemTray);
   }
 
   if (ShouldShowDeferredUpdateDialog()) {
@@ -180,7 +179,7 @@ void UnifiedSystemTrayController::HandleLockAction() {
 void UnifiedSystemTrayController::HandleSettingsAction() {
   base::RecordAction(base::UserMetricsAction("Tray_Settings"));
   Shell::Get()->system_tray_model()->client()->ShowSettings(
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetDisplayNearestView(
               quick_settings_view_->GetWidget()->GetNativeView())
           .id());
@@ -234,6 +233,10 @@ void UnifiedSystemTrayController::ShowUserChooserView() {
     return;
   }
   ShowDetailedView(std::make_unique<UserChooserDetailedViewController>(this));
+}
+
+void UnifiedSystemTrayController::ShowNearbyShareDetailedView() {
+  ShowDetailedView(std::make_unique<NearbyShareDetailedViewController>(this));
 }
 
 void UnifiedSystemTrayController::ShowNetworkDetailedView() {
@@ -355,15 +358,6 @@ void UnifiedSystemTrayController::OnAudioSettingsButtonClicked() {
   ShowAudioDetailedView();
 }
 
-void UnifiedSystemTrayController::ShowMediaControls() {
-  quick_settings_view_->ShowMediaControls();
-}
-
-void UnifiedSystemTrayController::OnMediaControlsViewClicked() {
-  ShowMediaControlsDetailedView(
-      GlobalMediaControlsEntryPoint::kQuickSettingsMiniPlayer);
-}
-
 void UnifiedSystemTrayController::SetShowMediaView(bool show_media_view) {
   quick_settings_view_->SetShowMediaView(show_media_view);
 }
@@ -420,11 +414,9 @@ void UnifiedSystemTrayController::InitFeatureTiles() {
   create_tile(VIEW_ID_FEATURE_TILE_HOTSPOT,
               std::make_unique<HotspotFeaturePodController>(this),
               feature_pod_controllers_, tiles);
-  if (base::FeatureList::IsEnabled(features::kFocusMode)) {
-    create_tile(VIEW_ID_FEATURE_TILE_FOCUS_MODE,
-                std::make_unique<FocusModeFeaturePodController>(this),
-                feature_pod_controllers_, tiles);
-  }
+  create_tile(VIEW_ID_FEATURE_TILE_FOCUS_MODE,
+              std::make_unique<FocusModeFeaturePodController>(this),
+              feature_pod_controllers_, tiles);
   create_tile(VIEW_ID_FEATURE_TILE_NEARBY_SHARE,
               std::make_unique<NearbyShareFeaturePodController>(this),
               feature_pod_controllers_, tiles);
@@ -451,7 +443,7 @@ void UnifiedSystemTrayController::InitFeatureTiles() {
   quick_settings_metrics_util::RecordQsFeaturePodCount(
       quick_settings_view_->feature_tiles_container()
           ->GetVisibleFeatureTileCount(),
-      display::Screen::GetScreen()->InTabletMode());
+      display::Screen::Get()->InTabletMode());
 }
 
 void UnifiedSystemTrayController::ShowDetailedView(
@@ -478,7 +470,7 @@ void UnifiedSystemTrayController::ShowDetailedView(
   if (bubble_) {
     UpdateBubble();
     // Notify accessibility features that a new view is showing.
-    bubble_->NotifyAccessibilityEvent(ax::mojom::Event::kShow, true);
+    bubble_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kShow, true);
   }
 }
 
@@ -505,6 +497,49 @@ void UnifiedSystemTrayController::ShutDownDetailedViewController() {
   if (detailed_view_controller_) {
     detailed_view_controller_->ShutDown();
   }
+}
+
+void UnifiedSystemTrayController::PrepareBubbleDestroy() {
+  ShutDownDetailedViewController();
+  quick_settings_view_ = nullptr;
+  unified_volume_view_ = nullptr;
+  unified_brightness_view_ = nullptr;
+}
+
+void UnifiedSystemTrayController::UpdateBrightnessSlider() const {
+  if (!unified_brightness_view_) {
+    return;
+  }
+  auto* slider =
+      views::AsViewClass<UnifiedBrightnessView>(unified_brightness_view_)
+          ->slider();
+  for (const display::Display& display :
+       display::Screen::Get()->GetAllDisplays()) {
+    if (display.IsInternal()) {
+      slider->SetEnabled(true);
+      return;
+    }
+  }
+  slider->SetEnabled(false);
+}
+
+bool UnifiedSystemTrayController::GetBrightnessSliderEnabledForTesting() const {
+  if (!unified_brightness_view_) {
+    return false;
+  }
+  return views::AsViewClass<UnifiedBrightnessView>(unified_brightness_view_)
+      ->slider()
+      ->GetEnabled();
+}
+
+void UnifiedSystemTrayController::OnDisplayAdded(
+    const display::Display& new_display) {
+  UpdateBrightnessSlider();
+}
+
+void UnifiedSystemTrayController::OnDisplaysRemoved(
+    const display::Displays& removed_displays) {
+  UpdateBrightnessSlider();
 }
 
 }  // namespace ash

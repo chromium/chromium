@@ -73,18 +73,12 @@ bool ContentSettingsAgentImpl::Delegate::AllowWriteToClipboard() {
   return false;
 }
 
-std::optional<bool> ContentSettingsAgentImpl::Delegate::AllowMutationEvents() {
-  return std::nullopt;
-}
-
 ContentSettingsAgentImpl::ContentSettingsAgentImpl(
     content::RenderFrame* render_frame,
-    bool should_allowlist,
     std::unique_ptr<Delegate> delegate)
     : content::RenderFrameObserver(render_frame),
       content::RenderFrameObserverTracker<ContentSettingsAgentImpl>(
           render_frame),
-      should_allowlist_(should_allowlist),
       delegate_(std::move(delegate)) {
   DCHECK(delegate_);
   ClearBlockedContentSettings();
@@ -148,8 +142,7 @@ ContentSetting GetContentSettingFromRules(
       return rule.GetContentSetting();
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return CONTENT_SETTING_DEFAULT;
+  NOTREACHED();
 }
 }  // namespace
 
@@ -210,8 +203,6 @@ void ContentSettingsAgentImpl::OnContentSettingsAgentRequest(
 mojom::ContentSettingsManager::StorageType
 ContentSettingsAgentImpl::ConvertToMojoStorageType(StorageType storage_type) {
   switch (storage_type) {
-    case StorageType::kDatabase:
-      return mojom::ContentSettingsManager::StorageType::DATABASE;
     case StorageType::kIndexedDB:
       return mojom::ContentSettingsManager::StorageType::INDEXED_DB;
     case StorageType::kCacheStorage:
@@ -301,10 +292,6 @@ bool ContentSettingsAgentImpl::AllowWriteToClipboard() {
   return delegate_->AllowWriteToClipboard();
 }
 
-bool ContentSettingsAgentImpl::AllowMutationEvents(bool default_value) {
-  return delegate_->AllowMutationEvents().value_or(default_value);
-}
-
 bool ContentSettingsAgentImpl::AllowRunningInsecureContent(
     bool allowed_per_settings,
     const blink::WebURL& resource_url) {
@@ -351,39 +338,6 @@ void ContentSettingsAgentImpl::DidNotAllowImage() {
 void ContentSettingsAgentImpl::ClearBlockedContentSettings() {
   content_blocked_.clear();
   cached_storage_permissions_.clear();
-}
-
-bool ContentSettingsAgentImpl::IsAllowlistedForContentSettings() const {
-  if (should_allowlist_)
-    return true;
-
-  const WebDocument& document = render_frame()->GetWebFrame()->GetDocument();
-  WebSecurityOrigin origin = document.GetSecurityOrigin();
-  WebURL document_url = document.Url();
-  if (document_url.GetString() == content::kUnreachableWebDataURL)
-    return true;
-
-  if (origin.IsNull() || origin.IsOpaque())
-    return false;  // Uninitialized document?
-
-  blink::WebString protocol = origin.Protocol();
-
-  if (protocol == content::kChromeUIScheme)
-    return true;  // Browser UI elements should still work.
-
-  if (protocol == content::kChromeDevToolsScheme)
-    return true;  // DevTools UI elements should still work.
-
-  if (delegate_->IsSchemeAllowlisted(protocol.Utf8()))
-    return true;
-
-  // If the scheme is file:, an empty file name indicates a directory listing,
-  // which requires JavaScript to function properly.
-  if (protocol == url::kFileScheme &&
-      document_url.ProtocolIs(url::kFileScheme)) {
-    return GURL(document_url).ExtractFileName().empty();
-  }
-  return false;
 }
 
 }  // namespace content_settings

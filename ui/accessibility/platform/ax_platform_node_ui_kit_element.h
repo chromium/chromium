@@ -14,6 +14,11 @@
 // query.
 @interface AXPlatformNodeUIKitElement : UIAccessibilityElement
 
+// Returns the AXPlatformNodeUIKitElement owned by the given
+// gfx::NativeViewAccessible object.
++ (AXPlatformNodeUIKitElement*)elementFromNativeViewAccessible:
+    (gfx::NativeViewAccessible)nativeViewAccessible;
+
 // The accessibility tree node associated with this wrapper.
 @property(nonatomic, readonly) ui::AXPlatformNodeIOS* node;
 

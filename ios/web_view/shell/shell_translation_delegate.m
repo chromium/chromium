@@ -47,20 +47,20 @@
 
   NSString* translateTitle = [NSString
       stringWithFormat:@"Translate to %@", userLanguage.localizedName];
-  UIAlertAction* translateAction = [UIAlertAction
-      actionWithTitle:translateTitle
-                style:UIAlertActionStyleDefault
-              handler:^(UIAlertAction* action) {
-                weakSelf.beforeTranslateActionSheet = nil;
-                if (!weakSelf) {
-                  return;
-                }
-                CWVTranslationLanguage* source = pageLanguage;
-                CWVTranslationLanguage* target = userLanguage;
-                [controller translatePageFromLanguage:source
-                                           toLanguage:target
-                                        userInitiated:YES];
-              }];
+  UIAlertAction* translateAction =
+      [UIAlertAction actionWithTitle:translateTitle
+                               style:UIAlertActionStyleDefault
+                             handler:^(UIAlertAction* action) {
+                               weakSelf.beforeTranslateActionSheet = nil;
+                               if (!weakSelf) {
+                                 return;
+                               }
+                               CWVTranslationLanguage* source = pageLanguage;
+                               CWVTranslationLanguage* target = userLanguage;
+                               [controller translatePageFromLanguage:source
+                                                          toLanguage:target
+                                                       userInitiated:YES];
+                             }];
   [_beforeTranslateActionSheet addAction:translateAction];
 
   UIAlertAction* alwaysTranslateAction = [UIAlertAction
@@ -113,6 +113,12 @@
                                error:(nullable NSError*)error {
   NSLog(@"%@:%@:%@:%@", NSStringFromSelector(_cmd), sourceLanguage,
         targetLanguage, error);
+}
+
+- (void)translationController:(CWVTranslationController*)controller
+    didDeterminePageLanguageDetectionDetails:
+        (CWVTranslationLanguageDetectionDetails*)pageLanguageDetectionDetails {
+  NSLog(@"%@:%@", NSStringFromSelector(_cmd), pageLanguageDetectionDetails);
 }
 
 #pragma mark - Private

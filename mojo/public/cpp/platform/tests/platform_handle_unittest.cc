@@ -7,12 +7,14 @@
 #include <tuple>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/platform_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
@@ -25,13 +27,11 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
 #include "base/win/scoped_handle.h"
 #else
 #include "base/files/scoped_file.h"
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/binder.h"
 #endif
 
 namespace mojo {
@@ -98,8 +98,7 @@ class PlatformHandleTest : public testing::Test,
 #if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_MAC)
     return GetSharedMemoryContents(handle);
 #else
-    NOTREACHED_IN_MIGRATION();
-    return std::string();
+    NOTREACHED();
 #endif
   }
 
@@ -115,8 +114,7 @@ class PlatformHandleTest : public testing::Test,
     base::File test_file(temp_dir_.GetPath().AppendASCII("test"),
                          base::File::FLAG_CREATE | base::File::FLAG_WRITE |
                              base::File::FLAG_READ);
-    test_file.WriteAtCurrentPos(kTestData.data(),
-                                static_cast<int>(kTestData.size()));
+    test_file.WriteAtCurrentPos(base::as_byte_span(kTestData));
 
 #if BUILDFLAG(IS_WIN)
     return PlatformHandle(
@@ -139,7 +137,7 @@ class PlatformHandleTest : public testing::Test,
     base::File file(handle.TakeFD());
 #endif
     std::vector<char> buffer(kTestData.size());
-    file.Read(0, buffer.data(), static_cast<int>(buffer.size()));
+    file.Read(0, base::as_writable_byte_span(buffer));
     std::string contents(buffer.begin(), buffer.end());
 
 // Let |handle| retain ownership.
@@ -251,110 +249,21 @@ TEST_P(PlatformHandleTest, CStructConversion) {
   EXPECT_EQ(kTestData, GetObjectContents(handle));
 }
 
-#if BUILDFLAG(IS_ANDROID)
-DEFINE_BINDER_CLASS(IncrementerInterface);
-class Incrementer : public base::android::SupportsBinder<IncrementerInterface> {
- public:
-  using Proxy = IncrementerInterface::BinderRef;
-
-  Incrementer() = default;
-
-  static constexpr transaction_code_t kDoIncrement = 42;
-
-  static int32_t DoIncrement(Proxy& proxy, int32_t value) {
-    const auto reply = *proxy.Transact(
-        kDoIncrement,
-        [value](const auto& parcel) { return parcel.WriteInt32(value); });
-    return *reply.reader().ReadInt32();
-  }
-
-  void WaitForDisconnect() { disconnect_.Wait(); }
-
- private:
-  ~Incrementer() override = default;
-
-  // base::android::SupportsBinder<IncrementerInterface>
-  base::android::BinderStatusOr<void> OnBinderTransaction(
-      transaction_code_t code,
-      const base::android::ParcelReader& in,
-      const base::android::ParcelWriter& out) override {
-    EXPECT_EQ(kDoIncrement, code);
-    return out.WriteInt32(*in.ReadInt32() + 1);
-  }
-
-  void OnBinderDestroyed() override { disconnect_.Signal(); }
-
-  base::WaitableEvent disconnect_;
-};
-
-TEST(PlatformHandleBinderTest, HandleTypeAndValidity) {
-  if (!base::android::IsNativeBinderAvailable()) {
-    GTEST_SKIP() << "This test is only valid with native Binder support (Q+)";
-  }
-
-  auto handle = PlatformHandle(base::android::BinderRef());
-  EXPECT_TRUE(handle.is_binder());
-  EXPECT_FALSE(handle.is_valid_binder());
-  EXPECT_FALSE(handle.is_fd());
-  EXPECT_FALSE(handle.is_valid_fd());
-  EXPECT_FALSE(handle.is_valid());
-
-  auto incrementer = base::MakeRefCounted<Incrementer>();
-  handle = PlatformHandle(incrementer->GetBinder());
-  EXPECT_TRUE(handle.is_binder());
-  EXPECT_TRUE(handle.is_valid_binder());
-  EXPECT_FALSE(handle.is_fd());
-  EXPECT_FALSE(handle.is_valid_fd());
-  EXPECT_TRUE(handle.is_valid());
-
-  auto proxy = Incrementer::Proxy(handle.GetBinder());
-  EXPECT_EQ(3, Incrementer::DoIncrement(proxy, 2));
-
-  PlatformHandle other = std::move(handle);
-  EXPECT_FALSE(handle.is_binder());
-  EXPECT_FALSE(handle.is_valid_binder());
-  EXPECT_FALSE(handle.is_valid());
-  EXPECT_FALSE(handle.GetBinder());
-  EXPECT_FALSE(handle.TakeBinder());
-  EXPECT_TRUE(other.is_binder());
-  EXPECT_TRUE(other.is_valid_binder());
-  EXPECT_TRUE(other.is_valid());
-  EXPECT_TRUE(other.GetBinder());
-
-  auto binder = other.TakeBinder();
-  EXPECT_TRUE(binder);
-  EXPECT_FALSE(other.is_binder());
-  EXPECT_FALSE(other.is_valid());
-
-  proxy = Incrementer::Proxy(binder);
-  EXPECT_EQ(7, Incrementer::DoIncrement(proxy, 6));
-  proxy.reset();
-  binder.reset();
-
-  // Ensure we haven't leaked any binder refs through all this.
-  incrementer->WaitForDisconnect();
+#if BUILDFLAG(IS_WIN) && !DCHECK_IS_ON()
+// In DCHECK builds these explode but we include defense-in-depth measures as
+// third party code can cause unexpected values to manifest in handles.
+TEST_P(PlatformHandleTest, InvalidHandles) {
+  // Validate the security assumption that a pseudo handle cannot be adopted as
+  // a PlatformHandle and that it cannot be cloned to a valid handle.
+  PlatformHandle invalid((base::win::ScopedHandle(::GetCurrentThread())));
+  EXPECT_FALSE(invalid.is_valid());
+  PlatformHandle cloned = invalid.Clone();
+  EXPECT_FALSE(cloned.is_valid());
+  EXPECT_EQ(invalid.ReleaseHandle(), nullptr);
+  EXPECT_EQ(cloned.ReleaseHandle(), nullptr);
 }
+#endif  // BUILDFLAG(IS_WIN) && !DCHECK_IS_ON()
 
-TEST(PlatformHandleBinderTest, WrapUnwrap) {
-  if (!base::android::IsNativeBinderAvailable()) {
-    GTEST_SKIP() << "This test is only valid with native Binder support (Q+)";
-  }
-
-  Incrementer::Proxy proxy;
-  auto handle = WrapPlatformHandle(PlatformHandle(std::move(proxy)));
-  EXPECT_FALSE(handle.is_valid());
-
-  auto incrementer = base::MakeRefCounted<Incrementer>();
-  proxy = Incrementer::Proxy(incrementer->GetBinder());
-  EXPECT_EQ(43, Incrementer::DoIncrement(proxy, 42));
-
-  handle = WrapPlatformHandle(PlatformHandle(std::move(proxy)));
-  EXPECT_TRUE(handle.is_valid());
-  proxy =
-      Incrementer::Proxy(UnwrapPlatformHandle(std::move(handle)).TakeBinder());
-  EXPECT_EQ(9001, Incrementer::DoIncrement(proxy, 9000));
-}
-#endif
 
 INSTANTIATE_TEST_SUITE_P(All,
                          PlatformHandleTest,

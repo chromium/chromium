@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/webrtc/thread_wrapper.h"
 #include "net/base/io_buffer.h"
@@ -17,6 +18,7 @@
 #include "remoting/codec/webrtc_video_encoder_vpx.h"
 #include "remoting/protocol/audio_source.h"
 #include "remoting/protocol/audio_stream.h"
+#include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/clipboard_stub.h"
 #include "remoting/protocol/desktop_capturer.h"
 #include "remoting/protocol/host_control_dispatcher.h"
@@ -78,12 +80,15 @@ protocol::Session* WebrtcConnectionToClient::session() {
   return session_.get();
 }
 
-void WebrtcConnectionToClient::Disconnect(ErrorCode error) {
+void WebrtcConnectionToClient::Disconnect(
+    ErrorCode error,
+    std::string_view error_details,
+    const SourceLocation& error_location) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // This should trigger OnConnectionClosed() event and this object
   // may be destroyed as the result.
-  session_->Close(error);
+  session_->Close(error, error_details, error_location);
 }
 
 std::unique_ptr<VideoStream> WebrtcConnectionToClient::StartVideoStream(
@@ -136,9 +141,13 @@ void WebrtcConnectionToClient::set_input_stub(protocol::InputStub* input_stub) {
 void WebrtcConnectionToClient::ApplySessionOptions(
     const SessionOptions& options) {
   session_options_ = options;
-  DCHECK(transport_);
   transport_->ApplySessionOptions(options);
   video_encoder_factory_->ApplySessionOptions(options);
+}
+
+void WebrtcConnectionToClient::ApplyNetworkSettings(
+    const NetworkSettings& settings) {
+  transport_->ApplyNetworkSettings(settings);
 }
 
 PeerConnectionControls* WebrtcConnectionToClient::peer_connection_controls() {
@@ -167,7 +176,8 @@ void WebrtcConnectionToClient::OnSessionStateChange(Session::State state) {
 
     case Session::AUTHENTICATED: {
       base::WeakPtr<WebrtcConnectionToClient> self = weak_factory_.GetWeakPtr();
-      event_handler_->OnConnectionAuthenticated();
+      event_handler_->OnConnectionAuthenticated(
+          session_->authenticator().GetSessionPolicies());
 
       // OnConnectionAuthenticated() call above may result in the connection
       // being torn down.
@@ -181,8 +191,9 @@ void WebrtcConnectionToClient::OnSessionStateChange(Session::State state) {
     case Session::FAILED:
       control_dispatcher_.reset();
       event_dispatcher_.reset();
-      transport_->Close(state == Session::CLOSED ? ErrorCode::OK
-                                                 : session_->error());
+      transport_->Close(
+          state == Session::CLOSED ? ErrorCode::OK : session_->error(),
+          /* error_details= */ {}, FROM_HERE);
       transport_.reset();
       event_handler_->OnConnectionClosed(
           state == Session::CLOSED ? ErrorCode::OK : session_->error());
@@ -217,9 +228,12 @@ void WebrtcConnectionToClient::OnWebrtcTransportConnected() {
   }
 }
 
-void WebrtcConnectionToClient::OnWebrtcTransportError(ErrorCode error) {
+void WebrtcConnectionToClient::OnWebrtcTransportError(
+    ErrorCode error,
+    std::string_view error_details,
+    const base::Location& error_location) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  Disconnect(error);
+  Disconnect(error, error_details, error_location);
 }
 
 void WebrtcConnectionToClient::OnWebrtcTransportProtocolChanged() {
@@ -247,13 +261,13 @@ void WebrtcConnectionToClient::OnWebrtcTransportIncomingDataChannel(
 }
 
 void WebrtcConnectionToClient::OnWebrtcTransportMediaStreamAdded(
-    rtc::scoped_refptr<webrtc::MediaStreamInterface> stream) {
+    webrtc::scoped_refptr<webrtc::MediaStreamInterface> stream) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   LOG(WARNING) << "The client created an unexpected media stream.";
 }
 
 void WebrtcConnectionToClient::OnWebrtcTransportMediaStreamRemoved(
-    rtc::scoped_refptr<webrtc::MediaStreamInterface> stream) {
+    webrtc::scoped_refptr<webrtc::MediaStreamInterface> stream) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
@@ -294,9 +308,10 @@ void WebrtcConnectionToClient::OnChannelClosed(
   // or the client page is closed normally. If the client goes offline then the
   // channel will remain open. Hence it should be safe to report ErrorCode::OK
   // here.
-  HOST_LOG << "Channel " << channel_dispatcher->channel_name()
-           << " was closed.";
-  Disconnect(ErrorCode::OK);
+  std::string details = base::StringPrintf(
+      "Channel %s was closed.", channel_dispatcher->channel_name().c_str());
+  HOST_LOG << details;
+  Disconnect(ErrorCode::OK, details, FROM_HERE);
 }
 
 bool WebrtcConnectionToClient::allChannelsConnected() {

@@ -54,7 +54,7 @@ namespace blink {
 LocalFrame& InsertCommands::TargetFrame(LocalFrame& frame, Event* event) {
   if (!event)
     return frame;
-  const Node* node = event->target()->ToNode();
+  const Node* node = event->RawTarget()->ToNode();
   if (!node)
     return frame;
   LocalFrame* local_frame = node->GetDocument().GetFrame();
@@ -173,8 +173,7 @@ bool InsertCommands::ExecuteInsertLineBreak(LocalFrame& frame,
       DCHECK(frame.GetDocument());
       return TypingCommand::InsertLineBreak(*frame.GetDocument());
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool InsertCommands::ExecuteInsertNewline(LocalFrame& frame,

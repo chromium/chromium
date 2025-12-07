@@ -5,45 +5,35 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_DIGITAL_CREDENTIALS_DIGITAL_IDENTITY_BLUETOOTH_MANUAL_DIALOG_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_DIGITAL_CREDENTIALS_DIGITAL_IDENTITY_BLUETOOTH_MANUAL_DIALOG_CONTROLLER_H_
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/digital_credentials/digital_identity_bluetooth_adapter_status_change_observer.h"
-#include "device/fido/digital_identity_request_handler.h"
-#include "device/fido/fido_request_handler_base.h"
+#include "base/memory/weak_ptr.h"
 
 class DigitalIdentityMultiStepDialog;
-class DigitalIdentityFidoHandlerObserver;
 
 // Displays step asking user to manually turn on bluetooth.
-class DigitalIdentityBluetoothManualDialogController
-    : public DigitalIdentityBluetoothAdapterStatusChangeObserver {
+class DigitalIdentityBluetoothManualDialogController {
  public:
-  DigitalIdentityBluetoothManualDialogController(
-      DigitalIdentityMultiStepDialog* dialog,
-      DigitalIdentityFidoHandlerObserver* observer_registrar);
-  ~DigitalIdentityBluetoothManualDialogController() override;
+  explicit DigitalIdentityBluetoothManualDialogController(
+      DigitalIdentityMultiStepDialog* dialog);
+  ~DigitalIdentityBluetoothManualDialogController();
 
-  void Show(base::RepeatingClosure accept_bluetooth_powered_on_callback,
-            base::RepeatingClosure cancel_callback);
-
-  // DigitalIdentityBluetoothAdapterPowerChangedObserver:
-  void OnBluetoothAdapterStatusChanged(
-      device::FidoRequestHandlerBase::BleStatus ble_status) override;
+  void Show(base::OnceClosure user_requested_bluetooth_power_on_callback,
+            base::OnceClosure cancel_callback);
 
  private:
-  void UpdateDialog();
-
-  // Whether bluetooth is powered.
-  bool is_ble_powered_ = false;
-
-  base::RepeatingClosure accept_bluetooth_powered_on_callback_;
-  base::RepeatingClosure cancel_callback_;
+  void UpdateDialog(bool enabled);
+  void OnAccept();
+  void OnCancel();
 
   // Owned by DigitalIdentityProviderDesktop.
-  raw_ptr<DigitalIdentityMultiStepDialog> dialog_;
+  const raw_ptr<DigitalIdentityMultiStepDialog> dialog_;
 
-  // Owned by DigitalIdentityProviderDesktop.
-  raw_ptr<DigitalIdentityFidoHandlerObserver> observer_registrar_;
+  base::OnceClosure user_requested_blueooth_power_on_callback_;
+  base::OnceClosure cancel_callback_;
+
+  base::WeakPtrFactory<DigitalIdentityBluetoothManualDialogController>
+      weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DIGITAL_CREDENTIALS_DIGITAL_IDENTITY_BLUETOOTH_MANUAL_DIALOG_CONTROLLER_H_

@@ -7,24 +7,26 @@
 #include <memory>
 #include <optional>
 
+#include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_installer.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_installer_impl.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_service_factory.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
-#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -94,6 +96,12 @@ std::u16string GetDetailedErrorMessage(
           IDS_BRUSCHETTA_INSTALLER_GENERIC_DLC_ERROR_MESSAGE,
           bruschetta::BruschettaInstallResultString(error));
 
+    case bruschetta::BruschettaInstallResult::kNoAdidError:
+    case bruschetta::BruschettaInstallResult::kNotEnoughMemoryError:
+      return l10n_util::GetStringFUTF16(
+          IDS_BRUSCHETTA_INSTALLER_UNINSTALLABLE_ERROR_MESSAGE,
+          bruschetta::BruschettaInstallResultString(error));
+
     default:
       // Everything else gets a generic error, they can get dedicated error
       // messages later if it's useful.
@@ -107,6 +115,7 @@ std::u16string GetDetailedErrorMessage(
 
 // static
 void BruschettaInstallerView::Show(Profile* profile,
+                                   PrefService& local_state,
                                    const guest_os::GuestId& guest_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (bruschetta::GetInstallableConfigs(profile).empty()) {
@@ -116,7 +125,7 @@ void BruschettaInstallerView::Show(Profile* profile,
   }
   if (!g_bruschetta_installer_view) {
     g_bruschetta_installer_view =
-        new BruschettaInstallerView(profile, guest_id);
+        new BruschettaInstallerView(profile, local_state, guest_id);
     views::DialogDelegate::CreateDialogWidget(g_bruschetta_installer_view,
                                               nullptr, nullptr);
   }
@@ -146,13 +155,14 @@ BEGIN_METADATA(BruschettaInstallerView, TitleLabel)
 END_METADATA
 
 BruschettaInstallerView::BruschettaInstallerView(Profile* profile,
+                                                 PrefService& local_state,
                                                  guest_os::GuestId guest_id)
     : profile_(profile), observation_(this), guest_id_(guest_id) {
   // Layout constants from the spec used for the plugin vm installer.
   constexpr auto kDialogInsets = gfx::Insets::TLBR(60, 64, 0, 64);
+  const int kPrimaryMessageHeight =
+      ash::GetLineHeight(ash::CONTEXT_HEADLINE).value();
   const auto& typography_provider = views::TypographyProvider::Get();
-  const int kPrimaryMessageHeight = typography_provider.GetLineHeight(
-      CONTEXT_HEADLINE, views::style::STYLE_PRIMARY);
   const int kSecondaryMessageHeight = typography_provider.GetLineHeight(
       views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY);
   constexpr int kProgressBarHeight = 5;
@@ -179,13 +189,13 @@ BruschettaInstallerView::BruschettaInstallerView(Profile* profile,
   radio_button_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
-  primary_message_label_ = new TitleLabel(GetPrimaryMessage(), CONTEXT_HEADLINE,
-                                          views::style::STYLE_PRIMARY);
+  primary_message_label_ = new TitleLabel(
+      GetPrimaryMessage(), ash::CONTEXT_HEADLINE, views::style::STYLE_PRIMARY);
   primary_message_label_->SetProperty(
       views::kMarginsKey, gfx::Insets::TLBR(kPrimaryMessageHeight, 0, 0, 0));
   primary_message_label_->SetMultiLine(false);
   primary_message_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  upper_container_view->AddChildView(primary_message_label_.get());
+  upper_container_view->AddChildViewRaw(primary_message_label_.get());
 
   views::View* secondary_message_container_view =
       AddChildView(std::make_unique<views::View>());
@@ -193,14 +203,14 @@ BruschettaInstallerView::BruschettaInstallerView(Profile* profile,
       std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical,
           gfx::Insets::TLBR(kSecondaryMessageHeight, 0, 0, 0)));
-  upper_container_view->AddChildView(secondary_message_container_view);
+  upper_container_view->AddChildViewRaw(secondary_message_container_view);
   // The label content will be populated by SetSecondaryMessageLabel shortly.
   secondary_message_label_ =
       new views::Label(u"", views::style::CONTEXT_DIALOG_BODY_TEXT,
                        views::style::STYLE_SECONDARY);
   secondary_message_label_->SetMultiLine(true);
   secondary_message_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  secondary_message_container_view->AddChildView(
+  secondary_message_container_view->AddChildViewRaw(
       secondary_message_label_.get());
 
   // Add "Learn More" link.
@@ -209,19 +219,19 @@ BruschettaInstallerView::BruschettaInstallerView(Profile* profile,
   learn_more_url_ = bruschetta::GetLearnMoreUrl(profile_);
   link_label_->SetCallback(base::BindRepeating(
       [](GURL url) {
-        ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+        ash::NewWindowDelegate::GetInstance()->OpenUrl(
             url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
             ash::NewWindowDelegate::Disposition::kNewForegroundTab);
       },
       learn_more_url_));
-  secondary_message_container_view->AddChildView(link_label_.get());
+  secondary_message_container_view->AddChildViewRaw(link_label_.get());
 
   progress_bar_ = new views::ProgressBar();
   progress_bar_->SetPreferredHeight(kProgressBarHeight);
   progress_bar_->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(kProgressBarTopMargin - kProgressBarHeight, 0, 0, 0));
-  upper_container_view->AddChildView(progress_bar_.get());
+  upper_container_view->AddChildViewRaw(progress_bar_.get());
 
   // Add list of configs in display order.
   {
@@ -248,12 +258,14 @@ BruschettaInstallerView::BruschettaInstallerView(Profile* profile,
   if (dark_light_controller) {
     dark_light_controller->AddObserver(this);
   }
-  installer_factory_ =
-      base::BindRepeating([](Profile* profile, base::OnceClosure closure) {
+  installer_factory_ = base::BindRepeating(
+      [](PrefService& local_state, Profile* profile, base::OnceClosure closure)
+          -> std::unique_ptr<bruschetta::BruschettaInstaller> {
         return static_cast<std::unique_ptr<bruschetta::BruschettaInstaller>>(
             std::make_unique<bruschetta::BruschettaInstallerImpl>(
-                profile, std::move(closure)));
-      });
+                profile, local_state, std::move(closure)));
+      },
+      std::ref(local_state));
 }
 
 BruschettaInstallerView::~BruschettaInstallerView() {
@@ -290,7 +302,8 @@ bool BruschettaInstallerView::Accept() {
     RemoveChildViewT(radio_button_container_.get());
     radio_button_container_ = nullptr;
     radio_buttons_.clear();
-    NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kChildrenChanged,
+                                       true);
   }
 
   observation_.Reset();
@@ -422,37 +435,40 @@ std::u16string BruschettaInstallerView::GetSecondaryMessage() const {
 int BruschettaInstallerView::GetCurrentDialogButtons() const {
   switch (state_) {
     case State::kInstalling:
-      return ui::DIALOG_BUTTON_CANCEL;
+      return static_cast<int>(ui::mojom::DialogButton::kCancel);
     case State::kConfirmInstall:
       // Cancel | Start installing
-      return ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK;
+      return static_cast<int>(ui::mojom::DialogButton::kCancel) |
+             static_cast<int>(ui::mojom::DialogButton::kOk);
     case State::kCleaningUp:
       return 0;
     case State::kFailedCleanup:
     case State::kFailed:
       // Quit | Retry
-      return ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK;
+      return static_cast<int>(ui::mojom::DialogButton::kCancel) |
+             static_cast<int>(ui::mojom::DialogButton::kOk);
   }
 }
 
 std::u16string BruschettaInstallerView::GetCurrentDialogButtonLabel(
-    ui::DialogButton button) const {
+    ui::mojom::DialogButton button) const {
   switch (state_) {
     case State::kConfirmInstall:
       return l10n_util::GetStringUTF16(
-          button == ui::DIALOG_BUTTON_OK
+          button == ui::mojom::DialogButton::kOk
               ? IDS_BRUSCHETTA_INSTALLER_INSTALL_BUTTON
               : IDS_APP_CANCEL);
     case State::kInstalling:
-      DCHECK_EQ(button, ui::DIALOG_BUTTON_CANCEL);
+      DCHECK_EQ(button, ui::mojom::DialogButton::kCancel);
       return l10n_util::GetStringUTF16(IDS_APP_CANCEL);
     case State::kCleaningUp:
       return {};
     case State::kFailed:
     case State::kFailedCleanup:
       return l10n_util::GetStringUTF16(
-          button == ui::DIALOG_BUTTON_OK ? IDS_BRUSCHETTA_INSTALLER_RETRY_BUTTON
-                                         : IDS_APP_CLOSE);
+          button == ui::mojom::DialogButton::kOk
+              ? IDS_BRUSCHETTA_INSTALLER_RETRY_BUTTON
+              : IDS_APP_CLOSE);
   }
 }
 
@@ -466,16 +482,17 @@ void BruschettaInstallerView::OnStateUpdated() {
 
   int buttons = GetCurrentDialogButtons();
   SetButtons(buttons);
-  if (buttons & ui::DIALOG_BUTTON_OK) {
-    SetButtonLabel(ui::DIALOG_BUTTON_OK,
-                   GetCurrentDialogButtonLabel(ui::DIALOG_BUTTON_OK));
-    SetDefaultButton(ui::DIALOG_BUTTON_OK);
+  if (buttons & static_cast<int>(ui::mojom::DialogButton::kOk)) {
+    SetButtonLabel(ui::mojom::DialogButton::kOk,
+                   GetCurrentDialogButtonLabel(ui::mojom::DialogButton::kOk));
+    SetDefaultButton(static_cast<int>(ui::mojom::DialogButton::kOk));
   } else {
-    SetDefaultButton(ui::DIALOG_BUTTON_NONE);
+    SetDefaultButton(static_cast<int>(ui::mojom::DialogButton::kNone));
   }
-  if (buttons & ui::DIALOG_BUTTON_CANCEL) {
-    SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
-                   GetCurrentDialogButtonLabel(ui::DIALOG_BUTTON_CANCEL));
+  if (buttons & static_cast<int>(ui::mojom::DialogButton::kCancel)) {
+    SetButtonLabel(
+        ui::mojom::DialogButton::kCancel,
+        GetCurrentDialogButtonLabel(ui::mojom::DialogButton::kCancel));
   }
 
   const bool progress_bar_visible =
@@ -486,12 +503,12 @@ void BruschettaInstallerView::OnStateUpdated() {
   if (progress_bar_visible) {
     progress_bar_->GetViewAccessibility().SetDescription(
         *secondary_message_label_);
-    progress_bar_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged,
-                                            true);
+    progress_bar_->NotifyAccessibilityEventDeprecated(
+        ax::mojom::Event::kTextChanged, true);
   }
 
   DialogModelChanged();
-  primary_message_label_->NotifyAccessibilityEvent(
+  primary_message_label_->NotifyAccessibilityEventDeprecated(
       ax::mojom::Event::kLiveRegionChanged,
       /* send_native_event = */ true);
 }
@@ -509,21 +526,21 @@ void BruschettaInstallerView::OnColorModeChanged(bool dark_mode_enabled) {
 void BruschettaInstallerView::SetPrimaryMessageLabel() {
   primary_message_label_->SetText(GetPrimaryMessage());
   primary_message_label_->SetVisible(true);
-  primary_message_label_->NotifyAccessibilityEvent(
+  primary_message_label_->NotifyAccessibilityEventDeprecated(
       ax::mojom::Event::kTextChanged, true);
 }
 
 void BruschettaInstallerView::SetSecondaryMessageLabel() {
   secondary_message_label_->SetText(GetSecondaryMessage());
   secondary_message_label_->SetVisible(true);
-  secondary_message_label_->NotifyAccessibilityEvent(
+  secondary_message_label_->NotifyAccessibilityEventDeprecated(
       ax::mojom::Event::kTextChanged, true);
 }
 
 void BruschettaInstallerView::CleanupPartialInstall() {
   state_ = State::kCleaningUp;
   OnStateUpdated();
-  bruschetta::BruschettaService::GetForProfile(profile_)->RemoveVm(
+  bruschetta::BruschettaServiceFactory::GetForProfile(profile_)->RemoveVm(
       guest_id_,
       base::BindOnce(&BruschettaInstallerView::UninstallBruschettaFinished,
                      weak_factory_.GetWeakPtr()));

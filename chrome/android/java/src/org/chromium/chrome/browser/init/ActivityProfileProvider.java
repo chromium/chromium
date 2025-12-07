@@ -4,29 +4,29 @@
 
 package org.chromium.chrome.browser.init;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 
 /** Handles initializing an Activity appropriate ProfileProvider. */
+@NullMarked
 public class ActivityProfileProvider extends OneshotSupplierImpl<ProfileProvider>
         implements ProfileManager.Observer, DestroyObserver {
-    private OTRProfileID mOTRProfileID;
-    private boolean mHasCreatedOTRProfileID;
+    private @Nullable OtrProfileId mOtrProfileId;
+    private boolean mHasCreatedOtrProfileId;
 
     /**
      * Handles initialization of a ProfileProvider for a given Activity.
      *
      * @param lifecycleDispatcher Provides lifecycle events for the host activity.
      */
-    public ActivityProfileProvider(@NonNull ActivityLifecycleDispatcher lifecycleDispatcher) {
+    public ActivityProfileProvider(ActivityLifecycleDispatcher lifecycleDispatcher) {
         lifecycleDispatcher.register(this);
 
         if (ProfileManager.isInitialized()) {
@@ -49,49 +49,37 @@ public class ActivityProfileProvider extends OneshotSupplierImpl<ProfileProvider
     private void onProfileManagerReady() {
         set(
                 new ProfileProvider() {
-                    @NonNull
+
                     @Override
                     public Profile getOriginalProfile() {
                         return ProfileManager.getLastUsedRegularProfile();
                     }
 
-                    @Nullable
                     @Override
-                    public Profile getOffTheRecordProfile(boolean createIfNeeded) {
+                    public @Nullable Profile getOffTheRecordProfile(boolean createIfNeeded) {
                         Profile originalProfile = getOriginalProfile();
-                        OTRProfileID otrProfileID = getOrCreateOTRProfileID();
-                        return otrProfileID == null
-                                ? originalProfile.getPrimaryOTRProfile(createIfNeeded)
+                        OtrProfileId otrProfileId = getOrCreateOtrProfileId();
+                        return otrProfileId == null
+                                ? originalProfile.getPrimaryOtrProfile(createIfNeeded)
                                 : originalProfile.getOffTheRecordProfile(
-                                        otrProfileID, createIfNeeded);
-                    }
-
-                    @Override
-                    public boolean hasOffTheRecordProfile() {
-                        Profile originalProfile = getOriginalProfile();
-                        OTRProfileID otrProfileID = getOrCreateOTRProfileID();
-                        return otrProfileID == null
-                                ? originalProfile.hasPrimaryOTRProfile()
-                                : originalProfile.hasOffTheRecordProfile(otrProfileID);
+                                        otrProfileId, createIfNeeded);
                     }
                 });
     }
 
-    @Nullable
-    private OTRProfileID getOrCreateOTRProfileID() {
-        if (!mHasCreatedOTRProfileID) {
-            mOTRProfileID = createOffTheRecordProfileID();
-            mHasCreatedOTRProfileID = true;
+    private @Nullable OtrProfileId getOrCreateOtrProfileId() {
+        if (!mHasCreatedOtrProfileId) {
+            mOtrProfileId = createOffTheRecordProfileId();
+            mHasCreatedOtrProfileId = true;
         }
-        return mOTRProfileID;
+        return mOtrProfileId;
     }
 
     /**
-     * Create the OTRProfileID that should be used for the incognito profile of this provider. If
+     * Create the OtrProfileId that should be used for the incognito profile of this provider. If
      * null, the default OffTheRecord profile will be used.
      */
-    @Nullable
-    protected OTRProfileID createOffTheRecordProfileID() {
+    protected @Nullable OtrProfileId createOffTheRecordProfileId() {
         return null;
     }
 

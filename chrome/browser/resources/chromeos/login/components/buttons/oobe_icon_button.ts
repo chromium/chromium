@@ -36,7 +36,7 @@ import '../oobe_vars/oobe_custom_vars.css.js';
 import '../hd_iron_icon.js';
 
 import type {CrButtonElement} from '//resources/ash/common/cr_elements/cr_button/cr_button.js';
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 
 import type {HdIronIcon} from '../hd_iron_icon.js';
 

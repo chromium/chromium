@@ -196,7 +196,7 @@ function simpleLoadIgnoreOnBeforeSendHeadersInvalidHeaders() {
         event: "onResponseStarted",
         details: {
           url: getURLHttpSimpleLoad(),
-          fromCache: false,
+          fromCache: true,
           statusCode: 200,
           ip: "127.0.0.1",
           statusLine: "HTTP/1.1 200 OK"
@@ -206,7 +206,7 @@ function simpleLoadIgnoreOnBeforeSendHeadersInvalidHeaders() {
         event: "onCompleted",
         details: {
           url: getURLHttpSimpleLoad(),
-          fromCache: false,
+          fromCache: true,
           statusCode: 200,
           ip: "127.0.0.1",
           statusLine: "HTTP/1.1 200 OK"
@@ -271,7 +271,7 @@ function simpleLoadIgnoreOnBeforeSendHeadersInvalidResponse() {
         event: "onResponseStarted",
         details: {
           url: getURLHttpSimpleLoad(),
-          fromCache: false,
+          fromCache: true,
           statusCode: 200,
           ip: "127.0.0.1",
           statusLine: "HTTP/1.1 200 OK",
@@ -282,7 +282,7 @@ function simpleLoadIgnoreOnBeforeSendHeadersInvalidResponse() {
         event: "onCompleted",
         details: {
           url: getURLHttpSimpleLoad(),
-          fromCache: false,
+          fromCache: true,
           statusCode: 200,
           ip: "127.0.0.1",
           statusLine: "HTTP/1.1 200 OK",
@@ -1388,8 +1388,9 @@ const scriptUrl = '_test_resources/api_test/webrequest/framework.js';
 let loadScript = chrome.test.loadScript(scriptUrl);
 
 function getFilteredTests(tests) {
-  if (!isServiceWorker)
+  if (!isServiceWorker) {
     return tests;
+  }
   return tests.filter(function(op) {
     return !nonServiceWorkerTests.includes(op);
   });

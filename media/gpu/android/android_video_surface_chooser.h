@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/functional/bind.h"
-#include "base/memory/weak_ptr.h"
 #include "media/base/android/android_overlay.h"
 #include "media/base/video_transformation.h"
 #include "media/gpu/media_gpu_export.h"

@@ -14,7 +14,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/color_palette.h"
-#include "ui/gfx/image/image_skia.h"
 #include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/controls/image_view.h"
 
@@ -50,6 +49,10 @@ enum class PageActionPageEvent {
   kMaxValue = kMultipleActionsShown,
 };
 
+// WARNING WARNING WARNING WARNING
+// This class is deprecated in favor of `PageActionView`. Please see
+// the `README.md` for details on integrating with the new page actions
+// framework. Reach out to alsan@ for help.
 // Represents an inbuilt (as opposed to an extension) page action icon that
 // shows a bubble when clicked.
 class PageActionIconView : public IconLabelBubbleView {
@@ -73,7 +76,8 @@ class PageActionIconView : public IconLabelBubbleView {
     virtual bool ShouldHidePageActionIcons() const;
 
     // Returns whether or not the given page action icon should be hidden.
-    virtual bool ShouldHidePageActionIcon(PageActionIconView* icon_view) const;
+    virtual bool ShouldHidePageActionIcon(
+        const PageActionIconView* icon_view) const;
   };
 
   PageActionIconView(const PageActionIconView&) = delete;
@@ -107,7 +111,7 @@ class PageActionIconView : public IconLabelBubbleView {
 
   SkColor GetLabelColorForTesting() const;
 
-  std::optional<actions::ActionId> action_id() { return action_id_; }
+  std::optional<actions::ActionId> action_id() const { return action_id_; }
   const char* name_for_histograms() const { return name_for_histograms_; }
   bool ephemeral() const { return ephemeral_; }
 
@@ -160,7 +164,6 @@ class PageActionIconView : public IconLabelBubbleView {
   virtual void OnPressed(bool activated) {}
 
   // IconLabelBubbleView:
-  std::u16string GetTooltipText(const gfx::Point& p) const override;
   void ViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details) override;
   void OnThemeChanged() override;
@@ -169,6 +172,8 @@ class PageActionIconView : public IconLabelBubbleView {
   bool IsTriggerableEvent(const ui::Event& event) override;
   bool ShouldUpdateInkDropOnClickCanceled() const override;
   void UpdateBorder() override;
+
+  virtual void UpdateTooltipText();
 
  protected:
   // Calls OnExecuting and runs |command_id_| with a valid |command_updater_|.
@@ -209,6 +214,9 @@ class PageActionIconView : public IconLabelBubbleView {
  private:
   void InstallLoadingIndicator();
 
+  void OnAXNameChanged(ax::mojom::StringAttribute attribute,
+                       const std::optional<std::string>& name);
+
   // What color to paint the icon with.
   SkColor icon_color_ = gfx::kPlaceholderColor;
 
@@ -243,6 +251,8 @@ class PageActionIconView : public IconLabelBubbleView {
 
   base::ObserverList<PageActionIconViewObserver>::UncheckedAndDanglingUntriaged
       observer_list_;
+
+  base::CallbackListSubscription name_changed_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_ICON_VIEW_H_

@@ -8,6 +8,7 @@
 
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
@@ -104,8 +105,7 @@ void FakeCrosDisksClient::Mount(const std::string& source_path,
       }
       break;
     case MountType::kInvalid:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   mounted_paths_.insert(mounted_path);
 

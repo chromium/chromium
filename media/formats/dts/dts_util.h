@@ -18,8 +18,7 @@ namespace dts {
 
 // Returns the total number of audio samples in the given buffer, which
 // could contain several complete DTS frames.
-MEDIA_EXPORT int ParseTotalSampleCount(const uint8_t* data,
-                                       size_t size,
+MEDIA_EXPORT int ParseTotalSampleCount(base::span<const uint8_t> buffer_span,
                                        AudioCodec dts_codec_type);
 
 // Encapsulate a single DTS audio frame with IEC 61937 encapsulation to

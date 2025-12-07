@@ -32,8 +32,8 @@ class AvailabilityCallbackWrapper final
 
   void Run(RemotePlayback*, bool new_availability);
 
-  virtual void Trace(Visitor*) const;
-  const char* NameInHeapSnapshot() const override {
+  void Trace(Visitor*) const;
+  const char* GetHumanReadableName() const override {
     return "AvailabilityCallbackWrapper";
   }
 

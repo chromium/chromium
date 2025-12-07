@@ -72,7 +72,7 @@ inline constexpr float kMinDividerPositionRatio = 0.15f;
 
 // Extra insets used to increase the hit bounds of the split view divider to
 // make it easier to handle located event.
-inline constexpr int kSplitViewDividerExtraInset = 8;
+inline constexpr int kSplitViewDividerExtraInset = 2;
 
 // The distance that the divider and windows are resized by when the divider is
 // resized via the keyboard.

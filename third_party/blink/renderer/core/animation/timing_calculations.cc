@@ -97,7 +97,9 @@ AnimationTimeDelta TimingCalculations::MultiplyZeroAlwaysGivesZero(
 Timing::Phase TimingCalculations::CalculatePhase(
     const Timing::NormalizedTiming& normalized,
     std::optional<AnimationTimeDelta>& local_time,
-    Timing::AnimationDirection direction) {
+    Timing::AnimationDirection direction,
+    bool paused_for_trigger,
+    bool is_endpoint_inclusive) {
   DCHECK(GreaterThanOrEqualToWithinTimeTolerance(normalized.active_duration,
                                                  AnimationTimeDelta()));
   if (!local_time) {
@@ -119,9 +121,10 @@ Timing::Phase TimingCalculations::CalculatePhase(
     }
     return Timing::kPhaseBefore;
   }
-  if ((direction == Timing::AnimationDirection::kBackwards &&
+  if (((direction == Timing::AnimationDirection::kBackwards ||
+        paused_for_trigger) &&
        local_time.value() == before_active_boundary_time &&
-       !normalized.is_start_boundary_aligned)) {
+       !normalized.is_start_boundary_aligned && !is_endpoint_inclusive)) {
     return Timing::kPhaseBefore;
   }
 
@@ -140,9 +143,10 @@ Timing::Phase TimingCalculations::CalculatePhase(
     }
     return Timing::kPhaseAfter;
   }
-  if ((direction == Timing::AnimationDirection::kForwards &&
+  if (((direction == Timing::AnimationDirection::kForwards ||
+        paused_for_trigger) &&
        local_time.value() == active_after_boundary_time &&
-       !normalized.is_end_boundary_aligned)) {
+       !normalized.is_end_boundary_aligned && !is_endpoint_inclusive)) {
     return Timing::kPhaseAfter;
   }
   return Timing::kPhaseActive;
@@ -181,8 +185,7 @@ std::optional<AnimationTimeDelta> TimingCalculations::CalculateActiveTime(
       DCHECK(!local_time.has_value());
       return std::nullopt;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::nullopt;
+      NOTREACHED();
   }
 }
 
@@ -300,11 +303,9 @@ bool TimingCalculations::IsCurrentDirectionForwards(
     std::optional<double> current_iteration,
     Timing::PlaybackDirection direction) {
   const bool current_iteration_is_even =
-      !current_iteration ? false
-                         : (std::isinf(current_iteration.value())
-                                ? true
-                                : IsWithinAnimationTimeEpsilon(
-                                      fmod(current_iteration.value(), 2), 0));
+      current_iteration &&
+      (std::isinf(current_iteration.value()) ||
+       IsWithinAnimationTimeEpsilon(fmod(current_iteration.value(), 2), 0));
 
   switch (direction) {
     case Timing::PlaybackDirection::NORMAL:

@@ -64,12 +64,15 @@ class CONTENT_EXPORT FencedFrame : public blink::mojom::FencedFrameOwnerHost,
   void DidStartLoading(FrameTreeNode* frame_tree_node) override {}
   void DidStopLoading() override {}
   bool IsHidden() override;
-  int GetOuterDelegateFrameTreeNodeId() override;
+  FrameTreeNodeId GetOuterDelegateFrameTreeNodeId() override;
   RenderFrameHostImpl* GetProspectiveOuterDocument() override;
   FrameTree* LoadingTree() override;
   void SetFocusedFrame(FrameTreeNode* node, SiteInstanceGroup* source) override;
-  FrameTree* GetOwnedPictureInPictureFrameTree() override;
-  FrameTree* GetPictureInPictureOpenerFrameTree() override;
+  FrameTree* GetOwnedDocumentPictureInPictureFrameTree() override;
+  FrameTree* GetDocumentPictureInPictureOpenerFrameTree() override;
+  bool OnRenderFrameProxyVisibilityChanged(
+      RenderFrameProxyHost* render_frame_proxy_host,
+      blink::mojom::FrameVisibility visibility) override;
 
   // Returns the devtools frame token of the fenced frame's inner FrameTree's
   // main frame.
@@ -91,6 +94,11 @@ class CONTENT_EXPORT FencedFrame : public blink::mojom::FencedFrameOwnerHost,
   void ActivateAndShowRepostFormWarningDialog() override;
   bool ShouldPreserveAbortedURLs() override;
   void UpdateOverridingUserAgent() override;
+#if BUILDFLAG(IS_ANDROID)
+  scoped_refptr<viz::RasterContextProvider> GetRasterContextProvider() override;
+  gfx::ColorSpace GetOutputColorSpace(gfx::ContentColorUsage color_usage,
+                                      bool needs_alpha) override;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   const raw_ptr<WebContentsImpl> web_contents_;
 

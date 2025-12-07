@@ -25,16 +25,14 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/controls/button/label_button.h"
@@ -66,16 +64,13 @@ class PageFlipWaiter : public PaginationModelObserver {
 
 }  // namespace
 
-class PagedAppsGridViewTest : public AshTestBase,
-                              public testing::WithParamInterface<bool> {
+class PagedAppsGridViewTest : public AshTestBase {
  public:
   PagedAppsGridViewTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~PagedAppsGridViewTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(
-        app_list_features::kDragAndDropRefactor, GetParam());
     AshTestBase::SetUp();
 
     ash::TabletModeControllerTestApi().EnterTabletMode();
@@ -156,10 +151,7 @@ class PagedAppsGridViewTest : public AshTestBase,
   }
 
   std::unique_ptr<test::AppsGridViewTestApi> grid_test_api_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-INSTANTIATE_TEST_SUITE_P(All, PagedAppsGridViewTest, testing::Bool());
 
 // Tests with app list nudge enabled.
 class PagedAppsGridViewWithNudgeTest : public PagedAppsGridViewTest {
@@ -175,9 +167,7 @@ class PagedAppsGridViewWithNudgeTest : public PagedAppsGridViewTest {
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(All, PagedAppsGridViewWithNudgeTest, testing::Bool());
-
-TEST_P(PagedAppsGridViewTest, CreatePage) {
+TEST_F(PagedAppsGridViewTest, CreatePage) {
   PagedAppsGridView* apps_grid_view =
       GetAppListTestHelper()->GetRootPagedAppsGridView();
 
@@ -196,7 +186,7 @@ TEST_P(PagedAppsGridViewTest, CreatePage) {
 // Test that the first page of the root level paged apps grid holds less apps to
 // accommodate the recent apps which are show at the top of the first page. Then
 // check that the subsequent page holds more apps.
-TEST_P(PagedAppsGridViewTest, PageMaxAppCounts) {
+TEST_F(PagedAppsGridViewTest, PageMaxAppCounts) {
   GetAppListTestHelper()->AddAppItems(40);
 
   // Add some recent apps and re-layout so the first page of the apps grid has
@@ -222,7 +212,7 @@ TEST_P(PagedAppsGridViewTest, PageMaxAppCounts) {
 // The number of rows should change depending on the display height and the
 // first page should most of the time have less rows to accommodate the recents
 // apps.
-TEST_P(PagedAppsGridViewTest, GridDimensionsChangesWithDisplaySize) {
+TEST_F(PagedAppsGridViewTest, GridDimensionsChangesWithDisplaySize) {
   // Add some recent apps to take up space on the first page.
   GetAppListTestHelper()->AddAppItems(4);
   GetAppListTestHelper()->AddRecentApps(4);
@@ -271,7 +261,7 @@ TEST_P(PagedAppsGridViewTest, GridDimensionsChangesWithDisplaySize) {
 
 // Test that an app cannot be dragged to create a new page when the remove empty
 // space flag is enabled.
-TEST_P(PagedAppsGridViewTest, DragItemToNextPage) {
+TEST_F(PagedAppsGridViewTest, DragItemToNextPage) {
   PaginationModel* pagination_model =
       GetAppListTestHelper()->GetRootPagedAppsGridView()->pagination_model();
 
@@ -328,7 +318,7 @@ TEST_P(PagedAppsGridViewTest, DragItemToNextPage) {
 
 // Test that dragging an app item just above or just below the background card
 // of the selected page will trigger a page flip.
-TEST_P(PagedAppsGridViewTest, PageFlipBufferSizedByBackgroundCard) {
+TEST_F(PagedAppsGridViewTest, PageFlipBufferSizedByBackgroundCard) {
   PaginationModel* pagination_model =
       GetAppListTestHelper()->GetRootPagedAppsGridView()->pagination_model();
 
@@ -391,7 +381,7 @@ TEST_P(PagedAppsGridViewTest, PageFlipBufferSizedByBackgroundCard) {
 
 // Test that dragging an item to just past the top of the first page
 // background card does not cause a page flip.
-TEST_P(PagedAppsGridViewTest, NoPageFlipUpOnFirstPage) {
+TEST_F(PagedAppsGridViewTest, NoPageFlipUpOnFirstPage) {
   PaginationModel* pagination_model =
       GetAppListTestHelper()->GetRootPagedAppsGridView()->pagination_model();
 
@@ -428,7 +418,7 @@ TEST_P(PagedAppsGridViewTest, NoPageFlipUpOnFirstPage) {
 
 // Test that dragging an item to just past the bottom of the last background
 // card does not cause a page flip.
-TEST_P(PagedAppsGridViewTest, NoPageFlipDownOnLastPage) {
+TEST_F(PagedAppsGridViewTest, NoPageFlipDownOnLastPage) {
   PaginationModel* pagination_model =
       GetAppListTestHelper()->GetRootPagedAppsGridView()->pagination_model();
 
@@ -473,7 +463,7 @@ TEST_P(PagedAppsGridViewTest, NoPageFlipDownOnLastPage) {
 // accommodate the recent apps, which are shown at the top of the first page,
 // and the app list nudge, which is shown right above the apps grid view. Then
 // check that the subsequent page holds more apps.
-TEST_P(PagedAppsGridViewWithNudgeTest, PageMaxAppCounts) {
+TEST_F(PagedAppsGridViewWithNudgeTest, PageMaxAppCounts) {
   GetAppListTestHelper()->AddAppItems(40);
 
   // Add some recent apps and re-layout so the first page of the apps grid has
@@ -500,7 +490,7 @@ TEST_P(PagedAppsGridViewWithNudgeTest, PageMaxAppCounts) {
 // first page should most of the time have less rows to accommodate the recents
 // apps. With the app list nudge enabled in this test, the number of rows
 // showing could be less to accommodate the toast nudge.
-TEST_P(PagedAppsGridViewWithNudgeTest, GridDimensionsChangesWithDisplaySize) {
+TEST_F(PagedAppsGridViewWithNudgeTest, GridDimensionsChangesWithDisplaySize) {
   // Add some recent apps to take up space on the first page.
   GetAppListTestHelper()->AddAppItems(4);
   GetAppListTestHelper()->AddRecentApps(4);
@@ -540,7 +530,7 @@ TEST_P(PagedAppsGridViewWithNudgeTest, GridDimensionsChangesWithDisplaySize) {
   EXPECT_EQ(5, GetPagedAppsGridView()->cols());
 }
 
-TEST_P(PagedAppsGridViewTest, SortAppsMakesA11yAnnouncement) {
+TEST_F(PagedAppsGridViewTest, SortAppsMakesA11yAnnouncement) {
   auto* helper = GetAppListTestHelper();
   helper->AddAppItems(5);
   helper->GetAppsContainerView()->ResetForShowApps();
@@ -573,9 +563,9 @@ TEST_P(PagedAppsGridViewTest, SortAppsMakesA11yAnnouncement) {
 }
 
 // Verifies that sorting app list with an app item focused works as expected.
-TEST_P(PagedAppsGridViewTest, SortAppsWithItemFocused) {
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+TEST_F(PagedAppsGridViewTest, SortAppsWithItemFocused) {
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Show an app list with enough apps to create multiple pages.
   auto* helper = GetAppListTestHelper();
@@ -634,9 +624,9 @@ TEST_P(PagedAppsGridViewTest, SortAppsWithItemFocused) {
 }
 
 // Verify on the paged apps grid the undo toast should show after scrolling.
-TEST_P(PagedAppsGridViewTest, ScrollToShowUndoToastWhenSorting) {
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+TEST_F(PagedAppsGridViewTest, ScrollToShowUndoToastWhenSorting) {
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Show an app list with enough apps to create multiple pages.
   auto* helper = GetAppListTestHelper();
@@ -681,9 +671,9 @@ TEST_P(PagedAppsGridViewTest, ScrollToShowUndoToastWhenSorting) {
 
 // Test tapping on the close button to dismiss the reorder toast. Also make sure
 // that items animate upward to take the place of the closed toast.
-TEST_P(PagedAppsGridViewTest, CloseReorderToast) {
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+TEST_F(PagedAppsGridViewTest, CloseReorderToast) {
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   auto* helper = GetAppListTestHelper();
   helper->AddAppItems(50);
@@ -738,9 +728,9 @@ TEST_P(PagedAppsGridViewTest, CloseReorderToast) {
 // Test that when quickly dragging and removing the last item from a folder, the
 // item view layers which are created when entering cardified state are
 // destroyed once the exit cardified item animations are complete.
-TEST_P(PagedAppsGridViewTest, DestroyLayersOnDragLastItemFromFolder) {
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+TEST_F(PagedAppsGridViewTest, DestroyLayersOnDragLastItemFromFolder) {
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   GetAppListTestHelper()->model()->CreateSingleItemFolder("folder_id",
                                                           "Item_0");
   GetAppListTestHelper()->model()->PopulateApps(5);
@@ -781,13 +771,8 @@ TEST_P(PagedAppsGridViewTest, DestroyLayersOnDragLastItemFromFolder) {
                                ->GetBoundsInScreen()
                                .bottom_center() +
                            gfx::Vector2d(0, item_view->height()));
-    if (GetParam()) {
       // Generate OnDragExit() event for the folder apps grid view.
       generator->MoveMouseBy(10, 10);
-    }
-    ASSERT_TRUE(helper->GetFullscreenFolderView()
-                    ->items_grid_view()
-                    ->FireFolderItemReparentTimerForTest());
     GetEventGenerator()->ReleaseLeftButton();
   }));
   MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch=*/false);
@@ -815,7 +800,7 @@ TEST_P(PagedAppsGridViewTest, DestroyLayersOnDragLastItemFromFolder) {
 // Test that when quickly dragging an item into a second page, and then into the
 // search box while the reorder animation is running, does not results in a
 // crash.
-TEST_P(PagedAppsGridViewTest, EnterSearchBoxDuringDragNoCrash) {
+TEST_F(PagedAppsGridViewTest, EnterSearchBoxDuringDragNoCrash) {
   const size_t kTotalApps = grid_test_api_->TilesPerPageInPagedGrid(0) + 1;
   GetAppListTestHelper()->model()->PopulateApps(kTotalApps);
   UpdateLayout();
@@ -847,8 +832,8 @@ TEST_P(PagedAppsGridViewTest, EnterSearchBoxDuringDragNoCrash) {
   // Trigger animation for reordering, and move to the search box while it is
   // still animating.
   tasks.push_back(base::BindLambdaForTesting([&]() {
-    ui::ScopedAnimationDurationScaleMode scope_duration(
-        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode scope_duration(
+        gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
     generator->MoveMouseTo(
         GetPagedAppsGridView()->GetBoundsInScreen().CenterPoint());
     ASSERT_TRUE(GetPagedAppsGridView()->reorder_timer_for_test()->IsRunning());
@@ -869,9 +854,9 @@ TEST_P(PagedAppsGridViewTest, EnterSearchBoxDuringDragNoCrash) {
 // the exiting animations. It could be possible that this animation interrupt
 // triggers `OnCardifiedStateEnded()` twice, so test that cardified state ended
 // only happens once.
-TEST_P(PagedAppsGridViewTest, QuicklyDragAndDropItem) {
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+TEST_F(PagedAppsGridViewTest, QuicklyDragAndDropItem) {
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   GetAppListTestHelper()->model()->PopulateApps(5);
   UpdateLayout();
 
@@ -914,9 +899,9 @@ TEST_P(PagedAppsGridViewTest, QuicklyDragAndDropItem) {
 
 // When quickly dragging and dropping an item from one row to another, test that
 // row change animations are not interrupted during cardified state exit.
-TEST_P(PagedAppsGridViewTest, QuicklyDragAndDropItemToNewRow) {
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+TEST_F(PagedAppsGridViewTest, QuicklyDragAndDropItemToNewRow) {
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   GetAppListTestHelper()->model()->PopulateApps(10);
   UpdateLayout();
 
@@ -971,9 +956,9 @@ TEST_P(PagedAppsGridViewTest, QuicklyDragAndDropItemToNewRow) {
   EXPECT_EQ(1, number_of_times_cardified_state_ended);
 }
 
-TEST_P(PagedAppsGridViewTest, CardifiedEnterAnimationInterruptedByExit) {
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+TEST_F(PagedAppsGridViewTest, CardifiedEnterAnimationInterruptedByExit) {
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   GetAppListTestHelper()->model()->PopulateApps(5);
   UpdateLayout();
 
@@ -1036,7 +1021,7 @@ TEST_P(PagedAppsGridViewTest, CardifiedEnterAnimationInterruptedByExit) {
 
 // Test that a first page item released outside of the grid with second page
 // shown will visually change back to the first page.
-TEST_P(PagedAppsGridViewTest, DragOutsideOfNextPageSelectsOriginalPage) {
+TEST_F(PagedAppsGridViewTest, DragOutsideOfNextPageSelectsOriginalPage) {
   const size_t kTotalApps = grid_test_api_->TilesPerPageInPagedGrid(0) + 1;
   GetAppListTestHelper()->model()->PopulateApps(kTotalApps);
   UpdateLayout();
@@ -1063,8 +1048,8 @@ TEST_P(PagedAppsGridViewTest, DragOutsideOfNextPageSelectsOriginalPage) {
   tasks.push_back(base::BindLambdaForTesting([&]() {
     auto page_flip_waiter = std::make_unique<PageFlipWaiter>(pagination_model);
     page_flip_waiter->Wait();
-    ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+        gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
     // Second page should be selected.
     EXPECT_EQ(1, pagination_model->selected_page());
   }));

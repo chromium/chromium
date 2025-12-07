@@ -3,13 +3,15 @@
 // found in the LICENSE file.
 
 import {FullscreenPreviewState} from 'chrome://resources/ash/common/personalization/wallpaper_state.js';
-import {emptyState as emptySeaPenState, SeaPenState} from 'chrome://resources/ash/common/sea_pen/sea_pen_state.js';
-import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import type {SeaPenState} from 'chrome://resources/ash/common/sea_pen/sea_pen_state.js';
+import {emptyState as emptySeaPenState} from 'chrome://resources/ash/common/sea_pen/sea_pen_state.js';
+import type {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {CurrentAttribution, CurrentWallpaper, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, WallpaperCollection, WallpaperImage} from '../../personalization_app.mojom-webui.js';
+import type {CurrentAttribution, CurrentWallpaper, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, WallpaperCollection, WallpaperImage} from '../../personalization_app.mojom-webui.js';
 
-import {DefaultImageSymbol, DisplayableImage, kDefaultImageSymbol} from './constants.js';
+import type {DefaultImageSymbol, DisplayableImage} from './constants.js';
+import {kDefaultImageSymbol} from './constants.js';
 
 /**
  * Stores collections and images from backdrop server.

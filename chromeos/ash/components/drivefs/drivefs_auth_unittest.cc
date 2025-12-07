@@ -17,6 +17,7 @@
 #include "components/account_id/account_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -78,7 +79,7 @@ class DriveFsAuthTest : public ::testing::Test {
     timer_ = timer.get();
     delegate_ = std::make_unique<AuthDelegateImpl>(
         identity_test_env_.identity_manager(),
-        AccountId::FromUserEmailGaiaId(kTestEmail, "ID"));
+        AccountId::FromUserEmailGaiaId(kTestEmail, GaiaId("ID")));
     auth_ = std::make_unique<DriveFsAuth>(&clock_,
                                           base::FilePath("/path/to/profile"),
                                           std::move(timer), delegate_.get());

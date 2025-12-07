@@ -13,7 +13,7 @@ namespace blink::bindings {
 namespace {
 
 const WrapperTypeInfo frozen_array_wrapper_type_info_{
-    gin::kEmbedderBlink,
+    {gin::kEmbedderBlink},
     // JS objects for IDL frozen array types are implemented as JS Arrays,
     // which don't support V8 internal fields. Neither v8::FunctionTemplate nor
     // v8::ObjectTemplate is used.
@@ -21,12 +21,13 @@ const WrapperTypeInfo frozen_array_wrapper_type_info_{
     nullptr,  // install_context_dependent_props_func
     "FrozenArray",
     nullptr,  // parent_class
-    kDOMWrappersTag,
-    kDOMWrappersTag,
+    static_cast<v8::CppHeapPointerTag>(
+        ScriptWrappableArrayTag::kFrozenArrayTag),
+    static_cast<v8::CppHeapPointerTag>(
+        ScriptWrappableArrayTag::kFrozenArrayTag),
     WrapperTypeInfo::kWrapperTypeNoPrototype,
     WrapperTypeInfo::kNoInternalFieldClassId,
-    WrapperTypeInfo::kNotInheritFromActiveScriptWrappable,
-    WrapperTypeInfo::kCustomWrappableKind,
+    WrapperTypeInfo::kIdlOtherType,
 };
 
 }  // namespace
@@ -35,20 +36,6 @@ const WrapperTypeInfo frozen_array_wrapper_type_info_{
 // FrozenArrayBase::wrapper_type_info_ manually here.
 const WrapperTypeInfo& FrozenArrayBase::wrapper_type_info_ =
     frozen_array_wrapper_type_info_;
-
-v8::Local<v8::Value> FrozenArrayBase::ToV8(ScriptState* script_state) const {
-  return const_cast<FrozenArrayBase*>(this)->ToV8(script_state);
-}
-
-v8::Local<v8::Value> FrozenArrayBase::ToV8(ScriptState* script_state) {
-  v8::Local<v8::Object> wrapper;
-  if (DOMDataStore::GetWrapper(script_state->GetIsolate(), this)
-          .ToLocal(&wrapper)) [[likely]] {
-    return wrapper;
-  }
-
-  return Wrap(script_state);
-}
 
 v8::Local<v8::Value> FrozenArrayBase::Wrap(ScriptState* script_state) {
   DCHECK(!DOMDataStore::ContainsWrapper(script_state->GetIsolate(), this));

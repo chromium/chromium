@@ -147,8 +147,7 @@ CryptAuthKey::Status ConvertKeyCreationToKeyStatus(KeyCreation key_creation) {
     case SyncSingleKeyResponse::INACTIVE:
       return CryptAuthKey::Status::kInactive;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return CryptAuthKey::Status::kInactive;
+      NOTREACHED();
   }
 }
 
@@ -468,7 +467,7 @@ void CryptAuthV2EnrollerImpl::OnTimeout() {
       RecordEnrollKeysMetrics(execution_time, CryptAuthApiCallResult::kTimeout);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   FinishAttempt(*error_code);
@@ -768,10 +767,7 @@ void CryptAuthV2EnrollerImpl::OnKeysCreated(
               kErrorDeviceSyncBetterTogetherKeyCreationFailed;
           break;
         case CryptAuthKeyBundle::Name::kDeviceSyncBetterTogetherGroupKey:
-          NOTREACHED_IN_MIGRATION();
-          result_code = CryptAuthEnrollmentResult::ResultCode::
-              kErrorUserKeyPairCreationFailed;
-          break;
+          NOTREACHED();
       }
       FinishAttempt(result_code);
       return;

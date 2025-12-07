@@ -19,13 +19,13 @@ struct DidOverscrollParams;
 // The options that define the context under which mouse events are accepted.
 // Acceptance under a lower option implies acceptance under any higher option,
 // but not vice versa.
-enum AcceptMouseEventsOption {
+enum class AcceptMouseEvents {
   // Accepts mouse events only when the window is active.
-  kAcceptMouseEventsInActiveWindow = 0,
+  kWhenInActiveWindow = 0,
   // Accepts mouse events when any window of the application is active.
-  kAcceptMouseEventsInActiveApp = 1,
+  kWhenInActiveApp = 1,
   // Accepts mouse events regardless of window or application activation.
-  kAcceptMouseEventsAlways = 2,
+  kAlways = 2,
 };
 
 // This protocol is used as a delegate for the NSView class used in the
@@ -36,25 +36,16 @@ enum AcceptMouseEventsOption {
 //
 // Like any Objective-C delegate, it is not retained by the delegator object.
 // The delegator object will call the -viewGone: method when it is going away.
-
-@class NSEvent;
 @protocol RenderWidgetHostViewMacDelegate
-// Notification of when a gesture begins/ends.
-- (void)beginGestureWithEvent:(NSEvent*)event;
-- (void)endGestureWithEvent:(NSEvent*)event;
-
-// This is a low level API which provides touches associated with an event.
-// It is used in conjunction with gestures to determine finger placement
-// on the trackpad.
+// The standard set of touch callbacks found on NSResponder. These messages are
+// forwarded by the RenderWidgetHostViewMac/Cocoa to its delegate.
 - (void)touchesMovedWithEvent:(NSEvent*)event;
 - (void)touchesBeganWithEvent:(NSEvent*)event;
 - (void)touchesCancelledWithEvent:(NSEvent*)event;
 - (void)touchesEndedWithEvent:(NSEvent*)event;
 
-// The browser process received an ACK from the renderer after it processed
-// |event|.
-- (void)rendererHandledWheelEvent:(const blink::WebMouseWheelEvent&)event
-                         consumed:(BOOL)consumed;
+// Callbacks to the delegate to indicate that the renderer has handled either
+// a gesture scroll event or an overscroll event.
 - (void)rendererHandledGestureScrollEvent:(const blink::WebGestureEvent&)event
                                  consumed:(BOOL)consumed;
 - (void)rendererHandledOverscrollEvent:(const ui::DidOverscrollParams&)params;
@@ -74,6 +65,8 @@ enum AcceptMouseEventsOption {
 - (BOOL)validateUserInterfaceItem:(id<NSValidatedUserInterfaceItem>)item
                       isValidItem:(BOOL*)valid;
 
+// The standard set of responder found on NSResponder. These messages are
+// forwarded by the RenderWidgetHostViewMac/Cocoa to its delegate.
 - (void)becomeFirstResponder;
 - (void)resignFirstResponder;
 
@@ -81,7 +74,7 @@ enum AcceptMouseEventsOption {
 
 // By default, only active window accepts mouse events. The content embedder may
 // override this method to override the default behavior.
-- (AcceptMouseEventsOption)acceptsMouseEventsOption;
+- (AcceptMouseEvents)acceptsMouseEventsOption;
 @end
 
 #endif  // CONTENT_PUBLIC_BROWSER_RENDER_WIDGET_HOST_VIEW_MAC_DELEGATE_H_

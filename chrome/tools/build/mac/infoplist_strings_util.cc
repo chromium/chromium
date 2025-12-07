@@ -49,7 +49,7 @@ std::string LoadStringFromDataPack(ui::DataPack* data_pack,
                                    const std::string& data_pack_lang,
                                    uint32_t resource_id,
                                    const char* resource_id_str) {
-  std::optional<std::string_view> data = data_pack->GetStringPiece(resource_id);
+  std::optional<std::string_view> data = data_pack->GetStringView(resource_id);
   CHECK(data.has_value()) << "failed to load string " << resource_id_str
                           << " for lang " << data_pack_lang;
 
@@ -187,6 +187,7 @@ int main(int argc, char* const argv[]) {
         {"CFBundleGetInfoString", get_info},
         {"NSHumanReadableCopyright", copyright},
 
+        {"NSAudioCaptureUsageDescription", permission_reason},
         {"NSBluetoothAlwaysUsageDescription", permission_reason},
         {"NSBluetoothPeripheralUsageDescription", permission_reason},
         {"NSCameraUsageDescription", permission_reason},

@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -65,11 +66,11 @@ class PLATFORM_EXPORT MultiBufferReader : public MultiBuffer::Reader {
   // Tries to read |len| bytes from position |pos|.
   // Returns number of bytes read.
   // Safe to call from any thread.
-  int64_t TryReadAt(int64_t pos, uint8_t* data, int64_t len);
+  int64_t TryReadAt(int64_t pos, base::span<uint8_t> data);
 
   // Tries to read |len| bytes and update current position.
   // Returns number of bytes read.
-  int64_t TryRead(uint8_t* data, int64_t len);
+  int64_t TryRead(base::span<uint8_t>);
 
   // Wait until |len| bytes are available for reading.
   // Returns net::OK if |len| bytes are already available, otherwise it will

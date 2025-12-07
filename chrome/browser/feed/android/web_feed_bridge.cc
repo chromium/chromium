@@ -33,7 +33,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/service_access_type.h"
-#include "ui/base/l10n/l10n_util.h"
+#include "components/variations/service/variations_service.h"
 #include "url/android/gurl_android.h"
 #include "url/origin.h"
 
@@ -55,8 +55,7 @@ base::CancelableTaskTracker& TaskTracker() {
 
 PageInformation ToNativePageInformation(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& pageInfo) {
-
+    const base::android::JavaRef<jobject>& pageInfo) {
   PageInformation result;
   result.url = url::GURLAndroid::ToNativeGURL(
       env, Java_WebFeedPageInformation_getUrl(env, pageInfo));
@@ -105,8 +104,7 @@ base::android::ScopedJavaLocalRef<jobject> ToJava(
     JNIEnv* env,
     const WebFeedMetadata& metadata) {
   return Java_WebFeedMetadata_Constructor(
-      env, ToJavaWebFeedId(env, metadata.web_feed_id),
-      base::android::ConvertUTF8ToJavaString(env, metadata.title),
+      env, ToJavaWebFeedId(env, metadata.web_feed_id), metadata.title,
       url::GURLAndroid::FromNativeGURL(env, metadata.publisher_url),
       static_cast<int>(metadata.subscription_status),
       static_cast<int>(metadata.availability_status), metadata.is_recommended,
@@ -141,10 +139,8 @@ base::android::ScopedJavaLocalRef<jobject> ToJava(
 base::android::ScopedJavaLocalRef<jobject> ToJava(
     JNIEnv* env,
     const WebFeedSubscriptions::QueryWebFeedResult& result) {
-  return Java_QueryResult_Constructor(
-      env, base::android::ConvertUTF8ToJavaString(env, result.web_feed_id),
-      base::android::ConvertUTF8ToJavaString(env, result.title),
-      base::android::ConvertUTF8ToJavaString(env, result.url));
+  return Java_QueryResult_Constructor(env, result.web_feed_id, result.title,
+                                      result.url);
 }
 
 base::android::ScopedJavaLocalRef<jobject> ToJava(
@@ -155,7 +151,7 @@ base::android::ScopedJavaLocalRef<jobject> ToJava(
 }
 
 base::OnceCallback<void(WebFeedMetadata)> AdaptWebFeedMetadataCallback(
-    const base::android::JavaParamRef<jobject>& callback) {
+    const base::android::JavaRef<jobject>& callback) {
   auto adaptor = [](const base::android::JavaRef<jobject>& callback,
                     WebFeedMetadata metadata) {
     JNIEnv* env = base::android::AttachCurrentThread();
@@ -168,7 +164,7 @@ base::OnceCallback<void(WebFeedMetadata)> AdaptWebFeedMetadataCallback(
 
 base::OnceCallback<void(WebFeedSubscriptions::QueryWebFeedResult)>
 AdaptQueryWebFeedResultCallback(
-    const base::android::JavaParamRef<jobject>& callback) {
+    const base::android::JavaRef<jobject>& callback) {
   auto adaptor = [](const base::android::JavaRef<jobject>& callback,
                     WebFeedSubscriptions::QueryWebFeedResult result) {
     JNIEnv* env = base::android::AttachCurrentThread();
@@ -191,7 +187,7 @@ void RunJavaCallback(const base::android::JavaRef<jobject>& callback,
 template <typename T>
 base::OnceCallback<void(T)> AdaptCallbackForJava(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& callback) {
+    const base::android::JavaRef<jobject>& callback) {
   auto adaptor = [](const base::android::JavaRef<jobject>& callback, T result) {
     JNIEnv* env = base::android::AttachCurrentThread();
     RunJavaCallback(callback, ToJava(env, std::move(result)));
@@ -205,9 +201,9 @@ base::OnceCallback<void(T)> AdaptCallbackForJava(
 
 static void JNI_WebFeedBridge_FollowWebFeed(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& pageInfo,
+    const base::android::JavaRef<jobject>& pageInfo,
     jint change_reason,
-    const base::android::JavaParamRef<jobject>& j_callback) {
+    const base::android::JavaRef<jobject>& j_callback) {
   auto callback =
       AdaptCallbackForJava<WebFeedSubscriptions::FollowWebFeedResult>(
           env, j_callback);
@@ -226,23 +222,20 @@ static void JNI_WebFeedBridge_FollowWebFeed(
       std::move(callback));
 }
 
+static jboolean JNI_WebFeedBridge_IsWebFeedEnabled(JNIEnv* env) {
+  return feed::IsWebFeedEnabledForLocale(FeedServiceFactory::GetCountry());
+}
+
 static jboolean JNI_WebFeedBridge_IsCormorantEnabledForLocale(JNIEnv* env) {
   return JNI_WebFeedBridge_IsWebFeedEnabled(env);
 }
 
-static jboolean JNI_WebFeedBridge_IsWebFeedEnabled(JNIEnv* env) {
-  return l10n_util::GetLanguage(g_browser_process->GetApplicationLocale()) ==
-             "en" &&
-         feed::IsWebFeedEnabledForLocale(
-             country_codes::GetCurrentCountryCode());
-}
-
 static void JNI_WebFeedBridge_FollowWebFeedById(
     JNIEnv* env,
-    const base::android::JavaParamRef<jbyteArray>& webFeedId,
+    const base::android::JavaRef<jbyteArray>& webFeedId,
     jboolean is_durable,
     jint change_reason,
-    const base::android::JavaParamRef<jobject>& j_callback) {
+    const base::android::JavaRef<jobject>& j_callback) {
   WebFeedSubscriptions* subscriptions = GetSubscriptions();
   auto callback =
       AdaptCallbackForJava<WebFeedSubscriptions::FollowWebFeedResult>(
@@ -260,10 +253,10 @@ static void JNI_WebFeedBridge_FollowWebFeedById(
 
 static void JNI_WebFeedBridge_UnfollowWebFeed(
     JNIEnv* env,
-    const base::android::JavaParamRef<jbyteArray>& webFeedId,
+    const base::android::JavaRef<jbyteArray>& webFeedId,
     jboolean is_durable,
     jint change_reason,
-    const base::android::JavaParamRef<jobject>& j_callback) {
+    const base::android::JavaRef<jobject>& j_callback) {
   auto callback =
       AdaptCallbackForJava<WebFeedSubscriptions::UnfollowWebFeedResult>(
           env, j_callback);
@@ -276,9 +269,9 @@ static void JNI_WebFeedBridge_UnfollowWebFeed(
 
 static void JNI_WebFeedBridge_FindWebFeedInfoForPage(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& pageInfo,
+    const base::android::JavaRef<jobject>& pageInfo,
     const int reason,
-    const base::android::JavaParamRef<jobject>& j_callback) {
+    const base::android::JavaRef<jobject>& j_callback) {
   base::OnceCallback<void(WebFeedMetadata)> callback =
       AdaptCallbackForJava<WebFeedMetadata>(env, j_callback);
 
@@ -297,8 +290,8 @@ static void JNI_WebFeedBridge_FindWebFeedInfoForPage(
 
 static void JNI_WebFeedBridge_FindWebFeedInfoForWebFeedId(
     JNIEnv* env,
-    const base::android::JavaParamRef<jbyteArray>& webFeedId,
-    const base::android::JavaParamRef<jobject>& j_callback) {
+    const base::android::JavaRef<jbyteArray>& webFeedId,
+    const base::android::JavaRef<jobject>& j_callback) {
   base::OnceCallback<void(WebFeedMetadata)> callback =
       AdaptWebFeedMetadataCallback(j_callback);
   WebFeedSubscriptions* subscriptions = GetSubscriptions();
@@ -312,7 +305,7 @@ static void JNI_WebFeedBridge_FindWebFeedInfoForWebFeedId(
 
 static void JNI_WebFeedBridge_GetAllSubscriptions(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_callback) {
+    const base::android::JavaRef<jobject>& j_callback) {
   base::OnceCallback<void(std::vector<WebFeedMetadata>)> callback =
       AdaptCallbackForJava<std::vector<WebFeedMetadata>>(env, j_callback);
   WebFeedSubscriptions* subscriptions = GetSubscriptions();
@@ -325,7 +318,7 @@ static void JNI_WebFeedBridge_GetAllSubscriptions(
 
 static void JNI_WebFeedBridge_RefreshSubscriptions(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_callback) {
+    const base::android::JavaRef<jobject>& j_callback) {
   base::OnceCallback<void(WebFeedSubscriptions::RefreshResult)> callback =
       AdaptCallbackForJava<WebFeedSubscriptions::RefreshResult>(env,
                                                                 j_callback);
@@ -339,7 +332,7 @@ static void JNI_WebFeedBridge_RefreshSubscriptions(
 
 static void JNI_WebFeedBridge_RefreshRecommendedFeeds(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_callback) {
+    const base::android::JavaRef<jobject>& j_callback) {
   base::OnceCallback<void(WebFeedSubscriptions::RefreshResult)> callback =
       AdaptCallbackForJava<WebFeedSubscriptions::RefreshResult>(env,
                                                                 j_callback);
@@ -353,8 +346,8 @@ static void JNI_WebFeedBridge_RefreshRecommendedFeeds(
 
 static void JNI_WebFeedBridge_GetRecentVisitCountsToHost(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_url,
-    const base::android::JavaParamRef<jobject>& j_callback) {
+    const base::android::JavaRef<jobject>& j_url,
+    const base::android::JavaRef<jobject>& j_callback) {
   base::OnceCallback<void(history::DailyVisitsResult)> callback =
       AdaptCallbackForJava<history::DailyVisitsResult>(env, j_callback);
 
@@ -377,7 +370,8 @@ static void JNI_WebFeedBridge_GetRecentVisitCountsToHost(
       base::Days(GetFeedConfig().webfeed_accelerator_recent_visit_history_days);
   history_service->GetDailyVisitsToOrigin(
       url::Origin::Create(url::GURLAndroid::ToNativeGURL(env, j_url)),
-      begin_time, end_time, std::move(callback), &TaskTracker());
+      begin_time, end_time, history::VisitQuery404sPolicy::kExclude404s,
+      std::move(callback), &TaskTracker());
 }
 
 static void JNI_WebFeedBridge_IncrementFollowedFromWebPageMenuCount(
@@ -391,8 +385,8 @@ static void JNI_WebFeedBridge_IncrementFollowedFromWebPageMenuCount(
 
 static void JNI_WebFeedBridge_QueryWebFeed(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& url,
-    const base::android::JavaParamRef<jobject>& j_callback) {
+    std::string& url,
+    const base::android::JavaRef<jobject>& j_callback) {
   base::OnceCallback<void(WebFeedSubscriptions::QueryWebFeedResult)> callback =
       AdaptQueryWebFeedResultCallback(j_callback);
   WebFeedSubscriptions* subscriptions = GetSubscriptions();
@@ -400,15 +394,13 @@ static void JNI_WebFeedBridge_QueryWebFeed(
     std::move(callback).Run({});
     return;
   }
-  subscriptions->QueryWebFeed(
-      GURL(base::android::ConvertJavaStringToUTF8(env, url)),
-      std::move(callback));
+  subscriptions->QueryWebFeed(GURL(url), std::move(callback));
 }
 
 static void JNI_WebFeedBridge_QueryWebFeedId(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& id,
-    const base::android::JavaParamRef<jobject>& j_callback) {
+    std::string& id,
+    const base::android::JavaRef<jobject>& j_callback) {
   base::OnceCallback<void(WebFeedSubscriptions::QueryWebFeedResult)> callback =
       AdaptQueryWebFeedResultCallback(j_callback);
   WebFeedSubscriptions* subscriptions = GetSubscriptions();
@@ -416,7 +408,8 @@ static void JNI_WebFeedBridge_QueryWebFeedId(
     std::move(callback).Run({});
     return;
   }
-  subscriptions->QueryWebFeedId(base::android::ConvertJavaStringToUTF8(env, id),
-                                std::move(callback));
+  subscriptions->QueryWebFeedId(id, std::move(callback));
 }
 }  // namespace feed
+
+DEFINE_JNI(WebFeedBridge)

@@ -44,6 +44,14 @@ class AppShimController
     : public chrome::mojom::AppShim,
       public mac_notifications::mojom::MacNotificationProvider {
  public:
+  class TestDelegate {
+   public:
+    virtual ~TestDelegate() = default;
+    virtual void PopulateChromeCommandLine(base::CommandLine& command_line) = 0;
+  };
+
+  static void SetDelegateForTesting(TestDelegate* delegate);
+
   struct Params {
     Params();
     Params(const Params& other);

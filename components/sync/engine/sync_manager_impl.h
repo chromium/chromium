@@ -43,7 +43,7 @@ class SyncManagerImpl
       public NudgeHandler {
  public:
   // Create an uninitialized SyncManager.  Callers must Init() before using.
-  // |network_connection_tracker| must not be null and must outlive this object.
+  // `network_connection_tracker` must not be null and must outlive this object.
   SyncManagerImpl(
       const std::string& name,
       network::NetworkConnectionTracker* network_connection_tracker);
@@ -77,7 +77,6 @@ class SyncManagerImpl
   std::string cache_guid() override;
   std::string birthday() override;
   std::string bag_of_chips() override;
-  DataTypeSet GetTypesWithUnsyncedData() override;
   bool HasUnsyncedItemsForTest() override;
   SyncEncryptionHandler* GetEncryptionHandler() override;
   std::vector<std::unique_ptr<ProtocolEvent>> GetBufferedProtocolEvents()

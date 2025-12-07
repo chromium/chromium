@@ -23,10 +23,6 @@
 #include "sql/init_status.h"
 #include "sql/meta_table.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "components/history/core/browser/android/android_urls_database.h"
-#endif
-
 namespace base {
 class FilePath;
 }
@@ -47,15 +43,27 @@ namespace history {
 // as the storage interface. Logic for manipulating this storage layer should
 // be in HistoryBackend.cc.
 class HistoryDatabase : public DownloadDatabase,
-#if BUILDFLAG(IS_ANDROID)
-                        public AndroidURLsDatabase,
-#endif
                         public URLDatabase,
                         public VisitDatabase,
                         public VisitAnnotationsDatabase,
                         public VisitedLinkDatabase,
                         public VisitSegmentDatabase {
  public:
+  // Reasons for initialization to fail. These are logged to UMA. It corresponds
+  // to the HistoryInitStep enum in enums.xml.
+  //
+  // DO NOT CHANGE THE VALUES. Leave holes if anything is removed and add only
+  // to the end.
+  enum class InitStep {
+    OPEN = 0,
+    TRANSACTION_BEGIN = 1,
+    META_TABLE_INIT = 2,
+    CREATE_TABLES = 3,
+    VERSION = 4,
+    COMMIT = 5,
+    RAZE_OLD_DB = 6,
+  };
+
   // Must call Init() to complete construction. Although it can be created on
   // any thread, it must be destructed on the history thread for proper
   // database cleanup.
@@ -83,22 +91,25 @@ class HistoryDatabase : public DownloadDatabase,
   // called once and only upon successful Init.
   void ComputeDatabaseMetrics(const base::FilePath& filename);
 
-  // Counts the number of unique Hosts visited in the last month.
-  int CountUniqueHostsVisitedLastMonth();
-
-  // Gets unique domains (eLTD+1) visited within the time range
+  // Gets unique domains (eTLD+1) visited within the time range
   // [`begin_time`, `end_time`) for local and synced visits sorted in
-  // reverse-chronological order.
-  DomainsVisitedResult GetUniqueDomainsVisited(base::Time begin_time,
-                                               base::Time end_time);
+  // reverse-chronological order. Whether visits with an HTTP response code of
+  // 404 count is determined by `policy_for_404_visits`.
+  DomainsVisitedResult GetUniqueDomainsVisited(
+      base::Time begin_time,
+      base::Time end_time,
+      VisitQuery404sPolicy policy_for_404_visits);
 
-  // Counts the number of unique domains (eLTD+1) visited within
-  // [`begin_time`, `end_time`).
+  // Counts the number of unique domains (eTLD+1) visited within
+  // [`begin_time`, `end_time`). Whether visits with an HTTP response code of
+  // 404 count is determined by `policy_for_404_visits`.
   // The return value is a pair of (local, all), where "local" only counts
   // domains that were visited on this device, whereas "all" also counts
   // foreign/synced visits.
-  std::pair<int, int> CountUniqueDomainsVisited(base::Time begin_time,
-                                                base::Time end_time);
+  std::pair<int, int> CountUniqueDomainsVisited(
+      base::Time begin_time,
+      base::Time end_time,
+      VisitQuery404sPolicy policy_for_404_visits);
 
   // Call to set the mode on the database to exclusive. The default locking mode
   // is "normal" but we want to run in exclusive mode for slightly better
@@ -200,11 +211,6 @@ class HistoryDatabase : public DownloadDatabase,
   sql::Database& GetDBForTesting();
 
  private:
-#if BUILDFLAG(IS_ANDROID)
-  // AndroidProviderBackend uses the `db_`.
-  friend class AndroidProviderBackend;
-  FRIEND_TEST_ALL_PREFIXES(AndroidURLsMigrationTest, MigrateToVersion22);
-#endif
   friend class ::InMemoryURLIndexTest;
 
   // Overridden from URLDatabase, DownloadDatabase, VisitDatabase, and
@@ -212,6 +218,11 @@ class HistoryDatabase : public DownloadDatabase,
   sql::Database& GetDB() override;
 
   // Migration -----------------------------------------------------------------
+
+  // Razes the database if it's so old that we no longer have to code to migrate
+  // it to the current version. Returns `false` if the database was too old and
+  // could not be razed.
+  bool RazeDbIfTooOld();
 
   // Makes sure the version is up to date, updating if necessary. If the
   // database is too old to migrate, the user will be notified. Returns
@@ -228,6 +239,12 @@ class HistoryDatabase : public DownloadDatabase,
 #endif
 
   bool MigrateRemoveTypedUrlMetadata();
+
+#if BUILDFLAG(IS_ANDROID)
+  // The android_urls table ceased usage in 91.0.4438.0. This method drops the
+  // table if it exists.
+  bool DropAndroidUrlsTable();
+#endif
 
   // ---------------------------------------------------------------------------
 

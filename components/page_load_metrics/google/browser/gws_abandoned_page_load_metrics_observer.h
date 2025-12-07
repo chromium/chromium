@@ -16,10 +16,11 @@ extern const char kSuffixWasNonSRP[];
 
 extern const char kGwsAFTStartMarkName[];
 extern const char kGwsAFTEndMarkName[];
-extern const char kGwsHeaderChunkStartMarkName[];
-extern const char kGwsHeaderChunkEndMarkName[];
+extern const char kGwsHeadChunkStartMarkName[];
+extern const char kGwsHeadChunkEndMarkName[];
 extern const char kGwsBodyChunkStartMarkName[];
 extern const char kGwsBodyChunkEndMarkName[];
+extern const char kGwsSGLMarkName[];
 }  // namespace internal
 
 // Observes and records UMA for navigations to GWS which might or might get
@@ -55,6 +56,10 @@ class GWSAbandonedPageLoadMetricsObserver
   const base::flat_map<std::string, NavigationMilestone>&
   GetCustomUserTimingMarkNames() const override;
   bool IsAllowedToLogUKM() const override;
+
+  // Whether we've reached and logged all loading milestones, from kParseStart
+  // to kBodyChunkEnd.
+  bool DidLogAllLoadingMilestones() const override;
 
   // Set to true if we see the navigation involves non-SRP URL, which will be
   // specially marked in the logged metrics.

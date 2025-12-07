@@ -8,8 +8,7 @@
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "build/chromeos_buildflags.h"
-#include "components/flags_ui/feature_entry.h"
+#include "components/webui/flags/feature_entry.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
@@ -20,7 +19,7 @@ struct LabInfo;
 namespace views {
 class Button;
 class FlexLayoutView;
-}
+}  // namespace views
 
 // TODO(elainechien): Use composition instead of inheritance.
 class ChromeLabsBubbleView : public views::BubbleDialogDelegateView {
@@ -53,8 +52,6 @@ class ChromeLabsBubbleView : public views::BubbleDialogDelegateView {
 
  private:
   void NotifyRestartCallback();
-
-  raw_ptr<actions::ActionItem> chrome_labs_action_item_ = nullptr;
 
   // This view will hold all the child lab items.
   raw_ptr<views::FlexLayoutView> menu_item_container_;

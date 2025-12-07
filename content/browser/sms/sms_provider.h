@@ -30,6 +30,7 @@ enum class SmsFetchType {
 class CONTENT_EXPORT SmsProvider {
  public:
   using FailureType = SmsFetchFailureType;
+  using OriginList = SmsFetcher::OriginList;
   using SmsParsingStatus = SmsParser::SmsParsingStatus;
   using UserConsent = SmsFetcher::UserConsent;
 

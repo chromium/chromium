@@ -10,6 +10,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "components/sync/service/sync_service_observer.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 
 namespace syncer {
 
@@ -43,12 +44,11 @@ class SyncServiceAndroidBridge : public SyncServiceObserver {
 
   // Please keep all methods below in the same order as the @NativeMethods in
   // SyncServiceImpl.java.
-  void SetSyncRequested(JNIEnv* env);
+  void AcknowledgeBookmarksLimitExceededError(JNIEnv* env);
   jboolean IsSyncFeatureEnabled(JNIEnv* env);
   jboolean IsSyncFeatureActive(JNIEnv* env);
   jboolean IsSyncDisabledByEnterprisePolicy(JNIEnv* env);
   jboolean IsEngineInitialized(JNIEnv* env);
-  jboolean IsTransportStateActive(JNIEnv* env);
   void SetSetupInProgress(JNIEnv* env, jboolean in_progress);
   jboolean IsInitialSyncFeatureSetupComplete(JNIEnv* env);
   void SetInitialSyncFeatureSetupComplete(JNIEnv* env, jint source);
@@ -56,20 +56,20 @@ class SyncServiceAndroidBridge : public SyncServiceObserver {
   base::android::ScopedJavaLocalRef<jintArray> GetSelectedTypes(JNIEnv* env);
   void GetTypesWithUnsyncedData(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& callback);
+      const base::android::JavaRef<jobject>& callback);
   void GetLocalDataDescriptions(
       JNIEnv* env,
-      const base::android::JavaParamRef<jintArray>& types,
-      const base::android::JavaParamRef<jobject>& callback);
+      const base::android::JavaRef<jintArray>& types,
+      const base::android::JavaRef<jobject>& callback);
   void TriggerLocalDataMigration(
       JNIEnv* env,
-      const base::android::JavaParamRef<jintArray>& types);
+      const base::android::JavaRef<jintArray>& types);
   jboolean IsTypeManagedByPolicy(JNIEnv* env, jint type);
   jboolean IsTypeManagedByCustodian(JNIEnv* env, jint type);
-  void SetSelectedTypes(JNIEnv* env,
-                        jboolean sync_everything,
-                        const base::android::JavaParamRef<jintArray>&
-                            user_selectable_type_selection);
+  void SetSelectedTypes(
+      JNIEnv* env,
+      jboolean sync_everything,
+      const base::android::JavaRef<jintArray>& user_selectable_type_selection);
   void SetSelectedType(JNIEnv* env, jint type, jboolean is_type_on);
   jboolean IsCustomPassphraseAllowed(JNIEnv* env);
   jboolean IsEncryptEverythingEnabled(JNIEnv* env);
@@ -79,19 +79,19 @@ class SyncServiceAndroidBridge : public SyncServiceObserver {
   jboolean IsTrustedVaultRecoverabilityDegraded(JNIEnv* env);
   jboolean IsUsingExplicitPassphrase(JNIEnv* env);
   jint GetPassphraseType(JNIEnv* env);
+  jint GetTransportState(JNIEnv* env);
+  jint GetUserActionableError(JNIEnv* env);
   void SetEncryptionPassphrase(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& passphrase);
+      const base::android::JavaRef<jstring>& passphrase);
   jboolean SetDecryptionPassphrase(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& passphrase);
+      const base::android::JavaRef<jstring>& passphrase);
   // Returns 0 if there's no passphrase time.
   jlong GetExplicitPassphraseTime(JNIEnv* env);
   void GetAllNodes(JNIEnv* env,
-                   const base::android::JavaParamRef<jobject>& callback);
-  jint GetAuthError(JNIEnv* env);
-  jboolean HasUnrecoverableError(JNIEnv* env);
-  jboolean RequiresClientUpgrade(JNIEnv* env);
+                   const base::android::JavaRef<jobject>& callback);
+  GoogleServiceAuthError GetAuthError(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetAccountInfo(JNIEnv* env);
   jboolean HasSyncConsent(JNIEnv* env);
   jboolean IsPassphrasePromptMutedForCurrentProductVersion(JNIEnv* env);
@@ -104,7 +104,7 @@ class SyncServiceAndroidBridge : public SyncServiceObserver {
   jlong GetLastSyncedTimeForDebugging(JNIEnv* env);
   void KeepAccountSettingsPrefsOnlyForUsers(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobjectArray>& gaia_ids);
+      const base::android::JavaRef<jobjectArray>& gaia_ids);
 
  private:
   // A reference to the sync service for this profile.

@@ -4,15 +4,21 @@
 
 package org.chromium.chrome.browser.safe_browsing;
 
+import android.content.Intent;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.content_public.browser.WebContents;
 
 /** Bridge providing access to native-side Safe Browsing data. */
 @JNINamespace("safe_browsing")
+@NullMarked
 public final class SafeBrowsingBridge {
     private final Profile mProfile;
 
@@ -43,6 +49,11 @@ public final class SafeBrowsingBridge {
      */
     public void setSafeBrowsingExtendedReportingEnabled(boolean enabled) {
         SafeBrowsingBridgeJni.get().setSafeBrowsingExtendedReportingEnabled(mProfile, enabled);
+    }
+
+    /** Set the Safe Browsing setting set locally pref as true. */
+    public void enableSafeBrowsingSettingSetLocallyPref() {
+        SafeBrowsingBridgeJni.get().enableSafeBrowsingSettingSetLocallyPref(mProfile);
     }
 
     /**
@@ -77,17 +88,35 @@ public final class SafeBrowsingBridge {
     }
 
     /**
-     * @return Whether the user is under Advanced Protection.
-     */
-    public boolean isUnderAdvancedProtection() {
-        return SafeBrowsingBridgeJni.get().isUnderAdvancedProtection(mProfile);
-    }
-
-    /**
      * @return Whether hash real-time lookup is enabled.
      */
     public static boolean isHashRealTimeLookupEligibleInSession() {
         return SafeBrowsingBridgeJni.get().isHashRealTimeLookupEligibleInSession();
+    }
+
+    /**
+     * Report an intent sent to open an external app. This may be summarized and sent to Safe
+     * Browsing.
+     *
+     * @param webContents The WebContents that triggered the intent
+     * @param intent The intent Chrome generated
+     */
+    public static void reportIntent(WebContents webContents, Intent intent) {
+        String packageName;
+        if (intent.getComponent() != null) {
+            packageName = intent.getComponent().getPackageName();
+        } else if (intent.getPackage() != null) {
+            packageName = intent.getPackage();
+        } else {
+            packageName = "";
+        }
+
+        String uri = "";
+        if (intent.getData() != null) {
+            uri = intent.getData().toString();
+        }
+
+        SafeBrowsingBridgeJni.get().reportIntent(webContents, packageName, uri);
     }
 
     @NativeMethods
@@ -106,10 +135,15 @@ public final class SafeBrowsingBridge {
 
         void setSafeBrowsingState(Profile profile, @SafeBrowsingState int state);
 
+        void enableSafeBrowsingSettingSetLocallyPref(Profile profile);
+
         boolean isSafeBrowsingManaged(Profile profile);
 
-        boolean isUnderAdvancedProtection(Profile profile);
-
         boolean isHashRealTimeLookupEligibleInSession();
+
+        void reportIntent(
+                @JniType("content::WebContents*") WebContents webContents,
+                @JniType("std::string") String packageName,
+                @JniType("std::string") String uri);
     }
 }

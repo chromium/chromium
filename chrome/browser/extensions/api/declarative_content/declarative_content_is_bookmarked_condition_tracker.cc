@@ -7,13 +7,15 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/declarative/declarative_constants.h"
 #include "extensions/common/permissions/permissions_data.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -186,7 +188,7 @@ void DeclarativeContentIsBookmarkedConditionTracker::TrackForWebContents(
     content::WebContents* contents) {
   per_web_contents_tracker_[contents] = std::make_unique<PerWebContentsTracker>(
       contents,
-      base::BindRepeating(&Delegate::RequestEvaluation,
+      base::BindRepeating(&Delegate::NotifyPredicateStateUpdated,
                           base::Unretained(delegate_)),
       base::BindOnce(&DeclarativeContentIsBookmarkedConditionTracker::
                          DeletePerWebContentsTracker,
@@ -211,7 +213,7 @@ bool DeclarativeContentIsBookmarkedConditionTracker::EvaluatePredicate(
   const DeclarativeContentIsBookmarkedPredicate* typed_predicate =
       static_cast<const DeclarativeContentIsBookmarkedPredicate*>(predicate);
   auto loc = per_web_contents_tracker_.find(tab);
-  CHECK(loc != per_web_contents_tracker_.end(), base::NotFatalUntil::M130);
+  CHECK(loc != per_web_contents_tracker_.end());
   return loc->second->is_url_bookmarked() == typed_predicate->is_bookmarked();
 }
 

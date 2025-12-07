@@ -8,12 +8,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.home.list.ListItem;
 import org.chromium.chrome.browser.download.home.list.ListProperties;
 import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** A {@link RecyclerView.ViewHolder} specifically meant to display a pagination header. */
+@NullMarked
 public class PaginationViewHolder extends ListItemViewHolder {
     /** Creates a new {@link PaginationViewHolder} instance. */
     public static PaginationViewHolder create(ViewGroup parent) {

@@ -60,6 +60,8 @@ class VR_EXPORT VRBrowserRendererThread {
     bool ShouldDrawUI();
     bool ShouldDrawWebXR();
 
+    ExternalPromptNotificationType GetPrompt() const { return prompt_; }
+
    private:
     ExternalPromptNotificationType prompt_ =
         ExternalPromptNotificationType::kPromptNone;

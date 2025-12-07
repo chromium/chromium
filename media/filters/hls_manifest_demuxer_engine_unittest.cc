@@ -3,22 +3,26 @@
 // found in the LICENSE file.
 
 #include "media/filters/hls_manifest_demuxer_engine.h"
-#include "media/filters/manifest_demuxer.h"
 
 #include <memory>
 #include <string>
 #include <string_view>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "crypto/aes_cbc.h"
+#include "crypto/random.h"
 #include "media/base/mock_media_log.h"
 #include "media/base/pipeline_status.h"
 #include "media/base/test_helpers.h"
 #include "media/filters/hls_data_source_provider.h"
 #include "media/filters/hls_test_helpers.h"
+#include "media/filters/manifest_demuxer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -136,6 +140,28 @@ const std::string kMultivariantPlaylistWithAlts =
     "#EXT-X-STREAM-INF:BANDWIDTH=65000,CODECS=\"mp4a.40.05\",AUDIO=\"aac\"\n"
     "main/english-audio.m3u8\n";
 
+const std::string kMultivariantPlaylistWithEmbeddedAlts =
+    "#EXTM3U\n"
+    "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"aac\",NAME=\"Eng\",DEFAULT=YES,"
+    "AUTOSELECT=YES,LANGUAGE=\"en\"\n"
+    "#EXT-X-STREAM-INF:BANDWIDTH=7680000,CODECS=\"avc1.420000\",AUDIO=\"aac\"\n"
+    "hi/video-only.m3u8\n";
+
+const std::string kLiveFullEncryptedMediaPlaylist =
+    "#EXTM3U\n"
+    "#EXT-X-VERSION:4\n"
+    "#EXT-X-TARGETDURATION:4\n"
+    "#EXT-X-MEDIA-SEQUENCE:13979\n"
+    "#EXT-X-DISCONTINUITY-SEQUENCE:0\n"
+    "#EXT-X-KEY:METHOD=AES-128,URI=\"K\",IV=0x66666666666666666666666666666666,"
+    "KEYFORMAT=\"identity\",KEYFORMATVERSIONS=\"1\"\n"
+    "#EXTINF:3.0,\n"
+    "13979.js\n"
+    "#EXTINF:3.0,\n"
+    "13980.js\n"
+    "#EXTINF:3.0,\n"
+    "13981.js\n";
+
 using ::base::test::RunOnceCallback;
 using ::base::test::RunOnceClosure;
 using testing::_;
@@ -172,6 +198,17 @@ MATCHER_P2(SingleSegmentQueue,
   return first.uri == GURL(urlstr) && first.range == range;
 }
 
+static constexpr size_t kKeySize = 16;
+std::tuple<std::string, std::array<uint8_t, kKeySize>> Encrypt(
+    std::string cleartext,
+    base::span<const uint8_t, crypto::aes_cbc::kBlockSize> iv) {
+  std::array<uint8_t, kKeySize> key;
+  crypto::RandBytes(key);
+  auto ciphertext =
+      crypto::aes_cbc::Encrypt(key, iv, base::as_byte_span(cleartext));
+  return std::make_tuple(std::string(base::as_string_view(ciphertext)), key);
+}
+
 class FakeHlsDataSourceProvider : public HlsDataSourceProvider {
  private:
   raw_ptr<HlsDataSourceProvider> mock_;
@@ -199,27 +236,32 @@ class FakeHlsDataSourceProvider : public HlsDataSourceProvider {
 template <typename T>
 class CallbackEnforcer {
  public:
-  explicit CallbackEnforcer(T expected)
-      : expected_(std::move(expected)), was_called_(false) {}
+  explicit CallbackEnforcer(
+      T expected,
+      const base::Location& from = base::Location::Current())
+      : expected_(std::move(expected)), created_(from) {}
 
   base::OnceCallback<void(T)> GetCallback() {
     return base::BindOnce(
-        [](bool* writeback, T expected, T actual) {
+        [](size_t line, bool* writeback, T expected, T actual) {
           *writeback = true;
-          ASSERT_EQ(actual, expected);
+          ASSERT_EQ(actual, expected)
+              << "Callback at line:" << line << " called with wrong parameter";
         },
-        &was_called_, expected_);
+        created_.line_number(), &was_called_, expected_);
   }
 
   // This method is move only, so it must be std::moved.
   void AssertAndReset(base::test::TaskEnvironment& env) && {
     env.RunUntilIdle();
-    ASSERT_TRUE(was_called_);
+    ASSERT_TRUE(was_called_)
+        << "Callback at line:" << created_.line_number() << " never called";
   }
 
  private:
   T expected_;
   bool was_called_ = false;
+  base::Location created_;
 };
 
 class HlsManifestDemuxerEngineTest : public testing::Test {
@@ -271,12 +313,13 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
     BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
         "http://media.example.com/manifest.m3u8", kSimpleMultivariantPlaylist);
     BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
-        "http://example.com/hi.m3u8", kSimpleMediaPlaylist);
+        "http://example.com/low.m3u8", kSimpleMediaPlaylist);
     EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
     InitializeEngine();
     task_environment_.RunUntilIdle();
 
-    auto rendition = std::make_unique<StrictMock<MockHlsRendition>>();
+    auto rendition = std::make_unique<StrictMock<MockHlsRendition>>(
+        GURL("http://example.com/low.m3u8"));
     EXPECT_CALL(*rendition, GetDuration()).WillOnce(Return(base::Seconds(30)));
     auto* rendition_ptr = rendition.get();
     engine_->AddRenditionForTesting("primary", std::move(rendition));
@@ -353,16 +396,19 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
     task_environment_.RunUntilIdle();
     CHECK(continue_adaptation);
     return base::BindOnce(
-        [](MockHlsRendition* rendition_ptr, base::OnceClosure cb) {
-          EXPECT_CALL(*rendition_ptr, UpdatePlaylist(_, _));
+        [](MockHlsRendition* rendition_ptr, base::OnceClosure cb, GURL uri) {
+          EXPECT_CALL(*rendition_ptr, UpdatePlaylist(_));
+          EXPECT_CALL(*rendition_ptr, MockUpdatePlaylistURI(uri));
           std::move(cb).Run();
         },
-        rendition_ptr, std::move(continue_adaptation));
+        rendition_ptr, std::move(continue_adaptation), GURL(url));
   }
 
  public:
   MOCK_METHOD(void, MockInitComplete, (PipelineStatus status), ());
   MOCK_METHOD(void, SeekFinished, (), ());
+  MOCK_METHOD(void, AddTrack, (const MediaTrack&), ());
+  MOCK_METHOD(void, RemoveTrack, (const MediaTrack&), ());
 
   HlsManifestDemuxerEngineTest()
       : media_log_(std::make_unique<NiceMock<media::MockMediaLog>>()),
@@ -379,6 +425,10 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
 
     engine_ = std::make_unique<HlsManifestDemuxerEngine>(
         std::move(dsp), base::SingleThreadTaskRunner::GetCurrentDefault(),
+        base::BindRepeating(&HlsManifestDemuxerEngineTest::AddTrack,
+                            base::Unretained(this)),
+        base::BindRepeating(&HlsManifestDemuxerEngineTest::RemoveTrack,
+                            base::Unretained(this)),
         false, GURL("http://media.example.com/manifest.m3u8"),
         media_log_.get());
   }
@@ -399,9 +449,8 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
 TEST_F(HlsManifestDemuxerEngineTest, TestInitFailure) {
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/manifest.m3u8", kInvalidMediaPlaylist);
-  EXPECT_CALL(*mock_mdeh_,
-              OnError(HasStatusCode(DEMUXER_ERROR_COULD_NOT_PARSE)));
-  EXPECT_CALL(*this, MockInitComplete(_)).Times(0);
+  EXPECT_CALL(*this,
+              MockInitComplete(HasStatusCode(DEMUXER_ERROR_COULD_NOT_PARSE)));
   InitializeEngine();
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(engine_->IsSeekable());
@@ -451,12 +500,12 @@ TEST_F(HlsManifestDemuxerEngineTest, TestLivePlaybackManifestUpdates) {
   EXPECT_CALL(*mock_mdeh_, AppendAndParseData("primary", _, _, _))
       .WillRepeatedly(Return(true));
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
-      "http://media.example.com/a.ts", "Cheese in a cstring is string cheese.");
+      "http://media.example.com/b.ts", "Cheese in a cstring is string cheese.");
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
-      "http://media.example.com/b.ts",
+      "http://media.example.com/c.ts",
       "Tomatoes are a fruit. Ketchup is a jam.");
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
-      "http://media.example.com/c.ts", "You've never been in an empty room.");
+      "http://media.example.com/d.ts", "You've never been in an empty room.");
 
   Ranges<base::TimeDelta> after_seg_a;
   after_seg_a.Add(base::Seconds(0), base::Seconds(9));
@@ -472,9 +521,11 @@ TEST_F(HlsManifestDemuxerEngineTest, TestLivePlaybackManifestUpdates) {
       .WillOnce(Return(after_seg_a))                // After appending segment A
       .WillOnce(Return(after_seg_a))                // Second CheckState
       .WillOnce(Return(after_seg_b))                // After appending segment B
+      .WillOnce(Return(after_seg_b))                // MediaLog
       .WillOnce(Return(after_seg_b))                // Third CheckState
       .WillOnce(Return(after_seg_b))                // Fourth CheckState
       .WillOnce(Return(after_seg_c))                // After appending segment C
+      .WillOnce(Return(after_seg_c))                // MediaLog
       .WillOnce(Return(after_seg_c))                // Fifth CheckState
       ;
 
@@ -530,7 +581,7 @@ TEST_F(HlsManifestDemuxerEngineTest, TestMultivariantPlaylistNoAlternates) {
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/manifest.m3u8", kSimpleMultivariantPlaylist);
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
-      "http://example.com/hi.m3u8", kSimpleMediaPlaylist);
+      "http://example.com/low.m3u8", kSimpleMediaPlaylist);
   EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
   InitializeEngine();
   task_environment_.RunUntilIdle();
@@ -556,6 +607,30 @@ TEST_F(HlsManifestDemuxerEngineTest, TestMultivariantPlaylistWithAlternates) {
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/eng-audio.m3u8", kSingleInfoMediaPlaylist);
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
+      "http://media.example.com/low/video-only.m3u8", kSimpleMediaPlaylist);
+  EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
+  InitializeEngine();
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(HlsManifestDemuxerEngineTest, TestMultivariantPlaylistWithNoUrlAlts) {
+  EXPECT_CALL(*mock_mdeh_, SetSequenceMode("audio-override", true)).Times(0);
+  EXPECT_CALL(*mock_mdeh_, SetSequenceMode("primary", true));
+  EXPECT_CALL(*mock_mdeh_, SetDuration(21.021));
+  EXPECT_CALL(*mock_mdeh_,
+              AddRole("audio-override", RelaxedParserSupportedType::kMP2T))
+      .Times(0);
+  EXPECT_CALL(*mock_mdeh_,
+              AddRole("primary", RelaxedParserSupportedType::kMP2T));
+
+  // URL queries in order:
+  //  - manifest.m3u8: root manifest
+  //  - video-only.m3u8: primary rendition
+  //  - first.ts: check container/codecs for the primary rendition
+  BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
+      "http://media.example.com/manifest.m3u8",
+      kMultivariantPlaylistWithEmbeddedAlts);
+  BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/hi/video-only.m3u8", kSimpleMediaPlaylist);
   EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
   InitializeEngine();
@@ -567,8 +642,9 @@ TEST_F(HlsManifestDemuxerEngineTest, TestMultivariantWithNoSupportedCodecs) {
   EXPECT_CALL(*mock_mdeh_, SetSequenceMode(_, _)).Times(0);
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/manifest.m3u8", kUnsupportedCodecs);
-  EXPECT_CALL(*mock_mdeh_,
-              OnError(HasStatusCode(DEMUXER_ERROR_COULD_NOT_PARSE)));
+
+  EXPECT_CALL(*this,
+              MockInitComplete(HasStatusCode(DEMUXER_ERROR_COULD_NOT_PARSE)));
   InitializeEngine();
   task_environment_.RunUntilIdle();
 }
@@ -666,9 +742,8 @@ TEST_F(HlsManifestDemuxerEngineTest, TestMultiRenditionCheckState) {
 TEST_F(HlsManifestDemuxerEngineTest, SeekAfterErrorFails) {
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/manifest.m3u8", kInvalidMediaPlaylist);
-  EXPECT_CALL(*mock_mdeh_,
-              OnError(HasStatusCode(DEMUXER_ERROR_COULD_NOT_PARSE)));
-  EXPECT_CALL(*this, MockInitComplete(_)).Times(0);
+  EXPECT_CALL(*this,
+              MockInitComplete(HasStatusCode(DEMUXER_ERROR_COULD_NOT_PARSE)));
   InitializeEngine();
   task_environment_.RunUntilIdle();
 
@@ -688,11 +763,13 @@ TEST_F(HlsManifestDemuxerEngineTest, SeekAfterErrorFails) {
 
 TEST_F(HlsManifestDemuxerEngineTest, TestSeekDuringAdaptation) {
   auto* rendition_ptr = SetUpInterruptTest();
+  EXPECT_EQ(rendition_ptr->MediaPlaylistUri(),
+            GURL("http://example.com/low.m3u8"));
 
   // Start the adaptation and hold it from finishing.
   base::OnceClosure continue_adaptation = StartAndCaptureNetworkAdaptation(
-      rendition_ptr, "http://example.com/low.m3u8", kSimpleMediaPlaylist,
-      1380000);
+      rendition_ptr, "http://example.com/hi.m3u8", kSimpleMediaPlaylist,
+      45600001);
 
   // Start a seek. It should wait while the adaptation is pending.
   EXPECT_CALL(*this, SeekFinished()).Times(0);
@@ -717,6 +794,9 @@ TEST_F(HlsManifestDemuxerEngineTest, TestSeekDuringAdaptation) {
 
   // Finish the adaptation, seek should complete.
   std::move(continue_adaptation).Run();
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(rendition_ptr->MediaPlaylistUri(),
+            GURL("http://example.com/hi.m3u8"));
   task_environment_.RunUntilIdle();
 }
 
@@ -750,6 +830,8 @@ TEST_F(HlsManifestDemuxerEngineTest, TestSeekDuringTimeUpdate) {
 
   // Finish the update, seek should complete.
   std::move(continue_update).Run();
+  EXPECT_EQ(rendition_ptr->MediaPlaylistUri(),
+            GURL("http://example.com/low.m3u8"));
   task_environment_.RunUntilIdle();
 }
 
@@ -762,12 +844,12 @@ TEST_F(HlsManifestDemuxerEngineTest, TestAdaptDuringTimeUpdate) {
 
   // Start an adaptation. It should wait while the update is pending.
   ExpectNoNetworkRequests();
-  engine_->UpdateNetworkSpeed(1380000);
+  engine_->UpdateNetworkSpeed(45600001);
   task_environment_.RunUntilIdle();
 
   // When the update finishes, the adaptation requests the low quality stream.
   BindUrlAssignmentThunk<StringHlsDataSourceStreamFactory>(
-      "http://example.com/low.m3u8", kSimpleMediaPlaylist);
+      "http://example.com/hi.m3u8", kSimpleMediaPlaylist);
   std::move(continue_update).Run();
   task_environment_.RunUntilIdle();
 }
@@ -780,12 +862,12 @@ TEST_F(HlsManifestDemuxerEngineTest, TestAdaptDuringSeek) {
 
   // Start an adaptation. It should wait while the seek is pending.
   ExpectNoNetworkRequests();
-  engine_->UpdateNetworkSpeed(1380000);
+  engine_->UpdateNetworkSpeed(45600001);
   task_environment_.RunUntilIdle();
 
-  // When the seek finishes, the adaptation requests the low quality stream.
+  // When the seek finishes, the adaptation requests the high quality stream.
   BindUrlAssignmentThunk<StringHlsDataSourceStreamFactory>(
-      "http://example.com/low.m3u8", kSimpleMediaPlaylist);
+      "http://example.com/hi.m3u8", kSimpleMediaPlaylist);
   EXPECT_CALL(*this, SeekFinished());
   std::move(continue_seek).Run();
   task_environment_.RunUntilIdle();
@@ -796,8 +878,8 @@ TEST_F(HlsManifestDemuxerEngineTest, TestTimeUpdateDuringAdaptation) {
 
   // Start the adaptation and hold it from finishing.
   base::OnceClosure continue_adaptation = StartAndCaptureNetworkAdaptation(
-      rendition_ptr, "http://example.com/low.m3u8", kSimpleMediaPlaylist,
-      1380000);
+      rendition_ptr, "http://example.com/hi.m3u8", kSimpleMediaPlaylist,
+      55600001);
 
   // Start the time update
   EXPECT_CALL(*rendition_ptr, CheckState(_, _, _)).Times(0);
@@ -921,9 +1003,8 @@ TEST_F(HlsManifestDemuxerEngineTest, TestEndOfStreamPropagatesOnce) {
 
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/manifest.m3u8", kInvalidMediaPlaylist);
-  EXPECT_CALL(*mock_mdeh_,
-              OnError(HasStatusCode(DEMUXER_ERROR_COULD_NOT_PARSE)));
-  EXPECT_CALL(*this, MockInitComplete(_)).Times(0);
+  EXPECT_CALL(*this,
+              MockInitComplete(HasStatusCode(DEMUXER_ERROR_COULD_NOT_PARSE)));
   InitializeEngine();
   task_environment_.RunUntilIdle();
 
@@ -972,11 +1053,32 @@ TEST_F(HlsManifestDemuxerEngineTest, TestOriginTainting) {
       "http://media.example.com/manifest.m3u8", kSimpleMultivariantPlaylist,
       /*taint_origin=*/true);
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
-      "http://example.com/hi.m3u8", kSimpleMediaPlaylist);
+      "http://example.com/low.m3u8", kSimpleMediaPlaylist);
   EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
   InitializeEngine();
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(engine_->WouldTaintOrigin());
+}
+
+TEST_F(HlsManifestDemuxerEngineTest, TestInitialSegmentEncrypted) {
+  std::string cleartext = "G <- 0x47 (G) is the sentinal byte for TS content";
+  std::string ciphertext;
+  std::array<uint8_t, kKeySize> key;
+  constexpr std::array<uint8_t, crypto::aes_cbc::kBlockSize> kIv{
+      'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f',
+      'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f',
+  };
+  std::tie(ciphertext, key) = Encrypt(cleartext, kIv);
+  BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
+      "http://media.example.com/manifest.m3u8",
+      kLiveFullEncryptedMediaPlaylist);
+  EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
+  BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
+      "http://media.example.com/K", std::string(base::as_string_view(key)));
+  BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
+      "http://media.example.com/13979.js", ciphertext);
+  InitializeEngine();
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace media

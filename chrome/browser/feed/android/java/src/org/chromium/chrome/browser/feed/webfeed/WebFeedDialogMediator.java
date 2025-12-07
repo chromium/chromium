@@ -7,12 +7,15 @@ package org.chromium.chrome.browser.feed.webfeed;
 import android.view.View;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Mediator class responsible for the logic of showing WebFeed dialogs. */
+@NullMarked
 class WebFeedDialogMediator {
     private final ModalDialogManager mDialogManager;
 
@@ -60,6 +63,7 @@ class WebFeedDialogMediator {
      * @param view The {@link View} to show.
      * @param dialogContents The {@link WebFeedDialogContents} containing the dialog contents.
      */
+    @Initializer
     void initialize(View view, WebFeedDialogContents dialogContents) {
         mHostDialogModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)

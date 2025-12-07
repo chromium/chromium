@@ -1,0 +1,20 @@
+Name: Jetpack WindowManager library Extensions
+Short Name: window-extensions
+URL: https://dl.google.com/dl/android/maven2/androidx/window/window-extensions/1.0.0-alpha01/window-extensions-1.0.0-alpha01.aar
+Version: 1.0.0-alpha01
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: no
+Shipped: no
+License Android Compatible: yes
+
+Description:
+OEM extension interface definition for the Jetpack WindowManager. This module declares the interface the the 'Core' component of this library will use when communicating with the device-specific OEM extension.
+
+See also: https://developer.android.com/jetpack/androidx
+
+
+Local Modifications:
+No modifications.

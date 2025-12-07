@@ -19,7 +19,6 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_process_host.h"
 #include "ipc/ipc_listener.h"
-#include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -84,7 +83,6 @@ class SiteInstanceGroup;
 // complete, the RenderFrameHost is deleted.
 class CONTENT_EXPORT RenderFrameProxyHost
     : public IPC::Listener,
-      public IPC::Sender,
       public blink::mojom::RemoteFrameHost,
       public blink::mojom::RemoteMainFrameHost {
  public:
@@ -123,15 +121,18 @@ class CONTENT_EXPORT RenderFrameProxyHost
   RenderProcessHost* GetProcess() const { return process_; }
 
   // Initializes the object and creates the `blink::RemoteFrame` in the process
-  // for the `site_instance_group_`. If `batched_proxy_ipc_sender` is not null,
+  // for the `site_instance_group_`. If this proxy is being initialized as part
+  // of a new navigation, `navigation_metrics_token` identifies that navigation
+  // for metrics purposes. If `batched_proxy_ipc_sender` is not null,
   // then the proxy will not be created immediately. It will be batch created
   // later.
   bool InitRenderFrameProxy(
+      const std::optional<base::UnguessableToken>& navigation_metrics_token,
       BatchedProxyIPCSender* batched_proxy_ipc_sender = nullptr);
 
   int GetRoutingID() const { return routing_id_; }
   GlobalRoutingID GetGlobalID() const {
-    return GlobalRoutingID(GetProcess()->GetID(), routing_id_);
+    return GlobalRoutingID(GetProcess()->GetDeprecatedID(), routing_id_);
   }
 
   // Each RenderFrameProxyHost belongs to a SiteInstanceGroup, where it is a
@@ -163,11 +164,7 @@ class CONTENT_EXPORT RenderFrameProxyHost
 
   RenderViewHostImpl* GetRenderViewHost();
 
-  // IPC::Sender
-  bool Send(IPC::Message* msg) override;
-
   // IPC::Listener
-  bool OnMessageReceived(const IPC::Message& msg) override;
   std::string ToDebugString() override;
 
   CrossProcessFrameConnector* cross_process_frame_connector() {
@@ -228,7 +225,7 @@ class CONTENT_EXPORT RenderFrameProxyHost
   void RouteMessageEvent(
       const std::optional<blink::LocalFrameToken>& source_frame_token,
       const url::Origin& source_origin,
-      const std::u16string& target_origin,
+      const std::optional<url::Origin>& target_origin,
       blink::TransferableMessage message) override;
   void PrintCrossProcessSubframe(const gfx::Rect& rect,
                                  int document_cookie) override;
@@ -313,12 +310,6 @@ class CONTENT_EXPORT RenderFrameProxyHost
   // with.
   AgentSchedulingGroupHost& GetAgentSchedulingGroup();
 
-  // Helper to compute the serialized source origin from an actual source origin
-  // for postMessage. This will ultimately be exposed to JavaScript via the
-  // message's event.origin field.
-  std::u16string SerializePostMessageSourceOrigin(
-      const url::Origin& source_origin);
-
   // Needed for tests to be able to swap the implementation and intercept calls.
   mojo::AssociatedReceiver<blink::mojom::RemoteFrameHost>&
   frame_host_receiver_for_testing() {
@@ -332,6 +323,8 @@ class CONTENT_EXPORT RenderFrameProxyHost
   // placeholder for a frame in a different SiteInstanceGroup.
   scoped_refptr<SiteInstanceGroup> site_instance_group_;
 
+  // TODO(crbug.com/388998723): Remove the comment about the side effect
+  // of GetProcess() after the full migration to GetOrCreateProcess().
   // The renderer process this RenderFrameProxyHost is associated with. It is
   // equivalent to the result of site_instance_group_->GetProcess(), but that
   // method has the side effect of creating the process if it doesn't exist.
@@ -358,9 +351,6 @@ class CONTENT_EXPORT RenderFrameProxyHost
   // TODO(creis): RenderViewHost will eventually go away and be replaced with
   // some form of page context.
   scoped_refptr<RenderViewHostImpl> render_view_host_;
-
-  std::unique_ptr<blink::AssociatedInterfaceProvider>
-      remote_associated_interfaces_;
 
   // Holder of Mojo connection with the Frame service in Blink.
   mojo::AssociatedRemote<blink::mojom::RemoteFrame> remote_frame_;

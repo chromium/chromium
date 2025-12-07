@@ -14,7 +14,7 @@
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
-#include "components/user_education/common/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/product_messaging_controller.h"
 #include "content/public/test/browser_test.h"
 
@@ -52,15 +52,18 @@ class ProductMessagingControllerUiTest : public InteractiveFeaturePromoTest {
   }
 
   auto EnsureHandle() {
-    return std::move(Check([this]() {
-                       return !!notice_handle_;
-                     }).SetDescription("EnsureHandle()"));
+    return Check([this]() { return !!notice_handle_; })
+        .SetDescription("EnsureHandle()");
+  }
+
+  auto SetShown() {
+    return Do([this]() { notice_handle_.SetShown(); })
+        .SetDescription("SetShown()");
   }
 
   auto ReleaseHandle() {
-    return std::move(Do([this]() {
-                       notice_handle_.Release();
-                     }).SetDescription("ReleaseHandle()"));
+    return Do([this]() { notice_handle_.Release(); })
+        .SetDescription("ReleaseHandle()");
   }
 
   void OnNoticeShown(
@@ -76,6 +79,6 @@ IN_PROC_BROWSER_TEST_F(ProductMessagingControllerUiTest, NoticeBlocksIPH) {
       QueueNotice(),
       MaybeShowPromo(feature_engagement::kIPHTabSearchFeature,
                      user_education::FeaturePromoResult::kBlockedByPromo),
-      FlushEvents(), EnsureHandle(), ReleaseHandle(),
+      EnsureHandle(), SetShown(), ReleaseHandle(),
       MaybeShowPromo(feature_engagement::kIPHTabSearchFeature));
 }

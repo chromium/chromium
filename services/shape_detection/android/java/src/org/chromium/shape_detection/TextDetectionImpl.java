@@ -14,6 +14,8 @@ import com.google.android.gms.vision.text.TextRecognizer;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.gfx.mojom.PointF;
 import org.chromium.gfx.mojom.RectF;
 import org.chromium.gms.ChromiumPlayServicesAvailability;
@@ -22,10 +24,11 @@ import org.chromium.shape_detection.mojom.TextDetection;
 import org.chromium.shape_detection.mojom.TextDetectionResult;
 
 /** Implementation of mojo TextDetection, using Google Play Services vision package. */
+@NullMarked
 public class TextDetectionImpl implements TextDetection {
     private static final String TAG = "TextDetectionImpl";
 
-    private TextRecognizer mTextRecognizer;
+    private final TextRecognizer mTextRecognizer;
 
     public TextDetectionImpl() {
         mTextRecognizer = new TextRecognizer.Builder(ContextUtils.getApplicationContext()).build();
@@ -84,7 +87,7 @@ public class TextDetectionImpl implements TextDetection {
         close();
     }
 
-    public static TextDetection create() {
+    public static @Nullable TextDetection create() {
         if (!ChromiumPlayServicesAvailability.isGooglePlayServicesAvailable(
                 ContextUtils.getApplicationContext())) {
             Log.e(TAG, "Google Play Services not available");

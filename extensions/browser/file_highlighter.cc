@@ -20,12 +20,13 @@ void QuoteIncrement(const std::string& str, size_t* index) {
   size_t i = *index + 1;  // Skip over the first quote.
   bool found = false;
   while (!found && i < str.size()) {
-    if (str[i] == '\\' && i + 1 < str.size())
+    if (str[i] == '\\' && i + 1 < str.size()) {
       i += 2;  // if we find an escaped character, skip it.
-    else if (str[i] == '"')
+    } else if (str[i] == '"') {
       found = true;
-    else
+    } else {
       ++i;
+    }
   }
   *index = found ? i : std::string::npos;
 }
@@ -46,14 +47,17 @@ void CommentSafeIncrement(const std::string& str, size_t* index) {
       // Eat "/*"
       i += 2;
       // Advance to the first possible comment end, if there are any chars left.
-      if (i < str.size())
+      if (i < str.size()) {
         ++i;
-      while (i < str.size() && !(str[i - 1] == '*' && str[i] == '/'))
+      }
+      while (i < str.size() && !(str[i - 1] == '*' && str[i] == '/')) {
         ++i;
+      }
     }
   }
-  if (i < str.size())
+  if (i < str.size()) {
     ++i;
+  }
   *index = i;
 
   DCHECK_LE(*index, str.size());
@@ -138,15 +142,17 @@ void ManifestHighlighter::Parse(const std::string& key,
     // specific.
     if (!specific.empty()) {
       FindBounds(specific, false /* don't enforce at top level */);
-      if (start_ > end_)
+      if (start_ > end_) {
         start_ = end_;
+      }
     }
 
     // We may have found trailing whitespace. Don't use base::TrimWhitespace,
     // because we want to keep any whitespace we find - just not highlight it.
     size_t trim = contents_.find_last_not_of(" \t\n\r", end_ - 1);
-    if (trim < end_ && trim > start_)
+    if (trim < end_ && trim > start_) {
       end_ = trim + 1;
+    }
   } else {
     // If we fail, then we set start to end so that the highlighted portion is
     // empty.
@@ -163,8 +169,9 @@ bool ManifestHighlighter::FindBounds(const std::string& feature,
       // The feature may be quoted.
       size_t quote_end = start_;
       QuoteIncrement(contents_, &quote_end);
-      if (quote_end == std::string::npos)
+      if (quote_end == std::string::npos) {
         return false;
+      }
       if (contents_.substr(start_ + 1, quote_end - 1 - start_) == feature) {
         FindBoundsEnd(feature, quote_end + 1);
         return true;
@@ -200,10 +207,11 @@ void ManifestHighlighter::FindBoundsEnd(const std::string& feature,
     }
     // We can skip any chunks we find, since we are looking for the end of the
     // current feature, and don't want to go any deeper.
-    if (c == '"' || c == '{' || c == '[')
+    if (c == '"' || c == '{' || c == '[') {
       ChunkIncrement(contents_, &local_start, end_);
-    else
+    } else {
       CommentSafeIncrement(contents_, &local_start);
+    }
   }
 }
 
@@ -225,8 +233,9 @@ void SourceHighlighter::Parse(size_t line_number) {
 
   for (size_t i = 1; i < line_number; ++i) {
     start_ = contents_.find('\n', start_);
-    if (start_ == std::string::npos)
+    if (start_ == std::string::npos) {
       break;
+    }
     start_ += 1;
   }
 

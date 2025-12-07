@@ -15,7 +15,7 @@ namespace content::test {
 
 using PrefetchContainerIdForTesting =
     base::StrongAlias<class PrefetchContainerIdForTestingTag, std::string>;
-static constexpr PrefetchContainerIdForTesting
+inline constexpr PrefetchContainerIdForTesting
     InvalidPrefetchContainerIdForTesting = PrefetchContainerIdForTesting("");
 
 class TestPrefetchWatcherImpl;
@@ -34,21 +34,19 @@ class TestPrefetchWatcher {
 
   // Waits until the specific prefetch request searched by its
   // document token and url (which correspond the properties of
-  // `PrefetchContainer::Key`) is successfully completed. Returns a
+  // `PrefetchKey`) is successfully completed. Returns a
   // test-specific id for `PrefetchContainer`.
   PrefetchContainerIdForTesting WaitUntilPrefetchResponseCompleted(
       const std::optional<blink::DocumentToken>& document_token,
       const GURL& url);
 
-  // Returns whether prefetch was served in the last navigation. Returns
-  // std::nullopt if the first navigation hasn't happened yet.
-  std::optional<bool> PrefetchUsedInLastNavigation();
+  // Returns whether prefetch was served in the last navigation.
+  bool PrefetchUsedInLastNavigation();
 
   // Returns a test-specific id of `PrefetchContainer`, if the prefetch was
   // served in the last navigation. Returns
-  // `InvalidPrefetchContainerIdForTesting` if not served. Returns std::nullopt
-  // if the first navigation hasn't happened yet.
-  std::optional<PrefetchContainerIdForTesting>
+  // `InvalidPrefetchContainerIdForTesting` if not served.
+  PrefetchContainerIdForTesting
   GetPrefetchContainerIdForTestingInLastNavigation();
 
  private:

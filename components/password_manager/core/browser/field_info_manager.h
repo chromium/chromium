@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/task/single_thread_task_runner.h"
-#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/signatures.h"
@@ -21,8 +20,6 @@
 namespace password_manager {
 
 struct FormPredictions;
-
-constexpr base::TimeDelta kFieldInfoLifetime = base::Minutes(5);
 
 struct FieldInfo {
   // Id of the PasswordManagerDriver which corresponds to the frame of the
@@ -72,8 +69,12 @@ class FieldInfoManager : public KeyedService {
   void AddFieldInfo(const FieldInfo& new_info,
                     const std::optional<FormPredictions>& predictions);
 
-  // Retrieves field info for the given |signon_realm|.
-  std::vector<FieldInfo> GetFieldInfo(const std::string& signon_realm);
+  // Retrieves field info for the given `signon_realm`. If
+  // `num_fields_to_consider` is set, only the last `num_fields_to_consider`
+  // fields are considered.
+  std::vector<FieldInfo> GetFieldInfo(
+      const std::string& signon_realm,
+      std::optional<size_t> num_fields_to_consider = std::nullopt);
 
   // Propagates signatures and field type received from the server.
   void ProcessServerPredictions(

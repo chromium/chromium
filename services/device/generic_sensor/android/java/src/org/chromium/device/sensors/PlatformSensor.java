@@ -17,6 +17,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.device.mojom.ReportingMode;
 import org.chromium.device.mojom.SensorType;
 
@@ -29,6 +31,7 @@ import java.util.List;
  * the device::PlatformSensorAndroid.
  */
 @JNINamespace("device")
+@NullMarked
 public class PlatformSensor implements SensorEventListener {
     private static final double MICROSECONDS_IN_SECOND = 1000000;
     private static final double SECONDS_IN_MICROSECOND = 0.000001d;
@@ -77,7 +80,7 @@ public class PlatformSensor implements SensorEventListener {
      * @param nativePlatformSensorAndroid identifier of device::PlatformSensorAndroid instance.
      */
     @CalledByNative
-    public static PlatformSensor create(
+    public static @Nullable PlatformSensor create(
             PlatformSensorProvider provider, int type, long nativePlatformSensorAndroid) {
         SensorManager sensorManager = provider.getSensorManager();
         if (sensorManager == null) return null;
@@ -187,7 +190,7 @@ public class PlatformSensor implements SensorEventListener {
         try {
             sensorStarted =
                     mProvider
-                            .getSensorManager()
+                            .getSensorManagerNonNull()
                             .registerListener(
                                     this,
                                     mSensor,
@@ -212,7 +215,7 @@ public class PlatformSensor implements SensorEventListener {
     private void unregisterListener() {
         // Do not unregister if current polling frequency is 0, not polling for data.
         if (mCurrentPollingFrequency == 0) return;
-        mProvider.getSensorManager().unregisterListener(this, mSensor);
+        mProvider.getSensorManagerNonNull().unregisterListener(this, mSensor);
     }
 
     /** Requests sensor to stop polling for data. */
@@ -254,8 +257,7 @@ public class PlatformSensor implements SensorEventListener {
     @GuardedBy("mLock")
     protected void sensorError() {
         if (mNativePlatformSensorAndroid != 0) {
-            PlatformSensorJni.get()
-                    .notifyPlatformSensorError(mNativePlatformSensorAndroid, PlatformSensor.this);
+            PlatformSensorJni.get().notifyPlatformSensorError(mNativePlatformSensorAndroid);
         }
     }
 
@@ -265,13 +267,7 @@ public class PlatformSensor implements SensorEventListener {
             double timestamp, double value1, double value2, double value3, double value4) {
         PlatformSensorJni.get()
                 .updatePlatformSensorReading(
-                        mNativePlatformSensorAndroid,
-                        PlatformSensor.this,
-                        timestamp,
-                        value1,
-                        value2,
-                        value3,
-                        value4);
+                        mNativePlatformSensorAndroid, timestamp, value1, value2, value3, value4);
     }
 
     @Override
@@ -346,11 +342,10 @@ public class PlatformSensor implements SensorEventListener {
 
     @NativeMethods
     interface Natives {
-        void notifyPlatformSensorError(long nativePlatformSensorAndroid, PlatformSensor caller);
+        void notifyPlatformSensorError(long nativePlatformSensorAndroid);
 
         void updatePlatformSensorReading(
                 long nativePlatformSensorAndroid,
-                PlatformSensor caller,
                 double timestamp,
                 double value1,
                 double value2,

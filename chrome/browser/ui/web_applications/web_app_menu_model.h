@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_MENU_MODEL_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_MENU_MODEL_H_
 
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 
 namespace chromeos {
@@ -25,7 +24,6 @@ class WebAppMenuModel : public AppMenuModel {
 
   // AppMenuModel:
   bool IsCommandIdEnabled(int command_id) const override;
-  bool IsCommandIdVisible(int command_id) const override;
   void ExecuteCommand(int command_id, int event_flags) override;
 
  protected:
@@ -33,7 +31,7 @@ class WebAppMenuModel : public AppMenuModel {
   void Build() override;
 
  private:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<chromeos::MoveToDesksMenuModel> move_to_desks_submenu_;
 #endif
 };

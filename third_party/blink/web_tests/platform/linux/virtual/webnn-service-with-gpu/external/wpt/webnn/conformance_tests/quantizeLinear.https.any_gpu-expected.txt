@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] [optional] quantizeLinear float32 tensor with int32 zeroPoint
+  assert_less_than_equal: assert_array_approx_equals_ulp: test quantizeLinear int32 actual 12352 should be close enough to expected 12345 by ULP distance: expected a number less than or equal to 1 but got 7
+[FAIL] [optional] quantizeLinear float16 tensor with int32 zeroPoint
+  assert_less_than_equal: assert_array_approx_equals_ulp: test quantizeLinear int32 actual 12352 should be close enough to expected 12347 by ULP distance: expected a number less than or equal to 1 but got 5
+Harness: the test ran to completion.
+

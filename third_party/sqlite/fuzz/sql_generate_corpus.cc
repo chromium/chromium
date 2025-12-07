@@ -90,11 +90,12 @@ std::string RandBytesAsString(size_t length) {
 }
 
 uint64_t RandUint64() {
-  if (sizeof(size_t) == sizeof(uint64_t)) {
+  static_assert(sizeof(size_t) == sizeof(uint64_t) ||
+                sizeof(size_t) == sizeof(uint32_t));
+  if constexpr (sizeof(size_t) == sizeof(uint64_t)) {
     return GetRandom()();
   }
 
-  CHECK(sizeof(size_t) == sizeof(uint32_t));
   uint64_t rand = GetRandom()();
   rand <<= 32;
   rand |= GetRandom()();

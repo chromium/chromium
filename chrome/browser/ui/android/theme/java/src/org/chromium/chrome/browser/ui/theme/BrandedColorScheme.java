@@ -6,8 +6,12 @@ package org.chromium.chrome.browser.ui.theme;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 @IntDef({
     BrandedColorScheme.LIGHT_BRANDED_THEME,
@@ -16,6 +20,8 @@ import java.lang.annotation.RetentionPolicy;
     BrandedColorScheme.APP_DEFAULT
 })
 @Retention(RetentionPolicy.SOURCE)
+@Target({ElementType.TYPE_USE})
+@NullMarked
 public @interface BrandedColorScheme {
     /**
      * Light branded color as defined by the website, unrelated to the app/OS dark theme setting.

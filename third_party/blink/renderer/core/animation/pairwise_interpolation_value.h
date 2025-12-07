@@ -17,13 +17,13 @@ namespace blink {
 struct PairwiseInterpolationValue {
   DISALLOW_NEW();
 
-  PairwiseInterpolationValue(InterpolableValue* start_interpolable_value,
-                             InterpolableValue* end_interpolable_value,
-                             scoped_refptr<const NonInterpolableValue>
-                                 non_interpolable_value = nullptr)
+  PairwiseInterpolationValue(
+      InterpolableValue* start_interpolable_value,
+      InterpolableValue* end_interpolable_value,
+      const NonInterpolableValue* non_interpolable_value = nullptr)
       : start_interpolable_value(start_interpolable_value),
         end_interpolable_value(end_interpolable_value),
-        non_interpolable_value(std::move(non_interpolable_value)) {}
+        non_interpolable_value(non_interpolable_value) {}
 
   PairwiseInterpolationValue(std::nullptr_t) {}
 
@@ -37,11 +37,12 @@ struct PairwiseInterpolationValue {
   void Trace(Visitor* v) const {
     v->Trace(start_interpolable_value);
     v->Trace(end_interpolable_value);
+    v->Trace(non_interpolable_value);
   }
 
   Member<InterpolableValue> start_interpolable_value;
   Member<InterpolableValue> end_interpolable_value;
-  scoped_refptr<const NonInterpolableValue> non_interpolable_value;
+  Member<const NonInterpolableValue> non_interpolable_value;
 };
 
 }  // namespace blink

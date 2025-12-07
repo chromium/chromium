@@ -5,13 +5,15 @@
 #include "components/autofill/core/browser/webdata/addresses/autofill_profile_sync_util.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "components/autofill/core/browser/country_type.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
-#include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/webdata/autofill_table_utils.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -19,42 +21,46 @@
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
 namespace autofill {
 
 namespace {
 using base::ASCIIToUTF16;
 using base::UTF16ToUTF8;
 using base::UTF8ToUTF16;
+using base::test::EqualsProto;
 using sync_pb::AutofillProfileSpecifics;
 using syncer::EntityData;
 
 // Some guids for testing.
-const char kGuid[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44A";
-const char kGuidInvalid[] = "EDC609ED";
-
-const base::Time kJune2017 = base::Time::FromSecondsSinceUnixEpoch(1497552271);
+constexpr char kGuid[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44A";
+constexpr char kGuidInvalid[] = "EDC609ED";
 
 // Returns a profile with all fields set.  Contains identical data to the data
 // returned from ConstructBaseSpecifics().
 AutofillProfile ConstructBaseProfile(
     AddressCountryCode country_code = AddressCountryCode("ES")) {
-  AutofillProfile profile(kGuid, AutofillProfile::Source::kLocalOrSyncable,
+  AutofillProfile profile(kGuid, AutofillProfile::RecordType::kLocalOrSyncable,
                           country_code);
 
-  profile.set_use_count(7);
-  profile.set_use_date(base::Time::FromTimeT(1423182152));
+  profile.usage_history().set_use_count(7);
+  profile.usage_history().set_use_date(base::Time::FromTimeT(1423182152));
 
   profile.set_profile_label("profile_label");
 
   // Set testing values and statuses for the name.
-  profile.SetRawInfoWithVerificationStatus(NAME_FULL, u"John K. Doe",
+  profile.SetRawInfoWithVerificationStatus(NAME_FULL, u"John K. von Doe",
                                            VerificationStatus::kUserVerified);
   profile.SetRawInfoWithVerificationStatus(NAME_FIRST, u"John",
                                            VerificationStatus::kObserved);
   profile.SetRawInfoWithVerificationStatus(NAME_MIDDLE, u"K.",
                                            VerificationStatus::kObserved);
-  profile.SetRawInfoWithVerificationStatus(NAME_LAST, u"Doe",
+  profile.SetRawInfoWithVerificationStatus(NAME_LAST, u"von Doe",
                                            VerificationStatus::kFormatted);
+  profile.SetRawInfoWithVerificationStatus(NAME_LAST_PREFIX, u"von",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(NAME_LAST_CORE, u"Doe",
+                                           VerificationStatus::kParsed);
   profile.SetRawInfoWithVerificationStatus(NAME_LAST_FIRST, u"D",
                                            VerificationStatus::kParsed);
   profile.SetRawInfoWithVerificationStatus(NAME_LAST_SECOND, u"e",
@@ -83,8 +89,14 @@ AutofillProfile ConstructBaseProfile(
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STATE, u"California",
                                            VerificationStatus::kObserved);
 
-  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ZIP, u"94043",
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ZIP, u"94043-4567",
                                            VerificationStatus::kObserved);
+
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ZIP_PREFIX, u"94043",
+                                           VerificationStatus::kParsed);
+
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ZIP_SUFFIX, u"4567",
+                                           VerificationStatus::kParsed);
 
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ADMIN_LEVEL2, u"Oxaca",
                                            VerificationStatus::kObserved);
@@ -314,6 +326,18 @@ AutofillProfile ConstructCompleteProfileIN() {
   return profile;
 }
 
+AutofillProfile ConstructCompleteProfileJP() {
+  AutofillProfile profile = ConstructBaseProfile(AddressCountryCode("JP"));
+  profile.SetRawInfoWithVerificationStatus(ALTERNATIVE_FULL_NAME,
+                                           u"やまもと あおい",
+                                           VerificationStatus::kUserVerified);
+  profile.SetRawInfoWithVerificationStatus(ALTERNATIVE_GIVEN_NAME, u"あおい",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(ALTERNATIVE_FAMILY_NAME, u"やまもと",
+                                           VerificationStatus::kParsed);
+  return profile;
+}
+
 // Returns AutofillProfileSpecifics with all Autofill profile fields set.
 // Contains identical data to the data returned from ConstructBaseProfile().
 AutofillProfileSpecifics ConstructBaseSpecifics() {
@@ -338,10 +362,20 @@ AutofillProfileSpecifics ConstructBaseSpecifics() {
       AutofillProfileSpecifics::VerificationStatus::
           AutofillProfileSpecifics_VerificationStatus_OBSERVED);
 
-  specifics.add_name_last("Doe");
+  specifics.add_name_last("von Doe");
   specifics.add_name_last_status(
       AutofillProfileSpecifics::VerificationStatus::
           AutofillProfileSpecifics_VerificationStatus_FORMATTED);
+
+  specifics.add_name_last_prefix("von");
+  specifics.add_name_last_prefix_status(
+      AutofillProfileSpecifics::VerificationStatus::
+          AutofillProfileSpecifics_VerificationStatus_PARSED);
+
+  specifics.add_name_last_core("Doe");
+  specifics.add_name_last_core_status(
+      AutofillProfileSpecifics::VerificationStatus::
+          AutofillProfileSpecifics_VerificationStatus_PARSED);
 
   specifics.add_name_last_first("D");
   specifics.add_name_last_first_status(
@@ -358,10 +392,25 @@ AutofillProfileSpecifics ConstructBaseSpecifics() {
       AutofillProfileSpecifics::VerificationStatus::
           AutofillProfileSpecifics_VerificationStatus_PARSED);
 
-  specifics.add_name_full("John K. Doe");
+  specifics.add_name_full("John K. von Doe");
   specifics.add_name_full_status(
       AutofillProfileSpecifics::VerificationStatus::
           AutofillProfileSpecifics_VerificationStatus_USER_VERIFIED);
+
+  specifics.set_alternative_given_name("");
+  specifics.set_alternative_given_name_status(
+      AutofillProfileSpecifics::VerificationStatus::
+          AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
+
+  specifics.set_alternative_family_name("");
+  specifics.set_alternative_family_name_status(
+      AutofillProfileSpecifics::VerificationStatus::
+          AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
+
+  specifics.set_alternative_full_name("");
+  specifics.set_alternative_full_name_status(
+      AutofillProfileSpecifics::VerificationStatus::
+          AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
 
   // Set testing values for email, phone and company.
   specifics.add_email_address("user@example.com");
@@ -412,9 +461,17 @@ AutofillProfileSpecifics ConstructBaseSpecifics() {
   specifics.set_address_home_state_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
 
-  specifics.set_address_home_zip("94043");
+  specifics.set_address_home_zip("94043-4567");
   specifics.set_address_home_zip_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
+
+  specifics.set_address_home_zip_prefix("94043");
+  specifics.set_address_home_zip_prefix_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_PARSED);
+
+  specifics.set_address_home_zip_suffix("4567");
+  specifics.set_address_home_zip_suffix_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_PARSED);
 
   specifics.set_address_home_country("ES");
   specifics.set_address_home_country_status(
@@ -422,6 +479,10 @@ AutofillProfileSpecifics ConstructBaseSpecifics() {
 
   specifics.set_address_home_admin_level_2("Oxaca");
   specifics.set_address_home_admin_level_2_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
+
+  specifics.set_address_home_sorting_code("CEDEX");
+  specifics.set_address_home_sorting_code_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
 
   specifics.set_address_home_dependent_locality("Santa Clara");
@@ -567,6 +628,10 @@ AutofillProfileSpecifics ConstructCompleteSpecificsBR() {
   specifics.set_address_home_floor_status(
       sync_pb::
           AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
+  specifics.set_address_home_sorting_code("");
+  specifics.set_address_home_sorting_code_status(
+      sync_pb::
+          AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
   specifics.set_address_home_admin_level_2("");
   specifics.set_address_home_admin_level_2_status(
       sync_pb::
@@ -628,6 +693,10 @@ AutofillProfileSpecifics ConstructCompleteSpecificsAU() {
       sync_pb::AutofillProfileSpecifics_VerificationStatus_PARSED);
 
   // Reset unused tokens from the default info.
+  specifics.set_address_home_sorting_code("");
+  specifics.set_address_home_sorting_code_status(
+      sync_pb::
+          AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
   specifics.set_address_home_admin_level_2("");
 
   specifics.set_address_home_admin_level_2_status(
@@ -679,6 +748,10 @@ AutofillProfileSpecifics ConstructCompleteSpecificsDE() {
       sync_pb::AutofillProfileSpecifics_VerificationStatus_PARSED);
 
   // Reset unused tokens from the default info.
+  specifics.set_address_home_sorting_code("");
+  specifics.set_address_home_sorting_code_status(
+      sync_pb::
+          AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
   specifics.set_address_home_admin_level_2("");
 
   specifics.set_address_home_admin_level_2_status(
@@ -800,6 +873,11 @@ AutofillProfileSpecifics ConstructCompleteSpecificsMX() {
   specifics.set_address_home_floor_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus_PARSED);
 
+  specifics.set_address_home_sorting_code("");
+  specifics.set_address_home_sorting_code_status(
+      sync_pb::
+          AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
+
   return specifics;
 }
 
@@ -870,6 +948,34 @@ AutofillProfileSpecifics ConstructCompleteSpecificsIN() {
       sync_pb::
           AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
 
+  specifics.set_address_home_sorting_code("");
+  specifics.set_address_home_sorting_code_status(
+      sync_pb::
+          AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
+
+  return specifics;
+}
+
+AutofillProfileSpecifics ConstructCompleteSpecificsJP() {
+  AutofillProfileSpecifics specifics = ConstructBaseSpecifics();
+  specifics.set_address_home_country("JP");
+  specifics.set_address_home_country_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
+  specifics.set_alternative_given_name("あおい");
+  specifics.set_alternative_given_name_status(
+      AutofillProfileSpecifics::VerificationStatus::
+          AutofillProfileSpecifics_VerificationStatus_PARSED);
+
+  specifics.set_alternative_family_name("やまもと");
+  specifics.set_alternative_family_name_status(
+      AutofillProfileSpecifics::VerificationStatus::
+          AutofillProfileSpecifics_VerificationStatus_PARSED);
+
+  specifics.set_alternative_full_name("やまもと あおい");
+  specifics.set_alternative_full_name_status(
+      AutofillProfileSpecifics::VerificationStatus::
+          AutofillProfileSpecifics_VerificationStatus_USER_VERIFIED);
+
   return specifics;
 }
 
@@ -879,10 +985,11 @@ enum class I18nCountryModel {
   kBR = 2,
   kDE = 3,
   kIN = 4,
-  kMX = 5
+  kMX = 5,
+  kJP = 6
 };
 
-// The tests are parametrized with a country to assert that all custom address
+// The tests are parameterized with a country to assert that all custom address
 // models are supported.
 class AutofillProfileSyncUtilTest
     : public testing::Test,
@@ -890,26 +997,15 @@ class AutofillProfileSyncUtilTest
  public:
   AutofillProfileSyncUtilTest() {
     // Fix a time for implicitly constructed use_dates in AutofillProfile.
-    test_clock_.SetNow(kJune2017);
     features_.InitWithFeatures(
-        {features::kAutofillUseI18nAddressModel,
-         features::kAutofillUseAUAddressModel,
-         features::kAutofillUseBRAddressModel,
-         features::kAutofillUseCAAddressModel,
-         features::kAutofillUseDEAddressModel,
-         features::kAutofillUseFRAddressModel,
-         features::kAutofillUseINAddressModel,
-         features::kAutofillUseITAddressModel,
-         features::kAutofillUseMXAddressModel,
-         features::kAutofillEnableSupportForLandmark,
-         features::kAutofillEnableSupportForAddressOverflow,
-         features::kAutofillEnableSupportForBetweenStreets,
-         features::kAutofillEnableSupportForBetweenStreetsOrLandmark,
-         features::kAutofillEnableSupportForAddressOverflowAndLandmark,
-         features::kAutofillEnableSupportForAdminLevel2,
-         features::kAutofillEnableSupportForApartmentNumbers,
-         features::kAutofillEnableDependentLocalityParsing},
+        {
+            features::kAutofillUseINAddressModel,
+            features::kAutofillSupportPhoneticNameForJP,
+            features::kAutofillSupportLastNamePrefix,
+            features::kAutofillSupportSplitZipCode,
+        },
         {});
+    task_environment_.AdvanceClock(test::kJune2017 - base::Time::Now());
   }
 
   AutofillProfile GetAutofillProfileForCountry(I18nCountryModel country_model) {
@@ -926,6 +1022,8 @@ class AutofillProfileSyncUtilTest
         return ConstructCompleteProfileMX();
       case I18nCountryModel::kIN:
         return ConstructCompleteProfileIN();
+      case I18nCountryModel::kJP:
+        return ConstructCompleteProfileJP();
     }
   }
 
@@ -944,12 +1042,15 @@ class AutofillProfileSyncUtilTest
         return ConstructCompleteSpecificsMX();
       case I18nCountryModel::kIN:
         return ConstructCompleteSpecificsIN();
+      case I18nCountryModel::kJP:
+        return ConstructCompleteSpecificsJP();
     }
   }
 
  private:
-  autofill::TestAutofillClock test_clock_;
   base::test::ScopedFeatureList features_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 // Ensure that all profile fields are able to be synced up from the client to
@@ -963,13 +1064,13 @@ TEST_P(AutofillProfileSyncUtilTest, CreateEntityDataFromAutofillProfile) {
   // The non-unique name should be set to the guid of the profile.
   EXPECT_EQ(entity_data->name, profile.guid());
 
-  EXPECT_EQ(specifics.SerializeAsString(),
-            entity_data->specifics.autofill_profile().SerializeAsString());
+  EXPECT_THAT(specifics,
+              EqualsProto(entity_data->specifics.autofill_profile()));
 }
 
 // Test that fields not set for the input are empty in the output.
 TEST_F(AutofillProfileSyncUtilTest, CreateEntityDataFromAutofillProfile_Empty) {
-  AutofillProfile profile(kGuid, AutofillProfile::Source::kLocalOrSyncable,
+  AutofillProfile profile(kGuid, AutofillProfile::RecordType::kLocalOrSyncable,
                           i18n_model_definition::kLegacyHierarchyCountryCode);
   ASSERT_FALSE(profile.HasRawInfo(NAME_FULL));
   ASSERT_FALSE(profile.HasRawInfo(COMPANY_NAME));
@@ -988,7 +1089,7 @@ TEST_F(AutofillProfileSyncUtilTest,
   std::string kNameLong(kMaxDataLengthForDatabase + 1, 'a');
   std::string kNameTrimmed(kMaxDataLengthForDatabase, 'a');
 
-  AutofillProfile profile(kGuid, AutofillProfile::Source::kLocalOrSyncable,
+  AutofillProfile profile(kGuid, AutofillProfile::RecordType::kLocalOrSyncable,
                           i18n_model_definition::kLegacyHierarchyCountryCode);
   profile.SetRawInfo(NAME_FULL, ASCIIToUTF16(kNameLong));
 
@@ -1013,7 +1114,7 @@ TEST_F(AutofillProfileSyncUtilTest,
     kNameTrimmed += "ä";
   }
 
-  AutofillProfile profile(kGuid, AutofillProfile::Source::kLocalOrSyncable,
+  AutofillProfile profile(kGuid, AutofillProfile::RecordType::kLocalOrSyncable,
                           i18n_model_definition::kLegacyHierarchyCountryCode);
   profile.SetRawInfo(NAME_FULL, UTF8ToUTF16(kNameLong));
 
@@ -1024,47 +1125,53 @@ TEST_F(AutofillProfileSyncUtilTest,
             entity_data->specifics.autofill_profile().name_full(0));
 }
 
+// Test that validation returns true if the input guid is valid.
+TEST_F(AutofillProfileSyncUtilTest, IsAutofillProfileSpecificsValid_Valid) {
+  AutofillProfileSpecifics specifics;
+  specifics.set_guid(kGuid);
+
+  EXPECT_TRUE(IsAutofillProfileSpecificsValid(specifics));
+}
+
+// Test that validation returns false if the input guid is invalid.
+TEST_F(AutofillProfileSyncUtilTest, IsAutofillProfileSpecificsValid_Invalid) {
+  AutofillProfileSpecifics specifics;
+  specifics.set_guid(kGuidInvalid);
+
+  EXPECT_FALSE(IsAutofillProfileSpecificsValid(specifics));
+}
+
 // Ensure that all profile fields are able to be synced down from the server to
 // the client (and nothing gets uploaded back).
-TEST_P(AutofillProfileSyncUtilTest, CreateAutofillProfileFromSpecifics) {
+TEST_P(AutofillProfileSyncUtilTest, CreateAutofillProfileFromValidSpecifics) {
   // Fix a time for implicitly constructed use_dates in AutofillProfile.
-  autofill::TestAutofillClock test_clock;
-  test_clock.SetNow(kJune2017);
 
   AutofillProfileSpecifics specifics =
       GetAutofillProfileSpecificsForCountry(GetParam());
   AutofillProfile profile = GetAutofillProfileForCountry(GetParam());
 
-  std::unique_ptr<AutofillProfile> converted_profile =
-      CreateAutofillProfileFromSpecifics(specifics);
-  EXPECT_TRUE(test_api(profile).EqualsIncludingUsageStats(*converted_profile));
+  AutofillProfile converted_profile =
+      CreateAutofillProfileFromValidSpecifics(specifics);
+  EXPECT_TRUE(test_api(profile).EqualsIncludingUsageStats(converted_profile));
 }
 
 // Test that fields not set for the input are also not set on the output.
-TEST_F(AutofillProfileSyncUtilTest, CreateAutofillProfileFromSpecifics_Empty) {
+TEST_F(AutofillProfileSyncUtilTest,
+       CreateAutofillProfileFromValidSpecifics_Empty) {
   AutofillProfileSpecifics specifics;
   specifics.set_guid(kGuid);
 
-  std::unique_ptr<AutofillProfile> profile =
-      CreateAutofillProfileFromSpecifics(specifics);
+  std::optional<AutofillProfile> profile =
+      CreateAutofillProfileFromValidSpecifics(specifics);
 
   EXPECT_FALSE(profile->HasRawInfo(NAME_FULL));
   EXPECT_FALSE(profile->HasRawInfo(COMPANY_NAME));
 }
 
-// Test that nullptr is produced if the input guid is invalid.
-TEST_F(AutofillProfileSyncUtilTest,
-       CreateAutofillProfileFromSpecifics_Invalid) {
-  AutofillProfileSpecifics specifics;
-  specifics.set_guid(kGuidInvalid);
-
-  EXPECT_EQ(nullptr, CreateAutofillProfileFromSpecifics(specifics));
-}
-
 // Test that if conflicting info is set for address home, the (deprecated) line1
 // & line2 fields get overwritten by the street_address field.
 TEST_F(AutofillProfileSyncUtilTest,
-       CreateAutofillProfileFromSpecifics_HomeAddressWins) {
+       CreateAutofillProfileFromValidSpecifics_HomeAddressWins) {
   AutofillProfileSpecifics specifics;
   specifics.set_guid(kGuid);
 
@@ -1074,12 +1181,10 @@ TEST_F(AutofillProfileSyncUtilTest,
   specifics.set_address_home_line1("456 Old St.");
   specifics.set_address_home_line2("Apt. 43");
 
-  std::unique_ptr<AutofillProfile> profile =
-      CreateAutofillProfileFromSpecifics(specifics);
+  AutofillProfile profile = CreateAutofillProfileFromValidSpecifics(specifics);
 
-  EXPECT_EQ("123 New St.",
-            UTF16ToUTF8(profile->GetRawInfo(ADDRESS_HOME_LINE1)));
-  EXPECT_EQ("Apt. 42", UTF16ToUTF8(profile->GetRawInfo(ADDRESS_HOME_LINE2)));
+  EXPECT_EQ("123 New St.", UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_LINE1)));
+  EXPECT_EQ("Apt. 42", UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_LINE2)));
 }
 
 // Test that country names (used in the past for the field) get correctly parsed
@@ -1090,19 +1195,17 @@ TEST_F(AutofillProfileSyncUtilTest,
   specifics.set_guid(kGuid);
 
   specifics.set_address_home_country("Germany");
-  EXPECT_EQ("DE", UTF16ToUTF8(
-                      CreateAutofillProfileFromSpecifics(specifics)->GetRawInfo(
-                          ADDRESS_HOME_COUNTRY)));
+  EXPECT_EQ("DE", UTF16ToUTF8(CreateAutofillProfileFromValidSpecifics(specifics)
+                                  .GetRawInfo(ADDRESS_HOME_COUNTRY)));
 
   specifics.set_address_home_country("united states");
-  EXPECT_EQ("US", UTF16ToUTF8(
-                      CreateAutofillProfileFromSpecifics(specifics)->GetRawInfo(
-                          ADDRESS_HOME_COUNTRY)));
+  EXPECT_EQ("US", UTF16ToUTF8(CreateAutofillProfileFromValidSpecifics(specifics)
+                                  .GetRawInfo(ADDRESS_HOME_COUNTRY)));
 }
 
 // Tests that guid is returned as storage key.
 TEST_F(AutofillProfileSyncUtilTest, GetStorageKeyFromAutofillProfile) {
-  AutofillProfile profile(kGuid, AutofillProfile::Source::kLocalOrSyncable,
+  AutofillProfile profile(kGuid, AutofillProfile::RecordType::kLocalOrSyncable,
                           i18n_model_definition::kLegacyHierarchyCountryCode);
 
   EXPECT_EQ(kGuid, GetStorageKeyFromAutofillProfile(profile));
@@ -1133,7 +1236,8 @@ INSTANTIATE_TEST_SUITE_P(AutofillI18nModels,
                                          I18nCountryModel::kBR,
                                          I18nCountryModel::kDE,
                                          I18nCountryModel::kMX,
-                                         I18nCountryModel::kIN));
+                                         I18nCountryModel::kIN,
+                                         I18nCountryModel::kJP));
 
 }  // namespace
 }  // namespace autofill

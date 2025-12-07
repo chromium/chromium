@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/safe_browsing/phishy_interaction_tracker.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -19,6 +20,10 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+
+namespace autofill {
+class LogRouter;
+}
 
 namespace safe_browsing {
 class PasswordProtectionService;
@@ -54,7 +59,7 @@ class ChromePasswordReuseDetectionManagerClient
 
   // PasswordReuseDetectionManagerClient implementation.
   void MaybeLogPasswordReuseDetectedEvent() override;
-  autofill::LogManager* GetLogManager() override;
+  autofill::LogManager* GetCurrentLogManager() override;
   password_manager::PasswordReuseManager* GetPasswordReuseManager()
       const override;
   bool IsHistorySyncAccountEmail(const std::string& username) override;
@@ -99,7 +104,8 @@ class ChromePasswordReuseDetectionManagerClient
   void OnPaste() override;
 
   // content::RenderWidgetHost::InputEventObserver overrides.
-  void OnInputEvent(const blink::WebInputEvent&) override;
+  void OnInputEvent(const content::RenderWidgetHost& widget,
+                    const blink::WebInputEvent&) override;
 
   // Implements signin::IdentityManager::Observer.
   void OnPrimaryAccountChanged(
@@ -114,6 +120,7 @@ class ChromePasswordReuseDetectionManagerClient
       password_reuse_detection_manager_;
   const raw_ptr<Profile> profile_;
 
+  const raw_ptr<autofill::LogRouter> log_router_;
   std::unique_ptr<autofill::RoutingLogManager> log_manager_;
 
   safe_browsing::PhishyInteractionTracker phishy_interaction_tracker_;

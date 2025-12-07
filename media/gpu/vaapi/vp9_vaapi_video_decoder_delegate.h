@@ -42,7 +42,6 @@ class VP9VaapiVideoDecoderDelegate : public VP9Decoder::VP9Accelerator,
                       const Vp9ReferenceFrameVector& reference_frames) override;
 
   bool OutputPicture(scoped_refptr<VP9Picture> pic) override;
-  bool NeedsCompressedHeaderParsed() const override;
 
   // VaapiVideoDecoderDelegate impl.
   void OnVAContextDestructionSoon() override;

@@ -38,8 +38,7 @@ std::ostream& operator<<(std::ostream& stream,
     case ::chromecast::media::kCodecMpegHAudio:
       return stream << "MPEG-H Audio";
   }
-  NOTREACHED_IN_MIGRATION();
-  return stream << "UNKNOWN";
+  NOTREACHED();
 }
 
 std::ostream& operator<<(std::ostream& stream,
@@ -66,6 +65,5 @@ std::ostream& operator<<(std::ostream& stream,
     case ::chromecast::media::kSampleFormatPlanarU8:
       return stream << "planar unsigned 8-bit int";
   }
-  NOTREACHED_IN_MIGRATION();
-  return stream << "UNKNOWN";
+  NOTREACHED();
 }

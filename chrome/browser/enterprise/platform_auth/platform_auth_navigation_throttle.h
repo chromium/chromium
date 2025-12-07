@@ -8,10 +8,6 @@
 #include "content/public/browser/navigation_throttle.h"
 #include "net/http/http_request_headers.h"
 
-namespace content {
-class NavigationHandle;
-}  // namespace content
-
 namespace net {
 class HttpRequestHeaders;
 }  // namespace net
@@ -19,11 +15,11 @@ class HttpRequestHeaders;
 namespace enterprise_auth {
 class PlatformAuthNavigationThrottle : public content::NavigationThrottle {
  public:
-  static std::unique_ptr<PlatformAuthNavigationThrottle> MaybeCreateThrottleFor(
-      content::NavigationHandle* navigation_handle);
+  static void MaybeCreateAndAdd(
+      content::NavigationThrottleRegistry& registry);
 
   explicit PlatformAuthNavigationThrottle(
-      content::NavigationHandle* navigation_handle);
+      content::NavigationThrottleRegistry& registry);
   PlatformAuthNavigationThrottle(const PlatformAuthNavigationThrottle&) =
       delete;
   PlatformAuthNavigationThrottle& operator=(

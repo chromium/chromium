@@ -71,4 +71,8 @@ export class TestCaptionsBrowserProxy extends TestBrowserProxy implements
   installLanguagePacks(languageCodes: string[]) {
     this.methodCalled('installLanguagePacks', languageCodes);
   }
+
+  setInstalledLanguagePacks(installedLanguagePacks: LiveCaptionLanguageList) {
+    this.installedLanguagePacks_ = installedLanguagePacks;
+  }
 }

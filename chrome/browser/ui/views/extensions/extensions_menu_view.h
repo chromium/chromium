@@ -13,12 +13,11 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
+#include "extensions/browser/permissions/site_permissions_helper.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/gfx/geometry/size.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/label_button.h"
 
@@ -28,7 +27,7 @@ class View;
 }  // namespace views
 
 class Browser;
-class ExtensionsContainer;
+class ExtensionsContainerViews;
 class ExtensionMenuItemView;
 
 // This bubble view displays a list of user extensions and a button to get to
@@ -41,7 +40,7 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
  public:
   ExtensionsMenuView(views::View* anchor_view,
                      Browser* browser,
-                     ExtensionsContainer* extensions_container);
+                     ExtensionsContainerViews* extensions_container);
   ExtensionsMenuView(const ExtensionsMenuView&) = delete;
   ExtensionsMenuView& operator=(const ExtensionsMenuView&) = delete;
   ~ExtensionsMenuView() override;
@@ -49,9 +48,10 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
   // Displays the ExtensionsMenu under |anchor_view|, attached to |browser|, and
   // with the associated |extensions_container|.
   // Only one menu is allowed to be shown at a time (outside of tests).
-  static views::Widget* ShowBubble(views::View* anchor_view,
-                                   Browser* browser,
-                                   ExtensionsContainer* extensions_container);
+  static views::Widget* ShowBubble(
+      views::View* anchor_view,
+      Browser* browser,
+      ExtensionsContainerViews* extensions_container);
 
   // Returns true if there is currently an ExtensionsMenuView showing (across
   // all browsers and profiles).
@@ -88,13 +88,10 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
   void OnToolbarModelInitialized() override;
   void OnToolbarPinnedActionsChanged() override;
 
+  // For testing.
   base::flat_set<raw_ptr<ExtensionMenuItemView, CtnExperimental>>
-  extensions_menu_items_for_testing() {
-    return extensions_menu_items_;
-  }
-  views::Button* manage_extensions_button_for_testing() {
-    return manage_extensions_button_;
-  }
+  extensions_menu_items_for_testing();
+  views::Button* manage_extensions_button_for_testing();
   // Returns a scoped object allowing test dialogs to be created (i.e.,
   // instances of the ExtensionsMenuView that are not created through
   // ShowBubble()).
@@ -159,7 +156,7 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
   void SanityCheck();
 
   const raw_ptr<Browser> browser_;
-  const raw_ptr<ExtensionsContainer> extensions_container_;
+  const raw_ptr<ExtensionsContainerViews> extensions_container_;
   const raw_ptr<ToolbarActionsModel> toolbar_model_;
   base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
       toolbar_model_observation_{this};

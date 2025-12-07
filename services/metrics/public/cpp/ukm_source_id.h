@@ -39,9 +39,10 @@ class METRICS_EXPORT SourceIdObj {
     // the max threshold.
     NAVIGATION_ID = 1,
     // Source ID used by AppLaunchEventLogger::Log and
-    // AppPlatformMetrics::GetSourceId and DesktopWebAppUkmRecorder. They will
-    // be kept in memory as long as the associated app is still running and the
-    // number of sources are within the max threshold.
+    // AppPlatformMetrics::GetSourceId, DesktopWebAppUkmRecorder and
+    // WebInstallServiceImpl. They will be kept in memory as long as the
+    // associated app is still running and the number of sources are within the
+    // max threshold.
     APP_ID = 2,
     // Source ID for background events that don't have an open tab but the
     // associated URL is still present in the browsing history. A new source of
@@ -98,8 +99,15 @@ class METRICS_EXPORT SourceIdObj {
     // report
     // interval; it will not be kept in memory between different reports.
     NOTIFICATION_ID = 13,
+    // Source ID type for Content Decryption Module triggered events.
+    // The CDM persists a CDM origin which it receives from the renderer, and is
+    // used for crash reporting. To avoid making a round trip from the utility
+    // process where the CDM is hosted, and because the adapter exists for ~ 5
+    // more seconds after the renderer/tab is tore down, the events are logged
+    // with a CDM_ID SourceId type to specify exactly where it is coming from.
+    CDM_ID = 14,
 
-    kMaxValue = NOTIFICATION_ID,
+    kMaxValue = CDM_ID,
   };
 
   // Default constructor has the invalid value.
@@ -109,12 +117,8 @@ class METRICS_EXPORT SourceIdObj {
   constexpr SourceIdObj& operator=(const SourceIdObj& other) = default;
 
   // Allow identity comparisons.
-  constexpr bool operator==(SourceIdObj other) const {
-    return value_ == other.value_;
-  }
-  constexpr bool operator!=(SourceIdObj other) const {
-    return value_ != other.value_;
-  }
+  friend constexpr bool operator==(const SourceIdObj&,
+                                   const SourceIdObj&) = default;
 
   // Extract the Type of the SourceId.
   Type GetType() const;

@@ -9,6 +9,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/containers/contains.h"
+#include "base/debug/alias.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -32,6 +33,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/api/storage.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 
 using content::BrowserContext;
 using content::BrowserThread;
@@ -56,9 +58,17 @@ events::HistogramValue StorageAreaToEventHistogram(
     case StorageAreaNamespace::kSession:
       return events::STORAGE_SESSION_ON_CHANGE;
     case StorageAreaNamespace::kInvalid:
-      NOTREACHED_IN_MIGRATION();
-      return events::UNKNOWN;
+      NOTREACHED();
   }
+}
+
+void GetKeysWithValueStore(
+    base::OnceCallback<void(ValueStore::ReadResult)> callback,
+    ValueStore* store) {
+  ValueStore::ReadResult result = store->GetKeys();
+
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
 }
 
 void GetWithValueStore(
@@ -108,6 +118,14 @@ void ClearWithValueStore(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
 }
 
+base::Value::List KeysFromDict(base::Value::Dict dict) {
+  base::Value::List list = base::Value::List::with_capacity(dict.size());
+  for (auto item : dict) {
+    list.Append(std::move(item.first));
+  }
+  return list;
+}
+
 }  // namespace
 
 // static
@@ -130,6 +148,14 @@ StorageFrontend::ResultStatus::ResultStatus() = default;
 StorageFrontend::ResultStatus::ResultStatus(const ResultStatus&) = default;
 
 StorageFrontend::ResultStatus::~ResultStatus() = default;
+
+// Implementation of GetKeysResult.
+
+StorageFrontend::GetKeysResult::GetKeysResult() = default;
+
+StorageFrontend::GetKeysResult::GetKeysResult(GetKeysResult&& other) = default;
+
+StorageFrontend::GetKeysResult::~GetKeysResult() = default;
 
 // Implementation of GetResult.
 
@@ -196,6 +222,24 @@ void StorageFrontend::OnReadFinished(
   std::move(callback).Run(std::move(get_result));
 }
 
+void StorageFrontend::OnReadKeysFinished(
+    base::OnceCallback<void(GetKeysResult)> callback,
+    ValueStore::ReadResult result) {
+  bool success = result.status().ok();
+
+  GetKeysResult get_keys_result;
+
+  get_keys_result.status.success = success;
+  get_keys_result.status.error =
+      success ? std::nullopt : std::optional(result.status().message);
+
+  if (success) {
+    get_keys_result.data = KeysFromDict(result.PassSettings());
+  }
+
+  std::move(callback).Run(std::move(get_keys_result));
+}
+
 void StorageFrontend::OnWriteFinished(
     const ExtensionId& extension_id,
     StorageAreaNamespace storage_area,
@@ -205,7 +249,9 @@ void StorageFrontend::OnWriteFinished(
 
   if (success && !result.changes().empty()) {
     OnSettingsChanged(
-        extension_id, storage_area, std::nullopt,
+        extension_id, storage_area,
+        storage_utils::GetAccessLevelForArea(extension_id, *browser_context_,
+                                             storage_area),
         value_store::ValueStoreChange::ToValue(result.PassChanges()));
   }
 
@@ -255,6 +301,46 @@ void StorageFrontend::GetValues(scoped_refptr<const Extension> extension,
                      base::BindOnce(&StorageFrontend::OnReadFinished,
                                     weak_factory_.GetWeakPtr(), extension->id(),
                                     storage_area, std::move(callback))));
+}
+
+void StorageFrontend::GetKeys(
+    scoped_refptr<const Extension> extension,
+    StorageAreaNamespace storage_area,
+    base::OnceCallback<void(GetKeysResult)> callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (storage_area == StorageAreaNamespace::kSession) {
+    SessionStorageManager* storage_manager =
+        SessionStorageManager::GetForBrowserContext(browser_context_);
+
+    std::vector<std::string> keys = storage_manager->GetKeys(extension->id());
+
+    base::Value::List list = base::Value::List::with_capacity(keys.size());
+    for (const std::string& key : keys) {
+      list.Append(key);
+    }
+
+    GetKeysResult get_keys_result;
+    get_keys_result.data = std::move(list);
+
+    // Using a task here is important since we want to consistently fire the
+    // callback asynchronously.
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), std::move(get_keys_result)));
+    return;
+  }
+
+  settings_namespace::Namespace settings_namespace =
+      StorageAreaToSettingsNamespace(storage_area);
+
+  CHECK(StorageFrontend::IsStorageEnabled(settings_namespace));
+
+  base::OnceCallback<void(ValueStore::ReadResult)> test =
+      base::BindOnce(&StorageFrontend::OnReadKeysFinished,
+                     weak_factory_.GetWeakPtr(), std::move(callback));
+  RunWithStorage(extension, settings_namespace,
+                 base::BindOnce(&GetKeysWithValueStore, std::move(test)));
 }
 
 void StorageFrontend::GetBytesInUse(
@@ -312,8 +398,8 @@ void StorageFrontend::Set(scoped_refptr<const Extension> extension,
 
     if (success && !changes.empty()) {
       OnSettingsChanged(extension->id(), storage_area,
-                        storage_utils::GetSessionAccessLevel(extension->id(),
-                                                             *browser_context_),
+                        storage_utils::GetAccessLevelForArea(
+                            extension->id(), *browser_context_, storage_area),
                         storage_utils::ValueChangeToValue(std::move(changes)));
     }
 
@@ -356,8 +442,8 @@ void StorageFrontend::Remove(scoped_refptr<const Extension> extension,
 
     if (!changes.empty()) {
       OnSettingsChanged(extension->id(), storage_area,
-                        storage_utils::GetSessionAccessLevel(extension->id(),
-                                                             *browser_context_),
+                        storage_utils::GetAccessLevelForArea(
+                            extension->id(), *browser_context_, storage_area),
                         storage_utils::ValueChangeToValue(std::move(changes)));
     }
 
@@ -397,8 +483,8 @@ void StorageFrontend::Clear(
 
     if (!changes.empty()) {
       OnSettingsChanged(extension->id(), storage_area,
-                        storage_utils::GetSessionAccessLevel(extension->id(),
-                                                             *browser_context_),
+                        storage_utils::GetAccessLevelForArea(
+                            extension->id(), *browser_context_, storage_area),
                         storage_utils::ValueChangeToValue(std::move(changes)));
     }
 
@@ -498,7 +584,7 @@ void StorageFrontend::DisableStorageForTesting(
 void StorageFrontend::OnSettingsChanged(
     const ExtensionId& extension_id,
     StorageAreaNamespace storage_area,
-    std::optional<api::storage::AccessLevel> session_access_level,
+    std::optional<api::storage::AccessLevel> access_level,
     base::Value changes) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TRACE_EVENT1("browser", "SettingsObserver:OnSettingsChanged", "extension_id",
@@ -524,15 +610,12 @@ void StorageFrontend::OnSettingsChanged(
   bool has_area_changed_event_listener =
       event_router->ExtensionHasEventListener(extension_id, area_event_name);
 
-  // Restrict event to privileged context if session access level is set only to
-  // trusted contexts.
+  // Restrict event to privileged context if access level is set only to trusted
+  // contexts.
   std::optional<mojom::ContextType> restrict_to_context_type = std::nullopt;
-  if (storage_area == StorageAreaNamespace::kSession) {
-    CHECK(session_access_level.has_value());
-    if (session_access_level.value() ==
-        api::storage::AccessLevel::kTrustedContexts) {
-      restrict_to_context_type = mojom::ContextType::kPrivilegedExtension;
-    }
+  if (access_level.has_value() &&
+      access_level.value() == api::storage::AccessLevel::kTrustedContexts) {
+    restrict_to_context_type = mojom::ContextType::kPrivilegedExtension;
   }
 
   auto make_changed_event = [&namespace_string,

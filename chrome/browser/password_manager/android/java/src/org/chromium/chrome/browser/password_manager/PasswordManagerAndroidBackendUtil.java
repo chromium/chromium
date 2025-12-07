@@ -5,19 +5,20 @@ package org.chromium.chrome.browser.password_manager;
 
 import android.app.PendingIntent;
 
-import androidx.annotation.Nullable;
-
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 
 /**
- * Collection of utilities used by classes interacting with the password manager backend
- * in Google Mobile Services.
+ * Collection of utilities used by classes interacting with the password manager backend in Google
+ * Mobile Services.
  */
+@NullMarked
 class PasswordManagerAndroidBackendUtil {
     private static final String TAG = "PwdManagerBackend";
 
@@ -34,14 +35,13 @@ class PasswordManagerAndroidBackendUtil {
     }
 
     static @CredentialManagerError int getPasswordCheckupBackendError(Exception exception) {
-        if (exception instanceof PasswordCheckupClientHelper.PasswordCheckBackendException) {
-            return ((PasswordCheckupClientHelper.PasswordCheckBackendException) exception)
-                    .errorCode;
+        if (exception instanceof PasswordCheckupClientHelper.PasswordManagerUnavailableException) {
+            return CredentialManagerError.PASSWORD_MANAGER_NOT_AVAILABLE;
         }
         if (exception instanceof ApiException) {
-            return CredentialManagerError.API_ERROR;
+            return CredentialManagerError.API_EXCEPTION;
         }
-        return CredentialManagerError.UNCATEGORIZED;
+        return CredentialManagerError.OTHER_API_ERROR;
     }
 
     static int getApiErrorCode(Exception exception) {

@@ -18,22 +18,9 @@ namespace blink {
 SelectorDirective::SelectorDirective(Type type) : Directive(type) {}
 SelectorDirective::~SelectorDirective() = default;
 
-namespace {
-void RejectWithCode(ScriptPromiseResolverBase* resolver,
-                    DOMExceptionCode code,
-                    const String& message) {
-  ScriptState::Scope scope(resolver->GetScriptState());
-  ExceptionState exception_state(resolver->GetScriptState()->GetIsolate(),
-                                 v8::ExceptionContext::kOperation,
-                                 "SelectorDirective",
-                                 "createSelectorDirective");
-  exception_state.ThrowDOMException(code, message);
-  resolver->Reject(exception_state);
-}
-}  // namespace
-
 ScriptPromise<Range> SelectorDirective::getMatchingRange(
-    ScriptState* state) const {
+    ScriptState* state,
+    ExceptionState& exception_state) const {
   if (ExecutionContext::From(state)->IsContextDestroyed())
     return EmptyPromise();
 
@@ -43,8 +30,8 @@ ScriptPromise<Range> SelectorDirective::getMatchingRange(
   // TODO(bokan): If this method can initiate a search, it'd probably be more
   // straightforward to avoid caching and have each call start a new search.
   // That way this is more resilient to changes in the DOM.
-  matching_range_resolver_ =
-      MakeGarbageCollected<ScriptPromiseResolver<Range>>(state);
+  matching_range_resolver_ = MakeGarbageCollected<ScriptPromiseResolver<Range>>(
+      state, exception_state.GetContext());
 
   // Access the promise first to ensure it is created so that the proper state
   // can be changed when it is resolved or rejected.
@@ -80,8 +67,9 @@ void SelectorDirective::ResolvePromise() const {
   DCHECK(matching_finished_);
 
   if (!selected_range_) {
-    RejectWithCode(matching_range_resolver_, DOMExceptionCode::kNotFoundError,
-                   "Could not find range matching the given selector");
+    matching_range_resolver_->RejectWithDOMException(
+        DOMExceptionCode::kNotFoundError,
+        "Could not find range matching the given selector");
     return;
   }
 

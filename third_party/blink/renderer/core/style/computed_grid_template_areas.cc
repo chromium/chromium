@@ -17,14 +17,14 @@ ComputedGridTemplateAreas::CreateImplicitNamedGridLinesFromGridArea(
                                                : named_area.value.columns;
     {
       NamedGridLinesMap::AddResult start_result = named_grid_lines.insert(
-          named_area.key + "-start", Vector<wtf_size_t>());
+          StrCat({named_area.key, "-start"}), Vector<wtf_size_t>());
       start_result.stored_value->value.push_back(area_span.StartLine());
       std::sort(start_result.stored_value->value.begin(),
                 start_result.stored_value->value.end());
     }
     {
       NamedGridLinesMap::AddResult end_result = named_grid_lines.insert(
-          named_area.key + "-end", Vector<wtf_size_t>());
+          StrCat({named_area.key, "-end"}), Vector<wtf_size_t>());
       end_result.stored_value->value.push_back(area_span.EndLine());
       std::sort(end_result.stored_value->value.begin(),
                 end_result.stored_value->value.end());

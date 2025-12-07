@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 
+#include <array>
 #include <ios>
 #include <memory>
 
@@ -42,8 +38,8 @@ static void TestIsPotentialCustomElementName(const AtomicString& str,
 }
 
 static void TestIsPotentialCustomElementNameChar(UChar32 c, bool expected) {
-  LChar str8[] = "a-X";
-  UChar str16[] = {'a', '-', 'X', '\0', '\0'};
+  std::array<LChar, 3> str8 = {'a', '-', 'X'};
+  std::array<UChar, 5> str16 = {'a', '-', 'X', '\0', '\0'};
   AtomicString str;
   if (c <= 0xFF) {
     str8[2] = c;
@@ -51,8 +47,7 @@ static void TestIsPotentialCustomElementNameChar(UChar32 c, bool expected) {
   } else {
     size_t i = 2;
     U16_APPEND_UNSAFE(str16, i, c);
-    str16[i] = 0;
-    str = AtomicString(str16);
+    str = AtomicString(base::span(str16).first(i));
   }
   TestIsPotentialCustomElementName(str, expected);
 }
@@ -88,34 +83,34 @@ TEST(CustomElementTest, TestIsValidNamePotentialCustomElementName) {
 
 TEST(CustomElementTest, TestIsValidNamePotentialCustomElementNameChar) {
   test::TaskEnvironment task_environment;
+  // ranges is a list of ranges of valid characters. The comments show the
+  // invalid values which are in between the specified ranges.
   struct {
     UChar32 from, to;
   } ranges[] = {
-      // "-" | "." need to merge to test -1/+1.
-      {'-', '.'},
-      {'0', '9'},
-      {'_', '_'},
-      {'a', 'z'},
-      {0xB7, 0xB7},
-      {0xC0, 0xD6},
-      {0xD8, 0xF6},
-      // [#xF8-#x2FF] | [#x300-#x37D] need to merge to test -1/+1.
-      {0xF8, 0x37D},
-      {0x37F, 0x1FFF},
-      {0x200C, 0x200D},
-      {0x203F, 0x2040},
-      {0x2070, 0x218F},
-      {0x2C00, 0x2FEF},
-      {0x3001, 0xD7FF},
-      {0xF900, 0xFDCF},
-      {0xFDF0, 0xFFFD},
-      {0x10000, 0xEFFFF},
+      // 0x00 null
+      {0x01, 0x08},
+      // 0x09 tab, 0x0A LF
+      {0x0B, 0x0B},
+      // 0x0C FF, 0x0D CR
+      {0x0E, 0x1F},
+      // 0x20 space
+      {0x21, 0x2E},
+      // 0x2F /
+      {0x30, 0x3D},
+      // 0x3E >
+      {0x3F, 0x40},
+      // 0x41 to 0x5A uppercase alphas
+      {0x5B, 0x10FFFF},
   };
   for (auto range : ranges) {
     TestIsPotentialCustomElementNameChar(range.from - 1, false);
-    for (UChar32 c = range.from; c <= range.to; ++c)
+    for (UChar32 c = range.from; c <= range.to; ++c) {
       TestIsPotentialCustomElementNameChar(c, true);
-    TestIsPotentialCustomElementNameChar(range.to + 1, false);
+    }
+    if (range.to < 0x10FFFF) {
+      TestIsPotentialCustomElementNameChar(range.to + 1, false);
+    }
   }
 }
 
@@ -179,7 +174,8 @@ TEST(CustomElementTest, StateByParser) {
       "<font-face id=v0></font-face>";
   auto page_holder = std::make_unique<DummyPageHolder>();
   Document& document = page_holder->GetDocument();
-  document.body()->setInnerHTML(String::FromUTF8(body_content));
+  document.body()->SetInnerHTMLWithoutTrustedTypes(
+      String::FromUTF8(body_content));
 
   struct {
     const char* id;
@@ -236,7 +232,7 @@ TEST(CustomElementTest,
       scope.GetFrame().DomWindow()->customElements();
   NonThrowableExceptionState should_not_throw;
   {
-    CEReactionsScope reactions;
+    CEReactionsScope reactions(scope.GetIsolate());
     TestCustomElementDefinitionBuilder builder;
     registry->DefineInternal(script_state, AtomicString("a-a"), builder,
                              ElementDefinitionOptions::Create(),

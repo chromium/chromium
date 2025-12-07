@@ -222,7 +222,7 @@ void QuicHttp3Logger::OnHeadersFrameReceived(
 }
 
 void QuicHttp3Logger::OnHeadersDecoded(quic::QuicStreamId stream_id,
-                                       quic::QuicHeaderList headers) {
+                                       const quic::QuicHeaderList& headers) {
   if (!net_log_.IsCapturing()) {
     return;
   }

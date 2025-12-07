@@ -37,7 +37,7 @@ namespace media_router {
 
 MockCastSessionClient::MockCastSessionClient(const std::string& client_id,
                                              const url::Origin& origin,
-                                             int tab_id)
+                                             content::FrameTreeNodeId tab_id)
     : CastSessionClient(client_id, origin, tab_id) {
   instances_.push_back(this);
 }
@@ -49,8 +49,10 @@ MockCastSessionClient::~MockCastSessionClient() {
 std::vector<MockCastSessionClient*> MockCastSessionClient::instances_;
 
 MockCastActivityManager::MockCastActivityManager() = default;
-
 MockCastActivityManager::~MockCastActivityManager() = default;
+
+MockMediaRouterDebugger::MockMediaRouterDebugger() = default;
+MockMediaRouterDebugger::~MockMediaRouterDebugger() = default;
 
 const char* const CastActivityTestBase::kAppId = "theAppId";
 const char* const CastActivityTestBase::kRouteId = "theRouteId";
@@ -89,6 +91,12 @@ void CastActivityTestBase::SetUp() {
   ASSERT_EQ("theSessionId", session->session_id());
   session_ = session.get();
   session_tracker_.SetSessionForTest(kSinkId, std::move(session));
+
+  logger_receiver_ = std::make_unique<mojo::Receiver<mojom::Logger>>(
+      &mock_logger_, logger_.BindNewPipeAndPassReceiver());
+
+  debugger_receiver_ = std::make_unique<mojo::Receiver<mojom::Debugger>>(
+      &mock_debugger_, debugger_.BindNewPipeAndPassReceiver());
 }
 
 void CastActivityTestBase::TearDown() {
@@ -101,14 +109,15 @@ void CastActivityTestBase::RunUntilIdle() {
   testing::Mock::VerifyAndClearExpectations(&socket_service_);
   testing::Mock::VerifyAndClearExpectations(&message_handler_);
   testing::Mock::VerifyAndClearExpectations(&manager_);
-  for (const auto* client : MockCastSessionClient::instances())
+  for (const auto* client : MockCastSessionClient::instances()) {
     testing::Mock::VerifyAndClearExpectations(&client);
+  }
 }
 
 std::unique_ptr<CastSessionClient> CastActivityTestBase::MakeClientForTest(
     const std::string& client_id,
     const url::Origin& origin,
-    int tab_id) {
+    content::FrameTreeNodeId tab_id) {
   return std::make_unique<NiceMock<MockCastSessionClient>>(client_id, origin,
                                                            tab_id);
 }
@@ -116,7 +125,7 @@ std::unique_ptr<CastSessionClient> CastActivityTestBase::MakeClientForTest(
 MockCastSessionClient* CastActivityTestBase::AddMockClient(
     CastActivity* activity,
     const std::string& client_id,
-    int tab_id) {
+    content::FrameTreeNodeId tab_id) {
   CastMediaSource source("dummySourceId", std::vector<CastAppInfo>());
   source.set_client_id(client_id);
   activity->AddClient(source, url::Origin(), tab_id);

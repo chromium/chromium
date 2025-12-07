@@ -13,8 +13,6 @@
 #include "content/public/test/navigation_simulator.h"
 #include "net/dns/mock_host_resolver.h"
 
-namespace chrome {
-
 class ChainedBackNavigationTrackerBrowserTest : public InProcessBrowserTest {
  public:
   ChainedBackNavigationTrackerBrowserTest() = default;
@@ -127,5 +125,3 @@ IN_PROC_BROWSER_TEST_F(ChainedBackNavigationTrackerBrowserTest,
   ASSERT_EQ(url_a, web_contents()->GetLastCommittedURL());
   ASSERT_EQ(0u, tracker->chained_back_navigation_count_);
 }
-
-}  // namespace chrome

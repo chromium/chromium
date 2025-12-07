@@ -10,14 +10,21 @@
 #include <set>
 #include <string>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/sync/model/syncable_service.h"
 #include "components/value_store/value_store_factory.h"
 #include "extensions/browser/api/storage/settings_observer.h"
 #include "extensions/browser/api/storage/settings_storage_quota_enforcer.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
+namespace sync_pb {
+class ExtensionSettingSpecifics;
+}
 
 namespace value_store {
 class ValueStoreFactory;
@@ -33,8 +40,8 @@ class SyncableSettingsStorage;
 // Lives entirely on the FILE thread.
 class SyncStorageBackend final : public syncer::SyncableService {
  public:
-  // |storage_factory| is use to create leveldb storage areas.
-  // |observers| is the list of observers to settings changes.
+  // `storage_factory` is use to create leveldb storage areas.
+  // `observers` is the list of observers to settings changes.
   SyncStorageBackend(
       scoped_refptr<value_store::ValueStoreFactory> storage_factory,
       const SettingsStorageQuotaEnforcer::Limits& quota,
@@ -47,8 +54,8 @@ class SyncStorageBackend final : public syncer::SyncableService {
 
   ~SyncStorageBackend() override;
 
-  virtual value_store::ValueStore* GetStorage(const ExtensionId& extension_id);
-  virtual void DeleteStorage(const ExtensionId& extension_id);
+  value_store::ValueStore* GetStorage(const ExtensionId& extension_id);
+  void DeleteStorage(const ExtensionId& extension_id);
 
   // syncer::SyncableService implementation.
   void WaitUntilReadyToSync(base::OnceClosure done) override;
@@ -62,6 +69,8 @@ class SyncStorageBackend final : public syncer::SyncableService {
       const syncer::SyncChangeList& change_list) override;
   void StopSyncing(syncer::DataType type) override;
   base::WeakPtr<SyncableService> AsWeakPtr() override;
+  std::string GetClientTag(
+      const syncer::EntityData& entity_data) const override;
 
  private:
   // Gets a weak reference to the storage area for a given extension,
@@ -73,6 +82,10 @@ class SyncStorageBackend final : public syncer::SyncableService {
   // Creates a new SettingsSyncProcessor for an extension.
   std::unique_ptr<SettingsSyncProcessor> CreateSettingsSyncProcessor(
       const ExtensionId& extension_id) const;
+
+  // Returns the client tag for an extension or app setting.
+  std::string GetClientTagInternal(
+      const sync_pb::ExtensionSettingSpecifics& specifics) const;
 
   // The Factory to use for creating new ValueStores.
   const scoped_refptr<value_store::ValueStoreFactory> storage_factory_;

@@ -24,6 +24,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_input_method_context.h"
 #include "ui/ozone/platform/wayland/host/wayland_keyboard.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
+#include "ui/ozone/platform/wayland/host/wayland_tablet_tool.h"
 #include "ui/ozone/platform/wayland/host/wayland_touch.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_observer.h"
 #include "ui/ozone/platform/wayland/host/wayland_zwp_pointer_gestures.h"
@@ -53,11 +54,12 @@ class WaylandEventSource : public PlatformEventSource,
                            public WaylandWindowObserver,
                            public WaylandKeyboard::Delegate,
                            public WaylandPointer::Delegate,
+                           public WaylandTabletTool::Delegate,
                            public WaylandTouch::Delegate,
                            public WaylandZwpPointerGestures::Delegate,
                            public WaylandZwpRelativePointerManager::Delegate {
  public:
-  static void ConvertEventToTarget(const EventTarget* new_target,
+  static void ConvertEventToTarget(EventTarget* new_target,
                                    LocatedEvent* event);
 
   WaylandEventSource(wl_display* display,
@@ -102,7 +104,8 @@ class WaylandEventSource : public PlatformEventSource,
                               base::TimeTicks timestamp,
                               int device_id,
                               WaylandKeyboard::KeyEventKind kind) override;
-  void OnSynthesizedKeyPressEvent(DomCode dom_code,
+  void OnSynthesizedKeyPressEvent(WaylandWindow* window,
+                                  DomCode dom_code,
                                   base::TimeTicks timestamp) override;
 
   // WaylandPointer::Delegate
@@ -122,7 +125,8 @@ class WaylandEventSource : public PlatformEventSource,
                             wl::EventDispatchPolicy dispatch_policy,
                             bool is_synthesized) override;
   void OnPointerAxisEvent(const gfx::Vector2dF& offset,
-                          base::TimeTicks timestamp) override;
+                          std::optional<base::TimeTicks> timestamp,
+                          bool is_high_resolution) override;
   void OnPointerFrameEvent() override;
   void OnPointerAxisSourceEvent(uint32_t axis_source) override;
   void OnPointerAxisStopEvent(uint32_t axis,
@@ -131,10 +135,20 @@ class WaylandEventSource : public PlatformEventSource,
   bool IsPointerButtonPressed(EventFlags button) const override;
   void ReleasePressedPointerButtons(WaylandWindow* window,
                                     base::TimeTicks timestamp) override;
-  void OnPointerStylusToolChanged(EventPointerType pointer_type) override;
-  void OnPointerStylusForceChanged(float force) override;
-  void OnPointerStylusTiltChanged(const gfx::Vector2dF& tilt) override;
-  const WaylandWindow* GetPointerTarget() const override;
+
+  // WaylandTabletTool::Delegate:
+  void OnTabletToolProximityIn(WaylandWindow* window,
+                               const gfx::PointF& location,
+                               const PointerDetails& details,
+                               base::TimeTicks time) override;
+  void OnTabletToolProximityOut(base::TimeTicks time) override;
+  void OnTabletToolMotion(const gfx::PointF& location,
+                          const PointerDetails& details,
+                          base::TimeTicks time) override;
+  void OnTabletToolButton(int32_t button,
+                          bool pressed,
+                          const PointerDetails& details,
+                          base::TimeTicks time) override;
 
   // WaylandTouch::Delegate
   void OnTouchPressEvent(WaylandWindow* window,
@@ -156,11 +170,6 @@ class WaylandEventSource : public PlatformEventSource,
   void OnTouchFocusChanged(WaylandWindow* window) override;
   std::vector<PointerId> GetActiveTouchPointIds() override;
   const WaylandWindow* GetTouchTarget(PointerId id) const override;
-  void OnTouchStylusToolChanged(PointerId pointer_id,
-                                EventPointerType pointer_type) override;
-  void OnTouchStylusForceChanged(PointerId pointer_id, float force) override;
-  void OnTouchStylusTiltChanged(PointerId pointer_id,
-                                const gfx::Vector2dF& tilt) override;
 
   // WaylandZwpPointerGesture::Delegate:
   void OnPinchEvent(EventType event_type,
@@ -194,6 +203,7 @@ class WaylandEventSource : public PlatformEventSource,
     float dy = 0.0f;
     base::TimeDelta dt;
     bool is_axis_stop = false;
+    bool is_high_resolution = false;
     std::optional<base::TimeTicks> timestamp;
 
     void DumpState(std::ostream& out) const;
@@ -225,12 +235,6 @@ class WaylandEventSource : public PlatformEventSource,
   // Computes initial velocity of fling scroll based on recent frames.
   // The fling velocity is computed the same way as in libgestures.
   gfx::Vector2dF ComputeFlingVelocity();
-
-  // For pointer events.
-  std::optional<PointerDetails> AmendStylusData() const;
-
-  // For touch events.
-  std::optional<PointerDetails> AmendStylusData(PointerId pointer_id) const;
 
   // Wrap up method to support async pointer down/up event processing.
   void OnPointerButtonEventInternal(WaylandWindow* window, EventType type);
@@ -279,19 +283,6 @@ class WaylandEventSource : public PlatformEventSource,
   // Time of the last pointer frame event.
   base::TimeTicks last_pointer_frame_time_;
 
-  struct StylusData {
-    EventPointerType type = EventPointerType::kUnknown;
-    gfx::Vector2dF tilt;
-    float force = std::numeric_limits<float>::quiet_NaN();
-  };
-
-  // Last known pointer stylus data (eg {mouse, pen, eraser or touch}, tilt and
-  // force).
-  std::optional<StylusData> last_pointer_stylus_data_;
-
-  // Last known touch stylus data (eg {touch, pen or eraser}, tilt and force).
-  base::flat_map<PointerId, std::optional<StylusData>> last_touch_stylus_data_;
-
   // Order set of touch events to be dispatching on the next
   // wl_touch::frame event.
   std::deque<std::unique_ptr<FrameData>> touch_frames_;
@@ -300,15 +291,22 @@ class WaylandEventSource : public PlatformEventSource,
   // wl_pointer::frame event.
   std::deque<std::unique_ptr<FrameData>> pointer_frames_;
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   // Status of fling.
   bool is_fling_active_ = false;
-#endif
 
   // Map that keeps track of the current touch points, associating touch IDs to
   // to the surface/location where they happened.
   struct TouchPoint;
   base::flat_map<PointerId, std::unique_ptr<TouchPoint>> touch_points_;
+
+  // The window that currently has tablet tool focus.
+  base::WeakPtr<WaylandWindow> tablet_tool_focused_window_;
+
+  // Last known tablet tool location.
+  gfx::PointF tablet_tool_location_;
+
+  // Bitmask of EventFlags used to keep track of the the tablet tool state.
+  int tablet_tool_buttons_ = 0;
 
   std::unique_ptr<WaylandEventWatcher> event_watcher_;
 };

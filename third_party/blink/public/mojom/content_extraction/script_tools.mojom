@@ -1,0 +1,21 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// See AnnotationsDict in tool_registration_params.idl for details of this
+// data structure.
+struct ScriptToolAnnotations {
+  bool read_only;
+};
+
+// See ToolRegistrationParams in tool_registration_params.idl for details of
+// this data structure.
+struct ScriptTool {
+  // These directly map to the corresponding fields in the web API.
+  string name;
+  string description;
+  string? input_schema;
+  ScriptToolAnnotations? annotations;
+};

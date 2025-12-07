@@ -22,12 +22,12 @@ TEST_F(UninstallViewTest, Cancel) {
   int result = -1;
   UninstallView view(&result, base::DoNothing());
   view.Cancel();
-  EXPECT_EQ(result, chrome::RESULT_CODE_UNINSTALL_USER_CANCEL);
+  EXPECT_EQ(result, CHROME_RESULT_CODE_UNINSTALL_USER_CANCEL);
 }
 
 TEST_F(UninstallViewTest, Close) {
   int result = -1;
   UninstallView view(&result, base::DoNothing());
   view.Close();
-  EXPECT_EQ(result, chrome::RESULT_CODE_UNINSTALL_USER_CANCEL);
+  EXPECT_EQ(result, CHROME_RESULT_CODE_UNINSTALL_USER_CANCEL);
 }

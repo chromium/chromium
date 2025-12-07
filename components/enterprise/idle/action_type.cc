@@ -1,19 +1,17 @@
-
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/enterprise/idle/action_type.h"
 
+#include <algorithm>
 #include <cstring>
-#include <regex>
 #include <string>
 #include <utility>
 
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -96,20 +94,17 @@ std::optional<ActionType> NameToActionType(const std::string& name) {
 
 std::string GetActionBrowsingDataTypeName(const std::string& action) {
   // Get the data type to be cleared if the action is to clear browsig data.
-  const char kPrefix[] = "clear_";
-  if (!base::StartsWith(action, kPrefix, base::CompareCase::SENSITIVE)) {
-    return std::string();
-  }
-  return action.substr(std::strlen(kPrefix));
+  auto remainder = base::RemovePrefix(action, "clear_");
+  return remainder ? std::string(*remainder) : std::string();
 }
 
 std::vector<ActionType> GetActionTypesFromPrefs(PrefService* prefs) {
   std::vector<ActionType> actions;
-  base::ranges::transform(prefs->GetList(prefs::kIdleTimeoutActions),
-                          std::back_inserter(actions),
-                          [](const base::Value& action) {
-                            return static_cast<ActionType>(action.GetInt());
-                          });
+  std::ranges::transform(prefs->GetList(prefs::kIdleTimeoutActions),
+                         std::back_inserter(actions),
+                         [](const base::Value& action) {
+                           return static_cast<ActionType>(action.GetInt());
+                         });
   return actions;
 }
 

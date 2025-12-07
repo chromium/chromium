@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/functional/callback_helpers.h"
 #import "base/test/scoped_mock_clock_override.h"
 #import "base/test/task_environment.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
+#import "components/feature_engagement/public/group_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/feature_engagement/test/scoped_iph_feature_list.h"
 #import "components/feature_engagement/test/test_tracker.h"
@@ -16,10 +18,6 @@ namespace {
 // The minimum number of times Chrome must be opened in order for the Reading
 // List Badge to be shown.
 const int kMinChromeOpensRequiredForReadingList = 5;
-
-// The minimum number of times url must be opened in order for the New Tab IPH
-// to be displayed.
-const int kMinURLOpensRequiredForNewTabIPH = 2;
 
 // The minimum number of times url must be opened in order for the History IPH
 // to be displayed.
@@ -37,6 +35,18 @@ class FeatureEngagementTest : public PlatformTest {
  public:
   FeatureEngagementTest();
   ~FeatureEngagementTest() override;
+
+  std::map<std::string, std::string> BadgedReaderModeParams() {
+    std::map<std::string, std::string> params;
+    params["event_trigger"] = "name:ios_iph_badged_reader_mode_triggered;"
+                              "comparator:==0;window:1095;storage:"
+                              "1095";
+    params["event_used"] =
+        "name:ios_reader_mode_used;comparator:==0;window:90;storage:90";
+    params["session_rate"] = "==0";
+    params["availability"] = "any";
+    return params;
+  }
 
   std::map<std::string, std::string> BadgedReadingListParams() {
     std::map<std::string, std::string> params;
@@ -114,18 +124,6 @@ class FeatureEngagementTest : public PlatformTest {
     return params;
   }
 
-  std::map<std::string, std::string> IPHiOSTabGridToolbarItemParams() {
-    std::map<std::string, std::string> params;
-    params["event_trigger"] = "name:iph_tab_grid_toolbar_item_trigger;"
-                              "comparator:==0;window:7;storage:"
-                              "7";
-    params["event_used"] =
-        "name:tab_grid_toolbar_item_used;comparator:==0;window:365;storage:365";
-    params["session_rate"] = "==0";
-    params["availability"] = "any";
-    return params;
-  }
-
   std::map<std::string, std::string> IPHiOSHistoryOnOverflowMenuParams() {
     std::map<std::string, std::string> params;
     params["event_1"] =
@@ -135,18 +133,6 @@ class FeatureEngagementTest : public PlatformTest {
                               "7";
     params["event_used"] = "name:history_on_overflow_menu_used;comparator:==0;"
                            "window:365;storage:365";
-    params["session_rate"] = "==0";
-    params["availability"] = "any";
-    return params;
-  }
-
-  std::map<std::string, std::string> IPHiOSShareParams() {
-    std::map<std::string, std::string> params;
-    params["event_trigger"] = "name:share_toolbar_item_trigger;"
-                              "comparator:==0;window:7;storage:"
-                              "7";
-    params["event_used"] =
-        "name:share_toolbar_item_used;comparator:==0;window:365;storage:365";
     params["session_rate"] = "==0";
     params["availability"] = "any";
     return params;
@@ -219,6 +205,44 @@ class FeatureEngagementTest : public PlatformTest {
         "name:default_site_view_shown;comparator:==0;window:720;storage:720";
     params["event_1"] =
         "name:desktop_version_requested;comparator:>=3;window:60;storage:60";
+    return params;
+  }
+
+  std::map<std::string, std::string> IPHiOSHomepageLensNewBadgeParams() {
+    std::map<std::string, std::string> params;
+    params["availability"] = "any";
+    params["session_rate"] = "<1";
+    params["used"] = "name:ios_lens_button_used;"
+                     "comparator:==0;window:3650;storage:3650";
+    params["trigger"] = "name:ios_homepage_lens_badge_trigger;comparator:<3;"
+                        "window:3650;storage:3650";
+    params["groups"] = "IPH_iOSHomepageNewBadgesGroup";
+    return params;
+  }
+
+  std::map<std::string, std::string>
+  IPHiOSHomepageCustomizationNewBadgeParams() {
+    std::map<std::string, std::string> params;
+    params["availability"] = "any";
+    params["session_rate"] = "<1";
+    params["used"] =
+        "name:ios_homepage_customization_badge_used;comparator:any;"
+        "window:3650;storage:3650";
+    params["trigger"] =
+        "name:ios_homepage_customization_badge_trigger;comparator:<3;window:"
+        "3650;storage:3650";
+    params["groups"] = "IPH_iOSHomepageNewBadgesGroup";
+    return params;
+  }
+
+  std::map<std::string, std::string> HomepageNewBadgesGroupParams() {
+    std::map<std::string, std::string> params;
+    params["session_rate"] = "<1";
+    params["trigger"] =
+        "name:homepage_new_badges_group_trigger;comparator:<1;window:1;storage:"
+        "365";
+    params["event_1"] = "name:ios_fre_badge_holdback_period_elapsed;comparator:"
+                        ">=1;window:3650;storage:3650";
     return params;
   }
 
@@ -336,92 +360,6 @@ TEST_F(FeatureEngagementTest, TestBadgedTranslateManualTriggerShouldShowOnce) {
   // The IPH should not trigger the second time
   EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
       feature_engagement::kIPHBadgedTranslateManualTriggerFeature));
-}
-
-// Verifies that the New Tab IPH is triggered after the proper conditions
-// are met.
-TEST_F(FeatureEngagementTest, TestNewTabToolbarItemIPHShouldShow) {
-  feature_engagement::test::ScopedIphFeatureList list;
-  list.InitAndEnableFeaturesWithParameters(
-      {{feature_engagement::kIPHiOSNewTabToolbarItemFeature,
-        IPHiOSNewTabToolbarItemParams()}});
-
-  std::unique_ptr<feature_engagement::Tracker> tracker =
-      feature_engagement::CreateTestTracker();
-  // Make sure tracker is initialized.
-  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
-  run_loop_.Run();
-
-  // Ensure that url has been opened enough times to meet the trigger
-  // condition.
-  for (int index = 0; index < kMinURLOpensRequiredForNewTabIPH; index++) {
-    tracker->NotifyEvent(feature_engagement::events::kOpenUrlFromOmnibox);
-  }
-
-  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
-      feature_engagement::kIPHiOSNewTabToolbarItemFeature));
-}
-
-// Verifies that the New Tab IPH is not triggered.
-TEST_F(FeatureEngagementTest, TestNewTabToolbarItemIPHShouldNotShow) {
-  feature_engagement::test::ScopedIphFeatureList list;
-  list.InitAndEnableFeaturesWithParameters(
-      {{feature_engagement::kIPHiOSNewTabToolbarItemFeature,
-        IPHiOSNewTabToolbarItemParams()}});
-
-  std::unique_ptr<feature_engagement::Tracker> tracker =
-      feature_engagement::CreateTestTracker();
-  // Make sure tracker is initialized.
-  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
-  run_loop_.Run();
-
-  for (int index = 0; index < kMinURLOpensRequiredForNewTabIPH; index++) {
-    tracker->NotifyEvent(feature_engagement::events::kOpenUrlFromOmnibox);
-  }
-
-  // The kNewTabToolbarItemUsed event will prevent the trigger.
-  tracker->NotifyEvent(feature_engagement::events::kNewTabToolbarItemUsed);
-
-  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
-      feature_engagement::kIPHiOSNewTabToolbarItemFeature));
-}
-
-// Verifies that the Tab Grid IPH is triggered after the proper conditions
-// are met.
-TEST_F(FeatureEngagementTest, TestTabGridToolbarItemIPHShouldShow) {
-  feature_engagement::test::ScopedIphFeatureList list;
-  list.InitAndEnableFeaturesWithParameters(
-      {{feature_engagement::kIPHiOSTabGridToolbarItemFeature,
-        IPHiOSTabGridToolbarItemParams()}});
-
-  std::unique_ptr<feature_engagement::Tracker> tracker =
-      feature_engagement::CreateTestTracker();
-  // Make sure tracker is initialized.
-  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
-  run_loop_.Run();
-
-  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
-      feature_engagement::kIPHiOSTabGridToolbarItemFeature));
-}
-
-// Verifies that the Tab Grid IPH is not triggered due to being used already.
-TEST_F(FeatureEngagementTest, TestTabGridToolbarItemIPHShouldNotShow) {
-  feature_engagement::test::ScopedIphFeatureList list;
-  list.InitAndEnableFeaturesWithParameters(
-      {{feature_engagement::kIPHiOSTabGridToolbarItemFeature,
-        IPHiOSTabGridToolbarItemParams()}});
-
-  std::unique_ptr<feature_engagement::Tracker> tracker =
-      feature_engagement::CreateTestTracker();
-  // Make sure tracker is initialized.
-  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
-  run_loop_.Run();
-
-  // Ensure that the tab grid item has been used to prevent triggering.
-  tracker->NotifyEvent(feature_engagement::events::kTabGridToolbarItemUsed);
-
-  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
-      feature_engagement::kIPHiOSTabGridToolbarItemFeature));
 }
 
 // Verifies that the pull down to refresh IPH is not triggered
@@ -785,44 +723,6 @@ TEST_F(FeatureEngagementTest,
       feature_engagement::kIPHiOSHistoryOnOverflowMenuFeature));
 }
 
-// Verifies that the Share IPH is triggered after the proper conditions
-// are met.
-TEST_F(FeatureEngagementTest, TestShareToolbarItemIPHShouldShow) {
-  feature_engagement::test::ScopedIphFeatureList list;
-  list.InitAndEnableFeaturesWithParameters(
-      {{feature_engagement::kIPHiOSShareToolbarItemFeature,
-        IPHiOSShareParams()}});
-
-  std::unique_ptr<feature_engagement::Tracker> tracker =
-      feature_engagement::CreateTestTracker();
-  // Make sure tracker is initialized.
-  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
-  run_loop_.Run();
-
-  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
-      feature_engagement::kIPHiOSShareToolbarItemFeature));
-}
-
-// Verifies that the Share IPH is not triggered due to being used already.
-TEST_F(FeatureEngagementTest, TestShareToolbarItemIPHShouldNotShowDueToUsage) {
-  feature_engagement::test::ScopedIphFeatureList list;
-  list.InitAndEnableFeaturesWithParameters(
-      {{feature_engagement::kIPHiOSShareToolbarItemFeature,
-        IPHiOSShareParams()}});
-
-  std::unique_ptr<feature_engagement::Tracker> tracker =
-      feature_engagement::CreateTestTracker();
-  // Make sure tracker is initialized.
-  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
-  run_loop_.Run();
-
-  // Ensure that the share has been used to prevent triggering the IPH.
-  tracker->NotifyEvent(feature_engagement::events::kShareToolbarItemUsed);
-
-  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
-      feature_engagement::kIPHiOSShareToolbarItemFeature));
-}
-
 // Verifies that the bottom toolbar tip triggers.
 TEST_F(FeatureEngagementTest, TestBottomToolbarTipTriggers) {
   feature_engagement::test::ScopedIphFeatureList list;
@@ -1098,4 +998,472 @@ TEST_F(FeatureEngagementTest, TestEnhancedSafeBrowsingInlinePromoIsShown) {
 
   EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
       feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature));
+}
+
+// Verifies the Reminder Notifications Overflow Menu Bubble IPH should not
+// trigger after a reminder is scheduled (used event).
+TEST_F(
+    FeatureEngagementTest,
+    TestReminderNotificationsOverflowMenuBubbleIPHShouldNotTriggerAfterUsed) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeatures(
+      {feature_engagement::
+           kIPHiOSReminderNotificationsOverflowMenuBubbleFeature});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  // Ensures the tracker is initialized.
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  // Simulates a reminder scheduled (used event).
+  tracker->NotifyEvent(feature_engagement::events::kIOSTabReminderScheduled);
+
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::
+          kIPHiOSReminderNotificationsOverflowMenuBubbleFeature));
+}
+
+// Verifies the Reminder Notifications Overflow Menu Bubble IPH can trigger
+// again the next day if preconditions are met again.
+TEST_F(
+    FeatureEngagementTest,
+    TestReminderNotificationsOverflowMenuBubbleIPHShouldTriggerAgainNextDay) {
+  base::ScopedMockClockOverride scoped_clock;
+  scoped_clock.Advance(base::Time::UnixEpoch() - base::Time());
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeatures(
+      {feature_engagement::
+           kIPHiOSReminderNotificationsOverflowMenuBubbleFeature});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  // Ensures the tracker is initialized.
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  // Day 1: Simulates precondition met and IPH triggered.
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::
+          kIPHiOSReminderNotificationsOverflowMenuBubbleFeature));
+  tracker->Dismissed(feature_engagement::
+                         kIPHiOSReminderNotificationsOverflowMenuBubbleFeature);
+
+  // Day 2: Advances clock by 1 day and simulates precondition met again.
+  scoped_clock.Advance(base::Days(1));
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::
+          kIPHiOSReminderNotificationsOverflowMenuBubbleFeature));
+}
+
+// Verifies the Reminder Notifications Overflow Menu Bubble IPH should not
+// trigger after reaching the trigger limit (3 times) across multiple days.
+TEST_F(
+    FeatureEngagementTest,
+    TestReminderNotificationsOverflowMenuBubbleIPHShouldNotTriggerAfterLimitMultiDays) {
+  base::ScopedMockClockOverride scoped_clock;
+  scoped_clock.Advance(base::Time::UnixEpoch() - base::Time());
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeatures(
+      {feature_engagement::
+           kIPHiOSReminderNotificationsOverflowMenuBubbleFeature});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  // Ensures the tracker is initialized.
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  // Day 1: Simulates precondition met and IPH triggered.
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::
+          kIPHiOSReminderNotificationsOverflowMenuBubbleFeature));
+  tracker->Dismissed(feature_engagement::
+                         kIPHiOSReminderNotificationsOverflowMenuBubbleFeature);
+
+  // Day 2: Advances clock by 1 day and simulates precondition met again.
+  scoped_clock.Advance(base::Days(1));
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::
+          kIPHiOSReminderNotificationsOverflowMenuBubbleFeature));
+  tracker->Dismissed(feature_engagement::
+                         kIPHiOSReminderNotificationsOverflowMenuBubbleFeature);
+
+  // Day 3: Advances clock by 1 day and simulates precondition met again.
+  scoped_clock.Advance(base::Days(1));
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::
+          kIPHiOSReminderNotificationsOverflowMenuBubbleFeature));
+  tracker->Dismissed(feature_engagement::
+                         kIPHiOSReminderNotificationsOverflowMenuBubbleFeature);
+
+  // Day 4: Advances clock by 1 day and simulates precondition met again.
+  scoped_clock.Advance(base::Days(1));
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::
+          kIPHiOSReminderNotificationsOverflowMenuBubbleFeature));
+}
+
+// Verifies the Reminder Notifications Overflow Menu New Badge IPH should
+// trigger when preconditions are met.
+TEST_F(FeatureEngagementTest,
+       TestReminderNotificationsOverflowMenuNewBadgeIPHShouldTrigger) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeatures(
+      {feature_engagement::
+           kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  // Ensures the tracker is initialized.
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::
+          kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature));
+  tracker->Dismissed(
+      feature_engagement::
+          kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature);
+}
+
+// Verifies the Reminder Notifications Overflow Menu New Badge IPH should not
+// trigger after tapping "Set a Reminder" (used event).
+TEST_F(
+    FeatureEngagementTest,
+    TestReminderNotificationsOverflowMenuNewBadgeIPHShouldNotTriggerAfterTapped) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeatures(
+      {feature_engagement::
+           kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  // Ensures the tracker is initialized.
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  // Simulates tapping "Set a Reminder" (used event).
+  tracker->NotifyEvent(
+      feature_engagement::events::kIOSOverflowMenuSetTabReminderTapped);
+
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::
+          kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature));
+}
+
+// Verifies the Reminder Notifications Overflow Menu New Badge IPH should not
+// trigger if a tab reminder was already scheduled (used event - historical
+// usage).
+TEST_F(
+    FeatureEngagementTest,
+    TestReminderNotificationsOverflowMenuNewBadgeIPHShouldNotTriggerAfterReminderScheduled) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeatures(
+      {feature_engagement::
+           kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  // Ensures the tracker is initialized.
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  // Simulates a reminder already scheduled (used event).
+  tracker->NotifyEvent(feature_engagement::events::kIOSTabReminderScheduled);
+
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::
+          kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature));
+}
+
+// Verifies the Reminder Notifications Overflow Menu New Badge IPH should not
+// trigger after reaching the trigger limit (3 times).
+TEST_F(
+    FeatureEngagementTest,
+    TestReminderNotificationsOverflowMenuNewBadgeIPHShouldNotTriggerAfterLimit) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeatures(
+      {feature_engagement::
+           kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  // Ensures the tracker is initialized.
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  // Trigger IPH 3 times.
+  for (int i = 0; i < 3; ++i) {
+    EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+        feature_engagement::
+            kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature));
+    tracker->Dismissed(
+        feature_engagement::
+            kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature);
+  }
+
+  // IPH should not trigger again after reaching the limit.
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::
+          kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature));
+}
+
+// Verifies that the Homepage Lens New Badge IPH triggers.
+TEST_F(FeatureEngagementTest, TestHomepageLensNewBadge_ShouldTrigger) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeaturesWithParameters(
+      /*features=*/{{feature_engagement::kIPHiOSHomepageLensNewBadge,
+                     IPHiOSHomepageLensNewBadgeParams()},
+                    {feature_engagement::kiOSHomepageNewBadgesGroup,
+                     HomepageNewBadgesGroupParams()}});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSHomepageLensNewBadge));
+
+  // Notify that the holdback period has elapsed.
+  tracker->NotifyEvent(
+      feature_engagement::events::kIOSFREBadgeHoldbackPeriodElapsed);
+
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSHomepageLensNewBadge));
+  tracker->Dismissed(feature_engagement::kIPHiOSHomepageLensNewBadge);
+}
+
+// Verifies that the Homepage Lens New Badge IPH does not trigger after being
+// used.
+TEST_F(FeatureEngagementTest,
+       TestHomepageLensNewBadge_ShouldNotTriggerWhenUsed) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeaturesWithParameters(
+      /*features=*/{{feature_engagement::kIPHiOSHomepageLensNewBadge,
+                     IPHiOSHomepageLensNewBadgeParams()},
+                    {feature_engagement::kiOSHomepageNewBadgesGroup,
+                     HomepageNewBadgesGroupParams()}});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  // Notify that the holdback period has elapsed.
+  tracker->NotifyEvent(
+      feature_engagement::events::kIOSFREBadgeHoldbackPeriodElapsed);
+
+  // Assume it would trigger initially.
+  ASSERT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSHomepageLensNewBadge));
+
+  tracker->Dismissed(feature_engagement::kIPHiOSHomepageLensNewBadge);
+
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSHomepageLensNewBadge));
+}
+
+// Verifies that the Homepage Customization New Badge IPH triggers.
+TEST_F(FeatureEngagementTest, TestHomepageCustomizationNewBadge_ShouldTrigger) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeaturesWithParameters(
+      /*features=*/{{feature_engagement::kIPHiOSHomepageCustomizationNewBadge,
+                     IPHiOSHomepageCustomizationNewBadgeParams()},
+                    {feature_engagement::kiOSHomepageNewBadgesGroup,
+                     HomepageNewBadgesGroupParams()}});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  // Notify that the holdback period has elapsed.
+  tracker->NotifyEvent(
+      feature_engagement::events::kIOSFREBadgeHoldbackPeriodElapsed);
+
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSHomepageCustomizationNewBadge));
+  tracker->Dismissed(feature_engagement::kIPHiOSHomepageCustomizationNewBadge);
+}
+
+// Verifies that the Lens new badge takes priority over the Customization new
+// badge.
+TEST_F(FeatureEngagementTest, TestHomepageNewBadgesGroup_LensTakesPriority) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeaturesWithParameters(
+      /*features=*/{
+          {feature_engagement::kIPHiOSHomepageLensNewBadge,
+           IPHiOSHomepageLensNewBadgeParams()},  // Assumes higher priority.
+          {feature_engagement::kIPHiOSHomepageCustomizationNewBadge,
+           IPHiOSHomepageCustomizationNewBadgeParams()},  // Assumes lower
+          // priority.
+          {feature_engagement::kiOSHomepageNewBadgesGroup,
+           HomepageNewBadgesGroupParams()}});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  // Notify that the holdback period has elapsed.
+  tracker->NotifyEvent(
+      feature_engagement::events::kIOSFREBadgeHoldbackPeriodElapsed);
+
+  // Lens should trigger due to priority/order.
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSHomepageLensNewBadge));
+  tracker->Dismissed(feature_engagement::kIPHiOSHomepageLensNewBadge);
+
+  // Customization should not trigger because Lens triggered first and group
+  // limits apply.
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSHomepageCustomizationNewBadge));
+}
+
+// Verifies that only one badge from the group is shown per session.
+TEST_F(FeatureEngagementTest, TestHomepageNewBadgesGroup_OneBadgePerSession) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeaturesWithParameters(
+      /*features=*/{
+          {feature_engagement::kIPHiOSHomepageLensNewBadge,
+           IPHiOSHomepageLensNewBadgeParams()},
+          {feature_engagement::kIPHiOSHomepageCustomizationNewBadge,
+           IPHiOSHomepageCustomizationNewBadgeParams()},
+          {feature_engagement::kiOSHomepageNewBadgesGroup,
+           HomepageNewBadgesGroupParams()}  // Assumes session limit.
+      });
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  // Make sure tracker is initialized.
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  // Notify that the holdback period has elapsed.
+  tracker->NotifyEvent(
+      feature_engagement::events::kIOSFREBadgeHoldbackPeriodElapsed);
+
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSHomepageLensNewBadge));
+  tracker->Dismissed(feature_engagement::kIPHiOSHomepageLensNewBadge);
+
+  // Mark Lens badge as used so it won't be shown again.
+  tracker->NotifyEvent(feature_engagement::events::kIOSLensButtonUsed);
+
+  // Customization badge should not be shown in the same session due to group
+  // limits.
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSHomepageCustomizationNewBadge));
+}
+
+// Verifies that no badge is shown immediately after the First Run Experience.
+TEST_F(FeatureEngagementTest, TestHomepageNewBadgesGroup_NoBadgeAfterFRE) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeaturesWithParameters(
+      /*features=*/{{feature_engagement::kIPHiOSHomepageLensNewBadge,
+                     IPHiOSHomepageLensNewBadgeParams()},
+                    {feature_engagement::kiOSHomepageNewBadgesGroup,
+                     HomepageNewBadgesGroupParams()}});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  // Assuming FRE completion prevents immediate triggering.
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSHomepageLensNewBadge));
+}
+
+// Verifies that a badge can be shown after the holdback period has elapsed.
+TEST_F(FeatureEngagementTest,
+       TestHomepageNewBadgesGroup_BadgeShownAfterHoldbackElapsed) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeaturesWithParameters(
+      /*features=*/{{feature_engagement::kIPHiOSHomepageLensNewBadge,
+                     IPHiOSHomepageLensNewBadgeParams()},
+                    {feature_engagement::kiOSHomepageNewBadgesGroup,
+                     HomepageNewBadgesGroupParams()}});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  // The badge shouldn't be shown initially.
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSHomepageLensNewBadge));
+
+  // Notify that the holdback period has elapsed.
+  tracker->NotifyEvent(
+      feature_engagement::events::kIOSFREBadgeHoldbackPeriodElapsed);
+
+  // Now the badge should be shown.
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSHomepageLensNewBadge));
+  tracker->Dismissed(feature_engagement::kIPHiOSHomepageLensNewBadge);
+}
+
+// Verifies that the Homepage Lens New Badge IPH does not trigger after the Lens
+// button is used.
+TEST_F(FeatureEngagementTest,
+       TestHomepageLensNewBadge_ShouldNotTriggerAfterLensButtonUsed) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeaturesWithParameters(
+      /*features=*/{{feature_engagement::kIPHiOSHomepageLensNewBadge,
+                     IPHiOSHomepageLensNewBadgeParams()},
+                    {feature_engagement::kiOSHomepageNewBadgesGroup,
+                     HomepageNewBadgesGroupParams()}});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  // Notify that the holdback period has elapsed.
+  tracker->NotifyEvent(
+      feature_engagement::events::kIOSFREBadgeHoldbackPeriodElapsed);
+
+  // The badge should be shown initially.
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSHomepageLensNewBadge));
+  tracker->Dismissed(feature_engagement::kIPHiOSHomepageLensNewBadge);
+
+  // Simulate the user using the Lens button while the badge is displayed.
+  tracker->NotifyEvent(feature_engagement::events::kIOSLensButtonUsed);
+
+  // The badge should no longer trigger.
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSHomepageLensNewBadge));
+}
+
+TEST_F(FeatureEngagementTest, TestReaderModeNewBadge_TriggeredBeforeUseOnly) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeaturesWithParameters(
+      /*features=*/{{feature_engagement::kIPHBadgedReaderModeFeature,
+                     BadgedReaderModeParams()}});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  // The badge should be shown initially.
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHBadgedReaderModeFeature));
+  tracker->Dismissed(feature_engagement::kIPHBadgedReaderModeFeature);
+
+  // Simulate the user using Reading Mode while the badge is displayed.
+  tracker->NotifyEvent(feature_engagement::events::kIOSReaderModeUsed);
+
+  // The badge should no longer trigger.
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHBadgedReaderModeFeature));
 }

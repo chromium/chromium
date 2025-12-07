@@ -23,7 +23,7 @@ suite('cr-card-radio-button', function() {
     assertTrue(radioButton.hasAttribute('checked'));
     assertEquals('true', radioButton.$.button.getAttribute('aria-checked'));
     assertTrue(
-        getComputedStyle(radioButton.shadowRoot!.querySelector('#checkMark')!)
+        getComputedStyle(radioButton.shadowRoot.querySelector('#checkMark')!)
             .display !== 'none');
   }
 
@@ -31,7 +31,7 @@ suite('cr-card-radio-button', function() {
     assertFalse(radioButton.hasAttribute('checked'));
     assertEquals('false', radioButton.$.button.getAttribute('aria-checked'));
     assertTrue(
-        getComputedStyle(radioButton.shadowRoot!.querySelector('#checkMark')!)
+        getComputedStyle(radioButton.shadowRoot.querySelector('#checkMark')!)
             .display === 'none');
   }
 
@@ -73,7 +73,7 @@ suite('cr-card-radio-button', function() {
 
   test('Ripple', function() {
     function getRipple() {
-      return radioButton.shadowRoot!.querySelector('cr-ripple');
+      return radioButton.shadowRoot.querySelector('cr-ripple');
     }
 
     assertFalse(!!getRipple());

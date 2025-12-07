@@ -26,6 +26,20 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="PlaybackLocation">
+  <int value="0" label="Not started"/>
+  <int value="1" label="0s-5s"/>
+  <int value="2" label="5s-10s"/>
+  <int value="3" label="10s-20s"/>
+  <int value="4" label="More than 20s"/>
+</enum>
+
+<enum name="PlaybackMode">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="Standard"/>
+  <int value="2" label="Audio Overview"/>
+</enum>
+
 <enum name="PlaybackStoppedReason">
   <int value="0" label="UNKNOWN_REASON"/>
   <int value="1" label="MANUAL_CLOSE"/>
@@ -39,12 +53,14 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="ACTIVITY_ATTACHEMENT_CHANGED"/>
   <int value="10" label="TAB_CLOSED"/>
   <int value="11" label="EXTERNAL_PLAYBACK_REQUEST"/>
+  <int value="12" label="PLAYBACK_MODE_CHANGE"/>
 </enum>
 
 <enum name="ReadAloudEntrypoint">
   <int value="0" label="OVERFLOW_MENU"/>
   <int value="1" label="MAGIC_TOOLBAR"/>
   <int value="2" label="RESTORED_PLAYBACK"/>
+  <int value="3" label="FEED_PLAYBACK"/>
 </enum>
 
 <enum name="ReadAloudErrorCode">
@@ -109,7 +125,8 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="UNSUPPORTED_TUPLE_DATA_EXTRACTION"/>
   <int value="19" label="UNSUPPORTED_LATTICE_REVIEW_DATA_EXTRACTION"/>
   <int value="20" label="DISALLOWED_FOR_TRANSLATION"/>
-  <int value="21" label="COUNT"/>
+  <int value="21" label="NOT_SUITABLE_FOR_OVERVIEW"/>
+  <int value="22" label="COUNT"/>
 </enum>
 
 </enums>

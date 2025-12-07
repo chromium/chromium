@@ -1,0 +1,48 @@
+<style include="healthd-internals-shared">
+  #chartContainer {
+    --summary-table-height: 200px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height:100%;
+  }
+
+  #summaryTable {
+    display: flex;
+    width: 100%;
+    height: var(--summary-table-height);
+  }
+
+  #chartRoot {
+    background-color: var(--cros-ref-neutral90);
+    display: flex;
+    flex-direction: row;
+    height: calc(90% - var(--summary-table-height));
+    overflow: hidden;
+    width: 90%;
+    margin: 16px auto;
+  }
+
+  #canvasContainer {
+    flex-grow: 1;
+    touch-action: none;
+  }
+
+  #mainCanvas {
+    background-color: var(--cros-ref-neutral90);
+    touch-action: none;
+  }
+</style>
+<div id="chartContainer">
+  <healthd-internals-chart-summary-table id="summaryTable">
+  </healthd-internals-chart-summary-table>
+  <div id="chartRoot">
+    <healthd-internals-line-chart-menu id="chartMenu">
+    </healthd-internals-line-chart-menu>
+    <div id="canvasContainer">
+      <canvas id="mainCanvas"></canvas>
+      <healthd-internals-line-chart-scrollbar id="chartScrollbar">
+      </healthd-internals-line-chart-scrollbar>
+    </div>
+  </div>
+</div>

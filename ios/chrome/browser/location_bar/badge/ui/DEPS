@@ -1,0 +1,12 @@
+include_rules = [
+  "+ios/chrome/browser/badges/ui_bundled",
+  "+ios/chrome/browser/bubble/ui_bundled/bubble_util.h",
+  "+ios/chrome/browser/contextual_panel/entrypoint/ui",
+  "+ios/chrome/browser/contextual_panel/model",
+  "+ios/chrome/browser/fullscreen/ui_bundled",
+  "+ios/chrome/browser/intelligence/features",
+  "+ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h",
+  "+ios/chrome/browser/reader_mode/coordinator",
+  "+ios/chrome/browser/reader_mode/model/features.h",
+  "+ios/chrome/browser/reader_mode/ui",
+]

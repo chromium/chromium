@@ -1,9 +1,10 @@
 Name: Android NDK
 URL: http://developer.android.com/ndk/index.html
-Version: r27
+Version: r28
+Update Mechanism: Manual
 Security Critical: no
 Shipped: yes
-License: Apache Version 2.0
+License: Unicode-DFS-2016, NAIST-2003, IBM-DHCP, BSD-3-Clause, Unicode-DFS-2015, NCSA, Zlib, ISC, Apache-with-LLVM-Exception, BSD-2-Clause, BSD-4-Clause-UC, BSD-4-Clause-Wasabi, Apache-2.0, MIT, MPL-2.0, CERN, SunPro, Caffe, ICU
 License File: NOTICE
 
 Description:

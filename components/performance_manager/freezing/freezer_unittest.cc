@@ -23,59 +23,20 @@ namespace {
 
 static constexpr char kUrl[] = "https://www.foo.com/";
 
-void FlushUIThreadTasks() {
-  // Post a single task and wait for it to finish. This will ensure that any
-  // tasks not yet run but posted prior to this task have been dispatched.
-  base::RunLoop run_loop;
-  content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
-                                               run_loop.QuitClosure());
-  run_loop.Run();
-}
-
 void MaybeFreezePageNode(content::WebContents* content) {
-  base::RunLoop run_loop;
-  auto quit_closure = run_loop.QuitClosure();
-  PerformanceManager::CallOnGraph(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::WeakPtr<PageNode> page_node,
-             base::OnceClosure quit_closure) {
-            EXPECT_TRUE(page_node);
-            Freezer freezer;
-            freezer.MaybeFreezePageNode(page_node.get());
-            std::move(quit_closure).Run();
-          },
-          PerformanceManager::GetPrimaryPageNodeForWebContents(content),
-          std::move(quit_closure)));
-  run_loop.Run();
-
-  // Allow the bounce back to the UI thread to run; it will have been scheduled
-  // but not yet necessarily processed if the PM is also running on the UI
-  // thread.
-  FlushUIThreadTasks();
+  base::WeakPtr<PageNode> page_node =
+      PerformanceManager::GetPrimaryPageNodeForWebContents(content);
+  ASSERT_TRUE(page_node);
+  Freezer freezer;
+  freezer.MaybeFreezePageNode(page_node.get());
 }
 
 void UnfreezePageNode(content::WebContents* content) {
-  base::RunLoop run_loop;
-  auto quit_closure = run_loop.QuitClosure();
-  PerformanceManager::CallOnGraph(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::WeakPtr<PageNode> page_node,
-             base::OnceClosure quit_closure) {
-            EXPECT_TRUE(page_node);
-            Freezer freezer;
-            freezer.UnfreezePageNode(page_node.get());
-            std::move(quit_closure).Run();
-          },
-          PerformanceManager::GetPrimaryPageNodeForWebContents(content),
-          std::move(quit_closure)));
-  run_loop.Run();
-
-  // Allow the bounce back to the UI thread to run; it will have been scheduled
-  // but not yet necessarily processed if the PM is also running on the UI
-  // thread.
-  FlushUIThreadTasks();
+  base::WeakPtr<PageNode> page_node =
+      PerformanceManager::GetPrimaryPageNodeForWebContents(content);
+  ASSERT_TRUE(page_node);
+  Freezer freezer;
+  freezer.UnfreezePageNode(page_node.get());
 }
 
 }  // namespace

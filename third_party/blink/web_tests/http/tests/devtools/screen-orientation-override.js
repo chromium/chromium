@@ -91,7 +91,7 @@ import * as ProtocolClient from 'devtools/core/protocol_client/protocol_client.j
     },
 
     function clearOverride(next) {
-      TestRunner.EmulationAgent.clearDeviceMetricsOverride().then(checkInitial);
+      TestRunner.EmulationAgent.invoke_clearDeviceMetricsOverride().then(checkInitial);
 
       function checkInitial() {
         TestRunner.evaluateInPage('dump()', dumpCallback);

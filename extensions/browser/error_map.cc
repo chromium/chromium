@@ -158,11 +158,13 @@ const ExtensionError* ErrorMap::ExtensionEntry::AddError(
 
   // If there are too many errors for an extension already, limit ourselves to
   // the most recent ones.
-  if (list_.size() >= kMaxErrorsPerExtension)
+  if (list_.size() >= kMaxErrorsPerExtension) {
     list_.pop_front();
+  }
 
-  if (error->id() == 0)
+  if (error->id() == 0) {
     error->set_id(g_next_error_id++);
+  }
 
   list_.push_back(std::move(error));
   return list_.back().get();
@@ -170,8 +172,7 @@ const ExtensionError* ErrorMap::ExtensionEntry::AddError(
 
 ////////////////////////////////////////////////////////////////////////////////
 // ErrorMap
-ErrorMap::ErrorMap() {
-}
+ErrorMap::ErrorMap() = default;
 
 ErrorMap::~ErrorMap() {
   RemoveAllErrors();
@@ -186,8 +187,9 @@ const ErrorList& ErrorMap::GetErrorsForExtension(
 const ExtensionError* ErrorMap::AddError(
     std::unique_ptr<ExtensionError> error) {
   std::unique_ptr<ExtensionEntry>& entry = map_[error->extension_id()];
-  if (!entry)
+  if (!entry) {
     entry = std::make_unique<ExtensionEntry>();
+  }
 
   return entry->AddError(std::move(error));
 }
@@ -197,13 +199,15 @@ void ErrorMap::RemoveErrors(const Filter& filter,
   if (!filter.restrict_to_extension_id.empty()) {
     auto iter = map_.find(filter.restrict_to_extension_id);
     if (iter != map_.end()) {
-      if (iter->second->DeleteErrors(filter) && affected_ids)
+      if (iter->second->DeleteErrors(filter) && affected_ids) {
         affected_ids->insert(filter.restrict_to_extension_id);
+      }
     }
   } else {
     for (auto& key_val : map_) {
-      if (key_val.second->DeleteErrors(filter) && affected_ids)
+      if (key_val.second->DeleteErrors(filter) && affected_ids) {
         affected_ids->insert(key_val.first);
+      }
     }
   }
 }

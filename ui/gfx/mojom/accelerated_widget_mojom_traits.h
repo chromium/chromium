@@ -8,7 +8,7 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "ui/gfx/mojom/accelerated_widget.mojom.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace mojo {
 
@@ -21,8 +21,7 @@ struct StructTraits<gfx::mojom::AcceleratedWidgetDataView,
 #elif BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_MAC)
     return static_cast<uint64_t>(widget);
 #else
-    NOTREACHED_IN_MIGRATION();
-    return 0;
+    NOTREACHED();
 #endif
   }
 
@@ -35,8 +34,7 @@ struct StructTraits<gfx::mojom::AcceleratedWidgetDataView,
     *out = static_cast<gfx::AcceleratedWidget>(data.widget());
     return true;
 #else
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
 #endif
   }
 };

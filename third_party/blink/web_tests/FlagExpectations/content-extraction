@@ -1,0 +1,15 @@
+# tags: [ Android Fuchsia Linux Mac Mac12 Mac13 Mac13-arm64 Mac14 Mac14-arm64 Mac15 Mac15-arm64 Win Win10.20h2 Win11 Win11-arm64 ]
+# tags: [ Release Debug ]
+# results: [ Skip Crash Timeout Pass Failure Slow ]
+
+# Expectations for --enable-blink-features=AIPageContentBuildOnLoadForTesting
+
+# DCHECK failed: visual bounding box does not fit in outer bounding box
+virtual/content-extraction/compositing/overflow/nested-render-surfaces-with-rotation.html [ Crash Failure Pass Timeout ]
+virtual/content-extraction/css3/filters/nested-filter.html [ Crash Timeout ]
+
+# DCHECK failed: object.GetDocument().Lifecycle().GetState() >= DocumentLifecycle::kLayoutClean. ComputeVisibleBoundingBox only works when layout is complete
+compositing/iframes/content-visibility-hidden-frame.html [ Crash Timeout ]
+
+# DCHECK failed: !GetDocument().InvalidationDisallowed().
+fast/dom/HTMLObjectElement/update-data.html [ Crash Timeout ]

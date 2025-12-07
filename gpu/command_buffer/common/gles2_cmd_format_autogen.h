@@ -13202,63 +13202,6 @@ static_assert(offsetof(MemoryBarrierByRegion, header) == 0,
 static_assert(offsetof(MemoryBarrierByRegion, barriers) == 4,
               "offset of MemoryBarrierByRegion barriers should be 4");
 
-struct SwapBuffers {
-  typedef SwapBuffers ValueType;
-  static const CommandId kCmdId = kSwapBuffers;
-  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
-  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(1);
-
-  static uint32_t ComputeSize() {
-    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
-  }
-
-  void SetHeader() { header.SetCmd<ValueType>(); }
-
-  void Init(GLuint64 _swap_id, GLbitfield _flags) {
-    SetHeader();
-    GLES2Util::MapUint64ToTwoUint32(static_cast<uint64_t>(_swap_id), &swap_id_0,
-                                    &swap_id_1);
-    flags = _flags;
-    bool is_tracing = false;
-    TRACE_EVENT_CATEGORY_GROUP_ENABLED(
-        TRACE_DISABLED_BY_DEFAULT("gpu_cmd_queue"), &is_tracing);
-    if (is_tracing) {
-      trace_id = base::RandUint64();
-      TRACE_EVENT_WITH_FLOW1(
-          TRACE_DISABLED_BY_DEFAULT("gpu_cmd_queue"), "CommandBufferQueue",
-          trace_id, TRACE_EVENT_FLAG_FLOW_OUT, "command", "SwapBuffers");
-    } else {
-      trace_id = 0;
-    }
-  }
-
-  void* Set(void* cmd, GLuint64 _swap_id, GLbitfield _flags) {
-    static_cast<ValueType*>(cmd)->Init(_swap_id, _flags);
-    return NextCmdAddress<ValueType>(cmd);
-  }
-
-  GLuint64 swap_id() const volatile {
-    return static_cast<GLuint64>(
-        GLES2Util::MapTwoUint32ToUint64(swap_id_0, swap_id_1));
-  }
-
-  gpu::CommandHeader header;
-  uint32_t swap_id_0;
-  uint32_t swap_id_1;
-  uint32_t flags;
-  uint32_t trace_id;
-};
-
-static_assert(sizeof(SwapBuffers) == 20, "size of SwapBuffers should be 20");
-static_assert(offsetof(SwapBuffers, header) == 0,
-              "offset of SwapBuffers header should be 0");
-static_assert(offsetof(SwapBuffers, swap_id_0) == 4,
-              "offset of SwapBuffers swap_id_0 should be 4");
-static_assert(offsetof(SwapBuffers, swap_id_1) == 8,
-              "offset of SwapBuffers swap_id_1 should be 8");
-static_assert(offsetof(SwapBuffers, flags) == 12,
-              "offset of SwapBuffers flags should be 12");
-
 struct GetMaxValueInBufferCHROMIUM {
   typedef GetMaxValueInBufferCHROMIUM ValueType;
   static const CommandId kCmdId = kGetMaxValueInBufferCHROMIUM;
@@ -13529,77 +13472,6 @@ static_assert(offsetof(FlushMappedBufferRange, offset) == 8,
               "offset of FlushMappedBufferRange offset should be 8");
 static_assert(offsetof(FlushMappedBufferRange, size) == 12,
               "offset of FlushMappedBufferRange size should be 12");
-
-struct ResizeCHROMIUM {
-  typedef ResizeCHROMIUM ValueType;
-  static const CommandId kCmdId = kResizeCHROMIUM;
-  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
-  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(1);
-
-  static uint32_t ComputeSize() {
-    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
-  }
-
-  void SetHeader() { header.SetCmd<ValueType>(); }
-
-  void Init(GLint _width,
-            GLint _height,
-            GLfloat _scale_factor,
-            GLboolean _alpha,
-            GLuint _shm_id,
-            GLuint _shm_offset,
-            GLsizei _color_space_size) {
-    SetHeader();
-    width = _width;
-    height = _height;
-    scale_factor = _scale_factor;
-    alpha = _alpha;
-    shm_id = _shm_id;
-    shm_offset = _shm_offset;
-    color_space_size = _color_space_size;
-  }
-
-  void* Set(void* cmd,
-            GLint _width,
-            GLint _height,
-            GLfloat _scale_factor,
-            GLboolean _alpha,
-            GLuint _shm_id,
-            GLuint _shm_offset,
-            GLsizei _color_space_size) {
-    static_cast<ValueType*>(cmd)->Init(_width, _height, _scale_factor, _alpha,
-                                       _shm_id, _shm_offset, _color_space_size);
-    return NextCmdAddress<ValueType>(cmd);
-  }
-
-  gpu::CommandHeader header;
-  int32_t width;
-  int32_t height;
-  float scale_factor;
-  uint32_t alpha;
-  uint32_t shm_id;
-  uint32_t shm_offset;
-  int32_t color_space_size;
-};
-
-static_assert(sizeof(ResizeCHROMIUM) == 32,
-              "size of ResizeCHROMIUM should be 32");
-static_assert(offsetof(ResizeCHROMIUM, header) == 0,
-              "offset of ResizeCHROMIUM header should be 0");
-static_assert(offsetof(ResizeCHROMIUM, width) == 4,
-              "offset of ResizeCHROMIUM width should be 4");
-static_assert(offsetof(ResizeCHROMIUM, height) == 8,
-              "offset of ResizeCHROMIUM height should be 8");
-static_assert(offsetof(ResizeCHROMIUM, scale_factor) == 12,
-              "offset of ResizeCHROMIUM scale_factor should be 12");
-static_assert(offsetof(ResizeCHROMIUM, alpha) == 16,
-              "offset of ResizeCHROMIUM alpha should be 16");
-static_assert(offsetof(ResizeCHROMIUM, shm_id) == 20,
-              "offset of ResizeCHROMIUM shm_id should be 20");
-static_assert(offsetof(ResizeCHROMIUM, shm_offset) == 24,
-              "offset of ResizeCHROMIUM shm_offset should be 24");
-static_assert(offsetof(ResizeCHROMIUM, color_space_size) == 28,
-              "offset of ResizeCHROMIUM color_space_size should be 28");
 
 struct GetRequestableExtensionsCHROMIUM {
   typedef GetRequestableExtensionsCHROMIUM ValueType;
@@ -14932,122 +14804,6 @@ static_assert(offsetof(GetFragDataIndexEXT, index_shm_id) == 12,
 static_assert(offsetof(GetFragDataIndexEXT, index_shm_offset) == 16,
               "offset of GetFragDataIndexEXT index_shm_offset should be 16");
 
-struct InitializeDiscardableTextureCHROMIUM {
-  typedef InitializeDiscardableTextureCHROMIUM ValueType;
-  static const CommandId kCmdId = kInitializeDiscardableTextureCHROMIUM;
-  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
-  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
-
-  static uint32_t ComputeSize() {
-    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
-  }
-
-  void SetHeader() { header.SetCmd<ValueType>(); }
-
-  void Init(GLuint _texture_id, uint32_t _shm_id, uint32_t _shm_offset) {
-    SetHeader();
-    texture_id = _texture_id;
-    shm_id = _shm_id;
-    shm_offset = _shm_offset;
-  }
-
-  void* Set(void* cmd,
-            GLuint _texture_id,
-            uint32_t _shm_id,
-            uint32_t _shm_offset) {
-    static_cast<ValueType*>(cmd)->Init(_texture_id, _shm_id, _shm_offset);
-    return NextCmdAddress<ValueType>(cmd);
-  }
-
-  gpu::CommandHeader header;
-  uint32_t texture_id;
-  uint32_t shm_id;
-  uint32_t shm_offset;
-};
-
-static_assert(sizeof(InitializeDiscardableTextureCHROMIUM) == 16,
-              "size of InitializeDiscardableTextureCHROMIUM should be 16");
-static_assert(
-    offsetof(InitializeDiscardableTextureCHROMIUM, header) == 0,
-    "offset of InitializeDiscardableTextureCHROMIUM header should be 0");
-static_assert(
-    offsetof(InitializeDiscardableTextureCHROMIUM, texture_id) == 4,
-    "offset of InitializeDiscardableTextureCHROMIUM texture_id should be 4");
-static_assert(
-    offsetof(InitializeDiscardableTextureCHROMIUM, shm_id) == 8,
-    "offset of InitializeDiscardableTextureCHROMIUM shm_id should be 8");
-static_assert(
-    offsetof(InitializeDiscardableTextureCHROMIUM, shm_offset) == 12,
-    "offset of InitializeDiscardableTextureCHROMIUM shm_offset should be 12");
-
-struct UnlockDiscardableTextureCHROMIUM {
-  typedef UnlockDiscardableTextureCHROMIUM ValueType;
-  static const CommandId kCmdId = kUnlockDiscardableTextureCHROMIUM;
-  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
-  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
-
-  static uint32_t ComputeSize() {
-    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
-  }
-
-  void SetHeader() { header.SetCmd<ValueType>(); }
-
-  void Init(GLuint _texture_id) {
-    SetHeader();
-    texture_id = _texture_id;
-  }
-
-  void* Set(void* cmd, GLuint _texture_id) {
-    static_cast<ValueType*>(cmd)->Init(_texture_id);
-    return NextCmdAddress<ValueType>(cmd);
-  }
-
-  gpu::CommandHeader header;
-  uint32_t texture_id;
-};
-
-static_assert(sizeof(UnlockDiscardableTextureCHROMIUM) == 8,
-              "size of UnlockDiscardableTextureCHROMIUM should be 8");
-static_assert(offsetof(UnlockDiscardableTextureCHROMIUM, header) == 0,
-              "offset of UnlockDiscardableTextureCHROMIUM header should be 0");
-static_assert(
-    offsetof(UnlockDiscardableTextureCHROMIUM, texture_id) == 4,
-    "offset of UnlockDiscardableTextureCHROMIUM texture_id should be 4");
-
-struct LockDiscardableTextureCHROMIUM {
-  typedef LockDiscardableTextureCHROMIUM ValueType;
-  static const CommandId kCmdId = kLockDiscardableTextureCHROMIUM;
-  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
-  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
-
-  static uint32_t ComputeSize() {
-    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
-  }
-
-  void SetHeader() { header.SetCmd<ValueType>(); }
-
-  void Init(GLuint _texture_id) {
-    SetHeader();
-    texture_id = _texture_id;
-  }
-
-  void* Set(void* cmd, GLuint _texture_id) {
-    static_cast<ValueType*>(cmd)->Init(_texture_id);
-    return NextCmdAddress<ValueType>(cmd);
-  }
-
-  gpu::CommandHeader header;
-  uint32_t texture_id;
-};
-
-static_assert(sizeof(LockDiscardableTextureCHROMIUM) == 8,
-              "size of LockDiscardableTextureCHROMIUM should be 8");
-static_assert(offsetof(LockDiscardableTextureCHROMIUM, header) == 0,
-              "offset of LockDiscardableTextureCHROMIUM header should be 0");
-static_assert(
-    offsetof(LockDiscardableTextureCHROMIUM, texture_id) == 4,
-    "offset of LockDiscardableTextureCHROMIUM texture_id should be 4");
-
 struct WindowRectanglesEXTImmediate {
   typedef WindowRectanglesEXTImmediate ValueType;
   static const CommandId kCmdId = kWindowRectanglesEXTImmediate;
@@ -15472,300 +15228,6 @@ static_assert(
     offsetof(EndSharedImageAccessDirectCHROMIUM, texture) == 4,
     "offset of EndSharedImageAccessDirectCHROMIUM texture should be 4");
 
-struct ConvertRGBAToYUVAMailboxesINTERNALImmediate {
-  typedef ConvertRGBAToYUVAMailboxesINTERNALImmediate ValueType;
-  static const CommandId kCmdId = kConvertRGBAToYUVAMailboxesINTERNALImmediate;
-  static const cmd::ArgFlags kArgFlags = cmd::kAtLeastN;
-  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(2);
-
-  static uint32_t ComputeDataSize() {
-    return static_cast<uint32_t>(sizeof(GLbyte) * 80);
-  }
-
-  static uint32_t ComputeSize() {
-    return static_cast<uint32_t>(sizeof(ValueType) + ComputeDataSize());
-  }
-
-  void SetHeader() { header.SetCmdByTotalSize<ValueType>(ComputeSize()); }
-
-  void Init(GLenum _planes_yuv_color_space,
-            GLenum _plane_config,
-            GLenum _subsampling,
-            const GLbyte* _mailboxes) {
-    SetHeader();
-    planes_yuv_color_space = _planes_yuv_color_space;
-    plane_config = _plane_config;
-    subsampling = _subsampling;
-    memcpy(ImmediateDataAddress(this), _mailboxes, ComputeDataSize());
-  }
-
-  void* Set(void* cmd,
-            GLenum _planes_yuv_color_space,
-            GLenum _plane_config,
-            GLenum _subsampling,
-            const GLbyte* _mailboxes) {
-    static_cast<ValueType*>(cmd)->Init(_planes_yuv_color_space, _plane_config,
-                                       _subsampling, _mailboxes);
-    const uint32_t size = ComputeSize();
-    return NextImmediateCmdAddressTotalSize<ValueType>(cmd, size);
-  }
-
-  gpu::CommandHeader header;
-  uint32_t planes_yuv_color_space;
-  uint32_t plane_config;
-  uint32_t subsampling;
-};
-
-static_assert(
-    sizeof(ConvertRGBAToYUVAMailboxesINTERNALImmediate) == 16,
-    "size of ConvertRGBAToYUVAMailboxesINTERNALImmediate should be 16");
-static_assert(
-    offsetof(ConvertRGBAToYUVAMailboxesINTERNALImmediate, header) == 0,
-    "offset of ConvertRGBAToYUVAMailboxesINTERNALImmediate header should be 0");
-static_assert(offsetof(ConvertRGBAToYUVAMailboxesINTERNALImmediate,
-                       planes_yuv_color_space) == 4,
-              "offset of ConvertRGBAToYUVAMailboxesINTERNALImmediate "
-              "planes_yuv_color_space should be 4");
-static_assert(offsetof(ConvertRGBAToYUVAMailboxesINTERNALImmediate,
-                       plane_config) == 8,
-              "offset of ConvertRGBAToYUVAMailboxesINTERNALImmediate "
-              "plane_config should be 8");
-static_assert(offsetof(ConvertRGBAToYUVAMailboxesINTERNALImmediate,
-                       subsampling) == 12,
-              "offset of ConvertRGBAToYUVAMailboxesINTERNALImmediate "
-              "subsampling should be 12");
-
-struct ConvertYUVAMailboxesToRGBINTERNALImmediate {
-  typedef ConvertYUVAMailboxesToRGBINTERNALImmediate ValueType;
-  static const CommandId kCmdId = kConvertYUVAMailboxesToRGBINTERNALImmediate;
-  static const cmd::ArgFlags kArgFlags = cmd::kAtLeastN;
-  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(2);
-
-  static uint32_t ComputeDataSize() {
-    return static_cast<uint32_t>(sizeof(GLbyte) * 144);
-  }
-
-  static uint32_t ComputeSize() {
-    return static_cast<uint32_t>(sizeof(ValueType) + ComputeDataSize());
-  }
-
-  void SetHeader() { header.SetCmdByTotalSize<ValueType>(ComputeSize()); }
-
-  void Init(GLint _src_x,
-            GLint _src_y,
-            GLsizei _width,
-            GLsizei _height,
-            GLenum _planes_yuv_color_space,
-            GLenum _plane_config,
-            GLenum _subsampling,
-            const GLbyte* _mailboxes) {
-    SetHeader();
-    src_x = _src_x;
-    src_y = _src_y;
-    width = _width;
-    height = _height;
-    planes_yuv_color_space = _planes_yuv_color_space;
-    plane_config = _plane_config;
-    subsampling = _subsampling;
-    memcpy(ImmediateDataAddress(this), _mailboxes, ComputeDataSize());
-  }
-
-  void* Set(void* cmd,
-            GLint _src_x,
-            GLint _src_y,
-            GLsizei _width,
-            GLsizei _height,
-            GLenum _planes_yuv_color_space,
-            GLenum _plane_config,
-            GLenum _subsampling,
-            const GLbyte* _mailboxes) {
-    static_cast<ValueType*>(cmd)->Init(_src_x, _src_y, _width, _height,
-                                       _planes_yuv_color_space, _plane_config,
-                                       _subsampling, _mailboxes);
-    const uint32_t size = ComputeSize();
-    return NextImmediateCmdAddressTotalSize<ValueType>(cmd, size);
-  }
-
-  gpu::CommandHeader header;
-  int32_t src_x;
-  int32_t src_y;
-  int32_t width;
-  int32_t height;
-  uint32_t planes_yuv_color_space;
-  uint32_t plane_config;
-  uint32_t subsampling;
-};
-
-static_assert(
-    sizeof(ConvertYUVAMailboxesToRGBINTERNALImmediate) == 32,
-    "size of ConvertYUVAMailboxesToRGBINTERNALImmediate should be 32");
-static_assert(
-    offsetof(ConvertYUVAMailboxesToRGBINTERNALImmediate, header) == 0,
-    "offset of ConvertYUVAMailboxesToRGBINTERNALImmediate header should be 0");
-static_assert(
-    offsetof(ConvertYUVAMailboxesToRGBINTERNALImmediate, src_x) == 4,
-    "offset of ConvertYUVAMailboxesToRGBINTERNALImmediate src_x should be 4");
-static_assert(
-    offsetof(ConvertYUVAMailboxesToRGBINTERNALImmediate, src_y) == 8,
-    "offset of ConvertYUVAMailboxesToRGBINTERNALImmediate src_y should be 8");
-static_assert(
-    offsetof(ConvertYUVAMailboxesToRGBINTERNALImmediate, width) == 12,
-    "offset of ConvertYUVAMailboxesToRGBINTERNALImmediate width should be 12");
-static_assert(
-    offsetof(ConvertYUVAMailboxesToRGBINTERNALImmediate, height) == 16,
-    "offset of ConvertYUVAMailboxesToRGBINTERNALImmediate height should be 16");
-static_assert(offsetof(ConvertYUVAMailboxesToRGBINTERNALImmediate,
-                       planes_yuv_color_space) == 20,
-              "offset of ConvertYUVAMailboxesToRGBINTERNALImmediate "
-              "planes_yuv_color_space should be 20");
-static_assert(offsetof(ConvertYUVAMailboxesToRGBINTERNALImmediate,
-                       plane_config) == 24,
-              "offset of ConvertYUVAMailboxesToRGBINTERNALImmediate "
-              "plane_config should be 24");
-static_assert(offsetof(ConvertYUVAMailboxesToRGBINTERNALImmediate,
-                       subsampling) == 28,
-              "offset of ConvertYUVAMailboxesToRGBINTERNALImmediate "
-              "subsampling should be 28");
-
-struct ConvertYUVAMailboxesToTextureINTERNALImmediate {
-  typedef ConvertYUVAMailboxesToTextureINTERNALImmediate ValueType;
-  static const CommandId kCmdId =
-      kConvertYUVAMailboxesToTextureINTERNALImmediate;
-  static const cmd::ArgFlags kArgFlags = cmd::kAtLeastN;
-  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(2);
-
-  static uint32_t ComputeDataSize() {
-    return static_cast<uint32_t>(sizeof(GLbyte) * 64);
-  }
-
-  static uint32_t ComputeSize() {
-    return static_cast<uint32_t>(sizeof(ValueType) + ComputeDataSize());
-  }
-
-  void SetHeader() { header.SetCmdByTotalSize<ValueType>(ComputeSize()); }
-
-  void Init(GLuint _texture,
-            GLenum _target,
-            GLuint _internal_format,
-            GLenum _type,
-            GLint _src_x,
-            GLint _src_y,
-            GLsizei _width,
-            GLsizei _height,
-            GLboolean _flip_y,
-            GLenum _planes_yuv_color_space,
-            GLenum _plane_config,
-            GLenum _subsampling,
-            const GLbyte* _mailboxes) {
-    SetHeader();
-    texture = _texture;
-    target = _target;
-    internal_format = _internal_format;
-    type = _type;
-    src_x = _src_x;
-    src_y = _src_y;
-    width = _width;
-    height = _height;
-    flip_y = _flip_y;
-    planes_yuv_color_space = _planes_yuv_color_space;
-    plane_config = _plane_config;
-    subsampling = _subsampling;
-    memcpy(ImmediateDataAddress(this), _mailboxes, ComputeDataSize());
-  }
-
-  void* Set(void* cmd,
-            GLuint _texture,
-            GLenum _target,
-            GLuint _internal_format,
-            GLenum _type,
-            GLint _src_x,
-            GLint _src_y,
-            GLsizei _width,
-            GLsizei _height,
-            GLboolean _flip_y,
-            GLenum _planes_yuv_color_space,
-            GLenum _plane_config,
-            GLenum _subsampling,
-            const GLbyte* _mailboxes) {
-    static_cast<ValueType*>(cmd)->Init(_texture, _target, _internal_format,
-                                       _type, _src_x, _src_y, _width, _height,
-                                       _flip_y, _planes_yuv_color_space,
-                                       _plane_config, _subsampling, _mailboxes);
-    const uint32_t size = ComputeSize();
-    return NextImmediateCmdAddressTotalSize<ValueType>(cmd, size);
-  }
-
-  gpu::CommandHeader header;
-  uint32_t texture;
-  uint32_t target;
-  uint32_t internal_format;
-  uint32_t type;
-  int32_t src_x;
-  int32_t src_y;
-  int32_t width;
-  int32_t height;
-  uint32_t flip_y;
-  uint32_t planes_yuv_color_space;
-  uint32_t plane_config;
-  uint32_t subsampling;
-};
-
-static_assert(
-    sizeof(ConvertYUVAMailboxesToTextureINTERNALImmediate) == 52,
-    "size of ConvertYUVAMailboxesToTextureINTERNALImmediate should be 52");
-static_assert(offsetof(ConvertYUVAMailboxesToTextureINTERNALImmediate,
-                       header) == 0,
-              "offset of ConvertYUVAMailboxesToTextureINTERNALImmediate header "
-              "should be 0");
-static_assert(offsetof(ConvertYUVAMailboxesToTextureINTERNALImmediate,
-                       texture) == 4,
-              "offset of ConvertYUVAMailboxesToTextureINTERNALImmediate "
-              "texture should be 4");
-static_assert(offsetof(ConvertYUVAMailboxesToTextureINTERNALImmediate,
-                       target) == 8,
-              "offset of ConvertYUVAMailboxesToTextureINTERNALImmediate target "
-              "should be 8");
-static_assert(offsetof(ConvertYUVAMailboxesToTextureINTERNALImmediate,
-                       internal_format) == 12,
-              "offset of ConvertYUVAMailboxesToTextureINTERNALImmediate "
-              "internal_format should be 12");
-static_assert(offsetof(ConvertYUVAMailboxesToTextureINTERNALImmediate, type) ==
-                  16,
-              "offset of ConvertYUVAMailboxesToTextureINTERNALImmediate type "
-              "should be 16");
-static_assert(offsetof(ConvertYUVAMailboxesToTextureINTERNALImmediate, src_x) ==
-                  20,
-              "offset of ConvertYUVAMailboxesToTextureINTERNALImmediate src_x "
-              "should be 20");
-static_assert(offsetof(ConvertYUVAMailboxesToTextureINTERNALImmediate, src_y) ==
-                  24,
-              "offset of ConvertYUVAMailboxesToTextureINTERNALImmediate src_y "
-              "should be 24");
-static_assert(offsetof(ConvertYUVAMailboxesToTextureINTERNALImmediate, width) ==
-                  28,
-              "offset of ConvertYUVAMailboxesToTextureINTERNALImmediate width "
-              "should be 28");
-static_assert(offsetof(ConvertYUVAMailboxesToTextureINTERNALImmediate,
-                       height) == 32,
-              "offset of ConvertYUVAMailboxesToTextureINTERNALImmediate height "
-              "should be 32");
-static_assert(offsetof(ConvertYUVAMailboxesToTextureINTERNALImmediate,
-                       flip_y) == 36,
-              "offset of ConvertYUVAMailboxesToTextureINTERNALImmediate flip_y "
-              "should be 36");
-static_assert(offsetof(ConvertYUVAMailboxesToTextureINTERNALImmediate,
-                       planes_yuv_color_space) == 40,
-              "offset of ConvertYUVAMailboxesToTextureINTERNALImmediate "
-              "planes_yuv_color_space should be 40");
-static_assert(offsetof(ConvertYUVAMailboxesToTextureINTERNALImmediate,
-                       plane_config) == 44,
-              "offset of ConvertYUVAMailboxesToTextureINTERNALImmediate "
-              "plane_config should be 44");
-static_assert(offsetof(ConvertYUVAMailboxesToTextureINTERNALImmediate,
-                       subsampling) == 48,
-              "offset of ConvertYUVAMailboxesToTextureINTERNALImmediate "
-              "subsampling should be 48");
-
 struct CopySharedImageINTERNALImmediate {
   typedef CopySharedImageINTERNALImmediate ValueType;
   static const CommandId kCmdId = kCopySharedImageINTERNALImmediate;
@@ -15788,7 +15250,6 @@ struct CopySharedImageINTERNALImmediate {
             GLint _y,
             GLsizei _width,
             GLsizei _height,
-            GLboolean _unpack_flip_y,
             const GLbyte* _mailboxes) {
     SetHeader();
     xoffset = _xoffset;
@@ -15797,7 +15258,6 @@ struct CopySharedImageINTERNALImmediate {
     y = _y;
     width = _width;
     height = _height;
-    unpack_flip_y = _unpack_flip_y;
     memcpy(ImmediateDataAddress(this), _mailboxes, ComputeDataSize());
   }
 
@@ -15808,10 +15268,9 @@ struct CopySharedImageINTERNALImmediate {
             GLint _y,
             GLsizei _width,
             GLsizei _height,
-            GLboolean _unpack_flip_y,
             const GLbyte* _mailboxes) {
     static_cast<ValueType*>(cmd)->Init(_xoffset, _yoffset, _x, _y, _width,
-                                       _height, _unpack_flip_y, _mailboxes);
+                                       _height, _mailboxes);
     const uint32_t size = ComputeSize();
     return NextImmediateCmdAddressTotalSize<ValueType>(cmd, size);
   }
@@ -15823,11 +15282,10 @@ struct CopySharedImageINTERNALImmediate {
   int32_t y;
   int32_t width;
   int32_t height;
-  uint32_t unpack_flip_y;
 };
 
-static_assert(sizeof(CopySharedImageINTERNALImmediate) == 32,
-              "size of CopySharedImageINTERNALImmediate should be 32");
+static_assert(sizeof(CopySharedImageINTERNALImmediate) == 28,
+              "size of CopySharedImageINTERNALImmediate should be 28");
 static_assert(offsetof(CopySharedImageINTERNALImmediate, header) == 0,
               "offset of CopySharedImageINTERNALImmediate header should be 0");
 static_assert(offsetof(CopySharedImageINTERNALImmediate, xoffset) == 4,
@@ -15842,9 +15300,6 @@ static_assert(offsetof(CopySharedImageINTERNALImmediate, width) == 20,
               "offset of CopySharedImageINTERNALImmediate width should be 20");
 static_assert(offsetof(CopySharedImageINTERNALImmediate, height) == 24,
               "offset of CopySharedImageINTERNALImmediate height should be 24");
-static_assert(
-    offsetof(CopySharedImageINTERNALImmediate, unpack_flip_y) == 28,
-    "offset of CopySharedImageINTERNALImmediate unpack_flip_y should be 28");
 
 struct CopySharedImageToTextureINTERNALImmediate {
   typedef CopySharedImageToTextureINTERNALImmediate ValueType;
@@ -15870,7 +15325,7 @@ struct CopySharedImageToTextureINTERNALImmediate {
             GLint _src_y,
             GLsizei _width,
             GLsizei _height,
-            GLboolean _flip_y,
+            GLboolean _is_dst_origin_top_left,
             const GLbyte* _src_mailbox) {
     SetHeader();
     texture = _texture;
@@ -15881,7 +15336,7 @@ struct CopySharedImageToTextureINTERNALImmediate {
     src_y = _src_y;
     width = _width;
     height = _height;
-    flip_y = _flip_y;
+    is_dst_origin_top_left = _is_dst_origin_top_left;
     memcpy(ImmediateDataAddress(this), _src_mailbox, ComputeDataSize());
   }
 
@@ -15894,11 +15349,11 @@ struct CopySharedImageToTextureINTERNALImmediate {
             GLint _src_y,
             GLsizei _width,
             GLsizei _height,
-            GLboolean _flip_y,
+            GLboolean _is_dst_origin_top_left,
             const GLbyte* _src_mailbox) {
     static_cast<ValueType*>(cmd)->Init(_texture, _target, _internal_format,
                                        _type, _src_x, _src_y, _width, _height,
-                                       _flip_y, _src_mailbox);
+                                       _is_dst_origin_top_left, _src_mailbox);
     const uint32_t size = ComputeSize();
     return NextImmediateCmdAddressTotalSize<ValueType>(cmd, size);
   }
@@ -15912,7 +15367,7 @@ struct CopySharedImageToTextureINTERNALImmediate {
   int32_t src_y;
   int32_t width;
   int32_t height;
-  uint32_t flip_y;
+  uint32_t is_dst_origin_top_left;
 };
 
 static_assert(sizeof(CopySharedImageToTextureINTERNALImmediate) == 40,
@@ -15945,9 +15400,10 @@ static_assert(
 static_assert(
     offsetof(CopySharedImageToTextureINTERNALImmediate, height) == 32,
     "offset of CopySharedImageToTextureINTERNALImmediate height should be 32");
-static_assert(
-    offsetof(CopySharedImageToTextureINTERNALImmediate, flip_y) == 36,
-    "offset of CopySharedImageToTextureINTERNALImmediate flip_y should be 36");
+static_assert(offsetof(CopySharedImageToTextureINTERNALImmediate,
+                       is_dst_origin_top_left) == 36,
+              "offset of CopySharedImageToTextureINTERNALImmediate "
+              "is_dst_origin_top_left should be 36");
 
 struct ReadbackARGBImagePixelsINTERNAL {
   typedef ReadbackARGBImagePixelsINTERNAL ValueType;

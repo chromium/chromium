@@ -1,0 +1,23 @@
+<!doctype html>
+<title>Import same wasm resource twice</title>
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script type=module>
+setup({ single_test: true });
+
+import source exportedNamesSource from "./resources/exported-names.wasm";
+import source exportedNamesFoo from "./resources/exported-names.wasm#foo";
+
+let numDownloads = 0;
+const absoluteURL = new URL('resources/exported-names.wasm', location.href).href;
+performance.getEntriesByName(absoluteURL).forEach(entry => {
+    if (entry.transferSize > 0) {
+        numDownloads++;
+    }
+});
+assert_equals(numDownloads, 1);
+
+done();
+</script>

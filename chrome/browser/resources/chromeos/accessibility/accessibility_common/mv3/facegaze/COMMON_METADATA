@@ -1,0 +1,4 @@
+team_email: "chromium-accessibility@chromium.org"
+buganizer {
+  component_id: 1546021
+}

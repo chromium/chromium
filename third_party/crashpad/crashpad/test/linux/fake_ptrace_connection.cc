@@ -90,15 +90,13 @@ ProcessMemoryLinux* FakePtraceConnection::Memory() {
 
 bool FakePtraceConnection::Threads(std::vector<pid_t>* threads) {
   // TODO(jperaza): Implement this if/when it's needed.
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 ssize_t FakePtraceConnection::ReadUpTo(VMAddress address,
                                        size_t size,
                                        void* buffer) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace test

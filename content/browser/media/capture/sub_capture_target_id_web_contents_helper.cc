@@ -10,6 +10,8 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/token.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
@@ -17,10 +19,6 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#error Region Capture not supported on Android.
-#endif
 
 namespace content {
 

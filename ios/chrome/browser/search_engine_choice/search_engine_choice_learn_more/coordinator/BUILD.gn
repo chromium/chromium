@@ -1,0 +1,19 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "search_engine_choice_learn_more_coordinator.h",
+    "search_engine_choice_learn_more_coordinator.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/search_engine_choice/search_engine_choice_learn_more/ui",
+    "//ios/chrome/browser/search_engine_choice/ui:constants",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/commands",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

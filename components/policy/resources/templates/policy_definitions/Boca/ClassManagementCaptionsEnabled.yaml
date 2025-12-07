@@ -1,0 +1,26 @@
+caption: Configure <ph name="CLASS_TOOLS_NAME">Class Tools</ph> caption feature
+default: true
+desc: |-
+  Setting the policy specifies if teachers can use caption feature.
+
+  If value is set to true or unset, selected teachers can caption their voice and send the transcription to students.
+
+  If set to false they cannot access the feature.
+example_value: true
+features:
+  dynamic_refresh: false
+  per_profile: true
+items:
+- caption: Allow teachers to send transcription to students.
+  value: true
+- caption: Prevent teachers from sending transcription to students.
+  value: false
+owners:
+- cros-edu-eng@google.com
+- aprilzhou@google.com
+schema:
+  type: boolean
+supported_on:
+- chrome_os:137-
+tags: []
+type: main

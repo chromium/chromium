@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link href="./resources/consistent-rendering.css" rel="stylesheet" />
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="./resources/content-extraction-test-helpers.js"></script>
+<script src="../resources/ahem.js"></script>
+
+<script>
+function runTest() {
+  finishTest(dumpContentNodeTree(document));
+}
+</script>
+</head>
+<body onload="runTest()">
+  <details>
+    <summary>Expandable</summary>
+    Contents.
+  </details>
+</body>
+</html>

@@ -10,7 +10,6 @@
 
 #include "base/component_export.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -59,7 +58,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkChangeManager
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
   void OnNetworkChanged(
       bool dns_changed,
-      bool ip_address_changed,
+      mojom::IPAddressChangeType ip_address_change_type,
       bool connection_type_changed,
       mojom::ConnectionType new_connection_type,
       bool connection_subtype_changed,

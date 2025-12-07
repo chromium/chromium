@@ -1,0 +1,72 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("feature_list") {
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("public") {
+  sources = [
+    "context_decoration_params.cc",
+    "context_decoration_params.h",
+    "context_decorator.cc",
+    "context_decorator.h",
+    "contextual_task.cc",
+    "contextual_task.h",
+    "contextual_task_context.cc",
+    "contextual_task_context.h",
+    "contextual_tasks_service.cc",
+    "contextual_tasks_service.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/sessions:session_id",
+    "//ui/gfx",
+    "//url",
+  ]
+
+  public_deps = [ ":feature_list" ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_contextual_tasks_service.cc",
+    "mock_contextual_tasks_service.h",
+  ]
+
+  deps = [
+    ":public",
+    "//base",
+    "//components/sessions:session_id",
+    "//testing/gmock",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "contextual_task_context_unittest.cc",
+    "contextual_task_unittest.cc",
+  ]
+
+  deps = [
+    ":public",
+    "//base/test:test_support",
+    "//components/sessions:session_id",
+    "//testing/gtest",
+    "//url",
+  ]
+
+  visibility = [ "//components/contextual_tasks:unit_tests" ]
+}

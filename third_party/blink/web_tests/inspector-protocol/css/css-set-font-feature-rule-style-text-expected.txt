@@ -1,0 +1,22 @@
+Test that @font-feature-values sub-rules can be edited
+==== Style sheet text ====
+
+  div {
+    font-family: Bixa;
+    font-variant-alternates: swash(fancy);
+  }
+
+  @font-feature-values Bixa {
+    @stylistic {
+      donttouch: 8;
+    }
+    @swash {
+      fancy: 2;
+      boring: 1;
+    }
+    @styleset {
+      preserve: 9;
+    }
+  }
+  
+

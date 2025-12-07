@@ -1,0 +1,22 @@
+[
+  {
+    "os": [
+      "linux",
+      "mac",
+      "win",
+      "chromeos"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "GeminiActOnWebSettings": 1
+        },
+        "prefs": {
+          "glic.actuation_on_web": {
+            "value": 1
+          }
+        }
+      }
+    ]
+  }
+]

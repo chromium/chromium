@@ -6,12 +6,12 @@
 
 #include "base/containers/contains.h"
 #include "base/debug/alias.h"
-#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/services/storage/service_worker/service_worker_resource_ops.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom-forward.h"
 
 namespace storage {
 
@@ -87,33 +87,36 @@ mojo::SelfOwnedReceiverRef<mojom::ServiceWorkerStorageControl>
 ServiceWorkerStorageControlImpl::Create(
     mojo::PendingReceiver<mojom::ServiceWorkerStorageControl> receiver,
     const base::FilePath& user_data_directory,
-    scoped_refptr<base::SequencedTaskRunner> database_task_runner) {
+    scoped_refptr<storage::ServiceWorkerStorage::StorageSharedBuffer>
+        storage_shared_buffer) {
   return mojo::MakeSelfOwnedReceiver(
       base::WrapUnique(new ServiceWorkerStorageControlImpl(
-          user_data_directory, std::move(database_task_runner))),
+          user_data_directory, std::move(storage_shared_buffer))),
       std::move(receiver));
 }
 
 ServiceWorkerStorageControlImpl::ServiceWorkerStorageControlImpl(
     const base::FilePath& user_data_directory,
-    scoped_refptr<base::SequencedTaskRunner> database_task_runner)
+    scoped_refptr<storage::ServiceWorkerStorage::StorageSharedBuffer>
+        storage_shared_buffer)
     : storage_(ServiceWorkerStorage::Create(user_data_directory,
-                                            std::move(database_task_runner))),
+                                            std::move(storage_shared_buffer))),
       receiver_(this) {}
 
-ServiceWorkerStorageControlImpl::ServiceWorkerStorageControlImpl(
+ServiceWorkerStorageControlImpl::ServiceWorkerStorageControlImpl(  // IN-TEST
     const base::FilePath& user_data_directory,
-    scoped_refptr<base::SequencedTaskRunner> database_task_runner,
+    scoped_refptr<storage::ServiceWorkerStorage::StorageSharedBuffer>
+        storage_shared_buffer,
     mojo::PendingReceiver<mojom::ServiceWorkerStorageControl> receiver)
     : storage_(ServiceWorkerStorage::Create(user_data_directory,
-                                            std::move(database_task_runner))),
+                                            std::move(storage_shared_buffer))),
       receiver_(this, std::move(receiver)) {}
 
 ServiceWorkerStorageControlImpl::~ServiceWorkerStorageControlImpl() = default;
 
 void ServiceWorkerStorageControlImpl::OnNoLiveVersion(int64_t version_id) {
   auto it = live_versions_.find(version_id);
-  CHECK(it != live_versions_.end(), base::NotFatalUntil::M130);
+  CHECK(it != live_versions_.end());
   if (it->second->purgeable_resources().size() > 0) {
     storage_->PurgeResources(it->second->purgeable_resources());
   }
@@ -161,7 +164,8 @@ void ServiceWorkerStorageControlImpl::FindRegistrationForClientUrl(
       client_url, key,
       base::BindOnce(
           &ServiceWorkerStorageControlImpl::DidFindRegistrationForClientUrl,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+          weak_ptr_factory_.GetWeakPtr(), client_url, key,
+          std::move(callback)));
 }
 
 void ServiceWorkerStorageControlImpl::FindRegistrationForScope(
@@ -449,6 +453,8 @@ void ServiceWorkerStorageControlImpl::SetPurgingCompleteCallbackForTest(
 }
 
 void ServiceWorkerStorageControlImpl::DidFindRegistrationForClientUrl(
+    GURL client_url,
+    blink::StorageKey key,
     FindRegistrationForClientUrlCallback callback,
     mojom::ServiceWorkerRegistrationDataPtr data,
     std::unique_ptr<ResourceList> resources,
@@ -461,6 +467,19 @@ void ServiceWorkerStorageControlImpl::DidFindRegistrationForClientUrl(
 
   DCHECK(resources);
   DCHECK(data);
+
+  if (storage_->storage_shared_buffer().enable_find_registration_result()) {
+    ResourceList copy_of_resources;
+    copy_of_resources.reserve(resources->size());
+    for (const mojom::ServiceWorkerResourceRecordPtr& res : *resources) {
+      copy_of_resources.push_back(res.Clone());
+    }
+    storage_->storage_shared_buffer().PutFindRegistrationResult(
+        client_url, key,
+        mojom::ServiceWorkerFindRegistrationResult::New(
+            CreateLiveVersionReferenceRemote(data->version_id), data.Clone(),
+            std::move(copy_of_resources)));
+  }
 
   mojo::PendingRemote<mojom::ServiceWorkerLiveVersionRef> remote_reference =
       CreateLiveVersionReferenceRemote(data->version_id);
@@ -520,6 +539,103 @@ void ServiceWorkerStorageControlImpl::DidGetRegistrationsForStorageKey(
   }
 
   std::move(callback).Run(status, std::move(registrations));
+}
+
+void ServiceWorkerStorageControlImpl::GetFakeRegistrationForClientUrl(
+    const GURL& client_url,
+    const blink::StorageKey& key,
+    FindRegistrationForClientUrlCallback callback) {
+  GURL::Replacements replacements_for_script;
+  replacements_for_script.ClearQuery();
+  replacements_for_script.SetPathStr("/fake-sw-for-synthetic-response.js");
+  const auto kScript = client_url.ReplaceComponents(replacements_for_script);
+
+  GURL::Replacements replacements_for_scope;
+  replacements_for_scope.ClearQuery();
+  const auto kScope = client_url.ReplaceComponents(replacements_for_scope);
+
+  auto resources = std::make_unique<
+      std::vector<storage::mojom::ServiceWorkerResourceRecordPtr>>();
+  {
+    auto resource = storage::mojom::ServiceWorkerResourceRecord::New(
+        blink::mojom::kSyntheticResponseServiceWorkerResourceId, kScript, 0,
+        /*sha256_checksum=*/"");
+    resources->push_back(std::move(resource));
+  }
+
+  auto data = storage::mojom::ServiceWorkerRegistrationData::New();
+  data->registration_id =
+      blink::mojom::kSyntheticResponseServiceWorkerRegistrationId;
+  data->scope = kScope;
+  data->key = key;
+  data->script = kScript;
+  data->script_type = blink::mojom::ScriptType::kModule;
+  data->update_via_cache = blink::mojom::ServiceWorkerUpdateViaCache::kNone;
+  data->version_id = blink::mojom::kSyntheticResponseServiceWorkerVersionId;
+  data->is_active = true;
+  data->fetch_handler_type =
+      blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler;
+  data->last_update_check = base::Time::Now();
+  data->navigation_preload_state = blink::mojom::NavigationPreloadState::New();
+
+  {
+    int64_t resources_total_size_bytes = 0;
+    for (auto& resource : *resources) {
+      resources_total_size_bytes += resource->size_bytes;
+    }
+    data->resources_total_size_bytes = resources_total_size_bytes;
+  }
+
+  data->script_response_time = base::Time::Now();
+  data->ancestor_frame_type = blink::mojom::AncestorFrameType::kNormalFrame;
+  data->policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
+
+  // Add the router rules to let all requests go to network source.
+  {
+    blink::ServiceWorkerRouterRules router_rules;
+    {
+      blink::ServiceWorkerRouterRule rule;
+      {
+        blink::ServiceWorkerRouterOrCondition or_condition;
+        {
+          blink::ServiceWorkerRouterRequestCondition request;
+          request.mode = network::mojom::RequestMode::kNavigate;
+          or_condition.conditions.push_back(
+              blink::ServiceWorkerRouterCondition::WithRequest(request));
+        }
+        {
+          blink::ServiceWorkerRouterNotCondition not_condition;
+          {
+            blink::ServiceWorkerRouterRequestCondition request;
+            request.mode = network::mojom::RequestMode::kNavigate;
+            not_condition.condition =
+                std::make_unique<blink::ServiceWorkerRouterCondition>(
+                    blink::ServiceWorkerRouterCondition::WithRequest(request));
+          }
+          or_condition.conditions.push_back(
+              blink::ServiceWorkerRouterCondition::WithNotCondition(
+                  not_condition));
+        }
+        rule.condition =
+            blink::ServiceWorkerRouterCondition::WithOrCondition(or_condition);
+      }
+      {
+        blink::ServiceWorkerRouterSource source;
+        source.type = network::mojom::ServiceWorkerRouterSourceType::kNetwork;
+        source.network_source = blink::ServiceWorkerRouterNetworkSource{};
+        rule.sources.emplace_back(source);
+      }
+      router_rules.rules.emplace_back(rule);
+    }
+    data->router_rules = router_rules;
+  }
+  std::vector<GURL> scopes({kScope});
+
+  DidFindRegistrationForClientUrl(
+      client_url, key, std::move(callback), std::move(data),
+      std::move(resources), scopes,
+      storage::mojom::ServiceWorkerDatabaseStatus::kOk);
 }
 
 void ServiceWorkerStorageControlImpl::DidStoreRegistration(

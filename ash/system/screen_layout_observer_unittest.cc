@@ -20,6 +20,7 @@
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/display/display_layout_builder.h"
 #include "ui/display/display_switches.h"
+#include "ui/display/manager/display_layout_store.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/util/display_manager_test_util.h"
 #include "ui/display/manager/util/display_manager_util.h"
@@ -156,121 +157,6 @@ ScreenLayoutObserverTest::GetDisplayNotification() const {
   return nullptr;
 }
 
-// This test is flaky. crbug.com/1222612
-TEST_F(ScreenLayoutObserverTest, DISABLED_DisplayNotifications) {
-  UpdateDisplay("500x400");
-  display::SetInternalDisplayIds({display_manager()->first_display_id()});
-  EXPECT_TRUE(GetDisplayNotificationText().empty());
-
-  // No-update
-  CloseNotification();
-  UpdateDisplay("500x400");
-  EXPECT_FALSE(IsNotificationShown());
-
-  // Extended.
-  CloseNotification();
-  UpdateDisplay("500x400,300x200");
-  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_EXTENDED,
-                                       GetSecondDisplayName()),
-            GetDisplayNotificationText());
-  EXPECT_TRUE(GetDisplayNotificationAdditionalText().empty());
-
-  const int64_t first_display_id =
-      display::Screen::GetScreen()->GetPrimaryDisplay().id();
-  const int64_t second_display_id =
-      display::SynthesizeDisplayIdFromSeed(first_display_id);
-  display::ManagedDisplayInfo first_display_info =
-      CreateDisplayInfo(first_display_id, gfx::Rect(1, 1, 500, 500));
-  display::ManagedDisplayInfo second_display_info =
-      CreateDisplayInfo(second_display_id, gfx::Rect(2, 2, 500, 500));
-  std::vector<display::ManagedDisplayInfo> display_info_list;
-  display_info_list.push_back(first_display_info);
-  display_info_list.push_back(second_display_info);
-  display_manager()->OnNativeDisplaysChanged(display_info_list);
-
-  display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
-      .set_maximum_display(2u);
-  UpdateDisplay("500x400,300x200,200x100");
-  EXPECT_TRUE(GetDisplayNotificationText().empty());
-  EXPECT_EQ(l10n_util::GetStringUTF16(
-                IDS_ASH_STATUS_TRAY_DISPLAY_REMOVED_EXCEEDED_MAXIMUM),
-            GetDisplayNotificationAdditionalText());
-  EXPECT_TRUE(GetDisplayNotificationText().empty());
-  UpdateDisplay("500x400,300x200");
-  CloseNotification();
-
-  // Start tablet mode and wait until display mode is updated.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  base::RunLoop().RunUntilIdle();
-
-  // Exit mirror mode manually. Now display mode should be extending mode.
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_MIRROR_EXIT),
-            GetDisplayNotificationText());
-  CloseNotification();
-
-  // Simulate that device can support at most two displays and user connects
-  // it with three displays. Because device is in tablet mode, display mode
-  // becomes mirror mode from extending mode. Under this circumstance, user is
-  // still notified of connecting more displays than maximum. See issue 827406
-  // (https://crbug.com/827406).
-  UpdateDisplay("500x400,300x200,200x100");
-  EXPECT_EQ(l10n_util::GetStringUTF16(
-                IDS_ASH_STATUS_TRAY_DISPLAY_REMOVED_EXCEEDED_MAXIMUM),
-            GetDisplayNotificationAdditionalText());
-  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_MIRRORING,
-                                       GetMirroringDisplayNames()),
-            GetDisplayNotificationText());
-
-  // Reset the parameter. Close tablet mode and wait until display mode is
-  // updated.
-  display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
-      .ResetMaximumDisplay();
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
-  base::RunLoop().RunUntilIdle();
-
-  // Turn on mirror mode.
-  CloseNotification();
-  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, std::nullopt);
-  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_MIRRORING,
-                                       GetMirroringDisplayNames()),
-            GetDisplayNotificationText());
-  EXPECT_TRUE(GetDisplayNotificationAdditionalText().empty());
-
-  // Disconnect a display to end mirror mode.
-  CloseNotification();
-  display_info_list.erase(display_info_list.end() - 1);
-  display_manager()->OnNativeDisplaysChanged(display_info_list);
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_MIRROR_EXIT),
-            GetDisplayNotificationText());
-  EXPECT_TRUE(GetDisplayNotificationAdditionalText().empty());
-
-  // Restore mirror mode.
-  CloseNotification();
-  display_info_list.push_back(second_display_info);
-  display_manager()->OnNativeDisplaysChanged(display_info_list);
-  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_MIRRORING,
-                                       GetMirroringDisplayNames()),
-            GetDisplayNotificationText());
-  EXPECT_TRUE(GetDisplayNotificationAdditionalText().empty());
-
-  // Turn off mirror mode.
-  CloseNotification();
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_MIRROR_EXIT),
-            GetDisplayNotificationText());
-  EXPECT_TRUE(GetDisplayNotificationAdditionalText().empty());
-
-  // Enters closed lid mode.
-  UpdateDisplay("500x400@1.5,300x200");
-  display::SetInternalDisplayIds(
-      {display::test::DisplayManagerTestApi(display_manager())
-           .GetSecondaryDisplay()
-           .id()});
-  UpdateDisplay("500x400@1.5");
-  EXPECT_TRUE(GetDisplayNotificationText().empty());
-}
-
 TEST_F(ScreenLayoutObserverTest, DisplayNotificationsDisabled) {
   UpdateDisplay("500x400");
   display::SetInternalDisplayIds({display_manager()->first_display_id()});
@@ -281,7 +167,7 @@ TEST_F(ScreenLayoutObserverTest, DisplayNotificationsDisabled) {
   EXPECT_FALSE(IsNotificationShown());
 
   const int64_t first_display_id =
-      display::Screen::GetScreen()->GetPrimaryDisplay().id();
+      display::Screen::Get()->GetPrimaryDisplay().id();
   const int64_t second_display_id =
       display::SynthesizeDisplayIdFromSeed(first_display_id);
   display::ManagedDisplayInfo first_display_info =
@@ -328,6 +214,63 @@ TEST_F(ScreenLayoutObserverTest, DisplayNotificationsDisabled) {
   EXPECT_FALSE(display_manager()->IsInMirrorMode());
   EXPECT_TRUE(GetDisplayNotificationText().empty());
   CloseNotification();
+}
+
+// Tests that the mirror mode notification is shown correctly when an
+// unassociated display is connected, which forces the system into mirror mode.
+// This critical edge case is described in a comment in
+// `screen_layout_observer.cc`, inside the
+// `ScreenLayoutObserver::GetUnassociatedDisplayMessage` function.
+//
+// The flow is as follows:
+// 1. Start with two displays in tablet mode, which defaults to mirror mode.
+// 2. Manually switch to extended mode.
+// 3. Set the maximum number of supported displays to 2.
+// 4. Connect a third display. On a real device, this would cause the system to
+//    fall back to mirror mode because it cannot support three extended
+//    displays.
+// 5. The test simulates this by forcing mirror mode via
+//    `set_forced_mirror_mode_for_tablet(true)` before updating the displays.
+// 6. This is a critical edge case because `OnDidApplyDisplayChanges` currently
+//    only proceeds to check for mirror mode notifications if a new
+//    unassociated display is detected (`should_notify_has_unassociated_display`
+//    is true). This test verifies that under these specific circumstances, both
+//    the "entering mirror mode" and the "unassociated display" notifications
+//    are correctly generated and displayed.
+TEST_F(ScreenLayoutObserverTest, EnterMirrorModeWithUnassociatedDisplay) {
+  UpdateDisplay("500x400,300x200");
+  display::SetInternalDisplayIds({display_manager()->first_display_id()});
+  EXPECT_FALSE(IsNotificationShown());
+
+  // Start tablet mode and wait until display mode is updated.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  base::RunLoop().RunUntilIdle();
+
+  // Exit mirror mode manually. Now display mode should be extending mode.
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
+  EXPECT_FALSE(IsNotificationShown());
+
+  // Simulate that device can support at most two displays and user connects
+  // it with three displays.
+  display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
+      .set_maximum_display(2u);
+
+  // On a real device, connecting a third display here would trigger mirror
+  // mode. The test environment doesn't simulate this automatic switch, so we
+  // force mirror mode to test the notification logic.
+  display_manager()->layout_store()->set_forced_mirror_mode_for_tablet(true);
+  UpdateDisplay("500x400,300x200,200x100");
+
+  EXPECT_TRUE(IsNotificationShown());
+  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_MIRRORING,
+                                       GetMirroringDisplayNames()),
+            GetDisplayNotificationText());
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_ASH_STATUS_TRAY_DISPLAY_REMOVED_EXCEEDED_MAXIMUM),
+            GetDisplayNotificationAdditionalText());
+  EXPECT_TRUE(display_manager()->IsInMirrorMode());
+  CloseNotification();
+  display_manager()->layout_store()->set_forced_mirror_mode_for_tablet(false);
 }
 
 // Verify that no notification is shown when overscan of a screen is changed.

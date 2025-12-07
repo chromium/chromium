@@ -1,0 +1,426 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//components/offline_pages/buildflags/features.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+source_set("toolbar") {
+  sources = [
+    "chrome_location_bar_model_delegate.cc",
+    "chrome_location_bar_model_delegate.h",
+  ]
+  public_deps = [ "//components/omnibox/browser:location_bar" ]
+  deps = [
+    "//base",
+    "//chrome/browser/autocomplete",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/ui/login",
+    "//chrome/common",
+    "//chrome/common:constants",
+    "//components/google/core/common",
+    "//components/offline_pages/buildflags",
+    "//components/omnibox/browser",
+    "//components/omnibox/common",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/safe_browsing/core/common:features",
+    "//components/search",
+    "//components/security_interstitials/content:security_interstitial_page",
+    "//components/security_state/content",
+    "//components/security_state/core",
+    "//content/public/browser",
+    "//content/public/common",
+  ]
+
+  if (enable_offline_pages) {
+    deps += [ "//chrome:offline_pages_enum_javagen" ]
+  }
+
+  if (!is_android) {
+    sources += [
+      "app_menu_icon_controller.h",
+      "app_menu_model.h",
+      "back_forward_menu_model.h",
+      "bookmark_sub_menu_model.h",
+      "reading_list_sub_menu_model.h",
+      "toolbar_action_hover_card_types.h",
+      "toolbar_action_view_model.h",
+      "toolbar_pref_names.cc",
+      "toolbar_pref_names.h",
+    ]
+    public_deps += [
+      "//base",
+      "//chrome/app:command_ids",
+      "//chrome/browser/ui/extensions:extension_popup_types",
+      "//chrome/browser/ui/global_error",
+      "//chrome/browser/ui/safety_hub",
+      "//chrome/browser/upgrade_detector",
+      "//components/contextual_tasks/public:feature_list",
+      "//components/favicon/core",
+      "//components/prefs",
+      "//components/tabs:public",
+      "//components/translate/content/browser",
+      "//content/public/browser",
+      "//extensions/browser",
+      "//extensions/common",
+      "//ui/base:types",
+      "//ui/base/interaction",
+      "//ui/base/mojom:ui_base_types",
+      "//ui/menus",
+    ]
+    deps += [
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/actions:actions_headers",
+      "//components/user_education/common",
+    ]
+  }
+
+  if (enable_extensions_core) {
+    sources += [
+      "toolbar_actions_model.h",
+      "toolbar_actions_model_factory.h",
+    ]
+    public_deps += [
+      "//chrome/browser/profiles:profile",
+      "//components/keyed_service/core",
+      "//components/prefs",
+      "//extensions/browser",
+    ]
+    deps += [ "//extensions/common:common_constants" ]
+  }
+}
+
+source_set("impl") {
+  sources = []
+  deps = [ ":toolbar" ]
+
+  if (!is_android) {
+    sources += [
+      "app_menu_icon_controller.cc",
+      "app_menu_model.cc",
+      "back_forward_menu_model.cc",
+      "bookmark_sub_menu_model.cc",
+      "reading_list_sub_menu_model.cc",
+    ]
+
+    deps += [
+      "//base",
+      "//base:debugging_buildflags",
+      "//base:i18n",
+      "//build:branding_buildflags",
+      "//chrome/app:branded_strings",
+      "//chrome/app:command_ids",
+      "//chrome/app:generated_resources",
+      "//chrome/app/theme:theme_resources",
+      "//chrome/app/vector_icons",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/favicon",
+      "//chrome/browser/media/router:media_router_feature",
+      "//chrome/browser/prefs",
+      "//chrome/browser/profiles",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/profiles:profile_util",
+      "//chrome/browser/search",
+      "//chrome/browser/search/background",
+      "//chrome/browser/sharing_hub",
+      "//chrome/browser/signin",
+      "//chrome/browser/sync",
+      "//chrome/browser/sync:factories",
+      "//chrome/browser/themes",
+      "//chrome/browser/ui:browser_list",
+      "//chrome/browser/ui:browser_navigator_params_headers",
+      "//chrome/browser/ui:layout_constants",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/bookmarks",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/commerce",
+      "//chrome/browser/ui/global_error",
+      "//chrome/browser/ui/hats",
+      "//chrome/browser/ui/lens",
+      "//chrome/browser/ui/profiles",
+      "//chrome/browser/ui/safety_hub",
+      "//chrome/browser/ui/startup/default_browser_prompt",
+      "//chrome/browser/ui/tabs:tab_model",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/tabs/organization",
+      "//chrome/browser/ui/toolbar/chrome_labs",
+      "//chrome/browser/ui/user_education",
+      "//chrome/browser/ui/web_applications:launch_utils",
+      "//chrome/browser/ui/webui/whats_new",
+      "//chrome/browser/upgrade_detector",
+      "//chrome/browser/web_applications",
+      "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
+      "//chrome/browser/web_applications/proto",
+      "//chrome/common",
+      "//chrome/common:channel_info",
+      "//chrome/common:chrome_features",
+      "//chrome/common:constants",
+      "//chrome/common:non_code_constants",
+      "//components/bookmarks/common",
+      "//components/commerce/core:feature_list",
+      "//components/commerce/core:feature_utils",
+      "//components/contextual_tasks/public:feature_list",
+      "//components/dom_distiller/content/browser",
+      "//components/dom_distiller/core",
+      "//components/favicon_base",
+      "//components/feature_engagement/public",
+      "//components/feature_engagement/public:feature_constants",
+      "//components/lens:features",
+      "//components/omnibox/browser",
+      "//components/omnibox/browser:vector_icons",
+      "//components/password_manager/content/common",
+      "//components/password_manager/core/common",
+      "//components/password_manager/core/common:features",
+      "//components/policy/core/common:common_constants",
+      "//components/pref_registry",
+      "//components/prefs",
+      "//components/profile_metrics",
+      "//components/resources:components_scaled_resources",
+      "//components/resources:components_scaled_resources_grit",
+      "//components/saved_tab_groups/public:features",
+      "//components/signin/public/base",
+      "//components/signin/public/identity_manager",
+      "//components/strings:components_strings",
+      "//components/user_education/common",
+      "//components/vector_icons",
+      "//components/version_info:channel",
+      "//components/webapps/browser",
+      "//components/webapps/common",
+      "//content/public/browser",
+      "//content/public/common",
+      "//extensions/common:extension_features",
+      "//media",
+      "//net",
+      "//ui/actions:actions_headers",
+      "//ui/base",
+      "//ui/base:features",
+      "//ui/base:types",
+      "//ui/color:color_headers",
+      "//ui/display",
+      "//ui/gfx",
+      "//ui/gfx:color_utils",
+      "//ui/menus",
+    ]
+    if (is_chromeos) {
+      deps += [ "//chrome/browser/policy:system_features_disable_list" ]
+    } else {
+      deps += [
+        "//chrome/browser/ui/webui/signin:signin_ui_error",
+        "//chrome/browser/ui/webui/signin:signin_utils",
+      ]
+    }
+    if (enable_glic) {
+      deps += [
+        "//chrome/browser/glic",
+        "//chrome/browser/glic/resources:grit",
+        "//chrome/browser/glic/resources:grit_grit",
+      ]
+    }
+  }
+
+  if (enable_extensions_core) {
+    sources += [
+      "toolbar_actions_model.cc",
+      "toolbar_actions_model_factory.cc",
+    ]
+
+    deps += [
+      "//chrome/browser/extensions",
+      "//chrome/browser/ui/extensions",
+    ]
+  }
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("test_support") {
+  sources = []
+  deps = []
+
+  if (enable_extensions) {
+    sources += [
+      "test_toolbar_action_view_model.cc",
+      "test_toolbar_action_view_model.h",
+    ]
+    deps += [
+      ":toolbar",
+      "//chrome/browser/extensions",
+      "//extensions/browser",
+    ]
+  }
+}
+
+if (!is_android) {
+  source_set("unit_tests") {
+    testonly = true
+    sources = [
+      "app_menu_icon_controller_unittest.cc",
+      "app_menu_model_unittest.cc",
+      "back_forward_menu_model_unittest.cc",
+      "location_bar_model_unittest.cc",
+      "toolbar_actions_model_unittest.cc",
+    ]
+    deps = [
+      ":test_support",
+      ":toolbar",
+      "//base",
+      "//base/test:test_support",
+      "//build:branding_buildflags",
+      "//chrome/app:command_ids",
+      "//chrome/app:generated_resources",
+      "//chrome/browser/autocomplete",
+      "//chrome/browser/extensions",
+      "//chrome/browser/extensions:test_support",
+      "//chrome/browser/extensions/api/extension_action",
+      "//chrome/browser/favicon",
+      "//chrome/browser/history",
+      "//chrome/browser/prefs",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/signin",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/global_error",
+      "//chrome/browser/ui/hats",
+      "//chrome/browser/ui/hats:test_support",
+      "//chrome/browser/ui/safety_hub",
+      "//chrome/browser/ui/safety_hub:test_support",
+      "//chrome/browser/ui/startup/default_browser_prompt",
+      "//chrome/browser/ui/tabs:tab_model",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/tabs/organization",
+      "//chrome/browser/upgrade_detector",
+      "//chrome/common",
+      "//chrome/common:chrome_features",
+      "//chrome/common:constants",
+      "//chrome/test:test_support",
+      "//components/crx_file",
+      "//components/history/core/browser",
+      "//components/omnibox/browser:location_bar",
+      "//components/omnibox/common",
+      "//components/optimization_guide/core:features",
+      "//components/optimization_guide/core:model_execution",
+      "//components/password_manager/core/browser/password_store:test_support",
+      "//components/policy/core/common",
+      "//components/policy/core/common:common_constants",
+      "//components/prefs",
+      "//components/signin/public/base",
+      "//components/signin/public/identity_manager:test_support",
+      "//components/sync_preferences:test_support",
+      "//content/public/browser",
+      "//content/public/common",
+      "//content/test:test_support",
+      "//extensions:test_support",
+      "//extensions/browser",
+      "//extensions/common",
+      "//skia",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//ui/base",
+      "//ui/base:features",
+      "//ui/gfx",
+      "//ui/gfx:color_utils",
+      "//ui/gfx:test_support",
+      "//ui/gfx/codec",
+    ]
+    if (is_chromeos) {
+      deps += [ "//chrome/browser/policy:system_features_disable_list" ]
+    }
+    if (is_win) {
+      deps += [
+        "//chrome/install_static:install_static_util",
+        "//chrome/install_static/test:test_support",
+      ]
+    }
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+  }
+
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "chrome_location_bar_model_delegate_browsertest.cc",
+      "toolbar_actions_model_browsertest.cc",
+    ]
+    deps = [
+      ":toolbar",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/search",
+      "//chrome/browser/search_engines",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/common",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/search_engines",
+      "//content/test:test_support",
+      "//extensions/browser",
+      "//extensions/common",
+      "//testing/gmock",
+    ]
+  }
+
+  if (!is_chromeos_device) {
+    if (toolkit_views) {
+      source_set("interactive_ui_tests") {
+        testonly = true
+        defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+        sources = [
+          "app_menu_fullscreen_interactive_uitest.cc",
+          "app_menu_model_interactive_uitest.cc",
+        ]
+        deps = [
+          ":toolbar",
+          "//base",
+          "//base/test:test_support",
+          "//chrome/app:generated_resources",
+          "//chrome/app/vector_icons",
+          "//chrome/browser/extensions",
+          "//chrome/browser/media/router:media_router_feature",
+          "//chrome/browser/profiles:profile",
+          "//chrome/browser/ui:browser_element_identifiers",
+          "//chrome/browser/ui:browser_list",
+          "//chrome/browser/ui:ui_features",
+          "//chrome/browser/ui/browser_window",
+          "//chrome/browser/ui/exclusive_access",
+          "//chrome/browser/web_applications",
+          "//chrome/browser/web_applications:web_applications_test_support",
+          "//chrome/browser/web_applications/proto",
+          "//chrome/common",
+          "//chrome/common:chrome_features",
+          "//chrome/test:test_support",
+          "//chrome/test:test_support_ui",
+          "//components/crx_file",
+          "//components/password_manager/core/common:features",
+          "//components/performance_manager",
+          "//components/signin/public/identity_manager:test_support",
+          "//components/supervised_user/core/common:features",
+          "//components/supervised_user/test_support",
+          "//components/webapps/browser",
+          "//content/test:test_support",
+          "//extensions:test_support",
+          "//extensions/browser",
+          "//extensions/common",
+          "//skia",
+          "//testing/gtest",
+          "//ui/base",
+          "//ui/base:features",
+          "//ui/base:test_support",
+          "//ui/display",
+          "//ui/gfx",
+          "//ui/menus",
+          "//ui/views",
+          "//url",
+        ]
+      }
+    }
+  }
+}

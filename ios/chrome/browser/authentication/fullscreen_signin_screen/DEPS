@@ -1,0 +1,7 @@
+include_rules = [
+  "+ios/chrome/browser/first_run",
+  "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/sync/model",
+  "+ios/chrome/browser/settings/ui_bundled/elements/enterprise_info_popover_view_controller.h",
+]
+

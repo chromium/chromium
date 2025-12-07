@@ -5,7 +5,9 @@
 #import "ios/chrome/browser/passwords/ui_bundled/password_suggestion_coordinator.h"
 
 #import "base/check.h"
+#import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/common/password_generation_util.h"
@@ -17,8 +19,8 @@
 #import "ios/chrome/browser/autofill/model/form_input_accessory_view_handler.h"
 #import "ios/chrome/browser/passwords/ui_bundled/password_suggestion_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -32,6 +34,8 @@
 
 namespace {
 constexpr CGFloat preferredCornerRadius = 20;
+constexpr char kUmaActionPrefix[] =
+    "IOS.PasswordManager.PasswordGenerationSheet";
 }  // namespace
 
 @interface PasswordSuggestionCoordinator () <
@@ -52,11 +56,15 @@ constexpr CGFloat preferredCornerRadius = 20;
 @implementation PasswordSuggestionCoordinator {
   // YES when the bottom sheet is proactive where it is triggered upon focus.
   BOOL _proactive;
+
+  // Frame from which the bottom sheet for password genration was triggered.
+  base::WeakPtr<web::WebFrame> _frame;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser
                         passwordSuggestion:(NSString*)passwordSuggestion
+                                     frame:(base::WeakPtr<web::WebFrame>)frame
                            decisionHandler:
                                (void (^)(BOOL accept))decisionHandler
                                  proactive:(BOOL)proactive {
@@ -64,6 +72,7 @@ constexpr CGFloat preferredCornerRadius = 20;
 
   if (self) {
     _passwordSuggestion = passwordSuggestion;
+    _frame = frame;
     _decisionHandler = decisionHandler;
     _proactive = proactive;
   }
@@ -99,12 +108,34 @@ constexpr CGFloat preferredCornerRadius = 20;
   // the keyboard. This issue does not happen on mobile devices.
   // For more information, please see: https://www.crbug.com/1307759.
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    [self recordAction:"CloseKeyboard"];
     [self closeKeyboard];
   }
 
   [self.baseViewController presentViewController:self.viewController
                                         animated:YES
                                       completion:nil];
+
+  // Dismiss right away if the presentation failed to avoid having a zombie
+  // coordinator. This is the best proxy we have to know whether the view
+  // controller for the bottom sheet could really be presented as the completion
+  // block is only called when presentation really happens, and we can't get any
+  // error message or signal. Based on what we could test, we know that
+  // presentingViewController is only set if the view controller can be
+  // presented, where it is left to nil if the presentation is rejected for
+  // various reasons (having another view controller already presented is one of
+  // them). One should not think they can know all the reasons why the
+  // presentation fails.
+  //
+  // Keep this line at the end of -start because the
+  // delegate will likely -stop the coordinator when closing suggestions, so the
+  // coordinator should be in the most up to date state where it can be safely
+  // stopped.
+  if (!self.viewController.presentingViewController) {
+    [self.delegate closePasswordSuggestion];
+  }
+
+  [self recordAction:"Present"];
 }
 
 - (void)stop {
@@ -117,13 +148,12 @@ constexpr CGFloat preferredCornerRadius = 20;
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertSecondaryAction {
-  [self handleDecision:NO];
-  [self incrementDismissCount];
-  [self disableBottomSheet];
-  [self.delegate closePasswordSuggestion];
+  [self recordAction:"DismissWithButton"];
+  [self dismissWithRefocus:YES];
 }
 
 - (void)confirmationAlertPrimaryAction {
+  [self recordAction:"Accept"];
   [self handleDecision:YES];
   [self.delegate closePasswordSuggestion];
 }
@@ -132,25 +162,42 @@ constexpr CGFloat preferredCornerRadius = 20;
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  [self handleDecision:NO];
-  [self incrementDismissCount];
-  [self disableBottomSheet];
-  [self.delegate closePasswordSuggestion];
+  [self recordAction:"DismissWithSwipe"];
+  [self dismissWithRefocus:YES];
 }
 
 #pragma mark - Notification callback
 
 - (void)applicationDidEnterBackground:(NSNotification*)notification {
-  [self confirmationAlertSecondaryAction];
+  [self recordAction:"DismissWithBackground"];
+  [self dismissWithRefocus:NO];
 }
 
 #pragma mark - Private methods
 
+- (void)dismissWithRefocus:(BOOL)refocus {
+  [self handleDecision:NO];
+  [self incrementDismissCount];
+  if (refocus) {
+    [self refocusIfNeeded];
+  }
+  [self.delegate closePasswordSuggestion];
+}
+
+- (void)recordAction:(std::string_view)name {
+  std::string_view sheetTypeFragment = _proactive ? ".Proactive." : ".";
+  base::RecordAction(base::UserMetricsAction(base::StrCat({
+                                                              kUmaActionPrefix,
+                                                              sheetTypeFragment,
+                                                              name,
+                                                          })
+                                                 .c_str()));
+}
+
 // Returns the user email.
 - (NSString*)userEmail {
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
   AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForBrowserState(browserState);
+      AuthenticationServiceFactory::GetForProfile(self.profile);
   id<SystemIdentity> authenticatedIdentity =
       authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
 
@@ -168,36 +215,11 @@ constexpr CGFloat preferredCornerRadius = 20;
 
 // Closes the keyboard.
 - (void)closeKeyboard {
-  NSString* activeWebStateIdentifier = self.browser->GetWebStateList()
-                                           ->GetActiveWebState()
-                                           ->GetStableIdentifier();
-  [self onCloseKeyboardWithIdentifier:activeWebStateIdentifier];
-}
-
-- (web::WebState*)activeWebState {
-  if (!self.browser) {
-    return nullptr;
-  }
-  web::WebState* activeWebState =
-      self.browser->GetWebStateList()->GetActiveWebState();
-  if (!activeWebState) {
-    return nullptr;
-  }
-  return activeWebState;
-}
-
-// Helper method which closes the keyboard.
-- (void)onCloseKeyboardWithIdentifier:(NSString*)identifier {
   web::WebState* webState = [self activeWebState];
   if (!webState) {
     return;
   }
-  // Note that it may have changed between the moment the
-  // block was created and its invocation. So check whether
-  // the WebState identifier is the same.
-  NSString* webStateIdentifier = webState->GetStableIdentifier();
-  if (![webStateIdentifier isEqualToString:identifier])
-    return;
+
   password_manager::PasswordManagerJavaScriptFeature* feature =
       password_manager::PasswordManagerJavaScriptFeature::GetInstance();
   web::WebFrame* mainFrame =
@@ -214,6 +236,18 @@ constexpr CGFloat preferredCornerRadius = 20;
   [handler closeKeyboardWithoutButtonPress];
 }
 
+- (web::WebState*)activeWebState {
+  if (!self.browser) {
+    return nullptr;
+  }
+  web::WebState* activeWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  if (!activeWebState) {
+    return nullptr;
+  }
+  return activeWebState;
+}
+
 // Increments the password generation bottom sheet dismiss count
 // preference.
 - (void)incrementDismissCount {
@@ -222,11 +256,10 @@ constexpr CGFloat preferredCornerRadius = 20;
               kIOSProactivePasswordGenerationBottomSheet)) {
     return;
   }
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  if (!browserState) {
+  if (!self.profile) {
     return;
   }
-  PrefService* prefService = browserState->GetPrefs();
+  PrefService* prefService = self.profile->GetPrefs();
   if (prefService) {
     const int newDismissCount =
         prefService->GetInteger(
@@ -244,28 +277,6 @@ constexpr CGFloat preferredCornerRadius = 20;
   }
 }
 
-// Disables the proactive password generation bottom sheet for the current tab
-// session by detaching the listeners.
-- (void)disableBottomSheet {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::
-              kIOSProactivePasswordGenerationBottomSheet)) {
-    return;
-  }
-
-  web::WebState* webState = [self activeWebState];
-  if (!webState) {
-    return;
-  }
-  AutofillBottomSheetTabHelper* tabHelper =
-      AutofillBottomSheetTabHelper::FromWebState(webState);
-  if (!tabHelper) {
-    return;
-  }
-
-  tabHelper->DetachPasswordGenerationListenersForAllFrames();
-}
-
 // Resets the proactive password generation bottom sheet dismiss count to 0 when
 // a generated password suggestion is accepted.
 - (void)resetPasswordGenerationBottomSheetDismissCount {
@@ -278,12 +289,12 @@ constexpr CGFloat preferredCornerRadius = 20;
   if (!webState) {
     return;
   }
-  ChromeBrowserState* browserState =
-      ChromeBrowserState::FromBrowserState(webState->GetBrowserState());
-  if (!browserState) {
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(webState->GetBrowserState());
+  if (!profile) {
     return;
   }
-  PrefService* prefService = browserState->GetPrefs();
+  PrefService* prefService = profile->GetPrefs();
   if (prefService) {
     const int currentDismissCount = prefService->GetInteger(
         prefs::kIosPasswordGenerationBottomSheetDismissCount);
@@ -307,11 +318,12 @@ constexpr CGFloat preferredCornerRadius = 20;
   auto resolver = ^CGFloat(
       id<UISheetPresentationControllerDetentResolutionContext> context) {
     CGFloat height = [self.viewController preferredHeightForContent];
-    CGFloat largeDetentHeight = [UISheetPresentationControllerDetent.largeDetent
-        resolvedValueInContext:context];
+    CGFloat largeDetentHeight =
+        [[UISheetPresentationControllerDetent largeDetent]
+            resolvedValueInContext:context];
     height = MIN(height, largeDetentHeight);
     CGFloat mediumDetentHeight =
-        [UISheetPresentationControllerDetent.mediumDetent
+        [[UISheetPresentationControllerDetent mediumDetent]
             resolvedValueInContext:context];
     return MAX(height, mediumDetentHeight);
   };
@@ -329,23 +341,12 @@ constexpr CGFloat preferredCornerRadius = 20;
       // be an option).
       return @[ [self preferredHeightDetent] ];
     }
-    // Having the large detent as an option makes the modal expandable to
-    // the maximum size.
-    return @[
-      [self preferredHeightDetent],
-      UISheetPresentationControllerDetent.largeDetent
-    ];
-  } else if (@available(iOS 16, *)) {
-    // Having the large detent as an option makes the modal expandable to
-    // the maximum size.
-    return @[
-      [self preferredHeightDetent],
-      UISheetPresentationControllerDetent.largeDetent
-    ];
   }
+  // Having the large detent as an option makes the modal expandable to
+  // the maximum size.
   return @[
-    UISheetPresentationControllerDetent.mediumDetent,
-    UISheetPresentationControllerDetent.largeDetent
+    [self preferredHeightDetent],
+    [UISheetPresentationControllerDetent largeDetent]
   ];
 }
 
@@ -358,6 +359,28 @@ constexpr CGFloat preferredCornerRadius = 20;
     }
   }
   return YES;
+}
+
+// Refocuses the field that was blurred to show the payments suggestion
+// bottom sheet, if deemed needed.
+- (void)refocusIfNeeded {
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::
+              kIOSProactivePasswordGenerationBottomSheet)) {
+    return;
+  }
+
+  web::WebState* webState = [self activeWebState];
+  if (!webState) {
+    return;
+  }
+
+  if (AutofillBottomSheetTabHelper* tabHelper =
+          AutofillBottomSheetTabHelper::FromWebState(webState);
+      tabHelper && _frame) {
+    [self recordAction:"Refocus"];
+    tabHelper->RefocusElementIfNeeded(_frame->GetFrameId());
+  }
 }
 
 @end

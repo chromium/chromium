@@ -34,7 +34,7 @@ UserPolicyTestHelper::UserPolicyTestHelper(
     : account_id_(account_id),
       embedded_policy_server_(embedded_policy_server) {}
 
-UserPolicyTestHelper::~UserPolicyTestHelper() {}
+UserPolicyTestHelper::~UserPolicyTestHelper() = default;
 
 void UserPolicyTestHelper::SetPolicy(
     const enterprise_management::CloudPolicySettings& policy) {

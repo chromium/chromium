@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/time/time.h"
 #include "components/sync/protocol/gaia_password_reuse.pb.h"
 #include "components/sync/protocol/security_event_specifics.pb.h"
 
@@ -19,7 +20,7 @@ SecurityEventRecorderImpl::SecurityEventRecorderImpl(
   DCHECK(clock_);
 }
 
-SecurityEventRecorderImpl::~SecurityEventRecorderImpl() {}
+SecurityEventRecorderImpl::~SecurityEventRecorderImpl() = default;
 
 void SecurityEventRecorderImpl::RecordGaiaPasswordReuse(
     const sync_pb::GaiaPasswordReuse& event) {

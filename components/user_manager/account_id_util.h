@@ -23,8 +23,6 @@ namespace user_manager {
 USER_MANAGER_EXPORT extern const char kCanonicalEmail[];
 // Key of obfuscated GAIA id value.
 USER_MANAGER_EXPORT extern const char kGAIAIdKey[];
-// Key of obfuscated object guid value for Active Directory accounts.
-USER_MANAGER_EXPORT extern const char kObjGuidKey[];
 // Key of account type.
 USER_MANAGER_EXPORT extern const char kAccountTypeKey[];
 

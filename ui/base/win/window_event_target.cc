@@ -9,8 +9,8 @@ namespace ui {
 const char WindowEventTarget::kWin32InputEventTarget[]
     = "Win32_InputEventTarget";
 
-WindowEventTarget::WindowEventTarget() {}
+WindowEventTarget::WindowEventTarget() = default;
 
-WindowEventTarget::~WindowEventTarget() {}
+WindowEventTarget::~WindowEventTarget() = default;
 
 }  // namespace ui

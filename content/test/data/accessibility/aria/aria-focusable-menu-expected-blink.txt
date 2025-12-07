@@ -1,0 +1,31 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++popUpButton name='Actions' controlsIds=menu
+++++++++staticText name='Actions'
+++++++++++inlineTextBox name='Actions'
+++++++menu name='Actions' activedescendantId=menuItem
+++++++++menuItem name='New'
+++++++++++none ignored
+++++++++++++staticText name='%E2%80%A2 '
+++++++++++++++inlineTextBox name='%E2%80%A2 '
+++++++++++staticText name='New'
+++++++++++++inlineTextBox name='New'
+++++++++menuItem name='Open'
+++++++++++none ignored
+++++++++++++staticText name='%E2%80%A2 '
+++++++++++++++inlineTextBox name='%E2%80%A2 '
+++++++++++staticText name='Open'
+++++++++++++inlineTextBox name='Open'
+++++++++menuItem name='Save'
+++++++++++none ignored
+++++++++++++staticText name='%E2%80%A2 '
+++++++++++++++inlineTextBox name='%E2%80%A2 '
+++++++++++staticText name='Save'
+++++++++++++inlineTextBox name='Save'
+++++++++menuItem name='Quit'
+++++++++++none ignored
+++++++++++++staticText name='%E2%80%A2 '
+++++++++++++++inlineTextBox name='%E2%80%A2 '
+++++++++++staticText name='Quit'
+++++++++++++inlineTextBox name='Quit'

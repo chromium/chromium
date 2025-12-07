@@ -1,0 +1,88 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojom") {
+  sources = [ "unexportable_key_service.mojom" ]
+
+  public_deps = [ "//mojo/public/mojom/base" ]
+
+  generate_java = true
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "unexportable_keys.mojom.SignatureAlgorithm"
+          cpp = "::crypto::SignatureVerifier::SignatureAlgorithm"
+        },
+        {
+          mojom = "unexportable_keys.mojom.BackgroundTaskPriority"
+          cpp = "::unexportable_keys::BackgroundTaskPriority"
+        },
+        {
+          mojom = "unexportable_keys.mojom.ServiceError"
+          cpp = "::unexportable_keys::ServiceError"
+        },
+        {
+          mojom = "unexportable_keys.mojom.UnexportableKeyId"
+          cpp = "::unexportable_keys::UnexportableKeyId"
+        },
+      ]
+      traits_headers = [
+        "//components/unexportable_keys/mojom/unexportable_keys_mojom_traits.h",
+        "//components/unexportable_keys/background_task_priority.h",
+        "//components/unexportable_keys/unexportable_key_id.h",
+        "//crypto/signature_verifier.h",
+        "//crypto/unexportable_key.h",
+        "//components/unexportable_keys/service_error.h",
+      ]
+      traits_sources = [ "//components/unexportable_keys/mojom/unexportable_keys_mojom_traits.cc" ]
+      traits_deps = [
+        "//base",
+        "//components/unexportable_keys",
+        "//crypto",
+      ]
+    },
+  ]
+}
+
+source_set("mojo_service") {
+  sources = [
+    "unexportable_key_service_proxied.cc",
+    "unexportable_key_service_proxied.h",
+    "unexportable_key_service_proxy_impl.cc",
+    "unexportable_key_service_proxy_impl.h",
+  ]
+
+  public_deps = [
+    ":mojom",
+    "//components/unexportable_keys",
+    "//crypto",
+    "//mojo/public/cpp/bindings",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "unexportable_key_service_proxied_unittest.cc",
+    "unexportable_key_service_proxy_unittest.cc",
+  ]
+
+  deps = [
+    ":mojo_service",
+    ":mojom",
+    "//base/test:test_support",
+    "//components/unexportable_keys",
+    "//components/unexportable_keys:test_support",
+    "//crypto:test_support",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//testing/gtest",
+  ]
+}

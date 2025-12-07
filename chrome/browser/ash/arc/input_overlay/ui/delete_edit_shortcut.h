@@ -12,7 +12,7 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace views {
-class NonClientFrameView;
+class FrameView;
 }  // namespace views
 
 namespace ash {
@@ -57,12 +57,11 @@ class DeleteEditShortcut : public views::BubbleDialogDelegateView {
   void OnDeleteButtonPressed();
 
   // views::DialogDelegate:
-  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateFrameView(
       views::Widget* widget) override;
 
   // views::View:
   void OnMouseExited(const ui::MouseEvent& event) override;
-  void OnThemeChanged() override;
 
   // DisplayOverlayController owns this class, no need to deallocate.
   const raw_ptr<DisplayOverlayController> controller_ = nullptr;

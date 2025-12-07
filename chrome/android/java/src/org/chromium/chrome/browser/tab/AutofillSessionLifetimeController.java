@@ -5,11 +5,9 @@
 package org.chromium.chrome.browser.tab;
 
 import android.app.Activity;
-import android.os.Build;
 import android.view.autofill.AutofillManager;
 
-import androidx.annotation.RequiresApi;
-
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
@@ -18,14 +16,15 @@ import org.chromium.content_public.browser.NavigationHandle;
 /**
  * Handles the lifetime of the current Autofill session.
  *
- * The Android Autofill service only tracks a limited number (default: 10) of view sets with an
+ * <p>The Android Autofill service only tracks a limited number (default: 10) of view sets with an
  * open fill request per Autofill session. In order to keep Autofill triggering, the session has to
  * be finished (cancelled or committed) periodically.
  *
- * Additionally, Autofill sessions that clearly should not trigger a save flow can be cancelled in
- * order to reduce save UI false positives. The Autofill service triggers save when all Autofill-
+ * <p>Additionally, Autofill sessions that clearly should not trigger a save flow can be cancelled
+ * in order to reduce save UI false positives. The Autofill service triggers save when all Autofill-
  * relevant virtual views become invisible, so care must be taken to cancel the session beforehand.
  *
+ * <pre>
  * Autofill sessions are cancelled:
  * 1. when the domain part of the UrlBar content changes:
  *    In this case the session is cancelled by the Android Autofill service's compat mode.
@@ -40,12 +39,13 @@ import org.chromium.content_public.browser.NavigationHandle;
  *    browser controls should never trigger save UI. In order to cancel the session before web
  *    content views become invisible, we have to use onDidStartNavigationInPrimaryMainFrame rather
  *    than one of the later events.
+ * </pre>
  */
+@NullMarked
 public class AutofillSessionLifetimeController implements DestroyObserver {
-    private Activity mActivity;
+    private final Activity mActivity;
     private final ActivityTabProvider.ActivityTabTabObserver mActivityTabObserver;
 
-    @RequiresApi(Build.VERSION_CODES.O)
     public AutofillSessionLifetimeController(
             Activity activity,
             ActivityLifecycleDispatcher lifecycleDispatcher,
@@ -91,6 +91,5 @@ public class AutofillSessionLifetimeController implements DestroyObserver {
     @Override
     public void onDestroy() {
         mActivityTabObserver.destroy();
-        mActivity = null;
     }
 }

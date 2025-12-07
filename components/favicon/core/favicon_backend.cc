@@ -4,15 +4,22 @@
 
 #include "components/favicon/core/favicon_backend.h"
 
+#include <algorithm>
+#include <vector>
+
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "components/favicon/core/favicon_backend_delegate.h"
 #include "components/favicon/core/favicon_database.h"
+#include "components/favicon/core/favicon_types.h"
 #include "components/favicon_base/favicon_util.h"
 #include "components/favicon_base/select_favicon_frames.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -20,6 +27,9 @@
 #include "url/origin.h"
 
 namespace favicon {
+
+BASE_FEATURE(kUseLastVisitedFallbackURLFavicon,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 using RedirectList = std::vector<GURL>;
 
@@ -155,7 +165,7 @@ favicon_base::FaviconRawBitmapResult FaviconBackend::GetLargestFaviconForUrl(
   base::Time last_updated;
   base::Time last_requested;
   favicon_base::FaviconRawBitmapResult bitmap_result;
-  bitmap_result.icon_url = icon_url;
+  bitmap_result.icon_url = std::move(icon_url);
   bitmap_result.icon_type = icon_type;
   if (!db_->GetFaviconBitmap(largest_icon.bitmap_id, &last_updated,
                              &last_requested, &bitmap_result.bitmap_data,
@@ -187,6 +197,25 @@ FaviconBackend::GetFaviconsForUrl(const GURL& page_url,
   if (desired_sizes.size() == 1 && !bitmap_results.empty()) {
     bitmap_results.assign(1, favicon_base::ResizeFaviconBitmapResult(
                                  desired_sizes[0], bitmap_results));
+  }
+
+  for (auto size : desired_sizes) {
+    // Only record histograms for sizes that are on the |icon_sizes| allowlist.
+    if (std::find(icon_sizes.begin(), icon_sizes.end(), size) ==
+        icon_sizes.end()) {
+      continue;
+    }
+    bool size_found = false;
+    for (auto result : bitmap_results) {
+      if (result.pixel_size.width() == size &&
+          result.pixel_size.height() == size) {
+        size_found = true;
+        break;
+      }
+    }
+    base::UmaHistogramBoolean(
+        "Favicons.IconSuccess." + base::NumberToString(size) + "px",
+        size_found);
   }
   return bitmap_results;
 }
@@ -411,21 +440,34 @@ std::set<GURL> FaviconBackend::CloneFaviconMappingsForPages(
   TRACE_EVENT0("browser", "FaviconBackend::CloneFaviconMappingsForPages");
 
   // Update mappings including redirects for each entry in `page_urls_to_write`.
-  base::flat_set<GURL> page_urls_to_update_mappings;
+  base::flat_set<GURL> all_page_urls_to_update_mappings;
   for (const GURL& update_mappings_for_page : page_urls_to_write) {
     RedirectList redirects =
         delegate_->GetCachedRecentRedirectsForPage(update_mappings_for_page);
     // The delegate must always supply at least the supplied page.
     DCHECK(!redirects.empty());
-    page_urls_to_update_mappings.insert(redirects.begin(), redirects.end());
+    all_page_urls_to_update_mappings.insert(redirects.begin(), redirects.end());
   }
+  base::flat_set<GURL> regular_page_urls_to_update_mappings =
+      page_urls_to_write;
+  base::flat_set<GURL> redirect_page_urls_to_update_mappings;
+  std::set_difference(
+      all_page_urls_to_update_mappings.begin(),
+      all_page_urls_to_update_mappings.end(),
+      regular_page_urls_to_update_mappings.begin(),
+      regular_page_urls_to_update_mappings.end(),
+      std::inserter(redirect_page_urls_to_update_mappings,
+                    redirect_page_urls_to_update_mappings.begin()));
 
   // No need to update mapping for `page_url_to_read`, because this is where
   // we're getting the mappings from.
-  page_urls_to_update_mappings.erase(page_url_to_read);
+  regular_page_urls_to_update_mappings.erase(page_url_to_read);
+  redirect_page_urls_to_update_mappings.erase(page_url_to_read);
 
-  if (page_urls_to_update_mappings.empty())
+  if (regular_page_urls_to_update_mappings.empty() &&
+      redirect_page_urls_to_update_mappings.empty()) {
     return {};
+  }
 
   // Get FaviconIDs for `page_url_to_read` and one of `icon_types`.
   std::vector<IconMapping> icon_mappings;
@@ -435,8 +477,9 @@ std::set<GURL> FaviconBackend::CloneFaviconMappingsForPages(
 
   std::set<GURL> changed_page_urls;
   for (const IconMapping& icon_mapping : icon_mappings) {
-    std::vector<GURL> v = SetFaviconMappingsForPages(
-        page_urls_to_update_mappings, icon_mapping.icon_type,
+    std::vector<GURL> v = SetFaviconMappingsForPagesByPageUrlType(
+        regular_page_urls_to_update_mappings,
+        redirect_page_urls_to_update_mappings, icon_mapping.icon_type,
         icon_mapping.icon_id);
     changed_page_urls.insert(std::make_move_iterator(v.begin()),
                              std::make_move_iterator(v.end()));
@@ -568,14 +611,16 @@ bool FaviconBackend::SetFaviconBitmaps(favicon_base::FaviconID icon_id,
   using PNGEncodedBitmap =
       std::pair<scoped_refptr<base::RefCountedBytes>, gfx::Size>;
   std::vector<PNGEncodedBitmap> to_add;
-  for (size_t i = 0; i < bitmaps.size(); ++i) {
-    scoped_refptr<base::RefCountedBytes> bitmap_data(new base::RefCountedBytes);
-    if (!gfx::PNGCodec::EncodeBGRASkBitmap(bitmaps[i], false,
-                                           &bitmap_data->as_vector())) {
+  for (const auto& bitmap : bitmaps) {
+    std::optional<std::vector<uint8_t>> encoded =
+        gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false);
+    if (!encoded) {
       continue;
     }
-    to_add.push_back(std::make_pair(
-        bitmap_data, gfx::Size(bitmaps[i].width(), bitmaps[i].height())));
+    auto bitmap_data =
+        base::MakeRefCounted<base::RefCountedBytes>(std::move(encoded.value()));
+    to_add.emplace_back(bitmap_data,
+                        gfx::Size(bitmap.width(), bitmap.height()));
   }
 
   bool favicon_bitmaps_changed = false;
@@ -639,15 +684,35 @@ FaviconBackend::GetFaviconsFromDB(const GURL& page_url,
   // Get FaviconIDs for `page_url` and one of `icon_types`.
   std::vector<IconMapping> icon_mappings;
   db_->GetIconMappingsForPageURL(page_url, icon_types, &icon_mappings);
+  bool fallback_to_host_attempted = false;
 
   if (icon_mappings.empty() && fallback_to_host &&
       page_url.SchemeIsHTTPOrHTTPS()) {
-    // We didn't find any matches, and the caller requested falling back to the
-    // host of `page_url` for fuzzy matching. Query the database for a page_url
-    // that is known to exist and matches the host of `page_url`. Do this only
-    // if we have a HTTP/HTTPS url.
-    std::optional<GURL> fallback_page_url =
-        db_->FindFirstPageURLForHost(page_url, icon_types);
+    fallback_to_host_attempted = true;
+    std::optional<GURL> fallback_page_url;
+
+    // We didn't find any matches, and the caller passed `fallback_to_host` to
+    // request to fall back to the host of `page_url` for fuzzy matching. Query
+    // the database for a page_url that is known to exist and matches the host
+    // of `page_url`. Do this only if we have a HTTP/HTTPS url.
+    std::optional<std::pair<GURL, PageUrlType>> fallback_for_host =
+        db_->FindBestPageURLForHost(page_url, icon_types);
+
+    if (fallback_for_host.has_value()) {
+      // If the fallback URL is for a redirect, then use the last visited URL
+      // as a final fallback.
+      // FindBestPageURLForHost() prioritizes page URLs that are not redirects.
+      // Therefore, if the fallback it returns is a redirect, then all page
+      // visits to the host are redirects.
+      if (fallback_for_host->second == PageUrlType::kRedirect &&
+          base::FeatureList::IsEnabled(kUseLastVisitedFallbackURLFavicon)) {
+        url::Origin page_origin = url::Origin::Create(page_url);
+        fallback_page_url =
+            delegate_->GetMostRecentlyVisitedURLForOrigin(page_origin);
+      } else {
+        fallback_page_url = fallback_for_host->first;
+      }
+    }
 
     if (fallback_page_url) {
       db_->GetIconMappingsForPageURL(fallback_page_url.value(), icon_types,
@@ -659,7 +724,13 @@ FaviconBackend::GetFaviconsFromDB(const GURL& page_url,
   for (size_t i = 0; i < icon_mappings.size(); ++i)
     favicon_ids.push_back(icon_mappings[i].icon_id);
 
-  return GetFaviconBitmapResultsForBestMatch(favicon_ids, desired_sizes);
+  std::vector<favicon_base::FaviconRawBitmapResult> results =
+      GetFaviconBitmapResultsForBestMatch(favicon_ids, desired_sizes);
+  if (fallback_to_host_attempted) {
+    base::UmaHistogramBoolean("Favicons.FallbackToHostSuccess",
+                              results.size() > 0);
+  }
+  return results;
 }
 
 std::vector<favicon_base::FaviconRawBitmapResult>
@@ -734,37 +805,56 @@ bool FaviconBackend::SetFaviconMappingsForPageAndRedirects(
     favicon_base::FaviconID icon_id) {
   // Find all the pages whose favicons we should set, we want to set it for
   // all the pages in the redirect chain if it redirected.
-  RedirectList redirects = delegate_->GetCachedRecentRedirectsForPage(page_url);
+  RedirectList redirects_list =
+      delegate_->GetCachedRecentRedirectsForPage(page_url);
+  base::flat_set<GURL> redirects_set(redirects_list);
+  redirects_set.erase(page_url);
   bool mappings_changed =
-      !SetFaviconMappingsForPages(base::flat_set<GURL>(redirects), icon_type,
-                                  icon_id)
+      !SetFaviconMappingsForPagesByPageUrlType(
+           base::flat_set<GURL>({page_url}), redirects_set, icon_type, icon_id)
            .empty();
   return mappings_changed;
 }
 
-std::vector<GURL> FaviconBackend::SetFaviconMappingsForPages(
-    const base::flat_set<GURL>& page_urls,
+std::vector<GURL> FaviconBackend::SetFaviconMappingsForPagesByPageUrlType(
+    const base::flat_set<GURL>& regular_page_urls,
+    const base::flat_set<GURL>& redirect_page_urls,
     favicon_base::IconType icon_type,
     favicon_base::FaviconID icon_id) {
   std::vector<GURL> changed_page_urls;
-  for (const GURL& page_url : page_urls) {
-    if (SetFaviconMappingsForPage(page_url, icon_type, icon_id))
-      changed_page_urls.push_back(page_url);
-  }
+  SetFaviconMappingsForPages(regular_page_urls, icon_type, icon_id,
+                             PageUrlType::kRegular, changed_page_urls);
+  SetFaviconMappingsForPages(redirect_page_urls, icon_type, icon_id,
+                             PageUrlType::kRedirect, changed_page_urls);
   return changed_page_urls;
 }
 
-bool FaviconBackend::SetFaviconMappingsForPage(
-    const GURL& page_url,
+void FaviconBackend::SetFaviconMappingsForPages(
+    const base::flat_set<GURL>& page_urls,
     favicon_base::IconType icon_type,
-    favicon_base::FaviconID icon_id) {
+    favicon_base::FaviconID icon_id,
+    PageUrlType page_url_type,
+    std::vector<GURL>& changed_page_urls) {
+  for (const GURL& page_url : page_urls) {
+    if (SetFaviconMappingsForPage(page_url, icon_type, icon_id,
+                                  page_url_type)) {
+      changed_page_urls.push_back(page_url);
+    }
+  }
+}
+
+bool FaviconBackend::SetFaviconMappingsForPage(const GURL& page_url,
+                                               favicon_base::IconType icon_type,
+                                               favicon_base::FaviconID icon_id,
+                                               PageUrlType page_url_type) {
   bool mappings_changed = false;
   // Sets the icon mappings from `page_url` for `icon_type` to the favicon
   // with `icon_id`. Mappings for `page_url` to favicons of type `icon_type`
-  // with FaviconID other than `icon_id` are removed. All icon mappings for
-  // `page_url` to favicons of a type equivalent to `icon_type` are removed.
-  // Remove any favicons which are orphaned as a result of the removal of the
-  // icon mappings.
+  // with FaviconID other than `icon_id` are removed. The mapping is deleted and
+  // re-added if `page_url_type` is different between the previous mapping and
+  // the new mapping. All icon mappings for `page_url` to favicons of a type
+  // equivalent to `icon_type` are removed. Removes any favicons which are
+  // orphaned as a result of the removal of the icon mappings.
 
   favicon_base::FaviconID unmapped_icon_id = icon_id;
 
@@ -773,7 +863,16 @@ bool FaviconBackend::SetFaviconMappingsForPage(
 
   for (auto m = icon_mappings.begin(); m != icon_mappings.end(); ++m) {
     if (unmapped_icon_id == m->icon_id) {
-      unmapped_icon_id = 0;
+      if (page_url_type == m->page_url_type &&
+          AreIconTypesEquivalent(icon_type, m->icon_type)) {
+        // The mapping is already correct. Do nothing.
+        unmapped_icon_id = 0;
+      } else {
+        // Delete the mapping to be able to recreate it with the correct
+        // `page_url_type` and icon type. Don't delete the favicon since it
+        // is still required.
+        db_->DeleteIconMapping(m->mapping_id);
+      }
       continue;
     }
 
@@ -791,7 +890,7 @@ bool FaviconBackend::SetFaviconMappingsForPage(
   }
 
   if (unmapped_icon_id) {
-    db_->AddIconMapping(page_url, unmapped_icon_id);
+    db_->AddIconMapping(page_url, unmapped_icon_id, page_url_type);
     mappings_changed = true;
   }
   return mappings_changed;

@@ -10,7 +10,6 @@
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -74,12 +73,9 @@ bool IsGaiaCredentialPage(const std::string& signon_realm) {
 
 bool ShouldSaveEnterprisePasswordHash(const PasswordForm& form,
                                       const PrefService& prefs) {
-  if (base::FeatureList::IsEnabled(features::kPasswordReuseDetectionEnabled)) {
-    return safe_browsing::MatchesPasswordProtectionLoginURL(form.url, prefs) ||
-           safe_browsing::MatchesPasswordProtectionChangePasswordURL(form.url,
-                                                                     prefs);
-  }
-  return false;
+  return safe_browsing::MatchesPasswordProtectionLoginURL(form.url, prefs) ||
+         safe_browsing::MatchesPasswordProtectionChangePasswordURL(form.url,
+                                                                   prefs);
 }
 
 bool HasChosenToSyncPasswords(const syncer::SyncService* sync_service) {
@@ -104,13 +100,12 @@ bool IsSyncFeatureActiveIncludingPasswords(
 }
 
 std::optional<std::string> GetAccountForSaving(
-    const PrefService* pref_service,
     const syncer::SyncService* sync_service) {
   if (!sync_service) {
     return std::nullopt;
   }
   if (IsSyncFeatureEnabledIncludingPasswords(sync_service) ||
-      features_util::IsOptedInForAccountStorage(pref_service, sync_service)) {
+      features_util::IsAccountStorageEnabled(sync_service)) {
     return sync_service->GetAccountInfo().email;
   }
   return std::nullopt;

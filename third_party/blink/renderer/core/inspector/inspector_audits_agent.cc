@@ -21,14 +21,13 @@
 #include "third_party/blink/renderer/core/inspector/inspector_network_agent.h"
 #include "third_party/blink/renderer/core/inspector/protocol/audits.h"
 #include "third_party/blink/renderer/platform/graphics/image_data_buffer.h"
+#include "third_party/blink/renderer/platform/image-encoders/image_encoder_utils.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace blink {
-
-using protocol::Maybe;
 
 namespace encoding_enum = protocol::Audits::GetEncodedResponse::EncodingEnum;
 
@@ -40,14 +39,13 @@ static constexpr int kMaximumEncodeImageHeightInPixels = 10000;
 
 static constexpr double kDefaultEncodeQuality = 1;
 
-bool EncodeAsImage(char* body,
-                   size_t size,
+bool EncodeAsImage(base::span<const uint8_t> body,
                    const String& encoding,
                    const double quality,
                    Vector<unsigned char>* output) {
   const gfx::Size maximum_size = gfx::Size(kMaximumEncodeImageWidthInPixels,
                                            kMaximumEncodeImageHeightInPixels);
-  SkBitmap bitmap = WebImage::FromData(WebData(body, size), maximum_size);
+  SkBitmap bitmap = WebImage::FromData(WebData(body), maximum_size);
   if (bitmap.isNull())
     return false;
 
@@ -68,9 +66,10 @@ bool EncodeAsImage(char* body,
   if (!image_to_encode)
     return false;
 
-  String mime_type_name = StringView("image/") + encoding;
+  String mime_type_name = StrCat({"image/", encoding});
   ImageEncodingMimeType mime_type;
-  bool valid_mime_type = ParseImageEncodingMimeType(mime_type_name, mime_type);
+  bool valid_mime_type =
+      ImageEncoderUtils::ParseMimeType(mime_type_name, mime_type);
   DCHECK(valid_mime_type);
   return image_to_encode->EncodeImage(mime_type, quality, output);
 }
@@ -136,9 +135,9 @@ InspectorAuditsAgent::~InspectorAuditsAgent() = default;
 protocol::Response InspectorAuditsAgent::getEncodedResponse(
     const String& request_id,
     const String& encoding,
-    Maybe<double> quality,
-    Maybe<bool> size_only,
-    Maybe<protocol::Binary>* out_body,
+    std::optional<double> quality,
+    std::optional<bool> size_only,
+    std::optional<protocol::Binary>* out_body,
     int* out_original_size,
     int* out_encoded_size) {
   DCHECK(encoding == encoding_enum::Jpeg || encoding == encoding_enum::Png ||
@@ -151,16 +150,15 @@ protocol::Response InspectorAuditsAgent::getEncodedResponse(
   if (!response.IsSuccess())
     return response;
 
-  Vector<char> base64_decoded_buffer;
+  Vector<uint8_t> base64_decoded_buffer;
   if (!is_base64_encoded || !Base64Decode(body, base64_decoded_buffer) ||
       base64_decoded_buffer.size() == 0) {
     return protocol::Response::ServerError("Failed to decode original image");
   }
 
   Vector<unsigned char> encoded_image;
-  if (!EncodeAsImage(base64_decoded_buffer.data(), base64_decoded_buffer.size(),
-                     encoding, quality.value_or(kDefaultEncodeQuality),
-                     &encoded_image)) {
+  if (!EncodeAsImage(base::as_byte_span(base64_decoded_buffer), encoding,
+                     quality.value_or(kDefaultEncodeQuality), &encoded_image)) {
     return protocol::Response::ServerError(
         "Could not encode image with given settings");
   }
@@ -186,7 +184,7 @@ void InspectorAuditsAgent::CheckContrastForDocument(Document* document,
 }
 
 protocol::Response InspectorAuditsAgent::checkContrast(
-    protocol::Maybe<bool> report_aaa) {
+    std::optional<bool> report_aaa) {
   if (!inspected_frames_) {
     return protocol::Response::ServerError(
         "Inspected frames are not available");

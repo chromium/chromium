@@ -9,17 +9,20 @@
 #include <memory>
 #include <string_view>
 
+#include "base/base64.h"
 #include "base/base64url.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/supports_user_data.h"
 #include "base/values.h"
 #include "google_apis/gaia/bound_oauth_token.pb.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "google_apis/gaia/list_accounts_response.pb.h"
 #include "google_apis/gaia/oauth2_mint_token_consent_result.pb.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -54,12 +57,20 @@ std::string CanonicalizeEmailImpl(std::string_view email_address,
 
 }  // namespace
 
+ListedAccount::ListedAccount() = default;
 
-ListedAccount::ListedAccount() {}
+ListedAccount::ListedAccount(const ListedAccount&) = default;
+ListedAccount& ListedAccount::operator=(const ListedAccount&) = default;
 
-ListedAccount::ListedAccount(const ListedAccount& other) = default;
+ListedAccount::~ListedAccount() = default;
 
-ListedAccount::~ListedAccount() {}
+MultiloginAccountAuthCredentials::MultiloginAccountAuthCredentials(
+    GaiaId gaia_id,
+    std::string token,
+    std::string token_binding_assertion)
+    : gaia_id(std::move(gaia_id)),
+      token(std::move(token)),
+      token_binding_assertion(std::move(token_binding_assertion)) {}
 
 std::string CanonicalizeEmail(std::string_view email_address) {
   // CanonicalizeEmail() is called to process email strings that are eventually
@@ -94,14 +105,17 @@ bool AreEmailsSame(std::string_view email1, std::string_view email2) {
 
 std::string ExtractDomainName(std::string_view email_address) {
   // First canonicalize which will also verify we have proper domain part.
+  if (email_address == "") {
+    DUMP_WILL_BE_NOTREACHED();
+    return std::string();
+  }
   std::string email = CanonicalizeEmail(email_address);
   size_t separator_pos = email.find('@');
   if (separator_pos != std::string::npos &&
       separator_pos < email.length() - 1) {
     return email.substr(separator_pos + 1);
-  } else {
-    DUMP_WILL_BE_NOTREACHED() << "Not a proper email address: " << email;
   }
+  DUMP_WILL_BE_NOTREACHED() << "Not a proper email address: " << email;
   return std::string();
 }
 
@@ -126,73 +140,48 @@ bool HasGaiaSchemeHostPort(const GURL& url) {
   return url::SchemeHostPort(url) == gaia_scheme_host_port;
 }
 
-bool ParseListAccountsData(std::string_view data,
-                           std::vector<ListedAccount>* accounts,
-                           std::vector<ListedAccount>* signed_out_accounts) {
-  if (accounts)
+bool ParseBinaryListAccountsData(const std::string& data,
+                                 std::vector<ListedAccount>* accounts) {
+  // Clear and rebuild our accounts list if one is given.
+  if (accounts) {
     accounts->clear();
+  }
 
-  if (signed_out_accounts)
-    signed_out_accounts->clear();
-
-  // Parse returned data and make sure we have data.
-  std::optional<base::Value> value = base::JSONReader::Read(data);
-  if (!value)
+  // The input is expected to be base64-encoded.
+  std::string decoded_data;
+  if (!base::Base64Decode(data, &decoded_data,
+                          base::Base64DecodePolicy::kForgiving)) {
+    VLOG(1) << "Failed to decode ListAccounts data as a Base64 String";
     return false;
+  }
 
-  if (!value->is_list())
+  // Parse our binary proto response.
+  ListAccountsResponse parsed_result;
+  if (!parsed_result.ParseFromString(decoded_data)) {
+    VLOG(1) << "malformed ListAccountsResponse";
     return false;
-  const base::Value::List& list = value->GetList();
-  if (list.size() < 2u)
-    return false;
+  }
 
-  // Get list of account info.
-  if (!list[1].is_list())
-    return false;
-  const base::Value::List& account_list = list[1].GetList();
-
-  // Build a vector of accounts from the cookie.  Order is important: the first
+  // Build a vector of accounts from the cookie. Order is important: the first
   // account in the list is the primary account.
-  for (size_t i = 0; i < account_list.size(); ++i) {
-    if (account_list[i].is_list()) {
-      const base::Value::List& account = account_list[i].GetList();
-      std::string email;
-      // Canonicalize the email since ListAccounts returns "display email".
-      if (3u < account.size() && account[3].is_string() &&
-          !(email = account[3].GetString()).empty()) {
-        // New version if ListAccounts indicates whether the email's session
-        // is still valid or not.  If this value is present and false, assume
-        // its invalid.  Otherwise assume it's valid to remain compatible with
-        // old version.
-        int is_email_valid = 1;
-        if (9u < account.size() && account[9].is_int())
-          is_email_valid = account[9].GetInt();
+  for (const auto& account : parsed_result.account()) {
+    if (account.display_email().empty() || account.obfuscated_id().empty()) {
+      continue;
+    }
 
-        int signed_out = 0;
-        if (14u < account.size() && account[14].is_int())
-          signed_out = account[14].GetInt();
-
-        int verified = 1;
-        if (15u < account.size() && account[15].is_int())
-          verified = account[15].GetInt();
-
-        std::string gaia_id;
-        // ListAccounts must also return the Gaia Id.
-        if (10u < account.size() && account[10].is_string() &&
-            !(gaia_id = account[10].GetString()).empty()) {
-          ListedAccount listed_account;
-          listed_account.email = CanonicalizeEmail(email);
-          listed_account.gaia_id = gaia_id;
-          listed_account.valid = is_email_valid != 0;
-          listed_account.signed_out = signed_out != 0;
-          listed_account.verified = verified != 0;
-          listed_account.raw_email = email;
-          auto* accounts_ptr =
-              listed_account.signed_out ? signed_out_accounts : accounts;
-          if (accounts_ptr)
-            accounts_ptr->push_back(listed_account);
-        }
-      }
+    ListedAccount listed_account;
+    listed_account.email = CanonicalizeEmail(account.display_email());
+    listed_account.gaia_id = GaiaId(account.obfuscated_id());
+    // Assume the account is valid if unspecified for backcompat.
+    listed_account.valid =
+        !account.has_valid_session() || account.valid_session();
+    listed_account.signed_out =
+        account.has_signed_out() && account.signed_out();
+    listed_account.verified =
+        !account.has_is_verified() || account.is_verified();
+    listed_account.raw_email = account.display_email();
+    if (accounts) {
+      accounts->push_back(std::move(listed_account));
     }
   }
 
@@ -201,7 +190,7 @@ bool ParseListAccountsData(std::string_view data,
 
 bool ParseOAuth2MintTokenConsentResult(std::string_view consent_result,
                                        bool* approved,
-                                       std::string* gaia_id) {
+                                       GaiaId* gaia_id) {
   DCHECK(approved);
   DCHECK(gaia_id);
 
@@ -220,15 +209,15 @@ bool ParseOAuth2MintTokenConsentResult(std::string_view consent_result,
   }
 
   *approved = parsed_result.approved();
-  *gaia_id = parsed_result.obfuscated_id();
+  *gaia_id = GaiaId(parsed_result.obfuscated_id());
   return true;
 }
 
-std::string CreateBoundOAuthToken(const std::string& gaia_id,
+std::string CreateBoundOAuthToken(const GaiaId& gaia_id,
                                   const std::string& refresh_token,
                                   const std::string& binding_key_assertion) {
   BoundOAuthToken bound_oauth_token;
-  bound_oauth_token.set_gaia_id(gaia_id);
+  bound_oauth_token.set_gaia_id(gaia_id.ToString());
   bound_oauth_token.set_token(refresh_token);
   bound_oauth_token.set_token_binding_assertion(binding_key_assertion);
 
@@ -242,6 +231,26 @@ std::string CreateBoundOAuthToken(const std::string& gaia_id,
   base::Base64UrlEncode(serialized, base::Base64UrlEncodePolicy::OMIT_PADDING,
                         &base64_encoded);
   return base64_encoded;
+}
+
+std::string CreateMultiOAuthHeader(
+    const std::vector<MultiloginAccountAuthCredentials>& accounts) {
+  gaia::MultiOAuthHeader header;
+  for (const MultiloginAccountAuthCredentials& account : accounts) {
+    gaia::MultiOAuthHeader::AccountRequest request;
+    request.set_gaia_id(account.gaia_id.ToString());
+    request.set_token(account.token);
+    if (!account.token_binding_assertion.empty()) {
+      request.set_token_binding_assertion(account.token_binding_assertion);
+    }
+    header.mutable_account_requests()->Add(std::move(request));
+  }
+
+  std::string base64_encoded_header;
+  base::Base64UrlEncode(header.SerializeAsString(),
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &base64_encoded_header);
+  return base64_encoded_header;
 }
 
 }  // namespace gaia

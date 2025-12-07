@@ -24,6 +24,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/trace_event/trace_config.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "content/browser/tracing/grit/tracing_resources.h"
@@ -58,7 +59,7 @@ void OnGotCategories(WebUIDataSource::GotDataCallback callback,
   }
 
   auto res = base::MakeRefCounted<base::RefCountedString>();
-  base::JSONWriter::Write(category_list, &res->as_string());
+  res->as_string() = base::WriteJson(category_list).value_or("");
   std::move(callback).Run(res);
 }
 
@@ -257,7 +258,8 @@ bool TracingUI::GetTracingOptions(const std::string& data64,
     return false;
   }
 
-  std::optional<base::Value> options = base::JSONReader::Read(data);
+  std::optional<base::Value> options =
+      base::JSONReader::Read(data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!options) {
     LOG(ERROR) << "Options were not valid JSON";
     return false;

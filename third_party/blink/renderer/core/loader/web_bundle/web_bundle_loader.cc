@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/subresource_web_bundle.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -91,8 +92,8 @@ void WebBundleLoader::Clone(
 void WebBundleLoader::OnWebBundleError(
     network::mojom::blink::WebBundleErrorType type,
     const String& message) {
-  subresource_web_bundle_->OnWebBundleError(url_.ElidedString() + ": " +
-                                            message);
+  subresource_web_bundle_->OnWebBundleError(
+      StrCat({url_.ElidedString(), ": ", message}));
 }
 
 void WebBundleLoader::OnWebBundleLoadFinished(bool success) {

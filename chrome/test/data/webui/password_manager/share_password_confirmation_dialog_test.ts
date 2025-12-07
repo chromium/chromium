@@ -21,7 +21,7 @@ const HTTP_CHANGE_PASSWORD_URL = 'http://example.com';
 
 function assertVisibleTextContent(element: HTMLElement, expectedText: string) {
   assertTrue(isVisible(element));
-  assertEquals(expectedText, element?.textContent!.trim());
+  assertEquals(expectedText, element?.textContent.trim());
 }
 
 suite('SharePasswordConfirmationDialogTest', function() {

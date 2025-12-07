@@ -81,7 +81,12 @@ involved, members of the security team, and the original reporter.
 
 The developer will author a fix and a regression test for the security issue
 The CL description should mention the bug number in a
-[`Bug:` or `Fixed:` footer](../contributing.md#cl-footer-reference).
+[`Bug:` or `Fixed:` footer](../contributing.md#cl-footer-reference). The CL
+description should be as complete as possible and does not need to hide that
+the CL fixes a security issue. In general the CL should include a regression
+test - in limited cases where the issue can easily be triggered from a
+JavaScript sample the test can be landed later.
+
 Once the CL lands, it will not yet be widely available to users, since it is
 only in the `main` branch. Unless further steps are taken (see below), the fix
 will roll out as part of the normal [release

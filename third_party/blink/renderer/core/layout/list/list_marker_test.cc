@@ -43,14 +43,14 @@ class ListMarkerTest : public RenderingTest {
     declaration.Append("}");
     Element* sheet =
         GetDocument().CreateElementForBinding(AtomicString("style"));
-    sheet->setInnerHTML(declaration.ToString());
+    sheet->SetInnerHTMLWithoutTrustedTypes(declaration.ToString());
     GetDocument().body()->appendChild(sheet);
   }
 };
 
 TEST_F(ListMarkerTest, FallbackToTextWhenImagesDisable) {
   GetDocument().GetSettings()->SetImagesEnabled(false);
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       #decimal {
           list-style-type:decimal;
@@ -69,7 +69,7 @@ TEST_F(ListMarkerTest, FallbackToTextWhenImagesDisable) {
 }
 
 TEST_F(ListMarkerTest, AddCounterStyle) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       @counter-style foo {
         system: fixed;
@@ -103,7 +103,7 @@ TEST_F(ListMarkerTest, AddCounterStyle) {
 }
 
 TEST_F(ListMarkerTest, RemoveCounterStyle) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style id="foo-sheet">
       @counter-style foo {
         system: fixed;
@@ -133,7 +133,7 @@ TEST_F(ListMarkerTest, RemoveCounterStyle) {
 }
 
 TEST_F(ListMarkerTest, OverridePredefinedCounterStyle) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <ol>
       <li id="decimal" style="list-style-type: decimal"></li>
       <li id="upper-roman" style="list-style-type: upper-roman"></li>
@@ -158,7 +158,7 @@ TEST_F(ListMarkerTest, OverridePredefinedCounterStyle) {
 }
 
 TEST_F(ListMarkerTest, RemoveOverrideOfPredefinedCounterStyle) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style id="to-remove">
       @counter-style upper-roman {
         system: fixed;
@@ -188,7 +188,7 @@ TEST_F(ListMarkerTest, RemoveOverrideOfPredefinedCounterStyle) {
 }
 
 TEST_F(ListMarkerTest, OverrideSameScopeCounterStyle) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       @counter-style foo {
         system: fixed;
@@ -218,7 +218,7 @@ TEST_F(ListMarkerTest, OverrideSameScopeCounterStyle) {
 }
 
 TEST_F(ListMarkerTest, RemoveOverrideOfSameScopeCounterStyle) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       @counter-style foo {
         system: fixed;
@@ -254,7 +254,7 @@ TEST_F(ListMarkerTest, RemoveOverrideOfSameScopeCounterStyle) {
 }
 
 TEST_F(ListMarkerTest, ModifyShadowDOMWithOwnCounterStyles) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       @counter-style foo {
         system: fixed;
@@ -276,7 +276,7 @@ TEST_F(ListMarkerTest, ModifyShadowDOMWithOwnCounterStyles) {
   // Attach a shadow tree with counter styles. Shouldn't affect anything outside
   ShadowRoot& shadow1 = GetElementById("host1")->AttachShadowRootForTesting(
       ShadowRootMode::kOpen);
-  shadow1.setInnerHTML(R"HTML(
+  shadow1.SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       @counter-style foo {
         system: fixed;
@@ -299,7 +299,7 @@ TEST_F(ListMarkerTest, ModifyShadowDOMWithOwnCounterStyles) {
   // outside.
   ShadowRoot& shadow2 = GetElementById("host2")->AttachShadowRootForTesting(
       ShadowRootMode::kOpen);
-  shadow2.setInnerHTML(R"HTML(
+  shadow2.SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       @counter-style foo {
         system: fixed;
@@ -347,7 +347,7 @@ TEST_F(ListMarkerTest, WidthOfSymbolForFontSizeZero) {
 
 // crbug.com/1310599
 TEST_F(ListMarkerTest, InlineMarginsForOutside) {
-  GetDocument().body()->setInnerHTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       R"HTML(<details open><summary id="target" style="
   font-size: 536870912px;
   zoom: 65536;

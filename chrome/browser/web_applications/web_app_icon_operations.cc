@@ -5,11 +5,13 @@
 #include "chrome/browser/web_applications/web_app_icon_operations.h"
 
 #include <set>
+#include <variant>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/containers/extend.h"
 #include "base/containers/flat_set.h"
+#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -33,7 +35,7 @@ base::flat_set<GURL> GetAllIconUrlsForSizeAny(
 
 void PopulateIconUrlsForSizeAnyIfNeeded(
     std::vector<IconUrlWithSize>& icon_vector,
-    base::flat_set<GURL> icon_urls_to_download_if_any,
+    const base::flat_set<GURL>& icon_urls_to_download_if_any,
     SizeSet icon_sizes_found,
     bool is_app_icon = false) {
   std::set<SquareSizePx> sizes_to_generate = web_app::SizesToGenerate();
@@ -68,6 +70,16 @@ std::vector<IconUrlWithSize> GetAppIconUrls(
   std::vector<IconUrlWithSize> urls;
 
   for (const apps::IconInfo& info : web_app_info.manifest_icons) {
+    urls.push_back(IconUrlWithSize::CreateForUnspecifiedSize(info.url));
+  }
+
+  // This is usually not needed, since on production,
+  // `web_app_info.trusted_icons` is either empty or computed from
+  // `web_app_info.manifest_icons`. But some tests do not enforce this
+  // invariant, hence this is needed.
+  // In the end, the vector is converted into a set by
+  // `GetValidIconUrlsToDownload()`, so duplicates are removed.
+  for (const apps::IconInfo& info : web_app_info.trusted_icons) {
     urls.push_back(IconUrlWithSize::CreateForUnspecifiedSize(info.url));
   }
 
@@ -126,7 +138,7 @@ std::vector<IconUrlWithSize> GetHomeTabIcons(
     return urls;
   }
 
-  const auto& home_tab = absl::get<blink::Manifest::HomeTabParams>(
+  const auto& home_tab = std::get<blink::Manifest::HomeTabParams>(
       web_app_info.tab_strip.value().home_tab);
 
   for (const auto& icon : home_tab.icons) {
@@ -190,14 +202,22 @@ std::string IconUrlWithSize::ToString() const {
                             size.ToString().c_str());
 }
 
-IconUrlSizeSet GetValidIconUrlsToDownload(
-    const WebAppInstallInfo& web_app_info) {
+IconUrlSizeSet GetValidIconUrlsToDownload(const WebAppInstallInfo& web_app_info,
+                                          IconUrlExtractionOptions options) {
   std::vector<IconUrlWithSize> icon_urls_with_sizes;
 
-  base::Extend(icon_urls_with_sizes, GetAppIconUrls(web_app_info));
-  base::Extend(icon_urls_with_sizes, GetShortcutMenuIcons(web_app_info));
-  base::Extend(icon_urls_with_sizes, GetFileHandlingIcons(web_app_info));
-  base::Extend(icon_urls_with_sizes, GetHomeTabIcons(web_app_info));
+  if (options.product_icons) {
+    base::Extend(icon_urls_with_sizes, GetAppIconUrls(web_app_info));
+  }
+  if (options.shortcut_menu_item_icons) {
+    base::Extend(icon_urls_with_sizes, GetShortcutMenuIcons(web_app_info));
+  }
+  if (options.file_handling_icons) {
+    base::Extend(icon_urls_with_sizes, GetFileHandlingIcons(web_app_info));
+  }
+  if (options.home_tab_icons) {
+    base::Extend(icon_urls_with_sizes, GetHomeTabIcons(web_app_info));
+  }
 
   return RemoveDuplicates(std::move(icon_urls_with_sizes));
 }

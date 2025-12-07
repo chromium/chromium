@@ -1,0 +1,44 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_LENS_OVERLAY_COORDINATOR_LENS_RESULT_PAGE_MEDIATOR_DELEGATE_H_
+#define IOS_CHROME_BROWSER_LENS_OVERLAY_COORDINATOR_LENS_RESULT_PAGE_MEDIATOR_DELEGATE_H_
+
+#import <UIKit/UIKit.h>
+
+#import "components/lens/lens_overlay_new_tab_source.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_tab_change_audience.h"
+
+@class LensResultPageMediator;
+class GURL;
+namespace web {
+class WebState;
+}  // namespace web
+
+/// Delegate for the lens result page mediator.
+@protocol LensResultPageMediatorDelegate <NSObject>
+
+/// Called when the web state is shown.
+- (void)lensResultPageWebStateShown;
+
+/// Called when the web state gets destroyed.
+- (void)lensResultPageWebStateDestroyed;
+
+/// Called when the web view finished swiping with the given direction.
+- (void)lensResultPageWebViewDidSwipeWithDirection:
+    (UISwipeGestureRecognizerDirection)direction;
+
+/// Called when the active `webState` in LensResultPageMediator changes.
+- (void)lensResultPageDidChangeActiveWebState:(web::WebState*)webState;
+
+/// Called when a new tab has been opened by the lens result page mediator.
+- (void)lensResultPageMediator:(LensResultPageMediator*)mediator
+       didOpenNewTabFromSource:(lens::LensOverlayNewTabSource)newTabSource;
+
+/// Called when an URL needs to be opened in a new tab.
+- (void)lensResultPageOpenURLInNewTabRequested:(GURL)URL;
+
+@end
+
+#endif  // IOS_CHROME_BROWSER_LENS_OVERLAY_COORDINATOR_LENS_RESULT_PAGE_MEDIATOR_DELEGATE_H_

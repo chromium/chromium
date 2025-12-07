@@ -16,8 +16,8 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/leveldb_proto/internal/leveldb_database.h"
 #include "components/leveldb_proto/internal/proto_database_selector.h"
-#include "components/leveldb_proto/internal/shared_proto_database.h"
 #include "components/leveldb_proto/internal/shared_proto_database_provider.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/leveldb_proto/public/shared_proto_database_client_list.h"
@@ -167,22 +167,15 @@ class ProtoDatabaseImpl : public ProtoDatabase<P, T> {
 
 namespace {
 
-template <typename P,
-          typename T,
-          std::enable_if_t<std::is_base_of<google::protobuf::MessageLite,
-                                           T>::value>* = nullptr>
+template <typename P, typename T>
 std::string SerializeAsString(T* entry) {
-  return entry->SerializeAsString();
-}
-
-template <typename P,
-          typename T,
-          std::enable_if_t<!std::is_base_of<google::protobuf::MessageLite,
-                                            T>::value>* = nullptr>
-std::string SerializeAsString(T* entry) {
-  P proto;
-  DataToProto(entry, &proto);
-  return proto.SerializeAsString();
+  if constexpr (std::is_base_of_v<google::protobuf::MessageLite, T>) {
+    return entry->SerializeAsString();
+  } else {
+    P proto;
+    DataToProto(entry, &proto);
+    return proto.SerializeAsString();
+  }
 }
 
 template <typename P>
@@ -195,25 +188,19 @@ bool ParseToProto(const std::string& serialized_entry, P* proto) {
   return true;
 }
 
-template <typename P,
-          typename T,
-          std::enable_if_t<std::is_base_of<google::protobuf::MessageLite,
-                                           T>::value>* = nullptr>
+template <typename P, typename T>
 bool ParseToClientType(const std::string& serialized_entry, T* output) {
-  return ParseToProto<T>(serialized_entry, output);
-}
+  if constexpr (std::is_base_of_v<google::protobuf::MessageLite, T>) {
+    return ParseToProto<T>(serialized_entry, output);
+  } else {
+    P proto;
+    if (!ParseToProto<P>(serialized_entry, &proto)) {
+      return false;
+    }
 
-template <typename P,
-          typename T,
-          std::enable_if_t<!std::is_base_of<google::protobuf::MessageLite,
-                                            T>::value>* = nullptr>
-bool ParseToClientType(const std::string& serialized_entry, T* entry) {
-  P proto;
-  if (!ParseToProto<P>(serialized_entry, &proto))
-    return false;
-
-  ProtoToData(&proto, entry);
-  return true;
+    ProtoToData(&proto, output);
+    return true;
+  }
 }
 
 // Update transactions need to serialize the entries to be updated on background

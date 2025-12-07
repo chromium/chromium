@@ -13,18 +13,18 @@
 #include "chrome/browser/apps/browser_instance/web_contents_instance_id_utils.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/prefs/pref_service.h"
 #include "components/webapps/browser/banners/installable_web_app_check_result.h"
 #include "components/webapps/browser/banners/web_app_banner_data.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/installation/installation.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/aura/window.h"
@@ -61,12 +61,20 @@ aura::Window* GetWindowWithBrowser(Browser* browser) {
 }
 
 aura::Window* GetWindowWithTabStripModel(TabStripModel* tab_strip_model) {
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->tab_strip_model() == tab_strip_model) {
-      return GetWindowWithBrowser(browser);
-    }
-  }
-  return nullptr;
+  aura::Window* found_window = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [tab_strip_model,
+       &found_window](BrowserWindowInterface* browser_window_interface) {
+        if (browser_window_interface->GetTabStripModel() == tab_strip_model) {
+          if (ui::BaseWindow* const base_window =
+                  browser_window_interface->GetWindow()) {
+            found_window = base_window->GetNativeWindow();
+          }
+          return false;  // Stop iteration.
+        }
+        return true;  // Continue iteration.
+      });
+  return found_window;
 }
 
 wm::ActivationClient* GetActivationClient(aura::Window* window) {
@@ -468,7 +476,9 @@ void WebsiteMetrics::OnWebContentsUpdated(content::WebContents* web_contents) {
   }
 
   auto* const window =
-      GetWindowWithBrowser(chrome::FindBrowserWithTab(web_contents));
+      GetWindowWithBrowser(tabs::TabInterface::GetFromContents(web_contents)
+                               ->GetBrowserWindowInterface()
+                               ->GetBrowserForMigrationOnly());
   if (!window) {
     return;
   }

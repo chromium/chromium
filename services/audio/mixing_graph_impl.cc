@@ -2,19 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "services/audio/mixing_graph_impl.h"
 
 #include "base/compiler_specific.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/loopback_audio_converter.h"
+#include "media/base/vector_math.h"
 #include "services/audio/sync_mixing_graph_input.h"
 
 namespace audio {
@@ -23,22 +19,13 @@ std::unique_ptr<media::LoopbackAudioConverter> CreateConverter(
     const media::AudioParameters& input_params,
     const media::AudioParameters& output_params) {
   return std::make_unique<media::LoopbackAudioConverter>(
-      input_params, output_params, /*disable_fifo=*/true);
+      input_params, output_params, /*disable_fifo=*/false);
 }
 
 // Clamps all samples to the interval [-1, 1].
 void SanitizeOutput(media::AudioBus* bus) {
-  for (int channel = 0; channel < bus->channels(); ++channel) {
-    float* data = bus->channel(channel);
-    for (int frame = 0; frame < bus->frames(); frame++) {
-      float value = data[frame];
-      if (value * value <= 1.0f) [[likely]] {
-        continue;
-      }
-      // The sample is out of range. Negative values are clamped to -1. Positive
-      // values and NaN are clamped to 1.
-      data[frame] = value < 0.0f ? -1.0f : 1.0f;
-    }
+  for (auto channel : bus->AllChannels()) {
+    media::vector_math::FCLAMP(channel, channel);
   }
 }
 
@@ -98,7 +85,7 @@ MixingGraphImpl::MixingGraphImpl(const media::AudioParameters& output_params,
       create_converter_cb_(std::move(create_converter_cb)),
       overtime_logger_(
           std::make_unique<OvertimeLogger>(output_params.GetBufferDuration())),
-      main_converter_(output_params, output_params, /*disable_fifo=*/true) {}
+      main_converter_(output_params, output_params, /*disable_fifo=*/false) {}
 
 MixingGraphImpl::~MixingGraphImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
@@ -143,12 +130,18 @@ void MixingGraphImpl::AddInput(Input* input) {
   DCHECK(input_params.format() ==
          media::AudioParameters::AUDIO_PCM_LOW_LATENCY);
 
-  // Resampler input format is the same as output except sample rate.
+  // Resampler input format is the same as output except sample rate and frames
+  // per buffer.
   media::AudioParameters resampler_input_params(output_params_);
   resampler_input_params.set_sample_rate(input_params.sample_rate());
+  resampler_input_params.set_frames_per_buffer(
+      input_params.frames_per_buffer());
 
   // Channel mixer input format is the same as resampler input except channel
   // layout and channel count.
+  // TODO(crbug.com/406869460): Consider using full input parameters for
+  // channel mixer. This might allow AudioConverter to optimize (e.g., downmix)
+  // before resampling.
   media::AudioParameters channel_mixer_input_params(
       resampler_input_params.format(), input_params.channel_layout_config(),
       resampler_input_params.sample_rate(),
@@ -189,7 +182,7 @@ void MixingGraphImpl::Remove(const AudioConverterKey& key,
   }
 
   auto converter = converters_.find(key);
-  CHECK(converter != converters_.end(), base::NotFatalUntil::M130);
+  CHECK(converter != converters_.end());
   media::LoopbackAudioConverter* parent = converter->second.get();
   {
     base::AutoLock scoped_lock(lock_);

@@ -4,8 +4,9 @@
 
 #include "chromeos/ash/components/tether/connection_preserver_impl.h"
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/network/network_state.h"
@@ -123,7 +124,7 @@ std::string ConnectionPreserverImpl::GetPreferredPreservedConnectionDeviceId(
 
   std::vector<std::string> previously_connected_host_ids =
       tether_host_response_recorder_->GetPreviouslyConnectedHostIds();
-  const auto preferred_connection_id_it = base::ranges::find_if(
+  const auto preferred_connection_id_it = std::ranges::find_if(
       previously_connected_host_ids,
       [this, &device_id](auto previously_connected_id) {
         // Pick out whichever ID appears in the list first.

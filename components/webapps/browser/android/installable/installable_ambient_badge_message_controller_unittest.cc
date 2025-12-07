@@ -5,10 +5,12 @@
 #include "components/webapps/browser/android/installable/installable_ambient_badge_message_controller.h"
 
 #include "base/android/jni_android.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/messages/android/mock_message_dispatcher_bridge.h"
 #include "components/webapps/browser/android/installable/installable_ambient_badge_client.h"
 #include "components/webapps/browser/android/webapps_icon_utils.h"
+#include "components/webapps/browser/features.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -69,9 +71,7 @@ class InstallableAmbientBadgeMessageControllerTest
   messages::MockMessageDispatcherBridge message_dispatcher_bridge_;
   MockInstallableAmbientBadgeClient client_mock_;
   InstallableAmbientBadgeMessageController message_controller_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION messages::MessageWrapper* message_wrapper_ = nullptr;
+  raw_ptr<messages::MessageWrapper> message_wrapper_ = nullptr;
   SkBitmap test_icon;
 };
 
@@ -191,11 +191,7 @@ TEST_F(InstallableAmbientBadgeMessageControllerTest, MaskableIcon) {
   EXPECT_CALL(client_mock(), AddToHomescreenFromBadge);
   EXPECT_CALL(client_mock(), BadgeDismissed).Times(0);
   EXPECT_CALL(client_mock(), BadgeIgnored).Times(0);
-  if (WebappsIconUtils::DoesAndroidSupportMaskableIcons()) {
-    ExpectedIconChanged();
-  } else {
-    ExpectedIconUnchanged();
-  }
+  ExpectedIconChanged();
   TriggerActionClick();
 }
 
@@ -206,17 +202,6 @@ TEST_F(InstallableAmbientBadgeMessageControllerTest, Dismiss) {
   EXPECT_CALL(client_mock(), AddToHomescreenFromBadge).Times(0);
   EXPECT_CALL(client_mock(), BadgeDismissed);
   TriggerMessageDismissedWithGesture();
-}
-
-// Tests that when the user dismisses the message with a gesture, client's
-// BadgeDismissed method is called and the message is not enqueued
-// because of throttling.
-TEST_F(InstallableAmbientBadgeMessageControllerTest, Throttle) {
-  EnqueueMessage();
-  EXPECT_CALL(client_mock(), AddToHomescreenFromBadge).Times(0);
-  DismissMessage(true);
-  EnqueueMessageWithExpectNotCalled();
-  ASSERT_FALSE(message_controller()->IsMessageEnqueued());
 }
 
 // Tests that when the message is dismissed with the timer, client's

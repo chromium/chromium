@@ -14,12 +14,13 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_session_observer.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/remote_activity_notification_controller.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/start_crd_session_job_delegate.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "remoting/host/chromeos/chromeos_enterprise_params.h"
 #include "remoting/host/chromeos/remote_support_host_ash.h"
 #include "remoting/host/chromeos/session_id.h"
@@ -102,7 +103,9 @@ class CrdAdminSessionController : private StartCrdSessionJobDelegate,
   // reconnectable session has been re-established.
   void TryToReconnect(base::OnceClosure done_callback);
 
-  std::unique_ptr<CrdHostSession> CreateCrdHostSession();
+  std::unique_ptr<CrdHostSession> CreateCrdHostSession(
+      CrdSessionType crd_session_type,
+      UserSessionType user_session_type);
 
   bool IsCurrentSessionCurtained() const;
 
@@ -124,8 +127,10 @@ class CrdAdminSessionController : private StartCrdSessionJobDelegate,
       notification_controller_;
   std::unique_ptr<CrdHostSession> active_session_;
 
-  raw_ptr<ash::curtain::SecurityCurtainController> curtain_controller_ =
-      nullptr;
+  // May point to the SecurityCurtainController at destruction time. This is
+  // only during shutdown, allow it to dangle.
+  raw_ptr<ash::curtain::SecurityCurtainController, DisableDanglingPtrDetection>
+      curtain_controller_ = nullptr;
 
   // During unittests the `DeviceOAuth2TokenService` will be null and the code
   // will instead use this OAuth token to restart a reconnectable session.

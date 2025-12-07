@@ -44,7 +44,7 @@ uint BitInput::fgetbits()
 
 void BitInput::SetExternalBuffer(byte *Buf)
 {
-  if (InBuf!=NULL && !ExternalBuffer)
+  if (InBuf!=nullptr && !ExternalBuffer)
     delete[] InBuf;
   InBuf=Buf;
   ExternalBuffer=true;

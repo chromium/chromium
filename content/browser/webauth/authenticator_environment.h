@@ -12,8 +12,6 @@
 #include "base/no_destructor.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/common/content_export.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom-forward.h"
 
 namespace device {
 class FidoDiscoveryFactory;
@@ -56,13 +54,6 @@ class CONTENT_EXPORT AuthenticatorEnvironment : public FrameTreeNode::Observer {
   // environment is enabled for it, otherwise returns nullptr.
   VirtualAuthenticatorManagerImpl* MaybeGetVirtualAuthenticatorManager(
       FrameTreeNode* node);
-
-  // Adds the receiver to the virtual authenticator enabled for the |node|. The
-  // virtual authenticator must be enabled beforehand.
-  void AddVirtualAuthenticatorReceiver(
-      FrameTreeNode* node,
-      mojo::PendingReceiver<blink::test::mojom::VirtualAuthenticatorManager>
-          receiver);
 
   // Returns whether |node| has the virtual authenticator environment enabled
   // with a user-verifying platform installed in that environment.

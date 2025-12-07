@@ -45,10 +45,6 @@ const base::TimeDelta kDownloadImmediateRetryDelay = base::Seconds(1);
 // download will not be affected.
 const base::TimeDelta kAutoResumptionExpireInterval = base::Days(7);
 
-// The task type to use for scheduling a task.
-const download::DownloadTaskType kResumptionTaskType =
-    download::DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_TASK;
-
 const download::DownloadTaskType kUnmeteredDownloadsTaskType =
     download::DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_UNMETERED_TASK;
 
@@ -74,9 +70,7 @@ bool IsConnected(network::mojom::ConnectionType type) {
 
 }  // namespace
 
-AutoResumptionHandler::Config::Config()
-    : auto_resumption_size_limit(0),
-      is_auto_resumption_enabled_in_native(false) {}
+AutoResumptionHandler::Config::Config() : auto_resumption_size_limit(0) {}
 
 // static
 void AutoResumptionHandler::Create(
@@ -114,6 +108,7 @@ AutoResumptionHandler::~AutoResumptionHandler() {
 void AutoResumptionHandler::SetResumableDownloads(
     const std::vector<raw_ptr<download::DownloadItem, VectorExperimental>>&
         downloads) {
+  is_resumable_downloads_initialized_ = true;
   resumable_downloads_.clear();
   for (download::DownloadItem* download : downloads) {
     if (!IsAutoResumableDownload(download))
@@ -123,11 +118,21 @@ void AutoResumptionHandler::SetResumableDownloads(
     download->AddObserver(this);
   }
 
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&AutoResumptionHandler::ResumePendingDownloads,
-                     weak_factory_.GetWeakPtr()),
-      kAutoResumeStartupDelay);
+  if (is_waiting_for_resumable_downloads_) {
+    // Chrome was launched from background and has been waiting for downloads
+    // database initialization. We can resume the downloads now.
+    ResumePendingDownloads();
+    is_waiting_for_resumable_downloads_ = false;
+  } else {
+    // User probably just launched chrome in foreground. We should wait few
+    // seconds before resuming downloads in order to avoid overloading rest of
+    // the system during startup.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&AutoResumptionHandler::ResumePendingDownloads,
+                       weak_factory_.GetWeakPtr()),
+        kAutoResumeStartupDelay);
+  }
 }
 
 bool AutoResumptionHandler::IsActiveNetworkMetered() const {
@@ -188,10 +193,7 @@ void AutoResumptionHandler::OnDownloadDestroyed(download::DownloadItem* item) {
 }
 
 void AutoResumptionHandler::ResumeDownloadImmediately() {
-  if (!config_->is_auto_resumption_enabled_in_native)
-    return;
-
-  for (download::DownloadItem* download : std::move(downloads_to_retry_)) {
+  for (download::DownloadItem* download : downloads_to_retry_) {
     if (ShouldResumeNow(download))
       download->Resume(false);
     else
@@ -202,8 +204,10 @@ void AutoResumptionHandler::ResumeDownloadImmediately() {
 
 void AutoResumptionHandler::OnStartScheduledTask(
     DownloadTaskType type,
-    download::TaskFinishedCallback callback) {
-  task_manager_->OnStartScheduledTask(type, std::move(callback));
+    download::TaskFinishedCallback task_finished_callback,
+    TaskNotifyCallback task_notify_callback) {
+  task_manager_->OnStartScheduledTask(type, std::move(task_finished_callback));
+  task_notify_callback_ = std::move(task_notify_callback);
   ResumePendingDownloads();
 }
 
@@ -232,47 +236,9 @@ void AutoResumptionHandler::RecomputeTaskParams() {
 // At any point either a task is running or is scheduled but not both, which is
 // handled by TaskManager.
 void AutoResumptionHandler::RescheduleTaskIfNecessary() {
-  if (!config_->is_auto_resumption_enabled_in_native)
-    return;
-
   recompute_task_params_scheduled_ = false;
-
-  if (base::FeatureList::IsEnabled(features::kDownloadsMigrateToJobsAPI)) {
-    RescheduleTaskIfNecessaryForTaskType(kUnmeteredDownloadsTaskType);
-    RescheduleTaskIfNecessaryForTaskType(kAnyNetworkDownloadsTaskType);
-    return;
-  }
-
-  DownloadTaskType task_type = kResumptionTaskType;
-
-  bool has_resumable_downloads = false;
-  bool has_actionable_downloads = false;
-  bool can_download_on_metered = false;
-
-  for (auto& pair : resumable_downloads_) {
-    download::DownloadItem* download = pair.second;
-    if (!IsAutoResumableDownload(download))
-      continue;
-
-    has_resumable_downloads = true;
-    has_actionable_downloads |= ShouldResumeNow(download);
-    can_download_on_metered |= download->AllowMetered();
-  }
-
-  if (!has_actionable_downloads) {
-    task_manager_->NotifyTaskFinished(task_type, false);
-  }
-
-  if (!has_resumable_downloads) {
-    task_manager_->UnscheduleTask(task_type);
-    return;
-  }
-
-  download::TaskManager::TaskParams task_params;
-  task_params.require_unmetered_network = !can_download_on_metered;
-  task_params.window_start_time_seconds = kWindowStartTimeSeconds;
-  task_params.window_end_time_seconds = kWindowEndTimeSeconds;
-  task_manager_->ScheduleTask(task_type, task_params);
+  RescheduleTaskIfNecessaryForTaskType(kUnmeteredDownloadsTaskType);
+  RescheduleTaskIfNecessaryForTaskType(kAnyNetworkDownloadsTaskType);
 }
 
 // Go through all the downloads. Filter out only the ones having matching
@@ -299,6 +265,12 @@ void AutoResumptionHandler::RescheduleTaskIfNecessaryForTaskType(
       continue;
     }
 
+    // Transient downloads (mainly inline pdf downloads) don't need a task as
+    // they don't have a notification in UI.
+    if (download->IsTransient()) {
+      continue;
+    }
+
     has_resumable_downloads = true;
     has_actionable_downloads |= ShouldResumeNow(download);
   }
@@ -322,8 +294,12 @@ void AutoResumptionHandler::RescheduleTaskIfNecessaryForTaskType(
 }
 
 void AutoResumptionHandler::ResumePendingDownloads() {
-  if (!config_->is_auto_resumption_enabled_in_native)
+  if (!is_resumable_downloads_initialized_) {
+    // If `SetResumableDownloads` hasn't been invoked (i.e. download manager
+    // hasn't been initialized), we should wait.
+    is_waiting_for_resumable_downloads_ = true;
     return;
+  }
 
   int resumed = MaybeResumeDownloads(resumable_downloads_);
 
@@ -333,7 +309,7 @@ void AutoResumptionHandler::ResumePendingDownloads() {
 }
 
 int AutoResumptionHandler::MaybeResumeDownloads(
-    std::map<std::string, DownloadItem*> downloads) {
+    std::map<std::string, raw_ptr<DownloadItem, CtnExperimental>> downloads) {
   int resumed = 0;
   for (const auto& pair : downloads) {
     DownloadItem* download = pair.second;
@@ -342,6 +318,12 @@ int AutoResumptionHandler::MaybeResumeDownloads(
 
     if (ShouldResumeNow(download)) {
       download->Resume(false);
+      // Inform Java side to post a notification immediately so the background
+      // task doesn't need to wait for the OnDownloadUpdated() call as it may
+      // trigger ANR if the call comes too late.
+      if (!task_notify_callback_.is_null()) {
+        std::move(task_notify_callback_).Run(download);
+      }
       resumed++;
     }
   }
@@ -378,7 +360,7 @@ bool AutoResumptionHandler::IsAutoResumableDownload(
              IsInterruptedDownloadAutoResumable(
                  item, config_->auto_resumption_size_limit);
     case download::DownloadItem::MAX_DOWNLOAD_STATE:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   return false;

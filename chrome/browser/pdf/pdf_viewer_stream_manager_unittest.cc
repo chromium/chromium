@@ -87,7 +87,8 @@ class PdfViewerStreamManagerTest : public ChromeRenderViewHostTestHarness {
 TEST_F(PdfViewerStreamManagerTest, AddAndGetStreamContainer) {
   content::RenderFrameHost* embedder_host =
       NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
-  int frame_tree_node_id = embedder_host->GetFrameTreeNodeId();
+  content::FrameTreeNodeId frame_tree_node_id =
+      embedder_host->GetFrameTreeNodeId();
 
   PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
   manager->AddStreamContainer(frame_tree_node_id, "internal_id",
@@ -117,7 +118,8 @@ TEST_F(PdfViewerStreamManagerTest,
        AddStreamContainerSameFrameTreeNodeIdUnclaimed) {
   content::RenderFrameHost* embedder_host =
       NavigateAndCommit(main_rfh(), GURL(kOriginalUrl2));
-  int frame_tree_node_id = embedder_host->GetFrameTreeNodeId();
+  content::FrameTreeNodeId frame_tree_node_id =
+      embedder_host->GetFrameTreeNodeId();
 
   PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
   manager->AddStreamContainer(frame_tree_node_id, "internal_id1",
@@ -329,7 +331,8 @@ TEST_F(PdfViewerStreamManagerTest, DeleteWithMultipleStreamContainers) {
 TEST_F(PdfViewerStreamManagerTest, DeleteUnclaimedStreamInfo) {
   content::RenderFrameHost* unclaimed_embedder_host =
       NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
-  int frame_tree_node_id = unclaimed_embedder_host->GetFrameTreeNodeId();
+  content::FrameTreeNodeId frame_tree_node_id =
+      unclaimed_embedder_host->GetFrameTreeNodeId();
 
   PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
   manager->AddStreamContainer(frame_tree_node_id, "internal_id",
@@ -539,7 +542,8 @@ TEST_F(PdfViewerStreamManagerTest, ContentRenderFrameHostChanged) {
 TEST_F(PdfViewerStreamManagerTest, EmbedderFrameDeleted) {
   content::RenderFrameHost* embedder_host =
       NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
-  int frame_tree_node_id = embedder_host->GetFrameTreeNodeId();
+  content::FrameTreeNodeId frame_tree_node_id =
+      embedder_host->GetFrameTreeNodeId();
 
   PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
   manager->AddStreamContainer(frame_tree_node_id, "internal_id",
@@ -559,7 +563,8 @@ TEST_F(PdfViewerStreamManagerTest, ExtensionFrameDeleted) {
   embedder_host = NavigateAndCommit(embedder_host, GURL(kOriginalUrl1));
   auto* extension_host =
       CreateChildRenderFrameHost(embedder_host, "extension host");
-  int frame_tree_node_id = extension_host->GetFrameTreeNodeId();
+  content::FrameTreeNodeId frame_tree_node_id =
+      extension_host->GetFrameTreeNodeId();
 
   PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
   manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
@@ -590,7 +595,8 @@ TEST_F(PdfViewerStreamManagerTest, ContentFrameDeleted) {
 
   auto* content_host =
       CreateChildRenderFrameHost(extension_host, "content host");
-  int frame_tree_node_id = content_host->GetFrameTreeNodeId();
+  content::FrameTreeNodeId frame_tree_node_id =
+      content_host->GetFrameTreeNodeId();
 
   PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
   manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
@@ -621,7 +627,8 @@ TEST_F(PdfViewerStreamManagerTest,
   auto* extension_host =
       CreateChildRenderFrameHost(embedder_host, "extension host");
   auto* pdf_host = CreateChildRenderFrameHost(extension_host, "pdf host");
-  int content_frame_tree_node_id = pdf_host->GetFrameTreeNodeId();
+  content::FrameTreeNodeId content_frame_tree_node_id =
+      pdf_host->GetFrameTreeNodeId();
 
   PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
   manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
@@ -636,13 +643,12 @@ TEST_F(PdfViewerStreamManagerTest,
 
   ASSERT_TRUE(pdf_viewer_stream_manager());
 
-  NiceMock<content::MockNavigationHandle> navigation_handle;
+  NiceMock<content::MockNavigationHandle> navigation_handle(GURL(kOriginalUrl1),
+                                                            pdf_host);
 
   // Set `navigation_handle`'s frame host to a grandchild frame host. This acts
   // as the PDF frame host.
   ON_CALL(navigation_handle, IsPdf).WillByDefault(Return(true));
-  ON_CALL(navigation_handle, GetFrameTreeNodeId)
-      .WillByDefault(Return(content_frame_tree_node_id));
   navigation_handle.set_render_frame_host(pdf_host);
 
   // Start the navigation. The content host frame tree node ID should now be
@@ -800,6 +806,65 @@ TEST_F(PdfViewerStreamManagerTest, ReadyToCommitNavigationClaimAndReplace) {
   EXPECT_TRUE(manager->GetStreamContainer(embedder_host));
   EXPECT_FALSE(original_stream);
   EXPECT_TRUE(pdf_viewer_stream_manager());
+}
+
+// If the PDF URL is reloaded during a PDF load, `PdfViewerStreamManager` should
+// ignore the initial PDF content frame navigation.
+TEST_F(PdfViewerStreamManagerTest,
+       DidFinishNavigationReloadOverlappingNavigations) {
+  const GURL pdf_url(kOriginalUrl1);
+
+  // Set up the first PDF load and initial PDF content navigation handle.
+  content::RenderFrameHost* embedder_host =
+      NavigateAndCommit(main_rfh(), pdf_url);
+  auto* extension_host1 =
+      CreateChildRenderFrameHost(embedder_host, "extension host1");
+  auto* pdf_host1 = CreateChildRenderFrameHost(extension_host1, "pdf host1");
+
+  PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
+  manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
+                              "internal_id1",
+                              pdf_test_util::GenerateSampleStreamContainer(1));
+  manager->ClaimStreamInfoForTesting(embedder_host);
+  ASSERT_TRUE(manager->GetStreamContainer(embedder_host));
+
+  manager->SetContentFrameTreeNodeIdForTesting(embedder_host,
+                                               pdf_host1->GetFrameTreeNodeId());
+
+  NiceMock<content::MockNavigationHandle> navigation_handle1(pdf_url,
+                                                             pdf_host1);
+  ON_CALL(navigation_handle1, IsPdf).WillByDefault(Return(true));
+
+  // Before processing the initial PDF content navigation handle, "reload" the
+  // URL. The embedder host will stay the same, but there will be a new PDF
+  // content frame and navigation handle. The stream info will be overridden.
+  // Do not use `NavigateAndCommit()` here, as it would delete `manager` (which
+  // does not happen in production code).
+  auto* extension_host2 =
+      CreateChildRenderFrameHost(embedder_host, "extension host2");
+  auto* pdf_host2 = CreateChildRenderFrameHost(extension_host2, "pdf host2");
+  manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
+                              "internal_id1",
+                              pdf_test_util::GenerateSampleStreamContainer(1));
+  manager->ClaimStreamInfoForTesting(embedder_host);
+  ASSERT_TRUE(manager->GetStreamContainer(embedder_host));
+
+  manager->SetContentFrameTreeNodeIdForTesting(embedder_host,
+                                               pdf_host2->GetFrameTreeNodeId());
+
+  NiceMock<content::MockNavigationHandle> navigation_handle2(pdf_url,
+                                                             pdf_host2);
+  ON_CALL(navigation_handle2, IsPdf).WillByDefault(Return(true));
+
+  EXPECT_FALSE(manager->DidPdfContentNavigate(embedder_host));
+
+  // The initial PDF content navigation should not update any stream state.
+  manager->DidFinishNavigation(&navigation_handle1);
+  EXPECT_FALSE(manager->DidPdfContentNavigate(embedder_host));
+
+  // The new, correct PDF content navigation should update the stream state.
+  manager->DidFinishNavigation(&navigation_handle2);
+  EXPECT_TRUE(manager->DidPdfContentNavigate(embedder_host));
 }
 
 }  // namespace pdf

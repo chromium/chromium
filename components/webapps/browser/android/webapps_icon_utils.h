@@ -46,10 +46,6 @@ class WebappsIconUtils {
   static int GetIdealIconSizeForIconType(webapk::Image::Usage usage,
                                          webapk::Image::Purpose purpose);
 
-  // Returns if the Android version supports Adaptive Icon (i.e. API level >=
-  // 26)
-  static bool DoesAndroidSupportMaskableIcons();
-
   // Finalize the launcher icon from |icon|. |start_url| is used to generate the
   // icon if |icon| is empty or is not large enough. When complete, posts
   // |callback| on |ui_thread_task_runner| binding:
@@ -60,6 +56,10 @@ class WebappsIconUtils {
       const GURL& url,
       scoped_refptr<base::SequencedTaskRunner> ui_thread_task_runner,
       base::OnceCallback<void(const SkBitmap&, bool)> callback);
+
+  // Generates a home screen icon for the web page at `page_url`. The icon is
+  // a single letter on a grey background.
+  static SkBitmap GenerateHomeScreenIconInBackground(const GURL& page_url);
 
   // Generate an adaptive icon for given maskable icon bitmap.
   static SkBitmap GenerateAdaptiveIconBitmap(const SkBitmap& icon);

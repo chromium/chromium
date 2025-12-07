@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_VISITED_URL_RANKING_PUBLIC_FEATURES_H_
 #define COMPONENTS_VISITED_URL_RANKING_PUBLIC_FEATURES_H_
 
+#include <string>
+
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
@@ -12,6 +14,16 @@ namespace visited_url_ranking::features {
 
 // Core feature flag for Visited URL Ranking service.
 BASE_DECLARE_FEATURE(kVisitedURLRankingService);
+
+// Parameter determining if the History data fetcher should discard zero ms
+// duration visits when computing computing history based URL visit
+// aggregate data.
+extern const base::FeatureParam<bool>
+    kVisitedURLRankingHistoryFetcherDiscardZeroDurationVisits;
+
+// Parameter determining if the actions used to train the model should
+// continue to be sent to the segmentation service.
+extern const base::FeatureParam<bool> kVisitedURLRankingRecordActions;
 
 // Parameter determining the fetch option's default query duration in hours.
 extern const char kVisitedURLRankingFetchDurationInHoursParam[];
@@ -52,11 +64,93 @@ extern const base::FeatureParam<bool> kVisitedURLRankingDeduplicationFallback;
 extern const base::FeatureParam<bool>
     kVisitedURLRankingDeduplicationUpdateScheme;
 
+// Parameter determining if the URL path should be removed when computing the
+// URL deduplication key.
+extern const base::FeatureParam<bool> kVisitedURLRankingDeduplicationClearPath;
+
+// Parameter determining if the page's title should be included when computing
+// the URL deduplication key.
+extern const base::FeatureParam<bool>
+    kVisitedURLRankingDeduplicationIncludeTitle;
+
 // Parameter determining which prefixes should be excluded. i.e.
 // "www.google.com" would become "google.com" if "www." is excluded.
 extern const base::FeatureParam<std::string>
     kVisitedURLRankingDeduplicationExcludedPrefixes;
 
+// Feature flag for enabling URL visit resumption decorators.
+BASE_DECLARE_FEATURE(kVisitedURLRankingDecorations);
+
+// Parameter determining what the minimum visits for a time of day should be
+// used when computing decorators.
+extern const base::FeatureParam<int> kVisitedURLRankingDecorationTimeOfDay;
+
+// Parameter determining what the minimum visits overall should be
+// used when computing decorators.
+extern const base::FeatureParam<int>
+    kVisitedURLRankingFrequentlyVisitedThreshold;
+
+// Parameter determining what the maximum relative time (in minutes)
+// to display the decoration string "You just visited".
+extern const base::FeatureParam<int>
+    kVisitedURLRankingDecorationRecentlyVisitedMinutesThreshold;
+
+// Parameter determining what result types to request when fetching URL
+// visit aggregate data.
+extern const base::FeatureParam<std::string> kVisitedURLRankingResultTypesParam;
+
+// Feature flag for enabling use of score threshold for filtering visits.
+BASE_DECLARE_FEATURE(kVisitedURLRankingScoreThreshold);
+
+// Parameter determining the threshold for active local tabs.
+extern const base::FeatureParam<double>
+    kVisitedURLRankingScoreThresholdActiveLocalTab;
+
+// Parameter determining the threshold for active remote tabs.
+extern const base::FeatureParam<double>
+    kVisitedURLRankingScoreThresholdActiveRemoteTab;
+
+// Parameter determining the threshold for local visits.
+extern const base::FeatureParam<double>
+    kVisitedURLRankingScoreThresholdLocalVisit;
+
+// Parameter determining the threshold for local visits.
+extern const base::FeatureParam<double>
+    kVisitedURLRankingScoreThresholdRemoteVisit;
+
+// Parameter determining the threshold for CCT Visits.
+extern const base::FeatureParam<double>
+    kVisitedURLRankingScoreThresholdCCTVisit;
+
+// Enable the tab group suggestion service.
+BASE_DECLARE_FEATURE(kGroupSuggestionService);
+
+// Parameter determining whether to enable the recently opened heuristics.
+extern const base::FeatureParam<bool> kGroupSuggestionEnableRecentlyOpened;
+
+// Parameter determining whether to enable the switch between heuristics.
+extern const base::FeatureParam<bool> kGroupSuggestionEnableSwitchBetween;
+
+// Parameter determining whether to enable the similar source heuristics.
+extern const base::FeatureParam<bool> kGroupSuggestionEnableSimilarSource;
+
+// Parameter determining whether to enable the same origin heuristics.
+extern const base::FeatureParam<bool> kGroupSuggestionEnableSameOrigin;
+
+// Parameter determining whether to show group suggestions only in tab switcher.
+extern const base::FeatureParam<bool> kGroupSuggestionEnableTabSwitcherOnly;
+
+// Parameter determining whether to check group visibility.
+extern const base::FeatureParam<bool> kGroupSuggestionEnableVisibilityCheck;
+
+// Parameter determining whether to trigger group suggestions calculation on
+// page loads.
+extern const base::FeatureParam<bool>
+    kGroupSuggestionTriggerCalculationOnPageLoad;
+
+// Parameter determining the age threshold for suggestion throttling.
+extern const base::FeatureParam<base::TimeDelta>
+    kGroupSuggestionThrottleAgeLimit;
 }  // namespace visited_url_ranking::features
 
 #endif  // COMPONENTS_VISITED_URL_RANKING_PUBLIC_FEATURES_H_

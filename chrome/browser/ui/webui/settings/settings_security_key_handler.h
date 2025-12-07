@@ -16,8 +16,8 @@
 #include "device/fido/bio/enrollment.h"
 #include "device/fido/bio/enrollment_handler.h"
 #include "device/fido/credential_management_handler.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_factory.h"
+#include "device/fido/public/fido_constants.h"
 
 namespace device {
 struct AggregatedEnumerateCredentialsResponse;
@@ -249,24 +249,6 @@ class SecurityKeysBioEnrollmentHandler : public SecurityKeysHandlerBase {
   std::unique_ptr<device::BioEnrollmentHandler> bio_;
   device::BioEnrollmentHandler::SensorInfo sensor_info_;
   base::WeakPtrFactory<SecurityKeysBioEnrollmentHandler> weak_factory_{this};
-};
-
-class SecurityKeysPhonesHandler : public SettingsPageUIHandler {
- public:
-  SecurityKeysPhonesHandler();
-  ~SecurityKeysPhonesHandler() override;
-
- protected:
-  void RegisterMessages() override;
-  void OnJavascriptAllowed() override;
-  void OnJavascriptDisallowed() override;
-
- private:
-  void HandleEnumerate(const base::Value::List& args);
-  void HandleDelete(const base::Value::List& args);
-  void HandleRename(const base::Value::List& args);
-
-  void DoEnumerate(const base::Value& callback_id);
 };
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

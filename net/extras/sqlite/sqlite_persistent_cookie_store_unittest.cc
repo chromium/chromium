@@ -31,10 +31,11 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
-#include "crypto/encryptor.h"
-#include "crypto/symmetric_key.h"
+#include "crypto/aes_cbc.h"
+#include "net/base/features.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
@@ -48,6 +49,7 @@
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
+#include "sql/test/test_helpers.h"
 #include "sql/transaction.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -83,22 +85,22 @@ class CookieCryptor : public CookieCryptoDelegate {
   bool init_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   bool initing_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   base::OnceClosureList callbacks_ GUARDED_BY_CONTEXT(sequence_checker_);
-  std::unique_ptr<crypto::SymmetricKey> key_;
-  crypto::Encryptor encryptor_;
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<CookieCryptor> weak_ptr_factory_{this};
 };
 
-CookieCryptor::CookieCryptor()
-    : key_(crypto::SymmetricKey::DeriveKeyFromPasswordUsingPbkdf2(
-          crypto::SymmetricKey::AES,
-          "password",
-          "saltiest",
-          1000,
-          256)) {
-  std::string iv("the iv: 16 bytes");
-  encryptor_.Init(key_.get(), crypto::Encryptor::CBC, iv);
+constexpr std::array<uint8_t, 32> kFixedKey{
+    'c', 'o', 'o', 'k', 'i', 'e', 'c', 'r', 'y', 'p', 't',
+    'o', 'r', 'i', 's', 'a', 'u', 's', 'e', 'f', 'u', 'l',
+    't', 'e', 's', 't', 'c', 'l', 'a', 's', 's', '!',
+};
+constexpr std::array<uint8_t, 16> kFixedIv{
+    't', 'h', 'e', ' ', 'i', 'v', ':', ' ',
+    '1', '6', ' ', 'b', 'y', 't', 'e', 's',
+};
+
+CookieCryptor::CookieCryptor() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
@@ -132,12 +134,38 @@ void CookieCryptor::Init(base::OnceClosure callback) {
 
 bool CookieCryptor::EncryptString(const std::string& plaintext,
                                   std::string* ciphertext) {
-  return encryptor_.Encrypt(plaintext, ciphertext);
+  // SQLite crypto uses OSCrypt Async Encryptor and the behavior for empty
+  // plaintext is to return empty ciphertext. See
+  // os_crypt_async::Encryptor::EncryptString. This matches this behavior,
+  // without adding a dependency from net into components.
+  if (plaintext.empty()) {
+    ciphertext->clear();
+    return true;
+  }
+  auto result = crypto::aes_cbc::Encrypt(kFixedKey, kFixedIv,
+                                         base::as_byte_span(plaintext));
+  ciphertext->assign(result.begin(), result.end());
+  return true;
 }
 
 bool CookieCryptor::DecryptString(const std::string& ciphertext,
                                   std::string* plaintext) {
-  return encryptor_.Decrypt(ciphertext, plaintext);
+  // SQLite crypto uses OSCrypt Async Encryptor and the behavior for empty
+  // ciphertext is to return empty plaintext. See
+  // os_crypt_async::Encryptor::DecryptString. This matches this behavior,
+  // without adding a dependency from net into components.
+  if (ciphertext.empty()) {
+    plaintext->clear();
+    return true;
+  }
+  auto result = crypto::aes_cbc::Decrypt(kFixedKey, kFixedIv,
+                                         base::as_byte_span(ciphertext));
+  if (result.has_value()) {
+    plaintext->assign(result->begin(), result->end());
+    return true;
+  }
+
+  return false;
 }
 
 void CookieCryptor::InitComplete() {
@@ -262,7 +290,7 @@ class SQLitePersistentCookieStoreTest : public TestWithTaskEnvironment {
                  const std::string& value,
                  const std::string& domain,
                  const std::string& path,
-                 const base::Time& creation) {
+                 base::Time creation) {
     store_->AddCookie(*CanonicalCookie::CreateUnsafeCookieForTesting(
         name, value, domain, path, creation, /*expiration=*/creation,
         /*last_access=*/base::Time(), /*last_update=*/base::Time(),
@@ -275,8 +303,8 @@ class SQLitePersistentCookieStoreTest : public TestWithTaskEnvironment {
                                const std::string& value,
                                const std::string& domain,
                                const std::string& path,
-                               const base::Time& creation,
-                               const base::Time& expiration) {
+                               base::Time creation,
+                               base::Time expiration) {
     store_->AddCookie(*CanonicalCookie::CreateUnsafeCookieForTesting(
         name, value, domain, path, creation, expiration,
         /*last_access=*/base::Time(), /*last_update=*/base::Time(),
@@ -288,8 +316,9 @@ class SQLitePersistentCookieStoreTest : public TestWithTaskEnvironment {
   std::string ReadRawDBContents() {
     std::string contents;
     if (!base::ReadFileToString(temp_dir_.GetPath().Append(kCookieFilename),
-                                &contents))
+                                &contents)) {
       return std::string();
+    }
     return contents;
   }
 
@@ -335,13 +364,13 @@ TEST_F(SQLitePersistentCookieStoreTest, TestInvalidVersionRecovery) {
 
   // Now make the version too old to initialize from.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(temp_dir_.GetPath().Append(kCookieFilename)));
     sql::MetaTable meta_table;
     ASSERT_TRUE(meta_table.Init(&db, 1, 1));
     // Keep in sync with latest unsupported version from:
     // net/extras/sqlite/sqlite_persistent_cookie_store.cc
-    ASSERT_TRUE(meta_table.SetVersionNumber(17));
+    ASSERT_TRUE(meta_table.SetVersionNumber(20));
   }
 
   // Upon loading, the database should be reset to a good, blank state.
@@ -377,7 +406,7 @@ TEST_F(SQLitePersistentCookieStoreTest, TestInvalidMetaTableRecovery) {
 
   // Now corrupt the meta table.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(temp_dir_.GetPath().Append(kCookieFilename)));
     sql::MetaTable meta_table;
     ASSERT_TRUE(meta_table.Init(&db, 1, 1));
@@ -741,7 +770,8 @@ TEST_F(SQLitePersistentCookieStoreTest, FilterBadCookiesAndFixupDb) {
 
   // Add some cookies in by hand.
   base::FilePath store_name(temp_dir_.GetPath().Append(kCookieFilename));
-  std::unique_ptr<sql::Database> db(std::make_unique<sql::Database>());
+  std::unique_ptr<sql::Database> db(
+      std::make_unique<sql::Database>(sql::test::kTestTag));
   ASSERT_TRUE(db->Open(store_name));
   sql::Statement stmt(db->GetUniqueStatement(
       "INSERT INTO cookies (creation_utc, host_key, top_frame_site_key, name, "
@@ -803,7 +833,7 @@ TEST_F(SQLitePersistentCookieStoreTest, FilterBadCookiesAndFixupDb) {
   DestroyStore();
 
   // Make sure that we only have one row left.
-  db = std::make_unique<sql::Database>();
+  db = std::make_unique<sql::Database>(sql::test::kTestTag);
   ASSERT_TRUE(db->Open(store_name));
   sql::Statement verify_stmt(db->GetUniqueStatement("SELECT * FROM COOKIES"));
   ASSERT_TRUE(verify_stmt.is_valid());
@@ -845,8 +875,9 @@ TEST_F(SQLitePersistentCookieStoreTest, PersistIsPersistent) {
   ASSERT_EQ(2U, cookies.size());
 
   std::map<std::string, CanonicalCookie*> cookie_map;
-  for (const auto& cookie : cookies)
+  for (const auto& cookie : cookies) {
     cookie_map[cookie->Name()] = cookie.get();
+  }
 
   auto it = cookie_map.find(kSessionName);
   ASSERT_TRUE(it != cookie_map.end());
@@ -905,8 +936,9 @@ TEST_F(SQLitePersistentCookieStoreTest, PriorityIsPersistent) {
 
   // Put the cookies into a map, by name, so we can easily find them.
   std::map<std::string, CanonicalCookie*> cookie_map;
-  for (const auto& cookie : cookies)
+  for (const auto& cookie : cookies) {
     cookie_map[cookie->Name()] = cookie.get();
+  }
 
   // Validate that each cookie has the correct priority.
   auto it = cookie_map.find(kLowName);
@@ -970,8 +1002,9 @@ TEST_F(SQLitePersistentCookieStoreTest, SameSiteIsPersistent) {
 
   // Put the cookies into a map, by name, for comparison below.
   std::map<std::string, CanonicalCookie*> cookie_map;
-  for (const auto& cookie : cookies)
+  for (const auto& cookie : cookies) {
     cookie_map[cookie->Name()] = cookie.get();
+  }
 
   // Validate that each cookie has the correct SameSite.
   ASSERT_EQ(1u, cookie_map.count(kNoneName));
@@ -1007,7 +1040,7 @@ TEST_F(SQLitePersistentCookieStoreTest, SameSiteExtendedTreatedAsUnspecified) {
   DestroyStore();
 
   // Open db.
-  sql::Database connection;
+  sql::Database connection(sql::test::kTestTag);
   ASSERT_TRUE(connection.Open(temp_dir_.GetPath().Append(kCookieFilename)));
   std::string update_stmt(
       "UPDATE cookies SET samesite=3"  // 3 is Extended.
@@ -1071,8 +1104,9 @@ TEST_F(SQLitePersistentCookieStoreTest, SourcePortIsPersistent) {
 
   // Put the cookies into a map, by name, for comparison below.
   std::map<std::string, CanonicalCookie*> cookie_map;
-  for (const auto& cookie : cookies)
+  for (const auto& cookie : cookies) {
     cookie_map[cookie->Name()] = cookie.get();
+  }
 
   for (const auto& expected : kTestCookies) {
     ASSERT_EQ(1u, cookie_map.count(expected.name));
@@ -1081,7 +1115,6 @@ TEST_F(SQLitePersistentCookieStoreTest, SourcePortIsPersistent) {
 }
 
 TEST_F(SQLitePersistentCookieStoreTest, UpdateToEncryption) {
-
   // Create unencrypted cookie store and write something to it.
   InitializeStore(/*crypt=*/false, /*restore_old_session_cookies=*/false);
   AddCookie("name", "value123XYZ", "foo.bar", "/", base::Time::Now());
@@ -1123,7 +1156,7 @@ TEST_F(SQLitePersistentCookieStoreTest, UpdateToEncryption) {
   DestroyStore();
 
   // Examine the real record to make sure plaintext version doesn't exist.
-  sql::Database db;
+  sql::Database db(sql::test::kTestTag);
   sql::Statement smt;
 
   ASSERT_TRUE(db.Open(temp_dir_.GetPath().Append(kCookieFilename)));
@@ -1149,7 +1182,9 @@ TEST_F(SQLitePersistentCookieStoreTest, UpdateToEncryption) {
 
 bool CompareCookies(const std::unique_ptr<CanonicalCookie>& a,
                     const std::unique_ptr<CanonicalCookie>& b) {
-  return a->PartialCompare(*b);
+  CHECK(a);
+  CHECK(b);
+  return *a < *b;
 }
 
 // Confirm the store can handle having cookies with identical creation
@@ -1523,82 +1558,6 @@ TEST_F(SQLitePersistentCookieStoreTest, CorruptStore) {
                                 sql::SqliteLoggedResultCode::kNotADatabase, 1);
 }
 
-bool CreateV18Schema(sql::Database* db) {
-  sql::MetaTable meta_table;
-  if (!meta_table.Init(db, 18, 18)) {
-    return false;
-  }
-
-  // Version 18 schema
-  static constexpr char kCreateSql[] =
-      "CREATE TABLE cookies("
-      "creation_utc INTEGER NOT NULL,"
-      "host_key TEXT NOT NULL,"
-      "top_frame_site_key TEXT NOT NULL,"
-      "name TEXT NOT NULL,"
-      "value TEXT NOT NULL,"
-      "encrypted_value BLOB NOT NULL,"
-      "path TEXT NOT NULL,"
-      "expires_utc INTEGER NOT NULL,"
-      "is_secure INTEGER NOT NULL,"
-      "is_httponly INTEGER NOT NULL,"
-      "last_access_utc INTEGER NOT NULL,"
-      "has_expires INTEGER NOT NULL,"
-      "is_persistent INTEGER NOT NULL,"
-      "priority INTEGER NOT NULL,"
-      "samesite INTEGER NOT NULL,"
-      "source_scheme INTEGER NOT NULL,"
-      "source_port INTEGER NOT NULL,"
-      "is_same_party INTEGER NOT NULL,"
-      "last_update_utc INTEGER NOT NULL,"
-      "UNIQUE (host_key, top_frame_site_key, name, path))";
-
-  static constexpr char kCreateIndexSql[] =
-      "CREATE UNIQUE INDEX cookies_unique_index "
-      "ON cookies(host_key, top_frame_site_key, name, path)";
-
-  return db->Execute(kCreateSql) && db->Execute(kCreateIndexSql);
-}
-
-bool CreateV20Schema(sql::Database* db) {
-  sql::MetaTable meta_table;
-  if (!meta_table.Init(db, 20, 20)) {
-    return false;
-  }
-
-  // Version 20 schema
-  static constexpr char kCreateSql[] =
-      "CREATE TABLE cookies("
-      "creation_utc INTEGER NOT NULL,"
-      "host_key TEXT NOT NULL,"
-      "top_frame_site_key TEXT NOT NULL,"
-      "name TEXT NOT NULL,"
-      "value TEXT NOT NULL,"
-      "encrypted_value BLOB NOT NULL,"
-      "path TEXT NOT NULL,"
-      "expires_utc INTEGER NOT NULL,"
-      "is_secure INTEGER NOT NULL,"
-      "is_httponly INTEGER NOT NULL,"
-      "last_access_utc INTEGER NOT NULL,"
-      "has_expires INTEGER NOT NULL,"
-      "is_persistent INTEGER NOT NULL,"
-      "priority INTEGER NOT NULL,"
-      "samesite INTEGER NOT NULL,"
-      "source_scheme INTEGER NOT NULL,"
-      "source_port INTEGER NOT NULL,"
-      "is_same_party INTEGER NOT NULL,"
-      "last_update_utc INTEGER NOT NULL,"
-      "UNIQUE (host_key, top_frame_site_key, name, path, source_scheme, "
-      "source_port))";
-
-  static constexpr char kCreateIndexSql[] =
-      "CREATE UNIQUE INDEX cookies_unique_index "
-      "ON cookies(host_key, top_frame_site_key, name, path, source_scheme, "
-      "source_port)";
-
-  return db->Execute(kCreateSql) && db->Execute(kCreateIndexSql);
-}
-
 bool CreateV21Schema(sql::Database* db) {
   sql::MetaTable meta_table;
   if (!meta_table.Init(db, 21, 21)) {
@@ -1676,6 +1635,44 @@ bool CreateV22Schema(sql::Database* db) {
   return db->Execute(kCreateSql) && db->Execute(kCreateIndexSql);
 }
 
+bool CreateV23Schema(sql::Database* db) {
+  sql::MetaTable meta_table;
+  if (!meta_table.Init(db, 23, 23)) {
+    return false;
+  }
+
+  // Version 23 schema
+  static constexpr char kCreateSql[] =
+      "CREATE TABLE cookies("
+      "creation_utc INTEGER NOT NULL,"
+      "host_key TEXT NOT NULL,"
+      "top_frame_site_key TEXT NOT NULL,"
+      "name TEXT NOT NULL,"
+      "value TEXT NOT NULL,"
+      "encrypted_value BLOB NOT NULL,"
+      "path TEXT NOT NULL,"
+      "expires_utc INTEGER NOT NULL,"
+      "is_secure INTEGER NOT NULL,"
+      "is_httponly INTEGER NOT NULL,"
+      "last_access_utc INTEGER NOT NULL,"
+      "has_expires INTEGER NOT NULL,"
+      "is_persistent INTEGER NOT NULL,"
+      "priority INTEGER NOT NULL,"
+      "samesite INTEGER NOT NULL,"
+      "source_scheme INTEGER NOT NULL,"
+      "source_port INTEGER NOT NULL,"
+      "last_update_utc INTEGER NOT NULL,"
+      "source_type INTEGER NOT NULL,"
+      "has_cross_site_ancestor INTEGER NOT NULL);";
+
+  static constexpr char kCreateIndexSql[] =
+      "CREATE UNIQUE INDEX cookies_unique_index "
+      "ON cookies(host_key, top_frame_site_key, has_cross_site_ancestor, "
+      "name, path, source_scheme, source_port)";
+
+  return db->Execute(kCreateSql) && db->Execute(kCreateIndexSql);
+}
+
 int GetDBCurrentVersionNumber(sql::Database* db) {
   static constexpr char kGetDBCurrentVersionQuery[] =
       "SELECT value FROM meta WHERE key='version'";
@@ -1721,74 +1718,12 @@ std::vector<CanonicalCookie> CookiesForMigrationTest() {
       /*last_update=*/now,
       /*secure=*/false, /*httponly=*/false, CookieSameSite::UNSPECIFIED,
       COOKIE_PRIORITY_DEFAULT));
+  cookies.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
+      "D", "", "empty.com", "/", /*creation=*/now, /*expiration=*/now,
+      /*last_access=*/now, /*last_update=*/now, /*secure=*/true,
+      /*httponly=*/false, CookieSameSite::UNSPECIFIED,
+      COOKIE_PRIORITY_DEFAULT));
   return cookies;
-}
-
-// Versions 18, 19, and 20 use the same schema so they can reuse this function.
-// AddV20CookiesToDB (and future versions) need to set max_expiration_delta to
-// base::Days(400) to simulate expiration limits introduced in version 19.
-bool AddV18CookiesToDB(sql::Database* db,
-                       base::TimeDelta max_expiration_delta) {
-  std::vector<CanonicalCookie> cookies = CookiesForMigrationTest();
-  sql::Statement statement(db->GetCachedStatement(
-      SQL_FROM_HERE,
-      "INSERT INTO cookies (creation_utc, top_frame_site_key, host_key, name, "
-      "value, encrypted_value, path, expires_utc, is_secure, is_httponly, "
-      "samesite, last_access_utc, has_expires, is_persistent, priority, "
-      "source_scheme, source_port, is_same_party, last_update_utc) "
-      "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"));
-  if (!statement.is_valid()) {
-    return false;
-  }
-  sql::Transaction transaction(db);
-  if (!transaction.Begin()) {
-    return false;
-  }
-  for (const CanonicalCookie& cookie : cookies) {
-    base::Time max_expiration(cookie.CreationDate() + max_expiration_delta);
-
-    statement.Reset(true);
-    statement.BindTime(0, cookie.CreationDate());
-    // TODO (crbug.com/326605834) Once ancestor chain bit changes are
-    // implemented update this method utilize the ancestor bit.
-    base::expected<CookiePartitionKey::SerializedCookiePartitionKey,
-                   std::string>
-        serialized_partition_key =
-            CookiePartitionKey::Serialize(cookie.PartitionKey());
-    EXPECT_TRUE(serialized_partition_key.has_value());
-
-    statement.BindString(1, serialized_partition_key->TopLevelSite());
-    statement.BindString(2, cookie.Domain());
-    statement.BindString(3, cookie.Name());
-    statement.BindString(4, cookie.Value());
-    statement.BindBlob(5, base::span<uint8_t>());  // encrypted_value
-    statement.BindString(6, cookie.Path());
-    statement.BindTime(7, std::min(cookie.ExpiryDate(), max_expiration));
-    statement.BindInt(8, cookie.SecureAttribute());
-    statement.BindInt(9, cookie.IsHttpOnly());
-    // Note that this, Priority(), and SourceScheme() below nominally rely on
-    // the enums in sqlite_persistent_cookie_store.cc having the same values as
-    // the ones in ../../cookies/cookie_constants.h.  But nothing in this test
-    // relies on that equivalence, so it's not worth the hassle to guarantee
-    // that.
-    statement.BindInt(10, static_cast<int>(cookie.SameSite()));
-    statement.BindTime(11, cookie.LastAccessDate());
-    statement.BindInt(12, cookie.IsPersistent());
-    statement.BindInt(13, cookie.IsPersistent());
-    statement.BindInt(14, static_cast<int>(cookie.Priority()));
-    statement.BindInt(15, static_cast<int>(cookie.SourceScheme()));
-    statement.BindInt(16, cookie.SourcePort());
-    statement.BindInt(17, /*is_same_party=*/false);
-    statement.BindTime(18, cookie.LastUpdateDate());
-    if (!statement.Run()) {
-      return false;
-    }
-  }
-  return transaction.Commit();
-}
-
-bool AddV20CookiesToDB(sql::Database* db) {
-  return AddV18CookiesToDB(db, base::Days(400));
 }
 
 bool AddV21CookiesToDB(sql::Database* db) {
@@ -1812,8 +1747,7 @@ bool AddV21CookiesToDB(sql::Database* db) {
 
     statement.Reset(true);
     statement.BindTime(0, cookie.CreationDate());
-    // TODO (crbug.com/326605834) Once ancestor chain bit changes are
-    // implemented update this method utilize the ancestor bit.
+
     base::expected<CookiePartitionKey::SerializedCookiePartitionKey,
                    std::string>
         serialized_partition_key =
@@ -1870,8 +1804,7 @@ bool AddV22CookiesToDB(sql::Database* db,
 
     statement.Reset(true);
     statement.BindTime(0, cookie.CreationDate());
-    // TODO (crbug.com/326605834) Once ancestor chain bit changes are
-    // implemented update this method utilize the ancestor bit.
+
     base::expected<CookiePartitionKey::SerializedCookiePartitionKey,
                    std::string>
         serialized_partition_key =
@@ -1908,11 +1841,96 @@ bool AddV22CookiesToDB(sql::Database* db,
   return transaction.Commit();
 }
 
+bool AddV23CookiesToDB(sql::Database* db,
+                       const std::vector<CanonicalCookie>& cookies,
+                       CookieCryptoDelegate* crypto,
+                       bool place_unencrypted_too) {
+  sql::Statement statement(db->GetCachedStatement(
+      SQL_FROM_HERE,
+      "INSERT INTO cookies (creation_utc, host_key, top_frame_site_key, name, "
+      "value, encrypted_value, path, expires_utc, is_secure, is_httponly, "
+      "samesite, last_access_utc, has_expires, is_persistent, priority, "
+      "source_scheme, source_port, last_update_utc, source_type, "
+      "has_cross_site_ancestor) "
+      "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"));
+  if (!statement.is_valid()) {
+    return false;
+  }
+  sql::Transaction transaction(db);
+  if (!transaction.Begin()) {
+    return false;
+  }
+  for (const CanonicalCookie& cookie : cookies) {
+    base::Time max_expiration(cookie.CreationDate() + base::Days(400));
+
+    statement.Reset(true);
+    statement.BindTime(0, cookie.CreationDate());
+
+    base::expected<CookiePartitionKey::SerializedCookiePartitionKey,
+                   std::string>
+        serialized_partition_key =
+            CookiePartitionKey::Serialize(cookie.PartitionKey());
+    EXPECT_TRUE(serialized_partition_key.has_value());
+
+    statement.BindString(1, cookie.Domain());
+    statement.BindString(2, serialized_partition_key->TopLevelSite());
+    statement.BindString(3, cookie.Name());
+    if (crypto) {
+      statement.BindString(
+          4, place_unencrypted_too
+                 ? cookie.Value()
+                 : "");  // value is encrypted. If `place_unencrypted_too` is
+                         // set then place it here too, to test bad databases.
+      std::string encrypted_value;
+      // v23 and below simply encrypted the cookie and stored it in this value.
+      EXPECT_TRUE(crypto->EncryptString(cookie.Value(), &encrypted_value));
+      statement.BindBlob(5, encrypted_value);  // encrypted_value.
+    } else {
+      statement.BindString(4, cookie.Value());
+      statement.BindBlob(5, base::span<uint8_t>());  // encrypted_value empty.
+    }
+    statement.BindString(6, cookie.Path());
+    statement.BindTime(7, std::min(cookie.ExpiryDate(), max_expiration));
+    statement.BindInt(8, cookie.SecureAttribute());
+    statement.BindInt(9, cookie.IsHttpOnly());
+    // Note that this, Priority(), and SourceScheme() below nominally rely on
+    // the enums in sqlite_persistent_cookie_store.cc having the same values as
+    // the ones in ../../cookies/cookie_constants.h.  But nothing in this test
+    // relies on that equivalence, so it's not worth the hassle to guarantee
+    // that.
+    statement.BindInt(10, static_cast<int>(cookie.SameSite()));
+    statement.BindTime(11, cookie.LastAccessDate());
+    statement.BindInt(12, cookie.IsPersistent());
+    statement.BindInt(13, cookie.IsPersistent());
+    statement.BindInt(14, static_cast<int>(cookie.Priority()));
+
+    // Version 23 updated any preexisting cookies with a source_scheme value of
+    // kUnset and a is_secure of true to have a source_scheme value of kSecure.
+    // This situation can occur with the test cookies, so update the data to
+    // reflect a v23 cookie store.
+    auto source_scheme = cookie.SourceScheme();
+    if (cookie.SourceScheme() == CookieSourceScheme::kUnset &&
+        cookie.IsSecure()) {
+      source_scheme = CookieSourceScheme::kSecure;
+    }
+    statement.BindInt(15, static_cast<int>(source_scheme));
+    statement.BindInt(16, cookie.SourcePort());
+    statement.BindTime(17, cookie.LastUpdateDate());
+    statement.BindInt(18, static_cast<int>(cookie.SourceType()));
+    statement.BindBool(19, serialized_partition_key->has_cross_site_ancestor());
+
+    if (!statement.Run()) {
+      return false;
+    }
+  }
+  return transaction.Commit();
+}
+
 // Confirm the cookie list passed in has the above cookies in it.
 void ConfirmCookiesAfterMigrationTest(
     std::vector<std::unique_ptr<CanonicalCookie>> read_in_cookies,
     bool expect_last_update_date = false) {
-  ASSERT_EQ(read_in_cookies.size(), 6u);
+  ASSERT_EQ(read_in_cookies.size(), 7u);
 
   std::sort(read_in_cookies.begin(), read_in_cookies.end(), &CompareCookies);
   int i = 0;
@@ -2001,83 +2019,27 @@ void ConfirmCookiesAfterMigrationTest(
   EXPECT_EQ(read_in_cookies[i]->ExpiryDate(),
             read_in_cookies[i]->CreationDate() + base::Days(399));
   EXPECT_EQ(read_in_cookies[i]->SourceType(), CookieSourceType::kUnknown);
+
+  i++;
+  EXPECT_EQ("D", read_in_cookies[i]->Name());
+  EXPECT_EQ("", read_in_cookies[i]->Value());
+  EXPECT_EQ("empty.com", read_in_cookies[i]->Domain());
+  EXPECT_EQ("/", read_in_cookies[i]->Path());
+  EXPECT_TRUE(read_in_cookies[i]->SecureAttribute());
+  EXPECT_EQ(CookieSourceScheme::kSecure, read_in_cookies[i]->SourceScheme());
+  EXPECT_EQ(read_in_cookies[i]->LastUpdateDate(),
+            expect_last_update_date ? read_in_cookies[i]->CreationDate()
+                                    : base::Time());
+  EXPECT_EQ(read_in_cookies[i]->ExpiryDate(),
+            read_in_cookies[i]->CreationDate());
+  EXPECT_EQ(read_in_cookies[i]->SourceType(), CookieSourceType::kUnknown);
 }
 
 void ConfirmDatabaseVersionAfterMigration(const base::FilePath path,
                                           int version) {
-  sql::Database connection;
+  sql::Database connection(sql::test::kTestTag);
   ASSERT_TRUE(connection.Open(path));
   ASSERT_GE(GetDBCurrentVersionNumber(&connection), version);
-}
-
-TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion19) {
-  // Open db.
-  const base::FilePath database_path =
-      temp_dir_.GetPath().Append(kCookieFilename);
-  {
-    sql::Database connection;
-    ASSERT_TRUE(connection.Open(database_path));
-    ASSERT_TRUE(CreateV18Schema(&connection));
-    ASSERT_EQ(GetDBCurrentVersionNumber(&connection), 18);
-    ASSERT_TRUE(AddV18CookiesToDB(&connection, base::TimeDelta::Max()));
-  }
-
-  CanonicalCookieVector read_in_cookies = CreateAndLoad(
-      /*crypt_cookies=*/false, /*restore_old_session_cookies=*/false);
-  ASSERT_NO_FATAL_FAILURE(
-      ConfirmCookiesAfterMigrationTest(std::move(read_in_cookies),
-                                       /*expect_last_update_date=*/true));
-  DestroyStore();
-
-  ASSERT_NO_FATAL_FAILURE(
-      ConfirmDatabaseVersionAfterMigration(database_path, 19));
-}
-
-TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion20) {
-  // Open db.
-  const base::FilePath database_path =
-      temp_dir_.GetPath().Append(kCookieFilename);
-  {
-    sql::Database connection;
-    ASSERT_TRUE(connection.Open(database_path));
-    // V19's schema is the same as V18, so we can reuse the creation function.
-    ASSERT_TRUE(CreateV18Schema(&connection));
-    ASSERT_EQ(GetDBCurrentVersionNumber(&connection), 18);
-    ASSERT_TRUE(AddV18CookiesToDB(&connection, base::TimeDelta::Max()));
-  }
-
-  CanonicalCookieVector read_in_cookies = CreateAndLoad(
-      /*crypt_cookies=*/false, /*restore_old_session_cookies=*/false);
-  ASSERT_NO_FATAL_FAILURE(
-      ConfirmCookiesAfterMigrationTest(std::move(read_in_cookies),
-                                       /*expect_last_update_date=*/true));
-  DestroyStore();
-
-  ASSERT_NO_FATAL_FAILURE(
-      ConfirmDatabaseVersionAfterMigration(database_path, 20));
-}
-
-TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion21) {
-  // Open db.
-  const base::FilePath database_path =
-      temp_dir_.GetPath().Append(kCookieFilename);
-  {
-    sql::Database connection;
-    ASSERT_TRUE(connection.Open(database_path));
-    ASSERT_TRUE(CreateV20Schema(&connection));
-    ASSERT_EQ(GetDBCurrentVersionNumber(&connection), 20);
-    ASSERT_TRUE(AddV20CookiesToDB(&connection));
-  }
-
-  CanonicalCookieVector read_in_cookies = CreateAndLoad(
-      /*crypt_cookies=*/false, /*restore_old_session_cookies=*/false);
-  ASSERT_NO_FATAL_FAILURE(
-      ConfirmCookiesAfterMigrationTest(std::move(read_in_cookies),
-                                       /*expect_last_update_date=*/true));
-  DestroyStore();
-
-  ASSERT_NO_FATAL_FAILURE(
-      ConfirmDatabaseVersionAfterMigration(database_path, 21));
 }
 
 TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion22) {
@@ -2085,7 +2047,7 @@ TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion22) {
   const base::FilePath database_path =
       temp_dir_.GetPath().Append(kCookieFilename);
   {
-    sql::Database connection;
+    sql::Database connection(sql::test::kTestTag);
     ASSERT_TRUE(connection.Open(database_path));
     ASSERT_TRUE(CreateV21Schema(&connection));
     ASSERT_EQ(GetDBCurrentVersionNumber(&connection), 21);
@@ -2108,7 +2070,7 @@ TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion23) {
   const base::FilePath database_path =
       temp_dir_.GetPath().Append(kCookieFilename);
   {
-    sql::Database connection;
+    sql::Database connection(sql::test::kTestTag);
     ASSERT_TRUE(connection.Open(database_path));
     ASSERT_TRUE(CreateV22Schema(&connection));
     ASSERT_EQ(GetDBCurrentVersionNumber(&connection), 22);
@@ -2124,6 +2086,193 @@ TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion23) {
 
   ASSERT_NO_FATAL_FAILURE(
       ConfirmDatabaseVersionAfterMigration(database_path, 23));
+}
+
+class SQLitePersistentCookieStorev24UpgradeTest
+    : public SQLitePersistentCookieStoreTest,
+      public ::testing::WithParamInterface<
+          std::tuple</*crypto_for_encrypt*/ bool,
+                     /*crypto_for_decrypt*/ bool,
+                     /*place_unencrypted_too*/ bool>> {};
+
+TEST_P(SQLitePersistentCookieStorev24UpgradeTest, UpgradeToSchemaVersion24) {
+  const bool crypto_for_encrypt = std::get<0>(GetParam());
+  const bool crypto_for_decrypt = std::get<1>(GetParam());
+  const bool place_unencrypted_too = std::get<2>(GetParam());
+
+  const base::FilePath database_path =
+      temp_dir_.GetPath().Append(kCookieFilename);
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(database_path));
+    ASSERT_TRUE(CreateV23Schema(&connection));
+    ASSERT_EQ(GetDBCurrentVersionNumber(&connection), 23);
+    auto cryptor = std::make_unique<CookieCryptor>();
+
+    ASSERT_TRUE(AddV23CookiesToDB(&connection, CookiesForMigrationTest(),
+                                  crypto_for_encrypt ? cryptor.get() : nullptr,
+                                  place_unencrypted_too));
+  }
+  {
+    base::HistogramTester histogram_tester;
+    CanonicalCookieVector read_in_cookies = CreateAndLoad(
+        /*crypt_cookies=*/crypto_for_decrypt,
+        /*restore_old_session_cookies=*/false);
+
+    // If encryption is enabled for encrypt and not available for decrypt, then
+    // most cookies will be gone, as the data is encrypted with no way to
+    // decrypt.
+    if (crypto_for_encrypt && !crypto_for_decrypt) {
+      // Subtle: The empty cookie for empty.com will not trigger a cookie load
+      // failure. This is because during the migration there is no crypto so no
+      // migration occurs for any cookie, including the empty one. Then when
+      // attempting to load a v24 store the cookie with an empty value and empty
+      // encrypted value will simply load empty.
+      EXPECT_EQ(read_in_cookies.size(), 1u);
+      // The case of plaintext and encrypted values is always checked when
+      // loading a cookie before the availability of crypto. This means the
+      // error code here depends on whether migration from v23 to v24 was done
+      // with crypto available or not. In this case, crypto was not available
+      // during migration so the values were left alone - meaning that if there
+      // are both plaintext and encrypted values the
+      // kValuesExistInBothEncryptedAndPlaintext error is returned. However, if
+      // this cookie does not have both plaintext and encrypted values, then the
+      // second check is hit which reports encrypted data that cannot be
+      // decrypted - kNoCrypto. Functionality for an already-migrated store (v24
+      // and above) with both plaintext and encrypted values is tested in the
+      // `OverridePlaintextValue` test below.
+      const base::Histogram::Sample32 expected_bucket =
+          place_unencrypted_too
+              ? /*CookieLoadProblem::kValuesExistInBothEncryptedAndPlaintext*/ 8
+              : /*CookieLoadProblem::kNoCrypto*/ 7;
+      histogram_tester.ExpectBucketCount("Cookie.LoadProblem", expected_bucket,
+                                         CookiesForMigrationTest().size() - 1);
+    } else {
+      histogram_tester.ExpectTotalCount("Cookie.LoadProblem", 0);
+      ASSERT_NO_FATAL_FAILURE(
+          ConfirmCookiesAfterMigrationTest(std::move(read_in_cookies),
+                                           /*expect_last_update_date=*/true));
+    }
+    DestroyStore();
+  }
+
+  ASSERT_NO_FATAL_FAILURE(
+      ConfirmDatabaseVersionAfterMigration(database_path, 24));
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         SQLitePersistentCookieStorev24UpgradeTest,
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool(),
+                                            ::testing::Bool()));
+
+TEST_F(SQLitePersistentCookieStoreTest, CannotModifyHostName) {
+  {
+    CreateAndLoad(/*crypt_cookies=*/true,
+                  /*restore_old_session_cookies=*/false);
+    AddCookie("A", "B", "sensitive.com", "/", base::Time::Now());
+    AddCookie("A", "B", "example.com", "/", base::Time::Now());
+    DestroyStore();
+  }
+  {
+    const base::FilePath database_path =
+        temp_dir_.GetPath().Append(kCookieFilename);
+    // Simulate an attacker modifying hostname to attacker controlled, to
+    // perform a cookie replay attack.
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(database_path));
+    sql::Transaction transaction(&connection);
+    ASSERT_TRUE(transaction.Begin());
+    ASSERT_TRUE(
+        connection.Execute("UPDATE cookies SET host_key='attacker.com' WHERE "
+                           "host_key='sensitive.com'"));
+    ASSERT_TRUE(transaction.Commit());
+  }
+  {
+    base::HistogramTester histogram_tester;
+    auto cookies = CreateAndLoad(/*crypt_cookies=*/true,
+                                 /*restore_old_session_cookies=*/false);
+    // Modified cookie should not load.
+    ASSERT_EQ(cookies.size(), 1u);
+    ASSERT_EQ(cookies[0]->Domain(), "example.com");
+    ASSERT_EQ(cookies[0]->Name(), "A");
+    ASSERT_EQ(cookies[0]->Value(), "B");
+    DestroyStore();
+    histogram_tester.ExpectBucketCount("Cookie.LoadProblem",
+                                       /*CookieLoadProblem::kHashFailed*/ 6, 1);
+  }
+  {
+    base::HistogramTester histogram_tester;
+    auto cookies = CreateAndLoad(/*crypt_cookies=*/true,
+                                 /*restore_old_session_cookies=*/false);
+    // Modified cookie should not load.
+    ASSERT_EQ(cookies.size(), 1u);
+    ASSERT_EQ(cookies[0]->Domain(), "example.com");
+    ASSERT_EQ(cookies[0]->Name(), "A");
+    ASSERT_EQ(cookies[0]->Value(), "B");
+    DestroyStore();
+    // The hash failure should only appear once, during the first read, as the
+    // invalid cookie gets deleted afterwards.
+    histogram_tester.ExpectTotalCount("Cookie.LoadProblem", 0);
+  }
+}
+
+TEST_F(SQLitePersistentCookieStoreTest, ShortHash) {
+  {
+    CreateAndLoad(/*crypt_cookies=*/true,
+                  /*restore_old_session_cookies=*/false);
+    AddCookie("A", "B", "sensitive.com", "/", base::Time::Now());
+    AddCookie("A", "B", "example.com", "/", base::Time::Now());
+    DestroyStore();
+  }
+  {
+    const base::FilePath database_path =
+        temp_dir_.GetPath().Append(kCookieFilename);
+    // Simulate an attacker modifying hostname to attacker controlled, to
+    // perform a cookie replay attack.
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(database_path));
+    sql::Transaction transaction(&connection);
+    sql::Statement set_encrypted_value(connection.GetUniqueStatement(
+        "UPDATE cookies SET encrypted_value=? WHERE host_key='sensitive.com'"));
+    CookieCryptor crypto;
+    // Short string, without a hash, but valid encryption. This verifies that
+    // the decryption code handles short-length encrypted data fine.
+    std::string encrypted_data;
+    crypto.EncryptString("a", &encrypted_data);
+    set_encrypted_value.BindBlob(0, encrypted_data);
+
+    ASSERT_TRUE(transaction.Begin());
+    ASSERT_TRUE(set_encrypted_value.Run());
+    ASSERT_TRUE(transaction.Commit());
+  }
+  {
+    base::HistogramTester histogram_tester;
+    auto cookies = CreateAndLoad(/*crypt_cookies=*/true,
+                                 /*restore_old_session_cookies=*/false);
+    // Modified cookie should not load.
+    ASSERT_EQ(cookies.size(), 1u);
+    ASSERT_EQ(cookies[0]->Domain(), "example.com");
+    ASSERT_EQ(cookies[0]->Name(), "A");
+    ASSERT_EQ(cookies[0]->Value(), "B");
+    DestroyStore();
+    histogram_tester.ExpectBucketCount("Cookie.LoadProblem",
+                                       /*CookieLoadProblem::kHashFailed*/ 6, 1);
+  }
+  {
+    base::HistogramTester histogram_tester;
+    auto cookies = CreateAndLoad(/*crypt_cookies=*/true,
+                                 /*restore_old_session_cookies=*/false);
+    // Modified cookie should not load.
+    ASSERT_EQ(cookies.size(), 1u);
+    ASSERT_EQ(cookies[0]->Domain(), "example.com");
+    ASSERT_EQ(cookies[0]->Name(), "A");
+    ASSERT_EQ(cookies[0]->Value(), "B");
+    DestroyStore();
+    // The hash failure should only appear once, during the first read, as the
+    // invalid cookie gets deleted afterwards.
+    histogram_tester.ExpectTotalCount("Cookie.LoadProblem", 0);
+  }
 }
 
 TEST_F(SQLitePersistentCookieStoreTest,
@@ -2147,7 +2296,7 @@ TEST_F(SQLitePersistentCookieStoreTest,
 
   // Open database, populate and close db.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(database_path));
     ASSERT_TRUE(CreateV22Schema(&db));
     ASSERT_EQ(GetDBCurrentVersionNumber(&db), 22);
@@ -2160,7 +2309,7 @@ TEST_F(SQLitePersistentCookieStoreTest,
   EXPECT_EQ(read_in_cookies.size(), cookies.size());
 
   // Reopen database for testing.
-  sql::Database connection;
+  sql::Database connection(sql::test::kTestTag);
   ASSERT_TRUE(connection.Open(database_path));
   ASSERT_GE(GetDBCurrentVersionNumber(&connection), 23);
   for (const auto& cookie : cookies) {
@@ -2315,7 +2464,7 @@ TEST_F(SQLitePersistentCookieStoreTest, SavingPartitionedCookies) {
   InitializeStore(/*crypt=*/false, /*restore_old_session_cookies=*/false);
 
   store_->AddCookie(*CanonicalCookie::CreateUnsafeCookieForTesting(
-      "__Host-foo", "bar", GURL("https://example.com/").host(), "/",
+      "__Host-foo", "bar", GURL("https://example.com/").GetHost(), "/",
       /*creation=*/base::Time::Now(),
       /*expiration=*/base::Time::Now() + base::Days(1),
       /*last_access=*/base::Time::Now(),
@@ -2336,7 +2485,8 @@ TEST_F(SQLitePersistentCookieStoreTest, LoadingPartitionedCookies) {
 
   // Insert a partitioned cookie into the database manually.
   base::FilePath store_name(temp_dir_.GetPath().Append(kCookieFilename));
-  std::unique_ptr<sql::Database> db(std::make_unique<sql::Database>());
+  std::unique_ptr<sql::Database> db(
+      std::make_unique<sql::Database>(sql::test::kTestTag));
   ASSERT_TRUE(db->Open(store_name));
 
   sql::Statement stmt(db->GetUniqueStatement(
@@ -2354,7 +2504,7 @@ TEST_F(SQLitePersistentCookieStoreTest, LoadingPartitionedCookies) {
   base::Time last_update(base::Time::Now());
 
   stmt.BindTime(0, creation);
-  stmt.BindString(1, GURL("https://www.example.com/").host());
+  stmt.BindString(1, GURL("https://www.example.com/").GetHost());
   stmt.BindString(2, "https://toplevelsite.com");
   stmt.BindString(3, "__Host-foo");
   stmt.BindString(4, "bar");
@@ -2375,7 +2525,7 @@ TEST_F(SQLitePersistentCookieStoreTest, LoadingPartitionedCookies) {
   auto cc = std::move(cookies[0]);
   EXPECT_EQ("__Host-foo", cc->Name());
   EXPECT_EQ("bar", cc->Value());
-  EXPECT_EQ(GURL("https://www.example.com/").host(), cc->Domain());
+  EXPECT_EQ(GURL("https://www.example.com/").GetHost(), cc->Domain());
   EXPECT_TRUE(cc->IsPartitioned());
   EXPECT_EQ(
       CookiePartitionKey::FromURLForTesting(GURL("https://toplevelsite.com")),
@@ -2405,45 +2555,37 @@ std::unique_ptr<CanonicalCookie> CreatePartitionedCookie(
       scheme);
 }
 
-// Pairs contain a cookie, and hard coded value for has_cross_site_ancestor
-// value.
-//
 // During migration we have no way of knowing if a cross site ancestor was
 // present. When the existing domain and the top_level_site of the partition key
 // are the same. The default behavior is to set the cross site value to
 // kSameSite, so ignore the kCrossSite cookie when testing migration.
-std::vector<std::pair<CanonicalCookie, std::string>>
-GenerateHasCrossSiteAncestorCookiesAndVals(bool migrating = false) {
-  std::vector<std::pair<CanonicalCookie, std::string>> results;
+std::vector<CanonicalCookie> GenerateCookiesForCrossSiteAncestorTest(
+    bool migrating = false) {
+  std::vector<CanonicalCookie> results;
   const std::string default_domain = "example.com";
 
   // Key and domain are the same site
-  results.emplace_back(
-      *CreatePartitionedCookie("A", default_domain, "https://www.example.com",
-                               CookiePartitionKey::AncestorChainBit::kSameSite),
-      "0");
+  results.emplace_back(*CreatePartitionedCookie(
+      "A", default_domain, "https://www.example.com",
+      CookiePartitionKey::AncestorChainBit::kSameSite));
   if (!migrating) {
     // Key and domain are the same site but with kCrossSite
     results.emplace_back(*CreatePartitionedCookie(
-                             "B", default_domain, "https://www.example.com",
-                             CookiePartitionKey::AncestorChainBit::kCrossSite),
-                         "1");
+        "B", default_domain, "https://www.example.com",
+        CookiePartitionKey::AncestorChainBit::kCrossSite));
   }
   // Key and domain are different
   results.emplace_back(*CreatePartitionedCookie(
-                           "C", default_domain, "https://www.toplevelsite.com",
-                           CookiePartitionKey::AncestorChainBit::kCrossSite),
-                       "1");
+      "C", default_domain, "https://www.toplevelsite.com",
+      CookiePartitionKey::AncestorChainBit::kCrossSite));
   // Domain is a substring
   results.emplace_back(*CreatePartitionedCookie(
-                           "D", "ample.com", "https://www.example.com",
-                           CookiePartitionKey::AncestorChainBit::kCrossSite),
-                       "1");
+      "D", "ample.com", "https://www.example.com",
+      CookiePartitionKey::AncestorChainBit::kCrossSite));
   // http check kNonSecure scheme match.
-  results.emplace_back(
-      *CreatePartitionedCookie("E", default_domain, "http://www.example.com",
-                               CookiePartitionKey::AncestorChainBit::kSameSite),
-      "0");
+  results.emplace_back(*CreatePartitionedCookie(
+      "E", default_domain, "http://www.example.com",
+      CookiePartitionKey::AncestorChainBit::kSameSite));
 
   return results;
 }
@@ -2453,17 +2595,16 @@ TEST_F(SQLitePersistentCookieStoreTest,
   const base::FilePath database_path =
       temp_dir_.GetPath().Append(kCookieFilename);
 
-  std::vector<std::pair<CanonicalCookie, std::string>>
-      cookies_and_expected_values =
-          GenerateHasCrossSiteAncestorCookiesAndVals(true);
+  std::vector<CanonicalCookie> exected_cookies =
+      GenerateCookiesForCrossSiteAncestorTest(/*migrating=*/true);
 
   std::vector<CanonicalCookie> cookies;
-  for (auto cookie_pair : cookies_and_expected_values) {
-    cookies.push_back(cookie_pair.first);
+  for (auto cookie : exected_cookies) {
+    cookies.push_back(cookie);
   }
   // Open database, populate and close db.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(database_path));
     ASSERT_TRUE(CreateV22Schema(&db));
     ASSERT_EQ(GetDBCurrentVersionNumber(&db), 22);
@@ -2476,17 +2617,15 @@ TEST_F(SQLitePersistentCookieStoreTest,
   EXPECT_EQ(read_in_cookies.size(), cookies.size());
 
   // Reopen database for testing.
-  sql::Database connection;
+  sql::Database connection(sql::test::kTestTag);
   ASSERT_TRUE(connection.Open(database_path));
   ASSERT_GE(GetDBCurrentVersionNumber(&connection), 23);
 
-  for (const auto& cookie_pair : cookies_and_expected_values) {
-    // TODO (crbug.com/326605834) Once ancestor chain bit changes are
-    // implemented update this method utilize the ancestor bit.
+  for (const auto& cookie : exected_cookies) {
     base::expected<CookiePartitionKey::SerializedCookiePartitionKey,
                    std::string>
         serialized_partition_key =
-            CookiePartitionKey::Serialize(cookie_pair.first.PartitionKey());
+            CookiePartitionKey::Serialize(cookie.PartitionKey());
     ASSERT_TRUE(serialized_partition_key.has_value());
 
     sql::Statement verify_stmt(connection.GetUniqueStatement(
@@ -2494,13 +2633,14 @@ TEST_F(SQLitePersistentCookieStoreTest,
         " AND top_frame_site_key=?"
         " AND has_cross_site_ancestor=?"));
 
-    verify_stmt.BindString(0, cookie_pair.first.Domain());
+    verify_stmt.BindString(0, cookie.Domain());
     verify_stmt.BindString(1, serialized_partition_key->TopLevelSite());
-    verify_stmt.BindString(2, cookie_pair.second);
+    verify_stmt.BindBool(2,
+                         serialized_partition_key->has_cross_site_ancestor());
 
     ASSERT_TRUE(verify_stmt.is_valid());
     EXPECT_TRUE(verify_stmt.Step());
-    EXPECT_EQ(cookie_pair.first.Name(), verify_stmt.ColumnString(0));
+    EXPECT_EQ(cookie.Name(), verify_stmt.ColumnString(0));
     // Confirm that exactly one cookie matches the SQL query
     EXPECT_FALSE(verify_stmt.Step());
   }
@@ -2510,11 +2650,10 @@ TEST_F(SQLitePersistentCookieStoreTest,
        TestValueOfHasCrossSiteAncestorOnDoCommit) {
   InitializeStore(/*crypt=*/false, /*restore_old_session_cookies=*/false);
 
-  std::vector<std::pair<CanonicalCookie, std::string>>
-      cookies_and_expected_values =
-          GenerateHasCrossSiteAncestorCookiesAndVals();
-  for (const auto& cookie_pair : cookies_and_expected_values) {
-    store_->AddCookie(cookie_pair.first);
+  std::vector<CanonicalCookie> exected_cookies =
+      GenerateCookiesForCrossSiteAncestorTest();
+  for (const auto& cookie : exected_cookies) {
+    store_->AddCookie(cookie);
   }
 
   // Force the store to write its data to the disk.
@@ -2522,19 +2661,17 @@ TEST_F(SQLitePersistentCookieStoreTest,
 
   cookies_ = CreateAndLoad(/*crypt_cookies=*/false,
                            /*restore_old_session_cookies=*/false);
-  EXPECT_EQ(cookies_.size(), cookies_and_expected_values.size());
+  EXPECT_EQ(cookies_.size(), exected_cookies.size());
 
-  sql::Database connection;
+  sql::Database connection(sql::test::kTestTag);
   ASSERT_TRUE(connection.Open(temp_dir_.GetPath().Append(kCookieFilename)));
-  ASSERT_EQ(GetDBCurrentVersionNumber(&connection), 23);
+  ASSERT_GT(GetDBCurrentVersionNumber(&connection), 23);
 
-  for (const auto& cookie_pair : cookies_and_expected_values) {
-    // TODO (crbug.com/326605834) Once ancestor chain bit changes are
-    // implemented update this method utilize the ancestor bit.
+  for (const auto& cookie : exected_cookies) {
     base::expected<CookiePartitionKey::SerializedCookiePartitionKey,
                    std::string>
         serialized_partition_key =
-            CookiePartitionKey::Serialize(cookie_pair.first.PartitionKey());
+            CookiePartitionKey::Serialize(cookie.PartitionKey());
     ASSERT_TRUE(serialized_partition_key.has_value());
 
     sql::Statement verify_stmt(connection.GetUniqueStatement(
@@ -2542,15 +2679,108 @@ TEST_F(SQLitePersistentCookieStoreTest,
         " AND top_frame_site_key=?"
         " AND has_cross_site_ancestor=?"));
 
-    verify_stmt.BindString(0, cookie_pair.first.Domain());
+    verify_stmt.BindString(0, cookie.Domain());
     verify_stmt.BindString(1, serialized_partition_key->TopLevelSite());
-    verify_stmt.BindString(2, cookie_pair.second);
+    verify_stmt.BindBool(2,
+                         serialized_partition_key->has_cross_site_ancestor());
     ASSERT_TRUE(verify_stmt.is_valid());
 
     EXPECT_TRUE(verify_stmt.Step());
-    EXPECT_EQ(cookie_pair.first.Name(), verify_stmt.ColumnString(0));
+    EXPECT_EQ(cookie.Name(), verify_stmt.ColumnString(0));
     // Confirm that exactly one cookie matches the SQL query
     EXPECT_FALSE(verify_stmt.Step());
+  }
+}
+
+TEST_F(SQLitePersistentCookieStoreTest, NoCryptoForDecryption) {
+  InitializeStore(/*crypt=*/true, /*restore_old_session_cookies=*/false);
+  AddCookie("X", "Y", "foo.bar", "/", base::Time::Now());
+  DestroyStore();
+
+  {
+    base::HistogramTester histogram_tester;
+    const auto cookies =
+        CreateAndLoad(/*crypt=*/false, /*restore_old_session_cookies=*/false);
+    ASSERT_TRUE(cookies.empty());
+    histogram_tester.ExpectBucketCount("Cookie.LoadProblem",
+                                       /*CookieLoadProblem::kNoCrypto*/ 7, 1);
+  }
+}
+
+// This test verifies that if a plaintext value is in the store (e.g. written in
+// manually, or crypto was at some point not available in the past) and crypto
+// is now available, it can still be read fine, including if the value is empty.
+// It also tests the case where both a plaintext and encrypted value exist,
+// in which case the cookie should be dropped.
+TEST_F(SQLitePersistentCookieStoreTest, OverridePlaintextValue) {
+  {
+    CreateAndLoad(/*crypt_cookies=*/true,
+                  /*restore_old_session_cookies=*/false);
+    AddCookie("A", "B", "example.com", "/", base::Time::Now());
+    AddCookie("C", "D", "example2.com", "/", base::Time::Now());
+    AddCookie("E", "F", "example3.com", "/", base::Time::Now());
+    DestroyStore();
+  }
+  {
+    base::HistogramTester histogram_tester;
+    auto cookies = CreateAndLoad(/*crypt_cookies=*/true,
+                                 /*restore_old_session_cookies=*/false);
+    ASSERT_EQ(cookies.size(), 3u);
+    EXPECT_EQ(cookies[0]->Domain(), "example.com");
+    EXPECT_EQ(cookies[0]->Name(), "A");
+    EXPECT_EQ(cookies[0]->Value(), "B");
+    EXPECT_EQ(cookies[1]->Domain(), "example2.com");
+    EXPECT_EQ(cookies[1]->Name(), "C");
+    EXPECT_EQ(cookies[1]->Value(), "D");
+    EXPECT_EQ(cookies[2]->Domain(), "example3.com");
+    EXPECT_EQ(cookies[2]->Name(), "E");
+    EXPECT_EQ(cookies[2]->Value(), "F");
+    DestroyStore();
+  }
+  {
+    const base::FilePath database_path =
+        temp_dir_.GetPath().Append(kCookieFilename);
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(database_path));
+    sql::Transaction transaction(&connection);
+    ASSERT_TRUE(transaction.Begin());
+    // Clear the encrypted value and set the plaintext value to something else.
+    ASSERT_TRUE(
+        connection.Execute("UPDATE cookies SET encrypted_value=x'', "
+                           "value='Val' WHERE host_key='example.com'"));
+    // Verify also that an empty value can be injected.
+    ASSERT_TRUE(
+        connection.Execute("UPDATE cookies SET encrypted_value=x'', "
+                           "value='' WHERE host_key='example2.com'"));
+    // Verify if both are present, it's dealt with correctly (encrypted data
+    // takes priority), and a histogram is recorded.
+    ASSERT_TRUE(connection.Execute(
+        "UPDATE cookies SET value='not-F' WHERE host_key='example3.com'"));
+    ASSERT_TRUE(transaction.Commit());
+  }
+  {
+    base::HistogramTester histogram_tester;
+    auto cookies = CreateAndLoad(/*crypt_cookies=*/true,
+                                 /*restore_old_session_cookies=*/false);
+    histogram_tester.ExpectBucketCount("Cookie.EncryptedAndPlaintextValues",
+                                       true, 1);
+
+    // Third cookie (example3.com) should be dropped.
+    ASSERT_EQ(cookies.size(), 2u);
+    // Cookie should load fine since it's been modified by writing plaintext and
+    // clearing ciphertext.
+    EXPECT_EQ(cookies[0]->Domain(), "example.com");
+    EXPECT_EQ(cookies[0]->Name(), "A");
+    EXPECT_EQ(cookies[0]->Value(), "Val");
+    EXPECT_EQ(cookies[1]->Domain(), "example2.com");
+    EXPECT_EQ(cookies[1]->Name(), "C");
+    EXPECT_TRUE(cookies[1]->Value().empty());
+
+    // Cookie should be dropped and a metric recorded.
+    histogram_tester.ExpectBucketCount(
+        "Cookie.LoadProblem",
+        /*CookieLoadProblem::kValuesExistInBothEncryptedAndPlaintext*/ 8, 1u);
+    DestroyStore();
   }
 }
 

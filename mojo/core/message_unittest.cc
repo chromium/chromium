@@ -7,33 +7,43 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include <algorithm>
+#include <array>
 #include <memory>
 #include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_math.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/ipcz_driver/mojo_message.h"
 #include "mojo/core/test/mojo_test_base.h"
-#include "mojo/core/user_message_impl.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
-namespace mojo {
-namespace core {
+#if BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE)
+#include "mojo/core/user_message_impl.h"
+#endif
+
+namespace mojo::core {
 namespace {
 
 using MessageTest = test::MojoTestBase;
+
+#if BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE)
+constexpr uint32_t kLegacyMinimumPayloadBufferSize = kMinimumPayloadBufferSize;
+#else
+constexpr uint32_t kLegacyMinimumPayloadBufferSize = 0;
+#endif
 
 // Helper class which provides a base implementation for an unserialized user
 // message context and helpers to go between these objects and opaque message
@@ -73,7 +83,7 @@ class TestMessageBase {
 
  protected:
   virtual void GetSerializedSize(size_t* num_bytes, size_t* num_handles) = 0;
-  virtual void SerializeHandles(MojoHandle* handles) = 0;
+  virtual void SerializeHandles(base::span<MojoHandle> handles) = 0;
   virtual void SerializePayload(void* buffer) = 0;
 
  private:
@@ -85,7 +95,7 @@ class TestMessageBase {
     message->GetSerializedSize(&num_bytes, &num_handles);
     std::vector<MojoHandle> handles(num_handles);
     if (num_handles)
-      message->SerializeHandles(handles.data());
+      message->SerializeHandles(handles);
 
     MojoAppendMessageDataOptions options;
     options.struct_size = sizeof(options);
@@ -124,12 +134,12 @@ class NeverSerializedMessage : public TestMessageBase {
  private:
   // TestMessageBase:
   void GetSerializedSize(size_t* num_bytes, size_t* num_handles) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
-  void SerializeHandles(MojoHandle* handles) override {
-    NOTREACHED_IN_MIGRATION();
+  void SerializeHandles(base::span<MojoHandle> handles) override {
+    NOTREACHED();
   }
-  void SerializePayload(void* buffer) override { NOTREACHED_IN_MIGRATION(); }
+  void SerializePayload(void* buffer) override { NOTREACHED(); }
 
   base::OnceClosure destruction_callback_;
 };
@@ -162,7 +172,7 @@ class SimpleMessage : public TestMessageBase {
     *num_handles = handles_.size();
   }
 
-  void SerializeHandles(MojoHandle* handles) override {
+  void SerializeHandles(base::span<MojoHandle> handles) override {
     ASSERT_TRUE(!handles_.empty());
     for (size_t i = 0; i < handles_.size(); ++i)
       handles[i] = handles_[i].release().value();
@@ -170,7 +180,7 @@ class SimpleMessage : public TestMessageBase {
   }
 
   void SerializePayload(void* buffer) override {
-    base::ranges::copy(contents_, static_cast<char*>(buffer));
+    std::ranges::copy(contents_, static_cast<char*>(buffer));
   }
 
   const std::string contents_;
@@ -707,7 +717,7 @@ TEST_F(MessageTest, PreallocateEnoughMemoryForMessage) {
   // `kMinimumBufferSize` bytes of capacity will be allocated).
   const size_t kMinimumBufferSize =
       IsMojoIpczEnabled() ? ipcz_driver::MojoMessage::kMinBufferSize
-                          : kMinimumPayloadBufferSize;
+                          : kLegacyMinimumPayloadBufferSize;
   const std::string kMsgPart1(kMinimumBufferSize / 2, 'x');
   const std::string kMsgPart2(kMinimumBufferSize, 'y');
   const std::string kCombined = kMsgPart1 + kMsgPart2;
@@ -775,7 +785,7 @@ TEST_F(MessageTest, PreallocateNotEnoughMemoryForMessage) {
   // `kMinimumBufferSize` bytes of capacity will be allocated).
   const size_t kMinimumBufferSize =
       IsMojoIpczEnabled() ? ipcz_driver::MojoMessage::kMinBufferSize
-                          : kMinimumPayloadBufferSize;
+                          : kLegacyMinimumPayloadBufferSize;
   const std::string kMsgPart1(kMinimumBufferSize / 2, 'x');
   const std::string kMsgPart2(kMinimumBufferSize, 'y');
   const std::string kCombined = kMsgPart1 + kMsgPart2;
@@ -985,6 +995,7 @@ TEST_F(MessageTest, CorrectPayloadBufferBoundaries) {
   EXPECT_EQ(MOJO_RESULT_OK, MojoDestroyMessage(message));
 }
 
+#if BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE)
 TEST_F(MessageTest, CommitInvalidMessageContents) {
   // Regression test for https://crbug.com/755127. Ensures that we don't crash
   // if we attempt to commit the contents of an unserialized message.
@@ -1007,6 +1018,7 @@ TEST_F(MessageTest, CommitInvalidMessageContents) {
   EXPECT_EQ(MOJO_RESULT_OK, MojoDestroyMessage(message));
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(b));
 }
+#endif  // BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE)
 
 #if BUILDFLAG(USE_BLINK)
 
@@ -1084,7 +1096,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadAndIgnoreMessage, MessageTest, h) {
   ExtendPayloadWithHandlesAttachedViaExtension
 #endif  // BUILDFLAG(IS_IOS)
 TEST_F(MessageTest, MAYBE_ExtendPayloadWithHandlesAttachedViaExtension) {
-  MojoHandle handles[5];
+  std::array<MojoHandle, 5> handles;
   CreateMessagePipe(&handles[0], &handles[4]);
   PlatformChannel channel;
   handles[1] =
@@ -1102,21 +1114,25 @@ TEST_F(MessageTest, MAYBE_ExtendPayloadWithHandlesAttachedViaExtension) {
   uint32_t buffer_size = 0;
   EXPECT_EQ(MOJO_RESULT_OK, MojoCreateMessage(nullptr, &message));
   EXPECT_EQ(MOJO_RESULT_OK,
-            MojoAppendMessageData(message, 0, handles, 1, nullptr, &buffer,
-                                  &buffer_size));
+            MojoAppendMessageData(message, 0, handles.data(), 1, nullptr,
+                                  &buffer, &buffer_size));
   uint32_t payload_size = buffer_size * 64;
   EXPECT_EQ(MOJO_RESULT_OK,
             MojoAppendMessageData(message, payload_size, nullptr, 0, nullptr,
                                   &buffer, nullptr));
 
   // Add more handles.
-  EXPECT_EQ(MOJO_RESULT_OK, MojoAppendMessageData(message, 0, handles + 1, 1,
-                                                  nullptr, &buffer, nullptr));
+  EXPECT_EQ(
+      MOJO_RESULT_OK,
+      MojoAppendMessageData(message, 0, base::span(handles).subspan(1u).data(),
+                            1, nullptr, &buffer, nullptr));
   MojoAppendMessageDataOptions options;
   options.struct_size = sizeof(options);
   options.flags = MOJO_APPEND_MESSAGE_DATA_FLAG_COMMIT_SIZE;
-  EXPECT_EQ(MOJO_RESULT_OK, MojoAppendMessageData(message, 0, handles + 2, 3,
-                                                  &options, &buffer, nullptr));
+  EXPECT_EQ(
+      MOJO_RESULT_OK,
+      MojoAppendMessageData(message, 0, base::span(handles).subspan(2u).data(),
+                            3, &options, &buffer, nullptr));
   memset(buffer, 'x', payload_size);
 
   RunTestClient("ReadMessageAndCheckPipe", [&](MojoHandle h) {
@@ -1173,5 +1189,4 @@ TEST_F(MessageTest, PartiallySerializedMessagesDontLeakHandles) {
 }
 
 }  // namespace
-}  // namespace core
-}  // namespace mojo
+}  // namespace mojo::core

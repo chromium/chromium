@@ -14,31 +14,28 @@
 #include "ui/accessibility/platform/ax_platform_node_textrangeprovider_win.h"
 
 #define UIA_VALIDATE_TEXTPROVIDER_CALL() \
-  if (!owner()->GetDelegate())           \
+  if (owner()->IsDestroyed())            \
     return UIA_E_ELEMENTNOTAVAILABLE;
 #define UIA_VALIDATE_TEXTPROVIDER_CALL_1_ARG(arg) \
-  if (!owner()->GetDelegate())                    \
+  if (owner()->IsDestroyed())                     \
     return UIA_E_ELEMENTNOTAVAILABLE;             \
   if (!arg)                                       \
     return E_INVALIDARG;
 
 namespace ui {
 
-AXPlatformNodeTextProviderWin::AXPlatformNodeTextProviderWin() {
-  DVLOG(1) << __func__;
-}
+AXPlatformNodeTextProviderWin::AXPlatformNodeTextProviderWin() {}
 
 AXPlatformNodeTextProviderWin::~AXPlatformNodeTextProviderWin() {}
 
 // static
-AXPlatformNodeTextProviderWin* AXPlatformNodeTextProviderWin::Create(
-    AXPlatformNodeWin* owner) {
+Microsoft::WRL::ComPtr<AXPlatformNodeTextProviderWin>
+AXPlatformNodeTextProviderWin::Create(AXPlatformNodeWin* owner) {
   CComObject<AXPlatformNodeTextProviderWin>* text_provider = nullptr;
   if (SUCCEEDED(CComObject<AXPlatformNodeTextProviderWin>::CreateInstance(
           &text_provider))) {
     DCHECK(text_provider);
     text_provider->owner_ = owner;
-    text_provider->AddRef();
     return text_provider;
   }
 
@@ -50,8 +47,12 @@ void AXPlatformNodeTextProviderWin::CreateIUnknown(AXPlatformNodeWin* owner,
                                                    IUnknown** unknown) {
   Microsoft::WRL::ComPtr<AXPlatformNodeTextProviderWin> text_provider(
       Create(owner));
-  if (text_provider)
-    *unknown = text_provider.Detach();
+  if (!text_provider) {
+    *unknown = nullptr;
+    return;
+  }
+  ITextEditProvider* provider_ptr = text_provider.Detach();
+  *unknown = provider_ptr;
 }
 
 //
@@ -221,7 +222,7 @@ HRESULT AXPlatformNodeTextProviderWin::RangeFromChild(
 
   *range = nullptr;
 
-  Microsoft::WRL::ComPtr<ui::AXPlatformNodeWin> child_platform_node;
+  Microsoft::WRL::ComPtr<AXPlatformNodeWin> child_platform_node;
   if (!SUCCEEDED(child->QueryInterface(IID_PPV_ARGS(&child_platform_node))))
     return UIA_E_INVALIDOPERATION;
 
@@ -307,8 +308,8 @@ HRESULT AXPlatformNodeTextProviderWin::GetConversionTarget(
 }
 
 void AXPlatformNodeTextProviderWin::GetRangeFromChild(
-    ui::AXPlatformNodeWin* ancestor,
-    ui::AXPlatformNodeWin* descendant,
+    AXPlatformNodeWin* ancestor,
+    AXPlatformNodeWin* descendant,
     ITextRangeProvider** range) {
   DCHECK(ancestor);
   DCHECK(descendant);
@@ -354,7 +355,7 @@ void AXPlatformNodeTextProviderWin::GetRangeFromChild(
 }
 
 void AXPlatformNodeTextProviderWin::CreateDegenerateRangeAtStart(
-    ui::AXPlatformNodeWin* node,
+    AXPlatformNodeWin* node,
     ITextRangeProvider** text_range_provider) {
   DCHECK(node);
   DCHECK(node->GetDelegate());
@@ -367,7 +368,7 @@ void AXPlatformNodeTextProviderWin::CreateDegenerateRangeAtStart(
       std::move(start), std::move(end), text_range_provider);
 }
 
-ui::AXPlatformNodeWin* AXPlatformNodeTextProviderWin::owner() const {
+AXPlatformNodeWin* AXPlatformNodeTextProviderWin::owner() const {
   return owner_.Get();
 }
 

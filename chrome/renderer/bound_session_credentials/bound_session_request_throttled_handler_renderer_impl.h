@@ -7,7 +7,6 @@
 
 #include "chrome/common/bound_session_request_throttled_handler.h"
 
-#include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/renderer/bound_session_credentials/bound_session_request_throttled_in_renderer_manager.h"
 
@@ -36,4 +35,5 @@ class BoundSessionRequestThrottledHandlerRendererImpl
       bound_session_request_throttled_manager_;
   const scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
 };
+
 #endif  // CHROME_RENDERER_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_REQUEST_THROTTLED_HANDLER_RENDERER_IMPL_H_

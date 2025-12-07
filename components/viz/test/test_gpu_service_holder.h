@@ -93,6 +93,7 @@ class TestGpuServiceHolder : public gpu::GpuInProcessThreadServiceDelegate {
   // GetInstance().
   static void DoNotResetOnTestExit();
 
+  TestGpuServiceHolder();
   explicit TestGpuServiceHolder(const gpu::GpuPreferences& preferences);
 
   TestGpuServiceHolder(const TestGpuServiceHolder&) = delete;

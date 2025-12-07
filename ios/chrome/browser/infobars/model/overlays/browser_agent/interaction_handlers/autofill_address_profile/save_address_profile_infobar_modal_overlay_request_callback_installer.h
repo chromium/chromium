@@ -5,10 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_INFOBARS_MODEL_OVERLAYS_BROWSER_AGENT_INTERACTION_HANDLERS_AUTOFILL_ADDRESS_PROFILE_SAVE_ADDRESS_PROFILE_INFOBAR_MODAL_OVERLAY_REQUEST_CALLBACK_INSTALLER_H_
 #define IOS_CHROME_BROWSER_INFOBARS_MODEL_OVERLAYS_BROWSER_AGENT_INTERACTION_HANDLERS_AUTOFILL_ADDRESS_PROFILE_SAVE_ADDRESS_PROFILE_INFOBAR_MODAL_OVERLAY_REQUEST_CALLBACK_INSTALLER_H_
 
-#import "ios/chrome/browser/infobars/model/overlays/browser_agent/interaction_handlers/common/infobar_modal_overlay_request_callback_installer.h"
-
 #import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#import "ios/chrome/browser/infobars/model/overlays/browser_agent/interaction_handlers/common/infobar_modal_overlay_request_callback_installer.h"
 
 class SaveAddressProfileInfobarModalInteractionHandler;
 
@@ -51,7 +50,7 @@ class SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller
   void InstallCallbacksInternal(OverlayRequest* request) override;
 
   // The handler for received responses.
-  raw_ptr<SaveAddressProfileInfobarModalInteractionHandler>
+  raw_ptr<SaveAddressProfileInfobarModalInteractionHandler, DanglingUntriaged>
       interaction_handler_ = nullptr;
 
   base::WeakPtrFactory<

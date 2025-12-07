@@ -34,6 +34,28 @@ inline constexpr char kAccountsPrefDeviceLocalAccountsKeyKioskAppId[] =
     "kiosk_app_id";
 inline constexpr char kAccountsPrefDeviceLocalAccountsKeyKioskAppUpdateURL[] =
     "kiosk_app_update_url";
+inline constexpr char kAccountsPrefDeviceLocalAccountsKeyIwaKioskBundleId[] =
+    "iwa_kiosk_web_bundle_id";
+inline constexpr char kAccountsPrefDeviceLocalAccountsKeyIwaKioskUpdateUrl[] =
+    "iwa_kiosk_update_manifest_url";
+inline constexpr char
+    kAccountsPrefDeviceLocalAccountsKeyIwaKioskUpdateChannel[] =
+        "iwa_kiosk_update_channel";
+inline constexpr char
+    kAccountsPrefDeviceLocalAccountsKeyIwaKioskPinnedVersion[] =
+        "iwa_kiosk_pinned_version";
+inline constexpr char
+    kAccountsPrefDeviceLocalAccountsKeyIwaKioskAllowDowngrades[] =
+        "iwa_kiosk_allow_downgrades";
+inline constexpr char kAccountsPrefDeviceLocalAccountsKeyArcvmKioskPackage[] =
+    "arcvm_kiosk_package";
+inline constexpr char kAccountsPrefDeviceLocalAccountsKeyArcvmKioskClass[] =
+    "arcvm_kiosk_class";
+inline constexpr char kAccountsPrefDeviceLocalAccountsKeyArcvmKioskAction[] =
+    "arcvm_kiosk_action";
+inline constexpr char
+    kAccountsPrefDeviceLocalAccountsKeyArcvmKioskDisplayName[] =
+        "arcvm_kiosk_display_name";
 inline constexpr char kAccountsPrefDeviceLocalAccountsKeyWebKioskUrl[] =
     "web_kiosk_url";
 inline constexpr char kAccountsPrefDeviceLocalAccountsKeyWebKioskTitle[] =
@@ -515,6 +537,11 @@ inline constexpr char kCastReceiverName[] = "cros.device.cast_receiver.name";
 inline constexpr char kUnaffiliatedArcAllowed[] =
     "cros.device.unaffiliated_arc_allowed";
 
+// A boolean pref that indicates whether Android VPN apps are allowed to
+// be push installed.
+inline constexpr char kDeviceFlexArcPreloadEnabled[] =
+    "cros.device.device_flex_arc_preload_enabled";
+
 // A boolean pref that indicates whether users are allowed to configure the
 // device hostname.
 inline constexpr char kDeviceHostnameUserConfigurable[] =
@@ -614,6 +641,11 @@ inline constexpr char kDevicePeripheralDataAccessEnabled[] =
 inline constexpr char kDeviceAllowedBluetoothServices[] =
     "cros.device.allowed_bluetooth_services";
 
+// Boolean pref indicating whether "Just Works" bluetooth pairing is enabled or
+// not.
+inline constexpr char kDeviceBluetoothJustWorksPairingEnabled[] =
+    "cros.device.bluetooth_just_works_pairing_enabled";
+
 // A dictionary pref specifying the recurring schedule for device reboot.
 inline constexpr char kDeviceScheduledReboot[] =
     "cros.device.device_scheduled_reboot";
@@ -649,6 +681,12 @@ inline constexpr char kDevicePrintingClientNameTemplate[] =
 // is available.
 inline constexpr char kDeviceHindiInscriptLayoutEnabled[] =
     "cros.device.hindi_inscript_layout_enabled";
+
+inline constexpr char kDeviceUserInitiatedFirmwareUpdatesEnabled[] =
+    "cros.device.user_initiated_firmware_updates_enabled";
+
+inline constexpr char kDeviceUserInitiatedFlexSystemFirmwareUpdatesEnabled[] =
+    "cros.device.user_initiated_flex_system_firmware_updates_enabled";
 
 // A list of strings representing DLC identifiers to be pre downloaded on the
 // device.

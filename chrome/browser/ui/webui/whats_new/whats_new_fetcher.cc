@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/webui/whats_new/whats_new_fetcher.h"
 
+#include <optional>
+#include <string>
+
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -11,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/browser_process.h"
@@ -21,10 +25,9 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "chrome/common/chrome_version.h"
-#include "components/user_education/common/user_education_features.h"
-#include "components/user_education/webui/whats_new_registry.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/reduce_accept_language_controller_delegate.h"
@@ -37,44 +40,60 @@
 
 namespace whats_new {
 const char kChromeWhatsNewURL[] = "https://www.google.com/chrome/whats-new/";
-const char kChromeWhatsNewV2URL[] =
-    "https://www.google.com/chrome/v2/whats-new/";
+const char kChromeWhatsNewRefreshURL[] =
+    "https://www.google.com/chrome/wn-2025/whats-new/";
+const char kChromeWhatsNewStagingURL[] =
+    "https://chrome-staging.corp.google.com/chrome/whats-new/";
+const char kChromeWhatsNewRefreshStagingURL[] =
+    "https://chrome-staging.corp.google.com/chrome/wn-2025/whats-new/";
 
 const int64_t kMaxDownloadBytes = 1024 * 1024;
 
-GURL GetV2ServerURL() {
-  return net::AppendQueryParameter(GURL(kChromeWhatsNewV2URL), "version",
+GURL AddVersionParameter(const GURL& base_url) {
+  return net::AppendQueryParameter(base_url, "version",
                                    base::NumberToString(CHROME_VERSION_MAJOR));
 }
 
-GURL GetV2ServerURLForRender() {
-  auto* registry = g_browser_process->GetFeatures()->whats_new_registry();
-  CHECK(registry);
+GURL GetServerLegacyURL(bool is_staging) {
+  const GURL base_url =
+      is_staging ? GURL(kChromeWhatsNewStagingURL) : GURL(kChromeWhatsNewURL);
+  return AddVersionParameter(base_url);
+}
 
-  GURL url = GetV2ServerURL();
-  auto active_features = registry->GetActiveFeatureNames();
-  if (active_features.size() > 0) {
+GURL GetServerRefreshURL(bool is_staging) {
+  const GURL base_url = is_staging ? GURL(kChromeWhatsNewRefreshStagingURL)
+                                   : GURL(kChromeWhatsNewRefreshURL);
+  return AddVersionParameter(base_url);
+}
+
+GURL GetServerURL(bool is_staging) {
+  return base::FeatureList::IsEnabled(features::kWhatsNewDesktopRefresh)
+             ? GetServerRefreshURL(is_staging)
+             : GetServerLegacyURL(is_staging);
+}
+
+GURL GetServerURLForRender(const WhatsNewRegistry& whats_new_registry,
+                           bool is_staging) {
+  GURL url = GetServerURL(is_staging);
+  const auto active_features = whats_new_registry.GetActiveFeatureNames();
+  if (!active_features.empty()) {
     url = net::AppendQueryParameter(
         url, "enabled", base::JoinString(active_features, std::string(",")));
   }
 
-  auto rolled_features = registry->GetRolledFeatureNames();
-  if (rolled_features.size() > 0) {
+  const auto rolled_features = whats_new_registry.GetRolledFeatureNames();
+  if (!rolled_features.empty()) {
     url = net::AppendQueryParameter(
         url, "rolled", base::JoinString(rolled_features, std::string(",")));
   }
 
-  return net::AppendQueryParameter(url, "internal", "true");
-}
+  const auto customizations = whats_new_registry.GetCustomizations();
+  if (!customizations.empty()) {
+    url = net::AppendQueryParameter(
+        url, "customization",
+        base::JoinString(customizations, std::string(",")));
+  }
 
-GURL GetServerURL(bool may_redirect) {
-  const GURL url =
-      may_redirect
-          ? net::AppendQueryParameter(
-                GURL(kChromeWhatsNewURL), "version",
-                base::NumberToString(CHROME_VERSION_MAJOR))
-          : GURL(kChromeWhatsNewURL)
-                .Resolve(base::StringPrintf("m%d", CHROME_VERSION_MAJOR));
   return net::AppendQueryParameter(url, "internal", "true");
 }
 
@@ -84,13 +103,15 @@ class WhatsNewFetcher : public BrowserListObserver {
  public:
   explicit WhatsNewFetcher(Browser* browser) : browser_(browser) {
     BrowserList::AddObserver(this);
+    browser_did_become_active_subscription_ = browser_->RegisterDidBecomeActive(
+        base::BindRepeating(&WhatsNewFetcher::OnBrowserDidBecomeActive,
+                            base::Unretained(this)));
+    browser_did_become_inactive_subscription_ =
+        browser_->RegisterDidBecomeActive(
+            base::BindRepeating(&WhatsNewFetcher::OnBrowserDidBecomeInactive,
+                                base::Unretained(this)));
 
-    GURL server_url;
-    if (user_education::features::IsWhatsNewV2()) {
-      server_url = GetV2ServerURL();
-    } else {
-      server_url = GetServerURL(false);
-    }
+    GURL server_url = GetServerURL();
     startup_url_ = GetWebUIStartupURL();
 
     if (IsRemoteContentDisabled()) {
@@ -170,6 +191,14 @@ class WhatsNewFetcher : public BrowserListObserver {
 
   ~WhatsNewFetcher() override { BrowserList::RemoveObserver(this); }
 
+  void OnBrowserDidBecomeActive(BrowserWindowInterface* browser) {
+    browser_closed_or_inactive_ = false;
+  }
+
+  void OnBrowserDidBecomeInactive(BrowserWindowInterface* browser) {
+    browser_closed_or_inactive_ = true;
+  }
+
   // BrowserListObserver:
   void OnBrowserRemoved(Browser* browser) override {
     if (browser != browser_) {
@@ -178,19 +207,9 @@ class WhatsNewFetcher : public BrowserListObserver {
 
     browser_closed_or_inactive_ = true;
     BrowserList::RemoveObserver(this);
+    browser_did_become_active_subscription_ = {};
+    browser_did_become_inactive_subscription_ = {};
     browser_ = nullptr;
-  }
-
-  void OnBrowserNoLongerActive(Browser* browser) override {
-    if (browser == browser_) {
-      browser_closed_or_inactive_ = true;
-    }
-  }
-
-  void OnBrowserSetLastActive(Browser* browser) override {
-    if (browser == browser_) {
-      browser_closed_or_inactive_ = false;
-    }
   }
 
  private:
@@ -213,7 +232,7 @@ class WhatsNewFetcher : public BrowserListObserver {
     delete this;
   }
 
-  void OnResponseLoaded(std::unique_ptr<std::string> body) {
+  void OnResponseLoaded(std::optional<std::string> body) {
     int error_or_response_code = simple_loader_->NetError();
     const auto& headers = simple_loader_->ResponseInfo()
                               ? simple_loader_->ResponseInfo()->headers
@@ -227,17 +246,12 @@ class WhatsNewFetcher : public BrowserListObserver {
     base::UmaHistogramSparse("WhatsNew.LoadResponseCode",
                              error_or_response_code);
 
-    if (user_education::features::IsWhatsNewV2()) {
-      // In V2, the server may respond with a 302 to indicate the requested
-      // page version does not exist but a suitable page has been found.
-      // This should not result in an error since the auto-opened page
-      // can still access a relevant resource.
-      success = success && error_or_response_code >= 200 &&
-                error_or_response_code <= 302 && body;
-    } else {
-      success = success && error_or_response_code >= 200 &&
-                error_or_response_code <= 299 && body;
-    }
+    // The server may respond with a 302 to indicate the requested
+    // page version does not exist but a suitable page has been found.
+    // This should not result in an error since the auto-opened page
+    // can still access a relevant resource.
+    success = success && error_or_response_code >= 200 &&
+              error_or_response_code <= 302 && body;
 
     // If the browser was closed or moved to the background while What's New was
     // loading, return early before recording that the user saw the page.
@@ -261,6 +275,8 @@ class WhatsNewFetcher : public BrowserListObserver {
   raw_ptr<Browser> browser_;
   bool browser_closed_or_inactive_ = false;
   GURL startup_url_;
+  base::CallbackListSubscription browser_did_become_active_subscription_;
+  base::CallbackListSubscription browser_did_become_inactive_subscription_;
 };
 
 }  // namespace

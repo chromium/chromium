@@ -5,21 +5,20 @@
 #ifndef CHROME_BROWSER_ASH_NET_BLUETOOTH_PREF_STATE_OBSERVER_H_
 #define CHROME_BROWSER_ASH_NET_BLUETOOTH_PREF_STATE_OBSERVER_H_
 
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
-class Profile;
+class PrefService;
 
 namespace ash {
 
-// Class to update CrosBluetoothConfig when the PrefService state changes. The
-// implementation currently relies on g_browser_process since it holds the
-// default PrefService.
+// Class to update CrosBluetoothConfig when the PrefService state changes.
 class BluetoothPrefStateObserver
     : public session_manager::SessionManagerObserver {
  public:
-  BluetoothPrefStateObserver();
+  explicit BluetoothPrefStateObserver(PrefService& local_state);
 
   BluetoothPrefStateObserver(const BluetoothPrefStateObserver&) = delete;
   BluetoothPrefStateObserver& operator=(const BluetoothPrefStateObserver&) =
@@ -31,11 +30,11 @@ class BluetoothPrefStateObserver
   void OnUserProfileLoaded(const AccountId& account_id) override;
 
  private:
-  void SetPrefs(Profile* profile);
-
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>
       session_observation_{this};
+
+  const raw_ref<PrefService> local_state_;
 };
 
 }  // namespace ash

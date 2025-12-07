@@ -14,6 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/env.h"
 #include "ui/aura/test/aura_test_base.h"
+#include "ui/aura/test/test_window_builder.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/test/window_occlusion_tracker_test_api.h"
@@ -24,10 +25,10 @@
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/compositor/test/layer_animator_test_controller.h"
 #include "ui/gfx/interpolated_transform.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 namespace aura {
 
@@ -142,8 +143,11 @@ class WindowOcclusionTrackerTest : public test::AuraTestBase {
                                 Window* parent = nullptr,
                                 ui::LayerType layer_type = ui::LAYER_TEXTURED) {
     if (layer_type == ui::LAYER_TEXTURED) {
-      return test::CreateTestWindow(SK_ColorWHITE, 1, bounds,
-                                    parent ? parent : root_window());
+      return test::CreateTestWindow({.parent = parent ? parent : root_window(),
+                                     .bounds = bounds,
+                                     .window_id = 1},
+                                    SK_ColorWHITE)
+          .release();
     }
     DCHECK_EQ(ui::LAYER_SOLID_COLOR, layer_type);
     Window* window = new Window(nullptr);
@@ -644,8 +648,8 @@ TEST_F(WindowOcclusionTrackerTest, BoundsChanged) {
 // should be considered non-occluded and should not occlude other windows. The
 // animated window starts occluded.
 TEST_F(WindowOcclusionTrackerTest, OccludedWindowBoundsAnimated) {
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   ui::LayerAnimatorTestController test_controller(
       ui::LayerAnimator::CreateImplicitAnimator());
   ui::ScopedLayerAnimationSettings layer_animation_settings(
@@ -698,8 +702,8 @@ TEST_F(WindowOcclusionTrackerTest, OccludedWindowBoundsAnimated) {
 
 // Same as the previous test, but the animated window starts non-occluded.
 TEST_F(WindowOcclusionTrackerTest, NonOccludedWindowBoundsAnimated) {
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   ui::LayerAnimatorTestController test_controller(
       ui::LayerAnimator::CreateImplicitAnimator());
   ui::ScopedLayerAnimationSettings layer_animation_settings(
@@ -838,8 +842,8 @@ TEST_F(WindowOcclusionTrackerTest, TransformChanged) {
 // should be considered non-occluded and should not occlude other windows. The
 // animated window starts occluded.
 TEST_F(WindowOcclusionTrackerTest, OccludedWindowTransformAnimated) {
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   ui::LayerAnimatorTestController test_controller(
       ui::LayerAnimator::CreateImplicitAnimator());
   ui::ScopedLayerAnimationSettings layer_animation_settings(
@@ -898,8 +902,8 @@ TEST_F(WindowOcclusionTrackerTest, OccludedWindowTransformAnimated) {
 
 // Same as the previous test, but the animated window starts non-occluded.
 TEST_F(WindowOcclusionTrackerTest, NonOccludedWindowTransformAnimated) {
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   ui::LayerAnimatorTestController test_controller(
       ui::LayerAnimator::CreateImplicitAnimator());
   ui::ScopedLayerAnimationSettings layer_animation_settings(
@@ -1296,8 +1300,8 @@ TEST_F(WindowOcclusionTrackerTest, Clipping) {
 // and the window should be removed from |animated_windows_| before
 // OnWindowDestroyed() is called).
 TEST_F(WindowOcclusionTrackerTest, DestroyWindowWithPendingAnimation) {
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   ui::LayerAnimatorTestController test_controller(
       ui::LayerAnimator::CreateImplicitAnimator());
   ui::ScopedLayerAnimationSettings layer_animation_settings(
@@ -1326,8 +1330,8 @@ TEST_F(WindowOcclusionTrackerTest, DestroyWindowWithPendingAnimation) {
 TEST_F(WindowOcclusionTrackerTest,
        DestroyOcclusionTrackerWithPendingAnimation) {
   auto occlusion_tracker = CreateSecondaryOcclusionTracker();
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   ui::LayerAnimatorTestController test_controller(
       ui::LayerAnimator::CreateImplicitAnimator());
   ui::ScopedLayerAnimationSettings layer_animation_settings(
@@ -1357,8 +1361,8 @@ TEST_F(WindowOcclusionTrackerTest,
 // Verify that an animated window stops being considered as animated when its
 // layer is recreated.
 TEST_F(WindowOcclusionTrackerTest, RecreateLayerOfAnimatedWindow) {
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   ui::LayerAnimatorTestController test_controller(
       ui::LayerAnimator::CreateImplicitAnimator());
   ui::ScopedLayerAnimationSettings layer_animation_settings(
@@ -1475,8 +1479,8 @@ class ObserverDestroyingWindowOnAnimationEnded
 // window before WindowOcclusionTracker is notified that the animation ended.
 TEST_P(WindowOcclusionTrackerOpacityTest,
        DestroyTrackedWindowFromLayerAnimationObserver) {
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   ui::LayerAnimatorTestController test_controller(
       ui::LayerAnimator::CreateImplicitAnimator());
   ui::ScopedLayerAnimationSettings layer_animation_settings(
@@ -1508,8 +1512,8 @@ TEST_P(WindowOcclusionTrackerOpacityTest,
 // window and deleted.
 TEST_P(WindowOcclusionTrackerOpacityTest,
        DeleteNonTrackedAnimatedWindowRemovedFromTrackedRoot) {
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   ui::LayerAnimatorTestController test_controller(
       ui::LayerAnimator::CreateImplicitAnimator());
   ui::ScopedLayerAnimationSettings layer_animation_settings(
@@ -1557,8 +1561,8 @@ TEST_P(WindowOcclusionTrackerOpacityTest,
 
 TEST_P(WindowOcclusionTrackerOpacityTest,
        OpacityAnimationShouldNotOccludeWindow) {
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   ui::LayerAnimatorTestController test_controller(
       ui::LayerAnimator::CreateImplicitAnimator());
   ui::ScopedLayerAnimationSettings layer_animation_settings(
@@ -2528,8 +2532,8 @@ TEST_F(WindowOcclusionTrackerTest,
             occlusion_data.occluded_region);
 
   // Start animating |window_b| to fully occlude |window_a|.
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   ui::LayerAnimatorTestController test_controller(
       ui::LayerAnimator::CreateImplicitAnimator());
   ui::ScopedLayerAnimationSettings layer_animation_settings(
@@ -2587,8 +2591,8 @@ TEST_P(WindowOcclusionTrackerOpacityTest,
   EXPECT_EQ(SkRegion(), occlusion_data.occluded_region);
 
   // Start animating |window_b| to fully occlude |window_a|.
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   ui::LayerAnimatorTestController test_controller(
       ui::LayerAnimator::CreateImplicitAnimator());
   ui::ScopedLayerAnimationSettings layer_animation_settings(
@@ -2651,8 +2655,8 @@ TEST_F(WindowOcclusionTrackerTest,
   EXPECT_EQ(SkRegion(), occlusion_data.occluded_region);
 
   // Start animating |window_b| to fully occlude |window_a|.
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   ui::LayerAnimatorTestController test_controller(
       ui::LayerAnimator::CreateImplicitAnimator());
   ui::ScopedLayerAnimationSettings layer_animation_settings(
@@ -2723,8 +2727,8 @@ TEST_F(WindowOcclusionTrackerTest,
 
   // Set a target transform on |window_b| which should increase the size of
   // its child window, occluding |window_d|.
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   ui::LayerAnimatorTestController test_controller(
       ui::LayerAnimator::CreateImplicitAnimator());
   ui::ScopedLayerAnimationSettings layer_animation_settings(
@@ -2776,8 +2780,8 @@ TEST_F(WindowOcclusionTrackerTest, ComputeTargetOcclusionForAnimatedWindow) {
   EXPECT_FALSE(delegate_a->is_expecting_call());
 
   // Start animating |window_a| to be fully occluded by |window_b|.
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   ui::LayerAnimatorTestController test_controller(
       ui::LayerAnimator::CreateImplicitAnimator());
   ui::ScopedLayerAnimationSettings layer_animation_settings(
@@ -2973,6 +2977,54 @@ TEST_F(WindowOcclusionTrackerTest, ClipToRootWindow) {
   delegate_a->set_expectation(Window::OcclusionState::OCCLUDED, SkRegion());
   CreateUntrackedWindow(root_window()->bounds());
   EXPECT_FALSE(delegate_a->is_expecting_call());
+}
+
+TEST_F(WindowOcclusionTrackerTest, DoNotCountTwice) {
+  auto* window_occlusion_tracker =
+      Env::GetInstance()->GetWindowOcclusionTracker();
+
+  class TestObserver : public WindowObserver {
+   public:
+    explicit TestObserver(aura::Window* window) : window_(window) {
+      window->AddObserver(this);
+    }
+    ~TestObserver() override {
+      if (window_) {
+        window_->RemoveObserver(this);
+      }
+    }
+    // WindowObserver:
+    void OnWindowDestroying(Window* window) override {
+      window_->RemoveObserver(this);
+      window_ = nullptr;
+    }
+    void OnWindowParentChanged(Window* window, Window* parent) override {
+      window_->TrackOcclusionState();
+    }
+    raw_ptr<Window> window_;
+  };
+
+  window_occlusion_tracker->set_num_tracked_windows_count_check_for_test(false);
+  {
+    auto w = test::TestWindowBuilder().SetShow(true).Build();
+    TestObserver obs(w.get());
+    root_window()->AddChild(w.get());
+  }
+  auto& sources =
+      window_occlusion_tracker->GetObservingWindowTreeHostsForTest();
+  EXPECT_EQ(0u, sources.size());
+
+  // This test requires DCHECK enabled.
+#if defined(GTEST_HAS_DEATH_TEST) && DCHECK_IS_ON()
+  window_occlusion_tracker->set_num_tracked_windows_count_check_for_test(true);
+  EXPECT_DEATH(
+      {
+        auto w = test::TestWindowBuilder().SetShow(true).Build();
+        TestObserver obs(w.get());
+        root_window()->AddChild(w.get());
+      },
+      "DCHECK failed.*num_tracked_windows.*");
+#endif
 }
 
 // Run tests with LAYER_TEXTURE_LAYER type or LAYER_SOLID_COLOR type.

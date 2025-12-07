@@ -4,14 +4,16 @@
 
 #include "partition_alloc/partition_alloc_base/strings/safe_sprintf.h"
 
-#include <algorithm>
 #include <cerrno>
 #include <cstring>
 #include <limits>
 
 #include "partition_alloc/build_config.h"
+#include "partition_alloc/buildflags.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/cxx_wrapper/algorithm.h"
 
-#if !defined(NDEBUG)
+#if PA_BUILDFLAG(IS_DEBUG)
 // In debug builds, we use RAW_CHECK() to print useful error messages, if
 // SafeSPrintf() is called with broken arguments.
 // As our contract promises that SafeSPrintf() can be called from any
@@ -41,7 +43,7 @@
     if (x) {           \
     }                  \
   } while (0)
-#endif
+#endif  // PA_BUILDFLAG(IS_DEBUG)
 
 namespace partition_alloc::internal::base::strings {
 
@@ -74,7 +76,7 @@ const char kUpCaseHexDigits[] = "0123456789ABCDEF";
 const char kDownCaseHexDigits[] = "0123456789abcdef";
 }  // namespace
 
-#if defined(NDEBUG)
+#if !PA_BUILDFLAG(IS_DEBUG)
 // We would like to define kSSizeMax as std::numeric_limits<ssize_t>::max(),
 // but C++ doesn't allow us to do that for constants. Instead, we have to
 // use careful casting and shifting. We later use a static_assert to
@@ -82,7 +84,7 @@ const char kDownCaseHexDigits[] = "0123456789abcdef";
 namespace {
 const size_t kSSizeMax = kSSizeMaxConst;
 }
-#else   // defined(NDEBUG)
+#else   // !PA_BUILDFLAG(IS_DEBUG)
 // For efficiency, we really need kSSizeMax to be a constant. But for unit
 // tests, it should be adjustable. This allows us to verify edge cases without
 // having to fill the entire available address space. As a compromise, we make
@@ -101,7 +103,7 @@ size_t GetSafeSPrintfSSizeMaxForTest() {
   return kSSizeMax;
 }
 }  // namespace internal
-#endif  // defined(NDEBUG)
+#endif  // !PA_BUILDFLAG(IS_DEBUG)
 
 namespace {
 class Buffer {
@@ -111,18 +113,10 @@ class Buffer {
   // to ensure that the buffer is at least one byte in size, so that it fits
   // the trailing NUL that will be added by the destructor. The buffer also
   // must be smaller or equal to kSSizeMax in size.
-  Buffer(char* buffer, size_t size)
-      : buffer_(buffer),
-        size_(size - 1),  // Account for trailing NUL byte
-        count_(0) {
-// MSVS2013's standard library doesn't mark max() as constexpr yet. cl.exe
-// supports static_cast but doesn't really implement constexpr yet so it doesn't
-// complain, but clang does.
-#if __cplusplus >= 201103 && !(defined(__clang__) && PA_BUILDFLAG(IS_WIN))
+  Buffer(char* buffer, size_t size) : buffer_(buffer), size_(size - 1) {
     static_assert(kSSizeMaxConst ==
                       static_cast<size_t>(std::numeric_limits<ssize_t>::max()),
                   "kSSizeMaxConst should be the max value of an ssize_t");
-#endif
     DEBUG_CHECK(size > 0);
     DEBUG_CHECK(size <= kSSizeMax);
   }
@@ -164,7 +158,7 @@ class Buffer {
   // have been allocated for the |buffer_|.
   inline bool Out(char ch) {
     if (size_ >= 1 && count_ < size_) {
-      buffer_[count_] = ch;
+      PA_UNSAFE_TODO(buffer_[count_]) = ch;
       return IncrementCountByOne();
     }
     // |count_| still needs to be updated, even if the buffer has been
@@ -263,7 +257,7 @@ class Buffer {
     if (idx > size_) {
       idx = size_;
     }
-    return buffer_ + idx;
+    return PA_UNSAFE_TODO(buffer_ + idx);
   }
 
   // User-provided buffer that will receive the fully formatted output string.
@@ -276,7 +270,7 @@ class Buffer {
   // Number of bytes that would have been emitted to the buffer, if the buffer
   // was sufficiently big. This number always excludes the trailing NUL byte
   // and it is guaranteed to never grow bigger than kSSizeMax-1.
-  size_t count_;
+  size_t count_ = 0;
 };
 
 bool Buffer::IToASCII(bool sign,
@@ -334,11 +328,12 @@ bool Buffer::IToASCII(bool sign,
         if (padding) {
           --padding;
         }
-        Out(*prefix++);
+        Out(*PA_UNSAFE_TODO(prefix++));
       }
       prefix = nullptr;
     } else {
-      for (reverse_prefix = prefix; *reverse_prefix; ++reverse_prefix) {
+      for (reverse_prefix = prefix; *reverse_prefix;
+           PA_UNSAFE_TODO(++reverse_prefix)) {
       }
     }
   } else {
@@ -362,9 +357,10 @@ bool Buffer::IToASCII(bool sign,
         // have to discard digits in the order that we have already emitted
         // them. This is essentially equivalent to:
         //   memmove(buffer_ + start, buffer_ + start + 1, size_ - start - 1)
-        for (char *move = buffer_ + start, *end = buffer_ + size_ - 1;
-             move < end; ++move) {
-          *move = move[1];
+        for (char *move = PA_UNSAFE_TODO(buffer_ + start),
+                  *end = PA_UNSAFE_TODO(buffer_ + size_ - 1);
+             move < end; PA_UNSAFE_TODO(++move)) {
+          *move = PA_UNSAFE_TODO(move[1]);
         }
         ++discarded;
         --count_;
@@ -386,14 +382,14 @@ bool Buffer::IToASCII(bool sign,
     // integer always ends in 2, 4, 6, or 8.
     if (!num && started) {
       if (reverse_prefix > prefix) {
-        Out(*--reverse_prefix);
+        Out(*PA_UNSAFE_TODO(--reverse_prefix));
       } else {
         Out(pad);
       }
     } else {
       started = true;
-      Out((upcase ? kUpCaseHexDigits
-                  : kDownCaseHexDigits)[num % base + minint]);
+      Out(PA_UNSAFE_TODO((upcase ? kUpCaseHexDigits
+                                 : kDownCaseHexDigits))[num % base + minint]);
     }
 
     minint = 0;
@@ -422,12 +418,12 @@ bool Buffer::IToASCII(bool sign,
     // order. We can't easily generate them in forward order, as we can't tell
     // the number of characters needed until we are done converting.
     // So, now, we reverse the string (except for the possible '-' sign).
-    char* front = buffer_ + start;
+    char* front = PA_UNSAFE_TODO(buffer_ + start);
     char* back = GetInsertionPoint();
-    while (--back > front) {
+    while (PA_UNSAFE_TODO(--back) > front) {
       char ch = *back;
       *back = *front;
-      *front++ = ch;
+      *PA_UNSAFE_TODO(front++) = ch;
     }
   }
   IncrementCount(discarded);
@@ -458,10 +454,10 @@ ssize_t SafeSNPrintf(char* buf,
   size_t padding;
   char pad;
   for (unsigned int cur_arg = 0; *fmt && !buffer.OutOfAddressableSpace();) {
-    if (*fmt++ == '%') {
+    if (*PA_UNSAFE_TODO(fmt++) == '%') {
       padding = 0;
       pad = ' ';
-      char ch = *fmt++;
+      char ch = *PA_UNSAFE_TODO(fmt++);
     format_character_found:
       switch (ch) {
         case '0':
@@ -492,7 +488,7 @@ ssize_t SafeSNPrintf(char* buf,
               // handling.
             padding_overflow:
               padding = max_padding;
-              while ((ch = *fmt++) >= '0' && ch <= '9') {
+              while ((ch = *PA_UNSAFE_TODO(fmt++)) >= '0' && ch <= '9') {
               }
               if (cur_arg < max_args) {
                 ++cur_arg;
@@ -508,7 +504,7 @@ ssize_t SafeSNPrintf(char* buf,
               DEBUG_CHECK(padding <= max_padding);
               goto padding_overflow;
             }
-            ch = *fmt++;
+            ch = *PA_UNSAFE_TODO(fmt++);
             if (ch < '0' || ch > '9') {
               // Reached the end of the width parameter. This is where the
               // format character is found.
@@ -523,7 +519,7 @@ ssize_t SafeSNPrintf(char* buf,
           }
 
           // Check that the argument has the expected type.
-          const Arg& arg = args[cur_arg++];
+          const Arg& arg = PA_UNSAFE_TODO(args[cur_arg++]);
           if (arg.type != Arg::INT && arg.type != Arg::UINT) {
             DEBUG_CHECK(arg.type == Arg::INT || arg.type == Arg::UINT);
             goto fail_to_expand;
@@ -551,7 +547,7 @@ ssize_t SafeSNPrintf(char* buf,
             goto fail_to_expand;
           }
 
-          const Arg& arg = args[cur_arg++];
+          const Arg& arg = PA_UNSAFE_TODO(args[cur_arg++]);
           int64_t i;
           const char* prefix = nullptr;
           if (ch != 'p') {
@@ -613,7 +609,7 @@ ssize_t SafeSNPrintf(char* buf,
           }
 
           // Check that the argument has the expected type.
-          const Arg& arg = args[cur_arg++];
+          const Arg& arg = PA_UNSAFE_TODO(args[cur_arg++]);
           const char* s;
           if (arg.type == Arg::STRING) {
             s = arg.str ? arg.str : "<NULL>";
@@ -630,7 +626,7 @@ ssize_t SafeSNPrintf(char* buf,
           // length of the string that we are outputting.
           if (padding) {
             size_t len = 0;
-            for (const char* src = s; *src++;) {
+            for (const char* src = s; *PA_UNSAFE_TODO(src++);) {
               ++len;
             }
             buffer.Pad(' ', padding, len);
@@ -640,7 +636,7 @@ ssize_t SafeSNPrintf(char* buf,
           // output buffer and making sure we don't output more bytes than
           // available space; Out() takes care of doing that.
           for (const char* src = s; *src;) {
-            buffer.Out(*src++);
+            buffer.Out(*PA_UNSAFE_TODO(src++));
           }
           break;
         }
@@ -671,7 +667,7 @@ ssize_t SafeSNPrintf(char* buf,
       }
     } else {
     copy_verbatim:
-      buffer.Out(fmt[-1]);
+      buffer.Out(PA_UNSAFE_TODO(fmt[-1]));
     }
   }
 end_of_format_string:
@@ -698,11 +694,11 @@ ssize_t SafeSNPrintf(char* buf, size_t sz, const char* fmt) {
   // SafeSPrintf() function always degenerates to a version of strncpy() that
   // de-duplicates '%' characters.
   const char* src = fmt;
-  for (; *src; ++src) {
+  for (; *src; PA_UNSAFE_TODO(++src)) {
     buffer.Out(*src);
-    DEBUG_CHECK(src[0] != '%' || src[1] == '%');
-    if (src[0] == '%' && src[1] == '%') {
-      ++src;
+    PA_UNSAFE_TODO(DEBUG_CHECK(src[0] != '%' || src[1] == '%'));
+    if (src[0] == '%' && PA_UNSAFE_TODO(src[1]) == '%') {
+      PA_UNSAFE_TODO(++src);
     }
   }
   return buffer.GetCount();

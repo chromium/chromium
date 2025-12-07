@@ -6,13 +6,15 @@
 #define COMPONENTS_POLICY_CORE_COMMON_CLOUD_CLOUD_POLICY_MANAGER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/component_cloud_policy_service.h"
+#include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_export.h"
@@ -58,6 +60,12 @@ class POLICY_EXPORT CloudPolicyManager
     return component_policy_service_.get();
   }
 
+  // Returns the DM Token, if it exists.
+  std::optional<policy::DMToken> GetDMToken() const;
+
+  // Returns the client ID, if it exists.
+  std::optional<std::string> GetClientId() const;
+
   // Returns true if the underlying CloudPolicyClient is already registered.
   // Virtual for mocking.
   virtual bool IsClientRegistered() const;
@@ -84,6 +92,9 @@ class POLICY_EXPORT CloudPolicyManager
   void OnComponentCloudPolicyUpdated() override;
 
  protected:
+  // Returns true if policy can be published now.
+  bool CanPublishPolicy() const;
+
   // Check whether fully initialized and if so, publish policy by calling
   // ConfigurationPolicyStore::UpdatePolicy().
   void CheckAndPublishPolicy();
@@ -116,6 +127,13 @@ class POLICY_EXPORT CloudPolicyManager
   std::unique_ptr<CloudPolicyStore> store_;
   CloudPolicyCore core_;
   std::unique_ptr<ComponentCloudPolicyService> component_policy_service_;
+
+  // Has component policy ever been published.
+  //
+  // Note that this flag is put here instead of ComponentCloudPolicyService
+  // because it's policy provider's duty to publish latest policy values. Hence
+  // lower level class doesn't need to know or maintain such state.
+  bool is_component_policy_published_ = false;
 
   // Whether there's a policy refresh operation pending, in which case all
   // policy update notifications are deferred until after it completes.

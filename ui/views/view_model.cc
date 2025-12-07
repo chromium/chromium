@@ -6,8 +6,9 @@
 
 #include <stddef.h>
 
+#include <algorithm>
+
 #include "base/check_op.h"
-#include "base/ranges/algorithm.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -24,8 +25,9 @@ void ViewModelBase::Move(size_t index, size_t target_index) {
   check_index(index);
   check_index(target_index);
 
-  if (index == target_index)
+  if (index == target_index) {
     return;
+  }
   Entry entry(entries_[index]);
   entries_.erase(entries_.begin() + static_cast<ptrdiff_t>(index));
   entries_.insert(entries_.begin() + static_cast<ptrdiff_t>(target_index),
@@ -35,13 +37,15 @@ void ViewModelBase::Move(size_t index, size_t target_index) {
 void ViewModelBase::MoveViewOnly(size_t index, size_t target_index) {
   if (target_index < index) {
     View* view = entries_[index].view;
-    for (size_t i = index; i > target_index; --i)
+    for (size_t i = index; i > target_index; --i) {
       entries_[i].view = entries_[i - 1].view;
+    }
     entries_[target_index].view = view;
   } else if (target_index > index) {
     View* view = entries_[index].view;
-    for (size_t i = index; i < target_index; ++i)
+    for (size_t i = index; i < target_index; ++i) {
       entries_[i].view = entries_[i + 1].view;
+    }
     entries_[target_index].view = view;
   }
 }
@@ -49,12 +53,13 @@ void ViewModelBase::MoveViewOnly(size_t index, size_t target_index) {
 void ViewModelBase::Clear() {
   Entries entries;
   entries.swap(entries_);
-  for (const auto& entry : entries)
+  for (const auto& entry : entries) {
     delete entry.view;
+  }
 }
 
 std::optional<size_t> ViewModelBase::GetIndexOfView(const View* view) const {
-  const auto i = base::ranges::find(entries_, view, &Entry::view);
+  const auto i = std::ranges::find(entries_, view, &Entry::view);
   return (i == entries_.cend())
              ? std::nullopt
              : std::make_optional(static_cast<size_t>(i - entries_.cbegin()));

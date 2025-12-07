@@ -26,8 +26,7 @@ class MODULES_EXPORT PushableMediaStreamAudioSource
   // PushableMediaStreamAudioSource from multiple threads. This also includes
   // safely posting tasks to/from outside the main thread.
   // The public methods of this class can be called on any thread.
-  class MODULES_EXPORT LOCKABLE Broker
-      : public WTF::ThreadSafeRefCounted<Broker> {
+  class MODULES_EXPORT LOCKABLE Broker : public ThreadSafeRefCounted<Broker> {
    public:
     Broker(const Broker&) = delete;
     Broker& operator=(const Broker&) = delete;

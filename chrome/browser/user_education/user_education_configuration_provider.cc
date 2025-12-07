@@ -4,23 +4,33 @@
 
 #include "chrome/browser/user_education/user_education_configuration_provider.h"
 
+#include <algorithm>
+
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "components/feature_engagement/public/configuration.h"
-#include "components/user_education/common/feature_promo_registry.h"
-#include "components/user_education/common/feature_promo_specification.h"
+#include "components/user_education/common/feature_promo/feature_promo_registry.h"
+#include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "components/user_education/common/user_education_features.h"
 
 namespace {
 
 std::string FeatureNameToEventName(const base::Feature& feature) {
   constexpr char kIPHPrefix[] = "IPH_";
-  std::string name = feature.name;
-  if (base::StartsWith(name, kIPHPrefix)) {
-    name = name.substr(strlen(kIPHPrefix));
-  }
-  return name;
+  std::string_view name = feature.name;
+  auto remainder = base::RemovePrefix(name, kIPHPrefix);
+  return std::string(remainder.value_or(name));
+}
+
+// Returns whether a comparator is bounded from above.
+bool IsAdditionalConfigBounded(const feature_engagement::EventConfig& config) {
+  const auto& comparator = config.comparator;
+  return (comparator.value > 0 &&
+          comparator.type == feature_engagement::LESS_THAN) ||
+         comparator.type == feature_engagement::LESS_THAN_OR_EQUAL ||
+         (comparator.value == 0 &&
+          comparator.type == feature_engagement::EQUAL);
 }
 
 }  // namespace
@@ -29,15 +39,13 @@ std::string FeatureNameToEventName(const base::Feature& feature) {
 extern void MaybeRegisterChromeFeaturePromos(
     user_education::FeaturePromoRegistry& registry);
 
-UserEducationConfigurationProvider::UserEducationConfigurationProvider()
-    : use_v2_behavior_(user_education::features::IsUserEducationV2()) {
+UserEducationConfigurationProvider::UserEducationConfigurationProvider() {
   MaybeRegisterChromeFeaturePromos(registry_);
 }
 
 UserEducationConfigurationProvider::UserEducationConfigurationProvider(
     user_education::FeaturePromoRegistry registry_for_testing)
-    : registry_(std::move(registry_for_testing)),
-      use_v2_behavior_(user_education::features::IsUserEducationV2()) {}
+    : registry_(std::move(registry_for_testing)) {}
 
 UserEducationConfigurationProvider::~UserEducationConfigurationProvider() =
     default;
@@ -47,17 +55,6 @@ bool UserEducationConfigurationProvider::MaybeProvideFeatureConfiguration(
     feature_engagement::FeatureConfig& config,
     const feature_engagement::FeatureVector& known_features,
     const feature_engagement::GroupVector& known_groups) const {
-  // Determine if a configuration needs to be provided or modified.
-  //
-  // Provide a configuration in v1 if there is no existing config, so that IPH
-  // added after the v2 transition without explicit configuration still work on
-  // browsers without the v2 flag enabled.
-  //
-  // In v2, a configuration is always provided; if one already exists, any
-  // values that mandatory in v2 are overwritten.
-  if (config.valid && !use_v2_behavior_) {
-    return false;
-  }
 
   // Features not controlled by FeaturePromoController are ignored.
   if (!registry_.IsFeatureRegistered(feature)) {
@@ -65,13 +62,6 @@ bool UserEducationConfigurationProvider::MaybeProvideFeatureConfiguration(
   }
 
   const auto* const promo_spec = registry_.GetParamsForFeature(feature);
-  const bool is_unlimited =
-      promo_spec->promo_subtype() == user_education::FeaturePromoSpecification::
-                                         PromoSubtype::kKeyedNotice ||
-      promo_spec->promo_subtype() == user_education::FeaturePromoSpecification::
-                                         PromoSubtype::kLegalNotice ||
-      promo_spec->promo_subtype() == user_education::FeaturePromoSpecification::
-                                         PromoSubtype::kActionableAlert;
 
   // These are baseline session rate values.
   config.session_rate.type = feature_engagement::ANY;
@@ -84,14 +74,10 @@ bool UserEducationConfigurationProvider::MaybeProvideFeatureConfiguration(
     case user_education::FeaturePromoSpecification::PromoType::kSnooze:
     case user_education::FeaturePromoSpecification::PromoType::kCustomAction:
     case user_education::FeaturePromoSpecification::PromoType::kTutorial:
+    case user_education::FeaturePromoSpecification::PromoType::kCustomUi:
       // Heavyweight promos prevent future low-priority heavyweight promos.
       config.session_rate_impact.type =
           feature_engagement::SessionRateImpact::Type::ALL;
-      // Heavyweight IPH can only show once per session. However, in V2,
-      // sessions are controlled by the session policy.
-      if (!is_unlimited && !use_v2_behavior_) {
-        config.session_rate.type = feature_engagement::EQUAL;
-      }
       break;
 
     case user_education::FeaturePromoSpecification::PromoType::kToast:
@@ -102,7 +88,7 @@ bool UserEducationConfigurationProvider::MaybeProvideFeatureConfiguration(
 
     case user_education::FeaturePromoSpecification::PromoType::kUnspecified:
       // Should never get here.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   // All IPH block all other IPH.
@@ -114,13 +100,8 @@ bool UserEducationConfigurationProvider::MaybeProvideFeatureConfiguration(
   if (config.trigger.name.empty()) {
     config.trigger.name = GetDefaultTriggerName(feature);
   }
-  if (is_unlimited || use_v2_behavior_) {
-    config.trigger.comparator.type = feature_engagement::ANY;
-    config.trigger.comparator.value = 0;
-  } else {
-    config.trigger.comparator.type = feature_engagement::LESS_THAN;
-    config.trigger.comparator.value = 5;
-  }
+  config.trigger.comparator.type = feature_engagement::ANY;
+  config.trigger.comparator.value = 0;
   config.trigger.storage = feature_engagement::kMaxStoragePeriod;
   config.trigger.window = feature_engagement::kMaxStoragePeriod;
 
@@ -154,12 +135,10 @@ bool UserEducationConfigurationProvider::MaybeProvideFeatureConfiguration(
 
   // In V2, since trigger config is overwritten, also remove additional
   // references in the existing event configs.
-  if (use_v2_behavior_) {
-    std::erase_if(config.event_configs, [&trigger_name = config.trigger.name](
-                                            const auto& event_config) {
-      return event_config.name == trigger_name;
-    });
-  }
+  std::erase_if(config.event_configs, [&trigger_name = config.trigger.name](
+                                          const auto& event_config) {
+    return event_config.name == trigger_name;
+  });
 
   // Set up additional constraints, if specified and not overridden in the
   // existing config.
@@ -204,20 +183,24 @@ bool UserEducationConfigurationProvider::MaybeProvideFeatureConfiguration(
             std::inserter(config.event_configs, config.event_configs.begin()));
 
   // Set up some reasonable availability values.
-  if (config.availability.value != 0) {
+  if (config.availability != feature_engagement::Comparator()) {
     // There is already configuration specified for availability other than the
     // default. Make sure the availability is a lower bound.
     if (config.availability.type != feature_engagement::GREATER_THAN) {
       config.availability.type = feature_engagement::GREATER_THAN_OR_EQUAL;
     }
-  } else if (!config.event_configs.empty() ||
-             config.used.comparator.value != 0 ||
-             additional.initial_delay_days().has_value()) {
-    // Use the initial delay specified, or settle on a default. When there are
-    // additional conditions or a nontrivial "used" condition, assume that some
-    // time will be required to determine if the conditions are met.
+  } else if (additional.initial_delay_days().has_value()) {
+    // Explicit availability was set in User Ed config, so use that.
     config.availability.type = feature_engagement::GREATER_THAN_OR_EQUAL;
-    config.availability.value = additional.initial_delay_days().value_or(7);
+    config.availability.value = additional.initial_delay_days().value();
+  } else if (std::any_of(config.event_configs.begin(),
+                         config.event_configs.end(),
+                         &IsAdditionalConfigBounded)) {
+    // If any of the additional event configs have put a maximum cap on a
+    // particular event, then default to a minimum availability period to give
+    // enough time to determine if the events in question happened.
+    config.availability.type = feature_engagement::GREATER_THAN_OR_EQUAL;
+    config.availability.value = 7;
   } else {
     // This should already be the default - the promo will be available as soon
     // as the feature is enabled.

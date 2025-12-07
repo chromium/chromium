@@ -6,7 +6,6 @@
 #define COMPONENTS_REPORTING_CLIENT_FILTERED_REPORT_QUEUE_H_
 
 #include <memory>
-#include <queue>
 #include <string>
 #include <type_traits>
 #include <utility>

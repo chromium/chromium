@@ -50,7 +50,9 @@ class AverageLagTrackingManagerTest : public testing::Test {
   // Collect events at the expected |gpu_swap_times|.
   void SimulateConstantScroll(const std::vector<int>& gpu_swap_times,
                               float scroll_delta,
-                              int scroll_rate) {
+                              int scroll_rate,
+                              ui::ScrollInputType scroll_input_type =
+                                  ui::ScrollInputType::kTouchscreen) {
     if (gpu_swap_times.empty() || gpu_swap_times[0] < scroll_rate)
       return;
 
@@ -61,12 +63,12 @@ class AverageLagTrackingManagerTest : public testing::Test {
     base::TimeDelta time_to_rwh = base::Milliseconds(1);
     events.main_event_metrics.push_back(PrepareScrollUpdateEvent(
         ScrollUpdateEventMetrics::ScrollUpdateType::kStarted, event_time,
-        event_time + time_to_rwh, scroll_delta));
+        event_time + time_to_rwh, scroll_delta, scroll_input_type));
     for (int i = 1; i < events_count; i++) {
       event_time += base::Milliseconds(scroll_rate);
       events.main_event_metrics.push_back(PrepareScrollUpdateEvent(
           ScrollUpdateEventMetrics::ScrollUpdateType::kContinued, event_time,
-          event_time + time_to_rwh, scroll_delta));
+          event_time + time_to_rwh, scroll_delta, scroll_input_type));
     }
     average_lag_tracking_manager_.CollectScrollEventsFromFrame(0, events);
 
@@ -79,7 +81,7 @@ class AverageLagTrackingManagerTest : public testing::Test {
         event_time += base::Milliseconds(scroll_rate);
         events.main_event_metrics.push_back(PrepareScrollUpdateEvent(
             ScrollUpdateEventMetrics::ScrollUpdateType::kContinued, event_time,
-            event_time + time_to_rwh, scroll_delta));
+            event_time + time_to_rwh, scroll_delta, scroll_input_type));
       }
       average_lag_tracking_manager_.CollectScrollEventsFromFrame(frame, events);
     }
@@ -90,11 +92,13 @@ class AverageLagTrackingManagerTest : public testing::Test {
       ScrollUpdateEventMetrics::ScrollUpdateType scroll_update_type,
       base::TimeTicks event_time,
       base::TimeTicks arrived_in_browser_main_timestamp,
-      float delta) {
+      float delta,
+      ui::ScrollInputType scroll_input_type =
+          ui::ScrollInputType::kTouchscreen) {
     const bool kScrollIsNotInertial = false;
     const int64_t trace_id = 123;
     return ScrollUpdateEventMetrics::Create(
-        ui::EventType::kGestureScrollUpdate, ui::ScrollInputType::kTouchscreen,
+        ui::EventType::kGestureScrollUpdate, scroll_input_type,
         kScrollIsNotInertial, scroll_update_type, delta, event_time,
         arrived_in_browser_main_timestamp, base::TimeTicks(),
         base::IdType64<class ui::LatencyInfo>(trace_id));
@@ -102,6 +106,28 @@ class AverageLagTrackingManagerTest : public testing::Test {
 
   AverageLagTrackingManager average_lag_tracking_manager_;
 };
+
+// Ensure that AverageLag metrics are not logged in non-touchscreen scenarios.
+TEST_F(AverageLagTrackingManagerTest, EnsureMetricNotLogged) {
+  base::HistogramTester histogram_tester;
+
+  std::vector<int> gpu_swap_times = {400, 1400, 1600};
+  std::vector<int> presentation_times = {500, 1500, 1700};
+  SimulateConstantScroll(gpu_swap_times, 10, 100, ui::ScrollInputType::kWheel);
+  for (size_t frame = 0; frame < gpu_swap_times.size(); frame++) {
+    average_lag_tracking_manager_.DidPresentCompositorFrame(
+        frame, PrepareFrameDetails(
+                   MillisecondsToTimeTicks(gpu_swap_times[frame]),
+                   MillisecondsToTimeTicks(presentation_times[frame])));
+  }
+
+  // Checking the 2 histograms should suffice. If they aren't logged, other
+  // AverageLag metrics also won't be logged.
+  histogram_tester.ExpectTotalCount(
+      "Event.Latency.ScrollBegin.Touch.AverageLagPresentation", 0);
+  histogram_tester.ExpectTotalCount(
+      "Event.Latency.ScrollUpdate.Touch.AverageLagPresentation", 0);
+}
 
 // Simulate a simple situation that generates events at every 10ms starting at
 // t=15ms and swaps frames at every 10ms, too, starting at t=20ms. Then tests

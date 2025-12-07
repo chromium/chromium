@@ -17,7 +17,7 @@
 # 8 if the test pass, `git bisect good`, otherwise `git bisect bad`.
 # 9 repeat 5 - 8 until finding the culprit.
 # This script will help you on 2 - 9. You first do 1, then run
-# `python3 tools/bisect/bisect.py -g <good commit id> -b <bad commit id>
+# `python3 tools/bisect/bisect_gtests.py -g <good commit id> -b <bad commit id>
 #   --build_command 'autoninja -C out/Default browser_tests'
 #   --test_command 'out/Default/browser_tests
 #                   --gtest_filter=BrowserTest.TestCase1'`

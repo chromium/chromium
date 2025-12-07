@@ -5,10 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_BOTTOM_SHEET_PAYMENTS_SUGGESTION_BOTTOM_SHEET_MEDIATOR_H_
 #define IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_BOTTOM_SHEET_PAYMENTS_SUGGESTION_BOTTOM_SHEET_MEDIATOR_H_
 
+#import <Foundation/Foundation.h>
+
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_delegate.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_exit_reason.h"
-
-#import <Foundation/Foundation.h>
 
 namespace autofill {
 class CreditCard;
@@ -39,15 +39,18 @@ class WebStateList;
 // Disconnects the mediator.
 - (void)disconnect;
 
-// Return the credit card associated with the backend identifier.
-- (autofill::CreditCard*)creditCardForIdentifier:(NSString*)identifier;
+// Returns the credit card associated with the backend identifier, if any.
+- (std::optional<autofill::CreditCard>)creditCardForIdentifier:
+    (NSString*)identifier;
 
 // Logs bottom sheet exit reasons, like dismissal or using a payment method.
 - (void)logExitReason:(PaymentsSuggestionBottomSheetExitReason)exitReason;
 
 // Sends the information about which credit card from the bottom sheet was
-// selected by the user, which is expected to fill the relevant fields.
-- (void)didSelectCreditCard:(CreditCardData*)creditCardData;
+// selected by the user, which is expected to fill the relevant fields. `index`
+// represents the position of the selected card in the list of card suggestions.
+- (void)didSelectCreditCard:(CreditCardData*)creditCardData
+                    atIndex:(NSInteger)index;
 
 @end
 

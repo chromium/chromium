@@ -25,7 +25,7 @@ class AutocompleteHistoryManager;
 // associated AutocompleteHistoryManager.
 class AutocompleteHistoryManagerFactory : public ProfileKeyedServiceFactory {
  public:
-  // Returns the AutocompleteHistoryManager for |profile|, creating it if it is
+  // Returns the AutocompleteHistoryManager for `profile`, creating it if it is
   // not yet created.
   static AutocompleteHistoryManager* GetForProfile(Profile* profile);
 
@@ -38,7 +38,7 @@ class AutocompleteHistoryManagerFactory : public ProfileKeyedServiceFactory {
   ~AutocompleteHistoryManagerFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
 };
 

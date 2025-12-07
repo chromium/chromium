@@ -20,6 +20,7 @@ namespace blink {
 class ExceptionState;
 class ScriptState;
 class ReadableStream;
+class ReadableStreamBYOBReaderReadOptions;
 class ReadableStreamReadResult;
 class ReadIntoRequest;
 class DOMArrayBufferView;
@@ -43,10 +44,11 @@ class CORE_EXPORT ReadableStreamBYOBReader
   bool IsBYOBReader() const override { return true; }
 
   // https://streams.spec.whatwg.org/#byob-reader-read
-
-  ScriptPromise<ReadableStreamReadResult> read(ScriptState*,
-                                               NotShared<DOMArrayBufferView>,
-                                               ExceptionState&);
+  ScriptPromise<ReadableStreamReadResult> read(
+      ScriptState*,
+      NotShared<DOMArrayBufferView> view,
+      const ReadableStreamBYOBReaderReadOptions* options,
+      ExceptionState&);
 
   // https://streams.spec.whatwg.org/#byob-reader-release-lock
   void releaseLock(ScriptState*, ExceptionState&);
@@ -75,6 +77,7 @@ class CORE_EXPORT ReadableStreamBYOBReader
   static void Read(ScriptState*,
                    ReadableStreamBYOBReader*,
                    NotShared<DOMArrayBufferView> view,
+                   const uint64_t min,
                    ReadIntoRequest*,
                    ExceptionState&);
 

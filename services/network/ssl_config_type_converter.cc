@@ -4,26 +4,15 @@
 
 #include "services/network/ssl_config_type_converter.h"
 
+#include <functional>
 #include <optional>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "net/ssl/ssl_config_service.h"
+#include "third_party/boringssl/src/include/openssl/ssl.h"
 
 namespace mojo {
-
-namespace {
-std::optional<bool> OptionalBoolFromMojo(network::mojom::OptionalBool v) {
-  switch (v) {
-    case network::mojom::OptionalBool::kTrue:
-      return std::make_optional(true);
-    case network::mojom::OptionalBool::kFalse:
-      return std::make_optional(false);
-    case network::mojom::OptionalBool::kUnset:
-      return std::nullopt;
-  }
-  NOTREACHED_NORETURN();
-}
-}  // namespace
 
 int MojoSSLVersionToNetSSLVersion(network::mojom::SSLVersion mojo_version) {
   switch (mojo_version) {
@@ -32,8 +21,7 @@ int MojoSSLVersionToNetSSLVersion(network::mojom::SSLVersion mojo_version) {
     case network::mojom::SSLVersion::kTLS13:
       return net::SSL_PROTOCOL_VERSION_TLS1_3;
   }
-  NOTREACHED_IN_MIGRATION();
-  return net::SSL_PROTOCOL_VERSION_TLS1_3;
+  NOTREACHED();
 }
 
 net::SSLContextConfig MojoSSLConfigToSSLContextConfig(
@@ -47,9 +35,39 @@ net::SSLContextConfig MojoSSLConfigToSSLContextConfig(
   DCHECK_LE(net_config.version_min, net_config.version_max);
 
   net_config.disabled_cipher_suites = mojo_config->disabled_cipher_suites;
-  net_config.post_quantum_override =
-      OptionalBoolFromMojo(mojo_config->post_quantum_override);
+  net_config.tls13_cipher_prefer_aes_256 =
+      mojo_config->tls13_cipher_prefer_aes_256;
   net_config.ech_enabled = mojo_config->ech_enabled;
+
+  // Translate the configuration options related to named groups.
+  switch (mojo_config->named_groups_preset) {
+    case network::mojom::SSLNamedGroupsPreset::kDefault:
+      // Do nothing, the `net::SSLContextConfig` constructor starts with the
+      // default list.
+      break;
+    case network::mojom::SSLNamedGroupsPreset::kCnsa2:
+      net_config.supported_named_groups = {
+          {.group_id = SSL_GROUP_MLKEM1024, .send_key_share = false},
+          {.group_id = SSL_GROUP_X25519_MLKEM768, .send_key_share = true},
+          {.group_id = SSL_GROUP_SECP384R1, .send_key_share = false},
+          {.group_id = SSL_GROUP_SECP256R1, .send_key_share = false},
+          {.group_id = SSL_GROUP_X25519, .send_key_share = true},
+      };
+      break;
+  }
+  if (!mojo_config->post_quantum_key_agreement_enabled) {
+    std::erase_if(net_config.supported_named_groups,
+                  std::mem_fn(&net::SSLNamedGroupInfo::IsPostQuantum));
+  }
+
+  for (const auto& tai : mojo_config->trust_anchor_ids) {
+    net_config.trust_anchor_ids.insert(tai);
+  }
+
+  for (const auto& tai : mojo_config->mtc_trust_anchor_ids) {
+    net_config.mtc_trust_anchor_ids.push_back(tai);
+  }
+
   return net_config;
 }
 
@@ -61,8 +79,6 @@ net::CertVerifier::Config MojoSSLConfigToCertVerifierConfig(
       mojo_config->rev_checking_required_local_anchors;
   net_config.enable_sha1_local_anchors =
       mojo_config->sha1_local_anchors_enabled;
-  net_config.disable_symantec_enforcement =
-      mojo_config->symantec_enforcement_disabled;
 
   return net_config;
 }

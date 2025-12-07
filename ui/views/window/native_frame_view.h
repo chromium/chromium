@@ -8,31 +8,26 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
-#include "ui/views/window/non_client_view.h"
+#include "ui/views/window/frame_view.h"
 
 namespace views {
 
 class Widget;
 
-class VIEWS_EXPORT NativeFrameView : public NonClientFrameView {
-  METADATA_HEADER(NativeFrameView, NonClientFrameView)
+class VIEWS_EXPORT NativeFrameView : public FrameView {
+  METADATA_HEADER(NativeFrameView, FrameView)
 
  public:
-  explicit NativeFrameView(Widget* frame);
+  explicit NativeFrameView(Widget* widget);
   NativeFrameView(const NativeFrameView&) = delete;
   NativeFrameView& operator=(const NativeFrameView&) = delete;
   ~NativeFrameView() override;
 
-  // NonClientFrameView overrides:
+  // FrameView overrides:
   gfx::Rect GetBoundsForClientView() const override;
   gfx::Rect GetWindowBoundsForClientBounds(
       const gfx::Rect& client_bounds) const override;
   int NonClientHitTest(const gfx::Point& point) override;
-  void GetWindowMask(const gfx::Size& size, SkPath* window_mask) override;
-  void ResetWindowControls() override;
-  void UpdateWindowIcon() override;
-  void UpdateWindowTitle() override;
-  void SizeConstraintsChanged() override;
 
   // View overrides:
   gfx::Size CalculatePreferredSize(
@@ -42,10 +37,10 @@ class VIEWS_EXPORT NativeFrameView : public NonClientFrameView {
 
  private:
   // Our containing frame.
-  raw_ptr<Widget> frame_;
+  raw_ptr<Widget> widget_;
 };
 
-BEGIN_VIEW_BUILDER(VIEWS_EXPORT, NativeFrameView, NonClientFrameView)
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, NativeFrameView, FrameView)
 END_VIEW_BUILDER
 
 }  // namespace views

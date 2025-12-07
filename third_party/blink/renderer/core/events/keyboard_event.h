@@ -65,7 +65,9 @@ class CORE_EXPORT KeyboardEvent final : public UIEventWithKeyState {
   KeyboardEvent(const WebKeyboardEvent&,
                 LocalDOMWindow*,
                 bool cancellable = true);
-  KeyboardEvent(const AtomicString&, const KeyboardEventInit*);
+  KeyboardEvent(const AtomicString&,
+                const KeyboardEventInit*,
+                base::TimeTicks platform_time_stamp = base::TimeTicks::Now());
   ~KeyboardEvent() override;
 
   void initKeyboardEvent(ScriptState*,
@@ -96,6 +98,8 @@ class CORE_EXPORT KeyboardEvent final : public UIEventWithKeyState {
   bool IsKeyboardEvent() const override;
   unsigned which() const override;
   bool isComposing() const { return is_composing_; }
+
+  CSSPseudoElement* pseudoTarget() const { return Event::pseudoTarget(); }
 
   void Trace(Visitor*) const override;
 

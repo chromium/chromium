@@ -6,7 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/web_content_commands.h"
 #import "ios/chrome/test/fakes/fake_web_content_handler.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
@@ -19,9 +19,8 @@ class ITunesUrlsHandlerTabHelperTest : public PlatformTest {
  protected:
   ITunesUrlsHandlerTabHelperTest()
       : fake_handler_([[FakeWebContentHandler alloc] init]),
-        chrome_browser_state_(TestChromeBrowserState::Builder().Build()) {
-    web_state_.SetBrowserState(
-        chrome_browser_state_->GetOriginalChromeBrowserState());
+        profile_(TestProfileIOS::Builder().Build()) {
+    web_state_.SetBrowserState(profile_->GetOriginalProfile());
     ITunesUrlsHandlerTabHelper::GetOrCreateForWebState(&web_state_)
         ->SetWebContentsHandler(fake_handler_);
   }
@@ -54,15 +53,14 @@ class ITunesUrlsHandlerTabHelperTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   FakeWebContentHandler* fake_handler_;
   web::FakeWebState web_state_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
 };
 
 // Verifies that iTunes URLs are not handled when in off the record mode.
 TEST_F(ITunesUrlsHandlerTabHelperTest, NoHandlingInOffTheRecordMode) {
   NSString* url = @"http://itunes.apple.com/us/app/app_name/id123";
   EXPECT_TRUE(VerifyStoreKitLaunched(url, /*main_frame=*/true));
-  web_state_.SetBrowserState(
-      chrome_browser_state_->GetOffTheRecordChromeBrowserState());
+  web_state_.SetBrowserState(profile_->GetOffTheRecordProfile());
   EXPECT_FALSE(VerifyStoreKitLaunched(url, /*main_frame=*/true));
 }
 
@@ -112,8 +110,6 @@ TEST_F(ITunesUrlsHandlerTabHelperTest, NonMatchingUrlsDoesntLaunchStoreKit) {
   EXPECT_FALSE(VerifyStoreKitLaunched(
       @"http://itunes.apple.com/us/movie/testmovie/id12345",
       /*main_frame=*/true));
-  EXPECT_FALSE(VerifyStoreKitLaunched(
-      @"http://itunes.apple.com/app-bundle/id12345", /*main_frame=*/true));
 }
 
 // Verifies that navigating to URLs for a product hosted on iTunes AppStore
@@ -162,5 +158,10 @@ TEST_F(ITunesUrlsHandlerTabHelperTest, MatchingUrlsLaunchesStoreKit) {
       @"http://apps.apple.com/de/app/bar/id123?at=2&uo=4#foo",
       /*main_frame=*/true));
   expected_params = @{product_id : @"123", af_tkn : @"2", @"uo" : @"4"};
+  EXPECT_NSEQ(expected_params, fake_handler_.productParams);
+
+  EXPECT_TRUE(VerifyStoreKitLaunched(
+      @"http://apps.apple.com/app-bundle/bar/id243?at=12345", /*main_frame=*/true));
+  expected_params = @{product_id : @"243", af_tkn : @"12345"};
   EXPECT_NSEQ(expected_params, fake_handler_.productParams);
 }

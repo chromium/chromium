@@ -31,10 +31,6 @@ namespace aura {
 class Window;
 }
 
-namespace base {
-class TimeDelta;
-}
-
 namespace gfx {
 struct FontRenderParams;
 class Image;
@@ -56,16 +52,21 @@ class LinuxInputMethodContextDelegate;
 class LinuxUiTheme;
 class NativeTheme;
 class NavButtonProvider;
+class PrimaryPastePrefObserver;
 class SelectFileDialog;
 class SelectFilePolicy;
-class TextEditCommandAuraLinux;
 class WindowButtonOrderObserver;
 class WindowFrameProvider;
+enum class TextEditCommand;
 
 // Adapter class with targets to render like different toolkits. Set by any
 // project that wants to do linux desktop native rendering.
 class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
  public:
+  // 8px is the default value in GTK for how far the mouse needs to move before
+  // a drag begins.
+  constexpr static int kDefaultWindowDragThreshold = 8;
+
   // Describes the window management actions that could be taken in response to
   // a middle click in the non client area.
   enum class WindowFrameAction {
@@ -121,6 +122,11 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
 
   void RemoveCursorThemeObserver(CursorThemeManagerObserver* observer);
 
+  // Adds `observer` and calls if the middle click paste preference changes.
+  void AddPrimaryPastePrefObserver(PrimaryPastePrefObserver* observer);
+
+  void RemovePrimaryPastePrefObserver(PrimaryPastePrefObserver* observer);
+
   // Returns details about the default UI font.
   FontSettings GetDefaultFontDescription();
 
@@ -137,8 +143,6 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
   // explicitly since the first call to get the font settings will implicitly
   // initialize the default front render parameters.
   virtual void InitializeFontSettings() = 0;
-
-  virtual base::TimeDelta GetCursorBlinkInterval() const = 0;
 
   // Returns the icon for a given content type from the icon theme.
   // TODO(davidben): Add an observer for the theme changing, so we can drop the
@@ -177,16 +181,13 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
   virtual std::unique_ptr<LinuxInputMethodContext> CreateInputMethodContext(
       LinuxInputMethodContextDelegate* delegate) const = 0;
 
-  // Matches a key event against the users' platform specific key bindings,
-  // false will be returned if the key event doesn't correspond to a predefined
-  // key binding.  Edit commands matched with |event| will be stored in
-  // |edit_commands|, if |edit_commands| is non-nullptr.
+  // Matches a key event against the users' platform specific key bindings.
+  // Returns ui::TextEditCommand::INVALID_COMMAND if the key event doesn't
+  // correspond to a predefined key binding.
   //
-  // |text_falgs| is the current ui::TextInputFlags if available.
-  virtual bool GetTextEditCommandsForEvent(
-      const ui::Event& event,
-      int text_flags,
-      std::vector<TextEditCommandAuraLinux>* commands) = 0;
+  // `text_flags` is the current ui::TextInputFlags if available.
+  virtual TextEditCommand GetTextEditCommandForEvent(const Event& event,
+                                                     int text_flags) = 0;
 
   // Returns the default font rendering settings.
   virtual gfx::FontRenderParams GetDefaultFontRenderParams() = 0;
@@ -207,6 +208,17 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
   // |source| describes the type of click.
   virtual WindowFrameAction GetWindowFrameAction(
       WindowFrameActionSource source) = 0;
+
+  // Whether a middle mouse click should paste the primary clipboard contents.
+  virtual bool PrimaryPasteEnabled() const = 0;
+
+  // The threshold for moving the mouse after pressing down in the non-client
+  // area after which a window drag is initiated.
+  virtual int GetWindowDragThresholdPx() const = 0;
+
+  // Returns the command line flags that should be copied to subprocesses
+  // to have the same toolkit and version as this process.
+  virtual std::vector<std::string> GetCmdLineFlagsForCopy() const = 0;
 
  protected:
   struct CmdLineArgs {
@@ -229,14 +241,17 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
 
   static CmdLineArgs CopyCmdLine(const base::CommandLine& command_line);
 
-  const base::ObserverList<DeviceScaleFactorObserver>::Unchecked&
-  device_scale_factor_observer_list() const {
+  base::ObserverList<DeviceScaleFactorObserver>::Unchecked&
+  device_scale_factor_observer_list() {
     return device_scale_factor_observer_list_;
   }
 
-  const base::ObserverList<CursorThemeManagerObserver>&
-  cursor_theme_observers() {
+  base::ObserverList<CursorThemeManagerObserver>& cursor_theme_observers() {
     return cursor_theme_observer_list_;
+  }
+
+  base::ObserverList<PrimaryPastePrefObserver>& primary_paste_observers() {
+    return primary_paste_observer_list_;
   }
 
   display::DisplayConfig& display_config() { return display_config_; }
@@ -254,6 +269,9 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
   // Objects to notify when the cursor theme or size changes.
   base::ObserverList<CursorThemeManagerObserver> cursor_theme_observer_list_;
 
+  // Objects to notify when the middle click paste preference changes.
+  base::ObserverList<PrimaryPastePrefObserver> primary_paste_observer_list_;
+
   display::DisplayConfig display_config_;
 
   std::optional<FontSettings> default_font_settings_;
@@ -265,10 +283,12 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUiTheme {
   LinuxUiTheme& operator=(const LinuxUiTheme&) = delete;
   virtual ~LinuxUiTheme();
 
-  // Returns the LinuxUi instance for the given window.
+  // Returns the LinuxUi instance for the given window, or the default instance
+  // if the window is nullptr.
   static LinuxUiTheme* GetForWindow(aura::Window* window);
 
-  // Returns the LinuxUi instance for the given profile.
+  // Returns the LinuxUi instance for the given profile, or the default instance
+  // if the profile is nullptr.
   static LinuxUiTheme* GetForProfile(Profile* profile);
 
   // Returns the native theme for this toolkit.
@@ -307,7 +327,8 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUiTheme {
   // The returned object is not owned by the caller and will remain alive until
   // the process ends.
   virtual WindowFrameProvider* GetWindowFrameProvider(bool solid_frame,
-                                                      bool tiled) = 0;
+                                                      bool tiled,
+                                                      bool maximized) = 0;
 
  protected:
   LinuxUiTheme();
@@ -358,6 +379,18 @@ struct ScopedObservationTraits<ui::LinuxUi, ui::WindowButtonOrderObserver> {
   static void RemoveObserver(ui::LinuxUi* source,
                              ui::WindowButtonOrderObserver* observer) {
     source->RemoveWindowButtonOrderObserver(observer);
+  }
+};
+
+template <>
+struct ScopedObservationTraits<ui::LinuxUi, ui::PrimaryPastePrefObserver> {
+  static void AddObserver(ui::LinuxUi* source,
+                          ui::PrimaryPastePrefObserver* observer) {
+    source->AddPrimaryPastePrefObserver(observer);
+  }
+  static void RemoveObserver(ui::LinuxUi* source,
+                             ui::PrimaryPastePrefObserver* observer) {
+    source->RemovePrimaryPastePrefObserver(observer);
   }
 };
 

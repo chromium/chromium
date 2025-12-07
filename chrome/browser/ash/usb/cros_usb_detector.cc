@@ -5,20 +5,24 @@
 #include "chrome/browser/ash/usb/cros_usb_detector.h"
 
 #include <fcntl.h>
+#include <unistd.h>
 
 #include <string>
 #include <utility>
 
-#include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "base/check_deref.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
@@ -38,6 +42,7 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/vector_icons/vector_icons.h"
@@ -46,6 +51,7 @@
 #include "services/device/public/mojom/usb_enumeration_options.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/gfx/paint_vector_icon.h"
 
 namespace ash {
 
@@ -59,6 +65,8 @@ const char16_t kParallelsName[] = u"Parallels Desktop";
 static CrosUsbDetector* g_cros_usb_detector = nullptr;
 
 const char kNotifierUsb[] = "crosusb.connected";
+
+const uint16_t kWacomVendorId = 0x056a;
 
 std::u16string ProductLabelFromDevice(
     const device::mojom::UsbDeviceInfo& device_info) {
@@ -95,6 +103,9 @@ uint32_t ClearMatchingInterfaces(
         }
         if (filter.has_protocol_code &&
             alternate_info->protocol_code != filter.protocol_code) {
+          continue;
+        }
+        if (filter.has_vendor_id && device_info.vendor_id != filter.vendor_id) {
           continue;
         }
         if (iface->interface_number >= 32) {
@@ -168,6 +179,8 @@ class CrosUsbNotificationDelegate
              const std::optional<std::u16string>& reply) override {
     disposition_ = CrosUsbNotificationClosed::kUnknown;
     if (button_index && *button_index < static_cast<int>(vm_names_.size())) {
+      LOG(WARNING)
+          << "Share USB device with [some guest] notification was clicked";
       if (vm_names_[*button_index] == crostini::kCrostiniDefaultVmName) {
         // When multi-container is enabled, show the settings page instead of
         // directly attaching the device to the VM. Otherwise, the device is
@@ -199,6 +212,8 @@ class CrosUsbNotificationDelegate
     disposition_ = CrosUsbNotificationClosed::kConnectToLinux;
     CrosUsbDetector* detector = CrosUsbDetector::Get();
     if (detector) {
+      LOG(WARNING)
+          << "Handling guest connection, will attach USB device to guest";
       detector->AttachUsbDeviceToGuest(guest_id, guid_, base::DoNothing());
       return;
     }
@@ -239,6 +254,13 @@ device::mojom::UsbDeviceFilterPtr UsbFilterByClassAndSubclassCode(
   filter->class_code = device_class;
   filter->has_subclass_code = true;
   filter->subclass_code = device_subclass;
+  return filter;
+}
+
+device::mojom::UsbDeviceFilterPtr UsbFilterByVendorId(uint16_t vendor_id) {
+  auto filter = device::mojom::UsbDeviceFilter::New();
+  filter->has_vendor_id = true;
+  filter->vendor_id = vendor_id;
   return filter;
 }
 
@@ -394,12 +416,14 @@ CrosUsbDeviceInfo::CrosUsbDeviceInfo(
     std::optional<guest_os::GuestId> shared_guest_id,
     uint16_t vendor_id,
     uint16_t product_id,
+    std::string serial_number,
     bool prompt_before_sharing)
     : guid(guid),
       label(label),
       shared_guest_id(shared_guest_id),
       vendor_id(vendor_id),
       product_id(product_id),
+      serial_number(serial_number),
       prompt_before_sharing(prompt_before_sharing) {}
 CrosUsbDeviceInfo::CrosUsbDeviceInfo(const CrosUsbDeviceInfo&) = default;
 CrosUsbDeviceInfo::~CrosUsbDeviceInfo() = default;
@@ -447,6 +471,14 @@ CrosUsbDetector::CrosUsbDetector() {
   guest_os_usb_int_any_filter_.emplace_back(UsbFilterByClassAndSubclassCode(
       USB_CLASS_COMM, USB_COMM_SUBCLASS_ETHERNET));
 
+  // Wacom graphics tablets have a storage partition that is usually disabled
+  // when first used on other platforms with their driver. This causes them to
+  // have an interface with USB_CLASS_VENDOR_SPEC which causes the notification
+  // to show up. Their driver does not work on ChromeOS so this notification is
+  // shown every time the peripheral connects.
+  guest_os_usb_int_any_filter_.emplace_back(
+      UsbFilterByVendorId(kWacomVendorId));
+
   CiceroneClient::Get()->AddObserver(this);
   ConciergeClient::Get()->AddVmObserver(this);
   VmPluginDispatcherClient::Get()->AddObserver(this);
@@ -486,9 +518,13 @@ std::vector<CrosUsbDeviceInfo> CrosUsbDetector::GetShareableDevices() const {
   std::vector<CrosUsbDeviceInfo> result;
   for (const auto& it : usb_devices_) {
     const UsbDevice& device = it.second;
+    std::string serial_number =
+        device.info->serial_number.has_value()
+            ? base::UTF16ToASCII(device.info->serial_number.value()).c_str()
+            : "";
     result.emplace_back(
         device.info->guid, device.label, device.shared_guest_id,
-        device.info->vendor_id, device.info->product_id,
+        device.info->vendor_id, device.info->product_id, serial_number,
         /*prompt_before_sharing=*/
         device.shared_guest_id.has_value() || !device.mount_points.empty());
   }
@@ -637,6 +673,15 @@ void CrosUsbDetector::OnMountEvent(
   }
 }
 
+std::string UsbDeviceIdentifier(device::mojom::UsbDeviceInfoPtr& device_info) {
+  std::string serial_number =
+      device_info->serial_number.has_value()
+          ? base::UTF16ToASCII(device_info->serial_number.value()).c_str()
+          : "";
+  return base::StringPrintf("%d:%d:%s", device_info->vendor_id,
+                            device_info->product_id, serial_number.c_str());
+}
+
 void CrosUsbDetector::OnDeviceChecked(
     device::mojom::UsbDeviceInfoPtr device_info,
     bool hide_notification,
@@ -667,6 +712,19 @@ void CrosUsbDetector::OnDeviceChecked(
   std::string guid = device_info->guid;
   std::u16string label = new_device.label;
 
+  // If device exists in persistent passthrough dict, skip notifications and
+  // connect it to the appropriate guest.
+  PrefService* prefs = profile()->GetPrefs();
+  const base::Value::Dict& persistent_passthrough_devices =
+      prefs->GetDict(guest_os::prefs::kGuestOsUSBPersistentPassthroughDevices);
+
+  const std::string* device = persistent_passthrough_devices.FindString(
+      UsbDeviceIdentifier(device_info));
+
+  LOG(WARNING) << "Checking for persistence of USB device ["
+               << UsbDeviceIdentifier(device_info) << "], "
+               << (device == nullptr ? "not persisted" : "persisted");
+
   new_device.info = std::move(device_info);
   auto result = usb_devices_.emplace(guid, std::move(new_device));
 
@@ -676,6 +734,18 @@ void CrosUsbDetector::OnDeviceChecked(
   }
 
   SignalUsbDeviceObservers();
+
+  if (device) {
+    const std::string& device_ref = CHECK_DEREF(device);
+    std::optional<guest_os::GuestId> guest_id =
+        guest_os::Deserialize(device_ref);
+    if (guest_id.has_value()) {
+      LOG(WARNING) << "Persisted USB device has valid guestId: "
+                   << guest_id->Serialize() << ", will attach";
+      AttachUsbDeviceToGuest(guest_id.value(), guid, base::DoNothing());
+      return;
+    }
+  }
 
   // Some devices should not trigger the notification.
   if (hide_notification || !ShouldShowNotification(result.first->second)) {
@@ -734,6 +804,8 @@ void CrosUsbDetector::ConnectSharedDevicesOnVmStartup(
     if (device.shared_guest_id.has_value() &&
         device.shared_guest_id->vm_name == vm_name) {
       VLOG(1) << "Connecting " << device.label << " to " << vm_name;
+      LOG(WARNING) << "Connecting " << device.label << "to " << vm_name
+                   << " on vm startup";
       // Clear any older guest_port setting.
       device.guest_port = std::nullopt;
       AttachUsbDeviceToGuest(*device.shared_guest_id, device.info->guid,
@@ -898,12 +970,14 @@ void CrosUsbDetector::OnUnmountFilesystems(
 
   // Detach first if device is attached elsewhere
   if (device.guest_port.has_value()) {
+    LOG(WARNING) << "Device was attached already, detaching before attaching.";
     DetachUsbDeviceFromVm(device.shared_guest_id->vm_name, guid,
                           base::BindOnce(&CrosUsbDetector::AttachAfterDetach,
                                          weak_ptr_factory_.GetWeakPtr(),
                                          guest_id, guid, std::move(callback)));
   } else {
     // The device isn't attached.
+    LOG(WARNING) << "Device was available (not attached to vm).";
     AttachAfterDetach(guest_id, guid, std::move(callback),
                       /*detach_success=*/true);
   }
@@ -937,6 +1011,7 @@ void CrosUsbDetector::AttachAfterDetach(
   auto claim_it = devices_claimed_.find(guid);
   if (claim_it != devices_claimed_.end()) {
     if (claim_it->second.device_file.is_valid()) {
+      LOG(WARNING) << "Device was already claimed.";
       // We take a dup here which will be closed if DoVmAttach fails.
       base::ScopedFD device_fd(dup(claim_it->second.device_file.get()));
       DoVmAttach(guest_id, device.info.Clone(), std::move(device_fd),
@@ -961,6 +1036,7 @@ void CrosUsbDetector::AttachAfterDetach(
   devices_claimed_[guid].lifeline_file = std::move(write_end);
 
   // Open a file descriptor to pass to CrostiniManager & Concierge.
+  LOG(WARNING) << "Opening fd for device.";
   device_manager_->OpenFileDescriptor(
       guid, kAllInterfacesMask, mojo::PlatformHandle(std::move(read_end)),
       base::BindOnce(&CrosUsbDetector::OnAttachUsbDeviceOpened,
@@ -1012,12 +1088,12 @@ void CrosUsbDetector::DoVmAttach(
       std::move(fd), std::move(request),
       base::BindOnce(&CrosUsbDetector::OnUsbDeviceAttachFinished,
                      weak_ptr_factory_.GetWeakPtr(), guest_id,
-                     device_info->guid, std::move(callback)));
+                     std::move(device_info), std::move(callback)));
 }
 
 void CrosUsbDetector::OnUsbDeviceAttachFinished(
     const guest_os::GuestId& guest_id,
-    const std::string& guid,
+    device::mojom::UsbDeviceInfoPtr device_info,
     base::OnceCallback<void(bool success)> callback,
     std::optional<vm_tools::concierge::AttachUsbDeviceResponse> response) {
   bool success = true;
@@ -1030,10 +1106,10 @@ void CrosUsbDetector::OnUsbDeviceAttachFinished(
   }
 
   if (success) {
-    auto it = usb_devices_.find(guid);
+    auto it = usb_devices_.find(device_info->guid);
     if (it == usb_devices_.end()) {
       LOG(WARNING) << "Dbus response indicates successful attach but device "
-                   << "info was missing for " << guid;
+                   << "info was missing for " << device_info->guid;
       success = false;
     } else {
       it->second.shared_guest_id = guest_id;
@@ -1041,9 +1117,34 @@ void CrosUsbDetector::OnUsbDeviceAttachFinished(
     }
   }
 
+  PrefService* prefs = profile()->GetPrefs();
+  if (success) {
+    LOG(WARNING) << "Successful connection of "
+                 << UsbDeviceIdentifier(device_info);
+  }
+  if (success &&
+      prefs->GetBoolean(
+          guest_os::prefs::kGuestOsUSBPersistentPassthroughEnabled)) {
+    ScopedDictPrefUpdate update(
+        prefs, guest_os::prefs::kGuestOsUSBPersistentPassthroughDevices);
+    base::Value::Dict& devices = update.Get();
+    std::string device_identifier = UsbDeviceIdentifier(device_info);
+    LOG(WARNING) << "After successful connection of " << device_identifier
+                 << "to " << guest_id.Serialize()
+                 << ", it is being added to persistency dictionary.";
+    // there are 3 possible scenarios here:
+    // 1 - device was not in list. in this case we definitely want to add it.
+    // 2 - device was in list for a different guest. in this case we want to
+    //     override the previous state.
+    // 3 - device was in list, with the current guest. we already have to
+    //     serialize the guest_id to check, so not much more different in
+    //     comparing vs writing the same thing back again.
+    devices.Set(device_identifier, guest_id.Serialize());
+  }
+
   if (success && !guest_id.container_name.empty()) {
-    AttachUsbDeviceToContainer(guest_id, response->guest_port(), guid,
-                               std::move(callback));
+    AttachUsbDeviceToContainer(guest_id, response->guest_port(),
+                               device_info->guid, std::move(callback));
   } else {
     SignalUsbDeviceObservers();
     std::move(callback).Run(success);
@@ -1186,13 +1287,13 @@ void CrosUsbDetector::OnUsbDeviceDetachFinished(
     const std::string& vm_name,
     const std::string& guid,
     base::OnceCallback<void(bool success)> callback,
-    std::optional<vm_tools::concierge::DetachUsbDeviceResponse> response) {
+    std::optional<vm_tools::concierge::SuccessFailureResponse> response) {
   bool success = true;
   if (!response) {
     LOG(ERROR) << "Failed to detach USB device, empty dbus response";
     success = false;
   } else if (!response->success()) {
-    LOG(ERROR) << "Failed to detach USB device, " << response->reason();
+    LOG(ERROR) << "Failed to detach USB device, " << response->failure_reason();
     success = false;
   }
 

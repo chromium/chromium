@@ -12,6 +12,7 @@ import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.browser.autofill.helpers.FaviconHelper;
@@ -48,9 +49,9 @@ class PasswordAccessorySheetViewBinder {
             case AccessorySheetDataPiece.Type.PASSWORD_INFO:
                 return new PasswordInfoViewHolder(parent, uiConfiguration.faviconHelper);
             case AccessorySheetDataPiece.Type.TITLE:
-                return new AccessorySheetTabViewBinder.TitleViewHolder(
-                        parent, R.layout.keyboard_accessory_sheet_tab_title);
+                return new AccessorySheetTabViewBinder.TitleViewHolder(parent);
             case AccessorySheetDataPiece.Type.FOOTER_COMMAND:
+            case AccessorySheetDataPiece.Type.DIVIDER:
             case AccessorySheetDataPiece.Type.OPTION_TOGGLE:
                 return AccessorySheetTabViewBinder.create(parent, viewType);
         }
@@ -91,14 +92,37 @@ class PasswordAccessorySheetViewBinder {
             bindChipView(view.getUsername(), info.getFields().get(0), view.getContext());
             bindChipView(view.getPassword(), info.getFields().get(1), view.getContext());
 
-            view.getTitle().setVisibility(info.isExactMatch() ? View.GONE : View.VISIBLE);
-            // Strip the trailing slash (for aesthetic reasons):
-            view.getTitle().setText(stripScheme(info.getOrigin()).replaceFirst("/$", ""));
+            view.getTitle()
+                    .setVisibility(
+                            info.isExactMatch() && !info.isBackupCredential()
+                                    ? View.GONE
+                                    : View.VISIBLE);
+            if (info.isBackupCredential()) {
+                view.getTitle().setText(R.string.password_accessory_recovery_password_title);
+                view.setContentDescription(
+                        view.getResources()
+                                .getString(
+                                        R.string
+                                                .recovery_password_accessory_sheet_content_description));
+            } else {
+                // Strip the trailing slash (for aesthetic reasons):
+                view.getTitle().setText(stripScheme(info.getOrigin()).replaceFirst("/$", ""));
+                view.setContentDescription(
+                        view.getResources()
+                                .getString(R.string.password_accessory_sheet_content_description));
+            }
 
-            // Set the default icon, then try to get a better one.
-            mFaviconRequestOrigin = info.getOrigin(); // Save the origin for returning callback.
-            view.setIconForBitmap(mFaviconHelper.getDefaultIcon(info.getOrigin()));
-            mFaviconHelper.fetchFavicon(info.getOrigin(), d -> setIcon(view, info.getOrigin(), d));
+            if (info.isBackupCredential()) {
+                view.setIconForBitmap(
+                        AppCompatResources.getDrawable(
+                                view.getContext(), R.drawable.ic_history_24dp));
+            } else {
+                // Set the default icon, then try to get a better one.
+                mFaviconRequestOrigin = info.getOrigin(); // Save the origin for returning callback.
+                view.setIconForBitmap(mFaviconHelper.getDefaultIcon(info.getOrigin()));
+                mFaviconHelper.fetchFavicon(
+                        info.getOrigin(), d -> setIcon(view, info.getOrigin(), d));
+            }
         }
 
         private void setIcon(
@@ -114,6 +138,9 @@ class PasswordAccessorySheetViewBinder {
                             field.isObfuscated() ? new PasswordTransformationMethod() : null);
             chip.getPrimaryTextView().setText(field.getDisplayText());
             chip.getPrimaryTextView().setContentDescription(field.getA11yDescription());
+            if (field.getIconId() != 0) {
+                chip.setIconWithTint(field.getIconId(), /* tintWithTextColor= */ true);
+            }
             View.OnClickListener listener = null;
             if (field.isSelectable()) {
                 listener = src -> field.triggerSelection();

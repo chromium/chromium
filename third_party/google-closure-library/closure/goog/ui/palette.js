@@ -201,6 +201,7 @@ goog.ui.Palette.prototype.handleMouseOver = function(e) {
   'use strict';
   goog.ui.Palette.superClass_.handleMouseOver.call(this, e);
 
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   var item = this.getRenderer().getContainingItem(this, e.target);
   if (item && e.relatedTarget && goog.dom.contains(item, e.relatedTarget)) {
     // Ignore internal mouse moves.
@@ -226,6 +227,7 @@ goog.ui.Palette.prototype.handleMouseDown = function(e) {
   if (this.isActive()) {
     // Make sure we move the highlight to the cell on which the user moused
     // down.
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     var item = this.getRenderer().getContainingItem(this, e.target);
     if (item != this.getHighlightedItem()) {
       this.setHighlightedItem(item);
@@ -262,6 +264,7 @@ goog.ui.Palette.prototype.performActionInternal = function(e) {
  * @param {!goog.events.Event} e Mouseup or key event being handled.
  * @return {boolean} True if the highlighted item should be selected.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.Palette.prototype.shouldSelectHighlightedItem_ = function(e) {
   'use strict';
@@ -293,6 +296,7 @@ goog.ui.Palette.prototype.shouldSelectHighlightedItem_ = function(e) {
 goog.ui.Palette.prototype.handleKeyEvent = function(e) {
   'use strict';
   var items = this.getContent();
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   var numItems = items ? items.length : 0;
   var numColumns = this.size_.width;
 
@@ -448,6 +452,7 @@ goog.ui.Palette.prototype.getHighlightedItem = function() {
 /**
  * @return {Element} The highlighted cell.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.Palette.prototype.getHighlightedCellElement_ = function() {
   'use strict';
@@ -482,7 +487,7 @@ goog.ui.Palette.prototype.setHighlightedIndexInternal_ = function(
     this.lastHighlightedIndex_ = this.highlightedIndex_;
     this.highlightedIndex_ = index;
     this.highlightIndex_(index, true);
-    if (scrollIntoView) {
+    if (scrollIntoView && this.getParent()) {
       var highlightedElement = goog.asserts.assert(
           this.getHighlightedCellElement_(),
           'Highlighted item must exist to scroll to make it visible in ' +
@@ -566,6 +571,7 @@ goog.ui.Palette.prototype.setSelectedItem = function(item) {
  * @param {boolean} highlight If true, the item is highlighted; otherwise it
  *     is un-highlighted.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.Palette.prototype.highlightIndex_ = function(index, highlight) {
   'use strict';
@@ -610,6 +616,7 @@ goog.ui.Palette.prototype.setHighlighted = function(highlight) {
  * @param {boolean} select If true, the item is selected; otherwise it is
  *     deselected.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.Palette.prototype.selectItem_ = function(item, select) {
   'use strict';
@@ -634,6 +641,9 @@ goog.ui.Palette.prototype.adjustSize_ = function() {
     if (this.size_ && this.size_.width) {
       // There is already a size set; honor the number of columns (if >0), but
       // increase the number of rows if needed.
+      /**
+       * @suppress {strictMissingProperties} Added to tighten compiler checks
+       */
       var minRows = Math.ceil(items.length / this.size_.width);
       if (typeof this.size_.height !== 'number' ||
           this.size_.height < minRows) {
@@ -642,6 +652,9 @@ goog.ui.Palette.prototype.adjustSize_ = function() {
     } else {
       // No size has been set; size the grid to the smallest square big enough
       // to hold all items (hey, why not?).
+      /**
+       * @suppress {strictMissingProperties} Added to tighten compiler checks
+       */
       var length = Math.ceil(Math.sqrt(items.length));
       this.size_ = new goog.math.Size(length, length);
     }

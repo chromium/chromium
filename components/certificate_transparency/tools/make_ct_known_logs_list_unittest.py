@@ -5,9 +5,12 @@
 
 import base64
 import hashlib
-import sys
-import unittest
+import json
 import make_ct_known_logs_list
+import os
+import sys
+import tempfile
+import unittest
 
 
 def b64e(x):
@@ -68,7 +71,9 @@ class FormattingTest(unittest.TestCase):
         "dns": "dns.ct.example.com"
     }
     expected_loginfo = (
-        '    {"\\x61\\x62\\x63",\n     3,\n     "Test Description",\n     "",'
+        '    {"\\x61\\x62\\x63",\n     3,\n     "Test Description",'
+        '\n     LogType::kRFC6962,'
+        '\n     "",'
         '\n     nullptr, 0}')
     self.assertEqual(
         make_ct_known_logs_list._to_loginfo_struct(log, 1), expected_loginfo)
@@ -85,7 +90,8 @@ class FormattingTest(unittest.TestCase):
     log["current_operator"] = "Test Operator"
     expected_loginfo = (
         '    {"\\x61\\x62\\x63",\n     3,\n     "Test Description",\n'
-        '     "Test Operator",\n     nullptr, 0}')
+        '     LogType::kRFC6962,\n     "Test Operator",\n'
+        '     nullptr, 0}')
     self.assertEqual(
         make_ct_known_logs_list._to_loginfo_struct(log, 1), expected_loginfo)
 
@@ -98,6 +104,7 @@ class FormattingTest(unittest.TestCase):
     }
     expected_loginfo = (
         '    {"\\x61\\x62\\x63",\n     3,\n     "Test Description",\n'
+        '     LogType::kRFC6962,\n'
         '     "",\n     nullptr, 0}')
     self.assertEqual(
         make_ct_known_logs_list._to_loginfo_struct(log, 1), expected_loginfo)
@@ -140,6 +147,7 @@ class DisqualifiedLogsHandlingTest(unittest.TestCase):
         '\\xde\\x5d\\xae\\x22\\x23\\xb0"\n     "\\x03\\x61\\xa3\\x96\\x17'
         '\\x7a\\x9c\\xb4\\x10\\xff\\x61\\xf2\\x00\\x15\\xad",\n    {"\\x61'
         '\\x62\\x63",\n     3,\n     "Test Description"'
+        ',\n     LogType::kRFC6962'
         ',\n     "",\n     nullptr, 0},\n     '
         "base::Time::FromTimeT(1551083574)}")
 
@@ -231,6 +239,39 @@ class LogListPreviousOperatorsTest(unittest.TestCase):
     self.assertEqual(
         make_ct_known_logs_list._to_previous_operators_struct(log, 1),
         expected_previous_operator_info)
+
+
+class TiledLogsTest(unittest.TestCase):
+
+  def testIncludeTiledLogs(self):
+    with tempfile.TemporaryDirectory() as tmpdirname:
+      # Generate the output.
+      script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
+      input_file = os.path.join(script_path, "testdata/input.json")
+      output_file = os.path.join(tmpdirname, "output.h")
+      with open(input_file, "r") as f_in:
+        with open(output_file, "w") as f_out:
+          make_ct_known_logs_list.generate_cpp_file(f_in, f_out)
+
+        # Read the output.
+        output = []
+        with open(output_file, "r") as f_out:
+          output = f_out.read().split("\n")
+
+        # Read the expected output.
+        output_expected = ""
+        expected_path = os.path.join(script_path,
+                                     "testdata/expected_output.header")
+        with open(expected_path, "r") as f_out_expected:
+          output_expected = f_out_expected.read().split("\n")
+
+      # Compare the output with the expected output:
+      self.assertEqual(len(output_expected), len(output))
+      for i in range(len(output_expected)):
+        # Skip the timestamp line:
+        if 'kLogListTimestamp' in output_expected[i]:
+          continue
+        self.assertEqual(output_expected[i], output[i])
 
 
 if __name__ == "__main__":

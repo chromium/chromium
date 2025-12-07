@@ -42,6 +42,8 @@ BLINK_COMMON_EXPORT bool IsScreenCaptureMediaType(mojom::MediaStreamType type);
 BLINK_COMMON_EXPORT bool IsVideoScreenCaptureMediaType(
     mojom::MediaStreamType type);
 BLINK_COMMON_EXPORT bool IsDesktopCaptureMediaType(mojom::MediaStreamType type);
+BLINK_COMMON_EXPORT bool IsAudioDesktopCaptureMediaType(
+    mojom::MediaStreamType type);
 BLINK_COMMON_EXPORT bool IsVideoDesktopCaptureMediaType(
     mojom::MediaStreamType type);
 BLINK_COMMON_EXPORT bool IsTabCaptureMediaType(mojom::MediaStreamType type);

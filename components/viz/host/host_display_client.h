@@ -14,7 +14,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/viz/privileged/mojom/compositing/display_private.mojom.h"
 #include "ui/base/ozone_buildflags.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace viz {
 
@@ -55,6 +55,10 @@ class VIZ_HOST_EXPORT HostDisplayClient : public mojom::DisplayClient {
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_X11)
   void DidCompleteSwapWithNewSize(const gfx::Size& size) override;
 #endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_X11)
+
+#if BUILDFLAG(IS_CHROMEOS)
+  void SetPreferredRefreshRate(float refresh_rate) override;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   mojo::Receiver<mojom::DisplayClient> receiver_{this};
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)

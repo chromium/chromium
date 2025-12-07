@@ -1,0 +1,17 @@
+<!doctype html>
+<html class="reftest-wait">
+<link rel="match" href="2d-presents-frame-after-context-restored-expected.html">
+<script src="./2d-presents-frame-after-context-restored-impl.js"></script>
+
+<title>
+  Tests that desynchronized 2D HTMLCanvasElement can send frames to the
+  compositor after the GPU context is lost and restored.
+</title>
+
+<canvas id="canvas"></canvas>
+<script type="module">
+  const canvas = document.getElementById('canvas');
+  await Test2dPresentsFrameAfterContextRestored(canvas, {desynchronized: true});
+  document.documentElement.classList.remove('reftest-wait');
+</script>
+</html>

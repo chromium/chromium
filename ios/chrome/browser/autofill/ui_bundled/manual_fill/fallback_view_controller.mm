@@ -10,25 +10,28 @@
 #import "base/ios/ios_util.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_action_cell.h"
+#import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/passwords/ui_bundled/password_suggestion_utils.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_action_cell.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+#import "url/gurl.h"
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   HeaderSectionIdentifier = kSectionIdentifierEnumZero,
   NoDataItemsSectionIdentifier,
   ActionsSectionIdentifier,
+  PlusAddressActionsSectionIdentifier,
   // Must be declared last as it is used as the starting point to dynamically
-  // create section identifiers for each data item when the
-  // kIOSKeyboardAccessoryUpgrade feature is enabled.
+  // create section identifiers for each data item.
   DataItemsSectionIdentifier
 };
 
@@ -53,10 +56,25 @@ constexpr base::TimeDelta kMinimumLoadingTime = base::Milliseconds(500);
 constexpr CGFloat kSectionHeaderHeight = 6;
 
 // Height of the section footer.
-constexpr CGFloat kSectionFooterHeight = 8;
+constexpr CGFloat kSectionFooterHeight = 6;
 
 // Left inset of the table view's section separators.
 constexpr CGFloat kSectionSepatatorLeftInset = 16;
+
+// Represents the different types of items that can be presented.
+enum class ItemType {
+  kItemTypeData = kItemTypeEnumZero,
+  kItemTypeAction,
+  kItemTypePlusAddressAction
+};
+
+// Returns whether the view should be resized to match the desired popover UI on
+// tablets.
+bool ShouldResizeViewForPopover(
+    UIModalPresentationStyle modal_presentation_style) {
+  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
+         modal_presentation_style == UIModalPresentationPopover;
+}
 
 }  // namespace
 
@@ -70,6 +88,10 @@ constexpr CGFloat kSectionSepatatorLeftInset = 16;
 // Action Items to be shown when the loading indicator disappears.
 @property(nonatomic, strong) NSArray<TableViewItem*>* queuedActionItems;
 
+// Plus Address Action Items to be shown when the loading indicator disappears.
+@property(nonatomic, strong)
+    NSArray<TableViewItem*>* queuedPlusAddressActionItems;
+
 @end
 
 @implementation FallbackViewController {
@@ -78,12 +100,14 @@ constexpr CGFloat kSectionSepatatorLeftInset = 16;
 
   // The number of data items that are currently being presented.
   NSInteger _dataItemCount;
+
+  // Attributes for the default globe favicon shown when no site-specific
+  // favicon can be retrieved.
+  FaviconAttributes* _defaultGlobeFaviconAttributes;
 }
 
 - (instancetype)init {
-  self = [super initWithStyle:IsKeyboardAccessoryUpgradeEnabled()
-                                  ? ChromeTableViewStyle()
-                                  : UITableViewStylePlain];
+  self = [super initWithStyle:ChromeTableViewStyle()];
 
   if (self) {
     _loadingIndicatorStartingTime = base::Time::Min();
@@ -93,30 +117,22 @@ constexpr CGFloat kSectionSepatatorLeftInset = 16;
 }
 
 - (void)viewDidLoad {
-  // Super's `viewDidLoad` uses `styler.tableViewBackgroundColor` so it needs to
-  // be set before.
-  self.styler.tableViewBackgroundColor =
-      [UIColor colorNamed:IsKeyboardAccessoryUpgradeEnabled()
-                              ? kGroupedPrimaryBackgroundColor
-                              : kBackgroundColor];
-
   [super viewDidLoad];
+
+  if (@available(iOS 26, *)) {
+    self.tableView.backgroundColor = UIColor.clearColor;
+  }
 
   // Remove extra spacing on top of sections.
   self.tableView.sectionHeaderTopPadding = 0;
 
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
-    self.tableView.separatorInset =
-        UIEdgeInsetsMake(0, kSectionSepatatorLeftInset, 0, 0);
-  } else {
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.tableView.separatorInset = UIEdgeInsetsMake(0, 0, 0, 0);
-  }
+  self.tableView.separatorInset =
+      UIEdgeInsetsMake(0, kSectionSepatatorLeftInset, 0, 0);
   self.tableView.estimatedRowHeight = 1;
   self.tableView.allowsSelection = NO;
   self.definesPresentationContext = YES;
   if (!self.tableViewModel) {
-    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    if (ShouldResizeViewForPopover(self.modalPresentationStyle)) {
       self.preferredContentSize = CGSizeMake(
           PopoverPreferredWidth, AlignValueToPixel(PopoverLoadingHeight));
     }
@@ -127,7 +143,7 @@ constexpr CGFloat kSectionSepatatorLeftInset = 16;
 
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+  if (ShouldResizeViewForPopover(self.modalPresentationStyle)) {
     CGSize systemLayoutSize = self.tableView.contentSize;
     CGFloat preferredHeight =
         std::min(systemLayoutSize.height, PopoverMaxHeight);
@@ -155,37 +171,39 @@ constexpr CGFloat kSectionSepatatorLeftInset = 16;
 }
 
 - (void)presentDataItems:(NSArray<TableViewItem*>*)items {
-  if (![self shouldPresentItems]) {
-    if (self.queuedDataItems) {
-      self.queuedDataItems = items;
-      return;
-    }
-    self.queuedDataItems = items;
-    __weak __typeof(self) weakSelf = self;
-    [self presentItemsAfterMinimumLoadingTime:^{
-      [weakSelf presentQueuedDataItems];
-    }];
-    return;
-  }
-  self.queuedDataItems = items;
-  [self presentQueuedDataItems];
+  [self presentItems:items ofItemType:ItemType::kItemTypeData];
 }
 
 - (void)presentActionItems:(NSArray<TableViewItem*>*)actions {
-  if (![self shouldPresentItems]) {
-    if (self.queuedActionItems) {
-      self.queuedActionItems = actions;
-      return;
-    }
-    self.queuedActionItems = actions;
-    __weak __typeof(self) weakSelf = self;
-    [self presentItemsAfterMinimumLoadingTime:^{
-      [weakSelf presentQueuedActionItems];
-    }];
+  [self presentItems:actions ofItemType:ItemType::kItemTypeAction];
+}
+
+- (void)presentPlusAddressActionItems:(NSArray<TableViewItem*>*)actions {
+  [self presentItems:actions ofItemType:ItemType::kItemTypePlusAddressAction];
+}
+
+- (void)loadFaviconForCellIdentifier:(NSString*)cellIdentifier
+                      itemIdentifier:(NSString*)itemIdentifier
+                          faviconURL:(const GURL&)faviconURL
+                          completion:
+                              (ConfigureFaviconCompletionBlock)completion {
+  // Only set the favicon if the cell hasn't been reused.
+  if (![cellIdentifier isEqualToString:itemIdentifier]) {
     return;
   }
-  self.queuedActionItems = actions;
-  [self presentQueuedActionItems];
+
+  if (faviconURL.is_empty()) {
+    completion([self defaultGlobeFaviconAttributes]);
+    return;
+  }
+
+  CrURL* crURL = [[CrURL alloc] initWithGURL:faviconURL];
+  [self.imageDataSource
+      faviconForPageURL:crURL
+             completion:^(FaviconAttributes* attributes, bool cached) {
+               CHECK(attributes);
+               completion(attributes);
+             }];
 }
 
 #pragma mark - UITableViewDelegate
@@ -200,7 +218,7 @@ constexpr CGFloat kSectionSepatatorLeftInset = 16;
 
 - (CGFloat)tableView:(UITableView*)tableView
     heightForFooterInSection:(NSInteger)section {
-  if (self.noDataItemsToShowHeaderItem &&
+  if (self.noRegularDataItemsToShowHeaderItem &&
       [self.tableViewModel
           hasSectionForSectionIdentifier:NoDataItemsSectionIdentifier] &&
       section ==
@@ -235,6 +253,59 @@ constexpr CGFloat kSectionSepatatorLeftInset = 16;
 }
 
 #pragma mark - Private
+
+// Presents an array of TableViewItems, handling queuing and delayed
+// presentation if necessary.
+- (void)presentItems:(NSArray<TableViewItem*>*)items
+          ofItemType:(ItemType)itemType {
+  BOOL hasQueuedItems = NO;
+
+  // Queue the items based on their type.
+  switch (itemType) {
+    case ItemType::kItemTypeData:
+      hasQueuedItems = (self.queuedDataItems != nil);
+      self.queuedDataItems = items;
+      break;
+    case ItemType::kItemTypeAction:
+      hasQueuedItems = (self.queuedActionItems != nil);
+      self.queuedActionItems = items;
+      break;
+    case ItemType::kItemTypePlusAddressAction:
+      hasQueuedItems = (self.queuedPlusAddressActionItems != nil);
+      self.queuedPlusAddressActionItems = items;
+      break;
+  }
+
+  if (![self shouldPresentItems]) {
+    if (hasQueuedItems) {
+      return;
+    }
+
+    // Delay presentation until after minimum loading time.
+    __weak __typeof(self) weakSelf = self;
+    [self presentItemsAfterMinimumLoadingTime:^{
+      [weakSelf presentQueuedItemsOfType:itemType];
+    }];
+    return;
+  }
+
+  [self presentQueuedItemsOfType:itemType];
+}
+
+// Presents the queued items based on their type.
+- (void)presentQueuedItemsOfType:(ItemType)itemType {
+  switch (itemType) {
+    case ItemType::kItemTypeData:
+      [self presentQueuedDataItems];
+      break;
+    case ItemType::kItemTypeAction:
+      [self presentQueuedActionItems];
+      break;
+    case ItemType::kItemTypePlusAddressAction:
+      [self presentQueuedPlusAddressActionItems];
+      break;
+  }
+}
 
 // Calls `presentationBlock` to update the items in `tableView` after
 // `kMinimumLoadingTime` has passed.
@@ -274,9 +345,6 @@ constexpr CGFloat kSectionSepatatorLeftInset = 16;
 
   [self updateEmptyStateMessage];
 
-  BOOL sectionExists = [self.tableViewModel
-      hasSectionForSectionIdentifier:DataItemsSectionIdentifier];
-
   // Determine the index at which the next section should be inserted based on
   // header existance.
   NSInteger sectionIndex =
@@ -285,47 +353,46 @@ constexpr CGFloat kSectionSepatatorLeftInset = 16;
           ? 1
           : 0;
 
-  // If the kIOSKeyboardAccessoryUpgrade feature is enabled, remove any excess
-  // data item sections, and present the queued data items.
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
-    [self removeUnusedDataItemSections];
-    [self presentFallbackItems:self.queuedDataItems
-             startingAtSection:DataItemsSectionIdentifier
-               startingAtIndex:sectionIndex];
-    _dataItemCount = self.queuedDataItems.count;
-  } else {
-    if (!self.queuedDataItems.count && sectionExists) {
-      [self.tableViewModel
-          removeSectionWithIdentifier:DataItemsSectionIdentifier];
-    } else if (self.queuedDataItems.count && !sectionExists) {
-      [self.tableViewModel
-          insertSectionWithIdentifier:DataItemsSectionIdentifier
-                              atIndex:sectionIndex];
-    }
-    [self presentFallbackItems:self.queuedDataItems
-                     inSection:DataItemsSectionIdentifier];
-  }
+  // Remove any excess data item sections, and present the queued data items.
+  [self removeUnusedDataItemSections];
+  [self presentFallbackItems:self.queuedDataItems
+           startingAtSection:DataItemsSectionIdentifier
+             startingAtIndex:sectionIndex];
+  _dataItemCount = self.queuedDataItems.count;
   self.queuedDataItems = nil;
 }
 
 // Presents the action items currently in queue.
 - (void)presentQueuedActionItems {
-  DCHECK(self.queuedActionItems);
+  [self presentActionItems:self.queuedActionItems
+                 inSection:ActionsSectionIdentifier];
+  self.queuedActionItems = nil;
+}
+
+// Presents plus address action items currently in the queue.
+- (void)presentQueuedPlusAddressActionItems {
+  [self presentActionItems:self.queuedPlusAddressActionItems
+                 inSection:PlusAddressActionsSectionIdentifier];
+  self.queuedPlusAddressActionItems = nil;
+}
+
+// Presents action items `items` in the `section`.
+- (void)presentActionItems:(NSArray<TableViewItem*>*)items
+                 inSection:(SectionIdentifier)section {
+  CHECK(items);
 
   [self createModelIfNeeded];
 
-  BOOL sectionExists = [self.tableViewModel
-      hasSectionForSectionIdentifier:ActionsSectionIdentifier];
+  BOOL sectionExists =
+      [self.tableViewModel hasSectionForSectionIdentifier:section];
   // If there are no passed items, remove section if it exists.
-  if (!self.queuedActionItems.count && sectionExists) {
-    [self.tableViewModel removeSectionWithIdentifier:ActionsSectionIdentifier];
-  } else if (self.queuedActionItems.count && !sectionExists) {
-    [self.tableViewModel addSectionWithIdentifier:ActionsSectionIdentifier];
+  if (!items.count && sectionExists) {
+    [self.tableViewModel removeSectionWithIdentifier:section];
+  } else if (items.count && !sectionExists) {
+    [self.tableViewModel addSectionWithIdentifier:section];
   }
 
-  [self presentFallbackItems:self.queuedActionItems
-                   inSection:ActionsSectionIdentifier];
-  self.queuedActionItems = nil;
+  [self presentFallbackItems:items inSection:section];
 }
 
 // Returns the time elapsed in seconds since the loading indicator started. This
@@ -405,15 +472,12 @@ constexpr CGFloat kSectionSepatatorLeftInset = 16;
   }
 }
 
-// Adds or removes the `noDataItemsToShowHeaderItem` if needed. This header item
-// is displayed to let the user know that there are no data items to show.
+// Adds or removes the `noRegularDataItemsToShowHeaderItem` if needed. This
+// header item is displayed to let the user know that there are no data items
+// amongst passwords, cards and addresses to show. However, plus address can
+// still be shown.
 - (void)updateEmptyStateMessage {
-  if (!IsKeyboardAccessoryUpgradeEnabled()) {
-    return;
-  }
-
-  BOOL needsEmptyStateHeader =
-      !self.queuedDataItems.count && self.noDataItemsToShowHeaderItem;
+  BOOL needsEmptyStateHeader = self.noRegularDataItemsToShowHeaderItem;
   BOOL hasEmptyStateSection = [self.tableViewModel
       hasSectionForSectionIdentifier:NoDataItemsSectionIdentifier];
   BOOL hasEmptyStateHeader =
@@ -427,13 +491,22 @@ constexpr CGFloat kSectionSepatatorLeftInset = 16;
 
   if (needsEmptyStateHeader) {
     [self.tableViewModel addSectionWithIdentifier:NoDataItemsSectionIdentifier];
-    [self.tableViewModel setHeader:self.noDataItemsToShowHeaderItem
+    [self.tableViewModel setHeader:self.noRegularDataItemsToShowHeaderItem
           forSectionWithIdentifier:NoDataItemsSectionIdentifier];
   } else {
     [self.tableViewModel
         removeSectionWithIdentifier:NoDataItemsSectionIdentifier];
-    self.noDataItemsToShowHeaderItem = nil;
+    self.noRegularDataItemsToShowHeaderItem = nil;
   }
+}
+
+// Creates the default globe favicon attributes if needed, and returns them.
+- (FaviconAttributes*)defaultGlobeFaviconAttributes {
+  if (!_defaultGlobeFaviconAttributes) {
+    _defaultGlobeFaviconAttributes = GetDefaultGlobeFaviconAttributes();
+  }
+
+  return _defaultGlobeFaviconAttributes;
 }
 
 @end

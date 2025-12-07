@@ -40,7 +40,7 @@ export class EditPasswordDisclaimerDialogElement extends
     };
   }
 
-  origin: string;
+  declare origin: string;
 
   override connectedCallback() {
     super.connectedCallback();

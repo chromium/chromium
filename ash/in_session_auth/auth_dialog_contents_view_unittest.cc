@@ -13,6 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -22,8 +23,6 @@
 #include "ui/views/widget/widget_delegate.h"
 
 namespace ash {
-
-namespace {
 
 class AuthDialogContentsViewTest : public AshTestBase {
  public:
@@ -104,11 +103,12 @@ std::unique_ptr<views::Widget> AuthDialogContentsViewTest::CreateDialogWidget(
       views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.delegate = new views::WidgetDelegate();
-  params.show_state = ui::SHOW_STATE_NORMAL;
+  params.show_state = ui::mojom::WindowShowState::kNormal;
   params.parent = root_window;
   params.name = "AuthDialogWidget";
   params.delegate->SetInitiallyFocusedView(dialog.get());
-  params.delegate->SetOwnedByWidget(true);
+  params.delegate->SetOwnedByWidget(
+      views::WidgetDelegate::OwnedByWidgetPassKey());
   params.bounds = gfx::Rect(dialog->GetPreferredSize());
 
   std::unique_ptr<views::Widget> widget = std::make_unique<views::Widget>();
@@ -146,7 +146,5 @@ TEST_F(AuthDialogContentsViewTest, AccessibleProperties) {
       .GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kStaticText);
 }
-
-}  // namespace
 
 }  // namespace ash

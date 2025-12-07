@@ -474,11 +474,10 @@ bool Character::IsIdeographicVariationSequence(UChar32 ch, UChar32 vs) {
   if (!IsInRange(vs, 0xE0100, 0xE01EF)) {
     return false;
   }
-  WTF::unicode::CharDecompositionType decomp_type =
-      WTF::unicode::DecompositionType(ch);
+  unicode::CharDecompositionType decomp_type = unicode::DecompositionType(ch);
   return u_hasBinaryProperty(ch, UCHAR_IDEOGRAPHIC) &&
-         decomp_type != WTF::unicode::kDecompositionCanonical &&
-         decomp_type != WTF::unicode::kDecompositionCompat;
+         decomp_type != unicode::kDecompositionCanonical &&
+         decomp_type != unicode::kDecompositionCompat;
 }
 
 bool Character::IsVariationSequence(UChar32 ch, UChar32 vs) {

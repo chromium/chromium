@@ -1,0 +1,2 @@
+# Don't format code imported/vendored from crates.io
+ignore = ["vendor/"]

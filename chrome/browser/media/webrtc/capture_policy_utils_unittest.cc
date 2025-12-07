@@ -18,10 +18,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/idle_service_ash.h"
-#include "chrome/browser/ash/crosapi/test_crosapi_dependency_registry.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -29,16 +27,12 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_type.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 constexpr char kTestSite1[] = "https://foo.test.org";
 constexpr char kTestSite1Pattern[] = "foo.test.org";
 constexpr char kTestSite1NonMatchingPattern[] = "foo.org";
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr char kAccountId[] = "test_1@example.com";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }  // namespace
 
 class CapturePolicyUtilsTest : public testing::Test {
@@ -278,110 +272,3 @@ TEST_F(CapturePolicyUtilsTest, FilterMediaListRestrictedSameOrigin) {
 
   EXPECT_EQ(expected_media_types, actual_media_types);
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
-class MultiCaptureTest
-    : public testing::Test,
-      public ::testing::WithParamInterface<
-          std::tuple<bool, std::vector<std::string>, std::string>> {
- public:
-  void SetUp() override {
-    testing::Test::SetUp();
-
-    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
-    CHECK(profile_manager_.SetUp());
-    profile_ = profile_manager_.CreateTestingProfile(kAccountId);
-
-    AccountId account_id = AccountId::FromUserEmail(kAccountId);
-    fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-        account_id, /*is_affiliated=*/true, user_manager::UserType::kRegular,
-        profile_);
-    fake_user_manager_->LoginUser(account_id);
-
-    // Settings required to create startup data.
-    crosapi::IdleServiceAsh::DisableForTesting();
-    if (!ash::LoginState::IsInitialized()) {
-      ash::LoginState::Initialize();
-    }
-    cros_api_manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
-
-    HostContentSettingsMap* content_settings =
-        HostContentSettingsMapFactory::GetForProfile(profile());
-    for (const std::string& url : AllowedOrigins()) {
-      content_settings->SetContentSettingDefaultScope(
-          GURL(url), GURL(url), ContentSettingsType::ALL_SCREEN_CAPTURE,
-          ContentSetting::CONTENT_SETTING_ALLOW);
-    }
-  }
-
-  void TearDown() override {
-    profile_ = nullptr;
-    // ash::LoginState::Shutdown();
-  }
-
-  Profile* profile() { return profile_; }
-  bool IsMainProfile() const { return std::get<0>(GetParam()); }
-  std::vector<std::string> AllowedOrigins() const {
-    return std::get<1>(GetParam());
-  }
-  std::string CurrentOrigin() const { return std::get<2>(GetParam()); }
-
- protected:
-  bool ExpectedIsMultiCaptureAllowed() {
-    std::vector<std::string> allowed_urls = AllowedOrigins();
-    return
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-        IsMainProfile() &&
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-        base::Contains(allowed_urls, CurrentOrigin());
-  }
-
-  bool ExpectedIsMultiCaptureAllowedForAnyUrl() {
-    return
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-        IsMainProfile() &&
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-        !AllowedOrigins().empty();
-  }
-
- private:
-  raw_ptr<TestingProfile> profile_;
-  content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<crosapi::CrosapiManager> cros_api_manager_;
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_;
-  TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
-};
-
-TEST_P(MultiCaptureTest, IsMultiCaptureAllowedBasedOnPolicy) {
-  base::test::TestFuture<bool> future;
-  capture_policy::CheckGetAllScreensMediaAllowed(
-      profile(), GURL(CurrentOrigin()), future.GetCallback());
-  ASSERT_TRUE(future.Wait());
-  EXPECT_EQ(ExpectedIsMultiCaptureAllowed(), future.Get<bool>());
-}
-
-TEST_P(MultiCaptureTest, IsMultiCaptureAllowedForAnyUrl) {
-  base::test::TestFuture<bool> future;
-  capture_policy::CheckGetAllScreensMediaAllowedForAnyOrigin(
-      profile(), future.GetCallback());
-  ASSERT_TRUE(future.Wait());
-  EXPECT_EQ(ExpectedIsMultiCaptureAllowedForAnyUrl(), future.Get<bool>());
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    MultiCaptureTestCases,
-    MultiCaptureTest,
-    ::testing::Combine(
-        // Is main profile?
-        ::testing::Bool(),
-        // Allowed origins
-        ::testing::ValuesIn({std::vector<std::string>{},
-                             std::vector<std::string>{
-                                 "https://www.google.com"}}),
-        // Origin to test
-        ::testing::ValuesIn({std::string("https://www.google.com"),
-                             std::string("https://www.notallowed.com")})));
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)

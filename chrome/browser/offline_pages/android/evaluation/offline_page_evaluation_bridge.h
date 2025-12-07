@@ -28,7 +28,6 @@ class OfflinePageEvaluationBridge : public OfflinePageModel::Observer,
                                     public OfflineEventLogger::Client {
  public:
   OfflinePageEvaluationBridge(JNIEnv* env,
-                              const base::android::JavaParamRef<jobject>& obj,
                               content::BrowserContext* browser_context,
                               OfflinePageModel* offline_page_model,
                               RequestCoordinator* request_coordinator);
@@ -38,7 +37,7 @@ class OfflinePageEvaluationBridge : public OfflinePageModel::Observer,
       delete;
 
   ~OfflinePageEvaluationBridge() override;
-  void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void Destroy(JNIEnv* env);
 
   // OfflinePageModel::Observer implementation.
   void OfflinePageModelLoaded(OfflinePageModel* model) override;
@@ -59,35 +58,30 @@ class OfflinePageEvaluationBridge : public OfflinePageModel::Observer,
 
   // Gets all pages in offline page model.
   void GetAllPages(JNIEnv* env,
-                   const base::android::JavaParamRef<jobject>& obj,
-                   const base::android::JavaParamRef<jobject>& j_result_obj,
-                   const base::android::JavaParamRef<jobject>& j_callback_obj);
+                   const base::android::JavaRef<jobject>& j_result_obj,
+                   const base::android::JavaRef<jobject>& j_callback_obj);
 
   // Return true if processing starts and callback is expected to be called.
   // False otherwise.
   bool PushRequestProcessing(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jobject>& j_callback_obj);
+      const base::android::JavaRef<jobject>& j_callback_obj);
 
   // Gets all the requests in the queue.
   void GetRequestsInQueue(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jobject>& j_callback_obj);
+      const base::android::JavaRef<jobject>& j_callback_obj);
 
   // Removes the requests from the queue.
   void RemoveRequestsFromQueue(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jlongArray>& j_request_ids,
-      const base::android::JavaParamRef<jobject>& j_callback_obj);
+      const base::android::JavaRef<jlongArray>& j_request_ids,
+      const base::android::JavaRef<jobject>& j_callback_obj);
 
   void SavePageLater(JNIEnv* env,
-                     const base::android::JavaParamRef<jobject>& obj,
-                     const base::android::JavaParamRef<jstring>& url,
-                     const base::android::JavaParamRef<jstring>& j_namespace,
-                     const base::android::JavaParamRef<jstring>& j_client_id,
+                     std::string& url,
+                     std::string& name_space,
+                     std::string& client_id,
                      jboolean user_requested);
 
  private:

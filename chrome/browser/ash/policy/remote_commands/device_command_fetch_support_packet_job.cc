@@ -17,7 +17,6 @@
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -36,8 +35,6 @@
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h"
 #include "chrome/browser/ash/policy/uploading/system_log_uploader.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/log_upload_event.pb.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -164,8 +161,7 @@ std::string GetUploadParameters(
           .Set(kFilenameKey, filename.BaseName().value())
           .Set(kCommandIdKey, base::NumberToString(command_id))
           .Set(kFileTypeKey, kSupportFileType);
-  std::string json;
-  base::JSONWriter::Write(upload_parameters_dict, &json);
+  std::string json = base::WriteJson(upload_parameters_dict).value_or("");
   return base::StringPrintf("%s\n%s", json.c_str(), kContentTypeJson);
 }
 
@@ -181,9 +177,7 @@ std::string GetCommandResultPayload(
     }
     json.Set(kNotesKey, std::move(notes_list));
   }
-  std::string result_payload;
-  base::JSONWriter::Write(json, &result_payload);
-  return result_payload;
+  return base::WriteJson(json).value_or("");
 }
 
 }  // namespace
@@ -242,14 +236,14 @@ bool DeviceCommandFetchSupportPacketJob::ParseCommandPayload(
 bool DeviceCommandFetchSupportPacketJob::ParseCommandPayloadImpl(
     const std::string& command_payload) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::optional<base::Value> value = base::JSONReader::Read(command_payload);
-  if (!value.has_value() || !value->is_dict()) {
+  std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
+      command_payload, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  if (!value) {
     return false;
   }
 
-  const base::Value::Dict& dict = value->GetDict();
   const base::Value::Dict* details_dict =
-      dict.FindDict(kSupportPacketDetailsKey);
+      value->FindDict(kSupportPacketDetailsKey);
   if (!details_dict) {
     return false;
   }
@@ -350,13 +344,13 @@ void DeviceCommandFetchSupportPacketJob::StartJobExecution() {
                                    .GetSigninBrowserContext())
                          : ProfileManager::GetActiveUserProfile();
   // Initialize SupportToolHandler with the requested details.
-  support_tool_handler_ =
-      GetSupportToolHandler(support_packet_details_.issue_case_id,
-                            // Leave the email address empty since data
-                            // collection is triggered by the admin remotely.
-                            /*email_address=*/std::string(),
-                            support_packet_details_.issue_description, profile,
-                            support_packet_details_.requested_data_collectors);
+  support_tool_handler_ = GetSupportToolHandler(
+      support_packet_details_.issue_case_id,
+      // Leave the email address empty since data
+      // collection is triggered by the admin remotely.
+      /*email_address=*/std::string(),
+      support_packet_details_.issue_description, std::nullopt, profile,
+      support_packet_details_.requested_data_collectors);
 
   // Start data collection.
   support_tool_handler_->CollectSupportData(
@@ -398,8 +392,8 @@ void DeviceCommandFetchSupportPacketJob::OnDataExported(
     std::set<SupportToolError> errors) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto export_error =
-      base::ranges::find(errors, SupportToolErrorCode::kDataExportError,
-                         &SupportToolError::error_code);
+      std::ranges::find(errors, SupportToolErrorCode::kDataExportError,
+                        &SupportToolError::error_code);
 
   if (export_error != errors.end()) {
     base::UmaHistogramEnumeration(kFetchSupportPacketFailureHistogramName,

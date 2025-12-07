@@ -13,6 +13,7 @@
 #include "base/json/json_reader.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -423,8 +424,8 @@ TEST_F(ConnectionTest, RequestWifiCredentials) {
   fake_nearby_connection_->AppendReadableData({0x00, 0x01, 0x02});
   std::vector<uint8_t> wifi_request = fake_nearby_connection_->GetWrittenData();
   std::string wifi_request_string(wifi_request.begin(), wifi_request.end());
-  std::optional<base::Value> parsed_wifi_request_json =
-      base::JSONReader::Read(wifi_request_string);
+  std::optional<base::Value> parsed_wifi_request_json = base::JSONReader::Read(
+      wifi_request_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(parsed_wifi_request_json);
   ASSERT_TRUE(parsed_wifi_request_json->is_dict());
   base::Value::Dict& written_wifi_credentials_request =
@@ -442,7 +443,8 @@ TEST_F(ConnectionTest, RequestWifiCredentials) {
                                     parsed_payload->end());
 
   std::optional<base::Value> parsed_wifi_request_payload_json =
-      base::JSONReader::Read(parsed_payload_string);
+      base::JSONReader::Read(parsed_payload_string,
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(parsed_wifi_request_payload_json);
   ASSERT_TRUE(parsed_wifi_request_payload_json->is_dict());
   base::Value::Dict& wifi_request_payload =

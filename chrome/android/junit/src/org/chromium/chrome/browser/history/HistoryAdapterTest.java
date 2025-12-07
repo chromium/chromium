@@ -8,21 +8,23 @@ import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.chrome.browser.history.HistoryTestUtils.checkAdapterContents;
 
-import android.view.View;
 import android.widget.TextView;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.history.AppFilterCoordinator.AppInfo;
+import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
 import org.chromium.components.browser_ui.widget.MoreProgressButton;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 
@@ -33,6 +35,7 @@ import java.util.concurrent.TimeUnit;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class HistoryAdapterTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private StubbedHistoryProvider mHistoryProvider;
     private HistoryAdapter mAdapter;
 
@@ -40,20 +43,16 @@ public class HistoryAdapterTest {
     @Mock private HistoryContentManager mContentManager;
     @Mock private ChipView mAppFilterChip;
     @Mock private TextView mTextView;
-    @Mock private View mAppFilterContainer;
+    @Mock private SigninPromoCoordinator mHistorySyncPromoCoordinator;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mHistoryProvider = new StubbedHistoryProvider();
-        mAdapter = new HistoryAdapter(mContentManager, mHistoryProvider);
+        mAdapter =
+                new HistoryAdapter(mContentManager, mHistoryProvider, mHistorySyncPromoCoordinator);
         mAdapter.generateHeaderItemsForTest();
         mAdapter.generateFooterItemsForTest(mMockButton);
         doReturn(mTextView).when(mAppFilterChip).getPrimaryTextView();
-    }
-
-    private void initializeAdapter() {
-        mAdapter.startLoadingItems();
     }
 
     private boolean showSourceApp() {
@@ -104,7 +103,8 @@ public class HistoryAdapterTest {
     public void testShowSourceAppInBrAppHistory() {
         // Reinstantiate HistoryAdapter with |showAppFilter| flag on. Now we're in BrApp.
         doReturn(true).when(mContentManager).showAppFilter();
-        mAdapter = new HistoryAdapter(mContentManager, mHistoryProvider);
+        mAdapter =
+                new HistoryAdapter(mContentManager, mHistoryProvider, mHistorySyncPromoCoordinator);
 
         mAdapter.generateHeaderItemsForTest();
         mAdapter.generateFooterItemsForTest(mMockButton);
@@ -200,6 +200,77 @@ public class HistoryAdapterTest {
 
         mAdapter.removeItems();
         Assert.assertEquals(1, mHistoryProvider.removeItemsCallback.getCallCount());
+    }
+
+    @Test
+    public void testRemove_WithPersistentHeader() {
+        // Add one history item.
+        Date today = new Date();
+        long timestamp = today.getTime();
+        HistoryItem item = StubbedHistoryProvider.createHistoryItem(0, timestamp);
+        mHistoryProvider.addItem(item);
+        // Show the history sync promo header.
+        doReturn(true).when(mHistorySyncPromoCoordinator).canShowPromo();
+        mAdapter.updateHistorySyncPromoVisibility();
+
+        mAdapter.startLoadingItems();
+
+        // There should be three items - the standard and persistent headers, a date header and
+        // a history item.
+        checkAdapterContents(
+                mAdapter,
+                /* hasStandardHeader= */ true,
+                /* hasPersistentHeader= */ true,
+                /* hasFooter= */ false,
+                null,
+                null,
+                null,
+                item);
+
+        mAdapter.markItemForRemoval(item);
+
+        // The standard and persistent headers should be the only visible items.
+        checkAdapterContents(
+                mAdapter,
+                /* hasStandardHeader= */ true,
+                /* hasPersistentHeader= */ true,
+                /* hasFooter= */ false,
+                null,
+                null);
+        Assert.assertEquals(1, mHistoryProvider.markItemForRemovalCallback.getCallCount());
+        Assert.assertEquals(0, mHistoryProvider.removeItemsCallback.getCallCount());
+
+        mAdapter.removeItems();
+        Assert.assertEquals(1, mHistoryProvider.removeItemsCallback.getCallCount());
+    }
+
+    @Test
+    public void testRemovePersistentHeader() {
+        // Show the history sync promo header.
+        doReturn(true).when(mHistorySyncPromoCoordinator).canShowPromo();
+        mAdapter.updateHistorySyncPromoVisibility();
+
+        mAdapter.startLoadingItems();
+
+        // The standard and persistent headers should be the only visible items.
+        checkAdapterContents(
+                mAdapter,
+                /* hasStandardHeader= */ true,
+                /* hasPersistentHeader= */ true,
+                /* hasFooter= */ false,
+                null,
+                null);
+
+        // Hide the history sync promo header.
+        doReturn(false).when(mHistorySyncPromoCoordinator).canShowPromo();
+        mAdapter.updateHistorySyncPromoVisibility();
+
+        // No item should be shown.
+        checkAdapterContents(
+                mAdapter,
+                /* hasStandardHeader= */ false,
+                /* hasPersistentHeader= */ false,
+                /* hasFooter= */ false);
     }
 
     @Test

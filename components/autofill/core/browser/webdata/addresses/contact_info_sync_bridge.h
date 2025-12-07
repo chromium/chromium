@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/containers/queue.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -64,8 +65,10 @@ class ContactInfoSyncBridge : public AutofillWebDataServiceObserverOnDBSequence,
       StorageKeyList storage_keys) override;
   std::unique_ptr<syncer::DataBatch> GetAllDataForDebugging() override;
   bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
-  std::string GetClientTag(const syncer::EntityData& entity_data) override;
-  std::string GetStorageKey(const syncer::EntityData& entity_data) override;
+  std::string GetClientTag(
+      const syncer::EntityData& entity_data) const override;
+  std::string GetStorageKey(
+      const syncer::EntityData& entity_data) const override;
   void ApplyDisableSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
                                    delete_metadata_change_list) override;
   sync_pb::EntitySpecifics TrimAllSupportedFieldsFromRemoteSpecifics(
@@ -99,6 +102,9 @@ class ContactInfoSyncBridge : public AutofillWebDataServiceObserverOnDBSequence,
   // the processor so it can start tracking changes.
   void LoadMetadata();
 
+  // Uploads all `pending_profile_changes_`.
+  void FlushPendingAccountProfileChanges();
+
   // The bridge should be used on the same sequence where it has been
   // constructed.
   SEQUENCE_CHECKER(sequence_checker_);
@@ -110,6 +116,11 @@ class ContactInfoSyncBridge : public AutofillWebDataServiceObserverOnDBSequence,
   base::ScopedObservation<AutofillWebDataBackend,
                           AutofillWebDataServiceObserverOnDBSequence>
       scoped_observation_{this};
+
+  // Contains local changes (see `AutofillProfileChanged()`) that happen before
+  // the change processor starts tracking metadata. They get uploaded once the
+  // change processor is ready (see `FlushPendingProfileChanges()`).
+  base::queue<AutofillProfileChange> pending_account_profile_changes_;
 };
 
 }  // namespace autofill

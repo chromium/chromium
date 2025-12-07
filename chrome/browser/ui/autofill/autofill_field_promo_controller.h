@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_FIELD_PROMO_CONTROLLER_H_
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_FIELD_PROMO_CONTROLLER_H_
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_field_promo_view.h"
 #include "chrome/browser/ui/autofill/autofill_popup_hide_helper.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "ui/base/interaction/element_identifier.h"
 
 namespace autofill {
@@ -79,6 +80,12 @@ class AutofillFieldPromoController {
   virtual void Show(const gfx::RectF& bounds) = 0;
   // Hides and destroys the view.
   virtual void Hide() = 0;
+  // Whether the call to Show was successful. This value is reset when the
+  // promo is hidden.
+  virtual bool IsMaybeShowing() const = 0;
+  // Returns the feature promo associated with a `AutofillFieldPromoController`
+  // instance.
+  virtual const base::Feature& GetFeaturePromo() const = 0;
 };
 
 }  // namespace autofill

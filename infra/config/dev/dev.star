@@ -5,8 +5,6 @@
 # See https://chromium.googlesource.com/infra/luci/luci-go/+/HEAD/lucicfg/doc/README.md
 # for information on starlark/lucicfg
 
-load("//lib/chrome_settings.star", "chrome_settings")
-
 luci.project(
     name = "chromium",
     config_dir = "luci",
@@ -59,10 +57,6 @@ luci.milo(
     logo = "https://storage.googleapis.com/chrome-infra-public/logo/chromium.svg",
 )
 
-chrome_settings.per_builder_outputs(
-    root_dir = "builders-dev",
-)
-
 # An all-purpose public realm.
 luci.realm(
     name = "public",
@@ -75,7 +69,57 @@ luci.realm(
             roles = "role/resultdb.invocationCreator",
             groups = "luci-resultdb-access",
         ),
+        # Allow everyone to view Turbo CI workflows
+        luci.binding(
+            roles = "role/turboci.graph.reader",
+            groups = "all",
+        ),
         # Other roles are inherited from @root which grants them to group:all.
+    ],
+)
+
+luci.realm(
+    name = "try",
+    bindings = [
+        # Allow everyone to view Turbo CI workflows
+        luci.binding(
+            roles = "role/turboci.graph.reader",
+            groups = "all",
+        ),
+    ],
+)
+
+# @project realm.
+luci.realm(
+    name = "@project",
+    bindings = [
+        # Allow everyone (including non-logged-in users) to see chromium tree status.
+        luci.binding(
+            roles = "role/treestatus.limitedReader",
+            groups = [
+                "all",
+            ],
+        ),
+        # Only allow Googlers to see PII.
+        luci.binding(
+            roles = "role/treestatus.reader",
+            groups = [
+                "googlers",
+            ],
+            users = [
+                "luci-notify-dev@appspot.gserviceaccount.com",
+            ],
+        ),
+        # Only allow Googlers and service accounts.
+        luci.binding(
+            roles = "role/treestatus.writer",
+            groups = [
+                "googlers",
+            ],
+            users = [
+                "luci-notify-dev@appspot.gserviceaccount.com",
+            ],
+        ),
     ],
 )
 
@@ -85,5 +129,7 @@ exec("//dev/swarming.star")
 
 exec("//recipes.star")
 exec("//gn_args/gn_args.star")
+
+exec("@chromium-targets//declarations.star")
 
 exec("//dev/subprojects/chromium/subproject.star")

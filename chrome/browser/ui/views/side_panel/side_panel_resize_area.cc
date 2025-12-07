@@ -109,11 +109,13 @@ void SidePanelResizeArea::OnMouseReleased(const ui::MouseEvent& event) {
 bool SidePanelResizeArea::OnKeyPressed(const ui::KeyEvent& event) {
   const int resize_increment = 50;
   if (event.key_code() == ui::VKEY_LEFT) {
-    side_panel_->OnResize(-resize_increment, true);
+    side_panel_->OnResize(
+        base::i18n::IsRTL() ? resize_increment : -resize_increment, true);
     side_panel_->SetKeyboardResized(true);
     return true;
   } else if (event.key_code() == ui::VKEY_RIGHT) {
-    side_panel_->OnResize(resize_increment, true);
+    side_panel_->OnResize(
+        base::i18n::IsRTL() ? -resize_increment : resize_increment, true);
     side_panel_->SetKeyboardResized(true);
     return true;
   }
@@ -145,7 +147,8 @@ void SidePanelResizeArea::Layout(PassKey) {
                               contents_bounds.x(), local_bounds.height());
   } else {
     resize_bounds = gfx::Rect(contents_bounds.right(), local_bounds.y(),
-                              local_bounds.right(), local_bounds.height());
+                              local_bounds.right() - contents_bounds.right(),
+                              local_bounds.height());
   }
 
   SetBoundsRect(resize_bounds);

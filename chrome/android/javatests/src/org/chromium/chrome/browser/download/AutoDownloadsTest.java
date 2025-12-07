@@ -9,9 +9,11 @@ import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.PathUtils;
@@ -21,22 +23,27 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.download.DownloadTestRule.CustomMainActivityStart;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.permissions.PermissionTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
 import java.util.ArrayList;
 
 /** Test suite for multiple downloads permissions requests. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class AutoDownloadsTest implements CustomMainActivityStart {
-    @Rule public DownloadTestRule mDownloadTestRule = new DownloadTestRule(this);
+public class AutoDownloadsTest {
+    public final FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+    public final DownloadTestRule mDownloadTestRule = new DownloadTestRule();
+
+    @Rule
+    public final RuleChain mRuleChain =
+            RuleChain.outerRule(mActivityTestRule).around(mDownloadTestRule);
 
     private static final String TEST_FILE =
             "/content/test/data/android/auto_downloads_permissions.html";
@@ -47,29 +54,20 @@ public class AutoDownloadsTest implements CustomMainActivityStart {
         ModalDialogView.disableButtonTapProtectionForTesting();
     }
 
-    @Override
-    public void customMainActivityStart() throws InterruptedException {
+    @Before
+    public void setUp() throws InterruptedException {
         mTestServer =
                 EmbeddedTestServer.createAndStartServer(
                         ApplicationProvider.getApplicationContext());
 
-        mDownloadTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
+        mDownloadTestRule.attach(mActivityTestRule.getActivity());
     }
 
     @After
     public void tearDown() {
         mDownloadTestRule.deleteFilesInDownloadDirectory(
                 new String[] {"test-image0.png", "test-image1.png"});
-    }
-
-    private void waitForDownloadDialog(ModalDialogManager manager) {
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(manager.isShowing(), Matchers.is(true));
-                    Criteria.checkThat(
-                            manager.getCurrentPresenterForTest(),
-                            Matchers.is(manager.getPresenterForTest(ModalDialogType.APP)));
-                });
     }
 
     @Test
@@ -89,8 +87,8 @@ public class AutoDownloadsTest implements CustomMainActivityStart {
                     .setDirectoryProviderForTesting(new TestDownloadDirectoryProvider(dirOptions));
         }
 
-        mDownloadTestRule.loadUrl(mTestServer.getURL(TEST_FILE));
-        ChromeActivity activity = mDownloadTestRule.getActivity();
+        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_FILE));
+        ChromeActivity activity = mActivityTestRule.getActivity();
 
         // Wait for "multiple downloads" permission dialog and allow.
         PermissionTestRule.waitForDialog(activity);

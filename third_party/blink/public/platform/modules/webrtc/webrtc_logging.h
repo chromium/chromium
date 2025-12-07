@@ -48,20 +48,21 @@ void BLINK_PLATFORM_EXPORT WebRtcLogMessage(const std::string& message);
 
 // Example: WebRtcLog("%s({foo=%d})", "Foo", 10) <=>
 // WebRtcLogMessage("Foo({foo=10})")
-void BLINK_PLATFORM_EXPORT WebRtcLog(const char* format, ...)
-    PRINTF_FORMAT(1, 2);
+PRINTF_FORMAT(1, 2)
+void BLINK_PLATFORM_EXPORT WebRtcLog(const char* format, ...);
 
 // Example: WebRtcLog(this, "%s({foo=%d})", "Foo", 10) <=>
 // WebRtcLogMessage("Foo({foo=10}) [this=0x24514CB47A0]")
-void BLINK_PLATFORM_EXPORT WebRtcLog(void* thiz, const char* format, ...)
-    PRINTF_FORMAT(2, 3);
+PRINTF_FORMAT(2, 3)
+void BLINK_PLATFORM_EXPORT WebRtcLog(void* thiz, const char* format, ...);
 
 // Example: WebRtcLog("RTC::", this, "%s({foo=%d})", "Foo", 10) <=>
 // WebRtcLogMessage("RTC::Foo({foo=10}) [this=0x24514CB47A0]")
+PRINTF_FORMAT(3, 4)
 void BLINK_PLATFORM_EXPORT WebRtcLog(const char* prefix,
                                      void* thiz,
                                      const char* format,
-                                     ...) PRINTF_FORMAT(3, 4);
+                                     ...);
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MODULES_WEBRTC_WEBRTC_LOGGING_H_

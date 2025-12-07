@@ -47,19 +47,24 @@
 #include "base/memory/raw_ptr.h"
 #include "base/pickle.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "cc/paint/paint_flags.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/utils/haptics_util.h"
 #include "components/services/app_service/public/cpp/app_shortcut_image.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/cursor/cursor.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
@@ -68,6 +73,7 @@
 #include "ui/compositor/layer_owner.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -193,10 +199,13 @@ class PromiseIconBackground : public views::Background {
   PromiseIconBackground(ui::ColorId color_id,
                         const gfx::Rect& icon_bounds,
                         const gfx::Insets& insets)
-      : color_id_(color_id), icon_bounds_(icon_bounds), insets_(insets) {}
+      : icon_bounds_(icon_bounds), insets_(insets) {
+    SetColor(color_id);
+  }
 
   PromiseIconBackground(const PromiseIconBackground&) = delete;
   PromiseIconBackground& operator=(const PromiseIconBackground&) = delete;
+
   ~PromiseIconBackground() override = default;
 
   // views::Background:
@@ -209,18 +218,16 @@ class PromiseIconBackground : public views::Background {
 
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
-    flags.setColor(get_color());
+    flags.setColor(color().ResolveToSkColor(view->GetColorProvider()));
 
     canvas->DrawCircle(bounds.CenterPoint(), radius, flags);
   }
 
   void OnViewThemeChanged(views::View* view) override {
-    SetNativeControlColor(view->GetColorProvider()->GetColor(color_id_));
     view->SchedulePaint();
   }
 
  private:
-  const ui::ColorId color_id_;
   const gfx::Rect icon_bounds_;
   const gfx::Insets insets_;
 };
@@ -534,7 +541,7 @@ class AppsCollectionsMenuModelAdapter : public AppListMenuModelAdapter {
       const std::string& app_id,
       std::unique_ptr<ui::SimpleMenuModel> menu_model,
       views::Widget* widget_owner,
-      ui::MenuSourceType source_type,
+      ui::mojom::MenuSourceType source_type,
       const AppLaunchedMetricParams& metric_params,
       AppListViewAppType type,
       base::OnceClosure on_menu_closed_callback,
@@ -656,11 +663,14 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
           ? TypographyToken::kCrosAnnotation1
           : TypographyToken::kCrosButton2,
       *title);
-  title->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  title->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
 
   icon_background_ = AddChildView(std::make_unique<views::View>());
   icon_background_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-  icon_background_->layer()->SetFillsBoundsOpaquely(false);
+  icon_background_->SetBackground(
+      views::CreateLayerBasedSolidBackground(GetBackgroundLayerColorId()));
+  icon_background_->background()->SetInternalName(
+      "AppListItemView/icon-background");
   icon_background_->SetCanProcessEventsWithinSubtree(false);
   icon_background_->SetVisible(is_folder_);
 
@@ -736,6 +746,15 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
         break;
     }
   }
+
+  UpdateAccessibleDescription();
+  UpdateTooltipText();
+
+  new_install_dot_visibility_changed_callback_ =
+      new_install_dot_->AddVisibleChangedCallback(base::BindRepeating(
+          &AppListItemView::UpdateTooltipText, weak_ptr_factory_.GetWeakPtr()));
+  title_->AddLabelTooltipTextChangedCallback(base::BindRepeating(
+      &AppListItemView::UpdateTooltipText, weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AppListItemView::InitializeIconLoader() {
@@ -835,7 +854,7 @@ void AppListItemView::SetIconAndMaybeHostBadgeIcon(
 
   // Clear icon and bail out if item icon is empty.
   if (icon.isNull()) {
-    icon_->SetImage(nullptr);
+    icon_->SetImage(ui::ImageModel());
     icon_image_model_ =
         ui::ImageModel(ui::ImageModel::FromImageSkia(gfx::ImageSkia()));
     return;
@@ -852,12 +871,13 @@ void AppListItemView::SetIconAndMaybeHostBadgeIcon(
   host_badge_icon_image_ = has_host_badge_ ? host_badge_icon : gfx::ImageSkia();
 
   if (GetColorProvider() && !host_badge_icon_image_.isNull()) {
-    icon_->SetImage(CreateBadgedShortcutImage(*app_list_config_, icon,
-                                              host_badge_icon, icon_scale_,
-                                              GetColorProvider()));
+    icon_->SetImage(ui::ImageModel::FromImageSkia(
+        CreateBadgedShortcutImage(*app_list_config_, icon, host_badge_icon,
+                                  icon_scale_, GetColorProvider())));
   } else {
-    icon_->SetImage(gfx::ImageSkiaOperations::CreateResizedImage(
-        icon, skia::ImageOperations::RESIZE_BEST, icon_size));
+    icon_->SetImage(ui::ImageModel::FromImageSkia(
+        gfx::ImageSkiaOperations::CreateResizedImage(
+            icon, skia::ImageOperations::RESIZE_BEST, icon_size)));
   }
 
   DeprecatedLayoutImmediately();
@@ -867,7 +887,7 @@ gfx::Size AppListItemView::GetIconSize() const {
   if (is_folder_) {
     return app_list_config_->folder_icon_size();
   }
-  if (is_promise_app_ && features::ArePromiseIconsEnabled() && item_weak_) {
+  if (is_promise_app_ && item_weak_) {
     // Placeholder icons do not change size between states.
     if (ImageModelHasPlaceholderIcon()) {
       return gfx::Size(kPlaceholderIconDimension, kPlaceholderIconDimension);
@@ -1051,9 +1071,7 @@ void AppListItemView::ScaleAppIcon(bool scale_up) {
   ui::ScopedLayerAnimationSettings settings(layer()->GetAnimator());
   settings.SetTransitionDuration(
       base::Milliseconds((kDragDropAppIconScaleTransitionInMs)));
-  settings.SetTweenType(app_list_features::IsDragAndDropRefactorEnabled()
-                            ? gfx::Tween::ACCEL_20_DECEL_100
-                            : gfx::Tween::EASE_OUT_2);
+  settings.SetTweenType(gfx::Tween::ACCEL_20_DECEL_100);
   if (scale_up) {
     layer()->SetTransform(gfx::Transform());
     if (progress_indicator_) {
@@ -1104,6 +1122,12 @@ void AppListItemView::SetMouseDragging(bool mouse_dragging) {
 
   mouse_dragging_ = mouse_dragging;
 
+  if (mouse_dragging) {
+    chromeos::haptics_util::PlayHapticTouchpadEffect(
+        ui::HapticTouchpadEffect::kTick,
+        ui::HapticTouchpadEffectStrength::kMedium);
+  }
+
   SetState(STATE_NORMAL);
   SetUIState(mouse_dragging_ ? UI_STATE_DRAGGING : UI_STATE_NORMAL);
 }
@@ -1126,15 +1150,6 @@ void AppListItemView::OnTouchDragTimer(
 
 bool AppListItemView::InitiateDrag(const gfx::Point& location,
                                    const gfx::Point& root_location) {
-  if (!app_list_features::IsDragAndDropRefactorEnabled() &&
-      !grid_delegate_->InitiateDrag(
-          this, location, root_location,
-          base::BindOnce(&AppListItemView::OnDragStarted,
-                         weak_ptr_factory_.GetWeakPtr()),
-          base::BindOnce(&AppListItemView::OnDragEnded,
-                         weak_ptr_factory_.GetWeakPtr()))) {
-    return false;
-  }
   if (!IsItemDraggable()) {
     return false;
   }
@@ -1228,70 +1243,9 @@ void AppListItemView::SetItemAccessibleName(const std::u16string& name) {
   GetViewAccessibility().SetName(name);
 }
 
-void AppListItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // When this item is being removed, there will still be an accessible object
-  // in the accessibility tree until it is destroyed. Populating AXNodeData
-  // with the information from the button makes it possible for assistive
-  // technologies to obtain the name and role/type of the control along with
-  // relevant states such as disabled. It is also necessary to pass the
-  // accessibility paint checks: items that claim to be focusable must have
-  // a valid role.
-  DCHECK(node_data);
-  Button::GetAccessibleNodeData(node_data);
-
-  if (!item_weak_) {
-    return;
-  }
-
-  // The list of descriptions to be announced.
-  std::vector<std::u16string> descriptions;
-
-  if (item_weak_->is_folder()) {
-    // For folder items, announce the number of apps in the folder.
-    std::u16string app_count_announcement = l10n_util::GetPluralStringFUTF16(
-        IDS_APP_LIST_FOLDER_NUMBER_OF_APPS_ACCESSIBILE_DESCRIPTION,
-        item_weak_->AsFolderItem()->ChildItemCount());
-    descriptions.push_back(app_count_announcement);
-  }
-
-  auto app_status = item_weak_->app_status();
-  std::u16string app_status_description;
-  switch (app_status) {
-    case AppStatus::kBlocked:
-      app_status_description =
-          ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
-              IDS_APP_LIST_BLOCKED_APP);
-      break;
-    case AppStatus::kPaused:
-      app_status_description =
-          ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
-              IDS_APP_LIST_PAUSED_APP);
-      break;
-    default:
-      if (item_weak_->is_new_install()) {
-        app_status_description =
-            ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
-                IDS_APP_LIST_NEW_INSTALL_ACCESSIBILE_DESCRIPTION);
-      }
-      break;
-  }
-  if (!app_status_description.empty()) {
-    descriptions.push_back(app_status_description);
-  }
-
-  if (context_ == Context::kAppsCollection) {
-    descriptions.push_back(GetAppCollectionName(item_weak_->collection_id()));
-  }
-
-  // Set the concatenated descriptions.
-  if (!descriptions.empty()) {
-    node_data->SetDescription(base::JoinString(descriptions, u" "));
-  }
-}
-
 void AppListItemView::OnContextMenuModelReceived(
     const gfx::Point& point,
-    ui::MenuSourceType source_type,
+    ui::mojom::MenuSourceType source_type,
     std::unique_ptr<ui::SimpleMenuModel> menu_model) {
   waiting_for_context_menu_options_ = false;
   if (!menu_model || IsShowingAppMenu()) {
@@ -1306,7 +1260,8 @@ void AppListItemView::OnContextMenuModelReceived(
     return;
   }
 
-  menu_show_initiated_from_key_ = source_type == ui::MENU_SOURCE_KEYBOARD;
+  menu_show_initiated_from_key_ =
+      source_type == ui::mojom::MenuSourceType::kKeyboard;
 
   // Clear the existing focus in other elements to prevent having a focus
   // indicator on other non-selected views.
@@ -1331,8 +1286,9 @@ void AppListItemView::OnContextMenuModelReceived(
                   views::MenuRunner::FIXED_ANCHOR |
                   views::MenuRunner::CONTEXT_MENU;
 
-  if (source_type == ui::MENU_SOURCE_TOUCH && touch_dragging_)
+  if (source_type == ui::mojom::MenuSourceType::kTouch && touch_dragging_) {
     run_types |= views::MenuRunner::SEND_GESTURE_EVENTS_TO_OWNER;
+  }
 
   // Screen bounds don't need RTL flipping.
   gfx::Rect anchor_rect = GetBoundsInScreen();
@@ -1394,7 +1350,7 @@ void AppListItemView::OnContextMenuModelReceived(
 void AppListItemView::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
-    ui::MenuSourceType source_type) {
+    ui::mojom::MenuSourceType source_type) {
   if (IsShowingAppMenu()) {
     return;
   }
@@ -1556,50 +1512,15 @@ void AppListItemView::OnMouseReleased(const ui::MouseEvent& event) {
 
   SetMouseDragging(false);
 
-  if (app_list_features::IsDragAndDropRefactorEnabled()) {
     // Cancel drag timer set when the mouse was pressed, to prevent the app
     // item from entering dragged state.
     mouse_drag_timer_.Stop();
     drag_state_ = DragState::kNone;
-    return;
-  }
-
-  // EndDrag may delete |this|.
-  grid_delegate_->EndDrag(/*cancel=*/false);
 }
 
 void AppListItemView::OnMouseCaptureLost() {
   Button::OnMouseCaptureLost();
   SetMouseDragging(false);
-
-  if (app_list_features::IsDragAndDropRefactorEnabled()) {
-    return;
-  }
-
-  // EndDrag may delete |this|.
-  grid_delegate_->EndDrag(/*cancel=*/true);
-}
-
-bool AppListItemView::OnMouseDragged(const ui::MouseEvent& event) {
-  bool return_value = Button::OnMouseDragged(event);
-
-  if (app_list_features::IsDragAndDropRefactorEnabled()) {
-    return return_value;
-  }
-
-  if (drag_state_ != DragState::kNone && mouse_dragging_) {
-    // Update the drag location of the drag proxy if it has been created.
-    // If the drag is no longer happening, it could be because this item
-    // got removed, in which case this item has been destroyed. So, bail out
-    // now as there will be nothing else to do anyway as
-    // grid_delegate_->IsDragging() will be false.
-    if (!grid_delegate_->UpdateDragFromItem(/*is_touch=*/false, event))
-      return true;
-  }
-
-  if (!grid_delegate_->IsSelectedView(this))
-    grid_delegate_->ClearSelectedView();
-  return true;
 }
 
 bool AppListItemView::SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) {
@@ -1628,18 +1549,11 @@ int AppListItemView::GetDragOperations(const gfx::Point& press_pt) {
     return ui::DragDropTypes::DRAG_NONE;
   }
 
-  return app_list_features::IsDragAndDropRefactorEnabled()
-             ? ui::DragDropTypes::DRAG_MOVE
-             : views::View::GetDragOperations(press_pt);
+  return ui::DragDropTypes::DRAG_MOVE;
 }
 
 void AppListItemView::WriteDragData(const gfx::Point& press_pt,
                                     OSExchangeData* data) {
-  if (!app_list_features::IsDragAndDropRefactorEnabled()) {
-    views::View::WriteDragData(press_pt, data);
-    return;
-  }
-
   if (item_weak_) {
     data->provider().SetDragImage(GetDragImage(), press_pt.OffsetFromOrigin());
     const DraggableAppType app_type = is_folder_
@@ -1653,8 +1567,6 @@ void AppListItemView::WriteDragData(const gfx::Point& press_pt,
 }
 
 bool AppListItemView::MaybeStartTouchDrag(const gfx::Point& location) {
-  DCHECK(app_list_features::IsDragAndDropRefactorEnabled());
-
   int drag_operations = GetDragOperations(location);
   views::Widget* widget = GetWidget();
   DCHECK(widget);
@@ -1678,17 +1590,11 @@ bool AppListItemView::MaybeStartTouchDrag(const gfx::Point& location) {
 }
 
 void AppListItemView::OnGestureEvent(ui::GestureEvent* event) {
-  const bool is_drag_and_drop_enabled =
-      app_list_features::IsDragAndDropRefactorEnabled();
-
+  gfx::Point screen_location(event->location());
   switch (event->type()) {
     case ui::EventType::kGestureScrollBegin:
       if (touch_dragging_) {
-        if (is_drag_and_drop_enabled) {
-          OnDragStarted();
-        } else {
-          grid_delegate_->StartDragAndDropHostDragAfterLongPress();
-        }
+        OnDragStarted();
         event->SetHandled();
       } else {
         touch_drag_timer_.Stop();
@@ -1696,22 +1602,8 @@ void AppListItemView::OnGestureEvent(ui::GestureEvent* event) {
       break;
     case ui::EventType::kGestureScrollUpdate:
       if (touch_dragging_ && drag_state_ != DragState::kNone) {
-        if (is_drag_and_drop_enabled &&
-            MaybeStartTouchDrag(event->location())) {
-          event->SetHandled();
-        } else {
-          grid_delegate_->UpdateDragFromItem(/*is_touch=*/true, *event);
-          event->SetHandled();
-        }
-      }
-      break;
-    case ui::EventType::kGestureScrollEnd:
-    case ui::EventType::kScrollFlingStart:
-      if (touch_dragging_) {
-        if (!is_drag_and_drop_enabled) {
-          SetTouchDragging(false);
-          event->SetHandled();
-        }
+        MaybeStartTouchDrag(event->location());
+        event->SetHandled();
       }
       break;
     case ui::EventType::kGestureTapDown:
@@ -1734,7 +1626,7 @@ void AppListItemView::OnGestureEvent(ui::GestureEvent* event) {
       break;
     case ui::EventType::kGestureLongTap:
     case ui::EventType::kGestureEnd:
-      if (is_drag_and_drop_enabled && drag_state_ == DragState::kInitialized) {
+      if (drag_state_ == DragState::kInitialized) {
         // Reset `drag_state_` if there was an attempt to initiate it (i.e. the
         // touch drag timer fired) but was not properly started (i.e. the app
         // item was never actually dragged) before a release event occurred.
@@ -1747,14 +1639,11 @@ void AppListItemView::OnGestureEvent(ui::GestureEvent* event) {
       }
       break;
     case ui::EventType::kGestureLongPress:
-      if (is_drag_and_drop_enabled) {
-        // Handle the long press event on long press to avoid RootView to
-        // trigger View::DoDrag for this view before the item is dragged.
-        gfx::Point screen_location(event->location());
-        View::ConvertPointToScreen(this, &screen_location);
-        ShowContextMenu(screen_location, ui::MENU_SOURCE_TOUCH);
-        event->SetHandled();
-      }
+      // Handle the long press event on long press to avoid RootView to
+      // trigger View::DoDrag for this view before the item is dragged.
+      View::ConvertPointToScreen(this, &screen_location);
+      ShowContextMenu(screen_location, ui::mojom::MenuSourceType::kTouch);
+      event->SetHandled();
       break;
     case ui::EventType::kGestureTwoFingerTap:
       if (touch_dragging_) {
@@ -1779,10 +1668,6 @@ void AppListItemView::OnThemeChanged() {
         is_folder_ ? GetColorProvider()->GetColor(cros_tokens::kIconColorBlue)
                    : item_weak_->GetNotificationBadgeColor();
     notification_indicator_->SetColor(notification_indicator_color);
-    if (icon_background_) {
-      icon_background_->layer()->SetColor(
-          GetColorProvider()->GetColor(GetBackgroundLayerColorId()));
-    }
   }
 
   UpdateIconView(/*update_item_icon=*/true);
@@ -1795,21 +1680,6 @@ void AppListItemView::OnThemeChanged() {
   SchedulePaint();
 }
 
-std::u16string AppListItemView::GetTooltipText(const gfx::Point& p) const {
-  // Use the label to generate a tooltip, so that it will consider its text
-  // truncation in making the tooltip. We do not want the label itself to have a
-  // tooltip, so we only temporarily enable it to get the tooltip text from the
-  // label, then disable it again.
-  title_->SetHandlesTooltips(true);
-  std::u16string tooltip = title_->GetTooltipText(p);
-  title_->SetHandlesTooltips(false);
-  if (new_install_dot_ && new_install_dot_->GetVisible() && !is_folder_) {
-    // Tooltip becomes two lines: "App Name" + "New install".
-    tooltip = l10n_util::GetStringFUTF16(IDS_APP_LIST_NEW_INSTALL, tooltip);
-  }
-  return tooltip;
-}
-
 void AppListItemView::OnDraggedViewEnter() {
   SetBackgroundExtendedState(/*extend_icon=*/true, /*animate=*/true);
 }
@@ -1820,7 +1690,7 @@ void AppListItemView::OnDraggedViewExit() {
 
 void AppListItemView::SetBackgroundBlurEnabled(bool enabled) {
   DCHECK(is_folder_);
-  if (!enabled) {
+  if (!enabled || !chromeos::features::IsSystemBlurEnabled()) {
     if (GetIconBackgroundLayer()) {
       GetIconBackgroundLayer()->SetBackgroundBlur(0);
     }
@@ -2171,25 +2041,17 @@ void AppListItemView::ItemIsNewInstallChanged() {
     new_install_dot_->SetVisible(item_weak_->is_new_install());
     DeprecatedLayoutImmediately();
   }
+
+  UpdateAccessibleDescription();
 }
 
 void AppListItemView::ItemBeingDestroyed() {
   DCHECK(item_weak_);
   item_weak_->RemoveObserver(this);
   item_weak_ = nullptr;
+  UpdateAccessibleDescription();
   if (!use_item_icon_) {
     folder_icon_->ResetFolderItem();
-  }
-
-  if (app_list_features::IsDragAndDropRefactorEnabled()) {
-    // When drag and drop refactor is enabled, AppsGridView observes dragged
-    // item destruction to ensure the drag is finalized.
-    return;
-  }
-
-  // `EndDrag()` may delete this.
-  if (drag_state_ != DragState::kNone) {
-    grid_delegate_->EndDrag(/*cancel=*/true);
   }
 }
 
@@ -2199,6 +2061,11 @@ void AppListItemView::ItemProgressUpdated() {
 
 void AppListItemView::ItemAppStatusUpdated() {
   UpdateProgressIndicatorState();
+  UpdateAccessibleDescription();
+}
+
+void AppListItemView::ItemAppCollectionIdChanged() {
+  UpdateAccessibleDescription();
 }
 
 bool AppListItemView::ImageModelHasPlaceholderIcon() const {
@@ -2208,8 +2075,7 @@ bool AppListItemView::ImageModelHasPlaceholderIcon() const {
 }
 
 void AppListItemView::UpdateProgressIndicatorState() {
-  if ((!is_promise_app_ && !forced_progress_indicator_value_) ||
-      !features::ArePromiseIconsEnabled()) {
+  if ((!is_promise_app_ && !forced_progress_indicator_value_)) {
     return;
   }
 
@@ -2358,7 +2224,8 @@ void AppListItemView::SetBackgroundExtendedState(bool extend_icon,
   if (GetWidget()) {
     builder.GetCurrentSequence().SetColor(
         background_layer,
-        GetColorProvider()->GetColor(GetBackgroundLayerColorId()),
+        SkColor4f::FromColor(
+            GetColorProvider()->GetColor(GetBackgroundLayerColorId())),
         animation_tween_type);
   }
 }
@@ -2391,6 +2258,73 @@ ui::Layer* AppListItemView::GetIconBackgroundLayer() {
 
 bool AppListItemView::AlwaysPaintsToLayer() {
   return is_promise_app_ || progress_indicator_;
+}
+
+void AppListItemView::UpdateAccessibleDescription() {
+  if (!item_weak_) {
+    GetViewAccessibility().RemoveDescription();
+    return;
+  }
+
+  // The list of descriptions to be announced.
+  std::vector<std::u16string> descriptions;
+
+  if (item_weak_->is_folder()) {
+    // For folder items, announce the number of apps in the folder.
+    std::u16string app_count_announcement = l10n_util::GetPluralStringFUTF16(
+        IDS_APP_LIST_FOLDER_NUMBER_OF_APPS_ACCESSIBILE_DESCRIPTION,
+        item_weak_->AsFolderItem()->ChildItemCount());
+    descriptions.push_back(app_count_announcement);
+  }
+
+  auto app_status = item_weak_->app_status();
+  std::u16string app_status_description;
+  switch (app_status) {
+    case AppStatus::kBlocked:
+      app_status_description =
+          ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
+              IDS_APP_LIST_BLOCKED_APP);
+      break;
+    case AppStatus::kPaused:
+      app_status_description =
+          ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
+              IDS_APP_LIST_PAUSED_APP);
+      break;
+    default:
+      if (item_weak_->is_new_install()) {
+        app_status_description =
+            ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
+                IDS_APP_LIST_NEW_INSTALL_ACCESSIBILE_DESCRIPTION);
+      }
+      break;
+  }
+  if (!app_status_description.empty()) {
+    descriptions.push_back(app_status_description);
+  }
+
+  if (context_ == Context::kAppsCollection) {
+    descriptions.push_back(GetAppCollectionName(item_weak_->collection_id()));
+  }
+
+  // Set the concatenated descriptions.
+  if (!descriptions.empty()) {
+    GetViewAccessibility().SetDescription(base::JoinString(descriptions, u" "));
+  } else {
+    GetViewAccessibility().RemoveDescription();
+  }
+}
+
+void AppListItemView::UpdateTooltipText() {
+  // Use the label to generate a tooltip, so that it will consider its text
+  // truncation in making the tooltip. We do not want the label itself to have a
+  // tooltip, so we only temporarily enable it to get the tooltip text from the
+  // label, then disable it again.
+  std::u16string tooltip(title_->GetComputedTooltip());
+  if (new_install_dot_ && new_install_dot_->GetVisible() && !is_folder_) {
+    // Tooltip becomes two lines: "App Name" + "New install".
+    tooltip = l10n_util::GetStringFUTF16(IDS_APP_LIST_NEW_INSTALL, tooltip);
+  }
+  SetTooltipText(tooltip);
 }
 
 BEGIN_METADATA(AppListItemView)

@@ -34,9 +34,10 @@
 
 namespace mediapipe::tasks::genai::xnn_utils {
 
-absl::StatusOr<std::unique_ptr<LlmBuilder>> CreateLlmBuilder(
+absl::StatusOr<std::unique_ptr<Llm>> CreateLlm(
     const LlmParams& llm_params,
     std::unique_ptr<RuntimeConfigs> runtime_configs,
+    std::unique_ptr<LlmWeightsLoader> weight_loader,
     std::unique_ptr<Sampler> sampler,
     odml::infra::proto::LlmModelType model_type) {
   std::unique_ptr<LlmBuilder> builder;
@@ -56,6 +57,10 @@ absl::StatusOr<std::unique_ptr<LlmBuilder>> CreateLlmBuilder(
     case odml::infra::proto::LLM_MODEL_TYPE_GEMMA_2B:
       ABSL_FALLTHROUGH_INTENDED;
     case odml::infra::proto::LLM_MODEL_TYPE_GEMMA_7B:
+      ABSL_FALLTHROUGH_INTENDED;
+    case odml::infra::proto::LLM_MODEL_TYPE_GEMMA2_2B:
+      ABSL_FALLTHROUGH_INTENDED;
+    case odml::infra::proto::LLM_MODEL_TYPE_GEMMA3_1B:
       builder = std::make_unique<LlmBuilder>(llm_params, std::move(sampler),
                                              std::move(runtime_configs));
       break;
@@ -63,7 +68,7 @@ absl::StatusOr<std::unique_ptr<LlmBuilder>> CreateLlmBuilder(
       return absl::InvalidArgumentError(
           absl::StrCat("Unsupported model type: ", model_type));
   }
-  return builder;
+  return Llm::CreateLlm(std::move(weight_loader), std::move(builder));
 }
 
 }  // namespace mediapipe::tasks::genai::xnn_utils

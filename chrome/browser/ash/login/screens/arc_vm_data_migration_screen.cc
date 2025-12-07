@@ -4,16 +4,13 @@
 
 #include "chrome/browser/ash/login/screens/arc_vm_data_migration_screen.h"
 
-#include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/session/arc_vm_data_migration_status.h"
 #include "ash/public/cpp/session/scoped_screen_lock_blocker.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -21,14 +18,18 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/arc_util.h"
-#include "chrome/browser/ash/login/ui/login_feedback.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/login/login_feedback.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/session/arc_vm_data_migration_status.h"
 #include "chromeos/dbus/common/dbus_callback.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -262,8 +263,7 @@ void ArcVmDataMigrationScreen::ShowImpl() {
       resuming_ = true;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   view_->Show();
@@ -309,8 +309,7 @@ void ArcVmDataMigrationScreen::SetUpInitialView() {
       CheckBatteryState();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -621,8 +620,7 @@ void ArcVmDataMigrationScreen::OnDataMigrationProgress(
       RemoveArcDataAndShowFailureScreen();
       return;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 }
 

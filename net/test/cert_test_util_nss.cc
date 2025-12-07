@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/test/cert_test_util.h"
 
 #include <certdb.h>
@@ -18,6 +13,7 @@
 #include <memory>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -55,7 +51,7 @@ bool IsKnownRoot(CERTCertificate* root) {
   for (const SECMODModuleList* item = SECMOD_GetDefaultModuleList();
        item != nullptr; item = item->next) {
     for (int i = 0; i < item->module->slotCount; ++i) {
-      PK11SlotInfo* slot = item->module->slots[i];
+      PK11SlotInfo* slot = UNSAFE_TODO(item->module->slots[i]);
       if (PK11_IsPresent(slot) && PK11_HasRootCerts(slot)) {
         CK_OBJECT_HANDLE handle = PK11_FindCertInSlot(slot, root, nullptr);
         if (handle != CK_INVALID_HANDLE &&
@@ -97,7 +93,7 @@ crypto::ScopedPK11Slot GetNssBuiltInRootCertsSlot() {
   for (SECMODModuleList* item = head; item != nullptr; item = item->next) {
     int slot_count = item->module->loaded ? item->module->slotCount : 0;
     for (int i = 0; i < slot_count; i++) {
-      PK11SlotInfo* slot = item->module->slots[i];
+      PK11SlotInfo* slot = UNSAFE_TODO(item->module->slots[i]);
       if (IsNssBuiltInRootSlot(slot)) {
         return crypto::ScopedPK11Slot(PK11_ReferenceSlot(slot));
       }

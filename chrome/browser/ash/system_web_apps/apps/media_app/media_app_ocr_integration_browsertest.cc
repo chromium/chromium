@@ -12,7 +12,8 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "chrome/browser/accessibility/media_app/ax_media_app_handler_factory.h"
+#include "base/strings/string_util.h"
+#include "chrome/browser/accessibility/media_app/ax_media_app_service_factory.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -20,8 +21,6 @@
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -42,9 +41,7 @@ constexpr char kFilePdfTall[] = "tall.pdf";
 
 class MediaAppOcrIntegrationTest : public ash::SystemWebAppIntegrationTest {
  public:
-  MediaAppOcrIntegrationTest() {
-    feature_list_.InitWithFeatures({ash::features::kMediaAppPdfA11yOcr}, {});
-  }
+  MediaAppOcrIntegrationTest() = default;
 
   void SetUpOnMainThread() override {
     SystemWebAppIntegrationTest::SetUpOnMainThread();
@@ -59,15 +56,12 @@ class MediaAppOcrIntegrationTest : public ash::SystemWebAppIntegrationTest {
                                  params);
     observer.Wait();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Waits for the number of active Browsers in the test process to reach `count`.
 void WaitForBrowserCount(size_t count) {
-  EXPECT_LE(BrowserList::GetInstance()->size(), count) << "Too many browsers";
-  while (BrowserList::GetInstance()->size() < count) {
+  EXPECT_LE(chrome::GetTotalBrowserCount(), count) << "Too many browsers";
+  while (chrome::GetTotalBrowserCount() < count) {
     ui_test_utils::WaitForBrowserToOpen();
   }
 }
@@ -111,32 +105,31 @@ void WaitForFirstFileLoadInActiveWindow(const std::string& filename) {
 
 // Test that the Media App connects to the OCR service when opening PDFs.
 IN_PROC_BROWSER_TEST_P(MediaAppOcrIntegrationTest, MediaAppLaunchPdfMulti) {
-  // Without any instance of MediaApp open, there are no corresponding handlers.
-  auto* ax_factory = ash::AXMediaAppHandlerFactory::GetInstance();
+  // Without any instance of MediaApp open, there are no corresponding services.
+  auto* ax_factory = ash::AXMediaAppServiceFactory::GetInstance();
   EXPECT_EQ(ax_factory->media_app_receivers().size(), 0u);
 
-  // Launch one PDF window and test one handler was created for the guest frame.
+  // Launch one PDF window and test one service was created for the guest frame.
   ash::SystemAppLaunchParams pdf_params_window1;
   pdf_params_window1.launch_paths = {TestFile(kFilePdfImg)};
   LaunchAndWait(pdf_params_window1);
   WaitForBrowserCount(2);  // 1 extra for the browser test browser.
-  const BrowserList* browser_list = BrowserList::GetInstance();
-  EXPECT_EQ(browser_list->size(), 2u);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 2u);
 
   WaitForFirstFileLoadInActiveWindow(kFilePdfImg);
-  // There should be one handler after one PDF window is opened. If it's in the
+  // There should be one service after one PDF window is opened. If it's in the
   // UniqueReceiverSet, this also means it's bound to a remote.
   EXPECT_EQ(ax_factory->media_app_receivers().size(), 1u);
 
-  // Launch a second PDF window and check it's got a second handler.
+  // Launch a second PDF window and check it's got a second service.
   ash::SystemAppLaunchParams pdf_params_window2;
   pdf_params_window2.launch_paths = {TestFile(kFilePdfTall)};
   LaunchAndWait(pdf_params_window2);
   WaitForBrowserCount(3);  // 1 extra for the browser test browser.
-  EXPECT_EQ(browser_list->size(), 3u);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 3u);
 
   WaitForFirstFileLoadInActiveWindow(kFilePdfTall);
-  // There should be a second handler after a second PDF window is opened.
+  // There should be a second service after a second PDF window is opened.
   EXPECT_EQ(ax_factory->media_app_receivers().size(), 2u);
 }
 

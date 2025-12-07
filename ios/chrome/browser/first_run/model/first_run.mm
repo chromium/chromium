@@ -40,7 +40,7 @@ FirstRun::FirstRunState FirstRun::first_run_ = FIRST_RUN_UNKNOWN;
 bool FirstRun::GetFirstRunSentinelFilePath(base::FilePath* path) {
   base::FilePath first_run_sentinel;
   if (!base::PathService::Get(ios::DIR_USER_DATA, &first_run_sentinel)) {
-    NOTREACHED_IN_MIGRATION();
+    DUMP_WILL_BE_NOTREACHED();
     return false;
   }
   *path = first_run_sentinel.Append(kSentinelFile);
@@ -49,8 +49,9 @@ bool FirstRun::GetFirstRunSentinelFilePath(base::FilePath* path) {
 
 // static
 bool FirstRun::IsChromeFirstRun() {
-  if (first_run_ != FIRST_RUN_UNKNOWN)
+  if (first_run_ != FIRST_RUN_UNKNOWN) {
     return first_run_ == FIRST_RUN_TRUE;
+  }
 
   base::FilePath first_run_sentinel;
   if (!GetFirstRunSentinelFilePath(&first_run_sentinel) ||
@@ -71,8 +72,9 @@ std::optional<base::File::Info> FirstRun::GetSentinelInfo() {
 // static
 bool FirstRun::RemoveSentinel() {
   base::FilePath first_run_sentinel;
-  if (!GetFirstRunSentinelFilePath(&first_run_sentinel))
+  if (!GetFirstRunSentinelFilePath(&first_run_sentinel)) {
     return false;
+  }
   return base::DeleteFile(first_run_sentinel);
 }
 
@@ -80,16 +82,19 @@ bool FirstRun::RemoveSentinel() {
 startup_metric_utils::FirstRunSentinelCreationResult FirstRun::CreateSentinel(
     base::File::Error* error) {
   base::FilePath first_run_sentinel;
-  if (!GetFirstRunSentinelFilePath(&first_run_sentinel))
+  if (!GetFirstRunSentinelFilePath(&first_run_sentinel)) {
     return startup_metric_utils::FirstRunSentinelCreationResult::
         kFailedToGetPath;
-  if (base::PathExists(first_run_sentinel))
+  }
+  if (base::PathExists(first_run_sentinel)) {
     return startup_metric_utils::FirstRunSentinelCreationResult::
         kFilePathExists;
+  }
   GetSentinelInfoGlobal() = std::nullopt;
   bool success = base::WriteFile(first_run_sentinel, std::string_view());
-  if (error)
+  if (error) {
     *error = base::File::GetLastFileError();
+  }
 
   if (success) {
     LoadSentinelInfo();

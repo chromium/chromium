@@ -57,6 +57,9 @@ class AutofillSaveCardBottomSheetBridge {
   // Called if the user has ignored the prompt.
   void OnUiIgnored(JNIEnv* env);
 
+  void SetSaveCardDelegateForTesting(
+      std::unique_ptr<AutofillSaveCardDelegateAndroid> delegate);
+
  protected:
   // Used in tests to inject dependencies.
   explicit AutofillSaveCardBottomSheetBridge(

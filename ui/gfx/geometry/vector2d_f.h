@@ -13,14 +13,14 @@
 #include <iosfwd>
 #include <string>
 
-#include "ui/gfx/geometry/geometry_export.h"
+#include "base/component_export.h"
 
 namespace perfetto {
 class TracedValue;
 }
 namespace gfx {
 
-class GEOMETRY_EXPORT Vector2dF {
+class COMPONENT_EXPORT(GEOMETRY) Vector2dF {
  public:
   constexpr Vector2dF() : x_(0), y_(0) {}
   constexpr Vector2dF(float x, float y) : x_(x), y_(y) {}
@@ -77,6 +77,8 @@ class GEOMETRY_EXPORT Vector2dF {
   // Divides each component of the vector by the given scale factors.
   void InvScale(float inv_x_scale, float inv_y_scale);
 
+  void Normalize() { InvScale(Length()); }
+
   void Transpose() {
     using std::swap;
     swap(x_, y_);
@@ -86,18 +88,13 @@ class GEOMETRY_EXPORT Vector2dF {
 
   void WriteIntoTrace(perfetto::TracedValue) const;
 
+  friend constexpr bool operator==(const Vector2dF&,
+                                   const Vector2dF&) = default;
+
  private:
   float x_;
   float y_;
 };
-
-inline constexpr bool operator==(const Vector2dF& lhs, const Vector2dF& rhs) {
-  return lhs.x() == rhs.x() && lhs.y() == rhs.y();
-}
-
-inline constexpr bool operator!=(const Vector2dF& lhs, const Vector2dF& rhs) {
-  return !(lhs == rhs);
-}
 
 inline constexpr Vector2dF operator-(const Vector2dF& v) {
   return Vector2dF(-v.x(), -v.y());
@@ -116,16 +113,17 @@ inline Vector2dF operator-(const Vector2dF& lhs, const Vector2dF& rhs) {
 }
 
 // Return the cross product of two vectors, i.e. the determinant.
-GEOMETRY_EXPORT double CrossProduct(const Vector2dF& lhs, const Vector2dF& rhs);
+COMPONENT_EXPORT(GEOMETRY)
+double CrossProduct(const Vector2dF& lhs, const Vector2dF& rhs);
 
 // Return the dot product of two vectors.
-GEOMETRY_EXPORT double DotProduct(const Vector2dF& lhs, const Vector2dF& rhs);
+COMPONENT_EXPORT(GEOMETRY)
+double DotProduct(const Vector2dF& lhs, const Vector2dF& rhs);
 
 // Return a vector that is |v| scaled by the given scale factors along each
 // axis.
-GEOMETRY_EXPORT Vector2dF ScaleVector2d(const Vector2dF& v,
-                                        float x_scale,
-                                        float y_scale);
+COMPONENT_EXPORT(GEOMETRY)
+Vector2dF ScaleVector2d(const Vector2dF& v, float x_scale, float y_scale);
 
 // Return a vector that is |v| scaled by the given scale factor.
 inline Vector2dF ScaleVector2d(const Vector2dF& v, float scale) {
@@ -136,6 +134,13 @@ inline Vector2dF TransposeVector2d(const Vector2dF& v) {
   return Vector2dF(v.y(), v.x());
 }
 
+// Return a unit vector with the same direction as v.
+inline Vector2dF NormalizeVector2d(const Vector2dF& v) {
+  Vector2dF normal(v);
+  normal.Normalize();
+  return normal;
+}
+
 // This is declared here for use in gtest-based unit tests but is defined in
 // the //ui/gfx:test_support target. Depend on that to use this in your unit
 // test. This should not be used in production code - call ToString() instead.
@@ -143,4 +148,4 @@ void PrintTo(const Vector2dF& vector, ::std::ostream* os);
 
 }  // namespace gfx
 
-#endif // UI_GFX_GEOMETRY_VECTOR2D_F_H_
+#endif  // UI_GFX_GEOMETRY_VECTOR2D_F_H_

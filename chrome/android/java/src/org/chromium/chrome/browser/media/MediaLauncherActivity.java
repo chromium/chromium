@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.media;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
@@ -11,9 +13,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.webkit.MimeTypeMap;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 
 import java.util.Locale;
@@ -22,14 +26,15 @@ import java.util.Locale;
  * The MediaLauncherActivity handles media-viewing Intents from other apps. It takes the given
  * content:// URI from the Intent and properly routes it to a media-viewing CustomTabActivity.
  */
+@NullMarked
 public class MediaLauncherActivity extends Activity {
     private static final String TAG = "MediaLauncher";
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Intent input = IntentUtils.sanitizeIntent(getIntent());
+        Intent input = assumeNonNull(IntentUtils.sanitizeIntent(getIntent()));
         Uri contentUri = input.getData();
         String mimeType = getMIMEType(contentUri);
 
@@ -41,7 +46,7 @@ public class MediaLauncherActivity extends Activity {
             return;
         }
 
-        boolean allowShareAction = !BuildInfo.getInstance().isAutomotive;
+        boolean allowShareAction = !DeviceInfo.isAutomotive();
         // TODO(crbug.com/40557611): Determine file:// URI when possible.
         Intent intent =
                 MediaViewerUtils.getMediaViewerIntent(
@@ -58,16 +63,25 @@ public class MediaLauncherActivity extends Activity {
 
         try {
             startActivity(intent);
+            MediaViewerUtils.recordMediaLauncherActivityStarted();
         } catch (SecurityException e) {
-            Log.w(TAG, "Cannot open content URI: " + contentUri.toString(), e);
+            Log.w(TAG, "Cannot open content URI: " + contentUri, e);
         }
 
         finish();
     }
 
-    private String getMIMEType(Uri uri) {
+    private @Nullable String getMIMEType(@Nullable Uri uri) {
+        if (uri == null) {
+            return "";
+        }
+        String uriScheme = uri.getScheme();
+        if (uriScheme == null) {
+            return "";
+        }
+
         // With a content URI, we can just query the ContentResolver.
-        if (uri.getScheme().equals(ContentResolver.SCHEME_CONTENT)) {
+        if (uriScheme.equals(ContentResolver.SCHEME_CONTENT)) {
             return getContentResolver().getType(uri);
         }
 

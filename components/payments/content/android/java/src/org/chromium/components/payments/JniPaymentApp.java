@@ -4,16 +4,19 @@
 
 package org.chromium.components.payments;
 
+import static java.util.Collections.unmodifiableList;
+
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Handler;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
 import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.payments.mojom.PaymentMethodData;
@@ -31,6 +34,7 @@ import java.util.Set;
 
 /** Wrapper around a C++ payment app. */
 @JNINamespace("payments")
+@NullMarked
 public class JniPaymentApp extends PaymentApp {
     private final Handler mHandler = new Handler();
     private final @PaymentAppType int mPaymentAppType;
@@ -38,20 +42,46 @@ public class JniPaymentApp extends PaymentApp {
     // The Java object owns the C++ payment app and frees it in dismissInstrument().
     private long mNativeObject;
 
-    private AbortCallback mAbortCallback;
-    private InstrumentDetailsCallback mInvokeCallback;
+    private @Nullable AbortCallback mAbortCallback;
+    private @Nullable InstrumentDetailsCallback mInvokeCallback;
+    private final List<PaymentEntityLogoImpl> mPaymentEntitiesLogos;
 
     @CalledByNative
     private JniPaymentApp(
             String id,
             String label,
             String sublabel,
-            Bitmap icon,
+            @JniType("const SkBitmap*") @Nullable final Bitmap icon,
             @PaymentAppType int paymentAppType,
-            long nativeObject) {
+            long nativeObject,
+            @JniType("std::vector<PaymentApp::PaymentEntityLogo*>")
+                    List<PaymentEntityLogoImpl> paymentEntitiesLogos) {
         super(id, label, sublabel, new BitmapDrawable(icon));
         mPaymentAppType = paymentAppType;
         mNativeObject = nativeObject;
+        mPaymentEntitiesLogos = paymentEntitiesLogos;
+    }
+
+    public static class PaymentEntityLogoImpl implements PaymentApp.PaymentEntityLogo {
+        private final String mLabel;
+        private final Bitmap mIcon;
+
+        @CalledByNative("PaymentEntityLogoImpl")
+        PaymentEntityLogoImpl(
+                @JniType("std::u16string") String label, @JniType("const SkBitmap*") Bitmap icon) {
+            mLabel = label;
+            mIcon = icon;
+        }
+
+        @Override
+        public String getLabel() {
+            return mLabel;
+        }
+
+        @Override
+        public Bitmap getIcon() {
+            return mIcon;
+        }
     }
 
     @CalledByNative
@@ -170,7 +200,7 @@ public class JniPaymentApp extends PaymentApp {
             String merchantName,
             String origin,
             String iframeOrigin,
-            @Nullable byte[][] certificateChain,
+            byte @Nullable [][] certificateChain,
             Map<String, PaymentMethodData> methodDataMap,
             PaymentItem total,
             List<PaymentItem> displayItems,
@@ -204,14 +234,12 @@ public class JniPaymentApp extends PaymentApp {
     }
 
     @Override
-    @Nullable
-    public String getApplicationIdentifierToHide() {
+    public @Nullable String getApplicationIdentifierToHide() {
         return JniPaymentAppJni.get().getApplicationIdentifierToHide(mNativeObject);
     }
 
     @Override
-    @Nullable
-    public Set<String> getApplicationIdentifiersThatHideThisApp() {
+    public @Nullable Set<String> getApplicationIdentifiersThatHideThisApp() {
         return new HashSet<>(
                 Arrays.asList(
                         JniPaymentAppJni.get()
@@ -235,6 +263,8 @@ public class JniPaymentApp extends PaymentApp {
         mNativeObject = 0;
     }
 
+    // TODO(crbug.com/40286193): Use an explicit destroy() method.
+    @SuppressWarnings("Finalize")
     @Override
     public void finalize() throws Throwable {
         dismissInstrument();
@@ -254,12 +284,17 @@ public class JniPaymentApp extends PaymentApp {
         return PaymentResponse.deserialize(ByteBuffer.wrap(byteResult));
     }
 
+    @Override
+    public List<PaymentEntityLogo> getPaymentEntitiesLogos() {
+        return unmodifiableList(mPaymentEntitiesLogos);
+    }
+
     @NativeMethods
     interface Natives {
         String[] getInstrumentMethodNames(long nativeJniPaymentApp);
 
         boolean isValidForPaymentMethodData(
-                long nativeJniPaymentApp, String method, ByteBuffer dataByteBuffer);
+                long nativeJniPaymentApp, String method, @Nullable ByteBuffer dataByteBuffer);
 
         boolean handlesShippingAddress(long nativeJniPaymentApp);
 

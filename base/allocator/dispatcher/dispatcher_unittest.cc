@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/allocator/dispatcher/dispatcher.h"
 
 #include "base/allocator/dispatcher/configuration.h"
@@ -135,7 +140,8 @@ struct AllocatorShimAllocator {
   VerifyNotificationUsingAllocatorShim
 #endif
 
-TEST_F(BaseAllocatorDispatcherTest, MAYBE_VerifyNotificationUsingAllocatorShim) {
+TEST_F(BaseAllocatorDispatcherTest,
+       MAYBE_VerifyNotificationUsingAllocatorShim) {
   AllocatorShimAllocator allocator;
   DoBasicTest(allocator);
 }

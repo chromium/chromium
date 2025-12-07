@@ -15,7 +15,6 @@ import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
@@ -24,22 +23,22 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -56,44 +55,36 @@ import org.chromium.url.GURL;
 public final class ShareButtonControllerUnitTest {
     private static final int WIDTH_DELTA = 50;
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private Context mContext;
 
     @Mock private UkmRecorder.Natives mUkmRecorderJniMock;
-    @Mock private Resources mResources;
     @Mock private Tab mTab;
     @Mock private Drawable mDrawable;
     @Mock private ActivityTabProvider mTabProvider;
     @Mock private ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
     @Mock private ShareDelegate mShareDelegate;
     @Mock private GURL mMockGurl;
-    @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private Tracker mTracker;
 
-    private Configuration mConfiguration = new Configuration();
+    private final Configuration mConfiguration = new Configuration();
     private ShareButtonController mShareButtonController;
-    private ShareUtils mShareUtils = new ShareUtils();
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mContext = RuntimeEnvironment.application;
-        mJniMocker.mock(UkmRecorderJni.TEST_HOOKS, mUkmRecorderJniMock);
+        UkmRecorderJni.setInstanceForTesting(mUkmRecorderJniMock);
 
         doReturn(mTab).when(mTabProvider).get();
         doReturn(mContext).when(mTab).getContext();
         mConfiguration.screenWidthDp = AdaptiveToolbarFeatures.DEFAULT_MIN_WIDTH_DP + WIDTH_DELTA;
-        doReturn(mConfiguration).when(mResources).getConfiguration();
 
         doReturn(mock(WebContents.class)).when(mTab).getWebContents();
         doReturn("https").when(mMockGurl).getScheme();
         doReturn(mMockGurl).when(mTab).getUrl();
 
         doReturn(mShareDelegate).when(mShareDelegateSupplier).get();
-
-        AdaptiveToolbarFeatures.clearParsedParamsForTesting();
 
         mShareButtonController =
                 new ShareButtonController(
@@ -102,36 +93,35 @@ public final class ShareButtonControllerUnitTest {
                         mTabProvider,
                         mShareDelegateSupplier,
                         () -> mTracker,
-                        mShareUtils,
                         mModalDialogManager,
-                        () -> {});
+                        CallbackUtils.emptyRunnable());
 
         TrackerFactory.setTrackerForTests(mTracker);
     }
 
     @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
     @Test
-    public void testIPHCommandHelper() {
+    public void testIphCommandHelper() {
         assertNull(
-                mShareButtonController.get(/* tab= */ null).getButtonSpec().getIPHCommandBuilder());
+                mShareButtonController.get(/* tab= */ null).getButtonSpec().getIphCommandBuilder());
 
-        // Verify that IPHCommandBuilder is set just once;
-        IPHCommandBuilder builder =
-                mShareButtonController.get(mTab).getButtonSpec().getIPHCommandBuilder();
+        // Verify that IphCommandBuilder is set just once;
+        IphCommandBuilder builder =
+                mShareButtonController.get(mTab).getButtonSpec().getIphCommandBuilder();
 
-        assertNotNull(mShareButtonController.get(mTab).getButtonSpec().getIPHCommandBuilder());
+        assertNotNull(mShareButtonController.get(mTab).getButtonSpec().getIphCommandBuilder());
 
-        // Verify that IPHCommandBuilder is same as before, get(Tab) did not create a new one.
+        // Verify that IphCommandBuilder is same as before, get(Tab) did not create a new one.
         assertEquals(
-                builder, mShareButtonController.get(mTab).getButtonSpec().getIPHCommandBuilder());
+                builder, mShareButtonController.get(mTab).getButtonSpec().getIphCommandBuilder());
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
-    public void testIPHEvent() {
+    public void testIphEvent() {
         doReturn(true)
                 .when(mTracker)
-                .shouldTriggerHelpUI(
+                .shouldTriggerHelpUi(
                         FeatureConstants
                                 .ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_SHARE_FEATURE);
 

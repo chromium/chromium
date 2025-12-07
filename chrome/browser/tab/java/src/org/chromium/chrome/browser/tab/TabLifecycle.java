@@ -5,10 +5,12 @@
 package org.chromium.chrome.browser.tab;
 
 import org.chromium.build.annotations.MockedInTests;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  */
 @MockedInTests
+@NullMarked
 public interface TabLifecycle {
     /**
      * @return Whether or not this Tab has a live native component.  This will be true prior to
@@ -45,6 +47,15 @@ public interface TabLifecycle {
      * @param closing Whether or not the tab is in the closing process.
      */
     void setClosing(boolean closing);
+
+    /** Mark the Tab for closure following an async request received while the tab was detached. */
+    void setDidCloseWhileDetached();
+
+    /**
+     * Returns whether this Tab was closed following an async request received while the tab was
+     * detached.
+     */
+    boolean didCloseWhileDetached();
 
     /**
      * @return Whether or not the tab is hidden.

@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/platform/mhtml/mhtml_parser.h"
 
 #include <stddef.h>
+
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -42,6 +43,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_concatenate.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
@@ -52,7 +54,7 @@ namespace blink {
 
 namespace {
 
-void QuotedPrintableDecode(base::span<const char> data, Vector<char>& out) {
+void QuotedPrintableDecode(base::span<const char> data, Vector<uint8_t>& out) {
   out.clear();
   if (data.empty()) {
     return;
@@ -202,11 +204,11 @@ MIMEHeader* MIMEHeader::ParseHeader(SharedBufferChunkReader* buffer) {
         DVLOG(1) << "No boundary found in multipart MIME header.";
         return nullptr;
       }
-      mime_header->end_of_part_boundary_ = "--" + boundary;
+      mime_header->end_of_part_boundary_ = StrCat({"--", boundary});
       mime_header->end_of_document_boundary_ =
           mime_header->end_of_part_boundary_;
       mime_header->end_of_document_boundary_ =
-          mime_header->end_of_document_boundary_ + "--";
+          StrCat({mime_header->end_of_document_boundary_, "--"});
     }
   }
 
@@ -417,12 +419,12 @@ ArchiveResource* MHTMLParser::ParseNextPart(
       }
       // Note that we use line.utf8() and not line.ascii() as ascii turns
       // special characters (such as tab, line-feed...) into '?'.
-      content.Append(line.Utf8().c_str(), line.length());
+      content.AppendSpan(base::span<const char>(line.Utf8()));
       if (content_transfer_encoding == MIMEHeader::Encoding::kQuotedPrintable) {
         // The line reader removes the \r\n, but we need them for the content in
         // this case as the QuotedPrintable decoder expects CR-LF terminated
         // lines.
-        content.Append("\r\n", 2u);
+        content.AppendSpan(base::span_from_cstring("\r\n"));
       }
     }
   }
@@ -431,10 +433,10 @@ ArchiveResource* MHTMLParser::ParseNextPart(
     return nullptr;
   }
 
-  Vector<char> data;
+  Vector<uint8_t> data;
   switch (content_transfer_encoding) {
     case MIMEHeader::Encoding::kBase64:
-      if (!Base64Decode(StringView(content.data(), content.size()), data)) {
+      if (!Base64Decode(StringView(base::as_byte_span(content)), data)) {
         DVLOG(1) << "Invalid base64 content for MHTML part.";
         return nullptr;
       }

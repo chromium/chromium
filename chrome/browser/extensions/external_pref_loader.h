@@ -13,6 +13,9 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/external_loader.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Profile;
 
@@ -32,7 +35,7 @@ class ExternalPrefLoader : public ExternalLoader {
     // owned by root and not writable by any non-root user.
     ENSURE_PATH_CONTROLLED_BY_ADMIN = 1 << 0,
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Delay external preference load. It delays default apps installation
     // to not overload the system on first time user login.
     DELAY_LOAD_UNTIL_PRIORITY_SYNC = 1 << 1,
@@ -42,11 +45,11 @@ class ExternalPrefLoader : public ExternalLoader {
     USE_USER_TYPE_PROFILE_FILTER = 1 << 2,
   };
 
-  // |base_path_id| is the directory containing the external_extensions.json
+  // `base_path_id` is the directory containing the external_extensions.json
   // file or the standalone extension manifest files. Relative file paths to
-  // extension files are resolved relative to this path. |profile| is used to
+  // extension files are resolved relative to this path. `profile` is used to
   // wait priority sync if DELAY_LOAD_UNTIL_PRIORITY_SYNC set.
-  // |options| is combination of |Options|.
+  // `options` is combination of `Options`.
   ExternalPrefLoader(int base_path_id, int options, Profile* profile);
 
   ExternalPrefLoader(const ExternalPrefLoader&) = delete;
@@ -73,12 +76,12 @@ class ExternalPrefLoader : public ExternalLoader {
   friend class ExternalTestingLoader;
   friend class TestExternalPrefLoader;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   class PrioritySyncReadyWaiter;
 #endif
 
-  // Extracts extension information from a json file serialized by |serializer|.
-  // |path| is only used for informational purposes (outputted when an error
+  // Extracts extension information from a json file serialized by `serializer`.
+  // `path` is only used for informational purposes (outputted when an error
   // occurs). An empty dictionary is returned in case of failure (e.g. invalid
   // path or json content).
   static base::Value::Dict ExtractExtensionPrefs(
@@ -92,29 +95,29 @@ class ExternalPrefLoader : public ExternalLoader {
   void PostLoadAndRemoveObservers();
 
   // Actually searches for and loads candidate standalone extension preference
-  // files in the path corresponding to |base_path_id|.
+  // files in the path corresponding to `base_path_id`.
   // Must be called on the file thread.
   // Note: Overridden in tests.
   virtual void LoadOnFileThread();
 
   // Extracts the information contained in an external_extension.json file
-  // regarding which extensions to install. |prefs| will be modified to
+  // regarding which extensions to install. `prefs` will be modified to
   // receive the extracted extension information.
   // Must be called from the File thread.
   void ReadExternalExtensionPrefFile(base::Value::Dict& prefs);
 
   // Extracts the information contained in standalone external extension
   // json files (<extension id>.json) regarding what external extensions
-  // to install. |prefs| will be modified to receive the extracted extension
+  // to install. `prefs` will be modified to receive the extracted extension
   // information.
   // Must be called from the File thread.
   void ReadStandaloneExtensionPrefFiles(base::Value::Dict& prefs);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void OnPrioritySyncReady(PrioritySyncReadyWaiter* waiter);
 #endif
 
-  // The path (coresponding to |base_path_id_| containing the json files
+  // The path (corresponding to `base_path_id_` containing the json files
   // describing which extensions to load.
   base::FilePath base_path_;
 
@@ -122,14 +125,14 @@ class ExternalPrefLoader : public ExternalLoader {
   // Needed for waiting for waiting priority sync.
   raw_ptr<Profile, FlakyDanglingUntriaged> profile_;
 
-  // User type determined by |profile_|. Used to filter extensions. In some unit
+  // User type determined by `profile_`. Used to filter extensions. In some unit
   // tests may not be set.
   const std::string user_type_;
 
   // Task runner for tasks that touch file.
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::vector<std::unique_ptr<PrioritySyncReadyWaiter>> pending_waiter_list_;
 #endif
 };

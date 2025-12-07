@@ -41,7 +41,7 @@ export class TabSearchGroupItemElement extends TabSearchGroupItemBase {
     };
   }
 
-  data: TabGroupData = new TabGroupData({
+  accessor data: TabGroupData = new TabGroupData({
     sessionId: -1,
     id: {high: 0n, low: 0n},
     color: Color.kGrey,

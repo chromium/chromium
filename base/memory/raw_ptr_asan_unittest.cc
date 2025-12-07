@@ -7,6 +7,7 @@
 #if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 
 #include <sanitizer/asan_interface.h>
+
 #include <thread>
 
 #include "base/debug/asan_service.h"
@@ -177,10 +178,10 @@ TEST_F(AsanBackupRefPtrTest, EarlyAllocationDetection) {
   EXPECT_TRUE(RawPtrAsanService::GetInstance().IsSupportedAllocation(
       late_allocation_ptr.get()));
 
-  EXPECT_DEATH_IF_SUPPORTED({ early_allocation_ptr_->func(); },
-                            kAsanBrpNotProtected_EarlyAllocation);
-  EXPECT_DEATH_IF_SUPPORTED({ late_allocation_ptr->func(); },
-                            kAsanBrpProtected_Dereference);
+  EXPECT_DEATH_IF_SUPPORTED(
+      { early_allocation_ptr_->func(); }, kAsanBrpNotProtected_EarlyAllocation);
+  EXPECT_DEATH_IF_SUPPORTED(
+      { late_allocation_ptr->func(); }, kAsanBrpProtected_Dereference);
 
   early_allocation_ptr_ = nullptr;
 }
@@ -304,7 +305,7 @@ TEST_F(AsanBackupRefPtrTest, BoundArgumentsNotProtected) {
       [](AsanStruct* outer_ptr, base::OnceClosure inner_callback) {
         std::move(inner_callback).Run();
         // This will never be executed, as we will crash in inner_callback
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       },
       base::Unretained(protected_ptr),
       base::BindOnce(
@@ -431,7 +432,7 @@ TEST_F(AsanBackupRefPtrTest, AccessOnThreadPoolThread) {
         EXPECT_DEATH_IF_SUPPORTED(protected_ptr->func(),
                                   kAsanBrpMaybeProtected_ThreadPool);
       }),
-      base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
+      base::BindLambdaForTesting([&run_loop] { run_loop.Quit(); }));
   run_loop.Run();
 }
 

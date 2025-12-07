@@ -21,7 +21,7 @@ items:
     sessions
   value: false
 owners:
-- bialpio@chromium.org
+- alcooper@chromium.org
 - xr-dev@chromium.org
 schema:
   type: boolean

@@ -5,8 +5,11 @@
 #ifndef CONTENT_BROWSER_DIRECT_SOCKETS_DIRECT_SOCKETS_SERVICE_IMPL_H_
 #define CONTENT_BROWSER_DIRECT_SOCKETS_DIRECT_SOCKETS_SERVICE_IMPL_H_
 
+#include <variant>
+
+#include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/document_service.h"
+#include "content/public/browser/child_process_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -23,16 +26,29 @@ class NetworkContext;
 
 namespace content {
 
-class DirectSocketsDelegate;
+class ServiceWorkerVersion;
+class SharedWorkerHost;
 
 // Implementation of the DirectSocketsService Mojo service.
 class CONTENT_EXPORT DirectSocketsServiceImpl
-    : public DocumentService<blink::mojom::DirectSocketsService> {
+    : public blink::mojom::DirectSocketsService {
  public:
+  using Context = std::variant<const raw_ptr<RenderFrameHost>,
+                               base::WeakPtr<SharedWorkerHost>,
+                               base::WeakPtr<ServiceWorkerVersion>>;
+
   ~DirectSocketsServiceImpl() override;
 
   static void CreateForFrame(
       RenderFrameHost*,
+      mojo::PendingReceiver<blink::mojom::DirectSocketsService> receiver);
+
+  static void CreateForSharedWorker(
+      SharedWorkerHost&,
+      mojo::PendingReceiver<blink::mojom::DirectSocketsService> receiver);
+
+  static void CreateForServiceWorker(
+      ServiceWorkerVersion&,
       mojo::PendingReceiver<blink::mojom::DirectSocketsService> receiver);
 
   // blink::mojom::DirectSocketsService:
@@ -59,15 +75,10 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
   // Testing:
   static void SetNetworkContextForTesting(network::mojom::NetworkContext*);
 
-#if BUILDFLAG(IS_CHROMEOS)
-  static void SetAlwaysOpenFirewallHoleForTesting();
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
  private:
-  DirectSocketsServiceImpl(
-      RenderFrameHost*,
-      mojo::PendingReceiver<blink::mojom::DirectSocketsService> receiver);
+  explicit DirectSocketsServiceImpl(Context context);
 
+  // Might return nullptr.
   network::mojom::NetworkContext* GetNetworkContext() const;
 
   void OnResolveCompleteForTCPSocket(
@@ -77,8 +88,15 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
       OpenTCPSocketCallback,
       int result,
       const net::ResolveErrorInfo&,
-      const std::optional<net::AddressList>& resolved_addresses,
-      const std::optional<net::HostResolverEndpointResults>&);
+      const net::AddressList& resolved_addresses,
+      const net::HostResolverEndpointResults&);
+
+  void CreateTCPConnectedSocketImpl(
+      const net::AddressList& resolved_addresses,
+      network::mojom::TCPConnectedSocketOptionsPtr options,
+      mojo::PendingReceiver<network::mojom::TCPConnectedSocket>,
+      mojo::PendingRemote<network::mojom::SocketObserver>,
+      OpenTCPSocketCallback);
 
   void OnResolveCompleteForUDPSocket(
       blink::mojom::DirectConnectedUDPSocketOptionsPtr,
@@ -87,15 +105,22 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
       OpenConnectedUDPSocketCallback,
       int result,
       const net::ResolveErrorInfo&,
-      const std::optional<net::AddressList>& resolved_addresses,
-      const std::optional<net::HostResolverEndpointResults>&);
+      const net::AddressList& resolved_addresses,
+      const net::HostResolverEndpointResults&);
 
+  void CreateRestrictedUDPSocketImpl(
+      const net::IPEndPoint& peer_addr,
+      network::mojom::RestrictedUDPSocketMode mode,
+      network::mojom::RestrictedUDPSocketParamsPtr options,
+      mojo::PendingReceiver<network::mojom::RestrictedUDPSocket>,
+      mojo::PendingRemote<network::mojom::UDPSocketListener>,
+      base::OnceCallback<void(int32_t, const std::optional<net::IPEndPoint>&)>
+          callback);
+
+  Context context_;
   std::unique_ptr<network::SimpleHostResolver> resolver_;
 
-#if BUILDFLAG(IS_CHROMEOS)
-  class FirewallHoleDelegate;
-  std::unique_ptr<FirewallHoleDelegate> firewall_hole_delegate_;
-#endif  // BUILDFLAG(IS_CHROMEOS)
+  base::WeakPtrFactory<DirectSocketsServiceImpl> weak_factory_{this};
 };
 
 }  // namespace content

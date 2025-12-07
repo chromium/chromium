@@ -49,8 +49,7 @@ class RecentlyDestroyedHostsTest : public testing::Test {
   raw_ptr<RecentlyDestroyedHosts> instance_;
 };
 
-TEST_F(RecentlyDestroyedHostsTest,
-       RecordMetricIfReusableHostRecentlyDestroyed) {
+TEST_F(RecentlyDestroyedHostsTest, RecordSubframeMetric) {
   const IsolationContext isolation_context(
       BrowsingInstanceId(1), &browser_context_,
       /*is_guest=*/false,
@@ -62,21 +61,21 @@ TEST_F(RecentlyDestroyedHostsTest,
       UrlInfo::CreateForTesting(GURL("https://www.google.com"),
                                 CreateStoragePartitionConfigForTesting()));
 
-  constexpr char kHistogramName[] =
+  constexpr char kTimingHistogram[] =
       "SiteIsolation.ReusePendingOrCommittedSite."
-      "TimeSinceReusableProcessDestroyed";
-  std::unique_ptr<base::HistogramTester> histogram_tester =
-      std::make_unique<base::HistogramTester>();
+      "TimeSinceReusableProcessDestroyed.Subframe2";
+  constexpr char kFoundHistogram[] =
+      "SiteIsolation.MissedReuseOpportunity.Found.Subframe";
 
-  // No entries matching |process_lock| are in the list of recently destroyed
-  // hosts, so histogram value |kRecentlyDestroyedNotFoundSentinel| should be
-  // emitted.
+  base::HistogramTester histogram_tester;
+
   RecentlyDestroyedHosts::RecordMetricIfReusableHostRecentlyDestroyed(
-      base::TimeTicks::Now(), process_lock, &browser_context_);
-  constexpr base::TimeDelta kRecentlyDestroyedNotFoundSentinel =
-      base::Seconds(20);
-  histogram_tester->ExpectUniqueTimeSample(
-      kHistogramName, kRecentlyDestroyedNotFoundSentinel, 1);
+      RecentlyDestroyedHosts::Context::kSubframe, base::TimeTicks::Now(),
+      process_lock, &browser_context_);
+
+  // No entry exists, so "Found" should be false, and timing should be empty.
+  histogram_tester.ExpectUniqueSample(kFoundHistogram, false, 1);
+  histogram_tester.ExpectTotalCount(kTimingHistogram, 0);
 
   // Add a RenderProcessHost for |process_lock| to RecentlyDestroyedHosts.
   MockRenderProcessHost host(&browser_context_, /*is_for_guests_only=*/false);
@@ -85,40 +84,65 @@ TEST_F(RecentlyDestroyedHostsTest,
       &host, /*time_spent_running_unload_handlers=*/base::TimeDelta(),
       &browser_context_);
 
-  // Histogram value 0 seconds should be emitted, because no time has passed
-  // (in this test's mocked time) since |host| was added.
-  histogram_tester = std::make_unique<base::HistogramTester>();
   RecentlyDestroyedHosts::RecordMetricIfReusableHostRecentlyDestroyed(
-      base::TimeTicks::Now(), process_lock, &browser_context_);
-  histogram_tester->ExpectUniqueTimeSample(kHistogramName, base::TimeDelta(),
-                                           1);
+      RecentlyDestroyedHosts::Context::kSubframe, base::TimeTicks::Now(),
+      process_lock, &browser_context_);
 
-  // Re-add |host| to RecentlyDestroyedHosts right before its storage timeout
-  // expires.
+  // After 2 actions, we check the cumulative state:
+  histogram_tester.ExpectBucketCount(kFoundHistogram, false, 1);
+  // The "true" bucket for the hit should now have 1 sample.
+  histogram_tester.ExpectBucketCount(kFoundHistogram, true, 1);
+  // The total count for the boolean histogram is now 2.
+  histogram_tester.ExpectTotalCount(kFoundHistogram, 2);
+  // The timing histogram should have its first and only sample.
+  histogram_tester.ExpectUniqueTimeSample(kTimingHistogram, base::TimeDelta(),
+                                          1);
+
+  // Advance time almost to the expiration point, then re-add the host to
+  // refresh its timestamp.
   task_environment_.FastForwardBy(
-      RecentlyDestroyedHosts::kRecentlyDestroyedStorageTimeout -
-      base::Seconds(1));
+      RecentlyDestroyedHosts::kSubframeStorageTimeout - base::Seconds(1));
   RecentlyDestroyedHosts::Add(
       &host, /*time_spent_running_unload_handlers=*/base::TimeDelta(),
       &browser_context_);
+
+  // Advance time a bit more and check that the host is still found.
   constexpr base::TimeDelta kReuseInterval = base::Seconds(5);
   task_environment_.FastForwardBy(kReuseInterval);
-  histogram_tester = std::make_unique<base::HistogramTester>();
   RecentlyDestroyedHosts::RecordMetricIfReusableHostRecentlyDestroyed(
-      base::TimeTicks::Now(), process_lock, &browser_context_);
-  // |host| should still be in RecentlyDestroyedHosts because its storage time
-  // was refreshed by the second call to Add(). The histogram should emit the
-  // time since the last call to Add() matching |process_lock|.
-  histogram_tester->ExpectUniqueTimeSample(kHistogramName, kReuseInterval, 1);
+      RecentlyDestroyedHosts::Context::kSubframe, base::TimeTicks::Now(),
+      process_lock, &browser_context_);
 
-  // After the storage timeout passes, |host| should no longer be present.
-  histogram_tester = std::make_unique<base::HistogramTester>();
+  // After 3 actions, we check the cumulative state:
+  histogram_tester.ExpectBucketCount(kFoundHistogram, false, 1);
+  // The "true" bucket for the hit should now have 2 sample.
+  histogram_tester.ExpectBucketCount(kFoundHistogram, true, 2);
+  // The total count for the boolean histogram is now 3.
+  histogram_tester.ExpectTotalCount(kFoundHistogram, 3);
+  // The timing histogram should a new entry for the new interval.
+  histogram_tester.ExpectTimeBucketCount(kTimingHistogram, kReuseInterval, 1);
+  // The total number of timing samples is now 2.
+  histogram_tester.ExpectTotalCount(kTimingHistogram, 2);
+
+  // After the storage timeout passes, host should no longer be present.
   task_environment_.FastForwardBy(
-      RecentlyDestroyedHosts::kRecentlyDestroyedStorageTimeout);
+      RecentlyDestroyedHosts::kSubframeStorageTimeout + base::Seconds(1));
+
   RecentlyDestroyedHosts::RecordMetricIfReusableHostRecentlyDestroyed(
-      base::TimeTicks::Now(), process_lock, &browser_context_);
-  histogram_tester->ExpectUniqueTimeSample(
-      kHistogramName, kRecentlyDestroyedNotFoundSentinel, 1);
+      RecentlyDestroyedHosts::Context::kSubframe, base::TimeTicks::Now(),
+      process_lock, &browser_context_);
+
+  // After 4 actions, we check the final cumulative state:
+  // The "false" bucket now has 2 samples: the initial miss and this expiration
+  // miss.
+  histogram_tester.ExpectBucketCount(kFoundHistogram, false, 2);
+  // The "true" bucket for the hit should now have 2 sample.
+  histogram_tester.ExpectBucketCount(kFoundHistogram, true, 2);
+  // The total count for the boolean histogram is now 4.
+  histogram_tester.ExpectTotalCount(kFoundHistogram, 4);
+  // The total number of timing samples is still 2, as the miss was not
+  // recorded.
+  histogram_tester.ExpectTotalCount(kTimingHistogram, 2);
 }
 
 TEST_F(RecentlyDestroyedHostsTest, AddReuseInterval) {
@@ -145,6 +169,78 @@ TEST_F(RecentlyDestroyedHostsTest, AddReuseInterval) {
   EXPECT_THAT(GetReuseIntervals(), testing::ElementsAre(t1, t1, t3, t5, t6));
   AddReuseInterval(t4);
   EXPECT_THAT(GetReuseIntervals(), testing::ElementsAre(t1, t3, t4, t5, t6));
+}
+
+TEST_F(RecentlyDestroyedHostsTest, RecordMainFrameMetric) {
+  const IsolationContext isolation_context(
+      BrowsingInstanceId(1), &browser_context_,
+      /*is_guest=*/false,
+      /*is_fenced=*/false,
+      OriginAgentClusterIsolationState::CreateForDefaultIsolation(
+          &browser_context_));
+  const ProcessLock process_lock = ProcessLock::Create(
+      isolation_context,
+      UrlInfo::CreateForTesting(GURL("https://www.google.com"),
+                                CreateStoragePartitionConfigForTesting()));
+
+  constexpr char kFoundHistogram[] =
+      "SiteIsolation.MissedReuseOpportunity.Found.MainFrame";
+  constexpr char kTimingHistogram[] =
+      "SiteIsolation.ReusePendingOrCommittedSite."
+      "TimeSinceReusableProcessDestroyed.MainFrame2";
+
+  base::HistogramTester histogram_tester;
+  RecentlyDestroyedHosts::RecordMetricIfReusableHostRecentlyDestroyed(
+      RecentlyDestroyedHosts::Context::kMainFrame, base::TimeTicks::Now(),
+      process_lock, &browser_context_);
+
+  // No entry exists, so "Found" should be false, and timing should be empty.
+  histogram_tester.ExpectUniqueSample(kFoundHistogram, false, 1);
+  histogram_tester.ExpectTotalCount(kTimingHistogram, 0);
+
+  // Add a host, advance time, and check for a hit.
+  MockRenderProcessHost host(&browser_context_);
+  host.SetProcessLock(isolation_context, process_lock);
+  RecentlyDestroyedHosts::Add(
+      &host, /*time_spent_running_unload_handlers=*/base::TimeDelta(),
+      &browser_context_);
+
+  constexpr base::TimeDelta kReuseInterval = base::Minutes(10);
+  task_environment_.FastForwardBy(kReuseInterval);
+
+  RecentlyDestroyedHosts::RecordMetricIfReusableHostRecentlyDestroyed(
+      RecentlyDestroyedHosts::Context::kMainFrame, base::TimeTicks::Now(),
+      process_lock, &browser_context_);
+
+  // After 2 actions, we check the cumulative state:
+  // The "false" bucket for the initial miss should still have 1 sample.
+  histogram_tester.ExpectBucketCount(kFoundHistogram, false, 1);
+  // The "true" bucket for the hit should now have 1 sample.
+  histogram_tester.ExpectBucketCount(kFoundHistogram, true, 1);
+  // The total count for the boolean histogram is now 2.
+  histogram_tester.ExpectTotalCount(kFoundHistogram, 2);
+  // The timing histogram should have its first and only sample.
+  histogram_tester.ExpectUniqueTimeSample(kTimingHistogram, kReuseInterval, 1);
+
+  // Advance time past the 2-hour timeout and check that we get a "miss".
+  task_environment_.FastForwardBy(
+      RecentlyDestroyedHosts::kMainFrameStorageTimeout + base::Seconds(1));
+
+  RecentlyDestroyedHosts::RecordMetricIfReusableHostRecentlyDestroyed(
+      RecentlyDestroyedHosts::Context::kMainFrame, base::TimeTicks::Now(),
+      process_lock, &browser_context_);
+
+  // After 3 actions, we check the final cumulative state.
+  // The "false" bucket now has 2 samples: the initial miss and this expiration
+  // miss.
+  histogram_tester.ExpectBucketCount(kFoundHistogram, false, 2);
+  // The "true" bucket still has 1 sample from the previous step.
+  histogram_tester.ExpectBucketCount(kFoundHistogram, true, 1);
+  // The total count for the boolean histogram is now 3.
+  histogram_tester.ExpectTotalCount(kFoundHistogram, 3);
+  // The total number of timing samples is still 1, as the miss was not
+  // recorded.
+  histogram_tester.ExpectTotalCount(kTimingHistogram, 1);
 }
 
 }  // namespace content

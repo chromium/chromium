@@ -22,7 +22,6 @@
 #include "base/observer_list_types.h"
 #include "base/task/deferred_sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "components/viz/common/frame_timing_details.h"
@@ -40,14 +39,16 @@ class ShelfModel;
 // during login time and triggers callbacks on some events.
 class ASH_EXPORT WindowRestoreTracker {
  public:
+  using NotifyCallback = base::OnceCallback<void(base::TimeTicks)>;
+
   WindowRestoreTracker();
   ~WindowRestoreTracker();
   WindowRestoreTracker(const WindowRestoreTracker&) = delete;
   WindowRestoreTracker& operator=(const WindowRestoreTracker&) = delete;
 
-  void Init(base::OnceClosure on_all_window_created,
-            base::OnceClosure on_all_window_shown,
-            base::OnceClosure on_all_window_presented);
+  void Init(NotifyCallback on_all_window_created,
+            NotifyCallback on_all_window_shown,
+            NotifyCallback on_all_window_presented);
 
   void AddWindow(int window_id, const std::string& app_id);
   void OnCreated(int window_id);
@@ -64,14 +65,14 @@ class ASH_EXPORT WindowRestoreTracker {
 
   void OnCompositorFramePresented(int window_id,
                                   const viz::FrameTimingDetails& details);
-  void OnPresented(int window_id);
+  void OnPresented(int window_id, base::TimeTicks presentation_time);
   int CountWindowsInState(State state) const;
 
   // Map from window id to window state.
   std::map<int, State> windows_;
-  base::OnceClosure on_created_;
-  base::OnceClosure on_shown_;
-  base::OnceClosure on_presented_;
+  NotifyCallback on_created_;
+  NotifyCallback on_shown_;
+  NotifyCallback on_presented_;
 
   base::WeakPtrFactory<WindowRestoreTracker> weak_ptr_factory_{this};
 };
@@ -174,8 +175,13 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public LoginState::Observer {
   void SetLoginFinishedReportedForTesting();
 
  private:
+  // Starts the deferred task runner.
+  void StartDeferredTaskRunner();
+
   void OnCompositorAnimationFinished(
-      const cc::FrameSequenceMetrics::CustomReportData& data);
+      const cc::FrameSequenceMetrics::CustomReportData& data,
+      base::TimeTicks first_animation_started_at,
+      base::TimeTicks last_animation_finished_at);
 
   void ScheduleWaitForShelfAnimationEndIfNeeded();
 
@@ -183,11 +189,9 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public LoginState::Observer {
 
   void MaybeReportLoginFinished();
 
-  void OnPostLoginDeferredTaskTimerFired();
-
-  void OnAllWindowsCreated();
-  void OnAllWindowsShown();
-  void OnAllWindowsPresented();
+  void OnAllWindowsCreated(base::TimeTicks time);
+  void OnAllWindowsShown(base::TimeTicks time);
+  void OnAllWindowsPresented(base::TimeTicks time);
 
   UiMetricsRecorder ui_recorder_;
 
@@ -199,21 +203,15 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public LoginState::Observer {
 
   bool user_logged_in_ = false;
 
-  // This flag is true after FullRestore has finished loading its data.
+  // Flags to DCHECK conditions.
   bool full_session_restore_data_loaded_ = false;
-
-  bool window_restore_done_ = false;
-
-  // |shelf_icons_loaded_| is true when all shelf icons are considered loaded,
-  // i.e. there is no pending icon on shelf after shelf is initialized.
-  bool shelf_icons_loaded_ = false;
-
   bool shelf_animation_end_scheduled_ = false;
 
-  bool shelf_animation_finished_ = false;
-
-  bool login_animation_throughput_received_ = false;
-
+  // Flags to track state transition.
+  std::optional<base::TimeTicks> time_window_restore_done_;
+  std::optional<base::TimeTicks> time_shelf_icons_loaded_;
+  std::optional<base::TimeTicks> time_shelf_animation_finished_;
+  std::optional<base::TimeTicks> time_compositor_animation_finished_;
   bool login_finished_reported_ = false;
 
   base::WeakPtr<ui::TotalAnimationThroughputReporter>
@@ -223,9 +221,6 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public LoginState::Observer {
       ui::TotalAnimationThroughputReporter::ScopedThroughputReporterBlocker>
       scoped_throughput_reporter_blocker_;
 
-  // Timer that triggers post-login tasks in case the login animation is taking
-  // longer time than expected.
-  base::OneShotTimer post_login_deferred_task_timer_;
   // Deferred task runner for the post-login tasks.
   scoped_refptr<base::DeferredSequencedTaskRunner>
       post_login_deferred_task_runner_;

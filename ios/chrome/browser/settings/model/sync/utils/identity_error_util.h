@@ -19,12 +19,4 @@ enum class SyncState;
 // error UI. Returns nil if there is no account error to display.
 AccountErrorUIInfo* GetAccountErrorUIInfo(syncer::SyncService* sync_service);
 
-// Returns true if the identity error should be indicated on the Settings
-// destination in the Overflow Menu.
-bool ShouldIndicateIdentityErrorInOverflowMenu(
-    syncer::SyncService* sync_service);
-
-// Returns the state of sync-the-feature.
-SyncState GetSyncFeatureState(syncer::SyncService* sync_service);
-
 #endif  // IOS_CHROME_BROWSER_SETTINGS_MODEL_SYNC_UTILS_IDENTITY_ERROR_UTIL_H_

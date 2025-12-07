@@ -8,10 +8,12 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string_view>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/subresource_filter/core/common/indexed_ruleset.h"
 #include "components/subresource_filter/core/common/load_policy.h"
+#include "components/subresource_filter/core/common/scoped_rule.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
 
@@ -36,7 +38,8 @@ class DocumentSubresourceFilter {
   //  -- Hold a reference to and use |ruleset| for its entire lifetime.
   DocumentSubresourceFilter(url::Origin document_origin,
                             mojom::ActivationState activation_state,
-                            scoped_refptr<const MemoryMappedRuleset> ruleset);
+                            scoped_refptr<const MemoryMappedRuleset> ruleset,
+                            std::string_view uma_tag);
 
   DocumentSubresourceFilter(const DocumentSubresourceFilter&) = delete;
   DocumentSubresourceFilter& operator=(const DocumentSubresourceFilter&) =
@@ -58,7 +61,8 @@ class DocumentSubresourceFilter {
 
   LoadPolicy GetLoadPolicy(
       const GURL& subresource_url,
-      url_pattern_index::proto::ElementType subresource_type);
+      url_pattern_index::proto::ElementType subresource_type,
+      ScopedRule* out_rule = nullptr);
 
   // Returns the matching rule that determines whether the request url and type
   // should be allowed. If no rule matches, returns nullptr.
@@ -81,6 +85,8 @@ class DocumentSubresourceFilter {
   std::unique_ptr<FirstPartyOrigin> document_origin_;
 
   mojom::DocumentLoadStatistics statistics_;
+
+  std::string_view uma_tag_;
 };
 
 }  // namespace subresource_filter

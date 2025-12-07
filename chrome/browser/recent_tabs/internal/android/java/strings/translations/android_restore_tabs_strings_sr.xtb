@@ -12,6 +12,7 @@
 <translation id="3983305234037158273">Синхронизовани уређаји за враћање картица су доступни за промену при додиру. Крећите се да бисте прегледали или вратили изабране картице за актуелни уређај на додир. Тастатура је сакривена.</translation>
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{Отвори <ph name="TABS_COUNT_ONE" /> картицу}one{Отвори <ph name="TABS_COUNT_MANY" /> картицу}few{Отвори <ph name="TABS_COUNT_MANY" /> картице}other{Отвори <ph name="TABS_COUNT_MANY" /> картица}}</translation>
 <translation id="4509609396389120020">Вратите картице са других уређаја</translation>
+<translation id="4619615317237390068">Картице са других уређаја</translation>
 <translation id="4811934403802581334">Биће враћене све изабране картице са тренутно изабраног уређаја.</translation>
 <translation id="5336031759968328813">Прегледај све картице</translation>
 <translation id="5494920125229734069">Избор свих ставки</translation>

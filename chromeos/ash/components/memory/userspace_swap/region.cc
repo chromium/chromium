@@ -11,6 +11,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/containers/span.h"
 
 namespace ash {

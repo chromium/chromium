@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <cmath>
 #include <optional>
 #include <sstream>
@@ -18,9 +19,8 @@
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/flat_tree.h"
-#include "base/functional/overloaded.h"
+#include "base/containers/to_vector.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/abseil_string_number_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -29,6 +29,7 @@
 #include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/aggregation_service/parsing_utils.h"
+#include "components/attribution_reporting/aggregatable_utils.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
@@ -78,16 +79,12 @@ base::expected<absl::uint128, ParseError> ParseAggregationKeyPiece(
   return key_piece;
 }
 
-bool AggregationKeyIdHasValidLength(const std::string& key) {
-  return key.size() <= kMaxBytesPerAggregationKeyId;
-}
-
 std::string HexEncodeAggregationKey(absl::uint128 value) {
   std::ostringstream out;
   out << "0x";
   out.setf(out.hex, out.basefield);
   out << value;
-  return out.str();
+  return std::move(out).str();
 }
 
 base::expected<std::optional<uint64_t>, ParseError> ParseUint64(
@@ -120,33 +117,76 @@ bool ParseDebugReporting(const base::Value::Dict& dict) {
   return dict.FindBool(kDebugReporting).value_or(false);
 }
 
-base::expected<base::TimeDelta, ParseError> ParseLegacyDuration(
+bool HasFractionalPart(double v) {
+  double int_part;
+  return std::modf(v, &int_part) != 0;
+}
+
+template <typename T>
+base::expected<T, ParseError> ParseIntFromIntOrDouble(
     const base::Value& value) {
+  // JSON serialization does not distinguish between integer and non-integer
+  // numbers, but `base::Value` does. To be maximally compatible, we permit
+  // `double` in addition to `int` as long as the `double`'s fractional part is
+  // 0.
+
+  if (std::optional<int> int_value = value.GetIfInt()) {
+    if (!base::IsValueInRangeForNumericType<T>(*int_value)) {
+      return base::unexpected(ParseError());
+    }
+    return static_cast<T>(*int_value);
+  } else if (std::optional<double> double_value = value.GetIfDouble()) {
+    if (HasFractionalPart(*double_value) ||
+        !base::IsValueInRangeForNumericType<T>(*double_value)) {
+      return base::unexpected(ParseError());
+    }
+    return static_cast<T>(*double_value);
+  } else {
+    return base::unexpected(ParseError());
+  }
+}
+
+base::expected<base::TimeDelta, ParseError> ParseLegacyDuration(
+    const base::Value& value,
+    const base::TimeDelta clamp_min,
+    const base::TimeDelta clamp_max) {
   // Note: The full range of uint64 seconds cannot be represented in the
   // resulting `base::TimeDelta`, but this is fine because `base::Seconds()`
   // properly clamps out-of-bound values and because the Attribution
   // Reporting API itself clamps values to 30 days:
   // https://wicg.github.io/attribution-reporting-api/#valid-source-expiry-range
 
-  return value.Visit(base::Overloaded{
-      [](int int_value) -> base::expected<base::TimeDelta, ParseError> {
-        if (int_value < 0) {
-          return base::unexpected(ParseError());
-        }
-        return base::Seconds(int_value);
-      },
-      [](const std::string& str)
-          -> base::expected<base::TimeDelta, ParseError> {
-        uint64_t seconds;
-        if (!base::StringToUint64(str, &seconds)) {
-          return base::unexpected(ParseError());
-        }
-        return base::Seconds(seconds);
-      },
-      [](const auto&) -> base::expected<base::TimeDelta, ParseError> {
-        return base::unexpected(ParseError());
-      },
-  });
+  base::TimeDelta duration;
+
+  if (const std::string* str = value.GetIfString()) {
+    uint64_t seconds;
+    if (!base::StringToUint64(*str, &seconds)) {
+      return base::unexpected(ParseError());
+    }
+    duration = base::Seconds(seconds);
+  } else {
+    ASSIGN_OR_RETURN(duration, ParseDuration(value));
+  }
+
+  if (duration.is_negative()) {
+    return base::unexpected(ParseError());
+  }
+
+  return std::clamp(duration, clamp_min, clamp_max);
+}
+
+base::expected<base::TimeDelta, ParseError> ParseDuration(
+    const base::Value& value) {
+  if (std::optional<int> int_value = value.GetIfInt()) {
+    return base::Seconds(*int_value);
+  } else if (std::optional<double> double_value = value.GetIfDouble()) {
+    if (HasFractionalPart(*double_value)) {
+      return base::unexpected(ParseError());
+    }
+    return base::Seconds(*double_value);
+  } else {
+    return base::unexpected(ParseError());
+  }
 }
 
 base::expected<std::optional<SuitableOrigin>, ParseError>
@@ -171,9 +211,17 @@ ParseAggregationCoordinator(const base::Value::Dict& dict) {
     return base::unexpected(ParseError());
   }
   auto aggregation_coordinator_origin =
-      SuitableOrigin::Create(*aggregation_coordinator);
+      SuitableOrigin::Create(*std::move(aggregation_coordinator));
   CHECK(aggregation_coordinator_origin.has_value());
   return *std::move(aggregation_coordinator_origin);
+}
+
+base::expected<int, ParseError> ParseAggregatableValue(const base::Value& v) {
+  ASSIGN_OR_RETURN(int value, ParseInt(v));
+  if (!IsAggregatableValueInRange(value)) {
+    return base::unexpected(ParseError());
+  }
+  return value;
 }
 
 void SerializeUint64(base::Value::Dict& dict,
@@ -221,25 +269,18 @@ void SerializeTimeDeltaInSeconds(base::Value::Dict& dict,
   }
 }
 
+base::expected<int, ParseError> ParseInt(const base::Value& value) {
+  return ParseIntFromIntOrDouble<int>(value);
+}
+
 base::expected<uint32_t, ParseError> ParseUint32(const base::Value& value) {
-  // We use `base::Value::GetIfDouble()`, which coerces if the value is an
-  // integer, because not all `uint32_t` can be represented by 32-bit `int`.
-  // We use `std::modf` to check that the fractional part of the `double` is 0.
-  //
   // Assumes that all `uint32_t` can be represented either by `int` or `double`,
   // and that when represented internally by `base::Value` as an `int`, can be
   // precisely represented by `double`.
   //
   // TODO(apaseltiner): Consider test coverage for all `uint32_t` values, or
   // some kind of fuzzer.
-  std::optional<double> double_value = value.GetIfDouble();
-  if (double int_part;
-      !double_value.has_value() || std::modf(*double_value, &int_part) != 0 ||
-      !base::IsValueInRangeForNumericType<uint32_t>(*double_value)) {
-    return base::unexpected(ParseError());
-  }
-
-  return static_cast<uint32_t>(*double_value);
+  return ParseIntFromIntOrDouble<uint32_t>(value);
 }
 
 base::expected<uint32_t, ParseError> ParsePositiveUint32(
@@ -273,21 +314,18 @@ base::expected<base::flat_set<std::string>, StringSetError> ExtractStringSet(
     }
   }
 
-  base::ranges::sort(list);
-  list.erase(base::ranges::unique(list), list.end());
+  std::ranges::sort(list);
+  auto repeated = std::ranges::unique(list);
+  list.erase(repeated.begin(), repeated.end());
 
   if (list.size() > max_set_size) {
     return base::unexpected(StringSetError::kSetTooLong);
   }
 
-  std::vector<std::string> values;
-  values.reserve(list.size());
-
-  for (base::Value& item : list) {
-    values.emplace_back(std::move(item).TakeString());
-  }
-
-  return base::flat_set<std::string>(base::sorted_unique, std::move(values));
+  return base::flat_set<std::string>(
+      base::sorted_unique, base::ToVector(list, [](base::Value& item) {
+        return std::move(item).TakeString();
+      }));
 }
 
 }  // namespace attribution_reporting

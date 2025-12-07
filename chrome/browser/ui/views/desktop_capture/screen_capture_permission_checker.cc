@@ -4,7 +4,11 @@
 
 #include "chrome/browser/ui/views/desktop_capture/screen_capture_permission_checker.h"
 
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/views/desktop_capture/screen_capture_permission_checker_mac.h"
+#endif
 
 std::unique_ptr<ScreenCapturePermissionChecker>
 ScreenCapturePermissionChecker::MaybeCreate(

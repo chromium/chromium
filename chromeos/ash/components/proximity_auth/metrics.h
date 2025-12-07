@@ -5,12 +5,9 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_PROXIMITY_AUTH_METRICS_H_
 #define CHROMEOS_ASH_COMPONENTS_PROXIMITY_AUTH_METRICS_H_
 
-#include <string>
-
 namespace proximity_auth {
 namespace metrics {
 
-extern const char kUnknownDeviceModel[];
 extern const int kUnknownProximityValue;
 
 // Possible states of the remote device's security settings. This enum is used
@@ -30,11 +27,6 @@ enum class RemoteSecuritySettingsState {
 // |rolling_rssi| should be set to |kUnknownProximityValue| if no RSSI readings
 // are available.
 void RecordAuthProximityRollingRssi(int rolling_rssi);
-
-// Records the phone model used for a successful auth attempt. The model is
-// recorded as a 32-bit hash due to the limits of UMA. |device_model| should be
-// set to |kUnknownDeviceModel| if the device model could not be read.
-void RecordAuthProximityRemoteDeviceModelHash(const std::string& device_model);
 
 // Records the screen lock and trust agent settings state of the remote device,
 // as received in a status update from the remote device.

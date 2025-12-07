@@ -8,6 +8,7 @@ found in the LICENSE file.
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:singleLineTitle="false"
     android:title="@string/all_sites">
 
     <!-- A common card preference to highlight a text paragraph. -->
@@ -25,6 +26,10 @@ found in the LICENSE file.
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="binary_toggle"
         android:defaultValue="true" />
+    <!-- A common binary radio button group, only shown for specific categories that allow
+         turning default values for that category.-->
+    <org.chromium.components.browser_ui.site_settings.BinaryStatePermissionPreference
+        android:key="binary_radio_button" />
     <!-- A common Allow/Ask/Block 3-state toggle (radio group). Only shown when
          the category requires these 3 states. Mutually exclusive with the
          "binary_toggle" above and the "four_state_cookie_toggle" below. -->
@@ -33,6 +38,9 @@ found in the LICENSE file.
     <!-- A three state toggle for third-party cookies preferences, only shown for the ThirdPartyCookies category. -->
     <org.chromium.components.browser_ui.site_settings.TriStateCookieSettingsPreference
         android:key="tri_state_cookie_toggle" />
+    <!-- A message to display why toggle is disabled -->
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="toggle_disable_reason" />
     <!-- A checkbox for enabling a quiet ui for notification prompts. Only shown in the Notifications category. -->
     <org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference
         android:key="notifications_quiet_ui"

@@ -7,8 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 
+class GaiaId;
+class PrefService;
 enum class PushNotificationClientId;
 
 // The purpose of this class is to manage the mapping between GaiaIDs and its
@@ -16,41 +18,46 @@ enum class PushNotificationClientId;
 @interface PushNotificationAccountContextManager : NSObject
 
 // The designated initializer. `manager` must not be nil.
-- (instancetype)initWithChromeBrowserStateManager:
-    (ChromeBrowserStateManager*)manager NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithProfileManager:(ProfileManagerIOS*)manager
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
 // Adds the account to the manager if the account is not signed into the device
-// in any BrowserState. This function returns a BOOL value indicating whether
+// in any Profile. This function returns a BOOL value indicating whether
 // the account was added to the manager.
-- (BOOL)addAccount:(const std::string&)gaiaID;
+- (BOOL)addAccount:(const GaiaId&)gaiaID;
 
 // Removes the account from the manager if the account is not signed into the
-// device in any BrowserState. This function returns a BOOL value indicating
+// device in any Profile. This function returns a BOOL value indicating
 // whether the account was removed from the manager.
-- (BOOL)removeAccount:(const std::string&)gaiaID;
+- (BOOL)removeAccount:(const GaiaId&)gaiaID;
 
 // Enables the user with the given `gaiaID` to begin receiving push
 // notifications from `clientID`.
 - (void)enablePushNotification:(PushNotificationClientId)clientID
-                    forAccount:(const std::string&)gaiaID;
+                    forAccount:(const GaiaId&)gaiaID;
 
 // Prevents the user with the given `gaiaID` from receiving push notifications
 // from `clientID`.
 - (void)disablePushNotification:(PushNotificationClientId)clientID
-                     forAccount:(const std::string&)gaiaID;
+                     forAccount:(const GaiaId&)gaiaID;
 
 // Returns the user with the given `gaiaID` can receive push notifications from
 // `clientID`.
 - (BOOL)isPushNotificationEnabledForClient:(PushNotificationClientId)clientID
-                                forAccount:(const std::string&)gaiaID;
+                                forAccount:(const GaiaId&)gaiaID;
+
+// Copies the notification permissions from profile prefs to
+// ProfileAttributesIOS.
+- (void)setAttributesForProfile:(std::string_view)profileName
+                      fromPrefs:(PrefService*)prefs;
 
 // Returns a dictionary that maps PushNotificationClientIDs, stored as
 // NSString, to a boolean value, stored as NSNumber, indicating whether the
 // client has push notification permission for the given user.
 - (NSDictionary<NSString*, NSNumber*>*)preferenceMapForAccount:
-    (const std::string&)gaiaID;
+    (const GaiaId&)gaiaID;
 
 // Returns a list of GAIA IDs registered with context manager.
 - (NSArray<NSString*>*)accountIDs;

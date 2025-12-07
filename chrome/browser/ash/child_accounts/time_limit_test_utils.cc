@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ash/child_accounts/time_limit_test_utils.h"
 
+#include <algorithm>
 #include <optional>
 #include <utility>
 
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 
 namespace ash {
@@ -119,7 +119,7 @@ void AddTimeUsageLimit(base::Value::Dict* policy,
   DCHECK_EQ(quota.InNanoseconds() % base::Minutes(1).InNanoseconds(), 0);
   DCHECK_LT(quota, base::Hours(24));
 
-  base::ranges::transform(day, day.begin(), ::tolower);
+  std::ranges::transform(day, day.begin(), ::tolower);
   policy->Find(kTimeUsageLimit)
       ->GetDict()
       .Set(day, CreateTimeUsage(quota, last_updated));
@@ -159,9 +159,7 @@ void AddOverrideWithDuration(base::Value::Dict* policy,
 }
 
 std::string PolicyToString(const base::Value::Dict& policy) {
-  std::string json_string;
-  base::JSONWriter::Write(policy, &json_string);
-  return json_string;
+  return base::WriteJson(policy).value_or("");
 }
 
 }  // namespace time_limit_test_utils

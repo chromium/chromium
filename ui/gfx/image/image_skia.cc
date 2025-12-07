@@ -293,7 +293,7 @@ ImageSkiaStorage::~ImageSkiaStorage() = default;
 
 }  // internal
 
-ImageSkia::ImageSkia() {}
+ImageSkia::ImageSkia() = default;
 
 ImageSkia::ImageSkia(std::unique_ptr<ImageSkiaSource> source,
                      const gfx::Size& size)

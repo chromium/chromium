@@ -20,31 +20,10 @@ void MockTranslateInfoBarDelegate::SetTranslateLanguagesForTest(
   }
 }
 
-void MockTranslateInfoBarDelegate::GetLanguagesNames(
-    std::vector<std::u16string>* names) const {
-  for (auto& entry : languages_) {
-    names->push_back(entry.second);
-  }
-}
-
-void MockTranslateInfoBarDelegate::GetLanguagesCodes(
-    std::vector<std::string>* codes) const {
-  for (auto& entry : languages_) {
-    codes->push_back(entry.first);
-  }
-}
-
 void MockTranslateInfoBarDelegate::SetContentLanguagesCodesForTest(
     std::vector<std::string> languages) {
   for (auto& entry : languages) {
     content_languages_.push_back(entry);
-  }
-}
-
-void MockTranslateInfoBarDelegate::GetContentLanguagesCodes(
-    std::vector<std::string>* codes) const {
-  for (auto& entry : content_languages_) {
-    codes->push_back(entry);
   }
 }
 
@@ -62,7 +41,7 @@ MockTranslateInfoBarDelegate::MockTranslateInfoBarDelegate(
                                           error_type,
                                           triggered_from_menu) {}
 
-MockTranslateInfoBarDelegate::~MockTranslateInfoBarDelegate() {}
+MockTranslateInfoBarDelegate::~MockTranslateInfoBarDelegate() = default;
 
 MockTranslateInfoBarDelegateFactory::MockTranslateInfoBarDelegateFactory(
     const std::string& source_language,
@@ -86,7 +65,8 @@ MockTranslateInfoBarDelegateFactory::MockTranslateInfoBarDelegateFactory(
       false);
 }
 
-MockTranslateInfoBarDelegateFactory::~MockTranslateInfoBarDelegateFactory() {}
+MockTranslateInfoBarDelegateFactory::~MockTranslateInfoBarDelegateFactory() =
+    default;
 
 // static
 std::unique_ptr<MockTranslateInfoBarDelegate>

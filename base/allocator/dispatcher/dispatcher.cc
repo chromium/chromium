@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/allocator/dispatcher/dispatcher.h"
 
 #include "base/allocator/dispatcher/internal/dispatch_data.h"
@@ -16,7 +21,7 @@
 #endif
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC)
-#include "partition_alloc/partition_alloc_hooks.h"
+#include "partition_alloc/partition_alloc_hooks.h"  // nogncheck
 #endif
 
 namespace base::allocator::dispatcher {
@@ -34,7 +39,7 @@ struct Dispatcher::Impl {
 
   void Reset() {
 #if DCHECK_IS_ON()
-    DCHECK([&]() {
+    DCHECK([&] {
       auto const was_set = is_initialized_check_flag_.test_and_set();
       is_initialized_check_flag_.clear();
       return was_set;

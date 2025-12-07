@@ -95,15 +95,15 @@ class WorkletModuleResponsesMapTest : public PageTestBase {
         const ModuleScriptCreationParams& params) override {
       ASSERT_EQ(Result::kInitial, result_);
       result_ = Result::kOK;
-      params_.emplace(std::move(params));
+      has_params_ = true;
     }
 
     Result GetResult() const { return result_; }
-    bool HasParams() const { return params_.has_value(); }
+    bool HasParams() const { return has_params_; }
 
    private:
     Result result_ = Result::kInitial;
-    std::optional<ModuleScriptCreationParams> params_;
+    bool has_params_ = false;
   };
 
   void Fetch(const KURL& url, ClientImpl* client) {
@@ -118,8 +118,10 @@ class WorkletModuleResponsesMapTest : public PageTestBase {
     WorkletModuleScriptFetcher* module_fetcher =
         MakeGarbageCollected<WorkletModuleScriptFetcher>(
             global_scope_, ModuleScriptLoader::CreatePassKeyForTests());
-    module_fetcher->Fetch(fetch_params, ModuleType::kJavaScript, fetcher_.Get(),
-                          ModuleGraphLevel::kTopLevelModuleFetch, client);
+    module_fetcher->Fetch(fetch_params, ModuleType::kJavaScriptOrWasm,
+                          fetcher_.Get(),
+                          ModuleGraphLevel::kTopLevelModuleFetch, client,
+                          ModuleImportPhase::kEvaluation);
   }
 
   void RunUntilIdle() {

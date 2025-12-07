@@ -5,8 +5,8 @@
 #ifndef UI_ACCESSIBILITY_AX_TREE_MANAGER_MAP_H_
 #define UI_ACCESSIBILITY_AX_TREE_MANAGER_MAP_H_
 
-#include <unordered_map>
-
+#include "base/memory/raw_ptr.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_manager.h"
 
@@ -28,7 +28,7 @@ class AX_EXPORT AXTreeManagerMap {
   AXTreeManager* GetManager(const AXTreeID& tree_id);
 
  private:
-  std::unordered_map<AXTreeID, AXTreeManager*, AXTreeIDHash> map_;
+  absl::flat_hash_map<AXTreeID, raw_ptr<AXTreeManager>, AXTreeIDHash> map_;
 };
 
 }  // namespace ui

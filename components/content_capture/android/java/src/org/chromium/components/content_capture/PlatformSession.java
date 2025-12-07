@@ -13,10 +13,14 @@ import android.widget.Checkable;
 
 import androidx.annotation.RequiresApi;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.util.HashMap;
 
 /** The class to manage the platform session. */
 @RequiresApi(Build.VERSION_CODES.Q)
+@NullMarked
 class PlatformSession {
     /**
      * PlatformSessionData wraps the ContentCaptureSession and its corresponding
@@ -34,10 +38,10 @@ class PlatformSession {
         }
     }
 
-    private PlatformSessionData mRootPlatformSessionData;
-    private HashMap<Long, PlatformSessionData> mFrameIdToPlatformSessionData;
+    private final PlatformSessionData mRootPlatformSessionData;
+    private @Nullable HashMap<Long, PlatformSessionData> mFrameIdToPlatformSessionData;
 
-    public static PlatformSession fromView(View view) {
+    public static @Nullable PlatformSession fromView(View view) {
         ContentCaptureSession session = view.getContentCaptureSession();
         if (session == null) return null;
         ViewStructure structure = session.newViewStructure(view);
@@ -79,7 +83,7 @@ class PlatformSession {
 
     public HashMap<Long, PlatformSessionData> getFrameIdToPlatformSessionData() {
         if (mFrameIdToPlatformSessionData == null) {
-            mFrameIdToPlatformSessionData = new HashMap<Long, PlatformSessionData>();
+            mFrameIdToPlatformSessionData = new HashMap<>();
         }
         return mFrameIdToPlatformSessionData;
     }

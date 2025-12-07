@@ -2,19 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/platform/text/layout_locale.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
 #include <tuple>
 
-#include "third_party/blink/renderer/platform/text/layout_locale.h"
-
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
 #include "third_party/blink/renderer/platform/testing/fuzzed_data_provider.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 // Entry point for LibFuzzer.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static blink::BlinkFuzzerTestSupport test_support;
+  blink::test::TaskEnvironment task_environment;
 
   blink::FuzzedDataProvider fuzzed_data(data, size);
 
@@ -27,7 +29,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   if (use_default) {
     locale = &blink::LayoutLocale::GetDefault();
   } else {
-    locale = blink::LayoutLocale::Get(AtomicString(maybe_locale));
+    locale = blink::LayoutLocale::Get(blink::AtomicString(maybe_locale));
   }
 
   if (!locale) {
@@ -40,7 +42,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     return 0;
   }
 
-  auto string_data = AtomicString(
+  auto string_data = blink::AtomicString(
       fuzzed_data.ConsumeRandomLengthString(fuzzed_data.RemainingBytes()));
   std::ignore = hyphen->HyphenLocations(string_data);
 

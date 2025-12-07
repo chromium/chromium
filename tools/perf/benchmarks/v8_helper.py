@@ -34,7 +34,7 @@ def AppendJSFlags(options, js_flags):
     if extra_arg.startswith(_JS_FLAGS_SWITCH):
       # Find and remove the set of existing js_flags.
       existing_js_flags = extra_arg[len(_JS_FLAGS_SWITCH):]
-      options.extra_browser_args.remove(extra_arg)
+      options.RemoveExtraBrowserArg(extra_arg)
       break
 
   options.AppendExtraBrowserArgs([
@@ -55,6 +55,7 @@ def AugmentOptionsForV8Metrics(options, enable_runtime_call_stats=True):
       'disabled-by-default-cppgc',
       'disabled-by-default-v8.gc',
       'v8',
+      'v8.memory',
       'v8.wasm',
       'v8.console',
       'webkit.console',

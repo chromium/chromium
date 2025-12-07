@@ -4,26 +4,42 @@
 
 #include "chrome/browser/ash/crostini/crostini_export_import.h"
 
+#include <cstdint>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/current_thread.h"
+#include "base/test/test_file_util.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/cicerone/fake_cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/fake_seneschal_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_service.pb.h"
+#include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/user_manager/fake_user_manager_delegate.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
+#include "components/user_manager/user_manager_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,6 +60,9 @@ struct ImportProgressOptionalArguments {
   uint64_t available_space{};
   uint64_t min_required_space{};
 };
+
+constexpr char zstd_filename[] =
+    "crostini_export_import_unittest_tarball.img.zst";
 
 class CrostiniExportImportTest : public testing::Test {
  public:
@@ -103,7 +122,22 @@ class CrostiniExportImportTest : public testing::Test {
     signal.set_total_input_bytes(arguments.total_bytes);
     signal.set_input_files_streamed(arguments.files_streamed);
     signal.set_input_bytes_streamed(arguments.bytes_streamed);
-    fake_cicerone_client_->NotifyExportLxdContainerProgress(signal);
+    ash::FakeCiceroneClient::Get()->NotifyExportLxdContainerProgress(signal);
+  }
+
+  void SendDiskImageProgress(const guest_os::GuestId& container_id,
+                             vm_tools::concierge::DiskImageStatus status,
+                             uint32_t progress) {
+    vm_tools::concierge::DiskImageStatusResponse signal;
+    signal.set_status(status);
+    signal.set_progress(progress);
+    ash::FakeConciergeClient::Get()->NotifyDiskImageProgress(signal);
+  }
+
+  void SetImportResponse() {
+    vm_tools::concierge::ImportDiskImageResponse response;
+    response.set_status(vm_tools::concierge::DISK_STATUS_IN_PROGRESS);
+    ash::FakeConciergeClient::Get()->set_import_disk_image_response(response);
   }
 
   void SendImportProgress(
@@ -120,7 +154,7 @@ class CrostiniExportImportTest : public testing::Test {
     signal.set_architecture_container("arch_con");
     signal.set_available_space(arguments.available_space);
     signal.set_min_required_space(arguments.min_required_space);
-    fake_cicerone_client_->NotifyImportLxdContainerProgress(signal);
+    ash::FakeCiceroneClient::Get()->NotifyImportLxdContainerProgress(signal);
   }
 
   CrostiniExportImportTest()
@@ -130,8 +164,6 @@ class CrostiniExportImportTest : public testing::Test {
     ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
-    fake_seneschal_client_ = ash::FakeSeneschalClient::Get();
-    fake_cicerone_client_ = ash::FakeCiceroneClient::Get();
   }
 
   CrostiniExportImportTest(const CrostiniExportImportTest&) = delete;
@@ -145,7 +177,19 @@ class CrostiniExportImportTest : public testing::Test {
   }
 
   void SetUp() override {
+    user_manager_.Reset(std::make_unique<user_manager::UserManagerImpl>(
+        std::make_unique<user_manager::FakeUserManagerDelegate>(),
+        TestingBrowserProcess::GetGlobal()->GetTestingLocalState()));
+    const AccountId account_id =
+        AccountId::FromUserEmailGaiaId("test@test", GaiaId("12345"));
+    ASSERT_TRUE(user_manager::TestHelper(user_manager_.Get())
+                    .AddRegularUser(account_id));
+    user_manager_->UserLoggedIn(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
+
     profile_ = std::make_unique<TestingProfile>();
+    ash::AnnotatedAccountId::Set(profile_.get(), account_id);
+
     crostini_export_import_ = std::make_unique<CrostiniExportImport>(profile());
     test_helper_ = std::make_unique<CrostiniTestHelper>(profile_.get());
     notification_display_service_tester_ =
@@ -177,19 +221,19 @@ class CrostiniExportImportTest : public testing::Test {
     // If the file has been created (by an export), then delete it, but first
     // shutdown GuestOsSharePath to ensure watchers are destroyed, otherwise
     // they can trigger and execute against a destroyed service.
-    guest_os::GuestOsSharePath::GetForProfile(profile())->Shutdown();
+    guest_os::GuestOsSharePathFactory::GetForProfile(profile())->Shutdown();
     task_environment_.RunUntilIdle();
     base::DeleteFile(tarball_);
+    base::DeleteFile(zstdfile_);
     test_helper_.reset();
     profile_.reset();
+    user_manager_.Reset();
   }
 
  protected:
   Profile* profile() { return profile_.get(); }
 
-  raw_ptr<ash::FakeCiceroneClient, DanglingUntriaged> fake_cicerone_client_;
-  raw_ptr<ash::FakeSeneschalClient, DanglingUntriaged> fake_seneschal_client_;
-
+  user_manager::ScopedUserManager user_manager_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<CrostiniExportImport> crostini_export_import_;
   std::unique_ptr<CrostiniTestHelper> test_helper_;
@@ -201,6 +245,7 @@ class CrostiniExportImportTest : public testing::Test {
   guest_os::GuestId default_container_id_;
   guest_os::GuestId custom_container_id_;
   base::FilePath tarball_;
+  base::FilePath zstdfile_;
 
   content::BrowserTaskEnvironment task_environment_;
 };
@@ -220,11 +265,418 @@ TEST_F(CrostiniExportImportTest, TestNotAllowed) {
       }));
 }
 
+TEST_F(CrostiniExportImportTest, TestExportDiskImageSuccess) {
+  crostini_export_import_->FillOperationData(
+      ExportImportType::EXPORT_DISK_IMAGE);
+  // Technically only need a temp path here, but the file will just be
+  // recreated.
+  base::ScopedTempFile zipfile;
+  EXPECT_TRUE(zipfile.Create());
+  crostini_export_import_->FileSelected(ui::SelectedFileInfo(zipfile.path()),
+                                        0);
+  task_environment_.RunUntilIdle();
+  base::WeakPtr<CrostiniExportImportNotificationController> controller =
+      GetController(default_container_id_);
+  ASSERT_NE(controller, nullptr);
+  EXPECT_EQ(controller->status(),
+            CrostiniExportImportStatusTracker::Status::RUNNING);
+
+  std::string notification_id;
+  {
+    const message_center::Notification& notification =
+        GetNotification(default_container_id_);
+    notification_id = notification.id();
+    EXPECT_EQ(notification.progress(), 0);
+    EXPECT_TRUE(notification.pinned());
+  }
+
+  // 50% done.
+  SendDiskImageProgress(default_container_id_,
+                        vm_tools::concierge::DISK_STATUS_IN_PROGRESS, 50);
+  ASSERT_NE(controller, nullptr);
+  EXPECT_EQ(controller->status(),
+            CrostiniExportImportStatusTracker::Status::RUNNING);
+  {
+    const message_center::Notification& notification =
+        GetNotification(default_container_id_);
+    EXPECT_EQ(notification.id(), notification_id);
+    EXPECT_EQ(notification.progress(), 50);
+    EXPECT_TRUE(notification.pinned());
+  }
+
+  // Close notification and update progress. Should not update notification.
+  controller->get_delegate()->Close(false);
+  SendDiskImageProgress(default_container_id_,
+                        vm_tools::concierge::DISK_STATUS_IN_PROGRESS, 60);
+  ASSERT_NE(controller, nullptr);
+  EXPECT_EQ(controller->status(),
+            CrostiniExportImportStatusTracker::Status::RUNNING);
+  {
+    const message_center::Notification& notification =
+        GetNotification(default_container_id_);
+    EXPECT_EQ(notification.id(), notification_id);
+    EXPECT_EQ(notification.progress(), 50);
+    EXPECT_TRUE(notification.pinned());
+  }
+
+  // Done.
+  SendDiskImageProgress(default_container_id_,
+                        vm_tools::concierge::DISK_STATUS_CREATED, 100);
+  EXPECT_EQ(GetController(default_container_id_), nullptr);
+  EXPECT_EQ(controller, nullptr);
+  {
+    const std::optional<message_center::Notification> ui_notification =
+        notification_display_service_->GetNotification(notification_id);
+    ASSERT_NE(ui_notification, std::nullopt);
+    EXPECT_FALSE(ui_notification->pinned());
+    std::string msg("Linux apps & files have been successfully backed up");
+    EXPECT_EQ(ui_notification->message(), base::UTF8ToUTF16(msg));
+  }
+}
+
+TEST_F(CrostiniExportImportTest, TestExportDiskImageFail) {
+  crostini_export_import_->FillOperationData(
+      ExportImportType::EXPORT_DISK_IMAGE);
+  base::ScopedTempFile zipfile;
+  EXPECT_TRUE(zipfile.Create());
+  crostini_export_import_->FileSelected(ui::SelectedFileInfo(zipfile.path()),
+                                        0);
+  task_environment_.RunUntilIdle();
+  base::WeakPtr<CrostiniExportImportNotificationController> controller =
+      GetController(default_container_id_);
+  ASSERT_NE(controller, nullptr);
+  EXPECT_EQ(controller->status(),
+            CrostiniExportImportStatusTracker::Status::RUNNING);
+
+  std::string notification_id;
+  {
+    const message_center::Notification& notification =
+        GetNotification(default_container_id_);
+    notification_id = notification.id();
+    EXPECT_EQ(notification.progress(), 0);
+    EXPECT_TRUE(notification.pinned());
+  }
+
+  // Fails.
+  SendDiskImageProgress(default_container_id_,
+                        vm_tools::concierge::DISK_STATUS_FAILED, 0);
+  EXPECT_EQ(GetController(default_container_id_), nullptr);
+  EXPECT_EQ(controller, nullptr);
+  {
+    const std::optional<message_center::Notification> ui_notification =
+        notification_display_service_->GetNotification(notification_id);
+    ASSERT_NE(ui_notification, std::nullopt);
+    EXPECT_FALSE(ui_notification->pinned());
+    std::string msg("Backup couldn't be completed due to an error");
+    EXPECT_EQ(ui_notification->message(), base::UTF8ToUTF16(msg));
+  }
+}
+
+TEST_F(CrostiniExportImportTest, TestExportDiskImageCancelled) {
+  base::ScopedTempFile zipfile;
+  EXPECT_TRUE(zipfile.Create());
+  crostini_export_import_->FillOperationData(
+      ExportImportType::EXPORT_DISK_IMAGE, custom_container_id_);
+  crostini_export_import_->FileSelected(ui::SelectedFileInfo(zipfile.path()),
+                                        0);
+  task_environment_.RunUntilIdle();
+  base::WeakPtr<CrostiniExportImportNotificationController> controller =
+      GetController(custom_container_id_);
+  ASSERT_NE(controller, nullptr);
+  EXPECT_EQ(controller->status(),
+            CrostiniExportImportStatusTracker::Status::RUNNING);
+
+  std::string notification_id;
+  {
+    const message_center::Notification& notification =
+        GetNotification(custom_container_id_);
+    notification_id = notification.id();
+    EXPECT_EQ(notification.progress(), 0);
+    EXPECT_TRUE(notification.pinned());
+  }
+
+  // CANCEL:
+  crostini_export_import_->CancelOperation(ExportImportType::EXPORT_DISK_IMAGE,
+                                           custom_container_id_);
+  ASSERT_NE(controller, nullptr);
+  EXPECT_EQ(controller->status(),
+            CrostiniExportImportStatusTracker::Status::CANCELLING);
+  {
+    const message_center::Notification& notification =
+        GetNotification(custom_container_id_);
+    EXPECT_EQ(notification.id(), notification_id);
+    EXPECT_EQ(notification.progress(), -1);
+    EXPECT_FALSE(notification.pinned());
+  }
+
+  // Should not be displayed as cancel is in progress
+  SendDiskImageProgress(default_container_id_,
+                        vm_tools::concierge::DISK_STATUS_IN_PROGRESS, 7);
+  ASSERT_NE(controller, nullptr);
+  EXPECT_EQ(controller->status(),
+            CrostiniExportImportStatusTracker::Status::CANCELLING);
+  {
+    const message_center::Notification& notification =
+        GetNotification(custom_container_id_);
+    EXPECT_EQ(notification.id(), notification_id);
+    EXPECT_EQ(notification.progress(), -1);
+    EXPECT_FALSE(notification.pinned());
+  }
+
+  // CANCELLED:
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(GetController(custom_container_id_), nullptr);
+  EXPECT_EQ(controller, nullptr);
+  {
+    const std::optional<message_center::Notification> ui_notification =
+        notification_display_service_->GetNotification(notification_id);
+    EXPECT_EQ(ui_notification, std::nullopt);
+  }
+}
+
+TEST_F(CrostiniExportImportTest, TestImportDiskImageSuccess) {
+  SetImportResponse();
+  crostini_export_import_->FillOperationData(
+      ExportImportType::IMPORT_DISK_IMAGE);
+  base::ScopedTempFile zipfile;
+  EXPECT_TRUE(zipfile.Create());
+  crostini_export_import_->FileSelected(ui::SelectedFileInfo(zipfile.path()),
+                                        0);
+  task_environment_.RunUntilIdle();
+  base::WeakPtr<CrostiniExportImportNotificationController> controller =
+      GetController(default_container_id_);
+  ASSERT_NE(controller, nullptr);
+  EXPECT_EQ(controller->status(),
+            CrostiniExportImportStatusTracker::Status::RUNNING);
+
+  std::string notification_id;
+  {
+    const message_center::Notification& notification =
+        GetNotification(default_container_id_);
+    notification_id = notification.id();
+    EXPECT_EQ(notification.progress(), 0);
+    EXPECT_TRUE(notification.pinned());
+  }
+
+  // 50% done.
+  SendDiskImageProgress(default_container_id_,
+                        vm_tools::concierge::DISK_STATUS_IN_PROGRESS, 50);
+  ASSERT_NE(controller, nullptr);
+  EXPECT_EQ(controller->status(),
+            CrostiniExportImportStatusTracker::Status::RUNNING);
+  {
+    const message_center::Notification& notification =
+        GetNotification(default_container_id_);
+    EXPECT_EQ(notification.id(), notification_id);
+    EXPECT_EQ(notification.progress(), 50);
+    EXPECT_TRUE(notification.pinned());
+  }
+
+  // Close notification and update progress. Should not update notification.
+  controller->get_delegate()->Close(false);
+  SendDiskImageProgress(default_container_id_,
+                        vm_tools::concierge::DISK_STATUS_IN_PROGRESS, 60);
+  ASSERT_NE(controller, nullptr);
+  EXPECT_EQ(controller->status(),
+            CrostiniExportImportStatusTracker::Status::RUNNING);
+  {
+    const message_center::Notification& notification =
+        GetNotification(default_container_id_);
+    EXPECT_EQ(notification.id(), notification_id);
+    EXPECT_EQ(notification.progress(), 50);
+    EXPECT_TRUE(notification.pinned());
+  }
+
+  // Done.
+  SendDiskImageProgress(default_container_id_,
+                        vm_tools::concierge::DISK_STATUS_CREATED, 100);
+  EXPECT_EQ(GetController(default_container_id_), nullptr);
+  EXPECT_EQ(controller, nullptr);
+  {
+    const std::optional<message_center::Notification> ui_notification =
+        notification_display_service_->GetNotification(notification_id);
+    ASSERT_NE(ui_notification, std::nullopt);
+    EXPECT_FALSE(ui_notification->pinned());
+    std::string msg("Linux apps & files have been successfully replaced");
+    EXPECT_EQ(ui_notification->message(), base::UTF8ToUTF16(msg));
+  }
+}
+
+TEST_F(CrostiniExportImportTest, TestImportZstdFileSuccess) {
+  SetImportResponse();
+  crostini_export_import_->FillOperationData(ExportImportType::IMPORT);
+  // We require the file to exist here.
+  zstdfile_ = base::GetTempDirForTesting().Append(zstd_filename);
+  base::WriteFile(zstdfile_, "");
+  crostini_export_import_->FileSelected(ui::SelectedFileInfo(zstdfile_), 0);
+
+  task_environment_.RunUntilIdle();
+  base::WeakPtr<CrostiniExportImportNotificationController> controller =
+      GetController(default_container_id_);
+  ASSERT_NE(controller, nullptr);
+  EXPECT_EQ(controller->status(),
+            CrostiniExportImportStatusTracker::Status::RUNNING);
+
+  std::string notification_id;
+  {
+    const message_center::Notification& notification =
+        GetNotification(default_container_id_);
+    notification_id = notification.id();
+    EXPECT_EQ(notification.progress(), 0);
+    EXPECT_TRUE(notification.pinned());
+  }
+
+  // 50% done.
+  SendDiskImageProgress(default_container_id_,
+                        vm_tools::concierge::DISK_STATUS_IN_PROGRESS, 50);
+  ASSERT_NE(controller, nullptr);
+  EXPECT_EQ(controller->status(),
+            CrostiniExportImportStatusTracker::Status::RUNNING);
+  {
+    const message_center::Notification& notification =
+        GetNotification(default_container_id_);
+    EXPECT_EQ(notification.id(), notification_id);
+    EXPECT_EQ(notification.progress(), 50);
+    EXPECT_TRUE(notification.pinned());
+  }
+
+  // Close notification and update progress. Should not update notification.
+  controller->get_delegate()->Close(false);
+  SendDiskImageProgress(default_container_id_,
+                        vm_tools::concierge::DISK_STATUS_IN_PROGRESS, 60);
+  ASSERT_NE(controller, nullptr);
+  EXPECT_EQ(controller->status(),
+            CrostiniExportImportStatusTracker::Status::RUNNING);
+  {
+    const message_center::Notification& notification =
+        GetNotification(default_container_id_);
+    EXPECT_EQ(notification.id(), notification_id);
+    EXPECT_EQ(notification.progress(), 50);
+    EXPECT_TRUE(notification.pinned());
+  }
+
+  // Done.
+  SendDiskImageProgress(default_container_id_,
+                        vm_tools::concierge::DISK_STATUS_CREATED, 100);
+  EXPECT_EQ(GetController(default_container_id_), nullptr);
+  EXPECT_EQ(controller, nullptr);
+  {
+    const std::optional<message_center::Notification> ui_notification =
+        notification_display_service_->GetNotification(notification_id);
+    ASSERT_NE(ui_notification, std::nullopt);
+    EXPECT_FALSE(ui_notification->pinned());
+    std::string msg("Linux apps & files have been successfully replaced");
+    EXPECT_EQ(ui_notification->message(), base::UTF8ToUTF16(msg));
+  }
+}
+
+TEST_F(CrostiniExportImportTest, TestImportDiskImageFail) {
+  SetImportResponse();
+  crostini_export_import_->FillOperationData(
+      ExportImportType::IMPORT_DISK_IMAGE);
+  base::ScopedTempFile zipfile;
+  EXPECT_TRUE(zipfile.Create());
+  crostini_export_import_->FileSelected(ui::SelectedFileInfo(zipfile.path()),
+                                        0);
+  task_environment_.RunUntilIdle();
+  base::WeakPtr<CrostiniExportImportNotificationController> controller =
+      GetController(default_container_id_);
+  ASSERT_NE(controller, nullptr);
+  EXPECT_EQ(controller->status(),
+            CrostiniExportImportStatusTracker::Status::RUNNING);
+
+  std::string notification_id;
+  {
+    const message_center::Notification& notification =
+        GetNotification(default_container_id_);
+    notification_id = notification.id();
+    EXPECT_EQ(notification.progress(), 0);
+    EXPECT_TRUE(notification.pinned());
+  }
+
+  // Fails.
+  SendDiskImageProgress(default_container_id_,
+                        vm_tools::concierge::DISK_STATUS_FAILED, 0);
+  EXPECT_EQ(GetController(default_container_id_), nullptr);
+  EXPECT_EQ(controller, nullptr);
+  {
+    const std::optional<message_center::Notification> ui_notification =
+        notification_display_service_->GetNotification(notification_id);
+    ASSERT_NE(ui_notification, std::nullopt);
+    EXPECT_FALSE(ui_notification->pinned());
+    std::string msg("Restoring couldn't be completed due to an error");
+    EXPECT_EQ(ui_notification->message(), base::UTF8ToUTF16(msg));
+  }
+}
+
+TEST_F(CrostiniExportImportTest, TestImportDiskImageCancelled) {
+  SetImportResponse();
+  base::ScopedTempFile zipfile;
+  EXPECT_TRUE(zipfile.Create());
+  crostini_export_import_->FillOperationData(
+      ExportImportType::IMPORT_DISK_IMAGE, custom_container_id_);
+  crostini_export_import_->FileSelected(ui::SelectedFileInfo(zipfile.path()),
+                                        0);
+  task_environment_.RunUntilIdle();
+  base::WeakPtr<CrostiniExportImportNotificationController> controller =
+      GetController(custom_container_id_);
+  ASSERT_NE(controller, nullptr);
+  EXPECT_EQ(controller->status(),
+            CrostiniExportImportStatusTracker::Status::RUNNING);
+
+  std::string notification_id;
+  {
+    const message_center::Notification& notification =
+        GetNotification(custom_container_id_);
+    notification_id = notification.id();
+    EXPECT_EQ(notification.progress(), 0);
+    EXPECT_TRUE(notification.pinned());
+  }
+
+  // CANCEL:
+  crostini_export_import_->CancelOperation(ExportImportType::IMPORT_DISK_IMAGE,
+                                           custom_container_id_);
+  ASSERT_NE(controller, nullptr);
+  EXPECT_EQ(controller->status(),
+            CrostiniExportImportStatusTracker::Status::CANCELLING);
+  {
+    const message_center::Notification& notification =
+        GetNotification(custom_container_id_);
+    EXPECT_EQ(notification.id(), notification_id);
+    EXPECT_EQ(notification.progress(), -1);
+    EXPECT_FALSE(notification.pinned());
+  }
+
+  // Should not be displayed as cancel is in progress
+  SendDiskImageProgress(default_container_id_,
+                        vm_tools::concierge::DISK_STATUS_IN_PROGRESS, 7);
+  ASSERT_NE(controller, nullptr);
+  EXPECT_EQ(controller->status(),
+            CrostiniExportImportStatusTracker::Status::CANCELLING);
+  {
+    const message_center::Notification& notification =
+        GetNotification(custom_container_id_);
+    EXPECT_EQ(notification.id(), notification_id);
+    EXPECT_EQ(notification.progress(), -1);
+    EXPECT_FALSE(notification.pinned());
+  }
+
+  // CANCELLED:
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(GetController(custom_container_id_), nullptr);
+  EXPECT_EQ(controller, nullptr);
+  {
+    const std::optional<message_center::Notification> ui_notification =
+        notification_display_service_->GetNotification(notification_id);
+    EXPECT_EQ(ui_notification, std::nullopt);
+  }
+}
+
 TEST_F(CrostiniExportImportTest, TestExportSuccess) {
   crostini_export_import_->FillOperationData(ExportImportType::EXPORT);
   crostini_export_import_->FileSelected(ui::SelectedFileInfo(tarball_), 0);
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(fake_seneschal_client_->share_path_called());
+  EXPECT_TRUE(ash::FakeSeneschalClient::Get()->share_path_called());
   base::WeakPtr<CrostiniExportImportNotificationController> controller =
       GetController(default_container_id_);
   ASSERT_NE(controller, nullptr);
@@ -325,7 +777,7 @@ TEST_F(CrostiniExportImportTest, TestExportCustomVmContainerSuccess) {
                                              custom_container_id_);
   crostini_export_import_->FileSelected(ui::SelectedFileInfo(tarball_), 0);
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(fake_seneschal_client_->share_path_called());
+  EXPECT_TRUE(ash::FakeSeneschalClient::Get()->share_path_called());
   base::WeakPtr<CrostiniExportImportNotificationController> controller =
       GetController(custom_container_id_);
   ASSERT_NE(controller, nullptr);
@@ -401,7 +853,8 @@ TEST_F(CrostiniExportImportTest, TestExportCustomVmContainerSuccess) {
   EXPECT_TRUE(base::PathExists(tarball_));
 }
 
-TEST_F(CrostiniExportImportTest, TestExportFail) {
+// TODO(crbug.com/440792198): Disabled for flakiness.
+TEST_F(CrostiniExportImportTest, DISABLED_TestExportFail) {
   crostini_export_import_->FillOperationData(ExportImportType::EXPORT);
   crostini_export_import_->FileSelected(ui::SelectedFileInfo(tarball_), 0);
   task_environment_.RunUntilIdle();
@@ -439,7 +892,9 @@ TEST_F(CrostiniExportImportTest, TestExportFail) {
   EXPECT_FALSE(base::PathExists(tarball_));
 }
 
-TEST_F(CrostiniExportImportTest, TestExportCancelled) {
+// TODO(crbug.com/441657411): Disabled as flaky since the replacement of
+// RunUntilIdle.
+TEST_F(CrostiniExportImportTest, DISABLED_TestExportCancelled) {
   crostini_export_import_->FillOperationData(ExportImportType::EXPORT,
                                              custom_container_id_);
   crostini_export_import_->FileSelected(ui::SelectedFileInfo(tarball_), 0);
@@ -510,7 +965,8 @@ TEST_F(CrostiniExportImportTest, TestExportCancelled) {
   EXPECT_FALSE(base::PathExists(tarball_));
 }
 
-TEST_F(CrostiniExportImportTest, TestExportDoneBeforeCancelled) {
+// TODO(crbug.com/440792198): Disabled for flakiness.
+TEST_F(CrostiniExportImportTest, DISABLED_TestExportDoneBeforeCancelled) {
   crostini_export_import_->FillOperationData(ExportImportType::EXPORT);
   crostini_export_import_->FileSelected(ui::SelectedFileInfo(tarball_), 0);
   task_environment_.RunUntilIdle();
@@ -563,7 +1019,7 @@ TEST_F(CrostiniExportImportTest, TestImportSuccess) {
   crostini_export_import_->FillOperationData(ExportImportType::IMPORT);
   crostini_export_import_->FileSelected(ui::SelectedFileInfo(tarball_), 0);
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(fake_seneschal_client_->share_path_called());
+  EXPECT_TRUE(ash::FakeSeneschalClient::Get()->share_path_called());
   base::WeakPtr<CrostiniExportImportNotificationController> controller =
       GetController(default_container_id_);
   ASSERT_NE(controller, nullptr);
@@ -651,7 +1107,7 @@ TEST_F(CrostiniExportImportTest, TestImportCustomVmContainerSuccess) {
                                              custom_container_id_);
   crostini_export_import_->FileSelected(ui::SelectedFileInfo(tarball_), 0);
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(fake_seneschal_client_->share_path_called());
+  EXPECT_TRUE(ash::FakeSeneschalClient::Get()->share_path_called());
   base::WeakPtr<CrostiniExportImportNotificationController> controller =
       GetController(custom_container_id_);
   ASSERT_NE(controller, nullptr);

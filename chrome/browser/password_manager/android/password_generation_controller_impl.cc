@@ -16,13 +16,13 @@
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "chrome/browser/keyboard_accessory/android/password_accessory_controller.h"
-#include "chrome/browser/password_manager/android/password_infobar_utils.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/touch_to_fill/password_manager/password_generation/android/touch_to_fill_password_generation_bridge_impl.h"
 #include "chrome/browser/touch_to_fill/password_manager/password_generation/android/touch_to_fill_password_generation_controller.h"
+#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/signatures.h"
@@ -75,7 +75,7 @@ void PasswordGenerationControllerImpl::OnAutomaticGenerationAvailable(
   // FocusedInputChanged by now, because there is a race condition. The roots
   // of the OnAutomaticGenerationAvailable and FocusedInputChanged calls are
   // the same in the renderer. So we need to set it here too.
-  FocusedInputChanged(autofill::mojom::FocusedFieldType::kFillablePasswordField,
+  FocusedInputChanged(/*is_field_eligible_for_generation=*/true,
                       std::move(target_frame_driver));
 
   active_frame_driver_->GetPasswordManager()
@@ -117,17 +117,16 @@ void PasswordGenerationControllerImpl::ShowManualGenerationDialog(
 }
 
 void PasswordGenerationControllerImpl::FocusedInputChanged(
-    autofill::mojom::FocusedFieldType focused_field_type,
+    bool is_field_eligible_for_generation,
     base::WeakPtr<password_manager::ContentPasswordManagerDriver> driver) {
   TRACE_EVENT0("passwords",
                "PasswordGenerationControllerImpl::FocusedInputChanged");
   // It's probably a duplicate notification.
-  if (IsActiveFrameDriver(driver.get()) &&
-      focused_field_type == FocusedFieldType::kFillablePasswordField) {
+  if (IsActiveFrameDriver(driver.get()) && is_field_eligible_for_generation) {
     return;
   }
   ResetFocusState();
-  if (focused_field_type == FocusedFieldType::kFillablePasswordField) {
+  if (is_field_eligible_for_generation) {
     active_frame_driver_ = std::move(driver);
   }
 }
@@ -228,6 +227,9 @@ PasswordGenerationControllerImpl::PasswordGenerationControllerImpl(
 
 std::unique_ptr<TouchToFillPasswordGenerationController>
 PasswordGenerationControllerImpl::CreateTouchToFillGenerationController() {
+  if (!active_frame_driver_ || !generation_element_data_) {
+    return nullptr;
+  }
   return std::make_unique<TouchToFillPasswordGenerationController>(
       active_frame_driver_, &GetWebContents(), *generation_element_data_,
       std::make_unique<TouchToFillPasswordGenerationBridgeImpl>(),
@@ -249,6 +251,11 @@ PasswordGenerationControllerImpl::
                          OnTouchToFillForGenerationDismissed,
                      base::Unretained(this)),
       manual_filling_controller);
+}
+
+TouchToFillPasswordGenerationController* PasswordGenerationControllerImpl::
+    GetTouchToFillGenerationControllerForTesting() {
+  return touch_to_fill_generation_controller_.get();
 }
 
 bool PasswordGenerationControllerImpl::TryToShowGenerationTouchToFill(
@@ -297,11 +304,14 @@ bool PasswordGenerationControllerImpl::ShowBottomSheet(
     PasswordGenerationType type) {
   touch_to_fill_generation_controller_ =
       create_touch_to_fill_generation_controller_.Run();
+  if (!touch_to_fill_generation_controller_) {
+    return false;  // Prevents using reset generation data, e.g. on unfocus.
+  }
   Profile* profile =
       Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
-  std::string account = password_manager::GetDisplayableAccountName(
-      SyncServiceFactory::GetForProfile(profile),
-      IdentityManagerFactory::GetForProfile(profile));
+  std::string account =
+      GetDisplayableAccountName(SyncServiceFactory::GetForProfile(profile),
+                                IdentityManagerFactory::GetForProfile(profile));
   if (!touch_to_fill_generation_controller_->ShowTouchToFill(
           std::move(account), type, client_->GetPrefs())) {
     return false;

@@ -12,7 +12,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/android/webapk/webapk_install_service.h"
 #include "chrome/browser/android/webapk/webapk_restore_web_contents_manager.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/webapps/browser/android/webapk/webapk_types.h"
 #include "components/webapps/browser/android/webapps_icon_utils.h"
 #include "components/webapps/browser/installable/installable_logging.h"
@@ -42,26 +41,21 @@ constexpr char kRestoreInstallFetchedWebApkResultHistogram[] =
 
 WebApkRestoreData::WebApkRestoreData(
     webapps::AppId id,
-    std::unique_ptr<webapps::ShortcutInfo> info,
-    base::Time time)
-    : app_id(id), shortcut_info(std::move(info)), last_used_time(time) {}
+    std::unique_ptr<webapps::ShortcutInfo> info)
+    : app_id(id), shortcut_info(std::move(info)) {}
 WebApkRestoreData::~WebApkRestoreData() = default;
 
 WebApkRestoreData::WebApkRestoreData(WebApkRestoreData&& other)
-    : app_id(other.app_id),
-      shortcut_info(std::move(other.shortcut_info)),
-      last_used_time(other.last_used_time) {}
+    : app_id(other.app_id), shortcut_info(std::move(other.shortcut_info)) {}
 
 WebApkRestoreTask::WebApkRestoreTask(
     base::PassKey<WebApkRestoreManager> pass_key,
-    Profile* profile,
+    WebApkInstallService* web_apk_install_service,
     WebApkRestoreWebContentsManager* web_contents_manager,
-    std::unique_ptr<webapps::ShortcutInfo> shortcut_info,
-    base::Time last_used_time)
-    : profile_(profile),
+    std::unique_ptr<webapps::ShortcutInfo> shortcut_info)
+    : web_apk_install_service_(web_apk_install_service),
       web_contents_manager_(web_contents_manager->GetWeakPtr()),
-      fallback_info_(std::move(shortcut_info)),
-      last_used_time_(last_used_time) {}
+      fallback_info_(std::move(shortcut_info)) {}
 
 WebApkRestoreTask::~WebApkRestoreTask() = default;
 
@@ -100,8 +94,7 @@ void WebApkRestoreTask::OnIconDownloaded(base::OnceClosure fetch_icon_callback,
 void WebApkRestoreTask::OnIconCreated(base::OnceClosure fetch_icon_callback,
                                       const SkBitmap& bitmap,
                                       bool is_generated) {
-  if ((is_generated || fallback_info_->is_primary_icon_maskable) &&
-      webapps::WebappsIconUtils::DoesAndroidSupportMaskableIcons()) {
+  if ((is_generated || fallback_info_->is_primary_icon_maskable)) {
     app_icon_ = webapps::WebappsIconUtils::GenerateAdaptiveIconBitmap(bitmap);
   } else {
     app_icon_ = bitmap;
@@ -181,7 +174,7 @@ void WebApkRestoreTask::Install(const webapps::ShortcutInfo& restore_info,
   // TODO(crbug.com/41496289): We need web_contents to construct the proto,
   // but generating WebAPK on server side and installing the apk can be done
   // in parallel with the next task.
-  WebApkInstallService::Get(profile_)->InstallRestoreAsync(
+  web_apk_install_service_->InstallRestoreAsync(
       web_contents_manager_->web_contents(), restore_info, primary_icon,
       webapps::WebappInstallSource::WEBAPK_RESTORE,
       base::BindOnce(&WebApkRestoreTask::OnFinishedInstall,

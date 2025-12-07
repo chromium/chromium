@@ -20,7 +20,8 @@ namespace content {
 class CONTENT_EXPORT InspectorMediaEventHandler
     : public BatchingMediaLog::EventHandler {
  public:
-  explicit InspectorMediaEventHandler(blink::MediaInspectorContext*);
+  explicit InspectorMediaEventHandler(blink::MediaInspectorContext*,
+                                      int dom_node_id);
   ~InspectorMediaEventHandler() override = default;
   void SendQueuedMediaEvents(std::vector<media::MediaLogRecord>) override;
   void OnWebMediaPlayerDestroyed() override;

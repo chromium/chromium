@@ -58,10 +58,6 @@ class CORE_EXPORT CSSTransitionData final : public CSSTimingData {
   using TransitionPropertyVector = Vector<TransitionProperty, 1>;
   using TransitionBehaviorVector = Vector<TransitionBehavior, 1>;
 
-  std::unique_ptr<CSSTransitionData> Clone() {
-    return base::WrapUnique(new CSSTransitionData(*this));
-  }
-
   CSSTransitionData();
   explicit CSSTransitionData(const CSSTransitionData&);
 

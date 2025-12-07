@@ -43,8 +43,9 @@ function safeCallbackApply(name, callback, args, priorStackTrace) {
  * @return {string} The formatted error message.
  */
 function formatErrorMessage(message, e, priorStackTrace) {
-  if (e)
+  if (e) {
     message += ': ' + safeErrorToString(e, false);
+  }
 
   var stack;
   try {
@@ -55,23 +56,27 @@ function formatErrorMessage(message, e, priorStackTrace) {
   } catch (e) {}
 
   // If a stack is not provided, capture a stack trace.
-  if (!priorStackTrace && !stack)
+  if (!priorStackTrace && !stack) {
     stack = getStackTrace();
+  }
 
   stack = filterExtensionStackTrace(stack);
-  if (stack)
+  if (stack) {
     message += '\n' + stack;
+  }
 
-  // If an asynchronouse stack trace was set, append it.
-  if (priorStackTrace)
+  // If an asynchronous stack trace was set, append it.
+  if (priorStackTrace) {
     message += '\n' + priorStackTrace;
+  }
 
   return message;
 }
 
 function filterExtensionStackTrace(stack) {
-  if (!stack)
+  if (!stack) {
     return '';
+  }
   // Remove stack frames in the stack trace that weren't associated with the
   // extension, to not confuse extension developers with internal details.
   stack = $String.split(stack, '\n');

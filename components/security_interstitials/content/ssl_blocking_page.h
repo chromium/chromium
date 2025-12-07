@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/security_interstitials/content/ssl_blocking_page_base.h"
@@ -23,13 +22,6 @@ class PolicyTest_SSLErrorOverridingDisallowed_Test;
 namespace security_interstitials {
 class SSLErrorUI;
 }
-
-// URL to use as the 'Learn More' link when the interstitial is caused by
-// a "ERR_CERT_SYMANTEC_LEGACY" error, -202 fragment is included so
-// chrome://connection-help expands the right section if the user can't reach
-// the help center.
-const char kSymantecSupportUrl[] =
-    "https://support.google.com/chrome?p=symantec#-202";
 
 // This class is responsible for showing/hiding the interstitial page that is
 // shown when a certificate error happens.

@@ -7,11 +7,10 @@
 
 #include "base/gtest_prod_util.h"
 #include "cc/tiles/raster_dark_mode_filter.h"
+#include "third_party/blink/renderer/platform/graphics/dark_mode_filter.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
-
-class DarkModeFilter;
 
 struct DarkModeSettings;
 

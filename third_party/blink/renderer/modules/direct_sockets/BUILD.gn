@@ -6,6 +6,8 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("direct_sockets") {
   sources = [
+    "multicast_controller.cc",
+    "multicast_controller.h",
     "socket.cc",
     "socket.h",
     "stream_wrapper.cc",
@@ -29,12 +31,13 @@ blink_modules_sources("direct_sockets") {
     "udp_writable_stream_wrapper.cc",
     "udp_writable_stream_wrapper.h",
   ]
-  deps = [ "//net:net" ]
+  deps = [ "//net" ]
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "multicast_controller_unittest.cc",
     "tcp_readable_stream_wrapper_unittest.cc",
     "tcp_socket_unittest.cc",
     "tcp_writable_stream_wrapper_unittest.cc",

@@ -15,7 +15,7 @@
 
 namespace gfx {
 
-class GFX_EXPORT PlatformFontSkia : public PlatformFont {
+class COMPONENT_EXPORT(GFX) PlatformFontSkia : public PlatformFont {
  public:
   // TODO(derat): Get rid of the default constructor in favor of using
   // FontList (which also has the concept of a default font but may contain
@@ -58,6 +58,7 @@ class GFX_EXPORT PlatformFontSkia : public PlatformFont {
   int GetStyle() const override;
   const std::string& GetFontName() const override;
   std::string GetActualFontName() const override;
+  std::vector<std::string> GetActualFontNames() const override;
   int GetFontSize() const override;
   const FontRenderParams& GetFontRenderParams() override;
   sk_sp<SkTypeface> GetNativeSkTypeface() const override;

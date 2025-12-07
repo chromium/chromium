@@ -36,7 +36,7 @@ constexpr char kSignedExchangeEnabledAcceptHeaderForCrossOriginPrefetch[] =
 PrefetchURLLoader::PrefetchURLLoader(
     int32_t request_id,
     uint32_t options,
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     const network::ResourceRequest& resource_request,
     const net::NetworkAnonymizationKey& network_anonymization_key,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
@@ -128,22 +128,9 @@ void PrefetchURLLoader::FollowRedirect(
 
 void PrefetchURLLoader::SetPriority(net::RequestPriority priority,
                                     int intra_priority_value) {
-  if (loader_)
+  if (loader_) {
     loader_->SetPriority(priority, intra_priority_value);
-}
-
-void PrefetchURLLoader::PauseReadingBodyFromNet() {
-  // TODO(kinuko): Propagate or handle the case where |loader_| is
-  // detached (for SignedExchanges), see OnReceiveResponse.
-  if (loader_)
-    loader_->PauseReadingBodyFromNet();
-}
-
-void PrefetchURLLoader::ResumeReadingBodyFromNet() {
-  // TODO(kinuko): Propagate or handle the case where |loader_| is
-  // detached (for SignedExchanges), see OnReceiveResponse.
-  if (loader_)
-    loader_->ResumeReadingBodyFromNet();
+  }
 }
 
 void PrefetchURLLoader::OnReceiveEarlyHints(

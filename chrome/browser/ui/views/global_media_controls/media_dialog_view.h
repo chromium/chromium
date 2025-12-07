@@ -51,7 +51,6 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
                         public speech::SodaInstaller::Observer {
   METADATA_HEADER(MediaDialogView, views::BubbleDialogDelegateView)
  public:
-
   MediaDialogView(const MediaDialogView&) = delete;
   MediaDialogView& operator=(const MediaDialogView&) = delete;
 
@@ -104,11 +103,14 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
 
   void TargetLanguageChanged();
 
-  const std::map<const std::string, global_media_controls::MediaItemUIView*>&
+  const std::map<
+      const std::string,
+      raw_ptr<global_media_controls::MediaItemUIView, CtnExperimental>>&
   GetItemsForTesting() const;
 
-  const std::map<const std::string,
-                 global_media_controls::MediaItemUIUpdatedView*>&
+  const std::map<
+      const std::string,
+      raw_ptr<global_media_controls::MediaItemUIUpdatedView, CtnExperimental>>&
   GetUpdatedItemsForTesting() const;
 
   const global_media_controls::MediaItemUIListView* GetListViewForTesting()
@@ -180,9 +182,12 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
   // A map of all the media item UIs that `MediaDialogView` is currently
   // observing. If media::kGlobalMediaControlsUpdatedUI on non-CrOS is enabled,
   // `updated_items_` is used, otherwise `observed_items_` is used.
-  std::map<const std::string, global_media_controls::MediaItemUIView*>
+  std::map<const std::string,
+           raw_ptr<global_media_controls::MediaItemUIView, CtnExperimental>>
       observed_items_;
-  std::map<const std::string, global_media_controls::MediaItemUIUpdatedView*>
+  std::map<
+      const std::string,
+      raw_ptr<global_media_controls::MediaItemUIUpdatedView, CtnExperimental>>
       updated_items_;
 
   raw_ptr<views::View> live_caption_container_ = nullptr;

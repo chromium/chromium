@@ -13,12 +13,14 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/prefs/mock_pref_change_callback.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_store.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/preference_specifics.pb.h"
@@ -36,6 +38,7 @@ namespace sync_preferences {
 
 namespace {
 
+using testing::Eq;
 using testing::NotNull;
 
 const char kStringPrefName[] = "pref.string";
@@ -44,10 +47,10 @@ const char kDictionaryPrefName[] = "pref.dictionary";
 const char kCustomMergePrefName[] = "pref.custom";
 
 const char kStringPriorityPrefName[] = "priority.pref.string";
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kStringOsPrefName[] = "os.pref.string";
 const char kStringOsPriorityPrefName[] = "os.priority.pref.string";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Assigning an id of 0 to all the test prefs.
 const TestSyncablePrefsDatabase::PrefsMap kSyncablePrefsDatabase = {
@@ -64,13 +67,13 @@ const TestSyncablePrefsDatabase::PrefsMap kSyncablePrefsDatabase = {
     {kStringPriorityPrefName,
      {0, syncer::PRIORITY_PREFERENCES, PrefSensitivity::kNone,
       MergeBehavior::kNone}},
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     {kStringOsPrefName,
      {0, syncer::OS_PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
     {kStringOsPriorityPrefName,
      {0, syncer::OS_PRIORITY_PREFERENCES, PrefSensitivity::kNone,
       MergeBehavior::kNone}},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 // Creates SyncData for a remote pref change.
@@ -597,7 +600,7 @@ TEST_F(SyncablePrefsDatabaseTest, ShouldAllowRegisteringSyncablePriorityPrefs) {
               NotNull());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(SyncablePrefsDatabaseTest, ShouldAllowRegisteringSyncableOSPrefs) {
   pref_registry_->RegisterStringPref(
       kStringOsPrefName, std::string(),
@@ -660,7 +663,7 @@ TEST_F(SyncablePrefsDatabaseDeathTest,
       kExpectedErrorMessageHint);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(SyncablePrefsDatabaseDeathTest, ShouldFailRegisteringIllegalOSPrefs) {
   const std::string kIllegalStringPrefName = "not-allowed_string_pref";
   const std::string kIllegalListPrefName = "not-allowed_list_pref";
@@ -721,7 +724,7 @@ TEST_F(SyncablePrefsDatabaseDeathTest,
                                kStringPriorityPrefName, std::string(),
                                user_prefs::PrefRegistrySyncable::SYNCABLE_PREF),
                            kExpectedErrorMessageHint);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_DCHECK_DEATH_WITH(
       pref_registry_->RegisterStringPref(
           kStringOsPrefName, std::string(),
@@ -739,7 +742,7 @@ class PrefModelAssociatorWithPreferencesAccountStorageTest
     : public testing::Test {
  protected:
   PrefModelAssociatorWithPreferencesAccountStorageTest()
-      : feature_list_(syncer::kEnablePreferencesAccountStorage),
+      : feature_list_(switches::kEnablePreferencesAccountStorage),
         client_(base::MakeRefCounted<TestPrefModelAssociatorClient>()),
         pref_registry_(
             base::MakeRefCounted<user_prefs::PrefRegistrySyncable>()),
@@ -881,6 +884,70 @@ TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
 
   MergeDataAndStartSyncing(initial_data);
   ASSERT_EQ(pref_service_->GetString(kStringPrefName), "new value");
+}
+
+TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
+       ShouldRecordHistogramOnPrefChange) {
+  base::HistogramTester histogram_tester;
+  MergeDataAndStartSyncing(syncer::SyncDataList());
+
+  pref_service_->SetString(kStringPrefName, "new value");
+
+  histogram_tester.ExpectTotalCount("Sync.SyncablePrefValueChanged", 1);
+  histogram_tester.ExpectTotalCount("Sync.SyncablePrefValueChanged.PREFERENCE",
+                                    1);
+}
+
+TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
+       ShouldRemoveAccountValuesUponStayStoppedAndMaybeClearData) {
+  // Load pre-existing values in the local and the account stores.
+  local_pref_store_->SetValue(kStringPrefName, base::Value("local value"), 0);
+  account_pref_store_->SetValue(kStringPrefName, base::Value("account value"),
+                                0);
+  ASSERT_EQ(pref_service_->GetString(kStringPrefName), "account value");
+
+  // Listen to pref changes.
+  MockPrefChangeCallback observer(pref_service_.get());
+  PrefChangeRegistrar registrar;
+  registrar.Init(pref_service_.get());
+  registrar.Add(kStringPrefName, observer.GetCallback());
+
+  // Observer should get notified since the effective value changes.
+  EXPECT_CALL(observer, OnPreferenceChanged(kStringPrefName));
+
+  pref_model_associator_->StayStoppedAndMaybeClearData(syncer::PREFERENCES);
+  EXPECT_EQ(pref_service_->GetString(kStringPrefName), "local value");
+
+  const base::Value* local_value = nullptr;
+  local_pref_store_->GetValue(kStringPrefName, &local_value);
+  EXPECT_THAT(local_value, Pointee(Eq("local value")));
+  EXPECT_TRUE(account_pref_store_->GetValues().empty());
+}
+
+TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
+       ShouldBeNoOpUponStayStoppedAndMaybeClearDataIfNoAccountValue) {
+  // Load pre-existing value in the local store.
+  local_pref_store_->SetValue(kStringPrefName, base::Value("local value"), 0);
+  ASSERT_EQ(pref_service_->GetString(kStringPrefName), "local value");
+  ASSERT_TRUE(account_pref_store_->GetValues().empty());
+
+  // Listen to pref changes.
+  MockPrefChangeCallback observer(pref_service_.get());
+  PrefChangeRegistrar registrar;
+  registrar.Init(pref_service_.get());
+  registrar.Add(kStringPrefName, observer.GetCallback());
+
+  // Observer should not get notified since there are no account values to
+  // be cleared.
+  EXPECT_CALL(observer, OnPreferenceChanged).Times(0);
+
+  pref_model_associator_->StayStoppedAndMaybeClearData(syncer::PREFERENCES);
+  EXPECT_EQ(pref_service_->GetString(kStringPrefName), "local value");
+
+  const base::Value* local_value = nullptr;
+  local_pref_store_->GetValue(kStringPrefName, &local_value);
+  EXPECT_THAT(local_value, Pointee(Eq("local value")));
+  EXPECT_TRUE(account_pref_store_->GetValues().empty());
 }
 
 }  // namespace

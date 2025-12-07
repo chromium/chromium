@@ -70,8 +70,7 @@ void MojomDevToolsAgentHost::Reload() {
 
 // Devtools agent host impl overrides:
 
-bool MojomDevToolsAgentHost::AttachSession(DevToolsSession* session,
-                                           bool aquire_wake_lock) {
+bool MojomDevToolsAgentHost::AttachSession(DevToolsSession* session) {
   session->AttachToAgent(associated_agent_remote_.get(),
                          delegate_->ForceIOSession());
   return true;

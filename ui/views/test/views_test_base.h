@@ -48,6 +48,7 @@ class ViewsTestBase : public PlatformTest {
   struct WidgetCloser {
     void operator()(Widget* widget) const;
   };
+  // DEPRECATED. Use std::unique_ptr<Widget> with CLIENT_OWNS_WIDGET instead.
   using WidgetAutoclosePtr = std::unique_ptr<Widget, WidgetCloser>;
 
   // Constructs a ViewsTestBase with |traits| being forwarded to its
@@ -107,10 +108,6 @@ class ViewsTestBase : public PlatformTest {
   // |widget|.
   void SimulateDesktopNativeDestroy(Widget* widget);
 #endif
-
-  // Get the system reserved height at the top of the screen. On Mac, this
-  // includes the menu bar and title bar.
-  static int GetSystemReservedHeightAtTopOfScreen();
 
  protected:
   base::test::TaskEnvironment* task_environment() {
@@ -172,6 +169,10 @@ class ViewsTestBase : public PlatformTest {
           views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
 
  private:
+#if BUILDFLAG(IS_WIN)
+  ui::ScopedOleInitializer ole_initializer_;
+#endif
+
   std::unique_ptr<base::test::TaskEnvironment> task_environment_;
   std::optional<ui::AXPlatformForTest> ax_platform_;
 
@@ -188,10 +189,6 @@ class ViewsTestBase : public PlatformTest {
   bool interactive_setup_called_ = false;
   bool setup_called_ = false;
   bool teardown_called_ = false;
-
-#if BUILDFLAG(IS_WIN)
-  ui::ScopedOleInitializer ole_initializer_;
-#endif
 };
 
 // A helper that makes it easier to declare basic views tests that want to test

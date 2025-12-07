@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/file_suggest/file_suggest_util.h"
 #include "components/keyed_service/core/keyed_service.h"
 
+class ApplicationLocaleStorage;
 class Profile;
 
 namespace app_list {
@@ -43,8 +44,11 @@ class FileSuggestKeyedService : public KeyedService {
     virtual void OnFileSuggestionUpdated(FileSuggestionType type) {}
   };
 
-  FileSuggestKeyedService(Profile* profile,
-                          PersistentProto<app_list::RemovedResultsProto> proto);
+  // `application_locale_storage` must be non-null and must outlive `this`.
+  FileSuggestKeyedService(
+      const ApplicationLocaleStorage* application_locale_storage,
+      Profile* profile,
+      PersistentProto<app_list::RemovedResultsProto> proto);
   FileSuggestKeyedService(const FileSuggestKeyedService&) = delete;
   FileSuggestKeyedService& operator=(const FileSuggestKeyedService&) = delete;
   ~FileSuggestKeyedService() override;
@@ -104,6 +108,12 @@ class FileSuggestKeyedService : public KeyedService {
  protected:
   // Called whenever a suggestion provider updates.
   void OnSuggestionProviderUpdated(FileSuggestionType type);
+
+  // Filters `suggestions` so that any suggestons which have a duplicate file
+  // path will be removed. Then returns the filtered result through `callback`.
+  void FilterDuplicateSuggestions(
+      GetSuggestFileDataCallback callback,
+      const std::optional<std::vector<FileSuggestData>>& suggestions);
 
   // Filters `suggestions` so that the suggestions that were removed before do
   // not appear. Then returns the filtered result through `callback`.

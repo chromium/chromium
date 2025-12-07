@@ -4,12 +4,15 @@
 
 #include "chrome/browser/apps/intent_helper/chromeos_disabled_apps_throttle.h"
 
+#include <cstddef>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/profiles/profile.h"
@@ -43,30 +46,59 @@ std::string GetAppDisabledErrorPage() {
   webui::SetLoadTimeDataDefaults(app_locale, &strings);
   return webui::GetI18nTemplateHtml(html, strings);
 }
+
+std::optional<std::string> FindThrottlingApp(Profile* profile,
+                                             const GURL& url) {
+  std::vector<std::string> app_ids =
+      apps::AppServiceProxyFactory::GetForProfile(profile)->GetAppIdsForUrl(
+          url, /*exclude_browsers=*/true, /*exclude_browser_tab_apps=*/false);
+
+  for (const auto& app_id : app_ids) {
+    policy::SystemFeature system_feature =
+        policy::SystemFeaturesDisableListPolicyHandler::
+            GetSystemFeatureFromAppId(app_id);
+
+    if (system_feature == policy::SystemFeature::kUnknownSystemFeature) {
+      continue;
+    }
+
+    if (!policy::SystemFeaturesDisableListPolicyHandler::
+            IsSystemFeatureDisabled(system_feature,
+                                    g_browser_process->local_state())) {
+      continue;
+    }
+
+    return app_id;
+  }
+
+  return std::nullopt;
+}
 }  // namespace
 
 // static
-std::unique_ptr<content::NavigationThrottle>
-ChromeOsDisabledAppsThrottle::MaybeCreate(content::NavigationHandle* handle) {
+void ChromeOsDisabledAppsThrottle::MaybeCreateAndAdd(
+    content::NavigationThrottleRegistry& registry) {
   // Don't handle navigations in subframes or main frames that are in a nested
   // frame tree (e.g. portals, fenced-frame).
-  if (!handle->IsInPrimaryMainFrame() && !handle->IsInPrerenderedMainFrame()) {
-    return nullptr;
+  auto& handle = registry.GetNavigationHandle();
+  if (!handle.IsInPrimaryMainFrame() && !handle.IsInPrerenderedMainFrame()) {
+    return;
   }
 
-  content::WebContents* web_contents = handle->GetWebContents();
+  content::WebContents* web_contents = handle.GetWebContents();
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   if (!AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
-    return nullptr;
+    return;
   }
 
-  return base::WrapUnique(new ChromeOsDisabledAppsThrottle(handle));
+  registry.AddThrottle(
+      base::WrapUnique(new ChromeOsDisabledAppsThrottle(registry)));
 }
 
 ChromeOsDisabledAppsThrottle::ChromeOsDisabledAppsThrottle(
-    content::NavigationHandle* navigation_handle)
-    : content::NavigationThrottle(navigation_handle) {}
+    content::NavigationThrottleRegistry& registry)
+    : content::NavigationThrottle(registry) {}
 ChromeOsDisabledAppsThrottle::~ChromeOsDisabledAppsThrottle() = default;
 
 const char* ChromeOsDisabledAppsThrottle::GetNameForLogging() {
@@ -88,30 +120,21 @@ ThrottleCheckResult ChromeOsDisabledAppsThrottle::HandleRequest() {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
-  std::vector<std::string> app_ids =
-      apps::AppServiceProxyFactory::GetForProfile(profile)->GetAppIdsForUrl(
-          url, /*exclude_browsers=*/true, /*exclude_browser_tab_apps=*/false);
+  std::optional<std::string> found_app_id = FindThrottlingApp(profile, url);
 
-  for (const auto& app_id : app_ids) {
-    policy::SystemFeature system_feature =
-        policy::SystemFeaturesDisableListPolicyHandler::
-            GetSystemFeatureFromAppId(app_id);
-
-    if (system_feature == policy::SystemFeature::kUnknownSystemFeature) {
-      continue;
-    }
-
-    if (!policy::SystemFeaturesDisableListPolicyHandler::
-            IsSystemFeatureDisabled(system_feature,
-                                    g_browser_process->local_state())) {
-      continue;
-    }
-
-    return ThrottleCheckResult(content::NavigationThrottle::CANCEL,
-                               net::ERR_BLOCKED_BY_ADMINISTRATOR,
-                               GetAppDisabledErrorPage());
+  if (!found_app_id) {
+    return content::NavigationThrottle::PROCEED;
   }
-  return content::NavigationThrottle::PROCEED;
+
+  switch (
+      apps::chrome_app_deprecation::HandleDeprecation(*found_app_id, profile)) {
+    case apps::chrome_app_deprecation::DeprecationStatus::kLaunchBlocked:
+      return content::NavigationThrottle::CANCEL;
+    case apps::chrome_app_deprecation::DeprecationStatus::kLaunchAllowed:
+      return ThrottleCheckResult(content::NavigationThrottle::CANCEL,
+                                 net::ERR_BLOCKED_BY_ADMINISTRATOR,
+                                 GetAppDisabledErrorPage());
+  }
 }
 
 }  // namespace apps

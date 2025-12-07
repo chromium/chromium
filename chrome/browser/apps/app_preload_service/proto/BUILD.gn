@@ -9,5 +9,5 @@ proto_library("proto") {
 
   sources = [ "app_preload.proto" ]
 
-  link_deps = [ "//chrome/browser/apps/almanac_api_client/proto" ]
+  deps = [ "//chrome/browser/apps/almanac_api_client/proto" ]
 }

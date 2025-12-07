@@ -136,8 +136,9 @@ HRESULT EtwTraceConsumerBase<ImplClass>::OpenSessionImpl(
   logfile.BufferCallback = &ProcessBufferCallback;
   logfile.Context = this;
   TRACEHANDLE trace_handle = ::OpenTrace(&logfile);
-  if (reinterpret_cast<TRACEHANDLE>(INVALID_HANDLE_VALUE) == trace_handle)
+  if (reinterpret_cast<TRACEHANDLE>(INVALID_HANDLE_VALUE) == trace_handle) {
     return HRESULT_FROM_WIN32(::GetLastError());
+  }
 
   trace_handles_.push_back(trace_handle);
   return S_OK;
@@ -161,8 +162,9 @@ inline HRESULT EtwTraceConsumerBase<ImplClass>::Close() {
       ULONG ret = ::CloseTrace(trace_handles_[i]);
       trace_handles_[i] = NULL;
 
-      if (FAILED(HRESULT_FROM_WIN32(ret)))
+      if (FAILED(HRESULT_FROM_WIN32(ret))) {
         hr = HRESULT_FROM_WIN32(ret);
+      }
     }
   }
   trace_handles_.clear();

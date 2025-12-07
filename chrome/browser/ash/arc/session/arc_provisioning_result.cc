@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/arc/session/arc_provisioning_result.h"
 
+#include <variant>
+
 #include "base/check.h"
 #include "chrome/browser/ash/arc/arc_optin_uma.h"
 
@@ -63,21 +65,23 @@ bool ArcProvisioningResult::is_success() const {
 }
 
 std::optional<ArcStopReason> ArcProvisioningResult::stop_reason() const {
-  if (!absl::holds_alternative<ArcStopReason>(result_))
+  if (!std::holds_alternative<ArcStopReason>(result_)) {
     return std::nullopt;
+  }
 
-  return absl::get<ArcStopReason>(result_);
+  return std::get<ArcStopReason>(result_);
 }
 
 bool ArcProvisioningResult::is_timedout() const {
-  return absl::holds_alternative<ChromeProvisioningTimeout>(result_);
+  return std::holds_alternative<ChromeProvisioningTimeout>(result_);
 }
 
 const mojom::ArcSignInResult* ArcProvisioningResult::sign_in_result() const {
-  if (!absl::holds_alternative<mojom::ArcSignInResultPtr>(result_))
+  if (!std::holds_alternative<mojom::ArcSignInResultPtr>(result_)) {
     return nullptr;
+  }
 
-  return absl::get<mojom::ArcSignInResultPtr>(result_).get();
+  return std::get<mojom::ArcSignInResultPtr>(result_).get();
 }
 
 std::ostream& operator<<(std::ostream& os,

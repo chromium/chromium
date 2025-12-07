@@ -5,11 +5,12 @@
 #include "chrome/browser/hid/hid_policy_allowed_devices_factory.h"
 
 #include "base/no_destructor.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
 #include "chrome/browser/hid/hid_policy_allowed_devices.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #endif
 
@@ -45,7 +46,7 @@ std::unique_ptr<KeyedService>
 HidPolicyAllowedDevicesFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   bool on_login_screen = false;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   on_login_screen = !ash::IsUserBrowserContext(context);
 #endif
   return std::make_unique<HidPolicyAllowedDevices>(

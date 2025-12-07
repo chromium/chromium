@@ -6,7 +6,6 @@ package org.chromium.base.task;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
-import static org.junit.Assert.assertNotNull;
 
 import androidx.test.filters.SmallTest;
 
@@ -46,15 +45,6 @@ public class PostTaskTest {
 
     @Test
     @SmallTest
-    public void testCreateSingleThreadTaskRunner() {
-        TaskRunner taskQueue = PostTask.createSingleThreadTaskRunner(TaskTraits.USER_BLOCKING);
-        // A SingleThreadTaskRunner with default traits will run in the native thread pool
-        // and tasks posted won't run until after the native library has loaded.
-        assertNotNull(taskQueue);
-    }
-
-    @Test
-    @SmallTest
     public void testCreateSequencedTaskRunner() {
         TaskRunner taskQueue = PostTask.createSequencedTaskRunner(TaskTraits.USER_BLOCKING);
         List<Integer> orderList = new ArrayList<>();
@@ -68,8 +58,8 @@ public class PostTaskTest {
 
     @Test
     @SmallTest
-    public void testCreateTaskRunner() {
-        TaskRunner taskQueue = PostTask.createTaskRunner(TaskTraits.USER_BLOCKING);
+    public void testGetTaskRunner() {
+        TaskRunner taskQueue = PostTask.getTaskRunner(TaskTraits.USER_BLOCKING);
 
         // This should not timeout.
         SchedulerTestHelpers.postTaskAndBlockUntilRun(taskQueue);

@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PATH_VALUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PATH_VALUE_H_
 
-#include <memory>
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/style/style_path.h"
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream.h"
@@ -23,16 +21,17 @@ class CSSPathValue : public CSSValue {
  public:
   static const CSSPathValue& EmptyPathValue();
 
-  explicit CSSPathValue(scoped_refptr<StylePath>,
+  explicit CSSPathValue(StylePath*,
                         PathSerializationFormat = kNoTransformation);
-  explicit CSSPathValue(std::unique_ptr<SVGPathByteStream>,
+  explicit CSSPathValue(SVGPathByteStream,
                         WindRule wind_rule = RULE_NONZERO,
                         PathSerializationFormat = kNoTransformation);
 
-  StylePath* GetStylePath() const { return style_path_.get(); }
+  StylePath* GetStylePath() const { return style_path_.Get(); }
   String CustomCSSText() const;
 
   bool Equals(const CSSPathValue&) const;
+  unsigned CustomHash() const;
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
@@ -42,7 +41,7 @@ class CSSPathValue : public CSSValue {
 
  private:
   const PathSerializationFormat serialization_format_;
-  scoped_refptr<StylePath> style_path_;
+  Member<StylePath> style_path_;
 };
 
 }  // namespace cssvalue

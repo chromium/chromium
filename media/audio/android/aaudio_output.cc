@@ -6,27 +6,31 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/checked_math.h"
 #include "base/task/sequenced_task_runner.h"
+#include "media/audio/android/audio_device.h"
 #include "media/audio/android/audio_manager_android.h"
 #include "media/audio/audio_manager.h"
 #include "media/base/amplitude_peak_detector.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_sample_types.h"
 
 namespace media {
 
-AAudioOutputStream::AAudioOutputStream(AudioManagerAndroid* manager,
-                                       const AudioParameters& params,
-                                       aaudio_usage_t usage)
+AAudioOutputStream::AAudioOutputStream(
+    AudioManagerAndroid* manager,
+    const AudioParameters& params,
+    android::AudioDevice device,
+    aaudio_usage_t usage,
+    AmplitudePeakDetector::PeakDetectedCB peak_detected_cb)
     : audio_manager_(manager),
       params_(params),
-      peak_detector_(base::BindRepeating(&AudioManager::TraceAmplitudePeak,
-                                         base::Unretained(audio_manager_),
-                                         /*trace_start=*/false)),
+      peak_detector_(std::move(peak_detected_cb)),
       stream_wrapper_(this,
                       AAudioStreamWrapper::StreamType::kOutput,
                       params,
+                      std::move(device),
                       usage) {
-  CHECK(manager);
   CHECK(params_.IsValid());
 }
 
@@ -52,10 +56,13 @@ bool AAudioOutputStream::Open() {
 void AAudioOutputStream::Close() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  Stop();
   stream_wrapper_.Close();
 
-  // Note: This must be last, it will delete |this|.
-  audio_manager_->ReleaseOutputStream(this);
+  if (audio_manager_) {
+    // Note: This must be last, it will delete |this|.
+    audio_manager_->ReleaseOutputStream(this);
+  }
 }
 
 void AAudioOutputStream::Start(AudioSourceCallback* callback) {
@@ -115,6 +122,18 @@ bool AAudioOutputStream::OnAudioDataRequested(void* audio_data,
   if (!callback_) {
     // Stop() might have already been called, but there can still be pending
     // data callbacks in flight.
+
+    size_t total_size;
+    auto total_frames = base::CheckMul(num_frames, audio_bus_->channels());
+    if (base::CheckMul(total_frames, sizeof(float))
+            .AssignIfValid(&total_size)) {
+      // SAFETY: Unfortunately, `audio_data` comes from the OS, and we must use
+      // some unsafe buffers. This should be safe because we set the format
+      // as AAUDIO_FORMAT_PCM_FLOAT in AAudioStreamWrapper (and CHECK that it is
+      // set), so we know this void* is pointing towards floats. We also control
+      // the channel count, and the OS gives us `num_frames`.
+      UNSAFE_BUFFERS(memset(audio_data, 0, total_size));
+    }
     return false;
   }
 
@@ -167,7 +186,8 @@ void AAudioOutputStream::SetVolume(double volume) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   double volume_override = 0;
-  if (audio_manager_->HasOutputVolumeOverride(&volume_override)) {
+  if (audio_manager_ &&
+      audio_manager_->HasOutputVolumeOverride(&volume_override)) {
     volume = volume_override;
   }
 

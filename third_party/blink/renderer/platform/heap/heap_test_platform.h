@@ -54,7 +54,8 @@ class HeapTestingPlatformAdapter final : public v8::Platform {
     return platform_->NumberOfWorkerThreads();
   }
   std::shared_ptr<v8::TaskRunner> GetForegroundTaskRunner(
-      v8::Isolate* isolate) final {
+      v8::Isolate* isolate,
+      v8::TaskPriority priority) final {
     // Provides task runner that allows for incremental tasks even in detached
     // mode.
     return task_runner_;
@@ -62,14 +63,14 @@ class HeapTestingPlatformAdapter final : public v8::Platform {
   void PostTaskOnWorkerThreadImpl(v8::TaskPriority priority,
                                   std::unique_ptr<v8::Task> task,
                                   const v8::SourceLocation& location) final {
-    platform_->CallOnWorkerThread(std::move(task));
+    platform_->PostTaskOnWorkerThread(priority, std::move(task), location);
   }
   void PostDelayedTaskOnWorkerThreadImpl(
       v8::TaskPriority priority,
       std::unique_ptr<v8::Task> task,
       double delay_in_seconds,
       const v8::SourceLocation& location) final {
-    platform_->CallDelayedOnWorkerThread(std::move(task), delay_in_seconds);
+    platform_->PostDelayedTaskOnWorkerThread(priority, std::move(task), delay_in_seconds, location);
   }
   bool IdleTasksEnabled(v8::Isolate* isolate) final {
     return platform_->IdleTasksEnabled(isolate);

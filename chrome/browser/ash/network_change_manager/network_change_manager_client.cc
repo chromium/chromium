@@ -9,7 +9,6 @@
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
-#include "chromeos/crosapi/mojom/network_change.mojom.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/network_service_util.h"
 #include "net/base/network_change_notifier_passive.h"
@@ -79,22 +78,6 @@ void NetworkChangeManagerClient::DefaultNetworkChanged(
                   connection_subtype_);
 }
 
-void NetworkChangeManagerClient::AddLacrosNetworkChangeObserver(
-    mojo::PendingRemote<crosapi::mojom::NetworkChangeObserver> observer) {
-  mojo::Remote<crosapi::mojom::NetworkChangeObserver> remote(
-      std::move(observer));
-
-  // Tell the observer what the current connection type is.
-  remote->OnNetworkChanged(
-      /*dns_changed=*/false, /*ip_address_changed=*/false,
-      /*connection_type_changed=*/true,
-      crosapi::mojom::ConnectionType(connection_type_),
-      /*connection_subtype_changed=*/true,
-      crosapi::mojom::ConnectionSubtype(connection_subtype_));
-
-  lacros_network_change_observers_.Add(std::move(remote));
-}
-
 void NetworkChangeManagerClient::ConnectToNetworkChangeManager() {
   if (network_change_manager_.is_bound())
     network_change_manager_.reset();
@@ -111,7 +94,8 @@ void NetworkChangeManagerClient::ReconnectToNetworkChangeManager() {
 
   // Tell the restarted network service what the current connection type is.
   network_change_manager_->OnNetworkChanged(
-      /*dns_changed=*/false, /*ip_address_changed=*/false,
+      /*dns_changed=*/false,
+      network::mojom::IPAddressChangeType::IP_ADDRESS_CHANGE_NONE,
       /*connection_type_changed=*/true,
       network::mojom::ConnectionType(connection_type_),
       /*connection_subtype_changed=*/true,
@@ -223,7 +207,8 @@ void NetworkChangeManagerClient::NotifyObservers(
 
   // Notify NetworkChangeNotifier.
   if (ip_address_changed)
-    network_change_notifier_->OnIPAddressChanged();
+    network_change_notifier_->OnIPAddressChanged(
+        net::NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL);
   if (dns_changed)
     network_change_notifier_->OnDNSChanged();
   if (connection_type_changed)
@@ -235,19 +220,14 @@ void NetworkChangeManagerClient::NotifyObservers(
   // Notify NetworkChangeManager if exists.
   if (network_change_manager_) {
     network_change_manager_->OnNetworkChanged(
-        dns_changed, ip_address_changed, connection_type_changed,
+        dns_changed,
+        ip_address_changed
+            ? network::mojom::IPAddressChangeType::IP_ADDRESS_CHANGE_NORMAL
+            : network::mojom::IPAddressChangeType::IP_ADDRESS_CHANGE_NONE,
+        connection_type_changed,
         network::mojom::ConnectionType(connection_type),
         connection_subtype_changed,
         network::mojom::ConnectionSubtype(connection_subtype));
-  }
-
-  // Notify NetworkChangeObserver in Lacros if exists.
-  for (auto& observer : lacros_network_change_observers_) {
-    observer->OnNetworkChanged(
-        dns_changed, ip_address_changed, connection_type_changed,
-        crosapi::mojom::ConnectionType(connection_type),
-        connection_subtype_changed,
-        crosapi::mojom::ConnectionSubtype(connection_subtype));
   }
 }
 

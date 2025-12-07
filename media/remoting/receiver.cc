@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -86,7 +87,7 @@ void Receiver::Initialize(MediaResource* media_resource,
 
 /* CDM is not supported for remoting media */
 void Receiver::SetCdm(CdmContext* cdm_context, CdmAttachedCB cdm_attached_cb) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // No-op. Controlled by sender via RPC calls instead.
@@ -248,7 +249,7 @@ void Receiver::OnError(PipelineStatus status) {
 }
 
 void Receiver::OnFallback(PipelineStatus status) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void Receiver::OnEnded() {

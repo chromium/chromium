@@ -105,3 +105,5 @@ TEST_F(PolicyMapAndroidTest, ListPolicy) {
 
 }  // namespace android
 }  // namespace policy
+
+DEFINE_JNI(PolicyMapTestSupporter)

@@ -8,6 +8,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/components/dom_distiller/core/DistilledPagePrefs.java",
+    "java/src/org/chromium/components/dom_distiller/core/DomDistillerFeatureMap.java",
     "java/src/org/chromium/components/dom_distiller/core/DomDistillerService.java",
     "java/src/org/chromium/components/dom_distiller/core/DomDistillerUrlUtils.java",
   ]
@@ -18,6 +19,7 @@ android_library("dom_distiller_core_java") {
     "//base:base_java",
     "//build/android:build_java",
     "//components/dom_distiller/core/mojom:mojom_java",
+    "//components/embedder_support/android:util_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
     "//url:gurl_java",
@@ -26,6 +28,8 @@ android_library("dom_distiller_core_java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/components/dom_distiller/core/DistilledPagePrefs.java",
+    "java/src/org/chromium/components/dom_distiller/core/DomDistillerFeatureMap.java",
+    "java/src/org/chromium/components/dom_distiller/core/DomDistillerFeatures.java",
     "java/src/org/chromium/components/dom_distiller/core/DomDistillerService.java",
     "java/src/org/chromium/components/dom_distiller/core/DomDistillerUrlUtils.java",
   ]

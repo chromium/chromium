@@ -1,0 +1,82 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_icons_lit.css.js
+ * #scheme=relative
+ * #include=cr-icons-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  align-items: center;
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  outline: none;
+}
+
+#container {
+  align-items: center;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  width: 48px;
+  height: 40px;
+}
+
+:host([enable-thumbnail-sizing-tweaks_]) #container {
+  border-radius: 8px;
+  height: 32px;
+  width: 40px;
+}
+
+#image {
+  display: initial;
+  height: 100%;
+  object-fit: cover;
+  /* Prevents the image from being selectable via double-click. */
+  user-select: none;
+  width: 100%;
+}
+
+/* TODO(b/328294049): Switch all hard-coded colors to CSS color tokens. */
+.overlay {
+  position: absolute;
+  justify-content: center;
+  align-items: center;
+  background-color: #0000000D;
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+:host([is-deletable_]:hover) .overlay,
+:host(:focus-visible) .overlay {
+  background-color: var(--color-searchbox-thumbnail-overlay);
+}
+
+#remove {
+  display: none;
+}
+
+:host(:hover) #remove,
+:host(:focus-visible) #remove {
+  display: flex;
+}
+
+:host(:focus-visible) #container {
+  border: solid 3px var(--color-searchbox-thumbnail-border);
+  box-sizing: border-box;
+}
+
+#remove {
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+  --cr-icon-button-fill-color: white;
+  background-color: transparent;
+}

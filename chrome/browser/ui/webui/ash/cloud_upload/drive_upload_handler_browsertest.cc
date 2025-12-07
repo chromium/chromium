@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
@@ -116,7 +118,7 @@ class DriveUploadHandlerTest
         std::make_unique<file_manager::test::FakeSimpleDriveFsHelper>(
             profile, drive_mount_point_);
     return new DriveIntegrationService(
-        profile, "", drive_mount_point_,
+        g_browser_process->local_state(), profile, "", drive_mount_point_,
         fake_drivefs_helpers_[profile]->CreateFakeDriveFsListenerFactory());
   }
 
@@ -410,7 +412,7 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, UploadFromMyFiles) {
       .WillOnce(RunOnceCallback<1>(drive::FileError::FILE_ERROR_OK));
 
   auto drive_upload_handler = std::make_unique<DriveUploadHandler>(
-      profile(), source_file_url,
+      profile(), source_file_url, UploadType::kMove,
       base::BindOnce(&DriveUploadHandlerTest::OnUploadDone,
                      base::Unretained(this)),
       cloud_open_metrics_ref_);
@@ -442,7 +444,7 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, UploadFromReadOnlyFileSystem) {
       .WillOnce(RunOnceCallback<1>(drive::FileError::FILE_ERROR_OK));
 
   auto drive_upload_handler = std::make_unique<DriveUploadHandler>(
-      profile(), source_file_url,
+      profile(), source_file_url, UploadType::kCopy,
       base::BindOnce(&DriveUploadHandlerTest::OnUploadDone,
                      base::Unretained(this)),
       cloud_open_metrics_ref_);
@@ -476,7 +478,7 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, UploadFails) {
       .WillOnce(RunOnceCallback<1>(drive::FileError::FILE_ERROR_FAILED));
 
   auto drive_upload_handler = std::make_unique<DriveUploadHandler>(
-      profile(), source_file_url,
+      profile(), source_file_url, UploadType::kMove,
       base::BindOnce(&DriveUploadHandlerTest::OnUploadDone,
                      base::Unretained(this)),
       cloud_open_metrics_ref_);
@@ -514,7 +516,7 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, UploadFromMyFilesNoConnection) {
                                    std::optional<GURL>(std::nullopt), _))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
   auto drive_upload_handler = std::make_unique<DriveUploadHandler>(
-      profile(), source_file_url, upload_callback.Get(),
+      profile(), source_file_url, UploadType::kMove, upload_callback.Get(),
       cloud_open_metrics_ref_);
   drive_upload_handler->Run();
   run_loop.Run();
@@ -552,7 +554,7 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest,
                                    std::optional<GURL>(std::nullopt), _))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
   auto drive_upload_handler = std::make_unique<DriveUploadHandler>(
-      profile(), source_file_url, upload_callback.Get(),
+      profile(), source_file_url, UploadType::kMove, upload_callback.Get(),
       cloud_open_metrics_ref_);
   drive_upload_handler->Run();
   run_loop.Run();
@@ -573,7 +575,8 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest,
 
   // Provide a FILE_ERROR_FAILED response.
   auto drive_upload_handler = std::make_unique<DriveUploadHandler>(
-      profile(), source_file_url, base::DoNothing(), cloud_open_metrics_ref_);
+      profile(), source_file_url, UploadType::kMove, base::DoNothing(),
+      cloud_open_metrics_ref_);
   // This should call the OnFailedUpload() immediately since no "upload"
   // actually occurred so there is no need to do any clean up.
   drive_upload_handler->OnGetDriveMetadata(
@@ -602,7 +605,8 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest,
   metadata->alternate_url = "invalid";
 
   auto drive_upload_handler = std::make_unique<DriveUploadHandler>(
-      profile(), source_file_url, base::DoNothing(), cloud_open_metrics_ref_);
+      profile(), source_file_url, UploadType::kMove, base::DoNothing(),
+      cloud_open_metrics_ref_);
   // This should call the OnFailedUpload() immediately since no "upload"
   // actually occurred so there is no need to do any clean up.
   drive_upload_handler->OnGetDriveMetadata(
@@ -631,7 +635,8 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest,
       "https://unexpected.com/document/d/smalldocxid?rtpof=true&usp=drive_fs";
 
   auto drive_upload_handler = std::make_unique<DriveUploadHandler>(
-      profile(), source_file_url, base::DoNothing(), cloud_open_metrics_ref_);
+      profile(), source_file_url, UploadType::kMove, base::DoNothing(),
+      cloud_open_metrics_ref_);
   // This should call the OnFailedUpload() immediately since no "upload"
   // actually occurred so there is no need to do any clean up.
   drive_upload_handler->OnGetDriveMetadata(
@@ -661,7 +666,8 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest,
       "https://drive.google.com/document/d/smalldocxid?rtpof=true&usp=drive_fs";
 
   auto drive_upload_handler = std::make_unique<DriveUploadHandler>(
-      profile(), source_file_url, base::DoNothing(), cloud_open_metrics_ref_);
+      profile(), source_file_url, UploadType::kMove, base::DoNothing(),
+      cloud_open_metrics_ref_);
   // This should call the OnFailedUpload() immediately since no "upload"
   // actually occurred so there is no need to do any clean up.
   drive_upload_handler->OnGetDriveMetadata(

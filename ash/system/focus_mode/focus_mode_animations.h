@@ -27,10 +27,11 @@ void PerformViewsVerticalShitfAnimation(
     const std::vector<views::View*>& animatable_views,
     const int shift_height);
 
-// Performs animating the `task_container_layer` shrink/expand when
+// Performs animating the `resized_container_layer` shrink/expand when
 // selecting/deselecting (editing) a task. `old_bounds_height` is the height of
-// the task container view before resizing it.
-void PerformTaskContainerViewResizeAnimation(ui::Layer* task_container_layer,
+// the task container view before resizing it, or the alternate view changed in
+// `FocusModeSoundsView`.
+void PerformTaskContainerViewResizeAnimation(ui::Layer* resized_container_layer,
                                              const int old_bounds_height);
 
 }  // namespace ash

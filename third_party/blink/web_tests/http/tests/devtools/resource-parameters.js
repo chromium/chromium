@@ -31,7 +31,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     var request = event.data;
     TestRunner.addResult(request.url());
     TestRunner.addObject(
-        await NetworkTestRunner.buildHARLogEntry(request),
+        await NetworkTestRunner.buildHARLogEntry(request, {sanitize: false}),
         NetworkTestRunner.HARPropertyFormattersWithSize);
     TestRunner.completeTest();
   }

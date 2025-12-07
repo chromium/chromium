@@ -13,6 +13,7 @@ namespace content {
 class WebContents;
 }
 
+class Browser;
 class PasswordBubbleControllerBase;
 
 // Base class for all manage-passwords bubbles. Provides static methods for
@@ -44,7 +45,7 @@ class PasswordBubbleViewBase : public LocationBarBubbleDelegateView {
   // current password_manager::ui::State value for the provided |web_contents|.
   static PasswordBubbleViewBase* CreateBubble(
       content::WebContents* web_contents,
-      views::View* anchor_view,
+      views::BubbleAnchor anchor_view,
       DisplayReason reason);
 
   // Closes the existing bubble.
@@ -61,22 +62,33 @@ class PasswordBubbleViewBase : public LocationBarBubbleDelegateView {
   virtual PasswordBubbleControllerBase* GetController() = 0;
   virtual const PasswordBubbleControllerBase* GetController() const = 0;
 
+  // views::View:
+  void OnMouseEntered(const ui::MouseEvent& event) override;
+  void OnMouseExited(const ui::MouseEvent& event) override;
+
  protected:
   // The |easily_dismissable| flag indicates if the bubble should close upon
   // a click in the content area of the browser.
   PasswordBubbleViewBase(content::WebContents* web_contents,
-                         views::View* anchor_view,
+                         views::BubbleAnchor anchor_view,
                          bool easily_dismissable);
 
   ~PasswordBubbleViewBase() override;
 
   // Sets the resource ids of the images used in the header in light and dark
   // mode.
+  // TODO(crbug.com/427581151): Remove this function once all callsites are
+  // converted to use the Lottie version. Then rename the Lottie function.
   void SetBubbleHeader(int light_image_id, int dark_image_id);
+
+  // Similar to SetBubbleHeader but specifically used for lottie illustrations.
+  void SetBubbleHeaderLottie(int lottie_image_id);
 
  private:
   // views::BubbleDialogDelegateView:
   void Init() override;
+
+  raw_ptr<Browser> browser_ = nullptr;
 
   // Singleton instance of the Password bubble.The instance is owned by the
   // Bubble and will be deleted when the bubble closes.

@@ -1,0 +1,8 @@
+include_rules = [
+  # keep-sorted start
+  "+components/commerce/core/pref_names.h",
+  "+components/ntp_tiles/pref_names.h",
+  "+components/omnibox/browser/omnibox_pref_names.h",
+  "+components/safety_check/safety_check_pref_names.h",
+  # keep-sorted end
+]

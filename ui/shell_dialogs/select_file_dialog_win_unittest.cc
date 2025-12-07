@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/shell_dialogs/select_file_dialog_win.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -228,7 +224,7 @@ TEST_F(SelectFileDialogWinTest, CancelAllDialogs) {
   for (size_t i = 0; i < std::size(kTestCases); ++i) {
     SCOPED_TRACE(base::StringPrintf("i=%zu", i));
 
-    const auto& test_case = kTestCases[i];
+    const auto& test_case = UNSAFE_TODO(kTestCases[i]);
 
     scoped_refptr<ui::SelectFileDialog> dialog =
         ui::SelectFileDialog::Create(this, nullptr);

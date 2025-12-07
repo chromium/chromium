@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/functional/bind.h"
-#include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -22,12 +21,12 @@ ImageFetcherImpl::ImageFetcherImpl(
       image_decoder_(std::move(image_decoder)),
       image_data_fetcher_(new ImageDataFetcher(url_loader_factory)) {}
 
-ImageFetcherImpl::~ImageFetcherImpl() {}
+ImageFetcherImpl::~ImageFetcherImpl() = default;
 
-ImageFetcherImpl::ImageRequest::ImageRequest() {}
+ImageFetcherImpl::ImageRequest::ImageRequest() = default;
 ImageFetcherImpl::ImageRequest::ImageRequest(ImageRequest&& other) = default;
 
-ImageFetcherImpl::ImageRequest::~ImageRequest() {}
+ImageFetcherImpl::ImageRequest::~ImageRequest() = default;
 
 void ImageFetcherImpl::FetchImageAndData(
     const GURL& image_url,
@@ -35,7 +34,7 @@ void ImageFetcherImpl::FetchImageAndData(
     ImageFetcherCallback image_callback,
     ImageFetcherParams params) {
   // Before starting to fetch the image. Look for a request in progress for
-  // |image_url|, and queue if appropriate.
+  // `image_url`, and queue if appropriate.
   auto it = pending_net_requests_.find(image_url);
   if (it == pending_net_requests_.end()) {
     ImageRequest request;
@@ -84,7 +83,7 @@ void ImageFetcherImpl::OnImageURLFetched(const GURL& image_url,
                                          const std::string& image_data,
                                          const RequestMetadata& metadata) {
   auto it = pending_net_requests_.find(image_url);
-  CHECK(it != pending_net_requests_.end(), base::NotFatalUntil::M130);
+  CHECK(it != pending_net_requests_.end());
   ImageRequest* request = &it->second;
   DCHECK(request->image_data.empty());
   DCHECK_EQ(RequestMetadata::RESPONSE_CODE_INVALID,
@@ -114,7 +113,7 @@ void ImageFetcherImpl::OnImageDecoded(const GURL& image_url,
                                       const gfx::Image& image) {
   // Get request for the given image_url from the request queue.
   auto image_iter = pending_net_requests_.find(image_url);
-  CHECK(image_iter != pending_net_requests_.end(), base::NotFatalUntil::M130);
+  CHECK(image_iter != pending_net_requests_.end());
   ImageRequest* request = &image_iter->second;
 
   // Run all image callbacks.

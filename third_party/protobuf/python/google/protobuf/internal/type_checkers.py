@@ -1,32 +1,9 @@
 # Protocol Buffers - Google's data interchange format
 # Copyright 2008 Google Inc.  All rights reserved.
-# https://developers.google.com/protocol-buffers/
 #
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are
-# met:
-#
-#     * Redistributions of source code must retain the above copyright
-# notice, this list of conditions and the following disclaimer.
-#     * Redistributions in binary form must reproduce the above
-# copyright notice, this list of conditions and the following disclaimer
-# in the documentation and/or other materials provided with the
-# distribution.
-#     * Neither the name of Google Inc. nor the names of its
-# contributors may be used to endorse or promote products derived from
-# this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-# OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file or at
+# https://developers.google.com/open-source/licenses/bsd
 
 """Provides type checking routines.
 
@@ -45,19 +22,23 @@ TYPE_TO_DESERIALIZE_METHOD: A dictionary with field types and deserialization
 
 __author__ = 'robinson@google.com (Will Robinson)'
 
-import ctypes
 import numbers
+import struct
+import warnings
 
+from google.protobuf import descriptor
 from google.protobuf.internal import decoder
 from google.protobuf.internal import encoder
 from google.protobuf.internal import wire_format
-from google.protobuf import descriptor
 
 _FieldDescriptor = descriptor.FieldDescriptor
-
+# TODO: Remove this warning count after 34.0
+# Assign bool to int/enum warnings will print 100 times at most which should
+# be enough for users to notice and do not cause timeout.
+_BoolWarningCount = 100
 
 def TruncateToFourByteFloat(original):
-  return ctypes.c_float(original).value
+  return struct.unpack('<f', struct.pack('<f', original))[0]
 
 
 def ToShortestFloat(original):
@@ -75,10 +56,6 @@ def ToShortestFloat(original):
   return rounded
 
 
-def SupportsOpenEnums(field_descriptor):
-  return field_descriptor.containing_type.syntax == 'proto3'
-
-
 def GetTypeChecker(field):
   """Returns a type checker for a message field of the specified types.
 
@@ -93,11 +70,11 @@ def GetTypeChecker(field):
       field.type == _FieldDescriptor.TYPE_STRING):
     return UnicodeValueChecker()
   if field.cpp_type == _FieldDescriptor.CPPTYPE_ENUM:
-    if SupportsOpenEnums(field):
+    if field.enum_type.is_closed:
+      return EnumValueChecker(field.enum_type)
+    else:
       # When open enums are supported, any int32 can be assigned.
       return _VALUE_CHECKERS[_FieldDescriptor.CPPTYPE_INT32]
-    else:
-      return EnumValueChecker(field.enum_type)
   return _VALUE_CHECKERS[field.cpp_type]
 
 
@@ -140,12 +117,21 @@ class BoolValueChecker(object):
   """Type checker used for bool fields."""
 
   def CheckValue(self, proposed_value):
-    if not hasattr(proposed_value, '__index__') or (
-        type(proposed_value).__module__ == 'numpy' and
+    if not hasattr(proposed_value, '__index__'):
+      # Under NumPy 2.3, numpy.bool does not have an __index__ method.
+      if (type(proposed_value).__module__ == 'numpy' and
+          type(proposed_value).__name__ == 'bool'):
+        return bool(proposed_value)
+      message = ('%.1024r has type %s, but expected one of: %s' %
+                 (proposed_value, type(proposed_value), (bool, int)))
+      raise TypeError(message)
+
+    if (type(proposed_value).__module__ == 'numpy' and
         type(proposed_value).__name__ == 'ndarray'):
       message = ('%.1024r has type %s, but expected one of: %s' %
                  (proposed_value, type(proposed_value), (bool, int)))
       raise TypeError(message)
+
     return bool(proposed_value)
 
   def DefaultValue(self):
@@ -159,6 +145,21 @@ class IntValueChecker(object):
   """Checker used for integer fields.  Performs type-check and range check."""
 
   def CheckValue(self, proposed_value):
+    global _BoolWarningCount
+    if type(proposed_value) == bool and _BoolWarningCount > 0:
+      _BoolWarningCount -= 1
+      message = (
+          '%.1024r has type %s, but expected one of: %s. This warning '
+          'will turn into error in 7.34.0, please fix it before that.'
+          % (
+              proposed_value,
+              type(proposed_value),
+              (int,),
+          )
+      )
+      # TODO: Raise errors in 2026 Q1 release
+      warnings.warn(message)
+
     if not hasattr(proposed_value, '__index__') or (
         type(proposed_value).__module__ == 'numpy' and
         type(proposed_value).__name__ == 'ndarray'):
@@ -185,6 +186,20 @@ class EnumValueChecker(object):
     self._enum_type = enum_type
 
   def CheckValue(self, proposed_value):
+    global _BoolWarningCount
+    if type(proposed_value) == bool and _BoolWarningCount > 0:
+      _BoolWarningCount -= 1
+      message = (
+          '%.1024r has type %s, but expected one of: %s. This warning '
+          'will turn into error in 7.34.0, please fix it before that.'
+          % (
+              proposed_value,
+              type(proposed_value),
+              (int,),
+          )
+      )
+      # TODO: Raise errors in 2026 Q1 release
+      warnings.warn(message)
     if not isinstance(proposed_value, numbers.Integral):
       message = ('%.1024r has type %s, but expected one of: %s' %
                  (proposed_value, type(proposed_value), (int,)))
@@ -258,6 +273,7 @@ class Uint64ValueChecker(IntValueChecker):
 # The max 4 bytes float is about 3.4028234663852886e+38
 _FLOAT_MAX = float.fromhex('0x1.fffffep+127')
 _FLOAT_MIN = -_FLOAT_MAX
+_MAX_FLOAT_AS_DOUBLE_ROUNDED = 3.4028235677973366e38
 _INF = float('inf')
 _NEG_INF = float('-inf')
 
@@ -296,8 +312,12 @@ class FloatValueChecker(DoubleValueChecker):
     converted_value = super().CheckValue(proposed_value)
     # This inf rounding matches the C++ proto SafeDoubleToFloat logic.
     if converted_value > _FLOAT_MAX:
+      if converted_value <= _MAX_FLOAT_AS_DOUBLE_ROUNDED:
+        return _FLOAT_MAX
       return _INF
     if converted_value < _FLOAT_MIN:
+      if converted_value >= -_MAX_FLOAT_AS_DOUBLE_ROUNDED:
+        return _FLOAT_MIN
       return _NEG_INF
 
     return TruncateToFourByteFloat(converted_value)

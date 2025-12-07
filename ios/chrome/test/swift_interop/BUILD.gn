@@ -9,44 +9,75 @@ import("//build/config/ios/rules.gni")
 source_set("objc_interop_tests") {
   testonly = true
   configs += [ "//build/config/ios:xctest_config" ]
+
+  # TODO(crbug.com/456806155): Find a better solution to suppress errors from
+  # chromium clang on headers that come from the iOS SDK. Ideally, we'd want
+  # a suppression that is inherited implicitly from swift_source_set
+  # dependencies. Unfortunately, the gn language does not allow child targets
+  # to do things like `invoker.configs -= [...]`. Also, we'd ideally want a
+  # suppression that is scoped to just the SDK headers rather than the entire
+  # target that includes the headers. We can't use the
+  # "build/config/compiler:no_chromium_code" config to solve this problem
+  # because we don't have any build targets that have the SDK headers as direct
+  # sources.
+  if (is_clang) {
+    configs -= [ "//build/config/clang:find_bad_constructs" ]
+  }
+
   sources = [ "objc_xctest.mm" ]
-  deps = [ "//base" ]
+  deps = [
+    ":swift_interop_tests",
+    "//base",
+  ]
   frameworks = [ "Foundation.framework" ]
 }
 
 source_set("swift_interop_tests_support_files") {
   testonly = true
   sources = [
-    "classes/inlined_class.h",
-    "classes/outlined_class.h",
     "classes/outlined_impl.cc",
-    "classes/polymorphism.h",
-    "enum/enum.h",
-    "namespace/namespace.h",
-    "pointer/object_passing.h",
+    "closure/closure.cc",
+    "closure/observer.cc",
+    "include/closure.h",
+    "include/enum.h",
+    "include/inlined_class.h",
+    "include/namespace.h",
+    "include/object_passing.h",
+    "include/observer.h",
+    "include/outlined_class.h",
+    "include/pointer_returner.h",
+    "include/polymorphism.h",
+    "include/shared_ptr.h",
+    "include/string_helper.h",
+    "include/struct.h",
+    "include/unique_ptr.h",
     "pointer/pointer_returner.cc",
-    "pointer/pointer_returner.h",
+    "pointer/shared_ptr.cc",
     "pointer/unique_ptr.cc",
-    "pointer/unique_ptr.h",
-    "struct/struct.h",
+    "string/string_helper.cc",
   ]
+  deps = [ "//base" ]
 }
 
 swift_source_set("swift_interop_tests") {
   testonly = true
-  configs += [ "//build/config/ios:enable_swift_cxx_interop" ]
   bridge_header = "swift_bridge.h"
   sources = [
     "classes/inlined_xctest.swift",
     "classes/outlined_xctest.swift",
     "classes/polymorphism_xctest.swift",
+    "closure/closure_xctest.swift",
+    "closure/observer_xctest.swift",
     "enum/enum_xctest.swift",
     "namespace/namespace_xctest.swift",
     "pointer/object_passing_xctest.swift",
     "pointer/pointer_xctest.swift",
+    "pointer/shared_ptr_xctest.swift",
     "pointer/unique_ptr_xctest.swift",
+    "string/string_xctest.swift",
     "struct/struct_xctest.swift",
   ]
+  cxx_modulemaps = [ "include/module.modulemap" ]
   frameworks = [ "UIKit.framework" ]
   deps = [
     "//base",
@@ -58,7 +89,10 @@ ios_app_bundle("ios_swift_interop_xcuitests") {
   testonly = true
   info_plist = "host-Info.plist"
   sources = [ "test_host.mm" ]
-  frameworks = [ "UIKit.framework" ]
+  frameworks = [
+    "UIKit.framework",
+    "Foundation.framework",
+  ]
 }
 
 ios_test_runner_xcuitest("ios_swift_interop_xcuitests_module") {
@@ -67,6 +101,7 @@ ios_test_runner_xcuitest("ios_swift_interop_xcuitests_module") {
     ":objc_interop_tests",
     ":swift_interop_tests",
     ":swift_interop_tests_support_files",
+    "//ios/chrome/test/swift_interop/chromium:tests",
   ]
   data_deps = [ ":ios_swift_interop_xcuitests" ]
 }

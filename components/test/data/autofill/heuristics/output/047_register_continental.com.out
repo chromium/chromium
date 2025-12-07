@@ -1,18 +1,10 @@
-ADDRESS_HOME_COUNTRY | ctl00$CustomerHeader$ddlCountries | CountryClose Please select your location or where you receive credit card billing  statements to see pricing in your local currency.Available Languages: | US | -default
-UNKNOWN_TYPE | ctl00$CustomerHeader$rdlang | Available Languages: | en-us | -default
-UNKNOWN_TYPE | ctl00$CustomerHeader$rdlang | Available Languages: | es | -default
-UNKNOWN_TYPE | ctl00$CustomerHeader$rdlang | Available Languages: | rd3 | -default
-UNKNOWN_TYPE | ctl00$CustomerHeader$chkSave | Save this preference | on | -default
+ADDRESS_HOME_COUNTRY | ctl00$CustomerHeader$ddlCountries | CountryClose Please select your location or where you receive credit card billing  statements to see pricing in your local currency.Available Languages:Save this preference | US | -default
 UNKNOWN_TYPE | ctl00$ContentInfo$Name$cboTitle$cboTitle | Title: |  | ctl00$ContentInfo$Name$cboTitle$cboTitle_1
 NAME_FIRST | ctl00$ContentInfo$Name$FName$txtFName | First Name: |  | ctl00$ContentInfo$Name$cboTitle$cboTitle_1
 NAME_MIDDLE_INITIAL | ctl00$ContentInfo$Name$MName$txtMName | Middle Initial (optional): |  | ctl00$ContentInfo$Name$cboTitle$cboTitle_1
 NAME_LAST | ctl00$ContentInfo$Name$LName$txtLName | Last Name: |  | ctl00$ContentInfo$Name$cboTitle$cboTitle_1
 UNKNOWN_TYPE | ctl00$ContentInfo$Name$suffix$txtSuffix | Suffix (optional): |  | ctl00$ContentInfo$Name$cboTitle$cboTitle_1
-UNKNOWN_TYPE | ctl00$ContentInfo$MemberAge$EnrollmentAge | This OnePass account is for an adult 18 years of age or older. This OnePass account is for an adult 18 years of age or older. | rdoAdult | ctl00$ContentInfo$Name$cboTitle$cboTitle_1
-UNKNOWN_TYPE | ctl00$ContentInfo$MemberAge$EnrollmentAge | This OnePass account is for a minor under the age of 18. This OnePass account is for a minor under the age of 18. | rdoMinor | ctl00$ContentInfo$Name$cboTitle$cboTitle_1
 UNKNOWN_TYPE | ctl00$ContentInfo$BirthDate$txtDOB | Minorâ€™s Date of Birth: | mm/dd/yyyy | ctl00$ContentInfo$Name$cboTitle$cboTitle_1
-UNKNOWN_TYPE | ctl00$ContentInfo$AddressType$AddressType | Home | rdoAddTypeHome | ctl00$ContentInfo$Name$cboTitle$cboTitle_1
-UNKNOWN_TYPE | ctl00$ContentInfo$AddressType$AddressType | Business/Other | rdoAddTypeBusiness | ctl00$ContentInfo$Name$cboTitle$cboTitle_1
 ADDRESS_HOME_LINE1 | ctl00$ContentInfo$Address$address1$txtAddress1 | Street Address: |  | ctl00$ContentInfo$Name$cboTitle$cboTitle_1
 ADDRESS_HOME_LINE2 | ctl00$ContentInfo$Address$address2$txtAddress2 | Street Address: |  | ctl00$ContentInfo$Name$cboTitle$cboTitle_1
 ADDRESS_HOME_LINE3 | ctl00$ContentInfo$Address$address3$txtAddress2 | Street Address: |  | ctl00$ContentInfo$Name$cboTitle$cboTitle_1
@@ -28,10 +20,6 @@ PHONE_HOME_EXTENSION | ctl00$ContentInfo$BusinessPhone$txtExt$txtPhoneExt | Ext.
 ADDRESS_HOME_COUNTRY | ctl00$ContentInfo$BusinessPhone$cboCountry$cboCountry | Country: | US | ctl00$ContentInfo$BusinessPhone$cboCountry$cboCountry_3
 UNKNOWN_TYPE | ctl00$ContentInfo$HomeAirport$txtAirport | Home Airport (optional): |  | ctl00$ContentInfo$BusinessPhone$cboCountry$cboCountry_3
 EMAIL_ADDRESS | ctl00$ContentInfo$Email$txtEmail | E-mail Address: |  | ctl00$ContentInfo$BusinessPhone$cboCountry$cboCountry_3
-UNKNOWN_TYPE | ctl00$ContentInfo$chkSubOpStatement |  | on | ctl00$ContentInfo$BusinessPhone$cboCountry$cboCountry_3
-UNKNOWN_TYPE | ctl00$ContentInfo$chkSubopnewsoffers |  | on | ctl00$ContentInfo$BusinessPhone$cboCountry$cboCountry_3
-UNKNOWN_TYPE | ctl00$ContentInfo$chkSubcocomspecials |  | on | ctl00$ContentInfo$BusinessPhone$cboCountry$cboCountry_3
-UNKNOWN_TYPE | ctl00$ContentInfo$chkSubtripnotes |  | on | ctl00$ContentInfo$BusinessPhone$cboCountry$cboCountry_3
 UNKNOWN_TYPE | ctl00$ContentInfo$NewPin$txtNewPin$txtNewPin | New PIN: |  | ctl00$ContentInfo$BusinessPhone$cboCountry$cboCountry_3
 UNKNOWN_TYPE | ctl00$ContentInfo$NewPin$txtConfPin$txtConfPin | Re-type New PIN: |  | ctl00$ContentInfo$BusinessPhone$cboCountry$cboCountry_3
 UNKNOWN_TYPE | ctl00$ContentInfo$UsernamePassword$username$txtUsername | Username: |  | ctl00$ContentInfo$BusinessPhone$cboCountry$cboCountry_3

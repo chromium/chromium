@@ -19,11 +19,11 @@
   self = [super init];
   if (self) {
     _creditCard = creditCard;
-    _title = title;
-    _explanatoryMessage = explanatoryMessage;
-    _acceptActionText = acceptActionText;
-    _cancelActionText = cancelActionText;
-    _learnMoreLinkText = learnMoreLinkText;
+    _title = [title copy];
+    _explanatoryMessage = [explanatoryMessage copy];
+    _acceptActionText = [acceptActionText copy];
+    _cancelActionText = [cancelActionText copy];
+    _learnMoreLinkText = [learnMoreLinkText copy];
     _paymentServerLegalMessageLines = paymentServerLegalMessageLines;
     _issuerLegalMessageLines = issuerLegalMessageLines;
   }

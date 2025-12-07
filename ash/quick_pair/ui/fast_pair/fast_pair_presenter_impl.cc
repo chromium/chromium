@@ -258,13 +258,13 @@ void FastPairPresenterImpl::OnDiscoveryDismissed(
       callback.Run(DiscoveryAction::kDismissedByTimeout);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
 void FastPairPresenterImpl::OnDiscoveryLearnMoreClicked(
     DiscoveryCallback callback) {
-  NewWindowDelegate::GetPrimary()->OpenUrl(
+  NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(kDiscoveryLearnMoreLink),
       NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
@@ -347,10 +347,9 @@ void FastPairPresenterImpl::OnPairingFailedDismissed(
     case FastPairNotificationDismissReason::kDismissedByTimeout:
       // Fast Pair Error Notifications do not have a timeout, so this is never
       // expected to be hit.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -420,7 +419,7 @@ void FastPairPresenterImpl::OnAssociateAccountActionClicked(
 
 void FastPairPresenterImpl::OnAssociateAccountLearnMoreClicked(
     AssociateAccountCallback callback) {
-  NewWindowDelegate::GetPrimary()->OpenUrl(
+  NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(kAssociateAccountLearnMoreLink),
       NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
@@ -441,7 +440,7 @@ void FastPairPresenterImpl::OnAssociateAccountDismissed(
       callback.Run(AssociateAccountAction::kDismissedByTimeout);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -579,8 +578,13 @@ void FastPairPresenterImpl::OnCompanionAppDismissed(
       callback.Run(CompanionAppAction::kDismissed);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
+}
+
+void FastPairPresenterImpl::ShowPasskey(std::u16string device_name,
+                                        uint32_t passkey) {
+  notification_controller_->ShowPasskey(device_name, passkey);
 }
 
 void FastPairPresenterImpl::RemoveNotifications() {

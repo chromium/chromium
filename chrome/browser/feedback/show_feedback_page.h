@@ -10,15 +10,15 @@
 #include "base/values.h"
 #include "chrome/browser/feedback/public/feedback_source.h"
 
-class Browser;
+class BrowserWindowInterface;
 class GURL;
 class Profile;
 
 namespace chrome {
 
-// ShowFeedbackPage() uses |browser| to determine the URL of the current tab.
-// |browser| should be NULL if there are no currently open browser windows.
-void ShowFeedbackPage(const Browser* browser,
+// ShowFeedbackPage() uses |bwi| to determine the URL of the current tab.
+// |bwi| should be NULL if there are no currently open browser windows.
+void ShowFeedbackPage(BrowserWindowInterface* bwi,
                       feedback::FeedbackSource source,
                       const std::string& description_template,
                       const std::string& description_placeholder_text,

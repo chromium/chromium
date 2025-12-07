@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.download;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
@@ -17,6 +17,7 @@ import java.util.Set;
  * A class that handles logic related to observers that are waiting to see when the
  * DownloadsForegroundService is shutting down or starting back up.
  */
+@NullMarked
 public final class DownloadForegroundServiceObservers {
     private static final String TAG = "DownloadFgServiceObs";
 

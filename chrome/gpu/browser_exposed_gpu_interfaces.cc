@@ -7,31 +7,32 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/gpu/chrome_content_gpu_client.h"
 #include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-#include "ash/components/arc/mojom/protected_buffer_manager.mojom.h"
-#include "ash/components/arc/mojom/video_decode_accelerator.mojom.h"
-#include "ash/components/arc/mojom/video_decoder.mojom.h"
-#include "ash/components/arc/mojom/video_encode_accelerator.mojom.h"
-#include "ash/components/arc/mojom/video_protected_buffer_allocator.mojom.h"
-#include "ash/components/arc/video_accelerator/gpu_arc_video_decode_accelerator.h"
-#include "ash/components/arc/video_accelerator/gpu_arc_video_decoder.h"
-#include "ash/components/arc/video_accelerator/gpu_arc_video_encode_accelerator.h"
-#include "ash/components/arc/video_accelerator/gpu_arc_video_protected_buffer_allocator.h"
-#include "ash/components/arc/video_accelerator/protected_buffer_manager.h"
-#include "ash/components/arc/video_accelerator/protected_buffer_manager_proxy.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) &&
-        // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
+#include "chromeos/ash/experiences/arc/mojom/protected_buffer_manager.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/video_decode_accelerator.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/video_decoder.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/video_encode_accelerator.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/video_protected_buffer_allocator.mojom.h"
+#include "chromeos/ash/experiences/arc/video_accelerator/gpu_arc_video_decode_accelerator.h"
+#include "chromeos/ash/experiences/arc/video_accelerator/gpu_arc_video_decoder.h"
+#include "chromeos/ash/experiences/arc/video_accelerator/gpu_arc_video_encode_accelerator.h"
+#include "chromeos/ash/experiences/arc/video_accelerator/gpu_arc_video_protected_buffer_allocator.h"
+#include "chromeos/ash/experiences/arc/video_accelerator/protected_buffer_manager.h"
+#include "chromeos/ash/experiences/arc/video_accelerator/protected_buffer_manager_proxy.h"
+#include "components/viz/service/gl/gpu_service_impl.h"  // nogncheck
+#include "gpu/ipc/service/arc_shared_image_interface.h"
+#endif  // BUILDFLAG(IS_CHROMEOS) &&
+        // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 void CreateArcVideoDecodeAccelerator(
     ChromeContentGpuClient* client,
     const gpu::GpuPreferences& gpu_preferences,
@@ -53,12 +54,15 @@ void CreateArcVideoDecoder(
 }
 
 void CreateArcVideoEncodeAccelerator(
+    viz::GpuServiceImpl* gpu_service,
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     mojo::PendingReceiver<::arc::mojom::VideoEncodeAccelerator> receiver) {
   mojo::MakeSelfOwnedReceiver(
-      std::make_unique<arc::GpuArcVideoEncodeAccelerator>(gpu_preferences,
-                                                          gpu_workarounds),
+      std::make_unique<arc::GpuArcVideoEncodeAccelerator>(
+          gpu::ArcSharedImageInterface::Create(
+              gpu_service->gpu_channel_manager(), gpu_service->main_runner()),
+          gpu_preferences, gpu_workarounds),
       std::move(receiver));
 }
 
@@ -83,17 +87,18 @@ void CreateProtectedBufferManager(
           client->GetProtectedBufferManager()),
       std::move(receiver));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) &&
-        // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(IS_CHROMEOS) &&
+        // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 
 }  // namespace
 
 void ExposeChromeGpuInterfacesToBrowser(
     ChromeContentGpuClient* client,
+    viz::GpuServiceImpl* gpu_service,
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     mojo::BinderMap* binders) {
-#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   binders->Add<::arc::mojom::VideoDecodeAccelerator>(
       base::BindRepeating(&CreateArcVideoDecodeAccelerator, client,
                           gpu_preferences, gpu_workarounds),
@@ -102,8 +107,8 @@ void ExposeChromeGpuInterfacesToBrowser(
       base::BindRepeating(&CreateArcVideoDecoder, client),
       base::SingleThreadTaskRunner::GetCurrentDefault());
   binders->Add<::arc::mojom::VideoEncodeAccelerator>(
-      base::BindRepeating(&CreateArcVideoEncodeAccelerator, gpu_preferences,
-                          gpu_workarounds),
+      base::BindRepeating(&CreateArcVideoEncodeAccelerator, gpu_service,
+                          gpu_preferences, gpu_workarounds),
       base::SingleThreadTaskRunner::GetCurrentDefault());
   binders->Add<::arc::mojom::VideoProtectedBufferAllocator>(
       base::BindRepeating(&CreateArcVideoProtectedBufferAllocator, client),
@@ -111,6 +116,6 @@ void ExposeChromeGpuInterfacesToBrowser(
   binders->Add<::arc::mojom::ProtectedBufferManager>(
       base::BindRepeating(&CreateProtectedBufferManager, client),
       base::SingleThreadTaskRunner::GetCurrentDefault());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) &&
-        // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(IS_CHROMEOS) &&
+        // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 }

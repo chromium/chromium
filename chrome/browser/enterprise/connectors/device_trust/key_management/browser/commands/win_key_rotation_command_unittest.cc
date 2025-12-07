@@ -158,9 +158,8 @@ TEST_F(WinKeyRotationCommandTest, UserLevelInstall) {
 
   WinKeyRotationCommand command(base::BindLambdaForTesting(
       [](const wchar_t* command, const std::vector<std::string>& args,
-         std::optional<DWORD>* return_code) {
-        NOTREACHED_IN_MIGRATION() << "Should not get to launching the command.";
-        return S_OK;
+         std::optional<DWORD>* return_code) -> HRESULT {
+        NOTREACHED() << "Should not get to launching the command.";
       }));
 
   base::test::TestFuture<KeyRotationCommand::Status> future_status;

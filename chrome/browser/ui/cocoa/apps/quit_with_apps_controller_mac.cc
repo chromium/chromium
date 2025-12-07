@@ -12,6 +12,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -44,7 +45,7 @@ const int kQuitAllAppsButtonIndex = 0;
 const int kDontShowAgainButtonIndex = 1;
 
 void CloseNotification(Profile* profile) {
-  NotificationDisplayService::GetForProfile(profile)->Close(
+  NotificationDisplayServiceFactory::GetForProfile(profile)->Close(
       NotificationHandler::Type::TRANSIENT,
       QuitWithAppsController::kQuitWithAppsNotificationID);
 }
@@ -82,7 +83,7 @@ QuitWithAppsController::QuitWithAppsController() {
   }
 }
 
-QuitWithAppsController::~QuitWithAppsController() {}
+QuitWithAppsController::~QuitWithAppsController() = default;
 
 void QuitWithAppsController::OnProfileManagerDestroying() {
   // Set `notification_profile_` to null to avoid danling pointer detection when
@@ -92,16 +93,18 @@ void QuitWithAppsController::OnProfileManagerDestroying() {
 }
 
 void QuitWithAppsController::Close(bool by_user) {
-  if (by_user)
+  if (by_user) {
     suppress_for_session_ = true;
+  }
 }
 
 void QuitWithAppsController::Click(const std::optional<int>& button_index,
                                    const std::optional<std::u16string>& reply) {
   CloseNotification(notification_profile_);
 
-  if (!button_index)
+  if (!button_index) {
     return;
+  }
 
   if (*button_index == kQuitAllAppsButtonIndex) {
     AppWindowRegistryUtil::CloseAllAppWindows();
@@ -152,10 +155,11 @@ bool QuitWithAppsController::ShouldQuit() {
   // Delete any existing notification to ensure this one is shown. If
   // notification_profile_ is NULL then it must be that no notification has been
   // added by this class yet.
-  if (notification_profile_)
+  if (notification_profile_) {
     CloseNotification(notification_profile_);
+  }
   notification_profile_ = profiles[0];
-  NotificationDisplayService::GetForProfile(notification_profile_)
+  NotificationDisplayServiceFactory::GetForProfile(notification_profile_)
       ->Display(NotificationHandler::Type::TRANSIENT, *notification_,
                 /*metadata=*/nullptr);
 

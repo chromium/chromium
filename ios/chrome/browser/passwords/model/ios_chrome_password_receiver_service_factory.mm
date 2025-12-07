@@ -8,8 +8,6 @@
 
 #import "base/functional/bind.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/password_manager/core/browser/sharing/incoming_password_sharing_invitation_sync_bridge.h"
 #import "components/password_manager/core/browser/sharing/password_receiver_service_impl.h"
@@ -19,7 +17,7 @@
 #import "components/sync/model/data_type_store_service.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
 #import "ios/chrome/common/channel_info.h"
 
@@ -32,17 +30,16 @@ IOSChromePasswordReceiverServiceFactory::GetInstance() {
 
 // static
 password_manager::PasswordReceiverService*
-IOSChromePasswordReceiverServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
-  return static_cast<password_manager::PasswordReceiverService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+IOSChromePasswordReceiverServiceFactory::GetForProfile(ProfileIOS* profile) {
+  return GetInstance()
+      ->GetServiceForProfileAs<password_manager::PasswordReceiverService>(
+          profile, /*create=*/true);
 }
 
 IOSChromePasswordReceiverServiceFactory::
     IOSChromePasswordReceiverServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "PasswordReceiverService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("PasswordReceiverService",
+                                    ProfileSelection::kRedirectedInIncognito) {
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(IOSChromeAccountPasswordStoreFactory::GetInstance());
   DependsOn(IOSChromeProfilePasswordStoreFactory::GetInstance());
@@ -53,12 +50,10 @@ IOSChromePasswordReceiverServiceFactory::
 
 std::unique_ptr<KeyedService>
 IOSChromePasswordReceiverServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+    ProfileIOS* profile) const {
   // Since Password Manager doesn't work for non-standard profiles, the
   // PasswordReceiverService also shouldn't be created for such profiles.
-  CHECK(!context->IsOffTheRecord());
+  CHECK(!profile->IsOffTheRecord());
 
   auto change_processor =
       std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
@@ -67,15 +62,14 @@ IOSChromePasswordReceiverServiceFactory::BuildServiceInstanceFor(
   auto sync_bridge = std::make_unique<
       password_manager::IncomingPasswordSharingInvitationSyncBridge>(
       std::move(change_processor),
-      DataTypeStoreServiceFactory::GetForBrowserState(browser_state)
-          ->GetStoreFactory());
+      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory());
 
   return std::make_unique<password_manager::PasswordReceiverServiceImpl>(
-      browser_state->GetPrefs(), std::move(sync_bridge),
-      IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-          browser_state, ServiceAccessType::EXPLICIT_ACCESS)
+      std::move(sync_bridge),
+      IOSChromeProfilePasswordStoreFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS)
           .get(),
-      IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
-          browser_state, ServiceAccessType::EXPLICIT_ACCESS)
+      IOSChromeAccountPasswordStoreFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS)
           .get());
 }

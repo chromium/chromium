@@ -6,8 +6,8 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "components/security_interstitials/content/ssl_blocking_page.h"
 #include "components/security_interstitials/content/urls.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
@@ -20,7 +20,7 @@ const char kHelpCenterConnectionHelpUrl[] =
 
 void RedirectToBundledHelp(content::WebContents* web_contents) {
   GURL::Replacements replacements;
-  std::string error_code = web_contents->GetLastCommittedURL().ref();
+  std::string error_code = web_contents->GetLastCommittedURL().GetRef();
   replacements.SetRefStr(error_code);
   web_contents->GetController().LoadURL(
       GURL(security_interstitials::kChromeUIConnectionHelpURL)
@@ -30,16 +30,14 @@ void RedirectToBundledHelp(content::WebContents* web_contents) {
 }
 }  // namespace
 
-ConnectionHelpTabHelper::~ConnectionHelpTabHelper() {}
+ConnectionHelpTabHelper::~ConnectionHelpTabHelper() = default;
 
 void ConnectionHelpTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   // Ignore pre-rendering navigations.
   if (navigation_handle->IsInPrimaryMainFrame() &&
-      (web_contents()->GetLastCommittedURL().EqualsIgnoringRef(
-           GetHelpCenterURL()) ||
-       web_contents()->GetLastCommittedURL().EqualsIgnoringRef(
-           GURL(kSymantecSupportUrl))) &&
+      web_contents()->GetLastCommittedURL().EqualsIgnoringRef(
+          GetHelpCenterURL()) &&
       navigation_handle->IsErrorPage() &&
       net::IsCertificateError(navigation_handle->GetNetErrorCode())) {
     RedirectToBundledHelp(web_contents());

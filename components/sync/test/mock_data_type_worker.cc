@@ -15,7 +15,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "components/sync/base/collaboration_id.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/protocol/collaboration_metadata.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -129,9 +131,7 @@ const CommitRequestData* MockDataTypeWorker::GetLatestPendingCommitForHash(
       }
     }
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Could not find commit for tag hash " << tag_hash << ".";
-  return nullptr;
+  NOTREACHED() << "Could not find commit for tag hash " << tag_hash << ".";
 }
 
 void MockDataTypeWorker::VerifyNthPendingCommit(
@@ -259,10 +259,12 @@ syncer::UpdateResponseData MockDataTypeWorker::GenerateUpdateData(
 syncer::UpdateResponseData MockDataTypeWorker::GenerateSharedUpdateData(
     const ClientTagHash& tag_hash,
     const sync_pb::EntitySpecifics& specifics,
-    const std::string& collaboration_id) {
+    const CollaborationId& collaboration_id) {
   syncer::UpdateResponseData response_data =
       GenerateUpdateData(tag_hash, specifics);
-  response_data.entity.collaboration_id = collaboration_id;
+  response_data.entity.collaboration_metadata =
+      CollaborationMetadata::ForLocalChange(/*changed_by=*/GaiaId(),
+                                            collaboration_id);
   return response_data;
 }
 
@@ -393,7 +395,7 @@ FailedCommitResponseData MockDataTypeWorker::FailedCommitResponse(
   const EntityData& entity = *request_data.entity;
 
   FailedCommitResponseData response_data;
-  // We reuse the |client_tag_hash| from the request.
+  // We reuse the `client_tag_hash` from the request.
   response_data.client_tag_hash = entity.client_tag_hash;
 
   response_data.response_type = sync_pb::CommitResponse::TRANSIENT_ERROR;
@@ -429,7 +431,7 @@ int64_t MockDataTypeWorker::GetServerVersion(const ClientTagHash& tag_hash) {
 }
 
 void MockDataTypeWorker::SetServerVersion(const ClientTagHash& tag_hash,
-                                           int64_t version) {
+                                          int64_t version) {
   server_versions_[tag_hash] = version;
 }
 

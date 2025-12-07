@@ -6,6 +6,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "ui/accessibility/ax_enum_test_util.h"
 
 namespace ui {
 
@@ -68,8 +69,7 @@ bool StringToBool(const std::string& s) {
   }
 
   // TODO: Specify which node this error was found at.
-  NOTREACHED_IN_MIGRATION() << "Invalid value passed to StringToBool: " << s;
-  return false;
+  NOTREACHED() << "Invalid value passed to StringToBool: " << s;
 }
 
 void ParseAndAddNodeProperties(
@@ -126,6 +126,32 @@ void ParseAndAddNodeProperties(
       node_data.AddIntAttribute(StringToIntAttribute(int_attribute_vector[0]),
                                 int_value);
 
+    } else if (property == "intListAttribute" ||
+               property == "IntListAttribute" ||
+               property == "intlistattribute") {
+      std::vector<std::string> int_list_attribute_vector =
+          base::SplitStringUsingSubstr(property_vector[1], ",",
+                                       base::KEEP_WHITESPACE,
+                                       base::SPLIT_WANT_ALL);
+      DCHECK(int_list_attribute_vector.size() >= 2)
+          << "Int list attribute in string must always be formed: "
+             "intListAttribute=<intListAttributeType>,<intAttributeListValue>[,"
+             "<intAttributeListValue>]";
+
+      std::vector<int> ids;
+      for (auto it = int_list_attribute_vector.begin() + 1;
+           it != int_list_attribute_vector.end(); ++it) {
+        int int_value = 0;
+        base::StringToInt(*it, &int_value);
+        DCHECK(int_value) << "Int list attribute formatting error or non "
+                             "integer passed as node ID.";
+        if (int_value) {
+          ids.push_back(int_value);
+        }
+      }
+      node_data.AddIntListAttribute(
+          StringToIntListAttribute(int_list_attribute_vector[0]), ids);
+
     } else if (property == "stringAttribute" || property == "StringAttribute" ||
                property == "stringattribute") {
       std::vector<std::string> string_attribute_vector =
@@ -153,7 +179,7 @@ void ParseAndAddNodeProperties(
 
     } else {
       // TODO: Will extend to more properties here.
-      NOTREACHED_IN_MIGRATION()
+      NOTREACHED()
           << "Either an invalid property was specified, or this function does "
              "not currently support the specified property.";
     }
@@ -334,9 +360,9 @@ TestAXTreeUpdate::TestAXTreeUpdate(const std::string& tree_structure) {
 
   DCHECK(node_data_vector.size() >= 1);
 
-  tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
   tree_data.focused_tree_id = tree_data.tree_id;
-  tree_data.parent_tree_id = ui::AXTreeIDUnknown();
+  tree_data.parent_tree_id = AXTreeIDUnknown();
   tree_data = tree_data;
   has_tree_data = true;
   root_id = node_data_vector[0].id;

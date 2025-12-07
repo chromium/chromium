@@ -1,0 +1,510 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chromeos/ash/components/boca/session_api/session_parser.h"
+
+#include "ash/constants/ash_features.h"
+#include "base/strings/string_number_conversions.h"
+#include "chromeos/ash/components/boca/proto/session.pb.h"
+#include "chromeos/ash/components/boca/session_api/constants.h"
+#include "chromeos/ash/components/boca/session_api/json_proto_converters.h"
+#include "google_apis/common/base_requests.h"
+
+namespace ash::boca {
+::boca::StudentStatus::StudentState StudentStatusJsonToProto(
+    const std::string& status) {
+  if (status == "STUDENT_STATE_UNKNOWN") {
+    return ::boca::StudentStatus::STUDENT_STATE_UNKNOWN;
+  }
+  if (status == "ADDED") {
+    return ::boca::StudentStatus::ADDED;
+  }
+  if (status == "ACTIVE") {
+    return ::boca::StudentStatus::ACTIVE;
+  }
+  if (status == "REMOVED_BY_OTHER_SESSION") {
+    return ::boca::StudentStatus::REMOVED_BY_OTHER_SESSION;
+  }
+  if (status == "REMOVED_BY_BEING_TEACHER") {
+    return ::boca::StudentStatus::REMOVED_BY_BEING_TEACHER;
+  }
+  if (status == "REMOVED_BY_TEACHER") {
+    return ::boca::StudentStatus::REMOVED_BY_TEACHER;
+  }
+  if (status == "NOT_ADDED_CONFIGURED_AS_TEACHER") {
+    return ::boca::StudentStatus::NOT_ADDED_CONFIGURED_AS_TEACHER;
+  }
+  if (status == "NOT_ADDED_NOT_CONFIGURED") {
+    return ::boca::StudentStatus::NOT_ADDED_NOT_CONFIGURED;
+  }
+  return ::boca::StudentStatus::STUDENT_STATE_UNKNOWN;
+}
+
+::boca::StudentDevice::StudentDeviceState DeviceStatusJsonToProto(
+    const std::string& status) {
+  if (status == "STUDENT_DEVICE_STATE_UNKNOWN") {
+    return ::boca::StudentDevice::STUDENT_DEVICE_STATE_UNKNOWN;
+  }
+  if (status == "ACTIVE") {
+    return ::boca::StudentDevice::ACTIVE;
+  }
+  if (status == "INACTIVE") {
+    return ::boca::StudentDevice::INACTIVE;
+  }
+  return ::boca::StudentDevice::STUDENT_DEVICE_STATE_UNKNOWN;
+}
+
+::boca::Session::SessionState SessionStateJsonToProto(
+    const std::string& state) {
+  if (state == "SESSION_STATE_UNKNOWN") {
+    return ::boca::Session::SESSION_STATE_UNKNOWN;
+  }
+  if (state == "PLANNING") {
+    return ::boca::Session::PLANNING;
+  }
+  if (state == "ACTIVE") {
+    return ::boca::Session::ACTIVE;
+  }
+  if (state == "PAST") {
+    return ::boca::Session::PAST;
+  }
+  return ::boca::Session::SESSION_STATE_UNKNOWN;
+}
+
+::boca::LockedNavigationOptions::NavigationType NavigationTypeJsonToProto(
+    const std::string& type) {
+  if (type == "NAVIGATION_TYPE_UNKNOWN") {
+    return ::boca::LockedNavigationOptions::NAVIGATION_TYPE_UNKNOWN;
+  }
+  if (type == "OPEN_NAVIGATION") {
+    return ::boca::LockedNavigationOptions::OPEN_NAVIGATION;
+  }
+  if (type == "BLOCK_NAVIGATION") {
+    return ::boca::LockedNavigationOptions::BLOCK_NAVIGATION;
+  }
+  if (type == "DOMAIN_NAVIGATION") {
+    return ::boca::LockedNavigationOptions::DOMAIN_NAVIGATION;
+  }
+  if (type == "LIMITED_NAVIGATION") {
+    return ::boca::LockedNavigationOptions::LIMITED_NAVIGATION;
+  }
+  if (type == "SAME_DOMAIN_OPEN_OTHER_DOMAIN_LIMITED_NAVIGATION") {
+    return ::boca::LockedNavigationOptions::
+        SAME_DOMAIN_OPEN_OTHER_DOMAIN_LIMITED_NAVIGATION;
+  }
+  if (type == "WORKSPACE_NAVIGATION") {
+    return ::boca::LockedNavigationOptions::WORKSPACE_NAVIGATION;
+  }
+  return ::boca::LockedNavigationOptions::NAVIGATION_TYPE_UNKNOWN;
+}
+
+::boca::StudentGroup::GroupSource GroupSourceJsonToProto(
+    const std::string& type) {
+  if (type == "GROUP_SOURCE_UNKNOWN") {
+    return ::boca::StudentGroup::GROUP_SOURCE_UNKNOWN;
+  }
+  if (type == "CLASSROOM") {
+    return ::boca::StudentGroup::CLASSROOM;
+  }
+  if (type == "JOIN_CODE") {
+    return ::boca::StudentGroup::JOIN_CODE;
+  }
+  // By default return roster source for backward compatibility.
+  return ::boca::StudentGroup::CLASSROOM;
+}
+
+::boca::ViewScreenConfig::ViewScreenState ViewScreenStateJsonToProto(
+    const std::string& type) {
+  if (type == "REQUESTED") {
+    return ::boca::ViewScreenConfig::REQUESTED;
+  }
+  if (type == "AVAILABLE") {
+    return ::boca::ViewScreenConfig::AVAILABLE;
+  }
+  if (type == "ACTIVE") {
+    return ::boca::ViewScreenConfig::ACTIVE;
+  }
+  if (type == "INACTIVE") {
+    return ::boca::ViewScreenConfig::INACTIVE;
+  }
+  return ::boca::ViewScreenConfig::UNKNOWN;
+}
+
+void ParseTeacherProtoFromJson(base::Value::Dict* session_dict,
+                               ::boca::Session* session) {
+  const auto* teacher_dict = session_dict->FindDict(kTeacher);
+  if (!teacher_dict) {
+    return;
+  }
+  *session->mutable_teacher() = ConvertUserIdentityJsonToProto(teacher_dict);
+}
+
+void ParseJoinCodeProtoFromJson(base::Value::Dict* session_dict,
+                                ::boca::Session* session) {
+  if (!session_dict->FindDict(kJoinCode)) {
+    return;
+  }
+  auto* join_code = session->mutable_join_code();
+  join_code->set_enabled(session_dict->FindDict(kJoinCode)
+                             ->FindBool(kJoinCodeEnabled)
+                             .value_or(false));
+  if (auto* ptr = session_dict->FindDict(kJoinCode)->FindString(kCode)) {
+    join_code->set_code(*ptr);
+  }
+}
+
+void ParseRosterProtoFromJson(base::Value::Dict* session_dict,
+                              ::boca::Session* session) {
+  auto* roster_dict = session_dict->FindDict(kRoster);
+  if (roster_dict) {
+    auto* roster = session->mutable_roster();
+    if (auto* ptr = roster_dict->FindString(kRosterTitle)) {
+      roster->set_title(*ptr);
+    }
+
+    auto* student_list_dict = roster_dict->FindList(kStudentGroups);
+    if (student_list_dict) {
+      for (auto& students_dict : *student_list_dict) {
+        auto* student_groups =
+            session->mutable_roster()->mutable_student_groups()->Add();
+        if (auto* ptr =
+                students_dict.GetIfDict()->FindString(kStudentGroupTitle)) {
+          student_groups->set_title(*ptr);
+        }
+        if (auto* ptr = students_dict.GetIfDict()->FindString(kGroupSource)) {
+          student_groups->set_group_source(GroupSourceJsonToProto(*ptr));
+        } else {
+          // By default set to classroom for backward compatibility.
+          student_groups->set_group_source(::boca::StudentGroup::CLASSROOM);
+        }
+        if (auto* ptr =
+                students_dict.GetIfDict()->FindString(kStudentGroupId)) {
+          student_groups->set_student_group_id(*ptr);
+        }
+        if (auto* items = students_dict.GetIfDict()->FindList(kStudents)) {
+          for (auto& item : *items) {
+            auto* item_dict = item.GetIfDict();
+            auto* student = student_groups->mutable_students()->Add();
+            *student = ConvertUserIdentityJsonToProto(item_dict);
+          }
+        }
+      }
+    }
+  }
+}
+
+void ParseSessionConfigProtoFromJson(base::Value::Dict* session_dict,
+                                     ::boca::Session* session,
+                                     bool is_producer) {
+  if (!session_dict->FindDict(kStudentGroupsConfig)) {
+    return;
+  }
+  auto* student_groups = session->mutable_student_group_configs();
+
+  base::Value::Dict* config;
+  if (is_producer) {
+    config = session_dict->FindDict(kStudentGroupsConfig)
+                 ->FindDict(kMainStudentGroupName);
+  } else {
+    // For consumer, the group name will be masked, also fetch the first item.
+    config = std::move(!session_dict->FindDict(kStudentGroupsConfig)->empty()
+                           ? session_dict->FindDict(kStudentGroupsConfig)
+                                 ->begin()
+                                 ->second.GetIfDict()
+                           : nullptr);
+  }
+
+  if (!config) {
+    return;
+  }
+  ::boca::SessionConfig session_config;
+
+  auto* caption_config_dict = config->FindDict(kCaptionsConfig);
+  if (caption_config_dict) {
+    auto* caption_config = session_config.mutable_captions_config();
+    caption_config->set_captions_enabled(
+        caption_config_dict->FindBool(kCaptionsEnabled).value_or(false));
+    caption_config->set_translations_enabled(
+        caption_config_dict->FindBool(kTranslationsEnabled).value_or(false));
+  }
+  auto* on_task_config_dict = config->FindDict(kOnTaskConfig);
+  if (on_task_config_dict) {
+    auto* active_bundle_dict = on_task_config_dict->FindDict(kActiveBundle);
+    if (active_bundle_dict) {
+      auto* on_task_config = session_config.mutable_on_task_config();
+      auto* active_bundle = on_task_config->mutable_active_bundle();
+      active_bundle->set_locked(
+          active_bundle_dict->FindBool(kLocked).value_or(false));
+      active_bundle->set_lock_to_app_home(
+          active_bundle_dict->FindBool(kLockToAppHome).value_or(false));
+      auto* content_configs_list =
+          active_bundle_dict->FindList(kContentConfigs);
+      if (content_configs_list) {
+        for (auto& item : *content_configs_list) {
+          auto* content_configs =
+              active_bundle->mutable_content_configs()->Add();
+          auto* item_dict = item.GetIfDict();
+          if (auto* ptr = item_dict->FindString(kUrl)) {
+            content_configs->set_url(*ptr);
+          }
+          if (auto* ptr = item_dict->FindString(kTitle)) {
+            content_configs->set_title(*ptr);
+          }
+          if (auto* ptr = item_dict->FindString(kFavIcon)) {
+            content_configs->set_favicon_url(*ptr);
+          }
+          if (item_dict->FindDict(kLockedNavigationOptions) &&
+              item_dict->FindDict(kLockedNavigationOptions)
+                  ->FindString(kNavigationType)) {
+            auto* lock_options =
+                content_configs->mutable_locked_navigation_options();
+            lock_options->set_navigation_type(NavigationTypeJsonToProto(
+                *item_dict->FindDict(kLockedNavigationOptions)
+                     ->FindString(kNavigationType)));
+          }
+        }
+      }
+    }
+  }
+  (*student_groups)[kMainStudentGroupName] = std::move(session_config);
+}
+
+void ParseStudentStatusProtoFromJson(base::Value::Dict* session_dict,
+                                     ::boca::Session* session,
+                                     bool is_producer) {  // Student status.
+  auto* student_status_dict = session_dict->FindDict(kStudentStatus);
+  if (!student_status_dict) {
+    return;
+  }
+  if (is_producer) {
+    // Roster feature is disabled, always fetch the first item.
+    if (session->roster().student_groups().size() > 0) {
+      for (auto group : session->roster().student_groups()) {
+        for (auto id : group.students()) {
+          if (auto* ptr = student_status_dict->FindDict(id.gaia_id())) {
+            auto* student_statuses = session->mutable_student_statuses();
+            ::boca::StudentStatus student_status;
+            ParseIndividualStudentStatusFromJson(&student_status, ptr);
+            (*student_statuses)[id.gaia_id()] = std::move(student_status);
+          }
+        }
+      }
+    }
+  } else {
+    // The roster entry is empty for students. For students the only student
+    // status returned to them from the server is their own student status.
+    if (student_status_dict->begin() != student_status_dict->end()) {
+      auto status = student_status_dict->begin();
+      if (auto* ptr = student_status_dict->FindDict(status->first)) {
+        auto* student_statuses = session->mutable_student_statuses();
+        ::boca::StudentStatus student_status;
+        ParseIndividualStudentStatusFromJson(&student_status, ptr);
+        (*student_statuses)[status->first] = std::move(student_status);
+      }
+    }
+  }
+}
+
+void ParseIndividualStudentStatusFromJson(
+    ::boca::StudentStatus* student_status,
+    base::Value::Dict* student_status_dict) {
+  // Set the student state
+  if (auto* state_ptr = student_status_dict->FindString(kStudentStatusState)) {
+    student_status->set_state(StudentStatusJsonToProto(*state_ptr));
+  }
+  // Parse and set the devices
+  if (auto* devices_ptr = student_status_dict->FindDict(kDevices)) {
+    for (auto device_iter : *devices_ptr) {
+      if (auto* device_dict = device_iter.second.GetIfDict()) {
+        auto& device_entry =
+            (*student_status->mutable_devices())[device_iter.first];
+        if (auto* state_ptr = device_dict->FindString(kDeviceStatusState)) {
+          device_entry.set_state(DeviceStatusJsonToProto(*state_ptr));
+        }
+        // Parse and set ActiveTab from StudentDeviceActivity
+        if (auto* activity = device_dict->FindDict(kActivity)) {
+          if (auto* active_tab_ptr = activity->FindDict(kActiveTab)) {
+            device_entry.mutable_activity()->mutable_active_tab()->set_title(
+                active_tab_ptr->FindString(kTitle)
+                    ? *active_tab_ptr->FindString(kTitle)
+                    : "");
+          }
+        }
+        if (auto* device_id =
+                device_dict->FindStringByDottedPath("info.deviceId")) {
+          device_entry.mutable_info()->set_device_id(*device_id);
+        }
+
+        if (::ash::features::IsBocaSpotlightEnabled()) {
+          if (auto* view_screen_config_dict =
+                  device_dict->FindDict(kViewScreenConfig)) {
+            auto& view_screen_config =
+                *device_entry.mutable_view_screen_config();
+            if (auto* view_screen_state =
+                    view_screen_config_dict->FindString(kViewScreenState)) {
+              view_screen_config.set_view_screen_state(
+                  ViewScreenStateJsonToProto(*view_screen_state));
+            }
+            if (auto* connection_param = view_screen_config_dict->FindDict(
+                    kSpotlightConnectionParam)) {
+              if (auto* connection_code =
+                      connection_param->FindString(kSpotlightConnectionCode)) {
+                view_screen_config.mutable_connection_param()
+                    ->set_connection_code(*connection_code);
+              }
+            }
+            if (auto* view_screen_requester_dict =
+                    view_screen_config_dict->FindDict(kViewScreenRequester)) {
+              if (auto* user_dict =
+                      view_screen_requester_dict->FindDict(kUser)) {
+                *view_screen_config.mutable_view_screen_requester()
+                     ->mutable_user() =
+                    ConvertUserIdentityJsonToProto(user_dict);
+              }
+              if (auto* service_account_dict =
+                      view_screen_requester_dict->FindDict(kServiceAccount)) {
+                if (auto* ptr = service_account_dict->FindString(kEmail)) {
+                  view_screen_config.mutable_view_screen_requester()
+                      ->mutable_service_account()
+                      ->set_email(*ptr);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+std::unique_ptr<::boca::Session> GetSessionProtoFromJson(std::string json,
+                                                         bool is_producer) {
+  std::unique_ptr<base::Value> raw_value = google_apis::ParseJson(json);
+  if (!raw_value) {
+    return nullptr;
+  }
+
+  auto session_dict = std::move(raw_value->GetIfDict());
+  if (!session_dict) {
+    return nullptr;
+  }
+
+  std::unique_ptr<::boca::Session> session =
+      std::make_unique<::boca::Session>();
+
+  if (auto* ptr = session_dict->FindString(kSessionId)) {
+    session->set_session_id(*ptr);
+  }
+
+  if (session_dict->FindDict(kDuration)) {
+    auto* duration = session->mutable_duration();
+    if (auto* ptr = session_dict->FindDict(kDuration)->FindString(kSeconds)) {
+      int64_t output;
+      if (base::StringToInt64(*ptr, &output)) {
+        duration->set_seconds(output);
+      }
+    }
+    duration->set_nanos(
+        session_dict->FindDict(kDuration)->FindInt(kNanos).value_or(0));
+  }
+
+  if (session_dict->FindDict(kStartTime)) {
+    auto* start_time = session->mutable_start_time();
+    if (auto* ptr = session_dict->FindDict(kStartTime)->FindString(kSeconds)) {
+      int64_t output;
+      if (base::StringToInt64(*ptr, &output)) {
+        start_time->set_seconds(output);
+      }
+    }
+    start_time->set_nanos(
+        session_dict->FindDict(kStartTime)->FindInt(kNanos).value_or(0));
+  }
+
+  if (auto* ptr = session_dict->FindString(kSessionState)) {
+    session->set_session_state(SessionStateJsonToProto(*ptr));
+  }
+
+  if (auto* ptr = session_dict->FindString(kTachyonGroupId)) {
+    session->set_tachyon_group_id(*ptr);
+  }
+
+  ParseTeacherProtoFromJson(session_dict, session.get());
+
+  ParseJoinCodeProtoFromJson(session_dict, session.get());
+
+  ParseRosterProtoFromJson(session_dict, session.get());
+
+  ParseSessionConfigProtoFromJson(session_dict, session.get(), is_producer);
+
+  ParseStudentStatusProtoFromJson(session_dict, session.get(), is_producer);
+
+  return session;
+}
+
+void ParseRosterJsonFromProto(::boca::Roster* roster,
+                              base::Value::Dict* roster_dict) {
+  base::Value::List student_groups;
+  if (roster && !roster->student_groups().empty()) {
+    base::Value::Dict main_group;
+    // Only handle main roster student for now.
+    main_group.Set(kTitle, kMainStudentGroupName);
+    base::Value::List students;
+    for (const auto& student : roster->student_groups()[0].students()) {
+      base::Value::Dict item;
+      item.Set(kGaiaId, student.gaia_id());
+      item.Set(kEmail, student.email());
+      item.Set(kFullName, student.full_name());
+      item.Set(kPhotoUrl, student.photo_url());
+      students.Append(std::move(item));
+    }
+    main_group.Set(kStudents, base::Value(std::move(students)));
+    student_groups.Append(std::move(main_group));
+  }
+  // Always create empty group for join code.
+  base::Value::Dict access_code_group;
+  access_code_group.Set(kTitle, kAccessCodeGroupName);
+  access_code_group.Set(kGroupSource, ::boca::StudentGroup::JOIN_CODE);
+  student_groups.Append(std::move(access_code_group));
+  roster_dict->Set(kStudentGroups, std::move(student_groups));
+}
+
+void ParseOnTaskConfigJsonFromProto(::boca::OnTaskConfig* on_task_config,
+                                    base::Value::Dict* on_task_config_dict) {
+  if (on_task_config && on_task_config->has_active_bundle()) {
+    base::Value::Dict bundle;
+    bundle.Set(kLocked, on_task_config->active_bundle().locked());
+    bundle.Set(kLockToAppHome,
+               on_task_config->active_bundle().lock_to_app_home());
+    base::Value::List content_configs;
+    for (const auto& content :
+         on_task_config->active_bundle().content_configs()) {
+      base::Value::Dict item;
+      item.Set(kUrl, content.url());
+      item.Set(kTitle, content.title());
+      item.Set(kFavIcon, content.favicon_url());
+      if (content.has_locked_navigation_options()) {
+        base::Value::Dict navigation_type;
+        navigation_type.Set(
+            kNavigationType,
+            content.locked_navigation_options().navigation_type());
+        item.Set(kLockedNavigationOptions, std::move(navigation_type));
+      }
+      content_configs.Append(std::move(item));
+    }
+    bundle.Set(kContentConfigs, std::move(content_configs));
+    on_task_config_dict->Set(kActiveBundle, std::move(bundle));
+  }
+}
+
+void ParseCaptionConfigJsonFromProto(::boca::CaptionsConfig* captions_config,
+                                     base::Value::Dict* caption_config_dict) {
+  if (captions_config) {
+    caption_config_dict->Set(kCaptionsEnabled,
+                             captions_config->captions_enabled());
+    caption_config_dict->Set(kTranslationsEnabled,
+                             captions_config->translations_enabled());
+  }
+}
+
+}  // namespace ash::boca

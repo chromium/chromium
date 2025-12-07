@@ -13,9 +13,8 @@
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gl_helper.h"
 #include "gpu/config/gpu_feature_info.h"
-#include "media/renderers/paint_canvas_video_renderer.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 
 namespace content {
 
@@ -67,10 +66,6 @@ gpu::ContextSupport* WebGraphicsContext3DProviderImpl::ContextSupport() {
 bool WebGraphicsContext3DProviderImpl::IsContextLost() {
   return RasterInterface() &&
          RasterInterface()->GetGraphicsResetStatusKHR() != GL_NO_ERROR;
-}
-
-GrDirectContext* WebGraphicsContext3DProviderImpl::GetGrContext() {
-  return provider_->GrContext();
 }
 
 const gpu::Capabilities& WebGraphicsContext3DProviderImpl::GetCapabilities()
@@ -168,8 +163,7 @@ void WebGraphicsContext3DProviderImpl::OnContextLost() {
 
 cc::ImageDecodeCache* WebGraphicsContext3DProviderImpl::ImageDecodeCache(
     SkColorType color_type) {
-  DCHECK(GetCapabilities().gpu_rasterization ||
-         GetGrContext()->colorTypeSupportedAsImage(color_type));
+  CHECK(GetCapabilities().gpu_rasterization);
   auto cache_iterator = image_decode_cache_map_.find(color_type);
   if (cache_iterator != image_decode_cache_map_.end())
     return cache_iterator->second.get();
@@ -179,13 +173,10 @@ cc::ImageDecodeCache* WebGraphicsContext3DProviderImpl::ImageDecodeCache(
   // budget in cc::DecodedDrawImage.
   static const size_t kMaxWorkingSetBytes = 64 * 1024 * 1024;
 
-  // TransferCache is used only with OOP raster.
-  const bool use_transfer_cache = GetCapabilities().gpu_rasterization;
-
   auto insertion_result = image_decode_cache_map_.emplace(
       color_type,
       std::make_unique<cc::GpuImageDecodeCache>(
-          provider_.get(), use_transfer_cache, color_type, kMaxWorkingSetBytes,
+          provider_.get(), color_type, kMaxWorkingSetBytes,
           provider_->ContextCapabilities().max_texture_size, nullptr));
   DCHECK(insertion_result.second);
   cache_iterator = insertion_result.first;
@@ -197,21 +188,9 @@ WebGraphicsContext3DProviderImpl::SharedImageInterface() {
   return provider_->SharedImageInterface();
 }
 
-void WebGraphicsContext3DProviderImpl::CopyVideoFrame(
-    media::PaintCanvasVideoRenderer* video_renderer,
-    media::VideoFrame* video_frame,
-    cc::PaintCanvas* canvas) {
-  video_renderer->Copy(video_frame, canvas, provider_.get());
-}
-
 viz::RasterContextProvider*
 WebGraphicsContext3DProviderImpl::RasterContextProvider() const {
   return provider_.get();
-}
-
-unsigned int WebGraphicsContext3DProviderImpl::GetGrGLTextureFormat(
-    viz::SharedImageFormat format) const {
-  return provider_->GetGrGLTextureFormat(format);
 }
 
 }  // namespace content

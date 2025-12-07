@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE_NAVIGATION_MONITOR_H_
 #define COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE_NAVIGATION_MONITOR_H_
 
+#include "base/component_export.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -25,7 +26,8 @@ enum class NavigationEvent {
 // NavigationMonitor does NOT has ownership of WebContentsObserver, and is
 // essentially a decoupled singleton that glues download service with
 // WebContents and WebContentsObserver.
-class NavigationMonitor : public KeyedService {
+class COMPONENT_EXPORT(COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE)
+    NavigationMonitor : public KeyedService {
  public:
   // Used to propagates the navigation events.
   class Observer {
@@ -53,7 +55,7 @@ class NavigationMonitor : public KeyedService {
                          base::TimeDelta navigation_timeout_delay) = 0;
 
  protected:
-  ~NavigationMonitor() override {}
+  ~NavigationMonitor() override = default;
 };
 
 }  // namespace download

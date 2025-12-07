@@ -4,24 +4,61 @@
 
 #include "components/services/font_data/font_data_service_impl.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#endif  // BUILDFLAG(IS_WIN)
+
+#include <algorithm>
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/heap_array.h"
+#include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "skia/ext/font_utils.h"
 #include "third_party/skia/include/core/SkFontStyle.h"
 #include "third_party/skia/include/core/SkStream.h"
+#include "third_party/skia/include/core/SkString.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 
 namespace font_data_service {
 
 namespace {
 
+// Recorded in Chrome.FontDataService.CreateResult, don't modify/reorder without
+// also changing FontDataServiceCreateResult in
+// tools/metrics/histograms/metadata/chrome/enums.xml
+enum class CreateResult {
+  kNoTypeface = 0,
+  kSuccessExistingSharedMemory = 1,
+  kFailureExistingSharedMemory = 2,
+  kSuccessSharingFileHandle = 3,
+  kSuccessSharingNewMemoryRegion = 4,
+  kFailureSharingNewMemoryRegion = 5,
+  kMaxValue = kFailureSharingNewMemoryRegion,
+};
+
+// Recorded in Chrome.FontDataService.InvokedIPC, don't modify or re-order
+// without also changing FontDataServiceIPC.
+enum class FontDataServiceIPC {
+  kMatchFamilyName = 0,
+  kMatchFamilyNameCharacter = 1,
+  kGetAllFamilyNames = 2,
+  kLegacyMakeTypeface = 3,
+  kMaxValue = kLegacyMakeTypeface,
+};
+
 // Value is arbitrary. The number should be small to conserve memory but large
 // enough to fit a meaningful amount of fonts.
 constexpr int kMemoryMapCacheSize = 128;
+
+BASE_FEATURE(kDumpOnOOBFontDataServiceCache, base::FEATURE_DISABLED_BY_DEFAULT);
 
 base::SequencedTaskRunner* GetFontDataServiceTaskRunner() {
   static base::NoDestructor<scoped_refptr<base::SequencedTaskRunner>>
@@ -45,7 +82,7 @@ constexpr SkFontStyle::Slant ConvertToFontStyle(mojom::TypefaceSlant slant) {
     case mojom::TypefaceSlant::kOblique:
       return SkFontStyle::Slant::kOblique_Slant;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -76,74 +113,125 @@ void FontDataServiceImpl::BindReceiver(
   receivers_.Add(this, std::move(receiver));
 }
 
+std::tuple<base::File, uint64_t> FontDataServiceImpl::GetFileHandle(
+    SkTypeface& typeface) {
+  SkString font_path;
+  typeface.getResourceName(&font_path);
+  base::UmaHistogramBoolean("Chrome.FontDataService.EmptyPathOnGetFileHandle",
+                            font_path.isEmpty());
+#if BUILDFLAG(IS_LINUX)
+  // TODO(crbug.com/463411679): `getResourceName()` is not implemented for
+  // Linux, so the returned file will always be invalid and a memory region will
+  // be shared instead.
+  CHECK(font_path.isEmpty());
+#endif  // BUILDFLAG(IS_LINUX)
+  if (font_path.isEmpty()) {
+    return {};
+  }
+
+  auto font_file_path = base::FilePath::FromUTF8Unsafe(font_path.c_str());
+  base::UmaHistogramBoolean(
+      "Chrome.FontDataService.FileHandlePathReferencesParent",
+      font_file_path.ReferencesParent());
+
+  auto font_file =
+      base::File(font_file_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                     base::File::FLAG_WIN_EXCLUSIVE_WRITE);
+#if BUILDFLAG(IS_WIN)
+  if (!font_file.IsValid()) {
+    base::UmaHistogramSparse("Chrome.FontDataService.WinLastError",
+                             ::GetLastError());
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
+  return std::make_tuple(std::move(font_file), GetUniqueFileId(font_file_path));
+}
+
 void FontDataServiceImpl::MatchFamilyName(const std::string& family_name,
                                           mojom::TypefaceStylePtr style,
                                           MatchFamilyNameCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT("fonts", "FontDataServiceImpl::MatchFamilyName", "family_name",
               family_name);
-  // The results of this function is <region, ttc_index> and will be passed to
-  // `callback`.
-  base::ReadOnlySharedMemoryRegion region;
-  int ttc_index = 0;
+  base::UmaHistogramEnumeration("Chrome.FontDataService.InvokedIPC",
+                                FontDataServiceIPC::kMatchFamilyName);
 
   // Call the font manager of the browser process to process the proxied match
   // family request.
   SkFontStyle sk_font_style(style->weight, style->width,
                             ConvertToFontStyle(style->slant));
-  auto result = mojom::MatchFamilyNameResult::New();
   sk_sp<SkTypeface> typeface =
       font_manager_->matchFamilyStyle(family_name.c_str(), sk_font_style);
-  if (typeface) {
-    auto iter = typeface_to_asset_index_.find(typeface->uniqueID());
-    if (iter != typeface_to_asset_index_.end()) {
-      const size_t asset_index = iter->second.asset_index;
-      region = assets_[asset_index]->shared_memory.region.Duplicate();
-      ttc_index = iter->second.ttc_index;
-    } else {
-      // Try to open the stream and prepare shared memory that will be shared
-      // with renderers. If the stream data is invalid or if the cache is full,
-      // return an invalid memory map region.
-      // TODO(crbug.com/335680565): Improve cache by transitioning to LRU.
-      auto stream = typeface->openStream(&ttc_index);
-      if (stream && stream->hasLength() && (stream->getLength() > 0u) &&
-          stream->getMemoryBase() && assets_.size() < kMemoryMapCacheSize) {
-        const size_t asset_index = GetOrCreateAssetIndex(std::move(stream));
-        region = assets_[asset_index]->shared_memory.region.Duplicate();
-        typeface_to_asset_index_[typeface->uniqueID()] =
-            MappedTypeface{asset_index, ttc_index};
-      }
-    }
 
-    const int axis_count = typeface->getVariationDesignPosition(nullptr, 0);
-    if (axis_count > 0) {
-      std::vector<SkFontArguments::VariationPosition::Coordinate>
-          coordinate_list;
-      coordinate_list.resize(axis_count);
-      if (typeface->getVariationDesignPosition(coordinate_list.data(),
-                                               coordinate_list.size()) > 0) {
-        auto variation_position = mojom::VariationPosition::New();
-        for (const auto& coordinate : coordinate_list) {
-          auto coordinate_result = mojom::Coordinate::New();
-          coordinate_result->axis = coordinate.axis;
-          coordinate_result->value = coordinate.value;
-          variation_position->coordinates.push_back(
-              std::move(coordinate_result));
-        }
-        variation_position->coordinateCount = axis_count;
-        result->variation_position = std::move(variation_position);
-      }
-    }
+  std::move(callback).Run(CreateMatchFamilyNameResult(typeface));
+}
+
+void FontDataServiceImpl::MatchFamilyNameCharacter(
+    const std::string& family_name,
+    mojom::TypefaceStylePtr style,
+    const std::vector<std::string>& bcp47s,
+    int32_t character,
+    MatchFamilyNameCharacterCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TRACE_EVENT("fonts", "FontDataServiceImpl::MatchFamilyNameCharacter",
+              "family_name", family_name);
+  base::UmaHistogramEnumeration("Chrome.FontDataService.InvokedIPC",
+                                FontDataServiceIPC::kMatchFamilyNameCharacter);
+
+  // Call the font manager of the browser process to process the proxied match
+  // family request.
+  SkFontStyle sk_font_style(style->weight, style->width,
+                            ConvertToFontStyle(style->slant));
+
+  // Skia passes the language tags as an array of null-terminated c-strings with
+  // a count. We transform that to an std::vector<std::string> to pass it over
+  // mojo, but have to recreate the same structure before passing it to skia
+  // functions again.
+  std::vector<const char*> bcp47s_array;
+  for (const auto& bcp47 : bcp47s) {
+    bcp47s_array.push_back(bcp47.c_str());
   }
 
-  if (!region.IsValid()) {
-    std::move(callback).Run(nullptr);
-    return;
+  sk_sp<SkTypeface> typeface = font_manager_->matchFamilyStyleCharacter(
+      family_name.c_str(), sk_font_style, bcp47s_array.data(), bcp47s.size(),
+      character);
+
+  std::move(callback).Run(CreateMatchFamilyNameResult(typeface));
+}
+
+void FontDataServiceImpl::GetAllFamilyNames(
+    GetAllFamilyNamesCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TRACE_EVENT("fonts", "FontDataServiceImpl::GetAllFamilyNames");
+  base::UmaHistogramEnumeration("Chrome.FontDataService.InvokedIPC",
+                                FontDataServiceIPC::kGetAllFamilyNames);
+
+  int family_count = font_manager_->countFamilies();
+  std::vector<std::string> result;
+  result.reserve(family_count);
+
+  for (int i = 0; i < family_count; ++i) {
+    SkString out;
+    font_manager_->getFamilyName(i, &out);
+    result.emplace_back(out.begin(), out.end());
   }
 
-  result->region = std::move(region);
-  result->ttc_index = ttc_index;
   std::move(callback).Run(std::move(result));
+}
+
+void FontDataServiceImpl::LegacyMakeTypeface(
+    const std::optional<std::string>& family_name,
+    mojom::TypefaceStylePtr style,
+    LegacyMakeTypefaceCallback callback) {
+  base::UmaHistogramEnumeration("Chrome.FontDataService.InvokedIPC",
+                                FontDataServiceIPC::kLegacyMakeTypeface);
+  SkFontStyle sk_font_style(style->weight, style->width,
+                            ConvertToFontStyle(style->slant));
+
+  sk_sp<SkTypeface> typeface = font_manager_->legacyMakeTypeface(
+      family_name ? family_name->c_str() : nullptr, sk_font_style);
+
+  std::move(callback).Run(CreateMatchFamilyNameResult(typeface));
 }
 
 size_t FontDataServiceImpl::GetOrCreateAssetIndex(
@@ -169,12 +257,6 @@ size_t FontDataServiceImpl::GetOrCreateAssetIndex(
 
   size_t asset_index = assets_.size();
 
-  // There is a memory copy for the content of the font. This could be
-  // mitigated by having either access to the memory address of the asset
-  // or finding the path and passing Handle. Both avenues worth being
-  // explored. As an initial safe step, the copy is not that expensive and
-  // it is shared by the process for all the renderers; only one time
-  // copy by font.
   {
     TRACE_EVENT("fonts",
                 "FontDataServiceImpl::GetOrCreateAssetIndex - memory copy",
@@ -191,6 +273,113 @@ size_t FontDataServiceImpl::GetOrCreateAssetIndex(
   address_to_asset_index_[memory_base] = asset_index;
 
   return asset_index;
+}
+
+uint64_t FontDataServiceImpl::GetUniqueFileId(base::FilePath path) {
+  uint64_t new_id = unique_path_ids_.size() + 1;
+  auto [it, inserted] = unique_path_ids_.try_emplace(path, new_id);
+  return it->second;
+}
+
+mojom::MatchFamilyNameResultPtr
+FontDataServiceImpl::CreateMatchFamilyNameResult(sk_sp<SkTypeface> typeface) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  CreateResult result_status = CreateResult::kNoTypeface;
+
+  auto result = mojom::MatchFamilyNameResult::New();
+
+  if (typeface) {
+    auto iter = typeface_to_asset_index_.find(typeface->uniqueID());
+    if (iter != typeface_to_asset_index_.end()) {
+      const size_t asset_index = iter->second.asset_index;
+      base::ReadOnlySharedMemoryRegion region =
+          assets_[asset_index]->shared_memory.region.Duplicate();
+      result->ttc_index = iter->second.ttc_index;
+      if (region.IsValid()) {
+        result->typeface_data =
+            mojom::TypefaceData::NewRegion(std::move(region));
+        result_status = CreateResult::kSuccessExistingSharedMemory;
+      } else {
+        result_status = CreateResult::kFailureExistingSharedMemory;
+      }
+    } else {
+      // While the stream is not necessary for file handles, fetch the ttc_index
+      // if available. It is possible that the index will be set even if
+      // openStream fails.
+      auto stream = typeface->openStream(&result->ttc_index);
+
+      // Try to share the font with a base::File. This is avoiding copy of the
+      // content of the file.
+      base::File font_file;
+      uint64_t font_file_unique_id;
+      std::tie(font_file, font_file_unique_id) = GetFileHandle(*typeface);
+      if (font_file.IsValid()) {
+        TRACE_EVENT("fonts", "FontDataServiceImpl - sharing file handle");
+        result->typeface_data =
+            mojom::TypefaceData::NewFontFile(mojom::TypefaceFile::New(
+                std::move(font_file), font_file_unique_id));
+
+        result_status = CreateResult::kSuccessSharingFileHandle;
+      } else {
+        TRACE_EVENT("fonts", "FontDataServiceImpl - sharing memory region");
+        // If it failed to share as an base::File, try sharing with shared
+        // memory. Try to open the stream and prepare shared memory that will be
+        // shared with renderers. The content of the stream is copied into the
+        // shared memory. If the stream data is invalid or if the cache is full,
+        // return an invalid memory map region.
+        // TODO(crbug.com/335680565): Improve cache by transitioning to LRU.
+        if (stream && stream->hasLength() && (stream->getLength() > 0u) &&
+            stream->getMemoryBase()) {
+          UMA_HISTOGRAM_COUNTS_10000(
+              "Chrome.FontDataService.MemoryMapCacheSize", assets_.size());
+          if (assets_.size() >= kMemoryMapCacheSize &&
+              base::FeatureList::IsEnabled(kDumpOnOOBFontDataServiceCache)) {
+            base::debug::DumpWithoutCrashing();
+          }
+          const size_t asset_index = GetOrCreateAssetIndex(std::move(stream));
+          base::ReadOnlySharedMemoryRegion region =
+              assets_[asset_index]->shared_memory.region.Duplicate();
+          typeface_to_asset_index_[typeface->uniqueID()] =
+              MappedTypeface{asset_index, result->ttc_index};
+          if (region.IsValid()) {
+            result->typeface_data =
+                mojom::TypefaceData::NewRegion(std::move(region));
+            result_status = CreateResult::kSuccessSharingNewMemoryRegion;
+          } else {
+            result_status = CreateResult::kFailureSharingNewMemoryRegion;
+          }
+        }
+      }
+    }
+  }
+
+  UMA_HISTOGRAM_ENUMERATION("Chrome.FontDataService.CreateResult",
+                            result_status);
+
+  if (!result->typeface_data) {
+    return nullptr;
+  }
+
+  const int axis_count = typeface->getVariationDesignPosition({});
+  if (axis_count > 0) {
+    auto coordinate_list =
+        base::HeapArray<SkFontArguments::VariationPosition::Coordinate>::Uninit(
+            axis_count);
+    if (typeface->getVariationDesignPosition(coordinate_list) > 0) {
+      result->variation_position = mojom::VariationPosition::New();
+      result->variation_position->coordinates.reserve(coordinate_list.size());
+      result->variation_position->coordinateCount = axis_count;
+      std::ranges::transform(
+          coordinate_list,
+          std::back_inserter(result->variation_position->coordinates),
+          [](const SkFontArguments::VariationPosition::Coordinate& coordinate) {
+            return mojom::Coordinate::New(coordinate.axis, coordinate.value);
+          });
+    }
+  }
+
+  return result;
 }
 
 }  // namespace font_data_service

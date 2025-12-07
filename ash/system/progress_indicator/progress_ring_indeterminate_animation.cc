@@ -4,8 +4,8 @@
 
 #include "ash/system/progress_indicator/progress_ring_indeterminate_animation.h"
 
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/paint_throbber.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 namespace ash {
 namespace {
@@ -52,7 +52,7 @@ void ProgressRingIndeterminateAnimation::UpdateAnimatableProperties(
   // Since `elapsed_time` is used rather than the animation `fraction`, it is
   // necessary to manually account for animation duration scaling.
   const float duration_multiplier =
-      ui::ScopedAnimationDurationScaleMode::duration_multiplier();
+      gfx::ScopedAnimationDurationScaleMode::duration_multiplier();
   if (duration_multiplier != 0.f)
     elapsed_time /= duration_multiplier;
 

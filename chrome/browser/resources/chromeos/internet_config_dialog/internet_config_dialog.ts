@@ -10,15 +10,15 @@ import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/ash/common/cr_elements/cr_page_host_style.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
-import './strings.m.js';
+import '/strings.m.js';
 
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {NetworkConfigElement} from 'chrome://resources/ash/common/network/network_config.js';
-import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import type {NetworkConfigElement} from 'chrome://resources/ash/common/network/network_config.js';
+import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {ConfigProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {ConfigProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './internet_config_dialog.html.js';
@@ -81,9 +81,14 @@ export class InternetConfigDialogElement extends
        * empty if nothing to prefill or the information will be synced based on
        * given guid.
        */
-      prefilledProperties_: ConfigProperties,
+      prefilledProperties_: Object,
 
       enableConnect_: Boolean,
+
+      /**
+       * Whether the connection has been attempted.
+       */
+      connectClicked_: Boolean,
 
       /**
        * Set by network-config when a configuration error occurs.
@@ -101,6 +106,7 @@ export class InternetConfigDialogElement extends
   private type_: string;
   private prefilledProperties_: ConfigProperties|null;
   private enableConnect_: boolean;
+  private connectClicked_: boolean;
   private error_: string;
 
   override connectedCallback() {
@@ -120,6 +126,7 @@ export class InternetConfigDialogElement extends
       this.guid_ = params.get('guid') || '';
       this.prefilledProperties_ = null;
     }
+    this.connectClicked_ = false;
 
     ColorChangeUpdater.forDocument().start();
 
@@ -137,6 +144,14 @@ export class InternetConfigDialogElement extends
     return this.i18n('internetJoinType', type);
   }
 
+  private shouldShowError_(): boolean {
+    // Do not show "out-of-range" error if the dialog is just opened.
+    if (!this.connectClicked_ && this.error_ === 'out-of-range') {
+      return false;
+    }
+    return !!this.error_;
+  }
+
   private getError_(): string {
     if (this.i18nExists(this.error_)) {
       return this.i18n(this.error_);
@@ -150,6 +165,11 @@ export class InternetConfigDialogElement extends
 
   private onConnectClick_(): void {
     this.$.networkConfig.connect();
+    this.connectClicked_ = true;
+  }
+
+  setErrorForTesting(error: string): void {
+    this.error_ = error;
   }
 }
 

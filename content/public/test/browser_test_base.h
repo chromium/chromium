@@ -21,13 +21,14 @@
 #include <string>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial.h"
+#include "base/test/scoped_path_override.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/public/test/test_host_resolver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/dns/public/dns_over_https_config.h"
@@ -37,14 +38,20 @@
 #include "storage/browser/quota/quota_settings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/animation_test_api.h"
+#include "ui/native_theme/os_settings_provider.h"
 
 namespace base {
-class CommandLine;
 class FilePath;
 class TimeDelta;
 }  // namespace base
 
-namespace ui {
+#if BUILDFLAG(IS_ANDROID)
+namespace discardable_memory {
+class DiscardableSharedMemoryManager;
+}
+#endif
+
+namespace gfx {
 class ScopedAnimationDurationScaleMode;
 }
 
@@ -181,7 +188,64 @@ class BrowserTestBase : public ::testing::Test {
     return embedded_test_server_.get();
   }
 
-  bool set_up_called() { return set_up_called_; }
+  // Initializes the HTTPS embedded test server. The HTTPS test server must be
+  // setup after any modifications done to the macOS `bundled` state as done
+  // with `SetOverrideAmIBundled`, since different browser test suites have
+  // different bundle behavior on macOS, and the HTTPS test server constructor
+  // reads in the local test root cert. In any case that the HTTPS test server
+  // is needed by tests under a child class of BrowserTestBase, the HTTPS test
+  // server must be initialized by calling this method during the test setup.
+  void InitializeHTTPSTestServer();
+
+  // Returns the HTTPS embedded test server.
+  // By default, the HTTPS test server is configured to have a valid
+  // certificate for the set of hostnames:
+  //   - [*.]example.com
+  //   - [*.]foo.com
+  //   - [*.]bar.com
+  //   - [*.]a.com
+  //   - [*.]b.com
+  //   - [*.]c.com
+  //
+  // After starting the server, you can get a working HTTPS URL for any of
+  // those hostnames. For example:
+  //
+  // ```
+  //   void SetUpOnMainThread() override {
+  //     host_resolver()->AddRule("*", "127.0.0.1");
+  //     ASSERT_TRUE(embedded_https_test_server().Start());
+  //     InProcessBrowserTest::SetUpOnMainThread();
+  //   }
+  //   ...
+  //   (later in the test logic):
+  //   embedded_https_test_server().GetURL("foo.com", "/simple.html");
+  // ```
+  //
+  // Tests can override the set of valid hostnames by calling
+  // `net::EmbeddedTestServer::SetCertHostnames()` before starting the test
+  // server, and a valid test certificate will be automatically generated for
+  // the hostnames passed in. For example:
+  //
+  //   ```
+  //   embedded_https_test_server().SetCertHostnames(
+  //       {"example.com", "example.org"});
+  //   ASSERT_TRUE(embedded_https_test_server().Start());
+  //   embedded_https_test_server().GetURL("example.org", "/simple.html");
+  //   ```
+  const net::EmbeddedTestServer& embedded_https_test_server() const {
+    CHECK(embedded_https_test_server_)
+        << "embedded_https_test_server() cannot be called before it was "
+           "initialized by calling InitializeHTTPSTestServer.";
+    return *embedded_https_test_server_;
+  }
+  net::EmbeddedTestServer& embedded_https_test_server() {
+    CHECK(embedded_https_test_server_)
+        << "embedded_https_test_server() cannot be called before it was "
+           "initialized by calling InitializeHTTPSTestServer.";
+    return *embedded_https_test_server_;
+  }
+
+  bool set_up_called() const { return set_up_called_; }
 
 #if BUILDFLAG(IS_POSIX)
   // This is only needed by a test that raises SIGTERM to ensure that a specific
@@ -210,6 +274,10 @@ class BrowserTestBase : public ::testing::Test {
   // display densities.
   void EnablePixelOutput(float force_device_scale_factor = 1.f);
 
+  // Call this before SetUp() to specify whether fake media stream devices
+  // should be used. True by default.
+  void SetUseFakeMediaStreamDevices(bool use_fake_media_stream_devices);
+
   // Call this before SetUp() to not use GL, but use software compositing
   // instead.
   void UseSoftwareCompositing();
@@ -220,12 +288,22 @@ class BrowserTestBase : public ::testing::Test {
   // code necessary.
   void SetInitialWebContents(WebContents* web_contents);
 
+  // Sets the flag to allow --enable-features and --disable-features to be
+  // present on the command line. Must be called before `SetUp`.
+  void SetAllowFeaturesSwitches(bool allow);
+
  private:
 #if BUILDFLAG(IS_ANDROID)
   // Android browser tests need to wait for async initialization in Java code.
   // This waits for those to complete before we can continue with the test.
   void WaitUntilJavaIsReady(base::OnceClosure quit_closure,
                             const base::TimeDelta& wait_retry_left);
+  // Android browser tests need to wait for the Activity to finish after tests
+  // run to properly shut down the browser.
+  void WaitUntilActivityTeardownIsFinished(
+      base::OnceClosure quit_closure,
+      const base::TimeDelta& wait_retry_left);
+
 #endif
   // Performs a bunch of setup, and then runs the browser test body.
   void ProxyRunTestOnMainThreadLoop();
@@ -243,8 +321,15 @@ class BrowserTestBase : public ::testing::Test {
   // CreatedBrowserMainParts().
   void CreatedBrowserMainPartsImpl(BrowserMainParts* browser_main_parts);
 
+#if BUILDFLAG(IS_WIN)
+  std::optional<base::ScopedPathOverride> system_temp_override_;
+#endif
+
   // Embedded HTTP test server, cheap to create, started on demand.
   std::unique_ptr<net::EmbeddedTestServer> embedded_test_server_;
+
+  // Embedded HTTPS test server, cheap to create, started on demand.
+  std::unique_ptr<net::EmbeddedTestServer> embedded_https_test_server_;
 
   // Host resolver used during tests.
   std::unique_ptr<TestHostResolver> test_host_resolver_;
@@ -265,6 +350,23 @@ class BrowserTestBase : public ::testing::Test {
   // Expected exit code.
   int expected_exit_code_ = 0;
 
+  // On ChromeOS, many tests expect the `ash::DarkLightModeController` to
+  // control the `ui::NativeTheme`. Since this is plumbed through
+  // `ui::OsSettingsProviderAsh`, the following instantiation breaks these
+  // tests.
+  // TODO(pkasting): Consider an alternate solution, e.g. changing tests to use
+  // a `ui::MockOsSettingsProvider` instead of the
+  // `ash::DarkLightModeController` and removing the `#if` guards here.
+#if !BUILDFLAG(IS_CHROMEOS)
+  // Browser tests should not use the current machine settings for theming, but
+  // should default to a consistent baseline. Instantiating
+  // `ui::OsSettingsProvider` will both provide sane default behavior and
+  // prevent `ui::OsSettingsProvider::Get()` from instantiating a
+  // platform-specific subclass.
+  ui::OsSettingsProvider os_settings_provider_{
+      ui::OsSettingsProvider::PriorityLevel::kTesting};
+#endif
+
   // When true, the compositor will produce pixel output that can be read back
   // for pixel tests.
   bool enable_pixel_output_ = false;
@@ -272,10 +374,15 @@ class BrowserTestBase : public ::testing::Test {
   // When using EnablePixelOutput, the device scale factor is forced to an
   // explicit value to ensure consistent results. This value will be passed to
   // the --force-device-scale-factor flag in SetUp.
-  float force_device_scale_factor_ = 0.f;
+  float force_device_scale_factor_ = 0;
+
+  // When true, fake media stream devices will be used instead of real ones.
+  // Real devices may depend on OS-specific implementations and may not work on
+  // bots.
+  bool use_fake_media_stream_devices_ = true;
 
   // When verifying pixel output, animations are disabled to reduce flakiness.
-  std::unique_ptr<ui::ScopedAnimationDurationScaleMode>
+  std::unique_ptr<gfx::ScopedAnimationDurationScaleMode>
       disable_layer_animations_;
   gfx::AnimationTestApi::RenderModeResetter disable_rich_animations_;
 
@@ -306,6 +413,21 @@ class BrowserTestBase : public ::testing::Test {
 #if BUILDFLAG(IS_POSIX)
   bool handle_sigterm_;
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+  // Mimic the destruction order of ContentMain:
+  // - ContentMainRunnerImpl::Shutdown() resets ipc support and shuts down the
+  //   BrowserTaskExecutor.
+  // - ContentMainRunnerImpl::~ContentMainRunnerImpl().
+  // - DiscardableSharedMemoryManager, owned by ContentMainRunnerImpl, is reset.
+  std::unique_ptr<discardable_memory::DiscardableSharedMemoryManager>
+      discardable_shared_memory_manager_;
+#endif
+
+  // Whether allow tests to provide --enable-features and --disable-features
+  // switches. Tests such as `GuestLoginTest` passes feature switches from PRE_
+  // to real tests.
+  bool allow_features_switches_ = false;
 };
 
 }  // namespace content

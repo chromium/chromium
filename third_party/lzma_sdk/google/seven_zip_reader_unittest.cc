@@ -47,6 +47,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
+#include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -67,7 +68,7 @@ using ::testing::Return;
 using ::testing::SetArgReferee;
 using ::testing::StrictMock;
 
-base::File OpenTestFile(base::FilePath::StringPieceType file_name) {
+base::File OpenTestFile(base::FilePath::StringViewType file_name) {
   base::FilePath path;
   if (!base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path))
     return base::File();
@@ -232,7 +233,7 @@ TEST(SevenZipReaderTest, StopsExtractionOnEntryDone) {
       .WillOnce(Return(ByMove(OpenTemporaryFile())));
   EXPECT_CALL(delegate, OnDirectory(_)).WillOnce(Return(true));
   EXPECT_CALL(delegate, OnEntry(Field(&EntryInfo::file_size, 19), _))
-      .WillOnce(DoAll(SetArgReferee<1>(base::make_span(buffer)), Return(true)));
+      .WillOnce(DoAll(SetArgReferee<1>(base::span(buffer)), Return(true)));
   EXPECT_CALL(delegate, EntryDone(_, _)).WillOnce(Return(false));
 
   std::unique_ptr<SevenZipReader> reader =
@@ -254,7 +255,7 @@ TEST(SevenZipReaderTest, ExtractsInTempBuffer) {
       .WillOnce(Return(ByMove(OpenTemporaryFile())));
   EXPECT_CALL(delegate, OnDirectory(_)).WillOnce(Return(true));
   EXPECT_CALL(delegate, OnEntry(Field(&EntryInfo::file_size, 19), _))
-      .WillOnce(DoAll(SetArgReferee<1>(base::make_span(buffer)), Return(true)));
+      .WillOnce(DoAll(SetArgReferee<1>(base::span(buffer)), Return(true)));
   EXPECT_CALL(delegate, EntryDone(Result::kSuccess, _)).WillOnce(Return(false));
 
   std::unique_ptr<SevenZipReader> reader =
@@ -272,7 +273,7 @@ TEST(SevenZipReaderTest, ExtractsNoTempBuffer) {
   StrictMock<MockSevenZipDelegate> delegate;
   std::array<uint8_t, 19> buffer;
   EXPECT_CALL(delegate, OnEntry(Field(&EntryInfo::file_size, 19), _))
-      .WillOnce(DoAll(SetArgReferee<1>(base::make_span(buffer)), Return(true)));
+      .WillOnce(DoAll(SetArgReferee<1>(base::span(buffer)), Return(true)));
   EXPECT_CALL(delegate, EntryDone(Result::kSuccess, _)).WillOnce(Return(false));
 
   std::unique_ptr<SevenZipReader> reader =
@@ -290,7 +291,7 @@ TEST(SevenZipReaderTest, BadCrc) {
   StrictMock<MockSevenZipDelegate> delegate;
   std::array<uint8_t, 19> buffer;
   EXPECT_CALL(delegate, OnEntry(Field(&EntryInfo::file_size, 19), _))
-      .WillOnce(DoAll(SetArgReferee<1>(base::make_span(buffer)), Return(true)));
+      .WillOnce(DoAll(SetArgReferee<1>(base::span(buffer)), Return(true)));
   EXPECT_CALL(delegate, EntryDone(Result::kBadCrc, _)).WillOnce(Return(false));
 
   std::unique_ptr<SevenZipReader> reader =
@@ -306,7 +307,7 @@ TEST(SevenZipReaderTest, EmptyFile) {
   StrictMock<MockSevenZipDelegate> delegate;
   std::array<uint8_t, 0> buffer;
   EXPECT_CALL(delegate, OnEntry(Field(&EntryInfo::file_size, 0), _))
-      .WillOnce(DoAll(SetArgReferee<1>(base::make_span(buffer)), Return(true)));
+      .WillOnce(DoAll(SetArgReferee<1>(base::span(buffer)), Return(true)));
   EXPECT_CALL(delegate, EntryDone(Result::kSuccess, _)).WillOnce(Return(false));
 
   std::unique_ptr<SevenZipReader> reader =
@@ -321,6 +322,10 @@ class SevenZipReaderFakeCrcTableTest : public testing::Test {
 
   void SetUp() override {
     seven_zip::EnsureLzmaSdkInitialized();
+
+    // Use software-backed CRC instead of hardware
+    g_Crc_Algo = 1;
+
     for (size_t i = 0; i < 2048; i++) {
       crc_table_[i] = g_CrcTable[i];
     }
@@ -364,7 +369,7 @@ TEST_F(SevenZipReaderFakeCrcTableTest, EmptyCrcWithFakeTable) {
   StrictMock<MockSevenZipDelegate> delegate;
   std::array<uint8_t, 19> buffer;
   EXPECT_CALL(delegate, OnEntry(Field(&EntryInfo::file_size, 19), _))
-      .WillOnce(DoAll(SetArgReferee<1>(base::make_span(buffer)), Return(true)));
+      .WillOnce(DoAll(SetArgReferee<1>(base::span(buffer)), Return(true)));
   EXPECT_CALL(delegate, EntryDone(Result::kSuccess, _)).WillOnce(Return(false));
 
   std::unique_ptr<SevenZipReader> reader =

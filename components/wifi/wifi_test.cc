@@ -11,9 +11,9 @@
 #include "base/at_exit.h"
 #include "base/cancelable_callback.h"
 #include "base/command_line.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/logging/logging_settings.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -28,14 +28,16 @@
 
 #if BUILDFLAG(IS_APPLE)
 #include "base/apple/scoped_nsautorelease_pool.h"
+#elif BUILDFLAG(IS_WIN)
+#include <windows.h>
 #endif
 
 namespace wifi {
 
 class WiFiTest {
  public:
-  WiFiTest() {}
-  ~WiFiTest() {}
+  WiFiTest() = default;
+  ~WiFiTest() = default;
 
   enum Result {
     RESULT_ERROR = -2,

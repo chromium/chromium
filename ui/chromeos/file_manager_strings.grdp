@@ -524,8 +524,8 @@
   <message name="IDS_FILE_BROWSER_GO_TO_FILE_LOCATION_BUTTON_LABEL" desc="Menu item label, navigating the user to the file's containing folder.">
     Go to file location
   </message>
-  <message name="IDS_FILE_BROWSER_ZIP_SELECTION_BUTTON_LABEL" desc="Menu item label, showing dialog to create zip file for selected files.">
-    Zip selection
+  <message name="IDS_FILE_BROWSER_ZIP_SELECTION_BUTTON_LABEL" desc="Menu item label, creating a ZIP archive containing the selected files and/or folders. This must be a verb. For languages in which the verb 'to zip' does not have any obvious or direct translation, consider expressions such as 'Compress', or 'Compress as ZIP', or 'Create ZIP archive'.">
+    Zip
   </message>
   <message name="IDS_FILE_BROWSER_SET_WALLPAPER_BUTTON_LABEL" desc="The context menu item to set wallpaper.">
     Set as wallpaper
@@ -1194,6 +1194,9 @@
   </message>
   <message name="IDS_FILE_BROWSER_METADATA_BOX_MODIFIED_BY" desc="Label for who modified the file.">
     Modified by
+  </message>
+  <message name="IDS_FILE_BROWSER_METADATA_BOX_DATE_TAKEN" desc="Label for the date that the image/photo was taken.">
+    Date taken
   </message>
   <message name="IDS_FILE_BROWSER_METADATA_BOX_PAGE_COUNT" desc="Label for pdf page count.">
     Page count
@@ -1876,5 +1879,8 @@
   </message>
   <message name="IDS_FILE_BROWSER_ONEDRIVE_FROZEN_ACCOUNT_SUBTITLE" desc="Subtitle of an empty state section displayed in OneDrive folder when the user's OneDrive account is frozen.">
     Visit <ph name="LINK_BEGIN">&lt;a href="https://onedrive.live.com" target="_blank"&gt;</ph>onedrive.live.com<ph name="LINK_END">&lt;/a&gt;</ph> for more information
+  </message>
+  <message name="IDS_FILE_BROWSER_ONEDRIVE_OFFLINE_TITLE" desc="Title of banner informing the user that OneDrive can't be used while the device is offline.">
+    OneDrive isn't available while offline
   </message>
 </grit-part>

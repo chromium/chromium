@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/birch/birch_data_provider.h"
 #include "ash/birch/birch_item.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"

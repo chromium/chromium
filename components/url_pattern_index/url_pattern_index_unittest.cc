@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/url_pattern_index/url_pattern_index.h"
 
 #include <algorithm>
+#include <array>
 #include <cstddef>
 #include <memory>
 #include <numeric>
@@ -17,11 +13,11 @@
 #include <string_view>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/url_pattern_index/url_pattern.h"
 #include "components/url_pattern_index/url_rule_test_support.h"
@@ -172,7 +168,7 @@ class UrlPatternIndexTest : public ::testing::Test {
       return false;
     const auto* data = reinterpret_cast<const uint8_t*>(rule);
     return data < flat_builder_->GetBufferPointer() ||
-           data >= flat_builder_->GetBufferPointer() + flat_builder_->GetSize();
+           data >= base::to_address(flat_builder_->GetBufferSpan().end());
   }
 
   void Reset() {
@@ -220,29 +216,32 @@ TEST_F(UrlPatternIndexTest, NoRuleApplies) {
 }
 
 TEST_F(UrlPatternIndexTest, ProtoCaseSensitivity) {
-  ASSERT_TRUE(
-      AddUrlRule(MakeUrlRule(UrlPattern("case-sensitive", kSubstring))));
+  // By default rules are case insensitive.
   proto::UrlRule rule = MakeUrlRule(UrlPattern("case-INSENsitive"));
-  rule.set_match_case(false);
   ASSERT_TRUE(AddUrlRule(rule));
+
+  proto::UrlRule case_sensitive_rule =
+      MakeUrlRule(UrlPattern("CASE-sensitive"));
+  case_sensitive_rule.set_match_case(true);
+  ASSERT_TRUE(AddUrlRule(case_sensitive_rule));
+
   Finish();
 
-  // We don't currently read case sensitivity from proto rules.
-  EXPECT_FALSE(FindMatch("http://abc.com/type=CASE-insEnsitIVe"));
-  EXPECT_FALSE(FindMatch("http://abc.com/type=case-INSENSITIVE"));
-  EXPECT_FALSE(FindMatch("http://abc.com?type=CASE-sensitive"));
-  EXPECT_TRUE(FindMatch("http://abc.com?type=case-sensitive"));
+  EXPECT_TRUE(FindMatch("http://abc.com?type=CASE-insEnsitIVe"));
+  EXPECT_TRUE(FindMatch("http://abc.com?type=case-INSENSITIVE"));
+  EXPECT_FALSE(FindMatch("http://abc.com?type=case-sensitive"));
+  EXPECT_TRUE(FindMatch("http://abc.com?type=CASE-sensitive"));
 }
 
 TEST_F(UrlPatternIndexTest, CaseSensitivity) {
   uint8_t common_options = flat::OptionFlag_APPLIES_TO_FIRST_PARTY |
                            flat::OptionFlag_APPLIES_TO_THIRD_PARTY;
   AddSimpleUrlRule("case-insensitive", 0 /* id */, 0 /* priority */,
-                   common_options | flat::OptionFlag_IS_CASE_INSENSITIVE,
-                   flat::ElementType_ANY, flat::RequestMethod_ANY);
-  AddSimpleUrlRule("case-sensitive", 0 /* id */, 0 /* priority */,
                    common_options, flat::ElementType_ANY,
                    flat::RequestMethod_ANY);
+  AddSimpleUrlRule("case-sensitive", 0 /* id */, 0 /* priority */,
+                   common_options | flat::OptionFlag_IS_MATCH_CASE,
+                   flat::ElementType_ANY, flat::RequestMethod_ANY);
   Finish();
 
   EXPECT_TRUE(FindMatch("http://abc.com/type=CASE-insEnsitIVe"));
@@ -1082,16 +1081,19 @@ TEST_F(UrlPatternIndexTest, RequestMethod) {
   const flat::ActivationType no_activation = flat::ActivationType_NONE;
   const std::string origin = "http://foo.com";
 
-  const struct {
+  struct RequestMethods {
     std::string name;
     flat::RequestMethod request_method;
-  } request_methods[] = {{"delete", flat::RequestMethod_DELETE},
-                         {"get", flat::RequestMethod_GET},
-                         {"head", flat::RequestMethod_HEAD},
-                         {"options", flat::RequestMethod_OPTIONS},
-                         {"patch", flat::RequestMethod_PATCH},
-                         {"post", flat::RequestMethod_POST},
-                         {"put", flat::RequestMethod_PUT}};
+  };
+  const auto request_methods = std::to_array<RequestMethods>({
+      {"delete", flat::RequestMethod_DELETE},
+      {"get", flat::RequestMethod_GET},
+      {"head", flat::RequestMethod_HEAD},
+      {"options", flat::RequestMethod_OPTIONS},
+      {"patch", flat::RequestMethod_PATCH},
+      {"post", flat::RequestMethod_POST},
+      {"put", flat::RequestMethod_PUT},
+  });
 
   int next_rule_id = 0;
   for (auto request_method : request_methods) {
@@ -1142,24 +1144,27 @@ TEST_F(UrlPatternIndexTest, EmbedderConditions) {
       });
   EmbedderConditionsMatcher match_has_evens =
       base::BindRepeating([](const flatbuffers::Vector<uint8_t>& conditions) {
-        return base::ranges::any_of(conditions,
-                                    [](int i) { return i % 2 == 0; });
+        return std::ranges::any_of(conditions,
+                                   [](int i) { return i % 2 == 0; });
       });
 
-  struct {
+  struct Cases {
     const std::string url;
     const EmbedderConditionsMatcher matcher;
     const bool expect_match;
     // Fields below are valid iff `expect_match` is true.
     const uint32_t expected_id = 0;
     const std::optional<std::vector<uint8_t>> expected_embedder_data;
-  } cases[] = {{url_1, match_first_element_one, true, 1, embedder_data_1},
-               {url_1, match_has_evens, true, 1, embedder_data_1},
-               {url_1, match_first_element_three, false},
-               {url_2, match_first_element_one, false},
-               {url_2, match_has_evens, true, 2, embedder_data_2},
-               {url_2, match_first_element_three, false},
-               {"http://abc.com", match_first_element_one, false}};
+  };
+  auto cases = std::to_array<Cases>({
+      {url_1, match_first_element_one, true, 1, embedder_data_1},
+      {url_1, match_has_evens, true, 1, embedder_data_1},
+      {url_1, match_first_element_three, false},
+      {url_2, match_first_element_one, false},
+      {url_2, match_has_evens, true, 2, embedder_data_2},
+      {url_2, match_first_element_three, false},
+      {"http://abc.com", match_first_element_one, false},
+  });
 
   for (size_t i = 0; i < std::size(cases); ++i) {
     SCOPED_TRACE(::testing::Message() << "Testing case " << i);

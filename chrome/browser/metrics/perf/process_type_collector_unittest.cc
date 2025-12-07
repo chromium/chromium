@@ -48,7 +48,7 @@ void GetExampleProcessTypeDataset(std::string* ps_output,
   process_types->insert(std::pair(3000, Process::GPU_PROCESS));
   process_types->insert(std::pair(4000, Process::UTILITY_PROCESS));
   process_types->insert(std::pair(5000, Process::ZYGOTE_PROCESS));
-  process_types->insert(std::pair(6000, Process::PPAPI_PLUGIN_PROCESS));
+  process_types->insert(std::pair(6000, Process::OTHER_PROCESS));
   process_types->insert(std::pair(7100, Process::OTHER_PROCESS));
   process_types->insert(std::pair(7200, Process::BROWSER_PROCESS));
   process_types->insert(std::pair(129000, Process::BROWSER_PROCESS));

@@ -7,6 +7,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
+#include "build/android_buildflags.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_task_environment.h"
@@ -65,7 +66,14 @@ TEST(ExtensionUtilTest, MapUrlToLocalFilePath) {
   EXPECT_FALSE(does_not_exist_path.empty());
 }
 
-TEST(ExtensionUtilTest, ExtensionIdForSiteInstance) {
+// TODO(https://crbug.com/356905053):Strict site isolation is not enabled on
+// Android, so this test is disabled on desktop android.
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+#define MAYBE_ExtensionIdForSiteInstance DISABLED_ExtensionIdForSiteInstance
+#else
+#define MAYBE_ExtensionIdForSiteInstance ExtensionIdForSiteInstance
+#endif
+TEST(ExtensionUtilTest, MAYBE_ExtensionIdForSiteInstance) {
   content::BrowserTaskEnvironment test_environment;
   content::TestBrowserContext test_context;
 

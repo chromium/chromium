@@ -5,22 +5,32 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_INCOGNITO_CLEAR_BROWSING_DATA_DIALOG_COORDINATOR_H_
 #define CHROME_BROWSER_UI_VIEWS_INCOGNITO_CLEAR_BROWSING_DATA_DIALOG_COORDINATOR_H_
 
-#include "chrome/browser/ui/browser_user_data.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/incognito_clear_browsing_data_dialog_interface.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "ui/views/view_tracker.h"
 
+class BrowserUserEducationInterface;
 class IncognitoClearBrowsingDataDialog;
+class Profile;
+
+namespace views {
+class View;
+}  // namespace views
 
 // Handles the lifetime and showing/hidden state of the clear data dialog. Owned
 // by the associated incognito browser.
-class IncognitoClearBrowsingDataDialogCoordinator
-    : public BrowserUserData<IncognitoClearBrowsingDataDialogCoordinator> {
+class IncognitoClearBrowsingDataDialogCoordinator {
  public:
-  ~IncognitoClearBrowsingDataDialogCoordinator() override;
+  explicit IncognitoClearBrowsingDataDialogCoordinator(Profile* profile);
+  IncognitoClearBrowsingDataDialogCoordinator(
+      const IncognitoClearBrowsingDataDialogCoordinator&) = delete;
+  IncognitoClearBrowsingDataDialogCoordinator& operator=(
+      const IncognitoClearBrowsingDataDialogCoordinator&) = delete;
+  ~IncognitoClearBrowsingDataDialogCoordinator();
 
-  // Shows the bubble for this browser anchored to the avatar toolbar button.
-  void Show(IncognitoClearBrowsingDataDialogInterface::Type type);
+  // Shows the bubble for this browser anchored to `anchor_view`.
+  void Show(IncognitoClearBrowsingDataDialogInterface::Type type,
+            views::View* anchor_view);
 
   // Returns true if the bubble is currently showing for this window.
   bool IsShowing() const;
@@ -29,13 +39,8 @@ class IncognitoClearBrowsingDataDialogCoordinator
   GetIncognitoClearBrowsingDataDialogForTesting();
 
  private:
-  friend class BrowserUserData<IncognitoClearBrowsingDataDialogCoordinator>;
-
-  explicit IncognitoClearBrowsingDataDialogCoordinator(Browser* browser);
-
   views::ViewTracker bubble_tracker_;
-
-  BROWSER_USER_DATA_KEY_DECL();
+  const raw_ptr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_INCOGNITO_CLEAR_BROWSING_DATA_DIALOG_COORDINATOR_H_

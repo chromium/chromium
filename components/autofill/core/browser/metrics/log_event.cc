@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/metrics/log_event.h"
 
+#include <variant>
+
 #include "base/notreached.h"
 
 namespace autofill {
@@ -32,16 +34,14 @@ bool OptionalBooleanToBool(OptionalBoolean value) {
     case OptionalBoolean::kTrue:
       return true;
     case OptionalBoolean::kUndefined:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
-bool AreCollapsible(const absl::monostate& event1,
-                    const absl::monostate& event2) {
+bool AreCollapsible(const std::monostate& event1,
+                    const std::monostate& event2) {
   return true;
 }
 
@@ -64,9 +64,9 @@ bool AreCollapsible(const FillFieldLogEvent& event1,
          event1.was_autofilled_before_security_policy ==
              event2.was_autofilled_before_security_policy &&
          event1.had_value_after_filling == event2.had_value_after_filling &&
-         event1.filling_method == event2.filling_method &&
          event1.filling_prevented_by_iframe_security_policy ==
-             event2.filling_prevented_by_iframe_security_policy;
+             event2.filling_prevented_by_iframe_security_policy &&
+         event1.was_refill == event2.was_refill;
 }
 
 bool AreCollapsible(const TypingFieldLogEvent& event1,
@@ -77,8 +77,9 @@ bool AreCollapsible(const TypingFieldLogEvent& event1,
 bool AreCollapsible(const HeuristicPredictionFieldLogEvent& event1,
                     const HeuristicPredictionFieldLogEvent& event2) {
   return event1.field_type == event2.field_type &&
-         event1.pattern_source == event2.pattern_source &&
-         event1.is_active_pattern_source == event2.is_active_pattern_source &&
+         event1.heuristic_source == event2.heuristic_source &&
+         event1.is_active_heuristic_source ==
+             event2.is_active_heuristic_source &&
          event1.rank_in_field_signature_group ==
              event2.rank_in_field_signature_group;
 }

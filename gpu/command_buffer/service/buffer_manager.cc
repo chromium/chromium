@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/buffer_manager.h"
 
 #include <stdint.h>
@@ -15,6 +10,7 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/format_macros.h"
 #include "base/notreached.h"
@@ -37,10 +33,9 @@ namespace {
 static const GLsizeiptr kDefaultMaxBufferSize = 1u << 30;  // 1GB
 }
 
-BufferManager::BufferManager(MemoryTracker* memory_tracker,
+BufferManager::BufferManager(scoped_refptr<MemoryTracker> memory_tracker,
                              FeatureInfo* feature_info)
-    : memory_type_tracker_(new MemoryTypeTracker(memory_tracker)),
-      memory_tracker_(memory_tracker),
+    : memory_type_tracker_(new MemoryTypeTracker(std::move(memory_tracker))),
       feature_info_(feature_info),
       max_buffer_size_(kDefaultMaxBufferSize),
       allow_buffers_on_multiple_targets_(false),
@@ -54,7 +49,7 @@ BufferManager::BufferManager(MemoryTracker* memory_tracker,
                        : false) {
   // When created from InProcessCommandBuffer, we won't have a |memory_tracker_|
   // so don't register a dump provider.
-  if (memory_tracker_) {
+  if (memory_type_tracker_->memory_tracker()) {
     base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
         this, "gpu::BufferManager",
         base::SingleThreadTaskRunner::GetCurrentDefault());
@@ -180,12 +175,11 @@ const GLvoid* Buffer::StageShadow(bool use_shadow,
   shadow_.clear();
   if (use_shadow) {
     if (data) {
-      shadow_.insert(shadow_.begin(),
-                     static_cast<const uint8_t*>(data),
-                     static_cast<const uint8_t*>(data) + size);
+      shadow_.insert(shadow_.begin(), static_cast<const uint8_t*>(data),
+                     UNSAFE_TODO(static_cast<const uint8_t*>(data) + size));
     } else {
       shadow_.resize(size);
-      memset(shadow_.data(), 0, static_cast<size_t>(size));
+      UNSAFE_TODO(memset(shadow_.data(), 0, static_cast<size_t>(size)));
     }
     return shadow_.data();
   } else {
@@ -223,7 +217,7 @@ void Buffer::SetRange(GLintptr offset, GLsizeiptr size, const GLvoid * data) {
   DCHECK(CheckRange(offset, size));
   if (!shadow_.empty()) {
     DCHECK_LE(static_cast<size_t>(offset + size), shadow_.size());
-    memcpy(shadow_.data() + offset, data, size);
+    UNSAFE_TODO(memcpy(shadow_.data() + offset, data, size));
     ClearCache();
   }
 }
@@ -236,7 +230,7 @@ const void* Buffer::GetRange(GLintptr offset, GLsizeiptr size) const {
     return nullptr;
   }
   DCHECK_LE(static_cast<size_t>(offset + size), shadow_.size());
-  return shadow_.data() + offset;
+  return UNSAFE_TODO(shadow_.data() + offset);
 }
 
 void Buffer::ClearCache() {
@@ -247,10 +241,10 @@ template <typename T>
 GLuint GetMaxValue(const void* data, GLuint offset, GLsizei count,
     GLuint primitive_restart_index) {
   GLuint max_value = 0;
-  const T* element =
-      reinterpret_cast<const T*>(static_cast<const int8_t*>(data) + offset);
-  const T* end = element + count;
-  for (; element < end; ++element) {
+  const T* element = reinterpret_cast<const T*>(
+      UNSAFE_TODO(static_cast<const int8_t*>(data) + offset));
+  const T* end = UNSAFE_TODO(element + count);
+  for (; element < end; UNSAFE_TODO(++element)) {
     if (*element > max_value) {
       if (*element == primitive_restart_index) {
         continue;
@@ -277,8 +271,7 @@ bool Buffer::GetMaxValueForRange(
         primitive_restart_index = 0xFFFFFFFF;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();  // should never get here by validation.
-        break;
+        NOTREACHED();  // should never get here by validation.
     }
   }
 
@@ -350,8 +343,7 @@ bool Buffer::GetMaxValueForRange(
                                     primitive_restart_index);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();  // should never get here by validation.
-      break;
+      NOTREACHED();  // should never get here by validation.
   }
   range_set_.insert(std::make_pair(range, max_v));
   *max_value = max_v;
@@ -466,6 +458,16 @@ void BufferManager::ValidateAndDoBufferData(ContextState* context_state,
     return;
   }
 
+  if (context_state->bound_transform_feedback &&
+      context_state->bound_transform_feedback->active() &&
+      !context_state->bound_transform_feedback->paused() &&
+      buffer->IsBoundForTransformFeedback()) {
+    ERRORSTATE_SET_GL_ERROR(error_state, GL_INVALID_OPERATION, "glBufferData",
+                            "buffer is bound for transform feedback that is "
+                            "currently active and not paused");
+    return;
+  }
+
   DoBufferData(error_state, buffer, target, size, usage, data);
 
   if (context_state->bound_transform_feedback.get()) {
@@ -523,6 +525,18 @@ void BufferManager::ValidateAndDoBufferSubData(ContextState* context_state,
   if (!buffer) {
     return;
   }
+
+  if (context_state->bound_transform_feedback &&
+      context_state->bound_transform_feedback->active() &&
+      !context_state->bound_transform_feedback->paused() &&
+      buffer->IsBoundForTransformFeedback()) {
+    ERRORSTATE_SET_GL_ERROR(error_state, GL_INVALID_OPERATION,
+                            "glBufferSubData",
+                            "buffer is bound for transform feedback that is "
+                            "currently active and not paused");
+    return;
+  }
+
   DoBufferSubData(buffer, target, offset, size, data);
 }
 
@@ -625,7 +639,7 @@ void BufferManager::ValidateAndDoGetBufferParameteri64v(
         break;
       }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -656,10 +670,10 @@ void BufferManager::ValidateAndDoGetBufferParameteriv(
         break;
       }
     case GL_BUFFER_MAPPED:
-      *params = buffer->GetMappedRange() == nullptr ? false : true;
+      *params = buffer->GetMappedRange() != nullptr;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -725,8 +739,7 @@ Buffer* BufferManager::GetBufferInfoForTarget(
     case GL_UNIFORM_BUFFER:
       return state->bound_uniform_buffer.get();
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -743,8 +756,7 @@ void BufferManager::SetPrimitiveRestartFixedIndexIfNecessary(GLenum type) {
       index = 0xFFFFFFFF;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();  // should never get here by validation.
-      break;
+      NOTREACHED();  // should never get here by validation.
   }
   if (primitive_restart_fixed_index_ != index) {
     glPrimitiveRestartIndex(index);
@@ -756,11 +768,14 @@ bool BufferManager::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                                  base::trace_event::ProcessMemoryDump* pmd) {
   using base::trace_event::MemoryAllocatorDump;
   using base::trace_event::MemoryDumpLevelOfDetail;
+  const uint64_t context_group_tracing_id =
+      memory_type_tracker_->memory_tracker()
+          ? memory_type_tracker_->memory_tracker()->ContextGroupTracingId()
+          : 0;
 
   if (args.level_of_detail == MemoryDumpLevelOfDetail::kBackground) {
-    std::string dump_name =
-        base::StringPrintf("gpu/gl/buffers/context_group_0x%" PRIX64 "",
-                           memory_tracker_->ContextGroupTracingId());
+    std::string dump_name = base::StringPrintf(
+        "gpu/gl/buffers/context_group_0x%" PRIX64 "", context_group_tracing_id);
     MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(dump_name);
     dump->AddScalar(MemoryAllocatorDump::kNameSize,
                     MemoryAllocatorDump::kUnitsBytes, mem_represented());
@@ -775,7 +790,7 @@ bool BufferManager::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
 
     std::string dump_name = base::StringPrintf(
         "gpu/gl/buffers/context_group_0x%" PRIX64 "/buffer_0x%" PRIX32,
-        memory_tracker_->ContextGroupTracingId(), client_buffer_id);
+        context_group_tracing_id, client_buffer_id);
     MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(dump_name);
     dump->AddScalar(MemoryAllocatorDump::kNameSize,
                     MemoryAllocatorDump::kUnitsBytes,
@@ -789,8 +804,8 @@ bool BufferManager::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
       pmd->CreateSharedMemoryOwnershipEdge(dump->guid(), shared_memory_guid,
                                            0 /* importance */);
     } else {
-      auto guid = gl::GetGLBufferGUIDForTracing(
-          memory_tracker_->ContextGroupTracingId(), client_buffer_id);
+      auto guid = gl::GetGLBufferGUIDForTracing(context_group_tracing_id,
+                                                client_buffer_id);
       pmd->CreateSharedGlobalAllocatorDump(guid);
       pmd->AddOwnershipEdge(dump->guid(), guid);
     }

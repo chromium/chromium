@@ -26,14 +26,9 @@ class ChooseFileJavaScriptFeature : public web::JavaScriptFeature {
                              const web::ScriptMessage& message) override;
 
   // Logs the click on choose file input.
-  void LogChooseFileEvent(int accept_type, bool allow_multiple_files);
-
-  // Returns and resets `last_choose_file_event_`.
-  std::optional<ChooseFileEvent> ResetLastChooseFileEvent();
-
- private:
-  // Latest `ChooseFileEvent` received from JavaScript.
-  std::optional<ChooseFileEvent> last_choose_file_event_;
+  void LogChooseFileEvent(int accept_type,
+                          bool allow_multiple_files,
+                          bool has_selected_file);
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_MODEL_CHOOSE_FILE_CHOOSE_FILE_JAVA_SCRIPT_FEATURE_H_

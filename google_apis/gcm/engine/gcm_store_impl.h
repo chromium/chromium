@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "google_apis/gcm/base/gcm_export.h"
 #include "google_apis/gcm/engine/gcm_store.h"
@@ -82,7 +82,6 @@ class GCM_EXPORT GCMStoreImpl : public GCMStore {
 
   // Sets last device's checkin information.
   void SetLastCheckinInfo(const base::Time& time,
-                          const std::set<std::string>& accounts,
                           UpdateCallback callback) override;
 
   // G-service settings handling.

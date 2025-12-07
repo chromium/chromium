@@ -5,12 +5,13 @@
 #ifndef CHROME_BROWSER_ASH_ARC_IDLE_MANAGER_ARC_DISPLAY_POWER_OBSERVER_H_
 #define CHROME_BROWSER_ASH_ARC_IDLE_MANAGER_ARC_DISPLAY_POWER_OBSERVER_H_
 
-#include "chrome/browser/ash/throttle_observer.h"
+#include "chromeos/ash/components/throttle/throttle_observer.h"
 #include "ui/display/manager/display_configurator.h"
 
 namespace arc {
 
-constexpr char kArcDisplayPowerObserverName[] = "ArcDisplayPowerObserver";
+inline constexpr char kArcDisplayPowerObserverName[] =
+    "ArcDisplayPowerObserver";
 
 // Listens to ARC power events and enforces throttle when display is off.
 // Enforcing throttle leads to idle state, ultimately leading to doze mode.

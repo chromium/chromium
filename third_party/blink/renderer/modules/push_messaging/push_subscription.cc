@@ -7,9 +7,9 @@
 #include <memory>
 
 #include "base/numerics/safe_conversions.h"
-#include "third_party/blink/renderer/bindings/core/v8/callback_promise_adapter.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_push_encryption_key_name.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/push_messaging/push_error.h"
 #include "third_party/blink/renderer/modules/push_messaging/push_provider.h"
@@ -27,11 +27,7 @@ namespace {
 // This method and its dependencies must remain constant time, thus not branch
 // based on the value of |buffer| while encoding, assuming a known length.
 String ToBase64URLWithoutPadding(DOMArrayBuffer* buffer) {
-  String value = WTF::Base64URLEncode(
-      static_cast<const char*>(buffer->Data()),
-      // The size of {buffer} should always fit into into {wtf_size_t}, because
-      // the buffer content itself origins from a WTF::Vector.
-      base::checked_cast<wtf_size_t>(buffer->ByteLength()));
+  String value = Base64URLEncode(buffer->ByteSpan());
   DCHECK_GT(value.length(), 0u);
 
   unsigned padding_to_remove = 0;
@@ -78,20 +74,17 @@ PushSubscription* PushSubscription::Create(
 PushSubscription::PushSubscription(
     const KURL& endpoint,
     bool user_visible_only,
-    const WTF::Vector<uint8_t>& application_server_key,
-    const WTF::Vector<unsigned char>& p256dh,
-    const WTF::Vector<unsigned char>& auth,
+    const Vector<uint8_t>& application_server_key,
+    const Vector<unsigned char>& p256dh,
+    const Vector<unsigned char>& auth,
     const std::optional<DOMTimeStamp>& expiration_time,
     ServiceWorkerRegistration* service_worker_registration)
     : endpoint_(endpoint),
       options_(MakeGarbageCollected<PushSubscriptionOptions>(
           user_visible_only,
           application_server_key)),
-      p256dh_(
-          DOMArrayBuffer::Create(p256dh.data(),
-                                 base::checked_cast<unsigned>(p256dh.size()))),
-      auth_(DOMArrayBuffer::Create(auth.data(),
-                                   base::checked_cast<unsigned>(auth.size()))),
+      p256dh_(DOMArrayBuffer::Create(p256dh)),
+      auth_(DOMArrayBuffer::Create(auth)),
       expiration_time_(expiration_time),
       service_worker_registration_(service_worker_registration) {}
 
@@ -104,31 +97,29 @@ std::optional<DOMTimeStamp> PushSubscription::expirationTime() const {
   return expiration_time_;
 }
 
-DOMArrayBuffer* PushSubscription::getKey(const AtomicString& name) const {
-  if (name == "p256dh")
-    return p256dh_.Get();
-  if (name == "auth")
-    return auth_.Get();
-
-  return nullptr;
+DOMArrayBuffer* PushSubscription::getKey(
+    const V8PushEncryptionKeyName& name) const {
+  switch (name.AsEnum()) {
+    case V8PushEncryptionKeyName::Enum::kP256Dh:
+      return p256dh_.Get();
+    case V8PushEncryptionKeyName::Enum::kAuth:
+      return auth_.Get();
+  }
+  NOTREACHED();
 }
 
 ScriptPromise<IDLBoolean> PushSubscription::unsubscribe(
     ScriptState* script_state) {
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(script_state);
-  auto promise = resolver->Promise();
-
   PushProvider* push_provider =
       PushProvider::From(service_worker_registration_);
   DCHECK(push_provider);
-  push_provider->Unsubscribe(
-      std::make_unique<CallbackPromiseAdapter<IDLBoolean, DOMException>>(
-          resolver));
-  return promise;
+  push_provider->Unsubscribe(resolver);
+  return resolver->Promise();
 }
 
-ScriptValue PushSubscription::toJSONForBinding(ScriptState* script_state) {
+ScriptObject PushSubscription::toJSONForBinding(ScriptState* script_state) {
   DCHECK(p256dh_);
 
   V8ObjectBuilder result(script_state);
@@ -146,7 +137,7 @@ ScriptValue PushSubscription::toJSONForBinding(ScriptState* script_state) {
 
   result.Add("keys", keys);
 
-  return result.GetScriptValue();
+  return result.ToScriptObject();
 }
 
 void PushSubscription::Trace(Visitor* visitor) const {

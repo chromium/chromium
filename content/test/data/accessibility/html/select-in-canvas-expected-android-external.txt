@@ -1,0 +1,7 @@
+WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea", hasImage="true"]
+++View viewIdResName:"control" actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
+++++View text:"1" canOpenPopUp clickable focusable expandedState:1 actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, EXPAND] bundle:[chromeRole="comboBoxSelect", clickableScore="300", roleDescription="menu pop up button"]
+++Image viewIdResName:"canvas" actions:[AX_FOCUS] bundle:[chromeRole="canvas", hasImage="true"]
+++++TextView text:"\n  " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
+++++View text:"1" canOpenPopUp clickable focusable expandedState:1 actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, EXPAND] bundle:[chromeRole="comboBoxSelect", clickableScore="300", roleDescription="menu pop up button"]
+++++TextView text:"\n" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]

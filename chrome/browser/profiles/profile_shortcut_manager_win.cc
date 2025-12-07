@@ -7,6 +7,7 @@
 #include <shlobj.h>  // For SHChangeNotify().
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <string>
@@ -18,10 +19,10 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ref.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -53,9 +54,9 @@
 #include "third_party/skia/include/core/SkRRect.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/gfx/icon_util.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_family.h"
+#include "ui/gfx/win/icon_util.h"
 
 using content::BrowserThread;
 
@@ -95,6 +96,9 @@ void OnProfileIconCreateSuccess(base::FilePath profile_path) {
   if (profile) {
     profile->GetPrefs()->SetInteger(prefs::kProfileIconVersion,
                                     kCurrentProfileIconVersion);
+    profile->GetPrefs()->SetBoolean(
+        prefs::kProfileIconWin11Format,
+        base::win::GetVersion() >= base::win::Version::WIN11);
   }
 }
 
@@ -349,7 +353,7 @@ void RenameChromeDesktopShortcutForProfile(
   if (!profile_shortcuts->empty()) {
     // From all profile_shortcuts choose the one with a known (canonical) name.
     profiles::internal::ShortcutFilenameMatcher matcher(old_profile_name);
-    auto it = base::ranges::find_if(
+    auto it = std::ranges::find_if(
         *profile_shortcuts, [&matcher](const base::FilePath& p) {
           return matcher.IsCanonical(p.BaseName().value());
         });
@@ -414,7 +418,7 @@ struct CreateOrUpdateShortcutsParams {
         profile_path(profile_path),
         single_profile(single_profile),
         incognito(incognito) {}
-  ~CreateOrUpdateShortcutsParams() {}
+  ~CreateOrUpdateShortcutsParams() = default;
 
   ProfileShortcutManagerWin::CreateOrUpdateMode create_mode;
   ProfileShortcutManagerWin::NonProfileShortcutAction action;
@@ -458,8 +462,7 @@ void CreateOrUpdateDesktopShortcutsAndIconForProfile(
 
   base::FilePath chrome_exe;
   if (!base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   std::set<base::FilePath> desktop_contents =
@@ -476,8 +479,8 @@ void CreateOrUpdateDesktopShortcutsAndIconForProfile(
   // Do not call ListUserDesktopContents again (but with filter) to avoid
   // excess work inside it. Just reuse non-filtered desktop_contents.
   // We need both of them (desktop_contents and shortcuts) later.
-  base::ranges::copy_if(desktop_contents,
-                        std::inserter(shortcuts, shortcuts.begin()), filter);
+  std::ranges::copy_if(desktop_contents,
+                       std::inserter(shortcuts, shortcuts.begin()), filter);
 
   if (params.old_profile_name != params.profile_name || params.single_profile) {
     RenameChromeDesktopShortcutForProfile(
@@ -620,8 +623,7 @@ void UnpinAndDeleteDesktopShortcuts(
 
   base::FilePath chrome_exe;
   if (!base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   const std::wstring command_line =
@@ -656,8 +658,7 @@ bool HasAnyProfileShortcuts(const base::FilePath& profile_path) {
 
   base::FilePath chrome_exe;
   if (!base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   const std::wstring command_line =
@@ -693,7 +694,7 @@ std::wstring SanitizeShortcutProfileNameString(
 
 namespace profiles {
 
-const base::FilePath::StringPieceType kProfileIconFileName =
+const base::FilePath::StringViewType kProfileIconFileName =
     FILE_PATH_LITERAL("Google Profile.ico");
 
 namespace internal {
@@ -719,7 +720,7 @@ std::wstring GetUniqueShortcutFilenameForProfile(
     const std::u16string& profile_name,
     const std::set<base::FilePath>& excludes) {
   std::set<std::wstring> excludes_names;
-  base::ranges::transform(
+  std::ranges::transform(
       excludes, std::inserter(excludes_names, excludes_names.begin()),
       [](const base::FilePath& e) { return e.BaseName().value(); });
 
@@ -783,8 +784,7 @@ bool IsChromeShortcutForProfile(const base::FilePath& shortcut,
                                 const base::FilePath& profile_path) {
   base::FilePath chrome_exe;
   if (!base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   std::wstring cmd_line_string;
@@ -868,11 +868,8 @@ bool ProfileShortcutManager::IsFeatureEnabled() {
   base::FilePath user_data_dir;
   bool success = base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
   DCHECK(success);
-  base::FilePath default_user_data_dir;
-  success = chrome::GetDefaultUserDataDirectory(&default_user_data_dir);
-  DCHECK(success);
-  return user_data_dir == default_user_data_dir ||
-         user_data_dir == policy_user_data_dir;
+  return user_data_dir == policy_user_data_dir ||
+         chrome::IsUsingDefaultDataDirectory().value_or(false);
 }
 
 // static
@@ -937,8 +934,7 @@ void ProfileShortcutManagerWin::GetShortcutProperties(
     base::FilePath* icon_path) {
   base::FilePath chrome_exe;
   if (!base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   ProfileAttributesStorage& storage =
@@ -1029,8 +1025,15 @@ void ProfileShortcutManagerWin::OnProfileHighResAvatarLoaded(
 }
 
 void ProfileShortcutManagerWin::OnProfileAdded(Profile* profile) {
-  if (profile->GetPrefs()->GetInteger(prefs::kProfileIconVersion) <
-      kCurrentProfileIconVersion) {
+  // Upgrade the profile icon if the current profile icon version has
+  // increased or if running on Win 11 and we don't know that the profile icon
+  // is the Win 11 format. This will result in a one time upgrade of profile
+  // icons on Win 11 since we were previously not tracking whether or not the
+  // profile icon was Win11 format.
+  if ((base::win::GetVersion() >= base::win::Version::WIN11 &&
+       !profile->GetPrefs()->GetBoolean(prefs::kProfileIconWin11Format)) ||
+      (profile->GetPrefs()->GetInteger(prefs::kProfileIconVersion) <
+       kCurrentProfileIconVersion)) {
     const base::FilePath profile_path = profile->GetPath();
     // Ensure the profile's icon file has been created.
     CreateOrUpdateProfileIcon(profile_path);
@@ -1064,8 +1067,7 @@ base::FilePath ProfileShortcutManagerWin::GetOtherProfilePath(
     if (path != profile_path)
       return path;
   }
-  NOTREACHED_IN_MIGRATION();
-  return base::FilePath();
+  NOTREACHED();
 }
 
 void ProfileShortcutManagerWin::CreateOrUpdateShortcutsForProfileAtPath(

@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "net/android/keystore.h"
 #include "net/cert/x509_certificate.h"
+#include "net/ssl/ssl_platform_key_util.h"
 #include "net/ssl/ssl_private_key.h"
 #include "net/ssl/ssl_private_key_test_util.h"
 #include "net/test/cert_test_util.h"
@@ -105,6 +106,33 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn(kTestKeys),
                          TestKeyToString);
 
+TEST_P(SSLPlatformKeyAndroidTest, MatchesPublicKey) {
+  const TestKey& test_key = GetParam();
+
+  scoped_refptr<X509Certificate> cert =
+      ImportCertFromFile(GetTestCertsDirectory(), test_key.cert_file);
+  ASSERT_TRUE(cert);
+
+  std::string key_bytes;
+  ASSERT_TRUE(ReadTestFile(test_key.key_file, &key_bytes));
+  ScopedJava java_key =
+      GetPKCS8PrivateKeyJava(test_key.android_key_type, key_bytes);
+  ASSERT_FALSE(java_key.is_null());
+
+  bssl::UniquePtr<EVP_PKEY> pubkey = net::GetClientCertPublicKey(cert.get());
+  ASSERT_TRUE(pubkey);
+
+  scoped_refptr<SSLPrivateKey> key =
+      WrapJavaPrivateKey(std::move(pubkey), java_key);
+  ASSERT_TRUE(key);
+
+  EXPECT_EQ(SSLPrivateKey::DefaultAlgorithmPreferences(test_key.type,
+                                                       true /* supports_pss */),
+            key->GetAlgorithmPreferences());
+
+  TestSSLPrivateKeyMatches(key.get(), key_bytes);
+}
+
 TEST(SSLPlatformKeyAndroidSigAlgTest, SignatureAlgorithmsToJavaKeyTypes) {
   const struct {
     std::vector<uint16_t> algorithms;
@@ -133,3 +161,5 @@ TEST(SSLPlatformKeyAndroidSigAlgTest, SignatureAlgorithmsToJavaKeyTypes) {
 }
 
 }  // namespace net
+
+DEFINE_JNI(AndroidKeyStoreTestUtil)

@@ -35,21 +35,21 @@ AudioSummingJunction::AudioSummingJunction(DeferredTaskHandler& handler)
     : deferred_task_handler_(&handler) {}
 
 AudioSummingJunction::~AudioSummingJunction() {
-  GetDeferredTaskHandler().AssertGraphOwner();
-  GetDeferredTaskHandler().RemoveMarkedSummingJunction(this);
+  deferred_task_handler_->AssertGraphOwner();
+  deferred_task_handler_->RemoveMarkedSummingJunction(this);
 }
 
 void AudioSummingJunction::ChangedOutputs() {
-  GetDeferredTaskHandler().AssertGraphOwner();
+  deferred_task_handler_->AssertGraphOwner();
   if (!rendering_state_need_updating_) {
-    GetDeferredTaskHandler().MarkSummingJunctionDirty(this);
+    deferred_task_handler_->MarkSummingJunctionDirty(this);
     rendering_state_need_updating_ = true;
   }
 }
 
 void AudioSummingJunction::UpdateRenderingState() {
-  DCHECK(GetDeferredTaskHandler().IsAudioThread());
-  GetDeferredTaskHandler().AssertGraphOwner();
+  DCHECK(deferred_task_handler_->IsAudioThread());
+  deferred_task_handler_->AssertGraphOwner();
   if (rendering_state_need_updating_) {
     // Copy from `outputs_` to `rendering_outputs_`.
     rendering_outputs_.resize(outputs_.size());
@@ -63,6 +63,18 @@ void AudioSummingJunction::UpdateRenderingState() {
 
     rendering_state_need_updating_ = false;
   }
+}
+
+void AudioSummingJunction::AssertGraphOwner() const {
+  deferred_task_handler_->AssertGraphOwner();
+}
+
+bool AudioSummingJunction::IsAudioThread() const {
+  return deferred_task_handler_->IsAudioThread();
+}
+
+uint32_t AudioSummingJunction::RenderQuantumFrames() const {
+  return deferred_task_handler_->RenderQuantumFrames();
 }
 
 }  // namespace blink

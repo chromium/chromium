@@ -7,8 +7,8 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/not_fatal_until.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 
 namespace syncer {
 
@@ -28,14 +28,9 @@ NudgeTracker::NudgeTracker() {
 NudgeTracker::~NudgeTracker() = default;
 
 bool NudgeTracker::IsSyncRequired(DataTypeSet types) const {
-  if (IsRetryRequired()) {
-    return true;
-  }
-
   for (DataType type : types) {
     TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
-    CHECK(tracker_it != type_trackers_.end(), base::NotFatalUntil::M130)
-        << DataTypeToDebugString(type);
+    CHECK(tracker_it != type_trackers_.end()) << DataTypeToDebugString(type);
     if (tracker_it->second->IsSyncRequired()) {
       return true;
     }
@@ -49,14 +44,9 @@ bool NudgeTracker::IsGetUpdatesRequired(DataTypeSet types) const {
     return true;
   }
 
-  if (IsRetryRequired()) {
-    return true;
-  }
-
   for (DataType type : types) {
     TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
-    CHECK(tracker_it != type_trackers_.end(), base::NotFatalUntil::M130)
-        << DataTypeToDebugString(type);
+    CHECK(tracker_it != type_trackers_.end()) << DataTypeToDebugString(type);
     if (tracker_it->second->IsGetUpdatesRequired()) {
       return true;
     }
@@ -64,40 +54,21 @@ bool NudgeTracker::IsGetUpdatesRequired(DataTypeSet types) const {
   return false;
 }
 
-bool NudgeTracker::IsRetryRequired() const {
-  if (sync_cycle_start_time_.is_null()) {
-    return false;
-  }
-
-  if (current_retry_time_.is_null()) {
-    return false;
-  }
-
-  return current_retry_time_ <= sync_cycle_start_time_;
-}
-
 void NudgeTracker::RecordSuccessfulCommitMessage(DataTypeSet types) {
   for (DataType type : types) {
     TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
-    CHECK(tracker_it != type_trackers_.end(), base::NotFatalUntil::M130)
-        << DataTypeToDebugString(type);
+    CHECK(tracker_it != type_trackers_.end()) << DataTypeToDebugString(type);
     tracker_it->second->RecordSuccessfulCommitMessage();
   }
 }
 
 void NudgeTracker::RecordSuccessfulSyncCycleIfNotBlocked(DataTypeSet types) {
-  // If a retry was required, we've just serviced it.  Unset the flag.
-  if (IsRetryRequired()) {
-    current_retry_time_ = base::TimeTicks();
-  }
-
   // A successful cycle while invalidations are enabled puts us back into sync.
   invalidations_out_of_sync_ = !invalidations_enabled_;
 
   for (DataType type : types) {
     TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
-    CHECK(tracker_it != type_trackers_.end(), base::NotFatalUntil::M130)
-        << DataTypeToDebugString(type);
+    CHECK(tracker_it != type_trackers_.end()) << DataTypeToDebugString(type);
     tracker_it->second->RecordSuccessfulSyncCycleIfNotBlocked();
   }
 }
@@ -105,8 +76,7 @@ void NudgeTracker::RecordSuccessfulSyncCycleIfNotBlocked(DataTypeSet types) {
 void NudgeTracker::RecordInitialSyncDone(DataTypeSet types) {
   for (DataType type : types) {
     TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
-    CHECK(tracker_it != type_trackers_.end(), base::NotFatalUntil::M130)
-        << DataTypeToDebugString(type);
+    CHECK(tracker_it != type_trackers_.end()) << DataTypeToDebugString(type);
     tracker_it->second->RecordInitialSyncDone();
   }
 }
@@ -121,8 +91,7 @@ base::TimeDelta NudgeTracker::RecordLocalChange(DataType type,
 base::TimeDelta NudgeTracker::RecordLocalRefreshRequest(DataTypeSet types) {
   for (DataType type : types) {
     TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
-    CHECK(tracker_it != type_trackers_.end(), base::NotFatalUntil::M130)
-        << DataTypeToDebugString(type);
+    CHECK(tracker_it != type_trackers_.end()) << DataTypeToDebugString(type);
     tracker_it->second->RecordLocalRefreshRequest();
   }
   return kLocalRefreshDelay;
@@ -130,19 +99,19 @@ base::TimeDelta NudgeTracker::RecordLocalRefreshRequest(DataTypeSet types) {
 
 base::TimeDelta NudgeTracker::GetRemoteInvalidationDelay(DataType type) const {
   TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
-  CHECK(tracker_it != type_trackers_.end(), base::NotFatalUntil::M130);
+  CHECK(tracker_it != type_trackers_.end());
   return tracker_it->second->GetRemoteInvalidationDelay();
 }
 
 void NudgeTracker::RecordInitialSyncRequired(DataType type) {
   TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
-  CHECK(tracker_it != type_trackers_.end(), base::NotFatalUntil::M130);
+  CHECK(tracker_it != type_trackers_.end());
   tracker_it->second->RecordInitialSyncRequired();
 }
 
 void NudgeTracker::RecordCommitConflict(DataType type) {
   TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
-  CHECK(tracker_it != type_trackers_.end(), base::NotFatalUntil::M130);
+  CHECK(tracker_it != type_trackers_.end());
   tracker_it->second->RecordCommitConflict();
 }
 
@@ -168,7 +137,7 @@ void NudgeTracker::SetTypeBackedOff(DataType type,
                                     base::TimeDelta length,
                                     base::TimeTicks now) {
   TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
-  CHECK(tracker_it != type_trackers_.end(), base::NotFatalUntil::M130);
+  CHECK(tracker_it != type_trackers_.end());
   tracker_it->second->BackOffType(length, now);
 }
 
@@ -181,7 +150,7 @@ void NudgeTracker::UpdateTypeThrottlingAndBackoffState() {
 void NudgeTracker::SetHasPendingInvalidations(DataType type,
                                               bool has_invalidation) {
   TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
-  CHECK(tracker_it != type_trackers_.end(), base::NotFatalUntil::M130);
+  CHECK(tracker_it != type_trackers_.end());
   tracker_it->second->SetHasPendingInvalidations(has_invalidation);
 }
 
@@ -224,7 +193,7 @@ base::TimeDelta NudgeTracker::GetTimeUntilNextUnblock() const {
 
 base::TimeDelta NudgeTracker::GetTypeLastBackoffInterval(DataType type) const {
   auto tracker_it = type_trackers_.find(type);
-  CHECK(tracker_it != type_trackers_.end(), base::NotFatalUntil::M130);
+  CHECK(tracker_it != type_trackers_.end());
 
   return tracker_it->second->GetLastBackoffInterval();
 }
@@ -270,6 +239,8 @@ DataTypeSet NudgeTracker::GetRefreshRequestedTypes() const {
 }
 
 sync_pb::SyncEnums::GetUpdatesOrigin NudgeTracker::GetOrigin() const {
+  // TODO(crbug.com/40252048): This appears trivial after removing GU_RETRY, either
+  // simplify the code around or add an explanation why this is needed.
   for (const auto& [type, tracker] : type_trackers_) {
     if (!tracker->IsBlocked() && (tracker->HasPendingInvalidation() ||
                                   tracker->HasRefreshRequestPending() ||
@@ -277,10 +248,6 @@ sync_pb::SyncEnums::GetUpdatesOrigin NudgeTracker::GetOrigin() const {
                                   tracker->IsInitialSyncRequired())) {
       return sync_pb::SyncEnums::GU_TRIGGER;
     }
-  }
-
-  if (IsRetryRequired()) {
-    return sync_pb::SyncEnums::RETRY;
   }
 
   return sync_pb::SyncEnums::UNKNOWN_ORIGIN;
@@ -295,33 +262,6 @@ void NudgeTracker::FillProtoMessage(DataType type,
 
   // Delegate the type-specific work to the DataTypeTracker class.
   type_trackers_.find(type)->second->FillGetUpdatesTriggersMessage(msg);
-}
-
-void NudgeTracker::SetSyncCycleStartTime(base::TimeTicks now) {
-  sync_cycle_start_time_ = now;
-
-  // If current_retry_time_ is still set, that means we have an old retry time
-  // left over from a previous cycle.  For example, maybe we tried to perform
-  // this retry, hit a network connection error, and now we're in exponential
-  // backoff.  In that case, we want this sync cycle to include the GU retry
-  // flag so we leave this variable set regardless of whether or not there is an
-  // overwrite pending.
-  if (!current_retry_time_.is_null()) {
-    return;
-  }
-
-  // If do not have a current_retry_time_, but we do have a next_retry_time_ and
-  // it is ready to go, then we set it as the current_retry_time_.  It will stay
-  // there until a GU retry has succeeded.
-  if (!next_retry_time_.is_null() &&
-      next_retry_time_ <= sync_cycle_start_time_) {
-    current_retry_time_ = next_retry_time_;
-    next_retry_time_ = base::TimeTicks();
-  }
-}
-
-void NudgeTracker::SetNextRetryTime(base::TimeTicks retry_time) {
-  next_retry_time_ = retry_time;
 }
 
 void NudgeTracker::UpdateLocalChangeDelay(DataType type,

@@ -13,8 +13,8 @@
 #include "base/observer_list.h"
 #include "base/types/pass_key.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
-#include "components/autofill/core/browser/autofill_driver_factory.h"
-#include "components/autofill/core/browser/autofill_driver_router.h"
+#include "components/autofill/core/browser/foundations/autofill_driver_factory.h"
+#include "components/autofill/core/browser/foundations/autofill_driver_router.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 
@@ -26,11 +26,12 @@ namespace autofill {
 
 class ContentAutofillClient;
 class ContentAutofillDriver;
-class ScopedAutofillManagersObservation;
 
-// Manages lifetime of ContentAutofillDriver. Owned by ContentAutofillClient,
-// therefore one Factory per WebContents. Creates one Driver per
-// RenderFrameHost.
+// Creates one ContentAutofillDriver per content::RenderFrameHost and manages
+// its lifecycle corresponding to the content::RenderFrameHost's lifecycle.
+//
+// Owned by ContentAutofillClient, therefore there is one
+// ContentAutofillDriverFactory per content::WebContents.
 class ContentAutofillDriverFactory : public AutofillDriverFactory,
                                      public content::WebContentsObserver {
  public:
@@ -87,11 +88,7 @@ class ContentAutofillDriverFactory : public AutofillDriverFactory,
 
   AutofillDriverRouter& router() { return router_; }
 
-  size_t num_drivers() const { return driver_map_.size(); }
-
-  // Returns raw pointers to all drivers that the factory currently owns.
-  std::vector<ContentAutofillDriver*> GetExistingDrivers(
-      base::PassKey<ScopedAutofillManagersObservation>);
+  std::vector<AutofillDriver*> GetExistingDrivers() override;
 
   ContentAutofillDriver* DriverForFrame(
       content::RenderFrameHost* render_frame_host,
@@ -122,8 +119,10 @@ class ContentAutofillDriverFactory : public AutofillDriverFactory,
   // The map should be empty at destruction time because its elements are erased
   // in RenderFrameDeleted(). In case it is not empty, is must be destroyed
   // before `router_` because ~ContentAutofillDriver() may access `router_`.
-  base::flat_map<content::RenderFrameHost*,
-                 std::unique_ptr<ContentAutofillDriver>>
+  //
+  // The map type must be so that `driver_map_.emplace()` does *not* invalidate
+  // references. Otherwise, recursive DriverForFrame() calls are unsafe.
+  std::map<content::RenderFrameHost*, std::unique_ptr<ContentAutofillDriver>>
       driver_map_;
 
   // The maximum number of coexisting drivers over the lifetime of this factory.

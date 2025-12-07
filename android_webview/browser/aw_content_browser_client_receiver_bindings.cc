@@ -23,7 +23,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/resource_context.h"
+#include "content/public/common/content_features.h"
 #include "media/mojo/buildflags.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -31,6 +31,7 @@
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
+#include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 #include "third_party/blink/public/mojom/webview/webview_media_integrity.mojom.h"
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
@@ -81,7 +82,6 @@ void CreateMediaDrmStorage(
 // over to the IO thread.
 void MaybeCreateSafeBrowsing(
     int rph_id,
-    base::WeakPtr<content::ResourceContext> resource_context,
     base::RepeatingCallback<scoped_refptr<safe_browsing::UrlCheckerDelegate>()>
         get_checker_delegate,
     mojo::PendingReceiver<safe_browsing::mojom::SafeBrowsing> receiver) {
@@ -93,8 +93,7 @@ void MaybeCreateSafeBrowsing(
     return;
 
   safe_browsing::MojoSafeBrowsingImpl::MaybeCreate(
-      rph_id, std::move(resource_context), std::move(get_checker_delegate),
-      std::move(receiver));
+      rph_id, std::move(get_checker_delegate), std::move(receiver));
 }
 
 void BindNetworkHintsHandler(
@@ -241,12 +240,9 @@ void AwContentBrowserClient::ExposeInterfacesToRenderer(
     service_manager::BinderRegistry* registry,
     blink::AssociatedInterfaceRegistry* associated_registry,
     content::RenderProcessHost* render_process_host) {
-  content::ResourceContext* resource_context =
-      render_process_host->GetBrowserContext()->GetResourceContext();
   registry->AddInterface<safe_browsing::mojom::SafeBrowsing>(
       base::BindRepeating(
-          &MaybeCreateSafeBrowsing, render_process_host->GetID(),
-          resource_context->GetWeakPtr(),
+          &MaybeCreateSafeBrowsing, render_process_host->GetDeprecatedID(),
           base::BindRepeating(
               &AwContentBrowserClient::GetSafeBrowsingUrlCheckerDelegate,
               base::Unretained(this))),
@@ -255,14 +251,13 @@ void AwContentBrowserClient::ExposeInterfacesToRenderer(
   // Add the RenderMessageFilter creation callback, the callbkack will happen on
   // the IO thread.
   registry->AddInterface<mojom::RenderMessageFilter>(base::BindRepeating(
-      &CreateRenderMessageFilter, render_process_host->GetID()));
+      &CreateRenderMessageFilter, render_process_host->GetDeprecatedID()));
 }
 
 void AwContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
     content::RenderFrameHost* render_frame_host,
     mojo::BinderMapWithContext<content::RenderFrameHost*>* map) {
-  map->Add<network_hints::mojom::NetworkHintsHandler>(
-      base::BindRepeating(&BindNetworkHintsHandler));
+  map->Add<network_hints::mojom::NetworkHintsHandler>(&BindNetworkHintsHandler);
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
   auto create_spellcheck_host =
@@ -272,14 +267,13 @@ void AwContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
                                     std::move(receiver));
       };
   map->Add<spellcheck::mojom::SpellCheckHost>(
-      base::BindRepeating(create_spellcheck_host),
-      content::GetUIThreadTaskRunner({}));
+      create_spellcheck_host, content::GetUIThreadTaskRunner({}));
 #endif
-
-  if (base::FeatureList::IsEnabled(
-          features::kWebViewMediaIntegrityApiBlinkExtension)) {
-    map->Add<blink::mojom::WebViewMediaIntegrityService>(
-        base::BindRepeating(&BindMediaIntegrityServiceReceiver));
+  map->Add<blink::mojom::WebViewMediaIntegrityService>(
+      &BindMediaIntegrityServiceReceiver);
+  if (base::FeatureList::IsEnabled(::features::kWebPayments)) {
+    map->Add<payments::mojom::PaymentRequest>(
+        &ForwardToJavaFrame<payments::mojom::PaymentRequest>);
   }
 }
 

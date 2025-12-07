@@ -62,7 +62,7 @@ void RenderFrameMetadataObserverImpl::OnRenderFrameSubmission(
     send_metadata |= force_send;
   }
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   bool is_frequency_all_updates =
       root_scroll_offset_update_frequency_.value_or(
           cc::mojom::blink::RootScrollOffsetUpdateFrequency::kNone) ==
@@ -99,8 +99,8 @@ void RenderFrameMetadataObserverImpl::OnRenderFrameSubmission(
         needs_activation_notification;
     render_frame_metadata_observer_client_->OnRenderFrameMetadataChanged(
         needs_activation_notification ? last_frame_token_ : 0u, metadata_copy);
-#if BUILDFLAG(IS_ANDROID)
-    last_root_scroll_offset_android_ = metadata_copy.root_scroll_offset;
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+    last_root_scroll_offset_ = metadata_copy.root_scroll_offset;
 #endif
     TRACE_EVENT_WITH_FLOW1(
         TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
@@ -116,13 +116,12 @@ void RenderFrameMetadataObserverImpl::OnRenderFrameSubmission(
             : "null");
   }
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   if (send_root_scroll_offset_changed) {
     DCHECK(!send_metadata);
     render_frame_metadata_observer_client_->OnRootScrollOffsetChanged(
         *render_frame_metadata.root_scroll_offset);
-    last_root_scroll_offset_android_ =
-        *render_frame_metadata.root_scroll_offset;
+    last_root_scroll_offset_ = *render_frame_metadata.root_scroll_offset;
   }
 #endif
 
@@ -135,7 +134,7 @@ void RenderFrameMetadataObserverImpl::OnRenderFrameSubmission(
   }
 }
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 void RenderFrameMetadataObserverImpl::UpdateRootScrollOffsetUpdateFrequency(
     cc::mojom::blink::RootScrollOffsetUpdateFrequency frequency) {
   if (!RuntimeEnabledFeatures::CCTNewRFMPushBehaviorEnabled()) {
@@ -254,7 +253,7 @@ bool RenderFrameMetadataObserverImpl::ShouldSendRenderFrameMetadata(
   return false;
 }
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 void RenderFrameMetadataObserverImpl::DidEndScroll() {
   if (!last_render_frame_metadata_.has_value()) {
     return;
@@ -262,7 +261,7 @@ void RenderFrameMetadataObserverImpl::DidEndScroll() {
 
   auto root_scroll_offset = last_render_frame_metadata_->root_scroll_offset;
   if (!root_scroll_offset.has_value() ||
-      root_scroll_offset == last_root_scroll_offset_android_) {
+      root_scroll_offset == last_root_scroll_offset_) {
     return;
   }
 
@@ -274,7 +273,7 @@ void RenderFrameMetadataObserverImpl::DidEndScroll() {
 
   render_frame_metadata_observer_client_->OnRootScrollOffsetChanged(
       root_scroll_offset.value());
-  last_root_scroll_offset_android_ = root_scroll_offset;
+  last_root_scroll_offset_ = root_scroll_offset;
 }
 #endif
 

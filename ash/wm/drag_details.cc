@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/window_properties.h"
 #include "ash/wm/window_resizer.h"
+#include "ash/wm/window_util.h"
 #include "ui/aura/window.h"
 #include "ui/base/hit_test.h"
 #include "ui/display/screen.h"
@@ -43,19 +44,11 @@ int GetSizeChangeDirectionForWindowComponent(int window_component) {
 }
 
 gfx::Rect GetWindowInitialBoundsInParent(aura::Window* window) {
-  // Floated windows should use their current bounds as a starting point, even
-  // in tablet mode.
-  if (WindowState::Get(window)->IsFloated())
-    return window->bounds();
-
-  if (display::Screen::GetScreen()->InTabletMode()) {
-    gfx::Rect* override_bounds = window->GetProperty(kRestoreBoundsOverrideKey);
-    if (override_bounds && !override_bounds->IsEmpty()) {
-      wm::ConvertRectFromScreen(window->GetRootWindow(), override_bounds);
-      return *override_bounds;
-    }
-  }
-  return window->bounds();
+  const WindowState* tab_drag_source_state =
+      window_util::GetTabDraggingSourceWindowState(window);
+  return (tab_drag_source_state && tab_drag_source_state->IsFloated())
+             ? tab_drag_source_state->window()->bounds()
+             : window->bounds();
 }
 
 gfx::Rect GetRestoreBoundsInParent(aura::Window* window, int window_component) {
@@ -67,7 +60,7 @@ gfx::Rect GetRestoreBoundsInParent(aura::Window* window, int window_component) {
   // TODO(xdai): Move these logic to WindowState::GetRestoreBoundsInScreen()
   // and let it return the right value.
   gfx::Rect restore_bounds;
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     gfx::Rect* override_bounds = window->GetProperty(kRestoreBoundsOverrideKey);
     if (override_bounds && !override_bounds->IsEmpty()) {
       restore_bounds = *override_bounds;

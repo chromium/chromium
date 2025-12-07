@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 41 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["delete",""]] "<p>foo<table><tr><td>bar</table><p>[]baz" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><table><tbody><tr><td>bar</td></tr></tbody></table><p>baz</p>" but got "<p>foo</p><table><tbody><tr><td>bar</td></tr></tbody></table>baz"
 [FAIL] [["delete",""]] "foo<br><table><tr><td>[]bar</table>baz" compare innerHTML
@@ -31,7 +31,7 @@ Found 41 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["delete",""]] "<ol><li>foo<br><li>[]bar</ol>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo<br>bar</li></ol>" but got "<ol><li>foobar</li></ol>"
 [FAIL] [["delete",""]] "<ol><li>foo<br><br><li>[]bar</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo<br><br>bar</li></ol>" but got "<ol><li>foo<br>bar<br></li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo<br><br>bar</li></ol>" but got "<ol><li>foo<br>bar</li></ol>"
 [FAIL] [["delete",""]] "<ol><li>foo<li>[]bar<br>baz</ol>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo<br>bar<br>baz</li></ol>" but got "<ol><li>foobar</li><li>baz</li></ol>"
 [FAIL] [["delete",""]] "<ol><li>foo<br>bar<li>[]baz</ol>" compare innerHTML
@@ -64,23 +64,5 @@ Found 41 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<dl><dt>foo<br>bar</dt><dd>baz</dd></dl>" but got "<dl><dt>foobar</dt><dd>baz</dd></dl>"
 [FAIL] [["delete",""]] "<dl><dt>foo<dd>bar<dd>[]baz</dl>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<dl><dt>foo</dt><dd>bar<br>baz</dd></dl>" but got "<dl><dt>foo</dt><dd>barbaz</dd></dl>"
-[FAIL] [["delete",""]] "<ol><li>foo<br><br></ol>[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo<br>bar</li></ol>" but got "<ol><li>foo<br>bar<br></li></ol>"
-[FAIL] [["delete",""]] "<ol><li><br></ol>[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>bar</li></ol>" but got "<ol><li>bar<br></li></ol>"
-[FAIL] [["delete",""]] "<ol><li>foo<li><br></ol>[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li></ol>" but got "<ol><li>foo</li><li>bar<br></li></ol>"
-[FAIL] [["defaultparagraphseparator","div"],["delete",""]] "<ol><li>foo<br><br></ol><p>[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo<br>bar</li></ol>" but got "<ol><li>foo<br>bar<br></li></ol>"
-[FAIL] [["defaultparagraphseparator","p"],["delete",""]] "<ol><li>foo<br><br></ol><p>[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo<br>bar</li></ol>" but got "<ol><li>foo<br>bar<br></li></ol>"
-[FAIL] [["defaultparagraphseparator","div"],["delete",""]] "<ol><li><br></ol><p>[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>bar</li></ol>" but got "<ol><li>bar<br></li></ol>"
-[FAIL] [["defaultparagraphseparator","p"],["delete",""]] "<ol><li><br></ol><p>[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>bar</li></ol>" but got "<ol><li>bar<br></li></ol>"
-[FAIL] [["defaultparagraphseparator","div"],["delete",""]] "<ol><li>foo<li><br></ol><p>[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li></ol>" but got "<ol><li>foo</li><li>bar<br></li></ol>"
-[FAIL] [["defaultparagraphseparator","p"],["delete",""]] "<ol><li>foo<li><br></ol><p>[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li></ol>" but got "<ol><li>foo</li><li>bar<br></li></ol>"
 Harness: the test ran to completion.
 

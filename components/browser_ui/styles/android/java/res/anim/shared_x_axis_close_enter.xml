@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+
+This is a variation of GM3's Forward/backward transition, with changes
+on the durations.
+https://m3.material.io/styles/motion/transitions/transition-patterns
+-->
+<set xmlns:android="http://schemas.android.com/apk/res/android">
+    <alpha android:fromAlpha="0.0"
+            android:toAlpha="1.0"
+            android:interpolator="@interpolator/m3_sys_motion_easing_standard_decelerate"
+            android:fillEnabled="true"
+            android:fillBefore="true"
+            android:fillAfter="true"
+            android:startOffset="@integer/shared_x_axis_exit_duration"
+            android:duration="@integer/shared_x_axis_enter_transition_duration" />
+    <translate android:fromXDelta="-25%"
+            android:toXDelta="0"
+            android:fillEnabled="true"
+            android:fillBefore="true"
+            android:fillAfter="true"
+            android:interpolator="@interpolator/m3_sys_motion_easing_emphasized"
+            android:duration="@integer/shared_x_axis_transition_duration" />
+</set>

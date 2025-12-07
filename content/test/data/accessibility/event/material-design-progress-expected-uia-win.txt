@@ -1,0 +1,6 @@
+=== Start Continuation ===
+AriaProperties changed on role=progressbar, name=Test Progress
+RangeValueValue changed on role=progressbar, name=Test Progress
+=== Start Continuation ===
+AriaProperties changed on role=progressbar, name=Test Progress
+RangeValueValue changed on role=progressbar, name=Test Progress

@@ -64,6 +64,7 @@ class MostVisitedSitesWaiter : public MostVisitedSites::Observer {
   }
 
   void OnURLsAvailable(
+      bool is_user_triggered,
       const std::map<SectionType, NTPTilesVector>& sections) override {
     tiles_ = sections.at(SectionType::PERSONALIZED);
     if (quit_closure_) {
@@ -82,7 +83,7 @@ class MostVisitedSitesWaiter : public MostVisitedSites::Observer {
 
 class NTPTilesTest : public InProcessBrowserTest {
  public:
-  NTPTilesTest() {}
+  NTPTilesTest() = default;
 
  protected:
   void SetUpOnMainThread() override {

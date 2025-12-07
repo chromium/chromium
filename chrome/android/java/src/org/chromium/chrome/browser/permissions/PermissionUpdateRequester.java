@@ -16,6 +16,8 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.permissions.PermissionCallback;
@@ -25,17 +27,18 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Triggers the Android runtime permission prompt UI to request missing
- * Chrome app-level permission(s) needed by the current website which already has the
- * website-level permission, and after the user expressed interest in fixing the situation
- * in the permission update infobar/message ui.
+ * Triggers the Android runtime permission prompt UI to request missing Chrome app-level
+ * permission(s) needed by the current website which already has the website-level permission, and
+ * after the user expressed interest in fixing the situation in the permission update
+ * infobar/message ui.
  */
+@NullMarked
 class PermissionUpdateRequester implements PermissionCallback {
     private final WebContents mWebContents;
     private final Set<String> mRequiredAndroidPermissions;
     private final String[] mAndroidPermisisons;
     private long mNativePtr;
-    private ActivityStateListener mActivityStateListener;
+    private @Nullable ActivityStateListener mActivityStateListener;
 
     @CalledByNative
     private static PermissionUpdateRequester create(
@@ -55,10 +58,10 @@ class PermissionUpdateRequester implements PermissionCallback {
         mNativePtr = nativePtr;
         mWebContents = webContents;
 
-        mRequiredAndroidPermissions = new HashSet<String>();
+        mRequiredAndroidPermissions = new HashSet<>();
         Collections.addAll(mRequiredAndroidPermissions, requiredPermissions);
 
-        Set<String> allPermissions = new HashSet<String>();
+        Set<String> allPermissions = new HashSet<>();
         Collections.addAll(allPermissions, requiredPermissions);
         Collections.addAll(allPermissions, optionalPermissions);
         mAndroidPermisisons = allPermissions.toArray(new String[allPermissions.size()]);

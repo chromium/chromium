@@ -4,12 +4,14 @@
 
 #include "components/web_package/web_bundle_utils.h"
 
+#include <optional>
 #include <string_view>
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/uuid.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -61,10 +63,10 @@ network::mojom::URLResponseHeadPtr CreateResourceResponseFromHeaderString(
 }
 
 bool HasNoSniffHeader(const network::mojom::URLResponseHead& response) {
-  std::string content_type_options;
-  response.headers->EnumerateHeader(nullptr, kContentTypeOptionsHeaderName,
-                                    &content_type_options);
-  return base::EqualsCaseInsensitiveASCII(content_type_options,
+  std::optional<std::string_view> content_type_options =
+      response.headers->EnumerateHeader(nullptr, kContentTypeOptionsHeaderName);
+  return content_type_options &&
+         base::EqualsCaseInsensitiveASCII(*content_type_options,
                                           kNoSniffHeaderValue);
 }
 

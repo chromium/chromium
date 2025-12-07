@@ -48,6 +48,9 @@ void MockUpdateHandler::ApplyUpdates(StatusController* status,
 void MockUpdateHandler::RecordRemoteInvalidation(
     std::unique_ptr<SyncInvalidation> incoming) {}
 
+void MockUpdateHandler::RecordDownloadFailure(
+    UpdateHandler::NudgedUpdateResult failure_result) const {}
+
 void MockUpdateHandler::CollectPendingInvalidations(
     sync_pb::GetUpdateTriggers* msg) {
   prepare_get_updates_count_++;

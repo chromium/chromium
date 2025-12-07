@@ -9,7 +9,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/cast_environment.h"
@@ -47,18 +46,12 @@ class FrameSender {
     virtual void OnFrameCanceled(FrameId frame_id) {}
   };
 
-  // NOTE: currently only used by the VideoSender.
-  // TODO(https://crbug.com/1316434): cleanup bitrate calculations when libcast
-  // has successfully launched.
-  using GetSuggestedVideoBitrateCB = base::RepeatingCallback<int()>;
-
   // Method of creating a frame sender using an openscreen::cast::Sender.
   static std::unique_ptr<FrameSender> Create(
       scoped_refptr<CastEnvironment> cast_environment,
       const FrameSenderConfig& config,
       std::unique_ptr<openscreen::cast::Sender> sender,
-      Client& client,
-      GetSuggestedVideoBitrateCB get_bitrate_cb = GetSuggestedVideoBitrateCB());
+      Client& client);
 
   FrameSender();
   FrameSender(FrameSender&&) = delete;
@@ -103,10 +96,6 @@ class FrameSender {
 
   // Returns the number of frames that were sent but not yet acknowledged.
   virtual int GetUnacknowledgedFrameCount() const = 0;
-
-  // Returns the suggested bitrate the next frame should be encoded at.
-  virtual int GetSuggestedBitrate(base::TimeTicks playout_time,
-                                  base::TimeDelta playout_delay) = 0;
 
   // Configuration specific methods.
 

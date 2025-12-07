@@ -9,6 +9,10 @@ namespace password_manager {
 struct CredentialUIEntry;
 }  // namespace password_manager
 
+namespace web {
+class WebStateID;
+}  // namespace web
+
 // Delegate for registering view controller and displaying its view. Used to
 // add views to BVC.
 // TODO(crbug.com/40806286): Refactor this API to not be coupled to the BVC and
@@ -18,7 +22,7 @@ struct CredentialUIEntry;
 // Adds `viewController` as child controller in order to display auto sign-in
 // notification. Returns YES if view was displayed, NO otherwise.
 - (BOOL)displaySignInNotification:(UIViewController*)viewController
-                        fromTabId:(NSString*)tabId;
+                        fromTabId:(web::WebStateID)tabId;
 
 // Opens the list of saved passwords in the settings.
 - (void)displaySavedPasswordList;

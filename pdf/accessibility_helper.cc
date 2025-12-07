@@ -7,8 +7,8 @@
 #include <stdint.h>
 
 #include <optional>
-#include <vector>
 
+#include "base/containers/span.h"
 #include "base/numerics/safe_math.h"
 #include "pdf/accessibility_structs.h"
 
@@ -24,7 +24,7 @@ bool IsCharWithinTextRun(const AccessibilityTextRunInfo& text_run,
 // If a valid text run range is not found for the char range then return the
 // fallback value.
 AccessibilityTextRunRangeInfo GetEnclosingTextRunRangeForCharRange(
-    const std::vector<AccessibilityTextRunInfo>& text_runs,
+    base::span<const AccessibilityTextRunInfo> text_runs,
     int start_char_index,
     int char_count) {
   // Initialize with fallback value.

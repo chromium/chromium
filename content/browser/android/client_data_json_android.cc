@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/webauth/client_data_json.h"
+
 #include <jni.h>
+
 #include <cstddef>
 #include <cstring>
 #include <utility>
@@ -10,10 +13,10 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
+#include "base/android/jni_bytebuffer.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
-#include "content/browser/webauth/client_data_json.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -31,15 +34,13 @@ void DeserializePaymentOptionsFromJavaByteBuffer(
     *out = nullptr;
     return;
   }
-  jbyte* buf_in =
-      static_cast<jbyte*>(env->GetDirectBufferAddress(jbuffer.obj()));
-  jlong buf_size = env->GetDirectBufferCapacity(jbuffer.obj());
-  if (buf_size == 0) {
+  base::span<const uint8_t> span =
+      base::android::JavaByteBufferToSpan(env, jbuffer);
+  if (span.empty()) {
     *out = nullptr;
     return;
   }
-  bool success =
-      blink::mojom::PaymentOptions::Deserialize(buf_in, buf_size, out);
+  bool success = blink::mojom::PaymentOptions::Deserialize(span, out);
   DCHECK(success);
 }
 
@@ -49,14 +50,14 @@ static base::android::ScopedJavaLocalRef<jstring>
 JNI_ClientDataJsonImpl_BuildClientDataJson(
     JNIEnv* env,
     jint jclient_data_request_type,
-    const base::android::JavaParamRef<jstring>& jcaller_origin,
-    const base::android::JavaParamRef<jbyteArray>& jchallenge,
+    const base::android::JavaRef<jstring>& jcaller_origin,
+    const base::android::JavaRef<jbyteArray>& jchallenge,
     jboolean jis_cross_origin,
-    const base::android::JavaParamRef<jobject>& joptions_byte_buffer,
-    const base::android::JavaParamRef<jstring>& jrelying_party_id,
-    const base::android::JavaParamRef<jobject>& jtop_origin) {
-  ClientDataRequestType type =
-      static_cast<ClientDataRequestType>(jclient_data_request_type);
+    const base::android::JavaRef<jobject>& joptions_byte_buffer,
+    const base::android::JavaRef<jstring>& jrelying_party_id,
+    const base::android::JavaRef<jobject>& jtop_origin) {
+  webauthn::ClientDataRequestType type =
+      static_cast<webauthn::ClientDataRequestType>(jclient_data_request_type);
   std::string caller_origin =
       base::android::ConvertJavaStringToUTF8(env, jcaller_origin);
   std::vector<uint8_t> challenge;
@@ -71,18 +72,16 @@ JNI_ClientDataJsonImpl_BuildClientDataJson(
       jrelying_party_id
           ? base::android::ConvertJavaStringToUTF8(env, jrelying_party_id)
           : "";
-  std::string top_origin =
-      jtop_origin ? url::Origin::FromJavaObject(jtop_origin).Serialize() : "";
 
-  ClientDataJsonParams client_data_json_params(
+  webauthn::ClientDataJsonParams client_data_json_params(
       /*type=*/type, /*origin=*/url::Origin::Create(GURL(caller_origin)),
+      /*top_origin=*/url::Origin::FromJavaObject(env, jtop_origin),
       /*challenge=*/challenge, /*is_cross_origin_iframe=*/is_cross_origin);
-  client_data_json_params.payment_options = std::move(options);
-  client_data_json_params.payment_rp = relying_party_id;
-  client_data_json_params.payment_top_origin = top_origin;
-  std::string client_data_json =
-      BuildClientDataJson(std::move(client_data_json_params));
+  std::string client_data_json = BuildClientDataJsonWithPayment(
+      std::move(client_data_json_params), std::move(options), relying_party_id);
   return base::android::ConvertUTF8ToJavaString(env, client_data_json);
 }
 
 }  // namespace content
+
+DEFINE_JNI(ClientDataJsonImpl)

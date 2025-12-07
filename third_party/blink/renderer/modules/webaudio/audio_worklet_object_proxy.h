@@ -17,7 +17,9 @@ class AudioWorkletObjectProxy final : public ThreadedWorkletObjectProxy {
  public:
   AudioWorkletObjectProxy(AudioWorkletMessagingProxy*,
                           ParentExecutionContextTaskRunners*,
-                          float context_sample_rate);
+                          float context_sample_rate,
+                          uint64_t context_sample_frame_at_construction,
+                          uint32_t context_render_quantum_size_at_construction);
 
   // Implements WorkerReportingProxy.
   void DidCreateWorkerGlobalScope(WorkerOrWorkletGlobalScope*) override;
@@ -31,7 +33,11 @@ class AudioWorkletObjectProxy final : public ThreadedWorkletObjectProxy {
 
   CrossThreadPersistent<AudioWorkletGlobalScope> global_scope_;
 
-  float context_sample_rate_;
+  // These variables get set at construction time and won't be changed over the
+  // course of the AWGS's lifetime.
+  const float context_sample_rate_at_construction_;
+  const uint64_t context_sample_frame_at_construction_;
+  const uint32_t context_render_quantum_size_at_construction_;
 };
 
 }  // namespace blink

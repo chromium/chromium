@@ -48,8 +48,8 @@ class DNRManifestTest : public testing::Test {
 
  protected:
   // Loads the extension and verifies the |expected_error|.
-  void LoadAndExpectError(const std::string& expected_error) {
-    std::string error;
+  void LoadAndExpectError(const std::u16string& expected_error) {
+    std::u16string error;
     scoped_refptr<Extension> extension = file_util::LoadExtension(
         temp_dir_.GetPath(), mojom::ManifestLocation::kUnpacked,
         Extension::NO_FLAGS, &error);
@@ -60,24 +60,27 @@ class DNRManifestTest : public testing::Test {
   // Loads the extension and verifies that the manifest info is correctly set
   // up without any warnings or errors.
   void LoadAndExpectSuccess(const std::vector<TestRulesetInfo>& info) {
-    std::vector<InstallWarning> warnings;
-    warnings.emplace_back("Unrecognized manifest key 'browser_action'.");
-    warnings.emplace_back(errors::kManifestV2IsDeprecatedWarning);
-    LoadAndExpectWarning(info, warnings);
+    LoadAndExpectWarning(info, std::nullopt);
   }
 
   // Loads the extension and verifies that the manifest info is correctly set
   // up, has no errors, but has provided warning.
   void LoadAndExpectWarning(
       const std::vector<TestRulesetInfo>& info,
-      const std::vector<InstallWarning>& expected_warnings) {
-    std::string error;
+      const std::optional<InstallWarning>& expected_warning) {
+    std::u16string error;
     scoped_refptr<Extension> extension = file_util::LoadExtension(
         temp_dir_.GetPath(), mojom::ManifestLocation::kUnpacked,
         Extension::NO_FLAGS, &error);
     ASSERT_TRUE(extension) << error;
     EXPECT_TRUE(error.empty());
-    EXPECT_EQ(expected_warnings, extension.get()->install_warnings());
+    if (expected_warning) {
+      ASSERT_EQ(1u, extension.get()->install_warnings().size());
+      EXPECT_EQ(expected_warning.value(),
+                extension.get()->install_warnings()[0]);
+    } else {
+      EXPECT_TRUE(extension.get()->install_warnings().empty());
+    }
 
     const std::vector<DNRManifestData::RulesetInfo>& rulesets =
         DNRManifestData::GetRulesets(*extension);
@@ -143,8 +146,8 @@ TEST_F(DNRManifestTest, InvalidManifestKey) {
 
   WriteManifestAndRuleset(manifest, rulesets);
   LoadAndExpectError(
-      "Error at key 'declarative_net_request'. Type is invalid. Expected "
-      "dictionary, found integer.");
+      u"Error at key 'declarative_net_request'. Type is invalid. Expected "
+      u"dictionary, found integer.");
 }
 
 TEST_F(DNRManifestTest, InvalidRulesFileKey) {
@@ -154,8 +157,9 @@ TEST_F(DNRManifestTest, InvalidRulesFileKey) {
 
   WriteManifestAndRuleset(manifest, rulesets);
   LoadAndExpectError(
-      "Error at key 'declarative_net_request.rule_resources'. Type is invalid. "
-      "Expected list, found integer.");
+      u"Error at key 'declarative_net_request.rule_resources'. Type is "
+      u"invalid. "
+      u"Expected list, found integer.");
 }
 
 TEST_F(DNRManifestTest, InvalidRulesFileFormat) {
@@ -168,26 +172,28 @@ TEST_F(DNRManifestTest, InvalidRulesFileFormat) {
   WriteManifestAndRuleset(manifest, {});
 
   LoadAndExpectError(
-      "Error at key 'declarative_net_request.rule_resources'. Parsing array "
-      "failed at index 0: expected dictionary, got string");
+      u"Error at key 'declarative_net_request.rule_resources'. Parsing array "
+      u"failed at index 0: expected dictionary, got string");
 }
 
 TEST_F(DNRManifestTest, InvalidRulesetPath) {
   TestRulesetInfo ruleset("rules", "sub/../rules.json", base::Value::List());
   WriteManifestAndRuleset(CreateManifest({ruleset}), {});
-  LoadAndExpectError(ErrorUtils::FormatErrorMessage(
+  // TODO(crbug.com/41317803): Continue removing std::string errors and
+  // replacing with std::u16string.
+  LoadAndExpectError(base::UTF8ToUTF16(ErrorUtils::FormatErrorMessage(
       errors::kRulesFileIsInvalid,
       dnr_api::ManifestKeys::kDeclarativeNetRequest,
-      dnr_api::DNRInfo::kRuleResources, ruleset.relative_file_path));
+      dnr_api::DNRInfo::kRuleResources, ruleset.relative_file_path)));
 }
 
 TEST_F(DNRManifestTest, InvalidRulesetPath2) {
   TestRulesetInfo ruleset("rules", "rules.json?param=1", base::Value::List());
   WriteManifestAndRuleset(CreateManifest({ruleset}), {});
-  LoadAndExpectError(ErrorUtils::FormatErrorMessage(
+  LoadAndExpectError(base::UTF8ToUTF16(ErrorUtils::FormatErrorMessage(
       errors::kRulesFileIsInvalid,
       dnr_api::ManifestKeys::kDeclarativeNetRequest,
-      dnr_api::DNRInfo::kRuleResources, ruleset.relative_file_path));
+      dnr_api::DNRInfo::kRuleResources, ruleset.relative_file_path)));
 }
 
 TEST_F(DNRManifestTest, ZeroRulesets) {
@@ -216,10 +222,10 @@ TEST_F(DNRManifestTest, MultipleRulesFileInvalidPath) {
   // Only persist |ruleset_1| on disk but include both in the manifest.
   WriteManifestAndRuleset(CreateManifest({ruleset_1, ruleset_2}), {ruleset_1});
 
-  LoadAndExpectError(ErrorUtils::FormatErrorMessage(
+  LoadAndExpectError(base::UTF8ToUTF16(ErrorUtils::FormatErrorMessage(
       errors::kRulesFileIsInvalid,
       dnr_api::ManifestKeys::kDeclarativeNetRequest,
-      dnr_api::DNRInfo::kRuleResources, ruleset_2.relative_file_path));
+      dnr_api::DNRInfo::kRuleResources, ruleset_2.relative_file_path)));
 }
 
 TEST_F(DNRManifestTest, RulesetCountExceeded) {
@@ -231,11 +237,11 @@ TEST_F(DNRManifestTest, RulesetCountExceeded) {
 
   WriteManifestAndRuleset(CreateManifest(rulesets), rulesets);
 
-  LoadAndExpectError(ErrorUtils::FormatErrorMessage(
+  LoadAndExpectError(base::UTF8ToUTF16(ErrorUtils::FormatErrorMessage(
       errors::kRulesetCountExceeded,
       dnr_api::ManifestKeys::kDeclarativeNetRequest,
       dnr_api::DNRInfo::kRuleResources,
-      base::NumberToString(dnr_api::MAX_NUMBER_OF_STATIC_RULESETS)));
+      base::NumberToString(dnr_api::MAX_NUMBER_OF_STATIC_RULESETS))));
 }
 
 TEST_F(DNRManifestTest, EnabledRulesetCountExceeded) {
@@ -247,11 +253,11 @@ TEST_F(DNRManifestTest, EnabledRulesetCountExceeded) {
 
   WriteManifestAndRuleset(CreateManifest(rulesets), rulesets);
 
-  LoadAndExpectError(ErrorUtils::FormatErrorMessage(
+  LoadAndExpectError(base::UTF8ToUTF16(ErrorUtils::FormatErrorMessage(
       errors::kEnabledRulesetCountExceeded,
       dnr_api::ManifestKeys::kDeclarativeNetRequest,
       dnr_api::DNRInfo::kRuleResources,
-      base::NumberToString(dnr_api::MAX_NUMBER_OF_ENABLED_STATIC_RULESETS)));
+      base::NumberToString(dnr_api::MAX_NUMBER_OF_ENABLED_STATIC_RULESETS))));
 }
 
 TEST_F(DNRManifestTest, NonExistentRulesFile) {
@@ -261,10 +267,10 @@ TEST_F(DNRManifestTest, NonExistentRulesFile) {
 
   WriteManifestAndRuleset(manifest, {});
 
-  LoadAndExpectError(ErrorUtils::FormatErrorMessage(
+  LoadAndExpectError(base::UTF8ToUTF16(ErrorUtils::FormatErrorMessage(
       errors::kRulesFileIsInvalid,
       dnr_api::ManifestKeys::kDeclarativeNetRequest,
-      dnr_api::DNRInfo::kRuleResources, ruleset.relative_file_path));
+      dnr_api::DNRInfo::kRuleResources, ruleset.relative_file_path)));
 }
 
 TEST_F(DNRManifestTest, NeedsDeclarativeNetRequestPermission) {
@@ -275,9 +281,9 @@ TEST_F(DNRManifestTest, NeedsDeclarativeNetRequestPermission) {
 
   WriteManifestAndRuleset(manifest, rulesets);
 
-  LoadAndExpectError(ErrorUtils::FormatErrorMessage(
+  LoadAndExpectError(base::UTF8ToUTF16(ErrorUtils::FormatErrorMessage(
       errors::kDeclarativeNetRequestPermissionNeeded,
-      dnr_api::ManifestKeys::kDeclarativeNetRequest));
+      dnr_api::ManifestKeys::kDeclarativeNetRequest)));
 }
 
 TEST_F(DNRManifestTest, RulesFileInNestedDirectory) {
@@ -297,9 +303,9 @@ TEST_F(DNRManifestTest, EmptyRulesetID) {
   std::vector<TestRulesetInfo> rulesets({ruleset_1, ruleset_2, ruleset_3});
   WriteManifestAndRuleset(CreateManifest(rulesets), rulesets);
 
-  LoadAndExpectError(ErrorUtils::FormatErrorMessage(
+  LoadAndExpectError(base::UTF8ToUTF16(ErrorUtils::FormatErrorMessage(
       errors::kInvalidRulesetID, dnr_api::ManifestKeys::kDeclarativeNetRequest,
-      dnr_api::DNRInfo::kRuleResources, "1"));
+      dnr_api::DNRInfo::kRuleResources, "1")));
 }
 
 TEST_F(DNRManifestTest, DuplicateRulesetID) {
@@ -311,9 +317,9 @@ TEST_F(DNRManifestTest, DuplicateRulesetID) {
       {ruleset_1, ruleset_2, ruleset_3, ruleset_4});
   WriteManifestAndRuleset(CreateManifest(rulesets), rulesets);
 
-  LoadAndExpectError(ErrorUtils::FormatErrorMessage(
+  LoadAndExpectError(base::UTF8ToUTF16(ErrorUtils::FormatErrorMessage(
       errors::kInvalidRulesetID, dnr_api::ManifestKeys::kDeclarativeNetRequest,
-      dnr_api::DNRInfo::kRuleResources, "3"));
+      dnr_api::DNRInfo::kRuleResources, "3")));
 }
 
 TEST_F(DNRManifestTest, ReservedRulesetID) {
@@ -323,9 +329,9 @@ TEST_F(DNRManifestTest, ReservedRulesetID) {
   std::vector<TestRulesetInfo> rulesets({ruleset_1, ruleset_2, ruleset_3});
   WriteManifestAndRuleset(CreateManifest(rulesets), rulesets);
 
-  LoadAndExpectError(ErrorUtils::FormatErrorMessage(
+  LoadAndExpectError(base::UTF8ToUTF16(ErrorUtils::FormatErrorMessage(
       errors::kInvalidRulesetID, dnr_api::ManifestKeys::kDeclarativeNetRequest,
-      dnr_api::DNRInfo::kRuleResources, "1"));
+      dnr_api::DNRInfo::kRuleResources, "1")));
 }
 
 // The webstore installation flow involves creation of a dummy extension with an
@@ -334,7 +340,7 @@ TEST_F(DNRManifestTest, ReservedRulesetID) {
 TEST_F(DNRManifestTest, EmptyExtensionRootPath) {
   TestRulesetInfo ruleset("foo", "1.json", base::Value::List());
 
-  std::string error;
+  std::u16string error;
   scoped_refptr<Extension> extension = Extension::Create(
       base::FilePath(), mojom::ManifestLocation::kInternal,
       CreateManifest({ruleset}), Extension::FROM_WEBSTORE, &error);
@@ -346,19 +352,19 @@ TEST_F(DNRManifestTest, EmptyExtensionRootPath) {
 TEST_F(DNRManifestTest, EmptyRulesetPath1) {
   TestRulesetInfo ruleset("foo", "", base::Value::List());
   WriteManifestAndRuleset(CreateManifest({ruleset}), {});
-  LoadAndExpectError(ErrorUtils::FormatErrorMessage(
+  LoadAndExpectError(base::UTF8ToUTF16(ErrorUtils::FormatErrorMessage(
       errors::kRulesFileIsInvalid,
       dnr_api::ManifestKeys::kDeclarativeNetRequest,
-      dnr_api::DNRInfo::kRuleResources, ruleset.relative_file_path));
+      dnr_api::DNRInfo::kRuleResources, ruleset.relative_file_path)));
 }
 
 TEST_F(DNRManifestTest, EmptyRulesetPath2) {
   TestRulesetInfo ruleset("foo", ".", base::Value::List());
   WriteManifestAndRuleset(CreateManifest({ruleset}), {});
-  LoadAndExpectError(ErrorUtils::FormatErrorMessage(
+  LoadAndExpectError(base::UTF8ToUTF16(ErrorUtils::FormatErrorMessage(
       errors::kRulesFileIsInvalid,
       dnr_api::ManifestKeys::kDeclarativeNetRequest,
-      dnr_api::DNRInfo::kRuleResources, ruleset.relative_file_path));
+      dnr_api::DNRInfo::kRuleResources, ruleset.relative_file_path)));
 }
 
 TEST_F(DNRManifestTest, DuplicateRulesetPath) {
@@ -366,11 +372,8 @@ TEST_F(DNRManifestTest, DuplicateRulesetPath) {
   TestRulesetInfo ruleset_2("bar", "rules.json", base::Value::List());
   std::vector<TestRulesetInfo> rulesets({ruleset_1, ruleset_2});
   WriteManifestAndRuleset(CreateManifest(rulesets), rulesets);
-  std::vector<InstallWarning> warnings;
-  warnings.emplace_back("Unrecognized manifest key 'browser_action'.");
-  warnings.emplace_back(errors::kManifestV2IsDeprecatedWarning);
-  warnings.emplace_back(errors::kDeclarativeNetRequestPathDuplicates);
-  LoadAndExpectWarning(rulesets, warnings);
+  LoadAndExpectWarning(
+      rulesets, InstallWarning(errors::kDeclarativeNetRequestPathDuplicates));
 }
 
 }  // namespace

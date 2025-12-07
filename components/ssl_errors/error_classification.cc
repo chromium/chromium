@@ -128,7 +128,7 @@ void RecordUMAStatistics(bool overridable,
       break;
     }
     case ssl_errors::ErrorInfo::CERT_COMMON_NAME_INVALID: {
-      std::string host_name = request_url.host();
+      std::string host_name = request_url.GetHost();
       std::vector<std::string> dns_names;
       cert.GetSubjectAltName(&dns_names, nullptr);
       std::vector<HostnameTokens> dns_name_tokens =
@@ -182,7 +182,7 @@ void RecordUMAStatisticsForClockInterstitial(bool overridable,
   } else if (clock_state == ssl_errors::CLOCK_STATE_PAST) {
     RecordSSLInterstitialCause(overridable, CLOCK_PAST);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -246,12 +246,10 @@ ClockState GetClockState(
     case NETWORK_CLOCK_STATE_CLOCK_IN_FUTURE:
       return CLOCK_STATE_FUTURE;
     case NETWORK_CLOCK_STATE_MAX:
-      NOTREACHED_IN_MIGRATION();
-      return CLOCK_STATE_UNKNOWN;
+      NOTREACHED();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return CLOCK_STATE_UNKNOWN;
+  NOTREACHED();
 }
 
 void SetBuildTimeForTesting(const base::Time& testing_time) {
@@ -272,7 +270,7 @@ HostnameTokens Tokenize(const std::string& name) {
 bool GetWWWSubDomainMatch(const GURL& request_url,
                           const std::vector<std::string>& dns_names,
                           std::string* www_match_host_name) {
-  const std::string& host_name = request_url.host();
+  const std::string& host_name = request_url.GetHost();
 
   if (HostNameHasKnownTLD(host_name)) {
     // Need to account for all possible domains given in the SSL certificate.
@@ -327,7 +325,7 @@ bool AnyNamesUnderName(const std::vector<HostnameTokens>& potential_children,
 
 bool IsSubDomainOutsideWildcard(const GURL& request_url,
                                 const net::X509Certificate& cert) {
-  std::string host_name = request_url.host();
+  std::string host_name = request_url.GetHost();
   HostnameTokens host_name_tokens = Tokenize(host_name);
   std::vector<std::string> dns_names;
   cert.GetSubjectAltName(&dns_names, nullptr);
@@ -355,7 +353,7 @@ bool IsSubDomainOutsideWildcard(const GURL& request_url,
 
 bool IsCertLikelyFromMultiTenantHosting(const GURL& request_url,
                                         const net::X509Certificate& cert) {
-  std::string host_name = request_url.host();
+  std::string host_name = request_url.GetHost();
   std::vector<std::string> dns_names;
   std::vector<std::string> dns_names_domain;
   cert.GetSubjectAltName(&dns_names, nullptr);
@@ -405,7 +403,7 @@ bool IsCertLikelyFromMultiTenantHosting(const GURL& request_url,
 
 bool IsCertLikelyFromSameDomain(const GURL& request_url,
                                 const net::X509Certificate& cert) {
-  std::string host_name = request_url.host();
+  std::string host_name = request_url.GetHost();
   std::vector<std::string> dns_names;
   cert.GetSubjectAltName(&dns_names, nullptr);
   if (dns_names.empty())

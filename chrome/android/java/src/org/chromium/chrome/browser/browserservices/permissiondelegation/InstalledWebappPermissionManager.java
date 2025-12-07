@@ -6,30 +6,29 @@ package org.chromium.chrome.browser.browserservices.permissiondelegation;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static android.Manifest.permission.READ_CONTACTS;
 
-import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.APP_CONTEXT;
+import static org.chromium.components.permissions.PermissionUtil.getGeolocationType;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.trusted.Token;
 
-import dagger.Lazy;
-
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.chrome.browser.ChromeApplicationImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.chrome.browser.webapps.WebappRegistry;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 
@@ -37,65 +36,47 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-
 /**
  * Handles preserving and surfacing the permissions of installed webapps (TWAs and WebAPKs) for
  * their associated websites. Communicates with the {@link InstalledWebappPermissionStore} and
  * {@link InstalledWebappBridge}.
  *
- * Lifecycle: This is a singleton.
- * Thread safety: Only call methods on the UI thread as this class may call into native.
- * Native: Does not require native.
+ * <p>Lifecycle: This is a singleton. Thread safety: Only call methods on the UI thread as this
+ * class may call into native. Native: Does not require native.
  */
-@Singleton
+@NullMarked
 public class InstalledWebappPermissionManager {
     private static final String TAG = "PermissionManager";
 
-    private final InstalledWebappPermissionStore mStore;
-    private final PackageManager mPackageManager;
+    private InstalledWebappPermissionManager() {}
 
-    // Use a Lazy instance so we don't instantiate it on Android versions pre-O.
-    private final Lazy<NotificationChannelPreserver> mChannelPreserver;
-
-    public static InstalledWebappPermissionManager get() {
-        return ChromeApplicationImpl.getComponent().resolvePermissionManager();
+    private static InstalledWebappPermissionStore getStore() {
+        return WebappRegistry.getInstance().getPermissionStore();
     }
 
-    @Inject
-    public InstalledWebappPermissionManager(
-            @Named(APP_CONTEXT) Context context,
-            InstalledWebappPermissionStore store,
-            Lazy<NotificationChannelPreserver> channelPreserver) {
-        mPackageManager = context.getPackageManager();
-        mStore = store;
-        mChannelPreserver = channelPreserver;
-    }
-
-    boolean isRunningTwa() {
+    static boolean isRunningTwa() {
         CustomTabActivity customTabActivity = getLastTrackedFocusedTwaCustomTabActivity();
         return customTabActivity != null;
     }
 
-    InstalledWebappBridge.Permission[] getPermissions(@ContentSettingsType.EnumType int type) {
-        if (type == ContentSettingsType.GEOLOCATION) {
+    static InstalledWebappBridge.Permission[] getPermissions(
+            @ContentSettingsType.EnumType int type) {
+        if (type == getGeolocationType()) {
             if (!isRunningTwa()) {
                 return new InstalledWebappBridge.Permission[0];
             }
         }
 
         List<InstalledWebappBridge.Permission> permissions = new ArrayList<>();
-        for (String originAsString : mStore.getStoredOrigins()) {
+        for (String originAsString : getStore().getStoredOrigins()) {
             Origin origin = Origin.create(originAsString);
             assert origin != null
                     : "Found unparsable Origins in the Permission Store : " + originAsString;
             if (origin == null) continue;
 
-            @ContentSettingValues int setting = getPermission(type, origin);
+            @ContentSetting int setting = getPermission(type, origin);
 
-            if (setting != ContentSettingValues.DEFAULT) {
+            if (setting != ContentSetting.DEFAULT) {
                 permissions.add(new InstalledWebappBridge.Permission(origin, setting));
             }
         }
@@ -104,24 +85,26 @@ public class InstalledWebappPermissionManager {
     }
 
     @UiThread
-    public void addDelegateApp(Origin origin, String packageName) {
-        Token token = Token.create(packageName, mPackageManager);
+    public static void addDelegateApp(Origin origin, String packageName) {
+        Token token =
+                Token.create(packageName, ContextUtils.getApplicationContext().getPackageManager());
         if (token == null) return;
-        mStore.addDelegateApp(origin, token);
+        getStore().addDelegateApp(origin, token);
     }
 
     @UiThread
-    @Nullable
-    public Set<Token> getAllDelegateApps(Origin origin) {
-        return mStore.getAllDelegateApps(origin);
+    public static @Nullable Set<Token> getAllDelegateApps(Origin origin) {
+        return getStore().getAllDelegateApps(origin);
     }
 
     @UiThread
-    public void updatePermission(
+    public static void updatePermission(
             Origin origin,
-            String packageName,
+            @Nullable String packageName,
             @ContentSettingsType.EnumType int type,
-            @ContentSettingValues int settingValue) {
+            @ContentSetting int settingValue) {
+        if (packageName == null) return;
+
         String appName = getAppNameForPackage(packageName);
         if (appName == null) return;
 
@@ -130,10 +113,10 @@ public class InstalledWebappPermissionManager {
         // notification permission could flicker from SET -> UNSET -> SET. This way we transition
         // straight from the channel's permission to the app's permission.
         boolean stateChanged =
-                mStore.setStateForOrigin(origin, packageName, appName, type, settingValue);
+                getStore().setStateForOrigin(origin, packageName, appName, type, settingValue);
 
         if (type == ContentSettingsType.NOTIFICATIONS) {
-            NotificationChannelPreserver.deleteChannelIfNeeded(mChannelPreserver, origin);
+            NotificationChannelPreserver.deleteChannelIfNeeded(origin);
         }
 
         if (stateChanged) {
@@ -142,18 +125,19 @@ public class InstalledWebappPermissionManager {
     }
 
     @UiThread
-    void unregister(Origin origin) {
-        mStore.removeOrigin(origin);
+    static void unregister(Origin origin) {
+        getStore().removeOrigin(origin);
 
-        NotificationChannelPreserver.restoreChannelIfNeeded(mChannelPreserver, origin);
+        NotificationChannelPreserver.restoreChannelIfNeeded(origin);
 
         InstalledWebappBridge.notifyPermissionsChange(ContentSettingsType.NOTIFICATIONS);
         InstalledWebappBridge.notifyPermissionsChange(ContentSettingsType.GEOLOCATION);
+        InstalledWebappBridge.notifyPermissionsChange(ContentSettingsType.GEOLOCATION_WITH_OPTIONS);
     }
 
     @UiThread
-    void resetStoredPermission(Origin origin, @ContentSettingsType.EnumType int type) {
-        mStore.resetPermission(origin, type);
+    static void resetStoredPermission(Origin origin, @ContentSettingsType.EnumType int type) {
+        getStore().resetPermission(origin, type);
         InstalledWebappBridge.notifyPermissionsChange(type);
     }
 
@@ -161,22 +145,18 @@ public class InstalledWebappPermissionManager {
      * Returns the user visible name of the app that will handle permission delegation for the
      * origin.
      */
-    public @Nullable String getDelegateAppName(Origin origin) {
-        return mStore.getDelegateAppName(origin);
+    public static @Nullable String getDelegateAppName(Origin origin) {
+        return getStore().getDelegateAppName(origin);
     }
 
     /** Returns the package of the app that will handle permission delegation for the origin. */
-    public @Nullable String getDelegatePackageName(Origin origin) {
-        return mStore.getDelegatePackageName(origin);
+    public static @Nullable String getDelegatePackageName(Origin origin) {
+        return getStore().getDelegatePackageName(origin);
     }
 
     /** Gets all the origins that we delegate permissions for. */
-    public Set<String> getAllDelegatedOrigins() {
-        return mStore.getStoredOrigins();
-    }
-
-    void clearForTesting() {
-        mStore.clearForTesting();
+    public static Set<String> getAllDelegatedOrigins() {
+        return getStore().getStoredOrigins();
     }
 
     private static @Nullable String getAppNameForPackage(String packageName) {
@@ -201,12 +181,12 @@ public class InstalledWebappPermissionManager {
     }
 
     @VisibleForTesting
-    @ContentSettingValues
-    int getPermission(@ContentSettingsType.EnumType int type, Origin origin) {
+    @ContentSetting
+    static int getPermission(@ContentSettingsType.EnumType int type, Origin origin) {
         switch (type) {
             case ContentSettingsType.NOTIFICATIONS:
                 {
-                    @ContentSettingValues Integer settingValue = mStore.getPermission(type, origin);
+                    @ContentSetting Integer settingValue = getStore().getPermission(type, origin);
                     if (settingValue == null) {
                         Log.w(TAG, "Origin %s is known but has no permission set.", origin);
                         break;
@@ -214,6 +194,7 @@ public class InstalledWebappPermissionManager {
                     return settingValue;
                 }
             case ContentSettingsType.GEOLOCATION:
+            case ContentSettingsType.GEOLOCATION_WITH_OPTIONS:
                 {
                     String packageName = getDelegatePackageName(origin);
                     Boolean enabled = hasAndroidLocationPermission(packageName);
@@ -221,38 +202,54 @@ public class InstalledWebappPermissionManager {
                     // Skip if the delegated app did not enable location delegation.
                     if (enabled == null) break;
 
-                    @ContentSettingValues
-                    Integer storedPermission = mStore.getPermission(type, origin);
+                    @ContentSetting
+                    Integer storedPermission = getStore().getPermission(type, origin);
 
                     // Return |ASK| if is the first time (no previous state), and is not enabled.
-                    if (storedPermission == null && !enabled) return ContentSettingValues.ASK;
+                    if (storedPermission == null && !enabled) return ContentSetting.ASK;
 
                     // This is a temperate solution for the new Android one-time permission. Since
                     // we are not able to detect if use is changing the setting to "ask every
                     // time", when there is no permission, return ASK to let the client app decide
                     // whether to show the prompt.
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        if (!enabled) return ContentSettingValues.ASK;
+                        if (!enabled) return ContentSetting.ASK;
                     }
 
-                    @ContentSettingValues
-                    int settingValue =
-                            enabled ? ContentSettingValues.ALLOW : ContentSettingValues.BLOCK;
+                    @ContentSetting
+                    int settingValue = enabled ? ContentSetting.ALLOW : ContentSetting.BLOCK;
 
-                    updatePermission(
-                            origin, packageName, ContentSettingsType.GEOLOCATION, settingValue);
+                    updatePermission(origin, packageName, getGeolocationType(), settingValue);
 
                     return settingValue;
                 }
         }
-        return ContentSettingValues.DEFAULT;
+        return ContentSetting.DEFAULT;
+    }
+
+    /**
+     * Returns whether the delegate application for the origin has Android contacts permission, or
+     * {@code null} if it does not exist or did not request contacts permission.
+     */
+    public static @Nullable Boolean hasAndroidContactsPermission(@Nullable String packageName) {
+        return hasAndroidPermissions(packageName, new String[] {READ_CONTACTS});
     }
 
     /**
      * Returns whether the delegate application for the origin has Android location permission, or
      * {@code null} if it does not exist or did not request location permission.
-     **/
-    public static @Nullable Boolean hasAndroidLocationPermission(String packageName) {
+     */
+    public static @Nullable Boolean hasAndroidLocationPermission(@Nullable String packageName) {
+        return hasAndroidPermissions(
+                packageName, new String[] {ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION});
+    }
+
+    /**
+     * Returns whether the delegate application for the origin has any of specific Android
+     * permissions, or {@code null} if it does not exist or did not request those permissions.
+     */
+    public static @Nullable Boolean hasAndroidPermissions(
+            @Nullable String packageName, String[] permissions) {
         if (packageName == null) return null;
 
         try {
@@ -263,29 +260,34 @@ public class InstalledWebappPermissionManager {
             String[] requestedPermissions = packageInfo.requestedPermissions;
             int[] requestedPermissionsFlags = packageInfo.requestedPermissionsFlags;
 
-            if (requestedPermissions != null) {
-                boolean locationRequested = false;
-                for (int i = 0; i < requestedPermissions.length; ++i) {
-                    if (ACCESS_COARSE_LOCATION.equals(requestedPermissions[i])
-                            || ACCESS_FINE_LOCATION.equals(requestedPermissions[i])) {
-                        if ((requestedPermissionsFlags[i]
-                                        & PackageInfo.REQUESTED_PERMISSION_GRANTED)
-                                != 0) {
+            if (requestedPermissions == null) {
+                return null;
+            }
+
+            boolean requested = false;
+            for (int i = 0; i < requestedPermissions.length; ++i) {
+                for (String permission : permissions) {
+                    if (permission.equals(requestedPermissions[i])) {
+                        if (requestedPermissionsFlags != null
+                                && ((requestedPermissionsFlags[i]
+                                                & PackageInfo.REQUESTED_PERMISSION_GRANTED)
+                                        != 0)) {
                             return true;
                         }
-                        locationRequested = true;
+                        requested = true;
+                        break;
                     }
                 }
-                // Coarse or fine Location requested but not granted.
-                if (locationRequested) return false;
             }
+            // Permissions requested but not granted.
+            if (requested) return false;
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(TAG, "Couldn't find name for client package: %s", packageName);
         }
         return null;
     }
 
-    private @Nullable CustomTabActivity getLastTrackedFocusedTwaCustomTabActivity() {
+    private static @Nullable CustomTabActivity getLastTrackedFocusedTwaCustomTabActivity() {
         final Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
         if (!(activity instanceof CustomTabActivity)) return null;
         CustomTabActivity customTabActivity = (CustomTabActivity) activity;

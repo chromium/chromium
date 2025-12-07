@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/platform/network/encoded_form_data.h"
+
 #include <utility>
 
 #include "base/task/sequenced_task_runner.h"
@@ -15,7 +17,6 @@
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
-#include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 
 namespace blink {
 
@@ -31,35 +32,26 @@ class EncodedFormDataTest : public testing::Test {
       EXPECT_NE(a.Impl(), b.Impl());
   }
 
-  void CheckDeepCopied(const KURL& a, const KURL& b) {
-    EXPECT_EQ(a, b);
-    CheckDeepCopied(a.GetString(), b.GetString());
-    if (a.InnerURL() && b.InnerURL())
-      CheckDeepCopied(*a.InnerURL(), *b.InnerURL());
-  }
-
   void CheckDeepCopied(const FormDataElement& a, const FormDataElement& b) {
     EXPECT_EQ(a, b);
     CheckDeepCopied(a.filename_, b.filename_);
-    CheckDeepCopied(a.blob_uuid_, b.blob_uuid_);
   }
 };
 
 TEST_F(EncodedFormDataTest, DeepCopy) {
   scoped_refptr<EncodedFormData> original(EncodedFormData::Create());
-  original->AppendData("Foo", 3);
+  original->AppendData(base::span_from_cstring("Foo"));
   original->AppendFileRange("example.txt", 12345, 56789,
                             base::Time::FromSecondsSinceUnixEpoch(9999.0));
 
   mojo::PendingRemote<mojom::blink::Blob> remote;
   mojo::PendingReceiver<mojom::blink::Blob> receiver =
       remote.InitWithNewPipeAndPassReceiver();
-  original->AppendBlob(
-      "originalUUID", BlobDataHandle::Create("uuid", "" /* type */,
-                                             0u /* size */, std::move(remote)));
+  original->AppendBlob(BlobDataHandle::Create("uuid", /*type=*/"", /*size=*/0,
+                                              std::move(remote)));
 
   Vector<char> boundary_vector;
-  boundary_vector.Append("----boundaryForTest", 19);
+  boundary_vector.AppendSpan(base::span_from_cstring("----boundaryForTest"));
   original->SetIdentifier(45678);
   original->SetBoundary(boundary_vector);
   original->SetContainsPasswordData(true);
@@ -70,7 +62,7 @@ TEST_F(EncodedFormDataTest, DeepCopy) {
   ASSERT_EQ(3ul, copy_elements.size());
 
   Vector<char> foo_vector;
-  foo_vector.Append("Foo", 3);
+  foo_vector.AppendSpan(base::span_from_cstring("Foo"));
 
   EXPECT_EQ(FormDataElement::kData, copy_elements[0].type_);
   EXPECT_EQ(foo_vector, copy_elements[0].data_);
@@ -84,7 +76,6 @@ TEST_F(EncodedFormDataTest, DeepCopy) {
                 .expected_file_modification_time_->InSecondsFSinceUnixEpoch());
 
   EXPECT_EQ(FormDataElement::kEncodedBlob, copy_elements[2].type_);
-  EXPECT_EQ(String("originalUUID"), copy_elements[2].blob_uuid_);
 
   EXPECT_EQ(45678, copy->Identifier());
   EXPECT_EQ(boundary_vector, copy->Boundary());
@@ -98,8 +89,7 @@ TEST_F(EncodedFormDataTest, DeepCopy) {
 
   // m_optionalBlobDataHandle is not checked, because BlobDataHandle is
   // ThreadSafeRefCounted.
-  // filename_ and blob_uuid_ are now thread safe, so they don't need a
-  // deep copy.
+  // filename_ is now thread safe, so it doesn't need a deep copy.
 }
 
 }  // namespace

@@ -58,7 +58,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     // won't be needed after that.
     scoped_refptr<media::DecoderBuffer> decoder_buffer =
         media::DecoderBuffer::CopyFrom(decoder_buffer_data);
-    decoder.SetStream(i, *decoder_buffer);
+    decoder.SetStream(i, decoder_buffer);
 
     // Decode should consume all the data unless it returns kConfigChange, and
     // in that case it needs to be called again.

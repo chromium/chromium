@@ -143,9 +143,8 @@ void UnionBoundsEqualToWorkAreaBounds(aura::Window* w1,
   }
 
   union_bounds.Union(divider_bounds);
-  EXPECT_EQ(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(w1).work_area(),
-      union_bounds);
+  EXPECT_EQ(display::Screen::Get()->GetDisplayNearestWindow(w1).work_area(),
+            union_bounds);
 }
 
 void UnionBoundsEqualToWorkAreaBounds(SnapGroup* snap_group) {

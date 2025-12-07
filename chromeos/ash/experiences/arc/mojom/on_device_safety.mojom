@@ -1,0 +1,46 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 2
+
+module arc.mojom;
+
+import "chromeos/ash/services/cros_safety/public/mojom/cros_safety.mojom";
+import "mojo/public/mojom/base/big_buffer.mojom";
+
+// This enum type identifies the result of initializing the arc safety service.
+[Stable, Extensible]
+enum GetArcSafetySessionResult {
+  kOk,
+  [Default] kGenericError,
+  kSafetyServiceNotFound,
+  kBindSafetyServiceError,
+  [MinVersion=1] kServiceNotAvailable,
+};
+
+// Handles requests from OnDeviceSafetyInstance that interacts with chrome.
+// Next Method ID: 1
+[Stable]
+interface OnDeviceSafetyHost {
+  // Returns true if the chrome safety service feature is enabled.
+  IsCrosSafetyServiceEnabled@0() => (bool is_enabled);
+};
+
+// Forwards requests for Trust & Safety filtering from Chrome to the (on-device)
+// Safety Service application running within ARC.
+// The Safety Service helps maintain a high-quality product experience by
+// filtering abusive or unsafe text/image input.
+// Next Method ID: 1
+[Stable]
+interface OnDeviceSafetyInstance {
+  // Creates a session to be used for on-device classification
+  // TODO(crbug.com/379251177): return union of pending_reciever or error as
+  // return value.
+  GetArcSafetySession@0(
+      pending_receiver<ash.cros_safety.mojom.OnDeviceSafetySession> session)
+      => (GetArcSafetySessionResult status);
+
+  // Establishes full-duplex communication with the host.
+  [MinVersion=1] Init@1(pending_remote<OnDeviceSafetyHost> host_remote) => ();
+};

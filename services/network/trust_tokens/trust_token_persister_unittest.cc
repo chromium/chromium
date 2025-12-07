@@ -163,8 +163,7 @@ class PersisterFactoryTypeNames {
       return "SQLitePersisterMemoryFallback";
     if (std::is_same<T, EndToEndSqliteTrustTokenPersisterFactory>())
       return "SQLitePersisterOnDisk";
-    NOTREACHED_IN_MIGRATION();
-    return "";
+    NOTREACHED();
   }
 };
 

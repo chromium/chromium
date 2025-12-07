@@ -9,6 +9,7 @@
 #include "ash/capture_mode/capture_mode_types.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -42,7 +43,9 @@ class ASH_EXPORT CaptureModeBarView : public views::View {
   virtual void OnCaptureTypeChanged(CaptureModeType new_type);
 
   // Called when settings is toggled on or off.
-  void SetSettingsMenuShown(bool shown);
+  virtual void SetSettingsMenuShown(bool shown);
+
+  bool IsEventOnSettingsButton(gfx::Point screen_location) const;
 
   // views::View:
   void AddedToWidget() override;
@@ -52,7 +55,8 @@ class ASH_EXPORT CaptureModeBarView : public views::View {
   CaptureModeBarView();
 
   // Adds the common elements of different capture bars to the bar view.
-  void AppendCommonElements();
+  void AppendSettingsButton();
+  void AppendCloseButton(int accessible_name_id = IDS_APP_ACCNAME_CLOSE);
 
  private:
   void OnSettingsButtonPressed(const ui::Event& event);

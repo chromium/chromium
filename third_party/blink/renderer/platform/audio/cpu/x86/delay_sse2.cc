@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/audio/delay.h"
 
 #include <xmmintrin.h>
+
+#include <array>
+
+#include "base/compiler_specific.h"
 
 namespace blink {
 
@@ -75,8 +74,8 @@ std::tuple<unsigned, int> Delay::ProcessARateVector(
   const __m128i v_incr = _mm_set1_epi32(4);
 
   // Temp arrays for storing the samples needed for interpolation
-  float sample1[4] __attribute((aligned(16)));
-  float sample2[4] __attribute((aligned(16)));
+  std::array<float, 4> sample1 __attribute((aligned(16)));
+  std::array<float, 4> sample2 __attribute((aligned(16)));
 
   // Initialize the write index vector, and  wrap the values if needed.
   __m128i v_write_index =
@@ -89,8 +88,8 @@ std::tuple<unsigned, int> Delay::ProcessARateVector(
   for (int n = 0; n < number_of_loops; ++n, k += 4) {
     // It's possible that `delay_time` contains negative values. Make sure
     // they are greater than zero.
-    const __m128 v_delay_time = _mm_max_ps(_mm_loadu_ps(delay_times + k),
-                                           v_all_zeros);
+    const __m128 v_delay_time =
+        _mm_max_ps(_mm_loadu_ps(UNSAFE_TODO(delay_times + k)), v_all_zeros);
     const __m128 v_desired_delay_frames =
         _mm_mul_ps(v_delay_time, v_sample_rate);
 
@@ -117,12 +116,12 @@ std::tuple<unsigned, int> Delay::ProcessARateVector(
         reinterpret_cast<const uint32_t*>(&v_read_index2);
 
     for (int m = 0; m < 4; ++m) {
-      sample1[m] = buffer[read_index1[m]];
-      sample2[m] = buffer[read_index2[m]];
+      sample1[m] = UNSAFE_TODO(buffer[read_index1[m]]);
+      sample2[m] = UNSAFE_TODO(buffer[read_index2[m]]);
     }
 
-    const __m128 v_sample1 = _mm_load_ps(sample1);
-    const __m128 v_sample2 = _mm_load_ps(sample2);
+    const __m128 v_sample1 = _mm_load_ps(sample1.data());
+    const __m128 v_sample2 = _mm_load_ps(sample2.data());
 
     v_write_index = _mm_add_epi32(v_write_index, v_incr);
     v_write_index = WrapIndexVector(v_write_index, v_buffer_length_int);
@@ -130,7 +129,7 @@ std::tuple<unsigned, int> Delay::ProcessARateVector(
     const __m128 sample = _mm_add_ps(
         v_sample1,
         _mm_mul_ps(interpolation_factor, _mm_sub_ps(v_sample2, v_sample1)));
-    _mm_store_ps(destination + k, sample);
+    _mm_store_ps(UNSAFE_TODO(destination + k), sample);
   }
 
   // Update |w_index|_ based on how many frames we processed here, wrapping
@@ -153,7 +152,7 @@ void Delay::HandleNaN(float* delay_times,
 
   // This is approximately 4 times faster than the scalar version.
   for (unsigned loop = 0; loop < number_of_loops; ++loop, k += 4) {
-    __m128 x = _mm_loadu_ps(delay_times + k);
+    __m128 x = _mm_loadu_ps(UNSAFE_TODO(delay_times + k));
     // 0xffffffff if x is NaN. Otherwise 0
     __m128 cmp = _mm_cmpunord_ps(x, x);
 
@@ -167,13 +166,13 @@ void Delay::HandleNaN(float* delay_times,
     // Merge i (bitwise or) x and cmp.  This makes x = max_time if x was NaN and
     // preserves x if not.
     x = _mm_or_ps(x, cmp);
-    _mm_storeu_ps(delay_times + k, x);
+    _mm_storeu_ps(UNSAFE_TODO(delay_times + k), x);
   }
 
   // Handle any frames not done in the loop above.
   for (; k < frames_to_process; ++k) {
-    if (std::isnan(delay_times[k])) {
-      delay_times[k] = max_time;
+    if (std::isnan(UNSAFE_TODO(delay_times[k]))) {
+      UNSAFE_TODO(delay_times[k]) = max_time;
     }
   }
 }

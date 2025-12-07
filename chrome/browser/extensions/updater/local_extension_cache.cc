@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
@@ -22,6 +23,9 @@
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 namespace {
@@ -629,7 +633,7 @@ void LocalExtensionCache::BackendMarkCacheInvalid(
     const std::string& extension_id) {
   base::FilePath invalid_cache_file =
       cache_dir.AppendASCII(kInvalidCacheIdsFileName);
-  std::string contents = base::ToString(extension_id, kExtensionIdDelimiter);
+  std::string contents = base::StrCat({extension_id, kExtensionIdDelimiter});
   bool success = false;
   if (!base::PathExists(invalid_cache_file)) {
     success = base::WriteFile(invalid_cache_file, contents);
@@ -718,7 +722,6 @@ LocalExtensionCache::CacheItemInfo::CacheItemInfo(
 LocalExtensionCache::CacheItemInfo::CacheItemInfo(const CacheItemInfo& other) =
     default;
 
-LocalExtensionCache::CacheItemInfo::~CacheItemInfo() {
-}
+LocalExtensionCache::CacheItemInfo::~CacheItemInfo() = default;
 
 }  // namespace extensions

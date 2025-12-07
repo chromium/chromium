@@ -6,9 +6,13 @@
 
 #include <cmath>
 #include <limits>
+#include <string_view>
 
+#include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_shader.h"
@@ -17,6 +21,7 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets_f.h"
 #include "ui/gfx/geometry/rect.h"
@@ -25,12 +30,30 @@
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
+#include "ui/gfx/platform_font.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/skia_paint_util.h"
 #include "ui/gfx/switches.h"
 
 namespace gfx {
+
+namespace {
+
+// The maximum number of entries in the cache.
+constexpr size_t kMaxStringWidthCacheSize = 32;
+
+// Maximum string length for which we'll cache the width lookup.
+constexpr size_t kMaxStringWidthCacheStringLength = 4;
+
+Canvas::StringWidthCache& GetStringWidthCache() {
+  static base::NoDestructor<Canvas::StringWidthCache> cache(
+      kMaxStringWidthCacheSize);
+  return *cache;
+}
+
+}  // namespace
 
 Canvas::Canvas(const Size& size, float image_scale, bool is_opaque)
     : image_scale_(image_scale) {
@@ -64,7 +87,7 @@ void Canvas::RecreateBackingCanvas(const Size& size,
 }
 
 // static
-void Canvas::SizeStringInt(const std::u16string& text,
+void Canvas::SizeStringInt(std::u16string_view text,
                            const FontList& font_list,
                            int* width,
                            int* height,
@@ -79,18 +102,51 @@ void Canvas::SizeStringInt(const std::u16string& text,
 }
 
 // static
-int Canvas::GetStringWidth(const std::u16string& text,
+int Canvas::GetStringWidth(std::u16string_view text,
                            const FontList& font_list) {
-  int width = 0, height = 0;
-  SizeStringInt(text, font_list, &width, &height, 0, NO_ELLIPSIS);
-  return width;
+  return base::ClampCeil(GetStringWidthF(text, font_list));
 }
 
 // static
-float Canvas::GetStringWidthF(const std::u16string& text,
+Canvas::StringWidthCache& Canvas::GetStringWidthCacheForTesting() {
+  return GetStringWidthCache();
+}
+
+// static
+float Canvas::GetStringWidthF(std::u16string_view text,
                               const FontList& font_list) {
+  if (text.empty()) {
+    return 0;
+  }
+
+  scoped_refptr<const gfx::PlatformFont> platform_font_ref(
+      font_list.GetPrimaryFont().platform_font());
+
+  // Cache only if there is one single Font, and that Font is already
+  // initialized (has a not-null PlatformFont). Otherwise SizeStringFloat()
+  // might return a different value on subsequent calls.
+  const bool use_cache =
+      base::FeatureList::IsEnabled(features::kStringWidthCache) &&
+      text.length() <= kMaxStringWidthCacheStringLength &&
+      font_list.GetFonts().size() == 1 && platform_font_ref;
+
+  if (use_cache) {
+    const StringWidthCacheKey key(std::u16string(text), platform_font_ref);
+    StringWidthCache& cache = GetStringWidthCache();
+
+    auto it = cache.Get(key);
+    if (it != cache.end()) {
+      return it->second;
+    }
+  }
+
   float width = 0, height = 0;
   SizeStringFloat(text, font_list, &width, &height, 0, NO_ELLIPSIS);
+
+  if (use_cache) {
+    const StringWidthCacheKey key(std::u16string(text), platform_font_ref);
+    GetStringWidthCache().Put(key, width);
+  }
   return width;
 }
 
@@ -401,7 +457,7 @@ void Canvas::DrawSkottie(scoped_refptr<cc::SkottieWrapper> skottie,
                        std::move(images), color_map, std::move(text_map));
 }
 
-void Canvas::DrawStringRect(const std::u16string& text,
+void Canvas::DrawStringRect(std::u16string_view text,
                             const FontList& font_list,
                             SkColor color,
                             const Rect& display_rect) {
@@ -478,7 +534,7 @@ SkBitmap Canvas::GetBitmap() const {
   return bitmap_.value();
 }
 
-bool Canvas::IntersectsClipRect(const SkRect& rect) {
+bool Canvas::IntersectsClipRect(const SkRect& rect) const {
   SkRect clip;
   return canvas_->getLocalClipBounds(&clip) && clip.intersects(rect);
 }
@@ -521,7 +577,20 @@ void Canvas::DrawImageIntHelper(const ImageSkiaRep& image_rep,
   shader_scale.setScale(SkFloatToScalar(user_scale_x),
                         SkFloatToScalar(user_scale_y));
   shader_scale.preTranslate(SkIntToScalar(-src_x), SkIntToScalar(-src_y));
-  shader_scale.postTranslate(SkIntToScalar(dest_x), SkIntToScalar(dest_y));
+  // In non pixel-canvas mode, the scaling and rounding is performed in cc side.
+  // In pixel canvas mode, we need to translate so that the position is pixel
+  // aligned at the target space, because drawing at subpixel position can
+  // result in pixelated image. Use `std::round` to be consistent with pxiel
+  // canvas' rounding logic.
+  // TOOD(crbug.com/41344902): Using image_scale_ isn't 100% accurate. It should
+  // use the scale applied to the canvas instead (which isn't available now).
+  if (features::IsPixelCanvasRecordingEnabled()) {
+    shader_scale.postTranslate(
+        SkFloatToScalar(std::round(dest_x * image_scale_) / image_scale_),
+        SkFloatToScalar(std::round(dest_y * image_scale_) / image_scale_));
+  } else {
+    shader_scale.postTranslate(SkIntToScalar(dest_x), SkIntToScalar(dest_y));
+  }
 
   cc::PaintFlags flags(original_flags);
   flags.setFilterQuality(filter ? cc::PaintFlags::FilterQuality::kLow
@@ -545,7 +614,7 @@ cc::PaintCanvas* Canvas::CreateOwnedCanvas(const Size& size, bool is_opaque) {
   bitmap_.emplace();
   bitmap_->allocPixels(info);
   // Ensure that the bitmap is zeroed, since the code expects that.
-  memset(bitmap_->getPixels(), 0, bitmap_->computeByteSize());
+  UNSAFE_TODO(memset(bitmap_->getPixels(), 0, bitmap_->computeByteSize()));
 
   owned_canvas_.emplace(bitmap_.value());
   return &owned_canvas_.value();

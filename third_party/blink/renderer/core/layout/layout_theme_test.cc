@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -31,7 +30,8 @@ class LayoutThemeTest : public PageTestBase {
 };
 
 void LayoutThemeTest::SetHtmlInnerHTML(const char* html_content) {
-  GetDocument().documentElement()->setInnerHTML(String::FromUTF8(html_content));
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
+      String::FromUTF8(html_content));
   UpdateAllLifecyclePhasesForTest();
 }
 
@@ -155,5 +155,16 @@ TEST_F(LayoutThemeTest, SetSelectionColorsNoInvalidation) {
             StyleChangeType::kNoStyleChange);
 }
 #endif  // !BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(LayoutThemeTest, AndroidSelectionColor) {
+  EXPECT_EQ(Color::FromRGBA32(0xFF000000),
+            LayoutTheme::GetTheme().ActiveSelectionForegroundColor(
+                mojom::blink::ColorScheme::kLight));
+  EXPECT_EQ(Color::FromRGBA32(0x6633b5e5),
+            LayoutTheme::GetTheme().ActiveSelectionBackgroundColor(
+                mojom::blink::ColorScheme::kLight));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace blink

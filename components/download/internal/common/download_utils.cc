@@ -5,7 +5,9 @@
 #include "components/download/public/common/download_utils.h"
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
@@ -20,6 +22,7 @@
 #include "components/download/public/common/download_create_info.h"
 #include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_interrupt_reasons_utils.h"
+#include "components/download/public/common/download_item_impl.h"
 #include "components/download/public/common/download_save_info.h"
 #include "components/download/public/common/download_stats.h"
 #include "components/download/public/common/download_task_runner.h"
@@ -30,10 +33,12 @@
 #include "net/http/http_content_disposition.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/origin.h"
+
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/content_uri_utils.h"
 #include "components/download/internal/common/android/download_collection_bridge.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -147,7 +152,7 @@ CreateIntermediateUriResult CreateIntermediateUri(
     const base::FilePath& suggested_name,
     const std::string& mime_type) {
   base::FilePath content_path =
-      current_path.IsContentUri() && base::ContentUriExists(current_path)
+      current_path.IsContentUri() && base::PathExists(current_path)
           ? current_path
           : DownloadCollectionBridge::CreateIntermediateUriForPublish(
                 original_url, referrer_url, suggested_name, mime_type);
@@ -329,18 +334,22 @@ void HandleResponseHeaders(const net::HttpResponseHeaders* headers,
   if (headers->HasStrongValidators()) {
     // If we don't have strong validators as per RFC 7232 section 2, then
     // we neither store nor use them for range requests.
-    if (!headers->EnumerateHeader(nullptr, "Last-Modified",
-                                  &create_info->last_modified))
-      create_info->last_modified.clear();
-    if (!headers->EnumerateHeader(nullptr, "ETag", &create_info->etag))
-      create_info->etag.clear();
+    std::optional<std::string_view> last_modified =
+        headers->EnumerateHeader(nullptr, "Last-Modified");
+    create_info->last_modified = last_modified.value_or(std::string_view());
+
+    std::optional<std::string_view> etag =
+        headers->EnumerateHeader(nullptr, "ETag");
+    create_info->etag = etag.value_or(std::string_view());
   }
 
   // Grab the first content-disposition header.  There may be more than one,
   // though as of this writing, the network stack ensures if there are, they
   // are all duplicates.
-  headers->EnumerateHeader(nullptr, "Content-Disposition",
-                           &create_info->content_disposition);
+  std::optional<std::string_view> content_disposition =
+      headers->EnumerateHeader(nullptr, "Content-Disposition");
+  create_info->content_disposition =
+      content_disposition.value_or(std::string_view());
 
   // Parse the original mime type from the header, notice that actual mime type
   // might be different due to mime type sniffing.
@@ -373,6 +382,12 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
   request->request_initiator = params->initiator();
   request->trusted_params = network::ResourceRequest::TrustedParams();
   request->has_user_gesture = params->has_user_gesture();
+
+  // TODO(crbug.com/382291442): Remove feature guarding once launched.
+  if (base::FeatureList::IsEnabled(
+          network::features::kPopulatePermissionsPolicyOnRequest)) {
+    request->permissions_policy = params->permissions_policy();
+  }
 
   if (params->isolation_info().has_value()) {
     request->trusted_params->isolation_info = params->isolation_info().value();
@@ -698,12 +713,6 @@ bool IsDownloadDone(const GURL& url,
 
 bool DeleteDownloadedFile(const base::FilePath& path) {
   DCHECK(GetDownloadTaskRunner()->RunsTasksInCurrentSequence());
-#if BUILDFLAG(IS_ANDROID)
-  if (path.IsContentUri()) {
-    base::DeleteContentUri(path);
-    return true;
-  }
-#endif
   // Make sure we only delete files.
   if (base::DirectoryExists(path))
     return true;
@@ -796,6 +805,25 @@ void DetermineLocalPath(DownloadItem* download,
   std::move(callback).Run(virtual_path, base::FilePath());
 }
 
+#if BUILDFLAG(IS_ANDROID)
+// Determine the file path for the save package file given the `suggested_path`.
+COMPONENTS_DOWNLOAD_EXPORT
+void DetermineSavePackagePath(const GURL& url,
+                              const base::FilePath& suggested_path,
+                              LocalPathCallback callback) {
+  base::FilePath mhtml_path = suggested_path.ReplaceExtension("mhtml");
+  if (DownloadCollectionBridge::ShouldPublishDownload(mhtml_path)) {
+    GetDownloadTaskRunner()->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&CreateIntermediateUri, url, GURL(), mhtml_path,
+                       mhtml_path.BaseName(), "multipart/related"),
+        base::BindOnce(&OnInterMediateUriCreated, std::move(callback)));
+    return;
+  }
+  std::move(callback).Run(mhtml_path, mhtml_path.BaseName());
+}
+#endif
+
 bool IsInterruptedDownloadAutoResumable(download::DownloadItem* download_item,
                                         int auto_resumption_size_limit) {
   DCHECK_EQ(download::DownloadItem::INTERRUPTED, download_item->GetState());
@@ -833,9 +861,12 @@ bool IsInterruptedDownloadAutoResumable(download::DownloadItem* download_item,
 
 bool IsContentDispositionAttachmentInHead(
     const network::mojom::URLResponseHead& response_head) {
-  std::string disposition;
-  response_head.headers->GetNormalizedHeader("content-disposition",
-                                             &disposition);
+  if (!response_head.headers) {
+    return false;
+  }
+  std::string disposition =
+      response_head.headers->GetNormalizedHeader("content-disposition")
+          .value_or(std::string());
   return !disposition.empty() &&
          net::HttpContentDisposition(disposition, std::string())
              .is_attachment();

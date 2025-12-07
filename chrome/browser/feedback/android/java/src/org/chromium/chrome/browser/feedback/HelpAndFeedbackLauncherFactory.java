@@ -5,11 +5,14 @@
 package org.chromium.chrome.browser.feedback;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /** Factory for {@link HelpAndFeedbackLauncher}. Can be used from chrome/browser modules. */
+@NullMarked
 public class HelpAndFeedbackLauncherFactory {
-    private static HelpAndFeedbackLauncher sInstanceForTesting;
+    private static @Nullable HelpAndFeedbackLauncher sInstanceForTesting;
 
     /** Get a {@link HelpAndFeedbackLauncher} for the given {@link Profile}. */
     public static HelpAndFeedbackLauncher getForProfile(Profile profile) {

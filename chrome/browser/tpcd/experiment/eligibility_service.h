@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
@@ -18,26 +19,13 @@
 namespace privacy_sandbox {
 class PrivacySandboxSettings;
 class TrackingProtectionOnboarding;
-}
+}  // namespace privacy_sandbox
 
 namespace tpcd::experiment {
 
 class ExperimentManager;
 
-enum class ProfileEligibilityMismatch {
-  kEligibleProfileInExperiment = 0,
-  kIneligibleProfileNotInExperiment = 1,
-  kIneligibleProfileInExperiment = 2,
-  kEligibleProfileNotInExperiment = 3,
-  kMaxValue = kEligibleProfileNotInExperiment,
-};
-
-const char ProfileEligibilityMismatchHistogramName[] =
-    "Privacy.3pcd.ProfileEligibilityMismatch";
-
-class EligibilityService
-    : public privacy_sandbox::TrackingProtectionOnboarding::Observer,
-      public KeyedService {
+class EligibilityService : public KeyedService {
  public:
   EligibilityService(
       Profile* profile,
@@ -65,21 +53,9 @@ class EligibilityService
   void MarkProfileEligibility(bool is_client_eligible);
   void BroadcastProfileEligibility();
   privacy_sandbox::TpcdExperimentEligibility ProfileEligibility();
-  void UpdateCookieDeprecationLabel();
   void MaybeNotifyManagerTrackingProtectionOnboarded(
       privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus
           onboarding_status);
-  void MaybeNotifyManagerTrackingProtectionSilentOnboarded(
-      privacy_sandbox::TrackingProtectionOnboarding::SilentOnboardingStatus
-          onboarding_status);
-
-  // privacy_sandbox::TrackingProtectionOnboarding::Observer:
-  void OnTrackingProtectionOnboardingUpdated(
-      privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus
-          onboarding_status) override;
-  void OnTrackingProtectionSilentOnboardingUpdated(
-      privacy_sandbox::TrackingProtectionOnboarding::SilentOnboardingStatus
-          onboarding_status) override;
 
   raw_ptr<Profile> profile_;
   // `onboarding_service_` may be null for OTR and system profiles.
@@ -93,11 +69,6 @@ class EligibilityService
   // setting the `profile_eligibility_`.
   std::optional<privacy_sandbox::TpcdExperimentEligibility>
       profile_eligibility_;
-
-  base::ScopedObservation<
-      privacy_sandbox::TrackingProtectionOnboarding,
-      privacy_sandbox::TrackingProtectionOnboarding::Observer>
-      onboarding_observation_{this};
 
   base::WeakPtrFactory<EligibilityService> weak_factory_{this};
 };

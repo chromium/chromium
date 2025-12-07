@@ -1,0 +1,2 @@
+# crbug.com/393608170
+-org.chromium.chrome.browser.tasks.tab_management.TabGridDialogViewTest.testUpdateDialogWithOrientation

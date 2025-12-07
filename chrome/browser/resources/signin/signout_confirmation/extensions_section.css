@@ -1,0 +1,120 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #include=cr-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --iron-collapse-transition-duration: 300ms;
+  --cr-checkbox-label-padding-start: 8px;
+  --extensions-section-background-color: var(--color-sys-surface3);
+  --scrollbar-width: 4px;
+}
+
+#extensionsSection {
+  background-color: var(--extensions-section-background-color);
+  border-radius: 8px;
+  box-sizing: border-box;
+  color: var(--cr-secondary-text-color);
+  display: flex;
+  flex-direction: column;
+  padding: var(--dialog-padding) 0;
+}
+
+#header-row {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  padding: 0 var(--dialog-padding);
+}
+
+#checkbox {
+  align-self: start;
+  margin-top: 4px;
+}
+
+#title-container {
+  color: var(--cr-secondary-text-color);
+  font-size: 13px;
+  line-height: 20px;
+}
+
+#tooltip-icon {
+  --iron-icon-height: 16px;
+  --iron-icon-width: 16px;
+
+  display: inline-block;
+  margin-inline-start: 4px;
+  vertical-align: text-bottom;
+}
+
+#tooltip {
+  margin-top: 40px;
+  max-width: 189px;
+}
+
+#expandButton {
+  align-self: start;
+  /* Set to vertically align with the checkbox and title. */
+  margin-top: -8px;
+}
+
+#account-extensions-list {
+  box-sizing: border-box;
+  /* Value set such that the max dialog height is 628px. */
+  max-height: 344px;
+  overflow-y: auto;
+  /* Only set padding on the side opposite of the scrollbar so the scrollbar
+   * is "flush" with the side of the entire #extensionsSection.
+   */
+  padding-inline-start: var(--dialog-padding);
+}
+
+.account-extension {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  font-weight: 500;
+  gap: 8px;
+  height: 36px;
+  margin-inline-start: 8px;
+}
+
+.item-icon-container {
+  --item-icon-container-size: 24px;
+  align-items: center;
+  background-color: var(--md-background-color);
+  border-radius: 25%;
+  display: flex;
+  flex-wrap: wrap;
+  height: var(--item-icon-container-size);
+  justify-content: center;
+  width: var(--item-icon-container-size);
+}
+
+.item-icon {
+  --item-icon-size: 16px;
+  height: var(--item-icon-size);
+  width: var(--item-icon-size);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: var(--scrollbar-width);
+}
+
+/* Track */
+.custom-scrollbar::-webkit-scrollbar-track {
+  border-radius: var(--scrollbar-width);
+}
+
+/* Handle */
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--color-button-foreground);
+  border-radius: var(--scrollbar-width);
+}

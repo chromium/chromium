@@ -7,6 +7,8 @@ var overflowButtonsCSS = [
     "-internal-media-controls-cast-button",
     "-webkit-media-controls-toggle-closed-captions-button",
     "-internal-media-controls-playback-speed-button",
+    "-internal-media-controls-video-track-selection-button",
+    "-internal-media-controls-audio-track-selection-button",
     "-internal-media-controls-picture-in-picture-button",
 ];
 //  PseudoID for the overflow button
@@ -33,10 +35,12 @@ var OverflowMenuButtons = {
   CAST: 4,
   CLOSED_CAPTIONS: 5,
   PLAYBACK_SPEED: 6,
+  VIDEO_TRACKS: 7,
+  AUDIO_TRACKS: 8,
 };
 
 // Default text within the overflow menu
-var overflowMenuText = ["Play", "Fullscreen", "Download", "Mute", "Cast", "CaptionsOff", "Playback speed"];
+var overflowMenuText = ["Play", "Fullscreen", "Download", "Mute", "Cast", "CaptionsOff", "Playback speed", "Video tracks", "Audio tracks"];
 
 if (document.pictureInPictureEnabled)
   overflowMenuText.push('Picture in Picture');

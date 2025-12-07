@@ -7,14 +7,15 @@
 
 import json
 import unittest
-import unittest.mock as mock
+from unittest import mock
+
+from flake_suppressor_common import unittest_utils as uu
+from flake_suppressor_common import tag_utils as common_tag_utils
 
 from flake_suppressor import gpu_expectations
 from flake_suppressor import gpu_queries as queries
 from flake_suppressor import gpu_tag_utils as tag_utils
 from flake_suppressor import gpu_results as results_module
-from flake_suppressor_common import unittest_utils as uu
-from flake_suppressor_common import tag_utils as common_tag_utils
 
 
 class GpuQueriesUnittest(unittest.TestCase):

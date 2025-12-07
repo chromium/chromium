@@ -15,6 +15,7 @@
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_utils.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
+#include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_mixin.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
@@ -34,8 +35,8 @@
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/dbus/missive/missive_client_test_observer.h"
 #include "components/app_constants/constants.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_service.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
@@ -113,6 +114,9 @@ class AppUsageTelemetrySamplerBrowserTest
     // Initialize the MockClock.
     test::MockClock::Get();
     crypto_home_mixin_.MarkUserAsExisting(affiliation_mixin_.account_id());
+    crypto_home_mixin_.ApplyAuthConfig(
+        affiliation_mixin_.account_id(),
+        ash::test::UserAuthConfig::Create(ash::test::kDefaultAuthSetup));
     ::policy::SetDMTokenForTesting(
         ::policy::DMToken::CreateValidToken(kDMToken));
   }
@@ -139,16 +143,10 @@ class AppUsageTelemetrySamplerBrowserTest
     test_ukm_recorder_ = std::make_unique<::ukm::TestAutoSetUkmRecorder>();
   }
 
-  void SetUpInProcessBrowserTestFixture() override {
-    ::policy::DevicePolicyCrosBrowserTest::SetUpInProcessBrowserTestFixture();
-    create_sync_service_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-                &AppUsageTelemetrySamplerBrowserTest::SetUpSyncService,
-                base::Unretained(this)));
-  }
-
-  void SetUpSyncService(::content::BrowserContext* context) {
+  void SetUpBrowserContextKeyedServices(
+      ::content::BrowserContext* context) override {
+    ::policy::DevicePolicyCrosBrowserTest::SetUpBrowserContextKeyedServices(
+        context);
     SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
         context, base::BindRepeating([](::content::BrowserContext* context)
                                          -> std::unique_ptr<KeyedService> {
@@ -268,7 +266,6 @@ class AppUsageTelemetrySamplerBrowserTest
   ::policy::AffiliationMixin affiliation_mixin_{&mixin_host_, &test_helper_};
   ::ash::CryptohomeMixin crypto_home_mixin_{&mixin_host_};
 
-  base::CallbackListSubscription create_sync_service_subscription_;
   std::unique_ptr<::ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
 };
 
@@ -325,8 +322,9 @@ IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest,
   // PRE-condition.
 }
 
+// TODO(crbug.com/453903951): Re-enable the test after it is de-flaked.
 IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest,
-                       ReportUsageDataWhenSyncDisabled) {
+                       DISABLED_ReportUsageDataWhenSyncDisabled) {
   sync_service()->SetAllowedByEnterprisePolicy(false);
 
   // Install web app and simulate its usage.

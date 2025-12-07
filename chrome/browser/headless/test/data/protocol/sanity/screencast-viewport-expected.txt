@@ -1,2 +1,0 @@
-Tests screencast viewport size.
-Image size: 640 x 480

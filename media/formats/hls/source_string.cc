@@ -60,6 +60,11 @@ void SourceStringBase<Self>::TrimStart() {
 }
 
 template <typename Self>
+void SourceStringBase<Self>::TrimEnd() {
+  str_ = base::TrimWhitespaceASCII(str_, base::TRIM_TRAILING);
+}
+
+template <typename Self>
 SourceStringBase<Self>::SourceStringBase(size_t line,
                                          size_t column,
                                          std::string_view str)
@@ -81,6 +86,15 @@ ResolvedSourceString SourceString::SkipVariableSubstitution() const {
   return ResolvedSourceString::Create(base::PassKey<SourceString>(), Line(),
                                       Column(), Str());
 }
+
+ResolvedSourceString::ResolvedSourceString(const ResolvedSourceString& other) =
+    default;
+ResolvedSourceString::ResolvedSourceString(ResolvedSourceString&& other) =
+    default;
+ResolvedSourceString& ResolvedSourceString::operator=(
+    const ResolvedSourceString& other) = default;
+ResolvedSourceString& ResolvedSourceString::operator=(
+    ResolvedSourceString&& other) = default;
 
 SourceLineIterator::SourceLineIterator(std::string_view source)
     : current_line_(1), source_(source) {}

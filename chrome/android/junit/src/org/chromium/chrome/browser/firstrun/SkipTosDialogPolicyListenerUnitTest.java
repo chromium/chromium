@@ -34,6 +34,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo.OwnedState;
+import org.chromium.chrome.browser.signin.AppRestrictionSupplier;
+import org.chromium.chrome.browser.signin.PolicyLoadListener;
 import org.chromium.components.policy.PolicyService;
 
 /**
@@ -360,8 +362,7 @@ public class SkipTosDialogPolicyListenerUnitTest {
     @Test
     public void testCreateAndOwnPolicyLoadListener()
             throws NoSuchFieldException, IllegalAccessException {
-        FirstRunAppRestrictionInfo mockAppRestrictionInfo =
-                Mockito.mock(FirstRunAppRestrictionInfo.class);
+        AppRestrictionSupplier mockAppRestrictionInfo = Mockito.mock(AppRestrictionSupplier.class);
         OneshotSupplier<PolicyService> mockSupplier =
                 (OneshotSupplier<PolicyService>) Mockito.mock(OneshotSupplier.class);
 

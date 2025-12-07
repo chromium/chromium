@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // The tests in this file attempt to verify the following through simulation:
 // a) That a server experiencing overload will actually benefit from the
 //    anti-DDoS throttling logic, i.e. that its traffic spike will subside
@@ -20,11 +15,13 @@
 #include <stdarg.h>
 #include <stddef.h>
 
+#include <array>
 #include <cmath>
 #include <limits>
 #include <memory>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/environment.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -61,7 +58,7 @@ void VerboseOut(const char* format, ...) {
   if (should_print) {
     va_list arglist;
     va_start(arglist, format);
-    vprintf(format, arglist);
+    UNSAFE_TODO(vprintf(format, arglist));
     va_end(arglist);
   }
 }
@@ -658,7 +655,7 @@ TEST(URLRequestThrottlerSimulation, PerceivedDowntimeRatio) {
   // type of behavior of the client and the downtime, e.g. the difference
   // in behavior between a client making requests every few minutes vs.
   // one that makes a request every 15 seconds).
-  Trial trials[] = {
+  auto trials = std::to_array<Trial>({
       {base::Seconds(10), base::Seconds(3)},
       {base::Seconds(30), base::Seconds(7)},
       {base::Minutes(5), base::Seconds(30)},
@@ -679,7 +676,7 @@ TEST(URLRequestThrottlerSimulation, PerceivedDowntimeRatio) {
 
       // Most brutal?
       {base::Minutes(45), base::Milliseconds(500)},
-  };
+  });
 
   // If things don't converge by the time we've done 100K trials, then
   // clearly one or more of the expected intervals are wrong.

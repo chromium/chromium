@@ -4,12 +4,12 @@
 
 #include "extensions/renderer/isolated_world_manager.h"
 
+#include <algorithm>
 #include <map>
 #include <string>
 
 #include "base/check.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "extensions/common/mojom/execution_world.mojom.h"
 #include "extensions/renderer/extensions_renderer_client.h"
 #include "extensions/renderer/injection_host.h"
@@ -208,7 +208,7 @@ IsolatedWorldManager::FindIsolatedWorldInfo(
     const std::string& host_id,
     mojom::ExecutionWorld execution_world,
     const std::optional<std::string>& world_id) {
-  auto iter = base::ranges::find_if(
+  auto iter = std::ranges::find_if(
       isolated_worlds_,
       [host_id, execution_world, world_id](const auto& entry) {
         return entry.second.host_id == host_id &&

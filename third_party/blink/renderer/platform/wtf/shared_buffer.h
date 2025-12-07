@@ -24,22 +24,18 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_SHARED_BUFFER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_SHARED_BUFFER_H_
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/checked_iterators.h"
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -47,7 +43,7 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
-namespace WTF {
+namespace blink {
 
 // This class is designed to store and manage large amounts of data that may be
 // split into multiple segments.
@@ -85,10 +81,8 @@ class WTF_EXPORT SegmentedBuffer {
       return temp;
     }
     bool operator==(const Iterator& that) const {
-      return base::ranges::equal(value_, that.value_) &&
-             buffer_ == that.buffer_;
+      return std::ranges::equal(value_, that.value_) && buffer_ == that.buffer_;
     }
-    bool operator!=(const Iterator& that) const { return !(*this == that); }
     const base::span<const char>& operator*() const {
       DCHECK(!IsEnd());
       return value_;
@@ -126,25 +120,6 @@ class WTF_EXPORT SegmentedBuffer {
 
   bool empty() const { return !size(); }
 
-  // TODO(crbug.com/40284755): Remove the pointer-based methods in favor of span
-  // ones.
-  HAS_STRICTLY_TYPED_ARG
-  void Append(const char* data, STRICTLY_TYPED_ARG(size)) {
-    ALLOW_NUMERIC_ARG_TYPES_PROMOTABLE_TO(size_t);
-    Append(
-        // SAFETY: The caller must ensure `data` points to `size` elements.
-        // TODO(crbug.com/40284755): Remove this in favor of the span versions.
-        UNSAFE_BUFFERS(base::span(data, size)));
-  }
-  HAS_STRICTLY_TYPED_ARG
-  void Append(const unsigned char* data, STRICTLY_TYPED_ARG(size)) {
-    ALLOW_NUMERIC_ARG_TYPES_PROMOTABLE_TO(size_t);
-    Append(
-        // SAFETY: The caller must ensure `data` points to `size` elements.
-        // TODO(crbug.com/40284755): Remove this in favor of the span versions.
-        UNSAFE_BUFFERS(base::span(data, size)));
-  }
-
   void Append(base::span<const char> data);
   void Append(base::span<const unsigned char> data) {
     Append(base::as_chars(data));
@@ -160,7 +135,7 @@ class WTF_EXPORT SegmentedBuffer {
 
   // Copies the segmented data into a contiguous buffer.  Use GetSomeData() or
   // iterators if a copy is not required, as they are cheaper.
-  // Supported Ts: WTF::Vector<char>, std::vector<char>.
+  // Supported Ts: blink::Vector<char>, std::vector<char>.
   template <typename T>
   T CopyAs() const;
 
@@ -174,15 +149,10 @@ class WTF_EXPORT SegmentedBuffer {
     return GetIteratorAtInternal(position);
   }
 
-  // Copies |byteLength| bytes from the beginning of the content data into
-  // |dest| as a flat buffer. Returns true on success, otherwise the content of
-  // |dest| is not guaranteed.
-  HAS_STRICTLY_TYPED_ARG [[nodiscard]] bool GetBytes(
-      void* dest,
-      STRICTLY_TYPED_ARG(byte_length)) const {
-    ALLOW_NUMERIC_ARG_TYPES_PROMOTABLE_TO(size_t);
-    return GetBytesInternal(dest, byte_length);
-  }
+  // Copies `buffer.size()` bytes from the beginning of the content data into
+  // `buffer` as a flat buffer. Returns true on success, otherwise the content
+  // of `buffer` is not guaranteed.
+  [[nodiscard]] bool GetBytes(base::span<uint8_t> buffer) const;
 
   void GetMemoryDumpNameAndSize(String& dump_name, size_t& dump_size) const;
 
@@ -193,10 +163,25 @@ class WTF_EXPORT SegmentedBuffer {
     STACK_ALLOCATED();
 
    public:
+    using iterator = base::CheckedContiguousIterator<const char>;
+
     explicit DeprecatedFlatData(const SegmentedBuffer*);
 
     const char* data() const { return data_; }
     size_t size() const { return buffer_->size(); }
+
+    // Iterators, so this type meets the requirements of
+    // `std::ranges::contiguous_range`.
+    iterator begin() const {
+      // SAFETY: The merged data has the same number of elements as the
+      // underlying segmented data, so this points to at most just past the end
+      // of the valid region.
+      return UNSAFE_BUFFERS(iterator(data(), data() + size()));
+    }
+    iterator end() const {
+      // SAFETY: As in `begin()` above.
+      return UNSAFE_BUFFERS(iterator(data(), data() + size(), data() + size()));
+    }
 
    private:
     const SegmentedBuffer* buffer_;
@@ -205,7 +190,6 @@ class WTF_EXPORT SegmentedBuffer {
   };
 
  private:
-  bool GetBytesInternal(void* dest, size_t) const;
   Iterator GetIteratorAtInternal(size_t position) const;
 
   size_t size_ = 0;
@@ -240,9 +224,9 @@ inline std::vector<char> SegmentedBuffer::CopyAs() const {
   std::vector<char> buffer;
   buffer.reserve(size_);
 
-  for (const auto& span : *this)
-    buffer.insert(buffer.end(), span.data(), span.data() + span.size());
-
+  for (const auto& span : *this) {
+    buffer.insert(buffer.end(), span.begin(), span.end());
+  }
   DCHECK_EQ(buffer.size(), size_);
   return buffer;
 }
@@ -253,8 +237,8 @@ inline std::vector<uint8_t> SegmentedBuffer::CopyAs() const {
   buffer.reserve(size_);
 
   for (const auto& span : *this) {
-    buffer.insert(buffer.end(), reinterpret_cast<const uint8_t*>(span.data()),
-                  reinterpret_cast<const uint8_t*>(span.data() + span.size()));
+    auto byte_span = base::as_bytes(span);
+    buffer.insert(buffer.end(), byte_span.begin(), byte_span.end());
   }
   DCHECK_EQ(buffer.size(), size_);
   return buffer;
@@ -281,26 +265,6 @@ class WTF_EXPORT SharedBuffer : public SegmentedBuffer,
     return base::AdoptRef(new SharedBuffer(std::move(data)));
   }
 
-  HAS_STRICTLY_TYPED_ARG
-  static scoped_refptr<SharedBuffer> Create(const char* data,
-                                            STRICTLY_TYPED_ARG(size)) {
-    ALLOW_NUMERIC_ARG_TYPES_PROMOTABLE_TO(size_t);
-    return Create(
-        // SAFETY: The caller must ensure `data` points to `size` elements.
-        // TODO(crbug.com/40284755): Remove this in favor of the span versions.
-        UNSAFE_BUFFERS(base::span(data, size)));
-  }
-
-  HAS_STRICTLY_TYPED_ARG
-  static scoped_refptr<SharedBuffer> Create(const unsigned char* data,
-                                            STRICTLY_TYPED_ARG(size)) {
-    ALLOW_NUMERIC_ARG_TYPES_PROMOTABLE_TO(size_t);
-    return Create(
-        // SAFETY: The caller must ensure `data` points to `size` elements.
-        // TODO(crbug.com/40284755): Remove this in favor of the span versions.
-        UNSAFE_BUFFERS(base::span(data, size)));
-  }
-
   static scoped_refptr<SharedBuffer> Create(Vector<char>&&);
 
  private:
@@ -314,6 +278,6 @@ class WTF_EXPORT SharedBuffer : public SegmentedBuffer,
   explicit SharedBuffer(SegmentedBuffer&&);
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_SHARED_BUFFER_H_

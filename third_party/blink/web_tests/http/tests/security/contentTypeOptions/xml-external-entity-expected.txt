@@ -1,0 +1,10 @@
+CONSOLE ERROR: Refused to load XML external entity from 'http://127.0.0.1:8000/security/contentTypeOptions/resources/script-with-header.pl?mime=application/xml' because its MIME type ('application/xml') is incorrect, and strict MIME type checking is enabled.
+CONSOLE ERROR: Refused to load XML external entity from 'http://127.0.0.1:8000/security/contentTypeOptions/resources/script-with-header.pl?mime=text/xml' because its MIME type ('text/xml') is incorrect, and strict MIME type checking is enabled.
+CONSOLE ERROR: Refused to load XML external entity from 'http://127.0.0.1:8000/security/contentTypeOptions/resources/script-with-header.pl?mime=text/html' because its MIME type ('text/html') is incorrect, and strict MIME type checking is enabled.
+CONSOLE ERROR: Refused to load XML external entity from 'http://127.0.0.1:8000/security/contentTypeOptions/resources/script-with-header.pl?mime=text/javascript' because its MIME type ('text/javascript') is incorrect, and strict MIME type checking is enabled.
+CONSOLE MESSAGE: Executed script with MIME type: 'application/xml-external-parsed-entity'.
+CONSOLE MESSAGE: Executed script with MIME type: 'text/xml-external-parsed-entity'.
+CONSOLE WARNING: Externally loaded entities in XML parsing have been deprecated and will be removed from this browser soon. See https://chromestatus.com/feature/6734457763659776.
+Test nosniff when loading XML external entities.On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".PASS successfullyParsed is true
+TEST COMPLETE
+

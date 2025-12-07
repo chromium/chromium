@@ -2,8 +2,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
+}
+
 source_set("public") {
   sources = [
+    "decoration.cc",
+    "decoration.h",
     "features.cc",
     "features.h",
     "fetch_options.cc",
@@ -12,6 +20,13 @@ source_set("public") {
     "fetch_result.h",
     "fetcher_config.cc",
     "fetcher_config.h",
+    "tab_metadata.cc",
+    "tab_metadata.h",
+    "url_grouping/group_suggestions.cc",
+    "url_grouping/group_suggestions.h",
+    "url_grouping/group_suggestions_delegate.h",
+    "url_grouping/group_suggestions_service.h",
+    "url_grouping/tab_event_tracker.h",
     "url_visit.cc",
     "url_visit.h",
     "url_visit_aggregates_transformer.h",
@@ -28,8 +43,11 @@ source_set("public") {
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/segmentation_platform/public",
+    "//components/strings",
     "//components/sync_device_info",
     "//components/url_deduplication",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//ui/base",
     "//url",
   ]
 }
@@ -44,7 +62,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//components/bookmarks/browser:browser",
+    "//components/bookmarks/browser",
     "//components/history/core/browser",
     "//components/segmentation_platform/public",
     "//components/segmentation_platform/public:test_support",
@@ -72,4 +90,43 @@ source_set("test_support") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+}
+
+if (is_android) {
+  android_library("public_java") {
+    srcjar_deps = [ ":group_suggestions_generated_enums" ]
+
+    sources = [
+      "url_grouping/android/java/src/org/chromium/components/visited_url_ranking/url_grouping/CachedSuggestions.java",
+      "url_grouping/android/java/src/org/chromium/components/visited_url_ranking/url_grouping/GroupSuggestion.java",
+      "url_grouping/android/java/src/org/chromium/components/visited_url_ranking/url_grouping/GroupSuggestions.java",
+      "url_grouping/android/java/src/org/chromium/components/visited_url_ranking/url_grouping/GroupSuggestionsService.java",
+      "url_grouping/android/java/src/org/chromium/components/visited_url_ranking/url_grouping/UserResponseMetadata.java",
+    ]
+
+    deps = [
+      "//base:base_java",
+      "//base:callback_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+      "//ui/android:ui_java",
+      "//url:url_java",
+    ]
+  }
+
+  generate_jni("jni_headers") {
+    sources = [
+      "url_grouping/android/java/src/org/chromium/components/visited_url_ranking/url_grouping/CachedSuggestions.java",
+      "url_grouping/android/java/src/org/chromium/components/visited_url_ranking/url_grouping/GroupSuggestion.java",
+      "url_grouping/android/java/src/org/chromium/components/visited_url_ranking/url_grouping/GroupSuggestions.java",
+      "url_grouping/android/java/src/org/chromium/components/visited_url_ranking/url_grouping/UserResponseMetadata.java",
+    ]
+  }
+
+  java_cpp_enum("group_suggestions_generated_enums") {
+    sources = [
+      "url_grouping/group_suggestions.h",
+      "url_grouping/tab_event_tracker.h",
+    ]
+  }
 }

@@ -2,17 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/paint/display_item_list.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <vector>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
@@ -44,21 +42,24 @@ namespace cc {
 
 namespace {
 
-bool CompareN32Pixels(void* actual_pixels,
-                      void* expected_pixels,
+bool CompareN32Pixels(base::span<unsigned char> actual_pixels,
+                      base::span<unsigned char> expected_pixels,
                       int width,
                       int height) {
-  if (memcmp(actual_pixels, expected_pixels, 4 * width * height) == 0)
+  CHECK_EQ(actual_pixels.size(), 4u * width * height);
+  CHECK_EQ(expected_pixels.size(), 4u * width * height);
+  if (actual_pixels == expected_pixels) {
     return true;
+  }
 
   SkImageInfo actual_info = SkImageInfo::MakeN32Premul(width, height);
   SkBitmap actual_bitmap;
-  actual_bitmap.installPixels(actual_info, actual_pixels,
+  actual_bitmap.installPixels(actual_info, actual_pixels.data(),
                               actual_info.minRowBytes());
 
   SkImageInfo expected_info = SkImageInfo::MakeN32Premul(width, height);
   SkBitmap expected_bitmap;
-  expected_bitmap.installPixels(expected_info, expected_pixels,
+  expected_bitmap.installPixels(expected_info, expected_pixels.data(),
                                 expected_info.minRowBytes());
 
   std::string gen_bmp_data_url = GetPNGDataUrl(actual_bitmap);
@@ -150,7 +151,7 @@ TEST_F(DisplayItemListTest, SingleUnpairedRange) {
   blue_flags.setColor(SK_ColorBLUE);
   PaintFlags red_paint;
   red_paint.setColor(SK_ColorRED);
-  unsigned char pixels[4 * 100 * 100] = {0};
+  unsigned char pixels[4 * 100 * 100] = {};
   auto list = base::MakeRefCounted<DisplayItemList>();
 
   gfx::Point offset(8, 9);
@@ -167,7 +168,7 @@ TEST_F(DisplayItemListTest, SingleUnpairedRange) {
   DrawDisplayList(pixels, layer_rect, list);
 
   SkBitmap expected_bitmap;
-  unsigned char expected_pixels[4 * 100 * 100] = {0};
+  unsigned char expected_pixels[4 * 100 * 100] = {};
   SkImageInfo info =
       SkImageInfo::MakeN32Premul(layer_rect.width(), layer_rect.height());
   expected_bitmap.installPixels(info, expected_pixels, info.minRowBytes());
@@ -212,7 +213,7 @@ TEST_F(DisplayItemListTest, ClipPairedRange) {
   blue_flags.setColor(SK_ColorBLUE);
   PaintFlags red_paint;
   red_paint.setColor(SK_ColorRED);
-  unsigned char pixels[4 * 100 * 100] = {0};
+  unsigned char pixels[4 * 100 * 100] = {};
   auto list = base::MakeRefCounted<DisplayItemList>();
 
   gfx::Point first_offset(8, 9);
@@ -261,7 +262,7 @@ TEST_F(DisplayItemListTest, ClipPairedRange) {
   DrawDisplayList(pixels, layer_rect, list);
 
   SkBitmap expected_bitmap;
-  unsigned char expected_pixels[4 * 100 * 100] = {0};
+  unsigned char expected_pixels[4 * 100 * 100] = {};
   SkImageInfo info =
       SkImageInfo::MakeN32Premul(layer_rect.width(), layer_rect.height());
   expected_bitmap.installPixels(info, expected_pixels, info.minRowBytes());
@@ -286,7 +287,7 @@ TEST_F(DisplayItemListTest, TransformPairedRange) {
   blue_flags.setColor(SK_ColorBLUE);
   PaintFlags red_paint;
   red_paint.setColor(SK_ColorRED);
-  unsigned char pixels[4 * 100 * 100] = {0};
+  unsigned char pixels[4 * 100 * 100] = {};
   auto list = base::MakeRefCounted<DisplayItemList>();
 
   gfx::Point first_offset(8, 9);
@@ -333,7 +334,7 @@ TEST_F(DisplayItemListTest, TransformPairedRange) {
   DrawDisplayList(pixels, layer_rect, list);
 
   SkBitmap expected_bitmap;
-  unsigned char expected_pixels[4 * 100 * 100] = {0};
+  unsigned char expected_pixels[4 * 100 * 100] = {};
   SkImageInfo info =
       SkImageInfo::MakeN32Premul(layer_rect.width(), layer_rect.height());
   expected_bitmap.installPixels(info, expected_pixels, info.minRowBytes());
@@ -355,7 +356,7 @@ TEST_F(DisplayItemListTest, TransformPairedRange) {
 TEST_F(DisplayItemListTest, FilterPairedRange) {
   gfx::Rect layer_rect(100, 100);
   FilterOperations filters;
-  unsigned char pixels[4 * 100 * 100] = {0};
+  unsigned char pixels[4 * 100 * 100] = {};
   auto list = base::MakeRefCounted<DisplayItemList>();
 
   sk_sp<SkSurface> source_surface =
@@ -428,7 +429,7 @@ TEST_F(DisplayItemListTest, FilterPairedRange) {
   DrawDisplayList(pixels, layer_rect, list);
 
   SkBitmap expected_bitmap;
-  unsigned char expected_pixels[4 * 100 * 100] = {0};
+  unsigned char expected_pixels[4 * 100 * 100] = {};
   PaintFlags paint;
   paint.setColor(SkColorSetRGB(64, 64, 64));
   SkImageInfo info =
@@ -575,10 +576,24 @@ TEST_F(DisplayItemListTest, AsValueWithOps) {
       ASSERT_NE(nullptr, items);
       ASSERT_EQ(7u, items->size());
 
-      const char* expected_names[] = {
-          "SaveOp",     "ConcatOp",  "SaveLayerOp", "TranslateOp",
-          "DrawRectOp", "RestoreOp", "RestoreOp"};
-      bool expected_has_skp[] = {false, true, true, true, true, false, false};
+      auto expected_names = std::to_array<const char*>({
+          "SaveOp",
+          "ConcatOp",
+          "SaveLayerOp",
+          "TranslateOp",
+          "DrawRectOp",
+          "RestoreOp",
+          "RestoreOp",
+      });
+      auto expected_has_skp = std::to_array<bool>({
+          false,
+          true,
+          true,
+          true,
+          true,
+          false,
+          false,
+      });
 
       for (int i = 0; i < 7; ++i) {
         const base::Value& item_value = (*items)[i];

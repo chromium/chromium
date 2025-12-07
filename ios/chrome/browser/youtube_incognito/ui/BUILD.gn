@@ -1,0 +1,27 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "youtube_incognito_enterprise_sheet.h",
+    "youtube_incognito_enterprise_sheet.mm",
+    "youtube_incognito_sheet.h",
+    "youtube_incognito_sheet.mm",
+    "youtube_incognito_sheet_delegate.h",
+  ]
+  deps = [
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ntp/ui_bundled",
+    "//ios/chrome/browser/ntp/ui_bundled/incognito",
+    "//ios/chrome/browser/ntp/ui_bundled/incognito:util",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/common:string_util",
+    "//ios/chrome/common/ui/button_stack",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+}

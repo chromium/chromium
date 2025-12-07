@@ -7,10 +7,12 @@
 #include <memory>
 #include <utility>
 
+#include "base/features.h"
 #include "base/functional/callback.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
+#include "components/performance_manager/scenario_api/performance_scenarios.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/scheduler/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/common/scheduler_helper.h"
@@ -34,10 +36,20 @@ namespace scheduler {
 CompositorThreadSchedulerImpl::CompositorThreadSchedulerImpl(
     base::sequence_manager::SequenceManager* sequence_manager)
     : NonMainThreadSchedulerBase(sequence_manager,
-                                 TaskType::kCompositorThreadTaskQueueDefault),
-      compositor_metrics_helper_(GetHelper().HasCPUTimingForEachTask()) {
+                                 TaskType::kCompositorThreadTaskQueueDefault) {
   DCHECK(!g_compositor_thread_scheduler);
   g_compositor_thread_scheduler = this;
+
+  if (base::FeatureList::IsEnabled(
+          base::features::kBoostCompositorThreadsPriorityWhenIdle)) {
+    scenario_priority_boost_.emplace(
+        base::ThreadType::kInteractive, base::BindRepeating([]() {
+          return performance_scenarios::CurrentScenariosMatch(
+              performance_scenarios::ScenarioScope::kCurrentProcess,
+              performance_scenarios::kDefaultIdleScenarios);
+        }));
+    AddTaskObserver(&scenario_priority_boost_.value());
+  }
 }
 
 CompositorThreadSchedulerImpl::~CompositorThreadSchedulerImpl() {
@@ -57,7 +69,6 @@ void CompositorThreadSchedulerImpl::OnTaskCompleted(
     base::LazyNow* lazy_now) {
   task_timing->RecordTaskEnd(lazy_now);
   DispatchOnTaskCompletionCallbacks();
-  compositor_metrics_helper_.RecordTaskMetrics(task, *task_timing);
 }
 
 scoped_refptr<scheduler::SingleThreadIdleTaskRunner>
@@ -72,8 +83,7 @@ CompositorThreadSchedulerImpl::IdleTaskRunner() {
 
 scoped_refptr<base::SingleThreadTaskRunner>
 CompositorThreadSchedulerImpl::V8TaskRunner() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
@@ -127,18 +137,14 @@ void CompositorThreadSchedulerImpl::PostIdleTask(const base::Location& location,
   IdleTaskRunner()->PostIdleTask(location, std::move(task));
 }
 
-void CompositorThreadSchedulerImpl::PostNonNestableIdleTask(
-    const base::Location& location,
-    Thread::IdleTask task) {
-  IdleTaskRunner()->PostNonNestableIdleTask(location, std::move(task));
-}
-
 void CompositorThreadSchedulerImpl::PostDelayedIdleTask(
     const base::Location& location,
     base::TimeDelta delay,
     Thread::IdleTask task) {
   IdleTaskRunner()->PostDelayedIdleTask(location, delay, std::move(task));
 }
+
+void CompositorThreadSchedulerImpl::RemoveCancelledIdleTasks() {}
 
 base::TimeTicks
 CompositorThreadSchedulerImpl::MonotonicallyIncreasingVirtualTime() {

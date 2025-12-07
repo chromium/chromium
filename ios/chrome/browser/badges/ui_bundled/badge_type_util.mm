@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/badges/ui_bundled/badge_type_util.h"
 
 #import <ostream>
+
 #import "base/notreached.h"
 
 BadgeType BadgeTypeForInfobarType(InfobarType infobar_type) {
@@ -24,8 +25,6 @@ BadgeType BadgeTypeForInfobarType(InfobarType infobar_type) {
       // GetStatesForAllPermissions() of the currently active WebState, and be
       // overridden when used.
       return kBadgeTypePermissionsCamera;
-    case InfobarType::kInfobarTypeParcelTracking:
-      return kBadgeTypeParcelTracking;
     default:
       return kBadgeTypeNone;
   }
@@ -47,10 +46,7 @@ InfobarType InfobarTypeForBadgeType(BadgeType badge_type) {
       // Falls through.
     case kBadgeTypePermissionsMicrophone:
       return InfobarType::kInfobarTypePermissions;
-    case kBadgeTypeParcelTracking:
-      return InfobarType::kInfobarTypeParcelTracking;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unsupported badge type.";
-      return InfobarType::kInfobarTypeConfirm;
+      NOTREACHED() << "Unsupported badge type.";
   }
 }

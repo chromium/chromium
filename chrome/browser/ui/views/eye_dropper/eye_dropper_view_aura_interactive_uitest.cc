@@ -62,7 +62,7 @@ IN_PROC_BROWSER_TEST_F(EyeDropperViewAuraInteractiveTest, MoveMouseAndTouch) {
       ShowEyeDropper(web_contents->GetPrimaryMainFrame(), &listener);
   ASSERT_TRUE(eye_dropper);
   auto* view = static_cast<eye_dropper::EyeDropperView*>(eye_dropper.get());
-  EXPECT_EQ(display::Screen::GetScreen()->GetCursorScreenPoint(),
+  EXPECT_EQ(display::Screen::Get()->GetCursorScreenPoint(),
             view->GetWidget()->GetWindowBoundsInScreen().CenterPoint());
 
   // EyeDropper should move as cursor moves.

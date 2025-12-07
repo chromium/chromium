@@ -6,6 +6,7 @@
 #define SERVICES_WEBNN_PUBLIC_MOJOM_OPERAND_DESCRIPTOR_MOJOM_TRAITS_H_
 
 #include "base/component_export.h"
+#include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-shared.h"
@@ -22,9 +23,22 @@ struct COMPONENT_EXPORT(WEBNN_MOJOM_TRAITS)
       const webnn::OperandDescriptor& descriptor) {
     return descriptor.shape();
   }
+  static const std::vector<uint32_t>& pending_permutation(
+      const webnn::OperandDescriptor& descriptor) {
+    return descriptor.pending_permutation();
+  }
 
   static bool Read(webnn::mojom::OperandDescriptorDataView data,
                    webnn::OperandDescriptor* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(WEBNN_MOJOM_TRAITS)
+    EnumTraits<webnn::mojom::DataType, webnn::OperandDataType> {
+  static webnn::mojom::DataType ToMojom(webnn::OperandDataType input);
+
+  static bool FromMojom(webnn::mojom::DataType input,
+                        webnn::OperandDataType* output);
 };
 
 }  // namespace mojo

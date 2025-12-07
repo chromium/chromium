@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.composeplate.ComposeplateView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/composeplate_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:orientation="horizontal">
+
+    <org.chromium.ui.widget.ChromeImageView
+        android:id="@+id/incognito_button"
+        android:contentDescription="@string/accessibility_new_incognito_tab_page"
+        android:src="@drawable/ic_incognito"
+        style="@style/ComposeplateViewButton"
+        android:layout_marginEnd="@dimen/composeplate_view_button_margin"
+        android:visibility="gone"/>
+
+    <org.chromium.ui.widget.ChromeImageView
+        android:id="@+id/voice_search_button"
+        android:contentDescription="@string/accessibility_toolbar_btn_mic"
+        android:src="@drawable/ic_mic_white_24dp"
+        style="@style/ComposeplateViewButton"
+        android:layout_marginEnd="@dimen/composeplate_view_button_margin"/>
+
+    <org.chromium.ui.widget.ChromeImageView
+        android:id="@+id/lens_camera_button"
+        android:contentDescription="@string/accessibility_btn_lens_camera"
+        android:src="@drawable/lens_camera_icon"
+        style="@style/ComposeplateViewButton"/>
+
+</org.chromium.chrome.browser.composeplate.ComposeplateView>

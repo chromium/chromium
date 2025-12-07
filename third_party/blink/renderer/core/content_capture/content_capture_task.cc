@@ -8,6 +8,7 @@
 
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
+#include "base/trace_event/trace_event.h"
 #include "cc/trees/layer_tree_host.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/web/web_content_capture_client.h"
@@ -61,9 +62,9 @@ ContentCaptureTask::ContentCaptureTask(LocalFrame& local_frame_root,
     histogram_reporter_ =
         base::MakeRefCounted<ContentCaptureTaskHistogramReporter>();
     task_session_->SetSentNodeCountCallback(
-        WTF::BindRepeating(&ContentCaptureTaskHistogramReporter::
-                               RecordsSentContentCountPerDocument,
-                           histogram_reporter_));
+        blink::BindRepeating(&ContentCaptureTaskHistogramReporter::
+                                 RecordsSentContentCountPerDocument,
+                             histogram_reporter_));
   }
 }
 
@@ -113,6 +114,16 @@ bool ContentCaptureTask::CaptureContent() {
   return result;
 }
 
+void ContentCaptureTask::EndBatchContent(
+    TaskSession::DocumentSession& doc_session) {
+  auto* document = doc_session.GetDocument();
+  CHECK(document);
+  auto* client = GetWebContentCaptureClient(*document);
+  CHECK(client);
+
+  client->DidCompleteBatchCaptureContent();
+}
+
 void ContentCaptureTask::SendContent(
     TaskSession::DocumentSession& doc_session) {
   auto* document = doc_session.GetDocument();
@@ -120,10 +131,7 @@ void ContentCaptureTask::SendContent(
   auto* client = GetWebContentCaptureClient(*document);
   DCHECK(client);
 
-  if (histogram_reporter_) {
-    histogram_reporter_->OnSendContentStarted();
-  }
-  WebVector<WebContentHolder> content_batch;
+  std::vector<WebContentHolder> content_batch;
   content_batch.reserve(kBatchSize);
   // Only send changed content after the new content was sent.
   bool sending_changed_content = !doc_session.HasUnsentCapturedContent();
@@ -144,9 +152,6 @@ void ContentCaptureTask::SendContent(
       client->DidCaptureContent(content_batch, !doc_session.FirstDataHasSent());
       doc_session.SetFirstDataHasSent();
     }
-  }
-  if (histogram_reporter_) {
-    histogram_reporter_->OnSendContentEnded(content_batch.size());
   }
 }
 
@@ -183,12 +188,15 @@ bool ContentCaptureTask::ProcessDocumentSession(
          doc_session.HasUnsentChangedContent()) {
     SendContent(doc_session);
     if (ShouldPause()) {
+      EndBatchContent(doc_session);
       return !doc_session.HasUnsentData();
     }
   }
   // Sent the detached nodes.
-  if (doc_session.HasUnsentDetachedNodes())
+  if (doc_session.HasUnsentDetachedNodes()) {
     content_capture_client->DidRemoveContent(doc_session.MoveDetachedNodes());
+  }
+  EndBatchContent(doc_session);
   DCHECK(!doc_session.HasUnsentData());
   return true;
 }
@@ -233,18 +241,9 @@ bool ContentCaptureTask::RunInternal() {
 void ContentCaptureTask::Run(TimerBase*) {
   TRACE_EVENT0("content_capture", "RunTask");
   task_delay_->IncreaseDelayExponent();
-  if (histogram_reporter_) {
-    histogram_reporter_->OnTaskRun();
-  }
   bool completed = RunInternal();
   if (!completed) {
     ScheduleInternal(ScheduleReason::kRetryTask);
-  }
-  if (histogram_reporter_ &&
-      (completed || task_state_ == TaskState::kCaptureContent)) {
-    // The current capture session ends if the task indicates it completed or
-    // is about to capture the new changes.
-    histogram_reporter_->OnAllCapturedContentSent();
   }
 }
 
@@ -275,18 +274,11 @@ void ContentCaptureTask::ScheduleInternal(ScheduleReason reason) {
   delay_task_.StartOneShot(delay, FROM_HERE);
   TRACE_EVENT_INSTANT1("content_capture", "ScheduleTask",
                        TRACE_EVENT_SCOPE_THREAD, "reason", reason);
-  if (histogram_reporter_) {
-    histogram_reporter_->OnTaskScheduled(/* record_task_delay = */ reason !=
-                                         ScheduleReason::kRetryTask);
-  }
 }
 
 void ContentCaptureTask::Schedule(ScheduleReason reason) {
   DCHECK(local_frame_root_);
   has_content_change_ = true;
-  if (histogram_reporter_) {
-    histogram_reporter_->OnContentChanged();
-  }
   ScheduleInternal(reason);
 }
 

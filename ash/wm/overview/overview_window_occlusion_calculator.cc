@@ -4,12 +4,12 @@
 
 #include "ash/wm/overview/overview_window_occlusion_calculator.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_controller.h"
-#include "base/metrics/histogram_functions.h"
+#include "base/trace_event/trace_event.h"
 
 namespace ash {
 
@@ -26,12 +26,12 @@ OverviewWindowOcclusionCalculator::GetCalculator() {
   return calculator_ ? calculator_->AsWeakPtr() : nullptr;
 }
 
-void OverviewWindowOcclusionCalculator::OnOverviewModeWillStart() {
-  if (!features::IsDeskBarWindowOcclusionOptimizationEnabled()) {
+void OverviewWindowOcclusionCalculator::OnOverviewModeStarting() {
+  if (!desks_util::ShouldRenderDeskBarWithMiniViews()) {
     return;
   }
-  base::ScopedUmaHistogramTimer timer(
-      "Ash.Overview.WindowOcclusionCalculator.EnterLatency");
+  TRACE_EVENT0("ui",
+               "OverviewWindowOcclusionCalculator::OnOverviewModeWillStart");
   calculator_.emplace();
   // Compute initial occlusion state of all desk's windows before occlusion
   // calculations are paused at the end of this method. Without this, the
@@ -60,6 +60,9 @@ void OverviewWindowOcclusionCalculator::OnOverviewModeWillStart() {
 
 void OverviewWindowOcclusionCalculator::OnOverviewModeStartingAnimationComplete(
     bool canceled) {
+  TRACE_EVENT0("ui",
+               "OverviewWindowOcclusionCalculator::"
+               "OnOverviewModeStartingAnimationComplete");
   enter_overview_pause_.reset();
 }
 
@@ -70,8 +73,8 @@ void OverviewWindowOcclusionCalculator::OnOverviewModeEnding(
   // bar is going to be destroyed imminently, and they slow down overview exit
   // so the calculator is destroyed early here.
   if (calculator_) {
-    base::ScopedUmaHistogramTimer timer(
-        "Ash.Overview.WindowOcclusionCalculator.ExitLatency");
+    TRACE_EVENT0("ui",
+                 "OverviewWindowOcclusionCalculator::OnOverviewModeEnding");
     calculator_->RemoveObserver(this);
     calculator_.reset();
   }

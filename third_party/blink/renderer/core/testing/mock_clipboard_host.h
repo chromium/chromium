@@ -7,6 +7,7 @@
 
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom-blink.h"
@@ -31,6 +32,16 @@ class MockClipboardHost : public mojom::blink::ClipboardHost {
   void WriteRtf(const String& rtf_text);
   void WriteFiles(mojom::blink::ClipboardFilesPtr files);
 
+  // Method to simulate clipboard data change only for testing.
+  void OnClipboardDataChanged();
+
+#if BUILDFLAG(IS_MAC)
+  // Test helper to configure the permission state returned by the mock
+  void SetPlatformPermissionState(
+      mojom::blink::PlatformClipboardPermissionState state) {
+    platform_permission_state_ = state;
+  }
+#endif
  private:
   // mojom::ClipboardHost
   void GetSequenceNumber(mojom::ClipboardBuffer clipboard_buffer,
@@ -72,12 +83,17 @@ class MockClipboardHost : public mojom::blink::ClipboardHost {
       ReadUnsanitizedCustomFormatCallback callback) override;
   void WriteUnsanitizedCustomFormat(const String& format,
                                     mojo_base::BigBuffer data) override;
+  void RegisterClipboardListener(
+      mojo::PendingRemote<mojom::blink::ClipboardListener> listener) override;
 #if BUILDFLAG(IS_MAC)
   void WriteStringToFindPboard(const String& text) override;
+  void GetPlatformPermissionState(
+      GetPlatformPermissionStateCallback callback) override;
 #endif
   Vector<String> ReadStandardFormatNames();
 
   mojo::ReceiverSet<mojom::blink::ClipboardHost> receivers_;
+  mojo::Remote<mojom::blink::ClipboardListener> clipboard_listener_;
   ClipboardSequenceNumberToken sequence_number_;
   String plain_text_ = g_empty_string;
   String html_text_ = g_empty_string;
@@ -92,6 +108,10 @@ class MockClipboardHost : public mojom::blink::ClipboardHost {
   bool write_smart_paste_ = false;
   bool needs_reset_ = false;
   HashMap<String, Vector<uint8_t>> unsanitized_custom_data_map_;
+#if BUILDFLAG(IS_MAC)
+  mojom::blink::PlatformClipboardPermissionState platform_permission_state_ =
+      mojom::blink::PlatformClipboardPermissionState::kAsk;
+#endif
 };
 
 }  // namespace blink

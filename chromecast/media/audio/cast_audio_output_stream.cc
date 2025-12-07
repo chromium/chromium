@@ -14,6 +14,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
@@ -33,6 +34,7 @@
 #include "chromecast/public/media/media_pipeline_device_params.h"
 #include "chromecast/public/volume_control.h"
 #include "media/audio/audio_device_description.h"
+#include "media/base/audio_bus.h"
 
 #define POST_TO_CMA_WRAPPER(method, ...)                                      \
   do {                                                                        \
@@ -79,8 +81,7 @@ audio_service::ContentType ConvertContentType(AudioContentType content_type) {
     case AudioContentType::kCommunication:
       return audio_service::CONTENT_TYPE_COMMUNICATION;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return audio_service::CONTENT_TYPE_MEDIA;
+      NOTREACHED();
   }
 }
 
@@ -111,12 +112,12 @@ class CastAudioOutputStream::MixerServiceWrapper
 
  private:
   // mixer_service::OutputStreamConnection::Delegate implementation:
-  void FillNextBuffer(void* buffer,
+  void FillNextBuffer(base::span<uint8_t> buffer,
                       int frames,
                       int64_t delay_timestamp,
                       int64_t delay) override;
   // We don't push an EOS buffer.
-  void OnEosPlayed() override { NOTREACHED_IN_MIGRATION(); }
+  void OnEosPlayed() override { NOTREACHED(); }
 
   const ::media::AudioParameters audio_params_;
   const std::string device_id_;
@@ -169,6 +170,7 @@ void CastAudioOutputStream::MixerServiceWrapper::Start(
   params.set_device_id(device_id_);
   params.set_stream_type(
       mixer_service::OutputStreamParams::STREAM_TYPE_DEFAULT);
+  // Note:: FillNextBuffer() assumes that the format is `float`.
   params.set_sample_format(audio_service::SAMPLE_FORMAT_FLOAT_P);
   params.set_sample_rate(audio_params_.sample_rate());
   params.set_num_channels(audio_params_.channels());
@@ -250,7 +252,7 @@ void CastAudioOutputStream::MixerServiceWrapper::SetVolume(double volume) {
 }
 
 void CastAudioOutputStream::MixerServiceWrapper::FillNextBuffer(
-    void* buffer,
+    base::span<uint8_t> buffer,
     int frames,
     int64_t delay_timestamp,
     int64_t delay) {
@@ -279,11 +281,25 @@ void CastAudioOutputStream::MixerServiceWrapper::FillNextBuffer(
   if (!audio_bus_) {
     audio_bus_ = ::media::AudioBus::CreateWrapper(audio_params_.channels());
   }
-  float* channel_data = static_cast<float*>(buffer);
-  for (int c = 0; c < audio_params_.channels(); ++c) {
-    audio_bus_->SetChannelData(c, channel_data + c * frames);
-  }
+
+  // This should be safe, since we set the format as a SAMPLE_FORMAT_FLOAT_P.
+  CHECK_EQ(buffer.size() % sizeof(float), 0U);
+
+  // TODO(crbug.com/365076676): Remove this reinterpret_cast.
+  UNSAFE_TODO(auto channel_data =
+                  base::span(reinterpret_cast<float*>(buffer.data()),
+                             buffer.size() / sizeof(float)));
+
+  // Make sure the underlying memory is properly aligned.
+  CHECK(::media::AudioBus::IsAligned(channel_data));
+
   audio_bus_->set_frames(frames);
+
+  const size_t frames_per_channel = base::checked_cast<size_t>(frames);
+  for (int c = 0; c < audio_params_.channels(); ++c) {
+    audio_bus_->SetChannelData(
+        c, channel_data.subspan(c * frames_per_channel, frames_per_channel));
+  }
 
   base::TimeDelta reported_delay = ::media::AudioTimestampHelper::FramesToTime(
       max_buffered_frames_, audio_params_.sample_rate());

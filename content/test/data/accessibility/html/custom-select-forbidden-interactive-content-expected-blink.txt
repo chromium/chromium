@@ -1,0 +1,50 @@
+rootWebArea focusable
+++genericContainer ignored
+++++genericContainer ignored
+++++++comboBoxSelect expanded focusable name='forbidden select' value='invoker button' setSize=2 posInSet=1 haspopup=menu
+++++++++genericContainer ignored
+++++++++++button ignored invisible
+++++++++++++staticText ignored invisible
+++++++++dialog activedescendantId=menuListOption setSize=2 ispopup=auto
+++++++++++menuListOption focusable name='one' selected=true
+++++++++++menuListOption focusable name='two' selected=false
+++++++++++button focusable name='forbidden button'
+++++++++++++staticText name='forbidden button'
+++++++++++++++inlineTextBox name='forbidden button'
+++++++genericContainer
+=== Start Continuation ===
+rootWebArea focusable
+++genericContainer ignored
+++++genericContainer ignored
+++++++comboBoxSelect expanded focusable name='forbidden select' value='invoker button' setSize=2 posInSet=1 haspopup=menu
+++++++++genericContainer ignored
+++++++++++button ignored invisible
+++++++++++++staticText ignored invisible
+++++++++menuListPopup activedescendantId=menuListOption setSize=2 ispopup=auto
+++++++++++menuListOption focusable name='one' setSize=2 posInSet=1 selected=true
+++++++++++menuListOption focusable name='two' setSize=2 posInSet=2 selected=false
+++++++genericContainer
+++++++++genericContainer
+++++++++++staticText name='removeForbidden'
+++++++++++++inlineTextBox name='removeForbidden'
+=== Start Continuation ===
+rootWebArea focusable
+++genericContainer ignored
+++++genericContainer ignored
+++++++comboBoxSelect expanded focusable name='forbidden select' value='invoker button' setSize=2 posInSet=1 haspopup=menu
+++++++++genericContainer ignored
+++++++++++button ignored invisible
+++++++++++++staticText ignored invisible
+++++++++dialog activedescendantId=menuListOption setSize=2 ispopup=auto
+++++++++++menuListOption focusable name='one' selected=true
+++++++++++menuListOption focusable name='two' selected=false
+++++++++++button focusable name='forbidden button'
+++++++++++++staticText name='forbidden button'
+++++++++++++++inlineTextBox name='forbidden button'
+++++++genericContainer
+++++++++genericContainer
+++++++++++staticText name='removeForbidden'
+++++++++++++inlineTextBox name='removeForbidden'
+++++++++genericContainer
+++++++++++staticText name='addForbidden'
+++++++++++++inlineTextBox name='addForbidden'

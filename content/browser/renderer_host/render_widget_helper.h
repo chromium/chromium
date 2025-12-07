@@ -17,9 +17,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/common/widget_type.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "ui/gfx/native_widget_types.h"
 
 namespace content {
 

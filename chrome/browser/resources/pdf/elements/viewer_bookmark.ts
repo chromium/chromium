@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -85,9 +85,9 @@ export class ViewerBookmarkElement extends CrLitElement {
     };
   }
 
-  bookmark: Bookmark;
-  depth: number = 0;
-  protected childrenShown_: boolean = false;
+  accessor bookmark: Bookmark = {title: '', children: []};
+  accessor depth: number = 0;
+  protected accessor childrenShown_: boolean = false;
 
   override firstUpdated() {
     this.$.item.addEventListener('keydown', e => {

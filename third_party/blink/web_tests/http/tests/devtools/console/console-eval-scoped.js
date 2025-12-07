@@ -61,7 +61,7 @@ import * as Console from 'devtools/panels/console/console.js';
   function dumpAndClearConsoleMessages(next) {
     TestRunner.deprecatedRunAfterPendingDispatches(async function() {
       await ConsoleTestRunner.dumpConsoleMessages();
-      Console.ConsoleView.ConsoleView.clearConsole();
+      Console.ConsoleView.ConsoleView.instance().clearConsole();
       TestRunner.deprecatedRunAfterPendingDispatches(next);
     });
   }
@@ -80,10 +80,11 @@ import * as Console from 'devtools/panels/console/console.js';
     },
 
     async function testConsoleEvalObject(next) {
-      var result = await TestRunner.RuntimeAgent.evaluate('testObj');
-      var properties = await TestRunner.RuntimeAgent.getProperties(result.objectId, /* isOwnProperty */ true);
+      var {result} = await TestRunner.RuntimeAgent.invoke_evaluate({expression: 'testObj'});
+      var {result: properties} =
+          await TestRunner.RuntimeAgent.invoke_getProperties({objectId: result.objectId, ownProperties: true});
       for (var p of properties)
-        TestRunner.dump(p, { objectId: 'formatAsTypeName', description: 'formatAsDescription' });
+        TestRunner.dump(p, {objectId: 'formatAsTypeName', description: 'formatAsDescription'});
       next();
     },
 

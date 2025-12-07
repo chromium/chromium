@@ -5,21 +5,22 @@
 package org.chromium.chrome.browser.feed;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.ui.base.WindowAndroid;
 
-/** Interface for Feed actions implemented by the Browser.*/
+/** Interface for Feed actions implemented by the Browser. */
+@NullMarked
 public interface FeedActionDelegate {
     /** Information about a page visit. */
-    public class VisitResult {
+    class VisitResult {
         // Total page visit time.
         public long visitTimeMs;
     }
 
     /** Observing page load events. */
-    public interface PageLoadObserver {
+    interface PageLoadObserver {
         /**
          * Called when the page starts loading.
          *
@@ -105,13 +106,6 @@ public interface FeedActionDelegate {
     default void onStreamCreated() {}
 
     /**
-     * Shows a sign in activity as a result of a feed user action.
-     *
-     * @param signinAccessPoint the entry point for the signin.
-     */
-    default void showSyncConsentActivity(@SigninAccessPoint int signinAccessPoint) {}
-
-    /**
      * Starts sign in flow as a result of a feed user action.
      *
      * @param signinAccessPoint the entry point for the signin.
@@ -123,10 +117,8 @@ public interface FeedActionDelegate {
      *
      * @param signinAccessPoint the entry point for the signin.
      * @param mBottomSheetController bottomsheet controller attached to the activity.
-     * @param mWindowAndroid window used by the feed.
      */
     default void showSignInInterstitial(
             @SigninAccessPoint int signinAccessPoint,
-            BottomSheetController mBottomSheetController,
-            WindowAndroid mWindowAndroid) {}
+            BottomSheetController mBottomSheetController) {}
 }

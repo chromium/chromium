@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -54,9 +54,9 @@ export class ViewerAttachmentElement extends CrLitElement {
     };
   }
 
-  attachment: Attachment;
-  index: number = -1;
-  protected saveAllowed_: boolean = false;
+  accessor attachment: Attachment = {name: '', size: 0, readable: false};
+  accessor index: number = -1;
+  protected accessor saveAllowed_: boolean = false;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

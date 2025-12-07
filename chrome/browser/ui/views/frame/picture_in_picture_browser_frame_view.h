@@ -7,14 +7,20 @@
 
 #include <optional>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
+#include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_widget_fade_animator.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model_states.h"
 #include "chrome/browser/ui/toolbar/chrome_location_bar_model_delegate.h"
-#include "chrome/browser/ui/views/frame/browser_frame.h"
-#include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view.h"
+#include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/overlay/close_image_button.h"
@@ -23,54 +29,37 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/multi_animation.h"
 #include "ui/gfx/animation/slide_animation.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/widget/widget_observer.h"
 
-#if BUILDFLAG(IS_LINUX)
-#include "ui/linux/window_frame_provider.h"
-#endif
-
-// On Windows, Linux, and Lacros, child dialogs don't draw outside of their
-// parent window, so to prevent cutting off important dialogs we resize the
-// picture-in-picture window to fit them. While ChromeOS Ash also uses Aura, it
-// does not have this issue so we do not resize on ChromeOS Ash.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG 1
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) ||
-        // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
-#include "base/scoped_multi_source_observation.h"
-#include "ui/aura/client/transient_window_client.h"
-#include "ui/aura/client/transient_window_client_observer.h"
-#include "ui/aura/window_observer.h"
-#endif  // RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
-
-class BrowserFrameBoundsChangeAnimation;
+class PictureInPictureBoundsChangeAnimation;
+class PictureInPictureTucker;
 
 namespace views {
-class FrameBackground;
 class Label;
 class View;
 }  // namespace views
 
 namespace {
 class WindowEventObserver;
-}
+}  // namespace
 
 class PictureInPictureBrowserFrameView
-    : public BrowserNonClientFrameView,
+    : public BrowserFrameView,
       public ChromeLocationBarModelDelegate,
       public LocationIconView::Delegate,
       public IconLabelBubbleView::Delegate,
       public ContentSettingImageView::Delegate,
       public views::WidgetObserver,
+      public PictureInPictureWindow,
       public gfx::AnimationDelegate {
-  METADATA_HEADER(PictureInPictureBrowserFrameView, BrowserNonClientFrameView)
+  METADATA_HEADER(PictureInPictureBrowserFrameView, BrowserFrameView)
 
  public:
-  PictureInPictureBrowserFrameView(BrowserFrame* frame,
+  PictureInPictureBrowserFrameView(BrowserWidget* widget,
                                    BrowserView* browser_view);
   PictureInPictureBrowserFrameView(const PictureInPictureBrowserFrameView&) =
       delete;
@@ -78,14 +67,13 @@ class PictureInPictureBrowserFrameView
       const PictureInPictureBrowserFrameView&) = delete;
   ~PictureInPictureBrowserFrameView() override;
 
-  // BrowserNonClientFrameView:
+  // BrowserFrameView:
   gfx::Rect GetBoundsForTabStripRegion(
       const gfx::Size& tabstrip_minimum_size) const override;
   gfx::Rect GetBoundsForWebAppFrameToolbar(
       const gfx::Size& toolbar_preferred_size) const override;
-  void LayoutWebAppWindowTitle(const gfx::Rect& available_space,
-                               views::Label& window_title_label) const override;
   int GetTopInset(bool restored) const override;
+  bool ShouldShowWebAppFrameToolbar() const override;
   void OnBrowserViewInitViewsComplete() override;
   void UpdateThrobber(bool running) override {}
   gfx::Rect GetBoundsForClientView() const override;
@@ -93,21 +81,13 @@ class PictureInPictureBrowserFrameView
       const gfx::Rect& client_bounds) const override;
   int NonClientHitTest(const gfx::Point& point) override;
   void GetWindowMask(const gfx::Size& size, SkPath* window_mask) override;
-  void ResetWindowControls() override {}
   void UpdateWindowIcon() override;
-  void UpdateWindowTitle() override {}
-  void SizeConstraintsChanged() override {}
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
   void OnThemeChanged() override;
   void Layout(PassKey) override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
-#if BUILDFLAG(IS_LINUX)
-  gfx::Insets RestoredMirroredFrameBorderInsets() const override;
-  gfx::Insets GetInputInsets() const override;
-  SkRRect GetRestoredClipRegion() const override;
-#endif
   void SetFrameBounds(const gfx::Rect& bounds) override;
 
   // ChromeLocationBarModelDelegate:
@@ -142,17 +122,20 @@ class PictureInPictureBrowserFrameView
   // views::WidgetObserver:
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   void OnWidgetDestroying(views::Widget* widget) override;
+  void OnWidgetVisibilityChanged(views::Widget* eidget, bool visible) override;
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
+
+  // PictureInPictureWindow:
+  void SetForcedTucking(bool tuck) override;
 
   // gfx::AnimationDelegate:
   void AnimationEnded(const gfx::Animation* animation) override;
   void AnimationProgressed(const gfx::Animation* animation) override;
 
-  // views::View:
-  void OnPaint(gfx::Canvas* canvas) override;
-
   // PictureInPictureBrowserFrameView:
+  virtual gfx::Rect GetHitRegion() const;
+
   // Convert the bounds of a child control view of |top_bar_container_view_| to
   // use the system's coordinate system while we need to know the original
   // container view.
@@ -179,9 +162,6 @@ class PictureInPictureBrowserFrameView
   // - Dialogs are opened in the PiP window
   void UpdateTopBarView(bool render_active);
 
-  // Returns the insets of the window frame borders.
-  gfx::Insets FrameBorderInsets() const;
-
   // Returns the height of the top bar area, including the window top border.
   int GetTopAreaHeight() const;
 
@@ -195,18 +175,12 @@ class PictureInPictureBrowserFrameView
   // Returns true if there's an overlay view that's currently shown.
   bool IsOverlayViewVisible() const;
 
-#if BUILDFLAG(IS_LINUX)
-  // Returns whether a client-side shadow should be drawn for the window.
-  bool ShouldDrawFrameShadow() const;
-
-  // Gets the shadow metrics (radius, offset, and number of shadows) even if
-  // shadows are not drawn.
-  static gfx::ShadowValues GetShadowValues();
-#endif
-
 #if BUILDFLAG(IS_WIN)
   gfx::Insets GetClientAreaInsets(HMONITOR monitor) const;
 #endif
+
+  // Returns true if `content_setting_views_` has any visible views.
+  bool HasAnyVisibleContentSettingViews() const;
 
   // Helper functions for testing.
   std::vector<gfx::Animation*> GetRenderActiveAnimationsForTesting();
@@ -214,6 +188,7 @@ class PictureInPictureBrowserFrameView
   views::View* GetBackToTabButtonForTesting();
   views::View* GetCloseButtonForTesting();
   views::Label* GetWindowTitleForTesting();
+  PictureInPictureWidgetFadeAnimator* GetFadeAnimatorForTesting();
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -232,25 +207,47 @@ class PictureInPictureBrowserFrameView
     return auto_pip_setting_overlay_;
   }
 
+  // `BrowserViewLayout` provides a maximum dialog size which is used to scale
+  // dialogs to fit their parent widgets.  We don't directly know (or want to
+  // know) how it does this.  Instead, assume that it's a constant difference
+  // from our widget size.  In other words, our dialog size will be our widget
+  // size minus whatever padding this function returns.
+  gfx::Size ComputeDialogPadding() const;
+
+  // Force any pending child resize to run, rather than waiting for enough
+  // wall-clock time to elapse.
+  void RunPendingChildResizeForTesting() {
+    child_dialog_observer_helper_->RunPendingChildResizeForTesting();
+  }
+
+  bool IsChildResizePendingForTesting() const {
+    return child_dialog_observer_helper_->IsChildResizePendingForTesting();
+  }
+
  protected:
   views::View* top_bar_container_view() { return top_bar_container_view_; }
 
   // Returns the insets of the window frame borders for resizing.
   virtual gfx::Insets ResizeBorderInsets() const;
 
+  // Returns the insets of the window frame borders.
+  virtual gfx::Insets FrameBorderInsets() const;
+
  private:
+  // Show `auto_pip_setting_overlay_` if we have it, and have a widget.
+  void ShowOverlayIfNeeded();
+
+  void EnforceTucking();
+
   CloseReason close_reason_ = CloseReason::kOther;
 
-#if RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
   // Observe child dialogs so that we can resize to ensure that they fit on
   // platforms where child dialogs would otherwise be cut off by our typically
   // small size.
-  class ChildDialogObserverHelper
-      : public views::WidgetObserver,
-        public aura::WindowObserver,
-        public aura::client::TransientWindowClientObserver {
+  class ChildDialogObserverHelper : public views::WidgetObserver {
    public:
-    explicit ChildDialogObserverHelper(views::Widget* pip_widget);
+    explicit ChildDialogObserverHelper(PictureInPictureBrowserFrameView*,
+                                       BrowserView*);
     ChildDialogObserverHelper(const ChildDialogObserverHelper&) = delete;
     ChildDialogObserverHelper& operator=(const ChildDialogObserverHelper&) =
         delete;
@@ -262,24 +259,34 @@ class PictureInPictureBrowserFrameView
     void OnWidgetDestroying(views::Widget* widget) override;
     void OnWidgetVisibilityChanged(views::Widget* widget,
                                    bool visible) override;
+    void OnWidgetChildAdded(views::Widget* widget,
+                            views::Widget* child_dialog) override;
+    void OnWidgetChildRemoved(views::Widget* widget,
+                              views::Widget* child_dialog) override;
 
-    // aura::WindowObserver:
-    void OnWindowAdded(aura::Window* new_window) override;
-
-    // aura::client::TransientWindowClientObserver:
-    void OnTransientChildWindowAdded(aura::Window* parent,
-                                     aura::Window* transient_child) override;
-    void OnTransientChildWindowRemoved(aura::Window* parent,
-                                       aura::Window* transient_child) override {
+    void RunPendingChildResizeForTesting() {
+      if (resize_timer_.IsRunning()) {
+        resize_timer_.FireNow();
+      }
+    }
+    bool IsChildResizePendingForTesting() const {
+      return resize_timer_.IsRunning();
     }
 
    private:
     enum class ResizingState {
-      // We are not currently resized for a child dialog.
-      kNormal,
+      // We are not currently resized for a child dialog.  For example, if the
+      // user manually resizes the pip window, then this is the right state.
+      kNotSizedToChildren,
 
-      // We are currently transitioning to a new size to fit a child dialog.
-      kDuringInitialResizeForNewChild,
+      // A resize due to a child widget is pending.  These are not run
+      // immediately because they can happen too quickly.  So, we batch them.
+      // This indicates that there's a delayed task pending.
+      kPendingResizeForChild,
+
+      // We are in the process of resizing to match a child widget.  While in
+      // this state, we will ignore any child resizes to prevent a loop.
+      kResizeForChildInProgress,
 
       // We have finished transitioning to a new size to fit a child dialog and
       // we have not yet returned to the original size (because the child dialog
@@ -287,19 +294,28 @@ class PictureInPictureBrowserFrameView
       kSizedToChildren,
     };
 
-    void OnChildDialogOpened(views::Widget* child_dialog);
+    // Animates the picture-in-picture child dialogs that are waiting to be
+    // resized.
+    //
+    // When child dialogs that require a resize of the parent window are
+    // opened, we first make them transparent and non-interactive to avoid
+    // visual glitches while the parent resizes. This function is called after
+    // the parent resize is complete to fade in the child dialogs and make them
+    // interactive again.
+    void AnimateDialogsWaitingForResize();
+
+    void PostResizeForChild(const gfx::Rect& new_bounds);
+    void FinishPendingResizeForChild();
+
     void MaybeResizeForChildDialog(views::Widget* child_dialog);
     void MaybeRevertSizeAfterChildDialogCloses();
 
+    const raw_ptr<PictureInPictureBrowserFrameView> pip_frame_;
+    // TODO: replace this with pip_frame->GetWidget()
     const raw_ptr<views::Widget> pip_widget_;
 
-    ResizingState resizing_state_ = ResizingState::kNormal;
+    ResizingState resizing_state_ = ResizingState::kNotSizedToChildren;
 
-    base::ScopedObservation<aura::Window, aura::WindowObserver>
-        aura_window_observation_{this};
-    base::ScopedObservation<aura::client::TransientWindowClient,
-                            aura::client::TransientWindowClientObserver>
-        transient_window_observation_{this};
     base::ScopedObservation<views::Widget, views::WidgetObserver>
         pip_widget_observation_{this};
 
@@ -314,13 +330,28 @@ class PictureInPictureBrowserFrameView
     // opening.
     gfx::Rect latest_child_dialog_forced_bounds_;
 
+    // The child dialogs that are waiting for the picture-in-picture window to
+    // resize.
+    //
+    // Used to disable visibility changed animations while child
+    // dialogs are waiting for the picture-in-picture window to resize. After
+    // the picture-in-picture window resizes, or if the user resizes the
+    // picture-in-picture window before the resize takes place, this set
+    // is used to enable visibility changed animations.
+    base::flat_set<raw_ptr<views::Widget>> child_dialogs_waiting_for_resize_;
+
+    // The sizes of the child dialogs. Used to avoid unnecessary resizes.
+    base::flat_map<raw_ptr<views::Widget>, gfx::Size> child_dialog_sizes_;
+
     // The bounds that the window would ideally be if we did not have to enlarge
     // to fit a child dialog.
     gfx::Rect latest_user_desired_bounds_;
+
+    base::OneShotTimer resize_timer_;
+    gfx::Rect pending_bounds_;
   };
 
   std::unique_ptr<ChildDialogObserverHelper> child_dialog_observer_helper_;
-#endif  // RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
 
   // A model required to use LocationIconView.
   std::unique_ptr<LocationBarModel> location_bar_model_;
@@ -366,20 +397,12 @@ class PictureInPictureBrowserFrameView
   gfx::MultiAnimation hide_back_to_tab_button_animation_;
   gfx::MultiAnimation show_close_button_animation_;
   gfx::MultiAnimation hide_close_button_animation_;
+  gfx::LinearAnimation show_all_buttons_animation_;
+  gfx::LinearAnimation hide_all_buttons_animation_;
 
   // The foreground color given the current state of the
   // `top_bar_color_animation_`.
   std::optional<SkColor> current_foreground_color_;
-
-#if BUILDFLAG(IS_LINUX)
-  // Used to draw window frame borders and shadow on Linux when GTK theme is
-  // enabled.
-  raw_ptr<ui::WindowFrameProvider> window_frame_provider_ = nullptr;
-
-  // Used to draw window frame borders and shadow on Linux when classic theme is
-  // enabled.
-  std::unique_ptr<views::FrameBackground> frame_background_;
-#endif
 
   // Used to monitor key and mouse events from native window.
   std::unique_ptr<WindowEventObserver> window_event_observer_;
@@ -389,7 +412,17 @@ class PictureInPictureBrowserFrameView
 
   // Animates programmatic changes to bounds (e.g. via `resizeTo()` or
   // `resizeBy()` calls).
-  std::unique_ptr<BrowserFrameBoundsChangeAnimation> bounds_change_animation_;
+  std::unique_ptr<PictureInPictureBoundsChangeAnimation>
+      bounds_change_animation_;
+
+  // Used to animate the Picture-in-Picture window creation.
+  std::unique_ptr<PictureInPictureWidgetFadeAnimator> fade_animator_;
+
+  // Used to tuck/untuck this widget into the side of the screen.
+  std::unique_ptr<PictureInPictureTucker> tucker_;
+  bool is_tucking_forced_ = false;
+
+  base::WeakPtrFactory<PictureInPictureBrowserFrameView> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_PICTURE_IN_PICTURE_BROWSER_FRAME_VIEW_H_

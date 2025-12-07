@@ -105,9 +105,7 @@ let lastVisitedURL: string;
  */
 export function visitURL(url: string): void {
   lastVisitedURL = url;
-  // openURL opens URLs in the primary browser (ash vs lacros) as opposed to
-  // window.open which always opens URLs in ash-chrome.
-  chrome.fileManagerPrivate.openURL(url);
+  window.open(url);
 }
 
 /**
@@ -296,3 +294,9 @@ export type DeepPartial<T> = T extends Builtin ? T : T extends {} ?
  */
 export type GetActionFactoryPayload<A extends ActionFactory<any>> =
     A extends ActionFactory<infer T>? T : unknown;
+
+
+export function debug(...vars: unknown[]) {
+  // eslint-disable-next-line no-console
+  console.debug(...vars);
+}

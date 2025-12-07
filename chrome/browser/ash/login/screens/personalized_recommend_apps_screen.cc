@@ -10,7 +10,6 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/metrics/histogram_functions.h"
@@ -32,6 +31,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/personalized_recommend_apps_screen_handler.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/package_id.h"
@@ -253,7 +253,7 @@ void PersonalizedRecommendAppsScreen::OnResponseReceived(
   //      server-defined order determines the primary use case for display.
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   const base::Value::List& selected_use_cases_ids =
-      prefs->GetList(prefs::kOobeCategoriesSelected).Clone();
+      prefs->GetList(prefs::kOobeCategoriesSelected);
 
   std::vector<OOBEDeviceUseCase> selected_use_cases;
 

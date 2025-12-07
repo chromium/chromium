@@ -4,20 +4,19 @@
 
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_service_factory.h"
 
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_configuration.h"
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/public/provider/chrome/browser/mailto_handler/mailto_handler_api.h"
 
 // static
-MailtoHandlerService* MailtoHandlerServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
-  return static_cast<MailtoHandlerService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+MailtoHandlerService* MailtoHandlerServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
+  return GetInstance()->GetServiceForProfileAs<MailtoHandlerService>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -27,34 +26,27 @@ MailtoHandlerServiceFactory* MailtoHandlerServiceFactory::GetInstance() {
 }
 
 MailtoHandlerServiceFactory::MailtoHandlerServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "MailtoHandlerService",
-          BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(AuthenticationServiceFactory::GetInstance());
+    : ProfileKeyedServiceFactoryIOS("MailtoHandlerService",
+                                    ProfileSelection::kRedirectedInIncognito) {
+  DependsOn(ChromeAccountManagerServiceFactory::GetInstance());
+  DependsOn(IdentityManagerFactory::GetInstance());
 }
 
 MailtoHandlerServiceFactory::~MailtoHandlerServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 MailtoHandlerServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  MailtoHandlerConfiguration* configuration =
+    ProfileIOS* profile) const {
+  MailtoHandlerConfiguration* config =
       [[MailtoHandlerConfiguration alloc] init];
 
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  configuration.authService =
-      AuthenticationServiceFactory::GetForBrowserState(browser_state);
+  config.identityManager = IdentityManagerFactory::GetForProfile(profile);
+  config.accountManager =
+      ChromeAccountManagerServiceFactory::GetForProfile(profile);
 
   ApplicationContext* application_context = GetApplicationContext();
-  configuration.localState = application_context->GetLocalState();
-  configuration.singleSignOnService =
-      application_context->GetSingleSignOnService();
+  config.localState = application_context->GetLocalState();
+  config.singleSignOnService = application_context->GetSingleSignOnService();
 
-  return ios::provider::CreateMailtoHandlerService(configuration);
-}
-
-web::BrowserState* MailtoHandlerServiceFactory::GetBrowserStateToUse(
-    web::BrowserState* context) const {
-  return GetBrowserStateRedirectedInIncognito(context);
+  return ios::provider::CreateMailtoHandlerService(config);
 }

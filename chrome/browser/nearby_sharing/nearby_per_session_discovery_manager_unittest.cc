@@ -407,14 +407,13 @@ TEST_F(NearbyPerSessionDiscoveryManagerTest, SelectShareTarget_SendSuccess) {
                             testing::IsTrue(), testing::IsTrue()));
 
   EXPECT_CALL(sharing_service(), SendAttachments(_, _))
-      .WillOnce(testing::Invoke(
-          [&share_target](
-              const ShareTarget& target,
-              std::vector<std::unique_ptr<Attachment>> attachments) {
-            EXPECT_EQ(share_target.id, target.id);
-            ExpectTextAttachment(kTextAttachmentBody, attachments);
-            return NearbySharingService::StatusCodes::kOk;
-          }));
+      .WillOnce([&share_target](
+                    const ShareTarget& target,
+                    std::vector<std::unique_ptr<Attachment>> attachments) {
+        EXPECT_EQ(share_target.id, target.id);
+        ExpectTextAttachment(kTextAttachmentBody, attachments);
+        return NearbySharingService::StatusCodes::kOk;
+      });
 
   manager().SelectShareTarget(share_target.id, callback.Get());
 
@@ -441,14 +440,13 @@ TEST_F(NearbyPerSessionDiscoveryManagerTest, SelectShareTarget_SendError) {
                   testing::IsFalse(), testing::IsFalse()));
 
   EXPECT_CALL(sharing_service(), SendAttachments(_, _))
-      .WillOnce(testing::Invoke(
-          [&share_target](
-              const ShareTarget& target,
-              std::vector<std::unique_ptr<Attachment>> attachments) {
-            EXPECT_EQ(share_target.id, target.id);
-            ExpectTextAttachment(kTextAttachmentBody, attachments);
-            return NearbySharingService::StatusCodes::kError;
-          }));
+      .WillOnce([&share_target](
+                    const ShareTarget& target,
+                    std::vector<std::unique_ptr<Attachment>> attachments) {
+        EXPECT_EQ(share_target.id, target.id);
+        ExpectTextAttachment(kTextAttachmentBody, attachments);
+        return NearbySharingService::StatusCodes::kError;
+      });
 
   manager().SelectShareTarget(share_target.id, callback.Get());
 
@@ -466,7 +464,7 @@ TEST_F(NearbyPerSessionDiscoveryManagerTest, OnTransferUpdate_WaitRemote) {
 
   base::RunLoop run_loop;
   EXPECT_CALL(transfer_listener, OnTransferUpdate(_, _))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&run_loop](nearby_share::mojom::TransferStatus status,
                       const std::optional<std::string>& token) {
             EXPECT_EQ(
@@ -474,7 +472,7 @@ TEST_F(NearbyPerSessionDiscoveryManagerTest, OnTransferUpdate_WaitRemote) {
                 status);
             EXPECT_FALSE(token.has_value());
             run_loop.Quit();
-          }));
+          });
 
   EXPECT_CALL(sharing_service(), IsTransferring()).Times(1);
   manager().StartDiscovery(listener.Bind(), base::DoNothing());
@@ -486,13 +484,13 @@ TEST_F(NearbyPerSessionDiscoveryManagerTest, OnTransferUpdate_WaitRemote) {
   MockSelectShareTargetCallback callback;
   EXPECT_CALL(callback, Run(nearby_share::mojom::SelectShareTargetResult::kOk,
                             testing::IsTrue(), testing::IsTrue()))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&transfer_listener](
               nearby_share::mojom::SelectShareTargetResult result,
               mojo::PendingReceiver<nearby_share::mojom::TransferUpdateListener>
                   listener,
               mojo::PendingRemote<nearby_share::mojom::ConfirmationManager>
-                  manager) { transfer_listener.Bind(std::move(listener)); }));
+                  manager) { transfer_listener.Bind(std::move(listener)); });
 
   EXPECT_CALL(sharing_service(), SendAttachments(_, _))
       .WillOnce(testing::Return(NearbySharingService::StatusCodes::kOk));
@@ -522,15 +520,15 @@ TEST_F(NearbyPerSessionDiscoveryManagerTest, OnTransferUpdate_WaitLocal) {
 
   base::RunLoop run_loop;
   EXPECT_CALL(transfer_listener, OnTransferUpdate(_, _))
-      .WillOnce(testing::Invoke([&run_loop, &expected_token](
-                                    nearby_share::mojom::TransferStatus status,
-                                    const std::optional<std::string>& token) {
+      .WillOnce([&run_loop, &expected_token](
+                    nearby_share::mojom::TransferStatus status,
+                    const std::optional<std::string>& token) {
         EXPECT_EQ(
             nearby_share::mojom::TransferStatus::kAwaitingLocalConfirmation,
             status);
         EXPECT_EQ(expected_token, token);
         run_loop.Quit();
-      }));
+      });
 
   EXPECT_CALL(sharing_service(), IsTransferring()).Times(1);
   manager().StartDiscovery(listener.Bind(), base::DoNothing());
@@ -542,13 +540,13 @@ TEST_F(NearbyPerSessionDiscoveryManagerTest, OnTransferUpdate_WaitLocal) {
   MockSelectShareTargetCallback callback;
   EXPECT_CALL(callback, Run(nearby_share::mojom::SelectShareTargetResult::kOk,
                             testing::IsTrue(), testing::IsTrue()))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&transfer_listener](
               nearby_share::mojom::SelectShareTargetResult result,
               mojo::PendingReceiver<nearby_share::mojom::TransferUpdateListener>
                   listener,
               mojo::PendingRemote<nearby_share::mojom::ConfirmationManager>
-                  manager) { transfer_listener.Bind(std::move(listener)); }));
+                  manager) { transfer_listener.Bind(std::move(listener)); });
 
   EXPECT_CALL(sharing_service(), SendAttachments(_, _))
       .WillOnce(testing::Return(NearbySharingService::StatusCodes::kOk));

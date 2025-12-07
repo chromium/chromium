@@ -16,8 +16,7 @@
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 namespace {
 
@@ -58,8 +57,8 @@ class FeatureSetupResponseProcessorTest : public testing::Test {
     fake_multidevice_feature_access_manager_
         ->SetFeatureSetupRequestSupportedInternal(true);
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kEcheSWA, features::kPhoneHubCameraRoll,
-                              features::kPhoneHubFeatureSetupErrorHandling},
+        /*enabled_features=*/{features::kEcheSWA,
+                              features::kPhoneHubCameraRoll},
         /*disabled_features=*/{});
   }
 
@@ -290,5 +289,4 @@ TEST_F(FeatureSetupResponseProcessorTest,
                    ->IsCombinedSetupOperationInProgress());
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

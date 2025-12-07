@@ -7,9 +7,9 @@ example.
 <!-- Top-level document URL: https://merchant.example/... -->
 <form>
   Cardholder name:    <input id="name">
-  Credit card number: <iframe src="https://psp.example/..." allow="shared-autofill"><input id="num"></iframe>
+  Credit card number: <iframe src="https://psp.example/..." allow="autofill"><input id="num"></iframe>
   Expiration date:    <input id="exp">
-  CVC:                <iframe src="https://psp.example/..." allow="shared-autofill"><input id="cvc"></iframe>
+  CVC:                <iframe src="https://psp.example/..." allow="autofill"><input id="cvc"></iframe>
                       <iframe src="https://ads.example/..."><input id="account"></iframe>
 </form>
 ```
@@ -18,19 +18,23 @@ This applies to address and payment information, but not to passwords.
 
 ## The security policy
 
-An autofill fills a form control *candidate* only if one of the following is true:
+TODO(crbug.com/40178859): Update the semantics of the policy-controlled feature
+[autofill].
+
+An autofill fills a form control *candidate* only if one of the following is
+true:
 
 -   the autofill's origin and the *candidate*'s origin are the [same origin];
--   [shared-autofill] is enabled in the *candidate*'s [node document] and one of
-    the following is true:
+-   the policy-controlled feature [autofill] is enabled in the *candidate*'s
+    [node document] and one of the following is true:
     -   the autofill's origin and the top-level origin are the [same origin];
-    -   the candidate's origin and the top-level origin are the [same origin] and the
-        *candidate*'s autofill value is non-sensitive.
+    -   the candidate's origin and the top-level origin are the [same origin]
+        and the *candidate*'s autofill value is non-sensitive.
 
 The terminology used above is defined in the [appendix](#appendix-terminology).
 
 This policy is the [eligibility for autofill] definition plus the additional
-"... and one of the following is true" conjunct in the [shared-autofill] clause.
+"... and one of the following is true" conjunct in the [autofill] clause.
 
 The policy is implemented in [FormForest::GetRendererFormsOfBrowserForm()].
 
@@ -51,9 +55,10 @@ Chrome Autofill's objective is to fill fields that the user expects to be
 filled, even if those fields cross origins, while protecting the user against
 possibly malicious sub-frames. Intuitively, we support two "directions":
 
--   "Downwards": An autofill may fill fields in descendant documents where
-    [shared-autofill] is enabled. In our example, an autofill initiated on the
-    cardholder name field may fill the credit card number field.
+-   "Downwards": An autofill may fill fields in descendant documents where the
+    policy-controlled feature [autofill] is enabled. In our example, an autofill
+    initiated on the cardholder name field may fill the credit card number
+    field.
 -   "Upwards": An autofill may fill certain values in ancestor documents. In our
     example, an autofill initiated on the credit card number field may fill the
     cardholder name field.
@@ -101,9 +106,9 @@ A *form control's origin* is its [node document]'s [origin].
 An *autofill's origin* is the [focused] form control's origin.
 The *top-level origin* is the [top-level traversable]'s [active document]'s [origin].
 
-*[shared-autofill] is enabled in a document* if the [Is feature enabled in
-document for origin?] algorithm on [shared-autofill], the document, and the
-document's [origin] returns `Enabled`.
+The policy-controlled feature *[autofill] is enabled in a document* if the
+[Is feature enabled in document for origin?] algorithm on [autofill], the
+document, and the document's [origin] returns `Enabled`.
 
 *TODO*: Update link to [eligibility for autofill] once the
 [PR](https://github.com/whatwg/html/pull/8801) is closed.
@@ -118,6 +123,6 @@ document's [origin] returns `Enabled`.
 [node document]: https://dom.spec.whatwg.org/#concept-node-document
 [origin]: https://dom.spec.whatwg.org/#concept-document-origin
 [PCI-DSS best practices]: https://www.pcisecuritystandards.org/
-[shared-autofill]: https://schwering.github.io/shared-autofill/
+[autofill]: https://github.com/explainers-by-googlers/safe-text-input/blob/main/autofill.md
 [top-level traversable]: https://html.spec.whatwg.org/#top-level-traversable
 [value]: https://html.spec.whatwg.org/#concept-fe-value

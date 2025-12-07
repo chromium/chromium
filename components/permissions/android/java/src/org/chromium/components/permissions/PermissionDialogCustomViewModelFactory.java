@@ -5,22 +5,26 @@
 package org.chromium.components.permissions;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.text.TextUtils;
 
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.res.ResourcesCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** This class creates the model for the permission dialog custom view. */
+@NullMarked
 class PermissionDialogCustomViewModelFactory {
     public static PropertyModel getModel(PermissionDialogDelegate delegate) {
         Context context = delegate.getWindow().getContext().get();
         assert context != null;
 
         String messageText = delegate.getMessageText();
-        assert !TextUtils.isEmpty(messageText);
 
+        // TODO(crbug.com/388407665): we might change the assert when creating new UI.
+        assert !TextUtils.isEmpty(messageText) || delegate.isEmbeddedPromptVariant();
         return new PropertyModel.Builder(PermissionDialogCustomViewProperties.ALL_KEYS)
                 .with(PermissionDialogCustomViewProperties.MESSAGE_TEXT, messageText)
                 .with(
@@ -34,8 +38,11 @@ class PermissionDialogCustomViewModelFactory {
                                 context.getTheme()))
                 .with(
                         PermissionDialogCustomViewProperties.ICON_TINT,
-                        AppCompatResources.getColorStateList(
-                                context, R.color.default_icon_color_accent1_tint_list))
+                        ColorStateList.valueOf(
+                                SemanticColorUtils.getDefaultIconColorOnAccent1Container(context)))
+                .with(
+                        PermissionDialogCustomViewProperties.CLOSE_BUTTON_CALLBACK,
+                        delegate::onCloseButtonClicked)
                 .build();
     }
 }

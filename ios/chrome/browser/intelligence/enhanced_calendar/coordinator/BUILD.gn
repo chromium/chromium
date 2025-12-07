@@ -1,0 +1,28 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "enhanced_calendar_coordinator.h",
+    "enhanced_calendar_coordinator.mm",
+    "enhanced_calendar_mediator.h",
+    "enhanced_calendar_mediator.mm",
+    "enhanced_calendar_mediator_delegate.h",
+  ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/intelligence/enhanced_calendar/constants",
+    "//ios/chrome/browser/intelligence/enhanced_calendar/model",
+    "//ios/chrome/browser/intelligence/enhanced_calendar/model:config",
+    "//ios/chrome/browser/intelligence/enhanced_calendar/ui",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/public/provider/chrome/browser/add_to_calendar:add_to_calendar_api",
+    "//ios/web/public",
+  ]
+}

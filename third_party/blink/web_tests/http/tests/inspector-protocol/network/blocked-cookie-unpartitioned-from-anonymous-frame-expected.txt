@@ -1,0 +1,47 @@
+Verifies that unpartitioned cookie access is blocked with correct reason from anonymous frame.
+
+requestWillBeSentExtraInfo associated cookies:[
+    [0] : {
+        blockedReasons : [
+            [0] : AnonymousContext
+        ]
+        cookie : {
+            domain : cookie.test
+            expires : -1
+            httpOnly : false
+            name : unpartitioned
+            path : /inspector-protocol/network/resources
+            priority : Medium
+            sameParty : false
+            secure : false
+            session : true
+            size : 18
+            sourcePort : 8443
+            sourceScheme : Secure
+            value : value
+        }
+        exemptionReason : None
+    }
+    [1] : {
+        blockedReasons : [
+        ]
+        cookie : {
+            domain : cookie.test
+            expires : -1
+            httpOnly : false
+            name : opaque
+            partitionKeyOpaque : false
+            path : /inspector-protocol/network/resources
+            priority : Medium
+            sameParty : false
+            secure : false
+            session : true
+            size : 11
+            sourcePort : 8443
+            sourceScheme : Secure
+            value : value
+        }
+        exemptionReason : None
+    }
+]
+

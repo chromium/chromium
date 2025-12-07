@@ -1,0 +1,88 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Logging for the Chrome Updater. This file is intended to be shared between
+// client and server repositories.
+
+syntax="proto3";
+option optimize_for = LITE_RUNTIME;
+
+package updater.proto;
+
+message NetworkEvent {
+  enum Stack {
+    NONE = 0;
+    DIRECT = 1;
+    MACOS_NETWORK_FALLBACK = 2;
+    MACOS_BACKGROUND_DOWNLOADER = 3;
+  }
+
+  enum UserState {
+    UNSPECIFIED = 0;
+    LOGGED_IN = 1;
+    NOT_LOGGED_IN = 2;
+  }
+
+  Stack stack = 1;
+
+  // The URL of the network event.
+  string url = 2;
+
+  // The number of bytes sent to the network.
+  int64 bytes_sent = 3;
+
+  // The number of bytes received from the network.
+  int64 bytes_received = 4;
+
+  // On Windows: NetworkCostType enum value defined by the Windows API.
+  // On Mac: need to be decided.
+  int32 connection_cost = 5;
+
+  // The duration of the network event in milliseconds.
+  int64 elapsed_time_ms = 6;
+
+  // Network outcome, 0 if success.
+  int32 error_code = 7;
+
+  // UserState at the time the download was requested.
+  UserState user_state = 8;
+}
+
+message Omaha4Metric {
+  oneof metric {
+    NetworkEvent network_event = 1;
+  }
+}
+
+message Omaha4UsageStatsMetadata {
+  // The OS platform of the client.
+  string platform = 1;
+
+  // The OS version of the client.
+  string os_version = 2;
+
+  // The CPU architecture of the client.
+  string cpu_architecture = 3;
+
+  // The Omaha cohort ID of the client.
+  string o4_omaha_cohort_id = 4;
+
+  // The updater version.
+  string app_version = 5;
+
+  // Whether the client is a machine or a user level updater.
+  bool is_machine = 6;
+
+  // Whether the client is managed by CBCM.
+  bool is_cbcm_managed = 7;
+
+  // Whether the client is domain joined.
+  bool is_domain_joined = 8;
+}
+
+// The message to serialize and include in the clearcut log request.
+message Omaha4UsageStatsExtension {
+  repeated Omaha4Metric metric = 1;
+  Omaha4UsageStatsMetadata metadata = 2;
+}

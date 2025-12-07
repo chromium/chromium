@@ -5,7 +5,7 @@
 #include "remoting/host/crash/minidump_handler.h"
 
 #include "base/functional/bind.h"
-#include "remoting/base/breakpad_utils.h"
+#include "remoting/base/crash/breakpad_utils.h"
 
 namespace remoting {
 

@@ -24,16 +24,19 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_MATCH_RESULT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_MATCH_RESULT_H_
 
-#include "base/memory/scoped_refptr.h"
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/cascade_layer_map.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
+#include "third_party/blink/renderer/core/css/mixin_parameter_bindings.h"
 #include "third_party/blink/renderer/core/css/resolver/cascade_origin.h"
 #include "third_party/blink/renderer/core/css/resolver/match_flags.h"
-#include "third_party/blink/renderer/core/css/rule_set.h"
+#include "third_party/blink/renderer/core/css/valid_property_filter.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -44,17 +47,8 @@ struct CORE_EXPORT MatchedProperties {
   DISALLOW_NEW();
 
  public:
-  MatchedProperties();
-
-  void Trace(Visitor*) const;
-
-  Member<CSSPropertyValueSet> properties;
-
+  // NOTE: tree_order is filled by AddMatchedProperties().
   struct Data {
-    unsigned link_match_type : 2;
-    unsigned valid_property_filter : 4;
-    unsigned signal : 2;  // CSSSelector::Signal
-    CascadeOrigin origin;
     // This is approximately equivalent to the 'shadow-including tree order'.
     // It can be used to evaluate the 'Shadow Tree' criteria. Note that the
     // number stored here is 'local' to each origin (user, author), and is
@@ -62,20 +56,61 @@ struct CORE_EXPORT MatchedProperties {
     // tree_orders from two different origins.
     //
     // https://drafts.csswg.org/css-scoping/#shadow-cascading
-    uint16_t tree_order;
-    // https://drafts.csswg.org/css-cascade-5/#layer-ordering
-    uint16_t layer_order;
-    bool is_inline_style;
+    uint16_t tree_order = 0;
+    uint8_t link_match_type : 2 = CSSSelector::kMatchAll;
+    uint8_t valid_property_filter : 4 =
+        static_cast<std::underlying_type_t<ValidPropertyFilter>>(
+            ValidPropertyFilter::kNoFilter);
+    uint8_t is_inline_style : 1 = false;
     // Try styles come from position-try-fallbacks.
     // https://drafts.csswg.org/css-anchor-position-1/#fallback
-    bool is_try_style;
+    uint8_t is_try_style : 1 = false;
+    CascadeOrigin origin = CascadeOrigin::kNone;
+    // https://drafts.csswg.org/css-cascade-5/#layer-ordering
+    uint16_t layer_order = CascadeLayerMap::kImplicitOuterLayerOrder;
     // Try-tactics style come from <try-tactic>.
     // https://drafts.csswg.org/css-anchor-position-1/#typedef-position-try-fallbacks-try-tactic
-    bool is_try_tactics_style;
-    // See CSSSelector::IsInvisible.
-    bool is_invisible;
+    bool is_try_tactics_style = false;
+    // 15 free bits after this, but since the MPC hashes and compares
+    // this as raw bytes, we cannot have undefined padding.
+    uint8_t padding = 0;
+
+    bool operator==(const Data& other) const {
+      return UNSAFE_TODO(memcmp(this, &other, sizeof(*this))) == 0;
+    }
   };
-  Data types_;
+
+  MatchedProperties(CSSPropertyValueSet* properties_arg,
+                    const MixinParameterBindings* mixin_parameter_bindings_arg,
+                    const Data& data_arg)
+      : properties(properties_arg),
+        mixin_parameter_bindings(mixin_parameter_bindings_arg),
+        data_(data_arg) {}
+
+  void Trace(Visitor*) const;
+
+  Member<CSSPropertyValueSet> properties;
+  Member<const MixinParameterBindings> mixin_parameter_bindings;
+  Data data_;
+};
+
+struct SameSizeAsMatchedProperties {
+  Member<void*> properties;
+  Member<void*> mixin_parameter_bindings;
+  uint8_t data_[8];
+};
+
+ASSERT_SIZE(MatchedProperties, SameSizeAsMatchedProperties);
+
+struct CORE_EXPORT MatchedPropertiesHash {
+  // The value of ComputeHash() of the corresponding CSSPropertyValueSet.
+  unsigned hash;
+
+  // It's unfortunate that we need to duplicate Data here just to have it be
+  // part of the hash, but we cannot easily move it out of MatchedProperties,
+  // since CachedMatchedProperties::CorrespondsTo() needs it (and the hashes
+  // are not stored in CachedMatchedProperties).
+  MatchedProperties::Data data;
 };
 
 }  // namespace blink
@@ -85,20 +120,7 @@ WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(blink::MatchedProperties)
 namespace blink {
 
 using MatchedPropertiesVector = HeapVector<MatchedProperties, 64>;
-
-struct AddMatchedPropertiesOptions {
-  STACK_ALLOCATED();
-
- public:
-  unsigned link_match_type = CSSSelector::kMatchAll;
-  ValidPropertyFilter valid_property_filter = ValidPropertyFilter::kNoFilter;
-  CSSSelector::Signal signal = CSSSelector::Signal::kNone;
-  unsigned layer_order = CascadeLayerMap::kImplicitOuterLayerOrder;
-  bool is_inline_style = false;
-  bool is_try_style = false;
-  bool is_try_tactics_style = false;
-  bool is_invisible = false;
-};
+using MatchedPropertiesHashVector = Vector<MatchedPropertiesHash, 64>;
 
 class CORE_EXPORT MatchResult {
   STACK_ALLOCATED();
@@ -110,8 +132,8 @@ class CORE_EXPORT MatchResult {
 
   void AddMatchedProperties(
       const CSSPropertyValueSet* properties,
-      CascadeOrigin origin,
-      const AddMatchedPropertiesOptions& = AddMatchedPropertiesOptions());
+      const MixinParameterBindings* mixin_parameter_bindings,
+      MatchedProperties::Data types);
   bool HasMatchedProperties() const { return matched_properties_.size(); }
 
   void BeginAddingAuthorRulesForTreeScope(const TreeScope&);
@@ -137,11 +159,17 @@ class CORE_EXPORT MatchResult {
   bool DependsOnStyleContainerQueries() const {
     return depends_on_style_container_queries_;
   }
-  void SetDependsOnStateContainerQueries() {
-    depends_on_state_container_queries_ = true;
+  void SetDependsOnScrollStateContainerQueries() {
+    depends_on_scroll_state_container_queries_ = true;
   }
-  bool DependsOnStateContainerQueries() const {
-    return depends_on_state_container_queries_;
+  bool DependsOnScrollStateContainerQueries() const {
+    return depends_on_scroll_state_container_queries_;
+  }
+  void SetDependsOnAnchoredContainerQueries() {
+    depends_on_anchored_container_queries_ = true;
+  }
+  bool DependsOnAnchoredContainerQueries() const {
+    return depends_on_anchored_container_queries_;
   }
   void SetFirstLineDependsOnSizeContainerQueries() {
     first_line_depends_on_size_container_queries_ = true;
@@ -200,12 +228,15 @@ class CORE_EXPORT MatchResult {
   void SetHasPseudoElementStyle(PseudoId pseudo) {
     DCHECK(pseudo >= kFirstPublicPseudoId);
     DCHECK(pseudo <= kLastTrackedPublicPseudoId);
-    pseudo_element_styles_ |= 1 << (pseudo - kFirstPublicPseudoId);
+    pseudo_element_styles_.Set(pseudo);
   }
-  unsigned PseudoElementStyles() const { return pseudo_element_styles_; }
+  PseudoIdFlags PseudoElementStyles() const { return pseudo_element_styles_; }
 
   const MatchedPropertiesVector& GetMatchedProperties() const {
     return matched_properties_;
+  }
+  const MatchedPropertiesHashVector& GetMatchedPropertiesHash() const {
+    return matched_properties_hashes_;
   }
 
   // Reset the MatchResult to its initial state, as if no MatchedProperties
@@ -226,12 +257,16 @@ class CORE_EXPORT MatchResult {
 
  private:
   MatchedPropertiesVector matched_properties_;
+  // Same size as matched_properties_; kept separate so that it is
+  // contiguous (so that we hash the hashes more easily).
+  MatchedPropertiesHashVector matched_properties_hashes_;
   HeapVector<Member<const TreeScope>, 4> tree_scopes_;
   HashSet<AtomicString> custom_highlight_names_;
   bool is_cacheable_{true};
   bool depends_on_size_container_queries_{false};
   bool depends_on_style_container_queries_{false};
-  bool depends_on_state_container_queries_{false};
+  bool depends_on_scroll_state_container_queries_{false};
+  bool depends_on_anchored_container_queries_{false};
   bool first_line_depends_on_size_container_queries_{false};
   bool depends_on_static_viewport_units_{false};
   bool depends_on_dynamic_viewport_units_{false};
@@ -245,16 +280,12 @@ class CORE_EXPORT MatchResult {
   CascadeOrigin last_origin_{CascadeOrigin::kNone};
 #endif
   uint16_t current_tree_order_{0};
-  uint32_t pseudo_element_styles_{kPseudoIdNone};
+  PseudoIdFlags pseudo_element_styles_;
 };
 
 inline bool operator==(const MatchedProperties& a, const MatchedProperties& b) {
   return a.properties == b.properties &&
-         a.types_.link_match_type == b.types_.link_match_type;
-}
-
-inline bool operator!=(const MatchedProperties& a, const MatchedProperties& b) {
-  return !(a == b);
+         a.data_.link_match_type == b.data_.link_match_type;
 }
 
 }  // namespace blink

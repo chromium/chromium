@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome-untrusted://lens/post_selection_renderer.js';
+import 'chrome-untrusted://lens-overlay/post_selection_renderer.js';
 
-import {BrowserProxyImpl} from 'chrome-untrusted://lens/browser_proxy.js';
-import type {LensPageRemote} from 'chrome-untrusted://lens/lens.mojom-webui.js';
-import {UserAction} from 'chrome-untrusted://lens/lens.mojom-webui.js';
-import type {PostSelectionBoundingBox, PostSelectionRendererElement} from 'chrome-untrusted://lens/post_selection_renderer.js';
-import {CUTOUT_RADIUS_PX, MAX_CORNER_LENGTH_PX, MAX_CORNER_RADIUS_PX, MIN_BOX_SIZE_PX, PERIMETER_SELECTION_PADDING_PX} from 'chrome-untrusted://lens/post_selection_renderer.js';
-import type {GestureEvent} from 'chrome-untrusted://lens/selection_utils.js';
-import {GestureState} from 'chrome-untrusted://lens/selection_utils.js';
+import {BrowserProxyImpl} from 'chrome-untrusted://lens-overlay/browser_proxy.js';
+import type {LensPageRemote} from 'chrome-untrusted://lens-overlay/lens.mojom-webui.js';
+import {UserAction} from 'chrome-untrusted://lens-overlay/lens.mojom-webui.js';
+import type {PostSelectionBoundingBox, PostSelectionRendererElement} from 'chrome-untrusted://lens-overlay/post_selection_renderer.js';
+import {CUTOUT_RADIUS_PX, MAX_CORNER_LENGTH_PX, MAX_CORNER_RADIUS_PX, MIN_BOX_SIZE_PX, PERIMETER_SELECTION_PADDING_PX} from 'chrome-untrusted://lens-overlay/post_selection_renderer.js';
+import type {GestureEvent} from 'chrome-untrusted://lens-overlay/selection_utils.js';
+import {GestureState} from 'chrome-untrusted://lens-overlay/selection_utils.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome-untrusted://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome-untrusted://webui-test/metrics_test_support.js';
@@ -50,6 +50,8 @@ suite('PostSelectionRenderer', () => {
         testBrowserProxy.callbackRouter.$.bindNewPipeAndPassRemote();
 
     postSelectionRenderer = document.createElement('post-selection-renderer');
+    postSelectionRenderer.setSelectionOverlayRectForTesting(
+        new DOMRect(0, 0, TEST_WIDTH, TEST_HEIGHT));
 
     postSelectionRenderer.style.display = 'block';
     postSelectionRenderer.style.width = `${TEST_WIDTH}px`;
@@ -91,12 +93,20 @@ suite('PostSelectionRenderer', () => {
       clientY: yStart,
     };
 
-    assertTrue(postSelectionRenderer.handleDownGesture(dragGesture));
+    assertTrue(postSelectionRenderer.handleGestureStart(dragGesture));
     dragGesture.clientX = xStart + xOffset;
     dragGesture.clientY = yStart + yOffset;
 
-    postSelectionRenderer.handleDragGesture(dragGesture);
-    postSelectionRenderer.handleUpGesture();
+    postSelectionRenderer.handleGestureDrag(dragGesture);
+    postSelectionRenderer.handleGestureEnd();
+  }
+
+  function simulateChange(cornerId: string, change: number): void {
+    const input =
+        postSelectionRenderer.shadowRoot!.querySelector<HTMLInputElement>(
+            `#${cornerId}Slider`)!;
+    input.value = String(Number(input.value) + change);
+    input.dispatchEvent(new Event('change'));
   }
 
   // Verifies the post seleciton is rendered with the given percentage values
@@ -583,7 +593,7 @@ suite('PostSelectionRenderer', () => {
       clientY: 45,
     };
 
-    assertFalse(postSelectionRenderer.handleDownGesture(dragGesture));
+    assertFalse(postSelectionRenderer.handleGestureStart(dragGesture));
   });
 
   test('PostSelectionClearAllSelectionsCallback', async () => {
@@ -616,5 +626,117 @@ suite('PostSelectionRenderer', () => {
     });
     await waitAfterNextRender(postSelectionRenderer);
     assertTrue(isVisible(postSelectionRenderer.$.postSelection));
+  });
+
+  test('PostSelectionSliderChange', async () => {
+    callbackRouterRemote.setPostRegionSelection({
+      box: {
+        x: normalizeX(160),
+        y: normalizeY(50),
+        width: normalizeX(160),
+        height: normalizeY(50),
+      },
+      rotation: 0.0,
+      coordinateType: 1,
+    });
+    await waitAfterNextRender(postSelectionRenderer);
+    assertPostSelectionRender(0.10, 0.05, 0.20, 0.10);
+
+    // Up or right arrow on top left corner should move left edge right.
+    simulateChange('topLeft', 1);
+    await waitAfterNextRender(postSelectionRenderer);
+    assertPostSelectionRender(0.11, 0.05, 0.19, 0.10);
+
+    // Up or right arrow on top right corner should move top edge up.
+    simulateChange('topRight', 1);
+    await waitAfterNextRender(postSelectionRenderer);
+    assertPostSelectionRender(0.11, 0.04, 0.19, 0.11);
+
+    // Up or right arrow on bottom right corner should move right edge right.
+    simulateChange('bottomRight', 1);
+    await waitAfterNextRender(postSelectionRenderer);
+    assertPostSelectionRender(0.11, 0.04, 0.20, 0.11);
+
+    // Up or right arrow on bottom left corner should move bottom edge up.
+    simulateChange('bottomLeft', 1);
+    await waitAfterNextRender(postSelectionRenderer);
+    assertPostSelectionRender(0.11, 0.04, 0.20, 0.10);
+
+    // Down or left arrow on top left corner should move left edge left.
+    simulateChange('topLeft', -1);
+    await waitAfterNextRender(postSelectionRenderer);
+    assertPostSelectionRender(0.10, 0.04, 0.21, 0.10);
+
+    // Down or left arrow on top right corner should move top edge down.
+    simulateChange('topRight', -1);
+    await waitAfterNextRender(postSelectionRenderer);
+    assertPostSelectionRender(0.10, 0.05, 0.21, 0.09);
+
+    // Down or left arrow on bottom right corner should move right edge left.
+    simulateChange('bottomRight', -1);
+    await waitAfterNextRender(postSelectionRenderer);
+    assertPostSelectionRender(0.10, 0.05, 0.20, 0.09);
+
+    // Down or left arrow on bottom left corner should move bottom edge down.
+    simulateChange('bottomLeft', -1);
+    await waitAfterNextRender(postSelectionRenderer);
+    assertPostSelectionRender(0.10, 0.05, 0.20, 0.10);
+  });
+
+  test('PostSelectionSliderChangeAtExtremes', async () => {
+    callbackRouterRemote.setPostRegionSelection({
+      box: {
+        x: normalizeX(0),
+        y: normalizeY(0),
+        width: normalizeX(1600),
+        height: normalizeY(1000),
+      },
+      rotation: 0.0,
+      coordinateType: 1,
+    });
+    await waitAfterNextRender(postSelectionRenderer);
+    assertPostSelectionRender(0.005, 0.008, 0.99, 0.984);
+
+    // Down or left arrow on top left corner should not move left edge past 0.
+    simulateChange('topLeft', -1);
+    await waitAfterNextRender(postSelectionRenderer);
+    assertPostSelectionRender(0.005, 0.008, 0.99, 0.984);
+
+    // Up or right arrow on top right corner should not move top edge past 0.
+    simulateChange('topRight', 1);
+    await waitAfterNextRender(postSelectionRenderer);
+    assertPostSelectionRender(0.005, 0.008, 0.99, 0.984);
+
+    // Up or right arrow on bottom right corner should not move right edge
+    // past 1.
+    simulateChange('bottomRight', 1);
+    await waitAfterNextRender(postSelectionRenderer);
+    assertPostSelectionRender(0.005, 0.008, 0.99, 0.984);
+
+    // Down or left arrow on bottom left corner should not move bottom edge
+    // past 1.
+    simulateChange('bottomLeft', -1);
+    await waitAfterNextRender(postSelectionRenderer);
+    assertPostSelectionRender(0.005, 0.008, 0.99, 0.984);
+
+    // Up or right arrow on top left corner should move left edge right.
+    simulateChange('topLeft', 1);
+    await waitAfterNextRender(postSelectionRenderer);
+    assertPostSelectionRender(0.02, 0.008, 0.975, 0.984);
+
+    // Down or left arrow on top left corner should move top edge down.
+    simulateChange('topRight', -1);
+    await waitAfterNextRender(postSelectionRenderer);
+    assertPostSelectionRender(0.02, 0.016, 0.975, 0.976);
+
+    // Down or left arrow on bottom right corner should move right edge left.
+    simulateChange('bottomRight', -1);
+    await waitAfterNextRender(postSelectionRenderer);
+    assertPostSelectionRender(0.02, 0.016, 0.97, 0.976);
+
+    // Up or right arrow on bottom left corner should move bottom edge up.
+    simulateChange('bottomLeft', 1);
+    await waitAfterNextRender(postSelectionRenderer);
+    assertPostSelectionRender(0.02, 0.016, 0.97, 0.968);
   });
 });

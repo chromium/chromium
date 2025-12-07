@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+  <LinearLayout
+    android:id="@+id/webstore_info_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:visibility="gone">
+    <!-- TODO(crbug.com/424010795): Add webstore information -->
+  </LinearLayout>
+
+  <LinearLayout
+    android:id="@+id/scroll_view_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/permissions_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="@dimen/modal_dialog_control_vertical_padding_filled"
+        android:visibility="gone">
+        <TextView
+          android:id="@+id/permissions_heading"
+          android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+          style="@style/AlertDialogContent" />
+    </LinearLayout>
+
+    <LinearLayout
+      android:id="@+id/justification_container"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      android:paddingTop="@dimen/modal_dialog_control_vertical_padding_filled"
+      android:visibility="gone">
+      <TextView
+        android:id="@+id/justification_heading"
+        android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+        style="@style/AlertDialogContent" />
+
+      <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/justification_input_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="@dimen/dialog_padding_sides"
+        app:counterEnabled="true"
+        app:counterMaxLength="@integer/extension_install_dialog_justification_max_input">
+          <com.google.android.material.textfield.TextInputEditText
+              android:id="@+id/justification_input_text"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"/>
+      </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+  </LinearLayout>
+
+</LinearLayout>

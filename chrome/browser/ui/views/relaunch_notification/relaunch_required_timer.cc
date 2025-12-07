@@ -17,7 +17,7 @@ RelaunchRequiredTimer::RelaunchRequiredTimer(base::Time deadline,
   ScheduleNextTitleRefresh();
 }
 
-RelaunchRequiredTimer::~RelaunchRequiredTimer() {}
+RelaunchRequiredTimer::~RelaunchRequiredTimer() = default;
 
 void RelaunchRequiredTimer::ScheduleNextTitleRefresh() {
   // Refresh at the next second, minute, hour, or day boundary; depending on the
@@ -26,8 +26,9 @@ void RelaunchRequiredTimer::ScheduleNextTitleRefresh() {
   const base::TimeDelta deadline_offset = deadline_ - now;
 
   // Don't start the timer if the deadline is in the past or right now.
-  if (deadline_offset <= base::TimeDelta())
+  if (deadline_offset <= base::TimeDelta()) {
     return;
+  }
 
   const base::TimeDelta refresh_delta =
       relaunch_notification::ComputeNextRefreshDelta(deadline_offset);

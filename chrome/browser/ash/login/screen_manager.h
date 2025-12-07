@@ -38,7 +38,7 @@ class ScreenManager {
   // after fixing this https://crbug.com/1312879 .
   OobeScreenId GetScreenByName(const std::string& screen_name);
 
-  bool HasScreen(OobeScreenId screen);
+  bool HasScreen(OobeScreenId screen) const;
 
   void SetScreenForTesting(std::unique_ptr<BaseScreen> value);
   void DeleteScreenForTesting(OobeScreenId screen);

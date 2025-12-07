@@ -57,6 +57,27 @@ class CommonFeaturesWriter(make_runtime_features.BaseRuntimeFeatureWriter):
         return self._template_inputs()
 
 
+class WebOriginTrialsWriter(make_runtime_features.BaseRuntimeFeatureWriter):
+    file_basename = 'web/web_origin_trials'
+
+    def __init__(self, json5_file_path, output_dir):
+        super(WebOriginTrialsWriter, self).__init__(json5_file_path,
+                                                    output_dir)
+        self._outputs = {
+            (self.file_basename + '.h'): self.generate_header,
+        }
+
+    @template_expander.use_jinja('templates/web_origin_trials.h.tmpl')
+    def generate_header(self):
+        return {
+            'features': self._features,
+            'origin_trial_features': self._origin_trial_features,
+            'input_files': self._input_files,
+            'header_guard': self._header_guard,
+        }
+
+
 if __name__ == '__main__':
     json5_generator.Maker(WebRuntimeFeaturesWriter).main()
     json5_generator.Maker(CommonFeaturesWriter).main()
+    json5_generator.Maker(WebOriginTrialsWriter).main()

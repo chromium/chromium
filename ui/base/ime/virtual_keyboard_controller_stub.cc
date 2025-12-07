@@ -14,17 +14,14 @@ VirtualKeyboardControllerStub::~VirtualKeyboardControllerStub() = default;
 
 bool VirtualKeyboardControllerStub::DisplayVirtualKeyboard() {
   visible_ = true;
-  for (auto& observer : observers_) {
-    observer.OnKeyboardVisible({});
-  }
+  observers_.Notify(&VirtualKeyboardControllerObserver::OnKeyboardVisible,
+                    gfx::Rect());
   return true;
 }
 
 void VirtualKeyboardControllerStub::DismissVirtualKeyboard() {
   visible_ = false;
-  for (auto& observer : observers_) {
-    observer.OnKeyboardHidden();
-  }
+  observers_.Notify(&VirtualKeyboardControllerObserver::OnKeyboardHidden);
 }
 
 void VirtualKeyboardControllerStub::AddObserver(

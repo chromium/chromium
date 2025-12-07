@@ -4,16 +4,17 @@
 
 package org.chromium.chrome.browser.hub;
 
-import android.view.View;
+import static org.chromium.chrome.browser.hub.HubColorMixer.COLOR_MIXER;
+
 import android.view.ViewGroup;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Sets up the component that holds a single pane at a time in the Hub. */
+@NullMarked
 public class HubPaneHostCoordinator {
     private final HubPaneHostMediator mMediator;
 
@@ -22,22 +23,27 @@ public class HubPaneHostCoordinator {
      *
      * @param hubPaneHostView The root view of this component. Inserted into hierarchy for us.
      * @param paneSupplier A way to observe and get the current {@link Pane}.
+     * @param hubColorMixer Mixes the Hub Overview Color.
+     * @param defaultPaneId The default pane's Id.
      */
     public HubPaneHostCoordinator(
-            HubPaneHostView hubPaneHostView, ObservableSupplier<Pane> paneSupplier) {
-        PropertyModel model = new PropertyModel.Builder(HubPaneHostProperties.ALL_KEYS).build();
+            HubPaneHostView hubPaneHostView,
+            ObservableSupplier<Pane> paneSupplier,
+            HubColorMixer hubColorMixer,
+            @PaneId int defaultPaneId) {
+        PropertyModel model =
+                new PropertyModel.Builder(HubPaneHostProperties.ALL_KEYS)
+                        .with(COLOR_MIXER, hubColorMixer)
+                        .build();
         PropertyModelChangeProcessor.create(model, hubPaneHostView, HubPaneHostViewBinder::bind);
-        mMediator = new HubPaneHostMediator(model, paneSupplier);
+        mMediator =
+                new HubPaneHostMediator(
+                        model, paneSupplier, new DefaultPaneOrderController(), defaultPaneId);
     }
 
     /** Cleans up observers and resources. */
     public void destroy() {
         mMediator.destroy();
-    }
-
-    /** Returns the button view for the floating action button if present. */
-    public @Nullable View getFloatingActionButton() {
-        return mMediator.getFloatingActionButton();
     }
 
     /** Returns the view group to contain the snackbar. */

@@ -5,24 +5,32 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CACHE_STORAGE_GLOBAL_CACHE_STORAGE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CACHE_STORAGE_GLOBAL_CACHE_STORAGE_H_
 
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
 class CacheStorage;
 class ExceptionState;
 class ExecutionContext;
-class LocalDOMWindow;
-class WorkerGlobalScope;
+class WindowOrWorkerGlobalScope;
 
-class GlobalCacheStorage {
-  STATIC_ONLY(GlobalCacheStorage);
-
+class GlobalCacheStorage final : public GarbageCollected<GlobalCacheStorage>,
+                                 public GarbageCollectedMixin {
  public:
+  GlobalCacheStorage() = default;
+
   static bool CanCreateCacheStorage(ExecutionContext*, ExceptionState&);
 
-  static CacheStorage* caches(LocalDOMWindow&, ExceptionState&);
-  static CacheStorage* caches(WorkerGlobalScope&, ExceptionState&);
+  static CacheStorage* caches(WindowOrWorkerGlobalScope&, ExceptionState&);
+
+  void Trace(Visitor* visitor) const override;
+
+ private:
+  static GlobalCacheStorage& From(WindowOrWorkerGlobalScope&);
+  CacheStorage* Caches(WindowOrWorkerGlobalScope&, ExceptionState&);
+
+  Member<CacheStorage> caches_;
 };
 
 }  // namespace blink

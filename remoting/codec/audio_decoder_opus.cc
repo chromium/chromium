@@ -4,9 +4,12 @@
 
 #include "remoting/codec/audio_decoder_opus.h"
 
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
 
+#include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "remoting/proto/audio.pb.h"
 #include "third_party/opus/src/include/opus.h"
@@ -105,14 +108,16 @@ std::unique_ptr<AudioPacket> AudioDecoderOpus::Decode(
   int buffer_pos = 0;
 
   for (int i = 0; i < packet->data_size(); ++i) {
-    int16_t* pcm_buffer =
-        reinterpret_cast<int16_t*>(std::data(*decoded_data) + buffer_pos);
+    CHECK_GE(buffer_pos, 0);
+    const size_t buffer_pos_size = base::checked_cast<size_t>(buffer_pos);
+    auto decoded_span = base::as_writable_byte_span(*decoded_data);
+    auto current_span = decoded_span.subspan(buffer_pos_size);
     CHECK_LE(buffer_pos + max_frame_bytes,
              static_cast<int>(decoded_data->size()));
     std::string* frame = packet->mutable_data(i);
-    unsigned char* frame_data =
-        reinterpret_cast<unsigned char*>(std::data(*frame));
-    int result = opus_decode(decoder_, frame_data, frame->size(), pcm_buffer,
+    auto frame_span = base::as_byte_span(*frame);
+    int result = opus_decode(decoder_, frame_span.data(), frame_span.size(),
+                             reinterpret_cast<int16_t*>(current_span.data()),
                              max_frame_samples, 0);
     if (result < 0) {
       LOG(ERROR) << "Failed decoding Opus frame. Error code: " << result;

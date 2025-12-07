@@ -11,7 +11,7 @@
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents_media_capture_id.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace content {
 
@@ -20,6 +20,7 @@ namespace content {
 struct CONTENT_EXPORT DesktopMediaID {
  public:
   enum Type { TYPE_NONE, TYPE_SCREEN, TYPE_WINDOW, TYPE_WEB_CONTENTS };
+  enum class AudioType { kNone, kSystem, kApplication };
 
   using Id = intptr_t;
 
@@ -51,9 +52,10 @@ struct CONTENT_EXPORT DesktopMediaID {
       : type(type), id(id), audio_share(audio_share) {}
 
   // Operators so that DesktopMediaID can be used with STL containers.
-  bool operator<(const DesktopMediaID& other) const;
-  bool operator==(const DesktopMediaID& other) const;
-  bool operator!=(const DesktopMediaID& other) const;
+  friend bool operator==(const DesktopMediaID&,
+                         const DesktopMediaID&) = default;
+  friend auto operator<=>(const DesktopMediaID&,
+                          const DesktopMediaID&) = default;
 
   bool is_null() const { return type == TYPE_NONE; }
   std::string ToString() const;
@@ -69,11 +71,13 @@ struct CONTENT_EXPORT DesktopMediaID {
   Id id = kNullId;
   Id window_id = kNullId;
 
-  // This records whether the desktop share has sound or not.
-  bool audio_share = false;
-
   // This id contains information for WebContents capture.
   WebContentsMediaCaptureId web_contents_id;
+
+  // This records whether the desktop share has sound or not.
+  bool audio_share = false;
+  // This records the type of audio share, if any.
+  AudioType window_audio_type = AudioType::kNone;
 };
 
 }  // namespace content

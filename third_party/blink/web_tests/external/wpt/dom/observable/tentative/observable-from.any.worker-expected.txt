@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] from(): Errors thrown in async iterator's next() GETTER are propagated in a microtask
+  assert_array_equals: lengths differ, expected array [] length 0, got [object "Error: next error"] length 1
+[FAIL] from(): Asynchronous iterable conversion, with synchronous iterable fallback
+  promise_test: Unhandled rejection with value: object "TypeError: Object must be iterable"
+Harness: the test ran to completion.
+

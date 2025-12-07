@@ -3,14 +3,6 @@ Archive member included because of file (symbol)
 obj/chrome/browser/libbrowser.a(about_flags.o)
                               --whole-archive
 
-Allocating common symbols
-Common symbol       size              file
-
-ff_cos_131072       0x40000           obj/third_party/ffmpeg/libffmpeg_internal.a(fft_float.o)
-ff_cos_131072_fixed
-                    0x20000           obj/third_party/ffmpeg/libffmpeg_internal.a(fft_fixed.o)
-ff_cos_65536        0x20000           obj/third_party/ffmpeg/libffmpeg_internal.a(fft_float.o)
-
 Discarded input sections
 
  .text          0x00000000        0x0 obj/chrome/android/chrome/chrome_main_delegate_android_initializer.o
@@ -200,6 +192,13 @@ Memory map
                 0x02dffe80        0x4 ./obj/third_party/icu/../icu/icuuc/ucnv_ext.o
  .bss._ZN12_GLOBAL__N_135g_AnimationFrameTimeHistogram_clazzE
                 0x02dffe84        0x4 ./obj/third_party/icu/../icu/icuuc/ucnv_ext.o
+ .bss.ff_cos_131072
+                0x02dffe88        0x4 obj/third_party/ffmpeg/libffmpeg_internal.a(fft_float.o)
+ .bss.ff_cos_131072_fixed
+                0x02dffe8c        0x4 obj/third_party/ffmpeg/libffmpeg_internal.a(fft_fixed.o)
+ .bss.ff_cos_65536
+                0x02dffe9b        0x4 obj/third_party/ffmpeg/libffmpeg_internal.a(fft_float.o)
+
  ** common      0x02e2fca0   0x10d8e8
 
 .note.gnu.gold-version

@@ -49,6 +49,7 @@ class TestExporter:
         self.github = None
         self.graphql = None
         self.gerrit = None
+        self.notifier = None
         self.dry_run = False
         self.local_repo = None
         self.surface_failures_to_gerrit = False
@@ -87,6 +88,8 @@ class TestExporter:
             token=credentials['GH_TOKEN'])
         self.gerrit = self.gerrit or GerritAPI.from_credentials(
             self.host, credentials)
+        self.notifier = ExportNotifier(self.host, self.github, self.gerrit,
+                                       self.dry_run)
         self.local_repo = self.local_repo or self.project_config.local_repo_factory(
             host=self.host, gh_token=credentials['GH_TOKEN'])
 
@@ -122,9 +125,7 @@ class TestExporter:
             if self.surface_failures_to_gerrit:
                 _log.info(
                     'Starting surfacing cross-browser failures to Gerrit.')
-                notifier = ExportNotifier(self.host, self.github, self.gerrit,
-                                          self.dry_run)
-                prs_by_change_id = notifier.main()
+                prs_by_change_id = self.notifier.main()
                 pr_events[PREventType.BLOCKED].update(
                     pr_status.pr_number
                     for pr_status in prs_by_change_id.values())
@@ -200,7 +201,11 @@ class TestExporter:
             _log.info(
                 'In-flight CLs cannot be exported due to the following error:')
             _log.error(str(e))
-            return True
+            # TODO(crbug.com/346392205) change this back to True once the bug is fixed
+            # We do not need to mark the exporter run as failed due to this. Instead
+            # in flight changes can be exported in the next exporter run, or exported
+            # after the change has been submitted.
+            return False
         else:
             self.process_gerrit_cls(open_gerrit_cls, pr_events)
             return False
@@ -331,6 +336,7 @@ class TestExporter:
                 return PREvent(pull_request.number, PREventType.MERGED)
         except MergeError:
             _log.warn('Could not merge PR.')
+            self.notifier.notify_gerrit_of_blocked_pr(pull_request)
             return PREvent(pull_request.number, PREventType.BLOCKED)
         return None
 

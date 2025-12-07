@@ -29,11 +29,15 @@ EnrollmentTestHelper::~EnrollmentTestHelper() {
   ash::OobeConfigurationClient::Shutdown();
 }
 
-void EnrollmentTestHelper::SetUpFlexDevice() {
-  command_line_->GetProcessCommandLine()->AppendSwitch(
-      ash::switches::kRevenBranding);
+void EnrollmentTestHelper::SetUpNonchromeDevice() {
   statistics_provider_->SetMachineStatistic(
       ash::system::kFirmwareTypeKey, ash::system::kFirmwareTypeValueNonchrome);
+}
+
+void EnrollmentTestHelper::SetUpFlexDevice() {
+  SetUpNonchromeDevice();
+  command_line_->GetProcessCommandLine()->AppendSwitch(
+      ash::switches::kRevenBranding);
 }
 
 void EnrollmentTestHelper::SetUpEnrollmentTokenConfig(
@@ -46,10 +50,15 @@ void EnrollmentTestHelper::SetUpEnrollmentTokenConfig(
   oobe_configuration_.CheckConfiguration();
 }
 
-void EnrollmentTestHelper::EnableFREOnFlex() {
+void EnrollmentTestHelper::DisableFREOnFlex() {
   command_line_->GetProcessCommandLine()->AppendSwitchASCII(
       ash::switches::kEnterpriseEnableForcedReEnrollmentOnFlex,
-      AutoEnrollmentTypeChecker::kForcedReEnrollmentAlways);
+      AutoEnrollmentTypeChecker::kFlexForcedReEnrollmentNever);
+}
+
+void EnrollmentTestHelper::EnableFREOnFlex() {
+  // This is a no-op right now, but we keep this in case we need to revert
+  // this CL.
 }
 
 const std::string*

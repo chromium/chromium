@@ -25,8 +25,9 @@ void ObjectPainter::PaintOutline(const PaintInfo& paint_info,
 
   const ComputedStyle& style_to_use = layout_object_.StyleRef();
   if (!style_to_use.HasOutline() ||
-      style_to_use.Visibility() != EVisibility::kVisible)
+      style_to_use.Visibility() != EVisibility::kVisible) {
     return;
+  }
 
   // Only paint the focus ring by hand if the theme isn't able to draw the focus
   // ring.
@@ -91,7 +92,7 @@ void ObjectPainter::AddURLRectIfNeeded(const PaintInfo& paint_info,
   String fragment_name;
   if (url.HasFragmentIdentifier() &&
       EqualIgnoringFragmentIdentifier(url, document.BaseURL())) {
-    fragment_name = url.FragmentIdentifier();
+    fragment_name = url.FragmentIdentifier().ToString();
     if (!document.FindAnchor(fragment_name)) {
       return;
     }
@@ -137,14 +138,6 @@ void ObjectPainter::RecordHitTestData(
     const PaintInfo& paint_info,
     const gfx::Rect& paint_rect,
     const DisplayItemClient& background_client) {
-  // When HitTestOpaqueness is not enabled, we only need to record hit test
-  // data for scrolling background when there are special hit test data.
-  if (!RuntimeEnabledFeatures::HitTestOpaquenessEnabled() &&
-      paint_info.IsPaintingBackgroundInContentsSpace() &&
-      !ShouldRecordSpecialHitTestData(paint_info)) {
-    return;
-  }
-
   // Hit test data are only needed for compositing. This flag is used for for
   // printing and drag images which do not need hit testing.
   if (paint_info.ShouldOmitCompositingInfo()) {
@@ -165,10 +158,6 @@ void ObjectPainter::RecordHitTestData(
 }
 
 cc::HitTestOpaqueness ObjectPainter::GetHitTestOpaqueness() const {
-  if (!RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
-    return cc::HitTestOpaqueness::kMixed;
-  }
-
   // Effects (e.g. clip-path and mask) are not checked here even if they
   // affects hit test. They are checked during PaintArtifactCompositor update
   // based on paint properties.
@@ -199,18 +188,15 @@ bool ObjectPainter::ShouldRecordSpecialHitTestData(
   if (layout_object_.InsideBlockingWheelEventHandler()) {
     return true;
   }
-  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
-    if (layout_object_.StyleRef().UsedPointerEvents() ==
-        EPointerEvents::kNone) {
-      return true;
-    }
-    if (paint_info.context.GetPaintController()
-            .CurrentChunkIsNonEmptyAndTransparentToHitTest()) {
-      // A non-none value of pointer-events will make a transparent paint chunk
-      // (due to pointer-events: none on an ancestor painted into the current
-      // paint chunk) not transparent.
-      return true;
-    }
+  if (layout_object_.StyleRef().UsedPointerEvents() == EPointerEvents::kNone) {
+    return true;
+  }
+  if (paint_info.context.GetPaintController()
+          .CurrentChunkIsNonEmptyAndTransparentToHitTest()) {
+    // A non-none value of pointer-events will make a transparent paint chunk
+    // (due to pointer-events: none on an ancestor painted into the current
+    // paint chunk) not transparent.
+    return true;
   }
   return false;
 }

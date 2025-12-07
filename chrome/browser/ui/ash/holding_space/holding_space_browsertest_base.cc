@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_file.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
@@ -19,14 +18,14 @@
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/ash_test_util.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
+#include "chrome/test/base/ash/util/ash_test_util.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/session_manager/core/session_manager.h"
 #include "storage/browser/file_system/external_mount_points.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 namespace ash {
 
@@ -139,8 +138,9 @@ base::FilePath HoldingSpaceBrowserTestBase::CreateFile(
 }
 
 void HoldingSpaceBrowserTestBase::RequestAndAwaitLockScreen() {
-  if (session_manager::SessionManager::Get()->IsScreenLocked())
+  if (session_manager::SessionManager::Get()->IsScreenLocked()) {
     return;
+  }
 
   SessionManagerClient::Get()->RequestLockScreen();
   SessionStateWaiter(session_manager::SessionState::LOCKED).Wait();
@@ -152,8 +152,8 @@ void HoldingSpaceUiBrowserTestBase::SetUpOnMainThread() {
   HoldingSpaceBrowserTestBase::SetUpOnMainThread();
 
   {
-    ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-        ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+        gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
     // The holding space tray will not show until the user has added a file to
     // holding space. Holding space UI browser tests don't need to assert that

@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/not_fatal_until.h"
 #include "base/timer/timer.h"
 #include "components/domain_reliability/util.h"
 
@@ -66,12 +65,13 @@ void DomainReliabilityDispatcher::ScheduleTask(base::OnceClosure closure,
       std::move(closure), time_->CreateTimer(), min_delay, max_delay);
   Task* task = owned_task.get();
   tasks_.insert(std::move(owned_task));
-  if (max_delay.InMicroseconds() < 0)
+  if (max_delay.InMicroseconds() < 0) {
     RunAndDeleteTask(task);
-  else if (min_delay.InMicroseconds() < 0)
+  } else if (min_delay.InMicroseconds() < 0) {
     MakeTaskEligible(task);
-  else
+  } else {
     MakeTaskWaiting(task);
+  }
 }
 
 void DomainReliabilityDispatcher::RunEligibleTasks() {
@@ -130,7 +130,7 @@ void DomainReliabilityDispatcher::RunAndDeleteTask(Task* task) {
     eligible_tasks_.erase(task);
 
   auto it = tasks_.find(task);
-  CHECK(it != tasks_.end(), base::NotFatalUntil::M130);
+  CHECK(it != tasks_.end());
   tasks_.erase(it);
 }
 

@@ -39,6 +39,7 @@ class CONTENT_EXPORT InstalledAppProviderImpl
   void FilterInstalledApps(
       std::vector<blink::mojom::RelatedApplicationPtr> related_apps,
       const GURL& manifest_url,
+      bool add_saved_related_applications,
       FilterInstalledAppsCallback callback) override;
 
   void StartTask(std::unique_ptr<FetchRelatedAppsTask> task,

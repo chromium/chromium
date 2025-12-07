@@ -54,7 +54,7 @@ public class PaymentRequestServiceBuilder implements Delegate {
     private boolean mIsOriginAllowedToUseWebPaymentApis = true;
     private boolean mIsPaymentDetailsValid = true;
     private PaymentRequestSpec mSpec;
-    private SecurePaymentConfirmationRequest mSecurePaymentConfirmationRequest;
+    private final SecurePaymentConfirmationRequest mSecurePaymentConfirmationRequest;
 
     public static PaymentRequestServiceBuilder defaultBuilder(
             Runnable onClosedListener,
@@ -121,7 +121,7 @@ public class PaymentRequestServiceBuilder implements Delegate {
     }
 
     @Override
-    public String getInvalidSslCertificateErrorMessage() {
+    public @Nullable String getInvalidSslCertificateErrorMessage() {
         return mInvalidSslCertificateErrorMessage;
     }
 
@@ -154,11 +154,6 @@ public class PaymentRequestServiceBuilder implements Delegate {
     @Override
     public String formatUrlForSecurityDisplay(GURL url) {
         return url.getSpec();
-    }
-
-    @Override
-    public byte[][] getCertificateChain(WebContents webContents) {
-        return new byte[0][];
     }
 
     @Override
@@ -245,8 +240,8 @@ public class PaymentRequestServiceBuilder implements Delegate {
         mMethodData = new PaymentMethodData[1];
         mMethodData[0] = new PaymentMethodData();
         mMethodData[0].supportedMethod = MethodStrings.SECURE_PAYMENT_CONFIRMATION;
-
         mMethodData[0].securePaymentConfirmation = mSecurePaymentConfirmationRequest;
+        Mockito.when(mSpec.isSecurePaymentConfirmationRequested()).thenReturn(true);
         return this;
     }
 
@@ -294,6 +289,11 @@ public class PaymentRequestServiceBuilder implements Delegate {
 
     public PaymentRequestServiceBuilder setPaymentRequestSpec(PaymentRequestSpec spec) {
         mSpec = spec;
+        return this;
+    }
+
+    public PaymentRequestServiceBuilder setPrefsCanMakePayment(boolean canMakePayment) {
+        mPrefsCanMakePayment = canMakePayment;
         return this;
     }
 

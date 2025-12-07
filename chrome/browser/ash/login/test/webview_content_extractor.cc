@@ -9,7 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/uuid.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"

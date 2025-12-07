@@ -8,9 +8,10 @@
 #include "third_party/omnibox_proto/groups.pb.h"
 
 TEST(AutocompleteGrouperGroupsTest, Group) {
-  Group group = {4,
-                 Group::GroupIdLimitsAndCounts{{omnibox::GROUP_SEARCH, {2}},
-                                               {omnibox::GROUP_DOCUMENT, {4}}}};
+  Group group(4, {
+                     {omnibox::GROUP_SEARCH, 2},
+                     {omnibox::GROUP_DOCUMENT, 4},
+                 });
   AutocompleteMatch search_match{};
   search_match.suggestion_group_id = omnibox::GROUP_SEARCH;
   AutocompleteMatch doc_match{};
@@ -39,25 +40,30 @@ TEST(AutocompleteGrouperGroupsTest, Group) {
   EXPECT_FALSE(group.CanAdd(other_match));
 
   // Verify with 0/2 searches, 4/4 docs, and 4/4 total.
-  group = {4, Group::GroupIdLimitsAndCounts{{omnibox::GROUP_SEARCH, {2}},
-                                            {omnibox::GROUP_DOCUMENT, {4}}}};
-  group.Add(doc_match);  // 0/2 searches, 1/4 docs, 1/4 total.
-  group.Add(doc_match);  // 0/2 searches, 2/4 docs, 2/4 total.
-  group.Add(doc_match);  // 0/2 searches, 3/4 docs, 3/4 total.
-  EXPECT_TRUE(group.CanAdd(search_match));
-  EXPECT_TRUE(group.CanAdd(doc_match));
-  group.Add(doc_match);  // 0/2 searches, 4/4 docs, 4/4 total.
-  EXPECT_FALSE(group.CanAdd(search_match));
-  EXPECT_FALSE(group.CanAdd(doc_match));
-  EXPECT_FALSE(group.CanAdd(other_match));
+  Group group2(4, {
+                      {omnibox::GROUP_SEARCH, 2},
+                      {omnibox::GROUP_DOCUMENT, 4},
+                  });
+  group2.Add(doc_match);  // 0/2 searches, 1/4 docs, 1/4 total.
+  group2.Add(doc_match);  // 0/2 searches, 2/4 docs, 2/4 total.
+  group2.Add(doc_match);  // 0/2 searches, 3/4 docs, 3/4 total.
+  EXPECT_TRUE(group2.CanAdd(search_match));
+  EXPECT_TRUE(group2.CanAdd(doc_match));
+  group2.Add(doc_match);  // 0/2 searches, 4/4 docs, 4/4 total.
+  EXPECT_FALSE(group2.CanAdd(search_match));
+  EXPECT_FALSE(group2.CanAdd(doc_match));
+  EXPECT_FALSE(group2.CanAdd(other_match));
 }
 
 TEST(AutocompleteGrouperGroupsTest, DefaultGroup) {
-  Group default_group({1,
-                       {{omnibox::GROUP_STARTER_PACK, {1}},
-                        {omnibox::GROUP_SEARCH, {1}},
-                        {omnibox::GROUP_OTHER_NAVS, {1}}},
-                       /*is_default=*/true});
+  Group default_group(1,
+                      {
+                          {omnibox::GROUP_STARTER_PACK, 1},
+                          {omnibox::GROUP_SEARCH, 1},
+                          {omnibox::GROUP_OTHER_NAVS, 1},
+                      },
+                      /*is_zps=*/false,
+                      /*is_default=*/true);
   ACMatches matches{{}, {}, {}};
 
   // Can't be added because `allowed_to_be_default` is false.

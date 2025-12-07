@@ -13,7 +13,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/updater/registration_data.h"
 #include "chrome/updater/updater_scope.h"
 #include "components/update_client/persisted_data.h"
 
@@ -26,17 +28,15 @@ class PrefRegistrySimple;
 
 namespace base {
 class FilePath;
-class Time;
 class Version;
 }  // namespace base
 
 namespace update_client {
 class ActivityDataService;
+struct CategorizedError;
 }  // namespace update_client
 
 namespace updater {
-
-struct RegistrationRequest;
 
 // PersistedData uses the PrefService to persist updater data that outlives
 // the updater processes.
@@ -86,9 +86,16 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData>,
   std::string GetAPKey(const std::string& id) const;
   void SetAPKey(const std::string& id, const std::string& value);
 
+  // These functions access the `lang` for the specified id.
+  std::string GetLang(const std::string& id);
+  void SetLang(const std::string& id, const std::string& lang);
+
   // This function sets any non-empty field in the registration request object
   // into the persistent data store.
   void RegisterApp(const RegistrationRequest& rq);
+
+  // This function returns true if and only if the specified app is registered.
+  bool HasApp(const std::string& id);
 
   // This function removes a registered application from the persistent store.
   bool RemoveApp(const std::string& id);
@@ -102,11 +109,22 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData>,
   bool GetHadApps() const;
   void SetHadApps();
 
-  // UsageStatsEnabled reflects whether the updater as a whole is allowed to
-  // send usage stats, and is set or reset periodically based on the usage
-  // stats opt-in state of each product.
-  bool GetUsageStatsEnabled() const;
-  void SetUsageStatsEnabled(bool usage_stats_enabled);
+  struct Cookie {
+    std::string value;
+    base::Time expiration;
+
+    auto operator<=>(const Cookie&) const = default;
+  };
+  // RemoteLoggingCookie stores the logging cookie provided by the remote
+  // logging server in a successful POST request.
+  std::optional<Cookie> GetRemoteLoggingCookie() const;
+  void SetRemoteLoggingCookie(const Cookie& logging_cookie);
+  void ClearRemoteLoggingCookie();
+
+  // NextAllowedLoggingAttemptTime maintains the next time the updater is
+  // allowed to attempt to log events to a remote endpoint.
+  base::Time GetNextAllowedLoggingAttemptTime() const;
+  void SetNextAllowedLoggingAttemptTime(base::Time time);
 
   // EulaRequired reflects whether some user responsible for this system has
   // accepted a EULA that covers the updater's operation or not. EulaRequired
@@ -120,13 +138,13 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData>,
   // for updating all applications works end to end, including communicating
   // with the backend.
   base::Time GetLastChecked() const;
-  void SetLastChecked(const base::Time& time);
+  void SetLastChecked(base::Time time);
 
   // LastStarted is set when `UpdateService::RunPeriodicTasks` is called. This
   // indicates that the mechanism to initiate automated update checks is
   // working.
   base::Time GetLastStarted() const;
-  void SetLastStarted(const base::Time& time);
+  void SetLastStarted(base::Time time);
 
 #if BUILDFLAG(IS_WIN)
   // Retrieves the previously stored OS version.
@@ -166,11 +184,16 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData>,
                        base::OnceClosure callback) override;
   int GetInstallDate(const std::string& id) const override;
   void SetInstallDate(const std::string& id, int install_date) override;
+  std::string GetInstallId(const std::string& app_id) const override;
+  void SetInstallId(const std::string& app_id,
+                    const std::string& install_id) override;
   void GetActiveBits(const std::vector<std::string>& ids,
                      base::OnceCallback<void(const std::set<std::string>&)>
                          callback) const override;
   base::Time GetThrottleUpdatesUntil() const override;
-  void SetThrottleUpdatesUntil(const base::Time& time) override;
+  void SetThrottleUpdatesUntil(base::Time time) override;
+  void SetLastUpdateCheckError(
+      const update_client::CategorizedError& error) override;
 
  private:
   friend class base::RefCountedThreadSafe<PersistedData>;
@@ -199,6 +222,7 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData>,
 };
 
 void RegisterPersistedDataPrefs(scoped_refptr<PrefRegistrySimple> registry);
+void MigrateObsoletePersistedDataPrefs(PrefService* pref_service);
 
 }  // namespace updater
 

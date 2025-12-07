@@ -5,17 +5,12 @@
 #ifndef COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_CLICK_INPUT_TRACKER_H_
 #define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_CLICK_INPUT_TRACKER_H_
 
-#include "base/feature_list.h"
 #include "base/time/time.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace page_load_metrics {
-
-BASE_FEATURE(kClickInputTracker,
-             "ClickInputTracker",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This class considers user input clicks for a page load to determine if a
 // burst of clicks occurs at the screen position. This is a possible signal

@@ -25,6 +25,8 @@ import {
   ChromeHelper,
   createBigBufferFromBlob,
   createNumArrayFromBlob,
+  handleBigBufferError,
+  shouldUseBigBuffer,
 } from '../mojo/chrome_helper.js';
 import {
   BigBuffer,
@@ -498,8 +500,7 @@ export class DocumentReview extends View {
    * Changes active page and updates related elements.
    */
   private selectPageView(index: number): void {
-    for (let i = 0; i < this.pagesElement.children.length; i++) {
-      const pageElement = this.pagesElement.children[i];
+    for (const pageElement of this.pagesElement.children) {
       pageElement.classList.remove(ACTIVE_PAGE_CLASS);
       pageElement.setAttribute('aria-selected', 'false');
       pageElement.setAttribute('tabindex', '-1');
@@ -645,13 +646,13 @@ class PdfBuilder {
   async addPage(jpg: Blob, index: number): Promise<void> {
     assert(this.builder !== null);
     try {
-      if (ChromeHelper.useBigBuffer) {
+      if (shouldUseBigBuffer()) {
         const bigBuffer = await createBigBufferFromBlob(jpg);
         this.builder.addPage(bigBuffer, index);
         return;
       }
     } catch (e) {
-      ChromeHelper.handleBigBufferError(e);
+      handleBigBufferError(e);
     }
     const numArray = await createNumArrayFromBlob(jpg);
     this.builder.addPageInline(numArray, index);
@@ -671,12 +672,12 @@ class PdfBuilder {
   async save(): Promise<Blob> {
     assert(this.builder !== null);
     try {
-      if (ChromeHelper.useBigBuffer) {
+      if (shouldUseBigBuffer()) {
         const {pdf} = await this.builder.save();
         return this.createPdfBlob(pdf);
       }
     } catch (e) {
-      ChromeHelper.handleBigBufferError(e);
+      handleBigBufferError(e);
     }
     const {pdf} = await this.builder.saveInline();
     return new Blob([new Uint8Array(pdf)], {type: MimeType.PDF});
@@ -705,7 +706,7 @@ class PdfBuilder {
    */
   private createPdfBlob(bigBuffer: BigBuffer): Blob {
     assert(bigBuffer.invalidBuffer !== true);
-    let bytes: Uint8Array|null = null;
+    let bytes: Uint8Array<ArrayBuffer>|null = null;
     if (bigBuffer.bytes !== undefined) {
       bytes = new Uint8Array(bigBuffer.bytes);
     } else {

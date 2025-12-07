@@ -17,11 +17,6 @@
 
 namespace blink {
 
-constexpr const char* kBoxOptionBorderBox = "border-box";
-constexpr const char* kBoxOptionContentBox = "content-box";
-constexpr const char* kBoxOptionDevicePixelContentBox =
-    "device-pixel-content-box";
-
 ResizeObserver* ResizeObserver::Create(ScriptState* script_state,
                                        V8ResizeObserverCallback* callback) {
   return MakeGarbageCollected<ResizeObserver>(
@@ -58,19 +53,22 @@ ResizeObserver::ResizeObserver(Delegate* delegate, LocalDOMWindow* window)
   }
 }
 
-ResizeObserverBoxOptions ResizeObserver::ParseBoxOptions(
-    const String& box_options) {
-  if (box_options == kBoxOptionBorderBox)
-    return ResizeObserverBoxOptions::kBorderBox;
-  if (box_options == kBoxOptionContentBox)
-    return ResizeObserverBoxOptions::kContentBox;
-  if (box_options == kBoxOptionDevicePixelContentBox)
-    return ResizeObserverBoxOptions::kDevicePixelContentBox;
-  return ResizeObserverBoxOptions::kContentBox;
+ResizeObserverBoxOptions ResizeObserver::V8EnumToBoxOptions(
+    V8ResizeObserverBoxOptions::Enum box_options) {
+  switch (box_options) {
+    case V8ResizeObserverBoxOptions::Enum::kBorderBox:
+      return ResizeObserverBoxOptions::kBorderBox;
+    case V8ResizeObserverBoxOptions::Enum::kContentBox:
+      return ResizeObserverBoxOptions::kContentBox;
+    case V8ResizeObserverBoxOptions::Enum::kDevicePixelContentBox:
+      return ResizeObserverBoxOptions::kDevicePixelContentBox;
+  }
+  NOTREACHED();
 }
 
 void ResizeObserver::observeInternal(Element* target,
-                                     ResizeObserverBoxOptions box_option) {
+                                     ResizeObserverBoxOptions box_option,
+                                     bool fire_on_every_paint) {
   auto& observer_map = target->EnsureResizeObserverData();
 
   if (observer_map.Contains(this)) {
@@ -90,8 +88,8 @@ void ResizeObserver::observeInternal(Element* target,
     observer_map.erase(observation);
   }
 
-  auto* observation =
-      MakeGarbageCollected<ResizeObservation>(target, this, box_option);
+  auto* observation = MakeGarbageCollected<ResizeObservation>(
+      target, this, box_option, fire_on_every_paint);
   observations_.insert(observation);
   observer_map.Set(this, observation);
 
@@ -101,12 +99,14 @@ void ResizeObserver::observeInternal(Element* target,
 
 void ResizeObserver::observe(Element* target,
                              const ResizeObserverOptions* options) {
-  ResizeObserverBoxOptions box_option = ParseBoxOptions(options->box());
-  observeInternal(target, box_option);
+  ResizeObserverBoxOptions box_option =
+      V8EnumToBoxOptions(options->box().AsEnum());
+  bool fire_on_every_paint = options->fireOnEveryPaint();
+  observeInternal(target, box_option, fire_on_every_paint);
 }
 
 void ResizeObserver::observe(Element* target) {
-  observeInternal(target, ResizeObserverBoxOptions::kContentBox);
+  observeInternal(target, ResizeObserverBoxOptions::kContentBox, false);
 }
 
 void ResizeObserver::unobserve(Element* target) {
@@ -141,8 +141,10 @@ size_t ResizeObserver::GatherObservations(size_t deeper_than) {
 
   size_t min_observed_depth = ResizeObserverController::kDepthBottom;
   for (auto& observation : observations_) {
-    if (!observation->ObservationSizeOutOfSync())
+    if (!observation->ObservationSizeOutOfSync() &&
+        (deeper_than != 0 || !observation->NeedsObservationForRepaint())) {
       continue;
+    }
     auto depth = observation->TargetDepth();
     if (depth > deeper_than) {
       active_observations_.push_back(*observation);

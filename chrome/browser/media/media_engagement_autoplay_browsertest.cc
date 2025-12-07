@@ -29,8 +29,11 @@
 namespace {
 
 base::FilePath GetPythonPath() {
-  // Every environment should have python3.
-  return base::FilePath(FILE_PATH_LITERAL("python3"));
+#if BUILDFLAG(IS_WIN)
+  return base::FilePath(FILE_PATH_LITERAL("vpython3.bat"));
+#else
+  return base::FilePath(FILE_PATH_LITERAL("vpython3"));
+#endif
 }
 
 const base::FilePath kTestDataPath = base::FilePath(
@@ -151,9 +154,8 @@ class MediaEngagementAutoplayBrowserTest
     // Write JSON file with the server origin in it.
     base::Value::List list;
     list.Append(origin.Serialize());
-    std::string json_data;
-    base::JSONWriter::Write(list, &json_data);
-    EXPECT_TRUE(base::WriteFile(input_path, json_data));
+    EXPECT_TRUE(
+        base::WriteFile(input_path, base::WriteJson(list).value_or("")));
 
     // Get the source root. The make_dafsa.py script is in here.
     base::FilePath src_root;

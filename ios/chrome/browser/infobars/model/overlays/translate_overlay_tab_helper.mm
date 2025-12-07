@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/infobars/model/overlays/translate_overlay_tab_helper.h"
 
+#import "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_request_inserter.h"
@@ -13,6 +14,10 @@
 #import "ios/chrome/browser/overlays/model/public/infobar_banner/infobar_banner_placeholder_request_config.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue_util.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/tips_manager/model/tips_manager_ios.h"
+#import "ios/chrome/browser/tips_manager/model/tips_manager_ios_factory.h"
 
 using translate_infobar_overlays::PlaceholderRequestCancelHandler;
 
@@ -30,8 +35,6 @@ base::RepeatingCallback<bool(OverlayRequest*)> ConfigAndInfoBarMatcher(
       infobar);
 }
 }  // namespace
-
-WEB_STATE_USER_DATA_KEY_IMPL(TranslateOverlayTabHelper)
 
 TranslateOverlayTabHelper::TranslateOverlayTabHelper(web::WebState* web_state)
     : translate_step_observer_(this),
@@ -101,8 +104,13 @@ void TranslateOverlayTabHelper::TranslateDidFinish(infobars::InfoBar* infobar,
   }
 }
 
-void TranslateOverlayTabHelper::TranslateInfoBarAdded(InfoBarIOS* infobar) {
+void TranslateOverlayTabHelper::TranslateInfoBarAdded(
+    InfoBarIOS* infobar,
+    translate::TranslateStep step) {
   translate_step_observer_.SetTranslateInfoBar(infobar);
+  if (step == translate::TranslateStep::TRANSLATE_STEP_AFTER_TRANSLATE) {
+    infobar->set_accepted(true);
+  }
 }
 
 void TranslateOverlayTabHelper::UpdateForWebStateDestroyed() {
@@ -174,27 +182,45 @@ void TranslateOverlayTabHelper::TranslateStepObserver::SetTranslateInfoBar(
 TranslateOverlayTabHelper::TranslateInfobarObserver::TranslateInfobarObserver(
     web::WebState* web_state,
     TranslateOverlayTabHelper* tab_helper)
-    : tab_helper_(tab_helper) {
+    : tab_helper_(tab_helper), tips_manager_(nullptr) {
   infobars::InfoBarManager* manager =
       InfoBarManagerImpl::FromWebState(web_state);
   DCHECK(manager);
   infobar_manager_scoped_observation_.Observe(manager);
+
+  if (IsSegmentationTipsManagerEnabled()) {
+    ProfileIOS* const profile =
+        ProfileIOS::FromBrowserState(web_state->GetBrowserState());
+
+    tips_manager_ = TipsManagerIOSFactory::GetForProfile(profile);
+  }
 }
 
 TranslateOverlayTabHelper::TranslateInfobarObserver::
-    ~TranslateInfobarObserver() = default;
+    ~TranslateInfobarObserver() {
+  tips_manager_ = nullptr;
+}
 
 void TranslateOverlayTabHelper::TranslateInfobarObserver::OnInfoBarAdded(
     infobars::InfoBar* infobar) {
   translate::TranslateInfoBarDelegate* delegate =
       infobar->delegate()->AsTranslateInfoBarDelegate();
   if (delegate) {
-    tab_helper_->TranslateInfoBarAdded(static_cast<InfoBarIOS*>(infobar));
+    tab_helper_->TranslateInfoBarAdded(static_cast<InfoBarIOS*>(infobar),
+                                       delegate->translate_step());
+  }
+
+  // Records a visit to a website in a language different from the user's
+  // default language. This allows the Tips Manager to offer assistance
+  // with translation features if available.
+  if (IsSegmentationTipsManagerEnabled() && tips_manager_) {
+    tips_manager_->NotifySignal(segmentation_platform::tips_manager::signals::
+                                    kOpenedWebsiteInAnotherLanguage);
   }
 }
 
-void TranslateOverlayTabHelper::TranslateInfobarObserver::OnManagerShuttingDown(
-    infobars::InfoBarManager* manager) {
+void TranslateOverlayTabHelper::TranslateInfobarObserver::
+    OnManagerWillBeDestroyed(infobars::InfoBarManager* manager) {
   DCHECK(infobar_manager_scoped_observation_.IsObservingSource(manager));
   infobar_manager_scoped_observation_.Reset();
 }

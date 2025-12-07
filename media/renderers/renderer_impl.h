@@ -59,19 +59,17 @@ class MEDIA_EXPORT RendererImpl final : public Renderer {
   void SetCdm(CdmContext* cdm_context, CdmAttachedCB cdm_attached_cb) final;
   void SetLatencyHint(std::optional<base::TimeDelta> latency_hint) final;
   void SetPreservesPitch(bool preserves_pitch) final;
-  void SetWasPlayedWithUserActivation(
-      bool was_played_with_user_activation) final;
+  void SetRenderMutedAudio(bool render_muted_audio) final;
+  void SetWasPlayedWithUserActivationAndHighMediaEngagement(
+      bool was_played_with_user_activation_and_high_media_engagement) final;
   void Flush(base::OnceClosure flush_cb) final;
   void StartPlayingFrom(base::TimeDelta time) final;
   void SetPlaybackRate(double playback_rate) final;
   void SetVolume(float volume) final;
   base::TimeDelta GetMediaTime() final;
-  void OnSelectedVideoTracksChanged(
-      const std::vector<DemuxerStream*>& enabled_tracks,
-      base::OnceClosure change_completed_cb) final;
-  void OnEnabledAudioTracksChanged(
-      const std::vector<DemuxerStream*>& enabled_tracks,
-      base::OnceClosure change_completed_cb) final;
+  void OnTracksChanged(DemuxerStream::Type track_type,
+                       DemuxerStream* enabled_track,
+                       base::OnceClosure change_completed_cb) final;
   RendererType GetRendererType() final;
 
   // Helper functions for testing purposes. Must be called before Initialize().

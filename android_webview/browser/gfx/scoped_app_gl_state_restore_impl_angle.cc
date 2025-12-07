@@ -7,7 +7,8 @@
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
+#include "base/logging.h"
 #include "base/native_library.h"
 #include "base/threading/thread_restrictions.h"
 #include "ui/gl/gl_context.h"
@@ -81,8 +82,7 @@ bool ClearGLErrors(bool warn, const char* msg) {
 namespace internal {
 
 ScopedAppGLStateRestoreImplAngle::ScopedAppGLStateRestoreImplAngle(
-    ScopedAppGLStateRestore::CallMode mode,
-    bool save_restore) {
+    ScopedAppGLStateRestore::CallMode mode) {
   os::InitializeGLBindings();
 
   os::ClearGLErrors(true, "Incoming GLError");
@@ -93,8 +93,8 @@ ScopedAppGLStateRestoreImplAngle::ScopedAppGLStateRestoreImplAngle(
 #endif
 
   if (mode == ScopedAppGLStateRestore::MODE_DRAW &&
-      base::android::BuildInfo::GetInstance()->sdk_int() ==
-          base::android::SDK_VERSION_S) {
+      base::android::android_info::sdk_int() ==
+          base::android::android_info::SDK_VERSION_S) {
     GLint red_bits = 0;
     GLint green_bits = 0;
     GLint blue_bits = 0;

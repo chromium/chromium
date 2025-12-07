@@ -3,42 +3,73 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//chrome/android/features/android_library_factory_tmpl.gni")
+import("//chrome/common/features.gni")
 import("//third_party/jni_zero/jni_zero.gni")
+import("//tools/grit/grit_rule.gni")
+
+java_strings_grd("java_strings_grd") {
+  defines = chrome_grit_defines
+  grd_file = "java/strings/android_tab_ui_strings.grd"
+}
 
 android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [
+    "java/src/org/chromium/chrome/browser/tab_ui/ActionConfirmationManager.java",
     "java/src/org/chromium/chrome/browser/tab_ui/InvalidationAwareThumbnailProvider.java",
     "java/src/org/chromium/chrome/browser/tab_ui/OnTabSelectingListener.java",
     "java/src/org/chromium/chrome/browser/tab_ui/RecyclerViewPosition.java",
+    "java/src/org/chromium/chrome/browser/tab_ui/SuggestionLifecycleObserverHandler.java",
+    "java/src/org/chromium/chrome/browser/tab_ui/TabCardThemeUtil.java",
     "java/src/org/chromium/chrome/browser/tab_ui/TabContentManager.java",
+    "java/src/org/chromium/chrome/browser/tab_ui/TabContentManagerThumbnailProvider.java",
     "java/src/org/chromium/chrome/browser/tab_ui/TabGridIphDialogCoordinator.java",
     "java/src/org/chromium/chrome/browser/tab_ui/TabListFaviconProvider.java",
+    "java/src/org/chromium/chrome/browser/tab_ui/TabModelDotInfo.java",
     "java/src/org/chromium/chrome/browser/tab_ui/TabSwitcher.java",
     "java/src/org/chromium/chrome/browser/tab_ui/TabSwitcherCustomViewManager.java",
+    "java/src/org/chromium/chrome/browser/tab_ui/TabSwitcherGroupSuggestionService.java",
     "java/src/org/chromium/chrome/browser/tab_ui/TabSwitcherIphController.java",
+    "java/src/org/chromium/chrome/browser/tab_ui/TabSwitcherUtils.java",
     "java/src/org/chromium/chrome/browser/tab_ui/TabThumbnailView.java",
-    "java/src/org/chromium/chrome/browser/tab_ui/TabUiThemeUtils.java",
     "java/src/org/chromium/chrome/browser/tab_ui/ThumbnailProvider.java",
   ]
   deps = [
     ":java_resources",
-    "//base:base_cached_flags_java",
     "//base:base_java",
     "//chrome/browser/browser_controls/android:java",
+    "//chrome/browser/collaboration:messaging_factory_java",
     "//chrome/browser/flags:java",
-    "//chrome/browser/hub:java",
+    "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/signin/services/android:java",
+    "//chrome/browser/sync/android:java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/tab_group_suggestion:java",
+    "//chrome/browser/tab_group_sync:factory_java",
     "//chrome/browser/tabmodel:java",
+    "//chrome/browser/tabwindow:java",
     "//chrome/browser/ui/android/favicon:java",
     "//chrome/browser/ui/android/favicon:java_resources",
+    "//chrome/browser/ui/android/layouts:java",
     "//chrome/browser/ui/android/native_page:java",
+    "//chrome/browser/ui/android/theme:java",
+    "//chrome/browser/user_education:java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/browser_ui/widget/android:java_resources",
+    "//components/cached_flags:java",
+    "//components/collaboration/public:messaging_java",
     "//components/embedder_support/android:util_java",
+    "//components/feature_engagement/public:public_java",
+    "//components/prefs/android:java",
+    "//components/saved_tab_groups/public:java",
+    "//components/signin/public/android:java",
+    "//components/sync/android:sync_java",
     "//components/tab_groups:tab_groups_java",
+    "//components/user_prefs/android:java",
+    "//components/visited_url_ranking/public:public_java",
     "//content/public/android:content_full_java",
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -54,7 +85,7 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
-    "java/res/drawable/ic_group_icon_16dp.xml",
+    "java/res/drawable/empty_thumbnail_background.xml",
     "java/res/drawable/ic_tab_placeholder.xml",
     "java/res/drawable/iph_drag_and_drop_animated_drawable.xml",
     "java/res/drawable/tab_strip_favicon_circle.xml",
@@ -62,10 +93,10 @@ android_resources("java_resources") {
     "java/res/values/attrs.xml",
     "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
-    "java/res/values/styles.xml",
     "java/res/values/values.xml",
   ]
   deps = [
+    ":java_strings_grd",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",
@@ -82,24 +113,65 @@ robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.tab_ui"
 
   sources = [
+    "junit/src/org/chromium/chrome/browser/tab_ui/ActionConfirmationManagerUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/tab_ui/SuggestionLifecycleObserverHandlerUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/tab_ui/TabCardThemeUtilUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_ui/TabListFaviconProviderTest.java",
     "junit/src/org/chromium/chrome/browser/tab_ui/TabSwitcherCustomViewManagerUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/tab_ui/TabSwitcherGroupSuggestionServiceUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/tab_ui/TabSwitcherUtilsUnitTest.java",
   ]
 
   deps = [
     ":java",
     ":java_resources",
     "//base:base_java",
+    "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//base:holder_java",
+    "//chrome/android/features/tab_ui:java_resources",
+    "//chrome/browser/collaboration:messaging_factory_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/signin/services/android:java",
+    "//chrome/browser/sync/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tab_group_suggestion:java",
+    "//chrome/browser/tab_group_sync:factory_java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/tabwindow:java",
     "//chrome/browser/ui/android/favicon:java",
+    "//chrome/browser/ui/android/layouts:java",
+    "//chrome/browser/ui/android/theme:java",
+    "//chrome/browser/user_education:java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/widget/android:java",
+    "//components/collaboration/public:messaging_java",
+    "//components/feature_engagement/public:public_java",
+    "//components/prefs/android:java",
+    "//components/saved_tab_groups/public:java",
+    "//components/saved_tab_groups/public:test_support_java",
+    "//components/signin/public/android:java",
+    "//components/signin/public/android:signin_java_test_support",
+    "//components/sync/android:sync_java",
     "//components/tab_groups:tab_groups_java",
+    "//components/user_prefs/android:java",
+    "//components/visited_url_ranking/public:public_java",
+    "//content/public/android:content_full_java",
+    "//third_party/android_deps:material_design_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/androidx:androidx_test_runner_java",
-    "//third_party/junit:junit",
+    "//third_party/jni_zero:gendeps_java",
+    "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
     "//url:gurl_java",
     "//url:gurl_junit_test_support",
   ]

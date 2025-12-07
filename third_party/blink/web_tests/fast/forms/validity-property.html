@@ -33,7 +33,7 @@ for (var i = 0; i < controls.length; ++i) {
     shouldBe('countAttr(controls[i].validity)', '11');
 }
 
-shouldThrow('new ValidityState()', '"TypeError: Illegal constructor"');
+shouldThrow('new ValidityState()', '"TypeError: Failed to construct \'ValidityState\': Illegal constructor"');
 </script>
 
 </body>

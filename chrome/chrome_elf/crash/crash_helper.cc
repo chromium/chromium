@@ -13,9 +13,9 @@
 #include <vector>
 
 #include "chrome/app/chrome_crash_reporter_client_win.h"
-#include "chrome/chrome_elf/hook_util/hook_util.h"
 #include "components/crash/core/app/crashpad.h"
 #include "components/crash/core/common/crash_keys.h"
+#include "sandbox/policy/win/hook_util/hook_util.h"
 #include "third_party/crashpad/crashpad/client/crashpad_client.h"
 
 namespace {
@@ -44,7 +44,7 @@ std::vector<crash_reporter::Report>* g_crash_reports = nullptr;
 // TODO(ananta).
 // Check if it is possible to fix EAT patching or use sidestep patching for
 // 32 bit and 64 bit for this purpose.
-elf_hook::IATHook* g_set_unhandled_exception_filter = nullptr;
+sandbox::policy::IATHook* g_set_unhandled_exception_filter = nullptr;
 
 // Hook function, which ignores the request to set an unhandled-exception
 // filter.
@@ -76,7 +76,7 @@ bool InitializeCrashReporting() {
   // No global objects with destructors, so using global pointers.
   // DllMain on detach will clean these up.
   g_crash_reports = new std::vector<crash_reporter::Report>;
-  g_set_unhandled_exception_filter = new elf_hook::IATHook();
+  g_set_unhandled_exception_filter = new sandbox::policy::IATHook();
 
   ChromeCrashReporterClient::InitializeCrashReportingForProcess();
 

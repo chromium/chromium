@@ -8,11 +8,10 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/services/secure_channel/authenticated_channel.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 
 namespace ash::secure_channel {
-
-class AuthenticatedChannel;
 
 // Performs an operation which creates a connection to a remote device. A
 // ConnectToDeviceOperation can only be used for a single connection attempt; if
@@ -33,19 +32,16 @@ class ConnectToDeviceOperation {
     if (has_finished_)
       return;
 
-    PA_LOG(ERROR) << "ConnectToDeviceOperation::~ConnectToDeviceOperation(): "
-                  << "Operation deleted before it finished or was canceled.";
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED() << "ConnectToDeviceOperation::~ConnectToDeviceOperation(): "
+                 << "Operation deleted before it finished or was canceled.";
   }
 
   // Updates the priority for this operation.
   void UpdateConnectionPriority(ConnectionPriority connection_priority) {
     if (has_finished_) {
-      PA_LOG(ERROR) << "ConnectToDeviceOperation::UpdateConnectionPriority(): "
-                    << "Connection priority update requested, but the "
-                    << "operation was no longer active.";
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED() << "ConnectToDeviceOperation::UpdateConnectionPriority(): "
+                   << "Connection priority update requested, but the "
+                   << "operation was no longer active.";
     }
 
     connection_priority_ = connection_priority;
@@ -56,10 +52,8 @@ class ConnectToDeviceOperation {
   // success/failure callbacks passed to the constructor to be invoked.
   void Cancel() {
     if (has_finished_) {
-      PA_LOG(ERROR) << "ConnectToDeviceOperation::Cancel(): Tried to cancel "
-                    << "operation after it had already finished.";
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED() << "ConnectToDeviceOperation::Cancel(): Tried to cancel "
+                   << "operation after it had already finished.";
     }
 
     has_finished_ = true;

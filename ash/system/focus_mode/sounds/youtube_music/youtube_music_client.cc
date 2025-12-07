@@ -9,6 +9,7 @@
 
 #include "ash/system/focus_mode/sounds/youtube_music/youtube_music_types.h"
 #include "ash/system/focus_mode/sounds/youtube_music/youtube_music_util.h"
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "google_apis/common/request_sender.h"
@@ -58,6 +59,15 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           }
         }
     )");
+
+// Runs `callback` with `PARSE_ERROR` for payloads that are unexpectedly null.
+// `callback` is in an unspecified state after this runs.
+template <class T>
+void ReportParseError(T&& callback) {
+  google_apis::youtube_music::ApiError api_error;
+  api_error.error_code = google_apis::PARSE_ERROR;
+  std::move(callback).Run(base::unexpected(api_error));
+}
 
 google_apis::youtube_music::ReportPlaybackRequestPayload::PlaybackState
 GetPayloadPlaybackState(const PlaybackState player_state) {
@@ -134,22 +144,24 @@ GetNetworkConnectionType() {
 std::unique_ptr<google_apis::youtube_music::ReportPlaybackRequestPayload>
 CreateReportPlaybackRequestPayload(const std::string& playback_reporting_token,
                                    const PlaybackData& playback_data) {
-  base::Time current_time = base::Time::Now();
-  std::optional<google_apis::youtube_music::ReportPlaybackRequestPayload::
-                    WatchTimeSegment>
-      watch_time_segment = std::nullopt;
-  if (!playback_data.initial_playback &&
-      playback_data.media_start.has_value() &&
-      playback_data.media_end.has_value()) {
-    watch_time_segment = google_apis::youtube_music::
-        ReportPlaybackRequestPayload::WatchTimeSegment(
-            base::Seconds(playback_data.media_start.value()),
-            base::Seconds(playback_data.media_end.value()), current_time);
+  std::vector<google_apis::youtube_music::ReportPlaybackRequestPayload::
+                  WatchTimeSegment>
+      watch_time_segments;
+  watch_time_segments.reserve(playback_data.media_segments.size());
+  for (const MediaSegment& media_segment : playback_data.media_segments) {
+    watch_time_segments.emplace_back(
+        google_apis::youtube_music::ReportPlaybackRequestPayload::
+            WatchTimeSegment(base::Seconds(media_segment.media_start),
+                             base::Seconds(media_segment.media_end),
+                             media_segment.client_start_time));
   }
   google_apis::youtube_music::ReportPlaybackRequestPayload::Params param(
-      playback_reporting_token, current_time, base::TimeDelta(),
-      base::TimeDelta(), GetNetworkConnectionType(),
-      GetPayloadPlaybackState(playback_data.state), watch_time_segment);
+      playback_data.initial_playback, playback_reporting_token,
+      playback_data.client_current_time,
+      base::Seconds(playback_data.playback_start_offset),
+      base::Seconds(playback_data.media_time_current),
+      GetNetworkConnectionType(), GetPayloadPlaybackState(playback_data.state),
+      watch_time_segments);
   return std::make_unique<
       google_apis::youtube_music::ReportPlaybackRequestPayload>(param);
 }
@@ -157,8 +169,10 @@ CreateReportPlaybackRequestPayload(const std::string& playback_reporting_token,
 }  // namespace
 
 YouTubeMusicClient::YouTubeMusicClient(
-    const CreateRequestSenderCallback& create_request_sender_callback)
-    : create_request_sender_callback_(create_request_sender_callback) {}
+    const CreateRequestSenderCallback& create_request_sender_callback,
+    std::unique_ptr<RequestSigner> request_signer)
+    : create_request_sender_callback_(create_request_sender_callback),
+      request_signer_(std::move(request_signer)) {}
 
 YouTubeMusicClient::~YouTubeMusicClient() = default;
 
@@ -169,7 +183,7 @@ void YouTubeMusicClient::GetMusicSection(GetMusicSectionCallback callback) {
   auto* const request_sender = GetRequestSender();
   request_sender->StartRequestWithAuthRetry(
       std::make_unique<google_apis::youtube_music::GetMusicSectionRequest>(
-          request_sender,
+          request_sender, request_signer_->DeviceInfoHeader(),
           base::BindOnce(&YouTubeMusicClient::OnGetMusicSectionRequestDone,
                          weak_factory_.GetWeakPtr(), base::Time::Now())));
 }
@@ -183,7 +197,7 @@ void YouTubeMusicClient::GetPlaylist(
   auto* const request_sender = GetRequestSender();
   request_sender->StartRequestWithAuthRetry(
       std::make_unique<google_apis::youtube_music::GetPlaylistRequest>(
-          request_sender, playlist_id,
+          request_sender, request_signer_->DeviceInfoHeader(), playlist_id,
           base::BindOnce(&YouTubeMusicClient::OnGetPlaylistRequestDone,
                          weak_factory_.GetWeakPtr(), playlist_id,
                          base::Time::Now())));
@@ -202,12 +216,38 @@ void YouTubeMusicClient::PlaybackQueuePrepare(
               ExplicitFilter::kBestEffort,
           google_apis::youtube_music::PlaybackQueuePrepareRequestPayload::
               ShuffleMode::kOn);
+
+  std::string payload = request_payload.ToJson();
+
   auto* const request_sender = GetRequestSender();
-  request_sender->StartRequestWithAuthRetry(
-      std::make_unique<google_apis::youtube_music::PlaybackQueuePrepareRequest>(
-          request_sender, request_payload,
+  google_apis::youtube_music::PlaybackQueuePrepareRequest::Callback
+      request_callback =
           base::BindOnce(&YouTubeMusicClient::OnPlaybackQueuePrepareRequestDone,
-                         weak_factory_.GetWeakPtr(), base::Time::Now())));
+                         weak_factory_.GetWeakPtr(), base::Time::Now());
+  auto request =
+      std::make_unique<google_apis::youtube_music::PlaybackQueuePrepareRequest>(
+          request_sender, request_payload, std::move(request_callback));
+
+  if (!request_signer_->GenerateHeaders(
+          base::as_byte_span(payload),
+          base::BindOnce(
+              &YouTubeMusicClient::OnRequestSigned, weak_factory_.GetWeakPtr(),
+              base::Unretained(request_sender), std::move(request)))) {
+    LOG(WARNING) << "Cannot sign request";
+    return;
+  }
+}
+
+void YouTubeMusicClient::OnRequestSigned(
+    google_apis::RequestSender* request_sender,
+    std::unique_ptr<google_apis::youtube_music::SignedRequest> signed_request,
+    const std::vector<std::string>& headers) {
+  if (headers.empty()) {
+    LOG(WARNING) << "Request signing failed. Cannot make API request.";
+    return;
+  }
+  signed_request->SetSigningHeaders(std::vector<std::string>(headers));
+  request_sender->StartRequestWithAuthRetry(std::move(signed_request));
 }
 
 void YouTubeMusicClient::PlaybackQueueNext(
@@ -217,12 +257,27 @@ void YouTubeMusicClient::PlaybackQueueNext(
   playback_context_next_callback_ = std::move(callback);
 
   auto* const request_sender = GetRequestSender();
-  request_sender->StartRequestWithAuthRetry(
-      std::make_unique<google_apis::youtube_music::PlaybackQueueNextRequest>(
-          request_sender,
+  google_apis::youtube_music::PlaybackQueueNextRequest::Callback
+      request_callback =
           base::BindOnce(&YouTubeMusicClient::OnPlaybackQueueNextRequestDone,
-                         weak_factory_.GetWeakPtr(), base::Time::Now()),
-          playback_queue_id));
+                         weak_factory_.GetWeakPtr(), base::Time::Now());
+
+  google_apis::youtube_music::PlaybackQueueNextRequestPayload payload;
+  std::string payload_string = payload.ToJson();
+
+  auto request =
+      std::make_unique<google_apis::youtube_music::PlaybackQueueNextRequest>(
+          request_sender, payload, std::move(request_callback),
+          playback_queue_id);
+
+  if (!request_signer_->GenerateHeaders(
+          base::as_byte_span(payload_string),
+          base::BindOnce(
+              &YouTubeMusicClient::OnRequestSigned, weak_factory_.GetWeakPtr(),
+              base::Unretained(request_sender), std::move(request)))) {
+    LOG(WARNING) << "Cannot sign request";
+    return;
+  }
 }
 
 void YouTubeMusicClient::ReportPlayback(
@@ -233,21 +288,30 @@ void YouTubeMusicClient::ReportPlayback(
   report_playback_callback_ = std::move(callback);
 
   auto* const request_sender = GetRequestSender();
-  request_sender->StartRequestWithAuthRetry(
+  auto payload = CreateReportPlaybackRequestPayload(playback_reporting_token,
+                                                    playback_data);
+  std::string json = payload->ToJson();
+  auto request_callback =
+      base::BindOnce(&YouTubeMusicClient::OnReportPlaybackRequestDone,
+                     weak_factory_.GetWeakPtr(), base::Time::Now());
+  auto request =
       std::make_unique<google_apis::youtube_music::ReportPlaybackRequest>(
-          request_sender,
-          CreateReportPlaybackRequestPayload(playback_reporting_token,
-                                             playback_data),
-          base::BindOnce(&YouTubeMusicClient::OnReportPlaybackRequestDone,
-                         weak_factory_.GetWeakPtr(), base::Time::Now())));
+          request_sender, std::move(payload), std::move(request_callback));
+  if (!request_signer_->GenerateHeaders(
+          base::as_byte_span(json),
+          base::BindOnce(
+              &YouTubeMusicClient::OnRequestSigned, weak_factory_.GetWeakPtr(),
+              base::Unretained(request_sender), std::move(request)))) {
+    LOG(WARNING) << "Cannot sign request";
+    return;
+  }
 }
 
 google_apis::RequestSender* YouTubeMusicClient::GetRequestSender() {
   if (!request_sender_) {
     CHECK(create_request_sender_callback_);
     request_sender_ =
-        std::move(create_request_sender_callback_)
-            .Run({GaiaConstants::kYouTubeMusicOAuth2Scope}, kTrafficAnnotation);
+        std::move(create_request_sender_callback_).Run(kTrafficAnnotation);
     create_request_sender_callback_ = base::NullCallback();
     CHECK(request_sender_);
   }
@@ -259,27 +323,31 @@ void YouTubeMusicClient::OnGetMusicSectionRequestDone(
     base::expected<
         std::unique_ptr<
             google_apis::youtube_music::TopLevelMusicRecommendations>,
-        google_apis::ApiErrorCode> result) {
+        google_apis::youtube_music::ApiError> result) {
   if (!music_section_callback_) {
     return;
   }
 
   if (!result.has_value()) {
-    std::move(music_section_callback_).Run(result.error(), std::nullopt);
+    std::move(music_section_callback_).Run(base::unexpected(result.error()));
+    return;
+  }
+
+  if (!result.value()) {
+    // This result is always expected to have contents.
+    ReportParseError(std::move(music_section_callback_));
     return;
   }
 
   std::move(music_section_callback_)
-      .Run(google_apis::HTTP_SUCCESS,
-           GetPlaylistsFromApiTopLevelMusicRecommendations(
-               result.value().get()));
+      .Run(GetPlaylistsFromApiTopLevelMusicRecommendations(*result.value()));
 }
 
 void YouTubeMusicClient::OnGetPlaylistRequestDone(
     const std::string& playlist_id,
     const base::Time& request_start_time,
     base::expected<std::unique_ptr<google_apis::youtube_music::Playlist>,
-                   google_apis::ApiErrorCode> result) {
+                   google_apis::youtube_music::ApiError> result) {
   if (playlist_callback_map_.find(playlist_id) ==
       playlist_callback_map_.end()) {
     return;
@@ -294,88 +362,87 @@ void YouTubeMusicClient::OnGetPlaylistRequestDone(
   }
 
   if (!result.has_value()) {
-    std::move(playlist_callback).Run(result.error(), std::nullopt);
+    std::move(playlist_callback).Run(base::unexpected(result.error()));
     return;
   }
 
-  std::move(playlist_callback)
-      .Run(google_apis::HTTP_SUCCESS,
-           GetPlaylistFromApiPlaylist(result.value().get()));
+  if (!result.value()) {
+    // This result is always expected to have contents.
+    ReportParseError(std::move(playlist_callback));
+    return;
+  }
+
+  std::move(playlist_callback).Run(GetPlaylistFromApiPlaylist(*result.value()));
 }
 
 void YouTubeMusicClient::OnPlaybackQueuePrepareRequestDone(
     const base::Time& request_start_time,
     base::expected<std::unique_ptr<google_apis::youtube_music::Queue>,
-                   google_apis::ApiErrorCode> result) {
+                   google_apis::youtube_music::ApiError> result) {
   if (!playback_context_prepare_callback_) {
     return;
   }
 
   if (!result.has_value()) {
     std::move(playback_context_prepare_callback_)
-        .Run(result.error(), std::nullopt);
+        .Run(base::unexpected(result.error()));
     return;
   }
 
   if (!result.value()) {
-    std::move(playback_context_prepare_callback_)
-        .Run(google_apis::ApiErrorCode::HTTP_SUCCESS, std::nullopt);
+    ReportParseError(std::move(playback_context_prepare_callback_));
     return;
   }
 
   std::move(playback_context_prepare_callback_)
-      .Run(google_apis::HTTP_SUCCESS,
-           GetPlaybackContextFromApiQueue(result.value().get()));
+      .Run(GetPlaybackContextFromApiQueue(*result.value()));
 }
 
 void YouTubeMusicClient::OnPlaybackQueueNextRequestDone(
     const base::Time& request_start_time,
     base::expected<std::unique_ptr<google_apis::youtube_music::QueueContainer>,
-                   google_apis::ApiErrorCode> result) {
+                   google_apis::youtube_music::ApiError> result) {
   if (!playback_context_next_callback_) {
     return;
   }
 
   if (!result.has_value()) {
     std::move(playback_context_next_callback_)
-        .Run(result.error(), std::nullopt);
+        .Run(base::unexpected(result.error()));
     return;
   }
 
   if (!result.value()) {
-    std::move(playback_context_next_callback_)
-        .Run(google_apis::ApiErrorCode::HTTP_SUCCESS, std::nullopt);
+    // This result is always expected to have contents.
+    ReportParseError(std::move(playback_context_next_callback_));
     return;
   }
 
   std::move(playback_context_next_callback_)
-      .Run(google_apis::HTTP_SUCCESS,
-           GetPlaybackContextFromApiQueue(&result.value()->queue()));
+      .Run(GetPlaybackContextFromApiQueue(result.value()->queue()));
 }
 
 void YouTubeMusicClient::OnReportPlaybackRequestDone(
     const base::Time& request_start_time,
     base::expected<
         std::unique_ptr<google_apis::youtube_music::ReportPlaybackResult>,
-        google_apis::ApiErrorCode> result) {
+        google_apis::youtube_music::ApiError> result) {
   if (!report_playback_callback_) {
     return;
   }
 
   if (!result.has_value()) {
-    std::move(report_playback_callback_).Run(result.error(), std::nullopt);
+    std::move(report_playback_callback_).Run(base::unexpected(result.error()));
     return;
   }
 
   if (!result.value()) {
-    std::move(report_playback_callback_)
-        .Run(google_apis::ApiErrorCode::HTTP_SUCCESS, std::nullopt);
+    ReportParseError(std::move(report_playback_callback_));
     return;
   }
 
   std::move(report_playback_callback_)
-      .Run(google_apis::HTTP_SUCCESS,
-           result.value()->playback_reporting_token());
+      .Run(result.value()->playback_reporting_token());
 }
 
 }  // namespace ash::youtube_music

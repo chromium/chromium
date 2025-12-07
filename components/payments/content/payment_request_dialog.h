@@ -5,15 +5,16 @@
 #ifndef COMPONENTS_PAYMENTS_CONTENT_PAYMENT_REQUEST_DIALOG_H_
 #define COMPONENTS_PAYMENTS_CONTENT_PAYMENT_REQUEST_DIALOG_H_
 
-#include "components/autofill/core/browser/payments/full_card_request.h"
 #include "components/payments/content/payment_request_display_manager.h"
+
+class GURL;
 
 namespace payments {
 
 // Used to interact with a cross-platform Payment Request dialog.
 class PaymentRequestDialog {
  public:
-  virtual ~PaymentRequestDialog() {}
+  virtual ~PaymentRequestDialog() = default;
 
   virtual void ShowDialog() = 0;
 

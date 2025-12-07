@@ -4,83 +4,47 @@
 
 #include "chrome/browser/extensions/extension_view_host.h"
 
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/extension_view.h"
-#include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/file_select_helper.h"
-#include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
-#include "chrome/browser/ui/browser.h"
-#include "components/autofill/content/browser/content_autofill_driver_factory.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
-#include "components/web_modal/web_contents_modal_dialog_manager.h"
-#include "content/public/browser/color_chooser.h"
 #include "content/public/browser/file_select_listener.h"
+#include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
-#include "content/public/browser/render_process_host.h"
-#include "content/public/browser/render_view_host.h"
-#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/process_util.h"
+#include "extensions/buildflags/buildflags.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
-#include "ui/base/resource/resource_bundle.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
-ExtensionViewHost::ExtensionViewHost(const Extension* extension,
-                                     content::SiteInstance* site_instance,
-                                     const GURL& url,
-                                     mojom::ViewType host_type,
-                                     Browser* browser)
-    : ExtensionHost(extension, site_instance, url, host_type),
-      browser_(browser) {
+ExtensionViewHost::Delegate::Delegate() = default;
+ExtensionViewHost::Delegate::~Delegate() = default;
+
+ExtensionViewHost::ExtensionViewHost(
+    const Extension* extension,
+    content::BrowserContext* browser_context_param,
+    const GURL& url,
+    mojom::ViewType host_type,
+    std::unique_ptr<Delegate> delegate)
+    : ExtensionHost(extension,
+                    browser_context_param,
+                    url,
+                    host_type),
+      delegate_(std::move(delegate)) {
   // Not used for panels, see PanelHost.
   DCHECK(host_type == mojom::ViewType::kExtensionPopup ||
          host_type == mojom::ViewType::kExtensionSidePanel);
-
-  // The browser should always be associated with the same original profile as
-  // this view host. The profiles may not be identical (i.e., one may be the
-  // off-the-record version of the other) in the case of a spanning-mode
-  // extension creating a popup in an incognito window.
-  DCHECK(!GetBrowser() || Profile::FromBrowserContext(browser_context())
-                              ->IsSameOrParent(GetBrowser()->profile()));
 
   // Attach WebContents helpers. Extension tabs automatically get them attached
   // in TabHelpers::AttachTabHelpers, but popups don't.
   // TODO(kalman): How much of TabHelpers::AttachTabHelpers should be here?
   autofill::ChromeAutofillClient::CreateForWebContents(host_contents());
-
-  // The popup itself cannot be zoomed, but we must specify a zoom level to use.
-  // Otherwise, if a user zooms a page of the same extension, the popup would
-  // use the per-origin zoom level.
-  if (host_type == mojom::ViewType::kExtensionPopup) {
-    content::HostZoomMap* zoom_map =
-        content::HostZoomMap::GetForWebContents(host_contents());
-    zoom_map->SetTemporaryZoomLevel(
-        host_contents()->GetPrimaryMainFrame()->GetGlobalId(),
-        zoom_map->GetDefaultZoomLevel());
-  }
 }
 
-ExtensionViewHost::~ExtensionViewHost() {
-  // The hosting WebContents will be deleted in the base class, so unregister
-  // this object before it deletes the attached WebContentsModalDialogManager.
-  auto* const manager =
-      web_modal::WebContentsModalDialogManager::FromWebContents(
-          host_contents());
-  if (manager) {
-    manager->SetDelegate(nullptr);
-  }
-  for (auto& observer : modal_dialog_host_observers_) {
-    observer.OnHostDestroying();
-  }
-}
-
-Browser* ExtensionViewHost::GetBrowser() {
-  return browser_;
-}
+ExtensionViewHost::~ExtensionViewHost() = default;
 
 bool ExtensionViewHost::UnhandledKeyboardEvent(
     content::WebContents* source,
@@ -102,19 +66,37 @@ void ExtensionViewHost::LoadInitialURL() {
     return;
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   // Popups may spawn modal dialogs, which need positioning information.
   if (extension_host_type() == mojom::ViewType::kExtensionPopup) {
-    web_modal::WebContentsModalDialogManager::CreateForWebContents(
-        host_contents());
-    web_modal::WebContentsModalDialogManager::FromWebContents(host_contents())
-        ->SetDelegate(this);
+    web_modal_handler_ = std::make_unique<ExtensionViewHostWebModalHandler>(
+        host_contents(), view_->GetNativeView());
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   ExtensionHost::LoadInitialURL();
 }
 
 bool ExtensionViewHost::IsBackgroundPage() const {
   return false;
+}
+
+void ExtensionViewHost::ReadyToCommitNavigation(
+    content::NavigationHandle* navigation_handle) {
+  ExtensionHost::ReadyToCommitNavigation(navigation_handle);
+
+  // The popup itself cannot be zoomed, but we must specify a zoom level to use.
+  // Otherwise, if a user zooms a page of the same extension, the popup would
+  // use the per-origin zoom level.
+  // We do this right before commit (rather than in the constructor) because the
+  // RenderFrameHost may be swapped during the creation/load process.
+  if (extension_host_type() == mojom::ViewType::kExtensionPopup) {
+    content::HostZoomMap* zoom_map =
+        content::HostZoomMap::GetForWebContents(host_contents());
+    zoom_map->SetTemporaryZoomLevel(
+        host_contents()->GetPrimaryMainFrame()->GetGlobalId(),
+        zoom_map->GetDefaultZoomLevel());
+  }
 }
 
 content::WebContents* ExtensionViewHost::OpenURLFromTab(
@@ -133,9 +115,7 @@ content::WebContents* ExtensionViewHost::OpenURLFromTab(
     case WindowOpenDisposition::OFF_THE_RECORD: {
       // Only allow these from hosts that are bound to a browser (e.g. popups).
       // Otherwise they are not driven by a user gesture.
-      return GetBrowser() ? GetBrowser()->OpenURL(
-                                params, std::move(navigation_handle_callback))
-                          : nullptr;
+      return delegate_->OpenURL(params, std::move(navigation_handle_callback));
     }
     default:
       return nullptr;
@@ -158,8 +138,7 @@ ExtensionViewHost::PreHandleKeyboardEvent(
     return content::KeyboardEventProcessingResult::NOT_HANDLED_IS_SHORTCUT;
 
   // Handle higher priority browser shortcuts such as ctrl-w.
-  return GetBrowser() ? GetBrowser()->PreHandleKeyboardEvent(source, event)
-                      : content::KeyboardEventProcessingResult::NOT_HANDLED;
+  return delegate_->PreHandleKeyboardEvent(source, event);
 }
 
 bool ExtensionViewHost::HandleKeyboardEvent(
@@ -192,7 +171,7 @@ void ExtensionViewHost::RunFileChooser(
 std::unique_ptr<content::EyeDropper> ExtensionViewHost::OpenEyeDropper(
     content::RenderFrameHost* frame,
     content::EyeDropperListener* listener) {
-  return GetBrowser() ? GetBrowser()->OpenEyeDropper(frame, listener) : nullptr;
+  return delegate_->OpenEyeDropper(frame, listener);
 }
 
 void ExtensionViewHost::ResizeDueToAutoResize(content::WebContents* source,
@@ -206,44 +185,8 @@ void ExtensionViewHost::RenderFrameCreated(
   view_->RenderFrameCreated(frame_host);
 }
 
-web_modal::WebContentsModalDialogHost*
-ExtensionViewHost::GetWebContentsModalDialogHost() {
-  return this;
-}
-
-bool ExtensionViewHost::IsWebContentsVisible(
-    content::WebContents* web_contents) {
-  return platform_util::IsVisible(web_contents->GetNativeView());
-}
-
-gfx::NativeView ExtensionViewHost::GetHostView() const {
-  return view_->GetNativeView();
-}
-
-gfx::Point ExtensionViewHost::GetDialogPosition(const gfx::Size& size) {
-  auto* const web_contents = GetVisibleWebContents();
-  const gfx::Size view_size =
-      web_contents ? web_contents->GetViewBounds().size() : gfx::Size();
-  return gfx::Rect(view_size - size).CenterPoint();
-}
-
-gfx::Size ExtensionViewHost::GetMaximumDialogSize() {
-  auto* const web_contents = GetVisibleWebContents();
-  return web_contents ? web_contents->GetViewBounds().size() : gfx::Size();
-}
-
-void ExtensionViewHost::AddObserver(
-    web_modal::ModalDialogHostObserver* observer) {
-  modal_dialog_host_observers_.AddObserver(observer);
-}
-
-void ExtensionViewHost::RemoveObserver(
-    web_modal::ModalDialogHostObserver* observer) {
-  modal_dialog_host_observers_.RemoveObserver(observer);
-}
-
 WindowController* ExtensionViewHost::GetExtensionWindowController() const {
-  return browser_ ? browser_->extension_window_controller() : nullptr;
+  return delegate_->GetExtensionWindowController();
 }
 
 content::WebContents* ExtensionViewHost::GetVisibleWebContents() const {

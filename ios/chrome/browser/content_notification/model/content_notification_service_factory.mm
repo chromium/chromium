@@ -4,17 +4,19 @@
 
 #import "ios/chrome/browser/content_notification/model/content_notification_service_factory.h"
 
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "ios/chrome/browser/content_notification/model/content_notification_configuration.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_service.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/public/provider/chrome/browser/content_notification/content_notification_api.h"
 
 // static
-ContentNotificationService*
-ContentNotificationServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
-  return static_cast<ContentNotificationService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+ContentNotificationService* ContentNotificationServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
+  return GetInstance()->GetServiceForProfileAs<ContentNotificationService>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -25,15 +27,25 @@ ContentNotificationServiceFactory::GetInstance() {
 }
 
 ContentNotificationServiceFactory::ContentNotificationServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "ContentNotificationService",
-          BrowserStateDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactoryIOS("ContentNotificationService") {
+  DependsOn(ChromeAccountManagerServiceFactory::GetInstance());
+  DependsOn(IdentityManagerFactory::GetInstance());
+}
 
 ContentNotificationServiceFactory::~ContentNotificationServiceFactory() =
     default;
 
 std::unique_ptr<KeyedService>
 ContentNotificationServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  return ios::provider::CreateContentNotificationService();
+    ProfileIOS* profile) const {
+  ContentNotificationConfiguration* config =
+      [[ContentNotificationConfiguration alloc] init];
+
+  config.identityManager = IdentityManagerFactory::GetForProfile(profile);
+  config.accountManager =
+      ChromeAccountManagerServiceFactory::GetForProfile(profile);
+
+  config.ssoService = GetApplicationContext()->GetSingleSignOnService();
+
+  return ios::provider::CreateContentNotificationService(config);
 }

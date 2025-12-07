@@ -17,14 +17,18 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.payments.Event2;
+import org.chromium.ui.base.PageTransition;
 
 import java.util.concurrent.TimeoutException;
 
@@ -123,7 +127,7 @@ public class PaymentRequestContactDetailsTest {
     @MediumTest
     @Feature({"Payments"})
     public void testPay() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUiAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getDismissed());
         mPaymentRequestTestRule.expectResultContains(
@@ -135,7 +139,7 @@ public class PaymentRequestContactDetailsTest {
     @MediumTest
     @Feature({"Payments"})
     public void testAddInvalidContactAndCancel() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUiAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickInContactInfoAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInContactInfoAndWait(
@@ -158,7 +162,7 @@ public class PaymentRequestContactDetailsTest {
     @MediumTest
     @Feature({"Payments"})
     public void testAddContactAndPay() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUiAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickInContactInfoAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInContactInfoAndWait(
@@ -180,7 +184,7 @@ public class PaymentRequestContactDetailsTest {
     @MediumTest
     @Feature({"Payments"})
     public void testQuickAddContactAndCloseShouldNotCrash() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUiAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickInContactInfoAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
 
@@ -189,12 +193,12 @@ public class PaymentRequestContactDetailsTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPaymentRequestTestRule
-                            .getPaymentRequestUI()
+                            .getPaymentRequestUi()
                             .getContactDetailsSectionForTest()
                             .findViewById(R.id.payments_add_option_button)
                             .performClick();
                     mPaymentRequestTestRule
-                            .getPaymentRequestUI()
+                            .getPaymentRequestUi()
                             .getDialogForTest()
                             .findViewById(R.id.close_button)
                             .performClick();
@@ -214,7 +218,7 @@ public class PaymentRequestContactDetailsTest {
     @MediumTest
     @Feature({"Payments"})
     public void testQuickCloseAndAddContactShouldNotCrash() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUiAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickInContactInfoAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
 
@@ -223,12 +227,12 @@ public class PaymentRequestContactDetailsTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPaymentRequestTestRule
-                            .getPaymentRequestUI()
+                            .getPaymentRequestUi()
                             .getDialogForTest()
                             .findViewById(R.id.close_button)
                             .performClick();
                     mPaymentRequestTestRule
-                            .getPaymentRequestUI()
+                            .getPaymentRequestUi()
                             .getContactDetailsSectionForTest()
                             .findViewById(R.id.payments_add_option_button)
                             .performClick();
@@ -244,7 +248,7 @@ public class PaymentRequestContactDetailsTest {
     @MediumTest
     @Feature({"Payments"})
     public void testEditContactAndCancelEditorShouldKeepContactSelected() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUiAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickInContactInfoAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.expectContactDetailsRowIsSelected(0);
@@ -264,7 +268,7 @@ public class PaymentRequestContactDetailsTest {
     @MediumTest
     @Feature({"Payments"})
     public void testAddContactAndCancelEditorShouldKeepContactSelected() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUiAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickInContactInfoAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.expectContactDetailsRowIsSelected(0);
@@ -284,7 +288,7 @@ public class PaymentRequestContactDetailsTest {
     @MediumTest
     @Feature({"Payments"})
     public void testQuickAddContactAndCancelShouldNotCrash() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUiAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickInContactInfoAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
 
@@ -293,12 +297,12 @@ public class PaymentRequestContactDetailsTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPaymentRequestTestRule
-                            .getPaymentRequestUI()
+                            .getPaymentRequestUi()
                             .getContactDetailsSectionForTest()
                             .findViewById(R.id.payments_add_option_button)
                             .performClick();
                     mPaymentRequestTestRule
-                            .getPaymentRequestUI()
+                            .getPaymentRequestUi()
                             .getDialogForTest()
                             .findViewById(R.id.button_secondary)
                             .performClick();
@@ -319,7 +323,7 @@ public class PaymentRequestContactDetailsTest {
     @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testQuickCancelAndAddContactShouldNotCrash() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUiAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickInContactInfoAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
 
@@ -328,12 +332,12 @@ public class PaymentRequestContactDetailsTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPaymentRequestTestRule
-                            .getPaymentRequestUI()
+                            .getPaymentRequestUi()
                             .getDialogForTest()
                             .findViewById(R.id.button_secondary)
                             .performClick();
                     mPaymentRequestTestRule
-                            .getPaymentRequestUI()
+                            .getPaymentRequestUi()
                             .getContactDetailsSectionForTest()
                             .findViewById(R.id.payments_add_option_button)
                             .performClick();
@@ -352,7 +356,7 @@ public class PaymentRequestContactDetailsTest {
     @MediumTest
     @Feature({"Payments"})
     public void testSuggestionsDeduped() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUiAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickInContactInfoAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         Assert.assertEquals(1, mPaymentRequestTestRule.getNumberOfContactDetailSuggestions());
@@ -368,7 +372,7 @@ public class PaymentRequestContactDetailsTest {
     @Feature({"Payments"})
     public void testPaymentRequestEventsMetric() throws TimeoutException {
         // Start and complete the Payment Request.
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUiAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getDismissed());
         mPaymentRequestTestRule.expectResultContains(
@@ -399,24 +403,39 @@ public class PaymentRequestContactDetailsTest {
     @Test
     @MediumTest
     @Feature({"Payments"})
-    public void testPaymentRequestIncognitoMode() throws TimeoutException {
-        // Open the test page in an incognito window.
-        mPaymentRequestTestRule.newIncognitoTabFromMenu();
-        mPaymentRequestTestRule.loadUrl(
-                mPaymentRequestTestRule
-                        .getTestServer()
-                        .getURL(
-                                "/components/test/data/payments/payment_request_contact_details_test.html"));
-        mPaymentRequestTestRule.setObserversAndWaitForInitialPageLoad();
+    public void testPaymentRequestIncognitoMode() throws Exception {
+        ChromeTabbedActivity chromeTabbedActivity;
+        Tab incognitoTab;
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            chromeTabbedActivity = mPaymentRequestTestRule.newIncognitoWindowFromMenu();
+            incognitoTab = chromeTabbedActivity.getActivityTabProvider().get();
+        } else {
+            incognitoTab = mPaymentRequestTestRule.newIncognitoTabFromMenu();
+            chromeTabbedActivity = mPaymentRequestTestRule.getActivity();
+        }
 
-        // Trigger the PaymentRequest, and expand the contact info section to show the text. This is
-        // where the code would previously crash.
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
+        String relativeTestUrl =
+                "/components/test/data/payments/payment_request_contact_details_test.html";
+        mPaymentRequestTestRule.loadUrlInTab(
+                mPaymentRequestTestRule.getTestServer().getURL(relativeTestUrl),
+                PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,
+                incognitoTab);
+        mPaymentRequestTestRule.setObserversAndWaitForInitialPageLoad(chromeTabbedActivity);
+
+        // Trigger the PaymentRequest, and expand the contact info section to show the text.
+        // This is where the code would previously crash.
+        mPaymentRequestTestRule.triggerUiAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickInContactInfoAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
 
         // Close the dialog.
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getDismissed());
+
+        // Cleanup: if the test opens a new incognito window instead of an incognito tab, destroy
+        // the new ChromeTabbedActivity.
+        if (chromeTabbedActivity.isIncognitoWindow()) {
+            chromeTabbedActivity.finish();
+        }
     }
 }

@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] innerHTML on a shadow root should use the scoped registry
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] innerHTML on a connected shadow root should use the associated scoped registry
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] innerHTML on a connected shadow root should not upgrade a custom element inside a template element
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] innerHTML on a connected shadow root should be able to create an unknown element
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+Harness: the test ran to completion.
+

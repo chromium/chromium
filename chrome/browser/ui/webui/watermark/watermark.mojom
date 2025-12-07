@@ -1,0 +1,33 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module watermark.mojom;
+
+// Used by the WebUI page to bootstrap bidirectional communication.
+interface PageHandlerFactory {
+  // Creates a PageHandler and binds it to the given receiver, allowing the
+  // WebUI page to send messages to the browser process.
+  CreatePageHandler(pending_receiver<PageHandler> handler);
+};
+
+// Defines the visual style properties for the watermark.
+struct WatermarkStyle {
+  // Opacity of the watermark's fill, from 0 to 100.
+  int32 fill_opacity;
+  // Opacity of the watermark's outline, from 0 to 100.
+  int32 outline_opacity;
+  // Font size of the watermark text in points.
+  int32 font_size;
+};
+
+// Implemented in the browser process to handle requests from the WebUI page.
+interface PageHandler {
+  // Sets the style for the watermark. Called by the WebUI when the user
+  // adjusts the watermark controls, allowing for real-time updates.
+  // @param style The desired style settings for the watermark.
+  SetWatermarkStyle(WatermarkStyle style);
+
+  // Triggers a toast with text "Copied to clipboard" to show up.
+  ShowNotificationToast();
+};

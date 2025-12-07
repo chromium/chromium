@@ -9,7 +9,9 @@ import "mojo/public/mojom/base/version.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/accelerated_widget.mojom";
 import "ui/gfx/mojom/buffer_types.mojom";
+import "ui/gfx/mojom/color_space.mojom";
 import "ui/gfx/mojom/gpu_fence_handle.mojom";
+import "ui/gfx/mojom/hdr_metadata.mojom";
 import "ui/gfx/mojom/swap_result.mojom";
 import "ui/gfx/mojom/frame_data.mojom";
 import "ui/ozone/platform/wayland/mojom/wayland_overlay_config.mojom";
@@ -45,6 +47,8 @@ interface WaylandBufferManagerHost {
                           array<uint64> modifiers,
                           uint32 format,
                           uint32 planes_count,
+                          gfx.mojom.ColorSpace color_space,
+                          gfx.mojom.HDRMetadata hdr_metadata,
                           uint32 buffer_id);
 
   // If software rendering path is used, this method can be used to ask
@@ -59,17 +63,6 @@ interface WaylandBufferManagerHost {
                        uint64 length,
                        gfx.mojom.Size size,
                        uint32 buffer_id);
-
-  // Creates a browser side solid color wl_buffer that is cleared to a given
-  // |color| on the Wayland compositor side without any performance penalties
-  // compared to creation of dmabuf/shm backed buffers cleared to a certain
-  // color. |color| is a requested color. |size| is a requested size of the
-  // solid color buffer. And |buffer_id| is a unique id for the buffer, which is
-  // used to identify imported wl_buffers on the browser process side and map
-  // them with the buffer objects on the gpu process side.
-  CreateSolidColorBuffer(gfx.mojom.Size size,
-                         skia.mojom.SkColor4f color,
-                         uint32 buffer_id);
 
   // Creates a browser side single pixel wl_buffer that is cleared to a given
   // |color| on the Wayland compositor side without any performance penalties
@@ -116,10 +109,6 @@ interface WaylandBufferManagerGpu {
   // contents.
   // `supports_overlays` indicates whether overlays should be used with this
   // Wayland compositor.
-  // `supported_surface_augmentor_version` says what version of the augment
-  // surface protocol the client is using. If the version is 0, the surface
-  // augmentor is not available.
-  // `server_version` indicates the dotted version number on of the server.
   Initialize(pending_remote<WaylandBufferManagerHost> remote_host,
              map<gfx.mojom.BufferFormat,
                  array<uint64>> buffer_formats_with_modifiers,
@@ -127,9 +116,7 @@ interface WaylandBufferManagerGpu {
              bool supports_viewporter,
              bool supports_acquire_fence,
              bool supports_overlays,
-             uint32 supported_surface_augmentor_version,
-             bool supports_single_pixel_buffer,
-             mojo_base.mojom.Version server_version);
+             bool supports_single_pixel_buffer);
 
   // Signals about swap completion and presentation.
   OnSubmission(gfx.mojom.AcceleratedWidget widget,

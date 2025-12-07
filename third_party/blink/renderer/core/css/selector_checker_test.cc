@@ -7,15 +7,18 @@
 #include <bitset>
 #include <optional>
 
+#include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/selector_checker-inl.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -100,6 +103,50 @@ ScopeProximityTestData scope_proximity_test_data[] = {
     },
 
     // The proximity is determined according to the nearest scoping root.
+    // (#target is the scope itself, selected with :scope).
+    {
+      R"HTML(
+        <div class=a>
+          <div>
+            <div>
+              <div>
+                <div id=target class=a></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )HTML",
+      R"CSS(
+        @scope (.a) {
+          :scope { z-index: 1; }
+        }
+      )CSS",
+      0
+    },
+
+    // The proximity is determined according to the nearest scoping root.
+    // (#target is the scope itself, selected with &).
+    {
+      R"HTML(
+        <div class=a>
+          <div>
+            <div>
+              <div>
+                <div id=target class=a></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )HTML",
+      R"CSS(
+        @scope (.a) {
+          & { z-index: 1; }
+        }
+      )CSS",
+      0
+    },
+
+    // The proximity is determined according to the nearest scoping root.
     // (Nested scopes from different @scope rules).
     {
       R"HTML(
@@ -168,7 +215,8 @@ TEST_P(ScopeProximityTest, All) {
   while (IsA<StyleRuleScope>(rule)) {
     auto& scope_rule = To<StyleRuleScope>(*rule);
     scope = scope_rule.GetStyleScope().CopyWithParent(scope);
-    const StyleRuleBase::ChildRuleVector& child_rules = scope_rule.ChildRules();
+    const HeapVector<Member<StyleRuleBase>>& child_rules =
+        scope_rule.ChildRules();
     ASSERT_EQ(1u, child_rules.size());
     rule = child_rules[0].Get();
   }
@@ -183,7 +231,8 @@ TEST_P(ScopeProximityTest, All) {
 
   SelectorChecker checker(SelectorChecker::kResolvingStyle);
   StyleScopeFrame style_scope_frame(*target, /* parent */ nullptr);
-  SelectorChecker::SelectorCheckingContext context(target);
+  SelectorChecker::SelectorCheckingContext context{
+      ElementResolveContext(*target)};
   context.selector = style_rule->FirstSelector();
   context.style_scope = scope;
   context.style_scope_frame = &style_scope_frame;
@@ -259,7 +308,7 @@ INSTANTIATE_TEST_SUITE_P(SelectorChecker,
 TEST_P(MatchFlagsTest, All) {
   MatchFlagsTestData param = GetParam();
 
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id=target>
       <div></div>
     </div>
@@ -272,10 +321,11 @@ TEST_P(MatchFlagsTest, All) {
   CSSSelectorList* selector_list =
       css_test_helpers::ParseSelectorList(param.selector);
   ASSERT_TRUE(selector_list);
-  ASSERT_TRUE(selector_list->HasOneSelector());
+  ASSERT_TRUE(selector_list->IsSingleComplexSelector());
 
   SelectorChecker checker(SelectorChecker::kResolvingStyle);
-  SelectorChecker::SelectorCheckingContext context(element);
+  SelectorChecker::SelectorCheckingContext context{
+      ElementResolveContext(*element)};
   context.selector = selector_list->First();
 
   SelectorChecker::MatchResult result;
@@ -294,7 +344,7 @@ class ImpactTest : public PageTestBase {
   void SetUp() override {
     PageTestBase::SetUp();
 
-    GetDocument().body()->setInnerHTML(R"HTML(
+    GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
       <div id=outer>
         <div id=middle>
           <div id=inner>
@@ -322,10 +372,11 @@ class ImpactTest : public PageTestBase {
     CSSSelectorList* selector_list =
         css_test_helpers::ParseSelectorList(selector);
     DCHECK(selector_list);
-    DCHECK(selector_list->HasOneSelector());
+    DCHECK(selector_list->IsSingleComplexSelector());
 
     SelectorChecker checker(SelectorChecker::kResolvingStyle);
-    SelectorChecker::SelectorCheckingContext context(&element);
+    SelectorChecker::SelectorCheckingContext context{
+        ElementResolveContext(element)};
     context.selector = selector_list->First();
     context.impact = impact;
 
@@ -623,7 +674,7 @@ INSTANTIATE_TEST_SUITE_P(SelectorChecker,
 TEST_P(MatchFlagsShadowTest, Host) {
   MatchFlagsTestData param = GetParam();
 
-  GetDocument().body()->setHTMLUnsafe(R"HTML(
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <div id=host>
       <template shadowrootmode="open">
         <div></div>
@@ -639,12 +690,14 @@ TEST_P(MatchFlagsShadowTest, Host) {
   CSSSelectorList* selector_list =
       css_test_helpers::ParseSelectorList(param.selector);
   ASSERT_TRUE(selector_list);
-  ASSERT_TRUE(selector_list->HasOneSelector());
+  ASSERT_TRUE(selector_list->IsSingleComplexSelector());
 
   SelectorChecker checker(SelectorChecker::kResolvingStyle);
-  SelectorChecker::SelectorCheckingContext context(host);
+  SelectorChecker::SelectorCheckingContext context{
+      ElementResolveContext(*host)};
   context.selector = selector_list->First();
   context.scope = host->GetShadowRoot();
+  context.tree_scope = host->GetShadowRoot();
 
   SelectorChecker::MatchResult result;
   checker.Match(context, result);
@@ -661,7 +714,7 @@ class MatchFlagsScopeTest : public PageTestBase {
  public:
   void SetUp() override {
     PageTestBase::SetUp();
-    GetDocument().body()->setInnerHTML(R"HTML(
+    GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
       <style id=style>
       </style>
       <div id=outer>
@@ -763,6 +816,283 @@ TEST_F(MatchFlagsScopeTest, ScopeLimitNonSubject) {
   EXPECT_FALSE(AffectedByHover(Inner()));
 }
 
+// The pseudo-child tests follow the following rules:
+//
+// A document is loaded with the following HTML:
+//
+//  <div id=a class=b></div>
+//
+// This div is then used as the (ultimate) originating element for a chain
+// of PseudoElements specified by `pseudo_element_chain`. The innermost
+// pseudo-element in that chain is the passed to the ElementResolveContext,
+// and we match `rule` against that context.
+struct PseudoChildMatchTestData {
+  // A chain of pseudo-elements to create, using #a (see above) as the ultimate
+  // originating element.
+  const std::vector<PseudoId> pseudo_element_chain;
+  // The rule to match against the innermost pseudo-element in the above chain.
+  const char* rule;
+  bool expected_match;
+};
+
+PseudoChildMatchTestData pseudo_child_match_data[] = {
+    // clang-format off
+
+    // Basic cases:
+    {
+      .pseudo_element_chain = { kPseudoIdBefore },
+      .rule = "div::before {}",
+      .expected_match = true,
+    },
+    {
+      .pseudo_element_chain = { kPseudoIdAfter },
+      .rule = "div::after {}",
+      .expected_match = true,
+    },
+    {
+      .pseudo_element_chain = { kPseudoIdMarker },
+      .rule = "div::marker {}",
+      .expected_match = true,
+    },
+
+    // Logical combinations:
+    {
+      .pseudo_element_chain = { kPseudoIdBefore },
+      .rule = ":is(::before) {}",
+      .expected_match = true,
+    },
+    {
+      .pseudo_element_chain = { kPseudoIdBefore },
+      .rule = ":not(:not(::before)) {}",
+      .expected_match = true,
+    },
+    {
+      .pseudo_element_chain = { kPseudoIdBefore },
+      .rule = ":not(::marker):is(::before) {}",
+      .expected_match = true,
+    },
+    {
+      .pseudo_element_chain = { kPseudoIdBefore },
+      .rule = ":not(:hover):is(::before) {}",
+      .expected_match = true,
+    },
+
+    // Nested cases:
+
+    {
+      .pseudo_element_chain = { kPseudoIdBefore, kPseudoIdMarker },
+      .rule = "div::before::marker {}",
+      .expected_match = true,
+    },
+
+    // Universal selector should not match, since nothing is explicitly
+    // matching with ::before. See the new proposed selectors data model:
+    // https://github.com/w3c/csswg-drafts/issues/9702#issuecomment-3250059981
+    {
+      .pseudo_element_chain = { kPseudoIdBefore },
+      .rule = "* {}",
+      .expected_match = false,
+    },
+
+    // Universal ultimate originating compound:
+    {
+      .pseudo_element_chain = { kPseudoIdBefore, kPseudoIdMarker },
+      .rule = "::before::marker {}",
+      .expected_match = true,
+    },
+
+    // Universal ultimate originating compound (explicit):
+    {
+      .pseudo_element_chain = { kPseudoIdBefore, kPseudoIdMarker },
+      .rule = "*::before::marker {}",
+      .expected_match = true,
+    },
+
+    // Tests below this line are expected to *not* match.
+
+    // Mismatched pseudo-element:
+    {
+      .pseudo_element_chain = { kPseudoIdAfter },
+      .rule = "div::before {}",
+      .expected_match = false,
+    },
+
+    // Pseudo-elements can not match tags, IDs, classes, nor attributes.
+    //
+    // Note: we're using an originating element <div id=a class=b>
+    // for all of these tests. We need to make sure that we're not
+    // actually matching against the originating element when we're
+    // really requesting a match against a pseudo-element.
+    {
+      .pseudo_element_chain = { kPseudoIdBefore },
+      .rule = "div {}",
+      .expected_match = false,
+    },
+    {
+      .pseudo_element_chain = { kPseudoIdBefore },
+      .rule = "#a {}",
+      .expected_match = false,
+    },
+    {
+      .pseudo_element_chain = { kPseudoIdBefore },
+      .rule = ".b {}",
+      .expected_match = false,
+    },
+    {
+      .pseudo_element_chain = { kPseudoIdBefore },
+      .rule = "[id] {}",
+      .expected_match = false,
+    },
+    // Like the previous four tests, but via :is() this time, plus explicitly
+    // matching ::before.
+    {
+      .pseudo_element_chain = { kPseudoIdBefore },
+      .rule = ":is(::before):is(div) {}",
+      .expected_match = false,
+    },
+    {
+      .pseudo_element_chain = { kPseudoIdBefore },
+      .rule = ":is(::before):is(#a) {}",
+      .expected_match = false,
+    },
+    {
+      .pseudo_element_chain = { kPseudoIdBefore },
+      .rule = ":is(::before):is(.b) {}",
+      .expected_match = false,
+    },
+    {
+      .pseudo_element_chain = { kPseudoIdBefore },
+      .rule = ":is(::before):is([id]) {}",
+      .expected_match = false,
+    },
+
+    // An element can't both be a before-pseudo-element
+    // and a marker-pseudo-element.
+    {
+      .pseudo_element_chain = { kPseudoIdBefore },
+      .rule = ":is(::before):is(::marker) {}",
+      .expected_match = false,
+    },
+
+    // No pseudo-element to match ::before. (The before pseudo-element that
+    // we do have attempts to match against ::marker.)
+    {
+      .pseudo_element_chain = { kPseudoIdBefore },
+      .rule = "div::before::marker {}",
+      .expected_match = false,
+    },
+
+    // Non-matching originating pseudo:
+    {
+      .pseudo_element_chain = { kPseudoIdAfter, kPseudoIdMarker },
+      .rule = "div::before::marker {}",
+      .expected_match = false,
+    },
+
+    // Non-matching ultimate originating element:
+    {
+      .pseudo_element_chain = { kPseudoIdBefore, kPseudoIdMarker },
+      .rule = "#noexist::before::marker {}",
+      .expected_match = false,
+    },
+
+    // clang-format on
+};
+
+class PseudoChildMatchTest
+    : public PageTestBase,
+      public testing::WithParamInterface<PseudoChildMatchTestData> {
+ public:
+  void SetUp() override {
+    PageTestBase::SetUp();
+    SetHtmlInnerHTML("<div id=a class=b></div>");
+    originating_element_ = GetDocument().getElementById(AtomicString("a"));
+    CHECK(originating_element_);
+  }
+
+  // Creating a chain of PseudoElements according to `chain`,
+  // using `originating_element_` as the ultimate originating element.
+  // Returns the innermost pseudo-element in the chain, or the originating
+  // element itself, if `chain` is empty.
+  Element* AttachPseudoElementChain(const std::vector<PseudoId>& chain) {
+    Element* leaf = originating_element_.Get();
+    for (PseudoId pseudo_id : chain) {
+      leaf = PseudoElement::Create(/*parent=*/leaf, pseudo_id);
+    }
+    return leaf;
+  }
+
+  bool Match(SelectorChecker::SelectorCheckingContext& context) {
+    SelectorChecker checker(SelectorChecker::kResolvingStyle);
+    return checker.Match(context);
+  }
+
+  Persistent<Element> originating_element_;
+};
+
+INSTANTIATE_TEST_SUITE_P(SelectorChecker,
+                         PseudoChildMatchTest,
+                         testing::ValuesIn(pseudo_child_match_data));
+
+TEST_P(PseudoChildMatchTest, PseudoElementObjects) {
+  ScopedCSSLogicalCombinationPseudoForTest scoped_feature(true);
+
+  PseudoChildMatchTestData param = GetParam();
+  SCOPED_TRACE(param.rule);
+
+  auto* style_rule = DynamicTo<StyleRule>(
+      css_test_helpers::ParseRule(GetDocument(), param.rule));
+  ASSERT_TRUE(style_rule);
+
+  Element* candidate = AttachPseudoElementChain(param.pseudo_element_chain);
+  ASSERT_TRUE(candidate);
+
+  SelectorChecker::SelectorCheckingContext context{
+      ElementResolveContext(*candidate)};
+  context.selector = style_rule->FirstSelector();
+  ASSERT_TRUE(context.pseudo_element);
+
+  EXPECT_EQ(param.expected_match, Match(context));
+}
+
+// This is a version of the above PseudoElementObjects test, which, instead of
+// creating PseudoElement objects for every item in the pseudo-element chain,
+// only does so for all but the last item. The last PseudoId in the chain
+// is instead set on SelectorCheckingContext::pseudo_id, to simulate
+// "virtual pseudo matching", as described near the implementation of
+// SelectorChecker::CheckVirtualPseudo.
+TEST_P(PseudoChildMatchTest, VirtualPseudo) {
+  ScopedCSSLogicalCombinationPseudoForTest scoped_feature(true);
+
+  PseudoChildMatchTestData param = GetParam();
+  SCOPED_TRACE(param.rule);
+
+  auto* style_rule = DynamicTo<StyleRule>(
+      css_test_helpers::ParseRule(GetDocument(), param.rule));
+  ASSERT_TRUE(style_rule);
+
+  // We won't create a PseudoElement for the rightmost pseudo-element selector.
+  // Instead, we'll simply set SelectorCheckingContext::pseudo_id to simulate
+  // e.g. getComputedStyle(e, '::before') when no before element actually
+  // exists.
+  PseudoId rightmost_pseudo_id = kPseudoIdNone;
+  std::vector<PseudoId> amended_chain = param.pseudo_element_chain;
+  if (!amended_chain.empty()) {
+    rightmost_pseudo_id = amended_chain.back();
+    amended_chain.pop_back();
+  }
+
+  Element* candidate = AttachPseudoElementChain(amended_chain);
+  ASSERT_TRUE(candidate);
+
+  SelectorChecker::SelectorCheckingContext context{
+      ElementResolveContext(*candidate)};
+  context.selector = style_rule->FirstSelector();
+  context.pseudo_id = rightmost_pseudo_id;
+
+  EXPECT_EQ(param.expected_match, Match(context));
+}
+
 class EasySelectorCheckerTest : public PageTestBase {
  protected:
   bool Matches(const String& selector_text, const char* id);
@@ -812,16 +1142,19 @@ TEST_F(EasySelectorCheckerTest, IsEasy) {
   EXPECT_FALSE(IsEasy("a:link"));
   EXPECT_FALSE(IsEasy("::before"));
   EXPECT_FALSE(IsEasy("div::before"));
-  EXPECT_FALSE(IsEasy("* .a"));  // Due to the universal selector.
+  EXPECT_TRUE(IsEasy("* .a"));
+  EXPECT_TRUE(IsEasy(".a *"));
   EXPECT_TRUE(IsEasy("[attr]"));
   EXPECT_TRUE(IsEasy("[attr=\"foo\"]"));
-  EXPECT_FALSE(IsEasy("[attr=\"foo\" i]"));
+  EXPECT_TRUE(IsEasy("[attr=\"foo\" i]"));
   EXPECT_TRUE(IsEasy(":root"));       // Due to bucketing.
   EXPECT_TRUE(IsEasy(":any-link"));   // Due to bucketing.
   EXPECT_TRUE(IsEasy("a:any-link"));  // Due to bucketing.
   EXPECT_TRUE(IsEasy(".a .b"));
   EXPECT_TRUE(IsEasy(".a .b.c.d"));
-  EXPECT_FALSE(IsEasy(".a > .b"));
+  EXPECT_TRUE(IsEasy(".a > .b"));
+  EXPECT_TRUE(IsEasy(".a .b > .c"));
+  EXPECT_FALSE(IsEasy(".a > .b .c"));
   EXPECT_FALSE(IsEasy(".a ~ .b"));
   EXPECT_FALSE(IsEasy("&"));
   EXPECT_FALSE(IsEasy(":not(.a)"));
@@ -857,7 +1190,7 @@ TEST_F(EasySelectorCheckerTest, SmokeTest) {
 class SelectorCheckerTest : public PageTestBase {};
 
 TEST_F(SelectorCheckerTest, PseudoScopeWithoutScope) {
-  GetDocument().body()->setInnerHTML("<div id=foo></div>");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("<div id=foo></div>");
   UpdateAllLifecyclePhasesForTest();
 
   CSSSelectorList* selector_list =
@@ -869,7 +1202,7 @@ TEST_F(SelectorCheckerTest, PseudoScopeWithoutScope) {
   ASSERT_TRUE(foo);
 
   SelectorChecker checker(SelectorChecker::kResolvingStyle);
-  SelectorChecker::SelectorCheckingContext context(foo);
+  SelectorChecker::SelectorCheckingContext context{ElementResolveContext(*foo)};
   context.selector = selector_list->First();
   // We have a selector with :scope, but no context.scope:
   context.scope = nullptr;
@@ -878,52 +1211,6 @@ TEST_F(SelectorCheckerTest, PseudoScopeWithoutScope) {
 
   // Don't crash.
   EXPECT_FALSE(checker.Match(context, result));
-}
-
-TEST_F(SelectorCheckerTest, PseudoTrue) {
-  GetDocument().body()->setInnerHTML("<div id=foo></div>");
-  UpdateAllLifecyclePhasesForTest();
-
-  CSSSelector selector;
-  selector.SetTrue();
-  selector.SetLastInComplexSelector(true);
-
-  Element* foo = GetDocument().getElementById(AtomicString("foo"));
-  ASSERT_TRUE(foo);
-
-  SelectorChecker checker(SelectorChecker::kResolvingStyle);
-  SelectorChecker::SelectorCheckingContext context(foo);
-  context.selector = &selector;
-
-  SelectorChecker::MatchResult result;
-  EXPECT_TRUE(checker.Match(context, result));
-}
-
-TEST_F(SelectorCheckerTest, PseudoTrueMatchesHost) {
-  GetDocument().body()->setHTMLUnsafe(R"HTML(
-    <div id=host>
-      <template shadowrootmode=open>
-      </template>
-    </div>
-  )HTML");
-  UpdateAllLifecyclePhasesForTest();
-
-  CSSSelector selector;
-  selector.SetTrue();
-  selector.SetLastInComplexSelector(true);
-
-  Element* host = GetElementById("host");
-  ASSERT_TRUE(host);
-  ShadowRoot* shadow = host->GetShadowRoot();
-  ASSERT_TRUE(shadow);
-
-  SelectorChecker checker(SelectorChecker::kResolvingStyle);
-  SelectorChecker::SelectorCheckingContext context(host);
-  context.selector = &selector;
-  context.scope = shadow;
-
-  SelectorChecker::MatchResult result;
-  EXPECT_TRUE(checker.Match(context, result));
 }
 
 }  // namespace blink

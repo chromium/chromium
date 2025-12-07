@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/webshare/win/fake_storage_file_statics.h"
 
 #include <wrl/event.h>
 #include <wrl/implements.h>
 
+#include "base/compiler_specific.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/win/scoped_hstring.h"
@@ -58,9 +54,9 @@ TEST(FakeStorageFileStaticsTest, CreateStreamedFileAsync) {
           byte* raw_buffer;
           EXPECT_HRESULT_SUCCEEDED(buffer->Buffer(&raw_buffer));
           raw_buffer[0] = 'f';
-          raw_buffer[1] = 'i';
-          raw_buffer[2] = 's';
-          raw_buffer[3] = 'h';
+          UNSAFE_TODO(raw_buffer[1]) = 'i';
+          UNSAFE_TODO(raw_buffer[2]) = 's';
+          UNSAFE_TODO(raw_buffer[3]) = 'h';
 
           // Write the bytes to the stream
           ComPtr<IAsyncOperationWithProgress<UINT32, UINT32>> write_operation;
@@ -196,9 +192,9 @@ TEST(FakeStorageFileStaticsTest, CreateStreamedFileAsync) {
   byte* raw_buffer;
   ASSERT_HRESULT_SUCCEEDED(buffer->Buffer(&raw_buffer));
   ASSERT_EQ(raw_buffer[0], 'f');
-  ASSERT_EQ(raw_buffer[1], 'i');
-  ASSERT_EQ(raw_buffer[2], 's');
-  ASSERT_EQ(raw_buffer[3], 'h');
+  ASSERT_EQ(UNSAFE_TODO(raw_buffer[1]), 'i');
+  ASSERT_EQ(UNSAFE_TODO(raw_buffer[2]), 's');
+  ASSERT_EQ(UNSAFE_TODO(raw_buffer[3]), 'h');
 
   // Cleanup
   ComPtr<IClosable> closable_input_stream;

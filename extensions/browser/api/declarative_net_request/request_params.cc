@@ -5,6 +5,7 @@
 #include "extensions/browser/api/declarative_net_request/request_params.h"
 
 #include <algorithm>
+#include <optional>
 #include <string_view>
 
 #include "base/check.h"
@@ -12,7 +13,6 @@
 #include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
 #include "content/public/browser/render_frame_host.h"
@@ -38,8 +38,9 @@ namespace flat_rule = url_pattern_index::flat;
 // Returns whether the request to `url` is third party to its `document_origin`.
 // TODO(crbug.com/40508457): Look into caching this.
 bool IsThirdPartyRequest(const GURL& url, const url::Origin& document_origin) {
-  if (document_origin.opaque())
+  if (document_origin.opaque()) {
     return true;
+  }
 
   return !net::registry_controlled_domains::SameDomainOrHost(
       url, document_origin,
@@ -48,8 +49,9 @@ bool IsThirdPartyRequest(const GURL& url, const url::Origin& document_origin) {
 
 bool IsThirdPartyRequest(const url::Origin& origin,
                          const url::Origin& document_origin) {
-  if (document_origin.opaque())
+  if (document_origin.opaque()) {
     return true;
+  }
 
   return !net::registry_controlled_domains::SameDomainOrHost(
       origin, document_origin,
@@ -58,8 +60,9 @@ bool IsThirdPartyRequest(const url::Origin& origin,
 
 content::GlobalRenderFrameHostId GetFrameRoutingId(
     content::RenderFrameHost* host) {
-  if (!host)
+  if (!host) {
     return content::GlobalRenderFrameHostId();
+  }
 
   return host->GetGlobalId();
 }
@@ -74,9 +77,9 @@ bool HasHeaderValue(const net::HttpResponseHeaders& response_headers,
   auto pattern = CreateString<std::string_view>(*flat_pattern);
 
   size_t iter = 0;
-  std::string temp;
-  while (response_headers.EnumerateHeader(&iter, header, &temp)) {
-    if (base::MatchPattern(base::ToLowerASCII(temp), pattern)) {
+  std::optional<std::string_view> temp;
+  while ((temp = response_headers.EnumerateHeader(&iter, header))) {
+    if (base::MatchPattern(base::ToLowerASCII(*temp), pattern)) {
       return true;
     }
   }
@@ -113,15 +116,15 @@ bool MatchesHeaderConditions(
     // The condition for `header` does not match if there's an excluded value,
     // continue to the next header.
     if (header_condition->excluded_values() &&
-        base::ranges::any_of(*header_condition->excluded_values(),
-                             has_header_value)) {
+        std::ranges::any_of(*header_condition->excluded_values(),
+                            has_header_value)) {
       continue;
     }
 
     // Match if the response contains at least one header value in
     // `header_condition->values()`.
     if (!header_condition->values() ||
-        base::ranges::any_of(*header_condition->values(), has_header_value)) {
+        std::ranges::any_of(*header_condition->values(), has_header_value)) {
       return true;
     }
   }
@@ -131,6 +134,7 @@ bool MatchesHeaderConditions(
 
 bool DoEmbedderConditionsMatch(
     int tab_id,
+    const std::string& top_level_frame_or_initiator_host,
     scoped_refptr<const net::HttpResponseHeaders> response_headers,
     const flatbuffers::Vector<uint8_t>& conditions_buffer) {
 #if DCHECK_IS_ON()
@@ -170,6 +174,34 @@ bool DoEmbedderConditionsMatch(
     return false;
   }
 
+  // Top-level frame domain matching.
+
+#if DCHECK_IS_ON()
+  auto domain_precedes = [](const flatbuffers::String* lhs,
+                            const flatbuffers::String* rhs) {
+    return url_pattern_index::CompareDomains(
+               std::string_view(lhs->c_str(), lhs->size()),
+               std::string_view(rhs->c_str(), rhs->size())) < 0;
+  };
+  if (embedder_conditions->top_domains_included()) {
+    CHECK(std::is_sorted(embedder_conditions->top_domains_included()->begin(),
+                         embedder_conditions->top_domains_included()->end(),
+                         domain_precedes));
+  }
+  if (embedder_conditions->top_domains_excluded()) {
+    CHECK(std::is_sorted(embedder_conditions->top_domains_excluded()->begin(),
+                         embedder_conditions->top_domains_excluded()->end(),
+                         domain_precedes));
+  }
+#endif  // DCHECK_IS_ON()
+
+  if (!url_pattern_index::DoesHostMatchDomainLists(
+          top_level_frame_or_initiator_host,
+          embedder_conditions->top_domains_included(),
+          embedder_conditions->top_domains_excluded())) {
+    return false;
+  }
+
   if (response_headers) {
     // Do not match the rule if any conditions in `excluded_response_headers()`
     // match.
@@ -201,10 +233,7 @@ RequestParams::RequestParams(
       first_party_origin(info.initiator.value_or(url::Origin())),
       element_type(GetElementType(info.web_request_type)),
       method(GetRequestMethod(info.url.SchemeIsHTTPOrHTTPS(), info.method)),
-      parent_routing_id(info.parent_routing_id),
-      embedder_conditions_matcher(base::BindRepeating(DoEmbedderConditionsMatch,
-                                                      info.frame_data.tab_id,
-                                                      response_headers)) {
+      parent_routing_id(info.parent_routing_id) {
   // Allow/allowAllRequest rules matched in earlier rule matching stages can
   // influence rule matches for later matching stages. Hence this information
   // is needed from `info`.
@@ -215,6 +244,35 @@ RequestParams::RequestParams(
   }
 
   is_third_party = IsThirdPartyRequest(*url, first_party_origin);
+
+  // Determine the top-level frame or initiator host. This is the request host
+  // for main-frame requests, the host of the outer-most frame of the request
+  // initiator if available, otherwise the host of the request initiator. When
+  // none of those are available, fall back to an opaque origin.
+  std::string top_level_frame_or_initiator_host;
+  if (info.web_request_type == WebRequestResourceType::MAIN_FRAME) {
+    top_level_frame_or_initiator_host = info.url.GetHost();
+  } else {
+    url::Origin top_level_frame_or_initiator_origin = first_party_origin;
+
+    content::RenderFrameHost* initiator_host =
+        content::RenderFrameHost::FromID(info.parent_routing_id);
+    if (initiator_host) {
+      url::Origin top_origin =
+          initiator_host->GetOutermostMainFrame()->GetLastCommittedOrigin();
+
+      if (!top_origin.opaque()) {
+        top_level_frame_or_initiator_origin = top_origin;
+      }
+    }
+
+    top_level_frame_or_initiator_host =
+        top_level_frame_or_initiator_origin.host();
+  }
+
+  embedder_conditions_matcher = base::BindRepeating(
+      DoEmbedderConditionsMatch, info.frame_data.tab_id,
+      std::move(top_level_frame_or_initiator_host), response_headers);
 }
 
 RequestParams::RequestParams(
@@ -240,18 +298,28 @@ RequestParams::RequestParams(
   is_third_party =
       IsThirdPartyRequest(host->GetLastCommittedOrigin(), first_party_origin);
 
+  url::Origin top_origin =
+      host->GetOutermostMainFrame()
+          ? host->GetOutermostMainFrame()->GetLastCommittedOrigin()
+          : url::Origin();
+
+  std::string top_level_frame_or_initiator_host =
+      top_origin.opaque() ? first_party_origin.host() : top_origin.host();
+
   int window_id_unused = extension_misc::kUnknownWindowId;
   int tab_id = extension_misc::kUnknownTabId;
   ExtensionsBrowserClient::Get()->GetTabAndWindowIdForWebContents(
       content::WebContents::FromRenderFrameHost(host), &tab_id,
       &window_id_unused);
-  embedder_conditions_matcher =
-      base::BindRepeating(DoEmbedderConditionsMatch, tab_id, response_headers);
+  embedder_conditions_matcher = base::BindRepeating(
+      DoEmbedderConditionsMatch, tab_id,
+      std::move(top_level_frame_or_initiator_host), response_headers);
 }
 
 RequestParams::RequestParams(
     const GURL& url,
     const url::Origin& initiator,
+    const url::Origin& top_origin,
     const api::declarative_net_request::ResourceType request_type,
     const api::declarative_net_request::RequestMethod request_method,
     int tab_id,
@@ -261,9 +329,11 @@ RequestParams::RequestParams(
       element_type(GetElementType(request_type)),
       is_third_party(IsThirdPartyRequest(url, first_party_origin)),
       method(GetRequestMethod(url.SchemeIsHTTPOrHTTPS(), request_method)),
-      embedder_conditions_matcher(base::BindRepeating(DoEmbedderConditionsMatch,
-                                                      tab_id,
-                                                      response_headers)) {}
+      embedder_conditions_matcher(base::BindRepeating(
+          DoEmbedderConditionsMatch,
+          tab_id,
+          top_origin.opaque() ? initiator.host() : top_origin.host(),
+          response_headers)) {}
 
 RequestParams::RequestParams() = default;
 RequestParams::~RequestParams() = default;

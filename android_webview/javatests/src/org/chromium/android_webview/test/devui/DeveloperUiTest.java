@@ -13,6 +13,8 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.assertNoUnverifiedIntents;
 import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.Intents.intending;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasData;
 import static androidx.test.espresso.intent.matcher.UriMatchers.hasHost;
 import static androidx.test.espresso.intent.matcher.UriMatchers.hasParamWithValue;
 import static androidx.test.espresso.intent.matcher.UriMatchers.hasPath;
@@ -31,6 +33,7 @@ import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
 import android.app.Instrumentation.ActivityResult;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
@@ -58,6 +61,7 @@ import org.chromium.android_webview.nonembedded_util.WebViewPackageHelper;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.ui.test.util.ViewUtils;
@@ -213,6 +217,7 @@ public class DeveloperUiTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
+    @DisabledTest(message = "https://crbug.com/369532182")
     public void testMenuOptions_switchProvider_shownOnNougat() throws Throwable {
         launchHomeFragment();
 
@@ -224,6 +229,7 @@ public class DeveloperUiTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
+    @DisabledTest(message = "https://crbug.com/369532182")
     public void testMenuOptions_reportBug() throws Throwable {
         launchHomeFragment();
 
@@ -253,6 +259,7 @@ public class DeveloperUiTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
+    @DisabledTest(message = "https://crbug.com/369532182")
     public void testMenuOptions_checkUpdates_withPlayStore() throws Throwable {
         launchHomeFragment();
 
@@ -286,6 +293,7 @@ public class DeveloperUiTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
+    @DisabledTest(message = "https://crbug.com/369532182")
     public void testMenuOptions_aboutDevTools() throws Throwable {
         launchHomeFragment();
 
@@ -305,6 +313,7 @@ public class DeveloperUiTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
+    @DisabledTest(message = "https://crbug.com/369532182")
     public void testMenuOptions_components() throws Throwable {
         launchHomeFragment();
         openOptionsMenu();
@@ -316,6 +325,7 @@ public class DeveloperUiTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
+    @DisabledTest(message = "https://crbug.com/369532182")
     public void testMenuOptions_safeMode() throws Throwable {
         launchHomeFragment();
 
@@ -325,6 +335,34 @@ public class DeveloperUiTest {
         onView(withText("SafeMode status")).perform(click());
 
         onView(withId(R.id.fragment_safe_mode)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testMenuOptions_reportBug_activityNotFound() throws Throwable {
+        launchHomeFragment();
+
+        // Stub external intents to throw ActivityNotFoundException.
+        intending(hasAction(Intent.ACTION_VIEW))
+                .respondWithFunction(
+                        intent -> {
+                            throw new ActivityNotFoundException();
+                        });
+
+        openOptionsMenu();
+
+        onView(withText("Report WebView Bug")).check(matches(isDisplayed())).perform(click());
+
+        // Verify that the error dialog is shown.
+        onView(withText("Can't find a browser to open URL")).check(matches(isDisplayed()));
+        onView(withText("OK")).check(matches(isDisplayed())).perform(click());
+
+        intended(
+                allOf(
+                        hasAction(Intent.ACTION_VIEW),
+                        hasData(hasScheme("https")),
+                        hasData(hasHost("issues.chromium.org"))));
     }
 
     private void switchToFlagsUi() {

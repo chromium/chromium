@@ -6,16 +6,60 @@
 
 #include <limits.h>
 
+#include <string_view>
+
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/notimplemented.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 
 namespace signin_metrics {
+
+namespace {
+
+std::string_view GetPromoActionHistogramSuffix(PromoAction promo_action) {
+  switch (promo_action) {
+    case PromoAction::PROMO_ACTION_WITH_DEFAULT:
+      return ".WithDefault";
+    case PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT:
+      return ".NewAccountNoExistingAccount";
+    case PromoAction::PROMO_ACTION_NEW_ACCOUNT_EXISTING_ACCOUNT:
+    case PromoAction::PROMO_ACTION_NOT_DEFAULT:
+      NOTIMPLEMENTED()
+          << "Those promo actions have no histogram equivalent yet, you need "
+             "to implement the histogram and return the correct histogram "
+             "suffix.";
+      return "NOT IMPLEMENTED";
+    case PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO:
+      NOTREACHED() << "No signin promo should not record metrics.";
+  }
+}
+
+#if BUILDFLAG(IS_IOS)
+std::string_view ReauthFlowEventToHistogramSuffix(ReauthFlowEvent event) {
+  switch (event) {
+    case ReauthFlowEvent::kStarted:
+      return ".Started";
+    case ReauthFlowEvent::kCompleted:
+      return ".Completed";
+    case ReauthFlowEvent::kError:
+      return ".Error";
+    case ReauthFlowEvent::kCancelled:
+      return ".Cancelled";
+    case ReauthFlowEvent::kInterrupted:
+      return ".Interrupted";
+  }
+}
+#endif  // BUILDFLAG(IS_IOS)
+
+}  // namespace
 
 // These intermediate macros are necessary when we may emit to different
 // histograms from the same logical place in the code. The base histogram macros
@@ -56,92 +100,109 @@ namespace signin_metrics {
 
 void LogSigninAccessPointStarted(AccessPoint access_point,
                                  PromoAction promo_action) {
-  UMA_HISTOGRAM_ENUMERATION("Signin.SigninStartedAccessPoint",
-                            static_cast<int>(access_point),
-                            static_cast<int>(AccessPoint::ACCESS_POINT_MAX));
+  UMA_HISTOGRAM_ENUMERATION("Signin.SigninStartedAccessPoint", access_point);
   switch (promo_action) {
     case PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO:
       break;
     case PromoAction::PROMO_ACTION_WITH_DEFAULT:
-      UMA_HISTOGRAM_ENUMERATION(
-          "Signin.SigninStartedAccessPoint.WithDefault",
-          static_cast<int>(access_point),
-          static_cast<int>(AccessPoint::ACCESS_POINT_MAX));
+      UMA_HISTOGRAM_ENUMERATION("Signin.SigninStartedAccessPoint.WithDefault",
+                                access_point);
       break;
     case PromoAction::PROMO_ACTION_NOT_DEFAULT:
-      UMA_HISTOGRAM_ENUMERATION(
-          "Signin.SigninStartedAccessPoint.NotDefault",
-          static_cast<int>(access_point),
-          static_cast<int>(AccessPoint::ACCESS_POINT_MAX));
+      UMA_HISTOGRAM_ENUMERATION("Signin.SigninStartedAccessPoint.NotDefault",
+                                access_point);
       break;
     case PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT:
       UMA_HISTOGRAM_ENUMERATION(
           "Signin.SigninStartedAccessPoint.NewAccountNoExistingAccount",
-          static_cast<int>(access_point),
-          static_cast<int>(AccessPoint::ACCESS_POINT_MAX));
+          access_point);
       break;
     case PromoAction::PROMO_ACTION_NEW_ACCOUNT_EXISTING_ACCOUNT:
       UMA_HISTOGRAM_ENUMERATION(
           "Signin.SigninStartedAccessPoint.NewAccountExistingAccount",
-          static_cast<int>(access_point),
-          static_cast<int>(AccessPoint::ACCESS_POINT_MAX));
+          access_point);
       break;
   }
 }
 
 void LogSigninAccessPointCompleted(AccessPoint access_point,
                                    PromoAction promo_action) {
-  UMA_HISTOGRAM_ENUMERATION("Signin.SigninCompletedAccessPoint",
-                            static_cast<int>(access_point),
-                            static_cast<int>(AccessPoint::ACCESS_POINT_MAX));
+  UMA_HISTOGRAM_ENUMERATION("Signin.SigninCompletedAccessPoint", access_point);
   switch (promo_action) {
     case PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO:
       break;
     case PromoAction::PROMO_ACTION_WITH_DEFAULT:
-      UMA_HISTOGRAM_ENUMERATION(
-          "Signin.SigninCompletedAccessPoint.WithDefault",
-          static_cast<int>(access_point),
-          static_cast<int>(AccessPoint::ACCESS_POINT_MAX));
+      UMA_HISTOGRAM_ENUMERATION("Signin.SigninCompletedAccessPoint.WithDefault",
+                                access_point);
       break;
     case PromoAction::PROMO_ACTION_NOT_DEFAULT:
-      UMA_HISTOGRAM_ENUMERATION(
-          "Signin.SigninCompletedAccessPoint.NotDefault",
-          static_cast<int>(access_point),
-          static_cast<int>(AccessPoint::ACCESS_POINT_MAX));
+      UMA_HISTOGRAM_ENUMERATION("Signin.SigninCompletedAccessPoint.NotDefault",
+                                access_point);
       break;
     case PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT:
       UMA_HISTOGRAM_ENUMERATION(
           "Signin.SigninCompletedAccessPoint.NewAccountNoExistingAccount",
-          static_cast<int>(access_point),
-          static_cast<int>(AccessPoint::ACCESS_POINT_MAX));
+          access_point);
       break;
     case PromoAction::PROMO_ACTION_NEW_ACCOUNT_EXISTING_ACCOUNT:
       UMA_HISTOGRAM_ENUMERATION(
           "Signin.SigninCompletedAccessPoint.NewAccountExistingAccount",
-          static_cast<int>(access_point),
-          static_cast<int>(AccessPoint::ACCESS_POINT_MAX));
+          access_point);
       break;
   }
 }
 
-void LogSignInOffered(AccessPoint access_point) {
-  base::UmaHistogramEnumeration("Signin.SignIn.Offered", access_point,
-                                AccessPoint::ACCESS_POINT_MAX);
+void LogSignInOffered(AccessPoint access_point, PromoAction promo_action) {
+  static constexpr char signin_offered_base_histogram[] =
+      "Signin.SignIn.Offered";
+
+  // Log the generic offered histogram.
+  base::UmaHistogramEnumeration(signin_offered_base_histogram, access_point);
+
+  // Do not record the histogram with a promo suffix if this is invoked/recorded
+  // from a non-promo context.
+  if (promo_action == PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO) {
+    return;
+  }
+
+  // Log the specific offered histogram based on the `promo_action`.
+  base::UmaHistogramEnumeration(
+      base::StrCat({signin_offered_base_histogram,
+                    GetPromoActionHistogramSuffix(promo_action)}),
+      access_point);
 }
 
 void LogSignInStarted(AccessPoint access_point) {
-  base::UmaHistogramEnumeration("Signin.SignIn.Started", access_point,
-                                AccessPoint::ACCESS_POINT_MAX);
+  base::UmaHistogramEnumeration("Signin.SignIn.Started", access_point);
 }
 
+void LogSigninPendingOffered(AccessPoint access_point) {
+  base::UmaHistogramEnumeration("Signin.SigninPending.Offered", access_point);
+}
+
+#if BUILDFLAG(IS_IOS)
+void LogSigninWithAccountType(SigninAccountType account_type) {
+  base::UmaHistogramEnumeration("Signin.AccountType.SigninConsent",
+                                account_type);
+}
+#endif  // BUILDFLAG(IS_IOS)
+
 void LogSyncOptInStarted(AccessPoint access_point) {
-  base::UmaHistogramEnumeration("Signin.SyncOptIn.Started", access_point,
-                                AccessPoint::ACCESS_POINT_MAX);
+  base::UmaHistogramEnumeration("Signin.SyncOptIn.Started", access_point);
+}
+
+void LogSyncOptInOffered(AccessPoint access_point) {
+  base::UmaHistogramEnumeration("Signin.SyncOptIn.Offered", access_point);
+}
+
+void LogHistorySyncOptInOffered(AccessPoint access_point) {
+  base::UmaHistogramEnumeration("Signin.HistorySyncOptIn.Offered",
+                                access_point);
 }
 
 void LogSyncSettingsOpened(AccessPoint access_point) {
   base::UmaHistogramEnumeration("Signin.SyncOptIn.OpenedSyncSettings",
-                                access_point, AccessPoint::ACCESS_POINT_MAX);
+                                access_point);
 }
 
 void RecordAccountsPerProfile(int total_number_accounts) {
@@ -219,7 +280,7 @@ void LogCookieJarCounts(const int signed_in,
 void LogAccountRelation(const AccountRelation relation,
                         const ReportingType type) {
   INVESTIGATOR_HISTOGRAM_ENUMERATION(
-      "Signin.CookieJar.ChromeAccountRelation", type,
+      "Signin.CookieJar.ChromeAccountRelation2", type,
       static_cast<int>(relation),
       static_cast<int>(AccountRelation::HISTOGRAM_COUNT));
 }
@@ -288,11 +349,47 @@ void RecordSignoutConfirmationFromDataLossAlert(
   base::UmaHistogramBoolean(histogram, signout_confirmed);
 }
 
-void RecordSignoutForceClearDataChoice(bool force_clear_data) {
-  base::UmaHistogramBoolean("Signin.UserRequestedWipeDataOnSignout",
-                            force_clear_data);
+void RecordReauthFlowEventInSigninFlow(signin_metrics::AccessPoint access_point,
+                                       ReauthFlowEvent event) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Signin.Reauth.InSigninFlow",
+                    ReauthFlowEventToHistogramSuffix(event)}),
+      access_point);
+}
+
+void RecordReauthFlowEventInExplicitFlow(ReauthAccessPoint access_point,
+                                         ReauthFlowEvent event) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Signin.Reauth.InExplicitFlow",
+                    ReauthFlowEventToHistogramSuffix(event)}),
+      access_point);
 }
 #endif  // BUILDFLAG(IS_IOS)
+
+void RecordOpenTabCountOnSignin(signin::ConsentLevel consent_level,
+                                size_t tabs_count) {
+  std::string_view consent_level_token =
+      consent_level == signin::ConsentLevel::kSignin ? ".OnSignin" : ".OnSync";
+  base::UmaHistogramCounts1000(
+      base::StrCat({"Signin.OpenTabsCount", consent_level_token}), tabs_count);
+}
+
+void RecordHistoryOptInStateOnSignin(signin_metrics::AccessPoint access_point,
+                                     signin::ConsentLevel consent_level,
+                                     bool opted_in) {
+  std::string_view consent_level_token =
+      consent_level == signin::ConsentLevel::kSignin ? ".OnSignin" : ".OnSync";
+  base::UmaHistogramBoolean(
+      base::StrCat({"Signin.HistoryOptInState", consent_level_token}),
+      opted_in);
+
+  if (opted_in) {
+    base::UmaHistogramEnumeration(
+        base::StrCat(
+            {"Signin.HistoryAlreadyOptedInAccessPoint", consent_level_token}),
+        access_point);
+  }
+}
 
 // --------------------------------------------------------------
 // User actions
@@ -300,382 +397,480 @@ void RecordSignoutForceClearDataChoice(bool force_clear_data) {
 
 void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
   switch (access_point) {
-    case AccessPoint::ACCESS_POINT_START_PAGE:
+    case AccessPoint::kStartPage:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromStartPage"));
       break;
-    case AccessPoint::ACCESS_POINT_NTP_LINK:
+    case AccessPoint::kNtpLink:
       base::RecordAction(base::UserMetricsAction("Signin_Signin_FromNTP"));
       break;
-    case AccessPoint::ACCESS_POINT_MENU:
+    case AccessPoint::kMenu:
       base::RecordAction(base::UserMetricsAction("Signin_Signin_FromMenu"));
       break;
-    case AccessPoint::ACCESS_POINT_SETTINGS:
+    case AccessPoint::kSettings:
       base::RecordAction(base::UserMetricsAction("Signin_Signin_FromSettings"));
       break;
-    case AccessPoint::ACCESS_POINT_SUPERVISED_USER:
+    case AccessPoint::kSettingsYourSavedInfo:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Signin_FromYourSavedInfo"));
+      break;
+    case AccessPoint::kSupervisedUser:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromSupervisedUser"));
       break;
-    case AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE:
+    case AccessPoint::kExtensionInstallBubble:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromExtensionInstallBubble"));
       break;
-    case AccessPoint::ACCESS_POINT_EXTENSIONS:
+    case AccessPoint::kExtensions:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromExtensions"));
       break;
-    case AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE:
+    case AccessPoint::kBookmarkBubble:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromBookmarkBubble"));
       break;
-    case AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER:
+    case AccessPoint::kBookmarkManager:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromBookmarkManager"));
       break;
-    case AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN:
+    case AccessPoint::kAvatarBubbleSignIn:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromAvatarBubbleSignin"));
       break;
-    case AccessPoint::ACCESS_POINT_USER_MANAGER:
+    case AccessPoint::kUserManager:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromUserManager"));
       break;
-    case AccessPoint::ACCESS_POINT_DEVICES_PAGE:
+    case AccessPoint::kDevicesPage:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromDevicesPage"));
       break;
-    case AccessPoint::ACCESS_POINT_SIGNIN_PROMO:
+    case AccessPoint::kFullscreenSigninPromo:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromSigninPromo"));
       break;
-    case AccessPoint::ACCESS_POINT_RECENT_TABS:
+    case AccessPoint::kRecentTabs:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromRecentTabs"));
       break;
-    case AccessPoint::ACCESS_POINT_UNKNOWN:
+    case AccessPoint::kUnknown:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromUnknownAccessPoint"));
       break;
-    case AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
+    case AccessPoint::kPasswordBubble:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromPasswordBubble"));
       break;
-    case AccessPoint::ACCESS_POINT_AUTOFILL_DROPDOWN:
+    case AccessPoint::kAutofillDropdown:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromAutofillDropdown"));
       break;
-    case AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR:
+    case AccessPoint::kResigninInfobar:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromReSigninInfobar"));
       break;
-    case AccessPoint::ACCESS_POINT_TAB_SWITCHER:
+    case AccessPoint::kTabSwitcher:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromTabSwitcher"));
       break;
-    case AccessPoint::ACCESS_POINT_MACHINE_LOGON:
+    case AccessPoint::kMachineLogon:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromMachineLogon"));
       break;
-    case AccessPoint::ACCESS_POINT_GOOGLE_SERVICES_SETTINGS:
+    case AccessPoint::kGoogleServicesSettings:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromGoogleServicesSettings"));
       break;
-    case AccessPoint::ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
+    case AccessPoint::kEnterpriseSignoutCoordinator:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromEnterpriseSignoutSheet"));
       break;
-    case AccessPoint::ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE:
+    case AccessPoint::kSigninInterceptFirstRunExperience:
       base::RecordAction(base::UserMetricsAction(
           "Signin_Signin_FromSigninInterceptFirstRunExperience"));
       break;
-    case AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
+    case AccessPoint::kNtpFeedTopPromo:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromNTPFeedTopPromo"));
       break;
-    case AccessPoint::ACCESS_POINT_KALEIDOSCOPE:
-      NOTREACHED_IN_MIGRATION()
-          << "Access point " << static_cast<int>(access_point)
-          << " is only used to trigger non-sync sign-in and this"
-          << " action should only be triggered for sync-enabled"
-          << " sign-ins.";
+    case AccessPoint::kKaleidoscope:
+      NOTREACHED() << "Access point " << static_cast<int>(access_point)
+                   << " is only used to trigger non-sync sign-in and this"
+                   << " action should only be triggered for sync-enabled"
+                   << " sign-ins.";
+    case AccessPoint::kSyncErrorCard:
+    case AccessPoint::kForcedSignin:
+    case AccessPoint::kAccountRenamed:
+    case AccessPoint::kWebSignin:
+    case AccessPoint::kSaveToDriveIos:
+    case AccessPoint::kSaveToPhotosIos:
+    case AccessPoint::kSettingsSyncOffRow:
+    case AccessPoint::kPostDeviceRestoreBackgroundSignin:
+    case AccessPoint::kRestorePrimaryAccountOnProfileLoad:
+    case AccessPoint::kDesktopSigninManager:
+    case AccessPoint::kSigninChoiceRemembered:
+    case AccessPoint::kProfileMenuSignoutConfirmationPrompt:
+    case AccessPoint::kSettingsSignoutConfirmationPrompt:
+    case AccessPoint::kWebauthnModalDialog:
+    case AccessPoint::kCctAccountMismatchNotification:
+    case AccessPoint::kDriveFilePickerIos:
+    case AccessPoint::kHistoryPage:
+    case AccessPoint::kWidget:
+    case AccessPoint::kHistorySyncEducationalTip:
+    case AccessPoint::kManagedProfileAutoSigninIos:
+      NOTREACHED() << "Access point " << static_cast<int>(access_point)
+                   << " is not supposed to log signin user actions.";
+    case AccessPoint::kCollaborationShareTabGroup:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Signin_FromCollaborationShareTabGroup"));
       break;
-    case AccessPoint::ACCESS_POINT_SYNC_ERROR_CARD:
-    case AccessPoint::ACCESS_POINT_FORCED_SIGNIN:
-    case AccessPoint::ACCESS_POINT_ACCOUNT_RENAMED:
-    case AccessPoint::ACCESS_POINT_WEB_SIGNIN:
-    case AccessPoint::ACCESS_POINT_SAVE_TO_DRIVE_IOS:
-    case AccessPoint::ACCESS_POINT_SAVE_TO_PHOTOS_IOS:
-    case AccessPoint::ACCESS_POINT_SETTINGS_SYNC_OFF_ROW:
-    case AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_BACKGROUND_SIGNIN:
-    case AccessPoint::ACCESS_POINT_RESTORE_PRIMARY_ACCOUNT_ON_PROFILE_LOAD:
-    case AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER:
-    case AccessPoint::ACCESS_POINT_SIGNIN_CHOICE_REMEMBERED:
-    case AccessPoint::ACCESS_POINT_PROFILE_MENU_SIGNOUT_CONFIRMATION_PROMPT:
-    case AccessPoint::ACCESS_POINT_SETTINGS_SIGNOUT_CONFIRMATION_PROMPT:
-    case AccessPoint::ACCESS_POINT_WEBAUTHN_MODAL_DIALOG:
-      NOTREACHED_IN_MIGRATION()
-          << "Access point " << static_cast<int>(access_point)
-          << " is not supposed to log signin user actions.";
+    case AccessPoint::kCollaborationJoinTabGroup:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Signin_FromCollaborationJoinTabGroup"));
       break;
-    case AccessPoint::ACCESS_POINT_SAFETY_CHECK:
+    case AccessPoint::kCollaborationLeaveOrDeleteTabGroup:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Signin_FromCollaborationLeaveOrDeleteTabGroup"));
+      break;
+    case AccessPoint::kSafetyCheck:
       VLOG(1) << "Signin_Signin_From* user action is not recorded "
               << "for access point " << static_cast<int>(access_point);
       break;
-    case AccessPoint::ACCESS_POINT_SEND_TAB_TO_SELF_PROMO:
+    case AccessPoint::kSendTabToSelfPromo:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromSendTabToSelfPromo"));
       break;
-    case AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO:
+    case AccessPoint::kPostDeviceRestoreSigninPromo:
       base::RecordAction(base::UserMetricsAction(
           "Signin_Signin_FromPostDeviceRestoreSigninPromo"));
       break;
-    case AccessPoint::ACCESS_POINT_NTP_SIGNED_OUT_ICON:
+    case AccessPoint::kNtpSignedOutIcon:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromNTPSignedOutIcon"));
       break;
-    case AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO:
+    case AccessPoint::kNtpFeedCardMenuPromo:
       base::RecordAction(base::UserMetricsAction(
           "Signin_Signin_FromNTPFeedCardMenuSigninPromo"));
       break;
-    case AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO:
+    case AccessPoint::kNtpFeedBottomPromo:
       base::RecordAction(base::UserMetricsAction(
           "Signin_Signin_FromNTPFeedBottomSigninPromo"));
       break;
-    case AccessPoint::ACCESS_POINT_FOR_YOU_FRE:
+    case AccessPoint::kForYouFre:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromForYouFre"));
       break;
-    case AccessPoint::ACCESS_POINT_CREATOR_FEED_FOLLOW:
+    case AccessPoint::kCreatorFeedFollow:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromCreatorFeedFollow"));
       break;
-    case AccessPoint::ACCESS_POINT_READING_LIST:
+    case AccessPoint::kReadingList:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromReadingList"));
       break;
-    case signin_metrics::AccessPoint::ACCESS_POINT_REAUTH_INFO_BAR:
+    case signin_metrics::AccessPoint::kReauthInfoBar:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromReauthInfoBar"));
       break;
-    case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE:
+    case signin_metrics::AccessPoint::kAccountConsistencyService:
       base::RecordAction(base::UserMetricsAction(
           "Signin_Signin_FromAccountConsistencyService"));
       break;
-    case AccessPoint::ACCESS_POINT_SEARCH_COMPANION:
+    case AccessPoint::kSearchCompanion:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromSearchCompanion"));
       break;
-    case AccessPoint::ACCESS_POINT_SET_UP_LIST:
+    case AccessPoint::kSetUpList:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromSetUpList"));
       break;
-    case AccessPoint::ACCESS_POINT_PASSWORD_MIGRATION_WARNING_ANDROID:
-      base::RecordAction(base::UserMetricsAction(
-          "Signin_Signin_FromPasswordMigrationWarningAndroid"));
-      break;
-    case AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE:
+    case AccessPoint::kChromeSigninInterceptBubble:
       base::RecordAction(base::UserMetricsAction(
           "Signin_Signin_FromChromeSigninInterceptBubble"));
       break;
-    case AccessPoint::ACCESS_POINT_TAB_ORGANIZATION:
+    case AccessPoint::kTabOrganization:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromTabOrganization"));
       break;
-    case AccessPoint::ACCESS_POINT_TIPS_NOTIFICATION:
+    case AccessPoint::kTipsNotification:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromTipsNotification"));
       break;
-    case AccessPoint::ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE:
+    case AccessPoint::kNotificationsOptInScreenContentToggle:
       base::RecordAction(base::UserMetricsAction(
           "Signin_Signin_FromNotificationsOptInScreenContentToggle"));
       break;
-    case AccessPoint::ACCESS_POINT_NTP_IDENTITY_DISC:
+    case AccessPoint::kNtpIdentityDisc:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromNtpIdentityDisc"));
       break;
-    case AccessPoint::ACCESS_POINT_OIDC_REDIRECTION_INTERCEPTION:
+    case AccessPoint::kOidcRedirectionInterception:
       base::RecordAction(base::UserMetricsAction(
           "Signin_Signin_FromOidcRedirectionInterception"));
       break;
-    case AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO:
+    case AccessPoint::kAvatarBubbleSignInWithSyncPromo:
       base::RecordAction(base::UserMetricsAction(
           "Signin_Signin_FromAvatarBubbleSigninWithSyncPromo"));
       break;
-    case AccessPoint::ACCESS_POINT_ACCOUNT_MENU:
+    case AccessPoint::kAccountMenuSwitchAccount:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromAccountMenu"));
       break;
-    case AccessPoint::ACCESS_POINT_MAX:
-      NOTREACHED_IN_MIGRATION();
+    case AccessPoint::kProductSpecifications:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Signin_FromProductSpecifications"));
       break;
-  }
-}
-
-void RecordSignoutUserAction(bool force_clear_data) {
-  if (force_clear_data) {
-    base::RecordAction(base::UserMetricsAction("Signin_SignoutClearData"));
-  } else {
-    base::RecordAction(base::UserMetricsAction("Signin_Signout"));
+    case AccessPoint::kAccountMenuSwitchAccountFailed:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Signin_FromAccountMenuFailedSwitch"));
+      break;
+    case AccessPoint::kAddressBubble:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Signin_FromAddressBubble"));
+      break;
+    case AccessPoint::kGlicLaunchButton:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Signin_FromGlicLaunchButton"));
+      break;
+    case AccessPoint::kHistorySyncOptinExpansionPillOnStartup:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Signin_FromHistorySyncOptinExpansionPillOnStartup"));
+      break;
+    case AccessPoint::kNonModalSigninPasswordPromo:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Signin_FromNonModalSigninPasswordPromo"));
+      break;
+    case AccessPoint::kNonModalSigninBookmarkPromo:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Signin_FromNonModalSigninBookmarkPromo"));
+      break;
+    case AccessPoint::kUserManagerWithPrefilledEmail:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Signin_FromUserManagerWithPrefilledEmail"));
+      break;
+    case AccessPoint::kEnterpriseManagementDisclaimerAtStartup:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Signin_FromEnterpriseManagementDisclaimerAtStartup"));
+      break;
+    case AccessPoint::kEnterpriseManagementDisclaimerAfterBrowserFocus:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Signin_FromEnterpriseManagementDisclaimerAfterBrowserFocus"));
+      break;
+    case AccessPoint::kEnterpriseManagementDisclaimerAfterSignin:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Signin_FromEnterpriseManagementDisclaimerAfterSignin"));
+      break;
+    case AccessPoint::kNtpFeaturePromo:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Signin_FromNtpFeaturePromo"));
+      break;
+    case AccessPoint::kEnterpriseDialogAfterSigninInterception:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Signin_FromEnterpriseDialogAfterSigninInterception"));
+      break;
+    case AccessPoint::kCredentialExchangeImport:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Signin_FromCredentialExchangeImport"));
+      break;
   }
 }
 
 void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
   switch (access_point) {
-    case AccessPoint::ACCESS_POINT_START_PAGE:
+    case AccessPoint::kStartPage:
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromStartPage"));
       break;
-    case AccessPoint::ACCESS_POINT_NTP_LINK:
+    case AccessPoint::kNtpLink:
       base::RecordAction(base::UserMetricsAction("Signin_Impression_FromNTP"));
       break;
-    case AccessPoint::ACCESS_POINT_MENU:
+    case AccessPoint::kMenu:
       base::RecordAction(base::UserMetricsAction("Signin_Impression_FromMenu"));
       break;
-    case AccessPoint::ACCESS_POINT_SETTINGS:
+    case AccessPoint::kSettings:
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromSettings"));
       break;
-    case AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE:
+    case AccessPoint::kSettingsYourSavedInfo:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Impression_FromYourSavedInfo"));
+      break;
+    case AccessPoint::kExtensionInstallBubble:
       base::RecordAction(base::UserMetricsAction(
           "Signin_Impression_FromExtensionInstallBubble"));
       break;
-    case AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE:
+    case AccessPoint::kBookmarkBubble:
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromBookmarkBubble"));
       break;
-    case AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER:
+    case AccessPoint::kBookmarkManager:
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromBookmarkManager"));
       break;
-    case AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN:
+    case AccessPoint::kAvatarBubbleSignIn:
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromAvatarBubbleSignin"));
       break;
-    case AccessPoint::ACCESS_POINT_DEVICES_PAGE:
+    case AccessPoint::kDevicesPage:
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromDevicesPage"));
       break;
-    case AccessPoint::ACCESS_POINT_SIGNIN_PROMO:
+    case AccessPoint::kFullscreenSigninPromo:
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromSigninPromo"));
       break;
-    case AccessPoint::ACCESS_POINT_RECENT_TABS:
+    case AccessPoint::kRecentTabs:
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromRecentTabs"));
       break;
-    case AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
+    case AccessPoint::kPasswordBubble:
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromPasswordBubble"));
       break;
-    case AccessPoint::ACCESS_POINT_AUTOFILL_DROPDOWN:
+    case AccessPoint::kAutofillDropdown:
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromAutofillDropdown"));
       break;
-    case AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR:
+    case AccessPoint::kResigninInfobar:
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromReSigninInfobar"));
       break;
-    case AccessPoint::ACCESS_POINT_TAB_SWITCHER:
+    case AccessPoint::kTabSwitcher:
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromTabSwitcher"));
       break;
-    case AccessPoint::ACCESS_POINT_GOOGLE_SERVICES_SETTINGS:
+    case AccessPoint::kGoogleServicesSettings:
       base::RecordAction(base::UserMetricsAction(
           "Signin_Impression_FromGoogleServicesSettings"));
       break;
-    case AccessPoint::ACCESS_POINT_KALEIDOSCOPE:
+    case AccessPoint::kKaleidoscope:
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromKaleidoscope"));
       break;
-    case AccessPoint::ACCESS_POINT_USER_MANAGER:
+    case AccessPoint::kUserManager:
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromUserManager"));
       break;
-    case AccessPoint::ACCESS_POINT_SEND_TAB_TO_SELF_PROMO:
+    case AccessPoint::kSendTabToSelfPromo:
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromSendTabToSelfPromo"));
       break;
-    case AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
+    case AccessPoint::kNtpFeedTopPromo:
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromNTPFeedTopPromo"));
       break;
-    case AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO:
+    case AccessPoint::kPostDeviceRestoreSigninPromo:
       base::RecordAction(base::UserMetricsAction(
           "Signin_Impression_FromPostDeviceRestoreSigninPromo"));
       break;
-    case AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO:
+    case AccessPoint::kNtpFeedCardMenuPromo:
       base::RecordAction(base::UserMetricsAction(
           "Signin_Impression_FromNTPFeedCardMenuSigninPromo"));
       break;
-    case AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO:
+    case AccessPoint::kNtpFeedBottomPromo:
       base::RecordAction(base::UserMetricsAction(
           "Signin_Impression_FromNTPFeedBottomSigninPromo"));
       break;
-    case AccessPoint::ACCESS_POINT_CREATOR_FEED_FOLLOW:
+    case AccessPoint::kCreatorFeedFollow:
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromCreatorFeedFollow"));
       break;
-    case AccessPoint::ACCESS_POINT_READING_LIST:
+    case AccessPoint::kReadingList:
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromReadingList"));
       break;
-    case AccessPoint::ACCESS_POINT_SEARCH_COMPANION:
+    case AccessPoint::kSearchCompanion:
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromSearchCompanion"));
       break;
-    case AccessPoint::ACCESS_POINT_SET_UP_LIST:
+    case AccessPoint::kSetUpList:
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromSetUpList"));
       break;
-    case AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE:
+    case AccessPoint::kChromeSigninInterceptBubble:
       base::RecordAction(base::UserMetricsAction(
           "Signin_Impression_FromChromeSigninInterceptBubble"));
       break;
-    case AccessPoint::ACCESS_POINT_TIPS_NOTIFICATION:
+    case AccessPoint::kTipsNotification:
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromTipsNotification"));
       break;
-    case AccessPoint::ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE:
+    case AccessPoint::kNotificationsOptInScreenContentToggle:
       base::RecordAction(base::UserMetricsAction(
           "Signin_Impression_FromNotificationsOptInScreenContentToggle"));
       break;
-    case AccessPoint::ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
-    case AccessPoint::ACCESS_POINT_EXTENSIONS:
-    case AccessPoint::ACCESS_POINT_SUPERVISED_USER:
-    case AccessPoint::ACCESS_POINT_UNKNOWN:
-    case AccessPoint::ACCESS_POINT_MACHINE_LOGON:
-    case AccessPoint::ACCESS_POINT_SYNC_ERROR_CARD:
-    case AccessPoint::ACCESS_POINT_FORCED_SIGNIN:
-    case AccessPoint::ACCESS_POINT_ACCOUNT_RENAMED:
-    case AccessPoint::ACCESS_POINT_WEB_SIGNIN:
-    case AccessPoint::ACCESS_POINT_SIGNIN_CHOICE_REMEMBERED:
-    case AccessPoint::ACCESS_POINT_SAFETY_CHECK:
-    case AccessPoint::ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE:
-    case AccessPoint::ACCESS_POINT_SETTINGS_SYNC_OFF_ROW:
-    case AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_BACKGROUND_SIGNIN:
-    case AccessPoint::ACCESS_POINT_NTP_SIGNED_OUT_ICON:
-    case AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER:
-    case AccessPoint::ACCESS_POINT_FOR_YOU_FRE:
-    case AccessPoint::ACCESS_POINT_SAVE_TO_DRIVE_IOS:
-    case AccessPoint::ACCESS_POINT_SAVE_TO_PHOTOS_IOS:
-    case AccessPoint::ACCESS_POINT_REAUTH_INFO_BAR:
-    case AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE:
-    case AccessPoint::ACCESS_POINT_PASSWORD_MIGRATION_WARNING_ANDROID:
-    case AccessPoint::ACCESS_POINT_RESTORE_PRIMARY_ACCOUNT_ON_PROFILE_LOAD:
-    case AccessPoint::ACCESS_POINT_TAB_ORGANIZATION:
-    case AccessPoint::ACCESS_POINT_PROFILE_MENU_SIGNOUT_CONFIRMATION_PROMPT:
-    case AccessPoint::ACCESS_POINT_SETTINGS_SIGNOUT_CONFIRMATION_PROMPT:
-    case AccessPoint::ACCESS_POINT_NTP_IDENTITY_DISC:
-    case AccessPoint::ACCESS_POINT_OIDC_REDIRECTION_INTERCEPTION:
-    case AccessPoint::ACCESS_POINT_WEBAUTHN_MODAL_DIALOG:
-    case AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO:
-    case AccessPoint::ACCESS_POINT_ACCOUNT_MENU:
-    case AccessPoint::ACCESS_POINT_MAX:
-      NOTREACHED_IN_MIGRATION() << "Signin_Impression_From* user actions"
-                                << " are not recorded for access point "
-                                << static_cast<int>(access_point);
+    case AccessPoint::kProductSpecifications:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Impression_FromProductSpecifications"));
       break;
+    case AccessPoint::kAddressBubble:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Impression_FromAddressBubble"));
+      break;
+    case AccessPoint::kUserManagerWithPrefilledEmail:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Impression_FromUserManagerWithPrefilledEmail"));
+      break;
+    case AccessPoint::kEnterpriseDialogAfterSigninInterception:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Impression_FromEnterpriseDialogAfterSigninInterception"));
+      break;
+    case AccessPoint::kCredentialExchangeImport:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Impression_FromCredentialExchangeImport"));
+      break;
+    case AccessPoint::kEnterpriseSignoutCoordinator:
+    case AccessPoint::kExtensions:
+    case AccessPoint::kSupervisedUser:
+    case AccessPoint::kUnknown:
+    case AccessPoint::kMachineLogon:
+    case AccessPoint::kSyncErrorCard:
+    case AccessPoint::kForcedSignin:
+    case AccessPoint::kAccountRenamed:
+    case AccessPoint::kWebSignin:
+    case AccessPoint::kSigninChoiceRemembered:
+    case AccessPoint::kSafetyCheck:
+    case AccessPoint::kSigninInterceptFirstRunExperience:
+    case AccessPoint::kSettingsSyncOffRow:
+    case AccessPoint::kPostDeviceRestoreBackgroundSignin:
+    case AccessPoint::kNtpSignedOutIcon:
+    case AccessPoint::kDesktopSigninManager:
+    case AccessPoint::kForYouFre:
+    case AccessPoint::kSaveToDriveIos:
+    case AccessPoint::kSaveToPhotosIos:
+    case AccessPoint::kReauthInfoBar:
+    case AccessPoint::kAccountConsistencyService:
+    case AccessPoint::kRestorePrimaryAccountOnProfileLoad:
+    case AccessPoint::kTabOrganization:
+    case AccessPoint::kProfileMenuSignoutConfirmationPrompt:
+    case AccessPoint::kSettingsSignoutConfirmationPrompt:
+    case AccessPoint::kNtpIdentityDisc:
+    case AccessPoint::kOidcRedirectionInterception:
+    case AccessPoint::kWebauthnModalDialog:
+    case AccessPoint::kAvatarBubbleSignInWithSyncPromo:
+    case AccessPoint::kAccountMenuSwitchAccount:
+    case AccessPoint::kAccountMenuSwitchAccountFailed:
+    case AccessPoint::kCctAccountMismatchNotification:
+    case AccessPoint::kDriveFilePickerIos:
+    case AccessPoint::kCollaborationShareTabGroup:
+    case AccessPoint::kGlicLaunchButton:
+    case AccessPoint::kHistoryPage:
+    case AccessPoint::kCollaborationJoinTabGroup:
+    case AccessPoint::kHistorySyncOptinExpansionPillOnStartup:
+    case AccessPoint::kWidget:
+    case AccessPoint::kCollaborationLeaveOrDeleteTabGroup:
+    case AccessPoint::kHistorySyncEducationalTip:
+    case AccessPoint::kManagedProfileAutoSigninIos:
+    case AccessPoint::kNonModalSigninPasswordPromo:
+    case AccessPoint::kNonModalSigninBookmarkPromo:
+    case AccessPoint::kEnterpriseManagementDisclaimerAtStartup:
+    case AccessPoint::kEnterpriseManagementDisclaimerAfterBrowserFocus:
+    case AccessPoint::kEnterpriseManagementDisclaimerAfterSignin:
+    case AccessPoint::kNtpFeaturePromo:
+      NOTREACHED() << "Signin_Impression_From* user actions are not recorded "
+                      "for access point "
+                   << static_cast<int>(access_point);
   }
 }
 
@@ -780,8 +975,7 @@ void RecordConsistencyPromoUserAction(AccountConsistencyPromoAction action,
       break;
   }
 
-  base::UmaHistogramEnumeration(histogram, access_point,
-                                AccessPoint::ACCESS_POINT_MAX);
+  base::UmaHistogramEnumeration(histogram, access_point);
 }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 

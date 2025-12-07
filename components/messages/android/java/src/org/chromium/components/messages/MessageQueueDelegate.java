@@ -4,14 +4,18 @@
 
 package org.chromium.components.messages;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Delegate for message queue to call when a message is about to show and hide. The delegate should
  * do preparation work and then call the given callback after preparation is finished.
  */
+@NullMarked
 public interface MessageQueueDelegate {
     /**
      * Called before a message is shown to allow the delegate to do preparation work. Should be
      * called only once before showing.
+     *
      * @param callback The callback called after all the preparation work has been done.
      */
     void onRequestShowing(Runnable callback);

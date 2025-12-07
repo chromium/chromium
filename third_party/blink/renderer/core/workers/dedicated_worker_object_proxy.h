@@ -31,14 +31,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_DEDICATED_WORKER_OBJECT_PROXY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_DEDICATED_WORKER_OBJECT_PROXY_H_
 
-#include <memory>
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
+#include "third_party/blink/renderer/core/workers/custom_event_message.h"
 #include "third_party/blink/renderer/core/workers/threaded_object_proxy_base.h"
 #include "third_party/blink/renderer/core/workers/worker_reporting_proxy.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -66,10 +66,16 @@ class CORE_EXPORT DedicatedWorkerObjectProxy : public ThreadedObjectProxyBase {
   void PostMessageToWorkerObject(BlinkTransferableMessage);
   void ProcessUnhandledException(int exception_id, WorkerThread*);
   void ProcessMessageFromWorkerObject(BlinkTransferableMessage, WorkerThread*);
+  void ProcessCustomEventFromWorkerObject(
+      CustomEventMessage,
+      WorkerThread*,
+      CrossThreadFunction<Event*(ScriptState*, CustomEventMessage)>
+          event_factory_callback,
+      CrossThreadFunction<Event*(ScriptState*)> event_factory_error_callback);
 
   // ThreadedObjectProxyBase overrides.
   void ReportException(const String& error_message,
-                       std::unique_ptr<SourceLocation>,
+                       const SourceLocation*,
                        int exception_id) override;
   void DidFailToFetchClassicScript() final;
   void DidFailToFetchModuleScript() final;

@@ -56,6 +56,11 @@ enum class PrefetchStatus {
 
   // The url was not eligible to be prefetched because there was a registered
   // service worker for that origin.
+  // Some other ServiceWorker-related `PrefetchStatus`/`PreloadingEligibility`
+  // values (e.g. `kPrefetchIneligibleUserHasServiceWorkerNoFetchHandler`) are
+  // used for some subcases.
+  // Even after the initial ServiceWorker support (https://crbug.com/40947546),
+  // this will still used for ServiceWorker-ineligible prefetches.
   kPrefetchIneligibleUserHasServiceWorker = 6,
 
   // The url was not eligible to be prefetched because its scheme was not
@@ -181,7 +186,9 @@ enum class PrefetchStatus {
 
   // Whether this prefetch is heldback for counterfactual logging.
   kPrefetchHeldback = 40,
-  kPrefetchAllowed = 41,
+
+  // DEPRECATED
+  // kPrefetchAllowed = 41,
 
   // The response of the prefetch is used for the next navigation. This is the
   // final successful state.
@@ -194,9 +201,12 @@ enum class PrefetchStatus {
   // prefetch.
   kPrefetchFailedIneligibleRedirect = 44,
 
+  // Deprecated; prefetches are now queued until other prefetches are evicted
+  // when the limit is reached.
+  //
   // The prefetch was not made because prefetches exceeded the limit per
   // page.
-  kPrefetchFailedPerPageLimitExceeded = 45,
+  // kPrefetchFailedPerPageLimitExceeded = 45,
 
   // The prefetch needed to fetch a same-site cross-origin URL and required the
   // use of the prefetch proxy. These prefetches are blocked since the default
@@ -212,16 +222,37 @@ enum class PrefetchStatus {
   // The prefetch was not made because preloading was disabled.
   kPrefetchIneligiblePreloadingDisabled = 48,
 
-  // The prefetch was evicted to make room for a newer prefetch. This currently
-  // only happens when |kPrefetchNewLimits| is enabled.
+  // The prefetch was evicted to make room for a newer prefetch.
   // kPrefetchEvicted = 49, DEPRECATED
   kPrefetchEvictedAfterCandidateRemoved = 50,
   kPrefetchEvictedForNewerPrefetch = 51,
 
+  // The initial URL is controlled by a ServiceWorker and then redirected
+  // (https://crbug.com/399819894).
+  kPrefetchIneligibleRedirectFromServiceWorker = 52,
+
+  // The initial URL is redirected to a URL controlled by a ServiceWorker
+  // (https://crbug.com/399819894).
+  // This case was previously counted as
+  // `kPrefetchIneligibleUserHasServiceWorker`.
+  kPrefetchIneligibleRedirectToServiceWorker = 53,
+
+  // The url was not eligible to be prefetched because there was a registered
+  // service worker with no fetch handler (when
+  // `kPrefetchServiceWorkerNoFetchHandlerFix` is enabled).
+  // This case was previously counted as
+  // `kPrefetchIneligibleUserHasServiceWorker`.
+  // Even after the initial ServiceWorker support (https://crbug.com/40947546),
+  // this will be still used for ServiceWorker-ineligible prefetches.
+  kPrefetchIneligibleUserHasServiceWorkerNoFetchHandler = 54,
+
+  // The prefetch canceled by clearing cache from browsing data removal.
+  kPrefetchEvictedAfterBrowsingDataRemoved = 55,
+
   // The max value of the PrefetchStatus. Update this when new enums are added.
-  kMaxValue = kPrefetchEvictedForNewerPrefetch,
+  kMaxValue = kPrefetchEvictedAfterBrowsingDataRemoved,
 };
-// LINT.ThenChange()
+// LINT.ThenChange(/tools/metrics/histograms/enums.xml)
 
 // Mapping from `PrefetchStatus` to `PreloadingFailureReason`.
 static_assert(

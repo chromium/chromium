@@ -1,36 +1,11 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// https://developers.google.com/protocol-buffers/
 //
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     * Redistributions of source code must retain the above copyright
-// notice, this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above
-// copyright notice, this list of conditions and the following disclaimer
-// in the documentation and/or other materials provided with the
-// distribution.
-//     * Neither the name of Google Inc. nor the names of its
-// contributors may be used to endorse or promote products derived from
-// this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
 
 package com.google.protobuf;
-
-import java.io.IOException;
 
 /**
  * This class is used internally by the Protocol Buffer library and generated message
@@ -187,85 +162,10 @@ public final class WireFormat {
    */
   enum Utf8Validation {
     /** Eagerly parses to String; silently accepts invalid UTF8 bytes. */
-    LOOSE {
-      @Override
-      Object readString(CodedInputStream input) throws IOException {
-        return input.readString();
-      }
-    },
+    LOOSE,
     /** Eagerly parses to String; throws an IOException on invalid bytes. */
-    STRICT {
-      @Override
-      Object readString(CodedInputStream input) throws IOException {
-        return input.readStringRequireUtf8();
-      }
-    },
+    STRICT,
     /** Keep data as ByteString; validation/conversion to String is lazy. */
-    LAZY {
-      @Override
-      Object readString(CodedInputStream input) throws IOException {
-        return input.readBytes();
-      }
-    };
-
-    /** Read a string field from the input with the proper UTF8 validation. */
-    abstract Object readString(CodedInputStream input) throws IOException;
-  }
-
-  /**
-   * Read a field of any primitive type for immutable messages from a CodedInputStream. Enums,
-   * groups, and embedded messages are not handled by this method.
-   *
-   * @param input The stream from which to read.
-   * @param type Declared type of the field.
-   * @param utf8Validation Different string UTF8 validation level for handling string fields.
-   * @return An object representing the field's value, of the exact type which would be returned by
-   *     {@link Message#getField(Descriptors.FieldDescriptor)} for this field.
-   */
-  static Object readPrimitiveField(
-      CodedInputStream input, FieldType type, Utf8Validation utf8Validation) throws IOException {
-    switch (type) {
-      case DOUBLE:
-        return input.readDouble();
-      case FLOAT:
-        return input.readFloat();
-      case INT64:
-        return input.readInt64();
-      case UINT64:
-        return input.readUInt64();
-      case INT32:
-        return input.readInt32();
-      case FIXED64:
-        return input.readFixed64();
-      case FIXED32:
-        return input.readFixed32();
-      case BOOL:
-        return input.readBool();
-      case BYTES:
-        return input.readBytes();
-      case UINT32:
-        return input.readUInt32();
-      case SFIXED32:
-        return input.readSFixed32();
-      case SFIXED64:
-        return input.readSFixed64();
-      case SINT32:
-        return input.readSInt32();
-      case SINT64:
-        return input.readSInt64();
-
-      case STRING:
-        return utf8Validation.readString(input);
-      case GROUP:
-        throw new IllegalArgumentException("readPrimitiveField() cannot handle nested groups.");
-      case MESSAGE:
-        throw new IllegalArgumentException("readPrimitiveField() cannot handle embedded messages.");
-      case ENUM:
-        // We don't handle enums because we don't know what to do if the
-        // value is not recognized.
-        throw new IllegalArgumentException("readPrimitiveField() cannot handle enums.");
-    }
-
-    throw new RuntimeException("There is no way to get here, but the compiler thinks otherwise.");
+    LAZY;
   }
 }

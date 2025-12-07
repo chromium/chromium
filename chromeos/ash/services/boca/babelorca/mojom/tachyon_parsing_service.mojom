@@ -1,0 +1,57 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.babelorca.mojom;
+
+import "sandbox/policy/mojom/sandbox.mojom";
+
+// Represents a segment of the sender transcription. Should be kept in sync with
+// //chromeos/ash/components/boca/babelorca/proto/babel_orca_message.proto
+struct TranscriptPart {
+  int64 transcript_id;
+  int64 text_index;
+  string text;
+  bool is_final;
+  string language;
+};
+
+// Represents BabelOrcaMessage sent from the captions sender in addition to the
+// sender email for verification. Should be kept in sync with
+// //chromeos/ash/components/boca/babelorca/proto/babel_orca_message.proto
+struct BabelOrcaMessage {
+  string? sender_email;
+  string session_id;
+  int64 init_timestamp_ms;
+  int64 order;
+  TranscriptPart? previous_transcript;
+  TranscriptPart current_transcript;
+};
+
+// Stream status when the server ends the connection.
+struct StreamStatus {
+  int32 code;
+  string message;
+};
+
+// Current parsing state. Parser won't process new data for a stream that has
+// ParsingState not equal to kOk.
+enum ParsingState {
+  kOk,
+  kError,
+  kClosed,
+};
+
+// Sandboxed service to parse received Tachyon data stream, should be used only
+// by BabelOrca clients.
+[ServiceSandbox=sandbox.mojom.Sandbox.kService]
+interface TachyonParsingService {
+  // Parse the stream data. `messages` can be empty if no data could be parsed
+  // either because of error, if data is incomplete, or the received data is
+  // not a `BabelOrcaMessage`. `stream_status` is received at the end of the
+  // stream indicating that the stream is closed, `state` will be `kClosed` in
+  // this case.
+  Parse(string stream_data) => (ParsingState state,
+                                array<BabelOrcaMessage> messages,
+                                StreamStatus? stream_status);
+};

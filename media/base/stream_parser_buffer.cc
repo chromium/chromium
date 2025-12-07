@@ -9,34 +9,37 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/types/pass_key.h"
 #include "media/base/media_client.h"
 #include "media/base/timestamp_constants.h"
 
 namespace media {
 
-scoped_refptr<StreamParserBuffer> StreamParserBuffer::CreateEOSBuffer() {
-  return base::WrapRefCounted(
-      new StreamParserBuffer(DecoderBufferType::kEndOfStream));
+static_assert(StreamParserBuffer::Type::TYPE_MAX < 4,
+              "StreamParserBuffer::type_ has a max storage size of two bits.");
+
+scoped_refptr<StreamParserBuffer> StreamParserBuffer::CreateEOSBuffer(
+    std::optional<ConfigVariant> next_config) {
+  return base::MakeRefCounted<StreamParserBuffer>(
+      base::PassKey<StreamParserBuffer>(), DecoderBufferType::kEndOfStream,
+      std::move(next_config));
 }
 
 scoped_refptr<StreamParserBuffer> StreamParserBuffer::CopyFrom(
-    const uint8_t* data,
-    int data_size,
+    base::span<const uint8_t> data,
     bool is_key_frame,
     Type type,
     TrackId track_id) {
   if (auto* media_client = GetMediaClient()) {
     if (auto* alloc = media_client->GetMediaAllocator()) {
-      auto data_span = UNSAFE_BUFFERS(
-          base::span(data, base::checked_cast<size_t>(data_size)));
       return StreamParserBuffer::FromExternalMemory(
-          alloc->CopyFrom(data_span), is_key_frame, type, track_id);
+          alloc->CopyFrom(data), is_key_frame, type, track_id);
     }
   }
-  return base::WrapRefCounted(
-      new StreamParserBuffer(data, data_size, is_key_frame, type, track_id));
+  return base::MakeRefCounted<StreamParserBuffer>(
+      base::PassKey<StreamParserBuffer>(), data, is_key_frame, type, track_id);
 }
 
 scoped_refptr<StreamParserBuffer> StreamParserBuffer::FromExternalMemory(
@@ -44,8 +47,9 @@ scoped_refptr<StreamParserBuffer> StreamParserBuffer::FromExternalMemory(
     bool is_key_frame,
     Type type,
     TrackId track_id) {
-  return base::WrapRefCounted(new StreamParserBuffer(
-      std::move(external_memory), is_key_frame, type, track_id));
+  return base::MakeRefCounted<StreamParserBuffer>(
+      base::PassKey<StreamParserBuffer>(), std::move(external_memory),
+      is_key_frame, type, track_id);
 }
 
 scoped_refptr<StreamParserBuffer> StreamParserBuffer::FromArray(
@@ -53,8 +57,9 @@ scoped_refptr<StreamParserBuffer> StreamParserBuffer::FromArray(
     bool is_key_frame,
     Type type,
     TrackId track_id) {
-  return base::WrapRefCounted(new StreamParserBuffer(
-      std::move(heap_array), is_key_frame, type, track_id));
+  return base::MakeRefCounted<StreamParserBuffer>(
+      base::PassKey<StreamParserBuffer>(), std::move(heap_array), is_key_frame,
+      type, track_id);
 }
 
 DecodeTimestamp StreamParserBuffer::GetDecodeTimestamp() const {
@@ -70,6 +75,7 @@ void StreamParserBuffer::SetDecodeTimestamp(DecodeTimestamp timestamp) {
 }
 
 StreamParserBuffer::StreamParserBuffer(
+    base::PassKey<StreamParserBuffer>,
     std::unique_ptr<ExternalMemory> external_memory,
     bool is_key_frame,
     Type type,
@@ -81,7 +87,8 @@ StreamParserBuffer::StreamParserBuffer(
   set_is_key_frame(is_key_frame);
 }
 
-StreamParserBuffer::StreamParserBuffer(base::HeapArray<uint8_t> heap_array,
+StreamParserBuffer::StreamParserBuffer(base::PassKey<StreamParserBuffer>,
+                                       base::HeapArray<uint8_t> heap_array,
                                        bool is_key_frame,
                                        Type type,
                                        TrackId track_id)
@@ -90,25 +97,16 @@ StreamParserBuffer::StreamParserBuffer(base::HeapArray<uint8_t> heap_array,
   set_is_key_frame(is_key_frame);
 }
 
-StreamParserBuffer::StreamParserBuffer(const uint8_t* data,
-                                       int data_size,
+StreamParserBuffer::StreamParserBuffer(base::PassKey<StreamParserBuffer>,
+                                       base::span<const uint8_t> data,
                                        bool is_key_frame,
                                        Type type,
                                        TrackId track_id)
-    : DecoderBuffer(
-          // TODO(crbug.com/40284755): Convert `StreamBufferParser` to
-          // `size_t` and `base::span`.
-          UNSAFE_BUFFERS(
-              base::span(data, base::checked_cast<size_t>(data_size)))),
-      decode_timestamp_(kNoDecodeTimestamp),
-      config_id_(kInvalidConfigId),
-      type_(type),
-      track_id_(track_id),
-      is_duration_estimated_(false) {
+    : DecoderBuffer(data), type_(type), track_id_(track_id) {
   // TODO(scherkus): Should DataBuffer constructor accept a timestamp and
   // duration to force clients to set them? Today they end up being zero which
   // is both a common and valid value and could lead to bugs.
-  if (data) {
+  if (!data.empty()) {
     set_duration(kNoTimestamp);
   }
 
@@ -116,8 +114,12 @@ StreamParserBuffer::StreamParserBuffer(const uint8_t* data,
     set_is_key_frame(true);
 }
 
-StreamParserBuffer::StreamParserBuffer(DecoderBufferType decoder_buffer_type)
-    : DecoderBuffer(decoder_buffer_type) {}
+StreamParserBuffer::StreamParserBuffer(base::PassKey<StreamParserBuffer>,
+                                       DecoderBufferType decoder_buffer_type,
+                                       std::optional<ConfigVariant> next_config)
+    : DecoderBuffer(decoder_buffer_type, next_config),
+      type_(Type::UNKNOWN),
+      track_id_(-1) {}
 
 StreamParserBuffer::~StreamParserBuffer() = default;
 
@@ -142,7 +144,7 @@ void StreamParserBuffer::SetPrerollBuffer(
   DCHECK(!preroll_buffer->end_of_stream());
   DCHECK(!preroll_buffer->preroll_buffer_);
   DCHECK(preroll_buffer->timestamp() <= timestamp());
-  DCHECK(preroll_buffer->discard_padding() == DecoderBuffer::DiscardPadding());
+  DCHECK(!preroll_buffer->discard_padding().has_value());
   DCHECK_EQ(preroll_buffer->type(), type());
   DCHECK_EQ(preroll_buffer->track_id(), track_id());
 

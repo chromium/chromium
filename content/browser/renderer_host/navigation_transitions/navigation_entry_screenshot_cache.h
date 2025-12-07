@@ -10,6 +10,7 @@
 #include "base/memory/safe_ref.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_manager.h"
+#include "content/browser/renderer_host/navigation_transitions/navigation_transition_data.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -78,15 +79,20 @@ class CONTENT_EXPORT NavigationEntryScreenshotCache
   // animation. The caller is responsible for making sure `navigation_entry`
   // has a screenshot.
   std::unique_ptr<NavigationEntryScreenshot> RemoveScreenshot(
-      NavigationEntry* navigation_entry);
+      NavigationEntry* navigation_entry,
+      std::optional<NavigationTransitionData::CacheHitOrMissReason>
+          cache_hit_or_miss_reason = std::nullopt);
+
+  void RemoveFailedScreenshot(NavigationEntryScreenshot* screenshot);
 
   // Called by the `NavigationScreenshot` when the hosting navigation entry is
   // deleted.
-  void OnNavigationEntryGone(int navigation_entry_id);
+  void OnNavigationEntryGone(NavigationTransitionData::UniqueId screenshot_id);
 
   // Called by `NavigationScreenshot` when the cached screenshot has been
   // compressed.
-  void OnScreenshotCompressed(int navigation_entry_id, size_t new_size);
+  void OnScreenshotCompressed(NavigationTransitionData::UniqueId screenshot_id,
+                              size_t new_size);
 
   // Called when a navigation request has finished.
   void OnNavigationFinished(const NavigationRequest& navigation_request);
@@ -108,11 +114,6 @@ class CONTENT_EXPORT NavigationEntryScreenshotCache
   bool IsEmpty() const override;
   std::optional<base::TimeTicks> GetLastVisibleTime() const override;
 
-  // Allows the browsertests to be notified when a screenshot is cached.
-  using NewScreenshotCachedCallbackForTesting = base::OnceCallback<void(int)>;
-  void SetNewScreenshotCachedCallbackForTesting(
-      NewScreenshotCachedCallbackForTesting callback);
-
  private:
   void SetScreenshotInternal(
       std::unique_ptr<NavigationEntryScreenshot> screenshot,
@@ -124,7 +125,8 @@ class CONTENT_EXPORT NavigationEntryScreenshotCache
 
   // Tracks the unique IDs of the navigation entries, for which we have captured
   // screenshots, and the screenshot size in bytes.
-  base::flat_map<int, size_t> cached_screenshots_;
+  base::flat_map<NavigationTransitionData::UniqueId, size_t>
+      cached_screenshots_;
 
   // Tracks the set of screenshots for ongoing navigations. These screenshots
   // are either added to `cached_screenshots_` or discarded when the navigation
@@ -154,8 +156,6 @@ class CONTENT_EXPORT NavigationEntryScreenshotCache
 
   // The last time this cache was visible or null if its currently visible.
   std::optional<base::TimeTicks> last_visible_timestamp_;
-
-  NewScreenshotCachedCallbackForTesting new_screenshot_cached_callback_;
 };
 
 }  // namespace content

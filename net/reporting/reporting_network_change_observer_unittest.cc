@@ -70,7 +70,7 @@ TEST_F(ReportingNetworkChangeObserverTest, ClearNothing) {
 
   cache()->AddReport(kReportingSource_, kNak_, kUrl_, kUserAgent_, kGroup_,
                      kType_, base::Value::Dict(), 0, tick_clock()->NowTicks(),
-                     0, ReportingTargetType::kDeveloper);
+                     ReportingTargetType::kDeveloper);
   SetEndpoint();
   ASSERT_EQ(1u, report_count());
   ASSERT_EQ(1u, cache()->GetEndpointCount());
@@ -89,7 +89,7 @@ TEST_F(ReportingNetworkChangeObserverTest, ClearReports) {
 
   cache()->AddReport(kReportingSource_, kNak_, kUrl_, kUserAgent_, kGroup_,
                      kType_, base::Value::Dict(), 0, tick_clock()->NowTicks(),
-                     0, ReportingTargetType::kDeveloper);
+                     ReportingTargetType::kDeveloper);
   SetEndpoint();
   ASSERT_EQ(1u, report_count());
   ASSERT_EQ(1u, cache()->GetEndpointCount());
@@ -108,7 +108,7 @@ TEST_F(ReportingNetworkChangeObserverTest, ClearClients) {
 
   cache()->AddReport(kReportingSource_, kNak_, kUrl_, kUserAgent_, kGroup_,
                      kType_, base::Value::Dict(), 0, tick_clock()->NowTicks(),
-                     0, ReportingTargetType::kDeveloper);
+                     ReportingTargetType::kDeveloper);
   SetEndpoint();
   ASSERT_EQ(1u, report_count());
   ASSERT_EQ(1u, cache()->GetEndpointCount());
@@ -127,7 +127,7 @@ TEST_F(ReportingNetworkChangeObserverTest, ClearReportsAndClients) {
 
   cache()->AddReport(kReportingSource_, kNak_, kUrl_, kUserAgent_, kGroup_,
                      kType_, base::Value::Dict(), 0, tick_clock()->NowTicks(),
-                     0, ReportingTargetType::kDeveloper);
+                     ReportingTargetType::kDeveloper);
   SetEndpoint();
   ASSERT_EQ(1u, report_count());
   ASSERT_EQ(1u, cache()->GetEndpointCount());

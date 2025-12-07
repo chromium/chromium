@@ -4,12 +4,14 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
 /**
  * Enables custom implementation for the notification site settings category, similar to
  * {@link LocationCategory}.
  */
+@NullMarked
 public class NotificationCategory extends SiteSettingsCategory {
     NotificationCategory(BrowserContextHandle browserContextHandle) {
         // Android does not treat notifications as a 'permission', i.e. notification status cannot

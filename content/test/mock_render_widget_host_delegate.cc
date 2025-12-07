@@ -51,7 +51,7 @@ void MockRenderWidgetHostDelegate::SelectAll() {}
 
 void MockRenderWidgetHostDelegate::CreateInputEventRouter() {
   rwh_input_event_router_ =
-      std::make_unique<input::RenderWidgetHostInputEventRouter>(
+      base::MakeRefCounted<input::RenderWidgetHostInputEventRouter>(
           GetHostFrameSinkManager(), this);
 }
 
@@ -101,6 +101,9 @@ MockRenderWidgetHostDelegate::GetDelegatedInkRenderer(
   }
   return delegated_ink_point_renderer_.get();
 }
+
+void MockRenderWidgetHostDelegate::OnInputIgnored(
+    const blink::WebInputEvent& event) {}
 
 input::TouchEmulator* MockRenderWidgetHostDelegate::GetTouchEmulator(
     bool create_if_necessary) {

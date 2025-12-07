@@ -15,11 +15,11 @@
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/ui/context_menu_params.h"
 #import "ios/web/public/web_client.h"
+#import "ios/web/util/wk_security_origin_util.h"
 #import "ios/web/web_state/ui/crw_media_capture_permission_request.h"
 #import "ios/web/web_state/ui/crw_wk_ui_handler_delegate.h"
 #import "ios/web/web_state/user_interaction_state.h"
 #import "ios/web/web_state/web_state_impl.h"
-#import "ios/web/web_view/wk_security_origin_util.h"
 #import "ios/web/webui/mojo_facade.h"
 #import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
@@ -79,11 +79,31 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
 @implementation CRWWKUIHandler
 
 - (instancetype)init {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _mainTaskRunner = base::SequencedTaskRunner::GetCurrentDefault();
     CHECK(_mainTaskRunner);
   }
   return self;
+}
+
+#pragma mark - NSObject
+
+// Overriden to return NO for
+// -webView:runOpenPanelWithParameters:initiatedByFrame:completionHandler:
+// if there is no delegate or `delegate->CanRunOpenPanel()` returns false.
+- (BOOL)respondsToSelector:(SEL)selector {
+  SEL runOpenPanelWithParametersSelector = @selector
+      (webView:runOpenPanelWithParameters:initiatedByFrame:completionHandler:);
+  if (selector == runOpenPanelWithParametersSelector) {
+    if (@available(iOS 18.4, *)) {
+      return web::GetWebClient()->CanRunOpenPanel(self.webStateImpl);
+    } else {
+      NOTREACHED() << "@selector(-webView:runOpenPanelWithParameters:"
+                      "initiatedByFrame:completionHandler:) only exists on "
+                      "18.4+ so it should not be used in former versions.";
+    }
+  }
+  return [super respondsToSelector:selector];
 }
 
 #pragma mark - CRWWebViewHandler
@@ -100,8 +120,9 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
 }
 
 - (web::MojoFacade*)mojoFacade {
-  if (!_mojoFacade)
+  if (!_mojoFacade) {
     _mojoFacade = std::make_unique<web::MojoFacade>(self.webStateImpl);
+  }
   return _mojoFacade.get();
 }
 
@@ -171,8 +192,9 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
 
   web::WebState* childWebState = self.webStateImpl->CreateNewWebState(
       requestURL, openerURL, initiatedByUser);
-  if (!childWebState)
+  if (!childWebState) {
     return nil;
+  }
 
   // WKWebView requires WKUIDelegate to return a child view created with
   // exactly the same `configuration` object (exception is raised if config is
@@ -180,9 +202,15 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
   // WKWebViewConfigurationProvider are different objects because WKWebView
   // makes a shallow copy of the config inside init, so every WKWebView
   // owns a separate shallow copy of WKWebViewConfiguration.
-  return [self.delegate UIHandler:self
-      createWebViewWithConfiguration:configuration
-                         forWebState:childWebState];
+  WKWebView* newWebView = [self.delegate UIHandler:self
+                    createWebViewWithConfiguration:configuration
+                                       forWebState:childWebState];
+
+  if (childWebState->GetDelegate()) {
+    childWebState->GetDelegate()->OnNewWebViewCreated(childWebState);
+  }
+
+  return newWebView;
 }
 
 - (void)webViewDidClose:(WKWebView*)webView {
@@ -216,8 +244,9 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
     return;
   }
 
+  url::Origin origin = web::OriginWithWKSecurityOrigin(frame.securityOrigin);
   self.webStateImpl->RunJavaScriptAlertDialog(
-      requestURL, message, base::BindOnce(completionHandler));
+      origin, message, base::BindOnce(completionHandler));
 }
 
 - (void)webView:(WKWebView*)webView
@@ -234,8 +263,9 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
     return;
   }
 
+  url::Origin origin = web::OriginWithWKSecurityOrigin(frame.securityOrigin);
   self.webStateImpl->RunJavaScriptConfirmDialog(
-      requestURL, message, base::BindOnce(completionHandler));
+      origin, message, base::BindOnce(completionHandler));
 }
 
 - (void)webView:(WKWebView*)webView
@@ -244,8 +274,8 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
                          initiatedByFrame:(WKFrameInfo*)frame
                         completionHandler:
                             (void (^)(NSString* result))completionHandler {
-  GURL origin(web::GURLOriginWithWKSecurityOrigin(frame.securityOrigin));
-  if (web::GetWebClient()->IsAppSpecificURL(origin)) {
+  GURL origin_url(web::GURLOriginWithWKSecurityOrigin(frame.securityOrigin));
+  if (web::GetWebClient()->IsAppSpecificURL(origin_url)) {
     std::string mojoResponse =
         self.mojoFacade->HandleMojoMessage(base::SysNSStringToUTF8(prompt));
     completionHandler(base::SysUTF8ToNSString(mojoResponse));
@@ -261,8 +291,9 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
     return;
   }
 
+  url::Origin origin = web::OriginWithWKSecurityOrigin(frame.securityOrigin);
   self.webStateImpl->RunJavaScriptPromptDialog(
-      requestURL, prompt, defaultText, base::BindOnce(completionHandler));
+      origin, prompt, defaultText, base::BindOnce(completionHandler));
 }
 
 - (void)webView:(WKWebView*)webView
@@ -293,6 +324,20 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
   }
 
   delegate->ContextMenuWillCommitWithAnimator(self.webStateImpl, animator);
+}
+
+- (void)webView:(WKWebView*)webView
+    runOpenPanelWithParameters:(WKOpenPanelParameters*)parameters
+              initiatedByFrame:(WKFrameInfo*)frame
+             completionHandler:(void (^)(NSArray<NSURL*>*))completionHandler
+    API_AVAILABLE(ios(18.4)) {
+  CHECK(web::GetWebClient()->CanRunOpenPanel(self.webStateImpl))
+      << "-[CRWWKUIHandler "
+         "webView:runOpenPanelWithParameters:initiatedByFrame:"
+         "completionHandler:] was called while "
+         "web::GetWebClient()->CanRunOpenPanel() returned false.";
+  web::GetWebClient()->RunOpenPanel(self.webStateImpl, parameters, frame,
+                                    base::BindOnce(completionHandler));
 }
 
 #pragma mark - CRWMediaCapturePermissionPresenter

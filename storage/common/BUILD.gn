@@ -4,6 +4,40 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
+component("database_status") {
+  output_name = "storage_database_status"
+  sources = [
+    "database/db_status.cc",
+    "database/db_status.h",
+  ]
+
+  defines = [ "IS_STORAGE_DATABASE_STATUS_IMPL" ]
+
+  public_deps = [ "//base" ]
+}
+
+# This helper is in a separate component to help isolate the dependency on
+# leveldb. Once we have migrated storage databases from leveldb to sqlite, this
+# component will be removed.
+# TODO(crbug.com/377242771): Add a sqlite version of the status helper. Remove
+# the leveldb one when migration to sqlite is complete.
+component("leveldb_status_helper") {
+  output_name = "storage_leveldb_status_helper"
+  sources = [
+    "database/leveldb_status_helper.cc",
+    "database/leveldb_status_helper.h",
+  ]
+
+  defines = [ "IS_STORAGE_LEVELDB_STATUS_HELPER_IMPL" ]
+
+  public_deps = [
+    ":database_status",
+    "//base",
+  ]
+
+  deps = [ "//third_party/leveldatabase" ]
+}
+
 component("common") {
   output_name = "storage_common"
   sources = [

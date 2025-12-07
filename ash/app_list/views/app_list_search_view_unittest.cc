@@ -4,6 +4,7 @@
 
 #include "ash/app_list/views/app_list_search_view.h"
 
+#include <string_view>
 #include <tuple>
 #include <utility>
 
@@ -33,16 +34,19 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -54,7 +58,7 @@
 
 namespace {
 
-int kDefaultSearchItems = 3;
+constexpr int kDefaultSearchItems = 3;
 // SearchResultListViewType is 0 indexed so we need to add 1 here.
 const int kResultContainersCount =
     static_cast<int>(
@@ -189,7 +193,7 @@ class AppListSearchViewTest : public AshTestBase {
         .value();
   }
 
-  std::u16string GetListLabel(
+  std::u16string_view GetListLabel(
       SearchResultContainerView* result_container_view) {
     return static_cast<SearchResultListView*>(result_container_view)
         ->title_label_for_test()
@@ -294,11 +298,8 @@ class SearchViewTabletTest : public AppListSearchViewTest {
 class SearchResultImageViewTest : public SearchViewClamshellAndTabletTest {
  public:
   SearchResultImageViewTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kProductivityLauncherImageSearch,
-         features::kLauncherSearchControl,
-         features::kFeatureManagementLocalImageSearch},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kFeatureManagementLocalImageSearch);
   }
 
   bool IsImageSearchEnabled(PrefService* prefs) {
@@ -508,8 +509,8 @@ TEST_P(SearchResultImageViewTest, PulsingBlocksShowWhenNoResultIcon) {
         SetUpImageSearchResults(results, 1, num_results, ResultIconType::kNone);
       }));
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Press a key to start a search.
   PressAndReleaseKey(ui::VKEY_A);
@@ -593,8 +594,8 @@ TEST_P(SearchResultImageViewTest, PulsingBlocksShownWithPlaceholdertIcon) {
                                 ResultIconType::kPlaceholder);
       }));
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Press a key to start a search.
   PressAndReleaseKey(ui::VKEY_A);
@@ -840,7 +841,7 @@ TEST_P(SearchResultImageViewTest, SearchCategoryMenuItemTooltips) {
   GetSearchBoxView()->GetWidget()->LayoutRootViewIfNecessary();
   views::ImageButton* filter_button = GetSearchBoxView()->filter_button();
   EXPECT_TRUE(filter_button->GetVisible());
-  EXPECT_EQ(filter_button->GetTooltipText({}),
+  EXPECT_EQ(filter_button->GetRenderedTooltipText({}),
             u"Toggle search result categories");
   LeftClickOn(filter_button);
   EXPECT_TRUE(GetSearchBoxView()->IsFilterMenuOpen());
@@ -849,7 +850,7 @@ TEST_P(SearchResultImageViewTest, SearchCategoryMenuItemTooltips) {
                            std::u16string tooltip) {
     EXPECT_EQ(GetSearchBoxView()
                   ->GetFilterMenuItemByCategory(category)
-                  ->GetTooltipText({}),
+                  ->GetRenderedTooltipText({}),
               tooltip);
   };
 
@@ -865,11 +866,41 @@ TEST_P(SearchResultImageViewTest, SearchCategoryMenuItemTooltips) {
   check_tooltip(AppListSearchControlCategory::kHelp,
                 u"Key shortcuts, tips for using device, and more");
   check_tooltip(AppListSearchControlCategory::kImages,
-                u"Search for text within images and see image previews");
+                u"Image search by content and image previews");
   check_tooltip(AppListSearchControlCategory::kPlayStore,
                 u"Available apps from the Play Store");
   check_tooltip(AppListSearchControlCategory::kWeb,
                 u"Websites including pages you've visited and open pages");
+}
+
+TEST_P(SearchResultImageViewTest, AccessibleProperties) {
+  GetAppListTestHelper()->ShowAppList();
+  auto* app_list_client = GetAppListTestHelper()->app_list_client();
+
+  app_list_client->set_available_categories_for_test(
+      {AppListSearchControlCategory::kApps});
+
+  // Press a character key to open the search.
+  PressAndReleaseKey(ui::VKEY_A);
+  GetSearchBoxView()->GetWidget()->LayoutRootViewIfNecessary();
+  views::ImageButton* filter_button = GetSearchBoxView()->filter_button();
+  LeftClickOn(filter_button);
+
+  ui::AXNodeData data;
+  auto* checkbox_menu_item_view =
+      GetSearchBoxView()->GetFilterMenuItemByCategory(
+          AppListSearchControlCategory::kApps);
+  checkbox_menu_item_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kTrue);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel),
+            1);
+
+  // Execute command to disable category.
+  LeftClickOn(checkbox_menu_item_view);
+
+  data = ui::AXNodeData();
+  checkbox_menu_item_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kFalse);
 }
 
 // Tests that key traversal correctly cycles between the list of results and
@@ -944,8 +975,8 @@ TEST_P(SearchResultImageViewTest, ResultSelectionCycle) {
 
 TEST_P(SearchViewClamshellAndTabletTest, AnimateSearchResultView) {
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   GetAppListTestHelper()->ShowAppList();
 
@@ -1104,8 +1135,8 @@ TEST_P(SearchViewClamshellAndTabletTest,
   ASSERT_TRUE(app_result);
 
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Press backspace to delete the query and switch back to the apps page.
   PressAndReleaseKey(ui::VKEY_BACK);
@@ -1186,8 +1217,8 @@ TEST_F(SearchViewTabletTest, SearchResultPageShownWhileClosing) {
   ASSERT_TRUE(app_result);
 
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Press backspace to delete the query and switch back to the apps page.
   PressAndReleaseKey(ui::VKEY_ESCAPE);
@@ -1242,8 +1273,8 @@ TEST_P(SearchViewClamshellAndTabletTest, SelectionChangeDuringHide) {
   }
 
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Press backspace to delete the query and switch back to the apps page.
   PressAndReleaseKey(ui::VKEY_BACK);
@@ -1319,7 +1350,14 @@ TEST_P(SearchViewClamshellAndTabletTest, ResultSelectionCycle) {
     EXPECT_EQ(controller->selected_location_details()->result_index, i);
   }
 
-  // Pressing down while the last result is selected moves focus to the close
+  // Pressing down while the last result is selected moves focus to the filter
+  // button.
+  PressAndReleaseKey(ui::VKEY_DOWN);
+
+  EXPECT_FALSE(controller->selected_result());
+  EXPECT_TRUE(GetSearchBoxView()->filter_button()->HasFocus());
+
+  // Pressing down while the filter button is selected moves focus to the close
   // button.
   PressAndReleaseKey(ui::VKEY_DOWN);
 
@@ -1334,11 +1372,15 @@ TEST_P(SearchViewClamshellAndTabletTest, ResultSelectionCycle) {
   EXPECT_EQ(controller->selected_location_details()->container_index, 2);
   EXPECT_EQ(controller->selected_location_details()->result_index, 0);
 
-  // Up key should cycle focus to the close button, and then the last search
-  // result.
+  // Up key should cycle focus to the close button, the filter button, and then
+  // the last search result.
   PressAndReleaseKey(ui::VKEY_UP);
   EXPECT_FALSE(controller->selected_result());
   EXPECT_TRUE(GetSearchBoxView()->close_button()->HasFocus());
+
+  PressAndReleaseKey(ui::VKEY_UP);
+  EXPECT_FALSE(controller->selected_result());
+  EXPECT_TRUE(GetSearchBoxView()->filter_button()->HasFocus());
 
   PressAndReleaseKey(ui::VKEY_UP);
   EXPECT_TRUE(GetSearchBoxView()->search_box()->HasFocus());
@@ -1636,7 +1678,7 @@ TEST_P(SearchViewClamshellAndTabletTest, SearchResultA11y) {
   ASSERT_EQ(static_cast<int>(result_containers.size()), kResultContainersCount);
   EXPECT_TRUE(result_containers[1]->GetVisible());
 
-  views::test::AXEventCounter ax_counter(views::AXEventManager::Get());
+  views::test::AXEventCounter ax_counter(views::AXUpdateNotifier::Get());
 
   // Pressing down should not generate a selection accessibility event because
   // A11Y announcements are delayed since the results list just changed.
@@ -1662,7 +1704,6 @@ TEST_P(SearchViewClamshellAndTabletTest, SearchResultA11y) {
 TEST_P(SearchViewClamshellAndTabletTest, SearchPageA11y) {
   auto* test_helper = GetAppListTestHelper();
   test_helper->ShowAppList();
-
   // Press a key to start a search.
   PressAndReleaseKey(ui::VKEY_A);
 
@@ -1684,27 +1725,41 @@ TEST_P(SearchViewClamshellAndTabletTest, SearchPageA11y) {
   EXPECT_FALSE(result_containers[0]->GetVisible());
   EXPECT_TRUE(search_view->GetVisible());
 
+  // Finish search results update.
+  base::RunLoop().RunUntilIdle();
+  task_environment()->FastForwardBy(base::Milliseconds(1500));
+
   ui::AXNodeData data;
   search_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kListBox);
   EXPECT_EQ("Displaying 0 results for a",
             data.GetStringAttribute(ax::mojom::StringAttribute::kValue));
+
   // Create a single search result and and verify A11yNodeData.
   SetUpSearchResults(results, 1, 1, 100, true, SearchResult::Category::kApps);
   for (ash::SearchResultContainerView* container : result_containers) {
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
   }
+
+  base::RunLoop().RunUntilIdle();
+  task_environment()->FastForwardBy(base::Milliseconds(1500));
+
+  data = ui::AXNodeData();
   search_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ("Displaying 1 result for a",
             data.GetStringAttribute(ax::mojom::StringAttribute::kValue));
 
-  // Create new search results and and and verify A11yNodeData.
+  // Create new search results and verify A11yNodeData.
   SetUpSearchResults(results, 2, kDefaultSearchItems - 1, 100, true,
                      SearchResult::Category::kApps);
   for (ash::SearchResultContainerView* container : result_containers) {
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
   }
-  ui::AXNodeData data2;
+
+  base::RunLoop().RunUntilIdle();
+  task_environment()->FastForwardBy(base::Milliseconds(1500));
+
+  data = ui::AXNodeData();
   search_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ("Displaying 3 results for a",
             data.GetStringAttribute(ax::mojom::StringAttribute::kValue));

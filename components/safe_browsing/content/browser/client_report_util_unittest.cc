@@ -98,6 +98,13 @@ TEST_F(ClientReportUtilTest, FillBasicReport) {
             safe_browsing::ClientSafeBrowsingReportRequest::URL_PHISHING);
   ASSERT_EQ(report->url_request_destination(),
             ClientSafeBrowsingReportRequest::DOCUMENT);
+  ASSERT_TRUE(report->has_client_properties());
+  ASSERT_TRUE(report->client_properties().has_url_api_type());
+  ASSERT_TRUE(report->client_properties().has_is_async_check());
+  ASSERT_EQ(
+      report->client_properties().url_api_type(),
+      ClientSafeBrowsingReportRequest::SAFE_BROWSING_URL_API_TYPE_UNSPECIFIED);
+  ASSERT_FALSE(report->client_properties().is_async_check());
 }
 
 TEST_F(ClientReportUtilTest, FillInterstitialInteractionsOfReport) {

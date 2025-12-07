@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/metrics/metrics_service.h"
-
 #include <memory>
 #include <string>
 #include <vector>
@@ -12,13 +10,12 @@
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/chrome_metrics_services_manager_client.h"
-#include "chrome/browser/metrics/testing/sync_metrics_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
@@ -26,6 +23,7 @@
 #include "components/metrics/delegating_provider.h"
 #include "components/metrics/demographics/demographic_metrics_provider.h"
 #include "components/metrics/demographics/demographic_metrics_test_utils.h"
+#include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_switches.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -97,10 +95,8 @@ class MetricsServiceUserDemographicsBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/40103988): Add the remaining test cases.
-// Keep this test in sync with testUMADemographicsReportingWithFeatureEnabled
-// and testUMADemographicsReportingWithFeatureDisabled in
-// ios/chrome/browser/metrics/demographics_egtest.mm.
+
+// LINT.IfChange(AddSyncedUserBirthYearAndGenderToProtoData)
 IN_PROC_BROWSER_TEST_P(MetricsServiceUserDemographicsBrowserTest,
                        AddSyncedUserBirthYearAndGenderToProtoData) {
   test::DemographicsTestParams param = GetParam();
@@ -124,8 +120,8 @@ IN_PROC_BROWSER_TEST_P(MetricsServiceUserDemographicsBrowserTest,
 
   // Enable sync for the test profile.
   std::unique_ptr<SyncServiceImplHarness> harness =
-      test::InitializeProfileForSync(test_profile,
-                                     GetFakeServer()->AsWeakPtr());
+      SyncServiceImplHarness::Create(
+          test_profile, SyncServiceImplHarness::SigninType::FAKE_SIGNIN);
   ASSERT_TRUE(harness->SetupSync());
 
   // Make sure that there is only one Profile to allow reporting the user's
@@ -155,8 +151,10 @@ IN_PROC_BROWSER_TEST_P(MetricsServiceUserDemographicsBrowserTest,
   harness->SignOutPrimaryAccount();
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 }
+// LINT.ThenChange(/ios/chrome/browser/metrics/demographics_egtest.mm:AddSyncedUserBirthYearAndGenderToProtoDataEnabled_msudBrowsertest)
+// ThenChange(/ios/chrome/browser/metrics/demographics_egtest.mm:AddSyncedUserBirthYearAndGenderToProtoDataDisabled_msudBrowsertest)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Cannot test for the enabled feature on Chrome OS because there are always
 // multiple profiles.
 static const auto kDemographicsTestParams = testing::Values(

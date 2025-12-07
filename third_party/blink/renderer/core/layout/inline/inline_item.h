@@ -20,16 +20,16 @@ namespace blink {
 
 class LayoutObject;
 
+using InlineItems = HeapVector<Member<InlineItem>>;
+
 // Class representing a single text node or styled inline element with text
 // content segmented by style, text direction, sideways rotation, font fallback
 // priority (text, symbol, emoji, etc), and script (but not by font).
 // In this representation TextNodes are merged up into their parent inline
 // element where possible.
-class CORE_EXPORT InlineItem {
-  DISALLOW_NEW();
-
+class CORE_EXPORT InlineItem final : public GarbageCollected<InlineItem> {
  public:
-  enum InlineItemType {
+  enum InlineItemType : uint8_t {
     kText,
     kControl,
     kAtomicInline,
@@ -51,7 +51,7 @@ class CORE_EXPORT InlineItem {
     kRubyLinePlaceholder
   };
 
-  enum CollapseType {
+  enum CollapseType : uint8_t {
     // No collapsible spaces.
     kNotCollapsible,
     // This item is opaque to whitespace collapsing.
@@ -75,6 +75,7 @@ class CORE_EXPORT InlineItem {
              unsigned adjusted_start,
              unsigned adjusted_end,
              const ShapeResult*);
+  InlineItem(const InlineItem&);
 
   InlineItemType Type() const { return type_; }
   const char* InlineItemTypeToString(InlineItemType val) const;
@@ -88,6 +89,9 @@ class CORE_EXPORT InlineItem {
   void SetTextType(TextItemType text_type) {
     text_type_ = static_cast<unsigned>(text_type);
   }
+  bool IsFloatingOrOutOfFlowPositioned() const {
+    return Type() == kFloating || Type() == kOutOfFlowPositioned;
+  }
   bool IsSymbolMarker() const {
     return TextType() == TextItemType::kSymbolMarker;
   }
@@ -96,6 +100,15 @@ class CORE_EXPORT InlineItem {
            TextType() == TextItemType::kSymbolMarker);
     SetTextType(TextItemType::kSymbolMarker);
   }
+  bool IsOpaqueForTextProcessing() const {
+    return !Length() || Type() == kFloating || Type() == kOutOfFlowPositioned;
+  }
+
+  // The index in `InlineItems`. The value is valid only after `UpdateIndex()`
+  // was run.
+  wtf_size_t Index() const { return index_; }
+  // Same as `Index()`. Use this variant if before `UpdateIndex()` was run.
+  wtf_size_t Index(base::span<const Member<InlineItem>>) const;
 
   const ShapeResult* TextShapeResult() const { return shape_result_.Get(); }
   ShapeResult* CloneTextShapeResult() {
@@ -162,9 +175,6 @@ class CORE_EXPORT InlineItem {
 
   bool IsImage() const {
     return GetLayoutObject() && GetLayoutObject()->IsLayoutImage();
-  }
-  bool IsRubyColumn() const {
-    return GetLayoutObject() && GetLayoutObject()->IsRubyColumn();
   }
   bool IsTextCombine() const {
     return GetLayoutObject() && GetLayoutObject()->IsLayoutTextCombine();
@@ -237,12 +247,12 @@ class CORE_EXPORT InlineItem {
     is_end_collapsible_newline_ = is_newline;
   }
 
-  static void Split(HeapVector<InlineItem>&, unsigned index, unsigned offset);
+  static void Split(InlineItems&, unsigned index, unsigned offset);
 
   // RunSegmenter properties.
   unsigned SegmentData() const { return segment_data_; }
   static void SetSegmentData(const RunSegmenter::RunSegmenterRange& range,
-                             HeapVector<InlineItem>* items);
+                             InlineItems* items);
 
   RunSegmenter::RunSegmenterRange CreateRunSegmenterRange() const {
     // Only `kText` has the `segment_data_`, see `InlineItem::SetSegmentData`.
@@ -262,10 +272,17 @@ class CORE_EXPORT InlineItem {
       shape_result_ = nullptr;
     bidi_level_ = level;
   }
-  static unsigned SetBidiLevel(HeapVector<InlineItem>&,
+  static unsigned SetBidiLevel(InlineItems&,
                                unsigned index,
                                unsigned end_offset,
-                               UBiDiLevel);
+                               UBiDiLevel,
+                               wtf_size_t num_out_of_flow = 0);
+
+  // Update `InlineItem::Index()` for the given list.
+  static void UpdateIndex(base::span<Member<InlineItem>> items);
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  static void CheckIndex(base::span<Member<InlineItem>> items);
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
 
   void AssertOffset(unsigned offset) const { DCHECK(IsValidOffset(offset)); }
   void AssertEndOffset(unsigned offset) const;
@@ -282,19 +299,20 @@ class CORE_EXPORT InlineItem {
   Member<const ShapeResult> shape_result_{
       nullptr, Member<const ShapeResult>::AtomicInitializerTag{}};
   Member<LayoutObject> layout_object_;
+  wtf_size_t index_ = 0;
 
   InlineItemType type_;
-  unsigned text_type_ : 3;          // TextItemType
-  unsigned style_variant_ : 2;      // StyleVariant
-  unsigned end_collapse_type_ : 2;  // CollapseType
-  unsigned bidi_level_ : 8;         // UBiDiLevel is defined as uint8_t.
+  unsigned text_type_ : 3 = static_cast<unsigned>(TextItemType::kNormal);
+  unsigned style_variant_ : 2 = static_cast<unsigned>(StyleVariant::kStandard);
+  unsigned end_collapse_type_ : 2 = CollapseType::kNotCollapsible;
+  unsigned bidi_level_ : 8 = UBIDI_LTR;  // UBiDiLevel is defined as uint8_t.
   // |segment_data_| is valid only for |type_ == InlineItem::kText|.
-  unsigned segment_data_ : InlineItemSegment::kSegmentDataBits;
-  unsigned is_empty_item_ : 1;
-  unsigned is_block_level_ : 1;
-  unsigned is_end_collapsible_newline_ : 1;
-  unsigned is_generated_for_line_break_ : 1;
-  unsigned is_unsafe_to_reuse_shape_result_ : 1;
+  unsigned segment_data_ : InlineItemSegment::kSegmentDataBits = 0;
+  unsigned is_empty_item_ : 1 = false;
+  unsigned is_block_level_ : 1 = false;
+  unsigned is_end_collapsible_newline_ : 1 = false;
+  unsigned is_generated_for_line_break_ : 1 = false;
+  unsigned is_unsafe_to_reuse_shape_result_ : 1 = false;
   friend class InlineNode;
   friend class InlineNodeDataEditor;
 };
@@ -309,16 +327,12 @@ inline void InlineItem::AssertEndOffset(unsigned offset) const {
   DCHECK_LE(offset, end_offset_);
 }
 
-}  // namespace blink
-
-namespace WTF {
-
 template <>
-struct VectorTraits<blink::InlineItem> : VectorTraitsBase<blink::InlineItem> {
+struct VectorTraits<InlineItem> : VectorTraitsBase<InlineItem> {
   static constexpr bool kCanClearUnusedSlotsWithMemset = true;
   static constexpr bool kCanTraceConcurrently = true;
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_INLINE_ITEM_H_

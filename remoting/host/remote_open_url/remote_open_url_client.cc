@@ -36,8 +36,7 @@ std::unique_ptr<RemoteOpenUrlClient::Delegate> CreateDelegate() {
 #elif BUILDFLAG(IS_WIN)
   return std::make_unique<RemoteOpenUrlClientDelegateWin>();
 #else
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 #endif
 }
 
@@ -107,6 +106,16 @@ void RemoteOpenUrlClient::Open(const base::CommandLine::StringType& arg,
     return;
   }
 
+  auto disconnect_handler = base::BindRepeating(
+      &RemoteOpenUrlClient::OnIpcDisconnected, base::Unretained(this));
+  // There is a bug in Mojo, such that if the host rejects binding of session
+  // services, there is a chance that binding of RemoteUrlOpener appears to be
+  // successful and the disconnect handler of `remote_` is never called, so
+  // `remote_` will remain invalid forever.
+  // The disconnect handler of session services is still called, so we set a
+  // disconnect handler on it.
+  // See https://crbug.com/425759818#comment8 for more context.
+  api_provider_->set_disconnect_handler(disconnect_handler);
   auto* api = api_provider_->GetSessionServices();
   if (!api) {
     HOST_LOG << "Can't make IPC connection. The host is probably not running.";
@@ -114,8 +123,7 @@ void RemoteOpenUrlClient::Open(const base::CommandLine::StringType& arg,
     return;
   }
   api->BindRemoteUrlOpener(remote_.BindNewPipeAndPassReceiver());
-  remote_.set_disconnect_handler(base::BindOnce(
-      &RemoteOpenUrlClient::OnIpcDisconnected, base::Unretained(this)));
+  remote_.set_disconnect_handler(disconnect_handler);
   timeout_timer_.Start(FROM_HERE, request_timeout_, this,
                        &RemoteOpenUrlClient::OnRequestTimeout);
   remote_->OpenUrl(url_, base::BindOnce(&RemoteOpenUrlClient::OnOpenUrlResponse,
@@ -123,7 +131,7 @@ void RemoteOpenUrlClient::Open(const base::CommandLine::StringType& arg,
 }
 
 void RemoteOpenUrlClient::OnOpenUrlResponse(mojom::OpenUrlResult result) {
-  timeout_timer_.AbandonAndStop();
+  timeout_timer_.Stop();
   switch (result) {
     case mojom::OpenUrlResult::SUCCESS:
       HOST_LOG << "The URL is successfully opened on the client.";
@@ -136,7 +144,7 @@ void RemoteOpenUrlClient::OnOpenUrlResponse(mojom::OpenUrlResult result) {
       delegate_->OpenUrlOnFallbackBrowser(url_);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   std::move(done_).Run();
   remote_.reset();

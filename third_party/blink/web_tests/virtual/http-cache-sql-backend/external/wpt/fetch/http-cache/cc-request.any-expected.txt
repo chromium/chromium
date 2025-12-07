@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[FAIL] HTTP cache doesn't use aged but fresh response when request contains Cache-Control: max-age=1
+  assert_equals: Response 2 comes from cache expected 2 but got 1
+[FAIL] HTTP cache doesn't use fresh response with Age header when request contains Cache-Control: max-age that is greater than remaining freshness
+  assert_equals: Response 2 comes from cache expected 2 but got 1
+[FAIL] HTTP cache does use aged stale response when request contains Cache-Control: max-stale that permits its use
+  assert_less_than: Response 2 does not come from cache expected a number less than 2 but got 2
+[FAIL] HTTP cache does reuse stale response with Age header when request contains Cache-Control: max-stale that permits its use
+  assert_less_than: Response 2 does not come from cache expected a number less than 2 but got 2
+[FAIL] HTTP cache doesn't reuse fresh response when request contains Cache-Control: min-fresh that wants it fresher
+  assert_equals: Response 2 comes from cache expected 2 but got 1
+[FAIL] HTTP cache doesn't reuse fresh response with Age header when request contains Cache-Control: min-fresh that wants it fresher
+  assert_equals: Response 2 comes from cache expected 2 but got 1
+[FAIL] HTTP cache doesn't reuse fresh response when request contains Cache-Control: no-store
+  assert_equals: Response 2 comes from cache expected 2 but got 1
+[FAIL] HTTP cache generates 504 status code when nothing is in cache and request contains Cache-Control: only-if-cached
+  assert_equals: Response 1 status is 200, not 504 expected 504 but got 200
+Harness: the test ran to completion.
+

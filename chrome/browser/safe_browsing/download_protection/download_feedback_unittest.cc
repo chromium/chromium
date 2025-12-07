@@ -17,6 +17,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/multipart_uploader.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -29,6 +30,9 @@
 
 namespace safe_browsing {
 
+using ::enterprise_connectors::ConnectorUploadRequest;
+using ::enterprise_connectors::ConnectorUploadRequestFactory;
+
 namespace {
 
 class FakeUploader : public MultipartUploadRequest {
@@ -38,8 +42,9 @@ class FakeUploader : public MultipartUploadRequest {
                const base::FilePath& file_path,
                uint64_t file_size,
                Callback finish_callback,
+               const std::string& histogram_suffix,
                const net::NetworkTrafficAnnotationTag& traffic_annotation);
-  ~FakeUploader() override {}
+  ~FakeUploader() override = default;
 
   void Start() override { start_called_ = true; }
 
@@ -57,12 +62,15 @@ FakeUploader::FakeUploader(
     const base::FilePath& file_path,
     uint64_t file_size,
     Callback finish_callback,
+    const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation)
     : MultipartUploadRequest(/*url_loader_factory=*/nullptr,
                              base_url,
                              metadata,
                              file_path,
                              file_size,
+                             false,
+                             histogram_suffix,
                              traffic_annotation,
                              base::DoNothing()),
       base_url_(base_url),
@@ -73,35 +81,36 @@ FakeUploader::FakeUploader(
 
 class FakeUploaderFactory : public ConnectorUploadRequestFactory {
  public:
-  FakeUploaderFactory() : uploader_(nullptr) {}
-  ~FakeUploaderFactory() override {}
-
   std::unique_ptr<ConnectorUploadRequest> CreateStringRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
       const std::string& data,
+      const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       ConnectorUploadRequest::Callback callback) override;
   std::unique_ptr<ConnectorUploadRequest> CreateFileRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
-      BinaryUploadService::Result get_data_result,
+      enterprise_connectors::ScanRequestUploadResult get_data_result,
       const base::FilePath& file_path,
       uint64_t file_size,
+      bool is_obfuscated,
+      const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       ConnectorUploadRequest::Callback callback) override;
   std::unique_ptr<ConnectorUploadRequest> CreatePageRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
-      BinaryUploadService::Result get_data_result,
+      enterprise_connectors::ScanRequestUploadResult get_data_result,
       base::ReadOnlySharedMemoryRegion page_region,
+      const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       ConnectorUploadRequest::Callback callback) override;
 
-  raw_ptr<FakeUploader, DanglingUntriaged> uploader_;
+  raw_ptr<FakeUploader, DanglingUntriaged> uploader_ = nullptr;
 };
 
 std::unique_ptr<ConnectorUploadRequest>
@@ -110,25 +119,28 @@ FakeUploaderFactory::CreateStringRequest(
     const GURL& base_url,
     const std::string& metadata,
     const std::string& data,
+    const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     ConnectorUploadRequest::Callback callback) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::unique_ptr<ConnectorUploadRequest> FakeUploaderFactory::CreateFileRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& base_url,
     const std::string& metadata,
-    BinaryUploadService::Result get_data_result,
+    enterprise_connectors::ScanRequestUploadResult get_data_result,
     const base::FilePath& file_path,
     uint64_t file_size,
+    bool is_obfuscated,
+    const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     ConnectorUploadRequest::Callback callback) {
   EXPECT_FALSE(uploader_);
 
-  auto uploader =
-      std::make_unique<FakeUploader>(base_url, metadata, file_path, file_size,
-                                     std::move(callback), traffic_annotation);
+  auto uploader = std::make_unique<FakeUploader>(
+      base_url, metadata, file_path, file_size, std::move(callback),
+      histogram_suffix, traffic_annotation);
   uploader_ = uploader.get();
   return uploader;
 }
@@ -136,11 +148,12 @@ std::unique_ptr<ConnectorUploadRequest> FakeUploaderFactory::CreatePageRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& base_url,
     const std::string& metadata,
-    BinaryUploadService::Result get_data_result,
+    enterprise_connectors::ScanRequestUploadResult get_data_result,
     base::ReadOnlySharedMemoryRegion page_region,
+    const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     ConnectorUploadRequest::Callback callback) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

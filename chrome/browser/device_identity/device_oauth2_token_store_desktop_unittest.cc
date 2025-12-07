@@ -5,13 +5,14 @@
 #include "chrome/browser/device_identity/device_oauth2_token_store_desktop.h"
 
 #include "base/base64.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "components/os_crypt/sync/os_crypt.h"
-#include "components/os_crypt/sync/os_crypt_mocker.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -33,29 +34,34 @@ class TestObserver : public DeviceOAuth2TokenStore::Observer {
 class DeviceOAuth2TokenStoreDesktopTest : public testing::Test {
  public:
   DeviceOAuth2TokenStoreDesktopTest()
-      : scoped_testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
+      : os_crypt_async_(os_crypt_async::GetTestOSCryptAsyncForTesting(
+            /*is_sync_for_unittests=*/true)) {}
+
   ~DeviceOAuth2TokenStoreDesktopTest() override = default;
 
-  ScopedTestingLocalState* scoped_testing_local_state() {
-    return &scoped_testing_local_state_;
+  std::optional<os_crypt_async::Encryptor> GetTestEncryptorForTesting() {
+    std::optional<os_crypt_async::Encryptor> encryptor;
+    os_crypt_async_->GetInstance(base::BindLambdaForTesting(
+        [&](os_crypt_async::Encryptor new_encryptor) {
+          encryptor = std::move(new_encryptor);
+        }));
+    return encryptor;
   }
 
-  void SetUp() override {
-    testing::Test::SetUp();
-    OSCryptMocker::SetUp();
+  PrefService* local_state() {
+    return TestingBrowserProcess::GetGlobal()->local_state();
   }
 
-  void TearDown() override {
-    OSCryptMocker::TearDown();
-    testing::Test::TearDown();
+  os_crypt_async::OSCryptAsync* os_crypt_async() {
+    return os_crypt_async_.get();
   }
 
  private:
-  ScopedTestingLocalState scoped_testing_local_state_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
 };
 
 TEST_F(DeviceOAuth2TokenStoreDesktopTest, InitWithoutSavedToken) {
-  DeviceOAuth2TokenStoreDesktop store(scoped_testing_local_state()->Get());
+  DeviceOAuth2TokenStoreDesktop store(local_state(), os_crypt_async());
 
   EXPECT_TRUE(store.GetAccountId().empty());
   EXPECT_TRUE(store.GetRefreshToken().empty());
@@ -73,19 +79,19 @@ TEST_F(DeviceOAuth2TokenStoreDesktopTest, InitWithoutSavedToken) {
 }
 
 TEST_F(DeviceOAuth2TokenStoreDesktopTest, InitWithSavedToken) {
-  scoped_testing_local_state()->Get()->SetString(kCBCMServiceAccountEmail,
-                                                 kTestRobotEmail);
+  local_state()->SetString(kCBCMServiceAccountEmail, kTestRobotEmail);
 
   std::string token = "test_token";
   std::string encrypted_token;
-  OSCrypt::EncryptString(token, &encrypted_token);
+  auto encryptor = GetTestEncryptorForTesting();
+  ASSERT_TRUE(encryptor.has_value());
+  EXPECT_TRUE(encryptor->EncryptString(token, &encrypted_token));
 
   std::string encoded = base::Base64Encode(encrypted_token);
 
-  scoped_testing_local_state()->Get()->SetString(
-      kCBCMServiceAccountRefreshToken, encoded);
+  local_state()->SetString(kCBCMServiceAccountRefreshToken, encoded);
 
-  DeviceOAuth2TokenStoreDesktop store(scoped_testing_local_state()->Get());
+  DeviceOAuth2TokenStoreDesktop store(local_state(), os_crypt_async());
 
   EXPECT_TRUE(store.GetRefreshToken().empty());
 
@@ -101,19 +107,19 @@ TEST_F(DeviceOAuth2TokenStoreDesktopTest, InitWithSavedToken) {
 }
 
 TEST_F(DeviceOAuth2TokenStoreDesktopTest, ObserverNotifiedWhenAccountChanges) {
-  scoped_testing_local_state()->Get()->SetString(kCBCMServiceAccountEmail,
-                                                 kTestRobotEmail);
+  local_state()->SetString(kCBCMServiceAccountEmail, kTestRobotEmail);
 
   std::string token = "test_token";
   std::string encrypted_token;
-  OSCrypt::EncryptString(token, &encrypted_token);
+  auto encryptor = GetTestEncryptorForTesting();
+  ASSERT_TRUE(encryptor.has_value());
+  EXPECT_TRUE(encryptor->EncryptString(token, &encrypted_token));
 
   std::string encoded = base::Base64Encode(encrypted_token);
 
-  scoped_testing_local_state()->Get()->SetString(
-      kCBCMServiceAccountRefreshToken, encoded);
+  local_state()->SetString(kCBCMServiceAccountRefreshToken, encoded);
 
-  DeviceOAuth2TokenStoreDesktop store(scoped_testing_local_state()->Get());
+  DeviceOAuth2TokenStoreDesktop store(local_state(), os_crypt_async());
 
   TestObserver test_observer;
   store.SetObserver(&test_observer);
@@ -136,7 +142,7 @@ TEST_F(DeviceOAuth2TokenStoreDesktopTest, ObserverNotifiedWhenAccountChanges) {
 TEST_F(DeviceOAuth2TokenStoreDesktopTest, SaveToken) {
   std::string token = "test_token";
 
-  DeviceOAuth2TokenStoreDesktop store(scoped_testing_local_state()->Get());
+  DeviceOAuth2TokenStoreDesktop store(local_state(), os_crypt_async());
   store.Init(base::BindOnce([](bool, bool) {}));
 
   EXPECT_TRUE(store.GetRefreshToken().empty());
@@ -149,13 +155,53 @@ TEST_F(DeviceOAuth2TokenStoreDesktopTest, SaveToken) {
 
   EXPECT_TRUE(callback_success);
 
-  std::string persisted_token = scoped_testing_local_state()->Get()->GetString(
-      kCBCMServiceAccountRefreshToken);
+  std::string persisted_token =
+      local_state()->GetString(kCBCMServiceAccountRefreshToken);
 
   std::string decoded;
   base::Base64Decode(persisted_token, &decoded);
   std::string decrypted;
-  OSCrypt::DecryptString(decoded, &decrypted);
+  auto encryptor = GetTestEncryptorForTesting();
+  ASSERT_TRUE(encryptor.has_value());
+  EXPECT_TRUE(encryptor->DecryptString(decoded, &decrypted));
+
+  EXPECT_EQ(token, store.GetRefreshToken());
+  EXPECT_EQ(token, decrypted);
+}
+
+TEST_F(DeviceOAuth2TokenStoreDesktopTest, SaveTokenBeforeInit) {
+  std::string token = "test_token";
+
+  DeviceOAuth2TokenStoreDesktop store(local_state(), os_crypt_async());
+
+  EXPECT_TRUE(store.GetRefreshToken().empty());
+
+  bool callback_success = false;
+  bool callback_called = false;
+  store.SetAndSaveRefreshToken(token,
+                               base::BindLambdaForTesting([&](bool success) {
+                                 callback_success = success;
+                                 callback_called = true;
+                               }));
+
+  // Callback should not be called yet because Init hasn't been called.
+  EXPECT_FALSE(callback_called);
+
+  store.Init(base::DoNothing());
+
+  // Now it should be called.
+  EXPECT_TRUE(callback_called);
+  EXPECT_TRUE(callback_success);
+
+  std::string persisted_token =
+      local_state()->GetString(kCBCMServiceAccountRefreshToken);
+
+  std::string decoded;
+  base::Base64Decode(persisted_token, &decoded);
+  std::string decrypted;
+  auto encryptor = GetTestEncryptorForTesting();
+  ASSERT_TRUE(encryptor.has_value());
+  EXPECT_TRUE(encryptor->DecryptString(decoded, &decrypted));
 
   EXPECT_EQ(token, store.GetRefreshToken());
   EXPECT_EQ(token, decrypted);

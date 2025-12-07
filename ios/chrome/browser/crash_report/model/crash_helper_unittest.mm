@@ -76,6 +76,7 @@ TEST_F(CrashHelperTest, CrashReportUserApplicationStateAllKeys) {
       @"presented_view_controller", @"parent_view_controller");
   crash_keys::MediaStreamPlaybackDidStart();
   crash_keys::SetVoiceOverRunning(true);
+  crash_keys::SetCurrentlyInReaderMode(true);
 
   // Set a max-length breadcrumbs string.
   std::string breadcrumbs(breadcrumbs::kMaxDataLength, 'A');
@@ -103,6 +104,7 @@ TEST_F(CrashHelperTest, CrashReportUserApplicationStateAllKeys) {
               @"\"regTabs\":999,\"scenes\":999,\"signIn\":1,\"sizeclass\":2,"
               @"\"user_interface_style\":2,\"voiceOver\":1}");
   EXPECT_NSEQ(reportParameters[@"memory_warning_in_progress"], @"yes");
+  EXPECT_NSEQ(reportParameters[@"readerMode"], @"yes");
 }
 
 TEST_F(CrashHelperTest, IsUploadingEnabled) {

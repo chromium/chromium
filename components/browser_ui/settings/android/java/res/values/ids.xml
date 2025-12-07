@@ -5,9 +5,8 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <resources>
-    <!-- TODO(crbug.com/40253053): Remove this ID definition once it's no longer needs to be known
-         by modules in targets that WebLayer depends on. Some alternatives: (1) Move
-         `ManagedPreferencesUtils` to its own target, so that it's not imported by WebLayer;
+    <!-- TODO(crbug.com/40253053): Remove this ID definition.
+         Some alternatives: (1) Move `ManagedPreferencesUtils` to its own target;
          (2) Move the logic that depends on this ID to `ManagedPreferenceDelegate`.
       -->
     <item type="id" name="managed_disclaimer_text" />

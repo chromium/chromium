@@ -3,6 +3,7 @@ desc: |-
   Setting the policy to Disabled prevents users from ending processes in the Task Manager.
 
         Setting the policy to Enabled or leaving it unset lets users end processes in the Task Manager.
+default: true
 example_value: true
 features:
   dynamic_refresh: true

@@ -55,6 +55,12 @@ suite('cr-iconset', function() {
     assertEquals(expectedPath, path.getAttribute('d'));
   }
 
+  function assertSvgStyle(svg: SVGElement) {
+    assertEquals('100%', svg.style.height);
+    assertEquals('100%', svg.style.width);
+    assertEquals('block', svg.style.display);
+  }
+
   test('initial state', () => {
     assertEquals(iconset, IconsetMap.getInstance().get('cr-test'));
     assertEquals('none', window.getComputedStyle(iconset).display);
@@ -68,10 +74,12 @@ suite('cr-iconset', function() {
     const arrowUpIcon = iconset.createIcon('arrow-drop-up');
     assertTrue(!!arrowUpIcon);
     assertSvgPath(arrowUpIcon, 'M7 14l5-5 5 5z');
+    assertSvgStyle(arrowUpIcon);
 
     const arrowDownIcon = iconset.createIcon('arrow-drop-down');
     assertTrue(!!arrowDownIcon);
     assertSvgPath(arrowDownIcon, 'M7 10l5 5 5-5z');
+    assertSvgStyle(arrowDownIcon);
 
     // Should return null for an icon not in the iconset
     const invalidIcon = iconset.createIcon('not-in-iconset');
@@ -79,23 +87,23 @@ suite('cr-iconset', function() {
   });
 
   test('icon add/remove', () => {
-    const icon = document.createElement('test-element');
+    const icon = document.createElement('test-element') as TestElement;
     document.body.appendChild(icon);
 
     iconset.applyIcon(icon, 'arrow-drop-up');
-    let svgs = icon.shadowRoot!.querySelectorAll('svg');
+    let svgs = icon.shadowRoot.querySelectorAll('svg');
     assertEquals(1, svgs.length);
     assertSvgPath(svgs[0]!, 'M7 14l5-5 5 5z');
 
     // Applying a new icon removes the old one.
     iconset.applyIcon(icon, 'arrow-drop-down');
-    svgs = icon.shadowRoot!.querySelectorAll('svg');
+    svgs = icon.shadowRoot.querySelectorAll('svg');
     assertEquals(1, svgs.length);
     assertSvgPath(svgs[0]!, 'M7 10l5 5 5-5z');
 
     // Removing the icon works.
     iconset.removeIcon(icon);
-    svgs = icon.shadowRoot!.querySelectorAll('svg');
+    svgs = icon.shadowRoot.querySelectorAll('svg');
     assertEquals(0, svgs.length);
   });
 });

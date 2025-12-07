@@ -12,7 +12,8 @@
 
 namespace views::test {
 
-// Wait until `callback` returns `expected_value`, but no longer than 1 second.
+// Wait until `callback` returns `expected_value`, but no longer than `timeout`
+// seconds (defaults to 1s).
 //
 // Example Usage :
 //  WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
@@ -24,7 +25,8 @@ namespace views::test {
 class PropertyWaiter {
  public:
   PropertyWaiter(base::RepeatingCallback<bool(void)> callback,
-                 bool expected_value);
+                 bool expected_value,
+                 base::TimeDelta timeout = base::Seconds(1));
   ~PropertyWaiter();
 
   bool Wait();
@@ -32,7 +34,7 @@ class PropertyWaiter {
  private:
   void Check();
 
-  const base::TimeDelta kTimeout = base::Seconds(1);
+  base::TimeDelta timeout_;
   base::RepeatingCallback<bool(void)> callback_;
   const bool expected_value_;
   bool success_ = false;

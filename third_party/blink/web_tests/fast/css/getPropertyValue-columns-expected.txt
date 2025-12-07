@@ -7,8 +7,6 @@ PASS webkitColumnsValue("columns2") is "10"
 PASS webkitColumnsValue("columns3") is "10px"
 PASS webkitColumnsValue("columns4") is "auto"
 PASS webkitColumnsValue("columns5") is "2"
-PASS webkitColumnsValue("columns6") is "10px 2"
-PASS webkitColumnsValue("columns7") is "auto"
 NOTE: 'foo' is an illegal CSS value for '-webkit-columns'.
 PASS webkitColumnsValue("columns8") is ""
 NOTE: If only few longhand properties are specified, getPropertyValue for shorthand property returns empty string.

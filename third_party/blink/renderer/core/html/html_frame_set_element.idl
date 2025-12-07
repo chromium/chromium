@@ -23,9 +23,9 @@
 // FIXME: HTMLFrameSetElement should not have [LegacyOverrideBuiltIns].
 [
     Exposed=Window,
-    HTMLConstructor,
     LegacyOverrideBuiltIns
 ] interface HTMLFrameSetElement : HTMLElement {
+    [HTMLConstructor] constructor();
     [CEReactions, Reflect] attribute DOMString cols;
     [CEReactions, Reflect] attribute DOMString rows;
 

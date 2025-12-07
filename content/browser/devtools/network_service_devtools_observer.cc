@@ -4,6 +4,7 @@
 
 #include "content/browser/devtools/network_service_devtools_observer.h"
 
+#include "base/feature_list.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/protocol/audits_handler.h"
@@ -12,8 +13,11 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/http_raw_headers.mojom.h"
 #include "services/network/public/mojom/shared_dictionary_error.mojom.h"
+#include "services/network/public/mojom/sri_message_signature.mojom.h"
+#include "services/network/public/mojom/unencoded_digest.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
 namespace content {
@@ -28,7 +32,8 @@ void DispatchToAgents(DevToolsAgentHostImpl* agent_host,
     (h->*method)(std::forward<Args>(args)...);
 }
 
-RenderFrameHostImpl* GetRenderFrameHostImplFrom(int frame_tree_node_id) {
+RenderFrameHostImpl* GetRenderFrameHostImplFrom(
+    FrameTreeNodeId frame_tree_node_id) {
   auto* ftn = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
   if (!ftn) {
     return nullptr;
@@ -43,18 +48,19 @@ RenderFrameHostImpl* GetRenderFrameHostImplFrom(int frame_tree_node_id) {
 NetworkServiceDevToolsObserver::NetworkServiceDevToolsObserver(
     base::PassKey<NetworkServiceDevToolsObserver> pass_key,
     const std::string& id,
-    int frame_tree_node_id)
+    FrameTreeNodeId frame_tree_node_id)
     : devtools_agent_id_(id), frame_tree_node_id_(frame_tree_node_id) {}
 
 NetworkServiceDevToolsObserver::~NetworkServiceDevToolsObserver() = default;
 
 DevToolsAgentHostImpl* NetworkServiceDevToolsObserver::GetDevToolsAgentHost() {
-  if (frame_tree_node_id_ != FrameTreeNode::kFrameTreeNodeInvalidId) {
+  if (frame_tree_node_id_) {
     auto* frame_tree_node =
         FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
     if (!frame_tree_node)
       return nullptr;
-    return RenderFrameDevToolsAgentHost::GetFor(frame_tree_node);
+    return RenderFrameDevToolsAgentHost::GetForWithAncestorFallback(
+        frame_tree_node);
   }
   auto host = DevToolsAgentHostImpl::GetForId(devtools_agent_id_);
   if (!host)
@@ -68,14 +74,16 @@ void NetworkServiceDevToolsObserver::OnRawRequest(
     std::vector<network::mojom::HttpRawHeaderPairPtr> request_headers,
     base::TimeTicks timestamp,
     network::mojom::ClientSecurityStatePtr security_state,
-    network::mojom::OtherPartitionInfoPtr other_partition_info) {
+    network::mojom::OtherPartitionInfoPtr other_partition_info,
+    const std::optional<base::UnguessableToken>&
+        applied_network_conditions_id) {
   auto* host = GetDevToolsAgentHost();
   if (!host)
     return;
-  DispatchToAgents(host,
-                   &protocol::NetworkHandler::OnRequestWillBeSentExtraInfo,
-                   devtools_request_id, request_cookie_list, request_headers,
-                   timestamp, security_state, other_partition_info);
+  DispatchToAgents(
+      host, &protocol::NetworkHandler::OnRequestWillBeSentExtraInfo,
+      devtools_request_id, request_cookie_list, request_headers, timestamp,
+      security_state, other_partition_info, applied_network_conditions_id);
 }
 
 void NetworkServiceDevToolsObserver::OnRawResponse(
@@ -123,15 +131,21 @@ void NetworkServiceDevToolsObserver::OnPrivateNetworkRequest(
     bool is_warning,
     network::mojom::IPAddressSpace resource_address_space,
     network::mojom::ClientSecurityStatePtr client_security_state) {
-  if (frame_tree_node_id_ == FrameTreeNode::kFrameTreeNodeInvalidId)
+  if (frame_tree_node_id_.is_null()) {
     return;
+  }
   auto* ftn = FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
   if (!ftn)
     return;
+
   auto cors_error_status =
       protocol::Network::CorsErrorStatus::Create()
           .SetCorsError(
-              protocol::Network::CorsErrorEnum::InsecurePrivateNetwork)
+              base::FeatureList::IsEnabled(
+                  network::features::kLocalNetworkAccessChecks)
+                  ? protocol::Network::CorsErrorEnum::
+                        LocalNetworkAccessPermissionDenied
+                  : protocol::Network::CorsErrorEnum::InsecurePrivateNetwork)
           .SetFailedParameter("")
           .Build();
   std::unique_ptr<protocol::Audits::AffectedRequest> affected_request =
@@ -163,7 +177,7 @@ void NetworkServiceDevToolsObserver::OnPrivateNetworkRequest(
                    .SetDetails(std::move(details))
                    .Build();
   devtools_instrumentation::ReportBrowserInitiatedIssue(
-      ftn->current_frame_host(), issue.get());
+      ftn->current_frame_host(), std::move(issue));
 }
 
 void NetworkServiceDevToolsObserver::OnCorsPreflightRequest(
@@ -180,7 +194,8 @@ void NetworkServiceDevToolsObserver::OnCorsPreflightRequest(
   DispatchToAgents(host, &protocol::NetworkHandler::RequestSent, id,
                    /* loader_id=*/"", request_headers, *request_info,
                    protocol::Network::Initiator::TypeEnum::Preflight,
-                   initiator_url, initiator_devtools_request_id, timestamp);
+                   initiator_url, initiator_devtools_request_id,
+                   /*frame_token=*/std::nullopt, timestamp);
 }
 
 void NetworkServiceDevToolsObserver::OnCorsPreflightResponse(
@@ -194,7 +209,7 @@ void NetworkServiceDevToolsObserver::OnCorsPreflightResponse(
   DispatchToAgents(host, &protocol::NetworkHandler::ResponseReceived, id,
                    /* loader_id=*/"", url,
                    protocol::Network::ResourceTypeEnum::Preflight, *head,
-                   protocol::Maybe<std::string>());
+                   std::nullopt);
 }
 
 void NetworkServiceDevToolsObserver::OnCorsPreflightRequestCompleted(
@@ -218,23 +233,6 @@ void NetworkServiceDevToolsObserver::OnCorsError(
   RenderFrameHostImpl* rfhi = GetRenderFrameHostImplFrom(frame_tree_node_id_);
   if (!rfhi)
     return;
-
-  // TODO(crbug.com/40204695): Remove this once enforcement is always
-  // enabled and warnings are no more.
-  if (is_warning && initiator_origin.has_value()) {
-    if (!initiator_origin->IsSameOriginWith(url)) {
-      GetContentClient()->browser()->LogWebFeatureForCurrentPage(
-          rfhi, blink::mojom::WebFeature::
-                    kPrivateNetworkAccessIgnoredCrossOriginPreflightError);
-    }
-
-    if (net::SchemefulSite(initiator_origin.value()) !=
-        net::SchemefulSite(url)) {
-      GetContentClient()->browser()->LogWebFeatureForCurrentPage(
-          rfhi, blink::mojom::WebFeature::
-                    kPrivateNetworkAccessIgnoredCrossSitePreflightError);
-    }
-  }
 
   std::unique_ptr<protocol::Audits::AffectedRequest> affected_request =
       protocol::Audits::AffectedRequest::Create()
@@ -267,7 +265,7 @@ void NetworkServiceDevToolsObserver::OnCorsError(
                    .SetDetails(std::move(details))
                    .SetIssueId(cors_error_status.issue_id.ToString())
                    .Build();
-  devtools_instrumentation::ReportBrowserInitiatedIssue(rfhi, issue.get());
+  devtools_instrumentation::ReportBrowserInitiatedIssue(rfhi, std::move(issue));
 }
 
 void NetworkServiceDevToolsObserver::OnOrbError(
@@ -297,55 +295,7 @@ void NetworkServiceDevToolsObserver::OnOrbError(
           .SetCode(protocol::Audits::InspectorIssueCodeEnum::GenericIssue)
           .SetDetails(std::move(details))
           .Build();
-  devtools_instrumentation::ReportBrowserInitiatedIssue(rfhi, issue.get());
-}
-
-void NetworkServiceDevToolsObserver::OnSubresourceWebBundleMetadata(
-    const std::string& devtools_request_id,
-    const std::vector<GURL>& urls) {
-  auto* host = GetDevToolsAgentHost();
-  if (!host)
-    return;
-  DispatchToAgents(host,
-                   &protocol::NetworkHandler::OnSubresourceWebBundleMetadata,
-                   devtools_request_id, urls);
-}
-
-void NetworkServiceDevToolsObserver::OnSubresourceWebBundleMetadataError(
-    const std::string& devtools_request_id,
-    const std::string& error_message) {
-  auto* host = GetDevToolsAgentHost();
-  if (!host)
-    return;
-  DispatchToAgents(
-      host, &protocol::NetworkHandler::OnSubresourceWebBundleMetadataError,
-      devtools_request_id, error_message);
-}
-
-void NetworkServiceDevToolsObserver::OnSubresourceWebBundleInnerResponse(
-    const std::string& inner_request_devtools_id,
-    const GURL& url,
-    const std::optional<std::string>& bundle_request_devtools_id) {
-  auto* host = GetDevToolsAgentHost();
-  if (!host)
-    return;
-  DispatchToAgents(
-      host, &protocol::NetworkHandler::OnSubresourceWebBundleInnerResponse,
-      inner_request_devtools_id, url, bundle_request_devtools_id);
-}
-
-void NetworkServiceDevToolsObserver::OnSubresourceWebBundleInnerResponseError(
-    const std::string& inner_request_devtools_id,
-    const GURL& url,
-    const std::string& error_message,
-    const std::optional<std::string>& bundle_request_devtools_id) {
-  auto* host = GetDevToolsAgentHost();
-  if (!host)
-    return;
-  DispatchToAgents(
-      host, &protocol::NetworkHandler::OnSubresourceWebBundleInnerResponseError,
-      inner_request_devtools_id, url, error_message,
-      bundle_request_devtools_id);
+  devtools_instrumentation::ReportBrowserInitiatedIssue(rfhi, std::move(issue));
 }
 
 namespace {
@@ -366,7 +316,7 @@ protocol::String BuildSharedDictionaryError(
       return SharedDictionaryErrorEnum::
           UseErrorUnexpectedContentDictionaryHeader;
     case SharedDictionaryError::kWriteErrorAlreadyRegistered:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case SharedDictionaryError::kWriteErrorCossOriginNoCorsRequest:
       return SharedDictionaryErrorEnum::WriteErrorCossOriginNoCorsRequest;
     case SharedDictionaryError::kWriteErrorDisallowedBySettings:
@@ -381,6 +331,8 @@ protocol::String BuildSharedDictionaryError(
       return SharedDictionaryErrorEnum::WriteErrorInvalidMatchField;
     case SharedDictionaryError::kWriteErrorInvalidStructuredHeader:
       return SharedDictionaryErrorEnum::WriteErrorInvalidStructuredHeader;
+    case SharedDictionaryError::kWriteErrorInvalidTTLField:
+      return SharedDictionaryErrorEnum::WriteErrorInvalidTTLField;
     case SharedDictionaryError::kWriteErrorNavigationRequest:
       return SharedDictionaryErrorEnum::WriteErrorNavigationRequest;
     case SharedDictionaryError::kWriteErrorNoMatchField:
@@ -405,6 +357,88 @@ protocol::String BuildSharedDictionaryError(
       return SharedDictionaryErrorEnum::WriteErrorTooLongIdField;
     case SharedDictionaryError::kWriteErrorUnsupportedType:
       return SharedDictionaryErrorEnum::WriteErrorUnsupportedType;
+    case SharedDictionaryError::kWriteErrorNonIntegerTTLField:
+      return SharedDictionaryErrorEnum::WriteErrorNonIntegerTTLField;
+  }
+}
+
+protocol::String ConvertToDevtoolsEnum(
+    network::mojom::SRIMessageSignatureError error) {
+  using network::mojom::SRIMessageSignatureError;
+  namespace SRIMessageSignatureErrorEnum =
+      protocol::Audits::SRIMessageSignatureErrorEnum;
+  switch (error) {
+    case SRIMessageSignatureError::kMissingSignatureHeader:
+      return SRIMessageSignatureErrorEnum::MissingSignatureHeader;
+    case SRIMessageSignatureError::kMissingSignatureInputHeader:
+      return SRIMessageSignatureErrorEnum::MissingSignatureInputHeader;
+    case SRIMessageSignatureError::kInvalidSignatureHeader:
+      return SRIMessageSignatureErrorEnum::InvalidSignatureHeader;
+    case SRIMessageSignatureError::kInvalidSignatureInputHeader:
+      return SRIMessageSignatureErrorEnum::InvalidSignatureInputHeader;
+    case SRIMessageSignatureError::kSignatureHeaderValueIsNotByteSequence:
+      return SRIMessageSignatureErrorEnum::
+          SignatureHeaderValueIsNotByteSequence;
+    case SRIMessageSignatureError::kSignatureHeaderValueIsParameterized:
+      return SRIMessageSignatureErrorEnum::SignatureHeaderValueIsParameterized;
+    case SRIMessageSignatureError::kSignatureHeaderValueIsIncorrectLength:
+      return SRIMessageSignatureErrorEnum::
+          SignatureHeaderValueIsIncorrectLength;
+    case SRIMessageSignatureError::kSignatureInputHeaderMissingLabel:
+      return SRIMessageSignatureErrorEnum::SignatureInputHeaderMissingLabel;
+    case SRIMessageSignatureError::kSignatureInputHeaderValueNotInnerList:
+      return SRIMessageSignatureErrorEnum::
+          SignatureInputHeaderValueNotInnerList;
+    case SRIMessageSignatureError::kSignatureInputHeaderValueMissingComponents:
+      return SRIMessageSignatureErrorEnum::
+          SignatureInputHeaderValueMissingComponents;
+    case SRIMessageSignatureError::kSignatureInputHeaderInvalidComponentType:
+      return SRIMessageSignatureErrorEnum::
+          SignatureInputHeaderInvalidComponentType;
+    case SRIMessageSignatureError::kSignatureInputHeaderInvalidComponentName:
+      return SRIMessageSignatureErrorEnum::
+          SignatureInputHeaderInvalidComponentName;
+    case SRIMessageSignatureError::
+        kSignatureInputHeaderInvalidHeaderComponentParameter:
+      return SRIMessageSignatureErrorEnum::
+          SignatureInputHeaderInvalidHeaderComponentParameter;
+    case SRIMessageSignatureError::
+        kSignatureInputHeaderInvalidDerivedComponentParameter:
+      return SRIMessageSignatureErrorEnum::
+          SignatureInputHeaderInvalidDerivedComponentParameter;
+    case SRIMessageSignatureError::kSignatureInputHeaderKeyIdLength:
+      return SRIMessageSignatureErrorEnum::SignatureInputHeaderKeyIdLength;
+    case SRIMessageSignatureError::kSignatureInputHeaderInvalidParameter:
+      return SRIMessageSignatureErrorEnum::SignatureInputHeaderInvalidParameter;
+    case SRIMessageSignatureError::
+        kSignatureInputHeaderMissingRequiredParameters:
+      return SRIMessageSignatureErrorEnum::
+          SignatureInputHeaderMissingRequiredParameters;
+    case SRIMessageSignatureError::kValidationFailedSignatureExpired:
+      return SRIMessageSignatureErrorEnum::ValidationFailedSignatureExpired;
+    case SRIMessageSignatureError::kValidationFailedSignatureMismatch:
+      return SRIMessageSignatureErrorEnum::ValidationFailedSignatureMismatch;
+    case SRIMessageSignatureError::kValidationFailedInvalidLength:
+      return SRIMessageSignatureErrorEnum::ValidationFailedInvalidLength;
+    case SRIMessageSignatureError::kValidationFailedIntegrityMismatch:
+      return SRIMessageSignatureErrorEnum::ValidationFailedIntegrityMismatch;
+  }
+}
+
+protocol::String ConvertToDevtoolsEnum(
+    network::mojom::UnencodedDigestIssue error) {
+  using network::mojom::UnencodedDigestIssue;
+  namespace UnencodedDigestErrorEnum =
+      protocol::Audits::UnencodedDigestErrorEnum;
+  switch (error) {
+    case UnencodedDigestIssue::kMalformedDictionary:
+      return UnencodedDigestErrorEnum::MalformedDictionary;
+    case UnencodedDigestIssue::kUnknownAlgorithm:
+      return UnencodedDigestErrorEnum::UnknownAlgorithm;
+    case UnencodedDigestIssue::kIncorrectDigestType:
+      return UnencodedDigestErrorEnum::IncorrectDigestType;
+    case UnencodedDigestIssue::kIncorrectDigestLength:
+      return UnencodedDigestErrorEnum::IncorrectDigestLength;
   }
 }
 
@@ -437,7 +471,75 @@ void NetworkServiceDevToolsObserver::OnSharedDictionaryError(
               protocol::Audits::InspectorIssueCodeEnum::SharedDictionaryIssue)
           .SetDetails(std::move(details))
           .Build();
-  devtools_instrumentation::ReportBrowserInitiatedIssue(rfhi, issue.get());
+  devtools_instrumentation::ReportBrowserInitiatedIssue(rfhi, std::move(issue));
+}
+
+void NetworkServiceDevToolsObserver::OnSRIMessageSignatureIssue(
+    const std::string& devtool_request_id,
+    const GURL& url,
+    std::vector<network::mojom::SRIMessageSignatureIssuePtr> issues) {
+  RenderFrameHostImpl* rfhi = GetRenderFrameHostImplFrom(frame_tree_node_id_);
+  if (!rfhi) {
+    return;
+  }
+  for (const auto& issue : issues) {
+    auto affected_request = protocol::Audits::AffectedRequest::Create()
+                                .SetRequestId(devtool_request_id)
+                                .SetUrl(url.spec())
+                                .Build();
+    auto issue_details =
+        protocol::Audits::SRIMessageSignatureIssueDetails::Create()
+            .SetError(ConvertToDevtoolsEnum(issue->error))
+            .SetRequest(std::move(affected_request))
+            .SetSignatureBase(issue->signature_base.value_or(""))
+            .SetIntegrityAssertions(
+                issue->integrity_assertions.has_value()
+                    ? std::make_unique<protocol::Array<protocol::String>>(
+                          std::move(issue->integrity_assertions.value()))
+                    : std::make_unique<protocol::Array<protocol::String>>())
+            .Build();
+    auto details =
+        protocol::Audits::InspectorIssueDetails::Create()
+            .SetSriMessageSignatureIssueDetails(std::move(issue_details))
+            .Build();
+    auto devtools_issue =
+        protocol::Audits::InspectorIssue::Create()
+            .SetCode(protocol::Audits::InspectorIssueCodeEnum::
+                         SRIMessageSignatureIssue)
+            .SetDetails(std::move(details))
+            .Build();
+    devtools_instrumentation::ReportBrowserInitiatedIssue(
+        rfhi, std::move(devtools_issue));
+  }
+}
+
+void NetworkServiceDevToolsObserver::OnUnencodedDigestError(
+    const std::string& devtool_request_id,
+    const GURL& url,
+    network::mojom::UnencodedDigestIssue issue) {
+  RenderFrameHostImpl* rfhi = GetRenderFrameHostImplFrom(frame_tree_node_id_);
+  if (!rfhi) {
+    return;
+  }
+  auto affected_request = protocol::Audits::AffectedRequest::Create()
+                              .SetRequestId(devtool_request_id)
+                              .SetUrl(url.spec())
+                              .Build();
+  auto issue_details = protocol::Audits::UnencodedDigestIssueDetails::Create()
+                           .SetError(ConvertToDevtoolsEnum(issue))
+                           .SetRequest(std::move(affected_request))
+                           .Build();
+  auto details = protocol::Audits::InspectorIssueDetails::Create()
+                     .SetUnencodedDigestIssueDetails(std::move(issue_details))
+                     .Build();
+  auto devtools_issue =
+      protocol::Audits::InspectorIssue::Create()
+          .SetCode(
+              protocol::Audits::InspectorIssueCodeEnum::UnencodedDigestIssue)
+          .SetDetails(std::move(details))
+          .Build();
+  devtools_instrumentation::ReportBrowserInitiatedIssue(
+      rfhi, std::move(devtools_issue));
 }
 
 void NetworkServiceDevToolsObserver::Clone(
@@ -455,7 +557,7 @@ NetworkServiceDevToolsObserver::MakeSelfOwned(const std::string& id) {
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<NetworkServiceDevToolsObserver>(
           base::PassKey<NetworkServiceDevToolsObserver>(), id,
-          FrameTreeNode::kFrameTreeNodeInvalidId),
+          FrameTreeNodeId()),
       remote.InitWithNewPipeAndPassReceiver());
   return remote;
 }

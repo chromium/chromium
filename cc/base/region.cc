@@ -64,7 +64,7 @@ int Region::GetRegionComplexity() const {
 }
 
 void Region::GetBoundaryPath(SkPath* path) const {
-  skregion_.getBoundaryPath(path);
+  *path = skregion_.getBoundaryPath();
 }
 
 bool Region::Contains(const gfx::Point& point) const {

@@ -9,24 +9,21 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.MetricAffectingSpan;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.omnibox.AnswerDataProto.FormattedString;
 import org.chromium.components.omnibox.AnswerDataProto.FormattedString.ColorType;
 import org.chromium.components.omnibox.AnswerDataProto.FormattedString.FormattedStringFragment;
 import org.chromium.components.omnibox.AnswerTypeProto.AnswerType;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.RichAnswerTemplateProto.RichAnswerTemplate;
 import org.chromium.ui.text.DownloadableFontTextAppearanceSpan;
 
 import java.util.List;
 
-/**
- * {@link AnswerText} implementation based on RichAnswerTemplate as the source of answer lines (as
- * opposed to SuggestionAnswer, implemented by {@link AnswerTextNewLayout}).
- */
+/** {@link AnswerText} implementation based on RichAnswerTemplate as the source of answer lines. */
+@NullMarked
 class RichAnswerText implements AnswerText {
 
     /** Content of the line of text in omnibox suggestion. */
@@ -38,7 +35,7 @@ class RichAnswerText implements AnswerText {
     private String mAccessibilityDescription;
     private int mMaxLines = 1;
     private final AnswerType mAnswerType;
-    private boolean mUseRichAnswerCard;
+    private final boolean mUseRichAnswerCard;
 
     @Override
     public SpannableStringBuilder getText() {
@@ -57,8 +54,8 @@ class RichAnswerText implements AnswerText {
 
     /** Construct an array of two AnswerText instances for the given RichAnswerTemplate. */
     static AnswerText[] from(
-            @NonNull Context context,
-            @NonNull RichAnswerTemplate richAnswerTemplate,
+            Context context,
+            RichAnswerTemplate richAnswerTemplate,
             AnswerType answerType,
             boolean reverseStockTextColor,
             boolean useRichAnswerCard) {
@@ -88,13 +85,8 @@ class RichAnswerText implements AnswerText {
 
         FormattedString firstLine;
         FormattedString secondLine;
-        if (shouldSkipTextReversal(answerType)) {
-            firstLine = richAnswerTemplate.getAnswers(0).getHeadline();
-            secondLine = richAnswerTemplate.getAnswers(0).getSubhead();
-        } else {
-            firstLine = richAnswerTemplate.getAnswers(0).getSubhead();
-            secondLine = richAnswerTemplate.getAnswers(0).getHeadline();
-        }
+        firstLine = richAnswerTemplate.getAnswers(0).getSubhead();
+        secondLine = richAnswerTemplate.getAnswers(0).getHeadline();
 
         // Construct the Answer card presenting Answers in Suggest in Answer > Query order.
         result[0] =
@@ -258,18 +250,5 @@ class RichAnswerText implements AnswerText {
                         || answerType == AnswerType.ANSWER_TYPE_TRANSLATION)
                 ? 3
                 : 1;
-    }
-
-    /**
-     * When shouldShowAnswerActions() is true, the backend provides dictionary, finance, sports,
-     * knowledge graph, and weather answer in reversed form already. Dictionary is handled
-     * separately, but for the remainder we want to skip reversing the text but continue to swap
-     * a11y content.
-     */
-    private static boolean shouldSkipTextReversal(AnswerType answerType) {
-        return OmniboxFeatures.shouldShowAnswerActions()
-                && (answerType == AnswerType.ANSWER_TYPE_FINANCE
-                        || answerType == AnswerType.ANSWER_TYPE_SPORTS
-                        || answerType == AnswerType.ANSWER_TYPE_WEATHER);
     }
 }

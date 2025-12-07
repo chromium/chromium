@@ -77,7 +77,7 @@ void PrintTo(const UpdateActiveSetupVersionWorkItemTestCase& test_case,
 class UpdateActiveSetupVersionWorkItemTest
     : public testing::TestWithParam<UpdateActiveSetupVersionWorkItemTestCase> {
  public:
-  UpdateActiveSetupVersionWorkItemTest() {}
+  UpdateActiveSetupVersionWorkItemTest() = default;
 
   UpdateActiveSetupVersionWorkItemTest(
       const UpdateActiveSetupVersionWorkItemTest&) = delete;

@@ -33,11 +33,15 @@ class CORE_EXPORT AddEventListenerOptionsResolved
   void SetPassiveSpecified(bool specified) { passive_specified_ = specified; }
   bool PassiveSpecified() const { return passive_specified_; }
 
+  void SetAnimationTrigger(bool val) { animation_trigger_ = val; }
+  bool IsAnimationTrigger() const { return animation_trigger_; }
+
   void Trace(Visitor*) const override;
 
  private:
-  bool passive_forced_for_document_target_;
-  bool passive_specified_;
+  bool passive_forced_for_document_target_{false};
+  bool passive_specified_{false};
+  bool animation_trigger_{false};
 };
 
 }  // namespace blink

@@ -8,14 +8,13 @@ import {
   html,
   nothing,
   PropertyDeclarations,
+  repeat,
   svg,
-  SVGTemplateResult,
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {
+  POWER_BARS_PER_SECOND,
   POWER_SCALE_FACTOR,
-  SAMPLE_RATE,
-  SAMPLES_PER_SLICE,
 } from '../core/audio_constants.js';
 import {i18n} from '../core/i18n.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
@@ -26,6 +25,7 @@ import {
   assertExists,
   assertInstanceof,
 } from '../core/utils/assert.js';
+import {InteriorMutableArray} from '../core/utils/interior_mutable_array.js';
 
 import {
   getNumSpeakerClass,
@@ -60,17 +60,14 @@ function toViewBoxString(viewBox: Rect|null): string|typeof nothing {
 /*
  * There are multiple different coordinate system for the "timestamp" of the
  * waveform used in this component:
- * (1) Time (in seconds). Each second contains SAMPLE_RATE audio samples.
- * (2) Index of the "bar" in the waveform, starting from 0. Each "bar" is an
- *     aggregate of SAMPLES_PER_SLICE audio samples. So index 0 corresponds to
- *     [0, SAMPLES_PER_SLICE) audio samples, index 1 corresponds to
- *     [SAMPLES_PER_SLICE, 2*SAMPLES_PER_SLICE) audio samples, and so on...
+ * (1) Time (in seconds). Each second contains `barsPerSecond` bars.
+ * (2) Index of the "bar" in the waveform, starting from 0.
  * (3) The x coordinate that is rendered in the SVG. Time 0 always corresponds
  *     to x = 0, and the viewBox of the whole SVG is set to show around the
  *     current time.
  *
- * `timestampToBarIndex` converts from (1) to (2), and `getBarX` converts from
- * (2) to (3).
+ * `timestampToBarIndex` converts from (1) to (2), `getBarX` converts from
+ * (2) to (3), and `xCoordinateToRoughIdx` converts from (3) to (2).
  *
  * Since the whole waveform looks better when things are aligned to bar, most
  * variables (ended in BarIdx) are in the coordinate of (2).
@@ -80,12 +77,16 @@ function toViewBoxString(viewBox: Rect|null): string|typeof nothing {
  * rendered x coordinate (3) and doesn't corresponds to actual slice of audio
  * samples.
  */
-function timestampToBarIndex(seconds: number): number {
-  return Math.floor((seconds * SAMPLE_RATE) / SAMPLES_PER_SLICE);
+function timestampToBarIndex(seconds: number, barsPerSecond: number): number {
+  return Math.floor(seconds * barsPerSecond);
 }
 
 function getBarX(barIdx: number): number {
   return barIdx * (BAR_WIDTH + BAR_GAP);
+}
+
+function xCoordinateToRoughIdx(x: number): number {
+  return Math.floor(x / (BAR_WIDTH + BAR_GAP));
 }
 
 /**
@@ -134,6 +135,12 @@ export class AudioWaveform extends ReactiveLitElement {
         position: absolute;
       }
 
+      .speaker-single {
+        & .range {
+          display: none;
+        }
+      }
+
       .speaker-duo,
       .speaker-multiple {
         & .no-speaker {
@@ -162,6 +169,9 @@ export class AudioWaveform extends ReactiveLitElement {
       }
 
       .bar {
+        /* Don't block hover on the background. */
+        pointer-events: none;
+
         .speaker-single & {
           fill: var(--cros-sys-primary);
 
@@ -237,6 +247,9 @@ export class AudioWaveform extends ReactiveLitElement {
 
       .playhead {
         fill: var(--cros-sys-on_surface_variant);
+
+        /* Don't block hover on the background. */
+        pointer-events: none;
       }
     `,
   ];
@@ -245,13 +258,16 @@ export class AudioWaveform extends ReactiveLitElement {
     values: {attribute: false},
     size: {state: true},
     currentTime: {type: Number},
+    barsPerSecond: {attribute: false},
     transcription: {attribute: false},
   };
 
   // Values to be shown as bars. Should be in range [0, POWER_SCALE_FACTOR - 1].
-  values: number[] = [];
+  values = new InteriorMutableArray<number>([]);
 
   currentTime: number|null = null;
+
+  barsPerSecond: number = POWER_BARS_PER_SECOND;
 
   private readonly currentTimeSignal = this.propSignal('currentTime');
 
@@ -259,7 +275,10 @@ export class AudioWaveform extends ReactiveLitElement {
     if (this.currentTimeSignal.value === null) {
       return null;
     }
-    return timestampToBarIndex(this.currentTimeSignal.value);
+    return timestampToBarIndex(
+      this.currentTimeSignal.value,
+      this.barsPerSecond,
+    );
   });
 
   private size: DOMRect|null = null;
@@ -301,8 +320,9 @@ export class AudioWaveform extends ReactiveLitElement {
       // The timestamps should be increasing.
       assert(startMs <= endMs);
 
-      const startBarIdx = timestampToBarIndex(startMs / 1000);
-      const endBarIdx = timestampToBarIndex(endMs / 1000);
+      const startBarIdx =
+        timestampToBarIndex(startMs / 1000, this.barsPerSecond);
+      const endBarIdx = timestampToBarIndex(endMs / 1000, this.barsPerSecond);
       assert(
         ranges.length === 0 ||
           assertExists(ranges.at(-1)).endBarIdx <= startBarIdx,
@@ -423,9 +443,9 @@ export class AudioWaveform extends ReactiveLitElement {
       width="100"
       height=${maxHeight}
     >
-      <div class="speaker-label ${classMap(classes)}">
-        <span class="short">${shortLabel}</span>
-        <span class="full">${fullLabel}</span>
+      <div class="speaker-label ${classMap(classes)}" aria-label=${fullLabel}>
+        <span class="short" aria-hidden="true">${shortLabel}</span>
+        <span class="full" aria-hidden="true">${fullLabel}</span>
       </div>
     </foreignObject>`;
     // clang-format on
@@ -505,13 +525,30 @@ export class AudioWaveform extends ReactiveLitElement {
     </g>`;
   }
 
-  private renderSvgContent(
-    viewBox: Rect|null,
-  ): SVGTemplateResult[]|typeof nothing {
-    if (viewBox === null || this.values.length === 0) {
+  private renderCurrentTimeBar(viewBox: Rect) {
+    if (this.currentTimeBarIdx.value === null) {
       return nothing;
     }
-    const ret: SVGTemplateResult[] = [];
+    const width = 2;
+    // Add the progress indicator at the current time. Draw on the left side
+    // of the current bar so it looks more "correct" when jumping to the start
+    // of a paragraph with speaker label.
+    const x = getBarX(this.currentTimeBarIdx.value) - BAR_WIDTH / 2 - width;
+    const y = viewBox.y;
+    return svg`<rect
+      x=${x}
+      y=${y}
+      width=${width}
+      height=${viewBox.height}
+      rx="1"
+      class="playhead"
+    />`;
+  }
+
+  private renderAudioBars(viewBox: Rect) {
+    if (this.values.length === 0) {
+      return nothing;
+    }
 
     const speakerLabelRanges = this.speakerLabelInfo.value.ranges;
     let currentSpeakerLabelRangeIdx = 0;
@@ -541,14 +578,40 @@ export class AudioWaveform extends ReactiveLitElement {
       return null;
     }
 
-    for (const [i, val] of this.values.entries()) {
+    // This is an optimization to not goes through the whole values array, and
+    // directly calculate the part that needs to be rendered instead. To
+    // simplify the logic we calculate the rough range and just extend it a bit
+    // to make sure we covers the whole range.
+    const startIdx = Math.max(xCoordinateToRoughIdx(viewBox.x) - 5, 0);
+    const endIdx = Math.min(
+      xCoordinateToRoughIdx(viewBox.x + viewBox.width) + 5,
+      this.values.length - 1,
+    );
+
+    if (endIdx < startIdx) {
+      return nothing;
+    }
+
+    const idxRange = Array.from(
+      {length: endIdx - startIdx + 1},
+      (_, i) => i + startIdx,
+    );
+
+    const toRenderBars: Array<{
+      idx: number,
+      rect: Rect,
+      classes: Record<string, boolean>,
+    }> = [];
+    const toRenderSpeakerLabelRanges: SpeakerLabelRange[] = [];
+
+    for (const i of idxRange) {
+      const val = assertExists(this.values.array[i]);
       const rect = this.getBarLocation(
         i,
         val,
         BAR_MIN_HEIGHT,
         Math.min(viewBox.height, BAR_MAX_HEIGHT),
       );
-      // TODO(pihsun): Optimize and directly calculate the index range.
       if (rect.x + rect.width < viewBox.x ||
           rect.x > viewBox.x + viewBox.width) {
         continue;
@@ -560,13 +623,7 @@ export class AudioWaveform extends ReactiveLitElement {
 
       if (range !== null) {
         if (!currentSpeakerLabelRangeRendered) {
-          ret.push(
-            this.renderSpeakerRange(
-              this.speakerLabelInfo.value.speakerLabels,
-              range,
-              viewBox,
-            ),
-          );
+          toRenderSpeakerLabelRanges.push(range);
           currentSpeakerLabelRangeRendered = true;
         }
 
@@ -574,36 +631,41 @@ export class AudioWaveform extends ReactiveLitElement {
       } else {
         classes['no-speaker'] = true;
       }
-      ret.push(
-        svg`<rect
+      toRenderBars.push({idx: i, rect, classes});
+    }
+
+    return [
+      repeat(
+        toRenderSpeakerLabelRanges,
+        ({startBarIdx}) => startBarIdx,
+        (range) => this.renderSpeakerRange(
+          this.speakerLabelInfo.value.speakerLabels,
+          range,
+          viewBox,
+        ),
+      ),
+      repeat(
+        toRenderBars,
+        ({idx}) => idx,
+        ({rect, classes}) => {
+          return svg`<rect
           x=${rect.x}
           y=${rect.y}
           width=${rect.width}
           height=${rect.height}
           rx=${rect.width / 2}
           class="bar ${classMap(classes)}"
-        />`,
-      );
+        />`;
+        },
+      ),
+    ];
+  }
+
+  private renderSvgContent(viewBox: Rect|null) {
+    if (viewBox === null) {
+      return nothing;
     }
-    if (this.currentTimeBarIdx.value !== null) {
-      const width = 2;
-      // Add the progress indicator at the current time. Draw on the left side
-      // of the current bar so it looks more "correct" when jumping to the start
-      // of a paragraph with speaker label.
-      const x = getBarX(this.currentTimeBarIdx.value) - BAR_WIDTH / 2 - width;
-      const y = viewBox.y;
-      ret.push(
-        svg`<rect
-          x=${x}
-          y=${y}
-          width=${width}
-          height=${viewBox.height}
-          rx="1"
-          class="playhead"
-        />`,
-      );
-    }
-    return ret;
+    return [this.renderAudioBars(viewBox), this.renderCurrentTimeBar(viewBox)];
   }
 
   private getViewBox(): Rect|null {

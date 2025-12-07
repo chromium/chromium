@@ -36,9 +36,10 @@ OpenXrAnchorManagerMsft::~OpenXrAnchorManagerMsft() {
   space_to_anchor_map_.clear();
 }
 
-XrSpace OpenXrAnchorManagerMsft::CreateAnchor(XrPosef pose,
-                                              XrSpace space,
-                                              XrTime predicted_display_time) {
+XrSpace OpenXrAnchorManagerMsft::CreateAnchorInternal(
+    XrPosef pose,
+    XrSpace space,
+    XrTime predicted_display_time) {
   XrSpatialAnchorMSFT xr_anchor;
   XrSpatialAnchorCreateInfoMSFT anchor_create_info{
       XR_TYPE_SPATIAL_ANCHOR_CREATE_INFO_MSFT};
@@ -97,41 +98,6 @@ OpenXrAnchorManagerMsft::GetAnchorFromMojom(
   }
 
   return XrPoseToDevicePose(anchor_from_mojo.pose);
-}
-
-OpenXrAnchorManagerMsftFactory::OpenXrAnchorManagerMsftFactory() = default;
-OpenXrAnchorManagerMsftFactory::~OpenXrAnchorManagerMsftFactory() = default;
-
-const base::flat_set<std::string_view>&
-OpenXrAnchorManagerMsftFactory::GetRequestedExtensions() const {
-  static base::NoDestructor<base::flat_set<std::string_view>> kExtensions(
-      {XR_MSFT_SPATIAL_ANCHOR_EXTENSION_NAME});
-  return *kExtensions;
-}
-
-std::set<device::mojom::XRSessionFeature>
-OpenXrAnchorManagerMsftFactory::GetSupportedFeatures(
-    const OpenXrExtensionEnumeration* extension_enum) const {
-  if (!IsEnabled(extension_enum)) {
-    return {};
-  }
-
-  return {device::mojom::XRSessionFeature::ANCHORS};
-}
-
-std::unique_ptr<OpenXrAnchorManager>
-OpenXrAnchorManagerMsftFactory::CreateAnchorManager(
-    const OpenXrExtensionHelper& extension_helper,
-    XrSession session,
-    XrSpace mojo_space) const {
-  bool is_supported = IsEnabled(extension_helper.ExtensionEnumeration());
-  DVLOG(2) << __func__ << " is_supported=" << is_supported;
-  if (is_supported) {
-    return std::make_unique<OpenXrAnchorManagerMsft>(extension_helper, session,
-                                                     mojo_space);
-  }
-
-  return nullptr;
 }
 
 }  // namespace device

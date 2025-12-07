@@ -22,11 +22,6 @@ class ScriptState;
 // Represents a GATT Service within a Bluetooth Peripheral, a collection of
 // characteristics and relationships to other services that encapsulate the
 // behavior of part of a device.
-//
-// Callbacks providing WebBluetoothRemoteGATTService objects are handled by
-// CallbackPromiseAdapter templatized with this class. See this class's
-// "Interface required by CallbackPromiseAdapter" section and the
-// CallbackPromiseAdapter class comments.
 class BluetoothRemoteGATTService final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -65,10 +60,10 @@ class BluetoothRemoteGATTService final : public ScriptWrappable {
           Vector<mojom::blink::WebBluetoothRemoteGATTCharacteristicPtr>>
           characteristics);
 
-  void GetCharacteristicsImpl(ScriptPromiseResolverBase*,
-                              ExceptionState&,
-                              mojom::blink::WebBluetoothGATTQueryQuantity,
-                              const String& characteristic_uuid = String());
+  ScriptPromise<IDLSequence<BluetoothRemoteGATTCharacteristic>>
+  GetCharacteristicsImpl(ScriptState*,
+                         ExceptionState&,
+                         const String& characteristic_uuid = String());
 
   mojom::blink::WebBluetoothRemoteGATTServicePtr service_;
   const bool is_primary_;

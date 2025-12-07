@@ -6,48 +6,34 @@
 
 #include <memory>
 
-#include "base/functional/callback_forward.h"
-#include "chrome/browser/digital_credentials/digital_identity_bluetooth_adapter_status_change_observer.h"
-#include "chrome/browser/digital_credentials/digital_identity_fido_handler_observer.h"
+#include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/digital_credentials/digital_identity_multi_step_dialog.h"
+#include "chrome/browser/ui/views/digital_credentials/digital_identity_safety_interstitial_controller_desktop.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 
-using BleStatus = device::FidoRequestHandlerBase::BleStatus;
-
 DigitalIdentityBluetoothManualDialogController::
     DigitalIdentityBluetoothManualDialogController(
-        DigitalIdentityMultiStepDialog* dialog,
-        DigitalIdentityFidoHandlerObserver* observer_registrar)
-    : dialog_(dialog), observer_registrar_(observer_registrar) {
-  observer_registrar_->AddBluetoothAdapterStatusChangeObserver(this);
-}
+        DigitalIdentityMultiStepDialog* dialog)
+    : dialog_(dialog) {}
 
 DigitalIdentityBluetoothManualDialogController::
-    ~DigitalIdentityBluetoothManualDialogController() {
-  observer_registrar_->RemoveBluetoothAdapterStatusChangeObserver(this);
-}
+    ~DigitalIdentityBluetoothManualDialogController() = default;
 
 void DigitalIdentityBluetoothManualDialogController::Show(
-    base::RepeatingClosure accept_bluetooth_powered_on_callback,
-    base::RepeatingClosure cancel_callback) {
-  accept_bluetooth_powered_on_callback_ =
-      std::move(accept_bluetooth_powered_on_callback);
+    base::OnceClosure user_requested_bluetooth_power_on_callback,
+    base::OnceClosure cancel_callback) {
+  user_requested_blueooth_power_on_callback_ =
+      std::move(user_requested_bluetooth_power_on_callback);
   cancel_callback_ = std::move(cancel_callback);
-  UpdateDialog();
+
+  UpdateDialog(/*enabled=*/true);
 }
 
-void DigitalIdentityBluetoothManualDialogController::
-    OnBluetoothAdapterStatusChanged(BleStatus ble_status) {
-  is_ble_powered_ = (ble_status == BleStatus::kOn);
-  UpdateDialog();
-}
-
-void DigitalIdentityBluetoothManualDialogController::UpdateDialog() {
-  CHECK(accept_bluetooth_powered_on_callback_);
-  CHECK(cancel_callback_);
-
+void DigitalIdentityBluetoothManualDialogController::UpdateDialog(
+    bool is_ok_button_enabled) {
   std::u16string dialog_title = l10n_util::GetStringUTF16(
       IDS_WEB_DIGITAL_CREDENTIALS_BLUETOOTH_POWER_ON_MANUAL_TITLE);
   std::u16string dialog_body = l10n_util::GetStringUTF16(
@@ -57,10 +43,42 @@ void DigitalIdentityBluetoothManualDialogController::UpdateDialog() {
   std::optional<ui::DialogModel::Button::Params> ok_button_params =
       std::make_optional<ui::DialogModel::Button::Params>();
   ok_button_params->SetLabel(ok_button_text);
-  ok_button_params->SetEnabled(is_ble_powered_);
+  ok_button_params->SetEnabled(is_ok_button_enabled);
 
-  dialog_->TryShow(ok_button_params, accept_bluetooth_powered_on_callback_,
-                   ui::DialogModel::Button::Params(), cancel_callback_,
-                   dialog_title, dialog_body,
-                   /*custom_body_field=*/nullptr);
+  auto illustration = std::make_unique<ThemeTrackingNonAccessibleImageView>(
+      ui::ImageModel::FromVectorIcon(kPasskeyErrorBluetoothIcon),
+      ui::ImageModel::FromVectorIcon(kPasskeyErrorBluetoothDarkIcon),
+      base::BindRepeating(&DigitalIdentityMultiStepDialog::GetBackgroundColor,
+                          base::Unretained(dialog_)));
+
+  dialog_->TryShow(
+      ok_button_params,
+      base::BindOnce(&DigitalIdentityBluetoothManualDialogController::OnAccept,
+                     weak_factory_.GetWeakPtr()),
+      /*cancel_button=*/
+      ui::DialogModel::Button::Params().SetLabel(l10n_util::GetStringUTF16(
+          IDS_WEB_DIGITAL_CREDENTIALS_FLOW_CANCEL_BUTTON_TEXT)),
+      base::BindOnce(&DigitalIdentityBluetoothManualDialogController::OnCancel,
+                     weak_factory_.GetWeakPtr()),
+      /*dialog_title=*/u"", /*dialog_body=*/u"",
+      DigitalIdentityMultiStepDialog::CreateHeaderView(std::move(dialog_title),
+                                                       std::move(dialog_body),
+                                                       std::move(illustration)),
+      /*show_progress_bar=*/false);
+}
+
+void DigitalIdentityBluetoothManualDialogController::OnAccept() {
+  CHECK(user_requested_blueooth_power_on_callback_);
+
+  // Disable the dialog so that the user can't click the button twice.
+  UpdateDialog(/*enabled=*/false);
+
+  std::move(user_requested_blueooth_power_on_callback_).Run();
+}
+
+void DigitalIdentityBluetoothManualDialogController::OnCancel() {
+  // The owner of this object should ensure that the user can't click other
+  // buttons after the cancel callback, e.g. by destroying the dialog.
+  CHECK(cancel_callback_);
+  std::move(cancel_callback_).Run();
 }

@@ -103,10 +103,9 @@ TEST_F(CustomTypesTest, ChromeSettingsEventUseAfterInvalidation) {
                                 });)");
 }
 
-TEST_F(CustomTypesTest, ContentSettingsPromisesForManifestV3) {
+TEST_F(CustomTypesTest, ContentSettingsPromises) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("foo")
-          .SetManifestVersion(3)
           .AddAPIPermission("contentSettings")
           .Build();
   RegisterExtension(extension);
@@ -235,9 +234,8 @@ TEST_F(CustomTypesTest, ContentSettingsInvalidInvocationForManifestV2) {
   }
 }
 
-TEST_F(CustomTypesTest, ChromeSettingPromisesForManifestV3) {
+TEST_F(CustomTypesTest, ChromeSettingPromises) {
   scoped_refptr<const Extension> extension = ExtensionBuilder("foo")
-                                                 .SetManifestVersion(3)
                                                  .AddAPIPermission("privacy")
                                                  .Build();
   RegisterExtension(extension);

@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_CONTENT_DISTRIBUTION_VALUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_CONTENT_DISTRIBUTION_VALUE_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
@@ -29,6 +28,7 @@ class CSSContentDistributionValue : public CSSValue {
   String CustomCSSText() const;
 
   bool Equals(const CSSContentDistributionValue&) const;
+  unsigned CustomHash() const;
 
   void TraceAfterDispatch(blink::Visitor* visitor) const {
     CSSValue::TraceAfterDispatch(visitor);

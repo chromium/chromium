@@ -35,7 +35,6 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
-#include "third_party/blink/public/mojom/feature_observer/feature_observer.mojom-blink.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -70,9 +69,7 @@ static const char kPermissionDeniedErrorMessage[] =
     "The user denied permission to access the database.";
 
 IDBFactory::IDBFactory(ExecutionContext* context)
-    : ExecutionContextLifecycleObserver(context),
-      remote_(context),
-      feature_observer_(context) {}
+    : ExecutionContextLifecycleObserver(context), remote_(context) {}
 IDBFactory::~IDBFactory() = default;
 
 static bool IsContextValid(ExecutionContext* context) {
@@ -90,7 +87,6 @@ void IDBFactory::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
   visitor->Trace(remote_);
-  visitor->Trace(feature_observer_);
   visitor->Trace(weak_factory_);
 }
 
@@ -154,9 +150,9 @@ ScriptPromise<IDLSequence<IDBDatabaseInfo>> IDBFactory::GetDatabaseInfo(
     return resolver->Promise();
   }
 
-  AllowIndexedDB(WTF::BindOnce(&IDBFactory::GetDatabaseInfoImpl,
-                               WrapPersistent(weak_factory_.GetWeakCell()),
-                               WrapPersistent(resolver)));
+  AllowIndexedDB(BindOnce(&IDBFactory::GetDatabaseInfoImpl,
+                          WrapPersistent(weak_factory_.GetWeakCell()),
+                          WrapPersistent(resolver)));
   return resolver->Promise();
 }
 
@@ -171,7 +167,7 @@ void IDBFactory::GetDatabaseInfoImpl(
     return;
   }
 
-  GetRemote()->GetDatabaseInfo(WTF::BindOnce(
+  GetRemote()->GetDatabaseInfo(BindOnce(
       &IDBFactory::DidGetDatabaseInfo,
       WrapPersistent(weak_factory_.GetWeakCell()), WrapPersistent(resolver)));
 }
@@ -221,9 +217,9 @@ void IDBFactory::GetDatabaseInfoForDevTools(
 
   DCHECK(context->IsContextThread());
 
-  AllowIndexedDB(WTF::BindOnce(&IDBFactory::GetDatabaseInfoForDevToolsHelper,
-                               WrapPersistent(weak_factory_.GetWeakCell()),
-                               std::move(callback)));
+  AllowIndexedDB(blink::BindOnce(&IDBFactory::GetDatabaseInfoForDevToolsHelper,
+                                 WrapPersistent(weak_factory_.GetWeakCell()),
+                                 std::move(callback)));
 }
 
 void IDBFactory::ContextDestroyed() {
@@ -290,13 +286,13 @@ IDBOpenDBRequest* IDBFactory::OpenInternal(ScriptState* script_state,
   auto* request = MakeGarbageCollected<IDBOpenDBRequest>(
       script_state, callbacks_remote.InitWithNewEndpointAndPassReceiver(),
       std::move(transaction_remote), transaction_id, version,
-      std::move(metrics), CreatePendingRemoteFeatureObserver());
+      std::move(metrics));
 
-  auto do_open = WTF::BindOnce(
-      &IDBFactory::OpenInternalImpl,
-      WrapPersistent(weak_factory_.GetWeakCell()), WrapPersistent(request),
-      std::move(callbacks_remote), std::move(transaction_receiver), name,
-      version, transaction_id);
+  auto do_open =
+      BindOnce(&IDBFactory::OpenInternalImpl,
+               WrapPersistent(weak_factory_.GetWeakCell()),
+               WrapPersistent(request), std::move(callbacks_remote),
+               std::move(transaction_receiver), name, version, transaction_id);
   if (allowed_.has_value() && !*allowed_) {
     // When the permission state is cached, `AllowIndexedDB` will invoke its
     // callback synchronously, and thus we'd dispatch the error event
@@ -325,9 +321,24 @@ void IDBFactory::OpenInternalImpl(
     return;
   }
 
+  // Getting the scheduling priority as a one-off is somewhat awkward.
+  int scheduling_priority = -1;
+  std::unique_ptr<FrameOrWorkerScheduler::LifecycleObserverHandle> lifecycle =
+      GetExecutionContext()->GetScheduler()->AddLifecycleObserver(
+          FrameOrWorkerScheduler::ObserverType::kWorkerScheduler,
+          BindRepeating(
+              [](int* priority,
+                 scheduler::SchedulingLifecycleState lifecycle_state) {
+                *priority = IDBDatabase::GetSchedulingPriority(lifecycle_state);
+              },
+              Unretained(&scheduling_priority)));
+  DCHECK_GE(scheduling_priority, 0);
+  request->set_connection_priority(scheduling_priority);
+
   GetRemote()->Open(CreatePendingRemote(request->CreateFactoryClient()),
                     std::move(callbacks_remote), name, version,
-                    std::move(transaction_receiver), transaction_id);
+                    std::move(transaction_receiver), transaction_id,
+                    scheduling_priority);
 }
 
 IDBOpenDBRequest* IDBFactory::open(ScriptState* script_state,
@@ -381,12 +392,11 @@ IDBOpenDBRequest* IDBFactory::DeleteDatabaseInternal(
       script_state,
       /*callbacks_receiver=*/mojo::NullAssociatedReceiver(),
       IDBTransaction::TransactionMojoRemote(context), 0,
-      IDBDatabaseMetadata::kDefaultVersion, std::move(metrics),
-      CreatePendingRemoteFeatureObserver());
+      IDBDatabaseMetadata::kDefaultVersion, std::move(metrics));
 
-  auto do_delete = WTF::BindOnce(&IDBFactory::DeleteDatabaseInternalImpl,
-                                 WrapPersistent(weak_factory_.GetWeakCell()),
-                                 WrapPersistent(request), name, force_close);
+  auto do_delete = BindOnce(&IDBFactory::DeleteDatabaseInternalImpl,
+                            WrapPersistent(weak_factory_.GetWeakCell()),
+                            WrapPersistent(request), name, force_close);
   if (allowed_.has_value() && !*allowed_) {
     // When the permission state is cached, `AllowIndexedDB` will invoke its
     // callback synchronously, and thus we'd dispatch the error event
@@ -465,8 +475,8 @@ void IDBFactory::AllowIndexedDB(base::OnceCallback<void()> callback) {
     }
     frame->AllowStorageAccessAndNotify(
         WebContentSettingsClient::StorageType::kIndexedDB,
-        WTF::BindOnce(&IDBFactory::DidAllowIndexedDB,
-                      WrapPersistent(weak_factory_.GetWeakCell())));
+        BindOnce(&IDBFactory::DidAllowIndexedDB,
+                 WrapPersistent(weak_factory_.GetWeakCell())));
     return;
   }
 
@@ -478,8 +488,8 @@ void IDBFactory::AllowIndexedDB(base::OnceCallback<void()> callback) {
   }
   settings_client->AllowStorageAccess(
       WebContentSettingsClient::StorageType::kIndexedDB,
-      WTF::BindOnce(&IDBFactory::DidAllowIndexedDB,
-                    WrapPersistent(weak_factory_.GetWeakCell())));
+      BindOnce(&IDBFactory::DidAllowIndexedDB,
+               WrapPersistent(weak_factory_.GetWeakCell())));
 }
 
 void IDBFactory::DidAllowIndexedDB(bool allow_access) {
@@ -502,22 +512,6 @@ IDBFactory::CreatePendingRemote(
       pending_factory_client.InitWithNewEndpointAndPassReceiver(),
       GetTaskRunner());
   return pending_factory_client;
-}
-
-mojo::PendingRemote<mojom::blink::ObservedFeature>
-IDBFactory::CreatePendingRemoteFeatureObserver() {
-  if (!feature_observer_) {
-    mojo::PendingRemote<mojom::blink::FeatureObserver> feature_observer;
-    GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
-        feature_observer.InitWithNewPipeAndPassReceiver());
-    feature_observer_.Bind(std::move(feature_observer), GetTaskRunner());
-  }
-
-  mojo::PendingRemote<mojom::blink::ObservedFeature> feature;
-  feature_observer_->Register(
-      feature.InitWithNewPipeAndPassReceiver(),
-      mojom::blink::ObservedFeatureType::kIndexedDBConnection);
-  return feature;
 }
 
 }  // namespace blink

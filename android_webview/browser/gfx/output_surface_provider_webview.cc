@@ -11,6 +11,7 @@
 #include "android_webview/browser/gfx/gpu_service_webview.h"
 #include "android_webview/browser/gfx/skia_output_surface_dependency_webview.h"
 #include "android_webview/browser/gfx/task_queue_webview.h"
+#include "android_webview/common/aw_features.h"
 #include "android_webview/common/crash_reporter/crash_keys.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -43,8 +44,6 @@ using GLSurfaceContextPair =
     std::pair<scoped_refptr<gl::GLSurface>, scoped_refptr<gl::GLContext>>;
 
 GLSurfaceContextPair GetRealContextForVulkan() {
-  // TODO(crbug.com/40155015): Remove all of this after code no longer expects
-  // GL to be present (eg for getting capabilities or calling glGetError).
   static base::NoDestructor<base::WeakPtr<gl::GLSurface>> cached_surface;
   static base::NoDestructor<base::WeakPtr<gl::GLContext>> cached_context;
 
@@ -103,7 +102,9 @@ void OnContextLost(std::unique_ptr<bool> expect_loss,
 
 OutputSurfaceProviderWebView::OutputSurfaceProviderWebView(
     AwVulkanContextProvider* vulkan_context_provider)
-    : vulkan_context_provider_(vulkan_context_provider) {
+    : vulkan_context_provider_(vulkan_context_provider),
+      aw_gr_context_options_provider_(
+          std::make_unique<AwGrContextOptionsProvider>()) {
   // Should be kept in sync with compositor_impl_android.cc.
   renderer_settings_.allow_antialiasing = false;
   renderer_settings_.highp_threshold_min = 2048;
@@ -111,7 +112,7 @@ OutputSurfaceProviderWebView::OutputSurfaceProviderWebView(
   // Webview does not own the surface so should not clear it.
   renderer_settings_.should_clear_root_render_pass = false;
 
-  enable_vulkan_ = features::IsUsingVulkan();
+  enable_vulkan_ = ::features::IsUsingVulkan();
   DCHECK(!enable_vulkan_ || vulkan_context_provider_);
 
   auto* command_line = base::CommandLine::ForCurrentProcess();
@@ -212,10 +213,14 @@ void OutputSurfaceProviderWebView::InitializeContext() {
   expect_context_loss_ = expect_context_loss_ptr.get();
   shared_context_state_ = base::MakeRefCounted<gpu::SharedContextState>(
       share_group, std::move(gl_surface_for_scs), std::move(gl_context),
-      false /* use_virtualized_gl_contexts */,
+      /*use_virtualized_gl_contexts=*/false,
       base::BindOnce(&OnContextLost, std::move(expect_context_loss_ptr)),
       GpuServiceWebView::GetInstance()->gpu_preferences().gr_context_type,
-      vulkan_context_provider_);
+      vulkan_context_provider_, /*metal_context_provider=*/nullptr,
+      /*dawn_context_provider=*/nullptr, /*peak_memory_monitor=*/nullptr,
+      /*direct_rendering_display_compositor_enabled=*/false,
+      /*created_on_compositor_gpu_thread=*/false,
+      aw_gr_context_options_provider_.get());
   if (!enable_vulkan_) {
     auto feature_info = base::MakeRefCounted<gpu::gles2::FeatureInfo>(
         workarounds, GpuServiceWebView::GetInstance()->gpu_feature_info());

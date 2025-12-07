@@ -4,15 +4,18 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/cpp/constants.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "storage/browser/quota/quota_features.h"
 #include "storage/browser/quota/quota_manager_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -21,7 +24,10 @@ namespace content {
 
 class QuotaBrowserTest : public ContentBrowserTest {
  public:
-  QuotaBrowserTest() = default;
+  QuotaBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        storage::features::kStaticStorageQuota);
+  }
 
   base::FilePath profile_path() {
     return shell()
@@ -30,6 +36,9 @@ class QuotaBrowserTest : public ContentBrowserTest {
         ->GetDefaultStoragePartition()
         ->GetPath();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // TODO(crbug.com/40488499): Android does not support PRE_ tests.
@@ -218,6 +227,31 @@ IN_PROC_BROWSER_TEST_F(QuotaBrowserTest,
   // of the Javascript execution.
   EXPECT_TRUE(base::PathExists(web_storage_dir_path.AppendASCII(
       storage::QuotaManagerImpl::kDatabaseName)));
+}
+
+IN_PROC_BROWSER_TEST_F(QuotaBrowserTest, StorageEstimateWithStaticQuota) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL empty_url(embedded_test_server()->GetURL("/empty.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), empty_url));
+
+  // The `navigator.storage.estimate()` API returns an estimate of the amount of
+  // storage available to the website. This value is calculated by the quota
+  // system. This test verifies that the returned value is the expected one when
+  // using the static quota system. The expected value is usage + min(10GiB,
+  // disk rounded up to the nearest 1 GiB). The test verifies that the returned
+  // quota value is <= 10GiB and is rounded.
+  int64_t quota = EvalJs(shell(), R"(
+        navigator.storage.estimate().then(
+          (result)=> {
+            return result.quota;
+          },
+          ()=>{ return -1; });)")
+                      .ExtractDouble();
+  const int64_t kGBytes = 1024 * 1024 * 1024;
+  EXPECT_LE(quota, 10 * kGBytes);
+  EXPECT_EQ(0, quota % kGBytes);
 }
 
 }  // namespace content

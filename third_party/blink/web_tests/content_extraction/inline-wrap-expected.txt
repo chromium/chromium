@@ -1,0 +1,9 @@
+<Root> [box: 0,0 800x600]
+  <Container> [box: 0,0 800x50]
+    <Container> [box: 0,0 800x50]
+      <Container> [box: 0,0 100x50]
+        <Text> "      The " [box: 0,0 40x10]
+        <Container> [box: 0,0 90x20] [fragmentBox#0 40,0 50x10] [fragmentBox#1 0,10 90x10]
+          <Text> "quick brown fox" [box: 0,0 90x20] [fragmentBox#0 40,0 50x10] [fragmentBox#1 0,10 90x10]
+        <Text> " jumps over the lazy dog.   " [box: 0,20 100x30] [fragmentBox#0 0,20 100x10] [fragmentBox#1 0,30 80x10] [fragmentBox#2 0,40 40x10]
+

@@ -20,8 +20,9 @@ namespace partition_alloc::internal::base {
 static constexpr size_t kMaxLengthOfTruncatingStringPrintfResult = 255U;
 
 // Return a C++ string given printf-like input.
-[[nodiscard]] PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) std::string
-    TruncatingStringPrintf(const char* format, ...) PA_PRINTF_FORMAT(1, 2);
+[[nodiscard]] PA_PRINTF_FORMAT(1, 2)
+    PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) std::string
+    TruncatingStringPrintf(const char* format, ...);
 
 }  // namespace partition_alloc::internal::base
 

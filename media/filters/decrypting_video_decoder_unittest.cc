@@ -487,9 +487,9 @@ TEST_F(DecryptingVideoDecoderTest, Destroy_DuringPendingDecoderInit) {
     return std::make_unique<CallbackRegistration>();
   });
   EXPECT_CALL(*decryptor_, InitializeVideoDecoder(_, _))
-      .WillOnce(WithArg<1>(Invoke([&](Decryptor::DecoderInitCB init_cb) {
+      .WillOnce(WithArg<1>([&](Decryptor::DecoderInitCB init_cb) {
         pending_init_cb_ = std::move(init_cb);
-      })));
+      }));
 
   InitializeAndExpectResult(TestVideoConfig::NormalEncrypted(), false);
   EXPECT_FALSE(!pending_init_cb_);

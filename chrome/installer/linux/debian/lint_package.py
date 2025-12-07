@@ -2,7 +2,6 @@
 # Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Performs some static analysis checks on Chrome debian packages
 using lintian.
 """
@@ -10,7 +9,6 @@ using lintian.
 import argparse
 import os
 import subprocess
-
 
 SUPPRESSIONS = [
     # Google Chrome is not software available on a distro by default,
@@ -28,18 +26,13 @@ SUPPRESSIONS = [
     'uses-no-compression-for-data-tarball',
 ]
 
-
 parser = argparse.ArgumentParser()
 parser.add_argument('package', help='path/to/package.deb')
 args = parser.parse_args()
 package = os.path.abspath(args.package)
 
 cmd = [
-    'lintian',
-    package,
-    '--no-tag-display-limit',
-    '--pedantic',
-    '--suppress-tags',
-    ','.join(SUPPRESSIONS)
+    'lintian', package, '--no-tag-display-limit', '--pedantic',
+    '--suppress-tags', ','.join(SUPPRESSIONS)
 ]
 subprocess.check_call(cmd)

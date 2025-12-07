@@ -5,10 +5,14 @@
 #ifndef CONTENT_BROWSER_SMART_CARD_SMART_CARD_SERVICE_H_
 #define CONTENT_BROWSER_SMART_CARD_SMART_CARD_SERVICE_H_
 
+#include <map>
+#include <string>
+
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ref.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_service.h"
+#include "content/public/browser/smart_card_delegate.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/smart_card.mojom.h"
@@ -23,7 +27,9 @@ class RenderFrameHost;
 // API.
 class CONTENT_EXPORT SmartCardService
     : public DocumentService<blink::mojom::SmartCardService>,
-      public device::mojom::SmartCardContext {
+      public device::mojom::SmartCardContext,
+      public device::mojom::SmartCardConnectionWatcher,
+      public SmartCardDelegate::PermissionObserver {
  public:
   explicit SmartCardService(
       RenderFrameHost& render_frame_host,
@@ -49,7 +55,13 @@ class CONTENT_EXPORT SmartCardService
   void Connect(const std::string& reader,
                device::mojom::SmartCardShareMode share_mode,
                device::mojom::SmartCardProtocolsPtr preferred_protocols,
+               mojo::PendingRemote<device::mojom::SmartCardConnectionWatcher>
+                   connection_watcher,
                ConnectCallback callback) override;
+  void NotifyConnectionUsed() override;
+
+  // SmartCardDelegate::PermissionObserver overrides:
+  void OnPermissionRevoked(const url::Origin& origin) override;
 
  private:
   void OnContextCreated(CreateContextCallback callback,
@@ -66,12 +78,28 @@ class CONTENT_EXPORT SmartCardService
   void OnListReadersResult(ListReadersCallback callback,
                            device::mojom::SmartCardListReadersResultPtr result);
 
-  // Receives SmartCardContext calls from blink
-  mojo::ReceiverSet<device::mojom::SmartCardContext> context_wrapper_receivers_;
+  mojo::PendingRemote<device::mojom::SmartCardConnectionWatcher>
+  GetNewConnectionWatcher(const std::string& reader);
+
+  void OnMojoWatcherPipeClosed();
 
   // Sends SmartCardContext calls to the platform's PC/SC stack.
   // Maps a wrapper context to its corresponding real context.
   std::map<mojo::ReceiverId, mojo::Remote<SmartCardContext>> context_remotes_;
+
+  // Receives SmartCardContext calls from blink
+  mojo::ReceiverSet<device::mojom::SmartCardContext> context_wrapper_receivers_;
+
+  // Receives notifications about smart card reader usage from the
+  // platform-specific implementation.
+  mojo::ReceiverSet<device::mojom::SmartCardConnectionWatcher>
+      connection_watcher_receivers_;
+
+  // On grant expiry, this allows us to kill the unwanted connections using the
+  // watcher's pipe.
+  std::map<std::string, std::set<mojo::ReceiverId>>
+      connection_watchers_per_reader_;
+  std::map<mojo::ReceiverId, std::string> reader_names_per_watcher_;
 
   // Used to filter a reader name coming from an application, before
   // it can be shown to the user in a permission prompt.

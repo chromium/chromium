@@ -4,9 +4,10 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {SettingsDropdownMenuElement} from 'chrome://os-settings/os_settings.js';
+import type {SettingsDropdownMenuElement} from 'chrome://os-settings/os_settings.js';
 import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+
 import {clearBody} from '../utils.js';
 
 /** @fileoverview Suite of tests for settings-dropdown-menu. */
@@ -56,11 +57,11 @@ suite('SettingsDropdownMenu', function() {
 
     // Initially selected item.
     assertEquals(
-        'Option 100', selectElement.selectedOptions[0]!.textContent!.trim());
+        'Option 100', selectElement.selectedOptions[0]!.textContent.trim());
 
     // Selecting an item updates the pref.
     await simulateChangeEvent('200');
-    assertEquals(200, dropdown.pref!.value);
+    assertEquals(200, dropdown.pref.value);
 
     // Updating the pref selects an item.
     dropdown.set('pref.value', 400);
@@ -83,17 +84,17 @@ suite('SettingsDropdownMenu', function() {
     await waitUntilDropdownUpdated();
 
     // Initially selected item.
-    assertEquals('CCC', selectElement.selectedOptions[0]!.textContent!.trim());
+    assertEquals('CCC', selectElement.selectedOptions[0]!.textContent.trim());
 
     // Selecting an item updates the pref.
     await simulateChangeEvent('a');
-    assertEquals('a', dropdown.pref!.value);
+    assertEquals('a', dropdown.pref.value);
 
     // Item remains selected after updating menu items.
     const newMenuOptions = dropdown.menuOptions.slice().reverse();
     dropdown.menuOptions = newMenuOptions;
     await waitUntilDropdownUpdated();
-    assertEquals('AAA', selectElement.selectedOptions[0]!.textContent!.trim());
+    assertEquals('AAA', selectElement.selectedOptions[0]!.textContent.trim());
   });
 
   test('with custom value', async function() {
@@ -121,7 +122,7 @@ suite('SettingsDropdownMenu', function() {
     assertFalse(customOption.disabled);
 
     // Pref should not have changed.
-    assertEquals('f', dropdown.pref!.value);
+    assertEquals('f', dropdown.pref.value);
   });
 
   test('with hidden options', async function() {
@@ -205,14 +206,14 @@ suite('SettingsDropdownMenu', function() {
     await waitUntilDropdownUpdated();
     // Initially selected item.
     assertEquals(
-        'Option 2', selectElement.selectedOptions[0]!.textContent!.trim());
+        'Option 2', selectElement.selectedOptions[0]!.textContent.trim());
 
     // Setup does not call the settings-control-change event.
     assertEquals(0, settingsControlChangeCount);
 
     // Selecting an item updates the pref.
     await simulateChangeEvent('value3');
-    assertEquals('value3', dropdown.pref!.value['key2']);
+    assertEquals('value3', dropdown.pref.value['key2']);
 
     // The settings-control-change callback should have been triggered
     // exactly once.

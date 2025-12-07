@@ -4,9 +4,10 @@
 
 #include "chrome/browser/fast_checkout/fast_checkout_trigger_validator_impl.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/logging/log_macros.h"
@@ -53,7 +54,7 @@ FastCheckoutTriggerOutcome FastCheckoutTriggerValidatorImpl::ShouldRun(
   }
 
   if (autofill_client_->GetVariationConfigCountryCode() !=
-      GeoIpCountryCode("US")) {
+      autofill::GeoIpCountryCode("US")) {
     return FastCheckoutTriggerOutcome::kUnsupportedCountry;
   }
 
@@ -155,7 +156,7 @@ FastCheckoutTriggerValidatorImpl::HasValidPersonalData() const {
 
 void FastCheckoutTriggerValidatorImpl::LogAutofillInternals(
     std::string message) const {
-  LOG_AF(autofill_client_->GetLogManager())
+  LOG_AF(autofill_client_->GetCurrentLogManager())
       << autofill::LoggingScope::kFastCheckout
       << autofill::LogMessage::kFastCheckout << message;
 }

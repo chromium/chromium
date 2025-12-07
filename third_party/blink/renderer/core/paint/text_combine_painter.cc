@@ -9,8 +9,9 @@
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/text_decoration_painter.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/fonts/plain_text_node.h"
+#include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
 #include "third_party/blink/renderer/platform/fonts/text_fragment_paint_info.h"
-#include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 
@@ -24,10 +25,9 @@ TextCombinePainter::TextCombinePainter(
     const LineRelativeOffset& text_origin)
     : TextPainter(context,
                   svg_context_paints,
-                  style.GetFont(),
+                  *style.GetFont(),
                   visual_rect,
-                  text_origin,
-                  /* horizontal */ false),
+                  text_origin),
       style_(style) {}
 
 TextCombinePainter::~TextCombinePainter() = default;
@@ -95,7 +95,7 @@ void TextCombinePainter::Paint(const PaintInfo& paint_info,
   }
 
   if (has_emphasis_mark) {
-    text_painter.PaintEmphasisMark(text_style, style.GetFont());
+    text_painter.PaintEmphasisMark(text_style, *style.GetFont());
   }
 
   if (has_text_decoration) {
@@ -111,10 +111,9 @@ bool TextCombinePainter::ShouldPaint(const LayoutTextCombine& text_combine) {
          style.GetTextEmphasisMark() != TextEmphasisMark::kNone;
 }
 
-void TextCombinePainter::ClipDecorationsStripe(const TextFragmentPaintInfo&,
-                                               float upper,
-                                               float stripe_width,
-                                               float dilation) {
+void TextCombinePainter::ClipDecorationLine(const DecorationGeometry&,
+                                            float ink_skip_offset,
+                                            const TextFragmentPaintInfo&) {
   // Nothing to do.
 }
 
@@ -122,7 +121,7 @@ void TextCombinePainter::PaintEmphasisMark(const TextPaintStyle& text_style,
                                            const Font& emphasis_mark_font) {
   DCHECK_NE(style_.GetTextEmphasisMark(), TextEmphasisMark::kNone);
   SetEmphasisMark(style_.TextEmphasisMarkString(),
-                  style_.GetTextEmphasisPosition());
+                  style_.GetTextEmphasisLineLogicalSide());
   DCHECK(emphasis_mark_font.GetFontDescription().IsVerticalBaseline());
   DCHECK(emphasis_mark());
   const SimpleFontData* const font_data = font().PrimaryFont();
@@ -136,14 +135,33 @@ void TextCombinePainter::PaintEmphasisMark(const TextPaintStyle& text_style,
   }
 
   const int font_ascent = font_data->GetFontMetrics().Ascent();
-  const TextRun placeholder_text_run(&kIdeographicFullStopCharacter, 1);
+  // https://drafts.csswg.org/css-writing-modes/#text-combine-layout
+  // > For other text layout purposes, e.g. emphasis marks, text-decoration,
+  // > spacing, etc. the resulting composition is treated as a single glyph
+  // > representing the Object Replacement Character U+FFFC.
+  //
+  // However the shape size of U+FFFC isn't suitable for emphasis mark
+  // positioning. We use Hiragana Letter A instead. See crbug.com/40386493
+  const TextRun placeholder_text_run(
+      base::span_from_ref(uchar::kHiraganaLetterA));
   const gfx::PointF emphasis_mark_text_origin =
       gfx::PointF(text_origin()) +
       gfx::Vector2dF(0, font_ascent + emphasis_mark_offset());
-  const TextRunPaintInfo text_run_paint_info(placeholder_text_run);
+
+  const PlainTextNode& node = PlainTextPainter::Shared().SegmentAndShape(
+      placeholder_text_run, emphasis_mark_font);
+  if (node.ItemList().empty()) {
+    return;
+  }
+  const ShapeResultView* shape_view = node.ItemList()[0].EnsureView();
+  if (!shape_view) {
+    return;
+  }
   graphics_context().DrawEmphasisMarks(
-      emphasis_mark_font, text_run_paint_info, emphasis_mark(),
-      emphasis_mark_text_origin,
+      emphasis_mark_font,
+      TextFragmentPaintInfo{placeholder_text_run.ToStringView(), 0, 1,
+                            shape_view},
+      emphasis_mark(), emphasis_mark_text_origin,
       PaintAutoDarkMode(style_, DarkModeFilter::ElementRole::kForeground));
 }
 

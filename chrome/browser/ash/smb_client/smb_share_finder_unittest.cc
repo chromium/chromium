@@ -7,15 +7,20 @@
 #include <algorithm>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "chrome/browser/ash/smb_client/discovery/in_memory_host_locator.h"
 #include "chrome/browser/ash/smb_client/smb_constants.h"
 #include "chrome/browser/ash/smb_client/smb_url.h"
 #include "chromeos/ash/components/dbus/smbprovider/fake_smb_provider_client.h"
+#include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
+#include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::smb_client {
@@ -38,8 +43,23 @@ class SmbShareFinderTest : public testing::Test {
   SmbShareFinderTest& operator=(const SmbShareFinderTest&) = delete;
   ~SmbShareFinderTest() override = default;
 
+  // When `StopJob()` is called, increments `stop_job_called_counter` and
+  // changes the status which indicates whether smbproviderd is stopped or not.
+  bool OnStopJobCalled(int32_t* stop_job_called_counter,
+                       const std::string& job_name,
+                       const std::vector<std::string>& env) {
+    if (job_name == kSmbProviderdUpstartJobName) {
+      *stop_job_called_counter += 1;
+      fake_client_->OnStopJobCalled();
+    }
+    return true;
+  }
+
  protected:
-  void TearDown() override { fake_client_->ClearShares(); }
+  void TearDown() override {
+    fake_client_->ClearShares();
+    ash::UpstartClient::Shutdown();
+  }
 
   // Adds host with |hostname| and |address| as the resolved url.
   void AddHost(const std::string& hostname, const std::string& address) {
@@ -129,6 +149,8 @@ class SmbShareFinderTest : public testing::Test {
   }
 
   void SetupShareFinderTest(bool should_run_synchronously) {
+    ash::UpstartClient::InitializeFake();
+
     auto host_locator =
         std::make_unique<InMemoryHostLocator>(should_run_synchronously);
     host_locator_ = host_locator.get();
@@ -176,6 +198,7 @@ class SmbShareFinderTest : public testing::Test {
 
   int32_t discovery_callback_counter_ = 0;
 
+  base::test::SingleThreadTaskEnvironment task_environment_;
   raw_ptr<InMemoryHostLocator, DanglingUntriaged> host_locator_;
   std::unique_ptr<FakeSmbProviderClient> fake_client_;
   std::unique_ptr<SmbShareFinder> share_finder_;
@@ -289,7 +312,7 @@ TEST_F(SmbShareFinderTest, ResolvesHostWithMultipleHosts) {
 }
 
 TEST_F(SmbShareFinderTest, TestNonEmptyDiscoveryWithNonEmptyShareCallback) {
-  SetupShareFinderTest(false /* should_run_synchronoulsy */);
+  SetupShareFinderTest(false /* should_run_synchronously */);
 
   AddDefaultHost();
 
@@ -306,7 +329,7 @@ TEST_F(SmbShareFinderTest, TestNonEmptyDiscoveryWithNonEmptyShareCallback) {
 }
 
 TEST_F(SmbShareFinderTest, TestEmptyDiscoveryWithNonEmptyShareCallback) {
-  SetupShareFinderTest(false /* should_run_synchronoulsy */);
+  SetupShareFinderTest(false /* should_run_synchronously */);
 
   AddDefaultHost();
   AddShareToDefaultHost("share1");
@@ -330,6 +353,96 @@ TEST_F(SmbShareFinderTest, TestEmptyDiscoveryWithNonEmptyShareCallback) {
   FinishShareDiscoveryOnSmbProviderClient();
 
   ExpectAllSharesHaveBeenFound();
+}
+
+TEST_F(SmbShareFinderTest, StopSmbproviderdUpstartJob) {
+  // Enable running smbproviderd on-demand.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kSmbproviderdOnDemand);
+
+  AddDefaultHost();
+  AddShareToDefaultHost("share1");
+
+  // Sets the counter, which is incremented when `StopJob()` is called.
+  int32_t stop_job_called_counter = 0;
+  ash::FakeUpstartClient::Get()->set_stop_job_cb(
+      base::BindRepeating(&SmbShareFinderTest::OnStopJobCalled,
+                          base::Unretained(this), &stop_job_called_counter));
+
+  StartDiscoveryWhileExpectingSharesFound();
+  ExpectAllSharesHaveBeenFound();
+
+  // Checks that `StopJob()` is called only once.
+  EXPECT_EQ(stop_job_called_counter, 1);
+}
+
+TEST_F(SmbShareFinderTest, StopSmbproviderdUpstartJobNoShares) {
+  // Enable running smbproviderd on-demand.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kSmbproviderdOnDemand);
+
+  AddDefaultHost();
+
+  // Sets the counter, which is incremented when `StopJob()` is called.
+  int32_t stop_job_called_counter = 0;
+  ash::FakeUpstartClient::Get()->set_stop_job_cb(
+      base::BindRepeating(&SmbShareFinderTest::OnStopJobCalled,
+                          base::Unretained(this), &stop_job_called_counter));
+  ExpectNoSharesFound();
+
+  // Checks that `StopJob()` is called even when no shares are found.
+  EXPECT_EQ(stop_job_called_counter, 1);
+}
+
+TEST_F(SmbShareFinderTest, StopSmbproviderdOnlyAfterLastServerScanned) {
+  // Enable running smbproviderd on-demand.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kSmbproviderdOnDemand);
+
+  AddDefaultHost();
+  AddShareToDefaultHost("share1");
+  const std::string host2 = "host2";
+  const std::string address2 = "4.5.6.7";
+  const std::string resolved_server_url2 = kSmbSchemePrefix + address2;
+  const std::string server_url2 = kSmbSchemePrefix + host2 + "/";
+  const std::string share2 = "share2";
+  AddHost(host2, address2);
+  AddShare(resolved_server_url2, server_url2, share2);
+
+  // Sets the counter, which is incremented when `StopJob()` is called.
+  int32_t stop_job_called_counter = 0;
+  ash::FakeUpstartClient::Get()->set_stop_job_cb(
+      base::BindRepeating(&SmbShareFinderTest::OnStopJobCalled,
+                          base::Unretained(this), &stop_job_called_counter));
+
+  StartDiscoveryWhileExpectingSharesFound();
+  ExpectAllSharesHaveBeenFound();
+
+  // Checks that `StopJob()` is called only once even when multiple hosts
+  // exist.
+  EXPECT_EQ(stop_job_called_counter, 1);
+}
+
+TEST_F(SmbShareFinderTest, StopSmbproviderdUpstartJobFeatureDisabled) {
+  // Disable running smbproviderd on-demand.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kSmbproviderdOnDemand);
+
+  AddDefaultHost();
+  AddShareToDefaultHost("share1");
+
+  // Sets the counter, which is incremented when `StopJob()` is called.
+  int32_t stop_job_called_counter = 0;
+  ash::FakeUpstartClient::Get()->set_stop_job_cb(
+      base::BindRepeating(&SmbShareFinderTest::OnStopJobCalled,
+                          base::Unretained(this), &stop_job_called_counter));
+
+  StartDiscoveryWhileExpectingSharesFound();
+  ExpectAllSharesHaveBeenFound();
+
+  // Checks that `StopJob()` is not called when `kSmbproviderdOnDemand` is
+  // disabled.
+  EXPECT_EQ(stop_job_called_counter, 0);
 }
 
 }  // namespace ash::smb_client

@@ -32,6 +32,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ELEMENT_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ELEMENT_DATA_H_
 
+#include <concepts>
+
+#include "base/containers/span.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/attribute_collection.h"
@@ -78,7 +81,9 @@ class ElementData : public GarbageCollected<ElementData> {
 
   const CSSPropertyValueSet* InlineStyle() const { return inline_style_.Get(); }
 
-  const CSSPropertyValueSet* PresentationAttributeStyle() const;
+  const CSSPropertyValueSet* PresentationAttributeStyle() const {
+    return presentation_attribute_style_.Get();
+  }
 
   AttributeCollection Attributes() const;
 
@@ -93,11 +98,11 @@ class ElementData : public GarbageCollected<ElementData> {
   void Trace(Visitor*) const;
 
  protected:
-  using BitField = WTF::ConcurrentlyReadBitField<uint32_t>;
+  using BitField = ConcurrentlyReadBitField<uint32_t>;
   using IsUniqueFlag =
-      BitField::DefineFirstValue<bool, 1, WTF::BitFieldValueConstness::kConst>;
+      BitField::DefineFirstValue<bool, 1, BitFieldValueConstness::kConst>;
   using ArraySize = IsUniqueFlag::
-      DefineNextValue<uint32_t, 28, WTF::BitFieldValueConstness::kConst>;
+      DefineNextValue<uint32_t, 28, BitFieldValueConstness::kConst>;
   using PresentationAttributeStyleIsDirty = ArraySize::DefineNextValue<bool, 1>;
   using StyleAttributeIsDirty =
       PresentationAttributeStyleIsDirty::DefineNextValue<bool, 1>;
@@ -136,6 +141,7 @@ class ElementData : public GarbageCollected<ElementData> {
   BitField bit_field_;
 
   mutable Member<CSSPropertyValueSet> inline_style_;
+  mutable Member<CSSPropertyValueSet> presentation_attribute_style_;
   mutable SpaceSplitString class_names_;
   mutable AtomicString id_for_style_resolution_;
 
@@ -149,6 +155,12 @@ class ElementData : public GarbageCollected<ElementData> {
   friend struct DowncastTraits<ShareableElementData>;
 
   UniqueElementData* MakeUniqueCopy() const;
+};
+
+template <typename T>
+  requires(std::derived_from<T, ElementData>)
+struct ThreadingTrait<T> {
+  static constexpr ThreadAffinity kAffinity = kMainThreadOnly;
 };
 
 #if defined(COMPILER_MSVC)
@@ -175,6 +187,20 @@ class ShareableElementData final : public ElementData {
   }
 
   AttributeCollection Attributes() const;
+
+  base::span<Attribute> AttributesSpan() {
+    // SAFETY: space for bit_field_.get<ArraySize>() Attributes are allocated
+    // after the main object (starting at attribute_array_) by the constructor.
+    return UNSAFE_BUFFERS(
+        base::span(attribute_array_, bit_field_.get<ArraySize>()));
+  }
+
+  base::span<const Attribute> AttributesSpan() const {
+    // SAFETY: space for bit_field_.get<ArraySize>() Attributes are allocated
+    // after the main object (starting at attribute_array_) by the constructor.
+    return UNSAFE_BUFFERS(
+        base::span(attribute_array_, bit_field_.get<ArraySize>()));
+  }
 
   Attribute attribute_array_[0];
 };
@@ -209,11 +235,6 @@ class UniqueElementData final : public ElementData {
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
-  // FIXME: We might want to support sharing element data for elements with
-  // presentation attribute style. Lots of table cells likely have the same
-  // attributes. Most modern pages don't use presentation attributes though
-  // so this might not make sense.
-  mutable Member<CSSPropertyValueSet> presentation_attribute_style_;
   AttributeVector attribute_vector_;
 };
 
@@ -224,13 +245,6 @@ struct DowncastTraits<UniqueElementData> {
   }
 };
 
-inline const CSSPropertyValueSet* ElementData::PresentationAttributeStyle()
-    const {
-  if (!bit_field_.get<IsUniqueFlag>())
-    return nullptr;
-  return To<UniqueElementData>(this)->presentation_attribute_style_.Get();
-}
-
 inline AttributeCollection ElementData::Attributes() const {
   if (auto* unique_element_data = DynamicTo<UniqueElementData>(this))
     return unique_element_data->Attributes();
@@ -238,12 +252,11 @@ inline AttributeCollection ElementData::Attributes() const {
 }
 
 inline AttributeCollection ShareableElementData::Attributes() const {
-  return AttributeCollection(attribute_array_, bit_field_.get<ArraySize>());
+  return AttributeCollection(AttributesSpan());
 }
 
 inline AttributeCollection UniqueElementData::Attributes() const {
-  return AttributeCollection(attribute_vector_.data(),
-                             attribute_vector_.size());
+  return AttributeCollection(attribute_vector_);
 }
 
 inline MutableAttributeCollection UniqueElementData::Attributes() {

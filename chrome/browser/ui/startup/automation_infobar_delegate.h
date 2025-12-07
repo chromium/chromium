@@ -27,6 +27,7 @@ class AutomationInfoBarDelegate : public ConfirmInfoBarDelegate {
   ~AutomationInfoBarDelegate() override = default;
 
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
+  infobars::InfoBarDelegate::InfobarPriority GetPriority() const override;
   bool ShouldExpire(const NavigationDetails& details) const override;
   bool ShouldAnimate() const override;
   std::u16string GetMessageText() const override;

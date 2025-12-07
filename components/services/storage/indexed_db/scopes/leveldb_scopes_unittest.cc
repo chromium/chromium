@@ -15,7 +15,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/leveldatabase/src/include/leveldb/slice.h"
 
-namespace content {
+namespace content::indexed_db {
 namespace {
 
 class LevelDBScopesStartupTest : public LevelDBScopesTestBase {
@@ -72,9 +72,10 @@ TEST_F(LevelDBScopesStartupTest, RevertWithLocksOnRecoveryWithNoCleanup) {
   WriteScopesMetadata(kScopeToResumeRevert, false);
 
   // Cleanup task that will be ignored.
-  cleanup_task_buffer_.mutable_delete_range()->set_begin(
+  cleanup_task_buffer_.mutable_delete_range_and_compact()->set_begin(
       kCleanupDeleteRangeBegin);
-  cleanup_task_buffer_.mutable_delete_range()->set_end(kCleanupDeleteRangeEnd);
+  cleanup_task_buffer_.mutable_delete_range_and_compact()->set_end(
+      kCleanupDeleteRangeEnd);
   WriteCleanupTask(kScopeToResumeRevert, /*sequence_number=*/0);
 
   // Undo task that will be executed.
@@ -99,7 +100,7 @@ TEST_F(LevelDBScopesStartupTest, RevertWithLocksOnRecoveryWithNoCleanup) {
   bool lock_grabbed = false;
   PartitionedLockHolder locks_receiver;
   lock_manager.AcquireLocks(
-      {CreateSimpleExclusiveLock()}, locks_receiver.AsWeakPtr(),
+      {CreateSimpleExclusiveLock()}, locks_receiver,
       base::BindLambdaForTesting([&]() { lock_grabbed = true; }));
 
   scopes.StartRecoveryAndCleanupTasks();
@@ -140,4 +141,4 @@ TEST_F(LevelDBScopesStartupTest, RevertWithLocksOnRecoveryWithNoCleanup) {
 }
 
 }  // namespace
-}  // namespace content
+}  // namespace content::indexed_db

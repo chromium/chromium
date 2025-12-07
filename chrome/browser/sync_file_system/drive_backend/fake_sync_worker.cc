@@ -80,45 +80,6 @@ RemoteServiceState FakeSyncWorker::GetCurrentState() const {
   return REMOTE_SERVICE_OK;
 }
 
-void FakeSyncWorker::GetOriginStatusMap(
-    RemoteFileSyncService::StatusMapCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  std::unique_ptr<RemoteFileSyncService::OriginStatusMap> status_map(
-      new RemoteFileSyncService::OriginStatusMap);
-  for (StatusMap::const_iterator itr = status_map_.begin();
-       itr != status_map_.end(); ++itr) {
-    switch (itr->second) {
-    case REGISTERED:
-      (*status_map)[itr->first] = "Registered";
-      break;
-    case ENABLED:
-      (*status_map)[itr->first] = "Enabled";
-      break;
-    case DISABLED:
-      (*status_map)[itr->first] = "Disabled";
-      break;
-    case UNINSTALLED:
-      (*status_map)[itr->first] = "Uninstalled";
-      break;
-    default:
-      (*status_map)[itr->first] = "Unknown";
-      break;
-    }
-  }
-  std::move(callback).Run(std::move(status_map));
-}
-
-base::Value::List FakeSyncWorker::DumpFiles(const GURL& origin) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::Value::List();
-}
-
-base::Value::List FakeSyncWorker::DumpDatabase() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::Value::List();
-}
-
 void FakeSyncWorker::SetSyncEnabled(bool enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sync_enabled_ = enabled;

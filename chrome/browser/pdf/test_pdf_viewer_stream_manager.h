@@ -41,7 +41,7 @@ class TestPdfViewerStreamManager : public PdfViewerStreamManager {
 
   // PdfViewerStreamManager overrides.
   void NavigateToPdfExtensionUrl(
-      int extension_host_frame_tree_node_id,
+      content::FrameTreeNodeId extension_host_frame_tree_node_id,
       StreamInfo* stream_info,
       content::SiteInstance* site_instance,
       content::GlobalRenderFrameHostId global_id) override;

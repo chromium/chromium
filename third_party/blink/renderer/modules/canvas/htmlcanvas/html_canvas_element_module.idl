@@ -7,6 +7,8 @@
 typedef (CanvasRenderingContext2D or
          WebGLRenderingContext or
          WebGL2RenderingContext or
+         WebGLRenderingContextWebGPU or
+         WebGL2RenderingContextWebGPU or
          ImageBitmapRenderingContext or
          GPUCanvasContext) RenderingContext;
 
@@ -14,7 +16,7 @@ typedef (CanvasRenderingContext2D or
     ImplementedAs=HTMLCanvasElementModule
 ] partial interface HTMLCanvasElement
 {
-    [HighEntropy, MeasureAs=HTMLCanvasGetContext, RaisesException] RenderingContext? getContext(DOMString contextId, optional CanvasContextCreationAttributesModule attributes = {});
+    [CallWith=ScriptState, MeasureAs=HTMLCanvasGetContext, RaisesException] RenderingContext? getContext(DOMString contextId, optional CanvasContextCreationAttributesModule attributes = {});
 
     [CallWith=ScriptState,
      RaisesException, MeasureAs=OffscreenCanvas] OffscreenCanvas transferControlToOffscreen();

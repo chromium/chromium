@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <set>
@@ -15,7 +16,6 @@
 #include "base/containers/stack.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
@@ -51,27 +51,6 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "cc/slim/layer_tree.h"
-#include "content/browser/renderer_host/compositor_impl_android.h"
-#include "ui/android/window_android.h"
-#include "ui/android/window_android_compositor.h"
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_MAC)
-#include "content/browser/renderer_host/browser_compositor_view_mac.h"
-#include "content/browser/renderer_host/test_render_widget_host_view_mac_factory.h"
-#endif  // BUILDFLAG(IS_MAC)
-
-#if BUILDFLAG(IS_IOS)
-#include "content/browser/renderer_host/browser_compositor_ios.h"
-#include "content/browser/renderer_host/test_render_widget_host_view_ios_factory.h"
-#endif  // BUILDFLAG(IS_IOS)
-
-#if defined(USE_AURA)
-#include "content/browser/renderer_host/render_widget_host_view_aura.h"
-#endif  // defined(USE_AURA)
 
 namespace content {
 
@@ -173,35 +152,53 @@ RenderFrameHost* CreateSubframe(WebContentsImpl* web_contents,
                                 std::string frame_id,
                                 const GURL& url,
                                 bool wait_for_navigation) {
+  return CreateSubframe(
+      web_contents->GetPrimaryFrameTree().root()->current_frame_host(),
+      frame_id, url, wait_for_navigation, {});
+}
+
+RenderFrameHost* CreateSubframe(RenderFrameHost* parent,
+                                std::string frame_id,
+                                const GURL& url,
+                                bool wait_for_navigation) {
+  return CreateSubframe(parent, frame_id, url, wait_for_navigation, {});
+}
+
+RenderFrameHost* CreateSubframe(RenderFrameHost* parent,
+                                std::string frame_id,
+                                const GURL& url,
+                                bool wait_for_navigation,
+                                ExtraParams extra_params) {
+  WebContents* web_contents = WebContents::FromRenderFrameHost(parent);
   RenderFrameHostCreatedObserver subframe_created_observer(web_contents);
   TestNavigationObserver subframe_nav_observer(web_contents);
-  if (url.is_empty()) {
-    EXPECT_TRUE(ExecJs(web_contents, JsReplace(R"(
-          var iframe = document.createElement('iframe');
-          iframe.id = $1;
-          document.body.appendChild(iframe);
-      )",
-                                               frame_id)));
-  } else {
-    EXPECT_TRUE(ExecJs(web_contents, JsReplace(R"(
-          var iframe = document.createElement('iframe');
-          iframe.id = $1;
-          iframe.src = $2;
-          document.body.appendChild(iframe);
-      )",
-                                               frame_id, url)));
-  }
+
+  EXPECT_TRUE(
+      ExecJs(parent, JsReplace(R"(
+    var iframe = document.createElement('iframe');
+    iframe.id = $1; //frame_id
+    if ($2) {
+      iframe.src = $2; // url
+    }
+    if ($3) {
+      iframe.sandbox = $3; // extra_params.sandbox_flags
+    }
+    document.body.appendChild(iframe);
+  )",
+                               frame_id, url, extra_params.sandbox_flags)));
+
   subframe_created_observer.Wait();
   if (wait_for_navigation)
     subframe_nav_observer.Wait();
-  FrameTreeNode* root = web_contents->GetPrimaryFrameTree().root();
+  FrameTreeNode* root =
+      static_cast<RenderFrameHostImpl*>(parent)->frame_tree_node();
   return root->child_at(root->child_count() - 1)->current_frame_host();
 }
 
 std::vector<RenderFrameHostImpl*> CollectAllRenderFrameHosts(
     RenderFrameHostImpl* starting_rfh) {
   std::vector<RenderFrameHostImpl*> visited_frames;
-  starting_rfh->ForEachRenderFrameHost(
+  starting_rfh->ForEachRenderFrameHostImpl(
       [&](RenderFrameHostImpl* rfh) { visited_frames.push_back(rfh); });
   return visited_frames;
 }
@@ -210,7 +207,7 @@ std::vector<RenderFrameHostImpl*>
 CollectAllRenderFrameHostsIncludingSpeculative(
     RenderFrameHostImpl* starting_rfh) {
   std::vector<RenderFrameHostImpl*> visited_frames;
-  starting_rfh->ForEachRenderFrameHostIncludingSpeculative(
+  starting_rfh->ForEachRenderFrameHostImplIncludingSpeculative(
       [&](RenderFrameHostImpl* rfh) { visited_frames.push_back(rfh); });
   return visited_frames;
 }
@@ -218,7 +215,7 @@ CollectAllRenderFrameHostsIncludingSpeculative(
 std::vector<RenderFrameHostImpl*> CollectAllRenderFrameHosts(
     WebContentsImpl* web_contents) {
   std::vector<RenderFrameHostImpl*> visited_frames;
-  web_contents->ForEachRenderFrameHost(
+  web_contents->ForEachRenderFrameHostImpl(
       [&](RenderFrameHostImpl* rfh) { visited_frames.push_back(rfh); });
   return visited_frames;
 }
@@ -226,7 +223,7 @@ std::vector<RenderFrameHostImpl*> CollectAllRenderFrameHosts(
 std::vector<RenderFrameHostImpl*>
 CollectAllRenderFrameHostsIncludingSpeculative(WebContentsImpl* web_contents) {
   std::vector<RenderFrameHostImpl*> visited_frames;
-  web_contents->ForEachRenderFrameHostIncludingSpeculative(
+  web_contents->ForEachRenderFrameHostImplIncludingSpeculative(
       [&](RenderFrameHostImpl* rfh) { visited_frames.push_back(rfh); });
   return visited_frames;
 }
@@ -451,7 +448,7 @@ std::string FrameTreeVisualizer::DepictFrameTree(FrameTreeNode* root) {
 std::string FrameTreeVisualizer::GetName(SiteInstance* site_instance) {
   // Indices into the vector correspond to letters of the alphabet.
   size_t index =
-      base::ranges::find(seen_site_instance_ids_, site_instance->GetId()) -
+      std::ranges::find(seen_site_instance_ids_, site_instance->GetId()) -
       seen_site_instance_ids_.begin();
   if (index == seen_site_instance_ids_.size())
     seen_site_instance_ids_.push_back(site_instance->GetId());
@@ -558,7 +555,8 @@ void FileChooserDelegate::RunFileChooser(
   std::vector<blink::mojom::FileChooserFileInfoPtr> files;
   for (const auto& file : files_) {
     auto file_info = blink::mojom::FileChooserFileInfo::NewNativeFile(
-        blink::mojom::NativeFileInfo::New(file, std::u16string()));
+        blink::mojom::NativeFileInfo::New(file, std::u16string(),
+                                          std::vector<std::u16string>()));
     files.push_back(std::move(file_info));
   }
   listener->FileSelected(std::move(files), base_dir_, params.mode);
@@ -569,7 +567,7 @@ void FileChooserDelegate::RunFileChooser(
 }
 
 FrameTestNavigationManager::FrameTestNavigationManager(
-    int filtering_frame_tree_node_id,
+    FrameTreeNodeId filtering_frame_tree_node_id,
     WebContents* web_contents,
     const GURL& url)
     : TestNavigationManager(web_contents, url),
@@ -617,162 +615,6 @@ RenderProcessHostBadIpcMessageWaiter::Wait() {
   return static_cast<bad_message::BadMessageReason>(internal_result.value());
 }
 
-CreateNewPopupWidgetInterceptor::CreateNewPopupWidgetInterceptor(
-    RenderFrameHostImpl* rfh,
-    base::OnceCallback<void(RenderWidgetHostImpl*)> did_create_callback)
-    : swapped_impl_(rfh->local_frame_host_receiver_for_testing(), this),
-      did_create_callback_(std::move(did_create_callback)) {}
-
-CreateNewPopupWidgetInterceptor::~CreateNewPopupWidgetInterceptor() = default;
-
-void CreateNewPopupWidgetInterceptor::CreateNewPopupWidget(
-    mojo::PendingAssociatedReceiver<blink::mojom::PopupWidgetHost>
-        blink_popup_widget_host,
-    mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost> blink_widget_host,
-    mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget) {
-  class PopupWidgetCreationObserver : public RenderWidgetHostFactory {
-   public:
-    PopupWidgetCreationObserver() { RegisterFactory(this); }
-
-    ~PopupWidgetCreationObserver() override { UnregisterFactory(); }
-
-    // RenderWidgetHostFactory overrides:
-    RenderWidgetHostImpl* CreateSelfOwnedRenderWidgetHost(
-        FrameTree* frame_tree,
-        RenderWidgetHostDelegate* delegate,
-        base::SafeRef<SiteInstanceGroup> site_instance_group,
-        int32_t routing_id,
-        bool hidden) override {
-      CHECK(!last_created_widget_);
-      last_created_widget_ =
-          RenderWidgetHostFactory::CreateSelfOwnedRenderWidgetHost(
-              frame_tree, delegate, std::move(site_instance_group), routing_id,
-              hidden);
-      return last_created_widget_;
-    }
-
-    RenderWidgetHostImpl* TakeLastCreatedWidget() {
-      return std::exchange(last_created_widget_, nullptr);
-    }
-
-   private:
-    raw_ptr<RenderWidgetHostImpl> last_created_widget_;
-  };
-
-  PopupWidgetCreationObserver creation_observer;
-
-  GetForwardingInterface()->CreateNewPopupWidget(
-      std::move(blink_popup_widget_host), std::move(blink_widget_host),
-      std::move(blink_widget));
-
-  if (!did_create_callback_) {
-    return;
-  }
-
-  if (auto* widget = creation_observer.TakeLastCreatedWidget(); widget) {
-    std::move(did_create_callback_).Run(widget);
-  }
-}
-
-blink::mojom::LocalFrameHost*
-CreateNewPopupWidgetInterceptor::GetForwardingInterface() {
-  return swapped_impl_.old_impl();
-}
-
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
-ShowPopupWidgetWaiter::ShowPopupMenuInterceptor::ShowPopupMenuInterceptor(
-    RenderFrameHostImpl* rfh,
-    base::OnceCallback<void(const gfx::Rect&)> did_show_popup_menu_callback)
-    : swapped_impl_(rfh->local_frame_host_receiver_for_testing(), this),
-      did_show_popup_menu_callback_(std::move(did_show_popup_menu_callback)) {}
-
-ShowPopupWidgetWaiter::ShowPopupMenuInterceptor::~ShowPopupMenuInterceptor() =
-    default;
-
-void ShowPopupWidgetWaiter::ShowPopupMenuInterceptor::ShowPopupMenu(
-    mojo::PendingRemote<blink::mojom::PopupMenuClient> popup_client,
-    const gfx::Rect& bounds,
-    int32_t item_height,
-    double font_size,
-    int32_t selected_item,
-    std::vector<blink::mojom::MenuItemPtr> menu_items,
-    bool right_aligned,
-    bool allow_multiple_selection) {
-  if (did_show_popup_menu_callback_) {
-    std::move(did_show_popup_menu_callback_).Run(bounds);
-    mojo::Remote<blink::mojom::PopupMenuClient>(std::move(popup_client))
-        ->DidCancel();
-    return;
-  }
-
-  GetForwardingInterface()->ShowPopupMenu(
-      std::move(popup_client), bounds, item_height, font_size, selected_item,
-      std::move(menu_items), right_aligned, allow_multiple_selection);
-}
-
-blink::mojom::LocalFrameHost*
-ShowPopupWidgetWaiter::ShowPopupMenuInterceptor::GetForwardingInterface() {
-  return swapped_impl_.old_impl();
-}
-#endif
-
-ShowPopupWidgetWaiter::ShowPopupWidgetWaiter(WebContentsImpl* web_contents,
-                                             RenderFrameHostImpl* frame_host)
-    : create_new_popup_widget_interceptor_(
-          frame_host,
-          base::BindOnce(&ShowPopupWidgetWaiter::DidCreatePopupWidget,
-                         base::Unretained(this))),
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
-      show_popup_menu_interceptor_(
-          frame_host,
-          base::BindOnce(&ShowPopupWidgetWaiter::DidShowPopupMenu,
-                         base::Unretained(this))),
-#endif
-
-      frame_host_(frame_host) {
-}
-
-ShowPopupWidgetWaiter::~ShowPopupWidgetWaiter() {
-  if (auto* rwhi = RenderWidgetHostImpl::FromID(process_id_, routing_id_)) {
-    std::ignore =
-        rwhi->popup_widget_host_receiver_for_testing().SwapImplForTesting(rwhi);
-  }
-}
-
-void ShowPopupWidgetWaiter::Wait() {
-  run_loop_.Run();
-}
-
-blink::mojom::PopupWidgetHost* ShowPopupWidgetWaiter::GetForwardingInterface() {
-  DCHECK_NE(MSG_ROUTING_NONE, routing_id_);
-  return RenderWidgetHostImpl::FromID(process_id_, routing_id_);
-}
-
-void ShowPopupWidgetWaiter::ShowPopup(const gfx::Rect& initial_rect,
-                                      const gfx::Rect& initial_anchor_rect,
-                                      ShowPopupCallback callback) {
-  GetForwardingInterface()->ShowPopup(initial_rect, initial_anchor_rect,
-                                      std::move(callback));
-  initial_rect_ = initial_rect;
-  run_loop_.Quit();
-}
-
-void ShowPopupWidgetWaiter::DidCreatePopupWidget(
-    RenderWidgetHostImpl* render_widget_host) {
-  process_id_ = render_widget_host->GetProcess()->GetID();
-  routing_id_ = render_widget_host->GetRoutingID();
-  // Swapped back in destructor from process_id_ and routing_id_ lookup.
-  std::ignore = render_widget_host->popup_widget_host_receiver_for_testing()
-                    .SwapImplForTesting(this);
-}
-
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
-void ShowPopupWidgetWaiter::DidShowPopupMenu(const gfx::Rect& bounds) {
-  initial_rect_ = bounds;
-  run_loop_.Quit();
-}
-#endif
-
 UnresponsiveRendererObserver::UnresponsiveRendererObserver(
     WebContents* web_contents)
     : WebContentsObserver(web_contents) {}
@@ -806,7 +648,6 @@ BeforeUnloadBlockingDelegate::~BeforeUnloadBlockingDelegate() {
     std::move(callback_).Run(true, std::u16string());
 
   web_contents_->SetDelegate(nullptr);
-  web_contents_->SetJavaScriptDialogManagerForTesting(nullptr);
 }
 
 void BeforeUnloadBlockingDelegate::Wait() {
@@ -832,7 +673,7 @@ void BeforeUnloadBlockingDelegate::RunJavaScriptDialog(
     const std::u16string& default_prompt_text,
     DialogClosedCallback callback,
     bool* did_suppress_message) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void BeforeUnloadBlockingDelegate::RunBeforeUnloadDialog(
@@ -848,8 +689,7 @@ bool BeforeUnloadBlockingDelegate::HandleJavaScriptDialog(
     WebContents* web_contents,
     bool accept,
     const std::u16string* prompt_override) {
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 FrameNavigateParamsCapturer::FrameNavigateParamsCapturer(WebContents* contents)
@@ -1073,7 +913,8 @@ void EffectiveURLContentBrowserTestContentBrowserClient::AddTranslation(
   helper_.AddTranslation(url_to_modify, url_to_return);
 }
 
-GURL EffectiveURLContentBrowserTestContentBrowserClient::GetEffectiveURL(
+std::optional<GURL>
+EffectiveURLContentBrowserTestContentBrowserClient::GetEffectiveURL(
     BrowserContext* browser_context,
     const GURL& url) {
   return helper_.GetEffectiveURL(url);
@@ -1140,76 +981,6 @@ bool CommitNavigationPauser::WillProcessDidCommitNavigation(
   return false;
 }
 
-// TODO(crbug.com/40278950): Use
-// `WebFrameWidgetImpl::NotifySwapAndPresentationTime` instead.
-void WaitForCopyableViewInWebContents(WebContents* web_contents) {
-  WaitForCopyableViewInFrame(web_contents->GetPrimaryMainFrame());
-}
-
-void WaitForCopyableViewInFrame(RenderFrameHost* render_frame_host) {
-  base::test::TestFuture<void> future;
-  NotifyCopyableViewInFrame(render_frame_host, future.GetCallback());
-  CHECK(future.Wait());
-}
-
-void WaitForBrowserCompositorFramePresented(WebContents* web_contents) {
-  base::RunLoop run_loop;
-  auto callback = base::BindOnce(
-      [](base::RepeatingClosure cb,
-         const viz::FrameTimingDetails& frame_timing_details) {
-        std::move(cb).Run();
-      },
-      run_loop.QuitClosure());
-#if BUILDFLAG(IS_ANDROID)
-  ui::WindowAndroidCompositor* compositor =
-      web_contents->GetNativeView()->GetWindowAndroid()->GetCompositor();
-  compositor->PostRequestSuccessfulPresentationTimeForNextFrame(
-      std::move(callback));
-#elif BUILDFLAG(IS_MAC)
-  auto* browser_compositor = GetBrowserCompositorMacForTesting(
-      web_contents->GetRenderWidgetHostView());
-  browser_compositor->GetCompositor()
-      ->RequestSuccessfulPresentationTimeForNextFrame(std::move(callback));
-#elif BUILDFLAG(IS_IOS)
-  auto* browser_compositor = GetBrowserCompositorIOSForTesting(
-      web_contents->GetRenderWidgetHostView());
-  browser_compositor->GetCompositor()
-      ->RequestSuccessfulPresentationTimeForNextFrame(std::move(callback));
-#elif defined(USE_AURA)
-  auto* compositor = static_cast<RenderWidgetHostViewAura*>(
-                         web_contents->GetRenderWidgetHostView())
-                         ->GetCompositor();
-  compositor->RequestSuccessfulPresentationTimeForNextFrame(
-      std::move(callback));
-#else
-  NOTREACHED_IN_MIGRATION();
-#endif
-  run_loop.Run();
-}
-
-void ForceNewCompositorFrameFromBrowser(WebContents* web_contents) {
-#if BUILDFLAG(IS_ANDROID)
-  ui::WindowAndroid* window = web_contents->GetTopLevelNativeWindow();
-  ui::WindowAndroidCompositor* compositor = window->GetCompositor();
-  cc::slim::LayerTree* layer_tree =
-      static_cast<CompositorImpl*>(compositor)->GetLayerTreeForTesting();
-  layer_tree->SetNeedsRedrawForTesting();
-#elif BUILDFLAG(IS_MAC)
-  auto* browser_compositor = GetBrowserCompositorMacForTesting(
-      web_contents->GetRenderWidgetHostView());
-  browser_compositor->GetCompositor()->ScheduleFullRedraw();
-#elif BUILDFLAG(IS_IOS)
-  auto* browser_compositor = GetBrowserCompositorIOSForTesting(
-      web_contents->GetRenderWidgetHostView());
-  browser_compositor->GetCompositor()->ScheduleFullRedraw();
-#elif defined(USE_AURA)
-  auto* compositor = static_cast<RenderWidgetHostViewAura*>(
-                         web_contents->GetRenderWidgetHostView())
-                         ->GetCompositor();
-  compositor->ScheduleFullRedraw();
-#endif
-}
-
 namespace {
 
 // Helper to return a 200 OK non-cacheable response for a first request, and
@@ -1229,7 +1000,7 @@ RedirectToTargetOnSecondNavigation(
   }
 
   std::string url_from_query =
-      base::UnescapeBinaryURLComponent(request.GetURL().query_piece());
+      base::UnescapeBinaryURLComponent(request.GetURL().query());
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_code(net::HttpStatusCode::HTTP_FOUND);
   http_response->AddCustomHeader("Location", url_from_query);
@@ -1245,6 +1016,37 @@ void AddRedirectOnSecondNavigationHandler(net::EmbeddedTestServer* server) {
       "/redirect-on-second-navigation",
       base::BindRepeating(&RedirectToTargetOnSecondNavigation,
                           base::OwnedRef(navigation_counter))));
+}
+
+LoadingStartObserver::LoadingStartObserver(WebContents* web_contents,
+                                           Callback callback)
+    : WebContentsObserver(web_contents), callback_(std::move(callback)) {}
+
+LoadingStartObserver::~LoadingStartObserver() = default;
+
+void LoadingStartObserver::DidStartLoading() {
+  callback_.Run();
+}
+
+LoadingStopObserver::LoadingStopObserver(WebContents* web_contents,
+                                         Callback callback)
+    : WebContentsObserver(web_contents), callback_(std::move(callback)) {}
+
+LoadingStopObserver::~LoadingStopObserver() = default;
+
+void LoadingStopObserver::DidStopLoading() {
+  callback_.Run();
+}
+
+LoadFinishObserver::LoadFinishObserver(WebContents* web_contents,
+                                       Callback callback)
+    : WebContentsObserver(web_contents), callback_(std::move(callback)) {}
+
+LoadFinishObserver::~LoadFinishObserver() = default;
+
+void LoadFinishObserver::DidFinishLoad(RenderFrameHost* render_frame_host,
+                                       const GURL& validated_url) {
+  callback_.Run(render_frame_host, validated_url);
 }
 
 }  // namespace content

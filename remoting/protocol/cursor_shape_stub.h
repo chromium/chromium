@@ -10,7 +10,9 @@
 namespace remoting::protocol {
 
 class CursorShapeInfo;
+class HostCursorPosition;
 
+// TODO: crbug.com/447440351 - Maybe rename this interface to CursorInfoStub.
 class CursorShapeStub {
  public:
   CursorShapeStub() = default;
@@ -21,6 +23,7 @@ class CursorShapeStub {
   virtual ~CursorShapeStub() = default;
 
   virtual void SetCursorShape(const CursorShapeInfo& cursor_shape) = 0;
+  virtual void SetHostCursorPosition(const HostCursorPosition& position) = 0;
 };
 
 }  // namespace remoting::protocol

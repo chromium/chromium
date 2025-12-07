@@ -10,6 +10,7 @@
 #include <string_view>
 
 #include "base/functional/callback.h"
+#include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "url/gurl.h"
@@ -73,4 +74,4 @@ class ChromeOSWebUIConfig : public content::WebUIConfig {
 
 }  //  namespace ash
 
-#endif  //  ASH_WEBUI_COMMON_CHROME_OS_WEBUI_CONFIG_H_
+#endif  // ASH_WEBUI_COMMON_CHROME_OS_WEBUI_CONFIG_H_

@@ -19,18 +19,26 @@ namespace signin {
 namespace {
 // Array of features exposed through the Java SigninFeatures API.
 const base::Feature* const kFeaturesExposedToJava[] = {
-    &switches::kSeedAccountsRevamp,
+    &switches::kCctSignInPrompt,
+    &switches::kEnableSeamlessSignin,
+    &switches::kForceStartupSigninPromo,
+    &switches::kForceHistoryOptInScreen,
     &switches::kSkipCheckForAccountManagementOnSignin,
-    &switches::kRestoreSignedInAccountAndSettingsFromBackup,
-    &switches::kHideSettingsSignInPromo,
-    &switches::kUpdateMetricsServicesStateInRestore,
-    &switches::kUseConsentLevelSigninForLegacyAccountEmailPref,
-    &switches::kDontFallbackToDefaultImplementationInAccountManagerFacade};
+    &switches::kSyncEnableBookmarksInTransportMode,
+    &switches::kHistoryOptInEducationalTip,
+    &switches::kMakeAccountsAvailableInIdentityManager,
+    &switches::kMigrateAccountManagerDelegate,
+    &switches::kFullscreenSignInPromoUseDate,
+    &switches::kSmartEmailLineBreaking,
+    &switches::kSupportWebSigninAddSession,
+    &switches::kSkipRefreshTokenCheckInIdentityManager,
+    &switches::kFRESignInAlternativeSecondaryButtonText,
+};
 
 // static
 base::android::FeatureMap* GetFeatureMap() {
-  static base::NoDestructor<base::android::FeatureMap> kFeatureMap(std::vector(
-      std::begin(kFeaturesExposedToJava), std::end(kFeaturesExposedToJava)));
+  static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
+      kFeaturesExposedToJava);
   return kFeatureMap.get();
 }
 
@@ -41,3 +49,5 @@ static jlong JNI_SigninFeatureMap_GetNativeMap(JNIEnv* env) {
 }
 
 }  // namespace signin
+
+DEFINE_JNI(SigninFeatureMap)

@@ -13,10 +13,11 @@ import {dedupingMixin} from '//resources/polymer/v3_0/polymer/polymer_bundled.mi
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {PermissionType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
+import type {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {PrivacyHubBrowserProxy, PrivacyHubBrowserProxyImpl} from '../../os_privacy_page/privacy_hub_browser_proxy.js';
+import type {PrivacyHubBrowserProxy} from '../../os_privacy_page/privacy_hub_browser_proxy.js';
+import {PrivacyHubBrowserProxyImpl} from '../../os_privacy_page/privacy_hub_browser_proxy.js';
 import {GeolocationAccessLevel} from '../../os_privacy_page/privacy_hub_geolocation_subpage.js';
 
 type Constructor<T> = new (...args: any[]) => T;

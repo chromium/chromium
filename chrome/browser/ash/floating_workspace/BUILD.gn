@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("floating_workspace") {
   sources = [
@@ -14,13 +14,12 @@ static_library("floating_workspace") {
     "floating_workspace_service.h",
     "floating_workspace_service_factory.cc",
     "floating_workspace_service_factory.h",
-    "floating_workspace_util.cc",
-    "floating_workspace_util.h",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
+    ":utils",
     "//ash",
     "//ash/constants",
     "//ash/public/cpp",
@@ -29,9 +28,14 @@ static_library("floating_workspace") {
     "//chrome/app:generated_resources",
     "//chrome/app/vector_icons",
     "//chrome/browser/ash/app_restore",
+    "//chrome/browser/ash/floating_sso",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/sessions",
+    "//chrome/browser/sync",
+    "//chrome/browser/ui/ash/desks",
+    "//chrome/browser/ui/ash/multi_user",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/network",
     "//chromeos/ash/services/device_sync/public/cpp/",
@@ -48,9 +52,25 @@ static_library("floating_workspace") {
     "//ui/message_center",
   ]
 
-  allow_circular_includes_from = [
-    "//chrome/browser/ash/app_restore",
-    "//chrome/browser/ash/login/session",
+  allow_circular_includes_from = [ "//chrome/browser/ash/login/session" ]
+}
+
+static_library("utils") {
+  sources = [
+    "floating_workspace_util.cc",
+    "floating_workspace_util.h",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/network",
+    "//components/policy/core/common:common_constants",
+    "//components/prefs",
+    "//components/user_manager",
   ]
 }
 
@@ -61,6 +81,7 @@ source_set("unit_tests") {
 
   deps = [
     ":floating_workspace",
+    ":utils",
     "//ash",
     "//ash/constants",
     "//ash/public/cpp",
@@ -68,14 +89,18 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/browser/prefs",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/ash",
-    "//chrome/browser/ui/ash:test_support",
     "//chrome/browser/ui/ash/desks",
     "//chrome/browser/ui/ash/multi_user",
+    "//chrome/browser/ui/ash/session",
+    "//chrome/browser/ui/ash/session:test_support",
+    "//chrome/browser/ui/webui/ash/floating_workspace",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/login/session",
     "//chromeos/ash/components/network",
     "//chromeos/ash/services/device_sync/public/cpp/",
+    "//chromeos/constants",
     "//chromeos/dbus/power",
     "//components/account_id",
     "//components/app_restore",

@@ -47,18 +47,21 @@ jonross@chromium.org
 # input, scrolling
 bokan@chromium.org
 flackr@chromium.org
+jonross@chromium.org
 skobes@chromium.org
 
 # metrics
 jonross@chromium.org
+gaiko@google.com
+# ScrollJank metrics
+petrcermak@chromium.org
 
 # paint
 sunnyps@chromium.org
 vasilyt@chromium.org
-reed@google.com
 fmalita@chromium.org
 
-# EU coverage of straightforward changes
+# EU coverage
 blundell@chromium.org
 
 # general

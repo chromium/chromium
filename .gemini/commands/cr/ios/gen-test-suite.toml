@@ -1,0 +1,86 @@
+description = "Generates an empty unit test suite for a class in the iOS codebase."
+prompt = """
+# Task
+Your task is to create a new GTest unit test suite for a given Objective C or
+C++ class in the iOS codebase. The user will provide the class name and may
+specify additional dependencies. The new test suite should contain a single,
+empty test.
+
+# Context & Best Practices
+
+## Key Classes & Patterns
+*   **TaskEnvironment**: Be prepared to add a `base::test::TaskEnvironment` ivar
+    if the class under test deals with tasks or threading.
+*   **Local State**: If local state is needed, add an
+    `IOSChromeScopedTestingLocalState` ivar. Access local state via
+    `GetApplicationContext()->GetLocalState()`.
+*   **Profile vs. BrowserState**: In iOS, always prefer `ProfileIOS` over
+    `BrowserState`. Use `TestProfileIOS` and `TestProfileIOS::Builder` for
+    testing, not `ChromeBrowserState` or `TestChromeBrowserState`.
+*   **Keyed Services**: When a dependency is a Keyed Service, you will need to
+    include its factory header and use the builder to install a test factory
+    function. Use code search to find existing unit tests for examples.
+*   Do not use `#include` - instead use `#import`, even for C++ classes.
+
+## Build System (BUILD.gn)
+*   **Source Sets**: Your new test file must be added to a `unit_tests` source
+    set in the `BUILD.gn` file located in the same directory. If one does not
+    exist, you must create it.
+*   **Dependencies (`deps`)**: The `deps` for the `unit_tests` source set must
+    include the target for the class under test and any other direct
+    dependencies.
+*   **Global Test Target**: If you create a new `unit_tests` source set in a
+    component's `BUILD.gn` file, you must also add a reference to it in
+    `//ios/chrome/test/BUILD.gn`.
+
+## Coding Style & Verification
+*   **Copyright Header**: All new files must begin with a copyright header:
+    `// Copyright XXXX The Chromium Authors`, where XXXX is the current year.
+*   **Builder Usage**: When using builders like `TestProfileIOS::Builder`, the
+    correct way to call the build method is `std::move(builder).Build()`.
+*   **Verify Paths**: Before adding an `#import` or a `BUILD.gn` dependency,
+    use code search to verify the file path is correct. If you get a "file not
+    found" error on an `#import` statement, it is probably because an
+    incorrect path was used - search again for the file using code search.
+
+## Tools
+*   Use the code search tool to find files and understand usage patterns. Do
+    not use `find`.
+
+# Workflow
+1.  **Analyze the Class**: Find and read the header and source files for the
+    user-provided class to understand its purpose, dependencies, and how it is
+    instantiated.
+2.  **Analyze the Dependencies**: For each dependency (including ProfileIOS,
+    TestProfileIOS, Browser, TestBrowser, and ApplicationContext) you must:
+    a. Find and read its header file and its BUILD.gn file. These classes
+       may have changed since the model was trained, so it is important to
+       read the latest code. In particular, for TestProfileIOS and TestBrowser,
+       ensure you are using the correct paths, which have changed.
+    b. Investigate its usage in other unit tests in the //ios/ codebase.
+    c. Before writing the test file, you MUST output a "Dependency Analysis"
+       summary in a bulleted list. For each dependency, this summary must
+       explicitly state:
+           Header Path*: The full file path for the #import statement.
+           GN Dependency*: The GN target path for the deps entry in BUILD.gn.
+           Instantiation*: The class name of the factory or builder needed to
+               create a test instance (e.g., ReadingListModelFactory).
+           Reference Test*: An existing test that also uses this dependency.
+3.  **Create the Test File**: Create a new `_unittest.mm` file for the class.
+    Add the standard boilerplate, including the copyright header, necessary
+    imports, a test fixture class inheriting from `PlatformTest`, an ivar for
+    an instance of the class being tested and a single `TEST_F` test case to
+    verify that the ivar was instantiated. The test class and the TEST_F
+    method should have comments.
+4.  **Update BUILD.gn**: Add the new test file to a `unit_tests` source set in
+    the relevant `BUILD.gn` file. Add the class under test to the `deps`.
+5.  **Build and Verify**: Build the `ios_chrome_unittests` target. Fix any
+    compilation errors, which typically involves adding missing `#import`
+    statements or `BUILD.gn` dependencies.
+6.  ** Run the new test suite**: Run the new test suite and fix any errors.
+    If there were errors, build, run, and fix the tests until they pass.
+7.  Once the tests pass, run `gclient runhooks` to make the new test file
+    accessible from Xcode.
+8.  **Final Check**: Confirm the new unit test suite file is present. Do NOT
+    delete it when you are done.
+"""

@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.net.ConnectionCloseSource;
 import org.chromium.net.CronetException;
 import org.chromium.net.ExperimentalUrlRequest;
@@ -25,6 +26,7 @@ import org.chromium.net.ThreadStatsUid;
 import org.chromium.net.UploadDataProvider;
 import org.chromium.net.UrlRequest;
 import org.chromium.net.UrlResponseInfo;
+import org.chromium.net.impl.CronetLogger.CronetSource;
 import org.chromium.net.impl.CronetLogger.CronetTrafficInfo;
 import org.chromium.net.impl.JavaUrlRequestUtils.CheckedRunnable;
 import org.chromium.net.impl.JavaUrlRequestUtils.DirectPreventingExecutor;
@@ -89,8 +91,8 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
 
     /* These don't change with redirects */
     private final String mInitialMethod;
-    private VersionSafeCallbacks.UploadDataProviderWrapper mUploadDataProvider;
-    private Executor mUploadExecutor;
+    private final VersionSafeCallbacks.UploadDataProviderWrapper mUploadDataProvider;
+    private final Executor mUploadExecutor;
 
     /**
      * Holds a subset of StatusValues - {@link State#STARTED} can represent {@link
@@ -210,48 +212,50 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
             ArrayList<Map.Entry<String, String>> requestHeaders,
             UploadDataProvider uploadDataProvider,
             Executor uploadDataProviderExecutor) {
-        Objects.requireNonNull(url, "URL is required");
-        Objects.requireNonNull(callback, "Listener is required");
-        Objects.requireNonNull(executor, "Executor is required");
-        Objects.requireNonNull(userExecutor, "userExecutor is required");
+        try (var traceEvent = ScopedSysTraceEvent.scoped("Cronet JavaUrlRequest#JavaUrlRequest")) {
+            Objects.requireNonNull(url, "URL is required");
+            Objects.requireNonNull(callback, "Listener is required");
+            Objects.requireNonNull(executor, "Executor is required");
+            Objects.requireNonNull(userExecutor, "userExecutor is required");
 
-        mAllowDirectExecutor = allowDirectExecutor;
-        mCallbackAsync = new AsyncUrlRequestCallback(callback, userExecutor);
-        final int trafficStatsTagToUse =
-                trafficStatsTagSet ? trafficStatsTag : TrafficStats.getThreadStatsTag();
-        mExecutor =
-                new SerializingExecutor(
-                        (command) -> {
-                            executor.execute(
-                                    () -> {
-                                        int oldTag = TrafficStats.getThreadStatsTag();
-                                        TrafficStats.setThreadStatsTag(trafficStatsTagToUse);
-                                        if (trafficStatsUidSet) {
-                                            ThreadStatsUid.set(trafficStatsUid);
-                                        }
-                                        try {
-                                            command.run();
-                                        } finally {
+            mAllowDirectExecutor = allowDirectExecutor;
+            mCallbackAsync = new AsyncUrlRequestCallback(callback, userExecutor);
+            final int trafficStatsTagToUse =
+                    trafficStatsTagSet ? trafficStatsTag : TrafficStats.getThreadStatsTag();
+            mExecutor =
+                    new SerializingExecutor(
+                            (command) -> {
+                                executor.execute(
+                                        () -> {
+                                            int oldTag = TrafficStats.getThreadStatsTag();
+                                            TrafficStats.setThreadStatsTag(trafficStatsTagToUse);
                                             if (trafficStatsUidSet) {
-                                                ThreadStatsUid.clear();
+                                                ThreadStatsUid.set(trafficStatsUid);
                                             }
-                                            TrafficStats.setThreadStatsTag(oldTag);
-                                        }
-                                    });
-                        });
-        mEngine = engine;
-        mCronetEngineId = engine.getCronetEngineId();
-        mLogger = engine.getCronetLogger();
-        mCurrentUrl = url;
-        mUserAgent = userAgent;
-        mNetworkHandle = networkHandle;
-        mInitialMethod = checkedHttpMethod(method);
-        setHeaders(requestHeaders);
-        mUploadDataProvider = checkedUploadDataProvider(uploadDataProvider);
-        mUploadExecutor =
-                uploadDataProviderExecutor == null || mAllowDirectExecutor
-                        ? uploadDataProviderExecutor
-                        : new DirectPreventingExecutor(uploadDataProviderExecutor);
+                                            try {
+                                                command.run();
+                                            } finally {
+                                                if (trafficStatsUidSet) {
+                                                    ThreadStatsUid.clear();
+                                                }
+                                                TrafficStats.setThreadStatsTag(oldTag);
+                                            }
+                                        });
+                            });
+            mEngine = engine;
+            mCronetEngineId = engine.getCronetEngineId();
+            mLogger = engine.getCronetLogger();
+            mCurrentUrl = url;
+            mUserAgent = userAgent;
+            mNetworkHandle = networkHandle;
+            mInitialMethod = checkedHttpMethod(method);
+            setHeaders(requestHeaders);
+            mUploadDataProvider = checkedUploadDataProvider(uploadDataProvider);
+            mUploadExecutor =
+                    uploadDataProviderExecutor == null || mAllowDirectExecutor
+                            ? uploadDataProviderExecutor
+                            : new DirectPreventingExecutor(uploadDataProviderExecutor);
+        }
     }
 
     private static String checkedHttpMethod(String method) {
@@ -451,10 +455,11 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
         // It's still possible that a non-final user callback may throw an exception after the
         // terminal callback returned and we already logged this metric, in which case we will miss
         // the exception. Arguably this is too unlikely for us to care.
-        mExecutor.execute(
+        executeOnExecutor(
                 () -> {
                     mNonfinalUserCallbackExceptionCount++;
-                });
+                },
+                "enterUserErrorState");
 
         enterErrorState(
                 new CallbackExceptionImpl("Exception received from UrlRequest.Callback", error));
@@ -484,10 +489,20 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
             @State int state = mState.get();
             if (!(state == State.CANCELLED || state == State.ERROR)) {
                 throw new IllegalStateException(
-                        "Invalid state transition - expected " + expected + " but was " + state);
+                        "Invalid state transition - expected "
+                                + JavaUrlRequestUtils.stateToString(expected)
+                                + " but was "
+                                + JavaUrlRequestUtils.stateToString(state));
             }
         } else {
-            afterTransition.run();
+            try (var traceEvent =
+                    ScopedSysTraceEvent.scoped(
+                            "Cronet JavaUrlRequest#transitionStates "
+                                    + JavaUrlRequestUtils.stateToString(expected)
+                                    + " -> "
+                                    + JavaUrlRequestUtils.stateToString(newState))) {
+                afterTransition.run();
+            }
         }
     }
 
@@ -508,7 +523,7 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
 
     private void fireGetHeaders() {
         mAdditionalStatusDetails = Status.WAITING_FOR_RESPONSE;
-        mExecutor.execute(
+        executeOnExecutor(
                 errorSetting(
                         () -> {
                             if (mCurrentUrlConnection == null) {
@@ -566,14 +581,15 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
                                         inputStream == null
                                                 ? null
                                                 : InputStreamChannel.wrap(inputStream);
-                                mCallbackAsync.onResponseStarted(mUrlResponseInfo);
+                                mCallbackAsync.onResponseStarted();
                             } else {
                                 mResponseChannel =
                                         InputStreamChannel.wrap(
                                                 mCurrentUrlConnection.getInputStream());
-                                mCallbackAsync.onResponseStarted(mUrlResponseInfo);
+                                mCallbackAsync.onResponseStarted();
                             }
-                        }));
+                        }),
+                "fireGetHeaders");
     }
 
     private void fireCloseUploadDataProvider() {
@@ -606,7 +622,7 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
     }
 
     private void fireOpenConnection() {
-        mExecutor.execute(
+        executeOnExecutor(
                 errorSetting(
                         () -> {
                             // If we're cancelled, then our old connection will be disconnected
@@ -621,8 +637,7 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
                                 mCurrentUrlConnection = null;
                             }
 
-                            if (mNetworkHandle == CronetEngineBase.DEFAULT_NETWORK_HANDLE
-                                    || Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                            if (mNetworkHandle == CronetEngineBase.DEFAULT_NETWORK_HANDLE) {
                                 mCurrentUrlConnection = (HttpURLConnection) url.openConnection();
                             } else {
                                 Network network = getNetworkFromHandle(mNetworkHandle);
@@ -657,7 +672,8 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
                                 mCurrentUrlConnection.connect();
                                 fireGetHeaders();
                             }
-                        }));
+                        }),
+                "fireOpenConnection");
     }
 
     private Runnable errorSetting(final CheckedRunnable delegate) {
@@ -707,7 +723,7 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
                 State.AWAITING_READ,
                 State.READING,
                 () -> {
-                    mExecutor.execute(errorSetting(doRead));
+                    executeOnExecutor(errorSetting(doRead), "read");
                 });
     }
 
@@ -727,7 +743,7 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
     }
 
     private void fireDisconnect() {
-        mExecutor.execute(
+        executeOnExecutor(
                 () -> {
                     if (mOutputStreamDataSink != null) {
                         try {
@@ -740,7 +756,8 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
                         mCurrentUrlConnection.disconnect();
                         mCurrentUrlConnection = null;
                     }
-                });
+                },
+                "fireDisconnect");
     }
 
     @Override
@@ -875,15 +892,16 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
 
         void sendStatus(
                 final VersionSafeCallbacks.UrlRequestStatusListener listener, final int status) {
-            mUserExecutor.execute(
+            executeOnUserExecutor(
                     () -> {
                         listener.onStatus(status);
-                    });
+                    },
+                    "sendStatus");
         }
 
-        void execute(CheckedRunnable runnable) {
+        void execute(CheckedRunnable runnable, String name) {
             try {
-                mUserExecutor.execute(userErrorSetting(runnable));
+                executeOnUserExecutor(userErrorSetting(runnable), name);
             } catch (RejectedExecutionException e) {
                 enterErrorState(new CronetExceptionImpl("Exception posting task to executor", e));
             }
@@ -893,10 +911,11 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
             execute(
                     () -> {
                         mCallback.onRedirectReceived(JavaUrlRequest.this, info, newLocationUrl);
-                    });
+                    },
+                    "onRedirectReceived");
         }
 
-        void onResponseStarted(UrlResponseInfo info) {
+        void onResponseStarted() {
             execute(
                     () -> {
                         if (mState.compareAndSet(
@@ -904,7 +923,8 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
                                 /* updated= */ State.AWAITING_READ)) {
                             mCallback.onResponseStarted(JavaUrlRequest.this, mUrlResponseInfo);
                         }
-                    });
+                    },
+                    "onResponseStarted");
         }
 
         void onReadCompleted(final UrlResponseInfo info, final ByteBuffer byteBuffer) {
@@ -915,7 +935,8 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
                                 /* updated= */ State.AWAITING_READ)) {
                             mCallback.onReadCompleted(JavaUrlRequest.this, info, byteBuffer);
                         }
-                    });
+                    },
+                    "onReadCompleted");
         }
 
         /**
@@ -1023,7 +1044,13 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
                     /* quicErrorCode */ 0,
                     /* connectionCloseSource */ ConnectionCloseSource.UNKNOWN,
                     /* failureReason */ CronetTrafficInfo.RequestFailureReason.UNKNOWN,
-                    /* socketReused */ false);
+                    /* socketReused */ false,
+                    ImplVersion.getCronetVersion(),
+                    CronetSource.CRONET_SOURCE_FALLBACK,
+                    /* timeToEstablishDnsMillis= */ -1,
+                    /* timeToEstablishSSLMillis= */ -1,
+                    /* timeToConnectMillis= */ -1,
+                    /* timeToSendFirstByteMillis= */ -1);
         }
 
         // Maybe report metrics. This method should only be called on Callback's executor thread and
@@ -1034,7 +1061,7 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
             // Schedule on the internal executor, which is serialized, to ensure we're not reading
             // data while some code running on the internal executor is still mutating it. See
             // https://crbug.com/337260115
-            mExecutor.execute(
+            executeOnExecutor(
                     () -> {
                         try {
                             mLogger.logCronetTrafficInfo(mCronetEngineId, buildCronetTrafficInfo());
@@ -1043,12 +1070,13 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
                             // logging.
                             Log.i(TAG, "Error while trying to log CronetTrafficInfo: ", e);
                         }
-                    });
+                    },
+                    "maybeReportMetrics");
         }
 
         void onCanceled(final UrlResponseInfo info) {
             closeResponseChannel();
-            mUserExecutor.execute(
+            executeOnUserExecutor(
                     () -> {
                         try {
                             mCallback.onCanceled(JavaUrlRequest.this, info);
@@ -1057,11 +1085,12 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
                         }
                         maybeReportMetrics();
                         mEngine.decrementActiveRequestCount();
-                    });
+                    },
+                    "onCanceled");
         }
 
         void onSucceeded(final UrlResponseInfo info) {
-            mUserExecutor.execute(
+            executeOnUserExecutor(
                     () -> {
                         try {
                             mCallback.onSucceeded(JavaUrlRequest.this, info);
@@ -1070,7 +1099,8 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
                         }
                         maybeReportMetrics();
                         mEngine.decrementActiveRequestCount();
-                    });
+                    },
+                    "onSucceeded");
         }
 
         void onFailed(final UrlResponseInfo urlResponseInfo, final CronetException e) {
@@ -1086,17 +1116,60 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
                         mEngine.decrementActiveRequestCount();
                     };
             try {
-                mUserExecutor.execute(runnable);
+                executeOnUserExecutor(runnable, "onFailed");
             } catch (InlineExecutionProhibitedException wasDirect) {
                 if (mFallbackExecutor != null) {
-                    mFallbackExecutor.execute(runnable);
+                    executeOnFallbackExecutor(runnable, "onFailed");
                 }
+            }
+        }
+
+        void executeOnUserExecutor(Runnable runnable, String name) {
+            try (var traceEvent =
+                    ScopedSysTraceEvent.scoped(
+                            "Cronet JavaUrlRequest.AsyncUrlRequestCallback#executeOnUserExecutor "
+                                    + name)) {
+                mUserExecutor.execute(
+                        () -> {
+                            try (var callbackTraceEvent =
+                                    ScopedSysTraceEvent.scoped(
+                                            "Cronet"
+                                                    + " JavaUrlRequest.AsyncUrlRequestCallback"
+                                                    + "#executeOnUserExecutor "
+                                                    + name
+                                                    + " running callback")) {
+                                runnable.run();
+                            }
+                        });
+            }
+        }
+
+        void executeOnFallbackExecutor(Runnable runnable, String name) {
+            try (var traceEvent =
+                    ScopedSysTraceEvent.scoped(
+                            "Cronet"
+                                    + " JavaUrlRequest.AsyncUrlRequestCallback"
+                                    + "#executeOnFallbackExecutor "
+                                    + name)) {
+                mFallbackExecutor.execute(
+                        () -> {
+                            try (var callbackTraceEvent =
+                                    ScopedSysTraceEvent.scoped(
+                                            "Cronet"
+                                                    + " JavaUrlRequest.AsyncUrlRequestCallback"
+                                                    + "#executeOnFallbackExecutor "
+                                                    + " "
+                                                    + name
+                                                    + " running callback")) {
+                                runnable.run();
+                            }
+                        });
             }
         }
     }
 
     private void closeResponseChannel() {
-        mExecutor.execute(
+        executeOnExecutor(
                 () -> {
                     if (mResponseChannel != null) {
                         try {
@@ -1106,7 +1179,8 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
                         }
                         mResponseChannel = null;
                     }
-                });
+                },
+                "closeResponseChannel");
     }
 
     private Network getNetworkFromHandle(long networkHandle) {
@@ -1125,5 +1199,21 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
     private void onFinalCallbackException(String method, Exception e) {
         Log.e(TAG, "Exception in " + method + " method", e);
         mFinalUserCallbackThrew = true;
+    }
+
+    private void executeOnExecutor(Runnable runnable, String name) {
+        try (var traceEvent =
+                ScopedSysTraceEvent.scoped("Cronet JavaUrlRequest#executeOnExecutor " + name)) {
+            mExecutor.execute(
+                    () -> {
+                        try (var callbackTraceEvent =
+                                ScopedSysTraceEvent.scoped(
+                                        "Cronet JavaUrlRequest#executeOnExecutor "
+                                                + name
+                                                + " running callback")) {
+                            runnable.run();
+                        }
+                    });
+        }
     }
 }

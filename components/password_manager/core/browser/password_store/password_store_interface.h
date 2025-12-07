@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/callback_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "components/keyed_service/core/refcounted_keyed_service.h"
@@ -15,6 +15,7 @@
 #include "components/password_manager/core/browser/password_store/password_store_change.h"
 
 namespace base {
+class CallbackListSubscription;
 class Location;
 }  // namespace base
 
@@ -107,9 +108,10 @@ class PasswordStoreInterface : public RefcountedKeyedService {
   virtual void RemoveLogin(const base::Location& location,
                            const PasswordForm& form) = 0;
 
-  // Remove all logins whose origins match the given filter and that were
-  // created in the given date range. `completion` will be run after deletions
-  // have been completed and notifications have been sent out.
+  // Removes all logins created in the given date range. `completion` is run
+  // after deletions have been completed and notifications have been sent out.
+  // If any logins were removed 'true' will be passed to `completion`, 'false'
+  // otherwise. `location` is used for logging purposes and investigations.
   // If the platform supports sync, `sync_completion` will be run once the
   // deletions have also been propagated to the server (or, in rare cases, if
   // the user permanently disables Sync or deletions haven't been propagated
@@ -117,24 +119,13 @@ class PasswordStoreInterface : public RefcountedKeyedService {
   // store users - for other users, `sync_completion` will be run immediately
   // after `completion`. `location` is used for logging purposes and
   // investigations.
-  virtual void RemoveLoginsByURLAndTime(
-      const base::Location& location,
-      const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-      base::Time delete_begin,
-      base::Time delete_end,
-      base::OnceClosure completion = base::NullCallback(),
-      base::OnceCallback<void(bool)> sync_completion =
-          base::NullCallback()) = 0;
-
-  // Removes all logins created in the given date range. `completion` is run
-  // after deletions have been completed and notifications have been sent out.
-  // If any logins were removed 'true' will be passed to `completion`, 'false'
-  // otherwise. `location` is used for logging purposes and investigations.
   virtual void RemoveLoginsCreatedBetween(
       const base::Location& location,
       base::Time delete_begin,
       base::Time delete_end,
-      base::OnceCallback<void(bool)> completion = base::NullCallback()) = 0;
+      base::OnceCallback<void(bool)> completion = base::NullCallback(),
+      base::OnceCallback<void(bool)> sync_completion =
+          base::NullCallback()) = 0;
 
   // Sets the 'skip_zero_click' flag for all credentials that match
   // `origin_filter`. `completion` will be run after these modifications are

@@ -4,6 +4,9 @@
 
 package org.chromium.android_webview.test;
 
+import android.graphics.Rect;
+import android.os.Build;
+
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
@@ -22,6 +25,8 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.common.ContentUrlConstants;
+import org.chromium.ui.base.UiAndroidFeatureMap;
+import org.chromium.ui.base.UiAndroidFeatures;
 import org.chromium.ui.display.DisplayAndroid;
 
 import java.util.Locale;
@@ -71,7 +76,7 @@ public class AwLegacyQuirksTest extends AwParameterizedTest {
         int actualWidth = Integer.parseInt(mActivityTestRule.getTitleOnUiThread(awContents));
         Assert.assertEquals(displayAndroid.getDisplayWidth(), actualWidth, 10f);
 
-        float displayWidth = (displayAndroid.getDisplayWidth());
+        float displayWidth = displayAndroid.getDisplayWidth();
         float deviceDpi = 160f * displayAndroid.getDipScale();
 
         mActivityTestRule.loadDataSync(
@@ -188,6 +193,17 @@ public class AwLegacyQuirksTest extends AwParameterizedTest {
         float physicalDisplayWidth = displayAndroid.getDisplayWidth();
         float physicalDisplayHeight = displayAndroid.getDisplayHeight();
 
+        float physicalWorkAreaWidth = physicalDisplayWidth;
+        float physicalWorkAreaHeight = physicalDisplayHeight;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+                && UiAndroidFeatureMap.isEnabled(
+                        UiAndroidFeatures.ANDROID_USE_CORRECT_DISPLAY_WORK_AREA)) {
+            final Rect workArea = displayAndroid.getWorkArea();
+            physicalWorkAreaWidth = workArea.width() * dipScale;
+            physicalWorkAreaHeight = workArea.height() * dipScale;
+        }
+
         float screenWidth =
                 Integer.parseInt(
                         mActivityTestRule.executeJavaScriptAndWaitForResult(
@@ -197,7 +213,7 @@ public class AwLegacyQuirksTest extends AwParameterizedTest {
                 Integer.parseInt(
                         mActivityTestRule.executeJavaScriptAndWaitForResult(
                                 awContents, contentClient, "screen.availWidth"));
-        Assert.assertEquals(physicalDisplayWidth, screenAvailWidth, 10f);
+        Assert.assertEquals(physicalWorkAreaWidth, screenAvailWidth, 10f);
         float outerWidth =
                 Integer.parseInt(
                         mActivityTestRule.executeJavaScriptAndWaitForResult(
@@ -225,7 +241,7 @@ public class AwLegacyQuirksTest extends AwParameterizedTest {
                 Integer.parseInt(
                         mActivityTestRule.executeJavaScriptAndWaitForResult(
                                 awContents, contentClient, "screen.availHeight"));
-        Assert.assertEquals(physicalDisplayHeight, screenAvailHeight, 10f);
+        Assert.assertEquals(physicalWorkAreaHeight, screenAvailHeight, 10f);
         float outerHeight =
                 Integer.parseInt(
                         mActivityTestRule.executeJavaScriptAndWaitForResult(

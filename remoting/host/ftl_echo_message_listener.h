@@ -5,8 +5,9 @@
 #ifndef REMOTING_HOST_FTL_ECHO_MESSAGE_LISTENER_H_
 #define REMOTING_HOST_FTL_ECHO_MESSAGE_LISTENER_H_
 
-#include <string>
+#include <string_view>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "remoting/signaling/signal_strategy.h"
 
@@ -19,8 +20,11 @@ namespace remoting {
 // standard signaling process if sent mid-connection negotiation.
 class FtlEchoMessageListener : public SignalStrategy::Listener {
  public:
+  using CheckAccessPermissionCallback =
+      base::RepeatingCallback<bool(std::string_view)>;
+
   // |signal_strategy| is expected to outlive this object.
-  FtlEchoMessageListener(std::string host_owner,
+  FtlEchoMessageListener(CheckAccessPermissionCallback callback,
                          SignalStrategy* signal_strategy);
 
   FtlEchoMessageListener(const FtlEchoMessageListener&) = delete;
@@ -38,7 +42,7 @@ class FtlEchoMessageListener : public SignalStrategy::Listener {
       const ftl::ChromotingMessage& message) override;
 
  private:
-  std::string host_owner_;
+  CheckAccessPermissionCallback check_access_permission_callback_;
   raw_ptr<SignalStrategy> signal_strategy_;
 };
 

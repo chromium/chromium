@@ -10,8 +10,14 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/notreached.h"
+#include "base/task/thread_pool.h"
+#include "base/timer/timer.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
 #include "chrome/browser/ash/file_manager/delete_io_task.h"
@@ -19,6 +25,8 @@
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/office_file_tasks.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/policy/skyvault/histogram_helper.h"
+#include "chrome/browser/ash/policy/skyvault/local_files_migration_constants.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/common/chrome_features.h"
@@ -28,11 +36,29 @@
 using storage::FileSystemURL;
 
 namespace policy::local_user_files {
+namespace {
+// Creates a directory at `dir_path`, if it doesn't already exist. Returns true
+// if directory exists or is created successfully.
+bool CreateDirectoryIfNeeded(const base::FilePath& dir_path) {
+  base::File::Error error = base::File::FILE_OK;
+  if (base::DirectoryExists(dir_path)) {
+    return true;
+  }
+  if (!base::CreateDirectoryAndGetError(dir_path, &error)) {
+    PLOG(ERROR) << "Failed to create directory: "
+                << base::File::ErrorToString(error);
+    return false;
+  }
+  return true;
+}
+}  // namespace
 
-DriveSkyvaultUploader::DriveSkyvaultUploader(Profile* profile,
-                                             const base::FilePath& file_path,
-                                             const base::FilePath& target_path,
-                                             UploadCallback callback)
+DriveSkyvaultUploader::DriveSkyvaultUploader(
+    Profile* profile,
+    const base::FilePath& file_path,
+    const base::FilePath& relative_source_path,
+    const std::string& upload_root,
+    UploadCallback callback)
     : profile_(profile),
       file_system_context_(
           file_manager::util::GetFileManagerFileSystemContext(profile)),
@@ -42,21 +68,23 @@ DriveSkyvaultUploader::DriveSkyvaultUploader(Profile* profile,
           blink::StorageKey(),
           storage::kFileSystemTypeLocal,
           file_path)),
-      target_path_(target_path),
-      callback_(std::move(callback)) {
-  observed_copy_task_id_ = -1;
-  observed_delete_task_id_ = -1;
-}
+      relative_source_path_(relative_source_path),
+      upload_root_(upload_root),
+      callback_(std::move(callback)) {}
 
 DriveSkyvaultUploader::~DriveSkyvaultUploader() = default;
 
 void DriveSkyvaultUploader::Run() {
   DCHECK(callback_);
 
-  // TODO(aidazolic): Handle different errors.
+  if (cancelled_) {
+    OnEndCopy(MigrationUploadError::kCancelled);
+    return;
+  }
+
   if (!profile_) {
     LOG(ERROR) << "No profile";
-    OnEndCopy(MigrationUploadError::kOther);
+    OnEndCopy(MigrationUploadError::kUnexpectedError);
     return;
   }
 
@@ -64,13 +92,13 @@ void DriveSkyvaultUploader::Run() {
       file_manager::VolumeManager::Get(profile_);
   if (!volume_manager) {
     LOG(ERROR) << "No volume manager";
-    OnEndCopy(MigrationUploadError::kOther);
+    OnEndCopy(MigrationUploadError::kUnexpectedError);
     return;
   }
   io_task_controller_ = volume_manager->io_task_controller();
   if (!io_task_controller_) {
     LOG(ERROR) << "No task_controller";
-    OnEndCopy(MigrationUploadError::kOther);
+    OnEndCopy(MigrationUploadError::kUnexpectedError);
     return;
   }
 
@@ -80,18 +108,35 @@ void DriveSkyvaultUploader::Run() {
     return;
   }
 
-  if (drive::util::GetDriveConnectionStatus(profile_) !=
-      drive::util::ConnectionStatus::kConnected) {
-    LOG(ERROR) << "No connection to Drive";
+  // Observe Drive updates.
+  drive::DriveIntegrationService::Observer::Observe(drive_integration_service_);
+
+  if (!drive_integration_service_->is_enabled()) {
+    // Drive is completely disabled for this profile.
+    LOG(ERROR) << "Drive integration service isn't available";
     OnEndCopy(MigrationUploadError::kServiceUnavailable);
+    return;
+  }
+
+  auto drive_status = drive::util::GetDriveConnectionStatus(profile_);
+  waiting_for_connection_ =
+      drive_status != drive::util::ConnectionStatus::kConnected;
+  SkyVaultMigrationWaitForConnectionHistogram(
+      MigrationDestination::kGoogleDrive, waiting_for_connection_);
+  if (waiting_for_connection_) {
+    LOG(ERROR) << "Waiting for connection to Drive";
+    connection_wait_start_time_ = base::Time::Now();
+
+    reconnection_timer_.Start(
+        FROM_HERE, kReconnectionTimeout,
+        base::BindOnce(&DriveSkyvaultUploader::OnReconnectionTimeout,
+                       weak_ptr_factory_.GetWeakPtr()));
     return;
   }
 
   // Observe IO tasks updates.
   io_task_controller_observer_.Observe(io_task_controller_);
 
-  // Observe Drive updates.
-  drive::DriveIntegrationService::Observer::Observe(drive_integration_service_);
   drivefs::DriveFsHost::Observer::Observe(
       drive_integration_service_->GetDriveFsHost());
 
@@ -101,22 +146,60 @@ void DriveSkyvaultUploader::Run() {
     return;
   }
 
+  upload_root_path_ = drive_integration_service_->GetMountPointPath()
+                          .AppendASCII("root")
+                          .AppendASCII(upload_root_);
+  auto destination_folder_path =
+      upload_root_path_.Append(relative_source_path_);
+  // Copy will fail if the full path doesn't already exist in drive, so first
+  // create the destination folder if needed.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&CreateDirectoryIfNeeded, destination_folder_path),
+      base::BindOnce(&DriveSkyvaultUploader::CreateCopyIOTask,
+                     weak_ptr_factory_.GetWeakPtr(), destination_folder_path));
+}
+
+void DriveSkyvaultUploader::Cancel() {
+  cancelled_ = true;
+  // If delete task has started, copy must have finished.
+  if (observed_delete_task_id_.has_value()) {
+    io_task_controller_->Cancel(observed_delete_task_id_.value());
+  } else if (observed_copy_task_id_.has_value()) {
+    io_task_controller_->Cancel(observed_copy_task_id_.value());
+  }
+}
+
+void DriveSkyvaultUploader::CreateCopyIOTask(
+    const base::FilePath& destination_folder_path,
+    bool created) {
+  if (observed_copy_task_id_) {
+    NOTREACHED()
+        << "The Copy IOTask was already triggered. Case should not be reached.";
+  }
+
+  if (cancelled_) {
+    OnEndCopy(MigrationUploadError::kCancelled);
+    return;
+  }
+
+  if (!created) {
+    OnEndCopy(MigrationUploadError::kCreateFolderFailed);
+    return;
+  }
+
   // Destination url.
-  base::FilePath destination_folder_path =
-      drive_integration_service_->GetMountPointPath().AppendASCII("root");
   FileSystemURL destination_folder_url =
       ash::cloud_upload::FilePathToFileSystemURL(profile_, file_system_context_,
                                                  destination_folder_path);
-  // TODO (b/243095484) Define error behavior.
   if (!destination_folder_url.is_valid()) {
     LOG(ERROR) << "Unable to generate destination folder Drive URL";
-    OnEndCopy(MigrationUploadError::kCopyFailed);
+    OnEndCopy(MigrationUploadError::kServiceUnavailable);
     return;
   }
 
   std::vector<FileSystemURL> source_urls{source_url_};
   // Always use a copy task. Will convert to a move upon success.
-  // TODO(b/349097896): Pass the destination path.
   std::unique_ptr<file_manager::io_task::IOTask> copy_task =
       std::make_unique<file_manager::io_task::CopyOrMoveIOTask>(
           file_manager::io_task::OperationType::kCopy, std::move(source_urls),
@@ -152,6 +235,17 @@ void DriveSkyvaultUploader::OnEndCopy(
     return;
   }
 
+  if (cancelled_) {
+    error_ = error_.value_or(MigrationUploadError::kCancelled);
+    OnEndUpload();
+    return;
+  }
+
+  if (observed_delete_task_id_) {
+    NOTREACHED() << "The delete IOTask was already triggered. Case should not "
+                    "be reached.";
+  }
+
   std::vector<FileSystemURL> file_urls;
   if (!error.has_value()) {
     // If copy to Drive was successful, delete source file to convert the upload
@@ -174,7 +268,10 @@ void DriveSkyvaultUploader::OnEndCopy(
 
 void DriveSkyvaultUploader::OnEndUpload() {
   observed_relative_drive_path_.clear();
-  std::move(callback_).Run(error_);
+  SkyVaultDeleteErrorHistogram(UploadTrigger::kMigration,
+                               MigrationDestination::kGoogleDrive,
+                               error_ == MigrationUploadError::kDeleteFailed);
+  std::move(callback_).Run(error_, upload_root_path_);
 }
 
 void DriveSkyvaultUploader::OnIOTaskStatus(
@@ -197,7 +294,7 @@ void DriveSkyvaultUploader::OnCopyStatus(
     case file_manager::io_task::State::kPaused:
       return;
     case file_manager::io_task::State::kInProgress:
-      if (observed_relative_drive_path_.empty()) {
+      if (observed_relative_drive_path_.empty() && !status.outputs.empty()) {
         // It's always one file.
         DCHECK_EQ(status.sources.size(), 1u);
         DCHECK_EQ(status.outputs.size(), 1u);
@@ -215,44 +312,58 @@ void DriveSkyvaultUploader::OnCopyStatus(
         observed_absolute_dest_path_ = status.outputs[0].url.path();
         drive_integration_service_->GetRelativeDrivePath(
             observed_absolute_dest_path_, &observed_relative_drive_path_);
-        // scoped_suppress_drive_notifications_for_path_ = std::make_unique<
-        //     file_manager::ScopedSuppressDriveNotificationsForPath>(
-        //     profile_, observed_relative_drive_path_);
       }
       return;
     case file_manager::io_task::State::kSuccess:
       DCHECK_EQ(status.outputs.size(), 1u);
       return;
     case file_manager::io_task::State::kCancelled:
-      LOG(ERROR) << "Upload to Google Drive cancelled";
-      OnEndCopy(MigrationUploadError::kCopyFailed);
+      OnEndCopy(MigrationUploadError::kCancelled);
       return;
     case file_manager::io_task::State::kError:
-      // TODO(aidazolic): Potentially handle different IOTask errors as in
-      // DriveUploadHandler::ShowIOTaskError.
-      OnEndCopy(MigrationUploadError::kCopyFailed);
+      ProcessCopyError(status);
       return;
     case file_manager::io_task::State::kNeedPassword:
-      NOTREACHED_IN_MIGRATION()
-          << "Encrypted file should not need password to be copied or "
-             "moved. Case should not be reached.";
-      return;
+      NOTREACHED() << "Encrypted file should not need password to be copied or "
+                      "moved. Case should not be reached.";
   }
+}
+
+void DriveSkyvaultUploader::ProcessCopyError(
+    const file_manager::io_task::ProgressStatus& status) {
+  // It's always one file.
+  DCHECK_EQ(status.sources.size(), 1u);
+  DCHECK_EQ(status.outputs.size(), 1u);
+  DCHECK_EQ(status.state, file_manager::io_task::State::kError);
+
+  base::File::Error error =
+      status.outputs.front().error.value_or(base::File::FILE_ERROR_FAILED);
+  MigrationUploadError upload_error = MigrationUploadError::kCopyFailed;
+
+  switch (error) {
+    case base::File::FILE_ERROR_NOT_FOUND:
+      upload_error = MigrationUploadError::kFileNotFound;
+      break;
+    case base::File::FILE_ERROR_NO_SPACE:
+      upload_error = MigrationUploadError::kCloudQuotaFull;
+      break;
+    default:
+      break;
+  }
+
+  OnEndCopy(upload_error);
 }
 
 void DriveSkyvaultUploader::OnDeleteStatus(
     const file_manager::io_task::ProgressStatus& status) {
   switch (status.state) {
     case file_manager::io_task::State::kCancelled:
-      NOTREACHED_IN_MIGRATION()
-          << "Deletion of source or destination file should not have "
-             "been cancelled.";
-      ABSL_FALLTHROUGH_INTENDED;
+      // Don't override errors occurred during the copy.
+      error_ = error_.value_or(MigrationUploadError::kCancelled);
+      break;
     case file_manager::io_task::State::kError:
-      if (!error_) {
-        // Don't override errors occurred during the copy.
-        error_ = MigrationUploadError::kDeleteFailed;
-      }
+      // Don't override errors occurred during the copy.
+      error_ = error_.value_or(MigrationUploadError::kDeleteFailed);
       break;
     case file_manager::io_task::State::kSuccess:
       break;
@@ -305,14 +416,13 @@ void DriveSkyvaultUploader::OnSyncingStatusUpdate(
         return;
       case drivefs::mojom::ItemEvent::State::kFailed:
         LOG(ERROR) << "Drive sync error: failed";
-        OnEndCopy(MigrationUploadError::kCopyFailed);
+        OnEndCopy(MigrationUploadError::kSyncFailed);
         return;
       case drivefs::mojom::ItemEvent::State::kCancelledAndDeleted:
-        NOTREACHED_IN_MIGRATION();
-        return;
+        NOTREACHED();
       case drivefs::mojom::ItemEvent::State::kCancelledAndTrashed:
         LOG(ERROR) << "Drive sync error: cancelled and trashed";
-        OnEndCopy(MigrationUploadError::kCopyFailed);
+        OnEndCopy(MigrationUploadError::kSyncFailed);
         return;
     }
   }
@@ -322,18 +432,46 @@ void DriveSkyvaultUploader::OnError(const drivefs::mojom::DriveError& error) {
   if (base::FilePath(error.path) != observed_relative_drive_path_) {
     return;
   }
-
-  // TODO(aidazolic): Potentially handle different errors, as in
-  // DriveUploadHandler::OnError.
-  OnEndCopy(MigrationUploadError::kCopyFailed);
+  OnEndCopy(MigrationUploadError::kCloudQuotaFull);
 }
 
 void DriveSkyvaultUploader::OnDriveConnectionStatusChanged(
     drive::util::ConnectionStatus status) {
+  if (waiting_for_connection_) {
+    if (status == drive::util::ConnectionStatus::kConnected) {
+      LOG(ERROR) << "Reconnected to Drive";
+      waiting_for_connection_ = false;
+      CHECK(connection_wait_start_time_.has_value());
+      SkyVaultMigrationReconnectionDurationHistogram(
+          MigrationDestination::kGoogleDrive,
+          base::Time::Now() - connection_wait_start_time_.value());
+      connection_wait_start_time_.reset();
+      reconnection_timer_.Stop();
+      drive::DriveIntegrationService::Observer::Reset();
+      Run();
+    }
+    return;
+  }
+  if (status == drive::util::ConnectionStatus::kNoService) {
+    LOG(ERROR) << "Drive service became unavailable during upload";
+    OnEndCopy(MigrationUploadError::kServiceUnavailable);
+    return;
+  }
   if (status != drive::util::ConnectionStatus::kConnected) {
     LOG(ERROR) << "Lost connection to Drive during upload";
-    OnEndCopy(MigrationUploadError::kServiceUnavailable);
+    OnEndCopy(MigrationUploadError::kNetworkError);
   }
+}
+
+void DriveSkyvaultUploader::OnReconnectionTimeout() {
+  if (!waiting_for_connection_) {
+    LOG(ERROR) << "Reconnection timer fired, but currently not waiting for "
+                  "connection; ignoring";
+    return;
+  }
+  LOG(ERROR)
+      << "Reconnection not established within the timeout, failing the upload";
+  OnEndCopy(MigrationUploadError::kReconnectTimeout);
 }
 
 }  // namespace policy::local_user_files

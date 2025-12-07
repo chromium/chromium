@@ -6,8 +6,10 @@
 #define MEDIA_FILTERS_HLS_DATA_SOURCE_PROVIDER_IMPL_H_
 
 #include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "base/types/pass_key.h"
@@ -25,8 +27,10 @@ class MEDIA_EXPORT HlsDataSourceProviderImpl : public HlsDataSourceProvider {
   class DataSourceFactory {
    public:
     using DataSourceCb = base::OnceCallback<void(std::unique_ptr<DataSource>)>;
-    virtual ~DataSourceFactory() = 0;
-    virtual void CreateDataSource(GURL uri, DataSourceCb cb) = 0;
+    virtual ~DataSourceFactory() = default;
+    virtual void CreateDataSource(GURL uri,
+                                  bool ignore_cache,
+                                  DataSourceCb cb) = 0;
   };
 
   ~HlsDataSourceProviderImpl() override;

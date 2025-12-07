@@ -20,7 +20,7 @@ class AutofillProfile;
 namespace views {
 class Button;
 class View;
-}
+}  // namespace views
 
 namespace payments {
 

@@ -5,19 +5,25 @@
 #ifndef COMPONENTS_INPUT_PASSTHROUGH_TOUCH_EVENT_QUEUE_H_
 #define COMPONENTS_INPUT_PASSTHROUGH_TOUCH_EVENT_QUEUE_H_
 
+#include <optional>
 #include <set>
 #include <string>
 
+#include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
+#include "components/input/dispatch_to_renderer_callback.h"
 #include "components/input/event_with_latency_info.h"
-#include "base/component_export.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "ui/events/blink/blink_features.h"
+
+namespace base {
+class SequencedTaskRunner;
+} // namespace base
 
 namespace content {
 class InputRouterImplTestBase;
@@ -31,10 +37,11 @@ class TouchTimeoutHandler;
 // dispatch touch event responses.
 class COMPONENT_EXPORT(INPUT) PassthroughTouchEventQueueClient {
  public:
-  virtual ~PassthroughTouchEventQueueClient() {}
+  virtual ~PassthroughTouchEventQueueClient() = default;
 
   virtual void SendTouchEventImmediately(
-      const TouchEventWithLatencyInfo& event) = 0;
+      const TouchEventWithLatencyInfo& event,
+      DispatchToRendererCallback& dispatch_callback) = 0;
 
   virtual void OnTouchEventAck(
       const TouchEventWithLatencyInfo& event,
@@ -45,6 +52,8 @@ class COMPONENT_EXPORT(INPUT) PassthroughTouchEventQueueClient {
       const blink::WebTouchEvent& touch_event) = 0;
 
   virtual void FlushDeferredGestureQueue() = 0;
+
+  virtual DispatchToRendererCallback GetDispatchToRendererCallback() = 0;
 };
 
 // A queue that processes a touch-event and forwards it on to the
@@ -99,9 +108,10 @@ class COMPONENT_EXPORT(INPUT) PassthroughTouchEventQueue {
 
   ~PassthroughTouchEventQueue();
 
-  void QueueEvent(const TouchEventWithLatencyInfo& event);
+  void QueueEvent(const TouchEventWithLatencyInfo& event,
+                  DispatchToRendererCallback& dispatch_callback);
 
-  void PrependTouchScrollNotification();
+  void PrependTouchScrollNotification(uint32_t primary_unique_touch_event_id);
 
   void ProcessTouchAck(blink::mojom::InputEventResultSource ack_source,
                        blink::mojom::InputEventResultState ack_result,
@@ -129,6 +139,8 @@ class COMPONENT_EXPORT(INPUT) PassthroughTouchEventQueue {
   // Empties the queue of touch events. This may result in any number of gesture
   // events being sent to the renderer.
   void FlushQueue();
+
+  void OnTouchActionFromMain();
 
  protected:
   void SendTouchCancelEventForTouchEvent(
@@ -224,13 +236,17 @@ class COMPONENT_EXPORT(INPUT) PassthroughTouchEventQueue {
   PreFilterResult FilterBeforeForwardingImpl(const blink::WebTouchEvent& event);
   bool ShouldFilterForEvent(const blink::WebTouchEvent& event);
 
+  void SetAckStateForPendingTouchMovesFromSequence(
+      uint32_t primary_unique_touch_event_id);
+
   void AckTouchEventToClient(
       const TouchEventWithLatencyInfo& acked_event,
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result);
 
   void SendTouchEventImmediately(TouchEventWithLatencyInfo* touch,
-                                 bool wait_for_ack);
+                                 bool wait_for_ack,
+                                 DispatchToRendererCallback& dispatch_callback);
 
   void AckCompletedEvents();
 
@@ -271,6 +287,8 @@ class COMPONENT_EXPORT(INPUT) PassthroughTouchEventQueue {
   std::set<TouchEventWithLatencyInfoAndAckState,
            TouchEventWithLatencyInfoAndAckStateComparator>
       outstanding_touches_;
+
+  std::optional<uint32_t> curr_sequence_down_event_id_ = std::nullopt;
 
   // Whether we should allow events to bypass normal queue filter rules.
   const bool skip_touch_filter_;

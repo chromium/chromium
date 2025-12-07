@@ -38,7 +38,7 @@ struct ThreadCacheStats {
   uint32_t metadata_overhead;
 
 #if PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
-  uint64_t allocs_per_bucket_[internal::kNumBuckets + 1];
+  uint64_t allocs_per_bucket_[BucketIndexLookup::kNumBuckets + 1];
 #endif  // PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
 };
 
@@ -56,7 +56,7 @@ struct ThreadAllocStats {
   uint64_t dealloc_total_size;
 };
 
-struct LightweightQuarantineStats {
+struct SchedulerLoopQuarantineStats {
   size_t size_in_bytes;
   size_t count;
   size_t cumulative_size_in_bytes;
@@ -93,7 +93,7 @@ struct PartitionMemoryStats {
   ThreadCacheStats all_thread_caches_stats;
 
   bool has_scheduler_loop_quarantine;
-  LightweightQuarantineStats scheduler_loop_quarantine_stats_total;
+  SchedulerLoopQuarantineStats scheduler_loop_quarantine_stats_total;
 
   // Count and total duration of system calls made since process start. May not
   // be reported on all platforms.

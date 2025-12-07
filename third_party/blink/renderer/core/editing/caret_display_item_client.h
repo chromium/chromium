@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
+#include "third_party/blink/renderer/core/layout/inline/caret_rect.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_client.h"
@@ -69,6 +70,9 @@ class CORE_EXPORT CaretDisplayItemClient final
   // Called during pre-paint tree walk to invalidate |previous_layout_block_|.
   void EnsureInvalidationOfPreviousLayoutBlock();
 
+  // Invalidate paint if a cc property tree update is not available.
+  void SetNeedsNonCompositedPaintInvalidation();
+
   bool ShouldPaintCaret(const LayoutBlock& block) const {
     return &block == layout_block_;
   }
@@ -102,7 +106,8 @@ class CORE_EXPORT CaretDisplayItemClient final
   // PositionWithAffinity version if possible.
   // A position in HTMLTextFromControlElement is a typical example.
   static CaretRectAndPainterBlock ComputeCaretRectAndPainterBlock(
-      const PositionWithAffinity& caret_position);
+      const PositionWithAffinity& caret_position,
+      CaretShape caret_shape);
 
   void InvalidatePaintInCurrentLayoutBlock(const PaintInvalidatorContext&);
   void InvalidatePaintInPreviousLayoutBlock(const PaintInvalidatorContext&);

@@ -5,29 +5,20 @@
 #ifndef IOS_CHROME_BROWSER_SYNC_MODEL_SYNC_INVALIDATIONS_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_SYNC_MODEL_SYNC_INVALIDATIONS_SERVICE_FACTORY_H_
 
-#include <memory>
+#import <memory>
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-
-class ChromeBrowserState;
+#import "base/no_destructor.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 namespace syncer {
 class SyncInvalidationsService;
 }  // namespace syncer
 
-class SyncInvalidationsServiceFactory : public BrowserStateKeyedServiceFactory {
+class SyncInvalidationsServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  SyncInvalidationsServiceFactory(const SyncInvalidationsServiceFactory&) =
-      delete;
-  SyncInvalidationsServiceFactory& operator=(
-      const SyncInvalidationsServiceFactory&) = delete;
-
   // Returned value may be nullptr in case if sync invalidations are disabled or
   // not supported.
-  static syncer::SyncInvalidationsService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
-
+  static syncer::SyncInvalidationsService* GetForProfile(ProfileIOS* profile);
   static SyncInvalidationsServiceFactory* GetInstance();
 
  private:
@@ -36,9 +27,9 @@ class SyncInvalidationsServiceFactory : public BrowserStateKeyedServiceFactory {
   SyncInvalidationsServiceFactory();
   ~SyncInvalidationsServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_SYNC_MODEL_SYNC_INVALIDATIONS_SERVICE_FACTORY_H_

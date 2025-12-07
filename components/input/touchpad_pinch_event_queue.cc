@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/latency/latency_info.h"
@@ -76,20 +77,22 @@ blink::WebMouseWheelEvent CreateSyntheticWheelFromTouchpadPinchEvent(
 // This is a single queued pinch event to which we add trace events.
 class QueuedTouchpadPinchEvent : public GestureEventWithLatencyInfo {
  public:
-  QueuedTouchpadPinchEvent(
-      const GestureEventWithLatencyInfo& original_event)
-      : GestureEventWithLatencyInfo(original_event) {
-    TRACE_EVENT_ASYNC_BEGIN0("input", "TouchpadPinchEventQueue::QueueEvent",
-                             this);
+  QueuedTouchpadPinchEvent(const GestureEventWithLatencyInfo& original_event,
+                           DispatchToRendererCallback callback)
+      : GestureEventWithLatencyInfo(original_event),
+        dispatch_callback(std::move(callback)) {
+    TRACE_EVENT_BEGIN("input", "TouchpadPinchEventQueue::QueueEvent",
+                      perfetto::Track::FromPointer(this));
   }
 
   QueuedTouchpadPinchEvent(const QueuedTouchpadPinchEvent&) = delete;
   QueuedTouchpadPinchEvent& operator=(const QueuedTouchpadPinchEvent&) = delete;
 
   ~QueuedTouchpadPinchEvent() {
-    TRACE_EVENT_ASYNC_END0("input", "TouchpadPinchEventQueue::QueueEvent",
-                           this);
+    TRACE_EVENT_END("input", perfetto::Track::FromPointer(this));
   }
+
+  DispatchToRendererCallback dispatch_callback;
 };
 
 TouchpadPinchEventQueue::TouchpadPinchEventQueue(
@@ -101,7 +104,8 @@ TouchpadPinchEventQueue::TouchpadPinchEventQueue(
 TouchpadPinchEventQueue::~TouchpadPinchEventQueue() = default;
 
 void TouchpadPinchEventQueue::QueueEvent(
-    const GestureEventWithLatencyInfo& event) {
+    const GestureEventWithLatencyInfo& event,
+    DispatchToRendererCallback& dispatch_callback) {
   TRACE_EVENT0("input", "TouchpadPinchEventQueue::QueueEvent");
 
   if (!pinch_queue_.empty()) {
@@ -110,6 +114,8 @@ void TouchpadPinchEventQueue::QueueEvent(
       // Terminate the LatencyInfo of the event before it gets coalesced away.
       event.latency.Terminate();
 
+      std::move(dispatch_callback)
+          .Run(event.event, DispatchToRendererResult::kNotDispatched);
       last_event->CoalesceWith(event);
       DCHECK_EQ(blink::WebInputEvent::Type::kGesturePinchUpdate,
                 last_event->event.GetType());
@@ -121,7 +127,8 @@ void TouchpadPinchEventQueue::QueueEvent(
     }
   }
 
-  pinch_queue_.push_back(std::make_unique<QueuedTouchpadPinchEvent>(event));
+  pinch_queue_.push_back(std::make_unique<QueuedTouchpadPinchEvent>(
+      event, std::move(dispatch_callback)));
   TryForwardNextEventToRenderer();
 }
 
@@ -163,6 +170,9 @@ void TouchpadPinchEventQueue::TryForwardNextEventToRenderer() {
         *pinch_event_awaiting_ack_,
         blink::mojom::InputEventResultSource::kBrowser,
         blink::mojom::InputEventResultState::kIgnored);
+    std::move(pinch_event_awaiting_ack_->dispatch_callback)
+        .Run(pinch_event_awaiting_ack_->event,
+             DispatchToRendererResult::kNotDispatched);
     pinch_event_awaiting_ack_.reset();
     TryForwardNextEventToRenderer();
     return;
@@ -202,9 +212,10 @@ void TouchpadPinchEventQueue::TryForwardNextEventToRenderer() {
       wheel_event_awaiting_ack, pinch_event_awaiting_ack_->latency);
 
   client_->SendMouseWheelEventForPinchImmediately(
-      synthetic_wheel,
+      pinch_event_awaiting_ack_->event, synthetic_wheel,
       base::BindOnce(&TouchpadPinchEventQueue::ProcessMouseWheelAck,
-                     base::Unretained(this)));
+                     base::Unretained(this)),
+      pinch_event_awaiting_ack_->dispatch_callback);
 }
 
 bool TouchpadPinchEventQueue::has_pending() const {

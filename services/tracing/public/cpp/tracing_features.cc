@@ -15,14 +15,21 @@
 #include "components/tracing/common/tracing_switches.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"  // nogncheck
+#include "base/android/android_info.h"  // nogncheck
 #endif
 
 namespace features {
 
+namespace {
+
+BASE_FEATURE(kPerfettoBackendParams,
+             "kPerfettoBackendParams",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+}  // namespace
+
 // Runs the tracing service as an in-process browser service.
 BASE_FEATURE(kTracingServiceInProcess,
-             "TracingServiceInProcess",
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CASTOS)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
@@ -30,15 +37,34 @@ BASE_FEATURE(kTracingServiceInProcess,
 #endif
 );
 
+// This feature is enabled by default on WebView using
+// `variations::FeatureOverrides` since we can't have #ifdef for WebView only.
 BASE_FEATURE(kEnablePerfettoSystemTracing,
-             "EnablePerfettoSystemTracing",
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
-             // TODO(crbug.com/42050521): Read from structured config on Fuchsia.
-             base::FEATURE_ENABLED_BY_DEFAULT
+    // TODO(crbug.com/42050521): Read from structured config on Fuchsia.
+    base::FEATURE_ENABLED_BY_DEFAULT
 #else
-             base::FEATURE_DISABLED_BY_DEFAULT
+    base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
+
+BASE_FEATURE(kEnablePerfettoSystemBackgroundTracing,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls the preferred size of each page in the shmem buffer.
+BASE_FEATURE_PARAM(int,
+                   kPerfettoSMBPageSizeBytes,
+                   &kPerfettoBackendParams,
+                   "page_size_bytes",
+                   tracing::kDefaultSMBPageSizeBytes);
+
+// Controls the size of the shared memory buffer between the current process and
+// the service backend(s)
+BASE_FEATURE_PARAM(int,
+                   kPerfettoSharedMemorySizeBytes,
+                   &kPerfettoBackendParams,
+                   "shared_memory_size_bytes",
+                   tracing::kDefaultSharedMemorySizeBytes);
 
 }  // namespace features
 
@@ -46,7 +72,7 @@ namespace tracing {
 
 bool ShouldSetupSystemTracing() {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_debug_android()) {
+  if (base::android::android_info::is_debug_android()) {
     return true;
   }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -55,6 +81,12 @@ bool ShouldSetupSystemTracing() {
   }
   return features::kEnablePerfettoSystemTracing.default_state ==
          base::FEATURE_ENABLED_BY_DEFAULT;
+}
+
+bool SystemBackgroundTracingEnabled() {
+  return ShouldSetupSystemTracing() &&
+         base::FeatureList::IsEnabled(
+             features::kEnablePerfettoSystemBackgroundTracing);
 }
 
 }  // namespace tracing

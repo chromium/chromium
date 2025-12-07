@@ -7,10 +7,10 @@
 #include <algorithm>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -18,14 +18,14 @@
 #include "chrome/browser/ash/crostini/ansible/ansible_management_service_factory.h"
 #include "chrome/browser/ash/crostini/crostini_disk.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
-#include "chrome/browser/ash/crostini/crostini_manager_factory.h"
+#include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer_dialog.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -45,44 +45,6 @@ namespace crostini {
 namespace {
 using SetupResult = CrostiniInstaller::SetupResult;
 constexpr char kCrostiniSetupSourceHistogram[] = "Crostini.SetupSource";
-
-class CrostiniInstallerFactory : public ProfileKeyedServiceFactory {
- public:
-  static crostini::CrostiniInstaller* GetForProfile(Profile* profile) {
-    return static_cast<crostini::CrostiniInstaller*>(
-        GetInstance()->GetServiceForBrowserContext(profile, true));
-  }
-
-  static CrostiniInstallerFactory* GetInstance() {
-    static base::NoDestructor<CrostiniInstallerFactory> factory;
-    return factory.get();
-  }
-
- private:
-  friend class base::NoDestructor<CrostiniInstallerFactory>;
-
-  CrostiniInstallerFactory()
-      : ProfileKeyedServiceFactory(
-            "CrostiniInstallerService",
-            ProfileSelections::Builder()
-                .WithRegular(ProfileSelection::kOriginalOnly)
-                // TODO(crbug.com/40257657): Check if this service is needed in
-                // Guest mode.
-                .WithGuest(ProfileSelection::kOriginalOnly)
-                // TODO(crbug.com/41488885): Check if this service is needed for
-                // Ash Internals.
-                .WithAshInternals(ProfileSelection::kOriginalOnly)
-                .Build()) {
-    DependsOn(crostini::CrostiniManagerFactory::GetInstance());
-  }
-
-  // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override {
-    Profile* profile = Profile::FromBrowserContext(context);
-    return new crostini::CrostiniInstaller(profile);
-  }
-};
 
 constexpr int kUninitializedDiskSpace = -1;
 
@@ -145,7 +107,7 @@ SetupResult ErrorToSetupResult(InstallerError error) {
       return SetupResult::kErrorUnknown;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 SetupResult InstallStateToCancelledSetupResult(
@@ -167,11 +129,14 @@ SetupResult InstallStateToCancelledSetupResult(
       return SetupResult::kUserCancelledSetupContainer;
     case InstallerState::kStartContainer:
       return SetupResult::kUserCancelledStartContainer;
+    case InstallerState::kFetchSshKeys_DEPRECATED:
+    case InstallerState::kMountContainer_DEPRECATED:
+      NOTREACHED();
     case InstallerState::kConfigureContainer:
       return SetupResult::kUserCancelledConfiguringContainer;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 crostini::mojom::InstallerError CrostiniResultToInstallerError(
@@ -188,8 +153,7 @@ crostini::mojom::InstallerError CrostiniResultToInstallerError(
   switch (installer_state) {
     default:
     case InstallerState::kStart:
-      NOTREACHED_IN_MIGRATION();
-      return InstallerError::kErrorUnknown;
+      NOTREACHED();
     case InstallerState::kInstallImageLoader:
       if (offline) {
         return InstallerError::kErrorOffline;
@@ -224,10 +188,6 @@ crostini::mojom::InstallerError CrostiniResultToInstallerError(
 }
 
 }  // namespace
-
-CrostiniInstaller* CrostiniInstaller::GetForProfile(Profile* profile) {
-  return CrostiniInstallerFactory::GetForProfile(profile);
-}
 
 CrostiniInstaller::CrostiniInstaller(Profile* profile) : profile_(profile) {}
 
@@ -455,7 +415,7 @@ void CrostiniInstaller::RunProgressCallback() {
       state_max_time = base::Seconds(140 + 300);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   double state_fraction = time_in_state / state_max_time;
@@ -466,9 +426,6 @@ void CrostiniInstaller::RunProgressCallback() {
     state_fraction =
         0.5 * (state_fraction + 0.01 * container_download_percent_);
   }
-  // TODO(crbug.com/40645509): Calculate configure container step
-  // progress based on real progress.
-
   double progress = state_start_mark + std::clamp(state_fraction, 0.0, 1.0) *
                                            (state_end_mark - state_start_mark);
   progress_callback_.Run(installing_state_, progress);
@@ -491,7 +448,7 @@ void CrostiniInstaller::UpdateState(State new_state) {
         base::BindRepeating(&CrostiniInstaller::RunProgressCallback,
                             weak_ptr_factory_.GetWeakPtr()));
   } else {
-    state_progress_timer_.AbandonAndStop();
+    state_progress_timer_.Stop();
   }
 }
 
@@ -574,8 +531,15 @@ void CrostiniInstaller::OnCrostiniRestartFinished(CrostiniResult result) {
 
   if (!skip_launching_terminal_for_testing_) {
     // kInvalidDisplayId will launch terminal on the current active display.
+    const guest_os::GuestId* container_id;
+    if (CrostiniManager::GetTerminaFlavor(profile_) ==
+        CrostiniManager::TerminaFlavor::BAGUETTE) {
+      container_id = &crostini::DefaultBaguetteContainerId();
+    } else {
+      container_id = &crostini::DefaultContainerId();
+    }
     guest_os::LaunchTerminal(profile_, display::kInvalidDisplayId,
-                             crostini::DefaultContainerId());
+                             *container_id);
   }
 }
 
@@ -612,11 +576,31 @@ void CrostiniInstaller::OnAvailableDiskSpace(std::optional<int64_t> bytes) {
 
   UpdateInstallingState(InstallerState::kInstallImageLoader);
 
-  // Kick off the Crostini Restart sequence. We will be added as an observer.
+  // In general, we should always try to start the guest that exists on the
+  // device. We should also only try to install baguette if the flag is enabled
+  // (for now).
+  //
+  // After this point, we can assume that the current local state is correct and
+  // no longer need concern ourself with the feature flag value.
+  CrostiniManager::TerminaFlavor termina_flavor =
+      CrostiniManager::GetTerminaFlavor(profile_);
+  bool baguette_enabled =
+      base::FeatureList::IsEnabled(ash::features::kCrostiniContainerless);
+  bool start_baguette =
+      (baguette_enabled &&
+       !(termina_flavor == CrostiniManager::TerminaFlavor::CROSTINI)) ||
+      termina_flavor == CrostiniManager::TerminaFlavor::BAGUETTE;
+  const guest_os::GuestId* container_id;
+  if (start_baguette) {
+    container_id = &crostini::DefaultBaguetteContainerId();
+  } else {
+    container_id = &crostini::DefaultContainerId();
+  }
+
   restart_id_ =
       crostini::CrostiniManager::GetForProfile(profile_)
           ->RestartCrostiniWithOptions(
-              crostini::DefaultContainerId(), std::move(restart_options_),
+              *container_id, std::move(restart_options_),
               base::BindOnce(&CrostiniInstaller::OnCrostiniRestartFinished,
                              weak_ptr_factory_.GetWeakPtr()),
               this);
@@ -626,11 +610,6 @@ void CrostiniInstaller::OnAvailableDiskSpace(std::optional<int64_t> bytes) {
   // subsequently set |state_| to |ERROR|.
   DCHECK_EQ(restart_id_ == CrostiniManager::kUninitializedRestartId,
             state_ == State::ERROR);
-}
-
-// static
-void CrostiniInstaller::EnsureFactoryBuilt() {
-  CrostiniInstallerFactory::GetInstance();
 }
 
 }  // namespace crostini

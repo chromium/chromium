@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.feed.webfeed;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -16,13 +18,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.R;
@@ -45,6 +49,7 @@ import org.chromium.ui.widget.LoadingView;
 import org.chromium.url.GURL;
 
 /** Specific {@link FrameLayout} that displays the Web Feed footer in the main menu. */
+@NullMarked
 public class WebFeedMainMenuItem extends FrameLayout {
     private static final String TAG = "WebFeedMainMenuItem";
     private static final int LOADING_REFRESH_TIME_MS = 400;
@@ -53,12 +58,12 @@ public class WebFeedMainMenuItem extends FrameLayout {
 
     private GURL mUrl;
     private Tab mTab;
-    private String mTitle;
+    private @Nullable String mTitle;
     private AppMenuHandler mAppMenuHandler;
-    private Class<?> mCreatorActivityClass;
+    private @Nullable Class<?> mCreatorActivityClass;
 
     // Points to the currently shown chip: null, mFollowingChipView, mFollowChipView,
-    private ChipView mChipView;
+    private @Nullable ChipView mChipView;
 
     // Child views, null before inflation.
     private ChipView mFollowingChipView;
@@ -66,7 +71,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
     private ImageView mIcon;
     private TextView mItemText;
 
-    private @Nullable byte[] mRecommendedWebFeedName;
+    private byte @Nullable [] mRecommendedWebFeedName;
 
     private WebFeedFaviconFetcher mFaviconFetcher;
     private WebFeedSnackbarController mWebFeedSnackbarController;
@@ -102,11 +107,11 @@ public class WebFeedMainMenuItem extends FrameLayout {
      * @param tab The current {@link Tab}.
      * @param appMenuHandler {@link AppMenuHandler} to control hiding the app menu.
      * @param feedLauncher {@link FeedLauncher}
-     * @param largeIconBridge {@link LargeIconBridge} to get the favicon of the page.
      * @param dialogManager {@link ModalDialogManager} for managing the dialog.
      * @param snackbarManager {@link SnackbarManager} to display snackbars.
      * @param creatorActivityClass {@link CreatorActivity} for launching the Creator Activity.
      */
+    @Initializer
     public void initialize(
             Tab tab,
             AppMenuHandler appMenuHandler,
@@ -187,7 +192,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
                 || subscriptionStatus == WebFeedSubscriptionStatus.NOT_SUBSCRIBED) {
             hideCurrentChipAndThen(this::showUnsubscribedChipView);
         } else if (subscriptionStatus == WebFeedSubscriptionStatus.SUBSCRIBED) {
-            hideCurrentChipAndThen(() -> showSubscribedChipView(webFeedMetadata.id));
+            hideCurrentChipAndThen(() -> showSubscribedChipView(assumeNonNull(webFeedMetadata).id));
         } else if (subscriptionStatus == WebFeedSubscriptionStatus.UNSUBSCRIBE_IN_PROGRESS) {
             showLoadingChipView(mFollowingChipView, mContext.getText(R.string.menu_following));
         } else if (subscriptionStatus == WebFeedSubscriptionStatus.SUBSCRIBE_IN_PROGRESS) {
@@ -275,7 +280,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
                         boolean mCalled;
 
                         @Override
-                        public void onShowLoadingUIComplete() {
+                        public void onShowLoadingUiComplete() {
                             if (mCalled) {
                                 return;
                             }
@@ -284,7 +289,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
                         }
 
                         @Override
-                        public void onHideLoadingUIComplete() {}
+                        public void onHideLoadingUiComplete() {}
                     });
         }
         postDelayed(
@@ -305,10 +310,10 @@ public class WebFeedMainMenuItem extends FrameLayout {
                         boolean mCalled;
 
                         @Override
-                        public void onShowLoadingUIComplete() {}
+                        public void onShowLoadingUiComplete() {}
 
                         @Override
-                        public void onHideLoadingUIComplete() {
+                        public void onHideLoadingUiComplete() {
                             if (mCalled) {
                                 return;
                             }
@@ -329,13 +334,13 @@ public class WebFeedMainMenuItem extends FrameLayout {
             OnClickListener onClickListener) {
         TextView chipTextView = chipView.getPrimaryTextView();
         chipTextView.setText(chipText);
-        chipView.setIcon(chipIconRes, /* tintWithTextColor= */ true);
+        chipView.setIconWithTint(chipIconRes, /* tintWithTextColor= */ true);
         chipView.setOnClickListener(onClickListener);
         chipView.setEnabled(!mTab.isShowingErrorPage());
         chipView.setVisibility(View.VISIBLE);
     }
 
-    private void onFaviconFetched(Bitmap icon) {
+    private void onFaviconFetched(@Nullable Bitmap icon) {
         mIcon.setImageBitmap(icon);
         if (icon == null) {
             mIcon.setVisibility(View.GONE);

@@ -78,8 +78,6 @@ class WebPerformanceMetricsTabHelper
   // Stores whether the WebState has been hidden at any point since the most
   // recent navigation started.
   bool has_been_hidden_since_navigation_started_ = false;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_MODEL_WEB_PERFORMANCE_METRICS_WEB_PERFORMANCE_METRICS_TAB_HELPER_H_

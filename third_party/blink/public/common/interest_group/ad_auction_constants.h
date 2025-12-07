@@ -7,6 +7,7 @@
 
 #include <cstddef>
 
+#include "base/time/time.h"
 #include "third_party/blink/public/common/common_export.h"
 
 namespace blink {
@@ -26,6 +27,15 @@ inline constexpr size_t kMaxAdAuctionAdComponentsConfigLimit = 100;
 // This is based on experiment configuration (so isn't entirely trivial to
 // call), but will not exceed kMaxAdAuctionAdComponentsConfigLimit.
 size_t BLINK_COMMON_EXPORT MaxAdAuctionAdComponents();
+
+// The maximum lifetime for interest group expiration, controlled by feature
+// params. Defaults to 30 days if the flag is off.
+base::TimeDelta BLINK_COMMON_EXPORT MaxInterestGroupLifetime();
+
+// The maximum lifetime for interest group metadata expiration (join/bid/win
+// history), controlled by feature params. Defaults to 30 days if the flag is
+// off.
+base::TimeDelta BLINK_COMMON_EXPORT MaxInterestGroupLifetimeForMetadata();
 
 }  // namespace blink
 

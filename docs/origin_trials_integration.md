@@ -51,7 +51,7 @@ Not specific to Origin Trial:
 
 More details are explained in the json5 file and in the above linked doc.
 
-If the runtime enabled feature flag is [used in C++](#1-in-c), you will have to
+If the runtime enabled feature flag is [used in C++](#1_in-c), you will have to
 change all callers of the no-argument overload of
 `RuntimeEnabledFeatures::MyFeatureEnabled()` to the overload that takes a
 `const FeatureContext*`. You can pass an `ExecutionContext` here, e.g. using

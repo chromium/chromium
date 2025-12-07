@@ -21,8 +21,9 @@ void ReceiverPresentationServiceDelegateImpl::CreateForWebContents(
     const std::string& presentation_id) {
   DCHECK(web_contents);
 
-  if (FromWebContents(web_contents))
+  if (FromWebContents(web_contents)) {
     return;
+  }
 
   web_contents->SetUserData(
       UserDataKey(),
@@ -65,6 +66,9 @@ ReceiverPresentationServiceDelegateImpl::
   DCHECK(!presentation_id.empty());
   DCHECK(local_presentation_manager_);
 }
+
+ReceiverPresentationServiceDelegateImpl::
+    ~ReceiverPresentationServiceDelegateImpl() = default;
 
 void ReceiverPresentationServiceDelegateImpl::
     RegisterReceiverConnectionAvailableCallback(

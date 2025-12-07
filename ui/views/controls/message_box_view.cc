@@ -8,11 +8,14 @@
 
 #include <memory>
 #include <numeric>
+#include <string_view>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -29,6 +32,7 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/client_view.h"
@@ -56,8 +60,8 @@ bool IsParagraphSeparator(char16_t c) {
 // Splits |text| into a vector of paragraphs.
 // Given an example "\nabc\ndef\n\n\nhij\n", the split results should be:
 // "", "abc", "def", "", "", "hij", and "".
-void SplitStringIntoParagraphs(const std::u16string& text,
-                               std::vector<std::u16string>* paragraphs) {
+void SplitStringIntoParagraphs(std::u16string_view text,
+                               std::vector<std::u16string_view>* paragraphs) {
   paragraphs->clear();
 
   size_t start = 0;
@@ -70,6 +74,26 @@ void SplitStringIntoParagraphs(const std::u16string& text,
   paragraphs->push_back(text.substr(start, text.length() - start));
 }
 
+std::unique_ptr<views::Label> GetLabelView(
+    std::u16string_view text,
+    gfx::HorizontalAlignment alignment,
+    views::MessageBoxView::MessageLabels& message_labels) {
+  return views::Builder<views::Label>()
+      .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
+      .SetText(std::u16string(text))
+      // Avoid empty multi-line labels, which have a height of 0.
+      .SetMultiLine(!text.empty())
+      .SetAllowCharacterBreak(true)
+      .SetHorizontalAlignment(alignment)
+      .CustomConfigure(base::BindOnce(
+          [](views::MessageBoxView::MessageLabels& message_labels,
+             views::Label* message_label) {
+            message_labels.push_back(message_label);
+          },
+          std::ref(message_labels)))
+      .Build();
+}
+
 }  // namespace
 
 namespace views {
@@ -79,7 +103,8 @@ namespace views {
 
 MessageBoxView::MessageBoxView(const std::u16string& message,
                                bool detect_directionality)
-    : inter_row_vertical_spacing_(LayoutProvider::Get()->GetDistanceMetric(
+    : detect_directionality_(detect_directionality),
+      inter_row_vertical_spacing_(LayoutProvider::Get()->GetDistanceMetric(
           DISTANCE_RELATED_CONTROL_VERTICAL)),
       message_width_(kDefaultMessageWidth) {
   const LayoutProvider* provider = LayoutProvider::Get();
@@ -92,37 +117,8 @@ MessageBoxView::MessageBoxView(const std::u16string& message,
           // We explicitly set insets on the message contents instead of the
           // scroll view so that the scroll view borders are not capped by
           // dialog insets.
-          .SetBorder(CreateEmptyBorder(GetHorizontalInsets(provider)));
-
-  auto add_label = [&message_contents, this](
-                       const std::u16string& text,
-                       gfx::HorizontalAlignment alignment) {
-    message_contents.AddChild(
-        Builder<Label>()
-            .SetText(text)
-            .SetTextContext(style::CONTEXT_DIALOG_BODY_TEXT)
-            .SetMultiLine(!text.empty())
-            .SetAllowCharacterBreak(true)
-            .SetHorizontalAlignment(alignment)
-            .CustomConfigure(base::BindOnce(
-                [](std::vector<raw_ptr<Label, VectorExperimental>>&
-                       message_labels,
-                   Label* message_label) {
-                  message_labels.push_back(message_label);
-                },
-                std::ref(message_labels_))));
-  };
-
-  if (detect_directionality) {
-    std::vector<std::u16string> texts;
-    SplitStringIntoParagraphs(message, &texts);
-    for (const auto& text : texts) {
-      // Avoid empty multi-line labels, which have a height of 0.
-      add_label(text, gfx::ALIGN_TO_HEAD);
-    }
-  } else {
-    add_label(message, gfx::ALIGN_LEFT);
-  }
+          .SetBorder(CreateEmptyBorder(GetHorizontalInsets(provider)))
+          .CopyAddressTo(&message_contents_);
 
   Builder<MessageBoxView>(this)
       .SetOrientation(BoxLayout::Orientation::kVertical)
@@ -156,24 +152,52 @@ MessageBoxView::MessageBoxView(const std::u16string& message,
               .SetVisible(false))
       .BuildChildren();
 
+  SetMessageLabel(message);
+
   // Don't enable text selection if multiple labels are used, since text
   // selection can't span multiple labels.
-  if (message_labels_.size() == 1u)
+  if (message_labels_.size() == 1u) {
     message_labels_[0]->SetSelectable(true);
+  }
 
   ResetLayoutManager();
 }
 
 MessageBoxView::~MessageBoxView() = default;
 
+void MessageBoxView::SetMessageLabel(std::u16string_view message) {
+  CHECK(message_contents_);
+
+  // Cleanup the message contents to remove old message.
+  message_labels_.clear();
+  message_contents_->RemoveAllChildViews();
+
+  label_text_ = message;
+  if (detect_directionality_) {
+    std::vector<std::u16string_view> texts;
+    SplitStringIntoParagraphs(message, &texts);
+    for (const auto& text : texts) {
+      message_contents_->AddChildView(GetLabelView(
+          /*text=*/text,
+          /*alignment=*/gfx::ALIGN_TO_HEAD,
+          /*message_label_*/ message_labels_));
+    }
+  } else {
+    message_contents_->AddChildView(GetLabelView(
+        /*text=*/message,
+        /*alignment=*/gfx::ALIGN_LEFT,
+        /*message_label_*/ message_labels_));
+  }
+}
+
 views::Textfield* MessageBoxView::GetVisiblePromptField() {
   return prompt_field_ && prompt_field_->GetVisible() ? prompt_field_.get()
                                                       : nullptr;
 }
 
-std::u16string MessageBoxView::GetInputText() {
+std::u16string_view MessageBoxView::GetInputText() {
   return prompt_field_ && prompt_field_->GetVisible() ? prompt_field_->GetText()
-                                                      : std::u16string();
+                                                      : std::u16string_view();
 }
 
 bool MessageBoxView::HasVisibleCheckBox() const {
@@ -186,8 +210,9 @@ bool MessageBoxView::IsCheckBoxSelected() {
 
 void MessageBoxView::SetCheckBoxLabel(const std::u16string& label) {
   DCHECK(checkbox_);
-  if (checkbox_->GetVisible() && checkbox_->GetText() == label)
+  if (checkbox_->GetVisible() && checkbox_->GetText() == label) {
     return;
+  }
 
   checkbox_->SetText(label);
   checkbox_->SetVisible(true);
@@ -196,8 +221,9 @@ void MessageBoxView::SetCheckBoxLabel(const std::u16string& label) {
 
 void MessageBoxView::SetCheckBoxSelected(bool selected) {
   // Only update the checkbox's state after the checkbox is shown.
-  if (!checkbox_->GetVisible())
+  if (!checkbox_->GetVisible()) {
     return;
+  }
   checkbox_->SetChecked(selected);
 }
 
@@ -208,24 +234,27 @@ void MessageBoxView::SetLink(const std::u16string& text,
   DCHECK(link_);
 
   link_->SetCallback(std::move(callback));
-  if (link_->GetVisible() && link_->GetText() == text)
+  if (link_->GetVisible() && link_->GetText() == text) {
     return;
+  }
   link_->SetText(text);
   link_->SetVisible(true);
   ResetLayoutManager();
 }
 
 void MessageBoxView::SetInterRowVerticalSpacing(int spacing) {
-  if (inter_row_vertical_spacing_ == spacing)
+  if (inter_row_vertical_spacing_ == spacing) {
     return;
+  }
 
   inter_row_vertical_spacing_ = spacing;
   ResetLayoutManager();
 }
 
 void MessageBoxView::SetMessageWidth(int width) {
-  if (message_width_ == width)
+  if (message_width_ == width) {
     return;
+  }
 
   message_width_ = width;
   ResetLayoutManager();
@@ -233,8 +262,10 @@ void MessageBoxView::SetMessageWidth(int width) {
 
 void MessageBoxView::SetPromptField(const std::u16string& default_prompt) {
   DCHECK(prompt_field_);
-  if (prompt_field_->GetVisible() && prompt_field_->GetText() == default_prompt)
+  if (prompt_field_->GetVisible() &&
+      prompt_field_->GetText() == default_prompt) {
     return;
+  }
   prompt_field_->SetText(default_prompt);
   prompt_field_->SetVisible(true);
   prompt_field_->GetViewAccessibility().SetIsIgnored(false);
@@ -257,29 +288,33 @@ gfx::Size MessageBoxView::CalculatePreferredSize(
 void MessageBoxView::ViewHierarchyChanged(
     const ViewHierarchyChangedDetails& details) {
   if (details.child == this && details.is_add) {
-    if (prompt_field_ && prompt_field_->GetVisible())
+    if (prompt_field_ && prompt_field_->GetVisible()) {
       prompt_field_->SelectAll(true);
+    }
   }
 }
 
 bool MessageBoxView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   // We only accept Ctrl-C.
-  DCHECK(accelerator.key_code() == 'C' && accelerator.IsCtrlDown());
+  DCHECK_EQ(accelerator.key_code(), 'C');
+  DCHECK(accelerator.IsCtrlDown());
 
   // We must not intercept Ctrl-C when we have a text box and it's focused.
-  if (prompt_field_ && prompt_field_->HasFocus())
+  if (prompt_field_ && prompt_field_->HasFocus()) {
     return false;
+  }
 
   // Don't intercept Ctrl-C if we only use a single message label supporting
   // text selection.
-  if (message_labels_.size() == 1u && message_labels_[0]->GetSelectable())
+  if (message_labels_.size() == 1u && message_labels_[0]->GetSelectable()) {
     return false;
+  }
 
   ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
   scw.WriteText(std::accumulate(message_labels_.cbegin(),
                                 message_labels_.cend(), std::u16string(),
                                 [](const std::u16string& left, Label* right) {
-                                  return left + right->GetText();
+                                  return base::StrCat({left, right->GetText()});
                                 }));
   return true;
 }
@@ -293,20 +328,23 @@ void MessageBoxView::ResetLayoutManager() {
 
   views::DialogContentType trailing_content_type =
       views::DialogContentType::kText;
-  if (prompt_field_->GetVisible())
+  if (prompt_field_->GetVisible()) {
     trailing_content_type = views::DialogContentType::kControl;
+  }
 
   bool checkbox_is_visible = checkbox_->GetVisible();
-  if (checkbox_is_visible)
+  if (checkbox_is_visible) {
     trailing_content_type = views::DialogContentType::kText;
+  }
 
   // Ignored views are not in the accessibility tree, but their children
   // still can be exposed. Leaf views have no accessible children.
   checkbox_->GetViewAccessibility().SetIsIgnored(!checkbox_is_visible);
   checkbox_->GetViewAccessibility().SetIsLeaf(!checkbox_is_visible);
 
-  if (link_->GetVisible())
+  if (link_->GetVisible()) {
     trailing_content_type = views::DialogContentType::kText;
+  }
 
   const LayoutProvider* provider = LayoutProvider::Get();
   gfx::Insets border_insets = provider->GetDialogInsetsForContentType(

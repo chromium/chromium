@@ -6,7 +6,10 @@ package org.chromium.content_public.browser;
 
 import android.view.KeyEvent;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Interface for the classes that need to be notified of IME changes. */
+@NullMarked
 public interface ImeEventObserver {
     /** Called to notify the delegate about synthetic/real key events before sending to renderer. */
     default void onImeEvent() {}

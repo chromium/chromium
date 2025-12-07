@@ -8,16 +8,18 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/reauth_reason.h"
 #include "ash/shell.h"
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/enrollment/account_status_check_fetcher.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
@@ -83,6 +85,7 @@ std::string GaiaScreen::GetResultString(Result result) {
       return "EnterpriseEnroll";
     case Result::ENTER_QUICK_START:
       return "EnterQuickStart";
+    case Result::ERROR_OOBE_NOT_COMPLETED:
     case Result::QUICK_START_ONGOING:
       return BaseScreen::kNotApplicable;
   }
@@ -106,6 +109,12 @@ bool GaiaScreen::MaybeSkip(WizardContext& context) {
       context.gaia_config.gaia_path !=
           WizardContext::GaiaPath::kQuickStartFallback) {
     exit_callback_.Run(Result::QUICK_START_ONGOING);
+    return true;
+  }
+
+  if (features::IsOobeAutoEnrollmentCheckForcedEnabled() &&
+      !StartupUtils::IsOobeCompleted()) {
+    exit_callback_.Run(Result::ERROR_OOBE_NOT_COMPLETED);
     return true;
   }
 
@@ -313,6 +322,19 @@ void GaiaScreen::HandleIdentifierEntered(const std::string& user_email) {
 void GaiaScreen::OnGetAuthFactorsConfiguration(
     std::unique_ptr<UserContext> user_context,
     std::optional<AuthenticationError> error) {
+  if (!view_) {
+    LOG(WARNING) << "The view is nullptr during OnGetAuthFactorsConfiguration";
+    return;
+  }
+
+  if (is_hidden()) {
+    LOG(WARNING) << "The Gaia screen is already hidden";
+    return;
+  } else {
+    CHECK(context());
+  }
+
+  CHECK(user_context);
   bool is_recovery_configured = false;
   bool is_gaia_password_configured = true;
   if (error.has_value()) {
@@ -325,8 +347,10 @@ void GaiaScreen::OnGetAuthFactorsConfiguration(
         config.HasConfiguredFactor(cryptohome::AuthFactorType::kRecovery);
     auto* password_factor =
         config.FindFactorByType(cryptohome::AuthFactorType::kPassword);
-    is_gaia_password_configured =
-        password_factor && auth::IsGaiaPassword(*password_factor);
+    if (password_factor != nullptr) {
+      is_gaia_password_configured =
+          password_factor && auth::IsGaiaPassword(*password_factor);
+    }
   }
 
   // Disallow passwordless login when Gaia password is configured during
@@ -339,12 +363,18 @@ void GaiaScreen::OnGetAuthFactorsConfiguration(
   }
 
   const AccountId& account_id = user_context->GetAccountId();
-  WizardContext::GaiaPath& gaia_path = LoginDisplayHost::default_host()
-                                           ->GetWizardContext()
-                                           ->gaia_config.gaia_path;
-  WizardContext::GaiaScreenMode& screen_mode = LoginDisplayHost::default_host()
-                                                   ->GetWizardContext()
-                                                   ->gaia_config.screen_mode;
+  CHECK(account_id.is_valid());
+
+  LoginDisplayHost* login_display_host = LoginDisplayHost::default_host();
+  CHECK(login_display_host);
+
+  WizardContext* wizard_context = login_display_host->GetWizardContext();
+  CHECK(wizard_context);
+
+  WizardContext::GaiaConfig& gaia_config = wizard_context->gaia_config;
+  WizardContext::GaiaPath& gaia_path = gaia_config.gaia_path;
+  WizardContext::GaiaScreenMode& screen_mode = gaia_config.screen_mode;
+
   if (GaiaScreenHandler::GetGaiaScreenMode(account_id.GetUserEmail()) ==
       WizardContext::GaiaScreenMode::kSamlRedirect) {
     gaia_path = WizardContext::GaiaPath::kSamlRedirect;
@@ -392,7 +422,7 @@ void GaiaScreen::OnAccountStatusFetched(const std::string& user_email,
   }
   if (status.enrollment_required) {
     const std::string email_domain =
-        chrome::enterprise_util::GetDomainFromEmail(user_email);
+        enterprise_util::GetDomainFromEmail(user_email);
     // Cache email in case we will need to pass it to the enrollment screen.
     enrollment_nudge_email_ = user_email;
     view_->ShowEnrollmentNudge(email_domain);
@@ -407,7 +437,7 @@ bool GaiaScreen::ShouldFetchEnrollmentNudgePolicy(
     return false;
   }
   const bool is_first_user =
-      user_manager::UserManager::Get()->GetUsers().empty();
+      user_manager::UserManager::Get()->GetPersistedUsers().empty();
   if (!is_first_user) {
     // Enrollment nudge targets only initial OOBE flow on unowned devices.
     // Current user is not a first user which means that device is already
@@ -415,19 +445,28 @@ bool GaiaScreen::ShouldFetchEnrollmentNudgePolicy(
     return false;
   }
   const std::string email_domain =
-      chrome::enterprise_util::GetDomainFromEmail(user_email);
+      enterprise_util::GetDomainFromEmail(user_email);
   // Enrollment nudging can't apply to users not belonging to a managed domain
-  return !chrome::enterprise_util::IsKnownConsumerDomain(email_domain);
+  return !enterprise_util::IsKnownConsumerDomain(email_domain);
 }
 
 void GaiaScreen::OnQuickStartButtonClicked() {
   CHECK(context()->quick_start_enabled);
+  CHECK(!context()->quick_start_setup_ongoing);
   exit_callback_.Run(Result::ENTER_QUICK_START);
 }
 
 void GaiaScreen::SetQuickStartButtonVisibility(bool visible) {
-  if (view_) {
-    view_->SetQuickStartEntryPointVisibility(visible);
+  if (!view_) {
+    return;
+  }
+
+  view_->SetQuickStartEntryPointVisibility(visible);
+
+  if (visible && !has_emitted_quick_start_visible) {
+    has_emitted_quick_start_visible = true;
+    quick_start::QuickStartMetrics::RecordEntryPointVisible(
+        quick_start::QuickStartMetrics::EntryPoint::GAIA_SCREEN);
   }
 }
 

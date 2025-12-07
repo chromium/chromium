@@ -41,7 +41,7 @@ void BackgroundFetchIconLoader::Start(
   DCHECK(bridge);
 
   icons_ = std::move(icons);
-  bridge->GetIconDisplaySize(WTF::BindOnce(
+  bridge->GetIconDisplaySize(blink::BindOnce(
       &BackgroundFetchIconLoader::DidGetIconDisplaySizeIfSoLoadIcon,
       WrapWeakPersistent(this), WrapWeakPersistent(execution_context),
       std::move(icon_callback)));
@@ -87,16 +87,16 @@ void BackgroundFetchIconLoader::DidGetIconDisplaySizeIfSoLoadIcon(
   FetchUtils::LogFetchKeepAliveRequestMetric(
       resource_request.GetRequestContext(),
       FetchUtils::FetchKeepAliveRequestState::kTotal);
-  threaded_icon_loader_->Start(
-      execution_context, resource_request, icon_display_size_pixels,
-      WTF::BindOnce(&BackgroundFetchIconLoader::DidGetIcon,
-                    WrapWeakPersistent(this)));
+  threaded_icon_loader_->Start(execution_context, resource_request,
+                               icon_display_size_pixels,
+                               BindOnce(&BackgroundFetchIconLoader::DidGetIcon,
+                                        WrapWeakPersistent(this)));
 }
 
 KURL BackgroundFetchIconLoader::PickBestIconForDisplay(
     ExecutionContext* execution_context,
     int ideal_size_pixels) {
-  WebVector<Manifest::ImageResource> icons;
+  std::vector<Manifest::ImageResource> icons;
   for (auto& icon : icons_) {
     // Update the src of |icon| to include the base URL in case relative paths
     // were used.
@@ -114,7 +114,7 @@ KURL BackgroundFetchIconLoader::PickBestIconForDisplay(
   }
 
   return KURL(ManifestIconSelector::FindBestMatchingSquareIcon(
-      icons.ReleaseVector(), ideal_size_pixels, kMinimumIconSizeInPx,
+      std::move(icons), ideal_size_pixels, kMinimumIconSizeInPx,
       mojom::ManifestImageResource_Purpose::ANY));
 }
 

@@ -4,13 +4,14 @@
 <translation id="1569387923882100876">Dispositivo collegato</translation>
 <translation id="1612196535745283361">Chrome ha bisogno dell'accesso alla posizione per cercare dispositivi. L'accesso alla posizione è <ph name="BEGIN_LINK" />disattivato su questo dispositivo<ph name="END_LINK" />.</translation>
 <translation id="1769234867324334094">Per questo sito, <ph name="APP_NAME" /> deve avere l'autorizzazione di accesso alla fotocamera.</translation>
-<translation id="1993768208584545658">Il sito <ph name="SITE" /> desidera accoppiarsi</translation>
+<translation id="1993768208584545658">Il sito <ph name="SITE" /> richiede l'accoppiamento tramite Bluetooth</translation>
 <translation id="2077832278056815832">Chiudi tutti i fumetti o gli overlay di altre app. Quindi riprova.</translation>
 <translation id="230115972905494466">Nessun dispositivo compatibile trovato</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2987449669841041897">Questo sito non può richiedere la tua autorizzazione</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Richiedi assistenza<ph name="END_LINK" /></translation>
 <translation id="3773755127849930740"><ph name="BEGIN_LINK" />Attiva il Bluetooth<ph name="END_LINK" /> per consentire l'accoppiamento</translation>
+<translation id="3878792656892132392"><ph name="APP_NAME" /> deve avere l'autorizzazione per monitorare le tue mani.</translation>
 <translation id="4915549754973153784"><ph name="BEGIN_LINK" />Richiedi assistenza<ph name="END_LINK" /> durante la ricerca di dispositivi…</translation>
 <translation id="4925793601605263825">Per questo sito, <ph name="APP_NAME" /> deve avere l'autorizzazione di accesso al microfono.</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> richiede di eseguire la scansione per rilevare dispositivi Bluetooth nelle vicinanze. Sono stati rilevati i seguenti dispositivi:</translation>

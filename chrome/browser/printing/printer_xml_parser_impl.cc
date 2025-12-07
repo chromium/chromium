@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/services/printing/public/mojom/printer_xml_parser.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -20,18 +21,17 @@ namespace printing {
 
 namespace {
 
+using ParseXmlCallback =
+    mojom::PrinterXmlParser::ParseXmlForPrinterCapabilitiesCallback;
+
 void XmlPrinterCapabilitiesParsed(
-    PrinterXmlParserImpl::ParseXmlCallback callback,
+    ParseXmlCallback callback,
     data_decoder::DataDecoder::ValueOrError value_or_error) {
   if (!value_or_error.has_value()) {
-    std::move(callback).Run(
-        mojom::PrinterCapabilitiesValueResult::NewResultCode(
-            mojom::ResultCode::kFailed));
+    std::move(callback).Run(base::unexpected(mojom::ResultCode::kFailed));
     return;
   }
-  std::move(callback).Run(
-      mojom::PrinterCapabilitiesValueResult::NewCapabilities(
-          std::move(value_or_error.value())));
+  std::move(callback).Run(base::ok(std::move(value_or_error.value())));
 }
 
 }  // namespace

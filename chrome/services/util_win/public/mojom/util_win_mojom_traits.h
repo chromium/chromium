@@ -91,9 +91,6 @@ struct StructTraits<chrome::mojom::ShortcutPropertiesDataView,
       const base::win::ShortcutProperties& input) {
     return input.app_id;
   }
-  static bool dual_mode(const base::win::ShortcutProperties& input) {
-    return input.dual_mode;
-  }
   static const CLSID& toast_activator_clsid(
       const base::win::ShortcutProperties& input) {
     return input.toast_activator_clsid;
@@ -156,12 +153,35 @@ struct StructTraits<chrome::mojom::AntiVirusProductDataView,
       case metrics::SystemProfileProto_AntiVirusState_STATE_EXPIRED:
         return chrome::mojom::AntiVirusProductState::kExpired;
     }
-    NOTREACHED_IN_MIGRATION();
-    return chrome::mojom::AntiVirusProductState::kOff;
+    NOTREACHED();
   }
 
   static bool Read(chrome::mojom::AntiVirusProductDataView data,
                    metrics::SystemProfileProto_AntiVirusProduct* output);
+};
+
+template <>
+struct StructTraits<chrome::mojom::TpmIdentifierDataView,
+                    metrics::SystemProfileProto_TpmIdentifier> {
+  static uint32_t manufacturer_id(
+      const metrics::SystemProfileProto_TpmIdentifier& input) {
+    return input.manufacturer_id();
+  }
+  static const std::string& manufacturer_version(
+      const metrics::SystemProfileProto_TpmIdentifier& input) {
+    return input.manufacturer_version();
+  }
+  static const std::string& manufacturer_version_info(
+      const metrics::SystemProfileProto_TpmIdentifier& input) {
+    return input.manufacturer_version_info();
+  }
+  static const std::string& tpm_specific_version(
+      const metrics::SystemProfileProto_TpmIdentifier& input) {
+    return input.tpm_specific_version();
+  }
+
+  static bool Read(chrome::mojom::TpmIdentifierDataView data,
+                   metrics::SystemProfileProto_TpmIdentifier* output);
 };
 
 }  // namespace mojo

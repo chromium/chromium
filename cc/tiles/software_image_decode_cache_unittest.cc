@@ -4,6 +4,8 @@
 
 #include "cc/tiles/software_image_decode_cache.h"
 
+#include "base/feature_list.h"
+#include "cc/base/features.h"
 #include "cc/paint/draw_image.h"
 #include "cc/paint/paint_image_builder.h"
 #include "cc/test/fake_paint_image_generator.h"
@@ -32,7 +34,7 @@ sk_sp<SkColorSpace> DefaultSkColorSpace() {
   return DefaultTargetColorParams().color_space.ToSkColorSpace();
 }
 
-size_t kLockedMemoryLimitBytes = 128 * 1024 * 1024;
+constexpr size_t kLockedMemoryLimitBytes = 128 * 1024 * 1024;
 class TestSoftwareImageDecodeCache : public SoftwareImageDecodeCache {
  public:
   TestSoftwareImageDecodeCache()
@@ -53,6 +55,39 @@ SkM44 CreateMatrix(const SkSize& scale, bool is_decomposable) {
 PaintImage CreatePaintImage(int width, int height) {
   return CreateDiscardablePaintImage(gfx::Size(width, height),
                                      DefaultSkColorSpace());
+}
+
+PaintImage CreatePaintImageWithGainmap(gfx::Size base_size,
+                                       gfx::Size gain_size) {
+  PaintImage::Id id = PaintImage::GetNextId();
+
+  SkImageInfo base_info =
+      SkImageInfo::Make(base_size.width(), base_size.height(), kN32_SkColorType,
+                        kPremul_SkAlphaType, SkColorSpace::MakeSRGB());
+
+  SkImageInfo gain_info =
+      SkImageInfo::Make(gain_size.width(), gain_size.height(), kN32_SkColorType,
+                        kPremul_SkAlphaType, SkColorSpace::MakeSRGB());
+
+  sk_sp<FakePaintImageGenerator> base_generator =
+      sk_make_sp<FakePaintImageGenerator>(
+          base_info, std::vector<FrameMetadata>{FrameMetadata()}, true);
+
+  sk_sp<FakePaintImageGenerator> gain_generator =
+      sk_make_sp<FakePaintImageGenerator>(
+          gain_info, std::vector<FrameMetadata>{FrameMetadata()}, true);
+
+  SkGainmapInfo gainmap_info;
+
+  auto paint_image =
+      PaintImageBuilder::WithDefault()
+          .set_id(id)
+          .set_paint_image_generator(base_generator)
+          .set_gainmap_paint_image_generator(gain_generator, gainmap_info)
+          // Match behavior of CreateDiscardablePaintImage
+          .set_decoding_mode(PaintImage::DecodingMode::kUnspecified)
+          .TakePaintImage();
+  return paint_image;
 }
 
 PaintImage CreatePaintImage(int width,
@@ -769,6 +804,193 @@ TEST_F(SoftwareImageDecodeCacheTest, GetTaskForImageSameImage) {
   cache_.UnrefImage(draw_image);
 }
 
+TEST_F(SoftwareImageDecodeCacheTest,
+       GetRasterTaskBeforeStandAloneTaskSameImage) {
+  if (!base::FeatureList::IsEnabled(features::kPreventDuplicateImageDecodes)) {
+    return;
+  }
+  PaintImage paint_image = CreatePaintImage(100, 100);
+  DrawImage draw_image(
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()),
+      PaintFlags::FilterQuality::kHigh,
+      CreateMatrix(SkSize::Make(0.5f, 0.5f), true),
+      PaintImage::kDefaultFrameIndex, DefaultTargetColorParams());
+
+  ImageDecodeCache::TaskResult raster_result = cache_.GetTaskForImageAndRef(
+      cache_client_id_, draw_image, ImageDecodeCache::TracingInfo());
+  EXPECT_TRUE(raster_result.need_unref);
+  EXPECT_TRUE(raster_result.task);
+  TileTask* raster_decode_task = raster_result.task.get();
+
+  ImageDecodeCache::TaskResult stand_alone_result =
+      cache_.GetOutOfRasterDecodeTaskForImageAndRef(
+          cache_client_id_, draw_image, /*speculative*/ false);
+  EXPECT_TRUE(stand_alone_result.need_unref);
+  EXPECT_EQ(stand_alone_result.task->dependencies().size(), 1u);
+  EXPECT_EQ(stand_alone_result.task->dependencies()[0].get(),
+            raster_decode_task);
+  EXPECT_EQ(raster_decode_task->external_dependent().get(),
+            stand_alone_result.task.get());
+
+  TestTileTaskRunner::ProcessTask(raster_decode_task);
+  TestTileTaskRunner::ProcessTask(stand_alone_result.task.get());
+
+  cache_.UnrefImage(draw_image);
+  cache_.UnrefImage(draw_image);
+}
+
+TEST_F(SoftwareImageDecodeCacheTest,
+       GetStandAloneTaskBeforeRasterTaskSameImage) {
+  if (!base::FeatureList::IsEnabled(features::kPreventDuplicateImageDecodes)) {
+    return;
+  }
+  PaintImage paint_image = CreatePaintImage(100, 100);
+  DrawImage draw_image(
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()),
+      PaintFlags::FilterQuality::kHigh,
+      CreateMatrix(SkSize::Make(0.5f, 0.5f), true),
+      PaintImage::kDefaultFrameIndex, DefaultTargetColorParams());
+
+  ImageDecodeCache::TaskResult stand_alone_result =
+      cache_.GetOutOfRasterDecodeTaskForImageAndRef(
+          cache_client_id_, draw_image, /*speculative*/ false);
+  EXPECT_TRUE(stand_alone_result.need_unref);
+  EXPECT_TRUE(stand_alone_result.task);
+
+  ImageDecodeCache::TaskResult raster_result = cache_.GetTaskForImageAndRef(
+      cache_client_id_, draw_image, ImageDecodeCache::TracingInfo());
+  EXPECT_TRUE(raster_result.need_unref);
+  EXPECT_TRUE(raster_result.task);
+  TileTask* raster_decode_task = raster_result.task.get();
+
+  // Stand-alone task hasn't started yet, so it depends on raster task.
+  EXPECT_EQ(stand_alone_result.task->dependencies().size(), 1u);
+  EXPECT_EQ(stand_alone_result.task->dependencies()[0].get(),
+            raster_decode_task);
+  EXPECT_EQ(raster_decode_task->external_dependent().get(),
+            stand_alone_result.task.get());
+
+  TestTileTaskRunner::ProcessTask(raster_decode_task);
+  TestTileTaskRunner::ProcessTask(stand_alone_result.task.get());
+
+  cache_.UnrefImage(draw_image);
+  cache_.UnrefImage(draw_image);
+}
+
+TEST_F(SoftwareImageDecodeCacheTest,
+       StandAloneTaskStartedBeforeRasterTaskSameImage) {
+  if (!base::FeatureList::IsEnabled(features::kPreventDuplicateImageDecodes)) {
+    return;
+  }
+  PaintImage paint_image = CreatePaintImage(100, 100);
+  DrawImage draw_image(
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()),
+      PaintFlags::FilterQuality::kHigh,
+      CreateMatrix(SkSize::Make(0.5f, 0.5f), true),
+      PaintImage::kDefaultFrameIndex, DefaultTargetColorParams());
+
+  ImageDecodeCache::TaskResult stand_alone_result =
+      cache_.GetOutOfRasterDecodeTaskForImageAndRef(
+          cache_client_id_, draw_image, /*speculative*/ false);
+  EXPECT_TRUE(stand_alone_result.need_unref);
+  EXPECT_TRUE(stand_alone_result.task);
+  TileTask* stand_alone_decode_task = stand_alone_result.task.get();
+
+  // Start stand-alone decode task before requesting image for raster
+  stand_alone_decode_task->state().DidSchedule();
+  stand_alone_decode_task->state().DidStart();
+
+  ImageDecodeCache::TaskResult raster_result = cache_.GetTaskForImageAndRef(
+      cache_client_id_, draw_image, ImageDecodeCache::TracingInfo());
+  EXPECT_TRUE(raster_result.need_unref);
+  EXPECT_TRUE(raster_result.task);
+  TileTask* raster_decode_task = raster_result.task.get();
+
+  // Raster task depends on in-flight stand-alone task
+  EXPECT_EQ(raster_decode_task->dependencies().size(), 1u);
+  EXPECT_EQ(raster_decode_task->dependencies()[0].get(),
+            stand_alone_decode_task);
+  EXPECT_EQ(stand_alone_decode_task->external_dependent().get(),
+            raster_decode_task);
+
+  stand_alone_decode_task->RunOnWorkerThread();
+  stand_alone_decode_task->state().DidFinish();
+  TestTileTaskRunner::CompleteTask(stand_alone_decode_task);
+  TestTileTaskRunner::ProcessTask(raster_decode_task);
+
+  cache_.UnrefImage(draw_image);
+  cache_.UnrefImage(draw_image);
+}
+
+TEST_F(SoftwareImageDecodeCacheTest, ExternalDependentRasterTaskCanceled) {
+  if (!base::FeatureList::IsEnabled(features::kPreventDuplicateImageDecodes)) {
+    return;
+  }
+
+  PaintImage paint_image = CreatePaintImage(100, 100);
+  DrawImage draw_image(
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()),
+      PaintFlags::FilterQuality::kHigh,
+      CreateMatrix(SkSize::Make(0.5f, 0.5f), true),
+      PaintImage::kDefaultFrameIndex, DefaultTargetColorParams());
+
+  ImageDecodeCache::TaskResult stand_alone_result =
+      cache_.GetOutOfRasterDecodeTaskForImageAndRef(
+          cache_client_id_, draw_image, /*speculative*/ false);
+  EXPECT_TRUE(stand_alone_result.need_unref);
+  EXPECT_TRUE(stand_alone_result.task);
+  TileTask* stand_alone_decode_task = stand_alone_result.task.get();
+
+  // Start stand-alone decode task before requesting image for raster
+  stand_alone_decode_task->state().DidSchedule();
+  stand_alone_decode_task->state().DidStart();
+
+  ImageDecodeCache::TaskResult raster_result = cache_.GetTaskForImageAndRef(
+      cache_client_id_, draw_image, ImageDecodeCache::TracingInfo());
+  EXPECT_TRUE(raster_result.need_unref);
+  EXPECT_TRUE(raster_result.task);
+  TileTask* raster_decode_task = raster_result.task.get();
+
+  // Raster task depends on in-flight stand-alone task
+  EXPECT_EQ(raster_decode_task->dependencies().size(), 1u);
+  EXPECT_EQ(raster_decode_task->dependencies()[0].get(),
+            stand_alone_decode_task);
+  EXPECT_EQ(stand_alone_decode_task->external_dependent().get(),
+            raster_decode_task);
+
+  // Cancel the upload and decode raster tasks
+  TestTileTaskRunner::CancelTask(raster_decode_task);
+  TestTileTaskRunner::CompleteTask(raster_decode_task);
+
+  // Create a new raster task depending on the stand-alone task. This
+  // should be OK since the first raster task was canceled.
+  raster_result = cache_.GetTaskForImageAndRef(cache_client_id_, draw_image,
+                                               ImageDecodeCache::TracingInfo());
+  EXPECT_TRUE(raster_result.need_unref);
+  EXPECT_TRUE(raster_result.task);
+  EXPECT_NE(raster_result.task.get(), raster_decode_task);
+  raster_decode_task = raster_result.task.get();
+  EXPECT_EQ(raster_decode_task->dependencies().size(), 1u);
+  EXPECT_EQ(raster_decode_task->dependencies()[0].get(),
+            stand_alone_decode_task);
+  EXPECT_EQ(stand_alone_decode_task->external_dependent().get(),
+            raster_decode_task);
+
+  stand_alone_decode_task->RunOnWorkerThread();
+  stand_alone_decode_task->state().DidFinish();
+  TestTileTaskRunner::CompleteTask(stand_alone_decode_task);
+  EXPECT_TRUE(raster_decode_task->dependencies().empty());
+  TestTileTaskRunner::ProcessTask(raster_decode_task);
+
+  cache_.UnrefImage(draw_image);
+  cache_.UnrefImage(draw_image);
+  cache_.UnrefImage(draw_image);
+}
+
 TEST_F(SoftwareImageDecodeCacheTest, GetTaskForImageProcessUnrefCancel) {
   PaintImage paint_image = CreatePaintImage(100, 100);
   bool is_decomposable = true;
@@ -1140,6 +1362,50 @@ TEST_F(SoftwareImageDecodeCacheTest, GetDecodedImageForDraw) {
 
   cache_.DrawWithImageFinished(draw_image, decoded_draw_image);
   cache_.UnrefImage(draw_image);
+}
+
+TEST_F(SoftwareImageDecodeCacheTest, GetDecodedImageForDrawScaleWithGainmap) {
+  std::vector<float> scales({1.0, 0.5, 0.25});
+  for (const auto& scale : scales) {
+    int kBaseSize = 100;
+    int kGainSize = 50;
+    PaintImage paint_image = CreatePaintImageWithGainmap(
+        gfx::Size(kBaseSize, kBaseSize), gfx::Size(kGainSize, kGainSize));
+    DrawImage draw_image(
+        paint_image,
+        /*use_dark_mode=*/false, SkIRect::MakeWH(kBaseSize, kBaseSize),
+        PaintFlags::FilterQuality::kHigh,
+        CreateMatrix(SkSize::Make(scale, scale), /*is_decomposable=*/true),
+        PaintImage::kDefaultFrameIndex, DefaultTargetColorParams());
+
+    ImageDecodeCache::TaskResult result = cache_.GetTaskForImageAndRef(
+        cache_client_id_, draw_image, ImageDecodeCache::TracingInfo());
+    EXPECT_TRUE(result.need_unref);
+    EXPECT_TRUE(result.task);
+
+    TestTileTaskRunner::ProcessTask(result.task.get());
+
+    DecodedDrawImage decoded_draw_image =
+        cache_.GetDecodedImageForDraw(draw_image);
+    EXPECT_TRUE(decoded_draw_image.image());
+    EXPECT_TRUE(decoded_draw_image.gainmap_image());
+    EXPECT_EQ(scale * kBaseSize, decoded_draw_image.image()->width());
+    EXPECT_EQ(scale * kBaseSize, decoded_draw_image.image()->height());
+    // The gainmap shouldn't start being rescaled until the base image is
+    // smaller than it.
+    if (scale * kBaseSize >= kGainSize) {
+      EXPECT_EQ(kGainSize, decoded_draw_image.gainmap_image()->width());
+      EXPECT_EQ(kGainSize, decoded_draw_image.gainmap_image()->height());
+    } else {
+      EXPECT_EQ(scale * kBaseSize, decoded_draw_image.image()->width());
+      EXPECT_EQ(scale * kBaseSize, decoded_draw_image.image()->height());
+    }
+    EXPECT_EQ(PaintFlags::FilterQuality::kLow,
+              decoded_draw_image.filter_quality());
+
+    cache_.DrawWithImageFinished(draw_image, decoded_draw_image);
+    cache_.UnrefImage(draw_image);
+  }
 }
 
 TEST_F(SoftwareImageDecodeCacheTest,
@@ -2069,7 +2335,9 @@ TEST_F(SoftwareImageDecodeCacheTest, HdrDecodeToSdr) {
       PaintImage::kDefaultFrameIndex, TargetColorParams(raster_color_space));
 
   DecodedDrawImage decoded_image = cache_.GetDecodedImageForDraw(draw_image);
-  EXPECT_NE(decoded_image.image()->colorType(), kRGBA_F16_SkColorType);
+  EXPECT_EQ(decoded_image.image()->colorType(), kRGBA_F16_SkColorType);
+  EXPECT_TRUE(SkColorSpace::Equals(decoded_image.image()->colorSpace(),
+                                   image_color_space.ToSkColorSpace().get()));
   cache_.DrawWithImageFinished(draw_image, decoded_image);
 }
 

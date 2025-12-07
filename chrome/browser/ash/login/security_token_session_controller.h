@@ -15,8 +15,7 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/crosapi/browser_manager_scoped_keep_alive.h"
-#include "chrome/browser/certificate_provider/certificate_provider_service.h"
+#include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -31,7 +30,7 @@ namespace views {
 class Widget;
 }
 
-namespace chromeos {
+namespace chromeos::certificate_provider {
 class CertificateProvider;
 }
 
@@ -105,7 +104,6 @@ class SecurityTokenSessionController
   bool ShouldApplyPolicyInCurrentSessionState() const;
   Behavior GetBehaviorFromPrefAndSessionState() const;
   void UpdateBehavior();
-  void UpdateKeepAlive();
   void UpdateNotificationPref();
 
   void ExtensionProvidesAllRequiredCertificates(
@@ -129,7 +127,6 @@ class SecurityTokenSessionController
       nullptr;
   extensions::ForceInstalledTracker extensions_tracker_;
   const raw_ptr<session_manager::SessionManager> session_manager_;
-  std::unique_ptr<crosapi::BrowserManagerScopedKeepAlive> keep_alive_;
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>
       session_manager_observation_{this};
@@ -145,7 +142,8 @@ class SecurityTokenSessionController
   raw_ptr<views::Widget> fullscreen_notification_ = nullptr;
   base::OneShotTimer action_timer_;
   base::OneShotTimer session_activation_timer_;
-  std::unique_ptr<chromeos::CertificateProvider> certificate_provider_;
+  std::unique_ptr<chromeos::certificate_provider::CertificateProvider>
+      certificate_provider_;
   // Whether all of the user's certificates have been provided at least once by
   // the extensions. This field is reset every time the session state changes.
   bool all_required_certificates_were_observed_ = false;

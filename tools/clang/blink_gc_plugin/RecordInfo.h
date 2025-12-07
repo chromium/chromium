@@ -23,15 +23,20 @@ class RecordCache;
 // A potentially tracable and/or lifetime affecting point in the object graph.
 class GraphPoint {
  public:
-  GraphPoint() : traced_(false) {}
   virtual ~GraphPoint() {}
-  void MarkTraced() { traced_ = true; }
-  bool IsProperlyTraced() { return traced_ || !NeedsTracing().IsNeeded(); }
-  bool IsInproperlyTraced() { return traced_ && NeedsTracing().IsIllegal(); }
+  void MarkTraced() { traced_ = TracedStatus::kTraced; }
+  void MarkTracedIfNeeded() { traced_ = TracedStatus::kTracedIfNeeded; }
+  bool IsProperlyTraced() {
+    return (traced_ != TracedStatus::kUntraced) || !NeedsTracing().IsNeeded();
+  }
+  bool IsInproperlyTraced() {
+    return (traced_ == TracedStatus::kTraced) && NeedsTracing().IsIllegal();
+  }
   virtual const TracingStatus NeedsTracing() = 0;
 
  private:
-  bool traced_;
+  enum class TracedStatus { kUntraced, kTraced, kTracedIfNeeded };
+  TracedStatus traced_ = TracedStatus::kUntraced;
 };
 
 class BasePoint : public GraphPoint {
@@ -94,12 +99,26 @@ class RecordInfo {
   clang::CXXMethodDecl* GetTraceDispatchMethod();
   clang::CXXMethodDecl* GetFinalizeDispatchMethod();
 
+  bool HasMultipleTraceDispatchMethods() const {
+    return extra_trace_dispatch_method_ != nullptr;
+  }
+  bool HasMultipleFinalizeDispatchMethods() const {
+    return extra_finalize_dispatch_method_ != nullptr;
+  }
+
+  clang::CXXMethodDecl* GetExtraTraceDispatchMethod() {
+    assert(determined_trace_methods_);
+    return extra_trace_dispatch_method_;
+  }
+  clang::CXXMethodDecl* GetExtraFinalizeDispatchMethod() {
+    assert(determined_trace_methods_);
+    return extra_finalize_dispatch_method_;
+  }
+
   bool GetTemplateArgs(size_t count, TemplateArgs* output_args);
 
-  bool IsHeapAllocatedCollection();
   bool IsGCDerived();
   bool IsGCDirectlyDerived();
-  bool IsGCAllocated();
   bool IsGCMixin();
   bool IsStackAllocated();
   bool IsNewDisallowed();
@@ -130,8 +149,6 @@ class RecordInfo {
   Edge* CreateEdge(const clang::Type* type);
   Edge* CreateEdgeFromOriginalType(const clang::Type* type);
 
-  bool HasOptionalFinalizer();
-
   bool HasTypeAlias(std::string marker_name) const;
   bool GetTemplateArgsInternal(
       const llvm::ArrayRef<clang::TemplateArgument>& args,
@@ -157,6 +174,8 @@ class RecordInfo {
   clang::CXXMethodDecl* trace_method_ = nullptr;
   clang::CXXMethodDecl* trace_dispatch_method_ = nullptr;
   clang::CXXMethodDecl* finalize_dispatch_method_ = nullptr;
+  clang::CXXMethodDecl* extra_trace_dispatch_method_ = nullptr;
+  clang::CXXMethodDecl* extra_finalize_dispatch_method_ = nullptr;
 
   bool is_gc_derived_ = false;
 

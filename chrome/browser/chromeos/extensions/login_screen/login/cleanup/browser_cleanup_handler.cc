@@ -14,18 +14,24 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "content/public/browser/browsing_data_remover.h"
 
 namespace {
 
 // TODO(maleksandrov, b:258196743) Move the logic into BrowserList class.
 bool HasBrowsersForProfile(Profile* profile) {
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->profile()->GetOriginalProfile() ==
-        profile->GetOriginalProfile())
-      return true;
-  }
-  return false;
+  bool found = false;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [profile, &found](BrowserWindowInterface* browser_window_interface) {
+        if (browser_window_interface->GetProfile()->GetOriginalProfile() ==
+            profile->GetOriginalProfile()) {
+          found = true;
+          return false;
+        }
+        return true;
+      });
+  return found;
 }
 
 }  // namespace
@@ -70,9 +76,8 @@ void BrowserCleanupHandler::OnBrowserRemoved(Browser* browser) {
 
   // In case any browser window is still open for current profile the cleanup
   // must not proceed otherwise some open tabs can remain in browser data.
-  for (Browser* open_browser : *BrowserList::GetInstance()) {
-    if (open_browser->profile() == profile_)
-      return;
+  if (HasBrowsersForProfile(profile_)) {
+    return;
   }
 
   BrowserList::RemoveObserver(this);

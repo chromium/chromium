@@ -5,9 +5,12 @@
 #ifndef CHROME_CREDENTIAL_PROVIDER_GAIACP_AUTH_UTILS_H_
 #define CHROME_CREDENTIAL_PROVIDER_GAIACP_AUTH_UTILS_H_
 
+#include <credentialprovider.h>
+#include <wtypes.h>
+
 #include <string>
 
-#include "chrome/credential_provider/gaiacp/stdafx.h"
+#include "base/win/windows_types.h"
 
 namespace credential_provider {
 

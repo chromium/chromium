@@ -9,14 +9,13 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
 class CSSComputedStyleDeclarationTest : public PageTestBase {};
 
 TEST_F(CSSComputedStyleDeclarationTest, CleanAncestorsNoRecalc) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div>
       <div id=dirty></div>
     </div>
@@ -40,7 +39,7 @@ TEST_F(CSSComputedStyleDeclarationTest, CleanAncestorsNoRecalc) {
 }
 
 TEST_F(CSSComputedStyleDeclarationTest, CleanShadowAncestorsNoRecalc) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div>
       <div id=dirty></div>
     </div>
@@ -51,7 +50,7 @@ TEST_F(CSSComputedStyleDeclarationTest, CleanShadowAncestorsNoRecalc) {
 
   ShadowRoot& shadow_root =
       host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
-  shadow_root.setInnerHTML(R"HTML(
+  shadow_root.SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id=target style='color:green'></div>
   )HTML");
 
@@ -71,7 +70,7 @@ TEST_F(CSSComputedStyleDeclarationTest, CleanShadowAncestorsNoRecalc) {
 }
 
 TEST_F(CSSComputedStyleDeclarationTest, AdjacentInvalidation) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       #b { color: red; }
       .test + #b { color: green; }
@@ -126,7 +125,7 @@ TEST_F(CSSComputedStyleDeclarationTest,
 
 // https://crbug.com/1115877
 TEST_F(CSSComputedStyleDeclarationTest, SVGBlockSizeLayoutDependent) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <svg viewBox="0 0 400 400">
       <rect width="400" height="400"></rect>
     </svg>
@@ -145,7 +144,7 @@ TEST_F(CSSComputedStyleDeclarationTest, SVGBlockSizeLayoutDependent) {
 
 // https://crbug.com/1115877
 TEST_F(CSSComputedStyleDeclarationTest, SVGInlineSizeLayoutDependent) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <svg viewBox="0 0 400 400">
       <rect width="400" height="400"></rect>
     </svg>
@@ -163,8 +162,7 @@ TEST_F(CSSComputedStyleDeclarationTest, SVGInlineSizeLayoutDependent) {
 }
 
 TEST_F(CSSComputedStyleDeclarationTest, UseCountDurationZero) {
-  ScopedScrollTimelineForTest scroll_timeline_feature(false);
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       div {
         color: green;

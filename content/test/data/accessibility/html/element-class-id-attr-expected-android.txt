@@ -1,0 +1,7 @@
+android.webkit.WebView focusable focused
+++android.widget.TextView role_description='heading 1' heading interesting name='Image'
+++android.widget.Image interesting name='greenbox' content_description='ImageAlt'
+=== Start Continuation ===
+android.webkit.WebView focusable focused interesting name='changed-class'
+++android.widget.TextView role_description='heading 1' heading interesting name='Image'
+++android.widget.Image interesting name='greenbox' content_description='ImageAlt'

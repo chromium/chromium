@@ -5,11 +5,15 @@
 #import "content/browser/web_contents/web_contents_view_mac.h"
 
 #import <Carbon/Carbon.h>
+#include <fcntl.h>
+#include <sys/stat.h>
 
 #include <memory>
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #import "base/mac/mac_util.h"
 #import "base/mac/scoped_sending_event.h"
 #import "base/message_loop/message_pump_apple.h"
@@ -36,6 +40,7 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/display/display_util.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
+#include "ui/gfx/native_ui_types.h"
 
 using blink::DragOperationsMask;
 using remote_cocoa::mojom::DraggingInfoPtr;
@@ -60,12 +65,26 @@ namespace {
 // stream.
 void PromiseWriterHelper(const DropData& drop_data, base::File file) {
   DCHECK(file.IsValid());
-  file.WriteAtCurrentPos(drop_data.file_contents.data(),
-                         drop_data.file_contents.length());
+  file.WriteAtCurrentPos(base::as_bytes(base::span(drop_data.file_contents)));
 }
 
 WebContentsViewMac::RenderWidgetHostViewCreateFunction
     g_create_render_widget_host_view = nullptr;
+
+// Sets read/write permissions on `file` based on the users umask.
+void SetReadWritePermissionsForFile(base::File& file) {
+  // Get the umask. There's no way to get the mask without changing it, so
+  // immediately set it back to its original value.
+  mode_t current_umask = umask(0);
+  umask(current_umask);
+
+  mode_t default_permissions = 0666;
+  mode_t effective_permissions = default_permissions & ~current_umask;
+
+  if (fchmod(file.GetPlatformFile(), effective_permissions) == -1) {
+    PLOG(ERROR) << "Failed to set drag file permissions using fchmod";
+  }
+}
 
 }  // namespace
 
@@ -74,6 +93,11 @@ void WebContentsViewMac::InstallCreateHookForTests(
     RenderWidgetHostViewCreateFunction create_render_widget_host_view) {
   CHECK_EQ(nullptr, g_create_render_widget_host_view);
   g_create_render_widget_host_view = create_render_widget_host_view;
+}
+
+void WebContentsViewMac::SetReadWritePermissionsForFileForTests(
+    base::File& file) {
+  SetReadWritePermissionsForFile(file);
 }
 
 std::unique_ptr<WebContentsView> CreateWebContentsView(
@@ -107,34 +131,56 @@ WebContentsViewCocoa* WebContentsViewMac::GetInProcessNSView() const {
 }
 
 gfx::NativeView WebContentsViewMac::GetNativeView() const {
-  return GetInProcessNSView();
+  return gfx::NativeView(GetInProcessNSView());
 }
 
 gfx::NativeView WebContentsViewMac::GetContentNativeView() const {
   RenderWidgetHostView* rwhv = web_contents_->GetRenderWidgetHostView();
-  if (!rwhv)
-    return nullptr;
+  if (!rwhv) {
+    return gfx::NativeView();
+  }
   return rwhv->GetNativeView();
 }
 
 gfx::NativeWindow WebContentsViewMac::GetTopLevelNativeWindow() const {
   NSWindow* window = [GetInProcessNSView() window];
-  if (window)
-    return window;
-  if (delegate_)
+  if (window) {
+    return gfx::NativeWindow(window);
+  }
+  if (delegate_) {
     return delegate_->GetNativeWindow();
-  return nullptr;
+  }
+  return gfx::NativeWindow();
 }
 
 gfx::Rect WebContentsViewMac::GetContainerBounds() const {
-  NSWindow* window = [GetInProcessNSView() window];
-  NSRect bounds = [GetInProcessNSView() bounds];
+  NSView* view = GetInProcessNSView();
+  NSWindow* window = [view window];
+  NSRect bounds;
+
   if (window)  {
+    bounds = [view bounds];
+
     // Convert bounds to window coordinate space.
-    bounds = [GetInProcessNSView() convertRect:bounds toView:nil];
+    bounds = [view convertRect:bounds toView:nil];
 
     // Convert bounds to screen coordinate space.
     bounds = [window convertRectToScreen:bounds];
+  } else {
+    // The only time Chrome calls this method with no NSWindow is very early in
+    // web contents creation cycle when the view has zero origin and size, so
+    // calling |bounds| or |frame| makes no difference. However, headless always
+    // runs with no NSWindow so it is important to retrieve view origin, hence
+    // we need to call |frame|. https://crbug.com/378531862.
+    bounds = [view frame];
+
+    // Convert bounds to the root view coordinate space.
+    NSView* root_view = view;
+    while (NSView* parent = [root_view superview]) {
+      root_view = parent;
+    }
+
+    bounds = [view convertRect:bounds toView:root_view];
   }
 
   return gfx::ScreenRectFromNSRect(bounds);
@@ -144,20 +190,12 @@ void WebContentsViewMac::OnCapturerCountChanged() {}
 
 void WebContentsViewMac::FullscreenStateChanged(bool is_fullscreen) {}
 
-void WebContentsViewMac::UpdateWindowControlsOverlay(
-    const gfx::Rect& bounding_rect) {
-  window_controls_overlay_bounding_rect_ = bounding_rect;
-  if (remote_ns_view_) {
-    remote_ns_view_->UpdateWindowControlsOverlay(bounding_rect);
-  } else {
-    in_process_ns_view_bridge_->UpdateWindowControlsOverlay(bounding_rect);
-  }
-}
-
 BackForwardTransitionAnimationManager*
 WebContentsViewMac::GetBackForwardTransitionAnimationManager() {
   return nullptr;
 }
+
+void WebContentsViewMac::DestroyBackForwardTransitionAnimationManager() {}
 
 void WebContentsViewMac::StartDragging(
     const DropData& drop_data,
@@ -296,7 +334,6 @@ void WebContentsViewMac::ShowPopupMenu(
     RenderFrameHost* render_frame_host,
     mojo::PendingRemote<blink::mojom::PopupMenuClient> popup_client,
     const gfx::Rect& bounds,
-    int item_height,
     double item_font_size,
     int selected_item,
     std::vector<blink::mojom::MenuItemPtr> menu_items,
@@ -304,9 +341,9 @@ void WebContentsViewMac::ShowPopupMenu(
     bool allow_multiple_selection) {
   popup_menu_helper_ = std::make_unique<PopupMenuHelper>(
       this, render_frame_host, std::move(popup_client));
-  popup_menu_helper_->ShowPopupMenu(bounds, item_height, item_font_size,
-                                    selected_item, std::move(menu_items),
-                                    right_aligned, allow_multiple_selection);
+  popup_menu_helper_->ShowPopupMenu(bounds, item_font_size, selected_item,
+                                    std::move(menu_items), right_aligned,
+                                    allow_multiple_selection);
   // Note: |this| may be deleted here.
 }
 
@@ -320,6 +357,23 @@ gfx::Rect WebContentsViewMac::GetViewBounds() const {
   window_bounds.origin =
       [GetInProcessNSView().window convertPointToScreen:window_bounds.origin];
   return gfx::ScreenRectFromNSRect(window_bounds);
+}
+
+void WebContentsViewMac::Resize(const gfx::Rect& new_bounds) {
+  NSView* view = GetNativeView().GetNativeNSView();
+  NSRect old_wcv_frame = view.frame;
+  CGFloat new_x = old_wcv_frame.origin.x;
+  CGFloat new_y = old_wcv_frame.origin.y +
+                  (old_wcv_frame.size.height - new_bounds.size().height());
+  NSRect new_wcv_frame = NSMakeRect(new_x, new_y, new_bounds.size().width(),
+                                    new_bounds.size().height());
+  view.frame = new_wcv_frame;
+}
+
+gfx::Size WebContentsViewMac::GetSize() const {
+  NSView* view = GetNativeView().GetNativeNSView();
+  NSRect frame = view.frame;
+  return gfx::Size(NSWidth(frame), NSHeight(frame));
 }
 
 void WebContentsViewMac::CreateView(gfx::NativeView context) {
@@ -360,7 +414,8 @@ RenderWidgetHostViewBase* WebContentsViewMac::CreateViewForWidget(
     auto* remote_cocoa_application = views_host_->GetRemoteCocoaApplication();
     view->MigrateNSViewBridge(remote_cocoa_application, ns_view_id_);
     view->SetParentUiLayer(views_host_->GetUiLayer());
-    view->SetParentAccessibilityElement(views_host_accessibility_element_);
+    view->SetParentAccessibilityElement(
+        views_host_accessibility_element_.Get());
   }
 
   // Fancy layout comes later; for now just make it our size and resize it
@@ -535,6 +590,8 @@ bool WebContentsViewMac::DragPromisedFileTo(const base::FilePath& file_path,
     return true;
   }
 
+  SetReadWritePermissionsForFile(file);
+
   if (download_url.is_valid() && web_contents_) {
     auto drag_file_downloader = std::make_unique<DragDownloadFile>(
         *out_file_path, std::move(file), download_url,
@@ -563,7 +620,20 @@ bool WebContentsViewMac::DragPromisedFileTo(const base::FilePath& file_path,
 void WebContentsViewMac::EndDrag(uint32_t drag_operation,
                                  const gfx::PointF& local_point,
                                  const gfx::PointF& screen_point) {
-  [drag_dest_ endDrag];
+  [drag_dest_
+      endDrag:base::BindOnce(&WebContentsViewMac::PerformEndDrag,
+                             deferred_close_weak_ptr_factory_.GetWeakPtr(),
+                             drag_operation, local_point, screen_point)];
+}
+
+void WebContentsViewMac::PerformEndDrag(uint32_t drag_operation,
+                                        const gfx::PointF& local_point,
+                                        const gfx::PointF& screen_point) {
+  // Validate internal members are non-null as this method can be called
+  // asynchronously.
+  if (!web_contents_ || !drag_source_start_rwh_) {
+    return;
+  }
 
   web_contents_->SystemDragEnded(drag_source_start_rwh_.get());
 
@@ -654,10 +724,6 @@ void WebContentsViewMac::ViewsHostableAttach(
     remote_cocoa_application->CreateWebContentsNSView(
         ns_view_id_, std::move(stub_host), std::move(stub_ns_view_receiver));
     remote_ns_view_->SetParentNSView(views_host_->GetNSViewId());
-    if (!window_controls_overlay_bounding_rect_.IsEmpty()) {
-      remote_ns_view_->UpdateWindowControlsOverlay(
-          window_controls_overlay_bounding_rect_);
-    }
 
     // Because this view is being displayed from a remote process, reset the
     // in-process NSView's client pointer, so that the in-process NSView will
@@ -702,11 +768,11 @@ void WebContentsViewMac::ViewsHostableDetach() {
 }
 
 void WebContentsViewMac::ViewsHostableSetBounds(
-    const gfx::Rect& bounds_in_window) {
+    const gfx::Rect& bounds_in_superview) {
   // Update both the in-process and out-of-process NSViews' bounds.
-  in_process_ns_view_bridge_->SetBounds(bounds_in_window);
+  in_process_ns_view_bridge_->SetBounds(bounds_in_superview);
   if (remote_ns_view_)
-    remote_ns_view_->SetBounds(bounds_in_window);
+    remote_ns_view_->SetBounds(bounds_in_superview);
 }
 
 void WebContentsViewMac::ViewsHostableSetVisible(bool visible) {
@@ -728,7 +794,8 @@ void WebContentsViewMac::ViewsHostableSetParentAccessible(
     gfx::NativeViewAccessible parent_accessibility_element) {
   views_host_accessibility_element_ = parent_accessibility_element;
   for (auto* rwhv_mac : GetChildViews())
-    rwhv_mac->SetParentAccessibilityElement(views_host_accessibility_element_);
+    rwhv_mac->SetParentAccessibilityElement(
+        views_host_accessibility_element_.Get());
 }
 
 gfx::NativeViewAccessible
@@ -739,8 +806,9 @@ WebContentsViewMac::ViewsHostableGetParentAccessible() {
 gfx::NativeViewAccessible
 WebContentsViewMac::ViewsHostableGetAccessibilityElement() {
   RenderWidgetHostView* rwhv = web_contents_->GetRenderWidgetHostView();
-  if (!rwhv)
-    return nil;
+  if (!rwhv) {
+    return gfx::NativeViewAccessible();
+  }
   return rwhv->GetNativeViewAccessible();
 }
 

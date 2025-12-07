@@ -39,7 +39,7 @@ DigitalIdentitySafetyInterstitialBridgeAndroid::ShowInterstitial(
         callback) {
   callback_ = std::move(callback);
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> j_origin = origin.ToJavaObject();
+  ScopedJavaLocalRef<jobject> j_origin = origin.ToJavaObject(env);
 
   base::android::ScopedJavaLocalRef<jobject> j_window = nullptr;
   if (web_contents.GetTopLevelNativeWindow()) {
@@ -72,3 +72,5 @@ void DigitalIdentitySafetyInterstitialBridgeAndroid::Abort() {
   JNIEnv* env = AttachCurrentThread();
   Java_DigitalIdentitySafetyInterstitialBridge_abort(env, j_bridge_);
 }
+
+DEFINE_JNI(DigitalIdentitySafetyInterstitialBridge)

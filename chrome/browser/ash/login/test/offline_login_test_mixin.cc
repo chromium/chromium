@@ -10,11 +10,11 @@
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/ash/login/ui/login_display_host_webui.h"
 #include "chrome/browser/ash/settings/device_settings_provider.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
+#include "chrome/browser/ui/ash/login/login_display_host_webui.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/offline_login_screen_handler.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -73,7 +73,7 @@ void OfflineLoginTestMixin::PrepareOfflineLogin() {
 
 void OfflineLoginTestMixin::GoOffline() {
   network_state_test_helper_ = std::make_unique<NetworkStateTestHelper>(
-      false /*use_default_devices_and_services*/);
+      /*use_default_devices_and_services=*/false);
   network_state_test_helper_->ClearServices();
   // Notify NetworkStateInformer explicitly
   if (LoginDisplayHost::default_host() &&

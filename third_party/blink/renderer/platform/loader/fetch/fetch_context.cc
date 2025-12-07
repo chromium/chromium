@@ -50,12 +50,16 @@ void FetchContext::PrepareRequest(ResourceRequest&,
                                   ResourceType) {}
 
 void FetchContext::AddResourceTiming(mojom::blink::ResourceTimingInfoPtr,
-                                     const WTF::AtomicString&) {}
+                                     const AtomicString&) {}
 
-void FetchContext::PopulateResourceRequest(
+void FetchContext::UpgradeResourceRequestForLoader(
     ResourceType,
     const std::optional<float> resource_width,
     ResourceRequest&,
     const ResourceLoaderOptions&) {}
+
+bool FetchContext::StartSpeculativeImageDecode(Resource* resource) {
+  return false;
+}
 
 }  // namespace blink

@@ -1,0 +1,29 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Configuration for an Android 15 (V, API 35) AVD on google_apis on x86_64
+# with tablet form factor - 10.05", 2560x1600, xhdpi
+
+emulator_package {
+  package_name: "chromium/third_party/android_sdk/public/emulator"
+  version: "v8yrLOpMlE0if7NxVuSlX0Etnq0k_FLX_hmYksbVSm0C"  # 36.1.9 (Stable)
+}
+
+system_image_package {
+  package_name: "chromium/third_party/android_sdk/public/system-images/android-35/google_apis/x86_64"
+  version: "RlhGUPY3gzHBfmiZuOqMu1uuznsnr5mbavafY8kK73AC"  # (r9) AE3A.240806.043
+}
+system_image_name: "system-images;android-35;google_apis;x86_64"
+
+avd_package {
+  package_name: "chromium/third_party/android_sdk/public/avds/android-35/google_apis/x86_64"
+  # Created in https://ci.chromium.org/ui/b/8705163385740243089
+  # Patched gmscore version 25.07.33 in https://crrev.com/c/6377466
+  version: "FV7x04xy9IciguKchoAImXLAqKExaolYtWUnZePh6L0C"
+}
+avd_name: "android_35_google_apis_x64"
+
+avd_launch_settings {
+  gpu_mode: "lavapipe"
+}

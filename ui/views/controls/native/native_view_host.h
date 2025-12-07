@@ -8,7 +8,7 @@
 #include <memory>
 #include <optional>
 
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/view.h"
 
 namespace gfx {
@@ -28,7 +28,7 @@ class NativeViewHostWrapper;
 
 // If a NativeViewHost's native view is a Widget, this native window
 // property is set on the widget, pointing to the owning NativeViewHost.
-extern const char kWidgetNativeViewHostKey[];
+inline constexpr char kWidgetNativeViewHostKey[] = "WidgetNativeViewHost";
 
 // A View type that hosts a gfx::NativeView. The bounds of the native view are
 // kept in sync with the bounds of this view as it is moved and sized.
@@ -62,13 +62,6 @@ class VIEWS_EXPORT NativeViewHost : public View {
   // or false if the platform doesn't support the operation. This method calls
   // SetCustomMask internally.
   bool SetCornerRadii(const gfx::RoundedCornersF& corner_radii);
-
-  // Sets the custom layer mask for clipping gfx::NativeView. Returns true on
-  // success or false if the platform doesn't support the operation.
-  // NB: This does not interact nicely with fast_resize.
-  // TODO(tluk): This is currently only being used to apply rounded corners in
-  // ash code. Migrate existing use to SetCornerRadii().
-  bool SetCustomMask(std::unique_ptr<ui::LayerOwner> mask);
 
   // Sets the height of the top region where the gfx::NativeView shouldn't be
   // targeted. This will be used when another view is covering there

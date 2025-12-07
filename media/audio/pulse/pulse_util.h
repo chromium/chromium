@@ -51,6 +51,13 @@ void StreamSuccessCallback(pa_stream* s, int error, void* mainloop);
 void ContextSuccessCallback(pa_context* context, int success, void* mainloop);
 void ContextStateCallback(pa_context* context, void* mainloop);
 
+// Mutes all audio output sinks except for a specified sink.
+void MuteAllSinksExcept(pa_threaded_mainloop* mainloop,
+                        pa_context* context,
+                        const std::string& exclude_sink_name);
+// Unmutes all audio output sinks in the system.
+void UnmuteAllSinks(pa_threaded_mainloop* mainloop, pa_context* context);
+
 pa_channel_map ChannelLayoutToPAChannelMap(ChannelLayout channel_layout);
 
 // Blocks until pa_operation completes. If |optional_context| and/or

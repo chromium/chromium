@@ -6,7 +6,7 @@
 #define COMPONENTS_VIZ_COMMON_QUADS_PICTURE_DRAW_QUAD_H_
 
 #include "base/containers/flat_map.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_image.h"
 #include "cc/paint/scroll_offset_map.h"
@@ -33,7 +33,6 @@ class VIZ_COMMON_EXPORT PictureDrawQuad : public ContentDrawQuadBase {
               const gfx::Rect& visible_rect,
               bool needs_blending,
               const gfx::RectF& tex_coord_rect,
-              const gfx::Size& texture_size,
               bool nearest_neighbor,
               const gfx::Rect& content,
               float scale,

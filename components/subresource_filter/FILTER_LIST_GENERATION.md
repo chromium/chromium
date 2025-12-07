@@ -8,54 +8,38 @@ N websites (according to Alexa rankings).
 This data is made available by the [HttpArchive](https://httparchive.org/)
 project and is queryable via [BigQuery](https://bigquery.cloud.google.com/). A
 short introduction to querying HttpArchive data is available
-[here](https://www.igvita.com/2013/06/20/http-archive-bigquery-web-performance-answers/).
-Because the output of our query is typically quite large, it's necessary to
-have a Google Compute Engine account with a storage bucket created to write
-the resulting table to.
+[here](https://har.fyi/guides/getting-started/). Because the output of our query
+is typically quite large, it's necessary to have a Google Compute Engine account
+with a storage bucket created to write the resulting table to.
 
 The query to run is:
 ```sql
 #standardSQL
 
 SELECT
-  pages.url AS origin,
-  requests.url AS request_url,
-  requests.type AS request_type
+  root_page AS origin,
+  url AS request_url,
+  type AS request_type,
+  rank as site_rank,
 FROM
-    `httparchive.summary_requests.2018_07_15_desktop` AS requests
-INNER JOIN (
-  SELECT
-    pageid,
-    url
-  FROM
-    `httparchive.summary_pages.2018_07_15_desktop`) AS pages
-ON
-  requests.pageid = pages.pageid
-UNION ALL
-
-SELECT
-  pages.url AS origin,
-  requests.url AS request_url,
-  requests.type AS request_type
-FROM
-    `httparchive.summary_requests.2018_07_15_mobile` AS requests
-INNER JOIN (
-  SELECT
-    pageid,
-    url
-  FROM
-    `httparchive.summary_pages.2018_07_15_mobile`) AS pages
-ON
-  requests.pageid = pages.pageid;
+  `httparchive.latest.requests`
+WHERE
+  -- httparchive's database includes data from sub-pages. Our filter list has
+  -- historically only dealt with requests that originate from root pages, so we
+  -- need to filter the sub-page requests out.
+  is_root_page = true AND
+  rank < 5000000 AND
+  -- Use a partition elimination filter to prevent querying the entire dataset.
+  -- 61 days to account for July 1-August 31 range.
+  date BETWEEN DATE_SUB(CURRENT_DATE(), INTERVAL 61 DAY) AND
+  CURRENT_DATE()
 ```
 
-You'll need to replace the tables with those of the dates that you're interested in.
-
-Since the output is too large (>32GB) to display
-on the page, the results will need to be written to a table in your Google
-Cloud Project. To do this, press the 'show options' button below your query, and press the
-'select table' button to create a table to write to in your project. You'll
-also want to check the 'allow large results' checkbox.
+Since the output is too large (>32GB) to display on the page, the results will
+need to be written to a table in your Google Cloud Project. To do this, press
+the 'show options' button below your query, and press the 'select table' button
+to create a table to write to in your project. You'll also want to check the
+'allow large results' checkbox.
 
 Now run the query. The results should be available in the table you specified
 in your project. Find the table on the BigQuery page and export it in JSON
@@ -76,8 +60,14 @@ An example using [EasyList](https://easylist.to/easylist/easylist.txt) follows:
 ```sh
 1. ninja -C out/Release/ subresource_filter_tools
 2. wget https://easylist.to/easylist/easylist.txt
-3. out/Release/ruleset_converter --input_format=filter-list --output_format=unindexed-ruleset --input_files=easylist.txt --output_file=easylist_unindexed
-4. out/Release/subresource_indexing_tool easylist_unindexed easylist_indexed
+# Convert `||domain.xyz^` rules into `||domain.xyz^$third-party` so
+# that we don't match all of the subresource requests when visiting
+# a top-level frame with that domain as a first party.
+# crbug.com/448915986
+3. awk '{ if (/^\s*!|^\s*@@|^\s*$/) { print; next } if (/^\s*\|\|[^/]*\^\s*$/) { print $0 "$third-party"; next } print }' easylist.txt > easylist_third.txt
+4. mv easylist_third.txt easylist.txt
+5. out/Release/ruleset_converter --input_format=filter-list --output_format=unindexed-ruleset --input_files=easylist.txt --output_file=easylist_unindexed
+6. out/Release/subresource_indexing_tool easylist_unindexed easylist_indexed
 ```
 
 ## 3. Generate the smaller filter list
@@ -116,7 +106,7 @@ It can be useful for development and testing to create a custom ruleset to activ
 2. Build tools needed to build the ruleset: `autoninja -C out/Release subresource_filter_tools`
 3. Run `./out/Release/ruleset_converter --input_format=filter-list --output_format=unindexed-ruleset --input_files=mock_easylist.txt --output_file=mock_easylist_unindexed`
 4. In `chrome://components` ensure "Subresource Filter Rules" has a non-0 version number or click "Check For Update". This ensures the path used in the following steps is created.
-5. In your Chrome user-data-dir, go to the `Subresource Filter/Unindexed` directory. Duplicate the latest version directory and increment the number: e.g. `cp -R 9.34.0/ 9.34.1/` (note: long-term, Chrome may replace this with a real list again when a new version is found).
+5. In your Chrome user-data-dir, go to the `Subresource Filter/Unindexed` directory. Locate the latest version directory and increment the number: e.g. `mv 9.34.0/ 9.34.1/` (note: long-term, Chrome may replace this with a real list again when a new version is found).
 6. Update the `version` property in `manifext.json` to match the incremented version number
 7. Overwrite `Filtering Rules` with the unindexed ruleset generated in step 3: `cp $CHROME_DIR/mock_easylist_indexed ./Filtering\ Rules`
 8. Remove `manifest.fingerprint` and `\_metadata`, leaving just `Filtering Rules`, `LICENSE.txt`, and `manifest.json`: `rm -rf manifest.fingerprint _metadata`

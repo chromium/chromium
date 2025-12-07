@@ -7,17 +7,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_countries_impl.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 
 namespace privacy_sandbox {
-
 namespace {
-
-PrivacySandboxCountries& GetPrivacySandboxCountries() {
-  static base::NoDestructor<PrivacySandboxCountriesImpl> instance;
-  return *instance;
-}
 
 enum class ConfirmationType { Notice, Consent, RestrictedNotice };
 
@@ -46,13 +39,14 @@ void EmitHistogram(ConfirmationType confirmation_type, bool value) {
   }
 }
 
-template <typename FilterFunction>
+template <typename FilterFunction, typename... Args>
 bool IsConfirmationRequired(ConfirmationType confirmation_type,
-                            FilterFunction filter_function) {
+                            FilterFunction filter_function,
+                            Args&&... args) {
   bool is_confirmation_required =
       privacy_sandbox::kPrivacySandboxSettings4.default_state ==
           base::FEATURE_ENABLED_BY_DEFAULT &&
-      filter_function();
+      std::invoke(filter_function, std::forward<Args>(args)...);
 
   if (base::FeatureList::GetInstance()->IsFeatureOverridden(
           privacy_sandbox::kPrivacySandboxSettings4.name)) {
@@ -60,32 +54,36 @@ bool IsConfirmationRequired(ConfirmationType confirmation_type,
         IsFeatureParamEnabled(confirmation_type);
     EmitHistogram(confirmation_type, is_confirmation_required !=
                                          is_confirmation_required_override);
-    if (!base::FeatureList::IsEnabled(
-            privacy_sandbox::kPrivacySandboxLocalNoticeConfirmation)) {
-      return is_confirmation_required_override;
-    }
+    return is_confirmation_required_override;
   }
   return is_confirmation_required;
 }
 
+bool IsRestrictedNoticeCondition(
+    PrivacySandboxCountries* privacy_sandbox_countries) {
+  return IsNoticeRequired(privacy_sandbox_countries) ||
+         IsConsentRequired(privacy_sandbox_countries);
+}
+
 }  // namespace
 
-bool IsConsentRequired() {
-  return IsConfirmationRequired(ConfirmationType::Consent, []() {
-    return GetPrivacySandboxCountries().IsConsentCountry();
-  });
+bool IsConsentRequired(PrivacySandboxCountries* privacy_sandbox_countries) {
+  return IsConfirmationRequired(ConfirmationType::Consent,
+                                &PrivacySandboxCountries::IsConsentCountry,
+                                privacy_sandbox_countries);
 }
 
-bool IsNoticeRequired() {
-  return IsConfirmationRequired(ConfirmationType::Notice, []() {
-    return GetPrivacySandboxCountries().IsRestOfWorldCountry();
-  });
+bool IsNoticeRequired(PrivacySandboxCountries* privacy_sandbox_countries) {
+  return IsConfirmationRequired(ConfirmationType::Notice,
+                                &PrivacySandboxCountries::IsRestOfWorldCountry,
+                                privacy_sandbox_countries);
 }
 
-bool IsRestrictedNoticeRequired() {
-  return IsConfirmationRequired(ConfirmationType::RestrictedNotice, []() {
-    return IsNoticeRequired() || IsConsentRequired();
-  });
+bool IsRestrictedNoticeRequired(
+    PrivacySandboxCountries* privacy_sandbox_countries) {
+  return IsConfirmationRequired(ConfirmationType::RestrictedNotice,
+                                &IsRestrictedNoticeCondition,
+                                privacy_sandbox_countries);
 }
 
 }  // namespace privacy_sandbox

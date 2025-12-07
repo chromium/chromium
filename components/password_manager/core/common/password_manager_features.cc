@@ -8,69 +8,49 @@
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
 
+namespace {
+// This covers the 95th percentile on desktop platforms. See
+// `PasswordManager.PasskeyRetrievalWaitDuration` metric.
+// On Android the target is to get retrieval times under this threshold.
+constexpr int kDefaultDelaySuggestionsTimeout = 4000;
+}  // namespace
+
 namespace password_manager::features {
 // NOTE: It is strongly recommended to use UpperCamelCase style for feature
 //       names, e.g. "MyGreatFeature".
 
-// Enables the overwriting of prefilled username fields if the server predicted
-// the field to contain a placeholder value.
-BASE_FEATURE(kEnableOverwritingPlaceholderUsernames,
-             "EnableOverwritingPlaceholderUsernames",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-#if BUILDFLAG(IS_IOS)
-// Enables password bottom sheet to be triggered on autofocus events (on iOS).
-BASE_FEATURE(kIOSPasswordBottomSheetAutofocus,
-             "kIOSPasswordBottomSheetAutofocus",
+// When enabled, will inform browser about filling through `FillField` as user
+// input.
+BASE_FEATURE(kActorLoginTreatFillingAsUserInput,
              base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // IS_IOS
 
-// Enables password reuse detection.
-BASE_FEATURE(kPasswordReuseDetectionEnabled,
-             "PasswordReuseDetectionEnabled",
+// Only relevant when `kShowSuggestionsOnAutofocus` is on. This prevents
+// suggestions from being shown while waiting for passkeys to become available,
+// if the popup was triggered by autofocus without user interaction. It is
+// enabled by default and can be turned off if it is found to cause any
+// problems.
+BASE_FEATURE(kDelaySuggestionsOnAutofocusWaitingForPasskeys,
+             "DelaysSuggestionsOnAutofocusWaitingForPasskeys",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Timeout value used when kDelaySuggestionsOnAutofocusWaitingForPasskeys is
+// enabled.
+BASE_FEATURE_PARAM(int,
+                   kDelaySuggestionsOnAutofocusTimeout,
+                   &kDelaySuggestionsOnAutofocusWaitingForPasskeys,
+                   "timeout_ms",
+                   kDefaultDelaySuggestionsTimeout);
 
 // Removes password suggestion filtering by username.
-BASE_FEATURE(kNoPasswordSuggestionFiltering,
-             "NoPasswordSuggestionFiltering",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNoPasswordSuggestionFiltering, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Allows to show suggestions automatically when password forms are autofocused
-// on pageload.
+// on pageload. Enabled by default on desktop in M140.
 BASE_FEATURE(kShowSuggestionsOnAutofocus,
-             "ShowSuggestionsOnAutofocus",
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-#if BUILDFLAG(IS_ANDROID)
-// Enables the refactored Password Suggestion bottom sheet (Touch-To-Fill).
-// The goal of the refactoring is to transfer the knowledge about the
-// Touch-To-Fill feature to the browser code completely and so to simplify the
-// renderer code. In the refactored version it will be decided inside the the
-// `ContentPasswordManagerDriver::ShowPasswordSuggestions` whether to show the
-// TTF to the user.
-BASE_FEATURE(kPasswordSuggestionBottomSheetV2,
-             "PasswordSuggestionBottomSheetV2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables showing the warning about UPM migrating local passwords.
-// The feature is limited to Canary/Dev/Beta by a check in
-// local_passwords_migration_warning_util::ShouldShowWarning.
-BASE_FEATURE(kUnifiedPasswordManagerLocalPasswordsMigrationWarning,
-             "UnifiedPasswordManagerLocalPasswordsMigrationWarning",
+#else
              base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-
-// The version of the password migration warning prefs. When the version
-// increases, the value of the pref LocalPasswordMigrationWarningPrefsVersion
-// increases and the affected prefs are reset. The affected prefs are:
-// LocalPasswordMigrationWarningShownAtStartup and
-// LocalPasswordsMigrationWarningShownTimestamp.
-extern const base::FeatureParam<int>
-    kLocalPasswordMigrationWarningPrefsVersion = {
-        &kUnifiedPasswordManagerLocalPasswordsMigrationWarning,
-        "pwd_migration_warning_prefs_version", 1};
 #endif
 
 // Field trial identifier for password generation requirements.

@@ -14,6 +14,8 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/security_context/insecure_request_policy.h"
@@ -41,7 +43,7 @@ bool IsSecureScheme(const std::string& scheme) {
 // Should return the same value as `SecurityOrigin::IsLocal()` and
 // `blink::SchemeRegistry::ShouldTreatURLSchemeAsCorsEnabled()`.
 bool ShouldTreatURLSchemeAsCorsEnabled(const GURL& url) {
-  return base::Contains(url::GetCorsEnabledSchemes(), url.scheme());
+  return base::Contains(url::GetCorsEnabledSchemes(), url.GetScheme());
 }
 
 // Should return the same value as the resource URL checks result from
@@ -169,11 +171,9 @@ void ReportBasicMixedContentFeatures(
     case blink::mojom::RequestContextType::PLUGIN:
     case blink::mojom::RequestContextType::VIDEO:
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "RequestContextType has value " << request_context_type
-          << " and has MixedContentContextType of "
-          << mixed_content_context_type;
-      return;
+      NOTREACHED() << "RequestContextType has value " << request_context_type
+                   << " and has MixedContentContextType of "
+                   << mixed_content_context_type;
   }
   mixed_content_features.insert(feature);
 }
@@ -320,9 +320,39 @@ bool MixedContentChecker::ShouldBlockInternal(
       break;
 
     case blink::mojom::MixedContentContextType::kNotMixedContent:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   };
+
+  // Skip mixed content check for URLs where we can determine that the request
+  // is a Local Network Access (LNA) request. LNA checks later on will ensure
+  // that (a) the request is actually an LNA request, and (b) the user has given
+  // permission for the LNA request to go through.
+  //
+  // Reference:
+  // https://wicg.github.io/local-network-access/
+  //
+  // This only checks for mixed content subframe navigations; subresource mixed
+  // content is checked in
+  // third_party/blink/renderer/core/loader/mixed_content_checker.cc.
+  if (base::FeatureList::IsEnabled(
+          network::features::kLocalNetworkAccessChecks)) {
+    // This request is a possible LNA request if we can determine from the URL
+    // that the ip address space is definitively in the local or loopback
+    // address spaces.
+    //
+    // Loopback addresses shouldn't need to be checked as they are considered
+    // secure and not mixed content, but it can't hurt.
+    //
+    // TODO(crbug.com/395895368): check the IP address space for initiator, only
+    // skip when the initiator is more public.
+    std::optional<network::mojom::IPAddressSpace> ip_address_space =
+        network::GetAddressSpaceFromUrl(url);
+    if (ip_address_space &&
+        (ip_address_space == network::mojom::IPAddressSpace::kLocal ||
+         ip_address_space == network::mojom::IPAddressSpace::kLoopback)) {
+      allowed = true;
+    }
+  }
 
   if (should_report_to_renderer) {
     *should_report_to_renderer = true;

@@ -8,8 +8,10 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "remoting/base/constants.h"
+#include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/channel_authenticator.h"
 #include "remoting/protocol/credentials_type.h"
 
@@ -48,9 +50,22 @@ bool PairingAuthenticatorBase::started() const {
 Authenticator::RejectionReason PairingAuthenticatorBase::rejection_reason()
     const {
   if (!spake2_authenticator_) {
-    return RejectionReason::PROTOCOL_ERROR;
+    return RejectionReason::INVALID_STATE;
   }
   return spake2_authenticator_->rejection_reason();
+}
+
+Authenticator::RejectionDetails PairingAuthenticatorBase::rejection_details()
+    const {
+  if (spake2_authenticator_ &&
+      spake2_authenticator_->state() == State::REJECTED) {
+    Authenticator::RejectionDetails spake2_rejection_details =
+        spake2_authenticator_->rejection_details();
+    if (!spake2_rejection_details.is_null()) {
+      return spake2_rejection_details;
+    }
+  }
+  return RejectionDetails(error_message_);
 }
 
 void PairingAuthenticatorBase::ProcessMessage(
@@ -97,6 +112,10 @@ PairingAuthenticatorBase::GetNextMessage() {
 
 const std::string& PairingAuthenticatorBase::GetAuthKey() const {
   return spake2_authenticator_->GetAuthKey();
+}
+
+const SessionPolicies* PairingAuthenticatorBase::GetSessionPolicies() const {
+  return nullptr;
 }
 
 std::unique_ptr<ChannelAuthenticator>

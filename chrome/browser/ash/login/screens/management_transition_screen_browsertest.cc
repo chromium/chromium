@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/login/screens/management_transition_screen.h"
+
 #include <memory>
 #include <string>
 
-#include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/session/arc_management_transition.h"
-#include "ash/components/arc/session/arc_session_runner.h"
-#include "ash/components/arc/test/fake_arc_session.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/run_loop.h"
@@ -18,18 +15,21 @@
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
-#include "chrome/browser/ash/login/screens/management_transition_screen.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/management_transition_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/session/arc_management_transition.h"
+#include "chromeos/ash/experiences/arc/session/arc_session_runner.h"
+#include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_type.h"
@@ -63,10 +63,7 @@ class ManagementTransitionScreenTest
     : public MixinBasedInProcessBrowserTest,
       public testing::WithParamInterface<TransitionScreenTestParams> {
  public:
-  ManagementTransitionScreenTest() {
-    feature_list_.InitAndEnableFeature(
-        arc::kEnableUnmanagedToManagedTransitionFeature);
-  }
+  ManagementTransitionScreenTest() = default;
 
   ManagementTransitionScreen* GetScreen() {
     return WizardController::default_controller()
@@ -131,8 +128,6 @@ class ManagementTransitionScreenTest
   LoggedInUserMixin logged_in_user_mixin_{&mixin_host_, /*test_base=*/this,
                                           embedded_test_server(),
                                           GetTargetUserType()};
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(ManagementTransitionScreenTest,

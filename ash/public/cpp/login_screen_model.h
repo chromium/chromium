@@ -44,12 +44,17 @@ class ASH_PUBLIC_EXPORT LoginScreenModel {
   // authentication) availability for the given user.
   virtual void SetAuthFactorsForUser(
       const AccountId& user,
-      cryptohome::AuthFactorsSet auth_factors) = 0;
+      cryptohome::AuthFactorsSet auth_factors,
+      cryptohome::PinLockAvailability pin_available_at) = 0;
 
   // Notification if pin is enabled or disabled for the given user.
-  // |account_id|:   The account id of the user in the user pod.
-  // |is_enabled|:   True if pin unlock is enabled.
-  virtual void SetPinEnabledForUser(const AccountId& user, bool enabled) = 0;
+  // |user|:         The account id of the user in the user pod.
+  // |enabled|:      True if pin unlock is enabled.
+  // |available_at|: The time when the pin will be available.
+  virtual void SetPinEnabledForUser(
+      const AccountId& user,
+      bool enabled,
+      cryptohome::PinLockAvailability available_at) = 0;
 
   // Update the status of the challenge-response authentication against a
   // security token for the given user.
@@ -162,11 +167,6 @@ class ASH_PUBLIC_EXPORT LoginScreenModel {
   // session login screen.
   virtual void SetPublicSessionShowFullManagementDisclosure(
       bool show_full_management_disclosure) = 0;
-
-  // Called when focus is reported to be leaving a lock screen app window.
-  // Requests focus to be handed off to the next suitable widget.
-  // |reverse|:   Whether the tab order is reversed.
-  virtual void HandleFocusLeavingLockScreenApps(bool reverse) = 0;
 
   // Called when the dialog hosting oobe has changed state. The oobe dialog
   // provides support for any part of login that is implemented in JS/HTML, such

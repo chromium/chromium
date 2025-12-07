@@ -11,6 +11,7 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_math.h"
 
@@ -25,7 +26,7 @@ class ByteSlice {
   // Creates a slice for a given data array.
   explicit ByteSlice(const uint8_t* data, size_t size)
       : data_(data), size_(size) {}
-  ~ByteSlice() {}
+  ~ByteSlice() = default;
 
   bool IsValid() {
     return data_ != nullptr;
@@ -35,7 +36,7 @@ class ByteSlice {
   ByteSlice Slice(size_t at, size_t size) {
     if (!RangeCheck(at, size))
       return ByteSlice();
-    return ByteSlice(data_ + at, size);
+    return ByteSlice(UNSAFE_TODO(data_ + at), size);
   }
 
   // Casts an offset to a specific type.
@@ -43,14 +44,14 @@ class ByteSlice {
   const T* GetPointerAt(size_t at) {
     if (!RangeCheck(at, sizeof(T)))
       return nullptr;
-    return reinterpret_cast<const T*>((data_ + at).get());
+    return UNSAFE_TODO(reinterpret_cast<const T*>((data_ + at).get()));
   }
 
   // Copies data from an offset to a buffer.
   bool CopyDataAt(size_t at, size_t size, uint8_t* out_data) {
     if (!RangeCheck(at, size))
       return false;
-    memcpy(out_data, data_ + at, size);
+    UNSAFE_TODO(memcpy(out_data, data_ + at, size));
     return true;
   }
 
@@ -74,11 +75,11 @@ class ByteSlice {
   // Copy and assign allowed.
 };
 
-MachOImageReader::LoadCommand::LoadCommand() {}
+MachOImageReader::LoadCommand::LoadCommand() = default;
 
 MachOImageReader::LoadCommand::LoadCommand(const LoadCommand& other) = default;
 
-MachOImageReader::LoadCommand::~LoadCommand() {}
+MachOImageReader::LoadCommand::~LoadCommand() = default;
 
 // static
 bool MachOImageReader::IsMachOMagicValue(uint32_t magic) {
@@ -94,7 +95,7 @@ MachOImageReader::MachOImageReader()
       commands_() {
 }
 
-MachOImageReader::~MachOImageReader() {}
+MachOImageReader::~MachOImageReader() = default;
 
 bool MachOImageReader::Initialize(const uint8_t* image, size_t image_size) {
   if (!image)

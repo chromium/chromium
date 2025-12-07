@@ -34,11 +34,8 @@ const SandboxedPageInfo& GetSandboxedPageInfo(const Extension* extension) {
 
 }  // namespace
 
-SandboxedPageInfo::SandboxedPageInfo() {
-}
-
-SandboxedPageInfo::~SandboxedPageInfo() {
-}
+SandboxedPageInfo::SandboxedPageInfo() = default;
+SandboxedPageInfo::~SandboxedPageInfo() = default;
 
 const URLPatternSet& SandboxedPageInfo::GetPages(const Extension* extension) {
   return GetSandboxedPageInfo(extension).pages;
@@ -49,11 +46,8 @@ bool SandboxedPageInfo::IsSandboxedPage(const Extension* extension,
   return extension->ResourceMatches(GetPages(extension), relative_path);
 }
 
-SandboxedPageHandler::SandboxedPageHandler() {
-}
-
-SandboxedPageHandler::~SandboxedPageHandler() {
-}
+SandboxedPageHandler::SandboxedPageHandler() = default;
+SandboxedPageHandler::~SandboxedPageHandler() = default;
 
 bool SandboxedPageHandler::Parse(Extension* extension, std::u16string* error) {
   std::unique_ptr<SandboxedPageInfo> sandboxed_info(new SandboxedPageInfo);

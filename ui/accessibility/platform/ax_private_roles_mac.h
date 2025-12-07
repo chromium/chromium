@@ -5,12 +5,14 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_AX_PRIVATE_ROLES_MAC_H_
 #define UI_ACCESSIBILITY_PLATFORM_AX_PRIVATE_ROLES_MAC_H_
 
+#include <Availability.h>
 #import <Cocoa/Cocoa.h>
 
 #include "base/component_export.h"
 
 // Private WebKit accessibility roles.
-COMPONENT_EXPORT(AX_PLATFORM)
-constexpr NSString* const NSAccessibilityWebAreaRole = @"AXWebArea";
+#if !defined(__MAC_26_0) || __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_26_0
+#define NSAccessibilityWebAreaRole @"AXWebArea"
+#endif
 
 #endif  // UI_ACCESSIBILITY_PLATFORM_AX_PRIVATE_ROLES_MAC_H_

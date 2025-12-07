@@ -53,27 +53,35 @@ bool TriggerNeedsOptInForCollection(const TriggerType trigger_type) {
       return true;
     case TriggerType::DEPRECATED_AD_POPUP:
     case TriggerType::DEPRECATED_AD_REDIRECT:
-      NOTREACHED_IN_MIGRATION() << "These triggers have been handled in "
-                                   "CanStartDataCollectionWithReason()";
-      return true;
+      NOTREACHED() << "These triggers have been handled in "
+                      "CanStartDataCollectionWithReason()";
   }
   // By default, require opt-in for all triggers.
   return true;
 }
 
-bool CanSendReport(const SBErrorOptions& error_display_options,
+bool CanSendReport(const TriggerManager::DataCollectionPermissions&
+                       data_collection_permissions,
                    const TriggerType trigger_type) {
+  // SafeBrowsingExtendedReportingOptInAllowed policy was deprecated.
+  // trigger_manager will not depend on the is_extended_reporting_opt_in_allowed
+  // value when the extended reporting is deprecated. We will remove the feature
+  // flag check when the feature is fully rolled out.
+  bool is_extended_reporting_opt_in_allowed =
+      base::FeatureList::IsEnabled(kExtendedReportingRemovePrefDependency)
+          ? true
+          : data_collection_permissions.is_extended_reporting_opt_in_allowed;
   // Reports are only sent for non-incoginito users who are allowed to modify
   // the Extended Reporting setting and have opted-in to Extended Reporting.
-  return !error_display_options.is_off_the_record &&
-         error_display_options.is_extended_reporting_opt_in_allowed &&
-         error_display_options.is_extended_reporting_enabled;
+  return !data_collection_permissions.is_off_the_record &&
+         is_extended_reporting_opt_in_allowed &&
+         data_collection_permissions.is_extended_reporting_enabled;
 }
 
 }  // namespace
 
-DataCollectorsContainer::DataCollectorsContainer() {}
-DataCollectorsContainer::~DataCollectorsContainer() {}
+DataCollectorsContainer::DataCollectorsContainer() = default;
+DataCollectorsContainer::~DataCollectorsContainer() = default;
 
 TriggerManager::FinishCollectingThreatDetailsResult::
     FinishCollectingThreatDetailsResult(bool should_send_report,
@@ -85,46 +93,55 @@ bool TriggerManager::FinishCollectingThreatDetailsResult::IsReportSent() {
   return should_send_report && are_threat_details_available;
 }
 
+TriggerManager::DataCollectionPermissions::DataCollectionPermissions(
+    bool is_extended_reporting_opt_in_allowed,
+    bool is_off_the_record,
+    bool is_extended_reporting_enabled)
+    : is_extended_reporting_opt_in_allowed(
+          is_extended_reporting_opt_in_allowed),
+      is_off_the_record(is_off_the_record),
+      is_extended_reporting_enabled(is_extended_reporting_enabled) {}
+
+TriggerManager::DataCollectionPermissions::DataCollectionPermissions(
+    const SBErrorOptions& error_display_options)
+    : is_extended_reporting_opt_in_allowed(
+          error_display_options.is_extended_reporting_opt_in_allowed),
+      is_off_the_record(error_display_options.is_off_the_record),
+      is_extended_reporting_enabled(
+          error_display_options.is_extended_reporting_enabled) {}
+
 TriggerManager::TriggerManager(BaseUIManager* ui_manager,
                                PrefService* local_state_prefs)
     : ui_manager_(ui_manager),
       trigger_throttler_(new TriggerThrottler(local_state_prefs)) {}
 
-TriggerManager::~TriggerManager() {}
+TriggerManager::~TriggerManager() = default;
 
 void TriggerManager::set_trigger_throttler(TriggerThrottler* throttler) {
   trigger_throttler_.reset(throttler);
 }
 
 // static
-SBErrorOptions TriggerManager::GetSBErrorDisplayOptions(
+TriggerManager::DataCollectionPermissions
+TriggerManager::GetDataCollectionPermissions(
     const PrefService& pref_service,
     content::WebContents* web_contents) {
-  return SBErrorOptions(
-      /*is_main_frame_load_pending=*/false,
+  return DataCollectionPermissions(
       IsExtendedReportingOptInAllowed(pref_service),
       web_contents->GetBrowserContext()->IsOffTheRecord(),
-      IsExtendedReportingEnabledBypassDeprecationFlag(pref_service),
-      IsExtendedReportingPolicyManaged(pref_service),
-      IsEnhancedProtectionEnabled(pref_service),
-      /*is_proceed_anyway_disabled=*/false,
-      /*should_open_links_in_new_tab=*/false,
-      /*always_show_back_to_safety=*/true,
-      /*is_enhanced_protection_message_enabled=*/true,
-      IsSafeBrowsingPolicyManaged(pref_service),
-      /*help_center_article_link=*/std::string());
+      IsExtendedReportingEnabledBypassDeprecationFlag(pref_service));
 }
 
 bool TriggerManager::CanStartDataCollection(
-    const SBErrorOptions& error_display_options,
+    const DataCollectionPermissions& data_collection_permissions,
     const TriggerType trigger_type) {
   TriggerManagerReason unused_reason;
-  return CanStartDataCollectionWithReason(error_display_options, trigger_type,
-                                          &unused_reason);
+  return CanStartDataCollectionWithReason(data_collection_permissions,
+                                          trigger_type, &unused_reason);
 }
 
 bool TriggerManager::CanStartDataCollectionWithReason(
-    const SBErrorOptions& error_display_options,
+    const DataCollectionPermissions& data_collection_permissions,
     const TriggerType trigger_type,
     TriggerManagerReason* out_reason) {
   if (trigger_type == TriggerType::DEPRECATED_AD_POPUP ||
@@ -140,14 +157,22 @@ bool TriggerManager::CanStartDataCollectionWithReason(
   // prompted for opt-in as part of the trigger).
   bool optin_required_check_ok =
       !TriggerNeedsOptInForCollection(trigger_type) ||
-      error_display_options.is_extended_reporting_enabled;
-  // We start data collection as long as user is not incognito and is able to
-  // change the Extended Reporting opt-in, and the |trigger_type| has available
-  // quota. For some triggers we also require extended reporting opt-in in
-  // order to start data collection.
-  if (!error_display_options.is_off_the_record &&
-      error_display_options.is_extended_reporting_opt_in_allowed &&
-      optin_required_check_ok) {
+      data_collection_permissions.is_extended_reporting_enabled;
+
+  // SafeBrowsingExtendedReportingOptInAllowed policy was deprecated.
+  // trigger_manager will not depend on the is_extended_reporting_opt_in_allowed
+  // value when the extended reporting is deprecated. We will remove the feature
+  // flag check when the feature is fully rolled out.
+  bool is_extended_reporting_opt_in_allowed =
+      base::FeatureList::IsEnabled(kExtendedReportingRemovePrefDependency)
+          ? true
+          : data_collection_permissions.is_extended_reporting_opt_in_allowed;
+
+  // We start data collection as long as user is not incognito, and the
+  // |trigger_type| has available quota. For some triggers we also require
+  // extended reporting opt-in in order to start data collection.
+  if (!data_collection_permissions.is_off_the_record &&
+      is_extended_reporting_opt_in_allowed && optin_required_check_ok) {
     bool quota_ok = trigger_throttler_->TriggerCanFire(trigger_type);
     if (!quota_ok)
       *out_reason = TriggerManagerReason::DAILY_QUOTA_EXCEEDED;
@@ -165,11 +190,11 @@ bool TriggerManager::StartCollectingThreatDetails(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     history::HistoryService* history_service,
     ReferrerChainProvider* referrer_chain_provider,
-    const SBErrorOptions& error_display_options) {
+    const DataCollectionPermissions& data_collection_permissions) {
   TriggerManagerReason unused_reason;
   return StartCollectingThreatDetailsWithReason(
       trigger_type, web_contents, resource, url_loader_factory, history_service,
-      referrer_chain_provider, error_display_options, &unused_reason);
+      referrer_chain_provider, data_collection_permissions, &unused_reason);
 }
 
 bool TriggerManager::StartCollectingThreatDetailsWithReason(
@@ -179,22 +204,19 @@ bool TriggerManager::StartCollectingThreatDetailsWithReason(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     history::HistoryService* history_service,
     ReferrerChainProvider* referrer_chain_provider,
-    const SBErrorOptions& error_display_options,
+    const DataCollectionPermissions& data_collection_permissions,
     TriggerManagerReason* reason) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  if (!CanStartDataCollectionWithReason(error_display_options, trigger_type,
-                                        reason))
+  if (!CanStartDataCollectionWithReason(data_collection_permissions,
+                                        trigger_type, reason)) {
     return false;
+  }
 
   // Ensure we're not already collecting ThreatDetails on this tab. Create an
   // entry in the map for this |web_contents| if it's not there already.
   DataCollectorsContainer* collectors =
       &data_collectors_map_[GetWebContentsKey(web_contents)];
-  bool collection_in_progress = collectors->threat_details != nullptr;
-  base::UmaHistogramBoolean(
-      "SafeBrowsing.ClientSafeBrowsingReport.HasThreatDetailsAtStart.Mainframe",
-      collection_in_progress);
-  if (collection_in_progress) {
+  if (collectors->threat_details) {
     return false;
   }
 
@@ -220,25 +242,28 @@ TriggerManager::FinishCollectingThreatDetails(
     const base::TimeDelta& delay,
     bool did_proceed,
     int num_visits,
-    const SBErrorOptions& error_display_options,
+    const DataCollectionPermissions& data_collection_permissions,
     std::optional<int64_t> warning_shown_ts,
     bool is_hats_candidate) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   // Determine whether a report should be sent.
-  bool should_send_report = CanSendReport(error_display_options, trigger_type);
+  bool should_send_report =
+      CanSendReport(data_collection_permissions, trigger_type);
   bool has_threat_details_in_map =
       base::Contains(data_collectors_map_, web_contents_key);
 
-  if (should_send_report) {
+  if (should_send_report &&
+      trigger_type == TriggerType::SECURITY_INTERSTITIAL) {
     base::UmaHistogramBoolean(
-        "SafeBrowsing.ClientSafeBrowsingReport.HasThreatDetailsForTab",
+        "SafeBrowsing.ClientSafeBrowsingReport.HasThreatDetailsForTab."
+        "SecurityInterstitial",
         has_threat_details_in_map);
-    if (trigger_type == TriggerType::SECURITY_INTERSTITIAL) {
-      base::UmaHistogramBoolean(
-          "SafeBrowsing.ClientSafeBrowsingReport.HasThreatDetailsForTab."
-          "SecurityInterstitial",
-          has_threat_details_in_map);
-    }
+  }
+
+  if (trigger_type == TriggerType::GAIA_PASSWORD_REUSE) {
+    base::UmaHistogramBoolean(
+        "SafeBrowsing.ClientSafeBrowsingReport.PasswordReuse.RepeatVisit",
+        num_visits > 0);
   }
 
   // Make sure there's a ThreatDetails collector running on this tab.
@@ -248,14 +273,6 @@ TriggerManager::FinishCollectingThreatDetails(
         /*are_threat_details_available=*/false);
   DataCollectorsContainer* collectors = &data_collectors_map_[web_contents_key];
   bool has_threat_details = !!collectors->threat_details;
-
-  if (should_send_report &&
-      trigger_type == TriggerType::SECURITY_INTERSTITIAL) {
-    base::UmaHistogramBoolean(
-        "SafeBrowsing.ClientSafeBrowsingReport.HasThreatDetailsInContainer."
-        "SecurityInterstitial",
-        has_threat_details);
-  }
 
   if (!has_threat_details) {
     return FinishCollectingThreatDetailsResult(
@@ -319,7 +336,7 @@ TriggerManagerWebContentsHelper::TriggerManagerWebContentsHelper(
           *web_contents),
       trigger_manager_(trigger_manager) {}
 
-TriggerManagerWebContentsHelper::~TriggerManagerWebContentsHelper() {}
+TriggerManagerWebContentsHelper::~TriggerManagerWebContentsHelper() = default;
 
 void TriggerManagerWebContentsHelper::WebContentsDestroyed() {
   trigger_manager_->WebContentsDestroyed(web_contents());

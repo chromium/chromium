@@ -8,46 +8,48 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/menu_label_accelerator_util_linux.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/gfx/image/image.h"
-
-#if BUILDFLAG(IS_OZONE)
-#include "ui/ozone/public/ozone_platform.h"       // nogncheck
-#include "ui/ozone/public/platform_menu_utils.h"  // nogncheck
-#endif
 
 namespace {
 
 std::string ToDBusKeySym(ui::KeyboardCode code) {
-#if BUILDFLAG(IS_OZONE)
-  if (const auto* const platorm_menu_utils =
-          ui::OzonePlatform::GetInstance()->GetPlatformMenuUtils()) {
-    return platorm_menu_utils->ToDBusKeySym(code);
+  const uint16_t c =
+      DomCodeToUsLayoutCharacter(UsLayoutKeyboardCodeToDomCode(code), 0);
+  if (!c) {
+    return std::string();
   }
-#endif
-  return {};
+  return base::UTF16ToUTF8(std::u16string(1, c));
 }
 
-std::vector<DbusString> GetDbusMenuShortcut(ui::Accelerator accelerator) {
+std::vector<std::string> GetDbusMenuShortcut(ui::Accelerator accelerator) {
   auto dbus_key_sym = ToDBusKeySym(accelerator.key_code());
-  if (dbus_key_sym.empty())
+  if (dbus_key_sym.empty()) {
     return {};
+  }
 
-  std::vector<DbusString> parts;
-  if (accelerator.IsCtrlDown())
+  std::vector<std::string> parts;
+  if (accelerator.IsCtrlDown()) {
     parts.emplace_back("Control");
-  if (accelerator.IsAltDown())
+  }
+  if (accelerator.IsAltDown()) {
     parts.emplace_back("Alt");
-  if (accelerator.IsShiftDown())
+  }
+  if (accelerator.IsShiftDown()) {
     parts.emplace_back("Shift");
-  if (accelerator.IsCmdDown())
+  }
+  if (accelerator.IsCmdDown()) {
     parts.emplace_back("Super");
+  }
   parts.emplace_back(dbus_key_sym);
   return parts;
 }
@@ -64,27 +66,31 @@ MenuItemProperties ComputeMenuPropertiesForMenuItem(ui::MenuModel* menu,
   // merge them with the regular label and icon.
   std::u16string label = menu->GetLabelAt(i);
   if (!label.empty()) {
-    properties["label"] = MakeDbusVariant(DbusString(
-        ui::ConvertAcceleratorsFromWindowsStyle(base::UTF16ToUTF8(label))));
+    properties["label"] = dbus_utils::Variant::Wrap<"s">(
+        ui::ConvertAcceleratorsFromWindowsStyle(base::UTF16ToUTF8(label)));
   }
 
-  if (!menu->IsEnabledAt(i))
-    properties["enabled"] = MakeDbusVariant(DbusBoolean(false));
-  if (!menu->IsVisibleAt(i))
-    properties["visible"] = MakeDbusVariant(DbusBoolean(false));
+  if (!menu->IsEnabledAt(i)) {
+    properties["enabled"] = dbus_utils::Variant::Wrap<"b">(false);
+  }
+  if (!menu->IsVisibleAt(i)) {
+    properties["visible"] = dbus_utils::Variant::Wrap<"b">(false);
+  }
 
   ui::ImageModel icon = menu->GetIconAt(i);
   if (icon.IsImage()) {
-    properties["icon-data"] =
-        MakeDbusVariant(DbusByteArray(icon.GetImage().As1xPNGBytes()));
+    auto png_bytes = icon.GetImage().As1xPNGBytes();
+    auto span = base::as_byte_span(*png_bytes);
+    properties["icon-data"] = dbus_utils::Variant::Wrap<"ay">(
+        std::vector<uint8_t>(span.begin(), span.end()));
   }
 
   ui::Accelerator accelerator;
   if (menu->GetAcceleratorAt(i, &accelerator)) {
     auto parts = GetDbusMenuShortcut(accelerator);
     if (!parts.empty()) {
-      properties["shortcut"] = MakeDbusVariant(
-          MakeDbusArray(DbusArray<DbusString>(std::move(parts))));
+      properties["shortcut"] = dbus_utils::Variant::Wrap<"aas">(
+          std::vector<std::vector<std::string>>{std::move(parts)});
     }
   }
 
@@ -96,16 +102,16 @@ MenuItemProperties ComputeMenuPropertiesForMenuItem(ui::MenuModel* menu,
       break;
     case ui::MenuModel::TYPE_CHECK:
     case ui::MenuModel::TYPE_RADIO:
-      properties["toggle-type"] = MakeDbusVariant(DbusString(
+      properties["toggle-type"] = dbus_utils::Variant::Wrap<"s">(
           menu->GetTypeAt(i) == ui::MenuModel::TYPE_CHECK ? "checkmark"
-                                                          : "radio"));
+                                                          : "radio");
       properties["toggle-state"] =
-          MakeDbusVariant(DbusInt32(menu->IsItemCheckedAt(i) ? 1 : 0));
+          dbus_utils::Variant::Wrap<"i">(menu->IsItemCheckedAt(i) ? 1 : 0);
       break;
     case ui::MenuModel::TYPE_SEPARATOR:
       // The dbusmenu interface doesn't have multiple types of separators like
       // MenuModel.  Just use a regular separator in all cases.
-      properties["type"] = MakeDbusVariant(DbusString("separator"));
+      properties["type"] = dbus_utils::Variant::Wrap<"s">("separator");
       break;
     case ui::MenuModel::TYPE_BUTTON_ITEM:
       // This type of menu represents a row of buttons, but the dbusmenu
@@ -117,7 +123,8 @@ MenuItemProperties ComputeMenuPropertiesForMenuItem(ui::MenuModel* menu,
       break;
     case ui::MenuModel::TYPE_SUBMENU:
     case ui::MenuModel::TYPE_ACTIONABLE_SUBMENU:
-      properties["children-display"] = MakeDbusVariant(DbusString("submenu"));
+      properties["children-display"] =
+          dbus_utils::Variant::Wrap<"s">("submenu");
       break;
   }
 
@@ -133,8 +140,9 @@ void ComputeMenuPropertyChanges(const MenuItemProperties& old_properties,
     const std::string& key = pair.first;
     auto new_it = new_properties.find(key);
     if (new_it != new_properties.end()) {
-      if (new_it->second != pair.second)
+      if (new_it->second != pair.second) {
         item_updated_props->push_back(key);
+      }
     } else {
       item_removed_props->push_back(key);
     }
@@ -142,7 +150,8 @@ void ComputeMenuPropertyChanges(const MenuItemProperties& old_properties,
   // Compute added properties.
   for (const auto& pair : new_properties) {
     const std::string& key = pair.first;
-    if (!base::Contains(old_properties, key))
+    if (!base::Contains(old_properties, key)) {
       item_updated_props->push_back(key);
+    }
   }
 }

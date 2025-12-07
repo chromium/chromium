@@ -26,12 +26,12 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     });
   }
 
-  await TestRunner.NetworkAgent.setCacheDisabled(true);
+  await TestRunner.NetworkAgent.invoke_setCacheDisabled({cacheDisabled: true});
   await TestRunner.reloadPage();
   await waitOnResource(/abe\.png/, 200, false);
   TestRunner.addResult('An uncached resource is found.');
 
-  await TestRunner.NetworkAgent.setCacheDisabled(false);
+  await TestRunner.NetworkAgent.invoke_setCacheDisabled({cacheDisabled: false});
   const cached = waitOnResource(/abe\.png/, 200, true);
   await TestRunner.addIframe('memory-cached-resource.html');
   await cached;

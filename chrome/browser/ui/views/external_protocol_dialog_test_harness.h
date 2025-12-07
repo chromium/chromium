@@ -30,6 +30,23 @@ class ExternalProtocolDialogBrowserTest
 
   void SetChecked(bool checked);
 
+  // Returns true if the `ExternalProtocolDialog` is occluded by a
+  // Picture-in-Picture window.
+  bool OccludedByPictureInPicture() const;
+
+  // Sets the `ExternalProtocolDialog` Picture-in-Picture occlusion state to the
+  // `occluded` value.
+  void SimulateOcclusionStateChanged(bool occluded);
+
+  // Returns true if button pressed events on the `ExternalProtocolDialog`
+  // should be ignored.
+  bool ShouldIgnoreButtonPressedEventHandling(views::View* button,
+                                              const ui::Event& event) const;
+
+  // Returns true if key events on the `ExternalProtocolDialog` should be
+  // allowed when input protection is active.
+  bool ShouldAllowKeyEventsDuringInputProtection() const;
+
   // ExternalProtocolHandler::Delegate:
   scoped_refptr<shell_integration::DefaultSchemeClientWorker> CreateShellWorker(
       const GURL& url) override;

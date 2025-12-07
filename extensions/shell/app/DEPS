@@ -2,7 +2,6 @@ include_rules = [
   "+ash/constants",
   "+extensions/shell",
   "+chromeos",
-  "+components/nacl",
   "+content/public/app",
   "+content/public/browser",
   "+content/public/utility",

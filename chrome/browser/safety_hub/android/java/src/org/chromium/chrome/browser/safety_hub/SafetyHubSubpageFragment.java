@@ -13,16 +13,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.preference.PreferenceCategory;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.ui.widget.ButtonCompat;
 
 /* Common ancestor for Safety Hub subpage fragments. */
+@NullMarked
 public abstract class SafetyHubSubpageFragment extends SafetyHubBaseFragment {
     private static final String PREF_HEADER = "header";
     private static final String PREF_LIST = "preference_list";
@@ -30,11 +34,12 @@ public abstract class SafetyHubSubpageFragment extends SafetyHubBaseFragment {
     protected PreferenceCategory mPreferenceList;
     protected ButtonCompat mBottomButton;
     protected boolean mBulkActionConfirmed;
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         SettingsUtils.addPreferencesFromResource(this, R.xml.safety_hub_subpage_preferences);
-        getActivity().setTitle(getTitleId());
+        mPageTitle.set(getString(getTitleId()));
 
         TextMessagePreference headPreference = (TextMessagePreference) findPreference(PREF_HEADER);
         headPreference.setSummary(getHeaderId());
@@ -44,10 +49,14 @@ public abstract class SafetyHubSubpageFragment extends SafetyHubBaseFragment {
         setHasOptionsMenu(true);
     }
 
-    @NonNull
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
+    }
+
     @Override
     public View onCreateView(
-            @NonNull LayoutInflater inflater,
+            LayoutInflater inflater,
             @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         LinearLayout view =
@@ -61,7 +70,8 @@ public abstract class SafetyHubSubpageFragment extends SafetyHubBaseFragment {
                     @Override
                     public void onClick(View view) {
                         mBulkActionConfirmed = true;
-                        getActivity().finish();
+                        SettingsNavigationFactory.createSettingsNavigation()
+                                .finishCurrentSettings(SafetyHubSubpageFragment.this);
                     }
                 });
         view.addView(bottomView);
@@ -69,8 +79,8 @@ public abstract class SafetyHubSubpageFragment extends SafetyHubBaseFragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
         updatePreferenceList();
     }
 

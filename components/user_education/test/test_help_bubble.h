@@ -10,9 +10,9 @@
 #include "base/auto_reset.h"
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
-#include "components/user_education/common/help_bubble.h"
-#include "components/user_education/common/help_bubble_factory.h"
-#include "components/user_education/common/help_bubble_params.h"
+#include "components/user_education/common/help_bubble/help_bubble.h"
+#include "components/user_education/common/help_bubble/help_bubble_factory.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
@@ -36,6 +36,10 @@ class TestHelpBubble : public HelpBubble {
   DECLARE_FRAMEWORK_SPECIFIC_METADATA()
 
   const HelpBubbleParams& params() const { return params_; }
+
+  const ui::TrackedElement* anchor_element() const {
+    return anchor_element_.get();
+  }
 
   // Simulates the user dismissing the bubble.
   void SimulateDismiss();

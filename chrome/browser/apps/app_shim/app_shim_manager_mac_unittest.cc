@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
 
 #include <unistd.h>
@@ -18,6 +13,7 @@
 #include <vector>
 
 #include "base/apple/scoped_cftyperef.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/sys_string_conversions.h"
@@ -54,7 +50,7 @@ using ::testing::WithArgs;
 
 class MockDelegate : public AppShimManager::Delegate {
  public:
-  ~MockDelegate() override {}
+  ~MockDelegate() override = default;
 
   MOCK_METHOD2(ShowAppWindows, bool(Profile*, const std::string&));
   MOCK_METHOD2(CloseAppWindows, void(Profile*, const std::string&));
@@ -147,8 +143,10 @@ class TestingAppShimManager : public AppShimManager {
   void SetAcceptablyCodeSigned(bool is_acceptable_code_signed) {
     is_acceptably_code_signed_ = is_acceptable_code_signed;
   }
-  bool IsAcceptablyCodeSigned(pid_t pid) const override {
-    return is_acceptably_code_signed_;
+  void IsAcceptablyCodeSigned(
+      audit_token_t audit_token,
+      base::OnceCallback<void(bool)> callback) const override {
+    std::move(callback).Run(is_acceptably_code_signed_);
   }
 
   MOCK_METHOD1(ProfileForPath, Profile*(const base::FilePath&));
@@ -204,7 +202,7 @@ class TestingAppShimHostBootstrap : public AppShimHostBootstrap {
       const std::string& app_id,
       bool is_from_bookmark,
       std::optional<chrome::mojom::AppShimLaunchResult>* launch_result)
-      : AppShimHostBootstrap(getpid()),
+      : AppShimHostBootstrap(AuditTokenForCurrentProcess()),
         profile_path_(profile_path),
         app_id_(app_id),
         is_from_bookmark_(is_from_bookmark),
@@ -264,6 +262,15 @@ class TestingAppShimHostBootstrap : public AppShimHostBootstrap {
   raw_ptr<std::optional<chrome::mojom::AppShimLaunchResult>> launch_result_ =
       nullptr;
   base::WeakPtrFactory<TestingAppShimHostBootstrap> weak_factory_;
+
+  static audit_token_t AuditTokenForCurrentProcess() {
+    audit_token_t token;
+    mach_msg_type_number_t size = TASK_AUDIT_TOKEN_COUNT;
+    int kr = task_info(mach_task_self(), TASK_AUDIT_TOKEN, (task_info_t)&token,
+                       &size);
+    CHECK(kr == KERN_SUCCESS) << " Error getting audit token.";
+    return token;
+  }
 };
 
 const char kTestAppIdA[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
@@ -334,7 +341,7 @@ class TestHost : public AppShimHost {
         test_weak_factory_(this) {}
   TestHost(const TestHost&) = delete;
   TestHost& operator=(const TestHost&) = delete;
-  ~TestHost() override {}
+  ~TestHost() override = default;
 
   chrome::mojom::AppShim* GetAppShim() const override {
     return test_app_shim_.get();
@@ -370,10 +377,10 @@ class TestHost : public AppShimHost {
 
 class AppShimManagerTest : public testing::Test {
  protected:
-  AppShimManagerTest() {}
+  AppShimManagerTest() = default;
   AppShimManagerTest(const AppShimManagerTest&) = delete;
   AppShimManagerTest& operator=(const AppShimManagerTest&) = delete;
-  ~AppShimManagerTest() override {}
+  ~AppShimManagerTest() override = default;
 
   void SetUp() override {
     profile_path_a_ = profile_a_.GetPath();
@@ -791,8 +798,8 @@ TEST_F(AppShimManagerTest, AppLaunchCancelled) {
   std::string app_name = web_app::GenerateApplicationNameFromAppId(kTestAppIdA);
   Browser::CreateParams params = Browser::CreateParams::CreateForApp(
       app_name, true, browser_window->GetBounds(), &profile_a_, true);
-  params.window = browser_window.get();
-  auto browser = std::unique_ptr<Browser>(Browser::Create(params));
+  params.window = browser_window.release();
+  auto browser = Browser::DeprecatedCreateOwnedForTesting(params);
   manager_->OnBrowserAdded(browser.get());
 
   // Validate that OnAppLaunchCancelled does not close the app,
@@ -1225,7 +1232,9 @@ TEST_F(AppShimManagerTest, NotificationAction) {
   };
 
   scoped_feature_list_.InitWithFeatures(
-      {features::kAppShimNotificationAttribution}, {});
+      {features::kAppShimNotificationAttribution,
+       features::kUseAdHocSigningForWebAppShims},
+      {});
 
   // Use SetAppCanCreateHost to simulate the case where there isn't already a
   // loaded profile.
@@ -1491,11 +1500,12 @@ TEST_F(AppShimManagerTest, MultiProfileSelectMenu_ShowsBrowser) {
 
   // Notify manager that a new browser has been associated with the app.
   auto browser_window_a = std::make_unique<TestBrowserWindowShow>();
+  TestBrowserWindowShow* browser_window_a_ptr = browser_window_a.get();
   std::string app_name = web_app::GenerateApplicationNameFromAppId(kTestAppIdA);
   Browser::CreateParams params_a = Browser::CreateParams::CreateForApp(
       app_name, true, browser_window_a->GetBounds(), &profile_a_, true);
-  params_a.window = browser_window_a.get();
-  auto browser_a = std::unique_ptr<Browser>(Browser::Create(params_a));
+  params_a.window = browser_window_a.release();
+  auto browser_a = Browser::DeprecatedCreateOwnedForTesting(params_a);
   manager_->OnBrowserAdded(browser_a.get());
 
   // Select profile B from the menu. This should request that the app be
@@ -1509,14 +1519,15 @@ TEST_F(AppShimManagerTest, MultiProfileSelectMenu_ShowsBrowser) {
 
   // Notify manager that a new browser has been associated with the app.
   auto browser_window_b = std::make_unique<TestBrowserWindowShow>();
+  TestBrowserWindowShow* browser_window_b_ptr = browser_window_b.get();
   Browser::CreateParams params_b = Browser::CreateParams::CreateForApp(
       app_name, true, browser_window_b->GetBounds(), &profile_b_, true);
-  params_b.window = browser_window_b.get();
-  auto browser_b = std::unique_ptr<Browser>(Browser::Create(params_b));
+  params_b.window = browser_window_b.release();
+  auto browser_b = Browser::DeprecatedCreateOwnedForTesting(params_b);
   manager_->OnBrowserAdded(browser_b.get());
 
-  EXPECT_FALSE(browser_window_a->did_show);
-  EXPECT_FALSE(browser_window_b->did_show);
+  EXPECT_FALSE(browser_window_a_ptr->did_show);
+  EXPECT_FALSE(browser_window_b_ptr->did_show);
 
   // Select profile A and B from the menu -- this should not request a launch,
   // because the profiles are already enabled.
@@ -1526,13 +1537,13 @@ TEST_F(AppShimManagerTest, MultiProfileSelectMenu_ShowsBrowser) {
                         chrome::mojom::AppShimLoginItemRestoreState::kNone, _))
       .Times(0);
   host_aa_->ProfileSelectedFromMenu(profile_path_a_);
-  EXPECT_TRUE(browser_window_a->did_show);
-  EXPECT_FALSE(browser_window_b->did_show);
-  browser_window_a->did_show = false;
+  EXPECT_TRUE(browser_window_a_ptr->did_show);
+  EXPECT_FALSE(browser_window_b_ptr->did_show);
+  browser_window_a_ptr->did_show = false;
 
   host_aa_->ProfileSelectedFromMenu(profile_path_b_);
-  EXPECT_FALSE(browser_window_a->did_show);
-  EXPECT_TRUE(browser_window_b->did_show);
+  EXPECT_FALSE(browser_window_a_ptr->did_show);
+  EXPECT_TRUE(browser_window_b_ptr->did_show);
 }
 
 TEST_F(AppShimManagerTest, ProfileMenuOneProfile) {
@@ -1845,8 +1856,8 @@ TEST_F(AppShimManagerTest, UpdateApplicationDockMenu) {
     std::vector<chrome::mojom::ApplicationDockMenuItemPtr> mock_dock_menu_items;
     for (size_t i = 0; i < menu_items_size; i++) {
       auto dock_menu_item = chrome::mojom::ApplicationDockMenuItem::New();
-      dock_menu_item->name = menu_items[i].name;
-      dock_menu_item->url = menu_items[i].url;
+      dock_menu_item->name = UNSAFE_TODO(menu_items[i]).name;
+      dock_menu_item->url = UNSAFE_TODO(menu_items[i]).url;
       mock_dock_menu_items.push_back(std::move(dock_menu_item));
     }
     return mock_dock_menu_items;
@@ -1857,8 +1868,10 @@ TEST_F(AppShimManagerTest, UpdateApplicationDockMenu) {
     const auto& dock_menu_items = host_aa_->test_app_shim_->dock_menu_items_;
     EXPECT_EQ(expected_menu_items_size, dock_menu_items.size());
     for (size_t i = 0; i < dock_menu_items.size(); i++) {
-      EXPECT_EQ(expected_menu_items[i].name, dock_menu_items[i]->name);
-      EXPECT_EQ(expected_menu_items[i].url, dock_menu_items[i]->url);
+      UNSAFE_TODO(
+          EXPECT_EQ(expected_menu_items[i].name, dock_menu_items[i]->name));
+      UNSAFE_TODO(
+          EXPECT_EQ(expected_menu_items[i].url, dock_menu_items[i]->url));
     }
   };
 
@@ -1881,19 +1894,19 @@ TEST_F(AppShimManagerTest, UpdateApplicationDockMenu) {
   std::unique_ptr<Browser> browser_profile_a, browser_profile_b;
 
   {
-    auto browser_window = std::make_unique<TestBrowserWindow>();
+    auto browser_window_a = std::make_unique<TestBrowserWindow>();
     Browser::CreateParams params = Browser::CreateParams::CreateForApp(
-        app_name, true, browser_window->GetBounds(), &profile_a_, true);
-    params.window = browser_window.get();
-    browser_profile_a = std::unique_ptr<Browser>(Browser::Create(params));
+        app_name, true, browser_window_a->GetBounds(), &profile_a_, true);
+    params.window = browser_window_a.release();
+    browser_profile_a = Browser::DeprecatedCreateOwnedForTesting(params);
   }
 
   {
-    auto browser_window = std::make_unique<TestBrowserWindow>();
+    auto browser_window_b = std::make_unique<TestBrowserWindow>();
     Browser::CreateParams params = Browser::CreateParams::CreateForApp(
-        app_name, true, browser_window->GetBounds(), &profile_b_, true);
-    params.window = browser_window.get();
-    browser_profile_b = std::unique_ptr<Browser>(Browser::Create(params));
+        app_name, true, browser_window_b->GetBounds(), &profile_b_, true);
+    params.window = browser_window_b.release();
+    browser_profile_b = Browser::DeprecatedCreateOwnedForTesting(params);
   }
 
   // Set profile A browser as last active, and validate the application dock
@@ -1998,7 +2011,9 @@ TEST_F(AppShimManagerTest,
 
 TEST_F(AppShimManagerTest, LaunchNotificationProviderWithAppRunning) {
   scoped_feature_list_.InitWithFeatures(
-      {features::kAppShimNotificationAttribution}, {});
+      {features::kAppShimNotificationAttribution,
+       features::kUseAdHocSigningForWebAppShims},
+      {});
 
   // This app is installed for profile A throughout this test.
   AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
@@ -2025,7 +2040,9 @@ TEST_F(AppShimManagerTest, LaunchNotificationProviderWithAppRunning) {
 
 TEST_F(AppShimManagerTest, LaunchNotificationProviderWithoutAppRunning) {
   scoped_feature_list_.InitWithFeatures(
-      {features::kAppShimNotificationAttribution}, {});
+      {features::kAppShimNotificationAttribution,
+       features::kUseAdHocSigningForWebAppShims},
+      {});
 
   // This app is installed for profile A throughout this test.
   AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
@@ -2050,7 +2067,9 @@ TEST_F(AppShimManagerTest, LaunchNotificationProviderWithoutAppRunning) {
 
 TEST_F(AppShimManagerTest, LaunchNotificationProviderWithAppNotInstalled) {
   scoped_feature_list_.InitWithFeatures(
-      {features::kAppShimNotificationAttribution}, {});
+      {features::kAppShimNotificationAttribution,
+       features::kUseAdHocSigningForWebAppShims},
+      {});
 
   EXPECT_CALL(*manager_, ProfileForBackgroundShimLaunch(kTestAppIdA))
       .WillOnce(Return(nullptr));
@@ -2078,7 +2097,9 @@ TEST_F(AppShimManagerTest, LaunchNotificationProviderWithAppNotInstalled) {
 
 TEST_F(AppShimManagerTest, RequestNotificationPermissionWithAppRunning) {
   scoped_feature_list_.InitWithFeatures(
-      {features::kAppShimNotificationAttribution}, {});
+      {features::kAppShimNotificationAttribution,
+       features::kUseAdHocSigningForWebAppShims},
+      {});
 
   // This app is installed for profile A throughout this test.
   AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
@@ -2110,7 +2131,9 @@ TEST_F(AppShimManagerTest, RequestNotificationPermissionWithAppRunning) {
 
 TEST_F(AppShimManagerTest, RequestNotificationPermissionWithoutAppRunning) {
   scoped_feature_list_.InitWithFeatures(
-      {features::kAppShimNotificationAttribution}, {});
+      {features::kAppShimNotificationAttribution,
+       features::kUseAdHocSigningForWebAppShims},
+      {});
 
   // This app is installed for profile A throughout this test.
   AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
@@ -2142,7 +2165,9 @@ TEST_F(AppShimManagerTest, RequestNotificationPermissionWithoutAppRunning) {
 TEST_F(AppShimManagerTest,
        RequestNotificationPermissionWithoutAppRunningAndBrowserClosing) {
   scoped_feature_list_.InitWithFeatures(
-      {features::kAppShimNotificationAttribution}, {});
+      {features::kAppShimNotificationAttribution,
+       features::kUseAdHocSigningForWebAppShims},
+      {});
 
   // This app is installed for profile A throughout this test.
   AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
@@ -2187,7 +2212,9 @@ TEST_F(AppShimManagerTest,
 TEST_F(AppShimManagerTest,
        AppShimFailToConnectForNotificationPermissionAfterBrowserClosed) {
   scoped_feature_list_.InitWithFeatures(
-      {features::kAppShimNotificationAttribution}, {});
+      {features::kAppShimNotificationAttribution,
+       features::kUseAdHocSigningForWebAppShims},
+      {});
 
   // This app is installed for profile A throughout this test.
   AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
@@ -2231,7 +2258,9 @@ TEST_F(AppShimManagerTest,
 TEST_F(AppShimManagerTest,
        RequestNotificationPermissionWithAppShimFailingToLaunch) {
   scoped_feature_list_.InitWithFeatures(
-      {features::kAppShimNotificationAttribution}, {});
+      {features::kAppShimNotificationAttribution,
+       features::kUseAdHocSigningForWebAppShims},
+      {});
 
   // This app is installed for profile A throughout this test.
   AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
@@ -2264,7 +2293,9 @@ TEST_F(AppShimManagerTest,
 
 TEST_F(AppShimManagerTest, RequestNotificationPermissionWithAppNotInstalled) {
   scoped_feature_list_.InitWithFeatures(
-      {features::kAppShimNotificationAttribution}, {});
+      {features::kAppShimNotificationAttribution,
+       features::kUseAdHocSigningForWebAppShims},
+      {});
 
   EXPECT_CALL(*manager_, ProfileForBackgroundShimLaunch(kTestAppIdA))
       .WillOnce(Return(nullptr));
@@ -2281,7 +2312,9 @@ TEST_F(AppShimManagerTest, RequestNotificationPermissionWithAppNotInstalled) {
 TEST_F(AppShimManagerTest, CachedNotificationPermissionStatus) {
   using PermissionStatus = mac_notifications::mojom::PermissionStatus;
   scoped_feature_list_.InitWithFeatures(
-      {features::kAppShimNotificationAttribution}, {});
+      {features::kAppShimNotificationAttribution,
+       features::kUseAdHocSigningForWebAppShims},
+      {});
 
   // Create and launch shim for app A in profile A.
   AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,

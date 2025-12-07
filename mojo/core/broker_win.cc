@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/core/broker.h"
 
 #include <windows.h>
@@ -14,9 +9,11 @@
 #include <limits>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/debug/alias.h"
 #include "base/logging.h"
 #include "base/memory/platform_shared_memory_region.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "mojo/core/broker_messages.h"
 #include "mojo/core/channel.h"
@@ -44,7 +41,7 @@ bool TakeHandlesFromBrokerMessage(Channel::Message* message,
   DCHECK(out_handles);
 
   for (size_t i = 0; i < num_handles; ++i)
-    out_handles[i] = handles[i].TakeHandle();
+    UNSAFE_TODO(out_handles[i]) = handles[i].TakeHandle();
   return true;
 }
 
@@ -70,8 +67,7 @@ Channel::MessagePtr WaitForBrokerMessage(HANDLE pipe_handle,
 
     base::debug::Alias(&buffer[0]);
     base::debug::Alias(&bytes_read);
-    CHECK(false);
-    return nullptr;
+    NOTREACHED();
   }
 
   const BrokerMessageHeader* header =
@@ -81,8 +77,7 @@ Channel::MessagePtr WaitForBrokerMessage(HANDLE pipe_handle,
 
     base::debug::Alias(&buffer[0]);
     base::debug::Alias(&bytes_read);
-    CHECK(false);
-    return nullptr;
+    NOTREACHED();
   }
 
   return message;
@@ -113,11 +108,12 @@ Broker::Broker(PlatformHandle handle, bool wait_for_channel_handle)
         static_cast<const BrokerMessageHeader*>(message->payload());
     CHECK_GE(message->payload_size(),
              sizeof(BrokerMessageHeader) + sizeof(InitData));
-    const InitData* data = reinterpret_cast<const InitData*>(header + 1);
+    const InitData* data =
+        reinterpret_cast<const InitData*>(UNSAFE_TODO(header + 1));
     CHECK_EQ(message->payload_size(),
              sizeof(BrokerMessageHeader) + sizeof(InitData) +
                  data->pipe_name_length * sizeof(char16_t));
-    auto* name_data = reinterpret_cast<const wchar_t*>(data + 1);
+    auto* name_data = reinterpret_cast<const wchar_t*>(UNSAFE_TODO(data + 1));
     CHECK(data->pipe_name_length);
     inviter_endpoint_ = NamedPlatformChannel::ConnectToServer(
         NamedPlatformChannel::ServerName(name_data, data->pipe_name_length));

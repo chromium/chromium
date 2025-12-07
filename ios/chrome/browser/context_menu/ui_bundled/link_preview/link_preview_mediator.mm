@@ -45,13 +45,7 @@
     _referrer = referrer;
     _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
     _webState->AddObserver(_webStateObserver.get());
-
     _restorationHasFinished = NO;
-    if (!base::FeatureList::IsEnabled(
-            web::features::kRemoveOldWebStateRestoration)) {
-      _restorationHasFinished =
-          !_webState->GetNavigationManager()->IsRestoreSessionInProgress();
-    }
   }
   return self;
 }
@@ -68,11 +62,8 @@
 
 - (void)webState:(web::WebState*)webState didLoadPageWithSuccess:(BOOL)success {
   DCHECK_EQ(_webState, webState);
-  // Load the preview after the restore session has been done.
-  if (success && !self.restorationHasFinished &&
-      !_webState->GetNavigationManager()->IsRestoreSessionInProgress()) {
+  if (success && !self.restorationHasFinished) {
     self.restorationHasFinished = YES;
-
 
     // Load the preview page using the copied web state.
     web::NavigationManager::WebLoadParams loadParams(self.URL);
@@ -122,8 +113,10 @@
 
 // Updates the consumer to match the current loading state.
 - (void)updateLoadingState {
-  if (!self.restorationHasFinished)
+  if (!self.restorationHasFinished) {
     return;
+  }
+
   if (!self.consumer) {
     return;
   }

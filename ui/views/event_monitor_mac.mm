@@ -16,8 +16,14 @@
 #include "ui/events/event.h"
 #include "ui/events/event_observer.h"
 #include "ui/events/event_utils.h"
+#include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
+#include "ui/views/event_monitor_remote_cocoa.h"
 
 namespace views {
+
+namespace {
+bool g_use_remote_cocoa_for_testing = false;
+}
 
 // static
 std::unique_ptr<EventMonitor> EventMonitor::CreateApplicationMonitor(
@@ -25,7 +31,8 @@ std::unique_ptr<EventMonitor> EventMonitor::CreateApplicationMonitor(
     gfx::NativeWindow context,
     const std::set<ui::EventType>& types) {
   // |context| is not needed on Mac.
-  return std::make_unique<EventMonitorMac>(event_observer, nullptr, types);
+  return std::make_unique<EventMonitorMac>(event_observer, gfx::NativeWindow(),
+                                           types);
 }
 
 // static
@@ -33,8 +40,22 @@ std::unique_ptr<EventMonitor> EventMonitor::CreateWindowMonitor(
     ui::EventObserver* event_observer,
     gfx::NativeWindow target_window,
     const std::set<ui::EventType>& types) {
-  return std::make_unique<EventMonitorMac>(event_observer, target_window,
-                                           types);
+  CHECK(target_window)
+      << "Use CreateApplicationMonitor to observe events to all windows";
+
+  // For Progressive Web App (PWA) windows, we can't use an in-process NSEvent
+  // monitors, as these windows exist in a different process. So depending on
+  // if the target window is local or remote we use a different EventMonitor
+  // implementation.
+  auto* host =
+      views::NativeWidgetMacNSWindowHost::GetFromNativeWindow(target_window);
+  if (host && (host->application_host() || g_use_remote_cocoa_for_testing)) {
+    return std::make_unique<EventMonitorRemoteCocoa>(event_observer,
+                                                     target_window, types);
+  } else {
+    return std::make_unique<EventMonitorMac>(event_observer, target_window,
+                                             types);
+  }
 }
 
 struct EventMonitorMac::ObjCStorage {
@@ -44,7 +65,9 @@ struct EventMonitorMac::ObjCStorage {
 EventMonitorMac::EventMonitorMac(ui::EventObserver* event_observer,
                                  gfx::NativeWindow target_native_window,
                                  const std::set<ui::EventType>& types)
-    : types_(types), objc_storage_(std::make_unique<ObjCStorage>()) {
+    : types_(types),
+      event_observer_(event_observer),
+      objc_storage_(std::make_unique<ObjCStorage>()) {
   DCHECK(event_observer);
   NSWindow* target_window = target_native_window.GetNativeNSWindow();
 
@@ -77,7 +100,13 @@ EventMonitorMac::~EventMonitorMac() {
 }
 
 gfx::Point EventMonitorMac::GetLastMouseLocation() {
-  return display::Screen::GetScreen()->GetCursorScreenPoint();
+  return display::Screen::Get()->GetCursorScreenPoint();
+}
+
+// static
+base::AutoReset<bool> EventMonitorMac::UseRemoteCocoaForTesting() {
+  base::AutoReset<bool> result(&g_use_remote_cocoa_for_testing, true);
+  return result;
 }
 
 }  // namespace views

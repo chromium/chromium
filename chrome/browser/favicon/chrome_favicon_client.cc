@@ -14,6 +14,12 @@
 #include "extensions/buildflags/buildflags.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+#include "components/webapps/isolated_web_apps/scheme.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/constants.h"
 #endif
@@ -33,14 +39,21 @@ void RunFaviconCallbackIfNotCanceled(
 ChromeFaviconClient::ChromeFaviconClient(Profile* profile) : profile_(profile) {
 }
 
-ChromeFaviconClient::~ChromeFaviconClient() {
-}
+ChromeFaviconClient::~ChromeFaviconClient() = default;
 
 bool ChromeFaviconClient::IsNativeApplicationURL(const GURL& url) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (url.SchemeIs(extensions::kExtensionScheme))
     return true;
 #endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  if (url.SchemeIs(webapps::kIsolatedAppScheme)) {
+    return true;
+  }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
   return url.SchemeIs(content::kChromeUIScheme);
 }

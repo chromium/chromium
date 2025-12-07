@@ -15,9 +15,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/app_mode/kiosk_test_helper.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
-#include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
+#include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
+#include "chrome/browser/ash/app_mode/test/scoped_device_settings.h"
+#include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_data.h"
+#include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_utils.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
@@ -33,6 +34,7 @@
 #include "chrome/browser/metrics/structured/test/structured_metrics_mixin.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/structured_metrics_client.h"
@@ -41,17 +43,16 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
-#include "components/policy/core/common/device_local_account_type.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 
 namespace {
 namespace em = enterprise_management;
-using ash::KioskSessionInitializedWaiter;
+using ash::KioskWebAppManager;
 using ash::LoginScreenTestApi;
 using ash::ScopedDeviceSettings;
-using ash::WebKioskAppManager;
+using ash::kiosk::test::WaitKioskLaunched;
 using testing::InvokeWithoutArgs;
 using StructuredEventProto = metrics::StructuredEventProto;
 using StructuredDataProto = metrics::StructuredDataProto;
@@ -79,8 +80,7 @@ std::optional<em::PolicyData::MarketSegment> GetMarketSegment(
     case StructuredDataProto::ENTERPRISE:
       return em::PolicyData::ENROLLED_ENTERPRISE;
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
+  NOTREACHED();
 }
 
 std::optional<em::PolicyData::MetricsLogSegment> GetMetricsLogSegment(
@@ -101,8 +101,7 @@ std::optional<em::PolicyData::MetricsLogSegment> GetMetricsLogSegment(
     case StructuredEventProto::UNKNOWN_PRIMARY_USER_TYPE:
       return std::nullopt;
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -224,15 +223,6 @@ class MetadataProcessorTest : public policy::DevicePolicyCrosBrowserTest,
         kAccountId1, device_local_account_policy_.GetBlob());
   }
 
-  void SetUp() override {
-    // These tests are only applicable if structured metrics service is enabled.
-    if (!base::FeatureList::IsEnabled(kEnabledStructuredMetricsService)) {
-      GTEST_SKIP() << "Skipping test: Structured Metrics Service and CrOS "
-                      "Events must be enabled";
-    }
-    policy::DevicePolicyCrosBrowserTest::SetUp();
-  }
-
   void SetDevicePolicy() {
     UploadAndInstallDeviceLocalAccountPolicy();
     // Add an account with DeviceLocalAccountType::kPublicSession.
@@ -325,13 +315,13 @@ class MetadataProcessorTest : public policy::DevicePolicyCrosBrowserTest,
 
   bool LaunchApp() {
     return LoginScreenTestApi::LaunchApp(
-        WebKioskAppManager::Get()->GetAppByAccountId(account_id_2_)->app_id());
+        KioskWebAppManager::Get()->GetAppByAccountId(account_id_2_)->app_id());
   }
 
   void StartKioskApp() {
     PrepareAppLaunch();
     LaunchApp();
-    KioskSessionInitializedWaiter().Wait();
+    ASSERT_TRUE(WaitKioskLaunched());
   }
 
   void WaitForSessionStart() {

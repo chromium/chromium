@@ -83,6 +83,8 @@ class ASH_EXPORT AppsCollectionsController {
 
   void SetReorderCallback(ReorderCallback callback);
 
+  void ForceAppsCollectionsForTesting(bool force);
+
  private:
   // Store the experimental arm for this user as a profile perf.
   void MaybeRecordUserExperimentStatePref(ExperimentalArm arm);
@@ -97,6 +99,8 @@ class ASH_EXPORT AppsCollectionsController {
   // A local flag that stores whether the app list was reordered during this
   // session.
   bool app_list_was_reordered_ = false;
+
+  bool force_apps_collections_ = false;
 
   // A callback invoked when the nudge on this page is removed/dismissed.
   ReorderCallback reorder_callback_;

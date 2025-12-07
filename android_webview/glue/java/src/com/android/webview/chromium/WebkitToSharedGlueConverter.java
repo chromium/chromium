@@ -4,7 +4,6 @@
 
 package com.android.webview.chromium;
 
-import android.os.Build;
 import android.webkit.CookieManager;
 import android.webkit.SafeBrowsingResponse;
 import android.webkit.ServiceWorkerWebSettings;
@@ -12,15 +11,15 @@ import android.webkit.WebMessagePort;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
+import android.webkit.WebStorage;
 import android.webkit.WebView;
 
-import androidx.annotation.RequiresApi;
-
 import org.chromium.android_webview.AwContentsClient.AwWebResourceError;
-import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
 import org.chromium.android_webview.AwCookieManager;
+import org.chromium.android_webview.AwQuotaManagerBridge;
 import org.chromium.android_webview.AwServiceWorkerSettings;
 import org.chromium.android_webview.AwSettings;
+import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingResponse;
 import org.chromium.base.Callback;
@@ -66,7 +65,6 @@ public class WebkitToSharedGlueConverter {
         return ((WebResourceErrorAdapter) error).getAwWebResourceError();
     }
 
-    @RequiresApi(Build.VERSION_CODES.O_MR1)
     public static Callback<AwSafeBrowsingResponse> getAwSafeBrowsingResponseCallback(
             SafeBrowsingResponse response) {
         return ((SafeBrowsingResponseAdapter) response).getAwSafeBrowsingResponseCallback();
@@ -74,5 +72,9 @@ public class WebkitToSharedGlueConverter {
 
     public static MessagePort getMessagePort(WebMessagePort messagePort) {
         return ((WebMessagePortAdapter) messagePort).getPort();
+    }
+
+    public static AwQuotaManagerBridge getQuotaManagerBridge(WebStorage webStorage) {
+        return ((WebStorageAdapter) webStorage).getQuotaManagerBridge();
     }
 }

@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(ReportSchedulerTest, LaunchTest) {
   // The report should be either scheduled or being uploaded.
   EXPECT_TRUE(report_scheduler()->IsNextReportScheduledForTesting() ||
               report_scheduler()->GetActiveTriggerForTesting() ==
-                  ReportScheduler::kTriggerTimer);
+                  ReportTrigger::kTriggerTimer);
 }
 
 }  // namespace enterprise_reporting

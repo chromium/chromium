@@ -6,7 +6,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
-#include "crypto/secure_hash.h"
+#include "crypto/hash.h"
 #include "net/base/hash_value.h"
 #include "net/base/io_buffer.h"
 #include "services/network/shared_dictionary/shared_dictionary_constants.h"
@@ -19,15 +19,6 @@ namespace {
 const std::string kTestData = "Hello world";
 const std::string kTestData1 = "Hello ";
 const std::string kTestData2 = "world";
-
-net::SHA256HashValue GetHash(const std::string& data) {
-  std::unique_ptr<crypto::SecureHash> secure_hash =
-      crypto::SecureHash::Create(crypto::SecureHash::SHA256);
-  secure_hash->Update(data.c_str(), data.size());
-  net::SHA256HashValue sha256;
-  secure_hash->Finish(sha256.data, sizeof(sha256.data));
-  return sha256;
-}
 
 }  // namespace
 
@@ -45,10 +36,10 @@ TEST(SharedDictionaryWriterInMemory, SimpleWrite) {
                     kTestData,
                     std::string(reinterpret_cast<const char*>(buffer->data()),
                                 size));
-                EXPECT_EQ(GetHash(kTestData), hash);
+                EXPECT_EQ(crypto::hash::Sha256(kTestData), hash);
                 finish_callback_called = true;
               }));
-  writer->Append(kTestData.c_str(), kTestData.size());
+  writer->Append(base::as_byte_span(kTestData));
   writer->Finish();
   EXPECT_TRUE(finish_callback_called);
 }
@@ -67,11 +58,11 @@ TEST(SharedDictionaryWriterInMemory, MultipleWrite) {
                     kTestData1 + kTestData2,
                     std::string(reinterpret_cast<const char*>(buffer->data()),
                                 size));
-                EXPECT_EQ(GetHash(kTestData1 + kTestData2), hash);
+                EXPECT_EQ(crypto::hash::Sha256(kTestData1 + kTestData2), hash);
                 finish_callback_called = true;
               }));
-  writer->Append(kTestData1.c_str(), kTestData1.size());
-  writer->Append(kTestData2.c_str(), kTestData2.size());
+  writer->Append(base::as_byte_span(kTestData1));
+  writer->Append(base::as_byte_span(kTestData2));
   writer->Finish();
   EXPECT_TRUE(finish_callback_called);
 }
@@ -104,7 +95,7 @@ TEST(SharedDictionaryWriterInMemory, AbortedAfterWrite) {
                           result);
                 finish_callback_called = true;
               }));
-  writer->Append(kTestData.c_str(), kTestData.size());
+  writer->Append(base::as_byte_span(kTestData));
   writer.reset();
   EXPECT_TRUE(finish_callback_called);
 }
@@ -142,13 +133,13 @@ TEST(SharedDictionaryWriterInMemory, ErrorSizeExceedsLimit) {
             result);
         finish_callback_called = true;
       }));
-  writer->Append(kTestData1.c_str(), kTestData1.size());
+  writer->Append(base::as_byte_span(kTestData1));
   EXPECT_FALSE(finish_callback_called);
-  writer->Append("x", 1);
+  writer->Append(std::to_array<uint8_t>({'x'}));
   EXPECT_TRUE(finish_callback_called);
 
   // Test that calling Append() and Finish() doesn't cause unexpected crash.
-  writer->Append(kTestData2.c_str(), kTestData2.size());
+  writer->Append(base::as_byte_span(kTestData2));
   writer->Finish();
 }
 

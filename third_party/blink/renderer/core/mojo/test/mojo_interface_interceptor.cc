@@ -40,7 +40,7 @@ MojoInterfaceInterceptor* MojoInterfaceInterceptor::Create(
   }
 
   if (scope == Scope::Enum::kContextJs &&
-      !context->use_mojo_js_interface_broker()) {
+      !context->ShouldUseMojoJSInterfaceBroker()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         "\"context_js\" scope interception is unavailable unless MojoJS "
@@ -64,12 +64,13 @@ void MojoInterfaceInterceptor::start(ExceptionState& exception_state) {
     started_ = true;
     if (!Platform::Current()->GetBrowserInterfaceBroker()->SetBinderForTesting(
             interface_name,
-            WTF::BindRepeating(&MojoInterfaceInterceptor::OnInterfaceRequest,
-                               WrapWeakPersistent(this)))) {
+            BindRepeating(&MojoInterfaceInterceptor::OnInterfaceRequest,
+                          WrapWeakPersistent(this)))) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidModificationError,
-          "Interface " + interface_name_ +
-              " is already intercepted by another MojoInterfaceInterceptor.");
+          StrCat({"Interface ", interface_name_,
+                  " is already intercepted by another "
+                  "MojoInterfaceInterceptor."}));
     }
 
     return;
@@ -82,27 +83,29 @@ void MojoInterfaceInterceptor::start(ExceptionState& exception_state) {
 
   started_ = true;
   if (scope_ == Scope::Enum::kContextJs) {
-    DCHECK(context->use_mojo_js_interface_broker());
+    DCHECK(context->ShouldUseMojoJSInterfaceBroker());
     if (!context->GetMojoJSInterfaceBroker().SetBinderForTesting(
             interface_name,
-            WTF::BindRepeating(&MojoInterfaceInterceptor::OnInterfaceRequest,
-                               WrapWeakPersistent(this)))) {
+            BindRepeating(&MojoInterfaceInterceptor::OnInterfaceRequest,
+                          WrapWeakPersistent(this)))) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidModificationError,
-          "Interface " + interface_name_ +
-              " is already intercepted by another MojoInterfaceInterceptor.");
+          StrCat({"Interface ", interface_name_,
+                  " is already intercepted by another "
+                  "MojoInterfaceInterceptor."}));
     }
     return;
   }
 
   if (!context->GetBrowserInterfaceBroker().SetBinderForTesting(
           interface_name,
-          WTF::BindRepeating(&MojoInterfaceInterceptor::OnInterfaceRequest,
-                             WrapWeakPersistent(this)))) {
+          BindRepeating(&MojoInterfaceInterceptor::OnInterfaceRequest,
+                        WrapWeakPersistent(this)))) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidModificationError,
-        "Interface " + interface_name_ +
-            " is already intercepted by another MojoInterfaceInterceptor.");
+        StrCat(
+            {"Interface ", interface_name_,
+             " is already intercepted by another MojoInterfaceInterceptor."}));
   }
 }
 
@@ -123,7 +126,7 @@ void MojoInterfaceInterceptor::stop() {
   DCHECK(context);
 
   if (scope_ == Scope::Enum::kContextJs) {
-    DCHECK(context->use_mojo_js_interface_broker());
+    DCHECK(context->ShouldUseMojoJSInterfaceBroker());
     context->GetMojoJSInterfaceBroker().SetBinderForTesting(interface_name, {});
     return;
   }
@@ -169,10 +172,10 @@ void MojoInterfaceInterceptor::OnInterfaceRequest(
   // request is being satisfied by another process.
   GetExecutionContext()
       ->GetTaskRunner(TaskType::kMicrotask)
-      ->PostTask(FROM_HERE,
-                 WTF::BindOnce(
-                     &MojoInterfaceInterceptor::DispatchInterfaceRequestEvent,
-                     WrapPersistent(this), std::move(handle)));
+      ->PostTask(
+          FROM_HERE,
+          BindOnce(&MojoInterfaceInterceptor::DispatchInterfaceRequestEvent,
+                   WrapPersistent(this), std::move(handle)));
 }
 
 void MojoInterfaceInterceptor::DispatchInterfaceRequestEvent(

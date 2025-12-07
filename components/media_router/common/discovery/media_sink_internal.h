@@ -48,8 +48,6 @@ struct DialSinkExtraData {
 struct CastSinkExtraData {
   net::IPEndPoint ip_endpoint;
 
-  int port = 0;
-
   // Model name of the sink.
   std::string model_name;
 
@@ -94,7 +92,6 @@ class MediaSinkInternal {
   MediaSinkInternal& operator=(const MediaSinkInternal& other);
   MediaSinkInternal& operator=(MediaSinkInternal&& other) noexcept;
   bool operator==(const MediaSinkInternal& other) const;
-  bool operator!=(const MediaSinkInternal& other) const;
   // Sorted by sink id.
   bool operator<(const MediaSinkInternal& other) const;
 

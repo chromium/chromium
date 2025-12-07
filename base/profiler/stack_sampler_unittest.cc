@@ -22,6 +22,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/profiler/module_cache.h"
 #include "base/profiler/profile_builder.h"
+#include "base/profiler/register_context_registers.h"
 #include "base/profiler/stack_buffer.h"
 #include "base/profiler/stack_copier.h"
 #include "base/profiler/stack_sampling_profiler_test_util.h"
@@ -44,13 +45,13 @@ class StackSamplerTest : public ::testing::Test {
  protected:
   ModuleCache module_cache_;
 
- private:
   base::test::TaskEnvironment task_environment_;
 };
 
 class TestProfileBuilder : public ProfileBuilder {
  public:
-  TestProfileBuilder(ModuleCache* module_cache) : module_cache_(module_cache) {}
+  explicit TestProfileBuilder(ModuleCache* module_cache)
+      : module_cache_(module_cache) {}
 
   TestProfileBuilder(const TestProfileBuilder&) = delete;
   TestProfileBuilder& operator=(const TestProfileBuilder&) = delete;
@@ -79,8 +80,8 @@ class TestProfileBuilder : public ProfileBuilder {
 // operating on the supplied fake stack.
 class TestStackCopier : public StackCopier {
  public:
-  TestStackCopier(const std::vector<uintptr_t>& fake_stack,
-                  TimeTicks timestamp = TimeTicks())
+  explicit TestStackCopier(const std::vector<uintptr_t>& fake_stack,
+                           TimeTicks timestamp = TimeTicks())
       : fake_stack_(fake_stack), timestamp_(timestamp) {}
 
   bool CopyStack(StackBuffer* stack_buffer,
@@ -227,7 +228,7 @@ uintptr_t GetTestInstructionPointer() {
 class FakeTestUnwinder : public Unwinder {
  public:
   struct Result {
-    Result(bool can_unwind)
+    explicit Result(bool can_unwind)
         : can_unwind(can_unwind), result(UnwindResult::kUnrecognizedFrame) {}
 
     Result(UnwindResult result, std::vector<uintptr_t> instruction_pointers)
@@ -255,8 +256,9 @@ class FakeTestUnwinder : public Unwinder {
     // NB: If CanUnwindFrom() returns false then TryUnwind() will not be
     // invoked, so current_unwind_ is guarantee to be incremented only once for
     // each result.
-    if (!can_unwind)
+    if (!can_unwind) {
       ++current_unwind_;
+    }
     return can_unwind;
   }
 
@@ -268,10 +270,11 @@ class FakeTestUnwinder : public Unwinder {
     const Result& current_result = results_[current_unwind_];
     ++current_unwind_;
     CHECK(current_result.can_unwind);
-    for (const auto instruction_pointer : current_result.instruction_pointers)
+    for (const auto instruction_pointer : current_result.instruction_pointers) {
       stack->emplace_back(
           instruction_pointer,
           module_cache()->GetModuleForAddress(instruction_pointer));
+    }
     return current_result.result;
   }
 
@@ -294,8 +297,9 @@ StackSampler::UnwindersFactory MakeUnwindersFactory(
 std::vector<UnwinderCapture> MakeUnwinderStateVector(Unwinder* native_unwinder,
                                                      Unwinder* aux_unwinder) {
   std::vector<UnwinderCapture> unwinders;
-  if (aux_unwinder)
+  if (aux_unwinder) {
     unwinders.emplace_back(aux_unwinder, nullptr);
+  }
   if (native_unwinder) {
     unwinders.emplace_back(native_unwinder, nullptr);
   }
@@ -306,7 +310,7 @@ std::vector<UnwinderCapture> MakeUnwinderStateVector(Unwinder* native_unwinder,
 
 TEST_F(StackSamplerTest, CopyStack) {
   base::test::TestFuture<void> sample_completed;
-  auto unwind_data = std::make_unique<StackUnwindData>(
+  auto unwind_data = base::MakeRefCounted<StackUnwindData>(
       std::make_unique<TestProfileBuilder>(&module_cache_));
   const std::vector<uintptr_t> stack = {0, 1, 2, 3, 4};
   InjectModuleForContextInstructionPointer(stack, &module_cache_);
@@ -331,7 +335,7 @@ TEST_F(StackSamplerTest, CopyStack) {
 TEST_F(StackSamplerTest, RecordStackFramesUMAMetric) {
   base::test::TestFuture<void> sample_completed;
   HistogramTester histogram_tester;
-  auto unwind_data = std::make_unique<StackUnwindData>(
+  auto unwind_data = base::MakeRefCounted<StackUnwindData>(
       std::make_unique<TestProfileBuilder>(&module_cache_));
   std::vector<uintptr_t> stack;
   constexpr size_t UIntPtrsPerKilobyte = 1024 / sizeof(uintptr_t);
@@ -378,7 +382,7 @@ TEST_F(StackSamplerTest, RecordStackFramesUMAMetric) {
 
 TEST_F(StackSamplerTest, CopyStackTimestamp) {
   base::test::TestFuture<void> sample_completed;
-  auto unwind_data = std::make_unique<StackUnwindData>(
+  auto unwind_data = base::MakeRefCounted<StackUnwindData>(
       std::make_unique<TestProfileBuilder>(&module_cache_));
   const std::vector<uintptr_t> stack = {0};
   InjectModuleForContextInstructionPointer(stack, &module_cache_);
@@ -409,7 +413,7 @@ TEST_F(StackSamplerTest, UnwinderInvokedWhileRecordingStackFrames) {
   std::unique_ptr<StackBuffer> stack_buffer = std::make_unique<StackBuffer>(10);
   auto owned_unwinder = std::make_unique<CallRecordingUnwinder>();
   CallRecordingUnwinder* unwinder = owned_unwinder.get();
-  auto unwind_data = std::make_unique<StackUnwindData>(
+  auto unwind_data = base::MakeRefCounted<StackUnwindData>(
       std::make_unique<TestProfileBuilder>(&module_cache_));
   std::unique_ptr<StackSampler> stack_sampler = StackSampler::CreateForTesting(
       std::make_unique<DelegateInvokingStackCopier>(), std::move(unwind_data),
@@ -425,10 +429,19 @@ TEST_F(StackSamplerTest, UnwinderInvokedWhileRecordingStackFrames) {
   EXPECT_TRUE(unwinder->update_modules_was_invoked());
 }
 
-TEST_F(StackSamplerTest, AuxUnwinderInvokedWhileRecordingStackFrames) {
+// TODO(crbug.com/455972314): Failed on ChromeOS builders.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_AuxUnwinderInvokedWhileRecordingStackFrames \
+  DISABLED_AuxUnwinderInvokedWhileRecordingStackFrames
+#else
+#define MAYBE_AuxUnwinderInvokedWhileRecordingStackFrames \
+  AuxUnwinderInvokedWhileRecordingStackFrames
+#endif
+
+TEST_F(StackSamplerTest, MAYBE_AuxUnwinderInvokedWhileRecordingStackFrames) {
   base::test::TestFuture<void> sample_completed;
   std::unique_ptr<StackBuffer> stack_buffer = std::make_unique<StackBuffer>(10);
-  auto unwind_data = std::make_unique<StackUnwindData>(
+  auto unwind_data = base::MakeRefCounted<StackUnwindData>(
       std::make_unique<TestProfileBuilder>(&module_cache_));
   std::unique_ptr<StackSampler> stack_sampler = StackSampler::CreateForTesting(
       std::make_unique<DelegateInvokingStackCopier>(), std::move(unwind_data),
@@ -458,6 +471,47 @@ TEST_F(StackSamplerTest, AuxUnwinderInvokedWhileRecordingStackFrames) {
   ASSERT_TRUE(sample_completed.Wait());
   EXPECT_TRUE(aux_unwinder->on_stack_capture_was_invoked());
   EXPECT_TRUE(aux_unwinder->update_modules_was_invoked());
+}
+
+// Regression test for a potential use-after-free when StackSampler owns
+// StackUnwindData but performs the unwind on a ThreadPool worker.
+TEST_F(StackSamplerTest, AsyncUnwindSafeAfterSamplerDeletion) {
+  auto unwind_data = base::MakeRefCounted<StackUnwindData>(
+      std::make_unique<TestProfileBuilder>(&module_cache_));
+  const std::vector<uintptr_t> stack = {GetTestInstructionPointer()};
+  InjectModuleForContextInstructionPointer(stack, &module_cache_);
+
+  std::vector<uintptr_t> stack_copy;
+  std::unique_ptr<StackSampler> stack_sampler = StackSampler::CreateForTesting(
+      std::make_unique<TestStackCopier>(stack), std::move(unwind_data),
+      MakeUnwindersFactory(std::make_unique<TestUnwinder>(&stack_copy)));
+
+  stack_sampler->Initialize();
+
+  // Ensure the ThreadPool has run any tasks posted by Initialize(), including
+  // the one that marks the sampler's internal thread_pool_runner_ as ready.
+  task_environment_.RunUntilIdle();
+
+  std::unique_ptr<StackBuffer> stack_buffer =
+      std::make_unique<StackBuffer>(stack.size() * sizeof(uintptr_t));
+
+  // Queue several async unwinds to increase the chance that work is still
+  // pending when the sampler is stopped and destroyed.
+  for (int i = 0; i < 10; ++i) {
+    stack_sampler->RecordStackFrames(stack_buffer.get(),
+                                     PlatformThread::CurrentId(), DoNothing());
+  }
+
+  // Also exercise the AddAuxUnwinder asynchronous path.
+  stack_sampler->AddAuxUnwinder(std::make_unique<CallRecordingUnwinder>());
+
+  // Simulate shutdown: request stop but do not wait for all callbacks here.
+  stack_sampler->Stop(DoNothing());
+
+  // Immediately destroy the sampler while work may still be queued.
+  stack_sampler.reset();
+
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(StackSamplerTest, WalkStack_Completed) {
@@ -543,8 +597,9 @@ TEST_F(StackSamplerTest, WalkStack_AuxThenNative) {
   // Inject a fake native module for the second frame.
   module_cache_.AddCustomNativeModule(std::make_unique<TestModule>(1u, 1u));
 
-  auto aux_unwinder = WrapUnique(
-      new FakeTestUnwinder({{UnwindResult::kUnrecognizedFrame, {1u}}, false}));
+  auto aux_unwinder =
+      WrapUnique(new FakeTestUnwinder({{UnwindResult::kUnrecognizedFrame, {1u}},
+                                       FakeTestUnwinder::Result(false)}));
   aux_unwinder->Initialize(&module_cache_);
   auto native_unwinder =
       WrapUnique(new FakeTestUnwinder({{UnwindResult::kCompleted, {2u}}}));
@@ -573,8 +628,10 @@ TEST_F(StackSamplerTest, WalkStack_NativeThenAux) {
   module_cache_.UpdateNonNativeModules(
       {}, ToModuleVector(std::make_unique<TestModule>(1u, 1u, false)));
 
-  auto aux_unwinder = WrapUnique(new FakeTestUnwinder(
-      {{false}, {UnwindResult::kUnrecognizedFrame, {2u}}, {false}}));
+  auto aux_unwinder =
+      WrapUnique(new FakeTestUnwinder({FakeTestUnwinder::Result(false),
+                                       {UnwindResult::kUnrecognizedFrame, {2u}},
+                                       FakeTestUnwinder::Result(false)}));
   aux_unwinder->Initialize(&module_cache_);
   auto native_unwinder =
       WrapUnique(new FakeTestUnwinder({{UnwindResult::kUnrecognizedFrame, {1u}},

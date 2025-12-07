@@ -6,8 +6,46 @@ import("//build/config/ios/ios_sdk.gni")
 import("//build/config/ios/rules.gni")
 import("//third_party/protobuf/proto_library.gni")
 
+# Remove when GTX is updated or a better solution is found.
+template("patch_file") {
+  assert(defined(invoker.patch_path),
+         "patch_path must be defined for $target_name")
+  assert(defined(invoker.source_file),
+         "source_file must be defined for $target_name")
+
+  action(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "testonly",
+                             "visibility",
+                           ])
+
+    script = "patch.py"
+    sources = [
+      invoker.patch_path,
+      invoker.source_file,
+    ]
+    outputs = [ "$target_gen_dir/" + invoker.source_file ]
+
+    args = rebase_path(sources, root_build_dir) +
+           rebase_path(outputs, root_build_dir)
+  }
+}
+
+patch_file("patch_GTXAccessibilityTree_m") {
+  patch_path = "patches/GTXAccessibilityTree.m.diff"
+  source_file = "src/Classes/GTXAccessibilityTree.m"
+}
+
 config("config") {
   include_dirs = [ "src/Classes" ]
+}
+
+config("internal_config") {
+  include_dirs = [
+    "src/OOPClasses",
+    "../../../third_party/protobuf/src",
+  ]
 }
 
 # GTXiLibCore.m uses `-keyWindow` method which is deprecated since iOS 13.0.
@@ -16,6 +54,14 @@ config("config") {
 config("disable_deprecated_declarations") {
   cflags_objcc = [ "-Wno-deprecated-declarations" ]
   cflags_objc = cflags_objcc
+}
+
+# The file ios/third_party/gtx/redirect_compiled_header.h brings dependency
+# on third_party/abseil-cpp/absl which does not use nullability annotations
+# but GTX uses the macro to push nullability annotation causing lots of
+# warnings during compilation.
+config("disable_nullability_completeness") {
+  cflags = [ "-Wno-nullability-completeness" ]
 }
 
 proto_library("proto") {
@@ -58,15 +104,22 @@ source_set("oop_classes") {
     "src/OOPClasses/ui_element.h",
   ]
 
-  deps = [ ":proto" ]
+  deps = [
+    ":proto",
+    "//third_party/protobuf:protobuf_lite",
+  ]
 
-  # Don't use the gtx provided compiled protobuf header. Use an -include here to
-  # force that.
+  # Don't use the gtx provided compiled protobuf header. The ordering of these
+  # include_dirs enforces that.
   cflags_cc = [
     "-include",
-    rebase_path(
-        "$root_out_dir/gen/ios/third_party/gtx/src/OOPClasses/Protos/gtx.pb.h",
-        root_build_dir),
+    rebase_path("redirect_compiled_header.h", root_build_dir),
+  ]
+  include_dirs =
+      [ "$root_out_dir/gen/ios/third_party/gtx/src/OOPClasses/Protos" ]
+  configs += [
+    ":internal_config",
+    ":disable_nullability_completeness",
   ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -194,24 +247,27 @@ ios_framework_bundle("gtx") {
     "src/Classes/UIColor+GTXOOPAdditions.h",
     "src/Classes/GTXToolKit+GTXOOPAdditions.h",
   ]
+
   deps = [
     ":oop_classes",
     "//build/config/ios:xctest",
+    "//third_party/protobuf:protobuf_lite",
   ]
 
-  # Don't use the gtx provided compiled protobuf header. Use an -include here to
-  # force that.
+  # Remove when GTX is updated or a better solution is found.
+  sources -= [ "src/Classes/GTXAccessibilityTree.m" ]
+  sources += get_target_outputs(":patch_GTXAccessibilityTree_m")
+  deps += [ ":patch_GTXAccessibilityTree_m" ]
+
+  # Don't use the gtx provided compiled protobuf header. The ordering of these
+  # include_dirs enforces that.
   cflags_objcc = [
     "-include",
-    rebase_path(
-        "$root_out_dir/gen/ios/third_party/gtx/src/OOPClasses/Protos/gtx.pb.h",
-        root_build_dir),
+    rebase_path("redirect_compiled_header.h", root_build_dir),
   ]
-
-  include_dirs = [
-    "src/OOPClasses",
-    "../../../third_party/protobuf/src",
-  ]
+  include_dirs =
+      [ "$root_out_dir/gen/ios/third_party/gtx/src/OOPClasses/Protos" ]
+  configs += [ ":internal_config" ]
 
   frameworks = [
     "CoreGraphics.framework",

@@ -14,10 +14,8 @@
 
 TEST(NearbyShareCertificatesCommonTest, AuthenticationTokenHash) {
   EXPECT_EQ(GetNearbyShareTestPayloadHashUsingSecretKey(),
-            ComputeAuthenticationTokenHash(
-                GetNearbyShareTestPayloadToSign(),
-                base::as_bytes(
-                    base::make_span(GetNearbyShareTestSecretKey()->key()))));
+            ComputeAuthenticationTokenHash(GetNearbyShareTestPayloadToSign(),
+                                           GetNearbyShareTestSecretKey()));
 }
 
 TEST(NearbyShareCertificatesCommonTest, ValidityPeriod_PrivateCertificate) {

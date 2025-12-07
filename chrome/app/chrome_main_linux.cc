@@ -4,6 +4,7 @@
 
 #include "chrome/app/chrome_main_linux.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,16 +14,18 @@
 #include "base/logging.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
+#include "base/version_info/nix/version_extra_utils.h"
 #include "chrome/common/channel_info.h"
 
 namespace {
 
 void AppendExtraArgsFromEnvVar(const std::string& env_var_name,
                                std::vector<std::string>& out_args) {
-  std::string extra_args_str;
-  auto environment = base::Environment::Create();
-  if (environment->GetVar(env_var_name, &extra_args_str)) {
-    base::StringTokenizer tokenizer(extra_args_str, base::kWhitespaceASCII);
+  std::unique_ptr<base::Environment> environment = base::Environment::Create();
+  std::optional<std::string> extra_args_str = environment->GetVar(env_var_name);
+  if (extra_args_str.has_value()) {
+    base::StringTokenizer tokenizer(extra_args_str.value(),
+                                    base::kWhitespaceASCII);
     tokenizer.set_quote_chars("\"'");
     while (tokenizer.GetNext()) {
       std::string arg;
@@ -71,14 +74,14 @@ void PossiblyDetermineFallbackChromeChannel(const char* launched_binary_path) {
   // script. Check for an adjacent "CHROME_VERSION_EXTRA" file for the channel.
   // Note: Child processes inherit environment variables, so once this is set
   // in the parent, child processes won't enter the if below.
-  if (!env->HasVar("CHROME_VERSION_EXTRA")) {
+  if (!env->HasVar(version_info::nix::kChromeVersionExtra)) {
     base::FilePath path = base::FilePath(launched_binary_path)
                               .DirName()
-                              .Append("CHROME_VERSION_EXTRA");
+                              .Append(version_info::nix::kChromeVersionExtra);
     std::string channel = ReadChromeVersionExtra(path);
     if (!channel.empty()) {
       LOG(WARNING) << "Read channel " << channel << " from " << path;
-      env->SetVar("CHROME_VERSION_EXTRA", channel);
+      env->SetVar(version_info::nix::kChromeVersionExtra, channel);
     }
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)

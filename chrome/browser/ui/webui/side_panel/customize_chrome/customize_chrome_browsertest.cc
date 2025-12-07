@@ -81,17 +81,10 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
                                            GURL(chrome::kChromeUISettingsURL)));
 
   // Toolbar Pinning allows the cusst
-  if (features::IsToolbarPinningEnabled()) {
-    EXPECT_TRUE(customize_chrome_side_panel_controller
-                    ->IsCustomizeChromeEntryAvailable());
-    EXPECT_TRUE(customize_chrome_side_panel_controller
-                    ->IsCustomizeChromeEntryShowing());
-  } else {
-    EXPECT_FALSE(customize_chrome_side_panel_controller
-                     ->IsCustomizeChromeEntryAvailable());
-    EXPECT_FALSE(customize_chrome_side_panel_controller
-                     ->IsCustomizeChromeEntryShowing());
-  }
+  EXPECT_TRUE(customize_chrome_side_panel_controller
+                  ->IsCustomizeChromeEntryAvailable());
+  EXPECT_TRUE(
+      customize_chrome_side_panel_controller->IsCustomizeChromeEntryShowing());
 }
 
 IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,

@@ -1,0 +1,22 @@
+diff --git a/include/libxml/tree.h b/include/libxml/tree.h
+index e5a8fb70..03f9c4a8 100644
+--- a/include/libxml/tree.h
++++ b/include/libxml/tree.h
+@@ -612,6 +612,8 @@ struct _xmlAttr {
+     void            *psvi;
+     /** ID struct if any */
+     struct _xmlID   *id XML_DEPRECATED_MEMBER;
++    /** extra data for XPath/XSLT */
++    unsigned int    extra;
+ };
+ 
+ /** Extra data for ID attributes */
+@@ -844,6 +846,8 @@ struct _xmlDoc {
+     int             parseFlags;
+     /** xmlDocProperties of the document */
+     int             properties;
++    /** extra data for XPath/XSLT */
++    unsigned int    extra;
+ };
+ 
+ 

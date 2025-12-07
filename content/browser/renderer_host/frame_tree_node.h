@@ -26,6 +26,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_type.h"
 #include "content/public/browser/navigation_discard_reason.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "services/network/public/mojom/referrer_policy.mojom-forward.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
@@ -34,7 +35,6 @@
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom-forward.h"
-#include "third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -73,11 +73,9 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
     virtual ~Observer() = default;
   };
 
-  static const int kFrameTreeNodeInvalidId;
-
   // Returns the FrameTreeNode with the given global |frame_tree_node_id|,
   // regardless of which FrameTree it is in.
-  static FrameTreeNode* GloballyFindByID(int frame_tree_node_id);
+  static FrameTreeNode* GloballyFindByID(FrameTreeNodeId frame_tree_node_id);
 
   // Returns the FrameTreeNode for the given |rfh|. Same as
   // rfh->frame_tree_node(), but also supports nullptrs.
@@ -99,6 +97,14 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
 
   ~FrameTreeNode() override;
 
+  // Remove the corresponding FrameNavigationEntry and its descendants
+  // from the last committed entry if this frame was created by a script.
+  // This should be called when this frame is about to be deleted.
+  // The caller is responsible to call this
+  // method at a time where the last committed entry still has those
+  // FrameNavigationEntries.
+  void MaybeRemoveFromLastCommittedEntry();
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
@@ -111,6 +117,10 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   bool IsMainFrame() const;
   bool IsOutermostMainFrame() const;
 
+  // Returns true if all the ancestors of the current frame have a potentially
+  // trustworthy origin.
+  bool AreAncestorsSecure();
+
   FrameTree& frame_tree() const { return frame_tree_.get(); }
   Navigator& navigator();
 
@@ -118,7 +128,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   const RenderFrameHostManager* render_manager() const {
     return &render_manager_;
   }
-  int frame_tree_node_id() const { return frame_tree_node_id_; }
+  FrameTreeNodeId frame_tree_node_id() const { return frame_tree_node_id_; }
   // This reflects window.name, which is initially set to the the "name"
   // attribute. But this won't reflect changes of 'name' attribute and instead
   // reflect changes to the Window object's name property.
@@ -223,6 +233,21 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
     return render_manager_.current_replication_state().origin;
   }
 
+  // Returns the origin of the last *successfully* committed page in this
+  // frame. This may be different from current_origin() if the current page is
+  // an error page.
+  // IMPORTANT: Use current_origin() instead, as all security-relevant decisions
+  // should be made using the current origin of the frame. The last successful
+  // origin is only relevant for specific abuse mitigations that require
+  // tracking the previous state of a frame before an error page navigation.
+  const url::Origin& last_successful_origin() const {
+    return last_successful_origin_;
+  }
+
+  void set_last_successful_origin(const url::Origin& origin) {
+    last_successful_origin_ = origin;
+  }
+
   // Returns the latest frame policy (sandbox flags and container policy) for
   // this frame. This includes flags inherited from parent frames and the latest
   // flags from the <iframe> element hosting this frame. The returned policies
@@ -235,10 +260,15 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
     return pending_frame_policy_;
   }
 
-  // Update this frame's sandbox flags and container policy.  This is called
-  // when a parent frame updates the "sandbox" attribute in the <iframe> element
-  // for this frame, or any of the attributes which affect the container policy
-  // ("allowfullscreen", "allowpaymentrequest", "allow", and "src".)
+  // Update this frame's sandbox flags, container policy and deferred fetch
+  // policy.
+  // This is called when either
+  // - a parent frame updates the "sandbox" attribute in the <iframe> element
+  //   for this frame
+  // - any of the attributes which affect the container policy
+  //   ("allowfullscreen", "allowpaymentrequest", "allow", and "src".)
+  // - a frame begins navigation which leads to calculation of deferred fetch
+  //   policy.
   // These policies won't take effect until next navigation.  If this frame's
   // parent is itself sandboxed, the parent's sandbox flags are combined with
   // those in |frame_policy|.
@@ -607,21 +637,6 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
     return fenced_frame_properties_.has_value();
   }
 
-  // Called from the currently active document via the
-  // `Fence.setReportEventDataForAutomaticBeacons` JS API.
-  void SetFencedFrameAutomaticBeaconReportEventData(
-      blink::mojom::AutomaticBeaconType event_type,
-      const std::string& event_data,
-      const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
-      bool once,
-      bool cross_origin_exposed) override;
-
-  // Helper function to clear out automatic beacon data after one automatic
-  // beacon if `once` was set to true when calling
-  // `setReportEventDataForAutomaticBeacons()`.
-  void MaybeResetFencedFrameAutomaticBeaconReportEventData(
-      blink::mojom::AutomaticBeaconType event_type);
-
   // Returns the number of fenced frame boundaries above this frame. The
   // outermost main frame's frame tree has fenced frame depth 0, a topmost
   // fenced frame tree embedded in the outermost main frame has fenced frame
@@ -726,14 +741,13 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
       const std::vector<GURL>& redirects,
       const GURL& original_url,
       std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter,
-      int http_response_code) override;
+      std::unique_ptr<DocumentIsolationPolicyReporter> dip_reporter,
+      int http_response_code,
+      base::TimeTicks actual_navigation_start) override;
   void CancelNavigation(NavigationDiscardReason reason) override;
+  void ResetNavigationsForDiscard() override;
   bool Credentialless() const override;
-#if !BUILDFLAG(IS_ANDROID)
-  void GetVirtualAuthenticatorManager(
-      mojo::PendingReceiver<blink::test::mojom::VirtualAuthenticatorManager>
-          receiver) override;
-#endif
+  FrameType GetCurrentFrameType() const override;
 
   // Restart the navigation restoring the page from the back-forward cache
   // as a regular non-BFCached history navigation.
@@ -801,8 +815,8 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // See `RestartBackForwardCachedNavigationAsync()`.
   void RestartBackForwardCachedNavigationImpl(int nav_entry_id);
 
-  // The next available browser-global FrameTreeNode ID.
-  static int next_frame_tree_node_id_;
+  // The browser-global FrameTreeNodeId generator.
+  static FrameTreeNodeId::Generator frame_tree_node_id_generator_;
 
   // The FrameTree owning |this|. It can change with Prerender2 during
   // activation.
@@ -810,7 +824,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
 
   // A browser-global identifier for the frame in the page, which stays stable
   // even if the frame does a cross-process navigation.
-  const int frame_tree_node_id_;
+  const FrameTreeNodeId frame_tree_node_id_;
 
   // The RenderFrameHost owning this FrameTreeNode, which cannot change for the
   // life of this FrameTreeNode. |nullptr| if this node is the root.
@@ -902,12 +916,17 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   const blink::mojom::TreeScopeType tree_scope_type_ =
       blink::mojom::TreeScopeType::kDocument;
 
-  // Track the pending sandbox flags and container policy for this frame. When a
-  // parent frame dynamically updates 'sandbox', 'allow', 'allowfullscreen',
-  // 'allowpaymentrequest' or 'src' attributes, the updated policy for the frame
-  // is stored here, and transferred into
+  // Track the pending sandbox flags, container policy, and deferred fetch
+  // policy for this frame.
+  // When a parent frame dynamically updates 'sandbox', 'allow',
+  // 'allowfullscreen', 'allowpaymentrequest' or 'src' attributes, the updated
+  // policy for the frame is stored here, and transferred into
   // render_manager_.current_replication_state().frame_policy when they take
   // effect on the next frame navigation.
+  //
+  // Note that updates to FramePolicy from the renderer side must be explicitly
+  // set in this field via `SetPendingFramePolicy()`; Otherwise, the browser
+  // side won't have it saved and can't pass it to new RenderFrameHost.
   blink::FramePolicy pending_frame_policy_;
 
   // Whether the frame was created by javascript.  This is useful to prune
@@ -952,6 +971,14 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // used to cancel the task.
   // See `CancelRestartingBackForwardCacheNavigation()`.
   base::CancelableTaskTracker restart_back_forward_cached_navigation_tracker_;
+
+  // The last successfully committed origin in this frame. Set in two scenarios:
+  // 1. By RenderFrameHostImpl::DidNavigate() when a navigation in this frame
+  //    succeeds.
+  // 2. By RenderFrameHostImpl::SetOriginDependentStateOfNewFrame() when a new
+  //    frame is first created, which will reflect the origin of the initial
+  //    about::blank document before any navigation has committed.
+  url::Origin last_successful_origin_;
 
   // Manages creation and swapping of RenderFrameHosts for this frame.
   //

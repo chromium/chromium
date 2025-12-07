@@ -5,20 +5,23 @@
 #include "third_party/blink/renderer/core/editing/text_offset_mapping.h"
 
 #include <ostream>
+
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/iterators/character_iterator.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
 namespace {
 
 // TODO(editing-dev): We may not need to do full-subtree traversal, but we're
-// not sure, e.g. ::first-line. See |enum PseudoId| for list of pseudo elements
+// not sure, e.g. ::first-line. See |enum PseudoId| for list of pseudo-elements
 // used in Blink.
 bool HasNonPsuedoNode(const LayoutObject& parent) {
   if (parent.NonPseudoNode())
@@ -53,8 +56,7 @@ bool CanBeInlineContentsContainer(const LayoutObject& layout_object) {
     return true;
   }
   // Since we can't create |EphemeralRange|, we exclude a |LayoutBlockFlow| if
-  // its entire subtree is anonymous, e.g. |LayoutMultiColumnSet|,
-  // and with anonymous layout objects.
+  // its entire subtree is anonymous.
   return HasNonPsuedoNode(*block_flow);
 }
 
@@ -135,8 +137,8 @@ const Node* FindLastNonPseudoNodeIn(const LayoutObject& container) {
 //  3. Gh
 // See RangeWithNestedInlineBlock* tests.
 
-// Note: Since "inline-block" and "float" are not considered as text segment
-// boundary, we should not consider them as block for scanning.
+// Note: Since "inline-block" is not considered as text segment
+// boundary, we should not consider it as block for scanning.
 // Example in selection text:
 //  <div>|ab<b style="display:inline-block">CD</b>ef</div>
 //  selection.modify('extent', 'forward', 'word')
@@ -157,12 +159,11 @@ const LayoutBlockFlow* ComputeInlineContentsAsBlockFlow(
     return nullptr;
   if (!block_flow->ChildrenInline())
     return nullptr;
-  if (block_flow->IsAtomicInlineLevel() ||
-      block_flow->IsFloatingOrOutOfFlowPositioned()) {
+  if (block_flow->IsAtomicInlineLevel()) {
     const LayoutBlockFlow& root_block_flow =
         RootInlineContentsContainerOf(*block_flow);
     // Skip |root_block_flow| if it's an anonymous wrapper created for
-    // pseudo elements. See test AnonymousBlockFlowWrapperForFloatPseudo.
+    // pseudo-elements. See test AnonymousBlockFlowWrapperForFloatPseudo.
     if (!CanBeInlineContentsContainer(root_block_flow))
       return nullptr;
     return &root_block_flow;
@@ -191,6 +192,16 @@ TextOffsetMapping::InlineContents CreateInlineContentsFromBlockFlow(
     if (layout_object == &target) {
       // Note: When |target| is in subtree of user agent shadow root, we don't
       // reach here. See  http://crbug.com/1224206
+      last = first;
+      break;
+    }
+    // Exclude out-of-flow objects (float/absolute/fixed) that are DOM
+    // descendants of `target`, since they don’t participate in the inline
+    // formatting context. See http://crbug.com/443752821.
+    if (RuntimeEnabledFeatures::CreateInlineContentsExcludeOutOfFlowEnabled() &&
+        layout_object->IsFloatingOrOutOfFlowPositioned() &&
+        layout_object->GetNode() &&
+        layout_object->GetNode()->IsDescendantOf(target.GetNode())) {
       last = first;
       break;
     }
@@ -236,6 +247,20 @@ TextOffsetMapping::InlineContents ComputeInlineContentsFromNode(
       ComputeInlineContentsAsBlockFlow(*layout_object);
   if (!block_flow)
     return TextOffsetMapping::InlineContents();
+  // If the node is inside a User agent Shadow root and the block_flow
+  // is anonymous and outside the shadow root we should pass
+  // node as Shadow host and get the layout object from that.
+  if (node.IsInUserAgentShadowRoot() && block_flow->IsAnonymous()) {
+    auto* shadow_host_layout_object = node.OwnerShadowHost()->GetLayoutObject();
+    // The shadow host's LayoutObject may be null, for example when the host
+    // is a <slot> element with `display: contents`.
+    if (RuntimeEnabledFeatures::ComputeInlineContentsSafeRetargetEnabled() &&
+        !shadow_host_layout_object) {
+      return TextOffsetMapping::InlineContents();
+    }
+    return CreateInlineContentsFromBlockFlow(*block_flow,
+                                             *shadow_host_layout_object);
+  }
   return CreateInlineContentsFromBlockFlow(*block_flow, *layout_object);
 }
 

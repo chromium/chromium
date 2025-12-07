@@ -14,9 +14,9 @@ using testing::Contains;
 TEST(PermissionTypeHelpersTest, AllPermissionTypesSmokeTest) {
   const auto all_permission_types = blink::GetAllPermissionTypes();
 
-  // All but five removed permissions and PermissionType::NUM should be added.
+  // All but six removed permissions and PermissionType::NUM should be added.
   EXPECT_EQ(all_permission_types.size(),
-            static_cast<unsigned long>(blink::PermissionType::NUM) - 6);
+            static_cast<unsigned long>(blink::PermissionType::NUM) - 7);
 
   // Check that some arbitrary permission types are in this vector.
   // The order is not relevant.

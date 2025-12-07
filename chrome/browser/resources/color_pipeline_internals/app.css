@@ -1,0 +1,113 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_nav_menu_item_style_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=//resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #include=cr-shared-style-lit cr-hidden-style-lit cr-nav-menu-item-style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  --main-column-max-width: 490px;
+  --side-bar-width: 300px;
+}
+
+cr-toolbar {
+  min-height: 56px;
+
+  --cr-toolbar-center-basis: var(--main-column-max-width);
+}
+
+cr-toolbar:not([narrow]) {
+  --cr-toolbar-left-spacer-width: var(--side-bar-width);
+}
+
+.section {
+  scroll-margin-top: 16px;
+}
+
+.entry {
+  width: 200px;
+  margin: 20px;
+  border-radius: 8px;
+  display: inline-block;
+  box-sizing: border-box;
+  padding-block: var(--cr-section-vertical-padding);
+  padding-inline: var(--cr-section-padding);
+}
+
+#cr-container-shadow-top {
+  /* Needs to be higher than #container's z-index to appear above
+    * scrollbars. */
+  z-index: 2;
+}
+
+#container {
+  align-items: flex-start;
+  color: var(--cr-primary-text-color);
+  display: flex;
+  flex: 1;
+  overflow: auto;
+}
+
+#left,
+#main,
+#right {
+  flex: 1;
+}
+
+#left, #right {
+  height: 100%;
+  position: sticky;
+  top: 0;
+}
+
+#sidebar {
+  width: var(--side-bar-width);
+}
+
+#main {
+  display: flex;
+  flex-basis: var(--main-column-max-width);
+  justify-content: center;
+  position: relative;
+}
+
+#content {
+  width: var(--main-column-max-width);
+}
+
+#left h2 {
+  border-bottom: 1px solid var(--cr-separator-color);
+  margin: 0 0 12px 0;
+  padding: 16px;
+}
+
+.varName {
+  font-weight: bold;
+  padding-inline-start: 1em;
+}
+
+/* Width is left + --cr-section-padding + main. */
+@media (max-width: 780px) {
+  #main {
+    flex: 1;
+    min-width: auto;
+  }
+
+  #content {
+    flex-basis: var(--main-column-max-width);
+    padding-inline: var(--cr-section-indent-padding);
+    width: auto;
+  }
+}
+

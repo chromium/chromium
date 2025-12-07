@@ -5,9 +5,12 @@
 #include "device/vr/android/cardboard/cardboard_render_loop.h"
 
 #include <time.h>
+
 #include <memory>
 
+#include "base/functional/callback_helpers.h"
 #include "base/task/bind_post_task.h"
+#include "base/trace_event/trace_event.h"
 #include "device/vr/android/cardboard/cardboard_image_transport.h"
 #include "device/vr/android/cardboard/cardboard_sdk.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
@@ -104,10 +107,16 @@ void CardboardRenderLoop::CreateSession(
     return;
   }
 
+  // Set whether or not the session produces frames with WebGPU based on in the
+  // 'webgpu' feature was requested.
+  bool webgpu_session =
+      enabled_features_.contains(device::mojom::XRSessionFeature::WEBGPU);
+
   cardboard_image_transport_->Initialize(
       webxr_.get(),
       base::BindOnce(&CardboardRenderLoop::OnCardboardImageTransportReady,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr()),
+      webgpu_session);
 
   left_eye_ = mojom::XRView::New();
   left_eye_->eye = mojom::XREye::kLeft;
@@ -120,12 +129,14 @@ void CardboardRenderLoop::CreateSession(
       gfx::Rect(texture_size_.width() / 2, 0, texture_size_.width() / 2,
                 texture_size_.height());
 
-  left_eye_->mojo_from_view = gfx::Transform();
-  left_eye_->field_of_view =
+  left_eye_->geometry = mojom::XRViewGeometry::New();
+  left_eye_->geometry->mojo_from_view = gfx::Transform();
+  left_eye_->geometry->field_of_view =
       cardboard_image_transport_->GetFOV(CardboardEye::kLeft);
 
-  right_eye_->mojo_from_view = gfx::Transform();
-  right_eye_->field_of_view =
+  right_eye_->geometry = mojom::XRViewGeometry::New();
+  right_eye_->geometry->mojo_from_view = gfx::Transform();
+  right_eye_->geometry->field_of_view =
       cardboard_image_transport_->GetFOV(CardboardEye::kRight);
 
   head_tracker_ = internal::ScopedCardboardObject<CardboardHeadTracker*>(
@@ -233,20 +244,9 @@ void CardboardRenderLoop::OnCardboardImageTransportReady(bool success) {
       device::mojom::XRPresentationTransportOptions::New();
   transport_options->wait_for_gpu_fence = true;
 
-  if (CardboardImageTransport::UseSharedBuffer()) {
-    DVLOG(2) << __func__
-             << ": UseSharedBuffer()=true, DRAW_INTO_TEXTURE_MAILBOX";
-    transport_options->transport_method =
-        device::mojom::XRPresentationTransportMethod::DRAW_INTO_TEXTURE_MAILBOX;
-  } else {
-    DVLOG(2) << __func__
-             << ": UseSharedBuffer()=false, SUBMIT_AS_MAILBOX_HOLDER";
-    transport_options->transport_method =
-        device::mojom::XRPresentationTransportMethod::SUBMIT_AS_MAILBOX_HOLDER;
-    transport_options->wait_for_transfer_notification = true;
-    cardboard_image_transport_->SetFrameAvailableCallback(base::BindRepeating(
-        &CardboardRenderLoop::RenderFrame, weak_ptr_factory_.GetWeakPtr()));
-  }
+  DVLOG(2) << __func__ << ": UseSharedBuffer()=true, DRAW_INTO_TEXTURE_MAILBOX";
+  transport_options->transport_method =
+      device::mojom::XRPresentationTransportMethod::DRAW_INTO_TEXTURE_MAILBOX;
 
   mojom::XRRuntimeSessionResultPtr result =
       device::mojom::XRRuntimeSessionResult::New();
@@ -315,7 +315,8 @@ void CardboardRenderLoop::CleanUp() {
 void CardboardRenderLoop::GetFrameData(
     mojom::XRFrameDataRequestOptionsPtr options,
     mojom::XRFrameDataProvider::GetFrameDataCallback callback) {
-  TRACE_EVENT1("gpu", __func__, "frame", webxr_->PeekNextFrameIndex());
+  TRACE_EVENT1("gpu", "CardboardRenderLoop::GetFrameData", "frame",
+               webxr_->PeekNextFrameIndex());
   DCHECK(task_runner()->BelongsToCurrentThread());
   CHECK(!texture_size_.IsEmpty());
 
@@ -343,24 +344,22 @@ void CardboardRenderLoop::GetFrameData(
 
   base::TimeTicks now = base::TimeTicks::Now();
   mojom::XRFrameDataPtr frame_data = mojom::XRFrameData::New();
+  frame_data->render_info = mojom::XRRenderInfo::New();
 
-  frame_data->frame_id = webxr_->StartFrameAnimating();
+  frame_data->render_info->frame_id = webxr_->StartFrameAnimating();
   WebXrFrame* xr_frame = webxr_->GetAnimatingFrame();
 
   xr_frame->time_pose = now;
   xr_frame->bounds_left = left_bounds_;
   xr_frame->bounds_right = right_bounds_;
 
-  if (CardboardImageTransport::UseSharedBuffer()) {
-    // We aren't modifying the texture that we give to the page, so we just pass
-    // in identity for the uv_transform.
-    WebXrSharedBuffer* shared_buffer =
-        cardboard_image_transport_->TransferFrame(webxr_.get(), texture_size_,
-                                                  gfx::Transform());
-    CHECK(shared_buffer);
-    frame_data->buffer_shared_image = shared_buffer->shared_image->Export();
-    frame_data->buffer_sync_token = shared_buffer->sync_token;
-  }
+  // We aren't modifying the texture that we give to the page, so we just pass
+  // in identity for the uv_transform.
+  WebXrSharedBuffer* shared_buffer = cardboard_image_transport_->TransferFrame(
+      webxr_.get(), texture_size_, gfx::Transform());
+  CHECK(shared_buffer);
+  frame_data->buffer_shared_image = shared_buffer->shared_image->Export();
+  frame_data->buffer_sync_token = shared_buffer->sync_token;
 
   // Get the head pose
   int64_t timestamp_ns = GetBootTimeNano() + kPredictionTimeWithoutVsyncNanos;
@@ -379,16 +378,16 @@ void CardboardRenderLoop::GetFrameData(
   pose->emulated_position = true;
 
   gfx::Transform mojo_from_viewer = vr_utils::VrPoseToTransform(pose.get());
-  frame_data->mojo_from_viewer = std::move(pose);
+  frame_data->render_info->mojo_from_viewer = std::move(pose);
 
   // Get the view transform for each eye
-  left_eye_->mojo_from_view =
+  left_eye_->geometry->mojo_from_view =
       cardboard_image_transport_->GetMojoFromView(kLeft, mojo_from_viewer);
-  right_eye_->mojo_from_view =
+  right_eye_->geometry->mojo_from_view =
       cardboard_image_transport_->GetMojoFromView(kRight, mojo_from_viewer);
 
-  frame_data->views.push_back(left_eye_.Clone());
-  frame_data->views.push_back(right_eye_.Clone());
+  frame_data->render_info->views.push_back(left_eye_.Clone());
+  frame_data->render_info->views.push_back(right_eye_.Clone());
 
   std::vector<mojom::XRInputSourceStatePtr> input_state;
   input_state.push_back(GetInputSourceState());
@@ -438,7 +437,8 @@ bool CardboardRenderLoop::IsSubmitFrameExpected(int16_t frame_index) {
 
 void CardboardRenderLoop::SubmitFrameMissing(int16_t frame_index,
                                              const gpu::SyncToken& sync_token) {
-  TRACE_EVENT1("gpu", __func__, "frame", frame_index);
+  TRACE_EVENT1("gpu", "CardboardRenderLoop::SubmitFrameMissing", "frame",
+               frame_index);
   DVLOG(2) << __func__ << ": frame=" << frame_index;
 
   if (!IsSubmitFrameExpected(frame_index)) {
@@ -457,48 +457,23 @@ void CardboardRenderLoop::SubmitFrameMissing(int16_t frame_index,
 void CardboardRenderLoop::SubmitFrame(int16_t frame_index,
                                       const gpu::MailboxHolder& mailbox,
                                       base::TimeDelta time_waited) {
-  TRACE_EVENT1("gpu", __func__, "frame", frame_index);
-  DVLOG(2) << __func__ << ": frame=" << frame_index;
-  CHECK(!CardboardImageTransport::UseSharedBuffer());
-
-  if (!IsSubmitFrameExpected(frame_index)) {
-    return;
-  }
-
-  webxr_->ProcessOrDefer(
-      base::BindOnce(&CardboardRenderLoop::ProcessFrameFromMailbox,
-                     weak_ptr_factory_.GetWeakPtr(), frame_index, mailbox));
-}
-
-void CardboardRenderLoop::ProcessFrameFromMailbox(
-    int16_t frame_index,
-    const gpu::MailboxHolder& mailbox) {
-  TRACE_EVENT1("gpu", __func__, "frame", frame_index);
-  DVLOG(2) << __func__ << ": frame=" << frame_index;
-  CHECK(webxr_->HaveProcessingFrame());
-  CHECK(!CardboardImageTransport::UseSharedBuffer());
-
-  // We aren't modifying the texture that we've received from the page, so we
-  // just pass in identity.
-  cardboard_image_transport_->CopyMailboxToSurfaceAndSwap(
-      texture_size_, mailbox, gfx::Transform());
-
-  // Notify the client that we're done with the mailbox so that the underlying
-  // image is eligible for destruction.
-  submit_client_->OnSubmitFrameTransferred(true);
-
-  // Now wait for cardboard_image_transport_ to call RenderFrame indicating that
-  // the image drawn onto the Surface is ready for consumption from the
-  // SurfaceTexture.
+  NOTREACHED();
 }
 
 void CardboardRenderLoop::SubmitFrameDrawnIntoTexture(
     int16_t frame_index,
+    const std::vector<LayerId>& layer_ids,
     const gpu::SyncToken& sync_token,
     base::TimeDelta time_waited) {
-  TRACE_EVENT1("gpu", __func__, "frame", frame_index);
+  TRACE_EVENT1("gpu", "CardboardRenderLoop::SubmitFrameDrawnIntoTexture",
+               "frame", frame_index);
   DVLOG(2) << __func__ << ": frame=" << frame_index;
-  CHECK(CardboardImageTransport::UseSharedBuffer());
+
+  if (!layer_ids.empty()) {
+    presentation_receiver_.ReportBadMessage(
+        "Layers feature not enabled for this session");
+    return;
+  }
 
   if (!IsSubmitFrameExpected(frame_index)) {
     return;
@@ -557,7 +532,7 @@ void CardboardRenderLoop::RenderFrame(const gfx::Transform& uv_transform) {
   DVLOG(2) << __func__;
   CHECK(webxr_->HaveProcessingFrame());
   int16_t frame_index = webxr_->GetProcessingFrame()->index;
-  TRACE_EVENT1("gpu", __func__, "frame", frame_index);
+  TRACE_EVENT1("gpu", "CardboardRenderLoop::RenderFrame", "frame", frame_index);
 
   TransitionProcessingFrameToRendering();
 
@@ -591,7 +566,8 @@ void CardboardRenderLoop::FinishRenderingFrame(WebXrFrame* frame) {
 }
 
 void CardboardRenderLoop::ClearRenderingFrame(WebXrFrame* frame) {
-  TRACE_EVENT1("gpu", __func__, "frame", frame->index);
+  TRACE_EVENT1("gpu", "CardboardRenderLoop::ClearRenderingFrame", "frame",
+               frame->index);
   DVLOG(3) << __func__ << ": frame=" << frame->index;
 
   // Ensure that we're totally finished with the rendering frame, then collect
@@ -604,7 +580,7 @@ void CardboardRenderLoop::ClearRenderingFrame(WebXrFrame* frame) {
 }
 
 void CardboardRenderLoop::FinishFrame(int16_t frame_index) {
-  TRACE_EVENT1("gpu", __func__, "frame", frame_index);
+  TRACE_EVENT1("gpu", "CardboardRenderLoop::FinishFrame", "frame", frame_index);
   DVLOG(3) << __func__;
 
   surface_->SwapBuffers(base::DoNothing(), gfx::FrameData());

@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/media/prefs/capture_device_ranking.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
@@ -108,8 +109,7 @@ void MediaDevicesSelectionHandler::InitializeCaptureDevices(
     const base::Value::List& args) {
   DCHECK_EQ(1U, args.size());
   if (!args[0].is_string()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   const std::string& type = args[0].GetString();
   DCHECK(!type.empty());
@@ -127,8 +127,7 @@ void MediaDevicesSelectionHandler::SetPreferredCaptureDevice(
     const base::Value::List& args) {
   CHECK_EQ(2U, args.size());
   if (!args[0].is_string() || !args[1].is_string()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   const std::string& type = args[0].GetString();
   const std::string& device_id = args[1].GetString();
@@ -148,7 +147,7 @@ void MediaDevicesSelectionHandler::SetPreferredCaptureDevice(
     media_prefs::UpdateVideoDevicePreferenceRanking(*prefs, preferred_iter,
                                                     video_device_infos_);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -233,13 +232,13 @@ std::string MediaDevicesSelectionHandler::GetDeviceDisplayName(
     case media::VideoFacingMode::MEDIA_VIDEO_FACING_NONE:
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 #endif
 
-  if (facing_info.empty())
+  if (facing_info.empty()) {
     return device.descriptor.display_name();
+  }
   return device.descriptor.display_name() + " " + facing_info;
 }
 

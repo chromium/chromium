@@ -1,70 +1,148 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// https://developers.google.com/protocol-buffers/
 //
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     * Redistributions of source code must retain the above copyright
-// notice, this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above
-// copyright notice, this list of conditions and the following disclaimer
-// in the documentation and/or other materials provided with the
-// distribution.
-//     * Neither the name of Google Inc. nor the names of its
-// contributors may be used to endorse or promote products derived from
-// this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
 
 // Author: kenton@google.com (Kenton Varda)
 //  Based on original Protocol Buffers design by
 //  Sanjay Ghemawat, Jeff Dean, and others.
 
-#include <google/protobuf/stubs/casts.h>
-#include <google/protobuf/stubs/strutil.h>
-#include <google/protobuf/stubs/logging.h>
-#include <google/protobuf/stubs/common.h>
-#include <google/protobuf/unittest.pb.h>
-#include <google/protobuf/unittest_mset.pb.h>
-#include <google/protobuf/io/coded_stream.h>
-#include <google/protobuf/io/zero_copy_stream_impl.h>
-#include <google/protobuf/descriptor.pb.h>
-#include <google/protobuf/arena.h>
-#include <google/protobuf/descriptor.h>
-#include <google/protobuf/dynamic_message.h>
-#include <google/protobuf/extension_set.h>
-#include <google/protobuf/text_format.h>
-#include <google/protobuf/wire_format.h>
-#include <google/protobuf/testing/googletest.h>
+#include "google/protobuf/extension_set.h"
+
+#include <algorithm>
+#include <cctype>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "google/protobuf/descriptor.pb.h"
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
-#include <google/protobuf/test_util.h>
-#include <google/protobuf/test_util2.h>
-#include <google/protobuf/stubs/stl_util.h>
+#include "absl/algorithm/container.h"
+#include "absl/strings/cord.h"
+#include "absl/strings/match.h"
+#include "absl/strings/str_cat.h"
+#include "google/protobuf/arena.h"
+#include "google/protobuf/cpp_features.pb.h"
+#include "google/protobuf/descriptor.h"
+#include "google/protobuf/dynamic_message.h"
+#include "google/protobuf/io/coded_stream.h"
+#include "google/protobuf/io/zero_copy_stream_impl_lite.h"
+#include "google/protobuf/message_lite.h"
+#include "google/protobuf/port.h"
+#include "google/protobuf/test_util.h"
+#include "google/protobuf/test_util2.h"
+#include "google/protobuf/text_format.h"
+#include "google/protobuf/unittest.pb.h"
+#include "google/protobuf/unittest_import.pb.h"
+#include "google/protobuf/unittest_mset.pb.h"
+#include "google/protobuf/unittest_mset_wire_format.pb.h"
+#include "google/protobuf/unittest_proto3_extensions.pb.h"
+#include "google/protobuf/wire_format.h"
+#include "google/protobuf/wire_format_lite.h"
+
 
 // Must be included last.
-#include <google/protobuf/port_def.inc>
-
+#include "google/protobuf/port_def.inc"
 
 namespace google {
 namespace protobuf {
+
+
 namespace internal {
+
+extern bool fully_verify_message_sets_opt_out;
+
+// Enum to represent the type of ExtensionFinder to use in the parameterized
+// test.
+enum class ExtensionFinderType {
+  kGeneratedExtensionFinder,
+  kDescriptorPoolExtensionFinder,
+};
+
+// Parameterized test fixture for FindExtensionInfoFromFieldNumber.
+class FindExtensionTest : public ::testing::TestWithParam<ExtensionFinderType> {
+ protected:
+  std::unique_ptr<GeneratedExtensionFinder> generated_finder_;
+  std::unique_ptr<DescriptorPoolExtensionFinder> pool_finder_;
+  DescriptorPool dynamic_pool_;
+  std::unique_ptr<DynamicMessageFactory> dynamic_factory_;
+  const Message* extendee_;
+
+  FindExtensionTest() : dynamic_pool_(DescriptorPool::generated_pool()) {}
+
+  template <typename MessageT>
+  void ConstructFinders() {
+    extendee_ = &MessageT::default_instance();
+    generated_finder_ = std::make_unique<GeneratedExtensionFinder>(extendee_);
+
+    dynamic_factory_ = std::make_unique<DynamicMessageFactory>(&dynamic_pool_);
+    dynamic_factory_->SetDelegateToGeneratedFactory(true);
+    pool_finder_ = std::make_unique<DescriptorPoolExtensionFinder>(
+        &dynamic_pool_, dynamic_factory_.get(),
+        MessageT::default_instance().GetDescriptor());
+  }
+
+  template <typename T>
+  T* GetFinder() {
+    if constexpr (std::is_same_v<T, GeneratedExtensionFinder>) {
+      return generated_finder_.get();
+    } else if constexpr (std::is_same_v<T, DescriptorPoolExtensionFinder>) {
+      return pool_finder_.get();
+    } else {
+      return nullptr;
+    }
+  }
+
+  bool FindExtensionInfoFromFieldNumber(int wire_type, int field_number,
+                                        ExtensionInfo* extension,
+                                        bool* was_packed_on_wire) {
+    ExtensionSet es;
+    switch (GetParam()) {
+      case ExtensionFinderType::kGeneratedExtensionFinder:
+        return es.FindExtensionInfoFromFieldNumber(
+            wire_type, field_number, GetFinder<GeneratedExtensionFinder>(),
+            extension, was_packed_on_wire);
+      case ExtensionFinderType::kDescriptorPoolExtensionFinder:
+        return es.FindExtensionInfoFromFieldNumber(
+            wire_type, field_number, GetFinder<DescriptorPoolExtensionFinder>(),
+            extension, was_packed_on_wire);
+    }
+    return false;
+  }
+
+  bool CallFindExtension(int wire_type, int field_number,
+                         ExtensionInfo* extension, bool* was_packed_on_wire) {
+    const char* ptr;
+    internal::ParseContext ctx(100, false, &ptr, "");
+    ExtensionSet es;
+    switch (GetParam()) {
+      case ExtensionFinderType::kGeneratedExtensionFinder: {
+        return es.FindExtension(wire_type, field_number, extendee_, &ctx,
+                                extension, was_packed_on_wire);
+      }
+      case ExtensionFinderType::kDescriptorPoolExtensionFinder: {
+        // We need to contrive a ParseContext that will cause the
+        // DescriptorPoolExtensionFinder to be used.
+        ctx.data().pool = &dynamic_pool_;
+        ctx.data().factory = dynamic_factory_.get();
+        return es.FindExtension(wire_type, field_number, extendee_, &ctx,
+                                extension, was_packed_on_wire);
+      }
+    }
+    return false;
+  }
+};
+
 namespace {
 
 using TestUtil::EqualsToSerialized;
 
-// This test closely mirrors third_party/protobuf/compiler/cpp/unittest.cc
+// This test closely mirrors google/protobuf/compiler/cpp/unittest.cc
 // except that it uses extensions rather than regular fields.
 
 TEST(ExtensionSetTest, Defaults) {
@@ -157,7 +235,7 @@ TEST(ExtensionSetTest, SetAllocatedExtension) {
   message.SetAllocatedExtension(unittest::optional_foreign_message_extension,
                                 new unittest::ForeignMessage());
 
-  // SetAllocatedExtension with nullptr is equivalent to ClearExtenion.
+  // SetAllocatedExtension with nullptr is equivalent to ClearExtension.
   message.SetAllocatedExtension(unittest::optional_foreign_message_extension,
                                 nullptr);
   EXPECT_FALSE(
@@ -198,7 +276,7 @@ TEST(ExtensionSetTest, ReleaseExtension) {
 TEST(ExtensionSetTest, ArenaUnsafeArenaSetAllocatedAndRelease) {
   Arena arena;
   unittest::TestAllExtensions* message =
-      Arena::CreateMessage<unittest::TestAllExtensions>(&arena);
+      Arena::Create<unittest::TestAllExtensions>(&arena);
   unittest::ForeignMessage extension;
   message->UnsafeArenaSetAllocatedExtension(
       unittest::optional_foreign_message_extension, &extension);
@@ -244,7 +322,7 @@ TEST(ExtensionSetTest, UnsafeArenaSetAllocatedAndRelease) {
 TEST(ExtensionSetTest, ArenaUnsafeArenaReleaseOfHeapAlloc) {
   Arena arena;
   unittest::TestAllExtensions* message =
-      Arena::CreateMessage<unittest::TestAllExtensions>(&arena);
+      Arena::Create<unittest::TestAllExtensions>(&arena);
   unittest::ForeignMessage* extension = new unittest::ForeignMessage;
   message->SetAllocatedExtension(unittest::optional_foreign_message_extension,
                                  extension);
@@ -375,7 +453,7 @@ TEST(ExtensionSetTest, SwapExtensionBothFull) {
 TEST(ExtensionSetTest, ArenaSetAllExtension) {
   Arena arena1;
   unittest::TestAllExtensions* message1 =
-      Arena::CreateMessage<unittest::TestAllExtensions>(&arena1);
+      Arena::Create<unittest::TestAllExtensions>(&arena1);
   TestUtil::SetAllExtensions(message1);
   TestUtil::ExpectAllExtensionsSet(*message1);
 }
@@ -383,7 +461,7 @@ TEST(ExtensionSetTest, ArenaSetAllExtension) {
 TEST(ExtensionSetTest, ArenaCopyConstructor) {
   Arena arena1;
   unittest::TestAllExtensions* message1 =
-      Arena::CreateMessage<unittest::TestAllExtensions>(&arena1);
+      Arena::Create<unittest::TestAllExtensions>(&arena1);
   TestUtil::SetAllExtensions(message1);
   unittest::TestAllExtensions message2(*message1);
   arena1.Reset();
@@ -393,7 +471,7 @@ TEST(ExtensionSetTest, ArenaCopyConstructor) {
 TEST(ExtensionSetTest, ArenaMergeFrom) {
   Arena arena1;
   unittest::TestAllExtensions* message1 =
-      Arena::CreateMessage<unittest::TestAllExtensions>(&arena1);
+      Arena::Create<unittest::TestAllExtensions>(&arena1);
   TestUtil::SetAllExtensions(message1);
   unittest::TestAllExtensions message2;
   message2.MergeFrom(*message1);
@@ -404,8 +482,8 @@ TEST(ExtensionSetTest, ArenaMergeFrom) {
 TEST(ExtensionSetTest, ArenaMergeFromWithClearedExtensions) {
   Arena arena;
   {
-    auto* message1 = Arena::CreateMessage<unittest::TestAllExtensions>(&arena);
-    auto* message2 = Arena::CreateMessage<unittest::TestAllExtensions>(&arena);
+    auto* message1 = Arena::Create<unittest::TestAllExtensions>(&arena);
+    auto* message2 = Arena::Create<unittest::TestAllExtensions>(&arena);
 
     // Set an extension and then clear it
     message1->SetExtension(unittest::optional_int32_extension, 1);
@@ -420,8 +498,8 @@ TEST(ExtensionSetTest, ArenaMergeFromWithClearedExtensions) {
   {
     // As more complicated case, let's have message1 and message2 share some
     // uncleared extensions in common.
-    auto* message1 = Arena::CreateMessage<unittest::TestAllExtensions>(&arena);
-    auto* message2 = Arena::CreateMessage<unittest::TestAllExtensions>(&arena);
+    auto* message1 = Arena::Create<unittest::TestAllExtensions>(&arena);
+    auto* message2 = Arena::Create<unittest::TestAllExtensions>(&arena);
 
     // Set int32 and uint32 on both messages.
     message1->SetExtension(unittest::optional_int32_extension, 1);
@@ -444,7 +522,7 @@ TEST(ExtensionSetTest, ArenaMergeFromWithClearedExtensions) {
 TEST(ExtensionSetTest, ArenaSetAllocatedMessageAndRelease) {
   Arena arena;
   unittest::TestAllExtensions* message =
-      Arena::CreateMessage<unittest::TestAllExtensions>(&arena);
+      Arena::Create<unittest::TestAllExtensions>(&arena);
   EXPECT_FALSE(
       message->HasExtension(unittest::optional_foreign_message_extension));
   // Add a extension using SetAllocatedExtension
@@ -468,9 +546,9 @@ TEST(ExtensionSetTest, SwapExtensionBothFullWithArena) {
   std::unique_ptr<Arena> arena2(new Arena());
 
   unittest::TestAllExtensions* message1 =
-      Arena::CreateMessage<unittest::TestAllExtensions>(&arena1);
+      Arena::Create<unittest::TestAllExtensions>(&arena1);
   unittest::TestAllExtensions* message2 =
-      Arena::CreateMessage<unittest::TestAllExtensions>(arena2.get());
+      Arena::Create<unittest::TestAllExtensions>(arena2.get());
 
   TestUtil::SetAllExtensions(message1);
   TestUtil::SetAllExtensions(message2);
@@ -490,9 +568,9 @@ TEST(ExtensionSetTest, SwapExtensionBothFullWithArena) {
   Arena arena3, arena4;
 
   unittest::TestAllExtensions* message3 =
-      Arena::CreateMessage<unittest::TestAllExtensions>(&arena3);
+      Arena::Create<unittest::TestAllExtensions>(&arena3);
   unittest::TestAllExtensions* message4 =
-      Arena::CreateMessage<unittest::TestAllExtensions>(&arena4);
+      Arena::Create<unittest::TestAllExtensions>(&arena4);
   TestUtil::SetAllExtensions(message3);
   message3->Swap(message4);
   arena3.Reset();
@@ -504,9 +582,9 @@ TEST(ExtensionSetTest, SwapFieldsOfExtensionBothFullWithArena) {
   Arena* arena2 = new Arena();
 
   unittest::TestAllExtensions* message1 =
-      Arena::CreateMessage<unittest::TestAllExtensions>(&arena1);
+      Arena::Create<unittest::TestAllExtensions>(&arena1);
   unittest::TestAllExtensions* message2 =
-      Arena::CreateMessage<unittest::TestAllExtensions>(arena2);
+      Arena::Create<unittest::TestAllExtensions>(arena2);
 
   TestUtil::SetAllExtensions(message1);
   TestUtil::SetAllExtensions(message2);
@@ -547,7 +625,7 @@ TEST(ExtensionSetTest, SerializationToArray) {
   size_t size = source.ByteSizeLong();
   std::string data;
   data.resize(size);
-  uint8_t* target = reinterpret_cast<uint8_t*>(::google::protobuf::string_as_array(&data));
+  uint8_t* target = reinterpret_cast<uint8_t*>(&data[0]);
   uint8_t* end = source.SerializeWithCachedSizesToArray(target);
   EXPECT_EQ(size, end - target);
   EXPECT_TRUE(destination.ParseFromString(data));
@@ -569,7 +647,7 @@ TEST(ExtensionSetTest, SerializationToStream) {
   std::string data;
   data.resize(size);
   {
-    io::ArrayOutputStream array_stream(::google::protobuf::string_as_array(&data), size, 1);
+    io::ArrayOutputStream array_stream(&data[0], size, 1);
     io::CodedOutputStream output_stream(&array_stream);
     source.SerializeWithCachedSizes(&output_stream);
     ASSERT_FALSE(output_stream.HadError());
@@ -591,7 +669,7 @@ TEST(ExtensionSetTest, PackedSerializationToArray) {
   size_t size = source.ByteSizeLong();
   std::string data;
   data.resize(size);
-  uint8_t* target = reinterpret_cast<uint8_t*>(::google::protobuf::string_as_array(&data));
+  uint8_t* target = reinterpret_cast<uint8_t*>(&data[0]);
   uint8_t* end = source.SerializeWithCachedSizesToArray(target);
   EXPECT_EQ(size, end - target);
   EXPECT_TRUE(destination.ParseFromString(data));
@@ -613,7 +691,7 @@ TEST(ExtensionSetTest, PackedSerializationToStream) {
   std::string data;
   data.resize(size);
   {
-    io::ArrayOutputStream array_stream(::google::protobuf::string_as_array(&data), size, 1);
+    io::ArrayOutputStream array_stream(&data[0], size, 1);
     io::CodedOutputStream output_stream(&array_stream);
     source.SerializeWithCachedSizes(&output_stream);
     ASSERT_FALSE(output_stream.HadError());
@@ -657,7 +735,7 @@ TEST(ExtensionSetTest, Parsing) {
   TestUtil::SetAllFields(&source);
   source.SerializeToString(&data);
   EXPECT_TRUE(destination.ParseFromString(data));
-  TestUtil::SetOneofFields(&destination);
+  TestUtil::SetOneofFieldsExtensions(&destination);
   TestUtil::ExpectAllExtensionsSet(destination);
 }
 
@@ -694,7 +772,7 @@ TEST(ExtensionSetTest, PackedToUnpackedParsing) {
   // Make sure we can add extensions.
   destination.AddExtension(unittest::unpacked_int32_extension, 1);
   destination.AddExtension(unittest::unpacked_enum_extension,
-                           protobuf_unittest::FOREIGN_BAR);
+                           proto2_unittest::FOREIGN_BAR);
 }
 
 TEST(ExtensionSetTest, UnpackedToPackedParsing) {
@@ -718,7 +796,7 @@ TEST(ExtensionSetTest, UnpackedToPackedParsing) {
   // Make sure we can add extensions.
   destination.AddExtension(unittest::packed_int32_extension, 1);
   destination.AddExtension(unittest::packed_enum_extension,
-                           protobuf_unittest::FOREIGN_BAR);
+                           proto2_unittest::FOREIGN_BAR);
 }
 
 TEST(ExtensionSetTest, IsInitialized) {
@@ -827,8 +905,7 @@ TEST(ExtensionSetTest, SpaceUsedExcludingSelf) {
 
   // Repeated primitive extensions will increase space used by at least a
   // RepeatedField<T>, and will cause additional allocations when the array
-  // gets too big for the initial space.  Note, we explicitly allocate on the
-  // heap to avoid message-owned arenas.
+  // gets too big for the initial space.
   // This macro:
   //   - Adds a value to the repeated extension, then clears it, establishing
   //     the base size.
@@ -839,7 +916,7 @@ TEST(ExtensionSetTest, SpaceUsedExcludingSelf) {
 #define TEST_REPEATED_EXTENSIONS_SPACE_USED(type, cpptype, value)              \
   do {                                                                         \
     std::unique_ptr<unittest::TestAllExtensions> message(                      \
-        Arena::CreateMessage<unittest::TestAllExtensions>(nullptr));           \
+        Arena::Create<unittest::TestAllExtensions>(nullptr));                  \
     const size_t base_size = message->SpaceUsedLong();                         \
     size_t min_expected_size = sizeof(RepeatedField<cpptype>) + base_size;     \
     message->AddExtension(unittest::repeated_##type##_extension, value);       \
@@ -852,8 +929,12 @@ TEST(ExtensionSetTest, SpaceUsedExcludingSelf) {
     const size_t old_capacity =                                                \
         message->GetRepeatedExtension(unittest::repeated_##type##_extension)   \
             .Capacity();                                                       \
-    EXPECT_GE(old_capacity,                                                    \
-              (RepeatedFieldLowerClampLimit<cpptype, sizeof(void*)>()));       \
+    if (sizeof(cpptype) > 1) {                                                 \
+      EXPECT_GE(                                                               \
+          old_capacity,                                                        \
+          (RepeatedFieldLowerClampLimit<cpptype, std::max(sizeof(cpptype),     \
+                                                          sizeof(void*))>())); \
+    }                                                                          \
     for (int i = 0; i < 16; ++i) {                                             \
       message->AddExtension(unittest::repeated_##type##_extension, value);     \
     }                                                                          \
@@ -886,7 +967,7 @@ TEST(ExtensionSetTest, SpaceUsedExcludingSelf) {
   // Repeated strings
   {
     std::unique_ptr<unittest::TestAllExtensions> message(
-        Arena::CreateMessage<unittest::TestAllExtensions>(nullptr));
+        Arena::Create<unittest::TestAllExtensions>(nullptr));
     const size_t base_size = message->SpaceUsedLong();
     size_t min_expected_size =
         sizeof(RepeatedPtrField<std::string>) + base_size;
@@ -905,7 +986,7 @@ TEST(ExtensionSetTest, SpaceUsedExcludingSelf) {
   // Repeated messages
   {
     std::unique_ptr<unittest::TestAllExtensions> message(
-        Arena::CreateMessage<unittest::TestAllExtensions>(nullptr));
+        Arena::Create<unittest::TestAllExtensions>(nullptr));
     const size_t base_size = message->SpaceUsedLong();
     size_t min_expected_size =
         sizeof(RepeatedPtrField<unittest::ForeignMessage>) + base_size;
@@ -1069,7 +1150,7 @@ TEST(ExtensionSetTest, RepeatedFields) {
                .MutableRepeatedExtension(unittest::repeated_string_extension)
                ->end();
        string_iter != string_end; ++string_iter) {
-    *string_iter += "test";
+    string_iter->append("test");
   }
   RepeatedPtrField<std::string>::const_iterator string_const_iter;
   RepeatedPtrField<std::string>::const_iterator string_const_end;
@@ -1183,22 +1264,25 @@ TEST(ExtensionSetTest, AbsentExtension) {
                 .bb());
 }
 
-#ifdef PROTOBUF_HAS_DEATH_TEST
+#if GTEST_HAS_DEATH_TEST
 
 TEST(ExtensionSetTest, InvalidEnumDeath) {
   unittest::TestAllExtensions message;
   EXPECT_DEBUG_DEATH(
       message.SetExtension(unittest::optional_foreign_enum_extension,
                            static_cast<unittest::ForeignEnum>(53)),
-      "IsValid");
+      "ValidateEnum");
 }
 
-#endif  // PROTOBUF_HAS_DEATH_TEST
+#endif  // GTEST_HAS_DEATH_TEST
 
 TEST(ExtensionSetTest, DynamicExtensions) {
   // Test adding a dynamic extension to a compiled-in message object.
 
   FileDescriptorProto dynamic_proto;
+  unittest::TestDynamicExtensions::descriptor()->file()->CopyHeadingTo(
+      &dynamic_proto);
+  dynamic_proto.clear_dependency();
   dynamic_proto.set_name("dynamic_extensions_test.proto");
   dynamic_proto.add_dependency(
       unittest::TestAllExtensions::descriptor()->file()->name());
@@ -1226,10 +1310,11 @@ TEST(ExtensionSetTest, DynamicExtensions) {
 
     // If the field refers to one of the types nested in TestDynamicExtensions,
     // make it refer to the type in our dynamic proto instead.
-    std::string prefix = "." + template_descriptor->full_name() + ".";
+    std::string prefix =
+        absl::StrCat(".", template_descriptor->full_name(), ".");
     if (extension->has_type_name()) {
       std::string* type_name = extension->mutable_type_name();
-      if (HasPrefixString(*type_name, prefix)) {
+      if (absl::StartsWith(*type_name, prefix)) {
         type_name->replace(0, prefix.size(), ".dynamic_extensions.");
       }
     }
@@ -1331,11 +1416,7 @@ TEST(ExtensionSetTest, DynamicExtensions) {
     const Message& sub_message =
         message.GetReflection()->GetMessage(message, message_extension);
     const unittest::ForeignMessage* typed_sub_message =
-#if PROTOBUF_RTTI
-        dynamic_cast<const unittest::ForeignMessage*>(&sub_message);
-#else
-        static_cast<const unittest::ForeignMessage*>(&sub_message);
-#endif
+        google::protobuf::DynamicCastMessage<unittest::ForeignMessage>(&sub_message);
     ASSERT_TRUE(typed_sub_message != nullptr);
     EXPECT_EQ(456, typed_sub_message->c());
   }
@@ -1355,16 +1436,90 @@ TEST(ExtensionSetTest, DynamicExtensions) {
   }
 }
 
+TEST(ExtensionSetTest, Proto3PackedDynamicExtensions) {
+  // Regression test for b/271121265. This test case verifies that
+  // packed-by-default repeated custom options in proto3 are correctly
+  // serialized in packed form when dynamic extensions are used.
+
+  // Create a custom option in proto3 and load this into an overlay
+  // DescriptorPool with a DynamicMessageFactory.
+  google::protobuf::FileDescriptorProto file_descriptor_proto;
+  file_descriptor_proto.set_syntax("proto3");
+  file_descriptor_proto.set_name(
+      "google/protobuf/unittest_proto3_packed_extension.proto");
+  file_descriptor_proto.set_package("proto3_unittest");
+  file_descriptor_proto.add_dependency(
+      DescriptorProto::descriptor()->file()->name());
+  FieldDescriptorProto* extension = file_descriptor_proto.add_extension();
+  extension->set_name("repeated_int32_option");
+  extension->set_extendee(MessageOptions().GetTypeName());
+  extension->set_number(50009);
+  extension->set_label(FieldDescriptorProto::LABEL_REPEATED);
+  extension->set_type(FieldDescriptorProto::TYPE_INT32);
+  extension->set_json_name("repeatedInt32Option");
+  google::protobuf::DescriptorPool pool(DescriptorPool::generated_pool());
+  ASSERT_NE(pool.BuildFile(file_descriptor_proto), nullptr);
+  DynamicMessageFactory factory;
+  factory.SetDelegateToGeneratedFactory(true);
+
+  // Create a serialized MessageOptions proto equivalent to:
+  // [proto3_unittest.repeated_int32_option]: 1
+  UnknownFieldSet unknown_fields;
+  unknown_fields.AddVarint(50009, 1);
+  std::string serialized_options;
+  ASSERT_TRUE(unknown_fields.SerializeToString(&serialized_options));
+
+  // Parse the MessageOptions using our custom extension registry.
+  io::ArrayInputStream input_stream(serialized_options.data(),
+                                    serialized_options.size());
+  io::CodedInputStream coded_stream(&input_stream);
+  coded_stream.SetExtensionRegistry(&pool, &factory);
+  MessageOptions message_options;
+  ASSERT_TRUE(message_options.ParseFromCodedStream(&coded_stream));
+
+  // Finally, serialize the proto again and verify that the repeated option has
+  // been correctly serialized in packed form.
+  std::string reserialized_options;
+  ASSERT_TRUE(message_options.SerializeToString(&reserialized_options));
+  EXPECT_EQ(reserialized_options, "\xca\xb5\x18\x01\x01");
+}
+
+TEST(ExtensionSetTest, Proto3ExtensionPresenceSingular) {
+  using protobuf_unittest::Proto3FileExtensions;
+  FileDescriptorProto file;
+
+  EXPECT_FALSE(file.options().HasExtension(Proto3FileExtensions::singular_int));
+  EXPECT_EQ(file.options().GetExtension(Proto3FileExtensions::singular_int), 0);
+
+  file.mutable_options()->SetExtension(Proto3FileExtensions::singular_int, 1);
+
+  EXPECT_TRUE(file.options().HasExtension(Proto3FileExtensions::singular_int));
+  EXPECT_EQ(file.options().GetExtension(Proto3FileExtensions::singular_int), 1);
+}
+
 TEST(ExtensionSetTest, BoolExtension) {
   unittest::TestAllExtensions msg;
   uint8_t wire_bytes[2] = {13 * 8, 42 /* out of bounds payload for bool */};
   EXPECT_TRUE(msg.ParseFromArray(wire_bytes, 2));
-  EXPECT_TRUE(msg.GetExtension(protobuf_unittest::optional_bool_extension));
+  EXPECT_TRUE(msg.GetExtension(proto2_unittest::optional_bool_extension));
 }
 
 TEST(ExtensionSetTest, ConstInit) {
   PROTOBUF_CONSTINIT static ExtensionSet set{};
   EXPECT_EQ(set.NumExtensions(), 0);
+}
+
+// Make sure that is_cleared is set correctly for repeated fields.
+TEST(ExtensionSetTest, NumExtensionsWithRepeatedFields) {
+  unittest::TestAllExtensions msg;
+  ExtensionSet set;
+  const auto* desc =
+      unittest::TestAllExtensions::descriptor()->file()->FindExtensionByName(
+          "repeated_int32_extension");
+  ASSERT_NE(desc, nullptr);
+  set.MutableRawRepeatedField(desc->number(), WireFormatLite::TYPE_INT32, false,
+                              desc);
+  EXPECT_EQ(set.NumExtensions(), 1);
 }
 
 TEST(ExtensionSetTest, ExtensionSetSpaceUsed) {
@@ -1379,7 +1534,197 @@ TEST(ExtensionSetTest, ExtensionSetSpaceUsed) {
   EXPECT_TRUE((l2 - l) > (l3 - l));
 }
 
+TEST(ExtensionSetTest, Descriptor) {
+  EXPECT_EQ(
+      GetExtensionReflection(unittest::optional_int32_extension),
+      unittest::TestAllExtensions::descriptor()->file()->FindExtensionByName(
+          "optional_int32_extension"));
+  EXPECT_NE(GetExtensionReflection(unittest::optional_int32_extension),
+            nullptr);
+  EXPECT_EQ(GetExtensionReflection(pb::cpp),
+            pb::CppFeatures::descriptor()->file()->FindExtensionByName("cpp"));
+  EXPECT_NE(GetExtensionReflection(pb::cpp), nullptr);
+}
+
+
+TEST_P(FindExtensionTest,
+       FindExtensionInfoFromFieldNumber_FindExistingExtension) {
+  ExtensionInfo extension_info;
+  bool was_packed_on_wire;
+  const int field_number = unittest::kOptionalInt32ExtensionFieldNumber;
+  const WireFormatLite::WireType wire_type =
+      WireFormatLite::WireTypeForFieldType(WireFormatLite::TYPE_INT32);
+  ConstructFinders<unittest::TestAllExtensions>();
+
+  EXPECT_TRUE(FindExtensionInfoFromFieldNumber(
+      wire_type, field_number, &extension_info, &was_packed_on_wire));
+  EXPECT_EQ(extension_info.number, field_number);
+  EXPECT_EQ(extension_info.type, WireFormatLite::TYPE_INT32);
+  EXPECT_FALSE(extension_info.is_repeated);
+  EXPECT_FALSE(was_packed_on_wire);
+}
+
+TEST_P(FindExtensionTest, FindExtensionInfoFromFieldNumberExtensionNotFound) {
+  ExtensionInfo extension_info;
+  bool was_packed_on_wire;
+  const int field_number = 9999;  // Non-existent field number
+  const WireFormatLite::WireType wire_type =
+      WireFormatLite::WireTypeForFieldType(WireFormatLite::TYPE_INT32);
+  ConstructFinders<unittest::TestAllExtensions>();
+
+  EXPECT_FALSE(FindExtensionInfoFromFieldNumber(
+      wire_type, field_number, &extension_info, &was_packed_on_wire));
+}
+
+TEST_P(FindExtensionTest, FindExtensionInfoFromFieldNumberWireTypeMismatch) {
+  ExtensionInfo extension_info;
+  bool was_packed_on_wire;
+  const int field_number = unittest::kOptionalInt32ExtensionFieldNumber;
+  const WireFormatLite::WireType wire_type =
+      WireFormatLite::WIRETYPE_FIXED64;  // Incorrect wire type
+  ConstructFinders<unittest::TestAllExtensions>();
+
+  EXPECT_FALSE(FindExtensionInfoFromFieldNumber(
+      wire_type, field_number, &extension_info, &was_packed_on_wire));
+}
+
+TEST_P(FindExtensionTest, FindExtensionInfoFromFieldNumberPackedExtension) {
+  ExtensionInfo extension_info;
+  bool was_packed_on_wire;
+  const int field_number = unittest::kPackedInt32ExtensionFieldNumber;
+  ConstructFinders<unittest::TestPackedExtensions>();
+
+  // Packed fields appear as LENGTH_DELIMITED on the wire.
+  const WireFormatLite::WireType wire_type =
+      WireFormatLite::WIRETYPE_LENGTH_DELIMITED;
+
+  EXPECT_TRUE(FindExtensionInfoFromFieldNumber(
+      wire_type, field_number, &extension_info, &was_packed_on_wire));
+  EXPECT_EQ(extension_info.number, field_number);
+  EXPECT_EQ(extension_info.type, WireFormatLite::TYPE_INT32);
+  EXPECT_TRUE(extension_info.is_repeated);
+  EXPECT_TRUE(extension_info.is_packed);
+  EXPECT_TRUE(was_packed_on_wire);
+}
+
+TEST_P(FindExtensionTest,
+       FindExtensionInfoFromFieldNumber_UnpackedRepeatedExtension) {
+  ExtensionInfo extension_info;
+  bool was_packed_on_wire;
+  const int field_number = unittest::kRepeatedInt32ExtensionFieldNumber;
+  const WireFormatLite::WireType wire_type =
+      WireFormatLite::WireTypeForFieldType(WireFormatLite::TYPE_INT32);
+  ConstructFinders<unittest::TestAllExtensions>();
+
+  EXPECT_TRUE(FindExtensionInfoFromFieldNumber(
+      wire_type, field_number, &extension_info, &was_packed_on_wire));
+  EXPECT_EQ(extension_info.number, field_number);
+  EXPECT_EQ(extension_info.type, WireFormatLite::TYPE_INT32);
+  EXPECT_TRUE(extension_info.is_repeated);
+  EXPECT_FALSE(extension_info.is_packed);
+  EXPECT_FALSE(was_packed_on_wire);
+}
+
+TEST_P(FindExtensionTest, FindExtensionFindExistingExtension) {
+  ExtensionInfo extension_info;
+  bool was_packed_on_wire;
+  const int field_number = unittest::kOptionalInt32ExtensionFieldNumber;
+  const WireFormatLite::WireType wire_type =
+      WireFormatLite::WireTypeForFieldType(WireFormatLite::TYPE_INT32);
+  ConstructFinders<unittest::TestAllExtensions>();
+
+  EXPECT_TRUE(CallFindExtension(wire_type, field_number, &extension_info,
+                                &was_packed_on_wire));
+  EXPECT_EQ(extension_info.number, field_number);
+  EXPECT_EQ(extension_info.type, WireFormatLite::TYPE_INT32);
+  EXPECT_FALSE(extension_info.is_repeated);
+  EXPECT_FALSE(was_packed_on_wire);
+}
+
+TEST_P(FindExtensionTest, FindExtensionExtensionNotFound) {
+  ExtensionInfo extension_info;
+  bool was_packed_on_wire;
+  const int field_number = 9999;  // Non-existent field number
+  const WireFormatLite::WireType wire_type =
+      WireFormatLite::WireTypeForFieldType(WireFormatLite::TYPE_INT32);
+  ConstructFinders<unittest::TestAllExtensions>();
+
+  EXPECT_FALSE(CallFindExtension(wire_type, field_number, &extension_info,
+                                 &was_packed_on_wire));
+}
+
+TEST_P(FindExtensionTest, FindExtensionWireTypeMismatch) {
+  ExtensionInfo extension_info;
+  bool was_packed_on_wire;
+  const int field_number = unittest::kOptionalInt32ExtensionFieldNumber;
+  const WireFormatLite::WireType wire_type =
+      WireFormatLite::WIRETYPE_FIXED64;  // Incorrect wire type
+  ConstructFinders<unittest::TestAllExtensions>();
+
+  EXPECT_FALSE(CallFindExtension(wire_type, field_number, &extension_info,
+                                 &was_packed_on_wire));
+}
+
+TEST_P(FindExtensionTest, FindExtensionPackedExtension) {
+  ExtensionInfo extension_info;
+  bool was_packed_on_wire;
+  const int field_number = unittest::kPackedInt32ExtensionFieldNumber;
+  ConstructFinders<unittest::TestPackedExtensions>();
+
+  // Packed fields appear as LENGTH_DELIMITED on the wire.
+  const WireFormatLite::WireType wire_type =
+      WireFormatLite::WIRETYPE_LENGTH_DELIMITED;
+
+  EXPECT_TRUE(CallFindExtension(wire_type, field_number, &extension_info,
+                                &was_packed_on_wire));
+  EXPECT_EQ(extension_info.number, field_number);
+  EXPECT_EQ(extension_info.type, WireFormatLite::TYPE_INT32);
+  EXPECT_TRUE(extension_info.is_repeated);
+  EXPECT_TRUE(extension_info.is_packed);
+  EXPECT_TRUE(was_packed_on_wire);
+}
+
+TEST_P(FindExtensionTest, FindExtensionUnpackedRepeatedExtension) {
+  ExtensionInfo extension_info;
+  bool was_packed_on_wire;
+  const int field_number = unittest::kRepeatedInt32ExtensionFieldNumber;
+  const WireFormatLite::WireType wire_type =
+      WireFormatLite::WireTypeForFieldType(WireFormatLite::TYPE_INT32);
+  ConstructFinders<unittest::TestAllExtensions>();
+
+  EXPECT_TRUE(CallFindExtension(wire_type, field_number, &extension_info,
+                                &was_packed_on_wire));
+  EXPECT_EQ(extension_info.number, field_number);
+  EXPECT_EQ(extension_info.type, WireFormatLite::TYPE_INT32);
+  EXPECT_TRUE(extension_info.is_repeated);
+  EXPECT_FALSE(extension_info.is_packed);
+  EXPECT_FALSE(was_packed_on_wire);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ExtensionFinders, FindExtensionTest,
+    ::testing::Values(ExtensionFinderType::kGeneratedExtensionFinder,
+                      ExtensionFinderType::kDescriptorPoolExtensionFinder),
+    [](const testing::TestParamInfo<FindExtensionTest::ParamType>& info) {
+      std::string name = absl::StrCat(
+          info.param == ExtensionFinderType::kGeneratedExtensionFinder
+              ? "GeneratedExtensionFinder"
+              : "DescriptorPoolExtensionFinder");
+      absl::c_replace_if(name, [](char c) { return !std::isalnum(c); }, '_');
+      return name;
+    });
+
 }  // namespace
 }  // namespace internal
 }  // namespace protobuf
 }  // namespace google
+
+// Some code thunks to allow easy inspection of the generated asm via `lldb`.
+auto CodegenGetExtensionInt32(
+    const google::protobuf::unittest::TestAllExtensions& message) {
+  return message.GetExtension(google::protobuf::unittest::optional_int32_extension);
+}
+static int odr [[maybe_unused]] =
+    (::google::protobuf::internal::StrongPointer(&CodegenGetExtensionInt32), 0);
+
+#include "google/protobuf/port_undef.inc"

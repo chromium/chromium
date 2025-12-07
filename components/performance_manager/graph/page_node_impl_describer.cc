@@ -11,6 +11,7 @@
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/performance_manager/public/graph/node_data_describer_util.h"
+#include "components/performance_manager/public/resource_attribution/page_context.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 
 namespace performance_manager {
@@ -82,28 +83,24 @@ base::Value::Dict PageNodeImplDescriber::DescribePageNodeData(
   result.Set("lifecycle_state",
              MojoEnumToString(page_node_impl->lifecycle_state_.value()));
   result.Set("is_holding_weblock", page_node_impl->is_holding_weblock_.value());
-  result.Set("is_holding_indexeddb_lock",
-             page_node_impl->is_holding_indexeddb_lock_.value());
+  result.Set("is_holding_blocking_indexeddb_lock",
+             page_node_impl->is_holding_blocking_indexeddb_lock_.value());
   result.Set("had_form_interaction",
              page_node_impl->had_form_interaction_.value());
   result.Set("had_user_edits", page_node_impl->had_user_edits_.value());
   result.Set("notification_permission",
              PermissionStatusToString(
-                 page_node_impl->notification_permission_status_));
-  if (page_node_impl->embedding_type_ != PageNode::EmbeddingType::kInvalid) {
-    result.Set("embedding_type",
-               PageNode::ToString(page_node_impl->embedding_type_));
-  }
+                 page_node_impl->notification_permission_status_.value()));
   result.Set("resource_context",
              page_node_impl->GetResourceContext().ToString());
 
   base::Value::Dict estimates;
-  estimates.Set(
-      "private_footprint_kb",
-      base::NumberToString(page_node_impl->EstimatePrivateFootprintSize()));
+  estimates.Set("private_footprint_kb",
+                base::NumberToString(
+                    page_node_impl->EstimatePrivateFootprintSize().InKiB()));
   estimates.Set(
       "resident_set_size_kb",
-      base::NumberToString(page_node_impl->EstimateResidentSetSize()));
+      base::NumberToString(page_node_impl->EstimateResidentSetSize().InKiB()));
   result.Set("estimates", std::move(estimates));
 
   return result;

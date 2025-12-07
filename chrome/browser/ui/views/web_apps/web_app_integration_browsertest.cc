@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/web_apps/web_app_integration_test_driver.h"
 #include "chrome/common/chrome_features.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest-spi.h"
 #include "web_app_integration_test_driver.h"
@@ -18,13 +19,13 @@ using WebAppIntegration = WebAppIntegrationTest;
 // Manual tests:
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, EnterAndExitFullScreenApp) {
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
+  helper_.InstallMenuOption(Site::kStandalone);
   helper_.EnterFullScreenApp();
   helper_.ExitFullScreenApp();
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, UninstallFromList) {
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
+  helper_.InstallMenuOption(Site::kStandalone);
   helper_.UninstallFromList(Site::kStandalone);
   helper_.CheckAppNotInList(Site::kStandalone);
 }
@@ -32,49 +33,49 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, UninstallFromList) {
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, ManifestUpdateScope) {
   helper_.InstallOmniboxIcon(InstallableSite::kStandaloneNestedA);
   helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
-  helper_.AwaitManifestUpdate(Site::kStandaloneNestedA);
   helper_.NavigateBrowser(Site::kStandalone);
   helper_.CheckLaunchIconShown();
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, ManifestUpdateIcon) {
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
+  helper_.InstallMenuOption(Site::kStandalone);
   helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
-  helper_.ManifestUpdateIcon(Site::kStandalone,
-                             UpdateDialogResponse::kAcceptUpdate);
-  helper_.AwaitManifestUpdate(Site::kStandalone);
-  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.ManifestUpdateIcon(Site::kStandalone, Color::kRed);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
   helper_.CheckAppIcon(Site::kStandalone, Color::kRed);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppIntegration, ManifestUpdateTitleAccept) {
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated,
-                              UpdateDialogResponse::kAcceptUpdate);
-  helper_.AwaitManifestUpdate(Site::kStandalone);
-  helper_.LaunchFromLaunchIcon(Site::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, ManifestUpdateIconSmallImageDiff) {
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.ManifestUpdateIcon(Site::kStandalone, Color::kGreenSmallDiff);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreenSmallDiff);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppIntegration,
-                       ManifestUpdateTitleSkipUninstallAccept) {
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, ManifestUpdateTitleAccept) {
+  helper_.InstallMenuOption(Site::kStandalone);
   helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.ManifestUpdateTitle(
-      Site::kStandalone, Title::kStandaloneUpdated,
-      UpdateDialogResponse::kCancelUninstallAndAcceptUpdate);
-  helper_.AwaitManifestUpdate(Site::kStandalone);
-  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
   helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, ManifestUpdateTitleCancel) {
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
+  helper_.InstallMenuOption(Site::kStandalone);
   helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated,
-                              UpdateDialogResponse::kCancelDialogAndUninstall);
-  helper_.AwaitManifestUpdate(Site::kStandalone);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kCancelDialogAndUninstall);
   helper_.CheckAppNotInList(Site::kStandalone);
   helper_.CheckPlatformShortcutNotExists(Site::kStandalone);
 }
@@ -83,22 +84,21 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, ManifestUpdatePolicyAppTitle) {
   helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
                            WindowOptions::kWindowed, InstallMode::kWebApp);
   helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated,
-                              UpdateDialogResponse::kSkipDialog);
-  helper_.AwaitManifestUpdate(Site::kStandalone);
-  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
   helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, LaunchFromMenuOption) {
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
+  helper_.InstallMenuOption(Site::kStandalone);
   helper_.CheckWindowCreated();
   helper_.LaunchFromMenuOption(Site::kStandalone);
   helper_.CheckWindowCreated();
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, OpenInChrome) {
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
+  helper_.InstallMenuOption(Site::kStandalone);
   helper_.CheckWindowCreated();
   helper_.OpenInChrome();
   helper_.CheckTabCreated(Number::kOne);
@@ -111,10 +111,9 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, OpenInChrome) {
 #define MAYBE_ManifestUpdateDisplayBrowser ManifestUpdateDisplayBrowser
 #endif
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, MAYBE_ManifestUpdateDisplayBrowser) {
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
+  helper_.InstallMenuOption(Site::kStandalone);
   helper_.CheckWindowCreated();
   helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kBrowser);
-  helper_.AwaitManifestUpdate(Site::kStandalone);
   helper_.LaunchFromChromeApps(Site::kStandalone);
   helper_.CheckTabNotCreated();
   helper_.CheckWindowCreated();
@@ -123,12 +122,11 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, MAYBE_ManifestUpdateDisplayBrowser) {
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration,
                        ManifestUpdateDisplayOverrideWindowControlsOverlay) {
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
+  helper_.InstallMenuOption(Site::kStandalone);
   helper_.CheckWindowCreated();
   helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
                                            IsShown::kNotShown);
   helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kWco);
-  helper_.AwaitManifestUpdate(Site::kStandalone);
   helper_.LaunchFromChromeApps(Site::kStandalone);
   helper_.CheckWindowCreated();
   helper_.CheckWindowControlsOverlayToggle(Site::kStandalone, IsShown::kShown);
@@ -136,13 +134,13 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration,
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration,
                        WindowControlsOverlayNotEnabledWithoutWCOManifest) {
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
+  helper_.InstallMenuOption(Site::kStandalone);
   helper_.CheckWindowCreated();
   helper_.CheckWindowControlsOverlay(Site::kStandalone, IsOn::kOff);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, ToggleWindowControlsOverlay) {
-  helper_.CreateShortcut(Site::kWco, WindowOptions::kWindowed);
+  helper_.InstallMenuOption(Site::kWco);
   helper_.CheckWindowCreated();
   helper_.CheckWindowControlsOverlayToggle(Site::kWco, IsShown::kShown);
   helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOff);
@@ -153,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, ToggleWindowControlsOverlay) {
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration,
                        WindowControlsOverlayStatePreservesBetweenLaunches) {
-  helper_.CreateShortcut(Site::kWco, WindowOptions::kWindowed);
+  helper_.InstallMenuOption(Site::kWco);
   helper_.CheckWindowCreated();
   helper_.CheckWindowControlsOverlayToggle(Site::kWco, IsShown::kShown);
   helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOff);
@@ -173,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, SwitchIncognitoProfile) {
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration,
                        AppsWithoutServiceWorkerCanBeInstalledViaMenu) {
-  helper_.InstallMenuOption(InstallableSite::kNoServiceWorker);
+  helper_.InstallMenuOption(Site::kNoServiceWorker);
   helper_.CheckWindowCreated();
   helper_.CheckAppInListWindowed(Site::kNoServiceWorker);
   helper_.CheckAppNavigationIsStartUrl();
@@ -182,12 +180,12 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration,
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckAppInListIconCorrect) {
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
+  helper_.InstallMenuOption(Site::kStandalone);
   helper_.CheckAppInListIconCorrect(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckAppInListIconCorrectFails) {
-  helper_.InstallMenuOption(InstallableSite::kStandalone);  // green icon
+  helper_.InstallMenuOption(Site::kStandalone);  // green icon
   EXPECT_NONFATAL_FAILURE(helper_.CheckAppInListIconCorrect(Site::kMinimalUi),
                           "expected_color");  // black icon
 }
@@ -200,12 +198,12 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration,
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckAppNavigation) {
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
+  helper_.InstallMenuOption(Site::kStandalone);
   helper_.CheckAppNavigation(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckAppNavigationFails) {
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
+  helper_.InstallMenuOption(Site::kStandalone);
   EXPECT_NONFATAL_FAILURE(helper_.CheckAppNavigation(Site::kStandaloneNestedB),
                           "webapps_integration/standalone/basic.html");
 }
@@ -216,20 +214,26 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, RicherInstallModal) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckBrowserNavigation) {
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kBrowser);
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.SetOpenInTabFromAppSettings(Site::kStandalone);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
   helper_.CheckBrowserNavigation(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckBrowserNavigationFails) {
-#if !BUILDFLAG(IS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(features::kShortcutsNotApps)) {
-    GTEST_SKIP()
-        << "Explicit skip to prevent EXPECT_NONFATAL_FAILURE to be triggered";
-  }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-  helper_.CreateShortcut(Site::kStandaloneNestedA, WindowOptions::kBrowser);
+  helper_.InstallMenuOption(Site::kStandaloneNestedA);
+  helper_.SetOpenInTabFromAppSettings(Site::kStandaloneNestedA);
+  helper_.LaunchFromChromeApps(Site::kStandaloneNestedA);
   EXPECT_NONFATAL_FAILURE(helper_.CheckBrowserNavigation(Site::kStandalone),
                           "webapps_integration/standalone/foo/basic.html");
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, AppLaunchedInTab) {
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.SetOpenInTabFromAppSettings(Site::kStandalone);
+  helper_.CheckAppInListTabbed(Site::kStandalone);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.CheckAppLoadedInTab(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckSubAppInstallation) {
@@ -247,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckSubAppInstallation) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, NewAppTab) {
-  helper_.CreateShortcut(Site::kTabbed, WindowOptions::kWindowed);
+  helper_.InstallMenuOption(Site::kTabbed);
   helper_.CheckAppNavigation(Site::kTabbed);
   helper_.NewAppTab(Site::kTabbed);
   helper_.CheckAppTabCreated();
@@ -255,19 +259,19 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, NewAppTab) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckSiteHandlesFile) {
-  helper_.InstallMenuOption(InstallableSite::kFileHandler);
+  helper_.InstallMenuOption(Site::kFileHandler);
   helper_.CheckSiteHandlesFile(Site::kFileHandler, FileExtension::kFoo);
   helper_.CheckSiteHandlesFile(Site::kFileHandler, FileExtension::kBar);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckSiteNotHandlesFile) {
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
+  helper_.InstallMenuOption(Site::kStandalone);
   helper_.CheckSiteNotHandlesFile(Site::kStandalone, FileExtension::kFoo);
   helper_.CheckSiteNotHandlesFile(Site::kStandalone, FileExtension::kBar);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, DisableEnableFileHandling) {
-  helper_.InstallMenuOption(InstallableSite::kMinimalUi);
+  helper_.InstallMenuOption(Site::kMinimalUi);
   helper_.CheckSiteHandlesFile(Site::kMinimalUi, FileExtension::kFoo);
   helper_.CheckSiteHandlesFile(Site::kMinimalUi, FileExtension::kBar);
 
@@ -282,150 +286,6 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, DisableEnableFileHandling) {
 
 // Generated tests:
 
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29NotPromotableBrowser_11NotPromotable_7NotPromotable_37NotPromotable_17_19) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kNotPromotable, WindowOptions::kBrowser);
-  helper_.CheckAppInListTabbed(Site::kNotPromotable);
-  helper_.CheckPlatformShortcutAndIcon(Site::kNotPromotable);
-  helper_.NavigateBrowser(Site::kNotPromotable);
-  helper_.CheckInstallIconNotShown();
-  helper_.CheckLaunchIconNotShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29NotPromotableBrowser_11NotPromotable_7NotPromotable_10NotPromotable_15Standalone) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kNotPromotable, WindowOptions::kBrowser);
-  helper_.CheckAppInListTabbed(Site::kNotPromotable);
-  helper_.CheckPlatformShortcutAndIcon(Site::kNotPromotable);
-  helper_.UninstallFromList(Site::kNotPromotable);
-  helper_.CheckAppNotInList(Site::kStandalone);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29NotPromotableWindowed_12NotPromotable_7NotPromotable_37NotPromotable_17_20) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kNotPromotable, WindowOptions::kWindowed);
-  helper_.CheckAppInListWindowed(Site::kNotPromotable);
-  helper_.CheckPlatformShortcutAndIcon(Site::kNotPromotable);
-  helper_.NavigateBrowser(Site::kNotPromotable);
-  helper_.CheckInstallIconNotShown();
-  helper_.CheckLaunchIconShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29NotPromotableWindowed_12NotPromotable_7NotPromotable_69NotPromotable_24) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kNotPromotable, WindowOptions::kWindowed);
-  helper_.CheckAppInListWindowed(Site::kNotPromotable);
-  helper_.CheckPlatformShortcutAndIcon(Site::kNotPromotable);
-  helper_.LaunchFromMenuOption(Site::kNotPromotable);
-  helper_.CheckWindowCreated();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29NotPromotableWindowed_12NotPromotable_7NotPromotable_35NotPromotable_24) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kNotPromotable, WindowOptions::kWindowed);
-  helper_.CheckAppInListWindowed(Site::kNotPromotable);
-  helper_.CheckPlatformShortcutAndIcon(Site::kNotPromotable);
-  helper_.LaunchFromLaunchIcon(Site::kNotPromotable);
-  helper_.CheckWindowCreated();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29NotPromotableWindowed_12NotPromotable_7NotPromotable_34NotPromotable_24) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kNotPromotable, WindowOptions::kWindowed);
-  helper_.CheckAppInListWindowed(Site::kNotPromotable);
-  helper_.CheckPlatformShortcutAndIcon(Site::kNotPromotable);
-  helper_.LaunchFromChromeApps(Site::kNotPromotable);
-  helper_.CheckWindowCreated();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29NotPromotableWindowed_12NotPromotable_7NotPromotable_10NotPromotable_15Standalone) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kNotPromotable, WindowOptions::kWindowed);
-  helper_.CheckAppInListWindowed(Site::kNotPromotable);
-  helper_.CheckPlatformShortcutAndIcon(Site::kNotPromotable);
-  helper_.UninstallFromList(Site::kNotPromotable);
-  helper_.CheckAppNotInList(Site::kStandalone);
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppIntegration,
-                       WAI_29MinimalUiWindowed_37MinimalUi_20) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kMinimalUi, WindowOptions::kWindowed);
-  helper_.NavigateBrowser(Site::kMinimalUi);
-  helper_.CheckLaunchIconShown();
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppIntegration,
-                       WAI_29MinimalUiWindowed_69MinimalUi_25) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kMinimalUi, WindowOptions::kWindowed);
-  helper_.LaunchFromMenuOption(Site::kMinimalUi);
-  helper_.CheckWindowDisplayMinimal();
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppIntegration,
-                       WAI_29MinimalUiWindowed_35MinimalUi_25) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kMinimalUi, WindowOptions::kWindowed);
-  helper_.LaunchFromLaunchIcon(Site::kMinimalUi);
-  helper_.CheckWindowDisplayMinimal();
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppIntegration,
-                       WAI_29MinimalUiWindowed_34MinimalUi_25) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kMinimalUi, WindowOptions::kWindowed);
-  helper_.LaunchFromChromeApps(Site::kMinimalUi);
-  helper_.CheckWindowDisplayMinimal();
-}
-
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, WAI_31MinimalUi_37MinimalUi_20) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
@@ -436,88 +296,6 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, WAI_31MinimalUi_37MinimalUi_20) {
   helper_.CheckLaunchIconShown();
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppIntegration, WAI_31MinimalUi_69MinimalUi_25) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kMinimalUi);
-  helper_.LaunchFromMenuOption(Site::kMinimalUi);
-  helper_.CheckWindowDisplayMinimal();
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppIntegration, WAI_31MinimalUi_35MinimalUi_25) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kMinimalUi);
-  helper_.LaunchFromLaunchIcon(Site::kMinimalUi);
-  helper_.CheckWindowDisplayMinimal();
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppIntegration, WAI_31MinimalUi_34MinimalUi_25) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kMinimalUi);
-  helper_.LaunchFromChromeApps(Site::kMinimalUi);
-  helper_.CheckWindowDisplayMinimal();
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppIntegration, WAI_47MinimalUi_37MinimalUi_20) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kMinimalUi);
-  helper_.NavigateBrowser(Site::kMinimalUi);
-  helper_.CheckLaunchIconShown();
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppIntegration, WAI_47MinimalUi_69MinimalUi_25) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kMinimalUi);
-  helper_.LaunchFromMenuOption(Site::kMinimalUi);
-  helper_.CheckWindowDisplayMinimal();
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppIntegration, WAI_47MinimalUi_35MinimalUi_25) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kMinimalUi);
-  helper_.LaunchFromLaunchIcon(Site::kMinimalUi);
-  helper_.CheckWindowDisplayMinimal();
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppIntegration, WAI_47MinimalUi_34MinimalUi_25) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kMinimalUi);
-  helper_.LaunchFromChromeApps(Site::kMinimalUi);
-  helper_.CheckWindowDisplayMinimal();
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppIntegration,
-                       WAI_29StandaloneNestedAWindowed_37NotInstalled_18_19) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandaloneNestedA, WindowOptions::kWindowed);
-  helper_.NavigateBrowser(Site::kNotInstalled);
-  helper_.CheckInstallIconShown();
-  helper_.CheckLaunchIconNotShown();
-}
-
 IN_PROC_BROWSER_TEST_F(WebAppIntegration,
                        WAI_31StandaloneNestedA_37NotInstalled_18_19) {
   // Test contents are generated by script. Please do not modify!
@@ -525,18 +303,6 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration,
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
   helper_.InstallOmniboxIcon(InstallableSite::kStandaloneNestedA);
-  helper_.NavigateBrowser(Site::kNotInstalled);
-  helper_.CheckInstallIconShown();
-  helper_.CheckLaunchIconNotShown();
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppIntegration,
-                       WAI_47StandaloneNestedA_37NotInstalled_18_19) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandaloneNestedA);
   helper_.NavigateBrowser(Site::kNotInstalled);
   helper_.CheckInstallIconShown();
   helper_.CheckLaunchIconNotShown();
@@ -577,231 +343,6 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, WAI_38_17) {
   // Sheriffs: Disabling this test is supported.
   helper_.NavigateNotfoundUrl();
   helper_.CheckInstallIconNotShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneNestedAWindowed_8StandaloneNestedAStandalone_117StandaloneNestedA_69StandaloneNestedA_39StandaloneNestedAStandaloneNestedB_21) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandaloneNestedA, WindowOptions::kWindowed);
-  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
-  helper_.AwaitManifestUpdate(Site::kStandaloneNestedA);
-  helper_.LaunchFromMenuOption(Site::kStandaloneNestedA);
-  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
-  helper_.CheckNoToolbar();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneNestedAWindowed_8StandaloneNestedAStandalone_117StandaloneNestedA_35StandaloneNestedA_39StandaloneNestedAStandaloneNestedB_21) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandaloneNestedA, WindowOptions::kWindowed);
-  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
-  helper_.AwaitManifestUpdate(Site::kStandaloneNestedA);
-  helper_.LaunchFromLaunchIcon(Site::kStandaloneNestedA);
-  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
-  helper_.CheckNoToolbar();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneNestedAWindowed_8StandaloneNestedAStandalone_117StandaloneNestedA_34StandaloneNestedA_39StandaloneNestedAStandaloneNestedB_21) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandaloneNestedA, WindowOptions::kWindowed);
-  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
-  helper_.AwaitManifestUpdate(Site::kStandaloneNestedA);
-  helper_.LaunchFromChromeApps(Site::kStandaloneNestedA);
-  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
-  helper_.CheckNoToolbar();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneNestedAWindowed_8StandaloneNestedAStandalone_117StandaloneNestedA_37StandaloneNestedB_17_20) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandaloneNestedA, WindowOptions::kWindowed);
-  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
-  helper_.AwaitManifestUpdate(Site::kStandaloneNestedA);
-  helper_.NavigateBrowser(Site::kStandaloneNestedB);
-  helper_.CheckInstallIconNotShown();
-  helper_.CheckLaunchIconShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneNestedAWindowed_8StandaloneNestedAStandalone_117StandaloneNestedA_37StandaloneNestedA_17_20) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandaloneNestedA, WindowOptions::kWindowed);
-  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
-  helper_.AwaitManifestUpdate(Site::kStandaloneNestedA);
-  helper_.NavigateBrowser(Site::kStandaloneNestedA);
-  helper_.CheckInstallIconNotShown();
-  helper_.CheckLaunchIconShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31StandaloneNestedA_8StandaloneNestedAStandalone_117StandaloneNestedA_69StandaloneNestedA_39StandaloneNestedAStandaloneNestedB_21) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kStandaloneNestedA);
-  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
-  helper_.AwaitManifestUpdate(Site::kStandaloneNestedA);
-  helper_.LaunchFromMenuOption(Site::kStandaloneNestedA);
-  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
-  helper_.CheckNoToolbar();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31StandaloneNestedA_8StandaloneNestedAStandalone_117StandaloneNestedA_35StandaloneNestedA_39StandaloneNestedAStandaloneNestedB_21) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kStandaloneNestedA);
-  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
-  helper_.AwaitManifestUpdate(Site::kStandaloneNestedA);
-  helper_.LaunchFromLaunchIcon(Site::kStandaloneNestedA);
-  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
-  helper_.CheckNoToolbar();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31StandaloneNestedA_8StandaloneNestedAStandalone_117StandaloneNestedA_34StandaloneNestedA_39StandaloneNestedAStandaloneNestedB_21) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kStandaloneNestedA);
-  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
-  helper_.AwaitManifestUpdate(Site::kStandaloneNestedA);
-  helper_.LaunchFromChromeApps(Site::kStandaloneNestedA);
-  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
-  helper_.CheckNoToolbar();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31StandaloneNestedA_8StandaloneNestedAStandalone_117StandaloneNestedA_37StandaloneNestedB_17_20) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kStandaloneNestedA);
-  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
-  helper_.AwaitManifestUpdate(Site::kStandaloneNestedA);
-  helper_.NavigateBrowser(Site::kStandaloneNestedB);
-  helper_.CheckInstallIconNotShown();
-  helper_.CheckLaunchIconShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31StandaloneNestedA_8StandaloneNestedAStandalone_117StandaloneNestedA_37StandaloneNestedA_17_20) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kStandaloneNestedA);
-  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
-  helper_.AwaitManifestUpdate(Site::kStandaloneNestedA);
-  helper_.NavigateBrowser(Site::kStandaloneNestedA);
-  helper_.CheckInstallIconNotShown();
-  helper_.CheckLaunchIconShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47StandaloneNestedA_8StandaloneNestedAStandalone_117StandaloneNestedA_69StandaloneNestedA_39StandaloneNestedAStandaloneNestedB_21) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandaloneNestedA);
-  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
-  helper_.AwaitManifestUpdate(Site::kStandaloneNestedA);
-  helper_.LaunchFromMenuOption(Site::kStandaloneNestedA);
-  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
-  helper_.CheckNoToolbar();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47StandaloneNestedA_8StandaloneNestedAStandalone_117StandaloneNestedA_35StandaloneNestedA_39StandaloneNestedAStandaloneNestedB_21) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandaloneNestedA);
-  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
-  helper_.AwaitManifestUpdate(Site::kStandaloneNestedA);
-  helper_.LaunchFromLaunchIcon(Site::kStandaloneNestedA);
-  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
-  helper_.CheckNoToolbar();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47StandaloneNestedA_8StandaloneNestedAStandalone_117StandaloneNestedA_34StandaloneNestedA_39StandaloneNestedAStandaloneNestedB_21) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandaloneNestedA);
-  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
-  helper_.AwaitManifestUpdate(Site::kStandaloneNestedA);
-  helper_.LaunchFromChromeApps(Site::kStandaloneNestedA);
-  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
-  helper_.CheckNoToolbar();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47StandaloneNestedA_8StandaloneNestedAStandalone_117StandaloneNestedA_37StandaloneNestedB_17_20) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandaloneNestedA);
-  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
-  helper_.AwaitManifestUpdate(Site::kStandaloneNestedA);
-  helper_.NavigateBrowser(Site::kStandaloneNestedB);
-  helper_.CheckInstallIconNotShown();
-  helper_.CheckLaunchIconShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47StandaloneNestedA_8StandaloneNestedAStandalone_117StandaloneNestedA_37StandaloneNestedA_17_20) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandaloneNestedA);
-  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
-  helper_.AwaitManifestUpdate(Site::kStandaloneNestedA);
-  helper_.NavigateBrowser(Site::kStandaloneNestedA);
-  helper_.CheckInstallIconNotShown();
-  helper_.CheckLaunchIconShown();
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -905,45 +446,6 @@ IN_PROC_BROWSER_TEST_F(
   helper_.CheckLaunchIconShown();
 }
 
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_32MinimalUiWithShortcutWindowedWebApp_69MinimalUi_25) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyApp(Site::kMinimalUi, ShortcutOptions::kWithShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.LaunchFromMenuOption(Site::kMinimalUi);
-  helper_.CheckWindowDisplayMinimal();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_32MinimalUiWithShortcutWindowedWebApp_35MinimalUi_25) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyApp(Site::kMinimalUi, ShortcutOptions::kWithShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.LaunchFromLaunchIcon(Site::kMinimalUi);
-  helper_.CheckWindowDisplayMinimal();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_32MinimalUiWithShortcutWindowedWebApp_34MinimalUi_25) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyApp(Site::kMinimalUi, ShortcutOptions::kWithShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.LaunchFromChromeApps(Site::kMinimalUi);
-  helper_.CheckWindowDisplayMinimal();
-}
-
 IN_PROC_BROWSER_TEST_F(WebAppIntegration,
                        WAI_32MinimalUiNoShortcutWindowedWebApp_37MinimalUi_20) {
   // Test contents are generated by script. Please do not modify!
@@ -954,42 +456,6 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration,
                            WindowOptions::kWindowed, InstallMode::kWebApp);
   helper_.NavigateBrowser(Site::kMinimalUi);
   helper_.CheckLaunchIconShown();
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppIntegration,
-                       WAI_32MinimalUiNoShortcutWindowedWebApp_69MinimalUi_25) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyApp(Site::kMinimalUi, ShortcutOptions::kNoShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.LaunchFromMenuOption(Site::kMinimalUi);
-  helper_.CheckWindowDisplayMinimal();
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppIntegration,
-                       WAI_32MinimalUiNoShortcutWindowedWebApp_35MinimalUi_25) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyApp(Site::kMinimalUi, ShortcutOptions::kNoShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.LaunchFromLaunchIcon(Site::kMinimalUi);
-  helper_.CheckWindowDisplayMinimal();
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppIntegration,
-                       WAI_32MinimalUiNoShortcutWindowedWebApp_34MinimalUi_25) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyApp(Site::kMinimalUi, ShortcutOptions::kNoShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.LaunchFromChromeApps(Site::kMinimalUi);
-  helper_.CheckWindowDisplayMinimal();
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1221,429 +687,6 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     WebAppIntegration,
-    WAI_29MinimalUiWindowed_116MinimalUiWco_117MinimalUi_143_69MinimalUi_112MinimalUiShown_114MinimalUi_113MinimalUiOn_112MinimalUiShown) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kMinimalUi, WindowOptions::kWindowed);
-  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
-  helper_.AwaitManifestUpdate(Site::kMinimalUi);
-  helper_.MaybeClosePwa();
-  helper_.LaunchFromMenuOption(Site::kMinimalUi);
-  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
-  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
-  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
-  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29MinimalUiWindowed_116MinimalUiWco_117MinimalUi_143_35MinimalUi_112MinimalUiShown_114MinimalUi_113MinimalUiOn_112MinimalUiShown) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kMinimalUi, WindowOptions::kWindowed);
-  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
-  helper_.AwaitManifestUpdate(Site::kMinimalUi);
-  helper_.MaybeClosePwa();
-  helper_.LaunchFromLaunchIcon(Site::kMinimalUi);
-  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
-  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
-  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
-  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29MinimalUiWindowed_116MinimalUiWco_117MinimalUi_143_34MinimalUi_112MinimalUiShown_114MinimalUi_113MinimalUiOn_112MinimalUiShown) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kMinimalUi, WindowOptions::kWindowed);
-  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
-  helper_.AwaitManifestUpdate(Site::kMinimalUi);
-  helper_.MaybeClosePwa();
-  helper_.LaunchFromChromeApps(Site::kMinimalUi);
-  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
-  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
-  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
-  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31MinimalUi_116MinimalUiWco_117MinimalUi_143_69MinimalUi_112MinimalUiShown_114MinimalUi_113MinimalUiOn_112MinimalUiShown) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kMinimalUi);
-  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
-  helper_.AwaitManifestUpdate(Site::kMinimalUi);
-  helper_.MaybeClosePwa();
-  helper_.LaunchFromMenuOption(Site::kMinimalUi);
-  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
-  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
-  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
-  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31MinimalUi_116MinimalUiWco_117MinimalUi_143_35MinimalUi_112MinimalUiShown_114MinimalUi_113MinimalUiOn_112MinimalUiShown) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kMinimalUi);
-  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
-  helper_.AwaitManifestUpdate(Site::kMinimalUi);
-  helper_.MaybeClosePwa();
-  helper_.LaunchFromLaunchIcon(Site::kMinimalUi);
-  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
-  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
-  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
-  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31MinimalUi_116MinimalUiWco_117MinimalUi_143_34MinimalUi_112MinimalUiShown_114MinimalUi_113MinimalUiOn_112MinimalUiShown) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kMinimalUi);
-  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
-  helper_.AwaitManifestUpdate(Site::kMinimalUi);
-  helper_.MaybeClosePwa();
-  helper_.LaunchFromChromeApps(Site::kMinimalUi);
-  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
-  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
-  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
-  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_32MinimalUiWithShortcutWindowedWebApp_116MinimalUiWco_117MinimalUi_143_69MinimalUi_112MinimalUiShown_114MinimalUi_113MinimalUiOn_112MinimalUiShown) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyApp(Site::kMinimalUi, ShortcutOptions::kWithShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
-  helper_.AwaitManifestUpdate(Site::kMinimalUi);
-  helper_.MaybeClosePwa();
-  helper_.LaunchFromMenuOption(Site::kMinimalUi);
-  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
-  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
-  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
-  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_32MinimalUiWithShortcutWindowedWebApp_116MinimalUiWco_117MinimalUi_143_35MinimalUi_112MinimalUiShown_114MinimalUi_113MinimalUiOn_112MinimalUiShown) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyApp(Site::kMinimalUi, ShortcutOptions::kWithShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
-  helper_.AwaitManifestUpdate(Site::kMinimalUi);
-  helper_.MaybeClosePwa();
-  helper_.LaunchFromLaunchIcon(Site::kMinimalUi);
-  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
-  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
-  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
-  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_32MinimalUiWithShortcutWindowedWebApp_116MinimalUiWco_117MinimalUi_143_34MinimalUi_112MinimalUiShown_114MinimalUi_113MinimalUiOn_112MinimalUiShown) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyApp(Site::kMinimalUi, ShortcutOptions::kWithShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
-  helper_.AwaitManifestUpdate(Site::kMinimalUi);
-  helper_.MaybeClosePwa();
-  helper_.LaunchFromChromeApps(Site::kMinimalUi);
-  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
-  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
-  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
-  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_32MinimalUiNoShortcutWindowedWebApp_116MinimalUiWco_117MinimalUi_143_69MinimalUi_112MinimalUiShown_114MinimalUi_113MinimalUiOn_112MinimalUiShown) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyApp(Site::kMinimalUi, ShortcutOptions::kNoShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
-  helper_.AwaitManifestUpdate(Site::kMinimalUi);
-  helper_.MaybeClosePwa();
-  helper_.LaunchFromMenuOption(Site::kMinimalUi);
-  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
-  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
-  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
-  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_32MinimalUiNoShortcutWindowedWebApp_116MinimalUiWco_117MinimalUi_143_35MinimalUi_112MinimalUiShown_114MinimalUi_113MinimalUiOn_112MinimalUiShown) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyApp(Site::kMinimalUi, ShortcutOptions::kNoShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
-  helper_.AwaitManifestUpdate(Site::kMinimalUi);
-  helper_.MaybeClosePwa();
-  helper_.LaunchFromLaunchIcon(Site::kMinimalUi);
-  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
-  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
-  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
-  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_32MinimalUiNoShortcutWindowedWebApp_116MinimalUiWco_117MinimalUi_143_34MinimalUi_112MinimalUiShown_114MinimalUi_113MinimalUiOn_112MinimalUiShown) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyApp(Site::kMinimalUi, ShortcutOptions::kNoShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
-  helper_.AwaitManifestUpdate(Site::kMinimalUi);
-  helper_.MaybeClosePwa();
-  helper_.LaunchFromChromeApps(Site::kMinimalUi);
-  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
-  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
-  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
-  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47MinimalUi_116MinimalUiWco_117MinimalUi_143_69MinimalUi_112MinimalUiShown_114MinimalUi_113MinimalUiOn_112MinimalUiShown) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kMinimalUi);
-  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
-  helper_.AwaitManifestUpdate(Site::kMinimalUi);
-  helper_.MaybeClosePwa();
-  helper_.LaunchFromMenuOption(Site::kMinimalUi);
-  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
-  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
-  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
-  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47MinimalUi_116MinimalUiWco_117MinimalUi_143_35MinimalUi_112MinimalUiShown_114MinimalUi_113MinimalUiOn_112MinimalUiShown) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kMinimalUi);
-  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
-  helper_.AwaitManifestUpdate(Site::kMinimalUi);
-  helper_.MaybeClosePwa();
-  helper_.LaunchFromLaunchIcon(Site::kMinimalUi);
-  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
-  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
-  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
-  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47MinimalUi_116MinimalUiWco_117MinimalUi_143_34MinimalUi_112MinimalUiShown_114MinimalUi_113MinimalUiOn_112MinimalUiShown) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kMinimalUi);
-  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
-  helper_.AwaitManifestUpdate(Site::kMinimalUi);
-  helper_.MaybeClosePwa();
-  helper_.LaunchFromChromeApps(Site::kMinimalUi);
-  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
-  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
-  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
-  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneNestedAWindowed_8StandaloneNestedAStandalone_117StandaloneNestedA_37Standalone_17_20) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandaloneNestedA, WindowOptions::kWindowed);
-  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
-  helper_.AwaitManifestUpdate(Site::kStandaloneNestedA);
-  helper_.NavigateBrowser(Site::kStandalone);
-  helper_.CheckInstallIconNotShown();
-  helper_.CheckLaunchIconShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31StandaloneNestedA_8StandaloneNestedAStandalone_117StandaloneNestedA_37Standalone_17_20) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kStandaloneNestedA);
-  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
-  helper_.AwaitManifestUpdate(Site::kStandaloneNestedA);
-  helper_.NavigateBrowser(Site::kStandalone);
-  helper_.CheckInstallIconNotShown();
-  helper_.CheckLaunchIconShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_32StandaloneNestedAWithShortcutWindowedWebApp_8StandaloneNestedAStandalone_117StandaloneNestedA_37Standalone_17_20) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyApp(Site::kStandaloneNestedA,
-                           ShortcutOptions::kWithShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
-  helper_.AwaitManifestUpdate(Site::kStandaloneNestedA);
-  helper_.NavigateBrowser(Site::kStandalone);
-  helper_.CheckInstallIconNotShown();
-  helper_.CheckLaunchIconShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_32StandaloneNestedAWithShortcutWindowedWebApp_8StandaloneNestedAStandalone_117StandaloneNestedA_69StandaloneNestedA_39StandaloneNestedAStandaloneNestedB_21) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyApp(Site::kStandaloneNestedA,
-                           ShortcutOptions::kWithShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
-  helper_.AwaitManifestUpdate(Site::kStandaloneNestedA);
-  helper_.LaunchFromMenuOption(Site::kStandaloneNestedA);
-  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
-  helper_.CheckNoToolbar();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_32StandaloneNestedAWithShortcutWindowedWebApp_8StandaloneNestedAStandalone_117StandaloneNestedA_35StandaloneNestedA_39StandaloneNestedAStandaloneNestedB_21) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyApp(Site::kStandaloneNestedA,
-                           ShortcutOptions::kWithShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
-  helper_.AwaitManifestUpdate(Site::kStandaloneNestedA);
-  helper_.LaunchFromLaunchIcon(Site::kStandaloneNestedA);
-  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
-  helper_.CheckNoToolbar();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_32StandaloneNestedAWithShortcutWindowedWebApp_8StandaloneNestedAStandalone_117StandaloneNestedA_34StandaloneNestedA_39StandaloneNestedAStandaloneNestedB_21) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyApp(Site::kStandaloneNestedA,
-                           ShortcutOptions::kWithShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
-  helper_.AwaitManifestUpdate(Site::kStandaloneNestedA);
-  helper_.LaunchFromChromeApps(Site::kStandaloneNestedA);
-  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
-  helper_.CheckNoToolbar();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_32StandaloneNestedAWithShortcutWindowedWebApp_8StandaloneNestedAStandalone_117StandaloneNestedA_37StandaloneNestedB_17_20) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyApp(Site::kStandaloneNestedA,
-                           ShortcutOptions::kWithShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
-  helper_.AwaitManifestUpdate(Site::kStandaloneNestedA);
-  helper_.NavigateBrowser(Site::kStandaloneNestedB);
-  helper_.CheckInstallIconNotShown();
-  helper_.CheckLaunchIconShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_32StandaloneNestedAWithShortcutWindowedWebApp_8StandaloneNestedAStandalone_117StandaloneNestedA_37StandaloneNestedA_17_20) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyApp(Site::kStandaloneNestedA,
-                           ShortcutOptions::kWithShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
-  helper_.AwaitManifestUpdate(Site::kStandaloneNestedA);
-  helper_.NavigateBrowser(Site::kStandaloneNestedA);
-  helper_.CheckInstallIconNotShown();
-  helper_.CheckLaunchIconShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47StandaloneNestedA_8StandaloneNestedAStandalone_117StandaloneNestedA_37Standalone_17_20) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandaloneNestedA);
-  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
-  helper_.AwaitManifestUpdate(Site::kStandaloneNestedA);
-  helper_.NavigateBrowser(Site::kStandalone);
-  helper_.CheckInstallIconNotShown();
-  helper_.CheckLaunchIconShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
     WAI_32TabbedWithShortcutWindowedWebApp_12Tabbed_37Tabbed_20_17) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
@@ -1778,58 +821,6 @@ IN_PROC_BROWSER_TEST_F(
   helper_.CheckWindowDisplayTabbed();
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppIntegration,
-                       WAI_47Tabbed_12Tabbed_37Tabbed_20_17) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kTabbed);
-  helper_.CheckAppInListWindowed(Site::kTabbed);
-  helper_.NavigateBrowser(Site::kTabbed);
-  helper_.CheckLaunchIconShown();
-  helper_.CheckInstallIconNotShown();
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppIntegration,
-                       WAI_47Tabbed_12Tabbed_143_69Tabbed_144) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kTabbed);
-  helper_.CheckAppInListWindowed(Site::kTabbed);
-  helper_.MaybeClosePwa();
-  helper_.LaunchFromMenuOption(Site::kTabbed);
-  helper_.CheckWindowDisplayTabbed();
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppIntegration,
-                       WAI_47Tabbed_12Tabbed_143_35Tabbed_144) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kTabbed);
-  helper_.CheckAppInListWindowed(Site::kTabbed);
-  helper_.MaybeClosePwa();
-  helper_.LaunchFromLaunchIcon(Site::kTabbed);
-  helper_.CheckWindowDisplayTabbed();
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppIntegration,
-                       WAI_47Tabbed_12Tabbed_143_34Tabbed_144) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kTabbed);
-  helper_.CheckAppInListWindowed(Site::kTabbed);
-  helper_.MaybeClosePwa();
-  helper_.LaunchFromChromeApps(Site::kTabbed);
-  helper_.CheckWindowDisplayTabbed();
-}
-
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, WAI_73_166_167) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
@@ -1858,1346 +849,6 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, WAI_73_37NotPromotable_17) {
   helper_.SwitchIncognitoProfile();
   helper_.NavigateBrowser(Site::kNotPromotable);
   helper_.CheckInstallIconNotShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_69Standalone_79StandaloneStandaloneOriginal_24_26) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.LaunchFromMenuOption(Site::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckWindowDisplayStandalone();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_35Standalone_79StandaloneStandaloneOriginal_24_26) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.LaunchFromLaunchIcon(Site::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckWindowDisplayStandalone();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_34Standalone_79StandaloneStandaloneOriginal_24_26) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.LaunchFromChromeApps(Site::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckWindowDisplayStandalone();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_88StandaloneStandaloneUpdatedAcceptUpdate_117Standalone_69Standalone_79StandaloneStandaloneUpdated) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated,
-                              UpdateDialogResponse::kAcceptUpdate);
-  helper_.AwaitManifestUpdate(Site::kStandalone);
-  helper_.LaunchFromMenuOption(Site::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_88StandaloneStandaloneUpdatedAcceptUpdate_117Standalone_35Standalone_79StandaloneStandaloneUpdated) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated,
-                              UpdateDialogResponse::kAcceptUpdate);
-  helper_.AwaitManifestUpdate(Site::kStandalone);
-  helper_.LaunchFromLaunchIcon(Site::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_88StandaloneStandaloneUpdatedAcceptUpdate_117Standalone_34Standalone_79StandaloneStandaloneUpdated) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated,
-                              UpdateDialogResponse::kAcceptUpdate);
-  helper_.AwaitManifestUpdate(Site::kStandalone);
-  helper_.LaunchFromChromeApps(Site::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_88StandaloneStandaloneUpdatedCancelDialogAndUninstall_117Standalone_15Standalone) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated,
-                              UpdateDialogResponse::kCancelDialogAndUninstall);
-  helper_.AwaitManifestUpdate(Site::kStandalone);
-  helper_.CheckAppNotInList(Site::kStandalone);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_68StandaloneAcceptUpdate_117Standalone_110StandaloneRed) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.ManifestUpdateIcon(Site::kStandalone,
-                             UpdateDialogResponse::kAcceptUpdate);
-  helper_.AwaitManifestUpdate(Site::kStandalone);
-  helper_.CheckAppIcon(Site::kStandalone, Color::kRed);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_39StandaloneMinimalUi_16_79StandaloneStandaloneOriginal_27_14) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.NavigatePwa(Site::kStandalone, Site::kMinimalUi);
-  helper_.CheckCustomToolbar();
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CloseCustomToolbar();
-  helper_.CheckAppNavigationIsStartUrl();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_39StandaloneMinimalUi_16_79StandaloneStandaloneOriginal_71_22One) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.NavigatePwa(Site::kStandalone, Site::kMinimalUi);
-  helper_.CheckCustomToolbar();
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.OpenInChrome();
-  helper_.CheckTabCreated(Number::kOne);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_37Standalone_17_20) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.NavigateBrowser(Site::kStandalone);
-  helper_.CheckInstallIconNotShown();
-  helper_.CheckLaunchIconShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_10Standalone_15Standalone_37Standalone_18_19) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.UninstallFromList(Site::kStandalone);
-  helper_.CheckAppNotInList(Site::kStandalone);
-  helper_.NavigateBrowser(Site::kStandalone);
-  helper_.CheckInstallIconShown();
-  helper_.CheckLaunchIconNotShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_149Standalone_11Standalone_37Standalone_18) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.SetOpenInTabFromAppSettings(Site::kStandalone);
-  helper_.CheckAppInListTabbed(Site::kStandalone);
-  helper_.NavigateBrowser(Site::kStandalone);
-  helper_.CheckInstallIconShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_71_22One_163Standalone) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.OpenInChrome();
-  helper_.CheckTabCreated(Number::kOne);
-  helper_.CheckAppLoadedInTab(Site::kStandalone);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneNoShortcutWindowedWebApp_7Standalone_44Standalone_12Standalone_7Standalone) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.UninstallPolicyApp(Site::kStandalone);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneNoShortcutBrowserWebApp_7Standalone_12Standalone_37Standalone_20) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
-                           WindowOptions::kBrowser, InstallMode::kWebApp);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.NavigateBrowser(Site::kStandalone);
-  helper_.CheckLaunchIconShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneNoShortcutBrowserWebApp_7Standalone_12Standalone_69Standalone_24) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
-                           WindowOptions::kBrowser, InstallMode::kWebApp);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.LaunchFromMenuOption(Site::kStandalone);
-  helper_.CheckWindowCreated();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneNoShortcutBrowserWebApp_7Standalone_12Standalone_35Standalone_24) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
-                           WindowOptions::kBrowser, InstallMode::kWebApp);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.LaunchFromLaunchIcon(Site::kStandalone);
-  helper_.CheckWindowCreated();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneNoShortcutBrowserWebApp_7Standalone_12Standalone_34Standalone_24) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
-                           WindowOptions::kBrowser, InstallMode::kWebApp);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.LaunchFromChromeApps(Site::kStandalone);
-  helper_.CheckWindowCreated();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneNoShortcutBrowserWebApp_7Standalone_12Standalone_44Standalone_12Standalone_7Standalone) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
-                           WindowOptions::kBrowser, InstallMode::kWebApp);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.UninstallPolicyApp(Site::kStandalone);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneWithShortcutBrowserWebApp_12Standalone_37Standalone_20) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
-                           WindowOptions::kBrowser, InstallMode::kWebApp);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.NavigateBrowser(Site::kStandalone);
-  helper_.CheckLaunchIconShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneWithShortcutBrowserWebApp_12Standalone_69Standalone_24) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
-                           WindowOptions::kBrowser, InstallMode::kWebApp);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.LaunchFromMenuOption(Site::kStandalone);
-  helper_.CheckWindowCreated();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneWithShortcutBrowserWebApp_12Standalone_35Standalone_24) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
-                           WindowOptions::kBrowser, InstallMode::kWebApp);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.LaunchFromLaunchIcon(Site::kStandalone);
-  helper_.CheckWindowCreated();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneWithShortcutBrowserWebApp_12Standalone_34Standalone_24) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
-                           WindowOptions::kBrowser, InstallMode::kWebApp);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.LaunchFromChromeApps(Site::kStandalone);
-  helper_.CheckWindowCreated();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneWithShortcutBrowserWebApp_12Standalone_44Standalone_12Standalone_7Standalone) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
-                           WindowOptions::kBrowser, InstallMode::kWebApp);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.UninstallPolicyApp(Site::kStandalone);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneWithShortcutWindowedWebApp_44Standalone_12Standalone_7Standalone) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.UninstallPolicyApp(Site::kStandalone);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_116StandaloneTabbed_143_117Standalone_69Standalone_24_94_144) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kTabbed);
-  helper_.MaybeClosePwa();
-  helper_.AwaitManifestUpdate(Site::kStandalone);
-  helper_.LaunchFromMenuOption(Site::kStandalone);
-  helper_.CheckWindowCreated();
-  helper_.CheckTabNotCreated();
-  helper_.CheckWindowDisplayTabbed();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_116StandaloneTabbed_143_117Standalone_35Standalone_24_94_144) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kTabbed);
-  helper_.MaybeClosePwa();
-  helper_.AwaitManifestUpdate(Site::kStandalone);
-  helper_.LaunchFromLaunchIcon(Site::kStandalone);
-  helper_.CheckWindowCreated();
-  helper_.CheckTabNotCreated();
-  helper_.CheckWindowDisplayTabbed();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_116StandaloneTabbed_143_117Standalone_34Standalone_24_94_144) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kTabbed);
-  helper_.MaybeClosePwa();
-  helper_.AwaitManifestUpdate(Site::kStandalone);
-  helper_.LaunchFromChromeApps(Site::kStandalone);
-  helper_.CheckWindowCreated();
-  helper_.CheckTabNotCreated();
-  helper_.CheckWindowDisplayTabbed();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_37StandaloneNestedA_17_20) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.NavigateBrowser(Site::kStandaloneNestedA);
-  helper_.CheckInstallIconNotShown();
-  helper_.CheckLaunchIconShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_37MinimalUi_18_19) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.NavigateBrowser(Site::kMinimalUi);
-  helper_.CheckInstallIconShown();
-  helper_.CheckLaunchIconNotShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_73_37Standalone_19) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.SwitchIncognitoProfile();
-  helper_.NavigateBrowser(Site::kStandalone);
-  helper_.CheckLaunchIconNotShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_69Standalone_79StandaloneStandaloneOriginal_24_26) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.LaunchFromMenuOption(Site::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckWindowDisplayStandalone();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_35Standalone_79StandaloneStandaloneOriginal_24_26) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.LaunchFromLaunchIcon(Site::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckWindowDisplayStandalone();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_34Standalone_79StandaloneStandaloneOriginal_24_26) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.LaunchFromChromeApps(Site::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckWindowDisplayStandalone();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_88StandaloneStandaloneUpdatedAcceptUpdate_117Standalone_69Standalone_79StandaloneStandaloneUpdated) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated,
-                              UpdateDialogResponse::kAcceptUpdate);
-  helper_.AwaitManifestUpdate(Site::kStandalone);
-  helper_.LaunchFromMenuOption(Site::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_88StandaloneStandaloneUpdatedAcceptUpdate_117Standalone_35Standalone_79StandaloneStandaloneUpdated) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated,
-                              UpdateDialogResponse::kAcceptUpdate);
-  helper_.AwaitManifestUpdate(Site::kStandalone);
-  helper_.LaunchFromLaunchIcon(Site::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_88StandaloneStandaloneUpdatedAcceptUpdate_117Standalone_34Standalone_79StandaloneStandaloneUpdated) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated,
-                              UpdateDialogResponse::kAcceptUpdate);
-  helper_.AwaitManifestUpdate(Site::kStandalone);
-  helper_.LaunchFromChromeApps(Site::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_88StandaloneStandaloneUpdatedCancelDialogAndUninstall_117Standalone_15Standalone) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated,
-                              UpdateDialogResponse::kCancelDialogAndUninstall);
-  helper_.AwaitManifestUpdate(Site::kStandalone);
-  helper_.CheckAppNotInList(Site::kStandalone);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_68StandaloneAcceptUpdate_117Standalone_110StandaloneRed) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.ManifestUpdateIcon(Site::kStandalone,
-                             UpdateDialogResponse::kAcceptUpdate);
-  helper_.AwaitManifestUpdate(Site::kStandalone);
-  helper_.CheckAppIcon(Site::kStandalone, Color::kRed);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_39StandaloneMinimalUi_16_79StandaloneStandaloneOriginal_27_14) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.NavigatePwa(Site::kStandalone, Site::kMinimalUi);
-  helper_.CheckCustomToolbar();
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CloseCustomToolbar();
-  helper_.CheckAppNavigationIsStartUrl();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_39StandaloneMinimalUi_16_79StandaloneStandaloneOriginal_71_22One) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.NavigatePwa(Site::kStandalone, Site::kMinimalUi);
-  helper_.CheckCustomToolbar();
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.OpenInChrome();
-  helper_.CheckTabCreated(Number::kOne);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_37Standalone_17_20) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.NavigateBrowser(Site::kStandalone);
-  helper_.CheckInstallIconNotShown();
-  helper_.CheckLaunchIconShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_10Standalone_15Standalone_37Standalone_18_19) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.UninstallFromList(Site::kStandalone);
-  helper_.CheckAppNotInList(Site::kStandalone);
-  helper_.NavigateBrowser(Site::kStandalone);
-  helper_.CheckInstallIconShown();
-  helper_.CheckLaunchIconNotShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_149Standalone_11Standalone_37Standalone_18) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.SetOpenInTabFromAppSettings(Site::kStandalone);
-  helper_.CheckAppInListTabbed(Site::kStandalone);
-  helper_.NavigateBrowser(Site::kStandalone);
-  helper_.CheckInstallIconShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_71_22One_163Standalone) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.OpenInChrome();
-  helper_.CheckTabCreated(Number::kOne);
-  helper_.CheckAppLoadedInTab(Site::kStandalone);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneNoShortcutWindowedWebApp_7Standalone_44Standalone_12Standalone_7Standalone) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.UninstallPolicyApp(Site::kStandalone);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneNoShortcutBrowserWebApp_7Standalone_12Standalone_37Standalone_20) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
-                           WindowOptions::kBrowser, InstallMode::kWebApp);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.NavigateBrowser(Site::kStandalone);
-  helper_.CheckLaunchIconShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneNoShortcutBrowserWebApp_7Standalone_12Standalone_69Standalone_24) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
-                           WindowOptions::kBrowser, InstallMode::kWebApp);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.LaunchFromMenuOption(Site::kStandalone);
-  helper_.CheckWindowCreated();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneNoShortcutBrowserWebApp_7Standalone_12Standalone_35Standalone_24) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
-                           WindowOptions::kBrowser, InstallMode::kWebApp);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.LaunchFromLaunchIcon(Site::kStandalone);
-  helper_.CheckWindowCreated();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneNoShortcutBrowserWebApp_7Standalone_12Standalone_34Standalone_24) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
-                           WindowOptions::kBrowser, InstallMode::kWebApp);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.LaunchFromChromeApps(Site::kStandalone);
-  helper_.CheckWindowCreated();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneNoShortcutBrowserWebApp_7Standalone_12Standalone_44Standalone_12Standalone_7Standalone) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
-                           WindowOptions::kBrowser, InstallMode::kWebApp);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.UninstallPolicyApp(Site::kStandalone);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneWithShortcutBrowserWebApp_12Standalone_37Standalone_20) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
-                           WindowOptions::kBrowser, InstallMode::kWebApp);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.NavigateBrowser(Site::kStandalone);
-  helper_.CheckLaunchIconShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneWithShortcutBrowserWebApp_12Standalone_69Standalone_24) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
-                           WindowOptions::kBrowser, InstallMode::kWebApp);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.LaunchFromMenuOption(Site::kStandalone);
-  helper_.CheckWindowCreated();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneWithShortcutBrowserWebApp_12Standalone_35Standalone_24) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
-                           WindowOptions::kBrowser, InstallMode::kWebApp);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.LaunchFromLaunchIcon(Site::kStandalone);
-  helper_.CheckWindowCreated();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneWithShortcutBrowserWebApp_12Standalone_34Standalone_24) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
-                           WindowOptions::kBrowser, InstallMode::kWebApp);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.LaunchFromChromeApps(Site::kStandalone);
-  helper_.CheckWindowCreated();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneWithShortcutBrowserWebApp_12Standalone_44Standalone_12Standalone_7Standalone) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
-                           WindowOptions::kBrowser, InstallMode::kWebApp);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.UninstallPolicyApp(Site::kStandalone);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneWithShortcutWindowedWebApp_44Standalone_12Standalone_7Standalone) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.UninstallPolicyApp(Site::kStandalone);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_116StandaloneTabbed_143_117Standalone_69Standalone_24_94_144) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kTabbed);
-  helper_.MaybeClosePwa();
-  helper_.AwaitManifestUpdate(Site::kStandalone);
-  helper_.LaunchFromMenuOption(Site::kStandalone);
-  helper_.CheckWindowCreated();
-  helper_.CheckTabNotCreated();
-  helper_.CheckWindowDisplayTabbed();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_116StandaloneTabbed_143_117Standalone_35Standalone_24_94_144) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kTabbed);
-  helper_.MaybeClosePwa();
-  helper_.AwaitManifestUpdate(Site::kStandalone);
-  helper_.LaunchFromLaunchIcon(Site::kStandalone);
-  helper_.CheckWindowCreated();
-  helper_.CheckTabNotCreated();
-  helper_.CheckWindowDisplayTabbed();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_116StandaloneTabbed_143_117Standalone_34Standalone_24_94_144) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kTabbed);
-  helper_.MaybeClosePwa();
-  helper_.AwaitManifestUpdate(Site::kStandalone);
-  helper_.LaunchFromChromeApps(Site::kStandalone);
-  helper_.CheckWindowCreated();
-  helper_.CheckTabNotCreated();
-  helper_.CheckWindowDisplayTabbed();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_37StandaloneNestedA_17_20) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.NavigateBrowser(Site::kStandaloneNestedA);
-  helper_.CheckInstallIconNotShown();
-  helper_.CheckLaunchIconShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_37MinimalUi_18_19) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.NavigateBrowser(Site::kMinimalUi);
-  helper_.CheckInstallIconShown();
-  helper_.CheckLaunchIconNotShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_73_37Standalone_19) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.SwitchIncognitoProfile();
-  helper_.NavigateBrowser(Site::kStandalone);
-  helper_.CheckLaunchIconNotShown();
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -3248,143 +899,6 @@ IN_PROC_BROWSER_TEST_F(
   helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
   helper_.UninstallPolicyApp(Site::kStandalone);
   helper_.CheckAppNotInList(Site::kStandalone);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_32StandaloneWithShortcutWindowedWebApp_79StandaloneStandaloneOriginal_12Standalone_7Standalone_69Standalone_24_26_112StandaloneNotShown) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.LaunchFromMenuOption(Site::kStandalone);
-  helper_.CheckWindowCreated();
-  helper_.CheckWindowDisplayStandalone();
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_32StandaloneWithShortcutWindowedWebApp_79StandaloneStandaloneOriginal_12Standalone_7Standalone_35Standalone_24_26_112StandaloneNotShown) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.LaunchFromLaunchIcon(Site::kStandalone);
-  helper_.CheckWindowCreated();
-  helper_.CheckWindowDisplayStandalone();
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_32StandaloneWithShortcutWindowedWebApp_79StandaloneStandaloneOriginal_12Standalone_7Standalone_34Standalone_24_26_112StandaloneNotShown) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.LaunchFromChromeApps(Site::kStandalone);
-  helper_.CheckWindowCreated();
-  helper_.CheckWindowDisplayStandalone();
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_32StandaloneWithShortcutWindowedWebApp_79StandaloneStandaloneOriginal_12Standalone_7Standalone_116StandaloneTabbed_143_117Standalone_69Standalone_24_94_144) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kTabbed);
-  helper_.MaybeClosePwa();
-  helper_.AwaitManifestUpdate(Site::kStandalone);
-  helper_.LaunchFromMenuOption(Site::kStandalone);
-  helper_.CheckWindowCreated();
-  helper_.CheckTabNotCreated();
-  helper_.CheckWindowDisplayTabbed();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_32StandaloneWithShortcutWindowedWebApp_79StandaloneStandaloneOriginal_12Standalone_7Standalone_116StandaloneTabbed_143_117Standalone_35Standalone_24_94_144) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kTabbed);
-  helper_.MaybeClosePwa();
-  helper_.AwaitManifestUpdate(Site::kStandalone);
-  helper_.LaunchFromLaunchIcon(Site::kStandalone);
-  helper_.CheckWindowCreated();
-  helper_.CheckTabNotCreated();
-  helper_.CheckWindowDisplayTabbed();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_32StandaloneWithShortcutWindowedWebApp_79StandaloneStandaloneOriginal_12Standalone_7Standalone_116StandaloneTabbed_143_117Standalone_34Standalone_24_94_144) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kTabbed);
-  helper_.MaybeClosePwa();
-  helper_.AwaitManifestUpdate(Site::kStandalone);
-  helper_.LaunchFromChromeApps(Site::kStandalone);
-  helper_.CheckWindowCreated();
-  helper_.CheckTabNotCreated();
-  helper_.CheckWindowDisplayTabbed();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_32StandaloneWithShortcutWindowedWebApp_79StandaloneStandaloneOriginal_12Standalone_7Standalone_37StandaloneNestedA_17_20) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.NavigateBrowser(Site::kStandaloneNestedA);
-  helper_.CheckInstallIconNotShown();
-  helper_.CheckLaunchIconShown();
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -3476,27 +990,6 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     WebAppIntegration,
-    WAI_32StandaloneWithShortcutBrowserWebApp_79StandaloneStandaloneOriginal_11Standalone_7Standalone_29StandaloneWindowed_12Standalone_7Standalone_24_44Standalone_12Standalone_7Standalone) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
-                           WindowOptions::kBrowser, InstallMode::kWebApp);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckAppInListTabbed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowCreated();
-  helper_.UninstallPolicyApp(Site::kStandalone);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
     WAI_32StandaloneWithShortcutBrowserWebApp_79StandaloneStandaloneOriginal_11Standalone_7Standalone_31Standalone_12Standalone_7Standalone_24_44Standalone_12Standalone_7Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
@@ -3508,27 +1001,6 @@ IN_PROC_BROWSER_TEST_F(
   helper_.CheckAppInListTabbed(Site::kStandalone);
   helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
   helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowCreated();
-  helper_.UninstallPolicyApp(Site::kStandalone);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_32StandaloneWithShortcutBrowserWebApp_79StandaloneStandaloneOriginal_11Standalone_7Standalone_47Standalone_12Standalone_7Standalone_24_44Standalone_12Standalone_7Standalone) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
-                           WindowOptions::kBrowser, InstallMode::kWebApp);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckAppInListTabbed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
   helper_.CheckAppInListWindowed(Site::kStandalone);
   helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
   helper_.CheckWindowCreated();
@@ -3582,76 +1054,6 @@ IN_PROC_BROWSER_TEST_F(
   helper_.CheckAppInListWindowed(Site::kStandalone);
   helper_.UninstallPolicyApp(Site::kStandalone);
   helper_.CheckAppNotInList(Site::kStandalone);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_32StandaloneNoShortcutWindowedWebApp_79StandaloneStandaloneOriginal_12Standalone_69Standalone_24_26_112StandaloneNotShown) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.LaunchFromMenuOption(Site::kStandalone);
-  helper_.CheckWindowCreated();
-  helper_.CheckWindowDisplayStandalone();
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_32StandaloneNoShortcutWindowedWebApp_79StandaloneStandaloneOriginal_12Standalone_35Standalone_24_26_112StandaloneNotShown) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.LaunchFromLaunchIcon(Site::kStandalone);
-  helper_.CheckWindowCreated();
-  helper_.CheckWindowDisplayStandalone();
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_32StandaloneNoShortcutWindowedWebApp_79StandaloneStandaloneOriginal_12Standalone_34Standalone_24_26_112StandaloneNotShown) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.LaunchFromChromeApps(Site::kStandalone);
-  helper_.CheckWindowCreated();
-  helper_.CheckWindowDisplayStandalone();
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_32StandaloneNoShortcutWindowedWebApp_79StandaloneStandaloneOriginal_12Standalone_37StandaloneNestedA_17_20) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.NavigateBrowser(Site::kStandaloneNestedA);
-  helper_.CheckInstallIconNotShown();
-  helper_.CheckLaunchIconShown();
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -3738,26 +1140,6 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     WebAppIntegration,
-    WAI_32StandaloneNoShortcutBrowserWebApp_79StandaloneStandaloneOriginal_11Standalone_29StandaloneWindowed_12Standalone_7Standalone_24_44Standalone_12Standalone_7Standalone) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
-                           WindowOptions::kBrowser, InstallMode::kWebApp);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckAppInListTabbed(Site::kStandalone);
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowCreated();
-  helper_.UninstallPolicyApp(Site::kStandalone);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
     WAI_32StandaloneNoShortcutBrowserWebApp_79StandaloneStandaloneOriginal_11Standalone_31Standalone_12Standalone_7Standalone_24_44Standalone_12Standalone_7Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
@@ -3774,961 +1156,6 @@ IN_PROC_BROWSER_TEST_F(
   helper_.UninstallPolicyApp(Site::kStandalone);
   helper_.CheckAppInListWindowed(Site::kStandalone);
   helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_32StandaloneNoShortcutBrowserWebApp_79StandaloneStandaloneOriginal_11Standalone_47Standalone_12Standalone_7Standalone_24_44Standalone_12Standalone_7Standalone) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
-                           WindowOptions::kBrowser, InstallMode::kWebApp);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckAppInListTabbed(Site::kStandalone);
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowCreated();
-  helper_.UninstallPolicyApp(Site::kStandalone);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneWindowed_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_39StandaloneMinimalUi_16_79StandaloneStandaloneOriginal_27_14) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.NavigatePwa(Site::kStandalone, Site::kMinimalUi);
-  helper_.CheckCustomToolbar();
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CloseCustomToolbar();
-  helper_.CheckAppNavigationIsStartUrl();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneWindowed_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_39StandaloneMinimalUi_16_79StandaloneStandaloneOriginal_71_22One) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.NavigatePwa(Site::kStandalone, Site::kMinimalUi);
-  helper_.CheckCustomToolbar();
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.OpenInChrome();
-  helper_.CheckTabCreated(Number::kOne);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneWindowed_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_37Standalone_17_20) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.NavigateBrowser(Site::kStandalone);
-  helper_.CheckInstallIconNotShown();
-  helper_.CheckLaunchIconShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneWindowed_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_10Standalone_15Standalone_37Standalone_18_19) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.UninstallFromList(Site::kStandalone);
-  helper_.CheckAppNotInList(Site::kStandalone);
-  helper_.NavigateBrowser(Site::kStandalone);
-  helper_.CheckInstallIconShown();
-  helper_.CheckLaunchIconNotShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_32WcoWithShortcutWindowedWebApp_116WcoStandalone_117Wco_143_69Wco_112WcoNotShown_113WcoOff) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyApp(Site::kWco, ShortcutOptions::kWithShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.ManifestUpdateDisplay(Site::kWco, Display::kStandalone);
-  helper_.AwaitManifestUpdate(Site::kWco);
-  helper_.MaybeClosePwa();
-  helper_.LaunchFromMenuOption(Site::kWco);
-  helper_.CheckWindowControlsOverlayToggle(Site::kWco, IsShown::kNotShown);
-  helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOff);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_32WcoWithShortcutWindowedWebApp_116WcoStandalone_117Wco_143_35Wco_112WcoNotShown_113WcoOff) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyApp(Site::kWco, ShortcutOptions::kWithShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.ManifestUpdateDisplay(Site::kWco, Display::kStandalone);
-  helper_.AwaitManifestUpdate(Site::kWco);
-  helper_.MaybeClosePwa();
-  helper_.LaunchFromLaunchIcon(Site::kWco);
-  helper_.CheckWindowControlsOverlayToggle(Site::kWco, IsShown::kNotShown);
-  helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOff);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_32WcoWithShortcutWindowedWebApp_116WcoStandalone_117Wco_143_34Wco_112WcoNotShown_113WcoOff) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyApp(Site::kWco, ShortcutOptions::kWithShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.ManifestUpdateDisplay(Site::kWco, Display::kStandalone);
-  helper_.AwaitManifestUpdate(Site::kWco);
-  helper_.MaybeClosePwa();
-  helper_.LaunchFromChromeApps(Site::kWco);
-  helper_.CheckWindowControlsOverlayToggle(Site::kWco, IsShown::kNotShown);
-  helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOff);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_32WcoNoShortcutWindowedWebApp_116WcoStandalone_117Wco_143_69Wco_112WcoNotShown_113WcoOff) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyApp(Site::kWco, ShortcutOptions::kNoShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.ManifestUpdateDisplay(Site::kWco, Display::kStandalone);
-  helper_.AwaitManifestUpdate(Site::kWco);
-  helper_.MaybeClosePwa();
-  helper_.LaunchFromMenuOption(Site::kWco);
-  helper_.CheckWindowControlsOverlayToggle(Site::kWco, IsShown::kNotShown);
-  helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOff);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_32WcoNoShortcutWindowedWebApp_116WcoStandalone_117Wco_143_35Wco_112WcoNotShown_113WcoOff) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyApp(Site::kWco, ShortcutOptions::kNoShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.ManifestUpdateDisplay(Site::kWco, Display::kStandalone);
-  helper_.AwaitManifestUpdate(Site::kWco);
-  helper_.MaybeClosePwa();
-  helper_.LaunchFromLaunchIcon(Site::kWco);
-  helper_.CheckWindowControlsOverlayToggle(Site::kWco, IsShown::kNotShown);
-  helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOff);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_32WcoNoShortcutWindowedWebApp_116WcoStandalone_117Wco_143_34Wco_112WcoNotShown_113WcoOff) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyApp(Site::kWco, ShortcutOptions::kNoShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.ManifestUpdateDisplay(Site::kWco, Display::kStandalone);
-  helper_.AwaitManifestUpdate(Site::kWco);
-  helper_.MaybeClosePwa();
-  helper_.LaunchFromChromeApps(Site::kWco);
-  helper_.CheckWindowControlsOverlayToggle(Site::kWco, IsShown::kNotShown);
-  helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOff);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneWindowed_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_69Standalone_24_26) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.LaunchFromMenuOption(Site::kStandalone);
-  helper_.CheckWindowCreated();
-  helper_.CheckWindowDisplayStandalone();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneWindowed_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_35Standalone_24_26) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.LaunchFromLaunchIcon(Site::kStandalone);
-  helper_.CheckWindowCreated();
-  helper_.CheckWindowDisplayStandalone();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneWindowed_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_34Standalone_24_26) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.LaunchFromChromeApps(Site::kStandalone);
-  helper_.CheckWindowCreated();
-  helper_.CheckWindowDisplayStandalone();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneWindowed_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_149Standalone_11Standalone_37Standalone_18) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.SetOpenInTabFromAppSettings(Site::kStandalone);
-  helper_.CheckAppInListTabbed(Site::kStandalone);
-  helper_.NavigateBrowser(Site::kStandalone);
-  helper_.CheckInstallIconShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneWindowed_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_71_22One_163Standalone) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.OpenInChrome();
-  helper_.CheckTabCreated(Number::kOne);
-  helper_.CheckAppLoadedInTab(Site::kStandalone);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneWindowed_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneNoShortcutWindowedWebApp_7Standalone_44Standalone_12Standalone_7Standalone) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.UninstallPolicyApp(Site::kStandalone);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneWindowed_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneNoShortcutBrowserWebApp_7Standalone_12Standalone_37Standalone_20) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
-                           WindowOptions::kBrowser, InstallMode::kWebApp);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.NavigateBrowser(Site::kStandalone);
-  helper_.CheckLaunchIconShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneWindowed_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneNoShortcutBrowserWebApp_7Standalone_12Standalone_69Standalone_24) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
-                           WindowOptions::kBrowser, InstallMode::kWebApp);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.LaunchFromMenuOption(Site::kStandalone);
-  helper_.CheckWindowCreated();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneWindowed_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneNoShortcutBrowserWebApp_7Standalone_12Standalone_35Standalone_24) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
-                           WindowOptions::kBrowser, InstallMode::kWebApp);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.LaunchFromLaunchIcon(Site::kStandalone);
-  helper_.CheckWindowCreated();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneWindowed_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneNoShortcutBrowserWebApp_7Standalone_12Standalone_34Standalone_24) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
-                           WindowOptions::kBrowser, InstallMode::kWebApp);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.LaunchFromChromeApps(Site::kStandalone);
-  helper_.CheckWindowCreated();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneWindowed_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneNoShortcutBrowserWebApp_7Standalone_12Standalone_44Standalone_12Standalone_7Standalone) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
-                           WindowOptions::kBrowser, InstallMode::kWebApp);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.UninstallPolicyApp(Site::kStandalone);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneWindowed_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneWithShortcutBrowserWebApp_12Standalone_37Standalone_20) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
-                           WindowOptions::kBrowser, InstallMode::kWebApp);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.NavigateBrowser(Site::kStandalone);
-  helper_.CheckLaunchIconShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneWindowed_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneWithShortcutBrowserWebApp_12Standalone_69Standalone_24) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
-                           WindowOptions::kBrowser, InstallMode::kWebApp);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.LaunchFromMenuOption(Site::kStandalone);
-  helper_.CheckWindowCreated();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneWindowed_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneWithShortcutBrowserWebApp_12Standalone_35Standalone_24) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
-                           WindowOptions::kBrowser, InstallMode::kWebApp);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.LaunchFromLaunchIcon(Site::kStandalone);
-  helper_.CheckWindowCreated();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneWindowed_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneWithShortcutBrowserWebApp_12Standalone_34Standalone_24) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
-                           WindowOptions::kBrowser, InstallMode::kWebApp);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.LaunchFromChromeApps(Site::kStandalone);
-  helper_.CheckWindowCreated();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneWindowed_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneWithShortcutBrowserWebApp_12Standalone_44Standalone_12Standalone_7Standalone) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
-                           WindowOptions::kBrowser, InstallMode::kWebApp);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.UninstallPolicyApp(Site::kStandalone);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneWindowed_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneWithShortcutWindowedWebApp_44Standalone_12Standalone_7Standalone) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.UninstallPolicyApp(Site::kStandalone);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneWindowed_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_116StandaloneTabbed_143_117Standalone_69Standalone_24_94_144) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kTabbed);
-  helper_.MaybeClosePwa();
-  helper_.AwaitManifestUpdate(Site::kStandalone);
-  helper_.LaunchFromMenuOption(Site::kStandalone);
-  helper_.CheckWindowCreated();
-  helper_.CheckTabNotCreated();
-  helper_.CheckWindowDisplayTabbed();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneWindowed_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_116StandaloneTabbed_143_117Standalone_35Standalone_24_94_144) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kTabbed);
-  helper_.MaybeClosePwa();
-  helper_.AwaitManifestUpdate(Site::kStandalone);
-  helper_.LaunchFromLaunchIcon(Site::kStandalone);
-  helper_.CheckWindowCreated();
-  helper_.CheckTabNotCreated();
-  helper_.CheckWindowDisplayTabbed();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneWindowed_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_116StandaloneTabbed_143_117Standalone_34Standalone_24_94_144) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kTabbed);
-  helper_.MaybeClosePwa();
-  helper_.AwaitManifestUpdate(Site::kStandalone);
-  helper_.LaunchFromChromeApps(Site::kStandalone);
-  helper_.CheckWindowCreated();
-  helper_.CheckTabNotCreated();
-  helper_.CheckWindowDisplayTabbed();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneWindowed_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_37StandaloneNestedA_17_20) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.NavigateBrowser(Site::kStandaloneNestedA);
-  helper_.CheckInstallIconNotShown();
-  helper_.CheckLaunchIconShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneWindowed_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_37MinimalUi_18_19) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.NavigateBrowser(Site::kMinimalUi);
-  helper_.CheckInstallIconShown();
-  helper_.CheckLaunchIconNotShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneWindowed_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_73_37Standalone_19) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.SwitchIncognitoProfile();
-  helper_.NavigateBrowser(Site::kStandalone);
-  helper_.CheckLaunchIconNotShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneBrowser_79StandaloneStandaloneOriginal_11Standalone_7Standalone_37Standalone_18_19) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kBrowser);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckAppInListTabbed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.NavigateBrowser(Site::kStandalone);
-  helper_.CheckInstallIconShown();
-  helper_.CheckLaunchIconNotShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneBrowser_79StandaloneStandaloneOriginal_11Standalone_7Standalone_10Standalone_15Standalone_37Standalone_18_19) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kBrowser);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckAppInListTabbed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.UninstallFromList(Site::kStandalone);
-  helper_.CheckAppNotInList(Site::kStandalone);
-  helper_.NavigateBrowser(Site::kStandalone);
-  helper_.CheckInstallIconShown();
-  helper_.CheckLaunchIconNotShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneBrowser_79StandaloneStandaloneOriginal_11Standalone_7Standalone_150Standalone_12Standalone_69Standalone_24) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kBrowser);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckAppInListTabbed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.SetOpenInWindowFromAppSettings(Site::kStandalone);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.LaunchFromMenuOption(Site::kStandalone);
-  helper_.CheckWindowCreated();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneBrowser_79StandaloneStandaloneOriginal_11Standalone_7Standalone_150Standalone_12Standalone_35Standalone_24) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kBrowser);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckAppInListTabbed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.SetOpenInWindowFromAppSettings(Site::kStandalone);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.LaunchFromLaunchIcon(Site::kStandalone);
-  helper_.CheckWindowCreated();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneBrowser_79StandaloneStandaloneOriginal_11Standalone_7Standalone_150Standalone_12Standalone_34Standalone_24) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kBrowser);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckAppInListTabbed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.SetOpenInWindowFromAppSettings(Site::kStandalone);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.LaunchFromChromeApps(Site::kStandalone);
-  helper_.CheckWindowCreated();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneBrowser_79StandaloneStandaloneOriginal_11Standalone_7Standalone_150Standalone_12Standalone_37Standalone_17_20) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kBrowser);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckAppInListTabbed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.SetOpenInWindowFromAppSettings(Site::kStandalone);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.NavigateBrowser(Site::kStandalone);
-  helper_.CheckInstallIconNotShown();
-  helper_.CheckLaunchIconShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneBrowser_79StandaloneStandaloneOriginal_11Standalone_7Standalone_32StandaloneWithShortcutWindowedWebApp_7Standalone_11Standalone_37Standalone_18) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kBrowser);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckAppInListTabbed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckAppInListTabbed(Site::kStandalone);
-  helper_.NavigateBrowser(Site::kStandalone);
-  helper_.CheckInstallIconShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneBrowser_79StandaloneStandaloneOriginal_11Standalone_7Standalone_32StandaloneWithShortcutWindowedWebApp_7Standalone_11Standalone_44Standalone_11Standalone_7Standalone) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kBrowser);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckAppInListTabbed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckAppInListTabbed(Site::kStandalone);
-  helper_.UninstallPolicyApp(Site::kStandalone);
-  helper_.CheckAppInListTabbed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneBrowser_79StandaloneStandaloneOriginal_11Standalone_7Standalone_32StandaloneNoShortcutWindowedWebApp_7Standalone_11Standalone_37Standalone_18) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kBrowser);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckAppInListTabbed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckAppInListTabbed(Site::kStandalone);
-  helper_.NavigateBrowser(Site::kStandalone);
-  helper_.CheckInstallIconShown();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneBrowser_79StandaloneStandaloneOriginal_11Standalone_7Standalone_32StandaloneNoShortcutWindowedWebApp_7Standalone_11Standalone_44Standalone_11Standalone_7Standalone) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kBrowser);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckAppInListTabbed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
-                           WindowOptions::kWindowed, InstallMode::kWebApp);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckAppInListTabbed(Site::kStandalone);
-  helper_.UninstallPolicyApp(Site::kStandalone);
-  helper_.CheckAppInListTabbed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneBrowser_79StandaloneStandaloneOriginal_11Standalone_7Standalone_32StandaloneWithShortcutBrowserWebApp_44Standalone_11Standalone_7Standalone) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kBrowser);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckAppInListTabbed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
-                           WindowOptions::kBrowser, InstallMode::kWebApp);
-  helper_.UninstallPolicyApp(Site::kStandalone);
-  helper_.CheckAppInListTabbed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_29StandaloneBrowser_79StandaloneStandaloneOriginal_11Standalone_7Standalone_32StandaloneNoShortcutBrowserWebApp_44Standalone_11Standalone_7Standalone) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kBrowser);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckAppInListTabbed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
-                           WindowOptions::kBrowser, InstallMode::kWebApp);
-  helper_.UninstallPolicyApp(Site::kStandalone);
-  helper_.CheckAppInListTabbed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppIntegration,
-                       WAI_29TabbedWindowed_12Tabbed_37Tabbed_20_17) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kTabbed, WindowOptions::kWindowed);
-  helper_.CheckAppInListWindowed(Site::kTabbed);
-  helper_.NavigateBrowser(Site::kTabbed);
-  helper_.CheckLaunchIconShown();
-  helper_.CheckInstallIconNotShown();
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppIntegration,
-                       WAI_29TabbedWindowed_12Tabbed_143_69Tabbed_144) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kTabbed, WindowOptions::kWindowed);
-  helper_.CheckAppInListWindowed(Site::kTabbed);
-  helper_.MaybeClosePwa();
-  helper_.LaunchFromMenuOption(Site::kTabbed);
-  helper_.CheckWindowDisplayTabbed();
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppIntegration,
-                       WAI_29TabbedWindowed_12Tabbed_143_35Tabbed_144) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kTabbed, WindowOptions::kWindowed);
-  helper_.CheckAppInListWindowed(Site::kTabbed);
-  helper_.MaybeClosePwa();
-  helper_.LaunchFromLaunchIcon(Site::kTabbed);
-  helper_.CheckWindowDisplayTabbed();
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppIntegration,
-                       WAI_29TabbedWindowed_12Tabbed_143_34Tabbed_144) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kTabbed, WindowOptions::kWindowed);
-  helper_.CheckAppInListWindowed(Site::kTabbed);
-  helper_.MaybeClosePwa();
-  helper_.LaunchFromChromeApps(Site::kTabbed);
-  helper_.CheckWindowDisplayTabbed();
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration,
@@ -4783,154 +1210,5925 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration,
   helper_.CheckWindowDisplayTabbed();
 }
 
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_31Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_88StandaloneStandaloneUpdatedCancelUninstallAndAcceptUpdate_117Standalone_69Standalone_79StandaloneStandaloneUpdated) {
+IN_PROC_BROWSER_TEST_F(WebAppIntegration,
+                       WAI_InstallMenuOptionChromeUrlWindowed) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kChromeUrl);
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneWithShortcutWindowedWebApp_NavigateBrowserStandaloneNestedA) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.NavigateBrowser(Site::kStandaloneNestedA);
+  helper_.CheckInstallIconNotShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneNoShortcutWindowedWebApp_NavigateBrowserStandaloneNestedA) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.NavigateBrowser(Site::kStandaloneNestedA);
+  helper_.CheckInstallIconNotShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneWithShortcutBrowserWebApp_InstallMenuStandalone_UninstallPolicyAppStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kBrowser, InstallMode::kWebApp);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckAppInListTabbed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowCreated();
+  helper_.UninstallPolicyApp(Site::kStandalone);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneNoShortcutBrowserWebApp_InstallMenuStandalone_UninstallPolicyAppStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kBrowser, InstallMode::kWebApp);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckAppInListTabbed(Site::kStandalone);
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowCreated();
+  helper_.UninstallPolicyApp(Site::kStandalone);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegration,
+                       WAI_InstallMenuMinimalUi_NavigateBrowserMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kMinimalUi);
+  helper_.NavigateBrowser(Site::kMinimalUi);
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegration,
+                       WAI_InstallMenuTabbed_NavigateBrowserTabbed) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kTabbed);
+  helper_.CheckAppInListWindowed(Site::kTabbed);
+  helper_.NavigateBrowser(Site::kTabbed);
+  helper_.CheckLaunchIconShown();
+  helper_.CheckInstallIconNotShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuTabbed_MaybeClosePwa_LaunchFromMenuOptionTabbed) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kTabbed);
+  helper_.CheckAppInListWindowed(Site::kTabbed);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kTabbed);
+  helper_.CheckWindowDisplayTabbed();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuTabbed_MaybeClosePwa_LaunchFromLaunchIconTabbed) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kTabbed);
+  helper_.CheckAppInListWindowed(Site::kTabbed);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kTabbed);
+  helper_.CheckWindowDisplayTabbed();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuTabbed_MaybeClosePwa_LaunchFromChromeAppsTabbed) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kTabbed);
+  helper_.CheckAppInListWindowed(Site::kTabbed);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kTabbed);
+  helper_.CheckWindowDisplayTabbed();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuNotPromotable_NavigateBrowserNotPromotable) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kNotPromotable);
+  helper_.CheckAppInListWindowed(Site::kNotPromotable);
+  helper_.CheckPlatformShortcutAndIcon(Site::kNotPromotable);
+  helper_.NavigateBrowser(Site::kNotPromotable);
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuNotPromotable_UninstallFromListNotPromotable) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kNotPromotable);
+  helper_.CheckAppInListWindowed(Site::kNotPromotable);
+  helper_.CheckPlatformShortcutAndIcon(Site::kNotPromotable);
+  helper_.UninstallFromList(Site::kNotPromotable);
+  helper_.CheckAppNotInList(Site::kStandalone);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuNotPromotable_LaunchFromMenuOptionNotPromotable) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kNotPromotable);
+  helper_.CheckAppInListWindowed(Site::kNotPromotable);
+  helper_.CheckPlatformShortcutAndIcon(Site::kNotPromotable);
+  helper_.LaunchFromMenuOption(Site::kNotPromotable);
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuNotPromotable_LaunchFromLaunchIconNotPromotable) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kNotPromotable);
+  helper_.CheckAppInListWindowed(Site::kNotPromotable);
+  helper_.CheckPlatformShortcutAndIcon(Site::kNotPromotable);
+  helper_.LaunchFromLaunchIcon(Site::kNotPromotable);
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuNotPromotable_LaunchFromChromeAppsNotPromotable) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kNotPromotable);
+  helper_.CheckAppInListWindowed(Site::kNotPromotable);
+  helper_.CheckPlatformShortcutAndIcon(Site::kNotPromotable);
+  helper_.LaunchFromChromeApps(Site::kNotPromotable);
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, WAI_InstallMenuChromeUrl) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kChromeUrl);
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandaloneNestedA_NavigateBrowserNotInstalled) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandaloneNestedA);
+  helper_.NavigateBrowser(Site::kNotInstalled);
+  helper_.CheckInstallIconShown();
+  helper_.CheckLaunchIconNotShown();
+}
+
+// TODO(crbug.com/405233966): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_WAI_InstallOmniboxIconStandalone_NavigatePwaStandaloneMinimalUi_CloseCustomToolbar \
+  DISABLED_WAI_InstallOmniboxIconStandalone_NavigatePwaStandaloneMinimalUi_CloseCustomToolbar
+#else
+#define MAYBE_WAI_InstallOmniboxIconStandalone_NavigatePwaStandaloneMinimalUi_CloseCustomToolbar \
+  WAI_InstallOmniboxIconStandalone_NavigatePwaStandaloneMinimalUi_CloseCustomToolbar
+#endif
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    MAYBE_WAI_InstallOmniboxIconStandalone_NavigatePwaStandaloneMinimalUi_CloseCustomToolbar) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
   helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
   helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
   helper_.CheckWindowCreated();
   helper_.CheckAppInListWindowed(Site::kStandalone);
   helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
   helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
                                            IsShown::kNotShown);
-  helper_.ManifestUpdateTitle(
-      Site::kStandalone, Title::kStandaloneUpdated,
-      UpdateDialogResponse::kCancelUninstallAndAcceptUpdate);
-  helper_.AwaitManifestUpdate(Site::kStandalone);
+  helper_.NavigatePwa(Site::kStandalone, Site::kMinimalUi);
+  helper_.CheckCustomToolbar();
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CloseCustomToolbar();
+  helper_.CheckAppNavigationIsStartUrl();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_NavigatePwaStandaloneMinimalUi_OpenInChrome) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.NavigatePwa(Site::kStandalone, Site::kMinimalUi);
+  helper_.CheckCustomToolbar();
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.OpenInChrome();
+  helper_.CheckTabCreated(Number::kOne);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_NavigateBrowserStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.NavigateBrowser(Site::kStandalone);
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+// TODO(crbug.com/405233966): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_WAI_InstallOmniboxIconStandalone_UninstallFromListStandalone_NavigateBrowserStandalone \
+  DISABLED_WAI_InstallOmniboxIconStandalone_UninstallFromListStandalone_NavigateBrowserStandalone
+#else
+#define MAYBE_WAI_InstallOmniboxIconStandalone_UninstallFromListStandalone_NavigateBrowserStandalone \
+  WAI_InstallOmniboxIconStandalone_UninstallFromListStandalone_NavigateBrowserStandalone
+#endif
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    MAYBE_WAI_InstallOmniboxIconStandalone_UninstallFromListStandalone_NavigateBrowserStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.UninstallFromList(Site::kStandalone);
+  helper_.CheckAppNotInList(Site::kStandalone);
+  helper_.NavigateBrowser(Site::kStandalone);
+  helper_.CheckInstallIconShown();
+  helper_.CheckLaunchIconNotShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_SetOpenInTabFromAppSettingsStandalone_NavigateBrowserStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.SetOpenInTabFromAppSettings(Site::kStandalone);
+  helper_.CheckAppInListTabbed(Site::kStandalone);
+  helper_.NavigateBrowser(Site::kStandalone);
+  helper_.CheckInstallIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegration,
+                       WAI_InstallOmniboxIconStandalone_OpenInChrome) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.OpenInChrome();
+  helper_.CheckTabCreated(Number::kOne);
+  helper_.CheckAppLoadedInTab(Site::kStandalone);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_InstallPolicyAppStandaloneNoShortcutWindowedWebApp_UninstallPolicyAppStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.UninstallPolicyApp(Site::kStandalone);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_InstallPolicyAppStandaloneNoShortcutBrowserWebApp_NavigateBrowserStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kBrowser, InstallMode::kWebApp);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.NavigateBrowser(Site::kStandalone);
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_InstallPolicyAppStandaloneNoShortcutBrowserWebApp_LaunchFromMenuOptionStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kBrowser, InstallMode::kWebApp);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
   helper_.LaunchFromMenuOption(Site::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
+  helper_.CheckWindowCreated();
 }
 
+// TODO(crbug.com/405233966): Re-enable this test.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_WAI_InstallOmniboxIconStandalone_InstallPolicyAppStandaloneNoShortcutBrowserWebApp_LaunchFromLaunchIconStandalone \
+  WAI_InstallOmniboxIconStandalone_InstallPolicyAppStandaloneNoShortcutBrowserWebApp_LaunchFromLaunchIconStandalone
+#else
+#define MAYBE_WAI_InstallOmniboxIconStandalone_InstallPolicyAppStandaloneNoShortcutBrowserWebApp_LaunchFromLaunchIconStandalone \
+  WAI_InstallOmniboxIconStandalone_InstallPolicyAppStandaloneNoShortcutBrowserWebApp_LaunchFromLaunchIconStandalone
+#endif
 IN_PROC_BROWSER_TEST_F(
     WebAppIntegration,
-    WAI_31Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_88StandaloneStandaloneUpdatedCancelUninstallAndAcceptUpdate_117Standalone_35Standalone_79StandaloneStandaloneUpdated) {
+    MAYBE_WAI_InstallOmniboxIconStandalone_InstallPolicyAppStandaloneNoShortcutBrowserWebApp_LaunchFromLaunchIconStandalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
+  // Gardeners: Disabling this test is supported.
   helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
   helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
   helper_.CheckWindowCreated();
   helper_.CheckAppInListWindowed(Site::kStandalone);
   helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
   helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
                                            IsShown::kNotShown);
-  helper_.ManifestUpdateTitle(
-      Site::kStandalone, Title::kStandaloneUpdated,
-      UpdateDialogResponse::kCancelUninstallAndAcceptUpdate);
-  helper_.AwaitManifestUpdate(Site::kStandalone);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kBrowser, InstallMode::kWebApp);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
   helper_.LaunchFromLaunchIcon(Site::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
+  helper_.CheckWindowCreated();
 }
 
 IN_PROC_BROWSER_TEST_F(
     WebAppIntegration,
-    WAI_31Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_88StandaloneStandaloneUpdatedCancelUninstallAndAcceptUpdate_117Standalone_34Standalone_79StandaloneStandaloneUpdated) {
+    WAI_InstallOmniboxIconStandalone_InstallPolicyAppStandaloneNoShortcutBrowserWebApp_LaunchFromChromeAppsStandalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
+  // Gardeners: Disabling this test is supported.
   helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
   helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
   helper_.CheckWindowCreated();
   helper_.CheckAppInListWindowed(Site::kStandalone);
   helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
   helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
                                            IsShown::kNotShown);
-  helper_.ManifestUpdateTitle(
-      Site::kStandalone, Title::kStandaloneUpdated,
-      UpdateDialogResponse::kCancelUninstallAndAcceptUpdate);
-  helper_.AwaitManifestUpdate(Site::kStandalone);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kBrowser, InstallMode::kWebApp);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_InstallPolicyAppStandaloneNoShortcutBrowserWebApp_UninstallPolicyAppStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kBrowser, InstallMode::kWebApp);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.UninstallPolicyApp(Site::kStandalone);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_InstallPolicyAppStandaloneWithShortcutBrowserWebApp_NavigateBrowserStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kBrowser, InstallMode::kWebApp);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.NavigateBrowser(Site::kStandalone);
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_InstallPolicyAppStandaloneWithShortcutBrowserWebApp_LaunchFromMenuOptionStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kBrowser, InstallMode::kWebApp);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_InstallPolicyAppStandaloneWithShortcutBrowserWebApp_LaunchFromLaunchIconStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kBrowser, InstallMode::kWebApp);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_InstallPolicyAppStandaloneWithShortcutBrowserWebApp_LaunchFromChromeAppsStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kBrowser, InstallMode::kWebApp);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_InstallPolicyAppStandaloneWithShortcutBrowserWebApp_UninstallPolicyAppStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kBrowser, InstallMode::kWebApp);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.UninstallPolicyApp(Site::kStandalone);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_InstallPolicyAppStandaloneWithShortcutWindowedWebApp_UninstallPolicyAppStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.UninstallPolicyApp(Site::kStandalone);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_NavigateBrowserStandaloneNestedA) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.NavigateBrowser(Site::kStandaloneNestedA);
+  helper_.CheckInstallIconNotShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_NavigateBrowserMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.NavigateBrowser(Site::kMinimalUi);
+  helper_.CheckInstallIconShown();
+  helper_.CheckLaunchIconNotShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_SwitchIncognitoProfile_NavigateBrowserStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.SwitchIncognitoProfile();
+  helper_.NavigateBrowser(Site::kStandalone);
+  helper_.CheckLaunchIconNotShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_NavigatePwaStandaloneMinimalUi_CloseCustomToolbar) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.NavigatePwa(Site::kStandalone, Site::kMinimalUi);
+  helper_.CheckCustomToolbar();
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CloseCustomToolbar();
+  helper_.CheckAppNavigationIsStartUrl();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_NavigatePwaStandaloneMinimalUi_OpenInChrome) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.NavigatePwa(Site::kStandalone, Site::kMinimalUi);
+  helper_.CheckCustomToolbar();
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.OpenInChrome();
+  helper_.CheckTabCreated(Number::kOne);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegration,
+                       WAI_InstallMenuStandalone_NavigateBrowserStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.NavigateBrowser(Site::kStandalone);
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_UninstallFromListStandalone_NavigateBrowserStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.UninstallFromList(Site::kStandalone);
+  helper_.CheckAppNotInList(Site::kStandalone);
+  helper_.NavigateBrowser(Site::kStandalone);
+  helper_.CheckInstallIconShown();
+  helper_.CheckLaunchIconNotShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_SetOpenInTabFromAppSettingsStandalone_NavigateBrowserStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.SetOpenInTabFromAppSettings(Site::kStandalone);
+  helper_.CheckAppInListTabbed(Site::kStandalone);
+  helper_.NavigateBrowser(Site::kStandalone);
+  helper_.CheckInstallIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegration,
+                       WAI_InstallMenuStandalone_OpenInChrome) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.OpenInChrome();
+  helper_.CheckTabCreated(Number::kOne);
+  helper_.CheckAppLoadedInTab(Site::kStandalone);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_InstallPolicyAppStandaloneNoShortcutWindowedWebApp_UninstallPolicyAppStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.UninstallPolicyApp(Site::kStandalone);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_InstallPolicyAppStandaloneNoShortcutBrowserWebApp_NavigateBrowserStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kBrowser, InstallMode::kWebApp);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.NavigateBrowser(Site::kStandalone);
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_InstallPolicyAppStandaloneNoShortcutBrowserWebApp_LaunchFromMenuOptionStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kBrowser, InstallMode::kWebApp);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_InstallPolicyAppStandaloneNoShortcutBrowserWebApp_LaunchFromLaunchIconStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kBrowser, InstallMode::kWebApp);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_InstallPolicyAppStandaloneNoShortcutBrowserWebApp_LaunchFromChromeAppsStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kBrowser, InstallMode::kWebApp);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_InstallPolicyAppStandaloneNoShortcutBrowserWebApp_UninstallPolicyAppStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kBrowser, InstallMode::kWebApp);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.UninstallPolicyApp(Site::kStandalone);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_InstallPolicyAppStandaloneWithShortcutBrowserWebApp_NavigateBrowserStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kBrowser, InstallMode::kWebApp);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.NavigateBrowser(Site::kStandalone);
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_InstallPolicyAppStandaloneWithShortcutBrowserWebApp_LaunchFromMenuOptionStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kBrowser, InstallMode::kWebApp);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_InstallPolicyAppStandaloneWithShortcutBrowserWebApp_LaunchFromLaunchIconStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kBrowser, InstallMode::kWebApp);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_InstallPolicyAppStandaloneWithShortcutBrowserWebApp_LaunchFromChromeAppsStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kBrowser, InstallMode::kWebApp);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_InstallPolicyAppStandaloneWithShortcutBrowserWebApp_UninstallPolicyAppStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kBrowser, InstallMode::kWebApp);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.UninstallPolicyApp(Site::kStandalone);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_InstallPolicyAppStandaloneWithShortcutWindowedWebApp_UninstallPolicyAppStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.UninstallPolicyApp(Site::kStandalone);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_NavigateBrowserStandaloneNestedA) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.NavigateBrowser(Site::kStandaloneNestedA);
+  helper_.CheckInstallIconNotShown();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegration,
+                       WAI_InstallMenuStandalone_NavigateBrowserMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.NavigateBrowser(Site::kMinimalUi);
+  helper_.CheckInstallIconShown();
+  helper_.CheckLaunchIconNotShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_SwitchIncognitoProfile_NavigateBrowserStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.SwitchIncognitoProfile();
+  helper_.NavigateBrowser(Site::kStandalone);
+  helper_.CheckLaunchIconNotShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconMinimalUi_LaunchFromMenuOptionMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kMinimalUi);
+  helper_.LaunchFromMenuOption(Site::kMinimalUi);
+  helper_.CheckWindowDisplayMinimal();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconMinimalUi_LaunchFromLaunchIconMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kMinimalUi);
+  helper_.LaunchFromLaunchIcon(Site::kMinimalUi);
+  helper_.CheckWindowDisplayMinimal();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconMinimalUi_LaunchFromChromeAppsMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kMinimalUi);
+  helper_.LaunchFromChromeApps(Site::kMinimalUi);
+  helper_.CheckWindowDisplayMinimal();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppMinimalUiWithShortcutWindowedWebApp_LaunchFromMenuOptionMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kMinimalUi, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.LaunchFromMenuOption(Site::kMinimalUi);
+  helper_.CheckWindowDisplayMinimal();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppMinimalUiWithShortcutWindowedWebApp_LaunchFromLaunchIconMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kMinimalUi, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.LaunchFromLaunchIcon(Site::kMinimalUi);
+  helper_.CheckWindowDisplayMinimal();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppMinimalUiWithShortcutWindowedWebApp_LaunchFromChromeAppsMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kMinimalUi, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.LaunchFromChromeApps(Site::kMinimalUi);
+  helper_.CheckWindowDisplayMinimal();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppMinimalUiNoShortcutWindowedWebApp_LaunchFromMenuOptionMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kMinimalUi, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.LaunchFromMenuOption(Site::kMinimalUi);
+  helper_.CheckWindowDisplayMinimal();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppMinimalUiNoShortcutWindowedWebApp_LaunchFromLaunchIconMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kMinimalUi, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.LaunchFromLaunchIcon(Site::kMinimalUi);
+  helper_.CheckWindowDisplayMinimal();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppMinimalUiNoShortcutWindowedWebApp_LaunchFromChromeAppsMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kMinimalUi, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.LaunchFromChromeApps(Site::kMinimalUi);
+  helper_.CheckWindowDisplayMinimal();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegration,
+                       WAI_InstallMenuMinimalUi_LaunchFromMenuOptionMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kMinimalUi);
+  helper_.LaunchFromMenuOption(Site::kMinimalUi);
+  helper_.CheckWindowDisplayMinimal();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegration,
+                       WAI_InstallMenuMinimalUi_LaunchFromLaunchIconMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kMinimalUi);
+  helper_.LaunchFromLaunchIcon(Site::kMinimalUi);
+  helper_.CheckWindowDisplayMinimal();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegration,
+                       WAI_InstallMenuMinimalUi_LaunchFromChromeAppsMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kMinimalUi);
+  helper_.LaunchFromChromeApps(Site::kMinimalUi);
+  helper_.CheckWindowDisplayMinimal();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_LaunchFromMenuOptionStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.CheckWindowCreated();
+  helper_.CheckWindowDisplayStandalone();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_LaunchFromLaunchIconStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.CheckWindowCreated();
+  helper_.CheckWindowDisplayStandalone();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_LaunchFromChromeAppsStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.CheckWindowCreated();
+  helper_.CheckWindowDisplayStandalone();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_ManifestUpdateTitleStandaloneStandaloneUpdated_TriggerUpdateDialogAndHandleResponseAcceptUpdate) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_ManifestUpdateTitleStandaloneStandaloneUpdated_TriggerUpdateDialogAndHandleResponseCancelDialogAndUninstall) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kCancelDialogAndUninstall);
+  helper_.CheckAppNotInList(Site::kStandalone);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_ManifestUpdateTitleStandaloneStandaloneUpdated_TriggerUpdateDialogAndHandleResponseIgnoreDialog_LaunchFromMenuOptionStandalone_TriggerUpdateDialogAndHandleResponseAcceptUpdate_LaunchFromChromeAppsStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kIgnoreDialog);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
   helper_.LaunchFromChromeApps(Site::kStandalone);
   helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
 }
 
 IN_PROC_BROWSER_TEST_F(
     WebAppIntegration,
-    WAI_47Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_88StandaloneStandaloneUpdatedCancelUninstallAndAcceptUpdate_117Standalone_69Standalone_79StandaloneStandaloneUpdated) {
+    WAI_InstallOmniboxIconStandalone_ManifestUpdateTitleStandaloneStandaloneUpdated_TriggerUpdateDialogAndHandleResponseIgnoreDialog_LaunchFromLaunchIconStandalone_TriggerUpdateDialogAndHandleResponseAcceptUpdate_LaunchFromLaunchIconStandalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
   helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
   helper_.CheckWindowCreated();
   helper_.CheckAppInListWindowed(Site::kStandalone);
   helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
   helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
                                            IsShown::kNotShown);
-  helper_.ManifestUpdateTitle(
-      Site::kStandalone, Title::kStandaloneUpdated,
-      UpdateDialogResponse::kCancelUninstallAndAcceptUpdate);
-  helper_.AwaitManifestUpdate(Site::kStandalone);
-  helper_.LaunchFromMenuOption(Site::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegration,
-    WAI_47Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_88StandaloneStandaloneUpdatedCancelUninstallAndAcceptUpdate_117Standalone_35Standalone_79StandaloneStandaloneUpdated) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
-  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kStandalone);
-  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
-  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
-                                           IsShown::kNotShown);
-  helper_.ManifestUpdateTitle(
-      Site::kStandalone, Title::kStandaloneUpdated,
-      UpdateDialogResponse::kCancelUninstallAndAcceptUpdate);
-  helper_.AwaitManifestUpdate(Site::kStandalone);
+  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kIgnoreDialog);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
   helper_.LaunchFromLaunchIcon(Site::kStandalone);
   helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
 }
 
 IN_PROC_BROWSER_TEST_F(
     WebAppIntegration,
-    WAI_47Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_88StandaloneStandaloneUpdatedCancelUninstallAndAcceptUpdate_117Standalone_34Standalone_79StandaloneStandaloneUpdated) {
+    WAI_InstallOmniboxIconStandalone_ManifestUpdateTitleStandaloneStandaloneUpdated_TriggerUpdateDialogAndHandleResponseIgnoreDialog_LaunchFromLaunchIconStandalone_TriggerUpdateDialogAndHandleResponseAcceptUpdate_LaunchFromChromeAppsStandalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
   helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
   helper_.CheckWindowCreated();
   helper_.CheckAppInListWindowed(Site::kStandalone);
   helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
   helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
                                            IsShown::kNotShown);
-  helper_.ManifestUpdateTitle(
-      Site::kStandalone, Title::kStandaloneUpdated,
-      UpdateDialogResponse::kCancelUninstallAndAcceptUpdate);
-  helper_.AwaitManifestUpdate(Site::kStandalone);
+  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kIgnoreDialog);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
   helper_.LaunchFromChromeApps(Site::kStandalone);
   helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppIntegration, WAI_CreateShortcutChromeUrlWindowed) {
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_ManifestUpdateTitleStandaloneStandaloneUpdated_TriggerUpdateDialogAndHandleResponseIgnoreDialog_LaunchFromChromeAppsStandalone_TriggerUpdateDialogAndHandleResponseAcceptUpdate_LaunchFromMenuOptionStandalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Gardeners: Disabling this test is supported.
-  helper_.CreateShortcut(Site::kChromeUrl, WindowOptions::kWindowed);
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
   helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kIgnoreDialog);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppIntegration, WAI_InstallMenuOptionChromeURL) {
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_ManifestUpdateTitleStandaloneStandaloneUpdated_TriggerUpdateDialogAndHandleResponseIgnoreDialog_LaunchFromChromeAppsStandalone_TriggerUpdateDialogAndHandleResponseAcceptUpdate_LaunchFromLaunchIconStandalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Gardeners: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kChromeUrl);
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
   helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kIgnoreDialog);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_ManifestUpdateTitleStandaloneStandaloneUpdated_TriggerUpdateDialogAndHandleResponseIgnoreDialog_LaunchFromChromeAppsStandalone_TriggerUpdateDialogAndHandleResponseAcceptUpdate_LaunchFromChromeAppsStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kIgnoreDialog);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_ManifestUpdateTitleStandaloneStandaloneUpdated_TriggerUpdateDialogAndHandleResponseIgnoreDialog_LaunchFromMenuOptionStandalone_TriggerUpdateDialogAndHandleResponseAcceptUpdate_LaunchFromMenuOptionStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kIgnoreDialog);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_ManifestUpdateTitleStandaloneStandaloneUpdated_TriggerUpdateDialogAndHandleResponseIgnoreDialog_LaunchFromMenuOptionStandalone_TriggerUpdateDialogAndHandleResponseAcceptUpdate_LaunchFromLaunchIconStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kIgnoreDialog);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_ManifestUpdateTitleStandaloneStandaloneUpdated_TriggerUpdateDialogAndHandleResponseIgnoreDialog_LaunchFromLaunchIconStandalone_TriggerUpdateDialogAndHandleResponseAcceptUpdate_LaunchFromMenuOptionStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kIgnoreDialog);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_MaybeClosePwa_LaunchFromMenuOptionStandalone_ManifestUpdateDisplayStandaloneTabbed_MaybeClosePwa_LaunchFromMenuOptionStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kTabbed);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.CheckWindowCreated();
+  helper_.CheckTabNotCreated();
+  helper_.CheckWindowDisplayTabbed();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_MaybeClosePwa_LaunchFromMenuOptionStandalone_ManifestUpdateDisplayStandaloneTabbed_MaybeClosePwa_LaunchFromLaunchIconStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kTabbed);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.CheckWindowCreated();
+  helper_.CheckTabNotCreated();
+  helper_.CheckWindowDisplayTabbed();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_MaybeClosePwa_LaunchFromMenuOptionStandalone_ManifestUpdateDisplayStandaloneTabbed_MaybeClosePwa_LaunchFromChromeAppsStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kTabbed);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.CheckWindowCreated();
+  helper_.CheckTabNotCreated();
+  helper_.CheckWindowDisplayTabbed();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_MaybeClosePwa_LaunchFromLaunchIconStandalone_ManifestUpdateDisplayStandaloneTabbed_MaybeClosePwa_LaunchFromMenuOptionStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kTabbed);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.CheckWindowCreated();
+  helper_.CheckTabNotCreated();
+  helper_.CheckWindowDisplayTabbed();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_MaybeClosePwa_LaunchFromLaunchIconStandalone_ManifestUpdateDisplayStandaloneTabbed_MaybeClosePwa_LaunchFromLaunchIconStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kTabbed);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.CheckWindowCreated();
+  helper_.CheckTabNotCreated();
+  helper_.CheckWindowDisplayTabbed();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_MaybeClosePwa_LaunchFromLaunchIconStandalone_ManifestUpdateDisplayStandaloneTabbed_MaybeClosePwa_LaunchFromChromeAppsStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kTabbed);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.CheckWindowCreated();
+  helper_.CheckTabNotCreated();
+  helper_.CheckWindowDisplayTabbed();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_MaybeClosePwa_LaunchFromChromeAppsStandalone_ManifestUpdateDisplayStandaloneTabbed_MaybeClosePwa_LaunchFromMenuOptionStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kTabbed);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.CheckWindowCreated();
+  helper_.CheckTabNotCreated();
+  helper_.CheckWindowDisplayTabbed();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_MaybeClosePwa_LaunchFromChromeAppsStandalone_ManifestUpdateDisplayStandaloneTabbed_MaybeClosePwa_LaunchFromLaunchIconStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kTabbed);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.CheckWindowCreated();
+  helper_.CheckTabNotCreated();
+  helper_.CheckWindowDisplayTabbed();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_MaybeClosePwa_LaunchFromChromeAppsStandalone_ManifestUpdateDisplayStandaloneTabbed_MaybeClosePwa_LaunchFromChromeAppsStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kTabbed);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.CheckWindowCreated();
+  helper_.CheckTabNotCreated();
+  helper_.CheckWindowDisplayTabbed();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_ManifestUpdateTitleStandaloneStandaloneUpdated_TriggerUpdateDialogAndHandleResponseAcceptUpdate) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_ManifestUpdateTitleStandaloneStandaloneUpdated_TriggerUpdateDialogAndHandleResponseCancelDialogAndUninstall) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kCancelDialogAndUninstall);
+  helper_.CheckAppNotInList(Site::kStandalone);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_ManifestUpdateTitleStandaloneStandaloneUpdated_TriggerUpdateDialogAndHandleResponseIgnoreDialog_LaunchFromMenuOptionStandalone_TriggerUpdateDialogAndHandleResponseAcceptUpdate_LaunchFromMenuOptionStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kIgnoreDialog);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_ManifestUpdateTitleStandaloneStandaloneUpdated_TriggerUpdateDialogAndHandleResponseIgnoreDialog_LaunchFromMenuOptionStandalone_TriggerUpdateDialogAndHandleResponseAcceptUpdate_LaunchFromLaunchIconStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kIgnoreDialog);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_ManifestUpdateTitleStandaloneStandaloneUpdated_TriggerUpdateDialogAndHandleResponseIgnoreDialog_LaunchFromMenuOptionStandalone_TriggerUpdateDialogAndHandleResponseAcceptUpdate_LaunchFromChromeAppsStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kIgnoreDialog);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_ManifestUpdateTitleStandaloneStandaloneUpdated_TriggerUpdateDialogAndHandleResponseIgnoreDialog_LaunchFromLaunchIconStandalone_TriggerUpdateDialogAndHandleResponseAcceptUpdate_LaunchFromMenuOptionStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kIgnoreDialog);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_ManifestUpdateTitleStandaloneStandaloneUpdated_TriggerUpdateDialogAndHandleResponseIgnoreDialog_LaunchFromLaunchIconStandalone_TriggerUpdateDialogAndHandleResponseAcceptUpdate_LaunchFromLaunchIconStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kIgnoreDialog);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_ManifestUpdateTitleStandaloneStandaloneUpdated_TriggerUpdateDialogAndHandleResponseIgnoreDialog_LaunchFromLaunchIconStandalone_TriggerUpdateDialogAndHandleResponseAcceptUpdate_LaunchFromChromeAppsStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kIgnoreDialog);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_ManifestUpdateTitleStandaloneStandaloneUpdated_TriggerUpdateDialogAndHandleResponseIgnoreDialog_LaunchFromChromeAppsStandalone_TriggerUpdateDialogAndHandleResponseAcceptUpdate_LaunchFromMenuOptionStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kIgnoreDialog);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_ManifestUpdateTitleStandaloneStandaloneUpdated_TriggerUpdateDialogAndHandleResponseIgnoreDialog_LaunchFromChromeAppsStandalone_TriggerUpdateDialogAndHandleResponseAcceptUpdate_LaunchFromLaunchIconStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kIgnoreDialog);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_ManifestUpdateTitleStandaloneStandaloneUpdated_TriggerUpdateDialogAndHandleResponseIgnoreDialog_LaunchFromChromeAppsStandalone_TriggerUpdateDialogAndHandleResponseAcceptUpdate_LaunchFromChromeAppsStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kIgnoreDialog);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_MaybeClosePwa_LaunchFromMenuOptionStandalone_ManifestUpdateDisplayStandaloneTabbed_MaybeClosePwa_LaunchFromMenuOptionStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kTabbed);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.CheckWindowCreated();
+  helper_.CheckTabNotCreated();
+  helper_.CheckWindowDisplayTabbed();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_MaybeClosePwa_LaunchFromMenuOptionStandalone_ManifestUpdateDisplayStandaloneTabbed_MaybeClosePwa_LaunchFromLaunchIconStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kTabbed);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.CheckWindowCreated();
+  helper_.CheckTabNotCreated();
+  helper_.CheckWindowDisplayTabbed();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_MaybeClosePwa_LaunchFromMenuOptionStandalone_ManifestUpdateDisplayStandaloneTabbed_MaybeClosePwa_LaunchFromChromeAppsStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kTabbed);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.CheckWindowCreated();
+  helper_.CheckTabNotCreated();
+  helper_.CheckWindowDisplayTabbed();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_MaybeClosePwa_LaunchFromLaunchIconStandalone_ManifestUpdateDisplayStandaloneTabbed_MaybeClosePwa_LaunchFromMenuOptionStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kTabbed);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.CheckWindowCreated();
+  helper_.CheckTabNotCreated();
+  helper_.CheckWindowDisplayTabbed();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_MaybeClosePwa_LaunchFromLaunchIconStandalone_ManifestUpdateDisplayStandaloneTabbed_MaybeClosePwa_LaunchFromLaunchIconStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kTabbed);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.CheckWindowCreated();
+  helper_.CheckTabNotCreated();
+  helper_.CheckWindowDisplayTabbed();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_MaybeClosePwa_LaunchFromLaunchIconStandalone_ManifestUpdateDisplayStandaloneTabbed_MaybeClosePwa_LaunchFromChromeAppsStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kTabbed);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.CheckWindowCreated();
+  helper_.CheckTabNotCreated();
+  helper_.CheckWindowDisplayTabbed();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_MaybeClosePwa_LaunchFromChromeAppsStandalone_ManifestUpdateDisplayStandaloneTabbed_MaybeClosePwa_LaunchFromMenuOptionStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kTabbed);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.CheckWindowCreated();
+  helper_.CheckTabNotCreated();
+  helper_.CheckWindowDisplayTabbed();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_MaybeClosePwa_LaunchFromChromeAppsStandalone_ManifestUpdateDisplayStandaloneTabbed_MaybeClosePwa_LaunchFromLaunchIconStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kTabbed);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.CheckWindowCreated();
+  helper_.CheckTabNotCreated();
+  helper_.CheckWindowDisplayTabbed();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_MaybeClosePwa_LaunchFromChromeAppsStandalone_ManifestUpdateDisplayStandaloneTabbed_MaybeClosePwa_LaunchFromChromeAppsStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kTabbed);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.CheckWindowCreated();
+  helper_.CheckTabNotCreated();
+  helper_.CheckWindowDisplayTabbed();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneWithShortcutWindowedWebApp_LaunchFromMenuOptionStandalone_ManifestUpdateTitleStandaloneStandaloneUpdated) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckWindowCreated();
+  helper_.CheckWindowDisplayStandalone();
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneWithShortcutWindowedWebApp_LaunchFromLaunchIconStandalone_ManifestUpdateTitleStandaloneStandaloneUpdated) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckWindowCreated();
+  helper_.CheckWindowDisplayStandalone();
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneWithShortcutWindowedWebApp_LaunchFromChromeAppsStandalone_ManifestUpdateTitleStandaloneStandaloneUpdated) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckWindowCreated();
+  helper_.CheckWindowDisplayStandalone();
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneWithShortcutWindowedWebApp_MaybeClosePwa_LaunchFromMenuOptionStandalone_ManifestUpdateDisplayStandaloneTabbed_MaybeClosePwa_LaunchFromMenuOptionStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kTabbed);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.CheckWindowCreated();
+  helper_.CheckTabNotCreated();
+  helper_.CheckWindowDisplayTabbed();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneWithShortcutWindowedWebApp_MaybeClosePwa_LaunchFromMenuOptionStandalone_ManifestUpdateDisplayStandaloneTabbed_MaybeClosePwa_LaunchFromLaunchIconStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kTabbed);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.CheckWindowCreated();
+  helper_.CheckTabNotCreated();
+  helper_.CheckWindowDisplayTabbed();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneWithShortcutWindowedWebApp_MaybeClosePwa_LaunchFromMenuOptionStandalone_ManifestUpdateDisplayStandaloneTabbed_MaybeClosePwa_LaunchFromChromeAppsStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kTabbed);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.CheckWindowCreated();
+  helper_.CheckTabNotCreated();
+  helper_.CheckWindowDisplayTabbed();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneWithShortcutWindowedWebApp_MaybeClosePwa_LaunchFromLaunchIconStandalone_ManifestUpdateDisplayStandaloneTabbed_MaybeClosePwa_LaunchFromMenuOptionStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kTabbed);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.CheckWindowCreated();
+  helper_.CheckTabNotCreated();
+  helper_.CheckWindowDisplayTabbed();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneWithShortcutWindowedWebApp_MaybeClosePwa_LaunchFromLaunchIconStandalone_ManifestUpdateDisplayStandaloneTabbed_MaybeClosePwa_LaunchFromLaunchIconStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kTabbed);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.CheckWindowCreated();
+  helper_.CheckTabNotCreated();
+  helper_.CheckWindowDisplayTabbed();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneWithShortcutWindowedWebApp_MaybeClosePwa_LaunchFromLaunchIconStandalone_ManifestUpdateDisplayStandaloneTabbed_MaybeClosePwa_LaunchFromChromeAppsStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kTabbed);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.CheckWindowCreated();
+  helper_.CheckTabNotCreated();
+  helper_.CheckWindowDisplayTabbed();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneWithShortcutWindowedWebApp_MaybeClosePwa_LaunchFromChromeAppsStandalone_ManifestUpdateDisplayStandaloneTabbed_MaybeClosePwa_LaunchFromMenuOptionStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kTabbed);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.CheckWindowCreated();
+  helper_.CheckTabNotCreated();
+  helper_.CheckWindowDisplayTabbed();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneWithShortcutWindowedWebApp_MaybeClosePwa_LaunchFromChromeAppsStandalone_ManifestUpdateDisplayStandaloneTabbed_MaybeClosePwa_LaunchFromLaunchIconStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kTabbed);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.CheckWindowCreated();
+  helper_.CheckTabNotCreated();
+  helper_.CheckWindowDisplayTabbed();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneWithShortcutWindowedWebApp_MaybeClosePwa_LaunchFromChromeAppsStandalone_ManifestUpdateDisplayStandaloneTabbed_MaybeClosePwa_LaunchFromChromeAppsStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kTabbed);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.CheckWindowCreated();
+  helper_.CheckTabNotCreated();
+  helper_.CheckWindowDisplayTabbed();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneNoShortcutWindowedWebApp_LaunchFromMenuOptionStandalone_ManifestUpdateTitleStandaloneStandaloneUpdated) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckWindowCreated();
+  helper_.CheckWindowDisplayStandalone();
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneNoShortcutWindowedWebApp_LaunchFromLaunchIconStandalone_ManifestUpdateTitleStandaloneStandaloneUpdated) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckWindowCreated();
+  helper_.CheckWindowDisplayStandalone();
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneNoShortcutWindowedWebApp_LaunchFromChromeAppsStandalone_ManifestUpdateTitleStandaloneStandaloneUpdated) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckWindowCreated();
+  helper_.CheckWindowDisplayStandalone();
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconMinimalUi_MaybeClosePwa_LaunchFromMenuOptionMinimalUi_ManifestUpdateDisplayMinimalUiWco_MaybeClosePwa_LaunchFromMenuOptionMinimalUi_EnableWindowControlsOverlayMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kMinimalUi);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kMinimalUi);
+  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconMinimalUi_MaybeClosePwa_LaunchFromMenuOptionMinimalUi_ManifestUpdateDisplayMinimalUiWco_MaybeClosePwa_LaunchFromLaunchIconMinimalUi_EnableWindowControlsOverlayMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kMinimalUi);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kMinimalUi);
+  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconMinimalUi_MaybeClosePwa_LaunchFromMenuOptionMinimalUi_ManifestUpdateDisplayMinimalUiWco_MaybeClosePwa_LaunchFromChromeAppsMinimalUi_EnableWindowControlsOverlayMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kMinimalUi);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kMinimalUi);
+  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconMinimalUi_MaybeClosePwa_LaunchFromLaunchIconMinimalUi_ManifestUpdateDisplayMinimalUiWco_MaybeClosePwa_LaunchFromMenuOptionMinimalUi_EnableWindowControlsOverlayMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kMinimalUi);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kMinimalUi);
+  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconMinimalUi_MaybeClosePwa_LaunchFromLaunchIconMinimalUi_ManifestUpdateDisplayMinimalUiWco_MaybeClosePwa_LaunchFromLaunchIconMinimalUi_EnableWindowControlsOverlayMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kMinimalUi);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kMinimalUi);
+  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconMinimalUi_MaybeClosePwa_LaunchFromLaunchIconMinimalUi_ManifestUpdateDisplayMinimalUiWco_MaybeClosePwa_LaunchFromChromeAppsMinimalUi_EnableWindowControlsOverlayMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kMinimalUi);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kMinimalUi);
+  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconMinimalUi_MaybeClosePwa_LaunchFromChromeAppsMinimalUi_ManifestUpdateDisplayMinimalUiWco_MaybeClosePwa_LaunchFromMenuOptionMinimalUi_EnableWindowControlsOverlayMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kMinimalUi);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kMinimalUi);
+  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconMinimalUi_MaybeClosePwa_LaunchFromChromeAppsMinimalUi_ManifestUpdateDisplayMinimalUiWco_MaybeClosePwa_LaunchFromLaunchIconMinimalUi_EnableWindowControlsOverlayMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kMinimalUi);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kMinimalUi);
+  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconMinimalUi_MaybeClosePwa_LaunchFromChromeAppsMinimalUi_ManifestUpdateDisplayMinimalUiWco_MaybeClosePwa_LaunchFromChromeAppsMinimalUi_EnableWindowControlsOverlayMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kMinimalUi);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kMinimalUi);
+  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppMinimalUiWithShortcutWindowedWebApp_MaybeClosePwa_LaunchFromMenuOptionMinimalUi_ManifestUpdateDisplayMinimalUiWco_MaybeClosePwa_LaunchFromMenuOptionMinimalUi_EnableWindowControlsOverlayMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kMinimalUi, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kMinimalUi);
+  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppMinimalUiWithShortcutWindowedWebApp_MaybeClosePwa_LaunchFromMenuOptionMinimalUi_ManifestUpdateDisplayMinimalUiWco_MaybeClosePwa_LaunchFromLaunchIconMinimalUi_EnableWindowControlsOverlayMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kMinimalUi, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kMinimalUi);
+  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppMinimalUiWithShortcutWindowedWebApp_MaybeClosePwa_LaunchFromMenuOptionMinimalUi_ManifestUpdateDisplayMinimalUiWco_MaybeClosePwa_LaunchFromChromeAppsMinimalUi_EnableWindowControlsOverlayMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kMinimalUi, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kMinimalUi);
+  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppMinimalUiWithShortcutWindowedWebApp_MaybeClosePwa_LaunchFromLaunchIconMinimalUi_ManifestUpdateDisplayMinimalUiWco_MaybeClosePwa_LaunchFromMenuOptionMinimalUi_EnableWindowControlsOverlayMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kMinimalUi, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kMinimalUi);
+  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppMinimalUiWithShortcutWindowedWebApp_MaybeClosePwa_LaunchFromLaunchIconMinimalUi_ManifestUpdateDisplayMinimalUiWco_MaybeClosePwa_LaunchFromLaunchIconMinimalUi_EnableWindowControlsOverlayMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kMinimalUi, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kMinimalUi);
+  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppMinimalUiWithShortcutWindowedWebApp_MaybeClosePwa_LaunchFromLaunchIconMinimalUi_ManifestUpdateDisplayMinimalUiWco_MaybeClosePwa_LaunchFromChromeAppsMinimalUi_EnableWindowControlsOverlayMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kMinimalUi, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kMinimalUi);
+  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppMinimalUiWithShortcutWindowedWebApp_MaybeClosePwa_LaunchFromChromeAppsMinimalUi_ManifestUpdateDisplayMinimalUiWco_MaybeClosePwa_LaunchFromMenuOptionMinimalUi_EnableWindowControlsOverlayMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kMinimalUi, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kMinimalUi);
+  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppMinimalUiWithShortcutWindowedWebApp_MaybeClosePwa_LaunchFromChromeAppsMinimalUi_ManifestUpdateDisplayMinimalUiWco_MaybeClosePwa_LaunchFromLaunchIconMinimalUi_EnableWindowControlsOverlayMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kMinimalUi, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kMinimalUi);
+  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppMinimalUiWithShortcutWindowedWebApp_MaybeClosePwa_LaunchFromChromeAppsMinimalUi_ManifestUpdateDisplayMinimalUiWco_MaybeClosePwa_LaunchFromChromeAppsMinimalUi_EnableWindowControlsOverlayMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kMinimalUi, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kMinimalUi);
+  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppMinimalUiNoShortcutWindowedWebApp_MaybeClosePwa_LaunchFromMenuOptionMinimalUi_ManifestUpdateDisplayMinimalUiWco_MaybeClosePwa_LaunchFromMenuOptionMinimalUi_EnableWindowControlsOverlayMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kMinimalUi, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kMinimalUi);
+  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppMinimalUiNoShortcutWindowedWebApp_MaybeClosePwa_LaunchFromMenuOptionMinimalUi_ManifestUpdateDisplayMinimalUiWco_MaybeClosePwa_LaunchFromLaunchIconMinimalUi_EnableWindowControlsOverlayMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kMinimalUi, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kMinimalUi);
+  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppMinimalUiNoShortcutWindowedWebApp_MaybeClosePwa_LaunchFromMenuOptionMinimalUi_ManifestUpdateDisplayMinimalUiWco_MaybeClosePwa_LaunchFromChromeAppsMinimalUi_EnableWindowControlsOverlayMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kMinimalUi, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kMinimalUi);
+  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppMinimalUiNoShortcutWindowedWebApp_MaybeClosePwa_LaunchFromLaunchIconMinimalUi_ManifestUpdateDisplayMinimalUiWco_MaybeClosePwa_LaunchFromMenuOptionMinimalUi_EnableWindowControlsOverlayMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kMinimalUi, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kMinimalUi);
+  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppMinimalUiNoShortcutWindowedWebApp_MaybeClosePwa_LaunchFromLaunchIconMinimalUi_ManifestUpdateDisplayMinimalUiWco_MaybeClosePwa_LaunchFromLaunchIconMinimalUi_EnableWindowControlsOverlayMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kMinimalUi, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kMinimalUi);
+  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppMinimalUiNoShortcutWindowedWebApp_MaybeClosePwa_LaunchFromLaunchIconMinimalUi_ManifestUpdateDisplayMinimalUiWco_MaybeClosePwa_LaunchFromChromeAppsMinimalUi_EnableWindowControlsOverlayMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kMinimalUi, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kMinimalUi);
+  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppMinimalUiNoShortcutWindowedWebApp_MaybeClosePwa_LaunchFromChromeAppsMinimalUi_ManifestUpdateDisplayMinimalUiWco_MaybeClosePwa_LaunchFromMenuOptionMinimalUi_EnableWindowControlsOverlayMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kMinimalUi, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kMinimalUi);
+  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppMinimalUiNoShortcutWindowedWebApp_MaybeClosePwa_LaunchFromChromeAppsMinimalUi_ManifestUpdateDisplayMinimalUiWco_MaybeClosePwa_LaunchFromLaunchIconMinimalUi_EnableWindowControlsOverlayMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kMinimalUi, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kMinimalUi);
+  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppMinimalUiNoShortcutWindowedWebApp_MaybeClosePwa_LaunchFromChromeAppsMinimalUi_ManifestUpdateDisplayMinimalUiWco_MaybeClosePwa_LaunchFromChromeAppsMinimalUi_EnableWindowControlsOverlayMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kMinimalUi, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kMinimalUi);
+  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuMinimalUi_MaybeClosePwa_LaunchFromMenuOptionMinimalUi_ManifestUpdateDisplayMinimalUiWco_MaybeClosePwa_LaunchFromMenuOptionMinimalUi_EnableWindowControlsOverlayMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kMinimalUi);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kMinimalUi);
+  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuMinimalUi_MaybeClosePwa_LaunchFromMenuOptionMinimalUi_ManifestUpdateDisplayMinimalUiWco_MaybeClosePwa_LaunchFromLaunchIconMinimalUi_EnableWindowControlsOverlayMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kMinimalUi);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kMinimalUi);
+  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuMinimalUi_MaybeClosePwa_LaunchFromMenuOptionMinimalUi_ManifestUpdateDisplayMinimalUiWco_MaybeClosePwa_LaunchFromChromeAppsMinimalUi_EnableWindowControlsOverlayMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kMinimalUi);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kMinimalUi);
+  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuMinimalUi_MaybeClosePwa_LaunchFromLaunchIconMinimalUi_ManifestUpdateDisplayMinimalUiWco_MaybeClosePwa_LaunchFromMenuOptionMinimalUi_EnableWindowControlsOverlayMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kMinimalUi);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kMinimalUi);
+  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuMinimalUi_MaybeClosePwa_LaunchFromLaunchIconMinimalUi_ManifestUpdateDisplayMinimalUiWco_MaybeClosePwa_LaunchFromLaunchIconMinimalUi_EnableWindowControlsOverlayMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kMinimalUi);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kMinimalUi);
+  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuMinimalUi_MaybeClosePwa_LaunchFromLaunchIconMinimalUi_ManifestUpdateDisplayMinimalUiWco_MaybeClosePwa_LaunchFromChromeAppsMinimalUi_EnableWindowControlsOverlayMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kMinimalUi);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kMinimalUi);
+  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuMinimalUi_MaybeClosePwa_LaunchFromChromeAppsMinimalUi_ManifestUpdateDisplayMinimalUiWco_MaybeClosePwa_LaunchFromMenuOptionMinimalUi_EnableWindowControlsOverlayMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kMinimalUi);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kMinimalUi);
+  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuMinimalUi_MaybeClosePwa_LaunchFromChromeAppsMinimalUi_ManifestUpdateDisplayMinimalUiWco_MaybeClosePwa_LaunchFromLaunchIconMinimalUi_EnableWindowControlsOverlayMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kMinimalUi);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kMinimalUi);
+  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuMinimalUi_MaybeClosePwa_LaunchFromChromeAppsMinimalUi_ManifestUpdateDisplayMinimalUiWco_MaybeClosePwa_LaunchFromChromeAppsMinimalUi_EnableWindowControlsOverlayMinimalUi) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kMinimalUi);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kMinimalUi);
+  helper_.ManifestUpdateDisplay(Site::kMinimalUi, Display::kWco);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kMinimalUi);
+  helper_.CheckWindowControlsOverlay(Site::kMinimalUi, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kMinimalUi, IsShown::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandaloneNestedA_LaunchFromMenuOptionStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_NavigateBrowserStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandaloneNestedA);
+  helper_.LaunchFromMenuOption(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.NavigateBrowser(Site::kStandalone);
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandaloneNestedA_LaunchFromMenuOptionStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_LaunchFromMenuOptionStandaloneNestedA_NavigatePwaStandaloneNestedAStandaloneNestedB) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandaloneNestedA);
+  helper_.LaunchFromMenuOption(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromMenuOption(Site::kStandaloneNestedA);
+  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
+  helper_.CheckNoToolbar();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandaloneNestedA_LaunchFromMenuOptionStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_LaunchFromLaunchIconStandaloneNestedA_NavigatePwaStandaloneNestedAStandaloneNestedB) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandaloneNestedA);
+  helper_.LaunchFromMenuOption(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromLaunchIcon(Site::kStandaloneNestedA);
+  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
+  helper_.CheckNoToolbar();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandaloneNestedA_LaunchFromMenuOptionStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_LaunchFromChromeAppsStandaloneNestedA_NavigatePwaStandaloneNestedAStandaloneNestedB) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandaloneNestedA);
+  helper_.LaunchFromMenuOption(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromChromeApps(Site::kStandaloneNestedA);
+  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
+  helper_.CheckNoToolbar();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandaloneNestedA_LaunchFromMenuOptionStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_NavigateBrowserStandaloneNestedB) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandaloneNestedA);
+  helper_.LaunchFromMenuOption(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.NavigateBrowser(Site::kStandaloneNestedB);
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandaloneNestedA_LaunchFromMenuOptionStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_NavigateBrowserStandaloneNestedA) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandaloneNestedA);
+  helper_.LaunchFromMenuOption(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.NavigateBrowser(Site::kStandaloneNestedA);
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandaloneNestedA_LaunchFromLaunchIconStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_NavigateBrowserStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandaloneNestedA);
+  helper_.LaunchFromLaunchIcon(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.NavigateBrowser(Site::kStandalone);
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandaloneNestedA_LaunchFromLaunchIconStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_LaunchFromMenuOptionStandaloneNestedA_NavigatePwaStandaloneNestedAStandaloneNestedB) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandaloneNestedA);
+  helper_.LaunchFromLaunchIcon(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromMenuOption(Site::kStandaloneNestedA);
+  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
+  helper_.CheckNoToolbar();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandaloneNestedA_LaunchFromLaunchIconStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_LaunchFromLaunchIconStandaloneNestedA_NavigatePwaStandaloneNestedAStandaloneNestedB) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandaloneNestedA);
+  helper_.LaunchFromLaunchIcon(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromLaunchIcon(Site::kStandaloneNestedA);
+  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
+  helper_.CheckNoToolbar();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandaloneNestedA_LaunchFromLaunchIconStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_LaunchFromChromeAppsStandaloneNestedA_NavigatePwaStandaloneNestedAStandaloneNestedB) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandaloneNestedA);
+  helper_.LaunchFromLaunchIcon(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromChromeApps(Site::kStandaloneNestedA);
+  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
+  helper_.CheckNoToolbar();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandaloneNestedA_LaunchFromLaunchIconStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_NavigateBrowserStandaloneNestedB) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandaloneNestedA);
+  helper_.LaunchFromLaunchIcon(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.NavigateBrowser(Site::kStandaloneNestedB);
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandaloneNestedA_LaunchFromLaunchIconStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_NavigateBrowserStandaloneNestedA) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandaloneNestedA);
+  helper_.LaunchFromLaunchIcon(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.NavigateBrowser(Site::kStandaloneNestedA);
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandaloneNestedA_LaunchFromChromeAppsStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_NavigateBrowserStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandaloneNestedA);
+  helper_.LaunchFromChromeApps(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.NavigateBrowser(Site::kStandalone);
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandaloneNestedA_LaunchFromChromeAppsStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_LaunchFromMenuOptionStandaloneNestedA_NavigatePwaStandaloneNestedAStandaloneNestedB) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandaloneNestedA);
+  helper_.LaunchFromChromeApps(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromMenuOption(Site::kStandaloneNestedA);
+  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
+  helper_.CheckNoToolbar();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandaloneNestedA_LaunchFromChromeAppsStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_LaunchFromLaunchIconStandaloneNestedA_NavigatePwaStandaloneNestedAStandaloneNestedB) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandaloneNestedA);
+  helper_.LaunchFromChromeApps(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromLaunchIcon(Site::kStandaloneNestedA);
+  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
+  helper_.CheckNoToolbar();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandaloneNestedA_LaunchFromChromeAppsStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_LaunchFromChromeAppsStandaloneNestedA_NavigatePwaStandaloneNestedAStandaloneNestedB) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandaloneNestedA);
+  helper_.LaunchFromChromeApps(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromChromeApps(Site::kStandaloneNestedA);
+  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
+  helper_.CheckNoToolbar();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandaloneNestedA_LaunchFromChromeAppsStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_NavigateBrowserStandaloneNestedB) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandaloneNestedA);
+  helper_.LaunchFromChromeApps(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.NavigateBrowser(Site::kStandaloneNestedB);
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandaloneNestedA_LaunchFromChromeAppsStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_NavigateBrowserStandaloneNestedA) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandaloneNestedA);
+  helper_.LaunchFromChromeApps(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.NavigateBrowser(Site::kStandaloneNestedA);
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneNestedAWithShortcutWindowedWebApp_LaunchFromMenuOptionStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_NavigateBrowserStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandaloneNestedA,
+                           ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.LaunchFromMenuOption(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.NavigateBrowser(Site::kStandalone);
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneNestedAWithShortcutWindowedWebApp_LaunchFromMenuOptionStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_LaunchFromMenuOptionStandaloneNestedA_NavigatePwaStandaloneNestedAStandaloneNestedB) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandaloneNestedA,
+                           ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.LaunchFromMenuOption(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromMenuOption(Site::kStandaloneNestedA);
+  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
+  helper_.CheckNoToolbar();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneNestedAWithShortcutWindowedWebApp_LaunchFromMenuOptionStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_LaunchFromLaunchIconStandaloneNestedA_NavigatePwaStandaloneNestedAStandaloneNestedB) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandaloneNestedA,
+                           ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.LaunchFromMenuOption(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromLaunchIcon(Site::kStandaloneNestedA);
+  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
+  helper_.CheckNoToolbar();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneNestedAWithShortcutWindowedWebApp_LaunchFromMenuOptionStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_LaunchFromChromeAppsStandaloneNestedA_NavigatePwaStandaloneNestedAStandaloneNestedB) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandaloneNestedA,
+                           ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.LaunchFromMenuOption(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromChromeApps(Site::kStandaloneNestedA);
+  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
+  helper_.CheckNoToolbar();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneNestedAWithShortcutWindowedWebApp_LaunchFromMenuOptionStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_NavigateBrowserStandaloneNestedB) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandaloneNestedA,
+                           ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.LaunchFromMenuOption(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.NavigateBrowser(Site::kStandaloneNestedB);
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneNestedAWithShortcutWindowedWebApp_LaunchFromMenuOptionStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_NavigateBrowserStandaloneNestedA) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandaloneNestedA,
+                           ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.LaunchFromMenuOption(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.NavigateBrowser(Site::kStandaloneNestedA);
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneNestedAWithShortcutWindowedWebApp_LaunchFromLaunchIconStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_NavigateBrowserStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandaloneNestedA,
+                           ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.LaunchFromLaunchIcon(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.NavigateBrowser(Site::kStandalone);
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneNestedAWithShortcutWindowedWebApp_LaunchFromLaunchIconStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_LaunchFromMenuOptionStandaloneNestedA_NavigatePwaStandaloneNestedAStandaloneNestedB) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandaloneNestedA,
+                           ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.LaunchFromLaunchIcon(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromMenuOption(Site::kStandaloneNestedA);
+  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
+  helper_.CheckNoToolbar();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneNestedAWithShortcutWindowedWebApp_LaunchFromLaunchIconStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_LaunchFromLaunchIconStandaloneNestedA_NavigatePwaStandaloneNestedAStandaloneNestedB) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandaloneNestedA,
+                           ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.LaunchFromLaunchIcon(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromLaunchIcon(Site::kStandaloneNestedA);
+  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
+  helper_.CheckNoToolbar();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneNestedAWithShortcutWindowedWebApp_LaunchFromLaunchIconStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_LaunchFromChromeAppsStandaloneNestedA_NavigatePwaStandaloneNestedAStandaloneNestedB) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandaloneNestedA,
+                           ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.LaunchFromLaunchIcon(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromChromeApps(Site::kStandaloneNestedA);
+  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
+  helper_.CheckNoToolbar();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneNestedAWithShortcutWindowedWebApp_LaunchFromLaunchIconStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_NavigateBrowserStandaloneNestedB) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandaloneNestedA,
+                           ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.LaunchFromLaunchIcon(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.NavigateBrowser(Site::kStandaloneNestedB);
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneNestedAWithShortcutWindowedWebApp_LaunchFromLaunchIconStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_NavigateBrowserStandaloneNestedA) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandaloneNestedA,
+                           ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.LaunchFromLaunchIcon(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.NavigateBrowser(Site::kStandaloneNestedA);
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneNestedAWithShortcutWindowedWebApp_LaunchFromChromeAppsStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_NavigateBrowserStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandaloneNestedA,
+                           ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.LaunchFromChromeApps(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.NavigateBrowser(Site::kStandalone);
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneNestedAWithShortcutWindowedWebApp_LaunchFromChromeAppsStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_LaunchFromMenuOptionStandaloneNestedA_NavigatePwaStandaloneNestedAStandaloneNestedB) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandaloneNestedA,
+                           ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.LaunchFromChromeApps(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromMenuOption(Site::kStandaloneNestedA);
+  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
+  helper_.CheckNoToolbar();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneNestedAWithShortcutWindowedWebApp_LaunchFromChromeAppsStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_LaunchFromLaunchIconStandaloneNestedA_NavigatePwaStandaloneNestedAStandaloneNestedB) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandaloneNestedA,
+                           ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.LaunchFromChromeApps(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromLaunchIcon(Site::kStandaloneNestedA);
+  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
+  helper_.CheckNoToolbar();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneNestedAWithShortcutWindowedWebApp_LaunchFromChromeAppsStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_LaunchFromChromeAppsStandaloneNestedA_NavigatePwaStandaloneNestedAStandaloneNestedB) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandaloneNestedA,
+                           ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.LaunchFromChromeApps(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromChromeApps(Site::kStandaloneNestedA);
+  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
+  helper_.CheckNoToolbar();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneNestedAWithShortcutWindowedWebApp_LaunchFromChromeAppsStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_NavigateBrowserStandaloneNestedB) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandaloneNestedA,
+                           ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.LaunchFromChromeApps(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.NavigateBrowser(Site::kStandaloneNestedB);
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneNestedAWithShortcutWindowedWebApp_LaunchFromChromeAppsStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_NavigateBrowserStandaloneNestedA) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandaloneNestedA,
+                           ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.LaunchFromChromeApps(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.NavigateBrowser(Site::kStandaloneNestedA);
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandaloneNestedA_LaunchFromMenuOptionStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_NavigateBrowserStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandaloneNestedA);
+  helper_.LaunchFromMenuOption(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.NavigateBrowser(Site::kStandalone);
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandaloneNestedA_LaunchFromMenuOptionStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_LaunchFromMenuOptionStandaloneNestedA_NavigatePwaStandaloneNestedAStandaloneNestedB) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandaloneNestedA);
+  helper_.LaunchFromMenuOption(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromMenuOption(Site::kStandaloneNestedA);
+  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
+  helper_.CheckNoToolbar();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandaloneNestedA_LaunchFromMenuOptionStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_LaunchFromLaunchIconStandaloneNestedA_NavigatePwaStandaloneNestedAStandaloneNestedB) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandaloneNestedA);
+  helper_.LaunchFromMenuOption(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromLaunchIcon(Site::kStandaloneNestedA);
+  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
+  helper_.CheckNoToolbar();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandaloneNestedA_LaunchFromMenuOptionStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_LaunchFromChromeAppsStandaloneNestedA_NavigatePwaStandaloneNestedAStandaloneNestedB) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandaloneNestedA);
+  helper_.LaunchFromMenuOption(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromChromeApps(Site::kStandaloneNestedA);
+  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
+  helper_.CheckNoToolbar();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandaloneNestedA_LaunchFromMenuOptionStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_NavigateBrowserStandaloneNestedB) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandaloneNestedA);
+  helper_.LaunchFromMenuOption(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.NavigateBrowser(Site::kStandaloneNestedB);
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandaloneNestedA_LaunchFromMenuOptionStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_NavigateBrowserStandaloneNestedA) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandaloneNestedA);
+  helper_.LaunchFromMenuOption(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.NavigateBrowser(Site::kStandaloneNestedA);
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandaloneNestedA_LaunchFromLaunchIconStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_NavigateBrowserStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandaloneNestedA);
+  helper_.LaunchFromLaunchIcon(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.NavigateBrowser(Site::kStandalone);
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandaloneNestedA_LaunchFromLaunchIconStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_LaunchFromMenuOptionStandaloneNestedA_NavigatePwaStandaloneNestedAStandaloneNestedB) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandaloneNestedA);
+  helper_.LaunchFromLaunchIcon(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromMenuOption(Site::kStandaloneNestedA);
+  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
+  helper_.CheckNoToolbar();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandaloneNestedA_LaunchFromLaunchIconStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_LaunchFromLaunchIconStandaloneNestedA_NavigatePwaStandaloneNestedAStandaloneNestedB) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandaloneNestedA);
+  helper_.LaunchFromLaunchIcon(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromLaunchIcon(Site::kStandaloneNestedA);
+  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
+  helper_.CheckNoToolbar();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandaloneNestedA_LaunchFromLaunchIconStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_LaunchFromChromeAppsStandaloneNestedA_NavigatePwaStandaloneNestedAStandaloneNestedB) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandaloneNestedA);
+  helper_.LaunchFromLaunchIcon(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromChromeApps(Site::kStandaloneNestedA);
+  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
+  helper_.CheckNoToolbar();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandaloneNestedA_LaunchFromLaunchIconStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_NavigateBrowserStandaloneNestedB) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandaloneNestedA);
+  helper_.LaunchFromLaunchIcon(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.NavigateBrowser(Site::kStandaloneNestedB);
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandaloneNestedA_LaunchFromLaunchIconStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_NavigateBrowserStandaloneNestedA) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandaloneNestedA);
+  helper_.LaunchFromLaunchIcon(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.NavigateBrowser(Site::kStandaloneNestedA);
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandaloneNestedA_LaunchFromChromeAppsStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_NavigateBrowserStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandaloneNestedA);
+  helper_.LaunchFromChromeApps(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.NavigateBrowser(Site::kStandalone);
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandaloneNestedA_LaunchFromChromeAppsStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_LaunchFromMenuOptionStandaloneNestedA_NavigatePwaStandaloneNestedAStandaloneNestedB) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandaloneNestedA);
+  helper_.LaunchFromChromeApps(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromMenuOption(Site::kStandaloneNestedA);
+  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
+  helper_.CheckNoToolbar();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandaloneNestedA_LaunchFromChromeAppsStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_LaunchFromLaunchIconStandaloneNestedA_NavigatePwaStandaloneNestedAStandaloneNestedB) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandaloneNestedA);
+  helper_.LaunchFromChromeApps(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromLaunchIcon(Site::kStandaloneNestedA);
+  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
+  helper_.CheckNoToolbar();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandaloneNestedA_LaunchFromChromeAppsStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_LaunchFromChromeAppsStandaloneNestedA_NavigatePwaStandaloneNestedAStandaloneNestedB) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandaloneNestedA);
+  helper_.LaunchFromChromeApps(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromChromeApps(Site::kStandaloneNestedA);
+  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
+  helper_.CheckNoToolbar();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandaloneNestedA_LaunchFromChromeAppsStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_NavigateBrowserStandaloneNestedB) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandaloneNestedA);
+  helper_.LaunchFromChromeApps(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.NavigateBrowser(Site::kStandaloneNestedB);
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandaloneNestedA_LaunchFromChromeAppsStandaloneNestedA_ManifestUpdateScopeToStandaloneNestedAStandalone_NavigateBrowserStandaloneNestedA) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandaloneNestedA);
+  helper_.LaunchFromChromeApps(Site::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.NavigateBrowser(Site::kStandaloneNestedA);
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppWcoWithShortcutWindowedWebApp_MaybeClosePwa_LaunchFromMenuOptionWco_ManifestUpdateDisplayWcoStandalone_MaybeClosePwa_LaunchFromMenuOptionWco) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kWco, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kWco);
+  helper_.ManifestUpdateDisplay(Site::kWco, Display::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kWco);
+  helper_.CheckWindowControlsOverlayToggle(Site::kWco, IsShown::kNotShown);
+  helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOff);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppWcoWithShortcutWindowedWebApp_MaybeClosePwa_LaunchFromMenuOptionWco_ManifestUpdateDisplayWcoStandalone_MaybeClosePwa_LaunchFromLaunchIconWco) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kWco, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kWco);
+  helper_.ManifestUpdateDisplay(Site::kWco, Display::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kWco);
+  helper_.CheckWindowControlsOverlayToggle(Site::kWco, IsShown::kNotShown);
+  helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOff);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppWcoWithShortcutWindowedWebApp_MaybeClosePwa_LaunchFromMenuOptionWco_ManifestUpdateDisplayWcoStandalone_MaybeClosePwa_LaunchFromChromeAppsWco) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kWco, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kWco);
+  helper_.ManifestUpdateDisplay(Site::kWco, Display::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kWco);
+  helper_.CheckWindowControlsOverlayToggle(Site::kWco, IsShown::kNotShown);
+  helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOff);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppWcoWithShortcutWindowedWebApp_MaybeClosePwa_LaunchFromLaunchIconWco_ManifestUpdateDisplayWcoStandalone_MaybeClosePwa_LaunchFromMenuOptionWco) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kWco, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kWco);
+  helper_.ManifestUpdateDisplay(Site::kWco, Display::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kWco);
+  helper_.CheckWindowControlsOverlayToggle(Site::kWco, IsShown::kNotShown);
+  helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOff);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppWcoWithShortcutWindowedWebApp_MaybeClosePwa_LaunchFromLaunchIconWco_ManifestUpdateDisplayWcoStandalone_MaybeClosePwa_LaunchFromLaunchIconWco) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kWco, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kWco);
+  helper_.ManifestUpdateDisplay(Site::kWco, Display::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kWco);
+  helper_.CheckWindowControlsOverlayToggle(Site::kWco, IsShown::kNotShown);
+  helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOff);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppWcoWithShortcutWindowedWebApp_MaybeClosePwa_LaunchFromLaunchIconWco_ManifestUpdateDisplayWcoStandalone_MaybeClosePwa_LaunchFromChromeAppsWco) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kWco, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kWco);
+  helper_.ManifestUpdateDisplay(Site::kWco, Display::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kWco);
+  helper_.CheckWindowControlsOverlayToggle(Site::kWco, IsShown::kNotShown);
+  helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOff);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppWcoWithShortcutWindowedWebApp_MaybeClosePwa_LaunchFromChromeAppsWco_ManifestUpdateDisplayWcoStandalone_MaybeClosePwa_LaunchFromMenuOptionWco) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kWco, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kWco);
+  helper_.ManifestUpdateDisplay(Site::kWco, Display::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kWco);
+  helper_.CheckWindowControlsOverlayToggle(Site::kWco, IsShown::kNotShown);
+  helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOff);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppWcoWithShortcutWindowedWebApp_MaybeClosePwa_LaunchFromChromeAppsWco_ManifestUpdateDisplayWcoStandalone_MaybeClosePwa_LaunchFromLaunchIconWco) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kWco, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kWco);
+  helper_.ManifestUpdateDisplay(Site::kWco, Display::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kWco);
+  helper_.CheckWindowControlsOverlayToggle(Site::kWco, IsShown::kNotShown);
+  helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOff);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppWcoWithShortcutWindowedWebApp_MaybeClosePwa_LaunchFromChromeAppsWco_ManifestUpdateDisplayWcoStandalone_MaybeClosePwa_LaunchFromChromeAppsWco) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kWco, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kWco);
+  helper_.ManifestUpdateDisplay(Site::kWco, Display::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kWco);
+  helper_.CheckWindowControlsOverlayToggle(Site::kWco, IsShown::kNotShown);
+  helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOff);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppWcoNoShortcutWindowedWebApp_MaybeClosePwa_LaunchFromMenuOptionWco_ManifestUpdateDisplayWcoStandalone_MaybeClosePwa_LaunchFromMenuOptionWco) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kWco, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kWco);
+  helper_.ManifestUpdateDisplay(Site::kWco, Display::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kWco);
+  helper_.CheckWindowControlsOverlayToggle(Site::kWco, IsShown::kNotShown);
+  helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOff);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppWcoNoShortcutWindowedWebApp_MaybeClosePwa_LaunchFromMenuOptionWco_ManifestUpdateDisplayWcoStandalone_MaybeClosePwa_LaunchFromLaunchIconWco) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kWco, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kWco);
+  helper_.ManifestUpdateDisplay(Site::kWco, Display::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kWco);
+  helper_.CheckWindowControlsOverlayToggle(Site::kWco, IsShown::kNotShown);
+  helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOff);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppWcoNoShortcutWindowedWebApp_MaybeClosePwa_LaunchFromMenuOptionWco_ManifestUpdateDisplayWcoStandalone_MaybeClosePwa_LaunchFromChromeAppsWco) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kWco, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kWco);
+  helper_.ManifestUpdateDisplay(Site::kWco, Display::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kWco);
+  helper_.CheckWindowControlsOverlayToggle(Site::kWco, IsShown::kNotShown);
+  helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOff);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppWcoNoShortcutWindowedWebApp_MaybeClosePwa_LaunchFromLaunchIconWco_ManifestUpdateDisplayWcoStandalone_MaybeClosePwa_LaunchFromMenuOptionWco) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kWco, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kWco);
+  helper_.ManifestUpdateDisplay(Site::kWco, Display::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kWco);
+  helper_.CheckWindowControlsOverlayToggle(Site::kWco, IsShown::kNotShown);
+  helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOff);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppWcoNoShortcutWindowedWebApp_MaybeClosePwa_LaunchFromLaunchIconWco_ManifestUpdateDisplayWcoStandalone_MaybeClosePwa_LaunchFromLaunchIconWco) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kWco, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kWco);
+  helper_.ManifestUpdateDisplay(Site::kWco, Display::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kWco);
+  helper_.CheckWindowControlsOverlayToggle(Site::kWco, IsShown::kNotShown);
+  helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOff);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppWcoNoShortcutWindowedWebApp_MaybeClosePwa_LaunchFromLaunchIconWco_ManifestUpdateDisplayWcoStandalone_MaybeClosePwa_LaunchFromChromeAppsWco) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kWco, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kWco);
+  helper_.ManifestUpdateDisplay(Site::kWco, Display::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kWco);
+  helper_.CheckWindowControlsOverlayToggle(Site::kWco, IsShown::kNotShown);
+  helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOff);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppWcoNoShortcutWindowedWebApp_MaybeClosePwa_LaunchFromChromeAppsWco_ManifestUpdateDisplayWcoStandalone_MaybeClosePwa_LaunchFromMenuOptionWco) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kWco, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kWco);
+  helper_.ManifestUpdateDisplay(Site::kWco, Display::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromMenuOption(Site::kWco);
+  helper_.CheckWindowControlsOverlayToggle(Site::kWco, IsShown::kNotShown);
+  helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOff);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppWcoNoShortcutWindowedWebApp_MaybeClosePwa_LaunchFromChromeAppsWco_ManifestUpdateDisplayWcoStandalone_MaybeClosePwa_LaunchFromLaunchIconWco) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kWco, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kWco);
+  helper_.ManifestUpdateDisplay(Site::kWco, Display::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromLaunchIcon(Site::kWco);
+  helper_.CheckWindowControlsOverlayToggle(Site::kWco, IsShown::kNotShown);
+  helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOff);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppWcoNoShortcutWindowedWebApp_MaybeClosePwa_LaunchFromChromeAppsWco_ManifestUpdateDisplayWcoStandalone_MaybeClosePwa_LaunchFromChromeAppsWco) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kWco, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kWco);
+  helper_.ManifestUpdateDisplay(Site::kWco, Display::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.MaybeClosePwa();
+  helper_.LaunchFromChromeApps(Site::kWco);
+  helper_.CheckWindowControlsOverlayToggle(Site::kWco, IsShown::kNotShown);
+  helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOff);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_LaunchFromMenuOptionStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.CheckWindowCreated();
+  helper_.CheckWindowDisplayStandalone();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_LaunchFromLaunchIconStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.CheckWindowCreated();
+  helper_.CheckWindowDisplayStandalone();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_LaunchFromChromeAppsStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.CheckWindowCreated();
+  helper_.CheckWindowDisplayStandalone();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandaloneNestedA_MaybeClosePwa_NavigateBrowserStandalone_ManifestUpdateScopeToStandaloneNestedAStandalone_NavigateBrowserStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandaloneNestedA);
+  helper_.MaybeClosePwa();
+  helper_.NavigateBrowser(Site::kStandalone);
+  helper_.CheckLaunchIconNotShown();
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.NavigateBrowser(Site::kStandalone);
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandaloneNestedA_MaybeClosePwa_NavigateBrowserStandalone_ManifestUpdateScopeToStandaloneNestedAStandalone_NavigateBrowserStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandaloneNestedA);
+  helper_.MaybeClosePwa();
+  helper_.NavigateBrowser(Site::kStandalone);
+  helper_.CheckLaunchIconNotShown();
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.NavigateBrowser(Site::kStandalone);
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_MaybeClosePwa_NavigateBrowserStandalone_ManifestUpdateTitleStandaloneStandaloneUpdated_LaunchFromMenuOptionStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.MaybeClosePwa();
+  helper_.NavigateBrowser(Site::kStandalone);
+  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated);
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_MaybeClosePwa_NavigateBrowserStandalone_ManifestUpdateTitleStandaloneStandaloneUpdated_LaunchFromLaunchIconStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.MaybeClosePwa();
+  helper_.NavigateBrowser(Site::kStandalone);
+  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated);
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_MaybeClosePwa_NavigateBrowserStandalone_ManifestUpdateTitleStandaloneStandaloneUpdated_LaunchFromChromeAppsStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.MaybeClosePwa();
+  helper_.NavigateBrowser(Site::kStandalone);
+  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_MaybeClosePwa_NavigateBrowserStandalone_ManifestUpdateTitleStandaloneStandaloneUpdated_LaunchFromMenuOptionStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.MaybeClosePwa();
+  helper_.NavigateBrowser(Site::kStandalone);
+  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated);
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_MaybeClosePwa_NavigateBrowserStandalone_ManifestUpdateTitleStandaloneStandaloneUpdated_LaunchFromLaunchIconStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.MaybeClosePwa();
+  helper_.NavigateBrowser(Site::kStandalone);
+  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated);
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_MaybeClosePwa_NavigateBrowserStandalone_ManifestUpdateTitleStandaloneStandaloneUpdated_LaunchFromChromeAppsStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.MaybeClosePwa();
+  helper_.NavigateBrowser(Site::kStandalone);
+  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_ManifestUpdateIconStandaloneRed_TriggerUpdateDialogAndHandleResponseAcceptUpdate) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateIcon(Site::kStandalone, Color::kRed);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kRed);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_ManifestUpdateIconStandaloneRed_TriggerUpdateDialogAndHandleResponseCancelDialogAndUninstall) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateIcon(Site::kStandalone, Color::kRed);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kCancelDialogAndUninstall);
+  helper_.CheckAppNotInList(Site::kStandalone);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_ManifestUpdateIconStandaloneRed_TriggerUpdateDialogAndHandleResponseIgnoreDialog_LaunchFromMenuOptionStandalone_TriggerUpdateDialogAndHandleResponseAcceptUpdate_LaunchFromMenuOptionStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateIcon(Site::kStandalone, Color::kRed);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kIgnoreDialog);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kRed);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_ManifestUpdateIconStandaloneRed_TriggerUpdateDialogAndHandleResponseIgnoreDialog_LaunchFromMenuOptionStandalone_TriggerUpdateDialogAndHandleResponseAcceptUpdate_LaunchFromLaunchIconStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateIcon(Site::kStandalone, Color::kRed);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kIgnoreDialog);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kRed);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_ManifestUpdateIconStandaloneRed_TriggerUpdateDialogAndHandleResponseIgnoreDialog_LaunchFromMenuOptionStandalone_TriggerUpdateDialogAndHandleResponseAcceptUpdate_LaunchFromChromeAppsStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateIcon(Site::kStandalone, Color::kRed);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kIgnoreDialog);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kRed);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_ManifestUpdateIconStandaloneRed_TriggerUpdateDialogAndHandleResponseIgnoreDialog_LaunchFromLaunchIconStandalone_TriggerUpdateDialogAndHandleResponseAcceptUpdate_LaunchFromMenuOptionStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateIcon(Site::kStandalone, Color::kRed);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kIgnoreDialog);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kRed);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_ManifestUpdateIconStandaloneRed_TriggerUpdateDialogAndHandleResponseIgnoreDialog_LaunchFromLaunchIconStandalone_TriggerUpdateDialogAndHandleResponseAcceptUpdate_LaunchFromLaunchIconStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateIcon(Site::kStandalone, Color::kRed);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kIgnoreDialog);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kRed);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_ManifestUpdateIconStandaloneRed_TriggerUpdateDialogAndHandleResponseIgnoreDialog_LaunchFromLaunchIconStandalone_TriggerUpdateDialogAndHandleResponseAcceptUpdate_LaunchFromChromeAppsStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateIcon(Site::kStandalone, Color::kRed);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kIgnoreDialog);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kRed);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_ManifestUpdateIconStandaloneRed_TriggerUpdateDialogAndHandleResponseIgnoreDialog_LaunchFromChromeAppsStandalone_TriggerUpdateDialogAndHandleResponseAcceptUpdate_LaunchFromMenuOptionStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateIcon(Site::kStandalone, Color::kRed);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kIgnoreDialog);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kRed);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_ManifestUpdateIconStandaloneRed_TriggerUpdateDialogAndHandleResponseIgnoreDialog_LaunchFromChromeAppsStandalone_TriggerUpdateDialogAndHandleResponseAcceptUpdate_LaunchFromLaunchIconStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateIcon(Site::kStandalone, Color::kRed);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kIgnoreDialog);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kRed);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_ManifestUpdateIconStandaloneRed_TriggerUpdateDialogAndHandleResponseIgnoreDialog_LaunchFromChromeAppsStandalone_TriggerUpdateDialogAndHandleResponseAcceptUpdate_LaunchFromChromeAppsStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateIcon(Site::kStandalone, Color::kRed);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kIgnoreDialog);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kRed);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_ManifestUpdateIconStandaloneGreenSmallDiff) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateIcon(Site::kStandalone, Color::kGreenSmallDiff);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreenSmallDiff);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_MaybeClosePwa_NavigateBrowserStandalone_ManifestUpdateIconStandaloneRed_LaunchFromMenuOptionStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.MaybeClosePwa();
+  helper_.NavigateBrowser(Site::kStandalone);
+  helper_.ManifestUpdateIcon(Site::kStandalone, Color::kRed);
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_MaybeClosePwa_NavigateBrowserStandalone_ManifestUpdateIconStandaloneRed_LaunchFromLaunchIconStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.MaybeClosePwa();
+  helper_.NavigateBrowser(Site::kStandalone);
+  helper_.ManifestUpdateIcon(Site::kStandalone, Color::kRed);
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallOmniboxIconStandalone_MaybeClosePwa_NavigateBrowserStandalone_ManifestUpdateIconStandaloneRed_LaunchFromChromeAppsStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.MaybeClosePwa();
+  helper_.NavigateBrowser(Site::kStandalone);
+  helper_.ManifestUpdateIcon(Site::kStandalone, Color::kRed);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_ManifestUpdateIconStandaloneRed_TriggerUpdateDialogAndHandleResponseAcceptUpdate) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateIcon(Site::kStandalone, Color::kRed);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kRed);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_ManifestUpdateIconStandaloneRed_TriggerUpdateDialogAndHandleResponseCancelDialogAndUninstall) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateIcon(Site::kStandalone, Color::kRed);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kCancelDialogAndUninstall);
+  helper_.CheckAppNotInList(Site::kStandalone);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_ManifestUpdateIconStandaloneRed_TriggerUpdateDialogAndHandleResponseIgnoreDialog_LaunchFromMenuOptionStandalone_TriggerUpdateDialogAndHandleResponseAcceptUpdate_LaunchFromMenuOptionStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateIcon(Site::kStandalone, Color::kRed);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kIgnoreDialog);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kRed);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_ManifestUpdateIconStandaloneRed_TriggerUpdateDialogAndHandleResponseIgnoreDialog_LaunchFromMenuOptionStandalone_TriggerUpdateDialogAndHandleResponseAcceptUpdate_LaunchFromLaunchIconStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateIcon(Site::kStandalone, Color::kRed);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kIgnoreDialog);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kRed);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_ManifestUpdateIconStandaloneRed_TriggerUpdateDialogAndHandleResponseIgnoreDialog_LaunchFromMenuOptionStandalone_TriggerUpdateDialogAndHandleResponseAcceptUpdate_LaunchFromChromeAppsStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateIcon(Site::kStandalone, Color::kRed);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kIgnoreDialog);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kRed);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_ManifestUpdateIconStandaloneRed_TriggerUpdateDialogAndHandleResponseIgnoreDialog_LaunchFromLaunchIconStandalone_TriggerUpdateDialogAndHandleResponseAcceptUpdate_LaunchFromMenuOptionStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateIcon(Site::kStandalone, Color::kRed);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kIgnoreDialog);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kRed);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_ManifestUpdateIconStandaloneRed_TriggerUpdateDialogAndHandleResponseIgnoreDialog_LaunchFromLaunchIconStandalone_TriggerUpdateDialogAndHandleResponseAcceptUpdate_LaunchFromLaunchIconStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateIcon(Site::kStandalone, Color::kRed);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kIgnoreDialog);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kRed);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_ManifestUpdateIconStandaloneRed_TriggerUpdateDialogAndHandleResponseIgnoreDialog_LaunchFromLaunchIconStandalone_TriggerUpdateDialogAndHandleResponseAcceptUpdate_LaunchFromChromeAppsStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateIcon(Site::kStandalone, Color::kRed);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kIgnoreDialog);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kRed);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_ManifestUpdateIconStandaloneRed_TriggerUpdateDialogAndHandleResponseIgnoreDialog_LaunchFromChromeAppsStandalone_TriggerUpdateDialogAndHandleResponseAcceptUpdate_LaunchFromMenuOptionStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateIcon(Site::kStandalone, Color::kRed);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kIgnoreDialog);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kRed);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_ManifestUpdateIconStandaloneRed_TriggerUpdateDialogAndHandleResponseIgnoreDialog_LaunchFromChromeAppsStandalone_TriggerUpdateDialogAndHandleResponseAcceptUpdate_LaunchFromLaunchIconStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateIcon(Site::kStandalone, Color::kRed);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kIgnoreDialog);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kRed);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_ManifestUpdateIconStandaloneRed_TriggerUpdateDialogAndHandleResponseIgnoreDialog_LaunchFromChromeAppsStandalone_TriggerUpdateDialogAndHandleResponseAcceptUpdate_LaunchFromChromeAppsStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateIcon(Site::kStandalone, Color::kRed);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kIgnoreDialog);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.TriggerUpdateDialogAndHandleResponse(
+      UpdateDialogResponse::kAcceptUpdate);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kRed);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_ManifestUpdateIconStandaloneGreenSmallDiff) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateIcon(Site::kStandalone, Color::kGreenSmallDiff);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreenSmallDiff);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_MaybeClosePwa_NavigateBrowserStandalone_ManifestUpdateIconStandaloneRed_LaunchFromMenuOptionStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.MaybeClosePwa();
+  helper_.NavigateBrowser(Site::kStandalone);
+  helper_.ManifestUpdateIcon(Site::kStandalone, Color::kRed);
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_MaybeClosePwa_NavigateBrowserStandalone_ManifestUpdateIconStandaloneRed_LaunchFromLaunchIconStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.MaybeClosePwa();
+  helper_.NavigateBrowser(Site::kStandalone);
+  helper_.ManifestUpdateIcon(Site::kStandalone, Color::kRed);
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallMenuStandalone_MaybeClosePwa_NavigateBrowserStandalone_ManifestUpdateIconStandaloneRed_LaunchFromChromeAppsStandalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.MaybeClosePwa();
+  helper_.NavigateBrowser(Site::kStandalone);
+  helper_.ManifestUpdateIcon(Site::kStandalone, Color::kRed);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.CheckMenuButtonPendingUpdate(
+      MenuButtonState::kExpandedUpdateAvailable);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneWithShortcutWindowedWebApp_LaunchFromMenuOptionStandalone_ManifestUpdateIconStandaloneRed) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckWindowCreated();
+  helper_.CheckWindowDisplayStandalone();
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateIcon(Site::kStandalone, Color::kRed);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kRed);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneWithShortcutWindowedWebApp_LaunchFromLaunchIconStandalone_ManifestUpdateIconStandaloneRed) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckWindowCreated();
+  helper_.CheckWindowDisplayStandalone();
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateIcon(Site::kStandalone, Color::kRed);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kRed);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneWithShortcutWindowedWebApp_LaunchFromChromeAppsStandalone_ManifestUpdateIconStandaloneRed) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckWindowCreated();
+  helper_.CheckWindowDisplayStandalone();
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateIcon(Site::kStandalone, Color::kRed);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kRed);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneNoShortcutWindowedWebApp_LaunchFromMenuOptionStandalone_ManifestUpdateIconStandaloneRed) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.LaunchFromMenuOption(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckWindowCreated();
+  helper_.CheckWindowDisplayStandalone();
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateIcon(Site::kStandalone, Color::kRed);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kRed);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneNoShortcutWindowedWebApp_LaunchFromLaunchIconStandalone_ManifestUpdateIconStandaloneRed) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.LaunchFromLaunchIcon(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckWindowCreated();
+  helper_.CheckWindowDisplayStandalone();
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateIcon(Site::kStandalone, Color::kRed);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kRed);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_InstallPolicyAppStandaloneNoShortcutWindowedWebApp_LaunchFromChromeAppsStandalone_ManifestUpdateIconStandaloneRed) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
+  helper_.CheckWindowCreated();
+  helper_.CheckWindowDisplayStandalone();
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ManifestUpdateIcon(Site::kStandalone, Color::kRed);
+  helper_.CheckMenuButtonPendingUpdate(MenuButtonState::kNotExpanded);
+  helper_.CheckAppIcon(Site::kStandalone, Color::kRed);
 }
 
 }  // namespace

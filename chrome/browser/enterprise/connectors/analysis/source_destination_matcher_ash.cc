@@ -23,7 +23,6 @@ namespace {
 // Checks if the key of the sources or destinations list is known.
 // This should only be extended when a key is properly supported.
 bool AllowedFSInfoKey(const std::string& key) {
-  // TODO(crbug.com/1340553): Also allow settings for app ids and smb.
   return key == "file_system_type";
 }
 
@@ -71,7 +70,7 @@ SourceDestinationMatcherAsh::FsType SourceDestinationMatcherAsh::VolumeToFsType(
         return SourceDestinationMatcherAsh::FsType::kUnknownVm;
       case guest_os::VmType::VmType_INT_MIN_SENTINEL_DO_NOT_USE_:
       case guest_os::VmType::VmType_INT_MAX_SENTINEL_DO_NOT_USE_:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
   switch (volume->type()) {
@@ -105,10 +104,9 @@ SourceDestinationMatcherAsh::FsType SourceDestinationMatcherAsh::VolumeToFsType(
     case file_manager::VOLUME_TYPE_MOUNTED_ARCHIVE_FILE:
     case file_manager::VOLUME_TYPE_GUEST_OS:
     case file_manager::NUM_VOLUME_TYPE:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return SourceDestinationMatcherAsh::FsType::kUnknown;
+  NOTREACHED();
 }
 
 // static
@@ -253,8 +251,7 @@ std::string SourceDestinationMatcherAsh::FsTypeToString(
     case SourceDestinationMatcherAsh::FsType::kUnknownVm:
       return "UNKNOWN_VM";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 SourceDestinationMatcherAsh::SourceDestinationMatcherAsh() = default;
@@ -265,7 +262,6 @@ void SourceDestinationMatcherAsh::AddFilters(
     ID* id,
     const base::Value::List* settings_list) {
   DCHECK(id);
-  // TODO(crbug.com/1340553): Adapt for app ids and smb settings
   if (!settings_list) {
     LOG(ERROR) << "No settings list found.";
     return;

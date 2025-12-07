@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/memory/singleton.h"
+#include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/windows_version.h"
 #include "third_party/iaccessible2/ia2_api_all.h"
@@ -33,7 +34,8 @@
 namespace views {
 
 // static
-std::unique_ptr<ViewAccessibility> ViewAccessibility::Create(View* view) {
+std::unique_ptr<ViewAccessibility>
+ViewAXPlatformNodeDelegate::CreatePlatformSpecific(View* view) {
   auto result = std::make_unique<ViewAXPlatformNodeDelegateWin>(view);
   result->Init();
   return result;
@@ -46,33 +48,38 @@ ViewAXPlatformNodeDelegateWin::~ViewAXPlatformNodeDelegateWin() = default;
 
 gfx::NativeViewAccessible ViewAXPlatformNodeDelegateWin::GetParent() const {
   // If the View has a parent View, return that View's IAccessible.
-  if (view()->parent())
+  if (view()->parent()) {
     return ViewAXPlatformNodeDelegate::GetParent();
+  }
 
   // Otherwise we must be the RootView, get the corresponding Widget
   // and Window.
   Widget* widget = view()->GetWidget();
-  if (!widget)
+  if (!widget) {
     return nullptr;
+  }
 
   aura::Window* window = widget->GetNativeWindow();
-  if (!window)
+  if (!window) {
     return nullptr;
+  }
 
   // Look for an ancestor window with a Widget, and if found, return
   // the NativeViewAccessible for its RootView.
   aura::Window* ancestor_window = GetWindowParentIncludingTransient(window);
   while (ancestor_window) {
     Widget* ancestor_widget = Widget::GetWidgetForNativeView(ancestor_window);
-    if (ancestor_widget && ancestor_widget->GetRootView())
+    if (ancestor_widget && ancestor_widget->GetRootView()) {
       return ancestor_widget->GetRootView()->GetNativeViewAccessible();
+    }
     ancestor_window = GetWindowParentIncludingTransient(ancestor_window);
   }
 
   // If that fails, return the NativeViewAccessible for our owning HWND.
   HWND hwnd = HWNDForView(view());
-  if (!hwnd)
+  if (!hwnd) {
     return nullptr;
+  }
 
   IAccessible* parent;
   if (SUCCEEDED(
@@ -95,7 +102,7 @@ gfx::Rect ViewAXPlatformNodeDelegateWin::GetBoundsRect(
     ui::AXOffscreenResult* offscreen_result) const {
   switch (coordinate_system) {
     case ui::AXCoordinateSystem::kScreenPhysicalPixels:
-      return display::win::ScreenWin::DIPToScreenRect(
+      return display::win::GetScreenWin()->DIPToScreenRect(
           HWNDForView(view()), view()->GetBoundsInScreen());
     case ui::AXCoordinateSystem::kScreenDIPs:
       // We could optionally add clipping here if ever needed.
@@ -115,7 +122,7 @@ gfx::Rect ViewAXPlatformNodeDelegateWin::GetInnerTextRangeBoundsRect(
     ui::AXOffscreenResult* offscreen_result) const {
   switch (coordinate_system) {
     case ui::AXCoordinateSystem::kScreenPhysicalPixels:
-      return display::win::ScreenWin::DIPToScreenRect(
+      return display::win::GetScreenWin()->DIPToScreenRect(
           HWNDForView(view()),
           ViewAXPlatformNodeDelegate::GetInnerTextRangeBoundsRect(
               start_offset, end_offset, ui::AXCoordinateSystem::kScreenDIPs,
@@ -141,18 +148,8 @@ gfx::Point ViewAXPlatformNodeDelegateWin::ScreenToDIPPoint(
   // This is because Chromium transforms the screen physical coordinates it
   // receives from Windows into an internal representation of screen physical
   // coordinates adjusted for multiple displays of different resolutions.
-  return ToRoundedPoint(
-      display::win::ScreenWin::ScreenToDIPPoint(gfx::PointF(screen_point)));
-}
-
-void ViewAXPlatformNodeDelegateWin::EnsureAtomicViewAXTreeManager() {
-  DCHECK(needs_ax_tree_manager());
-  if (atomic_view_ax_tree_manager_) {
-    return;
-  }
-
-  atomic_view_ax_tree_manager_ =
-      views::AtomicViewAXTreeManager::Create(this, data());
+  return ToRoundedPoint(display::win::GetScreenWin()->ScreenToDIPPoint(
+      gfx::PointF(screen_point)));
 }
 
 }  // namespace views

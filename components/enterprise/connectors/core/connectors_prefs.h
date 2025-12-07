@@ -6,11 +6,16 @@
 #define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CONNECTORS_PREFS_H_
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "components/enterprise/buildflags/buildflags.h"
 
 class PrefRegistrySimple;
 
 namespace enterprise_connectors {
+
+#if BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
+// Pref that maps to the "CacheEncryptionEnabled" policy.
+extern const char kCacheEncryptionEnabledPref[];
+#endif
 
 // Pref that maps to the "OnFileAttachedEnterpriseConnector" policy.
 extern const char kOnFileAttachedPref[];
@@ -48,10 +53,26 @@ extern const char kOnPrintScopePref[];
 extern const char kOnFileTransferScopePref[];
 #endif
 extern const char kOnSecurityEventScopePref[];
+inline constexpr const char kWatermarkStyleFillOpacityPref[] =
+    "policy.watermark_style.fill_opacity";
+inline constexpr const char kWatermarkStyleOutlineOpacityPref[] =
+    "policy.watermark_style.outline_opacity";
+inline constexpr const char kWatermarkStyleFontSizePref[] =
+    "policy.watermark_style.font_size";
+inline constexpr const char kWatermarkStyleFillOpacityFieldName[] =
+    "fill_opacity";
+inline constexpr const char kWatermarkStyleOutlineOpacityFieldName[] =
+    "outline_opacity";
+inline constexpr const char kWatermarkStyleFontSizeFieldName[] = "font_size";
+inline constexpr int kWatermarkStyleFillOpacityDefault = 4;
+inline constexpr int kWatermarkStyleOutlineOpacityDefault = 6;
+inline constexpr int kWatermarkStyleFontSizeDefault = 24;
+
 inline constexpr char kEnterpriseRealTimeUrlCheckScope[] =
     "safebrowsing.enterprise_real_time_url_check_scope";
 
 extern const char kLatestCrashReportCreationTime[];
+extern const char kLatestTelomereReportCreationTime[];
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);

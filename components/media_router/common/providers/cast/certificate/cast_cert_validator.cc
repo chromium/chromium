@@ -23,9 +23,9 @@
 #include "components/media_router/common/providers/cast/certificate/cast_crl.h"
 #include "components/media_router/common/providers/cast/certificate/cast_trust_store.h"
 #include "components/media_router/common/providers/cast/certificate/switches.h"
+#include "crypto/evp.h"
 #include "net/cert/time_conversions.h"
 #include "net/cert/x509_util.h"
-#include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/digest.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/pki/cert_issuer_source_static.h"
@@ -50,6 +50,19 @@ bssl::der::Input AudioOnlyPolicyOid() {
   static const uint8_t kAudioOnlyPolicy[] = {0x2B, 0x06, 0x01, 0x04, 0x01,
                                              0xD6, 0x79, 0x02, 0x05, 0x02};
   return bssl::der::Input(kAudioOnlyPolicy);
+}
+
+std::optional<base::Time> SafeTimeAdd(const base::Time& time,
+                                      const base::TimeDelta& delta) {
+  base::CheckedNumeric<int64_t> t =
+      time.ToDeltaSinceWindowsEpoch().InMicroseconds();
+  t += delta.InMicroseconds();
+
+  int64_t sum_us;
+  if (!t.AssignIfValid(&sum_us)) {
+    return std::nullopt;
+  }
+  return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(sum_us));
 }
 
 // Cast certificates rely on RSASSA-PKCS#1 v1.5 with SHA-1 for signatures.
@@ -91,8 +104,8 @@ class CertVerificationContextImpl : public CertVerificationContext {
     };
 
     // Verify with RSASSA-PKCS1-v1_5 and |digest|.
-    auto signature_bytes = base::as_bytes(base::make_span(signature));
-    auto data_bytes = base::as_bytes(base::make_span(data));
+    auto signature_bytes = base::as_byte_span(signature);
+    auto data_bytes = base::as_byte_span(data);
     bssl::ScopedEVP_MD_CTX ctx;
     return EVP_PKEY_id(key_.get()) == EVP_PKEY_RSA &&
            EVP_DigestVerifyInit(ctx.get(), nullptr, digest, nullptr,
@@ -171,8 +184,9 @@ void DetermineDeviceCertificatePolicy(
     const bssl::ParsedCertificate* cert,
     std::unique_ptr<CertVerificationContext>* context) {
   // Get the Key Usage extension.
-  if (!cert->has_key_usage())
+  if (!cert->has_key_usage()) {
     return false;
+  }
 
   // Ensure Key Usage contains digitalSignature.
   if (!cert->key_usage().AssertsBit(bssl::KEY_USAGE_BIT_DIGITAL_SIGNATURE)) {
@@ -181,15 +195,16 @@ void DetermineDeviceCertificatePolicy(
 
   // Get the Common Name for the certificate.
   std::string common_name;
-  if (!GetCommonNameFromSubject(cert->tbs().subject_tlv, &common_name))
+  if (!GetCommonNameFromSubject(cert->tbs().subject_tlv, &common_name)) {
     return false;
+  }
 
   // Get the public key for the certificate.
-  CBS spki;
-  CBS_init(&spki, cert->tbs().spki_tlv.data(), cert->tbs().spki_tlv.size());
-  bssl::UniquePtr<EVP_PKEY> key(EVP_parse_public_key(&spki));
-  if (!key || CBS_len(&spki) != 0)
+  bssl::UniquePtr<EVP_PKEY> key =
+      crypto::evp::PublicKeyFromBytes(cert->tbs().spki_tlv);
+  if (!key) {
     return false;
+  }
 
   *context = std::make_unique<CertVerificationContextImpl>(std::move(key),
                                                            common_name);
@@ -216,8 +231,9 @@ bssl::ParseCertificateOptions GetCertParsingOptions() {
 // This function must only be called if path building failed.
 CastCertError MapToCastError(const bssl::CertPathBuilder::Result& result) {
   DCHECK(!result.HasValidPath());
-  if (result.paths.empty())
+  if (result.paths.empty()) {
     return CastCertError::ERR_CERTS_VERIFY_GENERIC;
+  }
   const bssl::CertPathErrors& path_errors =
       result.paths.at(result.best_result_index)->errors;
   if (path_errors.ContainsError(bssl::cert_errors::kValidityFailedNotAfter) ||
@@ -225,6 +241,63 @@ CastCertError MapToCastError(const bssl::CertPathBuilder::Result& result) {
     return CastCertError::ERR_CERTS_DATE_INVALID;
   }
   return CastCertError::ERR_CERTS_VERIFY_GENERIC;
+}
+
+// Gets the certificate validation date, possibly adjusting it to allow for the
+// grace period granted long-term expiry certificates.
+// For motivation, see b/416790717.
+std::optional<base::Time> GetValidationDate(
+    const bssl::ParsedCertificate* target_cert,
+    const std::vector<std::shared_ptr<const bssl::ParsedCertificate>>&
+        parsed_certs,
+    const base::Time& time) {
+  // Ignore expiry date only within a time window and if certs are long-term.
+  base::Time min_not_after = base::Time::Max();
+  base::TimeDelta min_validity_duration = base::TimeDelta::Max();
+  for (const auto& cert : parsed_certs) {
+    base::Time not_before;
+    base::Time not_after;
+    if (!net::GeneralizedTimeToTime(cert->tbs().validity_not_before,
+                                    &not_before) ||
+        !net::GeneralizedTimeToTime(cert->tbs().validity_not_after,
+                                    &not_after)) {
+      return std::nullopt;
+    }
+    min_not_after = std::min(not_after, min_not_after);
+
+    const base::TimeDelta validity_duration = not_after - not_before;
+    if (validity_duration < min_validity_duration) {
+      min_validity_duration = validity_duration;
+    }
+  }
+
+  base::Time leaf_not_after;
+  if (!net::GeneralizedTimeToTime(target_cert->tbs().validity_not_after,
+                                  &leaf_not_after)) {
+    return std::nullopt;
+  }
+
+  // Certificate must be a long-term certificate, which we define here as
+  // having a validity duration of at least 5 years.
+  static constexpr base::TimeDelta kMinValidityDuration = base::Days(5 * 365);
+
+  // Expand the certificate expiry date window by 15 years beyond the leaf
+  // certificate's notAfter date.
+  static constexpr base::TimeDelta kMaxValidityDuration = base::Days(15 * 365);
+  const std::optional<base::Time> max_validity_date =
+      SafeTimeAdd(leaf_not_after, kMaxValidityDuration);
+  if (!max_validity_date.has_value()) {
+    // If the addition overflowed, return no adjustment. This ensures that we
+    // properly handle user provided certificates, although the `leaf_not_after`
+    // value would have be massive to cause an overflow.
+    return time;
+  }
+
+  if (min_not_after <= time && time <= max_validity_date &&
+      min_validity_duration > kMinValidityDuration) {
+    return min_not_after - base::Days(7);
+  }
+  return time;
 }
 
 }  // namespace
@@ -268,32 +341,45 @@ CastCertError VerifyDeviceCertUsingCustomTrustStore(
             << CastCertificateChainAsPEM(certs);
   }
 
-  if (!trust_store)
+  if (!trust_store) {
     return VerifyDeviceCert(certs, time, context, policy, crl, fallback_crl,
                             crl_policy);
+  }
 
-  if (certs.empty())
+  if (certs.empty()) {
     return CastCertError::ERR_CERTS_MISSING;
+  }
 
   // Fail early if CRL is required but not provided.
-  if (!crl && crl_policy == CRLPolicy::CRL_REQUIRED)
+  if (!crl && crl_policy == CRLPolicy::CRL_REQUIRED) {
     return CastCertError::ERR_CRL_INVALID;
+  }
 
   bssl::CertErrors errors;
-  std::shared_ptr<const bssl::ParsedCertificate> target_cert;
-  bssl::CertIssuerSourceStatic intermediate_cert_issuer_source;
-  for (size_t i = 0; i < certs.size(); ++i) {
+  std::vector<std::shared_ptr<const bssl::ParsedCertificate>> parsed_certs;
+  for (const std::string& cert_str : certs) {
     std::shared_ptr<const bssl::ParsedCertificate> cert(
         bssl::ParsedCertificate::Create(
-            net::x509_util::CreateCryptoBuffer(certs[i]),
+            net::x509_util::CreateCryptoBuffer(cert_str),
             GetCertParsingOptions(), &errors));
-    if (!cert)
+    if (!cert) {
       return CastCertError::ERR_CERTS_PARSE;
+    }
+    parsed_certs.push_back(std::move(cert));
+  }
 
-    if (i == 0)
-      target_cert = std::move(cert);
-    else
-      intermediate_cert_issuer_source.AddCert(std::move(cert));
+  // TODO(crbug.com/455642501): Chrome should use libcast's cast certificate
+  // validation code, including this long-term expiry handling logic there.
+  std::shared_ptr<const bssl::ParsedCertificate> target_cert = parsed_certs[0];
+  bssl::CertIssuerSourceStatic intermediate_cert_issuer_source;
+  for (size_t i = 1; i < parsed_certs.size(); ++i) {
+    intermediate_cert_issuer_source.AddCert(parsed_certs[i]);
+  }
+
+  const std::optional<base::Time> validation_date =
+      GetValidationDate(target_cert.get(), parsed_certs, time);
+  if (!validation_date.has_value()) {
+    return CastCertError::ERR_CERTS_DATE_INVALID;
   }
 
   CastPathBuilderDelegate path_builder_delegate;
@@ -301,7 +387,7 @@ CastCertError VerifyDeviceCertUsingCustomTrustStore(
   // Do path building and RFC 5280 compatible certificate verification using the
   // two Cast trust anchors and Cast signature policy.
   bssl::der::GeneralizedTime verification_time;
-  if (!net::EncodeTimeAsGeneralizedTime(time, &verification_time)) {
+  if (!net::EncodeTimeAsGeneralizedTime(*validation_date, &verification_time)) {
     return CastCertError::ERR_UNEXPECTED;
   }
   bssl::CertPathBuilder path_builder(
@@ -312,8 +398,9 @@ CastCertError VerifyDeviceCertUsingCustomTrustStore(
       bssl::InitialAnyPolicyInhibit::kFalse);
   path_builder.AddCertIssuerSource(&intermediate_cert_issuer_source);
   bssl::CertPathBuilder::Result result = path_builder.Run();
-  if (!result.HasValidPath())
+  if (!result.HasValidPath()) {
     return MapToCastError(result);
+  }
 
   // Determine whether this device certificate is restricted to audio-only.
   DetermineDeviceCertificatePolicy(result.GetBestValidPath(), policy);
@@ -321,8 +408,9 @@ CastCertError VerifyDeviceCertUsingCustomTrustStore(
   // Check properties of the leaf certificate not already verified by path
   // building (key usage), and construct a CertVerificationContext that uses
   // its public key.
-  if (!CheckTargetCertificate(target_cert.get(), context))
+  if (!CheckTargetCertificate(target_cert.get(), context)) {
     return CastCertError::ERR_CERTS_RESTRICTIONS;
+  }
 
   if (!crl && (crl_policy == CRLPolicy::CRL_REQUIRED_WITH_FALLBACK ||
                crl_policy == CRLPolicy::CRL_OPTIONAL_WITH_FALLBACK)) {
@@ -362,5 +450,8 @@ std::string CastCertErrorToString(CastCertError error) {
   }
   return "CastCertError::UNKNOWN";
 }
+
+CertVerificationContext::CertVerificationContext() = default;
+CertVerificationContext::~CertVerificationContext() = default;
 
 }  // namespace cast_certificate

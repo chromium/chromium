@@ -18,6 +18,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/gfx/paint_vector_icon.h"
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ExclusiveAccessPermissionPromptView,
@@ -52,6 +53,20 @@ void AddElementIdentifierToLabel(views::Label& label, size_t index) {
       return;
   }
   label.SetProperty(views::kElementIdentifierKey, id);
+}
+
+std::string GetPermissionActionString(
+    ExclusiveAccessPermissionPromptView::ButtonType button) {
+  switch (button) {
+    case ExclusiveAccessPermissionPromptView::ButtonType::kAlwaysAllow:
+      return "Accepted";
+    case ExclusiveAccessPermissionPromptView::ButtonType::kAllowThisTime:
+      return "AcceptedOnce";
+    case ExclusiveAccessPermissionPromptView::ButtonType::kNeverAllow:
+      return "Denied";
+    default:
+      NOTREACHED();
+  }
 }
 
 }  // namespace
@@ -98,6 +113,9 @@ void ExclusiveAccessPermissionPromptView::RunButtonCallback(int button_id) {
     return;
   }
   ButtonType button = GetButtonType(button_id);
+  permissions::PermissionUmaUtil::RecordActionBrowserAlwaysActive(
+      request_type(), GetPermissionActionString(button),
+      record_browser_always_active_value());
   if (button == ButtonType::kAllowThisTime) {
     delegate_->AcceptThisTime();
   } else if (button == ButtonType::kAlwaysAllow) {
@@ -131,6 +149,7 @@ void ExclusiveAccessPermissionPromptView::AddedToWidget() {
   label->SetCollapseWhenHidden(true);
   label->SetMultiLine(true);
   label->SetAllowCharacterBreak(true);
+  label->SetTextStyle(views::style::STYLE_HEADLINE_4_BOLD);
   label->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
@@ -176,7 +195,7 @@ void ExclusiveAccessPermissionPromptView::Init() {
                      base::Unretained(this)));
 
   int index = 0;
-  for (permissions::PermissionRequest* request : delegate_->Requests()) {
+  for (const auto& request : delegate_->Requests()) {
     AddRequestLine(&permissions::GetIconId(request->request_type()),
                    request->GetMessageTextFragment(), index++);
   }
@@ -185,20 +204,16 @@ void ExclusiveAccessPermissionPromptView::Init() {
 
 void ExclusiveAccessPermissionPromptView::InitButtons() {
   // Hide the OK/Cancel buttons that are shown by default on dialogs.
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
   auto buttons_container = std::make_unique<views::View>();
   buttons_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       kButtonVerticalDistance));
 
-  if (permissions::feature_params::kShowAllowAlwaysAsFirstButton.Get()) {
-    AddAlwaysAllowButton(*buttons_container);
-    AddAllowThisTimeButton(*buttons_container);
-  } else {
-    AddAllowThisTimeButton(*buttons_container);
-    AddAlwaysAllowButton(*buttons_container);
-  }
+  AddAlwaysAllowButton(*buttons_container);
+  AddAllowThisTimeButton(*buttons_container);
+
   AddButton(*buttons_container,
             l10n_util::GetStringUTF16(IDS_PERMISSION_NEVER_ALLOW),
             ButtonType::kNeverAllow, ui::ButtonStyle::kTonal, kNeverAllowId);
@@ -241,7 +256,7 @@ void ExclusiveAccessPermissionPromptView::AddRequestLine(
   label->SetMultiLine(true);
   AddElementIdentifierToLabel(*label, index);
   label->SetTextStyle(views::style::STYLE_BODY_3);
-  label->SetEnabledColorId(kColorPermissionPromptRequestText);
+  label->SetEnabledColor(kColorPermissionPromptRequestText);
 
   line_container->SetProperty(views::kMarginsKey,
                               gfx::Insets().set_top(kBodyTopMargin));
@@ -281,6 +296,8 @@ void ExclusiveAccessPermissionPromptView::AddAllowThisTimeButton(
 
 void ExclusiveAccessPermissionPromptView::ClosingPermission() {
   if (delegate_) {
+    permissions::PermissionUmaUtil::RecordActionBrowserAlwaysActive(
+        request_type(), "Dismissed", record_browser_always_active_value());
     delegate_->Dismiss();
   }
 }

@@ -1,0 +1,50 @@
+createDocument tests modelled after createElementNS tests from mozilla which were attached to webkit bug 16833
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS document.implementation.createDocument() threw exception TypeError: Failed to execute 'createDocument' on 'DOMImplementation': 2 arguments required, but only 0 present..
+PASS document.implementation.createDocument("http://www.example.com") threw exception TypeError: Failed to execute 'createDocument' on 'DOMImplementation': 2 arguments required, but only 1 present..
+PASS createDocument(, , null)
+PASS createDocument(null, , null)
+PASS createDocument(, null, null)
+PASS createDocument(null, null, null)
+PASS createDocument(null, "", null)
+PASS createDocument("", null, null)
+PASS createDocument("", "", null)
+PASS createDocument(null, "<div>", null); threw INVALID_CHARACTER_ERR
+PASS createDocument(null, "0div", null); threw INVALID_CHARACTER_ERR
+PASS createDocument(null, "di v", null); threw INVALID_CHARACTER_ERR
+FAIL createDocument(null, "di<v", null); expected expected no exception, threw INVALID_CHARACTER_ERR
+PASS createDocument(null, "-div", null); threw INVALID_CHARACTER_ERR
+PASS createDocument(null, ".div", null); threw INVALID_CHARACTER_ERR
+PASS createDocument("http://example.com/", "<div>", null); threw INVALID_CHARACTER_ERR
+PASS createDocument("http://example.com/", "0div", null); threw INVALID_CHARACTER_ERR
+FAIL createDocument("http://example.com/", "di<v", null); expected expected no exception, threw INVALID_CHARACTER_ERR
+PASS createDocument("http://example.com/", "-div", null); threw INVALID_CHARACTER_ERR
+PASS createDocument("http://example.com/", ".div", null); threw INVALID_CHARACTER_ERR
+PASS createDocument(null, ":div", null); threw INVALID_CHARACTER_ERR
+PASS createDocument(null, "div:", null); threw INVALID_CHARACTER_ERR
+PASS createDocument("http://example.com/", ":div", null); threw INVALID_CHARACTER_ERR
+PASS createDocument("http://example.com/", "div:", null); threw INVALID_CHARACTER_ERR
+PASS createDocument(null, "d:iv", null); threw NAMESPACE_ERR
+FAIL createDocument(null, "a:b:c", null); expected NAMESPACE_ERR, threw INVALID_CHARACTER_ERR
+FAIL createDocument("http://example.com/", "a:b:c", null); expected expected no exception, threw INVALID_CHARACTER_ERR
+PASS createDocument(null, "a::c", null); threw INVALID_CHARACTER_ERR
+PASS createDocument("http://example.com/", "a::c", null); threw INVALID_CHARACTER_ERR
+PASS createDocument("http://example.com/", "a:0", null); valid XML name, not a valid QName; threw INVALID_CHARACTER_ERR
+FAIL createDocument("http://example.com/", "0:a", null); expected expected no exception, threw INVALID_CHARACTER_ERR
+PASS createDocument("http://example.com/", "a:_", null)
+FAIL createDocument("http://example.com/", "a:ெ", null); expected expected no exception, threw INVALID_CHARACTER_ERR
+FAIL createDocument("http://example.com/", "ெ:a", null); expected expected no exception, threw INVALID_CHARACTER_ERR
+PASS createDocument("http://example.com/", "a:aெ", null)
+PASS createDocument("http://example.com/", "aெ:a", null)
+PASS createDocument("http://example.com/", "xml:test", null); binding xml prefix wrong; threw NAMESPACE_ERR
+PASS createDocument("http://example.com/", "xmlns:test", null); binding xmlns prefix wrong; threw NAMESPACE_ERR
+PASS createDocument("http://www.w3.org/2000/xmlns/", "x:test", null); binding namespace namespace to wrong prefix; threw NAMESPACE_ERR
+PASS createDocument("http://www.w3.org/2000/xmlns/", "xmlns:test", null)
+PASS createDocument("http://www.w3.org/XML/1998/namespace", "xml:test", null)
+PASS createDocument("http://www.w3.org/XML/1998/namespace", "x:test", null)
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

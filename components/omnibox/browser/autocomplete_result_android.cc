@@ -18,13 +18,12 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
-#include "components/query_tiles/android/tile_conversion_bridge.h"
 #include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/omnibox/browser/jni_headers/AutocompleteResult_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaBooleanArray;
 using base::android::ToJavaByteArray;
@@ -76,7 +75,7 @@ const char* MatchVerificationPointToString(int verification_point) {
     case MatchVerificationPoint::INVALID:
       return "Invalid";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool sInvalidMatchMetricsUploaded = false;
@@ -135,7 +134,7 @@ void AutocompleteResult::DestroyJavaObject() const {
 ScopedJavaLocalRef<jobjectArray> AutocompleteResult::BuildJavaMatches(
     JNIEnv* env) const {
   jclass clazz = AutocompleteMatch::GetClazz(env);
-  ScopedJavaLocalRef<jobjectArray> j_matches(
+  auto j_matches = ScopedJavaLocalRef<jobjectArray>::Adopt(
       env, env->NewObjectArray(matches_.size(), clazz, nullptr));
   base::android::CheckException(env);
 
@@ -150,7 +149,7 @@ ScopedJavaLocalRef<jobjectArray> AutocompleteResult::BuildJavaMatches(
 
 bool AutocompleteResult::VerifyCoherency(
     JNIEnv* env,
-    const JavaParamRef<jlongArray>& j_matches_array,
+    const JavaRef<jlongArray>& j_matches_array,
     jint match_index,
     jint verification_point) {
   DCHECK(j_matches_array);
@@ -210,3 +209,5 @@ bool AutocompleteResult::VerifyCoherency(
                             MatchVerificationResult::COUNT);
   return true;
 }
+
+DEFINE_JNI(AutocompleteResult)

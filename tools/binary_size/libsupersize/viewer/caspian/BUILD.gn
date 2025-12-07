@@ -4,11 +4,9 @@
 
 import("//testing/test.gni")
 
-# Enable wasm target that depends on foo.patch being applied.
-if (!defined(is_wasm)) {
-  is_wasm = current_os == "wasm"
+declare_args() {
+  enable_caspian = false
 }
-
 assert(is_linux || is_chromeos || is_wasm)
 
 source_set("caspian-lib") {
@@ -29,13 +27,17 @@ source_set("caspian-lib") {
     "tree_builder.h",
   ]
   deps = [
-    "//third_party/re2:re2",
-    "//third_party/zlib:zlib",
+    "//third_party/re2",
+    "//third_party/zlib",
     "//third_party/zlib/google:compression_utils_portable",
   ]
-  public_deps = [ "//third_party/jsoncpp:jsoncpp" ]
+  public_deps = [ "//third_party/jsoncpp" ]
   configs -= [ "//build/config/compiler:default_optimization" ]
   configs += [ "//build/config/compiler:optimize_speed" ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 test("caspian_unittests") {
@@ -48,10 +50,15 @@ test("caspian_unittests") {
   ]
   deps = [
     ":caspian-lib",
+    "//base",
     "//testing/gtest",
     "//testing/gtest:gtest_main",
-    "//third_party/re2:re2",
+    "//third_party/re2",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 executable("caspian_cli") {
@@ -60,18 +67,26 @@ executable("caspian_cli") {
   cflags = [ "-Wall" ]
 }
 
-if (is_wasm) {
-  executable("caspian_web") {
-    sources = [ "caspian_web.cc" ]
-    deps = [
-      ":caspian-lib",
-      "//third_party/re2:re2",
-    ]
-    ldflags = [
-      "-s",
-      "EXPORTED_FUNCTIONS=['_BuildTree','_GetMetadata','_LoadBeforeSizeFile','_LoadSizeFile','_Open','_QueryAncestryById','_QueryProperty','_free','_malloc']",
-      "-s",
-      "EXPORTED_RUNTIME_METHODS=['ccall','cwrap','UTF8ToString']",
-    ]
+if (enable_caspian) {
+  if (is_wasm) {
+    executable("caspian_web") {
+      sources = [ "caspian_web.cc" ]
+      deps = [
+        ":caspian-lib",
+        "//third_party/re2",
+      ]
+      ldflags = [
+        "-s",
+        "EXPORTED_FUNCTIONS=['_BuildTree','_GetMetadata','_LoadBeforeSizeFile','_LoadSizeFile','_Open','_QueryAncestryById','_QueryProperty','_free','_malloc']",
+        "-s",
+        "EXPORTED_RUNTIME_METHODS=['HEAPU8','ccall','cwrap','UTF8ToString']",
+        "-s",
+        "MAXIMUM_MEMORY=4GB",
+      ]
+    }
+  } else {
+    group("caspian_web") {
+      public_deps = [ ":caspian_web(//build/toolchain/wasm)" ]
+    }
   }
 }

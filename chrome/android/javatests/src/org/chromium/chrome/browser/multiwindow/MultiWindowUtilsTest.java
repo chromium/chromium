@@ -13,8 +13,6 @@ import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.crea
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Build;
-import android.os.Build.VERSION_CODES;
 
 import androidx.test.filters.SmallTest;
 
@@ -35,38 +33,42 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.ui.test.util.UiDisableIf;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.TimeoutException;
 
 /** Class for testing MultiWindowUtils. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableIf.Build(sdk_is_greater_than = VERSION_CODES.S_V2) // https://crbug.com/1297370
 public class MultiWindowUtilsTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule
-    public AutomotiveContextWrapperTestRule mAutomotiveContextWrapperTestRule =
-            new AutomotiveContextWrapperTestRule();
+    public OverrideContextWrapperTestRule mAutomotiveContextWrapperTestRule =
+            new OverrideContextWrapperTestRule();
 
     @Mock private MultiWindowUtils mMultiWindowUtils;
+    private WebPageStation mPage;
 
     @Before
     public void setUp() throws InterruptedException {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
         mMultiWindowUtils = Mockito.spy(MultiWindowUtils.getInstance());
     }
 
@@ -75,12 +77,27 @@ public class MultiWindowUtilsTest {
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(false);
     }
 
+    @Test
+    @SmallTest
+    @Feature("MultiWindow")
+    public void testTabbedActivityForIntentWithMultiInstanceApi31() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        Assert.assertEquals(
+                "ChromeTabbedActivity should be used",
+                ChromeTabbedActivity.class,
+                MultiWindowUtils.getInstance()
+                        .getTabbedActivityForIntent(activity.getIntent(), activity));
+    }
+
     /** Tests that ChromeTabbedActivity2 is used for intents when EXTRA_WINDOW_ID is set to 2. */
     @Test
     @SmallTest
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/338976206
     @Feature("MultiWindow")
     public void testTabbedActivityForIntentWithExtraWindowId() {
+        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+            return;
+        }
         ChromeTabbedActivity activity1 = mActivityTestRule.getActivity();
         createSecondChromeTabbedActivity(activity1);
 
@@ -99,9 +116,11 @@ public class MultiWindowUtilsTest {
      */
     @Test
     @SmallTest
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/338976206
     @Feature("MultiWindow")
     public void testTabbedActivityForIntentLastResumedActivity() {
+        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+            return;
+        }
         ChromeTabbedActivity activity1 = mActivityTestRule.getActivity();
         final ChromeTabbedActivity2 activity2 = createSecondChromeTabbedActivity(activity1);
 
@@ -141,8 +160,10 @@ public class MultiWindowUtilsTest {
     @Test
     @SmallTest
     @Feature("MultiWindow")
-    @DisabledTest(message = "https://crbug.com/1417018")
     public void testTabbedActivityForIntentOnlyActivity1IsRunning() {
+        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+            return;
+        }
         ChromeTabbedActivity activity1 = mActivityTestRule.getActivity();
         ChromeTabbedActivity2 activity2 = createSecondChromeTabbedActivity(activity1);
         activity2.finishAndRemoveTask();
@@ -160,9 +181,11 @@ public class MultiWindowUtilsTest {
      */
     @Test
     @SmallTest
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/338976206
     @Feature("MultiWindow")
     public void testTabbedActivityForIntentOnlyActivity2IsRunning() {
+        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+            return;
+        }
         ChromeTabbedActivity activity1 = mActivityTestRule.getActivity();
         createSecondChromeTabbedActivity(activity1);
         activity1.finishAndRemoveTask();
@@ -183,6 +206,9 @@ public class MultiWindowUtilsTest {
     @SmallTest
     @Feature("MultiWindow")
     public void testTabbedActivityForIntentNoActivitiesAlive() {
+        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+            return;
+        }
         ChromeTabbedActivity activity1 = mActivityTestRule.getActivity();
         activity1.finishAndRemoveTask();
 
@@ -197,8 +223,10 @@ public class MultiWindowUtilsTest {
     @Test
     @SmallTest
     @Feature("MultiWindow")
-    @DisabledTest(message = "https://crbug.com/1417018")
     public void testTabbedActivity2TaskRunning() {
+        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+            return;
+        }
         ChromeTabbedActivity activity2 =
                 createSecondChromeTabbedActivity(mActivityTestRule.getActivity());
         Assert.assertTrue(MultiWindowUtils.getInstance().getTabbedActivity2TaskRunning());
@@ -217,10 +245,12 @@ public class MultiWindowUtilsTest {
      */
     @Test
     @SmallTest
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/338976206
     @Feature("MultiWindow")
     public void testAreMultipleChromeInstancesRunningSecondInstanceKilledFirst()
             throws TimeoutException {
+        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+            return;
+        }
         ChromeTabbedActivity activity1 = mActivityTestRule.getActivity();
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
         Assert.assertFalse(
@@ -311,12 +341,11 @@ public class MultiWindowUtilsTest {
     @Test
     @SmallTest
     @Feature("MultiWindow")
-    @DisableIf.Build(
-            sdk_is_less_than = Build.VERSION_CODES.O,
-            message = "https://crbug.com/1077249")
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/338976206
     public void testAreMultipleChromeInstancesRunningFirstInstanceKilledFirst()
             throws TimeoutException {
+        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+            return;
+        }
         ChromeTabbedActivity activity1 = mActivityTestRule.getActivity();
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
         Assert.assertFalse(
@@ -429,6 +458,7 @@ public class MultiWindowUtilsTest {
     @Test
     @SmallTest
     @Feature("MultiWindow")
+    @Features.DisableFeatures({ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW})
     public void testIsOpenInOtherWindowSupported_otherWindowActivityIsNotNull_returnsTrue() {
         assertTrue(
                 doTestIsOpenInOtherWindowSupported(
@@ -438,6 +468,27 @@ public class MultiWindowUtilsTest {
                         /* openInOtherWindowActivity= */ ChromeTabbedActivity.class));
     }
 
+    @Test
+    @SmallTest
+    @Feature("MultiWindow")
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @Features.EnableFeatures({ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW})
+    public void
+            testIsOpenInOtherWindowSupported_noOtherActivity_incognitoWindowEnabled_returnsFalse() {
+        assertFalse(doTestIsOpenInOtherWindowSupportedIncognitoWindowing(/* instanceCount= */ 1));
+    }
+
+    @Test
+    @SmallTest
+    @Feature("MultiWindow")
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @Features.EnableFeatures({ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW})
+    public void
+            testIsOpenInOtherWindowSupported_noOtherActivity_incognitoWindowEnabled_returnsTrue() {
+        assertTrue(doTestIsOpenInOtherWindowSupportedIncognitoWindowing(/* instanceCount= */ 3));
+    }
+
+    @SuppressWarnings("DirectInvocationOnMock")
     public boolean doTestIsOpenInOtherWindowSupported(
             boolean isAutomotive,
             boolean isInMultiWindowMode,
@@ -450,6 +501,17 @@ public class MultiWindowUtilsTest {
         doReturn(openInOtherWindowActivity)
                 .when(mMultiWindowUtils)
                 .getOpenInOtherWindowActivity(any());
+
+        return mMultiWindowUtils.isOpenInOtherWindowSupported(mActivityTestRule.getActivity());
+    }
+
+    @SuppressWarnings("DirectInvocationOnMock")
+    public boolean doTestIsOpenInOtherWindowSupportedIncognitoWindowing(int instanceCount) {
+        mAutomotiveContextWrapperTestRule.setIsAutomotive(false);
+
+        doReturn(true).when(mMultiWindowUtils).isInMultiWindowMode(any());
+        doReturn(true).when(mMultiWindowUtils).isInMultiDisplayMode(any());
+        MultiWindowUtils.setInstanceCountForTesting(instanceCount);
 
         return mMultiWindowUtils.isOpenInOtherWindowSupported(mActivityTestRule.getActivity());
     }
@@ -502,6 +564,7 @@ public class MultiWindowUtilsTest {
                         /* customMultiWindowModeSupported= */ true));
     }
 
+    @SuppressWarnings("DirectInvocationOnMock")
     public boolean doTestCanEnterMultiWindowMode(
             boolean isAutomotive,
             boolean aospMultiWindowModeSupported,
@@ -515,6 +578,6 @@ public class MultiWindowUtilsTest {
                 .when(mMultiWindowUtils)
                 .customMultiWindowModeSupported();
 
-        return mMultiWindowUtils.canEnterMultiWindowMode(mActivityTestRule.getActivity());
+        return mMultiWindowUtils.canEnterMultiWindowMode();
     }
 }

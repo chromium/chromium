@@ -21,7 +21,8 @@ ServiceWorkerObjectHost::ServiceWorkerObjectHost(
     scoped_refptr<ServiceWorkerVersion> version)
     : context_(context),
       container_host_(container_host),
-      container_origin_(url::Origin::Create(container_host_->url())),
+      container_origin_(
+          url::Origin::Create(container_host_->url_for_access_check())),
       version_(std::move(version)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(context_ && container_host_ && version_);
@@ -88,11 +89,12 @@ void ServiceWorkerObjectHost::DispatchExtendableMessageEvent(
     std::move(callback).Run(blink::ServiceWorkerStatusCode::kErrorAbort);
     return;
   }
-  DCHECK_EQ(container_origin_, url::Origin::Create(container_host_->url()));
+  DCHECK_EQ(container_origin_,
+            url::Origin::Create(container_host_->url_for_access_check()));
 
   // As we don't track tasks between workers and renderers, we can nullify the
-  // message's parent task ID.
-  message.parent_task_id = std::nullopt;
+  // message's task state ID.
+  message.task_state_id = std::nullopt;
 
   container_host_->DispatchExtendableMessageEvent(version_, std::move(message),
                                                   std::move(callback));

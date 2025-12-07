@@ -4,6 +4,7 @@
 
 #include "ash/wm/desks/desk_bar_controller.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "ash/accessibility/accessibility_controller.h"
@@ -27,7 +28,6 @@
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/presentation_time_recorder.h"
@@ -314,7 +314,7 @@ void DeskBarController::OnDisplayMetricsChanged(const display::Display& display,
     }
 
     const int64_t display_id =
-        display::Screen::GetScreen()
+        display::Screen::Get()
             ->GetDisplayNearestWindow(desk_bar.bar_view->root())
             .id();
     if (display.id() != display_id) {
@@ -326,15 +326,15 @@ void DeskBarController::OnDisplayMetricsChanged(const display::Display& display,
 }
 
 DeskBarViewBase* DeskBarController::GetDeskBarView(aura::Window* root) {
-  auto it = base::ranges::find_if(desk_bars_,
-                                  [root](const BarWidgetAndView& desk_bar) {
-                                    return desk_bar.bar_view->root() == root;
-                                  });
+  auto it = std::ranges::find_if(desk_bars_,
+                                 [root](const BarWidgetAndView& desk_bar) {
+                                   return desk_bar.bar_view->root() == root;
+                                 });
   return it != desk_bars_.end() ? it->bar_view : nullptr;
 }
 
 bool DeskBarController::IsShowingDeskBar() const {
-  return base::ranges::any_of(desk_bars_, [](const BarWidgetAndView& desk_bar) {
+  return std::ranges::any_of(desk_bars_, [](const BarWidgetAndView& desk_bar) {
     return desk_bar.bar_view->GetVisible();
   });
 }
@@ -342,14 +342,14 @@ bool DeskBarController::IsShowingDeskBar() const {
 void DeskBarController::OpenDeskBar(aura::Window* root) {
   CHECK(root && root->IsRootWindow());
 
-  if (!window_occlusion_calculator_ &&
-      features::IsDeskBarWindowOcclusionOptimizationEnabled()) {
+  if (!window_occlusion_calculator_) {
     window_occlusion_calculator_.emplace();
   }
 
   auto presentation_time_recorder = CreatePresentationTimeHistogramRecorder(
       root->layer()->GetCompositor(), kDeskBarEnterPresentationHistogram, "",
-      kDeskBarEnterExitPresentationMaxLatency);
+      ui::PresentationTimeRecorder::BucketParams::CreateWithMaximum(
+          kDeskBarEnterExitPresentationMaxLatency));
   presentation_time_recorder->RequestNext();
 
   // It should not close all bars for the activation change when a new desk bar
@@ -374,7 +374,7 @@ void DeskBarController::OpenDeskBar(aura::Window* root) {
         root, window_occlusion_calculator_
                   ? window_occlusion_calculator_->AsWeakPtr()
                   : nullptr));
-    bar_view->Init();
+    bar_view->Init(bar_widget->GetNativeWindow());
 
     // Ownership transfer and bookkeeping.
     desk_bars_.emplace_back(bar_view, std::move(bar_widget));
@@ -461,7 +461,8 @@ void DeskBarController::CloseDeskBarInternal(BarWidgetAndView& desk_bar) {
   auto presentation_time_recorder = CreatePresentationTimeHistogramRecorder(
       desk_bar.bar_view->root()->layer()->GetCompositor(),
       kDeskBarExitPresentationHistogram, "",
-      kDeskBarEnterExitPresentationMaxLatency);
+      ui::PresentationTimeRecorder::BucketParams::CreateWithMaximum(
+          kDeskBarEnterExitPresentationMaxLatency));
   presentation_time_recorder->RequestNext();
 
   desk_bar.bar_widget->Hide();

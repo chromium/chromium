@@ -40,7 +40,7 @@ async function main() {
       const error = await catchError(readTextFromBlob(fileSlice));
 
       chrome.test.assertTrue(!!error, 'Reading should fail.');
-      chrome.test.assertEq('NotReadableError', error.name);
+      chrome.test.assertEq('NotFoundError', error.name);
       chrome.test.succeed();
     },
 

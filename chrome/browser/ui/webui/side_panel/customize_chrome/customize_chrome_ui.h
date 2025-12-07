@@ -8,8 +8,10 @@
 #include <memory>
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
+#include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar.mojom.h"
@@ -22,7 +24,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/resources/cr_components/customize_color_scheme_mode/customize_color_scheme_mode.mojom.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 #include "ui/webui/resources/cr_components/theme_color_picker/theme_color_picker.mojom.h"
@@ -40,10 +41,6 @@ class ThemeColorPickerHandler;
 class WallpaperSearchBackgroundManager;
 class WallpaperSearchHandler;
 class WallpaperSearchStringMap;
-
-namespace ui {
-class ColorChangeHandler;
-}
 
 class CustomizeChromeUIConfig
     : public DefaultTopChromeWebUIConfig<CustomizeChromeUI> {
@@ -82,7 +79,10 @@ class CustomizeChromeUI
   void ScrollToSection(CustomizeChromeSection section);
 
   // Passthrough that calls the CustomizeChromePage's AttachedTabStateUpdated.
-  void AttachedTabStateUpdated(bool is_source_tab_first_party_ntp);
+  void AttachedTabStateUpdated(const GURL& url);
+
+  // Passthrough that calls to CustomizeChromePage's UpdateThemeEditable.
+  void UpdateThemeEditable(bool is_theme_editable);
 
   // Gets a weak pointer to this object.
   base::WeakPtr<CustomizeChromeUI> GetWeakPtr();
@@ -96,10 +96,6 @@ class CustomizeChromeUI
 
   void BindInterface(
       mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
-          pending_receiver);
-
-  void BindInterface(
-      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
           pending_receiver);
 
   void BindInterface(
@@ -121,7 +117,7 @@ class CustomizeChromeUI
           side_panel::customize_chrome::mojom::CustomizeToolbarHandlerFactory>
           receiver);
 
-  static constexpr std::string GetWebUIName() { return "CustomizeChrome"; }
+  static constexpr std::string_view GetWebUIName() { return "CustomizeChrome"; }
 
  private:
   // side_panel::mojom::CustomizeChromePageHandlerFactory
@@ -177,18 +173,18 @@ class CustomizeChromeUI
   std::unique_ptr<CustomizeChromePageHandler> customize_chrome_page_handler_;
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
-  const std::vector<std::pair<const std::string, int>> module_id_names_;
+  const std::vector<ntp::ModuleIdDetail> module_id_details_;
   mojo::Receiver<side_panel::mojom::CustomizeChromePageHandlerFactory>
       page_factory_receiver_;
   // Caches a request to scroll to a section in case the request happens before
   // the front-end is ready to receive the request.
   std::optional<CustomizeChromeSection> section_;
-  std::optional<bool> is_source_tab_first_party_ntp_;
+  GURL source_tab_url_;
+  std::optional<bool> is_theme_editable_;
 
   std::unique_ptr<user_education::HelpBubbleHandler> help_bubble_handler_;
   mojo::Receiver<help_bubble::mojom::HelpBubbleHandlerFactory>
       help_bubble_handler_factory_receiver_{this};
-  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
   std::unique_ptr<CustomizeColorSchemeModeHandler>
       customize_color_scheme_mode_handler_;
   mojo::Receiver<customize_color_scheme_mode::mojom::

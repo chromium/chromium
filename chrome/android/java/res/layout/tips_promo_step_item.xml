@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:gravity="center_vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:paddingTop="@dimen/tips_notifications_bottom_sheet_step_vertical_padding"
+    android:paddingBottom="@dimen/tips_notifications_bottom_sheet_step_vertical_padding"
+    android:paddingStart="@dimen/tips_notifications_bottom_sheet_horizontal_margin"
+    android:paddingEnd="@dimen/tips_notifications_bottom_sheet_horizontal_margin"
+    android:orientation="horizontal">
+    <TextView
+        android:id="@+id/step_number"
+        android:layout_width="@dimen/tips_notifications_bottom_sheet_step_number_width"
+        android:layout_height="@dimen/tips_notifications_bottom_sheet_step_number_width"
+        android:background="@drawable/steps_number_circle_background"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Primary"/>
+    <TextView
+        android:id="@+id/step_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/tips_notifications_bottom_sheet_step_content_margin_start"
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+        android:textAlignment="viewStart"
+        android:focusable="false"/>
+</LinearLayout>

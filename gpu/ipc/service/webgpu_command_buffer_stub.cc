@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/notimplemented.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/constants.h"
@@ -17,15 +18,14 @@
 #include "gpu/command_buffer/service/gl_state_restorer_impl.h"
 #include "gpu/command_buffer/service/logger.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
+#include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/service_utils.h"
-#include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/command_buffer/service/transfer_buffer_manager.h"
 #include "gpu/command_buffer/service/webgpu_decoder.h"
 #include "gpu/config/gpu_crash_keys.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "gpu/ipc/service/gpu_channel_manager_delegate.h"
-#include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
@@ -35,10 +35,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-#include "gpu/ipc/service/stream_texture_android.h"
 #endif
 
 namespace gpu {
@@ -65,7 +61,6 @@ WebGPUCommandBufferStub::~WebGPUCommandBufferStub() {
 }
 
 gpu::ContextResult WebGPUCommandBufferStub::Initialize(
-    CommandBufferStub* share_command_buffer_stub,
     const mojom::CreateCommandBufferParams& init_params,
     base::UnsafeSharedMemoryRegion shared_state_shm) {
 #if BUILDFLAG(IS_FUCHSIA)
@@ -79,17 +74,6 @@ gpu::ContextResult WebGPUCommandBufferStub::Initialize(
 
   GpuChannelManager* manager = channel_->gpu_channel_manager();
   DCHECK(manager);
-
-  if (share_command_buffer_stub) {
-    LOG(ERROR) << "Using a share group is not supported with WebGPUDecoder";
-    return ContextResult::kFatalFailure;
-  }
-
-  if (init_params.attribs.context_type != CONTEXT_TYPE_WEBGPU) {
-    LOG(ERROR) << "ContextResult::kFatalFailure: Incompatible creation attribs "
-                  "used with WebGPUDecoder";
-    return ContextResult::kFatalFailure;
-  }
 
   ContextResult result;
   scoped_refptr<SharedContextState> shared_context_state =
@@ -112,14 +96,16 @@ gpu::ContextResult WebGPUCommandBufferStub::Initialize(
 
   command_buffer_ =
       std::make_unique<CommandBufferService>(this, memory_tracker_.get());
-  std::unique_ptr<webgpu::WebGPUDecoder> decoder(webgpu::WebGPUDecoder::Create(
-      this, command_buffer_.get(), manager->shared_image_manager(),
-      memory_tracker_.get(), manager->outputter(), manager->gpu_preferences(),
-      std::move(shared_context_state), dawn_cache_options, channel_));
+  std::unique_ptr<webgpu::WebGPUDecoder> decoder =
+      webgpu::WebGPUDecoder::Create(
+          this, command_buffer_.get(), manager->shared_image_manager(),
+          memory_tracker_.get(), manager->outputter(),
+          manager->gpu_preferences(), std::move(shared_context_state),
+          dawn_cache_options, channel_);
 
-  sync_point_client_state_ =
-      channel_->sync_point_manager()->CreateSyncPointClientState(
-          CommandBufferNamespace::GPU_IO, command_buffer_id_, sequence_id_);
+  scoped_sync_point_client_state_ =
+      channel_->scheduler()->CreateSyncPointClientState(
+          sequence_id_, CommandBufferNamespace::GPU_IO, command_buffer_id_);
 
   result = decoder->Initialize(manager->gpu_feature_info());
   if (result != gpu::ContextResult::kSuccess) {
@@ -159,7 +145,5 @@ MemoryTracker* WebGPUCommandBufferStub::GetContextGroupMemoryTracker() const {
 base::WeakPtr<CommandBufferStub> WebGPUCommandBufferStub::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
-
-void WebGPUCommandBufferStub::OnSwapBuffers(uint64_t swap_id, uint32_t flags) {}
 
 }  // namespace gpu

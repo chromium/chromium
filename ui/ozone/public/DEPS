@@ -1,5 +1,7 @@
 include_rules = [
   "+mojo/public",
+  "+components/viz/common/resources/shared_image_format_utils.h",
+  "+components/viz/common/resources/shared_image_format.h",
   "+ui/base/test/ui_controls.h",
 ]
 

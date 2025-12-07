@@ -38,6 +38,7 @@ class GPU_GLES2_EXPORT Logger {
 
   void LogMessage(const char* filename, int line, const std::string& msg);
   const std::string& GetLogPrefix() const;
+  bool SuppressPerformanceLogs() const;
 
   // Defaults to true. Set to false for the gpu_unittests as they
   // are explicitly checking errors are generated and so don't need the numerous
@@ -56,6 +57,7 @@ class GPU_GLES2_EXPORT Logger {
   int log_message_count_;
   bool log_synthesized_gl_errors_;
   bool disable_gl_error_limit_;
+  bool suppress_performance_logs_;
 };
 
 }  // namespace gles2

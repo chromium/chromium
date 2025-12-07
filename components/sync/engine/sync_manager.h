@@ -117,7 +117,7 @@ class SyncManager {
   SyncManager();
   virtual ~SyncManager();
 
-  // Initialize the sync manager using arguments from |args|.
+  // Initialize the sync manager using arguments from `args`.
   //
   // Note, args is passed by non-const pointer because it contains objects like
   // unique_ptr.
@@ -144,7 +144,7 @@ class SyncManager {
   // any configuration tasks needed as determined by the params. Once complete,
   // syncer will remain in CONFIGURATION_MODE until StartSyncingNormally is
   // called.
-  // |ready_task| is invoked when the configuration completes.
+  // `ready_task` is invoked when the configuration completes.
   virtual void ConfigureSyncer(ConfigureReason reason,
                                DataTypeSet to_download,
                                SyncFeatureState sync_feature_state,
@@ -190,9 +190,6 @@ class SyncManager {
   // Returns the bag of chips of the currently open database.
   // Requires that the SyncManager be initialized.
   virtual std::string bag_of_chips() = 0;
-
-  // Returns types that have local changes yet to be synced to the server.
-  virtual DataTypeSet GetTypesWithUnsyncedData() = 0;
 
   // Returns whether there are remaining unsynced items.
   virtual bool HasUnsyncedItemsForTest() = 0;

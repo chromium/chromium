@@ -50,8 +50,8 @@ symbol_level = 1
 ```
 
 And to build a Chrome target, not Chromium, in order to get code ordering,
-e.g. `monochrome_apk`. Then, you can either use it purely to visualize code
-layout, or to couple it with residency.
+e.g. `chrome_apk`. Then, you can either use it purely to visualize code layout,
+or to couple it with residency.
 
 ### No residency
 Run:

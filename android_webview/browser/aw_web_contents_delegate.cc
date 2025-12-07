@@ -19,6 +19,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -38,6 +39,7 @@
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "url/gurl.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/AwWebContentsDelegate_jni.h"
@@ -45,7 +47,7 @@
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using blink::mojom::FileChooserFileInfo;
 using blink::mojom::FileChooserFileInfoPtr;
@@ -54,7 +56,9 @@ using content::WebContents;
 
 namespace android_webview {
 
-AwWebContentsDelegate::AwWebContentsDelegate(JNIEnv* env, jobject obj)
+AwWebContentsDelegate::AwWebContentsDelegate(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& obj)
     : WebContentsDelegateAndroid(env, obj), is_fullscreen_(false) {}
 
 AwWebContentsDelegate::~AwWebContentsDelegate() = default;
@@ -121,24 +125,20 @@ void AwWebContentsDelegate::RunFileChooser(
     return;
   }
 
-  int mode_flags = 0;
-  if (params.mode == FileChooserParams::Mode::kUploadFolder ||
-      params.mode == FileChooserParams::Mode::kOpenMultiple) {
-    // Folder implies multiple in Chrome.
-    mode_flags = static_cast<int>(FileChooserParams::Mode::kOpenMultiple);
-  } else if (params.mode == FileChooserParams::Mode::kSave) {
-    // Save not supported, so cancel it.
+  // Only allow Open, OpenMultiple and UploadFolder for pre-FSA code.
+  if (!base::FeatureList::IsEnabled(features::kWebViewFileSystemAccess) &&
+      params.mode != FileChooserParams::Mode::kOpen &&
+      params.mode != FileChooserParams::Mode::kOpenMultiple &&
+      params.mode != FileChooserParams::Mode::kUploadFolder) {
     listener->FileSelectionCanceled();
     return;
-  } else {
-    DCHECK_EQ(FileChooserParams::Mode::kOpen, params.mode);
   }
   DCHECK(!file_select_listener_)
       << "Multiple concurrent FileChooser requests are not supported.";
   file_select_listener_ = std::move(listener);
   Java_AwWebContentsDelegate_runFileChooser(
-      env, java_delegate, render_frame_host->GetProcess()->GetID(),
-      render_frame_host->GetRoutingID(), mode_flags,
+      env, java_delegate, render_frame_host->GetProcess()->GetDeprecatedID(),
+      render_frame_host->GetRoutingID(), params.mode, params.open_writable,
       ConvertUTF16ToJavaString(env,
                                base::JoinString(params.accept_types, u",")),
       params.title.empty() ? nullptr
@@ -149,7 +149,11 @@ void AwWebContentsDelegate::RunFileChooser(
       params.use_media_capture);
 }
 
-void AwWebContentsDelegate::AddNewContents(
+bool AwWebContentsDelegate::UseFileChooserForFileSystemAccess() const {
+  return true;
+}
+
+WebContents* AwWebContentsDelegate::AddNewContents(
     WebContents* source,
     std::unique_ptr<WebContents> new_contents,
     const GURL& target_url,
@@ -195,6 +199,12 @@ void AwWebContentsDelegate::AddNewContents(
   if (was_blocked) {
     *was_blocked = !create_popup;
   }
+  return nullptr;
+}
+
+void AwWebContentsDelegate::SetContentsBounds(content::WebContents* source,
+                                              const gfx::Rect& bounds) {
+  // Do nothing.
 }
 
 void AwWebContentsDelegate::NavigationStateChanged(
@@ -285,9 +295,6 @@ bool AwWebContentsDelegate::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
     const url::Origin& security_origin,
     blink::mojom::MediaStreamType type) {
-  if (!base::FeatureList::IsEnabled(features::kWebViewEnumerateDevicesCache)) {
-    return false;
-  }
   WebContents* web_contents =
       WebContents::FromRenderFrameHost(render_frame_host);
   if (!web_contents) {
@@ -349,7 +356,13 @@ bool AwWebContentsDelegate::IsBackForwardCacheSupported(
 }
 
 content::PreloadingEligibility AwWebContentsDelegate::IsPrerender2Supported(
-    content::WebContents& web_contents) {
+    content::WebContents& web_contents,
+    content::PreloadingTriggerType trigger_type) {
+  // Allow when prerendering is triggered by the WebView Prerender API.
+  if (trigger_type == content::PreloadingTriggerType::kEmbedder) {
+    return content::PreloadingEligibility::kEligible;
+  }
+
   AwSettings* aw_settings = AwSettings::FromWebContents(&web_contents);
   if (aw_settings->IsPrerender2Allowed()) {
     return content::PreloadingEligibility::kEligible;
@@ -358,8 +371,14 @@ content::PreloadingEligibility AwWebContentsDelegate::IsPrerender2Supported(
   return content::PreloadingEligibility::kPreloadingUnsupportedByWebContents;
 }
 
+int AwWebContentsDelegate::AllowedPrerenderingCount(
+    content::WebContents& web_contents) {
+  return AwBrowserContext::FromWebContents(&web_contents)
+      ->AllowedPrerenderingCount();
+}
+
 content::NavigationController::UserAgentOverrideOption
-AwWebContentsDelegate::ShouldOverrideUserAgentForPrerender2() {
+AwWebContentsDelegate::ShouldOverrideUserAgentForPreloading(const GURL& url) {
   // For WebView, always use the user agent override, which is set every time
   // the user agent in AwSettings is modified.
   return content::NavigationController::UA_OVERRIDE_TRUE;
@@ -373,13 +392,24 @@ bool AwWebContentsDelegate::ShouldAllowPartialParamMismatchOfPrerender2(
 
   // `ui::PAGE_TRANSITION_FROM_API` bit distinguishes that the activation
   // navigation is triggered by `WebView.loadUrl()`.
-  bool ret =
-      navigation_handle.GetPageTransition() & ui::PAGE_TRANSITION_FROM_API;
-  if (ret) {
-    CHECK(!navigation_handle.GetInitiatorFrameToken().has_value());
-    CHECK(!navigation_handle.GetInitiatorOrigin().has_value());
+  return navigation_handle.GetPageTransition() & ui::PAGE_TRANSITION_FROM_API;
+}
+
+bool AwWebContentsDelegate::isModalContextMenu() const {
+  JNIEnv* env = AttachCurrentThread();
+
+  ScopedJavaLocalRef<jobject> java_delegate = GetJavaDelegate(env);
+  if (java_delegate.is_null()) {
+    return true;
   }
-  return ret;
+
+  // Feature is behind a flag which is disabled by default.
+  // TODO(crbug/408234669): remove this check once flag is no longer needed.
+  if (!base::FeatureList::IsEnabled(features::kWebViewHyperlinkContextMenu)) {
+    return false;
+  }
+
+  return !Java_AwWebContentsDelegate_isPopupSupported(env, java_delegate);
 }
 
 scoped_refptr<content::FileSelectListener>
@@ -392,8 +422,8 @@ static void JNI_AwWebContentsDelegate_FilesSelectedInChooser(
     jint process_id,
     jint render_id,
     jint mode_flags,
-    const JavaParamRef<jobjectArray>& file_paths,
-    const JavaParamRef<jobjectArray>& display_names) {
+    const JavaRef<jobjectArray>& file_paths,
+    const JavaRef<jobjectArray>& display_names) {
   content::RenderFrameHost* rfh =
       content::RenderFrameHost::FromID(process_id, render_id);
   auto* web_contents = WebContents::FromRenderFrameHost(rfh);
@@ -455,3 +485,5 @@ static void JNI_AwWebContentsDelegate_FilesSelectedInChooser(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwWebContentsDelegate)

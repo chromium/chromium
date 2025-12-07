@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
@@ -20,6 +22,8 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.net.ConnectionType;
 import org.chromium.net.NetworkChangeNotifierAutoDetect;
 import org.chromium.net.RegistrationPolicyAlwaysRegister;
@@ -41,17 +45,18 @@ import java.util.List;
  */
 @JNINamespace("content")
 @VisibleForTesting
+@NullMarked
 public class BackgroundSyncNetworkObserver implements NetworkChangeNotifierAutoDetect.Observer {
     private static final String TAG = "BgSyncNetObserver";
     private static boolean sSetConnectionTypeForTesting;
-    private NetworkChangeNotifierAutoDetect mNotifier;
+    private @Nullable NetworkChangeNotifierAutoDetect mNotifier;
 
     // The singleton instance.
     @SuppressLint("StaticFieldLeak")
-    private static BackgroundSyncNetworkObserver sInstance;
+    private static @Nullable BackgroundSyncNetworkObserver sInstance;
 
     // List of native observers. These are each called when the network state changes.
-    private List<Long> mNativePtrs;
+    private final List<Long> mNativePtrs;
 
     private @ConnectionType int mLastBroadcastConnectionType;
     private boolean mHasBroadcastConnectionType;
@@ -84,7 +89,7 @@ public class BackgroundSyncNetworkObserver implements NetworkChangeNotifierAutoD
     }
 
     @CalledByNative
-    private static BackgroundSyncNetworkObserver createObserver(long nativePtr) {
+    private static @Nullable BackgroundSyncNetworkObserver createObserver(long nativePtr) {
         ThreadUtils.assertOnUiThread();
 
         getBackgroundSyncNetworkObserver().registerObserver(nativePtr);
@@ -112,9 +117,7 @@ public class BackgroundSyncNetworkObserver implements NetworkChangeNotifierAutoD
         mNotifier.updateCurrentNetworkState();
         BackgroundSyncNetworkObserverJni.get()
                 .notifyConnectionTypeChanged(
-                        nativePtr,
-                        BackgroundSyncNetworkObserver.this,
-                        mNotifier.getCurrentNetworkState().getConnectionType());
+                        nativePtr, mNotifier.getCurrentNetworkState().getConnectionType());
     }
 
     @CalledByNative
@@ -137,8 +140,7 @@ public class BackgroundSyncNetworkObserver implements NetworkChangeNotifierAutoD
         mLastBroadcastConnectionType = newConnectionType;
         for (Long nativePtr : mNativePtrs) {
             BackgroundSyncNetworkObserverJni.get()
-                    .notifyConnectionTypeChanged(
-                            nativePtr, BackgroundSyncNetworkObserver.this, newConnectionType);
+                    .notifyConnectionTypeChanged(nativePtr, newConnectionType);
         }
     }
 
@@ -174,6 +176,7 @@ public class BackgroundSyncNetworkObserver implements NetworkChangeNotifierAutoD
     public void onNetworkDisconnect(long netId) {
         ThreadUtils.assertOnUiThread();
         if (sSetConnectionTypeForTesting) return;
+        assumeNonNull(mNotifier);
 
         // If we're in doze mode (N+ devices), onConnectionTypeChanged may not
         // be called, but this function should. So update the connection type
@@ -189,7 +192,6 @@ public class BackgroundSyncNetworkObserver implements NetworkChangeNotifierAutoD
     @NativeMethods
     interface Natives {
         @NativeClassQualifiedName("BackgroundSyncNetworkObserverAndroid::Observer")
-        void notifyConnectionTypeChanged(
-                long nativePtr, BackgroundSyncNetworkObserver caller, int newConnectionType);
+        void notifyConnectionTypeChanged(long nativePtr, int newConnectionType);
     }
 }

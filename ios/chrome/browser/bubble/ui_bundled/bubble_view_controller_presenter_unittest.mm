@@ -25,23 +25,19 @@ class BubbleViewControllerPresenterTest : public PlatformTest {
       : bubble_view_controller_presenter_([[BubbleViewControllerPresenter alloc]
                  initWithText:@"Text"
                         title:@"Title"
-                        image:[[UIImage alloc] init]
                arrowDirection:BubbleArrowDirectionUp
                     alignment:BubbleAlignmentCenter
-                   bubbleType:BubbleViewTypeRichWithSnooze
-            dismissalCallback:^(
-                IPHDismissalReasonType reason,
-                feature_engagement::Tracker::SnoozeAction action) {
+                   bubbleType:BubbleViewTypeRich
+              pageControlPage:BubblePageControlPageNone
+            dismissalCallback:^(IPHDismissalReasonType reason) {
               dismissal_callback_count_++;
-              dismissal_callback_action_ = action;
               run_loop_.Quit();
             }]),
         window_([[UIWindow alloc]
             initWithFrame:CGRectMake(0.0, 0.0, 500.0, 500.0)]),
         parent_view_controller_([[UIViewController alloc] init]),
         anchor_point_(CGPointMake(250.0, 250.0)),
-        dismissal_callback_count_(0),
-        dismissal_callback_action_() {
+        dismissal_callback_count_(0) {
     parent_view_controller_.view.frame = CGRectMake(0.0, 0.0, 500.0, 500.0);
     [window_ addSubview:parent_view_controller_.view];
   }
@@ -67,8 +63,6 @@ class BubbleViewControllerPresenterTest : public PlatformTest {
   // `dismissalCallback` has been invoked. Defaults to 0. Every time the
   // callback is invoked, `dismissal_callback_count_` increments.
   int dismissal_callback_count_;
-  std::optional<feature_engagement::Tracker::SnoozeAction>
-      dismissal_callback_action_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::RunLoop run_loop_;
@@ -226,15 +220,12 @@ TEST_F(BubbleViewControllerPresenterTest,
       [[BubbleViewControllerPresenter alloc]
                initWithText:@"Text"
                       title:@"Title"
-                      image:[[UIImage alloc] init]
              arrowDirection:BubbleArrowDirectionUp
                   alignment:BubbleAlignmentCenter
                  bubbleType:BubbleViewTypeWithClose
-          dismissalCallback:^(
-              IPHDismissalReasonType reason,
-              feature_engagement::Tracker::SnoozeAction action) {
+            pageControlPage:BubblePageControlPageNone
+          dismissalCallback:^(IPHDismissalReasonType reason) {
             dismissal_callback_count_++;
-            dismissal_callback_action_ = action;
           }];
   [bubble_view_controller_presenter
       presentInViewController:parent_view_controller_
@@ -245,28 +236,6 @@ TEST_F(BubbleViewControllerPresenterTest,
   UIButton* close_button = GetCloseButtonFromBubbleView(bubble_view);
   EXPECT_TRUE(close_button);
   [close_button sendActionsForControlEvents:UIControlEventTouchUpInside];
-  EXPECT_TRUE(dismissal_callback_action_);
-  EXPECT_EQ(feature_engagement::Tracker::SnoozeAction::DISMISSED,
-            dismissal_callback_action_);
-  EXPECT_EQ(1, dismissal_callback_count_);
-}
-
-// Tests that tapping the bubble view's snooze button invoke the dismissal
-// callback with a snooze action.
-TEST_F(BubbleViewControllerPresenterTest,
-       BubbleViewSnoozeButtonCallDismissalCallback) {
-  [bubble_view_controller_presenter_
-      presentInViewController:parent_view_controller_
-                  anchorPoint:anchor_point_];
-  BubbleView* bubble_view = base::apple::ObjCCastStrict<BubbleView>(
-      bubble_view_controller_presenter_.bubbleViewController.view);
-  EXPECT_TRUE(bubble_view);
-  UIButton* snooze_button = GetSnoozeButtonFromBubbleView(bubble_view);
-  EXPECT_TRUE(snooze_button);
-  [snooze_button sendActionsForControlEvents:UIControlEventTouchUpInside];
-  EXPECT_TRUE(dismissal_callback_action_);
-  EXPECT_EQ(feature_engagement::Tracker::SnoozeAction::SNOOZED,
-            dismissal_callback_action_);
   EXPECT_EQ(1, dismissal_callback_count_);
 }
 

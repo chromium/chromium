@@ -4,11 +4,18 @@
 
 #include "components/metrics/debug/metrics_internals_utils.h"
 
+#include <string>
 #include <string_view>
 
+#include "base/base64.h"
+#include "base/i18n/time_formatting.h"
+#include "base/strings/string_number_conversions.h"
+#include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/proto/study.pb.h"
+#include "components/variations/seed_reader_writer.h"
 #include "components/variations/service/variations_service.h"
 
 namespace metrics {
@@ -27,7 +34,7 @@ std::string ChannelToString(variations::Study::Channel channel) {
     case variations::Study::STABLE:
       return "Stable";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::string PlatformToString(variations::Study::Platform platform) {
@@ -53,7 +60,7 @@ std::string PlatformToString(variations::Study::Platform platform) {
     case variations::Study::PLATFORM_CHROMEOS_LACROS:
       return "ChromeOS Lacros";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::string CpuArchitectureToString(
@@ -70,7 +77,7 @@ std::string CpuArchitectureToString(
     case variations::Study::TRANSLATED_X86_64:
       return "translated_x86_64";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::string FormFactorToString(variations::Study::FormFactor form_factor) {
@@ -92,11 +99,32 @@ std::string FormFactorToString(variations::Study::FormFactor form_factor) {
     case variations::Study::FOLDABLE:
       return "Foldable";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+std::string GoogleGroupsToString(
+    const base::flat_set<uint64_t>& google_groups) {
+  std::string result;
+  for (const uint64_t google_group : google_groups) {
+    if (!result.empty()) {
+      result += ",";
+    }
+    result += base::NumberToString(google_group);
+  }
+  return result;
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 std::string BoolToString(bool val) {
   return val ? "Yes" : "No";
+}
+
+// Converts a timestamp in microseconds since the Windows epoch to a date
+// string.
+std::string FormatDate(int64_t timestamp) {
+  return base::TimeFormatAsIso8601(
+      variations::SeedReaderWriter::ProtoTimeToTime(timestamp));
 }
 
 base::Value::Dict CreateKeyValueDict(std::string_view key,
@@ -105,6 +133,36 @@ base::Value::Dict CreateKeyValueDict(std::string_view key,
   dict.Set("key", key);
   dict.Set("value", value);
   return dict;
+}
+
+void StoredSeedInfoToKeyValueList(
+    base::OnceCallback<void(base::ValueView)> done_callback,
+    variations::StoredSeedInfo stored_seed_info) {
+  base::Value::List list;
+  // We need to encode the seed data so it's valid utf-8.
+  list.Append(CreateKeyValueDict("Seed Data",
+                                 base::Base64Encode(stored_seed_info.data())));
+  list.Append(
+      CreateKeyValueDict("Seed Signature", stored_seed_info.signature()));
+  list.Append(CreateKeyValueDict(
+      "Seed Milestone", base::NumberToString(stored_seed_info.milestone())));
+  list.Append(CreateKeyValueDict(
+      "Seed Date", base::NumberToString(stored_seed_info.seed_date())));
+  list.Append(CreateKeyValueDict("Seed Date (Formatted)",
+                                 FormatDate(stored_seed_info.seed_date())));
+  list.Append(CreateKeyValueDict(
+      "Client Fetch Time",
+      base::NumberToString(stored_seed_info.client_fetch_time())));
+  list.Append(
+      CreateKeyValueDict("Client Fetch Time (Formatted)",
+                         FormatDate(stored_seed_info.client_fetch_time())));
+  list.Append(CreateKeyValueDict("Session Country Code",
+                                 stored_seed_info.session_country_code()));
+  list.Append(CreateKeyValueDict("Permanent Country Code",
+                                 stored_seed_info.permanent_country_code()));
+  list.Append(CreateKeyValueDict("Permanent Version",
+                                 stored_seed_info.permanent_version()));
+  std::move(done_callback).Run(std::move(list));
 }
 
 }  // namespace
@@ -150,7 +208,22 @@ base::Value::List GetVariationsSummary(
   list.Append(CreateKeyValueDict("Locale", state->locale));
   list.Append(
       CreateKeyValueDict("Enterprise", BoolToString(state->IsEnterprise())));
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  list.Append(CreateKeyValueDict("Google Groups",
+                                 GoogleGroupsToString(state->GoogleGroups())));
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return list;
+}
+
+void GetStoredSeedInfo(
+    base::OnceCallback<void(base::ValueView)> done_callback,
+    metrics_services_manager::MetricsServicesManager* metrics_service_manager,
+    variations::VariationsSeedStore::SeedType seed_type) {
+  metrics_service_manager->GetVariationsService()
+      ->GetStoredSeedInfoForDebugging(
+          base::BindOnce(&StoredSeedInfoToKeyValueList,
+                         std::move(done_callback)),
+          seed_type);
 }
 
 }  // namespace metrics

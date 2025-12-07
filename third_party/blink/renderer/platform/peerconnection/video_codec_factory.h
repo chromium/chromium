@@ -12,13 +12,8 @@
 #include "third_party/webrtc/api/video_codecs/video_encoder_factory.h"
 
 namespace media {
-class DecoderFactory;
 class GpuVideoAcceleratorFactories;
 class MojoVideoEncoderMetricsProviderFactory;
-}
-
-namespace base {
-class SequencedTaskRunner;
 }
 
 namespace gfx {
@@ -36,10 +31,21 @@ CreateWebrtcVideoEncoderFactory(
 PLATFORM_EXPORT std::unique_ptr<webrtc::VideoDecoderFactory>
 CreateWebrtcVideoDecoderFactory(
     media::GpuVideoAcceleratorFactories* gpu_factories,
-    base::WeakPtr<media::DecoderFactory> media_decoder_factory,
-    scoped_refptr<base::SequencedTaskRunner> media_task_runner,
     const gfx::ColorSpace& render_color_space,
     StatsCollector::StoreProcessingStatsCB stats_callback);
+
+// Temporary factory functions that are used to enable logging of codecs that
+// are potentially HW accelerated. Some codec profiles are only enabled if
+// certain features are enabled. The factories that are created by the functions
+// below override these. Please note that they must only be used for logging
+// purpose.
+PLATFORM_EXPORT std::unique_ptr<webrtc::VideoEncoderFactory>
+CreateWebrtcVideoEncoderFactoryForUmaLogging(
+    media::GpuVideoAcceleratorFactories* gpu_factories);
+PLATFORM_EXPORT std::unique_ptr<webrtc::VideoDecoderFactory>
+CreateWebrtcVideoDecoderFactoryForUmaLogging(
+    media::GpuVideoAcceleratorFactories* gpu_factories,
+    const gfx::ColorSpace& render_color_space);
 
 }  // namespace blink
 

@@ -14,3 +14,5 @@
   readonly attribute XRRigidTransform normDepthBufferFromNormView;
   readonly attribute float rawValueToMeters;
 };
+
+XRDepthInformation includes XRViewGeometry;

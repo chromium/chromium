@@ -77,6 +77,9 @@ static void InitTables()
 
 uint CRC32(uint StartCRC,const void *Addr,size_t Size)
 {
+#if defined(CHROMIUM_UNRAR_FUZZER)
+  return -1;
+#else
   if (!is_initialized) {
     is_initialized = true;
     InitTables();
@@ -151,6 +154,7 @@ uint CRC32(uint StartCRC,const void *Addr,size_t Size)
     StartCRC=crc_tables[0][(byte)(StartCRC^Data[0])]^(StartCRC>>8);
 
   return StartCRC;
+#endif  // defined(CHROMIUM_UNRAR_FUZZER)
 }
 
 

@@ -137,7 +137,9 @@ Animation::PlaybackConfig Animation::PlaybackConfig::CreateDefault(
   return PlaybackConfig(
       /*scheduled_cycles=*/{CycleBoundaries::FullCycle(animation)},
       /*initial_offset=*/base::TimeDelta(),
-      /*initial_completed_cycles=*/0, Animation::Style::kLoop);
+      /*initial_completed_cycles=*/0,
+      /*style=*/Animation::Style::kLoop,
+      /*ignore_reduced_motion=*/false);
 }
 
 // static
@@ -155,11 +157,13 @@ Animation::PlaybackConfig::PlaybackConfig(
     std::vector<CycleBoundaries> scheduled_cycles,
     base::TimeDelta initial_offset,
     int initial_completed_cycles,
-    Style style)
+    Style style,
+    bool ignore_reduced_motion)
     : scheduled_cycles(std::move(scheduled_cycles)),
       initial_offset(initial_offset),
       initial_completed_cycles(initial_completed_cycles),
-      style(style) {}
+      style(style),
+      ignore_reduced_motion(ignore_reduced_motion) {}
 
 Animation::PlaybackConfig::PlaybackConfig(const PlaybackConfig& other) =
     default;
@@ -199,9 +203,7 @@ Animation::Animation(scoped_refptr<cc::SkottieWrapper> skottie,
 }
 
 Animation::~Animation() {
-  for (AnimationObserver& obs : observers_) {
-    obs.AnimationIsDeleting(this);
-  }
+  observers_.Notify(&AnimationObserver::AnimationIsDeleting, this);
 }
 
 void Animation::AddObserver(AnimationObserver* observer) {
@@ -240,7 +242,8 @@ void Animation::Start(std::optional<PlaybackConfig> playback_config) {
   // Reset the |timer_control_| object for a new animation play.
   timer_control_.reset(nullptr);
 
-  if (gfx::Animation::PrefersReducedMotion()) {
+  if (gfx::Animation::PrefersReducedMotion() &&
+      !playback_config->ignore_reduced_motion) {
     // Start in a paused state if "prefers reduced motion" is enabled on the
     // system.
     state_ = PlayState::kPaused;
@@ -265,9 +268,7 @@ void Animation::ResumePlaying() {
 void Animation::Stop() {
   state_ = PlayState::kStopped;
   timer_control_.reset(nullptr);
-  for (AnimationObserver& obs : observers_) {
-    obs.AnimationStopped(this);
-  }
+  observers_.Notify(&AnimationObserver::AnimationStopped, this);
 }
 
 std::optional<float> Animation::GetCurrentProgress() const {
@@ -336,9 +337,7 @@ void Animation::Paint(gfx::Canvas* canvas,
     case PlayState::kSchedulePlay:
       InitTimer(timestamp);
       state_ = PlayState::kPlaying;
-      for (AnimationObserver& obs : observers_) {
-        obs.AnimationWillStartPlaying(this);
-      }
+      observers_.Notify(&AnimationObserver::AnimationWillStartPlaying, this);
       break;
     case PlayState::kPlaying: {
       DCHECK(timer_control_);
@@ -365,9 +364,7 @@ void Animation::Paint(gfx::Canvas* canvas,
         // before it started playing.
         InitTimer(timestamp);
       }
-      for (AnimationObserver& obs : observers_) {
-        obs.AnimationResuming(this);
-      }
+      observers_.Notify(&AnimationObserver::AnimationResuming, this);
       break;
     case PlayState::kEnded:
       break;
@@ -399,9 +396,7 @@ void Animation::PaintFrame(gfx::Canvas* canvas,
                                         std::ref(all_frame_data)));
   canvas->DrawSkottie(skottie(), gfx::Rect(size), t, std::move(all_frame_data),
                       color_map_, text_map_);
-  for (AnimationObserver& obs : observers_) {
-    obs.AnimationFramePainted(this, t);
-  }
+  observers_.Notify(&AnimationObserver::AnimationFramePainted, this, t);
 }
 
 void Animation::SetPlaybackSpeed(float playback_speed) {
@@ -435,7 +430,7 @@ void Animation::InitTimer(const base::TimeTicks& timestamp) {
       timestamp, playback_config_.style == Style::kThrobbing, playback_speed_);
 }
 
-void Animation::TryNotifyAnimationCycleEnded() const {
+void Animation::TryNotifyAnimationCycleEnded() {
   DCHECK(timer_control_);
   bool inform_observer = true;
   switch (playback_config_.style) {
@@ -454,9 +449,7 @@ void Animation::TryNotifyAnimationCycleEnded() const {
 
   // Inform observer if the cycle has ended.
   if (inform_observer) {
-    for (AnimationObserver& obs : observers_) {
-      obs.AnimationCycleEnded(this);
-    }
+    observers_.Notify(&AnimationObserver::AnimationCycleEnded, this);
   }
 }
 

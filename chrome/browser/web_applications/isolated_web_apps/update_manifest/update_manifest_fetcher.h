@@ -6,16 +6,13 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_UPDATE_MANIFEST_UPDATE_MANIFEST_FETCHER_H_
 
 #include <optional>
+#include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
-#include "base/values.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
-#include "services/data_decoder/public/mojom/json_parser.mojom.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -53,14 +50,9 @@ class UpdateManifestFetcher {
   void DownloadUpdateManifest();
 
   void OnUpdateManifestDownloaded(
-      std::unique_ptr<std::string> update_manifest_content);
+      std::optional<std::string> update_manifest_content);
 
   void ParseUpdateManifest(const std::string& update_manifest_content);
-
-  void InitializeJsonParser();
-
-  void OnUpdateManifestParsed(std::optional<base::Value> result,
-                              const std::optional<std::string>& error);
 
   GURL url_;
   net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation_;
@@ -69,9 +61,6 @@ class UpdateManifestFetcher {
   FetchCallback fetch_callback_;
 
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
-
-  data_decoder::DataDecoder data_decoder_;
-  mojo::Remote<data_decoder::mojom::JsonParser> json_parser_;
 
   base::WeakPtrFactory<UpdateManifestFetcher> weak_factory_{this};
 };

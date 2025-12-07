@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #import <Foundation/Foundation.h>
 #include <mach/mach.h>
 #include <mach/mach_time.h>
@@ -53,7 +58,7 @@ void PlatformThreadForTesting::YieldCurrentThread() {
 
 size_t GetDefaultThreadStackSize(const pthread_attr_t& attributes) {
 #if PA_BUILDFLAG(IS_IOS)
-  return 0;
+  return 1024 * 1024;
 #else
   // The macOS default for a pthread stack size is 512kB.
   // Libc-594.1.4/pthreads/pthread.c's pthread_attr_init uses

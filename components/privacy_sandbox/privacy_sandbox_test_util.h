@@ -7,6 +7,7 @@
 
 #include <set>
 #include <string>
+#include <variant>
 
 #include "components/browsing_topics/test_util.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -39,8 +40,27 @@ class PrivacySandboxServiceTestInterface {
   virtual base::Time TopicsConsentLastUpdateTime() const = 0;
   virtual std::string TopicsConsentLastUpdateText() const = 0;
   virtual void ForceChromeBuildForTests(bool force_chrome_build) const = 0;
-  virtual int GetRequiredPromptType() const = 0;
-  virtual void PromptActionOccurred(int action) const = 0;
+  virtual int GetRequiredPromptType(int surface_type) const = 0;
+  virtual void PromptActionOccurred(int action, int surface_type) const = 0;
+};
+
+// Allow tests to access private variables and functions from
+// `PrivacySandboxSettingsImpl`.
+class PrivacySandboxSettingsTestPeer {
+ public:
+  explicit PrivacySandboxSettingsTestPeer(
+      privacy_sandbox::PrivacySandboxSettingsImpl* pss_impl)
+      : pss_impl_(pss_impl) {}
+  ~PrivacySandboxSettingsTestPeer() = default;
+
+  using Status = privacy_sandbox::PrivacySandboxSettingsImpl::Status;
+
+  static bool IsAllowed(Status status);
+
+  bool IsFledgeJoiningAllowed(const url::Origin& top_frame_origin) const;
+
+ private:
+  raw_ptr<privacy_sandbox::PrivacySandboxSettingsImpl> pss_impl_;
 };
 
 class MockPrivacySandboxObserver
@@ -49,7 +69,7 @@ class MockPrivacySandboxObserver
   MockPrivacySandboxObserver();
   ~MockPrivacySandboxObserver();
   MOCK_METHOD(void, OnTopicsDataAccessibleSinceUpdated, (), (override));
-  MOCK_METHOD1(OnFirstPartySetsEnabledChanged, void(bool));
+  MOCK_METHOD1(OnRelatedWebsiteSetsEnabledChanged, void(bool));
 };
 
 class MockPrivacySandboxSettingsDelegate
@@ -102,12 +122,6 @@ class MockPrivacySandboxSettingsDelegate
         });
   }
 
-  void SetUpIsCookieDeprecationLabelAllowedResponse(bool allowed) {
-    ON_CALL(*this, IsCookieDeprecationLabelAllowed).WillByDefault([=]() {
-      return allowed;
-    });
-  }
-
   void SetUpAreThirdPartyCookiesBlockedByCookieDeprecationExperimentResponse(
       bool result) {
     ON_CALL(*this, AreThirdPartyCookiesBlockedByCookieDeprecationExperiment)
@@ -132,7 +146,6 @@ class MockPrivacySandboxSettingsDelegate
               GetCookieDeprecationExperimentCurrentEligibility,
               (),
               (const, override));
-  MOCK_METHOD(bool, IsCookieDeprecationLabelAllowed, (), (const, override));
   MOCK_METHOD(bool,
               AreThirdPartyCookiesBlockedByCookieDeprecationExperiment,
               (),
@@ -240,13 +253,14 @@ enum class OutputKey {
   kIsFledgeUpdateAllowedMetric = 43,
   kIsFledgeSellAllowedMetric = 44,
   kIsFledgeBuyAllowedMetric = 45,
-  kIsCookieDeprecationLabelAllowedForContext = 46,
   kIsPrivateAggregationDebugModeAllowed = 47,
   kIsSharedStorageAllowedDebugMessage = 48,
   kIsSharedStorageSelectURLAllowedDebugMessage = 49,
   kIsSharedStorageBlockSiteSettingSpecific = 50,
   kIsSharedStorageSelectURLBlockSiteSettingSpecific = 51,
   kIsPrivateAggregationBlockSiteSettingSpecific = 52,
+  kIsFencedStorageReadAllowed = 53,
+  kIsFencedStorageReadAllowedMetric = 54,
 };
 
 // To allow multiple input keys to map to the same value, without having to
@@ -261,7 +275,7 @@ using MultipleInputKeys = MultipleKeys<InputKey>;
 using MultipleOutputKeys = MultipleKeys<OutputKey>;
 
 template <typename T>
-using TestKey = absl::variant<T, MultipleKeys<T>>;
+using TestKey = std::variant<T, MultipleKeys<T>>;
 
 using SiteDataException = std::pair<std::string, ContentSetting>;
 using SiteDataExceptions = std::vector<SiteDataException>;
@@ -270,22 +284,22 @@ using SiteDataExceptions = std::vector<SiteDataException>;
 // key types, the set of value types associated with those keys is shared, and
 // represented by this variant. When accessing keys, the test util will expect
 // a particular value type, and will error otherwise.
-using TestCaseItemValue = absl::variant<
-    bool,
-    bool*,
-    std::string,
-    std::string*,
-    url::Origin,
-    GURL,
-    content_settings::CookieControlsMode,
-    SiteDataExceptions,
-    ContentSetting,
-    int,
-    base::Time,
-    base::TimeDelta,
-    privacy_sandbox::TopicsConsentUpdateSource,
-    std::vector<int>,
-    std::optional<privacy_sandbox::PrivacySandboxAttestationsMap>>;
+using TestCaseItemValue =
+    std::variant<bool,
+                 bool*,
+                 std::string,
+                 std::string*,
+                 url::Origin,
+                 GURL,
+                 content_settings::CookieControlsMode,
+                 SiteDataExceptions,
+                 ContentSetting,
+                 int,
+                 base::Time,
+                 base::TimeDelta,
+                 privacy_sandbox::TopicsConsentUpdateSource,
+                 std::vector<int>,
+                 std::optional<privacy_sandbox::PrivacySandboxAttestationsMap>>;
 
 using TestState = std::map<TestKey<StateKey>, TestCaseItemValue>;
 using TestInput = std::map<TestKey<InputKey>, TestCaseItemValue>;

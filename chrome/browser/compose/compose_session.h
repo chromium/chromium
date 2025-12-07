@@ -6,21 +6,23 @@
 #define CHROME_BROWSER_COMPOSE_COMPOSE_SESSION_H_
 
 #include <memory>
-#include <stack>
 #include <string>
 #include <string_view>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "base/types/optional_ref.h"
-#include "chrome/browser/content_extraction/inner_text.h"
 #include "chrome/common/compose/compose.mojom.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/core/browser/compose_metrics.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/content_extraction/content/browser/inner_text.h"
+#include "components/optimization_guide/core/model_execution/multimodal_message.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
+#include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -38,6 +40,10 @@ class WebContents;
 namespace content_extraction {
 struct InnerTextResult;
 }  // namespace content_extraction
+
+namespace optimization_guide {
+struct OptimizationGuideModelExecutionResult;
+}  // namespace optimization_guide
 
 namespace ui {
 struct AXTreeUpdate;
@@ -86,15 +92,16 @@ class ComposeSession
         compose::ComposeSessionCloseReason close_reason,
         const compose::ComposeSessionEvents& events) = 0;
   };
-  ComposeSession(
-      content::WebContents* web_contents,
-      optimization_guide::OptimizationGuideModelExecutor* executor,
-      base::Token session_id,
-      InnerTextProvider* inner_text,
-      autofill::FieldGlobalId node_id,
-      bool is_page_language_supported,
-      Observer* observer,
-      ComposeCallback callback = base::NullCallback());
+  ComposeSession(content::WebContents* web_contents,
+                 optimization_guide::RemoteModelExecutor* executor,
+                 optimization_guide::ModelQualityLogsUploaderService*
+                     model_quality_uploader,
+                 base::Token session_id,
+                 InnerTextProvider* inner_text,
+                 autofill::FieldGlobalId node_id,
+                 bool is_page_language_supported,
+                 Observer* observer,
+                 ComposeCallback callback = base::NullCallback());
   ~ComposeSession() override;
 
   // Binds this to a Compose webui.
@@ -110,7 +117,9 @@ class ComposeSession
   // Requests a compose response for `input`. The result will be sent through
   // the ComposeDialog interface rather than through a callback, as it might
   // complete after the originating WebUI has been destroyed.
-  void Compose(const std::string& input, bool is_input_edited) override;
+  void Compose(const std::string& input,
+               compose::mojom::InputMode mode,
+               bool is_input_edited) override;
 
   // Requests a rewrite the last response. `style` specifies how the response
   // should be changed. An empty `style` without a tone or length requests a
@@ -152,6 +161,10 @@ class ComposeSession
   // is clicked in the FRE or Compose dialog.
   void OpenComposeLearnMorePage() override;
 
+  // Opens the Chrome Generative AI features and policies page in a new tab when
+  // the "Learn more" link is clicked in the FRE or Compose dialog.
+  void OpenEnterpriseComposeLearnMorePage() override;
+
   // Opens the Compose feedback survey page in a new tab. This implementation is
   // designed for Dogfood only.
   void OpenFeedbackSurveyLink() override;
@@ -171,7 +184,7 @@ class ComposeSession
 
   // Notifies the session that a new dialog is opening and starts. Saves the
   // |selected_text| for use as an initial prompt and refreshes innertext.
-  void InitializeWithText(const std::string_view selected_text);
+  void InitializeWithText(std::string_view selected_text);
 
   // If all pre-conditions are acknowledged starts refreshing page context. If
   // autocompose is enabled and has not been tried yet this session will also
@@ -224,7 +237,11 @@ class ComposeSession
 
   void SetCloseReason(compose::ComposeSessionCloseReason close_reason);
 
+  void LaunchHatsSurvey(compose::ComposeSessionCloseReason close_reason);
+
   void SetSkipFeedbackUiForTesting(bool allowed);
+
+  bool HasExpired();
 
  private:
   void ProcessError(compose::EvalLocation eval_location,
@@ -235,15 +252,15 @@ class ComposeSession
       int request_id,
       compose::ComposeRequestReason request_reason,
       bool was_input_edited,
-      optimization_guide::OptimizationGuideModelStreamingExecutionResult
-          result);
-  void ModelExecutionProgress(optimization_guide::StreamingResponse result);
+      optimization_guide::OptimizationGuideModelExecutionResult result,
+      std::unique_ptr<optimization_guide::proto::ComposeLoggingData>
+          logging_data);
   void ModelExecutionComplete(
       base::TimeDelta request_delta,
       compose::ComposeRequestReason request_reason,
       bool was_input_edited,
-      optimization_guide::OptimizationGuideModelStreamingExecutionResult
-          result);
+      optimization_guide::OptimizationGuideModelExecutionResult result,
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
   void AddNewResponseToHistory(std::unique_ptr<ComposeState> new_state);
   void EraseForwardStatesInHistory();
 
@@ -268,9 +285,8 @@ class ComposeSession
       int request_id,
       std::unique_ptr<content_extraction::InnerTextResult> result);
 
-  void UpdateAXSnapshotAndContinueComposeIfNecessary(
-      int request_id,
-      const ui::AXTreeUpdate& update);
+  void UpdateAXSnapshotAndContinueComposeIfNecessary(int request_id,
+                                                     ui::AXTreeUpdate& update);
 
   // Continues the compose request if all page context has been received.
   // Note that this adds necessary metadata that may have been populated from
@@ -301,7 +317,11 @@ class ComposeSession
   base::optional_ref<ComposeState> LastResponseState();
 
   // Outlives `this`.
-  raw_ptr<optimization_guide::OptimizationGuideModelExecutor> executor_;
+  raw_ptr<optimization_guide::RemoteModelExecutor> executor_;
+
+  // Outlives `this`.
+  raw_ptr<optimization_guide::ModelQualityLogsUploaderService>
+      model_quality_uploader_;
 
   mojo::Receiver<compose::mojom::ComposeSessionUntrustedPageHandler>
       handler_receiver_;
@@ -351,6 +371,10 @@ class ComposeSession
   // Reason that a compose session was exited, used for quality logging.
   optimization_guide::proto::FinalStatus final_status_{
       optimization_guide::proto::FinalStatus::STATUS_UNSPECIFIED};
+  // Success status of a completed compose session, used for quality logging.
+  optimization_guide::proto::FinalModelStatus final_model_status_{
+      optimization_guide::proto::FinalModelStatus::
+          FINAL_MODEL_STATUS_UNSPECIFIED};
 
   // Tracks how long a session has been open.
   std::unique_ptr<base::ElapsedTimer> session_duration_;
@@ -367,9 +391,8 @@ class ComposeSession
   // A callback to Autofill that triggers filling the field.
   ComposeCallback callback_;
 
-  // A session which allows for building context and streaming output.
-  std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
-      session_;
+  optimization_guide::MultimodalMessage request_context_;
+
   // This is incremented every request to avoid handling responses from previous
   // requests.
   int request_id_ = 0;

@@ -4,6 +4,7 @@
 
 #include "chromeos/printing/ppd_provider.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -16,14 +17,13 @@
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
-#include "chromeos/printing/epson_driver_matching.h"
 #include "chromeos/printing/ppd_cache.h"
 #include "chromeos/printing/ppd_metadata_manager.h"
 #include "chromeos/printing/printer_config_cache.h"
@@ -36,19 +36,9 @@
 namespace chromeos {
 namespace {
 
-// The exact queue length at which PpdProvider will begin to post
-// failure callbacks in response to its queue-able public methods.
-// Arbitrarily chosen.
-// See also: struct MethodDeferralContext
-constexpr size_t kMethodDeferralLimit = 20;
-
 // Age limit for time-sensitive API calls. Typically denotes "Please
 // respond with data no older than kMaxDataAge." Arbitrarily chosen.
 constexpr base::TimeDelta kMaxDataAge = base::Minutes(30LL);
-
-// Effective-make-and-model string that describes a printer capable of
-// using the generic Epson PPD.
-const char kEpsonGenericEmm[] = "epson generic escpr printer";
 
 bool PpdReferenceIsWellFormed(const Printer::PpdReference& reference) {
   int filled_fields = 0;
@@ -71,8 +61,8 @@ bool PpdReferenceIsWellFormed(const Printer::PpdReference& reference) {
   // All effective-make-and-model strings should be lowercased, since v2.
   // Since make-and-model strings could include non-Latin chars, only checking
   // that it excludes all upper-case chars A-Z.
-  if (!base::ranges::all_of(reference.effective_make_and_model,
-                            [](char c) { return !base::IsAsciiUpper(c); })) {
+  if (!std::ranges::all_of(reference.effective_make_and_model,
+                           [](char c) { return !base::IsAsciiUpper(c); })) {
     return false;
   }
   // Should have exactly one non-empty field.
@@ -90,71 +80,6 @@ bool SupportsGenericZebraPPD(const PrinterSearchData& search_data) {
          base::Contains(search_data.printer_id.model(), "ZPL");
 }
 
-// Helper struct for PpdProviderImpl. Allows PpdProviderImpl to defer
-// its public method calls, which PpdProviderImpl will do when the
-// PpdMetadataManager is not ready to deal with locale-sensitive PPD
-// metadata.
-//
-// Note that the semantics of this struct demand two things of the
-// deferable public methods of PpdProviderImpl:
-// 1. that they check for its presence and
-// 2. that they check its |current_method_is_being_failed| member to
-//    prevent infinite re-enqueueing of public methods once the queue
-//    is full.
-struct MethodDeferralContext {
-  MethodDeferralContext() = default;
-  ~MethodDeferralContext() = default;
-
-  // This struct is not copyable.
-  MethodDeferralContext(const MethodDeferralContext&) = delete;
-  MethodDeferralContext& operator=(const MethodDeferralContext&) = delete;
-
-  // Pops the first entry from |deferred_methods| and synchronously runs
-  // it with the intent to fail it.
-  void FailOneEnqueuedMethod() {
-    DCHECK(!current_method_is_being_failed);
-
-    // Explicitly activates the failure codepath for whatever public
-    // method of PpdProviderImpl that we'll now Run().
-    current_method_is_being_failed = true;
-
-    std::move(deferred_methods.front()).Run();
-    deferred_methods.pop();
-    current_method_is_being_failed = false;
-  }
-
-  // Fails all |deferred_methods| synchronously.
-  void FailAllEnqueuedMethods() {
-    while (!deferred_methods.empty()) {
-      FailOneEnqueuedMethod();
-    }
-  }
-
-  // Dequeues and posts all |deferred_methods| onto our sequence.
-  void FlushAndPostAll() {
-    while (!deferred_methods.empty()) {
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, std::move(deferred_methods.front()));
-      deferred_methods.pop();
-    }
-  }
-
-  bool IsFull() { return deferred_methods.size() >= kMethodDeferralLimit; }
-
-  // Whether an attempt to get the metadata locale is ongoing.
-  bool metadata_locale_fetch_is_ongoing = false;
-
-  // This bool is checked during execution of a queue-able public method
-  // of PpdProviderImpl. If it is true, then
-  // 1. the current queue-able public method was previously enqueued,
-  // 2. the deferral queue is full, and so
-  // 3. the current queue-able public method was posted for the sole
-  //    purpose of being _failed_, and should not be re-enqueued.
-  bool current_method_is_being_failed = false;
-
-  base::queue<base::OnceCallback<void()>> deferred_methods;
-};
-
 // This class implements the PpdProvider interface for the v3 metadata
 // (https://crbug.com/888189).
 class PpdProviderImpl : public PpdProvider {
@@ -166,7 +91,6 @@ class PpdProviderImpl : public PpdProvider {
                   std::unique_ptr<RemotePpdFetcher> remote_ppd_fetcher)
       : version_(current_version),
         ppd_cache_(cache),
-        deferral_context_(std::make_unique<MethodDeferralContext>()),
         metadata_manager_(std::move(metadata_manager)),
         config_cache_(std::move(config_cache)),
         remote_ppd_fetcher_(std::move(remote_ppd_fetcher)),
@@ -175,49 +99,11 @@ class PpdProviderImpl : public PpdProvider {
              base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {}
 
   void ResolveManufacturers(ResolveManufacturersCallback cb) override {
-    // Do we need
-    // 1. to defer this method?
-    // 2. to fail this method (which was already previously deferred)?
-    if (deferral_context_) {
-      if (deferral_context_->current_method_is_being_failed) {
-        auto failure_cb = base::BindOnce(
-            std::move(cb), PpdProvider::CallbackResultCode::SERVER_ERROR,
-            std::vector<std::string>());
-        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, std::move(failure_cb));
-        return;
-      }
-
-      if (deferral_context_->IsFull()) {
-        deferral_context_->FailOneEnqueuedMethod();
-        DCHECK(!deferral_context_->IsFull());
-      }
-      TryToGetMetadataManagerLocale();
-
-      base::OnceCallback<void()> this_method =
-          base::BindOnce(&PpdProviderImpl::ResolveManufacturers,
-                         weak_factory_.GetWeakPtr(), std::move(cb));
-      deferral_context_->deferred_methods.push(std::move(this_method));
-      return;
-    }
-
     metadata_manager_->GetManufacturers(kMaxDataAge, std::move(cb));
   }
 
   void ResolvePrinters(const std::string& manufacturer,
                        ResolvePrintersCallback cb) override {
-    // Caller must not call ResolvePrinters() before a successful reply
-    // from ResolveManufacturers(). ResolveManufacturers() cannot have
-    // been successful if the |deferral_context_| still exists.
-    if (deferral_context_) {
-      auto failure_cb = base::BindOnce(
-          std::move(cb), PpdProvider::CallbackResultCode::INTERNAL_ERROR,
-          ResolvedPrintersList());
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, std::move(failure_cb));
-      return;
-    }
-
     PpdMetadataManager::GetPrintersCallback manager_callback =
         base::BindOnce(&PpdProviderImpl::OnPrintersGotten,
                        weak_factory_.GetWeakPtr(), std::move(cb));
@@ -231,14 +117,10 @@ class PpdProviderImpl : public PpdProvider {
   //    effective-make-and-model strings from forward index metadata.
   // 2. |search_data|::usb_*_id - we seek out a device with a matching
   //    ID from USB index metadata.
-  // 3. |search_data|::make_and_model - we check if any among these
-  //    effective-make-and-model strings describe a printer for which
-  //    we can use the generic Epson PPD.
   //
   // *  This method observes and honors PPD restrictions (furnished by
   //    forward index metadata) and will ignore PPDs that are not
   //    advertised to run with the current |version_|.
-  // *  This method is not locale-sensitive.
   void ResolvePpdReference(const PrinterSearchData& search_data,
                            ResolvePpdReferenceCallback cb) override {
     // In v3 metadata, effective-make-and-model strings are only
@@ -315,32 +197,6 @@ class PpdProviderImpl : public PpdProvider {
 
   void ReverseLookup(const std::string& effective_make_and_model,
                      ReverseLookupCallback cb) override {
-    // Do we need
-    // 1. to defer this method?
-    // 2. to fail this method (which was already previously deferred)?
-    if (deferral_context_) {
-      if (deferral_context_->current_method_is_being_failed) {
-        auto failure_cb = base::BindOnce(
-            std::move(cb), PpdProvider::CallbackResultCode::SERVER_ERROR, "",
-            "");
-        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, std::move(failure_cb));
-        return;
-      }
-
-      if (deferral_context_->IsFull()) {
-        deferral_context_->FailOneEnqueuedMethod();
-        DCHECK(!deferral_context_->IsFull());
-      }
-      TryToGetMetadataManagerLocale();
-
-      base::OnceCallback<void()> this_method = base::BindOnce(
-          &PpdProviderImpl::ReverseLookup, weak_factory_.GetWeakPtr(),
-          effective_make_and_model, std::move(cb));
-      deferral_context_->deferred_methods.push(std::move(this_method));
-      return;
-    }
-
     // In v3 metadata, effective-make-and-model strings are only
     // expressed in lowercased ASCII.
     std::string lowercased_effective_make_and_model =
@@ -351,8 +207,7 @@ class PpdProviderImpl : public PpdProvider {
                                          kMaxDataAge, std::move(cb));
   }
 
-  // This method depends on forward indices, which are not
-  // locale-sensitive.
+  // This method depends on forward indices.
   void ResolvePpdLicense(std::string_view effective_make_and_model,
                          ResolvePpdLicenseCallback cb) override {
     // In v3 metadata, effective-make-and-model strings are only
@@ -421,23 +276,6 @@ class PpdProviderImpl : public PpdProvider {
     return file_contents;
   }
 
-  // Requests that |metadata_manager_| obtain a metadata locale so that
-  // |this| can call its locale-sensitive methods.
-  //
-  // |this| is largely useless if its |metadata_manager_| is not ready
-  // to traffick in locale-sensitive PPD metadata, so we want this
-  // method to eventually succeed.
-  void TryToGetMetadataManagerLocale() {
-    if (deferral_context_->metadata_locale_fetch_is_ongoing) {
-      return;
-    }
-    auto callback =
-        base::BindOnce(&PpdProviderImpl::OnMetadataManagerLocaleGotten,
-                       weak_factory_.GetWeakPtr());
-    metadata_manager_->GetLocale(std::move(callback));
-    deferral_context_->metadata_locale_fetch_is_ongoing = true;
-  }
-
   // Evaluates true if our |version_| falls within the bounds set by
   // |restrictions|.
   bool CurrentVersionSatisfiesRestrictions(
@@ -451,22 +289,6 @@ class PpdProviderImpl : public PpdProvider {
       return false;
     }
     return true;
-  }
-
-  // Callback fed to PpdMetadataManager::GetLocale().
-  void OnMetadataManagerLocaleGotten(bool succeeded) {
-    deferral_context_->metadata_locale_fetch_is_ongoing = false;
-    if (!succeeded) {
-      // Uh-oh, we concretely failed to get a metadata locale. We should
-      // fail all outstanding deferred methods and let callers retry as
-      // they see fit.
-      deferral_context_->FailAllEnqueuedMethods();
-      return;
-    }
-    deferral_context_->FlushAndPostAll();
-
-    // It is no longer necessary to defer public method calls.
-    deferral_context_.reset();
   }
 
   // Callback fed to PpdMetadataManager::GetPrinters().
@@ -562,48 +384,6 @@ class PpdProviderImpl : public PpdProvider {
                                                  /*manufacturer=*/"");
   }
 
-  // Continues a prior call to ResolvePpdReference() (step 3).
-  // This callback is fed to
-  // PpdMetadataManager::FindAllEmmsAvailableInIndex(), as we treat the
-  // hardcoded generic Epson effective-make-and-model string like any
-  // other emm, duly verifying its presence in forward index metadata
-  // and that it is not restricted from running in this |version_|.
-  void OnForwardIndicesSearchedForGenericEpsonEmm(
-      ResolvePpdReferenceContext context,
-      const base::flat_map<std::string, ParsedIndexValues>&
-          forward_index_results) {
-    const ParsedIndexLeaf* const index_leaf =
-        FirstAllowableParsedIndexLeaf(kEpsonGenericEmm, forward_index_results);
-    if (index_leaf) {
-      SuccessfullyResolvePpdReferenceWithEmm(kEpsonGenericEmm,
-                                             std::move(context.cb));
-      return;
-    }
-
-    // This really shouldn't happen, but we couldn't build a
-    // PpdReference that would point to the generic Epson PPD.
-    // (This might mean that the serving root is badly messed up in a
-    // way that escaped the attention of the Chrome OS printing team.)
-    FailToResolvePpdReference(std::move(context));
-  }
-
-  // Continues a prior call to ResolvePpdReference() (step 3).
-  void TryToResolvePpdReferenceWithGenericEpsonPpd(
-      ResolvePpdReferenceContext context) {
-    if (CanUseEpsonGenericPPD(context.search_data)) {
-      auto callback = base::BindOnce(
-          &PpdProviderImpl::OnForwardIndicesSearchedForGenericEpsonEmm,
-          weak_factory_.GetWeakPtr(), std::move(context));
-      metadata_manager_->FindAllEmmsAvailableInIndex(
-          {kEpsonGenericEmm}, kMaxDataAge, std::move(callback));
-      return;
-    }
-
-    // At this point, we couldn't build a PpdReference using the
-    // generic Epson PPD. ResolvePpdReference() can only fail now.
-    FailToResolvePpdReference(std::move(context));
-  }
-
   // Continues a prior call to ResolvePpdReference() (step 2).
   // This callback is fed to
   // PpdMetadataManager::FindAllEmmsAvailableInIndex().
@@ -622,8 +402,8 @@ class PpdProviderImpl : public PpdProvider {
 
     // At this point, we couldn't build a PpdReference from the
     // effective-make-and-model string sourced from the USB index.
-    // ResolvePpdReference() continues to its next step.
-    TryToResolvePpdReferenceWithGenericEpsonPpd(std::move(context));
+    // ResolvePpdReference() can only fail now.
+    FailToResolvePpdReference(std::move(context));
   }
 
   // Continues a prior call to ResolvePpdReference() (step 2).
@@ -641,8 +421,8 @@ class PpdProviderImpl : public PpdProvider {
     }
 
     // At this point, we couldn't build a PpdReference from a USB index
-    // search. ResolvePpdReference() continues to its next step.
-    TryToResolvePpdReferenceWithGenericEpsonPpd(std::move(context));
+    // search. ResolvePpdReference() can only fail now.
+    FailToResolvePpdReference(std::move(context));
   }
 
   // Continues a prior call to ResolvePpdReference() (step 2).
@@ -660,8 +440,8 @@ class PpdProviderImpl : public PpdProvider {
     }
 
     // At this point, we couldn't use |search_data| to search USB indices.
-    // ResolvePpdReference() continues to its next step.
-    TryToResolvePpdReferenceWithGenericEpsonPpd(std::move(context));
+    // ResolvePpdReference() can only fail now.
+    FailToResolvePpdReference(std::move(context));
   }
 
   // Continues a prior call to ResolvePpdReference() (step 1).
@@ -1017,15 +797,6 @@ class PpdProviderImpl : public PpdProvider {
 
   // Provides PPD storage on-device.
   scoped_refptr<PpdCache> ppd_cache_;
-
-  // Used to
-  // 1. to determine if |this| should defer locale-sensitive public
-  //    method calls and
-  // 2. to defer those method calls, if necessary.
-  // These deferrals are only necessary before the |metadata_manager_|
-  // is ready to deal with locale-sensitive PPD metadata. This member is
-  // reset once deferrals are unnecessary.
-  std::unique_ptr<MethodDeferralContext> deferral_context_;
 
   // Interacts with and controls PPD metadata.
   std::unique_ptr<PpdMetadataManager> metadata_manager_;

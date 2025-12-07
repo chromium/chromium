@@ -4,10 +4,10 @@
 
 #include "third_party/blink/renderer/modules/background_fetch/background_fetch_manager.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "services/network/public/mojom/ip_address_space.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_request_requestorusvstringsequence_usvstring.h"
@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_background_fetch_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_resource.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/quota_exceeded_error.h"
 #include "third_party/blink/renderer/core/fetch/body.h"
 #include "third_party/blink/renderer/core/fetch/body_stream_buffer.h"
 #include "third_party/blink/renderer/core/fetch/request.h"
@@ -40,6 +41,7 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl_hash.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace blink {
@@ -55,9 +57,9 @@ ScriptPromise<BackgroundFetchRegistration> RejectWithTypeError(
     const KURL& request_url,
     const String& reason,
     ExceptionState& exception_state) {
-  exception_state.ThrowTypeError("Refused to fetch '" +
-                                 request_url.ElidedString() + "' because " +
-                                 reason + ".");
+  exception_state.ThrowTypeError(
+      StrCat({"Refused to fetch '", request_url.ElidedString(), "' because ",
+              reason, "."}));
   return EmptyPromise();
 }
 
@@ -89,8 +91,8 @@ bool ShouldBlockCredentials(ExecutionContext* execution_context,
 bool ShouldBlockScheme(const KURL& request_url) {
   // Require http(s), i.e. block data:, wss: and file:
   // https://github.com/WICG/background-fetch/issues/44
-  return !request_url.ProtocolIs(WTF::g_http_atom) &&
-         !request_url.ProtocolIs(WTF::g_https_atom);
+  return !request_url.ProtocolIs(g_http_atom) &&
+         !request_url.ProtocolIs(g_https_atom);
 }
 
 bool ShouldBlockDanglingMarkup(const KURL& request_url) {
@@ -228,7 +230,7 @@ ScriptPromise<BackgroundFetchRegistration> BackgroundFetchManager::fetch(
         MakeGarbageCollected<BackgroundFetchIconLoader>();
     loaders_.push_back(loader);
     loader->Start(bridge_.Get(), execution_context, options->icons(),
-                  resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+                  resolver->WrapCallbackInScriptScope(BindOnce(
                       &BackgroundFetchManager::DidLoadIcons,
                       WrapPersistent(this), id, std::move(fetch_api_requests),
                       std::move(options_ptr), WrapWeakPersistent(loader))));
@@ -250,13 +252,13 @@ void BackgroundFetchManager::DidLoadIcons(
     const SkBitmap& icon,
     int64_t ideal_to_chosen_icon_size) {
   if (loader)
-    loaders_.erase(base::ranges::find(loaders_, loader));
+    loaders_.erase(std::ranges::find(loaders_, loader));
 
   auto ukm_data = mojom::blink::BackgroundFetchUkmData::New();
   ukm_data->ideal_to_chosen_icon_size = ideal_to_chosen_icon_size;
   bridge_->Fetch(id, std::move(requests), std::move(options), icon,
                  std::move(ukm_data),
-                 resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+                 resolver->WrapCallbackInScriptScope(BindOnce(
                      &BackgroundFetchManager::DidFetch, WrapPersistent(this))));
 }
 
@@ -295,8 +297,7 @@ void BackgroundFetchManager::DidFetch(
           "There is no service worker available to service the fetch."));
       return;
     case mojom::blink::BackgroundFetchError::QUOTA_EXCEEDED:
-      resolver->RejectWithDOMException(DOMExceptionCode::kQuotaExceededError,
-                                       "Quota exceeded.");
+      QuotaExceededError::Reject(resolver, "Quota exceeded.");
       return;
     case mojom::blink::BackgroundFetchError::REGISTRATION_LIMIT_EXCEEDED:
       resolver->Reject(V8ThrowException::CreateTypeError(
@@ -309,7 +310,7 @@ void BackgroundFetchManager::DidFetch(
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 ScriptPromise<IDLNullable<BackgroundFetchRegistration>>
@@ -343,10 +344,9 @@ BackgroundFetchManager::get(ScriptState* script_state,
     return promise;
   }
 
-  bridge_->GetRegistration(
-      id,
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
-          &BackgroundFetchManager::DidGetRegistration, WrapPersistent(this))));
+  bridge_->GetRegistration(id, resolver->WrapCallbackInScriptScope(BindOnce(
+                                   &BackgroundFetchManager::DidGetRegistration,
+                                   WrapPersistent(this))));
 
   return promise;
 }
@@ -457,7 +457,7 @@ void BackgroundFetchManager::DidGetRegistration(
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 ScriptPromise<IDLArray<IDLString>> BackgroundFetchManager::getIds(
@@ -481,7 +481,7 @@ ScriptPromise<IDLArray<IDLString>> BackgroundFetchManager::getIds(
   if (!registration_->active()) {
     resolver->Resolve(Vector<String>());
   } else {
-    bridge_->GetDeveloperIds(resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+    bridge_->GetDeveloperIds(resolver->WrapCallbackInScriptScope(BindOnce(
         &BackgroundFetchManager::DidGetDeveloperIds, WrapPersistent(this))));
   }
 
@@ -515,7 +515,7 @@ void BackgroundFetchManager::DidGetDeveloperIds(
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void BackgroundFetchManager::Trace(Visitor* visitor) const {

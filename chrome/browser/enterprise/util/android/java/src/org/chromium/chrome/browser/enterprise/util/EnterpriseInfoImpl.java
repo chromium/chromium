@@ -4,12 +4,16 @@
 
 package org.chromium.chrome.browser.enterprise.util;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.admin.DevicePolicyManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -22,27 +26,32 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 
-import java.util.LinkedList;
+import java.util.ArrayDeque;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.RejectedExecutionException;
 
 /** The typical implementation of {@link EnterpriseInfo} at runtime. */
+@NullMarked
 public class EnterpriseInfoImpl extends EnterpriseInfo {
     private static final String TAG = "EnterpriseInfoImpl";
     private final Handler mHandler;
 
     // Only ever read/written on the UI thread.
-    private OwnedState mOwnedState;
-    private Queue<Callback<OwnedState>> mCallbackList;
+    private @MonotonicNonNull OwnedState mOwnedState;
+    private final Queue<Callback<@Nullable OwnedState>> mCallbackList;
 
     private boolean mSkipAsyncCheckForTesting;
 
     EnterpriseInfoImpl() {
-        mOwnedState = null;
-        mCallbackList = new LinkedList<>();
-        mHandler = new Handler(Looper.myLooper());
+        mCallbackList = new ArrayDeque<>();
+        mHandler = new Handler(assumeNonNull(Looper.myLooper()));
     }
 
     @Override
@@ -72,33 +81,88 @@ public class EnterpriseInfoImpl extends EnterpriseInfo {
 
         // There is no cached value and this is the first request, spin up a thread to query the
         // device.
+        getDeviceEnterpriseInfoInBackground();
+    }
+
+    @Override
+    public @Nullable OwnedState getDeviceEnterpriseInfoSync() {
+        if (mOwnedState != null) {
+            return mOwnedState;
+        }
+
+        // Add a placeholder callback to avoid multiple background tasks from
+        // getDeviceEnterpriseInfoSync or getDeviceEnterpriseInfo.
+        mCallbackList.add(result -> {});
+        if (mCallbackList.size() > 1) {
+            return null;
+        }
+
+        // Skip querying the device if we're testing.
+        if (mSkipAsyncCheckForTesting) {
+            return null;
+        }
+
+        // There is no cached value and this is the first request, spin up a thread to query the
+        // device.
+        getDeviceEnterpriseInfoInBackground();
+        return null;
+    }
+
+    private void getDeviceEnterpriseInfoInBackground() {
         try {
             new AsyncTask<OwnedState>() {
                 // TODO: Unit test this function. https://crbug.com/1099262
                 private OwnedState calculateIsRunningOnManagedProfile(Context context) {
+                    long startTime = SystemClock.elapsedRealtime();
                     boolean hasProfileOwnerApp = false;
                     boolean hasDeviceOwnerApp = false;
                     PackageManager packageManager = context.getPackageManager();
                     DevicePolicyManager devicePolicyManager =
                             (DevicePolicyManager)
                                     context.getSystemService(Context.DEVICE_POLICY_SERVICE);
+                    assert devicePolicyManager != null;
 
                     if (CommandLine.getInstance()
                             .hasSwitch(ChromeSwitches.FORCE_DEVICE_OWNERSHIP)) {
                         hasDeviceOwnerApp = true;
                     }
 
-                    for (PackageInfo pkg : packageManager.getInstalledPackages(/* flags= */ 0)) {
-                        assert devicePolicyManager != null;
-                        if (devicePolicyManager.isProfileOwnerApp(pkg.packageName)) {
-                            hasProfileOwnerApp = true;
+                    int systemCallCount = 1;
+                    if (ChromeFeatureList.sAndroidUseAdminsForEnterpriseInfo.isEnabled()) {
+                        List<ComponentName> activeAdmins = devicePolicyManager.getActiveAdmins();
+                        if (activeAdmins != null) {
+                            for (ComponentName admin : activeAdmins) {
+                                systemCallCount += 2;
+                                String adminPackageName = admin.getPackageName();
+                                if (devicePolicyManager.isProfileOwnerApp(adminPackageName)) {
+                                    hasProfileOwnerApp = true;
+                                }
+                                if (devicePolicyManager.isDeviceOwnerApp(adminPackageName)) {
+                                    hasDeviceOwnerApp = true;
+                                }
+                                if (hasProfileOwnerApp && hasDeviceOwnerApp) break;
+                            }
                         }
-                        if (devicePolicyManager.isDeviceOwnerApp(pkg.packageName)) {
-                            hasDeviceOwnerApp = true;
+                    } else {
+                        for (PackageInfo pkg :
+                                packageManager.getInstalledPackages(/* flags= */ 0)) {
+                            systemCallCount += 2;
+                            if (devicePolicyManager.isProfileOwnerApp(pkg.packageName)) {
+                                hasProfileOwnerApp = true;
+                            }
+                            if (devicePolicyManager.isDeviceOwnerApp(pkg.packageName)) {
+                                hasDeviceOwnerApp = true;
+                            }
+                            if (hasProfileOwnerApp && hasDeviceOwnerApp) break;
                         }
-                        if (hasProfileOwnerApp && hasDeviceOwnerApp) break;
                     }
 
+                    long endTime = SystemClock.elapsedRealtime();
+                    RecordHistogram.recordTimesHistogram(
+                            "EnterpriseCheck.IsRunningOnManagedProfileDuration",
+                            endTime - startTime);
+                    RecordHistogram.recordCount100000Histogram(
+                            "EnterpriseCheck.SystemCallCount", systemCallCount);
                     return new OwnedState(hasDeviceOwnerApp, hasProfileOwnerApp);
                 }
 
@@ -121,7 +185,7 @@ public class EnterpriseInfoImpl extends EnterpriseInfo {
 
             // There will only ever be a single item in the queue as we only try()/catch() on the
             // first item.
-            Callback<OwnedState> failedRunCallback = mCallbackList.remove();
+            Callback<@Nullable OwnedState> failedRunCallback = mCallbackList.remove();
             mHandler.post(() -> failedRunCallback.onResult(null));
         }
     }
@@ -150,14 +214,10 @@ public class EnterpriseInfoImpl extends EnterpriseInfo {
 
     @Override
     public void logDeviceEnterpriseInfo() {
-        Callback<OwnedState> callback =
-                (result) -> {
-                    recordManagementHistograms(result);
-                };
-        getDeviceEnterpriseInfo(callback);
+        getDeviceEnterpriseInfo(result -> recordManagementHistograms(result));
     }
 
-    private static void recordManagementHistograms(OwnedState state) {
+    private static void recordManagementHistograms(@Nullable OwnedState state) {
         if (state == null) return;
 
         RecordHistogram.recordBooleanHistogram("EnterpriseCheck.IsManaged2", state.mProfileOwned);

@@ -32,32 +32,42 @@ class LobsterCandidateStoreTest : public testing::Test {
 TEST_F(LobsterCandidateStoreTest, CanFindImageCandidateAfterCaching) {
   LobsterCandidateStore store;
 
-  store.Cache({.id = 123,
-               .image_bytes = "a1b2c3",
-               .seed = 10001,
-               .query = "a sunny day"});
-  store.Cache({.id = 456,
-               .image_bytes = "a4b5c6",
-               .seed = 10004,
-               .query = "a windy weekday"});
+  store.Cache(
+      LobsterImageCandidate(/*id=*/123,
+                            /*image_bytes=*/"a1b2c3",
+                            /*seed=*/10001,
+                            /*query=*/"a sunny day",
+                            /*rewritten_query=*/"rewritten: a sunny day"));
+  store.Cache(
+      LobsterImageCandidate(/*id=*/456,
+                            /*image_bytes=*/"a4b5c6",
+                            /*seed=*/10004,
+                            /*query=*/"a windy weekday",
+                            /*rewritten_query=*/"rewritten: a windy weekday"));
 
   EXPECT_EQ(store.FindCandidateById(123).value(),
-            LobsterImageCandidate(123, "a1b2c3", 10001, "a sunny day"));
+            LobsterImageCandidate(123, "a1b2c3", 10001, "a sunny day",
+                                  "rewritten: a sunny day"));
   EXPECT_EQ(store.FindCandidateById(456).value(),
-            LobsterImageCandidate(456, "a4b5c6", 10004, "a windy weekday"));
+            LobsterImageCandidate(456, "a4b5c6", 10004, "a windy weekday",
+                                  "rewritten: a windy weekday"));
 }
 
 TEST_F(LobsterCandidateStoreTest, ReturnsEmptyCandidateIfIdDoesNotMatch) {
   LobsterCandidateStore store;
 
-  store.Cache({.id = 123,
-               .image_bytes = "a1b2c3",
-               .seed = 10001,
-               .query = "a sunny day"});
-  store.Cache({.id = 456,
-               .image_bytes = "a4b5c6",
-               .seed = 10004,
-               .query = "a windy weekday"});
+  store.Cache(
+      LobsterImageCandidate(/*id=*/123,
+                            /*image_bytes=*/"a1b2c3",
+                            /*seed=*/10001,
+                            /*query=*/"a sunny day",
+                            /*rewritten_query=*/"rewritten: a sunny day"));
+  store.Cache(
+      LobsterImageCandidate(/*id=*/456,
+                            /*image_bytes=*/"a4b5c6",
+                            /*seed=*/10004,
+                            /*query=*/"a windy weekday",
+                            /*rewritten_query=*/"rewritten: a windy weekday"));
 
   EXPECT_FALSE(store.FindCandidateById(120).has_value());
   EXPECT_FALSE(store.FindCandidateById(505).has_value());
@@ -66,25 +76,33 @@ TEST_F(LobsterCandidateStoreTest, ReturnsEmptyCandidateIfIdDoesNotMatch) {
 TEST_F(LobsterCandidateStoreTest, CacheOverridesPreviouslyCachedCandidate) {
   LobsterCandidateStore store;
 
-  store.Cache({.id = 123,
-               .image_bytes = "a1b2c3",
-               .seed = 10001,
-               .query = "a sunny day"});
-  store.Cache({.id = 456,
-               .image_bytes = "a4b5c6",
-               .seed = 10004,
-               .query = "a windy weekday"});
+  store.Cache(
+      LobsterImageCandidate(/*id=*/123,
+                            /*image_bytes=*/"a1b2c3",
+                            /*seed=*/10001,
+                            /*query=*/"a sunny day",
+                            /*rewritten_query=*/"rewritten: a sunny day"));
+  store.Cache(
+      LobsterImageCandidate(/*id=*/456,
+                            /*image_bytes=*/"a4b5c6",
+                            /*seed=*/10004,
+                            /*query=*/"a windy weekday",
+                            /*rewritten_query=*/"rewritten: a windy weekday"));
 
   EXPECT_EQ(store.FindCandidateById(123).value(),
-            LobsterImageCandidate(123, "a1b2c3", 10001, "a sunny day"));
+            LobsterImageCandidate(123, "a1b2c3", 10001, "a sunny day",
+                                  "rewritten: a sunny day"));
 
-  store.Cache({.id = 123,
-               .image_bytes = "x8y9z0",
-               .seed = 10011,
-               .query = "a starry night"});
+  store.Cache(
+      LobsterImageCandidate(/*id=*/123,
+                            /*image_bytes=*/"x8y9z0",
+                            /*seed=*/10011,
+                            /*query=*/"a starry night",
+                            /*rewritten_query=*/"rewritten: a starry night"));
 
   EXPECT_EQ(store.FindCandidateById(123).value(),
-            LobsterImageCandidate(123, "x8y9z0", 10011, "a starry night"));
+            LobsterImageCandidate(123, "x8y9z0", 10011, "a starry night",
+                                  "rewritten: a starry night"));
 }
 
 }  // namespace

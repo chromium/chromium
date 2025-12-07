@@ -10,18 +10,14 @@
 #include <optional>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/platform_shared_memory_handle.h"
 #include "base/memory/shared_memory_mapper.h"
+#include "base/types/expected.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-namespace content {
-class SandboxIPCHandler;
-}
-#endif
 
 namespace base {
 namespace subtle {
@@ -84,29 +80,31 @@ class BASE_EXPORT PlatformSharedMemoryRegion {
     kMaxValue = GET_SHMEM_TEMP_DIR_FAILURE
   };
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // Structure to limit access to executable region creation.
-  struct ExecutableRegion {
-   private:
-    // Creates a new shared memory region the unsafe mode (writable and not and
-    // convertible to read-only), and in addition marked executable. A ScopedFD
-    // to this region is returned. Any any mapping will have to be done
-    // manually, including setting executable permissions if necessary
-    //
-    // This is only used to support sandbox_ipc_linux.cc, and should not be used
-    // anywhere else in chrome. This is restricted via AllowCreateExecutable.
-    // TODO(crbug.com/41470149): remove this when NaCl is unshipped.
-    //
-    // Returns an invalid ScopedFD if the call fails.
-    static ScopedFD CreateFD(size_t size);
-
-    friend class content::SandboxIPCHandler;
-  };
-#endif
-
   // The minimum alignment in bytes that any mapped address produced by Map()
   // and MapAt() is guaranteed to have.
   enum { kMapMinimumAlignment = 32 };
+
+  // Errors that can occur during permission and mode consistency checks that
+  // are performed when adopting native platform handles with `Take()` or
+  // `TakeOrFail()`.
+  enum class TakeError {
+    kExpectedReadOnlyButNot,
+    kExpectedWritableButNot,
+#if BUILDFLAG(IS_ANDROID)
+    kFailedToGetAshmemRegionProtectionMask,
+#endif
+#if BUILDFLAG(IS_APPLE)
+    kVmMapFailed,
+#endif
+#if BUILDFLAG(IS_FUCHSIA)
+    kNotVmo,
+#endif
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+    kFcntlFailed,
+    kReadOnlyFdNotReadOnly,
+    kUnexpectedReadOnlyFd,
+#endif
+  };
 
   // Creates a new PlatformSharedMemoryRegion with corresponding mode and size.
   // Creating in kReadOnly mode isn't supported because then there will be no
@@ -115,16 +113,20 @@ class BASE_EXPORT PlatformSharedMemoryRegion {
   static PlatformSharedMemoryRegion CreateUnsafe(size_t size);
 
   // Returns a new PlatformSharedMemoryRegion that takes ownership of the
-  // |handle|. All parameters must be taken from another valid
-  // PlatformSharedMemoryRegion instance, e.g. |size| must be equal to the
-  // actual region size as allocated by the kernel.
-  // Closes the |handle| and returns an invalid instance if passed parameters
-  // are invalid.
+  // `handle` (which may be null/invalid). All parameters should be
+  // self-consistent, e.g. `size` must be equal to the actual region size as
+  // allocated by the kernel, if any.
+  //
+  // Returns an invalid instance if any input parameter are invalid. However,
+  // note that if the permissions on `handle` do not agree with `mode`, this
+  // function will `CHECK()` (e.g. `mode == Mode::kWritable` but `handle` is
+  // read-only), as this typically indicates a potential developer error.
   static PlatformSharedMemoryRegion Take(
       ScopedPlatformSharedMemoryHandle handle,
       Mode mode,
       size_t size,
       const UnguessableToken& guid);
+
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_APPLE)
   // Specialized version of Take() for POSIX that takes only one file descriptor
   // instead of pair. Cannot be used with kWritable |mode|.
@@ -133,6 +135,18 @@ class BASE_EXPORT PlatformSharedMemoryRegion {
                                          size_t size,
                                          const UnguessableToken& guid);
 #endif
+
+  // Similar to `Take()` but relaxes the permission and mode consistency checks
+  // to return an error instead. Useful when deserializing a handle from an
+  // untrustworthy process.
+  //
+  // Note that even when this function returns a region instead of an error,
+  // `region.IsValid()` may be false, e.g. if the input `handle` is invalid.
+  static expected<PlatformSharedMemoryRegion, TakeError> TakeOrFail(
+      ScopedPlatformSharedMemoryHandle handle,
+      Mode mode,
+      size_t size,
+      const UnguessableToken& guid);
 
   // Default constructor initializes an invalid instance, i.e. an instance that
   // doesn't wrap any valid platform handle.
@@ -203,7 +217,7 @@ class BASE_EXPORT PlatformSharedMemoryRegion {
   // created by calling |MapAt()| above.
   static void Unmap(span<uint8_t> mapping, SharedMemoryMapper* mapper);
 
-  const UnguessableToken& GetGUID() const { return guid_; }
+  const UnguessableToken& GetGUID() const LIFETIME_BOUND { return guid_; }
 
   size_t GetSize() const { return size_; }
 
@@ -222,7 +236,8 @@ class BASE_EXPORT PlatformSharedMemoryRegion {
 #endif
   );
 
-  static bool CheckPlatformHandlePermissionsCorrespondToMode(
+  static base::expected<void, TakeError>
+  CheckPlatformHandlePermissionsCorrespondToMode(
       PlatformSharedMemoryHandle handle,
       Mode mode,
       size_t size);

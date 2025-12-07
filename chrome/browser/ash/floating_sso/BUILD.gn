@@ -4,12 +4,14 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("floating_sso") {
   sources = [
     "cookie_sync_conversions.cc",
     "cookie_sync_conversions.h",
+    "cookie_sync_data_type_controller.cc",
+    "cookie_sync_data_type_controller.h",
     "floating_sso_service.cc",
     "floating_sso_service.h",
     "floating_sso_service_factory.cc",
@@ -19,19 +21,47 @@ static_library("floating_sso") {
   ]
 
   deps = [
-    "//ash/constants:constants",
+    "//ash/constants",
     "//base",
+    "//chrome/browser/ash/floating_workspace:utils",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync:factories",
     "//chrome/common",
-    "//chrome/common:channel_info",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/channel",
+    "//chromeos/constants",
     "//components/google/core/common",
     "//components/keyed_service/core",
     "//components/prefs",
     "//components/sync/service",
+    "//components/url_matcher",
+    "//components/user_manager",
     "//content/public/browser",
     "//net",
   ]
+
+  allow_circular_includes_from =
+      [ "//chrome/browser/ash/floating_workspace:utils" ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "cookie_sync_test_util.cc",
+    "cookie_sync_test_util.h",
+  ]
+
+  deps = [
+    ":floating_sso",
+    "//base",
+    "//components/sync/protocol",
+    "//components/sync/protocol:util",
+  ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("unit_tests") {
@@ -39,14 +69,12 @@ source_set("unit_tests") {
 
   sources = [
     "cookie_sync_conversions_unittest.cc",
-    "cookie_sync_test_util.cc",
-    "cookie_sync_test_util.h",
     "floating_sso_sync_bridge_unittest.cc",
   ]
 
   deps = [
     ":floating_sso",
-    "//base",
+    ":test_support",
     "//base/test:test_support",
     "//components/sync:test_support",
     "//components/sync/service",
@@ -65,10 +93,12 @@ source_set("browser_tests") {
 
   deps = [
     ":floating_sso",
-    "//base",
+    ":test_support",
     "//base/test:test_support",
+    "//chrome/browser/ash/floating_workspace:utils",
     "//chrome/browser/policy:test_support",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/sync",
     "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//chromeos/constants",

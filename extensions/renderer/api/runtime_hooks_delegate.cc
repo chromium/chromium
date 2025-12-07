@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/v8_value_converter.h"
@@ -46,7 +47,8 @@ void GetExtensionId(v8::Local<v8::Name> property_name,
                     const v8::PropertyCallbackInfo<v8::Value>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Context> context = info.Holder()->GetCreationContextChecked();
+  v8::Local<v8::Context> context =
+      info.HolderV2()->GetCreationContextChecked(isolate);
 
   ScriptContext* script_context = GetScriptContextFromV8Context(context);
   // This could potentially be invoked after the script context is removed
@@ -63,7 +65,8 @@ void GetDynamicId(v8::Local<v8::Name> property_name,
                   const v8::PropertyCallbackInfo<v8::Value>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Context> context = info.Holder()->GetCreationContextChecked();
+  v8::Local<v8::Context> context =
+      info.HolderV2()->GetCreationContextChecked(isolate);
 
   ScriptContext* script_context = GetScriptContextFromV8Context(context);
   // This could potentially be invoked after the script context is removed
@@ -83,6 +86,7 @@ void EmptySetter(v8::Local<v8::Name> name,
 }
 
 constexpr char kGetManifest[] = "runtime.getManifest";
+constexpr char kGetVersion[] = "runtime.getVersion";
 constexpr char kGetURL[] = "runtime.getURL";
 constexpr char kConnect[] = "runtime.connect";
 constexpr char kConnectNative[] = "runtime.connectNative";
@@ -98,7 +102,8 @@ void GetBackgroundPageCallback(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Context> context = info.This()->GetCreationContextChecked();
+  v8::Local<v8::Context> context =
+      info.This()->GetCreationContextChecked(isolate);
 
   // Custom callbacks are called with the arguments of the callback function and
   // the response from the API. Since the custom callback here handles all the
@@ -151,11 +156,20 @@ v8::LocalVector<v8::Value> MassageRequestUpdateCheckResults(
   DCHECK(success);
 
   // Version is wrapped as a parameter on a details object.
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   v8::Local<v8::Object> details = v8::Object::New(isolate);
   auto key = gin::StringToV8(isolate, "version");
   details->CreateDataProperty(context, key, version).Check();
   return v8::LocalVector<v8::Value>(isolate, {status, details});
+}
+
+// Constructs a URL string from an `id` and `path`. `id` is directly used as
+// the host and can be a static or dynamic (GUID) identifier.
+GURL UrlFromPathAndId(const std::string& id, const std::string& path) {
+  std::string maybe_slash = !path.empty() && path[0] == '/' ? "" : "/";
+  std::string url = base::StrCat(
+      {kExtensionScheme, url::kStandardSchemeSeparator, id, maybe_slash, path});
+  return GURL(url);
 }
 
 }  // namespace
@@ -176,22 +190,22 @@ RequestResult RuntimeHooksDelegate::GetURL(
   v8::Isolate* isolate = script_context->isolate();
   std::string path = gin::V8ToString(isolate, arguments[0]);
   const auto* extension = script_context->extension();
-  bool use_dynamic_url = false;
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kExtensionDynamicURLRedirection)) {
-    use_dynamic_url =
-        WebAccessibleResourcesInfo::ShouldUseDynamicUrl(extension, path);
-  }
-  std::string id = use_dynamic_url ? extension->guid() : extension->id();
 
-  RequestResult result(RequestResult::HANDLED);
-  std::string url = base::StringPrintf(
-      "chrome-extension://%s%s%s", id.c_str(),
-      !path.empty() && path[0] == '/' ? "" : "/", path.c_str());
+  GURL url = UrlFromPathAndId(extension->id(), path);
   // GURL considers any possible path valid. Since the argument is only appended
   // as part of the path, there should be no way this could conceivably fail.
-  DCHECK(GURL(url).is_valid());
-  result.return_value = gin::StringToV8(isolate, url);
+  DCHECK(url.is_valid());
+
+  if (WebAccessibleResourcesInfo::ShouldUseDynamicUrl(extension,
+                                                      url.GetPath())) {
+    GURL::Replacements replacements;
+    replacements.SetHostStr(extension->guid());
+    url = url.ReplaceComponents(replacements);
+  }
+
+  RequestResult result(RequestResult::HANDLED);
+  DCHECK(url.is_valid());
+  result.return_value = gin::StringToV8(isolate, url.spec());
   return result;
 }
 
@@ -211,6 +225,7 @@ RequestResult RuntimeHooksDelegate::HandleRequest(
       {&RuntimeHooksDelegate::HandleConnect, kConnect},
       {&RuntimeHooksDelegate::HandleGetURL, kGetURL},
       {&RuntimeHooksDelegate::HandleGetManifest, kGetManifest},
+      {&RuntimeHooksDelegate::HandleGetVersion, kGetVersion},
       {&RuntimeHooksDelegate::HandleConnectNative, kConnectNative},
       {&RuntimeHooksDelegate::HandleSendNativeMessage, kSendNativeMessage},
       {&RuntimeHooksDelegate::HandleGetBackgroundPage, kGetBackgroundPage},
@@ -242,7 +257,7 @@ RequestResult RuntimeHooksDelegate::HandleRequest(
   }
 
   if (should_massage) {
-    messaging_util::MassageSendMessageArguments(context->GetIsolate(),
+    messaging_util::MassageSendMessageArguments(v8::Isolate::GetCurrent(),
                                                 allow_options, arguments);
   }
 
@@ -263,11 +278,8 @@ void RuntimeHooksDelegate::InitializeTemplate(
     const APITypeReferenceMap& type_refs) {
   object_template->SetNativeDataProperty(gin::StringToSymbol(isolate, "id"),
                                          &GetExtensionId, &EmptySetter);
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kExtensionDynamicURLRedirection)) {
-    object_template->SetNativeDataProperty(
-        gin::StringToSymbol(isolate, "dynamicId"), &GetDynamicId, &EmptySetter);
-  }
+  object_template->SetNativeDataProperty(
+      gin::StringToSymbol(isolate, "dynamicId"), &GetDynamicId, &EmptySetter);
 }
 
 RequestResult RuntimeHooksDelegate::HandleGetManifest(
@@ -281,6 +293,20 @@ RequestResult RuntimeHooksDelegate::HandleGetManifest(
   RequestResult result(RequestResult::HANDLED);
   result.return_value = content::V8ValueConverter::Create()->ToV8Value(
       *script_context->extension()->manifest()->value(),
+      script_context->v8_context());
+
+  return result;
+}
+
+RequestResult RuntimeHooksDelegate::HandleGetVersion(
+    ScriptContext* script_context,
+    const APISignature::V8ParseResult& parse_result) {
+  DCHECK_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
+  CHECK(script_context->extension());
+
+  RequestResult result(RequestResult::HANDLED);
+  result.return_value = content::V8ValueConverter::Create()->ToV8Value(
+      script_context->extension()->VersionString(),
       script_context->v8_context());
 
   return result;
@@ -414,15 +440,16 @@ RequestResult RuntimeHooksDelegate::HandleConnect(
         messaging_util::PARSE_CHANNEL_NAME);
   }
 
-  gin::Handle<GinPort> port = messaging_service_->Connect(
+  GinPort* port = messaging_service_->Connect(
       script_context, MessageTarget::ForExtension(target_id),
       options.channel_name,
       messaging_util::GetSerializationFormat(*script_context));
-  DCHECK(!port.IsEmpty());
+  DCHECK(port);
   DCHECK_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
 
   RequestResult result(RequestResult::HANDLED);
-  result.return_value = port.ToV8();
+  result.return_value =
+      port->GetWrapper(script_context->isolate()).ToLocalChecked();
   return result;
 }
 
@@ -440,12 +467,13 @@ RequestResult RuntimeHooksDelegate::HandleConnectNative(
   // Native messaging always uses JSON since a native host doesn't understand
   // structured cloning serialization.
   auto format = mojom::SerializationFormat::kJson;
-  gin::Handle<GinPort> port = messaging_service_->Connect(
+  GinPort* port = messaging_service_->Connect(
       script_context, MessageTarget::ForNativeApp(application_name),
       std::string(), format);
 
   RequestResult result(RequestResult::HANDLED);
-  result.return_value = port.ToV8();
+  result.return_value =
+      port->GetWrapper(script_context->isolate()).ToLocalChecked();
   return result;
 }
 
@@ -510,9 +538,7 @@ RequestResult RuntimeHooksDelegate::HandleGetPackageDirectoryEntryCallback(
     if (!script_context->module_system()
              ->Require("fileEntryBindingUtil")
              .ToLocal(&file_entry_binding_util)) {
-      NOTREACHED_IN_MIGRATION();
-      // Abort, and consider the request handled.
-      return RequestResult(RequestResult::HANDLED);
+      NOTREACHED();
     }
 
     v8::Local<v8::Value> get_bind_directory_entry_callback_value;
@@ -520,14 +546,11 @@ RequestResult RuntimeHooksDelegate::HandleGetPackageDirectoryEntryCallback(
              ->Get(v8_context, gin::StringToSymbol(
                                    isolate, "getBindDirectoryEntryCallback"))
              .ToLocal(&get_bind_directory_entry_callback_value)) {
-      NOTREACHED_IN_MIGRATION();
-      return RequestResult(RequestResult::THROWN);
+      NOTREACHED();
     }
 
     if (!get_bind_directory_entry_callback_value->IsFunction()) {
-      NOTREACHED_IN_MIGRATION();
-      // Abort, and consider the request handled.
-      return RequestResult(RequestResult::HANDLED);
+      NOTREACHED();
     }
 
     v8::Local<v8::Function> get_bind_directory_entry_callback =
@@ -536,18 +559,15 @@ RequestResult RuntimeHooksDelegate::HandleGetPackageDirectoryEntryCallback(
     maybe_custom_callback =
         JSRunner::Get(v8_context)
             ->RunJSFunctionSync(get_bind_directory_entry_callback, v8_context,
-                                0, nullptr);
+                                {});
   }  // End modules enabled scope.
   v8::Local<v8::Value> callback;
   if (!maybe_custom_callback.ToLocal(&callback)) {
-    NOTREACHED_IN_MIGRATION();
-    return RequestResult(RequestResult::THROWN);
+    NOTREACHED();
   }
 
   if (!callback->IsFunction()) {
-    NOTREACHED_IN_MIGRATION();
-    // Abort, and consider the request handled.
-    return RequestResult(RequestResult::HANDLED);
+    NOTREACHED();
   }
 
   RequestResult result(RequestResult::NOT_HANDLED);

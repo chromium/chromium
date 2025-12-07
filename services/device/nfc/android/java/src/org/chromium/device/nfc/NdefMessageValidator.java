@@ -4,10 +4,12 @@
 
 package org.chromium.device.nfc;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.device.mojom.NdefMessage;
 import org.chromium.device.mojom.NdefRecord;
 
 /** Utility class that provides validation of NdefMessage. */
+@NullMarked
 public final class NdefMessageValidator {
     /**
      * Validates NdefMessage.

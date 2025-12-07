@@ -18,7 +18,7 @@ enum class ScriptSchedulingType {
   // Because the scheduling type is determined slightly after PendingScript
   // creation, it is set to kNotSet before ScriptLoader::TakePendingScript()
   // is called. kNotSet should not be observed.
-  kNotSet,
+  kNotSet = 0,
 
   // Deferred scripts controlled by HTMLParserScriptRunner.
   //
@@ -27,7 +27,7 @@ enum class ScriptSchedulingType {
   // Examples:
   // - <script defer> (parser inserted)
   // - <script type="module"> (parser inserted)
-  kDefer,
+  kDefer = 1,
 
   // Parser-blocking external scripts controlled by XML/HTMLParserScriptRunner.
   //
@@ -35,12 +35,12 @@ enum class ScriptSchedulingType {
   //
   // Examples:
   // - <script> (parser inserted)
-  kParserBlocking,
+  kParserBlocking = 2,
 
   // Parser-blocking inline scripts controlled by XML/HTMLParserScriptRunner.
   //
   // Spec: Step 32.2.
-  kParserBlockingInline,
+  kParserBlockingInline = 3,
 
   // In-order scripts controlled by ScriptRunner.
   //
@@ -48,7 +48,7 @@ enum class ScriptSchedulingType {
   //
   // Examples (either classic or module):
   // - Dynamically inserted <script>s with s.async = false
-  kInOrder,
+  kInOrder = 4,
 
   // Async scripts controlled by ScriptRunner.
   //
@@ -58,11 +58,11 @@ enum class ScriptSchedulingType {
   // - <script async> and <script async defer> (parser inserted)
   // - Dynamically inserted <script>s
   // - Dynamically inserted <script>s with s.async = true
-  kAsync,
+  kAsync = 5,
 
   // Inline <script> executed immediately within prepare-the-script-element.
   // Spec: Step 32.3.
-  kImmediate,
+  kImmediate = 6,
 
   // Force deferred scripts controlled by HTMLParserScriptRunner.
   // These are otherwise parser-blocking scripts that are being forced to
@@ -71,14 +71,14 @@ enum class ScriptSchedulingType {
   // Spec: not yet spec'ed. https://crbug.com/976061 https://crbug.com/1339112
   // kDeprecatedForceDefer is deprecated, but kept here to ensure metrics are
   // recorded correctly in-order.
-  kDeprecatedForceDefer,
+  kDeprecatedForceDefer = 7,
 
   // Force in-order scripts controlled by ScriptRunner.
   //
   // Spec: not yet spec'ed. https://crbug.com/1344772
-  kForceInOrder,
+  // Deprecated: kForceInOrder = 8,
 
-  kMaxValue = kForceInOrder,
+  kMaxValue = kDeprecatedForceDefer,
 };
 
 }  // namespace blink

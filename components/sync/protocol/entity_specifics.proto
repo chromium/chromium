@@ -11,6 +11,8 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
+import "components/sync/protocol/ai_thread_specifics.proto";
+import "components/sync/protocol/contextual_task_specifics.proto";
 import "components/sync/protocol/encryption.proto";
 import "components/sync/protocol/app_list_specifics.proto";
 import "components/sync/protocol/app_setting_specifics.proto";
@@ -18,6 +20,9 @@ import "components/sync/protocol/app_specifics.proto";
 import "components/sync/protocol/arc_package_specifics.proto";
 import "components/sync/protocol/autofill_specifics.proto";
 import "components/sync/protocol/autofill_offer_specifics.proto";
+import "components/sync/protocol/autofill_valuable_specifics.proto";
+import "components/sync/protocol/autofill_valuable_metadata_specifics.proto";
+import "components/sync/protocol/account_setting_specifics.proto";
 import "components/sync/protocol/autofill_wallet_credential_specifics.proto";
 import "components/sync/protocol/autofill_wallet_usage_specifics.proto";
 import "components/sync/protocol/bookmark_specifics.proto";
@@ -27,15 +32,11 @@ import "components/sync/protocol/contact_info_specifics.proto";
 import "components/sync/protocol/cookie_specifics.proto";
 import "components/sync/protocol/device_info_specifics.proto";
 import "components/sync/protocol/dictionary_specifics.proto";
-import "components/sync/protocol/experiments_specifics.proto";
 import "components/sync/protocol/extension_setting_specifics.proto";
 import "components/sync/protocol/extension_specifics.proto";
-import "components/sync/protocol/favicon_image_specifics.proto";
-import "components/sync/protocol/favicon_tracking_specifics.proto";
 import "components/sync/protocol/history_delete_directive_specifics.proto";
 import "components/sync/protocol/history_specifics.proto";
 import "components/sync/protocol/managed_user_setting_specifics.proto";
-import "components/sync/protocol/managed_user_shared_setting_specifics.proto";
 import "components/sync/protocol/nigori_specifics.proto";
 import "components/sync/protocol/os_preference_specifics.proto";
 import "components/sync/protocol/os_priority_preference_specifics.proto";
@@ -43,7 +44,6 @@ import "components/sync/protocol/password_sharing_invitation_specifics.proto";
 import "components/sync/protocol/password_specifics.proto";
 import "components/sync/protocol/plus_address_setting_specifics.proto";
 import "components/sync/protocol/plus_address_specifics.proto";
-import "components/sync/protocol/power_bookmark_specifics.proto";
 import "components/sync/protocol/preference_specifics.proto";
 import "components/sync/protocol/printer_specifics.proto";
 import "components/sync/protocol/printers_authorization_server_specifics.proto";
@@ -54,6 +54,7 @@ import "components/sync/protocol/search_engine_specifics.proto";
 import "components/sync/protocol/security_event_specifics.proto";
 import "components/sync/protocol/send_tab_to_self_specifics.proto";
 import "components/sync/protocol/session_specifics.proto";
+import "components/sync/protocol/shared_comment_specifics.proto";
 import "components/sync/protocol/shared_tab_group_data_specifics.proto";
 import "components/sync/protocol/sharing_message_specifics.proto";
 import "components/sync/protocol/theme_specifics.proto";
@@ -65,6 +66,7 @@ import "components/sync/protocol/web_app_specifics.proto";
 import "components/sync/protocol/webauthn_credential_specifics.proto";
 import "components/sync/protocol/wifi_configuration_specifics.proto";
 import "components/sync/protocol/workspace_desk_specifics.proto";
+import "components/sync/protocol/shared_tab_group_account_data_specifics.proto";
 
 message EntitySpecifics {
   // If a datatype is encrypted, this field will contain the encrypted
@@ -146,7 +148,6 @@ message EntitySpecifics {
     SavedTabGroupSpecifics saved_tab_group = 1004874;
     AutofillWalletUsageSpecifics autofill_wallet_usage = 1033580;
     ContactInfoSpecifics contact_info = 1034378;
-    PowerBookmarkSpecifics power_bookmark = 1073150;
     IncomingPasswordSharingInvitationSpecifics
         incoming_password_sharing_invitation = 1141935;
     OutgoingPasswordSharingInvitationSpecifics
@@ -158,6 +159,13 @@ message EntitySpecifics {
     PlusAddressSpecifics plus_address = 1267844;
     CookieSpecifics cookie = 1281100;
     PlusAddressSettingSpecifics plus_address_setting = 1303742;
+    AutofillValuableSpecifics autofill_valuable = 1419865;
+    SharedTabGroupAccountDataSpecifics shared_tab_group_account_data = 1429255;
+    SharedCommentSpecifics shared_comment = 1484017;
+    AccountSettingSpecifics account_setting = 1438954;
+    AiThreadSpecifics ai_thread = 1517585;
+    ContextualTaskSpecifics contextual_task = 1518931;
+    AutofillValuableMetadataSpecifics autofill_valuable_metadata = 1520954;
     // When adding a new type, follow the docs below and keep this comment as
     // the last entry.
     // https://www.chromium.org/developers/design-documents/sync/integration-checklist/
@@ -169,15 +177,17 @@ message EntitySpecifics {
     EmptySpecifics app_notification = 45184 [deprecated = true];
     EmptySpecifics synced_notification = 153108 [deprecated = true];
     EmptySpecifics synced_notification_app_info = 235816 [deprecated = true];
-    ExperimentsSpecifics experiments = 161496 [deprecated = true];
-    FaviconTrackingSpecifics favicon_tracking = 181534 [deprecated = true];
-    FaviconImageSpecifics favicon_image = 182019 [deprecated = true];
     EmptySpecifics managed_user = 194582 [deprecated = true];
-    ManagedUserSharedSettingSpecifics managed_user_shared_setting = 202026
-        [deprecated = true];
+    EmptySpecifics managed_user_shared_setting = 202026 [deprecated = true];
     EmptySpecifics managed_user_allowlist = 306060 [deprecated = true];
     TypedUrlSpecifics typed_url = 40781 [deprecated = true];
   }
+  reserved 161496;
+  reserved "experiments";
+  reserved 181534;
+  reserved "favicon_tracking";
+  reserved 182019;
+  reserved "favicon_image";
   reserved 218175;
   reserved "wifi_credential";
   reserved 223759;
@@ -186,6 +196,8 @@ message EntitySpecifics {
   reserved "mountain_share";
   reserved 1026052;
   reserved "segmentation";
+  reserved 1073150;
+  reserved "power_bookmark";
 }
 
 message EmptySpecifics {}

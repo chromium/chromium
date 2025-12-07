@@ -9,13 +9,13 @@
 
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
+#include "cc/trees/property_tree.h"
 #include "cc/trees/sticky_position_constraint.h"
 #include "third_party/blink/renderer/platform/graphics/compositing_reasons.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper_clip_cache.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper_transform_cache.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_property_node.h"
-#include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/point3_f.h"
@@ -23,6 +23,7 @@
 
 namespace blink {
 
+class ScrollPaintPropertyNode;
 using CompositorStickyConstraint = cc::StickyPositionConstraint;
 
 // A transform (e.g., created by css "transform" or "perspective", or for
@@ -63,15 +64,18 @@ class PLATFORM_EXPORT TransformPaintPropertyNodeOrAlias
 class TransformPaintPropertyNodeAlias final
     : public TransformPaintPropertyNodeOrAlias {
  public:
-  static scoped_refptr<TransformPaintPropertyNodeAlias> Create(
+  static TransformPaintPropertyNodeAlias* Create(
       const TransformPaintPropertyNodeOrAlias& parent) {
-    return base::AdoptRef(new TransformPaintPropertyNodeAlias(parent));
+    return MakeGarbageCollected<TransformPaintPropertyNodeAlias>(kParentAlias,
+                                                                 parent);
   }
 
- private:
-  explicit TransformPaintPropertyNodeAlias(
+  // This is public required by MakeGarbageCollected, but the protected tag
+  // prevents this from being called from outside.
+  TransformPaintPropertyNodeAlias(
+      ParentAliasTag,
       const TransformPaintPropertyNodeOrAlias& parent)
-      : TransformPaintPropertyNodeOrAlias(parent, kParentAlias) {}
+      : TransformPaintPropertyNodeOrAlias(kParentAlias, parent) {}
 };
 
 class PLATFORM_EXPORT TransformPaintPropertyNode final
@@ -103,10 +107,12 @@ class PLATFORM_EXPORT TransformPaintPropertyNode final
   // To make it less verbose and more readable to construct and update a node,
   // a struct with default values is used to represent the state.
   struct PLATFORM_EXPORT State {
+    DISALLOW_NEW();
+
+   public:
     TransformAndOrigin transform_and_origin;
-    scoped_refptr<const ScrollPaintPropertyNode> scroll;
-    scoped_refptr<const TransformPaintPropertyNode>
-        scroll_translation_for_fixed;
+    Member<const ScrollPaintPropertyNode> scroll;
+    Member<const TransformPaintPropertyNode> scroll_translation_for_fixed;
 
     bool flattens_inherited_transform : 1 = false;
     bool in_subtree_of_page_scale : 1 = true;
@@ -139,17 +145,25 @@ class PLATFORM_EXPORT TransformPaintPropertyNode final
       return direct_compositing_reasons &
              CompositingReason::kRequiresCullRectExpansion;
     }
+
+    void Trace(Visitor*) const;
   };
 
   // This node is really a sentinel, and does not represent a real transform
   // space.
   static const TransformPaintPropertyNode& Root();
 
-  static scoped_refptr<TransformPaintPropertyNode> Create(
+  static TransformPaintPropertyNode* Create(
       const TransformPaintPropertyNodeOrAlias& parent,
       State&& state) {
-    return base::AdoptRef(
-        new TransformPaintPropertyNode(&parent, std::move(state)));
+    return MakeGarbageCollected<TransformPaintPropertyNode>(
+        kNonParentAlias, parent, std::move(state));
+  }
+
+  void Trace(Visitor* visitor) const final {
+    TransformPaintPropertyNodeOrAlias::Trace(visitor);
+    visitor->Trace(state_);
+    visitor->Trace(transform_cache_);
   }
 
   const TransformPaintPropertyNode& Unalias() const = delete;
@@ -200,11 +214,11 @@ class PLATFORM_EXPORT TransformPaintPropertyNode final
 
   // The associated scroll node, or nullptr otherwise.
   const ScrollPaintPropertyNode* ScrollNode() const {
-    return state_.scroll.get();
+    return state_.scroll.Get();
   }
 
   const TransformPaintPropertyNode* ScrollTranslationForFixed() const {
-    return state_.scroll_translation_for_fixed.get();
+    return state_.scroll_translation_for_fixed.Get();
   }
 
   // If true, this node is translated by the viewport bounds delta, which is
@@ -213,6 +227,11 @@ class PLATFORM_EXPORT TransformPaintPropertyNode final
   bool IsAffectedByOuterViewportBoundsDelta() const {
     return DirectCompositingReasons() &
            CompositingReason::kAffectedByOuterViewportBoundsDelta;
+  }
+
+  bool IsAffectedBySafeAreaBottom() const {
+    return DirectCompositingReasons() &
+           CompositingReason::kAffectedBySafeAreaBottom;
   }
 
   // If true, this node is a descendant of the page scale transform. This is
@@ -382,13 +401,18 @@ class PLATFORM_EXPORT TransformPaintPropertyNode final
 
   std::unique_ptr<JSONObject> ToJSON() const final;
 
- private:
-  TransformPaintPropertyNode(const TransformPaintPropertyNodeOrAlias* parent,
+  // These are public required by MakeGarbageCollected, but the protected tags
+  // prevent these from being called from outside.
+  explicit TransformPaintPropertyNode(RootTag);
+  TransformPaintPropertyNode(NonParentAliasTag,
+                             const TransformPaintPropertyNodeOrAlias& parent,
                              State&& state)
-      : TransformPaintPropertyNodeOrAlias(parent), state_(std::move(state)) {
+      : TransformPaintPropertyNodeOrAlias(kNonParentAlias, parent),
+        state_(std::move(state)) {
     Validate();
   }
 
+ private:
   CompositingReasons DirectCompositingReasons() const {
     return state_.direct_compositing_reasons;
   }
@@ -419,8 +443,9 @@ class PLATFORM_EXPORT TransformPaintPropertyNode final
   friend class PaintPropertyTreeBuilderTest;
 
   const GeometryMapperTransformCache& GetTransformCache() const {
-    if (!transform_cache_)
-      transform_cache_ = std::make_unique<GeometryMapperTransformCache>();
+    if (!transform_cache_) {
+      transform_cache_ = MakeGarbageCollected<GeometryMapperTransformCache>();
+    }
     transform_cache_->UpdateIfNeeded(*this);
     return *transform_cache_;
   }
@@ -430,7 +455,7 @@ class PLATFORM_EXPORT TransformPaintPropertyNode final
   }
 
   State state_;
-  mutable std::unique_ptr<GeometryMapperTransformCache> transform_cache_;
+  mutable Member<GeometryMapperTransformCache> transform_cache_;
 };
 
 }  // namespace blink

@@ -7,8 +7,6 @@
 
 namespace power_bookmarks {
 
-BASE_FEATURE(kPowerBookmarkBackend,
-             "PowerBookmarkBackend",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPowerBookmarkBackend, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace power_bookmarks

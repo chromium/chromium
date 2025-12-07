@@ -1,0 +1,47 @@
+{
+  "name": "Manifest with use counter fields",
+  "id": "some_id",
+  "icons": [
+    {
+      "src": "launcher-icon-1x.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshot1-portrait.jpeg",
+      "type": "image/jpeg",
+      "sizes": "409x728",
+      "form_factor": "narrow",
+      "label": "a narrow screenshot"
+    }
+  ],
+  "start_url": "different_manifest_test_page.html",
+  "display": "fullscreen",
+  "scope": "/",
+  "lock_screen": {
+    "notifications": true
+  },
+  "note_taking": {
+    "new_note_url": "/banners/scope_a/new_note.html"
+  },
+  "prefer_related_applications": true,
+  "related_applications": [
+    {
+      "platform": "play",
+      "id": "com.example.hiking-app"
+    },
+    {
+      "platform": "windows",
+      "url": "https://example.com"
+    }
+  ],
+  "theme_color": "#FFFFFF",
+  "background_color": "#000000",
+  "permissions_policy": {
+    "geolocation": ["https://example.com"],
+    "microphone": ["https://example.com"]
+  },
+  "version": "1.0.0"
+}

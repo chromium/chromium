@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/arc_util.h"
 #include "base/barrier_closure.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -28,6 +27,8 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_registry.h"
@@ -137,13 +138,14 @@ std::string GetBoardName(const base::FilePath& build_prop_path) {
       content, "\n", base::WhitespaceHandling::KEEP_WHITESPACE,
       base::SplitResult::SPLIT_WANT_ALL);
   for (const auto& line : lines) {
-    if (!base::StartsWith(line, kKeyToFind, base::CompareCase::SENSITIVE))
-      continue;
-    const std::string board = line.substr(strlen(kKeyToFind));
-    VLOG(2) << "Current board is " << board;
-    return board;
+    std::optional<std::string_view> remainder =
+        base::RemovePrefix(line, kKeyToFind);
+    if (remainder) {
+      std::string board(*remainder);
+      VLOG(2) << "Current board is " << board;
+      return board;
+    }
   }
-
   LOG(ERROR) << "Failed to find " << kKeyToFind << " in " << build_prop_path;
   return std::string();
 }
@@ -355,4 +357,4 @@ ArcDefaultAppList::AppInfo::AppInfo(const std::string& name,
       oem(oem),
       app_path(app_path) {}
 
-ArcDefaultAppList::AppInfo::~AppInfo() {}
+ArcDefaultAppList::AppInfo::~AppInfo() = default;

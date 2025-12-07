@@ -16,7 +16,7 @@
 * [Threading](/android_webview/docs/threading.md)
   <!-- Link new docs above this line. -->
 * [More docs](/android_webview/docs/)
-* [**File a docs bug or request**](https://issues.chromium.org/issues/new?component=1456456&template=1947974)
+* [Reporting bugs in WebView](/android_webview/docs/bugreport.md)
 
 [home]: /android_webview/docs/README.md
 [logo]: /android_webview/docs/images/webview_logo.png

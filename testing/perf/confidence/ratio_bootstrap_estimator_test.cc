@@ -18,8 +18,8 @@ TEST(RatioBootstrapEstimatorTest, TrivialTest) {
 
   RatioBootstrapEstimator estimator(1111);
   std::vector<RatioBootstrapEstimator::Estimate> estimates =
-      estimator.ComputeRatioEstimates({twice_as_fast, equally_fast}, 1000,
-                                      0.95);
+      estimator.ComputeRatioEstimates({twice_as_fast, equally_fast}, 1000, 0.95,
+                                      /*compute_geometric_mean=*/false);
   EXPECT_NEAR(2.0, estimates[0].lower, 0.2);
   EXPECT_NEAR(2.0, estimates[0].upper, 0.2);
   EXPECT_NEAR(2.0, estimates[0].point_estimate, 0.2);
@@ -27,6 +27,21 @@ TEST(RatioBootstrapEstimatorTest, TrivialTest) {
   EXPECT_NEAR(1.0, estimates[1].lower, 0.2);
   EXPECT_NEAR(1.0, estimates[1].upper, 0.2);
   EXPECT_NEAR(1.0, estimates[1].point_estimate, 0.2);
+}
+
+TEST(RatioBootstrapEstimatorTest, GeometricMean) {
+  std::vector<RatioBootstrapEstimator::Sample> twice_as_fast = {
+      {1.0, 0.5}, {1.01, 0.49}, {0.99, 0.51}};
+  std::vector<RatioBootstrapEstimator::Sample> equally_fast = {
+      {2.0, 2.01}, {2.01, 1.99}, {1.99, 2.0}};
+
+  RatioBootstrapEstimator estimator(2024);
+  std::vector<RatioBootstrapEstimator::Estimate> estimates =
+      estimator.ComputeRatioEstimates({twice_as_fast, equally_fast}, 1000, 0.95,
+                                      /*compute_geometric_mean=*/true);
+  EXPECT_NEAR(1.414, estimates[2].lower, 0.2);
+  EXPECT_NEAR(1.414, estimates[2].upper, 0.2);
+  EXPECT_NEAR(1.414, estimates[2].point_estimate, 0.2);
 }
 
 // This data set is picked out from a real Pinpoint run (a test of
@@ -69,7 +84,8 @@ TEST(RatioBootstrapEstimatorTest, RealData) {
 
   RatioBootstrapEstimator estimator(1234);
   std::vector<RatioBootstrapEstimator::Estimate> estimates =
-      estimator.ComputeRatioEstimates({data}, 10000, 0.95);
+      estimator.ComputeRatioEstimates({data}, 10000, 0.95,
+                                      /*compute_geometric_mean=*/false);
 
   // This data is higher-is-better, so we need to flip it (and thus
   // also swap higher/lower) to get throughput. R says [-0.2%, +0.8%]

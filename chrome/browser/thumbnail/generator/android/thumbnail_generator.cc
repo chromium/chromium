@@ -8,6 +8,7 @@
 
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/thumbnail/generator/android/thumbnail_media_parser.h"
@@ -20,7 +21,7 @@
 
 class SkBitmap;
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 
 namespace {
@@ -46,15 +47,14 @@ void OnThumbnailScaled(base::OnceCallback<void(SkBitmap)> java_callback,
 
 }  // namespace
 
-ThumbnailGenerator::ThumbnailGenerator(const JavaParamRef<jobject>& jobj)
+ThumbnailGenerator::ThumbnailGenerator(const JavaRef<jobject>& jobj)
     : java_delegate_(jobj) {
   DCHECK(!jobj.is_null());
 }
 
 ThumbnailGenerator::~ThumbnailGenerator() = default;
 
-void ThumbnailGenerator::Destroy(JNIEnv* env,
-                                 const JavaParamRef<jobject>& jobj) {
+void ThumbnailGenerator::Destroy(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   delete this;
 }
@@ -91,14 +91,12 @@ void ThumbnailGenerator::OnVideoThumbnailRetrieved(
                                                              std::move(parser));
 }
 
-void ThumbnailGenerator::RetrieveThumbnail(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jobj,
-    const JavaParamRef<jstring>& jcontent_id,
-    const JavaParamRef<jstring>& jfile_path,
-    const JavaParamRef<jstring>& jmime_type,
-    jint icon_size,
-    const JavaParamRef<jobject>& callback) {
+void ThumbnailGenerator::RetrieveThumbnail(JNIEnv* env,
+                                           const JavaRef<jstring>& jcontent_id,
+                                           const JavaRef<jstring>& jfile_path,
+                                           const JavaRef<jstring>& jmime_type,
+                                           jint icon_size,
+                                           const JavaRef<jobject>& callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   base::FilePath file_path = base::FilePath::FromUTF8Unsafe(
@@ -141,6 +139,8 @@ void ThumbnailGenerator::RetrieveThumbnail(
 
 // static
 static jlong JNI_ThumbnailGenerator_Init(JNIEnv* env,
-                                         const JavaParamRef<jobject>& jobj) {
+                                         const JavaRef<jobject>& jobj) {
   return reinterpret_cast<intptr_t>(new ThumbnailGenerator(jobj));
 }
+
+DEFINE_JNI(ThumbnailGenerator)

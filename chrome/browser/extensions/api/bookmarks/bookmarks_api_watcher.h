@@ -9,23 +9,26 @@
 #include "base/observer_list_types.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "extensions/buildflags/buildflags.h"
 
-#include "content/public/browser/browser_context.h"
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
+namespace content {
+class BrowserContext;
+}
+
+class ExtensionFunction;
 
 namespace extensions {
-class BookmarksFunction;
-class Extension;
 
-// This KeyedService is meant to observe the bookmark api and provide
-// notifications
+// This KeyedService is meant to observe the bookmarks API and provide
+// notifications.
 class BookmarksApiWatcher : public KeyedService {
  public:
   class Observer : public base::CheckedObserver {
    public:
     // Notifies listeners that the bookmark API was invoked.
-    virtual void OnBookmarksApiInvoked(
-        const extensions::Extension* extension,
-        const extensions::BookmarksFunction* func) {}
+    virtual void OnBookmarksApiInvoked(const ExtensionFunction* func) {}
   };
 
   static BookmarksApiWatcher* GetForBrowserContext(
@@ -36,8 +39,7 @@ class BookmarksApiWatcher : public KeyedService {
   BookmarksApiWatcher(const BookmarksApiWatcher&) = delete;
   BookmarksApiWatcher& operator=(const BookmarksApiWatcher&) = delete;
 
-  void NotifyApiInvoked(const extensions::Extension* extension,
-                        const extensions::BookmarksFunction* func);
+  void NotifyApiInvoked(const ExtensionFunction* func);
 
   // Add/remove observer.
   void AddObserver(Observer* observer);

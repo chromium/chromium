@@ -3,18 +3,20 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/bruschetta/bruschetta_uninstaller_view.h"
+
 #include <memory>
 
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_service_factory.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -42,7 +44,7 @@ void BruschettaUninstallerView::Show(Profile* profile,
 
 bool BruschettaUninstallerView::Accept() {
   state_ = State::UNINSTALLING;
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   message_label_->SetText(l10n_util::GetStringUTF16(
       IDS_BRUSCHETTA_UNINSTALLER_UNINSTALLING_MESSAGE));
 
@@ -54,7 +56,7 @@ bool BruschettaUninstallerView::Accept() {
   GetWidget()->UpdateWindowTitle();
   GetWidget()->SetSize(GetWidget()->non_client_view()->GetPreferredSize());
 
-  bruschetta::BruschettaService::GetForProfile(profile_)->RemoveVm(
+  bruschetta::BruschettaServiceFactory::GetForProfile(profile_)->RemoveVm(
       guest_id_,
       base::BindOnce(&BruschettaUninstallerView::UninstallBruschettaFinished,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -92,10 +94,10 @@ BruschettaUninstallerView::BruschettaUninstallerView(Profile* profile,
       l10n_util::GetStringFUTF16(IDS_BRUSCHETTA_UNINSTALLER_TITLE, name);
   SetTitle(title);
   SetButtonLabel(
-      ui::DIALOG_BUTTON_OK,
+      ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(IDS_BRUSCHETTA_UNINSTALLER_UNINSTALL_BUTTON));
-  set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_STANDALONE_BUBBLE_PREFERRED_WIDTH));
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
   views::LayoutProvider* provider = views::LayoutProvider::Get();
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
@@ -117,7 +119,7 @@ BruschettaUninstallerView::~BruschettaUninstallerView() {
 
 void BruschettaUninstallerView::HandleError() {
   state_ = State::ERROR;
-  SetButtons(ui::DIALOG_BUTTON_CANCEL);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kCancel));
   message_label_->SetVisible(true);
   const std::u16string name =
       base::UTF8ToUTF16(bruschetta::GetDisplayName(profile_, guest_id_));

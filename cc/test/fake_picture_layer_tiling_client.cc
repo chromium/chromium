@@ -12,15 +12,30 @@
 #include "base/task/single_thread_task_runner.h"
 #include "cc/test/fake_raster_source.h"
 #include "cc/test/fake_tile_manager.h"
+#include "cc/tiles/picture_layer_tiling_set.h"
 
 namespace cc {
+
+namespace {
+
+void SetupGlobalTileState(GlobalStateThatImpactsTilePriority* state) {
+  state->soft_memory_limit_in_bytes = 100 * 1000 * 1000;
+  state->num_resources_limit = 10000;
+  state->hard_memory_limit_in_bytes = state->soft_memory_limit_in_bytes * 2;
+  state->memory_limit_policy = ALLOW_ANYTHING;
+  state->tree_priority = SAME_PRIORITY_FOR_BOTH_TREES;
+}
+
+}  // namespace
 
 FakePictureLayerTilingClient::FakePictureLayerTilingClient()
     : tile_manager_(new FakeTileManager(&tile_manager_client_)),
       raster_source_(FakeRasterSource::CreateInfiniteFilled()),
       twin_set_(nullptr),
       twin_tiling_(nullptr),
-      has_valid_tile_priorities_(true) {}
+      has_valid_tile_priorities_(true) {
+  SetupGlobalTileState(&global_tile_state_);
+}
 
 FakePictureLayerTilingClient::FakePictureLayerTilingClient(
     viz::ClientResourceProvider* resource_provider,
@@ -36,7 +51,9 @@ FakePictureLayerTilingClient::FakePictureLayerTilingClient(
       raster_source_(FakeRasterSource::CreateInfiniteFilled()),
       twin_set_(nullptr),
       twin_tiling_(nullptr),
-      has_valid_tile_priorities_(true) {}
+      has_valid_tile_priorities_(true) {
+  SetupGlobalTileState(&global_tile_state_);
+}
 
 FakePictureLayerTilingClient::~FakePictureLayerTilingClient() = default;
 
@@ -95,6 +112,9 @@ ScrollOffsetMap FakePictureLayerTilingClient::GetRasterInducingScrollOffsets()
   return ScrollOffsetMap();
 }
 
-void FakePictureLayerTilingClient::OnAllTilesDoneCleared() {}
+const GlobalStateThatImpactsTilePriority&
+FakePictureLayerTilingClient::global_tile_state() const {
+  return global_tile_state_;
+}
 
 }  // namespace cc

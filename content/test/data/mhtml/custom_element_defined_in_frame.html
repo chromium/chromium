@@ -1,0 +1,12 @@
+<style>
+    test-element:not(:defined) {
+        display: none;
+    }
+</style>
+
+<test-element>
+Hidden because not defined outside of frame.
+</test-element>
+
+<iframe src="custom_element_defined.html">
+</iframe>

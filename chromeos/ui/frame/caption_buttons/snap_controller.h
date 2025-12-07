@@ -48,7 +48,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) SnapController {
   enum class SnapRequestSource {
     kSnapButton,
     kWindowLayoutMenu,
-    kFromLacrosSnapButtonOrWindowLayoutMenu,
   };
 
   virtual ~SnapController();

@@ -39,6 +39,7 @@ class BoundSessionRefreshCookieFetcherImpl
       const GURL& cookie_url,
       base::flat_set<std::string> cookie_names,
       bool is_off_the_record_profile,
+      Trigger trigger,
       bound_session_credentials::RotationDebugInfo debug_info);
   ~BoundSessionRefreshCookieFetcherImpl() override;
 
@@ -48,6 +49,8 @@ class BoundSessionRefreshCookieFetcherImpl
       std::optional<std::string> sec_session_challenge_response) override;
   bool IsChallengeReceived() const override;
   std::optional<std::string> TakeSecSessionChallengeResponseIfAny() override;
+  base::flat_set<std::string> GetNonRefreshedCookieNames() override;
+  Trigger GetTrigger() const override;
 
  private:
   friend class BoundSessionRefreshCookieFetcherImplTest;
@@ -83,12 +86,10 @@ class BoundSessionRefreshCookieFetcherImpl
   void HandleBindingKeyAssertionRequired(
       const std::string& challenge_header_value);
   void CompleteRequestAndReportRefreshResult(Result result);
-  void RefreshWithChallenge(const std::string& challenge,
-                            size_t generate_assertion_attempt = 0);
+  void RefreshWithChallenge(const std::string& challenge);
   void OnGenerateBindingKeyAssertion(
       base::ElapsedTimer generate_assertion_timer,
       const std::string& challenge,
-      size_t generate_assertion_attempt,
       base::expected<std::string, SessionBindingHelper::Error>
           assertion_or_error);
 
@@ -113,9 +114,14 @@ class BoundSessionRefreshCookieFetcherImpl
   // GWS-visible Finch experiment.
   const bool is_off_the_record_profile_;
 
+  // What triggered the refresh request. Useful for metrics.
+  const Trigger trigger_;
+
   RefreshCookieCompleteCallback callback_;
 
-  bool expected_cookies_set_ = false;
+  // Subset of `expected_cookie_names_` containing cookies that haven't been
+  // refreshed yet.
+  base::flat_set<std::string> non_refreshed_cookie_names_;
   base::OneShotTimer reported_cookies_notified_timer_;
   bool reported_cookies_notified_ = false;
 

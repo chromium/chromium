@@ -1,0 +1,5 @@
+This is a wdspec test.
+[ERROR] test_timezone_set_override_and_reset
+  setup error: KeyError: 'value'
+Harness: the test ran to completion.
+

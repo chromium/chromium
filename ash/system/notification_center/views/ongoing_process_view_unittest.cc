@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/system/notification_center/views/ongoing_process_view.h"
+
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/system_notification_builder.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
-#include "ash/system/notification_center/views/ongoing_process_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/views_test_utils.h"
@@ -434,6 +436,114 @@ TEST_F(OngoingProcessViewTest, UpdateWithNotification_IconButtons) {
   // The icon buttons should still be visible, as the buttons cannot be removed.
   EXPECT_TRUE(primary_button);
   EXPECT_TRUE(secondary_button);
+}
+
+TEST_F(OngoingProcessViewTest, PillButtonTooltipText) {
+  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+
+  message_center::RichNotificationData data;
+  data.buttons.emplace_back(message_center::ButtonInfo(/*title=*/sample_text));
+
+  auto notification =
+      ash::SystemNotificationBuilder()
+          .SetId("id")
+          .SetCatalogName(NotificationCatalogName::kTestCatalogName)
+          .SetSmallImage(*sample_icon)
+          .SetTitle(sample_text)
+          .SetOptionalFields(data)
+          .Build(
+              /*keep_timestamp=*/false);
+
+  OngoingProcessView* ongoing_process_view = widget->SetContentsView(
+      std::make_unique<OngoingProcessView>(notification));
+
+  auto* pill_button = GetPillButton(ongoing_process_view);
+  EXPECT_TRUE(pill_button);
+
+  EXPECT_EQ(pill_button->GetRenderedTooltipText(gfx::Point()), sample_text);
+
+  pill_button->SetTooltipText(u"");
+  EXPECT_EQ(pill_button->GetRenderedTooltipText(gfx::Point()),
+            pill_button->GetText());
+
+  pill_button->SetText(u"This is Label's Tooltip Text");
+  EXPECT_EQ(pill_button->GetRenderedTooltipText(gfx::Point()),
+            pill_button->GetText());
+
+  pill_button->SetUseLabelAsDefaultTooltip(false);
+  EXPECT_EQ(pill_button->GetRenderedTooltipText(gfx::Point()), u"");
+
+  pill_button->SetTooltipText(sample_text);
+  EXPECT_NE(pill_button->GetRenderedTooltipText(gfx::Point()),
+            pill_button->GetText());
+  EXPECT_EQ(pill_button->GetRenderedTooltipText(gfx::Point()), sample_text);
+}
+
+TEST_F(OngoingProcessViewTest, PillButtonTooltipTextAccessibility) {
+  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+
+  message_center::RichNotificationData data;
+  data.buttons.emplace_back(message_center::ButtonInfo(/*title=*/sample_text));
+
+  auto notification =
+      ash::SystemNotificationBuilder()
+          .SetId("id")
+          .SetCatalogName(NotificationCatalogName::kTestCatalogName)
+          .SetSmallImage(*sample_icon)
+          .SetTitle(sample_text)
+          .SetOptionalFields(data)
+          .Build(
+              /*keep_timestamp=*/false);
+
+  OngoingProcessView* ongoing_process_view = widget->SetContentsView(
+      std::make_unique<OngoingProcessView>(notification));
+
+  auto* pill_button = GetPillButton(ongoing_process_view);
+  EXPECT_TRUE(pill_button);
+
+  ui::AXNodeData node_data;
+  pill_button->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            pill_button->GetRenderedTooltipText(gfx::Point()));
+  EXPECT_NE(
+      node_data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+      pill_button->GetRenderedTooltipText(gfx::Point()));
+
+  pill_button->SetTooltipText(u"");
+  node_data = ui::AXNodeData();
+  pill_button->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            pill_button->GetRenderedTooltipText(gfx::Point()));
+  EXPECT_NE(
+      node_data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+      pill_button->GetRenderedTooltipText(gfx::Point()));
+
+  pill_button->SetText(u"This is Label's Tooltip Text");
+  node_data = ui::AXNodeData();
+  pill_button->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            pill_button->GetRenderedTooltipText(gfx::Point()));
+  EXPECT_NE(
+      node_data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+      pill_button->GetRenderedTooltipText(gfx::Point()));
+
+  pill_button->SetUseLabelAsDefaultTooltip(false);
+  node_data = ui::AXNodeData();
+  pill_button->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_NE(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            pill_button->GetRenderedTooltipText(gfx::Point()));
+  EXPECT_EQ(
+      node_data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+      pill_button->GetRenderedTooltipText(gfx::Point()));
+
+  pill_button->SetTooltipText(sample_text);
+  node_data = ui::AXNodeData();
+  pill_button->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_NE(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            pill_button->GetRenderedTooltipText(gfx::Point()));
+  EXPECT_EQ(
+      node_data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+      pill_button->GetRenderedTooltipText(gfx::Point()));
 }
 
 }  // namespace ash

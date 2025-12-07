@@ -47,6 +47,7 @@ class ThrottledOfflineContentProvider
   void CancelDownload(const ContentId& id) override;
   void PauseDownload(const ContentId& id) override;
   void ResumeDownload(const ContentId& id) override;
+  void ValidateDangerousDownload(const ContentId& id) override;
 
   // Because this class queues updates, a call to Observer::OnItemUpdated might
   // get triggered with the same contents as returned by these getter methods in

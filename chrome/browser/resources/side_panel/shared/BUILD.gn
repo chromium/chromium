@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//ui/webui/resources/tools/build_webui.gni")
+import("//ui/webui/webui_features.gni")
 
 assert(!is_android)
 
@@ -10,10 +11,14 @@ build_webui("build") {
   grd_prefix = "side_panel_shared"
   grd_resource_path_prefix = "shared"
 
-  web_component_files = [
+  ts_files = [
+    "sp_empty_state.html.ts",
     "sp_empty_state.ts",
+    "sp_footer.html.ts",
     "sp_footer.ts",
+    "sp_heading.html.ts",
     "sp_heading.ts",
+    "sp_list_item_badge.html.ts",
     "sp_list_item_badge.ts",
   ]
 
@@ -21,6 +26,7 @@ build_webui("build") {
     "sp_empty_state.css",
     "sp_footer.css",
     "sp_heading.css",
+    "sp_list_item_badge.css",
     "sp_shared_style.css",
     "sp_shared_style_lit.css",
     "sp_shared_vars.css",
@@ -28,9 +34,8 @@ build_webui("build") {
 
   icons_html_files = [ "sp_icons.html" ]
 
-  html_to_wrapper_template = "detect"
-
   ts_composite = true
+  ts_tsconfig_base = "//tools/typescript/tsconfig_base_lit.json"
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",
@@ -41,4 +46,5 @@ build_webui("build") {
   # Used by both trusted and untrusted hosts so all imports in this folder
   # should be scheme-relative.
   webui_context_type = "relative"
+  generate_code_cache = enable_webui_generate_code_cache
 }

@@ -1,0 +1,22 @@
+<style include="settings-shared site-settings-shared"></style>
+<settings-subpage page-title="$i18n{siteSettingsSmartCardReaders}"
+    search-label="$i18n{siteSettingsAllSitesSearch}"
+    route-path$="[[routePath]]">
+  <div class="content-settings-header secondary">
+    $i18n{siteSettingsSmartCardReadersDescription}
+  </div>
+  <settings-category-default-radio-group
+      category="[[contentSettingsTypeEnum_.SMART_CARD_READERS]]"
+      description=
+          "$i18n{siteSettingsSmartCardReadersDefaultDescription}"
+      allow-option-label=
+          "$i18n{siteSettingsSmartCardReadersAllowed}"
+      allow-option-icon="privacy:smart-card-reader"
+      block-option-label="$i18n{siteSettingsSmartCardReadersBlocked}"
+      block-option-icon="privacy:smart-card-reader-off">
+  </settings-category-default-radio-group>
+  <chooser-exception-list
+      category="[[contentSettingsTypeEnum_.SMART_CARD_READERS]]"
+      chooser-type="[[chooserTypeEnum_.SMART_CARD_READERS_DEVICES]]">
+  </chooser-exception-list>
+</settings-subpage>

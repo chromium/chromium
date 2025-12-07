@@ -14,6 +14,7 @@ DISABLE_DIRECT_COMPOSITION_VIDEO_OVERLAYS =\
     '--disable_direct_composition_video_overlays=1'
 DISABLE_DIRECT_COMPOSITION_VP_SCALING = '--disable_vp_scaling=1'
 DISABLE_DOMAIN_BLOCKING_FOR_3D_APIS = '--disable-domain-blocking-for-3d-apis'
+DISABLE_DIRECT_SEARCH_ENGINE_PREWARM = '--disable-features=Prewarm'
 DISABLE_D3D11_VIDEO_DECODER = '--disable_d3d11_video_decoder=1'
 DISABLE_GPU = '--disable-gpu'
 DISABLE_GPU_COMPOSITING = '--disable-gpu-compositing'
@@ -25,8 +26,6 @@ ENABLE_DIRECT_COMPOSITION_VIDEO_OVERLAYS =\
     '--enable-direct-composition-video-overlays'
 ENABLE_DIRECT_COMPOSITION_VP_SCALING = '--disable_vp_scaling=0'
 ENABLE_DXVA_VIDEO_DECODER = '--enable-features=DXVAVideoDecoding'
-ENABLE_PLATFORM_HEVC_ENCODER_SUPPORT =\
-    '--enable-features=PlatformHEVCEncoderSupport'
 ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES =\
     '--enable-experimental-web-platform-features'
 ENABLE_GPU_BENCHMARKING = '--enable-gpu-benchmarking'
@@ -36,8 +35,3 @@ ENSURE_FORCED_COLOR_PROFILE = '--ensure-forced-color-profile'
 FORCE_BROWSER_CRASH_ON_GPU_CRASH = '--force-browser-crash-on-gpu-crash'
 FORCE_COLOR_PROFILE_SRGB = '--force-color-profile=srgb'
 TEST_TYPE_GPU = '--test-type=gpu'
-
-# Combinations of flags for specific purpose.
-ENABLE_WEBGPU_FOR_TESTING = [
-    '--enable-unsafe-webgpu', '--enable-webgpu-developer-features'
-]

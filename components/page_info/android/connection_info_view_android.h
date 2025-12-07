@@ -25,23 +25,23 @@ class PageInfoClient;
 // connection and certificate information for the website.
 class ConnectionInfoViewAndroid : public PageInfoUI {
  public:
-  ConnectionInfoViewAndroid(JNIEnv* env,
-                            jobject java_page_info,
-                            content::WebContents* web_contents);
+  ConnectionInfoViewAndroid(
+      JNIEnv* env,
+      const base::android::JavaRef<jobject>& java_page_info,
+      content::WebContents* web_contents);
 
   ConnectionInfoViewAndroid(const ConnectionInfoViewAndroid&) = delete;
   ConnectionInfoViewAndroid& operator=(const ConnectionInfoViewAndroid&) =
       delete;
 
   ~ConnectionInfoViewAndroid() override;
-  void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void Destroy(JNIEnv* env);
 
   // Revokes any current user exceptions for bypassing SSL error interstitials
   // on this page.
   void ResetCertDecisions(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jobject>& java_web_contents);
+      const base::android::JavaRef<jobject>& java_web_contents);
 
   // PageInfoUI implementations.
   void SetIdentityInfo(const IdentityInfo& identity_info) override;

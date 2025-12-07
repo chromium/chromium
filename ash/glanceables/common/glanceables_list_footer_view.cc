@@ -13,7 +13,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
 #include "base/check_op.h"
-#include "base/functional/callback_forward.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/vector_icons/vector_icons.h"
@@ -31,7 +30,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_types.h"
-#include "ui/views/metadata/view_factory_internal.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
@@ -68,7 +67,7 @@ class SeeAllButton : public views::LabelButton {
         ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon,
                                        cros_tokens::kCrosSysOnSurface));
     SetImageLabelSpacing(kSeeAllIconLabelSpacing);
-    SetTextColorId(views::Button::STATE_NORMAL, cros_tokens::kCrosSysOnSurface);
+    SetTextColor(views::Button::STATE_NORMAL, cros_tokens::kCrosSysOnSurface);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                           *label());
     views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysFocusRing);
@@ -92,7 +91,7 @@ GlanceablesListFooterView::GlanceablesListFooterView(
   title_label_ = AddChildView(
       views::Builder<views::Label>()
           .SetID(base::to_underlying(GlanceablesViewId::kListFooterTitleLabel))
-          .SetEnabledColorId(cros_tokens::kCrosSysSecondary)
+          .SetEnabledColor(cros_tokens::kCrosSysSecondary)
           .SetFontList(typography_provider->ResolveTypographyToken(
               TypographyToken::kCrosBody2))
           .SetLineHeight(typography_provider->ResolveLineHeight(
@@ -114,8 +113,8 @@ void GlanceablesListFooterView::SetTitleText(const std::u16string& title_text) {
 
 void GlanceablesListFooterView::SetSeeAllAccessibleName(
     const std::u16string& see_all_accessible_name) {
-  see_all_button_->GetViewAccessibility().SetProperties(
-      ax::mojom::Role::kLink, see_all_accessible_name);
+  see_all_button_->GetViewAccessibility().SetRole(ax::mojom::Role::kLink);
+  see_all_button_->GetViewAccessibility().SetName(see_all_accessible_name);
 }
 
 BEGIN_METADATA(GlanceablesListFooterView)

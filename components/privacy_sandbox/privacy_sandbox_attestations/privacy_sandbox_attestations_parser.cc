@@ -3,13 +3,15 @@
 // found in the LICENSE file.
 
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_parser.h"
-#include "components/privacy_sandbox/privacy_sandbox_attestations/proto/privacy_sandbox_attestations.pb.h"
 
 #include <string>
 
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/proto/privacy_sandbox_attestations.pb.h"
 #include "net/base/schemeful_site.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 namespace {
@@ -44,6 +46,15 @@ void InsertAPI(
           privacy_sandbox::PrivacySandboxAttestationsGatedAPI::kSharedStorage);
       return;
     }
+    case privacy_sandbox::FENCED_STORAGE_READ: {
+      if (base::FeatureList::IsEnabled(
+              blink::features::kFencedFramesLocalUnpartitionedDataAccess)) {
+        allowed_api_set.Put(
+            privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
+                kFencedStorageRead);
+      }
+      return;
+    }
     case privacy_sandbox::UNKNOWN: {
       return;
     }
@@ -57,7 +68,7 @@ void InsertAPI(
 namespace privacy_sandbox {
 
 std::optional<PrivacySandboxAttestationsMap> ParseAttestationsFromString(
-    std::string& input) {
+    const std::string& input) {
   PrivacySandboxAttestationsProto proto;
 
   // Parse the istream into a proto for the attestations message format.
@@ -108,7 +119,7 @@ std::optional<PrivacySandboxAttestationsMap> ParseAttestationsFromString(
 
   // Convert the vector into a flat map (which prefers initialization with the
   // entire data structure, not incremental inserts) and return.
-  return PrivacySandboxAttestationsMap(site_attestations_vector);
+  return PrivacySandboxAttestationsMap(std::move(site_attestations_vector));
 }
 
 }  // namespace privacy_sandbox

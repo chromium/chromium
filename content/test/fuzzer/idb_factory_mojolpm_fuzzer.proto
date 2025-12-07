@@ -1,0 +1,56 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Message format for the MojoLPM fuzzer for the IDBFactory interface.
+
+syntax = "proto2";
+
+package content.fuzzing.idb_factory.proto;
+
+import "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.mojolpm.proto";
+
+// Bind a new IDBFactory remote.
+message NewIDBFactoryAction {
+  required uint32 id = 1;
+}
+
+// Post a task on the specified thread's task runner, continuing when complete.
+// This is not intended to create a specific ordering but to allow the fuzzer to
+// delay a later task until previous tasks have completed.
+message RunThreadAction {
+  enum ThreadId {
+    UI = 0;
+    IO = 1;
+    Bucket = 2;
+  }
+  required ThreadId id = 1;
+}
+
+// Actions that can be performed by the fuzzer.
+message Action {
+  oneof action {
+    NewIDBFactoryAction new_idb_factory = 1;
+    RunThreadAction run_thread = 2;
+    mojolpm.blink.mojom.IDBFactory.RemoteAction idb_factory_remote_action = 3;
+    mojolpm.blink.mojom.IDBDatabase.AssociatedRemoteAction
+        idb_database_associated_remote_action = 4;
+    mojolpm.blink.mojom.IDBTransaction.AssociatedRemoteAction
+        idb_transaction_associated_remote_action = 5;
+  }
+}
+
+// Sequence provides a level of indirection which allows Testcase to compactly
+// express repeated sequences of actions.
+message Sequence {
+  repeated uint32 action_indexes = 1 [packed = true];
+}
+
+// Testcase is the top-level message type interpreted by the fuzzer.
+message Testcase {
+  repeated Action actions = 1;
+  repeated Sequence sequences = 2;
+  repeated uint32 sequence_indexes = 3 [packed = true];
+  required bool in_memory = 4;
+  required bool use_sqlite = 5;
+}

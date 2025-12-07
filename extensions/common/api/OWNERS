@@ -1,8 +1,10 @@
 per-file *.json=set noparent
 per-file *.idl=set noparent
+per-file *.webidl=set noparent
 
 per-file *.json=file://extensions/common/api/API_OWNERS
 per-file *.idl=file://extensions/common/api/API_OWNERS
+per-file *.webidl=file://extensions/common/api/API_OWNERS
 
 per-file *view*.json=file://components/guest_view/OWNERS
 
@@ -13,4 +15,3 @@ per-file *.mojom=file://ipc/SECURITY_OWNERS
 # New APIs or changes to existing APIs should be approved by an
 # extensions OWNER from //extensions/common/api/API_OWNERS.
 per-file automation*.idl=dtseng@chromium.org
-per-file automation*.idl=nektar@chromium.org

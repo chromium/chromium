@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_DEVICE_DELEGATE_OBSERVER_H_
 
 #include "base/containers/flat_map.h"
-#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"

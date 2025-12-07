@@ -87,7 +87,7 @@ TEST_F(URLVisitAggregatesSegmentationMetricsTransformerTest, Transform) {
                                kNumUserInteractionMetrics *
                                kSampleAggregatesCount);
   EXPECT_CALL(*database_client_, ProcessFeatures(_, _, _))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&counts](
               const segmentation_platform::proto::SegmentationModelMetadata&
                   metadata,
@@ -97,7 +97,7 @@ TEST_F(URLVisitAggregatesSegmentationMetricsTransformerTest, Transform) {
             std::move(callback).Run(
                 segmentation_platform::DatabaseClient::ResultStatus::kSuccess,
                 counts);
-          }));
+          });
 
   std::vector<URLVisitAggregate> input_sample_aggregates = {};
   for (size_t i = 0; i < kSampleAggregatesCount; i++) {

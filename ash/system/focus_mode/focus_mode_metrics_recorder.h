@@ -39,7 +39,9 @@ class ASH_EXPORT FocusModeMetricsRecorder
   // session completing.
   void RecordHistogramsOnEnd();
 
-  void RecordHistogramOnEndingMoment(
+  // TODO: Rename these
+  void RecordDNDHistogram();
+  void RecordEndingMomentBubbleHistogram(
       focus_mode_histogram_names::EndingMomentBubbleClosedReason reason);
 
  private:
@@ -51,6 +53,12 @@ class ASH_EXPORT FocusModeMetricsRecorder
 
   // True if the user turns DND on or off in an active session.
   bool has_user_interactions_on_dnd_in_focus_session_ = false;
+
+  // True if DNDStateOnFocusEndHistogram has been triggered already. This is to
+  // prevent double recording since we can record this either on the ending
+  // moment timer or the session being reset.
+  bool has_recorded_dnd_state_histogram_ = false;
+
   const base::TimeDelta initial_session_duration_;
 
   // True if a soundscape playlist was played during this session.

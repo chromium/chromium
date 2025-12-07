@@ -22,6 +22,7 @@
 #include "chrome/browser/prefs/profile_pref_store_manager.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_content_filters_service_factory.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -65,7 +66,7 @@ void CreateProfileReadme(const base::FilePath& profile_path) {
 void RegisterProfilePrefs(bool is_signin_profile,
                           const std::string& locale,
                           user_prefs::PrefRegistrySyncable* pref_registry) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (is_signin_profile)
     RegisterSigninProfilePrefs(pref_registry, GetCountry());
   else
@@ -78,7 +79,7 @@ void RegisterProfilePrefs(bool is_signin_profile,
       ->RegisterProfilePrefsForServices(pref_registry);
 }
 
-std::unique_ptr<sync_preferences::PrefServiceSyncable> CreatePrefService(
+std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateProfilePrefService(
     scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry,
     PrefStore* extension_pref_store,
     policy::PolicyService* policy_service,
@@ -87,17 +88,17 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreatePrefService(
         pref_validation_delegate,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     SimpleFactoryKey* key,
-    const base::FilePath& path,
-    bool async_prefs) {
+    const base::FilePath& profile_path,
+    bool async_prefs,
+    os_crypt_async::OSCryptAsync* os_crypt_async) {
   supervised_user::SupervisedUserSettingsService* supervised_user_settings =
-      nullptr;
-  supervised_user_settings =
       SupervisedUserSettingsServiceFactory::GetForKey(key);
-  supervised_user_settings->Init(path, io_task_runner, !async_prefs);
-  {
-    return chrome_prefs::CreateProfilePrefs(
-        path, std::move(pref_validation_delegate), policy_service,
-        supervised_user_settings, extension_pref_store, pref_registry,
-        browser_policy_connector, async_prefs, io_task_runner);
-  }
+  supervised_user::SupervisedUserContentFiltersService*
+      content_filters_service =
+          SupervisedUserContentFiltersServiceFactory::GetForKey(key);
+  supervised_user_settings->Init(profile_path, io_task_runner, !async_prefs);
+  return chrome_prefs::CreateProfilePrefs(
+      profile_path, std::move(pref_validation_delegate), policy_service,
+      supervised_user_settings, content_filters_service, extension_pref_store, pref_registry,
+      browser_policy_connector, async_prefs, io_task_runner, os_crypt_async);
 }

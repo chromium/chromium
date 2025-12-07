@@ -7,22 +7,22 @@
 #include <optional>
 
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
-#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/test/child_logged_in_browser_test_mixin.h"
+#include "chrome/browser/ash/test/regular_logged_in_browser_test_mixin.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/signin_promo.h"
@@ -31,23 +31,22 @@
 #include "chrome/browser/ui/webui/ash/edu_coexistence/edu_coexistence_login_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/ash/components/standalone_browser/feature_refs.h"
-#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
+#include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "components/account_manager_core/account_manager_facade.h"
-#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/account_manager_core/mock_account_manager_facade.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/user_manager/known_user.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_web_ui.h"
 #include "google_apis/gaia/fake_gaia.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -69,15 +68,10 @@ constexpr char kPasswordKey[] = "password";
 constexpr char kGaiaIdKey[] = "gaiaId";
 constexpr char kIsAvailableInArcKey[] = "isAvailableInArc";
 constexpr char kSecondaryAccount1Email[] = "secondary1@gmail.com";
-constexpr char kSecondaryAccount2Email[] = "secondary2@gmail.com";
-constexpr char kSecondaryAccount3Email[] = "secondary3@gmail.com";
 constexpr char kSecondaryAccountOAuthCode[] = "fake_oauth_code";
 constexpr char kSecondaryAccountRefreshToken[] = "fake_refresh_token";
 constexpr char kCompleteLoginMessage[] = "completeLogin";
 constexpr char kGetDeviceIdMessage[] = "getDeviceId";
-constexpr char kMakeAvailableInArcMessage[] = "makeAvailableInArc";
-constexpr char kGetAccountsNotAvailableInArcMessage[] =
-    "getAccountsNotAvailableInArc";
 constexpr char kHandleFunctionName[] = "handleFunctionName";
 constexpr char kConsentLoggedCallback[] = "consent-logged-callback";
 constexpr char kToSVersion[] = "12345678";
@@ -104,7 +98,7 @@ std::ostream& operator<<(std::ostream& stream,
 }
 
 DeviceAccountInfo GetGaiaDeviceAccountInfo() {
-  return {signin::GetTestGaiaIdForEmail("primary@gmail.com") /*id*/,
+  return {signin::GetTestGaiaIdForEmail("primary@gmail.com").ToString() /*id*/,
           "primary@gmail.com" /*email*/,
           user_manager::UserType::kRegular /*user_type*/,
           account_manager::AccountType::kGaia /*account_type*/,
@@ -123,7 +117,8 @@ base::Value GetCompleteLoginArgs(const std::string& email) {
   base::Value::Dict dict;
   dict.Set(kEmailKey, base::Value(email));
   dict.Set(kPasswordKey, base::Value("fake password"));
-  dict.Set(kGaiaIdKey, base::Value(signin::GetTestGaiaIdForEmail(email)));
+  dict.Set(kGaiaIdKey,
+           base::Value(signin::GetTestGaiaIdForEmail(email).ToString()));
   dict.Set(kIsAvailableInArcKey, base::Value(true));
   return base::Value(std::move(dict));
 }
@@ -167,14 +162,35 @@ class MockAccountAppsAvailabilityObserver
               (override));
 };
 
+std::unique_ptr<InProcessBrowserTestMixin> CreateLoginMixin(
+    const DeviceAccountInfo& info,
+    InProcessBrowserTestMixinHost* host) {
+  switch (info.user_type) {
+    case user_manager::UserType::kRegular:
+      return std::make_unique<ash::RegularLoggedInBrowserTestMixin>(
+          host, AccountId::FromUserEmailGaiaId(info.email, GaiaId(info.id)));
+    case user_manager::UserType::kChild:
+      return std::make_unique<ash::ChildLoggedInBrowserTestMixin>(
+          host, AccountId::FromUserEmailGaiaId(info.email, GaiaId(info.id)));
+    case user_manager::UserType::kGuest:
+    case user_manager::UserType::kPublicAccount:
+    case user_manager::UserType::kKioskChromeApp:
+    case user_manager::UserType::kKioskWebApp:
+    case user_manager::UserType::kKioskIWA:
+    case user_manager::UserType::kKioskArcvmApp:
+      NOTREACHED();
+  }
+}
+
 }  // namespace
 
 class InlineLoginHandlerTest
-    : public InProcessBrowserTest,
+    : public MixinBasedInProcessBrowserTest,
       public testing::WithParamInterface<DeviceAccountInfo> {
  public:
   InlineLoginHandlerTest()
-      : embedded_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+      : login_mixin_(CreateLoginMixin(GetDeviceAccountInfo(), &mixin_host_)),
+        embedded_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     embedded_test_server_.RegisterRequestHandler(base::BindRepeating(
         &FakeGaia::HandleRequest, base::Unretained(&fake_gaia_)));
   }
@@ -182,10 +198,12 @@ class InlineLoginHandlerTest
 
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server_.InitializeAndListen());
-    InProcessBrowserTest::SetUp();
+    MixinBasedInProcessBrowserTest::SetUp();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
+
     // Configure embedded test server.
     const GURL& base_url = embedded_test_server_.base_url();
     command_line->AppendSwitchASCII(::switches::kGaiaUrl, base_url.spec());
@@ -195,48 +213,38 @@ class InlineLoginHandlerTest
     fake_gaia_.Initialize();
   }
 
-  void SetUpInProcessBrowserTestFixture() override {
-    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    MixinBasedInProcessBrowserTest::SetUpLocalStatePrefService(local_state);
 
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-                &InlineLoginHandlerTest::OnWillCreateBrowserContextServices,
-                base::Unretained(this)));
+    // Setup a default device id for the primary user.
+    const auto& info = GetDeviceAccountInfo();
+    user_manager::KnownUser known_user(local_state);
+    known_user.SetDeviceId(
+        AccountId::FromUserEmailGaiaId(info.email, GaiaId(info.id)),
+        kFakeDeviceId);
   }
 
   void SetUpOnMainThread() override {
+    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
+
     embedded_test_server_.StartAcceptingConnections();
 
-    // Setup user.
-    auto user_manager = std::make_unique<FakeChromeUserManager>();
-    const user_manager::User* user;
+    identity_test_env_profile_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
+    AccountInfo account_info =
+        identity_test_env_profile_adaptor_->identity_test_env()
+            ->MakePrimaryAccountAvailable(GetDeviceAccountInfo().email,
+                                          signin::ConsentLevel::kSignin);
+
     if (GetDeviceAccountInfo().user_type == user_manager::UserType::kChild) {
-      user = user_manager->AddChildUser(AccountId::FromUserEmailGaiaId(
-          GetDeviceAccountInfo().email, GetDeviceAccountInfo().id));
       profile()->GetPrefs()->SetString(prefs::kSupervisedUserId,
-                                       GetDeviceAccountInfo().id);
+                                       supervised_user::kChildAccountSUID);
       // This is required for Child users, otherwise an account cannot be added.
       edu_handler_ =
           std::make_unique<EduCoexistenceLoginHandler>(base::DoNothing());
       edu_handler_->set_web_ui_for_test(web_ui());
       edu_handler_->RegisterMessages();
-    } else {
-      user = user_manager->AddUser(AccountId::FromUserEmailGaiaId(
-          GetDeviceAccountInfo().email, GetDeviceAccountInfo().id));
     }
-    primary_account_id_ = user->GetAccountId();
-    user_manager->LoginUser(primary_account_id_);
-    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(user_manager));
-
-    ProfileHelper::Get()->SetUserToProfileMappingForTesting(user, profile());
-
-    identity_test_env_profile_adaptor_ =
-        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
-    identity_test_env_profile_adaptor_->identity_test_env()
-        ->MakePrimaryAccountAvailable(GetDeviceAccountInfo().email,
-                                      signin::ConsentLevel::kSignin);
 
     // Setup web ui with cookies.
     web_ui_.set_web_contents(web_contents());
@@ -256,7 +264,7 @@ class InlineLoginHandlerTest
 
     // Setup fake Gaia.
     FakeGaia::Configuration params;
-    params.email = kSecondaryAccount1Email;
+    params.emails = {kSecondaryAccount1Email};
     params.refresh_token = kSecondaryAccountRefreshToken;
     params.auth_code = kSecondaryAccountOAuthCode;
     fake_gaia_.UpdateConfiguration(params);
@@ -269,18 +277,24 @@ class InlineLoginHandlerTest
     base::RunLoop().RunUntilIdle();
   }
 
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    MixinBasedInProcessBrowserTest::SetUpBrowserContextKeyedServices(context);
     IdentityTestEnvironmentProfileAdaptor::
         SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+    if (GetDeviceAccountInfo().user_type == user_manager::UserType::kChild) {
+      Profile::FromBrowserContext(context)
+          ->GetProfilePolicyConnector()
+          ->OverrideIsManagedForTesting(true);
+    }
   }
 
   void TearDownOnMainThread() override {
     handler_.reset();
-    edu_handler_.reset();
     identity_test_env_profile_adaptor_.reset();
+    edu_handler_.reset();
     base::RunLoop().RunUntilIdle();
-    GetFakeUserManager()->RemoveUserFromList(primary_account_id_);
-    user_manager_enabler_.reset();
+    MixinBasedInProcessBrowserTest::TearDownOnMainThread();
   }
 
   void CompleteConsentLogForChildUser(const std::string& secondary_email) {
@@ -317,11 +331,6 @@ class InlineLoginHandlerTest
     return call_data.arg3()->GetString();
   }
 
-  FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<FakeChromeUserManager*>(
-        user_manager::UserManager::Get());
-  }
-
   DeviceAccountInfo GetDeviceAccountInfo() const { return GetParam(); }
 
   content::WebContents* web_contents() {
@@ -336,16 +345,19 @@ class InlineLoginHandlerTest
     return identity_test_env_profile_adaptor_->identity_test_env();
   }
 
-  const AccountId& primary_account_id() { return primary_account_id_; }
+  const AccountId& primary_account_id() {
+    return user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId();
+  }
 
  private:
+  // Mixin structure to set up a user with the appropriate type.
+  std::unique_ptr<InProcessBrowserTestMixin> login_mixin_;
+
   std::unique_ptr<TestInlineLoginHandler> handler_;
   std::unique_ptr<EduCoexistenceLoginHandler> edu_handler_;
   content::TestWebUI web_ui_;
   net::EmbeddedTestServer embedded_test_server_;
   FakeGaia fake_gaia_;
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
-  AccountId primary_account_id_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
   base::CallbackListSubscription create_services_subscription_;
@@ -356,7 +368,8 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTest, NewAccountAdditionSuccess) {
   base::ScopedObservation<account_manager::AccountManagerFacade,
                           account_manager::AccountManagerFacade::Observer>
       observation{&observer};
-  observation.Observe(::GetAccountManagerFacade(profile()->GetPath().value()));
+  observation.Observe(AccountManagerFactory::Get()->GetAccountManagerFacade(
+      profile()->GetPath().value()));
 
   // Call "completeLogin".
   base::Value::List args;
@@ -381,7 +394,8 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTest, PrimaryReauthenticationSuccess) {
   base::ScopedObservation<account_manager::AccountManagerFacade,
                           account_manager::AccountManagerFacade::Observer>
       observation{&observer};
-  observation.Observe(::GetAccountManagerFacade(profile()->GetPath().value()));
+  observation.Observe(AccountManagerFactory::Get()->GetAccountManagerFacade(
+      profile()->GetPath().value()));
 
   // Call "completeLogin".
   base::Value::List args;
@@ -510,213 +524,4 @@ INSTANTIATE_TEST_SUITE_P(InlineLoginHandlerTestSuite,
                          InlineLoginHandlerTest,
                          ::testing::Values(GetGaiaDeviceAccountInfo(),
                                            GetChildDeviceAccountInfo()));
-
-class InlineLoginHandlerTestWithArcRestrictions
-    : public InlineLoginHandlerTest {
- public:
-  InlineLoginHandlerTestWithArcRestrictions() {
-    auto lacros = ash::standalone_browser::GetFeatureRefs();
-    lacros.push_back(
-        ash::standalone_browser::features::kLacrosForSupervisedUsers);
-    feature_list_.InitWithFeatures(/*enabled=*/lacros, /*disabled=*/{});
-    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
-        ash::switches::kEnableLacrosForTesting);
-  }
-
-  ~InlineLoginHandlerTestWithArcRestrictions() override = default;
-
-  void SetUpOnMainThread() override {
-    if (browser() == nullptr) {
-      // Create a new Ash browser window so test code using browser() can work
-      // even when Lacros is the only browser.
-      // TODO(crbug.com/40270051): Remove uses of browser() from such tests.
-      chrome::NewEmptyWindow(ProfileManager::GetActiveUserProfile());
-      SelectFirstBrowser();
-    }
-    InlineLoginHandlerTest::SetUpOnMainThread();
-    // In-session account addition happens when `AccountAppsAvailability` is
-    // already initialized.
-    EXPECT_TRUE(AccountAppsAvailabilityFactory::GetForProfile(profile())
-                    ->IsInitialized());
-  }
-
-  void AddAccount(const std::string& email, bool is_available_in_arc) {
-    account_manager::MockAccountManagerFacadeObserver observer;
-    base::ScopedObservation<account_manager::AccountManagerFacade,
-                            account_manager::AccountManagerFacade::Observer>
-        observation{&observer};
-    observation.Observe(
-        ::GetAccountManagerFacade(profile()->GetPath().value()));
-    auto* account_apps_availability =
-        AccountAppsAvailabilityFactory::GetForProfile(profile());
-
-    base::test::TestFuture<void> future;
-    EXPECT_CALL(observer, OnAccountUpserted(AccountEmailEq(email)))
-        .WillOnce(testing::DoAll(
-            base::test::RunOnceClosure(future.GetCallback()),
-            [account_apps_availability,
-             is_available_in_arc](const account_manager::Account& account) {
-              account_apps_availability->SetIsAccountAvailableInArc(
-                  account, is_available_in_arc);
-            }));
-    identity_test_env()->MakeAccountAvailable(email);
-    EXPECT_TRUE(future.Wait());
-  }
-
-  bool ValuesListContainAccount(const base::Value::List& values,
-                                const std::string& email) {
-    return ValuesListGetAccount(values, email).has_value();
-  }
-
-  std::optional<base::Value> ValuesListGetAccount(
-      const base::Value::List& values,
-      const std::string& email) {
-    for (const base::Value& value : values) {
-      const std::string* email_val = value.GetDict().FindString("email");
-      EXPECT_TRUE(email_val != nullptr);
-      if (*email_val == email)
-        return value.Clone();
-    }
-    return std::nullopt;
-  }
-
-  const base::Value::List& CallGetAccountsNotAvailableInArc() {
-    // Call "getAccountsNotAvailableInArc".
-    base::Value::List args;
-    args.Append(kHandleFunctionName);
-    web_ui()->HandleReceivedMessage(kGetAccountsNotAvailableInArcMessage, args);
-    base::RunLoop().RunUntilIdle();
-
-    const content::TestWebUI::CallData& call_data =
-        *web_ui()->call_data().back();
-    EXPECT_EQ("cr.webUIResponse", call_data.function_name());
-    EXPECT_EQ(kHandleFunctionName, call_data.arg1()->GetString());
-    EXPECT_TRUE(call_data.arg2()->GetBool());
-
-    // Get results from JS callback.
-    return call_data.arg3()->GetList();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-  base::test::ScopedCommandLine scoped_command_line_;
-};
-
-IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTestWithArcRestrictions,
-                       NewAccountAdditionSuccess) {
-  account_manager::MockAccountManagerFacadeObserver observer;
-  base::ScopedObservation<account_manager::AccountManagerFacade,
-                          account_manager::AccountManagerFacade::Observer>
-      account_manager_facade_observation{&observer};
-  account_manager_facade_observation.Observe(
-      ::GetAccountManagerFacade(profile()->GetPath().value()));
-
-  MockAccountAppsAvailabilityObserver apps_availability_observer;
-  base::ScopedObservation<AccountAppsAvailability,
-                          AccountAppsAvailability::Observer>
-      apps_availability_observation{&apps_availability_observer};
-  apps_availability_observation.Observe(
-      AccountAppsAvailabilityFactory::GetForProfile(profile()));
-
-  // Call "completeLogin".
-  base::Value::List args;
-  args.Append(GetCompleteLoginArgs(kSecondaryAccount1Email));
-  web_ui()->HandleReceivedMessage(kCompleteLoginMessage, args);
-
-  if (GetDeviceAccountInfo().user_type == user_manager::UserType::kChild) {
-    // Consent logging is required for secondary accounts.
-    CompleteConsentLogForChildUser(kSecondaryAccount1Email);
-  }
-
-  // Wait until account is added.
-  base::test::TestFuture<void> future;
-  EXPECT_CALL(observer,
-              OnAccountUpserted(AccountEmailEq(kSecondaryAccount1Email)))
-      .WillOnce(base::test::RunOnceClosure(future.GetCallback()));
-  EXPECT_TRUE(future.Wait());
-
-  // Make sure that account was added to ARC.
-  base::test::TestFuture<void> future2;
-  EXPECT_CALL(apps_availability_observer,
-              OnAccountAvailableInArc(AccountEmailEq(kSecondaryAccount1Email)))
-      .WillOnce(base::test::RunOnceClosure(future2.GetCallback()));
-  EXPECT_TRUE(future2.Wait());
-}
-
-IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTestWithArcRestrictions,
-                       PrimaryReauthenticationSuccess) {
-  account_manager::MockAccountManagerFacadeObserver observer;
-  base::ScopedObservation<account_manager::AccountManagerFacade,
-                          account_manager::AccountManagerFacade::Observer>
-      account_manager_facade_observation{&observer};
-  account_manager_facade_observation.Observe(
-      ::GetAccountManagerFacade(profile()->GetPath().value()));
-
-  MockAccountAppsAvailabilityObserver apps_availability_observer;
-  base::ScopedObservation<AccountAppsAvailability,
-                          AccountAppsAvailability::Observer>
-      apps_availability_observation{&apps_availability_observer};
-  apps_availability_observation.Observe(
-      AccountAppsAvailabilityFactory::GetForProfile(profile()));
-
-  // Call "completeLogin".
-  base::Value::List args;
-  args.Append(GetCompleteLoginArgs(GetDeviceAccountInfo().email));
-  web_ui()->HandleReceivedMessage(kCompleteLoginMessage, args);
-
-  // Wait until account is added.
-  base::test::TestFuture<void> future;
-  EXPECT_CALL(observer,
-              OnAccountUpserted(AccountEmailEq(GetDeviceAccountInfo().email)))
-      .WillOnce(base::test::RunOnceClosure(future.GetCallback()));
-  EXPECT_TRUE(future.Wait());
-
-  // Make sure that ARC availability didn't change for account.
-  EXPECT_CALL(apps_availability_observer, OnAccountAvailableInArc).Times(0);
-  EXPECT_CALL(apps_availability_observer, OnAccountUnavailableInArc).Times(0);
-}
-
-IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTestWithArcRestrictions,
-                       GetAccountsNotAvailableInArc) {
-  AddAccount(kSecondaryAccount1Email, /*is_available_in_arc=*/true);
-  AddAccount(kSecondaryAccount2Email, /*is_available_in_arc=*/false);
-  AddAccount(kSecondaryAccount3Email, /*is_available_in_arc=*/false);
-
-  // Call "getAccountsNotAvailableInArc".
-  const base::Value::List& result = CallGetAccountsNotAvailableInArc();
-  // Two accounts are not available in ARC.
-  EXPECT_EQ(2u, result.size());
-  EXPECT_FALSE(ValuesListContainAccount(result, kSecondaryAccount1Email));
-  EXPECT_TRUE(ValuesListContainAccount(result, kSecondaryAccount2Email));
-  EXPECT_TRUE(ValuesListContainAccount(result, kSecondaryAccount3Email));
-}
-
-IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTestWithArcRestrictions,
-                       MakeAvailableInArc) {
-  AddAccount(kSecondaryAccount1Email, /*is_available_in_arc=*/true);
-  AddAccount(kSecondaryAccount2Email, /*is_available_in_arc=*/false);
-
-  // Call "getAccountsNotAvailableInArc".
-  const base::Value::List& result = CallGetAccountsNotAvailableInArc();
-  // One account is not available in ARC.
-  EXPECT_EQ(1u, result.size());
-  EXPECT_FALSE(ValuesListContainAccount(result, kSecondaryAccount1Email));
-  EXPECT_TRUE(ValuesListContainAccount(result, kSecondaryAccount2Email));
-
-  // Call "makeAvailableInArc".
-  base::Value::List args_1;
-  args_1.Append(ValuesListGetAccount(result, kSecondaryAccount2Email).value());
-  web_ui()->HandleReceivedMessage(kMakeAvailableInArcMessage, args_1);
-
-  // Call "getAccountsNotAvailableInArc".
-  const base::Value::List& result_1 = CallGetAccountsNotAvailableInArc();
-  // Zero accounts are not available in ARC.
-  EXPECT_EQ(0u, result_1.size());
-}
-
-INSTANTIATE_TEST_SUITE_P(InlineLoginHandlerTestWithArcRestrictionsSuite,
-                         InlineLoginHandlerTestWithArcRestrictions,
-                         ::testing::Values(GetGaiaDeviceAccountInfo(),
-                                           GetChildDeviceAccountInfo()));
-
 }  // namespace ash

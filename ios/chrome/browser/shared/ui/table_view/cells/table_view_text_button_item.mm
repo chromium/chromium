@@ -32,22 +32,18 @@ const CGFloat kButtonCornerRadius = 8;
 // The size of the checkmark symbol in the confirmation state on the
 // item's button.
 const CGFloat kSymbolConfirmationCheckmarkPointSize = 22;
-// Default Text alignment.
-const NSTextAlignment kDefaultTextAlignment = NSTextAlignmentCenter;
 }  // namespace
 
 @implementation TableViewTextButtonItem
 @synthesize buttonAccessibilityIdentifier = _buttonAccessibilityIdentifier;
 @synthesize buttonBackgroundColor = _buttonBackgroundColor;
 @synthesize buttonText = _buttonText;
-@synthesize text = _text;
 
 - (instancetype)initWithType:(NSInteger)type {
   self = [super initWithType:type];
   if (self) {
     self.cellClass = [TableViewTextButtonCell class];
     _enabled = YES;
-    _textAlignment = kDefaultTextAlignment;
     _boldButtonText = YES;
     _dimBackgroundWhenDisabled = YES;
     _showsActivityIndicator = NO;
@@ -56,25 +52,14 @@ const NSTextAlignment kDefaultTextAlignment = NSTextAlignmentCenter;
   return self;
 }
 
-- (void)configureCell:(TableViewCell*)tableCell
+- (void)configureCell:(LegacyTableViewCell*)tableCell
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:tableCell withStyler:styler];
   TableViewTextButtonCell* cell =
       base::apple::ObjCCastStrict<TableViewTextButtonCell>(tableCell);
   [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 
-  cell.textLabel.text = self.text;
-  // Decide cell.textLabel.textColor in order:
-  //   1. styler.cellTitleColor
-  //   2. [UIColor colorNamed:kTextSecondaryColor]
-  if (styler.cellTitleColor) {
-    cell.textLabel.textColor = styler.cellTitleColor;
-  } else {
-    cell.textLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-  }
-  [cell enableItemSpacing:[self.text length]];
   [cell disableButtonIntrinsicWidth:self.disableButtonIntrinsicWidth];
-  cell.textLabel.textAlignment = self.textAlignment;
 
   UIButtonConfiguration* buttonConfiguration = cell.button.configuration;
   UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
@@ -112,12 +97,9 @@ const NSTextAlignment kDefaultTextAlignment = NSTextAlignmentCenter;
 
   buttonConfiguration.showsActivityIndicator = self.showsActivityIndicator;
   if (self.showsActivityIndicator) {
-    __weak __typeof(self) weakSelf = self;
     buttonConfiguration.activityIndicatorColorTransformer =
         ^UIColor*(UIColor* color) {
-          return weakSelf.activityIndicatorColor
-                     ? weakSelf.activityIndicatorColor
-                     : [UIColor colorNamed:kSolidWhiteColor];
+          return [UIColor colorNamed:kSolidWhiteColor];
         };
   }
 
@@ -125,10 +107,8 @@ const NSTextAlignment kDefaultTextAlignment = NSTextAlignmentCenter;
     buttonConfiguration.image = DefaultSymbolWithPointSize(
         kCheckmarkCircleFillSymbol, kSymbolConfirmationCheckmarkPointSize);
 
-    __weak __typeof(self) weakSelf = self;
     buttonConfiguration.imageColorTransformer = ^UIColor*(UIColor* color) {
-      return weakSelf.checkmarkColor ? weakSelf.checkmarkColor
-                                     : [UIColor colorNamed:kBlue700Color];
+      return [UIColor colorNamed:kBlue700Color];
     };
   }
 
@@ -155,22 +135,12 @@ const NSTextAlignment kDefaultTextAlignment = NSTextAlignmentCenter;
 @end
 
 @implementation TableViewTextButtonCell
-@synthesize textLabel = _textLabel;
 @synthesize button = _button;
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style
               reuseIdentifier:(NSString*)reuseIdentifier {
   self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
   if (self) {
-    // Create informative text label.
-    self.textLabel = [[UILabel alloc] init];
-    self.textLabel.numberOfLines = 0;
-    self.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
-    self.textLabel.textAlignment = NSTextAlignmentCenter;
-    self.textLabel.font =
-        [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
-    self.textLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-
     // Create button.
     self.button = [UIButton buttonWithType:UIButtonTypeSystem];
     self.button.translatesAutoresizingMaskIntoConstraints = NO;
@@ -195,8 +165,8 @@ const NSTextAlignment kDefaultTextAlignment = NSTextAlignmentCenter;
         CreateOpaqueOrTransparentButtonPointerStyleProvider();
 
     // Vertical stackView to hold label and button.
-    self.verticalStackView = [[UIStackView alloc]
-        initWithArrangedSubviews:@[ self.textLabel, self.button ]];
+    self.verticalStackView =
+        [[UIStackView alloc] initWithArrangedSubviews:@[ self.button ]];
     self.verticalStackView.alignment = UIStackViewAlignmentCenter;
     self.verticalStackView.axis = UILayoutConstraintAxisVertical;
     self.verticalStackView.translatesAutoresizingMaskIntoConstraints = NO;

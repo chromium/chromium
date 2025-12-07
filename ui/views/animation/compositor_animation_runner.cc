@@ -21,8 +21,9 @@ CompositorAnimationRunner::CompositorAnimationRunner(
 
 CompositorAnimationRunner::~CompositorAnimationRunner() {
   // Make sure we're not observing |compositor_|.
-  if (widget_)
+  if (widget_) {
     OnWidgetDestroying(widget_);
+  }
   DCHECK(!compositor_ || !compositor_->HasAnimationObserver(this));
   CHECK(!IsInObserverList());
 }
@@ -32,8 +33,9 @@ void CompositorAnimationRunner::Stop() {
 }
 
 void CompositorAnimationRunner::OnAnimationStep(base::TimeTicks timestamp) {
-  if (timestamp - last_tick_ < min_interval_)
+  if (timestamp - last_tick_ < min_interval_) {
     return;
+  }
 
   last_tick_ = timestamp;
   Step(last_tick_);
@@ -52,8 +54,9 @@ void CompositorAnimationRunner::OnWidgetDestroying(Widget* widget) {
 
 void CompositorAnimationRunner::OnStart(base::TimeDelta min_interval,
                                         base::TimeDelta elapsed) {
-  if (!widget_)
+  if (!widget_) {
     return;
+  }
 
   ui::Compositor* current_compositor = widget_->GetCompositor();
   if (!current_compositor) {
@@ -62,8 +65,9 @@ void CompositorAnimationRunner::OnStart(base::TimeDelta min_interval,
   }
 
   if (current_compositor != compositor_) {
-    if (compositor_ && compositor_->HasAnimationObserver(this))
+    if (compositor_ && compositor_->HasAnimationObserver(this)) {
       compositor_->RemoveAnimationObserver(this);
+    }
     compositor_ = current_compositor;
   }
 
@@ -74,8 +78,9 @@ void CompositorAnimationRunner::OnStart(base::TimeDelta min_interval,
 }
 
 void CompositorAnimationRunner::StopInternal() {
-  if (compositor_ && compositor_->HasAnimationObserver(this))
+  if (compositor_ && compositor_->HasAnimationObserver(this)) {
     compositor_->RemoveAnimationObserver(this);
+  }
 
   min_interval_ = base::TimeDelta::Max();
   compositor_ = nullptr;

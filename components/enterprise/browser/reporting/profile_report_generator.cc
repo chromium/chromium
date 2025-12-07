@@ -9,12 +9,12 @@
 #include "base/check_is_test.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"
-#include "build/chromeos_buildflags.h"
 #include "components/enterprise/browser/reporting/policy_info.h"
 #include "components/enterprise/browser/reporting/report_type.h"
 #include "components/enterprise/browser/reporting/report_util.h"
 #include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
 #include "components/policy/core/browser/policy_conversions.h"
+#include "profile_report_generator.h"
 
 namespace em = enterprise_management;
 
@@ -38,38 +38,63 @@ void ProfileReportGenerator::set_is_machine_scope(bool is_machine) {
   is_machine_scope_ = is_machine;
 }
 
-std::unique_ptr<em::ChromeUserProfileInfo>
-ProfileReportGenerator::MaybeGenerate(const base::FilePath& path,
-                                      const std::string& name,
-                                      ReportType report_type) {
+void ProfileReportGenerator::SetExtensionsEnabledCallback(
+    ExtensionsEnabledCallback callback) {
+  extensions_enabled_callback_ = std::move(callback);
+}
+
+void ProfileReportGenerator::MaybeGenerate(
+    const base::FilePath& path,
+    ReportType report_type,
+    SecuritySignalsMode signals_mode,
+    base::OnceCallback<void(std::unique_ptr<em::ChromeUserProfileInfo>)>
+        callback) {
   if (!delegate_->Init(path)) {
-    return nullptr;
+    std::move(callback).Run(nullptr);
+    return;
   }
 
   report_ = std::make_unique<em::ChromeUserProfileInfo>();
 
+#if !BUILDFLAG(IS_CHROMEOS)
+  delegate_->GetAffiliationInfo(report_.get());
+#endif
+
   switch (report_type) {
+    // TODO(crbug.com/441536805): Rename report type `kFull` to `kBrowser`.
     case ReportType::kFull:
       report_->set_id(path.AsUTF8Unsafe());
       break;
     case ReportType::kProfileReport:
-      report_->set_id(ObfuscateFilePath(path.AsUTF8Unsafe()));
+      if (report_->has_affiliation() &&
+          report_->affiliation().has_is_affiliated() &&
+          report_->affiliation().is_affiliated()) {
+        report_->set_id(path.AsUTF8Unsafe());
+      } else {
+        report_->set_id(ObfuscateFilePath(path.AsUTF8Unsafe()));
+      }
       break;
     case ReportType::kBrowserVersion:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
-  report_->set_name(name);
   report_->set_is_detail_available(true);
 
   delegate_->GetSigninUserInfo(report_.get());
-  if (extensions_enabled_) {
+  delegate_->GetProfileName(report_.get());
+
+  if (signals_mode != SecuritySignalsMode::kSignalsOnly &&
+      extensions_enabled_ &&
+      (!extensions_enabled_callback_ || extensions_enabled_callback_.Run())) {
     delegate_->GetExtensionInfo(report_.get());
   }
 
-  if (is_machine_scope_) {
+  if (signals_mode != SecuritySignalsMode::kSignalsOnly && is_machine_scope_) {
     delegate_->GetExtensionRequest(report_.get());
+
+    // For profile reporting, the profile id is already in the &reportid=
+    // query param. Only set the proto field for browser reports.
+    delegate_->GetProfileId(report_.get());
   }
 
   if (policies_enabled_) {
@@ -89,7 +114,7 @@ ProfileReportGenerator::MaybeGenerate(const base::FilePath& path,
     }
   }
 
-  return std::move(report_);
+  std::move(callback).Run(std::move(report_));
 }
 
 void ProfileReportGenerator::GetChromePolicyInfo() {
@@ -101,10 +126,10 @@ void ProfileReportGenerator::GetExtensionPolicyInfo() {
 }
 
 void ProfileReportGenerator::GetPolicyFetchTimestampInfo() {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   AppendCloudPolicyFetchTimestamp(
       report_.get(), delegate_->GetCloudPolicyManager(is_machine_scope_));
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace enterprise_reporting

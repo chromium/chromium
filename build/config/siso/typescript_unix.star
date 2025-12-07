@@ -1,7 +1,10 @@
 # -*- bazel-starlark -*-
-load("@builtin//lib/gn.star", "gn")
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+"""Siso configuration for typescript on Unix."""
+
 load("@builtin//struct.star", "module")
-load("./config.star", "config")
 load("./typescript_all.star", "typescript_all")
 
 __handlers = {}
@@ -31,9 +34,6 @@ def __step_config(ctx, step_config):
         {
             "name": "typescript/ts_library",
             "command_prefix": "python3 ../../tools/typescript/ts_library.py",
-            "inputs": [
-                "tools/typescript/ts_library.py",
-            ],
             "indirect_inputs": {
                 "includes": [
                     "*.js",
@@ -41,9 +41,6 @@ def __step_config(ctx, step_config):
                     "*.json",
                 ],
             },
-            "exclude_input_patterns": [
-                "*.stamp",
-            ],
             "remote": remote_run,
             "timeout": "2m",
             "handler": "typescript_ts_library",
@@ -53,18 +50,12 @@ def __step_config(ctx, step_config):
         {
             "name": "typescript/ts_definitions",
             "command_prefix": "python3 ../../tools/typescript/ts_definitions.py",
-            "inputs": [
-                "tools/typescript/ts_definitions.py",
-            ],
             "indirect_inputs": {
                 "includes": [
                     "*.ts",  # *.d.ts, *.css.ts, *.html.ts, etc
                     "*.json",
                 ],
             },
-            "exclude_input_patterns": [
-                "*.stamp",
-            ],
             "remote": remote_run,
             "timeout": "2m",
             "handler": "typescript_ts_definitions",

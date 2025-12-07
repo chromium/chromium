@@ -23,7 +23,23 @@ PageAggregatorData& GetOrCreateData(PageNodeImpl* page_node) {
   }
   return PageAggregatorData::Get(page_node);
 }
+
+const PageNode* GetPageNodeFromEither(const FrameNode* frame_node1,
+                                      const FrameNode* frame_node2) {
+  // Sanity check.
+  CHECK(frame_node1 || frame_node2);
+  if (frame_node1 && frame_node2) {
+    CHECK_EQ(frame_node1->GetPageNode(), frame_node2->GetPageNode());
+  }
+
+  if (frame_node1) {
+    return frame_node1->GetPageNode();
+  } else {
+    return frame_node2->GetPageNode();
+  }
 }
+
+}  // namespace
 
 PageAggregator::PageAggregator() = default;
 PageAggregator::~PageAggregator() = default;
@@ -32,7 +48,8 @@ void PageAggregator::OnFrameNodeAdded(const FrameNode* frame_node) {
   CHECK(!frame_node->HadFormInteraction());
   CHECK(!frame_node->HadUserEdits());
   CHECK(!frame_node->IsHoldingWebLock());
-  CHECK(!frame_node->IsHoldingIndexedDBLock());
+  CHECK(!frame_node->IsHoldingBlockingIndexedDBLock());
+  CHECK(!frame_node->UsesWebRTC());
 }
 
 void PageAggregator::OnBeforeFrameNodeRemoved(const FrameNode* frame_node) {
@@ -45,42 +62,63 @@ void PageAggregator::OnBeforeFrameNodeRemoved(const FrameNode* frame_node) {
   Data& data = Data::Get(page_node);
 
   if (frame_node->IsCurrent()) {
-    // Decrement the form interaction and user edits counters for this page if
-    // needed.
+    // Decrement the form interaction, user edits and freezing origin trial
+    // opt-out counters for this page if needed.
     if (frame_node->HadFormInteraction()) {
-      data.UpdateCurrentFrameCountForFormInteraction(false, page_node,
-                                                     frame_node);
+      data.UpdateCurrentFrameCountForFormInteraction(
+          /*frame_had_form_interaction=*/false);
     }
     if (frame_node->HadUserEdits()) {
-      data.UpdateCurrentFrameCountForUserEdits(false, page_node, frame_node);
+      data.UpdateCurrentFrameCountForUserEdits(/*frame_had_user_edits=*/false);
+    }
+    if (frame_node->HasFreezingOriginTrialOptOut()) {
+      data.UpdateCurrentFrameCountForFreezingOriginTrialOptOut(false);
     }
   }
 
   // It is not guaranteed that the graph will be notified that the frame has
-  // released its lock before it is notified of the frame being deleted.
-  if (frame_node->IsHoldingWebLock())
-    data.UpdateFrameCountForWebLockUsage(false, page_node);
-  if (frame_node->IsHoldingIndexedDBLock())
-    data.UpdateFrameCountForIndexedDBLockUsage(false, page_node);
+  // released locks or stopped using WebRTC before it is notified of the frame
+  // being deleted.
+  if (frame_node->IsHoldingWebLock()) {
+    data.UpdateFrameCountForWebLockUsage(/*frame_is_holding_weblock=*/false);
+  }
+  if (frame_node->IsHoldingBlockingIndexedDBLock()) {
+    data.UpdateFrameCountForBlockingIndexedDBLockUsage(
+        /*frame_is_holding_blocking_indexeddb_lock=*/false);
+  }
+  if (frame_node->UsesWebRTC()) {
+    data.UpdateFrameCountForWebRTCUsage(/*frame_uses_web_rtc=*/false);
+  }
 }
 
-void PageAggregator::OnIsCurrentChanged(const FrameNode* frame_node) {
-  auto* page_node = PageNodeImpl::FromNode(frame_node->GetPageNode());
+void PageAggregator::OnCurrentFrameChanged(
+    const FrameNode* previous_frame_node,
+    const FrameNode* current_frame_node) {
+  auto* page_node = PageNodeImpl::FromNode(
+      GetPageNodeFromEither(previous_frame_node, current_frame_node));
   Data& data = GetOrCreateData(page_node);
 
-  // Check if the frame node had some form interaction or user edit, in this
-  // case there's two possibilities:
-  //   - The frame became current: The counter of current frames with form
-  //     interactions should be increased.
-  //   - The frame became non current: The counter of current frames with form
-  //     interactions should be decreased.
-  if (frame_node->HadFormInteraction()) {
-    data.UpdateCurrentFrameCountForFormInteraction(frame_node->IsCurrent(),
-                                                   page_node, nullptr);
+  // This lambda adjusts the form interaction, user edits and freezing origin
+  // trial opt-out counters for a `frame_node` which just became current (if
+  // `is_current` is true) or non-current (if `is_current` is false).
+  auto adjust_counters = [&data](const FrameNode* frame_node, bool is_current) {
+    if (frame_node->HadFormInteraction()) {
+      data.UpdateCurrentFrameCountForFormInteraction(is_current);
+    }
+    if (frame_node->HadUserEdits()) {
+      data.UpdateCurrentFrameCountForUserEdits(is_current);
+    }
+    if (frame_node->HasFreezingOriginTrialOptOut()) {
+      data.UpdateCurrentFrameCountForFreezingOriginTrialOptOut(is_current);
+    }
+  };
+
+  if (previous_frame_node) {
+    adjust_counters(previous_frame_node, /*is_current=*/false);
   }
-  if (frame_node->HadUserEdits()) {
-    data.UpdateCurrentFrameCountForUserEdits(frame_node->IsCurrent(), page_node,
-                                             nullptr);
+
+  if (current_frame_node) {
+    adjust_counters(current_frame_node, /*is_current=*/true);
   }
 }
 
@@ -88,16 +126,21 @@ void PageAggregator::OnFrameIsHoldingWebLockChanged(
     const FrameNode* frame_node) {
   auto* page_node = PageNodeImpl::FromNode(frame_node->GetPageNode());
   Data& data = GetOrCreateData(page_node);
-  data.UpdateFrameCountForWebLockUsage(frame_node->IsHoldingWebLock(),
-                                       page_node);
+  data.UpdateFrameCountForWebLockUsage(frame_node->IsHoldingWebLock());
 }
 
-void PageAggregator::OnFrameIsHoldingIndexedDBLockChanged(
+void PageAggregator::OnFrameIsHoldingBlockingIndexedDBLockChanged(
     const FrameNode* frame_node) {
   auto* page_node = PageNodeImpl::FromNode(frame_node->GetPageNode());
   Data& data = GetOrCreateData(page_node);
-  data.UpdateFrameCountForIndexedDBLockUsage(
-      frame_node->IsHoldingIndexedDBLock(), page_node);
+  data.UpdateFrameCountForBlockingIndexedDBLockUsage(
+      frame_node->IsHoldingBlockingIndexedDBLock());
+}
+
+void PageAggregator::OnFrameUsesWebRTCChanged(const FrameNode* frame_node) {
+  auto* page_node = PageNodeImpl::FromNode(frame_node->GetPageNode());
+  Data& data = GetOrCreateData(page_node);
+  data.UpdateFrameCountForWebRTCUsage(frame_node->UsesWebRTC());
 }
 
 void PageAggregator::OnHadFormInteractionChanged(const FrameNode* frame_node) {
@@ -105,7 +148,7 @@ void PageAggregator::OnHadFormInteractionChanged(const FrameNode* frame_node) {
     auto* page_node = PageNodeImpl::FromNode(frame_node->GetPageNode());
     Data& data = GetOrCreateData(page_node);
     data.UpdateCurrentFrameCountForFormInteraction(
-        frame_node->HadFormInteraction(), page_node, nullptr);
+        frame_node->HadFormInteraction());
   }
 }
 
@@ -113,8 +156,17 @@ void PageAggregator::OnHadUserEditsChanged(const FrameNode* frame_node) {
   if (frame_node->IsCurrent()) {
     auto* page_node = PageNodeImpl::FromNode(frame_node->GetPageNode());
     Data& data = GetOrCreateData(page_node);
-    data.UpdateCurrentFrameCountForUserEdits(frame_node->HadUserEdits(),
-                                             page_node, nullptr);
+    data.UpdateCurrentFrameCountForUserEdits(frame_node->HadUserEdits());
+  }
+}
+
+void PageAggregator::OnFrameHasFreezingOriginTrialOptOutChanged(
+    const FrameNode* frame_node) {
+  if (frame_node->IsCurrent()) {
+    auto* page_node = PageNodeImpl::FromNode(frame_node->GetPageNode());
+    Data& data = GetOrCreateData(page_node);
+    data.UpdateCurrentFrameCountForFreezingOriginTrialOptOut(
+        frame_node->HasFreezingOriginTrialOptOut());
   }
 }
 

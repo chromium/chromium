@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/login/login_tab_helper.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/google/core/common/google_util.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -44,9 +45,9 @@
 #include "chrome/browser/offline_pages/offline_page_utils.h"
 #endif  // BUILDFLAG(ENABLE_OFFLINE_PAGES)
 
-ChromeLocationBarModelDelegate::ChromeLocationBarModelDelegate() {}
+ChromeLocationBarModelDelegate::ChromeLocationBarModelDelegate() = default;
 
-ChromeLocationBarModelDelegate::~ChromeLocationBarModelDelegate() {}
+ChromeLocationBarModelDelegate::~ChromeLocationBarModelDelegate() = default;
 
 content::NavigationEntry* ChromeLocationBarModelDelegate::GetNavigationEntry()
     const {
@@ -66,8 +67,9 @@ ChromeLocationBarModelDelegate::FormattedStringWithEquivalentMeaning(
 bool ChromeLocationBarModelDelegate::GetURL(GURL* url) const {
   DCHECK(url);
   content::NavigationEntry* entry = GetNavigationEntry();
-  if (!entry || entry->IsInitialEntry())
+  if (!entry || entry->IsInitialEntry()) {
     return false;
+  }
 
   *url = entry->GetVirtualURL();
   return true;
@@ -91,42 +93,42 @@ bool ChromeLocationBarModelDelegate::ShouldDisplayURL() const {
   //   of view-source:chrome://newtab, which should display its URL despite what
   //   chrome://newtab says.
   content::NavigationEntry* entry = GetNavigationEntry();
-  if (!entry || entry->IsInitialEntry())
+  if (!entry || entry->IsInitialEntry()) {
     return true;
+  }
 
   security_interstitials::SecurityInterstitialTabHelper*
       security_interstitial_tab_helper =
           security_interstitials::SecurityInterstitialTabHelper::
               FromWebContents(GetActiveWebContents());
   if (security_interstitial_tab_helper &&
-      security_interstitial_tab_helper->IsDisplayingInterstitial())
+      security_interstitial_tab_helper->IsDisplayingInterstitial()) {
     return security_interstitial_tab_helper->ShouldDisplayURL();
+  }
 
   LoginTabHelper* login_tab_helper =
       LoginTabHelper::FromWebContents(GetActiveWebContents());
-  if (login_tab_helper && login_tab_helper->IsShowingPrompt())
+  if (login_tab_helper && login_tab_helper->IsShowingPrompt()) {
     return login_tab_helper->ShouldDisplayURL();
+  }
 
-  if (entry->IsViewSourceMode())
+  if (entry->IsViewSourceMode()) {
     return true;
+  }
 
   const auto is_ntp = [](const GURL& url) {
-    return url.SchemeIs(content::kChromeUIScheme) &&
-           url.host() == chrome::kChromeUINewTabHost;
+    return (url.SchemeIs(content::kChromeUIScheme) &&
+            url.GetHost() == chrome::kChromeUINewTabHost) ||
+           url.spec() == chrome::kChromeUISplitViewNewTabPageURL;
   };
 
   GURL url = entry->GetURL();
-  if (is_ntp(entry->GetVirtualURL()) || is_ntp(url))
+  if (is_ntp(entry->GetVirtualURL()) || is_ntp(url)) {
     return false;
+  }
 
   Profile* profile = GetProfile();
   return !profile || !search::IsInstantNTPURL(url, profile);
-}
-
-bool ChromeLocationBarModelDelegate::
-    ShouldUseUpdatedConnectionSecurityIndicators() const {
-  return base::FeatureList::IsEnabled(
-      omnibox::kUpdatedConnectionSecurityIndicators);
 }
 
 security_state::SecurityLevel ChromeLocationBarModelDelegate::GetSecurityLevel()
@@ -167,8 +169,9 @@ ChromeLocationBarModelDelegate::GetVisibleSecurityState() const {
 scoped_refptr<net::X509Certificate>
 ChromeLocationBarModelDelegate::GetCertificate() const {
   content::NavigationEntry* entry = GetNavigationEntry();
-  if (!entry || entry->IsInitialEntry())
+  if (!entry || entry->IsInitialEntry()) {
     return scoped_refptr<net::X509Certificate>();
+  }
   return entry->GetSSL().certificate;
 }
 
@@ -203,19 +206,22 @@ bool ChromeLocationBarModelDelegate::IsOfflinePage() const {
 
 bool ChromeLocationBarModelDelegate::IsNewTabPage() const {
   content::NavigationEntry* const entry = GetNavigationEntry();
-  if (!entry || entry->IsInitialEntry())
+  if (!entry || entry->IsInitialEntry()) {
     return false;
+  }
 
   Profile* const profile = GetProfile();
-  if (!profile)
+  if (!profile) {
     return false;
+  }
 
-  if (!search::DefaultSearchProviderIsGoogle(profile))
+  if (!search::DefaultSearchProviderIsGoogle(profile)) {
     return false;
+  }
 
   GURL ntp_url(chrome::kChromeUINewTabPageURL);
-  return ntp_url.scheme_piece() == entry->GetURL().scheme_piece() &&
-         ntp_url.host_piece() == entry->GetURL().host_piece();
+  return ntp_url.scheme() == entry->GetURL().scheme() &&
+         ntp_url.host() == entry->GetURL().host();
 }
 
 bool ChromeLocationBarModelDelegate::IsNewTabPageURL(const GURL& url) const {
@@ -224,8 +230,9 @@ bool ChromeLocationBarModelDelegate::IsNewTabPageURL(const GURL& url) const {
 
 bool ChromeLocationBarModelDelegate::IsHomePage(const GURL& url) const {
   Profile* const profile = GetProfile();
-  if (!profile)
+  if (!profile) {
     return false;
+  }
 
   return url.spec() == profile->GetPrefs()->GetString(prefs::kHomePage);
 }

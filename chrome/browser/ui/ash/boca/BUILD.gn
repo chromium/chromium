@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD - style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("boca") {
   sources = [
@@ -17,9 +15,10 @@ static_library("boca") {
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
-    "//chrome/browser/favicon",
+    "//chrome/browser/ash/browser_delegate",
     "//components/app_constants",
     "//components/app_restore",
+    "//components/sessions",
     "//content/public/browser",
   ]
 }
@@ -57,8 +56,8 @@ source_set("browser_tests") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/ui",
-    "//chrome/browser/ui/ash",
     "//chrome/test:test_support",
+    "//chrome/test/base/ash/util:test_support",
     "//components/prefs",
     "//content/test:test_support",
     "//testing/gtest",

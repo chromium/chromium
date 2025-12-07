@@ -35,7 +35,7 @@
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/base/auto_thread.h"
 #include "remoting/base/auto_thread_task_runner.h"
-#include "remoting/base/breakpad.h"
+#include "remoting/base/crash/crash_reporting_breakpad.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/scoped_sc_handle_win.h"
 #include "remoting/host/base/host_exit_codes.h"
@@ -196,7 +196,7 @@ DaemonProcessWin::~DaemonProcessWin() = default;
 void DaemonProcessWin::OnChannelConnected(int32_t peer_pid) {
   // Obtain the handle of the network process.
   network_process_.Set(OpenProcess(PROCESS_DUP_HANDLE, false, peer_pid));
-  if (!network_process_.IsValid()) {
+  if (!network_process_.is_valid()) {
     CrashNetworkProcess(FROM_HERE);
     return;
   }
@@ -224,12 +224,12 @@ void DaemonProcessWin::OnPermanentError(int exit_code) {
   DCHECK(kMinPermanentErrorExitCode <= exit_code &&
          exit_code <= kMaxPermanentErrorExitCode);
 
-  // Both kInvalidHostIdExitCode and kInvalidOauthCredentialsExitCode are
+  // Both kInvalidHostIdExitCode and kInvalidOAuthCredentialsExitCode are
   // errors that will never go away with the current config.
   // Disabling automatic service start until the host is re-enabled and config
   // updated.
   if (exit_code == kInvalidHostIdExitCode ||
-      exit_code == kInvalidOauthCredentialsExitCode) {
+      exit_code == kInvalidOAuthCredentialsExitCode) {
     DisableAutoStart();
   }
 
@@ -360,7 +360,7 @@ void DaemonProcessWin::DisableAutoStart() {
   ScopedScHandle scmanager(
       OpenSCManager(nullptr, SERVICES_ACTIVE_DATABASE,
                     SC_MANAGER_CONNECT | SC_MANAGER_ENUMERATE_SERVICE));
-  if (!scmanager.IsValid()) {
+  if (!scmanager.is_valid()) {
     PLOG(INFO) << "Failed to connect to the service control manager";
     return;
   }
@@ -368,7 +368,7 @@ void DaemonProcessWin::DisableAutoStart() {
   DWORD desired_access = SERVICE_CHANGE_CONFIG | SERVICE_QUERY_STATUS;
   ScopedScHandle service(
       OpenService(scmanager.Get(), kWindowsServiceName, desired_access));
-  if (!service.IsValid()) {
+  if (!service.is_valid()) {
     PLOG(INFO) << "Failed to open to the '" << kWindowsServiceName
                << "' service";
     return;
@@ -408,7 +408,7 @@ bool DaemonProcessWin::InitializePairingRegistry() {
       DuplicateRegistryKeyHandle(pairing_registry_privileged_key_);
   base::win::ScopedHandle unprivileged_key =
       DuplicateRegistryKeyHandle(pairing_registry_unprivileged_key_);
-  if (!(privileged_key.IsValid() && unprivileged_key.IsValid())) {
+  if (!(privileged_key.is_valid() && unprivileged_key.is_valid())) {
     return false;
   }
 

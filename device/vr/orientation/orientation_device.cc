@@ -32,7 +32,7 @@ namespace {
 static constexpr int kDefaultPumpFrequencyHz = 60;
 
 display::Display::Rotation GetRotation() {
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   if (!screen) {
     // If we can't get rotation we'll assume it's 0.
     return display::Display::ROTATE_0;
@@ -228,7 +228,8 @@ void VROrientationDevice::GetInlineFrameData(
   pose->orientation = latest_pose_;
 
   mojom::XRFrameDataPtr frame_data = mojom::XRFrameData::New();
-  frame_data->mojo_from_viewer = std::move(pose);
+  frame_data->render_info = mojom::XRRenderInfo::New();
+  frame_data->render_info->mojo_from_viewer = std::move(pose);
 
   std::move(callback).Run(std::move(frame_data));
 }

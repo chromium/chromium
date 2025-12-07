@@ -1,0 +1,57 @@
+[document web] name='Material Web Icon Buttons'
+++[section] name='Ready'
+++++[section]
+++++++[toggle button]
+++++[section]
+++++++[push button]
+++++[section]
+++++++[push button]
+++++[section]
+++++++[push button]
+++++[push button]
+=== Start Continuation ===
+[document web] name='Material Web Icon Buttons'
+++[section] name='Ready'
+++++[section]
+++++++[toggle button]
+++++[section]
+++++++[push button]
+++++[section]
+++++++[push button]
+++++[section]
+++++++[push button]
+++++[push button]
+++++[section]
+++++++[static] name='Toggle Icon Button Selected'
+=== Start Continuation ===
+[document web] name='Material Web Icon Buttons'
+++[section] name='Ready'
+++++[section]
+++++++[toggle button]
+++++[section]
+++++++[push button]
+++++[section]
+++++++[push button]
+++++[section]
+++++++[push button]
+++++[push button]
+++++[section]
+++++++[static] name='Toggle Icon Button Selected'
+++++[section]
+++++++[static] name='Toggle Icon Button Deselected'
+=== Start Continuation ===
+[document web] name='Material Web Icon Buttons'
+++[section] name='Ready'
+++++[section]
+++++++[toggle button]
+++++[section]
+++++++[push button]
+++++[section]
+++++++[push button]
+++++[section]
+++++++[push button]
+++++[push button]
+++++[section]
+++++++[static] name='Toggle Icon Button Selected'
+++++[section]
+++++++[static] name='Toggle Icon Button Deselected'

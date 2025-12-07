@@ -8,6 +8,7 @@
 #include <cstdint>
 
 #include "ui/gfx/buffer_types.h"
+#include "ui/ozone/public/native_pixmap_usage.h"
 
 namespace ui {
 
@@ -15,6 +16,8 @@ namespace ui {
 // Depending on the platform, certain usage flags may not be available (eg.
 // GBM_BO_USE_HW_VIDEO_ENCODER on desktop linux).
 uint32_t BufferUsageToGbmFlags(gfx::BufferUsage usage);
+
+uint32_t NativePixmapUsageToGbmFlags(NativePixmapUsageSet usage);
 
 }  // namespace ui
 

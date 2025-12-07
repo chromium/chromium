@@ -16,13 +16,14 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/hash/md5.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_view_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
@@ -36,10 +37,18 @@
 #include "chromeos/printing/printer_configuration.h"
 #include "components/device_event_log/device_event_log.h"
 #include "content/public/browser/browser_thread.h"
+#include "crypto/obsolete/md5.h"
 #include "printing/printing_features.h"
 #include "third_party/cros_system_api/dbus/debugd/dbus-constants.h"
 
 namespace ash {
+
+namespace printing {
+// Not placed in namespace {} so it can be friended from //crypto.
+crypto::obsolete::Md5 MakeMd5HasherForPrinterConfigurer() {
+  return {};
+}
+}  // namespace printing
 
 namespace {
 
@@ -51,7 +60,8 @@ const char kEbuildWithHplipPlugins[] = "hplip-plugin";
 PrinterSetupResult PrinterSetupResultFromDbusResultCode(const Printer& printer,
                                                         int result_code) {
   DCHECK_GE(result_code, 0);
-  const std::string prefix = printer.make_and_model() + " setup result: ";
+  const std::string prefix =
+      printer.id() + ": " + printer.make_and_model() + " setup result: ";
   switch (result_code) {
     case debugd::CupsResult::CUPS_SUCCESS:
       PRINTER_LOG(EVENT) << prefix << "Printer setup successful";
@@ -97,11 +107,12 @@ PrinterSetupResult PrinterSetupResultFromDbusErrorCode(
     const Printer& printer,
     chromeos::DBusLibraryError dbus_error) {
   DCHECK_LT(dbus_error, 0);
-  const std::string prefix = printer.make_and_model() + " setup result: ";
+  const std::string prefix =
+      printer.id() + ": " + printer.make_and_model() + " setup result: ";
   switch (dbus_error) {
     case chromeos::DBusLibraryError::kNoReply:
       PRINTER_LOG(ERROR) << prefix << "D-Bus error - no reply";
-      return PrinterSetupResult::kDbusNoReply;
+      return PrinterSetupResult::kDebugdDbusNoReply;
     case chromeos::DBusLibraryError::kTimeout:
       PRINTER_LOG(ERROR) << prefix << "D-Bus error - timeout";
       return PrinterSetupResult::kDbusTimeout;
@@ -114,7 +125,8 @@ PrinterSetupResult PrinterSetupResultFromDbusErrorCode(
 PrinterSetupResult PrinterSetupResultFromAddPrinterResult(
     const Printer& printer,
     printscanmgr::AddPrinterResult result) {
-  const std::string prefix = printer.make_and_model() + " setup result: ";
+  const std::string prefix =
+      printer.id() + ":" + printer.make_and_model() + " setup result: ";
   switch (result) {
     case printscanmgr::AddPrinterResult::ADD_PRINTER_RESULT_SUCCESS:
       PRINTER_LOG(EVENT) << prefix << "Printer setup successful";
@@ -157,7 +169,7 @@ PrinterSetupResult PrinterSetupResultFromAddPrinterResult(
       return PrinterSetupResult::kDbusError;
     case printscanmgr::AddPrinterResult::ADD_PRINTER_RESULT_DBUS_NO_REPLY:
       PRINTER_LOG(ERROR) << prefix << "D-Bus error - no reply";
-      return PrinterSetupResult::kDbusNoReply;
+      return PrinterSetupResult::kPrintscanmgrDbusNoReply;
     case printscanmgr::AddPrinterResult::ADD_PRINTER_RESULT_DBUS_TIMEOUT:
       PRINTER_LOG(ERROR) << prefix << "D-Bus error - timeout";
       return PrinterSetupResult::kDbusTimeout;
@@ -205,15 +217,15 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
   PrinterConfigurerImpl(const PrinterConfigurerImpl&) = delete;
   PrinterConfigurerImpl& operator=(const PrinterConfigurerImpl&) = delete;
 
-  ~PrinterConfigurerImpl() override {}
+  ~PrinterConfigurerImpl() override = default;
 
   void SetUpPrinterInCups(const Printer& printer,
                           PrinterSetupCallback callback) override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     DCHECK(!printer.id().empty());
     DCHECK(printer.HasUri());
-    PRINTER_LOG(USER) << printer.make_and_model()
-                      << " Printer setup requested as " << printer.id();
+    PRINTER_LOG(USER) << printer.id() << ": Printer setup requested for "
+                      << printer.make_and_model();
 
     if (!printer.IsIppEverywhere()) {
       if (!printer.ppd_reference().user_supplied_ppd_url.empty()) {
@@ -222,7 +234,7 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
       } else {
         // The PPD was selected from our PPD Index. We have to check its license
         // to make sure it doesn't need any additional plugins before setup.
-        PRINTER_LOG(DEBUG) << printer.make_and_model() << " Check license";
+        PRINTER_LOG(DEBUG) << printer.id() << ": Check PPD license";
         ppd_provider_->ResolvePpdLicense(
             printer.ppd_reference().effective_make_and_model,
             base::BindOnce(&PrinterConfigurerImpl::ResolveLicenseDone,
@@ -232,11 +244,11 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
       return;
     }
 
-    PRINTER_LOG(DEBUG) << printer.make_and_model()
-                       << " Attempting driverless setup at "
-                       << printer.uri().GetNormalized();
+    PRINTER_LOG(DEBUG) << printer.id() << ": Attempting driverless setup at "
+                       << printer.uri().GetNormalized(
+                              /*always_print_port=*/true);
     if (base::FeatureList::IsEnabled(
-            printing::features::kAddPrinterViaPrintscanmgr)) {
+            ::printing::features::kAddPrinterViaPrintscanmgr)) {
       printscanmgr::CupsAddAutoConfiguredPrinterRequest request;
       request.set_name(printer.id());
       request.set_uri(printer.uri().GetNormalized(/*always_print_port=*/true));
@@ -269,7 +281,7 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
     if (!response) {
-      PRINTER_LOG(ERROR) << "Null response to OnAddedPrinter";
+      PRINTER_LOG(ERROR) << printer.id() << ": Null response to OnAddedPrinter";
       std::move(cb).Run(PrinterSetupResult::kFatalError);
       return;
     }
@@ -298,11 +310,11 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
   void AddPrinter(const Printer& printer,
                   const std::string& ppd_contents,
                   PrinterSetupCallback cb) {
-    PRINTER_LOG(EVENT) << printer.make_and_model()
-                       << " Attempting setup with PPD at "
-                       << printer.uri().GetNormalized();
+    PRINTER_LOG(EVENT) << printer.id() << ": Attempting setup with PPD at "
+                       << printer.uri().GetNormalized(
+                              /*always_print_port=*/true);
     if (base::FeatureList::IsEnabled(
-            printing::features::kAddPrinterViaPrintscanmgr)) {
+            ::printing::features::kAddPrinterViaPrintscanmgr)) {
       printscanmgr::CupsAddManuallyConfiguredPrinterRequest request;
       request.set_name(printer.id());
       request.set_uri(printer.uri().GetNormalized(/*always_print_port=*/true));
@@ -329,7 +341,7 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
                       PpdProvider::CallbackResultCode result,
                       const std::string& ppd_contents) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    PRINTER_LOG(EVENT) << printer.make_and_model() << " PPD Resolution Result: "
+    PRINTER_LOG(EVENT) << printer.id() << " PPD Resolution Result: "
                        << PpdProvider::CallbackResultCodeName(result);
     switch (result) {
       case PpdProvider::SUCCESS:
@@ -339,13 +351,13 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
           auto reader = chromeos::PpdLineReader::Create(ppd_contents);
           std::string ppd = reader->RemainingContent();
           if (reader->Error()) {
-            PRINTER_LOG(ERROR) << printer.make_and_model()
-                               << " Error when reading/decompressing PPD";
+            PRINTER_LOG(ERROR)
+                << printer.id() << ": Error when reading/decompressing PPD";
           }
           if (!hplip_plugin_path.empty()) {
             if (!AddHplipPluginPathToPpdContent(hplip_plugin_path, ppd)) {
-              PRINTER_LOG(ERROR) << printer.make_and_model()
-                                 << " Missing HP printer language in PPD file";
+              PRINTER_LOG(ERROR) << printer.id()
+                                 << ": Missing HP printer language in PPD file";
             }
           }
           AddPrinter(printer, ppd, std::move(cb));
@@ -369,7 +381,7 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
   void ResolvePpd(const Printer& printer,
                   const std::string& hplip_plugin_path,
                   PrinterSetupCallback cb) {
-    PRINTER_LOG(DEBUG) << printer.make_and_model() << " Lookup PPD";
+    PRINTER_LOG(DEBUG) << printer.id() << ": Looking up PPD";
     ppd_provider_->ResolvePpd(
         printer.ppd_reference(),
         base::BindOnce(&PrinterConfigurerImpl::ResolvePpdDone,
@@ -382,8 +394,7 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
                           PpdProvider::CallbackResultCode result,
                           const std::string& license_name) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    PRINTER_LOG(EVENT) << printer.make_and_model()
-                       << " License resolution Result: "
+    PRINTER_LOG(EVENT) << printer.id() << ": License resolution Result: "
                        << PpdProvider::CallbackResultCodeName(result);
     switch (result) {
       case PpdProvider::SUCCESS:
@@ -405,7 +416,7 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
     if (license_name == kEbuildWithHplipPlugins) {
       // Printers with this license require special plugin. We have to install
       // it before proceeding.
-      PRINTER_LOG(DEBUG) << "Attempting installation of hplip-plugin";
+      PRINTER_LOG(DEBUG) << printer.id() << ": Installing hplip-plugin";
       dlcservice::InstallRequest install_request;
       install_request.set_id(kEbuildWithHplipPlugins);
       dlc_service_client_->Install(
@@ -427,8 +438,8 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
 
     if (result.root_path.empty()) {
       // Empty path of the plugin location means failure.
-      PRINTER_LOG(ERROR) << "Cannot install plugin " << result.dlc_id << ": "
-                         << result.error;
+      PRINTER_LOG(ERROR) << printer.id() << ": Cannot install plugin "
+                         << result.dlc_id << ": " << result.error;
       std::move(cb).Run(PrinterSetupResult::kComponentUnavailable);
     } else {
       // Plugin installed. We can proceed with PPD resolution.
@@ -445,17 +456,14 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
 
 // static
 std::string PrinterConfigurer::SetupFingerprint(const Printer& printer) {
-  base::MD5Context ctx;
-  base::MD5Init(&ctx);
-  base::MD5Update(&ctx, printer.id());
-  base::MD5Update(&ctx, printer.uri().GetNormalized(false));
-  base::MD5Update(&ctx, printer.ppd_reference().user_supplied_ppd_url);
-  base::MD5Update(&ctx, printer.ppd_reference().effective_make_and_model);
+  auto md5 = ash::printing::MakeMd5HasherForPrinterConfigurer();
+  md5.Update(printer.id());
+  md5.Update(printer.uri().GetNormalized(false));
+  md5.Update(printer.ppd_reference().user_supplied_ppd_url);
+  md5.Update(printer.ppd_reference().effective_make_and_model);
   char autoconf = printer.ppd_reference().autoconf ? 1 : 0;
-  base::MD5Update(&ctx, std::string(&autoconf, sizeof(autoconf)));
-  base::MD5Digest digest;
-  base::MD5Final(&digest, &ctx);
-  return std::string(reinterpret_cast<char*>(&digest.a[0]), sizeof(digest.a));
+  md5.Update(base::byte_span_from_ref(autoconf));
+  return std::string(base::as_string_view(md5.Finish()));
 }
 
 // static
@@ -518,7 +526,7 @@ std::string ResultCodeToMessage(const PrinterSetupResult result) {
     case PrinterSetupResult::kDbusError:
       return "D-Bus error occurred. Reboot required.";
     case PrinterSetupResult::kDbusNoReply:
-      return "Couldn't talk to printscanmgr over D-Bus.";
+      return "Deprecated.";
     case PrinterSetupResult::kDbusTimeout:
       return "Timed out trying to reach printscanmgr over D-Bus.";
     // Problem reported by OS.
@@ -534,6 +542,10 @@ std::string ResultCodeToMessage(const PrinterSetupResult result) {
       return "Printer requires manual setup.";
     case PrinterSetupResult::kPrinterRemoved:
       return "Printer was removed during the setup.";
+    case PrinterSetupResult::kPrintscanmgrDbusNoReply:
+      return "Couldn't talk to printscanmgr over D-Bus.";
+    case PrinterSetupResult::kDebugdDbusNoReply:
+      return "Couldn't talk to debugd over D-Bus.";
   }
 }
 

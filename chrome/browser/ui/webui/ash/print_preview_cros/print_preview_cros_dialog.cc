@@ -8,7 +8,7 @@
 
 #include "ash/webui/print_preview_cros/url_constants.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 #include "content/public/browser/web_ui.h"
 
 namespace ash::printing::print_preview {

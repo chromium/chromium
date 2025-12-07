@@ -7,7 +7,6 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/sync_extension_helper.h"
@@ -15,7 +14,6 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "components/crx_file/id_util.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/common/manifest.h"
 
 namespace {
@@ -39,6 +37,10 @@ bool UsingDefaultThemeFunc(ThemeService* theme_service) {
 
 bool UsingCustomThemeFunc(ThemeService* theme_service) {
   return theme_service->GetThemeID() != ThemeHelper::kDefaultThemeID;
+}
+
+bool UsingGrayscaleThemeFunc(ThemeService* theme_service) {
+  return theme_service->GetIsGrayscale();
 }
 
 }  // namespace
@@ -69,6 +71,10 @@ bool UsingSystemTheme(Profile* profile) {
   return UsingSystemThemeFunc(GetThemeService(profile));
 }
 
+bool UsingGrayscaleTheme(Profile* profile) {
+  return UsingGrayscaleThemeFunc(GetThemeService(profile));
+}
+
 bool ThemeIsPendingInstall(Profile* profile, const std::string& id) {
   return SyncExtensionHelper::GetInstance()->IsExtensionPendingInstallForSync(
       profile, id);
@@ -77,6 +83,10 @@ bool ThemeIsPendingInstall(Profile* profile, const std::string& id) {
 void UseCustomTheme(Profile* profile, int index) {
   SyncExtensionHelper::GetInstance()->InstallExtension(
       profile, MakeName(index), extensions::Manifest::TYPE_THEME);
+}
+
+void UseGrayscaleTheme(Profile* profile) {
+  GetThemeService(profile)->SetIsGrayscale(true);
 }
 
 void UseDefaultTheme(Profile* profile) {
@@ -92,15 +102,12 @@ void UseSystemTheme(Profile* profile) {
 ThemePendingInstallChecker::ThemePendingInstallChecker(Profile* profile,
                                                        const std::string& theme)
     : profile_(profile), theme_(theme) {
-  CHECK(extensions::ExtensionSystem::Get(profile)
-            ->extension_service()
-            ->updater());
-  extensions::ExtensionSystem::Get(profile)
-      ->extension_service()
-      ->updater()
-      ->SetUpdatingStartedCallbackForTesting(
-          base::BindRepeating(&ThemePendingInstallChecker::CheckExitCondition,
-                              weak_ptr_factory_.GetWeakPtr()));
+  auto* updater = extensions::ExtensionUpdater::Get(profile_);
+  CHECK(updater);
+  CHECK(updater->enabled());
+  updater->SetUpdatingStartedCallbackForTesting(
+      base::BindRepeating(&ThemePendingInstallChecker::CheckExitCondition,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 ThemePendingInstallChecker::~ThemePendingInstallChecker() = default;
@@ -147,3 +154,9 @@ CustomThemeChecker::CustomThemeChecker(Profile* profile)
     : ThemeConditionChecker(profile,
                             "Waiting until profile is using a custom theme",
                             base::BindRepeating(&UsingCustomThemeFunc)) {}
+
+GrayscaleThemeChecker::GrayscaleThemeChecker(Profile* profile)
+    : ThemeConditionChecker(
+          profile,
+          "Waiting until profile is using the grayscale theme",
+          base::BindRepeating(&UsingGrayscaleThemeFunc)) {}

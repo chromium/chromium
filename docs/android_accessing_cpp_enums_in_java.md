@@ -20,6 +20,7 @@ directive (optional)
 the `GENERATED_JAVA_PREFIX_TO_STRIP` directive (optional)
 * Follows best practices by using
 [IntDef Instead of Enum](/styleguide/java/java.md#IntDef-Instead-of-Enum)
+* Generate the `flag` attribute using the `GENERATED_JAVA_IS_FLAG` directive (optional)
 * Copies comments that directly precede enum entries into the generated Java
 class
 
@@ -32,9 +33,10 @@ class
     // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome
     // GENERATED_JAVA_CLASS_NAME_OVERRIDE: FooBar
     // GENERATED_JAVA_PREFIX_TO_STRIP: BAR_
+    // GENERATED_JAVA_IS_FLAG: true
     enum SomeEnum {
-      BAR_A,
-      BAR_B,
+      BAR_A = 1 << 0,
+      BAR_B = 1 << 1,
       BAR_C = BAR_B,
     };
     ```
@@ -80,14 +82,14 @@ class
     import java.lang.annotation.Retention;
     import java.lang.annotation.RetentionPolicy;
 
-    @IntDef({
+    @IntDef(flag = true, value = {
         FooBar.A, FooBar.B, FooBar.C
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface FooBar {
-      int A = 0;
-      int B = 1;
-      int C = 1;
+      int A = 1 << 0;
+      int B = 1 << 1;
+      int C = 1 << 1;
     }
     ```
 

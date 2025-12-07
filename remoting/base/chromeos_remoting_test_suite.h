@@ -5,13 +5,13 @@
 #ifndef REMOTING_BASE_CHROMEOS_REMOTING_TEST_SUITE_H_
 #define REMOTING_BASE_CHROMEOS_REMOTING_TEST_SUITE_H_
 
-#include "base/test/test_suite.h"
+#include "chromeos/ash/components/test/ash_test_suite.h"
 
 namespace remoting {
 
 // Allows for testing scenarios which require localized resources (e.g tests for
 // It2MeConfirmationDialogChromeOS).
-class ChromeOSRemotingTestSuite : public base::TestSuite {
+class ChromeOSRemotingTestSuite : public ash::AshTestSuite {
  public:
   ChromeOSRemotingTestSuite(int argc, char** argv);
 

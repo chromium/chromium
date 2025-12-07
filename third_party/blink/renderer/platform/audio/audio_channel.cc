@@ -26,15 +26,13 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/audio/audio_channel.h"
 
 #include <math.h>
+
 #include <algorithm>
+
+#include "base/compiler_specific.h"
 #include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 
@@ -61,8 +59,8 @@ void AudioChannel::CopyFrom(const AudioChannel* source_channel) {
     Zero();
     return;
   }
-  memcpy(MutableData(), source_channel->Data(),
-         base::CheckMul(sizeof(float), length()).ValueOrDie());
+  UNSAFE_TODO(memcpy(MutableData(), source_channel->Data(),
+                     base::CheckMul(sizeof(float), length()).ValueOrDie()));
 }
 
 void AudioChannel::CopyFromRange(const AudioChannel* source_channel,
@@ -90,10 +88,10 @@ void AudioChannel::CopyFromRange(const AudioChannel* source_channel,
     if (range_length == length()) {
       Zero();
     } else {
-      memset(destination, 0, safe_length);
+      UNSAFE_TODO(memset(destination, 0, safe_length));
     }
   } else {
-    memcpy(destination, source + start_frame, safe_length);
+    UNSAFE_TODO(memcpy(destination, source + start_frame, safe_length));
   }
 }
 

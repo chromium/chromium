@@ -6,6 +6,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "content/browser/devtools/protocol/target_auto_attacher.h"
 #include "content/browser/devtools/service_worker_devtools_manager.h"
 #include "content/browser/devtools/shared_storage_worklet_devtools_manager.h"
@@ -55,9 +56,13 @@ class FrameAutoAttacher : public protocol::RendererAutoAttacherBase,
 
  private:
   raw_ptr<RenderFrameHostImpl> render_frame_host_ = nullptr;
-  bool observing_service_workers_ = false;
-  bool observing_auction_worklets_ = false;
-  bool observing_shared_storage_worklets_ = false;
+  base::ScopedObservation<ServiceWorkerDevToolsManager, FrameAutoAttacher>
+      service_worker_devtools_manager_observation_{this};
+  base::ScopedObservation<SharedStorageWorkletDevToolsManager,
+                          FrameAutoAttacher>
+      shared_storage_worklet_devtools_manager_observation_{this};
+  base::ScopedObservation<DebuggableAuctionWorkletTracker, FrameAutoAttacher>
+      debuggable_auction_worklet_worklet_devtools_manager_observation_{this};
 };
 
 }  // namespace content

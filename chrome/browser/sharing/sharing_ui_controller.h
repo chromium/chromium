@@ -49,7 +49,6 @@ class SharingUiController {
   virtual void OnDeviceChosen(const SharingTargetDeviceInfo& device) = 0;
   // Called when user chooses a local app to complete the task.
   virtual void OnAppChosen(const SharingApp& app) = 0;
-  virtual PageActionIconType GetIconType() = 0;
   virtual sync_pb::SharingSpecificFields::EnabledFeatures GetRequiredFeature()
       const = 0;
   virtual const gfx::VectorIcon& GetVectorIcon() const = 0;
@@ -117,9 +116,6 @@ class SharingUiController {
       std::optional<base::TimeDelta> response_timeout,
       components_sharing_message::SharingMessage sharing_message,
       std::optional<SharingMessageSender::ResponseCallback> callback);
-
-  // Updates the omnibox icon if available.
-  void UpdateIcon();
 
  private:
   // Closes the current dialog if there is one.

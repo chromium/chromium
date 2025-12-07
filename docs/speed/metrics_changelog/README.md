@@ -3,11 +3,13 @@
 This directory contains changelogs for [Web Vitals](https://web.dev/vitals/) available via web performance APIs:
 
  * [Largest Contentful Paint](lcp.md)
- * [First Input Delay](fid.md)
  * [Cumulative Layout Shift](cls.md)
- * [First Contentful Paint](fcp.md)
  * [Interaction to Next Paint](inp.md)
+ * [First Contentful Paint](fcp.md)
  * [Soft Navigation Heuristics](soft_navigations.md)
+
+And deprecated Web Vitals:
+ * [First Input Delay](fid.md) (Deprecated September 9 2024 in favor of Interaction to Next Paint)
 
 See also:
 

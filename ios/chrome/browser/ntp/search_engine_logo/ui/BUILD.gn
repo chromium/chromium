@@ -1,0 +1,57 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "search_engine_logo_consumer.h",
+    "search_engine_logo_container_view.h",
+    "search_engine_logo_container_view.mm",
+    "search_engine_logo_state.h",
+  ]
+  deps = [
+    "//base",
+    "//components/google/core/common",
+    "//components/image_fetcher/ios",
+    "//components/omnibox/common",
+    "//components/search",
+    "//components/search_provider_logos",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/google/model:google_logo",
+    "//ios/chrome/browser/metrics/model:metrics_internal",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/ui_utils:ui_utils_api",
+    "//ios/web/public",
+    "//net",
+    "//services/network/public/cpp",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "search_engine_logo_container_view_unittest.mm" ]
+  deps = [
+    ":ui",
+    "//base",
+    "//base/test:test_support",
+    "//components/google/core/common",
+    "//components/search_engines",
+    "//ios/chrome/browser/search_engines/model",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/url_loading/model:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/testing:ocmock_support",
+    "//ios/web/public/test",
+    "//net",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+  ]
+}

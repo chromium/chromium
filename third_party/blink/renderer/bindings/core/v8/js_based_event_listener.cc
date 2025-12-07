@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -56,7 +57,7 @@ void JSBasedEventListener::Invoke(
     Event* event) {
   DCHECK(execution_context_of_event_target);
   DCHECK(event);
-  DCHECK(event->target());
+  DCHECK(event->RawTarget());
   DCHECK(event->currentTarget());
 
   v8::Isolate* isolate = GetIsolate();
@@ -91,7 +92,7 @@ void JSBasedEventListener::Invoke(
   if (!script_state_of_listener->ContextIsValid())
     return;  // Silently fail.
 
-  probe::InvokeEventHandler probe_scope(script_state_of_listener, event, this);
+  probe::InvokeEventHandler probe_scope(*script_state_of_listener, event, this);
   ScriptState::Scope listener_script_state_scope(script_state_of_listener);
 
   // https://dom.spec.whatwg.org/#firing-events
@@ -142,9 +143,15 @@ void JSBasedEventListener::Invoke(
     // Step 8-2: If |struct|’s invocation-target-in-shadow-tree is false (i.e.,
     // event's target is in a shadow tree), then set |global|’s current
     // event to event.
-    Node* target_node = event->target()->ToNode();
-    if (!(target_node && target_node->IsInShadowTree()))
+    Node* target_node = event->RawTarget()->ToNode();
+    bool in_shadow_tree =
+        RuntimeEnabledFeatures::TargetInShadowDeterminedBeforeListenerEnabled()
+            ? event->invocationTargetInShadowTree()
+            : (target_node && target_node->IsInShadowTree());
+
+    if (!in_shadow_tree) {
       window->SetCurrentEvent(event);
+    }
   }
 
   {
@@ -169,8 +176,7 @@ void JSBasedEventListener::Invoke(
     window->SetCurrentEvent(current_event);
 }
 
-std::unique_ptr<SourceLocation> JSBasedEventListener::GetSourceLocation(
-    EventTarget& target) {
+SourceLocation* JSBasedEventListener::GetSourceLocation(EventTarget& target) {
   v8::HandleScope handle_scope(GetIsolate());
   v8::Local<v8::Value> effective_function = GetEffectiveFunction(target);
   if (effective_function->IsFunction()) {

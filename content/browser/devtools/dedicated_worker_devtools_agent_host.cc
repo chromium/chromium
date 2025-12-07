@@ -6,6 +6,7 @@
 
 #include "content/browser/devtools/protocol/io_handler.h"
 #include "content/browser/devtools/protocol/network_handler.h"
+#include "content/browser/devtools/protocol/storage_handler.h"
 #include "content/browser/devtools/protocol/target_auto_attacher.h"
 #include "content/browser/devtools/protocol/target_handler.h"
 #include "content/browser/devtools/worker_devtools_manager.h"
@@ -18,6 +19,12 @@ namespace content {
 DedicatedWorkerDevToolsAgentHost* DedicatedWorkerDevToolsAgentHost::GetFor(
     const DedicatedWorkerHost* host) {
   return WorkerDevToolsManager::GetInstance().GetDevToolsHost(host);
+}
+
+// static
+void DedicatedWorkerDevToolsAgentHost::AddAllAgentHosts(
+    DevToolsAgentHost::List* result) {
+  WorkerDevToolsManager::GetInstance().AddAllAgentHosts(result);
 }
 
 DedicatedWorkerDevToolsAgentHost::DedicatedWorkerDevToolsAgentHost(
@@ -40,6 +47,12 @@ DedicatedWorkerDevToolsAgentHost::DedicatedWorkerDevToolsAgentHost(
 
 DedicatedWorkerDevToolsAgentHost::~DedicatedWorkerDevToolsAgentHost() = default;
 
+std::optional<blink::StorageKey>
+DedicatedWorkerDevToolsAgentHost::GetStorageKey() {
+  DedicatedWorkerHost* const host = GetDedicatedWorkerHost();
+  return host ? std::make_optional(host->GetStorageKey()) : std::nullopt;
+}
+
 std::string DedicatedWorkerDevToolsAgentHost::GetType() {
   return kTypeDedicatedWorker;
 }
@@ -54,14 +67,16 @@ DedicatedWorkerDevToolsAgentHost::GetDedicatedWorkerHost() {
       blink::DedicatedWorkerToken(devtools_worker_token()));
 }
 
-bool DedicatedWorkerDevToolsAgentHost::AttachSession(DevToolsSession* session,
-                                                     bool acquire_wake_lock) {
+bool DedicatedWorkerDevToolsAgentHost::AttachSession(DevToolsSession* session) {
   session->CreateAndAddHandler<protocol::IOHandler>(GetIOContext());
+  session->CreateAndAddHandler<protocol::StorageHandler>(this,
+                                                         session->GetClient());
   session->CreateAndAddHandler<protocol::TargetHandler>(
       protocol::TargetHandler::AccessMode::kAutoAttachOnly, GetId(),
       auto_attacher_.get(), session);
   session->CreateAndAddHandler<protocol::NetworkHandler>(
-      GetId(), devtools_worker_token(), GetIOContext(), base::DoNothing(),
+      GetId(), devtools_worker_token(), GetIOContext(),
+      GetProcessHost()->GetStoragePartition(), base::DoNothing(),
       session->GetClient());
   return true;
 }
@@ -77,6 +92,23 @@ DedicatedWorkerDevToolsAgentHost::cross_origin_embedder_policy(
   DedicatedWorkerHost* const host = GetDedicatedWorkerHost();
   return host ? std::make_optional(host->cross_origin_embedder_policy())
               : std::nullopt;
+}
+
+void DedicatedWorkerDevToolsAgentHost::DisconnectIfNotCreated() {
+  // If the child worker was actually created, we rely on mojo connection
+  // disconnect that is set up in ChildWorkerCreated.
+  if (!child_worker_created_) {
+    Disconnected();
+  }
+}
+
+void DedicatedWorkerDevToolsAgentHost::ChildWorkerCreated(
+    const GURL& url,
+    const std::string& name,
+    base::OnceCallback<void(DevToolsAgentHostImpl*)> callback) {
+  WorkerOrWorkletDevToolsAgentHost::ChildWorkerCreated(url, name,
+                                                       std::move(callback));
+  child_worker_created_ = true;
 }
 
 }  // namespace content

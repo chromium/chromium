@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/in_session_password_change/password_change_ui.h"
 
 #include <memory>
@@ -16,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/saml/password_expiry_notification.h"
@@ -24,7 +20,6 @@
 #include "chrome/browser/ui/webui/ash/in_session_password_change/password_change_dialogs.h"
 #include "chrome/browser/ui/webui/ash/in_session_password_change/password_change_handler.h"
 #include "chrome/browser/ui/webui/ash/in_session_password_change/urgent_password_expiry_notification_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/gaia_auth_host_resources_map.h"
@@ -43,6 +38,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/webui/webui_util.h"
 
 namespace ash {
 
@@ -109,13 +105,11 @@ PasswordChangeUI::PasswordChangeUI(content::WebUI* web_ui)
   source->AddString("hostedHeader", GetHostedHeaderText(password_change_url));
   source->UseStringsJs();
 
-  source->AddResourcePaths(
-      base::make_span(kPasswordChangeResources, kPasswordChangeResourcesSize));
+  source->AddResourcePaths(base::span(kPasswordChangeResources));
   source->SetDefaultResource(IDR_PASSWORD_CHANGE_PASSWORD_CHANGE_APP_HTML);
 
   // Add Gaia Authenticator resources
-  source->AddResourcePaths(
-      base::make_span(kGaiaAuthHostResources, kGaiaAuthHostResourcesSize));
+  source->AddResourcePaths(base::span(kGaiaAuthHostResources));
 }
 
 PasswordChangeUI::~PasswordChangeUI() = default;
@@ -160,8 +154,7 @@ ConfirmPasswordChangeUI::ConfirmPasswordChangeUI(content::WebUI* web_ui)
 
   source->UseStringsJs();
 
-  source->AddResourcePaths(
-      base::make_span(kPasswordChangeResources, kPasswordChangeResourcesSize));
+  source->AddResourcePaths(base::span(kPasswordChangeResources));
   source->SetDefaultResource(
       IDR_PASSWORD_CHANGE_CONFIRM_PASSWORD_CHANGE_APP_HTML);
 
@@ -206,8 +199,7 @@ UrgentPasswordExpiryNotificationUI::UrgentPasswordExpiryNotificationUI(
 
   source->UseStringsJs();
 
-  source->AddResourcePaths(
-      base::make_span(kPasswordChangeResources, kPasswordChangeResourcesSize));
+  source->AddResourcePaths(base::span(kPasswordChangeResources));
   source->SetDefaultResource(
       IDR_PASSWORD_CHANGE_URGENT_PASSWORD_EXPIRY_NOTIFICATION_HTML);
 

@@ -18,7 +18,7 @@
 @implementation BaseEarlGreyTestCaseAppInterface
 
 + (void)logMessage:(NSString*)message {
-  DLOG(WARNING) << base::SysNSStringToUTF8(message);
+  LOG(WARNING) << base::SysNSStringToUTF8(message);
 }
 
 + (void)enableFastAnimation {

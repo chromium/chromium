@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 
 namespace blink {
@@ -33,7 +34,7 @@ class JSEventHandlerForContentAttribute final : public JSEventHandler {
 
   // blink::JSBasedEventListener overrides:
   v8::Local<v8::Value> GetListenerObject(EventTarget&) override;
-  std::unique_ptr<SourceLocation> GetSourceLocation(EventTarget&) override;
+  SourceLocation* GetSourceLocation(EventTarget&) override;
 
   const String& ScriptBody() const override { return script_body_; }
 

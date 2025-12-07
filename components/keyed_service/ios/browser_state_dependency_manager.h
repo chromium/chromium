@@ -75,11 +75,6 @@ class KEYED_SERVICE_EXPORT BrowserStateDependencyManager
   // Helper function used by CreateBrowserStateServices[ForTest].
   void DoCreateBrowserStateServices(web::BrowserState* context,
                                     bool is_testing_context);
-
-#ifndef NDEBUG
-  // DependencyManager:
-  void DumpContextDependencies(void* context) const final;
-#endif  // NDEBUG
 };
 
 #endif  // COMPONENTS_KEYED_SERVICE_IOS_BROWSER_STATE_DEPENDENCY_MANAGER_H_

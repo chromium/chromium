@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "remoting/base/result.h"
+
 #include <memory>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr_exclusion.h"
-#include "remoting/base/result.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting {
@@ -240,7 +242,7 @@ TEST(Result, MapLvalue) {
   Result<const char*, int> result2 =
       result1.Map([](const std::string& value) { return value.c_str(); });
   ASSERT_TRUE(result2.is_success());
-  EXPECT_TRUE(strcmp("value18", result2.success()) == 0);
+  UNSAFE_TODO(EXPECT_TRUE(strcmp("value18", result2.success()) == 0));
 }
 
 TEST(Result, MapRvalue) {

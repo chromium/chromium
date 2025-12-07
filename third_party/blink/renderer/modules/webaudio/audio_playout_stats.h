@@ -30,7 +30,7 @@ class MODULES_EXPORT AudioPlayoutStats : public ScriptWrappable {
   DOMHighResTimeStamp maximumLatency(ScriptState* script_state);
   void resetLatency(ScriptState* script_state);
 
-  ScriptValue toJSON(ScriptState* script_state);
+  ScriptObject toJSON(ScriptState* script_state);
 
   void Trace(Visitor*) const override;
 
@@ -41,7 +41,7 @@ class MODULES_EXPORT AudioPlayoutStats : public ScriptWrappable {
   void OnMicrotask();
 
   WeakMember<AudioContext> context_;
-  AudioContext::AudioFrameStats stats_;
+  AudioFrameStatsAccumulator stats_;
   bool stats_are_from_current_task_ = false;
 };
 

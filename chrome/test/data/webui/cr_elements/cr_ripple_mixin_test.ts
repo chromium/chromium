@@ -30,7 +30,7 @@ suite('CrRippleMixin', function() {
       }
 
       const rippleContainer =
-          this.shadowRoot!.querySelector<HTMLElement>('#container');
+          this.shadowRoot.querySelector<HTMLElement>('#container');
       assertTrue(!!rippleContainer);
       this.rippleContainer = rippleContainer;
       return super.createRipple();
@@ -49,33 +49,33 @@ suite('CrRippleMixin', function() {
 
   test('createRippleDefault', function() {
     assertFalse(element.hasRipple());
-    assertEquals(null, element.shadowRoot!.querySelector('cr-ripple'));
-    assertEquals(null, element.shadowRoot!.querySelector('#ink'));
+    assertEquals(null, element.shadowRoot.querySelector('cr-ripple'));
+    assertEquals(null, element.shadowRoot.querySelector('#ink'));
 
     element.ensureRipple();
 
     assertTrue(element.hasRipple());
     const ripple = element.getRipple();
-    assertEquals(ripple, element.shadowRoot!.querySelector('cr-ripple'));
-    assertEquals(ripple, element.shadowRoot!.querySelector('#ink'));
+    assertEquals(ripple, element.shadowRoot.querySelector('cr-ripple'));
+    assertEquals(ripple, element.shadowRoot.querySelector('#ink'));
     assertEquals(element.shadowRoot, ripple.parentNode);
   });
 
   test('createRippleOverride', function() {
     assertFalse(element.hasRipple());
-    assertEquals(null, element.shadowRoot!.querySelector('cr-ripple'));
-    assertEquals(null, element.shadowRoot!.querySelector('#ink'));
+    assertEquals(null, element.shadowRoot.querySelector('cr-ripple'));
+    assertEquals(null, element.shadowRoot.querySelector('#ink'));
 
     element.useCustomContainer = true;
     element.ensureRipple();
 
     assertTrue(element.hasRipple());
-    assertNotEquals(null, element.shadowRoot!.querySelector('cr-ripple'));
+    assertNotEquals(null, element.shadowRoot.querySelector('cr-ripple'));
     const ripple = element.getRipple();
-    assertEquals(ripple, element.shadowRoot!.querySelector('cr-ripple'));
-    assertEquals(ripple, element.shadowRoot!.querySelector('#ink'));
+    assertEquals(ripple, element.shadowRoot.querySelector('cr-ripple'));
+    assertEquals(ripple, element.shadowRoot.querySelector('#ink'));
     assertEquals(
-        element.shadowRoot!.querySelector('#container'), ripple.parentNode);
+        element.shadowRoot.querySelector('#container'), ripple.parentNode);
   });
 
   test('noink', async function() {

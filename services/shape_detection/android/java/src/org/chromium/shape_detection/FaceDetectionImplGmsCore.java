@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 package org.chromium.shape_detection;
+import org.chromium.build.annotations.NullMarked;
 
 import android.graphics.PointF;
 import android.util.SparseArray;
@@ -28,12 +29,10 @@ import java.util.List;
  * Google Play services implementation of the FaceDetection service defined in
  * services/shape_detection/public/mojom/facedetection.mojom
  */
+@NullMarked
 public class FaceDetectionImplGmsCore implements FaceDetection {
     private static final String TAG = "FaceDetectionImpl";
     private static final int MAX_FACES = 32;
-    // Maximum rotation around the z-axis allowed when computing a tighter bounding box for the
-    // detected face.
-    private static final int MAX_EULER_Z = 15;
     private final int mMaxFaces;
     private final boolean mFastMode;
     private final FaceDetector mFaceDetector;

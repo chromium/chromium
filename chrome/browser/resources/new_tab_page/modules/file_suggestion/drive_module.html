@@ -1,0 +1,21 @@
+<ntp-module-header
+    id="moduleHeaderElementV2"
+    header-text="$i18n{modulesDriveTitleV2}"
+    .menuItems="${this.getMenuItems_()}"
+    more-actions-text="${this.i18nRecursive('',
+                                  'modulesMoreActions',
+                                  'modulesDriveSentence')}"
+    @disable-button-click="${this.onDisableButtonClick_}"
+    @dismiss-button-click="${this.onDismissButtonClick_}"
+    @info-button-click="${this.onInfoButtonClick_}">
+</ntp-module-header>
+<ntp-file-suggestion id="fileSuggestion"
+    module-name="Drive"
+    .files="${this.files}">
+  </ntp-file-suggestion>
+${this.showInfoDialog_ ? html`
+  <ntp-info-dialog show-on-attach
+      .innerHTML="${this.i18nAdvanced('modulesDriveInfo')}"
+      @close="${this.onInfoDialogClose_}">
+  </ntp-info-dialog>
+` : ''}

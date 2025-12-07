@@ -93,9 +93,6 @@ class AccountManagerUIHandler
   // WebUI "removeAccount" message callback.
   void HandleRemoveAccount(const base::Value::List& args);
 
-  // WebUI "changeArcAvailability" message callback.
-  void HandleChangeArcAvailability(const base::Value::List& args);
-
   // |account_manager::AccountManager::CheckDummyGaiaTokenForAllAccounts|
   // callback.
   void OnCheckDummyGaiaTokenForAllAccounts(
@@ -125,9 +122,6 @@ class AccountManagerUIHandler
 
   // Refreshes the UI.
   void RefreshUI();
-
-  // Whether some accounts may not be available in ARC due to policy or config.
-  static bool AreArcAccountsRestricted();
 
   raw_ptr<Profile> profile_ = nullptr;
 

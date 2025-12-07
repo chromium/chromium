@@ -15,6 +15,7 @@
 #include "cc/input/snap_selection_strategy.h"
 #include "cc/paint/element_id.h"
 #include "cc/trees/layer_tree_host_client.h"
+#include "cc/trees/scroll_source_type.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d.h"
 
@@ -98,12 +99,12 @@ struct CC_EXPORT CompositorCommitData {
   bool browser_controls_constraint_changed = false;
 
   struct ScrollEndInfo {
-    // Set to true when a scroll gesture being handled on the compositor has
-    // ended.
-    bool scroll_gesture_did_end = false;
+    ScrollEndInfo();
+    ~ScrollEndInfo();
 
-    bool gesture_affects_outer_viewport_scroll = false;
-    bool gesture_affects_inner_viewport_scroll = false;
+    // The set of containers for which an impl scroll has ended between this
+    // commit and the last.
+    base::flat_set<ElementId> done_containers;
   };
   ScrollEndInfo scroll_end_data;
 
@@ -124,6 +125,10 @@ struct CC_EXPORT CompositorCommitData {
   // scroll based on the scroll updates so far. The main thread will use this to
   // determine whether to fire scrollsnapchanging or not.
   std::unique_ptr<SnapSelectionStrategy> snap_strategy;
+
+  // Tracks type of the last latched scroll: absolute, relative or stationary.
+  // https://drafts.csswg.org/css-scroll-snap-1/#scroll-types.
+  ScrollSourceType scroll_type = ScrollSourceType::kNone;
 };
 
 }  // namespace cc

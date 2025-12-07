@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/guest_os/guest_os_file_watcher.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_service.pb.h"

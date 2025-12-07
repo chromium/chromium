@@ -4,6 +4,6 @@
 
 #include "chrome/common/importer/importer_bridge.h"
 
-ImporterBridge::ImporterBridge() {}
+ImporterBridge::ImporterBridge() = default;
 
-ImporterBridge::~ImporterBridge() {}
+ImporterBridge::~ImporterBridge() = default;

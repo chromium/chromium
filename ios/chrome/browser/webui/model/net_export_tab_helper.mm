@@ -19,5 +19,3 @@ void NetExportTabHelper::ShowMailComposer(ShowMailComposerContext* context) {
 void NetExportTabHelper::SetDelegate(id<NetExportTabHelperDelegate> delegate) {
   delegate_ = delegate;
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(NetExportTabHelper)

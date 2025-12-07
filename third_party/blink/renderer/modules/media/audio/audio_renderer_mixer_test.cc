@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/media/audio/audio_renderer_mixer.h"
 
 #include <stddef.h>
@@ -17,6 +12,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -24,6 +20,8 @@
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "base/types/zip.h"
+#include "media/base/audio_bus.h"
 #include "media/base/fake_audio_render_callback.h"
 #include "media/base/mock_audio_renderer_sink.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -69,7 +67,7 @@ class AudioRendererMixerTest
       input_parameters_.emplace_back(
           media::AudioParameters::AUDIO_PCM_LINEAR,
           media::ChannelLayoutConfig::FromLayout<kChannelLayout>(),
-          sample_rates[i], kHighLatencyBufferSize);
+          UNSAFE_TODO(sample_rates[i]), kHighLatencyBufferSize);
     }
 
     // Create output parameters based on test parameters.
@@ -100,7 +98,8 @@ class AudioRendererMixerTest
   AudioRendererMixerTest(const AudioRendererMixerTest&) = delete;
   AudioRendererMixerTest& operator=(const AudioRendererMixerTest&) = delete;
 
-  AudioRendererMixer* GetMixer(const FrameToken&,
+  AudioRendererMixer* GetMixer(const LocalFrameToken&,
+                               const FrameToken&,
                                const media::AudioParameters&,
                                media::AudioLatency::Type,
                                const media::OutputDeviceInfo&,
@@ -113,6 +112,7 @@ class AudioRendererMixerTest
   }
 
   scoped_refptr<media::AudioRendererSink> GetSink(const LocalFrameToken&,
+                                                  const FrameToken&,
                                                   std::string_view) override {
     return sink_;
   }
@@ -144,16 +144,20 @@ class AudioRendererMixerTest
   }
 
   bool ValidateAudioData(int index, int frames, float scale, double epsilon) {
-    for (int i = 0; i < audio_bus_->channels(); ++i) {
-      for (int j = index; j < frames; j++) {
-        double error = fabs(audio_bus_->channel(i)[j] -
-                            expected_audio_bus_->channel(i)[j] * scale);
+    for (int ch = 0; ch < audio_bus_->channels(); ++ch) {
+      auto expected_channel = expected_audio_bus_->channel_span(ch);
+      auto actual_channel = audio_bus_->channel_span(ch);
+
+      for (int sample = index; sample < frames; sample++) {
+        const double error =
+            fabs(actual_channel[sample] - expected_channel[sample] * scale);
+
         // The second comparison is for the case when scale is set to 0
         // (and less that 1 in general)
         if ((error > epsilon * scale) && (error > epsilon)) {
-          EXPECT_NEAR(expected_audio_bus_->channel(i)[j] * scale,
-                      audio_bus_->channel(i)[j], epsilon * scale)
-              << " i=" << i << ", j=" << j;
+          EXPECT_NEAR(expected_channel[sample] * scale, actual_channel[sample],
+                      epsilon * scale)
+              << " ch=" << ch << ", sample=" << sample;
           return false;
         }
       }
@@ -199,9 +203,8 @@ class AudioRendererMixerTest
 
   // Fill |audio_bus_| fully with |value|.
   void FillAudioData(float value) {
-    for (int i = 0; i < audio_bus_->channels(); ++i) {
-      std::fill(audio_bus_->channel(i),
-                audio_bus_->channel(i) + audio_bus_->frames(), value);
+    for (auto channel : audio_bus_->AllChannels()) {
+      std::ranges::fill(channel, value);
     }
   }
 

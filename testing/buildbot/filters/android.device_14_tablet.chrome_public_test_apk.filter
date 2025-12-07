@@ -1,0 +1,80 @@
+# crbug.com/355057773
+-org.chromium.chrome.browser.keyboard_accessory.PasswordGenerationIntegrationTest.*
+
+# crbug.com/376095153
+-org.chromium.chrome.browser.display_cutout.DisplayCutoutTest.*
+
+# crbug.com/375710620
+-org.chromium.chrome.browser.VirtualKeyboardResizeTest.testModeAfterNavigationWithPref
+
+# crbug.com/376100658
+-org.chromium.chrome.browser.payments.PaymentRequestServiceWorkerPaymentAppTest.*
+-org.chromium.chrome.browser.payments.PaymentRequestCanMakePaymentMetricsTest.testNoQuery_Complete
+-org.chromium.chrome.browser.payments.PaymentRequestCanMakePaymentMetricsTest.testNoQuery_UserAbort
+-org.chromium.chrome.browser.payments.PaymentRequestContactDetailsTest.testPaymentRequestIncognitoMode
+-org.chromium.chrome.browser.payments.PaymentRequestEmailAndPhoneTest.testAddEmailAndPhoneAndPay
+-org.chromium.chrome.browser.payments.PaymentRequestEmailAndPhoneTest.testAddInvalidEmailAndCancel
+-org.chromium.chrome.browser.payments.PaymentRequestNameTest.testAddInvalidNameAndCancel
+-org.chromium.chrome.browser.payments.PaymentRequestNameTest.testAddNameAndPay
+
+# crbug.com/376168546
+-org.chromium.chrome.browser.tabmodel.ContextMenuLoadUrlParamsTest.*
+
+# crbug.com/376169912
+-org.chromium.chrome.browser.ntp.ShowNtpAtStartupTest.testFakeSearchBoxWidth
+-org.chromium.chrome.browser.ntp.ShowNtpAtStartupTest.testMvtLayoutHorizontalMargin
+
+# crbug.com/376367458
+-org.chromium.chrome.browser.app.ContextMenuDragTest.*
+
+# crbug.com/376371633
+-org.chromium.chrome.browser.tabmodel.ChromeTabCreatorTest.testCreateNewTabInBackground
+
+# crbug.com/368117896
+-org.chromium.chrome.browser.commerce.coupons.DiscountsIntegrationTest.testRenderDiscountContextualPageActionIcon
+
+# crbug.com/376375165
+-org.chromium.chrome.browser.NavigateTest.testWindowOpenUrlSpoof
+
+# crbug.com/376527109
+-org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsDialogCoordinatorTest.testIphMessageResizedOnTablet
+-org.chromium.chrome.browser.tasks.tab_management.TabListContainerViewBinderTest.testSetInitialScrollIndex_Grid
+
+# crbug.com/376528174
+-org.chromium.chrome.browser.signin.FullscreenSigninAndHistorySyncIntegrationTest.testScreenRotation
+
+# crbug.com/378555170
+-org.chromium.chrome.browser.sync.ui.SyncErrorMessageTest.testSyncErrorMessageForAuthErrorViewForSignedInUsers
+-org.chromium.chrome.browser.sync.ui.SyncErrorMessageTest.testSyncErrorMessageForClientOutOfDateView
+-org.chromium.chrome.browser.sync.ui.SyncErrorMessageTest.testSyncErrorMessageForSyncSetupIncompleteView
+-org.chromium.chrome.browser.sync.ui.SyncErrorMessageTest.testSyncErrorMessageForPassphraseRequiredViewForSignedInUsers
+-org.chromium.chrome.browser.sync.ui.SyncErrorMessageTest.testSyncErrorMessageForPassphraseRequiredView
+-org.chromium.chrome.browser.sync.ui.SyncErrorMessageTest.testSyncErrorMessageForAuthErrorViewModern
+-org.chromium.chrome.browser.sync.ui.SyncErrorMessageTest.testActionForPassphraseRequiredForSignedInUsers
+-org.chromium.chrome.browser.sync.ui.SyncErrorMessageTest.testSyncErrorMessageForClientOutOfDateViewForSignedInUsers
+
+# crbug.com/378557957
+-org.chromium.chrome.browser.permissions.PermissionUpdateMessageTest.testMessageForMediaStreamMicrophone
+-org.chromium.chrome.browser.permissions.PermissionUpdateMessageTest.testMessageForGeolocation
+-org.chromium.chrome.browser.permissions.PermissionUpdateMessageTest.testswitchContentShouldNotReprompt
+-org.chromium.chrome.browser.permissions.PermissionUpdateMessageTest.testInfobarShutsDownCleanlyForGeolocation
+-org.chromium.chrome.browser.permissions.PermissionUpdateMessageTest.testMessageForMediaStreamCamera
+
+# crbug.com/378734549
+-org.chromium.chrome.browser.subresource_filter.SubresourceFilterTest.resourceFilteredReload_MessagesUi
+-org.chromium.chrome.browser.subresource_filter.SubresourceFilterTest.resourceNotFiltered
+-org.chromium.chrome.browser.subresource_filter.SubresourceFilterTest.resourceNotFilteredWithWarning
+
+# crbug.com/378734892
+-org.chromium.chrome.browser.password_manager.PasswordCheckupIntegrationTest.testPasswordCheckOpensPasswordCheckupForLocalWhenStateCompromised
+
+# crbug.com/378735617
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchInstrumentationTest.testNonResolveGesture
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchInstrumentationTest.testResolveGesture
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchSystemTest.testAppMenuSuppressedWhenMaximized
+
+# crbug.com/402773550
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testTriggeringContextualSearchHidesFindInPageOverlay
+
+# crbug.com/441501312
+-org.chromium.chrome.browser.history.HistoryPaneTest.testOpenedHistoryItem_SingleClickOpensInSameTab

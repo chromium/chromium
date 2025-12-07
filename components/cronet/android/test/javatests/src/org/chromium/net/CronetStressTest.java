@@ -18,7 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.apihelpers.UploadDataProviders;
 
@@ -35,17 +35,18 @@ import java.util.concurrent.Executors;
 public class CronetStressTest {
     @Rule public final CronetTestRule mTestRule = CronetTestRule.withAutomaticEngineStartup();
 
+    private NativeTestServer mNativeTestServer;
+
     @Before
     public void setUp() throws Exception {
-        assertThat(
-                        NativeTestServer.startNativeTestServer(
-                                mTestRule.getTestFramework().getContext()))
-                .isTrue();
+        mNativeTestServer =
+                NativeTestServer.createNativeTestServer(mTestRule.getTestFramework().getContext());
+        mNativeTestServer.start();
     }
 
     @After
     public void tearDown() throws Exception {
-        NativeTestServer.shutdownNativeTestServer();
+        mNativeTestServer.close();
     }
 
     @Test
@@ -71,7 +72,7 @@ public class CronetStressTest {
                                 .getTestFramework()
                                 .getEngine()
                                 .newUrlRequestBuilder(
-                                        NativeTestServer.getEchoAllHeadersURL(),
+                                        mNativeTestServer.getEchoAllHeadersURL(),
                                         callback,
                                         callback.getExecutor());
                 for (int j = 0; j < kNumRequestHeaders; j++) {

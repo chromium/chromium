@@ -143,7 +143,7 @@ class WebCodecsDecoderSelectorTest : public ::testing::Test {
   WebCodecsDecoderSelectorTest& operator=(const WebCodecsDecoderSelectorTest&) =
       delete;
 
-  void OnOutput(scoped_refptr<Output> output) { NOTREACHED_IN_MIGRATION(); }
+  void OnOutput(scoped_refptr<Output> output) { NOTREACHED(); }
 
   MOCK_METHOD1_T(OnDecoderSelected, void(int));
 
@@ -181,15 +181,15 @@ class WebCodecsDecoderSelectorTest : public ::testing::Test {
     decoder_selector_ =
         std::make_unique<DecoderSelector<TypeParam::kStreamType>>(
             scheduler::GetSingleThreadTaskRunnerForTesting(),
-            WTF::BindRepeating(&Self::CreateDecoders, base::Unretained(this)),
-            WTF::BindRepeating(&Self::OnOutput, base::Unretained(this)));
+            BindRepeating(&Self::CreateDecoders, Unretained(this)),
+            blink::BindRepeating(&Self::OnOutput, Unretained(this)));
   }
 
   void SelectDecoder(DecoderConfig config = TypeParam::CreateConfig()) {
     last_set_decoder_config_ = config;
     decoder_selector_->SelectDecoder(
         config, low_delay_,
-        WTF::BindOnce(&Self::OnDecoderSelectedThunk, base::Unretained(this)));
+        BindOnce(&Self::OnDecoderSelectedThunk, Unretained(this)));
     RunUntilIdle();
   }
 

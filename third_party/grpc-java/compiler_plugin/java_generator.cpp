@@ -14,6 +14,30 @@
  * limitations under the License.
  */
 
+// gRPC Java code generation
+//
+// The generated code should be very light-weight in terms of size. Although
+// less of a scaling problem than for protobuf messages, additions here are
+// multiplied many times and could easily bloat binaries if added to without
+// consideration. This is generally achieved by putting logic in io.grpc.stub
+// and limiting the generated code to API surface and inputs.
+//
+// gRPC is compatible with old versions of the generated code. New versions of
+// generated code are free to use new APIs, and thus require new gRPC versions.
+// But this isn't a special rule and is more just that the generated code is
+// best viewed as a library that depends on gRPC (as it may be used within a
+// library), and it should adhere to the normal rules of such. Notably, it can
+// only use stable API. Using experimental API, even if only exposing its own
+// experimental API, is not safe as libraries do not get to choose the version
+// of gRPC being used. The rule here is more "everything should behave like
+// normal to users" or "we don't require users to generate code for their
+// transitive dependency tree because OSS build tools don't support that."
+//
+// Java lite is designed for tools like Proguard to strip unused code. Be
+// careful not to add new references to methods that would retain them even when
+// unneeded. In particular, we want uncalled RPC methods to have their
+// descriptors and code pruned.
+
 #include "java_generator.h"
 
 #include <algorithm>
@@ -123,7 +147,7 @@ static std::set<std::string> java_keywords = {
 //   - decapitalize the first letter
 //   - remove embedded underscores & capitalize the following letter
 //  Finally, if the result is a reserved java keyword, append an underscore.
-static std::string MixedLower(const std::string& word) {
+static std::string MixedLower(std::string word) {
   std::string w;
   w += tolower(word[0]);
   bool after_underscore = false;
@@ -145,7 +169,7 @@ static std::string MixedLower(const std::string& word) {
 //   - An underscore is inserted where a lower case letter is followed by an
 //     upper case letter.
 //   - All letters are converted to upper case
-static std::string ToAllUpperCase(const std::string& word) {
+static std::string ToAllUpperCase(std::string word) {
   std::string w;
   for (size_t i = 0; i < word.length(); ++i) {
     w += toupper(word[i]);
@@ -157,19 +181,19 @@ static std::string ToAllUpperCase(const std::string& word) {
 }
 
 static inline std::string LowerMethodName(const MethodDescriptor* method) {
-  return MixedLower(method->name());
+  return MixedLower(std::string(method->name()));
 }
 
 static inline std::string MethodPropertiesFieldName(const MethodDescriptor* method) {
-  return "METHOD_" + ToAllUpperCase(method->name());
+  return "METHOD_" + ToAllUpperCase(std::string(method->name()));
 }
 
 static inline std::string MethodPropertiesGetterName(const MethodDescriptor* method) {
-  return MixedLower("get_" + method->name() + "_method");
+  return MixedLower("get_" + std::string(method->name()) + "_method");
 }
 
 static inline std::string MethodIdFieldName(const MethodDescriptor* method) {
-  return "METHODID_" + ToAllUpperCase(method->name());
+  return "METHODID_" + ToAllUpperCase(std::string(method->name()));
 }
 
 static inline std::string MessageFullJavaName(const Descriptor* desc) {
@@ -322,6 +346,26 @@ static std::vector<std::string> GrpcGetDocLinesForDescriptor(const DescriptorTyp
   return GrpcGetDocLines(GrpcGetCommentsForDescriptor(descriptor));
 }
 
+enum StubType {
+  ASYNC_INTERFACE = 0,
+  BLOCKING_CLIENT_INTERFACE = 1,
+  FUTURE_CLIENT_INTERFACE = 2,
+  BLOCKING_SERVER_INTERFACE = 3,
+  ASYNC_CLIENT_IMPL = 4,
+  BLOCKING_CLIENT_IMPL = 5,
+  FUTURE_CLIENT_IMPL = 6,
+  ABSTRACT_CLASS = 7,
+  BLOCKING_V2_CLIENT_IMPL = 8,
+  NONE = 999,
+};
+
+enum CallType {
+  ASYNC_CALL = 0,
+  BLOCKING_CALL = 1,
+  FUTURE_CALL = 2,
+  BLOCKING_V2_CALL = 3,
+};
+
 // TODO(nmittler): Remove once protobuf includes javadoc methods in distribution.
 static void GrpcWriteDocCommentBody(Printer* printer,
                                     const std::vector<std::string>& lines,
@@ -356,12 +400,33 @@ static void GrpcWriteDocComment(Printer* printer, const std::string& comments) {
   printer->Print(" */\n");
 }
 
-// TODO(nmittler): Remove once protobuf includes javadoc methods in distribution.
+// For the non-interface classes add a description of use before the description from proto
 static void GrpcWriteServiceDocComment(Printer* printer,
-                                       const ServiceDescriptor* service) {
-  // Deviating from protobuf to avoid extraneous docs
-  // (see https://github.com/google/protobuf/issues/1406);
+                                       const ServiceDescriptor* service,
+                                       StubType type) {
   printer->Print("/**\n");
+
+  std::map<std::string, std::string> vars = {{"service", std::string(service->name())}};
+  switch (type) {
+    case ASYNC_CLIENT_IMPL:
+      printer->Print(vars, " * A stub to allow clients to do asynchronous rpc calls to service $service$.\n");
+      break;
+    case BLOCKING_CLIENT_IMPL:
+      printer->Print(vars, " * A stub to allow clients to do limited synchronous rpc calls to service $service$.\n");
+      break;
+    case BLOCKING_V2_CLIENT_IMPL:
+      printer->Print(vars, " * A stub to allow clients to do synchronous rpc calls to service $service$.\n");
+      break;
+    case FUTURE_CLIENT_IMPL:
+      printer->Print(vars, " * A stub to allow clients to do ListenableFuture-style rpc calls to service $service$.\n");
+      break;
+    case ABSTRACT_CLASS:
+      printer->Print(vars, " * Base class for the server implementation of the service $service$.\n");
+      break;
+    default: ;
+      // No extra description
+  }
+
   std::vector<std::string> lines = GrpcGetDocLinesForDescriptor(service);
   GrpcWriteDocCommentBody(printer, lines, true);
   printer->Print(" */\n");
@@ -455,7 +520,8 @@ static void PrintMethodFields(
         "            .setResponseMarshaller($ProtoUtils$.marshaller(\n"
         "                $output_type$.getDefaultInstance()))\n");
 
-    (*vars)["proto_method_descriptor_supplier"] = service->name() + "MethodDescriptorSupplier";
+    (*vars)["proto_method_descriptor_supplier"]
+        = std::string(service->name()) + "MethodDescriptorSupplier";
     if (flavor == ProtoFlavor::NORMAL) {
       p->Print(
           *vars,
@@ -475,24 +541,7 @@ static void PrintMethodFields(
   }
 }
 
-enum StubType {
-  ASYNC_INTERFACE = 0,
-  BLOCKING_CLIENT_INTERFACE = 1,
-  FUTURE_CLIENT_INTERFACE = 2,
-  BLOCKING_SERVER_INTERFACE = 3,
-  ASYNC_CLIENT_IMPL = 4,
-  BLOCKING_CLIENT_IMPL = 5,
-  FUTURE_CLIENT_IMPL = 6,
-  ABSTRACT_CLASS = 7,
-};
-
-enum CallType {
-  ASYNC_CALL = 0,
-  BLOCKING_CALL = 1,
-  FUTURE_CALL = 2
-};
-
-static void PrintBindServiceMethodBody(const ServiceDescriptor* service,
+static void PrintBindServiceMethod(const ServiceDescriptor* service,
                                    std::map<std::string, std::string>* vars,
                                    Printer* p);
 
@@ -511,6 +560,9 @@ static void PrintStubFactory(
       break;
     case BLOCKING_CLIENT_IMPL:
       stub_type_name = "Blocking";
+      break;
+    case BLOCKING_V2_CLIENT_IMPL:
+      stub_type_name = "BlockingV2";
       break;
     default:
       GRPC_CODEGEN_FAIL << "Cannot generate StubFactory for StubType: " << type;
@@ -532,80 +584,70 @@ static void PrintStub(
     const ServiceDescriptor* service,
     std::map<std::string, std::string>* vars,
     Printer* p, StubType type) {
-  const std::string service_name = service->name();
+  std::string service_name = std::string(service->name());
   (*vars)["service_name"] = service_name;
-  (*vars)["abstract_name"] = service_name + "ImplBase";
   std::string stub_name = service_name;
-  std::string client_name = service_name;
   std::string stub_base_class_name = "AbstractStub";
   CallType call_type;
-  bool impl_base = false;
   bool interface = false;
   switch (type) {
-    case ABSTRACT_CLASS:
+    case ASYNC_INTERFACE:
       call_type = ASYNC_CALL;
-      impl_base = true;
+      interface = true;
+      stub_name ="AsyncService";
       break;
     case ASYNC_CLIENT_IMPL:
       call_type = ASYNC_CALL;
       stub_name += "Stub";
       stub_base_class_name = "AbstractAsyncStub";
       break;
-    case BLOCKING_CLIENT_INTERFACE:
-      interface = true;
-      FALLTHROUGH;
     case BLOCKING_CLIENT_IMPL:
       call_type = BLOCKING_CALL;
       stub_name += "BlockingStub";
-      client_name += "BlockingClient";
       stub_base_class_name = "AbstractBlockingStub";
       break;
-    case FUTURE_CLIENT_INTERFACE:
-      interface = true;
-      FALLTHROUGH;
+    case BLOCKING_V2_CLIENT_IMPL:
+      call_type = BLOCKING_V2_CALL;
+      stub_name += "BlockingV2Stub";
+      stub_base_class_name = "AbstractBlockingStub";
+      break;
     case FUTURE_CLIENT_IMPL:
       call_type = FUTURE_CALL;
       stub_name += "FutureStub";
-      client_name += "FutureClient";
       stub_base_class_name = "AbstractFutureStub";
       break;
-    case ASYNC_INTERFACE:
-      call_type = ASYNC_CALL;
-      interface = true;
-      stub_name += "Stub";
-      stub_base_class_name = "AbstractAsyncStub";
-      break;
+    case BLOCKING_CLIENT_INTERFACE:
+    case FUTURE_CLIENT_INTERFACE:
+      GRPC_CODEGEN_FAIL << "Intentionally not creating StubType: " << type;
+    case ABSTRACT_CLASS:
+      GRPC_CODEGEN_FAIL << "Call PrintAbstractClassStub for ABSTRACT_CLASS";
     default:
       GRPC_CODEGEN_FAIL << "Cannot determine class name for StubType: " << type;
   }
   (*vars)["stub_name"] = stub_name;
-  (*vars)["client_name"] = client_name;
   (*vars)["stub_base_class_name"] = (*vars)[stub_base_class_name];
 
   // Class head
-  if (!interface) {
-    GrpcWriteServiceDocComment(p, service);
-  }
+  GrpcWriteServiceDocComment(p, service, type);
 
   if (service->options().deprecated()) {
     p->Print(*vars, "@$Deprecated$\n");
   }
 
-  if (impl_base) {
+  if (interface) {
     p->Print(
         *vars,
-        "public static abstract class $abstract_name$"
-        " implements $BindableService$ {\n");
+        "public interface $stub_name$ {\n");
   } else {
     p->Print(
         *vars,
-        "public static final class $stub_name$"
-        " extends $stub_base_class_name$<$stub_name$> {\n");
+        "public static final class $stub_name$\n"
+        "    extends $stub_base_class_name$<$stub_name$> {\n");
   }
   p->Indent();
 
   // Constructor and build() method
-  if (!impl_base && !interface) {
+  if (!interface) {
     p->Print(
         *vars,
         "private $stub_name$(\n"
@@ -651,21 +693,32 @@ static void PrintStub(
 
     // Method signature
     p->Print("\n");
-    // TODO(nmittler): Replace with WriteMethodDocComment once included by the protobuf distro.
-    if (!interface) {
-      GrpcWriteMethodDocComment(p, method);
-    }
+    GrpcWriteMethodDocComment(p, method);
 
     if (method->options().deprecated()) {
       p->Print(*vars, "@$Deprecated$\n");
     }
 
-    p->Print("public ");
+    if ((call_type == BLOCKING_CALL && client_streaming && server_streaming)
+       || (call_type == BLOCKING_V2_CALL && (client_streaming || server_streaming))) {
+      p->Print(*vars, "@io.grpc.ExperimentalApi(\"https://github.com/grpc/grpc-java/issues/10918\")\n");
+    }
+
+    if (!interface) {
+      p->Print("public ");
+    } else {
+      p->Print("default ");
+    }
     switch (call_type) {
       case BLOCKING_CALL:
         GRPC_CODEGEN_CHECK(!client_streaming)
             << "Blocking client interface with client streaming is unavailable";
-        if (server_streaming) {
+        if (client_streaming && server_streaming) {
+          p->Print(
+              *vars,
+              "$BlockingClientCall$<$input_type$, $output_type$>\n"
+               "    $lower_method_name$()");
+        } else if (server_streaming) {
           // Server streaming
           p->Print(
               *vars,
@@ -678,6 +731,25 @@ static void PrintStub(
               "$output_type$ $lower_method_name$($input_type$ request)");
         }
         break;
+      case BLOCKING_V2_CALL:
+        if (client_streaming) { // Both Bidi and Client Streaming
+          p->Print(
+              *vars,
+              "$BlockingClientCall$<$input_type$, $output_type$>\n"
+               "    $lower_method_name$()");
+        } else if (server_streaming) {
+          // Server streaming
+          p->Print(
+              *vars,
+              "$BlockingClientCall$<?, $output_type$>\n"
+              "    $lower_method_name$($input_type$ request)");
+       } else {
+          // Simple RPC
+          p->Print(
+              *vars,
+              "$output_type$ $lower_method_name$($input_type$ request)");
+       }
+       break;
       case ASYNC_CALL:
         if (client_streaming) {
           // Bidirectional streaming or client streaming
@@ -705,49 +777,64 @@ static void PrintStub(
         break;
     }
 
-    if (interface) {
-      p->Print(";\n");
-      continue;
-    }
     // Method body.
     p->Print(" {\n");
     p->Indent();
-    if (impl_base) {
-      switch (call_type) {
-        // NB: Skipping validation of service methods. If something is wrong, we wouldn't get to
-        // this point as compiler would return errors when generating service interface.
-        case ASYNC_CALL:
-          if (client_streaming) {
-            p->Print(
-                *vars,
-                "return io.grpc.stub.ServerCalls.asyncUnimplementedStreamingCall("
-                "$method_method_name$(), responseObserver);\n");
-          } else {
-            p->Print(
-                *vars,
-                "io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall("
-                "$method_method_name$(), responseObserver);\n");
-          }
-          break;
-        default:
-          break;
+    if (interface && call_type == ASYNC_CALL) {
+      // NB: Skipping validation of service methods. If something is wrong, we wouldn't get to
+      // this point as compiler would return errors when generating service interface.
+      if (client_streaming) {
+        p->Print(
+            *vars,
+            "return io.grpc.stub.ServerCalls.asyncUnimplementedStreamingCall("
+            "$method_method_name$(), responseObserver);\n");
+      } else {
+        p->Print(
+            *vars,
+            "io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall("
+            "$method_method_name$(), responseObserver);\n");
       }
     } else if (!interface) {
-      switch (call_type) {
+        switch (call_type) {
         case BLOCKING_CALL:
           GRPC_CODEGEN_CHECK(!client_streaming)
-              << "Blocking client streaming interface is not available";
-          if (server_streaming) {
-            (*vars)["calls_method"] = "io.grpc.stub.ClientCalls.blockingServerStreamingCall";
-            (*vars)["params"] = "request";
-          } else {
-            (*vars)["calls_method"] = "io.grpc.stub.ClientCalls.blockingUnaryCall";
-            (*vars)["params"] = "request";
+              << "Blocking client and bidi streaming interface are not available";
+            if (server_streaming) {
+              (*vars)["calls_method"] = "io.grpc.stub.ClientCalls.blockingServerStreamingCall";
+              (*vars)["params"] = "request";
+            } else {
+              (*vars)["calls_method"] = "io.grpc.stub.ClientCalls.blockingUnaryCall";
+              (*vars)["params"] = "request";
+            }
+            p->Print(
+                *vars,
+                "return $calls_method$(\n"
+                "    getChannel(), $method_method_name$(), getCallOptions(), $params$);\n");
+          break;
+        case BLOCKING_V2_CALL:
+          if (client_streaming) { // client and bidi streaming
+                if (server_streaming) {
+                    (*vars)["calls_method"] = "io.grpc.stub.ClientCalls.blockingBidiStreamingCall";
+                 } else {
+                   (*vars)["calls_method"] = "io.grpc.stub.ClientCalls.blockingClientStreamingCall";
+                 }
+           p->Print(
+                *vars,
+                "return $calls_method$(\n"
+                "    getChannel(), $method_method_name$(), getCallOptions());\n");
+          } else { // server streaming and unary
+               (*vars)["params"] = "request";
+               if (server_streaming) {
+                   (*vars)["calls_method"] = "io.grpc.stub.ClientCalls.blockingV2ServerStreamingCall";
+                } else {
+                  (*vars)["calls_method"] = "io.grpc.stub.ClientCalls.blockingUnaryCall";
+                }
+
+            p->Print(
+                *vars,
+                "return $calls_method$(\n"
+                "    getChannel(), $method_method_name$(), getCallOptions(), $params$);\n");
           }
-          p->Print(
-              *vars,
-              "return $calls_method$(\n"
-              "    getChannel(), $method_method_name$(), getCallOptions(), $params$);\n");
           break;
         case ASYNC_CALL:
           if (server_streaming) {
@@ -784,24 +871,38 @@ static void PrintStub(
               "return $calls_method$(\n"
               "    getChannel().newCall($method_method_name$(), getCallOptions()), request);\n");
           break;
-      }
+        }
+    } else {
+      GRPC_CODEGEN_FAIL << "Do not create Stub interfaces";
     }
     p->Outdent();
     p->Print("}\n");
   }
 
-  if (impl_base) {
-    p->Print("\n");
-    p->Print(
-        *vars,
-        "@$Override$ public final $ServerServiceDefinition$ bindService() {\n");
-    (*vars)["instance"] = "this";
-    PrintBindServiceMethodBody(service, vars, p);
-    p->Print("}\n");
-  }
-
   p->Outdent();
   p->Print("}\n\n");
+}
+
+
+static void PrintAbstractClassStub(
+    const ServiceDescriptor* service,
+    std::map<std::string, std::string>* vars,
+    Printer* p) {
+  (*vars)["service_name"] = service->name();
+
+  GrpcWriteServiceDocComment(p, service, ABSTRACT_CLASS);
+  if (service->options().deprecated()) {
+    p->Print(*vars, "@$Deprecated$\n");
+  }
+  p->Print(
+      *vars,
+      "public static abstract class $service_name$ImplBase\n"
+      "    implements $BindableService$, AsyncService {\n"
+      "\n"
+      "  @$Override$ public final $ServerServiceDefinition$ bindService() {\n"
+      "    return $service_class_name$.bindService(this);\n"
+      "  }\n"
+      "}\n\n");
 }
 
 static bool CompareMethodClientStreaming(const MethodDescriptor* method1,
@@ -831,7 +932,6 @@ static void PrintMethodHandlerClass(const ServiceDescriptor* service,
         "private static final int $method_id_name$ = $method_id$;\n");
   }
   p->Print("\n");
-  (*vars)["service_name"] = service->name() + "ImplBase";
   p->Print(
       *vars,
       "private static final class MethodHandlers<Req, Resp> implements\n"
@@ -839,10 +939,10 @@ static void PrintMethodHandlerClass(const ServiceDescriptor* service,
       "    io.grpc.stub.ServerCalls.ServerStreamingMethod<Req, Resp>,\n"
       "    io.grpc.stub.ServerCalls.ClientStreamingMethod<Req, Resp>,\n"
       "    io.grpc.stub.ServerCalls.BidiStreamingMethod<Req, Resp> {\n"
-      "  private final $service_name$ serviceImpl;\n"
+      "  private final AsyncService serviceImpl;\n"
       "  private final int methodId;\n"
       "\n"
-      "  MethodHandlers($service_name$ serviceImpl, int methodId) {\n"
+      "  MethodHandlers(AsyncService serviceImpl, int methodId) {\n"
       "    this.serviceImpl = serviceImpl;\n"
       "    this.methodId = methodId;\n"
       "  }\n\n");
@@ -922,13 +1022,14 @@ static void PrintGetServiceDescriptorMethod(const ServiceDescriptor* service,
                                    std::map<std::string, std::string>* vars,
                                    Printer* p,
                                    ProtoFlavor flavor) {
-  (*vars)["service_name"] = service->name();
+  std::string service_name = std::string(service->name());
+  (*vars)["service_name"] = service_name;
 
 
   if (flavor == ProtoFlavor::NORMAL) {
-    (*vars)["proto_base_descriptor_supplier"] = service->name() + "BaseDescriptorSupplier";
-    (*vars)["proto_file_descriptor_supplier"] = service->name() + "FileDescriptorSupplier";
-    (*vars)["proto_method_descriptor_supplier"] = service->name() + "MethodDescriptorSupplier";
+    (*vars)["proto_base_descriptor_supplier"] = service_name + "BaseDescriptorSupplier";
+    (*vars)["proto_file_descriptor_supplier"] = service_name + "FileDescriptorSupplier";
+    (*vars)["proto_method_descriptor_supplier"] = service_name + "MethodDescriptorSupplier";
     (*vars)["proto_class_name"] = protobuf::compiler::java::ClassName(service->file());
     p->Print(
         *vars,
@@ -955,9 +1056,9 @@ static void PrintGetServiceDescriptorMethod(const ServiceDescriptor* service,
         "private static final class $proto_method_descriptor_supplier$\n"
         "    extends $proto_base_descriptor_supplier$\n"
         "    implements $ProtoMethodDescriptorSupplier$ {\n"
-        "  private final String methodName;\n"
+        "  private final $String$ methodName;\n"
         "\n"
-        "  $proto_method_descriptor_supplier$(String methodName) {\n"
+        "  $proto_method_descriptor_supplier$($String$ methodName) {\n"
         "    this.methodName = methodName;\n"
         "  }\n"
         "\n"
@@ -1019,10 +1120,14 @@ static void PrintGetServiceDescriptorMethod(const ServiceDescriptor* service,
   p->Print("}\n");
 }
 
-static void PrintBindServiceMethodBody(const ServiceDescriptor* service,
+static void PrintBindServiceMethod(const ServiceDescriptor* service,
                                    std::map<std::string, std::string>* vars,
                                    Printer* p) {
   (*vars)["service_name"] = service->name();
+  p->Print(*vars,
+           "public static final io.grpc.ServerServiceDefinition "
+           "bindService(AsyncService service) {\n");
+
   p->Indent();
   p->Print(*vars,
            "return "
@@ -1063,7 +1168,7 @@ static void PrintBindServiceMethodBody(const ServiceDescriptor* service,
         "new MethodHandlers<\n"
         "  $input_type$,\n"
         "  $output_type$>(\n"
-        "    $instance$, $method_id_name$)))\n");
+        "    service, $method_id_name$)))\n");
     p->Outdent();
     p->Outdent();
   }
@@ -1071,13 +1176,15 @@ static void PrintBindServiceMethodBody(const ServiceDescriptor* service,
   p->Outdent();
   p->Outdent();
   p->Outdent();
+  p->Print("}\n\n");
 }
 
 static void PrintService(const ServiceDescriptor* service,
                          std::map<std::string, std::string>* vars,
                          Printer* p,
                          ProtoFlavor flavor,
-                         bool disable_version) {
+                         bool disable_version,
+                         GeneratedAnnotation generated_annotation) {
   (*vars)["service_name"] = service->name();
   (*vars)["file_name"] = service->file()->name();
   (*vars)["service_class_name"] = ServiceClassName(service);
@@ -1088,13 +1195,20 @@ static void PrintService(const ServiceDescriptor* service,
   }
   #endif
   // TODO(nmittler): Replace with WriteServiceDocComment once included by protobuf distro.
-  GrpcWriteServiceDocComment(p, service);
-  p->Print(
-      *vars,
-      "@$Generated$(\n"
-      "    value = \"by gRPC proto compiler$grpc_version$\",\n"
-      "    comments = \"Source: $file_name$\")\n"
-      "@$GrpcGenerated$\n");
+  GrpcWriteServiceDocComment(p, service, NONE);
+
+  if (generated_annotation == GeneratedAnnotation::JAVAX) {
+    p->Print(
+        *vars,
+        "@javax.annotation.Generated(\n"
+        "    value = \"by gRPC proto compiler$grpc_version$\",\n"
+        "    comments = \"Source: $file_name$\")\n"
+        "@$GrpcGenerated$\n");
+  } else { // GeneratedAnnotation::OMIT
+    p->Print(
+        *vars,
+        "@$GrpcGenerated$\n");
+  }
 
   if (service->options().deprecated()) {
     p->Print(*vars, "@$Deprecated$\n");
@@ -1110,7 +1224,7 @@ static void PrintService(const ServiceDescriptor* service,
 
   p->Print(
       *vars,
-      "public static final String SERVICE_NAME = "
+      "public static final $String$ SERVICE_NAME = "
       "\"$Package$$service_name$\";\n\n");
 
   PrintMethodFields(service, vars, p, flavor);
@@ -1123,6 +1237,21 @@ static void PrintService(const ServiceDescriptor* service,
   p->Indent();
   PrintStubFactory(service, vars, p, ASYNC_CLIENT_IMPL);
   p->Print(*vars, "return $service_name$Stub.newStub(factory, channel);\n");
+  p->Outdent();
+  p->Print("}\n\n");
+
+  // TODO(nmittler): Replace with WriteDocComment once included by protobuf distro.
+  GrpcWriteDocComment(p, " Creates a new blocking-style stub that supports all types of calls "
+                         "on the service");
+  p->Print(
+      *vars,
+      "public static $service_name$BlockingV2Stub newBlockingV2Stub(\n"
+      "    $Channel$ channel) {\n");
+  p->Indent();
+  PrintStubFactory(service, vars, p, BLOCKING_V2_CLIENT_IMPL);
+  p->Print(
+      *vars,
+      "return $service_name$BlockingV2Stub.newStub(factory, channel);\n");
   p->Outdent();
   p->Print("}\n\n");
 
@@ -1156,12 +1285,15 @@ static void PrintService(const ServiceDescriptor* service,
   p->Outdent();
   p->Print("}\n\n");
 
-  PrintStub(service, vars, p, ABSTRACT_CLASS);
+  PrintStub(service, vars, p, ASYNC_INTERFACE);
+  PrintAbstractClassStub(service, vars, p);
   PrintStub(service, vars, p, ASYNC_CLIENT_IMPL);
+  PrintStub(service, vars, p, BLOCKING_V2_CLIENT_IMPL);
   PrintStub(service, vars, p, BLOCKING_CLIENT_IMPL);
   PrintStub(service, vars, p, FUTURE_CLIENT_IMPL);
 
   PrintMethodHandlerClass(service, vars, p);
+  PrintBindServiceMethod(service, vars, p);
   PrintGetServiceDescriptorMethod(service, vars, p, flavor);
   p->Outdent();
   p->Print("}\n");
@@ -1176,7 +1308,8 @@ void PrintImports(Printer* p) {
 void GenerateService(const ServiceDescriptor* service,
                      protobuf::io::ZeroCopyOutputStream* out,
                      ProtoFlavor flavor,
-                     bool disable_version) {
+                     bool disable_version,
+                     GeneratedAnnotation generated_annotation) {
   // All non-generated classes must be referred by fully qualified names to
   // avoid collision with generated classes.
   std::map<std::string, std::string> vars;
@@ -1207,8 +1340,8 @@ void GenerateService(const ServiceDescriptor* service,
   vars["RpcMethod"] = "io.grpc.stub.annotations.RpcMethod";
   vars["MethodDescriptor"] = "io.grpc.MethodDescriptor";
   vars["StreamObserver"] = "io.grpc.stub.StreamObserver";
+  vars["BlockingClientCall"] = "io.grpc.stub.BlockingClientCall";
   vars["Iterator"] = "java.util.Iterator";
-  vars["Generated"] = "javax.annotation.Generated";
   vars["GrpcGenerated"] = "io.grpc.stub.annotations.GrpcGenerated";
   vars["ListenableFuture"] =
       "com.google.common.util.concurrent.ListenableFuture";
@@ -1227,7 +1360,7 @@ void GenerateService(const ServiceDescriptor* service,
   if (!vars["Package"].empty()) {
     vars["Package"].append(".");
   }
-  PrintService(service, &vars, &printer, flavor, disable_version);
+  PrintService(service, &vars, &printer, flavor, disable_version, generated_annotation);
 }
 
 std::string ServiceJavaPackage(const FileDescriptor* file) {
@@ -1242,7 +1375,7 @@ std::string ServiceJavaPackage(const FileDescriptor* file) {
 }
 
 std::string ServiceClassName(const ServiceDescriptor* service) {
-  return service->name() + "Grpc";
+  return std::string(service->name()) + "Grpc";
 }
 
 }  // namespace java_grpc_generator

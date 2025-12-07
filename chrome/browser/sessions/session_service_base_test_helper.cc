@@ -60,7 +60,10 @@ void SessionServiceBaseTestHelper::ReadWindows(
       service_->GetCommandStorageManagerForTest());
   std::vector<std::unique_ptr<sessions::SessionCommand>> read_commands =
       test_helper.ReadLastSessionCommands();
-  RestoreSessionFromCommands(read_commands, windows, active_window_id);
+  std::string platform_session_id;
+  std::set<SessionID> discarded_window_ids;
+  RestoreSessionFromCommands(read_commands, windows, active_window_id,
+                             &platform_session_id, &discarded_window_ids);
   service_->RemoveUnusedRestoreWindows(windows);
 }
 

@@ -5,8 +5,11 @@
 #ifndef MEDIA_BASE_MEDIA_CONTENT_TYPE_H_
 #define MEDIA_BASE_MEDIA_CONTENT_TYPE_H_
 
-#include "base/time/time.h"
 #include "media/base/media_export.h"
+
+namespace base {
+class TimeDelta;
+}  // namespace base
 
 namespace media {
 
@@ -25,8 +28,11 @@ enum class MediaContentType {
   // audio focus when the player joins but will not let it respond to audio
   // focus changes.
   kOneShot,
+  // Type indicating that a player that can be mixed with other types of audio,
+  // having no effect on other holders of audio focus.
+  kAmbient,
   // The maximum number of media content types.
-  kMax = kOneShot,
+  kMax = kAmbient,
 };
 
 // Utility function for deciding the MediaContentType of a player based on its

@@ -20,6 +20,7 @@
 #include "google_apis/gcm/monitoring/gcm_stats_recorder.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -268,19 +269,18 @@ void RegistrationRequest::RetryWithBackoff() {
 
 RegistrationRequest::Status RegistrationRequest::ParseResponse(
     const network::SimpleURLLoader* source,
-    std::unique_ptr<std::string> body,
+    std::optional<std::string> body,
     std::string* token) {
   if (source->NetError() != net::OK) {
     LOG(ERROR) << "Registration URL fetching failed.";
     return URL_FETCHING_FAILED;
   }
 
-  std::string response;
   if (!body) {
     LOG(ERROR) << "Failed to get registration response body.";
     return NO_RESPONSE_BODY;
   }
-  response = std::move(*body);
+  std::string response = std::move(body).value();
 
   // If we are able to parse a meaningful known error, let's do so. Note that
   // some errors will have HTTP_OK response code!
@@ -319,7 +319,7 @@ RegistrationRequest::Status RegistrationRequest::ParseResponse(
 
 void RegistrationRequest::OnURLLoadComplete(
     const network::SimpleURLLoader* source,
-    std::unique_ptr<std::string> body) {
+    std::optional<std::string> body) {
   std::string token;
   Status status = ParseResponse(source, std::move(body), &token);
   recorder_->RecordRegistrationResponse(request_info_.app_id(),

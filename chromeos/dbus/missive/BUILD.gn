@@ -49,6 +49,10 @@ static_library("history_tracker") {
     "history_tracker.cc",
     "history_tracker.h",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 static_library("test_support") {

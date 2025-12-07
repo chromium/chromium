@@ -1,0 +1,29 @@
+include_rules = [
+  "+ios/chrome/browser/authentication/ui_bundled",
+  "+ios/chrome/browser/settings/ui_bundled",
+  "+ios/chrome/browser/drag_and_drop/model",
+  "+ios/chrome/browser/favicon/model",
+  "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
+  "+ios/chrome/browser/incognito_reauth/ui_bundled",
+  "+ios/chrome/browser/intents/model/intents_donation_helper.h",
+  "+ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h",
+  "+ios/chrome/browser/menu/ui_bundled",
+  "+ios/chrome/browser/metrics/model/new_tab_page_uma.h",
+  "+ios/chrome/browser/net/model/crurl.h",
+  "+ios/chrome/browser/policy/model/policy_util.h",
+  "+ios/chrome/browser/reminder_notifications/coordinator/reminder_notifications_coordinator.h",
+  "+ios/chrome/browser/settings/ui_bundled",
+  "+ios/chrome/browser/sharing/ui_bundled",
+  "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/sync/model",
+  "+ios/chrome/browser/url_loading/model",
+  "+ios/chrome/browser/window_activities/model/window_activity_helpers.h",
+]
+
+specific_include_rules = {
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "reading_list_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+}

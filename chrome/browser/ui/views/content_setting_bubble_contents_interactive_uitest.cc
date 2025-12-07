@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/content_setting_bubble_contents.h"
+#include <algorithm>
 
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
+#include "chrome/browser/ui/views/content_setting_bubble_contents.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -40,7 +41,7 @@ class ContentSettingBubbleContentsInteractiveTest
       ContentSettingImageModel::ImageType image_type) {
     LocationBarView* location_bar_view =
         BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView();
-    return **base::ranges::find(
+    return **std::ranges::find(
         location_bar_view->GetContentSettingViewsForTest(), image_type,
         &ContentSettingImageView::GetType);
   }
@@ -56,16 +57,18 @@ class ContentSettingBubbleContentsInteractiveTest
 class BubbleWidgetObserver : public views::WidgetObserver {
  public:
   explicit BubbleWidgetObserver(views::Widget* widget) : widget_(widget) {
-    if (!widget_)
+    if (!widget_) {
       return;
+    }
     widget_->AddObserver(this);
   }
 
   ~BubbleWidgetObserver() override { CleanupWidget(); }
 
   void WaitForClose() {
-    if (!widget_)
+    if (!widget_) {
       return;
+    }
     run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
@@ -73,13 +76,15 @@ class BubbleWidgetObserver : public views::WidgetObserver {
   // views::WidgetObserver:
   void OnWidgetDestroyed(views::Widget* widget) override {
     CleanupWidget();
-    if (run_loop_)
+    if (run_loop_) {
       run_loop_->Quit();
+    }
   }
 
   void CleanupWidget() {
-    if (!widget_)
+    if (!widget_) {
       return;
+    }
     widget_->RemoveObserver(this);
     widget_ = nullptr;
   }
@@ -129,7 +134,8 @@ IN_PROC_BROWSER_TEST_F(ContentSettingBubbleContentsInteractiveTest,
 
   // Start a prerender.
   auto prerender_url = embedded_test_server()->GetURL("/empty.html");
-  int host_id = prerender_helper()->AddPrerender(prerender_url);
+  content::FrameTreeNodeId host_id =
+      prerender_helper()->AddPrerender(prerender_url);
   content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
   EXPECT_FALSE(host_observer.was_activated());
 

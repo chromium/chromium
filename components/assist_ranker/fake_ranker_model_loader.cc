@@ -16,10 +16,10 @@ FakeRankerModelLoader::FakeRankerModelLoader(
       validate_model_cb_(std::move(validate_model_cb)),
       on_model_available_cb_(std::move(on_model_available_cb)) {}
 
-FakeRankerModelLoader::~FakeRankerModelLoader() {}
+FakeRankerModelLoader::~FakeRankerModelLoader() = default;
 
 void FakeRankerModelLoader::NotifyOfRankerActivity() {
-  if (validate_model_cb_.Run(*ranker_model_) == RankerModelStatus::OK) {
+  if (validate_model_cb_.Run(*ranker_model_) == RankerModelStatus::kOk) {
     on_model_available_cb_.Run(std::move(ranker_model_));
   }
 }

@@ -19,7 +19,6 @@
 #include "net/dns/opt_record_rdata.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/record_rdata.h"
-#include "url/gurl.h"
 
 namespace net {
 
@@ -126,6 +125,7 @@ class NET_EXPORT_PRIVATE DnsTransactionFactory {
   // The given EDNS0 option will be included in all DNS queries performed by
   // transactions from this factory.
   virtual void AddEDNSOption(std::unique_ptr<OptRecordRdata::Opt> opt) = 0;
+  virtual OptRecordRdata* GetOptRdataForTest() = 0;
 
   // Returns the default SecureDnsMode in the config.
   virtual SecureDnsMode GetSecureDnsModeForTest() = 0;

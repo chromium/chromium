@@ -6,26 +6,26 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 namespace permissions {
 
 WakeLockPermissionContext::WakeLockPermissionContext(
     content::BrowserContext* browser_context,
     ContentSettingsType content_settings_type)
-    : PermissionContextBase(
+    : ContentSettingPermissionContextBase(
           browser_context,
           content_settings_type,
           content_settings_type == ContentSettingsType::WAKE_LOCK_SCREEN
-              ? blink::mojom::PermissionsPolicyFeature::kScreenWakeLock
-              : blink::mojom::PermissionsPolicyFeature::kNotFound) {
+              ? network::mojom::PermissionsPolicyFeature::kScreenWakeLock
+              : network::mojom::PermissionsPolicyFeature::kNotFound) {
   DCHECK(content_settings_type == ContentSettingsType::WAKE_LOCK_SCREEN ||
          content_settings_type == ContentSettingsType::WAKE_LOCK_SYSTEM);
 }
 
 WakeLockPermissionContext::~WakeLockPermissionContext() = default;
 
-ContentSetting WakeLockPermissionContext::GetPermissionStatusInternal(
+ContentSetting WakeLockPermissionContext::GetContentSettingStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
@@ -35,8 +35,7 @@ ContentSetting WakeLockPermissionContext::GetPermissionStatusInternal(
     case ContentSettingsType::WAKE_LOCK_SYSTEM:
       return CONTENT_SETTING_BLOCK;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return CONTENT_SETTING_BLOCK;
+      NOTREACHED();
   }
 }
 

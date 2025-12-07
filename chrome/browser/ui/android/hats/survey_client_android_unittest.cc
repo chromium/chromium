@@ -24,7 +24,9 @@
 using base::android::ScopedJavaGlobalRef;
 
 namespace hats {
+
 namespace {
+
 const char kTestSurveyTrigger[] = "testing";
 const SurveyBitsData kTestSurveyProductSpecificBitsData{
     {"Test Field 1", true},
@@ -52,9 +54,9 @@ class TestSurveyUiDelegate : public SurveyUiDelegateAndroid {
 
   void ShowSurveyInvitation(
       JNIEnv* env,
-      const JavaParamRef<jobject>& on_accepted_callback,
-      const JavaParamRef<jobject>& on_declined_callback,
-      const JavaParamRef<jobject>& on_presentation_failed_callback) override {
+      const JavaRef<jobject>& on_accepted_callback,
+      const JavaRef<jobject>& on_declined_callback,
+      const JavaRef<jobject>& on_presentation_failed_callback) override {
     on_accepted_callback_ = on_accepted_callback;
     on_declined_callback_ = on_declined_callback;
     on_presentation_failed_callback_ = on_presentation_failed_callback;
@@ -103,7 +105,7 @@ TEST_F(SurveyClientAndroidTest, CreateSurveyClientWithStaticTriggerId) {
       std::make_unique<TestSurveyUiDelegate>(env);
   survey_client_ = std::make_unique<SurveyClientAndroid>(
       kTestSurveyTrigger, delegate.get(), profile_,
-      /*supplied_trigger_id=*/std::nullopt);
+      /*supplied_trigger_id=*/std::nullopt, window->get());
 
   survey_client_->LaunchSurvey(window->get(),
                                kTestSurveyProductSpecificBitsData,
@@ -127,7 +129,7 @@ TEST_F(SurveyClientAndroidTest, CreateSurveyClientWithDynamicTriggerId) {
   const std::string kSuppliedTriggerId = "SomeOtherId";
   survey_client_ = std::make_unique<SurveyClientAndroid>(
       kTestSurveyTrigger, delegate.get(), profile_,
-      /*supplied_trigger_id=*/kSuppliedTriggerId);
+      /*supplied_trigger_id=*/kSuppliedTriggerId, window->get());
 
   survey_client_->LaunchSurvey(window->get(),
                                kTestSurveyProductSpecificBitsData,

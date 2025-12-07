@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/policy/core/common/schema.h"
 
 #include <limits.h>
@@ -21,6 +16,7 @@
 #include <sstream>
 #include <string>
 #include <utility>
+#include <variant>
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
@@ -28,6 +24,7 @@
 #include "base/containers/flat_set.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -57,10 +54,10 @@ std::string ErrorPathToString(const std::string& policy_name,
   std::stringstream error_path_string{policy_name};
   error_path_string << policy_name;
   for (auto& entry : error_path) {
-    if (absl::holds_alternative<int>(entry)) {
-      error_path_string << "[" << absl::get<int>(entry) << "]";
-    } else if (absl::holds_alternative<std::string>(entry)) {
-      error_path_string << "." << absl::get<std::string>(entry);
+    if (std::holds_alternative<int>(entry)) {
+      error_path_string << "[" << std::get<int>(entry) << "]";
+    } else if (std::holds_alternative<std::string>(entry)) {
+      error_path_string << "." << std::get<std::string>(entry);
     }
   }
   return error_path_string.str();
@@ -72,12 +69,12 @@ namespace {
 
 struct ReferencesAndIDs {
   // Maps schema "id" attributes to the corresponding SchemaNode index.
-  std::map<std::string, short> id_map;
+  std::map<std::string, int16_t> id_map;
 
   // List of pairs of references to be assigned later. The string is the "id"
   // whose corresponding index should be stored in the pointer, once all the IDs
   // are available.
-  std::vector<std::pair<std::string, short*>> reference_list;
+  std::vector<std::pair<std::string, int16_t*>> reference_list;
 };
 
 // Sizes for the storage arrays. These are calculated in advance so that the
@@ -97,7 +94,7 @@ struct StorageSizes {
 
 // An invalid index, indicating that a node is not present; similar to a NULL
 // pointer.
-const short kInvalid = -1;
+const int16_t kInvalid = -1;
 
 // Maps a schema key to the corresponding base::Value::Type
 struct SchemaKeyToValueType {
@@ -115,8 +112,6 @@ const SchemaKeyToValueType kSchemaTypesToValueTypes[] = {
     {schema::kObject, base::Value::Type::DICT},
     {schema::kString, base::Value::Type::STRING},
 };
-const SchemaKeyToValueType* kSchemaTypesToValueTypesEnd =
-    kSchemaTypesToValueTypes + std::size(kSchemaTypesToValueTypes);
 
 // Allowed attributes and types for type 'array'. These are ordered
 // alphabetically to perform binary search.
@@ -128,8 +123,6 @@ const SchemaKeyToValueType kAttributesAndTypesForArray[] = {
     {schema::kTitle, base::Value::Type::STRING},
     {schema::kType, base::Value::Type::STRING},
 };
-const SchemaKeyToValueType* kAttributesAndTypesForArrayEnd =
-    kAttributesAndTypesForArray + std::size(kAttributesAndTypesForArray);
 
 // Allowed attributes and types for type 'boolean'. These are ordered
 // alphabetically to perform binary search.
@@ -140,8 +133,6 @@ const SchemaKeyToValueType kAttributesAndTypesForBoolean[] = {
     {schema::kTitle, base::Value::Type::STRING},
     {schema::kType, base::Value::Type::STRING},
 };
-const SchemaKeyToValueType* kAttributesAndTypesForBooleanEnd =
-    kAttributesAndTypesForBoolean + std::size(kAttributesAndTypesForBoolean);
 
 // Allowed attributes and types for type 'integer'. These are ordered
 // alphabetically to perform binary search.
@@ -155,8 +146,6 @@ const SchemaKeyToValueType kAttributesAndTypesForInteger[] = {
     {schema::kTitle, base::Value::Type::STRING},
     {schema::kType, base::Value::Type::STRING},
 };
-const SchemaKeyToValueType* kAttributesAndTypesForIntegerEnd =
-    kAttributesAndTypesForInteger + std::size(kAttributesAndTypesForInteger);
 
 // Allowed attributes and types for type 'number'. These are ordered
 // alphabetically to perform binary search.
@@ -167,8 +156,6 @@ const SchemaKeyToValueType kAttributesAndTypesForNumber[] = {
     {schema::kTitle, base::Value::Type::STRING},
     {schema::kType, base::Value::Type::STRING},
 };
-const SchemaKeyToValueType* kAttributesAndTypesForNumberEnd =
-    kAttributesAndTypesForNumber + std::size(kAttributesAndTypesForNumber);
 
 // Allowed attributes and types for type 'object'. These are ordered
 // alphabetically to perform binary search.
@@ -183,8 +170,6 @@ const SchemaKeyToValueType kAttributesAndTypesForObject[] = {
     {schema::kTitle, base::Value::Type::STRING},
     {schema::kType, base::Value::Type::STRING},
 };
-const SchemaKeyToValueType* kAttributesAndTypesForObjectEnd =
-    kAttributesAndTypesForObject + std::size(kAttributesAndTypesForObject);
 
 // Allowed attributes and types for $ref. These are ordered alphabetically to
 // perform binary search.
@@ -193,8 +178,6 @@ const SchemaKeyToValueType kAttributesAndTypesForRef[] = {
     {schema::kRef, base::Value::Type::STRING},
     {schema::kTitle, base::Value::Type::STRING},
 };
-const SchemaKeyToValueType* kAttributesAndTypesForRefEnd =
-    kAttributesAndTypesForRef + std::size(kAttributesAndTypesForRef);
 
 // Allowed attributes and types for type 'string'. These are ordered
 // alphabetically to perform binary search.
@@ -207,8 +190,6 @@ const SchemaKeyToValueType kAttributesAndTypesForString[] = {
     {schema::kTitle, base::Value::Type::STRING},
     {schema::kType, base::Value::Type::STRING},
 };
-const SchemaKeyToValueType* kAttributesAndTypesForStringEnd =
-    kAttributesAndTypesForString + std::size(kAttributesAndTypesForString);
 
 // Helper for std::lower_bound.
 bool CompareToString(const SchemaKeyToValueType& entry,
@@ -236,8 +217,9 @@ bool MapSchemaKeyToValueType(const std::string& schema_key,
 // |kSchemaTypesToValueTypes|.
 bool SchemaTypeToValueType(const std::string& schema_type,
                            base::Value::Type* value_type) {
-  return MapSchemaKeyToValueType(schema_type, kSchemaTypesToValueTypes,
-                                 kSchemaTypesToValueTypesEnd, value_type);
+  return MapSchemaKeyToValueType(
+      schema_type, std::begin(kSchemaTypesToValueTypes),
+      std::end(kSchemaTypesToValueTypes), value_type);
 }
 
 bool StrategyAllowUnknown(SchemaOnErrorStrategy strategy) {
@@ -286,8 +268,8 @@ bool CheckType(const base::Value* value, base::Value::Type expected_type) {
 
 // Returns true if |type| is supported as schema's 'type' value.
 bool IsValidType(const std::string& type) {
-  return MapSchemaKeyToValueType(type, kSchemaTypesToValueTypes,
-                                 kSchemaTypesToValueTypesEnd, nullptr);
+  return MapSchemaKeyToValueType(type, std::begin(kSchemaTypesToValueTypes),
+                                 std::end(kSchemaTypesToValueTypes), nullptr);
 }
 
 // Validate that |dict| only contains attributes that are allowed for the
@@ -300,29 +282,28 @@ base::expected<void, std::string> ValidateAttributesAndTypes(
   const SchemaKeyToValueType* begin = nullptr;
   const SchemaKeyToValueType* end = nullptr;
   if (type == schema::kArray) {
-    begin = kAttributesAndTypesForArray;
-    end = kAttributesAndTypesForArrayEnd;
+    begin = std::begin(kAttributesAndTypesForArray);
+    end = std::end(kAttributesAndTypesForArray);
   } else if (type == schema::kBoolean) {
-    begin = kAttributesAndTypesForBoolean;
-    end = kAttributesAndTypesForBooleanEnd;
+    begin = std::begin(kAttributesAndTypesForBoolean);
+    end = std::end(kAttributesAndTypesForBoolean);
   } else if (type == schema::kInteger) {
-    begin = kAttributesAndTypesForInteger;
-    end = kAttributesAndTypesForIntegerEnd;
+    begin = std::begin(kAttributesAndTypesForInteger);
+    end = std::end(kAttributesAndTypesForInteger);
   } else if (type == schema::kNumber) {
-    begin = kAttributesAndTypesForNumber;
-    end = kAttributesAndTypesForNumberEnd;
+    begin = std::begin(kAttributesAndTypesForNumber);
+    end = std::end(kAttributesAndTypesForNumber);
   } else if (type == schema::kObject) {
-    begin = kAttributesAndTypesForObject;
-    end = kAttributesAndTypesForObjectEnd;
+    begin = std::begin(kAttributesAndTypesForObject);
+    end = std::end(kAttributesAndTypesForObject);
   } else if (type == schema::kRef) {
-    begin = kAttributesAndTypesForRef;
-    end = kAttributesAndTypesForRefEnd;
+    begin = std::begin(kAttributesAndTypesForRef);
+    end = std::end(kAttributesAndTypesForRef);
   } else if (type == schema::kString) {
-    begin = kAttributesAndTypesForString;
-    end = kAttributesAndTypesForStringEnd;
+    begin = std::begin(kAttributesAndTypesForString);
+    end = std::end(kAttributesAndTypesForString);
   } else {
-    NOTREACHED_IN_MIGRATION()
-        << "Type should be a valid schema type or '$ref'.";
+    NOTREACHED() << "Type should be a valid schema type or '$ref'.";
   }
 
   base::Value::Type expected_type = base::Value::Type::NONE;
@@ -347,8 +328,9 @@ base::expected<void, std::string> ValidateEnum(const base::Value* enum_list,
     return base::unexpected("Attribute 'enum' must be a non-empty list.");
   }
   base::Value::Type expected_item_type = base::Value::Type::NONE;
-  MapSchemaKeyToValueType(type, kSchemaTypesToValueTypes,
-                          kSchemaTypesToValueTypesEnd, &expected_item_type);
+  MapSchemaKeyToValueType(type, std::begin(kSchemaTypesToValueTypes),
+                          std::end(kSchemaTypesToValueTypes),
+                          &expected_item_type);
   for (const base::Value& item : enum_list->GetList()) {
     if (item.type() != expected_item_type) {
       return base::unexpected(base::StringPrintf(
@@ -521,37 +503,37 @@ class Schema::InternalStorage
 
   const SchemaNode* schema(int index) const {
     DCHECK_GE(index, 0);
-    return schema_data_.schema_nodes + index;
+    return UNSAFE_TODO(schema_data_.schema_nodes + index);
   }
 
   const PropertiesNode* properties(int index) const {
     DCHECK_GE(index, 0);
-    return schema_data_.properties_nodes + index;
+    return UNSAFE_TODO(schema_data_.properties_nodes + index);
   }
 
   const PropertyNode* property(int index) const {
     DCHECK_GE(index, 0);
-    return schema_data_.property_nodes + index;
+    return UNSAFE_TODO(schema_data_.property_nodes + index);
   }
 
   const RestrictionNode* restriction(int index) const {
     DCHECK_GE(index, 0);
-    return schema_data_.restriction_nodes + index;
+    return UNSAFE_TODO(schema_data_.restriction_nodes + index);
   }
 
   const char* const* required_property(int index) const {
     DCHECK_GE(index, 0);
-    return schema_data_.required_properties + index;
+    return UNSAFE_TODO(schema_data_.required_properties + index);
   }
 
   const int* int_enums(int index) const {
     DCHECK_GE(index, 0);
-    return schema_data_.int_enums + index;
+    return UNSAFE_TODO(schema_data_.int_enums + index);
   }
 
   const char* const* string_enums(int index) const {
     DCHECK_GE(index, 0);
-    return schema_data_.string_enums + index;
+    return UNSAFE_TODO(schema_data_.string_enums + index);
   }
 
   // Compiles regular expression |pattern|. The result is cached and will be
@@ -580,7 +562,7 @@ class Schema::InternalStorage
   //
   // If |schema| is invalid, it returns an error reason.
   base::expected<void, std::string> Parse(const base::Value::Dict& schema,
-                                          short* index,
+                                          int16_t* index,
                                           ReferencesAndIDs* references_and_ids);
 
   // Helper for Parse() that gets an already assigned |schema_node| instead of
@@ -670,7 +652,7 @@ Schema::InternalStorage::ParseSchema(const base::Value::Dict& schema) {
   storage->int_enums_.reserve(sizes.int_enums);
   storage->string_enums_.reserve(sizes.string_enums);
 
-  short root_index = kInvalid;
+  int16_t root_index = kInvalid;
   ReferencesAndIDs references_and_ids;
 
   RETURN_IF_ERROR(storage->Parse(schema, &root_index, &references_and_ids));
@@ -816,7 +798,7 @@ void Schema::InternalStorage::DetermineStorageSizes(
 
 base::expected<void, std::string> Schema::InternalStorage::Parse(
     const base::Value::Dict& schema,
-    short* index,
+    int16_t* index,
     ReferencesAndIDs* references_and_ids) {
   const std::string* ref = schema.FindString(schema::kRef);
   if (ref) {
@@ -837,13 +819,13 @@ base::expected<void, std::string> Schema::InternalStorage::Parse(
     return base::unexpected("Type not supported: " + *type_string);
   }
 
-  if (schema_nodes_.size() > std::numeric_limits<short>::max()) {
+  if (schema_nodes_.size() > std::numeric_limits<int16_t>::max()) {
     return base::unexpected(
         "Can't have more than " +
-        base::NumberToString(std::numeric_limits<short>::max()) +
+        base::NumberToString(std::numeric_limits<int16_t>::max()) +
         " schema nodes.");
   }
-  *index = static_cast<short>(schema_nodes_.size());
+  *index = static_cast<int16_t>(schema_nodes_.size());
   schema_nodes_.push_back(
       {.type = type,
        .extra = kInvalid,
@@ -858,6 +840,9 @@ base::expected<void, std::string> Schema::InternalStorage::Parse(
   } else if (schema.contains(schema::kEnum)) {
     RETURN_IF_ERROR(ParseEnum(schema, type, schema_node));
   } else if (schema.contains(schema::kPattern)) {
+    if (type != base::Value::Type::STRING) {
+      return base::unexpected("Only strings can have a pattern");
+    }
     RETURN_IF_ERROR(ParseStringPattern(schema, schema_node));
   } else if (schema.contains(schema::kMinimum) ||
              schema.contains(schema::kMaximum)) {
@@ -962,6 +947,10 @@ base::expected<void, std::string> Schema::InternalStorage::ParseDictionary(
       schema.FindList(schema::kRequired);
   if (required_properties) {
     for (const base::Value& val : *required_properties) {
+      if (!val.is_string()) {
+        return base::unexpected(
+            "Items in the 'required' property must be strings.");
+      }
       strings_.push_back(val.GetString());
       required_properties_.push_back(strings_.back().c_str());
     }
@@ -1159,7 +1148,7 @@ bool Schema::Iterator::IsAtEnd() const {
 
 void Schema::Iterator::Advance() {
   DCHECK(it_);
-  ++it_;
+  UNSAFE_TODO(++it_);  // Should be UNSAFE_BUFFER_USAGE.
 }
 
 const char* Schema::Iterator::key() const {
@@ -1509,7 +1498,7 @@ SchemaList Schema::GetPatternProperties(const std::string& key) const {
   const PropertyNode* begin = storage_->property(node->end);
   const PropertyNode* end = storage_->property(node->pattern_end);
   SchemaList matching_properties;
-  for (const PropertyNode* it = begin; it != end; ++it) {
+  for (const PropertyNode* it = begin; it != end; UNSAFE_TODO(++it)) {
     if (re2::RE2::PartialMatch(key, *storage_->CompileRegex(it->key))) {
       matching_properties.push_back(
           Schema(storage_, storage_->schema(it->schema)));
@@ -1588,8 +1577,9 @@ bool Schema::ValidateStringRestriction(int index, const char* str) const {
       rnode->enumeration_restriction.offset_end) {
     for (int i = rnode->enumeration_restriction.offset_begin;
          i < rnode->enumeration_restriction.offset_end; ++i) {
-      if (strcmp(*storage_->string_enums(i), str) == 0)
+      if (UNSAFE_TODO(strcmp(*storage_->string_enums(i), str)) == 0) {
         return true;
+      }
     }
     return false;
   } else {

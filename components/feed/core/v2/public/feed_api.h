@@ -216,6 +216,7 @@ class FeedApi {
   // TODO(harringtond): Remove this one.
   virtual void ReportOtherUserAction(const StreamType& stream_type,
                                      FeedUserActionType action_type) = 0;
+  virtual void ReportOtherUserAction(FeedUserActionType action_type) = 0;
   // Reports that the info card is being tracked for its full visibility.
   virtual void ReportInfoCardTrackViewStarted(SurfaceId surface_id,
                                               int info_card_type) = 0;
@@ -240,6 +241,9 @@ class FeedApi {
   virtual void ReportContentSliceVisibleTimeForGoodVisits(
       SurfaceId surface_id,
       base::TimeDelta elapsed) = 0;
+
+  // Returns a list of feed article urls.
+  virtual std::vector<std::string> GetFeedUrls(SurfaceId surface_id) = 0;
 
   // The following methods are used for the internals page.
 

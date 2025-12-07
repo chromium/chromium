@@ -15,7 +15,8 @@
 #include "components/download/public/background_service/download_params.h"
 #include "components/download/public/background_service/test/mock_client.h"
 #include "ios/chrome/browser/download/model/background_service/background_download_service_factory.h"
-#include "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -96,26 +97,25 @@ class BackgroundDownloadServiceTest
 
   void SetUp() override {
     download::test::BackgroundDownloadTestBase::SetUp();
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         BackgroundDownloadServiceFactory::GetInstance(),
         base::BindRepeating(
             &BackgroundDownloadServiceTest::MakeBackgroundDowloadService,
             base::Unretained(this)));
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
 
-    // Create a random file in root dir and an unknown file in downoad dir.
-    ASSERT_TRUE(base::CreateTemporaryFileInDir(browser_state_->GetStatePath(),
+    // Create a random file in root dir and an unknown file in download dir.
+    ASSERT_TRUE(base::CreateTemporaryFileInDir(profile_->GetStatePath(),
                                                &temp_file_path_));
-    auto download_dir = browser_state_->GetStatePath()
+    auto download_dir = profile_->GetStatePath()
                             .Append(kDownloadServiceStorageDir)
                             .Append(kFilesStorageDir);
     base::CreateDirectoryAndGetError(download_dir, nullptr);
     ASSERT_TRUE(base::CreateTemporaryFileInDir(download_dir,
                                                &temp_file_path_to_delete_));
 
-    service_ = BackgroundDownloadServiceFactory::GetForBrowserState(
-        browser_state_.get());
+    service_ = BackgroundDownloadServiceFactory::GetForProfile(profile_.get());
     ASSERT_TRUE(fake_client_);
   }
 
@@ -144,18 +144,19 @@ class BackgroundDownloadServiceTest
   // service. A pointer to the FakeClient object is kept in the test fixture
   // instance to allow test cases to manipulate it.
   std::unique_ptr<KeyedService> MakeBackgroundDowloadService(
-      web::BrowserState* browser_state) {
+      ProfileIOS* profile) {
     DCHECK(!fake_client_);
     auto fake_client = std::make_unique<NiceMock<FakeClient>>();
     fake_client_ = fake_client.get();
     auto clients = std::make_unique<download::DownloadClientMap>();
     clients->emplace(download::DownloadClient::TEST, std::move(fake_client));
     return BackgroundDownloadServiceFactory::GetInstance()
-        ->BuildServiceWithClients(browser_state, std::move(clients));
+        ->BuildServiceWithClients(profile, std::move(clients));
   }
 
  private:
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<ProfileIOS> profile_;
   raw_ptr<download::BackgroundDownloadService> service_;
   raw_ptr<FakeClient> fake_client_ = nullptr;
   base::FilePath temp_file_path_;

@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/shell_dialogs/execute_select_file_win.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/shell_dialogs_export.h"
@@ -42,5 +42,4 @@ SHELL_DIALOGS_EXPORT SelectFileDialog* CreateWinSelectFileDialog(
 
 }  // namespace ui
 
-#endif  //  UI_SHELL_DIALOGS_SELECT_FILE_DIALOG_WIN_H_
-
+#endif  // UI_SHELL_DIALOGS_SELECT_FILE_DIALOG_WIN_H_

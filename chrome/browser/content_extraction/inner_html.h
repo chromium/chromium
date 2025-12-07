@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
-#include "third_party/blink/public/mojom/content_extraction/inner_html.mojom-forward.h"
 
 namespace content {
 class RenderFrameHost;
@@ -27,6 +26,11 @@ using InnerHtmlCallback =
 //
 // NOTE: This function services the request as soon as called, it does not wait
 // for the page to finish loading.
+//
+// IMPORTANT: The inner-html retrieved by this function is untrustworthy and
+// should not be processed in the browser process.
+// TODO(crbug.com/370820145): These fields should be annotated as untrustworthy
+// when possible.
 void GetInnerHtml(content::RenderFrameHost& host, InnerHtmlCallback callback);
 
 }  // namespace content_extraction

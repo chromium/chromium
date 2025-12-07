@@ -11,7 +11,6 @@ import './screens/common/add_child.js';
 import './screens/common/ai_intro.js';
 import './screens/common/app_downloading.js';
 import './screens/common/app_launch_splash.js';
-import './screens/common/assistant_optin.js';
 import './screens/common/categories_selection.js';
 import './screens/common/choobe.js';
 import './screens/common/consolidated_consent.js';
@@ -44,6 +43,7 @@ import './screens/common/remote_activity_notification.js';
 import './screens/common/saml_confirm_password.js';
 import './screens/common/signin_fatal_error.js';
 import './screens/common/smart_privacy_protection.js';
+import './screens/common/split_modifier_keyboard_info.js';
 import './screens/common/sync_consent.js';
 import './screens/common/theme_selection.js';
 import './screens/common/touchpad_scroll.js';
@@ -66,11 +66,10 @@ import './screens/osauth/cryptohome_recovery.js';
 // SCREENS USED DURING THE LOGIN FLOW
 import './screens/login/arc_vm_data_migration.js';
 import './screens/login/encryption_migration.js';
-import './screens/login/lacros_data_backward_migration.js';
-import './screens/login/lacros_data_migration.js';
 import './screens/login/management_transition.js';
 import './screens/login/offline_login.js';
 import './screens/login/update_required_card.js';
+import './screens/common/account_selection.js';
 // SCREENS USED DURING THE OOBE FLOW
 import './screens/oobe/auto_enrollment_check.js';
 import './screens/oobe/consumer_update.js';
@@ -78,12 +77,14 @@ import './screens/oobe/demo_preferences.js';
 import './screens/oobe/demo_setup.js';
 import './screens/oobe/enable_debugging.js';
 import './screens/oobe/enterprise_enrollment.js';
+import './screens/oobe/fjord_station_setup.js';
+import './screens/oobe/fjord_touch_controller.js';
 import './screens/oobe/hid_detection.js';
 import './screens/oobe/oobe_network.js';
 import './screens/oobe/packaged_license.js';
 import './screens/oobe/update.js';
 
-import {OobeTypes} from './components/oobe_types.js';
+import type {OobeTypes} from './components/oobe_types.js';
 
 /**
  * List of screens that are used for both `oobe` and `login` flows.
@@ -98,11 +99,6 @@ export const commonScreensList: OobeTypes.ScreensList = [
   },
   {tag: 'app-downloading-element', id: 'app-downloading'},
   {tag: 'app-launch-splash-element', id: 'app-launch-splash'},
-  {
-    tag: 'assistant-optin-element',
-    id: 'assistant-optin-flow',
-    condition: 'isOobeAssistantEnabled',
-  },
   {
     tag: 'apply-online-password-element',
     id: 'apply-online-password',
@@ -138,17 +134,9 @@ export const commonScreensList: OobeTypes.ScreensList = [
   {tag: 'error-message-element', id: 'error-message'},
   {tag: 'family-link-notice-element', id: 'family-link-notice'},
   {tag: 'fingerprint-setup-element', id: 'fingerprint-setup'},
-  {
-    tag: 'gaia-info-element',
-    id: 'gaia-info',
-    condition: 'isOobeGaiaInfoScreenEnabled',
-  },
+  {tag: 'gaia-info-element', id: 'gaia-info'},
   {tag: 'gaia-signin-element', id: 'gaia-signin'},
-  {
-    tag: 'gemini-intro-element',
-    id: 'gemini-intro',
-    condition: 'isOobeGeminiIntroEnabled',
-  },
+  {tag: 'gemini-intro-element', id: 'gemini-intro'},
   {tag: 'gesture-navigation-element', id: 'gesture-navigation'},
   {tag: 'guest-tos-element', id: 'guest-tos'},
   {tag: 'hw-data-collection-element', id: 'hw-data-collection'},
@@ -197,12 +185,16 @@ export const commonScreensList: OobeTypes.ScreensList = [
   {tag: 'recommend-apps-element', id: 'recommend-apps'},
   {
     tag: 'remote-activity-notification-element',
-    id: 'remote-activity-notification',
-    condition: 'isRemoteActivityNotificationEnabled',
+    id: 'remote-activity-notification'
   },
   {tag: 'saml-confirm-password-element', id: 'saml-confirm-password'},
   {tag: 'signin-fatal-error-element', id: 'signin-fatal-error'},
   {tag: 'smart-privacy-protection-element', id: 'smart-privacy-protection'},
+  {
+    tag: 'split-modifier-keyboard-info-element',
+    id: 'split-modifier-keyboard-info',
+    condition: 'isSplitModifierKeyboardInfoEnabled',
+  },
   {tag: 'sync-consent-element', id: 'sync-consent'},
   {tag: 'theme-selection-element', id: 'theme-selection'},
   {
@@ -234,22 +226,17 @@ export const loginScreensList: OobeTypes.ScreensList = [
   {tag: 'cryptohome-recovery-element', id: 'cryptohome-recovery'},
   {tag: 'encryption-migration-element', id: 'encryption-migration'},
   {
-    tag: 'lacros-data-backward-migration-element',
-    id: 'lacros-data-backward-migration',
-    extra_classes: ['migrate'],
-  },
-  {
-    tag: 'lacros-data-migration-element',
-    id: 'lacros-data-migration',
-    extra_classes: ['migrate'],
-  },
-  {
     tag: 'management-transition-element',
     id: 'management-transition',
     extra_classes: ['migrate'],
   },
   {tag: 'offline-login-element', id: 'offline-login'},
   {tag: 'update-required-card-element', id: 'update-required'},
+  {
+    tag: 'account-selection-element',
+    id: 'account-selection',
+    condition: 'isOobeAddUserDuringEnrollmentEnabled',
+  },
 ];
 
 /**
@@ -266,6 +253,16 @@ export const oobeScreensList: OobeTypes.ScreensList = [
   {tag: 'demo-setup-element', id: 'demo-setup'},
   {tag: 'enable-debugging-element', id: 'debugging'},
   {tag: 'enterprise-enrollment-element', id: 'enterprise-enrollment'},
+  {
+    tag: 'fjord-station-setup-element',
+    id: 'fjord-station-setup',
+    condition: 'isFjordOobeEnabled',
+  },
+  {
+    tag: 'fjord-touch-controller-element',
+    id: 'fjord-touch-controller',
+    condition: 'isFjordOobeEnabled',
+  },
   {tag: 'hid-detection-element', id: 'hid-detection'},
   {tag: 'oobe-network-element', id: 'network-selection'},
   {tag: 'packaged-license-element', id: 'packaged-license'},

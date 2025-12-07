@@ -33,14 +33,12 @@
 
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "v8/include/v8-exception.h"
 
 namespace blink {
 
 class Decimal;
-class ExceptionContext;
 
 class PLATFORM_EXPORT ExceptionMessages {
   STATIC_ONLY(ExceptionMessages);
@@ -51,7 +49,9 @@ class PLATFORM_EXPORT ExceptionMessages {
     kExclusiveBound,
   };
 
-  static String AddContextToMessage(const ExceptionContext&,
+  static String AddContextToMessage(v8::ExceptionContext type,
+                                    const char* class_name,
+                                    const String& property_name,
                                     const String& message);
 
   static String ArgumentNullOrIncorrectType(int argument_index,

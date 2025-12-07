@@ -24,7 +24,7 @@ goog.require('goog.dom');
 goog.require('goog.dom.NodeType');
 goog.require('goog.dom.RangeIterator');
 goog.require('goog.dom.TagName');
-goog.require('goog.iter.StopIteration');
+goog.require('goog.iter');
 
 
 
@@ -120,17 +120,13 @@ goog.dom.TextRangeIterator = function(
       this.isReversed_);
 
   if (goNext) {
-    try {
-      this.nextValueOrThrow();
-    } catch (e) {
-      if (e != goog.iter.StopIteration) {
-        throw e;
-      }
-    }
+    this.next();
   }
 };
 goog.inherits(goog.dom.TextRangeIterator, goog.dom.RangeIterator);
 
+/** @private {boolean} */
+goog.dom.TextRangeIterator.prototype.hasSkippedPastLast_ = false;
 
 /** @override */
 goog.dom.TextRangeIterator.prototype.getStartTextOffset = function() {
@@ -200,8 +196,8 @@ goog.dom.TextRangeIterator.prototype.isLast = function() {
 };
 
 /**
- * Returns true if the iterator is on the last step before StopIteration is
- * thrown, otherwise false.
+ * Returns true if the iterator is on the last step before iteration finishes,
+ * false otherwise.
  * @return {boolean}
  * @private
  */
@@ -222,19 +218,19 @@ goog.dom.TextRangeIterator.prototype.isLastTag_ = function() {
 };
 
 /**
- * Move to the next position in the selection.
- * Throws `goog.iter.StopIteration` when it passes the end of the range.
- * @return {Node} The node at the next position.
+ * Move to the next position in the selection. Returns `{done: true}` when it
+ * passes the end of the range.
+ * @return {!IIterableResult<!Node>} The node at the next position.
  * @override
  */
-goog.dom.TextRangeIterator.prototype.nextValueOrThrow = function() {
+goog.dom.TextRangeIterator.prototype.next = function() {
   'use strict';
-  if (this.isLast()) {
-    throw goog.iter.StopIteration;
+  if (this.isLast() || this.hasSkippedPastLast_) {
+    return goog.iter.ES6_ITERATOR_DONE;
   }
 
   // Call the super function.
-  return goog.dom.TextRangeIterator.superClass_.nextValueOrThrow.call(this);
+  return goog.dom.TextRangeIterator.superClass_.next.call(this);
 };
 
 
@@ -256,7 +252,7 @@ goog.dom.TextRangeIterator.prototype.skipTag = function() {
   // If the node we are skipping contains the end node, we just skipped past
   // the end, so we stop the iteration.
   if (goog.dom.contains(this.node, this.lastNode_())) {
-    throw goog.iter.StopIteration;
+    this.hasSkippedPastLast_ = true;
   }
 };
 

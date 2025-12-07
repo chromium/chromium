@@ -1,0 +1,64 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RANDOM_CACHING_KEY_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RANDOM_CACHING_KEY_H_
+
+#include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+
+namespace blink {
+
+class RandomValueSharing;
+
+// RandomCachingKey serves as the key for random base value cache stored in the
+// StyleEngine.
+// https://drafts.csswg.org/css-values-5/#random-caching-key
+class RandomCachingKey : public GarbageCollected<RandomCachingKey> {
+ public:
+  RandomCachingKey(AtomicString ident, const Element* element)
+      : ident_(ident), element_(element) {}
+  static RandomCachingKey* Create(RandomValueSharing random_value_sharing,
+                                  const Element* element,
+                                  AtomicString property_name,
+                                  size_t property_value_index);
+  bool operator==(const RandomCachingKey& other) const;
+  unsigned GetHash() const;
+  void Trace(Visitor* visitor) const;
+  AtomicString Ident() const { return ident_; }
+
+ private:
+  AtomicString ident_;
+  Member<const Element> element_;
+};
+
+template <>
+struct HashTraits<Member<RandomCachingKey>>
+    : MemberHashTraits<RandomCachingKey> {
+  static unsigned GetHash(const Member<RandomCachingKey>& key) {
+    return key ? key->GetHash() : 0;
+  }
+
+  static bool Equal(const Member<RandomCachingKey>& a,
+                    const Member<RandomCachingKey>& b) {
+    if (!a) {
+      return !b;
+    }
+    if (!b) {
+      return false;
+    }
+    return *a == *b;
+  }
+
+  // True because a default-constructed Member (nullptr) is distinct from
+  // any valid Member<RandomCachingKey> instance, and deleted slots are also
+  // distinct.
+  static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
+};
+
+}  // namespace blink
+
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RANDOM_CACHING_KEY_H_

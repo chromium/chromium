@@ -4,15 +4,18 @@
 
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/extension_cleanup_handler.h"
 
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/extensions/component_loader.h"
+#include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
 #include "components/app_constants/constants.h"
 #include "components/prefs/pref_service.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
@@ -21,7 +24,6 @@
 // Extensions that should not be attempted to be uninstalled and reinstalled.
 const char* const kExemptExtensions[] = {
     app_constants::kChromeAppId,
-    app_constants::kLacrosAppId,
 };
 
 namespace chromeos {
@@ -84,7 +86,7 @@ void ExtensionCleanupHandler::UninstallExtensions() {
   for (auto it = extensions_to_be_uninstalled_.begin();
        it != extensions_to_be_uninstalled_.end();) {
     std::u16string error;
-    extension_service_->UninstallExtension(
+    extensions::ExtensionRegistrar::Get(profile_)->UninstallExtension(
         *it, extensions::UninstallReason::UNINSTALL_REASON_REINSTALL, &error,
         base::BindOnce(&ExtensionCleanupHandler::OnUninstallDataDeleterFinished,
                        base::Unretained(this), *it));
@@ -123,10 +125,11 @@ void ExtensionCleanupHandler::OnUninstallDataDeleterFinished(
 
 void ExtensionCleanupHandler::ReinstallExtensions() {
   // Reinstall force-installed extensions and external component extensions.
-  extension_service_->ReinstallProviderExtensions();
+  extensions::ExternalProviderManager::Get(profile_)
+      ->ReinstallProviderExtensions();
 
   // Reinstall component extensions.
-  extension_service_->component_loader()->AddDefaultComponentExtensions(
+  extensions::ComponentLoader::Get(profile_)->AddDefaultComponentExtensions(
       /*skip_session_components=*/false);
 
   std::move(callback_).Run(std::nullopt);

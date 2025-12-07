@@ -4,8 +4,9 @@
 
 #include "chrome/browser/ui/views/crostini/crostini_app_restart_dialog.h"
 
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/screen.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -19,13 +20,35 @@ namespace crostini {
 namespace {
 
 gfx::NativeWindow GetNativeWindowFromDisplayId(int64_t display_id) {
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   display::Display display;
   screen->GetDisplayWithDisplayId(display_id, &display);
   return screen->GetWindowAtScreenPoint(display.bounds().origin());
 }
 
-std::unique_ptr<views::View> MakeCrostiniAppRestartView() {
+}  // namespace
+
+// static
+void AppRestartDialog::Show(int64_t display_id) {
+  ShowInternal(GetNativeWindowFromDisplayId(display_id));
+}
+
+// static
+void AppRestartDialog::ShowForTesting(gfx::NativeWindow context) {
+  ShowInternal(context);
+}
+
+// static
+void AppRestartDialog::ShowInternal(gfx::NativeWindow context) {
+  auto contents = MakeCrostiniAppRestartView();
+  auto delegate = MakeCrostiniAppRestartDelegate(std::move(contents));
+  views::DialogDelegate::CreateDialogWidget(std::move(delegate), context,
+                                            nullptr)
+      ->Show();
+}
+
+// static
+std::unique_ptr<views::View> AppRestartDialog::MakeCrostiniAppRestartView() {
   auto view = std::make_unique<views::View>();
 
   views::LayoutProvider* provider = views::LayoutProvider::Get();
@@ -39,42 +62,26 @@ std::unique_ptr<views::View> MakeCrostiniAppRestartView() {
   views::Label* message_label = new views::Label(message);
   message_label->SetMultiLine(true);
   message_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  view->AddChildView(message_label);
+  view->AddChildViewRaw(message_label);
 
   return view;
 }
 
-std::unique_ptr<views::DialogDelegate> MakeCrostiniAppRestartDelegate(
+// static
+std::unique_ptr<views::DialogDelegate>
+AppRestartDialog::MakeCrostiniAppRestartDelegate(
     std::unique_ptr<views::View> contents) {
   auto delegate = std::make_unique<views::DialogDelegate>();
   delegate->set_internal_name("CrostiniAppRestart");
-  delegate->SetButtons(ui::DIALOG_BUTTON_OK);
+  delegate->SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
   delegate->SetContentsView(std::move(contents));
-  delegate->SetModalType(ui::MODAL_TYPE_SYSTEM);
-  delegate->SetOwnedByWidget(true);
+  delegate->SetModalType(ui::mojom::ModalType::kSystem);
+  delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
   delegate->SetShowCloseButton(false);
-  delegate->set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
+  delegate->set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
   return delegate;
-}
-
-void ShowInternal(gfx::NativeWindow context) {
-  auto contents = MakeCrostiniAppRestartView();
-  auto delegate = MakeCrostiniAppRestartDelegate(std::move(contents));
-  views::DialogDelegate::CreateDialogWidget(std::move(delegate), context,
-                                            nullptr)
-      ->Show();
-}
-
-}  // namespace
-
-void ShowAppRestartDialog(int64_t display_id) {
-  ShowInternal(GetNativeWindowFromDisplayId(display_id));
-}
-
-void ShowAppRestartDialogForTesting(gfx::NativeWindow context) {
-  ShowInternal(context);
 }
 
 }  // namespace crostini

@@ -9,8 +9,8 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/sequence_checker.h"
-#include "chrome/updater/app/server/posix/update_service_internal_stub.h"
-#include "chrome/updater/app/server/posix/update_service_stub.h"
+#include "chrome/updater/app/server/update_service_internal_stub.h"
+#include "chrome/updater/app/server/update_service_stub.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/posix/setup.h"
 

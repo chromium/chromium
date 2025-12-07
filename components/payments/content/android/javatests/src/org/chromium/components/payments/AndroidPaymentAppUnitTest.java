@@ -13,31 +13,34 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.payments.mojom.PaymentCurrencyAmount;
-import org.chromium.payments.mojom.PaymentDetailsModifier;
 import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.payments.mojom.PaymentOptions;
-import org.chromium.payments.mojom.PaymentShippingOption;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-/** Tests for the native Android payment app finder. */
+/** Tests for the Android intent-based payment app. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class AndroidPaymentAppUnitTest {
-    @Mock private AndroidPaymentApp.Launcher mLauncherMock;
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private AndroidIntentLauncher mLauncherMock;
+    @Mock private DialogController mDialogControllerMock;
 
     private String mErrorMessage;
     private String mPaymentMethodName;
@@ -45,17 +48,82 @@ public class AndroidPaymentAppUnitTest {
     private boolean mReadyToPayResponse;
     private boolean mReadyToPayQueryFinished;
     private boolean mInvokePaymentAppFinished;
+    private Map<String, PaymentMethodData> mMethods;
 
     @Before
     public void setUp() {
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
+        // Reset test results.
+        mErrorMessage = null;
+        mPaymentMethodName = null;
+        mPaymentDetails = null;
+        mReadyToPayResponse = false;
+        mReadyToPayQueryFinished = false;
+        mInvokePaymentAppFinished = false;
+        mMethods = new HashMap<>();
+        mMethods.put("https://company.com/pay", new PaymentMethodData());
     }
 
     @SmallTest
     @Test
     @UiThreadTest
-    public void testSuccessfulPaymentWithoutIsReadyToPayService() throws Exception {
-        runTest(Activity.RESULT_OK);
+    public void testNoReadyToPayDebugInfo() throws Exception {
+        AndroidPaymentApp app = createApp(/* showReadyToPayDebugInfo= */ false);
+        queryReadyToPay(app);
+        Mockito.verify(mDialogControllerMock, Mockito.never())
+                .showReadyToPayDebugInfo(Mockito.any());
+    }
+
+    @SmallTest
+    @Test
+    @UiThreadTest
+    public void testShowReadyToPayDebugInfo() throws Exception {
+        AndroidPaymentApp app = createApp(/* showReadyToPayDebugInfo= */ true);
+        queryReadyToPay(app);
+        Mockito.verify(mDialogControllerMock, Mockito.times(1))
+                .showReadyToPayDebugInfo(
+                        Mockito.eq(
+                                "IS_READY_TO_PAY sent to com.company.app.IsReadyToPayService in"
+                                        + " com.company.app with {\"topLevelOrigin\":"
+                                        + " \"https://merchant.com\", \"paymentRequestOrigin\":"
+                                        + " \"https://psp.com\", \"methodNames\":"
+                                        + " [\"https://company.com/pay\"], \"methodData\":"
+                                        + " [{\"https://company.com/pay\": null}]}"));
+    }
+
+    @SmallTest
+    @Test
+    @UiThreadTest
+    public void testSetHasEnrolledInstrument() throws Exception {
+        AndroidPaymentApp app =
+                createApp(
+                        /* allowShowWithoutReadyToPay= */ true,
+                        /* showReadyToPayDebugInfo= */ false);
+        Assert.assertFalse(app.hasEnrolledInstrument());
+        app.setHasEnrolledInstrument(true);
+        Assert.assertTrue(app.hasEnrolledInstrument());
+    }
+
+    @SmallTest
+    @Test
+    @UiThreadTest
+    public void testCannotSetHasEnrolledInstrument() throws Exception {
+        AndroidPaymentApp app =
+                createApp(
+                        /* allowShowWithoutReadyToPay= */ false,
+                        /* showReadyToPayDebugInfo= */ false);
+        Assert.assertTrue(app.hasEnrolledInstrument());
+        app.setHasEnrolledInstrument(false);
+        Assert.assertTrue(app.hasEnrolledInstrument());
+    }
+
+    @SmallTest
+    @Test
+    @UiThreadTest
+    public void testSuccessfulPayment() throws Exception {
+        AndroidPaymentApp app = createApp(/* showReadyToPayDebugInfo= */ false);
+        queryReadyToPay(app);
+        invokePaymentApp(app, Activity.RESULT_OK);
         Assert.assertNull(mErrorMessage);
         Assert.assertEquals("https://company.com/pay", mPaymentMethodName);
         Assert.assertEquals("{}", mPaymentDetails);
@@ -64,8 +132,10 @@ public class AndroidPaymentAppUnitTest {
     @SmallTest
     @Test
     @UiThreadTest
-    public void testCancelledPaymentWithoutIsReadyToPayService() throws Exception {
-        runTest(Activity.RESULT_CANCELED);
+    public void testCancelledPayment() throws Exception {
+        AndroidPaymentApp app = createApp(/* showReadyToPayDebugInfo= */ false);
+        queryReadyToPay(app);
+        invokePaymentApp(app, Activity.RESULT_CANCELED);
         Assert.assertEquals(
                 "Payment app returned RESULT_CANCELED code. This is how payment apps "
                         + "can close their activity programmatically.",
@@ -74,41 +144,41 @@ public class AndroidPaymentAppUnitTest {
         Assert.assertNull(mPaymentDetails);
     }
 
-    private void runTest(int resultCode) throws Exception {
-        MockitoAnnotations.initMocks(this);
+    private AndroidPaymentApp createApp(boolean showReadyToPayDebugInfo) {
+        return createApp(/* allowShowWithoutReadyToPay= */ false, showReadyToPayDebugInfo);
+    }
 
-        // Reset test results.
-        mErrorMessage = null;
-        mPaymentMethodName = null;
-        mPaymentDetails = null;
-        mReadyToPayResponse = false;
-        mReadyToPayQueryFinished = false;
-        mInvokePaymentAppFinished = false;
-
+    private AndroidPaymentApp createApp(
+            boolean allowShowWithoutReadyToPay, boolean showReadyToPayDebugInfo) {
         AndroidPaymentApp app =
                 new AndroidPaymentApp(
                         mLauncherMock,
+                        mDialogControllerMock,
                         "com.company.app",
                         "com.company.app.PaymentActivity",
-                        /* isReadyToPayService= */ null,
+                        "com.company.app.IsReadyToPayService",
+                        "com.company.app.PaymentDetailsUpdateService",
                         "App Label",
                         /* icon= */ null,
                         /* isIncognito= */ false,
                         /* appToHide= */ null,
-                        new SupportedDelegations());
+                        new SupportedDelegations(),
+                        allowShowWithoutReadyToPay,
+                        showReadyToPayDebugInfo,
+                        /* removeDeprecatedFields= */ false,
+                        /* paymentDetailsUpdateServiceMaxRetryNumber= */ 0);
         app.addMethodName("https://company.com/pay");
+        return app;
+    }
 
-        Map<String, PaymentMethodData> methods = new HashMap<>();
-        methods.put("https://company.com/pay", new PaymentMethodData());
-
-        Map<String, PaymentDetailsModifier> modifiers = new HashMap<>();
-
+    private void queryReadyToPay(AndroidPaymentApp app) throws Exception {
+        app.bypassIsReadyToPayServiceInTest();
         app.maybeQueryIsReadyToPayService(
-                methods,
+                mMethods,
                 "https://merchant.com",
                 "https://psp.com",
                 /* certificateChain= */ null,
-                modifiers,
+                /* modifiers= */ new HashMap<>(),
                 new AndroidPaymentApp.IsReadyToPayCallback() {
                     @Override
                     public void onIsReadyToPayResponse(
@@ -119,7 +189,9 @@ public class AndroidPaymentAppUnitTest {
                 });
         CriteriaHelper.pollUiThreadNested(() -> mReadyToPayQueryFinished);
         Assert.assertTrue("Payment app should be ready to pay", mReadyToPayResponse);
+    }
 
+    private void invokePaymentApp(AndroidPaymentApp app, int resultCode) throws Exception {
         PaymentItem total = new PaymentItem();
         total.amount = new PaymentCurrencyAmount();
         total.amount.currency = "USD";
@@ -131,12 +203,12 @@ public class AndroidPaymentAppUnitTest {
                 "https://merchant.com",
                 "https://psp.com",
                 /* certificateChain= */ null,
-                methods,
+                mMethods,
                 total,
-                /* displayItems= */ new ArrayList<PaymentItem>(),
-                modifiers,
+                /* displayItems= */ new ArrayList<>(),
+                /* modifiers= */ new HashMap<>(),
                 new PaymentOptions(),
-                new ArrayList<PaymentShippingOption>(),
+                new ArrayList<>(),
                 new PaymentApp.InstrumentDetailsCallback() {
                     @Override
                     public void onInstrumentDetailsReady(
@@ -152,14 +224,12 @@ public class AndroidPaymentAppUnitTest {
                         mInvokePaymentAppFinished = true;
                     }
                 });
-        AndroidPaymentApp.IntentResult intentResult = new AndroidPaymentApp.IntentResult();
-        intentResult.resultCode = resultCode;
-        intentResult.data = new Intent();
+        Intent data = new Intent();
         Bundle extras = new Bundle();
         extras.putString("methodName", "https://company.com/pay");
         extras.putString("details", "{}");
-        intentResult.data.putExtras(extras);
-        app.onIntentCompletedForTesting(intentResult);
+        data.putExtras(extras);
+        app.onIntentCompleted(resultCode, data);
 
         CriteriaHelper.pollUiThreadNested(() -> mInvokePaymentAppFinished);
     }

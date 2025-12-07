@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -125,9 +124,9 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
   void SetOnFramePresentedCallback(OnNewFramePresentedCB presented_cb);
 
   // Gets the metadata for the last frame that was presented to the compositor.
-  // Used to populate the VideoFrameMetadata of video.requestVideoFrameCallback
-  // callbacks. See https://wicg.github.io/video-rvfc/.
-  // Can be called on any thread.
+  // Used to populate the VideoFrameCallbackMetadata of
+  // video.requestVideoFrameCallback callbacks. See
+  // https://wicg.github.io/video-rvfc/. Can be called on any thread.
   std::unique_ptr<WebMediaPlayer::VideoFramePresentationMetadata>
   GetLastPresentedFrameMetadata();
 
@@ -309,9 +308,6 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
   // |current_frame_lock_| protects |current_frame_|, |rendering_frame_buffer_|,
   // |dropped_frame_count_|, |current_metadata_| and |render_started_|.
   base::Lock current_frame_lock_;
-
-  // TODO(crbug.com/353554171): Remove this once the mechanism is fixed.
-  std::optional<base::TimeDelta> maximum_vsync_delay_for_renderer_reset_;
 
   base::WeakPtr<WebMediaPlayerMSCompositor> weak_this_;
   base::WeakPtrFactory<WebMediaPlayerMSCompositor> weak_ptr_factory_{this};

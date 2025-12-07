@@ -5,7 +5,10 @@
 #ifndef MEDIA_FILTERS_HLS_RENDITION_IMPL_H_
 #define MEDIA_FILTERS_HLS_RENDITION_IMPL_H_
 
-#include "crypto/encryptor.h"
+#include <array>
+
+#include "base/sequence_checker.h"
+#include "crypto/aes_cbc.h"
 #include "media/filters/hls_rendition.h"
 #include "media/formats/hls/segment_stream.h"
 
@@ -24,7 +27,8 @@ class MEDIA_EXPORT HlsRenditionImpl : public HlsRendition {
                    std::string role,
                    scoped_refptr<hls::MediaPlaylist> playlist,
                    std::optional<base::TimeDelta> duration,
-                   GURL media_playlist_uri);
+                   GURL media_playlist_uri,
+                   MediaLog* media_log);
 
   // `HlsRendition` implementation
   std::optional<base::TimeDelta> GetDuration() override;
@@ -34,8 +38,9 @@ class MEDIA_EXPORT HlsRenditionImpl : public HlsRendition {
   ManifestDemuxer::SeekResponse Seek(base::TimeDelta seek_time) override;
   void StartWaitingForSeek() override;
   void Stop() override;
-  void UpdatePlaylist(scoped_refptr<hls::MediaPlaylist> playlist,
-                      std::optional<GURL> new_playlist_uri) override;
+  void UpdatePlaylist(scoped_refptr<hls::MediaPlaylist> playlist) override;
+  void UpdatePlaylistURI(const GURL& playlist_uri) override;
+  const GURL& MediaPlaylistUri() const override;
 
  private:
   // A pending segment consists of the stream from which network data is fetched
@@ -46,7 +51,13 @@ class MEDIA_EXPORT HlsRenditionImpl : public HlsRendition {
   // Clears old data and returns the amount of time taken to do so, in order to
   // aid the delay calculations.
   base::TimeDelta ClearOldSegments(base::TimeDelta media_time);
-  void FetchNext(base::OnceClosure cb, base::TimeDelta required_time);
+  void FetchNext(base::OnceClosure cb,
+                 std::optional<base::TimeDelta> required_time);
+
+  void ResumeLivePlayback(base::TimeDelta estimated_resume,
+                          base::OnceClosure done);
+  void ManifestUpdateForLiveResume(base::OnceClosure done, base::TimeDelta);
+  void FirstSegmentFetchedForLiveResume(base::OnceClosure done);
 
   // Continues loading from a stored pending network request.
   void FetchMoreDataFromPendingStream(base::OnceClosure cb,
@@ -56,7 +67,7 @@ class MEDIA_EXPORT HlsRenditionImpl : public HlsRendition {
   // request if there is more to read.
   void OnSegmentData(scoped_refptr<hls::MediaSegment> segment,
                      base::OnceClosure cb,
-                     base::TimeDelta fetch_required_time,
+                     std::optional<base::TimeDelta> fetch_required_time,
                      base::TimeDelta parse_end,
                      base::TimeTicks net_req_start,
                      bool fetched_new_key,
@@ -81,7 +92,7 @@ class MEDIA_EXPORT HlsRenditionImpl : public HlsRendition {
   // Callback helper to receive notice when a new manifest has been updated.
   void OnManifestUpdate(ManifestDemuxer::DelayCallback cb,
                         base::TimeDelta delay,
-                        bool success);
+                        HlsDemuxerStatus success);
 
   // Helper method to use duration to determine stream liveness.
   bool IsLive() const;
@@ -114,8 +125,11 @@ class MEDIA_EXPORT HlsRenditionImpl : public HlsRendition {
   std::optional<base::TimeTicks> livestream_pause_time_ = std::nullopt;
 
   // Decrypt full segments if using AES128 or AES256.
-  std::unique_ptr<crypto::Encryptor> decryptor_;
   scoped_refptr<hls::MediaSegment> segment_with_key_;
+  std::vector<uint8_t> key_;
+  std::array<uint8_t, crypto::aes_cbc::kBlockSize> iv_;
+
+  std::unique_ptr<MediaLog> media_log_;
 
   // toggleable bool flags.
   bool set_stream_end_ = false;

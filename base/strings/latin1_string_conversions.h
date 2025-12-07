@@ -25,6 +25,10 @@ typedef unsigned char Latin1Char;
 // array to std::u16string. This function is defined here rather than in
 // WebString.h to avoid binary bloat in all the callers of the conversion
 // operator.
+// TODO(crbug.com/40284755): implement spanified version.
+// BASE_EXPORT std::u16string Latin1OrUTF16ToUTF16(
+//     base::span<const Latin1Char> latin1,
+//     base::span<const char16_t> utf16);
 BASE_EXPORT std::u16string Latin1OrUTF16ToUTF16(size_t length,
                                                 const Latin1Char* latin1,
                                                 const char16_t* utf16);

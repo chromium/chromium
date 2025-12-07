@@ -9,6 +9,9 @@
 
 #include "base/lazy_instance.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

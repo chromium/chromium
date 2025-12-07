@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -98,10 +100,11 @@ HttpBridge::~HttpBridge() {
 #endif
 }
 
-void HttpBridge::SetExtraRequestHeaders(const char* headers) {
-  DCHECK(extra_headers_.empty())
+void HttpBridge::SetExtraRequestHeaders(
+    const net::HttpRequestHeaders& headers) {
+  DCHECK(extra_headers_.IsEmpty())
       << "HttpBridge::SetExtraRequestHeaders called twice.";
-  extra_headers_.assign(headers);
+  extra_headers_ = headers;
 }
 
 void HttpBridge::SetURL(const GURL& url) {
@@ -186,8 +189,9 @@ void HttpBridge::MakeAsynchronousPost() {
 
   base::AutoLock lock(fetch_state_lock_);
   DCHECK(!fetch_state_.request_completed);
-  if (fetch_state_.aborted)
+  if (fetch_state_.aborted) {
     return;
+  }
 
   // Start the timer on the network thread (the same thread progress is made
   // on, and on which the url fetcher lives).
@@ -235,9 +239,7 @@ void HttpBridge::MakeAsynchronousPost() {
   resource_request->credentials_mode =
       google_apis::GetOmitCredentialsModeForGaiaRequests();
 
-  if (!extra_headers_.empty())
-    resource_request->headers.AddHeadersFromString(extra_headers_);
-
+  resource_request->headers.MergeFrom(extra_headers_);
   resource_request->headers.SetHeader("Content-Encoding", "gzip");
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
                                       user_agent_);
@@ -294,8 +296,9 @@ void HttpBridge::Abort() {
   base::AutoLock lock(fetch_state_lock_);
 
   DCHECK(!fetch_state_.aborted);
-  if (fetch_state_.aborted || fetch_state_.request_completed)
+  if (fetch_state_.aborted || fetch_state_.request_completed) {
     return;
+  }
 
   fetch_state_.aborted = true;
 
@@ -310,7 +313,7 @@ void HttpBridge::Abort() {
   http_post_completed_.Signal();
 }
 
-void HttpBridge::OnURLLoadComplete(std::unique_ptr<std::string> response_body) {
+void HttpBridge::OnURLLoadComplete(std::optional<std::string> response_body) {
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
 
   base::AutoLock lock(fetch_state_lock_);
@@ -318,8 +321,9 @@ void HttpBridge::OnURLLoadComplete(std::unique_ptr<std::string> response_body) {
   // If the fetch completes in the window between Abort() and
   // DestroyURLLoaderOnIOThread() this will still run. Abort() has already
   // reported the result, so no extra work is needed.
-  if (fetch_state_.aborted)
+  if (fetch_state_.aborted) {
     return;
+  }
 
   network::SimpleURLLoader* url_loader = fetch_state_.url_loader.get();
 
@@ -338,7 +342,7 @@ void HttpBridge::OnURLLoadCompleteInternal(
     int http_status_code,
     int net_error_code,
     const GURL& final_url,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!fetch_state_.aborted);
 
@@ -352,8 +356,9 @@ void HttpBridge::OnURLLoadCompleteInternal(
   fetch_state_.http_status_code = http_status_code;
   fetch_state_.net_error_code = net_error_code;
 
-  if (fetch_state_.request_succeeded)
+  if (fetch_state_.request_succeeded) {
     LogTimeout(false);
+  }
   base::UmaHistogramSparse("Sync.URLFetchResponse",
                            fetch_state_.request_succeeded
                                ? fetch_state_.http_status_code
@@ -364,14 +369,15 @@ void HttpBridge::OnURLLoadCompleteInternal(
   VLOG(1) << "HttpBridge received response code: "
           << fetch_state_.http_status_code;
 
-  if (response_body)
-    fetch_state_.response_content = std::move(*response_body);
+  if (response_body) {
+    fetch_state_.response_content = std::move(response_body).value();
+  }
 
   fetch_state_.url_loader.reset();
   url_loader_factory_ = nullptr;
 
   // Wake the blocked syncer thread in MakeSynchronousPost.
-  // WARNING: DONT DO ANYTHING AFTER THIS CALL! |this| may be deleted!
+  // WARNING: DONT DO ANYTHING AFTER THIS CALL! `this` may be deleted!
   http_post_completed_.Signal();
 }
 
@@ -379,16 +385,18 @@ void HttpBridge::OnURLLoadUploadProgress(uint64_t position, uint64_t total) {
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
   // Reset the delay when forward progress is made.
   base::AutoLock lock(fetch_state_lock_);
-  if (fetch_state_.http_request_timeout_timer)
+  if (fetch_state_.http_request_timeout_timer) {
     fetch_state_.http_request_timeout_timer->Reset();
+  }
 }
 
 void HttpBridge::OnURLLoadTimedOut() {
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
 
   base::AutoLock lock(fetch_state_lock_);
-  if (!fetch_state_.url_loader)
+  if (!fetch_state_.url_loader) {
     return;
+  }
 
   LogTimeout(true);
   DVLOG(1) << "Sync url fetch timed out. Canceling.";
@@ -408,7 +416,7 @@ void HttpBridge::OnURLLoadTimedOut() {
   fetch_state_.http_request_timeout_timer = nullptr;
 
   // Wake the blocked syncer thread in MakeSynchronousPost.
-  // WARNING: DONT DO ANYTHING AFTER THIS CALL! |this| may be deleted!
+  // WARNING: DONT DO ANYTHING AFTER THIS CALL! `this` may be deleted!
   http_post_completed_.Signal();
 }
 

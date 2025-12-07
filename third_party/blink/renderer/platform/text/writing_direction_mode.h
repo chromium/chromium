@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_WRITING_DIRECTION_MODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_WRITING_DIRECTION_MODE_H_
 
+#include "third_party/blink/renderer/platform/geometry/logical_direction.h"
 #include "third_party/blink/renderer/platform/geometry/physical_direction.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
@@ -73,12 +74,15 @@ class PLATFORM_EXPORT WritingDirectionMode {
   PhysicalDirection LineOver() const;
   PhysicalDirection LineUnder() const;
 
+  // Returns a logical direction corresponding to a physical direction.
+  LogicalDirection Top() const;
+  LogicalDirection Right() const;
+  LogicalDirection Left() const;
+  LogicalDirection Bottom() const;
+
   bool operator==(const WritingDirectionMode& other) const {
     return writing_mode_ == other.writing_mode_ &&
            direction_ == other.direction_;
-  }
-  bool operator!=(const WritingDirectionMode& other) const {
-    return !operator==(other);
   }
 
  private:

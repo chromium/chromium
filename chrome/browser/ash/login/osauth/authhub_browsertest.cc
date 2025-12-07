@@ -24,7 +24,6 @@ namespace ash {
 
 using testing::_;
 using testing::AnyNumber;
-using testing::Invoke;
 
 // This test currently uses mocks as consumers.
 // Once there is an AuthPanel implementation / In-Session auth dialog,
@@ -38,16 +37,15 @@ class AuthHubTest : public LoginManagerTest {
 
   void ExpectAuthenticationStarted() {
     EXPECT_CALL(attempt_consumer_, OnUserAuthAttemptConfirmed(_, _))
-        .WillOnce(Invoke([&](AuthHubConnector* connector,
-                             raw_ptr<AuthFactorStatusConsumer>& out_consumer) {
+        .WillOnce([&](AuthHubConnector* connector,
+                      raw_ptr<AuthFactorStatusConsumer>& out_consumer) {
           connector_ = connector;
           out_consumer = &status_consumer_;
-        }));
+        });
     EXPECT_CALL(status_consumer_, InitializeUi(_, _))
-        .WillOnce(
-            Invoke([&](AuthFactorsSet factors, AuthHubConnector* connector) {
-              connector_ = connector;
-            }));
+        .WillOnce([&](AuthFactorsSet factors, AuthHubConnector* connector) {
+          connector_ = connector;
+        });
     EXPECT_CALL(status_consumer_, OnFactorStatusesChanged(_))
         .Times(AnyNumber());
   }
@@ -55,9 +53,9 @@ class AuthHubTest : public LoginManagerTest {
   void ExpectSuccessfulAuthentication() {
     EXPECT_CALL(status_consumer_, OnFactorAuthSuccess(_));
     EXPECT_CALL(attempt_consumer_, OnUserAuthSuccess(_, _))
-        .WillOnce(Invoke([&](AshAuthFactor factor, AuthProofToken token) {
+        .WillOnce([&](AshAuthFactor factor, AuthProofToken token) {
           auth_token_ = token;
-        }));
+        });
   }
 
  protected:

@@ -44,34 +44,7 @@ class ASH_PUBLIC_EXPORT TestNewWindowDelegate : public NewWindowDelegate {
   void OpenPersonalizationHub() override;
   void OpenCaptivePortalSignin(const GURL& url) override;
   void OpenFile(const base::FilePath& file_path) override;
-};
-
-// NewWindowDelegateProvider implementation to provide TestNewWindowDelegate.
-class ASH_PUBLIC_EXPORT TestNewWindowDelegateProvider
-    : public NewWindowDelegateProvider {
- public:
-  // This provider's GetInstance() and GetPrimary() will both return |delegate|.
-  explicit TestNewWindowDelegateProvider(
-      std::unique_ptr<TestNewWindowDelegate> delegate);
-
-  // This provider's GetInstance() will return |ash|, its GetPrimary() will
-  // return |lacros|.
-  explicit TestNewWindowDelegateProvider(
-      std::unique_ptr<TestNewWindowDelegate> ash,
-      std::unique_ptr<TestNewWindowDelegate> lacros);
-
-  TestNewWindowDelegateProvider(const TestNewWindowDelegateProvider&) = delete;
-  TestNewWindowDelegateProvider& operator=(
-      const TestNewWindowDelegateProvider&) = delete;
-  ~TestNewWindowDelegateProvider() override;
-
-  // NewWindowDelegateProvider:
-  NewWindowDelegate* GetInstance() override;
-  NewWindowDelegate* GetPrimary() override;
-
- private:
-  std::unique_ptr<TestNewWindowDelegate> ash_;
-  std::unique_ptr<TestNewWindowDelegate> lacros_;
+  void ToggleGeminiApp() override;
 };
 
 }  // namespace ash

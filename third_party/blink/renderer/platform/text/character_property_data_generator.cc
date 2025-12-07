@@ -2,13 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
-#include "third_party/blink/renderer/platform/text/character_property_data.h"
-
 #include <stdio.h>
 #include <unicode/brkiter.h>
 #include <unicode/locid.h>
@@ -31,6 +24,8 @@
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/text/character_property.h"
+#include "third_party/blink/renderer/platform/text/character_property_data.h"
+#include "third_party/blink/renderer/platform/text/east_asian_spacing_type.h"
 #include "third_party/blink/renderer/platform/text/han_kerning_char_type.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 
@@ -82,7 +77,8 @@ class CharacterPropertyValues {
   constexpr static UChar32 kMaxCodepoint = 0x10FFFF;
   constexpr static UChar32 kSize = kMaxCodepoint + 1;
 
-  CharacterPropertyValues() : values_(new CharacterProperty[kSize]) {
+  CharacterPropertyValues()
+      : values_(base::HeapArray<CharacterProperty>::WithSize(kSize)) {
     Initialize();
   }
 
@@ -90,130 +86,245 @@ class CharacterPropertyValues {
 
  private:
   void Initialize() {
-    memset(values_.get(), 0, sizeof(CharacterProperty) * kSize);
+    SetIsCJKIdeographOrSymbolForEmoji();
 
-#define SET(name)                                     \
-  SetForRanges(name##Ranges, std::size(name##Ranges), \
-               CharacterProperty::name);              \
-  SetForValues(name##Array, std::size(name##Array), CharacterProperty::name);
+#define SET(name, field_name)                                        \
+  const auto field_name##_setter = [](CharacterProperty& property) { \
+    property.field_name = true;                                      \
+  };                                                                 \
+  SetForRanges(name##Ranges, field_name##_setter);                   \
+  SetForValues(name##Array, field_name##_setter);
 
-    SET(kIsCJKIdeographOrSymbol);
-    SET(kIsPotentialCustomElementNameChar);
-    SET(kIsBidiControl);
+    SET(kIsCJKIdeographOrSymbol, is_cjk_ideograph_or_symbol);
+    SET(kIsPotentialCustomElementNameChar,
+        is_potential_custom_element_name_char);
+    SET(kIsBidiControl, is_bidi_control);
 #undef SET
-    SetForRanges(kIsHangulRanges, std::size(kIsHangulRanges),
-                 CharacterProperty::kIsHangul);
+    SetForRanges(kIsHangulRanges, [](CharacterProperty& property) {
+      property.is_hangul = true;
+    });
     SetHanKerning();
+    SetEastAsianSpacing();
+  }
+
+  // Set all characters that have the `UCHAR_EMOJI_PRESENTATION` property as CJK
+  // symbol characters.
+  void SetIsCJKIdeographOrSymbolForEmoji() {
+    SetForUnicodePattern("[:Emoji_Presentation:]",
+                         [](CharacterProperty& property) {
+                           property.is_cjk_ideograph_or_symbol = true;
+                         });
   }
 
   void SetHanKerning() {
     // https://drafts.csswg.org/css-text-4/#text-spacing-classes
-    Set(kLeftSingleQuotationMarkCharacter, HanKerningCharType::kOpenQuote);
-    Set(kLeftDoubleQuotationMarkCharacter, HanKerningCharType::kOpenQuote);
-    Set(kRightSingleQuotationMarkCharacter, HanKerningCharType::kCloseQuote);
-    Set(kRightDoubleQuotationMarkCharacter, HanKerningCharType::kCloseQuote);
-    Set(kIdeographicSpaceCharacter, HanKerningCharType::kMiddle);
-    Set(kIdeographicCommaCharacter, HanKerningCharType::kDot);
-    Set(kIdeographicFullStopCharacter, HanKerningCharType::kDot);
-    Set(kFullwidthComma, HanKerningCharType::kDot);
-    Set(kFullwidthFullStop, HanKerningCharType::kDot);
-    Set(kFullwidthColon, HanKerningCharType::kColon);
-    Set(kFullwidthSemicolon, HanKerningCharType::kSemicolon);
-    Set(kMiddleDotCharacter, HanKerningCharType::kMiddle);
-    Set(kHyphenationPointCharacter, HanKerningCharType::kMiddle);
-    Set(kKatakanaMiddleDot, HanKerningCharType::kMiddle);
-    SetForUnicodeSet("[[:blk=CJK_Symbols:][:ea=F:] & [:gc=Ps:]]",
-                     HanKerningCharType::kOpen);
-    SetForUnicodeSet("[[:blk=CJK_Symbols:][:ea=F:] & [:gc=Pe:]]",
-                     HanKerningCharType::kClose);
-    SetForUnicodeSet("[[:gc=Ps:] - [:blk=CJK_Symbols:] - [:ea=F:]]",
-                     HanKerningCharType::kOpenNarrow);
-    SetForUnicodeSet("[[:gc=Pe:] - [:blk=CJK_Symbols:] - [:ea=F:]]",
-                     HanKerningCharType::kCloseNarrow);
+    Set(uchar::kLeftSingleQuotationMark, HanKerningCharType::kOpenQuote);
+    Set(uchar::kLeftDoubleQuotationMark, HanKerningCharType::kOpenQuote);
+    Set(uchar::kRightSingleQuotationMark, HanKerningCharType::kCloseQuote);
+    Set(uchar::kRightDoubleQuotationMark, HanKerningCharType::kCloseQuote);
+    Set(uchar::kIdeographicSpace, HanKerningCharType::kMiddle);
+    Set(uchar::kIdeographicComma, HanKerningCharType::kDot);
+    Set(uchar::kIdeographicFullStop, HanKerningCharType::kDot);
+    Set(uchar::kFullwidthComma, HanKerningCharType::kDot);
+    Set(uchar::kFullwidthFullStop, HanKerningCharType::kDot);
+    Set(uchar::kFullwidthColon, HanKerningCharType::kColon);
+    Set(uchar::kFullwidthSemicolon, HanKerningCharType::kSemicolon);
+    Set(uchar::kMiddleDot, HanKerningCharType::kMiddle);
+    Set(uchar::kHyphenationPoint, HanKerningCharType::kMiddle);
+    Set(uchar::kKatakanaMiddleDot, HanKerningCharType::kMiddle);
+    SetForUnicodePattern("[[:blk=CJK_Symbols:][:ea=F:] & [:gc=Ps:]]",
+                         HanKerningCharType::kOpen);
+    SetForUnicodePattern("[[:blk=CJK_Symbols:][:ea=F:] & [:gc=Pe:]]",
+                         HanKerningCharType::kClose);
+    SetForUnicodePattern("[[:gc=Ps:] - [:blk=CJK_Symbols:] - [:ea=F:]]",
+                         HanKerningCharType::kOpenNarrow);
+    SetForUnicodePattern("[[:gc=Pe:] - [:blk=CJK_Symbols:] - [:ea=F:]]",
+                         HanKerningCharType::kCloseNarrow);
   }
 
-  static CharacterProperty ToCharacterProperty(HanKerningCharType value) {
-    CHECK_EQ((static_cast<unsigned>(value) &
-              ~static_cast<unsigned>(CharacterProperty::kHanKerningMask)),
-             0u);
-    return static_cast<CharacterProperty>(
-        static_cast<unsigned>(value)
-        << static_cast<unsigned>(CharacterProperty::kHanKerningShift));
+  void SetEastAsianSpacing() {
+    // Set based on https://www.unicode.org/reports/tr59/#data.
+    UErrorCode error = U_ZERO_ERROR;
+
+    icu::UnicodeSet unassigned(icu::UnicodeString("[:General_Category=Cn:]"),
+                               error);
+    CHECK_EQ(error, U_ZERO_ERROR);
+
+    // 1. Set for the "Wide" property
+    //
+    // 1.1 Include if the Script property is one of the following values:
+    // Bopomofo (Bopo) Han (Hani) Hangul (Hang) Hiragana (Hira) Katakana (Kana)
+    // Khitan_Small_Script (Kits) Nushu (Nshu) Tangut (Tang) Yi (Yiii)
+    icu::UnicodeSet ideographs(
+        icu::UnicodeString(
+            "[[:sc=Bopomofo:][:sc=Han:][:sc=Hangul:][:sc=Hiragana:][:sc="
+            "Katakana:][:sc=Khitan_Small_Script:][:sc=Nushu:][:sc=Tangut:][:sc="
+            "Yi:]]"),
+        error);
+    CHECK_EQ(error, U_ZERO_ERROR);
+
+    {
+      // 1.2. Include if the Script_Extensions property is one of the values
+      // above, except when the East_Asian_Width property is “Neutral (N)” or
+      // “Narrow (Na)”.
+      icu::UnicodeSet temp_set(
+          icu::UnicodeString(
+              "[[[:scx=Bopo:][:scx=Hani:][:scx=Hang:][:scx=Hira:]["
+              ":scx=Kana:][:scx=Kits:][:scx=Nshu:][:scx=Tang:][:"
+              "scx=Yiii:]]-[:East_Asian_Width=Narrow:]-[:East_"
+              "Asian_Width=Neutral:]]"),
+          error);
+      CHECK_EQ(error, U_ZERO_ERROR);
+      ideographs.addAll(temp_set);
+    }
+    {
+      // 1.3 Exclude if the East_Asian_Width property is “East Asian Halfwidth
+      // (H)”.
+      // 1.4 Exclude if the General_Category property is “Punctuation (P)” or
+      // “Other_Number (No)”.
+      // 1.5 Exclude if the General_Category property is “Symbol (S)” except
+      // “Modifier_Symbol (Sk)”.
+      icu::UnicodeSet temp_set(
+          icu::UnicodeString(
+              "[[:East_Asian_Width=H:][:General_Category=P:][:"
+              "General_Category=No:]"
+              "[[:General_Category=S:]-[:General_Category=Sk:]]]"),
+          error);
+      CHECK_EQ(error, U_ZERO_ERROR);
+      ideographs.removeAll(temp_set);
+    }
+    // 1.6 Include the following code point: U+3013 GETA MARK
+    ideographs.add(0x3013);
+    ideographs.removeAll(unassigned);
+    SetForUnicodeSet(ideographs, EastAsianSpacingType::kWide);
+
+    // 2. Set for the Conditional property
+    //
+    // 2.1 Include if the General_Category property is “Other_Punctuation (Po)”.
+    // 2.2 Exclude if the East_Asian_Width property is “East Asian Fullwidth
+    // (F)”, “East Asian Halfwidth (H)”, or “East Asian Wide (W)”.
+    icu::UnicodeSet conditional(
+        icu::UnicodeString("[[:General_Category=Po:]-[:East_Asian_Width=F:]-[:"
+                           "East_Asian_Width=H:]-[:East_Asian_Width=W:]]"),
+        error);
+    CHECK_EQ(error, U_ZERO_ERROR);
+    // 2.3 Exclude the following code points: U+0022 QUOTATION MARK U+0027
+    // APOSTROPHE U+002A ASTERISK U+002F SOLIDUS U+00B7 MIDDLE DOT U+2020 DAGGER
+    // U+2021 DOUBLE DAGGER U+2026 HORIZONTAL ELLIPSIS
+    conditional.remove(0x0022);  // QUOTATION MARK
+    conditional.remove(0x0027);  // APOSTROPHE
+    conditional.remove(0x002A);  // ASTERISK
+    conditional.remove(0x002F);  // SOLIDUS
+    conditional.remove(0x00B7);  // MIDDLE DOT
+    conditional.remove(0x2020);  // DAGGER
+    conditional.remove(0x2021);  // DOUBLE DAGGER
+    conditional.remove(0x2026);  // HORIZONTAL ELLIPSIS
+
+    conditional.removeAll(unassigned);
+    SetForUnicodeSet(conditional, EastAsianSpacingType::kConditional);
+
+    // 3. Set for the Narrow property
+    // 3.1 Include if the General_Category property is “Letter (L)”, “Mark (M)”,
+    // or “Decimal_Number (Nd)”.
+    // 3.2 xclude if the East_Asian_Width property is “East Asian Fullwidth
+    // (F)", “East Asian Halfwidth (H)”, or “East Asian Wide (W)”.
+    icu::UnicodeSet narrow(
+        icu::UnicodeString(
+            "[[:General_Category=Letter:][:General_Category=M:][:"
+            "General_Category=Nd:]-[:East_Asian_Width=F:]-[:"
+            "East_Asian_Width=H:]-[:East_Asian_Width=W:]]"),
+        error);
+    CHECK_EQ(error, U_ZERO_ERROR);
+    // The intersection set of kWide and kConditional is not empty, so remove
+    // the chars which have been assigned the kWide property from narrow.
+    narrow.removeAll(ideographs);
+    SetForUnicodeSet(narrow, EastAsianSpacingType::kNarrow);
+
+    // The remaining assigned codes are kOther.
+    // The flag is initialized by 0, no need to set them.
+    static_assert(static_cast<int>(EastAsianSpacingType::kOther) == 0);
   }
 
-  void SetForUnicodeSet(const char* pattern, HanKerningCharType type) {
-    SetForUnicodeSet(pattern, ToCharacterProperty(type),
-                     CharacterProperty::kHanKerningShiftedMask);
+  void SetForUnicodeSet(const icu::UnicodeSet& unicode_set,
+                        EastAsianSpacingType value) {
+    SetForUnicodeSet(unicode_set, [value](CharacterProperty& property) {
+      property.east_asian_spacing = value;
+    });
+  }
+
+  template <typename Setter>
+  void SetForUnicodeSet(const icu::UnicodeSet& unicode_set, Setter set_value) {
+    const int32_t range_count = unicode_set.getRangeCount();
+    for (int32_t i = 0; i < range_count; ++i) {
+      const UChar32 end = unicode_set.getRangeEnd(i);
+      CHECK_LE(end, kMaxCodepoint);
+      for (UChar32 ch = unicode_set.getRangeStart(i); ch <= end; ++ch) {
+        set_value(values_[ch]);
+      }
+    }
+  }
+
+  void SetForUnicodePattern(const char* pattern, HanKerningCharType type) {
+    SetForUnicodePattern(pattern, [type](CharacterProperty& property) {
+      property.han_kerning = type;
+    });
   }
 
   // For `patterns`, see:
   // https://unicode-org.github.io/icu/userguide/strings/unicodeset.html#unicodeset-patterns
-  void SetForUnicodeSet(const char* pattern,
-                        CharacterProperty value,
-                        CharacterProperty mask) {
+  template <typename Setter>
+  void SetForUnicodePattern(const char* pattern, Setter set_value) {
     UErrorCode error = U_ZERO_ERROR;
     icu::UnicodeSet set(icu::UnicodeString(pattern), error);
     CHECK_EQ(error, U_ZERO_ERROR);
-    const int32_t range_count = set.getRangeCount();
-    for (int32_t i = 0; i < range_count; ++i) {
-      const UChar32 end = set.getRangeEnd(i);
-      for (UChar32 ch = set.getRangeStart(i); ch <= end; ++ch) {
-        CHECK_EQ(static_cast<unsigned>(values_[ch] & mask), 0u);
-        values_[ch] |= value;
-      }
-    }
+    SetForUnicodeSet(set, set_value);
   }
 
-  void SetForRanges(const UChar32* ranges,
-                    size_t length,
-                    CharacterProperty value) {
+  template <typename Setter>
+  void SetForRanges(base::span<const UChar32> ranges, Setter set_value) {
+    size_t length = ranges.size();
     CHECK_EQ(length % 2, 0u);
-    const UChar32* end = ranges + length;
-    for (; ranges != end; ranges += 2) {
-      CHECK_LE(ranges[0], ranges[1]);
-      CHECK_LE(ranges[1], kMaxCodepoint);
-      for (UChar32 c = ranges[0]; c <= ranges[1]; c++) {
-        values_[c] |= value;
+    for (size_t i = 0; i < length; i += 2) {
+      CHECK_LE(ranges[i], ranges[i + 1]);
+      CHECK_LE(ranges[i + 1], kMaxCodepoint);
+      for (UChar32 c = ranges[i]; c <= ranges[i + 1]; ++c) {
+        set_value(values_[c]);
       }
     }
   }
 
-  void SetForValues(const UChar32* begin,
-                    size_t length,
-                    CharacterProperty value) {
-    const UChar32* end = begin + length;
-    for (; begin != end; begin++) {
-      CHECK_LE(*begin, kMaxCodepoint);
-      values_[*begin] |= value;
+  template <typename Setter>
+  void SetForValues(base::span<const UChar32> code_points, Setter set_value) {
+    for (UChar32 code_point : code_points) {
+      CHECK_LE(code_point, kMaxCodepoint);
+      set_value(values_[code_point]);
     }
   }
 
   void Set(UChar32 ch, HanKerningCharType type) {
-    const CharacterProperty value = ToCharacterProperty(type);
-    CHECK_EQ(static_cast<unsigned>(values_[ch] &
-                                   CharacterProperty::kHanKerningShiftedMask),
-             0u);
-    values_[ch] |= value;
+    CHECK_EQ(values_[ch].han_kerning, HanKerningCharType::kOther);
+    values_[ch].han_kerning = type;
   }
 
-  std::unique_ptr<CharacterProperty[]> values_;
+  base::HeapArray<CharacterProperty> values_;
 };
 
 static void GenerateUTrieSerialized(FILE* fp,
-                                    int32_t size,
+                                    size_t size,
                                     base::span<uint8_t> array) {
   fprintf(fp,
           "#include <cstdint>\n\n"
           "namespace blink {\n\n"
-          "extern const int32_t kSerializedCharacterDataSize = %d;\n"
+          "extern const int32_t kSerializedCharacterDataSize = %zu;\n"
           // The utrie2_openFromSerialized function requires character data to
           // be aligned to 4 bytes.
           "alignas(4) extern const uint8_t kSerializedCharacterData[] = {",
           size);
-  for (int32_t i = 0; i < size;) {
+  for (size_t i = 0; i < size;) {
     fprintf(fp, "\n   ");
-    for (int col = 0; col < 16 && i < size; col++, i++)
+    for (size_t col = 0; col < 16 && i < size; ++col, ++i) {
       fprintf(fp, " 0x%02X,", array[i]);
+    }
   }
   fprintf(fp,
           "\n};\n\n"
@@ -235,9 +346,9 @@ static void GenerateCharacterPropertyData(FILE* fp) {
     if (c < CharacterPropertyValues::kSize && values[c] == value) {
       continue;
     }
-    if (static_cast<uint32_t>(value)) {
-      umutablecptrie_setRange(trie.get(), start, c - 1,
-                              static_cast<uint32_t>(value), &error);
+    if (const CharacterPropertyType value_as_unsigned = value.AsUnsigned()) {
+      umutablecptrie_setRange(trie.get(), start, c - 1, value_as_unsigned,
+                              &error);
       assert(error == U_ZERO_ERROR);
     }
     if (c >= CharacterPropertyValues::kSize) {
@@ -248,6 +359,7 @@ static void GenerateCharacterPropertyData(FILE* fp) {
   }
 
   // Convert to immutable UCPTrie in order to be able to serialize.
+  static_assert(sizeof(CharacterProperty) == 2);
   std::unique_ptr<UCPTrie, decltype(&ucptrie_close)> immutable_trie(
       umutablecptrie_buildImmutable(trie.get(), UCPTrieType::UCPTRIE_TYPE_FAST,
                                     UCPTrieValueWidth::UCPTRIE_VALUE_BITS_16,
@@ -258,17 +370,20 @@ static void GenerateCharacterPropertyData(FILE* fp) {
 
   int32_t serialized_size =
       ucptrie_toBinary(immutable_trie.get(), nullptr, 0, &error);
+  CHECK_GE(serialized_size, 0);
   error = U_ZERO_ERROR;
 
-  auto serialized = base::HeapArray<uint8_t>::Uninit(serialized_size);
+  auto serialized =
+      base::HeapArray<uint8_t>::Uninit(static_cast<size_t>(serialized_size));
   // Ensure 32-bit alignment, as ICU requires that to the ucptrie_toBinary call.
   CHECK(!(reinterpret_cast<intptr_t>(serialized.data()) % 4));
 
   serialized_size = ucptrie_toBinary(immutable_trie.get(), serialized.data(),
                                      serialized.size(), &error);
+  CHECK_GE(serialized_size, 0);
   assert(error == U_ZERO_ERROR);
 
-  GenerateUTrieSerialized(fp, serialized_size, serialized);
+  GenerateUTrieSerialized(fp, static_cast<size_t>(serialized_size), serialized);
 }
 
 //
@@ -292,8 +407,8 @@ class LineBreakData {
   void FillFromIcu() {
     UErrorCode status = U_ZERO_ERROR;
     const icu::Locale locale("en");
-    icu::BreakIterator* break_iterator =
-        icu::BreakIterator::createLineInstance(locale, status);
+    std::unique_ptr<icu::BreakIterator> break_iterator(
+        icu::BreakIterator::createLineInstance(locale, status));
     CHECK_U_ERROR(status, "createLineInstance");
 
     for (UChar ch = kMinChar; ch <= kMaxChar; ++ch) {
@@ -364,8 +479,10 @@ class LineBreakData {
             "\"third_party/blink/renderer/platform/wtf/text/wtf_uchar.h\"\n"
             "\nnamespace {\n\n");
 
-    fprintf(fp, "constexpr UChar kFastLineBreakMinChar = 0x%02X;\n", kMinChar);
-    fprintf(fp, "constexpr UChar kFastLineBreakMaxChar = 0x%02X;\n", kMaxChar);
+    fprintf(fp, "inline constexpr UChar kFastLineBreakMinChar = 0x%02X;\n",
+            kMinChar);
+    fprintf(fp, "inline constexpr UChar kFastLineBreakMaxChar = 0x%02X;\n",
+            kMaxChar);
 
     // Define macros.
     fprintf(fp,
@@ -382,7 +499,7 @@ class LineBreakData {
       if (ch != kMinChar && (ch - kMinChar) % 8 == 0) {
         fprintf(fp, "   ");
       }
-      fprintf(fp, ch < 0x7F ? " %c" : "%02X", ch);
+      UNSAFE_TODO(fprintf(fp, ch < 0x7F ? " %c" : "%02X", ch));
     }
     fprintf(fp, " */\n");
 
@@ -392,7 +509,7 @@ class LineBreakData {
       fprintf(fp, "/* %02X %c */ {B(", ch, ch < 0x7F ? ch : ' ');
       const char* prefix = "";
       for (int x = 0; x < kNumCharsRoundUp8; ++x) {
-        fprintf(fp, "%s%d", prefix, pair_[y][x]);
+        UNSAFE_TODO(fprintf(fp, "%s%d", prefix, pair_[y][x]));
         prefix = (x % 8 == 7) ? "),B(" : ",";
       }
       fprintf(fp, ")},\n");
@@ -427,7 +544,7 @@ class LineBreakData {
     CHECK_LE(ch1, kMaxChar);
     CHECK_GE(ch2, kMinChar);
     CHECK_LE(ch2, kMaxChar);
-    pair_[ch1 - kMinChar][ch2 - kMinChar] = value;
+    UNSAFE_TODO(pair_[ch1 - kMinChar][ch2 - kMinChar]) = value;
   }
 
   constexpr static UChar kMinChar = '!';
@@ -444,12 +561,12 @@ void InvokeGenerator(int index,
   if (index >= argc) {
     return;
   }
-  const char* path = argv[index];
+  const char* path = UNSAFE_TODO(argv[index]);
   if (!*path) {
     return;
   }
 
-  if (strcmp(path, "-") == 0) {
+  if (UNSAFE_TODO(strcmp(path, "-")) == 0) {
     (*generator)(stdout);
     return;
   }

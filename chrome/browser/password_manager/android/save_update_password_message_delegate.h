@@ -12,7 +12,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/password_edit_dialog/android/password_edit_dialog_bridge.h"
-#include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/passwords/manage_passwords_state.h"
 #include "components/browser_ui/device_lock/android/device_lock_bridge.h"
@@ -50,11 +49,6 @@ class SaveUpdatePasswordMessageDelegate
   SaveUpdatePasswordMessageDelegate(
       base::PassKey<class SaveUpdatePasswordMessageDelegateTest>,
       PasswordEditDialogFactory password_edit_dialog_factory,
-      base::RepeatingCallback<void(
-          gfx::NativeWindow,
-          Profile*,
-          password_manager::metrics_util::PasswordMigrationWarningTriggers)>
-          password_migration_warning_bridge_callback,
       std::unique_ptr<DeviceLockBridge> device_lock_bridge);
 
   // Displays a "Save password" message for current |web_contents| and
@@ -80,13 +74,8 @@ class SaveUpdatePasswordMessageDelegate
   friend class SaveUpdatePasswordMessageDelegateTest;
   enum class SavePasswordDialogMenuItem { kNeverSave = 0, kEditPassword = 1 };
 
-  SaveUpdatePasswordMessageDelegate(
-      PasswordEditDialogFactory password_edit_dialog_factory,
-      base::RepeatingCallback<void(
-          gfx::NativeWindow,
-          Profile*,
-          password_manager::metrics_util::PasswordMigrationWarningTriggers)>
-          password_migration_warning_bridge_callback);
+  explicit SaveUpdatePasswordMessageDelegate(
+      PasswordEditDialogFactory password_edit_dialog_factory);
 
   void DismissSaveUpdatePasswordMessage(messages::DismissReason dismiss_reason);
 
@@ -126,6 +115,9 @@ class SaveUpdatePasswordMessageDelegate
 
   // Following methods handle events associated with user interaction with UI.
   void HandleSaveButtonClicked();
+  void SavePassword();
+  void SavePasswordAfterDeviceLockUi(bool is_device_lock_set);
+  void SaveFormManager();
   void HandleNeverSaveClicked();
   void HandleUpdateButtonClicked();
   void DisplayEditDialog(bool update_password);
@@ -135,15 +127,13 @@ class SaveUpdatePasswordMessageDelegate
 
   void ClearState();
 
-  void RecordMessageShownMetrics();
+  void RecordMessageShownMetrics(bool update_password);
   void RecordDismissalReasonMetrics(
       password_manager::metrics_util::UIDismissalReason ui_dismissal_reason);
 
   static password_manager::metrics_util::UIDismissalReason
   MessageDismissReasonToPasswordManagerUIDismissalReason(
       messages::DismissReason dismiss_reason);
-
-  void MaybeNudgeToUpdateGmsCore();
 
   PasswordEditDialogFactory password_edit_dialog_factory_;
 
@@ -159,16 +149,8 @@ class SaveUpdatePasswordMessageDelegate
 
   std::unique_ptr<messages::MessageWrapper> message_;
   std::unique_ptr<PasswordEditDialog> password_edit_dialog_;
-  base::RepeatingCallback<void(
-      gfx::NativeWindow,
-      Profile*,
-      password_manager::metrics_util::PasswordMigrationWarningTriggers)>
-      create_migration_warning_callback_;
 
   std::unique_ptr<DeviceLockBridge> device_lock_bridge_;
-
-  void SavePassword();
-  void SavePasswordAfterDeviceLockUi(bool is_device_lock_set);
 
   base::WeakPtrFactory<SaveUpdatePasswordMessageDelegate> weak_ptr_factory_{
       this};

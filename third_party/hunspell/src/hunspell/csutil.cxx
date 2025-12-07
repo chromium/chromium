@@ -1,6 +1,8 @@
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
+ * Copyright (C) 2002-2022 Németh László
+ *
  * The contents of this file are subject to the Mozilla Public License Version
  * 1.1 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -11,12 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is Hunspell, based on MySpell.
- *
- * The Initial Developers of the Original Code are
- * Kevin Hendricks (MySpell) and Németh László (Hunspell).
- * Portions created by the Initial Developers are Copyright (C) 2002-2005
- * the Initial Developers. All Rights Reserved.
+ * Hunspell is based on MySpell which is Copyright (C) 2002 Kevin Hendricks.
  *
  * Contributor(s): David Einstein, Davide Prina, Giuseppe Modugno,
  * Gianluca Turconi, Simon Brouwer, Noll János, Bíró Árpád,
@@ -72,22 +69,20 @@
  */
 
 #include <algorithm>
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <ctype.h>
+#include <assert.h>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
+#include <cctype>
+#include <iterator>
 #include <sstream>
+#if __cplusplus >= 202002L
+#include <bit>
+#endif
 
 #include "csutil.hxx"
 #include "atypes.hxx"
 #include "langnum.hxx"
-
-// Unicode character encoding information
-struct unicode_info {
-  unsigned short c;
-  unsigned short cupper;
-  unsigned short clower;
-};
 
 #ifdef _WIN32
 #include <windows.h>
@@ -98,30 +93,17 @@ struct unicode_info {
 #include <unicode/uchar.h>
 #else
 #ifndef MOZILLA_CLIENT
-#include "utf_info.cxx"
-#define UTF_LST_LEN (sizeof(utf_lst) / (sizeof(unicode_info)))
+#include "utf_info.hxx"
 #endif
 #endif
 
 #ifdef MOZILLA_CLIENT
 #include "nsCOMPtr.h"
-#include "nsIUnicodeEncoder.h"
-#include "nsIUnicodeDecoder.h"
 #include "nsUnicharUtils.h"
-#include "mozilla/dom/EncodingUtils.h"
+#include "mozilla/Encoding.h"
 
-using mozilla::dom::EncodingUtils;
+using namespace mozilla;
 #endif
-
-struct unicode_info2 {
-  char cletter;
-  unsigned short cupper;
-  unsigned short clower;
-};
-
-static struct unicode_info2* utf_tbl = NULL;
-static int utf_tbl_count =
-    0;  // utf_tbl can be used by multiple Hunspell instances
 
 void myopen(std::ifstream& stream, const char* path, std::ios_base::openmode mode)
 {
@@ -145,8 +127,8 @@ void myopen(std::ifstream& stream, const char* path, std::ios_base::openmode mod
 
 std::string& u16_u8(std::string& dest, const std::vector<w_char>& src) {
   dest.clear();
-  std::vector<w_char>::const_iterator u2 = src.begin();
-  std::vector<w_char>::const_iterator u2_max = src.end();
+  dest.reserve(src.size());
+  auto u2 = src.begin(), u2_max = src.end();
   while (u2 < u2_max) {
     signed char u8;
     if (u2->h) {  // > 0xFF
@@ -180,10 +162,12 @@ std::string& u16_u8(std::string& dest, const std::vector<w_char>& src) {
   return dest;
 }
 
-int u8_u16(std::vector<w_char>& dest, const std::string& src) {
-  dest.clear();
-  std::string::const_iterator u8 = src.begin();
-  std::string::const_iterator u8_max = src.end();
+int u8_u16(std::vector<w_char>& dest, const std::string& src, bool only_convert_first_letter) {
+  // faster to oversize initially, assign to elements and resize to what's used
+  // than to reserve and push_back
+  dest.resize(only_convert_first_letter ? 1 : src.size());
+  auto u16 = dest.begin();
+  auto u8 = src.begin(), u8_max = src.end();
 
   while (u8 < u8_max) {
     w_char u2;
@@ -257,21 +241,27 @@ int u8_u16(std::vector<w_char>& dest, const std::string& src) {
         }
         break;
       }
-      case 0xf0: {  // 4 or more byte UTF-8 codes
+      default: {  // 4 or more byte UTF-8 codes
+        assert(((*u8) & 0xf0) == 0xf0 && "can only be 0xf0");
         HUNSPELL_WARNING(stderr,
                          "This UTF-8 encoding can't convert to UTF-16:\n%s\n",
                          src.c_str());
         u2.h = 0xff;
         u2.l = 0xfd;
-        dest.push_back(u2);
+        *u16++ = u2;
+        dest.resize(u16 - dest.begin());
         return -1;
       }
     }
-    dest.push_back(u2);
+    *u16++ = u2;
+    if (only_convert_first_letter)
+        break;
     ++u8;
   }
 
-  return dest.size();
+  int size = u16 - dest.begin();
+  dest.resize(size);
+  return size;
 }
 
 namespace {
@@ -279,7 +269,7 @@ class is_any_of {
  public:
   explicit is_any_of(const std::string& in) : chars(in) {}
 
-  bool operator()(char c) { return chars.find(c) != std::string::npos; }
+  bool operator()(char c) const { return chars.find(c) != std::string::npos; }
 
  private:
   std::string chars;
@@ -288,36 +278,21 @@ class is_any_of {
 
 std::string::const_iterator mystrsep(const std::string &str,
                                      std::string::const_iterator& start) {
-  std::string::const_iterator end = str.end();
+  auto end = str.end();
 
   is_any_of op(" \t");
   // don't use isspace() here, the string can be in some random charset
   // that's way different than the locale's
-  std::string::const_iterator sp = start;
+  auto sp = start;
   while (sp != end && op(*sp))
       ++sp;
 
-  std::string::const_iterator dp = sp;
+  auto dp = sp;
   while (dp != end && !op(*dp))
       ++dp;
 
   start = dp;
   return sp;
-}
-
-// replaces strdup with ansi version
-char* mystrdup(const char* s) {
-  char* d = NULL;
-  if (s) {
-    size_t sl = strlen(s) + 1;
-    d = (char*)malloc(sl);
-    if (d) {
-      memcpy(d, s, sl);
-    } else {
-      HUNSPELL_WARNING(stderr, "Can't allocate memory.\n");
-    }
-  }
-  return d;
 }
 
 // remove cross-platform text line end characters
@@ -407,9 +382,9 @@ void line_uniq_app(std::string& text, char breakchar) {
   }
 
   text.assign(" ( ");
-  for (size_t i = 0; i < lines.size(); ++i) {
-      text.append(lines[i]);
-      text.append(" | ");
+  for (auto& line : lines) {
+    text.append(line);
+    text.append(" | ");
   }
   text[text.size() - 2] = ')';  // " ) "
 }
@@ -445,9 +420,8 @@ bool copy_field(std::string& dest,
   dest.clear();
   std::string beg(morph.substr(pos + MORPH_TAG_LEN, std::string::npos));
 
-  for (size_t i = 0; i < beg.size(); ++i) {
-    const char c(beg[i]);
-    if (c == ' ' || c == '\t' || c == '\n')
+  for (const char c : beg) {
+	if (c == ' ' || c == '\t' || c == '\n')
       break;
     dest.push_back(c);
   }
@@ -474,11 +448,86 @@ size_t reverseword(std::string& word) {
 
 // reverse word
 size_t reverseword_utf(std::string& word) {
-  std::vector<w_char> w;
-  u8_u16(w, word);
-  std::reverse(w.begin(), w.end());
-  u16_u8(word, w);
-  return w.size();
+  std::reverse(word.begin(), word.end()); //1st step: we reverse the string
+	
+  size_t num_chars = word.size(); //in order to make sure there are enough characters at the end of the string when we process a multibyte character
+  //2nd step: we process each multibyte character and reverse it
+  for (auto it = word.rbegin(); it != word.rend(); ) {
+    switch ((*it) & 0xf0) {
+      case 0x00:
+      case 0x10:
+      case 0x20:
+      case 0x30:
+      case 0x40:
+      case 0x50:
+      case 0x60:
+      case 0x70:
+        //one byte
+        ++it;
+        --num_chars;
+        break;
+      case 0x80:
+      case 0x90:
+      case 0xa0:
+      case 0xb0:
+        HUNSPELL_WARNING(stderr,
+                         "UTF-8 encoding error. Unexpected continuation bytes "
+                         "in %ld. character position\n%s\n",
+                         static_cast<long>(std::distance(word.begin(), it.base()) - 1),
+                         word.c_str());
+        ++it;
+        --num_chars;
+        break;
+      case 0xc0:
+      case 0xd0: {
+	//two bytes
+        if (num_chars >= 2) {
+          std::iter_swap(it, it + 1);
+          it += 2;
+          num_chars -= 2;
+        } else {
+          HUNSPELL_WARNING(stderr,
+                         "UTF-8 encoding error. Missing character at the end\n%s\n",
+                         word.c_str());
+          ++it;
+          --num_chars;
+        }
+        break;
+      }
+      case 0xe0: {
+        //three bytes
+        if (num_chars >= 3) {
+          std::iter_swap(it, it + 2);
+          it += 3;
+          num_chars -= 3;
+        } else {
+          HUNSPELL_WARNING(stderr,
+                         "UTF-8 encoding error. Missing character at the end\n%s\n",
+                         word.c_str());
+          ++it;
+          --num_chars;
+        }
+        break;
+      }
+      default: {
+        // 4 or more byte UTF-8 codes
+        if (num_chars >= 4) {
+          std::iter_swap(it, it + 3);
+          std::iter_swap(it + 1, it + 2);
+          it += 4;
+          num_chars -= 4;
+        } else {
+          HUNSPELL_WARNING(stderr,
+                         "UTF-8 encoding error. Missing character at the end\n%s\n",
+                         word.c_str());
+          ++it;
+          --num_chars;
+        }
+        break;
+      }
+    }
+  }
+  return word.size();
 }
 
 void uniqlist(std::vector<std::string>& list) {
@@ -498,77 +547,95 @@ void uniqlist(std::vector<std::string>& list) {
 
 namespace {
 unsigned char cupper(const struct cs_info* csconv, int nIndex) {
-  if (nIndex < 0 || nIndex > 255)
-    return nIndex;
+  assert(nIndex >= 0 && nIndex <= 255);
   return csconv[nIndex].cupper;
 }
 
 unsigned char clower(const struct cs_info* csconv, int nIndex) {
-  if (nIndex < 0 || nIndex > 255)
-    return nIndex;
+  assert(nIndex >= 0 && nIndex <= 255);
   return csconv[nIndex].clower;
 }
 
 unsigned char ccase(const struct cs_info* csconv, int nIndex) {
-  if (nIndex < 0 || nIndex > 255)
-    return nIndex;
+  assert(nIndex >= 0 && nIndex <= 255);
   return csconv[nIndex].ccase;
 }
 }
 
 w_char upper_utf(w_char u, int langnum) {
-  unsigned short idx = (u.h << 8) + u.l;
-  if (idx != unicodetoupper(idx, langnum)) {
-    u.h = (unsigned char)(unicodetoupper(idx, langnum) >> 8);
-    u.l = (unsigned char)(unicodetoupper(idx, langnum) & 0x00FF);
-  }
+	
+#if defined(__i386__) || defined(_M_IX86) || defined(_M_X64)
+
+//with these optimizations, msvc can optimize this function to one jmp instruction
+//but g++ remains in five instructions
+//maybe use inline asm for g++?
+
+#if __cplusplus >= 202002L
+  return std::bit_cast<w_char>(unicodetoupper((unsigned short)u, langnum));
+#else
+  const auto us = unicodetoupper((unsigned short)u, langnum);
+  memcpy(&u, &us, sizeof(unsigned short));
   return u;
+#endif
+
+#else
+  const auto us = unicodetoupper((unsigned short)u, langnum);
+  u.h = (unsigned char)(us >> 8);
+  u.l = (unsigned char)(us & 0xff);
+  return u;
+#endif
 }
 
 w_char lower_utf(w_char u, int langnum) {
-  unsigned short idx = (u.h << 8) + u.l;
-  if (idx != unicodetolower(idx, langnum)) {
-    u.h = (unsigned char)(unicodetolower(idx, langnum) >> 8);
-    u.l = (unsigned char)(unicodetolower(idx, langnum) & 0x00FF);
-  }
+	
+#if defined(__i386__) || defined(_M_IX86) || defined(_M_X64)
+
+//with these optimizations, msvc can optimize this function to one jmp instruction
+//but g++ remains in five instructions
+//maybe use inline asm for g++?
+
+#if __cplusplus >= 202002L
+  return std::bit_cast<w_char>(unicodetolower((unsigned short)u, langnum));
+#else
+  const auto us = unicodetolower((unsigned short)u, langnum);
+  memcpy(&u, &us, sizeof(unsigned short));
   return u;
+#endif
+
+#else
+  const auto us = unicodetolower((unsigned short)u, langnum);
+  u.h = (unsigned char)(us >> 8);
+  u.l = (unsigned char)(us & 0xff);
+  return u;
+#endif
 }
 
 // convert std::string to all caps
 std::string& mkallcap(std::string& s, const struct cs_info* csconv) {
-  for (std::string::iterator aI = s.begin(), aEnd = s.end(); aI != aEnd; ++aI) {
-    *aI = cupper(csconv, static_cast<unsigned char>(*aI));
+  for (char& aI : s) {
+    aI = cupper(csconv, static_cast<unsigned char>(aI));
   }
   return s;
 }
 
 // convert std::string to all little
 std::string& mkallsmall(std::string& s, const struct cs_info* csconv) {
-  for (std::string::iterator aI = s.begin(), aEnd = s.end(); aI != aEnd; ++aI) {
-    *aI = clower(csconv, static_cast<unsigned char>(*aI));
+  for (char& aI : s) {
+    aI = clower(csconv, static_cast<unsigned char>(aI));
   }
   return s;
 }
 
-std::vector<w_char>& mkallsmall_utf(std::vector<w_char>& u,
-                                    int langnum) {
-  for (size_t i = 0; i < u.size(); ++i) {
-    unsigned short idx = (u[i].h << 8) + u[i].l;
-    if (idx != unicodetolower(idx, langnum)) {
-      u[i].h = (unsigned char)(unicodetolower(idx, langnum) >> 8);
-      u[i].l = (unsigned char)(unicodetolower(idx, langnum) & 0x00FF);
-    }
+std::vector<w_char>& mkallsmall_utf(std::vector<w_char>& u, int langnum) {
+  for (auto& i : u) {
+    i = lower_utf(i, langnum);
   }
   return u;
 }
 
 std::vector<w_char>& mkallcap_utf(std::vector<w_char>& u, int langnum) {
-  for (size_t i = 0; i < u.size(); i++) {
-    unsigned short idx = (u[i].h << 8) + u[i].l;
-    if (idx != unicodetoupper(idx, langnum)) {
-      u[i].h = (unsigned char)(unicodetoupper(idx, langnum) >> 8);
-      u[i].l = (unsigned char)(unicodetoupper(idx, langnum) & 0x00FF);
-    }
+  for (auto& i : u) {
+    i = upper_utf(i, langnum);
   }
   return u;
 }
@@ -582,11 +649,7 @@ std::string& mkinitcap(std::string& s, const struct cs_info* csconv) {
 
 std::vector<w_char>& mkinitcap_utf(std::vector<w_char>& u, int langnum) {
   if (!u.empty()) {
-    unsigned short idx = (u[0].h << 8) + u[0].l;
-    if (idx != unicodetoupper(idx, langnum)) {
-      u[0].h = (unsigned char)(unicodetoupper(idx, langnum) >> 8);
-      u[0].l = (unsigned char)(unicodetoupper(idx, langnum) & 0x00FF);
-    }
+	u[0] = upper_utf(u[0], langnum);
   }
   return u;
 }
@@ -600,11 +663,7 @@ std::string& mkinitsmall(std::string& s, const struct cs_info* csconv) {
 
 std::vector<w_char>& mkinitsmall_utf(std::vector<w_char>& u, int langnum) {
   if (!u.empty()) {
-    unsigned short idx = (u[0].h << 8) + u[0].l;
-    if (idx != unicodetolower(idx, langnum)) {
-      u[0].h = (unsigned char)(unicodetolower(idx, langnum) >> 8);
-      u[0].l = (unsigned char)(unicodetolower(idx, langnum) & 0x00FF);
-    }
+	u[0] = lower_utf(u[0], langnum);
   }
   return u;
 }
@@ -627,7 +686,7 @@ char* get_stored_pointer(const char* s) {
 // encodings supported
 // supplying isupper, tolower, and toupper
 
-static struct cs_info iso1_tbl[] = {
+const struct cs_info iso1_tbl[] = {
     {0x00, 0x00, 0x00}, {0x00, 0x01, 0x01}, {0x00, 0x02, 0x02},
     {0x00, 0x03, 0x03}, {0x00, 0x04, 0x04}, {0x00, 0x05, 0x05},
     {0x00, 0x06, 0x06}, {0x00, 0x07, 0x07}, {0x00, 0x08, 0x08},
@@ -715,7 +774,7 @@ static struct cs_info iso1_tbl[] = {
     {0x00, 0xfc, 0xdc}, {0x00, 0xfd, 0xdd}, {0x00, 0xfe, 0xde},
     {0x00, 0xff, 0xff}};
 
-static struct cs_info iso2_tbl[] = {
+const struct cs_info iso2_tbl[] = {
     {0x00, 0x00, 0x00}, {0x00, 0x01, 0x01}, {0x00, 0x02, 0x02},
     {0x00, 0x03, 0x03}, {0x00, 0x04, 0x04}, {0x00, 0x05, 0x05},
     {0x00, 0x06, 0x06}, {0x00, 0x07, 0x07}, {0x00, 0x08, 0x08},
@@ -803,7 +862,7 @@ static struct cs_info iso2_tbl[] = {
     {0x00, 0xfc, 0xdc}, {0x00, 0xfd, 0xdd}, {0x00, 0xfe, 0xde},
     {0x00, 0xff, 0xff}};
 
-static struct cs_info iso3_tbl[] = {
+const struct cs_info iso3_tbl[] = {
     {0x00, 0x00, 0x00}, {0x00, 0x01, 0x01}, {0x00, 0x02, 0x02},
     {0x00, 0x03, 0x03}, {0x00, 0x04, 0x04}, {0x00, 0x05, 0x05},
     {0x00, 0x06, 0x06}, {0x00, 0x07, 0x07}, {0x00, 0x08, 0x08},
@@ -891,7 +950,7 @@ static struct cs_info iso3_tbl[] = {
     {0x00, 0xfc, 0xdc}, {0x00, 0xfd, 0xdd}, {0x00, 0xfe, 0xde},
     {0x00, 0xff, 0xff}};
 
-static struct cs_info iso4_tbl[] = {
+const struct cs_info iso4_tbl[] = {
     {0x00, 0x00, 0x00}, {0x00, 0x01, 0x01}, {0x00, 0x02, 0x02},
     {0x00, 0x03, 0x03}, {0x00, 0x04, 0x04}, {0x00, 0x05, 0x05},
     {0x00, 0x06, 0x06}, {0x00, 0x07, 0x07}, {0x00, 0x08, 0x08},
@@ -979,7 +1038,7 @@ static struct cs_info iso4_tbl[] = {
     {0x00, 0xfc, 0xdc}, {0x00, 0xfd, 0xdd}, {0x00, 0xfe, 0xde},
     {0x00, 0xff, 0xff}};
 
-static struct cs_info iso5_tbl[] = {
+const struct cs_info iso5_tbl[] = {
     {0x00, 0x00, 0x00}, {0x00, 0x01, 0x01}, {0x00, 0x02, 0x02},
     {0x00, 0x03, 0x03}, {0x00, 0x04, 0x04}, {0x00, 0x05, 0x05},
     {0x00, 0x06, 0x06}, {0x00, 0x07, 0x07}, {0x00, 0x08, 0x08},
@@ -1067,7 +1126,7 @@ static struct cs_info iso5_tbl[] = {
     {0x00, 0xfc, 0xac}, {0x00, 0xfd, 0xfd}, {0x00, 0xfe, 0xae},
     {0x00, 0xff, 0xaf}};
 
-static struct cs_info iso6_tbl[] = {
+const struct cs_info iso6_tbl[] = {
     {0x00, 0x00, 0x00}, {0x00, 0x01, 0x01}, {0x00, 0x02, 0x02},
     {0x00, 0x03, 0x03}, {0x00, 0x04, 0x04}, {0x00, 0x05, 0x05},
     {0x00, 0x06, 0x06}, {0x00, 0x07, 0x07}, {0x00, 0x08, 0x08},
@@ -1155,7 +1214,7 @@ static struct cs_info iso6_tbl[] = {
     {0x00, 0xfc, 0xfc}, {0x00, 0xfd, 0xfd}, {0x00, 0xfe, 0xfe},
     {0x00, 0xff, 0xff}};
 
-static struct cs_info iso7_tbl[] = {
+const struct cs_info iso7_tbl[] = {
     {0x00, 0x00, 0x00}, {0x00, 0x01, 0x01}, {0x00, 0x02, 0x02},
     {0x00, 0x03, 0x03}, {0x00, 0x04, 0x04}, {0x00, 0x05, 0x05},
     {0x00, 0x06, 0x06}, {0x00, 0x07, 0x07}, {0x00, 0x08, 0x08},
@@ -1243,7 +1302,7 @@ static struct cs_info iso7_tbl[] = {
     {0x00, 0xfc, 0xbc}, {0x00, 0xfd, 0xbe}, {0x00, 0xfe, 0xbf},
     {0x00, 0xff, 0xff}};
 
-static struct cs_info iso8_tbl[] = {
+const struct cs_info iso8_tbl[] = {
     {0x00, 0x00, 0x00}, {0x00, 0x01, 0x01}, {0x00, 0x02, 0x02},
     {0x00, 0x03, 0x03}, {0x00, 0x04, 0x04}, {0x00, 0x05, 0x05},
     {0x00, 0x06, 0x06}, {0x00, 0x07, 0x07}, {0x00, 0x08, 0x08},
@@ -1331,7 +1390,7 @@ static struct cs_info iso8_tbl[] = {
     {0x00, 0xfc, 0xfc}, {0x00, 0xfd, 0xfd}, {0x00, 0xfe, 0xfe},
     {0x00, 0xff, 0xff}};
 
-static struct cs_info iso9_tbl[] = {
+const struct cs_info iso9_tbl[] = {
     {0x00, 0x00, 0x00}, {0x00, 0x01, 0x01}, {0x00, 0x02, 0x02},
     {0x00, 0x03, 0x03}, {0x00, 0x04, 0x04}, {0x00, 0x05, 0x05},
     {0x00, 0x06, 0x06}, {0x00, 0x07, 0x07}, {0x00, 0x08, 0x08},
@@ -1419,7 +1478,7 @@ static struct cs_info iso9_tbl[] = {
     {0x00, 0xfc, 0xdc}, {0x00, 0xfd, 0x49}, {0x00, 0xfe, 0xde},
     {0x00, 0xff, 0xff}};
 
-static struct cs_info iso10_tbl[] = {
+const struct cs_info iso10_tbl[] = {
     {0x00, 0x00, 0x00}, {0x00, 0x01, 0x01}, {0x00, 0x02, 0x02},
     {0x00, 0x03, 0x03}, {0x00, 0x04, 0x04}, {0x00, 0x05, 0x05},
     {0x00, 0x06, 0x06}, {0x00, 0x07, 0x07}, {0x00, 0x08, 0x08},
@@ -1507,7 +1566,7 @@ static struct cs_info iso10_tbl[] = {
     {0x00, 0xfc, 0xfc}, {0x00, 0xfd, 0xfd}, {0x00, 0xfe, 0xfe},
     {0x00, 0xff, 0xff}};
 
-static struct cs_info koi8r_tbl[] = {
+const struct cs_info koi8r_tbl[] = {
     {0x00, 0x00, 0x00}, {0x00, 0x01, 0x01}, {0x00, 0x02, 0x02},
     {0x00, 0x03, 0x03}, {0x00, 0x04, 0x04}, {0x00, 0x05, 0x05},
     {0x00, 0x06, 0x06}, {0x00, 0x07, 0x07}, {0x00, 0x08, 0x08},
@@ -1595,7 +1654,7 @@ static struct cs_info koi8r_tbl[] = {
     {0x01, 0xdc, 0xfc}, {0x01, 0xdd, 0xfd}, {0x01, 0xde, 0xfe},
     {0x01, 0xdf, 0xff}};
 
-static struct cs_info koi8u_tbl[] = {
+const struct cs_info koi8u_tbl[] = {
     {0x00, 0x00, 0x00}, {0x00, 0x01, 0x01}, {0x00, 0x02, 0x02},
     {0x00, 0x03, 0x03}, {0x00, 0x04, 0x04}, {0x00, 0x05, 0x05},
     {0x00, 0x06, 0x06}, {0x00, 0x07, 0x07}, {0x00, 0x08, 0x08},
@@ -1685,7 +1744,7 @@ static struct cs_info koi8u_tbl[] = {
     {0x01, 0xda, 0xfa}, {0x01, 0xdb, 0xfb}, {0x01, 0xdc, 0xfc},
     {0x01, 0xdd, 0xfd}, {0x01, 0xde, 0xfe}, {0x01, 0xdf, 0xff}};
 
-static struct cs_info cp1251_tbl[] = {
+const struct cs_info cp1251_tbl[] = {
     {0x00, 0x00, 0x00}, {0x00, 0x01, 0x01}, {0x00, 0x02, 0x02},
     {0x00, 0x03, 0x03}, {0x00, 0x04, 0x04}, {0x00, 0x05, 0x05},
     {0x00, 0x06, 0x06}, {0x00, 0x07, 0x07}, {0x00, 0x08, 0x08},
@@ -1773,7 +1832,7 @@ static struct cs_info cp1251_tbl[] = {
     {0x00, 0xfc, 0xdc}, {0x00, 0xfd, 0xdd}, {0x00, 0xfe, 0xde},
     {0x00, 0xff, 0xdf}};
 
-static struct cs_info iso13_tbl[] = {
+const struct cs_info iso13_tbl[] = {
     {0x00, 0x00, 0x00}, {0x00, 0x01, 0x01}, {0x00, 0x02, 0x02},
     {0x00, 0x03, 0x03}, {0x00, 0x04, 0x04}, {0x00, 0x05, 0x05},
     {0x00, 0x06, 0x06}, {0x00, 0x07, 0x07}, {0x00, 0x08, 0x08},
@@ -1861,7 +1920,7 @@ static struct cs_info iso13_tbl[] = {
     {0x00, 0xFC, 0xDC}, {0x00, 0xFD, 0xDD}, {0x00, 0xFE, 0xDE},
     {0x00, 0xFF, 0xFF}};
 
-static struct cs_info iso14_tbl[] = {
+const struct cs_info iso14_tbl[] = {
     {0x00, 0x00, 0x00}, {0x00, 0x01, 0x01}, {0x00, 0x02, 0x02},
     {0x00, 0x03, 0x03}, {0x00, 0x04, 0x04}, {0x00, 0x05, 0x05},
     {0x00, 0x06, 0x06}, {0x00, 0x07, 0x07}, {0x00, 0x08, 0x08},
@@ -1949,7 +2008,7 @@ static struct cs_info iso14_tbl[] = {
     {0x00, 0xfc, 0xdc}, {0x00, 0xfd, 0xdd}, {0x00, 0xfe, 0xde},
     {0x00, 0xff, 0xff}};
 
-static struct cs_info iso15_tbl[] = {
+const struct cs_info iso15_tbl[] = {
     {0x00, 0x00, 0x00}, {0x00, 0x01, 0x01}, {0x00, 0x02, 0x02},
     {0x00, 0x03, 0x03}, {0x00, 0x04, 0x04}, {0x00, 0x05, 0x05},
     {0x00, 0x06, 0x06}, {0x00, 0x07, 0x07}, {0x00, 0x08, 0x08},
@@ -2037,7 +2096,7 @@ static struct cs_info iso15_tbl[] = {
     {0x00, 0xfc, 0xdc}, {0x00, 0xfd, 0xdd}, {0x00, 0xfe, 0xde},
     {0x00, 0xff, 0xbe}};
 
-static struct cs_info iscii_devanagari_tbl[] = {
+const struct cs_info iscii_devanagari_tbl[] = {
     {0x00, 0x00, 0x00}, {0x00, 0x01, 0x01}, {0x00, 0x02, 0x02},
     {0x00, 0x03, 0x03}, {0x00, 0x04, 0x04}, {0x00, 0x05, 0x05},
     {0x00, 0x06, 0x06}, {0x00, 0x07, 0x07}, {0x00, 0x08, 0x08},
@@ -2125,7 +2184,7 @@ static struct cs_info iscii_devanagari_tbl[] = {
     {0x00, 0xfc, 0xfc}, {0x00, 0xfd, 0xfd}, {0x00, 0xfe, 0xfe},
     {0x00, 0xff, 0xff}};
 
-static struct cs_info tis620_tbl[] = {
+const struct cs_info tis620_tbl[] = {
     {0x00, 0x00, 0x00}, {0x00, 0x01, 0x01}, {0x00, 0x02, 0x02},
     {0x00, 0x03, 0x03}, {0x00, 0x04, 0x04}, {0x00, 0x05, 0x05},
     {0x00, 0x06, 0x06}, {0x00, 0x07, 0x07}, {0x00, 0x08, 0x08},
@@ -2215,10 +2274,10 @@ static struct cs_info tis620_tbl[] = {
 
 struct enc_entry {
   const char* enc_name;
-  struct cs_info* cs_table;
+  const struct cs_info* cs_table;
 };
 
-static struct enc_entry encds[] = {
+const struct enc_entry encds[] = {
     {"iso88591", iso1_tbl},  // ISO-8859-1
     {"iso88592", iso2_tbl},  // ISO-8859-2
     {"iso88593", iso3_tbl},  // ISO-8859-3
@@ -2265,15 +2324,14 @@ static void toAsciiLowerAndRemoveNonAlphanumeric(const char* pName,
   *pBuf = '\0';
 }
 
-struct cs_info* get_current_cs(const std::string& es) {
+const struct cs_info* get_current_cs(const std::string& es) {
   char* normalized_encoding = new char[es.size() + 1];
   toAsciiLowerAndRemoveNonAlphanumeric(es.c_str(), normalized_encoding);
 
-  struct cs_info* ccs = NULL;
-  int n = sizeof(encds) / sizeof(encds[0]);
-  for (int i = 0; i < n; i++) {
-    if (strcmp(normalized_encoding, encds[i].enc_name) == 0) {
-      ccs = encds[i].cs_table;
+  const struct cs_info* ccs = NULL;
+  for (const auto& encd : encds) {
+    if (strcmp(normalized_encoding, encd.enc_name) == 0) {
+      ccs = encd.cs_table;
       break;
     }
   }
@@ -2293,7 +2351,7 @@ struct cs_info* get_current_cs(const std::string& es) {
 // XXX This function was rewritten for mozilla. Instead of storing the
 // conversion tables static in this file, create them when needed
 // with help the mozilla backend.
-struct cs_info* get_current_cs(const std::string& es) {
+const struct cs_info* get_current_cs(const std::string& es) {
   struct cs_info* ccs = new cs_info[256];
   // Initialze the array with dummy data so that we wouldn't need
   // to return null in case of failures.
@@ -2303,20 +2361,12 @@ struct cs_info* get_current_cs(const std::string& es) {
     ccs[i].cupper = i;
   }
 
-  nsCOMPtr<nsIUnicodeEncoder> encoder;
-  nsCOMPtr<nsIUnicodeDecoder> decoder;
-
-  nsresult rv;
-
-  nsAutoCString label(es.c_str());
-  nsAutoCString encoding;
-  if (!EncodingUtils::FindEncodingForLabelNoReplacement(label, encoding)) {
+  auto encoding = Encoding::ForLabelNoReplacement(es);
+  if (!encoding) {
     return ccs;
   }
-  encoder = EncodingUtils::EncoderForEncoding(encoding);
-  decoder = EncodingUtils::DecoderForEncoding(encoding);
-  encoder->SetOutputErrorBehavior(encoder->kOnError_Signal, nullptr, '?');
-  decoder->SetInputErrorBehavior(decoder->kOnError_Signal);
+  auto encoder = encoding->NewEncoder();
+  auto decoder = encoding->NewDecoderWithoutBOMHandling();
 
   for (unsigned int i = 0; i <= 0xff; ++i) {
     bool success = false;
@@ -2324,35 +2374,49 @@ struct cs_info* get_current_cs(const std::string& es) {
     // in this 1-byte character encoding.  Call our encoding/decoding
     // APIs separately for each byte since they may reject some of the
     // bytes, and we want to handle errors separately for each byte.
-    char lower, upper;
+    uint8_t lower, upper;
     do {
       if (i == 0)
         break;
-      const char source = char(i);
-      char16_t uni, uniCased;
-      int32_t charLength = 1, uniLength = 1;
+      uint8_t source = uint8_t(i);
+      char16_t uni[2];
+      char16_t uniCased;
+      uint8_t destination[4];
+      auto src1 = MakeSpan(&source, 1);
+      auto dst1 = MakeSpan(uni);
+      auto src2 = MakeSpan(&uniCased, 1);
+      auto dst2 = MakeSpan(destination);
 
-      rv = decoder->Convert(&source, &charLength, &uni, &uniLength);
-      // Explicitly check NS_OK because we don't want to allow
-      // NS_OK_UDEC_MOREOUTPUT or NS_OK_UDEC_MOREINPUT.
-      if (rv != NS_OK || charLength != 1 || uniLength != 1)
+      uint32_t result;
+      size_t read;
+      size_t written;
+      Tie(result, read, written) =
+        decoder->DecodeToUTF16WithoutReplacement(src1, dst1, true);
+      if (result != kInputEmpty || read != 1 || written != 1) {
         break;
-      uniCased = ToLowerCase(uni);
-      rv = encoder->Convert(&uniCased, &uniLength, &lower, &charLength);
-      // Explicitly check NS_OK because we don't want to allow
-      // NS_OK_UDEC_MOREOUTPUT or NS_OK_UDEC_MOREINPUT.
-      if (rv != NS_OK || charLength != 1 || uniLength != 1)
-        break;
+      }
 
-      uniCased = ToUpperCase(uni);
-      rv = encoder->Convert(&uniCased, &uniLength, &upper, &charLength);
-      // Explicitly check NS_OK because we don't want to allow
-      // NS_OK_UDEC_MOREOUTPUT or NS_OK_UDEC_MOREINPUT.
-      if (rv != NS_OK || charLength != 1 || uniLength != 1)
+      uniCased = ToLowerCase(uni[0]);
+      Tie(result, read, written) =
+        encoder->EncodeFromUTF16WithoutReplacement(src2, dst2, true);
+      if (result != kInputEmpty || read != 1 || written != 1) {
         break;
+      }
+      lower = destination[0];
+
+      uniCased = ToUpperCase(uni[0]);
+      Tie(result, read, written) =
+        encoder->EncodeFromUTF16WithoutReplacement(src2, dst2, true);
+      if (result != kInputEmpty || read != 1 || written != 1) {
+        break;
+      }
+      upper = destination[0];
 
       success = true;
     } while (0);
+
+    encoding->NewEncoderInto(*encoder);
+    encoding->NewDecoderWithoutBOMHandlingInto(*decoder);
 
     if (success) {
       ccs[i].cupper = upper;
@@ -2374,7 +2438,7 @@ struct cs_info* get_current_cs(const std::string& es) {
 
 // primitive isalpha() replacement for tokenization
 std::string get_casechars(const char* enc) {
-  struct cs_info* csconv = get_current_cs(enc);
+  const struct cs_info* csconv = get_current_cs(enc);
   std::string expw;
   for (int i = 0; i <= 255; ++i) {
     if (cupper(csconv, i) != clower(csconv, i)) {
@@ -2394,10 +2458,11 @@ struct lang_map {
   int num;
 };
 
-static struct lang_map lang2enc[] =
+const struct lang_map lang2enc[] =
     {{"ar", LANG_ar},    {"az", LANG_az},
      {"az_AZ", LANG_az},  // for back-compatibility
      {"bg", LANG_bg},    {"ca", LANG_ca},
+     {"crh", LANG_crh},
      {"cs", LANG_cs},    {"da", LANG_da},
      {"de", LANG_de},    {"el", LANG_el},
      {"en", LANG_en},    {"es", LANG_es},
@@ -2412,50 +2477,19 @@ static struct lang_map lang2enc[] =
      {"ru", LANG_ru},    {"uk", LANG_uk}};
 
 int get_lang_num(const std::string& lang) {
-  int n = sizeof(lang2enc) / sizeof(lang2enc[0]);
-  for (int i = 0; i < n; i++) {
-    if (strcmp(lang.c_str(), lang2enc[i].lang) == 0) {
-      return lang2enc[i].num;
+  for (const auto& i : lang2enc) {
+    if (strcmp(lang.c_str(), i.lang) == 0) {
+      return i.num;
     }
   }
   return LANG_xx;
-}
-
-#ifndef OPENOFFICEORG
-#ifndef MOZILLA_CLIENT
-void initialize_utf_tbl() {
-  utf_tbl_count++;
-  if (utf_tbl)
-    return;
-  utf_tbl = new unicode_info2[CONTSIZE];
-  for (size_t j = 0; j < CONTSIZE; ++j) {
-    utf_tbl[j].cletter = 0;
-    utf_tbl[j].clower = (unsigned short)j;
-    utf_tbl[j].cupper = (unsigned short)j;
-  }
-  for (size_t j = 0; j < UTF_LST_LEN; ++j) {
-    utf_tbl[utf_lst[j].c].cletter = 1;
-    utf_tbl[utf_lst[j].c].clower = utf_lst[j].clower;
-    utf_tbl[utf_lst[j].c].cupper = utf_lst[j].cupper;
-  }
-}
-#endif
-#endif
-
-void free_utf_tbl() {
-  if (utf_tbl_count > 0)
-    utf_tbl_count--;
-  if (utf_tbl && (utf_tbl_count == 0)) {
-    delete[] utf_tbl;
-    utf_tbl = NULL;
-  }
 }
 
 unsigned short unicodetoupper(unsigned short c, int langnum) {
   // In Azeri and Turkish, I and i dictinct letters:
   // There are a dotless lower case i pair of upper `I',
   // and an upper I with dot pair of lower `i'.
-  if (c == 0x0069 && ((langnum == LANG_az) || (langnum == LANG_tr)))
+  if (c == 0x0069 && ((langnum == LANG_az) || (langnum == LANG_tr) || (langnum == LANG_crh)))
     return 0x0130;
 #ifdef OPENOFFICEORG
   return static_cast<unsigned short>(u_toupper(c));
@@ -2463,7 +2497,7 @@ unsigned short unicodetoupper(unsigned short c, int langnum) {
 #ifdef MOZILLA_CLIENT
   return ToUpperCase((char16_t)c);
 #else
-  return (utf_tbl) ? utf_tbl[c].cupper : c;
+  return utf_tbl[c].cupper;
 #endif
 #endif
 }
@@ -2472,7 +2506,7 @@ unsigned short unicodetolower(unsigned short c, int langnum) {
   // In Azeri and Turkish, I and i dictinct letters:
   // There are a dotless lower case i pair of upper `I',
   // and an upper I with dot pair of lower `i'.
-  if (c == 0x0049 && ((langnum == LANG_az) || (langnum == LANG_tr)))
+  if (c == 0x0049 && ((langnum == LANG_az) || (langnum == LANG_tr) || (langnum == LANG_crh)))
     return 0x0131;
 #ifdef OPENOFFICEORG
   return static_cast<unsigned short>(u_tolower(c));
@@ -2480,7 +2514,7 @@ unsigned short unicodetolower(unsigned short c, int langnum) {
 #ifdef MOZILLA_CLIENT
   return ToLowerCase((char16_t)c);
 #else
-  return (utf_tbl) ? utf_tbl[c].clower : c;
+  return utf_tbl[c].clower;
 #endif
 #endif
 }
@@ -2489,27 +2523,27 @@ int unicodeisalpha(unsigned short c) {
 #ifdef OPENOFFICEORG
   return u_isalpha(c);
 #else
-  return (utf_tbl) ? utf_tbl[c].cletter : 0;
+  return utf_tbl[c].cletter;
 #endif
 }
 
 /* get type of capitalization */
-int get_captype(const std::string& word, cs_info* csconv) {
+int get_captype(const std::string& word, const cs_info* csconv) {
   // now determine the capitalization type of the first nl letters
   size_t ncap = 0;
   size_t nneutral = 0;
   size_t firstcap = 0;
   if (csconv == NULL)
     return NOCAP;
-  for (std::string::const_iterator q = word.begin(); q != word.end(); ++q) {
-    unsigned char nIndex = static_cast<unsigned char>(*q);
+  for (auto q = word.begin(); q != word.end(); ++q) {
+    const auto nIndex = static_cast<unsigned char>(*q);
     if (ccase(csconv, nIndex))
       ncap++;
     if (cupper(csconv, nIndex) == clower(csconv, nIndex))
       nneutral++;
   }
   if (ncap) {
-    unsigned char nIndex = static_cast<unsigned char>(word[0]);
+    const auto nIndex = static_cast<unsigned char>(word[0]);
     firstcap = csconv[nIndex].ccase;
   }
 
@@ -2531,15 +2565,19 @@ int get_captype_utf8(const std::vector<w_char>& word, int langnum) {
   size_t ncap = 0;
   size_t nneutral = 0;
   size_t firstcap = 0;
-  for (size_t i = 0; i < word.size(); ++i) {
-    unsigned short idx = (word[i].h << 8) + word[i].l;
-    if (idx != unicodetolower(idx, langnum))
+
+  auto it = word.begin(), it_end = word.end();
+  while (it != it_end) {
+    const auto idx = (unsigned short)*it;
+    const auto lwridx = unicodetolower(idx, langnum);
+    if (idx != lwridx)
       ncap++;
-    if (unicodetoupper(idx, langnum) == unicodetolower(idx, langnum))
+    if (unicodetoupper(idx, langnum) == lwridx)
       nneutral++;
+    ++it;
   }
   if (ncap) {
-    unsigned short idx = (word[0].h << 8) + word[0].l;
+    const auto idx = (unsigned short)word[0];
     firstcap = (idx != unicodetolower(idx, langnum));
   }
 
@@ -2563,13 +2601,10 @@ size_t remove_ignored_chars_utf(std::string& word,
   std::vector<w_char> w2;
   u8_u16(w, word);
 
-  for (size_t i = 0; i < w.size(); ++i) {
-    if (!std::binary_search(ignored_chars.begin(),
-                            ignored_chars.end(),
-                            w[i])) {
-      w2.push_back(w[i]);
-    }
-  }
+  std::copy_if(w.begin(), w.end(), std::back_inserter(w2), 
+  [&ignored_chars](w_char wc) {
+    return !std::binary_search(ignored_chars.begin(), ignored_chars.end(), wc);
+  });
 
   u16_u8(word, w2);
   return w2.size();
@@ -2591,8 +2626,7 @@ bool parse_string(const std::string& line, std::string& out, int ln) {
   }
   int i = 0;
   int np = 0;
-  std::string::const_iterator iter = line.begin();
-  std::string::const_iterator start_piece = mystrsep(line, iter);
+  auto iter = line.begin(), start_piece = mystrsep(line, iter);
   while (start_piece != line.end()) {
     switch (i) {
       case 0: {

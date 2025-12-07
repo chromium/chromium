@@ -22,7 +22,7 @@ ManifestHandler::ManifestHandler() = default;
 
 ManifestHandler::~ManifestHandler() = default;
 
-bool ManifestHandler::Validate(const Extension* extension,
+bool ManifestHandler::Validate(const Extension& extension,
                                std::string* error,
                                std::vector<InstallWarning>* warnings) const {
   return true;

@@ -39,7 +39,7 @@
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/request_dispatcher_impl.h"
 #include "chrome/browser/ash/file_system_provider/request_manager.h"
-#include "chrome/browser/chromeos/extensions/file_system_provider/service_worker_lifetime_manager.h"
+#include "chrome/browser/ash/file_system_provider/service_worker_lifetime_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/file_system_provider.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -63,13 +63,12 @@ constexpr base::TimeDelta kDefaultOperationTimeout = base::Seconds(10);
 // Operation timeout for the ODFS extension.
 constexpr base::TimeDelta kODFSOperationTimeout = base::Seconds(30);
 
-extensions::file_system_provider::ServiceWorkerLifetimeManager*
-GetServiceWorkerLifetimeManager(Profile* profile) {
+ServiceWorkerLifetimeManager* GetServiceWorkerLifetimeManager(
+    Profile* profile) {
   if (!chromeos::features::IsUploadOfficeToCloudEnabled()) {
     return nullptr;
   }
-  return extensions::file_system_provider::ServiceWorkerLifetimeManager::Get(
-      profile);
+  return ServiceWorkerLifetimeManager::Get(profile);
 }
 
 class ScopedUserInteractionImpl : public ScopedUserInteraction {
@@ -188,8 +187,6 @@ ProvidedFileSystem::ProvidedFileSystem(
   DCHECK_EQ(ProviderId::EXTENSION, file_system_info.provider_id().GetType());
   request_dispatcher_ = std::make_unique<RequestDispatcherImpl>(
       file_system_info_.provider_id().GetExtensionId(), event_router_,
-      base::BindRepeating(&ProvidedFileSystem::OnLacrosOperationForwarded,
-                          weak_ptr_factory_.GetWeakPtr()),
       GetServiceWorkerLifetimeManager(profile_));
   const ProviderId& provider_id = file_system_info_.provider_id();
   if (chromeos::features::IsUploadOfficeToCloudEnabled() &&
@@ -211,8 +208,6 @@ void ProvidedFileSystem::SetEventRouterForTesting(
   event_router_ = event_router;
   request_dispatcher_ = std::make_unique<RequestDispatcherImpl>(
       file_system_info_.provider_id().GetExtensionId(), event_router_,
-      base::BindRepeating(&ProvidedFileSystem::OnLacrosOperationForwarded,
-                          weak_ptr_factory_.GetWeakPtr()),
       GetServiceWorkerLifetimeManager(profile_));
 }
 
@@ -947,11 +942,6 @@ void ProvidedFileSystem::OnCloseFileCompleted(
   // list of opened files.
   opened_files_.erase(file_handle);
   std::move(callback).Run(result);
-}
-
-void ProvidedFileSystem::OnLacrosOperationForwarded(int request_id,
-                                                    base::File::Error error) {
-  request_manager_->RejectRequest(request_id, RequestValue(), error);
 }
 
 void ProvidedFileSystem::ConstructRequestManager() {

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/threading/scoped_blocking_call_internal.h"
 
 #include <algorithm>
@@ -25,18 +20,17 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace base {
 namespace internal {
 
 namespace {
 
-ABSL_CONST_INIT thread_local BlockingObserver* blocking_observer = nullptr;
+constinit thread_local BlockingObserver* blocking_observer = nullptr;
 
 // Last ScopedBlockingCall instantiated on this thread.
-ABSL_CONST_INIT thread_local UncheckedScopedBlockingCall*
-    last_scoped_blocking_call = nullptr;
+constinit thread_local UncheckedScopedBlockingCall* last_scoped_blocking_call =
+    nullptr;
 
 // These functions can be removed, and the calls below replaced with direct
 // variable accesses, once the MSAN workaround is not necessary.
@@ -137,7 +131,7 @@ constexpr TimeDelta IOJankMonitoringWindow::kMonitoringWindow;
 // static
 constexpr TimeDelta IOJankMonitoringWindow::kTimeDiscrepancyTimeout;
 // static
-constexpr int IOJankMonitoringWindow::kNumIntervals;
+constexpr size_t IOJankMonitoringWindow::kNumIntervals;
 
 // static
 scoped_refptr<IOJankMonitoringWindow>
@@ -149,8 +143,9 @@ IOJankMonitoringWindow::MonitorNextJankWindowIfNecessary(TimeTicks recent_now) {
   {
     AutoLock lock(current_jank_window_lock());
 
-    if (!reporting_callback_storage())
+    if (!reporting_callback_storage()) {
       return nullptr;
+    }
 
     scoped_refptr<IOJankMonitoringWindow>& current_jank_window_ref =
         current_jank_window_storage();
@@ -204,7 +199,7 @@ IOJankMonitoringWindow::MonitorNextJankWindowIfNecessary(TimeTicks recent_now) {
   // beats us to it. Adjust the timing to alleviate any drift in the timer. Do
   // this outside the lock to avoid scheduling tasks while holding it.
   ThreadPool::PostDelayedTask(
-      FROM_HERE, BindOnce([]() {
+      FROM_HERE, BindOnce([] {
         IOJankMonitoringWindow::MonitorNextJankWindowIfNecessary(
             TimeTicks::Now());
       }),
@@ -216,8 +211,9 @@ IOJankMonitoringWindow::MonitorNextJankWindowIfNecessary(TimeTicks recent_now) {
 // NO_THREAD_SAFETY_ANALYSIS because ~RefCountedThreadSafe() guarantees we're
 // the last ones to access this state (and ordered after all other accesses).
 IOJankMonitoringWindow::~IOJankMonitoringWindow() NO_THREAD_SAFETY_ANALYSIS {
-  if (canceled_)
+  if (canceled_) {
     return;
+  }
 
   int janky_intervals_count = 0;
   int total_jank_count = 0;
@@ -243,45 +239,58 @@ void IOJankMonitoringWindow::OnBlockingCallCompleted(TimeTicks call_start,
   // comparison operators).
   DCHECK_LE(call_start, call_end);
 
-  if (call_end - call_start < kIOJankInterval)
+  if (call_end - call_start < kIOJankInterval) {
     return;
+  }
 
   // Make sure the chain of |next_| pointers is sufficient to reach
   // |call_end| (e.g. if this runs before the delayed task kicks in)
-  if (call_end >= start_time_ + kMonitoringWindow)
+  if (call_end >= start_time_ + kMonitoringWindow) {
     MonitorNextJankWindowIfNecessary(call_end);
+  }
 
   // Begin attributing jank to the first interval in which it appeared, no
   // matter how far into the interval the jank began.
-  const int jank_start_index =
-      ClampFloor((call_start - start_time_) / kIOJankInterval);
+  const size_t jank_start_index =
+      ClampFloor<size_t, double>((call_start - start_time_) / kIOJankInterval);
 
   // Round the jank duration so the total number of intervals marked janky is as
   // close as possible to the actual jank duration.
-  const int num_janky_intervals =
-      ClampRound((call_end - call_start) / kIOJankInterval);
+  const size_t num_janky_intervals =
+      ClampRound<size_t, double>((call_end - call_start) / kIOJankInterval);
 
   AddJank(jank_start_index, num_janky_intervals);
 }
 
-void IOJankMonitoringWindow::AddJank(int local_jank_start_index,
-                                     int num_janky_intervals) {
-  DCHECK_GE(local_jank_start_index, 0);
+void IOJankMonitoringWindow::AddJank(size_t local_jank_start_index,
+                                     size_t num_janky_intervals) {
   DCHECK_LT(local_jank_start_index, kNumIntervals);
 
   // Increment jank counts for intervals in this window. If
   // |num_janky_intervals| lands beyond kNumIntervals, the additional intervals
   // will be reported to |next_|.
-  const int jank_end_index = local_jank_start_index + num_janky_intervals;
-  const int local_jank_end_index = std::min(kNumIntervals, jank_end_index);
+  const size_t jank_end_index = local_jank_start_index + num_janky_intervals;
+  const size_t local_jank_end_index = std::min(kNumIntervals, jank_end_index);
+
+  const ptrdiff_t jank_start_index_ptrdiff =
+      checked_cast<ptrdiff_t>(local_jank_start_index);
+  const ptrdiff_t jank_end_index_ptrdiff =
+      checked_cast<ptrdiff_t>(local_jank_end_index);
 
   {
     // Note: while this window could be |canceled| here we must add our count
     // unconditionally as it is only thread-safe to read |canceled| in
     // ~IOJankMonitoringWindow().
     AutoLock lock(intervals_lock_);
-    for (int i = local_jank_start_index; i < local_jank_end_index; ++i)
-      ++intervals_jank_count_[i];
+
+    DCHECK_LE(static_cast<size_t>(jank_start_index_ptrdiff),
+              intervals_jank_count_.size());
+    DCHECK_LE(static_cast<size_t>(jank_end_index_ptrdiff),
+              intervals_jank_count_.size());
+
+    std::for_each(intervals_jank_count_.begin() + jank_start_index_ptrdiff,
+                  intervals_jank_count_.begin() + jank_end_index_ptrdiff,
+                  [](size_t& n) { ++n; });
   }
 
   if (jank_end_index != local_jank_end_index) {
@@ -360,8 +369,9 @@ UncheckedScopedBlockingCall::~UncheckedScopedBlockingCall() {
   // prevents side effect.
   ScopedClearLastError save_last_error;
   DCHECK_EQ(this, GetLastScopedBlockingCall());
-  if (blocking_observer_ && !previous_scoped_blocking_call_)
+  if (blocking_observer_ && !previous_scoped_blocking_call_) {
     blocking_observer_->BlockingEnded();
+  }
 }
 
 }  // namespace internal

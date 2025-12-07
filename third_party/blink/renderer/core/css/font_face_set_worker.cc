@@ -23,22 +23,13 @@
 
 namespace blink {
 
-// static
-const char FontFaceSetWorker::kSupplementName[] = "FontFaceSetWorker";
-
 FontFaceSetWorker::FontFaceSetWorker(WorkerGlobalScope& worker)
-    : FontFaceSet(worker), Supplement<WorkerGlobalScope>(worker) {}
+    : FontFaceSet(worker) {}
 
 FontFaceSetWorker::~FontFaceSetWorker() = default;
 
 WorkerGlobalScope* FontFaceSetWorker::GetWorker() const {
   return To<WorkerGlobalScope>(GetExecutionContext());
-}
-
-AtomicString FontFaceSetWorker::status() const {
-  DEFINE_STATIC_LOCAL(AtomicString, loading, ("loading"));
-  DEFINE_STATIC_LOCAL(AtomicString, loaded, ("loaded"));
-  return is_loading_ ? loading : loaded;
 }
 
 void FontFaceSetWorker::BeginFontLoading(FontFace* font_face) {
@@ -70,17 +61,16 @@ void FontFaceSetWorker::FireDoneEventIfPossible() {
   FireDoneEvent();
 }
 
-bool FontFaceSetWorker::ResolveFontStyle(const String& font_string,
-                                         Font& font) {
+const Font* FontFaceSetWorker::ResolveFontStyle(const String& font_string) {
   if (font_string.empty()) {
-    return false;
+    return nullptr;
   }
 
   // Interpret fontString in the same way as the 'font' attribute of
   // CanvasRenderingContext2D.
   auto* parsed_style = CSSParser::ParseFont(font_string, GetExecutionContext());
   if (!parsed_style) {
-    return false;
+    return nullptr;
   }
 
   FontDescription default_font_description;
@@ -93,24 +83,21 @@ bool FontFaceSetWorker::ResolveFontStyle(const String& font_string,
   FontDescription description = FontStyleResolver::ComputeFont(
       *parsed_style, GetWorker()->GetFontSelector());
 
-  font = Font(description, GetWorker()->GetFontSelector());
-
-  return true;
+  return MakeGarbageCollected<Font>(description,
+                                    GetWorker()->GetFontSelector());
 }
 
 FontFaceSetWorker* FontFaceSetWorker::From(WorkerGlobalScope& worker) {
-  FontFaceSetWorker* fonts =
-      Supplement<WorkerGlobalScope>::From<FontFaceSetWorker>(worker);
+  FontFaceSetWorker* fonts = worker.GetFontFaceSetWorker();
   if (!fonts) {
     fonts = MakeGarbageCollected<FontFaceSetWorker>(worker);
-    ProvideTo(worker, fonts);
+    worker.SetFontFaceSetWorker(fonts);
   }
 
   return fonts;
 }
 
 void FontFaceSetWorker::Trace(Visitor* visitor) const {
-  Supplement<WorkerGlobalScope>::Trace(visitor);
   FontFaceSet::Trace(visitor);
 }
 

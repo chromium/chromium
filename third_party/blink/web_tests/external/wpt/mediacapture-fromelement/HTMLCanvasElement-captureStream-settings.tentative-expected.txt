@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] HTMLCanvasElement.captureStream() creates tracks that populate resolution settings
+  assert_equals: Track width setting follows canvas expected 200 but got 166
+Harness: the test ran to completion.
+

@@ -39,3 +39,5 @@ void VibrationManagerAndroid::Create(
 }
 
 }  // namespace device
+
+DEFINE_JNI(VibrationManagerAndroid)

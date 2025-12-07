@@ -9,20 +9,25 @@ import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.util.Size;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** API of the PlayerFrameMediator to helper classes. */
+@NullMarked
 public interface PlayerFrameMediatorDelegate {
     /** Gets the visual viewport of the player. */
-    public PlayerFrameViewport getViewport();
+    PlayerFrameViewport getViewport();
 
     /** Gets the size of the content shown in the mediator. */
-    public Size getContentSize();
+    Size getContentSize();
 
     /** Gets the min scale factor at the last computed viewport width. */
-    public float getMinScaleFactor();
+    float getMinScaleFactor();
 
     /**
      * Triggers an update of the visual contents of the PlayerFrameView. This fetches updates the
      * model and fetches any new bitmaps asynchronously.
+     *
      * @param scaleChanged Indicates that the scale changed so all current bitmaps need to be
      *     discarded.
      */
@@ -57,7 +62,7 @@ public interface PlayerFrameMediatorDelegate {
     void forceRedrawVisibleSubframes();
 
     /** Updates the bitmap matrix in the model. */
-    void updateBitmapMatrix(Bitmap[][] bitmapMatrix);
+    void updateBitmapMatrix(Bitmap @Nullable [][] bitmapMatrix);
 
     /** Update the model when the bitmap state is swapped. */
     void onSwapState();

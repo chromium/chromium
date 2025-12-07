@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.components.browser_ui.share.ShareParams;
 
@@ -19,6 +20,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /** Content type used by sharing related code. */
+@NullMarked
 public class ShareContentTypeHelper {
     private static final String IMAGE_TYPE = "image/";
 

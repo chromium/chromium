@@ -25,12 +25,12 @@ namespace safe_browsing {
 
 class MockFileTypePolicies : public FileTypePolicies {
  public:
-  MockFileTypePolicies() {}
+  MockFileTypePolicies() = default;
 
   MockFileTypePolicies(const MockFileTypePolicies&) = delete;
   MockFileTypePolicies& operator=(const MockFileTypePolicies&) = delete;
 
-  ~MockFileTypePolicies() override {}
+  ~MockFileTypePolicies() override = default;
 
   MOCK_METHOD2(RecordUpdateMetrics, void(UpdateResult, const std::string&));
 };
@@ -146,8 +146,6 @@ TEST_F(FileTypePoliciesTest, UnpackResourceBundle) {
   EXPECT_EQ(142, file_type.uma_value());
   EXPECT_FALSE(file_type.is_archive());
   EXPECT_EQ(DownloadFileType::FULL_PING, file_type.ping_setting());
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX)
   EXPECT_EQ(DownloadFileType::ALLOW_ON_USER_GESTURE,
             file_type.platform_settings(0).danger_level());

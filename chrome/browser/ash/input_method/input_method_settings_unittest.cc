@@ -28,6 +28,7 @@ constexpr char kKoreanEngineId[] = "ko-t-i0-und";
 constexpr char kPinyinEngineId[] = "zh-t-i0-pinyin";
 constexpr char kZhuyinEngineId[] = "zh-hant-t-i0-und";
 constexpr char kJapaneseEngineId[] = "nacl_mozc_jp";
+constexpr char kJapaneseUsEngineId[] = "nacl_mozc_us";
 
 constexpr char kVietnameseVniEngineId[] = "vkd_vi_vni";
 constexpr char kVietnameseTelexEngineId[] = "vkd_vi_telex";
@@ -291,9 +292,10 @@ TEST(CreateSettingsFromPrefsTest, CreateZhuyinSettings) {
   EXPECT_EQ(zhuyin_settings.page_size, 8u);
 }
 
-TEST(CreateSettingsFromPrefsTest, CreateJapaneseSettings) {
-  using ::ash::ime::mojom::JapaneseSettings;
+class JapaneseTesting : public testing::TestWithParam<std::string> {};
 
+TEST_P(JapaneseTesting, CreateJapaneseSettingsFromPrefsTest) {
+  using ::ash::ime::mojom::JapaneseSettings;
   base::Value::Dict jp_prefs;
   jp_prefs.Set("AutomaticallySendStatisticsToGoogle", false);
   jp_prefs.Set("AutomaticallySwitchToHalfwidth", false);
@@ -310,17 +312,28 @@ TEST(CreateSettingsFromPrefsTest, CreateJapaneseSettings) {
   jp_prefs.Set("numberOfSuggestions", 5);
 
   base::Value::Dict full_prefs;
+
+  // TODO(crbug.com/203464079): Use distinct CrOS prefs for nacl_mozc_jp
+  // ("Japanese [for JIS keyboard]") and nacl_mozc_us ("Japanese for US
+  // keyboard") input methods. Due to singleton constraints in the legacy
+  // implementation, unlike all other input methods whose settings were distinct
+  // from one another, these two input methods shared the same settings. Upon
+  // migration to CrOS prefs, the unintended sharing was intentionally retained
+  // until the issue is separately addressed outside the scope of the said
+  // migration. Thus a single Japanese prefs entry with key "nacl_mozc_jp" is
+  // currently used for both "nacl_mozc_jp" and "nacl_mozc_us" input methods.
   full_prefs.Set(kJapaneseEngineId, std::move(jp_prefs));
+
   TestingPrefServiceSimple prefs;
   RegisterTestingPrefs(prefs, full_prefs);
 
   const mojom::InputMethodSettingsPtr settings =
-      CreateSettingsFromPrefs(prefs, kJapaneseEngineId);
+      CreateSettingsFromPrefs(prefs, GetParam());
 
   ASSERT_TRUE(settings->is_japanese_settings());
   mojom::JapaneseSettingsPtr expected = mojom::JapaneseSettings::New();
-  expected->automatically_send_statistics_to_google = false;
-  expected->automatically_switch_to_halfwidth = true;
+  expected->unused2 = false;
+  expected->automatically_switch_to_halfwidth = false;
   expected->disable_personalized_suggestions = true;
   expected->input_mode = JapaneseSettings::InputMode::kKana;
   expected->keymap_style = JapaneseSettings::KeymapStyle::kChromeos;
@@ -337,6 +350,11 @@ TEST(CreateSettingsFromPrefsTest, CreateJapaneseSettings) {
   expected->number_of_suggestions = 5;
   EXPECT_EQ(settings->get_japanese_settings(), expected);
 }
+
+INSTANTIATE_TEST_SUITE_P(CreateJapaneseSettingsFromPrefsTestSuite,
+                         JapaneseTesting,
+                         testing::Values(kJapaneseEngineId,
+                                         kJapaneseUsEngineId));
 
 TEST(CreateSettingsFromPrefsTest, AutocorrectIsSupportedForLatin) {
   ASSERT_TRUE(IsAutocorrectSupported("xkb:ca:multix:fra"));

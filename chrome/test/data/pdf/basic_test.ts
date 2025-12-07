@@ -14,7 +14,7 @@ const tests = [
     const elementNames = ['viewer-pdf-sidenav', 'viewer-toolbar'];
 
     for (const elementName of elementNames) {
-      const elements = viewer.shadowRoot!.querySelectorAll(elementName);
+      const elements = viewer.shadowRoot.querySelectorAll(elementName);
       chrome.test.assertEq(1, elements.length);
       chrome.test.assertTrue(elements[0]!.shadowRoot !== null);
     }
@@ -26,7 +26,7 @@ const tests = [
    */
   function testPluginElement() {
     const viewer = document.body.querySelector('pdf-viewer')!;
-    const plugin = viewer.shadowRoot!.querySelector('#plugin')!;
+    const plugin = viewer.shadowRoot.querySelector('#plugin')!;
     chrome.test.assertEq('embed', plugin.localName);
 
     chrome.test.assertTrue(
@@ -39,18 +39,18 @@ const tests = [
     const toolbar = viewer.$.toolbar;
 
     // Test case where an <input> field is focused.
-    toolbar.shadowRoot!.querySelector(
-                           'viewer-page-selector')!.$.pageSelector.focus();
+    toolbar.shadowRoot.querySelector(
+                          'viewer-page-selector')!.$.pageSelector.focus();
     chrome.test.assertTrue(shouldIgnoreKeyEvents());
 
     // Test case where another field is focused.
-    const rotateButton = toolbar.shadowRoot!.querySelector<HTMLElement>(
-        'cr-icon-button[iron-icon=\'pdf:rotate-left\']')!;
+    const rotateButton =
+        toolbar.shadowRoot.querySelector<HTMLElement>('#rotate')!;
     rotateButton.focus();
     chrome.test.assertFalse(shouldIgnoreKeyEvents());
 
     // Test case where the plugin itself is focused.
-    viewer.shadowRoot!.querySelector<HTMLElement>('#plugin')!.focus();
+    viewer.shadowRoot.querySelector<HTMLElement>('#plugin')!.focus();
     chrome.test.assertFalse(shouldIgnoreKeyEvents());
 
     chrome.test.succeed();

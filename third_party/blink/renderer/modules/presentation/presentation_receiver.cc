@@ -62,7 +62,7 @@ void PresentationReceiver::OnReceiverConnectionAvailable(
     mojom::blink::PresentationConnectionResultPtr result) {
   // Take() will call PresentationReceiver::registerConnection()
   // and register the connection.
-  auto* connection = ReceiverPresentationConnection::Take(
+  auto* connection = ReceiverPresentationConnection::Create(
       this, *result->presentation_info, std::move(result->connection_remote),
       std::move(result->connection_receiver));
 

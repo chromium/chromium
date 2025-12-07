@@ -8,8 +8,10 @@
 #include "third_party/blink/renderer/core/layout/background_bleed_avoidance.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_sides.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
-#include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
+#include "third_party/blink/renderer/core/paint/paint_flags.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
+#include "third_party/blink/renderer/platform/geometry/physical_offset.h"
+#include "third_party/blink/renderer/platform/geometry/physical_size.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -23,16 +25,17 @@ namespace blink {
 
 class BackgroundImageGeometry;
 class BoxBackgroundPaintContext;
+struct BorderShapeReferenceRects;
 class ComputedStyle;
+class ContouredRect;
 class Document;
 class FillLayer;
-class FloatRoundedRect;
 class GraphicsContext;
 class ImageResourceObserver;
 class LayoutBox;
 class Node;
+struct BorderShapeReferenceRects;
 struct PaintInfo;
-struct PhysicalOffset;
 struct PhysicalRect;
 
 // Base class for box painting. Has no dependencies on the layout tree and thus
@@ -73,6 +76,7 @@ class BoxPainterBase {
       const PaintInfo&,
       const PhysicalRect&,
       const ComputedStyle&,
+      std::optional<BorderShapeReferenceRects> border_shape_rects,
       PhysicalBoxSides sides_to_include = PhysicalBoxSides(),
       bool background_is_skipped = true);
 
@@ -94,18 +98,20 @@ class BoxPainterBase {
       const PhysicalRect&,
       const ComputedStyle&,
       BackgroundBleedAvoidance = kBackgroundBleedNone,
-      PhysicalBoxSides sides_to_include = PhysicalBoxSides());
+      PhysicalBoxSides sides_to_include = PhysicalBoxSides(),
+      const BorderShapeReferenceRects* border_shape_rects = nullptr);
 
   static bool ShouldForceWhiteBackgroundForPrintEconomy(const Document&,
                                                         const ComputedStyle&);
 
-  typedef Vector<const FillLayer*, 8> FillLayerOcclusionOutputList;
-  // Returns true if the result fill layers have non-associative blending or
-  // compositing mode.  (i.e. The rendering will be different without creating
-  // isolation group by context.saveLayer().) Note that the output list will be
-  // in top-bottom order.
-  bool CalculateFillLayerOcclusionCulling(
-      FillLayerOcclusionOutputList& reversed_paint_list,
+  // Analyzes the fill layers to determine painting requirements.
+  // Returns a pair containing:
+  //  - bool: True if the layers require an isolation group (a separate buffer)
+  //    due to non-associative blending modes.
+  //  - const FillLayer*: The last layer to be painted. Subsequent layers are
+  //    occluded and can be culled. This will be the last layer in the list
+  //    if no occlusion occurs.
+  std::pair<bool, const FillLayer*> AnalyzeFillLayersForPainting(
       const FillLayer&);
 
   static bool ShouldSkipPaintUnderInvalidationChecking(const LayoutBox&);
@@ -122,7 +128,8 @@ class BoxPainterBase {
                   BackgroundBleedAvoidance,
                   PhysicalBoxSides sides_to_include,
                   bool is_inline,
-                  bool is_painting_background_in_contents_space);
+                  bool is_painting_background_in_contents_space,
+                  PaintFlags paint_flags);
 
     // FillLayerInfo is a temporary, stack-allocated container which cannot
     // outlive the StyleImage.  This would normally be a raw pointer, if not for
@@ -167,10 +174,11 @@ class BoxPainterBase {
       const Color&,
       const FillLayer&,
       BackgroundBleedAvoidance,
-      bool is_painting_background_in_contents_space) const = 0;
+      bool is_painting_background_in_contents_space,
+      PaintFlags paint_flags) const = 0;
   static void PaintInsetBoxShadow(
       const PaintInfo&,
-      const FloatRoundedRect&,
+      const ContouredRect&,
       const ComputedStyle&,
       PhysicalBoxSides sides_to_include = PhysicalBoxSides());
 

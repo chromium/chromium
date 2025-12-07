@@ -21,10 +21,10 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {isInputDeviceSettingsSplitEnabled} from '../common/load_time_booleans.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, Router, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {Router, routes} from '../router.js';
 
 import {getTemplate} from './pointers.html.js';
 
@@ -50,7 +50,7 @@ export class SettingsPointersElement extends SettingsPointersElementBase {
 
       hasHapticTouchpad: Boolean,
 
-      swapPrimaryOptions: {
+      swapPrimaryOptions_: {
         readOnly: true,
         type: Array,
         value() {
@@ -106,40 +106,6 @@ export class SettingsPointersElement extends SettingsPointersElementBase {
         },
         readOnly: true,
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kTouchpadTapToClick,
-          Setting.kTouchpadTapDragging,
-          Setting.kTouchpadReverseScrolling,
-          Setting.kTouchpadAcceleration,
-          Setting.kTouchpadSpeed,
-          Setting.kTouchpadHapticFeedback,
-          Setting.kTouchpadHapticClickSensitivity,
-          Setting.kPointingStickAcceleration,
-          Setting.kPointingStickSpeed,
-          Setting.kPointingStickSwapPrimaryButtons,
-          Setting.kMouseSwapPrimaryButtons,
-          Setting.kMouseReverseScrolling,
-          Setting.kMouseAcceleration,
-          Setting.kMouseSpeed,
-        ]),
-      },
-
-      /**
-       * Whether settings should be split per device.
-       */
-      isDeviceSettingsSplitEnabled_: {
-        type: Boolean,
-        value() {
-          return isInputDeviceSettingsSplitEnabled();
-        },
-        readOnly: true,
-      },
     };
   }
 
@@ -147,7 +113,31 @@ export class SettingsPointersElement extends SettingsPointersElementBase {
   hasPointingStick: boolean;
   hasTouchpad: boolean;
   hasHapticTouchpad: boolean;
-  private isDeviceSettingsSplitEnabled_: boolean;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kTouchpadTapToClick,
+    Setting.kTouchpadTapDragging,
+    Setting.kTouchpadReverseScrolling,
+    Setting.kTouchpadAcceleration,
+    Setting.kTouchpadSpeed,
+    Setting.kTouchpadHapticFeedback,
+    Setting.kTouchpadHapticClickSensitivity,
+    Setting.kPointingStickAcceleration,
+    Setting.kPointingStickSpeed,
+    Setting.kPointingStickSwapPrimaryButtons,
+    Setting.kMouseSwapPrimaryButtons,
+    Setting.kMouseReverseScrolling,
+    Setting.kMouseAcceleration,
+    Setting.kMouseSpeed,
+  ]);
+
+  private readonly hapticClickSensitivityValues_:
+      Array<{value: number, ariaValue: number}>;
+  private readonly sensitivityValues_: number[];
+  private showHeadings_: boolean;
+  private subsectionClass_: string;
+  private swapPrimaryOptions_: Array<{value: boolean, name: string}>;
 
   /**
    * Headings should only be visible if more than one subsection is present.
@@ -174,16 +164,11 @@ export class SettingsPointersElement extends SettingsPointersElementBase {
   }
 
   private getCursorSpeedString(): TrustedHTML {
-    return this.i18nAdvanced(
-        loadTimeData.getBoolean('allowScrollSettings') ? 'cursorSpeed' :
-                                                         'mouseSpeed');
+    return this.i18nAdvanced('cursorSpeed');
   }
 
   private getCursorAccelerationString(): TrustedHTML {
-    return this.i18nAdvanced(
-        loadTimeData.getBoolean('allowScrollSettings') ?
-            'cursorAccelerationLabel' :
-            'mouseAccelerationLabel');
+    return this.i18nAdvanced('cursorAccelerationLabel');
   }
 
   override currentRouteChanged(route: Route): void {
@@ -191,8 +176,7 @@ export class SettingsPointersElement extends SettingsPointersElementBase {
     if (route !== routes.POINTERS) {
       return;
     }
-    if (Router.getInstance().currentRoute === routes.POINTERS &&
-        this.isDeviceSettingsSplitEnabled_) {
+    if (Router.getInstance().currentRoute === routes.POINTERS) {
       // Call setCurrentRoute function to go to the device page when
       // the feature flag is turned on. We don't use navigateTo function since
       // we don't want to navigate back to the previous point page.

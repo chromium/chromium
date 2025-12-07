@@ -10,7 +10,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -21,6 +20,13 @@
 #include "ui/base/webui/resource_path.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
+#include "ui/webui/webui_util.h"
+
+bool SigninEmailConfirmationUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return !profile->IsOffTheRecord();
+}
 
 SigninEmailConfirmationUI::SigninEmailConfirmationUI(content::WebUI* web_ui)
     : ConstrainedWebDialogUI(web_ui) {
@@ -37,6 +43,8 @@ SigninEmailConfirmationUI::SigninEmailConfirmationUI(content::WebUI* web_ui)
   static constexpr webui::ResourcePath kResources[] = {
       {"signin_email_confirmation_app.js",
        IDR_SIGNIN_SIGNIN_EMAIL_CONFIRMATION_SIGNIN_EMAIL_CONFIRMATION_APP_JS},
+      {"signin_email_confirmation_app.css.js",
+       IDR_SIGNIN_SIGNIN_EMAIL_CONFIRMATION_SIGNIN_EMAIL_CONFIRMATION_APP_CSS_JS},
       {"signin_email_confirmation_app.html.js",
        IDR_SIGNIN_SIGNIN_EMAIL_CONFIRMATION_SIGNIN_EMAIL_CONFIRMATION_APP_HTML_JS},
       {"signin_shared.css.js", IDR_SIGNIN_SIGNIN_SHARED_CSS_JS},
@@ -67,7 +75,7 @@ SigninEmailConfirmationUI::SigninEmailConfirmationUI(content::WebUI* web_ui)
   source->AddLocalizedStrings(strings);
 }
 
-SigninEmailConfirmationUI::~SigninEmailConfirmationUI() {}
+SigninEmailConfirmationUI::~SigninEmailConfirmationUI() = default;
 
 void SigninEmailConfirmationUI::Close() {
   ConstrainedWebDialogDelegate* delegate = GetConstrainedDelegate();

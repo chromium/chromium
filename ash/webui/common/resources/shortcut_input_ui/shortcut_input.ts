@@ -8,18 +8,15 @@ import 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
-import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {FakeShortcutInputProvider} from './fake_shortcut_input_provider.js';
-import {KeyEvent} from './input_device_settings.mojom-webui.js';
+import type {KeyEvent} from './input_device_settings.mojom-webui.js';
 import {getTemplate} from './shortcut_input.html.js';
-import {ShortcutInputObserverReceiver, ShortcutInputProviderInterface} from './shortcut_input_provider.mojom-webui.js';
+import type {ShortcutInputProviderInterface} from './shortcut_input_provider.mojom-webui.js';
+import {ShortcutInputObserverReceiver} from './shortcut_input_provider.mojom-webui.js';
 import {getSortedModifiers, KeyInputState, KeyToIconNameMap, MetaKey, Modifier, ModifierKeyCodes, Modifiers} from './shortcut_utils.js';
-
-// <if expr="_google_chrome" >
-import {KeyToInternalIconNameMap} from './shortcut_utils.js';
-// </if>
 
 export interface ShortcutInputElement {
   $: {
@@ -128,17 +125,20 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
    * Updates UI to the newly received KeyEvent.
    */
   onShortcutInputEventPressed(
-      prerewrittenKeyEvent: KeyEvent, keyEvent: KeyEvent): void {
-    this.pendingKeyEvent = keyEvent;
-    this.pendingPrerewrittenKeyEvent = prerewrittenKeyEvent;
+      prerewrittenKeyEvent: KeyEvent, keyEvent: KeyEvent|null): void {
+    if (keyEvent === null) {
+      if (this.displayPrerewrittenKeyEvents) {
+        this.pendingKeyEvent = prerewrittenKeyEvent;
+        this.pendingPrerewrittenKeyEvent = prerewrittenKeyEvent;
+      } else {
+        return;
+      }
+    } else {
+      this.pendingKeyEvent = keyEvent;
+      this.pendingPrerewrittenKeyEvent = prerewrittenKeyEvent;
+    }
 
     if (this.updateOnKeyPress) {
-      // TODO(jimmyxgong): Should be able to do this unconditionally, but for
-      // now the modifiers trigger observable events that may unintentionally
-      // update the UI.
-      this.pendingKeyEvent.modifiers = keyEvent.modifiers;
-      this.pendingPrerewrittenKeyEvent.modifiers =
-          prerewrittenKeyEvent.modifiers;
       this.dispatchEvent(new CustomEvent('shortcut-input-event', {
         bubbles: true,
         composed: true,
@@ -154,9 +154,17 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
    * parent elements.
    */
   onShortcutInputEventReleased(
-      prerewrittenKeyEvent: KeyEvent, keyEvent: KeyEvent): void {
+      prerewrittenKeyEvent: KeyEvent, keyEvent: KeyEvent|null): void {
     if (this.shouldIgnoreKeyRelease) {
       return;
+    }
+
+    if (keyEvent === null) {
+      if (this.displayPrerewrittenKeyEvents) {
+        keyEvent = prerewrittenKeyEvent;
+      } else {
+        return;
+      }
     }
 
     // Ignore the release event if no key was pressed before. This is to
@@ -278,11 +286,7 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
       if (keyDisplay in KeyToIconNameMap) {
         return keyDisplay;
       }
-      // <if expr="_google_chrome" >
-      if (keyDisplay in KeyToInternalIconNameMap) {
-        return keyDisplay;
-      }
-      // </if>
+
       return keyDisplay.toLowerCase();
     }
     return this.i18n('inputKeyPlaceholder');
@@ -303,11 +307,7 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
       if (keyDisplay in KeyToIconNameMap) {
         return keyDisplay;
       }
-      // <if expr="_google_chrome" >
-      if (keyDisplay in KeyToInternalIconNameMap) {
-        return keyDisplay;
-      }
-      // </if>
+
       return keyDisplay.toLowerCase();
     }
     return this.i18n('inputKeyPlaceholder');

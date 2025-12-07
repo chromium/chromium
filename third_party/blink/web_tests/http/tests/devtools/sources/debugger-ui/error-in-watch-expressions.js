@@ -14,12 +14,15 @@ import * as Sources from 'devtools/panels/sources/sources.js';
   `);
 
   var watchExpressionsPane = Sources.WatchExpressionsSidebarPane.WatchExpressionsSidebarPane.instance();
-  Sources.SourcesPanel.SourcesPanel.instance().sidebarPaneStack.showView(Sources.SourcesPanel.SourcesPanel.instance().watchSidebarPane).then(() => {
-    watchExpressionsPane.doUpdate();
-    watchExpressionsPane.createWatchExpression('#$%');
-    watchExpressionsPane.saveExpressions();
-    TestRunner.deprecatedRunAfterPendingDispatches(step1);
-  });
+  Sources.SourcesPanel.SourcesPanel.instance()
+      .sidebarPaneStack
+      .showView(Sources.SourcesPanel.SourcesPanel.instance().watchSidebarPane)
+      .then(() => {
+        watchExpressionsPane.performUpdate();
+        watchExpressionsPane.createWatchExpression('#$%');
+        watchExpressionsPane.saveExpressions();
+        TestRunner.deprecatedRunAfterPendingDispatches(step1);
+      });
 
 
   function step1() {

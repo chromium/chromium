@@ -4,8 +4,10 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {CrostiniBrowserProxyImpl, CrostiniPortSetting, GuestOsBrowserProxyImpl, SettingsCrostiniDiskResizeDialogElement, SettingsCrostiniSubpageElement} from 'chrome://os-settings/lazy_load.js';
-import {CrSliderElement, Router, routes, settingMojom, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import type {CrostiniPortSetting, SettingsCrostiniDiskResizeDialogElement, SettingsCrostiniSubpageElement} from 'chrome://os-settings/lazy_load.js';
+import {CrostiniBrowserProxyImpl, GuestOsBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
+import type {CrSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -25,6 +27,90 @@ interface PrefParams {
   arcEnabled?: boolean;
   bruschettaInstalled?: boolean;
 }
+
+suite('<settings-crostini-subpage> for baguette', () => {
+  let subpage: SettingsCrostiniSubpageElement;
+  let guestOsBrowserProxy: TestGuestOsBrowserProxy;
+  let crostiniBrowserProxy: TestCrostiniBrowserProxy;
+
+  function setCrostiniPrefs(enabled: boolean, {
+    sharedPaths = {},
+    forwardedPorts = [],
+    micAllowed = false,
+    arcEnabled = false,
+    bruschettaInstalled = false,
+  }: PrefParams = {}): void {
+    subpage.prefs = {
+      arc: {
+        enabled: {value: arcEnabled},
+      },
+      bruschetta: {
+        installed: {
+          value: bruschettaInstalled,
+        },
+      },
+      crostini: {
+        enabled: {value: enabled},
+        mic_allowed: {value: micAllowed},
+        port_forwarding: {ports: {value: forwardedPorts}},
+      },
+      guest_os: {
+        paths_shared_to_vms: {value: sharedPaths},
+      },
+    };
+    flush();
+  }
+
+  setup(async () => {
+    loadTimeData.overrideValues({
+      isBaguette: true,
+      isCrostiniAllowed: true,
+      isCrostiniSupported: true,
+      showCrostiniExportImport: true,
+      showCrostiniContainerUpgrade: true,
+      showCrostiniPortForwarding: true,
+      showCrostiniDiskResize: true,
+      showCrostiniExtraContainers: false,
+    });
+
+    crostiniBrowserProxy = new TestCrostiniBrowserProxy();
+    CrostiniBrowserProxyImpl.setInstanceForTesting(crostiniBrowserProxy);
+    guestOsBrowserProxy = new TestGuestOsBrowserProxy();
+    GuestOsBrowserProxyImpl.setInstanceForTesting(guestOsBrowserProxy);
+
+    Router.getInstance().navigateTo(routes.CROSTINI_DETAILS);
+
+    clearBody();
+    subpage = document.createElement('settings-crostini-subpage');
+    document.body.appendChild(subpage);
+    setCrostiniPrefs(true, {arcEnabled: true});
+    await flushTasks();
+  });
+
+  teardown(() => {
+    Router.getInstance().resetRouteForTesting();
+  });
+
+  test('Basic, no port forwarding', () => {
+    assertTrue(isVisible(
+        subpage.shadowRoot!.querySelector('#crostiniSharedPathsRow')));
+    assertTrue(isVisible(
+        subpage.shadowRoot!.querySelector('#crostiniSharedUsbDevicesRow')));
+    assertTrue(isVisible(
+        subpage.shadowRoot!.querySelector('#crostiniExportImportRow')));
+    assertTrue(isVisible(subpage.shadowRoot!.querySelector('#remove')));
+    assertTrue(
+        isVisible(subpage.shadowRoot!.querySelector('#container-upgrade')));
+    assertFalse(isVisible(
+        subpage.shadowRoot!.querySelector('#crostiniPortForwardingRow')));
+    assertTrue(isVisible(
+        subpage.shadowRoot!.querySelector('#crostini-mic-permission-toggle')));
+    assertTrue(
+        isVisible(subpage.shadowRoot!.querySelector('#crostiniDiskResizeRow')));
+    assertFalse(isVisible(
+        subpage.shadowRoot!.querySelector('#crostiniExtraContainersRow')));
+  });
+});
 
 suite('<settings-crostini-subpage>', () => {
   let subpage: SettingsCrostiniSubpageElement;
@@ -63,13 +149,13 @@ suite('<settings-crostini-subpage>', () => {
 
   setup(async () => {
     loadTimeData.overrideValues({
+      isBaguette: false,
       isCrostiniAllowed: true,
       isCrostiniSupported: true,
       showCrostiniExportImport: true,
       showCrostiniContainerUpgrade: true,
       showCrostiniPortForwarding: true,
       showCrostiniDiskResize: true,
-      arcAdbSideloadingSupported: true,
       showCrostiniExtraContainers: true,
     });
 
@@ -99,8 +185,6 @@ suite('<settings-crostini-subpage>', () => {
           subpage.shadowRoot!.querySelector('#crostiniSharedUsbDevicesRow')));
       assertTrue(isVisible(
           subpage.shadowRoot!.querySelector('#crostiniExportImportRow')));
-      assertTrue(isVisible(
-          subpage.shadowRoot!.querySelector('#crostiniEnableArcAdbRow')));
       assertTrue(isVisible(subpage.shadowRoot!.querySelector('#remove')));
       assertTrue(
           isVisible(subpage.shadowRoot!.querySelector('#container-upgrade')));
@@ -114,7 +198,7 @@ suite('<settings-crostini-subpage>', () => {
           subpage.shadowRoot!.querySelector('#crostiniExtraContainersRow')));
     });
 
-    test('Shared paths', async () => {
+    test('Shared paths', () => {
       const button = subpage.shadowRoot!.querySelector<HTMLButtonElement>(
           '#crostiniSharedPathsRow');
       assertTrue(!!button);
@@ -272,7 +356,7 @@ suite('<settings-crostini-subpage>', () => {
       setCrostiniPrefs(false);
 
       await flushTasks();
-      assertEquals(routes.CROSTINI, Router.getInstance().currentRoute);
+      assertEquals(routes.ABOUT, Router.getInstance().currentRoute);
 
       const crostiniSettingsCard =
           crostiniPage.shadowRoot!.querySelector('crostini-settings-card');

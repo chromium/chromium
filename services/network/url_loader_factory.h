@@ -14,6 +14,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/orb/orb_api.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
+#include "services/network/public/mojom/device_bound_sessions.mojom.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/trust_token_access_observer.mojom.h"
@@ -75,20 +76,18 @@ class URLLoaderFactory : public mojom::URLLoaderFactory,
   bool ShouldRequireIsolationInfo() const override;
   const cors::OriginAccessList& GetOriginAccessList() const override;
   const mojom::URLLoaderFactoryParams& GetFactoryParams() const override;
-  mojom::CookieAccessObserver* GetCookieAccessObserver() const override;
-  mojom::TrustTokenAccessObserver* GetTrustTokenAccessObserver() const override;
   mojom::CrossOriginEmbedderPolicyReporter* GetCoepReporter() const override;
-  mojom::DevToolsObserver* GetDevToolsObserver() const override;
+  mojom::DocumentIsolationPolicyReporter* GetDipReporter() const override;
   mojom::NetworkContextClient* GetNetworkContextClient() const override;
   mojom::TrustedURLLoaderHeaderClient* GetUrlLoaderHeaderClient()
-      const override;
-  mojom::URLLoaderNetworkServiceObserver* GetURLLoaderNetworkServiceObserver()
       const override;
   net::URLRequestContext* GetUrlRequestContext() const override;
   scoped_refptr<ResourceSchedulerClient> GetResourceSchedulerClient()
       const override;
   orb::PerFactoryState& GetMutableOrbState() override;
   bool DataUseUpdatesEnabled() override;
+  scoped_refptr<RefCountedDeviceBoundSessionAccessObserverRemote>
+  GetDeviceBoundSessionAccessObserverSharedRemote() const override;
 
   // Allows starting a URLLoader with a synchronous URLLoaderClient as an
   // optimization.
@@ -101,6 +100,8 @@ class URLLoaderFactory : public mojom::URLLoaderFactory,
       base::WeakPtr<mojom::URLLoaderClient> sync_client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation);
 
+  mojom::DevToolsObserver* GetDevToolsObserver() const;
+
   // Returns the network that URLLoaders, created out of this factory, will
   // target. If == net::handles::kInvalidNetworkHandle, then no network is being
   // targeted and the system default network will be used (see
@@ -112,19 +113,8 @@ class URLLoaderFactory : public mojom::URLLoaderFactory,
   static constexpr int kMaxTotalKeepaliveRequestSize = 512 * 1024;
 
  private:
-  // Starts the timer to call
-  // URLLoaderNetworkServiceObserver::OnLoadingStateUpdate(), if
-  // needed.
-  void MaybeStartUpdateLoadInfoTimer();
-
-  // Invoked once the browser has acknowledged receiving the previous LoadInfo.
-  // Sets |waiting_on_load_state_ack_| to false, and calls
-  // MaybeStartUpdateLoadeInfoTimer.
-  void AckUpdateLoadInfo();
-
-  // Finds the most relevant URLLoader that is outstanding and asks it to
-  // send an update.
-  void UpdateLoadInfo();
+  mojom::URLLoaderNetworkServiceObserver* GetURLLoaderNetworkServiceObserver()
+      const;
 
   // The NetworkContext that indirectly owns |this|.
   const raw_ptr<NetworkContext> context_;
@@ -147,9 +137,8 @@ class URLLoaderFactory : public mojom::URLLoaderFactory,
   mojo::Remote<mojom::CookieAccessObserver> cookie_observer_;
   mojo::Remote<mojom::TrustTokenAccessObserver> trust_token_observer_;
   mojo::Remote<mojom::DevToolsObserver> devtools_observer_;
-
-  base::OneShotTimer update_load_info_timer_;
-  bool waiting_on_load_state_ack_ = false;
+  scoped_refptr<RefCountedDeviceBoundSessionAccessObserverRemote>
+      device_bound_session_observer_;
 };
 
 }  // namespace network

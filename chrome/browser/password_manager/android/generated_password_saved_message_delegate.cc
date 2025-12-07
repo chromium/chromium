@@ -17,7 +17,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 GeneratedPasswordSavedMessageDelegate::GeneratedPasswordSavedMessageDelegate()
     : add_username_dialog_factory_(base::BindRepeating(

@@ -27,8 +27,9 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
@@ -39,7 +40,6 @@ import org.chromium.base.library_loader.LoaderErrors;
 import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.init.BrowserParts;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.components.background_task_scheduler.BackgroundTask;
@@ -81,6 +81,8 @@ public class NativeBackgroundTaskTest {
                 @LibraryProcessType int libraryProcessType,
                 boolean startGpuProcess,
                 boolean startMinimalBrowser,
+                boolean singleProcess,
+                boolean scheduleFlushStartupTasks,
                 final StartupCallback callback) {}
 
         @Override
@@ -126,11 +128,10 @@ public class NativeBackgroundTaskTest {
         }
     }
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private TestBrowserStartupController mBrowserStartupController;
-    private TaskFinishedCallback mCallback;
+    private NativeBackgroundTaskTest.TaskFinishedCallback mCallback;
     private TestNativeBackgroundTask mTask;
-
-    @Rule public final JniMocker mocker = new JniMocker();
     @Mock private ChromeBrowserInitializer mChromeBrowserInitializer;
     @Captor ArgumentCaptor<BrowserParts> mBrowserParts;
 
@@ -139,7 +140,7 @@ public class NativeBackgroundTaskTest {
     private static class TaskFinishedCallback implements BackgroundTask.TaskFinishedCallback {
         private boolean mWasCalled;
         private boolean mNeedsReschedule;
-        private CountDownLatch mCallbackLatch;
+        private final CountDownLatch mCallbackLatch;
 
         TaskFinishedCallback() {
             mCallbackLatch = new CountDownLatch(1);
@@ -172,12 +173,12 @@ public class NativeBackgroundTaskTest {
         @StartBeforeNativeResult private int mStartBeforeNativeResult;
         private boolean mWasOnStartTaskWithNativeCalled;
         private boolean mNeedsReschedulingAfterStop;
-        private CountDownLatch mStartWithNativeLatch;
+        private final CountDownLatch mStartWithNativeLatch;
         private boolean mWasOnStopTaskWithNativeCalled;
         private boolean mWasOnStopTaskBeforeNativeLoadedCalled;
-        private BrowserStartupController mBrowserStartupController;
+        private final BrowserStartupController mBrowserStartupController;
 
-        public TestNativeBackgroundTask(BrowserStartupController controller) {
+        TestNativeBackgroundTask(BrowserStartupController controller) {
             super();
             setDelegate(new ChromeNativeBackgroundTaskDelegate());
             mBrowserStartupController = controller;
@@ -189,13 +190,17 @@ public class NativeBackgroundTaskTest {
 
         @Override
         protected int onStartTaskBeforeNativeLoaded(
-                Context context, TaskParameters taskParameters, TaskFinishedCallback callback) {
+                Context context,
+                TaskParameters taskParameters,
+                BackgroundTask.TaskFinishedCallback callback) {
             return mStartBeforeNativeResult;
         }
 
         @Override
         protected void onStartTaskWithNative(
-                Context context, TaskParameters taskParameters, TaskFinishedCallback callback) {
+                Context context,
+                TaskParameters taskParameters,
+                BackgroundTask.TaskFinishedCallback callback) {
             assertEquals(ContextUtils.getApplicationContext(), context);
             assertEquals(getTaskParameters(), taskParameters);
             mWasOnStartTaskWithNativeCalled = true;
@@ -247,9 +252,8 @@ public class NativeBackgroundTaskTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mBrowserStartupController = new TestBrowserStartupController();
-        mCallback = new TaskFinishedCallback();
+        mCallback = new NativeBackgroundTaskTest.TaskFinishedCallback();
         mTask = new TestNativeBackgroundTask(mBrowserStartupController);
         BackgroundTaskSchedulerFactory.setUmaReporterForTesting(mExternalUmaMock);
         ChromeBrowserInitializer.setForTesting(mChromeBrowserInitializer);
@@ -268,7 +272,7 @@ public class NativeBackgroundTaskTest {
         switch (setup) {
             case SUCCESS:
                 doAnswer(
-                                new Answer<Void>() {
+                                new Answer<>() {
                                     @Override
                                     public Void answer(InvocationOnMock invocation) {
                                         mBrowserParts.getValue().finishNativeInitialization();
@@ -280,7 +284,7 @@ public class NativeBackgroundTaskTest {
                 break;
             case FAILURE:
                 doAnswer(
-                                new Answer<Void>() {
+                                new Answer<>() {
                                     @Override
                                     public Void answer(InvocationOnMock invocation) {
                                         mBrowserParts.getValue().onStartupFailure(null);
@@ -296,7 +300,7 @@ public class NativeBackgroundTaskTest {
                         .handlePostNativeStartup(eq(true), any(BrowserParts.class));
                 break;
             default:
-                assert false;
+                throw new AssertionError();
         }
     }
 

@@ -1,0 +1,7 @@
+Page scroll position: 400,400
+
+text "ABCD EFGH IJKL MNOP"
+  bounding_box: [100,100 180x40]
+  fragment_visible_bounding_boxes:
+    [100,100 180x20]
+    [100,120 180x20]

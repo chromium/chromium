@@ -1,0 +1,54 @@
+[
+  {
+    "os": [
+      "chromeos"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "ash.local_auth_factors.complexity": {
+            "location": "user_profile",
+            "default_value": 1
+          }
+        }
+      },
+      {
+        "note": "Invalid value.",
+        "policies": {
+          "LocalAuthFactorsComplexity": -1
+        },
+        "prefs": {
+          "ash.local_auth_factors.complexity": {
+            "location": "user_profile",
+            "default_value": 1
+          }
+        }
+      },
+      {
+        "note": "Invalid value 2.",
+        "policies": {
+          "LocalAuthFactorsComplexity": 10
+        },
+        "prefs": {
+          "ash.local_auth_factors.complexity": {
+            "location": "user_profile",
+            "default_value": 1
+          }
+        }
+      },
+      {
+        "note": "Valid value.",
+        "policies": {
+          "LocalAuthFactorsComplexity": 2
+        },
+        "prefs": {
+          "ash.local_auth_factors.complexity": {
+            "location": "user_profile",
+            "value": 2
+          }
+        }
+      }
+    ]
+  }
+]

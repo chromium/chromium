@@ -2,10 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//testing/test.gni")
 
-assert(is_chromeos_ash, "Diagnostics App is ash-chrome only")
+assert(is_chromeos, "Diagnostics App is ChromeOS only")
 
 static_library("diagnostics_ui") {
   sources = [
@@ -27,16 +26,16 @@ static_library("diagnostics_ui") {
     "//ash/webui/common/backend",
     "//ash/webui/diagnostics_ui/backend",
     "//ash/webui/diagnostics_ui/mojom",
-    "//ash/webui/diagnostics_ui/resources:resources",
+    "//ash/webui/diagnostics_ui/resources",
     "//chromeos/ash/components/feature_usage",
     "//chromeos/ash/components/login/login_state",
     "//chromeos/strings/",
     "//content/public/browser",
     "//ui/base",
     "//ui/chromeos/strings:strings_provider",
-    "//ui/resources",
     "//ui/web_dialogs",
     "//ui/webui",
+    "//ui/webui/resources",
   ]
 }
 

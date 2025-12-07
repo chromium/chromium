@@ -7,8 +7,14 @@
 
 namespace remoting {
 
+// The bundle ID for the Remoting Host.
+extern const char kBundleId[];
+
 // The name of the Remoting Host service that is registered with launchd.
 extern const char kServiceName[];
+
+// The name of the Remoting Host broker that is registered with launchd.
+extern const char kBrokerName[];
 
 // Use a single configuration file, instead of separate "auth" and "host" files.
 // This is because the SetConfigAndStart() API only provides a single
@@ -43,6 +49,9 @@ extern const char kHostEnabledPath[];
 // The .plist file for the Chromoting service.
 extern const char kServicePlistPath[];
 
+// The .plist file for the Chromoting agent broker.
+extern const char kBrokerPlistPath[];
+
 // Path to the host log file
 extern const char kLogFilePath[];
 
@@ -50,13 +59,17 @@ extern const char kLogFilePath[];
 extern const char kLogFileConfigPath[];
 
 // Paths to the native messaging host manifests
-extern const char* kNativeMessagingManifestPaths[4];
+extern const char* kNativeMessagingManifestPaths[5];
 
 // The branded and unbranded names for the uninstaller.
 // This is the only file that changes names based on branding. We define both
 // because we want local dev builds to be able to clean up both files.
 extern const char kBrandedUninstallerPath[];
 extern const char kUnbrandedUninstallerPath[];
+
+// The launchctl service target (domain_target/service_name) that can be used to
+// unload the broker service.
+extern const char kBrokerServiceTarget[];
 
 }  // namespace remoting
 

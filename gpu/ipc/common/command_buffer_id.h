@@ -11,8 +11,7 @@ namespace gpu {
 
 enum class GpuChannelReservedRoutes : int32_t {
   kSharedImageInterface = 0,
-  kImageDecodeAccelerator = 1,
-  kMaxValue = kImageDecodeAccelerator,
+  kMaxValue = kSharedImageInterface,
 };
 
 inline CommandBufferId CommandBufferIdFromChannelAndRoute(int channel_id,

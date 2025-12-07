@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/parsers/vp9_uncompressed_header_parser.h"
 
+#include "base/compiler_specific.h"
 #include "media/parsers/vp9_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -38,7 +34,7 @@ class Vp9UncompressedHeaderParserTest : public testing::Test {
 };
 
 TEST_F(Vp9UncompressedHeaderParserTest, SetupPastIndependence) {
-  Vp9FrameHeader frame_header = {};
+  Vp9FrameHeader frame_header;
 
   SetupPastIndependence(&frame_header);
 
@@ -60,11 +56,12 @@ TEST_F(Vp9UncompressedHeaderParserTest, SetupPastIndependence) {
 
   EXPECT_TRUE(frame_header.frame_context.IsValid());
 
-  static_assert(std::is_pod<Vp9FrameContext>::value,
+  static_assert(std::is_trivial<Vp9FrameContext>::value,
                 "Vp9FrameContext is not POD, rewrite the next EXPECT_TRUE");
-  EXPECT_TRUE(std::memcmp(&frame_header.frame_context,
-                          &GetVp9DefaultFrameContextForTesting(),
-                          sizeof(GetVp9DefaultFrameContextForTesting())) == 0);
+  UNSAFE_TODO(EXPECT_TRUE(
+      std::memcmp(&frame_header.frame_context,
+                  &GetVp9DefaultFrameContextForTesting(),
+                  sizeof(GetVp9DefaultFrameContextForTesting())) == 0));
 }
 
 }  // namespace media

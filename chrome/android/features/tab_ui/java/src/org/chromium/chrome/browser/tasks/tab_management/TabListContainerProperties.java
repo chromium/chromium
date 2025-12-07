@@ -11,13 +11,16 @@ import androidx.core.util.Pair;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
+import java.util.function.Supplier;
+
+@NullMarked
 class TabListContainerProperties {
     public static final PropertyModel.WritableBooleanPropertyKey BLOCK_TOUCH_INPUT =
             new PropertyModel.WritableBooleanPropertyKey();
@@ -49,6 +52,10 @@ class TabListContainerProperties {
     public static final PropertyModel.WritableIntPropertyKey BOTTOM_PADDING =
             new PropertyModel.WritableIntPropertyKey();
 
+    /** Call {@link android.view.ViewGroup#setClipToPadding(boolean)} for the view. */
+    public static final PropertyModel.WritableBooleanPropertyKey IS_CLIP_TO_PADDING =
+            new PropertyModel.WritableBooleanPropertyKey();
+
     /** Get root view for a given recycler view index. Can be null. */
     public static final ReadableObjectPropertyKey<Callback<Function<Integer, View>>>
             FETCH_VIEW_BY_INDEX_CALLBACK = new ReadableObjectPropertyKey<>();
@@ -61,6 +68,25 @@ class TabListContainerProperties {
     public static final ReadableObjectPropertyKey<Callback<ObservableSupplier<Boolean>>>
             IS_SCROLLING_SUPPLIER_CALLBACK = new WritableObjectPropertyKey<>();
 
+    /** Whether the tab switcher pane has sensitive content. */
+    public static final PropertyModel.WritableBooleanPropertyKey IS_CONTENT_SENSITIVE =
+            new PropertyModel.WritableBooleanPropertyKey();
+
+    public static final ReadableObjectPropertyKey<Callback<TabKeyEventData>> PAGE_KEY_LISTENER =
+            new ReadableObjectPropertyKey<>();
+
+    public static final PropertyModel.WritableBooleanPropertyKey SUPPRESS_ACCESSIBILITY =
+            new PropertyModel.WritableBooleanPropertyKey();
+
+    public static final PropertyModel.WritableBooleanPropertyKey IS_TABLET_OR_LANDSCAPE =
+            new PropertyModel.WritableBooleanPropertyKey();
+
+    public static final PropertyModel.WritableBooleanPropertyKey IS_NON_ZERO_Y_OFFSET =
+            new PropertyModel.WritableBooleanPropertyKey();
+
+    public static final WritableObjectPropertyKey<ObservableSupplier<Boolean>>
+            IS_PINNED_TAB_STRIP_ANIMATING_SUPPLIER = new WritableObjectPropertyKey<>();
+
     /** Keys for {@link TabSwitcherPaneCoordinator}. */
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
@@ -70,8 +96,15 @@ class TabListContainerProperties {
                 MODE,
                 FOCUS_TAB_INDEX_FOR_ACCESSIBILITY,
                 BOTTOM_PADDING,
+                IS_CLIP_TO_PADDING,
                 FETCH_VIEW_BY_INDEX_CALLBACK,
                 GET_VISIBLE_RANGE_CALLBACK,
                 IS_SCROLLING_SUPPLIER_CALLBACK,
+                IS_CONTENT_SENSITIVE,
+                PAGE_KEY_LISTENER,
+                SUPPRESS_ACCESSIBILITY,
+                IS_TABLET_OR_LANDSCAPE,
+                IS_NON_ZERO_Y_OFFSET,
+                IS_PINNED_TAB_STRIP_ANIMATING_SUPPLIER
             };
 }

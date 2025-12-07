@@ -6,10 +6,9 @@
 
 #import <memory>
 
-#import "base/test/task_environment.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser_list_observer.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
@@ -17,17 +16,15 @@ using BrowserType = BrowserList::BrowserType;
 
 class BrowserListTest : public PlatformTest {
  public:
-  BrowserListTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-  }
+  BrowserListTest() { profile_ = TestProfileIOS::Builder().Build(); }
 
   BrowserList* browser_list() { return &browser_list_; }
 
-  ChromeBrowserState* browser_state() { return browser_state_.get(); }
+  ProfileIOS* profile() { return profile_.get(); }
 
  private:
-  base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestProfileIOS> profile_;
   BrowserList browser_list_;
 };
 
@@ -36,7 +33,7 @@ TEST_F(BrowserListTest, AddRemoveBrowsers) {
   // Browser list should start empty
   EXPECT_EQ(0UL, browser_list()->BrowsersOfType(BrowserType::kAll).size());
 
-  TestBrowser browser_1(browser_state());
+  TestBrowser browser_1(profile());
 
   // Adding a browser should result in it appearing in the list.
   browser_list()->AddBrowser(&browser_1);
@@ -46,7 +43,7 @@ TEST_F(BrowserListTest, AddRemoveBrowsers) {
   auto found_browser = browsers.find(&browser_1);
   EXPECT_EQ(&browser_1, *found_browser);
 
-  TestBrowser browser_2(browser_state());
+  TestBrowser browser_2(profile());
 
   // Removing a browser not in the list is a no-op.
   browser_list()->RemoveBrowser(&browser_2);
@@ -79,12 +76,11 @@ TEST_F(BrowserListTest, AddRemoveIncognitoAndInactiveBrowsers) {
   // Incognito browser list starts empty.
   EXPECT_EQ(0UL, browser_list()->BrowsersOfType(BrowserType::kAll).size());
 
-  TestBrowser browser_1(browser_state());
+  TestBrowser browser_1(profile());
   Browser* inactive_browser_1 = browser_1.CreateInactiveBrowser();
 
-  ChromeBrowserState* incognito_browser_state =
-      browser_state()->GetOffTheRecordChromeBrowserState();
-  TestBrowser incognito_browser_1(incognito_browser_state);
+  ProfileIOS* incognito_profile = profile()->GetOffTheRecordProfile();
+  TestBrowser incognito_browser_1(incognito_profile);
 
   // Adding a regular browser doesn't affect the incognito/inactive lists.
   browser_list()->AddBrowser(&browser_1);
@@ -133,14 +129,13 @@ TEST_F(BrowserListTest, AddRemoveIncognitoAndInactiveBrowsers) {
 TEST_F(BrowserListTest, AutoRemoveBrowsers) {
   {
     // Create and add scoped browsers
-    TestBrowser browser_1(browser_state());
+    TestBrowser browser_1(profile());
     browser_list()->AddBrowser(&browser_1);
     EXPECT_EQ(1UL,
               browser_list()->BrowsersOfType(BrowserType::kRegular).size());
 
-    ChromeBrowserState* incognito_browser_state =
-        browser_state()->GetOffTheRecordChromeBrowserState();
-    TestBrowser incognito_browser_1(incognito_browser_state);
+    ProfileIOS* incognito_profile = profile()->GetOffTheRecordProfile();
+    TestBrowser incognito_browser_1(incognito_profile);
     browser_list()->AddBrowser(&incognito_browser_1);
     EXPECT_EQ(1UL,
               browser_list()->BrowsersOfType(BrowserType::kIncognito).size());
@@ -153,7 +148,7 @@ TEST_F(BrowserListTest, AutoRemoveBrowsers) {
 // Tests that values returned from BrowsersOfType aren't affected by subsequent
 // changes to the browser list.
 TEST_F(BrowserListTest, AllBrowserValuesDontChange) {
-  TestBrowser browser_1(browser_state());
+  TestBrowser browser_1(profile());
 
   // Add a browser and get the current set of browsers.
   browser_list()->AddBrowser(&browser_1);
@@ -173,10 +168,9 @@ TEST_F(BrowserListTest, BrowserListObserver) {
   TestBrowserListObserver observer;
   browser_list()->AddObserver(&observer);
 
-  TestBrowser browser_1(browser_state());
-  ChromeBrowserState* incognito_browser_state =
-      browser_state()->GetOffTheRecordChromeBrowserState();
-  TestBrowser incognito_browser_1(incognito_browser_state);
+  TestBrowser browser_1(profile());
+  ProfileIOS* incognito_profile = profile()->GetOffTheRecordProfile();
+  TestBrowser incognito_browser_1(incognito_profile);
 
   // Check that a regular addition is observed.
   browser_list()->AddBrowser(&browser_1);
@@ -208,7 +202,7 @@ TEST_F(BrowserListTest, BrowserListObserver) {
 // Checks that destroying the BrowserList  informs the observer.
 // TestBrowserListObserver knows to remove itself as an Observer
 // when BrowserList::OnBrowserListShutdown() is called.
-TEST_F(BrowserListTest, DeleteBrowserState) {
+TEST_F(BrowserListTest, DeleteProfile) {
   TestBrowserListObserver observer;
 
   // Use a locally scoped BrowserList to control destruction.
@@ -218,7 +212,7 @@ TEST_F(BrowserListTest, DeleteBrowserState) {
 
     // Use a locally scoped Browser to control destruction.
     {
-      TestBrowser browser_1(browser_state());
+      TestBrowser browser_1(profile());
       browser_list.AddBrowser(&browser_1);
 
       // Destroy the Browser, nothing should break.
@@ -229,22 +223,21 @@ TEST_F(BrowserListTest, DeleteBrowserState) {
 }
 
 // Checks that the BrowserList is still functional after the destruction of
-// the off-the-record ChromeBrowserState (since this happen during normal
+// the off-the-record Profile (since this happen during normal
 // use of the application).
-TEST_F(BrowserListTest, ShutdownOTRBrowserState) {
+TEST_F(BrowserListTest, ShutdownOTRProfile) {
   TestBrowserListObserver observer;
   browser_list()->AddObserver(&observer);
 
-  TestBrowser browser_1(browser_state());
+  TestBrowser browser_1(profile());
 
   // Use a block to ensure that the Browser pointing to the off-the-record
-  // ChromeBrowserState does not outlive the object (which would cause an
+  // Profile does not outlive the object (which would cause an
   // use-after-free access in when BrowserList is informed of the Browser
   // destruction).
   {
-    ChromeBrowserState* incognito_browser_state =
-        browser_state()->GetOffTheRecordChromeBrowserState();
-    TestBrowser incognito_browser_1(incognito_browser_state);
+    ProfileIOS* incognito_profile = profile()->GetOffTheRecordProfile();
+    TestBrowser incognito_browser_1(incognito_profile);
     browser_list()->AddBrowser(&incognito_browser_1);
 
     // Check that adding/removing incognito is observed.
@@ -257,11 +250,11 @@ TEST_F(BrowserListTest, ShutdownOTRBrowserState) {
     EXPECT_EQ(1UL, observer.GetLastBrowsers().size());
   }
 
-  // Destroy the off-the-record ChromeBrowserState.
-  browser_state()->DestroyOffTheRecordChromeBrowserState();
-  ASSERT_FALSE(browser_state()->HasOffTheRecordChromeBrowserState());
+  // Destroy the off-the-record Profile.
+  profile()->DestroyOffTheRecordProfile();
+  ASSERT_FALSE(profile()->HasOffTheRecordProfile());
 
-  TestBrowser browser_2(browser_state());
+  TestBrowser browser_2(profile());
   browser_list()->AddBrowser(&browser_2);
   // Check that another regular addition is observed.
   EXPECT_EQ(&browser_2, observer.GetLastAddedBrowser());

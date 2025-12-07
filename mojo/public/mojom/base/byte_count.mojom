@@ -1,0 +1,12 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module mojo_base.mojom;
+
+// Corresponds to `base::ByteCount` in base/byte_count.h.
+//
+// DEPRECATED: use ByteSize for unsigned values and ByteSizeDelta for signed.
+struct ByteCount {
+  int64 count;
+};

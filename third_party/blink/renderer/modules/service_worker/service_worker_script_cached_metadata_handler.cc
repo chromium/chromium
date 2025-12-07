@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -38,13 +39,17 @@ void ServiceWorkerScriptCachedMetadataHandler::Trace(Visitor* visitor) const {
 void ServiceWorkerScriptCachedMetadataHandler::SetCachedMetadata(
     CodeCacheHost* code_cache_host,
     uint32_t data_type_id,
-    const uint8_t* data,
-    size_t size) {
-  cached_metadata_ = CachedMetadata::Create(data_type_id, data, size);
+    base::span<const uint8_t> data) {
+  cached_metadata_ = CachedMetadata::Create(data_type_id, data);
   base::span<const uint8_t> serialized_data =
       cached_metadata_->SerializedData();
   global_scope_->GetServiceWorkerHost()->SetCachedMetadata(script_url_,
                                                            serialized_data);
+}
+
+void ServiceWorkerScriptCachedMetadataHandler::SetSerializedCachedMetadata(
+    mojo_base::BigBuffer data) {
+  NOTREACHED();
 }
 
 void ServiceWorkerScriptCachedMetadataHandler::ClearCachedMetadata(
@@ -71,21 +76,16 @@ String ServiceWorkerScriptCachedMetadataHandler::Encoding() const {
   return g_empty_string;
 }
 
-bool ServiceWorkerScriptCachedMetadataHandler::IsServedFromCacheStorage()
-    const {
-  return false;
-}
-
 void ServiceWorkerScriptCachedMetadataHandler::OnMemoryDump(
     WebProcessMemoryDump* pmd,
     const String& dump_prefix) const {
   if (!cached_metadata_)
     return;
-  const String dump_name = dump_prefix + "/service_worker";
+  const String dump_name = StrCat({dump_prefix, "/service_worker"});
   auto* dump = pmd->CreateMemoryAllocatorDump(dump_name);
   dump->AddScalar("size", "bytes", GetCodeCacheSize());
   pmd->AddSuballocation(dump->Guid(),
-                        String(WTF::Partitions::kAllocatedObjectPoolName));
+                        String(Partitions::kAllocatedObjectPoolName));
 }
 
 size_t ServiceWorkerScriptCachedMetadataHandler::GetCodeCacheSize() const {

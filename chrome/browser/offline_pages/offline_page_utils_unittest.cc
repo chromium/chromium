@@ -13,7 +13,6 @@
 #include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -183,7 +182,7 @@ class OfflinePageUtilsTest : public testing::Test,
   std::unique_ptr<content::WebContents> web_contents_;
   base::test::ScopedFeatureList scoped_feature_list_;
 #if BUILDFLAG(IS_ANDROID)
-  chrome::android::MockDownloadController download_controller_;
+  android::MockDownloadController download_controller_;
   // OfflinePageTabHelper instantiates PrefetchService which in turn requests a
   // fresh GCM token automatically. This causes the request to be done
   // synchronously instead of with a posted task.
@@ -194,7 +193,7 @@ class OfflinePageUtilsTest : public testing::Test,
 
 OfflinePageUtilsTest::OfflinePageUtilsTest() = default;
 
-OfflinePageUtilsTest::~OfflinePageUtilsTest() {}
+OfflinePageUtilsTest::~OfflinePageUtilsTest() = default;
 
 void OfflinePageUtilsTest::SetUp() {
   // Create a test web contents.
@@ -380,22 +379,6 @@ TEST_F(OfflinePageUtilsTest, ScheduleDownload) {
   WaitForRequestMinCount(++request_count_wait);
   EXPECT_EQ(1, FindRequestByNamespaceAndURL(kDownloadNamespace, kTestPage4Url));
 }
-
-#if BUILDFLAG(IS_ANDROID)
-TEST_F(OfflinePageUtilsTest, ScheduleDownloadWithFailedFileAcecssRequest) {
-  DownloadControllerBase::Get()->SetApproveFileAccessRequestForTesting(false);
-  OfflinePageUtils::ScheduleDownload(
-      web_contents(), kDownloadNamespace, kTestPage4Url,
-      OfflinePageUtils::DownloadUIActionFlags::NONE);
-
-  // Here, we're waiting to make sure a request is not created. We can't use
-  // QuitClosure, since there's no callback threaded through ScheduleDownload.
-  // Instead, just wait a bit and assume ScheduleDownload is complete.
-  RunTasksForDuration(base::Seconds(1));
-
-  EXPECT_EQ(0, FindRequestByNamespaceAndURL(kDownloadNamespace, kTestPage4Url));
-}
-#endif
 
 TEST_F(OfflinePageUtilsTest, TestGetCachedOfflinePageSizeBetween) {
   // The clock will be at 03:00:00 after adding pages.

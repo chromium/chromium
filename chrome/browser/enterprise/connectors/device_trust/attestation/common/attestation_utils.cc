@@ -25,9 +25,7 @@ std::string ProtobufChallengeToJsonChallenge(
   base::Value::Dict dict;
   dict.Set("challengeResponse", base::Value(encoded));
 
-  std::string json;
-  base::JSONWriter::Write(dict, &json);
-  return json;
+  return base::WriteJson(dict).value_or("");
 }
 
 }  // namespace enterprise_connectors

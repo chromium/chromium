@@ -1,0 +1,28 @@
+caption: Block idle detection on these sites
+desc: |-
+  Allows you to set a list of URL patterns that specify the sites that are not allowed to use the Idle Detection API.
+
+  For detailed information on valid site url patterns, please see https://chromeenterprise.google/policies/url-patterns. Wildcards, <ph name="WILDCARD_VALUE">*</ph>, are allowed. This policy only matches based on origin, so any path in the URL pattern is ignored.
+
+  If this policy is not set, the global default value will be used for all sites, which is configured by the <ph name="DEFAULT_IDLE_DETECTION_SETTING_POLICY_NAME">DefaultIdleDetectionSetting</ph> (Default idle detection setting) policy, if set, or by the user's personal configuration otherwise.
+example_value:
+- https://www.example.com
+- '[*.]example.edu'
+features:
+  dynamic_refresh: true
+  per_profile: true
+label: Blocked sites for idle detection
+owners:
+- pastarmovj@chromium.org
+- anin@chromium.org
+schema:
+  type: array
+  items:
+    type: string
+future_on:
+- chrome.*
+- chrome_os
+- android
+tags:
+- website-sharing
+type: list

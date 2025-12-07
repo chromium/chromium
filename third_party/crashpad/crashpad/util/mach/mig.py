@@ -31,11 +31,11 @@ def _try_remove(*paths):
             pass
 
 
-def _generate_and_fix(user_c, server_c, user_h, server_h, defs, include, sdk,
-                      clang_path, mig_path, migcom_path, arch):
+def _generate_and_fix(user_c, server_c, user_h, server_h, defs, include,
+                      define, sdk, clang_path, mig_path, migcom_path, arch):
     interface = mig_gen.MigInterface(user_c, server_c, user_h, server_h)
-    mig_gen.generate_interface(defs, interface, include, sdk, clang_path,
-                               mig_path, migcom_path, arch)
+    mig_gen.generate_interface(defs, interface, include, define, sdk,
+                               clang_path, mig_path, migcom_path, arch)
     mig_fix.fix_interface(interface)
 
 
@@ -59,8 +59,8 @@ def main(args):
     if len(parsed.arch) <= 1:
         _generate_and_fix(parsed.user_c, parsed.server_c, parsed.user_h,
                           parsed.server_h, parsed.defs, parsed.include,
-                          parsed.sdk, parsed.clang_path, parsed.mig_path,
-                          parsed.migcom_path,
+                          parsed.define, parsed.sdk, parsed.clang_path,
+                          parsed.mig_path, parsed.migcom_path,
                           parsed.arch[0] if len(parsed.arch) >= 1 else None)
         return 0
 

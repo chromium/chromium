@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/cache_storage/cache_storage_cache.h"
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <functional>
 #include <limits>
 #include <memory>
@@ -18,6 +14,7 @@
 #include <utility>
 
 #include "base/barrier_closure.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -26,10 +23,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -47,7 +44,6 @@
 #include "content/browser/cache_storage/cache_storage_trace_utils.h"
 #include "content/common/background_fetch/background_fetch_types.h"
 #include "crypto/hmac.h"
-#include "crypto/symmetric_key.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/completion_repeating_callback.h"
 #include "net/base/io_buffer.h"
@@ -112,8 +108,7 @@ network::mojom::FetchResponseType ProtoResponseTypeToFetchResponseType(
     case proto::CacheResponse::OPAQUE_REDIRECT_TYPE:
       return network::mojom::FetchResponseType::kOpaqueRedirect;
   }
-  NOTREACHED_IN_MIGRATION();
-  return network::mojom::FetchResponseType::kOpaque;
+  NOTREACHED();
 }
 
 proto::CacheResponse::ResponseType FetchResponseTypeToProtoResponseType(
@@ -132,8 +127,7 @@ proto::CacheResponse::ResponseType FetchResponseTypeToProtoResponseType(
     case network::mojom::FetchResponseType::kOpaqueRedirect:
       return proto::CacheResponse::OPAQUE_REDIRECT_TYPE;
   }
-  NOTREACHED_IN_MIGRATION();
-  return proto::CacheResponse::OPAQUE_TYPE;
+  NOTREACHED();
 }
 
 // Assert that ConnectionInfo does not change since we cast it to
@@ -258,7 +252,7 @@ bool VaryMatches(const blink::FetchAPIRequestHeadersMap& request,
   if (response_type == network::mojom::FetchResponseType::kOpaque)
     return true;
 
-  auto vary_iter = base::ranges::find_if(
+  auto vary_iter = std::ranges::find_if(
       response, [](const ResponseHeaderMap::value_type& pair) {
         return base::CompareCaseInsensitiveASCII(pair.first, "vary") == 0;
       });
@@ -325,9 +319,8 @@ std::vector<std::string> FindDuplicateOperations(
   // have the same URL.  This results in an average complexity of O(n log n).
   // If the entire list has entries with the same URL and different VARY
   // headers then this devolves into O(n^2).
-  for (BatchOperation* const* outer = sorted.cbegin(); outer != sorted.cend();
-       ++outer) {
-    const BatchOperation* outer_op = *outer;
+  for (size_t i = 0; i < sorted.size(); ++i) {
+    const BatchOperation* outer_op = sorted[i];
 
     // Note, the spec checks CacheQueryOptions like ignoreSearch, etc, but
     // currently there is no way for script to trigger a batch operation with
@@ -344,9 +337,8 @@ std::vector<std::string> FindDuplicateOperations(
       continue;
     }
 
-    for (BatchOperation* const* inner = std::next(outer);
-         inner != sorted.cend(); ++inner) {
-      const BatchOperation* inner_op = *inner;
+    for (size_t j = i + 1; j < sorted.size(); ++j) {
+      const BatchOperation* inner_op = sorted[j];
       // Since the list is sorted we can stop looking at neighbors after
       // the first different URL.
       if (outer_op->request->url != inner_op->request->url) {
@@ -448,12 +440,7 @@ blink::mojom::FetchAPIRequestPtr CreateRequest(
 
 blink::mojom::FetchAPIResponsePtr CreateResponse(
     const proto::CacheMetadata& metadata,
-    const std::string& cache_name) {
-  // We no longer support Responses with only a single URL entry.  This field
-  // was deprecated in M57.
-  if (metadata.response().has_url())
-    return nullptr;
-
+    const std::u16string& cache_name) {
   std::vector<GURL> url_list;
   url_list.reserve(metadata.response().url_list_size());
   for (int i = 0; i < metadata.response().url_list_size(); ++i)
@@ -506,7 +493,7 @@ blink::mojom::FetchAPIResponsePtr CreateResponse(
       padding, network::mojom::FetchResponseSource::kCacheStorage, headers,
       mime_type, request_method, /*blob=*/nullptr,
       blink::mojom::ServiceWorkerResponseError::kUnknown, response_time,
-      cache_name,
+      base::UTF16ToUTF8(cache_name),
       std::vector<std::string>(
           metadata.response().cors_exposed_header_names().begin(),
           metadata.response().cors_exposed_header_names().end()),
@@ -609,7 +596,7 @@ struct CacheStorageCache::BatchInfo {
 std::unique_ptr<CacheStorageCache> CacheStorageCache::CreateMemoryCache(
     const storage::BucketLocator& bucket_locator,
     storage::mojom::CacheStorageOwner owner,
-    const std::string& cache_name,
+    const std::u16string& cache_name,
     CacheStorage* cache_storage,
     scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
@@ -628,7 +615,7 @@ std::unique_ptr<CacheStorageCache> CacheStorageCache::CreateMemoryCache(
 std::unique_ptr<CacheStorageCache> CacheStorageCache::CreatePersistentCache(
     const storage::BucketLocator& bucket_locator,
     storage::mojom::CacheStorageOwner owner,
-    const std::string& cache_name,
+    const std::u16string& cache_name,
     CacheStorage* cache_storage,
     const base::FilePath& path,
     scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
@@ -914,12 +901,9 @@ void CacheStorageCache::BatchDidGetBucketSpaceRemaining(
         Delete(std::move(operation), completion_callback);
         break;
       case blink::mojom::OperationType::kUndefined:
-        NOTREACHED_IN_MIGRATION();
         // TODO(nhiroki): This should return "TypeError".
         // http://crbug.com/425505
-        completion_callback.Run(MakeErrorStorage(
-            ErrorStorageType::kBatchDidGetUsageAndQuotaUndefinedOp));
-        break;
+        NOTREACHED();
     }
   }
 }
@@ -1052,7 +1036,7 @@ void CacheStorageCache::SetSchedulerForTesting(
 CacheStorageCache::CacheStorageCache(
     const storage::BucketLocator& bucket_locator,
     storage::mojom::CacheStorageOwner owner,
-    const std::string& cache_name,
+    const std::u16string& cache_name,
     const base::FilePath& path,
     CacheStorage* cache_storage,
     scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
@@ -1906,7 +1890,7 @@ void CacheStorageCache::PutDidCreateEntry(
   proto::CacheRequest* request_metadata = metadata.mutable_request();
   request_metadata->set_method(put_context->request->method);
   if (put_context->request->url.has_ref())
-    request_metadata->set_fragment(put_context->request->url.ref());
+    request_metadata->set_fragment(put_context->request->url.GetRef());
 
   for (const auto& header : put_context->request->headers) {
     DCHECK_EQ(std::string::npos, header.first.find('\0'));
@@ -2035,7 +2019,7 @@ void CacheStorageCache::PutWriteBlobToCache(
       break;
     }
     case INDEX_HEADERS:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   ScopedWritableEntry entry(put_context->cache_entry.release());
@@ -2514,6 +2498,7 @@ void CacheStorageCache::CreateBackend(ErrorCallback callback) {
   disk_cache::BackendResult result = disk_cache::CreateCacheBackend(
       cache_type, net::CACHE_BACKEND_SIMPLE, /*file_operations=*/nullptr, path_,
       max_bytes, disk_cache::ResetHandling::kNeverReset, /*net_log=*/nullptr,
+      /*cache_encryption_delegate=*/nullptr,
       base::BindOnce(&CacheStorageCache::DeleteBackendCompletedIO,
                      weak_ptr_factory_.GetWeakPtr()),
       std::move(split_callback.first));

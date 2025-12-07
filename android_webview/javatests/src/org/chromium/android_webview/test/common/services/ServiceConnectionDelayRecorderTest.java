@@ -32,7 +32,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 @DoNotBatch(reason = "To make sure all bound services are properly killed between tests.")
 public class ServiceConnectionDelayRecorderTest {
     // Test class that increments time with multiples of 1000 ms.
-    private static class TestClock implements TestServiceConnectionDelayRecorder.Clock {
+    private static class TestClock implements ServiceConnectionDelayRecorder.Clock {
         private long mInternalValue;
         private long mIncrement = 1000;
 

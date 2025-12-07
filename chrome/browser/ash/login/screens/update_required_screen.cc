@@ -15,11 +15,11 @@
 #include "base/time/default_clock.h"
 #include "chrome/browser/ash/login/error_screens_histogram_helper.h"
 #include "chrome/browser/ash/login/helper.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/update_required_screen_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -112,7 +112,7 @@ void UpdateRequiredScreen::OnGetEolInfo(
     if (view_) {
       view_->SetUIState(UpdateRequiredView::EOL_REACHED);
       view_->SetIsUserDataPresent(
-          !user_manager::UserManager::Get()->GetUsers().empty());
+          !user_manager::UserManager::Get()->GetPersistedUsers().empty());
     }
   } else {
     // UI state does not change for EOL devices.
@@ -364,7 +364,7 @@ void UpdateRequiredScreen::UpdateInfoChanged(
       version_updater_->StartExitUpdate(VersionUpdater::Result::UPDATE_ERROR);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   RefreshView(update_info);
 }
@@ -427,7 +427,7 @@ void UpdateRequiredScreen::DeleteUsersData() {
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   // Make a copy of the list since we'll be removing users and the list would
   // change underneath.
-  const user_manager::UserList user_list = user_manager->GetUsers();
+  const user_manager::UserList user_list = user_manager->GetPersistedUsers();
   for (user_manager::User* user : user_list) {
     user_manager->RemoveUser(user->GetAccountId(),
                              user_manager::UserRemovalReason::
@@ -437,7 +437,7 @@ void UpdateRequiredScreen::DeleteUsersData() {
   // TODO(b/277159583): Here we check the user list, but the exact
   // condition we should check is whether actual user data are successfully
   // removed.
-  if (user_manager->GetUsers().empty()) {
+  if (user_manager->GetPersistedUsers().empty()) {
     view_->SetIsUserDataPresent(false);
   }
 }

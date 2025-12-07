@@ -131,6 +131,12 @@ void CaptureModeTestApi::SetOnVideoRecordCountdownFinishedCallback(
   controller_->on_countdown_finished_callback_for_test_ = std::move(callback);
 }
 
+void CaptureModeTestApi::SetOnImageCapturedForSearchCallback(
+    OnImageCapturedForSearchCallback callback) {
+  controller_->on_image_captured_for_search_callback_for_test_ =
+      std::move(callback);
+}
+
 void CaptureModeTestApi::SetAudioRecordingMode(AudioRecordingMode mode) {
   DCHECK(!controller_->is_recording_in_progress());
   controller_->audio_recording_mode_ = mode;
@@ -202,7 +208,7 @@ aura::Window* CaptureModeTestApi::GetFolderSelectionDialogWindow() {
 
 void CaptureModeTestApi::SetForceUseGpuMemoryBufferForCameraFrames(bool value) {
   DCHECK(controller_->camera_controller());
-  capture_mode::CameraVideoFrameHandler::SetForceUseGpuMemoryBufferForTest(
+  ::capture_mode::CameraVideoFrameHandler::SetForceUseGpuMemoryBufferForTest(
       value);
 }
 

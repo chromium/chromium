@@ -33,7 +33,7 @@ const std::vector<base::FilePath::StringType> kRegsiterDlls = {
     kCredentialProviderDll,
 };
 
-GCPWFiles::~GCPWFiles() {}
+GCPWFiles::~GCPWFiles() = default;
 
 std::vector<base::FilePath::StringType> GCPWFiles::GetEffectiveInstallFiles() {
   std::vector<base::FilePath::StringType> files;

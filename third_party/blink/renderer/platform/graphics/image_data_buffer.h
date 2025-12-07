@@ -29,16 +29,17 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_IMAGE_DATA_BUFFER_H_
 
 #include <memory>
+
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/image-encoders/image_encoder.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-#include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -56,30 +57,17 @@ class PLATFORM_EXPORT ImageDataBuffer {
                    const double& quality,
                    Vector<unsigned char>* encoded_image) const;
 
-  const unsigned char* Pixels() const;
-  const gfx::Size& size() const { return size_; }
-  int Height() const { return size_.height(); }
-  int Width() const { return size_.width(); }
-  size_t ComputeByteSize() const { return pixmap_.computeByteSize(); }
+  base::span<const uint8_t> PixelData() const;
 
  private:
-  ImageDataBuffer(const gfx::Size&,
-                  const unsigned char*,
-                  const CanvasColorParams&);
   ImageDataBuffer(const SkPixmap&);
   ImageDataBuffer(scoped_refptr<StaticBitmapImage>);
 
   bool IsValid() { return is_valid_; }  // Only used by Create()
 
-  bool EncodeImageInternal(const ImageEncodingMimeType mime_type,
-                           const double& quality,
-                           Vector<unsigned char>* encoded_image,
-                           const SkPixmap& pixmap) const;
-
   sk_sp<SkImage> retained_image_;
   SkPixmap pixmap_;
   bool is_valid_ = false;
-  gfx::Size size_;
 };
 
 }  // namespace blink

@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 
 #include "chrome/browser/ui/browser.h"
-#include "components/saved_tab_groups/types.h"
+#include "components/saved_tab_groups/public/types.h"
 
 namespace tab_groups {
 

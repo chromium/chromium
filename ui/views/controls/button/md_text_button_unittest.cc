@@ -33,11 +33,12 @@ TEST_F(MdTextButtonTest, CustomPadding) {
 TEST_F(MdTextButtonTest, BackgroundColorChangesWithWidgetActivation) {
   // Test whether the button's background color changes when its containing
   // widget's activation changes.
-  if (!PlatformStyle::kInactiveWidgetControlsAppearDisabled)
+  if constexpr (!PlatformStyle::kInactiveWidgetControlsAppearDisabled) {
     GTEST_SKIP() << "Button colors do not change with widget activation here.";
+  }
 
   std::unique_ptr<Widget> widget =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
   auto* button = widget->SetContentsView(
       std::make_unique<MdTextButton>(Button::PressedCallback(), u" "));
   button->SetStyle(ui::ButtonStyle::kProminent);
@@ -65,7 +66,7 @@ TEST_F(MdTextButtonTest, BackgroundColorChangesWithWidgetActivation) {
 
   // Activate another widget to cause the original widget to deactivate.
   std::unique_ptr<Widget> other_widget =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
   test::WidgetTest::SimulateNativeActivate(other_widget.get());
   EXPECT_FALSE(widget->IsActive());
   SkBitmap inactive_bitmap = views::test::PaintViewToBitmap(button);
@@ -108,12 +109,16 @@ TEST_F(MdTextButtonActionViewInterfaceTest,
   ASSERT_NE(corner_radius_1, corner_radius_2);
 
   md_text_button->SetBoundsRect(gfx::Rect(kSize1));
-  EXPECT_EQ(md_text_button->GetCornerRadiusValue(), corner_radius_1);
-  EXPECT_EQ(md_text_button->GetFocusRingCornerRadius(), corner_radius_1);
+  EXPECT_EQ(md_text_button->GetCornerRadii(),
+            gfx::RoundedCornersF(corner_radius_1));
+  EXPECT_EQ(md_text_button->GetFocusRingCornerRadii(),
+            gfx::RoundedCornersF(corner_radius_1));
 
   md_text_button->SetBoundsRect(gfx::Rect(kSize2));
-  EXPECT_EQ(md_text_button->GetCornerRadiusValue(), corner_radius_2);
-  EXPECT_EQ(md_text_button->GetFocusRingCornerRadius(), corner_radius_2);
+  EXPECT_EQ(md_text_button->GetCornerRadii(),
+            gfx::RoundedCornersF(corner_radius_2));
+  EXPECT_EQ(md_text_button->GetFocusRingCornerRadii(),
+            gfx::RoundedCornersF(corner_radius_2));
 }
 
 TEST_F(MdTextButtonActionViewInterfaceTest,
@@ -123,11 +128,42 @@ TEST_F(MdTextButtonActionViewInterfaceTest,
 
   constexpr int kCustomCornerRadius = 1234;
   md_text_button->SetCornerRadius(kCustomCornerRadius);
-  ASSERT_EQ(md_text_button->GetCornerRadiusValue(), kCustomCornerRadius);
+  ASSERT_EQ(md_text_button->GetCornerRadii(),
+            gfx::RoundedCornersF(kCustomCornerRadius));
 
   md_text_button->SetBoundsRect(gfx::Rect(50, 50));
-  EXPECT_EQ(md_text_button->GetCornerRadiusValue(), kCustomCornerRadius);
-  EXPECT_EQ(md_text_button->GetFocusRingCornerRadius(), kCustomCornerRadius);
+  EXPECT_EQ(md_text_button->GetCornerRadii(),
+            gfx::RoundedCornersF(kCustomCornerRadius));
+  EXPECT_EQ(md_text_button->GetFocusRingCornerRadii(),
+            gfx::RoundedCornersF(kCustomCornerRadius));
+}
+
+TEST_F(MdTextButtonActionViewInterfaceTest, CustomCornerRadii) {
+  auto md_text_button = std::make_unique<MdTextButton>();
+  md_text_button->SetBoundsRect(gfx::Rect(100, 100));
+
+  gfx::RoundedCornersF kCustomCornerRadii(1, 5, 10, 20);
+  md_text_button->SetCornerRadii(kCustomCornerRadii);
+  EXPECT_EQ(md_text_button->GetCornerRadii(), kCustomCornerRadii);
+  EXPECT_EQ(md_text_button->GetFocusRingCornerRadii(), kCustomCornerRadii);
+}
+
+TEST_F(MdTextButtonTest, StrokeColorIdOverride) {
+  auto button = std::make_unique<MdTextButton>();
+
+  ASSERT_FALSE(button->GetStrokeColorIdOverride().has_value());
+
+  button->SetStrokeColorIdOverride(ui::kColorButtonBorder);
+  EXPECT_EQ(ui::kColorButtonBorder, button->GetStrokeColorIdOverride().value());
+}
+
+TEST_F(MdTextButtonTest, StrokeColorOverride) {
+  auto button = std::make_unique<MdTextButton>();
+
+  ASSERT_FALSE(button->GetStrokeColorOverrideDeprecated().has_value());
+
+  button->SetStrokeColorOverrideDeprecated(SK_ColorBLUE);
+  EXPECT_EQ(SK_ColorBLUE, button->GetStrokeColorOverrideDeprecated().value());
 }
 
 }  // namespace views

@@ -13,18 +13,18 @@
 #include <map>
 
 #include "base/process/process.h"
-#include "gpu/gpu_export.h"
+#include "gpu/ipc/common/gpu_ipc_common_export.h"
 
 namespace gpu {
 
 // Note: we use uint64_t instead of size_t for byte count because this struct
 // is sent over IPC which could span 32 & 64 bit processes.
-struct GPU_EXPORT VideoMemoryUsageStats {
+struct GPU_IPC_COMMON_EXPORT VideoMemoryUsageStats {
   VideoMemoryUsageStats();
   VideoMemoryUsageStats(const VideoMemoryUsageStats& other);
   ~VideoMemoryUsageStats();
 
-  struct GPU_EXPORT ProcessStats {
+  struct GPU_IPC_COMMON_EXPORT ProcessStats {
     ProcessStats();
     ~ProcessStats();
 

@@ -160,6 +160,34 @@ void InstallIndexHelper::IndexStaticRulesets(
 }
 
 // static
+base::expected<base::Value::Dict, std::string>
+InstallIndexHelper::IndexAndPersistRulesOnInstall(Extension& extension) {
+  // Index all static rulesets and therefore parse all static rules at
+  // installation time for unpacked extensions. Throw an error for invalid rules
+  // where possible so that the extension developer is immediately notified.
+  auto ruleset_filter = declarative_net_request::FileBackedRulesetSource::
+      RulesetFilter::kIncludeAll;
+  auto parse_flags =
+      declarative_net_request::RulesetSource::kRaiseErrorOnInvalidRules |
+      declarative_net_request::RulesetSource::kRaiseWarningOnLargeRegexRules;
+
+  // TODO(crbug.com/40538050): IndexStaticRulesetsUnsafe will read and parse
+  // JSON synchronously. Change this so that we don't need to parse JSON in the
+  // browser process.
+  RulesetParseResult result =
+      IndexStaticRulesetsUnsafe(extension, ruleset_filter, parse_flags);
+  if (result.error) {
+    return base::unexpected(std::move(*result.error));
+  }
+
+  if (!result.warnings.empty()) {
+    extension.AddInstallWarnings(std::move(result.warnings));
+  }
+
+  return std::move(result.ruleset_install_prefs);
+}
+
+// static
 RulesetParseResult InstallIndexHelper::IndexStaticRulesetsUnsafe(
     const Extension& extension,
     FileBackedRulesetSource::RulesetFilter ruleset_filter,

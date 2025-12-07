@@ -5,6 +5,7 @@ desc: |-
         Leaving the policy unset means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> lets users control whether it's the default and, if not, whether user notifications should appear.
 
         Note: For <ph name="MS_WIN_NAME">Microsoft®Windows®</ph> administrators, turning this setting on only works for machines running Windows 7. For later versions, you must deploy a "default application associations" file that makes <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> the handler for the <ph name="HTTPS_PROTOCOL">https</ph> and <ph name="HTTP_PROTOCOL">http</ph> protocols (and, optionally, the <ph name="FTP_PROTOCOL">ftp</ph> protocol and other file formats). See Chrome Help ( https://support.google.com/chrome?p=make_chrome_default_win ).
+default: null
 example_value: true
 features:
   dynamic_refresh: true
@@ -16,6 +17,8 @@ items:
   value: true
 - caption: Disable the default browser check on startup
   value: false
+- caption: Allow the user to decide
+  value: null
 label: Set <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> as Default Browser
 owners:
 - file://components/policy/OWNERS

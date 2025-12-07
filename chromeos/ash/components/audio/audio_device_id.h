@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_AUDIO_AUDIO_DEVICE_ID_H_
 #define CHROMEOS_ASH_COMPONENTS_AUDIO_AUDIO_DEVICE_ID_H_
 
+#include <optional>
+
 #include "chromeos/ash/components/audio/audio_device.h"
 
 namespace ash {

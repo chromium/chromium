@@ -4,14 +4,16 @@
 
 #include "ash/system/unified/feature_pod_button.h"
 
+#include <string_view>
+
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/color_util.h"
 #include "ash/style/style_util.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -25,10 +27,6 @@
 #include "ui/views/view_class_properties.h"
 
 namespace ash {
-
-using ContentLayerType = AshColorProvider::ContentLayerType;
-using ControlsLayerType = AshColorProvider::ControlsLayerType;
-
 namespace {
 
 void ConfigureFeaturePodLabel(views::Label* label,
@@ -85,9 +83,9 @@ FeaturePodLabelButton::FeaturePodLabelButton(PressedCallback callback)
   detailed_view_arrow_->SetCanProcessEventsWithinSubtree(false);
   detailed_view_arrow_->SetVisible(false);
 
-  AddChildView(label_.get());
-  AddChildView(detailed_view_arrow_.get());
-  AddChildView(sub_label_.get());
+  AddChildViewRaw(label_.get());
+  AddChildViewRaw(detailed_view_arrow_.get());
+  AddChildViewRaw(sub_label_.get());
 
   StyleUtil::SetUpInkDropForButton(this);
 
@@ -159,28 +157,23 @@ gfx::Size FeaturePodLabelButton::CalculatePreferredSize(
   return gfx::Size(width, height);
 }
 
-void FeaturePodLabelButton::OnThemeChanged() {
-  views::Button::OnThemeChanged();
-  OnEnabledChanged();
-}
-
-void FeaturePodLabelButton::SetLabel(const std::u16string& label) {
+void FeaturePodLabelButton::SetLabel(std::u16string_view label) {
   label_->SetText(label);
   InvalidateLayout();
 }
 
-const std::u16string& FeaturePodLabelButton::GetLabelText() const {
+std::u16string_view FeaturePodLabelButton::GetLabelText() const {
   return label_->GetText();
 }
 
-void FeaturePodLabelButton::SetSubLabel(const std::u16string& sub_label) {
+void FeaturePodLabelButton::SetSubLabel(std::u16string_view sub_label) {
   sub_label_->SetText(sub_label);
   sub_label_->SetVisible(!sub_label.empty());
   label_->SetMultiLine(sub_label.empty());
   InvalidateLayout();
 }
 
-const std::u16string& FeaturePodLabelButton::GetSubLabelText() const {
+std::u16string_view FeaturePodLabelButton::GetSubLabelText() const {
   return sub_label_->GetText();
 }
 
@@ -191,23 +184,19 @@ void FeaturePodLabelButton::ShowDetailedViewArrow() {
 
 void FeaturePodLabelButton::OnEnabledChanged() {
   views::Button::OnEnabledChanged();
-  const AshColorProvider* color_provider = AshColorProvider::Get();
-  const SkColor primary_text_color =
-      color_provider->GetContentLayerColor(ContentLayerType::kTextColorPrimary);
-  const SkColor secondary_text_color = color_provider->GetContentLayerColor(
-      ContentLayerType::kTextColorSecondary);
-  label_->SetEnabledColor(
-      GetEnabled() ? primary_text_color
-                   : ColorUtil::GetDisabledColor(primary_text_color));
+  label_->SetEnabledColor(GetEnabled() ? cros_tokens::kTextColorPrimary
+                                       : ColorUtil::GetDisabledColor(
+                                             cros_tokens::kTextColorPrimary));
   sub_label_->SetEnabledColor(
-      GetEnabled() ? secondary_text_color
-                   : ColorUtil::GetDisabledColor(secondary_text_color));
+      GetEnabled()
+          ? cros_tokens::kTextColorSecondary
+          : ColorUtil::GetDisabledColor(cros_tokens::kTextColorSecondary));
 
-  const SkColor icon_color =
-      color_provider->GetContentLayerColor(ContentLayerType::kIconColorPrimary);
-  detailed_view_arrow_->SetImage(gfx::CreateVectorIcon(
+  detailed_view_arrow_->SetImage(ui::ImageModel::FromVectorIcon(
       kUnifiedMenuMoreIcon,
-      GetEnabled() ? icon_color : ColorUtil::GetDisabledColor(icon_color)));
+      GetEnabled()
+          ? cros_tokens::kIconColorPrimary
+          : ColorUtil::GetDisabledColor(cros_tokens::kIconColorPrimary)));
 }
 
 void FeaturePodLabelButton::LayoutInCenter(views::View* child, int y) {
@@ -239,8 +228,8 @@ FeaturePodButton::FeaturePodButton(FeaturePodControllerBase* controller,
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  AddChildView(icon_button_.get());
-  AddChildView(label_button_.get());
+  AddChildViewRaw(icon_button_.get());
+  AddChildViewRaw(label_button_.get());
 
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);

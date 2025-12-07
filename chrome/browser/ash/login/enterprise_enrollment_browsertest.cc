@@ -18,10 +18,10 @@
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
@@ -29,6 +29,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace ash {
 namespace {
@@ -40,7 +41,7 @@ constexpr char kEnrollmentUI[] = "enterprise-enrollment";
 const test::UIPath kWebview = {kEnrollmentUI, "step-signin", "signin-frame"};
 
 constexpr char kTestUserEmail[] = "testuser@test.com";
-constexpr char kTestUserGaiaId[] = "test_user_gaia_id";
+constexpr GaiaId::Literal kTestUserGaiaId("test_user_gaia_id");
 constexpr char kTestUserPassword[] = "test_user_password";
 
 }  // namespace

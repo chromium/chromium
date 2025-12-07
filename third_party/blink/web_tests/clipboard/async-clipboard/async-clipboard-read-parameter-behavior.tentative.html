@@ -1,0 +1,56 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Async clipboard read parameter behavior</title>
+<link rel="help" href="https://w3c.github.io/clipboard-apis/#async-clipboard-api">
+<body>Body needed for test_driver.click()</body>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/testdriver.js"></script>
+<script src="../../resources/testdriver-vendor.js"></script>
+<script src="resources/clipboard-write.js"></script>
+<script src="resources/user-activation.js"></script>
+<script>
+//  Tests clipboard.read() parameter handling and type filtering behavior.
+//  Validates undefined types, duplicate types, mixed availability, and unsanitized options.
+//  Ensures proper ClipboardItem.types array content based on different parameter combinations.
+
+promise_test(async t => {
+  await WritePlainTextAndHTMLToClipboard();
+  const items = await navigator.clipboard.read({
+    types: ['text/plain'],
+    unsanitized: ['text/html']
+  });
+  assert_equals(items.length, 1);
+  const item = items[0];
+  const clipboard_mime_types = item.types;
+  assert_array_equals(clipboard_mime_types, ['text/plain']);
+}, 'Reading only plain text and unsanitized option is mentioned');
+
+promise_test(async t => {
+  await WritePlainTextAndHTMLToClipboard();
+  const items = await navigator.clipboard.read({types: undefined});
+  assert_equals(items.length, 1);
+  const item = items[0];
+  const clipboard_mime_types = item.types;
+  assert_array_equals(clipboard_mime_types, ['text/plain', 'text/html']);
+}, 'types: undefined should return all clipboard data');
+
+promise_test(async t => {
+  await WritePlainTextAndHTMLToClipboard();
+  const items = await navigator.clipboard.read({types: ['text/plain', 'image/png']});
+  assert_equals(items.length, 1);
+  const item = items[0];
+  const clipboard_mime_types = item.types;
+  assert_array_equals(clipboard_mime_types, ['text/plain']);
+}, 'Read only available types');
+
+promise_test(async t => {
+  await WritePlainTextAndHTMLToClipboard();
+  const items = await navigator.clipboard.read({types: ['text/plain', 'text/plain']});
+  assert_equals(items.length, 1);
+  const item = items[0];
+  const clipboard_mime_types = item.types;
+  assert_array_equals(clipboard_mime_types, ['text/plain']);
+}, 'Reading duplicate types should return single instance');
+
+</script>

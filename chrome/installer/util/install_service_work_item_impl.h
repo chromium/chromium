@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/strings/cstring_view.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
 #include "chrome/installer/util/work_item_list.h"
@@ -56,6 +57,7 @@ class InstallServiceWorkItemImpl {
 
   InstallServiceWorkItemImpl(const std::wstring& service_name,
                              const std::wstring& display_name,
+                             const std::wstring& description,
                              uint32_t start_type,
                              const base::CommandLine& service_cmd_line,
                              const base::CommandLine& com_service_cmd_line_args,
@@ -115,6 +117,14 @@ class InstallServiceWorkItemImpl {
   // terminated with '\0\0'. Return an empty vector if the input is nullptr.
   static std::vector<wchar_t> MultiSzToVector(const wchar_t* multi_sz);
 
+  // Returns true if a cursory check appears to indicate that the service
+  // hosting `clsid` is installed.
+  static bool IsComServiceInstalled(const GUID& clsid);
+
+  // Returns the current name of the service as registered with the SCM.
+  static std::wstring GetCurrentServiceName(base::wcstring_view service_name,
+                                            base::wcstring_view registry_path);
+
  private:
   class ScHandleTraits {
    public:
@@ -142,6 +152,12 @@ class InstallServiceWorkItemImpl {
 
   // This is the core functionality for COM registration for the Service.
   bool DoComRegistration();
+
+  // Returns the service description by querying the service.
+  std::wstring GetCurrentServiceDescription() const;
+
+  // Sets the service description displayed in the services control panel.
+  void SetDescription();
 
   // Member functions that help with service installation or upgrades.
   bool InstallNewService();
@@ -182,6 +198,9 @@ class InstallServiceWorkItemImpl {
 
   // The service name displayed to the user.
   const std::wstring display_name_;
+
+  // The service description displayed in the services control panel.
+  const std::wstring description_;
 
   // The service start options. This parameter is typically SERVICE_AUTO_START
   // or SERVICE_DEMAND_START.
@@ -230,6 +249,9 @@ class InstallServiceWorkItemImpl {
   // True if a pre-existing service (named |original_service_name_|) could not
   // be deleted and still exists on rollback.
   bool original_service_still_exists_;
+
+  FRIEND_TEST_ALL_PREFIXES(InstallServiceWorkItemTest,
+                           Do_UpgradeChangedCmdLineStartTypeCOMArgs);
 };
 
 }  // namespace installer

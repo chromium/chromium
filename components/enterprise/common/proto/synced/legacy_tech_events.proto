@@ -1,0 +1,98 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package enterprise_reporting;
+
+// Used for annotating sensitive fields in google3.
+// ${COPYBARA_DATAPOL_IMPORT}
+
+option optimize_for = LITE_RUNTIME;
+
+// LegacyTechEvent is sent whenever a chrome deprecated feature is encountered
+// on the client side chrome browser.
+//
+// Next ID: 10.
+message LegacyTechEvent {
+  // ID of the deprecated feature.
+  string feature_id = 1;
+
+  // The event upload time, in milliseconds since Epoch in UTC timezone (Java
+  // time).
+  int64 event_timestamp_millis = 2;
+
+  // This includes url + path but not the params. The params are cut out on the
+  // client side.
+  string url = 3;
+
+  // The entity from the allowlist policy that has matched the url on the client
+  // side.
+  string allowlisted_url_match = 4;
+
+  // The js filename where the deprecated feature was encountered.
+  string filename = 5;
+
+  // The column where the legacy tech was encountered.
+  uint64 column = 6;
+
+  // The line where the legacy tech was encountered.
+  uint64 line = 7;
+
+  // Details of a Cookie Issue.
+  CookieIssueDetails cookie_issue_details = 8;
+
+  // The URL of the frame that raised the event.
+  string frame_url = 9;
+}
+
+// Operation of the cookie access.
+// Next ID: 3
+enum CookieAccessOperation {
+  // Unspecified operation.
+  COOKIE_ACCESS_OPERATION_UNSPECIFIED = 0;
+
+  // The cookie was read.
+  COOKIE_ACCESS_OPERATION_READ = 1;
+
+  // The cookie was written.
+  COOKIE_ACCESS_OPERATION_WRITE = 2;
+}
+
+// Details of the Cookie Issue of an event.
+// Next ID: 6
+message CookieIssueDetails {
+  // If the cookie is accessed by a network transfer, this is the URL being
+  // loaded; if it is read by a script, it's the URL of the window or service
+  // worker script looking them up.
+  string transfer_or_script_url = 1
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_NETWORK_ENDPOINT]
+      // copybara:datapol_end
+      ;
+
+  // Name of the cookie.
+  string name = 2
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_NOT_REQUIRED]
+      // copybara:datapol_end
+      ;
+
+  // Domain of the cookie.
+  string domain = 3
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_NETWORK_ENDPOINT]
+      // copybara:datapol_end
+      ;
+
+  // Path of the cookie.
+  string path = 4
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_NOT_REQUIRED]
+      // copybara:datapol_end
+      ;
+
+  // The operation performed on the cookie.
+  CookieAccessOperation access_operation = 5;
+}

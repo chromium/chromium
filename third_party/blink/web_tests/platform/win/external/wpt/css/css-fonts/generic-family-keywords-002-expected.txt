@@ -1,4 +1,12 @@
 This is a testharness.js-based test.
+[FAIL] font-family: -webkit-generic(fangsong) treated as <font-family>, not <generic-name>
+  assert_equals: expected 50 but got 25
+[FAIL] font-family: -webkit-generic(kai) treated as <font-family>, not <generic-name>
+  assert_equals: expected 50 but got 25
+[FAIL] font-family: -webkit-generic(khmer-mul) treated as <font-family>, not <generic-name>
+  assert_equals: expected 50 but got 25
+[FAIL] font-family: -webkit-generic(nastaliq) treated as <font-family>, not <generic-name>
+  assert_equals: expected 50 but got 25
 [FAIL] font-family: -webkit-body treated as <font-family>, not <generic-name>
   assert_equals: expected 50 but got 25
 Harness: the test ran to completion.

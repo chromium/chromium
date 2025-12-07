@@ -6,6 +6,7 @@ blink_core_sources_exported = [
   "web_array_buffer.cc",
   "web_array_buffer_converter.cc",
   "web_blob.cc",
+  "web_bundled_code_cache_generator.cc",
   "web_console_message.cc",
   "web_content_holder.cc",
   "web_custom_element.cc",
@@ -32,6 +33,7 @@ blink_core_sources_exported = [
   "web_input_element.cc",
   "web_input_method_controller_impl.cc",
   "web_input_method_controller_impl.h",
+  "web_interaction_effects_monitor.cc",
   "web_isolated_world_info.cc",
   "web_label_element.cc",
   "web_language_detection_details.cc",
@@ -57,7 +59,6 @@ blink_core_sources_exported = [
   "web_searchable_form_data.cc",
   "web_security_policy.cc",
   "web_select_element.cc",
-  "web_select_list_element.cc",
   "web_selector.cc",
   "web_serialized_script_value.cc",
   "web_settings_impl.cc",
@@ -65,6 +66,7 @@ blink_core_sources_exported = [
   "web_shared_worker_impl.cc",
   "web_shared_worker_impl.h",
   "web_text_checking_result.cc",
+  "web_url_pattern_to_safe_url_pattern.cc",
   "web_v8_context_snapshot.cc",
   "web_v8_features.cc",
   "web_view_impl.cc",
@@ -73,6 +75,7 @@ blink_core_sources_exported = [
 ]
 
 blink_core_tests_exported = [
+  "web_bundled_code_cache_generator_test.cc",
   "web_disallow_transition_scope_test.cc",
   "web_document_subresource_filter_test.cc",
   "web_document_test.cc",

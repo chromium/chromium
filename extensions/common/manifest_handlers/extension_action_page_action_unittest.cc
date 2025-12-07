@@ -31,8 +31,9 @@ std::unique_ptr<ActionInfo> PageActionManifestTest::LoadAction(
   const ActionInfo* page_action_info =
       GetActionInfoOfType(*extension, ActionInfo::Type::kPage);
   EXPECT_TRUE(page_action_info);
-  if (page_action_info)
+  if (page_action_info) {
     return std::make_unique<ActionInfo>(*page_action_info);
+  }
   ADD_FAILURE() << "Expected manifest in " << manifest_filename
                 << " to include a page_action section.";
   return nullptr;
@@ -90,7 +91,7 @@ TEST_F(PageActionManifestTest, LoadPageActionHelper) {
   const ActionInfo* extension_action =
       GetActionInfoOfType(*extension, ActionInfo::Type::kPage);
   ASSERT_TRUE(extension_action);
-  EXPECT_EQ(extension->url().Resolve(kPopupHtmlFile),
+  EXPECT_EQ(extension->GetResourceURL(kPopupHtmlFile),
             extension_action->default_popup_url);
 
   // Setting default_popup to "" is the same as having no popup.

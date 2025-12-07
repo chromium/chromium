@@ -8,6 +8,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -18,6 +19,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Hosts common code for search engine choice metrics reporting. */
+@NullMarked
 public class SearchEngineChoiceMetrics {
     /**
      * AndroidSearchEngineChoiceEvents defined in tools/metrics/histograms/enums.xml. These values
@@ -96,8 +98,9 @@ public class SearchEngineChoiceMetrics {
 
     /**
      * Records the search engine type after the user chooses a different search engine.
+     *
      * @return Whether the search engine was changed.
-     **/
+     */
     public static boolean recordSearchEngineTypeAfterChoice() {
         if (!isSearchEnginePossiblyDifferent()) return false;
 

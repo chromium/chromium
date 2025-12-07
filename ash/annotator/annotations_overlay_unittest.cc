@@ -91,10 +91,9 @@ TEST_F(AnnotationsOverlayTest, CreateOverlayOnRegion) {
 TEST_F(AnnotationsOverlayTest, ChangeWindowBounds) {
   auto overlay_controller =
       std::make_unique<AnnotationsOverlayController>(window(), std::nullopt);
-  window()->SetBoundsInScreen(
-      gfx::Rect(900, 0, 600, 500),
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
-          Shell::GetPrimaryRootWindow()));
+  window()->SetBoundsInScreen(gfx::Rect(900, 0, 600, 500),
+                              display::Screen::Get()->GetDisplayNearestWindow(
+                                  Shell::GetPrimaryRootWindow()));
   ExpectSameWindowBounds(overlay_controller->GetOverlayNativeWindow(),
                          window());
 }
@@ -114,10 +113,9 @@ TEST_F(AnnotationsOverlayTest, ChangeDisplay) {
   ASSERT_TRUE(displays[1].bounds().Contains(point_in_second_display));
 
   GetEventGenerator()->MoveMouseTo(point_in_second_display);
-  window()->SetBoundsInScreen(
-      gfx::Rect(900, 0, 600, 500),
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
-          Shell::GetAllRootWindows()[1]));
+  window()->SetBoundsInScreen(gfx::Rect(900, 0, 600, 500),
+                              display::Screen::Get()->GetDisplayNearestWindow(
+                                  Shell::GetAllRootWindows()[1]));
   ExpectSameWindowBounds(overlay_controller->GetOverlayNativeWindow(),
                          window());
 }

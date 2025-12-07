@@ -8,21 +8,19 @@
 #include <memory>
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 namespace commerce {
 
 class ShoppingService;
 
-class ShoppingServiceFactory : public BrowserStateKeyedServiceFactory {
+// Owns all ShoppingService instances and associates them to profiles.
+class ShoppingServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  ShoppingServiceFactory(const ShoppingServiceFactory&) = delete;
-  ShoppingServiceFactory& operator=(const ShoppingServiceFactory&) = delete;
-
   static ShoppingServiceFactory* GetInstance();
 
-  static ShoppingService* GetForBrowserState(web::BrowserState* state);
-  static ShoppingService* GetForBrowserStateIfExists(web::BrowserState* state);
+  static ShoppingService* GetForProfile(ProfileIOS* profile);
+  static ShoppingService* GetForProfileIfExists(ProfileIOS* profile);
 
  private:
   friend class base::NoDestructor<ShoppingServiceFactory>;
@@ -30,10 +28,9 @@ class ShoppingServiceFactory : public BrowserStateKeyedServiceFactory {
   ShoppingServiceFactory();
   ~ShoppingServiceFactory() override = default;
 
-  // BrowserContextKeyedServiceFactory:
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* state) const override;
-  bool ServiceIsNULLWhileTesting() const override;
+      ProfileIOS* profile) const override;
 };
 
 }  // namespace commerce

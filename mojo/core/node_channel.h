@@ -11,6 +11,7 @@
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
@@ -27,7 +28,9 @@ namespace mojo {
 namespace core {
 
 inline constexpr uint64_t kNodeCapabilityNone = 0;
-inline constexpr uint64_t kNodeCapabilitySupportsUpgrade = 1;
+
+// Removed capability bit. Must not be reused.
+inline constexpr uint64_t kNodeCapabilitySupportsUpgradeRemoved = 1;
 
 inline constexpr uint32_t kNodeChannelHeaderSize = 8;
 
@@ -201,7 +204,8 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeChannel
   // Channel::Delegate:
   void OnChannelMessage(const void* payload,
                         size_t payload_size,
-                        std::vector<PlatformHandle> handles) override;
+                        std::vector<PlatformHandle> handles,
+                        scoped_refptr<ipcz_driver::Envelope> envelope) override;
   void OnChannelError(Channel::Error error) override;
 
   void WriteChannelMessage(Channel::MessagePtr message);

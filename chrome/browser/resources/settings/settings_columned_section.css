@@ -26,7 +26,8 @@ settings-collapse-radio-button .settings-columned-section {
 }
 
 .settings-columned-section h2.description-header,
-.settings-columned-section h3.description-header {
+.settings-columned-section h3.description-header,
+.settings-columned-section h4.description-header {
   /* description-header elements should have the same style no matter their
      programmatic heading role. */
   font-size: inherit;

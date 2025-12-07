@@ -6,7 +6,8 @@ source_set("content_notification") {
   testonly = true
   sources = [ "test_content_notification.mm" ]
   deps = [
+    "//ios/chrome/browser/content_notification/model:content_notification_service",
     "//ios/public/provider/chrome/browser/content_notification:content_notification_api",
-    "//url:url",
+    "//url",
   ]
 }

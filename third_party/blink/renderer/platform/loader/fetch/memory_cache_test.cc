@@ -31,7 +31,9 @@
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 
 #include <string_view>
+#include <variant>
 
+#include "base/memory_coordinator/test_memory_consumer_registry.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -68,7 +70,7 @@ class FakeDecodedResource final : public Resource {
       : Resource(request, ResourceType::kMock, options) {}
 
   void AppendData(
-      absl::variant<SegmentedBuffer, base::span<const char>> data) override {
+      std::variant<SegmentedBuffer, base::span<const char>> data) override {
     Resource::AppendData(std::move(data));
     SetDecodedSize(this->size());
   }
@@ -93,6 +95,8 @@ class MemoryCacheTest : public testing::Test {
  public:
   class FakeResource final : public Resource {
    public:
+    static constexpr size_t kInitialDecodedSize = 42;
+
     FakeResource(const char* url, ResourceType type)
         : FakeResource(KURL(url), type) {}
     FakeResource(const KURL& url, ResourceType type)
@@ -102,14 +106,19 @@ class MemoryCacheTest : public testing::Test {
     FakeResource(const ResourceRequest& request,
                  ResourceType type,
                  const ResourceLoaderOptions& options)
-        : Resource(request, type, options) {}
+        : Resource(request, type, options) {
+      SetDecodedSize(kInitialDecodedSize);
+    }
+
+    void DestroyDecodedDataIfPossible() override { SetDecodedSize(0u); }
   };
+
+  MemoryCacheTest()
+      : scoped_memory_cache_(
+            MakeGarbageCollected<MemoryCache>(platform_->test_task_runner())) {}
 
  protected:
   void SetUp() override {
-    // Save the global memory cache to restore it upon teardown.
-    global_memory_cache_ = ReplaceMemoryCacheForTesting(
-        MakeGarbageCollected<MemoryCache>(platform_->test_task_runner()));
     auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
     lifecycle_notifier_ = MakeGarbageCollected<MockContextLifecycleNotifier>();
     fetcher_ = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
@@ -120,34 +129,22 @@ class MemoryCacheTest : public testing::Test {
         nullptr /* back_forward_cache_loader_helper */));
   }
 
-  void TearDown() override {
-    ReplaceMemoryCacheForTesting(global_memory_cache_.Release());
-  }
-
-  Persistent<MemoryCache> global_memory_cache_;
+  base::test::TaskEnvironment task_environment_;
+  base::TestMemoryConsumerRegistry test_memory_consumer_registry_;
   Persistent<ResourceFetcher> fetcher_;
   Persistent<MockContextLifecycleNotifier> lifecycle_notifier_;
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform_;
+  ScopedMemoryCacheForTesting scoped_memory_cache_;
 
  private:
-  base::test::TaskEnvironment task_environment_;
 };
 
-// Verifies that setters and getters for cache capacities work correcty.
-TEST_F(MemoryCacheTest, CapacityAccounting) {
-  const size_t kSizeMax = ~static_cast<size_t>(0);
-  const size_t kTotalCapacity = kSizeMax / 4;
-  MemoryCache::Get()->SetCapacity(kTotalCapacity);
-  EXPECT_EQ(kTotalCapacity, MemoryCache::Get()->Capacity());
-}
 
 TEST_F(MemoryCacheTest, VeryLargeResourceAccounting) {
   const size_t kSizeMax = ~static_cast<size_t>(0);
-  const size_t kTotalCapacity = kSizeMax / 4;
   const size_t kResourceSize1 = kSizeMax / 16;
   const size_t kResourceSize2 = kSizeMax / 20;
-  MemoryCache::Get()->SetCapacity(kTotalCapacity);
   Persistent<MockResourceClient> client =
       MakeGarbageCollected<MockResourceClient>();
   // Here and below, use an image MIME type. This is because on Android
@@ -171,106 +168,13 @@ TEST_F(MemoryCacheTest, VeryLargeResourceAccounting) {
   EXPECT_EQ(cached_resource->size(), MemoryCache::Get()->size());
 }
 
-static void RunTask(Resource* resource1, Resource* resource2) {
-  // The resource size has to be nonzero for this test to be meaningful, but
-  // we do not rely on it having any particular value.
-  EXPECT_GT(resource1->size(), 0u);
-  EXPECT_GT(resource2->size(), 0u);
-
-  EXPECT_EQ(0u, MemoryCache::Get()->size());
-
-  MemoryCache::Get()->Add(resource1);
-  MemoryCache::Get()->Add(resource2);
-
-  size_t total_size = resource1->size() + resource2->size();
-  EXPECT_EQ(total_size, MemoryCache::Get()->size());
-  EXPECT_GT(resource1->DecodedSize(), 0u);
-  EXPECT_GT(resource2->DecodedSize(), 0u);
-
-  // We expect actual pruning doesn't occur here synchronously but deferred,
-  // due to the previous pruning invoked in TestResourcePruningLater().
-  MemoryCache::Get()->Prune();
-  EXPECT_EQ(total_size, MemoryCache::Get()->size());
-  EXPECT_GT(resource1->DecodedSize(), 0u);
-  EXPECT_GT(resource2->DecodedSize(), 0u);
-}
-
-static void TestResourcePruningLater(ResourceFetcher* fetcher,
-                                     const String& identifier1,
-                                     const String& identifier2) {
-  auto* platform = static_cast<TestingPlatformSupportWithMockScheduler*>(
-      Platform::Current());
-
-  MemoryCache::Get()->SetDelayBeforeLiveDecodedPrune(base::TimeDelta());
-
-  // Enforce pruning by adding |dummyResource| and then call prune().
-  Resource* dummy_resource = RawResource::CreateForTest(
-      KURL("http://dummy"), SecurityOrigin::CreateUniqueOpaque(),
-      ResourceType::kRaw);
-  MemoryCache::Get()->Add(dummy_resource);
-  EXPECT_GT(MemoryCache::Get()->size(), 1u);
-  const unsigned kTotalCapacity = 1;
-  MemoryCache::Get()->SetCapacity(kTotalCapacity);
-  MemoryCache::Get()->Prune();
-  MemoryCache::Get()->Remove(dummy_resource);
-  EXPECT_EQ(0u, MemoryCache::Get()->size());
-
-  std::string_view kData = "abcde";
-  FetchParameters params1 = FetchParameters::CreateForTest(
-      ResourceRequest("data:image/jpeg,resource1"));
-  Resource* resource1 = FakeDecodedResource::Fetch(params1, fetcher, nullptr);
-  MemoryCache::Get()->Remove(resource1);
-  if (!identifier1.empty())
-    resource1->SetCacheIdentifier(identifier1);
-  resource1->AppendData(kData.substr(0u, 3u));
-  resource1->FinishForTest();
-  FetchParameters params2 = FetchParameters::CreateForTest(
-      ResourceRequest("data:image/jpeg,resource2"));
-  Persistent<MockResourceClient> client =
-      MakeGarbageCollected<MockResourceClient>();
-  Resource* resource2 = FakeDecodedResource::Fetch(params2, fetcher, client);
-  MemoryCache::Get()->Remove(resource2);
-  if (!identifier2.empty())
-    resource2->SetCacheIdentifier(identifier2);
-  resource2->AppendData(kData.substr(0u, 4u));
-  resource2->FinishForTest();
-
-  platform->test_task_runner()->PostTask(
-      FROM_HERE, WTF::BindOnce(&RunTask, WrapPersistent(resource1),
-                               WrapPersistent(resource2)));
-  platform->RunUntilIdle();
-
-  // Now, the resources was pruned.
-  size_t size_without_decode =
-      resource1->EncodedSize() + resource1->OverheadSize() +
-      resource2->EncodedSize() + resource2->OverheadSize();
-  EXPECT_EQ(size_without_decode, MemoryCache::Get()->size());
-}
-
-// Verified that when ordering a prune in a runLoop task, the prune is deferred.
-TEST_F(MemoryCacheTest, ResourcePruningLater_Basic) {
-  TestResourcePruningLater(fetcher_, "", "");
-}
-
-TEST_F(MemoryCacheTest, ResourcePruningLater_MultipleResourceMaps) {
-  {
-    TestResourcePruningLater(fetcher_, "foo", "");
-    MemoryCache::Get()->EvictResources();
-  }
-  {
-    TestResourcePruningLater(fetcher_, "foo", "bar");
-    MemoryCache::Get()->EvictResources();
-  }
-}
-
 // Verifies that
-// - Resources are not pruned synchronously when ResourceClient is removed.
 // - size() is updated appropriately when Resources are added to MemoryCache
 //   and garbage collected.
+// -
 static void TestClientRemoval(ResourceFetcher* fetcher,
                               const String& identifier1,
                               const String& identifier2) {
-  MemoryCache::Get()->SetCapacity(0);
   const std::string_view kData = "abcde";
   Persistent<MockResourceClient> client1 =
       MakeGarbageCollected<MockResourceClient>();
@@ -285,7 +189,6 @@ static void TestClientRemoval(ResourceFetcher* fetcher,
   resource1->AppendData(kData.substr(0u, 4u));
   resource2->AppendData(kData.substr(0u, 4u));
 
-  MemoryCache::Get()->SetCapacity(0);
   // Remove and re-Add the resources, with proper cache identifiers.
   MemoryCache::Get()->Remove(resource1);
   MemoryCache::Get()->Remove(resource2);
@@ -298,14 +201,7 @@ static void TestClientRemoval(ResourceFetcher* fetcher,
 
   size_t original_total_size = resource1->size() + resource2->size();
 
-  // Call prune. There is nothing to prune, but this will initialize
-  // the prune timestamp, allowing future prunes to be deferred.
-  MemoryCache::Get()->Prune();
-  EXPECT_GT(resource1->DecodedSize(), 0u);
-  EXPECT_GT(resource2->DecodedSize(), 0u);
-  EXPECT_EQ(original_total_size, MemoryCache::Get()->size());
-
-  // Removing the client from resource1 should not trigger pruning.
+  // Removing the client from resource1 should not affect the size.
   client1->RemoveAsClient();
   EXPECT_GT(resource1->DecodedSize(), 0u);
   EXPECT_GT(resource2->DecodedSize(), 0u);
@@ -313,7 +209,7 @@ static void TestClientRemoval(ResourceFetcher* fetcher,
   EXPECT_TRUE(MemoryCache::Get()->Contains(resource1));
   EXPECT_TRUE(MemoryCache::Get()->Contains(resource2));
 
-  // Removing the client from resource2 should not trigger pruning.
+  // Removing the client from resource2 should not affect the size.
   client2->RemoveAsClient();
   EXPECT_GT(resource1->DecodedSize(), 0u);
   EXPECT_GT(resource2->DecodedSize(), 0u);
@@ -324,10 +220,10 @@ static void TestClientRemoval(ResourceFetcher* fetcher,
   WeakPersistent<Resource> resource1_weak = resource1;
   WeakPersistent<Resource> resource2_weak = resource2;
 
+  // Garabage collection should cause resources without clients to be collected
+  // and removed from the cache. The size should be updated accordingly.
   ThreadState::Current()->CollectAllGarbageForTesting(
       ThreadState::StackState::kNoHeapPointers);
-  // Resources are garbage-collected (WeakMemoryCache) and thus removed
-  // from MemoryCache.
   EXPECT_FALSE(resource1_weak);
   EXPECT_FALSE(resource2_weak);
   EXPECT_EQ(0u, MemoryCache::Get()->size());
@@ -485,6 +381,42 @@ TEST_F(MemoryCacheStrongReferenceTest, LRU) {
   MemoryCache::Get()->SaveStrongReference(resource1);
   ASSERT_EQ(MemoryCache::Get()->strong_references_.size(), 2u);
   ASSERT_EQ(*MemoryCache::Get()->strong_references_.begin(), resource2.Get());
+}
+
+TEST_F(MemoryCacheStrongReferenceTest, ClearStrongReferences) {
+  const KURL kURL("http://test/resource1");
+  Member<FakeResource> resource =
+      MakeGarbageCollected<FakeResource>(kURL, ResourceType::kRaw);
+  MemoryCache::Get()->SaveStrongReference(resource);
+  EXPECT_EQ(MemoryCache::Get()->strong_references_.size(), 1u);
+  MemoryCache::Get()->ClearStrongReferences();
+  EXPECT_EQ(MemoryCache::Get()->strong_references_.size(), 0u);
+}
+
+TEST_F(MemoryCacheStrongReferenceTest, ChangeMemoryCacheSize) {
+  // Memory cache has a non-null max size, but is empty.
+  EXPECT_NE(MemoryCache::Get()->strong_references_max_size_, 0u);
+  EXPECT_EQ(MemoryCache::Get()->strong_references_.size(), 0u);
+
+  // Add a resource.
+  const KURL kURL("http://test/resource1");
+  Member<FakeResource> resource =
+      MakeGarbageCollected<FakeResource>(kURL, ResourceType::kRaw);
+  MemoryCache::Get()->SaveStrongReference(resource);
+
+  EXPECT_NE(MemoryCache::Get()->strong_references_max_size_, 0u);
+  EXPECT_EQ(MemoryCache::Get()->strong_references_.size(), 1u);
+
+  // Change the memory limit. This will reduce the max size to zero, but not
+  // clear anything yet.
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimit(0);
+  EXPECT_EQ(MemoryCache::Get()->strong_references_max_size_, 0u);
+  EXPECT_EQ(MemoryCache::Get()->strong_references_.size(), 1u);
+
+  // ReleaseMemory notification. This actually calls PruneStrongReferences();
+  test_memory_consumer_registry_.NotifyReleaseMemory();
+  EXPECT_EQ(MemoryCache::Get()->strong_references_max_size_, 0u);
+  EXPECT_EQ(MemoryCache::Get()->strong_references_.size(), 0u);
 }
 
 }  // namespace blink

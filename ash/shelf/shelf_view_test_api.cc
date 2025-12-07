@@ -14,6 +14,7 @@
 #include "ash/shelf/shelf_widget.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -67,6 +68,10 @@ ShelfID ShelfViewTestAPI::AddItem(ShelfItemType type) {
   shelf_view_->model_->Add(item,
                            std::make_unique<TestShelfItemDelegate>(item.id));
   return item.id;
+}
+
+void ShelfViewTestAPI::RemoveItemAt(int index) {
+  shelf_view_->model_->RemoveItemAt(index);
 }
 
 views::View* ShelfViewTestAPI::GetViewAt(int index) {

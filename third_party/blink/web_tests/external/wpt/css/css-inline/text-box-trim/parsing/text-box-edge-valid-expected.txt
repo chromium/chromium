@@ -1,0 +1,35 @@
+This is a testharness.js-based test.
+[FAIL] e.style['text-box-edge'] = "ideographic" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['text-box-edge'] = "ideographic-ink" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['text-box-edge'] = "text ideographic" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['text-box-edge'] = "text ideographic-ink" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['text-box-edge'] = "cap ideographic" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['text-box-edge'] = "cap ideographic-ink" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['text-box-edge'] = "ex ideographic" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['text-box-edge'] = "ex ideographic-ink" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['text-box-edge'] = "ideographic text" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['text-box-edge'] = "ideographic alphabetic" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['text-box-edge'] = "ideographic ideographic" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['text-box-edge'] = "ideographic ideographic-ink" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['text-box-edge'] = "ideographic-ink text" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['text-box-edge'] = "ideographic-ink alphabetic" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['text-box-edge'] = "ideographic-ink ideographic" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['text-box-edge'] = "ideographic-ink ideographic-ink" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+Harness: the test ran to completion.
+

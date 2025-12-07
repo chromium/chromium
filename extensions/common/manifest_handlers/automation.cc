@@ -17,8 +17,6 @@
 #include "extensions/common/permissions/manifest_permission.h"
 #include "extensions/common/permissions/permission_message_util.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "ipc/ipc_message.h"
-#include "ipc/ipc_message_utils.h"
 
 using extensions::mojom::APIPermissionID;
 
@@ -134,13 +132,15 @@ bool AutomationHandler::Parse(Extension* extension, std::u16string* error) {
   std::vector<InstallWarning> install_warnings;
   std::unique_ptr<AutomationInfo> info =
       AutomationInfo::FromValue(*automation, &install_warnings, error);
-  if (!error->empty())
+  if (!error->empty()) {
     return false;
+  }
 
   extension->AddInstallWarnings(std::move(install_warnings));
 
-  if (!info)
+  if (!info) {
     return true;
+  }
 
   extension->SetManifestData(keys::kAutomation, std::move(info));
   return true;
@@ -184,8 +184,9 @@ std::unique_ptr<AutomationInfo> AutomationInfo::FromValue(
   }
 
   if (automation->as_boolean) {
-    if (*automation->as_boolean)
+    if (*automation->as_boolean) {
       return base::WrapUnique(new AutomationInfo());
+    }
     return nullptr;
   }
   const Automation::Object& automation_object = *automation->as_object;

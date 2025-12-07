@@ -51,7 +51,7 @@ const {createElement} = goog.require('goog.dom');
 
 // Capture the native URL constructor before users have a chance to clobber it.
 /** @type {?typeof URL} */
-const NATIVE_URL = window['URL'];
+const NATIVE_URL = goog.global['URL'];
 
 /** @define {boolean} */
 const ASSUME_COMPLIANT_URL_API = goog.define(
@@ -62,9 +62,9 @@ const ASSUME_COMPLIANT_URL_API = goog.define(
     // polyfill.
     goog.FEATURESET_YEAR >= 2020);
 
-let urlBase = goog.global.document.baseURI ||
+let urlBase = goog.global?.document?.baseURI ||
     // baseURI is not available in IE11 and earlier
-    goog.global.window.location.href || '';
+    goog.global.location?.href || '';
 
 /**
  * For testing only - this adjusts the base used in `resolveRelativeUrl`.
@@ -382,8 +382,9 @@ const createAnchorElementInIE = function(urlStr) {
   if (!aTag.hostname) {
     throw new Error(`${urlStr} is not a valid URL.`);
   }
+  const href = aTag.href;
   const urlLike = {
-    href: aTag.href,
+    href,
     protocol: aTag.protocol,
     username: '',
     password: '',
@@ -392,6 +393,7 @@ const createAnchorElementInIE = function(urlStr) {
     pathname: '/' + aTag.pathname,
     search: aTag.search,
     hash: aTag.hash,
+    toString: () => href,
   };
   // Canonicalize the port out from the URL if it matches
   const canonicalPort = canonicalPortForProtocols.get(aTag.protocol);
@@ -611,6 +613,7 @@ const canonicalPortForProtocols = new Map([
  * Closure Compiler to code-strip the polyfill if searchParams are never used.
  * @param {!UrlLike|!URL} url The URL object to derive SearchParams for.
  * @return {!ReadonlySearchParams} The URLSearchParams-like object for the URL.
+ * @suppress {strictMissingProperties} url.searchParams on union
  */
 const getSearchParams = function(url) {
   if (goog.FEATURESET_YEAR >= 2020 ||

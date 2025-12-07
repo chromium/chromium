@@ -167,8 +167,8 @@ TEST_F(ThreadTest, StartWithOptions_StackSize) {
   additional_space += 56 * 1024;
 #endif
 #if DCHECK_IS_ON()
-  // The thread restrictions add four BooleanWithStacks (which are ~2k each).
-  additional_space += sizeof(BooleanWithStack) * 4;
+  // The thread restrictions add four BooleanWithOptionalStacks (~2k each).
+  additional_space += sizeof(BooleanWithOptionalStack) * 4;
 #endif
 
   Thread a("StartWithStackSize");
@@ -555,7 +555,7 @@ class SequenceManagerThreadDelegate : public Thread::Delegate {
   SequenceManagerThreadDelegate& operator=(
       const SequenceManagerThreadDelegate&) = delete;
 
-  ~SequenceManagerThreadDelegate() override {}
+  ~SequenceManagerThreadDelegate() override = default;
 
   // Thread::Delegate:
 
@@ -566,6 +566,10 @@ class SequenceManagerThreadDelegate : public Thread::Delegate {
   void BindToCurrentThread() override {
     sequence_manager_->BindToMessagePump(
         MessagePump::Create(MessagePumpType::DEFAULT));
+  }
+
+  void AddTaskObserver(TaskObserver* observer) override {
+    sequence_manager_->AddTaskObserver(observer);
   }
 
  private:

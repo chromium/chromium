@@ -4,6 +4,8 @@
 
 #include "third_party/blink/public/common/safe_url_pattern_mojom_traits.h"
 
+#include "base/notreached.h"
+
 namespace mojo {
 
 bool EnumTraits<blink::mojom::Modifier, ::liburlpattern::Modifier>::FromMojom(
@@ -23,8 +25,7 @@ bool EnumTraits<blink::mojom::Modifier, ::liburlpattern::Modifier>::FromMojom(
       *out = liburlpattern::Modifier::kNone;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool StructTraits<blink::mojom::FixedPatternDataView, ::liburlpattern::Part>::
@@ -67,8 +68,7 @@ UnionTraits<blink::mojom::PatternTemplateDataView,
     case liburlpattern::PartType::kSegmentWildcard:
       return blink::mojom::PatternTemplate::Tag::kSegmentWildcard;
     case liburlpattern::PartType::kRegex:
-      NOTREACHED_IN_MIGRATION();
-      return blink::mojom::PatternTemplate::Tag::kFixed;
+      NOTREACHED();
   }
 }
 

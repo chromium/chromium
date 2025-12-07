@@ -8,8 +8,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 namespace {
 
@@ -83,5 +82,4 @@ TEST_F(ScreenLockManagerImplTest, ScreenLockStateChanged) {
   EXPECT_EQ(2u, GetNumObserverCalls());
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

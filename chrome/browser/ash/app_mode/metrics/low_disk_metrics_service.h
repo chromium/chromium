@@ -5,11 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_APP_MODE_METRICS_LOW_DISK_METRICS_SERVICE_H_
 #define CHROME_BROWSER_ASH_APP_MODE_METRICS_LOW_DISK_METRICS_SERVICE_H_
 
-#include <utility>
-
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
-#include "components/prefs/pref_service.h"
+
+class PrefService;
 
 namespace ash {
 
@@ -33,17 +32,12 @@ enum class KioskLowDiskSeverity {
 // LowDiskMetricsService tracks and reports severity of low disk notifications.
 class LowDiskMetricsService : public UserDataAuthClient::Observer {
  public:
-  LowDiskMetricsService();
+  explicit LowDiskMetricsService(PrefService& local_state);
   LowDiskMetricsService(LowDiskMetricsService&) = delete;
   LowDiskMetricsService& operator=(const LowDiskMetricsService&) = delete;
   ~LowDiskMetricsService() override;
 
-  static std::unique_ptr<LowDiskMetricsService> CreateForTesting(
-      PrefService* pref);
-
  private:
-  explicit LowDiskMetricsService(PrefService* prefs);
-
   // Called when the device is running low on disk space.
   // This is responsible for tracking the severity metrics.
   void LowDiskSpace(const ::user_data_auth::LowDiskSpace& status) override;
@@ -54,7 +48,8 @@ class LowDiskMetricsService : public UserDataAuthClient::Observer {
   // Report a highest severity of the previous session.
   void ReportPreviousSessionLowDiskSeverity();
 
-  raw_ptr<PrefService> prefs_;
+  const raw_ref<PrefService> local_state_;
+
   // The highest low disk notification severity during the session.
   KioskLowDiskSeverity low_disk_severity_{KioskLowDiskSeverity::kNone};
 };

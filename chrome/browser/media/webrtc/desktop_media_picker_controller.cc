@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
@@ -19,8 +20,6 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/native_desktop_media_list.h"
 #include "chrome/browser/media/webrtc/tab_desktop_media_list.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/grit/branded_strings.h"
 #include "content/public/browser/desktop_capture.h"
 #include "content/public/browser/desktop_streams_registry.h"
@@ -28,11 +27,12 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "desktop_media_picker.h"
-#include "extensions/common/manifest.h"
-#include "extensions/common/switches.h"
 #include "media/audio/audio_features.h"
 #include "media/base/media_switches.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+
+using ::content::DesktopMediaID;
 
 DesktopMediaPickerController::DesktopMediaPickerController(
     DesktopMediaPickerFactory* picker_factory)
@@ -70,14 +70,14 @@ void DesktopMediaPickerController::Show(
     auto* source_list = source_lists_[0].get();
     source_list->Update(
         base::BindOnce(&DesktopMediaPickerController::OnInitialMediaListFound,
-                       base::Unretained(this)));
+                       weak_factory_.GetWeakPtr()));
   } else {
     ShowPickerDialog();
   }
 }
 
 void DesktopMediaPickerController::WebContentsDestroyed() {
-  OnPickerDialogResults(std::string(), content::DesktopMediaID());
+  OnPickerDialogResults(std::string(), DesktopMediaID());
 }
 
 // static
@@ -87,8 +87,14 @@ bool DesktopMediaPickerController::IsSystemAudioCaptureSupported(
     return false;
   }
 #if BUILDFLAG(IS_MAC)
- return request_source == Params::RequestSource::kCast ||
-     base::FeatureList::IsEnabled(media::kMacLoopbackAudioForScreenShare);
+  if (request_source == Params::RequestSource::kCast) {
+    return (media::IsMacSckSystemLoopbackCaptureSupported() ||
+            base::FeatureList::IsEnabled(media::kMacCatapLoopbackAudioForCast));
+  } else {
+    return (media::IsMacCatapSystemLoopbackCaptureSupported() &&
+            base::FeatureList::IsEnabled(
+                media::kMacCatapLoopbackAudioForScreenShare));
+  }
 #elif BUILDFLAG(IS_LINUX)
   if (request_source == Params::RequestSource::kCast) {
     return base::FeatureList::IsEnabled(media::kPulseaudioLoopbackForCast);
@@ -108,8 +114,8 @@ void DesktopMediaPickerController::OnInitialMediaListFound() {
   if (source_list->GetSourceCount() == 1) {
     // With only one possible source, the picker dialog is being bypassed. Apply
     // the default value of the "audio checkbox" here for desktop screen share.
-    content::DesktopMediaID media_id = source_list->GetSource(0).id;
-    DCHECK_EQ(media_id.type, content::DesktopMediaID::TYPE_SCREEN);
+    DesktopMediaID media_id = source_list->GetSource(0).id;
+    DCHECK_EQ(media_id.type, DesktopMediaID::TYPE_SCREEN);
     media_id.audio_share =
         params_.request_audio &&
         IsSystemAudioCaptureSupported(params_.request_source);
@@ -141,7 +147,11 @@ void DesktopMediaPickerController::ShowPickerDialog() {
 
 void DesktopMediaPickerController::OnPickerDialogResults(
     const std::string& err,
-    content::DesktopMediaID source) {
-  if (done_callback_)
+    base::expected<content::DesktopMediaID,
+                   blink::mojom::MediaStreamRequestResult> result) {
+  if (done_callback_) {
+    const content::DesktopMediaID source =
+        result.value_or(content::DesktopMediaID());
     std::move(done_callback_).Run(err, source);
+  }
 }

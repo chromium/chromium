@@ -137,7 +137,7 @@ void VTTCueBox::ApplyCSSProperties(
     // Longhands of `white-space: pre`.
     SetInlineStyleProperty(CSSPropertyID::kWhiteSpaceCollapse,
                            CSSValueID::kPreserve);
-    SetInlineStyleProperty(CSSPropertyID::kTextWrap, CSSValueID::kNowrap);
+    SetInlineStyleProperty(CSSPropertyID::kTextWrapMode, CSSValueID::kNowrap);
   }
 
   // The snap-to-lines position is propagated to VttCueLayoutAlgorithm.

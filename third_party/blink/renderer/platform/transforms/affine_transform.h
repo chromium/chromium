@@ -24,11 +24,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TRANSFORMS_AFFINE_TRANSFORM_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TRANSFORMS_AFFINE_TRANSFORM_H_
 
@@ -46,6 +41,9 @@ class Rect;
 class RectF;
 class Transform;
 }  // namespace gfx
+
+class SkMatrix;
+class SkM44;
 
 namespace blink {
 
@@ -136,16 +134,14 @@ class PLATFORM_EXPORT AffineTransform {
   [[nodiscard]] static AffineTransform FromTransform(const gfx::Transform&);
 
   [[nodiscard]] gfx::Transform ToTransform() const;
+  [[nodiscard]] SkMatrix ToSkMatrix() const;
+  [[nodiscard]] SkM44 ToSkM44() const;
 
   bool operator==(const AffineTransform& m2) const {
     return gfx::AllTrue(gfx::LoadDouble4(transform_) ==
                             gfx::LoadDouble4(m2.transform_) &
                         gfx::LoadDouble4(&transform_[2]) ==
                             gfx::LoadDouble4(&m2.transform_[2]));
-  }
-
-  bool operator!=(const AffineTransform& other) const {
-    return !(*this == other);
   }
 
   // *this = *this * t (i.e., a multRight)

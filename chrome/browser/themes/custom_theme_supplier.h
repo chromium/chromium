@@ -28,7 +28,7 @@ class Image;
 namespace ui {
 class ColorProvider;
 class NativeTheme;
-}
+}  // namespace ui
 
 // A representation of a theme. All theme properties can be accessed through the
 // public methods. Subclasses are expected to override all methods which should
@@ -71,11 +71,6 @@ class CustomThemeSupplier
 
   // Whether this theme provides an image for |id|.
   bool HasCustomImage(int id) const override;
-
-  // Returns whether or not the default incognito colors can be used with this
-  // theme. This is a workaround for the IncreasedContrastThemeSupplier that
-  // doesn't supply all the colors it should (http://crbug.com/1045630).
-  virtual bool CanUseIncognitoColors() const;
 
   // ui::ColorProviderKey::ThemeInitializerSupplier:
   void AddColorMixers(ui::ColorProvider* provider,

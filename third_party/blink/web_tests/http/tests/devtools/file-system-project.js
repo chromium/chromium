@@ -9,6 +9,7 @@ import {BindingsTestRunner} from 'bindings_test_runner';
 import * as Common from 'devtools/core/common/common.js';
 import * as Host from 'devtools/core/host/host.js';
 import * as Persistence from 'devtools/models/persistence/persistence.js';
+import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
 import * as Workspace from 'devtools/models/workspace/workspace.js';
 
 (async function() {
@@ -33,7 +34,7 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
       TestRunner.addResult(
           'UISourceCode is content script: ' +
           (uiSourceCode.project().type() === Workspace.Workspace.projectTypes.ContentScripts));
-    uiSourceCode.requestContent().then(didRequestContent);
+    uiSourceCode.requestContentData().then(TextUtils.ContentData.ContentData.asDeferredContent).then(didRequestContent);
 
     function didRequestContent(content, contentEncoded) {
       TestRunner.addResult('Highlighter type: ' + uiSourceCode.mimeType());

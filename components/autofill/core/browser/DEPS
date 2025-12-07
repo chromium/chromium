@@ -1,36 +1,44 @@
 include_rules = [
+  # go/keep-sorted start
   "+components/browser_ui/device_lock/android",
-  # TODO(crbug.com/40260352): Remove once the cause of the bug is understood.
-  "+components/crash/core/common/crash_key.h",
   "+components/device_reauth/device_authenticator.h",
   "+components/feature_engagement",
   "+components/google/core/common/google_util.h",
   "+components/grit/components_scaled_resources.h",
   "+components/history/core/browser",
+  "+components/image_fetcher",
   "+components/infobars/core",
   "+components/keyed_service/core",
   "+components/language/core/browser",
+  "+components/language_detection/core",
   "+components/leveldb_proto",
   "+components/metrics",
+  "+components/one_time_tokens/core/browser",
   "+components/optimization_guide",
   "+components/optimization_guide/core",
-  "+components/profile_metrics",
+  "+components/password_manager/core/browser/features/password_features.h",
+  "+components/payments/core/currency_formatter.h",
   "+components/policy",
+  "+components/profile_metrics",
   "+components/resources",
-  "+components/security_state",
   "+components/security_interstitials/core/insecure_form_util.h",
   "+components/security_interstitials/core/pref_names.h",
+  "+components/security_state",
   "+components/signin/public",
+  "+components/strike_database",
   "+components/strings",
   "+components/sync",
+  "+components/sync_preferences",
   "+components/translate/core/browser",
   "+components/translate/core/common",
   "+components/variations",
   "+components/version_info",
   "+components/webdata/common",
   "+components/webdata_services",
+  "+crypto/hash.h",
   "+crypto/hkdf.h",
   "+crypto/random.h",
+  "+google_apis/common",
   "+google_apis/gaia",
   "+google_apis/google_api_keys.h",
   "+net",
@@ -39,6 +47,7 @@ include_rules = [
   "+services/network/test",
   "+sql",
   "+third_party/icu/fuzzers/fuzzer_utils.h", # For fuzz-tests.
+  "+third_party/jni_zero",
   "+third_party/libaddressinput", # For address i18n.
   "+third_party/libphonenumber",  # For phone number i18n.
   "+third_party/re2",
@@ -47,6 +56,7 @@ include_rules = [
   "+ui/accessibility",
   "+ui/base",
   "+ui/gfx",
+  # go/keep-sorted end
 ]
 
 specific_include_rules = {
@@ -61,13 +71,11 @@ specific_include_rules = {
     "+components/ukm",
   ],
   "(test_)?credit_card_fido_authenticator\.(cc|h)": [
-    "+device/fido/authenticator_selection_criteria.h",
-    "+device/fido/fido_constants.h",
-    "+device/fido/fido_types.h",
+    "+device/fido/public",
     "+third_party/blink/public/mojom/webauthn",
   ],
   "(test_)?internal_authenticator\.h": [
-    "+device/fido/fido_constants.h",
+    "+device/fido/public",
     "+third_party/blink/public/mojom/webauthn",
   ],
   "autofill_driver\.h": [

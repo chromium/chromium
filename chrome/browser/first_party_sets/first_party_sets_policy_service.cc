@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <utility>
-
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
+
+#include <utility>
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
-#include "base/types/optional_util.h"
+#include "base/types/optional_ref.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
@@ -20,6 +20,7 @@
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
+#include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/first_party_sets_handler.h"
@@ -67,15 +68,6 @@ ServiceState GetServiceState(Profile* profile, bool pref_enabled) {
           net::features::kForceThirdPartyCookieBlocking)) {
     return ServiceState::kPermanentlyEnabled;
   }
-  auto* tracking_protection_settings =
-      TrackingProtectionSettingsFactory::GetForProfile(profile);
-  if (tracking_protection_settings &&
-      tracking_protection_settings->IsTrackingProtection3pcdEnabled()) {
-    return tracking_protection_settings->AreAllThirdPartyCookiesBlocked()
-               ? ServiceState::kDisabled
-               : ServiceState::kEnabled;
-  }
-
   return pref_enabled ? ServiceState::kEnabled : ServiceState::kDisabled;
 }
 
@@ -83,13 +75,14 @@ ServiceState GetServiceState(Profile* profile, bool pref_enabled) {
 
 FirstPartySetsPolicyService::FirstPartySetsPolicyService(
     content::BrowserContext* browser_context)
-    : browser_context_(browser_context) {
+    : browser_context_(
+          raw_ref<content::BrowserContext>::from_ptr(browser_context)),
+      privacy_sandbox_settings_(
+          raw_ref<privacy_sandbox::PrivacySandboxSettings>::from_ptr(
+              PrivacySandboxSettingsFactory::GetForProfile(
+                  Profile::FromBrowserContext(browser_context)))) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(browser_context);
-  privacy_sandbox_settings_ = PrivacySandboxSettingsFactory::GetForProfile(
-      Profile::FromBrowserContext(browser_context_));
-  CHECK(privacy_sandbox_settings_);
-  privacy_sandbox_settings_observer_.Observe(privacy_sandbox_settings_);
+  privacy_sandbox_settings_observer_.Observe(&*privacy_sandbox_settings_);
   Init();
 }
 
@@ -103,15 +96,13 @@ void FirstPartySetsPolicyService::InitForTesting() {
 void FirstPartySetsPolicyService::Init() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  Profile* profile = Profile::FromBrowserContext(browser_context_);
+  Profile* profile = Profile::FromBrowserContext(browser_context());
   // profile is guaranteed to be non-null since we create this service with a
   // non-null `context`.
   CHECK(profile);
 
   service_state_ = GetServiceState(
-      profile, profile->GetPrefs() &&
-                   profile->GetPrefs()->GetBoolean(
-                       prefs::kPrivacySandboxRelatedWebsiteSetsEnabled));
+      profile, privacy_sandbox_settings_->AreRelatedWebsiteSetsEnabled());
 
   if (service_state_ == ServiceState::kPermanentlyDisabled) {
     OnReadyToNotifyDelegates(net::FirstPartySetsContextConfig(),
@@ -136,7 +127,7 @@ void FirstPartySetsPolicyService::Init() {
 
 void FirstPartySetsPolicyService::ComputeFirstPartySetMetadata(
     const net::SchemefulSite& site,
-    const net::SchemefulSite* top_frame_site,
+    base::optional_ref<const net::SchemefulSite> top_frame_site,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!is_enabled()) {
@@ -147,18 +138,18 @@ void FirstPartySetsPolicyService::ComputeFirstPartySetMetadata(
   if (!config_.has_value()) {
     on_ready_callbacks_.push_back(base::BindOnce(
         &FirstPartySetsPolicyService::ComputeFirstPartySetMetadataInternal,
-        weak_factory_.GetWeakPtr(), site, base::OptionalFromPtr(top_frame_site),
+        weak_factory_.GetWeakPtr(), site, top_frame_site.CopyAsOptional(),
         std::move(callback)));
     return;
   }
 
-  content::FirstPartySetsHandler::GetInstance()->ComputeFirstPartySetMetadata(
-      site, top_frame_site, *config_, std::move(callback));
+  ComputeFirstPartySetMetadataInternal(site, top_frame_site,
+                                       std::move(callback));
 }
 
 void FirstPartySetsPolicyService::ComputeFirstPartySetMetadataInternal(
     const net::SchemefulSite& site,
-    const std::optional<net::SchemefulSite>& top_frame_site,
+    base::optional_ref<const net::SchemefulSite> top_frame_site,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(config_.has_value());
@@ -169,7 +160,7 @@ void FirstPartySetsPolicyService::ComputeFirstPartySetMetadataInternal(
   }
 
   content::FirstPartySetsHandler::GetInstance()->ComputeFirstPartySetMetadata(
-      site, base::OptionalToPtr(top_frame_site), *config_, std::move(callback));
+      site, top_frame_site, *config_, std::move(callback));
 }
 
 void FirstPartySetsPolicyService::AddRemoteAccessDelegate(
@@ -187,7 +178,8 @@ void FirstPartySetsPolicyService::AddRemoteAccessDelegate(
   access_delegates_.Add(std::move(access_delegate));
 }
 
-void FirstPartySetsPolicyService::OnFirstPartySetsEnabledChanged(bool enabled) {
+void FirstPartySetsPolicyService::OnRelatedWebsiteSetsEnabledChanged(
+    bool enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (service_state_ == ServiceState::kPermanentlyDisabled ||
       service_state_ == ServiceState::kPermanentlyEnabled) {
@@ -195,7 +187,7 @@ void FirstPartySetsPolicyService::OnFirstPartySetsEnabledChanged(bool enabled) {
   }
   // TODO(crbug.com/1366846) Add metrics here to track whether the pref is ever
   // enabled before the config is ready to be to be sent to the delegates.
-  Profile* profile = Profile::FromBrowserContext(browser_context_);
+  Profile* profile = Profile::FromBrowserContext(browser_context());
   CHECK(profile);
   service_state_ = GetServiceState(profile, enabled);
   for (auto& delegate : access_delegates_) {
@@ -217,14 +209,12 @@ void FirstPartySetsPolicyService::ClearContentSettings(Profile* profile) const {
   host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
       ContentSettingsType::STORAGE_ACCESS,
       [](const ContentSettingPatternSource& setting) -> bool {
-        return content_settings::IsGrantedByRelatedWebsiteSets(
-            ContentSettingsType::STORAGE_ACCESS, setting.metadata);
+        return setting.metadata.decided_by_related_website_sets();
       });
   host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
       ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
       [](const ContentSettingPatternSource& setting) -> bool {
-        return content_settings::IsGrantedByRelatedWebsiteSets(
-            ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, setting.metadata);
+        return setting.metadata.decided_by_related_website_sets();
       });
 }
 
@@ -240,8 +230,6 @@ void FirstPartySetsPolicyService::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   access_delegates_.Clear();
   on_ready_callbacks_.clear();
-  browser_context_ = nullptr;
-  privacy_sandbox_settings_ = nullptr;
   privacy_sandbox_settings_observer_.Reset();
   weak_factory_.InvalidateWeakPtrs();
 }
@@ -270,7 +258,7 @@ void FirstPartySetsPolicyService::OnProfileConfigReady(
     return;
   }
 
-  Profile* profile = Profile::FromBrowserContext(browser_context_);
+  Profile* profile = Profile::FromBrowserContext(browser_context());
   CHECK(profile);
   if (!profile->IsRegularProfile() || profile->IsGuestSession()) {
     // TODO(crbug.com/40233408): regular profiles and guest sessions
@@ -311,8 +299,9 @@ std::optional<net::FirstPartySetEntry> FirstPartySetsPolicyService::FindEntry(
 bool FirstPartySetsPolicyService::IsSiteInManagedSet(
     const net::SchemefulSite& site) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!config_.has_value() || !is_enabled())
+  if (!config_.has_value() || !is_enabled()) {
     return false;
+  }
 
   std::optional<net::FirstPartySetEntryOverride> maybe_override =
       config_->FindOverride(site);

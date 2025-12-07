@@ -43,7 +43,6 @@ using testing::Matcher;
 using testing::Pointee;
 using testing::Pointwise;
 using testing::Property;
-using WTF::String;
 
 #define SUBTEST(F)                                          \
   {                                                         \
@@ -248,12 +247,12 @@ PublicKeyCredentialRequestOptionsJSON* MakeRequestOptionsJSON(
   return json;
 }
 
-// Matches a blink WTF::String and a std::string for byte equality.
+// Matches a blink String and a std::string for byte equality.
 MATCHER_P(StrEq, str, "") {
   return ExplainMatchResult(Eq(String(str)), arg, result_listener);
 }
 
-// Matches a pair of (WTF::String, std::string) for equality (used with
+// Matches a pair of (String, std::string) for equality (used with
 // `testing::Pointwise`).
 MATCHER(StrEq, "") {
   const String& s1 = std::get<0>(arg);
@@ -263,16 +262,14 @@ MATCHER(StrEq, "") {
 
 // Matches the underlying `T` pointee of a `blink::Member<T>`.
 template <typename T>
-Matcher<Member<T>> MemberField(Matcher<T> matcher) {
-  return Property("Get", &Member<T>::Get, Pointee(matcher));
+Matcher<Member<T>> MemberField(Matcher<T*> matcher) {
+  return Property("Get", &Member<T>::Get, matcher);
 }
 
 // Performs WebAuthn Base64URL encoding, which is always unpadded.
-WTF::String Base64URLEncode(DOMArrayPiece buffer) {
-  // WTF::Base64URLEncode always pads, so we strip trailing '='.
-  String encoded =
-      WTF::Base64URLEncode(static_cast<const char*>(buffer.Data()),
-                           base::checked_cast<wtf_size_t>(buffer.ByteLength()));
+String Base64URLEncode(DOMArrayPiece buffer) {
+  // blink::Base64URLEncode always pads, so we strip trailing '='.
+  String encoded = blink::Base64URLEncode(buffer.ByteSpan());
   unsigned padding_start = encoded.length();
   for (; padding_start > 0; --padding_start) {
     if (encoded[padding_start - 1] != '=') {
@@ -305,7 +302,7 @@ MATCHER(CredentialDescriptorsEq, "") {
 
 // Matches `PublicKeyCredentialParameters`.
 MATCHER_P2(PubKeyCredParamsEq, type, alg, "") {
-  return arg.type() == String(type) && arg.alg() == alg;
+  return arg->type() == String(type) && arg->alg() == alg;
 }
 
 // Matches `AuthenticationExtensionsPRFValues`.

@@ -12,7 +12,7 @@
 namespace chrome_apps {
 namespace api {
 
-BrowserOpenTabFunction::~BrowserOpenTabFunction() {}
+BrowserOpenTabFunction::~BrowserOpenTabFunction() = default;
 
 ExtensionFunction::ResponseAction BrowserOpenTabFunction::Run() {
   std::optional<browser::OpenTab::Params> params(

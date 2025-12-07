@@ -52,6 +52,11 @@ struct CONTENT_EXPORT SavePackagePathPickedParams {
 #if BUILDFLAG(IS_MAC)
   std::vector<std::string> file_tags;
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+  // Android file path may be content URI, thus we need display name here.
+  base::FilePath display_name;
+#endif
 };
 using SavePackagePathPickedCallback =
     base::OnceCallback<void(SavePackagePathPickedParams,
@@ -135,6 +140,10 @@ class CONTENT_EXPORT DownloadManagerDelegate {
   virtual bool ShouldOpenDownload(download::DownloadItem* item,
                                   DownloadOpenDelayedCallback callback);
 
+  // Returns whether the download contents should be temporarily obfuscated for
+  // access prevention.
+  virtual bool ShouldObfuscateDownload(download::DownloadItem* item);
+
   // Checks and hands off the downloading to be handled by another system based
   // on mime type. Returns true if the download was intercepted.
   virtual bool InterceptDownloadIfApplicable(
@@ -145,6 +154,7 @@ class CONTENT_EXPORT DownloadManagerDelegate {
       const std::string& request_origin,
       int64_t content_length,
       bool is_transient,
+      bool is_content_initiated,
       WebContents* web_contents);
 
   // Retrieve the directories to save html pages and downloads to.
@@ -241,6 +251,9 @@ class CONTENT_EXPORT DownloadManagerDelegate {
 
   // Whether to open pdf inline.
   virtual bool ShouldOpenPdfInline();
+
+  // Whether download is restricted by policy.
+  virtual bool IsDownloadRestrictedByPolicy();
 #endif  // BUILDFLAG(IS_ANDROID)
  protected:
   virtual ~DownloadManagerDelegate();

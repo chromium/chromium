@@ -1,0 +1,302 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(!is_android)
+
+mojom("mojo_bindings") {
+  disable_variants = true
+  public_deps = [ "//mojo/public/mojom/base" ]
+
+  deps = [ "//ui/gfx/geometry/mojom" ]
+
+  sources = [ "actor_overlay.mojom" ]
+  webui_module_path = "/"
+}
+
+source_set("ui") {
+  sources = [
+    "actor_border_view_controller.cc",
+    "actor_border_view_controller.h",
+    "actor_overlay_handler.cc",
+    "actor_overlay_handler.h",
+    "actor_overlay_ui.cc",
+    "actor_overlay_ui.h",
+    "actor_overlay_web_view.cc",
+    "actor_overlay_web_view.h",
+    "actor_ui_metrics.cc",
+    "actor_ui_metrics.h",
+    "actor_ui_state_manager.cc",
+    "actor_ui_state_manager.h",
+    "actor_ui_state_manager_interface.h",
+    "actor_ui_state_manager_prefs.cc",
+    "actor_ui_state_manager_prefs.h",
+    "actor_ui_tab_controller.cc",
+    "actor_ui_tab_controller.h",
+    "actor_ui_tab_controller_interface.cc",
+    "actor_ui_tab_controller_interface.h",
+    "actor_ui_window_controller.cc",
+    "actor_ui_window_controller.h",
+    "handoff_button_controller.cc",
+    "handoff_button_controller.h",
+  ]
+  deps = [
+    ":ui_event_types",
+    "//base",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/actor/resources:browser_resources",
+    "//chrome/browser/actor/ui:ui_event_utils",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/actor_overlay:resources",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/tabs:tabs_public",
+    "//chrome/browser/ui/toasts",
+    "//chrome/browser/ui/toasts/api:toasts",
+    "//chrome/browser/ui/views/frame:immersive_mode_controller",
+    "//chrome/browser/ui/views/interaction",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chrome/common",
+    "//content/public/browser",
+    "//third_party/abseil-cpp:absl",
+    "//ui/base/unowned_user_data",
+    "//ui/views",
+    "//ui/views/controls/webview",
+    "//ui/webui",
+  ]
+
+  public_deps = [ ":mojo_bindings" ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+  if (enable_glic) {
+    deps += [ "//chrome/browser/glic" ]
+  }
+}
+
+source_set("states") {
+  public = [
+    "states/actor_overlay_state.h",
+    "states/actor_task_nudge_state.h",
+    "states/handoff_button_state.h",
+    "states/tab_indicator_state.h",
+  ]
+
+  public_deps = [ "//chrome/browser/actor:types" ]
+}
+
+source_set("event_dispatcher") {
+  sources = [
+    "event_dispatcher.cc",
+    "event_dispatcher.h",
+    "event_dispatcher_computations.cc",
+  ]
+  public_deps = [
+    ":ui",
+    "//base",
+    "//chrome/browser/actor:types",
+  ]
+  deps = [
+    ":dom_node_geometry",
+    ":ui_event_types",
+    ":ui_event_utils",
+    "//chrome/browser/actor",
+    "//chrome/browser/actor:variants",
+    "//chrome/browser/actor/ui",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
+source_set("dom_node_geometry") {
+  sources = [
+    "dom_node_geometry.cc",
+    "dom_node_geometry.h",
+  ]
+  deps = [
+    "//chrome/browser/actor:types",
+    "//chrome/common:chrome_features",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+  ]
+}
+
+source_set("actor_ui_interactive_base") {
+  sources = [
+    "actor_ui_interactive_browser_test.cc",
+    "actor_ui_interactive_browser_test.h",
+  ]
+  testonly = true
+  deps = [
+    "//base/test:test_support",
+    "//chrome/browser/actor",
+    "//chrome/browser/actor:test_support",
+    "//chrome/browser/actor:types",
+    "//chrome/test:test_support_ui",
+  ]
+}
+
+source_set("test_support") {
+  sources = [
+    "mocks/mock_actor_ui_state_manager.cc",
+    "mocks/mock_actor_ui_state_manager.h",
+    "mocks/mock_actor_ui_tab_controller.cc",
+    "mocks/mock_actor_ui_tab_controller.h",
+    "mocks/mock_event_dispatcher.cc",
+    "mocks/mock_event_dispatcher.h",
+    "mocks/mock_handoff_button_controller.cc",
+    "mocks/mock_handoff_button_controller.h",
+  ]
+  testonly = true
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui:test_support",
+    "//components/tabs:test_support",
+    "//testing/gmock",
+  ]
+  deps = [
+    ":event_dispatcher",
+    ":ui",
+    "//chrome/browser/actor",
+  ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
+
+source_set("ui_event_types") {
+  sources = [
+    "ui_event.cc",
+    "ui_event.h",
+  ]
+  public_deps = [
+    "//base",
+
+    # ActorTask::State isn't in actor:types
+    "//chrome/browser/actor",
+    "//chrome/browser/actor:types",
+  ]
+  deps = [ "//components/tabs:public" ]
+}
+
+source_set("ui_event_utils") {
+  sources = [
+    "ui_event_debugstring.cc",
+    "ui_event_debugstring.h",
+  ]
+  deps = [
+    ":ui_event_types",
+    "//base",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "actor_border_view_controller_unittest.cc",
+    "actor_overlay_handler_unittest.cc",
+    "actor_ui_metrics_unittest.cc",
+    "actor_ui_state_manager_unittest.cc",
+    "actor_ui_tab_controller_unittest.cc",
+    "dom_node_geometry_unittest.cc",
+    "event_dispatcher_unittest.cc",
+    "handoff_button_controller_unittest.cc",
+    "ui_event_debugstring_unittest.cc",
+  ]
+  deps = [
+    ":dom_node_geometry",
+    ":event_dispatcher",
+    ":test_support",
+    ":ui",
+    ":ui_event_types",
+    ":ui_event_utils",
+    "//chrome/browser/actor",
+    "//chrome/browser/actor:impl",
+    "//chrome/browser/actor:test_support",
+    "//chrome/browser/ui/tabs:tabs_public",
+    "//chrome/browser/ui/tabs:test_support",
+    "//chrome/browser/ui/views/frame:test_support",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//components/tabs:public",
+    "//components/tabs:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base/unowned_user_data",
+  ]
+
+  data = [ "//tools/metrics/actions/actions.xml" ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "actor_overlay_browsertest.cc",
+    "actor_ui_tab_controller_browsertest.cc",
+    "dom_node_geometry_browsertest.cc",
+    "handoff_button_controller_pixel_test.cc",
+  ]
+
+  deps = [
+    ":dom_node_geometry",
+    ":ui",
+    ":ui_event_types",
+    "//base/test:test_support",
+    "//chrome/browser/actor",
+    "//chrome/browser/actor:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/tabs/alert:tab_alert",
+    "//chrome/browser/ui/views/frame",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/views:view_pixel_diff_test_support",
+  ]
+}
+
+source_set("interactive_ui_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "handoff_button_controller_interactive_uitest.cc" ]
+
+  deps = [
+    ":actor_ui_interactive_base",
+    ":ui",
+    "//base/test:test_support",
+    "//chrome/browser/actor",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/common",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+    "//ui/base/interaction",
+  ]
+
+  if (enable_glic) {
+    deps += [
+      "//chrome/browser/glic",
+      "//chrome/browser/glic/test_support",
+    ]
+  }
+}

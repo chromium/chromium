@@ -4,6 +4,7 @@
 
 package org.chromium.services.service_manager;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.mojo.bindings.ConnectionErrorHandler;
 import org.chromium.mojo.bindings.Interface;
 import org.chromium.mojo.bindings.InterfaceRequest;
@@ -13,8 +14,9 @@ import org.chromium.service_manager.mojom.Identity;
 import org.chromium.service_manager.mojom.ServiceFilter;
 
 /** This class exposes the ability to bind interfaces from other services in the system. */
+@NullMarked
 public class Connector implements ConnectionErrorHandler {
-    private org.chromium.service_manager.mojom.Connector.Proxy mConnector;
+    private final org.chromium.service_manager.mojom.Connector.Proxy mConnector;
 
     private static class ConnectorBindInterfaceResponseImpl
             implements org.chromium.service_manager.mojom.Connector.BindInterface_Response {

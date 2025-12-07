@@ -24,8 +24,7 @@ const float kEpsilon = 0.00001;
 class DarkModeImageClassifierTest : public testing::Test {
  public:
   DarkModeImageClassifierTest() {
-    dark_mode_image_classifier_ = std::make_unique<DarkModeImageClassifier>(
-        DarkModeImageClassifierPolicy::kNumColorsWithMlFallback);
+    dark_mode_image_classifier_ = std::make_unique<DarkModeImageClassifier>();
   }
 
   // Loads the image from |file_name|.

@@ -1,0 +1,15 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "ios.gemini_enabled_by_policy",
+      "default_value": 0,
+      "values_to_test": [
+        0,
+        1
+      ]
+    }
+  }
+]

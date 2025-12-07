@@ -9,12 +9,12 @@
 
 namespace remoting {
 
-bool DisplaySize::operator==(const DisplaySize& other) {
+bool DisplaySize::operator==(const DisplaySize& other) const {
   return other.width_dips_ == width_dips_ &&
          other.height_dips_ == height_dips_ && other.dpi_ == dpi_;
 }
 
-bool DisplaySize::operator!=(const DisplaySize& other) {
+bool DisplaySize::operator!=(const DisplaySize& other) const {
   return !(*this == other);
 }
 

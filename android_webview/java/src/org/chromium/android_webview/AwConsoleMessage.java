@@ -32,10 +32,10 @@ public class AwConsoleMessage {
     public static final int MESSAGE_LEVEL_ERROR = 3;
     public static final int MESSAGE_LEVEL_DEBUG = 4;
 
-    @MessageLevel private int mLevel;
-    private String mMessage;
-    private String mSourceId;
-    private int mLineNumber;
+    @MessageLevel private final int mLevel;
+    private final String mMessage;
+    private final String mSourceId;
+    private final int mLineNumber;
 
     public AwConsoleMessage(
             String message, String sourceId, int lineNumber, @MessageLevel int msgLevel) {

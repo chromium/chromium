@@ -19,3 +19,5 @@ NSString* const kHistoryToolbarCancelButtonIdentifier =
     @"kHistoryToolbarCancelButtonIdentifier";
 NSString* const kHistorySearchScrimIdentifier =
     @"kHistorySearchScrimIdentifier";
+NSString* const kHistoryToolbarShowFullHistoryButtonIdentifier =
+    @"kHistoryToolbarShowFullHistoryButtonIdentifier";

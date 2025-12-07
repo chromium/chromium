@@ -18,7 +18,7 @@
 #include "ui/display/display_export.h"
 #include "ui/display/screen_infos.h"
 #include "ui/gfx/gpu_extra_info.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace base {
 class TimeDelta;
@@ -54,8 +54,7 @@ class DISPLAY_EXPORT Screen {
   // Retrieves the single Screen object; this may be null if it's not already
   // created, except for IOS where it creates a native screen instance
   // automatically. On ChromeOS ash the return value is only null on startup.
-
-  static Screen* GetScreen();
+  static Screen* Get();
 
   // Returns whether a Screen singleton exists or not.
   static bool HasScreen();
@@ -140,7 +139,7 @@ class DISPLAY_EXPORT Screen {
   // (both of which may or may not be `nearest_id`).
   display::ScreenInfos GetScreenInfosNearestDisplay(int64_t nearest_id) const;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   // Object which suspends the platform-specific screensaver for the duration of
   // its existence.
   class ScreenSaverSuspender {
@@ -161,7 +160,7 @@ class DISPLAY_EXPORT Screen {
   // the platform-specific screensaver will not be un-suspended until all
   // returned |ScreenSaverSuspender| instances have been destructed.
   virtual std::unique_ptr<ScreenSaverSuspender> SuspendScreenSaver();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
 
   // Returns whether the screensaver is currently running.
   virtual bool IsScreenSaverActive() const;
@@ -213,17 +212,15 @@ class DISPLAY_EXPORT Screen {
   virtual std::optional<float> GetPreferredScaleFactorForView(
       gfx::NativeView view) const;
 
+  // Returns true when running in headless mode.
+  virtual bool IsHeadless() const;
+
 #if BUILDFLAG(IS_CHROMEOS)
   // Returns tablet state.
   virtual TabletState GetTabletState() const;
 
   // Returns true if the system is in tablet mode.
   bool InTabletMode() const;
-
-  // Overrides tablet state stored in screen and notifies observers only on
-  // Lacros side.
-  // Not that this method may make tablet state out-of-sync with Ash side.
-  virtual void OverrideTabletStateForTesting(TabletState tablet_state) {}
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
  protected:
@@ -248,9 +245,9 @@ class DISPLAY_EXPORT Screen {
   int64_t display_id_for_new_windows_;
   int64_t scoped_display_id_for_new_windows_ = display::kInvalidDisplayId;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   uint32_t screen_saver_suspension_count_ = 0;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
 };
 
 #if BUILDFLAG(IS_APPLE)
@@ -260,6 +257,12 @@ class DISPLAY_EXPORT Screen {
 // TODO(crbug.com/40222482): Make this static private member of
 // ScopedNativeScreen.
 DISPLAY_EXPORT Screen* CreateNativeScreen();
+
+#if BUILDFLAG(IS_IOS)
+// Returns the internal display device scale factor. This should only
+// be used for loading resources at startup before Screen is initialized.
+DISPLAY_EXPORT float GetInternalDisplayDeviceScaleFactor();
+#endif
 
 // ScopedNativeScreen creates a native screen if there is no screen created yet
 // (e.g. by a unit test).

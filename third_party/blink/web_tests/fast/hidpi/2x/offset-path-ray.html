@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<style>
+  #target {
+    background-color: lime;
+    width: 21px;
+    height: 13px;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    transform-origin: 0px 0px;
+    offset-path: ray(90deg closest-side);
+    offset-distance: 30px;
+    offset-position: auto;
+  }
+</style>
+
+<body>
+  <!-- This test passes if the target moves 30px across -->
+  <div id="target"></div>
+</body>

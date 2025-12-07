@@ -5,8 +5,9 @@
 #ifndef UI_GL_SCOPED_BINDERS_H_
 #define UI_GL_SCOPED_BINDERS_H_
 
+#include <array>
+
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "ui/gl/gl_export.h"
 
 namespace gl {
@@ -112,9 +113,7 @@ class GL_EXPORT ScopedVertexAttribArray {
   int type_;
   int normalized_;
   int stride_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION void* pointer_;
+  raw_ptr<void> pointer_;
 };
 
 class GL_EXPORT ScopedBufferBinder {
@@ -146,7 +145,7 @@ class GL_EXPORT ScopedViewport {
   ~ScopedViewport();
 
  private:
-  int data_[4] = {};
+  std::array<int, 4> data_ = {};
 };
 
 class GL_EXPORT ScopedVertexAttribPointer {
@@ -175,7 +174,7 @@ class GL_EXPORT ScopedColorMask {
   ~ScopedColorMask();
 
  private:
-  unsigned char colors_[4] = {};
+  std::array<unsigned char, 4> colors_ = {};
 };
 
 class GL_EXPORT ScopedCapability {

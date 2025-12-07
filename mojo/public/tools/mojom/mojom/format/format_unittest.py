@@ -50,6 +50,9 @@ class MojomFormatTest(unittest.TestCase):
     def test_struct_fields(self):
         self.golden_test('struct_fields')
 
+    def test_result(self):
+        self.golden_test('result')
+
 
 class LineWrapperTest(unittest.TestCase):
 
@@ -75,11 +78,12 @@ class LineWrapperTest(unittest.TestCase):
 
     def testWrapWithIndent(self):
         lw = mojofmt.LineWrapper(base_indent=2)
-        data = ('array<blink.mojom.ParsedPermissionsPolicyDeclaration> ' +
+        data = ('array<network.mojom.ParsedPermissionsPolicyDeclaration> ' +
                 'permissions_policy_header;')
         lw.write(data)
-        expected = ('  array<blink.mojom.ParsedPermissionsPolicyDeclaration>' +
-                    '\n      permissions_policy_header;')
+        expected = (
+            '  array<network.mojom.ParsedPermissionsPolicyDeclaration>' +
+            '\n      permissions_policy_header;')
         self.assertEqual(expected, lw.finish())
 
     def testAlreadyIndented(self):

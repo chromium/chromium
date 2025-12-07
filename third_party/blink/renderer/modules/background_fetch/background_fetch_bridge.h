@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/modules/service_worker/service_worker_registration.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -23,10 +22,8 @@ class BackgroundFetchRegistration;
 // Worker Registration.
 class BackgroundFetchBridge final
     : public GarbageCollected<BackgroundFetchBridge>,
-      public Supplement<ServiceWorkerRegistration> {
+      public GarbageCollectedMixin {
  public:
-  static const char kSupplementName[];
-
   using GetDeveloperIdsCallback =
       base::OnceCallback<void(mojom::blink::BackgroundFetchError,
                               const Vector<String>&)>;
@@ -42,7 +39,7 @@ class BackgroundFetchBridge final
   BackgroundFetchBridge(const BackgroundFetchBridge&) = delete;
   BackgroundFetchBridge& operator=(const BackgroundFetchBridge&) = delete;
 
-  virtual ~BackgroundFetchBridge();
+  ~BackgroundFetchBridge();
   void Trace(Visitor* visitor) const override;
 
   // Creates a new Background Fetch registration identified by |developer_id|
@@ -80,6 +77,7 @@ class BackgroundFetchBridge final
       mojom::blink::BackgroundFetchError error,
       mojom::blink::BackgroundFetchRegistrationPtr registration_ptr);
 
+  Member<ServiceWorkerRegistration> service_worker_registration_;
   HeapMojoRemote<mojom::blink::BackgroundFetchService>
       background_fetch_service_;
 };

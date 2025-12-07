@@ -39,15 +39,57 @@ std::string StripDigitsIfRequired(std::string_view input) {
 
     // If `input[i]` is a digit, find the range of consecutive digits starting
     // at `i`. If this range is shorter than 5 characters append it to `result`.
-    auto end_it = base::ranges::find_if_not(input.substr(i), IsDigit);
-    std::string_view digits = base::MakeStringPiece(input.begin() + i, end_it);
-    DCHECK(base::ranges::all_of(digits, IsDigit));
+    auto end_it = std::ranges::find_if_not(input.substr(i), IsDigit);
+    std::string_view digits = std::string_view(input.begin() + i, end_it);
+    DCHECK(std::ranges::all_of(digits, IsDigit));
     if (digits.size() < 5)
       base::StrAppend(&result, {digits});
     i += digits.size();
   }
 
   return result;
+}
+
+std::string CalculateAlternativeFormSignatureBase(const FormData& form_data) {
+  std::string_view scheme = form_data.action().scheme();
+  std::string_view host = form_data.action().host();
+
+  // If target host or scheme is empty, set scheme and host of source url.
+  // This is done to match the Toolbar's behavior.
+  if (scheme.empty() || host.empty()) {
+    scheme = form_data.url().scheme();
+    host = form_data.url().host();
+  }
+
+  std::string form_signature_field_types;
+  for (const FormFieldData& field : form_data.fields()) {
+    switch (field.form_control_type()) {
+      case mojom::FormControlType::kInputCheckbox:
+      case mojom::FormControlType::kInputDate:
+      case mojom::FormControlType::kInputRadio:
+        break;
+      case mojom::FormControlType::kContentEditable:
+      case mojom::FormControlType::kInputEmail:
+      case mojom::FormControlType::kInputMonth:
+      case mojom::FormControlType::kInputNumber:
+      case mojom::FormControlType::kInputPassword:
+      case mojom::FormControlType::kInputSearch:
+      case mojom::FormControlType::kInputTelephone:
+      case mojom::FormControlType::kInputText:
+      case mojom::FormControlType::kInputUrl:
+      case mojom::FormControlType::kSelectOne:
+      case mojom::FormControlType::kTextArea:
+        // We use the string representation of the FormControlType because
+        // changing the signature algorithm is non-trivial. If and when the
+        // sectioning algorithm changes, we could use the raw FormControlType
+        // enum instead.
+        base::StrAppend(
+            &form_signature_field_types,
+            {"&", FormControlTypeToString(field.form_control_type())});
+    }
+  }
+
+  return base::StrCat({scheme, "://", host, form_signature_field_types});
 }
 
 template <size_t N>
@@ -78,25 +120,38 @@ std::string GetDOMFormName(const std::string& form_name) {
 FormSignature CalculateFormSignature(const FormData& form_data) {
   const GURL& target_url = form_data.action();
   const GURL& source_url = form_data.url();
-  std::string_view scheme = target_url.scheme_piece();
-  std::string_view host = target_url.host_piece();
+  std::string_view scheme = target_url.scheme();
+  std::string_view host = target_url.host();
 
   // If target host or scheme is empty, set scheme and host of source url.
   // This is done to match the Toolbar's behavior.
   if (scheme.empty() || host.empty()) {
-    scheme = source_url.scheme_piece();
-    host = source_url.host_piece();
+    scheme = source_url.scheme();
+    host = source_url.host();
   }
 
   std::string form_signature_field_names;
 
   for (const FormFieldData& field : form_data.fields()) {
-    if (!IsCheckable(field.check_status())) {
-      // Add all supported form fields (including with empty names) to the
-      // signature.  This is a requirement for Autofill servers.
-      base::StrAppend(
-          &form_signature_field_names,
-          {"&", StripDigitsIfRequired(base::UTF16ToUTF8(field.name()))});
+    switch (field.form_control_type()) {
+      case mojom::FormControlType::kInputCheckbox:
+      case mojom::FormControlType::kInputDate:
+      case mojom::FormControlType::kInputRadio:
+        break;
+      case mojom::FormControlType::kContentEditable:
+      case mojom::FormControlType::kInputEmail:
+      case mojom::FormControlType::kInputMonth:
+      case mojom::FormControlType::kInputNumber:
+      case mojom::FormControlType::kInputPassword:
+      case mojom::FormControlType::kInputSearch:
+      case mojom::FormControlType::kInputTelephone:
+      case mojom::FormControlType::kInputText:
+      case mojom::FormControlType::kInputUrl:
+      case mojom::FormControlType::kSelectOne:
+      case mojom::FormControlType::kTextArea:
+        base::StrAppend(
+            &form_signature_field_names,
+            {"&", StripDigitsIfRequired(base::UTF16ToUTF8(field.name()))});
     }
   }
 
@@ -107,33 +162,13 @@ FormSignature CalculateFormSignature(const FormData& form_data) {
   return FormSignature(StrToHash64Bit(form_string));
 }
 
+FormSignature CalculateStructuralFormSignature(const FormData& form_data) {
+  return FormSignature(
+      StrToHash64Bit(CalculateAlternativeFormSignatureBase(form_data)));
+}
+
 FormSignature CalculateAlternativeFormSignature(const FormData& form_data) {
-  std::string_view scheme = form_data.action().scheme_piece();
-  std::string_view host = form_data.action().host_piece();
-
-  // If target host or scheme is empty, set scheme and host of source url.
-  // This is done to match the Toolbar's behavior.
-  if (scheme.empty() || host.empty()) {
-    scheme = form_data.url().scheme_piece();
-    host = form_data.url().host_piece();
-  }
-
-  std::string form_signature_field_types;
-  for (const FormFieldData& field : form_data.fields()) {
-    if (!IsCheckable(field.check_status())) {
-      // Add all supported form fields' form control types to the signature.
-      // We use the string representation of the FormControlType because
-      // changing the signature algorithm is non-trivial. If and when the
-      // sectioning algorithm, we could use the raw FormControlType enum
-      // instead.
-      base::StrAppend(
-          &form_signature_field_types,
-          {"&", FormControlTypeToString(field.form_control_type())});
-    }
-  }
-
-  std::string form_string =
-      base::StrCat({scheme, "://", host, form_signature_field_types});
+  std::string form_string = CalculateAlternativeFormSignatureBase(form_data);
 
   // Add more non-empty elements (one of path, reference, or query ordered by
   // preference) for small forms with 1-2 fields in order to prevent signature
@@ -141,12 +176,12 @@ FormSignature CalculateAlternativeFormSignature(const FormData& form_data) {
   if (form_data.fields().size() <= 2) {
     // Path piece includes the slash "/", so a non-empty path must have length
     // longer than 1.
-    if (form_data.url().path_piece().length() > 1) {
-      base::StrAppend(&form_string, {form_data.url().path_piece()});
+    if (form_data.url().path().length() > 1) {
+      base::StrAppend(&form_string, {form_data.url().path()});
     } else if (form_data.url().has_ref()) {
-      base::StrAppend(&form_string, {"#", form_data.url().ref_piece()});
+      base::StrAppend(&form_string, {"#", form_data.url().ref()});
     } else if (form_data.url().has_query()) {
-      base::StrAppend(&form_string, {"?", form_data.url().query_piece()});
+      base::StrAppend(&form_string, {"?", form_data.url().query()});
     }
   }
 
@@ -168,15 +203,25 @@ FieldSignature CalculateFieldSignatureForField(
 }
 
 uint64_t StrToHash64Bit(std::string_view str) {
-  auto bytes = base::as_bytes(base::make_span(str));
+  auto bytes = base::as_byte_span(str);
   const base::SHA1Digest digest = base::SHA1Hash(bytes);
-  return PackBytes(base::make_span(digest).subspan<0, 8>());
+  return PackBytes(base::span(digest).first<8>());
 }
 
 uint32_t StrToHash32Bit(std::string_view str) {
-  auto bytes = base::as_bytes(base::make_span(str));
+  auto bytes = base::as_byte_span(str);
   const base::SHA1Digest digest = base::SHA1Hash(bytes);
-  return PackBytes(base::make_span(digest).subspan<0, 4>());
+  return PackBytes(base::span(digest).first<4>());
+}
+
+int32_t StrToHash3Bit(std::string_view str) {
+  const base::SHA1Digest digest = base::SHA1Hash(base::as_byte_span(str));
+  // Keep only the first 3 bits of the SHA1 hash.
+  return static_cast<int32_t>((digest[0] >> 5) & 0x07);
+}
+
+int32_t StrToHash3Bit(std::u16string_view str) {
+  return StrToHash3Bit(base::UTF16ToUTF8(str));
 }
 
 int64_t HashFormSignature(FormSignature form_signature) {

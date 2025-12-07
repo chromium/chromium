@@ -6,10 +6,11 @@
 #define CHROME_BROWSER_FIRST_PARTY_SETS_FIRST_PARTY_SETS_POLICY_SERVICE_H_
 
 #include "base/containers/circular_deque.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "base/types/optional_ref.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "content/public/browser/first_party_sets_handler.h"
@@ -66,7 +67,7 @@ class FirstPartySetsPolicyService
   // This may invoke `callback` synchronously.
   void ComputeFirstPartySetMetadata(
       const net::SchemefulSite& site,
-      const net::SchemefulSite* top_frame_site,
+      base::optional_ref<const net::SchemefulSite> top_frame_site,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback);
 
   // Stores `access_delegate` in a RemoteSet for later IPC calls on it when this
@@ -74,18 +75,18 @@ class FirstPartySetsPolicyService
   //
   // NotifyReady will be called on `access_delegate` in the following cases:
   // - when site-data is cleared
-  // - upon OnFirstPartySetsEnabledChanged observations (if site-data has
+  // - upon OnRelatedWebsiteSetsEnabledChanged observations (if site-data has
   //   already been, or didn't need to be, cleared) and if `config` is ready
   // - by this method if `config_` has already been computed
   //
   // SetEnabled will be called on `access_delegate` when the First-Party Sets
-  // enabled pref changes, as observed by OnFirstPartySetsEnabledChanged.
+  // enabled pref changes, as observed by OnRelatedWebsiteSetsEnabledChanged.
   void AddRemoteAccessDelegate(
       mojo::Remote<network::mojom::FirstPartySetsAccessDelegate>
           access_delegate);
 
   // PrivacySandboxSettings::Observer
-  void OnFirstPartySetsEnabledChanged(bool enabled) override;
+  void OnRelatedWebsiteSetsEnabledChanged(bool enabled) override;
 
   // Stores the callback to be invoked when this service is ready to do so. Must
   // not be called when FPS is not enabled or the service is already ready.
@@ -167,7 +168,7 @@ class FirstPartySetsPolicyService
 
   content::BrowserContext* browser_context() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return browser_context_;
+    return &*browser_context_;
   }
 
   base::WeakPtr<first_party_sets::FirstPartySetsPolicyService> GetWeakPtr() {
@@ -194,7 +195,7 @@ class FirstPartySetsPolicyService
   // callback. Must not be called before `config_` has been received.
   void ComputeFirstPartySetMetadataInternal(
       const net::SchemefulSite& site,
-      const std::optional<net::SchemefulSite>& top_frame_site,
+      base::optional_ref<const net::SchemefulSite> top_frame_site,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const;
 
   // Clears the content settings associated with `profile` that were
@@ -206,9 +207,8 @@ class FirstPartySetsPolicyService
   mojo::RemoteSet<network::mojom::FirstPartySetsAccessDelegate>
       access_delegates_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // The BrowserContext with which this service is associated. Set to nullptr in
-  // `Shutdown()`.
-  raw_ptr<content::BrowserContext> browser_context_
+  // The BrowserContext with which this service is associated.
+  const raw_ref<content::BrowserContext> browser_context_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Whether FPS is enabled in this context. Note that this may be true even if
@@ -242,8 +242,8 @@ class FirstPartySetsPolicyService
   // not be reset in `ResetForTesting`.
   bool first_initialization_complete_for_testing_ = false;
 
-  raw_ptr<privacy_sandbox::PrivacySandboxSettings> privacy_sandbox_settings_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  const raw_ref<privacy_sandbox::PrivacySandboxSettings>
+      privacy_sandbox_settings_ GUARDED_BY_CONTEXT(sequence_checker_);
   base::ScopedObservation<privacy_sandbox::PrivacySandboxSettings,
                           privacy_sandbox::PrivacySandboxSettings::Observer>
       privacy_sandbox_settings_observer_{this};

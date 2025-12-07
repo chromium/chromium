@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/network/mobile_data_notifications.h"
 
 #include <gtest/gtest.h>
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -26,6 +27,7 @@
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -43,13 +45,13 @@ const char kTestUserName[] = "test-user@example.com";
 
 class NetworkConnectTestDelegate : public ash::NetworkConnect::Delegate {
  public:
-  NetworkConnectTestDelegate() {}
+  NetworkConnectTestDelegate() = default;
 
   NetworkConnectTestDelegate(const NetworkConnectTestDelegate&) = delete;
   NetworkConnectTestDelegate& operator=(const NetworkConnectTestDelegate&) =
       delete;
 
-  ~NetworkConnectTestDelegate() override {}
+  ~NetworkConnectTestDelegate() override = default;
 
   void ShowNetworkConfigure(const std::string& network_id) override {}
   void ShowNetworkSettings(const std::string& network_id) override {}
@@ -68,13 +70,13 @@ class NetworkConnectTestDelegate : public ash::NetworkConnect::Delegate {
 
 class MobileDataNotificationsTest : public testing::Test {
  public:
-  MobileDataNotificationsTest() {}
+  MobileDataNotificationsTest() = default;
 
   MobileDataNotificationsTest(const MobileDataNotificationsTest&) = delete;
   MobileDataNotificationsTest& operator=(const MobileDataNotificationsTest&) =
       delete;
 
-  ~MobileDataNotificationsTest() override {}
+  ~MobileDataNotificationsTest() override = default;
 
   void SetUp() override {
     session_manager_.SetSessionState(session_manager::SessionState::ACTIVE);
@@ -165,7 +167,8 @@ class MobileDataNotificationsTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   ash::NetworkHandlerTestHelper network_handler_test_helper_;
-  session_manager::SessionManager session_manager_;
+  session_manager::SessionManager session_manager_{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
   std::unique_ptr<MobileDataNotifications> mobile_data_notifications_;
   std::unique_ptr<NetworkConnectTestDelegate> network_connect_delegate_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;

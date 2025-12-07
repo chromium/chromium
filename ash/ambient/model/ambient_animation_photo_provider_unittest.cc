@@ -42,7 +42,6 @@ using ::testing::AnyOf;
 using ::testing::Each;
 using ::testing::ElementsAre;
 using ::testing::FieldsAre;
-using ::testing::Invoke;
 using ::testing::IsSubsetOf;
 using ::testing::Key;
 using ::testing::Mock;
@@ -655,7 +654,7 @@ TEST_F(AmbientAnimationPhotoProviderTestMultipleAssetsPerPosition,
                                Pair(_, TopicHasDetails("attribution-b")),
                                Pair(_, TopicHasDetails("attribution-c")),
                                Pair(_, TopicHasDetails("attribution-d"))))))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&](const base::flat_map<
               ambient::util::ParsedDynamicAssetId,
               std::reference_wrapper<const PhotoWithDetails>>& new_topics) {
@@ -667,7 +666,7 @@ TEST_F(AmbientAnimationPhotoProviderTestMultipleAssetsPerPosition,
                 new_topics.at(ambient::util::ParsedDynamicAssetId({"B", 2}))
                     .get()
                     .details;
-          }));
+          });
   GetFrameDataForAssets(all_assets, /*timestamp=*/0);
   Mock::VerifyAndClearExpectations(&observer);
 

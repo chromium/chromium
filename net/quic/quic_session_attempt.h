@@ -8,14 +8,17 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/connection_endpoint_metadata.h"
 #include "net/base/http_user_agent_settings.h"
 #include "net/base/ip_endpoint.h"
+#include "net/base/net_error_details.h"
 #include "net/base/net_export.h"
 #include "net/base/network_handle.h"
 #include "net/quic/quic_chromium_client_session.h"
 #include "net/quic/quic_session_alias_key.h"
+#include "net/spdy/multiplexed_session_creation_initiator.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 
 #ifndef NET_QUIC_QUIC_SESSION_ATTEMPT_H_
@@ -31,6 +34,13 @@ class QuicSessionPool;
 // retry on an alternate network if the system supports non-default networks.
 class NET_EXPORT_PRIVATE QuicSessionAttempt {
  public:
+  // Represents a successful QUIC session creation. Used for QUIC session
+  // creations that could complete asynchronously.
+  struct CreateSessionResult {
+    raw_ptr<QuicChromiumClientSession> session;
+    handles::NetworkHandle network = handles::kInvalidNetworkHandle;
+  };
+
   class Delegate {
    public:
     virtual ~Delegate() = default;
@@ -57,18 +67,20 @@ class NET_EXPORT_PRIVATE QuicSessionAttempt {
   // CryptoClientConfig alive until `this` completes. Call sites can pass
   // nullptr to `crypto_client_config_handle` if the corresponding
   // CryptoClientConfig is guaranteed to be alive.
-  QuicSessionAttempt(Delegate* delegate,
-                     IPEndPoint ip_endpoint,
-                     ConnectionEndpointMetadata metadata,
-                     quic::ParsedQuicVersion quic_version,
-                     int cert_verify_flags,
-                     base::TimeTicks dns_resolution_start_time,
-                     base::TimeTicks dns_resolution_end_time,
-                     bool retry_on_alternate_network_before_handshake,
-                     bool use_dns_aliases,
-                     std::set<std::string> dns_aliases,
-                     std::unique_ptr<QuicCryptoClientConfigHandle>
-                         crypto_client_config_handle);
+  QuicSessionAttempt(
+      Delegate* delegate,
+      IPEndPoint ip_endpoint,
+      ConnectionEndpointMetadata metadata,
+      quic::ParsedQuicVersion quic_version,
+      int cert_verify_flags,
+      base::TimeTicks dns_resolution_start_time,
+      base::TimeTicks dns_resolution_end_time,
+      bool retry_on_alternate_network_before_handshake,
+      bool use_dns_aliases,
+      std::set<std::string> dns_aliases,
+      std::unique_ptr<QuicCryptoClientConfigHandle> crypto_client_config_handle,
+      MultiplexedSessionCreationInitiator session_creation_initiator,
+      std::optional<ConnectionManagementConfig> connection_management_config);
   // Create a SessionAttempt for a connection proxied over the given stream.
   QuicSessionAttempt(
       Delegate* delegate,
@@ -77,7 +89,9 @@ class NET_EXPORT_PRIVATE QuicSessionAttempt {
       quic::ParsedQuicVersion quic_version,
       int cert_verify_flags,
       std::unique_ptr<QuicChromiumClientStream::Handle> proxy_stream,
-      const HttpUserAgentSettings* http_user_agent_settings);
+      const HttpUserAgentSettings* http_user_agent_settings,
+      MultiplexedSessionCreationInitiator session_creation_initiator,
+      std::optional<ConnectionManagementConfig> connection_management_config);
 
   ~QuicSessionAttempt();
 
@@ -88,7 +102,15 @@ class NET_EXPORT_PRIVATE QuicSessionAttempt {
 
   bool session_creation_finished() const { return session_creation_finished_; }
 
+  const quic::ParsedQuicVersion& quic_version() const { return quic_version_; }
+
+  const IPEndPoint& ip_endpoint() const { return ip_endpoint_; }
+
+  const ConnectionEndpointMetadata& metadata() const { return metadata_; }
+
   QuicChromiumClientSession* session() const { return session_.get(); }
+
+  void PopulateNetErrorDetails(NetErrorDetails* details) const;
 
  private:
   enum class State {
@@ -110,11 +132,16 @@ class NET_EXPORT_PRIVATE QuicSessionAttempt {
   int DoCryptoConnect(int rv);
   int DoConfirmConnection(int rv);
 
-  void OnCreateSessionComplete(int rv);
+  void OnCreateSessionComplete(base::expected<CreateSessionResult, int> result);
   void OnCryptoConnectComplete(int rv);
+
+  void MaybeInvokeCallback(int rv);
+
+  void ResetSession();
 
   const raw_ptr<Delegate> delegate_;
 
+  const base::TimeTicks start_time_;
   const IPEndPoint ip_endpoint_;
   const ConnectionEndpointMetadata metadata_;
   const quic::ParsedQuicVersion quic_version_;
@@ -132,12 +159,19 @@ class NET_EXPORT_PRIVATE QuicSessionAttempt {
   const raw_ptr<const HttpUserAgentSettings> http_user_agent_settings_;
   const IPEndPoint local_endpoint_;
 
+  const MultiplexedSessionCreationInitiator session_creation_initiator_;
+  std::optional<ConnectionManagementConfig> connection_management_config_;
+
   State next_state_ = State::kNone;
   bool in_loop_ = false;
 
   raw_ptr<QuicChromiumClientSession> session_ = nullptr;
   bool session_creation_finished_ = false;
   bool connection_retried_ = false;
+
+  // Used to populate NetErrorDetails after we reset `session_`.
+  HttpConnectionInfo connection_info_ = HttpConnectionInfo::kUNKNOWN;
+  quic::QuicErrorCode quic_connection_error_ = quic::QUIC_NO_ERROR;
 
   base::TimeTicks quic_connection_start_time_;
 

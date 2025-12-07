@@ -1,0 +1,257 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=/signin_shared.css.js
+ * #import=/signin_vars.css.js
+ * #import=/tangible_sync_style_shared.css.js
+ * #import=chrome://resources/cr_elements/cr_spinner_style_lit.css.js
+ * #scheme=relative
+ * #include=signin-shared tangible-sync-style-shared cr-spinner-style-lit
+ * #css_wrapper_metadata_end */
+
+/* TODO look at UI with inspector to see which lines are overridden by the
+ shared config. */
+:host {
+  --sync-benefits-list-color: var(--google-grey-50);
+  --sync-benefit-icon-color: var(--google-blue-600);
+  color: var(--cr-primary-text-color);
+  display: block;
+}
+
+@keyframes left-illustration-slide-animation {
+  0% {
+    transform: translateX(calc(-1 * var(--tangible-sync-style-banner-width)));
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes right-illustration-slide-animation {
+  0% {
+    transform: translateX(var(--tangible-sync-style-banner-width));
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes fade-in-animation {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 100%;
+  }
+}
+
+.secondary {
+  color: var(--cr-secondary-text-color);
+}
+
+.action-row {
+  bottom: 0;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: flex-end;
+  position: absolute;
+  width: 100%;
+}
+
+.spinner {
+  margin: auto 0;
+}
+
+#settingsButton {
+  inset-inline-start: var(--action-container-padding);
+  position: absolute;
+}
+
+
+#avatarContainer {
+  --avatar-border-width: 2px;
+  --avatar-size: var(--tangible-sync-style-avatar-size);
+
+  align-items: center;
+  background-color: var(--sync-benefits-list-color);
+  border-radius: 50%;
+  display: flex;
+  height: var(--avatar-size);
+  justify-content: center;
+  left: 0;
+  margin: auto;
+  position: relative;
+  right: 0;
+  width: var(--avatar-size);
+  z-index: 1;
+}
+
+.loading-spinner {
+  height: 50%;
+  width: 50%;
+}
+
+#avatar {
+  /** The user avatar may be transparent, add a background */
+  background-color: var(--md-background-color);
+  border: var(--avatar-border-width) solid var(--md-background-color);
+  border-radius: 50%;
+  height: 100%;
+  left: calc(-1 * var(--avatar-border-width));
+  position: absolute;
+  top: calc(-1 * var(--avatar-border-width));
+  width: 100%;
+}
+
+.work-badge {
+  bottom: 0;
+  position: absolute;
+}
+
+#contentContainer {
+  align-items: stretch;
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+  max-width: 500px;
+  text-align: center;
+}
+
+#contentContainer h2 {
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 32px;
+}
+
+#confirmationDescription {
+  font-size: 14px;
+  line-height: 20px;
+  margin-inline: auto;
+  margin-top: 16px;
+  max-width: 516px;
+}
+
+#buttonsContainer {
+  --action-container-padding: 24px;
+}
+
+#buttonsContainer cr-button {
+  font-size: 1.16em;
+  min-width: 111px;
+}
+
+#buttonsContainer #notNowButton {
+  font-weight: normal;
+}
+
+#buttonsContainer #settingsButton {
+  font-weight: normal;
+}
+
+.main-container:not(.dialog) {
+  --button-container-height: calc(2 * var(--action-container-padding) +
+      var(--cr-button-height));
+  display: flex;
+  height: calc(100vh - var(--button-container-height));
+  width: 100vw;
+}
+
+.dialog #contentContainer {
+  --cr-button-height: 32px;
+  --sync-info-desc-bottom-margin: 48px;
+  --container-bottom-padding: calc(var(--sync-info-desc-bottom-margin) +
+      var(--cr-button-height) + var(--action-container-padding));
+
+  /* Bottom padding is needed to save space for the button row in
+  the modal dialog view. */
+  padding: 32px 0 var(--container-bottom-padding);
+}
+
+#syncBenefitsList {
+  background: var(--sync-benefits-list-color);
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  font-size: 0.81rem;
+  font-weight: 400;
+  line-height: 20px;
+  margin: 24px 0 16px;
+  padding: 24px;
+  row-gap: 16px;
+}
+
+.dialog #syncBenefitsList {
+  margin: 16px 38px;
+  padding: 20px 24px;
+}
+
+.sync-benefit {
+  align-items: center;
+  column-gap: 12px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
+.sync-benefit-icon {
+  color: var(--sync-benefit-icon-color);
+  height: 24px;
+  width: 24px;
+}
+
+.sync-info-desc {
+  font-size: 0.75rem;
+  line-height: 20px;
+}
+
+.dialog .sync-info-desc {
+  margin: 0 38px;
+}
+
+.tangible-sync-style-dialog-illustration {
+  content: url(./images/dialog_illustration.svg);
+}
+
+.tangible-sync-style-left-banner {
+  animation-duration: 500ms;
+  animation-name: left-illustration-slide-animation, fade-in-animation;
+  content: url(./images/window_left_illustration.svg);
+  transition-timing-function: ease-in-out;
+}
+
+.tangible-sync-style-right-banner {
+  animation-duration: 500ms;
+  animation-name: right-illustration-slide-animation, fade-in-animation;
+  content: url(./images/window_right_illustration.svg);
+  transition-timing-function: ease-in-out;
+}
+
+.fade-in {
+  animation: 500ms ease-in-out fade-in-animation;
+}
+
+.visibility-hidden {
+  visibility: hidden;
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    --sync-benefits-list-color: var(--google-grey-800);
+    --sync-benefit-icon-color: var(--google-blue-300);
+  }
+
+  .tangible-sync-style-dialog-illustration {
+    content: url(./images/dialog_illustration_dark.svg);
+  }
+
+  .tangible-sync-style-left-banner {
+    content: url(./images/window_left_illustration_dark.svg);
+  }
+
+  .tangible-sync-style-right-banner {
+    content: url(./images/window_right_illustration_dark.svg);
+  }
+}

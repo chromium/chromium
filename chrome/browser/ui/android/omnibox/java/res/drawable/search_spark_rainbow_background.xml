@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="40dp"
+    android:height="40dp"
+    android:viewportWidth="40"
+    android:viewportHeight="40">
+  <path
+      android:pathData="M20,0.625L20,0.625A19.375,19.375 0,0 1,39.375 20L39.375,20A19.375,19.375 0,0 1,20 39.375L20,39.375A19.375,19.375 0,0 1,0.625 20L0.625,20A19.375,19.375 0,0 1,20 0.625z"
+      android:strokeWidth="1.5"
+      android:fillColor="@android:color/transparent">
+    <aapt:attr name="android:strokeColor">
+      <gradient
+          android:startX="0"
+          android:startY="24"
+          android:endX="40"
+          android:endY="24"
+          android:type="linear">
+        <item android:offset="0" android:color="#FF3186FF"/>
+        <item android:offset="0.45" android:color="#FF3186FF"/>
+        <item android:offset="0.6" android:color="#FFFF4641"/>
+        <item android:offset="0.76" android:color="#FFFFD314"/>
+        <item android:offset="0.92" android:color="#FF34A853"/>
+      </gradient>
+    </aapt:attr>
+  </path>
+</vector>

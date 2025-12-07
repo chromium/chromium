@@ -1,0 +1,6 @@
+specific_include_rules = {
+  # Common highlight color shared with text fragment.
+  "glic_marker.cc": [
+    "+components/shared_highlighting/core/common/fragment_directives_constants.h",
+  ],
+}

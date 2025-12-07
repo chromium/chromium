@@ -8,15 +8,13 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "ios/chrome/browser/bring_android_tabs/model/bring_android_tabs_to_ios_service.h"
 #import "ios/chrome/browser/bring_android_tabs/model/bring_android_tabs_to_ios_service_factory.h"
-#import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
+#import "ios/chrome/browser/bring_android_tabs/ui_bundled/tab_list_from_android_mediator.h"
+#import "ios/chrome/browser/bring_android_tabs/ui_bundled/tab_list_from_android_view_controller.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/bring_android_tabs_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
-#import "ios/chrome/browser/bring_android_tabs/ui_bundled/tab_list_from_android_mediator.h"
-#import "ios/chrome/browser/bring_android_tabs/ui_bundled/tab_list_from_android_view_controller.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 
 @implementation TabListFromAndroidCoordinator {
@@ -28,15 +26,13 @@
 
 - (void)start {
   BringAndroidTabsToIOSService* service =
-      BringAndroidTabsToIOSServiceFactory::GetForBrowserStateIfExists(
-          self.browser->GetBrowserState());
+      BringAndroidTabsToIOSServiceFactory::GetForProfileIfExists(self.profile);
   _mediator = [[TabListFromAndroidMediator alloc]
       initWithBringAndroidTabsService:service
                             URLLoader:UrlLoadingBrowserAgent::FromBrowser(
                                           self.browser)
                         faviconLoader:IOSChromeFaviconLoaderFactory::
-                                          GetForBrowserState(
-                                              self.browser->GetBrowserState())];
+                                          GetForProfile(self.profile)];
 
   TabListFromAndroidViewController* tableViewController =
       [[TabListFromAndroidViewController alloc] init];

@@ -13,11 +13,11 @@ package image_fetcher;
 enum CacheStrategy {
   // If reached storage space limit, the cache file may be deleted based on LRU
   // eviction. The cache files also have a default expiration time after
-  // |creation_time|.
+  // `creation_time`.
   BEST_EFFORT = 0;
 
-  // The cache file will be deleted after an |expiration_interval| after
-  // |last_used_time|.
+  // The cache file will be deleted after an `expiration_interval` after
+  // `last_used_time`.
   HOLD_UNTIL_EXPIRED = 1;
 }
 
@@ -43,7 +43,7 @@ message CachedImageMetadataProto {
   // The cache strategy used to control the cache file lifecycle.
   optional CacheStrategy cache_strategy = 6 [default = BEST_EFFORT];
 
-  // The expiration interval since |last_used_time| to delete the cache file for
+  // The expiration interval since `last_used_time` to delete the cache file for
   // CacheStrategy::HOLD_UNTIL_EXPIRED. Measured in microseconds.
   optional int64 expiration_interval = 7;
 }

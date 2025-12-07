@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/cronet/config.gni")
 import("//build/config/ui.gni")
 import("//gpu/vulkan/features.gni")
@@ -44,14 +43,9 @@ config("webgpu_implementation") {
 }
 
 component("gpu") {
-  public_deps = [
-    "//gpu/command_buffer/client:client_sources",
-    "//gpu/command_buffer/common:common_sources",
-    "//gpu/command_buffer/service:service_sources",
-    "//gpu/config:config_sources",
-    "//gpu/ipc/client:ipc_client_sources",
-    "//gpu/ipc/common:ipc_common_sources",
-  ]
+  # Do not depend on this component directly, depend on relevant gpu/{config,ipc,command_buffer}/{client,common,service} targets.
+  visibility = [ "//gpu/*" ]
+  public_deps = [ "//gpu/ipc/common:ipc_common_sources" ]
 }
 
 component("gles2") {
@@ -81,12 +75,6 @@ static_library("test_support") {
   sources = [
     "command_buffer/client/client_test_helper.cc",
     "command_buffer/client/client_test_helper.h",
-    "command_buffer/client/gles2_interface_stub.cc",
-    "command_buffer/client/gles2_interface_stub.h",
-    "command_buffer/client/gles2_interface_stub_autogen.h",
-    "command_buffer/client/gles2_interface_stub_impl_autogen.h",
-    "command_buffer/client/test_gpu_memory_buffer_manager.cc",
-    "command_buffer/client/test_gpu_memory_buffer_manager.h",
     "command_buffer/client/test_shared_image_interface.cc",
     "command_buffer/client/test_shared_image_interface.h",
     "command_buffer/client/webgpu_interface_stub.cc",
@@ -105,11 +93,8 @@ static_library("test_support") {
     "command_buffer/service/shared_image/test_image_backing.h",
     "command_buffer/service/test_helper.cc",
     "command_buffer/service/test_helper.h",
-    "command_buffer/service/test_memory_tracker.cc",
-    "command_buffer/service/test_memory_tracker.h",
     "ipc/raster_in_process_context.cc",
     "ipc/raster_in_process_context.h",
-    "ipc/service/gpu_memory_buffer_factory_test_template.h",
     "ipc/webgpu_in_process_context.cc",
     "ipc/webgpu_in_process_context.h",
   ]
@@ -120,6 +105,7 @@ static_library("test_support") {
     ":webgpu",
     "//gpu/command_buffer/client:gles2_interface",
     "//gpu/command_buffer/client:webgpu_interface",
+    "//gpu/command_buffer/service",
     "//gpu/ipc:gpu_thread_holder",
     "//third_party/dawn/include/dawn:cpp_headers",
     "//third_party/dawn/src/dawn:proc",
@@ -129,9 +115,11 @@ static_library("test_support") {
     "//gpu/command_buffer/client:raster",
     "//gpu/command_buffer/common",
     "//gpu/ipc:gl_in_process_context",
+    "//gpu/ipc/client",
     "//gpu/ipc/common",
     "//gpu/ipc/service",
-    "//gpu/skia_bindings:skia_bindings",
+    "//gpu/skia_bindings",
+    "//media",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/gfx:test_support",
@@ -145,19 +133,18 @@ static_library("test_support") {
       "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     ]
   }
-  if (use_static_angle) {
-    deps += [ "//third_party/angle:translator" ]
-  } else {
-    deps += [ "//third_party/angle:translator_gl_d3d_only" ]
-  }
+  deps += [ "//third_party/angle:translator" ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
-if (!is_android && !is_fuchsia && !is_chromeos_ash && !is_ios) {
+if (!is_android && !is_fuchsia && !is_chromeos && !is_ios) {
   proto_library("gl_lpm_fuzzer_proto") {
     sources = [ "command_buffer/tests/lpm/gl_lpm_fuzzer.proto" ]
 
     use_protobuf_full = true
-    deps = [ "//third_party/protobuf:protobuf_full" ]
   }
 
   static_library("gl_lpm_shader_to_string") {
@@ -168,7 +155,7 @@ if (!is_android && !is_fuchsia && !is_chromeos_ash && !is_ios) {
 
     deps = [
       ":gl_lpm_fuzzer_proto",
-      "//base:base",
+      "//base",
     ]
   }
 
@@ -207,12 +194,12 @@ if (!is_android && !is_fuchsia && !is_chromeos_ash && !is_ios) {
       "//gpu/command_buffer/client:gles2_implementation",
       "//gpu/command_buffer/common:gles2_utils",
       "//gpu/ipc:gl_in_process_context",
-      "//gpu/ipc/service:service",
-      "//testing/gtest:gtest",
+      "//gpu/ipc/service",
+      "//testing/gtest",
       "//third_party/libprotobuf-mutator",
-      "//ui/gfx:gfx",
-      "//ui/gl:gl",
-      "//ui/gl/init:init",
+      "//ui/gfx",
+      "//ui/gl",
+      "//ui/gl/init",
     ]
 
     if (use_ozone) {
@@ -225,9 +212,9 @@ test("gl_tests") {
   use_xvfb = use_xvfb_in_this_config
 
   sources = [
-    "command_buffer/service/gles2_external_framebuffer_unittest.cc",
     "command_buffer/service/shared_image/egl_image_backing_factory_unittest.cc",
     "command_buffer/service/shared_image/gl_texture_image_backing_factory_unittest.cc",
+    "command_buffer/service/shared_image/shared_image_copy_manager_unittest.cc",
     "command_buffer/service/shared_image/shared_image_factory_unittest.cc",
     "command_buffer/service/shared_image/shared_image_manager_unittest.cc",
     "command_buffer/service/shared_image/shared_image_representation_unittest.cc",
@@ -247,13 +234,11 @@ test("gl_tests") {
     "command_buffer/tests/gl_cube_map_texture_unittest.cc",
     "command_buffer/tests/gl_depth_texture_unittest.cc",
     "command_buffer/tests/gl_deschedule_unittest.cc",
-    "command_buffer/tests/gl_discardable_textures_unittest.cc",
     "command_buffer/tests/gl_dynamic_config_unittest.cc",
     "command_buffer/tests/gl_ext_blend_func_extended_unittest.cc",
     "command_buffer/tests/gl_ext_multisample_compatibility_unittest.cc",
     "command_buffer/tests/gl_ext_srgb_unittest.cc",
     "command_buffer/tests/gl_ext_window_rectangles_unittest.cc",
-    "command_buffer/tests/gl_gpu_memory_buffer_unittest.cc",
     "command_buffer/tests/gl_helper_unittest.cc",
     "command_buffer/tests/gl_lose_context_chromium_unittest.cc",
     "command_buffer/tests/gl_manager.cc",
@@ -268,7 +253,6 @@ test("gl_tests") {
     "command_buffer/tests/gl_readback_unittest.cc",
     "command_buffer/tests/gl_request_extension_unittest.cc",
     "command_buffer/tests/gl_set_aggressively_free_resources_unittest.cc",
-    "command_buffer/tests/gl_shared_resources_unittest.cc",
     "command_buffer/tests/gl_stream_draw_unittest.cc",
     "command_buffer/tests/gl_test_setup_helper.cc",
     "command_buffer/tests/gl_test_setup_helper.h",
@@ -288,10 +272,6 @@ test("gl_tests") {
     "ipc/client/raster_in_process_context_tests.cc",
   ]
 
-  if (is_android) {
-    sources += [ "command_buffer/tests/gl_unittests_android.cc" ]
-  }
-
   # Simply loading the Vulkan driver leaks crbug.com/1134681
   if (use_dawn && !is_lsan) {
     sources += [
@@ -307,7 +287,6 @@ test("gl_tests") {
 
   deps = [
     ":gles2",
-    ":gpu",
     ":test_support",
     "//base",
     "//base/test:test_support",
@@ -336,19 +315,19 @@ test("gl_tests") {
     "//ui/gl/init",
   ]
 
-  if (use_static_angle) {
-    deps += [ "//third_party/angle:translator" ]
-  } else {
-    deps += [ "//third_party/angle:translator_gl_d3d_only" ]
-  }
+  deps += [ "//third_party/angle:translator" ]
 
   if (use_ozone) {
+    if (enable_vulkan) {
+      sources +=
+          [ "command_buffer/service/drm_modifiers_filter_vulkan_unittest.cc" ]
+    }
     deps += [ "//ui/ozone" ]
     sources += [ "command_buffer/service/shared_image/ozone_image_backing_factory_unittest.cc" ]
   }
 
   if (enable_vulkan) {
-    deps += [ "//gpu/vulkan/init:init" ]
+    deps += [ "//gpu/vulkan/init" ]
   }
 
   libs = []
@@ -361,7 +340,10 @@ test("gl_tests") {
     frameworks = [ "IOSurface.framework" ]
     sources += [ "command_buffer/service/shared_image/iosurface_image_backing_factory_unittest.cc" ]
   } else if (is_win) {
+    libs += [ "d3d12.lib" ]
+    libs += [ "d3d11.lib" ]
     deps += [
+      "//third_party/microsoft_dxheaders:dxguids",
       "//ui/platform_window",
       "//ui/platform_window:platform_impls",
     ]
@@ -370,7 +352,7 @@ test("gl_tests") {
       "command_buffer/service/shared_image/d3d_image_backing_factory_unittest.cc",
       "command_buffer/service/shared_image/dcomp_image_backing_factory_unittest.cc",
     ]
-  } else if (is_linux || is_chromeos) {
+  } else if (is_linux) {
     # Simply loading the Vulkan driver leaks crbug.com/1134681
     # CFI error in third_party/vulkan_memory_allocator crbug.com/1139916
     if (enable_vulkan && !is_lsan && !is_cfi) {
@@ -391,6 +373,7 @@ test("gl_tests") {
     ]
 
     sources += [
+      "command_buffer/service/shared_image/dawn_image_backing_factory_unittest.cc",
       "command_buffer/service/shared_image/dawn_image_representation_unittest_common.cc",
       "command_buffer/service/shared_image/dawn_image_representation_unittest_common.h",
     ]
@@ -405,6 +388,10 @@ test("gl_tests") {
   if (is_chromeos) {
     deps += [ "//ui/gfx/linux:gbm" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 test("gpu_unittests") {
@@ -420,15 +407,17 @@ test("gpu_unittests") {
     "command_buffer/client/fenced_allocator_test.cc",
     "command_buffer/client/gles2_implementation_unittest.cc",
     "command_buffer/client/gles2_implementation_unittest_autogen.h",
+    "command_buffer/client/internal/mappable_buffer_shared_memory_unittest.cc",
+    "command_buffer/client/internal/mappable_buffer_test_template.h",
     "command_buffer/client/mapped_memory_unittest.cc",
     "command_buffer/client/mock_transfer_buffer.cc",
     "command_buffer/client/mock_transfer_buffer.h",
     "command_buffer/client/program_info_manager_unittest.cc",
     "command_buffer/client/query_tracker_unittest.cc",
-    "command_buffer/client/raster_implementation_gles_unittest.cc",
     "command_buffer/client/raster_implementation_unittest.cc",
     "command_buffer/client/raster_implementation_unittest_autogen.h",
     "command_buffer/client/ring_buffer_test.cc",
+    "command_buffer/client/shared_image_pool_unittest.cc",
     "command_buffer/client/transfer_buffer_cmd_copy_helpers_unittest.cc",
     "command_buffer/client/transfer_buffer_unittest.cc",
     "command_buffer/client/vertex_array_object_manager_unittest.cc",
@@ -487,9 +476,7 @@ test("gpu_unittests") {
     "command_buffer/service/raster_decoder_unittest_context_lost.cc",
     "command_buffer/service/renderbuffer_manager_unittest.cc",
     "command_buffer/service/retaining_one_shot_timer_holder_unittest.cc",
-    "command_buffer/service/scheduler_dfs_unittest.cc",
     "command_buffer/service/scheduler_unittest.cc",
-    "command_buffer/service/service_discardable_manager_unittest.cc",
     "command_buffer/service/service_transfer_cache_unittest.cc",
     "command_buffer/service/shader_manager_unittest.cc",
     "command_buffer/service/shader_translator_cache_unittest.cc",
@@ -523,9 +510,6 @@ test("gpu_unittests") {
     "config/gpu_test_expectations_parser_unittest.cc",
     "config/gpu_util_unittest.cc",
     "ipc/client/command_buffer_proxy_impl_unittest.cc",
-    "ipc/client/image_decode_accelerator_proxy_unittest.cc",
-    "ipc/common/gpu_memory_buffer_impl_shared_memory_unittest.cc",
-    "ipc/common/gpu_memory_buffer_impl_test_template.h",
     "ipc/common/mojom_traits_unittest.cc",
     "ipc/host/gpu_disk_cache_unittest.cc",
     "ipc/service/gpu_channel_test_common.cc",
@@ -557,45 +541,36 @@ test("gpu_unittests") {
     ]
   }
 
-  if (is_chromeos_ash) {
-    # Image decode acceleration with hardware is only supported in Chrome OS.
-    # The intention is to run this test in the linux-chromeos build.
-    sources += [ "ipc/service/image_decode_accelerator_stub_unittest.cc" ]
+  if (is_mac) {
+    sources += [
+      "command_buffer/client/internal/mappable_buffer_io_surface_unittest.cc",
+    ]
   }
 
   if (is_apple) {
     sources += [
-      "ipc/common/gpu_memory_buffer_impl_io_surface_unittest.cc",
-      "ipc/service/gpu_memory_buffer_factory_io_surface_unittest.cc",
+      "ipc/service/image_transport_surface_overlay_mac.h",
+      "ipc/service/image_transport_surface_overlay_mac.mm",
+      "ipc/service/image_transport_surface_overlay_mac_unittest.mm",
     ]
   }
 
   if (is_linux || is_chromeos || use_ozone) {
-    sources += [
-      "ipc/common/gpu_memory_buffer_impl_native_pixmap_unittest.cc",
-      "ipc/service/gpu_memory_buffer_factory_native_pixmap_unittest.cc",
-    ]
+    sources += [ "command_buffer/client/internal/mappable_buffer_native_pixmap_unittest.cc" ]
   }
 
   if (is_win) {
-    sources += [
-      "ipc/common/gpu_memory_buffer_impl_dxgi_unittest.cc",
-      "ipc/service/gpu_memory_buffer_factory_dxgi_unittest.cc",
-    ]
+    sources +=
+        [ "command_buffer/client/internal/mappable_buffer_dxgi_unittest.cc" ]
   }
 
   if (is_android) {
-    sources += [
-      "ipc/common/gpu_memory_buffer_impl_android_hardware_buffer_unittest.cc",
-    ]
+    sources +=
+        [ "command_buffer/client/internal/mappable_buffer_ahb_unittest.cc" ]
   }
 
   if (is_linux || is_chromeos || is_android) {
     sources += [ "command_buffer/service/gpu_fence_manager_unittest.cc" ]
-  }
-
-  if (is_mac) {
-    sources += [ "ipc/service/built_in_shader_cache_unittest.cc" ]
   }
 
   # On official builds angle doesn't build null backend that is required for
@@ -607,7 +582,6 @@ test("gpu_unittests") {
     sources += [
       "command_buffer/service/gles2_cmd_decoder_passthrough_unittest_buffers.cc",
       "command_buffer/service/gles2_cmd_decoder_passthrough_unittest_commands.cc",
-      "command_buffer/service/gles2_cmd_decoder_passthrough_unittest_discardable_textures.cc",
       "command_buffer/service/gles2_cmd_decoder_passthrough_unittest_drawing.cc",
       "command_buffer/service/gles2_cmd_decoder_passthrough_unittest_framebuffers.cc",
       "command_buffer/service/gles2_cmd_decoder_passthrough_unittest_textures.cc",
@@ -624,27 +598,33 @@ test("gpu_unittests") {
   if (use_dawn) {
     sources += [
       "command_buffer/service/dawn_caching_interface_unittest.cc",
+      "command_buffer/service/dawn_platform_unittest.cc",
+      "command_buffer/service/gpu_persistent_cache_unittest.cc",
       "config/webgpu_blocklist_unittest.cc",
     ]
+  }
+
+  if (skia_use_dawn) {
+    sources += [ "command_buffer/service/graphite_shared_context_unittest.cc" ]
   }
 
   configs += [ "//build/config:precompiled_headers" ]
 
   deps = [
     ":gles2",
-    ":gpu",
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//cc:test_support",
     "//cc/paint",
-    "//components/viz/common:shared_image_format",
+    "//components/persistent_cache",
+    "//components/viz/common/resources:shared_image_format",
     "//components/viz/test:test_support",
     "//gpu/command_buffer/client:gles2_c_lib",
     "//gpu/command_buffer/client:gles2_implementation",
     "//gpu/command_buffer/client:raster",
     "//gpu/command_buffer/client:webgpu",
+    "//gpu/command_buffer/client/internal",
     "//gpu/command_buffer/common",
     "//gpu/command_buffer/common:gles2_utils",
     "//gpu/command_buffer/service",
@@ -663,7 +643,7 @@ test("gpu_unittests") {
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/mesa_headers",
+    "//third_party/angle:includes",
     "//third_party/re2",
     "//ui/gfx",
     "//ui/gfx:test_support",
@@ -674,22 +654,15 @@ test("gpu_unittests") {
     "//url",
   ]
 
-  if (use_static_angle) {
-    deps += [ "//third_party/angle:translator" ]
-  } else {
-    deps += [ "//third_party/angle:translator_gl_d3d_only" ]
-  }
+  deps += [ "//third_party/angle:translator" ]
 
   if (is_android) {
-    deps += [
-      "//ui/android:ui_java",
-      "//ui/gl:gl_jni_headers",
-    ]
+    deps += [ "//ui/android:ui_java" ]
   }
 
   if (use_dawn) {
     deps += [
-      "//gpu/config:webgpu_blocklist_impl",
+      "//gpu/config",
       "//net:test_support",
       "//third_party/dawn/src/dawn:cpp",
       "//third_party/dawn/src/dawn:proc",
@@ -705,6 +678,14 @@ test("gpu_unittests") {
     bundle_deps =
         [ "//testing/buildbot/filters:gpu_unittests_filters_bundle_data" ]
   }
+
+  if (is_apple) {
+    deps += [ "//ui/accelerated_widget_mac" ]
+  }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 test("gpu_perftests") {
@@ -716,10 +697,10 @@ test("gpu_perftests") {
   ]
 
   deps = [
-    ":gpu",
     "//base",
     "//base/test:test_support",
     "//gpu/command_buffer/client:gles2_implementation",
+    "//gpu/command_buffer/service",
     "//testing/gmock",
     "//testing/gtest",
     "//testing/perf",
@@ -738,7 +719,7 @@ test("gpu_perftests") {
   data_deps = [
     # Needed for isolate script to execute.
     "//testing:run_perf_test",
-    "//third_party/mesa_headers",
+    "//third_party/angle:includes",
   ]
 
   # This target should not require the Chrome executable to run.
@@ -755,8 +736,10 @@ test("command_buffer_perftests") {
     ":gpu",
     "//base",
     "//base/test:test_support",
+    "//gpu/command_buffer/client",
     "//gpu/command_buffer/client:gles2_cmd_helper",
     "//gpu/command_buffer/client:gles2_implementation",
+    "//gpu/command_buffer/service",
     "//gpu/command_buffer/service:gles2",
     "//testing/gtest",
     "//testing/perf",
@@ -788,9 +771,9 @@ if (enable_validating_command_decoder || is_linux) {
 
     deps = [
       ":gles2",
-      ":gpu",
       "//base",
       "//base:i18n",
+      "//gpu/command_buffer/service",
       "//ui/gfx/geometry",
       "//ui/gl",
       "//ui/gl:test_support",
@@ -814,8 +797,8 @@ fuzzer_test("gpu_angle_passthrough_fuzzer") {
 
   deps = [
     ":gles2",
-    ":gpu",
     "//base",
+    "//gpu/command_buffer/service",
     "//ui/gfx/geometry",
     "//ui/gl",
     "//ui/gl:test_support",
@@ -839,8 +822,8 @@ fuzzer_test("gpu_swangle_passthrough_fuzzer") {
 
   deps = [
     ":gles2",
-    ":gpu",
     "//base",
+    "//gpu/command_buffer/service",
     "//ui/gfx/geometry",
     "//ui/gl",
     "//ui/gl:test_support",
@@ -861,8 +844,8 @@ if (is_linux || is_chromeos) {
 
     deps = [
       ":gles2",
-      ":gpu",
       "//base",
+      "//gpu/command_buffer/service",
       "//ui/gfx/geometry",
       "//ui/gl",
       "//ui/gl:test_support",
@@ -886,8 +869,8 @@ if (is_linux || is_chromeos) {
 
     deps = [
       ":gles2",
-      ":gpu",
       "//base",
+      "//gpu/command_buffer/service",
       "//ui/gfx/geometry",
       "//ui/gl",
       "//ui/gl:test_support",
@@ -912,8 +895,8 @@ if (is_linux || is_chromeos) {
 
     deps = [
       ":gles2",
-      ":gpu",
       "//base",
+      "//gpu/command_buffer/service",
       "//ui/gfx/geometry",
       "//ui/gl",
       "//ui/gl:test_support",
@@ -932,10 +915,7 @@ if (is_linux || is_chromeos) {
 test("gpu_benchmark") {
   sources = [ "command_buffer/tests/gl_helper_benchmark.cc" ]
 
-  configs += [
-    "//build/config:precompiled_headers",
-    "//third_party/khronos:khronos_headers",
-  ]
+  configs += [ "//build/config:precompiled_headers" ]
 
   if (!is_debug && (is_win || is_android)) {
     configs -= [ "//build/config/compiler:default_optimization" ]
@@ -955,8 +935,7 @@ test("gpu_benchmark") {
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/angle:includes",
     "//ui/gfx",
   ]
-
-  data_deps = [ "//third_party/mesa_headers" ]
 }

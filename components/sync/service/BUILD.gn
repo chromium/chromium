@@ -2,20 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/features.gni")
-
 static_library("service") {
   sources = [
-    "account_pref_utils.cc",
-    "account_pref_utils.h",
     "active_devices_provider.h",
     "backend_migrator.cc",
     "backend_migrator.h",
+    "bookmark_sync_error_state.cc",
+    "bookmark_sync_error_state.h",
+    "configure_context.cc",
     "configure_context.h",
     "data_type_controller.cc",
     "data_type_controller.h",
     "data_type_encryption_handler.h",
+    "data_type_local_data_batch_uploader.cc",
     "data_type_local_data_batch_uploader.h",
     "data_type_manager.cc",
     "data_type_manager.h",
@@ -24,6 +23,8 @@ static_library("service") {
     "data_type_manager_observer.h",
     "data_type_status_table.cc",
     "data_type_status_table.h",
+    "get_all_nodes_request_barrier.cc",
+    "get_all_nodes_request_barrier.h",
     "get_types_with_unsynced_data_request_barrier.cc",
     "get_types_with_unsynced_data_request_barrier.h",
     "glue/sync_engine_backend.cc",
@@ -36,6 +37,8 @@ static_library("service") {
     "history_sync_session_durations_metrics_recorder.h",
     "local_data_description.cc",
     "local_data_description.h",
+    "local_data_migration_item_queue.cc",
+    "local_data_migration_item_queue.h",
     "model_load_manager.cc",
     "model_load_manager.h",
     "non_ui_syncable_service_based_data_type_controller.cc",
@@ -46,6 +49,8 @@ static_library("service") {
     "sync_auth_manager.h",
     "sync_client.h",
     "sync_engine_factory.h",
+    "sync_error.cc",
+    "sync_error.h",
     "sync_feature_status_for_migrations_recorder.cc",
     "sync_feature_status_for_migrations_recorder.h",
     "sync_internals_util.cc",
@@ -80,6 +85,7 @@ static_library("service") {
     "trusted_vault_histograms.h",
     "trusted_vault_synthetic_field_trial.cc",
     "trusted_vault_synthetic_field_trial.h",
+    "type_status_map_for_debugging.h",
   ]
 
   public_deps = [
@@ -98,19 +104,21 @@ static_library("service") {
   deps = [
     "//base",
     "//base:i18n",
-    "//build:chromeos_buildflags",
     "//components/keyed_service/core",
     "//components/metrics",
+    "//components/os_crypt/async/browser",
+    "//components/os_crypt/async/common",
     "//components/os_crypt/sync",
     "//components/policy:generated",
     "//components/policy/core/browser",
     "//components/prefs",
+    "//components/saved_tab_groups/public:prefs",
+    "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/strings:components_strings_grit",
     "//components/sync/invalidations",
     "//components/version_info",
     "//components/version_info:generate_version_info",
-    "//crypto",
     "//services/network/public/cpp",
     "//ui/base",
   ]
@@ -121,7 +129,10 @@ static_library("service") {
       "../android/sync_service_android_bridge.cc",
       "../android/sync_service_android_bridge.h",
     ]
-    deps += [ "../android:jni_headers" ]
+    deps += [
+      "../android:jni_headers",
+      "//components/password_manager/core/browser:split_stores_and_local_upm",
+    ]
   }
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

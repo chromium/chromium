@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/signin_promo_view_wrapper"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    style="@style/MaterialCardStyle">
+
+    <!-- TODO(https://crbug.com/447407526): Use ConstraintLayout for this UI -->
+    <LinearLayout
+      android:id="@+id/promo_container"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      android:paddingBottom="12dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:id="@+id/signin_promo_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
+                android:includeFontPadding="false"
+                tools:text="@string/signin_promo_title"/>
+
+            <org.chromium.ui.widget.ChromeImageButton
+                android:id="@+id/signin_promo_dismiss_button"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="top|center"
+                android:layout_toEndOf="@id/signin_promo_dismiss_button"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:contentDescription="@string/close"
+                android:scaleType="center"
+                android:src="@drawable/btn_close"
+                app:tint="@macro/default_icon_color"
+                android:background="?attr/selectableItemBackground"
+                android:accessibilityTraversalBefore="@id/signin_promo_image" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:orientation="horizontal"
+          android:gravity="center_vertical"
+          android:layout_marginHorizontal="@dimen/signin_promo_desc_container_margin_horizontal_two_buttons"
+          android:layout_marginBottom="12dp">
+
+            <ImageView
+                android:id="@+id/signin_promo_image"
+                android:layout_width="@dimen/sync_promo_account_image_size"
+                android:layout_height="@dimen/sync_promo_account_image_size"
+                android:importantForAccessibility="no"
+                android:scaleType="fitCenter"/>
+
+            <TextView
+                android:id="@+id/signin_promo_description"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="@dimen/signin_promo_desc_margin_end_two_buttons"
+                android:gravity="center_vertical"
+                android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+                android:lineHeight="16sp"
+                android:includeFontPadding="false"
+                android:paddingTop="1dp"
+                android:paddingBottom="1dp"
+                tools:text="@string/signin_promo_description_recent_tabs" />
+        </LinearLayout>
+
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/signin_promo_primary_button"
+            style="@style/FilledButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/signin_promo_button_margin_two_buttons"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="@string/sync_promo_continue_as"/>
+
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/signin_promo_secondary_button"
+            style="@style/SigninButtonBorderlessRegular"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/signin_promo_button_margin_two_buttons"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="@string/signin_promo_choose_account"/>
+
+    </LinearLayout>
+
+</org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow>

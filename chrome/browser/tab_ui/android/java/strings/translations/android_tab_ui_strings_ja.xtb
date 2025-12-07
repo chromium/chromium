@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="ja">
+<translation id="1293272072740285747">後でタブを追加できるようにこのグループを保持するか、不要になった場合は削除します。
+
+削除すると、全員が「<ph name="TITLE_OF_GROUP" />」タブグループに直ちにアクセスできなくなり、すべてのデバイスから削除されます。</translation>
+<translation id="1340839264183302272">グループから退出</translation>
+<translation id="1419023007528516122">この操作を行うとデバイスからグループが完全に削除されます</translation>
+<translation id="1501480321619201731">グループを削除</translation>
+<translation id="2677748264148917807">このページを離れる</translation>
+<translation id="3547352561153509682"><ph name="USER_EMAIL" /> にログインしているすべてのデバイスからグループを削除します</translation>
+<translation id="381219490185664296">タブグループを解除しますか？</translation>
+<translation id="4139634748112164403">タブはこのデバイスで引き続き表示されますが、グループは完全に削除されます</translation>
+<translation id="4431937619879060901">「<ph name="GROUP_NAME" />」タブグループに直ちにアクセスできなくなり、すべてのデバイスから削除されます</translation>
+<translation id="4460014764210899310">グループを解除</translation>
+<translation id="4777866634702576038">タブグループを削除しますか？</translation>
+<translation id="5094423602314093681">タブとグループを削除しますか？</translation>
+<translation id="5647702255748985085">グループから退出しますか？</translation>
+<translation id="742664698522525515">グループを保持しますか？</translation>
+<translation id="750886945254958667">後でタブを追加できるようにこのグループを保持するか、今後使用しない場合は退出します</translation>
+<translation id="8261506727792406068">削除</translation>
+<translation id="870736955561925754">タブを閉じてグループを削除しますか？</translation>
+<translation id="8804742093141782941">グループを保持</translation>
+<translation id="9169141410816678175">全員が「<ph name="GROUP_NAME" />」タブグループに直ちにアクセスできなくなり、すべてのデバイスから削除されます</translation>
+<translation id="9216898458513705996">タブはこのデバイスで引き続き表示されますが、グループは <ph name="USER_EMAIL" /> にログインしているすべてのデバイスから削除されます</translation>
+<translation id="94870150074703282">グループを削除しますか？</translation>
+</translationbundle>

@@ -69,10 +69,6 @@ export async function holdingSpaceWelcomeBannerOnTabletModeChanged() {
   // Open Files app on Downloads.
   const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
-  // Check: `document.body` should indicate that tablet mode is disabled.
-  chrome.test.assertFalse(
-      document.body.classList.contains('tablet-mode-enabled'));
-
   // Async function which repeats until the element matching the specified
   // `query` has a calculated display matching the specified `displayValue`.
   async function waitForElementWithDisplay(
